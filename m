@@ -2,86 +2,87 @@ Return-Path: <SRS0=xPYy=XP=lists.linux-foundation.org=iommu-bounces@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-8.2 required=3.0 tests=HEADER_FROM_DIFFERENT_DOMAINS,
+X-Spam-Status: No, score=-8.3 required=3.0 tests=HEADER_FROM_DIFFERENT_DOMAINS,
 	INCLUDES_PATCH,MAILING_LIST_MULTI,SIGNED_OFF_BY,SPF_HELO_NONE,SPF_PASS,
-	URIBL_BLOCKED,USER_AGENT_SANE_1 autolearn=ham autolearn_force=no version=3.4.0
+	USER_AGENT_SANE_1 autolearn=ham autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 9CC49C3A5A2
-	for <iommu@archiver.kernel.org>; Fri, 20 Sep 2019 14:58:00 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id DDEFCC3A5A2
+	for <iommu@archiver.kernel.org>; Fri, 20 Sep 2019 15:14:45 +0000 (UTC)
 Received: from mail.linuxfoundation.org (mail.linuxfoundation.org [140.211.169.12])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by mail.kernel.org (Postfix) with ESMTPS id 68D4120882
-	for <iommu@archiver.kernel.org>; Fri, 20 Sep 2019 14:58:00 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 68D4120882
+	by mail.kernel.org (Postfix) with ESMTPS id AC8B62086A
+	for <iommu@archiver.kernel.org>; Fri, 20 Sep 2019 15:14:45 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org AC8B62086A
 Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=linux.ibm.com
 Authentication-Results: mail.kernel.org; spf=pass smtp.mailfrom=iommu-bounces@lists.linux-foundation.org
 Received: from mail.linux-foundation.org (localhost [127.0.0.1])
-	by mail.linuxfoundation.org (Postfix) with ESMTP id 26D6ACBC;
-	Fri, 20 Sep 2019 14:58:00 +0000 (UTC)
+	by mail.linuxfoundation.org (Postfix) with ESMTP id 7A979CF6;
+	Fri, 20 Sep 2019 15:14:45 +0000 (UTC)
 Received: from smtp1.linuxfoundation.org (smtp1.linux-foundation.org
 	[172.17.192.35])
-	by mail.linuxfoundation.org (Postfix) with ESMTPS id CB194CBA
+	by mail.linuxfoundation.org (Postfix) with ESMTPS id 079ABCF3
 	for <iommu@lists.linux-foundation.org>;
-	Fri, 20 Sep 2019 14:57:58 +0000 (UTC)
+	Fri, 20 Sep 2019 15:14:44 +0000 (UTC)
 X-Greylist: domain auto-whitelisted by SQLgrey-1.7.6
-Received: from mx0a-001b2d01.pphosted.com (mx0b-001b2d01.pphosted.com
-	[148.163.158.5])
-	by smtp1.linuxfoundation.org (Postfix) with ESMTPS id 0BE0E832
+Received: from mx0a-001b2d01.pphosted.com (mx0a-001b2d01.pphosted.com
+	[148.163.156.1])
+	by smtp1.linuxfoundation.org (Postfix) with ESMTPS id 8C49683A
 	for <iommu@lists.linux-foundation.org>;
-	Fri, 20 Sep 2019 14:57:57 +0000 (UTC)
-Received: from pps.filterd (m0098420.ppops.net [127.0.0.1])
-	by mx0b-001b2d01.pphosted.com (8.16.0.27/8.16.0.27) with SMTP id
-	x8KEgeu6014364; Fri, 20 Sep 2019 10:57:53 -0400
+	Fri, 20 Sep 2019 15:14:43 +0000 (UTC)
+Received: from pps.filterd (m0098399.ppops.net [127.0.0.1])
+	by mx0a-001b2d01.pphosted.com (8.16.0.27/8.16.0.27) with SMTP id
+	x8KFEE2U022014; Fri, 20 Sep 2019 11:14:37 -0400
 Received: from pps.reinject (localhost [127.0.0.1])
-	by mx0b-001b2d01.pphosted.com with ESMTP id 2v4xd66rq1-1
+	by mx0a-001b2d01.pphosted.com with ESMTP id 2v4y8angeg-1
 	(version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256
-	verify=NOT); Fri, 20 Sep 2019 10:57:52 -0400
-Received: from m0098420.ppops.net (m0098420.ppops.net [127.0.0.1])
-	by pps.reinject (8.16.0.27/8.16.0.27) with SMTP id x8KEh4Ov015557;
-	Fri, 20 Sep 2019 10:57:52 -0400
-Received: from ppma03wdc.us.ibm.com (ba.79.3fa9.ip4.static.sl-reverse.com
-	[169.63.121.186])
-	by mx0b-001b2d01.pphosted.com with ESMTP id 2v4xd66rpf-1
+	verify=NOT); Fri, 20 Sep 2019 11:14:37 -0400
+Received: from m0098399.ppops.net (m0098399.ppops.net [127.0.0.1])
+	by pps.reinject (8.16.0.27/8.16.0.27) with SMTP id x8KFECYs021796;
+	Fri, 20 Sep 2019 11:14:36 -0400
+Received: from ppma04dal.us.ibm.com (7a.29.35a9.ip4.static.sl-reverse.com
+	[169.53.41.122])
+	by mx0a-001b2d01.pphosted.com with ESMTP id 2v4y8angdu-1
 	(version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256
-	verify=NOT); Fri, 20 Sep 2019 10:57:52 -0400
-Received: from pps.filterd (ppma03wdc.us.ibm.com [127.0.0.1])
-	by ppma03wdc.us.ibm.com (8.16.0.27/8.16.0.27) with SMTP id
-	x8KEjuBI018221; Fri, 20 Sep 2019 14:57:51 GMT
-Received: from b03cxnp08025.gho.boulder.ibm.com
-	(b03cxnp08025.gho.boulder.ibm.com [9.17.130.17])
-	by ppma03wdc.us.ibm.com with ESMTP id 2v3vbuprg7-1
+	verify=NOT); Fri, 20 Sep 2019 11:14:36 -0400
+Received: from pps.filterd (ppma04dal.us.ibm.com [127.0.0.1])
+	by ppma04dal.us.ibm.com (8.16.0.27/8.16.0.27) with SMTP id
+	x8KFB389010798; Fri, 20 Sep 2019 15:14:35 GMT
+Received: from b03cxnp08027.gho.boulder.ibm.com
+	(b03cxnp08027.gho.boulder.ibm.com [9.17.130.19])
+	by ppma04dal.us.ibm.com with ESMTP id 2v3vbutjsd-1
 	(version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256
-	verify=NOT); Fri, 20 Sep 2019 14:57:51 +0000
+	verify=NOT); Fri, 20 Sep 2019 15:14:35 +0000
 Received: from b03ledav004.gho.boulder.ibm.com
 	(b03ledav004.gho.boulder.ibm.com [9.17.130.235])
-	by b03cxnp08025.gho.boulder.ibm.com (8.14.9/8.14.9/NCO v10.0) with
-	ESMTP id x8KEvlMn39649560
+	by b03cxnp08027.gho.boulder.ibm.com (8.14.9/8.14.9/NCO v10.0) with
+	ESMTP id x8KFEVa758786272
 	(version=TLSv1/SSLv3 cipher=DHE-RSA-AES256-GCM-SHA384 bits=256
-	verify=OK); Fri, 20 Sep 2019 14:57:47 GMT
+	verify=OK); Fri, 20 Sep 2019 15:14:31 GMT
 Received: from b03ledav004.gho.boulder.ibm.com (unknown [127.0.0.1])
-	by IMSVA (Postfix) with ESMTP id C14937805E;
-	Fri, 20 Sep 2019 14:57:47 +0000 (GMT)
+	by IMSVA (Postfix) with ESMTP id 39C9078060;
+	Fri, 20 Sep 2019 15:14:31 +0000 (GMT)
 Received: from b03ledav004.gho.boulder.ibm.com (unknown [127.0.0.1])
-	by IMSVA (Postfix) with ESMTP id B97FC7805C;
-	Fri, 20 Sep 2019 14:57:45 +0000 (GMT)
+	by IMSVA (Postfix) with ESMTP id 4FC877805C;
+	Fri, 20 Sep 2019 15:14:29 +0000 (GMT)
 Received: from oc4221205838.ibm.com (unknown [9.85.141.73])
 	by b03ledav004.gho.boulder.ibm.com (Postfix) with ESMTP;
-	Fri, 20 Sep 2019 14:57:45 +0000 (GMT)
-Subject: Re: [PATCH v4 4/4] vfio: pci: Using a device region to retrieve zPCI
-	information
-To: Alex Williamson <alex.williamson@redhat.com>
+	Fri, 20 Sep 2019 15:14:29 +0000 (GMT)
+Subject: Re: [PATCH v4 3/4] vfio: zpci: defining the VFIO headers
+To: Cornelia Huck <cohuck@redhat.com>
 References: <1567815231-17940-1-git-send-email-mjrosato@linux.ibm.com>
-	<1567815231-17940-5-git-send-email-mjrosato@linux.ibm.com>
-	<20190919165750.73675997@x1.home>
+	<1567815231-17940-4-git-send-email-mjrosato@linux.ibm.com>
+	<20190919172009.71b1c246.cohuck@redhat.com>
+	<0a62aba7-578a-6875-da4d-13e8b145cf9b@linux.ibm.com>
+	<20190920160258.70631905.cohuck@redhat.com>
 From: Matthew Rosato <mjrosato@linux.ibm.com>
 Openpgp: preference=signencrypt
-Message-ID: <adeb6955-81a4-23c3-d73e-f02eb4c0fde1@linux.ibm.com>
-Date: Fri, 20 Sep 2019 10:57:44 -0400
+Message-ID: <86647083-7f94-44aa-8856-103836906f36@linux.ibm.com>
+Date: Fri, 20 Sep 2019 11:14:28 -0400
 User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:60.0) Gecko/20100101
 	Thunderbird/60.8.0
 MIME-Version: 1.0
-In-Reply-To: <20190919165750.73675997@x1.home>
+In-Reply-To: <20190920160258.70631905.cohuck@redhat.com>
 Content-Language: en-US
 X-TM-AS-GCONF: 00
 X-Proofpoint-Virus-Version: vendor=fsecure engine=2.50.10434:, ,
@@ -91,13 +92,14 @@ X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0
 	malwarescore=0 suspectscore=0 phishscore=0 bulkscore=0 spamscore=0
 	clxscore=1015 lowpriorityscore=0 mlxscore=0 impostorscore=0
 	mlxlogscore=999 adultscore=0 classifier=spam adjust=0 reason=mlx
-	scancount=1 engine=8.0.1-1908290000 definitions=main-1909200139
+	scancount=1 engine=8.0.1-1908290000 definitions=main-1909200142
 Cc: gor@linux.ibm.com, linux-s390@vger.kernel.org, walling@linux.ibm.com,
-	kvm@vger.kernel.org, sebott@linux.ibm.com, pmorel@linux.ibm.com,
-	cohuck@redhat.com, heiko.carstens@de.ibm.com,
-	linux-kernel@vger.kernel.org, pasic@linux.ibm.com,
-	borntraeger@de.ibm.com, iommu@lists.linux-foundation.org,
-	robin.murphy@arm.com, gerald.schaefer@de.ibm.com
+	alex.williamson@redhat.com, kvm@vger.kernel.org,
+	sebott@linux.ibm.com, pmorel@linux.ibm.com,
+	heiko.carstens@de.ibm.com, linux-kernel@vger.kernel.org,
+	pasic@linux.ibm.com, borntraeger@de.ibm.com,
+	iommu@lists.linux-foundation.org, robin.murphy@arm.com,
+	gerald.schaefer@de.ibm.com
 X-BeenThere: iommu@lists.linux-foundation.org
 X-Mailman-Version: 2.1.12
 Precedence: list
@@ -115,215 +117,117 @@ Content-Transfer-Encoding: 7bit
 Sender: iommu-bounces@lists.linux-foundation.org
 Errors-To: iommu-bounces@lists.linux-foundation.org
 
-On 9/19/19 6:57 PM, Alex Williamson wrote:
-> On Fri,  6 Sep 2019 20:13:51 -0400
+On 9/20/19 10:02 AM, Cornelia Huck wrote:
+> On Thu, 19 Sep 2019 16:55:57 -0400
 > Matthew Rosato <mjrosato@linux.ibm.com> wrote:
 > 
->> From: Pierre Morel <pmorel@linux.ibm.com>
+>> On 9/19/19 11:20 AM, Cornelia Huck wrote:
+>>> On Fri,  6 Sep 2019 20:13:50 -0400
+>>> Matthew Rosato <mjrosato@linux.ibm.com> wrote:
+>>>   
+>>>> From: Pierre Morel <pmorel@linux.ibm.com>
+>>>>
+>>>> We define a new device region in vfio.h to be able to
+>>>> get the ZPCI CLP information by reading this region from
+>>>> userland.
+>>>>
+>>>> We create a new file, vfio_zdev.h to define the structure
+>>>> of the new region we defined in vfio.h
+>>>>
+>>>> Signed-off-by: Pierre Morel <pmorel@linux.ibm.com>
+>>>> Signed-off-by: Matthew Rosato <mjrosato@linux.ibm.com>
+>>>> ---
+>>>>  include/uapi/linux/vfio.h      |  1 +
+>>>>  include/uapi/linux/vfio_zdev.h | 35 +++++++++++++++++++++++++++++++++++
+>>>>  2 files changed, 36 insertions(+)
+>>>>  create mode 100644 include/uapi/linux/vfio_zdev.h
+> 
+>>>> diff --git a/include/uapi/linux/vfio_zdev.h b/include/uapi/linux/vfio_zdev.h
+>>>> new file mode 100644
+>>>> index 0000000..55e0d6d
+>>>> --- /dev/null
+>>>> +++ b/include/uapi/linux/vfio_zdev.h
+>>>> @@ -0,0 +1,35 @@
+>>>> +/* SPDX-License-Identifier: GPL-2.0 WITH Linux-syscall-note */
+>>>> +/*
+>>>> + * Region definition for ZPCI devices
+>>>> + *
+>>>> + * Copyright IBM Corp. 2019
+>>>> + *
+>>>> + * Author(s): Pierre Morel <pmorel@linux.ibm.com>
+>>>> + */
+>>>> +
+>>>> +#ifndef _VFIO_ZDEV_H_
+>>>> +#define _VFIO_ZDEV_H_
+>>>> +
+>>>> +#include <linux/types.h>
+>>>> +
+>>>> +/**
+>>>> + * struct vfio_region_zpci_info - ZPCI information.  
+>>>
+>>> Hm... probably should also get some more explanation. E.g. is that
+>>> derived from a hardware structure?
+>>>   
 >>
->> We define a new configuration entry for VFIO/PCI, VFIO_PCI_ZDEV
+>> The structure itself is not mapped 1:1 to a hardware structure, but it
+>> does serve as a collection of information that was derived from other
+>> hardware structures.
 >>
->> When the VFIO_PCI_ZDEV feature is configured we initialize
->> a new device region, VFIO_REGION_SUBTYPE_ZDEV_CLP, to hold
->> the information from the ZPCI device the use
+>> "Used for passing hardware feature information about a zpci device
+>> between the host and guest" ?
+> 
+> "zPCI specific hardware feature information for a device"?
+> 
+> Are we reasonably sure that this is complete for now? I'm not sure if
+> expanding this structure would work; adding another should always be
+> possible, though (if a bit annoying).
+> 
+
+I think trying to make the structure expandable would be best...  If we
+allow arbitrary-sized reads of the info, and only add new fields onto
+the end it should be OK, no? (older qemu doesn't get the info it doesn't
+ask for / understand)....  But I guess that's not compatible with having
+util_str[] size being defined dynamically.  Another caveat would be if
+CLP_UTIL_STR_LEN were to grow in size in the future, and assuming
+util_str[] was no longer at the end of the structure, I guess the
+additional data would have to end up in a
+util_str2[CLP_UTIL_STR_LEN_NEW-CLP_UTIL_STR_LEN_OLD]...  To explain what
+I mean, something like:
+
+struct vfio_region_zpci_info {
+	<..>
+	__u8 util_str[CLP_UTIL_STR_LEN_OLD];
+	/* END OF V1 */
+	__u8 foo;
+	/* END OF V2 */
+	__u8 util_str2[CLP_UTIL_STR_LEN_NEW-CLP_UTIL_STR_LEN_OLD];
+	/* END OF V3 */
+} __packed;
+
+
 >>
->> Signed-off-by: Pierre Morel <pmorel@linux.ibm.com>
->> Signed-off-by: Matthew Rosato <mjrosato@linux.ibm.com>
->> ---
->>  drivers/vfio/pci/Kconfig            |  7 +++
->>  drivers/vfio/pci/Makefile           |  1 +
->>  drivers/vfio/pci/vfio_pci.c         |  9 ++++
->>  drivers/vfio/pci/vfio_pci_private.h | 10 +++++
->>  drivers/vfio/pci/vfio_pci_zdev.c    | 85 +++++++++++++++++++++++++++++++++++++
->>  5 files changed, 112 insertions(+)
->>  create mode 100644 drivers/vfio/pci/vfio_pci_zdev.c
+>>>> + *
+>>>> + */
+>>>> +struct vfio_region_zpci_info {
+>>>> +	__u64 dasm;
+>>>> +	__u64 start_dma;
+>>>> +	__u64 end_dma;
+>>>> +	__u64 msi_addr;
+>>>> +	__u64 flags;
+>>>> +	__u16 pchid;
+>>>> +	__u16 mui;
+>>>> +	__u16 noi;
+>>>> +	__u16 maxstbl;
+>>>> +	__u8 version;
+>>>> +	__u8 gid;
+>>>> +#define VFIO_PCI_ZDEV_FLAGS_REFRESH 1
+>>>> +	__u8 util_str[];
+>>>> +} __packed;
+>>>> +
+>>>> +#endif  
+>>>
+>>>   
 >>
->> diff --git a/drivers/vfio/pci/Kconfig b/drivers/vfio/pci/Kconfig
->> index ac3c1dd..d4562a8 100644
->> --- a/drivers/vfio/pci/Kconfig
->> +++ b/drivers/vfio/pci/Kconfig
->> @@ -45,3 +45,10 @@ config VFIO_PCI_NVLINK2
->>  	depends on VFIO_PCI && PPC_POWERNV
->>  	help
->>  	  VFIO PCI support for P9 Witherspoon machine with NVIDIA V100 GPUs
->> +
->> +config VFIO_PCI_ZDEV
->> +	bool "VFIO PCI Generic for ZPCI devices"
->> +	depends on VFIO_PCI && S390
->> +	default y
->> +	help
->> +	  VFIO PCI support for S390 Z-PCI devices
->> diff --git a/drivers/vfio/pci/Makefile b/drivers/vfio/pci/Makefile
->> index f027f8a..781e080 100644
->> --- a/drivers/vfio/pci/Makefile
->> +++ b/drivers/vfio/pci/Makefile
->> @@ -3,5 +3,6 @@
->>  vfio-pci-y := vfio_pci.o vfio_pci_intrs.o vfio_pci_rdwr.o vfio_pci_config.o
->>  vfio-pci-$(CONFIG_VFIO_PCI_IGD) += vfio_pci_igd.o
->>  vfio-pci-$(CONFIG_VFIO_PCI_NVLINK2) += vfio_pci_nvlink2.o
->> +vfio-pci-$(CONFIG_VFIO_PCI_ZDEV) += vfio_pci_zdev.o
->>  
->>  obj-$(CONFIG_VFIO_PCI) += vfio-pci.o
->> diff --git a/drivers/vfio/pci/vfio_pci.c b/drivers/vfio/pci/vfio_pci.c
->> index 703948c..b40544a 100644
->> --- a/drivers/vfio/pci/vfio_pci.c
->> +++ b/drivers/vfio/pci/vfio_pci.c
->> @@ -356,6 +356,15 @@ static int vfio_pci_enable(struct vfio_pci_device *vdev)
->>  		}
->>  	}
->>  
->> +	if (IS_ENABLED(CONFIG_VFIO_PCI_ZDEV)) {
->> +		ret = vfio_pci_zdev_init(vdev);
->> +		if (ret) {
->> +			dev_warn(&vdev->pdev->dev,
->> +				 "Failed to setup ZDEV regions\n");
->> +			goto disable_exit;
->> +		}
->> +	}
->> +
->>  	vfio_pci_probe_mmaps(vdev);
->>  
->>  	return 0;
->> diff --git a/drivers/vfio/pci/vfio_pci_private.h b/drivers/vfio/pci/vfio_pci_private.h
->> index ee6ee91..08e02f5 100644
->> --- a/drivers/vfio/pci/vfio_pci_private.h
->> +++ b/drivers/vfio/pci/vfio_pci_private.h
->> @@ -186,4 +186,14 @@ static inline int vfio_pci_ibm_npu2_init(struct vfio_pci_device *vdev)
->>  	return -ENODEV;
->>  }
->>  #endif
->> +
->> +#ifdef CONFIG_VFIO_PCI_ZDEV
->> +extern int vfio_pci_zdev_init(struct vfio_pci_device *vdev);
->> +#else
->> +static inline int vfio_pci_zdev_init(struct vfio_pci_device *vdev)
->> +{
->> +	return -ENODEV;
->> +}
->> +#endif
->> +
->>  #endif /* VFIO_PCI_PRIVATE_H */
->> diff --git a/drivers/vfio/pci/vfio_pci_zdev.c b/drivers/vfio/pci/vfio_pci_zdev.c
->> new file mode 100644
->> index 0000000..22e2b60
->> --- /dev/null
->> +++ b/drivers/vfio/pci/vfio_pci_zdev.c
->> @@ -0,0 +1,85 @@
->> +// SPDX-License-Identifier: GPL-2.0+
->> +/*
->> + * VFIO ZPCI devices support
->> + *
->> + * Copyright (C) IBM Corp. 2019.  All rights reserved.
->> + *	Author: Pierre Morel <pmorel@linux.ibm.com>
->> + *
->> + * This program is free software; you can redistribute it and/or modify
->> + * it under the terms of the GNU General Public License version 2 as
->> + * published by the Free Software Foundation.
->> + *
->> + */
->> +#include <linux/io.h>
->> +#include <linux/pci.h>
->> +#include <linux/uaccess.h>
->> +#include <linux/vfio.h>
->> +#include <linux/vfio_zdev.h>
->> +
->> +#include "vfio_pci_private.h"
->> +
->> +static size_t vfio_pci_zdev_rw(struct vfio_pci_device *vdev,
->> +			       char __user *buf, size_t count, loff_t *ppos,
->> +			       bool iswrite)
->> +{
->> +	struct vfio_region_zpci_info *region;
->> +	struct zpci_dev *zdev;
->> +	unsigned int index = VFIO_PCI_OFFSET_TO_INDEX(*ppos);
->> +	loff_t pos = *ppos & VFIO_PCI_OFFSET_MASK;
->> +
->> +	if (!vdev->pdev->bus)
->> +		return -ENODEV;
->> +
->> +	zdev = vdev->pdev->bus->sysdata;
->> +	if (!zdev)
->> +		return -ENODEV;
->> +
->> +	if (pos >= sizeof(*region) || iswrite)
->> +		return -EINVAL;
->> +
->> +	region = vdev->region[index - VFIO_PCI_NUM_REGIONS].data;
->> +	region->dasm = zdev->dma_mask;
->> +	region->start_dma = zdev->start_dma;
->> +	region->end_dma = zdev->end_dma;
->> +	region->msi_addr = zdev->msi_addr;
->> +	region->flags = VFIO_PCI_ZDEV_FLAGS_REFRESH;
-> 
-> Even more curious what this means, why do we need a flag that's always
-> set?  Maybe NOREFRESH if it were ever to exist.>
-
-This flag also has a hardware structure counterpart -- this is
-associated with Pierre's comment from the cover letter:
-
-"Note that in the current state we do not use the CLP instructions to
-access the firmware but get the information directly from the zdev
-device. <...> But we will need this later, eventually in the next
-iteration to retrieve values not being saved inside the zdev structure.
-like maxstbl and the PCI supported version"
-
-Since this data isn't stored in the zdev, a subsequent patch that pulls
-the flag info from the CLP data would set this value intelligently vs
-the current hard-coded value.
-
->> +	region->gid = zdev->pfgid;
->> +	region->mui = zdev->fmb_update;
->> +	region->noi = zdev->max_msi;
->> +	memcpy(region->util_str, zdev->util_str, CLP_UTIL_STR_LEN);
-> 
-> Just checking, I assume this is dynamic based on it being recreated
-> every time, otherwise you'd have created it in the init function and
-> just do the below on read, right?  The fields that I can guess what they
-> might be don't seem like they'd change.  Comments would be good.
-
-I think you're right and this can be done in init, I'll have a look.
-
-> Thanks,
-> 
-> Alex
-> 
->> +
->> +	count = min(count, (size_t)(sizeof(*region) - pos));
->> +	if (copy_to_user(buf, region, count))
->> +		return -EFAULT;
->> +
->> +	return count;
->> +}
->> +
->> +static void vfio_pci_zdev_release(struct vfio_pci_device *vdev,
->> +				  struct vfio_pci_region *region)
->> +{
->> +	kfree(region->data);
->> +}
->> +
->> +static const struct vfio_pci_regops vfio_pci_zdev_regops = {
->> +	.rw		= vfio_pci_zdev_rw,
->> +	.release	= vfio_pci_zdev_release,
->> +};
->> +
->> +int vfio_pci_zdev_init(struct vfio_pci_device *vdev)
->> +{
->> +	struct vfio_region_zpci_info *region;
->> +	int ret;
->> +
->> +	region = kmalloc(sizeof(*region) + CLP_UTIL_STR_LEN, GFP_KERNEL);
->> +	if (!region)
->> +		return -ENOMEM;
->> +
->> +	ret = vfio_pci_register_dev_region(vdev,
->> +		PCI_VENDOR_ID_IBM | VFIO_REGION_TYPE_PCI_VENDOR_TYPE,
->> +		VFIO_REGION_SUBTYPE_ZDEV_CLP,
->> +		&vfio_pci_zdev_regops, sizeof(*region) + CLP_UTIL_STR_LEN,
->> +		VFIO_REGION_INFO_FLAG_READ, region);
->> +
->> +	return ret;
->> +}
-> 
 > 
 
 _______________________________________________
