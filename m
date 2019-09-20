@@ -2,85 +2,97 @@ Return-Path: <SRS0=xPYy=XP=lists.linux-foundation.org=iommu-bounces@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-3.5 required=3.0 tests=DKIM_INVALID,DKIM_SIGNED,
-	HEADER_FROM_DIFFERENT_DOMAINS,MAILING_LIST_MULTI,SIGNED_OFF_BY,SPF_HELO_NONE,
-	SPF_PASS,URIBL_BLOCKED autolearn=no autolearn_force=no version=3.4.0
+X-Spam-Status: No, score=-2.0 required=3.0 tests=DKIM_ADSP_CUSTOM_MED,
+	DKIM_INVALID,DKIM_SIGNED,FREEMAIL_FORGED_FROMDOMAIN,FREEMAIL_FROM,
+	HEADER_FROM_DIFFERENT_DOMAINS,MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS,
+	URIBL_BLOCKED,USER_AGENT_SANE_1 autolearn=no autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id D59C2C3A5A2
-	for <iommu@archiver.kernel.org>; Fri, 20 Sep 2019 21:07:33 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id ACEEBC4CEC9
+	for <iommu@archiver.kernel.org>; Fri, 20 Sep 2019 22:26:35 +0000 (UTC)
 Received: from mail.linuxfoundation.org (mail.linuxfoundation.org [140.211.169.12])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by mail.kernel.org (Postfix) with ESMTPS id 8C2342080F
-	for <iommu@archiver.kernel.org>; Fri, 20 Sep 2019 21:07:33 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTPS id 71D142086A
+	for <iommu@archiver.kernel.org>; Fri, 20 Sep 2019 22:26:35 +0000 (UTC)
 Authentication-Results: mail.kernel.org;
-	dkim=fail reason="signature verification failed" (1024-bit key) header.d=chromium.org header.i=@chromium.org header.b="b2M0SMWw"
-DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 8C2342080F
-Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=chromium.org
+	dkim=fail reason="signature verification failed" (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="oiX3xeQ0"
+DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 71D142086A
+Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=gmail.com
 Authentication-Results: mail.kernel.org; spf=pass smtp.mailfrom=iommu-bounces@lists.linux-foundation.org
 Received: from mail.linux-foundation.org (localhost [127.0.0.1])
-	by mail.linuxfoundation.org (Postfix) with ESMTP id 37AFADCE;
-	Fri, 20 Sep 2019 21:07:33 +0000 (UTC)
+	by mail.linuxfoundation.org (Postfix) with ESMTP id 17BFFBBC;
+	Fri, 20 Sep 2019 22:26:35 +0000 (UTC)
 Received: from smtp1.linuxfoundation.org (smtp1.linux-foundation.org
 	[172.17.192.35])
-	by mail.linuxfoundation.org (Postfix) with ESMTPS id D59B6D89
+	by mail.linuxfoundation.org (Postfix) with ESMTPS id A458DBA9
 	for <iommu@lists.linux-foundation.org>;
-	Fri, 20 Sep 2019 21:07:31 +0000 (UTC)
+	Fri, 20 Sep 2019 22:26:33 +0000 (UTC)
 X-Greylist: whitelisted by SQLgrey-1.7.6
-Received: from mail-pf1-f194.google.com (mail-pf1-f194.google.com
-	[209.85.210.194])
-	by smtp1.linuxfoundation.org (Postfix) with ESMTPS id 48B80711
+Received: from mail-lj1-f193.google.com (mail-lj1-f193.google.com
+	[209.85.208.193])
+	by smtp1.linuxfoundation.org (Postfix) with ESMTPS id AED82108
 	for <iommu@lists.linux-foundation.org>;
-	Fri, 20 Sep 2019 21:07:30 +0000 (UTC)
-Received: by mail-pf1-f194.google.com with SMTP id y72so5294169pfb.12
+	Fri, 20 Sep 2019 22:26:32 +0000 (UTC)
+Received: by mail-lj1-f193.google.com with SMTP id f5so8499406ljg.8
 	for <iommu@lists.linux-foundation.org>;
-	Fri, 20 Sep 2019 14:07:30 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=chromium.org; s=google;
-	h=message-id:mime-version:content-transfer-encoding:in-reply-to
-	:references:cc:to:from:subject:user-agent:date;
-	bh=lPIgzmO/aPJJEw9pL/CRSzhyVtzs0JpO8UpzUFEOaBQ=;
-	b=b2M0SMWw96aMNTsOlmWo8NW6A6GBgxj00yVxoie2lvcFcImFjACQ5a6NVxXmBr1fZ3
-	KcXfxvujifhSx74q2XGy3QX2C1PtePSqzBOgzegWIMspO1BvCQI3jqQ1F9mHe79PHfyw
-	kXiu5/W/2czx7NlzaTVvv774NlIsaW+Tu0Bto=
+	Fri, 20 Sep 2019 15:26:32 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=gmail.com; s=20161025;
+	h=subject:to:cc:references:from:message-id:date:user-agent
+	:mime-version:in-reply-to:content-language:content-transfer-encoding;
+	bh=NCRwLUskdzV7gHTBmxNv4l39hBOLgSQ0mOSFdrxw3Z4=;
+	b=oiX3xeQ0MNmmn5mM3EZkkEJkRlIy3l6sUSK6Bc0T7crcx0ziuZGRkuXypQJh7ZEOrh
+	7ZSAWAE6uudRQPD2YI6d2gfbd90BQUiwsd7uBebVi75hQCxyMivAibyE/WPyRAS3Pzap
+	+1/MgjgILz5Wvj3+ljs2MLCY1VVW4JTbBlscBmSsoo2tggbLnFAejToXHF6qQYgwBdnt
+	HsSOSNQ+sAchY3R2WETinc0jkM0L+x8Ol6V3C4crjqeHX5o1LrZ55KEz7/4AzZu7CpZ9
+	95+C7zJOYF6wZBBqmPwuaZcdT5ykBAtX+TjGX+NHq+vj9ioJiLl2qtVxB91+3O5ulNYO
+	nzRw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
 	d=1e100.net; s=20161025;
-	h=x-gm-message-state:message-id:mime-version
-	:content-transfer-encoding:in-reply-to:references:cc:to:from:subject
-	:user-agent:date;
-	bh=lPIgzmO/aPJJEw9pL/CRSzhyVtzs0JpO8UpzUFEOaBQ=;
-	b=oErNuXDv0E0+Jzu4vfD2q/hEck8BFUE4kCoAU45+LNnUGxNX9FebOnBcXfoInyxYCT
-	ge0w0NuVi3gI8L3gcpJ6P6D2bodsA6rjwVa1cZ+cxQoUSflx8e+rIWtAWmp15BbwF/T7
-	INgxTmi8Gzws/WoB1UlFuC0LHo96CMDNJCA97K9depSuiw1l2bkjMOMNux73gja1y4ST
-	QJCwAQwEgtSP6wz0djPIsN7re/DXlp0Cd0Ap5D/6Uj0EjzGZGzuc1ubM+mGx762uHIc0
-	E+ZoD29aqvpw6aujmfdanEcemuP6KgvnNDoYC4S4FLMoSrhA5v4aZ4pdOEIVgsMrigpz
-	6eaQ==
-X-Gm-Message-State: APjAAAXWJA1+NqC77RpZJFL8PuMoQEr2VDr0GMY8wilA12BNX2Q5n1lE
-	TOITo1y+0VcVNk6rDj9Wct6p1A==
-X-Google-Smtp-Source: APXvYqyAWN51mb5bwvg5tMBgXdaWqe6d1zPHJiWwX3nmpCkKnqqQBzcRed7PrS5FMAE8YAwI65K7Cg==
-X-Received: by 2002:a62:e21a:: with SMTP id a26mr20135657pfi.80.1569013649984; 
-	Fri, 20 Sep 2019 14:07:29 -0700 (PDT)
-Received: from chromium.org ([2620:15c:202:1:fa53:7765:582b:82b9])
-	by smtp.gmail.com with ESMTPSA id
-	a11sm3742571pfg.94.2019.09.20.14.07.29
-	(version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-	Fri, 20 Sep 2019 14:07:29 -0700 (PDT)
-Message-ID: <5d853f91.1c69fb81.a630b.98dd@mx.google.com>
+	h=x-gm-message-state:subject:to:cc:references:from:message-id:date
+	:user-agent:mime-version:in-reply-to:content-language
+	:content-transfer-encoding;
+	bh=NCRwLUskdzV7gHTBmxNv4l39hBOLgSQ0mOSFdrxw3Z4=;
+	b=n+BSh5T27LMXuTLle0WDWCHWYZGDXY6I7dPpeizPAy4hV949onSQZ4HGB7JAiQZAWi
+	CD2lztS/q9DdIHeRpFjLHoCmh6ueqKB1fp6aEcbtM1XgDVgQNzHUJgqADeg6M82Tox1T
+	RxJcScAEVzY5KCjYkhcHae5WqLhljAQuhWauQjVuJl6zc4Gl5LDmaP0AP98Btz96pinq
+	VJZpDPDFTSgfINTiHhhA4H/C9pV/KIAST9YHhclegiCNFRem6+i4XDWm2AgjUyPpC7TO
+	v2MF41Xd//tTkSDyYarTSknKwIzBD3v1qUjIlAGXo7dd1b+1zvRP2uTzCwXSRAuFe1fn
+	xg3Q==
+X-Gm-Message-State: APjAAAVQJJFvSYJck3cHwagmgELBwI9ZgyHXJZNwhP+PHbL/RZUZUyP7
+	5Rg0z9DWQCr5frduDz8BGRfY56Qp
+X-Google-Smtp-Source: APXvYqwxm/7zrCbHka/7eCQpm/oQUiH78xadO7fAr2TpiKXlOB/a4hiVWmiEHeHIi9DYOPMS0IXkVw==
+X-Received: by 2002:a05:651c:110f:: with SMTP id
+	d15mr10653261ljo.43.1569018390799; 
+	Fri, 20 Sep 2019 15:26:30 -0700 (PDT)
+Received: from [192.168.2.145] ([94.29.45.178])
+	by smtp.googlemail.com with ESMTPSA id
+	z30sm806218lfj.63.2019.09.20.15.26.29
+	(version=TLS1_2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128/128);
+	Fri, 20 Sep 2019 15:26:29 -0700 (PDT)
+Subject: Re: [PATCH] media: staging: tegra-vde: Fix build error
+To: Arnd Bergmann <arnd@arndb.de>
+References: <dc354ede-5963-cd7f-ee53-f3df3061d39a@gmail.com>
+	<20190725024129.22664-1-yuehaibing@huawei.com>
+	<dd547b44-7abb-371f-aeee-a82b96f824e2@gmail.com>
+	<CAK8P3a2Lxv6Wz3jv0eeNc7mfvNzSvh37QEx51W39eUnYPsxaYw@mail.gmail.com>
+From: Dmitry Osipenko <digetx@gmail.com>
+Message-ID: <ed818d0c-2d5a-d9a4-e99d-43fe4eba4357@gmail.com>
+Date: Sat, 21 Sep 2019 01:26:28 +0300
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:60.0) Gecko/20100101
+	Thunderbird/60.8.0
 MIME-Version: 1.0
-In-Reply-To: <3ed0de38b57fda1995d0f231cbcec38c16387a2a.1568966170.git.saiprakash.ranjan@codeaurora.org>
-References: <cover.1568966170.git.saiprakash.ranjan@codeaurora.org>
-	<3ed0de38b57fda1995d0f231cbcec38c16387a2a.1568966170.git.saiprakash.ranjan@codeaurora.org>
-To: Andy Gross <agross@kernel.org>, Joerg Roedel <joro@8bytes.org>,
+In-Reply-To: <CAK8P3a2Lxv6Wz3jv0eeNc7mfvNzSvh37QEx51W39eUnYPsxaYw@mail.gmail.com>
+Content-Language: en-US
+Cc: driverdevel <devel@driverdev.osuosl.org>,
+	gregkh <gregkh@linuxfoundation.org>, YueHaibing <yuehaibing@huawei.com>,
+	"linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
+	Jonathan Hunter <jonathanh@nvidia.com>,
+	"open list:IOMMU DRIVERS" <iommu@lists.linux-foundation.org>,
+	Thierry Reding <thierry.reding@gmail.com>,
+	"open list:TEGRA ARCHITECTURE SUPPORT" <linux-tegra@vger.kernel.org>,
+	Mauro Carvalho Chehab <mchehab@kernel.org>,
 	Robin Murphy <robin.murphy@arm.com>,
-	Sai Prakash Ranjan <saiprakash.ranjan@codeaurora.org>,
-	Vivek Gautam <vivek.gautam@codeaurora.org>,
-	Will Deacon <will@kernel.org>, bjorn.andersson@linaro.org,
-	iommu@lists.linux-foundation.org
-From: Stephen Boyd <swboyd@chromium.org>
-Subject: Re: [PATCHv7 3/3] iommu: arm-smmu-impl: Add sdm845 implementation hook
-User-Agent: alot/0.8.1
-Date: Fri, 20 Sep 2019 14:07:28 -0700
-Cc: linux-arm-msm@vger.kernel.org, Rajendra Nayak <rnayak@codeaurora.org>,
-	linux-kernel@vger.kernel.org
+	Linux Media Mailing List <linux-media@vger.kernel.org>
 X-BeenThere: iommu@lists.linux-foundation.org
 X-Mailman-Version: 2.1.12
 Precedence: list
@@ -93,82 +105,55 @@ List-Post: <mailto:iommu@lists.linux-foundation.org>
 List-Help: <mailto:iommu-request@lists.linux-foundation.org?subject=help>
 List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
 	<mailto:iommu-request@lists.linux-foundation.org?subject=subscribe>
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: base64
 Sender: iommu-bounces@lists.linux-foundation.org
 Errors-To: iommu-bounces@lists.linux-foundation.org
 
-Quoting Sai Prakash Ranjan (2019-09-20 01:04:29)
-> From: Vivek Gautam <vivek.gautam@codeaurora.org>
-> 
-> Add reset hook for sdm845 based platforms to turn off
-> the wait-for-safe sequence.
-> 
-> Understanding how wait-for-safe logic affects USB and UFS performance
-> on MTP845 and DB845 boards:
-> 
-> Qcom's implementation of arm,mmu-500 adds a WAIT-FOR-SAFE logic
-> to address under-performance issues in real-time clients, such as
-> Display, and Camera.
-> On receiving an invalidation requests, the SMMU forwards SAFE request
-> to these clients and waits for SAFE ack signal from real-time clients.
-> The SAFE signal from such clients is used to qualify the start of
-> invalidation.
-> This logic is controlled by chicken bits, one for each - MDP (display),
-> IFE0, and IFE1 (camera), that can be accessed only from secure software
-> on sdm845.
-> 
-> This configuration, however, degrades the performance of non-real time
-> clients, such as USB, and UFS etc. This happens because, with wait-for-safe
-> logic enabled the hardware tries to throttle non-real time clients while
-> waiting for SAFE ack signals from real-time clients.
-> 
-> On mtp845 and db845 devices, with wait-for-safe logic enabled by the
-> bootloaders we see degraded performance of USB and UFS when kernel
-> enables the smmu stage-1 translations for these clients.
-> Turn off this wait-for-safe logic from the kernel gets us back the perf
-> of USB and UFS devices until we re-visit this when we start seeing perf
-> issues on display/camera on upstream supported SDM845 platforms.
-> The bootloaders on these boards implement secure monitor callbacks to
-> handle a specific command - QCOM_SCM_SVC_SMMU_PROGRAM with which the
-> logic can be toggled.
-> 
-> There are other boards such as cheza whose bootloaders don't enable this
-> logic. Such boards don't implement callbacks to handle the specific SCM
-> call so disabling this logic for such boards will be a no-op.
-> 
-> This change is inspired by the downstream change from Patrick Daly
-> to address performance issues with display and camera by handling
-> this wait-for-safe within separte io-pagetable ops to do TLB
-> maintenance. So a big thanks to him for the change and for all the
-> offline discussions.
-> 
-> Without this change the UFS reads are pretty slow:
-> $ time dd if=/dev/sda of=/dev/zero bs=1048576 count=10 conv=sync
-> 10+0 records in
-> 10+0 records out
-> 10485760 bytes (10.0MB) copied, 22.394903 seconds, 457.2KB/s
-> real    0m 22.39s
-> user    0m 0.00s
-> sys     0m 0.01s
-> 
-> With this change they are back to rock!
-> $ time dd if=/dev/sda of=/dev/zero bs=1048576 count=300 conv=sync
-> 300+0 records in
-> 300+0 records out
-> 314572800 bytes (300.0MB) copied, 1.030541 seconds, 291.1MB/s
-> real    0m 1.03s
-> user    0m 0.00s
-> sys     0m 0.54s
-> 
-> Signed-off-by: Vivek Gautam <vivek.gautam@codeaurora.org>
-> Reviewed-by: Robin Murphy <robin.murphy@arm.com>
-> Signed-off-by: Sai Prakash Ranjan <saiprakash.ranjan@codeaurora.org>
-> ---
-
-Reviewed-by: Stephen Boyd <swboyd@chromium.org>
-
-_______________________________________________
-iommu mailing list
-iommu@lists.linux-foundation.org
-https://lists.linuxfoundation.org/mailman/listinfo/iommu
+MjAuMDkuMjAxOSAyMjozMiwgQXJuZCBCZXJnbWFubiDQv9C40YjQtdGCOgo+IE9uIFRodSwgSnVs
+IDI1LCAyMDE5IGF0IDI6MjQgUE0gRG1pdHJ5IE9zaXBlbmtvIDxkaWdldHhAZ21haWwuY29tPiB3
+cm90ZToKPj4KPj4gMjUuMDcuMjAxOSA1OjQxLCBZdWVIYWliaW5nINC/0LjRiNC10YI6Cj4+PiBJ
+ZiBJT01NVV9TVVBQT1JUIGlzIG5vdCBzZXQsIGFuZCBDT01QSUxFX1RFU1QgaXMgeSwKPj4+IElP
+TU1VX0lPVkEgbWF5IGJlIHNldCB0byBtLiBTbyBidWlsZGluZyB3aWxsIGZhaWxzOgo+Pj4KPj4+
+IGRyaXZlcnMvc3RhZ2luZy9tZWRpYS90ZWdyYS12ZGUvaW9tbXUubzogSW4gZnVuY3Rpb24gYHRl
+Z3JhX3ZkZV9pb21tdV9tYXAnOgo+Pj4gaW9tbXUuYzooLnRleHQrMHg0MSk6IHVuZGVmaW5lZCBy
+ZWZlcmVuY2UgdG8gYGFsbG9jX2lvdmEnCj4+PiBpb21tdS5jOigudGV4dCsweDU2KTogdW5kZWZp
+bmVkIHJlZmVyZW5jZSB0byBgX19mcmVlX2lvdmEnCj4+Pgo+Pj4gU2VsZWN0IElPTU1VX0lPVkEg
+d2hpbGUgQ09NUElMRV9URVNUIGlzIHNldCB0byBmaXggdGhpcy4KPiAKPj4+IEBAIC0zLDcgKzMs
+NyBAQCBjb25maWcgVEVHUkFfVkRFCj4+PiAgICAgICB0cmlzdGF0ZSAiTlZJRElBIFRlZ3JhIFZp
+ZGVvIERlY29kZXIgRW5naW5lIGRyaXZlciIKPj4+ICAgICAgIGRlcGVuZHMgb24gQVJDSF9URUdS
+QSB8fCBDT01QSUxFX1RFU1QKPj4+ICAgICAgIHNlbGVjdCBETUFfU0hBUkVEX0JVRkZFUgo+Pj4g
+LSAgICAgc2VsZWN0IElPTU1VX0lPVkEgaWYgSU9NTVVfU1VQUE9SVAo+Pj4gKyAgICAgc2VsZWN0
+IElPTU1VX0lPVkEgaWYgKElPTU1VX1NVUFBPUlQgfHwgQ09NUElMRV9URVNUKQo+Pj4gICAgICAg
+c2VsZWN0IFNSQU0KPj4+ICAgICAgIGhlbHAKPj4+ICAgICAgICAgICBTYXkgWSBoZXJlIHRvIGVu
+YWJsZSBzdXBwb3J0IGZvciB0aGUgTlZJRElBIFRlZ3JhIHZpZGVvIGRlY29kZXIKPj4+Cj4+Cj4+
+IFRoaXMgcmVzdWx0cyBpbiBtaXNzaW5nIHRoZSBjYXNlIG9mIGNvbXBpbGUtdGVzdGluZyAhSU9N
+TVVfSU9WQSBmb3IgdGhlCj4+IGRyaXZlciwgYnV0IHByb2JhYmx5IHRoYXQncyBub3QgYSBiaWcg
+ZGVhbC4KPj4KPj4gQWNrZWQtYnk6IERtaXRyeSBPc2lwZW5rbyA8ZGlnZXR4QGdtYWlsLmNvbT4K
+PiAKPiBJIGRvbid0IGtub3cgd2hhdCBoYXBwZW5lZCBoZXJlLCBidXQgdGhlIHBhdGNoIGZyb20g
+WXVlSGFpYmluZyBjYXVzZWQgdGhpcwo+IGVycm9yIGZvciBtZSwgd2hpY2ggaXMgdmVyeSBtdWNo
+IGxpa2UgdGhlIHByb2JsZW0gaXQgd2FzIG1lYW50IHRvIGZpeDoKPiAKPiBkcml2ZXJzL2dwdS9o
+b3N0MXgvZGV2Lm86IEluIGZ1bmN0aW9uIGBob3N0MXhfcHJvYmUnOgo+IGRldi5jOigudGV4dCsw
+eDE3MzQpOiB1bmRlZmluZWQgcmVmZXJlbmNlIHRvIGBwdXRfaW92YV9kb21haW4nCj4gZGV2LmM6
+KC50ZXh0KzB4MTc0NCk6IHVuZGVmaW5lZCByZWZlcmVuY2UgdG8gYGlvdmFfY2FjaGVfcHV0Jwo+
+IGRyaXZlcnMvZ3B1L2hvc3QxeC9kZXYubzogSW4gZnVuY3Rpb24gYGhvc3QxeF9yZW1vdmUnOgo+
+IGRldi5jOigudGV4dCsweDE4OTQpOiB1bmRlZmluZWQgcmVmZXJlbmNlIHRvIGBwdXRfaW92YV9k
+b21haW4nCj4gZGV2LmM6KC50ZXh0KzB4MTg5OCk6IHVuZGVmaW5lZCByZWZlcmVuY2UgdG8gYGlv
+dmFfY2FjaGVfcHV0Jwo+IGRyaXZlcnMvZ3B1L2hvc3QxeC9jZG1hLm86IEluIGZ1bmN0aW9uIGBo
+b3N0MXhfY2RtYV9pbml0JzoKPiBjZG1hLmM6KC50ZXh0KzB4NWQwKTogdW5kZWZpbmVkIHJlZmVy
+ZW5jZSB0byBgYWxsb2NfaW92YScKPiBjZG1hLmM6KC50ZXh0KzB4NjFjKTogdW5kZWZpbmVkIHJl
+ZmVyZW5jZSB0byBgX19mcmVlX2lvdmEnCj4gZHJpdmVycy9ncHUvaG9zdDF4L2NkbWEubzogSW4g
+ZnVuY3Rpb24gYGhvc3QxeF9jZG1hX2RlaW5pdCc6Cj4gY2RtYS5jOigudGV4dCsweDZjOCk6IHVu
+ZGVmaW5lZCByZWZlcmVuY2UgdG8gYGZyZWVfaW92YScKPiBkcml2ZXJzL2dwdS9ob3N0MXgvam9i
+Lm86IEluIGZ1bmN0aW9uIGBob3N0MXhfam9iX3Bpbic6Cj4gam9iLmM6KC50ZXh0KzB4NTE0KTog
+dW5kZWZpbmVkIHJlZmVyZW5jZSB0byBgYWxsb2NfaW92YScKPiBqb2IuYzooLnRleHQrMHg1Mjgp
+OiB1bmRlZmluZWQgcmVmZXJlbmNlIHRvIGBfX2ZyZWVfaW92YScKPiBkcml2ZXJzL2dwdS9ob3N0
+MXgvam9iLm86IEluIGZ1bmN0aW9uIGBob3N0MXhfam9iX3VucGluJzoKPiBqb2IuYzooLnRleHQr
+MHg1YmMpOiB1bmRlZmluZWQgcmVmZXJlbmNlIHRvIGBmcmVlX2lvdmEnCj4gCj4gQWZ0ZXIgcmV2
+ZXJ0aGluZyBjb21taXQgNmIyMjY1OTc1MjM5ICgibWVkaWE6IHN0YWdpbmc6Cj4gdGVncmEtdmRl
+OiBGaXggYnVpbGQgZXJyb3IiKSwgSSBjYW4gbm8gbG9uZ2VyIHJlcHJvZHVjZSB0aGUKPiBpc3N1
+ZS4KClRoZXJlIGlzIGEgZm9sbG93IHVwIGhlcmU6IGh0dHBzOi8vcGF0Y2h3b3JrLm96bGFicy5v
+cmcvcGF0Y2gvMTE1MzE3Ni8KX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19f
+X19fX19fX18KaW9tbXUgbWFpbGluZyBsaXN0CmlvbW11QGxpc3RzLmxpbnV4LWZvdW5kYXRpb24u
+b3JnCmh0dHBzOi8vbGlzdHMubGludXhmb3VuZGF0aW9uLm9yZy9tYWlsbWFuL2xpc3RpbmZvL2lv
+bW11
