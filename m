@@ -6,58 +6,59 @@ X-Spam-Status: No, score=-9.8 required=3.0 tests=DKIM_INVALID,DKIM_SIGNED,
 	INCLUDES_PATCH,MAILING_LIST_MULTI,SIGNED_OFF_BY,SPF_HELO_NONE,SPF_PASS,
 	URIBL_BLOCKED,USER_AGENT_GIT autolearn=ham autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 405D6C4740C
-	for <iommu@archiver.kernel.org>; Sun, 22 Sep 2019 18:48:01 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 0E05EC3A5A2
+	for <iommu@archiver.kernel.org>; Sun, 22 Sep 2019 18:48:05 +0000 (UTC)
 Received: from mail.linuxfoundation.org (mail.linuxfoundation.org [140.211.169.12])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by mail.kernel.org (Postfix) with ESMTPS id 0C1F2208C2
-	for <iommu@archiver.kernel.org>; Sun, 22 Sep 2019 18:48:00 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTPS id DD0642190F
+	for <iommu@archiver.kernel.org>; Sun, 22 Sep 2019 18:48:04 +0000 (UTC)
 Authentication-Results: mail.kernel.org;
-	dkim=fail reason="signature verification failed" (1024-bit key) header.d=kernel.org header.i=@kernel.org header.b="IuYy0/Gr"
-DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 0C1F2208C2
+	dkim=fail reason="signature verification failed" (1024-bit key) header.d=kernel.org header.i=@kernel.org header.b="hfjoYIhx"
+DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org DD0642190F
 Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=kernel.org
 Authentication-Results: mail.kernel.org; spf=pass smtp.mailfrom=iommu-bounces@lists.linux-foundation.org
 Received: from mail.linux-foundation.org (localhost [127.0.0.1])
-	by mail.linuxfoundation.org (Postfix) with ESMTP id 8BA26910;
-	Sun, 22 Sep 2019 18:48:00 +0000 (UTC)
+	by mail.linuxfoundation.org (Postfix) with ESMTP id B4B8EAC8;
+	Sun, 22 Sep 2019 18:48:04 +0000 (UTC)
 Received: from smtp1.linuxfoundation.org (smtp1.linux-foundation.org
 	[172.17.192.35])
-	by mail.linuxfoundation.org (Postfix) with ESMTPS id BC3B62F
+	by mail.linuxfoundation.org (Postfix) with ESMTPS id 332932F
 	for <iommu@lists.linux-foundation.org>;
-	Sun, 22 Sep 2019 18:47:58 +0000 (UTC)
+	Sun, 22 Sep 2019 18:48:03 +0000 (UTC)
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp1.linuxfoundation.org (Postfix) with ESMTPS id 6BEBB844
+	by smtp1.linuxfoundation.org (Postfix) with ESMTPS id E2003844
 	for <iommu@lists.linux-foundation.org>;
-	Sun, 22 Sep 2019 18:47:58 +0000 (UTC)
+	Sun, 22 Sep 2019 18:48:02 +0000 (UTC)
 Received: from sasha-vm.mshome.net (c-73-47-72-35.hsd1.nh.comcast.net
 	[73.47.72.35])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by mail.kernel.org (Postfix) with ESMTPSA id 7C74021479;
-	Sun, 22 Sep 2019 18:47:57 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTPSA id 6FCC3208C2;
+	Sun, 22 Sep 2019 18:48:01 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=default; t=1569178078;
-	bh=dzieCr/axxqMz92jBnTQ1G764nndP0Xbet2Pe5781Xs=;
+	s=default; t=1569178082;
+	bh=9SO459Tx95hQLcr6M3fZdhK5p3dMn/Dz2ldcdyi20Qc=;
 	h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-	b=IuYy0/GrKS+55M7TP/yHv3uUI+GesbvNsYkTr3nmZb8N4O5JLB2Yzza54D7B8Get/
-	GRgvY+5tU1xLKyHpMZbned72jDYyxcl85ec56cyCiE+yFa7rzM9Tz1YMkL4EBzpPcU
-	zM6MYS7rGCoUZT4YsTKH2OYqObtmY5+BuBrUyGUw=
+	b=hfjoYIhx38qd4UtAVlq5KgUsD4z78DPFI7BRTjh7voCbXW7/Jz7yWvYze4BX4raQf
+	0QTH/3PLeidWIhDBM5aWJMYT8VrIu/PcicTLRIHVJisyH55At1yddD67nBJKnLzGzl
+	w9hZpVXaPnHh+fkn8Ooj819YHqGRCYkey+F8qTfM=
 From: Sasha Levin <sashal@kernel.org>
 To: linux-kernel@vger.kernel.org,
 	stable@vger.kernel.org
-Subject: [PATCH AUTOSEL 5.3 149/203] iommu/amd: Silence warnings under memory
-	pressure
-Date: Sun, 22 Sep 2019 14:42:55 -0400
-Message-Id: <20190922184350.30563-149-sashal@kernel.org>
+Subject: [PATCH AUTOSEL 5.3 152/203] iommu/iova: Avoid false sharing on
+	fq_timer_on
+Date: Sun, 22 Sep 2019 14:42:58 -0400
+Message-Id: <20190922184350.30563-152-sashal@kernel.org>
 X-Mailer: git-send-email 2.20.1
 In-Reply-To: <20190922184350.30563-1-sashal@kernel.org>
 References: <20190922184350.30563-1-sashal@kernel.org>
 MIME-Version: 1.0
 X-stable: review
 X-Patchwork-Hint: Ignore
-Cc: Sasha Levin <sashal@kernel.org>, iommu@lists.linux-foundation.org,
-	Joerg Roedel <jroedel@suse.de>
+Cc: Sasha Levin <sashal@kernel.org>, Joerg Roedel <jroedel@suse.de>,
+	iommu@lists.linux-foundation.org, Jinyu Qi <jinyuqi@huawei.com>,
+	Eric Dumazet <edumazet@google.com>, Robin Murphy <robin.murphy@arm.com>
 X-BeenThere: iommu@lists.linux-foundation.org
 X-Mailman-Version: 2.1.12
 Precedence: list
@@ -75,62 +76,49 @@ Content-Transfer-Encoding: 7bit
 Sender: iommu-bounces@lists.linux-foundation.org
 Errors-To: iommu-bounces@lists.linux-foundation.org
 
-From: Qian Cai <cai@lca.pw>
+From: Eric Dumazet <edumazet@google.com>
 
-[ Upstream commit 3d708895325b78506e8daf00ef31549476e8586a ]
+[ Upstream commit 0d87308cca2c124f9bce02383f1d9632c9be89c4 ]
 
-When running heavy memory pressure workloads, the system is throwing
-endless warnings,
+In commit 14bd9a607f90 ("iommu/iova: Separate atomic variables
+to improve performance") Jinyu Qi identified that the atomic_cmpxchg()
+in queue_iova() was causing a performance loss and moved critical fields
+so that the false sharing would not impact them.
 
-smartpqi 0000:23:00.0: AMD-Vi: IOMMU mapping error in map_sg (io-pages:
-5 reason: -12)
-Hardware name: HPE ProLiant DL385 Gen10/ProLiant DL385 Gen10, BIOS A40
-07/10/2019
-swapper/10: page allocation failure: order:0, mode:0xa20(GFP_ATOMIC),
-nodemask=(null),cpuset=/,mems_allowed=0,4
-Call Trace:
- <IRQ>
- dump_stack+0x62/0x9a
- warn_alloc.cold.43+0x8a/0x148
- __alloc_pages_nodemask+0x1a5c/0x1bb0
- get_zeroed_page+0x16/0x20
- iommu_map_page+0x477/0x540
- map_sg+0x1ce/0x2f0
- scsi_dma_map+0xc6/0x160
- pqi_raid_submit_scsi_cmd_with_io_request+0x1c3/0x470 [smartpqi]
- do_IRQ+0x81/0x170
- common_interrupt+0xf/0xf
- </IRQ>
+However, avoiding the false sharing in the first place seems easy.
+We should attempt the atomic_cmpxchg() no more than 100 times
+per second. Adding an atomic_read() will keep the cache
+line mostly shared.
 
-because the allocation could fail from iommu_map_page(), and the volume
-of this call could be huge which may generate a lot of serial console
-output and cosumes all CPUs.
+This false sharing came with commit 9a005a800ae8
+("iommu/iova: Add flush timer").
 
-Fix it by silencing the warning in this call site, and there is still a
-dev_err() later to notify the failure.
-
-Signed-off-by: Qian Cai <cai@lca.pw>
+Signed-off-by: Eric Dumazet <edumazet@google.com>
+Fixes: 9a005a800ae8 ('iommu/iova: Add flush timer')
+Cc: Jinyu Qi <jinyuqi@huawei.com>
+Cc: Joerg Roedel <jroedel@suse.de>
+Acked-by: Robin Murphy <robin.murphy@arm.com>
 Signed-off-by: Joerg Roedel <jroedel@suse.de>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/iommu/amd_iommu.c | 4 +++-
+ drivers/iommu/iova.c | 4 +++-
  1 file changed, 3 insertions(+), 1 deletion(-)
 
-diff --git a/drivers/iommu/amd_iommu.c b/drivers/iommu/amd_iommu.c
-index 61de81965c44e..e1259429ded2f 100644
---- a/drivers/iommu/amd_iommu.c
-+++ b/drivers/iommu/amd_iommu.c
-@@ -2577,7 +2577,9 @@ static int map_sg(struct device *dev, struct scatterlist *sglist,
+diff --git a/drivers/iommu/iova.c b/drivers/iommu/iova.c
+index 3e1a8a6755723..41c605b0058f9 100644
+--- a/drivers/iommu/iova.c
++++ b/drivers/iommu/iova.c
+@@ -577,7 +577,9 @@ void queue_iova(struct iova_domain *iovad,
  
- 			bus_addr  = address + s->dma_address + (j << PAGE_SHIFT);
- 			phys_addr = (sg_phys(s) & PAGE_MASK) + (j << PAGE_SHIFT);
--			ret = iommu_map_page(domain, bus_addr, phys_addr, PAGE_SIZE, prot, GFP_ATOMIC);
-+			ret = iommu_map_page(domain, bus_addr, phys_addr,
-+					     PAGE_SIZE, prot,
-+					     GFP_ATOMIC | __GFP_NOWARN);
- 			if (ret)
- 				goto out_unmap;
+ 	spin_unlock_irqrestore(&fq->lock, flags);
  
+-	if (atomic_cmpxchg(&iovad->fq_timer_on, 0, 1) == 0)
++	/* Avoid false sharing as much as possible. */
++	if (!atomic_read(&iovad->fq_timer_on) &&
++	    !atomic_cmpxchg(&iovad->fq_timer_on, 0, 1))
+ 		mod_timer(&iovad->fq_timer,
+ 			  jiffies + msecs_to_jiffies(IOVA_FQ_TIMEOUT));
+ }
 -- 
 2.20.1
 
