@@ -4,61 +4,60 @@ X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 X-Spam-Level: 
 X-Spam-Status: No, score=-9.8 required=3.0 tests=DKIM_INVALID,DKIM_SIGNED,
 	INCLUDES_PATCH,MAILING_LIST_MULTI,SIGNED_OFF_BY,SPF_HELO_NONE,SPF_PASS,
-	URIBL_BLOCKED,USER_AGENT_GIT autolearn=ham autolearn_force=no version=3.4.0
+	USER_AGENT_GIT autolearn=ham autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 4A507C49ED7
-	for <iommu@archiver.kernel.org>; Sun, 22 Sep 2019 18:54:10 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id D2787C3A5A6
+	for <iommu@archiver.kernel.org>; Sun, 22 Sep 2019 18:56:28 +0000 (UTC)
 Received: from mail.linuxfoundation.org (mail.linuxfoundation.org [140.211.169.12])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by mail.kernel.org (Postfix) with ESMTPS id 267DE2190F
-	for <iommu@archiver.kernel.org>; Sun, 22 Sep 2019 18:54:10 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTPS id AD96221907
+	for <iommu@archiver.kernel.org>; Sun, 22 Sep 2019 18:56:28 +0000 (UTC)
 Authentication-Results: mail.kernel.org;
-	dkim=fail reason="signature verification failed" (1024-bit key) header.d=kernel.org header.i=@kernel.org header.b="WVpcbu2h"
-DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 267DE2190F
+	dkim=fail reason="signature verification failed" (1024-bit key) header.d=kernel.org header.i=@kernel.org header.b="gZtfrGrw"
+DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org AD96221907
 Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=kernel.org
 Authentication-Results: mail.kernel.org; spf=pass smtp.mailfrom=iommu-bounces@lists.linux-foundation.org
 Received: from mail.linux-foundation.org (localhost [127.0.0.1])
-	by mail.linuxfoundation.org (Postfix) with ESMTP id 109CA910;
-	Sun, 22 Sep 2019 18:54:10 +0000 (UTC)
+	by mail.linuxfoundation.org (Postfix) with ESMTP id 6A6CCAE0;
+	Sun, 22 Sep 2019 18:56:28 +0000 (UTC)
 Received: from smtp1.linuxfoundation.org (smtp1.linux-foundation.org
 	[172.17.192.35])
-	by mail.linuxfoundation.org (Postfix) with ESMTPS id 85C712F
+	by mail.linuxfoundation.org (Postfix) with ESMTPS id 0B3A2910
 	for <iommu@lists.linux-foundation.org>;
-	Sun, 22 Sep 2019 18:54:08 +0000 (UTC)
+	Sun, 22 Sep 2019 18:56:27 +0000 (UTC)
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp1.linuxfoundation.org (Postfix) with ESMTPS id 00809102
+	by smtp1.linuxfoundation.org (Postfix) with ESMTPS id AFC02844
 	for <iommu@lists.linux-foundation.org>;
-	Sun, 22 Sep 2019 18:54:08 +0000 (UTC)
+	Sun, 22 Sep 2019 18:56:26 +0000 (UTC)
 Received: from sasha-vm.mshome.net (c-73-47-72-35.hsd1.nh.comcast.net
 	[73.47.72.35])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by mail.kernel.org (Postfix) with ESMTPSA id 10C7A2190F;
-	Sun, 22 Sep 2019 18:54:06 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTPSA id DA8C521D7E;
+	Sun, 22 Sep 2019 18:56:25 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=default; t=1569178447;
-	bh=q1F/PL9JH2Pgit/X0ETfmM9LtIBLM1x7XmdLoELO7aU=;
+	s=default; t=1569178586;
+	bh=WBnSak/d1Xqtku0jLNdqMwI6cCkMITfUHWXejyzmLG4=;
 	h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-	b=WVpcbu2h3/2JnxOr2FGRYvEgoufs57LZORnKtdBD5Py1MZktynxsrupTWmnN6B5iI
-	qT+NBVP+mXzZVACSmyyVMPlPeNqDbj9SaYOlW/6P5Au8QCk/RVJKCinU9Lmdxtk2BV
-	ZFD0xZ6lVmCu54r/kJZIxuByrftk/D0pEW3kdD3g=
+	b=gZtfrGrwMa98nfGNL21PLxgPeCUxijurhaLYolvbzDxiuYAYx7VmBoW/UIcAIPB+m
+	ZC63MK1UYghGt3UrlZw6uRrNv2GH2XleLZk+vqeL/B1eqUNcIXoYHro+44LbVSKrzj
+	4+4ZPpTCRWnYA+elxKk4uWv3aiNVUlqKLcquDlbM=
 From: Sasha Levin <sashal@kernel.org>
 To: linux-kernel@vger.kernel.org,
 	stable@vger.kernel.org
-Subject: [PATCH AUTOSEL 5.2 179/185] iommu/amd: Override wrong IVRS IOAPIC on
-	Raven Ridge systems
-Date: Sun, 22 Sep 2019 14:49:17 -0400
-Message-Id: <20190922184924.32534-179-sashal@kernel.org>
+Subject: [PATCH AUTOSEL 4.19 095/128] iommu/amd: Silence warnings under memory
+	pressure
+Date: Sun, 22 Sep 2019 14:53:45 -0400
+Message-Id: <20190922185418.2158-95-sashal@kernel.org>
 X-Mailer: git-send-email 2.20.1
-In-Reply-To: <20190922184924.32534-1-sashal@kernel.org>
-References: <20190922184924.32534-1-sashal@kernel.org>
+In-Reply-To: <20190922185418.2158-1-sashal@kernel.org>
+References: <20190922185418.2158-1-sashal@kernel.org>
 MIME-Version: 1.0
 X-stable: review
 X-Patchwork-Hint: Ignore
 Cc: Sasha Levin <sashal@kernel.org>, iommu@lists.linux-foundation.org,
-	Kai-Heng Feng <kai.heng.feng@canonical.com>,
-	kbuild test robot <lkp@intel.com>, Joerg Roedel <jroedel@suse.de>
+	Joerg Roedel <jroedel@suse.de>
 X-BeenThere: iommu@lists.linux-foundation.org
 X-Mailman-Version: 2.1.12
 Precedence: list
@@ -76,192 +75,62 @@ Content-Transfer-Encoding: 7bit
 Sender: iommu-bounces@lists.linux-foundation.org
 Errors-To: iommu-bounces@lists.linux-foundation.org
 
-From: Kai-Heng Feng <kai.heng.feng@canonical.com>
+From: Qian Cai <cai@lca.pw>
 
-[ Upstream commit 93d051550ee02eaff9a2541d825605a7bd778027 ]
+[ Upstream commit 3d708895325b78506e8daf00ef31549476e8586a ]
 
-Raven Ridge systems may have malfunction touchpad or hang at boot if
-incorrect IVRS IOAPIC is provided by BIOS.
+When running heavy memory pressure workloads, the system is throwing
+endless warnings,
 
-Users already found correct "ivrs_ioapic=" values, let's put them inside
-kernel to workaround buggy BIOS.
+smartpqi 0000:23:00.0: AMD-Vi: IOMMU mapping error in map_sg (io-pages:
+5 reason: -12)
+Hardware name: HPE ProLiant DL385 Gen10/ProLiant DL385 Gen10, BIOS A40
+07/10/2019
+swapper/10: page allocation failure: order:0, mode:0xa20(GFP_ATOMIC),
+nodemask=(null),cpuset=/,mems_allowed=0,4
+Call Trace:
+ <IRQ>
+ dump_stack+0x62/0x9a
+ warn_alloc.cold.43+0x8a/0x148
+ __alloc_pages_nodemask+0x1a5c/0x1bb0
+ get_zeroed_page+0x16/0x20
+ iommu_map_page+0x477/0x540
+ map_sg+0x1ce/0x2f0
+ scsi_dma_map+0xc6/0x160
+ pqi_raid_submit_scsi_cmd_with_io_request+0x1c3/0x470 [smartpqi]
+ do_IRQ+0x81/0x170
+ common_interrupt+0xf/0xf
+ </IRQ>
 
-BugLink: https://bugs.launchpad.net/bugs/1795292
-BugLink: https://bugs.launchpad.net/bugs/1837688
-Reported-by: kbuild test robot <lkp@intel.com>
-Signed-off-by: Kai-Heng Feng <kai.heng.feng@canonical.com>
+because the allocation could fail from iommu_map_page(), and the volume
+of this call could be huge which may generate a lot of serial console
+output and cosumes all CPUs.
+
+Fix it by silencing the warning in this call site, and there is still a
+dev_err() later to notify the failure.
+
+Signed-off-by: Qian Cai <cai@lca.pw>
 Signed-off-by: Joerg Roedel <jroedel@suse.de>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/iommu/Makefile           |  2 +-
- drivers/iommu/amd_iommu.h        | 14 +++++
- drivers/iommu/amd_iommu_init.c   |  5 +-
- drivers/iommu/amd_iommu_quirks.c | 92 ++++++++++++++++++++++++++++++++
- 4 files changed, 111 insertions(+), 2 deletions(-)
- create mode 100644 drivers/iommu/amd_iommu.h
- create mode 100644 drivers/iommu/amd_iommu_quirks.c
+ drivers/iommu/amd_iommu.c | 4 +++-
+ 1 file changed, 3 insertions(+), 1 deletion(-)
 
-diff --git a/drivers/iommu/Makefile b/drivers/iommu/Makefile
-index 8c71a15e986b5..826a5bbe0d09b 100644
---- a/drivers/iommu/Makefile
-+++ b/drivers/iommu/Makefile
-@@ -10,7 +10,7 @@ obj-$(CONFIG_IOMMU_IO_PGTABLE_LPAE) += io-pgtable-arm.o
- obj-$(CONFIG_IOMMU_IOVA) += iova.o
- obj-$(CONFIG_OF_IOMMU)	+= of_iommu.o
- obj-$(CONFIG_MSM_IOMMU) += msm_iommu.o
--obj-$(CONFIG_AMD_IOMMU) += amd_iommu.o amd_iommu_init.o
-+obj-$(CONFIG_AMD_IOMMU) += amd_iommu.o amd_iommu_init.o amd_iommu_quirks.o
- obj-$(CONFIG_AMD_IOMMU_DEBUGFS) += amd_iommu_debugfs.o
- obj-$(CONFIG_AMD_IOMMU_V2) += amd_iommu_v2.o
- obj-$(CONFIG_ARM_SMMU) += arm-smmu.o
-diff --git a/drivers/iommu/amd_iommu.h b/drivers/iommu/amd_iommu.h
-new file mode 100644
-index 0000000000000..12d540d9b59b0
---- /dev/null
-+++ b/drivers/iommu/amd_iommu.h
-@@ -0,0 +1,14 @@
-+/* SPDX-License-Identifier: GPL-2.0-only */
-+
-+#ifndef AMD_IOMMU_H
-+#define AMD_IOMMU_H
-+
-+int __init add_special_device(u8 type, u8 id, u16 *devid, bool cmd_line);
-+
-+#ifdef CONFIG_DMI
-+void amd_iommu_apply_ivrs_quirks(void);
-+#else
-+static void amd_iommu_apply_ivrs_quirks(void) { }
-+#endif
-+
-+#endif
-diff --git a/drivers/iommu/amd_iommu_init.c b/drivers/iommu/amd_iommu_init.c
-index 07d84dbab564e..6469f51282427 100644
---- a/drivers/iommu/amd_iommu_init.c
-+++ b/drivers/iommu/amd_iommu_init.c
-@@ -30,6 +30,7 @@
- #include <asm/irq_remapping.h>
+diff --git a/drivers/iommu/amd_iommu.c b/drivers/iommu/amd_iommu.c
+index 8d9920ff41344..b892637c320bc 100644
+--- a/drivers/iommu/amd_iommu.c
++++ b/drivers/iommu/amd_iommu.c
+@@ -2533,7 +2533,9 @@ static int map_sg(struct device *dev, struct scatterlist *sglist,
  
- #include <linux/crash_dump.h>
-+#include "amd_iommu.h"
- #include "amd_iommu_proto.h"
- #include "amd_iommu_types.h"
- #include "irq_remapping.h"
-@@ -997,7 +998,7 @@ static void __init set_dev_entry_from_acpi(struct amd_iommu *iommu,
- 	set_iommu_for_device(iommu, devid);
- }
+ 			bus_addr  = address + s->dma_address + (j << PAGE_SHIFT);
+ 			phys_addr = (sg_phys(s) & PAGE_MASK) + (j << PAGE_SHIFT);
+-			ret = iommu_map_page(domain, bus_addr, phys_addr, PAGE_SIZE, prot, GFP_ATOMIC);
++			ret = iommu_map_page(domain, bus_addr, phys_addr,
++					     PAGE_SIZE, prot,
++					     GFP_ATOMIC | __GFP_NOWARN);
+ 			if (ret)
+ 				goto out_unmap;
  
--static int __init add_special_device(u8 type, u8 id, u16 *devid, bool cmd_line)
-+int __init add_special_device(u8 type, u8 id, u16 *devid, bool cmd_line)
- {
- 	struct devid_map *entry;
- 	struct list_head *list;
-@@ -1148,6 +1149,8 @@ static int __init init_iommu_from_acpi(struct amd_iommu *iommu,
- 	if (ret)
- 		return ret;
- 
-+	amd_iommu_apply_ivrs_quirks();
-+
- 	/*
- 	 * First save the recommended feature enable bits from ACPI
- 	 */
-diff --git a/drivers/iommu/amd_iommu_quirks.c b/drivers/iommu/amd_iommu_quirks.c
-new file mode 100644
-index 0000000000000..c235f79b7a200
---- /dev/null
-+++ b/drivers/iommu/amd_iommu_quirks.c
-@@ -0,0 +1,92 @@
-+/* SPDX-License-Identifier: GPL-2.0-only */
-+
-+/*
-+ * Quirks for AMD IOMMU
-+ *
-+ * Copyright (C) 2019 Kai-Heng Feng <kai.heng.feng@canonical.com>
-+ */
-+
-+#ifdef CONFIG_DMI
-+#include <linux/dmi.h>
-+
-+#include "amd_iommu.h"
-+
-+#define IVHD_SPECIAL_IOAPIC		1
-+
-+struct ivrs_quirk_entry {
-+	u8 id;
-+	u16 devid;
-+};
-+
-+enum {
-+	DELL_INSPIRON_7375 = 0,
-+	DELL_LATITUDE_5495,
-+	LENOVO_IDEAPAD_330S_15ARR,
-+};
-+
-+static const struct ivrs_quirk_entry ivrs_ioapic_quirks[][3] __initconst = {
-+	/* ivrs_ioapic[4]=00:14.0 ivrs_ioapic[5]=00:00.2 */
-+	[DELL_INSPIRON_7375] = {
-+		{ .id = 4, .devid = 0xa0 },
-+		{ .id = 5, .devid = 0x2 },
-+		{}
-+	},
-+	/* ivrs_ioapic[4]=00:14.0 */
-+	[DELL_LATITUDE_5495] = {
-+		{ .id = 4, .devid = 0xa0 },
-+		{}
-+	},
-+	/* ivrs_ioapic[32]=00:14.0 */
-+	[LENOVO_IDEAPAD_330S_15ARR] = {
-+		{ .id = 32, .devid = 0xa0 },
-+		{}
-+	},
-+	{}
-+};
-+
-+static int __init ivrs_ioapic_quirk_cb(const struct dmi_system_id *d)
-+{
-+	const struct ivrs_quirk_entry *i;
-+
-+	for (i = d->driver_data; i->id != 0 && i->devid != 0; i++)
-+		add_special_device(IVHD_SPECIAL_IOAPIC, i->id, (u16 *)&i->devid, 0);
-+
-+	return 0;
-+}
-+
-+static const struct dmi_system_id ivrs_quirks[] __initconst = {
-+	{
-+		.callback = ivrs_ioapic_quirk_cb,
-+		.ident = "Dell Inspiron 7375",
-+		.matches = {
-+			DMI_MATCH(DMI_SYS_VENDOR, "Dell Inc."),
-+			DMI_MATCH(DMI_PRODUCT_NAME, "Inspiron 7375"),
-+		},
-+		.driver_data = (void *)&ivrs_ioapic_quirks[DELL_INSPIRON_7375],
-+	},
-+	{
-+		.callback = ivrs_ioapic_quirk_cb,
-+		.ident = "Dell Latitude 5495",
-+		.matches = {
-+			DMI_MATCH(DMI_SYS_VENDOR, "Dell Inc."),
-+			DMI_MATCH(DMI_PRODUCT_NAME, "Latitude 5495"),
-+		},
-+		.driver_data = (void *)&ivrs_ioapic_quirks[DELL_LATITUDE_5495],
-+	},
-+	{
-+		.callback = ivrs_ioapic_quirk_cb,
-+		.ident = "Lenovo ideapad 330S-15ARR",
-+		.matches = {
-+			DMI_MATCH(DMI_SYS_VENDOR, "LENOVO"),
-+			DMI_MATCH(DMI_PRODUCT_NAME, "81FB"),
-+		},
-+		.driver_data = (void *)&ivrs_ioapic_quirks[LENOVO_IDEAPAD_330S_15ARR],
-+	},
-+	{}
-+};
-+
-+void __init amd_iommu_apply_ivrs_quirks(void)
-+{
-+	dmi_check_system(ivrs_quirks);
-+}
-+#endif
 -- 
 2.20.1
 
