@@ -1,63 +1,72 @@
-Return-Path: <SRS0=7DuD=XR=lists.linux-foundation.org=iommu-bounces@kernel.org>
+Return-Path: <SRS0=v/Dl=XS=lists.linux-foundation.org=iommu-bounces@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-9.8 required=3.0 tests=DKIM_INVALID,DKIM_SIGNED,
-	INCLUDES_PATCH,MAILING_LIST_MULTI,SIGNED_OFF_BY,SPF_HELO_NONE,SPF_PASS,
-	URIBL_BLOCKED,USER_AGENT_GIT autolearn=ham autolearn_force=no version=3.4.0
+X-Spam-Status: No, score=-0.7 required=3.0 tests=HEADER_FROM_DIFFERENT_DOMAINS,
+	MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED autolearn=no
+	autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 0BD98C49ED7
-	for <iommu@archiver.kernel.org>; Sun, 22 Sep 2019 19:00:32 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 44F6AC4740C
+	for <iommu@archiver.kernel.org>; Mon, 23 Sep 2019 08:17:44 +0000 (UTC)
 Received: from mail.linuxfoundation.org (mail.linuxfoundation.org [140.211.169.12])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by mail.kernel.org (Postfix) with ESMTPS id DA90C2186A
-	for <iommu@archiver.kernel.org>; Sun, 22 Sep 2019 19:00:31 +0000 (UTC)
-Authentication-Results: mail.kernel.org;
-	dkim=fail reason="signature verification failed" (1024-bit key) header.d=kernel.org header.i=@kernel.org header.b="Td9E5rJn"
-DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org DA90C2186A
-Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=kernel.org
+	by mail.kernel.org (Postfix) with ESMTPS id 17A862087C
+	for <iommu@archiver.kernel.org>; Mon, 23 Sep 2019 08:17:43 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 17A862087C
+Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=collabora.com
 Authentication-Results: mail.kernel.org; spf=pass smtp.mailfrom=iommu-bounces@lists.linux-foundation.org
 Received: from mail.linux-foundation.org (localhost [127.0.0.1])
-	by mail.linuxfoundation.org (Postfix) with ESMTP id 9CA88AE0;
-	Sun, 22 Sep 2019 19:00:31 +0000 (UTC)
+	by mail.linuxfoundation.org (Postfix) with ESMTP id C5755C64;
+	Mon, 23 Sep 2019 08:17:43 +0000 (UTC)
 Received: from smtp1.linuxfoundation.org (smtp1.linux-foundation.org
 	[172.17.192.35])
-	by mail.linuxfoundation.org (Postfix) with ESMTPS id 82E6B9CA
+	by mail.linuxfoundation.org (Postfix) with ESMTPS id 516BDC3E
 	for <iommu@lists.linux-foundation.org>;
-	Sun, 22 Sep 2019 19:00:30 +0000 (UTC)
-Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp1.linuxfoundation.org (Postfix) with ESMTPS id 260BF89A
+	Mon, 23 Sep 2019 08:17:42 +0000 (UTC)
+X-Greylist: whitelisted by SQLgrey-1.7.6
+Received: from mail-io1-f67.google.com (mail-io1-f67.google.com
+	[209.85.166.67])
+	by smtp1.linuxfoundation.org (Postfix) with ESMTPS id DE2F689E
 	for <iommu@lists.linux-foundation.org>;
-	Sun, 22 Sep 2019 19:00:30 +0000 (UTC)
-Received: from sasha-vm.mshome.net (c-73-47-72-35.hsd1.nh.comcast.net
-	[73.47.72.35])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
-	(No client certificate requested)
-	by mail.kernel.org (Postfix) with ESMTPSA id 50F862186A;
-	Sun, 22 Sep 2019 19:00:29 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=default; t=1569178830;
-	bh=fS6mnlDS/6Hxobltt3o7QXYglQKuAypIYZc77v3nC6c=;
-	h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-	b=Td9E5rJnoWu2VEeDI+AtrO4zRW7uR3T3y1GRqiU2VdDM6Ar1Hu4t1bLBCWhwOVrQt
-	IcFF1sCu/UlDV2rbmMPpFM4qF3XL48mATh7lh7MrQ5rxaIDfK606eSuwnhTuTeAhK5
-	ywvuU5QwG/n6QlUU2GagBw3/8i/CDo+/zR9Tz9PA=
-From: Sasha Levin <sashal@kernel.org>
-To: linux-kernel@vger.kernel.org,
-	stable@vger.kernel.org
-Subject: [PATCH AUTOSEL 4.9 40/60] iommu/amd: Silence warnings under memory
-	pressure
-Date: Sun, 22 Sep 2019 14:59:13 -0400
-Message-Id: <20190922185934.4305-40-sashal@kernel.org>
-X-Mailer: git-send-email 2.20.1
-In-Reply-To: <20190922185934.4305-1-sashal@kernel.org>
-References: <20190922185934.4305-1-sashal@kernel.org>
+	Mon, 23 Sep 2019 08:17:41 +0000 (UTC)
+Received: by mail-io1-f67.google.com with SMTP id z19so9126889ior.0
+	for <iommu@lists.linux-foundation.org>;
+	Mon, 23 Sep 2019 01:17:41 -0700 (PDT)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+	d=1e100.net; s=20161025;
+	h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+	:message-id:subject:to:cc;
+	bh=oqH5sSFzUYgYs5CppEfEXfr+LdLAvM6MsgUfbpsnBys=;
+	b=f9N/eGxD1myNHOtmLWsrfgIJEDpa6lsTEkHSnuvIiRPcwYthIcxE1CT9SvUigDdNQU
+	yWCEtwM/a9FkGrLa6ar+6iFKDc6hjDmyIo5CdHFf/9ziq5gul+hmUN2IATEkYaGyJHR3
+	oOa9qwg291rsPY7jcWQ0wRKYLrntSrvXJIni5NEzkCHbufkAMJyXLYQbw0MwPIh5Pfy7
+	hdG3szf/0+Gq2RSYxpQxIhMvfjV7RRaPej56WsbIOxOvluSt0uTpkZlT2z0GXa7njFaE
+	bCpsn0wEWN7fYnPEAVZ1xtZo7R92GYqkhEsn8gGGm1QY9r2Dx2MoQMopUr7dRfLZMLPo
+	6MCw==
+X-Gm-Message-State: APjAAAWR3vQCCAZNUeTxL/vaqWbtgaPMgbOLdaDpaVy8SI1168flRGp8
+	YU4Ui5pdGtatPntuHniqG0v282zHZoA++CXCzks=
+X-Google-Smtp-Source: APXvYqybSq/9Hct6euMAEnWR43nL4r3SiLtP2VgXDx6Ms50oGJokTQ2mf4VZUzl78UffYdvDJ2tfCvw0mHpn/H+pSak=
+X-Received: by 2002:a6b:4416:: with SMTP id r22mr14387046ioa.297.1569226661133;
+	Mon, 23 Sep 2019 01:17:41 -0700 (PDT)
 MIME-Version: 1.0
-X-stable: review
-X-Patchwork-Hint: Ignore
-Cc: Sasha Levin <sashal@kernel.org>, iommu@lists.linux-foundation.org,
-	Joerg Roedel <jroedel@suse.de>
+References: <cover.1568211045.git.robin.murphy@arm.com>
+	<d77047c2-1f16-eded-17ba-7463310d4bba@baylibre.com>
+	<20190911162024.i2sda7uzy3pbrnyd@willie-the-truck>
+	<83c45e97-8398-349d-5593-03af23b39c59@arm.com>
+	<20190919083035.tv446nelad6ki6db@willie-the-truck>
+In-Reply-To: <20190919083035.tv446nelad6ki6db@willie-the-truck>
+From: Tomeu Vizoso <tomeu.vizoso@collabora.com>
+Date: Mon, 23 Sep 2019 10:17:29 +0200
+Message-ID: <CAAObsKCja0xTaiayNq5TWE7YJ0RPiJbq5OqOdEtpKdCQivR0uw@mail.gmail.com>
+Subject: Re: [PATCH 0/3] iommu/io-pgtable-arm: Mali LPAE improvements
+To: Will Deacon <will@kernel.org>
+Cc: Rob Herring <robh@kernel.org>, Neil Armstrong <narmstrong@baylibre.com>,
+	Steven Price <steven.price@arm.com>,
+	Linux IOMMU <iommu@lists.linux-foundation.org>,
+	Robin Murphy <robin.murphy@arm.com>,
+	"moderated list:ARM/FREESCALE IMX / MXC ARM ARCHITECTURE"
+	<linux-arm-kernel@lists.infradead.org>
 X-BeenThere: iommu@lists.linux-foundation.org
 X-Mailman-Version: 2.1.12
 Precedence: list
@@ -75,65 +84,55 @@ Content-Transfer-Encoding: 7bit
 Sender: iommu-bounces@lists.linux-foundation.org
 Errors-To: iommu-bounces@lists.linux-foundation.org
 
-From: Qian Cai <cai@lca.pw>
+On Thu, 19 Sep 2019 at 10:31, Will Deacon <will@kernel.org> wrote:
+>
+> On Wed, Sep 11, 2019 at 06:19:40PM +0100, Robin Murphy wrote:
+> > On 2019-09-11 5:20 pm, Will Deacon wrote:
+> > > On Wed, Sep 11, 2019 at 06:19:04PM +0200, Neil Armstrong wrote:
+> > > > On 11/09/2019 16:42, Robin Murphy wrote:
+> > > > > Here's the eagerly-awaited fix to unblock T720/T820, plus a couple of
+> > > > > other bits that I've collected so far. I'm not considering this as
+> > > > > 5.3 fixes material, but it would be nice if there's any chance still
+> > > > > to sneak it into 5.4.
+> > > > >
+> > > > > Robin.
+> > > > >
+> > > > >
+> > > > > Robin Murphy (3):
+> > > > >    iommu/io-pgtable-arm: Correct Mali attributes
+> > > > >    iommu/io-pgtable-arm: Support more Mali configurations
+> > > > >    iommu/io-pgtable-arm: Allow coherent walks for Mali
+> > > > >
+> > > > >   drivers/iommu/io-pgtable-arm.c | 61 ++++++++++++++++++++++++++--------
+> > > > >   1 file changed, 48 insertions(+), 13 deletions(-)
+> > > > >
+> > > >
+> > > > Tested-by: Neil Armstrong <narmstrong@baylibre.com>
+> > > >
+> > > > On Khadas VIM2 (Amlogic S912) with T820 Mali GPU
+> > > >
+> > > > I hope this will be part of v5.4 so we can run panfrost on vanilla v5.4 !
+> > >
+> > > Not a chance -- the merge window opens on Monday and -next isn't being
+> > > rolled out at the moment due to LPC. Let's shoot for 5.5 and get this
+> > > queued up in a few weeks.
+> >
+> > Fair enough, that was certainly more extreme optimism than realistic
+> > expectation on my part :)
+> >
+> > There is some argument for taking #1 and #2 as 5.4 fixes, though - the
+> > upcoming Mesa 19.2 release will enable T820 support on the userspace side -
+> > so let's pick that discussion up again in a few weeks.
+>
+> Ok, I'll include those two in my fixes pull to Joerg at -rc1.
 
-[ Upstream commit 3d708895325b78506e8daf00ef31549476e8586a ]
+Hi Will,
 
-When running heavy memory pressure workloads, the system is throwing
-endless warnings,
+Looks like this didn't end up happening?
 
-smartpqi 0000:23:00.0: AMD-Vi: IOMMU mapping error in map_sg (io-pages:
-5 reason: -12)
-Hardware name: HPE ProLiant DL385 Gen10/ProLiant DL385 Gen10, BIOS A40
-07/10/2019
-swapper/10: page allocation failure: order:0, mode:0xa20(GFP_ATOMIC),
-nodemask=(null),cpuset=/,mems_allowed=0,4
-Call Trace:
- <IRQ>
- dump_stack+0x62/0x9a
- warn_alloc.cold.43+0x8a/0x148
- __alloc_pages_nodemask+0x1a5c/0x1bb0
- get_zeroed_page+0x16/0x20
- iommu_map_page+0x477/0x540
- map_sg+0x1ce/0x2f0
- scsi_dma_map+0xc6/0x160
- pqi_raid_submit_scsi_cmd_with_io_request+0x1c3/0x470 [smartpqi]
- do_IRQ+0x81/0x170
- common_interrupt+0xf/0xf
- </IRQ>
+Thanks,
 
-because the allocation could fail from iommu_map_page(), and the volume
-of this call could be huge which may generate a lot of serial console
-output and cosumes all CPUs.
-
-Fix it by silencing the warning in this call site, and there is still a
-dev_err() later to notify the failure.
-
-Signed-off-by: Qian Cai <cai@lca.pw>
-Signed-off-by: Joerg Roedel <jroedel@suse.de>
-Signed-off-by: Sasha Levin <sashal@kernel.org>
----
- drivers/iommu/amd_iommu.c | 4 +++-
- 1 file changed, 3 insertions(+), 1 deletion(-)
-
-diff --git a/drivers/iommu/amd_iommu.c b/drivers/iommu/amd_iommu.c
-index c1233d0288a03..245e831fe64c3 100644
---- a/drivers/iommu/amd_iommu.c
-+++ b/drivers/iommu/amd_iommu.c
-@@ -2589,7 +2589,9 @@ static int map_sg(struct device *dev, struct scatterlist *sglist,
- 
- 			bus_addr  = address + s->dma_address + (j << PAGE_SHIFT);
- 			phys_addr = (sg_phys(s) & PAGE_MASK) + (j << PAGE_SHIFT);
--			ret = iommu_map_page(domain, bus_addr, phys_addr, PAGE_SIZE, prot, GFP_ATOMIC);
-+			ret = iommu_map_page(domain, bus_addr, phys_addr,
-+					     PAGE_SIZE, prot,
-+					     GFP_ATOMIC | __GFP_NOWARN);
- 			if (ret)
- 				goto out_unmap;
- 
--- 
-2.20.1
-
+Tomeu
 _______________________________________________
 iommu mailing list
 iommu@lists.linux-foundation.org
