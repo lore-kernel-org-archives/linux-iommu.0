@@ -2,57 +2,95 @@ Return-Path: <SRS0=v/Dl=XS=lists.linux-foundation.org=iommu-bounces@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-6.9 required=3.0 tests=HEADER_FROM_DIFFERENT_DOMAINS,
+X-Spam-Status: No, score=-9.7 required=3.0 tests=HEADER_FROM_DIFFERENT_DOMAINS,
 	INCLUDES_PATCH,MAILING_LIST_MULTI,SIGNED_OFF_BY,SPF_HELO_NONE,SPF_PASS,
-	UNWANTED_LANGUAGE_BODY,URIBL_BLOCKED,USER_AGENT_GIT autolearn=unavailable
-	autolearn_force=no version=3.4.0
+	URIBL_BLOCKED,USER_AGENT_GIT autolearn=ham autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 776AEC3A5A6
-	for <iommu@archiver.kernel.org>; Mon, 23 Sep 2019 12:27:36 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 8FF00C32755
+	for <iommu@archiver.kernel.org>; Mon, 23 Sep 2019 12:35:14 +0000 (UTC)
 Received: from mail.linuxfoundation.org (mail.linuxfoundation.org [140.211.169.12])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by mail.kernel.org (Postfix) with ESMTPS id 567F7207FD
-	for <iommu@archiver.kernel.org>; Mon, 23 Sep 2019 12:27:36 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 567F7207FD
-Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=linux.intel.com
+	by mail.kernel.org (Postfix) with ESMTPS id 6AF7921655
+	for <iommu@archiver.kernel.org>; Mon, 23 Sep 2019 12:35:12 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 6AF7921655
+Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=linux.ibm.com
 Authentication-Results: mail.kernel.org; spf=pass smtp.mailfrom=iommu-bounces@lists.linux-foundation.org
 Received: from mail.linux-foundation.org (localhost [127.0.0.1])
-	by mail.linuxfoundation.org (Postfix) with ESMTP id A57F3CC9;
-	Mon, 23 Sep 2019 12:27:30 +0000 (UTC)
+	by mail.linuxfoundation.org (Postfix) with ESMTP id 99977CCC;
+	Mon, 23 Sep 2019 12:35:12 +0000 (UTC)
 Received: from smtp1.linuxfoundation.org (smtp1.linux-foundation.org
 	[172.17.192.35])
-	by mail.linuxfoundation.org (Postfix) with ESMTPS id D8620CC6
+	by mail.linuxfoundation.org (Postfix) with ESMTPS id 51E6DCC6
 	for <iommu@lists.linux-foundation.org>;
-	Mon, 23 Sep 2019 12:27:29 +0000 (UTC)
+	Mon, 23 Sep 2019 12:35:11 +0000 (UTC)
 X-Greylist: domain auto-whitelisted by SQLgrey-1.7.6
-Received: from mga09.intel.com (mga09.intel.com [134.134.136.24])
-	by smtp1.linuxfoundation.org (Postfix) with ESMTPS id 6D87E8AA
+Received: from mx0a-001b2d01.pphosted.com (mx0a-001b2d01.pphosted.com
+	[148.163.156.1])
+	by smtp1.linuxfoundation.org (Postfix) with ESMTPS id F1028102
 	for <iommu@lists.linux-foundation.org>;
-	Mon, 23 Sep 2019 12:27:29 +0000 (UTC)
-X-Amp-Result: SKIPPED(no attachment in message)
-X-Amp-File-Uploaded: False
-Received: from fmsmga001.fm.intel.com ([10.253.24.23])
-	by orsmga102.jf.intel.com with ESMTP/TLS/DHE-RSA-AES256-GCM-SHA384;
-	23 Sep 2019 05:27:29 -0700
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.64,539,1559545200"; d="scan'208";a="203116684"
-Received: from allen-box.sh.intel.com ([10.239.159.136])
-	by fmsmga001.fm.intel.com with ESMTP; 23 Sep 2019 05:27:26 -0700
-From: Lu Baolu <baolu.lu@linux.intel.com>
-To: Joerg Roedel <joro@8bytes.org>, David Woodhouse <dwmw2@infradead.org>,
-	Alex Williamson <alex.williamson@redhat.com>
-Subject: [RFC PATCH 4/4] iommu/vt-d: Identify domains using first level page
-	table
-Date: Mon, 23 Sep 2019 20:24:54 +0800
-Message-Id: <20190923122454.9888-5-baolu.lu@linux.intel.com>
+	Mon, 23 Sep 2019 12:35:10 +0000 (UTC)
+Received: from pps.filterd (m0098404.ppops.net [127.0.0.1])
+	by mx0a-001b2d01.pphosted.com (8.16.0.27/8.16.0.27) with SMTP id
+	x8NCUxlD139894
+	for <iommu@lists.linux-foundation.org>; Mon, 23 Sep 2019 08:35:10 -0400
+Received: from e06smtp01.uk.ibm.com (e06smtp01.uk.ibm.com [195.75.94.97])
+	by mx0a-001b2d01.pphosted.com with ESMTP id 2v6x4g02vs-1
+	(version=TLSv1.2 cipher=AES256-GCM-SHA384 bits=256 verify=NOT)
+	for <iommu@lists.linux-foundation.org>; Mon, 23 Sep 2019 08:35:09 -0400
+Received: from localhost
+	by e06smtp01.uk.ibm.com with IBM ESMTP SMTP Gateway: Authorized Use
+	Only! Violators will be prosecuted
+	for <iommu@lists.linux-foundation.org> from <pasic@linux.ibm.com>;
+	Mon, 23 Sep 2019 13:35:07 +0100
+Received: from b06cxnps3074.portsmouth.uk.ibm.com (9.149.109.194)
+	by e06smtp01.uk.ibm.com (192.168.101.131) with IBM ESMTP SMTP Gateway:
+	Authorized Use Only! Violators will be prosecuted; 
+	(version=TLSv1/SSLv3 cipher=AES256-GCM-SHA384 bits=256/256)
+	Mon, 23 Sep 2019 13:35:05 +0100
+Received: from d06av25.portsmouth.uk.ibm.com (d06av25.portsmouth.uk.ibm.com
+	[9.149.105.61])
+	by b06cxnps3074.portsmouth.uk.ibm.com (8.14.9/8.14.9/NCO v10.0) with
+	ESMTP id x8NCZ3RJ60686590
+	(version=TLSv1/SSLv3 cipher=DHE-RSA-AES256-GCM-SHA384 bits=256
+	verify=OK); Mon, 23 Sep 2019 12:35:03 GMT
+Received: from d06av25.portsmouth.uk.ibm.com (unknown [127.0.0.1])
+	by IMSVA (Postfix) with ESMTP id 83BC211C064;
+	Mon, 23 Sep 2019 12:35:03 +0000 (GMT)
+Received: from d06av25.portsmouth.uk.ibm.com (unknown [127.0.0.1])
+	by IMSVA (Postfix) with ESMTP id 2613811C05C;
+	Mon, 23 Sep 2019 12:35:03 +0000 (GMT)
+Received: from tuxmaker.boeblingen.de.ibm.com (unknown [9.152.85.9])
+	by d06av25.portsmouth.uk.ibm.com (Postfix) with ESMTP;
+	Mon, 23 Sep 2019 12:35:03 +0000 (GMT)
+From: Halil Pasic <pasic@linux.ibm.com>
+To: Christoph Hellwig <hch@lst.de>,
+	Gerald Schaefer <gerald.schaefer@de.ibm.com>
+Subject: [RFC PATCH 3/3] dma-mapping: warn on harmful GFP_* flags
+Date: Mon, 23 Sep 2019 14:34:18 +0200
 X-Mailer: git-send-email 2.17.1
-In-Reply-To: <20190923122454.9888-1-baolu.lu@linux.intel.com>
-References: <20190923122454.9888-1-baolu.lu@linux.intel.com>
-Cc: kevin.tian@intel.com, Yi Sun <yi.y.sun@linux.intel.com>,
-	ashok.raj@intel.com, kvm@vger.kernel.org,
-	sanjay.k.kumar@intel.com, iommu@lists.linux-foundation.org,
-	linux-kernel@vger.kernel.org, yi.y.sun@intel.com
+In-Reply-To: <20190923123418.22695-1-pasic@linux.ibm.com>
+References: <20190923123418.22695-1-pasic@linux.ibm.com>
+X-TM-AS-GCONF: 00
+x-cbid: 19092312-4275-0000-0000-0000036A0B34
+X-IBM-AV-DETECTION: SAVI=unused REMOTE=unused XFE=unused
+x-cbparentid: 19092312-4276-0000-0000-0000387C7F68
+Message-Id: <20190923123418.22695-4-pasic@linux.ibm.com>
+X-Proofpoint-Virus-Version: vendor=fsecure engine=2.50.10434:, ,
+	definitions=2019-09-23_04:, , signatures=0
+X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0
+	priorityscore=1501
+	malwarescore=0 suspectscore=0 phishscore=0 bulkscore=0 spamscore=0
+	clxscore=1011 lowpriorityscore=0 mlxscore=0 impostorscore=0
+	mlxlogscore=999 adultscore=0 classifier=spam adjust=0 reason=mlx
+	scancount=1 engine=8.0.1-1908290000 definitions=main-1909230124
+Cc: linux-s390@vger.kernel.org, Janosch Frank <frankja@linux.ibm.com>,
+	Vasily Gorbik <gor@linux.ibm.com>, Cornelia Huck <cohuck@redhat.com>,
+	Heiko Carstens <heiko.carstens@de.ibm.com>,
+	Peter Oberparleiter <oberpar@linux.ibm.com>,
+	linux-kernel@vger.kernel.org, Halil Pasic <pasic@linux.ibm.com>,
+	Christian Borntraeger <borntraeger@de.ibm.com>,
+	iommu@lists.linux-foundation.org
 X-BeenThere: iommu@lists.linux-foundation.org
 X-Mailman-Version: 2.1.12
 Precedence: list
@@ -71,101 +109,36 @@ Content-Transfer-Encoding: 7bit
 Sender: iommu-bounces@lists.linux-foundation.org
 Errors-To: iommu-bounces@lists.linux-foundation.org
 
-This checks whether a domain should use first level page table
-for map/unmap. And if so, we should attach the domain to the
-device in first level translation mode.
+The commit message of commit 57bf5a8963f8 ("dma-mapping: clear harmful
+GFP_* flags in common code") says that probably warn when we encounter
+harmful GFP_* flags which we clean -- because the client code is best
+case silly if not buggy. I concur with that.
 
-Cc: Ashok Raj <ashok.raj@intel.com>
-Cc: Jacob Pan <jacob.jun.pan@linux.intel.com>
-Cc: Kevin Tian <kevin.tian@intel.com>
-Cc: Liu Yi L <yi.l.liu@intel.com>
-Cc: Yi Sun <yi.y.sun@linux.intel.com>
-Cc: Sanjay Kumar <sanjay.k.kumar@intel.com>
-Signed-off-by: Lu Baolu <baolu.lu@linux.intel.com>
+Let's warn once when we encounter silly GFP_* flags. The guys caring
+about the respective client code will hopefully fix these soon.
+
+Signed-off-by: Halil Pasic <pasic@linux.ibm.com>
 ---
- drivers/iommu/intel-iommu.c | 41 ++++++++++++++++++++++++++++++++++---
- 1 file changed, 38 insertions(+), 3 deletions(-)
 
-diff --git a/drivers/iommu/intel-iommu.c b/drivers/iommu/intel-iommu.c
-index 103480016010..d539e6a6c3dd 100644
---- a/drivers/iommu/intel-iommu.c
-+++ b/drivers/iommu/intel-iommu.c
-@@ -1722,6 +1722,26 @@ static void free_dmar_iommu(struct intel_iommu *iommu)
- #endif
- }
- 
-+/*
-+ * Check and return whether first level is used by default for
-+ * DMA translation.
-+ */
-+static bool first_level_by_default(void)
-+{
-+	struct dmar_drhd_unit *drhd;
-+	struct intel_iommu *iommu;
-+
-+	rcu_read_lock();
-+	for_each_active_iommu(iommu, drhd)
-+		if (!sm_supported(iommu) ||
-+		    !ecap_flts(iommu->ecap) ||
-+		    !cap_caching_mode(iommu->cap))
-+			return false;
-+	rcu_read_unlock();
-+
-+	return true;
-+}
-+
- static struct dmar_domain *alloc_domain(int flags)
+I'm not too happy with my warning message. Suggestions welcome!
+---
+ include/linux/dma-mapping.h | 3 +++
+ 1 file changed, 3 insertions(+)
+
+diff --git a/include/linux/dma-mapping.h b/include/linux/dma-mapping.h
+index 5024bc863fa7..299f36ac8668 100644
+--- a/include/linux/dma-mapping.h
++++ b/include/linux/dma-mapping.h
+@@ -823,6 +823,9 @@ extern gfp_t dma_override_gfp_flags(struct device *dev, gfp_t flags);
+ static inline gfp_t dma_override_gfp_flags(struct device *dev, gfp_t flags)
  {
- 	struct dmar_domain *domain;
-@@ -1736,6 +1756,9 @@ static struct dmar_domain *alloc_domain(int flags)
- 	domain->has_iotlb_device = false;
- 	INIT_LIST_HEAD(&domain->devices);
- 
-+	if (first_level_by_default())
-+		domain->flags |= DOMAIN_FLAG_FIRST_LEVEL_TRANS;
-+
- 	return domain;
+ 	/* let the implementation decide on the zone to allocate from: */
++	dev_WARN_ONCE(dev,
++		      flags & (__GFP_DMA32 | __GFP_DMA | __GFP_HIGHMEM),
++		      "fixme: don't dma_alloc with any of: __GFP_DMA32, __GFP_DMA, __GFP_HIGHMEM\n");
+ 	return flags & ~(__GFP_DMA | __GFP_DMA32 | __GFP_HIGHMEM);
  }
- 
-@@ -2625,6 +2648,11 @@ static struct dmar_domain *dmar_insert_one_dev_info(struct intel_iommu *iommu,
- 		if (hw_pass_through && domain_type_is_si(domain))
- 			ret = intel_pasid_setup_pass_through(iommu, domain,
- 					dev, PASID_RID2PASID);
-+		else if (domain_type_is_flt(domain))
-+			ret = intel_pasid_setup_first_level(iommu, dev,
-+					domain->pgd, PASID_RID2PASID,
-+					domain->iommu_did[iommu->seq_id],
-+					PASID_FLAG_SUPERVISOR_MODE);
- 		else
- 			ret = intel_pasid_setup_second_level(iommu, domain,
- 					dev, PASID_RID2PASID);
-@@ -5349,8 +5377,14 @@ static int aux_domain_add_dev(struct dmar_domain *domain,
- 		goto attach_failed;
- 
- 	/* Setup the PASID entry for mediated devices: */
--	ret = intel_pasid_setup_second_level(iommu, domain, dev,
--					     domain->default_pasid);
-+	if (domain_type_is_flt(domain))
-+		ret = intel_pasid_setup_first_level(iommu, dev,
-+				domain->pgd, domain->default_pasid,
-+				domain->iommu_did[iommu->seq_id],
-+				PASID_FLAG_SUPERVISOR_MODE);
-+	else
-+		ret = intel_pasid_setup_second_level(iommu, domain, dev,
-+						     domain->default_pasid);
- 	if (ret)
- 		goto table_failed;
- 	spin_unlock(&iommu->lock);
-@@ -5583,7 +5617,8 @@ static phys_addr_t intel_iommu_iova_to_phys(struct iommu_domain *domain,
- 	int level = 0;
- 	u64 phys = 0;
- 
--	if (dmar_domain->flags & DOMAIN_FLAG_LOSE_CHILDREN)
-+	if ((dmar_domain->flags & DOMAIN_FLAG_LOSE_CHILDREN) ||
-+	    (dmar_domain->flags & DOMAIN_FLAG_FIRST_LEVEL_TRANS))
- 		return 0;
- 
- 	pte = pfn_to_dma_pte(dmar_domain, iova >> VTD_PAGE_SHIFT, &level);
+ #endif
 -- 
 2.17.1
 
