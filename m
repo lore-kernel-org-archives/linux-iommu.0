@@ -4,84 +4,86 @@ X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 X-Spam-Level: 
 X-Spam-Status: No, score=-9.7 required=3.0 tests=HEADER_FROM_DIFFERENT_DOMAINS,
 	INCLUDES_PATCH,MAILING_LIST_MULTI,SIGNED_OFF_BY,SPF_HELO_NONE,SPF_PASS,
-	URIBL_BLOCKED,USER_AGENT_GIT autolearn=ham autolearn_force=no version=3.4.0
+	URIBL_BLOCKED,USER_AGENT_GIT autolearn=unavailable autolearn_force=no
+	version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 8FF00C32755
-	for <iommu@archiver.kernel.org>; Mon, 23 Sep 2019 12:35:14 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 1639BC3A5A6
+	for <iommu@archiver.kernel.org>; Mon, 23 Sep 2019 12:35:22 +0000 (UTC)
 Received: from mail.linuxfoundation.org (mail.linuxfoundation.org [140.211.169.12])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by mail.kernel.org (Postfix) with ESMTPS id 6AF7921655
-	for <iommu@archiver.kernel.org>; Mon, 23 Sep 2019 12:35:12 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 6AF7921655
+	by mail.kernel.org (Postfix) with ESMTPS id E969B20835
+	for <iommu@archiver.kernel.org>; Mon, 23 Sep 2019 12:35:21 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org E969B20835
 Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=linux.ibm.com
 Authentication-Results: mail.kernel.org; spf=pass smtp.mailfrom=iommu-bounces@lists.linux-foundation.org
 Received: from mail.linux-foundation.org (localhost [127.0.0.1])
-	by mail.linuxfoundation.org (Postfix) with ESMTP id 99977CCC;
-	Mon, 23 Sep 2019 12:35:12 +0000 (UTC)
+	by mail.linuxfoundation.org (Postfix) with ESMTP id C4780CD9;
+	Mon, 23 Sep 2019 12:35:21 +0000 (UTC)
 Received: from smtp1.linuxfoundation.org (smtp1.linux-foundation.org
 	[172.17.192.35])
-	by mail.linuxfoundation.org (Postfix) with ESMTPS id 51E6DCC6
+	by mail.linuxfoundation.org (Postfix) with ESMTPS id C3167CC7
 	for <iommu@lists.linux-foundation.org>;
-	Mon, 23 Sep 2019 12:35:11 +0000 (UTC)
+	Mon, 23 Sep 2019 12:35:20 +0000 (UTC)
 X-Greylist: domain auto-whitelisted by SQLgrey-1.7.6
-Received: from mx0a-001b2d01.pphosted.com (mx0a-001b2d01.pphosted.com
-	[148.163.156.1])
-	by smtp1.linuxfoundation.org (Postfix) with ESMTPS id F1028102
+Received: from mx0b-001b2d01.pphosted.com (mx0b-001b2d01.pphosted.com
+	[148.163.158.5])
+	by smtp1.linuxfoundation.org (Postfix) with ESMTPS id 405F989A
 	for <iommu@lists.linux-foundation.org>;
-	Mon, 23 Sep 2019 12:35:10 +0000 (UTC)
-Received: from pps.filterd (m0098404.ppops.net [127.0.0.1])
+	Mon, 23 Sep 2019 12:35:20 +0000 (UTC)
+Received: from pps.filterd (m0127361.ppops.net [127.0.0.1])
 	by mx0a-001b2d01.pphosted.com (8.16.0.27/8.16.0.27) with SMTP id
-	x8NCUxlD139894
-	for <iommu@lists.linux-foundation.org>; Mon, 23 Sep 2019 08:35:10 -0400
+	x8NCRNeo146308
+	for <iommu@lists.linux-foundation.org>; Mon, 23 Sep 2019 08:35:18 -0400
 Received: from e06smtp01.uk.ibm.com (e06smtp01.uk.ibm.com [195.75.94.97])
-	by mx0a-001b2d01.pphosted.com with ESMTP id 2v6x4g02vs-1
+	by mx0a-001b2d01.pphosted.com with ESMTP id 2v5ep2wav3-1
 	(version=TLSv1.2 cipher=AES256-GCM-SHA384 bits=256 verify=NOT)
-	for <iommu@lists.linux-foundation.org>; Mon, 23 Sep 2019 08:35:09 -0400
+	for <iommu@lists.linux-foundation.org>; Mon, 23 Sep 2019 08:35:16 -0400
 Received: from localhost
 	by e06smtp01.uk.ibm.com with IBM ESMTP SMTP Gateway: Authorized Use
 	Only! Violators will be prosecuted
 	for <iommu@lists.linux-foundation.org> from <pasic@linux.ibm.com>;
 	Mon, 23 Sep 2019 13:35:07 +0100
-Received: from b06cxnps3074.portsmouth.uk.ibm.com (9.149.109.194)
+Received: from b06cxnps4074.portsmouth.uk.ibm.com (9.149.109.196)
 	by e06smtp01.uk.ibm.com (192.168.101.131) with IBM ESMTP SMTP Gateway:
 	Authorized Use Only! Violators will be prosecuted; 
 	(version=TLSv1/SSLv3 cipher=AES256-GCM-SHA384 bits=256/256)
-	Mon, 23 Sep 2019 13:35:05 +0100
+	Mon, 23 Sep 2019 13:35:04 +0100
 Received: from d06av25.portsmouth.uk.ibm.com (d06av25.portsmouth.uk.ibm.com
 	[9.149.105.61])
-	by b06cxnps3074.portsmouth.uk.ibm.com (8.14.9/8.14.9/NCO v10.0) with
-	ESMTP id x8NCZ3RJ60686590
+	by b06cxnps4074.portsmouth.uk.ibm.com (8.14.9/8.14.9/NCO v10.0) with
+	ESMTP id x8NCZ2GZ52625646
 	(version=TLSv1/SSLv3 cipher=DHE-RSA-AES256-GCM-SHA384 bits=256
-	verify=OK); Mon, 23 Sep 2019 12:35:03 GMT
+	verify=OK); Mon, 23 Sep 2019 12:35:02 GMT
 Received: from d06av25.portsmouth.uk.ibm.com (unknown [127.0.0.1])
-	by IMSVA (Postfix) with ESMTP id 83BC211C064;
-	Mon, 23 Sep 2019 12:35:03 +0000 (GMT)
+	by IMSVA (Postfix) with ESMTP id 9279511C04C;
+	Mon, 23 Sep 2019 12:35:02 +0000 (GMT)
 Received: from d06av25.portsmouth.uk.ibm.com (unknown [127.0.0.1])
-	by IMSVA (Postfix) with ESMTP id 2613811C05C;
-	Mon, 23 Sep 2019 12:35:03 +0000 (GMT)
+	by IMSVA (Postfix) with ESMTP id 3CE4A11C054;
+	Mon, 23 Sep 2019 12:35:02 +0000 (GMT)
 Received: from tuxmaker.boeblingen.de.ibm.com (unknown [9.152.85.9])
 	by d06av25.portsmouth.uk.ibm.com (Postfix) with ESMTP;
-	Mon, 23 Sep 2019 12:35:03 +0000 (GMT)
+	Mon, 23 Sep 2019 12:35:02 +0000 (GMT)
 From: Halil Pasic <pasic@linux.ibm.com>
 To: Christoph Hellwig <hch@lst.de>,
 	Gerald Schaefer <gerald.schaefer@de.ibm.com>
-Subject: [RFC PATCH 3/3] dma-mapping: warn on harmful GFP_* flags
-Date: Mon, 23 Sep 2019 14:34:18 +0200
+Subject: [RFC PATCH 1/3] dma-mapping: make overriding GFP_* flags arch
+	customizable
+Date: Mon, 23 Sep 2019 14:34:16 +0200
 X-Mailer: git-send-email 2.17.1
 In-Reply-To: <20190923123418.22695-1-pasic@linux.ibm.com>
 References: <20190923123418.22695-1-pasic@linux.ibm.com>
 X-TM-AS-GCONF: 00
-x-cbid: 19092312-4275-0000-0000-0000036A0B34
+x-cbid: 19092312-4275-0000-0000-0000036A0B33
 X-IBM-AV-DETECTION: SAVI=unused REMOTE=unused XFE=unused
-x-cbparentid: 19092312-4276-0000-0000-0000387C7F68
-Message-Id: <20190923123418.22695-4-pasic@linux.ibm.com>
+x-cbparentid: 19092312-4276-0000-0000-0000387C7F65
+Message-Id: <20190923123418.22695-2-pasic@linux.ibm.com>
 X-Proofpoint-Virus-Version: vendor=fsecure engine=2.50.10434:, ,
 	definitions=2019-09-23_04:, , signatures=0
 X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0
 	priorityscore=1501
 	malwarescore=0 suspectscore=0 phishscore=0 bulkscore=0 spamscore=0
-	clxscore=1011 lowpriorityscore=0 mlxscore=0 impostorscore=0
+	clxscore=1015 lowpriorityscore=0 mlxscore=0 impostorscore=0
 	mlxlogscore=999 adultscore=0 classifier=spam adjust=0 reason=mlx
 	scancount=1 engine=8.0.1-1908290000 definitions=main-1909230124
 Cc: linux-s390@vger.kernel.org, Janosch Frank <frankja@linux.ibm.com>,
@@ -109,36 +111,81 @@ Content-Transfer-Encoding: 7bit
 Sender: iommu-bounces@lists.linux-foundation.org
 Errors-To: iommu-bounces@lists.linux-foundation.org
 
-The commit message of commit 57bf5a8963f8 ("dma-mapping: clear harmful
-GFP_* flags in common code") says that probably warn when we encounter
-harmful GFP_* flags which we clean -- because the client code is best
-case silly if not buggy. I concur with that.
+Before commit 57bf5a8963f8 ("dma-mapping: clear harmful GFP_* flags in
+common code") tweaking the client code supplied GFP_* flags used to be
+an issue handled in the architecture specific code. The commit message
+suggests, that fixing the client code would actually be a better way
+of dealing with this.
 
-Let's warn once when we encounter silly GFP_* flags. The guys caring
-about the respective client code will hopefully fix these soon.
+On s390 common I/O devices are generally capable of using the full 64
+bit address space for DMA I/O, but some chunks of the DMA memory need to
+be 31 bit addressable (in physical address space) because the
+instructions involved mandate it. Before switching to DMA API this used
+to be a non-issue, we used to allocate those chunks from ZONE_DMA.
+Currently our only option with the DMA API is to restrict the devices to
+(via dma_mask and dma_mask_coherent) to 31 bit, which is sub-optimal.
+
+Thus s390 we would benefit form having control over what flags are
+dropped.
 
 Signed-off-by: Halil Pasic <pasic@linux.ibm.com>
 ---
-
-I'm not too happy with my warning message. Suggestions welcome!
----
- include/linux/dma-mapping.h | 3 +++
- 1 file changed, 3 insertions(+)
+ include/linux/dma-mapping.h | 10 ++++++++++
+ kernel/dma/Kconfig          |  6 ++++++
+ kernel/dma/mapping.c        |  4 +---
+ 3 files changed, 17 insertions(+), 3 deletions(-)
 
 diff --git a/include/linux/dma-mapping.h b/include/linux/dma-mapping.h
-index 5024bc863fa7..299f36ac8668 100644
+index 4a1c4fca475a..5024bc863fa7 100644
 --- a/include/linux/dma-mapping.h
 +++ b/include/linux/dma-mapping.h
-@@ -823,6 +823,9 @@ extern gfp_t dma_override_gfp_flags(struct device *dev, gfp_t flags);
- static inline gfp_t dma_override_gfp_flags(struct device *dev, gfp_t flags)
- {
- 	/* let the implementation decide on the zone to allocate from: */
-+	dev_WARN_ONCE(dev,
-+		      flags & (__GFP_DMA32 | __GFP_DMA | __GFP_HIGHMEM),
-+		      "fixme: don't dma_alloc with any of: __GFP_DMA32, __GFP_DMA, __GFP_HIGHMEM\n");
- 	return flags & ~(__GFP_DMA | __GFP_DMA32 | __GFP_HIGHMEM);
- }
+@@ -817,4 +817,14 @@ static inline int dma_mmap_wc(struct device *dev,
+ #define dma_unmap_len_set(PTR, LEN_NAME, VAL)    do { } while (0)
  #endif
+ 
++#ifdef CONFIG_ARCH_HAS_DMA_OVERRIDE_GFP_FLAGS
++extern gfp_t dma_override_gfp_flags(struct device *dev, gfp_t flags);
++#else
++static inline gfp_t dma_override_gfp_flags(struct device *dev, gfp_t flags)
++{
++	/* let the implementation decide on the zone to allocate from: */
++	return flags & ~(__GFP_DMA | __GFP_DMA32 | __GFP_HIGHMEM);
++}
++#endif
++
+ #endif
+diff --git a/kernel/dma/Kconfig b/kernel/dma/Kconfig
+index 73c5c2b8e824..4756c75047e3 100644
+--- a/kernel/dma/Kconfig
++++ b/kernel/dma/Kconfig
+@@ -54,6 +54,12 @@ config ARCH_HAS_DMA_PREP_COHERENT
+ config ARCH_HAS_DMA_COHERENT_TO_PFN
+ 	bool
+ 
++config ARCH_HAS_DMA_MMAP_PGPROT
++	bool
++
++config ARCH_HAS_DMA_OVERRIDE_GFP_FLAGS
++	bool
++
+ config ARCH_HAS_FORCE_DMA_UNENCRYPTED
+ 	bool
+ 
+diff --git a/kernel/dma/mapping.c b/kernel/dma/mapping.c
+index d9334f31a5af..535b809548e2 100644
+--- a/kernel/dma/mapping.c
++++ b/kernel/dma/mapping.c
+@@ -303,9 +303,7 @@ void *dma_alloc_attrs(struct device *dev, size_t size, dma_addr_t *dma_handle,
+ 	if (dma_alloc_from_dev_coherent(dev, size, dma_handle, &cpu_addr))
+ 		return cpu_addr;
+ 
+-	/* let the implementation decide on the zone to allocate from: */
+-	flag &= ~(__GFP_DMA | __GFP_DMA32 | __GFP_HIGHMEM);
+-
++	flag = dma_override_gfp_flags(dev, flag);
+ 	if (dma_is_direct(ops))
+ 		cpu_addr = dma_direct_alloc(dev, size, dma_handle, flag, attrs);
+ 	else if (ops->alloc)
 -- 
 2.17.1
 
