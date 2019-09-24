@@ -2,48 +2,57 @@ Return-Path: <SRS0=VpBQ=XT=lists.linux-foundation.org=iommu-bounces@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-5.2 required=3.0 tests=HEADER_FROM_DIFFERENT_DOMAINS,
-	MAILING_LIST_MULTI,SIGNED_OFF_BY,SPF_HELO_NONE,SPF_PASS,USER_AGENT_SANE_1
-	autolearn=ham autolearn_force=no version=3.4.0
+X-Spam-Status: No, score=-9.7 required=3.0 tests=HEADER_FROM_DIFFERENT_DOMAINS,
+	INCLUDES_PATCH,MAILING_LIST_MULTI,SIGNED_OFF_BY,SPF_HELO_NONE,SPF_PASS,
+	URIBL_BLOCKED,USER_AGENT_GIT autolearn=unavailable autolearn_force=no
+	version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 4FB68C432C2
-	for <iommu@archiver.kernel.org>; Tue, 24 Sep 2019 09:41:10 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id D241BC432C1
+	for <iommu@archiver.kernel.org>; Tue, 24 Sep 2019 12:02:06 +0000 (UTC)
 Received: from mail.linuxfoundation.org (mail.linuxfoundation.org [140.211.169.12])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by mail.kernel.org (Postfix) with ESMTPS id 239622146E
-	for <iommu@archiver.kernel.org>; Tue, 24 Sep 2019 09:41:10 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 239622146E
-Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=8bytes.org
+	by mail.kernel.org (Postfix) with ESMTPS id AF60D20872
+	for <iommu@archiver.kernel.org>; Tue, 24 Sep 2019 12:02:06 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org AF60D20872
+Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=linux.intel.com
 Authentication-Results: mail.kernel.org; spf=pass smtp.mailfrom=iommu-bounces@lists.linux-foundation.org
 Received: from mail.linux-foundation.org (localhost [127.0.0.1])
-	by mail.linuxfoundation.org (Postfix) with ESMTP id E8483C74;
-	Tue, 24 Sep 2019 09:41:09 +0000 (UTC)
+	by mail.linuxfoundation.org (Postfix) with ESMTP id 84015CC6;
+	Tue, 24 Sep 2019 12:02:06 +0000 (UTC)
 Received: from smtp1.linuxfoundation.org (smtp1.linux-foundation.org
 	[172.17.192.35])
-	by mail.linuxfoundation.org (Postfix) with ESMTPS id 18A71C11
+	by mail.linuxfoundation.org (Postfix) with ESMTPS id 76885CBB
 	for <iommu@lists.linux-foundation.org>;
-	Tue, 24 Sep 2019 09:41:09 +0000 (UTC)
-X-Greylist: from auto-whitelisted by SQLgrey-1.7.6
-Received: from theia.8bytes.org (8bytes.org [81.169.241.247])
-	by smtp1.linuxfoundation.org (Postfix) with ESMTPS id A2E328B7
+	Tue, 24 Sep 2019 12:02:05 +0000 (UTC)
+X-Greylist: domain auto-whitelisted by SQLgrey-1.7.6
+Received: from mga12.intel.com (mga12.intel.com [192.55.52.136])
+	by smtp1.linuxfoundation.org (Postfix) with ESMTPS id E5A5B102
 	for <iommu@lists.linux-foundation.org>;
-	Tue, 24 Sep 2019 09:41:08 +0000 (UTC)
-Received: by theia.8bytes.org (Postfix, from userid 1000)
-	id EE14C3A2; Tue, 24 Sep 2019 11:41:06 +0200 (CEST)
-Date: Tue, 24 Sep 2019 11:41:05 +0200
-From: Joerg Roedel <joro@8bytes.org>
-To: Filippo Sironi <sironi@amazon.de>
-Subject: Re: [PATCH 1/5] iommu/amd: Wait for completion of IOTLB flush in
-	attach_device
-Message-ID: <20190924094105.GB11453@8bytes.org>
-References: <1568137765-20278-1-git-send-email-sironi@amazon.de>
-	<1568137765-20278-2-git-send-email-sironi@amazon.de>
+	Tue, 24 Sep 2019 12:01:58 +0000 (UTC)
+X-Amp-Result: SKIPPED(no attachment in message)
+X-Amp-File-Uploaded: False
+Received: from orsmga007.jf.intel.com ([10.7.209.58])
+	by fmsmga106.fm.intel.com with ESMTP/TLS/DHE-RSA-AES256-GCM-SHA384;
+	24 Sep 2019 05:01:58 -0700
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="5.64,544,1559545200"; d="scan'208";a="179460795"
+Received: from black.fi.intel.com ([10.237.72.28])
+	by orsmga007.jf.intel.com with ESMTP; 24 Sep 2019 05:01:55 -0700
+Received: by black.fi.intel.com (Postfix, from userid 1003)
+	id 3CD28228; Tue, 24 Sep 2019 15:01:54 +0300 (EEST)
+From: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
+To: Joerg Roedel <joro@8bytes.org>, iommu@lists.linux-foundation.org,
+	Adrian Hunter <adrian.hunter@intel.com>,
+	Ulf Hansson <ulf.hansson@linaro.org>, linux-mmc@vger.kernel.org,
+	"Rafael J. Wysocki" <rjw@rjwysocki.net>, linux-acpi@vger.kernel.org
+Subject: [PATCH v1 1/5] ACPI / utils: Describe function parameters in
+	kernel-doc
+Date: Tue, 24 Sep 2019 15:01:49 +0300
+Message-Id: <20190924120153.8382-1-andriy.shevchenko@linux.intel.com>
+X-Mailer: git-send-email 2.23.0
 MIME-Version: 1.0
-Content-Disposition: inline
-In-Reply-To: <1568137765-20278-2-git-send-email-sironi@amazon.de>
-User-Agent: Mutt/1.10.1 (2018-07-13)
-Cc: iommu@lists.linux-foundation.org, linux-kernel@vger.kernel.org
+Cc: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
 X-BeenThere: iommu@lists.linux-foundation.org
 X-Mailman-Version: 2.1.12
 Precedence: list
@@ -61,13 +70,58 @@ Content-Transfer-Encoding: 7bit
 Sender: iommu-bounces@lists.linux-foundation.org
 Errors-To: iommu-bounces@lists.linux-foundation.org
 
-On Tue, Sep 10, 2019 at 07:49:21PM +0200, Filippo Sironi wrote:
-> Signed-off-by: Filippo Sironi <sironi@amazon.de>
-> ---
->  drivers/iommu/amd_iommu.c | 2 ++
->  1 file changed, 2 insertions(+)
+Kernel documentation script complains that some of the function parameters
+are not described:
 
-Applied this one with a commit message and a fixes tag, thanks.
+drivers/acpi/utils.c:462: warning: Function parameter or member 'handle' not described in 'acpi_handle_path'
+drivers/acpi/utils.c:484: warning: Function parameter or member 'level' not described in 'acpi_handle_printk'
+drivers/acpi/utils.c:484: warning: Function parameter or member 'handle' not described in 'acpi_handle_printk'
+drivers/acpi/utils.c:484: warning: Function parameter or member 'fmt' not described in 'acpi_handle_printk'
+drivers/acpi/utils.c:513: warning: Function parameter or member 'descriptor' not described in '__acpi_handle_debug'
+drivers/acpi/utils.c:513: warning: Function parameter or member 'handle' not described in '__acpi_handle_debug'
+drivers/acpi/utils.c:513: warning: Function parameter or member 'fmt' not described in '__acpi_handle_debug'
+
+Describe function parameters where it's appropriate.
+
+Signed-off-by: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
+---
+ drivers/acpi/utils.c | 7 +++++++
+ 1 file changed, 7 insertions(+)
+
+diff --git a/drivers/acpi/utils.c b/drivers/acpi/utils.c
+index e3974a8f8fd4..dbd1c4cfd7d1 100644
+--- a/drivers/acpi/utils.c
++++ b/drivers/acpi/utils.c
+@@ -455,6 +455,7 @@ EXPORT_SYMBOL(acpi_evaluate_ost);
+ 
+ /**
+  * acpi_handle_path: Return the object path of handle
++ * @handle: ACPI device handle
+  *
+  * Caller must free the returned buffer
+  */
+@@ -473,6 +474,9 @@ static char *acpi_handle_path(acpi_handle handle)
+ 
+ /**
+  * acpi_handle_printk: Print message with ACPI prefix and object path
++ * @level: log level
++ * @handle: ACPI device handle
++ * @fmt: format string
+  *
+  * This function is called through acpi_handle_<level> macros and prints
+  * a message with ACPI prefix and object path.  This function acquires
+@@ -501,6 +505,9 @@ EXPORT_SYMBOL(acpi_handle_printk);
+ #if defined(CONFIG_DYNAMIC_DEBUG)
+ /**
+  * __acpi_handle_debug: pr_debug with ACPI prefix and object path
++ * @descriptor: Dynamic Debug descriptor
++ * @handle: ACPI device handle
++ * @fmt: format string
+  *
+  * This function is called through acpi_handle_debug macro and debug
+  * prints a message with ACPI prefix and object path. This function
+-- 
+2.23.0
 
 _______________________________________________
 iommu mailing list
