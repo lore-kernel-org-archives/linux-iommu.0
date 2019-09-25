@@ -6,74 +6,73 @@ X-Spam-Status: No, score=-0.7 required=3.0 tests=HEADER_FROM_DIFFERENT_DOMAINS,
 	MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED autolearn=no
 	autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 0BE3AC432C1
-	for <iommu@archiver.kernel.org>; Wed, 25 Sep 2019 07:22:08 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id BE1A2C432C1
+	for <iommu@archiver.kernel.org>; Wed, 25 Sep 2019 07:33:04 +0000 (UTC)
 Received: from mail.linuxfoundation.org (mail.linuxfoundation.org [140.211.169.12])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by mail.kernel.org (Postfix) with ESMTPS id CB9FB222CC
-	for <iommu@archiver.kernel.org>; Wed, 25 Sep 2019 07:22:06 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org CB9FB222CC
+	by mail.kernel.org (Postfix) with ESMTPS id 8E162217F4
+	for <iommu@archiver.kernel.org>; Wed, 25 Sep 2019 07:33:04 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 8E162217F4
 Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=intel.com
 Authentication-Results: mail.kernel.org; spf=pass smtp.mailfrom=iommu-bounces@lists.linux-foundation.org
 Received: from mail.linux-foundation.org (localhost [127.0.0.1])
-	by mail.linuxfoundation.org (Postfix) with ESMTP id DFC8FBA4;
-	Wed, 25 Sep 2019 07:22:05 +0000 (UTC)
+	by mail.linuxfoundation.org (Postfix) with ESMTP id 43365B43;
+	Wed, 25 Sep 2019 07:33:04 +0000 (UTC)
 Received: from smtp1.linuxfoundation.org (smtp1.linux-foundation.org
 	[172.17.192.35])
-	by mail.linuxfoundation.org (Postfix) with ESMTPS id E0C2FB3E
+	by mail.linuxfoundation.org (Postfix) with ESMTPS id BF6BBAF3
 	for <iommu@lists.linux-foundation.org>;
-	Wed, 25 Sep 2019 07:22:03 +0000 (UTC)
+	Wed, 25 Sep 2019 07:33:02 +0000 (UTC)
 X-Greylist: domain auto-whitelisted by SQLgrey-1.7.6
-Received: from mga12.intel.com (mga12.intel.com [192.55.52.136])
-	by smtp1.linuxfoundation.org (Postfix) with ESMTPS id BE2658D
+Received: from mga18.intel.com (mga18.intel.com [134.134.136.126])
+	by smtp1.linuxfoundation.org (Postfix) with ESMTPS id A62F08A0
 	for <iommu@lists.linux-foundation.org>;
-	Wed, 25 Sep 2019 07:21:54 +0000 (UTC)
+	Wed, 25 Sep 2019 07:32:52 +0000 (UTC)
 X-Amp-Result: SKIPPED(no attachment in message)
 X-Amp-File-Uploaded: False
-Received: from orsmga008.jf.intel.com ([10.7.209.65])
-	by fmsmga106.fm.intel.com with ESMTP/TLS/DHE-RSA-AES256-GCM-SHA384;
-	25 Sep 2019 00:21:54 -0700
+Received: from orsmga005.jf.intel.com ([10.7.209.41])
+	by orsmga106.jf.intel.com with ESMTP/TLS/DHE-RSA-AES256-GCM-SHA384;
+	25 Sep 2019 00:32:52 -0700
 X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.64,547,1559545200"; d="scan'208";a="183169136"
-Received: from fmsmsx103.amr.corp.intel.com ([10.18.124.201])
-	by orsmga008.jf.intel.com with ESMTP; 25 Sep 2019 00:21:54 -0700
-Received: from fmsmsx118.amr.corp.intel.com (10.18.116.18) by
-	FMSMSX103.amr.corp.intel.com (10.18.124.201) with Microsoft SMTP Server
-	(TLS) id 14.3.439.0; Wed, 25 Sep 2019 00:21:53 -0700
-Received: from shsmsx153.ccr.corp.intel.com (10.239.6.53) by
-	fmsmsx118.amr.corp.intel.com (10.18.116.18) with Microsoft SMTP Server
-	(TLS) id 14.3.439.0; Wed, 25 Sep 2019 00:21:53 -0700
+X-IronPort-AV: E=Sophos;i="5.64,547,1559545200"; d="scan'208";a="364246016"
+Received: from fmsmsx108.amr.corp.intel.com ([10.18.124.206])
+	by orsmga005.jf.intel.com with ESMTP; 25 Sep 2019 00:32:51 -0700
+Received: from shsmsx103.ccr.corp.intel.com (10.239.4.69) by
+	FMSMSX108.amr.corp.intel.com (10.18.124.206) with Microsoft SMTP Server
+	(TLS) id 14.3.439.0; Wed, 25 Sep 2019 00:32:51 -0700
 Received: from shsmsx104.ccr.corp.intel.com ([169.254.5.32]) by
-	SHSMSX153.ccr.corp.intel.com ([169.254.12.235]) with mapi id
-	14.03.0439.000; Wed, 25 Sep 2019 15:21:51 +0800
+	SHSMSX103.ccr.corp.intel.com ([169.254.4.140]) with mapi id
+	14.03.0439.000; Wed, 25 Sep 2019 15:32:49 +0800
 From: "Tian, Kevin" <kevin.tian@intel.com>
-To: Peter Xu <peterx@redhat.com>, Lu Baolu <baolu.lu@linux.intel.com>
-Subject: RE: [RFC PATCH 0/4] Use 1st-level for DMA remapping in guest
-Thread-Topic: [RFC PATCH 0/4] Use 1st-level for DMA remapping in guest
-Thread-Index: AQHVcgo/pYehEUSjBUSa7tc1tTv1E6c5H56AgAAQYQCAATS/kIAAyIAAgABFVACAAIvPkA==
-Date: Wed, 25 Sep 2019 07:21:51 +0000
-Message-ID: <AADFC41AFE54684AB9EE6CBC0274A5D19D58F4A3@SHSMSX104.ccr.corp.intel.com>
+To: Lu Baolu <baolu.lu@linux.intel.com>, Peter Xu <peterx@redhat.com>
+Subject: RE: [RFC PATCH 2/4] iommu/vt-d: Add first level page table interfaces
+Thread-Topic: [RFC PATCH 2/4] iommu/vt-d: Add first level page table interfaces
+Thread-Index: AQHVcgpDf16VDDZMQk6x5RWfK5mI2qc5MXAAgABWBICAAcJfAIAAh6Ig//+HOwCAABizAIAAjr3w
+Date: Wed, 25 Sep 2019 07:32:48 +0000
+Message-ID: <AADFC41AFE54684AB9EE6CBC0274A5D19D58F4EA@SHSMSX104.ccr.corp.intel.com>
 References: <20190923122454.9888-1-baolu.lu@linux.intel.com>
-	<20190923122715.53de79d0@jacob-builder>
-	<20190923202552.GA21816@araj-mobl1.jf.intel.com>
-	<AADFC41AFE54684AB9EE6CBC0274A5D19D58D1F1@SHSMSX104.ccr.corp.intel.com>
-	<dfd9b7a2-5553-328a-08eb-16c8a3a2644e@linux.intel.com>
-	<20190925065640.GO28074@xz-x1>
-In-Reply-To: <20190925065640.GO28074@xz-x1>
+	<20190923122454.9888-3-baolu.lu@linux.intel.com>
+	<20190923203102.GB21816@araj-mobl1.jf.intel.com>
+	<9cfe6042-f0fb-ea5e-e134-f6f5bb9eb7b0@linux.intel.com>
+	<20190925043050.GK28074@xz-x1>
+	<AADFC41AFE54684AB9EE6CBC0274A5D19D58F018@SHSMSX104.ccr.corp.intel.com>
+	<20190925052402.GM28074@xz-x1>
+	<1713f03c-4d47-34ad-f36d-882645c36389@linux.intel.com>
+In-Reply-To: <1713f03c-4d47-34ad-f36d-882645c36389@linux.intel.com>
 Accept-Language: en-US
 Content-Language: en-US
 X-MS-Has-Attach: 
 X-MS-TNEF-Correlator: 
 x-ctpclassification: CTP_NT
-x-titus-metadata-40: eyJDYXRlZ29yeUxhYmVscyI6IiIsIk1ldGFkYXRhIjp7Im5zIjoiaHR0cDpcL1wvd3d3LnRpdHVzLmNvbVwvbnNcL0ludGVsMyIsImlkIjoiNWZmNjcyZDAtZDI5YS00ODVhLWI4ZWItMDVlMDgyZDQwNzRlIiwicHJvcHMiOlt7Im4iOiJDVFBDbGFzc2lmaWNhdGlvbiIsInZhbHMiOlt7InZhbHVlIjoiQ1RQX05UIn1dfV19LCJTdWJqZWN0TGFiZWxzIjpbXSwiVE1DVmVyc2lvbiI6IjE3LjEwLjE4MDQuNDkiLCJUcnVzdGVkTGFiZWxIYXNoIjoiMkNVbEFZR3BSQ0ZsNUZ0bW8xYTI0RXllYllTZVZRQ3VRZ29SeHh5YkpVTytKdkd5ODZISW9TeFpDMlFsVllWRiJ9
+x-titus-metadata-40: eyJDYXRlZ29yeUxhYmVscyI6IiIsIk1ldGFkYXRhIjp7Im5zIjoiaHR0cDpcL1wvd3d3LnRpdHVzLmNvbVwvbnNcL0ludGVsMyIsImlkIjoiY2U4YmU0ZmUtZDYzZS00ZjE4LWExZjctMTJkMzE0OTI5ZWIwIiwicHJvcHMiOlt7Im4iOiJDVFBDbGFzc2lmaWNhdGlvbiIsInZhbHMiOlt7InZhbHVlIjoiQ1RQX05UIn1dfV19LCJTdWJqZWN0TGFiZWxzIjpbXSwiVE1DVmVyc2lvbiI6IjE3LjEwLjE4MDQuNDkiLCJUcnVzdGVkTGFiZWxIYXNoIjoiQjAzc0c5Y3ZcL01KUnQ3QmQyR2hyUUdDVkVaY3J4TEUzcGJTZjZoYzM4MDdzcGVnXC9Kcm5MZ1RYbXNHcDZGNGVuIn0=
 dlp-product: dlpe-windows
 dlp-version: 11.0.400.15
 dlp-reaction: no-action
 x-originating-ip: [10.239.127.40]
 MIME-Version: 1.0
-Cc: Alex Williamson <alex.williamson@redhat.com>, "Raj,
-	Ashok" <ashok.raj@intel.com>,
+Cc: Alex Williamson <alex.williamson@redhat.com>,
+	Yi Sun <yi.y.sun@linux.intel.com>, "Raj, Ashok" <ashok.raj@intel.com>,
 	"kvm@vger.kernel.org" <kvm@vger.kernel.org>, "Kumar,
 	Sanjay K" <sanjay.k.kumar@intel.com>,
 	"iommu@lists.linux-foundation.org" <iommu@lists.linux-foundation.org>,
@@ -96,44 +95,58 @@ Content-Transfer-Encoding: 7bit
 Sender: iommu-bounces@lists.linux-foundation.org
 Errors-To: iommu-bounces@lists.linux-foundation.org
 
-> From: Peter Xu [mailto:peterx@redhat.com]
-> Sent: Wednesday, September 25, 2019 2:57 PM
+> From: Lu Baolu [mailto:baolu.lu@linux.intel.com]
+> Sent: Wednesday, September 25, 2019 2:52 PM
 > 
-> On Wed, Sep 25, 2019 at 10:48:32AM +0800, Lu Baolu wrote:
-> > Hi Kevin,
-> >
-> > On 9/24/19 3:00 PM, Tian, Kevin wrote:
-> > > > > >       '-----------'
-> > > > > >       '-----------'
-> > > > > >
-> > > > > > This patch series only aims to achieve the first goal, a.k.a using
-> > > first goal? then what are other goals? I didn't spot such information.
-> > >
-> >
-> > The overall goal is to use IOMMU nested mode to avoid shadow page
-> table
-> > and VMEXIT when map an gIOVA. This includes below 4 steps (maybe not
-> > accurate, but you could get the point.)
-> >
-> > 1) GIOVA mappings over 1st-level page table;
-> > 2) binding vIOMMU 1st level page table to the pIOMMU;
-> > 3) using pIOMMU second level for GPA->HPA translation;
-> > 4) enable nested (a.k.a. dual stage) translation in host.
-> >
-> > This patch set aims to achieve 1).
+> Hi Peter and Kevin,
 > 
-> Would it make sense to use 1st level even for bare-metal to replace
-> the 2nd level?
+> On 9/25/19 1:24 PM, Peter Xu wrote:
+> > On Wed, Sep 25, 2019 at 04:38:31AM +0000, Tian, Kevin wrote:
+> >>> From: Peter Xu [mailto:peterx@redhat.com]
+> >>> Sent: Wednesday, September 25, 2019 12:31 PM
+> >>>
+> >>> On Tue, Sep 24, 2019 at 09:38:53AM +0800, Lu Baolu wrote:
+> >>>>>> intel_mmmap_range(domain, addr, end, phys_addr, prot)
+> >>>>>
+> >>>>> Maybe think of a different name..? mmmap seems a bit weird :-)
+> >>>>
+> >>>> Yes. I don't like it either. I've thought about it and haven't
+> >>>> figured out a satisfied one. Do you have any suggestions?
+> >>>
+> >>> How about at least split the word using "_"?  Like "mm_map", then
+> >>> apply it to all the "mmm*" prefixes.  Otherwise it'll be easily
+> >>> misread as mmap() which is totally irrelevant to this...
+> >>>
+> >>
+> >> what is the point of keeping 'mm' here? replace it with 'iommu'?
+> >
+> > I'm not sure of what Baolu thought, but to me "mm" makes sense itself
+> > to identify this from real IOMMU page tables (because IIUC these will
+> > be MMU page tables).  We can come up with better names, but IMHO
+> > "iommu" can be a bit misleading to let people refer to the 2nd level
+> > page table.
 > 
-> What I'm thinking is the DPDK apps - they have MMU page table already
-> there for the huge pages, then if they can use 1st level as the
-> default device page table then it even does not need to map, because
-> it can simply bind the process root page table pointer to the 1st
-> level page root pointer of the device contexts that it uses.
+> "mm" represents a CPU (first level) page table;
+> 
+> vs.
+> 
+> "io" represents an IOMMU (second level) page table.
 > 
 
-Then you need bear with possible page faults from using CPU page
-table, while most devices don't support it today. 
+IOMMU first level is not equivalent to CPU page table, though you can
+use the latter as the first level (e.g. in SVA). Especially here you are
+making IOVA->GPA as the first level, which is not CPU page table.
+
+btw both levels are for "io" i.e. DMA purposes from VT-d p.o.v. They
+are just hierarchical structures implemented by VT-d, with slightly
+different format. The specification doesn't limit how you use them for.
+In a hypothetical case, an IOMMU may implement exactly same CPU-page-
+table format and support page faults for both levels. Then you can even
+link the CPU page table to the 2nd level for sure.
+
+Maybe we just name it from VT-d context, e.g. intel_map_first_level_range,
+Intel_map_second_level_range, and then register them as dmar domain
+callback as you replied in another mail.
 
 Thanks
 Kevin
