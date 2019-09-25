@@ -6,84 +6,81 @@ X-Spam-Status: No, score=-2.2 required=3.0 tests=HEADER_FROM_DIFFERENT_DOMAINS,
 	MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED,USER_AGENT_SANE_1
 	autolearn=no autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id D50D2C432C1
-	for <iommu@archiver.kernel.org>; Wed, 25 Sep 2019 05:24:25 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 58EEAC432C1
+	for <iommu@archiver.kernel.org>; Wed, 25 Sep 2019 06:50:29 +0000 (UTC)
 Received: from mail.linuxfoundation.org (mail.linuxfoundation.org [140.211.169.12])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by mail.kernel.org (Postfix) with ESMTPS id B2661217F4
-	for <iommu@archiver.kernel.org>; Wed, 25 Sep 2019 05:24:25 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org B2661217F4
+	by mail.kernel.org (Postfix) with ESMTPS id 27832217F4
+	for <iommu@archiver.kernel.org>; Wed, 25 Sep 2019 06:50:29 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 27832217F4
 Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=redhat.com
 Authentication-Results: mail.kernel.org; spf=pass smtp.mailfrom=iommu-bounces@lists.linux-foundation.org
 Received: from mail.linux-foundation.org (localhost [127.0.0.1])
-	by mail.linuxfoundation.org (Postfix) with ESMTP id 76393B9E;
-	Wed, 25 Sep 2019 05:24:25 +0000 (UTC)
+	by mail.linuxfoundation.org (Postfix) with ESMTP id D09FAB6C;
+	Wed, 25 Sep 2019 06:50:28 +0000 (UTC)
 Received: from smtp1.linuxfoundation.org (smtp1.linux-foundation.org
 	[172.17.192.35])
-	by mail.linuxfoundation.org (Postfix) with ESMTPS id E58437F6
+	by mail.linuxfoundation.org (Postfix) with ESMTPS id 21296B3E
 	for <iommu@lists.linux-foundation.org>;
-	Wed, 25 Sep 2019 05:24:23 +0000 (UTC)
+	Wed, 25 Sep 2019 06:50:28 +0000 (UTC)
 X-Greylist: domain auto-whitelisted by SQLgrey-1.7.6
 Received: from mx1.redhat.com (mx1.redhat.com [209.132.183.28])
-	by smtp1.linuxfoundation.org (Postfix) with ESMTPS id 8A5AE8A
+	by smtp1.linuxfoundation.org (Postfix) with ESMTPS id 9E0038A
 	for <iommu@lists.linux-foundation.org>;
-	Wed, 25 Sep 2019 05:24:15 +0000 (UTC)
-Received: from mail-pl1-f198.google.com (mail-pl1-f198.google.com
-	[209.85.214.198])
+	Wed, 25 Sep 2019 06:50:19 +0000 (UTC)
+Received: from mail-pg1-f199.google.com (mail-pg1-f199.google.com
+	[209.85.215.199])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by mx1.redhat.com (Postfix) with ESMTPS id 1B063882EA
+	by mx1.redhat.com (Postfix) with ESMTPS id F24F4C058CA4
 	for <iommu@lists.linux-foundation.org>;
-	Wed, 25 Sep 2019 05:24:15 +0000 (UTC)
-Received: by mail-pl1-f198.google.com with SMTP id y13so1270454plr.17
+	Wed, 25 Sep 2019 06:50:18 +0000 (UTC)
+Received: by mail-pg1-f199.google.com with SMTP id h36so2991883pgb.3
 	for <iommu@lists.linux-foundation.org>;
-	Tue, 24 Sep 2019 22:24:15 -0700 (PDT)
+	Tue, 24 Sep 2019 23:50:18 -0700 (PDT)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
 	d=1e100.net; s=20161025;
 	h=x-gm-message-state:date:from:to:cc:subject:message-id:references
 	:mime-version:content-disposition:in-reply-to:user-agent;
-	bh=/HNMfngrL2dVAv5oEf18q1bL4tnGnZHoARTtclw/zOQ=;
-	b=ThkA3PaFiFrDqpN0fOKzd96oFy4RkN9OaedP3QN8Xf7kQFZR/Y0AGyjr0OYCAZnBDv
-	YYdmrG8FfY0EVBYrPguOePEZ4tueaQfMJCzSGIXxCoEj9DAUmhFkwXjGpG62fMMnq5VO
-	ePsweYwZG1paG1/N+On5Va5pOVfpQStycbVXn4qC41u9DoPE8XwFidjTs9KVdnJJfv63
-	FdJABO27XI8m9XFGIq3V6iG3lys8G3NvvGoT/z8Ey2lFxsduGlU8jNOW/vZm3pMomrqO
-	rcVdZMhnBXG0pbJmRJv2DXCzd1VW/7ANlseG4N0CZA+3TOWWyAl9fxkTLl20qcThJCCD
-	0W2Q==
-X-Gm-Message-State: APjAAAVA1WBVnhs1qhQPlB0vCaNkLGjCzU6t4VA+1YF0md4hNP4eM+gW
-	pD2mP/N4t8Q3CQhjSmHTjWKHNDjh7/UIboV2OIfnGNSkInv/SM30G4svE8PlW7fut9XldJD0Iwc
-	pjFx3X3y1b8kHWGPUpekUbWm8rNLUBA==
-X-Received: by 2002:a62:5e42:: with SMTP id s63mr6745440pfb.96.1569389054616; 
-	Tue, 24 Sep 2019 22:24:14 -0700 (PDT)
-X-Google-Smtp-Source: APXvYqxwAC3wXoJ2PHgPRN3g8rZaANg2eV6wPnk6cDT4cSKrtUcaQ5efDKrefQ8BuOVG39h90nRsFQ==
-X-Received: by 2002:a62:5e42:: with SMTP id s63mr6745421pfb.96.1569389054455; 
-	Tue, 24 Sep 2019 22:24:14 -0700 (PDT)
-Received: from xz-x1 ([209.132.188.80]) by smtp.gmail.com with ESMTPSA id
-	d76sm9015810pga.80.2019.09.24.22.24.09
+	bh=qR/cKb1LH4Ut6XBt6GUfg+wU8+q9TeAgUhlA6c+rO4c=;
+	b=ksPAll9tXi+v7iUMSM6dzb3zR/3f0f5zjeeimhgPAog2I2fjDZX9983IRDjaQFDcAp
+	G9LovxSwqom9KUbsXa6K+AhfU0yBsqiWyOQ+CJ/rst7mfvmoWo+xuDt9mMHUsYgoen+k
+	cM4lakTFF/9o/09vEsy17uOriAwePoRsTS+lwN7YRFJh0ypYuOMnSxgkQRom8S580YsC
+	j0B75LSz9A4AAaxPlylJwf6daKq3Yra3bvvXZ0z2qcmBuknWrNrY6ZFsmSiXQ5/WLeND
+	NEdYnw/8uvM3joV0FpZNM7WMxOxEfaRFOudkSq82u1Y6LGbeWuyCoxfIWgnKJstFFAf9
+	E7bg==
+X-Gm-Message-State: APjAAAXe9C+w+hZ4fIi7jrGVBHeikzoe10YuWsrihWakvylz22mgZjKz
+	KZGNXpg/xE/i9TJnCOom73kUVnnGj13shN7lrKwJptkRn8sqHBqgYJjZxkaj1D7aPweq+mxbkvO
+	bUhwsVEzrlaXKr1s8/6+vTWEDrbKcFw==
+X-Received: by 2002:a17:90a:32c8:: with SMTP id
+	l66mr4786659pjb.44.1569394218437; 
+	Tue, 24 Sep 2019 23:50:18 -0700 (PDT)
+X-Google-Smtp-Source: APXvYqypWllblpMbhsSgwCAwLu+m/4ke343KRyPgiqd/aaN/IjsSQuc6mo4RWHK4cbHfclvFvQlQKQ==
+X-Received: by 2002:a17:90a:32c8:: with SMTP id
+	l66mr4786640pjb.44.1569394218177; 
+	Tue, 24 Sep 2019 23:50:18 -0700 (PDT)
+Received: from xz-x1 ([209.132.188.80])
+	by smtp.gmail.com with ESMTPSA id u1sm3296193pgi.28.2019.09.24.23.50.13
 	(version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-	Tue, 24 Sep 2019 22:24:13 -0700 (PDT)
-Date: Wed, 25 Sep 2019 13:24:02 +0800
+	Tue, 24 Sep 2019 23:50:17 -0700 (PDT)
+Date: Wed, 25 Sep 2019 14:50:06 +0800
 From: Peter Xu <peterx@redhat.com>
-To: "Tian, Kevin" <kevin.tian@intel.com>
-Subject: Re: [RFC PATCH 2/4] iommu/vt-d: Add first level page table interfaces
-Message-ID: <20190925052402.GM28074@xz-x1>
+To: Lu Baolu <baolu.lu@linux.intel.com>
+Subject: Re: [RFC PATCH 4/4] iommu/vt-d: Identify domains using first level
+	page table
+Message-ID: <20190925065006.GN28074@xz-x1>
 References: <20190923122454.9888-1-baolu.lu@linux.intel.com>
-	<20190923122454.9888-3-baolu.lu@linux.intel.com>
-	<20190923203102.GB21816@araj-mobl1.jf.intel.com>
-	<9cfe6042-f0fb-ea5e-e134-f6f5bb9eb7b0@linux.intel.com>
-	<20190925043050.GK28074@xz-x1>
-	<AADFC41AFE54684AB9EE6CBC0274A5D19D58F018@SHSMSX104.ccr.corp.intel.com>
+	<20190923122454.9888-5-baolu.lu@linux.intel.com>
 MIME-Version: 1.0
 Content-Disposition: inline
-In-Reply-To: <AADFC41AFE54684AB9EE6CBC0274A5D19D58F018@SHSMSX104.ccr.corp.intel.com>
+In-Reply-To: <20190923122454.9888-5-baolu.lu@linux.intel.com>
 User-Agent: Mutt/1.11.4 (2019-03-13)
-Cc: Alex Williamson <alex.williamson@redhat.com>,
-	Yi Sun <yi.y.sun@linux.intel.com>, "Raj, Ashok" <ashok.raj@intel.com>,
-	"kvm@vger.kernel.org" <kvm@vger.kernel.org>, "Kumar,
-	Sanjay K" <sanjay.k.kumar@intel.com>,
-	"iommu@lists.linux-foundation.org" <iommu@lists.linux-foundation.org>,
-	"linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
-	"Sun, Yi Y" <yi.y.sun@intel.com>, David Woodhouse <dwmw2@infradead.org>
+Cc: kevin.tian@intel.com, Yi Sun <yi.y.sun@linux.intel.com>,
+	ashok.raj@intel.com, kvm@vger.kernel.org,
+	sanjay.k.kumar@intel.com, iommu@lists.linux-foundation.org,
+	linux-kernel@vger.kernel.org, Alex Williamson <alex.williamson@redhat.com>,
+	David Woodhouse <dwmw2@infradead.org>, yi.y.sun@intel.com
 X-BeenThere: iommu@lists.linux-foundation.org
 X-Mailman-Version: 2.1.12
 Precedence: list
@@ -101,30 +98,41 @@ Content-Transfer-Encoding: 7bit
 Sender: iommu-bounces@lists.linux-foundation.org
 Errors-To: iommu-bounces@lists.linux-foundation.org
 
-On Wed, Sep 25, 2019 at 04:38:31AM +0000, Tian, Kevin wrote:
-> > From: Peter Xu [mailto:peterx@redhat.com]
-> > Sent: Wednesday, September 25, 2019 12:31 PM
-> > 
-> > On Tue, Sep 24, 2019 at 09:38:53AM +0800, Lu Baolu wrote:
-> > > > > intel_mmmap_range(domain, addr, end, phys_addr, prot)
-> > > >
-> > > > Maybe think of a different name..? mmmap seems a bit weird :-)
-> > >
-> > > Yes. I don't like it either. I've thought about it and haven't
-> > > figured out a satisfied one. Do you have any suggestions?
-> > 
-> > How about at least split the word using "_"?  Like "mm_map", then
-> > apply it to all the "mmm*" prefixes.  Otherwise it'll be easily
-> > misread as mmap() which is totally irrelevant to this...
-> > 
-> 
-> what is the point of keeping 'mm' here? replace it with 'iommu'?
+On Mon, Sep 23, 2019 at 08:24:54PM +0800, Lu Baolu wrote:
+> +/*
+> + * Check and return whether first level is used by default for
+> + * DMA translation.
+> + */
+> +static bool first_level_by_default(void)
+> +{
+> +	struct dmar_drhd_unit *drhd;
+> +	struct intel_iommu *iommu;
+> +
+> +	rcu_read_lock();
+> +	for_each_active_iommu(iommu, drhd)
+> +		if (!sm_supported(iommu) ||
+> +		    !ecap_flts(iommu->ecap) ||
+> +		    !cap_caching_mode(iommu->cap))
+> +			return false;
+> +	rcu_read_unlock();
+> +
+> +	return true;
+> +}
 
-I'm not sure of what Baolu thought, but to me "mm" makes sense itself
-to identify this from real IOMMU page tables (because IIUC these will
-be MMU page tables).  We can come up with better names, but IMHO
-"iommu" can be a bit misleading to let people refer to the 2nd level
-page table.
+"If no caching mode, then we will not use 1st level."
+
+Hmm, does the vIOMMU needs to support caching-mode if with the
+solution you proposed here?  Caching mode is only necessary for
+shadowing AFAICT, and after all you're going to use full-nested,
+then... then I would think it's not needed.  And if so, with this
+patch 1st level will be disabled. Sounds like a paradox...
+
+I'm thinking what would be the big picture for this to work now: For
+the vIOMMU, instead of exposing the caching-mode, I'm thinking maybe
+we should expose it with ecap.FLTS=1 while we can keep ecap.SLTS=0
+then it's natural that we can only use 1st level translation in the
+guest for all the domains (and I assume such an ecap value should
+never happen on real hardware, am I right?).
 
 Regards,
 
