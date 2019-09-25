@@ -1,59 +1,65 @@
-Return-Path: <SRS0=VpBQ=XT=lists.linux-foundation.org=iommu-bounces@kernel.org>
+Return-Path: <SRS0=izs0=XU=lists.linux-foundation.org=iommu-bounces@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-9.7 required=3.0 tests=HEADER_FROM_DIFFERENT_DOMAINS,
-	INCLUDES_PATCH,MAILING_LIST_MULTI,SIGNED_OFF_BY,SPF_HELO_NONE,SPF_PASS,
-	URIBL_BLOCKED,USER_AGENT_GIT autolearn=unavailable autolearn_force=no
-	version=3.4.0
+X-Spam-Status: No, score=-2.2 required=3.0 tests=HEADER_FROM_DIFFERENT_DOMAINS,
+	MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED,USER_AGENT_SANE_1
+	autolearn=no autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id A7E5BC432C1
-	for <iommu@archiver.kernel.org>; Tue, 24 Sep 2019 19:38:15 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 13FA7C432C1
+	for <iommu@archiver.kernel.org>; Wed, 25 Sep 2019 02:50:44 +0000 (UTC)
 Received: from mail.linuxfoundation.org (mail.linuxfoundation.org [140.211.169.12])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by mail.kernel.org (Postfix) with ESMTPS id 872D7214AF
-	for <iommu@archiver.kernel.org>; Tue, 24 Sep 2019 19:38:15 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 872D7214AF
+	by mail.kernel.org (Postfix) with ESMTPS id CEC5F20673
+	for <iommu@archiver.kernel.org>; Wed, 25 Sep 2019 02:50:43 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org CEC5F20673
 Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=linux.intel.com
 Authentication-Results: mail.kernel.org; spf=pass smtp.mailfrom=iommu-bounces@lists.linux-foundation.org
 Received: from mail.linux-foundation.org (localhost [127.0.0.1])
-	by mail.linuxfoundation.org (Postfix) with ESMTP id 105D5CCB;
-	Tue, 24 Sep 2019 19:37:55 +0000 (UTC)
+	by mail.linuxfoundation.org (Postfix) with ESMTP id 99042C7C;
+	Wed, 25 Sep 2019 02:50:43 +0000 (UTC)
 Received: from smtp1.linuxfoundation.org (smtp1.linux-foundation.org
 	[172.17.192.35])
-	by mail.linuxfoundation.org (Postfix) with ESMTPS id 0E402CCB
+	by mail.linuxfoundation.org (Postfix) with ESMTPS id 21C21B8F
 	for <iommu@lists.linux-foundation.org>;
-	Tue, 24 Sep 2019 19:37:53 +0000 (UTC)
+	Wed, 25 Sep 2019 02:50:42 +0000 (UTC)
 X-Greylist: domain auto-whitelisted by SQLgrey-1.7.6
-Received: from mga01.intel.com (mga01.intel.com [192.55.52.88])
-	by smtp1.linuxfoundation.org (Postfix) with ESMTPS id A916A87D
+Received: from mga09.intel.com (mga09.intel.com [134.134.136.24])
+	by smtp1.linuxfoundation.org (Postfix) with ESMTPS id 0C38B8A
 	for <iommu@lists.linux-foundation.org>;
-	Tue, 24 Sep 2019 19:37:52 +0000 (UTC)
+	Wed, 25 Sep 2019 02:50:32 +0000 (UTC)
 X-Amp-Result: SKIPPED(no attachment in message)
 X-Amp-File-Uploaded: False
-Received: from fmsmga004.fm.intel.com ([10.253.24.48])
-	by fmsmga101.fm.intel.com with ESMTP/TLS/DHE-RSA-AES256-GCM-SHA384;
-	24 Sep 2019 12:37:45 -0700
+Received: from orsmga002.jf.intel.com ([10.7.209.21])
+	by orsmga102.jf.intel.com with ESMTP/TLS/DHE-RSA-AES256-GCM-SHA384;
+	24 Sep 2019 19:50:32 -0700
 X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.64,545,1559545200"; d="scan'208";a="213800081"
-Received: from black.fi.intel.com ([10.237.72.28])
-	by fmsmga004.fm.intel.com with ESMTP; 24 Sep 2019 12:37:43 -0700
-Received: by black.fi.intel.com (Postfix, from userid 1003)
-	id CEA331A1; Tue, 24 Sep 2019 22:37:42 +0300 (EEST)
-From: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
-To: Joerg Roedel <joro@8bytes.org>, iommu@lists.linux-foundation.org,
-	Adrian Hunter <adrian.hunter@intel.com>,
-	Ulf Hansson <ulf.hansson@linaro.org>, linux-mmc@vger.kernel.org,
-	"Rafael J. Wysocki" <rjw@rjwysocki.net>, linux-acpi@vger.kernel.org
-Subject: [PATCH v2 3/6] ACPI / utils: Introduce acpi_dev_hid_uid_match() helper
-Date: Tue, 24 Sep 2019 22:37:36 +0300
-Message-Id: <20190924193739.86133-4-andriy.shevchenko@linux.intel.com>
-X-Mailer: git-send-email 2.23.0
-In-Reply-To: <20190924193739.86133-1-andriy.shevchenko@linux.intel.com>
-References: <20190924193739.86133-1-andriy.shevchenko@linux.intel.com>
+X-IronPort-AV: E=Sophos;i="5.64,546,1559545200"; d="scan'208";a="201100050"
+Received: from allen-box.sh.intel.com (HELO [10.239.159.136])
+	([10.239.159.136])
+	by orsmga002.jf.intel.com with ESMTP; 24 Sep 2019 19:50:29 -0700
+Subject: Re: [RFC PATCH 0/4] Use 1st-level for DMA remapping in guest
+To: "Tian, Kevin" <kevin.tian@intel.com>, "Raj, Ashok" <ashok.raj@intel.com>, 
+	Jacob Pan <jacob.jun.pan@linux.intel.com>
+References: <20190923122454.9888-1-baolu.lu@linux.intel.com>
+	<20190923122715.53de79d0@jacob-builder>
+	<20190923202552.GA21816@araj-mobl1.jf.intel.com>
+	<AADFC41AFE54684AB9EE6CBC0274A5D19D58D1F1@SHSMSX104.ccr.corp.intel.com>
+From: Lu Baolu <baolu.lu@linux.intel.com>
+Message-ID: <dfd9b7a2-5553-328a-08eb-16c8a3a2644e@linux.intel.com>
+Date: Wed, 25 Sep 2019 10:48:32 +0800
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:60.0) Gecko/20100101
+	Thunderbird/60.8.0
 MIME-Version: 1.0
-Cc: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
+In-Reply-To: <AADFC41AFE54684AB9EE6CBC0274A5D19D58D1F1@SHSMSX104.ccr.corp.intel.com>
+Content-Language: en-US
+Cc: "kvm@vger.kernel.org" <kvm@vger.kernel.org>, "Kumar,
+	Sanjay K" <sanjay.k.kumar@intel.com>, "Sun, Yi Y" <yi.y.sun@intel.com>,
+	"iommu@lists.linux-foundation.org" <iommu@lists.linux-foundation.org>,
+	"linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
+	Alex Williamson <alex.williamson@redhat.com>,
+	David Woodhouse <dwmw2@infradead.org>
 X-BeenThere: iommu@lists.linux-foundation.org
 X-Mailman-Version: 2.1.12
 Precedence: list
@@ -66,92 +72,42 @@ List-Post: <mailto:iommu@lists.linux-foundation.org>
 List-Help: <mailto:iommu-request@lists.linux-foundation.org?subject=help>
 List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
 	<mailto:iommu-request@lists.linux-foundation.org?subject=subscribe>
-Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset="us-ascii"; Format="flowed"
 Sender: iommu-bounces@lists.linux-foundation.org
 Errors-To: iommu-bounces@lists.linux-foundation.org
 
-There are users outside of ACPI realm which reimplementing the comparator
-function to check if the given device matches to given HID and UID.
+Hi Kevin,
 
-For better utilization, introduce a helper for everyone to use.
+On 9/24/19 3:00 PM, Tian, Kevin wrote:
+>>>>       '-----------'
+>>>>       '-----------'
+>>>>
+>>>> This patch series only aims to achieve the first goal, a.k.a using
+> first goal? then what are other goals? I didn't spot such information.
+> 
 
-Signed-off-by: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
----
- drivers/acpi/utils.c    | 25 +++++++++++++++++++++++++
- include/acpi/acpi_bus.h |  2 ++
- include/linux/acpi.h    |  6 ++++++
- 3 files changed, 33 insertions(+)
+The overall goal is to use IOMMU nested mode to avoid shadow page table
+and VMEXIT when map an gIOVA. This includes below 4 steps (maybe not
+accurate, but you could get the point.)
 
-diff --git a/drivers/acpi/utils.c b/drivers/acpi/utils.c
-index dbd1c4cfd7d1..804ac0df58ec 100644
---- a/drivers/acpi/utils.c
-+++ b/drivers/acpi/utils.c
-@@ -701,6 +701,31 @@ bool acpi_check_dsm(acpi_handle handle, const guid_t *guid, u64 rev, u64 funcs)
- }
- EXPORT_SYMBOL(acpi_check_dsm);
- 
-+/**
-+ * acpi_dev_hid_uid_match - Match device by supplied HID and UID
-+ * @adev: ACPI device to match.
-+ * @hid2: Hardware ID of the device.
-+ * @uid2: Unique ID of the device, pass NULL to not check _UID.
-+ *
-+ * Matches HID and UID in @adev with given @hid2 and @uid2.
-+ * Returns true if matches.
-+ */
-+bool acpi_dev_hid_uid_match(struct acpi_device *adev,
-+			    const char *hid2, const char *uid2)
-+{
-+	const char *hid1 = acpi_device_hid(adev);
-+	const char *uid1 = acpi_device_uid(adev);
-+
-+	if (strcmp(hid1, hid2))
-+		return false;
-+
-+	if (!uid2)
-+		return true;
-+
-+	return uid1 && !strcmp(uid1, uid2);
-+}
-+EXPORT_SYMBOL(acpi_dev_hid_uid_match);
-+
- /**
-  * acpi_dev_found - Detect presence of a given ACPI device in the namespace.
-  * @hid: Hardware ID of the device.
-diff --git a/include/acpi/acpi_bus.h b/include/acpi/acpi_bus.h
-index 3f6fddeb7519..0c23fd0548d1 100644
---- a/include/acpi/acpi_bus.h
-+++ b/include/acpi/acpi_bus.h
-@@ -680,6 +680,8 @@ static inline bool acpi_device_can_poweroff(struct acpi_device *adev)
- 		adev->power.states[ACPI_STATE_D3_HOT].flags.explicit_set);
- }
- 
-+bool acpi_dev_hid_uid_match(struct acpi_device *adev, const char *hid2, const char *uid2);
-+
- struct acpi_device *
- acpi_dev_get_first_match_dev(const char *hid, const char *uid, s64 hrv);
- 
-diff --git a/include/linux/acpi.h b/include/linux/acpi.h
-index 9426b9aaed86..34778e4757fd 100644
---- a/include/linux/acpi.h
-+++ b/include/linux/acpi.h
-@@ -672,6 +672,12 @@ static inline bool acpi_dev_present(const char *hid, const char *uid, s64 hrv)
- 	return false;
- }
- 
-+static inline bool
-+acpi_dev_hid_uid_match(struct acpi_device *adev, const char *hid2, const char *uid2)
-+{
-+	return false;
-+}
-+
- static inline struct acpi_device *
- acpi_dev_get_first_match_dev(const char *hid, const char *uid, s64 hrv)
- {
--- 
-2.23.0
+1) GIOVA mappings over 1st-level page table;
+2) binding vIOMMU 1st level page table to the pIOMMU;
+3) using pIOMMU second level for GPA->HPA translation;
+4) enable nested (a.k.a. dual stage) translation in host.
 
+This patch set aims to achieve 1).
+
+> Also earlier you mentioned the new approach (nested) is more secure
+> than shadowing. why?
+> 
+
+My bad! After reconsideration, I realized that it's not "more secure".
+
+Thanks for pointing this out.
+
+Best regards,
+Baolu
 _______________________________________________
 iommu mailing list
 iommu@lists.linux-foundation.org
