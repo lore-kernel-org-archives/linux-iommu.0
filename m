@@ -7,82 +7,84 @@ X-Spam-Status: No, score=-8.0 required=3.0 tests=DKIM_INVALID,DKIM_SIGNED,
 	SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED,USER_AGENT_SANE_1 autolearn=ham
 	autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id AD88FC432C2
-	for <iommu@archiver.kernel.org>; Thu, 26 Sep 2019 06:41:48 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id A60C9C432C2
+	for <iommu@archiver.kernel.org>; Thu, 26 Sep 2019 06:48:09 +0000 (UTC)
 Received: from mail.linuxfoundation.org (mail.linuxfoundation.org [140.211.169.12])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by mail.kernel.org (Postfix) with ESMTPS id 7611F21A4A
-	for <iommu@archiver.kernel.org>; Thu, 26 Sep 2019 06:41:48 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTPS id 712FE222BE
+	for <iommu@archiver.kernel.org>; Thu, 26 Sep 2019 06:48:09 +0000 (UTC)
 Authentication-Results: mail.kernel.org;
-	dkim=fail reason="signature verification failed" (1024-bit key) header.d=redhat.com header.i=@redhat.com header.b="KTDlYXz2"
-DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 7611F21A4A
+	dkim=fail reason="signature verification failed" (1024-bit key) header.d=redhat.com header.i=@redhat.com header.b="h2Jq8rhk"
+DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 712FE222BE
 Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=redhat.com
 Authentication-Results: mail.kernel.org; spf=pass smtp.mailfrom=iommu-bounces@lists.linux-foundation.org
 Received: from mail.linux-foundation.org (localhost [127.0.0.1])
-	by mail.linuxfoundation.org (Postfix) with ESMTP id 3E8F9B7D;
-	Thu, 26 Sep 2019 06:41:48 +0000 (UTC)
+	by mail.linuxfoundation.org (Postfix) with ESMTP id 2DFC1B7D;
+	Thu, 26 Sep 2019 06:48:09 +0000 (UTC)
 Received: from smtp1.linuxfoundation.org (smtp1.linux-foundation.org
 	[172.17.192.35])
-	by mail.linuxfoundation.org (Postfix) with ESMTPS id 717CF941
+	by mail.linuxfoundation.org (Postfix) with ESMTPS id 3FBD5941
 	for <iommu@lists.linux-foundation.org>;
-	Thu, 26 Sep 2019 06:41:47 +0000 (UTC)
+	Thu, 26 Sep 2019 06:48:08 +0000 (UTC)
 X-Greylist: domain auto-whitelisted by SQLgrey-1.7.6
-Received: from us-smtp-1.mimecast.com (us-smtp-2.mimecast.com [205.139.110.61])
-	by smtp1.linuxfoundation.org (Postfix) with ESMTP id E18858D
+Received: from us-smtp-1.mimecast.com (us-smtp-delivery-1.mimecast.com
+	[205.139.110.120])
+	by smtp1.linuxfoundation.org (Postfix) with ESMTP id 99F058D
 	for <iommu@lists.linux-foundation.org>;
-	Thu, 26 Sep 2019 06:41:46 +0000 (UTC)
+	Thu, 26 Sep 2019 06:48:07 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-	s=mimecast20190719; t=1569480105;
+	s=mimecast20190719; t=1569480486;
 	h=from:from:reply-to:reply-to:subject:subject:date:date:
 	message-id:message-id:to:to:cc:cc:mime-version:mime-version:
 	content-type:content-type:
 	content-transfer-encoding:content-transfer-encoding:
 	in-reply-to:in-reply-to:references:references;
-	bh=cdl1HGwvODnvSpwLDBUlDn2a4UEfKz3QZ/NK2LE4NIE=;
-	b=KTDlYXz2veRP9v4AbP1VpFZM/iRxf55XzqdRm/HRH4N9qSPUkjKBvtBrv3i5FHcJHu6Ehu
-	vggl7w3JNebziwCRu34+lr0/NMuKTcLFEjhTOad8ITvVJJpNPKbD2C7vz36NIAVnwHILTi
-	Ix8+2b1u4nrZ0NbLLiTqKNkzJ+b09Us=
-Received: from mail-io1-f70.google.com (mail-io1-f70.google.com
-	[209.85.166.70]) (Using TLS) by relay.mimecast.com with ESMTP id
-	us-mta-26-elrk3Mj6PT6rlVUos3PpHQ-1; Thu, 26 Sep 2019 02:41:41 -0400
-Received: by mail-io1-f70.google.com with SMTP id u18so2817064ioc.4
+	bh=n6CUXrWr4mCPGYCq+cJLTlwJMgS1vQs/FCrBmY/MsK4=;
+	b=h2Jq8rhk49WrD0cQYUJTxRYN+zitMEHTR/m8bXpCYRRLQr5GlixIdHqh8+QEXoX7PKET4J
+	ABnPrr4NJJ4MLPpdlLEGudPOECckre6V9YhRAmfkDQQ5x9v+eiYA6uF96XpbzvGQclU1jG
+	KyapgmXNqkMpLdR04nAPcPbaqlNohl8=
+Received: from mail-io1-f72.google.com (mail-io1-f72.google.com
+	[209.85.166.72]) (Using TLS) by relay.mimecast.com with ESMTP id
+	us-mta-124-V67IaLQaPV-85I7sm3zzKQ-1; Thu, 26 Sep 2019 02:48:04 -0400
+Received: by mail-io1-f72.google.com with SMTP id i2so2804917ioo.10
 	for <iommu@lists.linux-foundation.org>;
-	Wed, 25 Sep 2019 23:41:41 -0700 (PDT)
+	Wed, 25 Sep 2019 23:48:04 -0700 (PDT)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
 	d=1e100.net; s=20161025;
 	h=x-gm-message-state:date:from:to:cc:subject:message-id:reply-to
 	:references:mime-version:content-disposition:in-reply-to:user-agent;
-	bh=Ocy/BNPLMTqOEMeUFdKC8+8ilERJhw6D3aLwzJPoSDk=;
-	b=um2hbLgHI9PiupmLpHftmG2XPsp1FEY/EFEjysHmcmssPM0wbgb0p2tJEiTfbYoDg7
-	od5udvmNDV8OfYT+d7d1c74TJICl02oXM7ArAk5lPVOmT4MpcJc+GrgfvGiixyvB9f20
-	jlBNuSpL02lJAktWjepOzcDWhv7JlvLOwhv1Dd/uX5xm1dXEkNS8ZW4TNB0tOAOHBjo1
-	oRdkbhJHtB8dko2pyX3fMBb6xyygsYq5R+ld9rdd9DoEJ+EfJ2gNdrj2f9U1FkFJpwdV
-	/CU3N75UYhYoASy+qaXziQkVFph+LtcjhBfG8B2W6W3Di+JD0Maf1CuG4ovV2L6wcGhU
-	he8w==
-X-Gm-Message-State: APjAAAUKhjheDzf6X0fHF+Mo093lH+7u3PZ6GIj1EKbOUhE762MhNS+E
-	dBvyucAo5sRGuyFQbgPTLjZp6tiYdWSZdGHpHT+0rhKbpXuB5YVvyKKfVnlhJd0hNaScWfHmrYt
-	VEnGPymvFj0sU0xTm4DSDHsY6QlPrCg==
-X-Received: by 2002:a02:b156:: with SMTP id s22mr2201668jah.102.1569480101348; 
-	Wed, 25 Sep 2019 23:41:41 -0700 (PDT)
-X-Google-Smtp-Source: APXvYqzMAydh5zJla2DIRtUr8J9UKZ3dVBD6fGWa+Z3EwvVdpOipANdfqRJD5HNeuz7D2zOrZfO4WQ==
-X-Received: by 2002:a02:b156:: with SMTP id s22mr2201646jah.102.1569480100745; 
-	Wed, 25 Sep 2019 23:41:40 -0700 (PDT)
+	bh=ZSm7lrM/XD7oxHr83AfSfhbwTzHXmHDlDYOIH9PCddk=;
+	b=cxPy/wF7ZEUEnlGxyO0rkev9yQS+soAFGrXxw+yEN1r+94wz6dmw/N6CD7siyJL18Q
+	g4k2KuTIZ6/WxlAd9dvHrO7hjoIkgRS/ecKCAlrM4v35meuCsz36qvTKhQBUpR4zWIZp
+	UzEMuIOYdx6UERtpQSPA862xyfuuZS41KprfOXeIT+Vv2+Wmv+1OsIOrOwwlBu5WPqbu
+	k1gw/PP1lolLRpgSrd0rmygPM9Vp6Jd0S7GNL0v0y89dciTMM6YbqQ99kt4LpDF2EODS
+	AtgffLTVHr1Gowc9C20dDil/2bmsaZPtTkheDdJHp5bTqm0bMXlSOi0xsfgRVNBDjidv
+	ZYjg==
+X-Gm-Message-State: APjAAAVccq+gn1+Wua3DPUrWNkSQrERfGuhUdffAgATkkfuZZD+tGHCb
+	sHxr8lmEtRMU2nkyVFVwOrVaCiwkos64tVRx1vhfUs3SBE+Mt8wE7C3XHUqTxm9fnLCyLl05D+j
+	+XG2FS6jexqEQy/A5kvIg7YwnhQC+nQ==
+X-Received: by 2002:a92:5e02:: with SMTP id s2mr947981ilb.144.1569480484364;
+	Wed, 25 Sep 2019 23:48:04 -0700 (PDT)
+X-Google-Smtp-Source: APXvYqwJSRja6VCsS2ybSJHa0Z8SqncAf8TuDMbL2bTwto/aV25QFNo1lNdMDE8p05XJtTsG1lJVjw==
+X-Received: by 2002:a92:5e02:: with SMTP id s2mr947971ilb.144.1569480484094;
+	Wed, 25 Sep 2019 23:48:04 -0700 (PDT)
 Received: from localhost (ip70-163-223-149.ph.ph.cox.net. [70.163.223.149])
-	by smtp.gmail.com with ESMTPSA id b26sm313635ilb.12.2019.09.25.23.41.39
+	by smtp.gmail.com with ESMTPSA id o66sm333473ili.45.2019.09.25.23.48.02
 	(version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-	Wed, 25 Sep 2019 23:41:39 -0700 (PDT)
-Date: Wed, 25 Sep 2019 23:41:38 -0700
+	Wed, 25 Sep 2019 23:48:03 -0700 (PDT)
+Date: Wed, 25 Sep 2019 23:48:01 -0700
 From: Jerry Snitselaar <jsnitsel@redhat.com>
 To: Joerg Roedel <joro@8bytes.org>
-Subject: Re: [PATCH 5/6] iommu/amd: Lock dev_data in attach/detach code paths
-Message-ID: <20190926064138.numemgo2qc4nch2o@cantor>
+Subject: Re: [PATCH 6/6] iommu/amd: Lock code paths traversing
+	protection_domain->dev_list
+Message-ID: <20190926064801.ipdx4g3f34h4heuz@cantor>
 References: <20190925132300.3038-1-joro@8bytes.org>
-	<20190925132300.3038-6-joro@8bytes.org>
+	<20190925132300.3038-7-joro@8bytes.org>
 MIME-Version: 1.0
-In-Reply-To: <20190925132300.3038-6-joro@8bytes.org>
+In-Reply-To: <20190925132300.3038-7-joro@8bytes.org>
 User-Agent: NeoMutt/20180716
-X-MC-Unique: elrk3Mj6PT6rlVUos3PpHQ-1
+X-MC-Unique: V67IaLQaPV-85I7sm3zzKQ-1
 X-Mimecast-Spam-Score: 0
 Content-Disposition: inline
 Cc: Filippo Sironi <sironi@amazon.de>, iommu@lists.linux-foundation.org,
@@ -108,79 +110,107 @@ Errors-To: iommu-bounces@lists.linux-foundation.org
 On Wed Sep 25 19, Joerg Roedel wrote:
 >From: Joerg Roedel <jroedel@suse.de>
 >
->Make sure that attaching a detaching a device can't race against each
->other and protect the iommu_dev_data with a spin_lock in these code
->paths.
+>The traversing of this list requires protection_domain->lock to be taken
+>to avoid nasty races with attach/detach code. Make sure the lock is held
+>on all code-paths traversing this list.
 >
+>Reported-by: Filippo Sironi <sironi@amazon.de>
 >Fixes: 92d420ec028d ("iommu/amd: Relax locking in dma_ops path")
 >Signed-off-by: Joerg Roedel <jroedel@suse.de>
 >---
-> drivers/iommu/amd_iommu.c       | 9 +++++++++
-> drivers/iommu/amd_iommu_types.h | 3 +++
-> 2 files changed, 12 insertions(+)
+> drivers/iommu/amd_iommu.c | 25 ++++++++++++++++++++++++-
+> 1 file changed, 24 insertions(+), 1 deletion(-)
 >
 >diff --git a/drivers/iommu/amd_iommu.c b/drivers/iommu/amd_iommu.c
->index 459247c32dc0..bac4e20a5919 100644
+>index bac4e20a5919..9c26976a0f99 100644
 >--- a/drivers/iommu/amd_iommu.c
 >+++ b/drivers/iommu/amd_iommu.c
->@@ -201,6 +201,7 @@ static struct iommu_dev_data *alloc_dev_data(u16 devid)
-> 	if (!dev_data)
-> 		return NULL;
->
->+	spin_lock_init(&dev_data->lock);
-> 	dev_data->devid = devid;
-> 	ratelimit_default_init(&dev_data->rs);
->
->@@ -2157,6 +2158,8 @@ static int attach_device(struct device *dev,
->
-> 	dev_data = get_dev_data(dev);
->
->+	spin_lock(&dev_data->lock);
+>@@ -1334,8 +1334,12 @@ static void domain_flush_np_cache(struct protection_domain *domain,
+> 		dma_addr_t iova, size_t size)
+> {
+> 	if (unlikely(amd_iommu_np_cache)) {
+>+		unsigned long flags;
 >+
-> 	ret = -EBUSY;
-> 	if (dev_data->domain != NULL)
-> 		goto out;
->@@ -2199,6 +2202,8 @@ static int attach_device(struct device *dev,
-> 	domain_flush_complete(domain);
->
-> out:
->+	spin_unlock(&dev_data->lock);
->+
-> 	spin_unlock_irqrestore(&domain->lock, flags);
->
-> 	return ret;
->@@ -2218,6 +2223,8 @@ static void detach_device(struct device *dev)
->
-> 	spin_lock_irqsave(&domain->lock, flags);
->
->+	spin_lock(&dev_data->lock);
->+
-> 	/*
-> 	 * First check if the device is still attached. It might already
-> 	 * be detached from its domain because the generic
->@@ -2240,6 +2247,8 @@ static void detach_device(struct device *dev)
-> 	dev_data->ats.enabled = false;
->
-> out:
->+	spin_unlock(&dev_data->lock);
->+
-> 	spin_unlock_irqrestore(&domain->lock, flags);
+>+		spin_lock_irqsave(&domain->lock, flags);
+> 		domain_flush_pages(domain, iova, size);
+> 		domain_flush_complete(domain);
+>+		spin_unlock_irqrestore(&domain->lock, flags);
+> 	}
 > }
 >
->diff --git a/drivers/iommu/amd_iommu_types.h b/drivers/iommu/amd_iommu_types.h
->index 0186501ab971..c9c1612d52e0 100644
->--- a/drivers/iommu/amd_iommu_types.h
->+++ b/drivers/iommu/amd_iommu_types.h
->@@ -633,6 +633,9 @@ struct devid_map {
->  * This struct contains device specific data for the IOMMU
->  */
-> struct iommu_dev_data {
->+	/*Protect against attach/detach races */
->+	spinlock_t lock;
+>@@ -1700,8 +1704,13 @@ static int iommu_map_page(struct protection_domain *dom,
+> 	ret = 0;
+>
+> out:
+>-	if (updated)
+>+	if (updated) {
+>+		unsigned long flags;
 >+
-> 	struct list_head list;		  /* For domain->dev_list */
-> 	struct llist_node dev_data_list;  /* For global dev_data_list */
-> 	struct protection_domain *domain; /* Domain the device is bound to */
+>+		spin_lock_irqsave(&dom->lock, flags);
+> 		update_domain(dom);
+>+		spin_unlock_irqrestore(&dom->lock, flags);
+>+	}
+>
+> 	/* Everything flushed out, free pages now */
+> 	free_page_list(freelist);
+>@@ -1857,8 +1866,12 @@ static void free_gcr3_table(struct protection_domain *domain)
+>
+> static void dma_ops_domain_flush_tlb(struct dma_ops_domain *dom)
+> {
+>+	unsigned long flags;
+>+
+>+	spin_lock_irqsave(&dom->domain.lock, flags);
+> 	domain_flush_tlb(&dom->domain);
+> 	domain_flush_complete(&dom->domain);
+>+	spin_unlock_irqrestore(&dom->domain.lock, flags);
+> }
+>
+> static void iova_domain_flush_tlb(struct iova_domain *iovad)
+>@@ -2414,6 +2427,7 @@ static dma_addr_t __map_single(struct device *dev,
+> {
+> 	dma_addr_t offset = paddr & ~PAGE_MASK;
+> 	dma_addr_t address, start, ret;
+>+	unsigned long flags;
+> 	unsigned int pages;
+> 	int prot = 0;
+> 	int i;
+>@@ -2451,8 +2465,10 @@ static dma_addr_t __map_single(struct device *dev,
+> 		iommu_unmap_page(&dma_dom->domain, start, PAGE_SIZE);
+> 	}
+>
+>+	spin_lock_irqsave(&dma_dom->domain.lock, flags);
+> 	domain_flush_tlb(&dma_dom->domain);
+> 	domain_flush_complete(&dma_dom->domain);
+>+	spin_unlock_irqrestore(&dma_dom->domain.lock, flags);
+>
+> 	dma_ops_free_iova(dma_dom, address, pages);
+>
+>@@ -2481,8 +2497,12 @@ static void __unmap_single(struct dma_ops_domain *dma_dom,
+> 	}
+>
+> 	if (amd_iommu_unmap_flush) {
+>+		unsigned long flags;
+>+
+>+		spin_lock_irqsave(&dma_dom->domain.lock, flags);
+> 		domain_flush_tlb(&dma_dom->domain);
+> 		domain_flush_complete(&dma_dom->domain);
+>+		spin_unlock_irqrestore(&dma_dom->domain.lock, flags);
+> 		dma_ops_free_iova(dma_dom, dma_addr, pages);
+> 	} else {
+> 		pages = __roundup_pow_of_two(pages);
+>@@ -3246,9 +3266,12 @@ static bool amd_iommu_is_attach_deferred(struct iommu_domain *domain,
+> static void amd_iommu_flush_iotlb_all(struct iommu_domain *domain)
+> {
+> 	struct protection_domain *dom = to_pdomain(domain);
+>+	unsigned long flags;
+>
+>+	spin_lock_irqsave(&dom->lock, flags);
+> 	domain_flush_tlb_pde(dom);
+> 	domain_flush_complete(dom);
+>+	spin_unlock_irqrestore(&dom->lock, flags);
+> }
+>
+> static void amd_iommu_iotlb_sync(struct iommu_domain *domain,
 >-- 
 >2.17.1
 >
