@@ -2,85 +2,96 @@ Return-Path: <SRS0=V6zV=XV=lists.linux-foundation.org=iommu-bounces@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-9.4 required=3.0 tests=DKIM_ADSP_CUSTOM_MED,
-	DKIM_INVALID,DKIM_SIGNED,FREEMAIL_FORGED_FROMDOMAIN,FREEMAIL_FROM,
-	HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_PATCH,MAILING_LIST_MULTI,SIGNED_OFF_BY,
-	SPF_HELO_NONE,SPF_PASS,USER_AGENT_GIT autolearn=unavailable
-	autolearn_force=no version=3.4.0
+X-Spam-Status: No, score=-2.2 required=3.0 tests=HEADER_FROM_DIFFERENT_DOMAINS,
+	MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED,USER_AGENT_SANE_2
+	autolearn=no autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 5FF21C4360C
-	for <iommu@archiver.kernel.org>; Thu, 26 Sep 2019 12:28:35 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id D4681C4360C
+	for <iommu@archiver.kernel.org>; Thu, 26 Sep 2019 12:37:57 +0000 (UTC)
 Received: from mail.linuxfoundation.org (mail.linuxfoundation.org [140.211.169.12])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by mail.kernel.org (Postfix) with ESMTPS id 317A4207FF
-	for <iommu@archiver.kernel.org>; Thu, 26 Sep 2019 12:28:35 +0000 (UTC)
-Authentication-Results: mail.kernel.org;
-	dkim=fail reason="signature verification failed" (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="V3NuFBWS"
-DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 317A4207FF
-Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=gmail.com
+	by mail.kernel.org (Postfix) with ESMTPS id ABBBF21655
+	for <iommu@archiver.kernel.org>; Thu, 26 Sep 2019 12:37:57 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org ABBBF21655
+Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=linux.ibm.com
 Authentication-Results: mail.kernel.org; spf=pass smtp.mailfrom=iommu-bounces@lists.linux-foundation.org
 Received: from mail.linux-foundation.org (localhost [127.0.0.1])
-	by mail.linuxfoundation.org (Postfix) with ESMTP id 1163C129B;
-	Thu, 26 Sep 2019 12:28:10 +0000 (UTC)
+	by mail.linuxfoundation.org (Postfix) with ESMTP id 5E8661183;
+	Thu, 26 Sep 2019 12:37:57 +0000 (UTC)
 Received: from smtp1.linuxfoundation.org (smtp1.linux-foundation.org
 	[172.17.192.35])
-	by mail.linuxfoundation.org (Postfix) with ESMTPS id 74F591187
+	by mail.linuxfoundation.org (Postfix) with ESMTPS id 1D858B65
 	for <iommu@lists.linux-foundation.org>;
-	Thu, 26 Sep 2019 12:05:34 +0000 (UTC)
-X-Greylist: whitelisted by SQLgrey-1.7.6
-Received: from mail-wm1-f65.google.com (mail-wm1-f65.google.com
-	[209.85.128.65])
-	by smtp1.linuxfoundation.org (Postfix) with ESMTPS id C4AAE8A
+	Thu, 26 Sep 2019 12:37:57 +0000 (UTC)
+X-Greylist: domain auto-whitelisted by SQLgrey-1.7.6
+Received: from mx0a-001b2d01.pphosted.com (mx0b-001b2d01.pphosted.com
+	[148.163.158.5])
+	by smtp1.linuxfoundation.org (Postfix) with ESMTPS id 908BA108
 	for <iommu@lists.linux-foundation.org>;
-	Thu, 26 Sep 2019 12:05:25 +0000 (UTC)
-Received: by mail-wm1-f65.google.com with SMTP id 7so2472350wme.1
-	for <iommu@lists.linux-foundation.org>;
-	Thu, 26 Sep 2019 05:05:25 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=gmail.com; s=20161025;
-	h=from:to:cc:subject:date:message-id:in-reply-to:references
-	:mime-version:content-transfer-encoding;
-	bh=5nnUa/Si31PTL5dtLPgVx571em/1pS4POdS50m/K5Ds=;
-	b=V3NuFBWSJu7xEOXvNeF1piDC1tlhTyi/vK910RcpaIn2zWhzeot+1ei2FnYv/f8kUc
-	O51NoIb3sNyHPDnj2zFTngZV4r0wlHwtfZfS/zJh215Lo59zpCTx+TJPKF8fZZJgcaDQ
-	NPBXBb7qQfi3xh+kR/2S7NP+/KLKLQuNqiLkwiAA8KDB/vI1G5TlAt4L4LhmgCoDJQ7a
-	q27OGxllJCBRf17t3tZUniq/synG/txoGSkUk99LRK15yDnSF7vE8Le21lz/QUpuZdN7
-	1TchS1eGR80KMNFnhLZRl+hu1QKnkVrMKlz0MURq8KGXiWe/tMrPFeOghvdGlOf1myAg
-	IWNw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-	d=1e100.net; s=20161025;
-	h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
-	:references:mime-version:content-transfer-encoding;
-	bh=5nnUa/Si31PTL5dtLPgVx571em/1pS4POdS50m/K5Ds=;
-	b=ZXw8ij00QpdJ+yNH3AHk2Hj0gY5xn9giKsDf80yWDzVzDCtEMo1d0gA65av/ROp5qp
-	w1yP2Z9k5zdWJKjT5UWTTBVDpc4hIjWIlv/RBpMAR1s0PbMjslaCH9iqD1UAgzo5TTpk
-	V2M5cuPcefoKxSSuAMtEqORI6gStbPewyycNQ4aRmWGrwBtzbIvn9F4xNVEv4WYwmkCt
-	7STqVdrlC44LwV0IBYAxAOXvJEn1/lVgCFPpOunKUo+V7TS8tjqkEqAvb/Lu7qYem6CP
-	mA0zSUmLrOF+SjdJZdoTnzw7OSdcqZwcHshXcnrZUV97wHF69jYXPtEOvL0YOVgSYHqD
-	9yNQ==
-X-Gm-Message-State: APjAAAW2xRspHNeewfsyiuG5cwPlYjvlin31m0kD+cH5t49nM0d17mhu
-	NOFXwSBcNYKEe3G21DwdEzA=
-X-Google-Smtp-Source: APXvYqyEWOYPa4keiWseUvTvM6yh5wlL+BUNL3hKBl65XKnCQR456P4dLtJCZ7AfGFBeADHVgB350g==
-X-Received: by 2002:a7b:cb08:: with SMTP id u8mr2934851wmj.6.1569499524282;
-	Thu, 26 Sep 2019 05:05:24 -0700 (PDT)
-Received: from IcarusMOD.eternityproject.eu ([93.51.16.173])
-	by smtp.gmail.com with ESMTPSA id
-	d193sm5289584wmd.0.2019.09.26.05.05.23
-	(version=TLS1_2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128/128);
-	Thu, 26 Sep 2019 05:05:23 -0700 (PDT)
-From: kholk11@gmail.com
-To: linux-arm-msm@vger.kernel.org
-Subject: [PATCH 6/6] iommu/qcom: Add support for QCIOMMUv2 and QCIOMMU-500
-	secured contexts
-Date: Thu, 26 Sep 2019 14:05:16 +0200
-Message-Id: <20190926120516.4981-7-kholk11@gmail.com>
-X-Mailer: git-send-email 2.21.0
-In-Reply-To: <20190926120516.4981-1-kholk11@gmail.com>
-References: <20190926120516.4981-1-kholk11@gmail.com>
+	Thu, 26 Sep 2019 12:37:55 +0000 (UTC)
+Received: from pps.filterd (m0098416.ppops.net [127.0.0.1])
+	by mx0b-001b2d01.pphosted.com (8.16.0.27/8.16.0.27) with SMTP id
+	x8QCYpI4042579
+	for <iommu@lists.linux-foundation.org>; Thu, 26 Sep 2019 08:37:54 -0400
+Received: from e06smtp05.uk.ibm.com (e06smtp05.uk.ibm.com [195.75.94.101])
+	by mx0b-001b2d01.pphosted.com with ESMTP id 2v8ud067cq-1
+	(version=TLSv1.2 cipher=AES256-GCM-SHA384 bits=256 verify=NOT)
+	for <iommu@lists.linux-foundation.org>; Thu, 26 Sep 2019 08:37:54 -0400
+Received: from localhost
+	by e06smtp05.uk.ibm.com with IBM ESMTP SMTP Gateway: Authorized Use
+	Only! Violators will be prosecuted
+	for <iommu@lists.linux-foundation.org> from <pasic@linux.ibm.com>;
+	Thu, 26 Sep 2019 13:37:51 +0100
+Received: from b06avi18878370.portsmouth.uk.ibm.com (9.149.26.194)
+	by e06smtp05.uk.ibm.com (192.168.101.135) with IBM ESMTP SMTP Gateway:
+	Authorized Use Only! Violators will be prosecuted; 
+	(version=TLSv1/SSLv3 cipher=AES256-GCM-SHA384 bits=256/256)
+	Thu, 26 Sep 2019 13:37:48 +0100
+Received: from d06av21.portsmouth.uk.ibm.com (d06av21.portsmouth.uk.ibm.com
+	[9.149.105.232])
+	by b06avi18878370.portsmouth.uk.ibm.com (8.14.9/8.14.9/NCO v10.0) with
+	ESMTP id x8QCblR030081378
+	(version=TLSv1/SSLv3 cipher=DHE-RSA-AES256-GCM-SHA384 bits=256
+	verify=OK); Thu, 26 Sep 2019 12:37:47 GMT
+Received: from d06av21.portsmouth.uk.ibm.com (unknown [127.0.0.1])
+	by IMSVA (Postfix) with ESMTP id 2DB7C5204F;
+	Thu, 26 Sep 2019 12:37:47 +0000 (GMT)
+Received: from oc2783563651 (unknown [9.152.224.110])
+	by d06av21.portsmouth.uk.ibm.com (Postfix) with ESMTP id B682D5204E;
+	Thu, 26 Sep 2019 12:37:46 +0000 (GMT)
+Date: Thu, 26 Sep 2019 14:37:45 +0200
+From: Halil Pasic <pasic@linux.ibm.com>
+To: Christoph Hellwig <hch@lst.de>
+Subject: Re: [RFC PATCH 1/3] dma-mapping: make overriding GFP_* flags arch
+	customizable
+In-Reply-To: <20190923152117.GA2767@lst.de>
+References: <20190923123418.22695-1-pasic@linux.ibm.com>
+	<20190923123418.22695-2-pasic@linux.ibm.com>
+	<20190923152117.GA2767@lst.de>
+Organization: IBM
+X-Mailer: Claws Mail 3.11.1 (GTK+ 2.24.31; x86_64-redhat-linux-gnu)
 MIME-Version: 1.0
-X-Mailman-Approved-At: Thu, 26 Sep 2019 12:28:08 +0000
-Cc: marijns95@gmail.com, iommu@lists.linux-foundation.org, agross@kernel.org,
-	AngeloGioacchino Del Regno <kholk11@gmail.com>
+X-TM-AS-GCONF: 00
+x-cbid: 19092612-0020-0000-0000-00000371F6A1
+X-IBM-AV-DETECTION: SAVI=unused REMOTE=unused XFE=unused
+x-cbparentid: 19092612-0021-0000-0000-000021C7C21D
+Message-Id: <20190926143745.68bdd082.pasic@linux.ibm.com>
+X-Proofpoint-Virus-Version: vendor=fsecure engine=2.50.10434:, ,
+	definitions=2019-09-26_06:, , signatures=0
+X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0
+	priorityscore=1501
+	malwarescore=0 suspectscore=0 phishscore=0 bulkscore=0 spamscore=0
+	clxscore=1015 lowpriorityscore=0 mlxscore=0 impostorscore=0
+	mlxlogscore=999 adultscore=0 classifier=spam adjust=0 reason=mlx
+	scancount=1 engine=8.0.1-1908290000 definitions=main-1909260119
+Cc: linux-s390@vger.kernel.org, Janosch Frank <frankja@linux.ibm.com>,
+	Vasily Gorbik <gor@linux.ibm.com>, Cornelia Huck <cohuck@redhat.com>,
+	Heiko Carstens <heiko.carstens@de.ibm.com>,
+	Peter Oberparleiter <oberpar@linux.ibm.com>, linux-kernel@vger.kernel.org,
+	Christian Borntraeger <borntraeger@de.ibm.com>,
+	iommu@lists.linux-foundation.org,
+	Gerald Schaefer <gerald.schaefer@de.ibm.com>
 X-BeenThere: iommu@lists.linux-foundation.org
 X-Mailman-Version: 2.1.12
 Precedence: list
@@ -98,109 +109,44 @@ Content-Transfer-Encoding: 7bit
 Sender: iommu-bounces@lists.linux-foundation.org
 Errors-To: iommu-bounces@lists.linux-foundation.org
 
-From: AngeloGioacchino Del Regno <kholk11@gmail.com>
+On Mon, 23 Sep 2019 17:21:17 +0200
+Christoph Hellwig <hch@lst.de> wrote:
 
-This IOMMU is yet another Qualcomm variant of known IOMMUs, found in
-Family-B SoCs, such as MSM8956, MSM8976, MSM8953, MSM8917 and others,
-and that firmware perfectly adheres to this driver logic.
-This time, though, the catch is that the secure contexts are also
-secured, meaning that these are programmed by the bootloader or TZ
-and their "interesting" registers are locked out, so the hypervisor
-disallows touching them from the non-secure world: in this case
-the OS is supposed to blindly trust the secure configuration of
-these contexts and just use them "as they are".
+> On Mon, Sep 23, 2019 at 02:34:16PM +0200, Halil Pasic wrote:
+> > Before commit 57bf5a8963f8 ("dma-mapping: clear harmful GFP_* flags in
+> > common code") tweaking the client code supplied GFP_* flags used to be
+> > an issue handled in the architecture specific code. The commit message
+> > suggests, that fixing the client code would actually be a better way
+> > of dealing with this.
+> > 
+> > On s390 common I/O devices are generally capable of using the full 64
+> > bit address space for DMA I/O, but some chunks of the DMA memory need to
+> > be 31 bit addressable (in physical address space) because the
+> > instructions involved mandate it. Before switching to DMA API this used
+> > to be a non-issue, we used to allocate those chunks from ZONE_DMA.
+> > Currently our only option with the DMA API is to restrict the devices to
+> > (via dma_mask and dma_mask_coherent) to 31 bit, which is sub-optimal.
+> > 
+> > Thus s390 we would benefit form having control over what flags are
+> > dropped.
+> 
+> No way, sorry.  You need to express that using a dma mask instead of
+> overloading the GFP flags.
 
-For this reason, it is necessary to distinguish between the v1 and
-500/v2 secure contexts in this driver in order to adhere to this
-specification. To do this, add a new DT compatible, named
-"qcom,msm-iommu-v2-sec" that will trigger the new behavior.
+Thanks for your feedback and sorry for the delay. Can you help me figure
+out how can I express that using a dma mask? 
 
-For the sake of completeness, also add a "qcom,msm-iommu-v2-ns" so
-that the human eye gets pleased with it when reading the contexts
-in the final SoC DT. Of course, the latter is just cosmetic.
+IMHO what you ask from me is frankly impossible.
 
-Signed-off-by: AngeloGioacchino Del Regno <kholk11@gmail.com>
----
- .../devicetree/bindings/iommu/qcom,iommu.txt  |  2 ++
- drivers/iommu/qcom_iommu.c                    | 19 +++++++++++++++++--
- 2 files changed, 19 insertions(+), 2 deletions(-)
+What I need is the ability to ask for  (considering the physical
+address) 31 bit addressable DMA memory if the chunk is supposed to host
+control-type data that needs to be 31 bit addressable because that is
+how the architecture is, without affecting the normal data-path. So
+normally 64 bit mask is fine but occasionally (control) we would need
+a 31 bit mask.
 
-diff --git a/Documentation/devicetree/bindings/iommu/qcom,iommu.txt b/Documentation/devicetree/bindings/iommu/qcom,iommu.txt
-index a4dd76b8c566..44676d3221d5 100644
---- a/Documentation/devicetree/bindings/iommu/qcom,iommu.txt
-+++ b/Documentation/devicetree/bindings/iommu/qcom,iommu.txt
-@@ -36,6 +36,8 @@ to non-secure vs secure interrupt line.
-   - compatible     : Should be one of:
-         - "qcom,msm-iommu-v1-ns"  : non-secure context bank
-         - "qcom,msm-iommu-v1-sec" : secure context bank
-+        - "qcom,msm-iommu-v2-ns"  : non-secure QSMMUv2/QSMMU500 context bank
-+        - "qcom,msm-iommu-v2-sec" : secure QSMMUv2/QSMMU500 context bank
-   - reg            : Base address and size of context bank within the iommu
-   - interrupts     : The context fault irq.
-   - qcom,ctx-num   : The number associated to the context bank
-diff --git a/drivers/iommu/qcom_iommu.c b/drivers/iommu/qcom_iommu.c
-index 03c68fe9439b..2f65a4cdca78 100644
---- a/drivers/iommu/qcom_iommu.c
-+++ b/drivers/iommu/qcom_iommu.c
-@@ -56,6 +56,7 @@ struct qcom_iommu_ctx {
- 	struct device		*dev;
- 	void __iomem		*base;
- 	bool			 secure_init;
-+	bool			 secured_ctx;
- 	u8			 asid;      /* asid and ctx bank # are 1:1 */
- 	struct iommu_domain	*domain;
- };
-@@ -281,6 +282,12 @@ static int qcom_iommu_init_domain(struct iommu_domain *domain,
- 			ctx->secure_init = true;
- 		}
- 
-+		/* Secured QSMMU-500/QSMMU-v2 contexts cannot be programmed */
-+		if (ctx->secured_ctx) {
-+			ctx->domain = domain;
-+			break;
-+		}
-+
- 		qcom_iommu_reset_ctx(ctx);
- 
- 		tcr[0] = pgtbl_cfg.arm_lpae_s1_cfg.tcr;
-@@ -762,10 +769,15 @@ static int qcom_iommu_ctx_probe(struct platform_device *pdev)
- 		return -ENODEV;
- 	}
- 
-+	if (of_device_is_compatible(dev->of_node, "qcom,msm-iommu-v2-sec"))
-+		ctx->secured_ctx = true;
-+
- 	/* clear IRQs before registering fault handler, just in case the
- 	 * boot-loader left us a surprise:
- 	 */
--	iommu_writel(ctx, ARM_SMMU_CB_FSR, iommu_readl(ctx, ARM_SMMU_CB_FSR));
-+	if (!ctx->secured_ctx)
-+		iommu_writel(ctx, ARM_SMMU_CB_FSR,
-+			     iommu_readl(ctx, ARM_SMMU_CB_FSR));
- 
- 	ret = devm_request_irq(dev, irq,
- 			       qcom_iommu_fault,
-@@ -807,6 +819,8 @@ static int qcom_iommu_ctx_remove(struct platform_device *pdev)
- static const struct of_device_id ctx_of_match[] = {
- 	{ .compatible = "qcom,msm-iommu-v1-ns" },
- 	{ .compatible = "qcom,msm-iommu-v1-sec" },
-+	{ .compatible = "qcom,msm-iommu-v2-ns" },
-+	{ .compatible = "qcom,msm-iommu-v2-sec" },
- 	{ /* sentinel */ }
- };
- 
-@@ -824,7 +838,8 @@ static bool qcom_iommu_has_secure_context(struct qcom_iommu_dev *qcom_iommu)
- 	struct device_node *child;
- 
- 	for_each_child_of_node(qcom_iommu->dev->of_node, child)
--		if (of_device_is_compatible(child, "qcom,msm-iommu-v1-sec"))
-+		if (of_device_is_compatible(child, "qcom,msm-iommu-v1-sec") ||
-+		    of_device_is_compatible(child, "qcom,msm-iommu-v2-sec"))
- 			return true;
- 
- 	return false;
--- 
-2.21.0
+Regards,
+Halil
 
 _______________________________________________
 iommu mailing list
