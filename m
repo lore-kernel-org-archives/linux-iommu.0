@@ -2,90 +2,70 @@ Return-Path: <SRS0=V6zV=XV=lists.linux-foundation.org=iommu-bounces@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-2.0 required=3.0 tests=DKIM_INVALID,DKIM_SIGNED,
-	HEADER_FROM_DIFFERENT_DOMAINS,MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS,
-	USER_AGENT_SANE_1 autolearn=no autolearn_force=no version=3.4.0
+X-Spam-Status: No, score=-2.2 required=3.0 tests=HEADER_FROM_DIFFERENT_DOMAINS,
+	MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED,USER_AGENT_SANE_1
+	autolearn=no autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id E80B7C432C2
-	for <iommu@archiver.kernel.org>; Thu, 26 Sep 2019 00:25:26 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 7D9A8C4360D
+	for <iommu@archiver.kernel.org>; Thu, 26 Sep 2019 01:39:09 +0000 (UTC)
 Received: from mail.linuxfoundation.org (mail.linuxfoundation.org [140.211.169.12])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by mail.kernel.org (Postfix) with ESMTPS id 9E78821A4A
-	for <iommu@archiver.kernel.org>; Thu, 26 Sep 2019 00:25:26 +0000 (UTC)
-Authentication-Results: mail.kernel.org;
-	dkim=fail reason="signature verification failed" (1024-bit key) header.d=redhat.com header.i=@redhat.com header.b="Mxy1UE6D"
-DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 9E78821A4A
-Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=redhat.com
+	by mail.kernel.org (Postfix) with ESMTPS id 4FE7A222BF
+	for <iommu@archiver.kernel.org>; Thu, 26 Sep 2019 01:39:09 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 4FE7A222BF
+Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=linux.intel.com
 Authentication-Results: mail.kernel.org; spf=pass smtp.mailfrom=iommu-bounces@lists.linux-foundation.org
 Received: from mail.linux-foundation.org (localhost [127.0.0.1])
-	by mail.linuxfoundation.org (Postfix) with ESMTP id 67BD2EB8;
-	Thu, 26 Sep 2019 00:25:26 +0000 (UTC)
+	by mail.linuxfoundation.org (Postfix) with ESMTP id E36B9D4A;
+	Thu, 26 Sep 2019 01:39:08 +0000 (UTC)
 Received: from smtp1.linuxfoundation.org (smtp1.linux-foundation.org
 	[172.17.192.35])
-	by mail.linuxfoundation.org (Postfix) with ESMTPS id 7E03ACD5
+	by mail.linuxfoundation.org (Postfix) with ESMTPS id 0BF6CD3B
 	for <iommu@lists.linux-foundation.org>;
-	Thu, 26 Sep 2019 00:25:24 +0000 (UTC)
+	Thu, 26 Sep 2019 01:39:07 +0000 (UTC)
 X-Greylist: domain auto-whitelisted by SQLgrey-1.7.6
-Received: from us-smtp-delivery-1.mimecast.com
-	(us-smtp-delivery-1.mimecast.com [205.139.110.120])
-	by smtp1.linuxfoundation.org (Postfix) with ESMTP id E7FBF108
+Received: from mga18.intel.com (mga18.intel.com [134.134.136.126])
+	by smtp1.linuxfoundation.org (Postfix) with ESMTPS id 62DEFD0
 	for <iommu@lists.linux-foundation.org>;
-	Thu, 26 Sep 2019 00:25:23 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-	s=mimecast20190719; t=1569457522;
-	h=from:from:reply-to:reply-to:subject:subject:date:date:
-	message-id:message-id:to:to:cc:cc:mime-version:mime-version:
-	content-type:content-type:
-	content-transfer-encoding:content-transfer-encoding:
-	in-reply-to:in-reply-to:references:references;
-	bh=M9LJpP7JWmBUGgAl1VoixtxnvfidwyCHWS9Xy0f2b+U=;
-	b=Mxy1UE6DEI+6Ta0QpST9OBOH6L6VGhrr5dxbO6RAlFz0EfHY0Kirb58jgo6RpOx1Kg1pkn
-	YgiaV2J8IBAJTUZCvvuG8EVHXmeOiSXoXTkkTscTe0IoA8iaLDKgEt/guskcBXvCVOXfG9
-	89wioPHc6gm0I4Bw7aWi2rvJsGCE0kI=
-Received: from mail-io1-f72.google.com (mail-io1-f72.google.com
-	[209.85.166.72]) (Using TLS) by relay.mimecast.com with ESMTP id
-	us-mta-240-GAG56d12Ovebua03YCfokg-1; Wed, 25 Sep 2019 20:25:19 -0400
-Received: by mail-io1-f72.google.com with SMTP id o11so1081515iop.12
-	for <iommu@lists.linux-foundation.org>;
-	Wed, 25 Sep 2019 17:25:18 -0700 (PDT)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-	d=1e100.net; s=20161025;
-	h=x-gm-message-state:date:from:to:cc:subject:message-id:reply-to
-	:references:mime-version:content-disposition:in-reply-to:user-agent;
-	bh=QFrp1JmRS1j7kXZhEqRWc1jjvzTVA7ZCrrUMcuvofE4=;
-	b=hb4C05TI6zabT37fNu0J/Ujwa8DW2Ty5XCOAocFFHy+SltLuaO9qdUcwjQ99bRT0y/
-	clRKqNNb/nmeL9obrupK7KSG4Z7tbUdJGafeU4euuQtq0cGliCV1JpXbTHyuPMJ4GUju
-	nI3qhjPsw6yStceIkqSZRm/x5gZyceTbEUDTEQROG5J1nAosk8mztso5pHuE6hUvAlHs
-	G1GO5BRVGWV4tP8z+US0iMpfE0Aw3aP6YAyfZfwEf1bGbqPYR/moz11FQ1VwZIvi38Rz
-	LiHgTwe1iY8ga8yjkDkUEvwCKXyAI/QObFd9Iu1Is4u9PhWBDhEaYnSqQv/HJDi64s0W
-	fX6A==
-X-Gm-Message-State: APjAAAV9XwC8KpUh5NxDmTShmHLtZLHPja6gN+mytZT1dmJQx57o6nbX
-	3+COy0OGA4mdWzpnMCpuIysNnJASL2n28p5i2irR2QnWBuxPVnXfaejVYd49ObV8MYoBrdZ1VeE
-	97bzu5u8f9/2SE6QNOO33i61I97sLww==
-X-Received: by 2002:a6b:6d0c:: with SMTP id a12mr832856iod.122.1569457518296; 
-	Wed, 25 Sep 2019 17:25:18 -0700 (PDT)
-X-Google-Smtp-Source: APXvYqxqMuNlihbsmAHPcLEdF6dJWB4d07ToHvASQNxsSUCXCR2Y7JBJ9kceZfgq/OAESCuP64kIqw==
-X-Received: by 2002:a6b:6d0c:: with SMTP id a12mr832836iod.122.1569457518029; 
-	Wed, 25 Sep 2019 17:25:18 -0700 (PDT)
-Received: from localhost (ip70-163-223-149.ph.ph.cox.net. [70.163.223.149])
-	by smtp.gmail.com with ESMTPSA id s13sm185605iom.16.2019.09.25.17.25.16
-	(version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-	Wed, 25 Sep 2019 17:25:17 -0700 (PDT)
-Date: Wed, 25 Sep 2019 17:25:15 -0700
-From: Jerry Snitselaar <jsnitsel@redhat.com>
-To: Joerg Roedel <joro@8bytes.org>
-Subject: Re: [PATCH 0/6] iommu/amd: Locking Fixes
-Message-ID: <20190926002515.3xjm3fb6z42dfhar@cantor>
-References: <20190925132300.3038-1-joro@8bytes.org>
+	Thu, 26 Sep 2019 01:39:06 +0000 (UTC)
+X-Amp-Result: SKIPPED(no attachment in message)
+X-Amp-File-Uploaded: False
+Received: from orsmga002.jf.intel.com ([10.7.209.21])
+	by orsmga106.jf.intel.com with ESMTP/TLS/DHE-RSA-AES256-GCM-SHA384;
+	25 Sep 2019 18:39:05 -0700
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="5.64,549,1559545200"; d="scan'208";a="201449048"
+Received: from allen-box.sh.intel.com (HELO [10.239.159.136])
+	([10.239.159.136])
+	by orsmga002.jf.intel.com with ESMTP; 25 Sep 2019 18:39:03 -0700
+Subject: Re: [RFC PATCH 0/4] Use 1st-level for DMA remapping in guest
+To: Peter Xu <peterx@redhat.com>, "Tian, Kevin" <kevin.tian@intel.com>
+References: <20190923122454.9888-1-baolu.lu@linux.intel.com>
+	<20190923122715.53de79d0@jacob-builder>
+	<20190923202552.GA21816@araj-mobl1.jf.intel.com>
+	<AADFC41AFE54684AB9EE6CBC0274A5D19D58D1F1@SHSMSX104.ccr.corp.intel.com>
+	<dfd9b7a2-5553-328a-08eb-16c8a3a2644e@linux.intel.com>
+	<20190925065640.GO28074@xz-x1>
+	<AADFC41AFE54684AB9EE6CBC0274A5D19D58F4A3@SHSMSX104.ccr.corp.intel.com>
+	<20190925074507.GP28074@xz-x1>
+	<AADFC41AFE54684AB9EE6CBC0274A5D19D58F5F5@SHSMSX104.ccr.corp.intel.com>
+	<20190925085204.GR28074@xz-x1>
+From: Lu Baolu <baolu.lu@linux.intel.com>
+Message-ID: <b14a39f3-6aba-8fd2-757a-c244dcbe7b6b@linux.intel.com>
+Date: Thu, 26 Sep 2019 09:37:05 +0800
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:60.0) Gecko/20100101
+	Thunderbird/60.8.0
 MIME-Version: 1.0
-In-Reply-To: <20190925132300.3038-1-joro@8bytes.org>
-User-Agent: NeoMutt/20180716
-X-MC-Unique: GAG56d12Ovebua03YCfokg-1
-X-Mimecast-Spam-Score: 0
-Content-Disposition: inline
-Cc: Filippo Sironi <sironi@amazon.de>, iommu@lists.linux-foundation.org,
-	jroedel@suse.de
+In-Reply-To: <20190925085204.GR28074@xz-x1>
+Content-Language: en-US
+Cc: Alex Williamson <alex.williamson@redhat.com>, "Raj,
+	Ashok" <ashok.raj@intel.com>,
+	"kvm@vger.kernel.org" <kvm@vger.kernel.org>, "Kumar,
+	Sanjay K" <sanjay.k.kumar@intel.com>,
+	"iommu@lists.linux-foundation.org" <iommu@lists.linux-foundation.org>,
+	"linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
+	"Sun, Yi Y" <yi.y.sun@intel.com>, David Woodhouse <dwmw2@infradead.org>
 X-BeenThere: iommu@lists.linux-foundation.org
 X-Mailman-Version: 2.1.12
 Precedence: list
@@ -98,57 +78,123 @@ List-Post: <mailto:iommu@lists.linux-foundation.org>
 List-Help: <mailto:iommu-request@lists.linux-foundation.org?subject=help>
 List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
 	<mailto:iommu-request@lists.linux-foundation.org?subject=subscribe>
-Reply-To: Jerry Snitselaar <jsnitsel@redhat.com>
 Content-Transfer-Encoding: 7bit
 Content-Type: text/plain; charset="us-ascii"; Format="flowed"
 Sender: iommu-bounces@lists.linux-foundation.org
 Errors-To: iommu-bounces@lists.linux-foundation.org
 
-On Wed Sep 25 19, Joerg Roedel wrote:
->Hi,
->
->here are a couple of fixes for the amd iommu driver to fix a
->few locking issues around protection-domains. Main problem
->was that some traversals of ->dev_list were not locked in
->any form, causing potential race conditions.
->
->But there are more issues fixed here, for example the racy
->access to protection_domain->updated and races in the
->attach/detach_device code paths.
->
->Changes are boot-tested with lockdep enabled, looked all
->good so far.
->
->Please review.
->
->Thanks,
->
->	Joerg
->
->Joerg Roedel (6):
->  iommu/amd: Remove domain->updated
->  iommu/amd: Remove amd_iommu_devtable_lock
->  iommu/amd: Take domain->lock for complete attach/detach path
->  iommu/amd: Check for busy devices earlier in attach_device()
->  iommu/amd: Lock dev_data in attach/detach code paths
->  iommu/amd: Lock code paths traversing protection_domain->dev_list
->
-> drivers/iommu/amd_iommu.c       | 166 ++++++++++++++++----------------
-> drivers/iommu/amd_iommu_types.h |   4 +-
-> 2 files changed, 85 insertions(+), 85 deletions(-)
->
->-- 
->2.17.1
->
->_______________________________________________
->iommu mailing list
->iommu@lists.linux-foundation.org
->https://lists.linuxfoundation.org/mailman/listinfo/iommu
+Hi Peter,
 
-Hi Joerg,
+On 9/25/19 4:52 PM, Peter Xu wrote:
+> On Wed, Sep 25, 2019 at 08:02:23AM +0000, Tian, Kevin wrote:
+>>> From: Peter Xu [mailto:peterx@redhat.com]
+>>> Sent: Wednesday, September 25, 2019 3:45 PM
+>>>
+>>> On Wed, Sep 25, 2019 at 07:21:51AM +0000, Tian, Kevin wrote:
+>>>>> From: Peter Xu [mailto:peterx@redhat.com]
+>>>>> Sent: Wednesday, September 25, 2019 2:57 PM
+>>>>>
+>>>>> On Wed, Sep 25, 2019 at 10:48:32AM +0800, Lu Baolu wrote:
+>>>>>> Hi Kevin,
+>>>>>>
+>>>>>> On 9/24/19 3:00 PM, Tian, Kevin wrote:
+>>>>>>>>>>        '-----------'
+>>>>>>>>>>        '-----------'
+>>>>>>>>>>
+>>>>>>>>>> This patch series only aims to achieve the first goal, a.k.a using
+>>>>>>> first goal? then what are other goals? I didn't spot such information.
+>>>>>>>
+>>>>>>
+>>>>>> The overall goal is to use IOMMU nested mode to avoid shadow page
+>>>>> table
+>>>>>> and VMEXIT when map an gIOVA. This includes below 4 steps (maybe
+>>> not
+>>>>>> accurate, but you could get the point.)
+>>>>>>
+>>>>>> 1) GIOVA mappings over 1st-level page table;
+>>>>>> 2) binding vIOMMU 1st level page table to the pIOMMU;
+>>>>>> 3) using pIOMMU second level for GPA->HPA translation;
+>>>>>> 4) enable nested (a.k.a. dual stage) translation in host.
+>>>>>>
+>>>>>> This patch set aims to achieve 1).
+>>>>>
+>>>>> Would it make sense to use 1st level even for bare-metal to replace
+>>>>> the 2nd level?
+>>>>>
+>>>>> What I'm thinking is the DPDK apps - they have MMU page table already
+>>>>> there for the huge pages, then if they can use 1st level as the
+>>>>> default device page table then it even does not need to map, because
+>>>>> it can simply bind the process root page table pointer to the 1st
+>>>>> level page root pointer of the device contexts that it uses.
+>>>>>
+>>>>
+>>>> Then you need bear with possible page faults from using CPU page
+>>>> table, while most devices don't support it today.
+>>>
+>>> Right, I was just thinking aloud.  After all neither do we have IOMMU
+>>> hardware to support 1st level (or am I wrong?)...  It's just that when
+>>
+>> You are right. Current VT-d supports only 2nd level.
+>>
+>>> the 1st level is ready it should sound doable because IIUC PRI should
+>>> be always with the 1st level support no matter on IOMMU side or the
+>>> device side?
+>>
+>> No. PRI is not tied to 1st or 2nd level. Actually from device p.o.v, it's
+>> just a protocol to trigger page fault, but the device doesn't care whether
+>> the page fault is on 1st or 2nd level in the IOMMU side. The only
+>> relevant part is that a PRI request can have PASID tagged or cleared.
+>> When it's tagged with PASID, the IOMMU will locate the translation
+>> table under the given PASID (either 1st or 2nd level is fine, according
+>> to PASID entry setting). When no PASID is included, the IOMMU locates
+>> the translation from default entry (e.g. PASID#0 or any PASID contained
+>> in RID2PASID in VT-d).
+>>
+>> Your knowledge happened to be correct in deprecated ECS mode. At
+>> that time, there is only one 2nd level per context entry which doesn't
+>> support page fault, and there is only one 1st level per PASID entry which
+>> supports page fault. Then PRI could be indirectly connected to 1st level,
+>> but this just changed with new scalable mode.
+>>
+>> Another note is that the PRI capability only indicates that a device is
+>> capable of handling page faults, but not that a device can tolerate
+>> page fault for any of its DMA access. If the latter is fasle, using CPU
+>> page table for DPDK usage is still risky (and specific to device behavior)
+>>
+>>>
+>>> I'm actually not sure about whether my understanding here is
+>>> correct... I thought the pasid binding previously was only for some
+>>> vendor kernel drivers but not a general thing to userspace.  I feel
+>>> like that should be doable in the future once we've got some new
+>>> syscall interface ready to deliver 1st level page table (e.g., via
+>>> vfio?) then applications like DPDK seems to be able to use that too
+>>> even directly via bare metal.
+>>>
+>>
+>> using 1st level for userspace is different from supporting DMA page
+>> fault in userspace. The former is purely about which structure to
+>> keep the mapping. I think we may do the same thing for both bare
+>> metal and guest (using 2nd level only for GPA when nested is enabled
+>> on the IOMMU). But reusing CPU page table for userspace is more
+>> tricky. :-)
+> 
+> Yes I should have mixed up the 1st level page table and PRI a bit, and
+> after all my initial question should be irrelevant to this series as
+> well so it's already a bit out of topic (sorry for that).
 
-What branch is this on top of in your repo?
+Never mind. Good discussion. :-)
 
+Actually I have plan to use 1st level on bare metal as well. Just
+looking forward to more motivation and use cases.
+
+> 
+> And, thanks for explaining these. :)
+> 
+
+Thanks for Kevin's explanation. :-)
+
+Best regards,
+Baolu
 _______________________________________________
 iommu mailing list
 iommu@lists.linux-foundation.org
