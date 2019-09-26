@@ -5,75 +5,74 @@ X-Spam-Level:
 X-Spam-Status: No, score=-9.4 required=3.0 tests=DKIM_ADSP_CUSTOM_MED,
 	DKIM_INVALID,DKIM_SIGNED,FREEMAIL_FORGED_FROMDOMAIN,FREEMAIL_FROM,
 	HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_PATCH,MAILING_LIST_MULTI,SIGNED_OFF_BY,
-	SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED,USER_AGENT_GIT autolearn=unavailable
+	SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED,USER_AGENT_GIT autolearn=ham
 	autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id D3F87C4360C
-	for <iommu@archiver.kernel.org>; Thu, 26 Sep 2019 12:28:09 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 28A70C4360C
+	for <iommu@archiver.kernel.org>; Thu, 26 Sep 2019 12:28:13 +0000 (UTC)
 Received: from mail.linuxfoundation.org (mail.linuxfoundation.org [140.211.169.12])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by mail.kernel.org (Postfix) with ESMTPS id 96B65207FF
-	for <iommu@archiver.kernel.org>; Thu, 26 Sep 2019 12:28:09 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTPS id F0496207FF
+	for <iommu@archiver.kernel.org>; Thu, 26 Sep 2019 12:28:12 +0000 (UTC)
 Authentication-Results: mail.kernel.org;
-	dkim=fail reason="signature verification failed" (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="Y3QJp0Ws"
-DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 96B65207FF
+	dkim=fail reason="signature verification failed" (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="KvyXExCF"
+DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org F0496207FF
 Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=gmail.com
 Authentication-Results: mail.kernel.org; spf=pass smtp.mailfrom=iommu-bounces@lists.linux-foundation.org
 Received: from mail.linux-foundation.org (localhost [127.0.0.1])
-	by mail.linuxfoundation.org (Postfix) with ESMTP id 2F5081235;
+	by mail.linuxfoundation.org (Postfix) with ESMTP id 5354A126B;
 	Thu, 26 Sep 2019 12:28:09 +0000 (UTC)
 Received: from smtp1.linuxfoundation.org (smtp1.linux-foundation.org
 	[172.17.192.35])
-	by mail.linuxfoundation.org (Postfix) with ESMTPS id 7122C1184
+	by mail.linuxfoundation.org (Postfix) with ESMTPS id EEF931184
 	for <iommu@lists.linux-foundation.org>;
-	Thu, 26 Sep 2019 12:05:22 +0000 (UTC)
+	Thu, 26 Sep 2019 12:05:23 +0000 (UTC)
 X-Greylist: whitelisted by SQLgrey-1.7.6
 Received: from mail-wr1-f68.google.com (mail-wr1-f68.google.com
 	[209.85.221.68])
-	by smtp1.linuxfoundation.org (Postfix) with ESMTPS id DDEAC8A
+	by smtp1.linuxfoundation.org (Postfix) with ESMTPS id 658398A
 	for <iommu@lists.linux-foundation.org>;
-	Thu, 26 Sep 2019 12:05:21 +0000 (UTC)
-Received: by mail-wr1-f68.google.com with SMTP id v8so2471118wrt.2
+	Thu, 26 Sep 2019 12:05:23 +0000 (UTC)
+Received: by mail-wr1-f68.google.com with SMTP id n14so2150132wrw.9
 	for <iommu@lists.linux-foundation.org>;
-	Thu, 26 Sep 2019 05:05:21 -0700 (PDT)
+	Thu, 26 Sep 2019 05:05:23 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=gmail.com; s=20161025;
 	h=from:to:cc:subject:date:message-id:in-reply-to:references
 	:mime-version:content-transfer-encoding;
-	bh=MOsVaiINRsQWi6qw1udz6Ri8temeMMS+LWwbQK7C8b8=;
-	b=Y3QJp0WsN3oMzWiNiQaGbg0PlhKzNmGO4xOJsBPQzCTBrhcy2Fxu0zkMteZG0XCt7F
-	AB77+7fPlGCtsSVdS9KOBWPZD7ydTbFUMv3/mz9i2B1ixi3p+avOkBhHycZI5ZU5bYBV
-	uSD09cUlmKKcUgbMaYeEDqr0xP7HbIPh5/EUAfJJqiEtx0Ci/sPafM2Yl7aAYKVZ1ACz
-	Q1HN6b6X/yVRWIdU8P68lPbmDJuvoHXRUHPp+Ucoe0XbfJdFqJn+9y/WayoWcxlo/jYg
-	3qDaQ5yLId4OhHLGlfAKi1eO5gfebPhpcNukRPR1qkrP/5/V9QL7/y0Az4lHE1Fnm3Kz
-	x3Tg==
+	bh=sOvGRsd/SK03y6L73WlYgpmOS4qwC0AiL1VcwW/j4sA=;
+	b=KvyXExCFYgZX6hiDrHxGgq7np5TAMGddN73hQ6wryiTG4y5Mij4z/kcZIRTTRtzUd9
+	uON0HxTM/e3O51l7EaEoTbN9wj57ajBfY6efnOeH8Fe2rGJGCp4wayoFCk/BsxPVxY+E
+	LrYInqLWz2fuTBz4o/G44hswvp/36Mu9+85VkxdJPQEYrpycFYJtToFpSyXOy3AXKxpY
+	HD+sJbHGN1Ms1yWN6kJt5V7OSVsl9xgFLhWUDCDF6vrbRdKnMYYjBjtzBQ1tYscj1NEo
+	ww75zAnzZGKxFMKRCKW8rxTKHYhzZLqyne95j9OfyYqFTNV+RbWSyzh5FztrbqYZUfaB
+	YVzw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
 	d=1e100.net; s=20161025;
 	h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
 	:references:mime-version:content-transfer-encoding;
-	bh=MOsVaiINRsQWi6qw1udz6Ri8temeMMS+LWwbQK7C8b8=;
-	b=IHhyN1gblA4JBCwDU5EMFD28URH5S0WM3Ewdu4Sxwq3avR9ibyoaYaHby0LFqq9l4+
-	4jw0omFH4UkQAE3OQ09RrE7LBaoasvm9P1jLedWmyZW2LOA93By/hfjru7+Ynzdq6oan
-	o5828IukHeq1ueWBjz61VVgHH5GSOfl0Ib1rRNmNTlgXRFl4AMwBd7oQYQQd+Tyc9USp
-	w6SOlBj/bO4e8Uz/7eQcWhrd2XsjyurES/i7rtlvTF2K2L3HOL+Z9ZfLkMw2749i57Th
-	tZOn+g4173E7F4/0bJvQOVVlHDlZwEvorc68OI6U9CR/hsV08SdNfdL7nOitByElZBhb
-	q5OA==
-X-Gm-Message-State: APjAAAWlU3UYQR2sKsohzCa1ModHNd4U/AANV8dLqlr+7QCCto+DASH/
-	bFTz6yRTh6BWN+sydQnyTwo=
-X-Google-Smtp-Source: APXvYqx7wD+ZGQZkH/FkOlgTDQOFFXVBpRCAr3zs2vWK/gYIxmLmVH17JL+DgYXfDGR43YDUXPPLLQ==
-X-Received: by 2002:adf:f081:: with SMTP id n1mr2904579wro.273.1569499520399; 
-	Thu, 26 Sep 2019 05:05:20 -0700 (PDT)
+	bh=sOvGRsd/SK03y6L73WlYgpmOS4qwC0AiL1VcwW/j4sA=;
+	b=KSaa0PRse9AB6g3sSPKR5CexBN9QQvJjyFtZ7PFu+rIZBlrna3qmPY1jM4DU+AIwhf
+	ouWDNu+Ay3Lk5ejPV014oV+aMqn/xyw7Vb7jL2iEytBTY6zb4cIh/KfrwK/+vzdmvkO0
+	5YyQEz9aQs2/YYOltYfimDY5MlwFSPdGY60m9vMvY4BijdQcHmb68KkpQpv2D3mADmMM
+	Un1I9bK5fmg3NRSFIapM+uvJbsBtFHFLYRinrqn2xRn8JUomlFXCOA004WTHJyb+h84c
+	/FEOQg7ab+Gf26iwNGGO4hF4hCVff0lQ1kAqG/p0B5MFTauhLRlO775MOGOuanAkzHS7
+	pJlQ==
+X-Gm-Message-State: APjAAAVN1/69wCPbo5oi7HCF/Xb70dzGC6tcFiym+a9psCIIVAljxN49
+	yZXXQb0MwWCmRDxsrwObiT0=
+X-Google-Smtp-Source: APXvYqz4S+fUrzO5k8RXSgTfSI56EHZkCQoE681+xglSQMvATlcFp3o/C3o/mCebzXaw9AWE/XoHNA==
+X-Received: by 2002:a5d:6451:: with SMTP id d17mr2985861wrw.260.1569499521912; 
+	Thu, 26 Sep 2019 05:05:21 -0700 (PDT)
 Received: from IcarusMOD.eternityproject.eu ([93.51.16.173])
 	by smtp.gmail.com with ESMTPSA id
-	d193sm5289584wmd.0.2019.09.26.05.05.19
+	d193sm5289584wmd.0.2019.09.26.05.05.21
 	(version=TLS1_2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128/128);
-	Thu, 26 Sep 2019 05:05:19 -0700 (PDT)
+	Thu, 26 Sep 2019 05:05:21 -0700 (PDT)
 From: kholk11@gmail.com
 To: linux-arm-msm@vger.kernel.org
-Subject: [PATCH 1/6] iommu/qcom: Use the asid read from device-tree if
-	specified
-Date: Thu, 26 Sep 2019 14:05:11 +0200
-Message-Id: <20190926120516.4981-2-kholk11@gmail.com>
+Subject: [PATCH 3/6] iommu/qcom: Properly reset the IOMMU context
+Date: Thu, 26 Sep 2019 14:05:13 +0200
+Message-Id: <20190926120516.4981-4-kholk11@gmail.com>
 X-Mailer: git-send-email 2.21.0
 In-Reply-To: <20190926120516.4981-1-kholk11@gmail.com>
 References: <20190926120516.4981-1-kholk11@gmail.com>
@@ -100,75 +99,63 @@ Errors-To: iommu-bounces@lists.linux-foundation.org
 
 From: AngeloGioacchino Del Regno <kholk11@gmail.com>
 
-As specified in this driver, the context banks are 0x1000 apart.
-Problem is that sometimes the context number (our asid) does not
-match this logic and we end up using the wrong one: this starts
-being a problem in the case that we need to send TZ commands
-to do anything on a specific context.
-
-For this reason, read the ASID from the DT if the property
-"qcom,ctx-num" is present on the IOMMU context node.
+To avoid context faults reset the context entirely on detach and
+to ensure a fresh clean start also do a complete reset before
+programming the context for domain initialization.
 
 Signed-off-by: AngeloGioacchino Del Regno <kholk11@gmail.com>
 ---
- .../devicetree/bindings/iommu/qcom,iommu.txt    |  1 +
- drivers/iommu/qcom_iommu.c                      | 17 ++++++++++++++---
- 2 files changed, 15 insertions(+), 3 deletions(-)
+ drivers/iommu/qcom_iommu.c | 23 +++++++++++++++++++++--
+ 1 file changed, 21 insertions(+), 2 deletions(-)
 
-diff --git a/Documentation/devicetree/bindings/iommu/qcom,iommu.txt b/Documentation/devicetree/bindings/iommu/qcom,iommu.txt
-index 059139abce35..98102b323196 100644
---- a/Documentation/devicetree/bindings/iommu/qcom,iommu.txt
-+++ b/Documentation/devicetree/bindings/iommu/qcom,iommu.txt
-@@ -38,6 +38,7 @@ to non-secure vs secure interrupt line.
-         - "qcom,msm-iommu-v1-sec" : secure context bank
-   - reg            : Base address and size of context bank within the iommu
-   - interrupts     : The context fault irq.
-+  - qcom,ctx-num   : The number associated to the context bank
- 
- ** Optional properties:
- 
 diff --git a/drivers/iommu/qcom_iommu.c b/drivers/iommu/qcom_iommu.c
-index dadc707573a2..5837556af147 100644
+index 8431fb97a50f..2f31da2e7add 100644
 --- a/drivers/iommu/qcom_iommu.c
 +++ b/drivers/iommu/qcom_iommu.c
-@@ -557,7 +557,8 @@ static int qcom_iommu_of_xlate(struct device *dev, struct of_phandle_args *args)
- 	 * index into qcom_iommu->ctxs:
- 	 */
- 	if (WARN_ON(asid < 1) ||
--	    WARN_ON(asid > qcom_iommu->num_ctxs))
-+	    WARN_ON(asid > qcom_iommu->num_ctxs) ||
-+	    WARN_ON(qcom_iommu->ctxs[asid - 1] == NULL))
- 		return -EINVAL;
- 
- 	if (!fwspec->iommu_priv) {
-@@ -665,7 +666,8 @@ static int qcom_iommu_sec_ptbl_init(struct device *dev)
- 
- static int get_asid(const struct device_node *np)
- {
--	u32 reg;
-+	u32 reg, val;
-+	int asid;
- 
- 	/* read the "reg" property directly to get the relative address
- 	 * of the context bank, and calculate the asid from that:
-@@ -673,7 +675,16 @@ static int get_asid(const struct device_node *np)
- 	if (of_property_read_u32_index(np, "reg", 0, &reg))
- 		return -ENODEV;
- 
--	return reg / 0x1000;      /* context banks are 0x1000 apart */
-+	/* Context banks are 0x1000 apart but, in some cases, the ASID
-+	 * number doesn't match to this logic and needs to be passed
-+	 * from the DT configuration explicitly.
-+	 */
-+	if (of_property_read_u32(np, "qcom,ctx-num", &val))
-+		asid = reg / 0x1000;
-+	else
-+		asid = val;
-+
-+	return asid;
+@@ -198,6 +198,23 @@ static irqreturn_t qcom_iommu_fault(int irq, void *dev)
+ 	return IRQ_HANDLED;
  }
  
- static int qcom_iommu_ctx_probe(struct platform_device *pdev)
++static void qcom_iommu_reset_ctx(struct qcom_iommu_ctx *ctx)
++{
++	iommu_writel(ctx, ARM_SMMU_CB_FAR, 0);
++	iommu_writel(ctx, ARM_SMMU_CB_FSR, 0);
++	iommu_writel(ctx, ARM_SMMU_CB_S1_MAIR1, 0);
++	iommu_writel(ctx, ARM_SMMU_CB_PAR, 0);
++	iommu_writel(ctx, ARM_SMMU_CB_S1_MAIR0, 0);
++	iommu_writel(ctx, ARM_SMMU_CB_SCTLR, 0);
++	iommu_writel(ctx, ARM_SMMU_CB_TCR2, 0);
++	iommu_writel(ctx, ARM_SMMU_CB_TCR, 0);
++	iommu_writeq(ctx, ARM_SMMU_CB_TTBR0, 0);
++	iommu_writeq(ctx, ARM_SMMU_CB_TTBR1, 0);
++
++	/* Should we issue a TLBSYNC there instead? */
++	mb();
++}
++
+ static int qcom_iommu_init_domain(struct iommu_domain *domain,
+ 				  struct qcom_iommu_dev *qcom_iommu,
+ 				  struct iommu_fwspec *fwspec)
+@@ -245,6 +262,8 @@ static int qcom_iommu_init_domain(struct iommu_domain *domain,
+ 			ctx->secure_init = true;
+ 		}
+ 
++		qcom_iommu_reset_ctx(ctx);
++
+ 		/* TCR */
+ 		iommu_writel(ctx, ARM_SMMU_CB_TCR2,
+ 				(pgtbl_cfg.arm_lpae_s1_cfg.tcr >> 32) |
+@@ -390,8 +409,8 @@ static void qcom_iommu_detach_dev(struct iommu_domain *domain, struct device *de
+ 	for (i = 0; i < fwspec->num_ids; i++) {
+ 		struct qcom_iommu_ctx *ctx = to_ctx(fwspec, fwspec->ids[i]);
+ 
+-		/* Disable the context bank: */
+-		iommu_writel(ctx, ARM_SMMU_CB_SCTLR, 0);
++		/* Disable and reset the context bank */
++		qcom_iommu_reset_ctx(ctx);
+ 
+ 		ctx->domain = NULL;
+ 	}
 -- 
 2.21.0
 
