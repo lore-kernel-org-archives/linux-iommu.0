@@ -2,80 +2,77 @@ Return-Path: <SRS0=V6zV=XV=lists.linux-foundation.org=iommu-bounces@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-9.4 required=3.0 tests=DKIM_ADSP_CUSTOM_MED,
+X-Spam-Status: No, score=-3.4 required=3.0 tests=DKIM_ADSP_CUSTOM_MED,
 	DKIM_INVALID,DKIM_SIGNED,FREEMAIL_FORGED_FROMDOMAIN,FREEMAIL_FROM,
-	HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_PATCH,MAILING_LIST_MULTI,SIGNED_OFF_BY,
-	SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED,USER_AGENT_GIT autolearn=unavailable
-	autolearn_force=no version=3.4.0
+	HEADER_FROM_DIFFERENT_DOMAINS,MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS,
+	URIBL_BLOCKED,USER_AGENT_GIT autolearn=no autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id F0BADC4360C
-	for <iommu@archiver.kernel.org>; Thu, 26 Sep 2019 12:28:16 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id D2801C4360C
+	for <iommu@archiver.kernel.org>; Thu, 26 Sep 2019 12:28:21 +0000 (UTC)
 Received: from mail.linuxfoundation.org (mail.linuxfoundation.org [140.211.169.12])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by mail.kernel.org (Postfix) with ESMTPS id C2FF2207FF
-	for <iommu@archiver.kernel.org>; Thu, 26 Sep 2019 12:28:16 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTPS id A5BEE207FF
+	for <iommu@archiver.kernel.org>; Thu, 26 Sep 2019 12:28:21 +0000 (UTC)
 Authentication-Results: mail.kernel.org;
-	dkim=fail reason="signature verification failed" (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="lBuLbIw4"
-DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org C2FF2207FF
+	dkim=fail reason="signature verification failed" (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="lY6GbUxD"
+DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org A5BEE207FF
 Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=gmail.com
 Authentication-Results: mail.kernel.org; spf=pass smtp.mailfrom=iommu-bounces@lists.linux-foundation.org
 Received: from mail.linux-foundation.org (localhost [127.0.0.1])
-	by mail.linuxfoundation.org (Postfix) with ESMTP id 7DB8B1279;
+	by mail.linuxfoundation.org (Postfix) with ESMTP id 9D47E1285;
 	Thu, 26 Sep 2019 12:28:09 +0000 (UTC)
 Received: from smtp1.linuxfoundation.org (smtp1.linux-foundation.org
 	[172.17.192.35])
-	by mail.linuxfoundation.org (Postfix) with ESMTPS id 4AE661188
+	by mail.linuxfoundation.org (Postfix) with ESMTPS id BD5F51189
 	for <iommu@lists.linux-foundation.org>;
-	Thu, 26 Sep 2019 12:05:27 +0000 (UTC)
+	Thu, 26 Sep 2019 12:05:29 +0000 (UTC)
 X-Greylist: whitelisted by SQLgrey-1.7.6
-Received: from mail-wr1-f66.google.com (mail-wr1-f66.google.com
-	[209.85.221.66])
-	by smtp1.linuxfoundation.org (Postfix) with ESMTPS id AE9B38A
+Received: from mail-wr1-f67.google.com (mail-wr1-f67.google.com
+	[209.85.221.67])
+	by smtp1.linuxfoundation.org (Postfix) with ESMTPS id 36A2C8A
 	for <iommu@lists.linux-foundation.org>;
-	Thu, 26 Sep 2019 12:05:24 +0000 (UTC)
-Received: by mail-wr1-f66.google.com with SMTP id r5so2138548wrm.12
+	Thu, 26 Sep 2019 12:05:21 +0000 (UTC)
+Received: by mail-wr1-f67.google.com with SMTP id i1so2456813wro.4
 	for <iommu@lists.linux-foundation.org>;
-	Thu, 26 Sep 2019 05:05:24 -0700 (PDT)
+	Thu, 26 Sep 2019 05:05:21 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=gmail.com; s=20161025;
-	h=from:to:cc:subject:date:message-id:in-reply-to:references
-	:mime-version:content-transfer-encoding;
-	bh=hM8YfKOj/veQZGpRjHkC1Z8EKmrCYB/PVErpOmpXBBM=;
-	b=lBuLbIw4VBqFeCaW65bXt3a9GvcgmPYUq/9I5AxJDVG/eQ9VtHShtO2zXx/zH0y/Ih
-	bs1Cytd9GRcn16B4ghrrY1A3nkd1rtSvpC3GQCeC2aYAXw7o1kxquZxjxeWVz3t2ONos
-	ym8Sv+6Ha/gpQPexDPsG95SJrV/v3ElbtlxM1YORNHm2uYqEGFJxrFViSmzqLey7DFZy
-	1JvOZ/RY9M4pLxRHMjQSg9PEkmTC8cf8CokM8TO4dK4KXGmE923rUZDAOyPDe/bwAzcO
-	Ne3NI3xkR3xjhvSXAC9EunpKM8hkqsTLMxyFw2P+qVJs2aSLdVkvZQDQrnlyH3xI3fD9
-	FR0g==
+	h=from:to:cc:subject:date:message-id:mime-version
+	:content-transfer-encoding;
+	bh=Y07ZnDzexUD9RKC6iDZUZKRTQv+E4IUsmSABNZBPtUg=;
+	b=lY6GbUxDwmlppCz8w03u/a/XKs1RebO1CG027tKSNUaMrCOL8ApwY1PKEKNwQiijNv
+	Qx3QOqmN3hLxwFtt3LT7xVKr2agK8bWkY853sXPO9eNJVIsw6i9utP3tCp4tavm7gzhy
+	wTT9qtjlXC8cVD6LSTof8k3zNzcutc7mSWaRJYHUG9dTLDOPySv/fIsEBuhqwExMK/fW
+	9r1l71CQluQ7cA3hnmBCwhvssmlDzU9igERNYlX+KJ+PNq/+7aEknQtP2WaQH+oUBuJG
+	6lYZEM4kLnZrtn1gruTHc55ZxCbsOm3700NyJxk+VAk33qizvQkPo9FSAx21M8qnvrqe
+	zIXQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
 	d=1e100.net; s=20161025;
-	h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
-	:references:mime-version:content-transfer-encoding;
-	bh=hM8YfKOj/veQZGpRjHkC1Z8EKmrCYB/PVErpOmpXBBM=;
-	b=nPBcsaRsnFRfgALIrlZoDuUdT4RN+1ewZqAeNfFm56AnozepMjtPvx0rugAYfoaSfC
-	NJyNwGoy1lNFEfHs8cH8+itHFXI11ZjftnaHiY2L9sKPV3dtlvpukPM5OdtuYJqVWXdL
-	AmvlqdDR+r3EslWQ4m1odA4chiIaO/e3y+lNoo5UI+gD88oTXdjmKq+Ea6+oM53tosxI
-	exjOMqXbEP7Z9Lhhp9rVD5nj1L16IxB4hI0gy7e5c/W/zwD/iPcYaNwVMxQ0rFzRkJjF
-	c5xXfzmElxCa446jHI0Zajowzbol5WJTOn2M81MWWFqDY0DcDwfK7lKNheLPqk5H+33K
-	Owkg==
-X-Gm-Message-State: APjAAAUWV4hzid16Gwr+I5hICUhALBKioSuCGSlAaoLxgLiOZHPrIfcA
-	ciFU89bc5/Ykc1jGM4VtkqI=
-X-Google-Smtp-Source: APXvYqwoV1mUBUqMaCRaQReRjtFRL+Eof45k7bEWpHYlUxNeuRjc0LbO5xv8g1O5IYmkkn1VosjXJQ==
-X-Received: by 2002:adf:e488:: with SMTP id i8mr2882218wrm.20.1569499523392;
-	Thu, 26 Sep 2019 05:05:23 -0700 (PDT)
+	h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+	:content-transfer-encoding;
+	bh=Y07ZnDzexUD9RKC6iDZUZKRTQv+E4IUsmSABNZBPtUg=;
+	b=jRt345widbyCwT1ILqozfA0Yj1T+POE+XQ2VSIQgKB8PWy/G77xsndfGR2FidJAYW0
+	AzftYzw2atFeyRLaIAaMUa8SmQhCs4d1TpukC9Cf/AX+R5H4OqAxxqx5LY9P8dwVVm7n
+	jBlrRYj86rBpiR3Mf9VLNgz/gwPfXA6/lSANotbPUUNfwAe4JRL19/Bq5wwovGYwtLlD
+	RZewdKNLExXvBgMbHdYYxIygx7DC0cXu3YSn0h40V2WY5zrp9P0BXmvUNpkwysbNr4ey
+	cHbUhtrm6q6kflpvNAtZ/ymulpOuUMZaWBnwCNtaqrhvaoKDYdQD6XTyuu6dyHbLSfwT
+	L7xQ==
+X-Gm-Message-State: APjAAAXUIONacRxPWGQhSUTK4E+PDPLn/beIcSAPBjEvI62ReRUWl7fm
+	B2uxMlFFtfKCBcVkGNRHe/E=
+X-Google-Smtp-Source: APXvYqx9k0cZlYHe0P8eggYC/xz9L/TEupr8wVGgeoHdGd9BMRiHHRWA4yfN9cmikfylNkLDgEIz9g==
+X-Received: by 2002:a5d:4044:: with SMTP id w4mr2885084wrp.281.1569499519632; 
+	Thu, 26 Sep 2019 05:05:19 -0700 (PDT)
 Received: from IcarusMOD.eternityproject.eu ([93.51.16.173])
 	by smtp.gmail.com with ESMTPSA id
-	d193sm5289584wmd.0.2019.09.26.05.05.22
+	d193sm5289584wmd.0.2019.09.26.05.05.18
 	(version=TLS1_2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128/128);
-	Thu, 26 Sep 2019 05:05:22 -0700 (PDT)
+	Thu, 26 Sep 2019 05:05:18 -0700 (PDT)
 From: kholk11@gmail.com
 To: linux-arm-msm@vger.kernel.org
-Subject: [PATCH 5/6] iommu/qcom: Index contexts by asid number to allow asid 0
-Date: Thu, 26 Sep 2019 14:05:15 +0200
-Message-Id: <20190926120516.4981-6-kholk11@gmail.com>
+Subject: [PATCH 0/6] Add support for QCOM IOMMU v2 and 500
+Date: Thu, 26 Sep 2019 14:05:10 +0200
+Message-Id: <20190926120516.4981-1-kholk11@gmail.com>
 X-Mailer: git-send-email 2.21.0
-In-Reply-To: <20190926120516.4981-1-kholk11@gmail.com>
-References: <20190926120516.4981-1-kholk11@gmail.com>
 MIME-Version: 1.0
 X-Mailman-Approved-At: Thu, 26 Sep 2019 12:28:08 +0000
 Cc: marijns95@gmail.com, iommu@lists.linux-foundation.org, agross@kernel.org,
@@ -99,85 +96,28 @@ Errors-To: iommu-bounces@lists.linux-foundation.org
 
 From: AngeloGioacchino Del Regno <kholk11@gmail.com>
 
-This driver was indexing the contexts by asid-1, which is probably
-done under the assumption that the first ASID is always 1.
+Some Qualcomm Family-B SoCs have got a different version of the QCOM
+IOMMU, specifically v2 and 500, which perfectly adhere to the current
+qcom_iommu driver, but need some variations due to slightly different
+hypervisor behavior.
 
-Unfortunately this is not entirely true: at least in the MSM8956
-and MSM8976 GPU IOMMU, the gpu_user context's ASID number is zero.
-To allow using an asid number of zero, stop indexing the contexts
-by asid-1 and rather index them by asid.
+The personal aim is to upstream MSM8956 as much as possible.
 
-Signed-off-by: AngeloGioacchino Del Regno <kholk11@gmail.com>
----
- drivers/iommu/qcom_iommu.c | 19 +++++++++----------
- 1 file changed, 9 insertions(+), 10 deletions(-)
+This code has been tested on two Sony phones featuring the Qualcomm
+MSM8956 SoC.
 
-diff --git a/drivers/iommu/qcom_iommu.c b/drivers/iommu/qcom_iommu.c
-index 233ef496af27..03c68fe9439b 100644
---- a/drivers/iommu/qcom_iommu.c
-+++ b/drivers/iommu/qcom_iommu.c
-@@ -49,7 +49,7 @@ struct qcom_iommu_dev {
- 	u32			 sec_id;
- 	u8			 num_ctxs;
- 	bool			 use_aarch64_pt;
--	struct qcom_iommu_ctx	*ctxs[0];   /* indexed by asid-1 */
-+	struct qcom_iommu_ctx	*ctxs[0];   /* indexed by asid */
- };
- 
- struct qcom_iommu_ctx {
-@@ -87,7 +87,7 @@ static struct qcom_iommu_ctx * to_ctx(struct iommu_fwspec *fwspec, unsigned asid
- 	struct qcom_iommu_dev *qcom_iommu = to_iommu(fwspec);
- 	if (!qcom_iommu)
- 		return NULL;
--	return qcom_iommu->ctxs[asid - 1];
-+	return qcom_iommu->ctxs[asid];
- }
- 
- static inline void
-@@ -604,12 +604,10 @@ static int qcom_iommu_of_xlate(struct device *dev, struct of_phandle_args *args)
- 	qcom_iommu = platform_get_drvdata(iommu_pdev);
- 
- 	/* make sure the asid specified in dt is valid, so we don't have
--	 * to sanity check this elsewhere, since 'asid - 1' is used to
--	 * index into qcom_iommu->ctxs:
-+	 * to sanity check this elsewhere:
- 	 */
--	if (WARN_ON(asid < 1) ||
--	    WARN_ON(asid > qcom_iommu->num_ctxs) ||
--	    WARN_ON(qcom_iommu->ctxs[asid - 1] == NULL))
-+	if (WARN_ON(asid > qcom_iommu->num_ctxs) ||
-+	    WARN_ON(qcom_iommu->ctxs[asid] == NULL))
- 		return -EINVAL;
- 
- 	if (!fwspec->iommu_priv) {
-@@ -789,7 +787,7 @@ static int qcom_iommu_ctx_probe(struct platform_device *pdev)
- 
- 	dev_dbg(dev, "found asid %u\n", ctx->asid);
- 
--	qcom_iommu->ctxs[ctx->asid - 1] = ctx;
-+	qcom_iommu->ctxs[ctx->asid] = ctx;
- 
- 	return 0;
- }
-@@ -801,7 +799,7 @@ static int qcom_iommu_ctx_remove(struct platform_device *pdev)
- 
- 	platform_set_drvdata(pdev, NULL);
- 
--	qcom_iommu->ctxs[ctx->asid - 1] = NULL;
-+	qcom_iommu->ctxs[ctx->asid] = NULL;
- 
- 	return 0;
- }
-@@ -846,7 +844,8 @@ static int qcom_iommu_device_probe(struct platform_device *pdev)
- 	for_each_child_of_node(dev->of_node, child)
- 		max_asid = max(max_asid, get_asid(child));
- 
--	sz = sizeof(*qcom_iommu) + (max_asid * sizeof(qcom_iommu->ctxs[0]));
-+	sz = sizeof(*qcom_iommu);
-+	sz += (max_asid + 1) * sizeof(qcom_iommu->ctxs[0]);
- 
- 	qcom_iommu = devm_kzalloc(dev, sz, GFP_KERNEL);
- 	if (!qcom_iommu)
+AngeloGioacchino Del Regno (6):
+  iommu/qcom: Use the asid read from device-tree if specified
+  iommu/qcom: Write TCR before TTBRs to fix ASID access behavior
+  iommu/qcom: Properly reset the IOMMU context
+  iommu/qcom: Add support for AArch64 IOMMU pagetables
+  iommu/qcom: Index contexts by asid number to allow asid 0
+  iommu/qcom: Add support for QCIOMMUv2 and QCIOMMU-500 secured contexts
+
+ .../devicetree/bindings/iommu/qcom,iommu.txt  |   5 +
+ drivers/iommu/qcom_iommu.c                    | 133 ++++++++++++++----
+ 2 files changed, 111 insertions(+), 27 deletions(-)
+
 -- 
 2.21.0
 
