@@ -2,130 +2,92 @@ Return-Path: <SRS0=V6zV=XV=lists.linux-foundation.org=iommu-bounces@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-9.5 required=3.0 tests=DKIM_INVALID,DKIM_SIGNED,
+X-Spam-Status: No, score=-8.0 required=3.0 tests=DKIM_INVALID,DKIM_SIGNED,
 	HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_PATCH,MAILING_LIST_MULTI,SIGNED_OFF_BY,
-	SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED,USER_AGENT_GIT autolearn=ham
+	SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED,USER_AGENT_SANE_1 autolearn=ham
 	autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 2EC3AC432C2
-	for <iommu@archiver.kernel.org>; Thu, 26 Sep 2019 06:03:25 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 37D96C432C2
+	for <iommu@archiver.kernel.org>; Thu, 26 Sep 2019 06:18:14 +0000 (UTC)
 Received: from mail.linuxfoundation.org (mail.linuxfoundation.org [140.211.169.12])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by mail.kernel.org (Postfix) with ESMTPS id DCCE92146E
-	for <iommu@archiver.kernel.org>; Thu, 26 Sep 2019 06:03:24 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTPS id E0D972146E
+	for <iommu@archiver.kernel.org>; Thu, 26 Sep 2019 06:18:13 +0000 (UTC)
 Authentication-Results: mail.kernel.org;
-	dkim=fail reason="signature verification failed" (1024-bit key) header.d=xilinx.onmicrosoft.com header.i=@xilinx.onmicrosoft.com header.b="p8d+RChP"
-DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org DCCE92146E
-Authentication-Results: mail.kernel.org; dmarc=none (p=none dis=none) header.from=xilinx.com
+	dkim=fail reason="signature verification failed" (1024-bit key) header.d=redhat.com header.i=@redhat.com header.b="K1BGpvWB"
+DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org E0D972146E
+Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=redhat.com
 Authentication-Results: mail.kernel.org; spf=pass smtp.mailfrom=iommu-bounces@lists.linux-foundation.org
 Received: from mail.linux-foundation.org (localhost [127.0.0.1])
-	by mail.linuxfoundation.org (Postfix) with ESMTP id 943ABB1F;
-	Thu, 26 Sep 2019 06:03:24 +0000 (UTC)
+	by mail.linuxfoundation.org (Postfix) with ESMTP id 602ACB09;
+	Thu, 26 Sep 2019 06:18:13 +0000 (UTC)
 Received: from smtp1.linuxfoundation.org (smtp1.linux-foundation.org
 	[172.17.192.35])
-	by mail.linuxfoundation.org (Postfix) with ESMTPS id 620B441C
+	by mail.linuxfoundation.org (Postfix) with ESMTPS id 111D2408
 	for <iommu@lists.linux-foundation.org>;
-	Thu, 26 Sep 2019 06:03:23 +0000 (UTC)
-X-Greylist: whitelisted by SQLgrey-1.7.6
-Received: from NAM05-BY2-obe.outbound.protection.outlook.com
-	(mail-eopbgr710058.outbound.protection.outlook.com [40.107.71.58])
-	by smtp1.linuxfoundation.org (Postfix) with ESMTPS id B54398A
+	Thu, 26 Sep 2019 06:18:12 +0000 (UTC)
+X-Greylist: domain auto-whitelisted by SQLgrey-1.7.6
+Received: from us-smtp-delivery-1.mimecast.com (us-smtp-1.mimecast.com
+	[205.139.110.61])
+	by smtp1.linuxfoundation.org (Postfix) with ESMTP id 4D59F8A0
 	for <iommu@lists.linux-foundation.org>;
-	Thu, 26 Sep 2019 06:03:22 +0000 (UTC)
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
-	b=EIr/w8NNsN09WGpgTt+5SSFYBGpEUVvBDXXU4GKVeWspCd3wEoNM1pWZS0KzJ0vpLSrp8NrEAUv99zY/JuVFUpL6NK3zPzWjArHyq0E6JQdqSWcGCx79oaaCkwiknZ+mOnR4STCVeecPtMi97xdo8mrnvRhOt7u2HgzXfDZfx7kiQN95o2R8xeWEqL8jh+CnGUgXWKTJSbBpQVXNRrdqyNPPTHVaoUkB7jjlhNoQd0NvGid9TQkXFXNm2tfBatpoLn9RH8S/dBq0xMghIqsKT0lo619V10tqv1rWOjPasdLtG/hNV+JMrZ/IHiiwRw0ZgYCmvLfddqWp+CcEFBrH6A==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com; 
-	s=arcselector9901;
-	h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
-	bh=pwXrvOmDVmVyq64hMbhAF0PuJaQpuzxzcUF+0Dlr9E8=;
-	b=dJ2iUhogewgqIFmzA8PUHGKW8jpT8m7Hr8fNq44Al/G6bo6527MR+7lo0x1YT+On05xI4t8kNRV2yozenL7PMuVF0hjHfHI4FQxA/Pe5ZRiqdPhu1l4LMnYQPqYO0zghZkNVLjas2y80w2eYfH9Zx2NEbIu6pfFTZDoFg9rRACOj2sr3qNb895HZ5yRdd13Zz+VvuzGLdwlYcwpXcjeDxMG1Yl1yp9jD9jjFaqmhK5mXG/YmBU2Qyhch/rrZCCyMNi+kJVFPKTNx8jKuNchgqYGrMmIjvD+Q0+8ZG+wtaQHaF2lrU7bPyjCxM4+9EokLqKr7P31Skc4Vb3WMJx5d0g==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass (sender ip is
-	149.199.60.83) smtp.rcpttodomain=lists.linux-foundation.org
-	smtp.mailfrom=xilinx.com; dmarc=bestguesspass action=none
-	header.from=xilinx.com; dkim=none (message not signed); arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-	d=xilinx.onmicrosoft.com; s=selector2-xilinx-onmicrosoft-com;
-	h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
-	bh=pwXrvOmDVmVyq64hMbhAF0PuJaQpuzxzcUF+0Dlr9E8=;
-	b=p8d+RChPlOd9HtXOWI9cdKZbEVPZ0TsBLndpa49sci97T3nZUl78GZcSboY1Ye0OkglX3vsq3yhLam5zjTgEt4QAsfynklGdYu37JQBQXgHszmmccIMsmrMm1yxwdu1YkSE0FIc/M43BBUwiyhSwM3977K+ePcmvSnarB96+bVM=
-Received: from BYAPR02CA0063.namprd02.prod.outlook.com (2603:10b6:a03:54::40)
-	by BYAPR02MB5253.namprd02.prod.outlook.com (2603:10b6:a03:61::13)
-	with Microsoft SMTP Server (version=TLS1_2,
-	cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.2284.26;
-	Thu, 26 Sep 2019 06:03:19 +0000
-Received: from CY1NAM02FT061.eop-nam02.prod.protection.outlook.com
-	(2a01:111:f400:7e45::201) by BYAPR02CA0063.outlook.office365.com
-	(2603:10b6:a03:54::40) with Microsoft SMTP Server (version=TLS1_2,
-	cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.2199.15 via
-	Frontend Transport; Thu, 26 Sep 2019 06:03:19 +0000
-Authentication-Results: spf=pass (sender IP is 149.199.60.83)
-	smtp.mailfrom=xilinx.com; lists.linux-foundation.org;
-	dkim=none (message not
-	signed) header.d=none;lists.linux-foundation.org; dmarc=bestguesspass
-	action=none header.from=xilinx.com;
-Received-SPF: Pass (protection.outlook.com: domain of xilinx.com designates
-	149.199.60.83 as permitted sender) receiver=protection.outlook.com;
-	client-ip=149.199.60.83; helo=xsj-pvapsmtpgw01;
-Received: from xsj-pvapsmtpgw01 (149.199.60.83) by
-	CY1NAM02FT061.mail.protection.outlook.com (10.152.75.30) with Microsoft
-	SMTP Server (version=TLS1_0,
-	cipher=TLS_RSA_WITH_AES_256_CBC_SHA) id 15.20.2284.25
-	via Frontend Transport; Thu, 26 Sep 2019 06:03:19 +0000
-Received: from unknown-38-66.xilinx.com ([149.199.38.66] helo=xsj-pvapsmtp01)
-	by xsj-pvapsmtpgw01 with esmtp (Exim 4.63)
-	(envelope-from <dylan.yip@xilinx.com>)
-	id 1iDMs2-0006pm-Kl; Wed, 25 Sep 2019 23:03:18 -0700
-Received: from [127.0.0.1] (helo=localhost)
-	by xsj-pvapsmtp01 with smtp (Exim 4.63)
-	(envelope-from <dylan.yip@xilinx.com>)
-	id 1iDMrx-0005Jp-IA; Wed, 25 Sep 2019 23:03:13 -0700
-Received: from xsj-pvapsmtp01 (mailhost.xilinx.com [149.199.38.66])
-	by xsj-smtp-dlp2.xlnx.xilinx.com (8.13.8/8.13.1) with ESMTP id
-	x8Q6393F025367; Wed, 25 Sep 2019 23:03:10 -0700
-Received: from [172.19.2.242] (helo=xsjmadhurki50.xilinx.com)
-	by xsj-pvapsmtp01 with esmtp (Exim 4.63)
-	(envelope-from <dylan.yip@xilinx.com>)
-	id 1iDMrt-0005JK-TZ; Wed, 25 Sep 2019 23:03:09 -0700
-From: Dylan Yip <dylan.yip@xilinx.com>
-To: linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org,
-	iommu@lists.linux-foundation.org, satishna@xilinx.com
-Subject: [LINUX PATCH] dma-mapping: Control memset operation using gfp flags
-Date: Wed, 25 Sep 2019 23:03:08 -0700
-Message-Id: <1569477788-28290-1-git-send-email-dylan.yip@xilinx.com>
-X-Mailer: git-send-email 2.7.4
-X-RCIS-Action: ALLOW
-X-TM-AS-Product-Ver: IMSS-7.1.0.1224-8.2.0.1013-23620.005
-X-TM-AS-User-Approved-Sender: Yes;Yes
-X-EOPAttributedMessage: 0
-X-MS-Office365-Filtering-HT: Tenant
-X-Forefront-Antispam-Report: CIP:149.199.60.83; IPV:NLI; CTRY:US; EFV:NLI;
-	SFV:NSPM;
-	SFS:(10009020)(4636009)(376002)(136003)(346002)(39860400002)(396003)(199004)(189003)(70586007)(70206006)(107886003)(336012)(426003)(14444005)(36756003)(186003)(7696005)(26005)(478600001)(356004)(4326008)(51416003)(9786002)(106002)(47776003)(50226002)(81156014)(8676002)(6636002)(81166006)(16586007)(316002)(50466002)(5660300002)(486006)(44832011)(48376002)(2616005)(476003)(36386004)(305945005)(126002)(8936002)(2906002);
-	DIR:OUT; SFP:1101; SCL:1; SRVR:BYAPR02MB5253; H:xsj-pvapsmtpgw01;
-	FPR:; SPF:Pass; LANG:en; PTR:unknown-60-83.xilinx.com; A:1; MX:1;
+	Thu, 26 Sep 2019 06:18:11 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+	s=mimecast20190719; t=1569478689;
+	h=from:from:reply-to:reply-to:subject:subject:date:date:
+	message-id:message-id:to:to:cc:cc:mime-version:mime-version:
+	content-type:content-type:
+	content-transfer-encoding:content-transfer-encoding:
+	in-reply-to:in-reply-to:references:references;
+	bh=z6IgwqGl9UvJ4xVglEB6grHSGrzx+z6kvbQXSxgHkAM=;
+	b=K1BGpvWByerfte6pK6Jd3ng4bGX5pctHXsWysXa85QuTJn+ZM/GAgnMvCGFwcWYvzXFIYZ
+	hYnwP8pxDkuS7EV0m9YwBa9nkCdYyDlcYILEgm9C7RHst+i0g3xe86vMr6KpBGt2wCW65P
+	FoZeW8SIARVIEHSbxTWsX01ezo1iCsM=
+Received: from mail-io1-f72.google.com (mail-io1-f72.google.com
+	[209.85.166.72]) (Using TLS) by relay.mimecast.com with ESMTP id
+	us-mta-196-VIgYXletP-eUl5dAALsdqg-1; Thu, 26 Sep 2019 02:18:08 -0400
+Received: by mail-io1-f72.google.com with SMTP id q18so2703054ios.8
+	for <iommu@lists.linux-foundation.org>;
+	Wed, 25 Sep 2019 23:18:07 -0700 (PDT)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+	d=1e100.net; s=20161025;
+	h=x-gm-message-state:date:from:to:cc:subject:message-id:reply-to
+	:references:mime-version:content-disposition:in-reply-to:user-agent;
+	bh=G0pA5gf1SqiUP4jckDLg7x2aKqYiCt1lYdw1Je/sA9c=;
+	b=enQEsQbiUn3uCrKOlBVH7nWzg64KS16DPQF5+QNvLILknkOOX2L17wAPXpFTVkRjEe
+	L4hJxWBj8XN8iJVazd1DTntRtGAXUK46wRgramLah97dtO/PsuMcWUnzH1rOd/b8cdDc
+	/M0jwlfX/UEM+o1eyh/DfhfHF+N5GdDVXF3FJRi95Ezyu0x5us3RpycWEPTXBbgBsiLq
+	BtYyU25hN+D6zHVP7pcykX8J3SP7nhXg1kGSu/mAzsroJsHEt50lAm8U7bbXnq5aTxwJ
+	WEHxzKeaYiklRYA24HrLjQLwLB2c9def9NMNDPjYSqjZ+v2huIOzgQYWn8J9LuGKs5Ga
+	5pmA==
+X-Gm-Message-State: APjAAAUXR1EAE1ztjodYtJHDjXijuvDuO0ackLAAp5TjElL/Azi+t5I6
+	oBX6IkPyKGRp13WGfEqvpt3Au/N3WZg0AiphV1JacX4GyjVKR0IAbH2E6nB0VTrMEWSW6p4gkZf
+	arllTPKUwPFfb0LiUhVISqzBIuvsnIg==
+X-Received: by 2002:a02:712b:: with SMTP id n43mr2197240jac.2.1569478687468;
+	Wed, 25 Sep 2019 23:18:07 -0700 (PDT)
+X-Google-Smtp-Source: APXvYqzZ17RyHwHqn6A9i6D2R0wAVBun8TZL9D4RmlJ+LkqhJy9ZBnLLJUW04jxYpM5w7C8muzdLFA==
+X-Received: by 2002:a02:712b:: with SMTP id n43mr2197213jac.2.1569478687085;
+	Wed, 25 Sep 2019 23:18:07 -0700 (PDT)
+Received: from localhost (ip70-163-223-149.ph.ph.cox.net. [70.163.223.149])
+	by smtp.gmail.com with ESMTPSA id p16sm291634iln.35.2019.09.25.23.18.05
+	(version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+	Wed, 25 Sep 2019 23:18:06 -0700 (PDT)
+Date: Wed, 25 Sep 2019 23:18:04 -0700
+From: Jerry Snitselaar <jsnitsel@redhat.com>
+To: Joerg Roedel <joro@8bytes.org>
+Subject: Re: [PATCH 1/6] iommu/amd: Remove domain->updated
+Message-ID: <20190926061804.jaletrg437j4j2yh@cantor>
+References: <20190925132300.3038-1-joro@8bytes.org>
+	<20190925132300.3038-2-joro@8bytes.org>
 MIME-Version: 1.0
-X-MS-PublicTrafficType: Email
-X-MS-Office365-Filtering-Correlation-Id: 62e1ad14-0e18-4c28-5f8e-08d742473ad9
-X-Microsoft-Antispam: BCL:0; PCL:0;
-	RULEID:(2390118)(7020095)(4652040)(8989299)(4534185)(4627221)(201703031133081)(201702281549075)(8990200)(5600167)(711020)(4605104)(4709080)(1401327)(4618075)(2017052603328);
-	SRVR:BYAPR02MB5253; 
-X-MS-TrafficTypeDiagnostic: BYAPR02MB5253:
-X-Microsoft-Antispam-PRVS: <BYAPR02MB5253367D158C926526222DD0B0860@BYAPR02MB5253.namprd02.prod.outlook.com>
-X-Auto-Response-Suppress: DR, RN, NRN, OOF, AutoReply
-X-MS-Oob-TLC-OOBClassifiers: OLM:8882;
-X-Forefront-PRVS: 0172F0EF77
-X-MS-Exchange-SenderADCheck: 1
-X-Microsoft-Antispam-Message-Info: aBZE7xdA9CLBU7xfXE2Gk5sJv25xjVAWscQzRhOM59+5yTIQN9/dDl34IEOuiAel8vdrUe/w7n+RQd+Id7l8BIfjI9wTeULbsYubTzxYthagmAvwQsAqxJwD8UMgaw7vLN5+qaUT7+beWeu1WwH8Y3U7dZK9V3QGuJMMue/anfaoOF92JAQq9+O9138E4/r0xfa3MfNUh9Qi0RWqh15UFK44id+P3khKWaUNBi7PhqggeooN6Igem2Ch1TpQGu2U7zaWoK/LjYE+kNSh0Si1LUf7qc33WTwcu3GQV0leB3S1iDL8aVFpZtuRZnnYRi1srhxP4NdIdzUJCd5uALXv3b7mZrN8wvGKz6ZCgszNPjzbodynDjzCDDAWA0DdfCqhl/Mp9iabSgRvSU9P1X+o9TlQewzZSUqXezP3GkSaopM=
-X-OriginatorOrg: xilinx.com
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 26 Sep 2019 06:03:19.1267 (UTC)
-X-MS-Exchange-CrossTenant-Network-Message-Id: 62e1ad14-0e18-4c28-5f8e-08d742473ad9
-X-MS-Exchange-CrossTenant-Id: 657af505-d5df-48d0-8300-c31994686c5c
-X-MS-Exchange-CrossTenant-OriginalAttributedTenantConnectingIp: TenantId=657af505-d5df-48d0-8300-c31994686c5c;
-	Ip=[149.199.60.83]; Helo=[xsj-pvapsmtpgw01]
-X-MS-Exchange-CrossTenant-FromEntityHeader: HybridOnPrem
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: BYAPR02MB5253
-Cc: Dylan Yip <dylan.yip@xilinx.com>
+In-Reply-To: <20190925132300.3038-2-joro@8bytes.org>
+User-Agent: NeoMutt/20180716
+X-MC-Unique: VIgYXletP-eUl5dAALsdqg-1
+X-Mimecast-Spam-Score: 0
+Content-Disposition: inline
+Cc: Filippo Sironi <sironi@amazon.de>, iommu@lists.linux-foundation.org,
+	jroedel@suse.de
 X-BeenThere: iommu@lists.linux-foundation.org
 X-Mailman-Version: 2.1.12
 Precedence: list
@@ -138,163 +100,210 @@ List-Post: <mailto:iommu@lists.linux-foundation.org>
 List-Help: <mailto:iommu-request@lists.linux-foundation.org?subject=help>
 List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
 	<mailto:iommu-request@lists.linux-foundation.org?subject=subscribe>
-Content-Type: text/plain; charset="us-ascii"
+Reply-To: Jerry Snitselaar <jsnitsel@redhat.com>
 Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset="us-ascii"; Format="flowed"
 Sender: iommu-bounces@lists.linux-foundation.org
 Errors-To: iommu-bounces@lists.linux-foundation.org
 
-In case of 4k video buffer, the allocation from a reserved memory is
-taking a long time, ~500ms. This is root caused to the memset()
-operations on the allocated memory which is consuming more cpu cycles.
-Due to this delay, we see that initial frames are being dropped.
+On Wed Sep 25 19, Joerg Roedel wrote:
+>From: Joerg Roedel <jroedel@suse.de>
+>
+>This struct member was used to track whether a domain
+>change requires updates to the device-table and IOMMU cache
+>flushes. The problem is, that access to this field is racy
+>since locking in the common mapping code-paths has been
+>eliminated.
+>
+>Move the updated field to the stack to get rid of all
+>potential races and remove the field from the struct.
+>
+>Fixes: 92d420ec028d ("iommu/amd: Relax locking in dma_ops path")
+>Signed-off-by: Joerg Roedel <jroedel@suse.de>
+>---
+> drivers/iommu/amd_iommu.c       | 49 +++++++++++++++++----------------
+> drivers/iommu/amd_iommu_types.h |  1 -
+> 2 files changed, 25 insertions(+), 25 deletions(-)
+>
+>diff --git a/drivers/iommu/amd_iommu.c b/drivers/iommu/amd_iommu.c
+>index 7bdce3b10f3d..042854bbc5bc 100644
+>--- a/drivers/iommu/amd_iommu.c
+>+++ b/drivers/iommu/amd_iommu.c
+>@@ -1458,10 +1458,11 @@ static void free_pagetable(struct protection_domain *domain)
+>  * another level increases the size of the address space by 9 bits to a size up
+>  * to 64 bits.
+>  */
+>-static void increase_address_space(struct protection_domain *domain,
+>+static bool increase_address_space(struct protection_domain *domain,
+> 				   gfp_t gfp)
+> {
+> 	unsigned long flags;
+>+	bool ret = false;
+> 	u64 *pte;
+>
+> 	spin_lock_irqsave(&domain->lock, flags);
+>@@ -1478,19 +1479,21 @@ static void increase_address_space(struct protection_domain *domain,
+> 					iommu_virt_to_phys(domain->pt_root));
+> 	domain->pt_root  = pte;
+> 	domain->mode    += 1;
+>-	domain->updated  = true;
+>+
+>+	ret = true;
+>
+> out:
+> 	spin_unlock_irqrestore(&domain->lock, flags);
+>
+>-	return;
+>+	return ret;
+> }
+>
+> static u64 *alloc_pte(struct protection_domain *domain,
+> 		      unsigned long address,
+> 		      unsigned long page_size,
+> 		      u64 **pte_page,
+>-		      gfp_t gfp)
+>+		      gfp_t gfp,
+>+		      bool *updated)
+> {
+> 	int level, end_lvl;
+> 	u64 *pte, *page;
+>@@ -1498,7 +1501,7 @@ static u64 *alloc_pte(struct protection_domain *domain,
+> 	BUG_ON(!is_power_of_2(page_size));
+>
+> 	while (address > PM_LEVEL_SIZE(domain->mode))
+>-		increase_address_space(domain, gfp);
+>+		*updated = increase_address_space(domain, gfp) || *updated;
+>
+> 	level   = domain->mode - 1;
+> 	pte     = &domain->pt_root[PM_LEVEL_INDEX(level, address)];
+>@@ -1530,7 +1533,7 @@ static u64 *alloc_pte(struct protection_domain *domain,
+> 			for (i = 0; i < count; ++i)
+> 				cmpxchg64(&lpte[i], __pte, 0ULL);
+>
+>-			domain->updated = true;
+>+			*updated = true;
+> 			continue;
+> 		}
+>
+>@@ -1547,7 +1550,7 @@ static u64 *alloc_pte(struct protection_domain *domain,
+> 			if (cmpxchg64(pte, __pte, __npte) != __pte)
+> 				free_page((unsigned long)page);
+> 			else if (IOMMU_PTE_PRESENT(__pte))
+>-				domain->updated = true;
+>+				*updated = true;
+>
+> 			continue;
+> 		}
+>@@ -1656,28 +1659,29 @@ static int iommu_map_page(struct protection_domain *dom,
+> 			  gfp_t gfp)
+> {
+> 	struct page *freelist = NULL;
+>+	bool updated = false;
+> 	u64 __pte, *pte;
+>-	int i, count;
+>+	int ret, i, count;
+>
+> 	BUG_ON(!IS_ALIGNED(bus_addr, page_size));
+> 	BUG_ON(!IS_ALIGNED(phys_addr, page_size));
+>
+>+	ret = -EINVAL;
+> 	if (!(prot & IOMMU_PROT_MASK))
+>-		return -EINVAL;
+>+		goto out;
+>
+> 	count = PAGE_SIZE_PTE_COUNT(page_size);
+>-	pte   = alloc_pte(dom, bus_addr, page_size, NULL, gfp);
+>+	pte   = alloc_pte(dom, bus_addr, page_size, NULL, gfp, &updated);
+>
+>-	if (!pte) {
+>-		update_domain(dom);
+>-		return -ENOMEM;
+>-	}
+>+	ret = -ENOMEM;
+>+	if (!pte)
+>+		goto out;
+>
+> 	for (i = 0; i < count; ++i)
+> 		freelist = free_clear_pte(&pte[i], pte[i], freelist);
+>
+> 	if (freelist != NULL)
+>-		dom->updated = true;
+>+		updated = true;
+>
+> 	if (count > 1) {
+> 		__pte = PAGE_SIZE_PTE(__sme_set(phys_addr), page_size);
+>@@ -1693,12 +1697,16 @@ static int iommu_map_page(struct protection_domain *dom,
+> 	for (i = 0; i < count; ++i)
+> 		pte[i] = __pte;
+>
+>-	update_domain(dom);
+>+	ret = 0;
+>+
+>+out:
+>+	if (updated)
+>+		update_domain(dom);
+>
+> 	/* Everything flushed out, free pages now */
+> 	free_page_list(freelist);
+>
+>-	return 0;
+>+	return ret;
+> }
+>
+> static unsigned long iommu_unmap_page(struct protection_domain *dom,
+>@@ -2399,15 +2407,10 @@ static void update_device_table(struct protection_domain *domain)
+>
+> static void update_domain(struct protection_domain *domain)
+> {
+>-	if (!domain->updated)
+>-		return;
+>-
+> 	update_device_table(domain);
+>
+> 	domain_flush_devices(domain);
+> 	domain_flush_tlb_pde(domain);
+>-
+>-	domain->updated = false;
+> }
+>
+> static int dir2prot(enum dma_data_direction direction)
+>@@ -3333,7 +3336,6 @@ void amd_iommu_domain_direct_map(struct iommu_domain *dom)
+>
+> 	/* Update data structure */
+> 	domain->mode    = PAGE_MODE_NONE;
+>-	domain->updated = true;
+>
+> 	/* Make changes visible to IOMMUs */
+> 	update_domain(domain);
+>@@ -3379,7 +3381,6 @@ int amd_iommu_domain_enable_v2(struct iommu_domain *dom, int pasids)
+>
+> 	domain->glx      = levels;
+> 	domain->flags   |= PD_IOMMUV2_MASK;
+>-	domain->updated  = true;
+>
+> 	update_domain(domain);
+>
+>diff --git a/drivers/iommu/amd_iommu_types.h b/drivers/iommu/amd_iommu_types.h
+>index 9ac229e92b07..0186501ab971 100644
+>--- a/drivers/iommu/amd_iommu_types.h
+>+++ b/drivers/iommu/amd_iommu_types.h
+>@@ -475,7 +475,6 @@ struct protection_domain {
+> 	int glx;		/* Number of levels for GCR3 table */
+> 	u64 *gcr3_tbl;		/* Guest CR3 table */
+> 	unsigned long flags;	/* flags to find out type of domain */
+>-	bool updated;		/* complete domain flush required */
+> 	unsigned dev_cnt;	/* devices assigned to this domain */
+> 	unsigned dev_iommu[MAX_IOMMUS]; /* per-IOMMU reference count */
+> };
+>-- 
+>2.17.1
+>
+>_______________________________________________
+>iommu mailing list
+>iommu@lists.linux-foundation.org
+>https://lists.linuxfoundation.org/mailman/listinfo/iommu
 
-To fix this, we have wrapped the default memset, done when allocating
-coherent memory, under the __GFP_ZERO flag. So, we only clear
-allocated memory if __GFP_ZERO flag is enabled. We believe this
-should be safe as the video decoder always writes before reading.
-This optimizes decoder initialization as we do not set the __GFP_ZERO
-flag when allocating memory for decoder. With this optimization, we
-don't see initial frame drops and decoder initialization time is
-~100ms.
-
-This patch adds plumbing through dma_alloc functions to pass gfp flag
-set by user to __dma_alloc_from_coherent(). Here gfp flag is checked
-for __GFP_ZERO. If present, we memset the buffer to 0 otherwise we
-skip memset.
-
-Signed-off-by: Dylan Yip <dylan.yip@xilinx.com>
----
- arch/arm/mm/dma-mapping-nommu.c |  2 +-
- include/linux/dma-mapping.h     | 11 +++++++----
- kernel/dma/coherent.c           | 15 +++++++++------
- kernel/dma/mapping.c            |  2 +-
- 4 files changed, 18 insertions(+), 12 deletions(-)
-
-diff --git a/arch/arm/mm/dma-mapping-nommu.c b/arch/arm/mm/dma-mapping-nommu.c
-index 52b8255..242b2c3 100644
---- a/arch/arm/mm/dma-mapping-nommu.c
-+++ b/arch/arm/mm/dma-mapping-nommu.c
-@@ -35,7 +35,7 @@ static void *arm_nommu_dma_alloc(struct device *dev, size_t size,
- 				 unsigned long attrs)
- 
- {
--	void *ret = dma_alloc_from_global_coherent(size, dma_handle);
-+	void *ret = dma_alloc_from_global_coherent(size, dma_handle, gfp);
- 
- 	/*
- 	 * dma_alloc_from_global_coherent() may fail because:
-diff --git a/include/linux/dma-mapping.h b/include/linux/dma-mapping.h
-index f7d1eea..b715c9f 100644
---- a/include/linux/dma-mapping.h
-+++ b/include/linux/dma-mapping.h
-@@ -160,24 +160,27 @@ static inline int is_device_dma_capable(struct device *dev)
-  * Don't use them in device drivers.
-  */
- int dma_alloc_from_dev_coherent(struct device *dev, ssize_t size,
--				       dma_addr_t *dma_handle, void **ret);
-+				       dma_addr_t *dma_handle, void **ret,
-+				       gfp_t flag);
- int dma_release_from_dev_coherent(struct device *dev, int order, void *vaddr);
- 
- int dma_mmap_from_dev_coherent(struct device *dev, struct vm_area_struct *vma,
- 			    void *cpu_addr, size_t size, int *ret);
- 
--void *dma_alloc_from_global_coherent(ssize_t size, dma_addr_t *dma_handle);
-+void *dma_alloc_from_global_coherent(ssize_t size, dma_addr_t *dma_handle,
-+				     gfp_t flag);
- int dma_release_from_global_coherent(int order, void *vaddr);
- int dma_mmap_from_global_coherent(struct vm_area_struct *vma, void *cpu_addr,
- 				  size_t size, int *ret);
- 
- #else
--#define dma_alloc_from_dev_coherent(dev, size, handle, ret) (0)
-+#define dma_alloc_from_dev_coherent(dev, size, handle, ret, flag) (0)
- #define dma_release_from_dev_coherent(dev, order, vaddr) (0)
- #define dma_mmap_from_dev_coherent(dev, vma, vaddr, order, ret) (0)
- 
- static inline void *dma_alloc_from_global_coherent(ssize_t size,
--						   dma_addr_t *dma_handle)
-+						   dma_addr_t *dma_handle,
-+						   gfp_t flag)
- {
- 	return NULL;
- }
-diff --git a/kernel/dma/coherent.c b/kernel/dma/coherent.c
-index 29fd659..d85fab5 100644
---- a/kernel/dma/coherent.c
-+++ b/kernel/dma/coherent.c
-@@ -136,7 +136,7 @@ void dma_release_declared_memory(struct device *dev)
- EXPORT_SYMBOL(dma_release_declared_memory);
- 
- static void *__dma_alloc_from_coherent(struct dma_coherent_mem *mem,
--		ssize_t size, dma_addr_t *dma_handle)
-+		ssize_t size, dma_addr_t *dma_handle, gfp_t gfp_flag)
- {
- 	int order = get_order(size);
- 	unsigned long flags;
-@@ -158,7 +158,8 @@ static void *__dma_alloc_from_coherent(struct dma_coherent_mem *mem,
- 	*dma_handle = mem->device_base + (pageno << PAGE_SHIFT);
- 	ret = mem->virt_base + (pageno << PAGE_SHIFT);
- 	spin_unlock_irqrestore(&mem->spinlock, flags);
--	memset(ret, 0, size);
-+	if (gfp_flag & __GFP_ZERO)
-+		memset(ret, 0, size);
- 	return ret;
- err:
- 	spin_unlock_irqrestore(&mem->spinlock, flags);
-@@ -172,6 +173,7 @@ static void *__dma_alloc_from_coherent(struct dma_coherent_mem *mem,
-  * @dma_handle:	This will be filled with the correct dma handle
-  * @ret:	This pointer will be filled with the virtual address
-  *		to allocated area.
-+ * @flag:      gfp flag set by user
-  *
-  * This function should be only called from per-arch dma_alloc_coherent()
-  * to support allocation from per-device coherent memory pools.
-@@ -180,24 +182,25 @@ static void *__dma_alloc_from_coherent(struct dma_coherent_mem *mem,
-  * generic memory areas, or !0 if dma_alloc_coherent should return @ret.
-  */
- int dma_alloc_from_dev_coherent(struct device *dev, ssize_t size,
--		dma_addr_t *dma_handle, void **ret)
-+		dma_addr_t *dma_handle, void **ret, gfp_t flag)
- {
- 	struct dma_coherent_mem *mem = dev_get_coherent_memory(dev);
- 
- 	if (!mem)
- 		return 0;
- 
--	*ret = __dma_alloc_from_coherent(mem, size, dma_handle);
-+	*ret = __dma_alloc_from_coherent(mem, size, dma_handle, flag);
- 	return 1;
- }
- 
--void *dma_alloc_from_global_coherent(ssize_t size, dma_addr_t *dma_handle)
-+void *dma_alloc_from_global_coherent(ssize_t size, dma_addr_t *dma_handle,
-+				     gfp_t flag)
- {
- 	if (!dma_coherent_default_memory)
- 		return NULL;
- 
- 	return __dma_alloc_from_coherent(dma_coherent_default_memory, size,
--			dma_handle);
-+			dma_handle, flag);
- }
- 
- static int __dma_release_from_coherent(struct dma_coherent_mem *mem,
-diff --git a/kernel/dma/mapping.c b/kernel/dma/mapping.c
-index b0038ca..bfea1d2 100644
---- a/kernel/dma/mapping.c
-+++ b/kernel/dma/mapping.c
-@@ -272,7 +272,7 @@ void *dma_alloc_attrs(struct device *dev, size_t size, dma_addr_t *dma_handle,
- 
- 	WARN_ON_ONCE(!dev->coherent_dma_mask);
- 
--	if (dma_alloc_from_dev_coherent(dev, size, dma_handle, &cpu_addr))
-+	if (dma_alloc_from_dev_coherent(dev, size, dma_handle, &cpu_addr, flag))
- 		return cpu_addr;
- 
- 	/* let the implementation decide on the zone to allocate from: */
--- 
-2.7.4
+Reviewed-by: Jerry Snitselaar <jsnitsel@redhat.com>
 
 _______________________________________________
 iommu mailing list
