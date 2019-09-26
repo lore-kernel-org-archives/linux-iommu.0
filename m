@@ -2,77 +2,81 @@ Return-Path: <SRS0=V6zV=XV=lists.linux-foundation.org=iommu-bounces@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-3.4 required=3.0 tests=DKIM_ADSP_CUSTOM_MED,
+X-Spam-Status: No, score=-9.4 required=3.0 tests=DKIM_ADSP_CUSTOM_MED,
 	DKIM_INVALID,DKIM_SIGNED,FREEMAIL_FORGED_FROMDOMAIN,FREEMAIL_FROM,
-	HEADER_FROM_DIFFERENT_DOMAINS,MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS,
-	URIBL_BLOCKED,USER_AGENT_GIT autolearn=no autolearn_force=no version=3.4.0
+	HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_PATCH,MAILING_LIST_MULTI,SIGNED_OFF_BY,
+	SPF_HELO_NONE,SPF_PASS,USER_AGENT_GIT autolearn=ham autolearn_force=no
+	version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id D2801C4360C
-	for <iommu@archiver.kernel.org>; Thu, 26 Sep 2019 12:28:21 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 38D47C4360C
+	for <iommu@archiver.kernel.org>; Thu, 26 Sep 2019 12:28:26 +0000 (UTC)
 Received: from mail.linuxfoundation.org (mail.linuxfoundation.org [140.211.169.12])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by mail.kernel.org (Postfix) with ESMTPS id A5BEE207FF
-	for <iommu@archiver.kernel.org>; Thu, 26 Sep 2019 12:28:21 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTPS id 09AEE207FF
+	for <iommu@archiver.kernel.org>; Thu, 26 Sep 2019 12:28:26 +0000 (UTC)
 Authentication-Results: mail.kernel.org;
-	dkim=fail reason="signature verification failed" (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="lY6GbUxD"
-DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org A5BEE207FF
+	dkim=fail reason="signature verification failed" (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="cGy6tD1M"
+DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 09AEE207FF
 Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=gmail.com
 Authentication-Results: mail.kernel.org; spf=pass smtp.mailfrom=iommu-bounces@lists.linux-foundation.org
 Received: from mail.linux-foundation.org (localhost [127.0.0.1])
-	by mail.linuxfoundation.org (Postfix) with ESMTP id 9D47E1285;
+	by mail.linuxfoundation.org (Postfix) with ESMTP id C12BC128B;
 	Thu, 26 Sep 2019 12:28:09 +0000 (UTC)
 Received: from smtp1.linuxfoundation.org (smtp1.linux-foundation.org
 	[172.17.192.35])
-	by mail.linuxfoundation.org (Postfix) with ESMTPS id BD5F51189
+	by mail.linuxfoundation.org (Postfix) with ESMTPS id 2ED7C1189
 	for <iommu@lists.linux-foundation.org>;
-	Thu, 26 Sep 2019 12:05:29 +0000 (UTC)
+	Thu, 26 Sep 2019 12:05:31 +0000 (UTC)
 X-Greylist: whitelisted by SQLgrey-1.7.6
 Received: from mail-wr1-f67.google.com (mail-wr1-f67.google.com
 	[209.85.221.67])
-	by smtp1.linuxfoundation.org (Postfix) with ESMTPS id 36A2C8A
+	by smtp1.linuxfoundation.org (Postfix) with ESMTPS id 9FCF18A
 	for <iommu@lists.linux-foundation.org>;
-	Thu, 26 Sep 2019 12:05:21 +0000 (UTC)
-Received: by mail-wr1-f67.google.com with SMTP id i1so2456813wro.4
+	Thu, 26 Sep 2019 12:05:22 +0000 (UTC)
+Received: by mail-wr1-f67.google.com with SMTP id q17so2151024wrx.10
 	for <iommu@lists.linux-foundation.org>;
-	Thu, 26 Sep 2019 05:05:21 -0700 (PDT)
+	Thu, 26 Sep 2019 05:05:22 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=gmail.com; s=20161025;
-	h=from:to:cc:subject:date:message-id:mime-version
-	:content-transfer-encoding;
-	bh=Y07ZnDzexUD9RKC6iDZUZKRTQv+E4IUsmSABNZBPtUg=;
-	b=lY6GbUxDwmlppCz8w03u/a/XKs1RebO1CG027tKSNUaMrCOL8ApwY1PKEKNwQiijNv
-	Qx3QOqmN3hLxwFtt3LT7xVKr2agK8bWkY853sXPO9eNJVIsw6i9utP3tCp4tavm7gzhy
-	wTT9qtjlXC8cVD6LSTof8k3zNzcutc7mSWaRJYHUG9dTLDOPySv/fIsEBuhqwExMK/fW
-	9r1l71CQluQ7cA3hnmBCwhvssmlDzU9igERNYlX+KJ+PNq/+7aEknQtP2WaQH+oUBuJG
-	6lYZEM4kLnZrtn1gruTHc55ZxCbsOm3700NyJxk+VAk33qizvQkPo9FSAx21M8qnvrqe
-	zIXQ==
+	h=from:to:cc:subject:date:message-id:in-reply-to:references
+	:mime-version:content-transfer-encoding;
+	bh=gVA/w0d2QWMzk0mJERhCeM6+8qnZiMPqI0NO/jhQ/j0=;
+	b=cGy6tD1MRdVovih9rp/bCfOWWw14MpAMrP+XkmaHkV5XpsCX1VKcnoFuwLurkZkgqo
+	mLI1DjGIq0yLEppfJPl5VsRuFPWP0JRNgXWA5YSKzrMphho4+Vt/Vnogl/bm6FLFX21e
+	VMCk0VbY28C68hJLyqlmiqVtQjOpx6gQZvp33b/79YvORwxhU07ZpUxM79qMI5wlGzTH
+	3x1ffVMm9Xzt1K8cySaIYJZOCWsyo0+Lnv8JT5HEUA4yFmf8oa7ueJSsAED3czogD83P
+	Z1u7QyB0TNOM4yGNntYvv3ptx5cvynog6CXrjxwlq1UT9xd+dHvcT3TDVCkrqr2x/mDC
+	4SiA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
 	d=1e100.net; s=20161025;
-	h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
-	:content-transfer-encoding;
-	bh=Y07ZnDzexUD9RKC6iDZUZKRTQv+E4IUsmSABNZBPtUg=;
-	b=jRt345widbyCwT1ILqozfA0Yj1T+POE+XQ2VSIQgKB8PWy/G77xsndfGR2FidJAYW0
-	AzftYzw2atFeyRLaIAaMUa8SmQhCs4d1TpukC9Cf/AX+R5H4OqAxxqx5LY9P8dwVVm7n
-	jBlrRYj86rBpiR3Mf9VLNgz/gwPfXA6/lSANotbPUUNfwAe4JRL19/Bq5wwovGYwtLlD
-	RZewdKNLExXvBgMbHdYYxIygx7DC0cXu3YSn0h40V2WY5zrp9P0BXmvUNpkwysbNr4ey
-	cHbUhtrm6q6kflpvNAtZ/ymulpOuUMZaWBnwCNtaqrhvaoKDYdQD6XTyuu6dyHbLSfwT
-	L7xQ==
-X-Gm-Message-State: APjAAAXUIONacRxPWGQhSUTK4E+PDPLn/beIcSAPBjEvI62ReRUWl7fm
-	B2uxMlFFtfKCBcVkGNRHe/E=
-X-Google-Smtp-Source: APXvYqx9k0cZlYHe0P8eggYC/xz9L/TEupr8wVGgeoHdGd9BMRiHHRWA4yfN9cmikfylNkLDgEIz9g==
-X-Received: by 2002:a5d:4044:: with SMTP id w4mr2885084wrp.281.1569499519632; 
-	Thu, 26 Sep 2019 05:05:19 -0700 (PDT)
+	h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
+	:references:mime-version:content-transfer-encoding;
+	bh=gVA/w0d2QWMzk0mJERhCeM6+8qnZiMPqI0NO/jhQ/j0=;
+	b=V915QKCjwQpogBo8whO90YAMgbx+oYovxml9RIpPgeFf9nijmY4QaE8bfeE2meU+Er
+	ac5DTLimqyoM/rmFH45Jx+IOCD/JAwXVdF8dJEKC0ZDWA3zX1TMZ9BRY+kJYS1GKgytv
+	vqo0tzFL/Dz8NwhkwxyZhcXH6cBuG34CpBQjcfwADSg6ArI7WVZtNEoNxzdyCj4MVvQ9
+	cghQXNrsTbTja8+K9VeyV8iTM0WkckhPK1OzZf/eJzX8vqs2jZTd4LZS9AArHQjxiY9Q
+	qVWzO+zGLQGKIEU1+Y/i4l/xgTbmtLJdmOcKKpxh14j7HxbOXesZ9iNDb//uX0qQxzr/
+	LT9g==
+X-Gm-Message-State: APjAAAUTxCECLb2OQS3qeZvLqHSOJN0XNwaWwtlEtstlUfXz4GGnUgdq
+	68YoWrZCKI8/PVXxdqoj7AY=
+X-Google-Smtp-Source: APXvYqxdeIvz1c0FbYOZg6KWon1O1Msr3Uir5+wivy4bKJ4u8iKLs+/H/e0udgdoUCQIpIGHeRpvdg==
+X-Received: by 2002:adf:e292:: with SMTP id v18mr2942943wri.232.1569499521180; 
+	Thu, 26 Sep 2019 05:05:21 -0700 (PDT)
 Received: from IcarusMOD.eternityproject.eu ([93.51.16.173])
 	by smtp.gmail.com with ESMTPSA id
-	d193sm5289584wmd.0.2019.09.26.05.05.18
+	d193sm5289584wmd.0.2019.09.26.05.05.20
 	(version=TLS1_2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128/128);
-	Thu, 26 Sep 2019 05:05:18 -0700 (PDT)
+	Thu, 26 Sep 2019 05:05:20 -0700 (PDT)
 From: kholk11@gmail.com
 To: linux-arm-msm@vger.kernel.org
-Subject: [PATCH 0/6] Add support for QCOM IOMMU v2 and 500
-Date: Thu, 26 Sep 2019 14:05:10 +0200
-Message-Id: <20190926120516.4981-1-kholk11@gmail.com>
+Subject: [PATCH 2/6] iommu/qcom: Write TCR before TTBRs to fix ASID access
+	behavior
+Date: Thu, 26 Sep 2019 14:05:12 +0200
+Message-Id: <20190926120516.4981-3-kholk11@gmail.com>
 X-Mailer: git-send-email 2.21.0
+In-Reply-To: <20190926120516.4981-1-kholk11@gmail.com>
+References: <20190926120516.4981-1-kholk11@gmail.com>
 MIME-Version: 1.0
 X-Mailman-Approved-At: Thu, 26 Sep 2019 12:28:08 +0000
 Cc: marijns95@gmail.com, iommu@lists.linux-foundation.org, agross@kernel.org,
@@ -96,28 +100,47 @@ Errors-To: iommu-bounces@lists.linux-foundation.org
 
 From: AngeloGioacchino Del Regno <kholk11@gmail.com>
 
-Some Qualcomm Family-B SoCs have got a different version of the QCOM
-IOMMU, specifically v2 and 500, which perfectly adhere to the current
-qcom_iommu driver, but need some variations due to slightly different
-hypervisor behavior.
+As also stated in the arm-smmu driver, we must write the TCR before
+writing the TTBRs, since the TCR determines the access behavior of
+some fields.
 
-The personal aim is to upstream MSM8956 as much as possible.
+Signed-off-by: AngeloGioacchino Del Regno <kholk11@gmail.com>
+---
+ drivers/iommu/qcom_iommu.c | 14 +++++++-------
+ 1 file changed, 7 insertions(+), 7 deletions(-)
 
-This code has been tested on two Sony phones featuring the Qualcomm
-MSM8956 SoC.
-
-AngeloGioacchino Del Regno (6):
-  iommu/qcom: Use the asid read from device-tree if specified
-  iommu/qcom: Write TCR before TTBRs to fix ASID access behavior
-  iommu/qcom: Properly reset the IOMMU context
-  iommu/qcom: Add support for AArch64 IOMMU pagetables
-  iommu/qcom: Index contexts by asid number to allow asid 0
-  iommu/qcom: Add support for QCIOMMUv2 and QCIOMMU-500 secured contexts
-
- .../devicetree/bindings/iommu/qcom,iommu.txt  |   5 +
- drivers/iommu/qcom_iommu.c                    | 133 ++++++++++++++----
- 2 files changed, 111 insertions(+), 27 deletions(-)
-
+diff --git a/drivers/iommu/qcom_iommu.c b/drivers/iommu/qcom_iommu.c
+index 5837556af147..8431fb97a50f 100644
+--- a/drivers/iommu/qcom_iommu.c
++++ b/drivers/iommu/qcom_iommu.c
+@@ -245,6 +245,13 @@ static int qcom_iommu_init_domain(struct iommu_domain *domain,
+ 			ctx->secure_init = true;
+ 		}
+ 
++		/* TCR */
++		iommu_writel(ctx, ARM_SMMU_CB_TCR2,
++				(pgtbl_cfg.arm_lpae_s1_cfg.tcr >> 32) |
++				FIELD_PREP(TCR2_SEP, TCR2_SEP_UPSTREAM));
++		iommu_writel(ctx, ARM_SMMU_CB_TCR,
++				pgtbl_cfg.arm_lpae_s1_cfg.tcr);
++
+ 		/* TTBRs */
+ 		iommu_writeq(ctx, ARM_SMMU_CB_TTBR0,
+ 				pgtbl_cfg.arm_lpae_s1_cfg.ttbr[0] |
+@@ -253,13 +260,6 @@ static int qcom_iommu_init_domain(struct iommu_domain *domain,
+ 				pgtbl_cfg.arm_lpae_s1_cfg.ttbr[1] |
+ 				FIELD_PREP(TTBRn_ASID, ctx->asid));
+ 
+-		/* TCR */
+-		iommu_writel(ctx, ARM_SMMU_CB_TCR2,
+-				(pgtbl_cfg.arm_lpae_s1_cfg.tcr >> 32) |
+-				FIELD_PREP(TCR2_SEP, TCR2_SEP_UPSTREAM));
+-		iommu_writel(ctx, ARM_SMMU_CB_TCR,
+-				pgtbl_cfg.arm_lpae_s1_cfg.tcr);
+-
+ 		/* MAIRs (stage-1 only) */
+ 		iommu_writel(ctx, ARM_SMMU_CB_S1_MAIR0,
+ 				pgtbl_cfg.arm_lpae_s1_cfg.mair[0]);
 -- 
 2.21.0
 
