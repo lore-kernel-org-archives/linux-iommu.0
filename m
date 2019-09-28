@@ -2,65 +2,44 @@ Return-Path: <SRS0=jma8=XX=lists.linux-foundation.org=iommu-bounces@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-2.2 required=3.0 tests=HEADER_FROM_DIFFERENT_DOMAINS,
-	MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED,USER_AGENT_SANE_1
-	autolearn=no autolearn_force=no version=3.4.0
+X-Spam-Status: No, score=-12.2 required=3.0
+	tests=HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_PULL_REQUEST,MAILING_LIST_MULTI,
+	MENTIONS_GIT_HOSTING,SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED,USER_AGENT_SANE_1
+	autolearn=ham autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id BA25EC47404
-	for <iommu@archiver.kernel.org>; Sat, 28 Sep 2019 08:25:22 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id A8642C4360C
+	for <iommu@archiver.kernel.org>; Sat, 28 Sep 2019 19:10:28 +0000 (UTC)
 Received: from mail.linuxfoundation.org (mail.linuxfoundation.org [140.211.169.12])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by mail.kernel.org (Postfix) with ESMTPS id 8DBE820815
-	for <iommu@archiver.kernel.org>; Sat, 28 Sep 2019 08:25:22 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 8DBE820815
-Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=linux.intel.com
+	by mail.kernel.org (Postfix) with ESMTPS id 5F5C52082F
+	for <iommu@archiver.kernel.org>; Sat, 28 Sep 2019 19:10:28 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 5F5C52082F
+Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=8bytes.org
 Authentication-Results: mail.kernel.org; spf=pass smtp.mailfrom=iommu-bounces@lists.linux-foundation.org
 Received: from mail.linux-foundation.org (localhost [127.0.0.1])
-	by mail.linuxfoundation.org (Postfix) with ESMTP id 554091815;
-	Sat, 28 Sep 2019 08:25:22 +0000 (UTC)
+	by mail.linuxfoundation.org (Postfix) with ESMTP id 2B9DEE20;
+	Sat, 28 Sep 2019 19:10:28 +0000 (UTC)
 Received: from smtp1.linuxfoundation.org (smtp1.linux-foundation.org
 	[172.17.192.35])
-	by mail.linuxfoundation.org (Postfix) with ESMTPS id E16EC1810
+	by mail.linuxfoundation.org (Postfix) with ESMTPS id 9C0ACDCA
 	for <iommu@lists.linux-foundation.org>;
-	Sat, 28 Sep 2019 08:25:20 +0000 (UTC)
-X-Greylist: domain auto-whitelisted by SQLgrey-1.7.6
-Received: from mga11.intel.com (mga11.intel.com [192.55.52.93])
-	by smtp1.linuxfoundation.org (Postfix) with ESMTPS id AA38A8A9
+	Sat, 28 Sep 2019 19:10:26 +0000 (UTC)
+X-Greylist: from auto-whitelisted by SQLgrey-1.7.6
+Received: from theia.8bytes.org (8bytes.org [81.169.241.247])
+	by smtp1.linuxfoundation.org (Postfix) with ESMTPS id 4AAE38B5
 	for <iommu@lists.linux-foundation.org>;
-	Sat, 28 Sep 2019 08:25:19 +0000 (UTC)
-X-Amp-Result: SKIPPED(no attachment in message)
-X-Amp-File-Uploaded: False
-Received: from fmsmga008.fm.intel.com ([10.253.24.58])
-	by fmsmga102.fm.intel.com with ESMTP/TLS/DHE-RSA-AES256-GCM-SHA384;
-	28 Sep 2019 01:25:18 -0700
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.64,558,1559545200"; d="scan'208";a="189686935"
-Received: from allen-box.sh.intel.com (HELO [10.239.159.136])
-	([10.239.159.136])
-	by fmsmga008.fm.intel.com with ESMTP; 28 Sep 2019 01:25:16 -0700
-Subject: Re: [RFC PATCH 2/4] iommu/vt-d: Add first level page table interfaces
-To: Peter Xu <peterx@redhat.com>
-References: <20190923122454.9888-1-baolu.lu@linux.intel.com>
-	<20190923122454.9888-3-baolu.lu@linux.intel.com>
-	<20190925052157.GL28074@xz-x1>
-	<c9792e0b-bf42-1dbb-f060-0b1a43125f47@linux.intel.com>
-	<20190926034905.GW28074@xz-x1>
-	<52778812-129b-0fa7-985d-5814e9d84047@linux.intel.com>
-	<20190927053449.GA9412@xz-x1>
-From: Lu Baolu <baolu.lu@linux.intel.com>
-Message-ID: <66823e27-aa33-5968-b5fd-e5221fb1fffe@linux.intel.com>
-Date: Sat, 28 Sep 2019 16:23:16 +0800
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:60.0) Gecko/20100101
-	Thunderbird/60.8.0
+	Sat, 28 Sep 2019 19:10:21 +0000 (UTC)
+Received: by theia.8bytes.org (Postfix, from userid 1000)
+	id BFF26342; Sat, 28 Sep 2019 21:10:18 +0200 (CEST)
+Date: Sat, 28 Sep 2019 21:10:17 +0200
+From: Joerg Roedel <joro@8bytes.org>
+To: Linus Torvalds <torvalds@linux-foundation.org>
+Subject: [git pull] IOMMU Fixes for Linux v5.4-rc1
+Message-ID: <20190928191007.GA7565@8bytes.org>
 MIME-Version: 1.0
-In-Reply-To: <20190927053449.GA9412@xz-x1>
-Content-Language: en-US
-Cc: kevin.tian@intel.com, Yi Sun <yi.y.sun@linux.intel.com>,
-	ashok.raj@intel.com, kvm@vger.kernel.org,
-	sanjay.k.kumar@intel.com, iommu@lists.linux-foundation.org,
-	linux-kernel@vger.kernel.org, Alex Williamson <alex.williamson@redhat.com>,
-	David Woodhouse <dwmw2@infradead.org>, yi.y.sun@intel.com
+User-Agent: Mutt/1.10.1 (2018-07-13)
+Cc: iommu@lists.linux-foundation.org, linux-kernel@vger.kernel.org
 X-BeenThere: iommu@lists.linux-foundation.org
 X-Mailman-Version: 2.1.12
 Precedence: list
@@ -73,131 +52,107 @@ List-Post: <mailto:iommu@lists.linux-foundation.org>
 List-Help: <mailto:iommu-request@lists.linux-foundation.org?subject=help>
 List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
 	<mailto:iommu-request@lists.linux-foundation.org?subject=subscribe>
-Content-Transfer-Encoding: 7bit
-Content-Type: text/plain; charset="us-ascii"; Format="flowed"
+Content-Type: multipart/mixed; boundary="===============7841742657590613614=="
 Sender: iommu-bounces@lists.linux-foundation.org
 Errors-To: iommu-bounces@lists.linux-foundation.org
 
-Hi Peter,
 
-On 9/27/19 1:34 PM, Peter Xu wrote:
-> Hi, Baolu,
-> 
-> On Fri, Sep 27, 2019 at 10:27:24AM +0800, Lu Baolu wrote:
->>>>>> +	spin_lock(&(domain)->page_table_lock);				\
->>>>>
->>>>> Is this intended to lock here instead of taking the lock during the
->>>>> whole page table walk?  Is it safe?
->>>>>
->>>>> Taking the example where nm==PTE: when we reach here how do we
->>>>> guarantee that the PMD page that has this PTE is still valid?
->>>>
->>>> We will always keep the non-leaf pages in the table,
->>>
->>> I see.  Though, could I ask why?  It seems to me that the existing 2nd
->>> level page table does not keep these when unmap, and it's not even use
->>> locking at all by leveraging cmpxchg()?
->>
->> I still need some time to understand how cmpxchg() solves the race issue
->> when reclaims pages. For example.
->>
->> Thread A				Thread B
->> -A1: check all PTE's empty		-B1: up-level PDE valid
->> -A2: clear the up-level PDE
->> -A3: reclaim the page			-B2: populate the PTEs
->>
->> Both (A1,A2) and (B1,B2) should be atomic. Otherwise, race could happen.
-> 
-> I'm not sure of this, but IMHO it is similarly because we need to
-> allocate the iova ranges from iova allocator first, so thread A (who's
-> going to unmap pages) and thread B (who's going to map new pages)
-> should never have collapsed regions if happening concurrently.  I'm
+--===============7841742657590613614==
+Content-Type: multipart/signed; micalg=pgp-sha256;
+	protocol="application/pgp-signature"; boundary="CE+1k2dSO48ffgeK"
+Content-Disposition: inline
 
-Although they don't collapse, they might share a same pmd entry. If A
-cleared the pmd entry and B goes ahead with populating the pte's. It
-will crash.
 
-> referring to intel_unmap() in which we won't free the iova region
-> before domain_unmap() completes (which should cover the whole process
-> of A1-A3) so the same iova range to be unmapped won't be allocated to
-> any new pages in some other thread.
-> 
-> There's also a hint in domain_unmap():
-> 
->    /* we don't need lock here; nobody else touches the iova range */
-> 
->>
->> Actually, the iova allocator always packs IOVA ranges close to the top
->> of the address space. This results in requiring a minimal number of
->> pages to map the allocated IOVA ranges, which makes memory onsumption
->> by IOMMU page tables tolerable. Hence, we don't need to reclaim the
->> pages until the whole page table is about to tear down. The real data
->> on my test machine also improves this.
-> 
-> Do you mean you have run the code with a 1st-level-supported IOMMU
-> hardware?  IMHO any data point would be good to be in the cover letter
-> as reference.
+--CE+1k2dSO48ffgeK
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
 
-Yes. Sure! Let me do this since the next version.
+Hi Linus,
 
-> 
-> [...]
-> 
->>>>>> +static struct page *
->>>>>> +mmunmap_pte_range(struct dmar_domain *domain, pmd_t *pmd,
->>>>>> +		  unsigned long addr, unsigned long end,
->>>>>> +		  struct page *freelist, bool reclaim)
->>>>>> +{
->>>>>> +	int i;
->>>>>> +	unsigned long start;
->>>>>> +	pte_t *pte, *first_pte;
->>>>>> +
->>>>>> +	start = addr;
->>>>>> +	pte = pte_offset_kernel(pmd, addr);
->>>>>> +	first_pte = pte;
->>>>>> +	do {
->>>>>> +		set_pte(pte, __pte(0));
->>>>>> +	} while (pte++, addr += PAGE_SIZE, addr != end);
->>>>>> +
->>>>>> +	domain_flush_cache(domain, first_pte, (void *)pte - (void *)first_pte);
->>>>>> +
->>>>>> +	/* Add page to free list if all entries are empty. */
->>>>>> +	if (reclaim) {
->>>>>
->>>>> Shouldn't we know whether to reclaim if with (addr, end) specified as
->>>>> long as they cover the whole range of this PMD?
->>>>
->>>> Current policy is that we don't reclaim any pages until the whole page
->>>> table will be torn down.
->>>
->>> Ah OK.  But I saw that you're passing in relaim==!start_addr.
->>> Shouldn't that errornously trigger if one wants to unmap the 1st page
->>> as well even if not the whole address space?
->>
->> IOVA 0 is assumed to be reserved by the allocator. Otherwise, we have no
->> means to check whether a IOVA is valid.
-> 
-> Is this an assumption of the allocator?  Could that change in the future?
+The following changes since commit e95adb9add75affb98570a518c902f50e5fcce1b:
 
-Yes. And I think it should keep unless no consumer depends on this
-optimization.
+  Merge branches 'arm/omap', 'arm/exynos', 'arm/smmu', 'arm/mediatek', 'arm/qcom', 'arm/renesas', 'x86/amd', 'x86/vt-d' and 'core' into next (2019-09-11 12:39:19 +0200)
 
-> 
-> IMHO that's not necessary if so, after all it's as simple as replacing
-> (!start_addr) with (start == 0 && end == END).  I see that in
-> domain_unmap() it has a similar check when freeing pgd:
-> 
->    if (start_pfn == 0 && last_pfn == DOMAIN_MAX_PFN(domain->gaw))
-> 
+are available in the Git repository at:
 
-Yours looks better. Thank you!
+  git://git.kernel.org/pub/scm/linux/kernel/git/joro/iommu.git tags/iommu-fixes-5.4-rc1
 
-> Thanks,
-> 
+for you to fetch changes up to 2a78f9962565e53b78363eaf516eb052009e8020:
 
-Best regards,
-Baolu
+  iommu/amd: Lock code paths traversing protection_domain->dev_list (2019-09-28 14:44:13 +0200)
+
+----------------------------------------------------------------
+IOMMU Fixes for Linux v5.4-rc1
+
+A couple of fixes for the AMD IOMMU driver have piled up:
+
+	* Some fixes for the reworked IO page-table which caused memory
+	  leaks or did not allow to downgrade mappings under some
+	  conditions.
+
+	* Locking fixes to fix a couple of possible races around
+	  accessing 'struct protection_domain'. The races got introduced
+	  when the dma-ops path became lock-less in the fast-path.
+
+----------------------------------------------------------------
+Andrei Dulea (4):
+      iommu/amd: Fix pages leak in free_pagetable()
+      iommu/amd: Fix downgrading default page-sizes in alloc_pte()
+      iommu/amd: Introduce first_pte_l7() helper
+      iommu/amd: Unmap all L7 PTEs when downgrading page-sizes
+
+Filippo Sironi (1):
+      iommu/amd: Wait for completion of IOTLB flush in attach_device
+
+Joerg Roedel (6):
+      iommu/amd: Remove domain->updated
+      iommu/amd: Remove amd_iommu_devtable_lock
+      iommu/amd: Take domain->lock for complete attach/detach path
+      iommu/amd: Check for busy devices earlier in attach_device()
+      iommu/amd: Lock dev_data in attach/detach code paths
+      iommu/amd: Lock code paths traversing protection_domain->dev_list
+
+ drivers/iommu/amd_iommu.c       | 229 ++++++++++++++++++++++++----------------
+ drivers/iommu/amd_iommu_types.h |   4 +-
+ 2 files changed, 139 insertions(+), 94 deletions(-)
+
+Please pull.
+
+Thanks,
+
+	Joerg
+
+--CE+1k2dSO48ffgeK
+Content-Type: application/pgp-signature; name="signature.asc"
+Content-Description: Digital signature
+
+-----BEGIN PGP SIGNATURE-----
+
+iQIzBAEBCAAdFiEEr9jSbILcajRFYWYyK/BELZcBGuMFAl2PsA8ACgkQK/BELZcB
+GuO23hAA3ywhr5/cgbIu7M8wV+zAeqx0i0R6qkG7Imzh98HfCMtFGnkcl97tKM+k
+ojIM1ITKJZhM+C96dkNVMdp7V5jcqA6RS4+9q1HcchU47Krb1I8050zxf9lp4Nhy
+3GCTzC1waEhhrc39tBNJNkdz+KiZUm4WvMlYbjieD9KxH0Ny/zTWnVDiiW9Fq98c
+rXJhWv+OwQ6Z/clSNQIUS87mTGymro/5VBc2IEh61N82YgOzmlDA2tgMNOKIFVV7
+eQsAf2E/jGyNLR2zumceDB+p/0GXWNoz+imUXHJIRWDWcjL+W5+0GamPZ9YwFF+r
+Lu3+bI4JSCkpUo0UbEwFe7l7Aw0KEMoyXHmySfuZ0sZ2ysMY5Xkx/InklX2kpHbk
+NjfAiPbMn+AHuyDxj/9YkpApV7Q+WCEhvHapBKLmKBbYiRn7nz0N7hX3CaJqmeo1
+Hi7La6y3NIAT95nyhkzU4tgklH1wMW3nzpwx2BXdYjcsy/Pe63C9IgPIxcCuq1cC
+1W6A9YpYrV44sPl82V3u1SGoxM9KpWNx9uumSXBqzOJ8aj5luCoCYJVRHZgut+bm
+R45JVVpHs4oIdeJSGC/wsCVwSDMyHf/dPd0+dz5nUnbGnCaKKxeZX5u618lU5gCJ
+45zXdBAsUKafcU7d/ge6ZdlWmW1Q0oHRRPziuQq9isZ1JZansTA=
+=ftDq
+-----END PGP SIGNATURE-----
+
+--CE+1k2dSO48ffgeK--
+
+--===============7841742657590613614==
+Content-Type: text/plain; charset="us-ascii"
+MIME-Version: 1.0
+Content-Transfer-Encoding: 7bit
+Content-Disposition: inline
+
 _______________________________________________
 iommu mailing list
 iommu@lists.linux-foundation.org
 https://lists.linuxfoundation.org/mailman/listinfo/iommu
+--===============7841742657590613614==--
