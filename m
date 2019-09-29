@@ -1,45 +1,89 @@
-Return-Path: <SRS0=jma8=XX=lists.linux-foundation.org=iommu-bounces@kernel.org>
+Return-Path: <SRS0=praM=XY=lists.linux-foundation.org=iommu-bounces@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-12.2 required=3.0
-	tests=HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_PULL_REQUEST,MAILING_LIST_MULTI,
-	MENTIONS_GIT_HOSTING,SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED,USER_AGENT_SANE_1
-	autolearn=ham autolearn_force=no version=3.4.0
+X-Spam-Status: No, score=-2.2 required=3.0 tests=HEADER_FROM_DIFFERENT_DOMAINS,
+	MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS,USER_AGENT_SANE_1 autolearn=no
+	autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id A8642C4360C
-	for <iommu@archiver.kernel.org>; Sat, 28 Sep 2019 19:10:28 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 2EDDEC32793
+	for <iommu@archiver.kernel.org>; Sun, 29 Sep 2019 05:25:54 +0000 (UTC)
 Received: from mail.linuxfoundation.org (mail.linuxfoundation.org [140.211.169.12])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by mail.kernel.org (Postfix) with ESMTPS id 5F5C52082F
-	for <iommu@archiver.kernel.org>; Sat, 28 Sep 2019 19:10:28 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 5F5C52082F
-Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=8bytes.org
+	by mail.kernel.org (Postfix) with ESMTPS id F2DF1206C0
+	for <iommu@archiver.kernel.org>; Sun, 29 Sep 2019 05:25:53 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org F2DF1206C0
+Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=redhat.com
 Authentication-Results: mail.kernel.org; spf=pass smtp.mailfrom=iommu-bounces@lists.linux-foundation.org
 Received: from mail.linux-foundation.org (localhost [127.0.0.1])
-	by mail.linuxfoundation.org (Postfix) with ESMTP id 2B9DEE20;
-	Sat, 28 Sep 2019 19:10:28 +0000 (UTC)
+	by mail.linuxfoundation.org (Postfix) with ESMTP id B99B1B79;
+	Sun, 29 Sep 2019 05:25:53 +0000 (UTC)
 Received: from smtp1.linuxfoundation.org (smtp1.linux-foundation.org
 	[172.17.192.35])
-	by mail.linuxfoundation.org (Postfix) with ESMTPS id 9C0ACDCA
+	by mail.linuxfoundation.org (Postfix) with ESMTPS id B3803B62
 	for <iommu@lists.linux-foundation.org>;
-	Sat, 28 Sep 2019 19:10:26 +0000 (UTC)
-X-Greylist: from auto-whitelisted by SQLgrey-1.7.6
-Received: from theia.8bytes.org (8bytes.org [81.169.241.247])
-	by smtp1.linuxfoundation.org (Postfix) with ESMTPS id 4AAE38B5
+	Sun, 29 Sep 2019 05:25:51 +0000 (UTC)
+X-Greylist: domain auto-whitelisted by SQLgrey-1.7.6
+Received: from mx1.redhat.com (mx1.redhat.com [209.132.183.28])
+	by smtp1.linuxfoundation.org (Postfix) with ESMTPS id 4404071C
 	for <iommu@lists.linux-foundation.org>;
-	Sat, 28 Sep 2019 19:10:21 +0000 (UTC)
-Received: by theia.8bytes.org (Postfix, from userid 1000)
-	id BFF26342; Sat, 28 Sep 2019 21:10:18 +0200 (CEST)
-Date: Sat, 28 Sep 2019 21:10:17 +0200
-From: Joerg Roedel <joro@8bytes.org>
-To: Linus Torvalds <torvalds@linux-foundation.org>
-Subject: [git pull] IOMMU Fixes for Linux v5.4-rc1
-Message-ID: <20190928191007.GA7565@8bytes.org>
+	Sun, 29 Sep 2019 05:25:51 +0000 (UTC)
+Received: from mail-pf1-f199.google.com (mail-pf1-f199.google.com
+	[209.85.210.199])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+	(No client certificate requested)
+	by mx1.redhat.com (Postfix) with ESMTPS id 93642368B1
+	for <iommu@lists.linux-foundation.org>;
+	Sun, 29 Sep 2019 05:25:50 +0000 (UTC)
+Received: by mail-pf1-f199.google.com with SMTP id a1so5157154pfn.1
+	for <iommu@lists.linux-foundation.org>;
+	Sat, 28 Sep 2019 22:25:50 -0700 (PDT)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+	d=1e100.net; s=20161025;
+	h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+	:mime-version:content-disposition:in-reply-to:user-agent;
+	bh=U2Fqhrhhc3c5hT+09GB0Tz123AzZHSVYeE1k74C2N8Q=;
+	b=AXROnTny4CRgvKONiQb+gCYq/EvICegPvnyX+NlZMF7HxmHDUlVkl+LC6IdVqQf5Xk
+	EeKLkc5wLHoWVQbqGX9VZ6TTgQFHIsVNtFWE3bKnvdggkSqFStb5PYuxd2cHQWSb1LpT
+	gxvx0K9earRlAc13v5H4k0Ejt6DFdVftxry/35svKTFDByO6a0omnsw5WAOu9H7dWyH2
+	EESIzWjKDNrV2fhNFcXRNq5Cs3WZU1y3aNWBHvOIWdU5YzD+iBC6AKDQq9GfIN6X20kh
+	aZ87crBiV/D74vdeQlVnK0nwRVNBDrlA9SbvFZFm/OgiZICyf+9Q/5maF1cmZsuh+ojl
+	yL4A==
+X-Gm-Message-State: APjAAAWlAX/+mdcCvU7m8EC6ytRlEjMDUjcJzmyl+2xo6h6quRHtEhsp
+	cQIFjhe/4poEp2ezFD59jMSBtaWFJsHq7fpjiZnMzKrQRbG5b+1mgsCCg9pmYu6WjsCasDXj9lz
+	eX5saAnVZD3zfcJnZVXFeIuJbhdIxNA==
+X-Received: by 2002:a65:6111:: with SMTP id z17mr17809440pgu.415.1569734749964;
+	Sat, 28 Sep 2019 22:25:49 -0700 (PDT)
+X-Google-Smtp-Source: APXvYqxSwESBBqWbUZ8IYCB+ndAeHAFp/knXskQIwKbF6UdAPwArDrPxhK0qMIyDkQyFVFJVbYrxHA==
+X-Received: by 2002:a65:6111:: with SMTP id z17mr17809411pgu.415.1569734749539;
+	Sat, 28 Sep 2019 22:25:49 -0700 (PDT)
+Received: from xz-x1 ([209.132.188.80])
+	by smtp.gmail.com with ESMTPSA id y6sm7985721pfp.82.2019.09.28.22.25.44
+	(version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+	Sat, 28 Sep 2019 22:25:47 -0700 (PDT)
+Date: Sun, 29 Sep 2019 13:25:32 +0800
+From: Peter Xu <peterx@redhat.com>
+To: Lu Baolu <baolu.lu@linux.intel.com>
+Subject: Re: [RFC PATCH 2/4] iommu/vt-d: Add first level page table interfaces
+Message-ID: <20190929052532.GA12953@xz-x1>
+References: <20190923122454.9888-1-baolu.lu@linux.intel.com>
+	<20190923122454.9888-3-baolu.lu@linux.intel.com>
+	<20190925052157.GL28074@xz-x1>
+	<c9792e0b-bf42-1dbb-f060-0b1a43125f47@linux.intel.com>
+	<20190926034905.GW28074@xz-x1>
+	<52778812-129b-0fa7-985d-5814e9d84047@linux.intel.com>
+	<20190927053449.GA9412@xz-x1>
+	<66823e27-aa33-5968-b5fd-e5221fb1fffe@linux.intel.com>
 MIME-Version: 1.0
-User-Agent: Mutt/1.10.1 (2018-07-13)
-Cc: iommu@lists.linux-foundation.org, linux-kernel@vger.kernel.org
+Content-Disposition: inline
+In-Reply-To: <66823e27-aa33-5968-b5fd-e5221fb1fffe@linux.intel.com>
+User-Agent: Mutt/1.11.4 (2019-03-13)
+Cc: kevin.tian@intel.com, Yi Sun <yi.y.sun@linux.intel.com>,
+	ashok.raj@intel.com, kvm@vger.kernel.org,
+	sanjay.k.kumar@intel.com, iommu@lists.linux-foundation.org,
+	linux-kernel@vger.kernel.org, Alex Williamson <alex.williamson@redhat.com>,
+	David Woodhouse <dwmw2@infradead.org>, yi.y.sun@intel.com
 X-BeenThere: iommu@lists.linux-foundation.org
 X-Mailman-Version: 2.1.12
 Precedence: list
@@ -52,107 +96,77 @@ List-Post: <mailto:iommu@lists.linux-foundation.org>
 List-Help: <mailto:iommu-request@lists.linux-foundation.org?subject=help>
 List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
 	<mailto:iommu-request@lists.linux-foundation.org?subject=subscribe>
-Content-Type: multipart/mixed; boundary="===============7841742657590613614=="
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: 7bit
 Sender: iommu-bounces@lists.linux-foundation.org
 Errors-To: iommu-bounces@lists.linux-foundation.org
 
+On Sat, Sep 28, 2019 at 04:23:16PM +0800, Lu Baolu wrote:
+> Hi Peter,
+> 
+> On 9/27/19 1:34 PM, Peter Xu wrote:
+> > Hi, Baolu,
+> > 
+> > On Fri, Sep 27, 2019 at 10:27:24AM +0800, Lu Baolu wrote:
+> > > > > > > +	spin_lock(&(domain)->page_table_lock);				\
+> > > > > > 
+> > > > > > Is this intended to lock here instead of taking the lock during the
+> > > > > > whole page table walk?  Is it safe?
+> > > > > > 
+> > > > > > Taking the example where nm==PTE: when we reach here how do we
+> > > > > > guarantee that the PMD page that has this PTE is still valid?
+> > > > > 
+> > > > > We will always keep the non-leaf pages in the table,
+> > > > 
+> > > > I see.  Though, could I ask why?  It seems to me that the existing 2nd
+> > > > level page table does not keep these when unmap, and it's not even use
+> > > > locking at all by leveraging cmpxchg()?
+> > > 
+> > > I still need some time to understand how cmpxchg() solves the race issue
+> > > when reclaims pages. For example.
+> > > 
+> > > Thread A				Thread B
+> > > -A1: check all PTE's empty		-B1: up-level PDE valid
+> > > -A2: clear the up-level PDE
+> > > -A3: reclaim the page			-B2: populate the PTEs
+> > > 
+> > > Both (A1,A2) and (B1,B2) should be atomic. Otherwise, race could happen.
+> > 
+> > I'm not sure of this, but IMHO it is similarly because we need to
+> > allocate the iova ranges from iova allocator first, so thread A (who's
+> > going to unmap pages) and thread B (who's going to map new pages)
+> > should never have collapsed regions if happening concurrently.  I'm
+> 
+> Although they don't collapse, they might share a same pmd entry. If A
+> cleared the pmd entry and B goes ahead with populating the pte's. It
+> will crash.
 
---===============7841742657590613614==
-Content-Type: multipart/signed; micalg=pgp-sha256;
-	protocol="application/pgp-signature"; boundary="CE+1k2dSO48ffgeK"
-Content-Disposition: inline
+My understanding is that if A was not owning all the pages on that PMD
+entry then it will never free the page that was backing that PMD
+entry.  Please refer to the code in dma_pte_clear_level() where it
+has:
 
+        /* If range covers entire pagetable, free it */
+        if (start_pfn <= level_pfn &&
+                last_pfn >= level_pfn + level_size(level) - 1) {
+                ...
+        } else {
+                ...
+        }
 
---CE+1k2dSO48ffgeK
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
+Note that when going into the else block, the PMD won't be freed but
+only the PTEs that upon the PMD will be cleared.
 
-Hi Linus,
-
-The following changes since commit e95adb9add75affb98570a518c902f50e5fcce1b:
-
-  Merge branches 'arm/omap', 'arm/exynos', 'arm/smmu', 'arm/mediatek', 'arm/qcom', 'arm/renesas', 'x86/amd', 'x86/vt-d' and 'core' into next (2019-09-11 12:39:19 +0200)
-
-are available in the Git repository at:
-
-  git://git.kernel.org/pub/scm/linux/kernel/git/joro/iommu.git tags/iommu-fixes-5.4-rc1
-
-for you to fetch changes up to 2a78f9962565e53b78363eaf516eb052009e8020:
-
-  iommu/amd: Lock code paths traversing protection_domain->dev_list (2019-09-28 14:44:13 +0200)
-
-----------------------------------------------------------------
-IOMMU Fixes for Linux v5.4-rc1
-
-A couple of fixes for the AMD IOMMU driver have piled up:
-
-	* Some fixes for the reworked IO page-table which caused memory
-	  leaks or did not allow to downgrade mappings under some
-	  conditions.
-
-	* Locking fixes to fix a couple of possible races around
-	  accessing 'struct protection_domain'. The races got introduced
-	  when the dma-ops path became lock-less in the fast-path.
-
-----------------------------------------------------------------
-Andrei Dulea (4):
-      iommu/amd: Fix pages leak in free_pagetable()
-      iommu/amd: Fix downgrading default page-sizes in alloc_pte()
-      iommu/amd: Introduce first_pte_l7() helper
-      iommu/amd: Unmap all L7 PTEs when downgrading page-sizes
-
-Filippo Sironi (1):
-      iommu/amd: Wait for completion of IOTLB flush in attach_device
-
-Joerg Roedel (6):
-      iommu/amd: Remove domain->updated
-      iommu/amd: Remove amd_iommu_devtable_lock
-      iommu/amd: Take domain->lock for complete attach/detach path
-      iommu/amd: Check for busy devices earlier in attach_device()
-      iommu/amd: Lock dev_data in attach/detach code paths
-      iommu/amd: Lock code paths traversing protection_domain->dev_list
-
- drivers/iommu/amd_iommu.c       | 229 ++++++++++++++++++++++++----------------
- drivers/iommu/amd_iommu_types.h |   4 +-
- 2 files changed, 139 insertions(+), 94 deletions(-)
-
-Please pull.
+In the case you mentioned above, IMHO it should go into that else
+block.  Say, thread A must not contain the whole range of that PMD
+otherwise thread B won't get allocated with pages within that range
+covered by the same PMD.
 
 Thanks,
 
-	Joerg
-
---CE+1k2dSO48ffgeK
-Content-Type: application/pgp-signature; name="signature.asc"
-Content-Description: Digital signature
-
------BEGIN PGP SIGNATURE-----
-
-iQIzBAEBCAAdFiEEr9jSbILcajRFYWYyK/BELZcBGuMFAl2PsA8ACgkQK/BELZcB
-GuO23hAA3ywhr5/cgbIu7M8wV+zAeqx0i0R6qkG7Imzh98HfCMtFGnkcl97tKM+k
-ojIM1ITKJZhM+C96dkNVMdp7V5jcqA6RS4+9q1HcchU47Krb1I8050zxf9lp4Nhy
-3GCTzC1waEhhrc39tBNJNkdz+KiZUm4WvMlYbjieD9KxH0Ny/zTWnVDiiW9Fq98c
-rXJhWv+OwQ6Z/clSNQIUS87mTGymro/5VBc2IEh61N82YgOzmlDA2tgMNOKIFVV7
-eQsAf2E/jGyNLR2zumceDB+p/0GXWNoz+imUXHJIRWDWcjL+W5+0GamPZ9YwFF+r
-Lu3+bI4JSCkpUo0UbEwFe7l7Aw0KEMoyXHmySfuZ0sZ2ysMY5Xkx/InklX2kpHbk
-NjfAiPbMn+AHuyDxj/9YkpApV7Q+WCEhvHapBKLmKBbYiRn7nz0N7hX3CaJqmeo1
-Hi7La6y3NIAT95nyhkzU4tgklH1wMW3nzpwx2BXdYjcsy/Pe63C9IgPIxcCuq1cC
-1W6A9YpYrV44sPl82V3u1SGoxM9KpWNx9uumSXBqzOJ8aj5luCoCYJVRHZgut+bm
-R45JVVpHs4oIdeJSGC/wsCVwSDMyHf/dPd0+dz5nUnbGnCaKKxeZX5u618lU5gCJ
-45zXdBAsUKafcU7d/ge6ZdlWmW1Q0oHRRPziuQq9isZ1JZansTA=
-=ftDq
------END PGP SIGNATURE-----
-
---CE+1k2dSO48ffgeK--
-
---===============7841742657590613614==
-Content-Type: text/plain; charset="us-ascii"
-MIME-Version: 1.0
-Content-Transfer-Encoding: 7bit
-Content-Disposition: inline
-
+-- 
+Peter Xu
 _______________________________________________
 iommu mailing list
 iommu@lists.linux-foundation.org
 https://lists.linuxfoundation.org/mailman/listinfo/iommu
---===============7841742657590613614==--
