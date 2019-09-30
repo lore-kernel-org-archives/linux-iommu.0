@@ -6,61 +6,63 @@ X-Spam-Status: No, score=-3.8 required=3.0 tests=DKIM_INVALID,DKIM_SIGNED,
 	MAILING_LIST_MULTI,SIGNED_OFF_BY,SPF_HELO_NONE,SPF_PASS autolearn=no
 	autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id E2989C32792
-	for <iommu@archiver.kernel.org>; Mon, 30 Sep 2019 18:35:55 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id EA17AC388F3
+	for <iommu@archiver.kernel.org>; Mon, 30 Sep 2019 18:36:27 +0000 (UTC)
 Received: from mail.linuxfoundation.org (mail.linuxfoundation.org [140.211.169.12])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by mail.kernel.org (Postfix) with ESMTPS id AACF2224ED
-	for <iommu@archiver.kernel.org>; Mon, 30 Sep 2019 18:35:55 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTPS id C576E224D7
+	for <iommu@archiver.kernel.org>; Mon, 30 Sep 2019 18:36:27 +0000 (UTC)
 Authentication-Results: mail.kernel.org;
-	dkim=fail reason="signature verification failed" (1024-bit key) header.d=kernel.org header.i=@kernel.org header.b="Kt2C+zpy"
-DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org AACF2224ED
+	dkim=fail reason="signature verification failed" (1024-bit key) header.d=kernel.org header.i=@kernel.org header.b="yzJe07xv"
+DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org C576E224D7
 Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=kernel.org
 Authentication-Results: mail.kernel.org; spf=pass smtp.mailfrom=iommu-bounces@lists.linux-foundation.org
 Received: from mail.linux-foundation.org (localhost [127.0.0.1])
-	by mail.linuxfoundation.org (Postfix) with ESMTP id 685CE1ABE;
-	Mon, 30 Sep 2019 18:35:55 +0000 (UTC)
+	by mail.linuxfoundation.org (Postfix) with ESMTP id D22AF1ABE;
+	Mon, 30 Sep 2019 18:36:26 +0000 (UTC)
 Received: from smtp1.linuxfoundation.org (smtp1.linux-foundation.org
 	[172.17.192.35])
-	by mail.linuxfoundation.org (Postfix) with ESMTPS id 96B451AB6
+	by mail.linuxfoundation.org (Postfix) with ESMTPS id 814621ADA
 	for <iommu@lists.linux-foundation.org>;
-	Mon, 30 Sep 2019 18:35:54 +0000 (UTC)
+	Mon, 30 Sep 2019 18:36:25 +0000 (UTC)
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp1.linuxfoundation.org (Postfix) with ESMTPS id 455C88C1
+	by smtp1.linuxfoundation.org (Postfix) with ESMTPS id 3F4471FB
 	for <iommu@lists.linux-foundation.org>;
-	Mon, 30 Sep 2019 18:35:54 +0000 (UTC)
-Received: from mail-qk1-f180.google.com (mail-qk1-f180.google.com
-	[209.85.222.180])
+	Mon, 30 Sep 2019 18:36:25 +0000 (UTC)
+Received: from mail-qk1-f176.google.com (mail-qk1-f176.google.com
+	[209.85.222.176])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by mail.kernel.org (Postfix) with ESMTPSA id F1FEB224F0
+	by mail.kernel.org (Postfix) with ESMTPSA id EFAB6224F2
 	for <iommu@lists.linux-foundation.org>;
-	Mon, 30 Sep 2019 18:35:53 +0000 (UTC)
+	Mon, 30 Sep 2019 18:36:24 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=default; t=1569868554;
-	bh=Ad/j94Z9dDSgxHErptmrkH1hQQ6UN44H+9rW9TD3BaM=;
+	s=default; t=1569868585;
+	bh=Ve9EmbsF4R2T7X2AuYWHttWGyO9wXFWxIJj8J5eaoDE=;
 	h=References:In-Reply-To:From:Date:Subject:To:Cc:From;
-	b=Kt2C+zpyCU5QHHTkmX69LUYE3htP53f+lr6SffmWb6Vnmjl3+fm/DXec1/XPFGlb9
-	S5eYxPBwrvZcS0huTH82x9t7QSA3L1PkXERWLLahkdULpXJo5vxL3i5sdTU026dkLl
-	0Yz2H3BWxjDdKF2rDQhqtErfgnVykztci1K+2bzU=
-Received: by mail-qk1-f180.google.com with SMTP id y144so8706196qkb.7
+	b=yzJe07xvPb1X/lMsvcEm9s7vhsjgVOtzM9TWeZHjaB6SLT95m7stqvhjKv5aoL7rF
+	Au6KFV0YzVNY/d8PPnLGj3ZffNV6bhGsyW4EAI74hjCyGKOggKvZZhxHwI07PtdV04
+	xhw2ONm0tks6XUhVlyIWpOQbiYQE0ucMo3m+y1GI=
+Received: by mail-qk1-f176.google.com with SMTP id z67so8686972qkb.12
 	for <iommu@lists.linux-foundation.org>;
-	Mon, 30 Sep 2019 11:35:53 -0700 (PDT)
-X-Gm-Message-State: APjAAAUjmmqsZG6hY+mwVpyL25Caiy3rtqgm9SYcnwhI6bwLYqV1w/zh
-	PYoeLnlLhf9URqq6RcoyaLYoAgH6HURFQnLrKg==
-X-Google-Smtp-Source: APXvYqxwCcb++IDx59O2am9iLB7B24VXmMEw7rKL2+M9MuGAo7hvATTBo/yJCaWV5cXESjbNZkhjl2mMUvmOoAtRWEc=
-X-Received: by 2002:a37:be87:: with SMTP id o129mr1647961qkf.254.1569868553147;
-	Mon, 30 Sep 2019 11:35:53 -0700 (PDT)
+	Mon, 30 Sep 2019 11:36:24 -0700 (PDT)
+X-Gm-Message-State: APjAAAULM3Iw8tXnwLlysCNDRp/eyEyiV9j9KRgqXsvOpTtrAFjphcHI
+	G10AQKKlzueuq1rSSyrB0VNHY04C8DihxQ5DhQ==
+X-Google-Smtp-Source: APXvYqy2xChitegAmEHzNRbHSSH0nQKcTnaviLTzqyZbMb41lnr9tCCoVkEfo/b9C0IczxPJCD2HaN7s56mcLD1ZT6M=
+X-Received: by 2002:a05:620a:12d5:: with SMTP id
+	e21mr1643941qkl.152.1569868584102; 
+	Mon, 30 Sep 2019 11:36:24 -0700 (PDT)
 MIME-Version: 1.0
 References: <cover.1569851517.git.robin.murphy@arm.com>
-	<fc6ce3e89ae85c9010b25b9303589be944ba3811.1569851517.git.robin.murphy@arm.com>
-In-Reply-To: <fc6ce3e89ae85c9010b25b9303589be944ba3811.1569851517.git.robin.murphy@arm.com>
+	<20e142e236decbed1b890ef455c5a1ddbdb48b9d.1569851517.git.robin.murphy@arm.com>
+In-Reply-To: <20e142e236decbed1b890ef455c5a1ddbdb48b9d.1569851517.git.robin.murphy@arm.com>
 From: Rob Herring <robh@kernel.org>
-Date: Mon, 30 Sep 2019 13:35:41 -0500
-X-Gmail-Original-Message-ID: <CAL_JsqLDetEBhP71k1TmJN_eCBRRamwLcCwREBWJ+sPs=aA2xw@mail.gmail.com>
-Message-ID: <CAL_JsqLDetEBhP71k1TmJN_eCBRRamwLcCwREBWJ+sPs=aA2xw@mail.gmail.com>
-Subject: Re: [PATCH v2 1/3] iommu/io-pgtable-arm: Correct Mali attributes
+Date: Mon, 30 Sep 2019 13:36:13 -0500
+X-Gmail-Original-Message-ID: <CAL_JsqL3P4MrisYO3394ONJrpBXafR1GFhZJJYKJQ6t28AQ4kw@mail.gmail.com>
+Message-ID: <CAL_JsqL3P4MrisYO3394ONJrpBXafR1GFhZJJYKJQ6t28AQ4kw@mail.gmail.com>
+Subject: Re: [PATCH v2 2/3] iommu/io-pgtable-arm: Support all Mali
+	configurations
 To: Robin Murphy <robin.murphy@arm.com>
 Cc: Tomeu Vizoso <tomeu.vizoso@collabora.com>,
 	Neil Armstrong <narmstrong@baylibre.com>,
@@ -88,22 +90,25 @@ Errors-To: iommu-bounces@lists.linux-foundation.org
 
 On Mon, Sep 30, 2019 at 9:11 AM Robin Murphy <robin.murphy@arm.com> wrote:
 >
-> Whilst Midgard's MEMATTR follows a similar principle to the VMSA MAIR,
-> the actual attribute values differ, so although it currently appears to
-> work to some degree, we probably shouldn't be using our standard stage 1
-> MAIR for that. Instead, generate a reasonable MEMATTR with attribute
-> values borrowed from the kbase driver; at this point we'll be overriding
-> or ignoring pretty much all of the LPAE config, so just implement these
-> Mali details in a dedicated allocator instead of pretending to subclass
-> the standard VMSA format.
+> In principle, Midgard GPUs supporting smaller VA sizes should only
+> require 3-level pagetables, since level 0 only resolves bits 48:40 of
+> the address. However, the kbase driver does not appear to have any
+> notion of a variable start level, and empirically T720 and T820 rapidly
+> blow up with translation faults unless given a full 4-level table,
+> despite only supporting a 33-bit VA size.
+>
+> The 'real' IAS value is still valuable in terms of validating addresses
+> on map/unmap, so tweak the allocator to allow smaller values while still
+> forcing the resultant tables to the full 4 levels. As far as I can test,
+> this should make all known Midgard variants happy.
 >
 > Fixes: d08d42de6432 ("iommu: io-pgtable: Add ARM Mali midgard MMU page table format")
 > Tested-by: Neil Armstrong <narmstrong@baylibre.com>
 > Reviewed-by: Steven Price <steven.price@arm.com>
 > Signed-off-by: Robin Murphy <robin.murphy@arm.com>
 > ---
->  drivers/iommu/io-pgtable-arm.c | 53 +++++++++++++++++++++++++---------
->  1 file changed, 40 insertions(+), 13 deletions(-)
+>  drivers/iommu/io-pgtable-arm.c | 7 ++++++-
+>  1 file changed, 6 insertions(+), 1 deletion(-)
 
 Reviewed-by: Rob Herring <robh@kernel.org>
 _______________________________________________
