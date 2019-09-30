@@ -7,43 +7,42 @@ X-Spam-Status: No, score=-10.0 required=3.0
 	SIGNED_OFF_BY,SPF_HELO_NONE,SPF_PASS,USER_AGENT_GIT autolearn=unavailable
 	autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 5B252C32792
-	for <iommu@archiver.kernel.org>; Mon, 30 Sep 2019 14:37:12 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 52407C35280
+	for <iommu@archiver.kernel.org>; Mon, 30 Sep 2019 14:37:16 +0000 (UTC)
 Received: from mail.linuxfoundation.org (mail.linuxfoundation.org [140.211.169.12])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by mail.kernel.org (Postfix) with ESMTPS id 382B8218DE
-	for <iommu@archiver.kernel.org>; Mon, 30 Sep 2019 14:37:12 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 382B8218DE
+	by mail.kernel.org (Postfix) with ESMTPS id 3217E21906
+	for <iommu@archiver.kernel.org>; Mon, 30 Sep 2019 14:37:16 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 3217E21906
 Authentication-Results: mail.kernel.org; dmarc=none (p=none dis=none) header.from=huawei.com
 Authentication-Results: mail.kernel.org; spf=pass smtp.mailfrom=iommu-bounces@lists.linux-foundation.org
 Received: from mail.linux-foundation.org (localhost [127.0.0.1])
-	by mail.linuxfoundation.org (Postfix) with ESMTP id 9B1FD19C1;
+	by mail.linuxfoundation.org (Postfix) with ESMTP id BF6DA19C4;
 	Mon, 30 Sep 2019 14:37:06 +0000 (UTC)
 Received: from smtp1.linuxfoundation.org (smtp1.linux-foundation.org
 	[172.17.192.35])
-	by mail.linuxfoundation.org (Postfix) with ESMTPS id AB97B199D
+	by mail.linuxfoundation.org (Postfix) with ESMTPS id 9FCDF199D
 	for <iommu@lists.linux-foundation.org>;
-	Mon, 30 Sep 2019 14:37:03 +0000 (UTC)
+	Mon, 30 Sep 2019 14:37:05 +0000 (UTC)
 X-Greylist: domain auto-whitelisted by SQLgrey-1.7.6
 Received: from huawei.com (szxga04-in.huawei.com [45.249.212.190])
-	by smtp1.linuxfoundation.org (Postfix) with ESMTPS id 208D682C
+	by smtp1.linuxfoundation.org (Postfix) with ESMTPS id AC5B8735
 	for <iommu@lists.linux-foundation.org>;
-	Mon, 30 Sep 2019 14:37:03 +0000 (UTC)
+	Mon, 30 Sep 2019 14:37:04 +0000 (UTC)
 Received: from DGGEMS402-HUB.china.huawei.com (unknown [172.30.72.59])
-	by Forcepoint Email with ESMTP id 3920A100FDCBCDE5F8DC;
+	by Forcepoint Email with ESMTP id 2A2F4719A77CE6655499;
 	Mon, 30 Sep 2019 22:36:58 +0800 (CST)
 Received: from localhost.localdomain (10.67.212.75) by
 	DGGEMS402-HUB.china.huawei.com (10.3.19.202) with Microsoft SMTP Server
-	id 14.3.439.0; Mon, 30 Sep 2019 22:36:49 +0800
+	id 14.3.439.0; Mon, 30 Sep 2019 22:36:48 +0800
 From: John Garry <john.garry@huawei.com>
 To: <lorenzo.pieralisi@arm.com>, <guohanjun@huawei.com>,
 	<sudeep.holla@arm.com>, <robin.murphy@arm.com>, <mark.rutland@arm.com>, 
 	<will@kernel.org>
-Subject: [RFC PATCH 4/6] perf/smmuv3: Support HiSilicon hip08 (hi1620) IMP DEF
-	events
-Date: Mon, 30 Sep 2019 22:33:49 +0800
-Message-ID: <1569854031-237636-5-git-send-email-john.garry@huawei.com>
+Subject: [RFC PATCH 1/6] ACPI/IORT: Set PMCG device parent
+Date: Mon, 30 Sep 2019 22:33:46 +0800
+Message-ID: <1569854031-237636-2-git-send-email-john.garry@huawei.com>
 X-Mailer: git-send-email 2.8.1
 In-Reply-To: <1569854031-237636-1-git-send-email-john.garry@huawei.com>
 References: <1569854031-237636-1-git-send-email-john.garry@huawei.com>
@@ -70,120 +69,97 @@ Content-Transfer-Encoding: 7bit
 Sender: iommu-bounces@lists.linux-foundation.org
 Errors-To: iommu-bounces@lists.linux-foundation.org
 
-Now that we can identify an PMCG implementation through the parent SMMUv3
-implementation, add support for IMP DEF events.
+In the IORT, a PMCG node includes a node reference to its associated
+device.
 
-For each new implementation supported, we add a new attr_grps structure
-for a particular implementation and do lookup matching based on the
-parent SMMUv3 IIDR. This could maybe be optimised in future to reduce
-structures required.
+Set the PMCG platform device parent device for future referencing.
 
-For now, only the l1_tlb event is added for HiSilicon hip08 platform.
-
-This platform supports many more IMP DEF events, but I need something
-better than the electronically translated description of the event to
-support.
+For now, we only consider setting for when the associated component is an
+SMMUv3.
 
 Signed-off-by: John Garry <john.garry@huawei.com>
 ---
- drivers/perf/arm_smmuv3_pmu.c | 54 ++++++++++++++++++++++++++++++++++-
- 1 file changed, 53 insertions(+), 1 deletion(-)
+ drivers/acpi/arm64/iort.c | 34 ++++++++++++++++++++++++++++++++--
+ 1 file changed, 32 insertions(+), 2 deletions(-)
 
-diff --git a/drivers/perf/arm_smmuv3_pmu.c b/drivers/perf/arm_smmuv3_pmu.c
-index f702898c695d..11f28ba5fae0 100644
---- a/drivers/perf/arm_smmuv3_pmu.c
-+++ b/drivers/perf/arm_smmuv3_pmu.c
-@@ -132,6 +132,8 @@ SMMU_PMU_EVENT_ATTR_EXTRACTOR(filter_stream_id, config1, 0, 31);
- SMMU_PMU_EVENT_ATTR_EXTRACTOR(filter_span, config1, 32, 32);
- SMMU_PMU_EVENT_ATTR_EXTRACTOR(filter_enable, config1, 33, 33);
- 
-+#define PARENT_SMMU_IIDR_HISI_HIP08 (0x30736)
-+
- static inline void smmu_pmu_enable(struct pmu *pmu)
+diff --git a/drivers/acpi/arm64/iort.c b/drivers/acpi/arm64/iort.c
+index 8569b79e8b58..0b687520c3e7 100644
+--- a/drivers/acpi/arm64/iort.c
++++ b/drivers/acpi/arm64/iort.c
+@@ -1455,7 +1455,7 @@ static __init const struct iort_dev_config *iort_get_dev_cfg(
+  * Returns: 0 on success, <0 failure
+  */
+ static int __init iort_add_platform_device(struct acpi_iort_node *node,
+-					   const struct iort_dev_config *ops)
++					   const struct iort_dev_config *ops, struct device *parent)
  {
- 	struct smmu_pmu *smmu_pmu = to_smmu_pmu(pmu);
-@@ -505,6 +507,21 @@ static struct attribute *smmu_pmu_events[] = {
- 	NULL
- };
+ 	struct fwnode_handle *fwnode;
+ 	struct platform_device *pdev;
+@@ -1466,6 +1466,8 @@ static int __init iort_add_platform_device(struct acpi_iort_node *node,
+ 	if (!pdev)
+ 		return -ENOMEM;
  
-+SMMU_EVENT_ATTR(l1_tlb, 0x8a);
++	pdev->dev.parent = parent;
 +
-+static struct attribute *smmu_pmu_events_hip08[] = {
-+	&smmu_event_attr_cycles.attr.attr,
-+	&smmu_event_attr_transaction.attr.attr,
-+	&smmu_event_attr_tlb_miss.attr.attr,
-+	&smmu_event_attr_config_cache_miss.attr.attr,
-+	&smmu_event_attr_trans_table_walk_access.attr.attr,
-+	&smmu_event_attr_config_struct_access.attr.attr,
-+	&smmu_event_attr_pcie_ats_trans_rq.attr.attr,
-+	&smmu_event_attr_pcie_ats_trans_passed.attr.attr,
-+	&smmu_event_attr_l1_tlb.attr.attr,
-+	NULL
-+};
+ 	if (ops->dev_set_proximity) {
+ 		ret = ops->dev_set_proximity(&pdev->dev, node);
+ 		if (ret)
+@@ -1573,6 +1575,11 @@ static void __init iort_enable_acs(struct acpi_iort_node *iort_node)
+ static inline void iort_enable_acs(struct acpi_iort_node *iort_node) { }
+ #endif
+ 
++static int iort_fwnode_match(struct device *dev, const void *fwnode)
++{
++	return dev->fwnode == fwnode;
++}
 +
- static umode_t smmu_pmu_event_is_visible(struct kobject *kobj,
- 					 struct attribute *attr, int unused)
+ static void __init iort_init_platform_devices(void)
  {
-@@ -514,7 +531,10 @@ static umode_t smmu_pmu_event_is_visible(struct kobject *kobj,
+ 	struct acpi_iort_node *iort_node, *iort_end;
+@@ -1594,11 +1601,34 @@ static void __init iort_init_platform_devices(void)
+ 				iort_table->length);
  
- 	pmu_attr = container_of(attr, struct perf_pmu_events_attr, attr.attr);
+ 	for (i = 0; i < iort->node_count; i++) {
++		struct device *parent = NULL;
++
+ 		if (iort_node >= iort_end) {
+ 			pr_err("iort node pointer overflows, bad table\n");
+ 			return;
+ 		}
  
--	if (test_bit(pmu_attr->id, smmu_pmu->supported_events))
-+	if (pmu_attr->id < SMMU_PMCG_ARCH_MAX_EVENTS &&
-+	    test_bit(pmu_attr->id, smmu_pmu->supported_events))
-+		return attr->mode;
-+	else if (pmu_attr->id >= SMMU_PMCG_ARCH_MAX_EVENTS)
- 		return attr->mode;
++		/* Fixme: handle parent declared in IORT after PMCG */
++		if (iort_node->type == ACPI_IORT_NODE_PMCG) {
++			struct acpi_iort_node *iort_assoc_node;
++			struct acpi_iort_pmcg *pmcg;
++			u32 node_reference;
++
++			pmcg = (struct acpi_iort_pmcg *)iort_node->node_data;
++
++			node_reference = pmcg->node_reference;
++			iort_assoc_node = ACPI_ADD_PTR(struct acpi_iort_node, iort,
++				 node_reference);
++
++			if (iort_assoc_node->type == ACPI_IORT_NODE_SMMU_V3) {
++				struct fwnode_handle *assoc_fwnode;
++
++				assoc_fwnode = iort_get_fwnode(iort_assoc_node);
++
++				parent = bus_find_device(&platform_bus_type, NULL,
++				      assoc_fwnode, iort_fwnode_match);
++			}
++		}
+ 		iort_enable_acs(iort_node);
  
- 	return 0;
-@@ -526,6 +546,12 @@ static struct attribute_group smmu_pmu_events_group = {
- 	.is_visible = smmu_pmu_event_is_visible,
- };
+ 		ops = iort_get_dev_cfg(iort_node);
+@@ -1609,7 +1639,7 @@ static void __init iort_init_platform_devices(void)
  
-+static struct attribute_group smmu_pmu_events_group_hip08 = {
-+	.name = "events",
-+	.attrs = smmu_pmu_events_hip08,
-+	.is_visible = smmu_pmu_event_is_visible,
-+};
-+
- /* Formats */
- PMU_FORMAT_ATTR(event,		   "config:0-15");
- PMU_FORMAT_ATTR(filter_stream_id,  "config1:0-31");
-@@ -552,8 +578,34 @@ static const struct attribute_group *smmu_pmu_attr_grps[] = {
- 	NULL
- };
+ 			iort_set_fwnode(iort_node, fwnode);
  
-+static const struct attribute_group *smmu_pmu_attr_grps_hip08[] = {
-+	&smmu_pmu_cpumask_group,
-+	&smmu_pmu_events_group_hip08,
-+	&smmu_pmu_format_group,
-+	NULL
-+};
-+
-+struct smmu_pmu_attr_grps_custom {
-+	u32 parent_smmu_iidr;
-+	const struct attribute_group **attr_grps;
-+} smmu_pmu_attr_custom_grps[] = {
-+	{
-+		.parent_smmu_iidr = PARENT_SMMU_IIDR_HISI_HIP08,
-+		.attr_grps = smmu_pmu_attr_grps_hip08,
-+	},
-+};
-+
- static const struct attribute_group **smmu_pmu_lookup_attr_groups(u32 parent_smmu_iidr)
- {
-+	int i;
-+
-+	for (i = 0; i < ARRAY_SIZE(smmu_pmu_attr_custom_grps); i++) {
-+		struct smmu_pmu_attr_grps_custom *c = &smmu_pmu_attr_custom_grps[i];
-+
-+		if (c->parent_smmu_iidr == parent_smmu_iidr)
-+			return c->attr_grps;
-+	}
-+
- 	return smmu_pmu_attr_grps;
- }
- 
+-			ret = iort_add_platform_device(iort_node, ops);
++			ret = iort_add_platform_device(iort_node, ops, parent);
+ 			if (ret) {
+ 				iort_delete_fwnode(iort_node);
+ 				acpi_free_fwnode_static(fwnode);
 -- 
 2.17.1
 
