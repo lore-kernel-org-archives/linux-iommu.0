@@ -2,84 +2,56 @@ Return-Path: <SRS0=VD3v=X2=lists.linux-foundation.org=iommu-bounces@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-9.5 required=3.0 tests=DKIM_ADSP_CUSTOM_MED,
-	DKIM_INVALID,DKIM_SIGNED,FREEMAIL_FORGED_FROMDOMAIN,FREEMAIL_FROM,
-	HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_PATCH,MAILING_LIST_MULTI,SIGNED_OFF_BY,
-	SPF_HELO_NONE,SPF_PASS,USER_AGENT_GIT autolearn=unavailable
-	autolearn_force=no version=3.4.0
+X-Spam-Status: No, score=-9.8 required=3.0 tests=HEADER_FROM_DIFFERENT_DOMAINS,
+	INCLUDES_PATCH,MAILING_LIST_MULTI,SIGNED_OFF_BY,SPF_HELO_NONE,SPF_PASS,
+	USER_AGENT_GIT autolearn=ham autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 762F8ECE587
-	for <iommu@archiver.kernel.org>; Tue,  1 Oct 2019 22:02:59 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 3FAA8ECE58A
+	for <iommu@archiver.kernel.org>; Tue,  1 Oct 2019 23:29:20 +0000 (UTC)
 Received: from mail.linuxfoundation.org (mail.linuxfoundation.org [140.211.169.12])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by mail.kernel.org (Postfix) with ESMTPS id 3C46C21906
-	for <iommu@archiver.kernel.org>; Tue,  1 Oct 2019 22:02:59 +0000 (UTC)
-Authentication-Results: mail.kernel.org;
-	dkim=fail reason="signature verification failed" (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="U+1nwzMb"
-DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 3C46C21906
-Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=gmail.com
+	by mail.kernel.org (Postfix) with ESMTPS id 1020D21920
+	for <iommu@archiver.kernel.org>; Tue,  1 Oct 2019 23:29:19 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 1020D21920
+Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=linux.intel.com
 Authentication-Results: mail.kernel.org; spf=pass smtp.mailfrom=iommu-bounces@lists.linux-foundation.org
 Received: from mail.linux-foundation.org (localhost [127.0.0.1])
-	by mail.linuxfoundation.org (Postfix) with ESMTP id CE3F1234E;
-	Tue,  1 Oct 2019 22:02:33 +0000 (UTC)
+	by mail.linuxfoundation.org (Postfix) with ESMTP id CB5CA2B00;
+	Tue,  1 Oct 2019 23:29:19 +0000 (UTC)
 Received: from smtp1.linuxfoundation.org (smtp1.linux-foundation.org
 	[172.17.192.35])
-	by mail.linuxfoundation.org (Postfix) with ESMTPS id C42241A88
+	by mail.linuxfoundation.org (Postfix) with ESMTPS id 0AB782AD5
 	for <iommu@lists.linux-foundation.org>;
-	Tue,  1 Oct 2019 22:02:17 +0000 (UTC)
-X-Greylist: whitelisted by SQLgrey-1.7.6
-Received: from mail-wr1-f68.google.com (mail-wr1-f68.google.com
-	[209.85.221.68])
-	by smtp1.linuxfoundation.org (Postfix) with ESMTPS id 194A63D0
+	Tue,  1 Oct 2019 23:29:19 +0000 (UTC)
+X-Greylist: domain auto-whitelisted by SQLgrey-1.7.6
+Received: from mga07.intel.com (mga07.intel.com [134.134.136.100])
+	by smtp1.linuxfoundation.org (Postfix) with ESMTPS id 1353BA3
 	for <iommu@lists.linux-foundation.org>;
-	Tue,  1 Oct 2019 22:02:17 +0000 (UTC)
-Received: by mail-wr1-f68.google.com with SMTP id r3so17300768wrj.6
-	for <iommu@lists.linux-foundation.org>;
-	Tue, 01 Oct 2019 15:02:17 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=gmail.com; s=20161025;
-	h=from:to:cc:subject:date:message-id:in-reply-to:references
-	:mime-version:content-transfer-encoding;
-	bh=hNjIRfETItHrHAwc5fX92U90M7+/WUq/4UckUIkwrKY=;
-	b=U+1nwzMbMPc/wlXMV6DiSSz53/4/4mwteHm8yEycRl5mxcLwxtiJRo8Dcl6mYiPd1D
-	V4AkUvBKbcnvgxht9/xzkC1cRDopvdZYfQnW8FXCSErthMJUMhMBBd7bsyq4fhTvfys6
-	HV4mzO9ps51gnhycq8L7iy5PhV1MHSHtCBOLlA25jMNyb8Y714VQNxoXbI/KLOLG+oAi
-	XGXM5s0rLzn/Odgq+eTdoA9PSOXwcoVuN2LC94unk6i+k1/zHWGhu1zyQpz92AQhjvib
-	jJ2h6YhVNRKtgm3Nz6bydQ3F2s6+BJ54ARw7MWtAC5MynMhr9C8RMq+cSK7rloWlow/Y
-	CEqw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-	d=1e100.net; s=20161025;
-	h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
-	:references:mime-version:content-transfer-encoding;
-	bh=hNjIRfETItHrHAwc5fX92U90M7+/WUq/4UckUIkwrKY=;
-	b=QOsGRMqvjy4uPN7jGpW6H2/t8DPrZ3hHYB5NosOFTx8tukjtIZR+CKZ5PZ/EpPhGdX
-	lgmEpIoz4DG2PX7NnMp4MqKoxsUw81ibaq+BbasjsyNeBRlPCE4LKzZuDes9tHaCCLai
-	BG+zQHETKbPpFtQQZ8TxbcbFPnIveUs0nQXhKcAtoB5N2yqyXa2+nLceTAI+jKOTAXAs
-	7Nnnr05YQNrGNqGN6x+iN17yJzB9HIvtSws0ey+ZQ4eh8fUNkL+DFa2L/RS3bTBX5+Ub
-	FqWz13FYYKvjsLJstH4Vx5BTN6EecxStIV6pdSRoJoFLCbB4Uai5wWKsCPCtTM2fsqTw
-	IE0w==
-X-Gm-Message-State: APjAAAWtr4IyNarOc2CC4t8gXgQ6zgbCfBJFBMGzAfT9K3jj95GOPn9I
-	LJ1TGmGvk58gPHjVcZnD/aQ=
-X-Google-Smtp-Source: APXvYqxJYqkrRsARbbE+u7tKld5m6pET9Cw3dddqIrJXkIp4h9SjQ2YmBeS1wqdmJkNWAKkeTVYR6A==
-X-Received: by 2002:adf:dc41:: with SMTP id m1mr1445wrj.46.1569967335495;
-	Tue, 01 Oct 2019 15:02:15 -0700 (PDT)
-Received: from IcarusMOD.eternityproject.eu ([93.51.16.173])
-	by smtp.gmail.com with ESMTPSA id
-	v16sm21811219wrt.12.2019.10.01.15.02.14
-	(version=TLS1_2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128/128);
-	Tue, 01 Oct 2019 15:02:15 -0700 (PDT)
-From: kholk11@gmail.com
-To: linux-arm-msm@vger.kernel.org
-Subject: [PATCH v4 7/7] iommu/qcom: Add support for QCIOMMUv2 and QCIOMMU-500
-	secured contexts
-Date: Wed,  2 Oct 2019 00:02:05 +0200
-Message-Id: <20191001220205.6423-8-kholk11@gmail.com>
-X-Mailer: git-send-email 2.21.0
-In-Reply-To: <20191001220205.6423-1-kholk11@gmail.com>
-References: <20191001220205.6423-1-kholk11@gmail.com>
-MIME-Version: 1.0
-Cc: marijns95@gmail.com, iommu@lists.linux-foundation.org, agross@kernel.org,
-	kholk11@gmail.com
+	Tue,  1 Oct 2019 23:29:17 +0000 (UTC)
+X-Amp-Result: SKIPPED(no attachment in message)
+X-Amp-File-Uploaded: False
+Received: from orsmga002.jf.intel.com ([10.7.209.21])
+	by orsmga105.jf.intel.com with ESMTP/TLS/DHE-RSA-AES256-GCM-SHA384;
+	01 Oct 2019 16:29:17 -0700
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="5.64,572,1559545200"; d="scan'208";a="203402504"
+Received: from jacob-builder.jf.intel.com ([10.7.199.155])
+	by orsmga002.jf.intel.com with ESMTP; 01 Oct 2019 16:29:17 -0700
+From: Jacob Pan <jacob.jun.pan@linux.intel.com>
+To: iommu@lists.linux-foundation.org, LKML <linux-kernel@vger.kernel.org>,
+	Joerg Roedel <joro@8bytes.org>, David Woodhouse <dwmw2@infradead.org>,
+	Alex Williamson <alex.williamson@redhat.com>,
+	Jean-Philippe Brucker <jean-philippe@linaro.com>
+Subject: [PATCH v3 1/4] iommu: Introduce cache_invalidate API
+Date: Tue,  1 Oct 2019 16:33:22 -0700
+Message-Id: <1569972805-27664-2-git-send-email-jacob.jun.pan@linux.intel.com>
+X-Mailer: git-send-email 2.7.4
+In-Reply-To: <1569972805-27664-1-git-send-email-jacob.jun.pan@linux.intel.com>
+References: <1569972805-27664-1-git-send-email-jacob.jun.pan@linux.intel.com>
+Cc: "Tian, Kevin" <kevin.tian@intel.com>, Raj Ashok <ashok.raj@intel.com>,
+	Jean-Philippe Brucker <jean-philippe.brucker@arm.com>,
+	Jonathan Cameron <jic23@kernel.org>
 X-BeenThere: iommu@lists.linux-foundation.org
 X-Mailman-Version: 2.1.12
 Precedence: list
@@ -92,114 +64,223 @@ List-Post: <mailto:iommu@lists.linux-foundation.org>
 List-Help: <mailto:iommu-request@lists.linux-foundation.org?subject=help>
 List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
 	<mailto:iommu-request@lists.linux-foundation.org?subject=subscribe>
+MIME-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
 Sender: iommu-bounces@lists.linux-foundation.org
 Errors-To: iommu-bounces@lists.linux-foundation.org
 
-From: AngeloGioacchino Del Regno <kholk11@gmail.com>
+From: Yi L Liu <yi.l.liu@intel.com>
 
-This IOMMU is yet another Qualcomm variant of known IOMMUs, found in
-Family-B SoCs, such as MSM8956, MSM8976, MSM8953, MSM8917 and others,
-and that firmware perfectly adheres to this driver logic.
-This time, though, the catch is that the secure contexts are also
-secured, meaning that these are programmed by the bootloader or TZ
-and their "interesting" registers are locked out, so the hypervisor
-disallows touching them from the non-secure world: in this case
-the OS is supposed to blindly trust the secure configuration of
-these contexts and just use them "as they are".
+In any virtualization use case, when the first translation stage
+is "owned" by the guest OS, the host IOMMU driver has no knowledge
+of caching structure updates unless the guest invalidation activities
+are trapped by the virtualizer and passed down to the host.
 
-For this reason, it is necessary to distinguish between the v1 and
-500/v2 secure contexts in this driver in order to adhere to this
-specification. To do this, add a new DT compatible, named
-"qcom,msm-iommu-v2-sec" that will trigger the new behavior.
+Since the invalidation data can be obtained from user space and will be
+written into physical IOMMU, we must allow security check at various
+layers. Therefore, generic invalidation data format are proposed here,
+model specific IOMMU drivers need to convert them into their own format.
 
-For the sake of completeness, also add a "qcom,msm-iommu-v2-ns" so
-that the human eye gets pleased with it when reading the contexts
-in the final SoC DT. Of course, the latter is just cosmetic.
-
-Signed-off-by: AngeloGioacchino Del Regno <kholk11@gmail.com>
+Signed-off-by: Yi L Liu <yi.l.liu@intel.com>
+Signed-off-by: Jacob Pan <jacob.jun.pan@linux.intel.com>
+Signed-off-by: Ashok Raj <ashok.raj@intel.com>
+Signed-off-by: Eric Auger <eric.auger@redhat.com>
+Signed-off-by: Jean-Philippe Brucker <jean-philippe.brucker@arm.com>
 ---
- .../devicetree/bindings/iommu/qcom,iommu.txt  |  2 ++
- drivers/iommu/qcom_iommu.c                    | 19 +++++++++++++++++--
- 2 files changed, 19 insertions(+), 2 deletions(-)
+ drivers/iommu/iommu.c      |  10 +++++
+ include/linux/iommu.h      |  14 ++++++
+ include/uapi/linux/iommu.h | 110 +++++++++++++++++++++++++++++++++++++++++++++
+ 3 files changed, 134 insertions(+)
 
-diff --git a/Documentation/devicetree/bindings/iommu/qcom,iommu.txt b/Documentation/devicetree/bindings/iommu/qcom,iommu.txt
-index 72ae0595efff..861c0cd9c512 100644
---- a/Documentation/devicetree/bindings/iommu/qcom,iommu.txt
-+++ b/Documentation/devicetree/bindings/iommu/qcom,iommu.txt
-@@ -36,6 +36,8 @@ to non-secure vs secure interrupt line.
-   - compatible     : Should be one of:
-         - "qcom,msm-iommu-v1-ns"  : non-secure context bank
-         - "qcom,msm-iommu-v1-sec" : secure context bank
-+        - "qcom,msm-iommu-v2-ns"  : non-secure QSMMUv2/QSMMU500 context bank
-+        - "qcom,msm-iommu-v2-sec" : secure QSMMUv2/QSMMU500 context bank
-   - reg            : Base address and size of context bank within the iommu
-   - interrupts     : The context fault irq.
+diff --git a/drivers/iommu/iommu.c b/drivers/iommu/iommu.c
+index d658c7c6a2ab..6ca9d28c08bb 100644
+--- a/drivers/iommu/iommu.c
++++ b/drivers/iommu/iommu.c
+@@ -1665,6 +1665,16 @@ int iommu_attach_device(struct iommu_domain *domain, struct device *dev)
+ }
+ EXPORT_SYMBOL_GPL(iommu_attach_device);
  
-diff --git a/drivers/iommu/qcom_iommu.c b/drivers/iommu/qcom_iommu.c
-index 555cbc55b073..eaecb009849c 100644
---- a/drivers/iommu/qcom_iommu.c
-+++ b/drivers/iommu/qcom_iommu.c
-@@ -56,6 +56,7 @@ struct qcom_iommu_ctx {
- 	struct device		*dev;
- 	void __iomem		*base;
- 	bool			 secure_init;
-+	bool			 secured_ctx;
- 	u8			 asid;      /* asid and ctx bank # are 1:1 */
- 	struct iommu_domain	*domain;
- };
-@@ -303,6 +304,12 @@ static int qcom_iommu_init_domain(struct iommu_domain *domain,
- 			ctx->secure_init = true;
- 		}
- 
-+		/* Secured QSMMU-500/QSMMU-v2 contexts cannot be programmed */
-+		if (ctx->secured_ctx) {
-+			ctx->domain = domain;
-+			break;
-+		}
++int iommu_cache_invalidate(struct iommu_domain *domain, struct device *dev,
++			   struct iommu_cache_invalidate_info *inv_info)
++{
++	if (unlikely(!domain->ops->cache_invalidate))
++		return -ENODEV;
 +
- 		qcom_iommu_reset_ctx(ctx);
- 
- 		tcr[0] = pgtbl_cfg.arm_lpae_s1_cfg.tcr;
-@@ -788,10 +795,15 @@ static int qcom_iommu_ctx_probe(struct platform_device *pdev)
- 	if (irq < 0)
- 		return -ENODEV;
- 
-+	if (of_device_is_compatible(dev->of_node, "qcom,msm-iommu-v2-sec"))
-+		ctx->secured_ctx = true;
++	return domain->ops->cache_invalidate(domain, dev, inv_info);
++}
++EXPORT_SYMBOL_GPL(iommu_cache_invalidate);
 +
- 	/* clear IRQs before registering fault handler, just in case the
- 	 * boot-loader left us a surprise:
- 	 */
--	iommu_writel(ctx, ARM_SMMU_CB_FSR, iommu_readl(ctx, ARM_SMMU_CB_FSR));
-+	if (!ctx->secured_ctx)
-+		iommu_writel(ctx, ARM_SMMU_CB_FSR,
-+			     iommu_readl(ctx, ARM_SMMU_CB_FSR));
+ static void __iommu_detach_device(struct iommu_domain *domain,
+ 				  struct device *dev)
+ {
+diff --git a/include/linux/iommu.h b/include/linux/iommu.h
+index 29bac5345563..9b22055e6f85 100644
+--- a/include/linux/iommu.h
++++ b/include/linux/iommu.h
+@@ -244,6 +244,7 @@ struct iommu_iotlb_gather {
+  * @sva_unbind: Unbind process address space from device
+  * @sva_get_pasid: Get PASID associated to a SVA handle
+  * @page_response: handle page request response
++ * @cache_invalidate: invalidate translation caches
+  * @pgsize_bitmap: bitmap of all possible supported page sizes
+  */
+ struct iommu_ops {
+@@ -306,6 +307,8 @@ struct iommu_ops {
+ 	int (*page_response)(struct device *dev,
+ 			     struct iommu_fault_event *evt,
+ 			     struct iommu_page_response *msg);
++	int (*cache_invalidate)(struct iommu_domain *domain, struct device *dev,
++				struct iommu_cache_invalidate_info *inv_info);
  
- 	ret = devm_request_irq(dev, irq,
- 			       qcom_iommu_fault,
-@@ -833,6 +845,8 @@ static int qcom_iommu_ctx_remove(struct platform_device *pdev)
- static const struct of_device_id ctx_of_match[] = {
- 	{ .compatible = "qcom,msm-iommu-v1-ns" },
- 	{ .compatible = "qcom,msm-iommu-v1-sec" },
-+	{ .compatible = "qcom,msm-iommu-v2-ns" },
-+	{ .compatible = "qcom,msm-iommu-v2-sec" },
- 	{ /* sentinel */ }
+ 	unsigned long pgsize_bitmap;
+ };
+@@ -417,6 +420,9 @@ extern int iommu_attach_device(struct iommu_domain *domain,
+ 			       struct device *dev);
+ extern void iommu_detach_device(struct iommu_domain *domain,
+ 				struct device *dev);
++extern int iommu_cache_invalidate(struct iommu_domain *domain,
++				  struct device *dev,
++				  struct iommu_cache_invalidate_info *inv_info);
+ extern struct iommu_domain *iommu_get_domain_for_dev(struct device *dev);
+ extern struct iommu_domain *iommu_get_dma_domain(struct device *dev);
+ extern int iommu_map(struct iommu_domain *domain, unsigned long iova,
+@@ -1005,6 +1011,14 @@ static inline int iommu_sva_get_pasid(struct iommu_sva *handle)
+ 	return IOMMU_PASID_INVALID;
+ }
+ 
++static inline int
++iommu_cache_invalidate(struct iommu_domain *domain,
++		       struct device *dev,
++		       struct iommu_cache_invalidate_info *inv_info)
++{
++	return -ENODEV;
++}
++
+ #endif /* CONFIG_IOMMU_API */
+ 
+ #ifdef CONFIG_IOMMU_DEBUGFS
+diff --git a/include/uapi/linux/iommu.h b/include/uapi/linux/iommu.h
+index fc00c5d4741b..f3e96214df8e 100644
+--- a/include/uapi/linux/iommu.h
++++ b/include/uapi/linux/iommu.h
+@@ -152,4 +152,114 @@ struct iommu_page_response {
+ 	__u32	code;
  };
  
-@@ -850,7 +864,8 @@ static bool qcom_iommu_has_secure_context(struct qcom_iommu_dev *qcom_iommu)
- 	struct device_node *child;
- 
- 	for_each_child_of_node(qcom_iommu->dev->of_node, child)
--		if (of_device_is_compatible(child, "qcom,msm-iommu-v1-sec"))
-+		if (of_device_is_compatible(child, "qcom,msm-iommu-v1-sec") ||
-+		    of_device_is_compatible(child, "qcom,msm-iommu-v2-sec"))
- 			return true;
- 
- 	return false;
++/* defines the granularity of the invalidation */
++enum iommu_inv_granularity {
++	IOMMU_INV_GRANU_DOMAIN,	/* domain-selective invalidation */
++	IOMMU_INV_GRANU_PASID,	/* PASID-selective invalidation */
++	IOMMU_INV_GRANU_ADDR,	/* page-selective invalidation */
++	IOMMU_INV_GRANU_NR,	/* number of invalidation granularities */
++};
++
++/**
++ * struct iommu_inv_addr_info - Address Selective Invalidation Structure
++ *
++ * @flags: indicates the granularity of the address-selective invalidation
++ * - If the PASID bit is set, the @pasid field is populated and the invalidation
++ *   relates to cache entries tagged with this PASID and matching the address
++ *   range.
++ * - If ARCHID bit is set, @archid is populated and the invalidation relates
++ *   to cache entries tagged with this architecture specific ID and matching
++ *   the address range.
++ * - Both PASID and ARCHID can be set as they may tag different caches.
++ * - If neither PASID or ARCHID is set, global addr invalidation applies.
++ * - The LEAF flag indicates whether only the leaf PTE caching needs to be
++ *   invalidated and other paging structure caches can be preserved.
++ * @pasid: process address space ID
++ * @archid: architecture-specific ID
++ * @addr: first stage/level input address
++ * @granule_size: page/block size of the mapping in bytes
++ * @nb_granules: number of contiguous granules to be invalidated
++ */
++struct iommu_inv_addr_info {
++#define IOMMU_INV_ADDR_FLAGS_PASID	(1 << 0)
++#define IOMMU_INV_ADDR_FLAGS_ARCHID	(1 << 1)
++#define IOMMU_INV_ADDR_FLAGS_LEAF	(1 << 2)
++	__u32	flags;
++	__u32	archid;
++	__u64	pasid;
++	__u64	addr;
++	__u64	granule_size;
++	__u64	nb_granules;
++};
++
++/**
++ * struct iommu_inv_pasid_info - PASID Selective Invalidation Structure
++ *
++ * @flags: indicates the granularity of the PASID-selective invalidation
++ * - If the PASID bit is set, the @pasid field is populated and the invalidation
++ *   relates to cache entries tagged with this PASID and matching the address
++ *   range.
++ * - If the ARCHID bit is set, the @archid is populated and the invalidation
++ *   relates to cache entries tagged with this architecture specific ID and
++ *   matching the address range.
++ * - Both PASID and ARCHID can be set as they may tag different caches.
++ * - At least one of PASID or ARCHID must be set.
++ * @pasid: process address space ID
++ * @archid: architecture-specific ID
++ */
++struct iommu_inv_pasid_info {
++#define IOMMU_INV_PASID_FLAGS_PASID	(1 << 0)
++#define IOMMU_INV_PASID_FLAGS_ARCHID	(1 << 1)
++	__u32	flags;
++	__u32	archid;
++	__u64	pasid;
++};
++
++/**
++ * struct iommu_cache_invalidate_info - First level/stage invalidation
++ *     information
++ * @version: API version of this structure
++ * @cache: bitfield that allows to select which caches to invalidate
++ * @granularity: defines the lowest granularity used for the invalidation:
++ *     domain > PASID > addr
++ * @padding: reserved for future use (should be zero)
++ * @pasid_info: invalidation data when @granularity is %IOMMU_INV_GRANU_PASID
++ * @addr_info: invalidation data when @granularity is %IOMMU_INV_GRANU_ADDR
++ *
++ * Not all the combinations of cache/granularity are valid:
++ *
++ * +--------------+---------------+---------------+---------------+
++ * | type /       |   DEV_IOTLB   |     IOTLB     |      PASID    |
++ * | granularity  |               |               |      cache    |
++ * +==============+===============+===============+===============+
++ * | DOMAIN       |       N/A     |       Y       |       Y       |
++ * +--------------+---------------+---------------+---------------+
++ * | PASID        |       Y       |       Y       |       Y       |
++ * +--------------+---------------+---------------+---------------+
++ * | ADDR         |       Y       |       Y       |       N/A     |
++ * +--------------+---------------+---------------+---------------+
++ *
++ * Invalidations by %IOMMU_INV_GRANU_DOMAIN don't take any argument other than
++ * @version and @cache.
++ *
++ * If multiple cache types are invalidated simultaneously, they all
++ * must support the used granularity.
++ */
++struct iommu_cache_invalidate_info {
++#define IOMMU_CACHE_INVALIDATE_INFO_VERSION_1 1
++	__u32	version;
++/* IOMMU paging structure cache */
++#define IOMMU_CACHE_INV_TYPE_IOTLB	(1 << 0) /* IOMMU IOTLB */
++#define IOMMU_CACHE_INV_TYPE_DEV_IOTLB	(1 << 1) /* Device IOTLB */
++#define IOMMU_CACHE_INV_TYPE_PASID	(1 << 2) /* PASID cache */
++#define IOMMU_CACHE_INV_TYPE_NR		(3)
++	__u8	cache;
++	__u8	granularity;
++	__u8	padding[2];
++	union {
++		struct iommu_inv_pasid_info pasid_info;
++		struct iommu_inv_addr_info addr_info;
++	};
++};
++
+ #endif /* _UAPI_IOMMU_H */
 -- 
-2.21.0
+2.7.4
 
 _______________________________________________
 iommu mailing list
