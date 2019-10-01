@@ -6,50 +6,51 @@ X-Spam-Status: No, score=-5.3 required=3.0 tests=HEADER_FROM_DIFFERENT_DOMAINS,
 	MAILING_LIST_MULTI,SIGNED_OFF_BY,SPF_HELO_NONE,SPF_PASS,USER_AGENT_SANE_1
 	autolearn=ham autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id E81F1C352AA
-	for <iommu@archiver.kernel.org>; Tue,  1 Oct 2019 09:40:32 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 1E5A7C352AA
+	for <iommu@archiver.kernel.org>; Tue,  1 Oct 2019 09:41:05 +0000 (UTC)
 Received: from mail.linuxfoundation.org (mail.linuxfoundation.org [140.211.169.12])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by mail.kernel.org (Postfix) with ESMTPS id C726B215EA
-	for <iommu@archiver.kernel.org>; Tue,  1 Oct 2019 09:40:32 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org C726B215EA
+	by mail.kernel.org (Postfix) with ESMTPS id EE6F1215EA
+	for <iommu@archiver.kernel.org>; Tue,  1 Oct 2019 09:41:04 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org EE6F1215EA
 Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=linux.intel.com
 Authentication-Results: mail.kernel.org; spf=pass smtp.mailfrom=iommu-bounces@lists.linux-foundation.org
 Received: from mail.linux-foundation.org (localhost [127.0.0.1])
-	by mail.linuxfoundation.org (Postfix) with ESMTP id 9DA4B7CED;
-	Tue,  1 Oct 2019 09:40:32 +0000 (UTC)
+	by mail.linuxfoundation.org (Postfix) with ESMTP id D6A8F7CE1;
+	Tue,  1 Oct 2019 09:41:04 +0000 (UTC)
 Received: from smtp1.linuxfoundation.org (smtp1.linux-foundation.org
 	[172.17.192.35])
-	by mail.linuxfoundation.org (Postfix) with ESMTPS id B540E7CD8
+	by mail.linuxfoundation.org (Postfix) with ESMTPS id B945F7CD8
 	for <iommu@lists.linux-foundation.org>;
-	Tue,  1 Oct 2019 09:40:10 +0000 (UTC)
+	Tue,  1 Oct 2019 09:40:52 +0000 (UTC)
 X-Greylist: domain auto-whitelisted by SQLgrey-1.7.6
-Received: from mga07.intel.com (mga07.intel.com [134.134.136.100])
-	by smtp1.linuxfoundation.org (Postfix) with ESMTPS id 513828A7
+Received: from mga01.intel.com (mga01.intel.com [192.55.52.88])
+	by smtp1.linuxfoundation.org (Postfix) with ESMTPS id 6DD768A0
 	for <iommu@lists.linux-foundation.org>;
-	Tue,  1 Oct 2019 09:40:10 +0000 (UTC)
+	Tue,  1 Oct 2019 09:40:52 +0000 (UTC)
 X-Amp-Result: UNKNOWN
 X-Amp-Original-Verdict: FILE UNKNOWN
 X-Amp-File-Uploaded: False
 Received: from fmsmga001.fm.intel.com ([10.253.24.23])
-	by orsmga105.jf.intel.com with ESMTP/TLS/DHE-RSA-AES256-GCM-SHA384;
-	01 Oct 2019 02:40:09 -0700
+	by fmsmga101.fm.intel.com with ESMTP/TLS/DHE-RSA-AES256-GCM-SHA384;
+	01 Oct 2019 02:40:52 -0700
 X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.64,570,1559545200"; d="scan'208";a="205032703"
+X-IronPort-AV: E=Sophos;i="5.64,570,1559545200"; d="scan'208";a="205032813"
 Received: from lahna.fi.intel.com (HELO lahna) ([10.237.72.157])
-	by fmsmga001.fm.intel.com with SMTP; 01 Oct 2019 02:40:06 -0700
-Received: by lahna (sSMTP sendmail emulation); Tue, 01 Oct 2019 12:40:05 +0300
-Date: Tue, 1 Oct 2019 12:40:05 +0300
+	by fmsmga001.fm.intel.com with SMTP; 01 Oct 2019 02:40:49 -0700
+Received: by lahna (sSMTP sendmail emulation); Tue, 01 Oct 2019 12:40:48 +0300
+Date: Tue, 1 Oct 2019 12:40:48 +0300
 From: Mika Westerberg <mika.westerberg@linux.intel.com>
 To: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
-Subject: Re: [PATCH v2 4/6] ACPI / LPSS: Switch to use acpi_dev_hid_uid_match()
-Message-ID: <20191001094005.GI2714@lahna.fi.intel.com>
+Subject: Re: [PATCH v2 5/6] mmc: sdhci-acpi: Switch to use
+	acpi_dev_hid_uid_match()
+Message-ID: <20191001094048.GJ2714@lahna.fi.intel.com>
 References: <20190924193739.86133-1-andriy.shevchenko@linux.intel.com>
-	<20190924193739.86133-5-andriy.shevchenko@linux.intel.com>
+	<20190924193739.86133-6-andriy.shevchenko@linux.intel.com>
 MIME-Version: 1.0
 Content-Disposition: inline
-In-Reply-To: <20190924193739.86133-5-andriy.shevchenko@linux.intel.com>
+In-Reply-To: <20190924193739.86133-6-andriy.shevchenko@linux.intel.com>
 User-Agent: Mutt/1.12.1 (2019-06-15)
 Cc: Ulf Hansson <ulf.hansson@linaro.org>, linux-mmc@vger.kernel.org,
 	"Rafael J. Wysocki" <rjw@rjwysocki.net>,
@@ -72,7 +73,7 @@ Content-Transfer-Encoding: 7bit
 Sender: iommu-bounces@lists.linux-foundation.org
 Errors-To: iommu-bounces@lists.linux-foundation.org
 
-On Tue, Sep 24, 2019 at 10:37:37PM +0300, Andy Shevchenko wrote:
+On Tue, Sep 24, 2019 at 10:37:38PM +0300, Andy Shevchenko wrote:
 > Since we have a generic helper, drop custom implementation in the driver.
 > 
 > Signed-off-by: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
