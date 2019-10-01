@@ -2,59 +2,80 @@ Return-Path: <SRS0=VD3v=X2=lists.linux-foundation.org=iommu-bounces@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-0.8 required=3.0 tests=HEADER_FROM_DIFFERENT_DOMAINS,
-	MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS autolearn=no autolearn_force=no
-	version=3.4.0
+X-Spam-Status: No, score=-3.5 required=3.0 tests=DKIM_ADSP_CUSTOM_MED,
+	DKIM_INVALID,DKIM_SIGNED,FREEMAIL_FORGED_FROMDOMAIN,FREEMAIL_FROM,
+	HEADER_FROM_DIFFERENT_DOMAINS,MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS,
+	USER_AGENT_GIT autolearn=no autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 134BFC352AA
-	for <iommu@archiver.kernel.org>; Tue,  1 Oct 2019 15:01:32 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id A11DCECE587
+	for <iommu@archiver.kernel.org>; Tue,  1 Oct 2019 15:57:02 +0000 (UTC)
 Received: from mail.linuxfoundation.org (mail.linuxfoundation.org [140.211.169.12])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by mail.kernel.org (Postfix) with ESMTPS id D66E620679
-	for <iommu@archiver.kernel.org>; Tue,  1 Oct 2019 15:01:31 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org D66E620679
-Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=linux.intel.com
+	by mail.kernel.org (Postfix) with ESMTPS id 6956D2053B
+	for <iommu@archiver.kernel.org>; Tue,  1 Oct 2019 15:57:02 +0000 (UTC)
+Authentication-Results: mail.kernel.org;
+	dkim=fail reason="signature verification failed" (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="Ghvdl64a"
+DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 6956D2053B
+Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=gmail.com
 Authentication-Results: mail.kernel.org; spf=pass smtp.mailfrom=iommu-bounces@lists.linux-foundation.org
 Received: from mail.linux-foundation.org (localhost [127.0.0.1])
-	by mail.linuxfoundation.org (Postfix) with ESMTP id 88499176B;
-	Tue,  1 Oct 2019 15:01:31 +0000 (UTC)
+	by mail.linuxfoundation.org (Postfix) with ESMTP id 35F4A1AB9;
+	Tue,  1 Oct 2019 15:57:02 +0000 (UTC)
 Received: from smtp1.linuxfoundation.org (smtp1.linux-foundation.org
 	[172.17.192.35])
-	by mail.linuxfoundation.org (Postfix) with ESMTPS id E056512C3
+	by mail.linuxfoundation.org (Postfix) with ESMTPS id 8A1711A27
 	for <iommu@lists.linux-foundation.org>;
-	Tue,  1 Oct 2019 15:01:10 +0000 (UTC)
-X-Greylist: domain auto-whitelisted by SQLgrey-1.7.6
-Received: from mga06.intel.com (mga06.intel.com [134.134.136.31])
-	by smtp1.linuxfoundation.org (Postfix) with ESMTPS id 781FFA3
+	Tue,  1 Oct 2019 15:56:49 +0000 (UTC)
+X-Greylist: whitelisted by SQLgrey-1.7.6
+Received: from mail-wr1-f65.google.com (mail-wr1-f65.google.com
+	[209.85.221.65])
+	by smtp1.linuxfoundation.org (Postfix) with ESMTPS id 0E8F48A9
 	for <iommu@lists.linux-foundation.org>;
-	Tue,  1 Oct 2019 15:01:10 +0000 (UTC)
-X-Amp-Result: SKIPPED(no attachment in message)
-X-Amp-File-Uploaded: False
-Received: from fmsmga008.fm.intel.com ([10.253.24.58])
-	by orsmga104.jf.intel.com with ESMTP/TLS/DHE-RSA-AES256-GCM-SHA384;
-	01 Oct 2019 08:01:09 -0700
-X-IronPort-AV: E=Sophos;i="5.64,571,1559545200"; d="scan'208";a="190615982"
-Received: from jkrzyszt-desk.igk.intel.com (HELO
-	jkrzyszt-desk.ger.corp.intel.com) ([172.22.244.17])
-	by fmsmga008-auth.fm.intel.com with ESMTP/TLS/DHE-RSA-AES256-GCM-SHA384;
-	01 Oct 2019 08:01:07 -0700
-From: Janusz Krzysztofik <janusz.krzysztofik@linux.intel.com>
-To: Lu Baolu <baolu.lu@linux.intel.com>
-Subject: Re: [RFC PATCH] iommu/vt-d: Fix IOMMU field not populated on device
-	hot re-plug
-Date: Tue, 01 Oct 2019 17:01:02 +0200
-Message-ID: <7739498.9tyZrNxj5X@jkrzyszt-desk.ger.corp.intel.com>
-Organization: Intel Technology Poland sp. z o.o. - ul. Slowackiego 173,
-	80-298 Gdansk - KRS 101882 - NIP 957-07-52-316
-In-Reply-To: <2674326.ZPvzKFr69O@jkrzyszt-desk.ger.corp.intel.com>
-References: <20190822142922.31526-1-janusz.krzysztofik@linux.intel.com>
-	<52fbfac9-c879-4b45-dd74-fafe62c2432b@linux.intel.com>
-	<2674326.ZPvzKFr69O@jkrzyszt-desk.ger.corp.intel.com>
+	Tue,  1 Oct 2019 15:56:48 +0000 (UTC)
+Received: by mail-wr1-f65.google.com with SMTP id q17so16183771wrx.10
+	for <iommu@lists.linux-foundation.org>;
+	Tue, 01 Oct 2019 08:56:48 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=gmail.com; s=20161025;
+	h=from:to:cc:subject:date:message-id:mime-version
+	:content-transfer-encoding;
+	bh=yA8LuJphApJUMeW7EnoqDBSa3QsP9lGr6ZPmbMXfEH8=;
+	b=Ghvdl64a96N2aVk9qGQiF4Yf+Rr4r5Mhh7r5bvwp3rGPMahXdzD8ZrdNlIulL98Ysh
+	ZoOmKT8pvpQb9eod72lMGffmwHKVXQ4SyKVX1fF8Vo1zLg3iWolfc7VY8X24qj1hk2hs
+	+lrDSaNK9Dl+GGa38T7GhRnFiHNnllYhs4Lduq6wtaUTLTww1aho9oLWKWMeWWTnFxSE
+	/M/1gXMST6y1gU6IUQiyPkJ4IzVaqdu8OntKxI9ZRIjZlUQQXvgaBxkVthizpx94StCH
+	RUSMFlYuVCLAMDsrcn2QoVCYNFR4tzEL4+PVou9YHQkUE1JiDB6Xsym8MFx2s72S4myL
+	/5AA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+	d=1e100.net; s=20161025;
+	h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+	:content-transfer-encoding;
+	bh=yA8LuJphApJUMeW7EnoqDBSa3QsP9lGr6ZPmbMXfEH8=;
+	b=MQGbf0iacDz7YCqaaZX1CQMF3zijpYtCeXBiR3DePeLJgyvJtXdchJCFhf4JEJGHGn
+	Wt+YDE2Q2TF2M+j+PxXfgO2EkSyPWJtsRMro54xeUZ7xNTGLxFz6HZbYQKd3laEKHufT
+	0+upYW2yrEQeO3eptRqOMUUfGcjvbdzO/UHv2qmjPMgLqb1k1pULP3WQBC+OKiJigWMx
+	yr8RMz0RvuWihdm7i2p1gVsh+0WgoFINw8EBfu3tiHA3jBwjErvy021Q1BxQVAX2yvcS
+	SbEEaHVsR2oCHT/S9sHlJrNAi/8vBCPCajXK0chONmrIK0QPn4Zle8kT8gr90MeWgTMe
+	1erA==
+X-Gm-Message-State: APjAAAW4LwReM/QX/ufSPQ+4lJa8IX83ZBUtf6uPDZ1INYgnlF7tKAdD
+	xL1Orc6MAvj2FgDg/WqDYGw=
+X-Google-Smtp-Source: APXvYqwfEElz17GkD+jenA0SuVWri/ZG4JGXiJfIVeUnaoyAt3RrOOfUJtsoccNlQ51DQB6hH/Cz1w==
+X-Received: by 2002:adf:fe05:: with SMTP id n5mr19974278wrr.355.1569945407469; 
+	Tue, 01 Oct 2019 08:56:47 -0700 (PDT)
+Received: from IcarusMOD.eternityproject.eu ([93.51.16.173])
+	by smtp.gmail.com with ESMTPSA id
+	h63sm6209136wmf.15.2019.10.01.08.56.46
+	(version=TLS1_2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128/128);
+	Tue, 01 Oct 2019 08:56:46 -0700 (PDT)
+From: kholk11@gmail.com
+To: linux-arm-msm@vger.kernel.org
+Subject: [PATCH v3 0/7] Add support for QCOM IOMMU v2 and 500
+Date: Tue,  1 Oct 2019 17:56:34 +0200
+Message-Id: <20191001155641.37117-1-kholk11@gmail.com>
+X-Mailer: git-send-email 2.21.0
 MIME-Version: 1.0
-Cc: linux-kernel@vger.kernel.org, iommu@lists.linux-foundation.org,
-	David Woodhouse <dwmw2@infradead.org>, intel-gfx@lists.freedesktop.org,
-	=?utf-8?B?TWljaGHFgg==?= Wajdeczko <michal.wajdeczko@intel.com>
+Cc: marijns95@gmail.com, iommu@lists.linux-foundation.org, agross@kernel.org,
+	kholk11@gmail.com
 X-BeenThere: iommu@lists.linux-foundation.org
 X-Mailman-Version: 2.1.12
 Precedence: list
@@ -72,78 +93,51 @@ Content-Transfer-Encoding: 7bit
 Sender: iommu-bounces@lists.linux-foundation.org
 Errors-To: iommu-bounces@lists.linux-foundation.org
 
-Hi Baolu,
+From: AngeloGioacchino Del Regno <kholk11@gmail.com>
 
-On Tuesday, September 3, 2019 9:41:23 AM CEST Janusz Krzysztofik wrote:
-> Hi Baolu,
-> 
-> On Tuesday, September 3, 2019 3:29:40 AM CEST Lu Baolu wrote:
-> > Hi Janusz,
-> > 
-> > On 9/2/19 4:37 PM, Janusz Krzysztofik wrote:
-> > >> I am not saying that keeping data is not acceptable. I just want to
-> > >> check whether there are any other solutions.
-> > > Then reverting 458b7c8e0dde and applying this patch still resolves the 
-> issue
-> > > for me.  No errors appear when mappings are unmapped on device close after 
-> the
-> > > device has been removed, and domain info preserved on device removal is
-> > > successfully reused on device re-plug.
-> > 
-> > This patch doesn't look good to me although I agree that keeping data is
-> > acceptable. 
+Some Qualcomm Family-B SoCs have got a different version of the QCOM
+IOMMU, specifically v2 and 500, which perfectly adhere to the current
+qcom_iommu driver, but need some variations due to slightly different
+hypervisor behavior.
 
-Any progress with that?  Which mailing list should I watch for updates?
+The personal aim is to upstream MSM8956 as much as possible.
 
-Thanks,
-Janusz
+This code has been tested on two Sony phones featuring the Qualcomm
+MSM8956 SoC.
 
-> > It updates dev->archdata.iommu, but leaves the hardware
-> > context/pasid table unchanged. This might cause problems somewhere.
-> > 
-> > > 
-> > > Is there anything else I can do to help?
-> > 
-> > Can you please tell me how to reproduce the problem? 
-> 
-> The most simple way to reproduce the issue, assuming there are no non-Intel 
-> graphics adapters installed, is to run the following shell commands:
-> 
-> #!/bin/sh
-> # load i915 module
-> modprobe i915
-> # open an i915 device and keep it open in background
-> cat /dev/dri/card0 >/dev/null &
-> sleep 2
-> # simulate device unplug
-> echo 1 >/sys/class/drm/card0/device/remove
-> # make the background process close the device on exit
-> kill $!
-> 
-> Thanks,
-> Janusz
-> 
-> 
-> > Keeping the per
-> > device domain info while device is unplugged is a bit dangerous because
-> > info->dev might be a wild pointer. We need to work out a clean fix.
-> > 
-> > > 
-> > > Thanks,
-> > > Janusz
-> > > 
-> > 
-> > Best regards,
-> > Baolu
-> > 
-> 
-> 
-> 
-> 
-> 
+Changes in v2:
+- Fixed optional properties placement in documentation
 
+Changes in v3:
+- Rebased onto linux-next 01/10/2019
+- Added missing SCM commit (required by the AArch64 PT switch support)
 
+Angelo G. Del Regno (1):
+  firmware: qcom: scm: Add function to set IOMMU pagetable addressing
 
+AngeloGioacchino Del Regno (6):
+  iommu/qcom: Use the asid read from device-tree if specified
+  iommu/qcom: Write TCR before TTBRs to fix ASID access behavior
+  iommu/qcom: Properly reset the IOMMU context
+  iommu/qcom: Add support for AArch64 IOMMU pagetables
+  iommu/qcom: Index contexts by asid number to allow asid 0
+  iommu/qcom: Add support for QCIOMMUv2 and QCIOMMU-500 secured contexts
+
+ .../devicetree/bindings/iommu/qcom,iommu.txt  |   5 +
+ drivers/firmware/qcom_scm-32.c                |   6 +
+ drivers/firmware/qcom_scm-64.c                |  15 ++
+ drivers/firmware/qcom_scm.c                   |   7 +
+ drivers/firmware/qcom_scm.h                   |   4 +
+ drivers/firmware/qcom_scm.h.rej               |  13 ++
+ drivers/iommu/qcom_iommu.c                    | 134 ++++++++++++++----
+ include/linux/qcom_scm.h                      |   2 +
+ include/linux/qcom_scm.h.rej                  |  19 +++
+ 9 files changed, 177 insertions(+), 28 deletions(-)
+ create mode 100644 drivers/firmware/qcom_scm.h.rej
+ create mode 100644 include/linux/qcom_scm.h.rej
+
+-- 
+2.21.0
 
 _______________________________________________
 iommu mailing list
