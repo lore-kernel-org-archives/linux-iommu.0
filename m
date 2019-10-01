@@ -2,63 +2,80 @@ Return-Path: <SRS0=VD3v=X2=lists.linux-foundation.org=iommu-bounces@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-8.3 required=3.0 tests=DKIM_INVALID,DKIM_SIGNED,
-	FAKE_REPLY_C,INCLUDES_PATCH,MAILING_LIST_MULTI,SIGNED_OFF_BY,SPF_HELO_NONE,
-	SPF_PASS,USER_AGENT_SANE_1 autolearn=unavailable autolearn_force=no
-	version=3.4.0
+X-Spam-Status: No, score=-3.5 required=3.0 tests=DKIM_ADSP_CUSTOM_MED,
+	DKIM_INVALID,DKIM_SIGNED,FREEMAIL_FORGED_FROMDOMAIN,FREEMAIL_FROM,
+	HEADER_FROM_DIFFERENT_DOMAINS,MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS,
+	USER_AGENT_GIT autolearn=no autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id BDE53C352AA
-	for <iommu@archiver.kernel.org>; Tue,  1 Oct 2019 19:45:41 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 1F964ECE587
+	for <iommu@archiver.kernel.org>; Tue,  1 Oct 2019 22:02:23 +0000 (UTC)
 Received: from mail.linuxfoundation.org (mail.linuxfoundation.org [140.211.169.12])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by mail.kernel.org (Postfix) with ESMTPS id 86FF7205C9
-	for <iommu@archiver.kernel.org>; Tue,  1 Oct 2019 19:45:41 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTPS id D7D4321906
+	for <iommu@archiver.kernel.org>; Tue,  1 Oct 2019 22:02:22 +0000 (UTC)
 Authentication-Results: mail.kernel.org;
-	dkim=fail reason="signature verification failed" (1024-bit key) header.d=kernel.org header.i=@kernel.org header.b="2hV/mPBt"
-DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 86FF7205C9
-Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=kernel.org
+	dkim=fail reason="signature verification failed" (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="SU9Sh4cU"
+DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org D7D4321906
+Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=gmail.com
 Authentication-Results: mail.kernel.org; spf=pass smtp.mailfrom=iommu-bounces@lists.linux-foundation.org
 Received: from mail.linux-foundation.org (localhost [127.0.0.1])
-	by mail.linuxfoundation.org (Postfix) with ESMTP id 5C09515DE;
-	Tue,  1 Oct 2019 19:45:41 +0000 (UTC)
+	by mail.linuxfoundation.org (Postfix) with ESMTP id A934B233D;
+	Tue,  1 Oct 2019 22:02:22 +0000 (UTC)
 Received: from smtp1.linuxfoundation.org (smtp1.linux-foundation.org
 	[172.17.192.35])
-	by mail.linuxfoundation.org (Postfix) with ESMTPS id 2790A1584
+	by mail.linuxfoundation.org (Postfix) with ESMTPS id 47EF81A88
 	for <iommu@lists.linux-foundation.org>;
-	Tue,  1 Oct 2019 19:45:22 +0000 (UTC)
-Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp1.linuxfoundation.org (Postfix) with ESMTPS id 9EF95D3
+	Tue,  1 Oct 2019 22:02:10 +0000 (UTC)
+X-Greylist: whitelisted by SQLgrey-1.7.6
+Received: from mail-wm1-f65.google.com (mail-wm1-f65.google.com
+	[209.85.128.65])
+	by smtp1.linuxfoundation.org (Postfix) with ESMTPS id CBB313D0
 	for <iommu@lists.linux-foundation.org>;
-	Tue,  1 Oct 2019 19:45:21 +0000 (UTC)
-Received: from localhost (unknown [69.71.4.100])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-	(No client certificate requested)
-	by mail.kernel.org (Postfix) with ESMTPSA id 26F8A205C9;
-	Tue,  1 Oct 2019 19:45:20 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=default; t=1569959121;
-	bh=iuEl0oG1KnkC1p6/E5Wz2uBIvJyfmGalS5kJrSPDlLw=;
-	h=Date:From:To:Cc:Subject:In-Reply-To:From;
-	b=2hV/mPBtGU8oBcPBQvxE26QUIPzRLboN1a7KAwOaOZE1lpPoyVJG5/4rv3CiYrDzN
-	uL1kVj4B0TKChZ7oBo9O48OKM+XZkxEg8M7raFz6GnIiuzvq+gO1KpkNu9loHUiJwF
-	6tlzF/Y34Z2JKakjjPqBmUkb5VodKqlwihN5ekVs=
-Date: Tue, 1 Oct 2019 14:45:19 -0500
-From: Bjorn Helgaas <helgaas@kernel.org>
-To: Krzysztof Wilczynski <kw@linux.com>
-Subject: Re: [PATCH v2] PCI: Remove unused includes and superfluous struct
-	declaration
-Message-ID: <20191001194519.GA63059@google.com>
+	Tue,  1 Oct 2019 22:02:09 +0000 (UTC)
+Received: by mail-wm1-f65.google.com with SMTP id v17so4812648wml.4
+	for <iommu@lists.linux-foundation.org>;
+	Tue, 01 Oct 2019 15:02:09 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=gmail.com; s=20161025;
+	h=from:to:cc:subject:date:message-id:mime-version
+	:content-transfer-encoding;
+	bh=vxOgO1AYxiKtqziwjTRehHOuCKDD+E2RIq5SeYCl3mM=;
+	b=SU9Sh4cU7wRN8bqgDY//SM9ohtN1UTI8c3FeaRhzaPiAI/Z3Ox2fIFRV7k/qFBb+BJ
+	A/wgHFPFmGijMCQPTb40qtRtod8QZWOXIITDamOaRdntJulrfHcwhDoC43DoTc9ZBTAa
+	AThhNxb8J/6yvNQWVvtOfbEOH5Uph6/n5eX2rkW81HNUzYTuup5LY7VpbZ1WTdct++/3
+	M/BGiBFf8ClDnNzni2xXtj86sT8Jqa/FbqY7BGQf4/LeXz1o9JxTUJ1j3R8nek+g4qsW
+	lYcjK5jU2SC9CiGJV67awvwFiJqKjTF0ZcALCyu9e9fqsMMUnpe86i+GY5as9kMr3/37
+	RUag==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+	d=1e100.net; s=20161025;
+	h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+	:content-transfer-encoding;
+	bh=vxOgO1AYxiKtqziwjTRehHOuCKDD+E2RIq5SeYCl3mM=;
+	b=YZnm+8hBPIVOeGKG8qxVog4AQrxLb7XcTCvr2QZu7jR+lqpEW54ZFpBZU8tZUwxTLC
+	5t2SvmFySVes4rJk4d9J0sflTpkHSKo5DZhwuA/4ifwsurOax7GDiG3ragHkfemwEDn2
+	xn2qiSUPXMWLwhlev8nxi5ku2jU5TUreF4D/8DXyqznW13ac5uuvVkC38y1ZISrVRVFf
+	raHBKuKnDJSVJr34q/qWV28AOEWglz+DvyI211SWCEUoDCNr+xCQEDu3O6KS32Tm7+I1
+	mLn3IvxRrSvkjlcMaTpVrI/F0TZEwBWTUjuaZAsiuwoRRapXYMkhVS1DlzveuIOEl6PQ
+	8V3A==
+X-Gm-Message-State: APjAAAWU1ktHoSmUe6ummZiCbIOA1/XY3OoD5Y+JgdmF5irj8tiGE0zH
+	P8jWqDBv+KU7qUbf5cyxXPQ=
+X-Google-Smtp-Source: APXvYqyQo+tkOe830VTLlZ6xjCWNwUMwKXL+NYcNp2OCi4AegVagJTbLGvXiuLRYacPa7GV9+yI8Dg==
+X-Received: by 2002:a1c:9d52:: with SMTP id g79mr172077wme.91.1569967328289;
+	Tue, 01 Oct 2019 15:02:08 -0700 (PDT)
+Received: from IcarusMOD.eternityproject.eu ([93.51.16.173])
+	by smtp.gmail.com with ESMTPSA id
+	v16sm21811219wrt.12.2019.10.01.15.02.06
+	(version=TLS1_2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128/128);
+	Tue, 01 Oct 2019 15:02:07 -0700 (PDT)
+From: kholk11@gmail.com
+To: linux-arm-msm@vger.kernel.org
+Subject: [PATCH v4 0/7] Add support for QCOM IOMMU v2 and 500
+Date: Wed,  2 Oct 2019 00:01:58 +0200
+Message-Id: <20191001220205.6423-1-kholk11@gmail.com>
+X-Mailer: git-send-email 2.21.0
 MIME-Version: 1.0
-Content-Disposition: inline
-In-Reply-To: <20190903113059.2901-1-kw@linux.com>
-User-Agent: Mutt/1.10.1 (2018-07-13)
-Cc: devicetree@vger.kernel.org, Jingoo Han <jingoohan1@gmail.com>,
-	linux-pci@vger.kernel.org, linux-kernel@vger.kernel.org,
-	iommu@lists.linux-foundation.org, Rob Herring <robh+dt@kernel.org>,
-	Thomas Petazzoni <thomas.petazzoni@bootlin.com>,
-	Gustavo Pimentel <gustavo.pimentel@synopsys.com>,
-	Frank Rowand <frowand.list@gmail.com>, linux-arm-kernel@lists.infradead.org
+Cc: marijns95@gmail.com, iommu@lists.linux-foundation.org, agross@kernel.org,
+	kholk11@gmail.com
 X-BeenThere: iommu@lists.linux-foundation.org
 X-Mailman-Version: 2.1.12
 Precedence: list
@@ -76,149 +93,51 @@ Content-Transfer-Encoding: 7bit
 Sender: iommu-bounces@lists.linux-foundation.org
 Errors-To: iommu-bounces@lists.linux-foundation.org
 
-On Tue, Sep 03, 2019 at 01:30:59PM +0200, Krzysztof Wilczynski wrote:
-> Remove <linux/pci.h> and <linux/msi.h> from being included
-> directly as part of the include/linux/of_pci.h, and remove
-> superfluous declaration of struct of_phandle_args.
-> 
-> Move users of include <linux/of_pci.h> to include <linux/pci.h>
-> and <linux/msi.h> directly rather than rely on both being
-> included transitively through <linux/of_pci.h>.
-> 
-> Signed-off-by: Krzysztof Wilczynski <kw@linux.com>
+From: AngeloGioacchino Del Regno <kholk11@gmail.com>
 
-Applied with Rob's reviewed-by to pci/misc for v5.5, thanks!
+Some Qualcomm Family-B SoCs have got a different version of the QCOM
+IOMMU, specifically v2 and 500, which perfectly adhere to the current
+qcom_iommu driver, but need some variations due to slightly different
+hypervisor behavior.
 
-> ---
->  drivers/iommu/of_iommu.c                          | 2 ++
->  drivers/irqchip/irq-gic-v2m.c                     | 1 +
->  drivers/irqchip/irq-gic-v3-its-pci-msi.c          | 1 +
->  drivers/pci/controller/dwc/pcie-designware-host.c | 1 +
->  drivers/pci/controller/pci-aardvark.c             | 1 +
->  drivers/pci/controller/pci-thunder-pem.c          | 1 +
->  drivers/pci/pci.c                                 | 1 +
->  drivers/pci/probe.c                               | 1 +
->  include/linux/of_pci.h                            | 5 ++---
->  9 files changed, 11 insertions(+), 3 deletions(-)
-> 
-> diff --git a/drivers/iommu/of_iommu.c b/drivers/iommu/of_iommu.c
-> index 614a93aa5305..026ad2b29dcd 100644
-> --- a/drivers/iommu/of_iommu.c
-> +++ b/drivers/iommu/of_iommu.c
-> @@ -8,6 +8,8 @@
->  #include <linux/export.h>
->  #include <linux/iommu.h>
->  #include <linux/limits.h>
-> +#include <linux/pci.h>
-> +#include <linux/msi.h>
->  #include <linux/of.h>
->  #include <linux/of_iommu.h>
->  #include <linux/of_pci.h>
-> diff --git a/drivers/irqchip/irq-gic-v2m.c b/drivers/irqchip/irq-gic-v2m.c
-> index e88e75c22b6a..fbec07d634ad 100644
-> --- a/drivers/irqchip/irq-gic-v2m.c
-> +++ b/drivers/irqchip/irq-gic-v2m.c
-> @@ -17,6 +17,7 @@
->  #include <linux/irq.h>
->  #include <linux/irqdomain.h>
->  #include <linux/kernel.h>
-> +#include <linux/pci.h>
->  #include <linux/msi.h>
->  #include <linux/of_address.h>
->  #include <linux/of_pci.h>
-> diff --git a/drivers/irqchip/irq-gic-v3-its-pci-msi.c b/drivers/irqchip/irq-gic-v3-its-pci-msi.c
-> index 229d586c3d7a..87711e0f8014 100644
-> --- a/drivers/irqchip/irq-gic-v3-its-pci-msi.c
-> +++ b/drivers/irqchip/irq-gic-v3-its-pci-msi.c
-> @@ -5,6 +5,7 @@
->   */
->  
->  #include <linux/acpi_iort.h>
-> +#include <linux/pci.h>
->  #include <linux/msi.h>
->  #include <linux/of.h>
->  #include <linux/of_irq.h>
-> diff --git a/drivers/pci/controller/dwc/pcie-designware-host.c b/drivers/pci/controller/dwc/pcie-designware-host.c
-> index d3156446ff27..7a9bef993e57 100644
-> --- a/drivers/pci/controller/dwc/pcie-designware-host.c
-> +++ b/drivers/pci/controller/dwc/pcie-designware-host.c
-> @@ -10,6 +10,7 @@
->  
->  #include <linux/irqchip/chained_irq.h>
->  #include <linux/irqdomain.h>
-> +#include <linux/msi.h>
->  #include <linux/of_address.h>
->  #include <linux/of_pci.h>
->  #include <linux/pci_regs.h>
-> diff --git a/drivers/pci/controller/pci-aardvark.c b/drivers/pci/controller/pci-aardvark.c
-> index fc0fe4d4de49..3a05f6ca95b0 100644
-> --- a/drivers/pci/controller/pci-aardvark.c
-> +++ b/drivers/pci/controller/pci-aardvark.c
-> @@ -16,6 +16,7 @@
->  #include <linux/pci.h>
->  #include <linux/init.h>
->  #include <linux/platform_device.h>
-> +#include <linux/msi.h>
->  #include <linux/of_address.h>
->  #include <linux/of_pci.h>
->  
-> diff --git a/drivers/pci/controller/pci-thunder-pem.c b/drivers/pci/controller/pci-thunder-pem.c
-> index f127ce8bd4ef..9491e266b1ea 100644
-> --- a/drivers/pci/controller/pci-thunder-pem.c
-> +++ b/drivers/pci/controller/pci-thunder-pem.c
-> @@ -6,6 +6,7 @@
->  #include <linux/bitfield.h>
->  #include <linux/kernel.h>
->  #include <linux/init.h>
-> +#include <linux/pci.h>
->  #include <linux/of_address.h>
->  #include <linux/of_pci.h>
->  #include <linux/pci-acpi.h>
-> diff --git a/drivers/pci/pci.c b/drivers/pci/pci.c
-> index 484e35349565..571e7e00984b 100644
-> --- a/drivers/pci/pci.c
-> +++ b/drivers/pci/pci.c
-> @@ -13,6 +13,7 @@
->  #include <linux/delay.h>
->  #include <linux/dmi.h>
->  #include <linux/init.h>
-> +#include <linux/msi.h>
->  #include <linux/of.h>
->  #include <linux/of_pci.h>
->  #include <linux/pci.h>
-> diff --git a/drivers/pci/probe.c b/drivers/pci/probe.c
-> index 169943f17a4c..11b11a652d18 100644
-> --- a/drivers/pci/probe.c
-> +++ b/drivers/pci/probe.c
-> @@ -7,6 +7,7 @@
->  #include <linux/delay.h>
->  #include <linux/init.h>
->  #include <linux/pci.h>
-> +#include <linux/msi.h>
->  #include <linux/of_device.h>
->  #include <linux/of_pci.h>
->  #include <linux/pci_hotplug.h>
-> diff --git a/include/linux/of_pci.h b/include/linux/of_pci.h
-> index 21a89c4880fa..29658c0ee71f 100644
-> --- a/include/linux/of_pci.h
-> +++ b/include/linux/of_pci.h
-> @@ -2,11 +2,10 @@
->  #ifndef __OF_PCI_H
->  #define __OF_PCI_H
->  
-> -#include <linux/pci.h>
-> -#include <linux/msi.h>
-> +#include <linux/types.h>
-> +#include <linux/errno.h>
->  
->  struct pci_dev;
-> -struct of_phandle_args;
->  struct device_node;
->  
->  #if IS_ENABLED(CONFIG_OF) && IS_ENABLED(CONFIG_PCI)
-> -- 
-> 2.23.0
-> 
+The personal aim is to upstream MSM8956 as much as possible.
+
+This code has been tested on two Sony phones featuring the Qualcomm
+MSM8956 SoC.
+
+Changes in v2:
+- Fixed optional properties placement in documentation
+
+Changes in v3:
+- Rebased onto linux-next 01/10/2019
+- Added missing SCM commit (required by the AArch64 PT switch support)
+
+Changes in v4:
+- Removed rej files from the SCM patch (I'm truly sorry for the noise...)
+
+Angelo G. Del Regno (1):
+  firmware: qcom: scm: Add function to set IOMMU pagetable addressing
+
+AngeloGioacchino Del Regno (6):
+  iommu/qcom: Use the asid read from device-tree if specified
+  iommu/qcom: Write TCR before TTBRs to fix ASID access behavior
+  iommu/qcom: Properly reset the IOMMU context
+  iommu/qcom: Add support for AArch64 IOMMU pagetables
+  iommu/qcom: Index contexts by asid number to allow asid 0
+  iommu/qcom: Add support for QCIOMMUv2 and QCIOMMU-500 secured contexts
+
+ .../devicetree/bindings/iommu/qcom,iommu.txt  |   5 +
+ drivers/firmware/qcom_scm-32.c                |   6 +
+ drivers/firmware/qcom_scm-64.c                |  15 ++
+ drivers/firmware/qcom_scm.c                   |   7 +
+ drivers/firmware/qcom_scm.h                   |   4 +
+ drivers/iommu/qcom_iommu.c                    | 134 ++++++++++++++----
+ include/linux/qcom_scm.h                      |   2 +
+ 7 files changed, 145 insertions(+), 28 deletions(-)
+
+-- 
+2.21.0
+
 _______________________________________________
 iommu mailing list
 iommu@lists.linux-foundation.org
