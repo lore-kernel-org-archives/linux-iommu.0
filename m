@@ -2,56 +2,57 @@ Return-Path: <SRS0=9AUr=X3=lists.linux-foundation.org=iommu-bounces@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-12.3 required=3.0 tests=DKIM_INVALID,DKIM_SIGNED,
-	INCLUDES_PULL_REQUEST,MAILING_LIST_MULTI,MENTIONS_GIT_HOSTING,SPF_HELO_NONE,
-	SPF_PASS,USER_AGENT_SANE_1 autolearn=ham autolearn_force=no version=3.4.0
+X-Spam-Status: No, score=-2.3 required=3.0 tests=HEADER_FROM_DIFFERENT_DOMAINS,
+	MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS,USER_AGENT_SANE_2 autolearn=no
+	autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 00768C352AA
-	for <iommu@archiver.kernel.org>; Wed,  2 Oct 2019 13:13:05 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 56AC7C35280
+	for <iommu@archiver.kernel.org>; Wed,  2 Oct 2019 14:18:03 +0000 (UTC)
 Received: from mail.linuxfoundation.org (mail.linuxfoundation.org [140.211.169.12])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by mail.kernel.org (Postfix) with ESMTPS id AA7CF21D7B
-	for <iommu@archiver.kernel.org>; Wed,  2 Oct 2019 13:13:04 +0000 (UTC)
-Authentication-Results: mail.kernel.org;
-	dkim=fail reason="signature verification failed" (1024-bit key) header.d=kernel.org header.i=@kernel.org header.b="a/Lp9Dn8"
-DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org AA7CF21D7B
-Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=kernel.org
+	by mail.kernel.org (Postfix) with ESMTPS id 319A9222C8
+	for <iommu@archiver.kernel.org>; Wed,  2 Oct 2019 14:18:03 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 319A9222C8
+Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=linux.intel.com
 Authentication-Results: mail.kernel.org; spf=pass smtp.mailfrom=iommu-bounces@lists.linux-foundation.org
 Received: from mail.linux-foundation.org (localhost [127.0.0.1])
-	by mail.linuxfoundation.org (Postfix) with ESMTP id 6016FEB5;
-	Wed,  2 Oct 2019 13:13:04 +0000 (UTC)
+	by mail.linuxfoundation.org (Postfix) with ESMTP id F3799EF1;
+	Wed,  2 Oct 2019 14:18:02 +0000 (UTC)
 Received: from smtp1.linuxfoundation.org (smtp1.linux-foundation.org
 	[172.17.192.35])
-	by mail.linuxfoundation.org (Postfix) with ESMTPS id 51BDAEB4
+	by mail.linuxfoundation.org (Postfix) with ESMTPS id 5EA15EEC
 	for <iommu@lists.linux-foundation.org>;
-	Wed,  2 Oct 2019 13:13:03 +0000 (UTC)
-Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp1.linuxfoundation.org (Postfix) with ESMTPS id 116D01FB
+	Wed,  2 Oct 2019 14:18:01 +0000 (UTC)
+X-Greylist: domain auto-whitelisted by SQLgrey-1.7.6
+Received: from mga03.intel.com (mga03.intel.com [134.134.136.65])
+	by smtp1.linuxfoundation.org (Postfix) with ESMTPS id 4A6F78A8
 	for <iommu@lists.linux-foundation.org>;
-	Wed,  2 Oct 2019 13:13:03 +0000 (UTC)
-Received: from willie-the-truck (236.31.169.217.in-addr.arpa [217.169.31.236])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256
-	bits)) (No client certificate requested)
-	by mail.kernel.org (Postfix) with ESMTPSA id 03A5421920;
-	Wed,  2 Oct 2019 13:13:01 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=default; t=1570021982;
-	bh=3e4qjCD59H59r+JQxF+7cnk3Ugzw2q1azgwC+2Vshl0=;
-	h=Date:From:To:Cc:Subject:From;
-	b=a/Lp9Dn88fyyGRkxwEghkROxDPyppdGB9hjgASPc9EA9nzyvZnjCI4VZ3Dw8i5ybn
-	c1Aw85yc4ay9Ncc/TLwJH0nbmFMH33z4g0BVMpMEpmB+AYUbgEO7nIWTcQcAH3vaNW
-	lnGJgfDoF6qfGj8305AFPbSPAYwhHDZrpAiKKXFw=
-Date: Wed, 2 Oct 2019 14:12:59 +0100
-From: Will Deacon <will@kernel.org>
-To: joro@8bytes.org
-Subject: [GIT PULL] iommu/arm-smmu: Fixes for 5.4-rc2
-Message-ID: <20191002131258.ne5r6clp7hq6lxmx@willie-the-truck>
+	Wed,  2 Oct 2019 14:18:00 +0000 (UTC)
+X-Amp-Result: SKIPPED(no attachment in message)
+X-Amp-File-Uploaded: False
+Received: from orsmga007.jf.intel.com ([10.7.209.58])
+	by orsmga103.jf.intel.com with ESMTP/TLS/DHE-RSA-AES256-GCM-SHA384;
+	02 Oct 2019 07:17:59 -0700
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="5.64,574,1559545200"; d="scan'208";a="182060537"
+Received: from jacob-builder.jf.intel.com (HELO jacob-builder) ([10.7.199.155])
+	by orsmga007.jf.intel.com with ESMTP; 02 Oct 2019 07:17:59 -0700
+Date: Wed, 2 Oct 2019 07:22:08 -0700
+From: Jacob Pan <jacob.jun.pan@linux.intel.com>
+To: iommu@lists.linux-foundation.org, LKML <linux-kernel@vger.kernel.org>,
+	Joerg Roedel <joro@8bytes.org>, David Woodhouse <dwmw2@infradead.org>, Alex
+	Williamson <alex.williamson@redhat.com>, Jean-Philippe Brucker
+	<jean-philippe@linaro.com>
+Subject: Re: [PATCH v3 0/4] User API for nested shared virtual address (SVA)
+Message-ID: <20191002072208.243995a1@jacob-builder>
+In-Reply-To: <1569972805-27664-1-git-send-email-jacob.jun.pan@linux.intel.com>
+References: <1569972805-27664-1-git-send-email-jacob.jun.pan@linux.intel.com>
+Organization: OTC
+X-Mailer: Claws Mail 3.13.2 (GTK+ 2.24.30; x86_64-pc-linux-gnu)
 MIME-Version: 1.0
-Content-Disposition: inline
-User-Agent: NeoMutt/20170113 (1.7.2)
-Cc: iommu@lists.linux-foundation.org, robin.murphy@arm.com,
-	linux-kernel@vger.kernel.org
+Cc: "Tian, Kevin" <kevin.tian@intel.com>, Raj Ashok <ashok.raj@intel.com>,
+	Jonathan Cameron <jic23@kernel.org>
 X-BeenThere: iommu@lists.linux-foundation.org
 X-Mailman-Version: 2.1.12
 Precedence: list
@@ -69,42 +70,81 @@ Content-Transfer-Encoding: 7bit
 Sender: iommu-bounces@lists.linux-foundation.org
 Errors-To: iommu-bounces@lists.linux-foundation.org
 
-Hi Joerg,
+Hi Jean,
 
-Please can you pull these three arm-smmu fixes for -rc2? They fix a
-missing resource free on an error path and some page-table issues with
-MALI GPUs including broken cacheability attributes and malformed tree
-structure with smaller virtual address ranges.
+Just wondering if you have more comments on ioasid custom allocator, v3
+is largely the same as v2 other than shuffling header within the set.
 
 Thanks,
 
-Will
+Jacob
 
---->8
+On Tue,  1 Oct 2019 16:33:21 -0700
+Jacob Pan <jacob.jun.pan@linux.intel.com> wrote:
 
-The following changes since commit 54ecb8f7028c5eb3d740bb82b0f1d90f2df63c5c:
+> This set consists of IOMMU APIs to support SVA in the guest, a.k.a
+> nested SVA. As the complete SVA support is complex, we break down the
+> enabling effort into three stages:
+> 1. PCI device direct assignment
+> 2. Fault handling, especially page request service support
+> 3. Mediated device assignment
+> 
+> Each stage includes common API and vendor specific IOMMU driver
+> changes. This series is the common uAPI for stage #1. It is intended
+> to build consensus on the interface which all vendors reply on.
+> 
+> This series is extracted from the complete stage1 set which includes
+> VT-d code. https://lkml.org/lkml/2019/8/15/951
+> 
+> Changes:
+>  - Use spinlock instead of mutex to protect ioasid custom allocators.
+> This is to support callers in atomic context
+>  - Added more padding to guest PASID bind data for future extensions,
+> suggested by Joerg.
+> After much thinking, I did not do name change from PASID to IOASID in
+> the uAPI, considering we have been using PASID in the rest of uAPIs.
+> IOASID will remain used within the kernel.
+> 
+> For more discussions lead to this series, checkout LPC 2019
+> VFIO/IOMMU/PCI microconference materials.
+> https://linuxplumbersconf.org/event/4/sessions/66/#20190909
+> 
+> 
+> Change log:
+> v3:    - include errno.h in ioasid.h to fix compile error
+>        - rebased to v5.4-rc1, no change
+>  
+> v2:
+> 	- Addressed review comments by Jean on IOASID custom
+> allocators, locking fix, misc control flow fix.
+> 	- Fixed a compile error with missing header errno.h
+> 	- Updated Jean-Philiippe's new email and updateded
+> reviewed-by tag
+> 
+> 
+> Jacob Pan (2):
+>   iommu/ioasid: Add custom allocators
+>   iommu: Introduce guest PASID bind function
+> 
+> Jean-Philippe Brucker (1):
+>   iommu: Add I/O ASID allocator
+> 
+> Yi L Liu (1):
+>   iommu: Introduce cache_invalidate API
+> 
+>  drivers/iommu/Kconfig      |   4 +
+>  drivers/iommu/Makefile     |   1 +
+>  drivers/iommu/ioasid.c     | 432
+> +++++++++++++++++++++++++++++++++++++++++++++
+> drivers/iommu/iommu.c      |  30 ++++ include/linux/ioasid.h     |
+> 76 ++++++++ include/linux/iommu.h      |  36 ++++
+>  include/uapi/linux/iommu.h | 169 ++++++++++++++++++
+>  7 files changed, 748 insertions(+)
+>  create mode 100644 drivers/iommu/ioasid.c
+>  create mode 100644 include/linux/ioasid.h
+> 
 
-  Linux 5.4-rc1 (2019-09-30 10:35:40 -0700)
-
-are available in the Git repository at:
-
-  git://git.kernel.org/pub/scm/linux/kernel/git/will/linux.git for-joerg/arm-smmu/fixes
-
-for you to fetch changes up to 1be08f458d1602275b02f5357ef069957058f3fd:
-
-  iommu/io-pgtable-arm: Support all Mali configurations (2019-10-01 12:16:47 +0100)
-
-----------------------------------------------------------------
-Liu Xiang (1):
-      iommu/arm-smmu: Free context bitmap in the err path of arm_smmu_init_domain_context
-
-Robin Murphy (2):
-      iommu/io-pgtable-arm: Correct Mali attributes
-      iommu/io-pgtable-arm: Support all Mali configurations
-
- drivers/iommu/arm-smmu.c       |  1 +
- drivers/iommu/io-pgtable-arm.c | 58 ++++++++++++++++++++++++++++++++----------
- 2 files changed, 46 insertions(+), 13 deletions(-)
+[Jacob Pan]
 _______________________________________________
 iommu mailing list
 iommu@lists.linux-foundation.org
