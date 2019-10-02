@@ -1,56 +1,113 @@
-Return-Path: <SRS0=VD3v=X2=lists.linux-foundation.org=iommu-bounces@kernel.org>
+Return-Path: <SRS0=9AUr=X3=lists.linux-foundation.org=iommu-bounces@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-9.8 required=3.0 tests=HEADER_FROM_DIFFERENT_DOMAINS,
-	INCLUDES_PATCH,MAILING_LIST_MULTI,SIGNED_OFF_BY,SPF_HELO_NONE,SPF_PASS,
-	USER_AGENT_GIT autolearn=unavailable autolearn_force=no version=3.4.0
+X-Spam-Status: No, score=-3.6 required=3.0 tests=DKIM_INVALID,DKIM_SIGNED,
+	HEADER_FROM_DIFFERENT_DOMAINS,MAILING_LIST_MULTI,SIGNED_OFF_BY,SPF_HELO_NONE,
+	SPF_PASS autolearn=no autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id DF2C1ECE587
-	for <iommu@archiver.kernel.org>; Tue,  1 Oct 2019 23:29:44 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id EFDE4ECE58B
+	for <iommu@archiver.kernel.org>; Wed,  2 Oct 2019 04:49:27 +0000 (UTC)
 Received: from mail.linuxfoundation.org (mail.linuxfoundation.org [140.211.169.12])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by mail.kernel.org (Postfix) with ESMTPS id B90C421920
-	for <iommu@archiver.kernel.org>; Tue,  1 Oct 2019 23:29:44 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org B90C421920
-Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=linux.intel.com
+	by mail.kernel.org (Postfix) with ESMTPS id BAC26218DE
+	for <iommu@archiver.kernel.org>; Wed,  2 Oct 2019 04:49:27 +0000 (UTC)
+Authentication-Results: mail.kernel.org;
+	dkim=fail reason="signature verification failed" (1024-bit key) header.d=renesasgroup.onmicrosoft.com header.i=@renesasgroup.onmicrosoft.com header.b="qlJEWUTQ"
+DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org BAC26218DE
+Authentication-Results: mail.kernel.org; dmarc=none (p=none dis=none) header.from=renesas.com
 Authentication-Results: mail.kernel.org; spf=pass smtp.mailfrom=iommu-bounces@lists.linux-foundation.org
 Received: from mail.linux-foundation.org (localhost [127.0.0.1])
-	by mail.linuxfoundation.org (Postfix) with ESMTP id 6478D2B17;
-	Tue,  1 Oct 2019 23:29:22 +0000 (UTC)
+	by mail.linuxfoundation.org (Postfix) with ESMTP id 892C31EDB;
+	Wed,  2 Oct 2019 04:49:27 +0000 (UTC)
 Received: from smtp1.linuxfoundation.org (smtp1.linux-foundation.org
 	[172.17.192.35])
-	by mail.linuxfoundation.org (Postfix) with ESMTPS id C64672AFE
+	by mail.linuxfoundation.org (Postfix) with ESMTPS id 731FD13E4
 	for <iommu@lists.linux-foundation.org>;
-	Tue,  1 Oct 2019 23:29:20 +0000 (UTC)
-X-Greylist: domain auto-whitelisted by SQLgrey-1.7.6
-Received: from mga07.intel.com (mga07.intel.com [134.134.136.100])
-	by smtp1.linuxfoundation.org (Postfix) with ESMTPS id 187BC1FB
+	Wed,  2 Oct 2019 04:49:26 +0000 (UTC)
+X-Greylist: whitelisted by SQLgrey-1.7.6
+Received: from JPN01-TY1-obe.outbound.protection.outlook.com
+	(mail-eopbgr1400119.outbound.protection.outlook.com [40.107.140.119])
+	by smtp1.linuxfoundation.org (Postfix) with ESMTPS id E6B573D0
 	for <iommu@lists.linux-foundation.org>;
-	Tue,  1 Oct 2019 23:29:20 +0000 (UTC)
-X-Amp-Result: SKIPPED(no attachment in message)
-X-Amp-File-Uploaded: False
-Received: from orsmga002.jf.intel.com ([10.7.209.21])
-	by orsmga105.jf.intel.com with ESMTP/TLS/DHE-RSA-AES256-GCM-SHA384;
-	01 Oct 2019 16:29:18 -0700
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.64,572,1559545200"; d="scan'208";a="203402517"
-Received: from jacob-builder.jf.intel.com ([10.7.199.155])
-	by orsmga002.jf.intel.com with ESMTP; 01 Oct 2019 16:29:18 -0700
-From: Jacob Pan <jacob.jun.pan@linux.intel.com>
-To: iommu@lists.linux-foundation.org, LKML <linux-kernel@vger.kernel.org>,
-	Joerg Roedel <joro@8bytes.org>, David Woodhouse <dwmw2@infradead.org>,
-	Alex Williamson <alex.williamson@redhat.com>,
-	Jean-Philippe Brucker <jean-philippe@linaro.com>
-Subject: [PATCH v3 4/4] iommu: Introduce guest PASID bind function
-Date: Tue,  1 Oct 2019 16:33:25 -0700
-Message-Id: <1569972805-27664-5-git-send-email-jacob.jun.pan@linux.intel.com>
-X-Mailer: git-send-email 2.7.4
-In-Reply-To: <1569972805-27664-1-git-send-email-jacob.jun.pan@linux.intel.com>
-References: <1569972805-27664-1-git-send-email-jacob.jun.pan@linux.intel.com>
-Cc: "Tian, Kevin" <kevin.tian@intel.com>, Raj Ashok <ashok.raj@intel.com>,
-	Jonathan Cameron <jic23@kernel.org>
+	Wed,  2 Oct 2019 04:49:25 +0000 (UTC)
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+	b=gvoGK9Gx3pnVP12GVHmz/sWclj5rBMasiJehLJjXKY9RpZqwUp1+LdJ5i2X1pOst1P2RDtt4k3lDrKHiHsHeY/PGgFlhUKd2OV8tXRTktXa3IC+VZR8czakOIZ9XZX/o56ikvt3poPKp88AMtlTiREBTWvYLt75TUkJcsNOz/uOAC+L5VaAWLcOkkSmfeKZc55nN1zpW4QLu95fnZ9Iv6OvHd4qk+GGnO65WmmEa6d7DCLtNLqKwAoorquItl16idnHrzJg552zfIWZydFmnrGZuXLnfNhtVb7FcXhoBPumH4BOXQujDPP9pB3+bjzJLNj7Xlu7vxlu2fApnbXXRRw==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com; 
+	s=arcselector9901;
+	h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+	bh=XXcTWgQmiTb+tBucx+zH0e1DXzAKJizlbDY7kPr19eA=;
+	b=RIJmxlZXPvou1mLlAOFlGufvQVHu89+ST5JksthPRMVPgwFv3gJBnZn+RvhHjsE9KH1Hu8QvkCi6iaSl4kMK9rdjExAwR3ys4KF12RnzvRbidQLnDoGcbQtlyKEK8H6FDQpvkcIOy9r2zAKlWqobn5p3oUJ/132Pnc7OJTmWuU9NaSR8yWtu4Qib46TYyBTAWtkyPDKXjKhVyCO8/VWEZEKDtq2FCUosxSby/oSAxHBfs7l/CStUVMwxthuvSXy7Y+Bph2hTsV1sSwhhGF9oVEqXY5l2A87zaut9ko5Cn/dsIhktJQ72VOFe6xt9NcpEwD4BL0AtDvGhjLhrboHeKA==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+	smtp.mailfrom=renesas.com;
+	dmarc=pass action=none header.from=renesas.com; 
+	dkim=pass header.d=renesas.com; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+	d=renesasgroup.onmicrosoft.com; s=selector2-renesasgroup-onmicrosoft-com;
+	h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+	bh=XXcTWgQmiTb+tBucx+zH0e1DXzAKJizlbDY7kPr19eA=;
+	b=qlJEWUTQIDP7iEfsJI06egTEKQC8fXLPxUwHEeAzN9umAP6gUrWi9XQDiDDJsrHLrmL6OO26zjQaiY4RzgU0VQs8s/GIvxTEwS3reQQyjOFITu3vMbcb0FooEibVAjCbYTGiZBoKw94qGHDSQwFb73S3bYqrkZrjk+E4lYOHOw4=
+Received: from TYAPR01MB4544.jpnprd01.prod.outlook.com (20.179.175.203) by
+	TYAPR01MB4880.jpnprd01.prod.outlook.com (20.179.186.16) with Microsoft
+	SMTP
+	Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+	15.20.2305.20; Wed, 2 Oct 2019 04:49:23 +0000
+Received: from TYAPR01MB4544.jpnprd01.prod.outlook.com
+	([fe80::548:32de:c810:1947]) by TYAPR01MB4544.jpnprd01.prod.outlook.com
+	([fe80::548:32de:c810:1947%4]) with mapi id 15.20.2305.022;
+	Wed, 2 Oct 2019 04:49:22 +0000
+From: Yoshihiro Shimoda <yoshihiro.shimoda.uh@renesas.com>
+To: Geert Uytterhoeven <geert+renesas@glider.be>, Joerg Roedel
+	<joro@8bytes.org>
+Subject: RE: [PATCH] iommu/ipmmu-vmsa: Only call platform_get_irq() when
+	interrupt is mandatory
+Thread-Topic: [PATCH] iommu/ipmmu-vmsa: Only call platform_get_irq() when
+	interrupt is mandatory
+Thread-Index: AQHVeILzu4iiuNfi/0+Hx5Z/WRrFZKdGxWcQ
+Date: Wed, 2 Oct 2019 04:49:22 +0000
+Message-ID: <TYAPR01MB45442F203A35BD211C6FBE8DD89C0@TYAPR01MB4544.jpnprd01.prod.outlook.com>
+References: <20191001180622.806-1-geert+renesas@glider.be>
+In-Reply-To: <20191001180622.806-1-geert+renesas@glider.be>
+Accept-Language: ja-JP, en-US
+Content-Language: ja-JP
+X-MS-Has-Attach: 
+X-MS-TNEF-Correlator: 
+authentication-results: spf=none (sender IP is )
+	smtp.mailfrom=yoshihiro.shimoda.uh@renesas.com; 
+x-originating-ip: [150.249.235.54]
+x-ms-publictraffictype: Email
+x-ms-office365-filtering-correlation-id: 5d0dc168-0a6f-48dc-d424-08d746f3e4c8
+x-ms-office365-filtering-ht: Tenant
+x-ms-traffictypediagnostic: TYAPR01MB4880:
+x-microsoft-antispam-prvs: <TYAPR01MB488005EA32DEDB71E565F0C5D89C0@TYAPR01MB4880.jpnprd01.prod.outlook.com>
+x-ms-oob-tlc-oobclassifiers: OLM:3513;
+x-forefront-prvs: 0178184651
+x-forefront-antispam-report: SFV:NSPM;
+	SFS:(10019020)(4636009)(376002)(346002)(366004)(136003)(396003)(39860400002)(199004)(189003)(14454004)(229853002)(81156014)(476003)(86362001)(76176011)(8936002)(7696005)(8676002)(2906002)(186003)(66066001)(486006)(6506007)(33656002)(102836004)(6246003)(26005)(256004)(11346002)(99286004)(446003)(6436002)(305945005)(54906003)(52536014)(9686003)(4744005)(5660300002)(74316002)(55016002)(7736002)(6116002)(71190400001)(81166006)(71200400001)(66946007)(66556008)(25786009)(64756008)(66476007)(66446008)(478600001)(4326008)(110136005)(3846002)(316002)(76116006);
+	DIR:OUT; SFP:1102; SCL:1; SRVR:TYAPR01MB4880;
+	H:TYAPR01MB4544.jpnprd01.prod.outlook.com; FPR:; SPF:None;
+	LANG:en; PTR:InfoNoRecords; A:1; MX:1; 
+received-spf: None (protection.outlook.com: renesas.com does not designate
+	permitted sender hosts)
+x-ms-exchange-senderadcheck: 1
+x-microsoft-antispam: BCL:0;
+x-microsoft-antispam-message-info: IsUa9ZARZA03mh0Eu7NLqL0QeXd3g7hY5BVkUGzVA0/98gEgtK1eW0Gsi47/L3aaNPKMMIBq0BaIyEEUj6W46jULV80+jlXNC7MFWkYeocywG4lpSVTemFwqUq+QSdvAI1Yr2WA202Re+fs80Y3IAC3sDCsOqniki7WSO2G9XNfQ+xX+NjuUV/kOYBj+neebjb5YpODL8vbW5jfQyXJ9pddOIP4RfOgfz6WJ6GZmF5LDGkVaNAQ1ToRwSQllnTGFnTA3swNjpJi78c6nAz4azAGA16DBnnGqhQ9+2z5uVBnyTFuRqth4CXuUkCTL670yhBbMkP583YmXRN8RoIHwwOL38tKwyPTsDmBrPzkRU1DAGx+1rvQciW5Id2lJyIgki/+Oa+2fN+3CFS3tf1fuGT7VuLEVBGZCtqaLybq08WA=
+x-ms-exchange-transport-forked: True
+MIME-Version: 1.0
+X-OriginatorOrg: renesas.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: 5d0dc168-0a6f-48dc-d424-08d746f3e4c8
+X-MS-Exchange-CrossTenant-originalarrivaltime: 02 Oct 2019 04:49:22.4219 (UTC)
+X-MS-Exchange-CrossTenant-fromentityheader: Hosted
+X-MS-Exchange-CrossTenant-id: 53d82571-da19-47e4-9cb4-625a166a4a2a
+X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
+X-MS-Exchange-CrossTenant-userprincipalname: UVreoXuX20U1yIDYhrbUEm44nVdjBXG4URhRyRio4D0JJx5iHKMEKwFcgDkohifwb5RuIavNN2wC5GDOHh9DCX+D5bLoFO4QCSUtIl7QdkWtJOkaiLUG4M2k4vCRWxOK
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: TYAPR01MB4880
+Cc: "linux-renesas-soc@vger.kernel.org" <linux-renesas-soc@vger.kernel.org>,
+	Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+	"iommu@lists.linux-foundation.org" <iommu@lists.linux-foundation.org>,
+	"linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
+	Stephen Boyd <swboyd@chromium.org>
 X-BeenThere: iommu@lists.linux-foundation.org
 X-Mailman-Version: 2.1.12
 Precedence: list
@@ -63,224 +120,39 @@ List-Post: <mailto:iommu@lists.linux-foundation.org>
 List-Help: <mailto:iommu-request@lists.linux-foundation.org?subject=help>
 List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
 	<mailto:iommu-request@lists.linux-foundation.org?subject=subscribe>
-MIME-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
 Sender: iommu-bounces@lists.linux-foundation.org
 Errors-To: iommu-bounces@lists.linux-foundation.org
 
-Guest shared virtual address (SVA) may require host to shadow guest
-PASID tables. Guest PASID can also be allocated from the host via
-enlightened interfaces. In this case, guest needs to bind the guest
-mm, i.e. cr3 in guest physical address to the actual PASID table in
-the host IOMMU. Nesting will be turned on such that guest virtual
-address can go through a two level translation:
-- 1st level translates GVA to GPA
-- 2nd level translates GPA to HPA
-This patch introduces APIs to bind guest PASID data to the assigned
-device entry in the physical IOMMU. See the diagram below for usage
-explaination.
+Hi Geert-san,
 
-    .-------------.  .---------------------------.
-    |   vIOMMU    |  | Guest process mm, FL only |
-    |             |  '---------------------------'
-    .----------------/
-    | PASID Entry |--- PASID cache flush -
-    '-------------'                       |
-    |             |                       V
-    |             |                      GP
-    '-------------'
-Guest
-------| Shadow |----------------------- GP->HP* ---------
-      v        v                          |
-Host                                      v
-    .-------------.  .----------------------.
-    |   pIOMMU    |  | Bind FL for GVA-GPA  |
-    |             |  '----------------------'
-    .----------------/  |
-    | PASID Entry |     V (Nested xlate)
-    '----------------\.---------------------.
-    |             |   |Set SL to GPA-HPA    |
-    |             |   '---------------------'
-    '-------------'
+> From: Geert Uytterhoeven, Sent: Wednesday, October 2, 2019 3:06 AM
+> 
+> As platform_get_irq() now prints an error when the interrupt does not
+> exist, calling it gratuitously causes scary messages like:
+> 
+>     ipmmu-vmsa e6740000.mmu: IRQ index 0 not found
+> 
+> Fix this by moving the call to platform_get_irq() down, where the
+> existence of the interrupt is mandatory.
+> 
+> Fixes: 7723f4c5ecdb8d83 ("driver core: platform: Add an error message to platform_get_irq*()")
+> Signed-off-by: Geert Uytterhoeven <geert+renesas@glider.be>
+> ---
+> This is a fix for v5.4-rc1.
+> ---
 
-Where:
- - FL = First level/stage one page tables
- - SL = Second level/stage two page tables
- - GP = Guest PASID
- - HP = Host PASID
-* Conversion needed if non-identity GP-HP mapping option is chosen.
+Thank you for the patch!
 
-Signed-off-by: Jacob Pan <jacob.jun.pan@linux.intel.com>
-Signed-off-by: Liu Yi L <yi.l.liu@intel.com>
----
- drivers/iommu/iommu.c      | 20 ++++++++++++++++
- include/linux/iommu.h      | 22 +++++++++++++++++
- include/uapi/linux/iommu.h | 59 ++++++++++++++++++++++++++++++++++++++++++++++
- 3 files changed, 101 insertions(+)
+Reviewed-by: Yoshihiro Shimoda <yoshihiro.shimoda.uh@renesas.com>
 
-diff --git a/drivers/iommu/iommu.c b/drivers/iommu/iommu.c
-index 6ca9d28c08bb..4486c4e6830a 100644
---- a/drivers/iommu/iommu.c
-+++ b/drivers/iommu/iommu.c
-@@ -1675,6 +1675,26 @@ int iommu_cache_invalidate(struct iommu_domain *domain, struct device *dev,
- }
- EXPORT_SYMBOL_GPL(iommu_cache_invalidate);
- 
-+int iommu_sva_bind_gpasid(struct iommu_domain *domain,
-+			   struct device *dev, struct iommu_gpasid_bind_data *data)
-+{
-+	if (unlikely(!domain->ops->sva_bind_gpasid))
-+		return -ENODEV;
-+
-+	return domain->ops->sva_bind_gpasid(domain, dev, data);
-+}
-+EXPORT_SYMBOL_GPL(iommu_sva_bind_gpasid);
-+
-+int iommu_sva_unbind_gpasid(struct iommu_domain *domain, struct device *dev,
-+			     ioasid_t pasid)
-+{
-+	if (unlikely(!domain->ops->sva_unbind_gpasid))
-+		return -ENODEV;
-+
-+	return domain->ops->sva_unbind_gpasid(dev, pasid);
-+}
-+EXPORT_SYMBOL_GPL(iommu_sva_unbind_gpasid);
-+
- static void __iommu_detach_device(struct iommu_domain *domain,
- 				  struct device *dev)
- {
-diff --git a/include/linux/iommu.h b/include/linux/iommu.h
-index 9b22055e6f85..f8959f759e41 100644
---- a/include/linux/iommu.h
-+++ b/include/linux/iommu.h
-@@ -13,6 +13,7 @@
- #include <linux/errno.h>
- #include <linux/err.h>
- #include <linux/of.h>
-+#include <linux/ioasid.h>
- #include <uapi/linux/iommu.h>
- 
- #define IOMMU_READ	(1 << 0)
-@@ -246,6 +247,8 @@ struct iommu_iotlb_gather {
-  * @page_response: handle page request response
-  * @cache_invalidate: invalidate translation caches
-  * @pgsize_bitmap: bitmap of all possible supported page sizes
-+ * @sva_bind_gpasid: bind guest pasid and mm
-+ * @sva_unbind_gpasid: unbind guest pasid and mm
-  */
- struct iommu_ops {
- 	bool (*capable)(enum iommu_cap);
-@@ -309,6 +312,10 @@ struct iommu_ops {
- 			     struct iommu_page_response *msg);
- 	int (*cache_invalidate)(struct iommu_domain *domain, struct device *dev,
- 				struct iommu_cache_invalidate_info *inv_info);
-+	int (*sva_bind_gpasid)(struct iommu_domain *domain,
-+			struct device *dev, struct iommu_gpasid_bind_data *data);
-+
-+	int (*sva_unbind_gpasid)(struct device *dev, int pasid);
- 
- 	unsigned long pgsize_bitmap;
- };
-@@ -423,6 +430,10 @@ extern void iommu_detach_device(struct iommu_domain *domain,
- extern int iommu_cache_invalidate(struct iommu_domain *domain,
- 				  struct device *dev,
- 				  struct iommu_cache_invalidate_info *inv_info);
-+extern int iommu_sva_bind_gpasid(struct iommu_domain *domain,
-+		struct device *dev, struct iommu_gpasid_bind_data *data);
-+extern int iommu_sva_unbind_gpasid(struct iommu_domain *domain,
-+				struct device *dev, ioasid_t pasid);
- extern struct iommu_domain *iommu_get_domain_for_dev(struct device *dev);
- extern struct iommu_domain *iommu_get_dma_domain(struct device *dev);
- extern int iommu_map(struct iommu_domain *domain, unsigned long iova,
-@@ -1018,6 +1029,17 @@ iommu_cache_invalidate(struct iommu_domain *domain,
- {
- 	return -ENODEV;
- }
-+static inline int iommu_sva_bind_gpasid(struct iommu_domain *domain,
-+				struct device *dev, struct iommu_gpasid_bind_data *data)
-+{
-+	return -ENODEV;
-+}
-+
-+static inline int iommu_sva_unbind_gpasid(struct iommu_domain *domain,
-+					   struct device *dev, int pasid)
-+{
-+	return -ENODEV;
-+}
- 
- #endif /* CONFIG_IOMMU_API */
- 
-diff --git a/include/uapi/linux/iommu.h b/include/uapi/linux/iommu.h
-index f3e96214df8e..4ad3496e5c43 100644
---- a/include/uapi/linux/iommu.h
-+++ b/include/uapi/linux/iommu.h
-@@ -262,4 +262,63 @@ struct iommu_cache_invalidate_info {
- 	};
- };
- 
-+/**
-+ * struct iommu_gpasid_bind_data_vtd - Intel VT-d specific data on device and guest
-+ * SVA binding.
-+ *
-+ * @flags:	VT-d PASID table entry attributes
-+ * @pat:	Page attribute table data to compute effective memory type
-+ * @emt:	Extended memory type
-+ *
-+ * Only guest vIOMMU selectable and effective options are passed down to
-+ * the host IOMMU.
-+ */
-+struct iommu_gpasid_bind_data_vtd {
-+#define IOMMU_SVA_VTD_GPASID_SRE	(1 << 0) /* supervisor request */
-+#define IOMMU_SVA_VTD_GPASID_EAFE	(1 << 1) /* extended access enable */
-+#define IOMMU_SVA_VTD_GPASID_PCD	(1 << 2) /* page-level cache disable */
-+#define IOMMU_SVA_VTD_GPASID_PWT	(1 << 3) /* page-level write through */
-+#define IOMMU_SVA_VTD_GPASID_EMTE	(1 << 4) /* extended mem type enable */
-+#define IOMMU_SVA_VTD_GPASID_CD		(1 << 5) /* PASID-level cache disable */
-+	__u64 flags;
-+	__u32 pat;
-+	__u32 emt;
-+};
-+
-+/**
-+ * struct iommu_gpasid_bind_data - Information about device and guest PASID binding
-+ * @version:	Version of this data structure
-+ * @format:	PASID table entry format
-+ * @flags:	Additional information on guest bind request
-+ * @gpgd:	Guest page directory base of the guest mm to bind
-+ * @hpasid:	Process address space ID used for the guest mm in host IOMMU
-+ * @gpasid:	Process address space ID used for the guest mm in guest IOMMU
-+ * @addr_width:	Guest virtual address width
-+ * @padding:	Reserved for future use (should be zero)
-+ * @vtd:	Intel VT-d specific data
-+ *
-+ * Guest to host PASID mapping can be an identity or non-identity, where guest
-+ * has its own PASID space. For non-identify mapping, guest to host PASID lookup
-+ * is needed when VM programs guest PASID into an assigned device. VMM may
-+ * trap such PASID programming then request host IOMMU driver to convert guest
-+ * PASID to host PASID based on this bind data.
-+ */
-+struct iommu_gpasid_bind_data {
-+#define IOMMU_GPASID_BIND_VERSION_1	1
-+	__u32 version;
-+#define IOMMU_PASID_FORMAT_INTEL_VTD	1
-+	__u32 format;
-+#define IOMMU_SVA_GPASID_VAL	(1 << 0) /* guest PASID valid */
-+	__u64 flags;
-+	__u64 gpgd;
-+	__u64 hpasid;
-+	__u64 gpasid;
-+	__u32 addr_width;
-+	__u8  padding[12];
-+	/* Vendor specific data */
-+	union {
-+		struct iommu_gpasid_bind_data_vtd vtd;
-+	};
-+};
-+
- #endif /* _UAPI_IOMMU_H */
--- 
-2.7.4
+And, I tested this patch on R-Car H3. So,
+
+Tested-by: Yoshihiro Shimoda <yoshihiro.shimoda.uh@renesas.com>
+
+Best regards,
+Yoshihiro Shimoda
 
 _______________________________________________
 iommu mailing list
