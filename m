@@ -2,55 +2,81 @@ Return-Path: <SRS0=9AUr=X3=lists.linux-foundation.org=iommu-bounces@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-9.8 required=3.0 tests=HEADER_FROM_DIFFERENT_DOMAINS,
-	INCLUDES_PATCH,MAILING_LIST_MULTI,SIGNED_OFF_BY,SPF_HELO_NONE,SPF_PASS,
-	USER_AGENT_GIT autolearn=unavailable autolearn_force=no version=3.4.0
+X-Spam-Status: No, score=-6.6 required=3.0 tests=DKIM_INVALID,DKIM_SIGNED,
+	HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_PATCH,MAILING_LIST_MULTI,SIGNED_OFF_BY,
+	SPF_HELO_NONE,SPF_PASS autolearn=unavailable autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 26058C4360C
-	for <iommu@archiver.kernel.org>; Wed,  2 Oct 2019 19:38:56 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id A1E6EC4360C
+	for <iommu@archiver.kernel.org>; Wed,  2 Oct 2019 20:47:01 +0000 (UTC)
 Received: from mail.linuxfoundation.org (mail.linuxfoundation.org [140.211.169.12])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by mail.kernel.org (Postfix) with ESMTPS id 080B7206BB
-	for <iommu@archiver.kernel.org>; Wed,  2 Oct 2019 19:38:56 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 080B7206BB
-Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=linux.intel.com
+	by mail.kernel.org (Postfix) with ESMTPS id 6BAB02070B
+	for <iommu@archiver.kernel.org>; Wed,  2 Oct 2019 20:47:01 +0000 (UTC)
+Authentication-Results: mail.kernel.org;
+	dkim=fail reason="signature verification failed" (1024-bit key) header.d=chromium.org header.i=@chromium.org header.b="d/zOukb8"
+DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 6BAB02070B
+Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=chromium.org
 Authentication-Results: mail.kernel.org; spf=pass smtp.mailfrom=iommu-bounces@lists.linux-foundation.org
 Received: from mail.linux-foundation.org (localhost [127.0.0.1])
-	by mail.linuxfoundation.org (Postfix) with ESMTP id B2A8115B9;
-	Wed,  2 Oct 2019 19:38:40 +0000 (UTC)
+	by mail.linuxfoundation.org (Postfix) with ESMTP id F26601657;
+	Wed,  2 Oct 2019 20:47:00 +0000 (UTC)
 Received: from smtp1.linuxfoundation.org (smtp1.linux-foundation.org
 	[172.17.192.35])
-	by mail.linuxfoundation.org (Postfix) with ESMTPS id 92C4115A2
+	by mail.linuxfoundation.org (Postfix) with ESMTPS id B45BA1651
 	for <iommu@lists.linux-foundation.org>;
-	Wed,  2 Oct 2019 19:38:39 +0000 (UTC)
-X-Greylist: domain auto-whitelisted by SQLgrey-1.7.6
-Received: from mga17.intel.com (mga17.intel.com [192.55.52.151])
-	by smtp1.linuxfoundation.org (Postfix) with ESMTPS id 7E76F1FB
+	Wed,  2 Oct 2019 20:46:59 +0000 (UTC)
+X-Greylist: whitelisted by SQLgrey-1.7.6
+Received: from mail-pg1-f196.google.com (mail-pg1-f196.google.com
+	[209.85.215.196])
+	by smtp1.linuxfoundation.org (Postfix) with ESMTPS id C10C43D0
 	for <iommu@lists.linux-foundation.org>;
-	Wed,  2 Oct 2019 19:38:38 +0000 (UTC)
-X-Amp-Result: SKIPPED(no attachment in message)
-X-Amp-File-Uploaded: False
-Received: from orsmga001.jf.intel.com ([10.7.209.18])
-	by fmsmga107.fm.intel.com with ESMTP/TLS/DHE-RSA-AES256-GCM-SHA384;
-	02 Oct 2019 12:38:36 -0700
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.67,249,1566889200"; d="scan'208";a="275456103"
-Received: from jacob-builder.jf.intel.com ([10.7.199.155])
-	by orsmga001.jf.intel.com with ESMTP; 02 Oct 2019 12:38:35 -0700
-From: Jacob Pan <jacob.jun.pan@linux.intel.com>
-To: iommu@lists.linux-foundation.org, LKML <linux-kernel@vger.kernel.org>,
-	Joerg Roedel <joro@8bytes.org>, David Woodhouse <dwmw2@infradead.org>,
-	Alex Williamson <alex.williamson@redhat.com>,
-	Jean-Philippe Brucker <jean-philippe@linaro.com>
-Subject: [PATCH v4 3/4] iommu/ioasid: Add custom allocators
-Date: Wed,  2 Oct 2019 12:42:42 -0700
-Message-Id: <1570045363-24856-4-git-send-email-jacob.jun.pan@linux.intel.com>
-X-Mailer: git-send-email 2.7.4
-In-Reply-To: <1570045363-24856-1-git-send-email-jacob.jun.pan@linux.intel.com>
-References: <1570045363-24856-1-git-send-email-jacob.jun.pan@linux.intel.com>
-Cc: "Tian, Kevin" <kevin.tian@intel.com>, Raj Ashok <ashok.raj@intel.com>,
-	Jonathan Cameron <jic23@kernel.org>
+	Wed,  2 Oct 2019 20:46:57 +0000 (UTC)
+Received: by mail-pg1-f196.google.com with SMTP id q7so254238pgi.12
+	for <iommu@lists.linux-foundation.org>;
+	Wed, 02 Oct 2019 13:46:57 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=chromium.org; s=google;
+	h=date:from:to:cc:subject:message-id:mime-version:content-disposition; 
+	bh=NXZoaM8JnR0+26PVfw4tVHTn5SdQ45I7gpO85lvpiP0=;
+	b=d/zOukb8JkdaGMJDkXWNp2Q+WzlGXbZZGxLJkrMZ8FFJBwkDoe1BlOgLfvcWlg7OIV
+	FswyVy2UdZ9QywcGA3Shg+vQFos67XMyw9AqTmCvhSNVv+Z7IwtD7IvbVEWeiDoS8aFM
+	McCilSu2GEofjob8stzUmA8e/JlxTLTzVMtbc=
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+	d=1e100.net; s=20161025;
+	h=x-gm-message-state:date:from:to:cc:subject:message-id:mime-version
+	:content-disposition;
+	bh=NXZoaM8JnR0+26PVfw4tVHTn5SdQ45I7gpO85lvpiP0=;
+	b=aRnWwM1QQKERbZhFNBww6Z6d3XO5VKqmuP7778o+pgcaZUnltOjuOh6SWCXZC3/iA7
+	fEXajkfJir+b5GJHyta99oqQDvcIXPmRt77D2R3LSIp8iK5NFdgbkDDbnqUYUdLzbJKV
+	6cxOtYE442A98kFL+ayJVlbbM/9LBQYcsbkEAkAVWjid1o9ie07ys9FVCX9EwwjKFaQM
+	FNcIOn5uxta0Wl86tviGo8/bZMs30ENQ9NXLiLhXC2hch35+/0UfvPe3pTRfV410SGXO
+	mjbxQLswW9f3Qfu/flk8DsiUBku8jtG0pApNhJjVeCHjo15pkmLVQAYKdDO8ityQglnG
+	XZNQ==
+X-Gm-Message-State: APjAAAV0HifZaH6T7xPpd5UEgR7JGWOw8rRlIQT4N36OWY/yQGuigS84
+	JDPH80sQCJ3w/gfkt3OJpWydxg==
+X-Google-Smtp-Source: APXvYqz4cuEetDgLVL9xZEkahkfeg3mPz43ZiRkqQe1eIgZwxKs63wCyjcBd+aYAmiRIbW1RZftzuw==
+X-Received: by 2002:a63:4142:: with SMTP id o63mr6002272pga.426.1570049217206; 
+	Wed, 02 Oct 2019 13:46:57 -0700 (PDT)
+Received: from www.outflux.net (smtp.outflux.net. [198.145.64.163])
+	by smtp.gmail.com with ESMTPSA id
+	z13sm359178pfq.121.2019.10.02.13.46.56
+	(version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+	Wed, 02 Oct 2019 13:46:56 -0700 (PDT)
+Date: Wed, 2 Oct 2019 13:46:55 -0700
+From: Kees Cook <keescook@chromium.org>
+To: Christoph Hellwig <hch@lst.de>
+Subject: [PATCH] dma-mapping: Lift address space checks out of debug code
+Message-ID: <201910021341.7819A660@keescook>
+MIME-Version: 1.0
+Content-Disposition: inline
+Cc: Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+	linux-kernel@vger.kernel.org, Stephen Boyd <swboyd@chromium.org>,
+	iommu@lists.linux-foundation.org,
+	Semmle Security Reports <security-reports@semmle.com>,
+	Dan Carpenter <dan.carpenter@oracle.com>,
+	Jesper Dangaard Brouer <brouer@redhat.com>,
+	Thomas Gleixner <tglx@linutronix.de>, Laura Abbott <labbott@redhat.com>,
+	Robin Murphy <robin.murphy@arm.com>, Allison Randal <allison@lohutok.net>
 X-BeenThere: iommu@lists.linux-foundation.org
 X-Mailman-Version: 2.1.12
 Precedence: list
@@ -63,447 +89,103 @@ List-Post: <mailto:iommu@lists.linux-foundation.org>
 List-Help: <mailto:iommu-request@lists.linux-foundation.org?subject=help>
 List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
 	<mailto:iommu-request@lists.linux-foundation.org?subject=subscribe>
-MIME-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
 Sender: iommu-bounces@lists.linux-foundation.org
 Errors-To: iommu-bounces@lists.linux-foundation.org
 
-IOASID allocation may rely on platform specific methods. One use case is
-that when running in the guest, in order to obtain system wide global
-IOASIDs, emulated allocation interface is needed to communicate with the
-host. Here we call these platform specific allocators custom allocators.
+As we've seen from USB and other areas, we need to always do runtime
+checks for DMA operating on memory regions that might be remapped. This
+consolidates the (existing!) checks and makes them on by default. A
+warning will be triggered for any drivers still using DMA on the stack
+(as has been seen in a few recent reports).
 
-Custom IOASID allocators can be registered at runtime and take precedence
-over the default XArray allocator. They have these attributes:
-
-- provides platform specific alloc()/free() functions with private data.
-- allocation results lookup are not provided by the allocator, lookup
-  request must be done by the IOASID framework by its own XArray.
-- allocators can be unregistered at runtime, either fallback to the next
-  custom allocator or to the default allocator.
-- custom allocators can share the same set of alloc()/free() helpers, in
-  this case they also share the same IOASID space, thus the same XArray.
-- switching between allocators requires all outstanding IOASIDs to be
-  freed unless the two allocators share the same alloc()/free() helpers.
-
-Signed-off-by: Jean-Philippe Brucker <jean-philippe@linaro.com>
-Signed-off-by: Jacob Pan <jacob.jun.pan@linux.intel.com>
-Link: https://lkml.org/lkml/2019/4/26/462
+Suggested-by: Laura Abbott <labbott@redhat.com>
+Signed-off-by: Kees Cook <keescook@chromium.org>
 ---
- drivers/iommu/ioasid.c | 289 +++++++++++++++++++++++++++++++++++++++++++++++--
- include/linux/ioasid.h |  28 +++++
- 2 files changed, 308 insertions(+), 9 deletions(-)
+ include/linux/dma-debug.h   |  8 --------
+ include/linux/dma-mapping.h |  8 +++++++-
+ kernel/dma/debug.c          | 16 ----------------
+ 3 files changed, 7 insertions(+), 25 deletions(-)
 
-diff --git a/drivers/iommu/ioasid.c b/drivers/iommu/ioasid.c
-index aadf500c281c..0f8dd377aada 100644
---- a/drivers/iommu/ioasid.c
-+++ b/drivers/iommu/ioasid.c
-@@ -17,7 +17,245 @@ struct ioasid_data {
- 	struct rcu_head rcu;
- };
+diff --git a/include/linux/dma-debug.h b/include/linux/dma-debug.h
+index 4208f94d93f7..2af9765d9af7 100644
+--- a/include/linux/dma-debug.h
++++ b/include/linux/dma-debug.h
+@@ -18,9 +18,6 @@ struct bus_type;
  
--static DEFINE_XARRAY_ALLOC(ioasid_xa);
-+/*
-+ * struct ioasid_allocator_data - Internal data structure to hold information
-+ * about an allocator. There are two types of allocators:
-+ *
-+ * - Default allocator always has its own XArray to track the IOASIDs allocated.
-+ * - Custom allocators may share allocation helpers with different private data.
-+ *   Custom allocators that share the same helper functions also share the same
-+ *   XArray.
-+ * Rules:
-+ * 1. Default allocator is always available, not dynamically registered. This is
-+ *    to prevent race conditions with early boot code that want to register
-+ *    custom allocators or allocate IOASIDs.
-+ * 2. Custom allocators take precedence over the default allocator.
-+ * 3. When all custom allocators sharing the same helper functions are
-+ *    unregistered (e.g. due to hotplug), all outstanding IOASIDs must be
-+ *    freed. Otherwise, outstanding IOASIDs will be lost and orphaned.
-+ * 4. When switching between custom allocators sharing the same helper
-+ *    functions, outstanding IOASIDs are preserved.
-+ * 5. When switching between custom allocator and default allocator, all IOASIDs
-+ *    must be freed to ensure unadulterated space for the new allocator.
-+ *
-+ * @ops:	allocator helper functions and its data
-+ * @list:	registered custom allocators
-+ * @slist:	allocators share the same ops but different data
-+ * @flags:	attributes of the allocator
-+ * @xa:		xarray holds the IOASID space
-+ * @rcu:	used for kfree_rcu when unregistering allocator
-+ */
-+struct ioasid_allocator_data {
-+	struct ioasid_allocator_ops *ops;
-+	struct list_head list;
-+	struct list_head slist;
-+#define IOASID_ALLOCATOR_CUSTOM BIT(0) /* Needs framework to track results */
-+	unsigned long flags;
-+	struct xarray xa;
-+	struct rcu_head rcu;
-+};
-+
-+static DEFINE_SPINLOCK(ioasid_allocator_lock);
-+static LIST_HEAD(allocators_list);
-+
-+static ioasid_t default_alloc(ioasid_t min, ioasid_t max, void *opaque);
-+static void default_free(ioasid_t ioasid, void *opaque);
-+
-+static struct ioasid_allocator_ops default_ops = {
-+	.alloc = default_alloc,
-+	.free = default_free,
-+};
-+
-+static struct ioasid_allocator_data default_allocator = {
-+	.ops = &default_ops,
-+	.flags = 0,
-+	.xa = XARRAY_INIT(ioasid_xa, XA_FLAGS_ALLOC),
-+};
-+
-+static struct ioasid_allocator_data *active_allocator = &default_allocator;
-+
-+static ioasid_t default_alloc(ioasid_t min, ioasid_t max, void *opaque)
-+{
-+	ioasid_t id;
-+
-+	if (xa_alloc(&default_allocator.xa, &id, opaque, XA_LIMIT(min, max), GFP_ATOMIC)) {
-+		pr_err("Failed to alloc ioasid from %d to %d\n", min, max);
-+		return INVALID_IOASID;
-+	}
-+
-+	return id;
-+}
-+
-+static void default_free(ioasid_t ioasid, void *opaque)
-+{
-+	struct ioasid_data *ioasid_data;
-+
-+	ioasid_data = xa_erase(&default_allocator.xa, ioasid);
-+	kfree_rcu(ioasid_data, rcu);
-+}
-+
-+/* Allocate and initialize a new custom allocator with its helper functions */
-+static struct ioasid_allocator_data *ioasid_alloc_allocator(struct ioasid_allocator_ops *ops)
-+{
-+	struct ioasid_allocator_data *ia_data;
-+
-+	ia_data = kzalloc(sizeof(*ia_data), GFP_ATOMIC);
-+	if (!ia_data)
-+		return NULL;
-+
-+	xa_init_flags(&ia_data->xa, XA_FLAGS_ALLOC);
-+	INIT_LIST_HEAD(&ia_data->slist);
-+	ia_data->flags |= IOASID_ALLOCATOR_CUSTOM;
-+	ia_data->ops = ops;
-+
-+	/* For tracking custom allocators that share the same ops */
-+	list_add_tail(&ops->list, &ia_data->slist);
-+
-+	return ia_data;
-+}
-+
-+static bool use_same_ops(struct ioasid_allocator_ops *a, struct ioasid_allocator_ops *b)
-+{
-+	return (a->free == b->free) && (a->alloc == b->alloc);
-+}
-+
-+/**
-+ * ioasid_register_allocator - register a custom allocator
-+ * @ops: the custom allocator ops to be registered
-+ *
-+ * Custom allocators take precedence over the default xarray based allocator.
-+ * Private data associated with the IOASID allocated by the custom allocators
-+ * are managed by IOASID framework similar to data stored in xa by default
-+ * allocator.
-+ *
-+ * There can be multiple allocators registered but only one is active. In case
-+ * of runtime removal of a custom allocator, the next one is activated based
-+ * on the registration ordering.
-+ *
-+ * Multiple allocators can share the same alloc() function, in this case the
-+ * IOASID space is shared.
-+ */
-+int ioasid_register_allocator(struct ioasid_allocator_ops *ops)
-+{
-+	struct ioasid_allocator_data *ia_data;
-+	struct ioasid_allocator_data *pallocator;
-+	int ret = 0;
-+
-+	spin_lock(&ioasid_allocator_lock);
-+
-+	ia_data = ioasid_alloc_allocator(ops);
-+	if (!ia_data) {
-+		ret = -ENOMEM;
-+		goto out_unlock;
-+	}
-+
-+	/*
-+	 * No particular preference, we activate the first one and keep
-+	 * the later registered allocators in a list in case the first one gets
-+	 * removed due to hotplug.
-+	 */
-+	if (list_empty(&allocators_list)) {
-+		WARN_ON(active_allocator != &default_allocator);
-+		/* Use this new allocator if default is not active */
-+		if (xa_empty(&active_allocator->xa)) {
-+			rcu_assign_pointer(active_allocator, ia_data);
-+			list_add_tail(&ia_data->list, &allocators_list);
-+			goto out_unlock;
-+		}
-+		pr_warn("Default allocator active with outstanding IOASID\n");
-+		ret = -EAGAIN;
-+		goto out_free;
-+	}
-+
-+	/* Check if the allocator is already registered */
-+	list_for_each_entry(pallocator, &allocators_list, list) {
-+		if (pallocator->ops == ops) {
-+			pr_err("IOASID allocator already registered\n");
-+			ret = -EEXIST;
-+			goto out_free;
-+		} else if (use_same_ops(pallocator->ops, ops)) {
-+			/*
-+			 * If the new allocator shares the same ops,
-+			 * then they will share the same IOASID space.
-+			 * We should put them under the same xarray.
-+			 */
-+			list_add_tail(&ops->list, &pallocator->slist);
-+			goto out_free;
-+		}
-+	}
-+	list_add_tail(&ia_data->list, &allocators_list);
-+
-+	spin_unlock(&ioasid_allocator_lock);
-+	return 0;
-+out_free:
-+	kfree(ia_data);
-+out_unlock:
-+	spin_unlock(&ioasid_allocator_lock);
-+	return ret;
-+}
-+EXPORT_SYMBOL_GPL(ioasid_register_allocator);
-+
-+/**
-+ * ioasid_unregister_allocator - Remove a custom IOASID allocator ops
-+ * @ops: the custom allocator to be removed
-+ *
-+ * Remove an allocator from the list, activate the next allocator in
-+ * the order it was registered. Or revert to default allocator if all
-+ * custom allocators are unregistered without outstanding IOASIDs.
-+ */
-+void ioasid_unregister_allocator(struct ioasid_allocator_ops *ops)
-+{
-+	struct ioasid_allocator_data *pallocator;
-+	struct ioasid_allocator_ops *sops;
-+
-+	spin_lock(&ioasid_allocator_lock);
-+	if (list_empty(&allocators_list)) {
-+		pr_warn("No custom IOASID allocators active!\n");
-+		goto exit_unlock;
-+	}
-+
-+	list_for_each_entry(pallocator, &allocators_list, list) {
-+		if (!use_same_ops(pallocator->ops, ops))
-+			continue;
-+
-+		if (list_is_singular(&pallocator->slist)) {
-+			/* No shared helper functions */
-+			list_del(&pallocator->list);
-+			/*
-+			 * All IOASIDs should have been freed before
-+			 * the last allocator that shares the same ops
-+			 * is unregistered.
-+			 */
-+			WARN_ON(!xa_empty(&pallocator->xa));
-+			if (list_empty(&allocators_list)) {
-+				pr_info("No custom IOASID allocators, switch to default.\n");
-+				rcu_assign_pointer(active_allocator, &default_allocator);
-+			} else if (pallocator == active_allocator) {
-+				rcu_assign_pointer(active_allocator,
-+						list_first_entry(&allocators_list,
-+								struct ioasid_allocator_data, list));
-+				pr_info("IOASID allocator changed");
-+			}
-+			kfree_rcu(pallocator, rcu);
-+			break;
-+		}
-+		/*
-+		 * Find the matching shared ops to delete,
-+		 * but keep outstanding IOASIDs
-+		 */
-+		list_for_each_entry(sops, &pallocator->slist, list) {
-+			if (sops == ops) {
-+				list_del(&ops->list);
-+				break;
-+			}
-+		}
-+		break;
-+	}
-+
-+exit_unlock:
-+	spin_unlock(&ioasid_allocator_lock);
-+}
-+EXPORT_SYMBOL_GPL(ioasid_unregister_allocator);
+ extern void dma_debug_add_bus(struct bus_type *bus);
  
- /**
-  * ioasid_set_data - Set private data for an allocated ioasid
-@@ -32,13 +270,13 @@ int ioasid_set_data(ioasid_t ioasid, void *data)
- 	struct ioasid_data *ioasid_data;
- 	int ret = 0;
- 
--	xa_lock(&ioasid_xa);
--	ioasid_data = xa_load(&ioasid_xa, ioasid);
-+	spin_lock(&ioasid_allocator_lock);
-+	ioasid_data = xa_load(&active_allocator->xa, ioasid);
- 	if (ioasid_data)
- 		rcu_assign_pointer(ioasid_data->private, data);
- 	else
- 		ret = -ENOENT;
--	xa_unlock(&ioasid_xa);
-+	spin_unlock(&ioasid_allocator_lock);
- 
- 	/*
- 	 * Wait for readers to stop accessing the old private data, so the
-@@ -67,6 +305,7 @@ ioasid_t ioasid_alloc(struct ioasid_set *set, ioasid_t min, ioasid_t max,
- 		      void *private)
+-extern void debug_dma_map_single(struct device *dev, const void *addr,
+-				 unsigned long len);
+-
+ extern void debug_dma_map_page(struct device *dev, struct page *page,
+ 			       size_t offset, size_t size,
+ 			       int direction, dma_addr_t dma_addr);
+@@ -75,11 +72,6 @@ static inline void dma_debug_add_bus(struct bus_type *bus)
  {
- 	struct ioasid_data *data;
-+	void *adata;
- 	ioasid_t id;
- 
- 	data = kzalloc(sizeof(*data), GFP_ATOMIC);
-@@ -76,14 +315,31 @@ ioasid_t ioasid_alloc(struct ioasid_set *set, ioasid_t min, ioasid_t max,
- 	data->set = set;
- 	data->private = private;
- 
--	if (xa_alloc(&ioasid_xa, &id, data, XA_LIMIT(min, max), GFP_KERNEL)) {
--		pr_err("Failed to alloc ioasid from %d to %d\n", min, max);
-+	/*
-+	 * Custom allocator needs allocator data to perform platform specific
-+	 * operations.
-+	 */
-+	spin_lock(&ioasid_allocator_lock);
-+	adata = active_allocator->flags & IOASID_ALLOCATOR_CUSTOM ? active_allocator->ops->pdata : data;
-+	id = active_allocator->ops->alloc(min, max, adata);
-+	if (id == INVALID_IOASID) {
-+		pr_err("Failed ASID allocation %lu\n", active_allocator->flags);
-+		goto exit_free;
-+	}
-+
-+	if ((active_allocator->flags & IOASID_ALLOCATOR_CUSTOM) &&
-+	     xa_alloc(&active_allocator->xa, &id, data, XA_LIMIT(id, id), GFP_ATOMIC)) {
-+		/* Custom allocator needs framework to store and track allocation results */
-+		pr_err("Failed to alloc ioasid from %d\n", id);
-+		active_allocator->ops->free(id, active_allocator->ops->pdata);
- 		goto exit_free;
- 	}
- 	data->id = id;
- 
-+	spin_unlock(&ioasid_allocator_lock);
- 	return id;
- exit_free:
-+	spin_unlock(&ioasid_allocator_lock);
- 	kfree(data);
- 	return INVALID_IOASID;
- }
-@@ -97,9 +353,22 @@ void ioasid_free(ioasid_t ioasid)
- {
- 	struct ioasid_data *ioasid_data;
- 
--	ioasid_data = xa_erase(&ioasid_xa, ioasid);
-+	spin_lock(&ioasid_allocator_lock);
-+	ioasid_data = xa_load(&active_allocator->xa, ioasid);
-+	if (!ioasid_data) {
-+		pr_err("Trying to free unknown IOASID %u\n", ioasid);
-+		goto exit_unlock;
-+	}
- 
--	kfree_rcu(ioasid_data, rcu);
-+	active_allocator->ops->free(ioasid, active_allocator->ops->pdata);
-+	/* Custom allocator needs additional steps to free the xa element */
-+	if (active_allocator->flags & IOASID_ALLOCATOR_CUSTOM) {
-+		ioasid_data = xa_erase(&active_allocator->xa, ioasid);
-+		kfree_rcu(ioasid_data, rcu);
-+	}
-+
-+exit_unlock:
-+	spin_unlock(&ioasid_allocator_lock);
- }
- EXPORT_SYMBOL_GPL(ioasid_free);
- 
-@@ -122,9 +391,11 @@ void *ioasid_find(struct ioasid_set *set, ioasid_t ioasid,
- {
- 	void *priv;
- 	struct ioasid_data *ioasid_data;
-+	struct ioasid_allocator_data *idata;
- 
- 	rcu_read_lock();
--	ioasid_data = xa_load(&ioasid_xa, ioasid);
-+	idata = rcu_dereference(active_allocator);
-+	ioasid_data = xa_load(&idata->xa, ioasid);
- 	if (!ioasid_data) {
- 		priv = ERR_PTR(-ENOENT);
- 		goto unlock;
-diff --git a/include/linux/ioasid.h b/include/linux/ioasid.h
-index 17337a13f06e..6f000d7a0ddc 100644
---- a/include/linux/ioasid.h
-+++ b/include/linux/ioasid.h
-@@ -7,11 +7,28 @@
- 
- #define INVALID_IOASID ((ioasid_t)-1)
- typedef unsigned int ioasid_t;
-+typedef ioasid_t (*ioasid_alloc_fn_t)(ioasid_t min, ioasid_t max, void *data);
-+typedef void (*ioasid_free_fn_t)(ioasid_t ioasid, void *data);
- 
- struct ioasid_set {
- 	int dummy;
- };
- 
-+/**
-+ * struct ioasid_allocator_ops - IOASID allocator helper functions and data
-+ *
-+ * @alloc:	helper function to allocate IOASID
-+ * @free:	helper function to free IOASID
-+ * @list:	for tracking ops that share helper functions but not data
-+ * @pdata:	data belong to the allocator, provided when calling alloc()
-+ */
-+struct ioasid_allocator_ops {
-+	ioasid_alloc_fn_t alloc;
-+	ioasid_free_fn_t free;
-+	struct list_head list;
-+	void *pdata;
-+};
-+
- #define DECLARE_IOASID_SET(name) struct ioasid_set name = { 0 }
- 
- #if IS_ENABLED(CONFIG_IOASID)
-@@ -20,6 +37,8 @@ ioasid_t ioasid_alloc(struct ioasid_set *set, ioasid_t min, ioasid_t max,
- void ioasid_free(ioasid_t ioasid);
- void *ioasid_find(struct ioasid_set *set, ioasid_t ioasid,
- 		  bool (*getter)(void *));
-+int ioasid_register_allocator(struct ioasid_allocator_ops *allocator);
-+void ioasid_unregister_allocator(struct ioasid_allocator_ops *allocator);
- int ioasid_set_data(ioasid_t ioasid, void *data);
- 
- #else /* !CONFIG_IOASID */
-@@ -39,6 +58,15 @@ static inline void *ioasid_find(struct ioasid_set *set, ioasid_t ioasid,
- 	return NULL;
  }
  
-+static inline int ioasid_register_allocator(struct ioasid_allocator_ops *allocator)
-+{
-+	return -ENOTSUPP;
-+}
-+
-+static inline void ioasid_unregister_allocator(struct ioasid_allocator_ops *allocator)
-+{
-+}
-+
- static inline int ioasid_set_data(ioasid_t ioasid, void *data)
+-static inline void debug_dma_map_single(struct device *dev, const void *addr,
+-					unsigned long len)
+-{
+-}
+-
+ static inline void debug_dma_map_page(struct device *dev, struct page *page,
+ 				      size_t offset, size_t size,
+ 				      int direction, dma_addr_t dma_addr)
+diff --git a/include/linux/dma-mapping.h b/include/linux/dma-mapping.h
+index 4a1c4fca475a..2d6b8382eab1 100644
+--- a/include/linux/dma-mapping.h
++++ b/include/linux/dma-mapping.h
+@@ -583,7 +583,13 @@ static inline unsigned long dma_get_merge_boundary(struct device *dev)
+ static inline dma_addr_t dma_map_single_attrs(struct device *dev, void *ptr,
+ 		size_t size, enum dma_data_direction dir, unsigned long attrs)
  {
- 	return -ENOTSUPP;
+-	debug_dma_map_single(dev, ptr, size);
++	/* DMA must never operate on stack or other remappable places. */
++	WARN_ONCE(is_vmalloc_addr(ptr) || !virt_addr_valid(ptr),
++		"%s %s: driver maps %lu bytes from %s area\n",
++		dev ? dev_driver_string(dev) : "unknown driver",
++		dev ? dev_name(dev) : "unknown device", size,
++		is_vmalloc_addr(ptr) ? "vmalloc" : "invalid");
++
+ 	return dma_map_page_attrs(dev, virt_to_page(ptr), offset_in_page(ptr),
+ 			size, dir, attrs);
+ }
+diff --git a/kernel/dma/debug.c b/kernel/dma/debug.c
+index 099002d84f46..aa1e6a1990b2 100644
+--- a/kernel/dma/debug.c
++++ b/kernel/dma/debug.c
+@@ -1232,22 +1232,6 @@ static void check_sg_segment(struct device *dev, struct scatterlist *sg)
+ #endif
+ }
+ 
+-void debug_dma_map_single(struct device *dev, const void *addr,
+-			    unsigned long len)
+-{
+-	if (unlikely(dma_debug_disabled()))
+-		return;
+-
+-	if (!virt_addr_valid(addr))
+-		err_printk(dev, NULL, "device driver maps memory from invalid area [addr=%p] [len=%lu]\n",
+-			   addr, len);
+-
+-	if (is_vmalloc_addr(addr))
+-		err_printk(dev, NULL, "device driver maps memory from vmalloc area [addr=%p] [len=%lu]\n",
+-			   addr, len);
+-}
+-EXPORT_SYMBOL(debug_dma_map_single);
+-
+ void debug_dma_map_page(struct device *dev, struct page *page, size_t offset,
+ 			size_t size, int direction, dma_addr_t dma_addr)
+ {
 -- 
-2.7.4
+2.17.1
 
+
+-- 
+Kees Cook
 _______________________________________________
 iommu mailing list
 iommu@lists.linux-foundation.org
