@@ -2,112 +2,96 @@ Return-Path: <SRS0=9AUr=X3=lists.linux-foundation.org=iommu-bounces@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-3.6 required=3.0 tests=DKIM_INVALID,DKIM_SIGNED,
-	HEADER_FROM_DIFFERENT_DOMAINS,MAILING_LIST_MULTI,SIGNED_OFF_BY,SPF_HELO_NONE,
-	SPF_PASS autolearn=no autolearn_force=no version=3.4.0
+X-Spam-Status: No, score=-6.6 required=3.0 tests=DKIM_INVALID,DKIM_SIGNED,
+	HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_PATCH,MAILING_LIST_MULTI,SIGNED_OFF_BY,
+	SPF_HELO_NONE,SPF_PASS autolearn=ham autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id EFDE4ECE58B
-	for <iommu@archiver.kernel.org>; Wed,  2 Oct 2019 04:49:27 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 6830FC35280
+	for <iommu@archiver.kernel.org>; Wed,  2 Oct 2019 05:19:05 +0000 (UTC)
 Received: from mail.linuxfoundation.org (mail.linuxfoundation.org [140.211.169.12])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by mail.kernel.org (Postfix) with ESMTPS id BAC26218DE
-	for <iommu@archiver.kernel.org>; Wed,  2 Oct 2019 04:49:27 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTPS id 2A798215EA
+	for <iommu@archiver.kernel.org>; Wed,  2 Oct 2019 05:19:05 +0000 (UTC)
 Authentication-Results: mail.kernel.org;
-	dkim=fail reason="signature verification failed" (1024-bit key) header.d=renesasgroup.onmicrosoft.com header.i=@renesasgroup.onmicrosoft.com header.b="qlJEWUTQ"
-DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org BAC26218DE
-Authentication-Results: mail.kernel.org; dmarc=none (p=none dis=none) header.from=renesas.com
+	dkim=fail reason="signature verification failed" (1024-bit key) header.d=chromium.org header.i=@chromium.org header.b="HY4Kgjra"
+DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 2A798215EA
+Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=chromium.org
 Authentication-Results: mail.kernel.org; spf=pass smtp.mailfrom=iommu-bounces@lists.linux-foundation.org
 Received: from mail.linux-foundation.org (localhost [127.0.0.1])
-	by mail.linuxfoundation.org (Postfix) with ESMTP id 892C31EDB;
-	Wed,  2 Oct 2019 04:49:27 +0000 (UTC)
+	by mail.linuxfoundation.org (Postfix) with ESMTP id E62AA2808;
+	Wed,  2 Oct 2019 05:19:04 +0000 (UTC)
 Received: from smtp1.linuxfoundation.org (smtp1.linux-foundation.org
 	[172.17.192.35])
-	by mail.linuxfoundation.org (Postfix) with ESMTPS id 731FD13E4
+	by mail.linuxfoundation.org (Postfix) with ESMTPS id 5C5082804
 	for <iommu@lists.linux-foundation.org>;
-	Wed,  2 Oct 2019 04:49:26 +0000 (UTC)
+	Wed,  2 Oct 2019 05:19:03 +0000 (UTC)
 X-Greylist: whitelisted by SQLgrey-1.7.6
-Received: from JPN01-TY1-obe.outbound.protection.outlook.com
-	(mail-eopbgr1400119.outbound.protection.outlook.com [40.107.140.119])
-	by smtp1.linuxfoundation.org (Postfix) with ESMTPS id E6B573D0
+Received: from mail-ed1-f67.google.com (mail-ed1-f67.google.com
+	[209.85.208.67])
+	by smtp1.linuxfoundation.org (Postfix) with ESMTPS id D63303D0
 	for <iommu@lists.linux-foundation.org>;
-	Wed,  2 Oct 2019 04:49:25 +0000 (UTC)
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
-	b=gvoGK9Gx3pnVP12GVHmz/sWclj5rBMasiJehLJjXKY9RpZqwUp1+LdJ5i2X1pOst1P2RDtt4k3lDrKHiHsHeY/PGgFlhUKd2OV8tXRTktXa3IC+VZR8czakOIZ9XZX/o56ikvt3poPKp88AMtlTiREBTWvYLt75TUkJcsNOz/uOAC+L5VaAWLcOkkSmfeKZc55nN1zpW4QLu95fnZ9Iv6OvHd4qk+GGnO65WmmEa6d7DCLtNLqKwAoorquItl16idnHrzJg552zfIWZydFmnrGZuXLnfNhtVb7FcXhoBPumH4BOXQujDPP9pB3+bjzJLNj7Xlu7vxlu2fApnbXXRRw==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com; 
-	s=arcselector9901;
-	h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
-	bh=XXcTWgQmiTb+tBucx+zH0e1DXzAKJizlbDY7kPr19eA=;
-	b=RIJmxlZXPvou1mLlAOFlGufvQVHu89+ST5JksthPRMVPgwFv3gJBnZn+RvhHjsE9KH1Hu8QvkCi6iaSl4kMK9rdjExAwR3ys4KF12RnzvRbidQLnDoGcbQtlyKEK8H6FDQpvkcIOy9r2zAKlWqobn5p3oUJ/132Pnc7OJTmWuU9NaSR8yWtu4Qib46TYyBTAWtkyPDKXjKhVyCO8/VWEZEKDtq2FCUosxSby/oSAxHBfs7l/CStUVMwxthuvSXy7Y+Bph2hTsV1sSwhhGF9oVEqXY5l2A87zaut9ko5Cn/dsIhktJQ72VOFe6xt9NcpEwD4BL0AtDvGhjLhrboHeKA==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
-	smtp.mailfrom=renesas.com;
-	dmarc=pass action=none header.from=renesas.com; 
-	dkim=pass header.d=renesas.com; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-	d=renesasgroup.onmicrosoft.com; s=selector2-renesasgroup-onmicrosoft-com;
-	h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
-	bh=XXcTWgQmiTb+tBucx+zH0e1DXzAKJizlbDY7kPr19eA=;
-	b=qlJEWUTQIDP7iEfsJI06egTEKQC8fXLPxUwHEeAzN9umAP6gUrWi9XQDiDDJsrHLrmL6OO26zjQaiY4RzgU0VQs8s/GIvxTEwS3reQQyjOFITu3vMbcb0FooEibVAjCbYTGiZBoKw94qGHDSQwFb73S3bYqrkZrjk+E4lYOHOw4=
-Received: from TYAPR01MB4544.jpnprd01.prod.outlook.com (20.179.175.203) by
-	TYAPR01MB4880.jpnprd01.prod.outlook.com (20.179.186.16) with Microsoft
-	SMTP
-	Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
-	15.20.2305.20; Wed, 2 Oct 2019 04:49:23 +0000
-Received: from TYAPR01MB4544.jpnprd01.prod.outlook.com
-	([fe80::548:32de:c810:1947]) by TYAPR01MB4544.jpnprd01.prod.outlook.com
-	([fe80::548:32de:c810:1947%4]) with mapi id 15.20.2305.022;
-	Wed, 2 Oct 2019 04:49:22 +0000
-From: Yoshihiro Shimoda <yoshihiro.shimoda.uh@renesas.com>
-To: Geert Uytterhoeven <geert+renesas@glider.be>, Joerg Roedel
-	<joro@8bytes.org>
-Subject: RE: [PATCH] iommu/ipmmu-vmsa: Only call platform_get_irq() when
-	interrupt is mandatory
-Thread-Topic: [PATCH] iommu/ipmmu-vmsa: Only call platform_get_irq() when
-	interrupt is mandatory
-Thread-Index: AQHVeILzu4iiuNfi/0+Hx5Z/WRrFZKdGxWcQ
-Date: Wed, 2 Oct 2019 04:49:22 +0000
-Message-ID: <TYAPR01MB45442F203A35BD211C6FBE8DD89C0@TYAPR01MB4544.jpnprd01.prod.outlook.com>
-References: <20191001180622.806-1-geert+renesas@glider.be>
-In-Reply-To: <20191001180622.806-1-geert+renesas@glider.be>
-Accept-Language: ja-JP, en-US
-Content-Language: ja-JP
-X-MS-Has-Attach: 
-X-MS-TNEF-Correlator: 
-authentication-results: spf=none (sender IP is )
-	smtp.mailfrom=yoshihiro.shimoda.uh@renesas.com; 
-x-originating-ip: [150.249.235.54]
-x-ms-publictraffictype: Email
-x-ms-office365-filtering-correlation-id: 5d0dc168-0a6f-48dc-d424-08d746f3e4c8
-x-ms-office365-filtering-ht: Tenant
-x-ms-traffictypediagnostic: TYAPR01MB4880:
-x-microsoft-antispam-prvs: <TYAPR01MB488005EA32DEDB71E565F0C5D89C0@TYAPR01MB4880.jpnprd01.prod.outlook.com>
-x-ms-oob-tlc-oobclassifiers: OLM:3513;
-x-forefront-prvs: 0178184651
-x-forefront-antispam-report: SFV:NSPM;
-	SFS:(10019020)(4636009)(376002)(346002)(366004)(136003)(396003)(39860400002)(199004)(189003)(14454004)(229853002)(81156014)(476003)(86362001)(76176011)(8936002)(7696005)(8676002)(2906002)(186003)(66066001)(486006)(6506007)(33656002)(102836004)(6246003)(26005)(256004)(11346002)(99286004)(446003)(6436002)(305945005)(54906003)(52536014)(9686003)(4744005)(5660300002)(74316002)(55016002)(7736002)(6116002)(71190400001)(81166006)(71200400001)(66946007)(66556008)(25786009)(64756008)(66476007)(66446008)(478600001)(4326008)(110136005)(3846002)(316002)(76116006);
-	DIR:OUT; SFP:1102; SCL:1; SRVR:TYAPR01MB4880;
-	H:TYAPR01MB4544.jpnprd01.prod.outlook.com; FPR:; SPF:None;
-	LANG:en; PTR:InfoNoRecords; A:1; MX:1; 
-received-spf: None (protection.outlook.com: renesas.com does not designate
-	permitted sender hosts)
-x-ms-exchange-senderadcheck: 1
-x-microsoft-antispam: BCL:0;
-x-microsoft-antispam-message-info: IsUa9ZARZA03mh0Eu7NLqL0QeXd3g7hY5BVkUGzVA0/98gEgtK1eW0Gsi47/L3aaNPKMMIBq0BaIyEEUj6W46jULV80+jlXNC7MFWkYeocywG4lpSVTemFwqUq+QSdvAI1Yr2WA202Re+fs80Y3IAC3sDCsOqniki7WSO2G9XNfQ+xX+NjuUV/kOYBj+neebjb5YpODL8vbW5jfQyXJ9pddOIP4RfOgfz6WJ6GZmF5LDGkVaNAQ1ToRwSQllnTGFnTA3swNjpJi78c6nAz4azAGA16DBnnGqhQ9+2z5uVBnyTFuRqth4CXuUkCTL670yhBbMkP583YmXRN8RoIHwwOL38tKwyPTsDmBrPzkRU1DAGx+1rvQciW5Id2lJyIgki/+Oa+2fN+3CFS3tf1fuGT7VuLEVBGZCtqaLybq08WA=
-x-ms-exchange-transport-forked: True
+	Wed,  2 Oct 2019 05:19:01 +0000 (UTC)
+Received: by mail-ed1-f67.google.com with SMTP id h33so13990943edh.12
+	for <iommu@lists.linux-foundation.org>;
+	Tue, 01 Oct 2019 22:19:01 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=chromium.org; s=google;
+	h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+	:cc; bh=ht5W39F73OZwYjr1QLPkqRTtjn0zYK8mGDiJXCTjAlQ=;
+	b=HY4Kgjra1y5r/BLGDdRwRt0LVOQfQN7mE0ZX1xPteQgWm23AJKW4lSMw9UxCI+29nE
+	j1ycltij3ElQkF+De830aSaDo7u3QjbXKewfYdC1Ve+r4WYDXl0GLloAmdbaD9I7Lg30
+	h/0zQ7jqZPIu1FwyNoGFeSkQyprdtRdWK2m4M=
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+	d=1e100.net; s=20161025;
+	h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+	:message-id:subject:to:cc;
+	bh=ht5W39F73OZwYjr1QLPkqRTtjn0zYK8mGDiJXCTjAlQ=;
+	b=e71QSs73Baw4jlTQHDlsqZFyYJFvnupcAuwlpHg6J40jZcKioCbnu81S0EuCQzchGT
+	rVpsmzTyKlOMgv+HTi0ERoSuvLeNOF2fv2bUTWCeFzdt8Q/dbd4ku2N96RcbNB5lMbOE
+	dcq5wpBiS5W5MnjY4zVDcCf0K+rpxWzWAjROqCAXkCW3dd0zeHQT6MZVNZ7yl8o336CM
+	Fv02NhFELyj0IZpm2p0OfKnWQXFIVRIyzfkz5Vd7iFWYu9CrF7xbcaBNyBZRdvUHbB++
+	OE3xUOzYJloCaNyodn5hyU6bz0fpQ8rshk9CuLyAjECU1kW7stjq9TIk7jm8s0GMHAJb
+	nLNw==
+X-Gm-Message-State: APjAAAWN++w5CZoIdD6hHPb6hWfIYW/zS0OZTZlt5kze8lhpIVDaFY4e
+	Mz3o//edX8pfM5O7MlXD5gTBb4ToRq9HuQ==
+X-Google-Smtp-Source: APXvYqxt6zfixB8UiUFf0+HpA2xzpeTMqfzJTjHmJu42b7sNJtC5I+V3iaQQAOg/k/CHJxd1XREm/Q==
+X-Received: by 2002:a17:906:3746:: with SMTP id
+	e6mr1431703ejc.238.1569993539929; 
+	Tue, 01 Oct 2019 22:18:59 -0700 (PDT)
+Received: from mail-wm1-f54.google.com (mail-wm1-f54.google.com.
+	[209.85.128.54]) by smtp.gmail.com with ESMTPSA id
+	i23sm1098928ejj.32.2019.10.01.22.18.58
+	for <iommu@lists.linux-foundation.org>
+	(version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+	Tue, 01 Oct 2019 22:18:58 -0700 (PDT)
+Received: by mail-wm1-f54.google.com with SMTP id v17so5428704wml.4
+	for <iommu@lists.linux-foundation.org>;
+	Tue, 01 Oct 2019 22:18:58 -0700 (PDT)
+X-Received: by 2002:a1c:a516:: with SMTP id o22mr1287949wme.116.1569993537804; 
+	Tue, 01 Oct 2019 22:18:57 -0700 (PDT)
 MIME-Version: 1.0
-X-OriginatorOrg: renesas.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: 5d0dc168-0a6f-48dc-d424-08d746f3e4c8
-X-MS-Exchange-CrossTenant-originalarrivaltime: 02 Oct 2019 04:49:22.4219 (UTC)
-X-MS-Exchange-CrossTenant-fromentityheader: Hosted
-X-MS-Exchange-CrossTenant-id: 53d82571-da19-47e4-9cb4-625a166a4a2a
-X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
-X-MS-Exchange-CrossTenant-userprincipalname: UVreoXuX20U1yIDYhrbUEm44nVdjBXG4URhRyRio4D0JJx5iHKMEKwFcgDkohifwb5RuIavNN2wC5GDOHh9DCX+D5bLoFO4QCSUtIl7QdkWtJOkaiLUG4M2k4vCRWxOK
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: TYAPR01MB4880
-Cc: "linux-renesas-soc@vger.kernel.org" <linux-renesas-soc@vger.kernel.org>,
-	Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-	"iommu@lists.linux-foundation.org" <iommu@lists.linux-foundation.org>,
-	"linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
-	Stephen Boyd <swboyd@chromium.org>
+References: <1569822142-14303-1-git-send-email-yong.wu@mediatek.com>
+In-Reply-To: <1569822142-14303-1-git-send-email-yong.wu@mediatek.com>
+From: Tomasz Figa <tfiga@chromium.org>
+Date: Wed, 2 Oct 2019 14:18:46 +0900
+X-Gmail-Original-Message-ID: <CAAFQd5C+FM3n-Ww4C+qDD1QZOGZrqEYw4EvYECfadGcDH0fmew@mail.gmail.com>
+Message-ID: <CAAFQd5C+FM3n-Ww4C+qDD1QZOGZrqEYw4EvYECfadGcDH0fmew@mail.gmail.com>
+Subject: Re: [PATCH] iommu/mediatek: Move the tlb_sync into tlb_flush
+To: Yong Wu <yong.wu@mediatek.com>
+Cc: youlin.pei@mediatek.com, anan.sun@mediatek.com,
+	Nicolas Boichat <drinkcat@chromium.org>, cui.zhang@mediatek.com,
+	srv_heupstream <srv_heupstream@mediatek.com>,
+	Will Deacon <will.deacon@arm.com>,
+	Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
+	Evan Green <evgreen@chromium.org>, chao.hao@mediatek.com,
+	"list@263.net:IOMMU DRIVERS <iommu@lists.linux-foundation.org>,
+	Joerg Roedel <joro@8bytes.org>, " <iommu@lists.linux-foundation.org>,
+	"moderated list:ARM/Mediatek SoC support"
+	<linux-mediatek@lists.infradead.org>,
+	Matthias Brugger <matthias.bgg@gmail.com>,
+	Robin Murphy <robin.murphy@arm.com>,
+	"list@263.net:IOMMU DRIVERS <iommu@lists.linux-foundation.org>,
+	Joerg Roedel <joro@8bytes.org>, " <linux-arm-kernel@lists.infradead.org>
 X-BeenThere: iommu@lists.linux-foundation.org
 X-Mailman-Version: 2.1.12
 Precedence: list
@@ -125,35 +109,212 @@ Content-Transfer-Encoding: 7bit
 Sender: iommu-bounces@lists.linux-foundation.org
 Errors-To: iommu-bounces@lists.linux-foundation.org
 
-Hi Geert-san,
+Hi Yong,
 
-> From: Geert Uytterhoeven, Sent: Wednesday, October 2, 2019 3:06 AM
-> 
-> As platform_get_irq() now prints an error when the interrupt does not
-> exist, calling it gratuitously causes scary messages like:
-> 
->     ipmmu-vmsa e6740000.mmu: IRQ index 0 not found
-> 
-> Fix this by moving the call to platform_get_irq() down, where the
-> existence of the interrupt is mandatory.
-> 
-> Fixes: 7723f4c5ecdb8d83 ("driver core: platform: Add an error message to platform_get_irq*()")
-> Signed-off-by: Geert Uytterhoeven <geert+renesas@glider.be>
+On Mon, Sep 30, 2019 at 2:42 PM Yong Wu <yong.wu@mediatek.com> wrote:
+>
+> The commit 4d689b619445 ("iommu/io-pgtable-arm-v7s: Convert to IOMMU API
+> TLB sync") help move the tlb_sync of unmap from v7s into the iommu
+> framework. It helps add a new function "mtk_iommu_iotlb_sync", But it
+> lacked the dom->pgtlock, then it will cause the variable
+> "tlb_flush_active" may be changed unexpectedly, we could see this warning
+> log randomly:
+>
+
+Thanks for the patch! Please see my comments inline.
+
+> mtk-iommu 10205000.iommu: Partial TLB flush timed out, falling back to
+> full flush
+>
+> To fix this issue, we can add dom->pgtlock in the "mtk_iommu_iotlb_sync".
+> And when checking this issue, we find that __arm_v7s_unmap call
+> io_pgtable_tlb_add_flush consecutively when it is supersection/largepage,
+> this also is potential unsafe for us. There is no tlb flush queue in the
+> MediaTek M4U HW. The HW always expect the tlb_flush/tlb_sync one by one.
+> If v7s don't always gurarantee the sequence, Thus, In this patch I move
+> the tlb_sync into tlb_flush(also rename the function deleting "_nosync").
+> and we don't care if it is leaf, rearrange the callback functions. Also,
+> the tlb flush/sync was already finished in v7s, then iotlb_sync and
+> iotlb_sync_all is unnecessary.
+
+Performance-wise, we could do much better. Instead of synchronously
+syncing at the end of mtk_iommu_tlb_add_flush(), we could sync at the
+beginning, if there was any previous flush still pending. We would
+also have to keep the .iotlb_sync() callback, to take care of waiting
+for the last flush. That would allow better pipelining with CPU in
+cases like this:
+
+for (all pages in range) {
+   change page table();
+   flush();
+}
+
+"change page table()" could execute while the IOMMU is flushing the
+previous change.
+
+>
+> Besides, there are two minor changes:
+> a) Use writel for the register F_MMU_INV_RANGE which is for triggering the
+> HW work. We expect all the setting(iova_start/iova_end...) have already
+> been finished before F_MMU_INV_RANGE.
+> b) Reduce the tlb timeout value from 100000us to 1000us. the original value
+> is so long that affect the multimedia performance.
+
+By definition, timeout is something that should not normally happen.
+Too long timeout affecting multimedia performance would suggest that
+the timeout was actually happening, which is the core problem, not the
+length of the timeout. Could you provide more details on this?
+
+>
+> Fixes: 4d689b619445 ("iommu/io-pgtable-arm-v7s: Convert to IOMMU API TLB sync")
+> Signed-off-by: Chao Hao <chao.hao@mediatek.com>
+> Signed-off-by: Yong Wu <yong.wu@mediatek.com>
 > ---
-> This is a fix for v5.4-rc1.
+> This patch looks break the logic for tlb_flush and tlb_sync. I'm not
+> sure if it
+> is reasonable. If someone has concern, I could change:
+> a) Add dom->pgtlock in the mtk_iommu_iotlb_sync
+> b) Add a io_pgtable_tlb_sync in [1].
+>
+> [1]
+> https://elixir.bootlin.com/linux/v5.3-rc1/source/drivers/iommu/io-pgtable-arm-v7s.c#L655
+>
+> This patch rebase on Joerg's mediatek-smmu-merge branch which has mt8183
+> and Will's "Rework IOMMU API to allow for batching of invalidation".
 > ---
+>  drivers/iommu/mtk_iommu.c | 74 ++++++++++++-----------------------------------
+>  drivers/iommu/mtk_iommu.h |  1 -
+>  2 files changed, 19 insertions(+), 56 deletions(-)
+>
+> diff --git a/drivers/iommu/mtk_iommu.c b/drivers/iommu/mtk_iommu.c
+> index 6066272..e13cc56 100644
+> --- a/drivers/iommu/mtk_iommu.c
+> +++ b/drivers/iommu/mtk_iommu.c
+> @@ -173,11 +173,12 @@ static void mtk_iommu_tlb_flush_all(void *cookie)
+>         }
+>  }
+>
+> -static void mtk_iommu_tlb_add_flush_nosync(unsigned long iova, size_t size,
+> -                                          size_t granule, bool leaf,
+> -                                          void *cookie)
+> +static void mtk_iommu_tlb_add_flush(unsigned long iova, size_t size,
+> +                                   size_t granule, void *cookie)
+>  {
+>         struct mtk_iommu_data *data = cookie;
+> +       int ret;
+> +       u32 tmp;
+>
+>         for_each_m4u(data) {
+>                 writel_relaxed(F_INVLD_EN1 | F_INVLD_EN0,
+> @@ -186,25 +187,15 @@ static void mtk_iommu_tlb_add_flush_nosync(unsigned long iova, size_t size,
+>                 writel_relaxed(iova, data->base + REG_MMU_INVLD_START_A);
+>                 writel_relaxed(iova + size - 1,
+>                                data->base + REG_MMU_INVLD_END_A);
+> -               writel_relaxed(F_MMU_INV_RANGE,
+> -                              data->base + REG_MMU_INVALIDATE);
+> -               data->tlb_flush_active = true;
+> -       }
+> -}
+> -
+> -static void mtk_iommu_tlb_sync(void *cookie)
+> -{
+> -       struct mtk_iommu_data *data = cookie;
+> -       int ret;
+> -       u32 tmp;
+> -
+> -       for_each_m4u(data) {
+> -               /* Avoid timing out if there's nothing to wait for */
+> -               if (!data->tlb_flush_active)
+> -                       return;
+> +               writel(F_MMU_INV_RANGE, data->base + REG_MMU_INVALIDATE);
+>
+> +               /*
+> +                * There is no tlb flush queue in the HW, the HW always expect
+> +                * tlb_flush and tlb_sync one by one. Here tlb_sync always
+> +                * follows tlb_flush to avoid break the sequence.
+> +                */
+>                 ret = readl_poll_timeout_atomic(data->base + REG_MMU_CPE_DONE,
+> -                                               tmp, tmp != 0, 10, 100000);
+> +                                               tmp, tmp != 0, 10, 1000);
+>                 if (ret) {
+>                         dev_warn(data->dev,
+>                                  "Partial TLB flush timed out, falling back to full flush\n");
+> @@ -212,36 +203,21 @@ static void mtk_iommu_tlb_sync(void *cookie)
+>                 }
+>                 /* Clear the CPE status */
+>                 writel_relaxed(0, data->base + REG_MMU_CPE_DONE);
+> -               data->tlb_flush_active = false;
+>         }
+>  }
+>
+> -static void mtk_iommu_tlb_flush_walk(unsigned long iova, size_t size,
+> -                                    size_t granule, void *cookie)
+> +static void mtk_iommu_tlb_flush_page(struct iommu_iotlb_gather *gather,
+> +                                    unsigned long iova, size_t granule,
+> +                                    void *cookie)
+>  {
+> -       mtk_iommu_tlb_add_flush_nosync(iova, size, granule, false, cookie);
+> -       mtk_iommu_tlb_sync(cookie);
+> -}
+> -
+> -static void mtk_iommu_tlb_flush_leaf(unsigned long iova, size_t size,
+> -                                    size_t granule, void *cookie)
+> -{
+> -       mtk_iommu_tlb_add_flush_nosync(iova, size, granule, true, cookie);
+> -       mtk_iommu_tlb_sync(cookie);
+> -}
+> -
+> -static void mtk_iommu_tlb_flush_page_nosync(struct iommu_iotlb_gather *gather,
+> -                                           unsigned long iova, size_t granule,
+> -                                           void *cookie)
+> -{
+> -       mtk_iommu_tlb_add_flush_nosync(iova, granule, granule, true, cookie);
+> +       mtk_iommu_tlb_add_flush(iova, granule, granule, cookie);
+>  }
+>
+>  static const struct iommu_flush_ops mtk_iommu_flush_ops = {
+>         .tlb_flush_all = mtk_iommu_tlb_flush_all,
+> -       .tlb_flush_walk = mtk_iommu_tlb_flush_walk,
+> -       .tlb_flush_leaf = mtk_iommu_tlb_flush_leaf,
+> -       .tlb_add_page = mtk_iommu_tlb_flush_page_nosync,
+> +       .tlb_flush_walk = mtk_iommu_tlb_add_flush,
+> +       .tlb_flush_leaf = mtk_iommu_tlb_add_flush,
+> +       .tlb_add_page = mtk_iommu_tlb_flush_page,
+>  };
+>
+>  static irqreturn_t mtk_iommu_isr(int irq, void *dev_id)
+> @@ -445,17 +421,6 @@ static size_t mtk_iommu_unmap(struct iommu_domain *domain,
+>         return unmapsz;
+>  }
+>
+> -static void mtk_iommu_flush_iotlb_all(struct iommu_domain *domain)
+> -{
+> -       mtk_iommu_tlb_sync(mtk_iommu_get_m4u_data());
+> -}
+> -
+> -static void mtk_iommu_iotlb_sync(struct iommu_domain *domain,
+> -                                struct iommu_iotlb_gather *gather)
+> -{
+> -       mtk_iommu_tlb_sync(mtk_iommu_get_m4u_data());
+> -}
+> -
+>  static phys_addr_t mtk_iommu_iova_to_phys(struct iommu_domain *domain,
+>                                           dma_addr_t iova)
+>  {
+> @@ -574,8 +539,7 @@ static int mtk_iommu_of_xlate(struct device *dev, struct of_phandle_args *args)
+>         .detach_dev     = mtk_iommu_detach_device,
+>         .map            = mtk_iommu_map,
+>         .unmap          = mtk_iommu_unmap,
+> -       .flush_iotlb_all = mtk_iommu_flush_iotlb_all,
 
-Thank you for the patch!
-
-Reviewed-by: Yoshihiro Shimoda <yoshihiro.shimoda.uh@renesas.com>
-
-And, I tested this patch on R-Car H3. So,
-
-Tested-by: Yoshihiro Shimoda <yoshihiro.shimoda.uh@renesas.com>
+Don't we still want .flush_iotlb_all()? I think it should be more
+efficient in some cases than doing a big number of single flushes.
+(That said, the previous implementation didn't do any flush at all. It
+just waited for previously queued flushes to happen. Was that
+expected?)
 
 Best regards,
-Yoshihiro Shimoda
-
+Tomasz
 _______________________________________________
 iommu mailing list
 iommu@lists.linux-foundation.org
