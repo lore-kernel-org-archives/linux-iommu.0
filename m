@@ -2,59 +2,60 @@ Return-Path: <SRS0=9AUr=X3=lists.linux-foundation.org=iommu-bounces@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-5.3 required=3.0 tests=HEADER_FROM_DIFFERENT_DOMAINS,
-	MAILING_LIST_MULTI,SIGNED_OFF_BY,SPF_HELO_NONE,SPF_PASS,USER_AGENT_SANE_1
-	autolearn=unavailable autolearn_force=no version=3.4.0
+X-Spam-Status: No, score=-2.3 required=3.0 tests=HEADER_FROM_DIFFERENT_DOMAINS,
+	MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS,USER_AGENT_SANE_2 autolearn=no
+	autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 4D071C35280
-	for <iommu@archiver.kernel.org>; Wed,  2 Oct 2019 16:45:43 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id BA66FC10F14
+	for <iommu@archiver.kernel.org>; Wed,  2 Oct 2019 17:17:01 +0000 (UTC)
 Received: from mail.linuxfoundation.org (mail.linuxfoundation.org [140.211.169.12])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by mail.kernel.org (Postfix) with ESMTPS id 17A4F21D81
-	for <iommu@archiver.kernel.org>; Wed,  2 Oct 2019 16:45:42 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 17A4F21D81
-Authentication-Results: mail.kernel.org; dmarc=none (p=none dis=none) header.from=arm.com
+	by mail.kernel.org (Postfix) with ESMTPS id 8B00C21848
+	for <iommu@archiver.kernel.org>; Wed,  2 Oct 2019 17:17:00 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 8B00C21848
+Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=linux.intel.com
 Authentication-Results: mail.kernel.org; spf=pass smtp.mailfrom=iommu-bounces@lists.linux-foundation.org
 Received: from mail.linux-foundation.org (localhost [127.0.0.1])
-	by mail.linuxfoundation.org (Postfix) with ESMTP id BA1251361;
-	Wed,  2 Oct 2019 16:45:42 +0000 (UTC)
+	by mail.linuxfoundation.org (Postfix) with ESMTP id 1A1A81398;
+	Wed,  2 Oct 2019 17:16:47 +0000 (UTC)
 Received: from smtp1.linuxfoundation.org (smtp1.linux-foundation.org
 	[172.17.192.35])
-	by mail.linuxfoundation.org (Postfix) with ESMTPS id 1F9FB135C
+	by mail.linuxfoundation.org (Postfix) with ESMTPS id E0D621395
 	for <iommu@lists.linux-foundation.org>;
-	Wed,  2 Oct 2019 16:45:41 +0000 (UTC)
+	Wed,  2 Oct 2019 17:16:45 +0000 (UTC)
 X-Greylist: domain auto-whitelisted by SQLgrey-1.7.6
-Received: from foss.arm.com (foss.arm.com [217.140.110.172])
-	by smtp1.linuxfoundation.org (Postfix) with ESMTP id 2DDB28BA
+Received: from mga14.intel.com (mga14.intel.com [192.55.52.115])
+	by smtp1.linuxfoundation.org (Postfix) with ESMTPS id 6C1CF81A
 	for <iommu@lists.linux-foundation.org>;
-	Wed,  2 Oct 2019 16:45:38 +0000 (UTC)
-Received: from usa-sjc-imap-foss1.foss.arm.com (unknown [10.121.207.14])
-	by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id 60ACE1000;
-	Wed,  2 Oct 2019 09:45:38 -0700 (PDT)
-Received: from [10.1.197.57] (e110467-lin.cambridge.arm.com [10.1.197.57])
-	by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPSA id 3F6193F706;
-	Wed,  2 Oct 2019 09:45:37 -0700 (PDT)
-Subject: Re: [PATCH 3/4] dma-mapping: introduce a dma_common_find_pages helper
-To: Geert Uytterhoeven <geert@linux-m68k.org>, Christoph Hellwig <hch@lst.de>
-References: <20190830062924.21714-1-hch@lst.de>
-	<20190830062924.21714-4-hch@lst.de>
-	<CAMuHMdXxWp2=9n2LQA9KVH_ArOUnY78ZoiQ7ZsDMbTOGsEz4hw@mail.gmail.com>
-From: Robin Murphy <robin.murphy@arm.com>
-Message-ID: <ce6671a1-ebfe-22a8-d8c6-91b6692186f2@arm.com>
-Date: Wed, 2 Oct 2019 17:45:34 +0100
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:60.0) Gecko/20100101
-	Thunderbird/60.6.1
+	Wed,  2 Oct 2019 17:16:45 +0000 (UTC)
+X-Amp-Result: SKIPPED(no attachment in message)
+X-Amp-File-Uploaded: False
+Received: from orsmga004.jf.intel.com ([10.7.209.38])
+	by fmsmga103.fm.intel.com with ESMTP/TLS/DHE-RSA-AES256-GCM-SHA384;
+	02 Oct 2019 10:16:35 -0700
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="5.67,249,1566889200"; d="scan'208";a="343390102"
+Received: from jacob-builder.jf.intel.com (HELO jacob-builder) ([10.7.199.155])
+	by orsmga004.jf.intel.com with ESMTP; 02 Oct 2019 10:16:35 -0700
+Date: Wed, 2 Oct 2019 10:20:44 -0700
+From: Jacob Pan <jacob.jun.pan@linux.intel.com>
+To: Jean-Philippe Brucker <jean-philippe@linaro.org>
+Subject: Re: [PATCH v2 3/4] iommu/ioasid: Add custom allocators
+Message-ID: <20191002102044.6ed3ad56@jacob-builder>
+In-Reply-To: <20191002161825.GA626133@lophozonia>
+References: <1569110870-12603-1-git-send-email-jacob.jun.pan@linux.intel.com>
+	<1569110870-12603-4-git-send-email-jacob.jun.pan@linux.intel.com>
+	<20191002161825.GA626133@lophozonia>
+Organization: OTC
+X-Mailer: Claws Mail 3.13.2 (GTK+ 2.24.30; x86_64-pc-linux-gnu)
 MIME-Version: 1.0
-In-Reply-To: <CAMuHMdXxWp2=9n2LQA9KVH_ArOUnY78ZoiQ7ZsDMbTOGsEz4hw@mail.gmail.com>
-Content-Language: en-GB
-Cc: linux-xtensa@linux-xtensa.org,
-	Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
-	Russell King <linux@armlinux.org.uk>,
-	Linux-Renesas <linux-renesas-soc@vger.kernel.org>,
-	Linux MM <linux-mm@kvack.org>,
-	Linux IOMMU <iommu@lists.linux-foundation.org>,
-	Linux ARM <linux-arm-kernel@lists.infradead.org>
+Cc: "Tian, Kevin" <kevin.tian@intel.com>, Raj Ashok <ashok.raj@intel.com>,
+	David Woodhouse <dwmw2@infradead.org>, iommu@lists.linux-foundation.org,
+	LKML <linux-kernel@vger.kernel.org>,
+	Alex Williamson <alex.williamson@redhat.com>,
+	Jean-Philippe Brucker <jean-philippe@linaro.com>,
+	Jonathan Cameron <jic23@kernel.org>
 X-BeenThere: iommu@lists.linux-foundation.org
 X-Mailman-Version: 2.1.12
 Precedence: list
@@ -67,185 +68,113 @@ List-Post: <mailto:iommu@lists.linux-foundation.org>
 List-Help: <mailto:iommu-request@lists.linux-foundation.org?subject=help>
 List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
 	<mailto:iommu-request@lists.linux-foundation.org?subject=subscribe>
+Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
-Content-Type: text/plain; charset="us-ascii"; Format="flowed"
 Sender: iommu-bounces@lists.linux-foundation.org
 Errors-To: iommu-bounces@lists.linux-foundation.org
 
-On 02/10/2019 13:05, Geert Uytterhoeven wrote:
-> Hi Christoph,
-> 
-> On Fri, Aug 30, 2019 at 8:30 AM Christoph Hellwig <hch@lst.de> wrote:
->> A helper to find the backing page array based on a virtual address.
->> This also ensures we do the same vm_flags check everywhere instead
->> of slightly different or missing ones in a few places.
->>
->> Signed-off-by: Christoph Hellwig <hch@lst.de>
-> 
-> This is now commit 5cf4537975bbd569 ("dma-mapping: introduce a
-> dma_common_find_pages helper") in v5.4-rc1, and causes the following
-> warning during s2ram on r8a7740/armadillo, r7s72100/rskrza1, and
-> r7s9210/rza2mevb:
-> 
->       sh-eth e9a00000.ethernet eth0: Link is Down
->      +------------[ cut here ]------------
->      +WARNING: CPU: 0 PID: 556 at kernel/dma/remap.c:93
-> remap_allocator_free+0x20/0x30
->      +trying to free invalid coherent area: 6909579a
->      +Modules linked in:
->      +CPU: 0 PID: 556 Comm: s2ram Not tainted
-> 5.3.0-rc6-armadillo-00027-g5cf4537975bbd569-dirty #113
->      +Hardware name: Generic R8A7740 (Flattened Device Tree)
->      +[<c010d4b8>] (unwind_backtrace) from [<c010b4d0>] (show_stack+0x10/0x14)
->      +[<c010b4d0>] (show_stack) from [<c011d978>] (__warn+0xec/0x104)
->      +[<c011d978>] (__warn) from [<c011d9d4>] (warn_slowpath_fmt+0x44/0x6c)
->      +[<c011d9d4>] (warn_slowpath_fmt) from [<c011123c>]
-> (remap_allocator_free+0x20/0x30)
->      +[<c011123c>] (remap_allocator_free) from [<c0111cc4>]
-> (__arm_dma_free.constprop.2+0x114/0x144)
->      +[<c0111cc4>] (__arm_dma_free.constprop.2) from [<c03f193c>]
-> (sh_eth_ring_free+0xb8/0x114)
->      +[<c03f193c>] (sh_eth_ring_free) from [<c03f1a00>] (sh_eth_close+0x68/0x8c)
->      +[<c03f1a00>] (sh_eth_close) from [<c03f1f6c>] (sh_eth_resume+0x44/0x90)
->      +[<c03f1f6c>] (sh_eth_resume) from [<c03b7d3c>] (dpm_run_callback+0x64/0xdc)
->      +[<c03b7d3c>] (dpm_run_callback) from [<c03b80c0>]
-> (device_resume+0xbc/0x180)
->      +[<c03b80c0>] (device_resume) from [<c03b89b0>] (dpm_resume+0x124/0x1b0)
->      +[<c03b89b0>] (dpm_resume) from [<c03b8c5c>] (dpm_resume_end+0xc/0x18)
->      +[<c03b8c5c>] (dpm_resume_end) from [<c0158d2c>]
-> (suspend_devices_and_enter+0x15c/0x5ac)
->      +[<c0158d2c>] (suspend_devices_and_enter) from [<c01593bc>]
-> (pm_suspend+0x240/0x2f4)
->      +[<c01593bc>] (pm_suspend) from [<c0157b48>] (state_store+0x54/0x8c)
->      +[<c0157b48>] (state_store) from [<c0276ecc>] (kernfs_fop_write+0x154/0x1c8)
->      +[<c0276ecc>] (kernfs_fop_write) from [<c0209f74>] (__vfs_write+0x28/0xe0)
->      +[<c0209f74>] (__vfs_write) from [<c020acc0>] (vfs_write+0x98/0xbc)
->      +[<c020acc0>] (vfs_write) from [<c020ae48>] (ksys_write+0x68/0xb4)
->      +[<c020ae48>] (ksys_write) from [<c0101000>] (ret_fast_syscall+0x0/0x28)
->      +Exception stack(0xdd74dfa8 to 0xdd74dff0)
->      +dfa0:                   00000004 000e2408 00000001 000e2408
-> 00000004 00000000
->      +dfc0: 00000004 000e2408 b6f36d60 00000004 000e2408 00000004
-> 00000000 00000000
->      +dfe0: 00000000 be9fc74c b6e991bb b6ed5af6
->      +irq event stamp: 0
->      +hardirqs last  enabled at (0): [<00000000>] 0x0
->      +hardirqs last disabled at (0): [<c011b73c>] copy_process+0x520/0x14b8
->      +softirqs last  enabled at (0): [<c011b73c>] copy_process+0x520/0x14b8
->      +softirqs last disabled at (0): [<00000000>] 0x0
->      +---[ end trace 22461a068edbf2c1 ]---
->      +------------[ cut here ]------------
->      +WARNING: CPU: 0 PID: 556 at kernel/dma/remap.c:93
-> remap_allocator_free+0x20/0x30
->      +trying to free invalid coherent area: f39c52ba
-> 
->       [...]
-> 
->      +---[ end trace 22461a068edbf2c2 ]---
->       SMSC LAN8710/LAN8720 e9a00000.ethernet-ffffffff:00: attached PHY
-> driver [SMSC LAN8710/LAN8720]
-> (mii_bus:phy_addr=e9a00000.ethernet-ffffffff:00, irq=POLL)
-> 
-> (the dirty is due to the need for "ARM: fix __get_user_check() in case
->   uaccess_* calls are not inlined").
-> 
-> BTW, I cannot trigger the issue on r8a7791/koelsch, which also uses
-> sh-eth, not even when disabling CONFIG_IOMMU_SUPPORT and CONFIG_ARM_LPAE
-> (both are not set for the affected platforms).
-> 
->> --- a/drivers/iommu/dma-iommu.c
->> +++ b/drivers/iommu/dma-iommu.c
->> @@ -541,15 +541,6 @@ static struct page **__iommu_dma_alloc_pages(struct device *dev,
->>          return pages;
->>   }
->>
->> -static struct page **__iommu_dma_get_pages(void *cpu_addr)
->> -{
->> -       struct vm_struct *area = find_vm_area(cpu_addr);
->> -
->> -       if (!area || !area->pages)
-> 
-> This checks area->pages...
+On Wed, 2 Oct 2019 18:18:25 +0200
+Jean-Philippe Brucker <jean-philippe@linaro.org> wrote:
 
-32-bit Arm doesn't use iommu-dma, so I don't see how this could be 
-relevant to the reported problem, but either way this "check" of 
-area->pages...
+> Hi Jacob,
+> 
+> I have four tiny comments below but the patch looks great otherwise,
+> no major concern from me.
+> 
+> On Sat, Sep 21, 2019 at 05:07:49PM -0700, Jacob Pan wrote:
+> > +/*
+> > + * struct ioasid_allocator_data - Internal data structure to hold
+> > information
+> > + * about an allocator. There are two types of allocators:
+> > + *
+> > + * - Default allocator always has its own XArray to track the
+> > IOASIDs allocated.
+> > + * - Custom allocators may share allocation helpers with different
+> > private data.
+> > + *   Custom allocators that share the same helper functions also
+> > share the same
+> > + *   XArray.
+> > + * Rules:
+> > + * 1. Default allocator is always available, not dynamically
+> > registered. This is
+> > + *    to prevent race conditions with early boot code that want to
+> > register
+> > + *    custom allocators or allocate IOASIDs.
+> > + * 2. Custom allocators take precedence over the default allocator.
+> > + * 3. When all custom allocators sharing the same helper functions
+> > are
+> > + *    unregistered (e.g. due to hotplug), all outstanding IOASIDs
+> > must be
+> > + *    freed. Otherwise, outstand IOASIDs will be lost and
+> > orphaned.  
+> 
+>                            outstanding
+> 
+> [...]
+> >  ioasid_t ioasid_alloc(struct ioasid_set *set, ioasid_t min,
+> > ioasid_t max, void *private)
+> >  {
+> > -	ioasid_t id;
+> >  	struct ioasid_data *data;
+> > +	void *adata;
+> > +	ioasid_t id;  
+> 
+> nit: changing the location of id could be in patch 2/4.
+> 
+will do.
 
->> -               return NULL;
->> -       return area->pages;
->> -}
->> -
->>   /**
->>    * iommu_dma_alloc_remap - Allocate and map a buffer contiguous in IOVA space
->>    * @dev: Device to allocate memory for. Must be a real device
->> @@ -938,7 +929,7 @@ static void __iommu_dma_free(struct device *dev, size_t size, void *cpu_addr)
->>                   * If it the address is remapped, then it's either non-coherent
->>                   * or highmem CMA, or an iommu_dma_alloc_remap() construction.
->>                   */
->> -               pages = __iommu_dma_get_pages(cpu_addr);
->> +               pages = dma_common_find_pages(cpu_addr);
->>                  if (!pages)
->>                          page = vmalloc_to_page(cpu_addr);
->>                  dma_common_free_remap(cpu_addr, alloc_size);
->> @@ -1045,7 +1036,7 @@ static int iommu_dma_mmap(struct device *dev, struct vm_area_struct *vma,
->>                  return -ENXIO;
->>
->>          if (IS_ENABLED(CONFIG_DMA_REMAP) && is_vmalloc_addr(cpu_addr)) {
->> -               struct page **pages = __iommu_dma_get_pages(cpu_addr);
->> +               struct page **pages = dma_common_find_pages(cpu_addr);
->>
->>                  if (pages)
->>                          return __iommu_dma_mmap(pages, size, vma);
->> @@ -1067,7 +1058,7 @@ static int iommu_dma_get_sgtable(struct device *dev, struct sg_table *sgt,
->>          int ret;
->>
->>          if (IS_ENABLED(CONFIG_DMA_REMAP) && is_vmalloc_addr(cpu_addr)) {
->> -               struct page **pages = __iommu_dma_get_pages(cpu_addr);
->> +               struct page **pages = dma_common_find_pages(cpu_addr);
->>
->>                  if (pages) {
->>                          return sg_alloc_table_from_pages(sgt, pages,
+> > -	data = kzalloc(sizeof(*data), GFP_KERNEL);
+> > +	data = kzalloc(sizeof(*data), GFP_ATOMIC);  
 > 
->> --- a/kernel/dma/remap.c
->> +++ b/kernel/dma/remap.c
->> @@ -11,6 +11,15 @@
->>   #include <linux/slab.h>
->>   #include <linux/vmalloc.h>
->>
->> +struct page **dma_common_find_pages(void *cpu_addr)
->> +{
->> +       struct vm_struct *area = find_vm_area(cpu_addr);
->> +
->> +       if (!area || area->flags != VM_DMA_COHERENT)
+> I don't think that one needs to be GFP_ATOMIC. Otherwise it should
+> probably be done from the start, by patch 2/4.
 > 
-> ... while this one checks area->flags?
+I was thinking since we are making this API usable in atomic context,
+we need to use GFP_ATOMIC and spinlock throughout the code. I agree it
+should be moved to 2/4.
+> >  	if (!data)
+> >  		return INVALID_IOASID;
+> >  
+> >  	data->set = set;
+> >  	data->private = private;
+> >  
+> > -	if (xa_alloc(&ioasid_xa, &id, data, XA_LIMIT(min, max),
+> > GFP_KERNEL)) {
+> > -		pr_err("Failed to alloc ioasid from %d to %d\n",
+> > min, max);
+> > +	/*
+> > +	 * Custom allocator needs allocator data to perform
+> > platform specific
+> > +	 * operations.
+> > +	 */
+> > +	spin_lock(&ioasid_allocator_lock);
+> > +	adata = active_allocator->flags &
+> > IOASID_ALLOCATOR_CUSTOM ? active_allocator->ops->pdata : data;
+> > +	id = active_allocator->ops->alloc(min, max, adata);
+> > +	if (id == INVALID_IOASID) {
+> > +		pr_err("Failed ASID allocation %lu\n",
+> > active_allocator->flags);
+> > +		goto exit_free;
+> > +	}
+> > +
+> > +	if ((active_allocator->flags & IOASID_ALLOCATOR_CUSTOM) &&
+> > +		xa_alloc(&active_allocator->xa, &id, data,
+> > XA_LIMIT(id, id), GFP_ATOMIC)) {  
 > 
->> +               return NULL;
->> +       return area->pages;
+> nit: aligning at the "if (" would make this block more readable.
+> 
+sounds good. I need to change my editor :)
+> > +		/* Custom allocator needs framework to store and
+> > track allocation results */
+> > +		pr_err("Failed to alloc ioasid from %d\n", id);
+> > +		active_allocator->ops->free(id,
+> > active_allocator->ops->pdata); goto exit_free;
+> >  	}  
+> 
+> Thanks,
+> Jean
 
-...remains inherent in this statement ;)
-
-Introducing the additional area->flags check is rather the point of the 
-patch. As to how it could affect the behaviour of 
-remap_allocator_{alloc,free}(), that probably warrants some more digging 
-in the arch/arm code. Having looked briefly to see if anything jumped 
-out, I do notice that for the dma_common_contiguous_remap() case we're 
-now relying on a dangling pointer to a long-gone kernel stack in 
-area->pages to pass the check in dma_common_free_remap() - I can't see 
-that that has any bearing on the reported issue, but it is a bit icky.
-
-Robin.
-
->> +}
->> +
->>   static struct vm_struct *__dma_common_pages_remap(struct page **pages,
->>                          size_t size, pgprot_t prot, const void *caller)
->>   {
-> 
-> Gr{oetje,eeting}s,
-> 
->                          Geert
-> 
+[Jacob Pan]
 _______________________________________________
 iommu mailing list
 iommu@lists.linux-foundation.org
