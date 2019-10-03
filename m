@@ -2,65 +2,84 @@ Return-Path: <SRS0=AgN4=X4=lists.linux-foundation.org=iommu-bounces@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-2.3 required=3.0 tests=HEADER_FROM_DIFFERENT_DOMAINS,
-	MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS,USER_AGENT_SANE_1 autolearn=no
-	autolearn_force=no version=3.4.0
+X-Spam-Status: No, score=-3.6 required=3.0 tests=DKIM_INVALID,DKIM_SIGNED,
+	HEADER_FROM_DIFFERENT_DOMAINS,MAILING_LIST_MULTI,SIGNED_OFF_BY,SPF_HELO_NONE,
+	SPF_PASS autolearn=no autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 0E538C10F14
-	for <iommu@archiver.kernel.org>; Thu,  3 Oct 2019 10:18:20 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 17D0AC32792
+	for <iommu@archiver.kernel.org>; Thu,  3 Oct 2019 16:11:21 +0000 (UTC)
 Received: from mail.linuxfoundation.org (mail.linuxfoundation.org [140.211.169.12])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by mail.kernel.org (Postfix) with ESMTPS id D4AF0218DE
-	for <iommu@archiver.kernel.org>; Thu,  3 Oct 2019 10:18:19 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org D4AF0218DE
-Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=linux.intel.com
+	by mail.kernel.org (Postfix) with ESMTPS id C9F832054F
+	for <iommu@archiver.kernel.org>; Thu,  3 Oct 2019 16:11:20 +0000 (UTC)
+Authentication-Results: mail.kernel.org;
+	dkim=fail reason="signature verification failed" (1024-bit key) header.d=chromium.org header.i=@chromium.org header.b="Pq/jSr1x"
+DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org C9F832054F
+Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=chromium.org
 Authentication-Results: mail.kernel.org; spf=pass smtp.mailfrom=iommu-bounces@lists.linux-foundation.org
 Received: from mail.linux-foundation.org (localhost [127.0.0.1])
-	by mail.linuxfoundation.org (Postfix) with ESMTP id 8530B13EC;
-	Thu,  3 Oct 2019 10:18:19 +0000 (UTC)
+	by mail.linuxfoundation.org (Postfix) with ESMTP id 8F6301009;
+	Thu,  3 Oct 2019 16:11:20 +0000 (UTC)
 Received: from smtp1.linuxfoundation.org (smtp1.linux-foundation.org
 	[172.17.192.35])
-	by mail.linuxfoundation.org (Postfix) with ESMTPS id 08993F7E
+	by mail.linuxfoundation.org (Postfix) with ESMTPS id 734FFFCD
 	for <iommu@lists.linux-foundation.org>;
-	Thu,  3 Oct 2019 10:17:57 +0000 (UTC)
-X-Greylist: domain auto-whitelisted by SQLgrey-1.7.6
-Received: from mga11.intel.com (mga11.intel.com [192.55.52.93])
-	by smtp1.linuxfoundation.org (Postfix) with ESMTPS id DA1291FB
+	Thu,  3 Oct 2019 16:11:19 +0000 (UTC)
+X-Greylist: whitelisted by SQLgrey-1.7.6
+Received: from mail-pf1-f195.google.com (mail-pf1-f195.google.com
+	[209.85.210.195])
+	by smtp1.linuxfoundation.org (Postfix) with ESMTPS id 0829A19B
 	for <iommu@lists.linux-foundation.org>;
-	Thu,  3 Oct 2019 10:17:55 +0000 (UTC)
-X-Amp-Result: UNKNOWN
-X-Amp-Original-Verdict: FILE UNKNOWN
-X-Amp-File-Uploaded: False
-Received: from orsmga004.jf.intel.com ([10.7.209.38])
-	by fmsmga102.fm.intel.com with ESMTP/TLS/DHE-RSA-AES256-GCM-SHA384;
-	03 Oct 2019 03:17:54 -0700
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.67,251,1566889200"; d="scan'208";a="343624430"
-Received: from smile.fi.intel.com (HELO smile) ([10.237.68.40])
-	by orsmga004.jf.intel.com with ESMTP; 03 Oct 2019 03:17:52 -0700
-Received: from andy by smile with local (Exim 4.92.2)
-	(envelope-from <andriy.shevchenko@linux.intel.com>)
-	id 1iFyBD-0007PH-2I; Thu, 03 Oct 2019 13:17:51 +0300
-Date: Thu, 3 Oct 2019 13:17:51 +0300
-From: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
-To: Ulf Hansson <ulf.hansson@linaro.org>
-Subject: Re: [PATCH v3 0/6] ACPI / utils: add new helper for HID/UID match
-Message-ID: <20191003101751.GE32742@smile.fi.intel.com>
-References: <20191001142725.30857-1-andriy.shevchenko@linux.intel.com>
-	<CAPDyKFq_HPDW5i5ND_df4GJsnaOowHWbFTkgCCOP6w9ar2uo6w@mail.gmail.com>
+	Thu,  3 Oct 2019 16:11:18 +0000 (UTC)
+Received: by mail-pf1-f195.google.com with SMTP id q7so2058397pfh.8
+	for <iommu@lists.linux-foundation.org>;
+	Thu, 03 Oct 2019 09:11:18 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=chromium.org; s=google;
+	h=message-id:mime-version:content-transfer-encoding:in-reply-to
+	:references:from:to:cc:subject:user-agent:date;
+	bh=WCl0BJ/xg5z2POfrHRFKcHi5xkDivkEW/iGK30/2GP0=;
+	b=Pq/jSr1xmzlqjDuxBQh7dFDV5hRyr6MZtXVubXctjAF8kRjt+U6xL1O1zUsbiV9qug
+	ygNsoBsTe8l9J4vQh++/GIEgBZ3tc+dCBa+tnW6tuf4O22v4fqwHlcvMDTQXutYl4bj7
+	bWJISwhs7L3e2klQ4E9mPH1vemoDoOFTbhMxY=
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+	d=1e100.net; s=20161025;
+	h=x-gm-message-state:message-id:mime-version
+	:content-transfer-encoding:in-reply-to:references:from:to:cc:subject
+	:user-agent:date;
+	bh=WCl0BJ/xg5z2POfrHRFKcHi5xkDivkEW/iGK30/2GP0=;
+	b=OUN8agJ3l706MSE4Xeplcq0YgarGqGyp8xQmGuIbhdYG57CJ9O3MD+WE/NRZwID2nV
+	LR0UjoafSRi/2/LG25P95pmYNHnWYaCZWNFbdMqSB+FSsqY+cnhZW6M6CJ6ypAbKbhHK
+	mXpGCq3+QIlRzJCF9RrNxNVg1+cX7Er49fe5vxE5qKYXQ23Pvh90YvLLv4C2IrzCxTxS
+	LxcDYfNb/FAdPByxXK8Q7LzX3EnjI9pIqu2U1h97KwbFy+Lpwel4izWm3nYl7DOYjJ38
+	Y4z+RljmmE93nWMxHHXnMNClaPkBDDxd+D7XLbQn7WTrI+8RXNlY1bWD1QC8FLSTorUU
+	drVA==
+X-Gm-Message-State: APjAAAUMysS1dgPCuaGoHswjQRAwz/x1lcwhShAdcrrg4Tzhdx+yMqFm
+	4F8QuV3z95MIERJQpeLrkwEl3Q==
+X-Google-Smtp-Source: APXvYqwgRSbE1eF4YKGVz+xu6rX+ntZRdmjPXT4BO1EQpfB2LWEVRFrJK7RpkgO+T9w/1Sx9rAIAHg==
+X-Received: by 2002:a17:90a:ba94:: with SMTP id
+	t20mr11602435pjr.8.1570119078443; 
+	Thu, 03 Oct 2019 09:11:18 -0700 (PDT)
+Received: from chromium.org ([2620:15c:202:1:fa53:7765:582b:82b9])
+	by smtp.gmail.com with ESMTPSA id
+	j25sm4527578pfi.113.2019.10.03.09.11.17
+	(version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+	Thu, 03 Oct 2019 09:11:17 -0700 (PDT)
+Message-ID: <5d961da5.1c69fb81.f4dce.d93e@mx.google.com>
 MIME-Version: 1.0
-Content-Disposition: inline
-In-Reply-To: <CAPDyKFq_HPDW5i5ND_df4GJsnaOowHWbFTkgCCOP6w9ar2uo6w@mail.gmail.com>
-Organization: Intel Finland Oy - BIC 0357606-4 - Westendinkatu 7, 02160 Espoo
-User-Agent: Mutt/1.10.1 (2018-07-13)
-Cc: "linux-mmc@vger.kernel.org" <linux-mmc@vger.kernel.org>,
-	"Rafael J. Wysocki" <rjw@rjwysocki.net>,
-	Adrian Hunter <adrian.hunter@intel.com>,
-	ACPI Devel Maling List <linux-acpi@vger.kernel.org>,
-	"list@263.net:IOMMU DRIVERS <iommu@lists.linux-foundation.org>,
-	Joerg Roedel <joro@8bytes.org>, " <iommu@lists.linux-foundation.org>,
-	Mika Westerberg <mika.westerberg@linux.intel.com>
+In-Reply-To: <20191001180622.806-1-geert+renesas@glider.be>
+References: <20191001180622.806-1-geert+renesas@glider.be>
+From: Stephen Boyd <swboyd@chromium.org>
+To: Geert Uytterhoeven <geert+renesas@glider.be>,
+	Joerg Roedel <joro@8bytes.org>
+Subject: Re: [PATCH] iommu/ipmmu-vmsa: Only call platform_get_irq() when
+	interrupt is mandatory
+User-Agent: alot/0.8.1
+Date: Thu, 03 Oct 2019 09:11:17 -0700
+Cc: linux-renesas-soc@vger.kernel.org,
+	Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+	iommu@lists.linux-foundation.org, linux-kernel@vger.kernel.org,
+	Geert Uytterhoeven <geert+renesas@glider.be>
 X-BeenThere: iommu@lists.linux-foundation.org
 X-Mailman-Version: 2.1.12
 Precedence: list
@@ -78,30 +97,20 @@ Content-Transfer-Encoding: 7bit
 Sender: iommu-bounces@lists.linux-foundation.org
 Errors-To: iommu-bounces@lists.linux-foundation.org
 
-On Thu, Oct 03, 2019 at 12:00:29PM +0200, Ulf Hansson wrote:
-> On Tue, 1 Oct 2019 at 16:27, Andy Shevchenko
-> <andriy.shevchenko@linux.intel.com> wrote:
-> >
-> > There are few users outside of ACPI realm that re-introduce a custom
-> > solution to match ACPI device against HID/UID. Add a generic helper for
-> > them.
-> >
-> > The series is supposed to go via linux-pm tree.
-
-> I guess Rafael intend to pick this up for v5.5?
-
-Yes, linux-pm tree is maintained by Rafael.
-
-> In any case, for the mmc patch, feel free to add:
+Quoting Geert Uytterhoeven (2019-10-01 11:06:22)
+> As platform_get_irq() now prints an error when the interrupt does not
+> exist, calling it gratuitously causes scary messages like:
 > 
-> Acked-by: Ulf Hansson <ulf.hansson@linaro.org>
+>     ipmmu-vmsa e6740000.mmu: IRQ index 0 not found
+> 
+> Fix this by moving the call to platform_get_irq() down, where the
+> existence of the interrupt is mandatory.
+> 
+> Fixes: 7723f4c5ecdb8d83 ("driver core: platform: Add an error message to platform_get_irq*()")
+> Signed-off-by: Geert Uytterhoeven <geert+renesas@glider.be>
+> ---
 
-Thanks!
-
--- 
-With Best Regards,
-Andy Shevchenko
-
+Reviewed-by: Stephen Boyd <swboyd@chromium.org>
 
 _______________________________________________
 iommu mailing list
