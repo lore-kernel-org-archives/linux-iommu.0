@@ -2,47 +2,82 @@ Return-Path: <SRS0=qml7=X5=lists.linux-foundation.org=iommu-bounces@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-9.8 required=3.0 tests=HEADER_FROM_DIFFERENT_DOMAINS,
-	INCLUDES_PATCH,MAILING_LIST_MULTI,SIGNED_OFF_BY,SPF_HELO_NONE,SPF_PASS,
-	USER_AGENT_GIT autolearn=unavailable autolearn_force=no version=3.4.0
+X-Spam-Status: No, score=-6.5 required=3.0 tests=DKIM_INVALID,DKIM_SIGNED,
+	HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_PATCH,MAILING_LIST_MULTI,SIGNED_OFF_BY,
+	SPF_HELO_NONE,SPF_PASS autolearn=ham autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 0B24AC4360C
-	for <iommu@archiver.kernel.org>; Fri,  4 Oct 2019 20:56:17 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id E6246C4360C
+	for <iommu@archiver.kernel.org>; Fri,  4 Oct 2019 21:28:20 +0000 (UTC)
 Received: from mail.linuxfoundation.org (mail.linuxfoundation.org [140.211.169.12])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by mail.kernel.org (Postfix) with ESMTPS id CF50F2133F
-	for <iommu@archiver.kernel.org>; Fri,  4 Oct 2019 20:56:16 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org CF50F2133F
-Authentication-Results: mail.kernel.org; dmarc=none (p=none dis=none) header.from=chris-wilson.co.uk
+	by mail.kernel.org (Postfix) with ESMTPS id B4D26215EA
+	for <iommu@archiver.kernel.org>; Fri,  4 Oct 2019 21:28:20 +0000 (UTC)
+Authentication-Results: mail.kernel.org;
+	dkim=fail reason="signature verification failed" (1024-bit key) header.d=chromium.org header.i=@chromium.org header.b="LKCkmw+R"
+DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org B4D26215EA
+Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=chromium.org
 Authentication-Results: mail.kernel.org; spf=pass smtp.mailfrom=iommu-bounces@lists.linux-foundation.org
 Received: from mail.linux-foundation.org (localhost [127.0.0.1])
-	by mail.linuxfoundation.org (Postfix) with ESMTP id 8F747D9D;
-	Fri,  4 Oct 2019 20:56:16 +0000 (UTC)
+	by mail.linuxfoundation.org (Postfix) with ESMTP id DAEDDDDC;
+	Fri,  4 Oct 2019 21:28:19 +0000 (UTC)
 Received: from smtp1.linuxfoundation.org (smtp1.linux-foundation.org
 	[172.17.192.35])
-	by mail.linuxfoundation.org (Postfix) with ESMTPS id AB7CAD9A
+	by mail.linuxfoundation.org (Postfix) with ESMTPS id 6D62D9CA
 	for <iommu@lists.linux-foundation.org>;
-	Fri,  4 Oct 2019 20:56:14 +0000 (UTC)
-X-Greylist: from auto-whitelisted by SQLgrey-1.7.6
-Received: from fireflyinternet.com (mail.fireflyinternet.com [109.228.58.192])
-	by smtp1.linuxfoundation.org (Postfix) with ESMTPS id A9952A8
+	Fri,  4 Oct 2019 21:28:19 +0000 (UTC)
+X-Greylist: whitelisted by SQLgrey-1.7.6
+Received: from mail-pl1-f193.google.com (mail-pl1-f193.google.com
+	[209.85.214.193])
+	by smtp1.linuxfoundation.org (Postfix) with ESMTPS id 0F7AB189
 	for <iommu@lists.linux-foundation.org>;
-	Fri,  4 Oct 2019 20:56:13 +0000 (UTC)
-X-Default-Received-SPF: pass (skip=forwardok (res=PASS))
-	x-ip-name=78.156.65.138; 
-Received: from haswell.alporthouse.com (unverified [78.156.65.138]) 
-	by fireflyinternet.com (Firefly Internet (M1)) with ESMTP id
-	18728787-1500050 for multiple; Fri, 04 Oct 2019 21:55:59 +0100
-From: Chris Wilson <chris@chris-wilson.co.uk>
-To: iommu@lists.linux-foundation.org
-Subject: [PATCH] iommu/intel: Use fallback generic_device_group() for ACPI
-	devices
-Date: Fri,  4 Oct 2019 21:55:54 +0100
-Message-Id: <20191004205554.21055-1-chris@chris-wilson.co.uk>
-X-Mailer: git-send-email 2.23.0
+	Fri,  4 Oct 2019 21:28:19 +0000 (UTC)
+Received: by mail-pl1-f193.google.com with SMTP id u12so3701490pls.12
+	for <iommu@lists.linux-foundation.org>;
+	Fri, 04 Oct 2019 14:28:19 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=chromium.org; s=google;
+	h=date:from:to:cc:subject:message-id:mime-version:content-disposition; 
+	bh=ajF8BNvBTYWRihzw/y9VwrM/ZeW1oRTD6CKhvhiZBoI=;
+	b=LKCkmw+R9/tP6lwUTjU7DVBKx4EDr+7i54ERWo6nrw8NjY9juOgQ0ARnIgIokM6tjf
+	/rRBldUTEie6zXy0SlrpxdJG0N66DqeSVfK5vFOzopgyWA5ZYw6QUCOJBLgPTF6DuFhe
+	GELw9mbEVpz1VLRxk3zdG4IVsx3whJ9FE4YbE=
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+	d=1e100.net; s=20161025;
+	h=x-gm-message-state:date:from:to:cc:subject:message-id:mime-version
+	:content-disposition;
+	bh=ajF8BNvBTYWRihzw/y9VwrM/ZeW1oRTD6CKhvhiZBoI=;
+	b=JJA4hLZHB29uXhk8PIS/olHWwwviBLkHEN/35Lx4CX+obz0T//FGTdPIKGavrMQMGE
+	T2ETaiZ3gwaR6NMA7fg1Xeg6pdk7cog01+0zojIDGXj2AOhQpZ7moPVA4B8nuwiti9KG
+	bj0QWKt6nR+PLSKMHkar3WnPqt6a5UT0cIQ2YKiGYtl+PKAbVpB8fgpa21pe+XMmrr6l
+	oHE2rI5Jbtrzrphk4juStvHNNNPCW4NGoR8usDszy3vdcTavf8FaDuxBz5MF/1U2XPoc
+	WvL0FNlqwzEohR0GNdTonx5DRZ1beh0uz2NsCxXcQOFzndKnR3iDPM4Yf8XcEHSPD8TW
+	9NUA==
+X-Gm-Message-State: APjAAAWmFc8npnXN6pONWMniTFKKkIdPCEzmK63u2CiagJOIiVJ74ElO
+	bD08EQnem812VhzApu6xFIKnWw==
+X-Google-Smtp-Source: APXvYqwDlOrvI0afKJG2ACuljeKrA2U2VWMnuk9KBLbDCeKAaI50tWbsD8nVhCvFM30vjRdUUTt2Jg==
+X-Received: by 2002:a17:902:8bca:: with SMTP id
+	r10mr17398900plo.43.1570224498715; 
+	Fri, 04 Oct 2019 14:28:18 -0700 (PDT)
+Received: from www.outflux.net (smtp.outflux.net. [198.145.64.163])
+	by smtp.gmail.com with ESMTPSA id
+	z13sm7541296pfg.172.2019.10.04.14.28.17
+	(version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+	Fri, 04 Oct 2019 14:28:17 -0700 (PDT)
+Date: Fri, 4 Oct 2019 14:28:16 -0700
+From: Kees Cook <keescook@chromium.org>
+To: Robin Murphy <robin.murphy@arm.com>
+Subject: [PATCH v2] dma-mapping: Move vmap address checks into dma_map_single()
+Message-ID: <201910041420.F6E55D29A@keescook>
 MIME-Version: 1.0
-Cc: linux-kernel@vger.kernel.org, Chris Wilson <chris@chris-wilson.co.uk>
+Content-Disposition: inline
+Cc: Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+	linux-kernel@vger.kernel.org, Stephen Boyd <swboyd@chromium.org>,
+	iommu@lists.linux-foundation.org,
+	Semmle Security Reports <security-reports@semmle.com>,
+	Dan Carpenter <dan.carpenter@oracle.com>,
+	Jesper Dangaard Brouer <brouer@redhat.com>,
+	Thomas Gleixner <tglx@linutronix.de>, Laura Abbott <labbott@redhat.com>,
+	Christoph Hellwig <hch@lst.de>, Allison Randal <allison@lohutok.net>
 X-BeenThere: iommu@lists.linux-foundation.org
 X-Mailman-Version: 2.1.12
 Precedence: list
@@ -60,113 +95,71 @@ Content-Transfer-Encoding: 7bit
 Sender: iommu-bounces@lists.linux-foundation.org
 Errors-To: iommu-bounces@lists.linux-foundation.org
 
-[    2.073922] DMAR: ACPI device "INT33C2:00" under DMAR at fed91000 as 00:15.1
-[    2.073983] DMAR: ACPI device "INT33C3:00" under DMAR at fed91000 as 00:15.2
-[    2.074027] DMAR: ACPI device "INT33C0:00" under DMAR at fed91000 as 00:15.3
-[    2.074072] DMAR: ACPI device "INT33C1:00" under DMAR at fed91000 as 00:15.4
-[    2.074114] DMAR: Failed to find handle for ACPI object \_SB.PCI0.UA01
-[    2.074156] DMAR: Failed to find handle for ACPI object \_SB.PCI0.SDHC
-[    2.074208] DMAR: No ATSR found
-[    2.074572] DMAR: dmar0: Using Queued invalidation
-[    2.074629] DMAR: dmar1: Using Queued invalidation
-[    2.110029] pci 0000:00:00.0: Adding to iommu group 0
-[    2.115703] pci 0000:00:02.0: Adding to iommu group 1
-[    2.116221] pci 0000:00:03.0: Adding to iommu group 2
-[    2.116759] pci 0000:00:14.0: Adding to iommu group 3
-[    2.117276] pci 0000:00:16.0: Adding to iommu group 4
-[    2.117762] pci 0000:00:1b.0: Adding to iommu group 5
-[    2.118264] pci 0000:00:1c.0: Adding to iommu group 6
-[    2.118733] pci 0000:00:1c.2: Adding to iommu group 7
-[    2.119289] pci 0000:00:1d.0: Adding to iommu group 8
-[    2.119846] pci 0000:00:1f.0: Adding to iommu group 9
-[    2.119960] pci 0000:00:1f.2: Adding to iommu group 9
-[    2.120073] pci 0000:00:1f.3: Adding to iommu group 9
-[    2.120549] pci 0000:06:00.0: Adding to iommu group 10
-[    2.120631] ------------[ cut here ]------------
-[    2.120681] WARNING: CPU: 2 PID: 1 at drivers/iommu/iommu.c:1275 pci_device_group+0x109/0x120
-[    2.120723] Modules linked in:
-[    2.120744] CPU: 2 PID: 1 Comm: swapper/0 Not tainted 5.4.0-rc1-CI-CI_DRM_7000+ #1
-[    2.120782] Hardware name: Dell Inc. XPS 12-9Q33/XPS 12-9Q33, BIOS A04 12/03/2013
-[    2.120821] RIP: 0010:pci_device_group+0x109/0x120
-[    2.120848] Code: e9 ff ff 48 85 c0 48 89 c5 75 bd 48 8d 74 24 10 4c 89 e7 e8 49 ea ff ff 48 85 c0 48 89 c5 75 a8 e8 fc ee ff ff 48 89 c5 eb 9e <0f> 0b 48 c7 c5 ea ff ff ff eb 93 e8 37 5f a7 ff 0f 1f 80 00 00 00
-[    2.120933] RSP: 0000:ffffc90000037cd0 EFLAGS: 00010202
-[    2.120961] RAX: ffffffff81639810 RBX: ffffffffffffffea RCX: 0000000000000000
-[    2.120996] RDX: 0000000000000000 RSI: 00000000403efd19 RDI: ffff888119999c08
-[    2.121031] RBP: ffff888119999c08 R08: ffff88811a5188f8 R09: 00000000fffffffe
-[    2.121066] R10: 00000000ca7d066a R11: 000000002161dc90 R12: ffff888118320a58
-[    2.121100] R13: ffff888119fc1e50 R14: 0000000000000001 R15: ffff888119fc2300
-[    2.121136] FS:  0000000000000000(0000) GS:ffff88811b900000(0000) knlGS:0000000000000000
-[    2.121176] CS:  0010 DS: 0000 ES: 0000 CR0: 0000000080050033
-[    2.121205] CR2: 0000000000000000 CR3: 0000000005210001 CR4: 00000000001606e0
-[    2.121240] Call Trace:
-[    2.121264]  iommu_group_get_for_dev+0x77/0x210
-[    2.121295]  intel_iommu_add_device+0x54/0x1c0
-[    2.121323]  iommu_probe_device+0x43/0xc0
-[    2.121350]  intel_iommu_init+0x11fb/0x12c9
-[    2.121383]  ? set_debug_rodata+0xc/0xc
-[    2.121410]  ? set_debug_rodata+0xc/0xc
-[    2.121434]  ? e820__memblock_setup+0x5b/0x5b
-[    2.121458]  ? pci_iommu_init+0x11/0x3a
-[    2.121471]  ? rcu_read_lock_sched_held+0x4d/0x80
-[    2.121471]  pci_iommu_init+0x11/0x3a
-[    2.121471]  do_one_initcall+0x58/0x2ff
-[    2.121471]  ? set_debug_rodata+0xc/0xc
-[    2.121471]  ? rcu_read_lock_sched_held+0x4d/0x80
-[    2.121471]  kernel_init_freeable+0x137/0x1c7
-[    2.121471]  ? rest_init+0x250/0x250
-[    2.121471]  kernel_init+0x5/0x100
-[    2.121471]  ret_from_fork+0x3a/0x50
-[    2.121471] irq event stamp: 1252438
-[    2.121471] hardirqs last  enabled at (1252437): [<ffffffff8123f4ed>] __slab_alloc.isra.84.constprop.89+0x4d/0x70
-[    2.121471] hardirqs last disabled at (1252438): [<ffffffff81001bba>] trace_hardirqs_off_thunk+0x1a/0x20
-[    2.121471] softirqs last  enabled at (1252382): [<ffffffff81c00385>] __do_softirq+0x385/0x47f
-[    2.121471] softirqs last disabled at (1252375): [<ffffffff810b7f4a>] irq_exit+0xba/0xc0
-[    2.121471] ---[ end trace 610717c918cf08f3 ]---
-[    2.121974] DMAR: ACPI name space devices didn't probe correctly
-[    2.122069] DMAR: Intel(R) Virtualization Technology for Directed I/O
+As we've seen from USB and other areas, we need to always do runtime
+checks for DMA operating on memory regions that might be remapped. This
+moves the existing checks from USB into dma_map_single(), but leaves
+the slightly heavier checks as they are.
 
-Bugzilla: https://bugs.freedesktop.org/show_bug.cgi?id=111906
-Signed-off-by: Chris Wilson <chris@chris-wilson.co.uk>
-Cc: Joerg Roedel <joro@8bytes.org>
+Suggested-by: Laura Abbott <labbott@redhat.com>
+Signed-off-by: Kees Cook <keescook@chromium.org>
 ---
-Take the patch with a pinch of salt; it seems to be the pattern used by
-other iommu backends, but I don't know if it is even suitable for iommu
-and what appear to be ACPI devices rather than the expected PCI.
+v2: Only add is_vmalloc_addr()
+v1: https://lore.kernel.org/lkml/201910021341.7819A660@keescook
 ---
- drivers/iommu/intel-iommu.c | 10 +++++++++-
- 1 file changed, 9 insertions(+), 1 deletion(-)
+ drivers/usb/core/hcd.c      | 8 +-------
+ include/linux/dma-mapping.h | 7 +++++++
+ 2 files changed, 8 insertions(+), 7 deletions(-)
 
-diff --git a/drivers/iommu/intel-iommu.c b/drivers/iommu/intel-iommu.c
-index ed321b808176..e231be0d0534 100644
---- a/drivers/iommu/intel-iommu.c
-+++ b/drivers/iommu/intel-iommu.c
-@@ -5939,6 +5939,14 @@ static bool intel_iommu_is_attach_deferred(struct iommu_domain *domain,
- 	return dev->archdata.iommu == DEFER_DEVICE_DOMAIN_INFO;
- }
- 
-+static struct iommu_group *intel_iommu_device_group(struct device *dev)
-+{
-+	if (dev_is_pci(dev))
-+		return pci_device_group(dev);
-+	else
-+		return generic_device_group(dev);
-+}
+diff --git a/drivers/usb/core/hcd.c b/drivers/usb/core/hcd.c
+index f225eaa98ff8..281568d464f9 100644
+--- a/drivers/usb/core/hcd.c
++++ b/drivers/usb/core/hcd.c
+@@ -1410,10 +1410,7 @@ int usb_hcd_map_urb_for_dma(struct usb_hcd *hcd, struct urb *urb,
+ 		if (hcd->self.uses_pio_for_control)
+ 			return ret;
+ 		if (hcd_uses_dma(hcd)) {
+-			if (is_vmalloc_addr(urb->setup_packet)) {
+-				WARN_ONCE(1, "setup packet is not dma capable\n");
+-				return -EAGAIN;
+-			} else if (object_is_on_stack(urb->setup_packet)) {
++			if (object_is_on_stack(urb->setup_packet)) {
+ 				WARN_ONCE(1, "setup packet is on stack\n");
+ 				return -EAGAIN;
+ 			}
+@@ -1479,9 +1476,6 @@ int usb_hcd_map_urb_for_dma(struct usb_hcd *hcd, struct urb *urb,
+ 					ret = -EAGAIN;
+ 				else
+ 					urb->transfer_flags |= URB_DMA_MAP_PAGE;
+-			} else if (is_vmalloc_addr(urb->transfer_buffer)) {
+-				WARN_ONCE(1, "transfer buffer not dma capable\n");
+-				ret = -EAGAIN;
+ 			} else if (object_is_on_stack(urb->transfer_buffer)) {
+ 				WARN_ONCE(1, "transfer buffer is on stack\n");
+ 				ret = -EAGAIN;
+diff --git a/include/linux/dma-mapping.h b/include/linux/dma-mapping.h
+index 4a1c4fca475a..12dbd07f74f2 100644
+--- a/include/linux/dma-mapping.h
++++ b/include/linux/dma-mapping.h
+@@ -583,6 +583,13 @@ static inline unsigned long dma_get_merge_boundary(struct device *dev)
+ static inline dma_addr_t dma_map_single_attrs(struct device *dev, void *ptr,
+ 		size_t size, enum dma_data_direction dir, unsigned long attrs)
+ {
++	/* DMA must never operate on areas that might be remapped. */
++	if (WARN_ONCE(is_vmalloc_addr(ptr),
++		      "%s %s: driver maps %lu bytes from vmalloc area\n",
++		      dev ? dev_driver_string(dev) : "unknown driver",
++		      dev ? dev_name(dev) : "unknown device", size))
++		return DMA_MAPPING_ERROR;
 +
- const struct iommu_ops intel_iommu_ops = {
- 	.capable		= intel_iommu_capable,
- 	.domain_alloc		= intel_iommu_domain_alloc,
-@@ -5956,7 +5964,7 @@ const struct iommu_ops intel_iommu_ops = {
- 	.get_resv_regions	= intel_iommu_get_resv_regions,
- 	.put_resv_regions	= intel_iommu_put_resv_regions,
- 	.apply_resv_region	= intel_iommu_apply_resv_region,
--	.device_group		= pci_device_group,
-+	.device_group		= intel_iommu_device_group,
- 	.dev_has_feat		= intel_iommu_dev_has_feat,
- 	.dev_feat_enabled	= intel_iommu_dev_feat_enabled,
- 	.dev_enable_feat	= intel_iommu_dev_enable_feat,
+ 	debug_dma_map_single(dev, ptr, size);
+ 	return dma_map_page_attrs(dev, virt_to_page(ptr), offset_in_page(ptr),
+ 			size, dir, attrs);
 -- 
-2.23.0
+2.17.1
 
+
+-- 
+Kees Cook
 _______________________________________________
 iommu mailing list
 iommu@lists.linux-foundation.org
