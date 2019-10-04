@@ -2,89 +2,47 @@ Return-Path: <SRS0=qml7=X5=lists.linux-foundation.org=iommu-bounces@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-0.6 required=3.0 tests=DKIM_INVALID,DKIM_SIGNED,
-	HEADER_FROM_DIFFERENT_DOMAINS,MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS
-	autolearn=no autolearn_force=no version=3.4.0
+X-Spam-Status: No, score=-9.8 required=3.0 tests=HEADER_FROM_DIFFERENT_DOMAINS,
+	INCLUDES_PATCH,MAILING_LIST_MULTI,SIGNED_OFF_BY,SPF_HELO_NONE,SPF_PASS,
+	USER_AGENT_GIT autolearn=unavailable autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 3C648C4360C
-	for <iommu@archiver.kernel.org>; Fri,  4 Oct 2019 20:38:04 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 0B24AC4360C
+	for <iommu@archiver.kernel.org>; Fri,  4 Oct 2019 20:56:17 +0000 (UTC)
 Received: from mail.linuxfoundation.org (mail.linuxfoundation.org [140.211.169.12])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by mail.kernel.org (Postfix) with ESMTPS id F289B215EA
-	for <iommu@archiver.kernel.org>; Fri,  4 Oct 2019 20:38:03 +0000 (UTC)
-Authentication-Results: mail.kernel.org;
-	dkim=fail reason="signature verification failed" (2048-bit key) header.d=gateworks-com.20150623.gappssmtp.com header.i=@gateworks-com.20150623.gappssmtp.com header.b="gfxGPVaW"
-DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org F289B215EA
-Authentication-Results: mail.kernel.org; dmarc=none (p=none dis=none) header.from=gateworks.com
+	by mail.kernel.org (Postfix) with ESMTPS id CF50F2133F
+	for <iommu@archiver.kernel.org>; Fri,  4 Oct 2019 20:56:16 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org CF50F2133F
+Authentication-Results: mail.kernel.org; dmarc=none (p=none dis=none) header.from=chris-wilson.co.uk
 Authentication-Results: mail.kernel.org; spf=pass smtp.mailfrom=iommu-bounces@lists.linux-foundation.org
 Received: from mail.linux-foundation.org (localhost [127.0.0.1])
-	by mail.linuxfoundation.org (Postfix) with ESMTP id CB3C7D89;
-	Fri,  4 Oct 2019 20:38:03 +0000 (UTC)
+	by mail.linuxfoundation.org (Postfix) with ESMTP id 8F747D9D;
+	Fri,  4 Oct 2019 20:56:16 +0000 (UTC)
 Received: from smtp1.linuxfoundation.org (smtp1.linux-foundation.org
 	[172.17.192.35])
-	by mail.linuxfoundation.org (Postfix) with ESMTPS id 8E5D8D81
+	by mail.linuxfoundation.org (Postfix) with ESMTPS id AB7CAD9A
 	for <iommu@lists.linux-foundation.org>;
-	Fri,  4 Oct 2019 20:38:03 +0000 (UTC)
-X-Greylist: whitelisted by SQLgrey-1.7.6
-Received: from mail-wm1-f65.google.com (mail-wm1-f65.google.com
-	[209.85.128.65])
-	by smtp1.linuxfoundation.org (Postfix) with ESMTPS id A4661189
+	Fri,  4 Oct 2019 20:56:14 +0000 (UTC)
+X-Greylist: from auto-whitelisted by SQLgrey-1.7.6
+Received: from fireflyinternet.com (mail.fireflyinternet.com [109.228.58.192])
+	by smtp1.linuxfoundation.org (Postfix) with ESMTPS id A9952A8
 	for <iommu@lists.linux-foundation.org>;
-	Fri,  4 Oct 2019 20:38:02 +0000 (UTC)
-Received: by mail-wm1-f65.google.com with SMTP id r17so10396579wme.0
-	for <iommu@lists.linux-foundation.org>;
-	Fri, 04 Oct 2019 13:38:02 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-	d=gateworks-com.20150623.gappssmtp.com; s=20150623;
-	h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-	:cc; bh=skAE0yv65FpnWYSKjnu1eueJHObmclgqdYS8Pf8+I/s=;
-	b=gfxGPVaWQe4goiBs+/E81XZaApl2EOVwJZVFW021/Z0udRY8gYnAiMT47APmQ+ypoZ
-	IaHDVawvA33wl/OE7Oyyuv3bieyok7kGpMfrsNyR58ZOHm9UvTxf8gsh81crMR/mwsE+
-	DKnX0OtqPf21vwGbMLrCsCUZHFqgbP+g5IeOXBU2G/Z2opKGc6zOfvSke1ox688ZE6cA
-	6o0HWgxJD9NLUOaS0B6BbgTEgCjLl6V+D89tvk9OXeJQI3nJq/81A1bEVP3zzUgONVqd
-	WMcnHkQ3GwVm4H5Ot5sm2V7AhTxH1Pffg9lMGoHWKnoYu4f8JbcqfO+RAu142sdDIlj7
-	JQlQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-	d=1e100.net; s=20161025;
-	h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-	:message-id:subject:to:cc;
-	bh=skAE0yv65FpnWYSKjnu1eueJHObmclgqdYS8Pf8+I/s=;
-	b=ZVbO4cp4V9Qr2cyydgR9BFc89pTSqWGmMSQbgKEE7hkSDTruE9glSGFgi3sk6sJee6
-	/EezkK280i2wTonII71r7MbbbzHLXaR6ckBiINBCL5Y+BYTaelSE/aGiKupbJcZoWE3X
-	ixKezXc5COGDRe7DxIO54M3HFssqxPu56ybIlpVR7A+D+ibicjWfAjvKnZA7PPUmMb99
-	3T+wgk4GiBLyv8p0PzyRCc66EjKAZddVJAAjb8Qt5Zg4hhFdwkCCVxKpwGd78NTx+qoa
-	j2ASgjxE4kxhHOnplOxiSvlLtuicdt62wsMCaj/nNaDng4IsQrGKcSovGphGUoT0Ams/
-	gh+g==
-X-Gm-Message-State: APjAAAWWDj41FUhw3Da3M8s0AvVp5YoiQqM65I6Q90U/7VjpW0CtkUJz
-	OCcZpab2q1aXMIuGfq+wISTu2X5jeSszZJOcFA974g==
-X-Google-Smtp-Source: APXvYqzyMV9MupndO2O27UkHRxd6bN6vFHp8NNFlCcPiqfGOEpWYt1tSEzWQHCwIs1Xos3TV8BZ1f4zz8N/5gxBVL1U=
-X-Received: by 2002:a1c:2bc7:: with SMTP id
-	r190mr12951679wmr.143.1570221481014; 
-	Fri, 04 Oct 2019 13:38:01 -0700 (PDT)
+	Fri,  4 Oct 2019 20:56:13 +0000 (UTC)
+X-Default-Received-SPF: pass (skip=forwardok (res=PASS))
+	x-ip-name=78.156.65.138; 
+Received: from haswell.alporthouse.com (unverified [78.156.65.138]) 
+	by fireflyinternet.com (Firefly Internet (M1)) with ESMTP id
+	18728787-1500050 for multiple; Fri, 04 Oct 2019 21:55:59 +0100
+From: Chris Wilson <chris@chris-wilson.co.uk>
+To: iommu@lists.linux-foundation.org
+Subject: [PATCH] iommu/intel: Use fallback generic_device_group() for ACPI
+	devices
+Date: Fri,  4 Oct 2019 21:55:54 +0100
+Message-Id: <20191004205554.21055-1-chris@chris-wilson.co.uk>
+X-Mailer: git-send-email 2.23.0
 MIME-Version: 1.0
-References: <20190301192017.39770-1-dianders@chromium.org>
-	<CAJ+vNU0Ma5nG9_ThLO4cdO+=ivf7rmXiHZonF0HY0xx6X3R6Hw@mail.gmail.com>
-	<5dce2964-8761-e7d0-8963-f0f5cb2feb02@arm.com>
-	<CAJ+vNU0Q1-d7YDbAAEMqEcWnniqo6jLdKBbcUTar5=hJ+AC8vQ@mail.gmail.com>
-	<1f6f7eb0-e1dc-d5a8-fb38-44c5bd839894@arm.com>
-	<CAJ+vNU1Nd2p-ot2Qkj6vD9yD6gcYM-vm+snNWyt0ChgSqe4tBg@mail.gmail.com>
-	<5cf9ec03-f6fb-8227-4ec5-62445038f283@arm.com>
-	<CAJ+vNU28LrroW-XC4X2g3bdN171j0ieZenhYE1TrEM8yvKi=cQ@mail.gmail.com>
-	<cb6392ff-fac6-300b-2e04-b34df8c42f28@arm.com>
-In-Reply-To: <cb6392ff-fac6-300b-2e04-b34df8c42f28@arm.com>
-From: Tim Harvey <tharvey@gateworks.com>
-Date: Fri, 4 Oct 2019 13:37:49 -0700
-Message-ID: <CAJ+vNU0kDseyqAMKAv+9+aw6wVKjBQcHcGD_8XgCy_KzZTM4Gg@mail.gmail.com>
-Subject: Re: [PATCH v2] iommu/arm-smmu: Break insecure users by disabling
-	bypass by default
-To: Robin Murphy <robin.murphy@arm.com>
-Cc: open list <linux-kernel@vger.kernel.org>, linux-arm-msm@vger.kernel.org,
-	Will Deacon <will.deacon@arm.com>,
-	Douglas Anderson <dianders@chromium.org>, evgreen@chromium.org,
-	iommu@lists.linux-foundation.org,
-	Tirumalesh Chalamarla <tchalamarla@caviumnetworks.com>,
-	linux-arm-kernel@lists.infradead.org
+Cc: linux-kernel@vger.kernel.org, Chris Wilson <chris@chris-wilson.co.uk>
 X-BeenThere: iommu@lists.linux-foundation.org
 X-Mailman-Version: 2.1.12
 Precedence: list
@@ -102,115 +60,113 @@ Content-Transfer-Encoding: 7bit
 Sender: iommu-bounces@lists.linux-foundation.org
 Errors-To: iommu-bounces@lists.linux-foundation.org
 
-On Fri, Oct 4, 2019 at 11:34 AM Robin Murphy <robin.murphy@arm.com> wrote:
->
-> On 04/10/2019 18:13, Tim Harvey wrote:
-> [...]
-> >>> No difference... still need 'arm-smmu.disable_bypass=n' to boot. Are
-> >>> all four iommu-map props above supposed to be the same? Seems to me
-> >>> they all point to the same thing which looks wrong.
-> >>
-> >> Hmm... :/
-> >>
-> >> Those mappings just set Stream ID == PCI RID (strictly each one should
-> >> only need to cover the bus range assigned to that bridge, but it's not
-> >> crucial) which is the same thing the driver assumes for the mmu-masters
-> >> property, so either that's wrong and never could have worked anyway -
-> >> have you tried VFIO on this platform? - or there are other devices also
-> >> mastering through the SMMU that aren't described at all. Are you able to
-> >> capture a boot log? The SMMU faults do encode information about the
-> >> offending ID, and you can typically correlate their appearance
-> >> reasonably well with endpoint drivers probing.
-> >>
-> >
-> > Robin,
-> >
-> > VFIO is enabled in the kernel but I don't know anything about how to
-> > test/use it:
-> > $ grep VFIO .config
-> > CONFIG_KVM_VFIO=y
-> > CONFIG_VFIO_IOMMU_TYPE1=y
-> > CONFIG_VFIO_VIRQFD=y
-> > CONFIG_VFIO=y
-> > # CONFIG_VFIO_NOIOMMU is not set
-> > CONFIG_VFIO_PCI=y
-> > CONFIG_VFIO_PCI_MMAP=y
-> > CONFIG_VFIO_PCI_INTX=y
-> > # CONFIG_VFIO_PLATFORM is not set
-> > # CONFIG_VFIO_MDEV is not set
->
-> No worries - since it's a networking-focused SoC I figured there was a
-> chance you might be using DPDK or similar userspace drivers with the NIC
-> VFs, but I was just casting around for a quick and easy baseline of
-> whether the SMMU works at all (another way would be using Qemu to run a
-> VM with one or more PCI devices assigned).
->
-> > I do have a boot console yet I'm not seeing any smmu faults at all.
-> > Perhaps I've mis-diagnosed the issue completely. To be clear when I
-> > boot with arm-smmu.disable_bypass=y the serial console appears to not
-> > accept input in userspace and with arm-smmu.disable_bypass=n I'm fine.
-> > I'm using a buildroot initramfs rootfs for simplicity. The system
-> > isn't hung as I originally expected as the LED heartbeat trigger
-> > continues blinking... I just can't get console to accept input.
->
-> Curiouser and curiouser... I'm inclined to suspect that the interrupt
-> configuration might also be messed up, such that the SMMU is blocking
-> traffic and jammed up due to pending faults, but you're not getting the
-> IRQ delivered to find out. Does this patch help reveal anything?
->
-> http://linux-arm.org/git?p=linux-rm.git;a=commitdiff;h=29ac3648b580920692c9b417b2fc606995826517
->
-> (untested, but it's a direct port of the one I've used for SMMUv3 to
-> diagnose something similar)
+[    2.073922] DMAR: ACPI device "INT33C2:00" under DMAR at fed91000 as 00:15.1
+[    2.073983] DMAR: ACPI device "INT33C3:00" under DMAR at fed91000 as 00:15.2
+[    2.074027] DMAR: ACPI device "INT33C0:00" under DMAR at fed91000 as 00:15.3
+[    2.074072] DMAR: ACPI device "INT33C1:00" under DMAR at fed91000 as 00:15.4
+[    2.074114] DMAR: Failed to find handle for ACPI object \_SB.PCI0.UA01
+[    2.074156] DMAR: Failed to find handle for ACPI object \_SB.PCI0.SDHC
+[    2.074208] DMAR: No ATSR found
+[    2.074572] DMAR: dmar0: Using Queued invalidation
+[    2.074629] DMAR: dmar1: Using Queued invalidation
+[    2.110029] pci 0000:00:00.0: Adding to iommu group 0
+[    2.115703] pci 0000:00:02.0: Adding to iommu group 1
+[    2.116221] pci 0000:00:03.0: Adding to iommu group 2
+[    2.116759] pci 0000:00:14.0: Adding to iommu group 3
+[    2.117276] pci 0000:00:16.0: Adding to iommu group 4
+[    2.117762] pci 0000:00:1b.0: Adding to iommu group 5
+[    2.118264] pci 0000:00:1c.0: Adding to iommu group 6
+[    2.118733] pci 0000:00:1c.2: Adding to iommu group 7
+[    2.119289] pci 0000:00:1d.0: Adding to iommu group 8
+[    2.119846] pci 0000:00:1f.0: Adding to iommu group 9
+[    2.119960] pci 0000:00:1f.2: Adding to iommu group 9
+[    2.120073] pci 0000:00:1f.3: Adding to iommu group 9
+[    2.120549] pci 0000:06:00.0: Adding to iommu group 10
+[    2.120631] ------------[ cut here ]------------
+[    2.120681] WARNING: CPU: 2 PID: 1 at drivers/iommu/iommu.c:1275 pci_device_group+0x109/0x120
+[    2.120723] Modules linked in:
+[    2.120744] CPU: 2 PID: 1 Comm: swapper/0 Not tainted 5.4.0-rc1-CI-CI_DRM_7000+ #1
+[    2.120782] Hardware name: Dell Inc. XPS 12-9Q33/XPS 12-9Q33, BIOS A04 12/03/2013
+[    2.120821] RIP: 0010:pci_device_group+0x109/0x120
+[    2.120848] Code: e9 ff ff 48 85 c0 48 89 c5 75 bd 48 8d 74 24 10 4c 89 e7 e8 49 ea ff ff 48 85 c0 48 89 c5 75 a8 e8 fc ee ff ff 48 89 c5 eb 9e <0f> 0b 48 c7 c5 ea ff ff ff eb 93 e8 37 5f a7 ff 0f 1f 80 00 00 00
+[    2.120933] RSP: 0000:ffffc90000037cd0 EFLAGS: 00010202
+[    2.120961] RAX: ffffffff81639810 RBX: ffffffffffffffea RCX: 0000000000000000
+[    2.120996] RDX: 0000000000000000 RSI: 00000000403efd19 RDI: ffff888119999c08
+[    2.121031] RBP: ffff888119999c08 R08: ffff88811a5188f8 R09: 00000000fffffffe
+[    2.121066] R10: 00000000ca7d066a R11: 000000002161dc90 R12: ffff888118320a58
+[    2.121100] R13: ffff888119fc1e50 R14: 0000000000000001 R15: ffff888119fc2300
+[    2.121136] FS:  0000000000000000(0000) GS:ffff88811b900000(0000) knlGS:0000000000000000
+[    2.121176] CS:  0010 DS: 0000 ES: 0000 CR0: 0000000080050033
+[    2.121205] CR2: 0000000000000000 CR3: 0000000005210001 CR4: 00000000001606e0
+[    2.121240] Call Trace:
+[    2.121264]  iommu_group_get_for_dev+0x77/0x210
+[    2.121295]  intel_iommu_add_device+0x54/0x1c0
+[    2.121323]  iommu_probe_device+0x43/0xc0
+[    2.121350]  intel_iommu_init+0x11fb/0x12c9
+[    2.121383]  ? set_debug_rodata+0xc/0xc
+[    2.121410]  ? set_debug_rodata+0xc/0xc
+[    2.121434]  ? e820__memblock_setup+0x5b/0x5b
+[    2.121458]  ? pci_iommu_init+0x11/0x3a
+[    2.121471]  ? rcu_read_lock_sched_held+0x4d/0x80
+[    2.121471]  pci_iommu_init+0x11/0x3a
+[    2.121471]  do_one_initcall+0x58/0x2ff
+[    2.121471]  ? set_debug_rodata+0xc/0xc
+[    2.121471]  ? rcu_read_lock_sched_held+0x4d/0x80
+[    2.121471]  kernel_init_freeable+0x137/0x1c7
+[    2.121471]  ? rest_init+0x250/0x250
+[    2.121471]  kernel_init+0x5/0x100
+[    2.121471]  ret_from_fork+0x3a/0x50
+[    2.121471] irq event stamp: 1252438
+[    2.121471] hardirqs last  enabled at (1252437): [<ffffffff8123f4ed>] __slab_alloc.isra.84.constprop.89+0x4d/0x70
+[    2.121471] hardirqs last disabled at (1252438): [<ffffffff81001bba>] trace_hardirqs_off_thunk+0x1a/0x20
+[    2.121471] softirqs last  enabled at (1252382): [<ffffffff81c00385>] __do_softirq+0x385/0x47f
+[    2.121471] softirqs last disabled at (1252375): [<ffffffff810b7f4a>] irq_exit+0xba/0xc0
+[    2.121471] ---[ end trace 610717c918cf08f3 ]---
+[    2.121974] DMAR: ACPI name space devices didn't probe correctly
+[    2.122069] DMAR: Intel(R) Virtualization Technology for Directed I/O
 
-This shows:
-arm-smmu 830000000000.smmu0: Unexpected global fault, this could be serious
-arm-smmu 830000000000.smmu0:     GFSR 0x80000002, GFSYNR0 0x00000002,
-GFSYNR1 0x00000140, GFSYNR2 0x00000000
-arm-smmu 830000000000.smmu0: Unexpected global fault, this could be serious
-arm-smmu 830000000000.smmu0:     GFSR 0x80000002, GFSYNR0 0x00000002,
-GFSYNR1 0x00000010, GFSYNR2 0x00000000
-arm-smmu 830000000000.smmu0: Unexpected global fault, this could be serious
-arm-smmu 830000000000.smmu0:     GFSR 0x80000002, GFSYNR0 0x00000002,
-GFSYNR1 0x00000010, GFSYNR2 0x00000000
-arm-smmu 830000000000.smmu0: Unexpected global fault, this could be serious
-arm-smmu 830000000000.smmu0:     GFSR 0x80000002, GFSYNR0 0x00000002,
-GFSYNR1 0x00000010, GFSYNR2 0x00000000
-arm-smmu 830000000000.smmu0: Unexpected global fault, this could be serious
-arm-smmu 830000000000.smmu0:     GFSR 0x80000002, GFSYNR0 0x00000002,
-GFSYNR1 0x00000010, GFSYNR2 0x00000000
-arm-smmu 830000000000.smmu0: Unexpected global fault, this could be serious
-arm-smmu 830000000000.smmu0:     GFSR 0x80000002, GFSYNR0 0x00000002,
-GFSYNR1 0x00000010, GFSYNR2 0x00000000
-arm-smmu 830000000000.smmu0: Unexpected global fault, this could be serious
-arm-smmu 830000000000.smmu0:     GFSR 0x80000002, GFSYNR0 0x00000002,
-GFSYNR1 0x00000010, GFSYNR2 0x00000000
-arm-smmu 830000000000.smmu0: Unexpected global fault, this could be serious
-arm-smmu 830000000000.smmu0:     GFSR 0x80000002, GFSYNR0 0x00000002,
-GFSYNR1 0x00000010, GFSYNR2 0x00000000
-arm-smmu 830000000000.smmu0: Unexpected global fault, this could be serious
-arm-smmu 830000000000.smmu0:     GFSR 0x80000002, GFSYNR0 0x00000002,
-GFSYNR1 0x00000010, GFSYNR2 0x00000000
-arm-smmu 830000000000.smmu0: Unexpected global fault, this could be serious
-arm-smmu 830000000000.smmu0:     GFSR 0x80000002, GFSYNR0 0x00000002,
-GFSYNR1 0x00000010, GFSYNR2 0x00000000
-...
-arm-smmu 830000000000.smmu0: Unexpected global fault, this could be serious
-arm-smmu 830000000000.smmu0:     GFSR 0x80000002, GFSYNR0 0x00000002,
-GFSYNR1 0x00000010, GFSYNR2 0x00000000
-^^^ these two repeat over and over
+Bugzilla: https://bugs.freedesktop.org/show_bug.cgi?id=111906
+Signed-off-by: Chris Wilson <chris@chris-wilson.co.uk>
+Cc: Joerg Roedel <joro@8bytes.org>
+---
+Take the patch with a pinch of salt; it seems to be the pattern used by
+other iommu backends, but I don't know if it is even suitable for iommu
+and what appear to be ACPI devices rather than the expected PCI.
+---
+ drivers/iommu/intel-iommu.c | 10 +++++++++-
+ 1 file changed, 9 insertions(+), 1 deletion(-)
 
->
-> That said, it's also puzzling that no other drivers are reporting DMA
-> errors or timeouts either - is there any chance that some device is set
-> running by the firmware/bootloader and not taken over by a kernel driver?
->
+diff --git a/drivers/iommu/intel-iommu.c b/drivers/iommu/intel-iommu.c
+index ed321b808176..e231be0d0534 100644
+--- a/drivers/iommu/intel-iommu.c
++++ b/drivers/iommu/intel-iommu.c
+@@ -5939,6 +5939,14 @@ static bool intel_iommu_is_attach_deferred(struct iommu_domain *domain,
+ 	return dev->archdata.iommu == DEFER_DEVICE_DOMAIN_INFO;
+ }
+ 
++static struct iommu_group *intel_iommu_device_group(struct device *dev)
++{
++	if (dev_is_pci(dev))
++		return pci_device_group(dev);
++	else
++		return generic_device_group(dev);
++}
++
+ const struct iommu_ops intel_iommu_ops = {
+ 	.capable		= intel_iommu_capable,
+ 	.domain_alloc		= intel_iommu_domain_alloc,
+@@ -5956,7 +5964,7 @@ const struct iommu_ops intel_iommu_ops = {
+ 	.get_resv_regions	= intel_iommu_get_resv_regions,
+ 	.put_resv_regions	= intel_iommu_put_resv_regions,
+ 	.apply_resv_region	= intel_iommu_apply_resv_region,
+-	.device_group		= pci_device_group,
++	.device_group		= intel_iommu_device_group,
+ 	.dev_has_feat		= intel_iommu_dev_has_feat,
+ 	.dev_feat_enabled	= intel_iommu_dev_feat_enabled,
+ 	.dev_enable_feat	= intel_iommu_dev_enable_feat,
+-- 
+2.23.0
 
-anything is possible - I'm using the Cavium 'BDK' as boot firmware to
-configure the board which sits in from of arm trusted firmare and
-bootloader.
-
-Tim
 _______________________________________________
 iommu mailing list
 iommu@lists.linux-foundation.org
