@@ -2,59 +2,54 @@ Return-Path: <SRS0=q1eh=X7=lists.linux-foundation.org=iommu-bounces@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-5.8 required=3.0 tests=DKIM_INVALID,DKIM_SIGNED,
-	MAILING_LIST_MULTI,MENTIONS_GIT_HOSTING,SPF_HELO_NONE,SPF_PASS autolearn=ham
+X-Spam-Status: No, score=-2.3 required=3.0 tests=HEADER_FROM_DIFFERENT_DOMAINS,
+	MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS,USER_AGENT_SANE_1 autolearn=no
 	autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id E6C8FECE58B
-	for <iommu@archiver.kernel.org>; Sun,  6 Oct 2019 18:20:17 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id B7279C4360C
+	for <iommu@archiver.kernel.org>; Sun,  6 Oct 2019 18:45:52 +0000 (UTC)
 Received: from mail.linuxfoundation.org (mail.linuxfoundation.org [140.211.169.12])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by mail.kernel.org (Postfix) with ESMTPS id AB70020835
-	for <iommu@archiver.kernel.org>; Sun,  6 Oct 2019 18:20:17 +0000 (UTC)
-Authentication-Results: mail.kernel.org;
-	dkim=fail reason="signature verification failed" (1024-bit key) header.d=kernel.org header.i=@kernel.org header.b="wbHaJZp8"
-DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org AB70020835
-Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=kernel.org
+	by mail.kernel.org (Postfix) with ESMTPS id 9776020684
+	for <iommu@archiver.kernel.org>; Sun,  6 Oct 2019 18:45:52 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 9776020684
+Authentication-Results: mail.kernel.org; dmarc=none (p=none dis=none) header.from=lst.de
 Authentication-Results: mail.kernel.org; spf=pass smtp.mailfrom=iommu-bounces@lists.linux-foundation.org
 Received: from mail.linux-foundation.org (localhost [127.0.0.1])
-	by mail.linuxfoundation.org (Postfix) with ESMTP id 66248491;
-	Sun,  6 Oct 2019 18:20:17 +0000 (UTC)
+	by mail.linuxfoundation.org (Postfix) with ESMTP id 6DEBDC86;
+	Sun,  6 Oct 2019 18:45:52 +0000 (UTC)
 Received: from smtp1.linuxfoundation.org (smtp1.linux-foundation.org
 	[172.17.192.35])
-	by mail.linuxfoundation.org (Postfix) with ESMTPS id B151540B
+	by mail.linuxfoundation.org (Postfix) with ESMTPS id 9DF86C87
 	for <iommu@lists.linux-foundation.org>;
-	Sun,  6 Oct 2019 18:20:16 +0000 (UTC)
-Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp1.linuxfoundation.org (Postfix) with ESMTPS id 9779C27B
+	Sun,  6 Oct 2019 18:45:50 +0000 (UTC)
+X-Greylist: from auto-whitelisted by SQLgrey-1.7.6
+Received: from verein.lst.de (verein.lst.de [213.95.11.211])
+	by smtp1.linuxfoundation.org (Postfix) with ESMTPS id 89EDA27B
 	for <iommu@lists.linux-foundation.org>;
-	Sun,  6 Oct 2019 18:20:15 +0000 (UTC)
-Subject: Re: [GIT PULL] dma-mapping regression fix for 5.4-rc2
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=default; t=1570386015;
-	bh=vtKjxgXVhNL7l+sHOv51OqBy3Vg4AbXAWqnIMjxAo+w=;
-	h=From:In-Reply-To:References:Date:To:Cc:From;
-	b=wbHaJZp80I0Ip4ENaW65UOngeRJPbk4YBfNE295RSbMGcG2H8Hz7jl+v2E2HpjDZ2
-	5kbcMNMOPrXEO24SJWhvaEFZ+JWYYy7kgsJ0xGVaeaa/h1I4+C4I6OfLTVQiSvohbM
-	iGkIxlyI3whZwjs0pPiuzgzAK++eagDPKV9erYY0=
-From: pr-tracker-bot@kernel.org
-In-Reply-To: <20191006162740.GA27870@infradead.org>
-References: <20191006162740.GA27870@infradead.org>
-X-PR-Tracked-List-Id: <linux-kernel.vger.kernel.org>
-X-PR-Tracked-Message-Id: <20191006162740.GA27870@infradead.org>
-X-PR-Tracked-Remote: git://git.infradead.org/users/hch/dma-mapping.git
-	tags/dma-mapping-5.4-1
-X-PR-Tracked-Commit-Id: 2cf2aa6a69db0b17b3979144287af8775c1c1534
-X-PR-Merge-Tree: torvalds/linux.git
-X-PR-Merge-Refname: refs/heads/master
-X-PR-Merge-Commit-Id: 7cdb85df6061d001fffd09c6adfbcf20356615e2
-Message-Id: <157038601134.10784.18310088469834465902.pr-tracker-bot@kernel.org>
-Date: Sun, 06 Oct 2019 18:20:11 +0000
-To: Christoph Hellwig <hch@infradead.org>
-Cc: iommu@lists.linux-foundation.org,
-	Linus Torvalds <torvalds@linux-foundation.org>,
-	linux-kernel@vger.kernel.org
+	Sun,  6 Oct 2019 18:45:49 +0000 (UTC)
+Received: by verein.lst.de (Postfix, from userid 2407)
+	id 11C41227A8B; Sun,  6 Oct 2019 20:45:42 +0200 (CEST)
+Date: Sun, 6 Oct 2019 20:45:41 +0200
+From: Christoph Hellwig <hch@lst.de>
+To: Geert Uytterhoeven <geert@linux-m68k.org>
+Subject: Re: [PATCH 3/4] dma-mapping: introduce a dma_common_find_pages helper
+Message-ID: <20191006184541.GA4110@lst.de>
+References: <20190830062924.21714-1-hch@lst.de>
+	<20190830062924.21714-4-hch@lst.de>
+	<CAMuHMdXxWp2=9n2LQA9KVH_ArOUnY78ZoiQ7ZsDMbTOGsEz4hw@mail.gmail.com>
+MIME-Version: 1.0
+Content-Disposition: inline
+In-Reply-To: <CAMuHMdXxWp2=9n2LQA9KVH_ArOUnY78ZoiQ7ZsDMbTOGsEz4hw@mail.gmail.com>
+User-Agent: Mutt/1.5.17 (2007-11-01)
+Cc: linux-xtensa@linux-xtensa.org, Russell King <linux@armlinux.org.uk>,
+	Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
+	Linux-Renesas <linux-renesas-soc@vger.kernel.org>,
+	Linux MM <linux-mm@kvack.org>,
+	Linux IOMMU <iommu@lists.linux-foundation.org>,
+	Robin Murphy <robin.murphy@arm.com>, Christoph Hellwig <hch@lst.de>,
+	Linux ARM <linux-arm-kernel@lists.infradead.org>
 X-BeenThere: iommu@lists.linux-foundation.org
 X-Mailman-Version: 2.1.12
 Precedence: list
@@ -67,24 +62,15 @@ List-Post: <mailto:iommu@lists.linux-foundation.org>
 List-Help: <mailto:iommu-request@lists.linux-foundation.org?subject=help>
 List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
 	<mailto:iommu-request@lists.linux-foundation.org?subject=subscribe>
-MIME-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
 Sender: iommu-bounces@lists.linux-foundation.org
 Errors-To: iommu-bounces@lists.linux-foundation.org
 
-The pull request you sent on Sun, 6 Oct 2019 18:27:40 +0200:
+Hi Geert,
 
-> git://git.infradead.org/users/hch/dma-mapping.git tags/dma-mapping-5.4-1
-
-has been merged into torvalds/linux.git:
-https://git.kernel.org/torvalds/c/7cdb85df6061d001fffd09c6adfbcf20356615e2
-
-Thank you!
-
--- 
-Deet-doot-dot, I am a bot.
-https://korg.wiki.kernel.org/userdoc/prtracker
+please try Linus' current tree.  It has a fix from Andrey Smirnov
+for what looks the same problem that you reported.
 _______________________________________________
 iommu mailing list
 iommu@lists.linux-foundation.org
