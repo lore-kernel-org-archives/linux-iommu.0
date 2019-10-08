@@ -2,67 +2,63 @@ Return-Path: <SRS0=3Hvu=YB=lists.linux-foundation.org=iommu-bounces@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-6.8 required=3.0 tests=HEADER_FROM_DIFFERENT_DOMAINS,
-	INCLUDES_PATCH,MAILING_LIST_MULTI,SIGNED_OFF_BY,SPF_HELO_NONE,SPF_PASS,
-	URIBL_BLOCKED autolearn=unavailable autolearn_force=no version=3.4.0
+X-Spam-Status: No, score=-5.2 required=3.0 tests=HEADER_FROM_DIFFERENT_DOMAINS,
+	MAILING_LIST_MULTI,SIGNED_OFF_BY,SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED,
+	USER_AGENT_SANE_1 autolearn=ham autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id E947AC4360C
-	for <iommu@archiver.kernel.org>; Tue,  8 Oct 2019 13:32:10 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id B38E9C4360C
+	for <iommu@archiver.kernel.org>; Tue,  8 Oct 2019 13:54:54 +0000 (UTC)
 Received: from mail.linuxfoundation.org (mail.linuxfoundation.org [140.211.169.12])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by mail.kernel.org (Postfix) with ESMTPS id C59B1206C0
-	for <iommu@archiver.kernel.org>; Tue,  8 Oct 2019 13:32:10 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org C59B1206C0
-Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=redhat.com
+	by mail.kernel.org (Postfix) with ESMTPS id 86F53206BB
+	for <iommu@archiver.kernel.org>; Tue,  8 Oct 2019 13:54:54 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 86F53206BB
+Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=linux.intel.com
 Authentication-Results: mail.kernel.org; spf=pass smtp.mailfrom=iommu-bounces@lists.linux-foundation.org
 Received: from mail.linux-foundation.org (localhost [127.0.0.1])
-	by mail.linuxfoundation.org (Postfix) with ESMTP id 77E24FBD;
-	Tue,  8 Oct 2019 13:31:49 +0000 (UTC)
+	by mail.linuxfoundation.org (Postfix) with ESMTP id 525B4FE2;
+	Tue,  8 Oct 2019 13:54:54 +0000 (UTC)
 Received: from smtp1.linuxfoundation.org (smtp1.linux-foundation.org
 	[172.17.192.35])
-	by mail.linuxfoundation.org (Postfix) with ESMTPS id 51BB97F6
+	by mail.linuxfoundation.org (Postfix) with ESMTPS id 8A7BFFE0
 	for <iommu@lists.linux-foundation.org>;
-	Tue,  8 Oct 2019 13:31:48 +0000 (UTC)
+	Tue,  8 Oct 2019 13:54:53 +0000 (UTC)
 X-Greylist: domain auto-whitelisted by SQLgrey-1.7.6
-Received: from mx1.redhat.com (mx1.redhat.com [209.132.183.28])
-	by smtp1.linuxfoundation.org (Postfix) with ESMTPS id C11E98A8
+Received: from mga05.intel.com (mga05.intel.com [192.55.52.43])
+	by smtp1.linuxfoundation.org (Postfix) with ESMTPS id 8F4C68AC
 	for <iommu@lists.linux-foundation.org>;
-	Tue,  8 Oct 2019 13:31:47 +0000 (UTC)
-Received: from smtp.corp.redhat.com (int-mx08.intmail.prod.int.phx2.redhat.com
-	[10.5.11.23])
-	(using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
-	(No client certificate requested)
-	by mx1.redhat.com (Postfix) with ESMTPS id 0F21A3082E72;
-	Tue,  8 Oct 2019 13:31:47 +0000 (UTC)
-Received: from gondolin (dhcp-192-202.str.redhat.com [10.33.192.202])
-	by smtp.corp.redhat.com (Postfix) with ESMTP id D6D2719D70;
-	Tue,  8 Oct 2019 13:31:41 +0000 (UTC)
-Date: Tue, 8 Oct 2019 15:30:04 +0200
-From: Cornelia Huck <cohuck@redhat.com>
-To: Matthew Rosato <mjrosato@linux.ibm.com>
-Subject: Re: [PATCH v4 3/4] vfio: zpci: defining the VFIO headers
-Message-ID: <20191008153004.6be0e095.cohuck@redhat.com>
-In-Reply-To: <86647083-7f94-44aa-8856-103836906f36@linux.ibm.com>
-References: <1567815231-17940-1-git-send-email-mjrosato@linux.ibm.com>
-	<1567815231-17940-4-git-send-email-mjrosato@linux.ibm.com>
-	<20190919172009.71b1c246.cohuck@redhat.com>
-	<0a62aba7-578a-6875-da4d-13e8b145cf9b@linux.ibm.com>
-	<20190920160258.70631905.cohuck@redhat.com>
-	<86647083-7f94-44aa-8856-103836906f36@linux.ibm.com>
-Organization: Red Hat GmbH
+	Tue,  8 Oct 2019 13:54:52 +0000 (UTC)
+X-Amp-Result: UNKNOWN
+X-Amp-Original-Verdict: FILE UNKNOWN
+X-Amp-File-Uploaded: False
+Received: from fmsmga008.fm.intel.com ([10.253.24.58])
+	by fmsmga105.fm.intel.com with ESMTP/TLS/DHE-RSA-AES256-GCM-SHA384;
+	08 Oct 2019 06:54:51 -0700
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="5.67,270,1566889200"; d="scan'208";a="192580434"
+Received: from smile.fi.intel.com (HELO smile) ([10.237.68.40])
+	by fmsmga008.fm.intel.com with ESMTP; 08 Oct 2019 06:54:50 -0700
+Received: from andy by smile with local (Exim 4.92.2)
+	(envelope-from <andriy.shevchenko@linux.intel.com>)
+	id 1iHpwv-0002BP-9u; Tue, 08 Oct 2019 16:54:49 +0300
+Date: Tue, 8 Oct 2019 16:54:49 +0300
+From: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
+To: Joerg Roedel <joro@8bytes.org>
+Subject: Re: [PATCH v2 6/6] iommu/amd: Switch to use acpi_dev_hid_uid_match()
+Message-ID: <20191008135449.GK32742@smile.fi.intel.com>
+References: <20190924193739.86133-1-andriy.shevchenko@linux.intel.com>
+	<20190924193739.86133-7-andriy.shevchenko@linux.intel.com>
+	<20191007152848.GA20456@8bytes.org>
 MIME-Version: 1.0
-X-Scanned-By: MIMEDefang 2.84 on 10.5.11.23
-X-Greylist: Sender IP whitelisted, not delayed by milter-greylist-4.5.16
-	(mx1.redhat.com [10.5.110.46]);
-	Tue, 08 Oct 2019 13:31:47 +0000 (UTC)
-Cc: gor@linux.ibm.com, linux-s390@vger.kernel.org, walling@linux.ibm.com,
-	alex.williamson@redhat.com, kvm@vger.kernel.org,
-	sebott@linux.ibm.com, pmorel@linux.ibm.com,
-	heiko.carstens@de.ibm.com, linux-kernel@vger.kernel.org,
-	pasic@linux.ibm.com, borntraeger@de.ibm.com,
-	iommu@lists.linux-foundation.org, robin.murphy@arm.com,
-	gerald.schaefer@de.ibm.com
+Content-Disposition: inline
+In-Reply-To: <20191007152848.GA20456@8bytes.org>
+Organization: Intel Finland Oy - BIC 0357606-4 - Westendinkatu 7, 02160 Espoo
+User-Agent: Mutt/1.10.1 (2018-07-13)
+Cc: Ulf Hansson <ulf.hansson@linaro.org>, linux-mmc@vger.kernel.org,
+	"Rafael J. Wysocki" <rjw@rjwysocki.net>,
+	Adrian Hunter <adrian.hunter@intel.com>,
+	linux-acpi@vger.kernel.org, iommu@lists.linux-foundation.org
 X-BeenThere: iommu@lists.linux-foundation.org
 X-Mailman-Version: 2.1.12
 Precedence: list
@@ -80,130 +76,24 @@ Content-Transfer-Encoding: 7bit
 Sender: iommu-bounces@lists.linux-foundation.org
 Errors-To: iommu-bounces@lists.linux-foundation.org
 
-On Fri, 20 Sep 2019 11:14:28 -0400
-Matthew Rosato <mjrosato@linux.ibm.com> wrote:
-
-> On 9/20/19 10:02 AM, Cornelia Huck wrote:
-> > On Thu, 19 Sep 2019 16:55:57 -0400
-> > Matthew Rosato <mjrosato@linux.ibm.com> wrote:
-> >   
-> >> On 9/19/19 11:20 AM, Cornelia Huck wrote:  
-> >>> On Fri,  6 Sep 2019 20:13:50 -0400
-> >>> Matthew Rosato <mjrosato@linux.ibm.com> wrote:
-> >>>     
-> >>>> From: Pierre Morel <pmorel@linux.ibm.com>
-> >>>>
-> >>>> We define a new device region in vfio.h to be able to
-> >>>> get the ZPCI CLP information by reading this region from
-> >>>> userland.
-> >>>>
-> >>>> We create a new file, vfio_zdev.h to define the structure
-> >>>> of the new region we defined in vfio.h
-> >>>>
-> >>>> Signed-off-by: Pierre Morel <pmorel@linux.ibm.com>
-> >>>> Signed-off-by: Matthew Rosato <mjrosato@linux.ibm.com>
-> >>>> ---
-> >>>>  include/uapi/linux/vfio.h      |  1 +
-> >>>>  include/uapi/linux/vfio_zdev.h | 35 +++++++++++++++++++++++++++++++++++
-> >>>>  2 files changed, 36 insertions(+)
-> >>>>  create mode 100644 include/uapi/linux/vfio_zdev.h  
-> >   
-> >>>> diff --git a/include/uapi/linux/vfio_zdev.h b/include/uapi/linux/vfio_zdev.h
-> >>>> new file mode 100644
-> >>>> index 0000000..55e0d6d
-> >>>> --- /dev/null
-> >>>> +++ b/include/uapi/linux/vfio_zdev.h
-> >>>> @@ -0,0 +1,35 @@
-> >>>> +/* SPDX-License-Identifier: GPL-2.0 WITH Linux-syscall-note */
-> >>>> +/*
-> >>>> + * Region definition for ZPCI devices
-> >>>> + *
-> >>>> + * Copyright IBM Corp. 2019
-> >>>> + *
-> >>>> + * Author(s): Pierre Morel <pmorel@linux.ibm.com>
-> >>>> + */
-> >>>> +
-> >>>> +#ifndef _VFIO_ZDEV_H_
-> >>>> +#define _VFIO_ZDEV_H_
-> >>>> +
-> >>>> +#include <linux/types.h>
-> >>>> +
-> >>>> +/**
-> >>>> + * struct vfio_region_zpci_info - ZPCI information.    
-> >>>
-> >>> Hm... probably should also get some more explanation. E.g. is that
-> >>> derived from a hardware structure?
-> >>>     
-> >>
-> >> The structure itself is not mapped 1:1 to a hardware structure, but it
-> >> does serve as a collection of information that was derived from other
-> >> hardware structures.
-> >>
-> >> "Used for passing hardware feature information about a zpci device
-> >> between the host and guest" ?  
+On Mon, Oct 07, 2019 at 05:28:48PM +0200, Joerg Roedel wrote:
+> On Tue, Sep 24, 2019 at 10:37:39PM +0300, Andy Shevchenko wrote:
+> > Since we have a generic helper, drop custom implementation in the driver.
 > > 
-> > "zPCI specific hardware feature information for a device"?
-> > 
-> > Are we reasonably sure that this is complete for now? I'm not sure if
-> > expanding this structure would work; adding another should always be
-> > possible, though (if a bit annoying).
-> >   
+> > Signed-off-by: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
+> > ---
+> >  drivers/iommu/amd_iommu.c | 30 +++++-------------------------
+> >  1 file changed, 5 insertions(+), 25 deletions(-)
 > 
-> I think trying to make the structure expandable would be best...  If we
-> allow arbitrary-sized reads of the info, and only add new fields onto
-> the end it should be OK, no? (older qemu doesn't get the info it doesn't
-> ask for / understand)....  But I guess that's not compatible with having
-> util_str[] size being defined dynamically.  Another caveat would be if
-> CLP_UTIL_STR_LEN were to grow in size in the future, and assuming
-> util_str[] was no longer at the end of the structure, I guess the
-> additional data would have to end up in a
-> util_str2[CLP_UTIL_STR_LEN_NEW-CLP_UTIL_STR_LEN_OLD]...  To explain what
-> I mean, something like:
-> 
-> struct vfio_region_zpci_info {
-> 	<..>
-> 	__u8 util_str[CLP_UTIL_STR_LEN_OLD];
-> 	/* END OF V1 */
-> 	__u8 foo;
-> 	/* END OF V2 */
-> 	__u8 util_str2[CLP_UTIL_STR_LEN_NEW-CLP_UTIL_STR_LEN_OLD];
-> 	/* END OF V3 */
-> } __packed;
+> Acked-by: Joerg Roedel <jroedel@suse.de>
 
-[Sorry about the late response -- was on PTO]
+Thanks!
+There is v3 available, does it apply to it?
 
-That sounds a bit too complicated to me, and I'd prefer the "add
-another region if we missed something" approach. If we put anything
-looking potentially useful in here now, that "add another region" event
-is hopefully far in the future.
+-- 
+With Best Regards,
+Andy Shevchenko
 
-> 
-> 
-> >>  
-> >>>> + *
-> >>>> + */
-> >>>> +struct vfio_region_zpci_info {
-> >>>> +	__u64 dasm;
-> >>>> +	__u64 start_dma;
-> >>>> +	__u64 end_dma;
-> >>>> +	__u64 msi_addr;
-> >>>> +	__u64 flags;
-> >>>> +	__u16 pchid;
-> >>>> +	__u16 mui;
-> >>>> +	__u16 noi;
-> >>>> +	__u16 maxstbl;
-> >>>> +	__u8 version;
-> >>>> +	__u8 gid;
-> >>>> +#define VFIO_PCI_ZDEV_FLAGS_REFRESH 1
-> >>>> +	__u8 util_str[];
-> >>>> +} __packed;
-> >>>> +
-> >>>> +#endif    
-> >>>
-> >>>     
-> >>  
-> >   
-> 
 
 _______________________________________________
 iommu mailing list
