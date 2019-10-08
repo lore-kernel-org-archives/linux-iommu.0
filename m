@@ -1,85 +1,68 @@
-Return-Path: <SRS0=Lo8e=YA=lists.linux-foundation.org=iommu-bounces@kernel.org>
+Return-Path: <SRS0=3Hvu=YB=lists.linux-foundation.org=iommu-bounces@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-9.5 required=3.0 tests=DKIM_ADSP_CUSTOM_MED,
-	DKIM_INVALID,DKIM_SIGNED,FREEMAIL_FORGED_FROMDOMAIN,FREEMAIL_FROM,
-	HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_PATCH,MAILING_LIST_MULTI,SIGNED_OFF_BY,
-	SPF_HELO_NONE,SPF_PASS,USER_AGENT_GIT autolearn=ham autolearn_force=no
-	version=3.4.0
+X-Spam-Status: No, score=-2.2 required=3.0 tests=HEADER_FROM_DIFFERENT_DOMAINS,
+	MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED,USER_AGENT_SANE_1
+	autolearn=no autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 6F165C47404
-	for <iommu@archiver.kernel.org>; Mon,  7 Oct 2019 20:51:28 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 99BE5ECE58E
+	for <iommu@archiver.kernel.org>; Tue,  8 Oct 2019 02:22:28 +0000 (UTC)
 Received: from mail.linuxfoundation.org (mail.linuxfoundation.org [140.211.169.12])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by mail.kernel.org (Postfix) with ESMTPS id EE2482133F
-	for <iommu@archiver.kernel.org>; Mon,  7 Oct 2019 20:51:27 +0000 (UTC)
-Authentication-Results: mail.kernel.org;
-	dkim=fail reason="signature verification failed" (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="rC3YTB0+"
-DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org EE2482133F
-Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=gmail.com
+	by mail.kernel.org (Postfix) with ESMTPS id EBC98206BB
+	for <iommu@archiver.kernel.org>; Tue,  8 Oct 2019 02:22:27 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org EBC98206BB
+Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=linux.intel.com
 Authentication-Results: mail.kernel.org; spf=pass smtp.mailfrom=iommu-bounces@lists.linux-foundation.org
 Received: from mail.linux-foundation.org (localhost [127.0.0.1])
-	by mail.linuxfoundation.org (Postfix) with ESMTP id 8B5AEEBA;
-	Mon,  7 Oct 2019 20:51:27 +0000 (UTC)
+	by mail.linuxfoundation.org (Postfix) with ESMTP id 60C48CC1;
+	Tue,  8 Oct 2019 02:22:27 +0000 (UTC)
 Received: from smtp1.linuxfoundation.org (smtp1.linux-foundation.org
 	[172.17.192.35])
-	by mail.linuxfoundation.org (Postfix) with ESMTPS id 9B5AEEBA
+	by mail.linuxfoundation.org (Postfix) with ESMTPS id A0EE7CAC
 	for <iommu@lists.linux-foundation.org>;
-	Mon,  7 Oct 2019 20:51:25 +0000 (UTC)
-X-Greylist: whitelisted by SQLgrey-1.7.6
-Received: from mail-pg1-f196.google.com (mail-pg1-f196.google.com
-	[209.85.215.196])
-	by smtp1.linuxfoundation.org (Postfix) with ESMTPS id 43689604
+	Tue,  8 Oct 2019 02:22:26 +0000 (UTC)
+X-Greylist: domain auto-whitelisted by SQLgrey-1.7.6
+Received: from mga04.intel.com (mga04.intel.com [192.55.52.120])
+	by smtp1.linuxfoundation.org (Postfix) with ESMTPS id 3D19614D
 	for <iommu@lists.linux-foundation.org>;
-	Mon,  7 Oct 2019 20:51:25 +0000 (UTC)
-Received: by mail-pg1-f196.google.com with SMTP id i76so1777942pgc.0
-	for <iommu@lists.linux-foundation.org>;
-	Mon, 07 Oct 2019 13:51:25 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=gmail.com; s=20161025;
-	h=from:to:cc:subject:date:message-id:in-reply-to:references
-	:mime-version:content-transfer-encoding;
-	bh=6g6bAI8I8EYsK43cwBiTTXy4oB3NYybaiwTag+iFJPA=;
-	b=rC3YTB0+hOcmaDXUspN39GIY0nApX+Rt/+I0TvKqqeA1Xaq9WCzVeeUHweQW7m6Pav
-	VjVX19Qmr1nFoSTKu7/G6DQWha2WEgEh9X5NhuHzHKkws8lYbSCkIoU+t0BqIK7KBmpH
-	2+6UkWqL088G7ZOhAa5TGMmTTT0fyUdlaVFSiVJuBYLnKPYCcW0VfSzNdZa62BKIpJuB
-	qIexWIG7LzL9jmw5euiECych+ZLh6dexPW2I/F09tthZ/k8q3QBZcPsD7+GUiXJsTfr7
-	x+74QhULu49un+22fuw0md1lVwbPHpRnJDYtVwgQFbqrXiVVhfXWf3NeOyUNTCGDScua
-	NkJg==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-	d=1e100.net; s=20161025;
-	h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
-	:references:mime-version:content-transfer-encoding;
-	bh=6g6bAI8I8EYsK43cwBiTTXy4oB3NYybaiwTag+iFJPA=;
-	b=T3+Clnh3QbsrgtfB0zaPDEi3COr0DyTsWTzxADht7l863z4IJdlWDLGBc7ZxGpbTPq
-	Z3pqTBMm0aicA0RzHJcMSF9MNv6Sxm/vDfw9Mw0xa52rKYwunqzbAxU33B9g49fXvLRt
-	xKbfF9hkfUg0RD9ZOAnaKrTyuBccbqEg47YPD2uDnnuNRnJAzaIsfwb+Pc6WCf5tPzOk
-	CWloEe2ISCbbCVlZXSgWt3I/v048jSiV5tpzZebAdsD5BBCVK4BhJXzUim7oB7OI6l4s
-	1O0fftQRG27lLss47ttafXaL7Ge4omiE1xKMSyTJm0k7tORx76QFMFaCp7F7+X9oom3P
-	7iUw==
-X-Gm-Message-State: APjAAAWiq35WrfSI9gSheZYpt71WDasCDtvkYoo1++od8ksUgPYXFJY7
-	GOHNDXo20u5E0BP41jjpTQQUqwMK
-X-Google-Smtp-Source: APXvYqy3GawUaKDtynbkxOmrvUe78E4CqvoIysRE+NXAUd0BUstCS0iAwnenFUJnuEigjkBPuOqTiw==
-X-Received: by 2002:a63:60e:: with SMTP id 14mr5830612pgg.179.1570481484414;
-	Mon, 07 Oct 2019 13:51:24 -0700 (PDT)
-Received: from localhost ([100.118.89.196]) by smtp.gmail.com with ESMTPSA id
-	e192sm17789132pfh.83.2019.10.07.13.51.23
-	(version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-	Mon, 07 Oct 2019 13:51:23 -0700 (PDT)
-From: Rob Clark <robdclark@gmail.com>
-To: iommu@lists.linux-foundation.org
-Subject: [PATCH v2] iommu/arm-smmu: fix "hang" when games exit
-Date: Mon,  7 Oct 2019 13:49:06 -0700
-Message-Id: <20191007204906.19571-1-robdclark@gmail.com>
-X-Mailer: git-send-email 2.21.0
-In-Reply-To: <418d8426-f299-1269-2b2e-f86677cf22c2@arm.com>
-References: <418d8426-f299-1269-2b2e-f86677cf22c2@arm.com>
+	Tue,  8 Oct 2019 02:22:25 +0000 (UTC)
+X-Amp-Result: SKIPPED(no attachment in message)
+X-Amp-File-Uploaded: False
+Received: from fmsmga008.fm.intel.com ([10.253.24.58])
+	by fmsmga104.fm.intel.com with ESMTP/TLS/DHE-RSA-AES256-GCM-SHA384;
+	07 Oct 2019 19:22:25 -0700
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="5.67,269,1566889200"; d="scan'208";a="192455888"
+Received: from allen-box.sh.intel.com (HELO [10.239.159.136])
+	([10.239.159.136])
+	by fmsmga008.fm.intel.com with ESMTP; 07 Oct 2019 19:22:22 -0700
+Subject: Re: [RFC PATCH 2/4] iommu/vt-d: Add first level page table interfaces
+To: Peter Xu <peterx@redhat.com>
+References: <20190923122454.9888-1-baolu.lu@linux.intel.com>
+	<20190923122454.9888-3-baolu.lu@linux.intel.com>
+	<20190925052157.GL28074@xz-x1>
+	<c9792e0b-bf42-1dbb-f060-0b1a43125f47@linux.intel.com>
+	<20190926034905.GW28074@xz-x1>
+	<52778812-129b-0fa7-985d-5814e9d84047@linux.intel.com>
+	<20190927053449.GA9412@xz-x1>
+	<66823e27-aa33-5968-b5fd-e5221fb1fffe@linux.intel.com>
+	<20190929052532.GA12953@xz-x1>
+From: Lu Baolu <baolu.lu@linux.intel.com>
+Message-ID: <27232499-4f13-83c0-a1d3-e82e9183f3f0@linux.intel.com>
+Date: Tue, 8 Oct 2019 10:20:10 +0800
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:60.0) Gecko/20100101
+	Thunderbird/60.8.0
 MIME-Version: 1.0
-Cc: Rob Clark <robdclark@chromium.org>, Will Deacon <will@kernel.org>,
-	freedreno@lists.freedesktop.org, open list <linux-kernel@vger.kernel.org>,
-	Robin Murphy <robin.murphy@arm.com>, "moderated list:ARM SMMU DRIVERS"
-	<linux-arm-kernel@lists.infradead.org>
+In-Reply-To: <20190929052532.GA12953@xz-x1>
+Content-Language: en-US
+Cc: kevin.tian@intel.com, Yi Sun <yi.y.sun@linux.intel.com>,
+	ashok.raj@intel.com, kvm@vger.kernel.org,
+	sanjay.k.kumar@intel.com, iommu@lists.linux-foundation.org,
+	linux-kernel@vger.kernel.org, Alex Williamson <alex.williamson@redhat.com>,
+	David Woodhouse <dwmw2@infradead.org>, yi.y.sun@intel.com
 X-BeenThere: iommu@lists.linux-foundation.org
 X-Mailman-Version: 2.1.12
 Precedence: list
@@ -92,58 +75,85 @@ List-Post: <mailto:iommu@lists.linux-foundation.org>
 List-Help: <mailto:iommu-request@lists.linux-foundation.org?subject=help>
 List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
 	<mailto:iommu-request@lists.linux-foundation.org?subject=subscribe>
-Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset="us-ascii"; Format="flowed"
 Sender: iommu-bounces@lists.linux-foundation.org
 Errors-To: iommu-bounces@lists.linux-foundation.org
 
-From: Rob Clark <robdclark@chromium.org>
+Hi,
 
-When games, browser, or anything using a lot of GPU buffers exits, there
-can be many hundreds or thousands of buffers to unmap and free.  If the
-GPU is otherwise suspended, this can cause arm-smmu to resume/suspend
-for each buffer, resulting 5-10 seconds worth of reprogramming the
-context bank (arm_smmu_write_context_bank()/arm_smmu_write_s2cr()/etc).
-To the user it would appear that the system just locked up.
+On 9/29/19 1:25 PM, Peter Xu wrote:
+> On Sat, Sep 28, 2019 at 04:23:16PM +0800, Lu Baolu wrote:
+>> Hi Peter,
+>>
+>> On 9/27/19 1:34 PM, Peter Xu wrote:
+>>> Hi, Baolu,
+>>>
+>>> On Fri, Sep 27, 2019 at 10:27:24AM +0800, Lu Baolu wrote:
+>>>>>>>> +	spin_lock(&(domain)->page_table_lock);				\
+>>>>>>>
+>>>>>>> Is this intended to lock here instead of taking the lock during the
+>>>>>>> whole page table walk?  Is it safe?
+>>>>>>>
+>>>>>>> Taking the example where nm==PTE: when we reach here how do we
+>>>>>>> guarantee that the PMD page that has this PTE is still valid?
+>>>>>>
+>>>>>> We will always keep the non-leaf pages in the table,
+>>>>>
+>>>>> I see.  Though, could I ask why?  It seems to me that the existing 2nd
+>>>>> level page table does not keep these when unmap, and it's not even use
+>>>>> locking at all by leveraging cmpxchg()?
+>>>>
+>>>> I still need some time to understand how cmpxchg() solves the race issue
+>>>> when reclaims pages. For example.
+>>>>
+>>>> Thread A				Thread B
+>>>> -A1: check all PTE's empty		-B1: up-level PDE valid
+>>>> -A2: clear the up-level PDE
+>>>> -A3: reclaim the page			-B2: populate the PTEs
+>>>>
+>>>> Both (A1,A2) and (B1,B2) should be atomic. Otherwise, race could happen.
+>>>
+>>> I'm not sure of this, but IMHO it is similarly because we need to
+>>> allocate the iova ranges from iova allocator first, so thread A (who's
+>>> going to unmap pages) and thread B (who's going to map new pages)
+>>> should never have collapsed regions if happening concurrently.  I'm
+>>
+>> Although they don't collapse, they might share a same pmd entry. If A
+>> cleared the pmd entry and B goes ahead with populating the pte's. It
+>> will crash.
+> 
+> My understanding is that if A was not owning all the pages on that PMD
+> entry then it will never free the page that was backing that PMD
+> entry.  Please refer to the code in dma_pte_clear_level() where it
+> has:
+> 
+>          /* If range covers entire pagetable, free it */
+>          if (start_pfn <= level_pfn &&
+>                  last_pfn >= level_pfn + level_size(level) - 1) {
+>                  ...
+>          } else {
+>                  ...
+>          }
+> 
+> Note that when going into the else block, the PMD won't be freed but
+> only the PTEs that upon the PMD will be cleared.
 
-A simple solution is to use pm_runtime_put_autosuspend() instead, so we
-don't immediately suspend the SMMU device.
+Exactly! Thanks for pointing this out.
 
-Signed-off-by: Rob Clark <robdclark@chromium.org>
----
-v1: original
-v2: unconditionally use autosuspend, rather than deciding based on what
-    consumer does
+I will do the same thing in v2.
 
- drivers/iommu/arm-smmu.c | 5 ++++-
- 1 file changed, 4 insertions(+), 1 deletion(-)
+> 
+> In the case you mentioned above, IMHO it should go into that else
+> block.  Say, thread A must not contain the whole range of that PMD
+> otherwise thread B won't get allocated with pages within that range
+> covered by the same PMD.
+> 
+> Thanks,
+> 
 
-diff --git a/drivers/iommu/arm-smmu.c b/drivers/iommu/arm-smmu.c
-index 3f1d55fb43c4..b7b41f5001bc 100644
---- a/drivers/iommu/arm-smmu.c
-+++ b/drivers/iommu/arm-smmu.c
-@@ -289,7 +289,7 @@ static inline int arm_smmu_rpm_get(struct arm_smmu_device *smmu)
- static inline void arm_smmu_rpm_put(struct arm_smmu_device *smmu)
- {
- 	if (pm_runtime_enabled(smmu->dev))
--		pm_runtime_put(smmu->dev);
-+		pm_runtime_put_autosuspend(smmu->dev);
- }
- 
- static struct arm_smmu_domain *to_smmu_domain(struct iommu_domain *dom)
-@@ -1445,6 +1445,9 @@ static int arm_smmu_attach_dev(struct iommu_domain *domain, struct device *dev)
- 	/* Looks ok, so add the device to the domain */
- 	ret = arm_smmu_domain_add_master(smmu_domain, fwspec);
- 
-+	pm_runtime_set_autosuspend_delay(smmu->dev, 20);
-+	pm_runtime_use_autosuspend(smmu->dev);
-+
- rpm_put:
- 	arm_smmu_rpm_put(smmu);
- 	return ret;
--- 
-2.21.0
-
+Best regards,
+Baolu
 _______________________________________________
 iommu mailing list
 iommu@lists.linux-foundation.org
