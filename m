@@ -7,78 +7,78 @@ X-Spam-Status: No, score=-8.1 required=3.0 tests=DKIM_INVALID,DKIM_SIGNED,
 	SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED,USER_AGENT_SANE_1 autolearn=ham
 	autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 05C07C47404
-	for <iommu@archiver.kernel.org>; Wed,  9 Oct 2019 21:13:47 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 75660ECE58C
+	for <iommu@archiver.kernel.org>; Wed,  9 Oct 2019 22:28:59 +0000 (UTC)
 Received: from mail.linuxfoundation.org (mail.linuxfoundation.org [140.211.169.12])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by mail.kernel.org (Postfix) with ESMTPS id B4D5A206B6
-	for <iommu@archiver.kernel.org>; Wed,  9 Oct 2019 21:13:46 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTPS id 3CD61206BB
+	for <iommu@archiver.kernel.org>; Wed,  9 Oct 2019 22:28:59 +0000 (UTC)
 Authentication-Results: mail.kernel.org;
-	dkim=fail reason="signature verification failed" (2048-bit key) header.d=ragnatech-se.20150623.gappssmtp.com header.i=@ragnatech-se.20150623.gappssmtp.com header.b="PLcIfGu1"
-DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org B4D5A206B6
+	dkim=fail reason="signature verification failed" (2048-bit key) header.d=ragnatech-se.20150623.gappssmtp.com header.i=@ragnatech-se.20150623.gappssmtp.com header.b="NsUpvKLi"
+DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 3CD61206BB
 Authentication-Results: mail.kernel.org; dmarc=none (p=none dis=none) header.from=ragnatech.se
 Authentication-Results: mail.kernel.org; spf=pass smtp.mailfrom=iommu-bounces@lists.linux-foundation.org
 Received: from mail.linux-foundation.org (localhost [127.0.0.1])
-	by mail.linuxfoundation.org (Postfix) with ESMTP id 6AFEACC2;
-	Wed,  9 Oct 2019 21:13:46 +0000 (UTC)
+	by mail.linuxfoundation.org (Postfix) with ESMTP id DA019DC8;
+	Wed,  9 Oct 2019 22:28:58 +0000 (UTC)
 Received: from smtp1.linuxfoundation.org (smtp1.linux-foundation.org
 	[172.17.192.35])
-	by mail.linuxfoundation.org (Postfix) with ESMTPS id 770C6CBD
+	by mail.linuxfoundation.org (Postfix) with ESMTPS id 404E0DAB
 	for <iommu@lists.linux-foundation.org>;
-	Wed,  9 Oct 2019 21:13:45 +0000 (UTC)
+	Wed,  9 Oct 2019 22:28:57 +0000 (UTC)
 X-Greylist: whitelisted by SQLgrey-1.7.6
 Received: from mail-lj1-f194.google.com (mail-lj1-f194.google.com
 	[209.85.208.194])
-	by smtp1.linuxfoundation.org (Postfix) with ESMTPS id 0E2E114D
+	by smtp1.linuxfoundation.org (Postfix) with ESMTPS id 5A0C65D3
 	for <iommu@lists.linux-foundation.org>;
-	Wed,  9 Oct 2019 21:13:44 +0000 (UTC)
-Received: by mail-lj1-f194.google.com with SMTP id b20so3957404ljj.5
+	Wed,  9 Oct 2019 22:28:56 +0000 (UTC)
+Received: by mail-lj1-f194.google.com with SMTP id m7so4143026lji.2
 	for <iommu@lists.linux-foundation.org>;
-	Wed, 09 Oct 2019 14:13:43 -0700 (PDT)
+	Wed, 09 Oct 2019 15:28:56 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
 	d=ragnatech-se.20150623.gappssmtp.com; s=20150623;
 	h=date:from:to:cc:subject:message-id:references:mime-version
 	:content-disposition:content-transfer-encoding:in-reply-to
-	:user-agent; bh=O1szppMdVqNwuc6KuWMWhQME2fGH410c8EpWWgDMBF4=;
-	b=PLcIfGu1u1IvCWMz1vxBuFV0cu89qCdiTOjKDli2FoE8twmwiLbiKPOXHeTCC3RUCU
-	ldKrvjDP8gQWymjJGBXTEs94sEhw5wG78ttfeaD6QiCLHhW5STKX9DDZfBTfEcQ0PDoq
-	Z1EM/7ctGyhoVPhtj49iP+Gmv9PuSwDNt++VGgwgzS6Ym1nleMYhJIuYBAZKq3XHwykJ
-	pHDYsUN77cr0PlOmU4bCt/2QjDEkWEPoIqpBJY5cT+yemqPdqakbP3sfuTdCrnbrP93g
-	65tmDu4eanInpA7bA6eACIOIG/1olQELCY9txCJ61+Mytdu+ZQ5m4B6W5G96vVLleRT7
-	kETg==
+	:user-agent; bh=R/HtMaWym45Jgs9DzJ9pn5UaNkfLO50BqU9y3ggWmRs=;
+	b=NsUpvKLiPn8OYIAleT5jio4lqmOTA75y81AmU5GfR+c3SKfZeI6wUFH6dvMGjYcaJG
+	PEM2/QOoSmGwlKPisbliCY22oJbEMhJCDagmdWGrPmnT2lD4tP+KT2RUFNqbq34QSw8R
+	0gxaZuazih0Ss8CDxN/Tgp/MuVlRAn6Qij07VwQ0qSy8iySnsjk9Jg/gpAHb9vRmToLZ
+	5ShwxiuYucpGf44U0LFXMmknCxelRM3xDbvCo2Zah+gGbRL3PR/DIdL/Y2PJUTZKPbdF
+	0bFJSdMGc1b/RTAB+5gbqA+NOFvnx6IhhdsBhA/TkOo0dVWQODmLpK7Fr07apDawM5q5
+	TB3w==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
 	d=1e100.net; s=20161025;
 	h=x-gm-message-state:date:from:to:cc:subject:message-id:references
 	:mime-version:content-disposition:content-transfer-encoding
 	:in-reply-to:user-agent;
-	bh=O1szppMdVqNwuc6KuWMWhQME2fGH410c8EpWWgDMBF4=;
-	b=mufQekwFIBHk8S0314q77xOyre8svvsZTlpWGANRZKs2dS8o7Eho10ThRApPygf/IY
-	V2jPOxF4VfSuQmr/KYWcT9NT8+54SH2GfvKjTrOqQzsJknNRuz3QUiE9WCcRmgc+ho04
-	bBdzchznAdOAeCFWVOUKcXhO0sT6LTDrhZ6T6upLO7RDyqUz0Z+vCH3YBbYx2TH5Nvvo
-	+QNg6kryj+7qa04KKIW3+GMVC7GW+A6PiUJ1I7M16R3n+OIQq/wD46g5R1xvWvDKDatd
-	WTmDOXovHO2QDmOkbbqwZuuG8C0m4+8qbwv6UVGZZq1H2EjGnzd2vZJHAF4K9JXoCwT7
-	FuQQ==
-X-Gm-Message-State: APjAAAV52kVCAGdgsoVzthuGDJSi5/ilOpK6F40oOwUyopf5UGE5C6Sr
-	9z29Ps7I6REO/P/41z1GMxu5EA==
-X-Google-Smtp-Source: APXvYqwmUqnXBsqREPMUGkbmw/+UBNGTNWOYeVWtRCD6oDkAT12c6t2TrIalLcatg3lkNslAjq9Ylg==
-X-Received: by 2002:a2e:2b91:: with SMTP id r17mr3698727ljr.1.1570655622441;
-	Wed, 09 Oct 2019 14:13:42 -0700 (PDT)
+	bh=R/HtMaWym45Jgs9DzJ9pn5UaNkfLO50BqU9y3ggWmRs=;
+	b=NQfd71GUmpkpv6hjBzz3+D3LUpYZJT8GPVn5mQdzJOdjJus3/msZ5wObpjAzELbhKy
+	d6qHgqT9L94gtUDCc+DqGB+CIiIvD5jde774ot2R7DYD27Heq2E2OAj7ohPCajVdsL1o
+	q2L4lYHcU4+ZCcdWcVcA3Ry1Tc+sEg+W7Ghz5iPw23jnVB+x3QfE9UtUiV+q9cZAyEX9
+	GnDCwvUhS3USjAK9Dihga11qm3rUeNNd1wBlmfIyVyKQgRkMed+HNcuJceiIojxzChh4
+	XR0R+OnxZP4WGwsdjYztwKZa0oyGQzVwYVXdD9hMeVGpVKi4qbDJhPbpYqKoApMBjEuc
+	eAJA==
+X-Gm-Message-State: APjAAAXfCwyLdJop9oepzpkmjmDdW9YdDnlGRG9aWTAwGuYOAFSRFE4P
+	UJn+KASOynfZr3XivKOrQeithA==
+X-Google-Smtp-Source: APXvYqzONDXkmPjiIUmwEb3PEEeWJnbuEAEK0K2ke1CH0KMhOtf0YIrgYEoNlOGgpagsgyBNyua2IA==
+X-Received: by 2002:a05:651c:1031:: with SMTP id
+	w17mr3800047ljm.38.1570660134713; 
+	Wed, 09 Oct 2019 15:28:54 -0700 (PDT)
 Received: from localhost (h-93-159.A463.priv.bahnhof.se. [46.59.93.159])
-	by smtp.gmail.com with ESMTPSA id c69sm741520ljf.32.2019.10.09.14.13.41
+	by smtp.gmail.com with ESMTPSA id k15sm735891ljg.65.2019.10.09.15.28.53
 	(version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-	Wed, 09 Oct 2019 14:13:41 -0700 (PDT)
-Date: Wed, 9 Oct 2019 23:13:41 +0200
+	Wed, 09 Oct 2019 15:28:53 -0700 (PDT)
+Date: Thu, 10 Oct 2019 00:28:53 +0200
 From: Niklas =?iso-8859-1?Q?S=F6derlund?= <niklas.soderlund@ragnatech.se>
 To: Yoshihiro Shimoda <yoshihiro.shimoda.uh@renesas.com>
-Subject: Re: [PATCH 2/3] iommu/ipmmu-vmsa: Calculate context registers'
-	offset instead of a macro
-Message-ID: <20191009211341.GC21066@bigcity.dyn.berto.se>
+Subject: Re: [PATCH 3/3] iommu/ipmmu-vmsa: Add utlb_offset_base
+Message-ID: <20191009222853.GA32293@bigcity.dyn.berto.se>
 References: <1570609609-1332-1-git-send-email-yoshihiro.shimoda.uh@renesas.com>
-	<1570609609-1332-3-git-send-email-yoshihiro.shimoda.uh@renesas.com>
+	<1570609609-1332-4-git-send-email-yoshihiro.shimoda.uh@renesas.com>
 MIME-Version: 1.0
 Content-Disposition: inline
-In-Reply-To: <1570609609-1332-3-git-send-email-yoshihiro.shimoda.uh@renesas.com>
+In-Reply-To: <1570609609-1332-4-git-send-email-yoshihiro.shimoda.uh@renesas.com>
 User-Agent: Mutt/1.12.1 (2019-06-15)
 Cc: linux-renesas-soc@vger.kernel.org, iommu@lists.linux-foundation.org
 X-BeenThere: iommu@lists.linux-foundation.org
@@ -102,10 +102,11 @@ Hi Shimoda-san,
 
 Thanks for your patch.
 
-On 2019-10-09 17:26:48 +0900, Yoshihiro Shimoda wrote:
+On 2019-10-09 17:26:49 +0900, Yoshihiro Shimoda wrote:
 > Since we will have changed memory mapping of the IPMMU in the future,
-> this patch uses ipmmu_features values instead of a macro to
-> calculate context registers offset. No behavior change.
+> this patch adds a utlb_offset_base into struct ipmmu_features
+> for IMUCTR and IMUASID registers.
+> No behavior change.
 > =
 
 > Signed-off-by: Yoshihiro Shimoda <yoshihiro.shimoda.uh@renesas.com>
@@ -113,117 +114,81 @@ On 2019-10-09 17:26:48 +0900, Yoshihiro Shimoda wrote:
 Reviewed-by: Niklas S=F6derlund <niklas.soderlund+renesas@ragnatech.se>
 
 > ---
->  drivers/iommu/ipmmu-vmsa.c | 27 +++++++++++++++++++--------
->  1 file changed, 19 insertions(+), 8 deletions(-)
+>  drivers/iommu/ipmmu-vmsa.c | 14 +++++++++++---
+>  1 file changed, 11 insertions(+), 3 deletions(-)
 > =
 
 > diff --git a/drivers/iommu/ipmmu-vmsa.c b/drivers/iommu/ipmmu-vmsa.c
-> index dd554c2..76fb250 100644
+> index 76fb250..bc00e58 100644
 > --- a/drivers/iommu/ipmmu-vmsa.c
 > +++ b/drivers/iommu/ipmmu-vmsa.c
-> @@ -50,6 +50,8 @@ struct ipmmu_features {
->  	bool twobit_imttbcr_sl0;
->  	bool reserved_context;
+> @@ -52,6 +52,7 @@ struct ipmmu_features {
 >  	bool cache_snoop;
-> +	u32 ctx_offset_base;
-> +	u32 ctx_offset_stride;
+>  	u32 ctx_offset_base;
+>  	u32 ctx_offset_stride;
+> +	u32 utlb_offset_base;
 >  };
 >  =
 
 >  struct ipmmu_vmsa_device {
-> @@ -99,8 +101,6 @@ static struct ipmmu_vmsa_device *to_ipmmu(struct devic=
-e *dev)
->  =
-
->  #define IM_NS_ALIAS_OFFSET		0x800
->  =
-
-> -#define IM_CTX_SIZE			0x40
-> -
->  #define IMCTR				0x0000
->  #define IMCTR_TRE			(1 << 17)
->  #define IMCTR_AFE			(1 << 16)
-> @@ -253,18 +253,25 @@ static void ipmmu_write(struct ipmmu_vmsa_device *m=
-mu, unsigned int offset,
->  	iowrite32(data, mmu->base + offset);
+> @@ -285,6 +286,11 @@ static void ipmmu_ctx_write_all(struct ipmmu_vmsa_do=
+main *domain,
+>  	ipmmu_ctx_write_root(domain, reg, data);
 >  }
 >  =
 
-> +static u32 ipmmu_ctx_reg(struct ipmmu_vmsa_device *mmu, unsigned int con=
-text_id,
-> +			 unsigned int reg)
+> +static u32 ipmmu_utlb_reg(struct ipmmu_vmsa_device *mmu, unsigned int re=
+g)
 > +{
-> +	return mmu->features->ctx_offset_base +
-> +	       context_id * mmu->features->ctx_offset_stride + reg;
+> +	return mmu->features->utlb_offset_base + reg;
 > +}
 > +
->  static u32 ipmmu_ctx_read_root(struct ipmmu_vmsa_domain *domain,
->  			       unsigned int reg)
->  {
->  	return ipmmu_read(domain->mmu->root,
-> -			  domain->context_id * IM_CTX_SIZE + reg);
-> +			  ipmmu_ctx_reg(domain->mmu, domain->context_id, reg));
->  }
->  =
-
->  static void ipmmu_ctx_write_root(struct ipmmu_vmsa_domain *domain,
->  				 unsigned int reg, u32 data)
->  {
->  	ipmmu_write(domain->mmu->root,
-> -		    domain->context_id * IM_CTX_SIZE + reg, data);
-> +		    ipmmu_ctx_reg(domain->mmu, domain->context_id, reg), data);
->  }
->  =
-
->  static void ipmmu_ctx_write_all(struct ipmmu_vmsa_domain *domain,
-> @@ -272,10 +279,10 @@ static void ipmmu_ctx_write_all(struct ipmmu_vmsa_d=
-omain *domain,
->  {
->  	if (domain->mmu !=3D domain->mmu->root)
->  		ipmmu_write(domain->mmu,
-> -			    domain->context_id * IM_CTX_SIZE + reg, data);
-> +			    ipmmu_ctx_reg(domain->mmu, domain->context_id, reg),
-> +			    data);
->  =
-
-> -	ipmmu_write(domain->mmu->root,
-> -		    domain->context_id * IM_CTX_SIZE + reg, data);
-> +	ipmmu_ctx_write_root(domain, reg, data);
->  }
->  =
-
 >  /* ---------------------------------------------------------------------=
 --------
-> @@ -974,7 +981,7 @@ static void ipmmu_device_reset(struct ipmmu_vmsa_devi=
-ce *mmu)
+>   * TLB and microTLB Management
+>   */
+> @@ -330,9 +336,9 @@ static void ipmmu_utlb_enable(struct ipmmu_vmsa_domai=
+n *domain,
+>  	 */
 >  =
 
->  	/* Disable all contexts. */
->  	for (i =3D 0; i < mmu->num_ctx; ++i)
-> -		ipmmu_write(mmu, i * IM_CTX_SIZE + IMCTR, 0);
-> +		ipmmu_write(mmu, ipmmu_ctx_reg(mmu, i, IMCTR), 0);
+>  	/* TODO: What should we set the ASID to ? */
+> -	ipmmu_write(mmu, IMUASID(utlb), 0);
+> +	ipmmu_write(mmu, ipmmu_utlb_reg(mmu, IMUASID(utlb)), 0);
+>  	/* TODO: Do we need to flush the microTLB ? */
+> -	ipmmu_write(mmu, IMUCTR(utlb),
+> +	ipmmu_write(mmu, ipmmu_utlb_reg(mmu, IMUCTR(utlb)),
+>  		    IMUCTR_TTSEL_MMU(domain->context_id) | IMUCTR_FLUSH |
+>  		    IMUCTR_MMUEN);
+>  	mmu->utlb_ctx[utlb] =3D domain->context_id;
+> @@ -346,7 +352,7 @@ static void ipmmu_utlb_disable(struct ipmmu_vmsa_doma=
+in *domain,
+>  {
+>  	struct ipmmu_vmsa_device *mmu =3D domain->mmu;
+>  =
+
+> -	ipmmu_write(mmu, IMUCTR(utlb), 0);
+> +	ipmmu_write(mmu, ipmmu_utlb_reg(mmu, IMUCTR(utlb)), 0);
+>  	mmu->utlb_ctx[utlb] =3D IPMMU_CTX_INVALID;
 >  }
 >  =
 
->  static const struct ipmmu_features ipmmu_features_default =3D {
-> @@ -986,6 +993,8 @@ static const struct ipmmu_features ipmmu_features_def=
-ault =3D {
->  	.twobit_imttbcr_sl0 =3D false,
->  	.reserved_context =3D false,
+> @@ -995,6 +1001,7 @@ static const struct ipmmu_features ipmmu_features_de=
+fault =3D {
 >  	.cache_snoop =3D true,
-> +	.ctx_offset_base =3D 0,
-> +	.ctx_offset_stride =3D 0x40,
+>  	.ctx_offset_base =3D 0,
+>  	.ctx_offset_stride =3D 0x40,
+> +	.utlb_offset_base =3D 0,
 >  };
 >  =
 
 >  static const struct ipmmu_features ipmmu_features_rcar_gen3 =3D {
-> @@ -997,6 +1006,8 @@ static const struct ipmmu_features ipmmu_features_rc=
-ar_gen3 =3D {
->  	.twobit_imttbcr_sl0 =3D true,
->  	.reserved_context =3D true,
+> @@ -1008,6 +1015,7 @@ static const struct ipmmu_features ipmmu_features_r=
+car_gen3 =3D {
 >  	.cache_snoop =3D false,
-> +	.ctx_offset_base =3D 0,
-> +	.ctx_offset_stride =3D 0x40,
+>  	.ctx_offset_base =3D 0,
+>  	.ctx_offset_stride =3D 0x40,
+> +	.utlb_offset_base =3D 0,
 >  };
 >  =
 
