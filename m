@@ -4,58 +4,56 @@ X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 X-Spam-Level: 
 X-Spam-Status: No, score=-8.2 required=3.0 tests=HEADER_FROM_DIFFERENT_DOMAINS,
 	INCLUDES_PATCH,MAILING_LIST_MULTI,SIGNED_OFF_BY,SPF_HELO_NONE,SPF_PASS,
-	URIBL_BLOCKED,USER_AGENT_SANE_1 autolearn=unavailable autolearn_force=no
-	version=3.4.0
+	URIBL_BLOCKED,USER_AGENT_SANE_1 autolearn=ham autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id AE5A6ECE58D
-	for <iommu@archiver.kernel.org>; Wed,  9 Oct 2019 22:57:10 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 9BB57C47404
+	for <iommu@archiver.kernel.org>; Wed,  9 Oct 2019 23:44:03 +0000 (UTC)
 Received: from mail.linuxfoundation.org (mail.linuxfoundation.org [140.211.169.12])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by mail.kernel.org (Postfix) with ESMTPS id 8A721218AC
-	for <iommu@archiver.kernel.org>; Wed,  9 Oct 2019 22:57:10 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 8A721218AC
+	by mail.kernel.org (Postfix) with ESMTPS id 7538220659
+	for <iommu@archiver.kernel.org>; Wed,  9 Oct 2019 23:44:03 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 7538220659
 Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=linux.intel.com
 Authentication-Results: mail.kernel.org; spf=pass smtp.mailfrom=iommu-bounces@lists.linux-foundation.org
 Received: from mail.linux-foundation.org (localhost [127.0.0.1])
-	by mail.linuxfoundation.org (Postfix) with ESMTP id 661F0DDF;
-	Wed,  9 Oct 2019 22:57:10 +0000 (UTC)
+	by mail.linuxfoundation.org (Postfix) with ESMTP id 3E519DF2;
+	Wed,  9 Oct 2019 23:44:03 +0000 (UTC)
 Received: from smtp1.linuxfoundation.org (smtp1.linux-foundation.org
 	[172.17.192.35])
-	by mail.linuxfoundation.org (Postfix) with ESMTPS id D441CDCA
+	by mail.linuxfoundation.org (Postfix) with ESMTPS id 5DBF0DC3
 	for <iommu@lists.linux-foundation.org>;
-	Wed,  9 Oct 2019 22:57:08 +0000 (UTC)
+	Wed,  9 Oct 2019 23:44:01 +0000 (UTC)
 X-Greylist: domain auto-whitelisted by SQLgrey-1.7.6
-Received: from mga02.intel.com (mga02.intel.com [134.134.136.20])
-	by smtp1.linuxfoundation.org (Postfix) with ESMTPS id 362A914D
+Received: from mga04.intel.com (mga04.intel.com [192.55.52.120])
+	by smtp1.linuxfoundation.org (Postfix) with ESMTPS id D29CF14D
 	for <iommu@lists.linux-foundation.org>;
-	Wed,  9 Oct 2019 22:57:08 +0000 (UTC)
+	Wed,  9 Oct 2019 23:44:00 +0000 (UTC)
 X-Amp-Result: SKIPPED(no attachment in message)
 X-Amp-File-Uploaded: False
 Received: from fmsmga008.fm.intel.com ([10.253.24.58])
-	by orsmga101.jf.intel.com with ESMTP/TLS/DHE-RSA-AES256-GCM-SHA384;
-	09 Oct 2019 15:57:07 -0700
+	by fmsmga104.fm.intel.com with ESMTP/TLS/DHE-RSA-AES256-GCM-SHA384;
+	09 Oct 2019 16:44:00 -0700
 X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.67,277,1566889200"; d="scan'208";a="193017895"
+X-IronPort-AV: E=Sophos;i="5.67,278,1566889200"; d="scan'208";a="193027202"
 Received: from linux.intel.com ([10.54.29.200])
-	by fmsmga008.fm.intel.com with ESMTP; 09 Oct 2019 15:57:06 -0700
+	by fmsmga008.fm.intel.com with ESMTP; 09 Oct 2019 16:44:00 -0700
 Received: from [10.54.74.33] (skuppusw-desk.jf.intel.com [10.54.74.33])
-	by linux.intel.com (Postfix) with ESMTP id D516B5803E4;
-	Wed,  9 Oct 2019 15:57:06 -0700 (PDT)
-Subject: Re: [PATCH 2/2] PCI/ATS: Move pci_prg_resp_pasid_required() to
-	CONFIG_PCI_PRI
+	by linux.intel.com (Postfix) with ESMTP id EEC7E5802BC;
+	Wed,  9 Oct 2019 16:43:59 -0700 (PDT)
+Subject: Re: [PATCH 1/2] iommu/vt-d: Select PCI_PRI for INTEL_IOMMU_SVM
 To: Bjorn Helgaas <helgaas@kernel.org>, David Woodhouse
 	<dwmw2@infradead.org>, Joerg Roedel <joro@8bytes.org>
 References: <20191009224551.179497-1-helgaas@kernel.org>
-	<20191009224551.179497-3-helgaas@kernel.org>
+	<20191009224551.179497-2-helgaas@kernel.org>
 From: Kuppuswamy Sathyanarayanan <sathyanarayanan.kuppuswamy@linux.intel.com>
 Organization: Intel
-Message-ID: <67a573e9-3e04-5fca-6b8b-018b7bc75df8@linux.intel.com>
-Date: Wed, 9 Oct 2019 15:55:16 -0700
+Message-ID: <76ec2ac0-129e-ef65-8229-6405020fdc9f@linux.intel.com>
+Date: Wed, 9 Oct 2019 16:42:10 -0700
 User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:60.0) Gecko/20100101
 	Thunderbird/60.8.0
 MIME-Version: 1.0
-In-Reply-To: <20191009224551.179497-3-helgaas@kernel.org>
+In-Reply-To: <20191009224551.179497-2-helgaas@kernel.org>
 Content-Language: en-US
 Cc: Ashok Raj <ashok.raj@intel.com>, linux-pci@vger.kernel.org,
 	linux-kernel@vger.kernel.org, Keith Busch <keith.busch@intel.com>,
@@ -82,137 +80,42 @@ Errors-To: iommu-bounces@lists.linux-foundation.org
 On 10/9/19 3:45 PM, Bjorn Helgaas wrote:
 > From: Bjorn Helgaas <bhelgaas@google.com>
 >
-> pci_prg_resp_pasid_required() returns the value of the "PRG Response PASID
-> Required" bit from the PRI capability, but the interface was previously
-> defined under #ifdef CONFIG_PCI_PASID.
+> When CONFIG_INTEL_IOMMU_SVM=y, iommu_enable_dev_iotlb() calls PRI
+> interfaces (pci_reset_pri() and pci_enable_pri()), but those are only
+> implemented when CONFIG_PCI_PRI is enabled.
 >
-> Move it from CONFIG_PCI_PASID to CONFIG_PCI_PRI so it's with the other
-> PRI-related things.
+> Previously INTEL_IOMMU_SVM selected PCI_PASID but not PCI_PRI, so the state
+> of PCI_PRI depended on whether AMD_IOMMU (which selects PCI_PRI) was
+> enabled or PCI_PRI was enabled explicitly.
+>
+> The behavior of iommu_enable_dev_iotlb() should not depend on whether
+> AMD_IOMMU is enabled.  Make it predictable by having INTEL_IOMMU_SVM select
+> PCI_PRI so iommu_enable_dev_iotlb() always uses the full implementations of
+> PRI interfaces.
 >
 > Signed-off-by: Bjorn Helgaas <bhelgaas@google.com>
+
+Looks good to me.
+
 Reviewed-by: Kuppuswamy Sathyanarayanan 
 <sathyanarayanan.kuppuswamy@linux.intel.com>
+
 > ---
->   drivers/pci/ats.c       | 55 +++++++++++++++++++----------------------
->   include/linux/pci-ats.h | 11 ++++-----
->   2 files changed, 30 insertions(+), 36 deletions(-)
+>   drivers/iommu/Kconfig | 1 +
+>   1 file changed, 1 insertion(+)
 >
-> diff --git a/drivers/pci/ats.c b/drivers/pci/ats.c
-> index e18499243f84..0d06177252c7 100644
-> --- a/drivers/pci/ats.c
-> +++ b/drivers/pci/ats.c
-> @@ -280,6 +280,31 @@ int pci_reset_pri(struct pci_dev *pdev)
->   	return 0;
->   }
->   EXPORT_SYMBOL_GPL(pci_reset_pri);
-> +
-> +/**
-> + * pci_prg_resp_pasid_required - Return PRG Response PASID Required bit
-> + *				 status.
-> + * @pdev: PCI device structure
-> + *
-> + * Returns 1 if PASID is required in PRG Response Message, 0 otherwise.
-> + */
-> +int pci_prg_resp_pasid_required(struct pci_dev *pdev)
-> +{
-> +	u16 status;
-> +	int pos;
-> +
-> +	pos = pci_find_ext_capability(pdev, PCI_EXT_CAP_ID_PRI);
-> +	if (!pos)
-> +		return 0;
-> +
-> +	pci_read_config_word(pdev, pos + PCI_PRI_STATUS, &status);
-> +
-> +	if (status & PCI_PRI_STATUS_PASID)
-> +		return 1;
-> +
-> +	return 0;
-> +}
-> +EXPORT_SYMBOL_GPL(pci_prg_resp_pasid_required);
->   #endif /* CONFIG_PCI_PRI */
->   
->   #ifdef CONFIG_PCI_PASID
-> @@ -395,36 +420,6 @@ int pci_pasid_features(struct pci_dev *pdev)
->   }
->   EXPORT_SYMBOL_GPL(pci_pasid_features);
->   
-> -/**
-> - * pci_prg_resp_pasid_required - Return PRG Response PASID Required bit
-> - *				 status.
-> - * @pdev: PCI device structure
-> - *
-> - * Returns 1 if PASID is required in PRG Response Message, 0 otherwise.
-> - *
-> - * Even though the PRG response PASID status is read from PRI Status
-> - * Register, since this API will mainly be used by PASID users, this
-> - * function is defined within #ifdef CONFIG_PCI_PASID instead of
-> - * CONFIG_PCI_PRI.
-> - */
-> -int pci_prg_resp_pasid_required(struct pci_dev *pdev)
-> -{
-> -	u16 status;
-> -	int pos;
-> -
-> -	pos = pci_find_ext_capability(pdev, PCI_EXT_CAP_ID_PRI);
-> -	if (!pos)
-> -		return 0;
-> -
-> -	pci_read_config_word(pdev, pos + PCI_PRI_STATUS, &status);
-> -
-> -	if (status & PCI_PRI_STATUS_PASID)
-> -		return 1;
-> -
-> -	return 0;
-> -}
-> -EXPORT_SYMBOL_GPL(pci_prg_resp_pasid_required);
-> -
->   #define PASID_NUMBER_SHIFT	8
->   #define PASID_NUMBER_MASK	(0x1f << PASID_NUMBER_SHIFT)
->   /**
-> diff --git a/include/linux/pci-ats.h b/include/linux/pci-ats.h
-> index 1ebb88e7c184..a7a2b3d94fcc 100644
-> --- a/include/linux/pci-ats.h
-> +++ b/include/linux/pci-ats.h
-> @@ -10,6 +10,7 @@ int pci_enable_pri(struct pci_dev *pdev, u32 reqs);
->   void pci_disable_pri(struct pci_dev *pdev);
->   void pci_restore_pri_state(struct pci_dev *pdev);
->   int pci_reset_pri(struct pci_dev *pdev);
-> +int pci_prg_resp_pasid_required(struct pci_dev *pdev);
->   
->   #else /* CONFIG_PCI_PRI */
->   
-> @@ -31,6 +32,10 @@ static inline int pci_reset_pri(struct pci_dev *pdev)
->   	return -ENODEV;
->   }
->   
-> +static inline int pci_prg_resp_pasid_required(struct pci_dev *pdev)
-> +{
-> +	return 0;
-> +}
->   #endif /* CONFIG_PCI_PRI */
->   
->   #ifdef CONFIG_PCI_PASID
-> @@ -40,7 +45,6 @@ void pci_disable_pasid(struct pci_dev *pdev);
->   void pci_restore_pasid_state(struct pci_dev *pdev);
->   int pci_pasid_features(struct pci_dev *pdev);
->   int pci_max_pasids(struct pci_dev *pdev);
-> -int pci_prg_resp_pasid_required(struct pci_dev *pdev);
->   
->   #else  /* CONFIG_PCI_PASID */
->   
-> @@ -66,11 +70,6 @@ static inline int pci_max_pasids(struct pci_dev *pdev)
->   {
->   	return -EINVAL;
->   }
-> -
-> -static inline int pci_prg_resp_pasid_required(struct pci_dev *pdev)
-> -{
-> -	return 0;
-> -}
->   #endif /* CONFIG_PCI_PASID */
->   
->   
+> diff --git a/drivers/iommu/Kconfig b/drivers/iommu/Kconfig
+> index e3842eabcfdd..b183c9f916b0 100644
+> --- a/drivers/iommu/Kconfig
+> +++ b/drivers/iommu/Kconfig
+> @@ -207,6 +207,7 @@ config INTEL_IOMMU_SVM
+>   	bool "Support for Shared Virtual Memory with Intel IOMMU"
+>   	depends on INTEL_IOMMU && X86
+>   	select PCI_PASID
+> +	select PCI_PRI
+>   	select MMU_NOTIFIER
+>   	help
+>   	  Shared Virtual Memory (SVM) provides a facility for devices
 
 -- 
 Sathyanarayanan Kuppuswamy
