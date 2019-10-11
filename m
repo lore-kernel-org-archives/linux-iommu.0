@@ -2,61 +2,69 @@ Return-Path: <SRS0=QcZA=YE=lists.linux-foundation.org=iommu-bounces@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-2.2 required=3.0 tests=HEADER_FROM_DIFFERENT_DOMAINS,
-	MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED,USER_AGENT_SANE_1
-	autolearn=no autolearn_force=no version=3.4.0
+X-Spam-Status: No, score=-7.2 required=3.0 tests=HEADER_FROM_DIFFERENT_DOMAINS,
+	MAILING_LIST_MULTI,MENTIONS_GIT_HOSTING,SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED,
+	USER_AGENT_SANE_1 autolearn=unavailable autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 010DAC47404
-	for <iommu@archiver.kernel.org>; Fri, 11 Oct 2019 07:06:01 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 35D14C47404
+	for <iommu@archiver.kernel.org>; Fri, 11 Oct 2019 07:29:53 +0000 (UTC)
 Received: from mail.linuxfoundation.org (mail.linuxfoundation.org [140.211.169.12])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by mail.kernel.org (Postfix) with ESMTPS id C13512084C
-	for <iommu@archiver.kernel.org>; Fri, 11 Oct 2019 07:06:00 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org C13512084C
-Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=linux.intel.com
+	by mail.kernel.org (Postfix) with ESMTPS id F3A302196E
+	for <iommu@archiver.kernel.org>; Fri, 11 Oct 2019 07:29:52 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org F3A302196E
+Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=intel.com
 Authentication-Results: mail.kernel.org; spf=pass smtp.mailfrom=iommu-bounces@lists.linux-foundation.org
 Received: from mail.linux-foundation.org (localhost [127.0.0.1])
-	by mail.linuxfoundation.org (Postfix) with ESMTP id 4137D110A;
-	Fri, 11 Oct 2019 07:05:45 +0000 (UTC)
+	by mail.linuxfoundation.org (Postfix) with ESMTP id A1B65FCA;
+	Fri, 11 Oct 2019 07:29:52 +0000 (UTC)
 Received: from smtp1.linuxfoundation.org (smtp1.linux-foundation.org
 	[172.17.192.35])
-	by mail.linuxfoundation.org (Postfix) with ESMTPS id 5E99C10EC
+	by mail.linuxfoundation.org (Postfix) with ESMTPS id 72B0EE3D
 	for <iommu@lists.linux-foundation.org>;
-	Fri, 11 Oct 2019 06:56:29 +0000 (UTC)
+	Fri, 11 Oct 2019 07:20:59 +0000 (UTC)
 X-Greylist: domain auto-whitelisted by SQLgrey-1.7.6
-Received: from mga04.intel.com (mga04.intel.com [192.55.52.120])
-	by smtp1.linuxfoundation.org (Postfix) with ESMTPS id 362A714D
+Received: from mga02.intel.com (mga02.intel.com [134.134.136.20])
+	by smtp1.linuxfoundation.org (Postfix) with ESMTPS id D16BD14D
 	for <iommu@lists.linux-foundation.org>;
-	Fri, 11 Oct 2019 06:56:28 +0000 (UTC)
-X-Amp-Result: SKIPPED(no attachment in message)
+	Fri, 11 Oct 2019 07:20:57 +0000 (UTC)
+X-Amp-Result: UNKNOWN
+X-Amp-Original-Verdict: FILE UNKNOWN
 X-Amp-File-Uploaded: False
-Received: from fmsmga007.fm.intel.com ([10.253.24.52])
-	by fmsmga104.fm.intel.com with ESMTP/TLS/DHE-RSA-AES256-GCM-SHA384;
-	10 Oct 2019 23:56:27 -0700
+Received: from orsmga006.jf.intel.com ([10.7.209.51])
+	by orsmga101.jf.intel.com with ESMTP/TLS/DHE-RSA-AES256-GCM-SHA384;
+	11 Oct 2019 00:20:57 -0700
 X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.67,283,1566889200"; d="scan'208";a="194245955"
-Received: from allen-box.sh.intel.com (HELO [10.239.159.136])
-	([10.239.159.136])
-	by fmsmga007.fm.intel.com with ESMTP; 10 Oct 2019 23:56:25 -0700
-Subject: Re: [RFC PATCH] iommu/vt-d: Fix IOMMU field not populated on device
-	hot re-plug
-To: Janusz Krzysztofik <janusz.krzysztofik@linux.intel.com>
-References: <20190822142922.31526-1-janusz.krzysztofik@linux.intel.com>
-	<1769080.0GM3UzqXcv@jkrzyszt-desk.ger.corp.intel.com>
-	<52fbfac9-c879-4b45-dd74-fafe62c2432b@linux.intel.com>
-	<2674326.ZPvzKFr69O@jkrzyszt-desk.ger.corp.intel.com>
-From: Lu Baolu <baolu.lu@linux.intel.com>
-Message-ID: <19f435fc-7318-4abd-5c73-78ce253d5f07@linux.intel.com>
-Date: Fri, 11 Oct 2019 14:54:09 +0800
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:60.0) Gecko/20100101
-	Thunderbird/60.9.0
+X-IronPort-AV: E=Sophos;i="5.67,283,1566889200"; 
+	d="gz'50?scan'50,208,50";a="198622433"
+Received: from lkp-server01.sh.intel.com (HELO lkp-server01) ([10.239.97.150])
+	by orsmga006.jf.intel.com with ESMTP; 11 Oct 2019 00:20:53 -0700
+Received: from kbuild by lkp-server01 with local (Exim 4.89)
+	(envelope-from <lkp@intel.com>)
+	id 1iIpEL-000HTv-7P; Fri, 11 Oct 2019 15:20:53 +0800
+Date: Fri, 11 Oct 2019 15:20:52 +0800
+From: kbuild test robot <lkp@intel.com>
+To: Kees Cook <keescook@chromium.org>
+Subject: Re: [PATCH v2] dma-mapping: Move vmap address checks into
+	dma_map_single()
+Message-ID: <201910111445.5ygljXYD%lkp@intel.com>
+References: <201910041420.F6E55D29A@keescook>
 MIME-Version: 1.0
-In-Reply-To: <2674326.ZPvzKFr69O@jkrzyszt-desk.ger.corp.intel.com>
-Content-Language: en-US
-Cc: linux-kernel@vger.kernel.org, iommu@lists.linux-foundation.org,
-	=?UTF-8?Q?Micha=c5=82_Wajdeczko?= <michal.wajdeczko@intel.com>,
-	David Woodhouse <dwmw2@infradead.org>, intel-gfx@lists.freedesktop.org
+Content-Type: multipart/mixed; boundary="6ulkzfufowhnpquo"
+Content-Disposition: inline
+In-Reply-To: <201910041420.F6E55D29A@keescook>
+X-Patchwork-Hint: ignore
+User-Agent: NeoMutt/20170113 (1.7.2)
+Cc: Dan Carpenter <dan.carpenter@oracle.com>,
+	Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+	linux-kernel@vger.kernel.org, Stephen Boyd <swboyd@chromium.org>,
+	iommu@lists.linux-foundation.org,
+	Semmle Security Reports <security-reports@semmle.com>,
+	kbuild-all@01.org, Jesper Dangaard Brouer <brouer@redhat.com>,
+	Thomas Gleixner <tglx@linutronix.de>, Laura Abbott <labbott@redhat.com>,
+	Robin Murphy <robin.murphy@arm.com>, Christoph Hellwig <hch@lst.de>,
+	Allison Randal <allison@lohutok.net>
 X-BeenThere: iommu@lists.linux-foundation.org
 X-Mailman-Version: 2.1.12
 Precedence: list
@@ -69,288 +77,330 @@ List-Post: <mailto:iommu@lists.linux-foundation.org>
 List-Help: <mailto:iommu-request@lists.linux-foundation.org?subject=help>
 List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
 	<mailto:iommu-request@lists.linux-foundation.org?subject=subscribe>
-Content-Transfer-Encoding: 7bit
-Content-Type: text/plain; charset="us-ascii"; Format="flowed"
 Sender: iommu-bounces@lists.linux-foundation.org
 Errors-To: iommu-bounces@lists.linux-foundation.org
 
-Hi Janusz,
 
-On 9/3/19 3:41 PM, Janusz Krzysztofik wrote:
-> Hi Baolu,
-> 
-> On Tuesday, September 3, 2019 3:29:40 AM CEST Lu Baolu wrote:
->> Hi Janusz,
->>
->> On 9/2/19 4:37 PM, Janusz Krzysztofik wrote:
->>>> I am not saying that keeping data is not acceptable. I just want to
->>>> check whether there are any other solutions.
->>> Then reverting 458b7c8e0dde and applying this patch still resolves the
-> issue
->>> for me.  No errors appear when mappings are unmapped on device close after
-> the
->>> device has been removed, and domain info preserved on device removal is
->>> successfully reused on device re-plug.
->> This patch doesn't look good to me although I agree that keeping data is
->> acceptable. It updates dev->archdata.iommu, but leaves the hardware
->> context/pasid table unchanged. This might cause problems somewhere.
->>
->>> Is there anything else I can do to help?
->> Can you please tell me how to reproduce the problem?
-> The most simple way to reproduce the issue, assuming there are no non-Intel
-> graphics adapters installed, is to run the following shell commands:
-> 
-> #!/bin/sh
-> # load i915 module
-> modprobe i915
-> # open an i915 device and keep it open in background
-> cat /dev/dri/card0 >/dev/null &
-> sleep 2
-> # simulate device unplug
-> echo 1 >/sys/class/drm/card0/device/remove
-> # make the background process close the device on exit
-> kill $!
-> 
+--6ulkzfufowhnpquo
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
 
-I tried to reproduce the issue with above instructions. I got below
-kernel messages after above operation. Is it the same as what you've
-seen? I can't find anything explicitly related to iommu except an IOMMU
-fault generated after device got removed and the DMA translation
-structures got torn down. Can you please help me to understand how IOMMU
-driver triggers the issue?
+Hi Kees,
 
+I love your patch! Yet something to improve:
 
-[  182.217672] ------------[ cut here ]------------
-[  182.217679] WARNING: CPU: 1 PID: 1285 at 
-drivers/gpu/drm/drm_mode_config.c:495 drm_mode_config_cleanup+0x2cb/0x2e0
-[  182.217680] Modules linked in: nls_iso8859_1 snd_soc_skl 
-snd_soc_sst_ipc snd_soc_sst_dsp snd_hda_ext_core 
-snd_soc_acpi_intel_match snd_soc_acpi snd_soc_core intel_rapl_msr 
-snd_hda_codec_hdmi snd_hda_codec_realtek snd_compress 
-snd_hda_codec_generic ledtrig_audio ac97_bus snd_pcm_dmaengine 
-snd_hda_intel snd_intel_nhlt snd_hda_codec snd_hda_core snd_hwdep 
-snd_pcm intel_rapl_common x86_pkg_temp_thermal intel_powerclamp coretemp 
-kvm_intel kvm snd_seq_midi irqbypass snd_seq_midi_event snd_rawmidi 
-crct10dif_pclmul crc32_pclmul ghash_clmulni_intel iwlmvm snd_seq 
-mac80211 libarc4 aesni_intel snd_seq_device snd_timer crypto_simd 
-ipu3_cio2 cryptd glue_helper iwlwifi v4l2_fwnode intel_cstate 
-videobuf2_dma_sg videobuf2_memops intel_rapl_perf asix videobuf2_v4l2 
-videobuf2_common usbnet mii cfg80211 input_leds serio_raw 
-intel_wmi_thunderbolt snd mei_me videodev soundcore 
-intel_xhci_usb_role_switch mei 8250_dw mc roles intel_pch_thermal 
-hid_sensor_magn_3d hid_sensor_accel_3d hid_sensor_press
-[  182.217709]  hid_sensor_incl_3d hid_sensor_als hid_sensor_rotation 
-hid_sensor_gyro_3d hid_sensor_trigger industrialio_triggered_buffer 
-kfifo_buf hid_sensor_iio_common industrialio intel_vbtn mac_hid 
-intel_hid acpi_pad sparse_keymap sch_fq_codel parport_pc ppdev lp 
-parport ip_tables x_tables hid_sensor_custom hid_sensor_hub 
-intel_ishtp_hid hid_generic dwc3 ulpi udc_core i2c_designware_platform 
-i2c_designware_core e1000e psmouse i2c_i801 tg3 usbhid dwc3_pci hid 
-intel_ish_ipc intel_lpss_pci intel_ishtp intel_lpss wmi 
-pinctrl_sunrisepoint pinctrl_intel
-[  182.217727] CPU: 1 PID: 1285 Comm: bash Not tainted 5.4.0-rc2+ #2704
-[  182.217728] Hardware name: Intel Corporation Skylake Client 
-platform/Skylake Y LPDDR3 RVP3, BIOS SKLSE2R1.R00.B105.B00.1512051901 
-12/05/2015
-[  182.217731] RIP: 0010:drm_mode_config_cleanup+0x2cb/0x2e0
-[  182.217732] Code: eb 0c 48 8b 70 48 4c 89 e7 e8 31 f4 ff ff 48 8d 7d 
-a0 e8 d8 95 ff ff 48 85 c0 75 e6 48 8d 7d a0 e8 1a 87 ff ff e9 ef fd ff 
-ff <0f> 0b e9 ed fe ff ff 0f 0b eb 98 e8 05 ec 98 ff 0f 1f 44 00 00 0f
-[  182.217733] RSP: 0018:ffffa1c481d37c78 EFLAGS: 00010216
-[  182.217735] RAX: ffff95c7da326e08 RBX: ffff95c7dcf60000 RCX: 
-000000008010000e
-[  182.217735] RDX: ffff95c7dcf603b8 RSI: 000000008010000e RDI: 
-ffff95c7dcf60390
-[  182.217736] RBP: ffffa1c481d37cd8 R08: 0000000000000000 R09: 
-ffffffff9e035e00
-[  182.217737] R10: ffffa1c481d37be0 R11: 0000000000000001 R12: 
-ffff95c7dcf60250
-[  182.217737] R13: ffff95c7dcf603b8 R14: ffffa1c481d37ee8 R15: 
-fffffffffffffff2
-[  182.217739] FS:  00007f804af7f740(0000) GS:ffff95c7e7a80000(0000) 
-knlGS:0000000000000000
-[  182.217739] CS:  0010 DS: 0000 ES: 0000 CR0: 0000000080050033
-[  182.217740] CR2: 00007ffebc530cec CR3: 0000000137e0e003 CR4: 
-00000000003606e0
-[  182.217741] DR0: 0000000000000000 DR1: 0000000000000000 DR2: 
-0000000000000000
-[  182.217742] DR3: 0000000000000000 DR6: 00000000fffe0ff0 DR7: 
-0000000000000400
-[  182.217742] Call Trace:
-[  182.217748]  ? _cond_resched+0x19/0x40
-[  182.217752]  intel_modeset_driver_remove+0xd1/0x150
-[  182.217754]  i915_driver_remove+0xb8/0x120
-[  182.217756]  i915_pci_remove+0x23/0x40
-[  182.217758]  pci_device_remove+0x3e/0xc0
-[  182.217761]  device_release_driver_internal+0xec/0x1b0
-[  182.217762]  device_release_driver+0x12/0x20
-[  182.217764]  pci_stop_bus_device+0x68/0x90
-[  182.217766]  pci_stop_and_remove_bus_device_locked+0x1a/0x30
-[  182.217767]  remove_store+0x7c/0x90
-[  182.217770]  dev_attr_store+0x17/0x30
-[  182.217772]  sysfs_kf_write+0x3c/0x50
-[  182.217773]  kernfs_fop_write+0x125/0x1a0
-[  182.217776]  __vfs_write+0x1b/0x40
-[  182.217778]  vfs_write+0xb1/0x1a0
-[  182.217779]  ksys_write+0xa7/0xe0
-[  182.217780]  __x64_sys_write+0x1a/0x20
-[  182.217783]  do_syscall_64+0x57/0x1c0
-[  182.217785]  entry_SYSCALL_64_after_hwframe+0x44/0xa9
-[  182.217787] RIP: 0033:0x7f804b08f024
-[  182.217788] Code: 00 f7 d8 64 89 02 48 c7 c0 ff ff ff ff eb b3 0f 1f 
-80 00 00 00 00 48 8d 05 b9 d3 0d 00 8b 00 85 c0 75 13 b8 01 00 00 00 0f 
-05 <48> 3d 00 f0 ff ff 77 54 c3 0f 1f 00 41 54 49 89 d4 55 48 89 f5 53
-[  182.217789] RSP: 002b:00007ffdbe4bc0b8 EFLAGS: 00000246 ORIG_RAX: 
-0000000000000001
-[  182.217790] RAX: ffffffffffffffda RBX: 0000000000000002 RCX: 
-00007f804b08f024
-[  182.217791] RDX: 0000000000000002 RSI: 000055bf20640470 RDI: 
-0000000000000001
-[  182.217792] RBP: 000055bf20640470 R08: 000000000000000a R09: 
-0000000000008000
-[  182.217792] R10: 000000000000000a R11: 0000000000000246 R12: 
-00007f804b167760
-[  182.217793] R13: 0000000000000002 R14: 00007f804b168560 R15: 
-00007f804b167960
-[  182.217795] ---[ end trace 292e6caf66ddf0df ]---
-[  182.217797] [leaked fb] framebuffer[118]:
-[  182.217798] [leaked fb] 	allocated by = gnome-shell
-[  182.217799] [leaked fb] 	refcount=1
-[  182.217801] [leaked fb] 	format=XR24 little-endian (0x34325258)
-[  182.217802] [leaked fb] 	modifier=0x100000000000001
-[  182.217803] [leaked fb] 	size=3200x1800
-[  182.217803] [leaked fb] 	layers:
-[  182.217805] [leaked fb] 		size[0]=3200x1800
-[  182.217805] [leaked fb] 		pitch[0]=12800
-[  182.217806] [leaked fb] 		offset[0]=0
-[  182.217807] [leaked fb] 		obj[0]:
-[  182.217808] [leaked fb] 			name=0
-[  182.217809] [leaked fb] 			refcount=3
-[  182.217810] [leaked fb] 			start=00000000
-[  182.217810] [leaked fb] 			size=25165824
-[  182.217811] [leaked fb] 			imported=no
-[  182.241857] pci 0000:00:02.0: Removing from iommu group 1
-[  182.241858] DMAR: DRHD: handling fault status reg 2
-[  182.241864] DMAR: [DMA Write] Request device [00:02.0] PASID ffffffff 
-fault addr 0 [fault reason 02] Present bit in context entry is clear
-[  189.181789] general protection fault: 0000 [#1] SMP PTI
-[  189.181795] CPU: 0 PID: 836 Comm: gdbus Tainted: G        W 
-5.4.0-rc2+ #2704
-[  189.181797] Hardware name: Intel Corporation Skylake Client 
-platform/Skylake Y LPDDR3 RVP3, BIOS SKLSE2R1.R00.B105.B00.1512051901 
-12/05/2015
-[  189.181804] RIP: 0010:drm_mode_object_unregister+0xe/0x70
-[  189.181806] Code: 54 00 4c 89 e7 e8 d2 d8 56 00 5b 41 5c 41 5d 5d c3 
-90 66 2e 0f 1f 84 00 00 00 00 00 0f 1f 44 00 00 55 48 89 e5 41 55 41 54 
-53 <48> 8b 47 20 48 89 fb 49 89 f5 48 83 38 00 74 3a 4c 8d a3 d8 01 00
-[  189.181809] RSP: 0018:ffffa1c481e73b60 EFLAGS: 00010246
-[  189.181811] RAX: ffffffff9e502a90 RBX: ffff95c7da326e28 RCX: 
-0000000000000001
-[  189.181813] RDX: 0000000000000000 RSI: ffff95c7da326e18 RDI: 
-f1ca50a8ff50515a
-[  189.181815] RBP: ffffa1c481e73b78 R08: 0000000000000001 R09: 
-0000000000000000
-[  189.181817] R10: 0000000000000008 R11: ffff95c7dcf53770 R12: 
-ffff95c7da326e00
-[  189.181818] R13: ffffa1c481e73bf0 R14: ffff95c7e3cb7ac8 R15: 
-ffff95c7e6cb23c0
-[  189.181821] FS:  00007f688ccf1700(0000) GS:ffff95c7e7a00000(0000) 
-knlGS:0000000000000000
-[  189.181823] CS:  0010 DS: 0000 ES: 0000 CR0: 0000000080050033
-[  189.181825] CR2: 000056427674ff10 CR3: 000000015e376004 CR4: 
-00000000003606f0
-[  189.181826] DR0: 0000000000000000 DR1: 0000000000000000 DR2: 
-0000000000000000
-[  189.181828] DR3: 0000000000000000 DR6: 00000000fffe0ff0 DR7: 
-0000000000000400
-[  189.181829] Call Trace:
-[  189.181834]  drm_framebuffer_free+0x21/0x40
-[  189.181837]  drm_mode_object_put.part.2+0x3c/0x40
-[  189.181839]  drm_mode_object_put+0x15/0x20
-[  189.181841]  drm_fb_release+0xbc/0x130
-[  189.181845]  drm_file_free.part.5+0x2ac/0x2e0
-[  189.181847]  drm_close_helper.isra.6+0x60/0x70
-[  189.181850]  drm_release+0x50/0x80
-[  189.181853]  __fput+0xc6/0x260
-[  189.181856]  ____fput+0xe/0x10
-[  189.181859]  task_work_run+0x9d/0xc0
-[  189.181862]  do_exit+0x2ed/0xbb0
-[  189.181866]  ? poll_select_finish+0x210/0x210
-[  189.181869]  do_group_exit+0x43/0xa0
-[  189.181872]  get_signal+0x144/0x840
-[  189.181876]  ? eventfd_read+0xe9/0x260
-[  189.181879]  do_signal+0x34/0x6d0
-[  189.181884]  exit_to_usermode_loop+0x8e/0x100
-[  189.181887]  do_syscall_64+0x186/0x1c0
-[  189.181890]  entry_SYSCALL_64_after_hwframe+0x44/0xa9
-[  189.181895] RIP: 0033:0x7f6895119729
-[  189.181899] Code: Bad RIP value.
-[  189.181901] RSP: 002b:00007f688ccf08a0 EFLAGS: 00000293 ORIG_RAX: 
-0000000000000007
-[  189.181903] RAX: fffffffffffffdfc RBX: 00007f687c023170 RCX: 
-00007f6895119729
-[  189.181905] RDX: 00000000ffffffff RSI: 0000000000000005 RDI: 
-00007f687c023170
-[  189.181906] RBP: 0000000000000005 R08: 0000000000000000 R09: 
-0000000000000001
-[  189.181908] R10: 000055cc6ed5dd80 R11: 0000000000000293 R12: 
-00000000ffffffff
-[  189.181909] R13: 00007f6895d8b4c0 R14: 00000000ffffffff R15: 
-0000000000000005
-[  189.181911] Modules linked in: nls_iso8859_1 snd_soc_skl 
-snd_soc_sst_ipc snd_soc_sst_dsp snd_hda_ext_core 
-snd_soc_acpi_intel_match snd_soc_acpi snd_soc_core intel_rapl_msr 
-snd_hda_codec_hdmi snd_hda_codec_realtek snd_compress 
-snd_hda_codec_generic ledtrig_audio ac97_bus snd_pcm_dmaengine 
-snd_hda_intel snd_intel_nhlt snd_hda_codec snd_hda_core snd_hwdep 
-snd_pcm intel_rapl_common x86_pkg_temp_thermal intel_powerclamp coretemp 
-kvm_intel kvm snd_seq_midi irqbypass snd_seq_midi_event snd_rawmidi 
-crct10dif_pclmul crc32_pclmul ghash_clmulni_intel iwlmvm snd_seq 
-mac80211 libarc4 aesni_intel snd_seq_device snd_timer crypto_simd 
-ipu3_cio2 cryptd glue_helper iwlwifi v4l2_fwnode intel_cstate 
-videobuf2_dma_sg videobuf2_memops intel_rapl_perf asix videobuf2_v4l2 
-videobuf2_common usbnet mii cfg80211 input_leds serio_raw 
-intel_wmi_thunderbolt snd mei_me videodev soundcore 
-intel_xhci_usb_role_switch mei 8250_dw mc roles intel_pch_thermal 
-hid_sensor_magn_3d hid_sensor_accel_3d hid_sensor_press
-[  189.181950]  hid_sensor_incl_3d hid_sensor_als hid_sensor_rotation 
-hid_sensor_gyro_3d hid_sensor_trigger industrialio_triggered_buffer 
-kfifo_buf hid_sensor_iio_common industrialio intel_vbtn mac_hid 
-intel_hid acpi_pad sparse_keymap sch_fq_codel parport_pc ppdev lp 
-parport ip_tables x_tables hid_sensor_custom hid_sensor_hub 
-intel_ishtp_hid hid_generic dwc3 ulpi udc_core i2c_designware_platform 
-i2c_designware_core e1000e psmouse i2c_i801 tg3 usbhid dwc3_pci hid 
-intel_ish_ipc intel_lpss_pci intel_ishtp intel_lpss wmi 
-pinctrl_sunrisepoint pinctrl_intel
-[  189.181981] ---[ end trace 292e6caf66ddf0e0 ]---
-[  189.201970] RIP: 0010:drm_mode_object_unregister+0xe/0x70
-[  189.201975] Code: 54 00 4c 89 e7 e8 d2 d8 56 00 5b 41 5c 41 5d 5d c3 
-90 66 2e 0f 1f 84 00 00 00 00 00 0f 1f 44 00 00 55 48 89 e5 41 55 41 54 
-53 <48> 8b 47 20 48 89 fb 49 89 f5 48 83 38 00 74 3a 4c 8d a3 d8 01 00
-[  189.201978] RSP: 0018:ffffa1c481e73b60 EFLAGS: 00010246
-[  189.201981] RAX: ffffffff9e502a90 RBX: ffff95c7da326e28 RCX: 
-0000000000000001
-[  189.201982] RDX: 0000000000000000 RSI: ffff95c7da326e18 RDI: 
-f1ca50a8ff50515a
-[  189.201984] RBP: ffffa1c481e73b78 R08: 0000000000000001 R09: 
-0000000000000000
-[  189.201986] R10: 0000000000000008 R11: ffff95c7dcf53770 R12: 
-ffff95c7da326e00
-[  189.201987] R13: ffffa1c481e73bf0 R14: ffff95c7e3cb7ac8 R15: 
-ffff95c7e6cb23c0
-[  189.201990] FS:  00007f688ccf1700(0000) GS:ffff95c7e7a00000(0000) 
-knlGS:0000000000000000
-[  189.201991] CS:  0010 DS: 0000 ES: 0000 CR0: 0000000080050033
-[  189.201993] CR2: 00007f68951196ff CR3: 000000015e376004 CR4: 
-00000000003606f0
-[  189.201995] DR0: 0000000000000000 DR1: 0000000000000000 DR2: 
-0000000000000000
-[  189.201997] DR3: 0000000000000000 DR6: 00000000fffe0ff0 DR7: 
-0000000000000400
+[auto build test ERROR on linus/master]
+[cannot apply to v5.4-rc2 next-20191010]
+[if your patch is applied to the wrong git tree, please drop us a note to help
+improve the system. BTW, we also suggest to use '--base' option to specify the
+base tree in git format-patch, please see https://stackoverflow.com/a/37406982]
 
-Best regards,
-Baolu
+url:    https://github.com/0day-ci/linux/commits/Kees-Cook/dma-mapping-Move-vmap-address-checks-into-dma_map_single/20191005-073954
+config: sh-magicpanelr2_defconfig (attached as .config)
+compiler: sh4-linux-gcc (GCC) 7.4.0
+reproduce:
+        wget https://raw.githubusercontent.com/intel/lkp-tests/master/sbin/make.cross -O ~/bin/make.cross
+        chmod +x ~/bin/make.cross
+        # save the attached .config to linux build tree
+        GCC_VERSION=7.4.0 make.cross ARCH=sh 
+
+If you fix the issue, kindly add following tag
+Reported-by: kbuild test robot <lkp@intel.com>
+
+All errors (new ones prefixed by >>):
+
+   In file included from arch/sh/include/asm/bug.h:112:0,
+                    from include/linux/bug.h:5,
+                    from include/linux/thread_info.h:12,
+                    from include/asm-generic/preempt.h:5,
+                    from ./arch/sh/include/generated/asm/preempt.h:1,
+                    from include/linux/preempt.h:78,
+                    from include/linux/spinlock.h:51,
+                    from include/linux/seqlock.h:36,
+                    from include/linux/time.h:6,
+                    from include/linux/stat.h:19,
+                    from include/linux/module.h:10,
+                    from arch/sh/kernel/io.c:8:
+   include/linux/dma-mapping.h: In function 'dma_map_single_attrs':
+>> include/linux/dma-mapping.h:588:9: error: format '%lu' expects argument of type 'long unsigned int', but argument 4 has type 'size_t {aka unsigned int}' [-Werror=format=]
+            "%s %s: driver maps %lu bytes from vmalloc area\n",
+            ^
+   include/asm-generic/bug.h:92:17: note: in definition of macro '__WARN_printf'
+      __warn_printk(arg);     \
+                    ^~~
+   include/asm-generic/bug.h:155:3: note: in expansion of macro 'WARN'
+      WARN(1, format);    \
+      ^~~~
+   include/linux/dma-mapping.h:587:6: note: in expansion of macro 'WARN_ONCE'
+     if (WARN_ONCE(is_vmalloc_addr(ptr),
+         ^~~~~~~~~
+   cc1: all warnings being treated as errors
+
+vim +588 include/linux/dma-mapping.h
+
+   582	
+   583	static inline dma_addr_t dma_map_single_attrs(struct device *dev, void *ptr,
+   584			size_t size, enum dma_data_direction dir, unsigned long attrs)
+   585	{
+   586		/* DMA must never operate on areas that might be remapped. */
+   587		if (WARN_ONCE(is_vmalloc_addr(ptr),
+ > 588			      "%s %s: driver maps %lu bytes from vmalloc area\n",
+   589			      dev ? dev_driver_string(dev) : "unknown driver",
+   590			      dev ? dev_name(dev) : "unknown device", size))
+   591			return DMA_MAPPING_ERROR;
+   592	
+   593		debug_dma_map_single(dev, ptr, size);
+   594		return dma_map_page_attrs(dev, virt_to_page(ptr), offset_in_page(ptr),
+   595				size, dir, attrs);
+   596	}
+   597	
+
+---
+0-DAY kernel test infrastructure                Open Source Technology Center
+https://lists.01.org/pipermail/kbuild-all                   Intel Corporation
+
+--6ulkzfufowhnpquo
+Content-Type: application/gzip
+Content-Disposition: attachment; filename=".config.gz"
+Content-Transfer-Encoding: base64
+
+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
+P+uxEPVwhFwVQC1n/S8i6LiuFMMAAA==
+
+--6ulkzfufowhnpquo
+Content-Type: text/plain; charset="us-ascii"
+MIME-Version: 1.0
+Content-Transfer-Encoding: 7bit
+Content-Disposition: inline
+
 _______________________________________________
 iommu mailing list
 iommu@lists.linux-foundation.org
 https://lists.linuxfoundation.org/mailman/listinfo/iommu
+--6ulkzfufowhnpquo--
