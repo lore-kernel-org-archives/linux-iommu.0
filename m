@@ -2,66 +2,59 @@ Return-Path: <SRS0=ZipC=YH=lists.linux-foundation.org=iommu-bounces@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-9.7 required=3.0 tests=HEADER_FROM_DIFFERENT_DOMAINS,
+X-Spam-Status: No, score=-8.2 required=3.0 tests=HEADER_FROM_DIFFERENT_DOMAINS,
 	INCLUDES_PATCH,MAILING_LIST_MULTI,SIGNED_OFF_BY,SPF_HELO_NONE,SPF_PASS,
-	UNPARSEABLE_RELAY,URIBL_BLOCKED,USER_AGENT_GIT autolearn=ham
-	autolearn_force=no version=3.4.0
+	URIBL_BLOCKED,USER_AGENT_SANE_1 autolearn=unavailable autolearn_force=no
+	version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 694E9C4CECE
-	for <iommu@archiver.kernel.org>; Mon, 14 Oct 2019 06:53:10 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 2DCB1ECE587
+	for <iommu@archiver.kernel.org>; Mon, 14 Oct 2019 10:45:27 +0000 (UTC)
 Received: from mail.linuxfoundation.org (mail.linuxfoundation.org [140.211.169.12])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by mail.kernel.org (Postfix) with ESMTPS id 42FAA20673
-	for <iommu@archiver.kernel.org>; Mon, 14 Oct 2019 06:53:10 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 42FAA20673
-Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=mediatek.com
+	by mail.kernel.org (Postfix) with ESMTPS id 0E12F2168B
+	for <iommu@archiver.kernel.org>; Mon, 14 Oct 2019 10:45:27 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 0E12F2168B
+Authentication-Results: mail.kernel.org; dmarc=none (p=none dis=none) header.from=arm.com
 Authentication-Results: mail.kernel.org; spf=pass smtp.mailfrom=iommu-bounces@lists.linux-foundation.org
 Received: from mail.linux-foundation.org (localhost [127.0.0.1])
-	by mail.linuxfoundation.org (Postfix) with ESMTP id EBE8B25FB;
-	Mon, 14 Oct 2019 06:52:40 +0000 (UTC)
+	by mail.linuxfoundation.org (Postfix) with ESMTP id 09ADA28DB;
+	Mon, 14 Oct 2019 10:45:19 +0000 (UTC)
 Received: from smtp1.linuxfoundation.org (smtp1.linux-foundation.org
 	[172.17.192.35])
-	by mail.linuxfoundation.org (Postfix) with ESMTPS id 591F22552
-	for <iommu@lists.linux-foundation.org>;
-	Mon, 14 Oct 2019 06:39:34 +0000 (UTC)
+	by mail.linuxfoundation.org (Postfix) with ESMTPS id 6A21428C1;
+	Mon, 14 Oct 2019 10:29:29 +0000 (UTC)
 X-Greylist: domain auto-whitelisted by SQLgrey-1.7.6
-Received: from mailgw02.mediatek.com (unknown [210.61.82.184])
-	by smtp1.linuxfoundation.org (Postfix) with ESMTP id CB9555D3
-	for <iommu@lists.linux-foundation.org>;
-	Mon, 14 Oct 2019 06:39:33 +0000 (UTC)
-X-UUID: ed55d01c9188469f805706ca7db98295-20191014
-X-UUID: ed55d01c9188469f805706ca7db98295-20191014
-Received: from mtkexhb02.mediatek.inc [(172.21.101.103)] by
-	mailgw02.mediatek.com (envelope-from <yong.wu@mediatek.com>)
-	(Cellopoint E-mail Firewall v4.1.10 Build 0809 with TLS)
-	with ESMTP id 1114695393; Mon, 14 Oct 2019 14:39:30 +0800
-Received: from mtkcas09.mediatek.inc (172.21.101.178) by
-	mtkmbs01n2.mediatek.inc (172.21.101.79) with Microsoft SMTP Server
-	(TLS) id 15.0.1395.4; Mon, 14 Oct 2019 14:39:27 +0800
-Received: from localhost.localdomain (10.17.3.153) by mtkcas09.mediatek.inc
-	(172.21.101.73) with Microsoft SMTP Server id 15.0.1395.4 via Frontend
-	Transport; Mon, 14 Oct 2019 14:39:26 +0800
-From: Yong Wu <yong.wu@mediatek.com>
-To: Matthias Brugger <matthias.bgg@gmail.com>, Joerg Roedel <joro@8bytes.org>, 
-	Will Deacon <will.deacon@arm.com>
-Subject: [PATCH v3 7/7] iommu/mediatek: Reduce the tlb flush timeout value
-Date: Mon, 14 Oct 2019 14:38:21 +0800
-Message-ID: <1571035101-4213-8-git-send-email-yong.wu@mediatek.com>
-X-Mailer: git-send-email 1.9.1
-In-Reply-To: <1571035101-4213-1-git-send-email-yong.wu@mediatek.com>
-References: <1571035101-4213-1-git-send-email-yong.wu@mediatek.com>
+X-Greylist: domain auto-whitelisted by SQLgrey-1.7.6
+Received: from foss.arm.com (foss.arm.com [217.140.110.172])
+	by smtp1.linuxfoundation.org (Postfix) with ESMTP id 8627E14D;
+	Mon, 14 Oct 2019 10:29:28 +0000 (UTC)
+Received: from usa-sjc-imap-foss1.foss.arm.com (unknown [10.121.207.14])
+	by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id BDE68337;
+	Mon, 14 Oct 2019 03:29:27 -0700 (PDT)
+Received: from [10.1.197.57] (e110467-lin.cambridge.arm.com [10.1.197.57])
+	by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPSA id 9C3363F718;
+	Mon, 14 Oct 2019 03:29:25 -0700 (PDT)
+Subject: Re: [PATCH 1/2] dma-mapping: Add dma_addr_is_phys_addr()
+To: David Gibson <david@gibson.dropbear.id.au>, Ram Pai <linuxram@us.ibm.com>
+References: <1570843519-8696-1-git-send-email-linuxram@us.ibm.com>
+	<1570843519-8696-2-git-send-email-linuxram@us.ibm.com>
+	<20191014045139.GN4080@umbus.fritz.box>
+From: Robin Murphy <robin.murphy@arm.com>
+Message-ID: <37609731-5539-b906-aa94-2ef0242795ac@arm.com>
+Date: Mon, 14 Oct 2019 11:29:24 +0100
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:60.0) Gecko/20100101
+	Thunderbird/60.6.1
 MIME-Version: 1.0
-X-TM-SNTS-SMTP: 48748A048541F6C83B435A62F409553627F6DD0F6DA3E74D7B897F19B48032702000:8
-X-MTK: N
-Cc: youlin.pei@mediatek.com, anan.sun@mediatek.com,
-	Nicolas Boichat <drinkcat@chromium.org>, cui.zhang@mediatek.com,
-	srv_heupstream@mediatek.com, chao.hao@mediatek.com,
-	edison.hsieh@mediatek.com, linux-kernel@vger.kernel.org,
-	Evan Green <evgreen@chromium.org>,
-	Tomasz Figa <tfiga@google.com>, iommu@lists.linux-foundation.org,
-	linux-mediatek@lists.infradead.org, Robin Murphy <robin.murphy@arm.com>,
-	linux-arm-kernel@lists.infradead.org
+In-Reply-To: <20191014045139.GN4080@umbus.fritz.box>
+Content-Language: en-GB
+Cc: andmike@us.ibm.com, mdroth@linux.vnet.ibm.com, b.zolnierkie@samsung.com,
+	mpe@ellerman.id.au, jasowang@redhat.com, aik@linux.ibm.com,
+	linux-kernel@vger.kernel.org,
+	virtualization@lists.linux-foundation.org, paulus@ozlabs.org,
+	iommu@lists.linux-foundation.org, paul.burton@mips.com,
+	benh@kernel.crashing.org, sukadev@linux.vnet.ibm.com,
+	linuxppc-dev@lists.ozlabs.org, hch@lst.de
 X-BeenThere: iommu@lists.linux-foundation.org
 X-Mailman-Version: 2.1.12
 Precedence: list
@@ -74,36 +67,156 @@ List-Post: <mailto:iommu@lists.linux-foundation.org>
 List-Help: <mailto:iommu-request@lists.linux-foundation.org?subject=help>
 List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
 	<mailto:iommu-request@lists.linux-foundation.org?subject=subscribe>
-Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset="us-ascii"; Format="flowed"
 Sender: iommu-bounces@lists.linux-foundation.org
 Errors-To: iommu-bounces@lists.linux-foundation.org
 
-Reduce the tlb timeout value from 100000us to 1000us. the original value
-is so long that affect the multimedia performance. This is only a minor
-improvement rather than fixing a issue.
+On 14/10/2019 05:51, David Gibson wrote:
+> On Fri, Oct 11, 2019 at 06:25:18PM -0700, Ram Pai wrote:
+>> From: Thiago Jung Bauermann <bauerman@linux.ibm.com>
+>>
+>> In order to safely use the DMA API, virtio needs to know whether DMA
+>> addresses are in fact physical addresses and for that purpose,
+>> dma_addr_is_phys_addr() is introduced.
+>>
+>> cc: Benjamin Herrenschmidt <benh@kernel.crashing.org>
+>> cc: David Gibson <david@gibson.dropbear.id.au>
+>> cc: Michael Ellerman <mpe@ellerman.id.au>
+>> cc: Paul Mackerras <paulus@ozlabs.org>
+>> cc: Michael Roth <mdroth@linux.vnet.ibm.com>
+>> cc: Alexey Kardashevskiy <aik@linux.ibm.com>
+>> cc: Paul Burton <paul.burton@mips.com>
+>> cc: Robin Murphy <robin.murphy@arm.com>
+>> cc: Bartlomiej Zolnierkiewicz <b.zolnierkie@samsung.com>
+>> cc: Marek Szyprowski <m.szyprowski@samsung.com>
+>> cc: Christoph Hellwig <hch@lst.de>
+>> Suggested-by: Michael S. Tsirkin <mst@redhat.com>
+>> Signed-off-by: Ram Pai <linuxram@us.ibm.com>
+>> Signed-off-by: Thiago Jung Bauermann <bauerman@linux.ibm.com>
+> 
+> The change itself looks ok, so
+> 
+> Reviewed-by: David Gibson <david@gibson.dropbear.id.au>
+> 
+> However, I would like to see the commit message (and maybe the inline
+> comments) expanded a bit on what the distinction here is about.  Some
+> of the text from the next patch would be suitable, about DMA addresses
+> usually being in a different address space but not in the case of
+> bounce buffering.
 
-Signed-off-by: Yong Wu <yong.wu@mediatek.com>
----
- drivers/iommu/mtk_iommu.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+Right, this needs a much tighter definition. "DMA address happens to be 
+a valid physical address" is true of various IOMMU setups too, but I 
+can't believe it's meaningful in such cases.
 
-diff --git a/drivers/iommu/mtk_iommu.c b/drivers/iommu/mtk_iommu.c
-index d285457..c9d49af 100644
---- a/drivers/iommu/mtk_iommu.c
-+++ b/drivers/iommu/mtk_iommu.c
-@@ -191,7 +191,7 @@ static void mtk_iommu_tlb_flush_range_sync(unsigned long iova, size_t size,
- 
- 		/* tlb sync */
- 		ret = readl_poll_timeout_atomic(data->base + REG_MMU_CPE_DONE,
--						tmp, tmp != 0, 10, 100000);
-+						tmp, tmp != 0, 10, 1000);
- 		if (ret) {
- 			dev_warn(data->dev,
- 				 "Partial TLB flush timed out, falling back to full flush\n");
--- 
-1.9.1
+If what you actually want is "DMA is direct or SWIOTLB" - i.e. "DMA 
+address is physical address of DMA data (not necessarily the original 
+buffer)" - wouldn't dma_is_direct() suffice?
 
+Robin.
+
+>> ---
+>>   arch/powerpc/include/asm/dma-mapping.h | 21 +++++++++++++++++++++
+>>   arch/powerpc/platforms/pseries/Kconfig |  1 +
+>>   include/linux/dma-mapping.h            | 20 ++++++++++++++++++++
+>>   kernel/dma/Kconfig                     |  3 +++
+>>   4 files changed, 45 insertions(+)
+>>
+>> diff --git a/arch/powerpc/include/asm/dma-mapping.h b/arch/powerpc/include/asm/dma-mapping.h
+>> index 565d6f7..f92c0a4b 100644
+>> --- a/arch/powerpc/include/asm/dma-mapping.h
+>> +++ b/arch/powerpc/include/asm/dma-mapping.h
+>> @@ -5,6 +5,8 @@
+>>   #ifndef _ASM_DMA_MAPPING_H
+>>   #define _ASM_DMA_MAPPING_H
+>>   
+>> +#include <asm/svm.h>
+>> +
+>>   static inline const struct dma_map_ops *get_arch_dma_ops(struct bus_type *bus)
+>>   {
+>>   	/* We don't handle the NULL dev case for ISA for now. We could
+>> @@ -15,4 +17,23 @@ static inline const struct dma_map_ops *get_arch_dma_ops(struct bus_type *bus)
+>>   	return NULL;
+>>   }
+>>   
+>> +#ifdef CONFIG_ARCH_HAS_DMA_ADDR_IS_PHYS_ADDR
+>> +/**
+>> + * dma_addr_is_phys_addr - check whether a device DMA address is a physical
+>> + *		address
+>> + * @dev:	device to check
+>> + *
+>> + * Returns %true if any DMA address for this device happens to also be a valid
+>> + * physical address (not necessarily of the same page).
+>> + */
+>> +static inline bool dma_addr_is_phys_addr(struct device *dev)
+>> +{
+>> +	/*
+>> +	 * Secure guests always use the SWIOTLB, therefore DMA addresses are
+>> +	 * actually the physical address of the bounce buffer.
+>> +	 */
+>> +	return is_secure_guest();
+>> +}
+>> +#endif
+>> +
+>>   #endif	/* _ASM_DMA_MAPPING_H */
+>> diff --git a/arch/powerpc/platforms/pseries/Kconfig b/arch/powerpc/platforms/pseries/Kconfig
+>> index 9e35cdd..0108150 100644
+>> --- a/arch/powerpc/platforms/pseries/Kconfig
+>> +++ b/arch/powerpc/platforms/pseries/Kconfig
+>> @@ -152,6 +152,7 @@ config PPC_SVM
+>>   	select SWIOTLB
+>>   	select ARCH_HAS_MEM_ENCRYPT
+>>   	select ARCH_HAS_FORCE_DMA_UNENCRYPTED
+>> +	select ARCH_HAS_DMA_ADDR_IS_PHYS_ADDR
+>>   	help
+>>   	 There are certain POWER platforms which support secure guests using
+>>   	 the Protected Execution Facility, with the help of an Ultravisor
+>> diff --git a/include/linux/dma-mapping.h b/include/linux/dma-mapping.h
+>> index f7d1eea..6df5664 100644
+>> --- a/include/linux/dma-mapping.h
+>> +++ b/include/linux/dma-mapping.h
+>> @@ -693,6 +693,26 @@ static inline bool dma_addressing_limited(struct device *dev)
+>>   			    dma_get_required_mask(dev);
+>>   }
+>>   
+>> +#ifndef CONFIG_ARCH_HAS_DMA_ADDR_IS_PHYS_ADDR
+>> +/**
+>> + * dma_addr_is_phys_addr - check whether a device DMA address is a physical
+>> + *		address
+>> + * @dev:	device to check
+>> + *
+>> + * Returns %true if any DMA address for this device happens to also be a valid
+>> + * physical address (not necessarily of the same page).
+>> + */
+>> +static inline bool dma_addr_is_phys_addr(struct device *dev)
+>> +{
+>> +	/*
+>> +	 * Except in very specific setups, DMA addresses exist in a different
+>> +	 * address space from CPU physical addresses and cannot be directly used
+>> +	 * to reference system memory.
+>> +	 */
+>> +	return false;
+>> +}
+>> +#endif
+>> +
+>>   #ifdef CONFIG_ARCH_HAS_SETUP_DMA_OPS
+>>   void arch_setup_dma_ops(struct device *dev, u64 dma_base, u64 size,
+>>   		const struct iommu_ops *iommu, bool coherent);
+>> diff --git a/kernel/dma/Kconfig b/kernel/dma/Kconfig
+>> index 9decbba..6209b46 100644
+>> --- a/kernel/dma/Kconfig
+>> +++ b/kernel/dma/Kconfig
+>> @@ -51,6 +51,9 @@ config ARCH_HAS_DMA_MMAP_PGPROT
+>>   config ARCH_HAS_FORCE_DMA_UNENCRYPTED
+>>   	bool
+>>   
+>> +config ARCH_HAS_DMA_ADDR_IS_PHYS_ADDR
+>> +	bool
+>> +
+>>   config DMA_NONCOHERENT_CACHE_SYNC
+>>   	bool
+>>   
+> 
 _______________________________________________
 iommu mailing list
 iommu@lists.linux-foundation.org
