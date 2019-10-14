@@ -2,61 +2,62 @@ Return-Path: <SRS0=ZipC=YH=lists.linux-foundation.org=iommu-bounces@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-8.1 required=3.0 tests=DKIM_INVALID,DKIM_SIGNED,
-	HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_PATCH,MAILING_LIST_MULTI,SIGNED_OFF_BY,
-	SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED,USER_AGENT_SANE_1 autolearn=ham
-	autolearn_force=no version=3.4.0
+X-Spam-Status: No, score=-3.8 required=3.0 tests=HEADER_FROM_DIFFERENT_DOMAINS,
+	MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS,UNPARSEABLE_RELAY,USER_AGENT_GIT
+	autolearn=no autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 64A6BC4CECE
-	for <iommu@archiver.kernel.org>; Mon, 14 Oct 2019 05:08:40 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 227C5C47404
+	for <iommu@archiver.kernel.org>; Mon, 14 Oct 2019 06:52:40 +0000 (UTC)
 Received: from mail.linuxfoundation.org (mail.linuxfoundation.org [140.211.169.12])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by mail.kernel.org (Postfix) with ESMTPS id 38B6F20882
-	for <iommu@archiver.kernel.org>; Mon, 14 Oct 2019 05:08:40 +0000 (UTC)
-Authentication-Results: mail.kernel.org;
-	dkim=fail reason="signature verification failed" (1024-bit key) header.d=gibson.dropbear.id.au header.i=@gibson.dropbear.id.au header.b="H70L8H62"
-DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 38B6F20882
-Authentication-Results: mail.kernel.org; dmarc=none (p=none dis=none) header.from=gibson.dropbear.id.au
+	by mail.kernel.org (Postfix) with ESMTPS id E204220854
+	for <iommu@archiver.kernel.org>; Mon, 14 Oct 2019 06:52:39 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org E204220854
+Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=mediatek.com
 Authentication-Results: mail.kernel.org; spf=pass smtp.mailfrom=iommu-bounces@lists.linux-foundation.org
 Received: from mail.linux-foundation.org (localhost [127.0.0.1])
-	by mail.linuxfoundation.org (Postfix) with ESMTP id AB5AB2581;
-	Mon, 14 Oct 2019 05:08:16 +0000 (UTC)
+	by mail.linuxfoundation.org (Postfix) with ESMTP id 95BE425E8;
+	Mon, 14 Oct 2019 06:52:39 +0000 (UTC)
 Received: from smtp1.linuxfoundation.org (smtp1.linux-foundation.org
 	[172.17.192.35])
-	by mail.linuxfoundation.org (Postfix) with ESMTPS id 2212E2562;
-	Mon, 14 Oct 2019 04:52:46 +0000 (UTC)
+	by mail.linuxfoundation.org (Postfix) with ESMTPS id E7F0A2598
+	for <iommu@lists.linux-foundation.org>;
+	Mon, 14 Oct 2019 06:38:34 +0000 (UTC)
 X-Greylist: domain auto-whitelisted by SQLgrey-1.7.6
-X-Greylist: domain auto-whitelisted by SQLgrey-1.7.6
-Received: from ozlabs.org (ozlabs.org [203.11.71.1])
-	by smtp1.linuxfoundation.org (Postfix) with ESMTPS id 105565D3;
-	Mon, 14 Oct 2019 04:52:44 +0000 (UTC)
-Received: by ozlabs.org (Postfix, from userid 1007)
-	id 46s5lZ61Wqz9sPZ; Mon, 14 Oct 2019 15:52:42 +1100 (AEDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-	d=gibson.dropbear.id.au; s=201602; t=1571028762;
-	bh=iWErWVieEwX9iSuCACRAHe+fDMlfuKix+q5vZZBOBZU=;
-	h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-	b=H70L8H62Vxr4L1kqmnym3DsBagpkvknXimYdMD9V9ociV7LDUerbifPI2M+ZF+gKB
-	NbVWCEtaxLNqbISVhE5GxUzzy9X/MPnb781Tuld6xEY5pb7d4Ogx+EHyPQMZCnkvdT
-	MxhVFP6E1owqxLVKQYTQwBtNqrmDx4CoVAl1cT9w=
-Date: Mon, 14 Oct 2019 15:51:39 +1100
-From: David Gibson <david@gibson.dropbear.id.au>
-To: Ram Pai <linuxram@us.ibm.com>
-Subject: Re: [PATCH 1/2] dma-mapping: Add dma_addr_is_phys_addr()
-Message-ID: <20191014045139.GN4080@umbus.fritz.box>
-References: <1570843519-8696-1-git-send-email-linuxram@us.ibm.com>
-	<1570843519-8696-2-git-send-email-linuxram@us.ibm.com>
+Received: from mailgw01.mediatek.com (unknown [210.61.82.183])
+	by smtp1.linuxfoundation.org (Postfix) with ESMTP id 350225D3
+	for <iommu@lists.linux-foundation.org>;
+	Mon, 14 Oct 2019 06:38:33 +0000 (UTC)
+X-UUID: 3c212a6db640499e8e73f90b78eabc5a-20191014
+X-UUID: 3c212a6db640499e8e73f90b78eabc5a-20191014
+Received: from mtkmrs01.mediatek.inc [(172.21.131.159)] by
+	mailgw01.mediatek.com (envelope-from <yong.wu@mediatek.com>)
+	(Cellopoint E-mail Firewall v4.1.10 Build 0809 with TLS)
+	with ESMTP id 89117099; Mon, 14 Oct 2019 14:38:30 +0800
+Received: from mtkcas09.mediatek.inc (172.21.101.178) by
+	mtkmbs01n1.mediatek.inc (172.21.101.68) with Microsoft SMTP Server
+	(TLS) id 15.0.1395.4; Mon, 14 Oct 2019 14:38:26 +0800
+Received: from localhost.localdomain (10.17.3.153) by mtkcas09.mediatek.inc
+	(172.21.101.73) with Microsoft SMTP Server id 15.0.1395.4 via Frontend
+	Transport; Mon, 14 Oct 2019 14:38:26 +0800
+From: Yong Wu <yong.wu@mediatek.com>
+To: Matthias Brugger <matthias.bgg@gmail.com>, Joerg Roedel <joro@8bytes.org>, 
+	Will Deacon <will.deacon@arm.com>
+Subject: [PATCH v3 0/7] Improve tlb range flush
+Date: Mon, 14 Oct 2019 14:38:14 +0800
+Message-ID: <1571035101-4213-1-git-send-email-yong.wu@mediatek.com>
+X-Mailer: git-send-email 1.9.1
 MIME-Version: 1.0
-In-Reply-To: <1570843519-8696-2-git-send-email-linuxram@us.ibm.com>
-User-Agent: Mutt/1.12.1 (2019-06-15)
-Cc: andmike@us.ibm.com, sukadev@linux.vnet.ibm.com, mdroth@linux.vnet.ibm.com,
-	b.zolnierkie@samsung.com, mpe@ellerman.id.au,
-	jasowang@redhat.com, aik@linux.ibm.com, linux-kernel@vger.kernel.org,
-	virtualization@lists.linux-foundation.org, paulus@ozlabs.org,
-	iommu@lists.linux-foundation.org, paul.burton@mips.com,
-	benh@kernel.crashing.org, linuxppc-dev@lists.ozlabs.org,
-	hch@lst.de, robin.murphy@arm.com
+X-MTK: N
+Cc: youlin.pei@mediatek.com, anan.sun@mediatek.com,
+	Nicolas Boichat <drinkcat@chromium.org>, cui.zhang@mediatek.com,
+	srv_heupstream@mediatek.com, chao.hao@mediatek.com,
+	edison.hsieh@mediatek.com, linux-kernel@vger.kernel.org,
+	Evan Green <evgreen@chromium.org>,
+	Tomasz Figa <tfiga@google.com>, iommu@lists.linux-foundation.org,
+	linux-mediatek@lists.infradead.org, Robin Murphy <robin.murphy@arm.com>,
+	linux-arm-kernel@lists.infradead.org
 X-BeenThere: iommu@lists.linux-foundation.org
 X-Mailman-Version: 2.1.12
 Precedence: list
@@ -69,201 +70,45 @@ List-Post: <mailto:iommu@lists.linux-foundation.org>
 List-Help: <mailto:iommu-request@lists.linux-foundation.org?subject=help>
 List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
 	<mailto:iommu-request@lists.linux-foundation.org?subject=subscribe>
-Content-Type: multipart/mixed; boundary="===============1690614247457066197=="
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: 7bit
 Sender: iommu-bounces@lists.linux-foundation.org
 Errors-To: iommu-bounces@lists.linux-foundation.org
 
+This patchset mainly fixes a tlb flush timeout issue and use the new
+iommu_gather to re-implement the tlb flush flow. and several clean up
+patches about the tlb_flush.
 
---===============1690614247457066197==
-Content-Type: multipart/signed; micalg=pgp-sha256;
-	protocol="application/pgp-signature"; boundary="0aF+6pWUK5w8WdCh"
-Content-Disposition: inline
+change note:
+v3:
+   1. Use the gather to implement the tlb_flush suggested from Tomasz.
+   2. add some clean up patches.
 
+v2:
+https://lore.kernel.org/linux-iommu/1570627143-29441-1-git-send-email-yong.wu@mediatek.com/T/#t
+   1. rebase on v5.4-rc1
+   2. only split to several patches.
 
---0aF+6pWUK5w8WdCh
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-Content-Transfer-Encoding: quoted-printable
+v1:
+https://lore.kernel.org/linux-iommu/CAAFQd5C3U7pZo4SSUJ52Q7E+0FaUoORQFbQC5RhCHBhi=NFYTw@mail.gmail.com/T/#t
 
-On Fri, Oct 11, 2019 at 06:25:18PM -0700, Ram Pai wrote:
-> From: Thiago Jung Bauermann <bauerman@linux.ibm.com>
->=20
-> In order to safely use the DMA API, virtio needs to know whether DMA
-> addresses are in fact physical addresses and for that purpose,
-> dma_addr_is_phys_addr() is introduced.
->=20
-> cc: Benjamin Herrenschmidt <benh@kernel.crashing.org>
-> cc: David Gibson <david@gibson.dropbear.id.au>
-> cc: Michael Ellerman <mpe@ellerman.id.au>
-> cc: Paul Mackerras <paulus@ozlabs.org>
-> cc: Michael Roth <mdroth@linux.vnet.ibm.com>
-> cc: Alexey Kardashevskiy <aik@linux.ibm.com>
-> cc: Paul Burton <paul.burton@mips.com>
-> cc: Robin Murphy <robin.murphy@arm.com>
-> cc: Bartlomiej Zolnierkiewicz <b.zolnierkie@samsung.com>
-> cc: Marek Szyprowski <m.szyprowski@samsung.com>
-> cc: Christoph Hellwig <hch@lst.de>
-> Suggested-by: Michael S. Tsirkin <mst@redhat.com>
-> Signed-off-by: Ram Pai <linuxram@us.ibm.com>
-> Signed-off-by: Thiago Jung Bauermann <bauerman@linux.ibm.com>
+Yong Wu (7):
+  iommu/mediatek: Correct the flush_iotlb_all callback
+  iommu/mediatek: Add pgtlock in the iotlb_sync
+  iommu/mediatek: Use gather to achieve the tlb range flush
+  iommu/mediatek: Delete the leaf in the tlb flush
+  iommu/mediatek: Move the tlb_sync into tlb_flush
+  iommu/mediatek: Use writel for TLB range invalidation
+  iommu/mediatek: Reduce the tlb flush timeout value
 
-The change itself looks ok, so
+ drivers/iommu/mtk_iommu.c | 77 +++++++++++++++++++++++------------------------
+ drivers/iommu/mtk_iommu.h |  2 +-
+ 2 files changed, 38 insertions(+), 41 deletions(-)
 
-Reviewed-by: David Gibson <david@gibson.dropbear.id.au>
-
-However, I would like to see the commit message (and maybe the inline
-comments) expanded a bit on what the distinction here is about.  Some
-of the text from the next patch would be suitable, about DMA addresses
-usually being in a different address space but not in the case of
-bounce buffering.
-
-> ---
->  arch/powerpc/include/asm/dma-mapping.h | 21 +++++++++++++++++++++
->  arch/powerpc/platforms/pseries/Kconfig |  1 +
->  include/linux/dma-mapping.h            | 20 ++++++++++++++++++++
->  kernel/dma/Kconfig                     |  3 +++
->  4 files changed, 45 insertions(+)
->=20
-> diff --git a/arch/powerpc/include/asm/dma-mapping.h b/arch/powerpc/includ=
-e/asm/dma-mapping.h
-> index 565d6f7..f92c0a4b 100644
-> --- a/arch/powerpc/include/asm/dma-mapping.h
-> +++ b/arch/powerpc/include/asm/dma-mapping.h
-> @@ -5,6 +5,8 @@
->  #ifndef _ASM_DMA_MAPPING_H
->  #define _ASM_DMA_MAPPING_H
-> =20
-> +#include <asm/svm.h>
-> +
->  static inline const struct dma_map_ops *get_arch_dma_ops(struct bus_type=
- *bus)
->  {
->  	/* We don't handle the NULL dev case for ISA for now. We could
-> @@ -15,4 +17,23 @@ static inline const struct dma_map_ops *get_arch_dma_o=
-ps(struct bus_type *bus)
->  	return NULL;
->  }
-> =20
-> +#ifdef CONFIG_ARCH_HAS_DMA_ADDR_IS_PHYS_ADDR
-> +/**
-> + * dma_addr_is_phys_addr - check whether a device DMA address is a physi=
-cal
-> + *		address
-> + * @dev:	device to check
-> + *
-> + * Returns %true if any DMA address for this device happens to also be a=
- valid
-> + * physical address (not necessarily of the same page).
-> + */
-> +static inline bool dma_addr_is_phys_addr(struct device *dev)
-> +{
-> +	/*
-> +	 * Secure guests always use the SWIOTLB, therefore DMA addresses are
-> +	 * actually the physical address of the bounce buffer.
-> +	 */
-> +	return is_secure_guest();
-> +}
-> +#endif
-> +
->  #endif	/* _ASM_DMA_MAPPING_H */
-> diff --git a/arch/powerpc/platforms/pseries/Kconfig b/arch/powerpc/platfo=
-rms/pseries/Kconfig
-> index 9e35cdd..0108150 100644
-> --- a/arch/powerpc/platforms/pseries/Kconfig
-> +++ b/arch/powerpc/platforms/pseries/Kconfig
-> @@ -152,6 +152,7 @@ config PPC_SVM
->  	select SWIOTLB
->  	select ARCH_HAS_MEM_ENCRYPT
->  	select ARCH_HAS_FORCE_DMA_UNENCRYPTED
-> +	select ARCH_HAS_DMA_ADDR_IS_PHYS_ADDR
->  	help
->  	 There are certain POWER platforms which support secure guests using
->  	 the Protected Execution Facility, with the help of an Ultravisor
-> diff --git a/include/linux/dma-mapping.h b/include/linux/dma-mapping.h
-> index f7d1eea..6df5664 100644
-> --- a/include/linux/dma-mapping.h
-> +++ b/include/linux/dma-mapping.h
-> @@ -693,6 +693,26 @@ static inline bool dma_addressing_limited(struct dev=
-ice *dev)
->  			    dma_get_required_mask(dev);
->  }
-> =20
-> +#ifndef CONFIG_ARCH_HAS_DMA_ADDR_IS_PHYS_ADDR
-> +/**
-> + * dma_addr_is_phys_addr - check whether a device DMA address is a physi=
-cal
-> + *		address
-> + * @dev:	device to check
-> + *
-> + * Returns %true if any DMA address for this device happens to also be a=
- valid
-> + * physical address (not necessarily of the same page).
-> + */
-> +static inline bool dma_addr_is_phys_addr(struct device *dev)
-> +{
-> +	/*
-> +	 * Except in very specific setups, DMA addresses exist in a different
-> +	 * address space from CPU physical addresses and cannot be directly used
-> +	 * to reference system memory.
-> +	 */
-> +	return false;
-> +}
-> +#endif
-> +
->  #ifdef CONFIG_ARCH_HAS_SETUP_DMA_OPS
->  void arch_setup_dma_ops(struct device *dev, u64 dma_base, u64 size,
->  		const struct iommu_ops *iommu, bool coherent);
-> diff --git a/kernel/dma/Kconfig b/kernel/dma/Kconfig
-> index 9decbba..6209b46 100644
-> --- a/kernel/dma/Kconfig
-> +++ b/kernel/dma/Kconfig
-> @@ -51,6 +51,9 @@ config ARCH_HAS_DMA_MMAP_PGPROT
->  config ARCH_HAS_FORCE_DMA_UNENCRYPTED
->  	bool
-> =20
-> +config ARCH_HAS_DMA_ADDR_IS_PHYS_ADDR
-> +	bool
-> +
->  config DMA_NONCOHERENT_CACHE_SYNC
->  	bool
-> =20
-
---=20
-David Gibson			| I'll have my music baroque, and my code
-david AT gibson.dropbear.id.au	| minimalist, thank you.  NOT _the_ _other_
-				| _way_ _around_!
-http://www.ozlabs.org/~dgibson
-
---0aF+6pWUK5w8WdCh
-Content-Type: application/pgp-signature; name="signature.asc"
-
------BEGIN PGP SIGNATURE-----
-
-iQIzBAEBCAAdFiEEdfRlhq5hpmzETofcbDjKyiDZs5IFAl2j/tgACgkQbDjKyiDZ
-s5JjGg/+JngolQLtvjQamOxnEvRu2H1H2tVbqHMjiTaWHWflqa0S/1nocSzdtK2P
-XWHQwkku6xRMD2WmRLBxLciSfstKP0LO/s6GMh9ATx9JkDgaR1ayhMc1t6yIRrLh
-E1NNiwmwJBLNx4XDBV7ykagoSGaoF7LnOe2NFUeQ++IMMp61WYi95oc15s+JlEDG
-FGvfLDXYwLNyzhE7f8XQ11WLzdhj2oGey8n+Kjqg7yFmcYrw3H8aWet9tl8pL8wi
-QhATd99yJfC7Dwei+13Dg4b4ichGPn117SWXHd15FM6I6xkDOSwnq2nmCJOrcWrl
-jVOWHpgQHsdtizpdpc0RvjSXYjA5uXTOl5rOMz3/LVY/unvELd+7ohxL2miOb5fu
-PU26NMZXnL7Kc/vuvRemPvxYTX0RDH2JcOs8AmDaKWNony4yxqZENH2OUzkUQzuU
-5sravuQc3pm7JiJKg3Qvb+30ufJkjRIhRWWRvUKBorR/rZnO4DrAWcmMD1Op4d7Y
-1UHZTq3ebolz3NjC+n/OruacpccFEzfVst7LYVA7Ta0gNflF87Eskd66ANc3yCGZ
-eaeXmRyg+eQS8jdWsiZC0s+pftkVnKV1aR97WP9s7fUByOCrsO7Obzt9yAsjQC8p
-KynS5IvW4hY3deRymW3/sIX/qX+iWVm0z/7URc7CyskxWatq9xw=
-=/s/t
------END PGP SIGNATURE-----
-
---0aF+6pWUK5w8WdCh--
-
---===============1690614247457066197==
-Content-Type: text/plain; charset="us-ascii"
-MIME-Version: 1.0
-Content-Transfer-Encoding: 7bit
-Content-Disposition: inline
+-- 
+1.9.1
 
 _______________________________________________
 iommu mailing list
 iommu@lists.linux-foundation.org
 https://lists.linuxfoundation.org/mailman/listinfo/iommu
---===============1690614247457066197==--
