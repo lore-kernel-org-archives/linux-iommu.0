@@ -1,229 +1,92 @@
-Return-Path: <SRS0=Xkoz=YG=lists.linux-foundation.org=iommu-bounces@kernel.org>
+Return-Path: <SRS0=ZipC=YH=lists.linux-foundation.org=iommu-bounces@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-2.2 required=3.0 tests=HEADER_FROM_DIFFERENT_DOMAINS,
-	MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED,USER_AGENT_SANE_1
-	autolearn=no autolearn_force=no version=3.4.0
+X-Spam-Status: No, score=-8.0 required=3.0 tests=DKIM_ADSP_CUSTOM_MED,
+	DKIM_INVALID,DKIM_SIGNED,FREEMAIL_FORGED_FROMDOMAIN,FREEMAIL_FROM,
+	HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_PATCH,MAILING_LIST_MULTI,SIGNED_OFF_BY,
+	SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED,USER_AGENT_SANE_1 autolearn=unavailable
+	autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id A1544C4360C
-	for <iommu@archiver.kernel.org>; Sun, 13 Oct 2019 03:00:35 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 00295C4CECE
+	for <iommu@archiver.kernel.org>; Mon, 14 Oct 2019 02:39:38 +0000 (UTC)
 Received: from mail.linuxfoundation.org (mail.linuxfoundation.org [140.211.169.12])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by mail.kernel.org (Postfix) with ESMTPS id 375302089C
-	for <iommu@archiver.kernel.org>; Sun, 13 Oct 2019 03:00:35 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 375302089C
-Authentication-Results: mail.kernel.org; dmarc=none (p=none dis=none) header.from=deltatee.com
+	by mail.kernel.org (Postfix) with ESMTPS id B363320815
+	for <iommu@archiver.kernel.org>; Mon, 14 Oct 2019 02:39:38 +0000 (UTC)
+Authentication-Results: mail.kernel.org;
+	dkim=fail reason="signature verification failed" (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="IS5BQ/44"
+DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org B363320815
+Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=gmail.com
 Authentication-Results: mail.kernel.org; spf=pass smtp.mailfrom=iommu-bounces@lists.linux-foundation.org
 Received: from mail.linux-foundation.org (localhost [127.0.0.1])
-	by mail.linuxfoundation.org (Postfix) with ESMTP id DFF4821E9;
-	Sun, 13 Oct 2019 03:00:34 +0000 (UTC)
+	by mail.linuxfoundation.org (Postfix) with ESMTP id 70D9B253F;
+	Mon, 14 Oct 2019 02:39:38 +0000 (UTC)
 Received: from smtp1.linuxfoundation.org (smtp1.linux-foundation.org
 	[172.17.192.35])
-	by mail.linuxfoundation.org (Postfix) with ESMTPS id E23E721E0
+	by mail.linuxfoundation.org (Postfix) with ESMTPS id 6B5A724F9
 	for <iommu@lists.linux-foundation.org>;
-	Sun, 13 Oct 2019 02:49:31 +0000 (UTC)
-X-Greylist: from auto-whitelisted by SQLgrey-1.7.6
-Received: from listssympa-test.colorado.edu (listssympa-test.colorado.edu
-	[128.138.129.156])
-	by smtp1.linuxfoundation.org (Postfix) with ESMTPS id BB9D86CE
+	Mon, 14 Oct 2019 02:25:47 +0000 (UTC)
+X-Greylist: whitelisted by SQLgrey-1.7.6
+Received: from mail-ot1-f68.google.com (mail-ot1-f68.google.com
+	[209.85.210.68])
+	by smtp1.linuxfoundation.org (Postfix) with ESMTPS id D49615D3
 	for <iommu@lists.linux-foundation.org>;
-	Sun, 13 Oct 2019 02:49:30 +0000 (UTC)
-Received: from listssympa-test.colorado.edu (localhost [127.0.0.1])
-	by listssympa-test.colorado.edu (8.15.2/8.15.2/MJC-8.0/sympa) with
-	ESMTPS id x9D2nKQx013910
-	(version=TLSv1.2 cipher=DHE-RSA-AES256-GCM-SHA384 bits=256 verify=NO); 
-	Sat, 12 Oct 2019 20:49:21 -0600
-Received: (from root@localhost)
-	by listssympa-test.colorado.edu (8.15.2/8.15.2/MJC-8.0/submit) id
-	x9D2nJlE013867; Sat, 12 Oct 2019 20:49:19 -0600
-Received: from BN8PR03MB4851.namprd03.prod.outlook.com (2603:10b6:a03:100::34)
-	by BYAPR03MB4376.namprd03.prod.outlook.com with HTTPS via
-	BYAPR08CA0021.NAMPRD08.PROD.OUTLOOK.COM; Wed, 9 Oct 2019 23:08:54 +0000
-Received: from DM6PR03CA0071.namprd03.prod.outlook.com (2603:10b6:5:100::48) by
-	BN8PR03MB4851.namprd03.prod.outlook.com (2603:10b6:408:6e::11) with
-	Microsoft SMTP Server (version=TLS1_2,
-	cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.2347.16;
-	Wed, 9 Oct 2019 17:58:10 +0000
-Received: from BN3NAM01FT045.eop-nam01.prod.protection.outlook.com
-	(2a01:111:f400:7e41::200) by DM6PR03CA0071.outlook.office365.com
-	(2603:10b6:5:100::48) with Microsoft SMTP Server (version=TLS1_2,
-	cipher=TLS_ECDHE_RSA_WITH_AES_256_CBC_SHA384) id 15.20.2347.16 via
-	Frontend Transport; Wed, 9 Oct 2019 17:58:10 +0000
-Received: from ipmx7.colorado.edu (128.138.128.233) by
-	BN3NAM01FT045.mail.protection.outlook.com (10.152.66.101) with
-	Microsoft SMTP Server (version=TLS1_2,
-	cipher=TLS_ECDHE_RSA_WITH_AES_256_CBC_SHA384)
-	id 15.20.2347.16 via Frontend Transport; Wed, 9 Oct 2019 17:58:09 +0000
-Received: from ipmx4.colorado.edu ([128.138.67.75])  by mx.colorado.edu with
-	ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 09 Oct 2019 11:07:14 -0600
-Received: from mx-spsc.colorado.edu (HELO mx.colorado.edu) ([128.138.67.77]) by
-	mx.colorado.edu with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 09 Oct 2019
-	10:39:11 -0600
-Received: from vger.kernel.org ([209.132.180.67]) by mx.colorado.edu with
-	ESMTP; 09 Oct 2019 10:18:19 -0600
-Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand id
-	S1731734AbfJIQSS (ORCPT <rfc822; michael.gilroy@colorado.edu>);
-	Wed, 9 Oct 2019 12:18:18 -0400
-Received: from ale.deltatee.com ([207.54.116.67]:35238 "EHLO ale.deltatee.com"
-	rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP        id
-	S1731688AbfJIQSS (ORCPT <rfc822; linux-kernel@vger.kernel.org>); Wed,
-	9 Oct 2019 12:18:18 -0400
-Received: from s0106ac1f6bb1ecac.cg.shawcable.net ([70.73.163.230]
-	helo=[192.168.11.155])        by ale.deltatee.com with esmtpsa
-	(TLS1.2:ECDHE_RSA_AES_128_GCM_SHA256:128)        (Exim 4.89)       
-	(envelope-from <logang@deltatee.com>)        id 1iIEfE-0007Md-Fx;
-	Wed, 09 Oct 2019 10:18:13 -0600
-Authentication-Results: spf=none (sender IP is 128.138.128.233)
-	smtp.mailfrom=vger.kernel.org; 
-	o365.colorado.edu; dkim=none (message not signed)
-	header.d=none;o365.colorado.edu; dmarc=none action=none
-	header.from=deltatee.com;
-Received-SPF: None (protection.outlook.com: vger.kernel.org does not designate
-	permitted sender hosts)
-Authentication-Results-Original: mx.colorado.edu;
-	dkim=none (message not signed) header.i=none
-IronPort-SDR: BJojYsOHWW2eAdhVFmaFEuYrmoQqfxkRxW9P2UFfvHnX1G/BwWhEY4hobRHZqVwmBbMf+qSkuq
-	vliR6skdAbqkDFvGOOdM1VAHzkTCaOj4I=
-IronPort-SDR: IdGsJRsY4PhgK79eI17GUAEfWXWB9cZij2CuO38JbpBE6jv0G1O4lRjEYe6mrQdn6EOEX8yOYu
-	5IbcwQs8G0B8MofhawbHwkkkOWMsJ8LUQ=
-IronPort-SDR: u5p9AvVlm7Iu6F/k0s8Qpho6Ic5LXtX8LzjXzJnr1TFjsq2lsomZ8Av43I6vZ68+EDnUwXuhP4
-	8UHrSPjg7rTkh+EB7a1Y8BtoxECH1UeNc=
-IronPort-PHdr: =?us-ascii?q?9a23=3ATgFgOhVclpTegs69l/qHm7fwRDTV8LGuZFw894?=
-	=?us-ascii?q?YnhrRSc6+q45XlOgnl6O5wiEPSA9yJ7uICgO3StLrpVWtG7Jqc4zgOc51JAh?=
-	=?us-ascii?q?kCj8he3wktG9WMBkCzKvn2Jzc7E8JPWB4t/3yyPUVPXserYVrUr3A=3D?=
-IronPort-PHdr: =?us-ascii?q?9a23=3AUKrUIRTXyaS4J4HfW5Q/7tKV3Npsv++ubCcI9p?=
-	=?us-ascii?q?oqja5Pea2//pPkeXbS/uhpkESXBNfe+7RPjO7RqansXioN7YvS+HwBcZkZUR?=
-	=?us-ascii?q?gDhI1WmgE7G8eKBAX9K+KidC01GslOFRdl8ni3PFITGZP4YFvfrw=3D=3D?=
-IronPort-PHdr: =?us-ascii?q?9a23=3ApT0MaBXEW1ym142K0Sbsyhv81LbV8LGuZFw894?=
-	=?us-ascii?q?YnhrRSc6+q45XlOgnl6O5wiEPSA9yJ7uICgO3StLrpVWtG7Jqc4zgOc51JAh?=
-	=?us-ascii?q?kCj8he3wktG9WMBkCzKvn2Jzc7E8JPWB4t/3yyPUVPXserYVrUr3A=3D?=
-X-IronPort-Anti-Spam-Filtered: true
-X-IronPort-Anti-Spam-Filtered: true
-X-IronPort-Anti-Spam-Filtered: true
-X-IronPort-Anti-Spam-Result: =?us-ascii?q?A0FfAAD+Hp5dbUtDioBlGQEBAQEBAQE?=
-	=?us-ascii?q?BAQEBAQEBAQEBEQEBAQEBAQEBAQEBgXuCGwVvUx0SKoQjiQKHRSWDbpctFAE?=
-	=?us-ascii?q?BAQEBAQEBAQgYFQIBAQGHESM4EwIDCQEBAQMBAQECAQUCAQECAhANCwkGK4V?=
-	=?us-ascii?q?AhiABAQEBAwECIFYGCQEBCg4HAwICJgICA1QGDQYCAQEBgx2CeAWvdXWBMoV?=
-	=?us-ascii?q?Ngy2BSIEMKIwOGIFAP4E4DIJfPodSgl4ElidElliCLGqUKSGZQC2nXoFpgXt?=
-	=?us-ascii?q?NIxWDJ1AQFJA0VYEIkBMBAQ?=
-X-IronPort-Anti-Spam-Result: =?us-ascii?q?A0ErAABnDZ5dfU1DioBlGQEBAQEBAQE?=
-	=?us-ascii?q?BAQEBAQEBAQEBEQEBAQEBAQEBAQEBgXuCG3NwEiqEI4kCh0Qlg26XLRQBAQE?=
-	=?us-ascii?q?BAQEBAQEIGBUCAQEBhzQ4EwIDCQEBAQMBAQECAQUCAQECAhABAQkWCIVphiA?=
-	=?us-ascii?q?BAQEBAwECIFYGCQEBCg4HAwICJgICA1QGDQYCAQEBgx2CCwWvcXWBMoVNgy+?=
-	=?us-ascii?q?BSCBsKIwmgUA/gTgMgl8+h1KCWASWJ0SWWIIsapQpIZlALadegWmBe00jFYM?=
-	=?us-ascii?q?nUBAUkDQkMYEIk10BAQ?=
-X-IronPort-Anti-Spam-Result: =?us-ascii?q?A0FCAABKBp5dh0O0hNFlGgEBAQEBAQE?=
-	=?us-ascii?q?BAQMBAQEBEQEBAQICAQEBAYF7ghtzUTEqhCOQRiUUg1qXLRQBAQEBAQEBAQE?=
-	=?us-ascii?q?IGBQBAgEBAYcRIzgTAgMJAQEBAwEBAQIBBQIBAQICEAEBAQoLCQgphUCGIAE?=
-	=?us-ascii?q?BAQEDAQIgVgYJAQEKDgcDAgImAgIDVAYNBgIBAQGDHYILBa9edYEyhU2DLoF?=
-	=?us-ascii?q?IgQwojA4YgUA/gTgMgl8+h1KCWASWJ0SWWIIsapQpIZlALadegWmBe00jFYM?=
-	=?us-ascii?q?nUBAUkDQjMoEGAQGTXQEB?=
-X-IPAS-Result: =?us-ascii?q?A0FfAAD+Hp5dbUtDioBlGQEBAQEBAQEBAQEBAQEBAQEBE?=
-	=?us-ascii?q?QEBAQEBAQEBAQEBgXuCGwVvUx0SKoQjiQKHRSWDbpctFAEBAQEBAQEBAQgYF?=
-	=?us-ascii?q?QIBAQGHESM4EwIDCQEBAQMBAQECAQUCAQECAhANCwkGK4VAhiABAQEBAwECI?=
-	=?us-ascii?q?FYGCQEBCg4HAwICJgICA1QGDQYCAQEBgx2CeAWvdXWBMoVNgy2BSIEMKIwOG?=
-	=?us-ascii?q?IFAP4E4DIJfPodSgl4ElidElliCLGqUKSGZQC2nXoFpgXtNIxWDJ1AQFJA0V?=
-	=?us-ascii?q?YEIkBMBAQ?=
-X-IPAS-Result: =?us-ascii?q?A0ErAABnDZ5dfU1DioBlGQEBAQEBAQEBAQEBAQEBAQEBE?=
-	=?us-ascii?q?QEBAQEBAQEBAQEBgXuCG3NwEiqEI4kCh0Qlg26XLRQBAQEBAQEBAQEIGBUCA?=
-	=?us-ascii?q?QEBhzQ4EwIDCQEBAQMBAQECAQUCAQECAhABAQkWCIVphiABAQEBAwECIFYGC?=
-	=?us-ascii?q?QEBCg4HAwICJgICA1QGDQYCAQEBgx2CCwWvcXWBMoVNgy+BSCBsKIwmgUA/g?=
-	=?us-ascii?q?TgMgl8+h1KCWASWJ0SWWIIsapQpIZlALadegWmBe00jFYMnUBAUkDQkMYEIk?=
-	=?us-ascii?q?10BAQ?=
-X-IPAS-Result: =?us-ascii?q?A0FCAABKBp5dh0O0hNFlGgEBAQEBAQEBAQMBAQEBEQEBA?=
-	=?us-ascii?q?QICAQEBAYF7ghtzUTEqhCOQRiUUg1qXLRQBAQEBAQEBAQEIGBQBAgEBAYcRI?=
-	=?us-ascii?q?zgTAgMJAQEBAwEBAQIBBQIBAQICEAEBAQoLCQgphUCGIAEBAQEDAQIgVgYJA?=
-	=?us-ascii?q?QEKDgcDAgImAgIDVAYNBgIBAQGDHYILBa9edYEyhU2DLoFIgQwojA4YgUA/g?=
-	=?us-ascii?q?TgMgl8+h1KCWASWJ0SWWIIsapQpIZlALadegWmBe00jFYMnUBAUkDQjMoEGA?=
-	=?us-ascii?q?QGTXQEB?=
-X-IronPort-AV: E=Sophos; i="5.67,277,1566885600"; d="scan'208"; a="287172467"
-X-IronPort-AV: E=Sophos; i="5.67,276,1566885600"; d="scan'208"; a="369211590"
-X-IronPort-AV: E=Sophos; i="5.67,276,1566885600"; d="scan'208"; a="369151373"
-X-IronPort-Outbreak-Status: No, level 0, Unknown - Unknown
-X-IronPort-Outbreak-Status: No, level 0, Unknown - Unknown
-X-IronPort-Outbreak-Status: No, level 0, Unknown - Unknown
-X-Original-Recipients: gasiewsk@o365.colorado.edu
-X-Original-Recipients: migi9492@g.colorado.edu
-To: "Christoph Hellwig" <hch@infradead.org>
-References: <20191008221837.13067-1-logang@deltatee.com>
-	<20191008221837.13067-2-logang@deltatee.com>
-	<20191009065750.GA17832@infradead.org>
-From: "Logan Gunthorpe" <logang@deltatee.com>
-Message-ID: <c5f6750f-b415-3562-9abe-0937bae94f75@deltatee.com>
-Date: Wed, 9 Oct 2019 10:17:36 -0600
-User-Agent: Mozilla/5.0 (X11; Linux x86_64;
-	rv:60.0) Gecko/20100101 Thunderbird/60.9.0
+	Mon, 14 Oct 2019 02:25:46 +0000 (UTC)
+Received: by mail-ot1-f68.google.com with SMTP id 67so12546699oto.3
+	for <iommu@lists.linux-foundation.org>;
+	Sun, 13 Oct 2019 19:25:46 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=gmail.com; s=20161025;
+	h=date:from:to:cc:subject:message-id:references:mime-version
+	:content-disposition:in-reply-to:user-agent;
+	bh=lP906qLGyTEBqe55BgoOje0n/wNr+NcPtklrVASvvHA=;
+	b=IS5BQ/44O5nPSYEgMvhA5ue5f8rm2WjOUI0H0EaNT+szqXdXyFs4SCC/ZwFmnvPMt6
+	EwazwfzkAyQiJJ9DFy6cE8623VjFb/VMuqqPQIZlafgsGnERyxmrMqgEnOFOtb+q0pSo
+	NfAMizqzvJcwaj3hh2m6SzGAdM7mebp2YR9v3Zi/7ilcovua90ZnveeG/uhxtjs/1TAS
+	97f9ArqI/yrg+8V3hNWg0cMWeIjH44FLUMJPrHnkPX+6V4KZQa7hdKZQMaADVgjQUfTK
+	pEvBVDvVFMqWh8PLhTpOrAMrb9MpppnpV/v6D4B8va0USsaL2eNeQ65wcNF7wie6mvbN
+	xkLg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+	d=1e100.net; s=20161025;
+	h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+	:mime-version:content-disposition:in-reply-to:user-agent;
+	bh=lP906qLGyTEBqe55BgoOje0n/wNr+NcPtklrVASvvHA=;
+	b=VwEINs5J2ihoBOQDsoRty7TTH/6zKlA2aGXLeALs1RHiq4ivcchXmPY9qxibA6x9s2
+	g6/GGNIkAzLi/v2U3S1Uvki0nrZxZ03uV35SvQuYPti/gkUu3BlelbCLHViLkI0XYeE4
+	B75z/8V7nRG7HKbxeJ693EPucAnZsAnFMCjblY/2xEqg459gmK5B8tnG55Q65ZVUC30s
+	EZcifrzEzOJcApEsITmAdf/RqPnhKZpMKIaUsALYMZBQCx/fAHssfpEIGzLWMAk7G0oN
+	NytcYD8+1FE5BPE2Li7oI0j6/h1388eDGWRwo5lmkXIwpzBBOHOrdNvfQxV+p0yzyFHn
+	Ns+g==
+X-Gm-Message-State: APjAAAXlOXX4ObFBSrBRrVPVsJocBSOA8XlMIQAV5zeTIsWZ9drJeEQT
+	VOmqAb2Z3erVFnWgUTdn4D8=
+X-Google-Smtp-Source: APXvYqx1/+cDEztMyAYHqWplLS7mX+pExI62RCoIIFZ6rpPAtHcWGm4akpgGk84aUZCSA9QdvuLz/Q==
+X-Received: by 2002:a9d:12ac:: with SMTP id g41mr21703818otg.57.1571019945644; 
+	Sun, 13 Oct 2019 19:25:45 -0700 (PDT)
+Received: from ubuntu-m2-xlarge-x86 ([2604:1380:4111:8b00::1])
+	by smtp.gmail.com with ESMTPSA id
+	d95sm5617723otb.25.2019.10.13.19.25.44
+	(version=TLS1_2 cipher=ECDHE-RSA-CHACHA20-POLY1305 bits=256/256);
+	Sun, 13 Oct 2019 19:25:45 -0700 (PDT)
+Date: Sun, 13 Oct 2019 19:25:43 -0700
+From: Nathan Chancellor <natechancellor@gmail.com>
+To: Shyam Saini <mayhs11saini@gmail.com>
+Subject: Re: [PATCH] kernel: dma: Make CMA boot parameters __ro_after_init
+Message-ID: <20191014022543.GA2674@ubuntu-m2-xlarge-x86>
+References: <20191012122918.8066-1-mayhs11saini@gmail.com>
 MIME-Version: 1.0
-In-Reply-To: <20191009065750.GA17832@infradead.org>
-Content-Language: en-US
-X-SA-Exim-Connect-IP: 70.73.163.230
-X-SA-Exim-Rcpt-To: kchow@gigaio.com, joro@8bytes.org,
-	iommu@lists.linux-foundation.org, 
-	linux-kernel@vger.kernel.org, hch@infradead.org
-X-SA-Exim-Mail-From: logang@deltatee.com
-Subject: Re: [PATCH 1/3] iommu/amd: Implement dma_[un]map_resource()
-X-SA-Exim-Version: 4.2.1 (built Tue, 02 Aug 2016 21:08:31 +0000)
-X-SA-Exim-Scanned: Yes (on ale.deltatee.com)
-Precedence: bulk
-X-Mailing-List: linux-kernel@vger.kernel.org
-X-MS-Exchange-Organization-ExpirationStartTime: 09 Oct 2019 17:58:09.7323 (UTC)
-X-MS-Exchange-Organization-ExpirationStartTimeReason: OriginalSubmit
-X-MS-Exchange-Organization-ExpirationInterval: 1:00:00:00.0000000
-X-MS-Exchange-Organization-ExpirationIntervalReason: OriginalSubmit
-X-MS-Exchange-Organization-Network-Message-Id: 4924aeaf-bd7e-48e8-cd09-08d74ce23ede
-X-EOPAttributedMessage: 0
-X-MS-Exchange-Organization-MessageDirectionality: Originating
-X-Forefront-Antispam-Report: CIP:128.138.128.233; IPV:NLI; CTRY:US; EFV:NLI;
-	SFV:SKN; SFS:; DIR:INB; SFP:; SCL:-1; SRVR:BN8PR03MB4851;
-	H:ipmx7.colorado.edu; FPR:; SPF:None; LANG:en; ; SKIP:1; 
-X-MS-Exchange-Organization-AuthSource: BN3NAM01FT045.eop-nam01.prod.protection.outlook.com
-X-MS-Exchange-Organization-AuthAs: Anonymous
-X-OriginatorOrg: colorado.edu
-X-MS-PublicTrafficType: Email
-X-MS-Office365-Filtering-Correlation-Id: 4924aeaf-bd7e-48e8-cd09-08d74ce23ede
-X-MS-TrafficTypeDiagnostic: BN8PR03MB4851:|BN8PR03MB4851:
-X-MS-Exchange-Organization-SCL: -1
-X-MS-Oob-TLC-OOBClassifiers: OLM:9508;
-X-Microsoft-Antispam: BCL:0;
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 09 Oct 2019 17:58:09.4871 (UTC)
-X-MS-Exchange-CrossTenant-Network-Message-Id: 4924aeaf-bd7e-48e8-cd09-08d74ce23ede
-X-MS-Exchange-CrossTenant-Id: 3ded8b1b-070d-4629-82e4-c0b019f46057
-X-MS-Exchange-CrossTenant-OriginalAttributedTenantConnectingIp: TenantId=3ded8b1b-070d-4629-82e4-c0b019f46057;
-	Ip=[128.138.128.233]; Helo=[ipmx7.colorado.edu]
-X-MS-Exchange-CrossTenant-FromEntityHeader: HybridOnPrem
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: BN8PR03MB4851
-X-MS-Exchange-Transport-EndToEndLatency: 05:10:46.2162871
-X-MS-Exchange-Processed-By-BccFoldering: 15.20.2347.014
-X-Microsoft-Antispam-Mailbox-Delivery: ucf:0; jmr:0; ex:0; auth:0; dest:I;
-	ENG:(750127)(520002050)(944506383)(944626516); 
-X-Microsoft-Antispam-Message-Info: =?us-ascii?Q?6GJb0Mvqf2jjXmK7iosLrkmeB5tvN4+cWZpXyBONbuv6RfCrwmTu5p0ommul?=
-	=?us-ascii?Q?Rinri221W7owKSWjJ8/eme/Fmu1YyshbVsiI2NBzM983+IfeE3enkFHkmQUK?=
-	=?us-ascii?Q?aYIy2qYIrggIuiY/okFdiSLtmZQiTjDehjficxglqE5eNjIk8ypcah9RmE4v?=
-	=?us-ascii?Q?2rnA6gkLiw/U243yc8laJbJV+UIQMIKnu27JfkLvtPaFJCHvWmPPdlzxR/Yd?=
-	=?us-ascii?Q?jSUdQWZxy8w7qCZyx1TtxrKSXrRfhXjIX/OhKQFjM8mA4xC86kgukV9tpEyT?=
-	=?us-ascii?Q?YAmebxAu8ubZVf8dNq9Obut+KTX3uqCI7+PmhdckAk2QRorspcdV68PpAeMs?=
-	=?us-ascii?Q?lIJGPHjWNKnJqhLC4JVmMaVLtkCZsDUi/VOw5U/fJ0WuGadmzWB94lixn2nK?=
-	=?us-ascii?Q?yVhuwPu5IpB6O7cVW0AJrjYr6OdEkKdKTcMWKvjJ+4Qm0IC8AZTTL3B0Q7xO?=
-	=?us-ascii?Q?s3e6wT7j+VrTFGR0GRAxnIJvPyh358eQCuJUfhm7fb98W4Kp9kHFJSHC/o9c?=
-	=?us-ascii?Q?87eeYwQwRXUYE9NPXL3RW3K79grVEUCLpwzV+mtg1avmHBFNKHOrGFBs3nli?=
-	=?us-ascii?Q?qMKrq6iiYScq4GFZ83FI6paYt1OR50SY+BjG4BmaobDg2Eao8y8w6wXCkVjx?=
-	=?us-ascii?Q?fot6QCe7Vl8Y4bg4go+HFZY0LDz8P2jDtlLuzk3ljr3xuNRwQByGxeGTBXgj?=
-	=?us-ascii?Q?0y6TKhFr4tpMRghFOhFKfutWkPfaRRJ+Araet4Pjo3EjM7WrLEDD7dMTvnEv?=
-	=?us-ascii?Q?dn1/Pp3UO/GxR1i0Cg2JEfwTVmgtle6n+UC5Lq5f5UJMPRG2R0ohjwNKcpV1?=
-	=?us-ascii?Q?g9bL2GQM/evMG3EDqQVxSf/qiyG6GIfxqH9IJfXql2TjDmiK3BG3HACzt1rp?=
-	=?us-ascii?Q?MOUKmdCJNHba/RbOngEd/HWr6jJnWUERYlvqfmA5h/OIdS4do8P4OaaB/TZs?=
-	=?us-ascii?Q?R2W/xy9KGb4WOhUe4C9YrQD49h6OHzqapAXX0dhCVw+iJUuqo34OrB2Voh3N?=
-	=?us-ascii?Q?GXn3YKMV0+IajPIY8xR5vRp8cQ2IaCpI8t2Eaq6WYEQTMbVLawl9zfeN52Qw?=
-	=?us-ascii?Q?SqpDxf8qnNNCH4EoFUHBT7Kjar7DPsqehPkmnIGAS1MhsjKSrk9lpWbl0hBe?=
-	=?us-ascii?Q?/xwrOdz5fVbWXIHwfbHhR29E4Nt82lqvRVRQhQuu5g6l83Xu1ldco2/t4NSe?=
-	=?us-ascii?Q?4vclLecYSvl93W2I?=
-Cc: "iommu@lists.linux-foundation.org" <iommu@lists.linux-foundation.org>,
-	Kit Chow <kchow@gigaio.com>,
-	"linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>
+Content-Disposition: inline
+In-Reply-To: <20191012122918.8066-1-mayhs11saini@gmail.com>
+User-Agent: Mutt/1.9.4 (2018-02-28)
+Cc: Kees Cook <keescook@chromium.org>, kernel-hardening@lists.openwall.com,
+	linux-kernel@vger.kernel.org,
+	Matthew Wilcox <willy@infradead.org>, linux-mm@kvack.org,
+	iommu@lists.linux-foundation.org, clang-built-linux@googlegroups.com,
+	Christopher Lameter <cl@linux.com>, Robin Murphy <robin.murphy@arm.com>,
+	Christoph Hellwig <hch@lst.de>
 X-BeenThere: iommu@lists.linux-foundation.org
 X-Mailman-Version: 2.1.12
+Precedence: list
 List-Id: Development issues for Linux IOMMU support
 	<iommu.lists.linux-foundation.org>
 List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
@@ -233,52 +96,72 @@ List-Post: <mailto:iommu@lists.linux-foundation.org>
 List-Help: <mailto:iommu-request@lists.linux-foundation.org?subject=help>
 List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
 	<mailto:iommu-request@lists.linux-foundation.org?subject=subscribe>
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
 Sender: iommu-bounces@lists.linux-foundation.org
 Errors-To: iommu-bounces@lists.linux-foundation.org
-Message-ID: <20191009161736.cjfxHKTCXzSHOFZXOboYc73lgMbIB19lE3Av9SD6niM@z>
 
-
-
-On 2019-10-09 12:57 a.m., Christoph Hellwig wrote:
-> On Tue, Oct 08, 2019 at 04:18:35PM -0600, Logan Gunthorpe wrote:
->> From: Kit Chow <kchow@gigaio.com>
->>
->> Currently the Intel IOMMU uses the default dma_[un]map_resource()
+On Sat, Oct 12, 2019 at 05:59:18PM +0530, Shyam Saini wrote:
+> This parameters are not changed after early boot.
+> By making them __ro_after_init will reduce any attack surface in the
+> kernel.
 > 
-> s/Intel/AMD/ ?
-
-Oops, yes, my mistake.
-
->> +static dma_addr_t map_resource(struct device *dev, phys_addr_t paddr,
->> +		size_t size, enum dma_data_direction dir, unsigned long attrs)
->> +{
->> +	struct protection_domain *domain;
->> +	struct dma_ops_domain *dma_dom;
->> +
->> +	domain = get_domain(dev);
->> +	if (PTR_ERR(domain) == -EINVAL)
->> +		return (dma_addr_t)paddr;
+> Link: https://lwn.net/Articles/676145/
+> Cc: Christoph Hellwig <hch@lst.de>
+> Cc: Marek Szyprowski <m.szyprowski@samsung.com>
+> Cc: Robin Murphy <robin.murphy@arm.com>
+> Cc: Matthew Wilcox <willy@infradead.org>
+> Cc: Christopher Lameter <cl@linux.com>
+> Cc: Kees Cook <keescook@chromium.org>
+> Signed-off-by: Shyam Saini <mayhs11saini@gmail.com>
+> ---
+>  kernel/dma/contiguous.c | 8 ++++----
+>  1 file changed, 4 insertions(+), 4 deletions(-)
 > 
-> I thought that case can't happen anymore?
-> 
-> Also note that Joerg just applied the patch to convert the AMD iommu
-> driver to use the dma-iommu ops.  Can you test that series and check
-> it does the right thing for your use case?  From looking at the code
-> I think it should.
+> diff --git a/kernel/dma/contiguous.c b/kernel/dma/contiguous.c
+> index 69cfb4345388..1b689b1303cd 100644
+> --- a/kernel/dma/contiguous.c
+> +++ b/kernel/dma/contiguous.c
+> @@ -42,10 +42,10 @@ struct cma *dma_contiguous_default_area;
+>   * Users, who want to set the size of global CMA area for their system
+>   * should use cma= kernel parameter.
+>   */
+> -static const phys_addr_t size_bytes = (phys_addr_t)CMA_SIZE_MBYTES * SZ_1M;
+> -static phys_addr_t size_cmdline = -1;
+> -static phys_addr_t base_cmdline;
+> -static phys_addr_t limit_cmdline;
+> +static const phys_addr_t __ro_after_init size_bytes = (phys_addr_t)CMA_SIZE_MBYTES * SZ_1M;
 
-Yes, looking at the new code, it looks like this patch will not be
-needed. So we can drop it. We'll test it to make sure.
+The 0day bot reported an issue with this change with clang:
 
-I believe the other two patches in this series are still needed though.
+https://groups.google.com/d/msgid/clang-built-linux/201910140334.nhultlt8%25lkp%40intel.com
 
-Thanks,
+kernel/dma/contiguous.c:46:36: error: 'size_cmdline' causes a section type conflict with 'size_bytes'
+static phys_addr_t __ro_after_init size_cmdline = -1;
+                                   ^
+kernel/dma/contiguous.c:45:42: note: declared here
+static const phys_addr_t __ro_after_init size_bytes = (phys_addr_t)CMA_SIZE_MBYTES * SZ_1M;
+                                         ^
+kernel/dma/contiguous.c:47:36: error: 'base_cmdline' causes a section type conflict with 'size_bytes'
+static phys_addr_t __ro_after_init base_cmdline;
+                                   ^
+kernel/dma/contiguous.c:45:42: note: declared here
+static const phys_addr_t __ro_after_init size_bytes = (phys_addr_t)CMA_SIZE_MBYTES * SZ_1M;
+                                         ^
+kernel/dma/contiguous.c:48:36: error: 'limit_cmdline' causes a section type conflict with 'size_bytes'
+static phys_addr_t __ro_after_init limit_cmdline;
+                                   ^
+kernel/dma/contiguous.c:45:42: note: declared here
+static const phys_addr_t __ro_after_init size_bytes = (phys_addr_t)CMA_SIZE_MBYTES * SZ_1M;
+                                         ^
+3 errors generated.
 
-Logan
+The errors seem kind of cryptic at first but something that is const
+should automatically be in the read only section, this part of the
+commit seems unnecessary. Removing that part of the change fixes the error.
 
-
-
+Cheers,
+Nathan
 _______________________________________________
 iommu mailing list
 iommu@lists.linux-foundation.org
