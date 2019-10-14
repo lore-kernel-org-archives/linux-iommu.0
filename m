@@ -2,53 +2,61 @@ Return-Path: <SRS0=ZipC=YH=lists.linux-foundation.org=iommu-bounces@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-2.2 required=3.0 tests=HEADER_FROM_DIFFERENT_DOMAINS,
-	MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED,USER_AGENT_SANE_1
-	autolearn=no autolearn_force=no version=3.4.0
+X-Spam-Status: No, score=-8.3 required=3.0 tests=HEADER_FROM_DIFFERENT_DOMAINS,
+	INCLUDES_PATCH,MAILING_LIST_MULTI,SIGNED_OFF_BY,SPF_HELO_NONE,SPF_PASS,
+	USER_AGENT_SANE_1 autolearn=unavailable autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 2688DC4CECE
-	for <iommu@archiver.kernel.org>; Mon, 14 Oct 2019 14:21:30 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 4E745ECE587
+	for <iommu@archiver.kernel.org>; Mon, 14 Oct 2019 14:29:34 +0000 (UTC)
 Received: from mail.linuxfoundation.org (mail.linuxfoundation.org [140.211.169.12])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by mail.kernel.org (Postfix) with ESMTPS id F2B072067B
-	for <iommu@archiver.kernel.org>; Mon, 14 Oct 2019 14:21:29 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org F2B072067B
-Authentication-Results: mail.kernel.org; dmarc=none (p=none dis=none) header.from=linutronix.de
+	by mail.kernel.org (Postfix) with ESMTPS id 1F1222089C
+	for <iommu@archiver.kernel.org>; Mon, 14 Oct 2019 14:29:34 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 1F1222089C
+Authentication-Results: mail.kernel.org; dmarc=none (p=none dis=none) header.from=arm.com
 Authentication-Results: mail.kernel.org; spf=pass smtp.mailfrom=iommu-bounces@lists.linux-foundation.org
 Received: from mail.linux-foundation.org (localhost [127.0.0.1])
-	by mail.linuxfoundation.org (Postfix) with ESMTP id 5970A1512;
-	Mon, 14 Oct 2019 14:21:25 +0000 (UTC)
+	by mail.linuxfoundation.org (Postfix) with ESMTP id 9201516B8;
+	Mon, 14 Oct 2019 14:29:30 +0000 (UTC)
 Received: from smtp1.linuxfoundation.org (smtp1.linux-foundation.org
 	[172.17.192.35])
-	by mail.linuxfoundation.org (Postfix) with ESMTPS id A3B6D145D
+	by mail.linuxfoundation.org (Postfix) with ESMTPS id 18C7814FD
 	for <iommu@lists.linux-foundation.org>;
-	Mon, 14 Oct 2019 14:10:21 +0000 (UTC)
+	Mon, 14 Oct 2019 14:21:19 +0000 (UTC)
 X-Greylist: domain auto-whitelisted by SQLgrey-1.7.6
-Received: from Galois.linutronix.de (Galois.linutronix.de [193.142.43.55])
-	by smtp1.linuxfoundation.org (Postfix) with ESMTPS id 339F38A9
+Received: from foss.arm.com (foss.arm.com [217.140.110.172])
+	by smtp1.linuxfoundation.org (Postfix) with ESMTP id 9E4C68A0
 	for <iommu@lists.linux-foundation.org>;
-	Mon, 14 Oct 2019 14:10:21 +0000 (UTC)
-Received: from [5.158.153.52] (helo=nanos.tec.linutronix.de)
-	by Galois.linutronix.de with esmtpsa
-	(TLS1.2:DHE_RSA_AES_256_CBC_SHA256:256) (Exim 4.80)
-	(envelope-from <tglx@linutronix.de>)
-	id 1iK139-0001Ft-NS; Mon, 14 Oct 2019 16:10:15 +0200
-Date: Mon, 14 Oct 2019 16:10:15 +0200 (CEST)
-From: Thomas Gleixner <tglx@linutronix.de>
-To: "Guilherme G. Piccoli" <gpiccoli@canonical.com>
-Subject: Re: Advice on oops - memory trap on non-memory access instruction
-	(invalid CR2?)
-In-Reply-To: <66eeae28-bfd3-c7a0-011c-801981b74243@canonical.com>
-Message-ID: <alpine.DEB.2.21.1910141602270.2531@nanos.tec.linutronix.de>
-References: <66eeae28-bfd3-c7a0-011c-801981b74243@canonical.com>
-User-Agent: Alpine 2.21 (DEB 202 2017-01-01)
+	Mon, 14 Oct 2019 14:21:17 +0000 (UTC)
+Received: from usa-sjc-imap-foss1.foss.arm.com (unknown [10.121.207.14])
+	by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id 2C8E2337;
+	Mon, 14 Oct 2019 07:21:17 -0700 (PDT)
+Received: from [10.1.197.57] (e110467-lin.cambridge.arm.com [10.1.197.57])
+	by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPSA id 0CB573F68E;
+	Mon, 14 Oct 2019 07:21:14 -0700 (PDT)
+Subject: Re: [PATCH v3 3/7] iommu/mediatek: Use gather to achieve the tlb
+	range flush
+To: Yong Wu <yong.wu@mediatek.com>, Matthias Brugger
+	<matthias.bgg@gmail.com>, Joerg Roedel <joro@8bytes.org>,
+	Will Deacon <will.deacon@arm.com>
+References: <1571035101-4213-1-git-send-email-yong.wu@mediatek.com>
+	<1571035101-4213-4-git-send-email-yong.wu@mediatek.com>
+From: Robin Murphy <robin.murphy@arm.com>
+Message-ID: <f35c8a3a-0693-facf-2050-65d3f7628929@arm.com>
+Date: Mon, 14 Oct 2019 15:21:13 +0100
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:60.0) Gecko/20100101
+	Thunderbird/60.6.1
 MIME-Version: 1.0
-Cc: halves@canonical.com, mfo@canonical.com, kvm@vger.kernel.org,
-	linux-mm@kvack.org, x86@kernel.org,
-	platform-driver-x86@vger.kernel.org, linux-acpi@vger.kernel.org,
-	iommu@lists.linux-foundation.org, ioanna-maria.alifieraki@canonical.com,
-	jay.vosburgh@canonical.com, gavin.guo@canonical.com
+In-Reply-To: <1571035101-4213-4-git-send-email-yong.wu@mediatek.com>
+Content-Language: en-GB
+Cc: youlin.pei@mediatek.com, anan.sun@mediatek.com,
+	Nicolas Boichat <drinkcat@chromium.org>, cui.zhang@mediatek.com,
+	srv_heupstream@mediatek.com, chao.hao@mediatek.com,
+	edison.hsieh@mediatek.com, linux-kernel@vger.kernel.org,
+	Evan Green <evgreen@chromium.org>,
+	Tomasz Figa <tfiga@google.com>, iommu@lists.linux-foundation.org,
+	linux-mediatek@lists.infradead.org, linux-arm-kernel@lists.infradead.org
 X-BeenThere: iommu@lists.linux-foundation.org
 X-Mailman-Version: 2.1.12
 Precedence: list
@@ -61,33 +69,110 @@ List-Post: <mailto:iommu@lists.linux-foundation.org>
 List-Help: <mailto:iommu-request@lists.linux-foundation.org?subject=help>
 List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
 	<mailto:iommu-request@lists.linux-foundation.org?subject=subscribe>
-Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset="us-ascii"; Format="flowed"
 Sender: iommu-bounces@lists.linux-foundation.org
 Errors-To: iommu-bounces@lists.linux-foundation.org
 
-On Mon, 14 Oct 2019, Guilherme G. Piccoli wrote:
-> Modules linked in: <...>
-> CPU: 40 PID: 78274 Comm: qemu-system-x86 Tainted: P W  OE
+On 14/10/2019 07:38, Yong Wu wrote:
+> Use the iommu_gather mechanism to achieve the tlb range flush.
+> Gather the iova range in the "tlb_add_page", then flush the merged iova
+> range in iotlb_sync.
+> 
+> Note: If iotlb_sync comes from iommu_iotlb_gather_add_page, we have to
+> avoid retry the lock since the spinlock have already been acquired.
 
-Tainted: P     - Proprietary module loaded ...
+I think this could probably be even simpler - once the actual 
+register-poking is all confined to mtk_iommu_tlb_sync(), you should be 
+able get rid of the per-domain locking in map/unmap and just have a 
+single per-IOMMU lock to serialise syncs. The io-pgtable code itself 
+hasn't needed external locking for a while now.
 
-Try again without that module
+Robin.
 
-Tainted: W     - Warning issued before
-
-Are you sure that that warning is harmless and unrelated?
-
-> 4.4.0-45-generic #66~14.04.1-Ubuntu
-
-Does the same problem happen with a not so dead kernel? CR2 handling got
-quite some updates/fixes since then.
-
-Thanks,
-
-	tglx
-
-
+> Suggested-by: Tomasz Figa <tfiga@chromium.org>
+> Signed-off-by: Yong Wu <yong.wu@mediatek.com>
+> ---
+> 1) This is the special case backtrace:
+> 
+>   mtk_iommu_iotlb_sync+0x50/0xa0
+>   mtk_iommu_tlb_flush_page_nosync+0x5c/0xd0
+>   __arm_v7s_unmap+0x174/0x598
+>   arm_v7s_unmap+0x30/0x48
+>   mtk_iommu_unmap+0x50/0x78
+>   __iommu_unmap+0xa4/0xf8
+> 
+> 2) The checking "if (gather->start == ULONG_MAX) return;" also is
+> necessary. It will happened when unmap only go to _flush_walk, then
+> enter this tlb_sync.
+> ---
+>   drivers/iommu/mtk_iommu.c | 29 +++++++++++++++++++++++++----
+>   drivers/iommu/mtk_iommu.h |  1 +
+>   2 files changed, 26 insertions(+), 4 deletions(-)
+> 
+> diff --git a/drivers/iommu/mtk_iommu.c b/drivers/iommu/mtk_iommu.c
+> index 5f594d6..8712afc 100644
+> --- a/drivers/iommu/mtk_iommu.c
+> +++ b/drivers/iommu/mtk_iommu.c
+> @@ -234,7 +234,12 @@ static void mtk_iommu_tlb_flush_page_nosync(struct iommu_iotlb_gather *gather,
+>   					    unsigned long iova, size_t granule,
+>   					    void *cookie)
+>   {
+> -	mtk_iommu_tlb_add_flush_nosync(iova, granule, granule, true, cookie);
+> +	struct mtk_iommu_data *data = cookie;
+> +	struct iommu_domain *domain = &data->m4u_dom->domain;
+> +
+> +	data->is_in_tlb_gather_add_page = true;
+> +	iommu_iotlb_gather_add_page(domain, gather, iova, granule);
+> +	data->is_in_tlb_gather_add_page = false;
+>   }
+>   
+>   static const struct iommu_flush_ops mtk_iommu_flush_ops = {
+> @@ -453,12 +458,28 @@ static void mtk_iommu_flush_iotlb_all(struct iommu_domain *domain)
+>   static void mtk_iommu_iotlb_sync(struct iommu_domain *domain,
+>   				 struct iommu_iotlb_gather *gather)
+>   {
+> +	struct mtk_iommu_data *data = mtk_iommu_get_m4u_data();
+>   	struct mtk_iommu_domain *dom = to_mtk_domain(domain);
+> +	bool is_in_gather = data->is_in_tlb_gather_add_page;
+> +	size_t length = gather->end - gather->start;
+>   	unsigned long flags;
+>   
+> -	spin_lock_irqsave(&dom->pgtlock, flags);
+> -	mtk_iommu_tlb_sync(mtk_iommu_get_m4u_data());
+> -	spin_unlock_irqrestore(&dom->pgtlock, flags);
+> +	if (gather->start == ULONG_MAX)
+> +		return;
+> +
+> +	/*
+> +	 * Avoid acquire the lock when it's in gather_add_page since the lock
+> +	 * has already been held.
+> +	 */
+> +	if (!is_in_gather)
+> +		spin_lock_irqsave(&dom->pgtlock, flags);
+> +
+> +	mtk_iommu_tlb_add_flush_nosync(gather->start, length, gather->pgsize,
+> +				       false, data);
+> +	mtk_iommu_tlb_sync(data);
+> +
+> +	if (!is_in_gather)
+> +		spin_unlock_irqrestore(&dom->pgtlock, flags);
+>   }
+>   
+>   static phys_addr_t mtk_iommu_iova_to_phys(struct iommu_domain *domain,
+> diff --git a/drivers/iommu/mtk_iommu.h b/drivers/iommu/mtk_iommu.h
+> index fc0f16e..d29af1d 100644
+> --- a/drivers/iommu/mtk_iommu.h
+> +++ b/drivers/iommu/mtk_iommu.h
+> @@ -58,6 +58,7 @@ struct mtk_iommu_data {
+>   	struct iommu_group		*m4u_group;
+>   	bool                            enable_4GB;
+>   	bool				tlb_flush_active;
+> +	bool				is_in_tlb_gather_add_page;
+>   
+>   	struct iommu_device		iommu;
+>   	const struct mtk_iommu_plat_data *plat_data;
+> 
 _______________________________________________
 iommu mailing list
 iommu@lists.linux-foundation.org
