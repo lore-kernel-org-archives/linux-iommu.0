@@ -7,42 +7,42 @@ X-Spam-Status: No, score=-9.8 required=3.0 tests=HEADER_FROM_DIFFERENT_DOMAINS,
 	URIBL_BLOCKED,USER_AGENT_GIT autolearn=unavailable autolearn_force=no
 	version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 99123ECE58F
-	for <iommu@archiver.kernel.org>; Tue, 15 Oct 2019 11:12:20 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 8F57BC10F14
+	for <iommu@archiver.kernel.org>; Tue, 15 Oct 2019 11:12:25 +0000 (UTC)
 Received: from mail.linuxfoundation.org (mail.linuxfoundation.org [140.211.169.12])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by mail.kernel.org (Postfix) with ESMTPS id 783A720873
-	for <iommu@archiver.kernel.org>; Tue, 15 Oct 2019 11:12:20 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 783A720873
+	by mail.kernel.org (Postfix) with ESMTPS id 67F1421925
+	for <iommu@archiver.kernel.org>; Tue, 15 Oct 2019 11:12:25 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 67F1421925
 Authentication-Results: mail.kernel.org; dmarc=none (p=none dis=none) header.from=renesas.com
 Authentication-Results: mail.kernel.org; spf=pass smtp.mailfrom=iommu-bounces@lists.linux-foundation.org
 Received: from mail.linux-foundation.org (localhost [127.0.0.1])
-	by mail.linuxfoundation.org (Postfix) with ESMTP id 829F1CA6;
+	by mail.linuxfoundation.org (Postfix) with ESMTP id A66C4C7D;
 	Tue, 15 Oct 2019 11:12:06 +0000 (UTC)
 Received: from smtp1.linuxfoundation.org (smtp1.linux-foundation.org
 	[172.17.192.35])
-	by mail.linuxfoundation.org (Postfix) with ESMTPS id EB498C6F
+	by mail.linuxfoundation.org (Postfix) with ESMTPS id 594F3C6F
 	for <iommu@lists.linux-foundation.org>;
-	Tue, 15 Oct 2019 11:12:02 +0000 (UTC)
+	Tue, 15 Oct 2019 11:12:03 +0000 (UTC)
 X-Greylist: from auto-whitelisted by SQLgrey-1.7.6
-Received: from relmlie5.idc.renesas.com (relmlor1.renesas.com
-	[210.160.252.171])
-	by smtp1.linuxfoundation.org (Postfix) with ESMTP id 67FDC88E
+Received: from relmlie6.idc.renesas.com (relmlor2.renesas.com
+	[210.160.252.172])
+	by smtp1.linuxfoundation.org (Postfix) with ESMTP id CFE5A6D6
 	for <iommu@lists.linux-foundation.org>;
 	Tue, 15 Oct 2019 11:12:02 +0000 (UTC)
-X-IronPort-AV: E=Sophos;i="5.67,299,1566831600"; d="scan'208";a="29145957"
+X-IronPort-AV: E=Sophos;i="5.67,299,1566831600"; d="scan'208";a="28928931"
 Received: from unknown (HELO relmlir6.idc.renesas.com) ([10.200.68.152])
-	by relmlie5.idc.renesas.com with ESMTP; 15 Oct 2019 20:12:00 +0900
+	by relmlie6.idc.renesas.com with ESMTP; 15 Oct 2019 20:12:00 +0900
 Received: from localhost.localdomain (unknown [10.166.17.210])
-	by relmlir6.idc.renesas.com (Postfix) with ESMTP id 847F14208692;
+	by relmlir6.idc.renesas.com (Postfix) with ESMTP id 9C4BA4208692;
 	Tue, 15 Oct 2019 20:12:00 +0900 (JST)
 From: Yoshihiro Shimoda <yoshihiro.shimoda.uh@renesas.com>
 To: joro@8bytes.org
-Subject: [PATCH v2 3/6] iommu/ipmmu-vmsa: Add helper functions for MMU
-	"context" registers
-Date: Tue, 15 Oct 2019 20:11:57 +0900
-Message-Id: <1571137920-15314-4-git-send-email-yoshihiro.shimoda.uh@renesas.com>
+Subject: [PATCH v2 5/6] iommu/ipmmu-vmsa: Add helper functions for "uTLB"
+	registers
+Date: Tue, 15 Oct 2019 20:11:59 +0900
+Message-Id: <1571137920-15314-6-git-send-email-yoshihiro.shimoda.uh@renesas.com>
 X-Mailer: git-send-email 2.7.4
 In-Reply-To: <1571137920-15314-1-git-send-email-yoshihiro.shimoda.uh@renesas.com>
 References: <1571137920-15314-1-git-send-email-yoshihiro.shimoda.uh@renesas.com>
@@ -66,79 +66,66 @@ Sender: iommu-bounces@lists.linux-foundation.org
 Errors-To: iommu-bounces@lists.linux-foundation.org
 
 Since we will have changed memory mapping of the IPMMU in the future,
-This patch adds helper functions ipmmu_ctx_{reg,read,write}()
-for MMU "context" registers. No behavior change.
+This patch adds helper functions ipmmu_utlb_reg() and
+ipmmu_imu{asid,ctr}_write() for "uTLB" registers. No behavior change.
 
 Signed-off-by: Yoshihiro Shimoda <yoshihiro.shimoda.uh@renesas.com>
 ---
- drivers/iommu/ipmmu-vmsa.c | 32 +++++++++++++++++++++++---------
- 1 file changed, 23 insertions(+), 9 deletions(-)
+ drivers/iommu/ipmmu-vmsa.c | 26 +++++++++++++++++++++-----
+ 1 file changed, 21 insertions(+), 5 deletions(-)
 
 diff --git a/drivers/iommu/ipmmu-vmsa.c b/drivers/iommu/ipmmu-vmsa.c
-index 35aae24..c60b31d 100644
+index 37bb4b7..d8385ef 100644
 --- a/drivers/iommu/ipmmu-vmsa.c
 +++ b/drivers/iommu/ipmmu-vmsa.c
-@@ -190,29 +190,43 @@ static void ipmmu_write(struct ipmmu_vmsa_device *mmu, unsigned int offset,
- 	iowrite32(data, mmu->base + offset);
+@@ -230,6 +230,23 @@ static void ipmmu_ctx_write_all(struct ipmmu_vmsa_domain *domain,
+ 	ipmmu_ctx_write(domain->mmu->root, domain->context_id, reg, data);
  }
  
-+static unsigned int ipmmu_ctx_reg(struct ipmmu_vmsa_device *mmu,
-+				  unsigned int context_id, unsigned int reg)
++static u32 ipmmu_utlb_reg(struct ipmmu_vmsa_device *mmu, unsigned int reg)
 +{
-+	return context_id * IM_CTX_SIZE + reg;
++	return reg;
 +}
 +
-+static u32 ipmmu_ctx_read(struct ipmmu_vmsa_device *mmu,
-+			  unsigned int context_id, unsigned int reg)
++static void ipmmu_imuasid_write(struct ipmmu_vmsa_device *mmu,
++				unsigned int utlb, u32 data)
 +{
-+	return ipmmu_read(mmu, ipmmu_ctx_reg(mmu, context_id, reg));
++	ipmmu_write(mmu, ipmmu_utlb_reg(mmu, IMUASID(utlb)), data);
 +}
 +
-+static void ipmmu_ctx_write(struct ipmmu_vmsa_device *mmu,
-+			    unsigned int context_id, unsigned int reg, u32 data)
++static void ipmmu_imuctr_write(struct ipmmu_vmsa_device *mmu,
++			       unsigned int utlb, u32 data)
 +{
-+	ipmmu_write(mmu, ipmmu_ctx_reg(mmu, context_id, reg), data);
++	ipmmu_write(mmu, ipmmu_utlb_reg(mmu, IMUCTR(utlb)), data);
 +}
 +
- static u32 ipmmu_ctx_read_root(struct ipmmu_vmsa_domain *domain,
- 			       unsigned int reg)
- {
--	return ipmmu_read(domain->mmu->root,
--			  domain->context_id * IM_CTX_SIZE + reg);
-+	return ipmmu_ctx_read(domain->mmu->root, domain->context_id, reg);
- }
- 
- static void ipmmu_ctx_write_root(struct ipmmu_vmsa_domain *domain,
- 				 unsigned int reg, u32 data)
- {
--	ipmmu_write(domain->mmu->root,
--		    domain->context_id * IM_CTX_SIZE + reg, data);
-+	ipmmu_ctx_write(domain->mmu->root, domain->context_id, reg, data);
- }
- 
- static void ipmmu_ctx_write_all(struct ipmmu_vmsa_domain *domain,
- 				unsigned int reg, u32 data)
- {
- 	if (domain->mmu != domain->mmu->root)
--		ipmmu_write(domain->mmu,
--			    domain->context_id * IM_CTX_SIZE + reg, data);
-+		ipmmu_ctx_write(domain->mmu, domain->context_id, reg, data);
- 
--	ipmmu_write(domain->mmu->root,
--		    domain->context_id * IM_CTX_SIZE + reg, data);
-+	ipmmu_ctx_write(domain->mmu->root, domain->context_id, reg, data);
- }
- 
  /* -----------------------------------------------------------------------------
-@@ -911,7 +925,7 @@ static void ipmmu_device_reset(struct ipmmu_vmsa_device *mmu)
+  * TLB and microTLB Management
+  */
+@@ -275,11 +292,10 @@ static void ipmmu_utlb_enable(struct ipmmu_vmsa_domain *domain,
+ 	 */
  
- 	/* Disable all contexts. */
- 	for (i = 0; i < mmu->num_ctx; ++i)
--		ipmmu_write(mmu, i * IM_CTX_SIZE + IMCTR, 0);
-+		ipmmu_ctx_write(mmu, i, IMCTR, 0);
+ 	/* TODO: What should we set the ASID to ? */
+-	ipmmu_write(mmu, IMUASID(utlb), 0);
++	ipmmu_imuasid_write(mmu, utlb, 0);
+ 	/* TODO: Do we need to flush the microTLB ? */
+-	ipmmu_write(mmu, IMUCTR(utlb),
+-		    IMUCTR_TTSEL_MMU(domain->context_id) | IMUCTR_FLUSH |
+-		    IMUCTR_MMUEN);
++	ipmmu_imuctr_write(mmu, utlb, IMUCTR_TTSEL_MMU(domain->context_id) |
++				      IMUCTR_FLUSH | IMUCTR_MMUEN);
+ 	mmu->utlb_ctx[utlb] = domain->context_id;
  }
  
- static const struct ipmmu_features ipmmu_features_default = {
+@@ -291,7 +307,7 @@ static void ipmmu_utlb_disable(struct ipmmu_vmsa_domain *domain,
+ {
+ 	struct ipmmu_vmsa_device *mmu = domain->mmu;
+ 
+-	ipmmu_write(mmu, IMUCTR(utlb), 0);
++	ipmmu_imuctr_write(mmu, utlb, 0);
+ 	mmu->utlb_ctx[utlb] = IPMMU_CTX_INVALID;
+ }
+ 
 -- 
 2.7.4
 
