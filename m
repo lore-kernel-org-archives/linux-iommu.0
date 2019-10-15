@@ -2,87 +2,62 @@ Return-Path: <SRS0=BRyA=YI=lists.linux-foundation.org=iommu-bounces@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-2.0 required=3.0 tests=DKIM_INVALID,DKIM_SIGNED,
-	HEADER_FROM_DIFFERENT_DOMAINS,MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS,
-	URIBL_BLOCKED,USER_AGENT_SANE_1 autolearn=no autolearn_force=no version=3.4.0
+X-Spam-Status: No, score=-2.2 required=3.0 tests=HEADER_FROM_DIFFERENT_DOMAINS,
+	MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED,USER_AGENT_SANE_1
+	autolearn=no autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id C8B88ECE58E
-	for <iommu@archiver.kernel.org>; Tue, 15 Oct 2019 07:56:48 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id E67D2ECE58E
+	for <iommu@archiver.kernel.org>; Tue, 15 Oct 2019 08:35:34 +0000 (UTC)
 Received: from mail.linuxfoundation.org (mail.linuxfoundation.org [140.211.169.12])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by mail.kernel.org (Postfix) with ESMTPS id 8C6E92089C
-	for <iommu@archiver.kernel.org>; Tue, 15 Oct 2019 07:56:48 +0000 (UTC)
-Authentication-Results: mail.kernel.org;
-	dkim=fail reason="signature verification failed" (2048-bit key) header.d=linaro.org header.i=@linaro.org header.b="i21eyPVW"
-DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 8C6E92089C
-Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=linaro.org
+	by mail.kernel.org (Postfix) with ESMTPS id B4A6021835
+	for <iommu@archiver.kernel.org>; Tue, 15 Oct 2019 08:35:34 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org B4A6021835
+Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=redhat.com
 Authentication-Results: mail.kernel.org; spf=pass smtp.mailfrom=iommu-bounces@lists.linux-foundation.org
 Received: from mail.linux-foundation.org (localhost [127.0.0.1])
-	by mail.linuxfoundation.org (Postfix) with ESMTP id 71421B6D;
-	Tue, 15 Oct 2019 07:56:48 +0000 (UTC)
+	by mail.linuxfoundation.org (Postfix) with ESMTP id 80E47BBC;
+	Tue, 15 Oct 2019 08:35:34 +0000 (UTC)
 Received: from smtp1.linuxfoundation.org (smtp1.linux-foundation.org
 	[172.17.192.35])
-	by mail.linuxfoundation.org (Postfix) with ESMTPS id F03A1B62
+	by mail.linuxfoundation.org (Postfix) with ESMTPS id 89A86B7D
 	for <iommu@lists.linux-foundation.org>;
-	Tue, 15 Oct 2019 07:56:46 +0000 (UTC)
-X-Greylist: whitelisted by SQLgrey-1.7.6
-Received: from mail-ed1-f66.google.com (mail-ed1-f66.google.com
-	[209.85.208.66])
-	by smtp1.linuxfoundation.org (Postfix) with ESMTPS id A21E18A9
+	Tue, 15 Oct 2019 08:35:33 +0000 (UTC)
+X-Greylist: domain auto-whitelisted by SQLgrey-1.7.6
+Received: from mx1.redhat.com (mx1.redhat.com [209.132.183.28])
+	by smtp1.linuxfoundation.org (Postfix) with ESMTPS id 1B48514D
 	for <iommu@lists.linux-foundation.org>;
-	Tue, 15 Oct 2019 07:56:45 +0000 (UTC)
-Received: by mail-ed1-f66.google.com with SMTP id a15so17076599edt.6
-	for <iommu@lists.linux-foundation.org>;
-	Tue, 15 Oct 2019 00:56:45 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linaro.org; s=google;
-	h=date:from:to:cc:subject:message-id:references:mime-version
-	:content-disposition:in-reply-to:user-agent;
-	bh=purHCPGDjaKXkBT9wvD+Vn4dLucXAl8XRe5APKFmAL4=;
-	b=i21eyPVWB0UJJtw29IaCJIn5X5m/4qC54mNfQFbR+mZgoEjTJrVlCkS3NRRnzDyFrE
-	v55vFv3KYyKnKs/yP1Dk9iNltDwfelTDqDzVWY4yUZTb+memeZRKr3gXQAqRQunkumZl
-	LSIe+GCv7AXoRPI6r0mcmAdTZvsK1tyYVfFiBZwV4IUGdsi6KBYcl2BLpMJo+m05x2MJ
-	K8VMJdqusGaVP5K+2VrbuXSNoKsebYb+RnpqbEK4Sxmx3Op2+dibzT6IEL3of/xgD6ij
-	HqIgNbJFjFj+IgDBy23MHdoibAIqZVp8ShbibSsp6HH7h10x98K7I7datCyiKmNeK7s/
-	K30A==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-	d=1e100.net; s=20161025;
-	h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-	:mime-version:content-disposition:in-reply-to:user-agent;
-	bh=purHCPGDjaKXkBT9wvD+Vn4dLucXAl8XRe5APKFmAL4=;
-	b=ddah6sqtYugtcGef79EH6ZRPNGWU7Qz8t0QBfgrGZd6rOcsqQ1CgiFttMiseEyzvJE
-	xHTjuxajNPa3qvHsNw4lKniHUD2At3ICmd3FCiDEF4I86jdvIezKOWr6sfkOyQEZ7uYQ
-	Sd5EPfS9mVVHJlFb+uv1X6rFYa7hc9Whss+Cn+taiJ4D0gZIBzl1Ex76KgVPMfUHJFH6
-	MgiphI85qB7Iq4EpCXajT+4FiHVVJI7Ih0xRZSsCu9mXc7x2IbsarlFfZvFY5PyrzMCn
-	v0UO007LHKOV7lRucwfUgHYUHrDAx1BGMCJwhqvhj8mutmPkhhYMMzG7PxoiqezDKaP8
-	SwGA==
-X-Gm-Message-State: APjAAAVRzeqgQAjULB4aBI5dBtETbYA26kTns8lyfr8nOWq2zGkrVaiK
-	hNbtYrt3EKFnFqkOIg/6TYHaFg==
-X-Google-Smtp-Source: APXvYqz87++12wSGikge8AEkKIiQU8AjWcOWzGOGNRXHRWUIyzTL0GFPStDmWg3XJPNCBwz9LHpsjQ==
-X-Received: by 2002:a05:6402:21d6:: with SMTP id
-	bi22mr31741791edb.19.1571126204054; 
-	Tue, 15 Oct 2019 00:56:44 -0700 (PDT)
-Received: from lophozonia ([85.195.192.192]) by smtp.gmail.com with ESMTPSA id
-	br14sm2644807ejb.15.2019.10.15.00.56.42
-	(version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-	Tue, 15 Oct 2019 00:56:43 -0700 (PDT)
-Date: Tue, 15 Oct 2019 09:56:41 +0200
-From: Jean-Philippe Brucker <jean-philippe@linaro.org>
-To: Jacob Pan <jacob.jun.pan@linux.intel.com>
+	Tue, 15 Oct 2019 08:35:33 +0000 (UTC)
+Received: from smtp.corp.redhat.com (int-mx02.intmail.prod.int.phx2.redhat.com
+	[10.5.11.12])
+	(using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
+	(No client certificate requested)
+	by mx1.redhat.com (Postfix) with ESMTPS id 37B23793C9;
+	Tue, 15 Oct 2019 08:35:32 +0000 (UTC)
+Received: from [10.36.116.245] (ovpn-116-245.ams2.redhat.com [10.36.116.245])
+	by smtp.corp.redhat.com (Postfix) with ESMTPS id EE03C60C5D;
+	Tue, 15 Oct 2019 08:35:22 +0000 (UTC)
 Subject: Re: [PATCH v4 0/4] User API for nested shared virtual address (SVA)
-Message-ID: <20191015075641.GC1467695@lophozonia>
-References: <1570045363-24856-1-git-send-email-jacob.jun.pan@linux.intel.com>
-	<20191007123912.60c19a79@jacob-builder>
-	<20191014101405.5429571b@jacob-builder>
-MIME-Version: 1.0
-Content-Disposition: inline
-In-Reply-To: <20191014101405.5429571b@jacob-builder>
-User-Agent: Mutt/1.12.2 (2019-09-21)
-Cc: "Tian, Kevin" <kevin.tian@intel.com>, Raj Ashok <ashok.raj@intel.com>,
-	David Woodhouse <dwmw2@infradead.org>, iommu@lists.linux-foundation.org,
-	LKML <linux-kernel@vger.kernel.org>,
+To: Jacob Pan <jacob.jun.pan@linux.intel.com>,
+	iommu@lists.linux-foundation.org, LKML <linux-kernel@vger.kernel.org>, 
+	Joerg Roedel <joro@8bytes.org>, David Woodhouse <dwmw2@infradead.org>, 
 	Alex Williamson <alex.williamson@redhat.com>,
-	Jean-Philippe Brucker <jean-philippe@linaro.com>,
+	Jean-Philippe Brucker <jean-philippe@linaro.com>
+References: <1570045363-24856-1-git-send-email-jacob.jun.pan@linux.intel.com>
+From: Auger Eric <eric.auger@redhat.com>
+Message-ID: <57400ea9-607d-5502-8e77-3ad2b5f9a35e@redhat.com>
+Date: Tue, 15 Oct 2019 10:35:20 +0200
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:60.0) Gecko/20100101
+	Thunderbird/60.4.0
+MIME-Version: 1.0
+In-Reply-To: <1570045363-24856-1-git-send-email-jacob.jun.pan@linux.intel.com>
+Content-Language: en-US
+X-Scanned-By: MIMEDefang 2.79 on 10.5.11.12
+X-Greylist: Sender IP whitelisted, not delayed by milter-greylist-4.5.16
+	(mx1.redhat.com [10.5.110.25]);
+	Tue, 15 Oct 2019 08:35:32 +0000 (UTC)
+Cc: "Tian, Kevin" <kevin.tian@intel.com>, Raj Ashok <ashok.raj@intel.com>,
 	Jonathan Cameron <jic23@kernel.org>
 X-BeenThere: iommu@lists.linux-foundation.org
 X-Mailman-Version: 2.1.12
@@ -101,16 +76,77 @@ Content-Transfer-Encoding: 7bit
 Sender: iommu-bounces@lists.linux-foundation.org
 Errors-To: iommu-bounces@lists.linux-foundation.org
 
-On Mon, Oct 14, 2019 at 10:14:05AM -0700, Jacob Pan wrote:
-> Hi Joerg,
+Hi,
+
+On 10/2/19 9:42 PM, Jacob Pan wrote:
+> This set consists of IOMMU APIs to support SVA in the guest, a.k.a nested
+> SVA. As the complete SVA support is complex, we break down the enabling
+> effort into three stages:
+> 1. PCI device direct assignment
+> 2. Fault handling, especially page request service support
+> 3. Mediated device assignment
 > 
-> Just another gentle reminder. I think we have reached consensus in this
-> common code. Jean and Eric can confirm.
+> Each stage includes common API and vendor specific IOMMU driver changes. This
+> series is the common uAPI for stage #1. It is intended to build consensus on
+> the interface which all vendors reply on.
+> 
+> This series is extracted from the complete stage1 set which includes VT-d code.
+> https://lkml.org/lkml/2019/8/15/951
+> 
+> Changes:
+>  - Use spinlock instead of mutex to protect ioasid custom allocators. This is
+>    to support callers in atomic context
+>  - Added more padding to guest PASID bind data for future extensions, suggested
+>    by Joerg.
+> After much thinking, I did not do name change from PASID to IOASID in the uAPI,
+> considering we have been using PASID in the rest of uAPIs. IOASID will remain
+> used within the kernel.
+> 
+> For more discussions lead to this series, checkout LPC 2019 VFIO/IOMMU/PCI
+> microconference materials.
+> https://linuxplumbersconf.org/event/4/sessions/66/#20190909
+> 
+> 
+> Change log:
+> v4:    - minor patch regroup and fixes based on review from Jean
+> v3:    - include errno.h in ioasid.h to fix compile error
+>        - rebased to v5.4-rc1, no change
+>  
+> v2:
+> 	- Addressed review comments by Jean on IOASID custom allocators, locking
+> 	fix, misc control flow fix.
+> 	- Fixed a compile error with missing header errno.h
+> 	- Updated Jean-Philiippe's new email and updateded reviewed-by tag
+> 
+> Jacob Pan (2):
+>   iommu/ioasid: Add custom allocators
+>   iommu: Introduce guest PASID bind function
+> 
+> Jean-Philippe Brucker (1):
+>   iommu: Add I/O ASID allocator
+> 
+> Yi L Liu (1):
+>   iommu: Introduce cache_invalidate API
+> 
+>  drivers/iommu/Kconfig      |   4 +
+>  drivers/iommu/Makefile     |   1 +
+>  drivers/iommu/ioasid.c     | 422 +++++++++++++++++++++++++++++++++++++++++++++
+>  drivers/iommu/iommu.c      |  30 ++++
+>  include/linux/ioasid.h     |  76 ++++++++
+>  include/linux/iommu.h      |  36 ++++
+>  include/uapi/linux/iommu.h | 169 ++++++++++++++++++
+>  7 files changed, 738 insertions(+)
+>  create mode 100644 drivers/iommu/ioasid.c
+>  create mode 100644 include/linux/ioasid.h
 
-Yes for the whole series
+For the whole series,
+Reviewed-by: Eric Auger <eric.auger@redhat.com>
 
-Reviewed-by: Jean-Philippe Brucker <jean-philippe@linaro.org>
+Thanks
 
+Eric
+
+> 
 _______________________________________________
 iommu mailing list
 iommu@lists.linux-foundation.org
