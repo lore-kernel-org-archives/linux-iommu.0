@@ -6,50 +6,49 @@ X-Spam-Status: No, score=-2.2 required=3.0 tests=HEADER_FROM_DIFFERENT_DOMAINS,
 	MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED,USER_AGENT_SANE_1
 	autolearn=no autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id E28D3C10F14
-	for <iommu@archiver.kernel.org>; Tue, 15 Oct 2019 08:47:35 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 76819C10F14
+	for <iommu@archiver.kernel.org>; Tue, 15 Oct 2019 09:08:17 +0000 (UTC)
 Received: from mail.linuxfoundation.org (mail.linuxfoundation.org [140.211.169.12])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by mail.kernel.org (Postfix) with ESMTPS id B3E432089C
-	for <iommu@archiver.kernel.org>; Tue, 15 Oct 2019 08:47:35 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org B3E432089C
+	by mail.kernel.org (Postfix) with ESMTPS id 3968220659
+	for <iommu@archiver.kernel.org>; Tue, 15 Oct 2019 09:08:17 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 3968220659
 Authentication-Results: mail.kernel.org; dmarc=none (p=none dis=none) header.from=huawei.com
 Authentication-Results: mail.kernel.org; spf=pass smtp.mailfrom=iommu-bounces@lists.linux-foundation.org
 Received: from mail.linux-foundation.org (localhost [127.0.0.1])
-	by mail.linuxfoundation.org (Postfix) with ESMTP id 65AA7B8F;
-	Tue, 15 Oct 2019 08:47:35 +0000 (UTC)
+	by mail.linuxfoundation.org (Postfix) with ESMTP id BA2E7CAD;
+	Tue, 15 Oct 2019 09:08:16 +0000 (UTC)
 Received: from smtp1.linuxfoundation.org (smtp1.linux-foundation.org
 	[172.17.192.35])
-	by mail.linuxfoundation.org (Postfix) with ESMTPS id 20185AF3
+	by mail.linuxfoundation.org (Postfix) with ESMTPS id 25D8FAF3
 	for <iommu@lists.linux-foundation.org>;
-	Tue, 15 Oct 2019 08:47:34 +0000 (UTC)
+	Tue, 15 Oct 2019 09:08:15 +0000 (UTC)
 X-Greylist: domain auto-whitelisted by SQLgrey-1.7.6
-Received: from huawei.com (szxga07-in.huawei.com [45.249.212.35])
-	by smtp1.linuxfoundation.org (Postfix) with ESMTPS id 7DFDC6CE
+Received: from huawei.com (szxga04-in.huawei.com [45.249.212.190])
+	by smtp1.linuxfoundation.org (Postfix) with ESMTPS id 5245E14D
 	for <iommu@lists.linux-foundation.org>;
-	Tue, 15 Oct 2019 08:47:33 +0000 (UTC)
-Received: from DGGEMS406-HUB.china.huawei.com (unknown [172.30.72.59])
-	by Forcepoint Email with ESMTP id E5CBC381E56DCDE9C84C;
-	Tue, 15 Oct 2019 16:47:28 +0800 (CST)
-Received: from [127.0.0.1] (10.202.227.179) by DGGEMS406-HUB.china.huawei.com
-	(10.3.19.206) with Microsoft SMTP Server id 14.3.439.0;
-	Tue, 15 Oct 2019 16:47:19 +0800
-Subject: Re: [RFC PATCH 6/6] ACPI/IORT: Drop code to set the PMCG
-	software-defined model
+	Tue, 15 Oct 2019 09:08:14 +0000 (UTC)
+Received: from DGGEMS401-HUB.china.huawei.com (unknown [172.30.72.58])
+	by Forcepoint Email with ESMTP id E49F951A1DF59C7F64F8;
+	Tue, 15 Oct 2019 17:08:10 +0800 (CST)
+Received: from [127.0.0.1] (10.202.227.179) by DGGEMS401-HUB.china.huawei.com
+	(10.3.19.201) with Microsoft SMTP Server id 14.3.439.0;
+	Tue, 15 Oct 2019 17:08:01 +0800
+Subject: Re: [RFC PATCH 1/6] ACPI/IORT: Set PMCG device parent
 To: Hanjun Guo <guohanjun@huawei.com>, <lorenzo.pieralisi@arm.com>,
 	<sudeep.holla@arm.com>, <robin.murphy@arm.com>, <mark.rutland@arm.com>, 
 	<will@kernel.org>
 References: <1569854031-237636-1-git-send-email-john.garry@huawei.com>
-	<1569854031-237636-7-git-send-email-john.garry@huawei.com>
-	<e4e8adfd-a0af-82cb-c5f6-77153474330a@huawei.com>
+	<1569854031-237636-2-git-send-email-john.garry@huawei.com>
+	<ae9a1c8a-d84b-95ab-9a6b-87a7c89c68d9@huawei.com>
 From: John Garry <john.garry@huawei.com>
-Message-ID: <4de3b360-710f-e109-93bf-30ff942d08c1@huawei.com>
-Date: Tue, 15 Oct 2019 09:47:12 +0100
+Message-ID: <c7bfc6ac-71a1-50d2-e18f-4d352837b93b@huawei.com>
+Date: Tue, 15 Oct 2019 10:07:54 +0100
 User-Agent: Mozilla/5.0 (Windows NT 10.0; WOW64; rv:45.0) Gecko/20100101
 	Thunderbird/45.3.0
 MIME-Version: 1.0
-In-Reply-To: <e4e8adfd-a0af-82cb-c5f6-77153474330a@huawei.com>
+In-Reply-To: <ae9a1c8a-d84b-95ab-9a6b-87a7c89c68d9@huawei.com>
 X-Originating-IP: [10.202.227.179]
 X-CFilter-Loop: Reflected
 Cc: nleeder@codeaurora.org, rjw@rjwysocki.net, linux-kernel@vger.kernel.org,
@@ -72,34 +71,109 @@ Content-Type: text/plain; charset="us-ascii"; Format="flowed"
 Sender: iommu-bounces@lists.linux-foundation.org
 Errors-To: iommu-bounces@lists.linux-foundation.org
 
-On 15/10/2019 04:06, Hanjun Guo wrote:
->> -/*
->> > - * PMCG model identifiers for use in smmu pmu driver. Please note
->> > - * that this is purely for the use of software and has nothing to
->> > - * do with hardware or with IORT specification.
->> > - */
->> > -#define IORT_SMMU_V3_PMCG_GENERIC        0x00000000 /* Generic SMMUv3 PMCG */
->> > -#define IORT_SMMU_V3_PMCG_HISI_HIP08     0x00000001 /* HiSilicon HIP08 PMCG */
-> Since only HiSilicon platform has such erratum, and I think it works with
-> both old version of firmware, I'm fine with removing this erratum framework.
+Hi Hanjun,
+
+Thanks for checking this.
+
+>>   */
+>>  static int __init iort_add_platform_device(struct acpi_iort_node *node,
+>> -					   const struct iort_dev_config *ops)
+>> +					   const struct iort_dev_config *ops, struct device *parent)
+>
+> Since you added a input for this function, could you please update
+> the comments of this function as well?
+
+Right, that can be updated. Indeed, the current comment omit the @ops 
+argument also.
+
+>
+>>  {
+>>  	struct fwnode_handle *fwnode;
+>>  	struct platform_device *pdev;
+>> @@ -1466,6 +1466,8 @@ static int __init iort_add_platform_device(struct acpi_iort_node *node,
+>>  	if (!pdev)
+>>  		return -ENOMEM;
+>>
+>> +	pdev->dev.parent = parent;
+>> +
+>>  	if (ops->dev_set_proximity) {
+>>  		ret = ops->dev_set_proximity(&pdev->dev, node);
+>>  		if (ret)
+>> @@ -1573,6 +1575,11 @@ static void __init iort_enable_acs(struct acpi_iort_node *iort_node)
+>>  static inline void iort_enable_acs(struct acpi_iort_node *iort_node) { }
+>>  #endif
+>>
+>> +static int iort_fwnode_match(struct device *dev, const void *fwnode)
+>> +{
+>> +	return dev->fwnode == fwnode;
+>> +}
+>> +
+>>  static void __init iort_init_platform_devices(void)
+>>  {
+>>  	struct acpi_iort_node *iort_node, *iort_end;
+>> @@ -1594,11 +1601,34 @@ static void __init iort_init_platform_devices(void)
+>>  				iort_table->length);
+>>
+>>  	for (i = 0; i < iort->node_count; i++) {
+>> +		struct device *parent = NULL;
+>> +
+>>  		if (iort_node >= iort_end) {
+>>  			pr_err("iort node pointer overflows, bad table\n");
+>>  			return;
+>>  		}
+>>
+>> +		/* Fixme: handle parent declared in IORT after PMCG */
+>> +		if (iort_node->type == ACPI_IORT_NODE_PMCG) {
+>> +			struct acpi_iort_node *iort_assoc_node;
+>> +			struct acpi_iort_pmcg *pmcg;
+>> +			u32 node_reference;
+>> +
+>> +			pmcg = (struct acpi_iort_pmcg *)iort_node->node_data;
+>> +
+>> +			node_reference = pmcg->node_reference;
+>> +			iort_assoc_node = ACPI_ADD_PTR(struct acpi_iort_node, iort,
+>> +				 node_reference);
+>> +
+>> +			if (iort_assoc_node->type == ACPI_IORT_NODE_SMMU_V3) {
+>> +				struct fwnode_handle *assoc_fwnode;
+>> +
+>> +				assoc_fwnode = iort_get_fwnode(iort_assoc_node);
+>> +
+>> +				parent = bus_find_device(&platform_bus_type, NULL,
+>> +				      assoc_fwnode, iort_fwnode_match);
+>> +			}
+>> +		}
+>
+> How about using a function to include those new added code to make this
+> function (iort_init_platform_devices()) a bit cleaner?
 >
 
-Yeah, seems a decent change on its own, even without the SMMU PMCG 
-driver changes.
+Can do. But I still need to add code to deal with the scenario of the 
+parent PMCG not being an SMMU, which is supported in the spec as I recall.
 
-But we still need to check on patch "[PATCH RFC 2/6] iommu/arm-smmu-v3: 
-Record IIDR in arm_smmu_device structure" to progress any of this.
+Note that I would not have FW to test that, so maybe can omit support 
+for now as long as there's no regression.
 
-Will, Robin, Any opinion on that patch?
+>>  		iort_enable_acs(iort_node);
+>>
+>>  		ops = iort_get_dev_cfg(iort_node);
+>> @@ -1609,7 +1639,7 @@ static void __init iort_init_platform_devices(void)
+>>
+>>  			iort_set_fwnode(iort_node, fwnode);
+>>
+>> -			ret = iort_add_platform_device(iort_node, ops);
+>> +			ret = iort_add_platform_device(iort_node, ops, parent);
+>
+> This function is called if ops is valid, so retrieve the parent
+> can be done before this function I think.
 
-https://lore.kernel.org/linux-iommu/1569854031-237636-1-git-send-email-john.garry@huawei.com/T/#m1e24771a23ee5426ec94ca2c4ec572642c155a77
+Ah, yes
 
-> Acked-by: Hanjun Guo <guohanjun@huawei.com>
-
-Cheers,
+Thanks,
 John
 
 >
+
 > Thanks
 > Hanjun
 >
