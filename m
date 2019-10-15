@@ -2,80 +2,49 @@ Return-Path: <SRS0=BRyA=YI=lists.linux-foundation.org=iommu-bounces@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-3.5 required=3.0 tests=DKIM_ADSP_CUSTOM_MED,
-	DKIM_INVALID,DKIM_SIGNED,FREEMAIL_FORGED_FROMDOMAIN,FREEMAIL_FROM,
-	HEADER_FROM_DIFFERENT_DOMAINS,MAILING_LIST_MULTI,SIGNED_OFF_BY,SPF_HELO_NONE,
-	SPF_PASS autolearn=no autolearn_force=no version=3.4.0
+X-Spam-Status: No, score=-2.2 required=3.0 tests=HEADER_FROM_DIFFERENT_DOMAINS,
+	MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED,USER_AGENT_SANE_1
+	autolearn=no autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 4C5A5ECE588
-	for <iommu@archiver.kernel.org>; Tue, 15 Oct 2019 13:09:44 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 51D23ECE58F
+	for <iommu@archiver.kernel.org>; Tue, 15 Oct 2019 13:37:54 +0000 (UTC)
 Received: from mail.linuxfoundation.org (mail.linuxfoundation.org [140.211.169.12])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by mail.kernel.org (Postfix) with ESMTPS id 1CE5521848
-	for <iommu@archiver.kernel.org>; Tue, 15 Oct 2019 13:09:44 +0000 (UTC)
-Authentication-Results: mail.kernel.org;
-	dkim=fail reason="signature verification failed" (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="AxS3jNtI"
-DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 1CE5521848
-Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=gmail.com
+	by mail.kernel.org (Postfix) with ESMTPS id 257DA2064A
+	for <iommu@archiver.kernel.org>; Tue, 15 Oct 2019 13:37:54 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 257DA2064A
+Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=8bytes.org
 Authentication-Results: mail.kernel.org; spf=pass smtp.mailfrom=iommu-bounces@lists.linux-foundation.org
 Received: from mail.linux-foundation.org (localhost [127.0.0.1])
-	by mail.linuxfoundation.org (Postfix) with ESMTP id 0736FE18;
-	Tue, 15 Oct 2019 13:09:44 +0000 (UTC)
+	by mail.linuxfoundation.org (Postfix) with ESMTP id 02D18E52;
+	Tue, 15 Oct 2019 13:37:54 +0000 (UTC)
 Received: from smtp1.linuxfoundation.org (smtp1.linux-foundation.org
 	[172.17.192.35])
-	by mail.linuxfoundation.org (Postfix) with ESMTPS id AE35FE0E
+	by mail.linuxfoundation.org (Postfix) with ESMTPS id 8E7B8C59
 	for <iommu@lists.linux-foundation.org>;
-	Tue, 15 Oct 2019 13:09:43 +0000 (UTC)
-X-Greylist: whitelisted by SQLgrey-1.7.6
-Received: from mail-wm1-f68.google.com (mail-wm1-f68.google.com
-	[209.85.128.68])
-	by smtp1.linuxfoundation.org (Postfix) with ESMTPS id 97A9E6D6
+	Tue, 15 Oct 2019 13:37:52 +0000 (UTC)
+X-Greylist: from auto-whitelisted by SQLgrey-1.7.6
+Received: from theia.8bytes.org (8bytes.org [81.169.241.247])
+	by smtp1.linuxfoundation.org (Postfix) with ESMTPS id 0854D6D6
 	for <iommu@lists.linux-foundation.org>;
-	Tue, 15 Oct 2019 13:09:41 +0000 (UTC)
-Received: by mail-wm1-f68.google.com with SMTP id 5so20837658wmg.0
-	for <iommu@lists.linux-foundation.org>;
-	Tue, 15 Oct 2019 06:09:41 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=gmail.com; s=20161025;
-	h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-	:cc; bh=AZLh4M45F8+IHDYQfQ59rTfgOYaS9KZGvrjR75EFs2c=;
-	b=AxS3jNtI/paOnEUyOVl8yf+sRnICTDCB/pSCdYKfqkRkvuJ48UwgjiyPnmBbdvcUs8
-	3bWp50PWeCqic3cx0h/bmR/N91vRZx/oZafvItIrV5SGwMPhvzxGlNKbK4sYYgdXiQkz
-	ptjWMVNHgLfdJ/glRcVuUQhaNdBkL6ntYldvg9qQY1GrLBFM8wQsygF5/N/WS/h7CGTD
-	Lg/C+nW4EG1Kuve3pGCEP/ieDMFTRCjKVzxSDqgl4fJjyOxzAMmZYAcsEFahsfv7y2TL
-	t1fQZNKcB5KO9ky8Wf27LlVxKnJwkNISTUlal+eOASfb4iJtpubaWu7Ypb/w6wvranm1
-	LUNg==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-	d=1e100.net; s=20161025;
-	h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-	:message-id:subject:to:cc;
-	bh=AZLh4M45F8+IHDYQfQ59rTfgOYaS9KZGvrjR75EFs2c=;
-	b=efAP/ROMdKX/IPnexbgu6917MvbQUWBQmcXShdpFS1DhGaAV/hT8Phxy+Cy2TModa4
-	MMSY9ZVZelc8y6IGWilBzv549qQSphadGIXYgwPscphHMZwIRM19bq74Zv1XXzoIaXK4
-	ZsTq23l4776V5XPOSc8xlHNDipYZdoq/njEs2Z3oRh+SEDcHPL3vX4zj1zZYIpEM2VhX
-	ttppVtpY6TEMRZDl6103O2OiBBZsdz8vk7wWQ+nHiS8iG2Of22Br1Ku+GgYXTmOGl0uk
-	uttUIDT2S/+OZZWSQcDTeZASMg7XYT2O47DMc3XPWeQRcZRSPUNPH6Pw+pHdSAM5Q/yR
-	yGJw==
-X-Gm-Message-State: APjAAAUSVzDlWSOHx+SHVbRu9sDFgIyOJjpsEgrb6TEk5bXhtKr54WFY
-	XyWQYJE0fY+c0UV33v4jr3v7X0WwnorGYFP5RiM=
-X-Google-Smtp-Source: APXvYqw7BzekgKwEuFDENzlpilT/WQOhMMJM0W/kjTFmA6tcRQKrddwRlgXqkc9dE6v0IjOeWL5ccaRoNMDX9hiAPU4=
-X-Received: by 2002:a1c:a651:: with SMTP id p78mr19694786wme.53.1571144979978; 
-	Tue, 15 Oct 2019 06:09:39 -0700 (PDT)
+	Tue, 15 Oct 2019 13:37:51 +0000 (UTC)
+Received: by theia.8bytes.org (Postfix, from userid 1000)
+	id CAC062DF; Tue, 15 Oct 2019 15:37:49 +0200 (CEST)
+Date: Tue, 15 Oct 2019 15:37:48 +0200
+From: Joerg Roedel <joro@8bytes.org>
+To: Logan Gunthorpe <logang@deltatee.com>
+Subject: Re: [PATCH 3/3] iommu/amd: Support multiple PCI DMA aliases in IRQ
+	Remapping
+Message-ID: <20191015133748.GC17570@8bytes.org>
+References: <20191008221837.13067-1-logang@deltatee.com>
+	<20191008221837.13067-4-logang@deltatee.com>
 MIME-Version: 1.0
-References: <20191001220205.6423-1-kholk11@gmail.com>
-	<20191001220205.6423-2-kholk11@gmail.com>
-	<20191015111454.GG14518@8bytes.org>
-	<CAK7fi1YZXW=mqC5HWtfBWsioAq-duejAk6RgtD8npKZR=af38w@mail.gmail.com>
-	<20191015124008.GB17570@8bytes.org>
-In-Reply-To: <20191015124008.GB17570@8bytes.org>
-From: AngeloGioacchino Del Regno <kholk11@gmail.com>
-Date: Tue, 15 Oct 2019 15:09:29 +0200
-Message-ID: <CAK7fi1YT_Or0bD3DwofQ_BLUsKyY3M7T8XCmDp1PAK9To7b64g@mail.gmail.com>
-Subject: Re: [PATCH v4 1/7] firmware: qcom: scm: Add function to set IOMMU
-	pagetable addressing
-To: Joerg Roedel <joro@8bytes.org>
-Cc: MSM <linux-arm-msm@vger.kernel.org>, iommu@lists.linux-foundation.org,
-	Andy Gross <agross@kernel.org>, marijns95@gmail.com
+Content-Disposition: inline
+In-Reply-To: <20191008221837.13067-4-logang@deltatee.com>
+User-Agent: Mutt/1.10.1 (2018-07-13)
+Cc: iommu@lists.linux-foundation.org, linux-kernel@vger.kernel.org,
+	Kit Chow <kchow@gigaio.com>
 X-BeenThere: iommu@lists.linux-foundation.org
 X-Mailman-Version: 2.1.12
 Precedence: list
@@ -93,38 +62,38 @@ Content-Transfer-Encoding: 7bit
 Sender: iommu-bounces@lists.linux-foundation.org
 Errors-To: iommu-bounces@lists.linux-foundation.org
 
-Il giorno mar 15 ott 2019 alle ore 14:40 Joerg Roedel
-<joro@8bytes.org> ha scritto:
->
-> On Tue, Oct 15, 2019 at 02:33:47PM +0200, AngeloGioacchino Del Regno wrote:
-> > Il giorno mar 15 ott 2019 alle ore 13:14 Joerg Roedel
-> > <joro@8bytes.org> ha scritto:
-> > >
-> > > On Wed, Oct 02, 2019 at 12:01:59AM +0200, kholk11@gmail.com wrote:
-> > > > From: "Angelo G. Del Regno" <kholk11@gmail.com>
-> > > >
-> > > > Add a function to change the IOMMU pagetable addressing to
-> > > > AArch32 LPAE or AArch64. If doing that, then this must be
-> > > > done for each IOMMU context (not necessarily at the same time).
-> > >
-> > > This patch lacks a Signed-off-by.
-> > >
-> >
-> > I'm sorry for that. Should I resend or is it enough for me to write it here?
-> >
-> > Signed-off-by: AngeloGioacchino Del Regno <kholk11@gmail.com>
->
-> Please resend, but you are free to wait for the reviews/acks from Rob
-> Clark, which I'd like to see on the series.
->
-> Regards,
->
->         Joerg
+On Tue, Oct 08, 2019 at 04:18:37PM -0600, Logan Gunthorpe wrote:
+> -static struct irq_remap_table *alloc_irq_table(u16 devid)
+> +static int set_remap_table_entry_alias(struct pci_dev *pdev, u16 alias,
+> +				       void *data)
+> +{
+> +	struct irq_remap_table *table = data;
+> +
+> +	irq_lookup_table[alias] = table;
+> +	set_dte_irq_entry(alias, table);
+> +
+> +	return 0;
+> +}
+> +
+> +static int iommu_flush_dte_alias(struct pci_dev *pdev, u16 alias, void *data)
+> +{
+> +	struct amd_iommu *iommu = data;
+> +
+> +	iommu_flush_dte(iommu, alias);
+> +
+> +	return 0;
+> +}
 
-Okay, no problem. I will wait for the reviews/acks from Rob before
-resending in order to limit the amount of emails in everyone's inbox :))
+I think these two functions can be merged into one, saving one
+pci_for_each_dma_alias() call below. You can lookup the iommu using the
+amd_iommu_rlookup_table[alias] in the first function and issue the flush
+there.
 
-Angelo
+
+Regards,
+
+	Joerg
+
 _______________________________________________
 iommu mailing list
 iommu@lists.linux-foundation.org
