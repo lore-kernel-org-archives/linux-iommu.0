@@ -2,73 +2,48 @@ Return-Path: <SRS0=BRyA=YI=lists.linux-foundation.org=iommu-bounces@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-7.0 required=3.0 tests=DKIM_INVALID,DKIM_SIGNED,
-	HEADER_FROM_DIFFERENT_DOMAINS,MAILING_LIST_MULTI,MENTIONS_GIT_HOSTING,
-	SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED,USER_AGENT_SANE_1 autolearn=ham
-	autolearn_force=no version=3.4.0
+X-Spam-Status: No, score=-5.3 required=3.0 tests=HEADER_FROM_DIFFERENT_DOMAINS,
+	MAILING_LIST_MULTI,SIGNED_OFF_BY,SPF_HELO_NONE,SPF_PASS,USER_AGENT_SANE_1
+	autolearn=ham autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 07FC7ECE588
-	for <iommu@archiver.kernel.org>; Tue, 15 Oct 2019 10:23:53 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 3BBDFECE588
+	for <iommu@archiver.kernel.org>; Tue, 15 Oct 2019 10:45:52 +0000 (UTC)
 Received: from mail.linuxfoundation.org (mail.linuxfoundation.org [140.211.169.12])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by mail.kernel.org (Postfix) with ESMTPS id BE0ED217F9
-	for <iommu@archiver.kernel.org>; Tue, 15 Oct 2019 10:23:52 +0000 (UTC)
-Authentication-Results: mail.kernel.org;
-	dkim=fail reason="signature verification failed" (2048-bit key) header.d=infradead.org header.i=@infradead.org header.b="EdZyJ8Xg"
-DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org BE0ED217F9
-Authentication-Results: mail.kernel.org; dmarc=none (p=none dis=none) header.from=infradead.org
+	by mail.kernel.org (Postfix) with ESMTPS id 15CAC2089C
+	for <iommu@archiver.kernel.org>; Tue, 15 Oct 2019 10:45:52 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 15CAC2089C
+Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=8bytes.org
 Authentication-Results: mail.kernel.org; spf=pass smtp.mailfrom=iommu-bounces@lists.linux-foundation.org
 Received: from mail.linux-foundation.org (localhost [127.0.0.1])
-	by mail.linuxfoundation.org (Postfix) with ESMTP id 6DCC5AF0;
-	Tue, 15 Oct 2019 10:23:52 +0000 (UTC)
+	by mail.linuxfoundation.org (Postfix) with ESMTP id F211FB8F;
+	Tue, 15 Oct 2019 10:45:51 +0000 (UTC)
 Received: from smtp1.linuxfoundation.org (smtp1.linux-foundation.org
 	[172.17.192.35])
-	by mail.linuxfoundation.org (Postfix) with ESMTPS id 5222BAC8
+	by mail.linuxfoundation.org (Postfix) with ESMTPS id 1687DB8E
 	for <iommu@lists.linux-foundation.org>;
-	Tue, 15 Oct 2019 10:23:51 +0000 (UTC)
+	Tue, 15 Oct 2019 10:45:51 +0000 (UTC)
 X-Greylist: from auto-whitelisted by SQLgrey-1.7.6
-Received: from bombadil.infradead.org (bombadil.infradead.org
-	[198.137.202.133])
-	by smtp1.linuxfoundation.org (Postfix) with ESMTPS id 015FD8B3
+Received: from theia.8bytes.org (8bytes.org [81.169.241.247])
+	by smtp1.linuxfoundation.org (Postfix) with ESMTPS id 5A91888E
 	for <iommu@lists.linux-foundation.org>;
-	Tue, 15 Oct 2019 10:23:50 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
-	d=infradead.org; s=bombadil.20170209;
-	h=In-Reply-To:Content-Type:MIME-Version
-	:References:Message-ID:Subject:Cc:To:From:Date:Sender:Reply-To:
-	Content-Transfer-Encoding:Content-ID:Content-Description:Resent-Date:
-	Resent-From:Resent-Sender:Resent-To:Resent-Cc:Resent-Message-ID:List-Id:
-	List-Help:List-Unsubscribe:List-Subscribe:List-Post:List-Owner:List-Archive;
-	bh=g8Yf5bkK0qIaSk67mxtN2CAg12cwmtqwx0IrD4HqSA8=;
-	b=EdZyJ8XgRi7NDvsRwaiKHjDwN
-	Ss+k9RgPQXO/UicfhAEVevJjtPrsrxIwNCaJmatOW6cC/8dsNgm1lzeHLLfq3AId1rsH5VtQuhFiH
-	o+XDUvS0TQZ9DM1AyYY8qQKqO4VP3m56zRljXK33/mKPAOJTj9cX2BSx354fHODXNG2JPlhnaBm3u
-	C8JTi/PjWI3T+By2cocpOJp7tcjgKTesEtZFEyWcTCGB/KFhb8eeeFAoYr/VX2AX55veWzfRQyRbD
-	jm0lh3yxFO5EHPpUwl/1crtPqlvFNX5LkbO3tjMRMADbqOf3DIu62ij/wT5hGBCOZVoR7/bN/0hgq
-	nEKEJZY9w==;
-Received: from hch by bombadil.infradead.org with local (Exim 4.92.3 #3 (Red
-	Hat Linux)) id 1iKJzW-0002Q7-UI; Tue, 15 Oct 2019 10:23:46 +0000
-Date: Tue, 15 Oct 2019 03:23:46 -0700
-From: Christoph Hellwig <hch@infradead.org>
-To: Nicolas Saenz Julienne <nsaenzjulienne@suse.de>
-Subject: Re: [PATCH RFC 4/5] dma/direct: check for overflows in ARM's
-	dma_capable()
-Message-ID: <20191015102346.GA9071@infradead.org>
-References: <20191014183108.24804-1-nsaenzjulienne@suse.de>
-	<20191014183108.24804-5-nsaenzjulienne@suse.de>
+	Tue, 15 Oct 2019 10:45:50 +0000 (UTC)
+Received: by theia.8bytes.org (Postfix, from userid 1000)
+	id 3E5212D9; Tue, 15 Oct 2019 12:45:48 +0200 (CEST)
+Date: Tue, 15 Oct 2019 12:45:46 +0200
+From: Joerg Roedel <joro@8bytes.org>
+To: Heiko Stuebner <heiko@sntech.de>
+Subject: Re: [PATCH] iommu/rockchip: don't use platform_get_irq to implicitly
+	count irqs
+Message-ID: <20191015104546.GD14518@8bytes.org>
+References: <20190925184346.14121-1-heiko@sntech.de>
 MIME-Version: 1.0
 Content-Disposition: inline
-In-Reply-To: <20191014183108.24804-5-nsaenzjulienne@suse.de>
-User-Agent: Mutt/1.12.1 (2019-06-15)
-X-SRS-Rewrite: SMTP reverse-path rewritten from <hch@infradead.org> by
-	bombadil.infradead.org. See http://www.infradead.org/rpr.html
-Cc: mbrugger@suse.com, linux-kernel@vger.kernel.org,
-	Russell King <linux@armlinux.org.uk>,
-	iommu@lists.linux-foundation.org, f.fainelli@gmail.com,
-	bcm-kernel-feedback-list@broadcom.com,
-	linux-rpi-kernel@lists.infradead.org, Robin Murphy <robin.murphy@arm.com>,
-	linux-arm-kernel@lists.infradead.org, wahrenst@gmx.net
+In-Reply-To: <20190925184346.14121-1-heiko@sntech.de>
+User-Agent: Mutt/1.10.1 (2018-07-13)
+Cc: linux-rockchip@lists.infradead.org, iommu@lists.linux-foundation.org,
+	linux-kernel@vger.kernel.org, linux-arm-kernel@lists.infradead.org
 X-BeenThere: iommu@lists.linux-foundation.org
 X-Mailman-Version: 2.1.12
 Precedence: list
@@ -86,27 +61,22 @@ Content-Transfer-Encoding: 7bit
 Sender: iommu-bounces@lists.linux-foundation.org
 Errors-To: iommu-bounces@lists.linux-foundation.org
 
-On Mon, Oct 14, 2019 at 08:31:06PM +0200, Nicolas Saenz Julienne wrote:
-> The Raspberry Pi 4 has a 1GB ZONE_DMA area starting at address
-> 0x00000000 and a mapping between physical and DMA memory offset by
-> 0xc0000000.  It transpires that, on non LPAE systems, any attempt to
-> translate physical addresses outside of ZONE_DMA will result in an
-> overflow. The resulting DMA addresses will not be detected by arm's
-> dma_capable() as they still fit in the device's DMA mask.
+On Wed, Sep 25, 2019 at 08:43:46PM +0200, Heiko Stuebner wrote:
+> Till now the Rockchip iommu driver walked through the irq list via
+> platform_get_irq() until it encountered an ENXIO error. With the
+> recent change to add a central error message, this always results
+> in such an error for each iommu on probe and shutdown.
 > 
-> Fix this by failing to validate a DMA address smaller than the lowest
-> possible DMA address.
+> To not confuse people, switch to platform_count_irqs() to get the
+> actual number of interrupts before walking through them.
+> 
+> Fixes: 7723f4c5ecdb ("driver core: platform: Add an error message to platform_get_irq*()")
+> Signed-off-by: Heiko Stuebner <heiko@sntech.de>
+> ---
+>  drivers/iommu/rockchip-iommu.c | 19 ++++++++++++++-----
+>  1 file changed, 14 insertions(+), 5 deletions(-)
 
-I think the main problem here is that arm doesn't respect the
-bus_dma_mask.  If you replace the arm version of dma_capable with
-the generic one, does that fi the issue for you as well?
-
-We need to untangle the various macros arm uses for the direct mapping
-and eventually we should be able to use the linux/dma-direct.h helpers
-directly.  Here is a branch with some simple preps I had.  Freshly
-rebased, not actually tested:
-
-http://git.infradead.org/users/hch/misc.git/shortlog/refs/heads/arm-generic-dma-preps
+Applied for v5.4, thanks.
 _______________________________________________
 iommu mailing list
 iommu@lists.linux-foundation.org
