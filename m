@@ -6,44 +6,47 @@ X-Spam-Status: No, score=-5.2 required=3.0 tests=HEADER_FROM_DIFFERENT_DOMAINS,
 	MAILING_LIST_MULTI,SIGNED_OFF_BY,SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED,
 	USER_AGENT_SANE_1 autolearn=ham autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 64844ECE58E
-	for <iommu@archiver.kernel.org>; Tue, 15 Oct 2019 09:52:49 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id BF8A0ECE58E
+	for <iommu@archiver.kernel.org>; Tue, 15 Oct 2019 09:54:54 +0000 (UTC)
 Received: from mail.linuxfoundation.org (mail.linuxfoundation.org [140.211.169.12])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by mail.kernel.org (Postfix) with ESMTPS id 4183E20659
-	for <iommu@archiver.kernel.org>; Tue, 15 Oct 2019 09:52:49 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 4183E20659
+	by mail.kernel.org (Postfix) with ESMTPS id 9C8E020659
+	for <iommu@archiver.kernel.org>; Tue, 15 Oct 2019 09:54:54 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 9C8E020659
 Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=8bytes.org
 Authentication-Results: mail.kernel.org; spf=pass smtp.mailfrom=iommu-bounces@lists.linux-foundation.org
 Received: from mail.linux-foundation.org (localhost [127.0.0.1])
-	by mail.linuxfoundation.org (Postfix) with ESMTP id 1CB0CB59;
-	Tue, 15 Oct 2019 09:52:49 +0000 (UTC)
+	by mail.linuxfoundation.org (Postfix) with ESMTP id 72C75B59;
+	Tue, 15 Oct 2019 09:54:54 +0000 (UTC)
 Received: from smtp1.linuxfoundation.org (smtp1.linux-foundation.org
 	[172.17.192.35])
-	by mail.linuxfoundation.org (Postfix) with ESMTPS id D5137B43
+	by mail.linuxfoundation.org (Postfix) with ESMTPS id 429FD89B
 	for <iommu@lists.linux-foundation.org>;
-	Tue, 15 Oct 2019 09:52:47 +0000 (UTC)
+	Tue, 15 Oct 2019 09:54:53 +0000 (UTC)
 X-Greylist: from auto-whitelisted by SQLgrey-1.7.6
 Received: from theia.8bytes.org (8bytes.org [81.169.241.247])
-	by smtp1.linuxfoundation.org (Postfix) with ESMTPS id C8EB55D3
+	by smtp1.linuxfoundation.org (Postfix) with ESMTPS id A14E66C5
 	for <iommu@lists.linux-foundation.org>;
-	Tue, 15 Oct 2019 09:52:45 +0000 (UTC)
+	Tue, 15 Oct 2019 09:54:52 +0000 (UTC)
 Received: by theia.8bytes.org (Postfix, from userid 1000)
-	id 48096398; Tue, 15 Oct 2019 11:52:44 +0200 (CEST)
-Date: Tue, 15 Oct 2019 11:52:42 +0200
+	id 13C2B398; Tue, 15 Oct 2019 11:54:50 +0200 (CEST)
+Date: Tue, 15 Oct 2019 11:54:49 +0200
 From: Joerg Roedel <joro@8bytes.org>
-To: Lu Baolu <baolu.lu@linux.intel.com>
-Subject: Re: [PATCH 1/1] iommu/vt-d: Refactor find_domain() helper
-Message-ID: <20191015095242.GB14518@8bytes.org>
-References: <20190921070644.10630-1-baolu.lu@linux.intel.com>
+To: Biju Das <biju.das@bp.renesas.com>
+Subject: Re: [PATCH] dt-bindings: iommu: ipmmu-vmsa: Add r8a774b1 support
+Message-ID: <20191015095449.GC14518@8bytes.org>
+References: <1569310854-37057-1-git-send-email-biju.das@bp.renesas.com>
 MIME-Version: 1.0
 Content-Disposition: inline
-In-Reply-To: <20190921070644.10630-1-baolu.lu@linux.intel.com>
+In-Reply-To: <1569310854-37057-1-git-send-email-biju.das@bp.renesas.com>
 User-Agent: Mutt/1.10.1 (2018-07-13)
-Cc: kevin.tian@intel.com, ashok.raj@intel.com, linux-kernel@vger.kernel.org,
-	iommu@lists.linux-foundation.org, jacob.jun.pan@intel.com,
-	David Woodhouse <dwmw2@infradead.org>
+Cc: Mark Rutland <mark.rutland@arm.com>, devicetree@vger.kernel.org,
+	Chris Paterson <Chris.Paterson2@renesas.com>,
+	Geert Uytterhoeven <geert+renesas@glider.be>,
+	Simon Horman <horms@verge.net.au>, linux-renesas-soc@vger.kernel.org,
+	iommu@lists.linux-foundation.org, Rob Herring <robh+dt@kernel.org>,
+	Fabrizio Castro <fabrizio.castro@bp.renesas.com>
 X-BeenThere: iommu@lists.linux-foundation.org
 X-Mailman-Version: 2.1.12
 Precedence: list
@@ -61,24 +64,13 @@ Content-Transfer-Encoding: 7bit
 Sender: iommu-bounces@lists.linux-foundation.org
 Errors-To: iommu-bounces@lists.linux-foundation.org
 
-On Sat, Sep 21, 2019 at 03:06:44PM +0800, Lu Baolu wrote:
-> Current find_domain() helper checks and does the deferred domain
-> attachment and return the domain in use. This isn't always the
-> use case for the callers. Some callers only want to retrieve the
-> current domain in use.
+On Tue, Sep 24, 2019 at 08:40:54AM +0100, Biju Das wrote:
+> Document RZ/G2N (R8A774B1) SoC bindings.
 > 
-> This refactors find_domain() into two helpers: 1) find_domain()
-> only returns the domain in use; 2) deferred_attach_domain() does
-> the deferred domain attachment if required and return the domain
-> in use.
-> 
-> Cc: Ashok Raj <ashok.raj@intel.com>
-> Cc: Jacob Pan <jacob.jun.pan@linux.intel.com>
-> Cc: Kevin Tian <kevin.tian@intel.com>
-> Signed-off-by: Lu Baolu <baolu.lu@linux.intel.com>
+> Signed-off-by: Biju Das <biju.das@bp.renesas.com>
 > ---
->  drivers/iommu/intel-iommu.c | 31 ++++++++++++++++++-------------
->  1 file changed, 18 insertions(+), 13 deletions(-)
+>  Documentation/devicetree/bindings/iommu/renesas,ipmmu-vmsa.txt | 1 +
+>  1 file changed, 1 insertion(+)
 
 Applied, thanks.
 _______________________________________________
