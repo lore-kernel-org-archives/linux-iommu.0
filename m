@@ -6,59 +6,55 @@ X-Spam-Status: No, score=-2.2 required=3.0 tests=HEADER_FROM_DIFFERENT_DOMAINS,
 	MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED,USER_AGENT_SANE_1
 	autolearn=no autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id E67D2ECE58E
-	for <iommu@archiver.kernel.org>; Tue, 15 Oct 2019 08:35:34 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id E28D3C10F14
+	for <iommu@archiver.kernel.org>; Tue, 15 Oct 2019 08:47:35 +0000 (UTC)
 Received: from mail.linuxfoundation.org (mail.linuxfoundation.org [140.211.169.12])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by mail.kernel.org (Postfix) with ESMTPS id B4A6021835
-	for <iommu@archiver.kernel.org>; Tue, 15 Oct 2019 08:35:34 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org B4A6021835
-Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=redhat.com
+	by mail.kernel.org (Postfix) with ESMTPS id B3E432089C
+	for <iommu@archiver.kernel.org>; Tue, 15 Oct 2019 08:47:35 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org B3E432089C
+Authentication-Results: mail.kernel.org; dmarc=none (p=none dis=none) header.from=huawei.com
 Authentication-Results: mail.kernel.org; spf=pass smtp.mailfrom=iommu-bounces@lists.linux-foundation.org
 Received: from mail.linux-foundation.org (localhost [127.0.0.1])
-	by mail.linuxfoundation.org (Postfix) with ESMTP id 80E47BBC;
-	Tue, 15 Oct 2019 08:35:34 +0000 (UTC)
+	by mail.linuxfoundation.org (Postfix) with ESMTP id 65AA7B8F;
+	Tue, 15 Oct 2019 08:47:35 +0000 (UTC)
 Received: from smtp1.linuxfoundation.org (smtp1.linux-foundation.org
 	[172.17.192.35])
-	by mail.linuxfoundation.org (Postfix) with ESMTPS id 89A86B7D
+	by mail.linuxfoundation.org (Postfix) with ESMTPS id 20185AF3
 	for <iommu@lists.linux-foundation.org>;
-	Tue, 15 Oct 2019 08:35:33 +0000 (UTC)
+	Tue, 15 Oct 2019 08:47:34 +0000 (UTC)
 X-Greylist: domain auto-whitelisted by SQLgrey-1.7.6
-Received: from mx1.redhat.com (mx1.redhat.com [209.132.183.28])
-	by smtp1.linuxfoundation.org (Postfix) with ESMTPS id 1B48514D
+Received: from huawei.com (szxga07-in.huawei.com [45.249.212.35])
+	by smtp1.linuxfoundation.org (Postfix) with ESMTPS id 7DFDC6CE
 	for <iommu@lists.linux-foundation.org>;
-	Tue, 15 Oct 2019 08:35:33 +0000 (UTC)
-Received: from smtp.corp.redhat.com (int-mx02.intmail.prod.int.phx2.redhat.com
-	[10.5.11.12])
-	(using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
-	(No client certificate requested)
-	by mx1.redhat.com (Postfix) with ESMTPS id 37B23793C9;
-	Tue, 15 Oct 2019 08:35:32 +0000 (UTC)
-Received: from [10.36.116.245] (ovpn-116-245.ams2.redhat.com [10.36.116.245])
-	by smtp.corp.redhat.com (Postfix) with ESMTPS id EE03C60C5D;
-	Tue, 15 Oct 2019 08:35:22 +0000 (UTC)
-Subject: Re: [PATCH v4 0/4] User API for nested shared virtual address (SVA)
-To: Jacob Pan <jacob.jun.pan@linux.intel.com>,
-	iommu@lists.linux-foundation.org, LKML <linux-kernel@vger.kernel.org>, 
-	Joerg Roedel <joro@8bytes.org>, David Woodhouse <dwmw2@infradead.org>, 
-	Alex Williamson <alex.williamson@redhat.com>,
-	Jean-Philippe Brucker <jean-philippe@linaro.com>
-References: <1570045363-24856-1-git-send-email-jacob.jun.pan@linux.intel.com>
-From: Auger Eric <eric.auger@redhat.com>
-Message-ID: <57400ea9-607d-5502-8e77-3ad2b5f9a35e@redhat.com>
-Date: Tue, 15 Oct 2019 10:35:20 +0200
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:60.0) Gecko/20100101
-	Thunderbird/60.4.0
+	Tue, 15 Oct 2019 08:47:33 +0000 (UTC)
+Received: from DGGEMS406-HUB.china.huawei.com (unknown [172.30.72.59])
+	by Forcepoint Email with ESMTP id E5CBC381E56DCDE9C84C;
+	Tue, 15 Oct 2019 16:47:28 +0800 (CST)
+Received: from [127.0.0.1] (10.202.227.179) by DGGEMS406-HUB.china.huawei.com
+	(10.3.19.206) with Microsoft SMTP Server id 14.3.439.0;
+	Tue, 15 Oct 2019 16:47:19 +0800
+Subject: Re: [RFC PATCH 6/6] ACPI/IORT: Drop code to set the PMCG
+	software-defined model
+To: Hanjun Guo <guohanjun@huawei.com>, <lorenzo.pieralisi@arm.com>,
+	<sudeep.holla@arm.com>, <robin.murphy@arm.com>, <mark.rutland@arm.com>, 
+	<will@kernel.org>
+References: <1569854031-237636-1-git-send-email-john.garry@huawei.com>
+	<1569854031-237636-7-git-send-email-john.garry@huawei.com>
+	<e4e8adfd-a0af-82cb-c5f6-77153474330a@huawei.com>
+From: John Garry <john.garry@huawei.com>
+Message-ID: <4de3b360-710f-e109-93bf-30ff942d08c1@huawei.com>
+Date: Tue, 15 Oct 2019 09:47:12 +0100
+User-Agent: Mozilla/5.0 (Windows NT 10.0; WOW64; rv:45.0) Gecko/20100101
+	Thunderbird/45.3.0
 MIME-Version: 1.0
-In-Reply-To: <1570045363-24856-1-git-send-email-jacob.jun.pan@linux.intel.com>
-Content-Language: en-US
-X-Scanned-By: MIMEDefang 2.79 on 10.5.11.12
-X-Greylist: Sender IP whitelisted, not delayed by milter-greylist-4.5.16
-	(mx1.redhat.com [10.5.110.25]);
-	Tue, 15 Oct 2019 08:35:32 +0000 (UTC)
-Cc: "Tian, Kevin" <kevin.tian@intel.com>, Raj Ashok <ashok.raj@intel.com>,
-	Jonathan Cameron <jic23@kernel.org>
+In-Reply-To: <e4e8adfd-a0af-82cb-c5f6-77153474330a@huawei.com>
+X-Originating-IP: [10.202.227.179]
+X-CFilter-Loop: Reflected
+Cc: nleeder@codeaurora.org, rjw@rjwysocki.net, linux-kernel@vger.kernel.org,
+	linuxarm@huawei.com, iommu@lists.linux-foundation.org,
+	linux-arm-kernel@lists.infradead.org, lenb@kernel.org
 X-BeenThere: iommu@lists.linux-foundation.org
 X-Mailman-Version: 2.1.12
 Precedence: list
@@ -71,82 +67,47 @@ List-Post: <mailto:iommu@lists.linux-foundation.org>
 List-Help: <mailto:iommu-request@lists.linux-foundation.org?subject=help>
 List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
 	<mailto:iommu-request@lists.linux-foundation.org?subject=subscribe>
-Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset="us-ascii"; Format="flowed"
 Sender: iommu-bounces@lists.linux-foundation.org
 Errors-To: iommu-bounces@lists.linux-foundation.org
 
-Hi,
+On 15/10/2019 04:06, Hanjun Guo wrote:
+>> -/*
+>> > - * PMCG model identifiers for use in smmu pmu driver. Please note
+>> > - * that this is purely for the use of software and has nothing to
+>> > - * do with hardware or with IORT specification.
+>> > - */
+>> > -#define IORT_SMMU_V3_PMCG_GENERIC        0x00000000 /* Generic SMMUv3 PMCG */
+>> > -#define IORT_SMMU_V3_PMCG_HISI_HIP08     0x00000001 /* HiSilicon HIP08 PMCG */
+> Since only HiSilicon platform has such erratum, and I think it works with
+> both old version of firmware, I'm fine with removing this erratum framework.
+>
 
-On 10/2/19 9:42 PM, Jacob Pan wrote:
-> This set consists of IOMMU APIs to support SVA in the guest, a.k.a nested
-> SVA. As the complete SVA support is complex, we break down the enabling
-> effort into three stages:
-> 1. PCI device direct assignment
-> 2. Fault handling, especially page request service support
-> 3. Mediated device assignment
-> 
-> Each stage includes common API and vendor specific IOMMU driver changes. This
-> series is the common uAPI for stage #1. It is intended to build consensus on
-> the interface which all vendors reply on.
-> 
-> This series is extracted from the complete stage1 set which includes VT-d code.
-> https://lkml.org/lkml/2019/8/15/951
-> 
-> Changes:
->  - Use spinlock instead of mutex to protect ioasid custom allocators. This is
->    to support callers in atomic context
->  - Added more padding to guest PASID bind data for future extensions, suggested
->    by Joerg.
-> After much thinking, I did not do name change from PASID to IOASID in the uAPI,
-> considering we have been using PASID in the rest of uAPIs. IOASID will remain
-> used within the kernel.
-> 
-> For more discussions lead to this series, checkout LPC 2019 VFIO/IOMMU/PCI
-> microconference materials.
-> https://linuxplumbersconf.org/event/4/sessions/66/#20190909
-> 
-> 
-> Change log:
-> v4:    - minor patch regroup and fixes based on review from Jean
-> v3:    - include errno.h in ioasid.h to fix compile error
->        - rebased to v5.4-rc1, no change
->  
-> v2:
-> 	- Addressed review comments by Jean on IOASID custom allocators, locking
-> 	fix, misc control flow fix.
-> 	- Fixed a compile error with missing header errno.h
-> 	- Updated Jean-Philiippe's new email and updateded reviewed-by tag
-> 
-> Jacob Pan (2):
->   iommu/ioasid: Add custom allocators
->   iommu: Introduce guest PASID bind function
-> 
-> Jean-Philippe Brucker (1):
->   iommu: Add I/O ASID allocator
-> 
-> Yi L Liu (1):
->   iommu: Introduce cache_invalidate API
-> 
->  drivers/iommu/Kconfig      |   4 +
->  drivers/iommu/Makefile     |   1 +
->  drivers/iommu/ioasid.c     | 422 +++++++++++++++++++++++++++++++++++++++++++++
->  drivers/iommu/iommu.c      |  30 ++++
->  include/linux/ioasid.h     |  76 ++++++++
->  include/linux/iommu.h      |  36 ++++
->  include/uapi/linux/iommu.h | 169 ++++++++++++++++++
->  7 files changed, 738 insertions(+)
->  create mode 100644 drivers/iommu/ioasid.c
->  create mode 100644 include/linux/ioasid.h
+Yeah, seems a decent change on its own, even without the SMMU PMCG 
+driver changes.
 
-For the whole series,
-Reviewed-by: Eric Auger <eric.auger@redhat.com>
+But we still need to check on patch "[PATCH RFC 2/6] iommu/arm-smmu-v3: 
+Record IIDR in arm_smmu_device structure" to progress any of this.
 
-Thanks
+Will, Robin, Any opinion on that patch?
 
-Eric
+https://lore.kernel.org/linux-iommu/1569854031-237636-1-git-send-email-john.garry@huawei.com/T/#m1e24771a23ee5426ec94ca2c4ec572642c155a77
 
-> 
+> Acked-by: Hanjun Guo <guohanjun@huawei.com>
+
+Cheers,
+John
+
+>
+> Thanks
+> Hanjun
+>
+>
+> .
+>
+
+
 _______________________________________________
 iommu mailing list
 iommu@lists.linux-foundation.org
