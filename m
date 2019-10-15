@@ -2,63 +2,51 @@ Return-Path: <SRS0=BRyA=YI=lists.linux-foundation.org=iommu-bounces@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-8.2 required=3.0 tests=HEADER_FROM_DIFFERENT_DOMAINS,
-	INCLUDES_PATCH,MAILING_LIST_MULTI,SIGNED_OFF_BY,SPF_HELO_NONE,SPF_PASS,
-	URIBL_BLOCKED,USER_AGENT_SANE_1 autolearn=unavailable autolearn_force=no
-	version=3.4.0
+X-Spam-Status: No, score=-2.2 required=3.0 tests=HEADER_FROM_DIFFERENT_DOMAINS,
+	MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED,USER_AGENT_SANE_1
+	autolearn=no autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id AD13AECE588
-	for <iommu@archiver.kernel.org>; Tue, 15 Oct 2019 11:24:07 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 2180BECE58F
+	for <iommu@archiver.kernel.org>; Tue, 15 Oct 2019 11:35:42 +0000 (UTC)
 Received: from mail.linuxfoundation.org (mail.linuxfoundation.org [140.211.169.12])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by mail.kernel.org (Postfix) with ESMTPS id 7635C21835
-	for <iommu@archiver.kernel.org>; Tue, 15 Oct 2019 11:24:07 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 7635C21835
-Authentication-Results: mail.kernel.org; dmarc=none (p=none dis=none) header.from=arm.com
+	by mail.kernel.org (Postfix) with ESMTPS id E7A4421848
+	for <iommu@archiver.kernel.org>; Tue, 15 Oct 2019 11:35:41 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org E7A4421848
+Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=8bytes.org
 Authentication-Results: mail.kernel.org; spf=pass smtp.mailfrom=iommu-bounces@lists.linux-foundation.org
 Received: from mail.linux-foundation.org (localhost [127.0.0.1])
-	by mail.linuxfoundation.org (Postfix) with ESMTP id 58EF0C7C;
-	Tue, 15 Oct 2019 11:24:07 +0000 (UTC)
+	by mail.linuxfoundation.org (Postfix) with ESMTP id C36DECA4;
+	Tue, 15 Oct 2019 11:35:41 +0000 (UTC)
 Received: from smtp1.linuxfoundation.org (smtp1.linux-foundation.org
 	[172.17.192.35])
-	by mail.linuxfoundation.org (Postfix) with ESMTPS id 141C7C77
+	by mail.linuxfoundation.org (Postfix) with ESMTPS id F357AC97
 	for <iommu@lists.linux-foundation.org>;
-	Tue, 15 Oct 2019 11:24:06 +0000 (UTC)
-X-Greylist: domain auto-whitelisted by SQLgrey-1.7.6
-Received: from foss.arm.com (foss.arm.com [217.140.110.172])
-	by smtp1.linuxfoundation.org (Postfix) with ESMTP id 812F86D6
+	Tue, 15 Oct 2019 11:35:39 +0000 (UTC)
+X-Greylist: from auto-whitelisted by SQLgrey-1.7.6
+Received: from theia.8bytes.org (8bytes.org [81.169.241.247])
+	by smtp1.linuxfoundation.org (Postfix) with ESMTPS id 83F0E6C5
 	for <iommu@lists.linux-foundation.org>;
-	Tue, 15 Oct 2019 11:24:05 +0000 (UTC)
-Received: from usa-sjc-imap-foss1.foss.arm.com (unknown [10.121.207.14])
-	by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id EAE3D1000;
-	Tue, 15 Oct 2019 04:24:04 -0700 (PDT)
-Received: from [10.1.197.57] (e110467-lin.cambridge.arm.com [10.1.197.57])
-	by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPSA id BC9373F68E;
-	Tue, 15 Oct 2019 04:24:02 -0700 (PDT)
-Subject: Re: [PATCH v3 4/7] iommu/mediatek: Delete the leaf in the tlb flush
-To: Yong Wu <yong.wu@mediatek.com>
-References: <1571035101-4213-1-git-send-email-yong.wu@mediatek.com>
-	<1571035101-4213-5-git-send-email-yong.wu@mediatek.com>
-	<20c74c20-864e-88af-3c58-ad3bb7600bcc@arm.com>
-	<1571117118.19130.81.camel@mhfsdcap03>
-From: Robin Murphy <robin.murphy@arm.com>
-Message-ID: <888d299a-b314-2735-bc73-dd68b92c33af@arm.com>
-Date: Tue, 15 Oct 2019 12:24:01 +0100
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:60.0) Gecko/20100101
-	Thunderbird/60.6.1
+	Tue, 15 Oct 2019 11:35:39 +0000 (UTC)
+Received: by theia.8bytes.org (Postfix, from userid 1000)
+	id 878EF2D9; Tue, 15 Oct 2019 13:35:37 +0200 (CEST)
+Date: Tue, 15 Oct 2019 13:35:36 +0200
+From: Joerg Roedel <joro@8bytes.org>
+To: Jacob Pan <jacob.jun.pan@linux.intel.com>
+Subject: Re: [PATCH v4 0/4] User API for nested shared virtual address (SVA)
+Message-ID: <20191015113536.GI14518@8bytes.org>
+References: <1570045363-24856-1-git-send-email-jacob.jun.pan@linux.intel.com>
 MIME-Version: 1.0
-In-Reply-To: <1571117118.19130.81.camel@mhfsdcap03>
-Content-Language: en-GB
-Cc: youlin.pei@mediatek.com, anan.sun@mediatek.com,
-	Nicolas Boichat <drinkcat@chromium.org>, cui.zhang@mediatek.com,
-	srv_heupstream@mediatek.com, edison.hsieh@mediatek.com,
-	Will Deacon <will.deacon@arm.com>, linux-kernel@vger.kernel.org,
-	Evan Green <evgreen@chromium.org>, chao.hao@mediatek.com,
-	Tomasz Figa <tfiga@google.com>, iommu@lists.linux-foundation.org,
-	linux-mediatek@lists.infradead.org,
-	Matthias Brugger <matthias.bgg@gmail.com>,
-	linux-arm-kernel@lists.infradead.org
+Content-Disposition: inline
+In-Reply-To: <1570045363-24856-1-git-send-email-jacob.jun.pan@linux.intel.com>
+User-Agent: Mutt/1.10.1 (2018-07-13)
+Cc: "Tian, Kevin" <kevin.tian@intel.com>, Raj Ashok <ashok.raj@intel.com>,
+	David Woodhouse <dwmw2@infradead.org>, iommu@lists.linux-foundation.org,
+	LKML <linux-kernel@vger.kernel.org>,
+	Alex Williamson <alex.williamson@redhat.com>,
+	Jean-Philippe Brucker <jean-philippe@linaro.com>,
+	Jonathan Cameron <jic23@kernel.org>
 X-BeenThere: iommu@lists.linux-foundation.org
 X-Mailman-Version: 2.1.12
 Precedence: list
@@ -71,90 +59,34 @@ List-Post: <mailto:iommu@lists.linux-foundation.org>
 List-Help: <mailto:iommu-request@lists.linux-foundation.org?subject=help>
 List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
 	<mailto:iommu-request@lists.linux-foundation.org?subject=subscribe>
+Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
-Content-Type: text/plain; charset="us-ascii"; Format="flowed"
 Sender: iommu-bounces@lists.linux-foundation.org
 Errors-To: iommu-bounces@lists.linux-foundation.org
 
-On 15/10/2019 06:25, Yong Wu wrote:
-> On Mon, 2019-10-14 at 15:22 +0100, Robin Murphy wrote:
->> On 14/10/2019 07:38, Yong Wu wrote:
->>> In our tlb range flush, we don't care the "leaf". Remove it to simplify
->>> the code. no functional change.
->>
->> Presumably you don't care about the granule either?
+On Wed, Oct 02, 2019 at 12:42:39PM -0700, Jacob Pan wrote:
+> Jacob Pan (2):
+>   iommu/ioasid: Add custom allocators
+>   iommu: Introduce guest PASID bind function
 > 
-> Yes. I only keep "granule" to satisfy the format of "tlb_flush_walk",
-> then it's no need add a new helper function.
-
-Ah, I'd failed to make the connection that it ends up wired in directly 
-to the callbacks in patch #5 - indeed there's no point churning the 
-mtk_iommu_tlb_add_flush_nosync() callsites here if they're just getting 
-removed later anyway. In that case,
-
-Reviewed-by: Robin Murphy <robin.murphy@arm.com>
-
->>> Signed-off-by: Yong Wu <yong.wu@mediatek.com>
->>> ---
->>>    drivers/iommu/mtk_iommu.c | 16 ++++------------
->>>    1 file changed, 4 insertions(+), 12 deletions(-)
->>>
->>> diff --git a/drivers/iommu/mtk_iommu.c b/drivers/iommu/mtk_iommu.c
->>> index 8712afc..19f936c 100644
->>> --- a/drivers/iommu/mtk_iommu.c
->>> +++ b/drivers/iommu/mtk_iommu.c
->>> @@ -174,8 +174,7 @@ static void mtk_iommu_tlb_flush_all(void *cookie)
->>>    }
->>>    
->>>    static void mtk_iommu_tlb_add_flush_nosync(unsigned long iova, size_t size,
->>> -					   size_t granule, bool leaf,
->>> -					   void *cookie)
->>> +					   size_t granule, void *cookie)
->>>    {
->>>    	struct mtk_iommu_data *data = cookie;
->>>    
->>> @@ -219,14 +218,7 @@ static void mtk_iommu_tlb_sync(void *cookie)
->>>    static void mtk_iommu_tlb_flush_walk(unsigned long iova, size_t size,
->>>    				     size_t granule, void *cookie)
->>>    {
->>> -	mtk_iommu_tlb_add_flush_nosync(iova, size, granule, false, cookie);
->>> -	mtk_iommu_tlb_sync(cookie);
->>> -}
->>> -
->>> -static void mtk_iommu_tlb_flush_leaf(unsigned long iova, size_t size,
->>> -				     size_t granule, void *cookie)
->>> -{
->>> -	mtk_iommu_tlb_add_flush_nosync(iova, size, granule, true, cookie);
->>> +	mtk_iommu_tlb_add_flush_nosync(iova, size, granule, cookie);
->>>    	mtk_iommu_tlb_sync(cookie);
->>>    }
->>>    
->>> @@ -245,7 +237,7 @@ static void mtk_iommu_tlb_flush_page_nosync(struct iommu_iotlb_gather *gather,
->>>    static const struct iommu_flush_ops mtk_iommu_flush_ops = {
->>>    	.tlb_flush_all = mtk_iommu_tlb_flush_all,
->>>    	.tlb_flush_walk = mtk_iommu_tlb_flush_walk,
->>> -	.tlb_flush_leaf = mtk_iommu_tlb_flush_leaf,
->>> +	.tlb_flush_leaf = mtk_iommu_tlb_flush_walk,
->>>    	.tlb_add_page = mtk_iommu_tlb_flush_page_nosync,
->>>    };
->>>    
->>> @@ -475,7 +467,7 @@ static void mtk_iommu_iotlb_sync(struct iommu_domain *domain,
->>>    		spin_lock_irqsave(&dom->pgtlock, flags);
->>>    
->>>    	mtk_iommu_tlb_add_flush_nosync(gather->start, length, gather->pgsize,
->>> -				       false, data);
->>> +				       data);
->>>    	mtk_iommu_tlb_sync(data);
->>>    
->>>    	if (!is_in_gather)
->>>
->>
->> _______________________________________________
->> Linux-mediatek mailing list
->> Linux-mediatek@lists.infradead.org
->> http://lists.infradead.org/mailman/listinfo/linux-mediatek
+> Jean-Philippe Brucker (1):
+>   iommu: Add I/O ASID allocator
 > 
+> Yi L Liu (1):
+>   iommu: Introduce cache_invalidate API
 > 
+>  drivers/iommu/Kconfig      |   4 +
+>  drivers/iommu/Makefile     |   1 +
+>  drivers/iommu/ioasid.c     | 422 +++++++++++++++++++++++++++++++++++++++++++++
+>  drivers/iommu/iommu.c      |  30 ++++
+>  include/linux/ioasid.h     |  76 ++++++++
+>  include/linux/iommu.h      |  36 ++++
+>  include/uapi/linux/iommu.h | 169 ++++++++++++++++++
+>  7 files changed, 738 insertions(+)
+>  create mode 100644 drivers/iommu/ioasid.c
+>  create mode 100644 include/linux/ioasid.h
+
+Applied for v5.5, thanks everyone who worked on this!
 _______________________________________________
 iommu mailing list
 iommu@lists.linux-foundation.org
