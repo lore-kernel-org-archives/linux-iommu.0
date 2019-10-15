@@ -6,40 +6,40 @@ X-Spam-Status: No, score=-5.2 required=3.0 tests=HEADER_FROM_DIFFERENT_DOMAINS,
 	MAILING_LIST_MULTI,SIGNED_OFF_BY,SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED,
 	USER_AGENT_SANE_1 autolearn=ham autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 453B8ECE588
-	for <iommu@archiver.kernel.org>; Tue, 15 Oct 2019 12:14:30 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 8812FECE58F
+	for <iommu@archiver.kernel.org>; Tue, 15 Oct 2019 12:14:48 +0000 (UTC)
 Received: from mail.linuxfoundation.org (mail.linuxfoundation.org [140.211.169.12])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by mail.kernel.org (Postfix) with ESMTPS id 21165205F4
-	for <iommu@archiver.kernel.org>; Tue, 15 Oct 2019 12:14:30 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 21165205F4
+	by mail.kernel.org (Postfix) with ESMTPS id 67637205F4
+	for <iommu@archiver.kernel.org>; Tue, 15 Oct 2019 12:14:48 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 67637205F4
 Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=8bytes.org
 Authentication-Results: mail.kernel.org; spf=pass smtp.mailfrom=iommu-bounces@lists.linux-foundation.org
 Received: from mail.linux-foundation.org (localhost [127.0.0.1])
-	by mail.linuxfoundation.org (Postfix) with ESMTP id EE089E26;
-	Tue, 15 Oct 2019 12:14:29 +0000 (UTC)
+	by mail.linuxfoundation.org (Postfix) with ESMTP id 28746E1A;
+	Tue, 15 Oct 2019 12:14:48 +0000 (UTC)
 Received: from smtp1.linuxfoundation.org (smtp1.linux-foundation.org
 	[172.17.192.35])
-	by mail.linuxfoundation.org (Postfix) with ESMTPS id A5809E18
+	by mail.linuxfoundation.org (Postfix) with ESMTPS id 02777E18
 	for <iommu@lists.linux-foundation.org>;
-	Tue, 15 Oct 2019 12:14:28 +0000 (UTC)
+	Tue, 15 Oct 2019 12:14:47 +0000 (UTC)
 X-Greylist: from auto-whitelisted by SQLgrey-1.7.6
 Received: from theia.8bytes.org (8bytes.org [81.169.241.247])
-	by smtp1.linuxfoundation.org (Postfix) with ESMTPS id F01945D3
+	by smtp1.linuxfoundation.org (Postfix) with ESMTPS id 8E5915D3
 	for <iommu@lists.linux-foundation.org>;
-	Tue, 15 Oct 2019 12:14:27 +0000 (UTC)
+	Tue, 15 Oct 2019 12:14:46 +0000 (UTC)
 Received: by theia.8bytes.org (Postfix, from userid 1000)
-	id 445092D9; Tue, 15 Oct 2019 14:14:26 +0200 (CEST)
-Date: Tue, 15 Oct 2019 14:14:24 +0200
+	id 00D702D9; Tue, 15 Oct 2019 14:14:44 +0200 (CEST)
+Date: Tue, 15 Oct 2019 14:14:43 +0200
 From: "joro@8bytes.org" <joro@8bytes.org>
 To: "Suthikulpanit, Suravee" <Suravee.Suthikulpanit@amd.com>
-Subject: Re: iommu: amd: Fix incorrect PASID decoding from event log
-Message-ID: <20191015121424.GM14518@8bytes.org>
-References: <1571083556-105953-1-git-send-email-suravee.suthikulpanit@amd.com>
+Subject: Re: iommu: amd: Simpify decoding logic for INVALID_PPR_REQUEST event
+Message-ID: <20191015121443.GN14518@8bytes.org>
+References: <1571083569-105988-1-git-send-email-suravee.suthikulpanit@amd.com>
 MIME-Version: 1.0
 Content-Disposition: inline
-In-Reply-To: <1571083556-105953-1-git-send-email-suravee.suthikulpanit@amd.com>
+In-Reply-To: <1571083569-105988-1-git-send-email-suravee.suthikulpanit@amd.com>
 User-Agent: Mutt/1.10.1 (2018-07-13)
 Cc: "iommu@lists.linux-foundation.org" <iommu@lists.linux-foundation.org>,
 	Joerg Roedel <jroedel@suse.de>,
@@ -61,33 +61,17 @@ Content-Transfer-Encoding: 7bit
 Sender: iommu-bounces@lists.linux-foundation.org
 Errors-To: iommu-bounces@lists.linux-foundation.org
 
-On Mon, Oct 14, 2019 at 08:06:05PM +0000, Suthikulpanit, Suravee wrote:
-> IOMMU Event Log encodes 20-bit PASID for events:
->     ILLEGAL_DEV_TABLE_ENTRY
->     IO_PAGE_FAULT
->     PAGE_TAB_HARDWARE_ERROR
->     INVALID_DEVICE_REQUEST
-> as:
->     PASID[15:0]  = bit 47:32
->     PASID[19:16] = bit 19:16
+On Mon, Oct 14, 2019 at 08:06:19PM +0000, Suthikulpanit, Suravee wrote:
+> Reuse existing macro to simplify the code and improve readability.
 > 
-> Note that INVALID_PPR_REQUEST event has different encoding
-> from the rest of the events as the following:
->     PASID[15:0]  = bit 31:16
->     PASID[19:16] = bit 45:42
-> 
-> So, fixes the decoding logic.
-> 
-> Fixes: d64c0486ed50 ("iommu/amd: Update the PASID information printed to the system log")
 > Cc: Joerg Roedel <jroedel@suse.de>
 > Cc: Gary R Hook <gary.hook@amd.com>
 > Signed-off-by: Suravee Suthikulpanit <suravee.suthikulpanit@amd.com>
 > ---
->  drivers/iommu/amd_iommu.c       | 5 +++--
->  drivers/iommu/amd_iommu_types.h | 4 ++--
->  2 files changed, 5 insertions(+), 4 deletions(-)
+>  drivers/iommu/amd_iommu.c | 3 +--
+>  1 file changed, 1 insertion(+), 2 deletions(-)
 
-Applied for v5.4, thanks Suravee.
+Applied for v5.5, thanks.
 
 _______________________________________________
 iommu mailing list
