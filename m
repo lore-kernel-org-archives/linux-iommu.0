@@ -4,44 +4,44 @@ X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 X-Spam-Level: 
 X-Spam-Status: No, score=-9.8 required=3.0 tests=HEADER_FROM_DIFFERENT_DOMAINS,
 	INCLUDES_PATCH,MAILING_LIST_MULTI,SIGNED_OFF_BY,SPF_HELO_NONE,SPF_PASS,
-	URIBL_BLOCKED,USER_AGENT_GIT autolearn=unavailable autolearn_force=no
-	version=3.4.0
+	URIBL_BLOCKED,USER_AGENT_GIT autolearn=ham autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 969B4ECE588
-	for <iommu@archiver.kernel.org>; Tue, 15 Oct 2019 11:12:11 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id E11BDECE588
+	for <iommu@archiver.kernel.org>; Tue, 15 Oct 2019 11:12:15 +0000 (UTC)
 Received: from mail.linuxfoundation.org (mail.linuxfoundation.org [140.211.169.12])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by mail.kernel.org (Postfix) with ESMTPS id 73DAB20873
-	for <iommu@archiver.kernel.org>; Tue, 15 Oct 2019 11:12:11 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 73DAB20873
+	by mail.kernel.org (Postfix) with ESMTPS id BF0D120873
+	for <iommu@archiver.kernel.org>; Tue, 15 Oct 2019 11:12:15 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org BF0D120873
 Authentication-Results: mail.kernel.org; dmarc=none (p=none dis=none) header.from=renesas.com
 Authentication-Results: mail.kernel.org; spf=pass smtp.mailfrom=iommu-bounces@lists.linux-foundation.org
 Received: from mail.linux-foundation.org (localhost [127.0.0.1])
-	by mail.linuxfoundation.org (Postfix) with ESMTP id 34BCCC90;
-	Tue, 15 Oct 2019 11:12:04 +0000 (UTC)
+	by mail.linuxfoundation.org (Postfix) with ESMTP id 5738FC9E;
+	Tue, 15 Oct 2019 11:12:06 +0000 (UTC)
 Received: from smtp1.linuxfoundation.org (smtp1.linux-foundation.org
 	[172.17.192.35])
-	by mail.linuxfoundation.org (Postfix) with ESMTPS id 97219B7D
+	by mail.linuxfoundation.org (Postfix) with ESMTPS id DE05DC77
 	for <iommu@lists.linux-foundation.org>;
 	Tue, 15 Oct 2019 11:12:02 +0000 (UTC)
 X-Greylist: from auto-whitelisted by SQLgrey-1.7.6
 Received: from relmlie6.idc.renesas.com (relmlor2.renesas.com
 	[210.160.252.172])
-	by smtp1.linuxfoundation.org (Postfix) with ESMTP id F26966D6
+	by smtp1.linuxfoundation.org (Postfix) with ESMTP id 5E7DD821
 	for <iommu@lists.linux-foundation.org>;
-	Tue, 15 Oct 2019 11:12:01 +0000 (UTC)
-X-IronPort-AV: E=Sophos;i="5.67,299,1566831600"; d="scan'208";a="28928925"
+	Tue, 15 Oct 2019 11:12:02 +0000 (UTC)
+X-IronPort-AV: E=Sophos;i="5.67,299,1566831600"; d="scan'208";a="28928928"
 Received: from unknown (HELO relmlir6.idc.renesas.com) ([10.200.68.152])
 	by relmlie6.idc.renesas.com with ESMTP; 15 Oct 2019 20:12:00 +0900
 Received: from localhost.localdomain (unknown [10.166.17.210])
-	by relmlir6.idc.renesas.com (Postfix) with ESMTP id 78AC4420786F;
+	by relmlir6.idc.renesas.com (Postfix) with ESMTP id 90761420786F;
 	Tue, 15 Oct 2019 20:12:00 +0900 (JST)
 From: Yoshihiro Shimoda <yoshihiro.shimoda.uh@renesas.com>
 To: joro@8bytes.org
-Subject: [PATCH v2 2/6] iommu/ipmmu-vmsa: tidyup register definitions
-Date: Tue, 15 Oct 2019 20:11:56 +0900
-Message-Id: <1571137920-15314-3-git-send-email-yoshihiro.shimoda.uh@renesas.com>
+Subject: [PATCH v2 4/6] iommu/ipmmu-vmsa: Calculate context registers' offset
+	instead of a macro
+Date: Tue, 15 Oct 2019 20:11:58 +0900
+Message-Id: <1571137920-15314-5-git-send-email-yoshihiro.shimoda.uh@renesas.com>
 X-Mailer: git-send-email 2.7.4
 In-Reply-To: <1571137920-15314-1-git-send-email-yoshihiro.shimoda.uh@renesas.com>
 References: <1571137920-15314-1-git-send-email-yoshihiro.shimoda.uh@renesas.com>
@@ -64,101 +64,65 @@ Content-Transfer-Encoding: 7bit
 Sender: iommu-bounces@lists.linux-foundation.org
 Errors-To: iommu-bounces@lists.linux-foundation.org
 
-To support different registers memory mapping hardware easily
-in the future, this patch tidies up the register definitions
-as below:
- - Add comments to state to which SoCs or SoC families they apply
- - Add categories about MMU "context" and uTLB registers
-
-No change behavior.
+Since we will have changed memory mapping of the IPMMU in the future,
+this patch uses ipmmu_features values instead of a macro to
+calculate context registers offset. No behavior change.
 
 Signed-off-by: Yoshihiro Shimoda <yoshihiro.shimoda.uh@renesas.com>
 ---
- drivers/iommu/ipmmu-vmsa.c | 58 ++++++++++++++++++++++++----------------------
- 1 file changed, 30 insertions(+), 28 deletions(-)
+ drivers/iommu/ipmmu-vmsa.c | 11 ++++++++---
+ 1 file changed, 8 insertions(+), 3 deletions(-)
 
 diff --git a/drivers/iommu/ipmmu-vmsa.c b/drivers/iommu/ipmmu-vmsa.c
-index 89d2a5f..35aae24 100644
+index c60b31d..37bb4b7 100644
 --- a/drivers/iommu/ipmmu-vmsa.c
 +++ b/drivers/iommu/ipmmu-vmsa.c
-@@ -101,47 +101,49 @@ static struct ipmmu_vmsa_device *to_ipmmu(struct device *dev)
+@@ -50,6 +50,8 @@ struct ipmmu_features {
+ 	bool twobit_imttbcr_sl0;
+ 	bool reserved_context;
+ 	bool cache_snoop;
++	unsigned int ctx_offset_base;
++	unsigned int ctx_offset_stride;
+ };
  
- #define IM_CTX_SIZE			0x40
+ struct ipmmu_vmsa_device {
+@@ -99,8 +101,6 @@ static struct ipmmu_vmsa_device *to_ipmmu(struct device *dev)
  
--#define IMCTR				0x0000
--#define IMCTR_INTEN			(1 << 2)
--#define IMCTR_FLUSH			(1 << 1)
--#define IMCTR_MMUEN			(1 << 0)
+ #define IM_NS_ALIAS_OFFSET		0x800
+ 
+-#define IM_CTX_SIZE			0x40
 -
--#define IMTTBCR				0x0008
--#define IMTTBCR_EAE			(1 << 31)
-+/* MMU "context" registers */
-+#define IMCTR				0x0000		/* R-Car Gen2/3 */
-+#define IMCTR_INTEN			(1 << 2)	/* R-Car Gen2/3 */
-+#define IMCTR_FLUSH			(1 << 1)	/* R-Car Gen2/3 */
-+#define IMCTR_MMUEN			(1 << 0)	/* R-Car Gen2/3 */
-+
-+#define IMTTBCR				0x0008		/* R-Car Gen2/3 */
-+#define IMTTBCR_EAE			(1 << 31)	/* R-Car Gen2/3 */
- #define IMTTBCR_SH0_INNER_SHAREABLE	(3 << 12)	/* R-Car Gen2 only */
- #define IMTTBCR_ORGN0_WB_WA		(1 << 10)	/* R-Car Gen2 only */
- #define IMTTBCR_IRGN0_WB_WA		(1 << 8)	/* R-Car Gen2 only */
- #define IMTTBCR_SL0_TWOBIT_LVL_1	(2 << 6)	/* R-Car Gen3 only */
--#define IMTTBCR_SL0_LVL_1		(1 << 4)
-+#define IMTTBCR_SL0_LVL_1		(1 << 4)	/* R-Car Gen2 only */
+ /* MMU "context" registers */
+ #define IMCTR				0x0000		/* R-Car Gen2/3 */
+ #define IMCTR_INTEN			(1 << 2)	/* R-Car Gen2/3 */
+@@ -193,7 +193,8 @@ static void ipmmu_write(struct ipmmu_vmsa_device *mmu, unsigned int offset,
+ static unsigned int ipmmu_ctx_reg(struct ipmmu_vmsa_device *mmu,
+ 				  unsigned int context_id, unsigned int reg)
+ {
+-	return context_id * IM_CTX_SIZE + reg;
++	return mmu->features->ctx_offset_base +
++	       context_id * mmu->features->ctx_offset_stride + reg;
+ }
  
--#define IMBUSCR				0x000c
--#define IMBUSCR_DVM			(1 << 2)
--#define IMBUSCR_BUSSEL_MASK		(3 << 0)
-+#define IMBUSCR				0x000c		/* R-Car Gen2 only */
-+#define IMBUSCR_DVM			(1 << 2)	/* R-Car Gen2 only */
-+#define IMBUSCR_BUSSEL_MASK		(3 << 0)	/* R-Car Gen2 only */
+ static u32 ipmmu_ctx_read(struct ipmmu_vmsa_device *mmu,
+@@ -937,6 +938,8 @@ static const struct ipmmu_features ipmmu_features_default = {
+ 	.twobit_imttbcr_sl0 = false,
+ 	.reserved_context = false,
+ 	.cache_snoop = true,
++	.ctx_offset_base = 0,
++	.ctx_offset_stride = 0x40,
+ };
  
--#define IMTTLBR0			0x0010
--#define IMTTUBR0			0x0014
-+#define IMTTLBR0			0x0010		/* R-Car Gen2/3 */
-+#define IMTTUBR0			0x0014		/* R-Car Gen2/3 */
+ static const struct ipmmu_features ipmmu_features_rcar_gen3 = {
+@@ -948,6 +951,8 @@ static const struct ipmmu_features ipmmu_features_rcar_gen3 = {
+ 	.twobit_imttbcr_sl0 = true,
+ 	.reserved_context = true,
+ 	.cache_snoop = false,
++	.ctx_offset_base = 0,
++	.ctx_offset_stride = 0x40,
+ };
  
--#define IMSTR				0x0020
--#define IMSTR_MHIT			(1 << 4)
--#define IMSTR_ABORT			(1 << 2)
--#define IMSTR_PF			(1 << 1)
--#define IMSTR_TF			(1 << 0)
-+#define IMSTR				0x0020		/* R-Car Gen2/3 */
-+#define IMSTR_MHIT			(1 << 4)	/* R-Car Gen2/3 */
-+#define IMSTR_ABORT			(1 << 2)	/* R-Car Gen2/3 */
-+#define IMSTR_PF			(1 << 1)	/* R-Car Gen2/3 */
-+#define IMSTR_TF			(1 << 0)	/* R-Car Gen2/3 */
- 
--#define IMMAIR0				0x0028
-+#define IMMAIR0				0x0028		/* R-Car Gen2/3 */
- 
--#define IMELAR				0x0030	/* IMEAR on R-Car Gen2 */
--#define IMEUAR				0x0034	/* R-Car Gen3 only */
-+#define IMELAR				0x0030		/* R-Car Gen2/3, IMEAR on R-Car Gen2 */
-+#define IMEUAR				0x0034		/* R-Car Gen3 only */
- 
-+/* uTLB registers */
- #define IMUCTR(n)			((n) < 32 ? IMUCTR0(n) : IMUCTR32(n))
--#define IMUCTR0(n)			(0x0300 + ((n) * 16))
--#define IMUCTR32(n)			(0x0600 + (((n) - 32) * 16))
--#define IMUCTR_TTSEL_MMU(n)		((n) << 4)
--#define IMUCTR_FLUSH			(1 << 1)
--#define IMUCTR_MMUEN			(1 << 0)
-+#define IMUCTR0(n)			(0x0300 + ((n) * 16))		/* R-Car Gen2/3 */
-+#define IMUCTR32(n)			(0x0600 + (((n) - 32) * 16))	/* R-Car Gen3 only */
-+#define IMUCTR_TTSEL_MMU(n)		((n) << 4)	/* R-Car Gen2/3 */
-+#define IMUCTR_FLUSH			(1 << 1)	/* R-Car Gen2/3 */
-+#define IMUCTR_MMUEN			(1 << 0)	/* R-Car Gen2/3 */
- 
- #define IMUASID(n)			((n) < 32 ? IMUASID0(n) : IMUASID32(n))
--#define IMUASID0(n)			(0x0308 + ((n) * 16))
--#define IMUASID32(n)			(0x0608 + (((n) - 32) * 16))
-+#define IMUASID0(n)			(0x0308 + ((n) * 16))		/* R-Car Gen2/3 */
-+#define IMUASID32(n)			(0x0608 + (((n) - 32) * 16))	/* R-Car Gen3 only */
- 
- /* -----------------------------------------------------------------------------
-  * Root device handling
+ static const struct of_device_id ipmmu_of_ids[] = {
 -- 
 2.7.4
 
