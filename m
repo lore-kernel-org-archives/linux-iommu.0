@@ -6,46 +6,46 @@ X-Spam-Status: No, score=-5.2 required=3.0 tests=HEADER_FROM_DIFFERENT_DOMAINS,
 	MAILING_LIST_MULTI,SIGNED_OFF_BY,SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED,
 	USER_AGENT_SANE_1 autolearn=ham autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 4CEA8ECE588
-	for <iommu@archiver.kernel.org>; Tue, 15 Oct 2019 10:58:58 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 9CB29ECE588
+	for <iommu@archiver.kernel.org>; Tue, 15 Oct 2019 11:02:07 +0000 (UTC)
 Received: from mail.linuxfoundation.org (mail.linuxfoundation.org [140.211.169.12])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by mail.kernel.org (Postfix) with ESMTPS id 1E7662089C
-	for <iommu@archiver.kernel.org>; Tue, 15 Oct 2019 10:58:58 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 1E7662089C
+	by mail.kernel.org (Postfix) with ESMTPS id 79E0F2086A
+	for <iommu@archiver.kernel.org>; Tue, 15 Oct 2019 11:02:07 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 79E0F2086A
 Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=8bytes.org
 Authentication-Results: mail.kernel.org; spf=pass smtp.mailfrom=iommu-bounces@lists.linux-foundation.org
 Received: from mail.linux-foundation.org (localhost [127.0.0.1])
-	by mail.linuxfoundation.org (Postfix) with ESMTP id CF2DEC77;
-	Tue, 15 Oct 2019 10:58:57 +0000 (UTC)
+	by mail.linuxfoundation.org (Postfix) with ESMTP id 4DA8AC74;
+	Tue, 15 Oct 2019 11:02:07 +0000 (UTC)
 Received: from smtp1.linuxfoundation.org (smtp1.linux-foundation.org
 	[172.17.192.35])
-	by mail.linuxfoundation.org (Postfix) with ESMTPS id A4B90A70
+	by mail.linuxfoundation.org (Postfix) with ESMTPS id E019CBA0
 	for <iommu@lists.linux-foundation.org>;
-	Tue, 15 Oct 2019 10:58:56 +0000 (UTC)
+	Tue, 15 Oct 2019 11:02:05 +0000 (UTC)
 X-Greylist: from auto-whitelisted by SQLgrey-1.7.6
 Received: from theia.8bytes.org (8bytes.org [81.169.241.247])
-	by smtp1.linuxfoundation.org (Postfix) with ESMTPS id 0862114D
+	by smtp1.linuxfoundation.org (Postfix) with ESMTPS id 62FA514D
 	for <iommu@lists.linux-foundation.org>;
-	Tue, 15 Oct 2019 10:58:56 +0000 (UTC)
+	Tue, 15 Oct 2019 11:02:05 +0000 (UTC)
 Received: by theia.8bytes.org (Postfix, from userid 1000)
-	id 3435A2D9; Tue, 15 Oct 2019 12:58:54 +0200 (CEST)
-Date: Tue, 15 Oct 2019 12:58:52 +0200
+	id BED4D2D9; Tue, 15 Oct 2019 13:02:03 +0200 (CEST)
+Date: Tue, 15 Oct 2019 13:02:02 +0200
 From: Joerg Roedel <joro@8bytes.org>
-To: Biju Das <biju.das@bp.renesas.com>
-Subject: Re: [PATCH v2] iommu/ipmmu-vmsa: Hook up r8a774b1 DT matching code
-Message-ID: <20191015105852.GE14518@8bytes.org>
-References: <1569581601-34027-1-git-send-email-biju.das@bp.renesas.com>
+To: Geert Uytterhoeven <geert+renesas@glider.be>
+Subject: Re: [PATCH] iommu/ipmmu-vmsa: Only call platform_get_irq() when
+	interrupt is mandatory
+Message-ID: <20191015110202.GF14518@8bytes.org>
+References: <20191001180622.806-1-geert+renesas@glider.be>
 MIME-Version: 1.0
 Content-Disposition: inline
-In-Reply-To: <1569581601-34027-1-git-send-email-biju.das@bp.renesas.com>
+In-Reply-To: <20191001180622.806-1-geert+renesas@glider.be>
 User-Agent: Mutt/1.10.1 (2018-07-13)
-Cc: Fabrizio Castro <fabrizio.castro@bp.renesas.com>,
-	Chris Paterson <Chris.Paterson2@renesas.com>,
-	Geert Uytterhoeven <geert+renesas@glider.be>,
-	linux-renesas-soc@vger.kernel.org, iommu@lists.linux-foundation.org,
-	Simon Horman <horms@verge.net.au>
+Cc: linux-renesas-soc@vger.kernel.org,
+	Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+	iommu@lists.linux-foundation.org, linux-kernel@vger.kernel.org,
+	Stephen Boyd <swboyd@chromium.org>
 X-BeenThere: iommu@lists.linux-foundation.org
 X-Mailman-Version: 2.1.12
 Precedence: list
@@ -63,20 +63,24 @@ Content-Transfer-Encoding: 7bit
 Sender: iommu-bounces@lists.linux-foundation.org
 Errors-To: iommu-bounces@lists.linux-foundation.org
 
-On Fri, Sep 27, 2019 at 11:53:21AM +0100, Biju Das wrote:
-> Support RZ/G2N (R8A774B1) IPMMU.
+On Tue, Oct 01, 2019 at 08:06:22PM +0200, Geert Uytterhoeven wrote:
+> As platform_get_irq() now prints an error when the interrupt does not
+> exist, calling it gratuitously causes scary messages like:
 > 
-> Signed-off-by: Biju Das <biju.das@bp.renesas.com>
-> Reviewed-by: Geert Uytterhoeven <geert+renesas@glider.be>
+>     ipmmu-vmsa e6740000.mmu: IRQ index 0 not found
+> 
+> Fix this by moving the call to platform_get_irq() down, where the
+> existence of the interrupt is mandatory.
+> 
+> Fixes: 7723f4c5ecdb8d83 ("driver core: platform: Add an error message to platform_get_irq*()")
+> Signed-off-by: Geert Uytterhoeven <geert+renesas@glider.be>
 > ---
-> V1-->V2
->   * Incorporated Geet's review comment
->   * Added Geert's Reviewed-by tag
+> This is a fix for v5.4-rc1.
 > ---
->  drivers/iommu/ipmmu-vmsa.c | 5 +++++
->  1 file changed, 5 insertions(+)
+>  drivers/iommu/ipmmu-vmsa.c | 3 +--
+>  1 file changed, 1 insertion(+), 2 deletions(-)
 
-Applied, thanks.
+Applied for v5.4
 
 _______________________________________________
 iommu mailing list
