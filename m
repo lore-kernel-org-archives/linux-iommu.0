@@ -2,55 +2,80 @@ Return-Path: <SRS0=BRyA=YI=lists.linux-foundation.org=iommu-bounces@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-5.8 required=3.0 tests=HEADER_FROM_DIFFERENT_DOMAINS,
-	MAILING_LIST_MULTI,MENTIONS_GIT_HOSTING,SPF_HELO_NONE,SPF_PASS autolearn=ham
-	autolearn_force=no version=3.4.0
+X-Spam-Status: No, score=-3.5 required=3.0 tests=DKIM_ADSP_CUSTOM_MED,
+	DKIM_INVALID,DKIM_SIGNED,FREEMAIL_FORGED_FROMDOMAIN,FREEMAIL_FROM,
+	HEADER_FROM_DIFFERENT_DOMAINS,MAILING_LIST_MULTI,SIGNED_OFF_BY,SPF_HELO_NONE,
+	SPF_PASS autolearn=no autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 03D8BECE58F
-	for <iommu@archiver.kernel.org>; Tue, 15 Oct 2019 13:07:18 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 4C5A5ECE588
+	for <iommu@archiver.kernel.org>; Tue, 15 Oct 2019 13:09:44 +0000 (UTC)
 Received: from mail.linuxfoundation.org (mail.linuxfoundation.org [140.211.169.12])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by mail.kernel.org (Postfix) with ESMTPS id D2D2A21925
-	for <iommu@archiver.kernel.org>; Tue, 15 Oct 2019 13:07:17 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org D2D2A21925
-Authentication-Results: mail.kernel.org; dmarc=none (p=none dis=none) header.from=suse.de
+	by mail.kernel.org (Postfix) with ESMTPS id 1CE5521848
+	for <iommu@archiver.kernel.org>; Tue, 15 Oct 2019 13:09:44 +0000 (UTC)
+Authentication-Results: mail.kernel.org;
+	dkim=fail reason="signature verification failed" (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="AxS3jNtI"
+DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 1CE5521848
+Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=gmail.com
 Authentication-Results: mail.kernel.org; spf=pass smtp.mailfrom=iommu-bounces@lists.linux-foundation.org
 Received: from mail.linux-foundation.org (localhost [127.0.0.1])
-	by mail.linuxfoundation.org (Postfix) with ESMTP id 9634FC9E;
-	Tue, 15 Oct 2019 13:07:17 +0000 (UTC)
+	by mail.linuxfoundation.org (Postfix) with ESMTP id 0736FE18;
+	Tue, 15 Oct 2019 13:09:44 +0000 (UTC)
 Received: from smtp1.linuxfoundation.org (smtp1.linux-foundation.org
 	[172.17.192.35])
-	by mail.linuxfoundation.org (Postfix) with ESMTPS id 9D392C6A
+	by mail.linuxfoundation.org (Postfix) with ESMTPS id AE35FE0E
 	for <iommu@lists.linux-foundation.org>;
-	Tue, 15 Oct 2019 13:07:15 +0000 (UTC)
-X-Greylist: domain auto-whitelisted by SQLgrey-1.7.6
-Received: from mx1.suse.de (mx2.suse.de [195.135.220.15])
-	by smtp1.linuxfoundation.org (Postfix) with ESMTPS id C49A96D6
+	Tue, 15 Oct 2019 13:09:43 +0000 (UTC)
+X-Greylist: whitelisted by SQLgrey-1.7.6
+Received: from mail-wm1-f68.google.com (mail-wm1-f68.google.com
+	[209.85.128.68])
+	by smtp1.linuxfoundation.org (Postfix) with ESMTPS id 97A9E6D6
 	for <iommu@lists.linux-foundation.org>;
-	Tue, 15 Oct 2019 13:07:14 +0000 (UTC)
-X-Virus-Scanned: by amavisd-new at test-mx.suse.de
-Received: from relay2.suse.de (unknown [195.135.220.254])
-	by mx1.suse.de (Postfix) with ESMTP id D5344B300;
-	Tue, 15 Oct 2019 13:07:12 +0000 (UTC)
-Message-ID: <d57feba7e3956136a5d77cebbbf2807c2950d6df.camel@suse.de>
-Subject: Re: [PATCH RFC 4/5] dma/direct: check for overflows in ARM's
-	dma_capable()
-From: Nicolas Saenz Julienne <nsaenzjulienne@suse.de>
-To: Christoph Hellwig <hch@infradead.org>
-Date: Tue, 15 Oct 2019 15:07:08 +0200
-In-Reply-To: <20191015102346.GA9071@infradead.org>
-References: <20191014183108.24804-1-nsaenzjulienne@suse.de>
-	<20191014183108.24804-5-nsaenzjulienne@suse.de>
-	<20191015102346.GA9071@infradead.org>
-User-Agent: Evolution 3.32.4 
+	Tue, 15 Oct 2019 13:09:41 +0000 (UTC)
+Received: by mail-wm1-f68.google.com with SMTP id 5so20837658wmg.0
+	for <iommu@lists.linux-foundation.org>;
+	Tue, 15 Oct 2019 06:09:41 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=gmail.com; s=20161025;
+	h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+	:cc; bh=AZLh4M45F8+IHDYQfQ59rTfgOYaS9KZGvrjR75EFs2c=;
+	b=AxS3jNtI/paOnEUyOVl8yf+sRnICTDCB/pSCdYKfqkRkvuJ48UwgjiyPnmBbdvcUs8
+	3bWp50PWeCqic3cx0h/bmR/N91vRZx/oZafvItIrV5SGwMPhvzxGlNKbK4sYYgdXiQkz
+	ptjWMVNHgLfdJ/glRcVuUQhaNdBkL6ntYldvg9qQY1GrLBFM8wQsygF5/N/WS/h7CGTD
+	Lg/C+nW4EG1Kuve3pGCEP/ieDMFTRCjKVzxSDqgl4fJjyOxzAMmZYAcsEFahsfv7y2TL
+	t1fQZNKcB5KO9ky8Wf27LlVxKnJwkNISTUlal+eOASfb4iJtpubaWu7Ypb/w6wvranm1
+	LUNg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+	d=1e100.net; s=20161025;
+	h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+	:message-id:subject:to:cc;
+	bh=AZLh4M45F8+IHDYQfQ59rTfgOYaS9KZGvrjR75EFs2c=;
+	b=efAP/ROMdKX/IPnexbgu6917MvbQUWBQmcXShdpFS1DhGaAV/hT8Phxy+Cy2TModa4
+	MMSY9ZVZelc8y6IGWilBzv549qQSphadGIXYgwPscphHMZwIRM19bq74Zv1XXzoIaXK4
+	ZsTq23l4776V5XPOSc8xlHNDipYZdoq/njEs2Z3oRh+SEDcHPL3vX4zj1zZYIpEM2VhX
+	ttppVtpY6TEMRZDl6103O2OiBBZsdz8vk7wWQ+nHiS8iG2Of22Br1Ku+GgYXTmOGl0uk
+	uttUIDT2S/+OZZWSQcDTeZASMg7XYT2O47DMc3XPWeQRcZRSPUNPH6Pw+pHdSAM5Q/yR
+	yGJw==
+X-Gm-Message-State: APjAAAUSVzDlWSOHx+SHVbRu9sDFgIyOJjpsEgrb6TEk5bXhtKr54WFY
+	XyWQYJE0fY+c0UV33v4jr3v7X0WwnorGYFP5RiM=
+X-Google-Smtp-Source: APXvYqw7BzekgKwEuFDENzlpilT/WQOhMMJM0W/kjTFmA6tcRQKrddwRlgXqkc9dE6v0IjOeWL5ccaRoNMDX9hiAPU4=
+X-Received: by 2002:a1c:a651:: with SMTP id p78mr19694786wme.53.1571144979978; 
+	Tue, 15 Oct 2019 06:09:39 -0700 (PDT)
 MIME-Version: 1.0
-Cc: f.fainelli@gmail.com, linux-kernel@vger.kernel.org,
-	Russell King <linux@armlinux.org.uk>,
-	iommu@lists.linux-foundation.org, mbrugger@suse.com,
-	bcm-kernel-feedback-list@broadcom.com,
-	linux-rpi-kernel@lists.infradead.org, Robin Murphy <robin.murphy@arm.com>,
-	linux-arm-kernel@lists.infradead.org, wahrenst@gmx.net
+References: <20191001220205.6423-1-kholk11@gmail.com>
+	<20191001220205.6423-2-kholk11@gmail.com>
+	<20191015111454.GG14518@8bytes.org>
+	<CAK7fi1YZXW=mqC5HWtfBWsioAq-duejAk6RgtD8npKZR=af38w@mail.gmail.com>
+	<20191015124008.GB17570@8bytes.org>
+In-Reply-To: <20191015124008.GB17570@8bytes.org>
+From: AngeloGioacchino Del Regno <kholk11@gmail.com>
+Date: Tue, 15 Oct 2019 15:09:29 +0200
+Message-ID: <CAK7fi1YT_Or0bD3DwofQ_BLUsKyY3M7T8XCmDp1PAK9To7b64g@mail.gmail.com>
+Subject: Re: [PATCH v4 1/7] firmware: qcom: scm: Add function to set IOMMU
+	pagetable addressing
+To: Joerg Roedel <joro@8bytes.org>
+Cc: MSM <linux-arm-msm@vger.kernel.org>, iommu@lists.linux-foundation.org,
+	Andy Gross <agross@kernel.org>, marijns95@gmail.com
 X-BeenThere: iommu@lists.linux-foundation.org
 X-Mailman-Version: 2.1.12
 Precedence: list
@@ -63,104 +88,44 @@ List-Post: <mailto:iommu@lists.linux-foundation.org>
 List-Help: <mailto:iommu-request@lists.linux-foundation.org?subject=help>
 List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
 	<mailto:iommu-request@lists.linux-foundation.org?subject=subscribe>
-Content-Type: multipart/mixed; boundary="===============0698683551521385658=="
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: 7bit
 Sender: iommu-bounces@lists.linux-foundation.org
 Errors-To: iommu-bounces@lists.linux-foundation.org
 
+Il giorno mar 15 ott 2019 alle ore 14:40 Joerg Roedel
+<joro@8bytes.org> ha scritto:
+>
+> On Tue, Oct 15, 2019 at 02:33:47PM +0200, AngeloGioacchino Del Regno wrote:
+> > Il giorno mar 15 ott 2019 alle ore 13:14 Joerg Roedel
+> > <joro@8bytes.org> ha scritto:
+> > >
+> > > On Wed, Oct 02, 2019 at 12:01:59AM +0200, kholk11@gmail.com wrote:
+> > > > From: "Angelo G. Del Regno" <kholk11@gmail.com>
+> > > >
+> > > > Add a function to change the IOMMU pagetable addressing to
+> > > > AArch32 LPAE or AArch64. If doing that, then this must be
+> > > > done for each IOMMU context (not necessarily at the same time).
+> > >
+> > > This patch lacks a Signed-off-by.
+> > >
+> >
+> > I'm sorry for that. Should I resend or is it enough for me to write it here?
+> >
+> > Signed-off-by: AngeloGioacchino Del Regno <kholk11@gmail.com>
+>
+> Please resend, but you are free to wait for the reviews/acks from Rob
+> Clark, which I'd like to see on the series.
+>
+> Regards,
+>
+>         Joerg
 
---===============0698683551521385658==
-Content-Type: multipart/signed; micalg="pgp-sha256";
-	protocol="application/pgp-signature"; boundary="=-QilbOjg9rL1IFStaY+t4"
+Okay, no problem. I will wait for the reviews/acks from Rob before
+resending in order to limit the amount of emails in everyone's inbox :))
 
-
---=-QilbOjg9rL1IFStaY+t4
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
-
-On Tue, 2019-10-15 at 03:23 -0700, Christoph Hellwig wrote:
-> On Mon, Oct 14, 2019 at 08:31:06PM +0200, Nicolas Saenz Julienne wrote:
-> > The Raspberry Pi 4 has a 1GB ZONE_DMA area starting at address
-> > 0x00000000 and a mapping between physical and DMA memory offset by
-> > 0xc0000000.  It transpires that, on non LPAE systems, any attempt to
-> > translate physical addresses outside of ZONE_DMA will result in an
-> > overflow. The resulting DMA addresses will not be detected by arm's
-> > dma_capable() as they still fit in the device's DMA mask.
-> >=20
-> > Fix this by failing to validate a DMA address smaller than the lowest
-> > possible DMA address.
->=20
-> I think the main problem here is that arm doesn't respect the
-> bus_dma_mask.  If you replace the arm version of dma_capable with
-> the generic one, does that fi the issue for you as well?
-
-Yeah, that was my fist thought too, but it doesn't help.
-
-So with RPi4's DMA mapping:
-
-soc {
-	dma-ranges =3D <0xc0000000  0x0 0x00000000  0x3c000000>;
-	[...]
-};
-
-You'll get a 32bit bus dma map (log2i(0xc0000000 + 0x3c000000) + 1 =3D 32).
-
-Trouble is, taking into account arm's multi_v7_defconfig uses 32bit address=
-es,
-most phys_to_dma() translations are likely to overflow. For example phys
-0x60000000 will be translated to DMA 0x20000000, which is no good.
-
-No mask is going to catch this, and both dma_capable() implementations will
-fail.
-
-> We need to untangle the various macros arm uses for the direct mapping
-> and eventually we should be able to use the linux/dma-direct.h helpers
-> directly.  Here is a branch with some simple preps I had.  Freshly
-> rebased, not actually tested:
->=20
->=20
-http://git.infradead.org/users/hch/misc.git/shortlog/refs/heads/arm-generic=
--dma-preps
-
-Noted, looks good to me.
-
-Actually, an alternative to this patch would be to kill all custom
-dma_capable() implementations, which are mostly redundant, and add these ex=
-tra
-checks conditional to the DMA address size in the generic version. I'll try=
- to
-respin this if I manage to understand what's going on with x86/sta211-fixup=
-.c.
-
-
---=-QilbOjg9rL1IFStaY+t4
-Content-Type: application/pgp-signature; name="signature.asc"
-Content-Description: This is a digitally signed message part
-Content-Transfer-Encoding: 7bit
-
------BEGIN PGP SIGNATURE-----
-
-iQEzBAABCAAdFiEErOkkGDHCg2EbPcGjlfZmHno8x/4FAl2lxHwACgkQlfZmHno8
-x/5Qcgf9EYUZQRbilIK5s8eKqWcMhlpK7Df2P6SPXLkx+Vmkt2iYDyTfPLwB0Avl
-I9aSjwDP/vRSkR7DgiKGQkh2PtdHWFDUoCerdQnJb69v+DiObndKo5Zd0XCtbYx+
-+gPtyf43YhEGosmXi6aTI7pEh7HBYqu8ORrFJrdWaff3K5LJ8p4Phkkckup0NjHH
-Ddq96VamoZdnKmA171GZ6HNgUdYn8cOjUBA5DLOWK5LAX2rAd1g6bNCgs/GcUL4l
-sjoBu3utxJ9O9oe5reVU2XYfmX65xZqHqd1KkwN51Qo/w483+Hn0eSEclTVqT3hm
-8tkxAlJWOPwPdLB8706dF6mwsGp2Lw==
-=CUJl
------END PGP SIGNATURE-----
-
---=-QilbOjg9rL1IFStaY+t4--
-
-
---===============0698683551521385658==
-Content-Type: text/plain; charset="us-ascii"
-MIME-Version: 1.0
-Content-Transfer-Encoding: 7bit
-Content-Disposition: inline
-
+Angelo
 _______________________________________________
 iommu mailing list
 iommu@lists.linux-foundation.org
 https://lists.linuxfoundation.org/mailman/listinfo/iommu
---===============0698683551521385658==--
-
