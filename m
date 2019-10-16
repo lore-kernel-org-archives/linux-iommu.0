@@ -2,99 +2,57 @@ Return-Path: <SRS0=NqTC=YJ=lists.linux-foundation.org=iommu-bounces@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-5.2 required=3.0 tests=HEADER_FROM_DIFFERENT_DOMAINS,
-	INCLUDES_PATCH,MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS,USER_AGENT_SANE_1
-	autolearn=unavailable autolearn_force=no version=3.4.0
+X-Spam-Status: No, score=-2.2 required=3.0 tests=HEADER_FROM_DIFFERENT_DOMAINS,
+	MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED,USER_AGENT_SANE_1
+	autolearn=no autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 9429BC4360C
-	for <iommu@archiver.kernel.org>; Wed, 16 Oct 2019 07:55:41 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 1E9B7C4360C
+	for <iommu@archiver.kernel.org>; Wed, 16 Oct 2019 08:48:06 +0000 (UTC)
 Received: from mail.linuxfoundation.org (mail.linuxfoundation.org [140.211.169.12])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by mail.kernel.org (Postfix) with ESMTPS id 7482821848
-	for <iommu@archiver.kernel.org>; Wed, 16 Oct 2019 07:55:41 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 7482821848
-Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=us.ibm.com
+	by mail.kernel.org (Postfix) with ESMTPS id F1B1C21848
+	for <iommu@archiver.kernel.org>; Wed, 16 Oct 2019 08:48:05 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org F1B1C21848
+Authentication-Results: mail.kernel.org; dmarc=none (p=none dis=none) header.from=huawei.com
 Authentication-Results: mail.kernel.org; spf=pass smtp.mailfrom=iommu-bounces@lists.linux-foundation.org
 Received: from mail.linux-foundation.org (localhost [127.0.0.1])
-	by mail.linuxfoundation.org (Postfix) with ESMTP id 40D78A7F;
-	Wed, 16 Oct 2019 07:55:41 +0000 (UTC)
+	by mail.linuxfoundation.org (Postfix) with ESMTP id C71FDA70;
+	Wed, 16 Oct 2019 08:48:05 +0000 (UTC)
 Received: from smtp1.linuxfoundation.org (smtp1.linux-foundation.org
 	[172.17.192.35])
-	by mail.linuxfoundation.org (Postfix) with ESMTPS id 28E60949
+	by mail.linuxfoundation.org (Postfix) with ESMTPS id 162B541C
 	for <iommu@lists.linux-foundation.org>;
-	Wed, 16 Oct 2019 07:55:39 +0000 (UTC)
+	Wed, 16 Oct 2019 08:48:04 +0000 (UTC)
 X-Greylist: domain auto-whitelisted by SQLgrey-1.7.6
-Received: from mx0a-001b2d01.pphosted.com (mx0b-001b2d01.pphosted.com
-	[148.163.158.5])
-	by smtp1.linuxfoundation.org (Postfix) with ESMTPS id 88B696C5
+Received: from huawei.com (szxga04-in.huawei.com [45.249.212.190])
+	by smtp1.linuxfoundation.org (Postfix) with ESMTPS id 7BE8C5D3
 	for <iommu@lists.linux-foundation.org>;
-	Wed, 16 Oct 2019 07:55:38 +0000 (UTC)
-Received: from pps.filterd (m0098416.ppops.net [127.0.0.1])
-	by mx0b-001b2d01.pphosted.com (8.16.0.27/8.16.0.27) with SMTP id
-	x9G7gNLg194956
-	for <iommu@lists.linux-foundation.org>; Wed, 16 Oct 2019 03:55:37 -0400
-Received: from e06smtp03.uk.ibm.com (e06smtp03.uk.ibm.com [195.75.94.99])
-	by mx0b-001b2d01.pphosted.com with ESMTP id 2vnxnn9bfb-1
-	(version=TLSv1.2 cipher=AES256-GCM-SHA384 bits=256 verify=NOT)
-	for <iommu@lists.linux-foundation.org>; Wed, 16 Oct 2019 03:55:36 -0400
-Received: from localhost
-	by e06smtp03.uk.ibm.com with IBM ESMTP SMTP Gateway: Authorized Use
-	Only! Violators will be prosecuted
-	for <iommu@lists.linux-foundation.org> from <linuxram@us.ibm.com>;
-	Wed, 16 Oct 2019 08:55:35 +0100
-Received: from b06cxnps4076.portsmouth.uk.ibm.com (9.149.109.198)
-	by e06smtp03.uk.ibm.com (192.168.101.133) with IBM ESMTP SMTP Gateway:
-	Authorized Use Only! Violators will be prosecuted; 
-	(version=TLSv1/SSLv3 cipher=AES256-GCM-SHA384 bits=256/256)
-	Wed, 16 Oct 2019 08:55:29 +0100
-Received: from d06av26.portsmouth.uk.ibm.com (d06av26.portsmouth.uk.ibm.com
-	[9.149.105.62])
-	by b06cxnps4076.portsmouth.uk.ibm.com (8.14.9/8.14.9/NCO v10.0) with
-	ESMTP id x9G7tSFt45154546
-	(version=TLSv1/SSLv3 cipher=DHE-RSA-AES256-GCM-SHA384 bits=256
-	verify=OK); Wed, 16 Oct 2019 07:55:29 GMT
-Received: from d06av26.portsmouth.uk.ibm.com (unknown [127.0.0.1])
-	by IMSVA (Postfix) with ESMTP id C1818AE063;
-	Wed, 16 Oct 2019 07:55:28 +0000 (GMT)
-Received: from d06av26.portsmouth.uk.ibm.com (unknown [127.0.0.1])
-	by IMSVA (Postfix) with ESMTP id C0871AE051;
-	Wed, 16 Oct 2019 07:55:24 +0000 (GMT)
-Received: from oc0525413822.ibm.com (unknown [9.85.142.84])
-	by d06av26.portsmouth.uk.ibm.com (Postfix) with ESMTPS;
-	Wed, 16 Oct 2019 07:55:24 +0000 (GMT)
-Date: Wed, 16 Oct 2019 00:55:21 -0700
-From: Ram Pai <linuxram@us.ibm.com>
-To: Christoph Hellwig <hch@lst.de>
-References: <1570843519-8696-1-git-send-email-linuxram@us.ibm.com>
-	<1570843519-8696-2-git-send-email-linuxram@us.ibm.com>
-	<1570843519-8696-3-git-send-email-linuxram@us.ibm.com>
-	<20191015073501.GA32345@lst.de>
+	Wed, 16 Oct 2019 08:48:03 +0000 (UTC)
+Received: from DGGEMS412-HUB.china.huawei.com (unknown [172.30.72.60])
+	by Forcepoint Email with ESMTP id 8F356CBF38CF2F34D498;
+	Wed, 16 Oct 2019 16:47:59 +0800 (CST)
+Received: from [127.0.0.1] (10.202.227.179) by DGGEMS412-HUB.china.huawei.com
+	(10.3.19.212) with Microsoft SMTP Server id 14.3.439.0;
+	Wed, 16 Oct 2019 16:47:53 +0800
+Subject: Re: [RFC PATCH 0/6] SMMUv3 PMCG IMP DEF event support
+To: Robin Murphy <robin.murphy@arm.com>, <lorenzo.pieralisi@arm.com>,
+	<guohanjun@huawei.com>, <sudeep.holla@arm.com>, <mark.rutland@arm.com>, 
+	<will@kernel.org>
+References: <1569854031-237636-1-git-send-email-john.garry@huawei.com>
+	<66a3ce9f-d3cd-110f-7353-46e6eaf25b7c@arm.com>
+From: John Garry <john.garry@huawei.com>
+Message-ID: <1d546b4b-a2ad-49da-b532-951232093a9f@huawei.com>
+Date: Wed, 16 Oct 2019 09:47:45 +0100
+User-Agent: Mozilla/5.0 (Windows NT 10.0; WOW64; rv:45.0) Gecko/20100101
+	Thunderbird/45.3.0
 MIME-Version: 1.0
-Content-Disposition: inline
-In-Reply-To: <20191015073501.GA32345@lst.de>
-User-Agent: Mutt/1.5.21 (2010-09-15)
-X-TM-AS-GCONF: 00
-x-cbid: 19101607-0012-0000-0000-000003587DE7
-X-IBM-AV-DETECTION: SAVI=unused REMOTE=unused XFE=unused
-x-cbparentid: 19101607-0013-0000-0000-000021939633
-Message-Id: <20191016075521.GA5201@oc0525413822.ibm.com>
-Subject: RE: [PATCH 2/2] virtio_ring: Use DMA API if memory is encrypted
-X-Proofpoint-Virus-Version: vendor=fsecure engine=2.50.10434:, ,
-	definitions=2019-10-16_03:, , signatures=0
-X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0
-	priorityscore=1501
-	malwarescore=0 suspectscore=0 phishscore=0 bulkscore=0 spamscore=0
-	clxscore=1015 lowpriorityscore=0 mlxscore=0 impostorscore=0
-	mlxlogscore=999 adultscore=0 classifier=spam adjust=0 reason=mlx
-	scancount=1 engine=8.0.1-1908290000 definitions=main-1910160072
-Cc: andmike@us.ibm.com, sukadev@linux.vnet.ibm.com, mdroth@linux.vnet.ibm.com,
-	b.zolnierkie@samsung.com, benh@kernel.crashing.org,
-	jasowang@redhat.com, aik@linux.ibm.com, linux-kernel@vger.kernel.org,
-	virtualization@lists.linux-foundation.org, paulus@ozlabs.org,
-	iommu@lists.linux-foundation.org, paul.burton@mips.com,
-	mpe@ellerman.id.au, robin.murphy@arm.com,
-	linuxppc-dev@lists.ozlabs.org, david@gibson.dropbear.id.au
+In-Reply-To: <66a3ce9f-d3cd-110f-7353-46e6eaf25b7c@arm.com>
+X-Originating-IP: [10.202.227.179]
+X-CFilter-Loop: Reflected
+Cc: nleeder@codeaurora.org, rjw@rjwysocki.net, linux-kernel@vger.kernel.org,
+	linuxarm@huawei.com, iommu@lists.linux-foundation.org,
+	linux-arm-kernel@lists.infradead.org, lenb@kernel.org
 X-BeenThere: iommu@lists.linux-foundation.org
 X-Mailman-Version: 2.1.12
 Precedence: list
@@ -107,74 +65,120 @@ List-Post: <mailto:iommu@lists.linux-foundation.org>
 List-Help: <mailto:iommu-request@lists.linux-foundation.org?subject=help>
 List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
 	<mailto:iommu-request@lists.linux-foundation.org?subject=subscribe>
-Reply-To: Ram Pai <linuxram@us.ibm.com>
-Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset="us-ascii"; Format="flowed"
 Sender: iommu-bounces@lists.linux-foundation.org
 Errors-To: iommu-bounces@lists.linux-foundation.org
 
-On Tue, Oct 15, 2019 at 09:35:01AM +0200, Christoph Hellwig wrote:
-> On Fri, Oct 11, 2019 at 06:25:19PM -0700, Ram Pai wrote:
-> > From: Thiago Jung Bauermann <bauerman@linux.ibm.com>
-> > 
-> > Normally, virtio enables DMA API with VIRTIO_F_IOMMU_PLATFORM, which must
-> > be set by both device and guest driver. However, as a hack, when DMA API
-> > returns physical addresses, guest driver can use the DMA API; even though
-> > device does not set VIRTIO_F_IOMMU_PLATFORM and just uses physical
-> > addresses.
-> 
-> Sorry, but this is a complete bullshit hack.  Driver must always use
-> the DMA API if they do DMA, and if virtio devices use physical addresses
-> that needs to be returned through the platform firmware interfaces for
-> the dma setup.  If you don't do that yet (which based on previous
-> informations you don't), you need to fix it, and we can then quirk
-> old implementations that already are out in the field.
-> 
-> In other words: we finally need to fix that virtio mess and not pile
-> hacks on top of hacks.
+On 15/10/2019 19:00, Robin Murphy wrote:
+> Hi John,
+>
+> On 30/09/2019 15:33, John Garry wrote:
+>> This patchset adds IMP DEF event support for the SMMUv3 PMCG.
+>>
+>> It is marked as an RFC as the method to identify the PMCG implementation
+>> may be a quite disliked. And, in general, the series is somewhat
+>> incomplete.
+>>
+>> So the background is that the PMCG supports IMP DEF events, yet we
+>> have no
+>> method to identify the PMCG to know the IMP DEF events.
+>>
+>> A method for identifying the PMCG implementation could be using
+>> PMDEVARCH, but we cannot rely on this being set properly, as whether this
+>> is implemented is not defined in SMMUv3 spec.
+>>
+>> Another method would be perf event aliasing, but this method of event
+>> matching is based on CPU id, which would not guarantee same
+>> uniqueness as PMCG implementation.
+>>
+>> Yet another method could be to continue using ACPI OEM ID in the IORT
+>> code, but this does not scale. And it is not suitable if we ever add DT
+>> support to the PMCG driver.
+>>
+>> The method used in this series is based on matching on the parent SMMUv3
+>> IIDR. We store this IIDR contents in the arm smmu structure as the first
+>> element, which means that we don't have to expose SMMU APIs - this is
+>> the part which may be disliked.
+>>
+>> The final two patches switch the pre-existing PMCG model identification
+>> from ACPI OEM ID to the same parent SMMUv3 IIDR matching.
+>>
+>> For now, we only consider SMMUv3' nodes being the associated node for
+>> PMCG.
+>
 
-So force all virtio devices to use DMA API, except when
-VIRTIO_F_IOMMU_PLATFORM is not enabled?
+Hi Robin,
 
-Any help detailing the idea, will enable us fix this issue once for all.
+> Two significant concerns right off the bat:
+>
+> - It seems more common than not for silicon designers to fail to
+> implement IIDR correctly, so it's only a matter of time before
+> inevitably needing to bring back some firmware-level identifier
+> abstraction (if not already - does Hi161x have PMCGs?)
 
-Will something like below work? It removes the prior hacks, and
-always uses DMA API; except when VIRTIO_F_IOMMU_PLATFORM is not enabled.
+Maybe there's a way that we can switch to this method, and leave the 
+door open for an easy way to support firmware-level identifier again, if 
+ever needed. I'm not too pushed - this was secondary to just allowing 
+the PMCG driver know the associated SMMU model.
 
-diff --git a/drivers/virtio/virtio_ring.c b/drivers/virtio/virtio_ring.c
-index c8be1c4..b593d3d 100644
---- a/drivers/virtio/virtio_ring.c
-+++ b/drivers/virtio/virtio_ring.c
-@@ -240,22 +240,10 @@ static inline bool virtqueue_use_indirect(struct virtqueue *_vq,
- 
- static bool vring_use_dma_api(struct virtio_device *vdev)
- {
--	if (!virtio_has_iommu_quirk(vdev))
--		return true;
--
--	/* Otherwise, we are left to guess. */
--	/*
--	 * In theory, it's possible to have a buggy QEMU-supposed
--	 * emulated Q35 IOMMU and Xen enabled at the same time.  On
--	 * such a configuration, virtio has never worked and will
--	 * not work without an even larger kludge.  Instead, enable
--	 * the DMA API if we're a Xen guest, which at least allows
--	 * all of the sensible Xen configurations to work correctly.
--	 */
--	if (xen_domain())
--		return true;
-+	if (virtio_has_iommu_quirk(vdev))
-+		return false;
- 
--	return false;
-+	return true;
- }
- 
- size_t virtio_max_dma_size(struct virtio_device *vdev)
+And, no, hi161x does not have any PMCGs.
 
+>
+> - This seems like a step in entirely the wrong direction for supporting
+>.
 
--- 
-Ram Pai
+So to support PMCGs that reference a Named Component or Root Complex, I 
+thought that the IORT parsing code would have to do some secondary 
+lookup to the associated SMMU, through the Named Component or Root 
+Complex node.
+
+What was your idea here?
+
+Note: I do acknowledge that an overall issue is that we assume all PMCG 
+IMP DEF events are same for a given SMMU model.
+
+>
+> Interpreting the Node Reference is definitely a welcome improvement over
+> matching table headers, but absent a truly compelling argument to the
+> contrary, I'd rather retain the "PMCG model" abstraction in between that
+> and the driver itself (especially since those can trivially be hung off
+> compatibles once it comes to DT support).
+
+For DT, I would assume that we just use compatible strings would allow 
+us to identify the PMCG model.
+
+On a related matter, is there still a need to deal with scenarios of the 
+PMCG being located within the SMMU register map? As you may remember, we 
+did have this issue but relocated the PMCG to outside the SMMU register 
+map in a later chip rev.
+
+Cheers,
+John
+
+>
+> Thanks,
+> Robin.
+>
+>>
+>> John Garry (6):
+>>    ACPI/IORT: Set PMCG device parent
+>>    iommu/arm-smmu-v3: Record IIDR in arm_smmu_device structure
+>>    perf/smmuv3: Retrieve parent SMMUv3 IIDR
+>>    perf/smmuv3: Support HiSilicon hip08 (hi1620) IMP DEF events
+>>    perf/smmuv3: Match implementation options based on parent SMMU IIDR
+>>    ACPI/IORT: Drop code to set the PMCG software-defined model
+>>
+>>   drivers/acpi/arm64/iort.c     | 69 ++++++++++++++--------------
+>>   drivers/iommu/arm-smmu-v3.c   |  5 +++
+>>   drivers/perf/arm_smmuv3_pmu.c | 84 ++++++++++++++++++++++++++++++-----
+>>   include/linux/acpi_iort.h     |  8 ----
+>>   4 files changed, 112 insertions(+), 54 deletions(-)
+>>
+>
+> .
+>
+
 
 _______________________________________________
 iommu mailing list
