@@ -2,86 +2,80 @@ Return-Path: <SRS0=NqTC=YJ=lists.linux-foundation.org=iommu-bounces@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-8.0 required=3.0 tests=DKIM_ADSP_CUSTOM_MED,
-	DKIM_INVALID,DKIM_SIGNED,FREEMAIL_FORGED_FROMDOMAIN,FREEMAIL_FROM,
-	HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_PATCH,MAILING_LIST_MULTI,SIGNED_OFF_BY,
-	SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED,USER_AGENT_SANE_1 autolearn=ham
-	autolearn_force=no version=3.4.0
+X-Spam-Status: No, score=-2.0 required=3.0 tests=DKIM_INVALID,DKIM_SIGNED,
+	HEADER_FROM_DIFFERENT_DOMAINS,MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS,
+	USER_AGENT_SANE_2 autolearn=no autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 07E4BFA3728
-	for <iommu@archiver.kernel.org>; Wed, 16 Oct 2019 12:46:47 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 8F2C5FA372D
+	for <iommu@archiver.kernel.org>; Wed, 16 Oct 2019 14:55:13 +0000 (UTC)
 Received: from mail.linuxfoundation.org (mail.linuxfoundation.org [140.211.169.12])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by mail.kernel.org (Postfix) with ESMTPS id C07432168B
-	for <iommu@archiver.kernel.org>; Wed, 16 Oct 2019 12:46:46 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTPS id 6578B2168B
+	for <iommu@archiver.kernel.org>; Wed, 16 Oct 2019 14:55:13 +0000 (UTC)
 Authentication-Results: mail.kernel.org;
-	dkim=fail reason="signature verification failed" (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="KTEToaQ6"
-DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org C07432168B
-Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=gmail.com
+	dkim=fail reason="signature verification failed" (2048-bit key) header.d=lca.pw header.i=@lca.pw header.b="JtpuA57/"
+DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 6578B2168B
+Authentication-Results: mail.kernel.org; dmarc=none (p=none dis=none) header.from=lca.pw
 Authentication-Results: mail.kernel.org; spf=pass smtp.mailfrom=iommu-bounces@lists.linux-foundation.org
 Received: from mail.linux-foundation.org (localhost [127.0.0.1])
-	by mail.linuxfoundation.org (Postfix) with ESMTP id 8C74ADB2;
-	Wed, 16 Oct 2019 12:46:46 +0000 (UTC)
+	by mail.linuxfoundation.org (Postfix) with ESMTP id 1C09FEBD;
+	Wed, 16 Oct 2019 14:55:13 +0000 (UTC)
 Received: from smtp1.linuxfoundation.org (smtp1.linux-foundation.org
 	[172.17.192.35])
-	by mail.linuxfoundation.org (Postfix) with ESMTPS id B069AD67;
-	Wed, 16 Oct 2019 12:46:45 +0000 (UTC)
+	by mail.linuxfoundation.org (Postfix) with ESMTPS id F3660EBC
+	for <iommu@lists.linux-foundation.org>;
+	Wed, 16 Oct 2019 14:55:11 +0000 (UTC)
 X-Greylist: whitelisted by SQLgrey-1.7.6
-X-Greylist: whitelisted by SQLgrey-1.7.6
-Received: from mail-wm1-f66.google.com (mail-wm1-f66.google.com
-	[209.85.128.66])
-	by smtp1.linuxfoundation.org (Postfix) with ESMTPS id 220C013A;
-	Wed, 16 Oct 2019 12:46:45 +0000 (UTC)
-Received: by mail-wm1-f66.google.com with SMTP id b24so2602489wmj.5;
-	Wed, 16 Oct 2019 05:46:44 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=gmail.com; s=20161025;
-	h=date:from:to:cc:subject:message-id:references:mime-version
-	:content-disposition:in-reply-to:user-agent;
-	bh=zKeyF68jMzkZ8PZE+zyf0AJaz2r+snV2TpAgt4NOVLs=;
-	b=KTEToaQ6qrUyieyWQDtnZTqU0uLP/8iwXQlf8besLewIcU49APKdYdkSgI38Agh1MC
-	fybhBfRdkx5N+TTVr1tYMxdymZL3T0riuRTK/LOyyxhgaZQubAeRVPpVt+A3RnXX8QXs
-	URwFg3CqEOZzLc5RyI2hhW6B0aejSropBsziuKyyH/FIwM2Q/afI6g5YmezT97h0gfC5
-	m7l0yztoR6wQheMj/D2XjlMwJcTuiMahzWX2A2g4HbTmV1V3s2gVyEtGwQa4xFvdKB7X
-	+hlE/qsb3XwJejEKcLz/Da0ZJ8PWWa/2vOpEx0Rr6ALCbfpwZCOQM8tBCVrg0yVT28Nz
-	rENQ==
+Received: from mail-qt1-f195.google.com (mail-qt1-f195.google.com
+	[209.85.160.195])
+	by smtp1.linuxfoundation.org (Postfix) with ESMTPS id 13E9F8A0
+	for <iommu@lists.linux-foundation.org>;
+	Wed, 16 Oct 2019 14:55:10 +0000 (UTC)
+Received: by mail-qt1-f195.google.com with SMTP id m15so36570771qtq.2
+	for <iommu@lists.linux-foundation.org>;
+	Wed, 16 Oct 2019 07:55:10 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=lca.pw; s=google;
+	h=message-id:subject:from:to:cc:date:mime-version
+	:content-transfer-encoding;
+	bh=6hGS+UV0Kn8pFLpRVD/+mt3VBTqrlYZ2I5xPU55myZ4=;
+	b=JtpuA57/gkOgQxJH5xgPCfnwf4cLO/5VGf2sM0OiGVD1xyVMPTnuupzDBdy3edJRHU
+	bxPUzbGNWLvUjau4pPXmXhyK2p6K4mG4be8byvWS9ltYUWKhvHVobyYiCl5C9HYLT3AQ
+	UPXPusa/+BDlv2Vn7hwCsE1ZQQcrCKQALkc2nq7bINZYsBUsoiQ5L6yJNgSHbQG4eLVf
+	7cokIt/Whznq4PLbes3NSJetQZzqdk9yoL9T05Q/5XP+6Z7GQW9nTeGufqfn19GkWz0J
+	h0KIolxSo1GBdUUqDNCa+hldydDe1Cax7U/whhpSjck6lBSOqCufcFiTtDIfyDC+iEwf
+	zUtA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
 	d=1e100.net; s=20161025;
-	h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-	:mime-version:content-disposition:in-reply-to:user-agent;
-	bh=zKeyF68jMzkZ8PZE+zyf0AJaz2r+snV2TpAgt4NOVLs=;
-	b=GgtHLY/v0VIwGrDIF2jrB13dqz0eZv8fXK57S+B8nVQR4++ndUX1hGhYBoo1t1TErf
-	sMA5i8g0e/RPQ+qWlA++15B41hQnj9IdHIrqC/PFr4E0aRFFf/5br1UDr0BnctGV5Xmf
-	ebMe1jnixjCQ+tu4leZNCfie+4rBSEFFSfECt22l21SQEyrpFldZZKQ4a6S9xMZ7BHHV
-	4UsQii6ztq3qG+ZqwSexj5/SL+wvvKFqRG/VJiO2q8u5NGO0hNAdO6L3Y0mPK4qdn4kW
-	1tOqUJ0Wsx7eVLs/p6/g914fWzs0j4GJZx3NIxVVGmaOcWZjW4bMma1Wkdq4D4QdUSYc
-	1spQ==
-X-Gm-Message-State: APjAAAUF6DECd4mACrN1PTV0U8hMwF9xQfMgRkHJolmLqYJMAqo0rEp5
-	N0Nb36+HW/U7i7TLnpwdx5Q=
-X-Google-Smtp-Source: APXvYqy4uLAxXK8dZ9uj0Q5OXVcdh/jm7RvNEApTwfDvS63JBb+q8OpwLefZS54uymyMLUA4t9VzRQ==
-X-Received: by 2002:a7b:c4c6:: with SMTP id g6mr3276352wmk.126.1571230003562; 
-	Wed, 16 Oct 2019 05:46:43 -0700 (PDT)
-Received: from localhost (p2E5BE2CE.dip0.t-ipconnect.de. [46.91.226.206])
-	by smtp.gmail.com with ESMTPSA id
-	c18sm22646572wrv.10.2019.10.16.05.46.41
-	(version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-	Wed, 16 Oct 2019 05:46:41 -0700 (PDT)
-Date: Wed, 16 Oct 2019 14:46:40 +0200
-From: Thierry Reding <thierry.reding@gmail.com>
-To: Will Deacon <will@kernel.org>
-Subject: Re: [PATCH 1/5] iommu: Implement iommu_put_resv_regions_simple()
-Message-ID: <20191016124640.GA1772382@ulmo>
-References: <20190829111752.17513-1-thierry.reding@gmail.com>
-	<20190829111752.17513-2-thierry.reding@gmail.com>
-	<20190918153737.dea2z5dddhuus25g@willie-the-truck>
-MIME-Version: 1.0
-In-Reply-To: <20190918153737.dea2z5dddhuus25g@willie-the-truck>
-User-Agent: Mutt/1.12.2 (2019-09-21)
-Cc: Jean-Philippe Brucker <jean-philippe@linaro.org>,
-	Robin Murphy <robin.murphy@arm.com>, linux-kernel@vger.kernel.org,
-	virtualization@lists.linux-foundation.org,
-	iommu@lists.linux-foundation.org, David Woodhouse <dwmw2@infradead.org>,
-	linux-arm-kernel@lists.infradead.org
+	h=x-gm-message-state:message-id:subject:from:to:cc:date:mime-version
+	:content-transfer-encoding;
+	bh=6hGS+UV0Kn8pFLpRVD/+mt3VBTqrlYZ2I5xPU55myZ4=;
+	b=AW2HVaV1XJFVzXIlMdHbq3t0E97j6Mf3E67qgpwpsFSM/J5aeAq2/LLUBERUXYha3b
+	FPnLpj31oPS7ibSYhVg1z1jfNceGpTPcjcUnnhcQ7xl+K1EhteyI7JpIM7cZ6TPp+NkL
+	b1J+F8XwMibC1bNb5JmFXPLWImMRL2QOLX6QEaG6rmJmTFIqUeePNZB7Zb2EKpTrSX/G
+	RtuGQmxBLZXpxUf31Ibtx3CLNLurtFqAl29HfbspLwWAAmCgPf98szTQHJwJ8JA/iUfa
+	4D3YrXgTrZHnAtTlxlK3+A/+3N7JO5SqcdGd8jkvQT8cy6JDWQ2wXYmJye7NH5s3ldVA
+	9WBg==
+X-Gm-Message-State: APjAAAWu27orp0VgItwL9tnY71asOCqcostXOukrr0SLUFkpin0Ripjg
+	AxuJUXAAkR9JWRGiVP5f9XynVA==
+X-Google-Smtp-Source: APXvYqxgl2n27DMtvjvWjkEaY+O0vwkaUjx3G4C7sWU4RY6L2P73mSFc71rQzhKcwvrZkzTZLWVLBA==
+X-Received: by 2002:a0c:d1dd:: with SMTP id k29mr11074570qvh.110.1571237709699;
+	Wed, 16 Oct 2019 07:55:09 -0700 (PDT)
+Received: from dhcp-41-57.bos.redhat.com (nat-pool-bos-t.redhat.com.
+	[66.187.233.206]) by smtp.gmail.com with ESMTPSA id
+	n17sm12316324qke.103.2019.10.16.07.55.08
+	(version=TLS1_2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128/128);
+	Wed, 16 Oct 2019 07:55:09 -0700 (PDT)
+Message-ID: <1571237707.5937.58.camel@lca.pw>
+Subject: "Convert the AMD iommu driver to the dma-iommu api" is buggy
+From: Qian Cai <cai@lca.pw>
+To: Tom Murphy <murphyt7@tcd.ie>
+Date: Wed, 16 Oct 2019 10:55:07 -0400
+X-Mailer: Evolution 3.22.6 (3.22.6-10.el7) 
+Mime-Version: 1.0
+Cc: iommu@lists.linux-foundation.org, Joerg Roedel <jroedel@suse.de>,
+	Robin Murphy <robin.murphy@arm.com>,
+	Christoph Hellwig <hch@lst.de>, linux-kernel@vger.kernel.org
 X-BeenThere: iommu@lists.linux-foundation.org
 X-Mailman-Version: 2.1.12
 Precedence: list
@@ -94,112 +88,153 @@ List-Post: <mailto:iommu@lists.linux-foundation.org>
 List-Help: <mailto:iommu-request@lists.linux-foundation.org?subject=help>
 List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
 	<mailto:iommu-request@lists.linux-foundation.org?subject=subscribe>
-Content-Type: multipart/mixed; boundary="===============0852079236554484222=="
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: base64
 Sender: iommu-bounces@lists.linux-foundation.org
 Errors-To: iommu-bounces@lists.linux-foundation.org
 
-
---===============0852079236554484222==
-Content-Type: multipart/signed; micalg=pgp-sha256;
-	protocol="application/pgp-signature"; boundary="gKMricLos+KVdGMg"
-Content-Disposition: inline
-
-
---gKMricLos+KVdGMg
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-Content-Transfer-Encoding: quoted-printable
-
-On Wed, Sep 18, 2019 at 04:37:38PM +0100, Will Deacon wrote:
-> On Thu, Aug 29, 2019 at 01:17:48PM +0200, Thierry Reding wrote:
-> > From: Thierry Reding <treding@nvidia.com>
-> >=20
-> > Implement a generic function for removing reserved regions. This can be
-> > used by drivers that don't do anything fancy with these regions other
-> > than allocating memory for them.
-> >=20
-> > Signed-off-by: Thierry Reding <treding@nvidia.com>
-> > ---
-> >  drivers/iommu/iommu.c | 19 +++++++++++++++++++
-> >  include/linux/iommu.h |  2 ++
-> >  2 files changed, 21 insertions(+)
-> >=20
-> > diff --git a/drivers/iommu/iommu.c b/drivers/iommu/iommu.c
-> > index 0f585b614657..73a2a6b13507 100644
-> > --- a/drivers/iommu/iommu.c
-> > +++ b/drivers/iommu/iommu.c
-> > @@ -2170,6 +2170,25 @@ void iommu_put_resv_regions(struct device *dev, =
-struct list_head *list)
-> >  		ops->put_resv_regions(dev, list);
-> >  }
-> > =20
-> > +/**
-> > + * iommu_put_resv_regions_simple - Reserved region driver helper
-> > + * @dev: device for which to free reserved regions
-> > + * @list: reserved region list for device
-> > + *
-> > + * IOMMU drivers can use this to implement their .put_resv_regions() c=
-allback
-> > + * for simple reservations. Memory allocated for each reserved region =
-will be
-> > + * freed. If an IOMMU driver allocates additional resources per region=
-, it is
-> > + * going to have to implement a custom callback.
-> > + */
-> > +void iommu_put_resv_regions_simple(struct device *dev, struct list_hea=
-d *list)
-> > +{
-> > +	struct iommu_resv_region *entry, *next;
-> > +
-> > +	list_for_each_entry_safe(entry, next, list, list)
-> > +		kfree(entry);
-> > +}
-> > +EXPORT_SYMBOL(iommu_put_resv_regions_simple);
->=20
-> Can you call this directly from iommu_put_resv_regions() if the function
-> pointer in ops is NULL? That would save having to plumb the default callb=
-ack
-> into a bunch of drivers.
-
-I probably could, but I don't think that necessarily improves things.
-The reason is that that would cause the helper to get called even if the
-driver doesn't support reserved regions. That's likely harmless because
-in that case the list of regions passed to it would be empty. However, I
-think the current way to do this, where we have to implement both hooks
-for ->get_resv_regions() and ->put_resv_regions() is nicely symmetric.
-
-Thierry
-
---gKMricLos+KVdGMg
-Content-Type: application/pgp-signature; name="signature.asc"
-
------BEGIN PGP SIGNATURE-----
-
-iQIzBAABCAAdFiEEiOrDCAFJzPfAjcif3SOs138+s6EFAl2nES4ACgkQ3SOs138+
-s6EONg//ZrYWm5ShwdyQ9XivGxuuU1NxmrAJMtWHz2z0xMVhLv8vVlvNeGNNepm/
-AYozw/NMlEZokXfJVW9zNHDpOdr+MB6EchafhOZo9kK592CE18NhVrpVDptMvf29
-K1QsQvgCq5Lu9EHBeDMxpx6Kn9VNBFJuAeYCIVzD5GOm80sHdAp1eKMwu/od+oTQ
-IwZLB0K82tKdvnwYDYjN/JUW0dbrthH+fW843oOxAqQgrJYApL64k6WuPn6evN11
-V7xbw3/Yk3LMqxmBzve7b7ATYXdGRuN7TdMX7aZmLX8xyu11L6LbK+Lss10BbBKi
-Vja3MbZgoD54Eam3zOvj+b7tfdiRry4jhqqVksJ/Q2U7KOygrzLORgYR6wTgtz9g
-opzD+i9cGdaSj1k8kvVeFPqX9TL/er2hy05MIEWYYTuVh3Y6xiPekH988bHvxf9X
-bcl8I5YARin8U2n5R9kaS+drtuo3HvgeQMfszEf9UDNLQc+Pl5niTQPJzljWiZ36
-zI8Tq7Sq8Fph33gOGbpcZMTDux4cjlYtGWle7U5tkS38Xte7+IgRxmpwWDC6Y0jX
-muP1UNGkXJMLvJtssGseFZZw9qkJcq0NPRdjaN4k+LTdbrw0B10f1CDST8g/9Z4H
-xvmbe6SyeWzgcBc43Fs4V3YjZXAYWxf66eD2B9h9AdAEHSmCgD4=
-=LljU
------END PGP SIGNATURE-----
-
---gKMricLos+KVdGMg--
-
---===============0852079236554484222==
-Content-Type: text/plain; charset="us-ascii"
-MIME-Version: 1.0
-Content-Transfer-Encoding: 7bit
-Content-Disposition: inline
-
-_______________________________________________
-iommu mailing list
-iommu@lists.linux-foundation.org
-https://lists.linuxfoundation.org/mailman/listinfo/iommu
---===============0852079236554484222==--
+VG9kYXkncyBsaW51eC1uZXh0IGdlbmVyYXRlcyBhIGxvdCBvZiB3YXJuaW5ncyBvbiBtdWx0aXBs
+ZSBzZXJ2ZXJzIGR1cmluZyBib290CmR1ZSB0byB0aGUgc2VyaWVzICJpb21tdS9hbWQ6IENvbnZl
+cnQgdGhlIEFNRCBpb21tdSBkcml2ZXIgdG8gdGhlIGRtYS1pb21tdSBhcGkiClsxXS4gUmV2ZXJ0
+ZWQgdGhlIHdob2xlIHRoaW5ncyBmaXhlZCB0aGVtLgoKWzFdIGh0dHBzOi8vbG9yZS5rZXJuZWwu
+b3JnL2xrbWwvMjAxOTA5MDgxNjU2NDIuMjIyNTMtMS1tdXJwaHl0N0B0Y2QuaWUvCgpbwqDCoDI1
+Ny43ODU3NDldWyBUNjE4NF0gQlVHOiBzbGVlcGluZyBmdW5jdGlvbiBjYWxsZWQgZnJvbSBpbnZh
+bGlkIGNvbnRleHQgYXQKbW0vcGFnZV9hbGxvYy5jOjQ2OTIKW8KgwqAyNTcuNzk0ODg2XVsgVDYx
+ODRdIGluX2F0b21pYygpOiAxLCBpcnFzX2Rpc2FibGVkKCk6IDAsIG5vbl9ibG9jazogMCwgcGlk
+Ogo2MTg0LCBuYW1lOiByZWFkZWxmClvCoMKgMjU3LjgwMzU3NF1bIFQ2MTg0XSBJTkZPOiBsb2Nr
+ZGVwIGlzIHR1cm5lZCBvZmYuClvCoMKgMjU3LjgwODIzM11bIFQ2MTg0XSBDUFU6IDg2IFBJRDog
+NjE4NCBDb21tOiByZWFkZWxmIFRhaW50ZWQ6CkfCoMKgwqDCoMKgwqDCoMKgV8KgwqDCoMKgwqDC
+oMKgwqDCoDUuNC4wLXJjMy1uZXh0LTIwMTkxMDE2KyAjNwpbwqDCoDI1Ny44MTgwMzVdWyBUNjE4
+NF0gSGFyZHdhcmUgbmFtZTogSFBFIFByb0xpYW50IERMMzg1IEdlbjEwL1Byb0xpYW50IERMMzg1
+CkdlbjEwLCBCSU9TIEE0MCAwNy8xMC8yMDE5ClvCoMKgMjU3LjgyNzMxM11bIFQ2MTg0XSBDYWxs
+IFRyYWNlOgpbwqDCoDI1Ny44MzA0ODddWyBUNjE4NF3CoMKgZHVtcF9zdGFjaysweDg2LzB4Y2EK
+W8KgwqAyNTcuODM0NTMwXVsgVDYxODRdwqDCoF9fX21pZ2h0X3NsZWVwLmNvbGQuOTIrMHhkMi8w
+eDEyMgpbwqDCoDI1Ny44Mzk3MDhdWyBUNjE4NF3CoMKgX19taWdodF9zbGVlcCsweDczLzB4ZTAK
+W8KgwqAyNTcuODQ0MDExXVsgVDYxODRdwqDCoF9fYWxsb2NfcGFnZXNfbm9kZW1hc2srMHg0NDIv
+MHg3MjAKW8KgwqAyNTcuODQ5Mjc0XVsgVDYxODRdwqDCoD8gX19hbGxvY19wYWdlc19zbG93cGF0
+aCsweDE4ZDAvMHgxOGQwClvCoMKgMjU3Ljg1NDg4Nl1bIFQ2MTg0XcKgwqA/IGRlYnVnX2xvY2tk
+ZXBfcmN1X2VuYWJsZWQrMHgyNy8weDYwClvCoMKgMjU3Ljg2MDQxNV1bIFQ2MTg0XcKgwqA/IGxv
+Y2tfZG93bmdyYWRlKzB4M2MwLzB4M2MwClvCoMKgMjU3Ljg2NTE1Nl1bIFQ2MTg0XcKgwqBhbGxv
+Y19wYWdlc19jdXJyZW50KzB4OWMvMHgxMTAKW8KgwqAyNTcuODcwMDcxXVsgVDYxODRdwqDCoF9f
+Z2V0X2ZyZWVfcGFnZXMrMHgxMi8weDYwClvCoMKgMjU3Ljg3NDYzNF1bIFQ2MTg0XcKgwqBnZXRf
+emVyb2VkX3BhZ2UrMHgxNi8weDIwClvCoMKgMjU3Ljg3OTExMl1bIFQ2MTg0XcKgwqBhbWRfaW9t
+bXVfbWFwKzB4NTA0LzB4ODUwClvCoMKgMjU3Ljg4MzU4OF1bIFQ2MTg0XcKgwqA/IGFtZF9pb21t
+dV9kb21haW5fZGlyZWN0X21hcCsweDYwLzB4NjAKW8KgwqAyNTcuODg5Mjg2XVsgVDYxODRdwqDC
+oD8gbG9ja2RlcF9oYXJkaXJxc19vbisweDE2LzB4MmEwClvCoMKgMjU3Ljg5NDM3M11bIFQ2MTg0
+XcKgwqA/IGFsbG9jX2lvdmErMHgxODkvMHgyMTAKW8KgwqAyNTcuODk4NzY1XVsgVDYxODRdwqDC
+oD8gdHJhY2VfaGFyZGlycXNfb24rMHgzYS8weDE2MApbwqDCoDI1Ny45MDM2NzddWyBUNjE4NF3C
+oMKgaW9tbXVfbWFwKzB4MWIzLzB4NGQwClvCoMKgMjU3LjkwNzgwMl1bIFQ2MTg0XcKgwqA/IGlv
+bW11X3VubWFwKzB4ZjAvMHhmMApbwqDCoDI1Ny45MTIxMDRdWyBUNjE4NF3CoMKgPyBhbGxvY19p
+b3ZhX2Zhc3QrMHgyNTgvMHgzZDEKW8KgwqAyNTcuOTE2OTI5XVsgVDYxODRdwqDCoD8gY3JlYXRl
+X29iamVjdCsweDRhMi8weDU0MApbwqDCoDI1Ny45MjE1NzldWyBUNjE4NF3CoMKgaW9tbXVfbWFw
+X3NnKzB4OWQvMHgxMjAKW8KgwqAyNTcuOTI1ODgyXVsgVDYxODRdwqDCoGlvbW11X2RtYV9tYXBf
+c2crMHgyYzMvMHg0NTAKW8KgwqAyNTcuOTMwNjI3XVsgVDYxODRdwqDCoHNjc2lfZG1hX21hcCsw
+eGQ3LzB4MTYwClvCoMKgMjU3LjkzNDkzNl1bIFQ2MTg0XcKgwqBwcWlfcmFpZF9zdWJtaXRfc2Nz
+aV9jbWRfd2l0aF9pb19yZXF1ZXN0KzB4MzkyLzB4NDIwCltzbWFydHBxaV0KW8KgwqAyNTcuOTQy
+NzM1XVsgVDYxODRdwqDCoD8gcHFpX2FsbG9jX2lvX3JlcXVlc3QrMHgxMjcvMHgxNDAgW3NtYXJ0
+cHFpXQpbwqDCoDI1Ny45NDg5NjJdWyBUNjE4NF3CoMKgcHFpX3Njc2lfcXVldWVfY29tbWFuZCsw
+eDhhYi8weGUwMCBbc21hcnRwcWldClvCoMKgMjU3Ljk1NTE5Ml1bIFQ2MTg0XcKgwqA/IHBxaV9l
+aF9kZXZpY2VfcmVzZXRfaGFuZGxlcisweDljMC8weDljMCBbc21hcnRwcWldClvCoMKgMjU3Ljk2
+MjAyOV1bIFQ2MTg0XcKgwqA/IHNkX2luaXRfY29tbWFuZCsweGEyNS8weDEzNDYgW3NkX21vZF0K
+W8KgwqAyNTcuOTY3NzMwXVsgVDYxODRdwqDCoHNjc2lfcXVldWVfcnErMHhkMTkvMHgxMzYwClvC
+oMKgMjU3Ljk3MjI5OF1bIFQ2MTg0XcKgwqBfX2Jsa19tcV90cnlfaXNzdWVfZGlyZWN0bHkrMHgy
+OTUvMHgzZjAKW8KgwqAyNTcuOTc3OTk5XVsgVDYxODRdwqDCoD8gYmxrX21xX3JlcXVlc3RfYnlw
+YXNzX2luc2VydCsweGQwLzB4ZDAKW8KgwqAyNTcuOTgzNzg3XVsgVDYxODRdwqDCoD8gZGVidWdf
+bG9ja2RlcF9yY3VfZW5hYmxlZCsweDI3LzB4NjAKW8KgwqAyNTcuOTg5MzEyXVsgVDYxODRdwqDC
+oGJsa19tcV9yZXF1ZXN0X2lzc3VlX2RpcmVjdGx5KzB4YjUvMHgxMDAKW8KgwqAyNTcuOTk1MDk4
+XVsgVDYxODRdwqDCoD8gYmxrX21xX2ZsdXNoX3BsdWdfbGlzdCsweDdlMC8weDdlMApbwqDCoDI1
+OC4wMDA1MzddWyBUNjE4NF3CoMKgPyBibGtfbXFfc2NoZWRfaW5zZXJ0X3JlcXVlc3RzKzB4ZDYv
+MHgzODAKW8KgwqAyNTguMDA2NDA5XVsgVDYxODRdwqDCoD8gbG9ja19kb3duZ3JhZGUrMHgzYzAv
+MHgzYzAKW8KgwqAyNTguMDExMTQ3XVsgVDYxODRdwqDCoGJsa19tcV90cnlfaXNzdWVfbGlzdF9k
+aXJlY3RseSsweGE5LzB4MTYwClvCoMKgMjU4LjAxNzAyM11bIFQ2MTg0XcKgwqBibGtfbXFfc2No
+ZWRfaW5zZXJ0X3JlcXVlc3RzKzB4MjI4LzB4MzgwClvCoMKgMjU4LjAyMjgxMF1bIFQ2MTg0XcKg
+wqBibGtfbXFfZmx1c2hfcGx1Z19saXN0KzB4NDQ4LzB4N2UwClvCoMKgMjU4LjAyODA3M11bIFQ2
+MTg0XcKgwqA/IGJsa19tcV9pbnNlcnRfcmVxdWVzdHMrMHgzODAvMHgzODAKW8KgwqAyNTguMDMz
+NTE2XVsgVDYxODRdwqDCoGJsa19mbHVzaF9wbHVnX2xpc3QrMHgxZWIvMHgyMzAKW8KgwqAyNTgu
+MDM4NTE1XVsgVDYxODRdwqDCoD8gYmxrX2luc2VydF9jbG9uZWRfcmVxdWVzdCsweDFiMC8weDFi
+MApbwqDCoDI1OC4wNDQyMTVdWyBUNjE4NF3CoMKgYmxrX2ZpbmlzaF9wbHVnKzB4NDMvMHg1ZApb
+wqDCoDI1OC4wNDg2OTVdWyBUNjE4NF3CoMKgcmVhZF9wYWdlcysweGY2LzB4M2IwClvCoMKgMjU4
+LjA1MjgyM11bIFQ2MTg0XcKgwqA/IHJlYWRfY2FjaGVfcGFnZXMrMHgzNTAvMHgzNTAKW8KgwqAy
+NTguMDU3NzM3XVsgVDYxODRdwqDCoD8gX19wYWdlX2NhY2hlX2FsbG9jKzB4MTJjLzB4MjMwClvC
+oMKgMjU4LjA2MjgyNl1bIFQ2MTg0XcKgwqBfX2RvX3BhZ2VfY2FjaGVfcmVhZGFoZWFkKzB4MzQ2
+LzB4M2EwClvCoMKgMjU4LjA2ODM0OF1bIFQ2MTg0XcKgwqA/IHJlYWRfcGFnZXMrMHgzYjAvMHgz
+YjAKW8KgwqAyNTguMDcyNzM4XVsgVDYxODRdwqDCoD8gbG9ja2RlcF9oYXJkaXJxc19vbisweDE2
+LzB4MmEwClvCoMKgMjU4LjA3NzkyOF1bIFQ2MTg0XcKgwqA/IF9feGZzX2ZpbGVtYXBfZmF1bHQr
+MHgxNjcvMHg0YTAgW3hmc10KW8KgwqAyNTguMDgzNjI1XVsgVDYxODRdwqDCoGZpbGVtYXBfZmF1
+bHQrMHhhMTMvMHhlNzAKW8KgwqAyNTguMDg4MjAxXVsgVDYxODRdwqDCoF9feGZzX2ZpbGVtYXBf
+ZmF1bHQrMHgxNjcvMHg0YTAgW3hmc10KW8KgwqAyNTguMDkzNzMxXVsgVDYxODRdwqDCoD8ga21l
+bWxlYWtfYWxsb2MrMHg1Ny8weDkwClvCoMKgMjU4LjA5ODM5N11bIFQ2MTg0XcKgwqA/IHhmc19m
+aWxlX3JlYWRfaXRlcisweDNjMC8weDNjMCBbeGZzXQpbwqDCoDI1OC4xMDQwMDldWyBUNjE4NF3C
+oMKgPyBkZWJ1Z19jaGVja19ub19sb2Nrc19mcmVlZCsweDJjLzB4ZTAKW8KgwqAyNTguMTA5NjE4
+XVsgVDYxODRdwqDCoD8gbG9ja2RlcF9pbml0X21hcCsweDhiLzB4MmIwClvCoMKgMjU4LjExNDU0
+M11bIFQ2MTg0XcKgwqB4ZnNfZmlsZW1hcF9mYXVsdCsweDY4LzB4NzAgW3hmc10KW8KgwqAyNTgu
+MTE5NzIwXVsgVDYxODRdwqDCoF9fZG9fZmF1bHQrMHg4My8weDIyMApbwqDCoDI1OC4xMjM4NDdd
+WyBUNjE4NF3CoMKgX19oYW5kbGVfbW1fZmF1bHQrMHhkNzYvMHgxZjQwClvCoMKgMjU4LjEyODc1
+N11bIFQ2MTg0XcKgwqA/IF9fcG1kX2FsbG9jKzB4MjgwLzB4MjgwClvCoMKgMjU4LjEzMzIzMV1b
+IFQ2MTg0XcKgwqA/IGRlYnVnX2xvY2tkZXBfcmN1X2VuYWJsZWQrMHgyNy8weDYwClvCoMKgMjU4
+LjEzODc1NV1bIFQ2MTg0XcKgwqA/IGhhbmRsZV9tbV9mYXVsdCsweDE3OC8weDRjMApbwqDCoDI1
+OC4xNDM1ODFdWyBUNjE4NF3CoMKgPyBsb2NrZGVwX2hhcmRpcnFzX29uKzB4MTYvMHgyYTAKW8Kg
+wqAyNTguMTQ4Njc0XVsgVDYxODRdwqDCoD8gX19kb19wYWdlX2ZhdWx0KzB4MjljLzB4NjQwClvC
+oMKgMjU4LjE1MzUwMV1bIFQ2MTg0XcKgwqBoYW5kbGVfbW1fZmF1bHQrMHgyMDUvMHg0YzAKW8Kg
+wqAyNTguMTU4MTUxXVsgVDYxODRdwqDCoF9fZG9fcGFnZV9mYXVsdCsweDI5Yy8weDY0MApbwqDC
+oDI1OC4xNjI4MDBdWyBUNjE4NF3CoMKgZG9fcGFnZV9mYXVsdCsweDUwLzB4MzdmClvCoMKgMjU4
+LjE2NzE4OV1bIFQ2MTg0XcKgwqBwYWdlX2ZhdWx0KzB4MzQvMHg0MApbwqDCoDI1OC4xNzEyMjhd
+WyBUNjE4NF0gUklQOiAwMDEwOl9fY2xlYXJfdXNlcisweDNiLzB4NzAKClvCoMKgMTgzLjU1MzE1
+MF0gQlVHOiBzbGVlcGluZyBmdW5jdGlvbiBjYWxsZWQgZnJvbSBpbnZhbGlkIGNvbnRleHQgYXQK
+ZHJpdmVycy9pb21tdS9pb21tdS5jOjE5NTAKW8KgwqAxODMuNTYyMzA2XSBpbl9hdG9taWMoKTog
+MSwgaXJxc19kaXNhYmxlZCgpOiAxMjgsIG5vbl9ibG9jazogMCwgcGlkOiAxNDg2LApuYW1lOiBr
+d29ya2VyLzA6MwpbwqDCoDE4My41NzE0NTBdIDUgbG9ja3MgaGVsZCBieSBrd29ya2VyLzA6My8x
+NDg2OgpbwqDCoDE4My41NzY1MTBdwqDCoCMwOiA0NGZmMDAwODAwMGNlMTI4ICgod3FfY29tcGxl
+dGlvbilldmVudHMpeysuKy59LCBhdDoKcHJvY2Vzc19vbmVfd29yaysweDI1Yy8weDk0OApbwqDC
+oDE4My41ODYxMTBdwqDCoCMxOiA0M2ZmMDAwODFmYjJmY2Y4ICgod29ya19jb21wbGV0aW9uKSgm
+d2ZjLndvcmspKXsrLisufSwgYXQ6CnByb2Nlc3Nfb25lX3dvcmsrMHgyODAvMHg5NDgKW8KgwqAx
+ODMuNTk2MzEwXcKgwqAjMjogZmZmZjAwMGEyYzY2MWEwOCAoJmRldi0+aW50Zl9zdGF0ZV9tdXRl
+eCl7Ky4rLn0sIGF0OgptbHg1X2xvYWRfb25lKzB4NjgvMHgxMmUwIFttbHg1X2NvcmVdClvCoMKg
+MTgzLjYwNjkxNl3CoMKgIzM6IGZmZmY5MDAwMTI3ZTQ1NjAgKGlycV9kb21haW5fbXV0ZXgpeysu
+Ky59LCBhdDoKX19pcnFfZG9tYWluX2FsbG9jX2lycXMrMHgxZjgvMHg0MzAKW8KgwqAxODMuNjE2
+NjgzXcKgwqAjNDogMDJmZjAwOTVjYTBlZDhmMCAoJigmY29va2llLT5tc2lfbG9jayktPnJsb2Nr
+KXsuLi4ufSwgYXQ6CmlvbW11X2RtYV9wcmVwYXJlX21zaSsweDcwLzB4MjEwClvCoMKgMTgzLjYy
+NzE0Nl0gaXJxIGV2ZW50IHN0YW1wOiAzNzg4NzIKW8KgwqAxODMuNjMxMzQ1XSBoYXJkaXJxcyBs
+YXN0wqDCoGVuYWJsZWQgYXQgKDM3ODg3MSk6IFs8ZmZmZjkwMDAxMDlkMDIzMD5dCl9yYXdfd3Jp
+dGVfdW5sb2NrX2lycXJlc3RvcmUrMHg0Yy8weDg0ClvCoMKgMTgzLjY0MTc5MV0gaGFyZGlycXMg
+bGFzdCBkaXNhYmxlZCBhdCAoMzc4ODcyKTogWzxmZmZmOTAwMDEwOWNmN2EwPl0KX3Jhd19zcGlu
+X2xvY2tfaXJxc2F2ZSsweDM4LzB4OWMKW8KgwqAxODMuNjUxNzE3XSBzb2Z0aXJxcyBsYXN0wqDC
+oGVuYWJsZWQgYXQgKDM3Nzg1NCk6IFs8ZmZmZjkwMDAxMDA4MjRmND5dCl9fZG9fc29mdGlycSsw
+eDg2NC8weDkwMApbwqDCoDE4My42NjA5NTFdIHNvZnRpcnFzIGxhc3QgZGlzYWJsZWQgYXQgKDM3
+Nzg0MSk6IFs8ZmZmZjkwMDAxMDExODc2OD5dCmlycV9leGl0KzB4MWM4LzB4MjM4ClvCoMKgMTgz
+LjY2OTgzNl0gQ1BVOiAwIFBJRDogMTQ4NiBDb21tOiBrd29ya2VyLzA6MyBUYWludGVkOgpHwqDC
+oMKgwqDCoMKgwqDCoFfCoMKgwqDCoEzCoMKgwqDCoDUuNC4wLXJjMy1uZXh0LTIwMTkxMDE2KyAj
+OApbwqDCoDE4My42Nzk4NDVdIEhhcmR3YXJlIG5hbWU6IEhQRSBBcG9sbG8gNzDCoMKgwqDCoMKg
+wqDCoMKgwqDCoMKgwqDCoC9DMDFfQVBBQ0hFX01CwqDCoMKgwqDCoMKgwqDCoMKgLApCSU9TIEw1
+MF81LjEzXzEuMTEgMDYvMTgvMjAxOQpbwqDCoDE4My42OTAyOTJdIFdvcmtxdWV1ZTogZXZlbnRz
+IHdvcmtfZm9yX2NwdV9mbgpbwqDCoDE4My42OTUzNTddIENhbGwgdHJhY2U6ClvCoMKgMTgzLjY5
+ODUxMF3CoMKgZHVtcF9iYWNrdHJhY2UrMHgwLzB4MjQ4ClvCoMKgMTgzLjcwMjg3OF3CoMKgc2hv
+d19zdGFjaysweDIwLzB4MmMKW8KgwqAxODMuNzA2OTAwXcKgwqBkdW1wX3N0YWNrKzB4YzgvMHgx
+MzAKW8KgwqAxODMuNzExMDA5XcKgwqBfX19taWdodF9zbGVlcCsweDMxNC8weDMyOApbwqDCoDE4
+My43MTU1NTFdwqDCoF9fbWlnaHRfc2xlZXArMHg3Yy8weGUwClvCoMKgMTgzLjcxOTgzMl3CoMKg
+aW9tbXVfbWFwKzB4NDAvMHg3MApbwqDCoDE4My43MjM3NjZdwqDCoGlvbW11X2RtYV9wcmVwYXJl
+X21zaSsweDE2Yy8weDIxMApbwqDCoDE4My43Mjg5MTZdwqDCoGl0c19pcnFfZG9tYWluX2FsbG9j
+KzB4MTAwLzB4MjU0ClvCoMKgMTgzLjczMzk3OV3CoMKgaXJxX2RvbWFpbl9hbGxvY19pcnFzX3Bh
+cmVudCsweDc0LzB4OTAKW8KgwqAxODMuNzM5NTYyXcKgwqBtc2lfZG9tYWluX2FsbG9jKzB4YTAv
+MHgxNzAKW8KgwqAxODMuNzQ0MTkwXcKgwqBfX2lycV9kb21haW5fYWxsb2NfaXJxcysweDIyOC8w
+eDQzMApbwqDCoDE4My43NDk1MTJdwqDCoG1zaV9kb21haW5fYWxsb2NfaXJxcysweDEzMC8weDU0
+OApbwqDCoDE4My43NTQ2NjNdwqDCoHBjaV9tc2lfc2V0dXBfbXNpX2lycXMrMHg2NC8weDc0ClvC
+oMKgMTgzLjc1OTcyNl3CoMKgX19wY2lfZW5hYmxlX21zaXhfcmFuZ2UrMHg1MmMvMHg4NzgKW8Kg
+wqAxODMuNzY1MDQ5XcKgwqBwY2lfYWxsb2NfaXJxX3ZlY3RvcnNfYWZmaW5pdHkrMHg5NC8weDE2
+OApbwqDCoDE4My43NzEwMjhdwqDCoG1seDVfaXJxX3RhYmxlX2NyZWF0ZSsweDE3OC8weDc0OCBb
+bWx4NV9jb3JlXQpbwqDCoDE4My43NzczNTNdwqDCoG1seDVfbG9hZF9vbmUrMHg3MTAvMHgxMmUw
+IFttbHg1X2NvcmVdClvCoMKgMTgzLjc4MzA2OV3CoMKgaW5pdF9vbmUrMHg1MTQvMHg4OTggW21s
+eDVfY29yZV0KW8KgwqAxODMuNzg4MTM0XcKgwqBsb2NhbF9wY2lfcHJvYmUrMHg3NC8weGNjClvC
+oMKgMTgzLjc5MjU4OV3CoMKgd29ya19mb3JfY3B1X2ZuKzB4MzAvMHg0YwpbwqDCoDE4My43OTcw
+NDVdwqDCoHByb2Nlc3Nfb25lX3dvcmsrMHg0ZjQvMHg5NDgKW8KgwqAxODMuODAxNzYwXcKgwqBw
+cm9jZXNzX3NjaGVkdWxlZF93b3JrcysweDM0LzB4NTQKW8KgwqAxODMuODA2OTA5XcKgwqB3b3Jr
+ZXJfdGhyZWFkKzB4MzQ4LzB4NGJjClvCoMKgMTgzLjgxMTM2NF3CoMKga3RocmVhZCsweDFjYy8w
+eDFlOApbwqDCoDE4My44MTUyOTldwqDCoHJldF9mcm9tX2ZvcmsrMHgxMC8weDE4ClvCoMKgMTg0
+LjYyMTYzMV0gbWx4NV9jb3JlIDAwMDA6MGI6MDAuMTogUG9ydCBtb2R1bGUgZXZlbnQ6IG1vZHVs
+ZSAxLCBDYWJsZQp1bnBsdWdnZWQKW8KgwqAxODQuODY3MzY3XSBtbHg1X2NvcmUgMDAwMDowYjow
+MC4wOiBNTFg1RTogU3RyZFJxKDApIFJxU3ooMTAyNCkgU3RyZFN6KDI1NikKUnhDcWVDbXByc3Mo
+MCkKW8KgwqAxODYuMTgxODAyXSBtbHg1X2NvcmUgMDAwMDowYjowMC4xOiBNTFg1RTogU3RyZFJx
+KDApIFJxU3ooMTAyNCkgU3RyZFN6KDI1NikKUnhDcWVDbXByc3MoMCkKX19fX19fX19fX19fX19f
+X19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX18KaW9tbXUgbWFpbGluZyBsaXN0CmlvbW11
+QGxpc3RzLmxpbnV4LWZvdW5kYXRpb24ub3JnCmh0dHBzOi8vbGlzdHMubGludXhmb3VuZGF0aW9u
+Lm9yZy9tYWlsbWFuL2xpc3RpbmZvL2lvbW11
