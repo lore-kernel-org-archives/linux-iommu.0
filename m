@@ -7,47 +7,47 @@ X-Spam-Status: No, score=-9.7 required=3.0 tests=HEADER_FROM_DIFFERENT_DOMAINS,
 	UNPARSEABLE_RELAY,URIBL_BLOCKED,USER_AGENT_GIT autolearn=ham
 	autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 4205EECE59D
-	for <iommu@archiver.kernel.org>; Wed, 16 Oct 2019 03:34:16 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 6FFD6C4360C
+	for <iommu@archiver.kernel.org>; Wed, 16 Oct 2019 03:34:26 +0000 (UTC)
 Received: from mail.linuxfoundation.org (mail.linuxfoundation.org [140.211.169.12])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by mail.kernel.org (Postfix) with ESMTPS id 23917217D6
-	for <iommu@archiver.kernel.org>; Wed, 16 Oct 2019 03:34:16 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 23917217D6
+	by mail.kernel.org (Postfix) with ESMTPS id 4BEF32168B
+	for <iommu@archiver.kernel.org>; Wed, 16 Oct 2019 03:34:26 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 4BEF32168B
 Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=mediatek.com
 Authentication-Results: mail.kernel.org; spf=pass smtp.mailfrom=iommu-bounces@lists.linux-foundation.org
 Received: from mail.linux-foundation.org (localhost [127.0.0.1])
-	by mail.linuxfoundation.org (Postfix) with ESMTP id 0D01BC79;
-	Wed, 16 Oct 2019 03:34:16 +0000 (UTC)
+	by mail.linuxfoundation.org (Postfix) with ESMTP id 35DA7C51;
+	Wed, 16 Oct 2019 03:34:26 +0000 (UTC)
 Received: from smtp1.linuxfoundation.org (smtp1.linux-foundation.org
 	[172.17.192.35])
-	by mail.linuxfoundation.org (Postfix) with ESMTPS id ED4DBC51
+	by mail.linuxfoundation.org (Postfix) with ESMTPS id 011F1C4E
 	for <iommu@lists.linux-foundation.org>;
-	Wed, 16 Oct 2019 03:34:14 +0000 (UTC)
+	Wed, 16 Oct 2019 03:34:25 +0000 (UTC)
 X-Greylist: domain auto-whitelisted by SQLgrey-1.7.6
-Received: from mailgw02.mediatek.com (unknown [210.61.82.184])
-	by smtp1.linuxfoundation.org (Postfix) with ESMTP id 19D1614D
+Received: from mailgw01.mediatek.com (unknown [210.61.82.183])
+	by smtp1.linuxfoundation.org (Postfix) with ESMTP id 7570D14D
 	for <iommu@lists.linux-foundation.org>;
-	Wed, 16 Oct 2019 03:34:13 +0000 (UTC)
-X-UUID: 41739dda135545f4b0979a96962dc1f2-20191016
-X-UUID: 41739dda135545f4b0979a96962dc1f2-20191016
-Received: from mtkcas09.mediatek.inc [(172.21.101.178)] by
-	mailgw02.mediatek.com (envelope-from <yong.wu@mediatek.com>)
+	Wed, 16 Oct 2019 03:34:24 +0000 (UTC)
+X-UUID: 6eb8cb93d15e4b618ef15009ac3b4bc1-20191016
+X-UUID: 6eb8cb93d15e4b618ef15009ac3b4bc1-20191016
+Received: from mtkcas08.mediatek.inc [(172.21.101.126)] by
+	mailgw01.mediatek.com (envelope-from <yong.wu@mediatek.com>)
 	(Cellopoint E-mail Firewall v4.1.10 Build 0809 with TLS)
-	with ESMTP id 219861767; Wed, 16 Oct 2019 11:34:13 +0800
+	with ESMTP id 249294150; Wed, 16 Oct 2019 11:34:20 +0800
 Received: from mtkcas08.mediatek.inc (172.21.101.126) by
 	mtkmbs01n1.mediatek.inc (172.21.101.68) with Microsoft SMTP Server
-	(TLS) id 15.0.1395.4; Wed, 16 Oct 2019 11:34:09 +0800
+	(TLS) id 15.0.1395.4; Wed, 16 Oct 2019 11:34:17 +0800
 Received: from localhost.localdomain (10.17.3.153) by mtkcas08.mediatek.inc
 	(172.21.101.73) with Microsoft SMTP Server id 15.0.1395.4 via Frontend
-	Transport; Wed, 16 Oct 2019 11:34:08 +0800
+	Transport; Wed, 16 Oct 2019 11:34:16 +0800
 From: Yong Wu <yong.wu@mediatek.com>
 To: Matthias Brugger <matthias.bgg@gmail.com>, Joerg Roedel <joro@8bytes.org>, 
 	Will Deacon <will.deacon@arm.com>
-Subject: [PATCH v4 6/7] iommu/mediatek: Get rid of the pgtlock
-Date: Wed, 16 Oct 2019 11:33:11 +0800
-Message-ID: <1571196792-12382-7-git-send-email-yong.wu@mediatek.com>
+Subject: [PATCH v4 7/7] iommu/mediatek: Reduce the tlb flush timeout value
+Date: Wed, 16 Oct 2019 11:33:12 +0800
+Message-ID: <1571196792-12382-8-git-send-email-yong.wu@mediatek.com>
 X-Mailer: git-send-email 1.9.1
 In-Reply-To: <1571196792-12382-1-git-send-email-yong.wu@mediatek.com>
 References: <1571196792-12382-1-git-send-email-yong.wu@mediatek.com>
@@ -78,88 +78,28 @@ Content-Transfer-Encoding: 7bit
 Sender: iommu-bounces@lists.linux-foundation.org
 Errors-To: iommu-bounces@lists.linux-foundation.org
 
-Now we have tlb_lock for the HW tlb flush, then pgtable code hasn't
-needed the external "pgtlock" for a while. this patch remove the
-"pgtlock".
+Reduce the tlb timeout value from 100000us to 1000us. the original value
+is so long that affect the multimedia performance. This is only a minor
+improvement rather than fixing a issue.
 
 Signed-off-by: Yong Wu <yong.wu@mediatek.com>
 ---
- drivers/iommu/mtk_iommu.c | 25 +++----------------------
- 1 file changed, 3 insertions(+), 22 deletions(-)
+ drivers/iommu/mtk_iommu.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
 diff --git a/drivers/iommu/mtk_iommu.c b/drivers/iommu/mtk_iommu.c
-index 0e5f41f..c2b7ed5 100644
+index c2b7ed5..8ca2e99 100644
 --- a/drivers/iommu/mtk_iommu.c
 +++ b/drivers/iommu/mtk_iommu.c
-@@ -101,8 +101,6 @@
- #define MTK_M4U_TO_PORT(id)		((id) & 0x1f)
+@@ -192,7 +192,7 @@ static void mtk_iommu_tlb_flush_range_sync(unsigned long iova, size_t size,
  
- struct mtk_iommu_domain {
--	spinlock_t			pgtlock; /* lock for page table */
--
- 	struct io_pgtable_cfg		cfg;
- 	struct io_pgtable_ops		*iop;
- 
-@@ -295,8 +293,6 @@ static int mtk_iommu_domain_finalise(struct mtk_iommu_domain *dom)
- {
- 	struct mtk_iommu_data *data = mtk_iommu_get_m4u_data();
- 
--	spin_lock_init(&dom->pgtlock);
--
- 	dom->cfg = (struct io_pgtable_cfg) {
- 		.quirks = IO_PGTABLE_QUIRK_ARM_NS |
- 			IO_PGTABLE_QUIRK_NO_PERMS |
-@@ -395,18 +391,13 @@ static int mtk_iommu_map(struct iommu_domain *domain, unsigned long iova,
- {
- 	struct mtk_iommu_domain *dom = to_mtk_domain(domain);
- 	struct mtk_iommu_data *data = mtk_iommu_get_m4u_data();
--	unsigned long flags;
--	int ret;
- 
- 	/* The "4GB mode" M4U physically can not use the lower remap of Dram. */
- 	if (data->enable_4GB)
- 		paddr |= BIT_ULL(32);
- 
--	spin_lock_irqsave(&dom->pgtlock, flags);
--	ret = dom->iop->map(dom->iop, iova, paddr, size, prot);
--	spin_unlock_irqrestore(&dom->pgtlock, flags);
--
--	return ret;
-+	/* Synchronize with the tlb_lock */
-+	return dom->iop->map(dom->iop, iova, paddr, size, prot);
- }
- 
- static size_t mtk_iommu_unmap(struct iommu_domain *domain,
-@@ -414,14 +405,8 @@ static size_t mtk_iommu_unmap(struct iommu_domain *domain,
- 			      struct iommu_iotlb_gather *gather)
- {
- 	struct mtk_iommu_domain *dom = to_mtk_domain(domain);
--	unsigned long flags;
--	size_t unmapsz;
--
--	spin_lock_irqsave(&dom->pgtlock, flags);
--	unmapsz = dom->iop->unmap(dom->iop, iova, size, gather);
--	spin_unlock_irqrestore(&dom->pgtlock, flags);
- 
--	return unmapsz;
-+	return dom->iop->unmap(dom->iop, iova, size, gather);
- }
- 
- static void mtk_iommu_flush_iotlb_all(struct iommu_domain *domain)
-@@ -447,13 +432,9 @@ static phys_addr_t mtk_iommu_iova_to_phys(struct iommu_domain *domain,
- {
- 	struct mtk_iommu_domain *dom = to_mtk_domain(domain);
- 	struct mtk_iommu_data *data = mtk_iommu_get_m4u_data();
--	unsigned long flags;
- 	phys_addr_t pa;
- 
--	spin_lock_irqsave(&dom->pgtlock, flags);
- 	pa = dom->iop->iova_to_phys(dom->iop, iova);
--	spin_unlock_irqrestore(&dom->pgtlock, flags);
--
- 	if (data->enable_4GB && pa >= MTK_IOMMU_4GB_MODE_REMAP_BASE)
- 		pa &= ~BIT_ULL(32);
- 
+ 		/* tlb sync */
+ 		ret = readl_poll_timeout_atomic(data->base + REG_MMU_CPE_DONE,
+-						tmp, tmp != 0, 10, 100000);
++						tmp, tmp != 0, 10, 1000);
+ 		if (ret) {
+ 			dev_warn(data->dev,
+ 				 "Partial TLB flush timed out, falling back to full flush\n");
 -- 
 1.9.1
 
