@@ -2,57 +2,81 @@ Return-Path: <SRS0=NqTC=YJ=lists.linux-foundation.org=iommu-bounces@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-2.2 required=3.0 tests=HEADER_FROM_DIFFERENT_DOMAINS,
-	MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS,USER_AGENT_SANE_1 autolearn=no
+X-Spam-Status: No, score=-9.5 required=3.0 tests=DKIM_ADSP_CUSTOM_MED,
+	DKIM_INVALID,DKIM_SIGNED,FREEMAIL_FORGED_FROMDOMAIN,FREEMAIL_FROM,
+	HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_PATCH,MAILING_LIST_MULTI,SIGNED_OFF_BY,
+	SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED,USER_AGENT_GIT autolearn=ham
 	autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id A7954FA372B
-	for <iommu@archiver.kernel.org>; Wed, 16 Oct 2019 10:51:34 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 56B27FA3728
+	for <iommu@archiver.kernel.org>; Wed, 16 Oct 2019 11:50:32 +0000 (UTC)
 Received: from mail.linuxfoundation.org (mail.linuxfoundation.org [140.211.169.12])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by mail.kernel.org (Postfix) with ESMTPS id 754452067D
-	for <iommu@archiver.kernel.org>; Wed, 16 Oct 2019 10:51:34 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 754452067D
-Authentication-Results: mail.kernel.org; dmarc=none (p=none dis=none) header.from=arm.com
+	by mail.kernel.org (Postfix) with ESMTPS id 1DC4620854
+	for <iommu@archiver.kernel.org>; Wed, 16 Oct 2019 11:50:32 +0000 (UTC)
+Authentication-Results: mail.kernel.org;
+	dkim=fail reason="signature verification failed" (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="HYpVk/Vk"
+DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 1DC4620854
+Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=gmail.com
 Authentication-Results: mail.kernel.org; spf=pass smtp.mailfrom=iommu-bounces@lists.linux-foundation.org
 Received: from mail.linux-foundation.org (localhost [127.0.0.1])
-	by mail.linuxfoundation.org (Postfix) with ESMTP id 3ED74CC6;
-	Wed, 16 Oct 2019 10:51:34 +0000 (UTC)
+	by mail.linuxfoundation.org (Postfix) with ESMTP id DF9F1D13;
+	Wed, 16 Oct 2019 11:50:31 +0000 (UTC)
 Received: from smtp1.linuxfoundation.org (smtp1.linux-foundation.org
 	[172.17.192.35])
-	by mail.linuxfoundation.org (Postfix) with ESMTPS id 8BD28CC4
+	by mail.linuxfoundation.org (Postfix) with ESMTPS id 274EDD0A
 	for <iommu@lists.linux-foundation.org>;
-	Wed, 16 Oct 2019 10:51:32 +0000 (UTC)
-X-Greylist: domain auto-whitelisted by SQLgrey-1.7.6
-Received: from foss.arm.com (foss.arm.com [217.140.110.172])
-	by smtp1.linuxfoundation.org (Postfix) with ESMTP id D228D89D
+	Wed, 16 Oct 2019 11:50:31 +0000 (UTC)
+X-Greylist: whitelisted by SQLgrey-1.7.6
+Received: from mail-wr1-f66.google.com (mail-wr1-f66.google.com
+	[209.85.221.66])
+	by smtp1.linuxfoundation.org (Postfix) with ESMTPS id 941BC70D
 	for <iommu@lists.linux-foundation.org>;
-	Wed, 16 Oct 2019 10:51:31 +0000 (UTC)
-Received: from usa-sjc-imap-foss1.foss.arm.com (unknown [10.121.207.14])
-	by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id 54E0628;
-	Wed, 16 Oct 2019 03:51:31 -0700 (PDT)
-Received: from [192.168.1.123] (unknown [172.31.20.19])
-	by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPSA id 037943F6C4;
-	Wed, 16 Oct 2019 03:51:28 -0700 (PDT)
-Subject: Re: [RFC PATCH 0/6] SMMUv3 PMCG IMP DEF event support
-To: John Garry <john.garry@huawei.com>, lorenzo.pieralisi@arm.com,
-	guohanjun@huawei.com, sudeep.holla@arm.com, mark.rutland@arm.com,
-	will@kernel.org
-References: <1569854031-237636-1-git-send-email-john.garry@huawei.com>
-	<66a3ce9f-d3cd-110f-7353-46e6eaf25b7c@arm.com>
-	<1d546b4b-a2ad-49da-b532-951232093a9f@huawei.com>
-From: Robin Murphy <robin.murphy@arm.com>
-Message-ID: <fc2df5d8-561a-b25b-e8f1-79aeb913687f@arm.com>
-Date: Wed, 16 Oct 2019 11:51:22 +0100
-User-Agent: Mozilla/5.0 (Windows NT 10.0; rv:68.0) Gecko/20100101
-	Thunderbird/68.1.2
+	Wed, 16 Oct 2019 11:50:30 +0000 (UTC)
+Received: by mail-wr1-f66.google.com with SMTP id j18so27671706wrq.10
+	for <iommu@lists.linux-foundation.org>;
+	Wed, 16 Oct 2019 04:50:30 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=gmail.com; s=20161025;
+	h=from:to:cc:subject:date:message-id:mime-version
+	:content-transfer-encoding;
+	bh=2AlPPBm4srKsAvpAcC+NwwAp6Rz/P7KMIyX2GM7hrRY=;
+	b=HYpVk/VkIkhePa3U+OtGXpH89MDVJBwhV1l2OmFTM4UHRDyQHlxQ6qehExDezlPp8I
+	jZilnoimIbQ51Mg5B9RXAwV/KcUD/JrjaZ/qPzL0ZdkSksavFkNUY2Uh8vZ+uK8yicKI
+	ACXCEbZ5N5jmmr+R8/nwOjXuE2nGFoSSanqU5GVZws85tuAIPrHyypIYJL5mCjSyvrr2
+	nskk8m9apb/hM8hDTUM2erE4CxxyI/Cu5Ds+AeSe5/Ehx3CKpQHNazN/FIr4uonI3+3l
+	Asu3Eta4+w/fYZ4lu0Gz3YxdHry7D673L8vlqO3qnHDijdCTpJe/gd3ZbE7bEpFfnlhR
+	EbaQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+	d=1e100.net; s=20161025;
+	h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+	:content-transfer-encoding;
+	bh=2AlPPBm4srKsAvpAcC+NwwAp6Rz/P7KMIyX2GM7hrRY=;
+	b=MrOt5grOLJGjJrvybOxeyPzwSbWMzSYNptrglKUdjNI/isml9LSqLaHKjSeZySONN+
+	IKXJm8I5ivNOBodsLhvEndPRxEYdbAo9Q2VqWGts49GZiEIPsEyooPbSEUrpufMs08lD
+	PZzI1oBkNb46Mx90PEBOQ3V0D3x3mA2IBArfx2R4cLf63tHSJTOd85YkFSFGCKu0leLF
+	daiZAyiWVCy2vDrBGyLgsb7l3ogvX4hmLclz2NaPC6yW5INAu5WKvaghAiHhwF828+mB
+	jIVXfWnHGDXvA7Lz2YjQX1WDmpthT4ae0XwS+Bs9K5wYbF2CobbRwa7OxJ4JpmZJCN/Q
+	ZJqw==
+X-Gm-Message-State: APjAAAXcdkQbNtsr0ka3PyQWpdj7Shq/HfGGALG17kr95MZ2sK0U6/hk
+	+zYePNTcm89LQKRZGJTVSbk=
+X-Google-Smtp-Source: APXvYqwSzNMdMd6jpDsyZY8yAC0uEwWQnLuosqnZfhIyJs9nvKRQZ5bDaDIHzz7HBpsSDwbbIiuW2A==
+X-Received: by 2002:adf:f547:: with SMTP id j7mr2529411wrp.26.1571226629070;
+	Wed, 16 Oct 2019 04:50:29 -0700 (PDT)
+Received: from localhost (p2E5BE2CE.dip0.t-ipconnect.de. [46.91.226.206])
+	by smtp.gmail.com with ESMTPSA id
+	n7sm27110235wrt.59.2019.10.16.04.50.27
+	(version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+	Wed, 16 Oct 2019 04:50:27 -0700 (PDT)
+From: Thierry Reding <thierry.reding@gmail.com>
+To: Joerg Roedel <joro@8bytes.org>
+Subject: [PATCH 1/3] iommu/tegra-smmu: Use non-secure register for flushing
+Date: Wed, 16 Oct 2019 13:50:24 +0200
+Message-Id: <20191016115026.1768745-1-thierry.reding@gmail.com>
+X-Mailer: git-send-email 2.23.0
 MIME-Version: 1.0
-In-Reply-To: <1d546b4b-a2ad-49da-b532-951232093a9f@huawei.com>
-Content-Language: en-GB
-Cc: nleeder@codeaurora.org, rjw@rjwysocki.net, linux-kernel@vger.kernel.org,
-	linuxarm@huawei.com, iommu@lists.linux-foundation.org,
-	linux-arm-kernel@lists.infradead.org, lenb@kernel.org
+Cc: linux-tegra@vger.kernel.org, Dmitry Osipenko <digetx@gmail.com>,
+	iommu@lists.linux-foundation.org, Jon Hunter <jonathanh@nvidia.com>
 X-BeenThere: iommu@lists.linux-foundation.org
 X-Mailman-Version: 2.1.12
 Precedence: list
@@ -65,130 +89,42 @@ List-Post: <mailto:iommu@lists.linux-foundation.org>
 List-Help: <mailto:iommu-request@lists.linux-foundation.org?subject=help>
 List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
 	<mailto:iommu-request@lists.linux-foundation.org?subject=subscribe>
+Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
-Content-Type: text/plain; charset="us-ascii"; Format="flowed"
 Sender: iommu-bounces@lists.linux-foundation.org
 Errors-To: iommu-bounces@lists.linux-foundation.org
 
-On 2019-10-16 9:47 am, John Garry wrote:
-> On 15/10/2019 19:00, Robin Murphy wrote:
->> Hi John,
->>
->> On 30/09/2019 15:33, John Garry wrote:
->>> This patchset adds IMP DEF event support for the SMMUv3 PMCG.
->>>
->>> It is marked as an RFC as the method to identify the PMCG implementation
->>> may be a quite disliked. And, in general, the series is somewhat
->>> incomplete.
->>>
->>> So the background is that the PMCG supports IMP DEF events, yet we
->>> have no
->>> method to identify the PMCG to know the IMP DEF events.
->>>
->>> A method for identifying the PMCG implementation could be using
->>> PMDEVARCH, but we cannot rely on this being set properly, as whether 
->>> this
->>> is implemented is not defined in SMMUv3 spec.
->>>
->>> Another method would be perf event aliasing, but this method of event
->>> matching is based on CPU id, which would not guarantee same
->>> uniqueness as PMCG implementation.
->>>
->>> Yet another method could be to continue using ACPI OEM ID in the IORT
->>> code, but this does not scale. And it is not suitable if we ever add DT
->>> support to the PMCG driver.
->>>
->>> The method used in this series is based on matching on the parent SMMUv3
->>> IIDR. We store this IIDR contents in the arm smmu structure as the first
->>> element, which means that we don't have to expose SMMU APIs - this is
->>> the part which may be disliked.
->>>
->>> The final two patches switch the pre-existing PMCG model identification
->>> from ACPI OEM ID to the same parent SMMUv3 IIDR matching.
->>>
->>> For now, we only consider SMMUv3' nodes being the associated node for
->>> PMCG.
->>
-> 
-> Hi Robin,
-> 
->> Two significant concerns right off the bat:
->>
->> - It seems more common than not for silicon designers to fail to
->> implement IIDR correctly, so it's only a matter of time before
->> inevitably needing to bring back some firmware-level identifier
->> abstraction (if not already - does Hi161x have PMCGs?)
-> 
-> Maybe there's a way that we can switch to this method, and leave the 
-> door open for an easy way to support firmware-level identifier again, if 
-> ever needed. I'm not too pushed - this was secondary to just allowing 
-> the PMCG driver know the associated SMMU model.
+From: Navneet Kumar <navneetk@nvidia.com>
 
-But that's the part I'm not buying - there's no clear advantage to 
-pushing that complexity down into the PMCG driver, vs. leaving the IORT 
-code responsible for translating an SMMU model into a PMCG model, yet 
-the aforementioned disadvantages jump out right away.
+Use PTB_ASID instead of SMMU_CONFIG to flush smmu.
+PTB_ASID can be accessed from non-secure mode, SMMU_CONFIG cannot be.
+Using SMMU_CONFIG could pose a problem when kernel doesn't have secure
+mode access enabled from boot.
 
-> And, no, hi161x does not have any PMCGs.
+Signed-off-by: Navneet Kumar <navneetk@nvidia.com>
+Reviewed-by: Dmitry Osipenko <digetx@gmail.com>
+Tested-by: Dmitry Osipenko <digetx@gmail.com>
+Signed-off-by: Thierry Reding <treding@nvidia.com>
+---
+ drivers/iommu/tegra-smmu.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-Hooray, I guess :)
+diff --git a/drivers/iommu/tegra-smmu.c b/drivers/iommu/tegra-smmu.c
+index 99f85fb5a704..03e667480ec6 100644
+--- a/drivers/iommu/tegra-smmu.c
++++ b/drivers/iommu/tegra-smmu.c
+@@ -240,7 +240,7 @@ static inline void smmu_flush_tlb_group(struct tegra_smmu *smmu,
+ 
+ static inline void smmu_flush(struct tegra_smmu *smmu)
+ {
+-	smmu_readl(smmu, SMMU_CONFIG);
++	smmu_readl(smmu, SMMU_PTB_ASID);
+ }
+ 
+ static int tegra_smmu_alloc_asid(struct tegra_smmu *smmu, unsigned int *idp)
+-- 
+2.23.0
 
->>
->> - This seems like a step in entirely the wrong direction for supporting
->> .
-> 
-> So to support PMCGs that reference a Named Component or Root Complex, I 
-> thought that the IORT parsing code would have to do some secondary 
-> lookup to the associated SMMU, through the Named Component or Root 
-> Complex node.
-> 
-> What was your idea here?
-
-The associated SMMU has no relevance in that context - the reason for 
-the Node Reference to point to a non-SMMU node is for devices that 
-implement their own embedded TLB (e.g. AMBA DTI masters) and expose a 
-standard PMCG interface to monitor it. It isn't reasonable to expect any 
-old PCIe controller or on-chip-accelerator driver to expose a fake SMMU 
-IIDR just to keep some other driver happy.
-
-> Note: I do acknowledge that an overall issue is that we assume all PMCG 
-> IMP DEF events are same for a given SMMU model.
-
-That assumption does technically fail already - I know MMU-600 has 
-different IMP-DEF events for its TCU and TBUs, however as long as we can 
-get as far as "this is some part of an MMU-600" the driver should be 
-able to figure out the rest (annoyingly it looks like both PMCG types 
-expose the same PMCG_ID_REGS information, but they should be 
-distinguishable by PMCG_CEIDn).
-
->> Interpreting the Node Reference is definitely a welcome improvement over
->> matching table headers, but absent a truly compelling argument to the
->> contrary, I'd rather retain the "PMCG model" abstraction in between that
->> and the driver itself (especially since those can trivially be hung off
->> compatibles once it comes to DT support).
-> 
-> For DT, I would assume that we just use compatible strings would allow 
-> us to identify the PMCG model.
-
-Right, that was largely my point - DT probing can start with a PMCG 
-model, so it's a lot more logical for ACPI probing to do the same, with 
-the actual PMCG model determination hidden away in the ACPI code. That's 
-the basis of the current design.
-
-I have been nagging the architects that PMCGs not having their own IIDR 
-is an unwelcome hole in the spec, so hopefully this might get a bit 
-easier some day.
-
-> On a related matter, is there still a need to deal with scenarios of the 
-> PMCG being located within the SMMU register map? As you may remember, we 
-> did have this issue but relocated the PMCG to outside the SMMU register 
-> map in a later chip rev.
-
-MMU-600 has its TCU PMCG page 0 in the middle of its SMMU page 0 space, 
-but given that it's an Arm IP, I expect that when the heat gets turned 
-up for making it work, it's most likely to be under me ;)
-
-Robin.
 _______________________________________________
 iommu mailing list
 iommu@lists.linux-foundation.org
