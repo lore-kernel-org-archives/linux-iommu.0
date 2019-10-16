@@ -2,60 +2,56 @@ Return-Path: <SRS0=NqTC=YJ=lists.linux-foundation.org=iommu-bounces@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-8.2 required=3.0 tests=HEADER_FROM_DIFFERENT_DOMAINS,
-	INCLUDES_PATCH,MAILING_LIST_MULTI,SIGNED_OFF_BY,SPF_HELO_NONE,SPF_PASS,
-	URIBL_BLOCKED,USER_AGENT_SANE_1 autolearn=unavailable autolearn_force=no
-	version=3.4.0
+X-Spam-Status: No, score=-2.2 required=3.0 tests=HEADER_FROM_DIFFERENT_DOMAINS,
+	MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED,USER_AGENT_SANE_1
+	autolearn=no autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 280BDECE58F
-	for <iommu@archiver.kernel.org>; Wed, 16 Oct 2019 00:27:45 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 6DA5CECE59E
+	for <iommu@archiver.kernel.org>; Wed, 16 Oct 2019 00:48:22 +0000 (UTC)
 Received: from mail.linuxfoundation.org (mail.linuxfoundation.org [140.211.169.12])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by mail.kernel.org (Postfix) with ESMTPS id EF1DB20659
-	for <iommu@archiver.kernel.org>; Wed, 16 Oct 2019 00:27:44 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org EF1DB20659
+	by mail.kernel.org (Postfix) with ESMTPS id 36CA72067B
+	for <iommu@archiver.kernel.org>; Wed, 16 Oct 2019 00:48:22 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 36CA72067B
 Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=linux.intel.com
 Authentication-Results: mail.kernel.org; spf=pass smtp.mailfrom=iommu-bounces@lists.linux-foundation.org
 Received: from mail.linux-foundation.org (localhost [127.0.0.1])
-	by mail.linuxfoundation.org (Postfix) with ESMTP id A811AA95;
-	Wed, 16 Oct 2019 00:27:44 +0000 (UTC)
+	by mail.linuxfoundation.org (Postfix) with ESMTP id DCBD6AD8;
+	Wed, 16 Oct 2019 00:48:21 +0000 (UTC)
 Received: from smtp1.linuxfoundation.org (smtp1.linux-foundation.org
 	[172.17.192.35])
-	by mail.linuxfoundation.org (Postfix) with ESMTPS id 26B33408
+	by mail.linuxfoundation.org (Postfix) with ESMTPS id D59AB40B
 	for <iommu@lists.linux-foundation.org>;
-	Wed, 16 Oct 2019 00:27:44 +0000 (UTC)
+	Wed, 16 Oct 2019 00:48:20 +0000 (UTC)
 X-Greylist: domain auto-whitelisted by SQLgrey-1.7.6
-Received: from mga04.intel.com (mga04.intel.com [192.55.52.120])
-	by smtp1.linuxfoundation.org (Postfix) with ESMTPS id 2FCB770D
+Received: from mga06.intel.com (mga06.intel.com [134.134.136.31])
+	by smtp1.linuxfoundation.org (Postfix) with ESMTPS id 6FE73821
 	for <iommu@lists.linux-foundation.org>;
-	Wed, 16 Oct 2019 00:27:42 +0000 (UTC)
+	Wed, 16 Oct 2019 00:48:20 +0000 (UTC)
 X-Amp-Result: SKIPPED(no attachment in message)
 X-Amp-File-Uploaded: False
 Received: from fmsmga008.fm.intel.com ([10.253.24.58])
-	by fmsmga104.fm.intel.com with ESMTP/TLS/DHE-RSA-AES256-GCM-SHA384;
-	15 Oct 2019 17:27:41 -0700
+	by orsmga104.jf.intel.com with ESMTP/TLS/DHE-RSA-AES256-GCM-SHA384;
+	15 Oct 2019 17:48:19 -0700
 X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.67,301,1566889200"; d="scan'208";a="194679814"
+X-IronPort-AV: E=Sophos;i="5.67,301,1566889200"; d="scan'208";a="194683484"
 Received: from allen-box.sh.intel.com (HELO [10.239.159.136])
 	([10.239.159.136])
-	by fmsmga008.fm.intel.com with ESMTP; 15 Oct 2019 17:27:39 -0700
-Subject: Re: [PATCH] iommu/vt-d: Check VT-d RMRR region in BIOS is reported as
-	reserved
-To: Yian Chen <yian.chen@intel.com>, iommu@lists.linux-foundation.org,
-	linux-kernel@vger.kernel.org, linux-ia64@vger.kernel.org,
-	David Woodhouse <dwmw2@infradead.org>, Joerg Roedel <joro@8bytes.org>, 
-	Ashok Raj <ashok.raj@intel.com>, Sohil Mehta <sohil.mehta@intel.com>,
-	Tony Luck <tony.luck@intel.com>
-References: <20191015164932.18185-1-yian.chen@intel.com>
+	by fmsmga008.fm.intel.com with ESMTP; 15 Oct 2019 17:48:18 -0700
+Subject: Re: [PATCH 0/2] iommu/dmar: expose fault counters via sysfs
+To: Yuri Volchkov <volchkov@amazon.de>, iommu@lists.linux-foundation.org,
+	linux-kernel@vger.kernel.org, linux-pci@vger.kernel.org
+References: <20191015151112.17225-1-volchkov@amazon.de>
 From: Lu Baolu <baolu.lu@linux.intel.com>
-Message-ID: <bcb831c7-85f8-7a28-73a6-a0e39baca6d9@linux.intel.com>
-Date: Wed, 16 Oct 2019 08:25:17 +0800
+Message-ID: <005c9cae-be2a-80a7-6e78-ed535160350a@linux.intel.com>
+Date: Wed, 16 Oct 2019 08:45:55 +0800
 User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:60.0) Gecko/20100101
 	Thunderbird/60.9.0
 MIME-Version: 1.0
-In-Reply-To: <20191015164932.18185-1-yian.chen@intel.com>
+In-Reply-To: <20191015151112.17225-1-volchkov@amazon.de>
 Content-Language: en-US
+Cc: bhelgaas@google.com, dwmw2@infradead.org, neugebar@amazon.co.uk
 X-BeenThere: iommu@lists.linux-foundation.org
 X-Mailman-Version: 2.1.12
 Precedence: list
@@ -75,114 +71,41 @@ Errors-To: iommu-bounces@lists.linux-foundation.org
 
 Hi,
 
-On 10/16/19 12:49 AM, Yian Chen wrote:
-> VT-d RMRR (Reserved Memory Region Reporting) regions are reserved
-> for device use only and should not be part of allocable memory pool of OS.
+On 10/15/19 11:11 PM, Yuri Volchkov wrote:
+> For health monitoring, it can be useful to know if iommu is behaving as
+> expected. DMAR faults can be an indicator that a device:
+>   - has been misconfigured, or
+>   - has experienced a hardware hiccup and replacement should
+>     be considered, or
+>   - has been issuing faults due to malicious activity
 > 
-> BIOS e820_table reports complete memory map to OS, including OS usable
-> memory ranges and BIOS reserved memory ranges etc.
+> Currently the only way to check if there were any DMAR faults on the
+> host is to scan the dmesg output. However this approach is not very
+> elegant. The information we are looking for can be wrapped out of the
+> buffer, or masked (since it is a rate-limited print) by another
+> device.
 > 
-> x86 BIOS may not be trusted to include RMRR regions as reserved type
-> of memory in its e820 memory map, hence validate every RMRR entry
-> with the e820 memory map to make sure the RMRR regions will not be
-> used by OS for any other purposes.
+> The series adds counters for DMAR faults and exposes them via sysfs.
 > 
-> ia64 EFI is working fine so implement RMRR validation as a dummy function
-> 
-> Reviewed-by: Sohil Mehta <sohil.mehta@intel.com>
-> Signed-off-by: Yian Chen <yian.chen@intel.com>
 
-This patch looks good to me.
+We now have an iommu API named iommu_register_fault_handler() to
+register callbacks for dmar faults. How about monitoring the dmar
+fault through this api so that your code could be generic and vendor
+agnostic?
 
-Reviewed-by: Lu Baolu <baolu.lu@linux.intel.com>
+Best regards,
+Baolu
 
-> ---
->   arch/ia64/include/asm/iommu.h |  5 +++++
->   arch/x86/include/asm/iommu.h  | 18 ++++++++++++++++++
->   drivers/iommu/intel-iommu.c   |  8 +++++++-
->   3 files changed, 30 insertions(+), 1 deletion(-)
+> Yuri Volchkov (2):
+>    iommu/dmar: collect fault statistics
+>    iommu/dmar: catch early fault occurrences
 > 
-> diff --git a/arch/ia64/include/asm/iommu.h b/arch/ia64/include/asm/iommu.h
-> index 7904f591a79b..eb0db20c9d4c 100644
-> --- a/arch/ia64/include/asm/iommu.h
-> +++ b/arch/ia64/include/asm/iommu.h
-> @@ -2,6 +2,8 @@
->   #ifndef _ASM_IA64_IOMMU_H
->   #define _ASM_IA64_IOMMU_H 1
->   
-> +#include <linux/acpi.h>
-> +
->   /* 10 seconds */
->   #define DMAR_OPERATION_TIMEOUT (((cycles_t) local_cpu_data->itc_freq)*10)
->   
-> @@ -9,6 +11,9 @@ extern void no_iommu_init(void);
->   #ifdef	CONFIG_INTEL_IOMMU
->   extern int force_iommu, no_iommu;
->   extern int iommu_detected;
-> +
-> +static inline int __init
-> +arch_rmrr_sanity_check(struct acpi_dmar_reserved_memory *rmrr) { return 0; }
->   #else
->   #define no_iommu		(1)
->   #define iommu_detected		(0)
-> diff --git a/arch/x86/include/asm/iommu.h b/arch/x86/include/asm/iommu.h
-> index b91623d521d9..95fa65a5f0dc 100644
-> --- a/arch/x86/include/asm/iommu.h
-> +++ b/arch/x86/include/asm/iommu.h
-> @@ -2,10 +2,28 @@
->   #ifndef _ASM_X86_IOMMU_H
->   #define _ASM_X86_IOMMU_H
->   
-> +#include <linux/acpi.h>
-> +
-> +#include <asm/e820/api.h>
-> +
->   extern int force_iommu, no_iommu;
->   extern int iommu_detected;
->   
->   /* 10 seconds */
->   #define DMAR_OPERATION_TIMEOUT ((cycles_t) tsc_khz*10*1000)
->   
-> +static inline int __init
-> +arch_rmrr_sanity_check(struct acpi_dmar_reserved_memory *rmrr)
-> +{
-> +	u64 start = rmrr->base_address;
-> +	u64 end = rmrr->end_address + 1;
-> +
-> +	if (e820__mapped_all(start, end, E820_TYPE_RESERVED))
-> +		return 0;
-> +
-> +	pr_err(FW_BUG "No firmware reserved region can cover this RMRR [%#018Lx-%#018Lx], contact BIOS vendor for fixes\n",
-> +	       start, end - 1);
-> +	return -EFAULT;
-> +}
-> +
->   #endif /* _ASM_X86_IOMMU_H */
-> diff --git a/drivers/iommu/intel-iommu.c b/drivers/iommu/intel-iommu.c
-> index 3f974919d3bd..722290014143 100644
-> --- a/drivers/iommu/intel-iommu.c
-> +++ b/drivers/iommu/intel-iommu.c
-> @@ -4306,13 +4306,19 @@ int __init dmar_parse_one_rmrr(struct acpi_dmar_header *header, void *arg)
->   {
->   	struct acpi_dmar_reserved_memory *rmrr;
->   	struct dmar_rmrr_unit *rmrru;
-> +	int ret;
-> +
-> +	rmrr = (struct acpi_dmar_reserved_memory *)header;
-> +	ret = arch_rmrr_sanity_check(rmrr);
-> +	if (ret)
-> +		return ret;
->   
->   	rmrru = kzalloc(sizeof(*rmrru), GFP_KERNEL);
->   	if (!rmrru)
->   		goto out;
->   
->   	rmrru->hdr = header;
-> -	rmrr = (struct acpi_dmar_reserved_memory *)header;
-> +
->   	rmrru->base_address = rmrr->base_address;
->   	rmrru->end_address = rmrr->end_address;
->   
+>   drivers/iommu/dmar.c        | 182 ++++++++++++++++++++++++++++++++----
+>   drivers/iommu/intel-iommu.c |   1 +
+>   drivers/pci/pci-sysfs.c     |  20 ++++
+>   include/linux/intel-iommu.h |   4 +
+>   include/linux/pci.h         |  11 +++
+>   5 files changed, 201 insertions(+), 17 deletions(-)
 > 
 _______________________________________________
 iommu mailing list
