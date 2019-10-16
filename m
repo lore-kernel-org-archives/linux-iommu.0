@@ -2,59 +2,86 @@ Return-Path: <SRS0=NqTC=YJ=lists.linux-foundation.org=iommu-bounces@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-2.2 required=3.0 tests=HEADER_FROM_DIFFERENT_DOMAINS,
-	MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED,USER_AGENT_SANE_1
-	autolearn=no autolearn_force=no version=3.4.0
+X-Spam-Status: No, score=-8.0 required=3.0 tests=DKIM_ADSP_CUSTOM_MED,
+	DKIM_INVALID,DKIM_SIGNED,FREEMAIL_FORGED_FROMDOMAIN,FREEMAIL_FROM,
+	HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_PATCH,MAILING_LIST_MULTI,SIGNED_OFF_BY,
+	SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED,USER_AGENT_SANE_1 autolearn=ham
+	autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 57B2DFA3728
-	for <iommu@archiver.kernel.org>; Wed, 16 Oct 2019 12:07:36 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 07E4BFA3728
+	for <iommu@archiver.kernel.org>; Wed, 16 Oct 2019 12:46:47 +0000 (UTC)
 Received: from mail.linuxfoundation.org (mail.linuxfoundation.org [140.211.169.12])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by mail.kernel.org (Postfix) with ESMTPS id 2AF4720659
-	for <iommu@archiver.kernel.org>; Wed, 16 Oct 2019 12:07:36 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 2AF4720659
-Authentication-Results: mail.kernel.org; dmarc=none (p=none dis=none) header.from=huawei.com
+	by mail.kernel.org (Postfix) with ESMTPS id C07432168B
+	for <iommu@archiver.kernel.org>; Wed, 16 Oct 2019 12:46:46 +0000 (UTC)
+Authentication-Results: mail.kernel.org;
+	dkim=fail reason="signature verification failed" (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="KTEToaQ6"
+DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org C07432168B
+Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=gmail.com
 Authentication-Results: mail.kernel.org; spf=pass smtp.mailfrom=iommu-bounces@lists.linux-foundation.org
 Received: from mail.linux-foundation.org (localhost [127.0.0.1])
-	by mail.linuxfoundation.org (Postfix) with ESMTP id D8F95D84;
-	Wed, 16 Oct 2019 12:07:35 +0000 (UTC)
+	by mail.linuxfoundation.org (Postfix) with ESMTP id 8C74ADB2;
+	Wed, 16 Oct 2019 12:46:46 +0000 (UTC)
 Received: from smtp1.linuxfoundation.org (smtp1.linux-foundation.org
 	[172.17.192.35])
-	by mail.linuxfoundation.org (Postfix) with ESMTPS id 8CD5FD4A
-	for <iommu@lists.linux-foundation.org>;
-	Wed, 16 Oct 2019 12:07:34 +0000 (UTC)
-X-Greylist: domain auto-whitelisted by SQLgrey-1.7.6
-Received: from huawei.com (szxga07-in.huawei.com [45.249.212.35])
-	by smtp1.linuxfoundation.org (Postfix) with ESMTPS id E60A4831
-	for <iommu@lists.linux-foundation.org>;
-	Wed, 16 Oct 2019 12:07:33 +0000 (UTC)
-Received: from DGGEMS405-HUB.china.huawei.com (unknown [172.30.72.58])
-	by Forcepoint Email with ESMTP id D546CCAF42B4863132D3;
-	Wed, 16 Oct 2019 20:07:27 +0800 (CST)
-Received: from [127.0.0.1] (10.202.227.179) by DGGEMS405-HUB.china.huawei.com
-	(10.3.19.205) with Microsoft SMTP Server id 14.3.439.0;
-	Wed, 16 Oct 2019 20:07:18 +0800
-Subject: Re: [RFC PATCH 0/6] SMMUv3 PMCG IMP DEF event support
-To: Robin Murphy <robin.murphy@arm.com>, <lorenzo.pieralisi@arm.com>,
-	<guohanjun@huawei.com>, <sudeep.holla@arm.com>, <mark.rutland@arm.com>, 
-	<will@kernel.org>
-References: <1569854031-237636-1-git-send-email-john.garry@huawei.com>
-	<66a3ce9f-d3cd-110f-7353-46e6eaf25b7c@arm.com>
-	<1d546b4b-a2ad-49da-b532-951232093a9f@huawei.com>
-	<fc2df5d8-561a-b25b-e8f1-79aeb913687f@arm.com>
-From: John Garry <john.garry@huawei.com>
-Message-ID: <9b590b5c-b68a-6b33-dd8b-a992bf56a253@huawei.com>
-Date: Wed, 16 Oct 2019 13:07:10 +0100
-User-Agent: Mozilla/5.0 (Windows NT 10.0; WOW64; rv:45.0) Gecko/20100101
-	Thunderbird/45.3.0
+	by mail.linuxfoundation.org (Postfix) with ESMTPS id B069AD67;
+	Wed, 16 Oct 2019 12:46:45 +0000 (UTC)
+X-Greylist: whitelisted by SQLgrey-1.7.6
+X-Greylist: whitelisted by SQLgrey-1.7.6
+Received: from mail-wm1-f66.google.com (mail-wm1-f66.google.com
+	[209.85.128.66])
+	by smtp1.linuxfoundation.org (Postfix) with ESMTPS id 220C013A;
+	Wed, 16 Oct 2019 12:46:45 +0000 (UTC)
+Received: by mail-wm1-f66.google.com with SMTP id b24so2602489wmj.5;
+	Wed, 16 Oct 2019 05:46:44 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=gmail.com; s=20161025;
+	h=date:from:to:cc:subject:message-id:references:mime-version
+	:content-disposition:in-reply-to:user-agent;
+	bh=zKeyF68jMzkZ8PZE+zyf0AJaz2r+snV2TpAgt4NOVLs=;
+	b=KTEToaQ6qrUyieyWQDtnZTqU0uLP/8iwXQlf8besLewIcU49APKdYdkSgI38Agh1MC
+	fybhBfRdkx5N+TTVr1tYMxdymZL3T0riuRTK/LOyyxhgaZQubAeRVPpVt+A3RnXX8QXs
+	URwFg3CqEOZzLc5RyI2hhW6B0aejSropBsziuKyyH/FIwM2Q/afI6g5YmezT97h0gfC5
+	m7l0yztoR6wQheMj/D2XjlMwJcTuiMahzWX2A2g4HbTmV1V3s2gVyEtGwQa4xFvdKB7X
+	+hlE/qsb3XwJejEKcLz/Da0ZJ8PWWa/2vOpEx0Rr6ALCbfpwZCOQM8tBCVrg0yVT28Nz
+	rENQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+	d=1e100.net; s=20161025;
+	h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+	:mime-version:content-disposition:in-reply-to:user-agent;
+	bh=zKeyF68jMzkZ8PZE+zyf0AJaz2r+snV2TpAgt4NOVLs=;
+	b=GgtHLY/v0VIwGrDIF2jrB13dqz0eZv8fXK57S+B8nVQR4++ndUX1hGhYBoo1t1TErf
+	sMA5i8g0e/RPQ+qWlA++15B41hQnj9IdHIrqC/PFr4E0aRFFf/5br1UDr0BnctGV5Xmf
+	ebMe1jnixjCQ+tu4leZNCfie+4rBSEFFSfECt22l21SQEyrpFldZZKQ4a6S9xMZ7BHHV
+	4UsQii6ztq3qG+ZqwSexj5/SL+wvvKFqRG/VJiO2q8u5NGO0hNAdO6L3Y0mPK4qdn4kW
+	1tOqUJ0Wsx7eVLs/p6/g914fWzs0j4GJZx3NIxVVGmaOcWZjW4bMma1Wkdq4D4QdUSYc
+	1spQ==
+X-Gm-Message-State: APjAAAUF6DECd4mACrN1PTV0U8hMwF9xQfMgRkHJolmLqYJMAqo0rEp5
+	N0Nb36+HW/U7i7TLnpwdx5Q=
+X-Google-Smtp-Source: APXvYqy4uLAxXK8dZ9uj0Q5OXVcdh/jm7RvNEApTwfDvS63JBb+q8OpwLefZS54uymyMLUA4t9VzRQ==
+X-Received: by 2002:a7b:c4c6:: with SMTP id g6mr3276352wmk.126.1571230003562; 
+	Wed, 16 Oct 2019 05:46:43 -0700 (PDT)
+Received: from localhost (p2E5BE2CE.dip0.t-ipconnect.de. [46.91.226.206])
+	by smtp.gmail.com with ESMTPSA id
+	c18sm22646572wrv.10.2019.10.16.05.46.41
+	(version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+	Wed, 16 Oct 2019 05:46:41 -0700 (PDT)
+Date: Wed, 16 Oct 2019 14:46:40 +0200
+From: Thierry Reding <thierry.reding@gmail.com>
+To: Will Deacon <will@kernel.org>
+Subject: Re: [PATCH 1/5] iommu: Implement iommu_put_resv_regions_simple()
+Message-ID: <20191016124640.GA1772382@ulmo>
+References: <20190829111752.17513-1-thierry.reding@gmail.com>
+	<20190829111752.17513-2-thierry.reding@gmail.com>
+	<20190918153737.dea2z5dddhuus25g@willie-the-truck>
 MIME-Version: 1.0
-In-Reply-To: <fc2df5d8-561a-b25b-e8f1-79aeb913687f@arm.com>
-X-Originating-IP: [10.202.227.179]
-X-CFilter-Loop: Reflected
-Cc: nleeder@codeaurora.org, rjw@rjwysocki.net, linux-kernel@vger.kernel.org,
-	linuxarm@huawei.com, iommu@lists.linux-foundation.org,
-	linux-arm-kernel@lists.infradead.org, lenb@kernel.org
+In-Reply-To: <20190918153737.dea2z5dddhuus25g@willie-the-truck>
+User-Agent: Mutt/1.12.2 (2019-09-21)
+Cc: Jean-Philippe Brucker <jean-philippe@linaro.org>,
+	Robin Murphy <robin.murphy@arm.com>, linux-kernel@vger.kernel.org,
+	virtualization@lists.linux-foundation.org,
+	iommu@lists.linux-foundation.org, David Woodhouse <dwmw2@infradead.org>,
+	linux-arm-kernel@lists.infradead.org
 X-BeenThere: iommu@lists.linux-foundation.org
 X-Mailman-Version: 2.1.12
 Precedence: list
@@ -67,135 +94,112 @@ List-Post: <mailto:iommu@lists.linux-foundation.org>
 List-Help: <mailto:iommu-request@lists.linux-foundation.org?subject=help>
 List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
 	<mailto:iommu-request@lists.linux-foundation.org?subject=subscribe>
-Content-Transfer-Encoding: 7bit
-Content-Type: text/plain; charset="us-ascii"; Format="flowed"
+Content-Type: multipart/mixed; boundary="===============0852079236554484222=="
 Sender: iommu-bounces@lists.linux-foundation.org
 Errors-To: iommu-bounces@lists.linux-foundation.org
 
 
-Hi Robin,
+--===============0852079236554484222==
+Content-Type: multipart/signed; micalg=pgp-sha256;
+	protocol="application/pgp-signature"; boundary="gKMricLos+KVdGMg"
+Content-Disposition: inline
 
->>> Two significant concerns right off the bat:
->>>
->>> - It seems more common than not for silicon designers to fail to
->>> implement IIDR correctly, so it's only a matter of time before
->>> inevitably needing to bring back some firmware-level identifier
->>> abstraction (if not already - does Hi161x have PMCGs?)
->>
->> Maybe there's a way that we can switch to this method, and leave the
->> door open for an easy way to support firmware-level identifier again,
->> if ever needed. I'm not too pushed - this was secondary to just
->> allowing the PMCG driver know the associated SMMU model.
->
-> But that's the part I'm not buying - there's no clear advantage to
-> pushing that complexity down into the PMCG driver, vs. leaving the IORT
-> code responsible for translating an SMMU model into a PMCG model, yet
-> the aforementioned disadvantages jump out right away.
->
 
-One advantage is that the next piece of quirky hw with a properly 
-implemented IIDR does not require a new IORT model.
+--gKMricLos+KVdGMg
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+Content-Transfer-Encoding: quoted-printable
 
-And today, this handling is only for hi1620, and since we can use hi1620 
-IIDR to id it, then it seems good to remove code outside the PMCG driver 
-specifically to handle it.
+On Wed, Sep 18, 2019 at 04:37:38PM +0100, Will Deacon wrote:
+> On Thu, Aug 29, 2019 at 01:17:48PM +0200, Thierry Reding wrote:
+> > From: Thierry Reding <treding@nvidia.com>
+> >=20
+> > Implement a generic function for removing reserved regions. This can be
+> > used by drivers that don't do anything fancy with these regions other
+> > than allocating memory for them.
+> >=20
+> > Signed-off-by: Thierry Reding <treding@nvidia.com>
+> > ---
+> >  drivers/iommu/iommu.c | 19 +++++++++++++++++++
+> >  include/linux/iommu.h |  2 ++
+> >  2 files changed, 21 insertions(+)
+> >=20
+> > diff --git a/drivers/iommu/iommu.c b/drivers/iommu/iommu.c
+> > index 0f585b614657..73a2a6b13507 100644
+> > --- a/drivers/iommu/iommu.c
+> > +++ b/drivers/iommu/iommu.c
+> > @@ -2170,6 +2170,25 @@ void iommu_put_resv_regions(struct device *dev, =
+struct list_head *list)
+> >  		ops->put_resv_regions(dev, list);
+> >  }
+> > =20
+> > +/**
+> > + * iommu_put_resv_regions_simple - Reserved region driver helper
+> > + * @dev: device for which to free reserved regions
+> > + * @list: reserved region list for device
+> > + *
+> > + * IOMMU drivers can use this to implement their .put_resv_regions() c=
+allback
+> > + * for simple reservations. Memory allocated for each reserved region =
+will be
+> > + * freed. If an IOMMU driver allocates additional resources per region=
+, it is
+> > + * going to have to implement a custom callback.
+> > + */
+> > +void iommu_put_resv_regions_simple(struct device *dev, struct list_hea=
+d *list)
+> > +{
+> > +	struct iommu_resv_region *entry, *next;
+> > +
+> > +	list_for_each_entry_safe(entry, next, list, list)
+> > +		kfree(entry);
+> > +}
+> > +EXPORT_SYMBOL(iommu_put_resv_regions_simple);
+>=20
+> Can you call this directly from iommu_put_resv_regions() if the function
+> pointer in ops is NULL? That would save having to plumb the default callb=
+ack
+> into a bunch of drivers.
 
-But if you think it's going to be needed again, then it makes sense not 
-to remove it.
+I probably could, but I don't think that necessarily improves things.
+The reason is that that would cause the helper to get called even if the
+driver doesn't support reserved regions. That's likely harmless because
+in that case the list of regions passed to it would be empty. However, I
+think the current way to do this, where we have to implement both hooks
+for ->get_resv_regions() and ->put_resv_regions() is nicely symmetric.
 
->> And, no, hi161x does not have any PMCGs.
->
-> Hooray, I guess :)
->
->>>
->>> - This seems like a step in entirely the wrong direction for supporting
->>> .
->>
->> So to support PMCGs that reference a Named Component or Root Complex,
->> I thought that the IORT parsing code would have to do some secondary
->> lookup to the associated SMMU, through the Named Component or Root
->> Complex node.
->>
->> What was your idea here?
->
-> The associated SMMU has no relevance in that context - the reason for
-> the Node Reference to point to a non-SMMU node is for devices that
-> implement their own embedded TLB (e.g. AMBA DTI masters) and expose a
-> standard PMCG interface to monitor it. It isn't reasonable to expect any
-> old PCIe controller or on-chip-accelerator driver to expose a fake SMMU
-> IIDR just to keep some other driver happy.
+Thierry
 
-But won't there still be an SMMU associated with the AMBA DTI masters, 
-in your example?
+--gKMricLos+KVdGMg
+Content-Type: application/pgp-signature; name="signature.asc"
 
-It's this SMMU which the PMCG driver would reference as the "parent" 
-device, and the IORT parsing would need to do the lookup for this reference.
+-----BEGIN PGP SIGNATURE-----
 
-But then, this becomes something that the DT parsing would need to 
-handle also.
+iQIzBAABCAAdFiEEiOrDCAFJzPfAjcif3SOs138+s6EFAl2nES4ACgkQ3SOs138+
+s6EONg//ZrYWm5ShwdyQ9XivGxuuU1NxmrAJMtWHz2z0xMVhLv8vVlvNeGNNepm/
+AYozw/NMlEZokXfJVW9zNHDpOdr+MB6EchafhOZo9kK592CE18NhVrpVDptMvf29
+K1QsQvgCq5Lu9EHBeDMxpx6Kn9VNBFJuAeYCIVzD5GOm80sHdAp1eKMwu/od+oTQ
+IwZLB0K82tKdvnwYDYjN/JUW0dbrthH+fW843oOxAqQgrJYApL64k6WuPn6evN11
+V7xbw3/Yk3LMqxmBzve7b7ATYXdGRuN7TdMX7aZmLX8xyu11L6LbK+Lss10BbBKi
+Vja3MbZgoD54Eam3zOvj+b7tfdiRry4jhqqVksJ/Q2U7KOygrzLORgYR6wTgtz9g
+opzD+i9cGdaSj1k8kvVeFPqX9TL/er2hy05MIEWYYTuVh3Y6xiPekH988bHvxf9X
+bcl8I5YARin8U2n5R9kaS+drtuo3HvgeQMfszEf9UDNLQc+Pl5niTQPJzljWiZ36
+zI8Tq7Sq8Fph33gOGbpcZMTDux4cjlYtGWle7U5tkS38Xte7+IgRxmpwWDC6Y0jX
+muP1UNGkXJMLvJtssGseFZZw9qkJcq0NPRdjaN4k+LTdbrw0B10f1CDST8g/9Z4H
+xvmbe6SyeWzgcBc43Fs4V3YjZXAYWxf66eD2B9h9AdAEHSmCgD4=
+=LljU
+-----END PGP SIGNATURE-----
 
->
->> Note: I do acknowledge that an overall issue is that we assume all
->> PMCG IMP DEF events are same for a given SMMU model.
->
-> That assumption does technically fail already - I know MMU-600 has
-> different IMP-DEF events for its TCU and TBUs, however as long as we can
-> get as far as "this is some part of an MMU-600" the driver should be
-> able to figure out the rest (annoyingly it looks like both PMCG types
-> expose the same PMCG_ID_REGS information, but they should be
-> distinguishable by PMCG_CEIDn).
+--gKMricLos+KVdGMg--
 
-JFYI, PMCG_CEIDn contents for hi1620 are all zero, apart from PMDEVARCH 
-and PMDEVTYPE, which are same as arm implementation according to the 
-spec - sigh...
-
->
->>> Interpreting the Node Reference is definitely a welcome improvement over
->>> matching table headers, but absent a truly compelling argument to the
->>> contrary, I'd rather retain the "PMCG model" abstraction in between that
->>> and the driver itself (especially since those can trivially be hung off
->>> compatibles once it comes to DT support).
->>
->> For DT, I would assume that we just use compatible strings would allow
->> us to identify the PMCG model.
->
-> Right, that was largely my point - DT probing can start with a PMCG
-> model, so it's a lot more logical for ACPI probing to do the same, with
-> the actual PMCG model determination hidden away in the ACPI code. That's
-> the basis of the current design.
->
-> I have been nagging the architects that PMCGs not having their own IIDR
-> is an unwelcome hole in the spec, so hopefully this might get a bit
-> easier some day.
-
-For sure. The spec reads that the PMCGs may be "independently-designed", 
-hence no general id method. I don't get this.
-
->
->> On a related matter, is there still a need to deal with scenarios of
->> the PMCG being located within the SMMU register map? As you may
->> remember, we did have this issue but relocated the PMCG to outside the
->> SMMU register map in a later chip rev.
->
-> MMU-600 has its TCU PMCG page 0 in the middle of its SMMU page 0 space,
-> but given that it's an Arm IP, I expect that when the heat gets turned
-> up for making it work, it's most likely to be under me ;)
-
-OK, so this is another reason why I thought that having a reference to 
-the SMMU device could be useful in terms of solving that problem.
-
->
-> Robin.
->
-> .
-
-Thanks again,
-John
-
->
-
+--===============0852079236554484222==
+Content-Type: text/plain; charset="us-ascii"
+MIME-Version: 1.0
+Content-Transfer-Encoding: 7bit
+Content-Disposition: inline
 
 _______________________________________________
 iommu mailing list
 iommu@lists.linux-foundation.org
 https://lists.linuxfoundation.org/mailman/listinfo/iommu
+--===============0852079236554484222==--
