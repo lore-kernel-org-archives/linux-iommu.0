@@ -2,49 +2,99 @@ Return-Path: <SRS0=NqTC=YJ=lists.linux-foundation.org=iommu-bounces@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-2.2 required=3.0 tests=HEADER_FROM_DIFFERENT_DOMAINS,
-	MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS,USER_AGENT_SANE_1 autolearn=no
-	autolearn_force=no version=3.4.0
+X-Spam-Status: No, score=-5.2 required=3.0 tests=HEADER_FROM_DIFFERENT_DOMAINS,
+	INCLUDES_PATCH,MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS,USER_AGENT_SANE_1
+	autolearn=unavailable autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 0168DC4360C
-	for <iommu@archiver.kernel.org>; Wed, 16 Oct 2019 07:51:27 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 9429BC4360C
+	for <iommu@archiver.kernel.org>; Wed, 16 Oct 2019 07:55:41 +0000 (UTC)
 Received: from mail.linuxfoundation.org (mail.linuxfoundation.org [140.211.169.12])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by mail.kernel.org (Postfix) with ESMTPS id C9DC22082C
-	for <iommu@archiver.kernel.org>; Wed, 16 Oct 2019 07:51:26 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org C9DC22082C
-Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=8bytes.org
+	by mail.kernel.org (Postfix) with ESMTPS id 7482821848
+	for <iommu@archiver.kernel.org>; Wed, 16 Oct 2019 07:55:41 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 7482821848
+Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=us.ibm.com
 Authentication-Results: mail.kernel.org; spf=pass smtp.mailfrom=iommu-bounces@lists.linux-foundation.org
 Received: from mail.linux-foundation.org (localhost [127.0.0.1])
-	by mail.linuxfoundation.org (Postfix) with ESMTP id AC9C9A70;
-	Wed, 16 Oct 2019 07:51:26 +0000 (UTC)
+	by mail.linuxfoundation.org (Postfix) with ESMTP id 40D78A7F;
+	Wed, 16 Oct 2019 07:55:41 +0000 (UTC)
 Received: from smtp1.linuxfoundation.org (smtp1.linux-foundation.org
 	[172.17.192.35])
-	by mail.linuxfoundation.org (Postfix) with ESMTPS id AB9C5949
+	by mail.linuxfoundation.org (Postfix) with ESMTPS id 28E60949
 	for <iommu@lists.linux-foundation.org>;
-	Wed, 16 Oct 2019 07:51:25 +0000 (UTC)
-X-Greylist: from auto-whitelisted by SQLgrey-1.7.6
-Received: from theia.8bytes.org (8bytes.org [81.169.241.247])
-	by smtp1.linuxfoundation.org (Postfix) with ESMTPS id 69FA55D3
+	Wed, 16 Oct 2019 07:55:39 +0000 (UTC)
+X-Greylist: domain auto-whitelisted by SQLgrey-1.7.6
+Received: from mx0a-001b2d01.pphosted.com (mx0b-001b2d01.pphosted.com
+	[148.163.158.5])
+	by smtp1.linuxfoundation.org (Postfix) with ESMTPS id 88B696C5
 	for <iommu@lists.linux-foundation.org>;
-	Wed, 16 Oct 2019 07:51:24 +0000 (UTC)
-Received: by theia.8bytes.org (Postfix, from userid 1000)
-	id BDA7845B; Wed, 16 Oct 2019 09:51:22 +0200 (CEST)
-Date: Wed, 16 Oct 2019 09:51:21 +0200
-From: Joerg Roedel <joro@8bytes.org>
-To: Yian Chen <yian.chen@intel.com>
-Subject: Re: [PATCH] iommu/vt-d: Check VT-d RMRR region in BIOS is reported
-	as reserved
-Message-ID: <20191016075120.GB32232@8bytes.org>
-References: <20191015164932.18185-1-yian.chen@intel.com>
+	Wed, 16 Oct 2019 07:55:38 +0000 (UTC)
+Received: from pps.filterd (m0098416.ppops.net [127.0.0.1])
+	by mx0b-001b2d01.pphosted.com (8.16.0.27/8.16.0.27) with SMTP id
+	x9G7gNLg194956
+	for <iommu@lists.linux-foundation.org>; Wed, 16 Oct 2019 03:55:37 -0400
+Received: from e06smtp03.uk.ibm.com (e06smtp03.uk.ibm.com [195.75.94.99])
+	by mx0b-001b2d01.pphosted.com with ESMTP id 2vnxnn9bfb-1
+	(version=TLSv1.2 cipher=AES256-GCM-SHA384 bits=256 verify=NOT)
+	for <iommu@lists.linux-foundation.org>; Wed, 16 Oct 2019 03:55:36 -0400
+Received: from localhost
+	by e06smtp03.uk.ibm.com with IBM ESMTP SMTP Gateway: Authorized Use
+	Only! Violators will be prosecuted
+	for <iommu@lists.linux-foundation.org> from <linuxram@us.ibm.com>;
+	Wed, 16 Oct 2019 08:55:35 +0100
+Received: from b06cxnps4076.portsmouth.uk.ibm.com (9.149.109.198)
+	by e06smtp03.uk.ibm.com (192.168.101.133) with IBM ESMTP SMTP Gateway:
+	Authorized Use Only! Violators will be prosecuted; 
+	(version=TLSv1/SSLv3 cipher=AES256-GCM-SHA384 bits=256/256)
+	Wed, 16 Oct 2019 08:55:29 +0100
+Received: from d06av26.portsmouth.uk.ibm.com (d06av26.portsmouth.uk.ibm.com
+	[9.149.105.62])
+	by b06cxnps4076.portsmouth.uk.ibm.com (8.14.9/8.14.9/NCO v10.0) with
+	ESMTP id x9G7tSFt45154546
+	(version=TLSv1/SSLv3 cipher=DHE-RSA-AES256-GCM-SHA384 bits=256
+	verify=OK); Wed, 16 Oct 2019 07:55:29 GMT
+Received: from d06av26.portsmouth.uk.ibm.com (unknown [127.0.0.1])
+	by IMSVA (Postfix) with ESMTP id C1818AE063;
+	Wed, 16 Oct 2019 07:55:28 +0000 (GMT)
+Received: from d06av26.portsmouth.uk.ibm.com (unknown [127.0.0.1])
+	by IMSVA (Postfix) with ESMTP id C0871AE051;
+	Wed, 16 Oct 2019 07:55:24 +0000 (GMT)
+Received: from oc0525413822.ibm.com (unknown [9.85.142.84])
+	by d06av26.portsmouth.uk.ibm.com (Postfix) with ESMTPS;
+	Wed, 16 Oct 2019 07:55:24 +0000 (GMT)
+Date: Wed, 16 Oct 2019 00:55:21 -0700
+From: Ram Pai <linuxram@us.ibm.com>
+To: Christoph Hellwig <hch@lst.de>
+References: <1570843519-8696-1-git-send-email-linuxram@us.ibm.com>
+	<1570843519-8696-2-git-send-email-linuxram@us.ibm.com>
+	<1570843519-8696-3-git-send-email-linuxram@us.ibm.com>
+	<20191015073501.GA32345@lst.de>
 MIME-Version: 1.0
 Content-Disposition: inline
-In-Reply-To: <20191015164932.18185-1-yian.chen@intel.com>
-User-Agent: Mutt/1.10.1 (2018-07-13)
-Cc: Tony Luck <tony.luck@intel.com>, linux-ia64@vger.kernel.org,
-	Ashok Raj <ashok.raj@intel.com>, linux-kernel@vger.kernel.org,
-	iommu@lists.linux-foundation.org, David Woodhouse <dwmw2@infradead.org>
+In-Reply-To: <20191015073501.GA32345@lst.de>
+User-Agent: Mutt/1.5.21 (2010-09-15)
+X-TM-AS-GCONF: 00
+x-cbid: 19101607-0012-0000-0000-000003587DE7
+X-IBM-AV-DETECTION: SAVI=unused REMOTE=unused XFE=unused
+x-cbparentid: 19101607-0013-0000-0000-000021939633
+Message-Id: <20191016075521.GA5201@oc0525413822.ibm.com>
+Subject: RE: [PATCH 2/2] virtio_ring: Use DMA API if memory is encrypted
+X-Proofpoint-Virus-Version: vendor=fsecure engine=2.50.10434:, ,
+	definitions=2019-10-16_03:, , signatures=0
+X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0
+	priorityscore=1501
+	malwarescore=0 suspectscore=0 phishscore=0 bulkscore=0 spamscore=0
+	clxscore=1015 lowpriorityscore=0 mlxscore=0 impostorscore=0
+	mlxlogscore=999 adultscore=0 classifier=spam adjust=0 reason=mlx
+	scancount=1 engine=8.0.1-1908290000 definitions=main-1910160072
+Cc: andmike@us.ibm.com, sukadev@linux.vnet.ibm.com, mdroth@linux.vnet.ibm.com,
+	b.zolnierkie@samsung.com, benh@kernel.crashing.org,
+	jasowang@redhat.com, aik@linux.ibm.com, linux-kernel@vger.kernel.org,
+	virtualization@lists.linux-foundation.org, paulus@ozlabs.org,
+	iommu@lists.linux-foundation.org, paul.burton@mips.com,
+	mpe@ellerman.id.au, robin.murphy@arm.com,
+	linuxppc-dev@lists.ozlabs.org, david@gibson.dropbear.id.au
 X-BeenThere: iommu@lists.linux-foundation.org
 X-Mailman-Version: 2.1.12
 Precedence: list
@@ -57,42 +107,74 @@ List-Post: <mailto:iommu@lists.linux-foundation.org>
 List-Help: <mailto:iommu-request@lists.linux-foundation.org?subject=help>
 List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
 	<mailto:iommu-request@lists.linux-foundation.org?subject=subscribe>
+Reply-To: Ram Pai <linuxram@us.ibm.com>
 Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
 Sender: iommu-bounces@lists.linux-foundation.org
 Errors-To: iommu-bounces@lists.linux-foundation.org
 
-Hi,
-
-On Tue, Oct 15, 2019 at 09:49:32AM -0700, Yian Chen wrote:
-> VT-d RMRR (Reserved Memory Region Reporting) regions are reserved
-> for device use only and should not be part of allocable memory pool of OS.
+On Tue, Oct 15, 2019 at 09:35:01AM +0200, Christoph Hellwig wrote:
+> On Fri, Oct 11, 2019 at 06:25:19PM -0700, Ram Pai wrote:
+> > From: Thiago Jung Bauermann <bauerman@linux.ibm.com>
+> > 
+> > Normally, virtio enables DMA API with VIRTIO_F_IOMMU_PLATFORM, which must
+> > be set by both device and guest driver. However, as a hack, when DMA API
+> > returns physical addresses, guest driver can use the DMA API; even though
+> > device does not set VIRTIO_F_IOMMU_PLATFORM and just uses physical
+> > addresses.
 > 
-> BIOS e820_table reports complete memory map to OS, including OS usable
-> memory ranges and BIOS reserved memory ranges etc.
+> Sorry, but this is a complete bullshit hack.  Driver must always use
+> the DMA API if they do DMA, and if virtio devices use physical addresses
+> that needs to be returned through the platform firmware interfaces for
+> the dma setup.  If you don't do that yet (which based on previous
+> informations you don't), you need to fix it, and we can then quirk
+> old implementations that already are out in the field.
 > 
-> x86 BIOS may not be trusted to include RMRR regions as reserved type
-> of memory in its e820 memory map, hence validate every RMRR entry
-> with the e820 memory map to make sure the RMRR regions will not be
-> used by OS for any other purposes.
+> In other words: we finally need to fix that virtio mess and not pile
+> hacks on top of hacks.
 
-Are there real systems in the wild where this is a problem?
+So force all virtio devices to use DMA API, except when
+VIRTIO_F_IOMMU_PLATFORM is not enabled?
 
-> +static inline int __init
-> +arch_rmrr_sanity_check(struct acpi_dmar_reserved_memory *rmrr)
-> +{
-> +	u64 start = rmrr->base_address;
-> +	u64 end = rmrr->end_address + 1;
-> +
-> +	if (e820__mapped_all(start, end, E820_TYPE_RESERVED))
-> +		return 0;
-> +
-> +	pr_err(FW_BUG "No firmware reserved region can cover this RMRR [%#018Lx-%#018Lx], contact BIOS vendor for fixes\n",
-> +	       start, end - 1);
-> +	return -EFAULT;
-> +}
+Any help detailing the idea, will enable us fix this issue once for all.
 
-Why -EFAULT, there is no fault involved? Usibg -EINVAL seems to be a better choice.
+Will something like below work? It removes the prior hacks, and
+always uses DMA API; except when VIRTIO_F_IOMMU_PLATFORM is not enabled.
+
+diff --git a/drivers/virtio/virtio_ring.c b/drivers/virtio/virtio_ring.c
+index c8be1c4..b593d3d 100644
+--- a/drivers/virtio/virtio_ring.c
++++ b/drivers/virtio/virtio_ring.c
+@@ -240,22 +240,10 @@ static inline bool virtqueue_use_indirect(struct virtqueue *_vq,
+ 
+ static bool vring_use_dma_api(struct virtio_device *vdev)
+ {
+-	if (!virtio_has_iommu_quirk(vdev))
+-		return true;
+-
+-	/* Otherwise, we are left to guess. */
+-	/*
+-	 * In theory, it's possible to have a buggy QEMU-supposed
+-	 * emulated Q35 IOMMU and Xen enabled at the same time.  On
+-	 * such a configuration, virtio has never worked and will
+-	 * not work without an even larger kludge.  Instead, enable
+-	 * the DMA API if we're a Xen guest, which at least allows
+-	 * all of the sensible Xen configurations to work correctly.
+-	 */
+-	if (xen_domain())
+-		return true;
++	if (virtio_has_iommu_quirk(vdev))
++		return false;
+ 
+-	return false;
++	return true;
+ }
+ 
+ size_t virtio_max_dma_size(struct virtio_device *vdev)
+
+
+-- 
+Ram Pai
 
 _______________________________________________
 iommu mailing list
