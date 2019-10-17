@@ -2,66 +2,55 @@ Return-Path: <SRS0=zJQD=YK=lists.linux-foundation.org=iommu-bounces@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-2.0 required=3.0 tests=DKIM_INVALID,DKIM_SIGNED,
-	HEADER_FROM_DIFFERENT_DOMAINS,MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS,
-	URIBL_BLOCKED,USER_AGENT_SANE_1 autolearn=no autolearn_force=no version=3.4.0
+X-Spam-Status: No, score=-8.6 required=3.0 tests=DATE_IN_PAST_06_12,
+	HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_PATCH,MAILING_LIST_MULTI,SIGNED_OFF_BY,
+	SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED,USER_AGENT_GIT autolearn=unavailable
+	autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 747B2ECE58E
-	for <iommu@archiver.kernel.org>; Thu, 17 Oct 2019 16:24:59 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 93D37FA372A
+	for <iommu@archiver.kernel.org>; Thu, 17 Oct 2019 18:46:15 +0000 (UTC)
 Received: from mail.linuxfoundation.org (mail.linuxfoundation.org [140.211.169.12])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by mail.kernel.org (Postfix) with ESMTPS id 38A022089C
-	for <iommu@archiver.kernel.org>; Thu, 17 Oct 2019 16:24:59 +0000 (UTC)
-Authentication-Results: mail.kernel.org;
-	dkim=fail reason="signature verification failed" (2048-bit key) header.d=infradead.org header.i=@infradead.org header.b="SFBW3KU2"
-DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 38A022089C
-Authentication-Results: mail.kernel.org; dmarc=none (p=none dis=none) header.from=infradead.org
+	by mail.kernel.org (Postfix) with ESMTPS id 652512089C
+	for <iommu@archiver.kernel.org>; Thu, 17 Oct 2019 18:46:15 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 652512089C
+Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=intel.com
 Authentication-Results: mail.kernel.org; spf=pass smtp.mailfrom=iommu-bounces@lists.linux-foundation.org
 Received: from mail.linux-foundation.org (localhost [127.0.0.1])
-	by mail.linuxfoundation.org (Postfix) with ESMTP id 02879F75;
-	Thu, 17 Oct 2019 16:24:59 +0000 (UTC)
+	by mail.linuxfoundation.org (Postfix) with ESMTP id 1C631BDC;
+	Thu, 17 Oct 2019 18:46:15 +0000 (UTC)
 Received: from smtp1.linuxfoundation.org (smtp1.linux-foundation.org
 	[172.17.192.35])
-	by mail.linuxfoundation.org (Postfix) with ESMTPS id D5B7FF73
+	by mail.linuxfoundation.org (Postfix) with ESMTPS id B8C9EAAE
 	for <iommu@lists.linux-foundation.org>;
-	Thu, 17 Oct 2019 16:24:57 +0000 (UTC)
-X-Greylist: from auto-whitelisted by SQLgrey-1.7.6
-Received: from bombadil.infradead.org (bombadil.infradead.org
-	[198.137.202.133])
-	by smtp1.linuxfoundation.org (Postfix) with ESMTPS id 8ED28608
+	Thu, 17 Oct 2019 18:46:13 +0000 (UTC)
+X-Greylist: domain auto-whitelisted by SQLgrey-1.7.6
+Received: from mga05.intel.com (mga05.intel.com [192.55.52.43])
+	by smtp1.linuxfoundation.org (Postfix) with ESMTPS id 0FEBD8CC
 	for <iommu@lists.linux-foundation.org>;
-	Thu, 17 Oct 2019 16:24:57 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
-	d=infradead.org; s=bombadil.20170209;
-	h=In-Reply-To:Content-Type:MIME-Version
-	:References:Message-ID:Subject:Cc:To:From:Date:Sender:Reply-To:
-	Content-Transfer-Encoding:Content-ID:Content-Description:Resent-Date:
-	Resent-From:Resent-Sender:Resent-To:Resent-Cc:Resent-Message-ID:List-Id:
-	List-Help:List-Unsubscribe:List-Subscribe:List-Post:List-Owner:List-Archive;
-	bh=tM11n8HxbnKWuIhVBFZir6ZW0eaOohaPCZqy9IypX4U=;
-	b=SFBW3KU2AFnuPudmAUQJa1JCr
-	lzNCY42eqxDiR5TpNp5EuDL8nzHiMAQ48K5MeYMzAxKbrGFWSDWMk8nwju4mlbJTvAvLQ+hE0IPXH
-	wW6N08roi74hu6tGILnTfvmhDThfE55UeyADHlEOntoNPWirpMlWavoCHICueEnFAG6sWhJHWx6Cw
-	cj9RGPjUb8JTHrccwaeYX3JtE/Coju00bGauyGPykagxvMPlG/cOuiXRXQgzh8FX1h6VHS30t6Ngq
-	ImVcFe7rnAxwd9JQj8INAsbLw+PQP10U7atjrXkNsLllu8GjFi9/4yAo5AkcuQoqV7hKkcB7BrxLW
-	vMka7sSwA==;
-Received: from hch by bombadil.infradead.org with local (Exim 4.92.3 #3 (Red
-	Hat Linux)) id 1iL8a5-0005qh-Mk; Thu, 17 Oct 2019 16:24:53 +0000
-Date: Thu, 17 Oct 2019 09:24:53 -0700
-From: Christoph Hellwig <hch@infradead.org>
-To: Robin Murphy <robin.murphy@arm.com>
-Subject: Re: [PATCH] iommu/dma: Relax locking in iommu_dma_prepare_msi()
-Message-ID: <20191017162453.GA6012@infradead.org>
-References: <5af5e77102ca52576cb96816f0abcf6398820055.1571245656.git.robin.murphy@arm.com>
-MIME-Version: 1.0
-Content-Disposition: inline
-In-Reply-To: <5af5e77102ca52576cb96816f0abcf6398820055.1571245656.git.robin.murphy@arm.com>
-User-Agent: Mutt/1.12.1 (2019-06-15)
-X-SRS-Rewrite: SMTP reverse-path rewritten from <hch@infradead.org> by
-	bombadil.infradead.org. See http://www.infradead.org/rpr.html
-Cc: maz@kernel.org, iommu@lists.linux-foundation.org,
-	linux-kernel@vger.kernel.org, julien.grall@arm.com
+	Thu, 17 Oct 2019 18:46:12 +0000 (UTC)
+X-Amp-Result: SKIPPED(no attachment in message)
+X-Amp-File-Uploaded: False
+Received: from fmsmga004.fm.intel.com ([10.253.24.48])
+	by fmsmga105.fm.intel.com with ESMTP/TLS/DHE-RSA-AES256-GCM-SHA384;
+	17 Oct 2019 11:46:12 -0700
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="5.67,308,1566889200"; d="scan'208";a="221477723"
+Received: from oux.sc.intel.com ([10.3.52.57])
+	by fmsmga004.fm.intel.com with ESMTP; 17 Oct 2019 11:46:11 -0700
+From: Yian Chen <yian.chen@intel.com>
+To: iommu@lists.linux-foundation.org, linux-kernel@vger.kernel.org,
+	linux-ia64@vger.kernel.org, David Woodhouse <dwmw2@infradead.org>,
+	Joerg Roedel <joro@8bytes.org>, Ashok Raj <ashok.raj@intel.com>,
+	Sohil Mehta <sohil.mehta@intel.com>, Tony Luck <tony.luck@intel.com>,
+	Lu Baolu <baolu.lu@linux.intel.com>,
+	Ravi Shankar <ravi.v.shankar@intel.com>
+Subject: [PATCH v2] iommu/vt-d: Check VT-d RMRR region in BIOS is reported as
+	reserved
+Date: Thu, 17 Oct 2019 04:39:19 -0700
+Message-Id: <20191017113919.25424-1-yian.chen@intel.com>
+X-Mailer: git-send-email 2.17.1
 X-BeenThere: iommu@lists.linux-foundation.org
 X-Mailman-Version: 2.1.12
 Precedence: list
@@ -74,23 +63,121 @@ List-Post: <mailto:iommu@lists.linux-foundation.org>
 List-Help: <mailto:iommu-request@lists.linux-foundation.org?subject=help>
 List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
 	<mailto:iommu-request@lists.linux-foundation.org?subject=subscribe>
+MIME-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
 Sender: iommu-bounces@lists.linux-foundation.org
 Errors-To: iommu-bounces@lists.linux-foundation.org
 
-On Wed, Oct 16, 2019 at 06:07:36PM +0100, Robin Murphy wrote:
-> @@ -1180,7 +1179,7 @@ int iommu_dma_prepare_msi(struct msi_desc *desc, phys_addr_t msi_addr)
->  	struct iommu_domain *domain = iommu_get_domain_for_dev(dev);
->  	struct iommu_dma_cookie *cookie;
->  	struct iommu_dma_msi_page *msi_page;
-> -	unsigned long flags;
-> +	static DEFINE_MUTEX(msi_prepare_lock);
+VT-d RMRR (Reserved Memory Region Reporting) regions are reserved
+for device use only and should not be part of allocable memory pool of OS.
 
-Just a style nitpick, but I find locks declared inside functions
-really weird.  In addition to that locks not embedded into a structure
-and not directly next to variables or data structures they protect
-really need a comment explaining what they are trying to serialize.
+BIOS e820_table reports complete memory map to OS, including OS usable
+memory ranges and BIOS reserved memory ranges etc.
+
+x86 BIOS may not be trusted to include RMRR regions as reserved type
+of memory in its e820 memory map, hence validate every RMRR entry
+with the e820 memory map to make sure the RMRR regions will not be
+used by OS for any other purposes.
+
+ia64 EFI is working fine so implement RMRR validation as a dummy function
+
+Reviewed-by: Lu Baolu <baolu.lu@linux.intel.com>
+Reviewed-by: Sohil Mehta <sohil.mehta@intel.com>
+Signed-off-by: Yian Chen <yian.chen@intel.com>
+---
+v2:
+- return -EINVAL instead of -EFAULT when there is an error
+---
+ arch/ia64/include/asm/iommu.h |  5 +++++
+ arch/x86/include/asm/iommu.h  | 18 ++++++++++++++++++
+ drivers/iommu/intel-iommu.c   |  8 +++++++-
+ 3 files changed, 30 insertions(+), 1 deletion(-)
+
+diff --git a/arch/ia64/include/asm/iommu.h b/arch/ia64/include/asm/iommu.h
+index 7904f591a79b..eb0db20c9d4c 100644
+--- a/arch/ia64/include/asm/iommu.h
++++ b/arch/ia64/include/asm/iommu.h
+@@ -2,6 +2,8 @@
+ #ifndef _ASM_IA64_IOMMU_H
+ #define _ASM_IA64_IOMMU_H 1
+ 
++#include <linux/acpi.h>
++
+ /* 10 seconds */
+ #define DMAR_OPERATION_TIMEOUT (((cycles_t) local_cpu_data->itc_freq)*10)
+ 
+@@ -9,6 +11,9 @@ extern void no_iommu_init(void);
+ #ifdef	CONFIG_INTEL_IOMMU
+ extern int force_iommu, no_iommu;
+ extern int iommu_detected;
++
++static inline int __init
++arch_rmrr_sanity_check(struct acpi_dmar_reserved_memory *rmrr) { return 0; }
+ #else
+ #define no_iommu		(1)
+ #define iommu_detected		(0)
+diff --git a/arch/x86/include/asm/iommu.h b/arch/x86/include/asm/iommu.h
+index b91623d521d9..bf1ed2ddc74b 100644
+--- a/arch/x86/include/asm/iommu.h
++++ b/arch/x86/include/asm/iommu.h
+@@ -2,10 +2,28 @@
+ #ifndef _ASM_X86_IOMMU_H
+ #define _ASM_X86_IOMMU_H
+ 
++#include <linux/acpi.h>
++
++#include <asm/e820/api.h>
++
+ extern int force_iommu, no_iommu;
+ extern int iommu_detected;
+ 
+ /* 10 seconds */
+ #define DMAR_OPERATION_TIMEOUT ((cycles_t) tsc_khz*10*1000)
+ 
++static inline int __init
++arch_rmrr_sanity_check(struct acpi_dmar_reserved_memory *rmrr)
++{
++	u64 start = rmrr->base_address;
++	u64 end = rmrr->end_address + 1;
++
++	if (e820__mapped_all(start, end, E820_TYPE_RESERVED))
++		return 0;
++
++	pr_err(FW_BUG "No firmware reserved region can cover this RMRR [%#018Lx-%#018Lx], contact BIOS vendor for fixes\n",
++	       start, end - 1);
++	return -EINVAL;
++}
++
+ #endif /* _ASM_X86_IOMMU_H */
+diff --git a/drivers/iommu/intel-iommu.c b/drivers/iommu/intel-iommu.c
+index 3f974919d3bd..722290014143 100644
+--- a/drivers/iommu/intel-iommu.c
++++ b/drivers/iommu/intel-iommu.c
+@@ -4306,13 +4306,19 @@ int __init dmar_parse_one_rmrr(struct acpi_dmar_header *header, void *arg)
+ {
+ 	struct acpi_dmar_reserved_memory *rmrr;
+ 	struct dmar_rmrr_unit *rmrru;
++	int ret;
++
++	rmrr = (struct acpi_dmar_reserved_memory *)header;
++	ret = arch_rmrr_sanity_check(rmrr);
++	if (ret)
++		return ret;
+ 
+ 	rmrru = kzalloc(sizeof(*rmrru), GFP_KERNEL);
+ 	if (!rmrru)
+ 		goto out;
+ 
+ 	rmrru->hdr = header;
+-	rmrr = (struct acpi_dmar_reserved_memory *)header;
++
+ 	rmrru->base_address = rmrr->base_address;
+ 	rmrru->end_address = rmrr->end_address;
+ 
+-- 
+2.17.1
+
 _______________________________________________
 iommu mailing list
 iommu@lists.linux-foundation.org
