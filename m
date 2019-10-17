@@ -1,98 +1,108 @@
-Return-Path: <SRS0=NqTC=YJ=lists.linux-foundation.org=iommu-bounces@kernel.org>
+Return-Path: <SRS0=zJQD=YK=lists.linux-foundation.org=iommu-bounces@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-2.0 required=3.0 tests=DKIM_INVALID,DKIM_SIGNED,
-	HEADER_FROM_DIFFERENT_DOMAINS,MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS,
-	USER_AGENT_SANE_1 autolearn=no autolearn_force=no version=3.4.0
+X-Spam-Status: No, score=-9.5 required=3.0 tests=DKIM_ADSP_CUSTOM_MED,
+	DKIM_INVALID,DKIM_SIGNED,FREEMAIL_FORGED_FROMDOMAIN,FREEMAIL_FROM,
+	HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_PATCH,MAILING_LIST_MULTI,SIGNED_OFF_BY,
+	SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED,USER_AGENT_GIT autolearn=ham
+	autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id C65B5ECE599
-	for <iommu@archiver.kernel.org>; Wed, 16 Oct 2019 22:59:10 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 9FFF2ECE599
+	for <iommu@archiver.kernel.org>; Thu, 17 Oct 2019 02:08:54 +0000 (UTC)
 Received: from mail.linuxfoundation.org (mail.linuxfoundation.org [140.211.169.12])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by mail.kernel.org (Postfix) with ESMTPS id 8908D207FF
-	for <iommu@archiver.kernel.org>; Wed, 16 Oct 2019 22:59:10 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTPS id E103520663
+	for <iommu@archiver.kernel.org>; Thu, 17 Oct 2019 02:08:53 +0000 (UTC)
 Authentication-Results: mail.kernel.org;
-	dkim=fail reason="signature verification failed" (1024-bit key) header.d=redhat.com header.i=@redhat.com header.b="Wgk6dAjE"
-DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 8908D207FF
-Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=redhat.com
+	dkim=fail reason="signature verification failed" (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="Ox1kz4/u"
+DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org E103520663
+Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=gmail.com
 Authentication-Results: mail.kernel.org; spf=pass smtp.mailfrom=iommu-bounces@lists.linux-foundation.org
 Received: from mail.linux-foundation.org (localhost [127.0.0.1])
-	by mail.linuxfoundation.org (Postfix) with ESMTP id 32A13B5F;
-	Wed, 16 Oct 2019 22:59:10 +0000 (UTC)
+	by mail.linuxfoundation.org (Postfix) with ESMTP id 89FB8B5F;
+	Thu, 17 Oct 2019 02:08:53 +0000 (UTC)
 Received: from smtp1.linuxfoundation.org (smtp1.linux-foundation.org
 	[172.17.192.35])
-	by mail.linuxfoundation.org (Postfix) with ESMTPS id BC66DB50
+	by mail.linuxfoundation.org (Postfix) with ESMTPS id ADA8FAAE
 	for <iommu@lists.linux-foundation.org>;
-	Wed, 16 Oct 2019 22:59:08 +0000 (UTC)
-X-Greylist: domain auto-whitelisted by SQLgrey-1.7.6
-Received: from us-smtp-1.mimecast.com (us-smtp-1.mimecast.com [207.211.31.81])
-	by smtp1.linuxfoundation.org (Postfix) with ESMTP id 50FE288E
+	Thu, 17 Oct 2019 00:57:44 +0000 (UTC)
+X-Greylist: whitelisted by SQLgrey-1.7.6
+Received: from mail-qk1-f194.google.com (mail-qk1-f194.google.com
+	[209.85.222.194])
+	by smtp1.linuxfoundation.org (Postfix) with ESMTPS id 87E46828
 	for <iommu@lists.linux-foundation.org>;
-	Wed, 16 Oct 2019 22:59:08 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-	s=mimecast20190719; t=1571266747;
-	h=from:from:reply-to:reply-to:subject:subject:date:date:
-	message-id:message-id:to:to:cc:mime-version:mime-version:
-	content-type:content-type:
-	content-transfer-encoding:content-transfer-encoding:
-	in-reply-to:in-reply-to:references:references;
-	bh=NyiMlWJkqAf8MO4pTs8/WbLKzyR9A5LqxtBH32MGUbQ=;
-	b=Wgk6dAjEg5C/jE2LxSPqTFrSMyE/48DBnZFcWeWrKve3qLabx3SsxvqIQB+d4x8HxB4Q7p
-	RF4bpMnzJr9pDz+Yy9DQzb+dgAS1UhPkTHmQ9dio7eXo3YX1/12Xc0+IU7TKEPG+1k/7iw
-	6gOrXjScLUUA/nrhOmjeblt69lZk08g=
-Received: from mail-io1-f71.google.com (mail-io1-f71.google.com
-	[209.85.166.71]) (Using TLS) by relay.mimecast.com with ESMTP id
-	us-mta-273-N9GTSbD6MWGlpmIE_FpEPQ-1; Wed, 16 Oct 2019 18:59:03 -0400
-Received: by mail-io1-f71.google.com with SMTP id g8so282426iop.19
+	Thu, 17 Oct 2019 00:57:43 +0000 (UTC)
+Received: by mail-qk1-f194.google.com with SMTP id y189so349088qkc.3
 	for <iommu@lists.linux-foundation.org>;
-	Wed, 16 Oct 2019 15:59:03 -0700 (PDT)
+	Wed, 16 Oct 2019 17:57:43 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=gmail.com; s=20161025;
+	h=from:to:cc:subject:date:message-id:mime-version
+	:content-transfer-encoding;
+	bh=aTGJwtX3gaFJhfVoluMU8ZGAYiXGalHVfNd4SW8h3wE=;
+	b=Ox1kz4/ubMjY0NqMhSvT3o7i8b1ksljfLJIysx6uJPIP2yRWgaBpyjuJip6NCAsxXW
+	eI6pUQX1p0dzLjXIRU65G0ymCZmCJTb6sxNJVh83rgjxHF0V1RkyiDwzIObcotrTQcUL
+	xN4ONDLFOtBvp/pmrwIFbmNIqvP/HmMLg80WW2NeJs06uZd63KAjYIT+GdGY0FLrbvC+
+	RZ7nmMLb8gYfC9BgSaao3j9+UYa0VTVgTOL4HKZBoj8el2GQIi158v16B3BUNnue4hho
+	Vf/gzHQTIOXqaPn4LIueompNv0lcl7ipGHJuftywmGONHrlUahNlP3VkRt8gQuXWBGP5
+	xtaQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
 	d=1e100.net; s=20161025;
-	h=x-gm-message-state:date:from:to:subject:message-id:reply-to
-	:mail-followup-to:references:mime-version:content-disposition
-	:in-reply-to:user-agent;
-	bh=izr2IsFI8KdP3bcHd0eKxqMK3CSawZuxmuGffwvF3wM=;
-	b=Vw8BOBijM/Pkt3T6gBirD9J0fJrjasfaBm7Nv6WVN6I9p82YBLntMMp7L9vWcn+Can
-	knVrQJwT5wk5uFDb4QLVu4UclpbKr25rf6rJ6uDbRIl2GZUmus2/HlCug0qTQ1h+lcWT
-	ozgmPst52KYUirHWnBz2Zj6yTQsWYjvCiZ6axsuXvtJrLGCHr6pKSUoMqEzut0rVQpG6
-	1LJda1tQtuyYo3tJoui0+nuHaN1fCB9kD33c082obbessgMTTTOAg9H46H4Fbckey9P1
-	ByffCO9bjFPYE8TcPi0C5Yn69lcs5lO3Vxegd3ovop9MxxCBT+JHqFf001jNg59wM6GI
-	+BBA==
-X-Gm-Message-State: APjAAAXiCSx2TxfOTWgjIOl1pOvyAOywF9bHFKe2d0AujG4yah6mslR8
-	fDS6zylZjwWRlUhsKkHilasXJkMO7sRHFRe+fXLDPo5berfViFeJI0EmiwgNSIyFNP6yWdKpsRS
-	1kAdKrjIb7JcRnaDDz1jp1pPOTZEZpQ==
-X-Received: by 2002:a02:7124:: with SMTP id n36mr450930jac.90.1571266743020;
-	Wed, 16 Oct 2019 15:59:03 -0700 (PDT)
-X-Google-Smtp-Source: APXvYqyXgcSDWOvFVRU4qEgI4WtmHcPsJHr4aMIDVzx1G2HnyuwCQ56ZEGP2XRwkkjSFyOMu6fRo6A==
-X-Received: by 2002:a02:7124:: with SMTP id n36mr450914jac.90.1571266742774;
-	Wed, 16 Oct 2019 15:59:02 -0700 (PDT)
-Received: from localhost (ip70-163-223-149.ph.ph.cox.net. [70.163.223.149])
-	by smtp.gmail.com with ESMTPSA id t8sm101183ild.7.2019.10.16.15.59.00
-	(version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-	Wed, 16 Oct 2019 15:59:01 -0700 (PDT)
-Date: Wed, 16 Oct 2019 15:58:59 -0700
-From: Jerry Snitselaar <jsnitsel@redhat.com>
-To: Qian Cai <cai@lca.pw>, jroedel@suse.de, don.brace@microsemi.com,
-	martin.petersen@oracle.com, linux-scsi@vger.kernel.org,
-	jejb@linux.ibm.com, esc.storagedev@microsemi.com,
-	linux-kernel@vger.kernel.org, iommu@lists.linux-foundation.org
-Subject: Re: [PATCH -next] iommu/amd: fix a warning in increase_address_space
-Message-ID: <20191016225859.j3jq6pt73mn56chn@cantor>
-Mail-Followup-To: Qian Cai <cai@lca.pw>, jroedel@suse.de,
-	don.brace@microsemi.com, martin.petersen@oracle.com,
-	linux-scsi@vger.kernel.org, jejb@linux.ibm.com,
-	esc.storagedev@microsemi.com, linux-kernel@vger.kernel.org,
-	iommu@lists.linux-foundation.org
-References: <1571254542-13998-1-git-send-email-cai@lca.pw>
-	<20191016220415.cbam7qk3pxjmw4gi@cantor>
+	h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+	:content-transfer-encoding;
+	bh=aTGJwtX3gaFJhfVoluMU8ZGAYiXGalHVfNd4SW8h3wE=;
+	b=LoMtxHUqUf71RxCLvjBMezLzeO/EXS71ExGs5GwI/RJfSoYEa1QZh/CSBBPxmludPG
+	18yiVdK+kMKguKg3jfbl/f11Sn5DtbzIVCpusF6aXl6cS2hq2jDOpmnD7pviahPaKZpa
+	PyVZJSXN8pbWko/AD3mETsOMbpK/Sx79OTumbUBAOUyR/d5+SRqtSkQWBAYD2hekitWH
+	orG/Je7OyBx/mE4LQ7MNyBa70CwbgYLnVam8oLdorW8GNSXs/InoO7zn4J/nm3QMFNuu
+	IveLMQNcCgQzY52s6UXiPdoD8T42t1qLMYYpmJP7Tu9vOlk/xvmHUZt/9b1ljdqRtbVE
+	PmcA==
+X-Gm-Message-State: APjAAAXyUL8ZCCatqh4VpIb42q3VKXdqfmsK4Xuc3ha3OdWqcZGUaw4j
+	JmLWc6iChszctyaCpQ5h974=
+X-Google-Smtp-Source: APXvYqw+Is0zFWxxVXLgNAjD5ji4cCtuKQRAnjkgkQc5G9iAjtGzrF4ecvJ23ZYSA/DEUWls6TVR5g==
+X-Received: by 2002:a05:620a:98c:: with SMTP id
+	x12mr820763qkx.323.1571273862463; 
+	Wed, 16 Oct 2019 17:57:42 -0700 (PDT)
+Received: from auth1-smtp.messagingengine.com (auth1-smtp.messagingengine.com.
+	[66.111.4.227])
+	by smtp.gmail.com with ESMTPSA id x12sm619050qtb.32.2019.10.16.17.57.41
+	(version=TLS1_2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128/128);
+	Wed, 16 Oct 2019 17:57:41 -0700 (PDT)
+Received: from compute7.internal (compute7.nyi.internal [10.202.2.47])
+	by mailauth.nyi.internal (Postfix) with ESMTP id E2DB022025;
+	Wed, 16 Oct 2019 20:57:40 -0400 (EDT)
+Received: from mailfrontend2 ([10.202.2.163])
+	by compute7.internal (MEProxy); Wed, 16 Oct 2019 20:57:40 -0400
+X-ME-Sender: <xms:hLynXcZXTDVQW7tG4chaOnZhLkN2c_L2wmdkfpI7j_ISf5ekFmdMDw>
+X-ME-Proxy-Cause: gggruggvucftvghtrhhoucdtuddrgedufedrjeeigdefjecutefuodetggdotefrodftvf
+	curfhrohhfihhlvgemucfhrghsthforghilhdpqfgfvfdpuffrtefokffrpgfnqfghnecu
+	uegrihhlohhuthemuceftddtnecusecvtfgvtghiphhivghnthhsucdlqddutddtmdenuc
+	fjughrpefhvffufffkofgggfestdekredtredttdenucfhrhhomhepuehoqhhunhcuhfgv
+	nhhguceosghoqhhunhdrfhgvnhhgsehgmhgrihhlrdgtohhmqeenucfkphepuddtuddrke
+	eirdeguddrvdduvdenucfrrghrrghmpehmrghilhhfrhhomhepsghoqhhunhdomhgvshhm
+	thhprghuthhhphgvrhhsohhnrghlihhthidqieelvdeghedtieegqddujeejkeehheehvd
+	dqsghoqhhunheppehfihigmhgvrdhnrghmvgesfhhigihmvgdrnhgrmhgvnecuvehluhhs
+	thgvrhfuihiivgeptd
+X-ME-Proxy: <xmx:hLynXfLGr8-_sWO0fjTZIsG1Fw8PfzGIZ5TFLXYIH83mAw6a-JJdmw>
+	<xmx:hLynXaCcDgi12eMZ0Bx8PCeWvTGfGvx-5qJ9Pofcwm9UDca4-HdncA>
+	<xmx:hLynXUrxAb3L1i1zdg-K4vtQ-HuVjafjUS_HbDquhQ4zggNxagluvA>
+	<xmx:hLynXZD2Da2FGrkW1PNxbT17aIUbukOR2z_EkwOhnp5AZMPPhJZm_A>
+Received: from localhost (unknown [101.86.41.212])
+	by mail.messagingengine.com (Postfix) with ESMTPA id B150ED6005B;
+	Wed, 16 Oct 2019 20:57:39 -0400 (EDT)
+From: Boqun Feng <boqun.feng@gmail.com>
+To: iommu@lists.linux-foundation.org,
+	linux-kernel@vger.kernel.org
+Subject: [PATCH] drivers: iommu: hyperv: Make HYPERV_IOMMU only available on
+	x86
+Date: Thu, 17 Oct 2019 08:57:03 +0800
+Message-Id: <20191017005711.2013647-1-boqun.feng@gmail.com>
+X-Mailer: git-send-email 2.23.0
 MIME-Version: 1.0
-In-Reply-To: <20191016220415.cbam7qk3pxjmw4gi@cantor>
-User-Agent: NeoMutt/20180716
-X-MC-Unique: N9GTSbD6MWGlpmIE_FpEPQ-1
-X-Mimecast-Spam-Score: 0
-Content-Disposition: inline
+X-Mailman-Approved-At: Thu, 17 Oct 2019 02:08:52 +0000
+Cc: Boqun Feng <boqun.feng@gmail.com>, Lan Tianyu <Tianyu.Lan@microsoft.com>,
+	linux-hyperv@vger.kernel.org, Michael Kelley <mikelley@microsoft.com>
 X-BeenThere: iommu@lists.linux-foundation.org
 X-Mailman-Version: 2.1.12
 Precedence: list
@@ -105,31 +115,48 @@ List-Post: <mailto:iommu@lists.linux-foundation.org>
 List-Help: <mailto:iommu-request@lists.linux-foundation.org?subject=help>
 List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
 	<mailto:iommu-request@lists.linux-foundation.org?subject=subscribe>
-Reply-To: Jerry Snitselaar <jsnitsel@redhat.com>
+Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
-Content-Type: text/plain; charset="us-ascii"; Format="flowed"
 Sender: iommu-bounces@lists.linux-foundation.org
 Errors-To: iommu-bounces@lists.linux-foundation.org
 
-On Wed Oct 16 19, Jerry Snitselaar wrote:
->On Wed Oct 16 19, Qian Cai wrote:
->>
->>BTW, Joerg, this line from the commit "iommu/amd: Remove domain->updated" looks
->>suspicious. Not sure what the purpose of it.
->>
->>*updated = increase_address_space(domain, gfp) || *updated;
->>
->
->Looking at it again I think that isn't an issue really, it would just
->not lose updated being set in a previous loop iteration, but now
->I'm wondering about the loop itself. In the cases where it would return
->false, how does the evaluation of the condition for the while loop
->change?
->
+Currently hyperv-iommu is implemented in a x86 specific way, for
+example, apic is used. So make the HYPERV_IOMMU Kconfig depend on X86
+as a preparation for enabling HyperV on architecture other than x86.
 
-I guess the mode level 6 check is really for other potential callers
-increase_address_space, none exist at the moment, and the condition
-of the while loop in alloc_pte should fail if the mode level is 6.
+Cc: Lan Tianyu <Tianyu.Lan@microsoft.com>
+Cc: Michael Kelley <mikelley@microsoft.com>
+Cc: linux-hyperv@vger.kernel.org
+Signed-off-by: Boqun Feng (Microsoft) <boqun.feng@gmail.com>
+---
+
+Without this patch, I could observe compile error:
+
+| drivers/iommu/hyperv-iommu.c:17:10: fatal error: asm/apic.h: No such
+| file or directory
+|   17 | #include <asm/apic.h>
+|      |          ^~~~~~~~~~~~
+
+, after apply Michael's ARM64 on HyperV enablement patchset.
+
+ drivers/iommu/Kconfig | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+diff --git a/drivers/iommu/Kconfig b/drivers/iommu/Kconfig
+index e3842eabcfdd..f1086eaed41c 100644
+--- a/drivers/iommu/Kconfig
++++ b/drivers/iommu/Kconfig
+@@ -467,7 +467,7 @@ config QCOM_IOMMU
+ 
+ config HYPERV_IOMMU
+ 	bool "Hyper-V x2APIC IRQ Handling"
+-	depends on HYPERV
++	depends on HYPERV && X86
+ 	select IOMMU_API
+ 	default HYPERV
+ 	help
+-- 
+2.23.0
 
 _______________________________________________
 iommu mailing list
