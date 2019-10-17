@@ -1,121 +1,77 @@
-Return-Path: <SRS0=zJQD=YK=lists.linux-foundation.org=iommu-bounces@kernel.org>
+Return-Path: <SRS0=1rIG=YL=lists.linux-foundation.org=iommu-bounces@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-6.5 required=3.0 tests=DKIM_INVALID,DKIM_SIGNED,
-	HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_PATCH,MAILING_LIST_MULTI,SIGNED_OFF_BY,
-	SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED autolearn=ham autolearn_force=no
-	version=3.4.0
+X-Spam-Status: No, score=-7.0 required=3.0 tests=DKIM_INVALID,DKIM_SIGNED,
+	HEADER_FROM_DIFFERENT_DOMAINS,MAILING_LIST_MULTI,MENTIONS_GIT_HOSTING,
+	SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED,USER_AGENT_SANE_1 autolearn=ham
+	autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id E7274CA9EC8
-	for <iommu@archiver.kernel.org>; Thu, 17 Oct 2019 23:31:19 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 60E66CA9EB3
+	for <iommu@archiver.kernel.org>; Fri, 18 Oct 2019 00:32:29 +0000 (UTC)
 Received: from mail.linuxfoundation.org (mail.linuxfoundation.org [140.211.169.12])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by mail.kernel.org (Postfix) with ESMTPS id A8BA320854
-	for <iommu@archiver.kernel.org>; Thu, 17 Oct 2019 23:31:19 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTPS id 0275421852
+	for <iommu@archiver.kernel.org>; Fri, 18 Oct 2019 00:32:28 +0000 (UTC)
 Authentication-Results: mail.kernel.org;
-	dkim=fail reason="signature verification failed" (1024-bit key) header.d=microsoft.com header.i=@microsoft.com header.b="SQwhaZM2"
-DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org A8BA320854
+	dkim=fail reason="signature verification failed" (1024-bit key) header.d=ti.com header.i=@ti.com header.b="zGhH128J"
+DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 0275421852
 Authentication-Results: mail.kernel.org; dmarc=none (p=none dis=none) header.from=lists.linux-foundation.org
 Authentication-Results: mail.kernel.org; spf=pass smtp.mailfrom=iommu-bounces@lists.linux-foundation.org
 Received: from mail.linux-foundation.org (localhost [127.0.0.1])
-	by mail.linuxfoundation.org (Postfix) with ESMTP id 6C3ABCAF;
-	Thu, 17 Oct 2019 23:31:19 +0000 (UTC)
+	by mail.linuxfoundation.org (Postfix) with ESMTP id A03BBCB0;
+	Fri, 18 Oct 2019 00:32:28 +0000 (UTC)
 Received: from smtp1.linuxfoundation.org (smtp1.linux-foundation.org
 	[172.17.192.35])
-	by mail.linuxfoundation.org (Postfix) with ESMTPS id 596CBCAE
+	by mail.linuxfoundation.org (Postfix) with ESMTPS id 900C6AC8
 	for <iommu@lists.linux-foundation.org>;
-	Thu, 17 Oct 2019 23:31:18 +0000 (UTC)
-X-Greylist: whitelisted by SQLgrey-1.7.6
-Received: from NAM03-CO1-obe.outbound.protection.outlook.com
-	(mail-eopbgr790139.outbound.protection.outlook.com [40.107.79.139])
-	by smtp1.linuxfoundation.org (Postfix) with ESMTPS id E773B7D2
+	Fri, 18 Oct 2019 00:32:27 +0000 (UTC)
+X-Greylist: delayed 01:32:43 by SQLgrey-1.7.6
+Received: from fllv0016.ext.ti.com (fllv0016.ext.ti.com [198.47.19.142])
+	by smtp1.linuxfoundation.org (Postfix) with ESMTPS id 129A97DB
 	for <iommu@lists.linux-foundation.org>;
-	Thu, 17 Oct 2019 23:31:16 +0000 (UTC)
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
-	b=Gwx9Wji2g0neHCvxN4Q5GvKB6CI/yHZjQ71+dzFp87WbKK/ICqLhf9cKtJ48D6sUrP+2vuOAEopy0SR8dGRCdFhmFyXDP83idFYxTBnW+pzJkcKJa+ZrDjdFluTvSAhFA/FAxUKp1gz+s8spC7fPwBd6EEhmVDO42QKDdPE1Rrrl2H0+R8T5qRrb2oAXDGOc2aXAZNxZC+mo2mMYQex7eoeeqVbiYcvoA/2Qbhg0dk2NRu0XlVa2PhrSm4jdWJQBTQiWo7rBTGLWabEPsUrlX/hPYpoTXp0oaH9RfQXgHT9yPEbjfMXz0D9yd0NJx8aUAabWulxKSWOOJZ1vZpBjoQ==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com; 
-	s=arcselector9901;
-	h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
-	bh=EcpqB0clQOtqRtDRq6LJKR99/JeIIJsD1tvaeqjvtWI=;
-	b=NWmWmrwataMLqAl63aIVdFqxLQVZxoqn3oWdNKGTdpd2f5CJu0byz9qvhqPE15AzoiU4Sm48ClGHrEBW9OkbsE3FjDzD4qjFqXeEK8zsZjgCicaVXL5Q1zl5H603UxuyY52oo8/aBmRyRXjTasp90RlWJa0hK7iK58Whi94GCcxdIkVSZEysqpCxmEx+KKiBDJ6ANQ9aMzIBvRGlhFWJv9eFIbMCAEya8Ek2XbYjSPI76uy5HUWQOz7yI2bWRnsu1z1gxIoEDGSHE4RYIW0pv25n4guTCYNk+xQD2+nL4SEzzVh0R/pv5S67YO8H4LGWEzV5Uwe4zfyCx+trY/0AOg==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
-	smtp.mailfrom=microsoft.com; dmarc=pass action=none
-	header.from=microsoft.com; dkim=pass header.d=microsoft.com; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
-	s=selector2;
-	h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
-	bh=EcpqB0clQOtqRtDRq6LJKR99/JeIIJsD1tvaeqjvtWI=;
-	b=SQwhaZM2QeQLg1eqPF3U4h0leHLIGeno7iasQRgZjK7Y0k+ZjnT1I2jHfBHjQBhGc13osU5nvSOeXR3/SxKKqOKWmaM4Fh6bYHLKg7BjPEUiTkpmHsFhZRkKbdF7lM+BI5C4PlH6x2ug3FNRzeNIJqE17xl+dX1DR1Sn+Ha4DTY=
-Received: from DM5PR21MB0137.namprd21.prod.outlook.com (10.173.173.12) by
-	DM5PR21MB0156.namprd21.prod.outlook.com (10.173.173.19) with Microsoft
-	SMTP
-	Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
-	15.20.2387.8; Thu, 17 Oct 2019 23:31:14 +0000
-Received: from DM5PR21MB0137.namprd21.prod.outlook.com
-	([fe80::356d:3ae3:a1c8:327e]) by
-	DM5PR21MB0137.namprd21.prod.outlook.com
-	([fe80::356d:3ae3:a1c8:327e%8]) with mapi id 15.20.2387.009;
-	Thu, 17 Oct 2019 23:31:14 +0000
-To: boqun.feng <boqun.feng@gmail.com>, "iommu@lists.linux-foundation.org"
-	<iommu@lists.linux-foundation.org>, "linux-kernel@vger.kernel.org"
-	<linux-kernel@vger.kernel.org>
-Subject: RE: [PATCH] drivers: iommu: hyperv: Make HYPERV_IOMMU only available
-	on x86
-Thread-Topic: [PATCH] drivers: iommu: hyperv: Make HYPERV_IOMMU only available
-	on x86
-Thread-Index: AQHVhIXjbKTvIJIwEEeS7r8pz2yO3adffKQw
-Date: Thu, 17 Oct 2019 23:31:13 +0000
-Message-ID: <DM5PR21MB01372A106600DBCC137EAF30D76D0@DM5PR21MB0137.namprd21.prod.outlook.com>
-References: <20191017005711.2013647-1-boqun.feng@gmail.com>
-In-Reply-To: <20191017005711.2013647-1-boqun.feng@gmail.com>
-Accept-Language: en-US
-Content-Language: en-US
-X-MS-Has-Attach: 
-X-MS-TNEF-Correlator: 
-msip_labels: MSIP_Label_f42aa342-8706-4288-bd11-ebb85995028c_Enabled=True;
-	MSIP_Label_f42aa342-8706-4288-bd11-ebb85995028c_SiteId=72f988bf-86f1-41af-91ab-2d7cd011db47;
-	MSIP_Label_f42aa342-8706-4288-bd11-ebb85995028c_Owner=mikelley@ntdev.microsoft.com;
-	MSIP_Label_f42aa342-8706-4288-bd11-ebb85995028c_SetDate=2019-10-17T23:31:11.8063301Z;
-	MSIP_Label_f42aa342-8706-4288-bd11-ebb85995028c_Name=General;
-	MSIP_Label_f42aa342-8706-4288-bd11-ebb85995028c_Application=Microsoft
-	Azure Information Protection;
-	MSIP_Label_f42aa342-8706-4288-bd11-ebb85995028c_ActionId=d05a4104-3e6f-45bd-8a90-5e2b83c1dfbc;
-	MSIP_Label_f42aa342-8706-4288-bd11-ebb85995028c_Extended_MSFT_Method=Automatic
-authentication-results: spf=none (sender IP is )
-	smtp.mailfrom=mikelley@microsoft.com; 
-x-originating-ip: [24.22.167.197]
-x-ms-publictraffictype: Email
-x-ms-office365-filtering-correlation-id: 1b6d52fd-9e01-49b7-a99e-08d7535a19ce
-x-ms-office365-filtering-ht: Tenant
-x-ms-traffictypediagnostic: DM5PR21MB0156:|DM5PR21MB0156:|DM5PR21MB0156:
-x-ms-exchange-transport-forked: True
-x-ld-processed: 72f988bf-86f1-41af-91ab-2d7cd011db47,ExtAddr
-x-microsoft-antispam-prvs: <DM5PR21MB0156C3FD9D9E8C51D9AD4A96D76D0@DM5PR21MB0156.namprd21.prod.outlook.com>
-x-ms-oob-tlc-oobclassifiers: OLM:4714;
-x-forefront-prvs: 01930B2BA8
-x-forefront-antispam-report: SFV:NSPM;
-	SFS:(10019020)(4636009)(376002)(346002)(39860400002)(366004)(396003)(136003)(199004)(189003)(11346002)(25786009)(5660300002)(229853002)(476003)(486006)(446003)(186003)(71200400001)(71190400001)(2906002)(2501003)(55016002)(8936002)(66066001)(102836004)(4326008)(26005)(6116002)(76116006)(52536014)(66946007)(3846002)(9686003)(99286004)(8990500004)(6436002)(86362001)(66446008)(33656002)(10090500001)(8676002)(316002)(2201001)(76176011)(14454004)(7736002)(64756008)(6246003)(7696005)(305945005)(256004)(10290500003)(14444005)(478600001)(6506007)(54906003)(110136005)(74316002)(22452003)(66556008)(66476007)(81156014)(81166006);
-	DIR:OUT; SFP:1102; SCL:1; SRVR:DM5PR21MB0156;
-	H:DM5PR21MB0137.namprd21.prod.outlook.com; FPR:; SPF:None;
-	LANG:en; PTR:InfoNoRecords; A:1; MX:1; 
-received-spf: None (protection.outlook.com: microsoft.com does not designate
-	permitted sender hosts)
-x-ms-exchange-senderadcheck: 1
-x-microsoft-antispam: BCL:0;
-x-microsoft-antispam-message-info: CuMlVVzgmEWaoqDnytuBFPz7v521ebmEU45JOGhz4U1bmaFpZZnSEtEFqW6lxc5UJpouxFD8Ya5UF+ooYJ8ybvyB5dNiLfV1fpY0lIdNg82kbSThpUg+qIbGZGspa6ZdG2mu/uGLPyKdkxYYYTFW6aGZSIXAqpSlXdn8HaqzuGqUgJesJ/apBTSn6618KWsOSg6Z7vNffJbOS+G65UN6JpqeYalXLbj9VZoGCCVtfaBsuapU6cDI7KPC7PBfxVbwxENyjQDgBmfPWt0/vOg6XH9utbiKn5aRNif33mddbAoKt65MtkqjBr6geYMdqn4KsjAnkFAxMKGvj/lKKcXjJlD5+i+sxq3N9rZQUaWcl8tV1eL7wOiJP8Q+4F+4YT+ZWQmUCcO5n6+Spnax2LRocEUWYPppRfzzJHI7lFVRWvU=
+	Fri, 18 Oct 2019 00:32:26 +0000 (UTC)
+Received: from fllv0034.itg.ti.com ([10.64.40.246])
+	by fllv0016.ext.ti.com (8.15.2/8.15.2) with ESMTP id x9HMxR2Y126094;
+	Thu, 17 Oct 2019 17:59:27 -0500
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ti.com;
+	s=ti-com-17Q1; t=1571353167;
+	bh=7yVci9TQm4uJQZcKWfunF9rFAJOgeLJlmSxcYu9ZO48=;
+	h=Subject:To:CC:References:From:Date:In-Reply-To;
+	b=zGhH128JJX1JnoG4VHzhKQYvd3o8/tkSkeKs4Xn061Vtm92FrHfg//1xf80zDARO4
+	axt9WgbSLB7i4cQlrnBSWhibHcsIGJ/qBvEeK/nW9nuQoWecGQzo56f0rWsa/W4yHL
+	KDcU+L5U+A2f756WD58PfUQlSgDTa594kbTmGHAs=
+Received: from DLEE100.ent.ti.com (dlee100.ent.ti.com [157.170.170.30])
+	by fllv0034.itg.ti.com (8.15.2/8.15.2) with ESMTPS id x9HMxQYE041161
+	(version=TLSv1.2 cipher=AES256-GCM-SHA384 bits=256 verify=FAIL);
+	Thu, 17 Oct 2019 17:59:26 -0500
+Received: from DLEE104.ent.ti.com (157.170.170.34) by DLEE100.ent.ti.com
+	(157.170.170.30) with Microsoft SMTP Server (version=TLS1_2,
+	cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256_P256) id 15.1.1713.5;
+	Thu, 17 Oct 2019 17:59:26 -0500
+Received: from fllv0039.itg.ti.com (10.64.41.19) by DLEE104.ent.ti.com
+	(157.170.170.34) with Microsoft SMTP Server (version=TLS1_2,
+	cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256_P256) id 15.1.1713.5 via
+	Frontend Transport; Thu, 17 Oct 2019 17:59:18 -0500
+Received: from [128.247.58.153] (ileax41-snat.itg.ti.com [10.172.224.153])
+	by fllv0039.itg.ti.com (8.15.2/8.15.2) with ESMTP id x9HMxQIn025057;
+	Thu, 17 Oct 2019 17:59:26 -0500
+Subject: Re: [PATCH 0/2] OMAP IOMMU fixes to go with 5.4 OMAP IOMMU changes
+To: Tony Lindgren <tony@atomide.com>
+References: <20190827001452.31930-1-s-anna@ti.com>
+Message-ID: <68474455-c997-a40e-74c4-ea3e0faa6c24@ti.com>
+Date: Thu, 17 Oct 2019 17:59:26 -0500
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:60.0) Gecko/20100101
+	Thunderbird/60.6.1
 MIME-Version: 1.0
-X-OriginatorOrg: microsoft.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: 1b6d52fd-9e01-49b7-a99e-08d7535a19ce
-X-MS-Exchange-CrossTenant-originalarrivaltime: 17 Oct 2019 23:31:13.9311 (UTC)
-X-MS-Exchange-CrossTenant-fromentityheader: Hosted
-X-MS-Exchange-CrossTenant-id: 72f988bf-86f1-41af-91ab-2d7cd011db47
-X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
-X-MS-Exchange-CrossTenant-userprincipalname: aVA4AQPVIPqOmOPinarLregB2Zk6608+4k6lBa5UuKGD3VMTuy29zjCjSuMznX9ta4bb0V7nEM+Bjh198PjxP1Tl9zI0XJbBc8A3qHvQ5aw=
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: DM5PR21MB0156
-Cc: "boqun.feng" <boqun.feng@gmail.com>, Tianyu Lan <Tianyu.Lan@microsoft.com>,
-	"linux-hyperv@vger.kernel.org" <linux-hyperv@vger.kernel.org>
+In-Reply-To: <20190827001452.31930-1-s-anna@ti.com>
+Content-Language: en-US
+X-EXCLAIMER-MD-CONFIG: e1e8a2fd-e40a-4ac6-ac9b-f7e9cc9ee180
+Cc: Tero Kristo <t-kristo@ti.com>, iommu@lists.linux-foundation.org,
+	Sakari Ailus <sakari.ailus@iki.fi>,
+	Laurent Pinchart <laurent.pinchart@ideasonboard.com>,
+	linux-omap@vger.kernel.org
 X-BeenThere: iommu@lists.linux-foundation.org
 X-Mailman-Version: 2.1.12
 Precedence: list
@@ -128,54 +84,63 @@ List-Post: <mailto:iommu@lists.linux-foundation.org>
 List-Help: <mailto:iommu-request@lists.linux-foundation.org?subject=help>
 List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
 	<mailto:iommu-request@lists.linux-foundation.org?subject=subscribe>
-From: Michael Kelley via iommu <iommu@lists.linux-foundation.org>
-Reply-To: Michael Kelley <mikelley@microsoft.com>
+From: Suman Anna via iommu <iommu@lists.linux-foundation.org>
+Reply-To: Suman Anna <s-anna@ti.com>
 Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
 Sender: iommu-bounces@lists.linux-foundation.org
 Errors-To: iommu-bounces@lists.linux-foundation.org
 
-From: Boqun Feng <boqun.feng@gmail.com> Sent: Wednesday, October 16, 2019 5:57 PM
-> 
-> Currently hyperv-iommu is implemented in a x86 specific way, for
-> example, apic is used. So make the HYPERV_IOMMU Kconfig depend on X86
-> as a preparation for enabling HyperV on architecture other than x86.
-> 
-> Cc: Lan Tianyu <Tianyu.Lan@microsoft.com>
-> Cc: Michael Kelley <mikelley@microsoft.com>
-> Cc: linux-hyperv@vger.kernel.org
-> Signed-off-by: Boqun Feng (Microsoft) <boqun.feng@gmail.com>
-> ---
-> 
-> Without this patch, I could observe compile error:
-> 
-> | drivers/iommu/hyperv-iommu.c:17:10: fatal error: asm/apic.h: No such
-> | file or directory
-> |   17 | #include <asm/apic.h>
-> |      |          ^~~~~~~~~~~~
-> 
-> , after apply Michael's ARM64 on HyperV enablement patchset.
-> 
->  drivers/iommu/Kconfig | 2 +-
->  1 file changed, 1 insertion(+), 1 deletion(-)
-> 
-> diff --git a/drivers/iommu/Kconfig b/drivers/iommu/Kconfig
-> index e3842eabcfdd..f1086eaed41c 100644
-> --- a/drivers/iommu/Kconfig
-> +++ b/drivers/iommu/Kconfig
-> @@ -467,7 +467,7 @@ config QCOM_IOMMU
-> 
->  config HYPERV_IOMMU
->  	bool "Hyper-V x2APIC IRQ Handling"
-> -	depends on HYPERV
-> +	depends on HYPERV && X86
->  	select IOMMU_API
->  	default HYPERV
->  	help
-> --
-> 2.23.0
+Hi Tony,
 
-Reviewed-by: Michael Kelley <mikelley@microsoft.com>
+On 8/26/19 7:14 PM, Suman Anna wrote:
+> Hi Tony,
+> 
+> The following 2 patches need to go along with the recent "iommu/omap: misc
+> fixes" series [1] that is currently staged [2] for a 5.4 merge and available
+> in linux-next. That series added runtime pm callbacks in preparation for
+> the ti-sysc migration, but without adding the necessary platform data
+> callbacks for the existing functional MMUs on OMAP3, OMAP4 and OMAP5 SoCs.
+> These 2 patches add the same to maintain the functionality (l3_noc errors
+> are the visible symptom while enabling the MMUs without these patches).
+> 
+> OMAP4 and OMAP5 would also need another set of fixes related to the
+> breakage caused by the switch to clkctrl clocks as seen in [3].
+> 
+> These patches do have a dependency on the staged patches, so either you
+> submit a pull-request towards 5.4-rc2 using 5.4-rc1 baseline, or let
+> Joerg pick these through the arm/omap IOMMU branch for 5.4-rc1 itself.
+> 
+> Sakari/Laurent,
+> Appreciate it if you can check the OMAP3 ISP functionality on latest
+> linux-next with the second patch. I have verified the ISP MMU programming
+> only through an unit-test.
+> 
+> Tero,
+> I will be submitting another patch against OMAP IOMMU driver to skip the
+> pdata callbacks for ti-sysc in the next couple of days.
+> 
+> regards
+> Suman
+> 
+> [1] https://lore.kernel.org/linux-iommu/20190809153730.GF12930@8bytes.org/T/#mec99f8e8ed351689f4fcc76f4f000f9144a02b51
+> [2] https://git.kernel.org/pub/scm/linux/kernel/git/joro/iommu.git/log/?h=arm/omap
+> [3] https://patchwork.kernel.org/patch/11082125/#22829477
+> 
+> Suman Anna (2):
+>   ARM: OMAP2+: Plug in device_enable/idle ops for IOMMUs
+>   ARM: OMAP2+: Add pdata for OMAP3 ISP IOMMU
+
+Can you please pick these patches up for 5.4-rc cycle? The OMAP IOMMU
+changes that went in for 5.4-rc1 need the pdata to be plugged in.
+
+regards
+Suman
+
+> 
+>  arch/arm/mach-omap2/pdata-quirks.c | 11 +++++++++++
+>  1 file changed, 11 insertions(+)
+> 
 
 _______________________________________________
 iommu mailing list
