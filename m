@@ -2,83 +2,84 @@ Return-Path: <SRS0=zJQD=YK=lists.linux-foundation.org=iommu-bounces@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-0.5 required=3.0 tests=DKIM_INVALID,DKIM_SIGNED,
-	HEADER_FROM_DIFFERENT_DOMAINS,MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS,
-	URIBL_BLOCKED autolearn=no autolearn_force=no version=3.4.0
+X-Spam-Status: No, score=-5.0 required=3.0 tests=DKIM_INVALID,DKIM_SIGNED,
+	HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_PATCH,MAILING_LIST_MULTI,SPF_HELO_NONE,
+	SPF_PASS,URIBL_BLOCKED,USER_AGENT_SANE_2 autolearn=ham autolearn_force=no
+	version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id B4E97ECE58E
-	for <iommu@archiver.kernel.org>; Thu, 17 Oct 2019 11:36:55 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id D4A83FA3735
+	for <iommu@archiver.kernel.org>; Thu, 17 Oct 2019 14:39:20 +0000 (UTC)
 Received: from mail.linuxfoundation.org (mail.linuxfoundation.org [140.211.169.12])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by mail.kernel.org (Postfix) with ESMTPS id 89A7521848
-	for <iommu@archiver.kernel.org>; Thu, 17 Oct 2019 11:36:55 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTPS id 9E60F21D7C
+	for <iommu@archiver.kernel.org>; Thu, 17 Oct 2019 14:39:20 +0000 (UTC)
 Authentication-Results: mail.kernel.org;
-	dkim=fail reason="signature verification failed" (2048-bit key) header.d=lca.pw header.i=@lca.pw header.b="inLSz4cP"
-DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 89A7521848
+	dkim=fail reason="signature verification failed" (2048-bit key) header.d=lca.pw header.i=@lca.pw header.b="Z5ozsxrL"
+DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 9E60F21D7C
 Authentication-Results: mail.kernel.org; dmarc=none (p=none dis=none) header.from=lca.pw
 Authentication-Results: mail.kernel.org; spf=pass smtp.mailfrom=iommu-bounces@lists.linux-foundation.org
 Received: from mail.linux-foundation.org (localhost [127.0.0.1])
-	by mail.linuxfoundation.org (Postfix) with ESMTP id 71F341524;
-	Thu, 17 Oct 2019 11:36:55 +0000 (UTC)
+	by mail.linuxfoundation.org (Postfix) with ESMTP id 3DFC4CC2;
+	Thu, 17 Oct 2019 14:39:20 +0000 (UTC)
 Received: from smtp1.linuxfoundation.org (smtp1.linux-foundation.org
 	[172.17.192.35])
-	by mail.linuxfoundation.org (Postfix) with ESMTPS id E8C1F14C3
+	by mail.linuxfoundation.org (Postfix) with ESMTPS id DDE12C87
 	for <iommu@lists.linux-foundation.org>;
-	Thu, 17 Oct 2019 11:36:53 +0000 (UTC)
+	Thu, 17 Oct 2019 14:39:18 +0000 (UTC)
 X-Greylist: whitelisted by SQLgrey-1.7.6
-Received: from mail-qk1-f193.google.com (mail-qk1-f193.google.com
-	[209.85.222.193])
-	by smtp1.linuxfoundation.org (Postfix) with ESMTPS id 83A228C1
+Received: from mail-qt1-f195.google.com (mail-qt1-f195.google.com
+	[209.85.160.195])
+	by smtp1.linuxfoundation.org (Postfix) with ESMTPS id C1FD4608
 	for <iommu@lists.linux-foundation.org>;
-	Thu, 17 Oct 2019 11:36:53 +0000 (UTC)
-Received: by mail-qk1-f193.google.com with SMTP id u184so1524144qkd.4
+	Thu, 17 Oct 2019 14:39:17 +0000 (UTC)
+Received: by mail-qt1-f195.google.com with SMTP id n7so3905531qtb.6
 	for <iommu@lists.linux-foundation.org>;
-	Thu, 17 Oct 2019 04:36:53 -0700 (PDT)
+	Thu, 17 Oct 2019 07:39:17 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=lca.pw; s=google;
-	h=content-transfer-encoding:from:mime-version:subject:date:message-id
-	:references:cc:in-reply-to:to;
-	bh=8/Lz6l8sQ6PNj+KFicIECgEvYNy1usZIJng2CZIsbQg=;
-	b=inLSz4cPMI+GJ9z0YEfQf9RIV4d9DhKHvhpv9tRsAhG8lBPHCahDt7L4dZdCUDpNT3
-	V0qQsIIWtsi1zCvqA2zEvouImw2pz4PKQq7hNViCPYJJovM/WhPMwRFyY2ASg8xwBJ9e
-	3W7+KJNGsqtkQD7da4idydHyGxNm4S89TLBE1EO5Nsrb7rxQFLv7OHaNsX/MyjrqvoQf
-	sm4KR/GZnvc1LUVfYS7OZDzwz3t4PvX1fBGcOPD7sxVYWgEMvd2t+Q5JPWvhC3dGKSBs
-	ZmiLjM0dWcfgsG936+m01CkzNYi/KsWTeJ9XauEjKWmMjpkupFQQrtOUJwu1GXjwYO4O
-	E4Bg==
+	h=message-id:subject:from:to:cc:date:in-reply-to:references
+	:mime-version:content-transfer-encoding;
+	bh=iPv4xGfmhNBcAudJ2m+U/PKGMmIbhs2/YkiMhF6fFPc=;
+	b=Z5ozsxrLAow7bEU7nWG80R2CgeNG8zQPVzUL28MShaR4HDycfhOGCi8NaffDyAPvgD
+	AIybmU8gw9TlH06J5Nu25r9iEAEFg/z7wjCu9bDYmbUcoBXw+plOlzkljXN+iUpVrvHe
+	PGlPrqiGayV2ryqP8DJu8SMiX8/842fiXxbfVj52XoDzxXNqvWQJbkq3yn2W8ZI2jG4n
+	DE2brcxf0FTMIcjPOygTmldJbycUwHlOhn1WI5Ac8dbJ3kAOm7ECVCqI30SsiNMJO0Te
+	/3WwkxredcNT8VESSObYg2jVa3gZ2otkmLjZtpTOKAm9DNMPn9V8XlYjdpzOKpf8Rg1z
+	x0Yg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
 	d=1e100.net; s=20161025;
-	h=x-gm-message-state:content-transfer-encoding:from:mime-version
-	:subject:date:message-id:references:cc:in-reply-to:to;
-	bh=8/Lz6l8sQ6PNj+KFicIECgEvYNy1usZIJng2CZIsbQg=;
-	b=logV7MQp/C+qr9/NOmq60Vo0OkaZUnpDINeXvc2MeXsJanFnJzk0r7FgneZ1PEq57m
-	CcKnzj5RQg1sXSt5GEDa9unZ0eFbKsubPfyZw4vI5boVZ8T7bzvjxAy0SEf9rfy0ryaJ
-	oDoD3FlQ31KAx/+TXDEuPthjVkmCiLwz/xjskfqp2LXQDK6/kNwVeliYf6od5+tMgtVH
-	ySqOrsAadAPcfvACBIArkhHq9CW98ahai103ObdIwU/IWqT02PFnT0GJt/HcH8MwgQR9
-	mzwX+w6OJXNgTL9t8kAmdkBmVkEqV7W3rH+ZO6bCBYKsEj8PsLrA5wPQQBFop4qf2ldD
-	L9hw==
-X-Gm-Message-State: APjAAAVoYODKlijHAbE5ZoMS/ykcbZK+gulzQu548YXyrKEZLT+MkJnS
-	D/06nbR5gV0ZPow23X6a+2Claw==
-X-Google-Smtp-Source: APXvYqxdX0AeuN/dq2A2s87VdUR+xtxVcyeC34SKMarZg2FnGvyBY3fPdW9PrLgHFt8PN82r/JKQvw==
-X-Received: by 2002:a37:68a:: with SMTP id 132mr2773971qkg.359.1571312212534; 
-	Thu, 17 Oct 2019 04:36:52 -0700 (PDT)
-Received: from [192.168.1.183] (pool-71-184-117-43.bstnma.fios.verizon.net.
-	[71.184.117.43])
-	by smtp.gmail.com with ESMTPSA id c6sm1631979qtc.83.2019.10.17.04.36.51
-	(version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-	Thu, 17 Oct 2019 04:36:51 -0700 (PDT)
+	h=x-gm-message-state:message-id:subject:from:to:cc:date:in-reply-to
+	:references:mime-version:content-transfer-encoding;
+	bh=iPv4xGfmhNBcAudJ2m+U/PKGMmIbhs2/YkiMhF6fFPc=;
+	b=Mp1WesuomqkY4xiQjTkMBFQu71kz5Fkksn9fJu5zF4pDZiDZtpxbL1JSiPceqAJJSI
+	veFAFB0tFhI6QrA+gorgm2z6Rx4SGnzy9a8OrSD64v7O4iTTMCr4GRP28yxGZ02ahsvu
+	5MxYUmetU3g3oqGwcUUi8SQbXI2rxfiH6pZs9huRQCTHmD+SzHtfyNpEx5WVcuaLogs9
+	QTYAb6TjQlobLorVL+e6Tu57wcRR/mvByyczFg5MGnzWjE2qSXzwYEe4uTcNw2AcPOgU
+	44Dy/c+GsvO8VHTTMSyGs4uZLs2pykfC54+/57diH46p+JoZBIiMmTLKL8N6gjuGVFwm
+	OITw==
+X-Gm-Message-State: APjAAAUj4HjuXyDAbKw/UoblwxxdpezOb24GTKyC//l2ZRKIn3yXovSa
+	sBFJqMct4XVEy2JiILPkoD+BsQ==
+X-Google-Smtp-Source: APXvYqy7YdxTEZrz6r7lhrlzaTDa41hLtMCzXF8omQ5PUo8wn41x4fS6Wd2cEiqylNBXkJ0ldg5xJA==
+X-Received: by 2002:ac8:6144:: with SMTP id d4mr4164799qtm.282.1571323156758; 
+	Thu, 17 Oct 2019 07:39:16 -0700 (PDT)
+Received: from dhcp-41-57.bos.redhat.com (nat-pool-bos-t.redhat.com.
+	[66.187.233.206]) by smtp.gmail.com with ESMTPSA id
+	i66sm1135765qkb.105.2019.10.17.07.39.14
+	(version=TLS1_2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128/128);
+	Thu, 17 Oct 2019 07:39:15 -0700 (PDT)
+Message-ID: <1571323153.5937.67.camel@lca.pw>
+Subject: Re: "Convert the AMD iommu driver to the dma-iommu api" is buggy
 From: Qian Cai <cai@lca.pw>
-Mime-Version: 1.0 (1.0)
-Subject: Re: [PATCH -next] iommu/amd: fix a warning in increase_address_space
-Date: Thu, 17 Oct 2019 07:36:51 -0400
-Message-Id: <577A2A6B-3012-4CDE-BE57-3E0D628572CB@lca.pw>
-References: <20191016225859.j3jq6pt73mn56chn@cantor>
-In-Reply-To: <20191016225859.j3jq6pt73mn56chn@cantor>
-To: Jerry Snitselaar <jsnitsel@redhat.com>
-X-Mailer: iPhone Mail (17A878)
-Cc: don.brace@microsemi.com, jroedel@suse.de, martin.petersen@oracle.com,
-	linux-scsi@vger.kernel.org, jejb@linux.ibm.com,
-	esc.storagedev@microsemi.com, linux-kernel@vger.kernel.org,
-	iommu@lists.linux-foundation.org
+To: Joerg Roedel <jroedel@suse.de>
+Date: Thu, 17 Oct 2019 10:39:13 -0400
+In-Reply-To: <20191016154455.GG4695@suse.de>
+References: <1571237707.5937.58.camel@lca.pw>
+	<1571237982.5937.60.camel@lca.pw> <20191016154455.GG4695@suse.de>
+X-Mailer: Evolution 3.22.6 (3.22.6-10.el7) 
+Mime-Version: 1.0
+Cc: iommu@lists.linux-foundation.org, Robin Murphy <robin.murphy@arm.com>,
+	Christoph Hellwig <hch@lst.de>, Tom Murphy <murphyt7@tcd.ie>,
+	linux-kernel@vger.kernel.org
 X-BeenThere: iommu@lists.linux-foundation.org
 X-Mailman-Version: 2.1.12
 Precedence: list
@@ -96,15 +97,31 @@ Content-Transfer-Encoding: 7bit
 Sender: iommu-bounces@lists.linux-foundation.org
 Errors-To: iommu-bounces@lists.linux-foundation.org
 
-
-
-> On Oct 16, 2019, at 6:59 PM, Jerry Snitselaar <jsnitsel@redhat.com> wrote:
+On Wed, 2019-10-16 at 17:44 +0200, Joerg Roedel wrote:
+> On Wed, Oct 16, 2019 at 10:59:42AM -0400, Qian Cai wrote:
+> > BTW, the previous x86 warning was from only reverted one patch "iommu: Add gfp
+> > parameter to iommu_ops::map" where proved to be insufficient. Now, pasting the
+> > correct warning.
 > 
-> I guess the mode level 6 check is really for other potential callers
-> increase_address_space, none exist at the moment, and the condition
-> of the while loop in alloc_pte should fail if the mode level is 6.
+> Can you please test this small fix:
 
-Because there is no locking around iommu_map_page(), if there are several concurrent callers of it for the same domain, could it be that it silently corrupt data due to invalid access?
+This works fine so far.
+
+> 
+> diff --git a/drivers/iommu/amd_iommu.c b/drivers/iommu/amd_iommu.c
+> index 78a2cca3ac5c..e7a4464e8594 100644
+> --- a/drivers/iommu/amd_iommu.c
+> +++ b/drivers/iommu/amd_iommu.c
+> @@ -2562,7 +2562,7 @@ static int amd_iommu_map(struct iommu_domain *dom, unsigned long iova,
+>  	if (iommu_prot & IOMMU_WRITE)
+>  		prot |= IOMMU_PROT_IW;
+>  
+> -	ret = iommu_map_page(domain, iova, paddr, page_size, prot, GFP_KERNEL);
+> +	ret = iommu_map_page(domain, iova, paddr, page_size, prot, gfp);
+>  
+>  	domain_flush_np_cache(domain, iova, page_size);
+>  
+> 
 _______________________________________________
 iommu mailing list
 iommu@lists.linux-foundation.org
