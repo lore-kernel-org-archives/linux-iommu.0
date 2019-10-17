@@ -2,107 +2,66 @@ Return-Path: <SRS0=zJQD=YK=lists.linux-foundation.org=iommu-bounces@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-9.5 required=3.0 tests=DKIM_ADSP_CUSTOM_MED,
-	DKIM_INVALID,DKIM_SIGNED,FREEMAIL_FORGED_FROMDOMAIN,FREEMAIL_FROM,
-	HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_PATCH,MAILING_LIST_MULTI,SIGNED_OFF_BY,
-	SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED,USER_AGENT_GIT autolearn=ham
-	autolearn_force=no version=3.4.0
+X-Spam-Status: No, score=-2.2 required=3.0 tests=HEADER_FROM_DIFFERENT_DOMAINS,
+	MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED,USER_AGENT_SANE_1
+	autolearn=no autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 9FFF2ECE599
-	for <iommu@archiver.kernel.org>; Thu, 17 Oct 2019 02:08:54 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 6ECECECE599
+	for <iommu@archiver.kernel.org>; Thu, 17 Oct 2019 02:34:12 +0000 (UTC)
 Received: from mail.linuxfoundation.org (mail.linuxfoundation.org [140.211.169.12])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by mail.kernel.org (Postfix) with ESMTPS id E103520663
-	for <iommu@archiver.kernel.org>; Thu, 17 Oct 2019 02:08:53 +0000 (UTC)
-Authentication-Results: mail.kernel.org;
-	dkim=fail reason="signature verification failed" (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="Ox1kz4/u"
-DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org E103520663
-Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=gmail.com
+	by mail.kernel.org (Postfix) with ESMTPS id D617021925
+	for <iommu@archiver.kernel.org>; Thu, 17 Oct 2019 02:34:11 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org D617021925
+Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=redhat.com
 Authentication-Results: mail.kernel.org; spf=pass smtp.mailfrom=iommu-bounces@lists.linux-foundation.org
 Received: from mail.linux-foundation.org (localhost [127.0.0.1])
-	by mail.linuxfoundation.org (Postfix) with ESMTP id 89FB8B5F;
-	Thu, 17 Oct 2019 02:08:53 +0000 (UTC)
+	by mail.linuxfoundation.org (Postfix) with ESMTP id 707BFB59;
+	Thu, 17 Oct 2019 02:34:11 +0000 (UTC)
 Received: from smtp1.linuxfoundation.org (smtp1.linux-foundation.org
 	[172.17.192.35])
-	by mail.linuxfoundation.org (Postfix) with ESMTPS id ADA8FAAE
-	for <iommu@lists.linux-foundation.org>;
-	Thu, 17 Oct 2019 00:57:44 +0000 (UTC)
-X-Greylist: whitelisted by SQLgrey-1.7.6
-Received: from mail-qk1-f194.google.com (mail-qk1-f194.google.com
-	[209.85.222.194])
-	by smtp1.linuxfoundation.org (Postfix) with ESMTPS id 87E46828
-	for <iommu@lists.linux-foundation.org>;
-	Thu, 17 Oct 2019 00:57:43 +0000 (UTC)
-Received: by mail-qk1-f194.google.com with SMTP id y189so349088qkc.3
-	for <iommu@lists.linux-foundation.org>;
-	Wed, 16 Oct 2019 17:57:43 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=gmail.com; s=20161025;
-	h=from:to:cc:subject:date:message-id:mime-version
-	:content-transfer-encoding;
-	bh=aTGJwtX3gaFJhfVoluMU8ZGAYiXGalHVfNd4SW8h3wE=;
-	b=Ox1kz4/ubMjY0NqMhSvT3o7i8b1ksljfLJIysx6uJPIP2yRWgaBpyjuJip6NCAsxXW
-	eI6pUQX1p0dzLjXIRU65G0ymCZmCJTb6sxNJVh83rgjxHF0V1RkyiDwzIObcotrTQcUL
-	xN4ONDLFOtBvp/pmrwIFbmNIqvP/HmMLg80WW2NeJs06uZd63KAjYIT+GdGY0FLrbvC+
-	RZ7nmMLb8gYfC9BgSaao3j9+UYa0VTVgTOL4HKZBoj8el2GQIi158v16B3BUNnue4hho
-	Vf/gzHQTIOXqaPn4LIueompNv0lcl7ipGHJuftywmGONHrlUahNlP3VkRt8gQuXWBGP5
-	xtaQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-	d=1e100.net; s=20161025;
-	h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
-	:content-transfer-encoding;
-	bh=aTGJwtX3gaFJhfVoluMU8ZGAYiXGalHVfNd4SW8h3wE=;
-	b=LoMtxHUqUf71RxCLvjBMezLzeO/EXS71ExGs5GwI/RJfSoYEa1QZh/CSBBPxmludPG
-	18yiVdK+kMKguKg3jfbl/f11Sn5DtbzIVCpusF6aXl6cS2hq2jDOpmnD7pviahPaKZpa
-	PyVZJSXN8pbWko/AD3mETsOMbpK/Sx79OTumbUBAOUyR/d5+SRqtSkQWBAYD2hekitWH
-	orG/Je7OyBx/mE4LQ7MNyBa70CwbgYLnVam8oLdorW8GNSXs/InoO7zn4J/nm3QMFNuu
-	IveLMQNcCgQzY52s6UXiPdoD8T42t1qLMYYpmJP7Tu9vOlk/xvmHUZt/9b1ljdqRtbVE
-	PmcA==
-X-Gm-Message-State: APjAAAXyUL8ZCCatqh4VpIb42q3VKXdqfmsK4Xuc3ha3OdWqcZGUaw4j
-	JmLWc6iChszctyaCpQ5h974=
-X-Google-Smtp-Source: APXvYqw+Is0zFWxxVXLgNAjD5ji4cCtuKQRAnjkgkQc5G9iAjtGzrF4ecvJ23ZYSA/DEUWls6TVR5g==
-X-Received: by 2002:a05:620a:98c:: with SMTP id
-	x12mr820763qkx.323.1571273862463; 
-	Wed, 16 Oct 2019 17:57:42 -0700 (PDT)
-Received: from auth1-smtp.messagingengine.com (auth1-smtp.messagingengine.com.
-	[66.111.4.227])
-	by smtp.gmail.com with ESMTPSA id x12sm619050qtb.32.2019.10.16.17.57.41
-	(version=TLS1_2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128/128);
-	Wed, 16 Oct 2019 17:57:41 -0700 (PDT)
-Received: from compute7.internal (compute7.nyi.internal [10.202.2.47])
-	by mailauth.nyi.internal (Postfix) with ESMTP id E2DB022025;
-	Wed, 16 Oct 2019 20:57:40 -0400 (EDT)
-Received: from mailfrontend2 ([10.202.2.163])
-	by compute7.internal (MEProxy); Wed, 16 Oct 2019 20:57:40 -0400
-X-ME-Sender: <xms:hLynXcZXTDVQW7tG4chaOnZhLkN2c_L2wmdkfpI7j_ISf5ekFmdMDw>
-X-ME-Proxy-Cause: gggruggvucftvghtrhhoucdtuddrgedufedrjeeigdefjecutefuodetggdotefrodftvf
-	curfhrohhfihhlvgemucfhrghsthforghilhdpqfgfvfdpuffrtefokffrpgfnqfghnecu
-	uegrihhlohhuthemuceftddtnecusecvtfgvtghiphhivghnthhsucdlqddutddtmdenuc
-	fjughrpefhvffufffkofgggfestdekredtredttdenucfhrhhomhepuehoqhhunhcuhfgv
-	nhhguceosghoqhhunhdrfhgvnhhgsehgmhgrihhlrdgtohhmqeenucfkphepuddtuddrke
-	eirdeguddrvdduvdenucfrrghrrghmpehmrghilhhfrhhomhepsghoqhhunhdomhgvshhm
-	thhprghuthhhphgvrhhsohhnrghlihhthidqieelvdeghedtieegqddujeejkeehheehvd
-	dqsghoqhhunheppehfihigmhgvrdhnrghmvgesfhhigihmvgdrnhgrmhgvnecuvehluhhs
-	thgvrhfuihiivgeptd
-X-ME-Proxy: <xmx:hLynXfLGr8-_sWO0fjTZIsG1Fw8PfzGIZ5TFLXYIH83mAw6a-JJdmw>
-	<xmx:hLynXaCcDgi12eMZ0Bx8PCeWvTGfGvx-5qJ9Pofcwm9UDca4-HdncA>
-	<xmx:hLynXUrxAb3L1i1zdg-K4vtQ-HuVjafjUS_HbDquhQ4zggNxagluvA>
-	<xmx:hLynXZD2Da2FGrkW1PNxbT17aIUbukOR2z_EkwOhnp5AZMPPhJZm_A>
-Received: from localhost (unknown [101.86.41.212])
-	by mail.messagingengine.com (Postfix) with ESMTPA id B150ED6005B;
-	Wed, 16 Oct 2019 20:57:39 -0400 (EDT)
-From: Boqun Feng <boqun.feng@gmail.com>
-To: iommu@lists.linux-foundation.org,
-	linux-kernel@vger.kernel.org
-Subject: [PATCH] drivers: iommu: hyperv: Make HYPERV_IOMMU only available on
-	x86
-Date: Thu, 17 Oct 2019 08:57:03 +0800
-Message-Id: <20191017005711.2013647-1-boqun.feng@gmail.com>
-X-Mailer: git-send-email 2.23.0
+	by mail.linuxfoundation.org (Postfix) with ESMTPS id EECB3ACC;
+	Thu, 17 Oct 2019 02:34:09 +0000 (UTC)
+X-Greylist: domain auto-whitelisted by SQLgrey-1.7.6
+X-Greylist: domain auto-whitelisted by SQLgrey-1.7.6
+Received: from mx1.redhat.com (mx1.redhat.com [209.132.183.28])
+	by smtp1.linuxfoundation.org (Postfix) with ESMTPS id A388713A;
+	Thu, 17 Oct 2019 02:34:09 +0000 (UTC)
+Received: from smtp.corp.redhat.com (int-mx04.intmail.prod.int.phx2.redhat.com
+	[10.5.11.14])
+	(using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
+	(No client certificate requested)
+	by mx1.redhat.com (Postfix) with ESMTPS id ED16410DCC97;
+	Thu, 17 Oct 2019 02:34:07 +0000 (UTC)
+Received: from [10.72.12.185] (ovpn-12-185.pek2.redhat.com [10.72.12.185])
+	by smtp.corp.redhat.com (Postfix) with ESMTP id 138295D9DC;
+	Thu, 17 Oct 2019 02:34:00 +0000 (UTC)
+Subject: Re: [PATCH 2/2] virtio_ring: Use DMA API if memory is encrypted
+To: Christoph Hellwig <hch@lst.de>, Ram Pai <linuxram@us.ibm.com>
+References: <1570843519-8696-1-git-send-email-linuxram@us.ibm.com>
+	<1570843519-8696-2-git-send-email-linuxram@us.ibm.com>
+	<1570843519-8696-3-git-send-email-linuxram@us.ibm.com>
+	<20191015073501.GA32345@lst.de>
+From: Jason Wang <jasowang@redhat.com>
+Message-ID: <398dce4b-9290-0b14-28b1-e521331ec309@redhat.com>
+Date: Thu, 17 Oct 2019 10:33:59 +0800
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:60.0) Gecko/20100101
+	Thunderbird/60.8.0
 MIME-Version: 1.0
-X-Mailman-Approved-At: Thu, 17 Oct 2019 02:08:52 +0000
-Cc: Boqun Feng <boqun.feng@gmail.com>, Lan Tianyu <Tianyu.Lan@microsoft.com>,
-	linux-hyperv@vger.kernel.org, Michael Kelley <mikelley@microsoft.com>
+In-Reply-To: <20191015073501.GA32345@lst.de>
+Content-Language: en-US
+X-Scanned-By: MIMEDefang 2.79 on 10.5.11.14
+X-Greylist: Sender IP whitelisted, not delayed by milter-greylist-4.6.2
+	(mx1.redhat.com [10.5.110.64]);
+	Thu, 17 Oct 2019 02:34:08 +0000 (UTC)
+Cc: andmike@us.ibm.com, sukadev@linux.vnet.ibm.com, mdroth@linux.vnet.ibm.com,
+	b.zolnierkie@samsung.com, benh@kernel.crashing.org,
+	aik@linux.ibm.com, linux-kernel@vger.kernel.org,
+	virtualization@lists.linux-foundation.org, paulus@ozlabs.org,
+	iommu@lists.linux-foundation.org, paul.burton@mips.com,
+	mpe@ellerman.id.au, robin.murphy@arm.com,
+	linuxppc-dev@lists.ozlabs.org, david@gibson.dropbear.id.au
 X-BeenThere: iommu@lists.linux-foundation.org
 X-Mailman-Version: 2.1.12
 Precedence: list
@@ -115,50 +74,32 @@ List-Post: <mailto:iommu@lists.linux-foundation.org>
 List-Help: <mailto:iommu-request@lists.linux-foundation.org?subject=help>
 List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
 	<mailto:iommu-request@lists.linux-foundation.org?subject=subscribe>
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: 7bit
+Content-Transfer-Encoding: base64
+Content-Type: text/plain; charset="utf-8"; Format="flowed"
 Sender: iommu-bounces@lists.linux-foundation.org
 Errors-To: iommu-bounces@lists.linux-foundation.org
 
-Currently hyperv-iommu is implemented in a x86 specific way, for
-example, apic is used. So make the HYPERV_IOMMU Kconfig depend on X86
-as a preparation for enabling HyperV on architecture other than x86.
-
-Cc: Lan Tianyu <Tianyu.Lan@microsoft.com>
-Cc: Michael Kelley <mikelley@microsoft.com>
-Cc: linux-hyperv@vger.kernel.org
-Signed-off-by: Boqun Feng (Microsoft) <boqun.feng@gmail.com>
----
-
-Without this patch, I could observe compile error:
-
-| drivers/iommu/hyperv-iommu.c:17:10: fatal error: asm/apic.h: No such
-| file or directory
-|   17 | #include <asm/apic.h>
-|      |          ^~~~~~~~~~~~
-
-, after apply Michael's ARM64 on HyperV enablement patchset.
-
- drivers/iommu/Kconfig | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
-
-diff --git a/drivers/iommu/Kconfig b/drivers/iommu/Kconfig
-index e3842eabcfdd..f1086eaed41c 100644
---- a/drivers/iommu/Kconfig
-+++ b/drivers/iommu/Kconfig
-@@ -467,7 +467,7 @@ config QCOM_IOMMU
- 
- config HYPERV_IOMMU
- 	bool "Hyper-V x2APIC IRQ Handling"
--	depends on HYPERV
-+	depends on HYPERV && X86
- 	select IOMMU_API
- 	default HYPERV
- 	help
--- 
-2.23.0
-
-_______________________________________________
-iommu mailing list
-iommu@lists.linux-foundation.org
-https://lists.linuxfoundation.org/mailman/listinfo/iommu
+Ck9uIDIwMTkvMTAvMTUg5LiL5Y2IMzozNSwgQ2hyaXN0b3BoIEhlbGx3aWcgd3JvdGU6Cj4gT24g
+RnJpLCBPY3QgMTEsIDIwMTkgYXQgMDY6MjU6MTlQTSAtMDcwMCwgUmFtIFBhaSB3cm90ZToKPj4g
+RnJvbTogVGhpYWdvIEp1bmcgQmF1ZXJtYW5uIDxiYXVlcm1hbkBsaW51eC5pYm0uY29tPgo+Pgo+
+PiBOb3JtYWxseSwgdmlydGlvIGVuYWJsZXMgRE1BIEFQSSB3aXRoIFZJUlRJT19GX0lPTU1VX1BM
+QVRGT1JNLCB3aGljaCBtdXN0Cj4+IGJlIHNldCBieSBib3RoIGRldmljZSBhbmQgZ3Vlc3QgZHJp
+dmVyLiBIb3dldmVyLCBhcyBhIGhhY2ssIHdoZW4gRE1BIEFQSQo+PiByZXR1cm5zIHBoeXNpY2Fs
+IGFkZHJlc3NlcywgZ3Vlc3QgZHJpdmVyIGNhbiB1c2UgdGhlIERNQSBBUEk7IGV2ZW4gdGhvdWdo
+Cj4+IGRldmljZSBkb2VzIG5vdCBzZXQgVklSVElPX0ZfSU9NTVVfUExBVEZPUk0gYW5kIGp1c3Qg
+dXNlcyBwaHlzaWNhbAo+PiBhZGRyZXNzZXMuCj4gU29ycnksIGJ1dCB0aGlzIGlzIGEgY29tcGxl
+dGUgYnVsbHNoaXQgaGFjay4gIERyaXZlciBtdXN0IGFsd2F5cyB1c2UKPiB0aGUgRE1BIEFQSSBp
+ZiB0aGV5IGRvIERNQSwgYW5kIGlmIHZpcnRpbyBkZXZpY2VzIHVzZSBwaHlzaWNhbCBhZGRyZXNz
+ZXMKPiB0aGF0IG5lZWRzIHRvIGJlIHJldHVybmVkIHRocm91Z2ggdGhlIHBsYXRmb3JtIGZpcm13
+YXJlIGludGVyZmFjZXMgZm9yCj4gdGhlIGRtYSBzZXR1cC4gIElmIHlvdSBkb24ndCBkbyB0aGF0
+IHlldCAod2hpY2ggYmFzZWQgb24gcHJldmlvdXMKPiBpbmZvcm1hdGlvbnMgeW91IGRvbid0KSwg
+eW91IG5lZWQgdG8gZml4IGl0LCBhbmQgd2UgY2FuIHRoZW4gcXVpcmsKPiBvbGQgaW1wbGVtZW50
+YXRpb25zIHRoYXQgYWxyZWFkeSBhcmUgb3V0IGluIHRoZSBmaWVsZC4KPgo+IEluIG90aGVyIHdv
+cmRzOiB3ZSBmaW5hbGx5IG5lZWQgdG8gZml4IHRoYXQgdmlydGlvIG1lc3MgYW5kIG5vdCBwaWxl
+Cj4gaGFja3Mgb24gdG9wIG9mIGhhY2tzLgoKCkkgYWdyZWUsIHRoZSBvbmx5IHJlYXNvbiBmb3Ig
+SU9NTVVfUExBVEZPUk0gaXMgdG8gbWFrZSBzdXJlIGd1ZXN0IHdvcmtzIApmb3Igc29tZSBvbGQg
+YW5kIGJ1Z2d5IHFlbXUgd2hlbiB2SU9NTVUgaXMgZW5hYmxlZCB3aGljaCBzZWVtcyB1c2VsZXNz
+IAoobm90ZSB3ZSBkb24ndCBldmVuIHN1cHBvcnQgdklPTU1VIG1pZ3JhdGlvbiBpbiB0aGF0IGNh
+c2UpLgoKVGhhbmtzCgpfX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19f
+X19fXwppb21tdSBtYWlsaW5nIGxpc3QKaW9tbXVAbGlzdHMubGludXgtZm91bmRhdGlvbi5vcmcK
+aHR0cHM6Ly9saXN0cy5saW51eGZvdW5kYXRpb24ub3JnL21haWxtYW4vbGlzdGluZm8vaW9tbXU=
