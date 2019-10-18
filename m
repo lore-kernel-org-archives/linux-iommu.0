@@ -7,49 +7,48 @@ X-Spam-Status: No, score=-7.0 required=3.0 tests=DKIM_INVALID,DKIM_SIGNED,
 	MAILING_LIST_MULTI,MENTIONS_GIT_HOSTING,SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED,
 	USER_AGENT_SANE_1 autolearn=ham autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id ECF3BCA9EA0
-	for <iommu@archiver.kernel.org>; Fri, 18 Oct 2019 06:31:31 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 9A656CA9EA1
+	for <iommu@archiver.kernel.org>; Fri, 18 Oct 2019 07:00:42 +0000 (UTC)
 Received: from mail.linuxfoundation.org (mail.linuxfoundation.org [140.211.169.12])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by mail.kernel.org (Postfix) with ESMTPS id E3D27222BD
-	for <iommu@archiver.kernel.org>; Fri, 18 Oct 2019 06:31:30 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTPS id 6215621925
+	for <iommu@archiver.kernel.org>; Fri, 18 Oct 2019 07:00:42 +0000 (UTC)
 Authentication-Results: mail.kernel.org;
-	dkim=fail reason="signature verification failed" (1024-bit key) header.d=web.de header.i=@web.de header.b="Lb5Q+5tr"
-DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org E3D27222BD
+	dkim=fail reason="signature verification failed" (1024-bit key) header.d=web.de header.i=@web.de header.b="KF9PRB4b"
+DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 6215621925
 Authentication-Results: mail.kernel.org; dmarc=none (p=none dis=none) header.from=web.de
 Authentication-Results: mail.kernel.org; spf=pass smtp.mailfrom=iommu-bounces@lists.linux-foundation.org
 Received: from mail.linux-foundation.org (localhost [127.0.0.1])
-	by mail.linuxfoundation.org (Postfix) with ESMTP id D8442BBC;
-	Fri, 18 Oct 2019 06:31:29 +0000 (UTC)
+	by mail.linuxfoundation.org (Postfix) with ESMTP id 029FED80;
+	Fri, 18 Oct 2019 07:00:42 +0000 (UTC)
 Received: from smtp1.linuxfoundation.org (smtp1.linux-foundation.org
 	[172.17.192.35])
-	by mail.linuxfoundation.org (Postfix) with ESMTPS id 13F9D255
+	by mail.linuxfoundation.org (Postfix) with ESMTPS id E2B9CD7F
 	for <iommu@lists.linux-foundation.org>;
-	Fri, 18 Oct 2019 06:31:28 +0000 (UTC)
+	Fri, 18 Oct 2019 07:00:39 +0000 (UTC)
 X-Greylist: domain auto-whitelisted by SQLgrey-1.7.6
 Received: from mout.web.de (mout.web.de [212.227.15.14])
-	by smtp1.linuxfoundation.org (Postfix) with ESMTPS id 74EF57DB
+	by smtp1.linuxfoundation.org (Postfix) with ESMTPS id 0FF2B7DB
 	for <iommu@lists.linux-foundation.org>;
-	Fri, 18 Oct 2019 06:31:24 +0000 (UTC)
+	Fri, 18 Oct 2019 07:00:38 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=web.de;
-	s=dbaedf251592; t=1571380252;
-	bh=p8mhWn/YrYMqYy6+4X9EL8V29BdU0woCBpW40cTEzHc=;
+	s=dbaedf251592; t=1571382016;
+	bh=3BZbPmFPPAO7+0U6MgcVQbBO3tWHd1O9cxxtmg54BBM=;
 	h=X-UI-Sender-Class:To:From:Subject:Cc:Date;
-	b=Lb5Q+5trUEQiuWSsc/FD3D9sXuiFEeEb78TkYvj3JWHEy5pAFFjgIHKZcIqVXM0wk
-	EcpqmD5neoB+BG5TOb3P/aGhP0/v5VpeyYyRl7TtV41LCFGQJdamMrvd3+/+svjq5/
-	t8zorEpweN5dJac+qFY5vBk2AAhHVgphNpJAutEM=
+	b=KF9PRB4bh6OhSMGUuVBTTVSbfH6+Xqh7zqVULVdmSSkL7dXoGdWOr9KZA1KKvd7qZ
+	q+pYLPLvJij1xf/k8ZVSY/GMO7Nxtj9x8cn5HZCqYpSK04sgxPj0Gbi5bYkYVRHQXJ
+	OzJlIu5KVhXAOfARVnKz2fQeibIkEK6kRT052krA=
 X-UI-Sender-Class: c548c8c5-30a9-4db5-a2e7-cb6cb037b8f9
-Received: from [192.168.1.2] ([78.48.164.145]) by smtp.web.de (mrweb002
-	[213.165.67.108]) with ESMTPSA (Nemesis) id 0MFtOY-1iIcEU19XS-00Ev3n;
-	Fri, 18 Oct 2019 08:30:52 +0200
+Received: from [192.168.1.2] ([78.48.164.145]) by smtp.web.de (mrweb004
+	[213.165.67.108]) with ESMTPSA (Nemesis) id 0MODW0-1iQsYm1RmG-005Xd9;
+	Fri, 18 Oct 2019 09:00:16 +0200
 To: iommu@lists.linux-foundation.org, linux-arm-kernel@lists.infradead.org,
-	linux-samsung-soc@vger.kernel.org, =?UTF-8?B?SsO2cmcgUsO2ZGVs?=
-	<joro@8bytes.org>, Krzysztof Kozlowski <krzk@kernel.org>,
-	Kukjin Kim <kgene@kernel.org>, Marek Szyprowski <m.szyprowski@samsung.com>
+	linux-rockchip@lists.infradead.org, =?UTF-8?Q?Heiko_St=c3=bcbner?=
+	<heiko@sntech.de>, =?UTF-8?B?SsO2cmcgUsO2ZGVs?= <joro@8bytes.org>
 From: Markus Elfring <Markus.Elfring@web.de>
-Subject: iommu/exynos: Checking a device_link_add() call in
-	exynos_iommu_add_device()
+Subject: iommu/rockchip: Checking a device_link_add() call in
+	rk_iommu_add_device()
 Autocrypt: addr=Markus.Elfring@web.de; prefer-encrypt=mutual; keydata=
 	mQINBFg2+xABEADBJW2hoUoFXVFWTeKbqqif8VjszdMkriilx90WB5c0ddWQX14h6w5bT/A8
 	+v43YoGpDNyhgA0w9CEhuwfZrE91GocMtjLO67TAc2i2nxMc/FJRDI0OemO4VJ9RwID6ltwt
@@ -94,35 +93,35 @@ Autocrypt: addr=Markus.Elfring@web.de; prefer-encrypt=mutual; keydata=
 	x0n1QFc1xxJhbzN+r9djSGGN/5IBDfUqSANC8cWzHpWaHmSuU3JSAMB/N+yQjIad2ztTckZY
 	pwT6oxng29LzZspTYUEzMz3wK2jQHw+U66qBFk8whA7B2uAU1QdGyPgahLYSOa4XAEGb6wbI
 	FEE=
-Message-ID: <dfb07352-877b-0ed2-ea1b-5a4885cd740b@web.de>
-Date: Fri, 18 Oct 2019 08:30:42 +0200
+Message-ID: <c4a1fdd2-4383-dd0f-1d4b-f27ab62b383e@web.de>
+Date: Fri, 18 Oct 2019 09:00:14 +0200
 User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101
 	Thunderbird/68.1.2
 MIME-Version: 1.0
 Content-Language: en-US
-X-Provags-ID: V03:K1:Kz6Sq8uCDyYL9Ez0E32lMUJbvmecMdngPvik0NC9fOSKpwaCu/Z
-	GHf7SqhybjsaEj4DjUJFvmknmkm6W7gVZB02ooERL9yygzF8OGdThEnp/Tfda20nwV0Kq5m
-	4T/2U4ZTr8anhB+aj/oENyYdMcgEiW0AjOkE5k/igAWfO3w8P7mmUtW69U6LazhByxsh8NF
-	IDYpGue7A/AIaWdOop6ww==
-X-UI-Out-Filterresults: notjunk:1;V03:K0:/3R1qhRFeWU=:lHE+wQICeMtc/QR2/JeDzr
-	wJ8B0ISWyhsJrhy0bPfPrZ1+HCThx66JP5iXaqEl1IdF2VdvzMWIzYQBMGDwmVEFt1cVtd3Fh
-	S8YMOyIHMA+VyjPAbCxK8vPPQjcmbK6pNW243Ga9N1wq96Bph71bzJZd7J4p/Z5CFXK+TfOs6
-	V5cLO5pcp0Nortn3FyJGWrBSglMsVcoo6SiVcM/mXU1PnLA4i1X/9ynCdw+QDnXx/bYZxafYK
-	5UjfyUsqtAfETx6M9j+x1TRoRwhPf5vtBdCCFajDwwc3X89zwl8LWDYKELVKQDZg7SyUy9eH2
-	7kN1z69z1Qyxb9y54Wt2wW2G0PfAYjl/9zLqnNpQtReDIKvcertk13Ehv5gvgynNh2i9yvl3X
-	kl9u966zgb9hP1M8QlQM8nT0dGVKPQIpkzhhcId10fJv2vdTdRKIxAeIKB8dGBTN7guaTtJi3
-	fM0Yz3Rj9VFw2GxJ/Z4yopb4++ayk7S83sAEJDCvNQy/luSKP86lgrwWAkG2NP5uMjm1qYbV0
-	pbh72TJhxj06ab+sxBf7hd4VxgFwg0AmgUf4OmbZV5Rw3Fg3smYHEtK9qsMFJIspWOJPbaKyH
-	Hz817z3pW8zCogar/N+P+7/iwZ3t998byiJdkhR+UfyYYsf3xyMw5hukqMjW2JShzKo8I0Abj
-	oU16da5E1e3yKhn97HLdwfYAUN8C4dbtHsWAOyounOSij6ajZKqN1TgjAAcxwK153BbyLA94C
-	VkSZKitvfnymbcgWuXoXj6ukf8S7id7CoMoO0fDW8aAqckttEQ/FcbXXl2WTrDD2crr2PJ0jQ
-	s8GH5fQM1c2mleTkJdc055US7X0taZ1RSZdCwfild9iohfouwCaVzcf3Xb5IE2qmrxNf2OJZE
-	jfjOvRTvud6xtY50800RngNfQhBDwJtgvyGNlvbqscZ5TUpottmeyu5dUY2UbA1qFCh/6M/pi
-	EqETrzXxGga9ZJax6aGbOcFKg1Bvz/xpVuw81cKvAwy11aCW/3y9HHYqBK4RWfMACSXZhRo+k
-	vDnVGs5oyw2Pub3RsG498qpK6gOiM+zRx6kWgAZIh3WWq9f8k3r7ZwlCbaRpHE2LTOOzQpTVR
-	nQkBvmGXBWZgqBouBbhD3djNv8A5ZB28l9t6iP1w/2MP6rPy4aQJ0f7Met9hUzSybGGQPuZNJ
-	s9vOieRWSsH1xrY4ArIYRbENyRR1z+BhxLLHhEJBfibYt7SLPJCD9mA4YwgLrWTpx/Z0nxIae
-	Te10wqPTNMAWVq1UOCjMwlkcShmhumWhujAEgRavTQJ7PVEZc+qv7tZhEvkw=
+X-Provags-ID: V03:K1:arHMSO7J7Lbq059QWI4APZnKfleWL2ALjonNGJQWyv0XlvhcHFc
+	/wt6BcAF87ZKe+PY5KJhaqIyTCp5zWwqP4wNfPgeDGYwZcPWcDeaOi5OnRmqGjaN3nxVnod
+	AG8WTaSiFFUmMvvZbkNKGWJlRvd7DZ+pSkyqyxJqIpZWXi4Luv35Uf9BECan/G7+eka2RiN
+	RFhpEmGKfod4TxXorqUmQ==
+X-UI-Out-Filterresults: notjunk:1;V03:K0:v7PSuKQXx3Q=:yHmW7GyqR7nk7NlD6LQee3
+	OfezZASVPw1AczXasYQKYOhVgq8qFnO7j83I/qnrINkSvN0zdciaoHUadm1Aqc29NNx4ySByk
+	Abo4qq8bgggofnaZer1hb6nXytqYK8fK8ThXDMmQXa3OeMyGzwVYs59wmvwrwlKYRBsSJGuc3
+	Y1jQOp9OWwDMy5jsqQyhsfaebyladS/tl+665sS63XN6GYkwmq1ZC8DfBT5Jy0T6EOlcLw5nr
+	pZm6mxcPDMTmEFCyf6wzX8vC+L3ZFl6kQe4IU9CccKLZS4GCh5dBC03bFjIUdTeXJp5IUHmoM
+	JX5emqO9i0PX3aEz42ggkTZGBx14W7jCNWB2TYdDk0QYU2pFN5ewpjAUDEAPV8N2w2ffNA4fN
+	OuNthHiZCPp78nbklesi/ygf3U1/I+gDp01+miTWRqnjt+loz9uWv4gz1q1VH30KZlwe99sOz
+	NxBv6CnEjDr1clLLwL3sylewyBzJr840Wwc/1nP+ubtdimaXe6WVvWxvSnEOOX98WT4cCnb+p
+	shB6mXRioRVeOgnq8KGqvmGYE7hro+yWrAKUESlHBHWKjpIjcdvNNMk0RcIpslVTBeI+RaRoQ
+	iQuchPOfUIjxofkMyPlfr0KxBNcEFmjJnKdcJ4V2yDOUUaMnPn3TmBH3IBBBj499AcdO3jvze
+	PYLWyTETCj/Mu2lW+lEVL+K21fAMbCOZI0O5puTZYu+R9pi/WRwMoH5ES43C41Hjl61+gu8ER
+	mtL68GtBCDIgS4PReRzw+uLUKX5Nzj0OAt+I71MsxnNC5aR9XEUAUIKjXenipEBMVb9BEshSV
+	yQtkrlVwkXurjt3EtzdnIUmct8xms1wsJvj9uHOzNQqSGTXkvKhXO7PV5i9M4o6u8JsayGXtn
+	eNT43boz5iMWQVOqhyxBCFf6neOVnRW91XUbSnnM/qQbBUnQMoT6PNE7U4LVE8RU8iMzz0OeG
+	Q++07KYZzsIdVr4f/U4Cd0zOkL1iqdHpbU86/oAjtXmFsj9VtHysQ9gSiEFmzb324NVQQp/8D
+	4fn2QDYgCVSWip4NRTdAWWMNvUsh352Kvv4AiyjvVzdJ82VDWv174Tniu+/mAYAz+lUWz2Q2h
+	LYxyD9o4XukNDGRN51fjYaxe+xS4XGzFBI218w6p5tznJ6Yel0ixLAnAYebta5INmOGidzj3x
+	fwnItSCzedNRDwnjIbb/0X7XHcjmg77ARJpj6xiq5G4eI/8QLRZkarfJLbi5afxWFFtpEi49o
+	zyjB4Jv8wHqI2RL/RNjT9bbN1SNM/enlJv5pwgI4KjGd/ETOptz+uvbClw+g=
 Cc: "Rafael J. Wysocki" <rafael@kernel.org>, kernel-janitors@vger.kernel.org,
 	Stephen McCamant <smccaman@umn.edu>, Kangjie Lu <kjlu@umn.edu>,
 	LKML <linux-kernel@vger.kernel.org>, Navid Emamdoost <emamd001@umn.edu>,
@@ -146,17 +145,15 @@ Errors-To: iommu-bounces@lists.linux-foundation.org
 
 SGVsbG8sCgpJIHRyaWVkIGFub3RoZXIgc2NyaXB0IGZvciB0aGUgc2VtYW50aWMgcGF0Y2ggbGFu
 Z3VhZ2Ugb3V0LgpUaGlzIHNvdXJjZSBjb2RlIGFuYWx5c2lzIGFwcHJvYWNoIHBvaW50cyBvdXQg
-dGhhdCB0aGUgaW1wbGVtZW50YXRpb24Kb2YgdGhlIGZ1bmN0aW9uIOKAnGV4eW5vc19pb21tdV9h
-ZGRfZGV2aWNl4oCdIGNvbnRhaW5zIHN0aWxsCmFuIHVuY2hlY2tlZCBjYWxsIG9mIHRoZSBmdW5j
-dGlvbiDigJxkZXZpY2VfbGlua19hZGTigJ0uCmh0dHBzOi8vZ2l0Lmtlcm5lbC5vcmcvcHViL3Nj
-bS9saW51eC9rZXJuZWwvZ2l0L3RvcnZhbGRzL2xpbnV4LmdpdC90cmVlL2RyaXZlcnMvaW9tbXUv
-ZXh5bm9zLWlvbW11LmM/aWQ9MGUyYWRhYjZjZjI4NWM0MWU4MjViNmM3NGEzYWE2MTMyNGQxMTMy
-YyNuMTI1MwpodHRwczovL2VsaXhpci5ib290bGluLmNvbS9saW51eC92NS40LXJjMi9zb3VyY2Uv
-ZHJpdmVycy9pb21tdS9leHlub3MtaW9tbXUuYyNMMTI1MwoKSG93IGRvIHlvdSB0aGluayBhYm91
-dCB0byBpbXByb3ZlIGl0PwoKKiBXaGljaCBlcnJvciBjb2RlIHdvdWxkIHlvdSBsaWtlIHRvIHJl
-dHVybiBmb3IgYSBmYWlsZWQKICBkZXZpY2UgbGluayBhZGRpdGlvbiBhdCB0aGlzIHBsYWNlPwoK
-KiBXaWxsIGl0IGJlIG5lZWRlZCB0byBkZWxldGUgYW55IGxpbmtzIGFzIGV4Y2VwdGlvbiBoYW5k
-bGluZz8KClJlZ2FyZHMsCk1hcmt1cwpfX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19f
-X19fX19fX19fX19fXwppb21tdSBtYWlsaW5nIGxpc3QKaW9tbXVAbGlzdHMubGludXgtZm91bmRh
-dGlvbi5vcmcKaHR0cHM6Ly9saXN0cy5saW51eGZvdW5kYXRpb24ub3JnL21haWxtYW4vbGlzdGlu
-Zm8vaW9tbXU=
+dGhhdCB0aGUgaW1wbGVtZW50YXRpb24Kb2YgdGhlIGZ1bmN0aW9uIOKAnHJrX2lvbW11X2FkZF9k
+ZXZpY2XigJ0gY29udGFpbnMgc3RpbGwKYW4gdW5jaGVja2VkIGNhbGwgb2YgdGhlIGZ1bmN0aW9u
+IOKAnGRldmljZV9saW5rX2FkZOKAnS4KaHR0cHM6Ly9naXQua2VybmVsLm9yZy9wdWIvc2NtL2xp
+bnV4L2tlcm5lbC9naXQvbmV4dC9saW51eC1uZXh0LmdpdC90cmVlL2RyaXZlcnMvaW9tbXUvcm9j
+a2NoaXAtaW9tbXUuYz9pZD0zZWY4NDVkYTNjM2IxODBkZGQzODZlMjI4YWMzMjI4ZDg0YTUyMmQz
+I24xMDc1Cmh0dHBzOi8vZWxpeGlyLmJvb3RsaW4uY29tL2xpbnV4L3Y1LjQtcmMyL3NvdXJjZS9k
+cml2ZXJzL2lvbW11L3JvY2tjaGlwLWlvbW11LmMjTDEwNzEKCkhvdyBkbyB5b3UgdGhpbmsgYWJv
+dXQgdG8gaW1wcm92ZSBpdD8KCldoaWNoIGVycm9yIGNvZGUgd291bGQgeW91IGxpa2UgdG8gcmV0
+dXJuIGZvciBhIGZhaWxlZApkZXZpY2UgbGluayBhZGRpdGlvbiBhdCB0aGlzIHBsYWNlPwoKUmVn
+YXJkcywKTWFya3VzCl9fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19f
+X19fCmlvbW11IG1haWxpbmcgbGlzdAppb21tdUBsaXN0cy5saW51eC1mb3VuZGF0aW9uLm9yZwpo
+dHRwczovL2xpc3RzLmxpbnV4Zm91bmRhdGlvbi5vcmcvbWFpbG1hbi9saXN0aW5mby9pb21tdQ==
