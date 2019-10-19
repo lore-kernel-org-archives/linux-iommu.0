@@ -1,79 +1,82 @@
-Return-Path: <SRS0=1rIG=YL=lists.linux-foundation.org=iommu-bounces@kernel.org>
+Return-Path: <SRS0=Xbod=YM=lists.linux-foundation.org=iommu-bounces@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-8.6 required=3.0 tests=DKIM_INVALID,DKIM_SIGNED,
-	HEADER_FROM_DIFFERENT_DOMAINS,MAILING_LIST_MULTI,MENTIONS_GIT_HOSTING,
-	SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED,USER_AGENT_GIT autolearn=ham
-	autolearn_force=no version=3.4.0
+X-Spam-Status: No, score=-6.5 required=3.0 tests=DKIM_ADSP_CUSTOM_MED,
+	DKIM_INVALID,DKIM_SIGNED,FREEMAIL_FORGED_FROMDOMAIN,FREEMAIL_FROM,
+	HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_PATCH,MAILING_LIST_MULTI,SIGNED_OFF_BY,
+	SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED autolearn=ham autolearn_force=no
+	version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id E15FACA9EA9
-	for <iommu@archiver.kernel.org>; Fri, 18 Oct 2019 23:32:24 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id A2C35CA9EAD
+	for <iommu@archiver.kernel.org>; Sat, 19 Oct 2019 05:38:02 +0000 (UTC)
 Received: from mail.linuxfoundation.org (mail.linuxfoundation.org [140.211.169.12])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by mail.kernel.org (Postfix) with ESMTPS id 91B70222C2
-	for <iommu@archiver.kernel.org>; Fri, 18 Oct 2019 23:32:24 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTPS id 9BAE3222C5
+	for <iommu@archiver.kernel.org>; Sat, 19 Oct 2019 05:38:01 +0000 (UTC)
 Authentication-Results: mail.kernel.org;
-	dkim=fail reason="signature verification failed" (2048-bit key) header.d=nvidia.com header.i=@nvidia.com header.b="Tt5NqQ0P"
-DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 91B70222C2
-Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=nvidia.com
+	dkim=fail reason="signature verification failed" (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="I2ArurjZ"
+DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 9BAE3222C5
+Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=gmail.com
 Authentication-Results: mail.kernel.org; spf=pass smtp.mailfrom=iommu-bounces@lists.linux-foundation.org
 Received: from mail.linux-foundation.org (localhost [127.0.0.1])
-	by mail.linuxfoundation.org (Postfix) with ESMTP id 15CE0DDE;
-	Fri, 18 Oct 2019 23:31:30 +0000 (UTC)
+	by mail.linuxfoundation.org (Postfix) with ESMTP id 3E3CFAF0;
+	Sat, 19 Oct 2019 05:38:01 +0000 (UTC)
 Received: from smtp1.linuxfoundation.org (smtp1.linux-foundation.org
 	[172.17.192.35])
-	by mail.linuxfoundation.org (Postfix) with ESMTPS id 0A48CDB5
+	by mail.linuxfoundation.org (Postfix) with ESMTPS id 38B702F
 	for <iommu@lists.linux-foundation.org>;
-	Fri, 18 Oct 2019 23:31:27 +0000 (UTC)
-X-Greylist: domain auto-whitelisted by SQLgrey-1.7.6
-Received: from hqemgate16.nvidia.com (hqemgate16.nvidia.com [216.228.121.65])
-	by smtp1.linuxfoundation.org (Postfix) with ESMTPS id 91F18821
+	Sat, 19 Oct 2019 05:38:00 +0000 (UTC)
+X-Greylist: whitelisted by SQLgrey-1.7.6
+Received: from mail-ot1-f66.google.com (mail-ot1-f66.google.com
+	[209.85.210.66])
+	by smtp1.linuxfoundation.org (Postfix) with ESMTPS id 708B9608
 	for <iommu@lists.linux-foundation.org>;
-	Fri, 18 Oct 2019 23:31:23 +0000 (UTC)
-Received: from hqpgpgate101.nvidia.com (Not Verified[216.228.121.13]) by
-	hqemgate16.nvidia.com (using TLS: TLSv1.2, DES-CBC3-SHA)
-	id <B5daa4b4e0000>; Fri, 18 Oct 2019 16:31:26 -0700
-Received: from hqmail.nvidia.com ([172.20.161.6])
-	by hqpgpgate101.nvidia.com (PGP Universal service);
-	Fri, 18 Oct 2019 16:31:23 -0700
-X-PGP-Universal: processed;
-	by hqpgpgate101.nvidia.com on Fri, 18 Oct 2019 16:31:23 -0700
-Received: from HQMAIL109.nvidia.com (172.20.187.15) by HQMAIL105.nvidia.com
-	(172.20.187.12) with Microsoft SMTP Server (TLS) id 15.0.1473.3;
-	Fri, 18 Oct 2019 23:31:22 +0000
-Received: from hqnvemgw03.nvidia.com (10.124.88.68) by HQMAIL109.nvidia.com
-	(172.20.187.15) with Microsoft SMTP Server (TLS) id 15.0.1473.3 via
-	Frontend Transport; Fri, 18 Oct 2019 23:31:22 +0000
-Received: from vdumpa-ubuntu.nvidia.com (Not Verified[172.17.173.140]) by
-	hqnvemgw03.nvidia.com with Trustwave SEG (v7, 5, 8, 10121)
-	id <B5daa4b4a0001>; Fri, 18 Oct 2019 16:31:22 -0700
-From: Krishna Reddy <vdumpa@nvidia.com>
-To: 
-Subject: [PATCH v3 0/7] Nvidia Arm SMMUv2 Implementation
-Date: Fri, 18 Oct 2019 16:31:25 -0700
-Message-ID: <1571441492-21919-1-git-send-email-vdumpa@nvidia.com>
-X-Mailer: git-send-email 2.7.4
-X-NVConfidentiality: public
+	Sat, 19 Oct 2019 05:37:59 +0000 (UTC)
+Received: by mail-ot1-f66.google.com with SMTP id g13so6765678otp.8
+	for <iommu@lists.linux-foundation.org>;
+	Fri, 18 Oct 2019 22:37:59 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=gmail.com; s=20161025;
+	h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+	:cc; bh=dZD1rhZmQDM/H+GbTbYnSSIXxS9iO4DRfvqaZaVLmHA=;
+	b=I2ArurjZWxXb7+XpLicdsV0rlFMZFv7gBdh8euQxI0hZMDcpnlpIoJZu5ltMe9sWnb
+	DMG+2YBnDafJ9umzHpMqXhkhj8pHS4XAOZ0TDHp/p4y+cMp1hx3IHzeWCuB39zcqgjfj
+	msjJ1LArDkb6x6lsD8lb1dJ5GD204iI8auQKUnK539L4cpwBf/8UM1kNERPkdY+d/W66
+	P3H41YvHbbcfSy2/P+MzhkN72fgSNkI1nzurPybrCZqAzztSOhcEaDbR09FqlasCoovs
+	kXvovL0pU9ESneKb2ZJioZPYRBxw23HwTU2ZRSGD1TRQR7AgDrGP6LcPUVNL0U7swV7S
+	YbaQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+	d=1e100.net; s=20161025;
+	h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+	:message-id:subject:to:cc;
+	bh=dZD1rhZmQDM/H+GbTbYnSSIXxS9iO4DRfvqaZaVLmHA=;
+	b=C1FzGyi2mMEnVP9h3UhyFQp9qoe7Nk8SiH3kVCNU8C6yZvy5y0XVjcp9tHWtHxZa1/
+	Y7UHIA9SLwJplp9u2yWmz0K5ivDsdk7e/jUNMoGh7bCnAGXBLj1g1+FgYAo0zkAfeINc
+	Gxcb6TaL0RiLfPH3dQWaNR8wd9xwQNh8A7JI7mEd3XUhr6H7uKqQP59sWme2LbRqLHJf
+	XmqR7TtCumplg1mokvqigUIeJu9AlT/VRHSyke3XHyMhA6TR0YuRLTRpt0dhkJyyaJ6N
+	lUoaVTE5uJj3R9YzHMTyuDGP4bE9MkEhYELupCGFJFNVs5Aadk9dWR8SJ0yIiFW4bn+N
+	11+A==
+X-Gm-Message-State: APjAAAUudUEDOkPXpns6W2xlRIqE5qutYW88WnqnyrVGKtbMkPAE04J2
+	iwYibUxG6OTGQSWk+fbT6DykSnY3oeJHw2dpExI=
+X-Google-Smtp-Source: APXvYqxWRplW90eHZs/5G1y76NalbYYyDOet1jwKXgcM26aLqw7XHltBJMnUYIgx0qdZyyIcHCdpk3LqAa+mZJoGEFY=
+X-Received: by 2002:a9d:6e1a:: with SMTP id e26mr10354403otr.307.1571463478507;
+	Fri, 18 Oct 2019 22:37:58 -0700 (PDT)
 MIME-Version: 1.0
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=nvidia.com; s=n1;
-	t=1571441486; bh=5lCaK07q5Qhhlvw2Q+TW1iXiKMXxlWDodMf5qY32+XE=;
-	h=X-PGP-Universal:From:To:CC:Subject:Date:Message-ID:X-Mailer:
-	X-NVConfidentiality:MIME-Version:Content-Type;
-	b=Tt5NqQ0PjovUOfeE+3HNxxjh4aQjoRK/ak3CYE+nAxX3lP6t4M0gNaHshVpWdP7SK
-	VmegAmBb2WvCphuc0kb8oiYqUsMPg+oIXWthLfHGPGHU3PCixsmQUvbAkGExvUW1xd
-	dPspNxgBLJ2hASxVmfbg8A2K+FZ5cEt7EiQLEEXpT4K3bFfHRcnBTkohOjU/ef0App
-	jaG7J32FdBhxaj5z6te4roa9ZSF6J09KXAfAQKwG9qywpiBtskwbfkULvBHHScS9sa
-	PYAiZ11iZ9KP8Y8AD/57U7U/vaEF1Qgzx2TOLAXI4gpNwo5zYye1Wklh+RVHVsvrkY
-	7+GoPoL0OkT3w==
-Cc: snikam@nvidia.com, thomasz@nvidia.com, jtukkinen@nvidia.com,
-	mperttunen@nvidia.com, will@kernel.org,
-	linux-kernel@vger.kernel.org, praithatha@nvidia.com,
-	talho@nvidia.com, iommu@lists.linux-foundation.org,
-	nicolinc@nvidia.com, linux-tegra@vger.kernel.org,
-	yhsu@nvidia.com, treding@nvidia.com, robin.murphy@arm.com,
-	avanbrunt@nvidia.com, linux-arm-kernel@lists.infradead.org
+References: <20191012122918.8066-1-mayhs11saini@gmail.com>
+	<95842b81-c751-abed-dd3f-258b9fd70393@arm.com>
+In-Reply-To: <95842b81-c751-abed-dd3f-258b9fd70393@arm.com>
+From: Shyam Saini <mayhs11saini@gmail.com>
+Date: Sat, 19 Oct 2019 11:07:47 +0530
+Message-ID: <CAOfkYf7iEe8A0gFB6XG2RDfkHxQtdM_CUZFnsZADedsyMAm8+A@mail.gmail.com>
+Subject: Re: [PATCH] kernel: dma: Make CMA boot parameters __ro_after_init
+To: Robin Murphy <robin.murphy@arm.com>
+Cc: Kees Cook <keescook@chromium.org>,
+	Kernel Hardening <kernel-hardening@lists.openwall.com>,
+	linux-kernel <linux-kernel@vger.kernel.org>,
+	Matthew Wilcox <willy@infradead.org>,
+	linux-mm <linux-mm@kvack.org>, iommu@lists.linux-foundation.org,
+	Christopher Lameter <cl@linux.com>, Christoph Hellwig <hch@lst.de>
 X-BeenThere: iommu@lists.linux-foundation.org
 X-Mailman-Version: 2.1.12
 Precedence: list
@@ -91,37 +94,57 @@ Content-Transfer-Encoding: 7bit
 Sender: iommu-bounces@lists.linux-foundation.org
 Errors-To: iommu-bounces@lists.linux-foundation.org
 
-Changes in v3:
-Rebased on top of https://git.kernel.org/pub/scm/linux/kernel/git/joro/iommu.git/ next.
-Resolved compile error seen with tegra194.dtsi changes after rebase.
+Hi Robin,
 
-v2 - https://lkml.org/lkml/2019/9/2/980
-v1 - https://lkml.org/lkml/2019/8/29/1588
+Sorry for the late reply.
 
-Krishna Reddy (7):
-  iommu/arm-smmu: prepare arm_smmu_flush_ops for override
-  iommu/arm-smmu: add NVIDIA implementation for dual ARM MMU-500 usage
-  dt-bindings: arm-smmu: Add binding for Tegra194 SMMU
-  iommu/arm-smmu: Add global/context fault implementation hooks
-  arm64: tegra: Add Memory controller DT node on T194
-  arm64: tegra: Add DT node for T194 SMMU
-  arm64: tegra: enable SMMU for SDHCI and EQOS on T194
 
- .../devicetree/bindings/iommu/arm,smmu.txt         |   4 +
- MAINTAINERS                                        |   2 +
- arch/arm64/boot/dts/nvidia/tegra194-p2888.dtsi     |   4 +
- arch/arm64/boot/dts/nvidia/tegra194.dtsi           |  88 +++++++
- drivers/iommu/Makefile                             |   2 +-
- drivers/iommu/arm-smmu-impl.c                      |   3 +
- drivers/iommu/arm-smmu-nvidia.c                    | 287 +++++++++++++++++++++
- drivers/iommu/arm-smmu.c                           |  27 +-
- drivers/iommu/arm-smmu.h                           |   8 +-
- 9 files changed, 413 insertions(+), 12 deletions(-)
- create mode 100644 drivers/iommu/arm-smmu-nvidia.c
+> This parameters are not changed after early boot.
+> > By making them __ro_after_init will reduce any attack surface in the
+> > kernel.
+>
+> At a glance, it looks like these are only referenced by a couple of
+> __init functions, so couldn't they just be __initdata/__initconst?
 
--- 
-2.7.4
+yes, You are right it is only used by __init calls and not used anywhere else.
 
+I will resend the updated version.
+
+Thanks a lot for the feedback.
+
+
+> > Link: https://lwn.net/Articles/676145/
+> > Cc: Christoph Hellwig <hch@lst.de>
+> > Cc: Marek Szyprowski <m.szyprowski@samsung.com>
+> > Cc: Robin Murphy <robin.murphy@arm.com>
+> > Cc: Matthew Wilcox <willy@infradead.org>
+> > Cc: Christopher Lameter <cl@linux.com>
+> > Cc: Kees Cook <keescook@chromium.org>
+> > Signed-off-by: Shyam Saini <mayhs11saini@gmail.com>
+> > ---
+> >   kernel/dma/contiguous.c | 8 ++++----
+> >   1 file changed, 4 insertions(+), 4 deletions(-)
+> >
+> > diff --git a/kernel/dma/contiguous.c b/kernel/dma/contiguous.c
+> > index 69cfb4345388..1b689b1303cd 100644
+> > --- a/kernel/dma/contiguous.c
+> > +++ b/kernel/dma/contiguous.c
+> > @@ -42,10 +42,10 @@ struct cma *dma_contiguous_default_area;
+> >    * Users, who want to set the size of global CMA area for their system
+> >    * should use cma= kernel parameter.
+> >    */
+> > -static const phys_addr_t size_bytes = (phys_addr_t)CMA_SIZE_MBYTES * SZ_1M;
+> > -static phys_addr_t size_cmdline = -1;
+> > -static phys_addr_t base_cmdline;
+> > -static phys_addr_t limit_cmdline;
+> > +static const phys_addr_t __ro_after_init size_bytes = (phys_addr_t)CMA_SIZE_MBYTES * SZ_1M;
+> > +static phys_addr_t __ro_after_init size_cmdline = -1;
+> > +static phys_addr_t __ro_after_init base_cmdline;
+> > +static phys_addr_t __ro_after_init limit_cmdline;
+> >
+> >   static int __init early_cma(char *p)
+> >   {
+> >
 _______________________________________________
 iommu mailing list
 iommu@lists.linux-foundation.org
