@@ -2,61 +2,160 @@ Return-Path: <SRS0=F9Hu=YP=lists.linux-foundation.org=iommu-bounces@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-9.8 required=3.0 tests=HEADER_FROM_DIFFERENT_DOMAINS,
-	INCLUDES_PATCH,MAILING_LIST_MULTI,SIGNED_OFF_BY,SPF_HELO_NONE,SPF_PASS,
-	URIBL_BLOCKED,USER_AGENT_GIT autolearn=unavailable autolearn_force=no
-	version=3.4.0
+X-Spam-Status: No, score=-0.6 required=3.0 tests=DKIM_INVALID,DKIM_SIGNED,
+	HEADER_FROM_DIFFERENT_DOMAINS,MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS
+	autolearn=no autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 2DF1ACA9EA0
-	for <iommu@archiver.kernel.org>; Tue, 22 Oct 2019 22:01:35 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id C4FBCCA9EB7
+	for <iommu@archiver.kernel.org>; Tue, 22 Oct 2019 23:48:59 +0000 (UTC)
 Received: from mail.linuxfoundation.org (mail.linuxfoundation.org [140.211.169.12])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by mail.kernel.org (Postfix) with ESMTPS id 07351206C2
-	for <iommu@archiver.kernel.org>; Tue, 22 Oct 2019 22:01:35 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 07351206C2
-Authentication-Results: mail.kernel.org; dmarc=none (p=none dis=none) header.from=deltatee.com
+	by mail.kernel.org (Postfix) with ESMTPS id 892BA2075A
+	for <iommu@archiver.kernel.org>; Tue, 22 Oct 2019 23:48:59 +0000 (UTC)
+Authentication-Results: mail.kernel.org;
+	dkim=fail reason="signature verification failed" (2048-bit key) header.d=nvidia.com header.i=@nvidia.com header.b="JuyFt6ou"
+DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 892BA2075A
+Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=nvidia.com
 Authentication-Results: mail.kernel.org; spf=pass smtp.mailfrom=iommu-bounces@lists.linux-foundation.org
 Received: from mail.linux-foundation.org (localhost [127.0.0.1])
-	by mail.linuxfoundation.org (Postfix) with ESMTP id C9B77CCC;
-	Tue, 22 Oct 2019 22:01:27 +0000 (UTC)
+	by mail.linuxfoundation.org (Postfix) with ESMTP id 17A41AF0;
+	Tue, 22 Oct 2019 23:48:59 +0000 (UTC)
 Received: from smtp1.linuxfoundation.org (smtp1.linux-foundation.org
 	[172.17.192.35])
-	by mail.linuxfoundation.org (Postfix) with ESMTPS id E8F8341C
+	by mail.linuxfoundation.org (Postfix) with ESMTPS id DFC20AD8
 	for <iommu@lists.linux-foundation.org>;
-	Tue, 22 Oct 2019 22:01:26 +0000 (UTC)
+	Tue, 22 Oct 2019 23:48:57 +0000 (UTC)
 X-Greylist: domain auto-whitelisted by SQLgrey-1.7.6
-Received: from ale.deltatee.com (ale.deltatee.com [207.54.116.67])
-	by smtp1.linuxfoundation.org (Postfix) with ESMTPS id 8650D896
+Received: from hqemgate14.nvidia.com (hqemgate14.nvidia.com [216.228.121.143])
+	by smtp1.linuxfoundation.org (Postfix) with ESMTPS id 750B1822
 	for <iommu@lists.linux-foundation.org>;
-	Tue, 22 Oct 2019 22:01:26 +0000 (UTC)
-Received: from cgy1-donard.priv.deltatee.com ([172.16.1.31])
-	by ale.deltatee.com with esmtps
-	(TLS1.2:ECDHE_RSA_AES_256_GCM_SHA384:256) (Exim 4.89)
-	(envelope-from <gunthorp@deltatee.com>)
-	id 1iN2DU-0004Kr-By; Tue, 22 Oct 2019 16:01:26 -0600
-Received: from gunthorp by cgy1-donard.priv.deltatee.com with local (Exim 4.92)
-	(envelope-from <gunthorp@deltatee.com>)
-	id 1iN2DT-0000Iu-9w; Tue, 22 Oct 2019 16:01:23 -0600
-From: Logan Gunthorpe <logang@deltatee.com>
-To: linux-kernel@vger.kernel.org, iommu@lists.linux-foundation.org,
-	Joerg Roedel <joro@8bytes.org>
-Date: Tue, 22 Oct 2019 16:01:21 -0600
-Message-Id: <20191022220121.1120-3-logang@deltatee.com>
-X-Mailer: git-send-email 2.20.1
-In-Reply-To: <20191022220121.1120-1-logang@deltatee.com>
-References: <20191022220121.1120-1-logang@deltatee.com>
+	Tue, 22 Oct 2019 23:48:57 +0000 (UTC)
+Received: from hqpgpgate101.nvidia.com (Not Verified[216.228.121.13]) by
+	hqemgate14.nvidia.com (using TLS: TLSv1.2, DES-CBC3-SHA)
+	id <B5daf956e0000>; Tue, 22 Oct 2019 16:49:02 -0700
+Received: from hqmail.nvidia.com ([172.20.161.6])
+	by hqpgpgate101.nvidia.com (PGP Universal service);
+	Tue, 22 Oct 2019 16:48:56 -0700
+X-PGP-Universal: processed;
+	by hqpgpgate101.nvidia.com on Tue, 22 Oct 2019 16:48:56 -0700
+Received: from HQMAIL107.nvidia.com (172.20.187.13) by HQMAIL111.nvidia.com
+	(172.20.187.18) with Microsoft SMTP Server (TLS) id 15.0.1473.3;
+	Tue, 22 Oct 2019 23:48:56 +0000
+Received: from NAM02-SN1-obe.outbound.protection.outlook.com (104.47.36.57) by
+	HQMAIL107.nvidia.com (172.20.187.13) with Microsoft SMTP Server
+	(TLS) id
+	15.0.1473.3 via Frontend Transport; Tue, 22 Oct 2019 23:48:56 +0000
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+	b=P/i5kEYw48pPVIElu1zgU8gcROQIcLk3LE7zxUtoEtSIhDJ6M3FPOpPUDNiTZqm1Vi9VDDK9F4yv5ugZQMF7hr/BdW0zbLWSiucz/j5mgVB44GR26qjF1SlAySj0WYpjXYyNgZWa+jbjgSmDBz2zVUxvLLwoQLUYcoFLbc4J9zj6goNpbSddNCKnONohQk1eVHyAQWNCHpQ295nn2F0IIb7OPRrk0dhPVCcPj/nbOKWULpWng38rTxnXxXfN540N3PgpJcsGMifbyDq2cdKMksyjEhs2Gz0lfMjn5Pd6JvMW3jzp4m+TUrF/C7NWnmKaMnRvBfIZ0YYsVg3Leg17YQ==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com; 
+	s=arcselector9901;
+	h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+	bh=hh7MXofScYhBwjHA1E2Rr/9tALzMhSRaxjzSxLclQ4s=;
+	b=QfNmE2k3QtO/sJbDMywj5mGgaPSHRpaVPXliRGae2bv72a+FDk1MRHD4mcWSs/0DYPmRqDJRSLcNb3dn1cFmeHthIvQEycEaCAbwgbdj5oyWcmrW0GkNx9G6UwOaiVEvxbB4UCzTqSAVvLDWprR4BtXsgR/rZeZ/T41RfwBjOPT5tN9Yx+TO34H033W32CoBNJSL2QOBVPz+Glj184prMHGKeGRPceGU4iFK+O/Xg6k+io6Ui2zuS2ZQ0UItHMKDwg6t846mV3vQwaCUrI2UojjGa5b/BROy3lEiY1IF2BskQwwwrhJHP1V0P0mMPzdDHjqd4D7qGqb8rqu3q2EHHg==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+	smtp.mailfrom=nvidia.com; dmarc=pass action=none header.from=nvidia.com;
+	dkim=pass header.d=nvidia.com; arc=none
+Received: from BYAPR12MB2710.namprd12.prod.outlook.com (20.177.124.11) by
+	BYAPR12MB2856.namprd12.prod.outlook.com (20.179.93.29) with Microsoft
+	SMTP
+	Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+	15.20.2347.28; Tue, 22 Oct 2019 23:48:55 +0000
+Received: from BYAPR12MB2710.namprd12.prod.outlook.com
+	([fe80::c0fa:c019:dd8e:dd40]) by
+	BYAPR12MB2710.namprd12.prod.outlook.com
+	([fe80::c0fa:c019:dd8e:dd40%6]) with mapi id 15.20.2347.029;
+	Tue, 22 Oct 2019 23:48:55 +0000
+From: Krishna Reddy <vdumpa@nvidia.com>
+To: Robin Murphy <robin.murphy@arm.com>, "will@kernel.org" <will@kernel.org>
+Subject: RE: [PATCH v3 0/7] Nvidia Arm SMMUv2 Implementation
+Thread-Topic: [PATCH v3 0/7] Nvidia Arm SMMUv2 Implementation
+Thread-Index: AQHVhgwr2/1seTuEaUyC0D9/Qf1q8adm9sOAgABg1jA=
+Date: Tue, 22 Oct 2019 23:48:55 +0000
+Message-ID: <BYAPR12MB2710879535971E290E8B25D3B3680@BYAPR12MB2710.namprd12.prod.outlook.com>
+References: <1571441492-21919-1-git-send-email-vdumpa@nvidia.com>
+	<6d9e6425-fa69-9b76-b477-1fe50c459ca5@arm.com>
+In-Reply-To: <6d9e6425-fa69-9b76-b477-1fe50c459ca5@arm.com>
+Accept-Language: en-US
+X-MS-Has-Attach: 
+X-MS-TNEF-Correlator: 
+msip_labels: MSIP_Label_6b558183-044c-4105-8d9c-cea02a2a3d86_Enabled=True;
+	MSIP_Label_6b558183-044c-4105-8d9c-cea02a2a3d86_SiteId=43083d15-7273-40c1-b7db-39efd9ccc17a;
+	MSIP_Label_6b558183-044c-4105-8d9c-cea02a2a3d86_Owner=VDUMPA@nvidia.com;
+	MSIP_Label_6b558183-044c-4105-8d9c-cea02a2a3d86_SetDate=2019-10-22T23:48:52.8304322Z;
+	MSIP_Label_6b558183-044c-4105-8d9c-cea02a2a3d86_Name=Unrestricted;
+	MSIP_Label_6b558183-044c-4105-8d9c-cea02a2a3d86_Application=Microsoft
+	Azure Information Protection;
+	MSIP_Label_6b558183-044c-4105-8d9c-cea02a2a3d86_ActionId=2963f581-b925-41a1-8109-ed18d39e57e8;
+	MSIP_Label_6b558183-044c-4105-8d9c-cea02a2a3d86_Extended_MSFT_Method=Automatic
+authentication-results: spf=none (sender IP is )
+	smtp.mailfrom=vdumpa@nvidia.com; 
+x-originating-ip: [216.228.112.22]
+x-ms-publictraffictype: Email
+x-ms-office365-filtering-correlation-id: 1005c41b-ffcf-4272-7641-08d7574a667a
+x-ms-traffictypediagnostic: BYAPR12MB2856:|BYAPR12MB2856:
+x-ms-exchange-transport-forked: True
+x-microsoft-antispam-prvs: <BYAPR12MB28563C77B9A8FAD795B84917B3680@BYAPR12MB2856.namprd12.prod.outlook.com>
+x-ms-oob-tlc-oobclassifiers: OLM:6430;
+x-forefront-prvs: 01986AE76B
+x-forefront-antispam-report: SFV:NSPM;
+	SFS:(10009020)(4636009)(366004)(376002)(39860400002)(346002)(396003)(136003)(189003)(199004)(76116006)(86362001)(25786009)(6246003)(6436002)(4744005)(229853002)(107886003)(55016002)(52536014)(4326008)(66066001)(64756008)(54906003)(66446008)(66556008)(66946007)(66476007)(33656002)(9686003)(11346002)(476003)(7696005)(8676002)(186003)(6506007)(71200400001)(74316002)(5660300002)(486006)(71190400001)(446003)(305945005)(81166006)(81156014)(102836004)(478600001)(26005)(256004)(8936002)(6116002)(2906002)(2501003)(3846002)(14454004)(316002)(7736002)(76176011)(99286004)(110136005);
+	DIR:OUT; SFP:1101; SCL:1; SRVR:BYAPR12MB2856;
+	H:BYAPR12MB2710.namprd12.prod.outlook.com; FPR:; SPF:None;
+	LANG:en; PTR:InfoNoRecords; MX:1; A:1; 
+received-spf: None (protection.outlook.com: nvidia.com does not designate
+	permitted sender hosts)
+x-ms-exchange-senderadcheck: 1
+x-microsoft-antispam: BCL:0;
+x-microsoft-antispam-message-info: 3f6s9SPPqph/UZ7Lx2+MRvotk/0sckXSYrhNvMobFSAvMFKnzWqzv3Hjl93sqIPhC1k2mLTKgCs06TUzoiqk0bVf216/dYhGWz5BG6mEssHeIbcJ/lTyGHLyjm7x8jm+ABcyMmt7QFRPb1Aw3Jhf3ZYIKVhKvpkqgwXv8rN1EFWdyCxniqH4uD7Rfd8NxV0Ks6bjp6GVXKXedecjAAZOqt8NWAzjb94HExlIrCNMzq5gSBvh6yNAFXXiYiXv2hseNn/I6DA+3SV33zaUieXBdFFrygTHHgKJ6jj3hvcPYOtdzeCGJCQS/GcdG+/BaW586pekfsMPsc7xDQ6sxIbIFDyRU8LsxPrFiKiV64tXTdTCLKYJcksRygp37GzgMmy2A80tKVCCF2uR88KB1VpRK4S6kz2LxO4YUkZ8dvJ7Vrd4ggKmugvjste7BeEEf/ti
 MIME-Version: 1.0
-X-SA-Exim-Connect-IP: 172.16.1.31
-X-SA-Exim-Rcpt-To: linux-kernel@vger.kernel.org,
-	iommu@lists.linux-foundation.org, joro@8bytes.org,
-	kchow@gigaio.com, logang@deltatee.com
-X-SA-Exim-Mail-From: gunthorp@deltatee.com
-Subject: [PATCH v2 2/2] iommu/amd: Support multiple PCI DMA aliases in IRQ
-	Remapping
-X-SA-Exim-Version: 4.2.1 (built Tue, 02 Aug 2016 21:08:31 +0000)
-X-SA-Exim-Scanned: Yes (on ale.deltatee.com)
-Cc: Logan Gunthorpe <logang@deltatee.com>, Kit Chow <kchow@gigaio.com>
+X-MS-Exchange-CrossTenant-Network-Message-Id: 1005c41b-ffcf-4272-7641-08d7574a667a
+X-MS-Exchange-CrossTenant-originalarrivaltime: 22 Oct 2019 23:48:55.3573 (UTC)
+X-MS-Exchange-CrossTenant-fromentityheader: Hosted
+X-MS-Exchange-CrossTenant-id: 43083d15-7273-40c1-b7db-39efd9ccc17a
+X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
+X-MS-Exchange-CrossTenant-userprincipalname: AdK44H9I2DwMtfaoWTLZ6nAKu7UhfyztEEBJYk7aGtI2Ny0uUudihfHiikgkabZEHwwvSohvf6T89t4UIO5m1Q==
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: BYAPR12MB2856
+X-OriginatorOrg: Nvidia.com
+Content-Language: en-US
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=nvidia.com; s=n1;
+	t=1571788142; bh=hh7MXofScYhBwjHA1E2Rr/9tALzMhSRaxjzSxLclQ4s=;
+	h=X-PGP-Universal:ARC-Seal:ARC-Message-Signature:
+	ARC-Authentication-Results:From:To:CC:Subject:Thread-Topic:
+	Thread-Index:Date:Message-ID:References:In-Reply-To:
+	Accept-Language:X-MS-Has-Attach:X-MS-TNEF-Correlator:msip_labels:
+	authentication-results:x-originating-ip:x-ms-publictraffictype:
+	x-ms-office365-filtering-correlation-id:x-ms-traffictypediagnostic:
+	x-ms-exchange-transport-forked:x-microsoft-antispam-prvs:
+	x-ms-oob-tlc-oobclassifiers:x-forefront-prvs:
+	x-forefront-antispam-report:received-spf:
+	x-ms-exchange-senderadcheck:x-microsoft-antispam:
+	x-microsoft-antispam-message-info:MIME-Version:
+	X-MS-Exchange-CrossTenant-Network-Message-Id:
+	X-MS-Exchange-CrossTenant-originalarrivaltime:
+	X-MS-Exchange-CrossTenant-fromentityheader:
+	X-MS-Exchange-CrossTenant-id:X-MS-Exchange-CrossTenant-mailboxtype:
+	X-MS-Exchange-CrossTenant-userprincipalname:
+	X-MS-Exchange-Transport-CrossTenantHeadersStamped:X-OriginatorOrg:
+	Content-Language:Content-Type:Content-Transfer-Encoding;
+	b=JuyFt6ousahItj4lJXzCbpeM1/og4cXzKIGryozbYvks1k2aWV9vxmpPO4RDjixzc
+	TKgKfJ/+q/GxgdMr8Ln9+QBDBzwgSSuwPWh2ZNBsmep3VyMSJwYsvfMWxCPY7TkiPW
+	hHl23rs5jd9hUgAY5q9X1A8bskIr29kAzvCfmgm2RGqHqALu4pAtW0wM5ENwm0pbg0
+	613g2Jbx3WCpWwxjJHHkVhaJcD8O92lsfZuDp5Una/bwyxbjwrE2MWFPrcPVPjCajm
+	COg+YGU/fHcmJ9TtyRD5FGotUwd8+D8rNuiB+UP/l68rjnfQIzpSzPeC/X+AxU6IMi
+	ho6XcFoEqH3Bg==
+Cc: Sachin Nikam <Snikam@nvidia.com>, "thomasz@nvidia.com" <thomasz@nvidia.com>,
+	Juha Tukkinen <jtukkinen@nvidia.com>,
+	Mikko Perttunen <mperttunen@nvidia.com>,
+	"linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
+	Pritesh Raithatha <praithatha@nvidia.com>, Timo Alho <talho@nvidia.com>,
+	"iommu@lists.linux-foundation.org" <iommu@lists.linux-foundation.org>,
+	Nicolin Chen <nicolinc@nvidia.com>,
+	"linux-tegra@vger.kernel.org" <linux-tegra@vger.kernel.org>, Yu-Huan
+	Hsu <YHsu@nvidia.com>, Thierry Reding <treding@nvidia.com>,
+	Alexander Van Brunt <avanbrunt@nvidia.com>,
+	"linux-arm-kernel@lists.infradead.org"
+	<linux-arm-kernel@lists.infradead.org>
 X-BeenThere: iommu@lists.linux-foundation.org
 X-Mailman-Version: 2.1.12
 Precedence: list
@@ -74,118 +173,13 @@ Content-Transfer-Encoding: 7bit
 Sender: iommu-bounces@lists.linux-foundation.org
 Errors-To: iommu-bounces@lists.linux-foundation.org
 
-Non-Transparent Bridge (NTB) devices (among others) may have many DMA
-aliases seeing the hardware will send requests with different device ids
-depending on their origin across the bridged hardware.
+Hi Robin,
+>>Apologies for crossed wires, but I had a series getting rid of arm_smmu_flush_ops which was also meant to end up making things a bit easier for you:
 
-See commit ad281ecf1c7d ("PCI: Add DMA alias quirk for Microsemi Switchtec
-NTB") for more information on this.
+I was looking to rebase on top of your changes first.  Then I read Will's reply that said your work is queued for 5.5. 
+Let me know if these patches need to rebased on top of iommu/devel or a different branch. I can resend the patch set on top of necessary branch.
 
-The AMD IOMMU IRQ remapping functionality ignores all PCI aliases for
-IRQs so if devices send an interrupt from one of their aliases they
-will be blocked on AMD hardware with the IOMMU enabled.
-
-To fix this, ensure IRQ remapping is enabled for all aliases with
-MSI interrupts.
-
-This is analogous to the functionality added to the Intel IRQ remapping
-code in commit 3f0c625c6ae7 ("iommu/vt-d: Allow interrupts from the entire
-bus for aliased devices")
-
-Signed-off-by: Logan Gunthorpe <logang@deltatee.com>
----
- drivers/iommu/amd_iommu.c | 37 ++++++++++++++++++++++++++++++-------
- 1 file changed, 30 insertions(+), 7 deletions(-)
-
-diff --git a/drivers/iommu/amd_iommu.c b/drivers/iommu/amd_iommu.c
-index 585c2a94a7e9..f686d5708572 100644
---- a/drivers/iommu/amd_iommu.c
-+++ b/drivers/iommu/amd_iommu.c
-@@ -3175,7 +3175,20 @@ static void set_remap_table_entry(struct amd_iommu *iommu, u16 devid,
- 	iommu_flush_dte(iommu, devid);
- }
- 
--static struct irq_remap_table *alloc_irq_table(u16 devid)
-+static int set_remap_table_entry_alias(struct pci_dev *pdev, u16 alias,
-+				       void *data)
-+{
-+	struct irq_remap_table *table = data;
-+
-+	irq_lookup_table[alias] = table;
-+	set_dte_irq_entry(alias, table);
-+
-+	iommu_flush_dte(amd_iommu_rlookup_table[alias], alias);
-+
-+	return 0;
-+}
-+
-+static struct irq_remap_table *alloc_irq_table(u16 devid, struct pci_dev *pdev)
- {
- 	struct irq_remap_table *table = NULL;
- 	struct irq_remap_table *new_table = NULL;
-@@ -3221,7 +3234,12 @@ static struct irq_remap_table *alloc_irq_table(u16 devid)
- 	table = new_table;
- 	new_table = NULL;
- 
--	set_remap_table_entry(iommu, devid, table);
-+	if (pdev)
-+		pci_for_each_dma_alias(pdev, set_remap_table_entry_alias,
-+				       table);
-+	else
-+		set_remap_table_entry(iommu, devid, table);
-+
- 	if (devid != alias)
- 		set_remap_table_entry(iommu, alias, table);
- 
-@@ -3238,7 +3256,8 @@ static struct irq_remap_table *alloc_irq_table(u16 devid)
- 	return table;
- }
- 
--static int alloc_irq_index(u16 devid, int count, bool align)
-+static int alloc_irq_index(u16 devid, int count, bool align,
-+			   struct pci_dev *pdev)
- {
- 	struct irq_remap_table *table;
- 	int index, c, alignment = 1;
-@@ -3248,7 +3267,7 @@ static int alloc_irq_index(u16 devid, int count, bool align)
- 	if (!iommu)
- 		return -ENODEV;
- 
--	table = alloc_irq_table(devid);
-+	table = alloc_irq_table(devid, pdev);
- 	if (!table)
- 		return -ENODEV;
- 
-@@ -3681,7 +3700,7 @@ static int irq_remapping_alloc(struct irq_domain *domain, unsigned int virq,
- 		struct irq_remap_table *table;
- 		struct amd_iommu *iommu;
- 
--		table = alloc_irq_table(devid);
-+		table = alloc_irq_table(devid, NULL);
- 		if (table) {
- 			if (!table->min_index) {
- 				/*
-@@ -3698,11 +3717,15 @@ static int irq_remapping_alloc(struct irq_domain *domain, unsigned int virq,
- 		} else {
- 			index = -ENOMEM;
- 		}
--	} else {
-+	} else if (info->type == X86_IRQ_ALLOC_TYPE_MSI ||
-+		   info->type == X86_IRQ_ALLOC_TYPE_MSIX) {
- 		bool align = (info->type == X86_IRQ_ALLOC_TYPE_MSI);
- 
--		index = alloc_irq_index(devid, nr_irqs, align);
-+		index = alloc_irq_index(devid, nr_irqs, align, info->msi_dev);
-+	} else {
-+		index = alloc_irq_index(devid, nr_irqs, false, NULL);
- 	}
-+
- 	if (index < 0) {
- 		pr_warn("Failed to allocate IRTE\n");
- 		ret = index;
--- 
-2.20.1
-
+-KR
 _______________________________________________
 iommu mailing list
 iommu@lists.linux-foundation.org
