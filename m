@@ -2,61 +2,64 @@ Return-Path: <SRS0=/ROq=YQ=lists.linux-foundation.org=iommu-bounces@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-8.2 required=3.0 tests=HEADER_FROM_DIFFERENT_DOMAINS,
-	INCLUDES_PATCH,MAILING_LIST_MULTI,SIGNED_OFF_BY,SPF_HELO_NONE,SPF_PASS,
-	URIBL_BLOCKED,USER_AGENT_SANE_2 autolearn=unavailable autolearn_force=no
-	version=3.4.0
+X-Spam-Status: No, score=-2.2 required=3.0 tests=HEADER_FROM_DIFFERENT_DOMAINS,
+	MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED,USER_AGENT_SANE_1
+	autolearn=no autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 9B939CA9EBE
-	for <iommu@archiver.kernel.org>; Wed, 23 Oct 2019 04:15:13 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 45F69CA9EB6
+	for <iommu@archiver.kernel.org>; Wed, 23 Oct 2019 09:10:45 +0000 (UTC)
 Received: from mail.linuxfoundation.org (mail.linuxfoundation.org [140.211.169.12])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by mail.kernel.org (Postfix) with ESMTPS id 692542173B
-	for <iommu@archiver.kernel.org>; Wed, 23 Oct 2019 04:15:13 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 692542173B
-Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=linux.intel.com
+	by mail.kernel.org (Postfix) with ESMTPS id 1AD3B20659
+	for <iommu@archiver.kernel.org>; Wed, 23 Oct 2019 09:10:45 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 1AD3B20659
+Authentication-Results: mail.kernel.org; dmarc=none (p=none dis=none) header.from=lst.de
 Authentication-Results: mail.kernel.org; spf=pass smtp.mailfrom=iommu-bounces@lists.linux-foundation.org
 Received: from mail.linux-foundation.org (localhost [127.0.0.1])
-	by mail.linuxfoundation.org (Postfix) with ESMTP id 2DCB9B7D;
-	Wed, 23 Oct 2019 04:15:13 +0000 (UTC)
+	by mail.linuxfoundation.org (Postfix) with ESMTP id DACFAB88;
+	Wed, 23 Oct 2019 09:10:44 +0000 (UTC)
 Received: from smtp1.linuxfoundation.org (smtp1.linux-foundation.org
 	[172.17.192.35])
-	by mail.linuxfoundation.org (Postfix) with ESMTPS id 232A6B59
+	by mail.linuxfoundation.org (Postfix) with ESMTPS id 6269EB6C
 	for <iommu@lists.linux-foundation.org>;
-	Wed, 23 Oct 2019 04:15:12 +0000 (UTC)
-X-Greylist: domain auto-whitelisted by SQLgrey-1.7.6
-Received: from mga09.intel.com (mga09.intel.com [134.134.136.24])
-	by smtp1.linuxfoundation.org (Postfix) with ESMTPS id 0DF9114D
+	Wed, 23 Oct 2019 09:10:43 +0000 (UTC)
+X-Greylist: from auto-whitelisted by SQLgrey-1.7.6
+Received: from verein.lst.de (verein.lst.de [213.95.11.211])
+	by smtp1.linuxfoundation.org (Postfix) with ESMTPS id B13E987B
 	for <iommu@lists.linux-foundation.org>;
-	Wed, 23 Oct 2019 04:15:10 +0000 (UTC)
-X-Amp-Result: SKIPPED(no attachment in message)
-X-Amp-File-Uploaded: False
-Received: from orsmga006.jf.intel.com ([10.7.209.51])
-	by orsmga102.jf.intel.com with ESMTP/TLS/DHE-RSA-AES256-GCM-SHA384;
-	22 Oct 2019 21:15:09 -0700
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.68,219,1569308400"; d="scan'208";a="201874968"
-Received: from jacob-builder.jf.intel.com (HELO jacob-builder) ([10.7.199.155])
-	by orsmga006.jf.intel.com with ESMTP; 22 Oct 2019 21:15:09 -0700
-Date: Tue, 22 Oct 2019 21:19:30 -0700
-From: Jacob Pan <jacob.jun.pan@linux.intel.com>
-To: "Raj, Ashok" <ashok.raj@intel.com>
-Subject: Re: [PATCH v6 03/10] iommu/vt-d: Replace Intel specific PASID
-	allocator with IOASID
-Message-ID: <20191022211930.2ef8138f@jacob-builder>
-In-Reply-To: <20191023005859.GD100970@otc-nc-03>
-References: <1571788403-42095-1-git-send-email-jacob.jun.pan@linux.intel.com>
-	<1571788403-42095-4-git-send-email-jacob.jun.pan@linux.intel.com>
-	<20191023005859.GD100970@otc-nc-03>
-Organization: OTC
-X-Mailer: Claws Mail 3.13.2 (GTK+ 2.24.30; x86_64-pc-linux-gnu)
+	Wed, 23 Oct 2019 09:10:42 +0000 (UTC)
+Received: by verein.lst.de (Postfix, from userid 2407)
+	id DAB3A68BE1; Wed, 23 Oct 2019 11:10:37 +0200 (CEST)
+Date: Wed, 23 Oct 2019 11:10:37 +0200
+From: "hch@lst.de" <hch@lst.de>
+To: Wei Hu <weh@microsoft.com>
+Subject: Re: [PATCH] video: hyperv: hyperv_fb: Use physical memory for fb
+	on HyperV Gen 1 VMs.
+Message-ID: <20191023091037.GB21910@lst.de>
+References: <20191022110905.4032-1-weh@microsoft.com>
 MIME-Version: 1.0
-Cc: "Tian, Kevin" <kevin.tian@intel.com>, David Woodhouse <dwmw2@infradead.org>,
-	iommu@lists.linux-foundation.org, LKML <linux-kernel@vger.kernel.org>,
-	Alex Williamson <alex.williamson@redhat.com>,
-	Jean-Philippe Brucker <jean-philippe@linaro.com>,
-	Jonathan Cameron <jic23@kernel.org>
+Content-Disposition: inline
+In-Reply-To: <20191022110905.4032-1-weh@microsoft.com>
+User-Agent: Mutt/1.5.17 (2007-11-01)
+Cc: "sashal@kernel.org" <sashal@kernel.org>, "info@metux.net" <info@metux.net>,
+	"alexandre.belloni@bootlin.com" <alexandre.belloni@bootlin.com>,
+	Stephen Hemminger <sthemmin@microsoft.com>,
+	"arnd@arndb.de" <arnd@arndb.de>,
+	"b.zolnierkie@samsung.com" <b.zolnierkie@samsung.com>,
+	"sam@ravnborg.org" <sam@ravnborg.org>,
+	Haiyang Zhang <haiyangz@microsoft.com>,
+	"linux-fbdev@vger.kernel.org" <linux-fbdev@vger.kernel.org>,
+	"dri-devel@lists.freedesktop.org" <dri-devel@lists.freedesktop.org>,
+	"linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
+	"iommu@lists.linux-foundation.org" <iommu@lists.linux-foundation.org>,
+	"linux-hyperv@vger.kernel.org" <linux-hyperv@vger.kernel.org>,
+	Michael Kelley <mikelley@microsoft.com>,
+	"dcui@microsoft.com" <dcui@microsoft.com>,
+	"gregkh@linuxfoundation.org" <gregkh@linuxfoundation.org>,
+	"mchehab+samsung@kernel.org" <mchehab+samsung@kernel.org>,
+	KY Srinivasan <kys@microsoft.com>,
+	"robin.murphy@arm.com" <robin.murphy@arm.com>, "hch@lst.de" <hch@lst.de>
 X-BeenThere: iommu@lists.linux-foundation.org
 X-Mailman-Version: 2.1.12
 Precedence: list
@@ -69,247 +72,26 @@ List-Post: <mailto:iommu@lists.linux-foundation.org>
 List-Help: <mailto:iommu-request@lists.linux-foundation.org?subject=help>
 List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
 	<mailto:iommu-request@lists.linux-foundation.org?subject=subscribe>
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: base64
 Sender: iommu-bounces@lists.linux-foundation.org
 Errors-To: iommu-bounces@lists.linux-foundation.org
 
-On Tue, 22 Oct 2019 17:58:59 -0700
-"Raj, Ashok" <ashok.raj@intel.com> wrote:
-
-> On Tue, Oct 22, 2019 at 04:53:16PM -0700, Jacob Pan wrote:
-> > Make use of generic IOASID code to manage PASID allocation,
-> > free, and lookup. Replace Intel specific code.
-> > 
-> > Signed-off-by: Jacob Pan <jacob.jun.pan@linux.intel.com>
-> > ---
-> >  drivers/iommu/intel-iommu.c | 12 ++++++------
-> >  drivers/iommu/intel-pasid.c | 36
-> > ------------------------------------ drivers/iommu/intel-svm.c   |
-> > 37 +++++++++++++++++++++---------------- 3 files changed, 27
-> > insertions(+), 58 deletions(-)
-> > 
-> > diff --git a/drivers/iommu/intel-iommu.c
-> > b/drivers/iommu/intel-iommu.c index 3aff0141c522..72febcf2c48f
-> > 100644 --- a/drivers/iommu/intel-iommu.c
-> > +++ b/drivers/iommu/intel-iommu.c
-> > @@ -5311,7 +5311,7 @@ static void auxiliary_unlink_device(struct
-> > dmar_domain *domain, domain->auxd_refcnt--;
-> >  
-> >  	if (!domain->auxd_refcnt && domain->default_pasid > 0)
-> > -		intel_pasid_free_id(domain->default_pasid);
-> > +		ioasid_free(domain->default_pasid);  
-> 
-> if the domain is gauranteed to be torn down, its ok.. but otherwise
-> do you need to clear domain->default_pasid to avoid accidental
-> reference in some other code path?
-> 
-Good point, but i think it is out of the scope of this patch. Perhaps
-another patch to fix that.
-> >  }
-> >  
-> >  static int aux_domain_add_dev(struct dmar_domain *domain,
-> > @@ -5329,10 +5329,10 @@ static int aux_domain_add_dev(struct
-> > dmar_domain *domain, if (domain->default_pasid <= 0) {
-> >  		int pasid;
-> >  
-> > -		pasid = intel_pasid_alloc_id(domain, PASID_MIN,
-> > -
-> > pci_max_pasids(to_pci_dev(dev)),
-> > -					     GFP_KERNEL);
-> > -		if (pasid <= 0) {
-> > +		/* No private data needed for the default pasid */
-> > +		pasid = ioasid_alloc(NULL, PASID_MIN,
-> > pci_max_pasids(to_pci_dev(dev)) - 1,  
-> 
-> If we ensure IOMMU max-pasid is full 20bit width, its good. In a
-> vIOMMU if iommu max pasid is restricted for some kind of partitioning
-> in future you want to consider limiting to no more than what's
-> provisioned in the vIOMMU right?
-> 
-Yes, I agree we should double check IOMMU ecap PSS.
-But it is outside the scope of this patch, which is merely replacing the
-current logic with a different API.
-Also, unless we do nested mdev, this code should run in host only,
-no vIOMMU, right?
-> 
-> > +				NULL);
-> > +		if (pasid == INVALID_IOASID) {
-> >  			pr_err("Can't allocate default pasid\n");
-> >  			return -ENODEV;
-> >  		}
-> > @@ -5368,7 +5368,7 @@ static int aux_domain_add_dev(struct
-> > dmar_domain *domain, spin_unlock(&iommu->lock);
-> >  	spin_unlock_irqrestore(&device_domain_lock, flags);
-> >  	if (!domain->auxd_refcnt && domain->default_pasid > 0)
-> > -		intel_pasid_free_id(domain->default_pasid);
-> > +		ioasid_free(domain->default_pasid);
-> >  
-> >  	return ret;
-> >  }
-> > diff --git a/drivers/iommu/intel-pasid.c
-> > b/drivers/iommu/intel-pasid.c index 76bcbb21e112..c0d1f28d3412
-> > 100644 --- a/drivers/iommu/intel-pasid.c
-> > +++ b/drivers/iommu/intel-pasid.c
-> > @@ -26,42 +26,6 @@
-> >   */
-> >  static DEFINE_SPINLOCK(pasid_lock);
-> >  u32 intel_pasid_max_id = PASID_MAX;
-> > -static DEFINE_IDR(pasid_idr);
-> > -
-> > -int intel_pasid_alloc_id(void *ptr, int start, int end, gfp_t gfp)
-> > -{
-> > -	int ret, min, max;
-> > -
-> > -	min = max_t(int, start, PASID_MIN);
-> > -	max = min_t(int, end, intel_pasid_max_id);
-> > -
-> > -	WARN_ON(in_interrupt());
-> > -	idr_preload(gfp);
-> > -	spin_lock(&pasid_lock);
-> > -	ret = idr_alloc(&pasid_idr, ptr, min, max, GFP_ATOMIC);
-> > -	spin_unlock(&pasid_lock);
-> > -	idr_preload_end();
-> > -
-> > -	return ret;
-> > -}
-> > -
-> > -void intel_pasid_free_id(int pasid)
-> > -{
-> > -	spin_lock(&pasid_lock);
-> > -	idr_remove(&pasid_idr, pasid);
-> > -	spin_unlock(&pasid_lock);
-> > -}
-> > -
-> > -void *intel_pasid_lookup_id(int pasid)
-> > -{
-> > -	void *p;
-> > -
-> > -	spin_lock(&pasid_lock);
-> > -	p = idr_find(&pasid_idr, pasid);
-> > -	spin_unlock(&pasid_lock);
-> > -
-> > -	return p;
-> > -}
-> >  
-> >  static int check_vcmd_pasid(struct intel_iommu *iommu)
-> >  {
-> > diff --git a/drivers/iommu/intel-svm.c b/drivers/iommu/intel-svm.c
-> > index 9b159132405d..5aef5b7bf561 100644
-> > --- a/drivers/iommu/intel-svm.c
-> > +++ b/drivers/iommu/intel-svm.c
-> > @@ -17,6 +17,7 @@
-> >  #include <linux/dmar.h>
-> >  #include <linux/interrupt.h>
-> >  #include <linux/mm_types.h>
-> > +#include <linux/ioasid.h>
-> >  #include <asm/page.h>
-> >  
-> >  #include "intel-pasid.h"
-> > @@ -318,16 +319,15 @@ int intel_svm_bind_mm(struct device *dev, int
-> > *pasid, int flags, struct svm_dev_ if (pasid_max >
-> > intel_pasid_max_id) pasid_max = intel_pasid_max_id;
-> >  
-> > -		/* Do not use PASID 0 in caching mode (virtualised
-> > IOMMU) */
-> > -		ret = intel_pasid_alloc_id(svm,
-> > -					   !!cap_caching_mode(iommu->cap),
-> > -					   pasid_max - 1,
-> > GFP_KERNEL);
-> > -		if (ret < 0) {
-> > +		/* Do not use PASID 0, reserved for RID to PASID */
-> > +		svm->pasid = ioasid_alloc(NULL, PASID_MIN,
-> > +					pasid_max - 1, svm);
-> > +		if (svm->pasid == INVALID_IOASID) {
-> >  			kfree(svm);
-> >  			kfree(sdev);
-> > +			ret = ENOSPC;
-> >  			goto out;
-> >  		}
-> > -		svm->pasid = ret;
-> >  		svm->notifier.ops = &intel_mmuops;
-> >  		svm->mm = mm;
-> >  		svm->flags = flags;
-> > @@ -337,7 +337,7 @@ int intel_svm_bind_mm(struct device *dev, int
-> > *pasid, int flags, struct svm_dev_ if (mm) {
-> >  			ret =
-> > mmu_notifier_register(&svm->notifier, mm); if (ret) {
-> > -				intel_pasid_free_id(svm->pasid);
-> > +				ioasid_free(svm->pasid);
-> >  				kfree(svm);
-> >  				kfree(sdev);
-> >  				goto out;
-> > @@ -353,7 +353,7 @@ int intel_svm_bind_mm(struct device *dev, int
-> > *pasid, int flags, struct svm_dev_ if (ret) {
-> >  			if (mm)
-> >  				mmu_notifier_unregister(&svm->notifier,
-> > mm);
-> > -			intel_pasid_free_id(svm->pasid);
-> > +			ioasid_free(svm->pasid);
-> >  			kfree(svm);
-> >  			kfree(sdev);
-> >  			goto out;
-> > @@ -401,7 +401,12 @@ int intel_svm_unbind_mm(struct device *dev,
-> > int pasid) if (!iommu)
-> >  		goto out;
-> >  
-> > -	svm = intel_pasid_lookup_id(pasid);
-> > +	svm = ioasid_find(NULL, pasid, NULL);
-> > +	if (IS_ERR(svm)) {
-> > +		ret = PTR_ERR(svm);
-> > +		goto out;
-> > +	}
-> > +
-> >  	if (!svm)
-> >  		goto out;
-> >  
-> > @@ -423,7 +428,7 @@ int intel_svm_unbind_mm(struct device *dev, int
-> > pasid) kfree_rcu(sdev, rcu);
-> >  
-> >  				if (list_empty(&svm->devs)) {
-> > -
-> > intel_pasid_free_id(svm->pasid);
-> > +					ioasid_free(svm->pasid);
-> >  					if (svm->mm)
-> >  						mmu_notifier_unregister(&svm->notifier,
-> > svm->mm); 
-> > @@ -458,10 +463,11 @@ int intel_svm_is_pasid_valid(struct device
-> > *dev, int pasid) if (!iommu)
-> >  		goto out;
-> >  
-> > -	svm = intel_pasid_lookup_id(pasid);
-> > -	if (!svm)
-> > +	svm = ioasid_find(NULL, pasid, NULL);
-> > +	if (IS_ERR(svm)) {
-> > +		ret = PTR_ERR(svm);
-> >  		goto out;
-> > -
-> > +	}
-> >  	/* init_mm is used in this case */
-> >  	if (!svm->mm)
-> >  		ret = 1;
-> > @@ -568,13 +574,12 @@ static irqreturn_t prq_event_thread(int irq,
-> > void *d) 
-> >  		if (!svm || svm->pasid != req->pasid) {
-> >  			rcu_read_lock();
-> > -			svm = intel_pasid_lookup_id(req->pasid);
-> > +			svm = ioasid_find(NULL, req->pasid, NULL);
-> >  			/* It *can't* go away, because the driver
-> > is not permitted
-> >  			 * to unbind the mm while any page faults
-> > are outstanding.
-> >  			 * So we only need RCU to protect the
-> > internal idr code. */ rcu_read_unlock();
-> > -
-> > -			if (!svm) {
-> > +			if (IS_ERR(svm) || !svm) {
-> >  				pr_err("%s: Page request for
-> > invalid PASID %d: %08llx %08llx\n", iommu->name, req->pasid,
-> > ((unsigned long long *)req)[0], ((unsigned long long *)req)[1]);
-> > -- 
-> > 2.7.4
-> >   
-_______________________________________________
-iommu mailing list
-iommu@lists.linux-foundation.org
-https://lists.linuxfoundation.org/mailman/listinfo/iommu
+PiArCXNlbGVjdCBETUFfQ01BCgpUaNGWcyBuZWVkcyB0byBiZQoKCXNlbGVjdCBETUFfQ01BIGlm
+IEhBVkVfRE1BX0NPTlRJR1VPVVMKCj4gKyNpbmNsdWRlIDxsaW51eC9kbWEtY29udGlndW91cy5o
+PgoKPiArCS8qIEFsbG9jYXRlIGZyb20gQ01BICovCj4gKwkvLyByZXF1ZXN0X3BhZ2VzID0gKHJl
+cXVlc3Rfc2l6ZSA+PiBQQUdFX1NISUZUKSArIDE7Cj4gKwlyZXF1ZXN0X3BhZ2VzID0gKHJvdW5k
+X3VwKHJlcXVlc3Rfc2l6ZSwgUEFHRV9TSVpFKSA+PiBQQUdFX1NISUZUKTsKPiArCXBhZ2UgPSBk
+bWFfYWxsb2NfZnJvbV9jb250aWd1b3VzKE5VTEwsIHJlcXVlc3RfcGFnZXMsIDAsIGZhbHNlKTsK
+CmRtYV9hbGxvY19mcm9tX2NvbnRpZ3VvdXMgaXMgYW4gaW50ZXJuYWwgaGVscGVyLCB5b3UgbXVz
+dCB1c2UgaXQKdGhyb3VnaCBkbWFfYWxsb2NfY29oZXJlbnQgYW5kIHBhc3MgYSBzdHJ1Y3QgZGV2
+aWNlIHRvIHRoYXQgZnVuY3Rpb24uCgo+ICsJaWYgKCFnZW4ydm0pIHsKPiArCQlwZGV2ID0gcGNp
+X2dldF9kZXZpY2UoUENJX1ZFTkRPUl9JRF9NSUNST1NPRlQsCj4gKwkJCVBDSV9ERVZJQ0VfSURf
+SFlQRVJWX1ZJREVPLCBOVUxMKTsKPiArCQlpZiAoIXBkZXYpIHsKPiArCQkJcHJfZXJyKCJVbmFi
+bGUgdG8gZmluZCBQQ0kgSHlwZXItViB2aWRlb1xuIik7Cj4gKwkJCXJldHVybiAtRU5PREVWOwo+
+ICsJCX0KPiArCX0KClBsZWFzZSBhY3R1YWxseSBpbXBsZW1lbnQgYSBwY2lfZHJpdmVyIGluc3Rl
+YWQgb2YgaGFja3MgbGlrZSB0aGlzLgoKPiArCQkJcGFyLT5uZWVkX2RvY29weSA9IGZhbHNlOwo+
+ICsJCQlnb3RvIGdldG1lbTE7Cj4gKwkJfSBlbHNlIHsKCk5vIG5lZWQgZm9yIGFuIGVsc2UgYWZ0
+ZXIgYSBnb3RvLgoKX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19f
+X18KaW9tbXUgbWFpbGluZyBsaXN0CmlvbW11QGxpc3RzLmxpbnV4LWZvdW5kYXRpb24ub3JnCmh0
+dHBzOi8vbGlzdHMubGludXhmb3VuZGF0aW9uLm9yZy9tYWlsbWFuL2xpc3RpbmZvL2lvbW11
