@@ -2,71 +2,66 @@ Return-Path: <SRS0=/ROq=YQ=lists.linux-foundation.org=iommu-bounces@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-7.3 required=3.0 tests=DKIM_INVALID,DKIM_SIGNED,
-	MAILING_LIST_MULTI,MENTIONS_GIT_HOSTING,SPF_HELO_NONE,SPF_PASS,
+X-Spam-Status: No, score=-5.3 required=3.0 tests=DKIM_INVALID,DKIM_SIGNED,
+	MAILING_LIST_MULTI,SIGNED_OFF_BY,SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED,
 	USER_AGENT_SANE_1 autolearn=ham autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 66326CA9EB9
-	for <iommu@archiver.kernel.org>; Wed, 23 Oct 2019 16:27:26 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 3CD6BCA9EB6
+	for <iommu@archiver.kernel.org>; Wed, 23 Oct 2019 16:53:02 +0000 (UTC)
 Received: from mail.linuxfoundation.org (mail.linuxfoundation.org [140.211.169.12])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by mail.kernel.org (Postfix) with ESMTPS id 250A92084C
-	for <iommu@archiver.kernel.org>; Wed, 23 Oct 2019 16:27:26 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTPS id F1A3021925
+	for <iommu@archiver.kernel.org>; Wed, 23 Oct 2019 16:53:01 +0000 (UTC)
 Authentication-Results: mail.kernel.org;
-	dkim=fail reason="signature verification failed" (1024-bit key) header.d=kernel.org header.i=@kernel.org header.b="1DPwNU5s"
-DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 250A92084C
+	dkim=fail reason="signature verification failed" (1024-bit key) header.d=kernel.org header.i=@kernel.org header.b="vM3wriHv"
+DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org F1A3021925
 Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=kernel.org
 Authentication-Results: mail.kernel.org; spf=pass smtp.mailfrom=iommu-bounces@lists.linux-foundation.org
 Received: from mail.linux-foundation.org (localhost [127.0.0.1])
-	by mail.linuxfoundation.org (Postfix) with ESMTP id DDF58B79;
-	Wed, 23 Oct 2019 16:27:25 +0000 (UTC)
+	by mail.linuxfoundation.org (Postfix) with ESMTP id 971A492F;
+	Wed, 23 Oct 2019 16:53:01 +0000 (UTC)
 Received: from smtp1.linuxfoundation.org (smtp1.linux-foundation.org
 	[172.17.192.35])
-	by mail.linuxfoundation.org (Postfix) with ESMTPS id 28226AD7
+	by mail.linuxfoundation.org (Postfix) with ESMTPS id BBDA92F
 	for <iommu@lists.linux-foundation.org>;
-	Wed, 23 Oct 2019 16:27:24 +0000 (UTC)
+	Wed, 23 Oct 2019 16:53:00 +0000 (UTC)
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp1.linuxfoundation.org (Postfix) with ESMTPS id D34AF831
+	by smtp1.linuxfoundation.org (Postfix) with ESMTPS id DF32A89C
 	for <iommu@lists.linux-foundation.org>;
-	Wed, 23 Oct 2019 16:27:23 +0000 (UTC)
+	Wed, 23 Oct 2019 16:52:59 +0000 (UTC)
 Received: from willie-the-truck (236.31.169.217.in-addr.arpa [217.169.31.236])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256
 	bits)) (No client certificate requested)
-	by mail.kernel.org (Postfix) with ESMTPSA id B3C882084C;
-	Wed, 23 Oct 2019 16:27:20 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTPSA id 8F2EF21906;
+	Wed, 23 Oct 2019 16:52:56 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=default; t=1571848043;
-	bh=do5PkS+eCKNocSWak3vYJW2/3BSNU4s/TcZDTpcE/uE=;
+	s=default; t=1571849579;
+	bh=F5Izp3I8AX+Ri+LTIkBe2psZof2nJUu/2jw8CqPmo+4=;
 	h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-	b=1DPwNU5sp8U4oU2roN7ycpMthYFFZWGa9uGNfK5JqrAHZRUmADqgzKgjwm8KmNIV7
-	M/hqEg5VoO1HYCLa8snLPXvTJxivHw1rMSuA5n+AJBZSwt6NNLwy1FGgkzEtmOMIxB
-	BrT556CQ+lASBf9qVwuralKGxRkHukTJkktgejVQ=
-Date: Wed, 23 Oct 2019 17:27:17 +0100
+	b=vM3wriHv2BCfsl4QWE/Yo0Tr9tEwuSOYD/+jXqoi+TwKpYLw+r7KqC/INuDeE6paR
+	8kN95fF7O/278RKBRp+COHuOA0qlcJLdeS3sShi0ETrCZk8FOTwW3RTHbduQUIfc83
+	EcxQlpdh+2SDSt3EWDK/G1983yOPo7V7MQo9/1sY=
+Date: Wed, 23 Oct 2019 17:52:53 +0100
 From: Will Deacon <will@kernel.org>
-To: Krishna Reddy <vdumpa@nvidia.com>
-Subject: Re: [PATCH v3 0/7] Nvidia Arm SMMUv2 Implementation
-Message-ID: <20191023162716.GA27010@willie-the-truck>
-References: <1571441492-21919-1-git-send-email-vdumpa@nvidia.com>
-	<6d9e6425-fa69-9b76-b477-1fe50c459ca5@arm.com>
-	<BYAPR12MB2710879535971E290E8B25D3B3680@BYAPR12MB2710.namprd12.prod.outlook.com>
+To: Yong Wu <yong.wu@mediatek.com>
+Subject: Re: [PATCH v4 2/7] iommu/mediatek: Add a new tlb_lock for tlb_flush
+Message-ID: <20191023165252.GA27471@willie-the-truck>
+References: <1571196792-12382-1-git-send-email-yong.wu@mediatek.com>
+	<1571196792-12382-3-git-send-email-yong.wu@mediatek.com>
 MIME-Version: 1.0
 Content-Disposition: inline
-In-Reply-To: <BYAPR12MB2710879535971E290E8B25D3B3680@BYAPR12MB2710.namprd12.prod.outlook.com>
+In-Reply-To: <1571196792-12382-3-git-send-email-yong.wu@mediatek.com>
 User-Agent: Mutt/1.10.1 (2018-07-13)
-Cc: Sachin Nikam <Snikam@nvidia.com>, "thomasz@nvidia.com" <thomasz@nvidia.com>,
-	Juha Tukkinen <jtukkinen@nvidia.com>,
-	Mikko Perttunen <mperttunen@nvidia.com>,
-	"linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
-	Pritesh Raithatha <praithatha@nvidia.com>, Timo Alho <talho@nvidia.com>,
-	"iommu@lists.linux-foundation.org" <iommu@lists.linux-foundation.org>,
-	Nicolin Chen <nicolinc@nvidia.com>,
-	"linux-tegra@vger.kernel.org" <linux-tegra@vger.kernel.org>,
-	Yu-Huan Hsu <YHsu@nvidia.com>, Thierry Reding <treding@nvidia.com>,
-	Robin Murphy <robin.murphy@arm.com>,
-	Alexander Van Brunt <avanbrunt@nvidia.com>,
-	"linux-arm-kernel@lists.infradead.org"
-	<linux-arm-kernel@lists.infradead.org>
+Cc: youlin.pei@mediatek.com, anan.sun@mediatek.com,
+	Nicolas Boichat <drinkcat@chromium.org>, cui.zhang@mediatek.com,
+	srv_heupstream@mediatek.com, chao.hao@mediatek.com,
+	edison.hsieh@mediatek.com, Will Deacon <will.deacon@arm.com>,
+	linux-kernel@vger.kernel.org, Evan Green <evgreen@chromium.org>,
+	Tomasz Figa <tfiga@google.com>, iommu@lists.linux-foundation.org,
+	linux-mediatek@lists.infradead.org,
+	Matthias Brugger <matthias.bgg@gmail.com>,
+	Robin Murphy <robin.murphy@arm.com>, linux-arm-kernel@lists.infradead.org
 X-BeenThere: iommu@lists.linux-foundation.org
 X-Mailman-Version: 2.1.12
 Precedence: list
@@ -84,17 +79,42 @@ Content-Transfer-Encoding: 7bit
 Sender: iommu-bounces@lists.linux-foundation.org
 Errors-To: iommu-bounces@lists.linux-foundation.org
 
-On Tue, Oct 22, 2019 at 11:48:55PM +0000, Krishna Reddy wrote:
-> >>Apologies for crossed wires, but I had a series getting rid of
-> >>arm_smmu_flush_ops which was also meant to end up making things a bit
-> >>easier for you:
+On Wed, Oct 16, 2019 at 11:33:07AM +0800, Yong Wu wrote:
+> The commit 4d689b619445 ("iommu/io-pgtable-arm-v7s: Convert to IOMMU API
+> TLB sync") help move the tlb_sync of unmap from v7s into the iommu
+> framework. It helps add a new function "mtk_iommu_iotlb_sync", But it
+> lacked the lock, then it will cause the variable "tlb_flush_active"
+> may be changed unexpectedly, we could see this warning log randomly:
 > 
-> I was looking to rebase on top of your changes first.  Then I read Will's
-> reply that said your work is queued for 5.5.
+> mtk-iommu 10205000.iommu: Partial TLB flush timed out, falling back to
+> full flush
+> 
+> The HW requires tlb_flush/tlb_sync in pairs strictly, this patch adds
+> a new tlb_lock for tlb operations to fix this issue.
+> 
+> Fixes: 4d689b619445 ("iommu/io-pgtable-arm-v7s: Convert to IOMMU API TLB
+> sync")
+> Signed-off-by: Yong Wu <yong.wu@mediatek.com>
+> ---
+>  drivers/iommu/mtk_iommu.c | 23 ++++++++++++++++++++++-
+>  drivers/iommu/mtk_iommu.h |  1 +
+>  2 files changed, 23 insertions(+), 1 deletion(-)
 
-D'oh, sorry, I completely forgot to push that branch out. Now done:
+[...]
 
-https://git.kernel.org/pub/scm/linux/kernel/git/will/linux.git/log/?h=for-joerg/arm-smmu/updates
+>  static void mtk_iommu_tlb_flush_page_nosync(struct iommu_iotlb_gather *gather,
+>  					    unsigned long iova, size_t granule,
+>  					    void *cookie)
+>  {
+> +	struct mtk_iommu_data *data = cookie;
+> +	unsigned long flags;
+> +
+> +	spin_lock_irqsave(&data->tlb_lock, flags);
+>  	mtk_iommu_tlb_add_flush_nosync(iova, granule, granule, true, cookie);
+> +	spin_unlock_irqrestore(&data->tlb_lock, flags);
+
+Given that you release the lock here, what prevents another nosync()
+operation being issued before you've managed to do the sync()?
 
 Will
 _______________________________________________
