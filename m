@@ -2,67 +2,71 @@ Return-Path: <SRS0=/ROq=YQ=lists.linux-foundation.org=iommu-bounces@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-3.7 required=3.0 tests=HEADER_FROM_DIFFERENT_DOMAINS,
-	MAILING_LIST_MULTI,SIGNED_OFF_BY,SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED
-	autolearn=no autolearn_force=no version=3.4.0
+X-Spam-Status: No, score=-7.3 required=3.0 tests=DKIM_INVALID,DKIM_SIGNED,
+	MAILING_LIST_MULTI,MENTIONS_GIT_HOSTING,SPF_HELO_NONE,SPF_PASS,
+	USER_AGENT_SANE_1 autolearn=ham autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id E6104CA9EB7
-	for <iommu@archiver.kernel.org>; Wed, 23 Oct 2019 14:36:22 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 66326CA9EB9
+	for <iommu@archiver.kernel.org>; Wed, 23 Oct 2019 16:27:26 +0000 (UTC)
 Received: from mail.linuxfoundation.org (mail.linuxfoundation.org [140.211.169.12])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by mail.kernel.org (Postfix) with ESMTPS id B97CE2173B
-	for <iommu@archiver.kernel.org>; Wed, 23 Oct 2019 14:36:22 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org B97CE2173B
-Authentication-Results: mail.kernel.org; dmarc=none (p=none dis=none) header.from=linux-m68k.org
+	by mail.kernel.org (Postfix) with ESMTPS id 250A92084C
+	for <iommu@archiver.kernel.org>; Wed, 23 Oct 2019 16:27:26 +0000 (UTC)
+Authentication-Results: mail.kernel.org;
+	dkim=fail reason="signature verification failed" (1024-bit key) header.d=kernel.org header.i=@kernel.org header.b="1DPwNU5s"
+DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 250A92084C
+Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=kernel.org
 Authentication-Results: mail.kernel.org; spf=pass smtp.mailfrom=iommu-bounces@lists.linux-foundation.org
 Received: from mail.linux-foundation.org (localhost [127.0.0.1])
-	by mail.linuxfoundation.org (Postfix) with ESMTP id 88793AF7;
-	Wed, 23 Oct 2019 14:36:22 +0000 (UTC)
+	by mail.linuxfoundation.org (Postfix) with ESMTP id DDF58B79;
+	Wed, 23 Oct 2019 16:27:25 +0000 (UTC)
 Received: from smtp1.linuxfoundation.org (smtp1.linux-foundation.org
 	[172.17.192.35])
-	by mail.linuxfoundation.org (Postfix) with ESMTPS id 67AD8AF3
+	by mail.linuxfoundation.org (Postfix) with ESMTPS id 28226AD7
 	for <iommu@lists.linux-foundation.org>;
-	Wed, 23 Oct 2019 14:36:20 +0000 (UTC)
-X-Greylist: whitelisted by SQLgrey-1.7.6
-Received: from mail-oi1-f196.google.com (mail-oi1-f196.google.com
-	[209.85.167.196])
-	by smtp1.linuxfoundation.org (Postfix) with ESMTPS id B9773831
+	Wed, 23 Oct 2019 16:27:24 +0000 (UTC)
+Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
+	by smtp1.linuxfoundation.org (Postfix) with ESMTPS id D34AF831
 	for <iommu@lists.linux-foundation.org>;
-	Wed, 23 Oct 2019 14:36:19 +0000 (UTC)
-Received: by mail-oi1-f196.google.com with SMTP id s71so4699572oih.11
-	for <iommu@lists.linux-foundation.org>;
-	Wed, 23 Oct 2019 07:36:19 -0700 (PDT)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-	d=1e100.net; s=20161025;
-	h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-	:message-id:subject:to:cc;
-	bh=xxo/chYm01QC8eTInCjxWj6Txmh3kYU/ouOy2udw44M=;
-	b=CHX3VYY/GSsfGAgIBdrHIxo8Y5yKNtGe0lluiWHgPeVhb8ZWQLxIVs3nSh3QzNk9/+
-	wXmlv1Atj/UeD89yNBwZ+AEa5Tp0cKZzrolQSSlq1TMVrxcAMhjVEXmVdKZHkz8b0bIn
-	eL2bMbqiYibMaMuBRknHrcFMy3j1pnivHcYeCw6wZvtRzlThpLQpfAJU7K5i8CIvGG9+
-	QfO1n9HiRzm3E8eG9yS/pBfvBUJij81vsuN/Zwfapm2yVMVe98qh56fzQAOkXHa5iWcS
-	wTpJG8sC3/joQMN+IMuMsSjU0lTSmbDR71lh2xj9SopcGpq8q/yLSY/8t7UeVQlO+16g
-	XV9A==
-X-Gm-Message-State: APjAAAWMe46otBvVXNFHmAM3zCelckLZEnxnTMT012V8OluLmcjtDOah
-	hE056GAwwsT5LCPat88qQevQBL+QvjSaf21aepw=
-X-Google-Smtp-Source: APXvYqxDclxiIFroHlO24WZd1qvRSeKC3vh9yrg9lUgtANFtKnt58omlgaU/40OuK3FT1h/IrrwozE4TWGFgB2yxrRY=
-X-Received: by 2002:a54:4e89:: with SMTP id c9mr216403oiy.148.1571841378774;
-	Wed, 23 Oct 2019 07:36:18 -0700 (PDT)
+	Wed, 23 Oct 2019 16:27:23 +0000 (UTC)
+Received: from willie-the-truck (236.31.169.217.in-addr.arpa [217.169.31.236])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256
+	bits)) (No client certificate requested)
+	by mail.kernel.org (Postfix) with ESMTPSA id B3C882084C;
+	Wed, 23 Oct 2019 16:27:20 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+	s=default; t=1571848043;
+	bh=do5PkS+eCKNocSWak3vYJW2/3BSNU4s/TcZDTpcE/uE=;
+	h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+	b=1DPwNU5sp8U4oU2roN7ycpMthYFFZWGa9uGNfK5JqrAHZRUmADqgzKgjwm8KmNIV7
+	M/hqEg5VoO1HYCLa8snLPXvTJxivHw1rMSuA5n+AJBZSwt6NNLwy1FGgkzEtmOMIxB
+	BrT556CQ+lASBf9qVwuralKGxRkHukTJkktgejVQ=
+Date: Wed, 23 Oct 2019 17:27:17 +0100
+From: Will Deacon <will@kernel.org>
+To: Krishna Reddy <vdumpa@nvidia.com>
+Subject: Re: [PATCH v3 0/7] Nvidia Arm SMMUv2 Implementation
+Message-ID: <20191023162716.GA27010@willie-the-truck>
+References: <1571441492-21919-1-git-send-email-vdumpa@nvidia.com>
+	<6d9e6425-fa69-9b76-b477-1fe50c459ca5@arm.com>
+	<BYAPR12MB2710879535971E290E8B25D3B3680@BYAPR12MB2710.namprd12.prod.outlook.com>
 MIME-Version: 1.0
-References: <20191023135941.15000-1-yuehaibing@huawei.com>
-In-Reply-To: <20191023135941.15000-1-yuehaibing@huawei.com>
-From: Geert Uytterhoeven <geert@linux-m68k.org>
-Date: Wed, 23 Oct 2019 16:36:07 +0200
-Message-ID: <CAMuHMdV5dBGbB4DCwidpqeFkxtQGzrh=qO8Ph-Se3ZyGnrGpbw@mail.gmail.com>
-Subject: Re: [PATCH -next] iommu/ipmmu-vmsa: Remove dev_err() on
-	platform_get_irq() failure
-To: YueHaibing <yuehaibing@huawei.com>
-Cc: Joerg Roedel <jroedel@suse.de>,
-	Geert Uytterhoeven <geert+renesas@glider.be>,
-	Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
-	Stephen Boyd <swboyd@chromium.org>,
-	Linux IOMMU <iommu@lists.linux-foundation.org>
+Content-Disposition: inline
+In-Reply-To: <BYAPR12MB2710879535971E290E8B25D3B3680@BYAPR12MB2710.namprd12.prod.outlook.com>
+User-Agent: Mutt/1.10.1 (2018-07-13)
+Cc: Sachin Nikam <Snikam@nvidia.com>, "thomasz@nvidia.com" <thomasz@nvidia.com>,
+	Juha Tukkinen <jtukkinen@nvidia.com>,
+	Mikko Perttunen <mperttunen@nvidia.com>,
+	"linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
+	Pritesh Raithatha <praithatha@nvidia.com>, Timo Alho <talho@nvidia.com>,
+	"iommu@lists.linux-foundation.org" <iommu@lists.linux-foundation.org>,
+	Nicolin Chen <nicolinc@nvidia.com>,
+	"linux-tegra@vger.kernel.org" <linux-tegra@vger.kernel.org>,
+	Yu-Huan Hsu <YHsu@nvidia.com>, Thierry Reding <treding@nvidia.com>,
+	Robin Murphy <robin.murphy@arm.com>,
+	Alexander Van Brunt <avanbrunt@nvidia.com>,
+	"linux-arm-kernel@lists.infradead.org"
+	<linux-arm-kernel@lists.infradead.org>
 X-BeenThere: iommu@lists.linux-foundation.org
 X-Mailman-Version: 2.1.12
 Precedence: list
@@ -80,25 +84,19 @@ Content-Transfer-Encoding: 7bit
 Sender: iommu-bounces@lists.linux-foundation.org
 Errors-To: iommu-bounces@lists.linux-foundation.org
 
-On Wed, Oct 23, 2019 at 4:01 PM YueHaibing <yuehaibing@huawei.com> wrote:
-> platform_get_irq() will call dev_err() itself on failure,
-> so there is no need for the driver to also do this.
-> This is detected by coccinelle.
->
-> Signed-off-by: YueHaibing <yuehaibing@huawei.com>
+On Tue, Oct 22, 2019 at 11:48:55PM +0000, Krishna Reddy wrote:
+> >>Apologies for crossed wires, but I had a series getting rid of
+> >>arm_smmu_flush_ops which was also meant to end up making things a bit
+> >>easier for you:
+> 
+> I was looking to rebase on top of your changes first.  Then I read Will's
+> reply that said your work is queued for 5.5.
 
-Reviewed-by: Geert Uytterhoeven <geert+renesas@glider.be>
+D'oh, sorry, I completely forgot to push that branch out. Now done:
 
-Gr{oetje,eeting}s,
+https://git.kernel.org/pub/scm/linux/kernel/git/will/linux.git/log/?h=for-joerg/arm-smmu/updates
 
-                        Geert
-
--- 
-Geert Uytterhoeven -- There's lots of Linux beyond ia32 -- geert@linux-m68k.org
-
-In personal conversations with technical people, I call myself a hacker. But
-when I'm talking to journalists I just say "programmer" or something like that.
-                                -- Linus Torvalds
+Will
 _______________________________________________
 iommu mailing list
 iommu@lists.linux-foundation.org
