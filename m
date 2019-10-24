@@ -2,61 +2,119 @@ Return-Path: <SRS0=zRLl=YR=lists.linux-foundation.org=iommu-bounces@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-5.2 required=3.0 tests=HEADER_FROM_DIFFERENT_DOMAINS,
-	MAILING_LIST_MULTI,SIGNED_OFF_BY,SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED,
-	USER_AGENT_SANE_1 autolearn=ham autolearn_force=no version=3.4.0
+X-Spam-Status: No, score=-0.5 required=3.0 tests=DKIM_INVALID,DKIM_SIGNED,
+	HEADER_FROM_DIFFERENT_DOMAINS,MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS,
+	URIBL_BLOCKED autolearn=no autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 4EB46CA9EAF
-	for <iommu@archiver.kernel.org>; Thu, 24 Oct 2019 11:24:01 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id DB268CA9EBB
+	for <iommu@archiver.kernel.org>; Thu, 24 Oct 2019 11:27:23 +0000 (UTC)
 Received: from mail.linuxfoundation.org (mail.linuxfoundation.org [140.211.169.12])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by mail.kernel.org (Postfix) with ESMTPS id 2816120856
-	for <iommu@archiver.kernel.org>; Thu, 24 Oct 2019 11:24:01 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 2816120856
-Authentication-Results: mail.kernel.org; dmarc=none (p=none dis=none) header.from=arm.com
+	by mail.kernel.org (Postfix) with ESMTPS id A0F8920856
+	for <iommu@archiver.kernel.org>; Thu, 24 Oct 2019 11:27:23 +0000 (UTC)
+Authentication-Results: mail.kernel.org;
+	dkim=fail reason="signature verification failed" (1024-bit key) header.d=nxp.com header.i=@nxp.com header.b="TaFl3VnW"
+DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org A0F8920856
+Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=nxp.com
 Authentication-Results: mail.kernel.org; spf=pass smtp.mailfrom=iommu-bounces@lists.linux-foundation.org
 Received: from mail.linux-foundation.org (localhost [127.0.0.1])
-	by mail.linuxfoundation.org (Postfix) with ESMTP id E4C8314AD;
-	Thu, 24 Oct 2019 11:24:00 +0000 (UTC)
+	by mail.linuxfoundation.org (Postfix) with ESMTP id 6312714BF;
+	Thu, 24 Oct 2019 11:27:23 +0000 (UTC)
 Received: from smtp1.linuxfoundation.org (smtp1.linux-foundation.org
 	[172.17.192.35])
-	by mail.linuxfoundation.org (Postfix) with ESMTPS id C01D31420
+	by mail.linuxfoundation.org (Postfix) with ESMTPS id 884E61420
 	for <iommu@lists.linux-foundation.org>;
-	Thu, 24 Oct 2019 11:23:59 +0000 (UTC)
-X-Greylist: domain auto-whitelisted by SQLgrey-1.7.6
-Received: from foss.arm.com (unknown [217.140.110.172])
-	by smtp1.linuxfoundation.org (Postfix) with ESMTP id 231238AC
+	Thu, 24 Oct 2019 11:27:21 +0000 (UTC)
+X-Greylist: whitelisted by SQLgrey-1.7.6
+Received: from EUR03-AM5-obe.outbound.protection.outlook.com
+	(mail-eopbgr30054.outbound.protection.outlook.com [40.107.3.54])
+	by smtp1.linuxfoundation.org (Postfix) with ESMTPS id AB44C8AC
 	for <iommu@lists.linux-foundation.org>;
-	Thu, 24 Oct 2019 11:23:59 +0000 (UTC)
-Received: from usa-sjc-imap-foss1.foss.arm.com (unknown [10.121.207.14])
-	by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id B154DB57;
-	Thu, 24 Oct 2019 04:23:50 -0700 (PDT)
-Received: from [192.168.1.123] (unknown [172.31.20.19])
-	by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPSA id 42A993F71A;
-	Thu, 24 Oct 2019 04:23:49 -0700 (PDT)
-Subject: Re: [PATCH 3/4] iommu/io-pgtable-arm: Rationalise TCR handling
-To: Will Deacon <will@kernel.org>, joro@8bytes.org,
-	iommu@lists.linux-foundation.org, linux-arm-kernel@lists.infradead.org, 
-	robdclark@gmail.com
-References: <cover.1566238530.git.robin.murphy@arm.com>
-	<78df4f8e2510e88f3ded59eb385f79b4442ed4f2.1566238530.git.robin.murphy@arm.com>
-	<20190820103115.o7neehdethf7sbqi@willie-the-truck>
-	<48ca6945-de73-116a-3230-84862ca9e60b@arm.com>
-	<20190820160700.6ircxomwuo5bksqz@willie-the-truck>
-	<8cc47f43-ad74-b4e2-e977-6c78780abc91@arm.com>
-	<20190821121120.34wqo7vj56pqk57c@willie-the-truck>
-	<cdceec32-8dae-2c9e-8f66-0cd86288529f@arm.com>
-	<20191003173352.GA13386@jcrouse1-lnx.qualcomm.com>
-	<20191024105111.GB1242@willie-the-truck>
-From: Robin Murphy <robin.murphy@arm.com>
-Message-ID: <63fa5848-372d-fe09-7502-1b9ecbcc6cf0@arm.com>
-Date: Thu, 24 Oct 2019 12:23:46 +0100
-User-Agent: Mozilla/5.0 (Windows NT 10.0; rv:68.0) Gecko/20100101
-	Thunderbird/68.1.2
+	Thu, 24 Oct 2019 11:27:20 +0000 (UTC)
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+	b=RgovGwNcFznDO1U1VVsWleifm5ongGmWazZ6ufdk67WKGyCPZnNOVFppsJr6dwAlzn1v/Rij8s1AMtKwbcAeMd/6bn+AR1v6YOfPxUUUDcSg6QSd5Mpb/HdT/GTS5WTEQZj+uOfQo6dpcnALYgxxlUaq3Z3fb8LiFBdknEsJnB7SpNKe6bOS+S9MHW1H67Qwm2q0vwqCMgf8MzicaSJKP5nd+kRnrbGc9eIwC/+X2wtPhe1lBmTX/NfAQ/7QW0R6911095UsOXPzje+WLtyY3ygGIpBATZLIVBbojvKBjqfxC2X69puU23C+PrmwpaE+OrY4GlM7qnXv0IsMjdoCYQ==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com; 
+	s=arcselector9901;
+	h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+	bh=wy6mqQMWpCSf+Qx/DgIg4DprDSwfcuLGg+XkGZ/6fSU=;
+	b=DmX3GhzpvoGGXWltgpQPyx3JXNgFNeB3OQgAfEnPgJChcez5EIWRgFpJZKKZn0J3BKMXvujPjetE3bRockwN4flrtrnoTHZkItb2ZtFjFnsvYbqq4oQU0DxHwwWFUjIWgkBw380xGvkpRcrju1sw2XIpKEpEO6XNlAEFnsAo9wHMPNMbFPV/aOMr7oyeqOg/2FHcxrP0Q6rVJQpDdo/s+6r/40sUfJnMpwW02di8B1j1p/cwK/bKXUr/6ImpHApcsC/qDP44AWOOEji37La3BbOJVJ9Jyx9HkTtmT3SCiUZS4jb2cOjY64RUaNhSkg+9f51bQKe2LhpA7xW/UVdZZw==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+	smtp.mailfrom=nxp.com; dmarc=pass action=none header.from=nxp.com;
+	dkim=pass header.d=nxp.com; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=nxp.com; s=selector2; 
+	h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+	bh=wy6mqQMWpCSf+Qx/DgIg4DprDSwfcuLGg+XkGZ/6fSU=;
+	b=TaFl3VnWiw+aj45NCU+748GChRV6+zl9C6IB5pLQ3+a6lCgxONX/wUij0E4Ryki6Dz3ff2BdBT5jiiPJPOiGlU1sthyYO1weMMIU0PWHUMQYgxyH1LTZHX+162B7p3pOLcjUlSJQdABE0wDPW/WS2EAHJQagI9YNhSAhCYQzSck=
+Received: from VI1PR04MB5134.eurprd04.prod.outlook.com (20.177.51.208) by
+	VI1PR04MB7069.eurprd04.prod.outlook.com (10.186.157.147) with Microsoft
+	SMTP
+	Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+	15.20.2367.24; Thu, 24 Oct 2019 11:27:17 +0000
+Received: from VI1PR04MB5134.eurprd04.prod.outlook.com
+	([fe80::10f0:af2c:76ac:dfb]) by VI1PR04MB5134.eurprd04.prod.outlook.com
+	([fe80::10f0:af2c:76ac:dfb%7]) with mapi id 15.20.2347.030;
+	Thu, 24 Oct 2019 11:27:17 +0000
+From: Laurentiu Tudor <laurentiu.tudor@nxp.com>
+To: Robin Murphy <robin.murphy@arm.com>, "hch@lst.de" <hch@lst.de>
+Subject: Re: [RFC PATCH 1/3] dma-mapping: introduce a new dma api
+	dma_addr_to_phys_addr()
+Thread-Topic: [RFC PATCH 1/3] dma-mapping: introduce a new dma api
+	dma_addr_to_phys_addr()
+Thread-Index: AQHVilrGnKjPt4OKKUmo2Ix2Q0Rbb6dpp0QA
+Date: Thu, 24 Oct 2019 11:27:17 +0000
+Message-ID: <f01dc1b3-7d7d-118a-fbe9-1b176c4ce75a@nxp.com>
+References: <20191022125502.12495-1-laurentiu.tudor@nxp.com>
+	<20191022125502.12495-2-laurentiu.tudor@nxp.com>
+	<62561dca-cdd7-fe01-a0c3-7b5971c96e7e@arm.com>
+	<50a42575-02b2-c558-0609-90e2ad3f515b@nxp.com>
+	<20191024020140.GA6057@lst.de>
+	<ebbf742e-4d1f-ba90-0ed8-93ea445d0200@nxp.com>
+	<2b75c349-0ca1-ea7e-6571-28db9f1a8c46@arm.com>
+In-Reply-To: <2b75c349-0ca1-ea7e-6571-28db9f1a8c46@arm.com>
+Accept-Language: en-US
+Content-Language: en-US
+X-MS-Has-Attach: 
+X-MS-TNEF-Correlator: 
+authentication-results: spf=none (sender IP is )
+	smtp.mailfrom=laurentiu.tudor@nxp.com; 
+x-originating-ip: [89.37.124.34]
+x-ms-publictraffictype: Email
+x-ms-office365-filtering-ht: Tenant
+x-ms-office365-filtering-correlation-id: 12b0c47a-ca8a-4a91-e65f-08d7587520a9
+x-ms-traffictypediagnostic: VI1PR04MB7069:|VI1PR04MB7069:
+x-ms-exchange-transport-forked: True
+x-microsoft-antispam-prvs: <VI1PR04MB70692B5F76C92891CC129AD3EC6A0@VI1PR04MB7069.eurprd04.prod.outlook.com>
+x-ms-oob-tlc-oobclassifiers: OLM:9508;
+x-forefront-prvs: 0200DDA8BE
+x-forefront-antispam-report: SFV:NSPM;
+	SFS:(10009020)(4636009)(136003)(346002)(396003)(39860400002)(376002)(366004)(189003)(199004)(52314003)(31686004)(4326008)(486006)(66476007)(186003)(81166006)(81156014)(26005)(64756008)(11346002)(66446008)(36756003)(2616005)(8676002)(66556008)(91956017)(66946007)(476003)(478600001)(6512007)(14454004)(99286004)(446003)(5660300002)(2906002)(71200400001)(8936002)(66066001)(110136005)(229853002)(6436002)(86362001)(256004)(25786009)(54906003)(561944003)(6486002)(305945005)(71190400001)(76116006)(31696002)(76176011)(7736002)(44832011)(6116002)(14444005)(3846002)(6506007)(53546011)(6246003)(4001150100001)(102836004)(2501003)(316002);
+	DIR:OUT; SFP:1101; SCL:1; SRVR:VI1PR04MB7069;
+	H:VI1PR04MB5134.eurprd04.prod.outlook.com; FPR:; SPF:None;
+	LANG:en; PTR:InfoNoRecords; MX:1; A:1; 
+received-spf: None (protection.outlook.com: nxp.com does not designate
+	permitted sender hosts)
+x-ms-exchange-senderadcheck: 1
+x-microsoft-antispam: BCL:0;
+x-microsoft-antispam-message-info: yBn/ZqLFKmt/iqLBmoPmgGvPIGdvhreTeMx/sH5iLmYrX189czVRvn/+JycX3ctE2/omZ72HM1MxFVWE/YRqrl6/kQ+jMvsAsewA33LGpebclXC2VmN3bphInLaiV/3bZfnz4KW7rxo2mBzfgUPlYPSPtE3ah0LOt/RIeSu/v93U3jr120vKfKgcLCtvv5Txmtg809j02fQ4NVEpwSnxTV4YnxhwU6+7fIgF3aNcgwUI0gpx4yZ165Ms3uraQl7UNRvJQYMjXWZqU4GTj5hfExUJcDavvFP+Qvc/kIgbtIa6y0CeII4fb7UiOTuDzfp21E0miOdUicuNeD41/T2Z7Bi+DZBjnZeP+VhaoUF0hwAA8keV6e2A/zna2i6dXmGJhPkSNcagUK3gAa2FyZu8/6UUwDJOl6KNSflbCUDajso46WW7CFpO2Q4Av/Mm4j74
+Content-ID: <E9DF65D53EA6314D9FA5AB3AF57E7CDB@eurprd04.prod.outlook.com>
 MIME-Version: 1.0
-In-Reply-To: <20191024105111.GB1242@willie-the-truck>
-Content-Language: en-GB
+X-OriginatorOrg: nxp.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: 12b0c47a-ca8a-4a91-e65f-08d7587520a9
+X-MS-Exchange-CrossTenant-originalarrivaltime: 24 Oct 2019 11:27:17.7188 (UTC)
+X-MS-Exchange-CrossTenant-fromentityheader: Hosted
+X-MS-Exchange-CrossTenant-id: 686ea1d3-bc2b-4c6f-a92c-d99c5c301635
+X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
+X-MS-Exchange-CrossTenant-userprincipalname: KCinWk9DF4ccaoexw3gRwGajFhbAm4icxXhFdsG7r3P21aunyV7yku+UVL2gfEtshcIT9fwKWOE2BPhylqpjdA==
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: VI1PR04MB7069
+Cc: Ioana Ciocoi Radulescu <ruxandra.radulescu@nxp.com>,
+	Madalin Bucur <madalin.bucur@nxp.com>,
+	"netdev@vger.kernel.org" <netdev@vger.kernel.org>,
+	"linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
+	Leo Li <leoyang.li@nxp.com>,
+	"iommu@lists.linux-foundation.org" <iommu@lists.linux-foundation.org>,
+	Ioana Ciornei <ioana.ciornei@nxp.com>,
+	"davem@davemloft.net" <davem@davemloft.net>
 X-BeenThere: iommu@lists.linux-foundation.org
 X-Mailman-Version: 2.1.12
 Precedence: list
@@ -69,98 +127,59 @@ List-Post: <mailto:iommu@lists.linux-foundation.org>
 List-Help: <mailto:iommu-request@lists.linux-foundation.org?subject=help>
 List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
 	<mailto:iommu-request@lists.linux-foundation.org?subject=subscribe>
-Content-Transfer-Encoding: 7bit
-Content-Type: text/plain; charset="us-ascii"; Format="flowed"
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: base64
 Sender: iommu-bounces@lists.linux-foundation.org
 Errors-To: iommu-bounces@lists.linux-foundation.org
 
-On 2019-10-24 11:51 am, Will Deacon wrote:
-> On Thu, Oct 03, 2019 at 11:33:52AM -0600, Jordan Crouse wrote:
->> On Wed, Aug 21, 2019 at 01:56:20PM +0100, Robin Murphy wrote:
->>> On 21/08/2019 13:11, Will Deacon wrote:
->>>> On Tue, Aug 20, 2019 at 07:41:52PM +0100, Robin Murphy wrote:
->>>>> On 20/08/2019 17:07, Will Deacon wrote:
->>>>>> On Tue, Aug 20, 2019 at 04:25:56PM +0100, Robin Murphy wrote:
->>>>>>> On 20/08/2019 11:31, Will Deacon wrote:
->>>>>>>> On Mon, Aug 19, 2019 at 07:19:30PM +0100, Robin Murphy wrote:
->>>>>>>>> Although it's conceptually nice for the io_pgtable_cfg to provide a
->>>>>>>>> standard VMSA TCR value, the reality is that no VMSA-compliant IOMMU
->>>>>>>>> looks exactly like an Arm CPU, and they all have various other TCR
->>>>>>>>> controls which io-pgtable can't be expected to understand. Thus since
->>>>>>>>> there is an expectation that drivers will have to add to the given TCR
->>>>>>>>> value anyway, let's strip it down to just the essentials that are
->>>>>>>>> directly relevant to io-pgatble's inner workings - namely the address
->>>>>>>>> sizes, walk attributes, and where appropriate, format selection.
->>>>>>>>>
->>>>>>>>> Signed-off-by: Robin Murphy <robin.murphy@arm.com>
->>>>>>>>> ---
->>>>>>>>>     drivers/iommu/arm-smmu-v3.c        | 7 +------
->>>>>>>>>     drivers/iommu/arm-smmu.c           | 1 +
->>>>>>>>>     drivers/iommu/arm-smmu.h           | 2 ++
->>>>>>>>>     drivers/iommu/io-pgtable-arm-v7s.c | 6 ++----
->>>>>>>>>     drivers/iommu/io-pgtable-arm.c     | 4 ----
->>>>>>>>>     drivers/iommu/qcom_iommu.c         | 2 +-
->>>>>>>>>     6 files changed, 7 insertions(+), 15 deletions(-)
->>>>>>>>
->>>>>>>> Hmm, so I'm a bit nervous about this one since I think we really should
->>>>>>>> be providing a TCR with EPD1 set if we're only giving you TTBR0. Relying
->>>>>>>> on the driver to do this worries me. See my comments on the next patch.
->>>>>>>
->>>>>>> The whole idea is that we already know we can't provide a *complete* TCR
->>>>>>> value (not least because anything above bit 31 is the wild west), thus
->>>>>>> there's really no point in io-pgtable trying to provide anything other than
->>>>>>> the parts it definitely controls. It makes sense to provide this partial TCR
->>>>>>> value "as if" for TTBR0, since that's the most common case, but ultimately
->>>>>>> io-pgatble doesn't know (or need to) which TTBR the caller intends to
->>>>>>> actually use for this table. Even if the caller *is* allocating it for
->>>>>>> TTBR0, io-pgtable doesn't know that they haven't got something live in TTBR1
->>>>>>> already, so it still wouldn't be in a position to make the EPD1 call either
->>>>>>> way.
->>>>>>
->>>>>> Ok, but the driver can happily rewrite/ignore what it gets back. I suppose
->>>>>> an alternative would be scrapped the 'u64 tcr' and instead having a bunch
->>>>>> of named bitfields for the stuff we're actually providing, although I'd
->>>>>> still like EPDx to be in there.
->>>>>
->>>>> I like the bitfield idea; it would certainly emphasise the "you have to do
->>>>> something more with this" angle that I'm pushing towards here, but still
->>>>> leave things framed in TCR terms without having to go to some more general
->>>>> abstraction. It really doesn't play into your EPD argument though - such a
->>>>> config would be providing TxSZ/TGx/IRGNx/ORGNx/SHx, but EPDy, for y = !x.
->>>>> For a driver to understand that and do the right thing with it is even more
->>>>> involved than for the driver to just set EPD1 by itself anyway.
->>>>
->>>> Having considered the bitfield idea some more, I'm less attached to EPDx
->>>> because we simply wouldn't be making a statement about them, rather than a
->>>> (dangerous) zero value and expecting it to be ignored. So I think we're in
->>>> agreement on that.
->>>
->>> Cool, I'll give bitfields a go for v2.
->>>
->>>> The only part I'm still stuck to is that I think io-pgtable should know
->>>> whether it's targetting TTBR0 or TTBR1 so that it can sanitise input
->>>> addresses correctly. Doing this in the driver code is possible, but I'd
->>>> rather not start from that position, particularly as it would require things
->>>> like sign-extension in the TLBI callbacks.
->>
->> Bumping this as is our tradition in the -rc1 time frame before we get all
->> distracted with other stuff. It sounds like the last agreement was for a
->> TTBR1 hint for the EDP and the sign extension in the functions.
-> 
-> If somebody respins this using bitfields and an explicit TTBR1 quirk then
-> I'll merge it.
-
-Oops, the ping did register, I just didn't react outwardly ;)
-
-I have been working on v2, and plan to have something ready next week - 
-the holdup was that I started refactoring all the argument passing since 
-the number of things we have to carry through from one end of map/unmap 
-to the other is getting a bit silly, but I think I can still finish the 
-TTBR1 quirk without that, so if I don't get it cracked imminently then 
-I'll put it aside to revisit later.
-
-Robin.
-_______________________________________________
-iommu mailing list
-iommu@lists.linux-foundation.org
-https://lists.linuxfoundation.org/mailman/listinfo/iommu
+T24gMjQuMTAuMjAxOSAxNDowNCwgUm9iaW4gTXVycGh5IHdyb3RlOg0KPiBPbiAyMDE5LTEwLTI0
+IDg6NDkgYW0sIExhdXJlbnRpdSBUdWRvciB3cm90ZToNCj4+DQo+Pg0KPj4gT24gMjQuMTAuMjAx
+OSAwNTowMSwgaGNoQGxzdC5kZSB3cm90ZToNCj4+PiBPbiBXZWQsIE9jdCAyMywgMjAxOSBhdCAx
+MTo1Mzo0MUFNICswMDAwLCBMYXVyZW50aXUgVHVkb3Igd3JvdGU6DQo+Pj4+IFdlIGhhZCBhbiBp
+bnRlcm5hbCBkaXNjdXNzaW9uIG92ZXIgdGhlc2UgcG9pbnRzIHlvdSBhcmUgcmFpc2luZyBhbmQN
+Cj4+Pj4gTWFkYWxpbiAoY2MtZWQpIGNhbWUgdXAgd2l0aCBhbm90aGVyIGlkZWE6IGluc3RlYWQg
+b2YgYWRkaW5nIHRoaXMgcHJvbmUNCj4+Pj4gdG8gbWlzdXNlIGFwaSBob3cgYWJvdXQgZXhwZXJp
+bWVudGluZyB3aXRoIGEgbmV3IGRtYSB1bm1hcCBhbmQgZG1hIHN5bmMNCj4+Pj4gdmFyaWFudHMg
+dGhhdCB3b3VsZCByZXR1cm4gdGhlIHBoeXNpY2FsIGFkZHJlc3MgYnkgY2FsbGluZyB0aGUgbmV3
+bHkNCj4+Pj4gaW50cm9kdWNlZCBkbWEgbWFwIG9wLiBTb21ldGhpbmcgYWxvbmcgdGhlc2UgbGlu
+ZXM6DQo+Pj4+IMKgwqDCoCAqIHBoeXNfYWRkcl90IGRtYV91bm1hcF9wYWdlX3JldF9waHlzKC4u
+LikNCj4+Pj4gwqDCoMKgICogcGh5c19hZGRyX3QgZG1hX3VubWFwX3NpbmdsZV9yZXRfcGh5cygu
+Li4pDQo+Pj4+IMKgwqDCoCAqIHBoeXNfYWRkcl90IGRtYV9zeW5jX3NpbmdsZV9mb3JfY3B1X3Jl
+dF9waHlzKC4uLikNCj4+Pj4gSSdtIHRoaW5raW5nIHRoYXQgdGhpcyBwcm9wb3NhbCBzaG91bGQg
+cmVkdWNlIHRoZSByaXNrcyBvcGVuZWQgYnkgdGhlDQo+Pj4+IGluaXRpYWwgdmFyaWFudC4NCj4+
+Pj4gUGxlYXNlIGxldCBtZSBrbm93IHdoYXQgeW91IHRoaW5rLg0KPj4+DQo+Pj4gSSdtIG5vdCBz
+dXJlIHdoYXQgdGhlIHJldCBpcyBzdXBwb3NlZCB0byBtZWFuLCBidXQgSSBnZW5lcmFsbHkgbGlr
+ZQ0KPj4+IHRoYXQgaWRlYSBiZXR0ZXIuDQo+Pg0KPj4gSXQgd2FzIHN1cHBvc2VkIHRvIGJlIHNo
+b3J0IGZvciAicmV0dXJuIiBidXQgZ2l2ZW4gdGhhdCBJJ20gbm90IGdvb2QgYXQNCj4+IG5hbWlu
+ZyBzdHVmZiBJJ2xsIGp1c3QgZHJvcCBpdC4NCj4gDQo+IEhtbSwgaG93IGFib3V0IHNvbWV0aGlu
+ZyBsaWtlICJkbWFfdW5tYXBfKl9kZXNjIiBmb3IgdGhlIGNvbnRleHQgb2YgdGhlIA0KPiBtYXBw
+ZWQgRE1BIGFkZHJlc3MgYWxzbyBiZWluZyB1c2VkIGFzIGEgZGVzY3JpcHRvciB0b2tlbj8NCg0K
+QWxyaWdodC4NCg0KPj4+IFdlIGFsc28gbmVlZCB0byBtYWtlIHN1cmUgdGhlcmUgaXMgYW4gZWFz
+eSB3YXkNCj4+PiB0byBmaWd1cmUgb3V0IGlmIHRoZXNlIEFQSXMgYXJlIGF2YWlsYWJsZSwgYXMg
+dGhleSBnZW5lcmFsbHkgYXJlbid0DQo+Pj4gZm9yIGFueSBub24tSU9NTVUgQVBJIElPTU1VIGRy
+aXZlcnMuDQo+Pg0KPj4gSSB3YXMgcmVhbGx5IGhvcGluZyB0byBtYW5hZ2UgbWFraW5nIHRoZW0g
+YXMgZ2VuZXJpYyBhcyBwb3NzaWJsZSBidXQNCj4+IGFueXdheSwgSSdsbCBzdGFydCB3b3JraW5n
+IG9uIGEgUG9DIGFuZCBzZWUgaG93IGl0IHR1cm5zIG91dC4gVGhpcyB3aWxsDQo+PiBwcm9iYWJs
+eSBoYXBwZW4gc29tZXRpbWUgbmV4dCBuZXh0IHdlZWsgYXMgdGhlIGZvbGxvd2luZyB3ZWVrIEkn
+bGwgYmUNCj4+IHRyYXZlbGluZyB0byBhIGNvbmZlcmVuY2UuDQo+IA0KPiBBRkFJQ1MsIGV2ZW4g
+YSBmdWxsIGltcGxlbWVudGF0aW9uIG9mIHRoZXNlIEFQSXMgd291bGQgaGF2ZSB0byBiZSANCj4g
+Y2FwYWJsZSBvZiByZXR1cm5pbmcgYW4gaW5kaWNhdGlvbiB0aGF0IHRoZXJlIGlzIG5vIHZhbGlk
+IHBoeXNpY2FsIA0KPiBhZGRyZXNzIC0gZS5nLiBpZiB1bm1hcCBpcyBjYWxsZWQgd2l0aCBhIGJv
+Z3VzIERNQSBhZGRyZXNzIHRoYXQgd2FzIA0KPiBuZXZlciBtYXBwZWQuIEF0IHRoYXQgcG9pbnQg
+dGhlcmUnc3NlZW1pbmdseSBubyBwcm9ibGVtIGp1c3QgDQo+IGltcGxlbWVudGluZyB0aGUgdHJp
+dmlhbCBjYXNlIG9uIHRvcCBvZiBhbnkgZXhpc3RpbmcgdW5tYXAvc3luYyANCj4gY2FsbGJhY2tz
+IGZvciBldmVyeW9uZS4gSSdkIGltYWdpbmUgdGhhdCBkcml2ZXJzIHdoaWNoIHdhbnQgdGhpcyBh
+cmVuJ3QgDQo+IGxpa2VseSB0byBydW4gb24gdGhlIG9sZGVyIGFyY2hpdGVjdHVyZXMgd2hlcmUg
+dGhlIHdlaXJkIElPTU1VcyBsaXZlLCBzbyANCj4gdGhleSBjb3VsZCBwcm9iYWJseSBqdXN0IGFs
+d2F5cyB0cmVhdCBmYWlsdXJlIGFzIHVuZXhwZWN0ZWQgYW5kIGZhdGFsIA0KPiBlaXRoZXIgd2F5
+Lg0KPiANCj4gSW4gZmFjdCwgSSdtIG5vdyB3b25kZXJpbmcgd2hldGhlciBpdCdzIGxpa2VseSB0
+byBiZSBjb21tb24gdGhhdCB1c2VycyANCj4gd2FudCB0aGUgcGh5c2ljYWwgYWRkcmVzcyBzcGVj
+aWZpY2FsbHksIG9yIHdoZXRoZXIgaXQgd291bGQgbWFrZSBzZW5zZSANCj4gdG8gcmV0dXJuIHRo
+ZSBvcmlnaW5hbCBWQS9wYWdlLCBib3RoIGZvciBzeW1tZXRyeSB3aXRoIHRoZSBjb3JyZXNwb25k
+aW5nIA0KPiBtYXAgY2FsbHMgYW5kIGZvciB0aGUgZWFzZSBvZiBiZWluZyBhYmxlIHRvIHJldHVy
+biBOVUxMIHdoZW4gbmVjZXNzYXJ5Lg0KDQpUaGF0J3Mgc291bmRzIHdvbmRlcmZ1bCBhcyBpdCBz
+aG91bGQgbWFrZSB0aGUgY29kZSBsZWFuZXIgaW4gdGhlIGRyaXZlcnMuDQoNCi0tLQ0KQmVzdCBS
+ZWdhcmRzLCBMYXVyZW50aXUKX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19f
+X19fX19fX18KaW9tbXUgbWFpbGluZyBsaXN0CmlvbW11QGxpc3RzLmxpbnV4LWZvdW5kYXRpb24u
+b3JnCmh0dHBzOi8vbGlzdHMubGludXhmb3VuZGF0aW9uLm9yZy9tYWlsbWFuL2xpc3RpbmZvL2lv
+bW11
