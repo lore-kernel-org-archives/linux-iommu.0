@@ -2,69 +2,117 @@ Return-Path: <SRS0=zRLl=YR=lists.linux-foundation.org=iommu-bounces@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-8.2 required=3.0 tests=HEADER_FROM_DIFFERENT_DOMAINS,
-	INCLUDES_PATCH,MAILING_LIST_MULTI,SIGNED_OFF_BY,SPF_HELO_NONE,SPF_PASS,
-	UNPARSEABLE_RELAY,URIBL_BLOCKED,USER_AGENT_SANE_2 autolearn=unavailable
-	autolearn_force=no version=3.4.0
+X-Spam-Status: No, score=-0.5 required=3.0 tests=DKIM_INVALID,DKIM_SIGNED,
+	HEADER_FROM_DIFFERENT_DOMAINS,MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS,
+	URIBL_BLOCKED autolearn=no autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id E0163CA9EAF
-	for <iommu@archiver.kernel.org>; Thu, 24 Oct 2019 07:22:48 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 9BFA3CA9EBC
+	for <iommu@archiver.kernel.org>; Thu, 24 Oct 2019 07:49:10 +0000 (UTC)
 Received: from mail.linuxfoundation.org (mail.linuxfoundation.org [140.211.169.12])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by mail.kernel.org (Postfix) with ESMTPS id BFD8621655
-	for <iommu@archiver.kernel.org>; Thu, 24 Oct 2019 07:22:48 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org BFD8621655
-Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=mediatek.com
+	by mail.kernel.org (Postfix) with ESMTPS id 62BF52084C
+	for <iommu@archiver.kernel.org>; Thu, 24 Oct 2019 07:49:10 +0000 (UTC)
+Authentication-Results: mail.kernel.org;
+	dkim=fail reason="signature verification failed" (1024-bit key) header.d=nxp.com header.i=@nxp.com header.b="hucKS8iu"
+DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 62BF52084C
+Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=nxp.com
 Authentication-Results: mail.kernel.org; spf=pass smtp.mailfrom=iommu-bounces@lists.linux-foundation.org
 Received: from mail.linux-foundation.org (localhost [127.0.0.1])
-	by mail.linuxfoundation.org (Postfix) with ESMTP id 123A3B9E;
-	Thu, 24 Oct 2019 07:22:48 +0000 (UTC)
+	by mail.linuxfoundation.org (Postfix) with ESMTP id 34728B6D;
+	Thu, 24 Oct 2019 07:49:10 +0000 (UTC)
 Received: from smtp1.linuxfoundation.org (smtp1.linux-foundation.org
 	[172.17.192.35])
-	by mail.linuxfoundation.org (Postfix) with ESMTPS id 8FFD0B6D
+	by mail.linuxfoundation.org (Postfix) with ESMTPS id 26644B09
 	for <iommu@lists.linux-foundation.org>;
-	Thu, 24 Oct 2019 07:22:46 +0000 (UTC)
-X-Greylist: domain auto-whitelisted by SQLgrey-1.7.6
-Received: from mailgw01.mediatek.com (unknown [1.203.163.78])
-	by smtp1.linuxfoundation.org (Postfix) with ESMTP id 56726831
+	Thu, 24 Oct 2019 07:49:09 +0000 (UTC)
+X-Greylist: whitelisted by SQLgrey-1.7.6
+Received: from EUR01-VE1-obe.outbound.protection.outlook.com
+	(mail-eopbgr140052.outbound.protection.outlook.com [40.107.14.52])
+	by smtp1.linuxfoundation.org (Postfix) with ESMTPS id 2F85F87B
 	for <iommu@lists.linux-foundation.org>;
-	Thu, 24 Oct 2019 07:22:41 +0000 (UTC)
-X-UUID: c00efe6b6a6b490a8ec249bb5f663775-20191024
-X-UUID: c00efe6b6a6b490a8ec249bb5f663775-20191024
-Received: from mtkcas35.mediatek.inc [(172.27.4.253)] by mailgw01.mediatek.com
-	(envelope-from <yong.wu@mediatek.com>)
-	(mailgw01.mediatek.com ESMTP with TLS)
-	with ESMTP id 222561763; Thu, 24 Oct 2019 15:22:33 +0800
-Received: from MTKCAS36.mediatek.inc (172.27.4.186) by MTKMBS31DR.mediatek.inc
-	(172.27.6.102) with Microsoft SMTP Server (TLS) id 15.0.1395.4;
-	Thu, 24 Oct 2019 15:22:31 +0800
-Received: from [10.17.3.153] (172.27.4.253) by MTKCAS36.mediatek.inc
-	(172.27.4.170) with Microsoft SMTP Server id 15.0.1395.4 via Frontend
-	Transport; Thu, 24 Oct 2019 15:22:30 +0800
-Message-ID: <1571901752.19130.135.camel@mhfsdcap03>
-Subject: Re: [PATCH v4 3/7] iommu/mediatek: Use gather to achieve the tlb
-	range flush
-From: Yong Wu <yong.wu@mediatek.com>
-To: Will Deacon <will@kernel.org>
-Date: Thu, 24 Oct 2019 15:22:32 +0800
-In-Reply-To: <20191023165543.GB27471@willie-the-truck>
-References: <1571196792-12382-1-git-send-email-yong.wu@mediatek.com>
-	<1571196792-12382-4-git-send-email-yong.wu@mediatek.com>
-	<20191023165543.GB27471@willie-the-truck>
-X-Mailer: Evolution 3.10.4-0ubuntu2 
+	Thu, 24 Oct 2019 07:49:05 +0000 (UTC)
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+	b=gUXpUnKvbfC+wZqBAVh5yFP84zLRapg8t5PsFUqDI3PrhdYIiY4P5W/EGhhuYId83/Jl4lNiYp2KKNzPgqvTLFblizTzKf02sFm/3X1HxfC7g1rntpN6Ys5fXzcsWBW0OxE10IE+zNvw+aNl6LPuSON9OJZ7GH3OGkBIMcVN3UzuEqI6yCkfSkHKIZyOe3zTih5JoEWXpu2idSOZWZ997MW8wcHA+dEIhpsZ0gU3ZdUnRnfQh3OuwLQZNm/VrxJPF6w9fAcSYuKnz5CGlF0+r9GhTW50X3NPq9lEze1mi/eTbSeJENMXxRkSaYGlwipwNwqY1C0Gc7nKddWHVC6Nvw==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com; 
+	s=arcselector9901;
+	h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+	bh=tQ5MH9mEysUW4bL432qsECcRaRrIC0mqKe8cZSnzaf0=;
+	b=GgOHdxHs25kztN4DE/KA+qJFNXeISLfqNliFi8g/xN1C7SHw+b5eqSgIVs5U4tRK1gx1Ukl1SJtw4SvKcJGx273rTy0XK3fTIyxRX2jbQiu3O9xEC4SeZb/ECe4Qjb7eQCgTQyIvmko7tiV+HveTf51ix8YxvvoYylM27oDAxIW4/BkjLqdKyApcAEtDzcnbf42rQjuh2y0lcHjTUwhgKOdUj0MgLWb7ZmjDERdBXqz0yIeslsOr6z2vd9moCmecoHWAcsXP/pi/48r2dxJr4cx3ESURyNkYLz3y9kc5MYqTo1j3cUydzEdTa33Qo9ZCFFeQui+P8d7UpEGT41NhKA==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+	smtp.mailfrom=nxp.com; dmarc=pass action=none header.from=nxp.com;
+	dkim=pass header.d=nxp.com; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=nxp.com; s=selector2; 
+	h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+	bh=tQ5MH9mEysUW4bL432qsECcRaRrIC0mqKe8cZSnzaf0=;
+	b=hucKS8iuMJbMIpEML8XcuAln7JcM8dQeaAVWJQj1H8u5XaGy+YXGti9s6lNfKQVT/Gs9PboWxtaO7W1NkN2snaSHVXsIIzwctcaa6ZFy61CKHER3qW4dJbLeNNpunQxqhRRijGCyZnEpoJPyMvosbkZ3r3OOVoyk1N7IuJUdJYU=
+Received: from VI1PR04MB5134.eurprd04.prod.outlook.com (20.177.51.208) by
+	VI1PR04MB4912.eurprd04.prod.outlook.com (20.177.50.209) with Microsoft
+	SMTP
+	Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+	15.20.2367.24; Thu, 24 Oct 2019 07:49:03 +0000
+Received: from VI1PR04MB5134.eurprd04.prod.outlook.com
+	([fe80::10f0:af2c:76ac:dfb]) by VI1PR04MB5134.eurprd04.prod.outlook.com
+	([fe80::10f0:af2c:76ac:dfb%7]) with mapi id 15.20.2347.030;
+	Thu, 24 Oct 2019 07:49:03 +0000
+From: Laurentiu Tudor <laurentiu.tudor@nxp.com>
+To: "hch@lst.de" <hch@lst.de>
+Subject: Re: [RFC PATCH 1/3] dma-mapping: introduce a new dma api
+	dma_addr_to_phys_addr()
+Thread-Topic: [RFC PATCH 1/3] dma-mapping: introduce a new dma api
+	dma_addr_to_phys_addr()
+Thread-Index: AQHVig771lgo9fKx8UCeiOjKFT5WdadpauGA
+Date: Thu, 24 Oct 2019 07:49:03 +0000
+Message-ID: <ebbf742e-4d1f-ba90-0ed8-93ea445d0200@nxp.com>
+References: <20191022125502.12495-1-laurentiu.tudor@nxp.com>
+	<20191022125502.12495-2-laurentiu.tudor@nxp.com>
+	<62561dca-cdd7-fe01-a0c3-7b5971c96e7e@arm.com>
+	<50a42575-02b2-c558-0609-90e2ad3f515b@nxp.com>
+	<20191024020140.GA6057@lst.de>
+In-Reply-To: <20191024020140.GA6057@lst.de>
+Accept-Language: en-US
+Content-Language: en-US
+X-MS-Has-Attach: 
+X-MS-TNEF-Correlator: 
+authentication-results: spf=none (sender IP is )
+	smtp.mailfrom=laurentiu.tudor@nxp.com; 
+x-originating-ip: [89.37.124.34]
+x-ms-publictraffictype: Email
+x-ms-office365-filtering-ht: Tenant
+x-ms-office365-filtering-correlation-id: 566b47aa-28e5-43f4-a5d4-08d75856a3c1
+x-ms-traffictypediagnostic: VI1PR04MB4912:|VI1PR04MB4912:
+x-ms-exchange-transport-forked: True
+x-microsoft-antispam-prvs: <VI1PR04MB49125CA14F9CC1B4326A0F68EC6A0@VI1PR04MB4912.eurprd04.prod.outlook.com>
+x-ms-oob-tlc-oobclassifiers: OLM:8882;
+x-forefront-prvs: 0200DDA8BE
+x-forefront-antispam-report: SFV:NSPM;
+	SFS:(10009020)(4636009)(376002)(396003)(136003)(39860400002)(346002)(366004)(52314003)(199004)(189003)(14454004)(6916009)(31696002)(71200400001)(6246003)(8936002)(71190400001)(76116006)(91956017)(4326008)(561944003)(229853002)(6512007)(1730700003)(81156014)(81166006)(66066001)(8676002)(6486002)(66556008)(5640700003)(64756008)(66446008)(478600001)(66476007)(66946007)(6436002)(316002)(6506007)(53546011)(2351001)(2906002)(54906003)(6116002)(186003)(3846002)(305945005)(7736002)(26005)(31686004)(25786009)(86362001)(76176011)(102836004)(99286004)(2616005)(2501003)(11346002)(446003)(44832011)(486006)(476003)(36756003)(5660300002)(256004);
+	DIR:OUT; SFP:1101; SCL:1; SRVR:VI1PR04MB4912;
+	H:VI1PR04MB5134.eurprd04.prod.outlook.com; FPR:; SPF:None;
+	LANG:en; PTR:InfoNoRecords; A:1; MX:1; 
+received-spf: None (protection.outlook.com: nxp.com does not designate
+	permitted sender hosts)
+x-ms-exchange-senderadcheck: 1
+x-microsoft-antispam: BCL:0;
+x-microsoft-antispam-message-info: fFvD6/irDk36MlUmhZiGirNVQX+1Fw8ol8y9qJ6zFLcYLW0ToTca3ATXxjtOJx+tXMqqrjrCAgnX6qMI1ynze0Zi2/BNFOr2TeEtRNTogUyx0qPInUn1aw5mdZ2lixCf5BA1fx1V2rD+BOh2dwlZXhmrv4/fG3YMPbHGKTBBuBOg2bnIxybi8EVhu13jEtVujd/iStieVagQstld4twNzB8rG/c8XALEqkbDSJhQM4fxBem7FUrqnwvlPhJZcRGQv6VCblMw+k7SFf8J1mOjyq2K8rFSqIUc+PMzTY0SjP1RH1nOn4Rb1/TSAUz4MK5KQcBwDpgKB8B3qXgTAPST+F1HY3g/HIGZf2Sc4EWvdB9ULsdVqvSvX527xbZQA4+dt4iGuK5Or/kP/ibCPDrvJdB1L7i91d8zEvImdS8G07yTfOV9oRxqebPcHrpk2T1J
+Content-ID: <975444B2A0E5ED48B1C92BF5D9BCD6C0@eurprd04.prod.outlook.com>
 MIME-Version: 1.0
-X-TM-SNTS-SMTP: B3428B34711F9D4340351C5FBF71C7D9A7707DD264962EFF9A5C5A10E427B3F82000:8
-X-MTK: N
-Cc: youlin.pei@mediatek.com, anan.sun@mediatek.com,
-	Nicolas Boichat <drinkcat@chromium.org>, cui.zhang@mediatek.com,
-	srv_heupstream@mediatek.com, chao.hao@mediatek.com,
-	edison.hsieh@mediatek.com, Will Deacon <will.deacon@arm.com>,
-	linux-kernel@vger.kernel.org, Evan Green <evgreen@chromium.org>,
-	Tomasz Figa <tfiga@google.com>, iommu@lists.linux-foundation.org,
-	linux-mediatek@lists.infradead.org,
-	Matthias Brugger <matthias.bgg@gmail.com>,
-	Robin Murphy <robin.murphy@arm.com>, linux-arm-kernel@lists.infradead.org
+X-OriginatorOrg: nxp.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: 566b47aa-28e5-43f4-a5d4-08d75856a3c1
+X-MS-Exchange-CrossTenant-originalarrivaltime: 24 Oct 2019 07:49:03.2174 (UTC)
+X-MS-Exchange-CrossTenant-fromentityheader: Hosted
+X-MS-Exchange-CrossTenant-id: 686ea1d3-bc2b-4c6f-a92c-d99c5c301635
+X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
+X-MS-Exchange-CrossTenant-userprincipalname: RJWJQ0W9lCl3zNMbuy+H80YzerbvQfd2U/uTC6I1gFdTF2N672LMrr1SFLEaMfty3LfCzgCyGBGU/bvetBMIUg==
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: VI1PR04MB4912
+Cc: Ioana Ciocoi Radulescu <ruxandra.radulescu@nxp.com>,
+	Madalin Bucur <madalin.bucur@nxp.com>,
+	"netdev@vger.kernel.org" <netdev@vger.kernel.org>,
+	"linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
+	Leo Li <leoyang.li@nxp.com>,
+	"iommu@lists.linux-foundation.org" <iommu@lists.linux-foundation.org>,
+	Ioana Ciornei <ioana.ciornei@nxp.com>, Robin Murphy <robin.murphy@arm.com>,
+	"davem@davemloft.net" <davem@davemloft.net>
 X-BeenThere: iommu@lists.linux-foundation.org
 X-Mailman-Version: 2.1.12
 Precedence: list
@@ -82,72 +130,39 @@ Content-Transfer-Encoding: 7bit
 Sender: iommu-bounces@lists.linux-foundation.org
 Errors-To: iommu-bounces@lists.linux-foundation.org
 
-On Wed, 2019-10-23 at 17:55 +0100, Will Deacon wrote:
-> On Wed, Oct 16, 2019 at 11:33:08AM +0800, Yong Wu wrote:
-> > Use the iommu_gather mechanism to achieve the tlb range flush.
-> > Gather the iova range in the "tlb_add_page", then flush the merged iova
-> > range in iotlb_sync.
-> > 
-> > Suggested-by: Tomasz Figa <tfiga@chromium.org>
-> > Signed-off-by: Yong Wu <yong.wu@mediatek.com>
-> > ---
-> >  drivers/iommu/mtk_iommu.c | 12 ++++++++----
-> >  1 file changed, 8 insertions(+), 4 deletions(-)
-> > 
-> > diff --git a/drivers/iommu/mtk_iommu.c b/drivers/iommu/mtk_iommu.c
-> > index c2f6c78..81ac95f 100644
-> > --- a/drivers/iommu/mtk_iommu.c
-> > +++ b/drivers/iommu/mtk_iommu.c
-> > @@ -245,11 +245,9 @@ static void mtk_iommu_tlb_flush_page_nosync(struct iommu_iotlb_gather *gather,
-> >  					    void *cookie)
-> >  {
-> >  	struct mtk_iommu_data *data = cookie;
-> > -	unsigned long flags;
-> > +	struct iommu_domain *domain = &data->m4u_dom->domain;
-> >  
-> > -	spin_lock_irqsave(&data->tlb_lock, flags);
-> > -	mtk_iommu_tlb_add_flush_nosync(iova, granule, granule, true, cookie);
-> > -	spin_unlock_irqrestore(&data->tlb_lock, flags);
-> > +	iommu_iotlb_gather_add_page(domain, gather, iova, granule);
+
+
+On 24.10.2019 05:01, hch@lst.de wrote:
+> On Wed, Oct 23, 2019 at 11:53:41AM +0000, Laurentiu Tudor wrote:
+>> We had an internal discussion over these points you are raising and
+>> Madalin (cc-ed) came up with another idea: instead of adding this prone
+>> to misuse api how about experimenting with a new dma unmap and dma sync
+>> variants that would return the physical address by calling the newly
+>> introduced dma map op. Something along these lines:
+>>    * phys_addr_t dma_unmap_page_ret_phys(...)
+>>    * phys_addr_t dma_unmap_single_ret_phys(...)
+>>    * phys_addr_t dma_sync_single_for_cpu_ret_phys(...)
+>> I'm thinking that this proposal should reduce the risks opened by the
+>> initial variant.
+>> Please let me know what you think.
 > 
-> You need to be careful here, because iommu_iotlb_gather_add_page() can
-> call iommu_tlb_sync() in some situations and you don't hold the lock.
+> I'm not sure what the ret is supposed to mean, but I generally like
+> that idea better.  
 
-The mtk_iommu_iotlb_sync below already has the lock in it, so I delete
-the lock here.
+It was supposed to be short for "return" but given that I'm not good at 
+naming stuff I'll just drop it.
 
-> 
-> >  static const struct iommu_flush_ops mtk_iommu_flush_ops = {
-> > @@ -469,9 +467,15 @@ static void mtk_iommu_iotlb_sync(struct iommu_domain *domain,
-> >  				 struct iommu_iotlb_gather *gather)
-> >  {
-> >  	struct mtk_iommu_data *data = mtk_iommu_get_m4u_data();
-> > +	size_t length = gather->end - gather->start;
-> >  	unsigned long flags;
-> >  
-> > +	if (gather->start == ULONG_MAX)
-> > +		return;
-> > +
-> >  	spin_lock_irqsave(&data->tlb_lock, flags);
-> > +	mtk_iommu_tlb_add_flush_nosync(gather->start, length, gather->pgsize,
-> > +				       false, data);
-> >  	mtk_iommu_tlb_sync(data);
-> >  	spin_unlock_irqrestore(&data->tlb_lock, flags);
-> 
-> Modulo my comment above, this fixes my previous comment. Given that mainline
-> is already broken, I guess the runtime bisectability isn't a problem.
+> We also need to make sure there is an easy way
+> to figure out if these APIs are available, as they generally aren't
+> for any non-IOMMU API IOMMU drivers.
 
-As the reply in [2/7]. the mainline is not broken after [2/7], it only
-go to the previous status before commit(4d689b619445).
+I was really hoping to manage making them as generic as possible but 
+anyway, I'll start working on a PoC and see how it turns out. This will 
+probably happen sometime next next week as the following week I'll be 
+traveling to a conference.
 
-After using the iommu_gather, the iova will be the merged range in this
-iotlb_sync, it is just fit to do the tlb-flush/tlb-sync. then it fixes
-our potential issue(No tlb-sync for the previous tlb-flush range).
-
-> 
-> Will
-
-
+---
+Best Regards, Laurentiu
 _______________________________________________
 iommu mailing list
 iommu@lists.linux-foundation.org
