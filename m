@@ -2,66 +2,116 @@ Return-Path: <SRS0=zRLl=YR=lists.linux-foundation.org=iommu-bounces@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-5.3 required=3.0 tests=DKIM_INVALID,DKIM_SIGNED,
-	MAILING_LIST_MULTI,SIGNED_OFF_BY,SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED,
-	USER_AGENT_SANE_1 autolearn=ham autolearn_force=no version=3.4.0
+X-Spam-Status: No, score=-3.5 required=3.0 tests=DKIM_INVALID,DKIM_SIGNED,
+	HEADER_FROM_DIFFERENT_DOMAINS,MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS,
+	URIBL_BLOCKED,USER_AGENT_GIT autolearn=no autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 6592CCA9EBD
-	for <iommu@archiver.kernel.org>; Thu, 24 Oct 2019 11:40:29 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 0FA5CCA9EAF
+	for <iommu@archiver.kernel.org>; Thu, 24 Oct 2019 12:41:46 +0000 (UTC)
 Received: from mail.linuxfoundation.org (mail.linuxfoundation.org [140.211.169.12])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by mail.kernel.org (Postfix) with ESMTPS id 3054321872
-	for <iommu@archiver.kernel.org>; Thu, 24 Oct 2019 11:40:29 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTPS id 9C940205C9
+	for <iommu@archiver.kernel.org>; Thu, 24 Oct 2019 12:41:45 +0000 (UTC)
 Authentication-Results: mail.kernel.org;
-	dkim=fail reason="signature verification failed" (1024-bit key) header.d=kernel.org header.i=@kernel.org header.b="1dhg8R4z"
-DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 3054321872
-Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=kernel.org
+	dkim=fail reason="signature verification failed" (1024-bit key) header.d=nxp.com header.i=@nxp.com header.b="DA8mu3C3"
+DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 9C940205C9
+Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=nxp.com
 Authentication-Results: mail.kernel.org; spf=pass smtp.mailfrom=iommu-bounces@lists.linux-foundation.org
 Received: from mail.linux-foundation.org (localhost [127.0.0.1])
-	by mail.linuxfoundation.org (Postfix) with ESMTP id F30CB1516;
-	Thu, 24 Oct 2019 11:40:28 +0000 (UTC)
+	by mail.linuxfoundation.org (Postfix) with ESMTP id 636EF1532;
+	Thu, 24 Oct 2019 12:41:45 +0000 (UTC)
 Received: from smtp1.linuxfoundation.org (smtp1.linux-foundation.org
 	[172.17.192.35])
-	by mail.linuxfoundation.org (Postfix) with ESMTPS id DA5451515
+	by mail.linuxfoundation.org (Postfix) with ESMTPS id AE3F9152F
 	for <iommu@lists.linux-foundation.org>;
-	Thu, 24 Oct 2019 11:40:27 +0000 (UTC)
-Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp1.linuxfoundation.org (Postfix) with ESMTPS id 245B48AC
+	Thu, 24 Oct 2019 12:41:44 +0000 (UTC)
+X-Greylist: whitelisted by SQLgrey-1.7.6
+Received: from EUR01-DB5-obe.outbound.protection.outlook.com
+	(mail-eopbgr150084.outbound.protection.outlook.com [40.107.15.84])
+	by smtp1.linuxfoundation.org (Postfix) with ESMTPS id D64B689C
 	for <iommu@lists.linux-foundation.org>;
-	Thu, 24 Oct 2019 11:40:27 +0000 (UTC)
-Received: from willie-the-truck (236.31.169.217.in-addr.arpa [217.169.31.236])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256
-	bits)) (No client certificate requested)
-	by mail.kernel.org (Postfix) with ESMTPSA id E88FA20679;
-	Thu, 24 Oct 2019 11:40:25 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=default; t=1571917227;
-	bh=+5fAWXg25kh+vAkL7o5Ici9Ua+HaM74bc25Pav0jXqQ=;
-	h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-	b=1dhg8R4zpzAi631XaKnTUPCNGgsuKBT7TQ9X3uiJPcF4sctDfQPCLCeIuWQoi/sdY
-	u9NP7bCmBNR5eRn/rPhg6YGF+a2d2maBHYj0oak5UODbjrps63f9BEf/FgUN2dVbdf
-	g2ub9w6HKV0/NjmlSYXzKAmrTARIKCJw+0tHUF+M=
-Date: Thu, 24 Oct 2019 12:40:22 +0100
-From: Will Deacon <will@kernel.org>
-To: Robin Murphy <robin.murphy@arm.com>
-Subject: Re: [PATCH 3/4] iommu/io-pgtable-arm: Rationalise TCR handling
-Message-ID: <20191024114022.GE1242@willie-the-truck>
-References: <78df4f8e2510e88f3ded59eb385f79b4442ed4f2.1566238530.git.robin.murphy@arm.com>
-	<20190820103115.o7neehdethf7sbqi@willie-the-truck>
-	<48ca6945-de73-116a-3230-84862ca9e60b@arm.com>
-	<20190820160700.6ircxomwuo5bksqz@willie-the-truck>
-	<8cc47f43-ad74-b4e2-e977-6c78780abc91@arm.com>
-	<20190821121120.34wqo7vj56pqk57c@willie-the-truck>
-	<cdceec32-8dae-2c9e-8f66-0cd86288529f@arm.com>
-	<20191003173352.GA13386@jcrouse1-lnx.qualcomm.com>
-	<20191024105111.GB1242@willie-the-truck>
-	<63fa5848-372d-fe09-7502-1b9ecbcc6cf0@arm.com>
+	Thu, 24 Oct 2019 12:41:43 +0000 (UTC)
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+	b=MjOCm2LQ9SK7AfTb3L8T2rnHSs1pDXcxf9ds2mHbYkkkCaLDGtvnyQefDTJQAqAfDo6mcHq0nsyp/dTDdyI+O/LZLyBqucSvxN7KrLnZ+C9gTiunDix8RsmHNRkcyC3lzV8tmN7hRjxqe7mKSXsEL596L92woODdbZvIpJAa91BHL4a7xxD+hMfO3zvrWImQEl4XOXrdGPAT8iuRk/rwRBO6dFjl7UGF4BO/2UCnQL6lH6qG3JxZUn+bbmIjrSxgUiRH0bZqigkXiD9Lffj0GxqFAytMxO2JpqhwLr+qIKS8ZqZ5ykRdWVbuUMAgPGaRSsfum1ynPaQUd/mr6oI2Gw==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com; 
+	s=arcselector9901;
+	h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+	bh=e6rBLvHYFcbEahyZuys4gDUn7xt/7+w5yuYCF9fU/J0=;
+	b=h0DsIwiqq3FX/SPKQj7Oa3YpAc8G4URiTbBmx1RmiMETb2oLmcnS701+jrVYvw9IjVx6iKvA4+LdPCyKy/9laRjlfwheU5hVXTgy0jrc9Tk6bR4vVU3U9BQa0BMnm60HMHbhtW/jHRH+T6ELWG6SQymEU7HWkfRqDBzixitPnzRCGFyHUyo35SKvWqFeLpBvTjqG+uVk8wmn8ooi+/N1fvvUSRK9T8a/LpY1NPQpGcwNKzI9cy6Kn0XtKYfwCsnswy3ulh7ueRzS6LOIof5iW3iSReSa9jFNKrSTOktg9DYoB6wbeAby8tnxgipaR31iqYsA0bFAOx/7c4cLHnrhBQ==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+	smtp.mailfrom=nxp.com; dmarc=pass action=none header.from=nxp.com;
+	dkim=pass header.d=nxp.com; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=nxp.com; s=selector2; 
+	h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+	bh=e6rBLvHYFcbEahyZuys4gDUn7xt/7+w5yuYCF9fU/J0=;
+	b=DA8mu3C34yVZ4Gv5M2ha2/r4QlR1a7w7lEFavjcKGskj7VN4NOP04IZO+gng7ovkiBsqih4bn5BeFLt2AfGsMHxSNu+kFj7MGmw9GZUas47EptxDI7HlAjsRWV2pveSkr7WSEf6EC5Iu7mUMAeh8cvihblQnIpuBva/hFEyNFmo=
+Received: from VI1PR04MB5134.eurprd04.prod.outlook.com (20.177.51.208) by
+	VI1PR04MB4701.eurprd04.prod.outlook.com (20.177.48.154) with Microsoft
+	SMTP
+	Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+	15.20.2387.22; Thu, 24 Oct 2019 12:41:40 +0000
+Received: from VI1PR04MB5134.eurprd04.prod.outlook.com
+	([fe80::10f0:af2c:76ac:dfb]) by VI1PR04MB5134.eurprd04.prod.outlook.com
+	([fe80::10f0:af2c:76ac:dfb%7]) with mapi id 15.20.2347.030;
+	Thu, 24 Oct 2019 12:41:40 +0000
+From: Laurentiu Tudor <laurentiu.tudor@nxp.com>
+To: "hch@lst.de" <hch@lst.de>, "joro@8bytes.org" <joro@8bytes.org>, Ioana
+	Ciocoi Radulescu <ruxandra.radulescu@nxp.com>,
+	"linux-kernel@vger.kernel.org"
+	<linux-kernel@vger.kernel.org>, "iommu@lists.linux-foundation.org"
+	<iommu@lists.linux-foundation.org>, "netdev@vger.kernel.org"
+	<netdev@vger.kernel.org>, Ioana Ciornei <ioana.ciornei@nxp.com>
+Subject: [PATCH v2 0/3] dma-mapping: introduce new dma unmap and sync variants
+Thread-Topic: [PATCH v2 0/3] dma-mapping: introduce new dma unmap and sync
+	variants
+Thread-Index: AQHVimhhuMRbxKrZqkygDgTD8mS8Pw==
+Date: Thu, 24 Oct 2019 12:41:40 +0000
+Message-ID: <20191024124130.16871-1-laurentiu.tudor@nxp.com>
+Accept-Language: en-US
+Content-Language: en-US
+X-MS-Has-Attach: 
+X-MS-TNEF-Correlator: 
+x-clientproxiedby: LO2P265CA0278.GBRP265.PROD.OUTLOOK.COM
+	(2603:10a6:600:a1::26) To VI1PR04MB5134.eurprd04.prod.outlook.com
+	(2603:10a6:803:5f::16)
+x-mailer: git-send-email 2.17.1
+authentication-results: spf=none (sender IP is )
+	smtp.mailfrom=laurentiu.tudor@nxp.com; 
+x-ms-exchange-messagesentrepresentingtype: 1
+x-originating-ip: [89.37.124.34]
+x-ms-publictraffictype: Email
+x-ms-office365-filtering-ht: Tenant
+x-ms-office365-filtering-correlation-id: b2ebf557-6ff8-4985-3fe0-08d7587f845f
+x-ms-traffictypediagnostic: VI1PR04MB4701:|VI1PR04MB4701:
+x-ms-exchange-purlcount: 1
+x-ms-exchange-transport-forked: True
+x-microsoft-antispam-prvs: <VI1PR04MB4701101BB20CD68AEDCAA947EC6A0@VI1PR04MB4701.eurprd04.prod.outlook.com>
+x-ms-oob-tlc-oobclassifiers: OLM:7219;
+x-forefront-prvs: 0200DDA8BE
+x-forefront-antispam-report: SFV:NSPM;
+	SFS:(10009020)(4636009)(136003)(376002)(346002)(366004)(396003)(39860400002)(199004)(189003)(66556008)(64756008)(66476007)(66946007)(66446008)(1076003)(8676002)(8936002)(81156014)(50226002)(2201001)(305945005)(66066001)(7736002)(2501003)(54906003)(99286004)(81166006)(86362001)(186003)(5660300002)(14454004)(316002)(52116002)(6506007)(2616005)(256004)(14444005)(26005)(102836004)(386003)(6306002)(6512007)(71200400001)(71190400001)(6486002)(6436002)(25786009)(486006)(110136005)(478600001)(44832011)(4326008)(476003)(2906002)(966005)(6636002)(6116002)(3846002)(36756003);
+	DIR:OUT; SFP:1101; SCL:1; SRVR:VI1PR04MB4701;
+	H:VI1PR04MB5134.eurprd04.prod.outlook.com; FPR:; SPF:None;
+	LANG:en; PTR:InfoNoRecords; A:1; MX:1; 
+received-spf: None (protection.outlook.com: nxp.com does not designate
+	permitted sender hosts)
+x-ms-exchange-senderadcheck: 1
+x-microsoft-antispam: BCL:0;
+x-microsoft-antispam-message-info: 5sPC0aiWACVfaSy11GuFC9KYgdzKrDdzxXVAiFC07r3P0isvsknAy4vbtwbiasdf1zDla5J3trYGMqOPzmJC47M8FyAcgwJiJ7cBPVdIinbc9k2aOidx1yMC1LuFdPYI88j5/WLOjILcZc5k6qZhc4HV67lOS31hmwMLLjign95OUielTW9kme8R8L/n8DzpChpalpejF9Kxe1LanPUDuvhfc7Tm3EvE0uLdpB9xko1GtdXu/AdKdNgybdu1BJY/4rA4FdMT5r2l2hX1mwgcOxGpQrhGNDlpfWZ/AVEBXqaMtqgvYSJISCI5QurnNYoprrPf9gmgurCVTDCQSQKLqUYkTOdgw4mhBkmixfjGbuyKOyY+8/UKK6hkaIKejwFH0yoZhLmjPZ07iHZ3qWcvsqjEtNBm80tO4lUwkAYpWztaDqJQlduzCYMB0v2TRcwWUR9c6JYw1Ea++zipjfbetutlmNuxjwNRfEnOVyRH53Y=
+Content-ID: <E0571BA8D5EC9242B37A84DAD6498C98@eurprd04.prod.outlook.com>
 MIME-Version: 1.0
-Content-Disposition: inline
-In-Reply-To: <63fa5848-372d-fe09-7502-1b9ecbcc6cf0@arm.com>
-User-Agent: Mutt/1.10.1 (2018-07-13)
-Cc: iommu@lists.linux-foundation.org, linux-arm-kernel@lists.infradead.org
+X-OriginatorOrg: nxp.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: b2ebf557-6ff8-4985-3fe0-08d7587f845f
+X-MS-Exchange-CrossTenant-originalarrivaltime: 24 Oct 2019 12:41:40.2669 (UTC)
+X-MS-Exchange-CrossTenant-fromentityheader: Hosted
+X-MS-Exchange-CrossTenant-id: 686ea1d3-bc2b-4c6f-a92c-d99c5c301635
+X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
+X-MS-Exchange-CrossTenant-userprincipalname: sw63SrA/qDBJAtmd7W4R1kw4Lh4Um7jJgXzp5QTgWwdtNA1VOzx8BE2cqzvQI7Hdiw9Ih8sUDGqeqR6Bpj7H3g==
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: VI1PR04MB4701
+Cc: Madalin Bucur <madalin.bucur@nxp.com>, Leo Li <leoyang.li@nxp.com>,
+	"robin.murphy@arm.com" <robin.murphy@arm.com>,
+	"davem@davemloft.net" <davem@davemloft.net>
 X-BeenThere: iommu@lists.linux-foundation.org
 X-Mailman-Version: 2.1.12
 Precedence: list
@@ -79,95 +129,42 @@ Content-Transfer-Encoding: 7bit
 Sender: iommu-bounces@lists.linux-foundation.org
 Errors-To: iommu-bounces@lists.linux-foundation.org
 
-On Thu, Oct 24, 2019 at 12:23:46PM +0100, Robin Murphy wrote:
-> On 2019-10-24 11:51 am, Will Deacon wrote:
-> > On Thu, Oct 03, 2019 at 11:33:52AM -0600, Jordan Crouse wrote:
-> > > On Wed, Aug 21, 2019 at 01:56:20PM +0100, Robin Murphy wrote:
-> > > > On 21/08/2019 13:11, Will Deacon wrote:
-> > > > > On Tue, Aug 20, 2019 at 07:41:52PM +0100, Robin Murphy wrote:
-> > > > > > On 20/08/2019 17:07, Will Deacon wrote:
-> > > > > > > On Tue, Aug 20, 2019 at 04:25:56PM +0100, Robin Murphy wrote:
-> > > > > > > > On 20/08/2019 11:31, Will Deacon wrote:
-> > > > > > > > > On Mon, Aug 19, 2019 at 07:19:30PM +0100, Robin Murphy wrote:
-> > > > > > > > > > Although it's conceptually nice for the io_pgtable_cfg to provide a
-> > > > > > > > > > standard VMSA TCR value, the reality is that no VMSA-compliant IOMMU
-> > > > > > > > > > looks exactly like an Arm CPU, and they all have various other TCR
-> > > > > > > > > > controls which io-pgtable can't be expected to understand. Thus since
-> > > > > > > > > > there is an expectation that drivers will have to add to the given TCR
-> > > > > > > > > > value anyway, let's strip it down to just the essentials that are
-> > > > > > > > > > directly relevant to io-pgatble's inner workings - namely the address
-> > > > > > > > > > sizes, walk attributes, and where appropriate, format selection.
-> > > > > > > > > > 
-> > > > > > > > > > Signed-off-by: Robin Murphy <robin.murphy@arm.com>
-> > > > > > > > > > ---
-> > > > > > > > > >     drivers/iommu/arm-smmu-v3.c        | 7 +------
-> > > > > > > > > >     drivers/iommu/arm-smmu.c           | 1 +
-> > > > > > > > > >     drivers/iommu/arm-smmu.h           | 2 ++
-> > > > > > > > > >     drivers/iommu/io-pgtable-arm-v7s.c | 6 ++----
-> > > > > > > > > >     drivers/iommu/io-pgtable-arm.c     | 4 ----
-> > > > > > > > > >     drivers/iommu/qcom_iommu.c         | 2 +-
-> > > > > > > > > >     6 files changed, 7 insertions(+), 15 deletions(-)
-> > > > > > > > > 
-> > > > > > > > > Hmm, so I'm a bit nervous about this one since I think we really should
-> > > > > > > > > be providing a TCR with EPD1 set if we're only giving you TTBR0. Relying
-> > > > > > > > > on the driver to do this worries me. See my comments on the next patch.
-> > > > > > > > 
-> > > > > > > > The whole idea is that we already know we can't provide a *complete* TCR
-> > > > > > > > value (not least because anything above bit 31 is the wild west), thus
-> > > > > > > > there's really no point in io-pgtable trying to provide anything other than
-> > > > > > > > the parts it definitely controls. It makes sense to provide this partial TCR
-> > > > > > > > value "as if" for TTBR0, since that's the most common case, but ultimately
-> > > > > > > > io-pgatble doesn't know (or need to) which TTBR the caller intends to
-> > > > > > > > actually use for this table. Even if the caller *is* allocating it for
-> > > > > > > > TTBR0, io-pgtable doesn't know that they haven't got something live in TTBR1
-> > > > > > > > already, so it still wouldn't be in a position to make the EPD1 call either
-> > > > > > > > way.
-> > > > > > > 
-> > > > > > > Ok, but the driver can happily rewrite/ignore what it gets back. I suppose
-> > > > > > > an alternative would be scrapped the 'u64 tcr' and instead having a bunch
-> > > > > > > of named bitfields for the stuff we're actually providing, although I'd
-> > > > > > > still like EPDx to be in there.
-> > > > > > 
-> > > > > > I like the bitfield idea; it would certainly emphasise the "you have to do
-> > > > > > something more with this" angle that I'm pushing towards here, but still
-> > > > > > leave things framed in TCR terms without having to go to some more general
-> > > > > > abstraction. It really doesn't play into your EPD argument though - such a
-> > > > > > config would be providing TxSZ/TGx/IRGNx/ORGNx/SHx, but EPDy, for y = !x.
-> > > > > > For a driver to understand that and do the right thing with it is even more
-> > > > > > involved than for the driver to just set EPD1 by itself anyway.
-> > > > > 
-> > > > > Having considered the bitfield idea some more, I'm less attached to EPDx
-> > > > > because we simply wouldn't be making a statement about them, rather than a
-> > > > > (dangerous) zero value and expecting it to be ignored. So I think we're in
-> > > > > agreement on that.
-> > > > 
-> > > > Cool, I'll give bitfields a go for v2.
-> > > > 
-> > > > > The only part I'm still stuck to is that I think io-pgtable should know
-> > > > > whether it's targetting TTBR0 or TTBR1 so that it can sanitise input
-> > > > > addresses correctly. Doing this in the driver code is possible, but I'd
-> > > > > rather not start from that position, particularly as it would require things
-> > > > > like sign-extension in the TLBI callbacks.
-> > > 
-> > > Bumping this as is our tradition in the -rc1 time frame before we get all
-> > > distracted with other stuff. It sounds like the last agreement was for a
-> > > TTBR1 hint for the EDP and the sign extension in the functions.
-> > 
-> > If somebody respins this using bitfields and an explicit TTBR1 quirk then
-> > I'll merge it.
-> 
-> Oops, the ping did register, I just didn't react outwardly ;)
-> 
-> I have been working on v2, and plan to have something ready next week - the
-> holdup was that I started refactoring all the argument passing since the
-> number of things we have to carry through from one end of map/unmap to the
-> other is getting a bit silly, but I think I can still finish the TTBR1 quirk
-> without that, so if I don't get it cracked imminently then I'll put it aside
-> to revisit later.
+From: Laurentiu Tudor <laurentiu.tudor@nxp.com>
 
-Cheers, Robin! I'll keep an eye out for it.
+This series introduces a few new dma unmap and sync api variants that,
+on top of what the originals do, return the virtual address
+corresponding to the input dma address. In order to do that a new dma
+map op is added, .get_virt_addr that takes the input dma address and
+returns the virtual address backing it up.
+The second patch adds an implementation for this new dma map op in the
+generic iommu dma glue code and wires it in.
+The third patch updates the dpaa2-eth driver to use the new apis.
 
-Will
+Context: https://lkml.org/lkml/2019/5/31/684
+
+Changes in v2
+ * use "dma_unmap_*_desc" names (Robin)
+ * return va/page instead of phys addr (Robin)
+
+Changes since RFC
+ * completely changed the approach: added unmap and sync variants that
+   return the phys addr instead of adding a new dma to phys conversion
+   function
+
+Laurentiu Tudor (3):
+  dma-mapping: introduce new dma unmap and sync api variants
+  iommu/dma: wire-up new dma map op .get_virt_addr
+  dpaa2_eth: use new unmap and sync dma api variants
+
+ drivers/iommu/dma-iommu.c                     | 16 ++++++
+ .../net/ethernet/freescale/dpaa2/dpaa2-eth.c  | 40 +++++---------
+ .../net/ethernet/freescale/dpaa2/dpaa2-eth.h  |  1 -
+ include/linux/dma-mapping.h                   | 55 +++++++++++++++++++
+ 4 files changed, 86 insertions(+), 26 deletions(-)
+
+-- 
+2.17.1
+
 _______________________________________________
 iommu mailing list
 iommu@lists.linux-foundation.org
