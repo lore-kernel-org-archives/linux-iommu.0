@@ -7,44 +7,44 @@ X-Spam-Status: No, score=-9.7 required=3.0 tests=HEADER_FROM_DIFFERENT_DOMAINS,
 	URIBL_BLOCKED,USER_AGENT_GIT autolearn=unavailable autolearn_force=no
 	version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 82BE8CA9EBC
-	for <iommu@archiver.kernel.org>; Thu, 24 Oct 2019 12:52:59 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id F1DA4CA9EAF
+	for <iommu@archiver.kernel.org>; Thu, 24 Oct 2019 12:53:03 +0000 (UTC)
 Received: from mail.linuxfoundation.org (mail.linuxfoundation.org [140.211.169.12])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by mail.kernel.org (Postfix) with ESMTPS id 6135F205C9
-	for <iommu@archiver.kernel.org>; Thu, 24 Oct 2019 12:52:59 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 6135F205C9
+	by mail.kernel.org (Postfix) with ESMTPS id CEF09205C9
+	for <iommu@archiver.kernel.org>; Thu, 24 Oct 2019 12:53:03 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org CEF09205C9
 Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=intel.com
 Authentication-Results: mail.kernel.org; spf=pass smtp.mailfrom=iommu-bounces@lists.linux-foundation.org
 Received: from mail.linux-foundation.org (localhost [127.0.0.1])
-	by mail.linuxfoundation.org (Postfix) with ESMTP id B0730153A;
-	Thu, 24 Oct 2019 12:52:58 +0000 (UTC)
+	by mail.linuxfoundation.org (Postfix) with ESMTP id D49EA1539;
+	Thu, 24 Oct 2019 12:53:01 +0000 (UTC)
 Received: from smtp1.linuxfoundation.org (smtp1.linux-foundation.org
 	[172.17.192.35])
-	by mail.linuxfoundation.org (Postfix) with ESMTPS id 8E0A81539
+	by mail.linuxfoundation.org (Postfix) with ESMTPS id C2EDD1538
 	for <iommu@lists.linux-foundation.org>;
-	Thu, 24 Oct 2019 12:52:57 +0000 (UTC)
+	Thu, 24 Oct 2019 12:53:00 +0000 (UTC)
 X-Greylist: domain auto-whitelisted by SQLgrey-1.7.6
 Received: from mga14.intel.com (mga14.intel.com [192.55.52.115])
-	by smtp1.linuxfoundation.org (Postfix) with ESMTPS id 00E00831
+	by smtp1.linuxfoundation.org (Postfix) with ESMTPS id 0DA1F14D
 	for <iommu@lists.linux-foundation.org>;
-	Thu, 24 Oct 2019 12:52:56 +0000 (UTC)
+	Thu, 24 Oct 2019 12:53:00 +0000 (UTC)
 X-Amp-Result: SKIPPED(no attachment in message)
 X-Amp-File-Uploaded: False
 Received: from orsmga003.jf.intel.com ([10.7.209.27])
 	by fmsmga103.fm.intel.com with ESMTP/TLS/DHE-RSA-AES256-GCM-SHA384;
-	24 Oct 2019 05:52:56 -0700
+	24 Oct 2019 05:52:59 -0700
 X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.68,224,1569308400"; d="scan'208";a="201464809"
+X-IronPort-AV: E=Sophos;i="5.68,224,1569308400"; d="scan'208";a="201464819"
 Received: from iov.bj.intel.com ([10.238.145.67])
-	by orsmga003.jf.intel.com with ESMTP; 24 Oct 2019 05:52:53 -0700
+	by orsmga003.jf.intel.com with ESMTP; 24 Oct 2019 05:52:57 -0700
 From: Liu Yi L <yi.l.liu@intel.com>
 To: alex.williamson@redhat.com,
 	eric.auger@redhat.com
-Subject: [RFC v2 2/3] vfio/type1: VFIO_IOMMU_PASID_REQUEST(alloc/free)
-Date: Thu, 24 Oct 2019 08:26:22 -0400
-Message-Id: <1571919983-3231-3-git-send-email-yi.l.liu@intel.com>
+Subject: [RFC v2 3/3] vfio/type1: bind guest pasid (guest page tables) to host
+Date: Thu, 24 Oct 2019 08:26:23 -0400
+Message-Id: <1571919983-3231-4-git-send-email-yi.l.liu@intel.com>
 X-Mailer: git-send-email 2.7.4
 In-Reply-To: <1571919983-3231-1-git-send-email-yi.l.liu@intel.com>
 References: <1571919983-3231-1-git-send-email-yi.l.liu@intel.com>
@@ -69,62 +69,132 @@ Content-Transfer-Encoding: 7bit
 Sender: iommu-bounces@lists.linux-foundation.org
 Errors-To: iommu-bounces@lists.linux-foundation.org
 
-This patch adds VFIO_IOMMU_PASID_REQUEST ioctl which aims
-to passdown PASID allocation/free request from the virtual
-iommu. This is required to get PASID managed in system-wide.
+This patch adds vfio support to bind guest translation structure
+to host iommu. VFIO exposes iommu programming capability to user-
+space. Guest is a user-space application in host under KVM solution.
+For SVA usage in Virtual Machine, guest owns GVA->GPA translation
+structure. And this part should be passdown to host to enable nested
+translation (or say two stage translation). This patch reuses the
+VFIO_IOMMU_BIND proposal from Jean-Philippe Brucker, and adds new
+bind type for binding guest owned translation structure to host.
+
+*) Add two new ioctls for VFIO containers.
+
+  - VFIO_IOMMU_BIND: for bind request from userspace, it could be
+                   bind a process to a pasid or bind a guest pasid
+                   to a device, this is indicated by type
+  - VFIO_IOMMU_UNBIND: for unbind request from userspace, it could be
+                   unbind a process to a pasid or unbind a guest pasid
+                   to a device, also indicated by type
+  - Bind type:
+	VFIO_IOMMU_BIND_PROCESS: user-space request to bind a process
+                   to a device
+	VFIO_IOMMU_BIND_GUEST_PASID: bind guest owned translation
+                   structure to host iommu. e.g. guest page table
+
+*) Code logic in vfio_iommu_type1_ioctl() to handle VFIO_IOMMU_BIND/UNBIND
 
 Cc: Kevin Tian <kevin.tian@intel.com>
+Signed-off-by: Jean-Philippe Brucker <jean-philippe.brucker@arm.com>
 Signed-off-by: Liu Yi L <yi.l.liu@intel.com>
-Signed-off-by: Yi Sun <yi.y.sun@linux.intel.com>
 Signed-off-by: Jacob Pan <jacob.jun.pan@linux.intel.com>
 ---
- drivers/vfio/vfio_iommu_type1.c | 114 ++++++++++++++++++++++++++++++++++++++++
- include/uapi/linux/vfio.h       |  25 +++++++++
- 2 files changed, 139 insertions(+)
+ drivers/vfio/vfio_iommu_type1.c | 136 ++++++++++++++++++++++++++++++++++++++++
+ include/uapi/linux/vfio.h       |  44 +++++++++++++
+ 2 files changed, 180 insertions(+)
 
 diff --git a/drivers/vfio/vfio_iommu_type1.c b/drivers/vfio/vfio_iommu_type1.c
-index cd8d3a5..3d73a7d 100644
+index 3d73a7d..1a27e25 100644
 --- a/drivers/vfio/vfio_iommu_type1.c
 +++ b/drivers/vfio/vfio_iommu_type1.c
-@@ -2248,6 +2248,83 @@ static int vfio_cache_inv_fn(struct device *dev, void *data)
- 	return iommu_cache_invalidate(dc->domain, dev, &ustruct->info);
+@@ -2325,6 +2325,104 @@ static int vfio_iommu_type1_pasid_free(struct vfio_iommu *iommu,
+ 	return ret;
  }
  
-+static int vfio_iommu_type1_pasid_alloc(struct vfio_iommu *iommu,
-+					 int min_pasid,
-+					 int max_pasid)
++static int vfio_bind_gpasid_fn(struct device *dev, void *data)
 +{
-+	int ret;
-+	ioasid_t pasid;
-+	struct mm_struct *mm = NULL;
++	struct domain_capsule *dc = (struct domain_capsule *)data;
++	struct iommu_gpasid_bind_data *ustruct =
++		(struct iommu_gpasid_bind_data *) dc->data;
++
++	return iommu_sva_bind_gpasid(dc->domain, dev, ustruct);
++}
++
++static int vfio_unbind_gpasid_fn(struct device *dev, void *data)
++{
++	struct domain_capsule *dc = (struct domain_capsule *)data;
++	struct iommu_gpasid_bind_data *ustruct =
++		(struct iommu_gpasid_bind_data *) dc->data;
++
++	return iommu_sva_unbind_gpasid(dc->domain, dev,
++						ustruct->hpasid);
++}
++
++/*
++ * unbind specific gpasid, caller of this function requires hold
++ * vfio_iommu->lock
++ */
++static long vfio_iommu_type1_do_guest_unbind(struct vfio_iommu *iommu,
++		  struct iommu_gpasid_bind_data *gbind_data)
++{
++	return vfio_iommu_lookup_dev(iommu, vfio_unbind_gpasid_fn, gbind_data);
++}
++
++static long vfio_iommu_type1_bind_gpasid(struct vfio_iommu *iommu,
++					    void __user *arg,
++					    struct vfio_iommu_type1_bind *bind)
++{
++	struct iommu_gpasid_bind_data gbind_data;
++	unsigned long minsz;
++	int ret = 0;
++
++	minsz = sizeof(*bind) + sizeof(gbind_data);
++	if (bind->argsz < minsz)
++		return -EINVAL;
++
++	if (copy_from_user(&gbind_data, arg, sizeof(gbind_data)))
++		return -EFAULT;
 +
 +	mutex_lock(&iommu->lock);
 +	if (!IS_IOMMU_CAP_DOMAIN_IN_CONTAINER(iommu)) {
 +		ret = -EINVAL;
 +		goto out_unlock;
 +	}
-+	mm = get_task_mm(current);
-+	/* Track ioasid allocation owner by mm */
-+	pasid = ioasid_alloc((struct ioasid_set *)mm, min_pasid,
-+				max_pasid, NULL);
-+	if (pasid == INVALID_IOASID) {
-+		ret = -ENOSPC;
-+		goto out_unlock;
-+	}
-+	ret = pasid;
++
++	ret = vfio_iommu_lookup_dev(iommu, vfio_bind_gpasid_fn, &gbind_data);
++	/*
++	 * If bind failed, it may not be a total failure. Some devices within
++	 * the iommu group may have bind successfully. Although we don't enable
++	 * pasid capability for non-singletion iommu groups, a unbind operation
++	 * would be helpful to ensure no partial binding for an iommu group.
++	 */
++	if (ret)
++		/*
++		 * Undo all binds that already succeeded, no need to check the
++		 * return value here since some device within the group has no
++		 * successful bind when coming to this place switch.
++		 */
++		vfio_iommu_type1_do_guest_unbind(iommu, &gbind_data);
++
 +out_unlock:
 +	mutex_unlock(&iommu->lock);
-+	if (mm)
-+		mmput(mm);
 +	return ret;
 +}
 +
-+static int vfio_iommu_type1_pasid_free(struct vfio_iommu *iommu,
-+				       unsigned int pasid)
++static long vfio_iommu_type1_unbind_gpasid(struct vfio_iommu *iommu,
++					    void __user *arg,
++					    struct vfio_iommu_type1_bind *bind)
 +{
-+	struct mm_struct *mm = NULL;
-+	void *pdata;
++	struct iommu_gpasid_bind_data gbind_data;
++	unsigned long minsz;
 +	int ret = 0;
++
++	minsz = sizeof(*bind) + sizeof(gbind_data);
++	if (bind->argsz < minsz)
++		return -EINVAL;
++
++	if (copy_from_user(&gbind_data, arg, sizeof(gbind_data)))
++		return -EFAULT;
 +
 +	mutex_lock(&iommu->lock);
 +	if (!IS_IOMMU_CAP_DOMAIN_IN_CONTAINER(iommu)) {
@@ -132,37 +202,9 @@ index cd8d3a5..3d73a7d 100644
 +		goto out_unlock;
 +	}
 +
-+	/**
-+	 * REVISIT:
-+	 * There are two cases free could fail:
-+	 * 1. free pasid by non-owner, we use ioasid_set to track mm, if
-+	 * the set does not match, caller is not permitted to free.
-+	 * 2. free before unbind all devices, we can check if ioasid private
-+	 * data, if data != NULL, then fail to free.
-+	 */
-+	mm = get_task_mm(current);
-+	pdata = ioasid_find((struct ioasid_set *)mm, pasid, NULL);
-+	if (IS_ERR(pdata)) {
-+		if (pdata == ERR_PTR(-ENOENT))
-+			pr_err("PASID %u is not allocated\n", pasid);
-+		else if (pdata == ERR_PTR(-EACCES))
-+			pr_err("Free PASID %u by non-owner, denied", pasid);
-+		else
-+			pr_err("Error searching PASID %u\n", pasid);
-+		ret = -EPERM;
-+		goto out_unlock;
-+	}
-+	if (pdata) {
-+		pr_debug("Cannot free pasid %d with private data\n", pasid);
-+		/* Expect PASID has no private data if not bond */
-+		ret = -EBUSY;
-+		goto out_unlock;
-+	}
-+	ioasid_free(pasid);
++	ret = vfio_iommu_type1_do_guest_unbind(iommu, &gbind_data);
 +
 +out_unlock:
-+	if (mm)
-+		mmput(mm);
 +	mutex_unlock(&iommu->lock);
 +	return ret;
 +}
@@ -170,44 +212,45 @@ index cd8d3a5..3d73a7d 100644
  static long vfio_iommu_type1_ioctl(void *iommu_data,
  				   unsigned int cmd, unsigned long arg)
  {
-@@ -2370,6 +2447,43 @@ static long vfio_iommu_type1_ioctl(void *iommu_data,
- 					    &ustruct);
- 		mutex_unlock(&iommu->lock);
- 		return ret;
+@@ -2484,6 +2582,44 @@ static long vfio_iommu_type1_ioctl(void *iommu_data,
+ 		default:
+ 			return -EINVAL;
+ 		}
 +
-+	} else if (cmd == VFIO_IOMMU_PASID_REQUEST) {
-+		struct vfio_iommu_type1_pasid_request req;
-+		int min_pasid, max_pasid, pasid;
++	} else if (cmd == VFIO_IOMMU_BIND) {
++		struct vfio_iommu_type1_bind bind;
 +
-+		minsz = offsetofend(struct vfio_iommu_type1_pasid_request,
-+				    flag);
++		minsz = offsetofend(struct vfio_iommu_type1_bind, bind_type);
 +
-+		if (copy_from_user(&req, (void __user *)arg, minsz))
++		if (copy_from_user(&bind, (void __user *)arg, minsz))
 +			return -EFAULT;
 +
-+		if (req.argsz < minsz)
++		if (bind.argsz < minsz)
 +			return -EINVAL;
 +
-+		switch (req.flag) {
-+		/**
-+		 * TODO: min_pasid and max_pasid align with
-+		 * typedef unsigned int ioasid_t
-+		 */
-+		case VFIO_IOMMU_PASID_ALLOC:
-+			if (copy_from_user(&min_pasid,
-+				(void __user *)arg + minsz, sizeof(min_pasid)))
-+				return -EFAULT;
-+			if (copy_from_user(&max_pasid,
-+				(void __user *)arg + minsz + sizeof(min_pasid),
-+				sizeof(max_pasid)))
-+				return -EFAULT;
-+			return vfio_iommu_type1_pasid_alloc(iommu,
-+						min_pasid, max_pasid);
-+		case VFIO_IOMMU_PASID_FREE:
-+			if (copy_from_user(&pasid,
-+				(void __user *)arg + minsz, sizeof(pasid)))
-+				return -EFAULT;
-+			return vfio_iommu_type1_pasid_free(iommu, pasid);
++		switch (bind.bind_type) {
++		case VFIO_IOMMU_BIND_GUEST_PASID:
++			return vfio_iommu_type1_bind_gpasid(iommu,
++					(void __user *)(arg + minsz), &bind);
++		default:
++			return -EINVAL;
++		}
++
++	} else if (cmd == VFIO_IOMMU_UNBIND) {
++		struct vfio_iommu_type1_bind bind;
++
++		minsz = offsetofend(struct vfio_iommu_type1_bind, bind_type);
++
++		if (copy_from_user(&bind, (void __user *)arg, minsz))
++			return -EFAULT;
++
++		if (bind.argsz < minsz)
++			return -EINVAL;
++
++		switch (bind.bind_type) {
++		case VFIO_IOMMU_BIND_GUEST_PASID:
++			return vfio_iommu_type1_unbind_gpasid(iommu,
++					(void __user *)(arg + minsz), &bind);
 +		default:
 +			return -EINVAL;
 +		}
@@ -215,37 +258,56 @@ index cd8d3a5..3d73a7d 100644
  
  	return -ENOTTY;
 diff --git a/include/uapi/linux/vfio.h b/include/uapi/linux/vfio.h
-index ccf60a2..04de290 100644
+index 04de290..78e8c64 100644
 --- a/include/uapi/linux/vfio.h
 +++ b/include/uapi/linux/vfio.h
-@@ -807,6 +807,31 @@ struct vfio_iommu_type1_cache_invalidate {
- };
- #define VFIO_IOMMU_CACHE_INVALIDATE      _IO(VFIO_TYPE, VFIO_BASE + 24)
+@@ -832,6 +832,50 @@ struct vfio_iommu_type1_pasid_request {
+  */
+ #define VFIO_IOMMU_PASID_REQUEST	_IO(VFIO_TYPE, VFIO_BASE + 27)
  
-+/*
-+ * @flag=VFIO_IOMMU_PASID_ALLOC, refer to the @min_pasid and @max_pasid fields
-+ * @flag=VFIO_IOMMU_PASID_FREE, refer to @pasid field
-+ */
-+struct vfio_iommu_type1_pasid_request {
-+	__u32	argsz;
-+#define VFIO_IOMMU_PASID_ALLOC	(1 << 0)
-+#define VFIO_IOMMU_PASID_FREE	(1 << 1)
-+	__u32	flag;
-+	union {
-+		struct {
-+			int min_pasid;
-+			int max_pasid;
-+		};
-+		int pasid;
-+	};
++enum vfio_iommu_bind_type {
++	VFIO_IOMMU_BIND_PROCESS,
++	VFIO_IOMMU_BIND_GUEST_PASID,
 +};
 +
-+/**
-+ * VFIO_IOMMU_PASID_REQUEST - _IOWR(VFIO_TYPE, VFIO_BASE + 27,
-+ *				struct vfio_iommu_type1_pasid_request)
-+ *
++/*
++ * Supported types:
++ *	- VFIO_IOMMU_BIND_GUEST_PASID: bind guest pasid, which invoked
++ *			by guest, it takes iommu_gpasid_bind_data in data.
 + */
-+#define VFIO_IOMMU_PASID_REQUEST	_IO(VFIO_TYPE, VFIO_BASE + 27)
++struct vfio_iommu_type1_bind {
++	__u32				argsz;
++	enum vfio_iommu_bind_type	bind_type;
++	__u8				data[];
++};
++
++/*
++ * VFIO_IOMMU_BIND - _IOWR(VFIO_TYPE, VFIO_BASE + 28, struct vfio_iommu_bind)
++ *
++ * Manage address spaces of devices in this container. Initially a TYPE1
++ * container can only have one address space, managed with
++ * VFIO_IOMMU_MAP/UNMAP_DMA.
++ *
++ * An IOMMU of type VFIO_TYPE1_NESTING_IOMMU can be managed by both MAP/UNMAP
++ * and BIND ioctls at the same time. MAP/UNMAP acts on the stage-2 (host) page
++ * tables, and BIND manages the stage-1 (guest) page tables. Other types of
++ * IOMMU may allow MAP/UNMAP and BIND to coexist, where MAP/UNMAP controls
++ * non-PASID traffic and BIND controls PASID traffic. But this depends on the
++ * underlying IOMMU architecture and isn't guaranteed.
++ *
++ * Availability of this feature depends on the device, its bus, the underlying
++ * IOMMU and the CPU architecture.
++ *
++ * returns: 0 on success, -errno on failure.
++ */
++#define VFIO_IOMMU_BIND		_IO(VFIO_TYPE, VFIO_BASE + 28)
++
++/*
++ * VFIO_IOMMU_UNBIND - _IOWR(VFIO_TYPE, VFIO_BASE + 29, struct vfio_iommu_bind)
++ *
++ * Undo what was done by the corresponding VFIO_IOMMU_BIND ioctl.
++ */
++#define VFIO_IOMMU_UNBIND	_IO(VFIO_TYPE, VFIO_BASE + 29)
 +
  /* -------- Additional API for SPAPR TCE (Server POWERPC) IOMMU -------- */
  
