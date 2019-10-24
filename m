@@ -2,58 +2,68 @@ Return-Path: <SRS0=zRLl=YR=lists.linux-foundation.org=iommu-bounces@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-2.2 required=3.0 tests=HEADER_FROM_DIFFERENT_DOMAINS,
-	MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED,USER_AGENT_SANE_1
-	autolearn=no autolearn_force=no version=3.4.0
+X-Spam-Status: No, score=-5.2 required=3.0 tests=HEADER_FROM_DIFFERENT_DOMAINS,
+	MAILING_LIST_MULTI,SIGNED_OFF_BY,SPF_HELO_NONE,SPF_PASS,UNPARSEABLE_RELAY,
+	URIBL_BLOCKED,USER_AGENT_SANE_2 autolearn=unavailable autolearn_force=no
+	version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 1CDF4CA9EBB
-	for <iommu@archiver.kernel.org>; Thu, 24 Oct 2019 02:01:46 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 61B6ACA9EBB
+	for <iommu@archiver.kernel.org>; Thu, 24 Oct 2019 07:22:46 +0000 (UTC)
 Received: from mail.linuxfoundation.org (mail.linuxfoundation.org [140.211.169.12])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by mail.kernel.org (Postfix) with ESMTPS id DE21C2084B
-	for <iommu@archiver.kernel.org>; Thu, 24 Oct 2019 02:01:45 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org DE21C2084B
-Authentication-Results: mail.kernel.org; dmarc=none (p=none dis=none) header.from=lst.de
+	by mail.kernel.org (Postfix) with ESMTPS id 31FCA20684
+	for <iommu@archiver.kernel.org>; Thu, 24 Oct 2019 07:22:46 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 31FCA20684
+Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=mediatek.com
 Authentication-Results: mail.kernel.org; spf=pass smtp.mailfrom=iommu-bounces@lists.linux-foundation.org
 Received: from mail.linux-foundation.org (localhost [127.0.0.1])
-	by mail.linuxfoundation.org (Postfix) with ESMTP id 97C85B7A;
-	Thu, 24 Oct 2019 02:01:45 +0000 (UTC)
+	by mail.linuxfoundation.org (Postfix) with ESMTP id DFA82ACD;
+	Thu, 24 Oct 2019 07:22:45 +0000 (UTC)
 Received: from smtp1.linuxfoundation.org (smtp1.linux-foundation.org
 	[172.17.192.35])
-	by mail.linuxfoundation.org (Postfix) with ESMTPS id C80A3B6D
+	by mail.linuxfoundation.org (Postfix) with ESMTPS id AB5E7499
 	for <iommu@lists.linux-foundation.org>;
-	Thu, 24 Oct 2019 02:01:43 +0000 (UTC)
-X-Greylist: from auto-whitelisted by SQLgrey-1.7.6
-Received: from verein.lst.de (verein.lst.de [213.95.11.211])
-	by smtp1.linuxfoundation.org (Postfix) with ESMTPS id 5020E831
+	Thu, 24 Oct 2019 07:22:44 +0000 (UTC)
+X-Greylist: domain auto-whitelisted by SQLgrey-1.7.6
+Received: from mailgw01.mediatek.com (unknown [1.203.163.78])
+	by smtp1.linuxfoundation.org (Postfix) with ESMTP id 4262687B
 	for <iommu@lists.linux-foundation.org>;
-	Thu, 24 Oct 2019 02:01:43 +0000 (UTC)
-Received: by verein.lst.de (Postfix, from userid 2407)
-	id 3BD0B68BE1; Thu, 24 Oct 2019 04:01:40 +0200 (CEST)
-Date: Thu, 24 Oct 2019 04:01:40 +0200
-From: "hch@lst.de" <hch@lst.de>
-To: Laurentiu Tudor <laurentiu.tudor@nxp.com>
-Subject: Re: [RFC PATCH 1/3] dma-mapping: introduce a new dma api
-	dma_addr_to_phys_addr()
-Message-ID: <20191024020140.GA6057@lst.de>
-References: <20191022125502.12495-1-laurentiu.tudor@nxp.com>
-	<20191022125502.12495-2-laurentiu.tudor@nxp.com>
-	<62561dca-cdd7-fe01-a0c3-7b5971c96e7e@arm.com>
-	<50a42575-02b2-c558-0609-90e2ad3f515b@nxp.com>
+	Thu, 24 Oct 2019 07:22:42 +0000 (UTC)
+X-UUID: d19484b7065342aa99b1cf23ca602cb3-20191024
+X-UUID: d19484b7065342aa99b1cf23ca602cb3-20191024
+Received: from mtkcas32.mediatek.inc [(172.27.4.253)] by mailgw01.mediatek.com
+	(envelope-from <yong.wu@mediatek.com>)
+	(mailgw01.mediatek.com ESMTP with TLS)
+	with ESMTP id 6435572; Thu, 24 Oct 2019 15:22:30 +0800
+Received: from MTKCAS36.mediatek.inc (172.27.4.186) by MTKMBS31N1.mediatek.inc
+	(172.27.4.69) with Microsoft SMTP Server (TLS) id 15.0.1395.4;
+	Thu, 24 Oct 2019 15:22:26 +0800
+Received: from [10.17.3.153] (172.27.4.253) by MTKCAS36.mediatek.inc
+	(172.27.4.170) with Microsoft SMTP Server id 15.0.1395.4 via Frontend
+	Transport; Thu, 24 Oct 2019 15:22:25 +0800
+Message-ID: <1571901746.19130.134.camel@mhfsdcap03>
+Subject: Re: [PATCH v4 2/7] iommu/mediatek: Add a new tlb_lock for tlb_flush
+From: Yong Wu <yong.wu@mediatek.com>
+To: Will Deacon <will@kernel.org>
+Date: Thu, 24 Oct 2019 15:22:26 +0800
+In-Reply-To: <20191023165252.GA27471@willie-the-truck>
+References: <1571196792-12382-1-git-send-email-yong.wu@mediatek.com>
+	<1571196792-12382-3-git-send-email-yong.wu@mediatek.com>
+	<20191023165252.GA27471@willie-the-truck>
+X-Mailer: Evolution 3.10.4-0ubuntu2 
 MIME-Version: 1.0
-Content-Disposition: inline
-In-Reply-To: <50a42575-02b2-c558-0609-90e2ad3f515b@nxp.com>
-User-Agent: Mutt/1.5.17 (2007-11-01)
-Cc: Ioana Ciocoi Radulescu <ruxandra.radulescu@nxp.com>,
-	"davem@davemloft.net" <davem@davemloft.net>,
-	"netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-	Madalin-cristian Bucur <madalin.bucur@nxp.com>,
-	"linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
-	Leo Li <leoyang.li@nxp.com>,
-	"iommu@lists.linux-foundation.org" <iommu@lists.linux-foundation.org>,
-	Ioana Ciornei <ioana.ciornei@nxp.com>,
-	Robin Murphy <robin.murphy@arm.com>, "hch@lst.de" <hch@lst.de>
+X-TM-SNTS-SMTP: A424D45C3762AE65D19C9E0D6AC3052D0F4FDCA255F395DA386AC98B86DDEC702000:8
+X-MTK: N
+Cc: youlin.pei@mediatek.com, anan.sun@mediatek.com,
+	Nicolas Boichat <drinkcat@chromium.org>, cui.zhang@mediatek.com,
+	srv_heupstream@mediatek.com, chao.hao@mediatek.com,
+	edison.hsieh@mediatek.com, Will Deacon <will.deacon@arm.com>,
+	linux-kernel@vger.kernel.org, Evan Green <evgreen@chromium.org>,
+	Tomasz Figa <tfiga@google.com>, iommu@lists.linux-foundation.org,
+	linux-mediatek@lists.infradead.org,
+	Matthias Brugger <matthias.bgg@gmail.com>,
+	Robin Murphy <robin.murphy@arm.com>, linux-arm-kernel@lists.infradead.org
 X-BeenThere: iommu@lists.linux-foundation.org
 X-Mailman-Version: 2.1.12
 Precedence: list
@@ -71,23 +81,63 @@ Content-Transfer-Encoding: 7bit
 Sender: iommu-bounces@lists.linux-foundation.org
 Errors-To: iommu-bounces@lists.linux-foundation.org
 
-On Wed, Oct 23, 2019 at 11:53:41AM +0000, Laurentiu Tudor wrote:
-> We had an internal discussion over these points you are raising and 
-> Madalin (cc-ed) came up with another idea: instead of adding this prone 
-> to misuse api how about experimenting with a new dma unmap and dma sync 
-> variants that would return the physical address by calling the newly 
-> introduced dma map op. Something along these lines:
->   * phys_addr_t dma_unmap_page_ret_phys(...)
->   * phys_addr_t dma_unmap_single_ret_phys(...)
->   * phys_addr_t dma_sync_single_for_cpu_ret_phys(...)
-> I'm thinking that this proposal should reduce the risks opened by the 
-> initial variant.
-> Please let me know what you think.
+On Wed, 2019-10-23 at 17:52 +0100, Will Deacon wrote:
+> On Wed, Oct 16, 2019 at 11:33:07AM +0800, Yong Wu wrote:
+> > The commit 4d689b619445 ("iommu/io-pgtable-arm-v7s: Convert to IOMMU API
+> > TLB sync") help move the tlb_sync of unmap from v7s into the iommu
+> > framework. It helps add a new function "mtk_iommu_iotlb_sync", But it
+> > lacked the lock, then it will cause the variable "tlb_flush_active"
+> > may be changed unexpectedly, we could see this warning log randomly:
+> > 
+> > mtk-iommu 10205000.iommu: Partial TLB flush timed out, falling back to
+> > full flush
+> > 
+> > The HW requires tlb_flush/tlb_sync in pairs strictly, this patch adds
+> > a new tlb_lock for tlb operations to fix this issue.
+> > 
+> > Fixes: 4d689b619445 ("iommu/io-pgtable-arm-v7s: Convert to IOMMU API TLB
+> > sync")
+> > Signed-off-by: Yong Wu <yong.wu@mediatek.com>
+> > ---
+> >  drivers/iommu/mtk_iommu.c | 23 ++++++++++++++++++++++-
+> >  drivers/iommu/mtk_iommu.h |  1 +
+> >  2 files changed, 23 insertions(+), 1 deletion(-)
+> 
+> [...]
+> 
+> >  static void mtk_iommu_tlb_flush_page_nosync(struct iommu_iotlb_gather *gather,
+> >  					    unsigned long iova, size_t granule,
+> >  					    void *cookie)
+> >  {
+> > +	struct mtk_iommu_data *data = cookie;
+> > +	unsigned long flags;
+> > +
+> > +	spin_lock_irqsave(&data->tlb_lock, flags);
+> >  	mtk_iommu_tlb_add_flush_nosync(iova, granule, granule, true, cookie);
+> > +	spin_unlock_irqrestore(&data->tlb_lock, flags);
+> 
+> Given that you release the lock here, what prevents another nosync()
+> operation being issued before you've managed to do the sync()?
 
-I'm not sure what the ret is supposed to mean, but I generally like
-that idea better.  We also need to make sure there is an easy way
-to figure out if these APIs are available, as they generally aren't
-for any non-IOMMU API IOMMU drivers.
+This patch can not guarantee each flush_nosync() always followed by a
+sync().
+
+The current mainline don't guarantee this too(Current v7s call
+flush_nosync 16 times, then call tlb_sync 1 time in the
+supersection/largepage case.). At this situation, it don't guarantee the
+previous tlb_flushes are finished, But we never got the timeout
+issue(Fortunately our HW always work well at that time. Maybe the HW
+finish the previous tlb flush so quickly even though we don't polling
+its finish flag).
+
+We got the timeout issue only after this commit 4d689b619445. This patch
+only fixes this issue via adding a new lock in iotlb_sync.(It don't
+adjust the sequence of flush_nosync() and sync()).
+
+> 
+> Will
+
+
 _______________________________________________
 iommu mailing list
 iommu@lists.linux-foundation.org
