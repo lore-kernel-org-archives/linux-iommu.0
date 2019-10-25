@@ -6,41 +6,41 @@ X-Spam-Status: No, score=-9.7 required=3.0 tests=HEADER_FROM_DIFFERENT_DOMAINS,
 	INCLUDES_PATCH,MAILING_LIST_MULTI,SIGNED_OFF_BY,SPF_HELO_NONE,SPF_PASS,
 	URIBL_BLOCKED,USER_AGENT_GIT autolearn=ham autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 71005CA9EA0
-	for <iommu@archiver.kernel.org>; Fri, 25 Oct 2019 18:09:15 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 998A5C47E49
+	for <iommu@archiver.kernel.org>; Fri, 25 Oct 2019 18:09:20 +0000 (UTC)
 Received: from mail.linuxfoundation.org (mail.linuxfoundation.org [140.211.169.12])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by mail.kernel.org (Postfix) with ESMTPS id 4CB86205F4
-	for <iommu@archiver.kernel.org>; Fri, 25 Oct 2019 18:09:15 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 4CB86205F4
+	by mail.kernel.org (Postfix) with ESMTPS id 76DC3205F4
+	for <iommu@archiver.kernel.org>; Fri, 25 Oct 2019 18:09:19 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 76DC3205F4
 Authentication-Results: mail.kernel.org; dmarc=none (p=none dis=none) header.from=arm.com
 Authentication-Results: mail.kernel.org; spf=pass smtp.mailfrom=iommu-bounces@lists.linux-foundation.org
 Received: from mail.linux-foundation.org (localhost [127.0.0.1])
-	by mail.linuxfoundation.org (Postfix) with ESMTP id C7B14DDD;
+	by mail.linuxfoundation.org (Postfix) with ESMTP id E9B37E22;
 	Fri, 25 Oct 2019 18:08:52 +0000 (UTC)
 Received: from smtp1.linuxfoundation.org (smtp1.linux-foundation.org
 	[172.17.192.35])
-	by mail.linuxfoundation.org (Postfix) with ESMTPS id 7744AE1A
+	by mail.linuxfoundation.org (Postfix) with ESMTPS id 6F7D4DE0
 	for <iommu@lists.linux-foundation.org>;
-	Fri, 25 Oct 2019 18:08:50 +0000 (UTC)
+	Fri, 25 Oct 2019 18:08:51 +0000 (UTC)
 X-Greylist: domain auto-whitelisted by SQLgrey-1.7.6
 Received: from foss.arm.com (foss.arm.com [217.140.110.172])
-	by smtp1.linuxfoundation.org (Postfix) with ESMTP id DCCF187E
+	by smtp1.linuxfoundation.org (Postfix) with ESMTP id B2DA887E
 	for <iommu@lists.linux-foundation.org>;
-	Fri, 25 Oct 2019 18:08:49 +0000 (UTC)
+	Fri, 25 Oct 2019 18:08:50 +0000 (UTC)
 Received: from usa-sjc-imap-foss1.foss.arm.com (unknown [10.121.207.14])
-	by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id 8F749492;
-	Fri, 25 Oct 2019 11:08:49 -0700 (PDT)
+	by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id 73CDE28;
+	Fri, 25 Oct 2019 11:08:50 -0700 (PDT)
 Received: from e110467-lin.cambridge.arm.com (e110467-lin.cambridge.arm.com
 	[10.1.197.57])
-	by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPA id DCE923F6C4; 
-	Fri, 25 Oct 2019 11:08:48 -0700 (PDT)
+	by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPA id C2A3A3F6C4; 
+	Fri, 25 Oct 2019 11:08:49 -0700 (PDT)
 From: Robin Murphy <robin.murphy@arm.com>
 To: will@kernel.org
-Subject: [PATCH v2 07/10] iommu/io-pgtable-arm: Rationalise MAIR handling
-Date: Fri, 25 Oct 2019 19:08:36 +0100
-Message-Id: <c6bee9e6de5e7f4aa2293ee5385ffa2dd95600d3.1572024120.git.robin.murphy@arm.com>
+Subject: [PATCH v2 08/10] iommu/io-pgtable-arm: Rationalise TTBRn handling
+Date: Fri, 25 Oct 2019 19:08:37 +0100
+Message-Id: <74ada0e6c488a2310206a553eb108cc28fd52457.1572024120.git.robin.murphy@arm.com>
 X-Mailer: git-send-email 2.21.0.dirty
 In-Reply-To: <cover.1572024119.git.robin.murphy@arm.com>
 References: <cover.1572024119.git.robin.murphy@arm.com>
@@ -63,105 +63,198 @@ Content-Transfer-Encoding: 7bit
 Sender: iommu-bounces@lists.linux-foundation.org
 Errors-To: iommu-bounces@lists.linux-foundation.org
 
-Between VMSAv8-64 and the various 32-bit formats, there is either one
-64-bit MAIR or a pair of 32-bit MAIR0/MAIR1 or NMRR/PMRR registers.
-As such, keeping two 64-bit values in io_pgtable_cfg has always been
-overkill.
+TTBR1 values have so far been redundant since no users implement any
+support for split address spaces. Crucially, though, one of the main
+reasons for wanting to do so is to be able to manage each half entirely
+independently, e.g. context-switching one set of mappings without
+disturbing the other. Thus it seems unlikely that tying two tables
+together in a single io_pgtable_cfg would ever be particularly desirable
+or useful.
+
+Streamline the configs to just a single conceptual TTBR value
+representing the allocated table. This paves the way for future users to
+support split address spaces by simply allocating a table and dealing
+with the detailed TTBRn logistics themselves.
 
 Signed-off-by: Robin Murphy <robin.murphy@arm.com>
 ---
- drivers/iommu/arm-smmu-v3.c    | 2 +-
- drivers/iommu/arm-smmu.c       | 4 ++--
- drivers/iommu/io-pgtable-arm.c | 3 +--
- drivers/iommu/ipmmu-vmsa.c     | 2 +-
- drivers/iommu/qcom_iommu.c     | 4 ++--
- include/linux/io-pgtable.h     | 2 +-
- 6 files changed, 8 insertions(+), 9 deletions(-)
+ drivers/iommu/arm-smmu-v3.c        |  2 +-
+ drivers/iommu/arm-smmu.c           |  9 ++++-----
+ drivers/iommu/io-pgtable-arm-v7s.c | 16 +++++++---------
+ drivers/iommu/io-pgtable-arm.c     |  5 ++---
+ drivers/iommu/ipmmu-vmsa.c         |  2 +-
+ drivers/iommu/msm_iommu.c          |  4 ++--
+ drivers/iommu/mtk_iommu.c          |  4 ++--
+ drivers/iommu/qcom_iommu.c         |  3 +--
+ include/linux/io-pgtable.h         |  4 ++--
+ 9 files changed, 22 insertions(+), 27 deletions(-)
 
 diff --git a/drivers/iommu/arm-smmu-v3.c b/drivers/iommu/arm-smmu-v3.c
-index 8da93e730d6f..3f20e548f1ec 100644
+index 3f20e548f1ec..da31e607698f 100644
 --- a/drivers/iommu/arm-smmu-v3.c
 +++ b/drivers/iommu/arm-smmu-v3.c
-@@ -2172,7 +2172,7 @@ static int arm_smmu_domain_finalise_s1(struct arm_smmu_domain *smmu_domain,
- 	cfg->cd.asid	= (u16)asid;
- 	cfg->cd.ttbr	= pgtbl_cfg->arm_lpae_s1_cfg.ttbr[0];
- 	cfg->cd.tcr	= pgtbl_cfg->arm_lpae_s1_cfg.tcr;
--	cfg->cd.mair	= pgtbl_cfg->arm_lpae_s1_cfg.mair[0];
-+	cfg->cd.mair	= pgtbl_cfg->arm_lpae_s1_cfg.mair;
- 	return 0;
+@@ -2170,7 +2170,7 @@ static int arm_smmu_domain_finalise_s1(struct arm_smmu_domain *smmu_domain,
+ 	}
  
- out_free_asid:
+ 	cfg->cd.asid	= (u16)asid;
+-	cfg->cd.ttbr	= pgtbl_cfg->arm_lpae_s1_cfg.ttbr[0];
++	cfg->cd.ttbr	= pgtbl_cfg->arm_lpae_s1_cfg.ttbr;
+ 	cfg->cd.tcr	= pgtbl_cfg->arm_lpae_s1_cfg.tcr;
+ 	cfg->cd.mair	= pgtbl_cfg->arm_lpae_s1_cfg.mair;
+ 	return 0;
 diff --git a/drivers/iommu/arm-smmu.c b/drivers/iommu/arm-smmu.c
-index 080af0326816..2bc3e93b11e6 100644
+index 2bc3e93b11e6..a249e4e49ead 100644
 --- a/drivers/iommu/arm-smmu.c
 +++ b/drivers/iommu/arm-smmu.c
-@@ -552,8 +552,8 @@ static void arm_smmu_init_context_bank(struct arm_smmu_domain *smmu_domain,
- 			cb->mair[0] = pgtbl_cfg->arm_v7s_cfg.prrr;
- 			cb->mair[1] = pgtbl_cfg->arm_v7s_cfg.nmrr;
+@@ -534,13 +534,12 @@ static void arm_smmu_init_context_bank(struct arm_smmu_domain *smmu_domain,
+ 	/* TTBRs */
+ 	if (stage1) {
+ 		if (cfg->fmt == ARM_SMMU_CTX_FMT_AARCH32_S) {
+-			cb->ttbr[0] = pgtbl_cfg->arm_v7s_cfg.ttbr[0];
+-			cb->ttbr[1] = pgtbl_cfg->arm_v7s_cfg.ttbr[1];
++			cb->ttbr[0] = pgtbl_cfg->arm_v7s_cfg.ttbr;
++			cb->ttbr[1] = 0;
  		} else {
--			cb->mair[0] = pgtbl_cfg->arm_lpae_s1_cfg.mair[0];
--			cb->mair[1] = pgtbl_cfg->arm_lpae_s1_cfg.mair[1];
-+			cb->mair[0] = pgtbl_cfg->arm_lpae_s1_cfg.mair;
-+			cb->mair[1] = pgtbl_cfg->arm_lpae_s1_cfg.mair >> 32;
+-			cb->ttbr[0] = pgtbl_cfg->arm_lpae_s1_cfg.ttbr[0];
++			cb->ttbr[0] = pgtbl_cfg->arm_lpae_s1_cfg.ttbr;
+ 			cb->ttbr[0] |= FIELD_PREP(TTBRn_ASID, cfg->asid);
+-			cb->ttbr[1] = pgtbl_cfg->arm_lpae_s1_cfg.ttbr[1];
+-			cb->ttbr[1] |= FIELD_PREP(TTBRn_ASID, cfg->asid);
++			cb->ttbr[1] = FIELD_PREP(TTBRn_ASID, cfg->asid);
  		}
- 	}
- }
+ 	} else {
+ 		cb->ttbr[0] = pgtbl_cfg->arm_lpae_s2_cfg.vttbr;
+diff --git a/drivers/iommu/io-pgtable-arm-v7s.c b/drivers/iommu/io-pgtable-arm-v7s.c
+index 7c3bd2c3cdca..4d2c1e7f67c4 100644
+--- a/drivers/iommu/io-pgtable-arm-v7s.c
++++ b/drivers/iommu/io-pgtable-arm-v7s.c
+@@ -822,15 +822,13 @@ static struct io_pgtable *arm_v7s_alloc_pgtable(struct io_pgtable_cfg *cfg,
+ 	/* Ensure the empty pgd is visible before any actual TTBR write */
+ 	wmb();
+ 
+-	/* TTBRs */
+-	cfg->arm_v7s_cfg.ttbr[0] = virt_to_phys(data->pgd) |
+-				   ARM_V7S_TTBR_S | ARM_V7S_TTBR_NOS |
+-				   (cfg->coherent_walk ?
+-				   (ARM_V7S_TTBR_IRGN_ATTR(ARM_V7S_RGN_WBWA) |
+-				    ARM_V7S_TTBR_ORGN_ATTR(ARM_V7S_RGN_WBWA)) :
+-				   (ARM_V7S_TTBR_IRGN_ATTR(ARM_V7S_RGN_NC) |
+-				    ARM_V7S_TTBR_ORGN_ATTR(ARM_V7S_RGN_NC)));
+-	cfg->arm_v7s_cfg.ttbr[1] = 0;
++	/* TTBR */
++	cfg->arm_v7s_cfg.ttbr = virt_to_phys(data->pgd) | ARM_V7S_TTBR_S |
++				(cfg->coherent_walk ? (ARM_V7S_TTBR_NOS |
++				  ARM_V7S_TTBR_IRGN_ATTR(ARM_V7S_RGN_WBWA) |
++				  ARM_V7S_TTBR_ORGN_ATTR(ARM_V7S_RGN_WBWA)) :
++				 (ARM_V7S_TTBR_IRGN_ATTR(ARM_V7S_RGN_NC) |
++				  ARM_V7S_TTBR_ORGN_ATTR(ARM_V7S_RGN_NC)));
+ 	return &data->iop;
+ 
+ out_free_data:
 diff --git a/drivers/iommu/io-pgtable-arm.c b/drivers/iommu/io-pgtable-arm.c
-index 15b4927ce36b..1795df8f7a51 100644
+index 1795df8f7a51..bc0841040ebe 100644
 --- a/drivers/iommu/io-pgtable-arm.c
 +++ b/drivers/iommu/io-pgtable-arm.c
-@@ -861,8 +861,7 @@ arm_64_lpae_alloc_pgtable_s1(struct io_pgtable_cfg *cfg, void *cookie)
- 	      (ARM_LPAE_MAIR_ATTR_INC_OWBRWA
- 	       << ARM_LPAE_MAIR_ATTR_SHIFT(ARM_LPAE_MAIR_ATTR_IDX_INC_OCACHE));
+@@ -872,9 +872,8 @@ arm_64_lpae_alloc_pgtable_s1(struct io_pgtable_cfg *cfg, void *cookie)
+ 	/* Ensure the empty pgd is visible before any actual TTBR write */
+ 	wmb();
  
--	cfg->arm_lpae_s1_cfg.mair[0] = reg;
--	cfg->arm_lpae_s1_cfg.mair[1] = 0;
-+	cfg->arm_lpae_s1_cfg.mair = reg;
+-	/* TTBRs */
+-	cfg->arm_lpae_s1_cfg.ttbr[0] = virt_to_phys(data->pgd);
+-	cfg->arm_lpae_s1_cfg.ttbr[1] = 0;
++	/* TTBR */
++	cfg->arm_lpae_s1_cfg.ttbr = virt_to_phys(data->pgd);
+ 	return &data->iop;
  
- 	/* Looking good; allocate a pgd */
- 	data->pgd = __arm_lpae_alloc_pages(ARM_LPAE_PGD_SIZE(data),
+ out_free_data:
 diff --git a/drivers/iommu/ipmmu-vmsa.c b/drivers/iommu/ipmmu-vmsa.c
-index 9da8309f7170..e4da6efbda49 100644
+index e4da6efbda49..4fe0ff3216ce 100644
 --- a/drivers/iommu/ipmmu-vmsa.c
 +++ b/drivers/iommu/ipmmu-vmsa.c
-@@ -438,7 +438,7 @@ static void ipmmu_domain_setup_context(struct ipmmu_vmsa_domain *domain)
+@@ -416,7 +416,7 @@ static void ipmmu_domain_setup_context(struct ipmmu_vmsa_domain *domain)
+ 	u32 tmp;
  
- 	/* MAIR0 */
- 	ipmmu_ctx_write_root(domain, IMMAIR0,
--			     domain->cfg.arm_lpae_s1_cfg.mair[0]);
-+			     domain->cfg.arm_lpae_s1_cfg.mair);
+ 	/* TTBR0 */
+-	ttbr = domain->cfg.arm_lpae_s1_cfg.ttbr[0];
++	ttbr = domain->cfg.arm_lpae_s1_cfg.ttbr;
+ 	ipmmu_ctx_write_root(domain, IMTTLBR0, ttbr);
+ 	ipmmu_ctx_write_root(domain, IMTTUBR0, ttbr >> 32);
  
- 	/* IMBUSCR */
- 	if (domain->mmu->features->setup_imbuscr)
+diff --git a/drivers/iommu/msm_iommu.c b/drivers/iommu/msm_iommu.c
+index be99d408cf35..9ceec140fa67 100644
+--- a/drivers/iommu/msm_iommu.c
++++ b/drivers/iommu/msm_iommu.c
+@@ -279,8 +279,8 @@ static void __program_context(void __iomem *base, int ctx,
+ 	SET_V2PCFG(base, ctx, 0x3);
+ 
+ 	SET_TTBCR(base, ctx, priv->cfg.arm_v7s_cfg.tcr);
+-	SET_TTBR0(base, ctx, priv->cfg.arm_v7s_cfg.ttbr[0]);
+-	SET_TTBR1(base, ctx, priv->cfg.arm_v7s_cfg.ttbr[1]);
++	SET_TTBR0(base, ctx, priv->cfg.arm_v7s_cfg.ttbr);
++	SET_TTBR1(base, ctx, 0);
+ 
+ 	/* Set prrr and nmrr */
+ 	SET_PRRR(base, ctx, priv->cfg.arm_v7s_cfg.prrr);
+diff --git a/drivers/iommu/mtk_iommu.c b/drivers/iommu/mtk_iommu.c
+index 67a483c1a935..ef0b36eeb83d 100644
+--- a/drivers/iommu/mtk_iommu.c
++++ b/drivers/iommu/mtk_iommu.c
+@@ -392,7 +392,7 @@ static int mtk_iommu_attach_device(struct iommu_domain *domain,
+ 	/* Update the pgtable base address register of the M4U HW */
+ 	if (!data->m4u_dom) {
+ 		data->m4u_dom = dom;
+-		writel(dom->cfg.arm_v7s_cfg.ttbr[0] & MMU_PT_ADDR_MASK,
++		writel(dom->cfg.arm_v7s_cfg.ttbr & MMU_PT_ADDR_MASK,
+ 		       data->base + REG_MMU_PT_BASE_ADDR);
+ 	}
+ 
+@@ -797,7 +797,7 @@ static int __maybe_unused mtk_iommu_resume(struct device *dev)
+ 	writel_relaxed(reg->ivrp_paddr, base + REG_MMU_IVRP_PADDR);
+ 	writel_relaxed(reg->vld_pa_rng, base + REG_MMU_VLD_PA_RNG);
+ 	if (m4u_dom)
+-		writel(m4u_dom->cfg.arm_v7s_cfg.ttbr[0] & MMU_PT_ADDR_MASK,
++		writel(m4u_dom->cfg.arm_v7s_cfg.ttbr & MMU_PT_ADDR_MASK,
+ 		       base + REG_MMU_PT_BASE_ADDR);
+ 	return 0;
+ }
 diff --git a/drivers/iommu/qcom_iommu.c b/drivers/iommu/qcom_iommu.c
-index c31e7bc4ccbe..66e9b40e9275 100644
+index 66e9b40e9275..9a57eb6c253c 100644
 --- a/drivers/iommu/qcom_iommu.c
 +++ b/drivers/iommu/qcom_iommu.c
-@@ -284,9 +284,9 @@ static int qcom_iommu_init_domain(struct iommu_domain *domain,
+@@ -269,10 +269,9 @@ static int qcom_iommu_init_domain(struct iommu_domain *domain,
  
- 		/* MAIRs (stage-1 only) */
- 		iommu_writel(ctx, ARM_SMMU_CB_S1_MAIR0,
--				pgtbl_cfg.arm_lpae_s1_cfg.mair[0]);
-+				pgtbl_cfg.arm_lpae_s1_cfg.mair);
- 		iommu_writel(ctx, ARM_SMMU_CB_S1_MAIR1,
--				pgtbl_cfg.arm_lpae_s1_cfg.mair[1]);
-+				pgtbl_cfg.arm_lpae_s1_cfg.mair >> 32);
+ 		/* TTBRs */
+ 		iommu_writeq(ctx, ARM_SMMU_CB_TTBR0,
+-				pgtbl_cfg.arm_lpae_s1_cfg.ttbr[0] |
++				pgtbl_cfg.arm_lpae_s1_cfg.ttbr |
+ 				FIELD_PREP(TTBRn_ASID, ctx->asid));
+ 		iommu_writeq(ctx, ARM_SMMU_CB_TTBR1,
+-				pgtbl_cfg.arm_lpae_s1_cfg.ttbr[1] |
+ 				FIELD_PREP(TTBRn_ASID, ctx->asid));
  
- 		/* SCTLR */
- 		reg = SCTLR_CFIE | SCTLR_CFRE | SCTLR_AFE | SCTLR_TRE |
+ 		/* TCR */
 diff --git a/include/linux/io-pgtable.h b/include/linux/io-pgtable.h
-index ec7a13405f10..ee21eedafe98 100644
+index ee21eedafe98..53bca5343f52 100644
 --- a/include/linux/io-pgtable.h
 +++ b/include/linux/io-pgtable.h
-@@ -102,7 +102,7 @@ struct io_pgtable_cfg {
+@@ -100,7 +100,7 @@ struct io_pgtable_cfg {
+ 	/* Low-level data specific to the table format */
+ 	union {
  		struct {
- 			u64	ttbr[2];
+-			u64	ttbr[2];
++			u64	ttbr;
  			u64	tcr;
--			u64	mair[2];
-+			u64	mair;
+ 			u64	mair;
  		} arm_lpae_s1_cfg;
+@@ -111,7 +111,7 @@ struct io_pgtable_cfg {
+ 		} arm_lpae_s2_cfg;
  
  		struct {
+-			u32	ttbr[2];
++			u32	ttbr;
+ 			u32	tcr;
+ 			u32	nmrr;
+ 			u32	prrr;
 -- 
 2.21.0.dirty
 
