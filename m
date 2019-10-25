@@ -4,49 +4,49 @@ X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 X-Spam-Level: 
 X-Spam-Status: No, score=-6.7 required=3.0 tests=HEADER_FROM_DIFFERENT_DOMAINS,
 	INCLUDES_PATCH,MAILING_LIST_MULTI,SIGNED_OFF_BY,SPF_HELO_NONE,SPF_PASS,
-	URIBL_BLOCKED autolearn=ham autolearn_force=no version=3.4.0
+	URIBL_BLOCKED autolearn=unavailable autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id C92A0CA9EA0
-	for <iommu@archiver.kernel.org>; Fri, 25 Oct 2019 06:07:19 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 3005ACA9EBD
+	for <iommu@archiver.kernel.org>; Fri, 25 Oct 2019 06:19:37 +0000 (UTC)
 Received: from mail.linuxfoundation.org (mail.linuxfoundation.org [140.211.169.12])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by mail.kernel.org (Postfix) with ESMTPS id 99DB321929
-	for <iommu@archiver.kernel.org>; Fri, 25 Oct 2019 06:07:19 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 99DB321929
+	by mail.kernel.org (Postfix) with ESMTPS id 03A9C21D81
+	for <iommu@archiver.kernel.org>; Fri, 25 Oct 2019 06:19:36 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 03A9C21D81
 Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=intel.com
 Authentication-Results: mail.kernel.org; spf=pass smtp.mailfrom=iommu-bounces@lists.linux-foundation.org
 Received: from mail.linux-foundation.org (localhost [127.0.0.1])
-	by mail.linuxfoundation.org (Postfix) with ESMTP id 52986D91;
-	Fri, 25 Oct 2019 06:07:19 +0000 (UTC)
+	by mail.linuxfoundation.org (Postfix) with ESMTP id C5B0CD91;
+	Fri, 25 Oct 2019 06:19:36 +0000 (UTC)
 Received: from smtp1.linuxfoundation.org (smtp1.linux-foundation.org
 	[172.17.192.35])
-	by mail.linuxfoundation.org (Postfix) with ESMTPS id 270E2C8E
+	by mail.linuxfoundation.org (Postfix) with ESMTPS id 550FDD3D
 	for <iommu@lists.linux-foundation.org>;
-	Fri, 25 Oct 2019 06:07:18 +0000 (UTC)
+	Fri, 25 Oct 2019 06:19:35 +0000 (UTC)
 X-Greylist: domain auto-whitelisted by SQLgrey-1.7.6
 Received: from mga03.intel.com (mga03.intel.com [134.134.136.65])
-	by smtp1.linuxfoundation.org (Postfix) with ESMTPS id ADDBD87B
+	by smtp1.linuxfoundation.org (Postfix) with ESMTPS id 9DFA587B
 	for <iommu@lists.linux-foundation.org>;
-	Fri, 25 Oct 2019 06:07:17 +0000 (UTC)
+	Fri, 25 Oct 2019 06:19:34 +0000 (UTC)
 X-Amp-Result: SKIPPED(no attachment in message)
 X-Amp-File-Uploaded: False
-Received: from orsmga006.jf.intel.com ([10.7.209.51])
+Received: from fmsmga003.fm.intel.com ([10.253.24.29])
 	by orsmga103.jf.intel.com with ESMTP/TLS/DHE-RSA-AES256-GCM-SHA384;
-	24 Oct 2019 23:07:17 -0700
+	24 Oct 2019 23:19:34 -0700
 X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.68,227,1569308400"; d="scan'208";a="202519934"
-Received: from fmsmsx108.amr.corp.intel.com ([10.18.124.206])
-	by orsmga006.jf.intel.com with ESMTP; 24 Oct 2019 23:07:16 -0700
-Received: from FMSMSX110.amr.corp.intel.com (10.18.116.10) by
-	FMSMSX108.amr.corp.intel.com (10.18.124.206) with Microsoft SMTP Server
-	(TLS) id 14.3.439.0; Thu, 24 Oct 2019 23:07:00 -0700
-Received: from shsmsx108.ccr.corp.intel.com (10.239.4.97) by
-	fmsmsx110.amr.corp.intel.com (10.18.116.10) with Microsoft SMTP Server
-	(TLS) id 14.3.439.0; Thu, 24 Oct 2019 23:06:59 -0700
+X-IronPort-AV: E=Sophos;i="5.68,227,1569308400"; d="scan'208";a="204465995"
+Received: from fmsmsx105.amr.corp.intel.com ([10.18.124.203])
+	by FMSMGA003.fm.intel.com with ESMTP; 24 Oct 2019 23:19:33 -0700
+Received: from fmsmsx124.amr.corp.intel.com (10.18.125.39) by
+	FMSMSX105.amr.corp.intel.com (10.18.124.203) with Microsoft SMTP Server
+	(TLS) id 14.3.439.0; Thu, 24 Oct 2019 23:19:33 -0700
+Received: from shsmsx152.ccr.corp.intel.com (10.239.6.52) by
+	fmsmsx124.amr.corp.intel.com (10.18.125.39) with Microsoft SMTP Server
+	(TLS) id 14.3.439.0; Thu, 24 Oct 2019 23:19:33 -0700
 Received: from shsmsx104.ccr.corp.intel.com ([169.254.5.166]) by
-	SHSMSX108.ccr.corp.intel.com ([169.254.8.225]) with mapi id
-	14.03.0439.000; Fri, 25 Oct 2019 14:06:54 +0800
+	SHSMSX152.ccr.corp.intel.com ([10.239.6.52]) with mapi id
+	14.03.0439.000; Fri, 25 Oct 2019 14:19:30 +0800
 From: "Tian, Kevin" <kevin.tian@intel.com>
 To: Jacob Pan <jacob.jun.pan@linux.intel.com>,
 	"iommu@lists.linux-foundation.org" <iommu@lists.linux-foundation.org>, LKML
@@ -54,22 +54,20 @@ To: Jacob Pan <jacob.jun.pan@linux.intel.com>,
 	Woodhouse" <dwmw2@infradead.org>, Alex Williamson
 	<alex.williamson@redhat.com>, Jean-Philippe Brucker
 	<jean-philippe@linaro.com>
-Subject: RE: [PATCH v7 01/11] iommu/vt-d: Cache virtual command capability
-	register
-Thread-Topic: [PATCH v7 01/11] iommu/vt-d: Cache virtual command capability
-	register
-Thread-Index: AQHViqRUxHUR72S96U+DLESjOr18Wadq31Eg
-Date: Fri, 25 Oct 2019 06:06:53 +0000
-Message-ID: <AADFC41AFE54684AB9EE6CBC0274A5D19D5CDB93@SHSMSX104.ccr.corp.intel.com>
+Subject: RE: [PATCH v7 02/11] iommu/vt-d: Enlightened PASID allocation
+Thread-Topic: [PATCH v7 02/11] iommu/vt-d: Enlightened PASID allocation
+Thread-Index: AQHViqRV6Hm3D57CLU6HDLIZCr5tmqdq34rA
+Date: Fri, 25 Oct 2019 06:19:29 +0000
+Message-ID: <AADFC41AFE54684AB9EE6CBC0274A5D19D5CDC00@SHSMSX104.ccr.corp.intel.com>
 References: <1571946904-86776-1-git-send-email-jacob.jun.pan@linux.intel.com>
-	<1571946904-86776-2-git-send-email-jacob.jun.pan@linux.intel.com>
-In-Reply-To: <1571946904-86776-2-git-send-email-jacob.jun.pan@linux.intel.com>
+	<1571946904-86776-3-git-send-email-jacob.jun.pan@linux.intel.com>
+In-Reply-To: <1571946904-86776-3-git-send-email-jacob.jun.pan@linux.intel.com>
 Accept-Language: en-US
 Content-Language: en-US
 X-MS-Has-Attach: 
 X-MS-TNEF-Correlator: 
 x-ctpclassification: CTP_NT
-x-titus-metadata-40: eyJDYXRlZ29yeUxhYmVscyI6IiIsIk1ldGFkYXRhIjp7Im5zIjoiaHR0cDpcL1wvd3d3LnRpdHVzLmNvbVwvbnNcL0ludGVsMyIsImlkIjoiOTBiZDhmM2UtNWNiZC00NjA5LWE2MDEtZDk5N2NjMWZjNzg5IiwicHJvcHMiOlt7Im4iOiJDVFBDbGFzc2lmaWNhdGlvbiIsInZhbHMiOlt7InZhbHVlIjoiQ1RQX05UIn1dfV19LCJTdWJqZWN0TGFiZWxzIjpbXSwiVE1DVmVyc2lvbiI6IjE3LjEwLjE4MDQuNDkiLCJUcnVzdGVkTGFiZWxIYXNoIjoiaU4ydjNXXC91RTRqejBqSjd6V01LN2tSeHlUYUY3Z1VTbDRsMHRhN3hjc3ZGVVJXZFg2UHNhUUFiOGdwTmNyZzcifQ==
+x-titus-metadata-40: eyJDYXRlZ29yeUxhYmVscyI6IiIsIk1ldGFkYXRhIjp7Im5zIjoiaHR0cDpcL1wvd3d3LnRpdHVzLmNvbVwvbnNcL0ludGVsMyIsImlkIjoiY2I4ZjYzMjctOGY2Ny00YTcyLWJjZmQtYzkwMDNjMDFmZjQwIiwicHJvcHMiOlt7Im4iOiJDVFBDbGFzc2lmaWNhdGlvbiIsInZhbHMiOlt7InZhbHVlIjoiQ1RQX05UIn1dfV19LCJTdWJqZWN0TGFiZWxzIjpbXSwiVE1DVmVyc2lvbiI6IjE3LjEwLjE4MDQuNDkiLCJUcnVzdGVkTGFiZWxIYXNoIjoiTGtNbTJYMm96THJaaUMwRjFnY0FUenpYZFZDQ0NwVkRXQWRRNXpMM0lNOVlxYTR0ckN6XC9sSnFnZk0zVENaTmcifQ==
 dlp-product: dlpe-windows
 dlp-version: 11.0.400.15
 dlp-reaction: no-action
@@ -96,55 +94,163 @@ Errors-To: iommu-bounces@lists.linux-foundation.org
 > From: Jacob Pan [mailto:jacob.jun.pan@linux.intel.com]
 > Sent: Friday, October 25, 2019 3:55 AM
 > 
-> Virtual command registers are used in the guest only, to prevent
-> vmexit cost, we cache the capability and store it during initialization.
+> From: Lu Baolu <baolu.lu@linux.intel.com>
 > 
+> Enabling IOMMU in a guest requires communication with the host
+> driver for certain aspects. Use of PASID ID to enable Shared Virtual
+> Addressing (SVA) requires managing PASID's in the host. VT-d 3.0 spec
+> provides a Virtual Command Register (VCMD) to facilitate this.
+> Writes to this register in the guest are trapped by QEMU which
+> proxies the call to the host driver.
+> 
+> This virtual command interface consists of a capability register,
+> a virtual command register, and a virtual response register. Refer
+> to section 10.4.42, 10.4.43, 10.4.44 for more information.
+> 
+> This patch adds the enlightened PASID allocation/free interfaces
+> via the virtual command interface.
+> 
+> Cc: Ashok Raj <ashok.raj@intel.com>
+> Cc: Jacob Pan <jacob.jun.pan@linux.intel.com>
+> Cc: Kevin Tian <kevin.tian@intel.com>
+> Signed-off-by: Liu Yi L <yi.l.liu@intel.com>
+> Signed-off-by: Lu Baolu <baolu.lu@linux.intel.com>
 > Signed-off-by: Jacob Pan <jacob.jun.pan@linux.intel.com>
+> Reviewed-by: Eric Auger <eric.auger@redhat.com>
 > ---
->  drivers/iommu/dmar.c        | 1 +
->  include/linux/intel-iommu.h | 4 ++++
->  2 files changed, 5 insertions(+)
+>  drivers/iommu/intel-pasid.c | 56
+> +++++++++++++++++++++++++++++++++++++++++++++
+>  drivers/iommu/intel-pasid.h | 13 ++++++++++-
+>  include/linux/intel-iommu.h |  2 ++
+>  3 files changed, 70 insertions(+), 1 deletion(-)
 > 
-> diff --git a/drivers/iommu/dmar.c b/drivers/iommu/dmar.c
-> index eecd6a421667..49bb7d76e646 100644
-> --- a/drivers/iommu/dmar.c
-> +++ b/drivers/iommu/dmar.c
-> @@ -950,6 +950,7 @@ static int map_iommu(struct intel_iommu *iommu,
-> u64 phys_addr)
->  		warn_invalid_dmar(phys_addr, " returns all ones");
->  		goto unmap;
->  	}
-> +	iommu->vccap = dmar_readq(iommu->reg + DMAR_VCCAP_REG);
+> diff --git a/drivers/iommu/intel-pasid.c b/drivers/iommu/intel-pasid.c
+> index 040a445be300..d81e857d2b25 100644
+> --- a/drivers/iommu/intel-pasid.c
+> +++ b/drivers/iommu/intel-pasid.c
+> @@ -63,6 +63,62 @@ void *intel_pasid_lookup_id(int pasid)
+>  	return p;
+>  }
 > 
->  	/* the registers might be more than one page */
->  	map_size = max_t(int, ecap_max_iotlb_offset(iommu->ecap),
+> +int vcmd_alloc_pasid(struct intel_iommu *iommu, unsigned int *pasid)
+> +{
+> +	unsigned long flags;
+> +	u8 status_code;
+> +	int ret = 0;
+> +	u64 res;
+> +
+> +	raw_spin_lock_irqsave(&iommu->register_lock, flags);
+> +	dmar_writeq(iommu->reg + DMAR_VCMD_REG,
+> VCMD_CMD_ALLOC);
+> +	IOMMU_WAIT_OP(iommu, DMAR_VCRSP_REG, dmar_readq,
+> +		      !(res & VCMD_VRSP_IP), res);
+> +	raw_spin_unlock_irqrestore(&iommu->register_lock, flags);
+> +
+
+should we handle VCMD_VRSP_IP here?
+
+> +	status_code = VCMD_VRSP_SC(res);
+> +	switch (status_code) {
+> +	case VCMD_VRSP_SC_SUCCESS:
+> +		*pasid = VCMD_VRSP_RESULT(res);
+> +		break;
+> +	case VCMD_VRSP_SC_NO_PASID_AVAIL:
+> +		pr_info("IOMMU: %s: No PASID available\n", iommu-
+> >name);
+> +		ret = -ENOMEM;
+> +		break;
+> +	default:
+> +		ret = -ENODEV;
+> +		pr_warn("IOMMU: %s: Unexpected error code %d\n",
+> +			iommu->name, status_code);
+> +	}
+> +
+> +	return ret;
+> +}
+> +
+> +void vcmd_free_pasid(struct intel_iommu *iommu, unsigned int pasid)
+> +{
+> +	unsigned long flags;
+> +	u8 status_code;
+> +	u64 res;
+> +
+> +	raw_spin_lock_irqsave(&iommu->register_lock, flags);
+> +	dmar_writeq(iommu->reg + DMAR_VCMD_REG, (pasid << 8) |
+> VCMD_CMD_FREE);
+
+define a macro for pasid offset.
+
+> +	IOMMU_WAIT_OP(iommu, DMAR_VCRSP_REG, dmar_readq,
+> +		      !(res & VCMD_VRSP_IP), res);
+> +	raw_spin_unlock_irqrestore(&iommu->register_lock, flags);
+> +
+> +	status_code = VCMD_VRSP_SC(res);
+> +	switch (status_code) {
+> +	case VCMD_VRSP_SC_SUCCESS:
+> +		break;
+> +	case VCMD_VRSP_SC_INVALID_PASID:
+> +		pr_info("IOMMU: %s: Invalid PASID\n", iommu->name);
+> +		break;
+> +	default:
+> +		pr_warn("IOMMU: %s: Unexpected error code %d\n",
+> +			iommu->name, status_code);
+> +	}
+> +}
+> +
+>  /*
+>   * Per device pasid table management:
+>   */
+> diff --git a/drivers/iommu/intel-pasid.h b/drivers/iommu/intel-pasid.h
+> index fc8cd8f17de1..e413e884e685 100644
+> --- a/drivers/iommu/intel-pasid.h
+> +++ b/drivers/iommu/intel-pasid.h
+> @@ -23,6 +23,16 @@
+>  #define is_pasid_enabled(entry)		(((entry)->lo >> 3) & 0x1)
+>  #define get_pasid_dir_size(entry)	(1 << ((((entry)->lo >> 9) & 0x7) + 7))
+> 
+> +/* Virtual command interface for enlightened pasid management. */
+> +#define VCMD_CMD_ALLOC			0x1
+> +#define VCMD_CMD_FREE			0x2
+> +#define VCMD_VRSP_IP			0x1
+> +#define VCMD_VRSP_SC(e)			(((e) >> 1) & 0x3)
+> +#define VCMD_VRSP_SC_SUCCESS		0
+> +#define VCMD_VRSP_SC_NO_PASID_AVAIL	1
+> +#define VCMD_VRSP_SC_INVALID_PASID	1
+> +#define VCMD_VRSP_RESULT(e)		(((e) >> 8) & 0xfffff)
+> +
+>  /*
+>   * Domain ID reserved for pasid entries programmed for first-level
+>   * only and pass-through transfer modes.
+> @@ -95,5 +105,6 @@ int intel_pasid_setup_pass_through(struct
+> intel_iommu *iommu,
+>  				   struct device *dev, int pasid);
+>  void intel_pasid_tear_down_entry(struct intel_iommu *iommu,
+>  				 struct device *dev, int pasid);
+> -
+> +int vcmd_alloc_pasid(struct intel_iommu *iommu, unsigned int *pasid);
+> +void vcmd_free_pasid(struct intel_iommu *iommu, unsigned int pasid);
+>  #endif /* __INTEL_PASID_H */
 > diff --git a/include/linux/intel-iommu.h b/include/linux/intel-iommu.h
-> index ed11ef594378..2e1bed9b7eef 100644
+> index 2e1bed9b7eef..1d4b8dcdc5d8 100644
 > --- a/include/linux/intel-iommu.h
 > +++ b/include/linux/intel-iommu.h
-> @@ -186,6 +186,9 @@
->  #define ecap_max_handle_mask(e) ((e >> 20) & 0xf)
->  #define ecap_sc_support(e)	((e >> 7) & 0x1) /* Snooping Control */
+> @@ -161,6 +161,7 @@
+>  #define ecap_smpwc(e)		(((e) >> 48) & 0x1)
+>  #define ecap_flts(e)		(((e) >> 47) & 0x1)
+>  #define ecap_slts(e)		(((e) >> 46) & 0x1)
+> +#define ecap_vcs(e)		(((e) >> 44) & 0x1)
+>  #define ecap_smts(e)		(((e) >> 43) & 0x1)
+>  #define ecap_dit(e)		((e >> 41) & 0x1)
+>  #define ecap_pasid(e)		((e >> 40) & 0x1)
+> @@ -282,6 +283,7 @@
 > 
-> +/* Virtual command interface capabilities */
-> +#define vccap_pasid(v)		((v & DMA_VCS_PAS)) /* PASID
-> allocation */
-
-DMA_VCS_PAS is defined in [2/11]. should move to here.
-
-> +
->  /* IOTLB_REG */
->  #define DMA_TLB_FLUSH_GRANU_OFFSET  60
->  #define DMA_TLB_GLOBAL_FLUSH (((u64)1) << 60)
-> @@ -520,6 +523,7 @@ struct intel_iommu {
->  	u64		reg_size; /* size of hw register set */
->  	u64		cap;
->  	u64		ecap;
-> +	u64		vccap;
->  	u32		gcmd; /* Holds TE, EAFL. Don't need SRTP, SFL, WBF
-> */
->  	raw_spinlock_t	register_lock; /* protect register handling */
->  	int		seq_id;	/* sequence id of the iommu */
+>  /* PRS_REG */
+>  #define DMA_PRS_PPR	((u32)1)
+> +#define DMA_VCS_PAS	((u64)1)
+> 
+>  #define IOMMU_WAIT_OP(iommu, offset, op, cond, sts)
+> 	\
+>  do {									\
 > --
 > 2.7.4
 
