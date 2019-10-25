@@ -6,41 +6,41 @@ X-Spam-Status: No, score=-9.7 required=3.0 tests=HEADER_FROM_DIFFERENT_DOMAINS,
 	INCLUDES_PATCH,MAILING_LIST_MULTI,SIGNED_OFF_BY,SPF_HELO_NONE,SPF_PASS,
 	URIBL_BLOCKED,USER_AGENT_GIT autolearn=ham autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 9A35ACA9EBC
-	for <iommu@archiver.kernel.org>; Fri, 25 Oct 2019 18:08:53 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 13AA9CA9EA0
+	for <iommu@archiver.kernel.org>; Fri, 25 Oct 2019 18:08:58 +0000 (UTC)
 Received: from mail.linuxfoundation.org (mail.linuxfoundation.org [140.211.169.12])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by mail.kernel.org (Postfix) with ESMTPS id 70880222C4
-	for <iommu@archiver.kernel.org>; Fri, 25 Oct 2019 18:08:53 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 70880222C4
+	by mail.kernel.org (Postfix) with ESMTPS id DCA3A222C4
+	for <iommu@archiver.kernel.org>; Fri, 25 Oct 2019 18:08:57 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org DCA3A222C4
 Authentication-Results: mail.kernel.org; dmarc=none (p=none dis=none) header.from=arm.com
 Authentication-Results: mail.kernel.org; spf=pass smtp.mailfrom=iommu-bounces@lists.linux-foundation.org
 Received: from mail.linux-foundation.org (localhost [127.0.0.1])
-	by mail.linuxfoundation.org (Postfix) with ESMTP id 12876DDE;
+	by mail.linuxfoundation.org (Postfix) with ESMTP id 345E9DE1;
 	Fri, 25 Oct 2019 18:08:48 +0000 (UTC)
 Received: from smtp1.linuxfoundation.org (smtp1.linux-foundation.org
 	[172.17.192.35])
-	by mail.linuxfoundation.org (Postfix) with ESMTPS id E9D4FDD4
+	by mail.linuxfoundation.org (Postfix) with ESMTPS id A0769DDD
 	for <iommu@lists.linux-foundation.org>;
-	Fri, 25 Oct 2019 18:08:45 +0000 (UTC)
+	Fri, 25 Oct 2019 18:08:46 +0000 (UTC)
 X-Greylist: domain auto-whitelisted by SQLgrey-1.7.6
 Received: from foss.arm.com (foss.arm.com [217.140.110.172])
-	by smtp1.linuxfoundation.org (Postfix) with ESMTP id 5927D87E
+	by smtp1.linuxfoundation.org (Postfix) with ESMTP id 49B4B87E
 	for <iommu@lists.linux-foundation.org>;
-	Fri, 25 Oct 2019 18:08:45 +0000 (UTC)
+	Fri, 25 Oct 2019 18:08:46 +0000 (UTC)
 Received: from usa-sjc-imap-foss1.foss.arm.com (unknown [10.121.207.14])
-	by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id 14DE0492;
-	Fri, 25 Oct 2019 11:08:45 -0700 (PDT)
+	by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id 03DD5493;
+	Fri, 25 Oct 2019 11:08:46 -0700 (PDT)
 Received: from e110467-lin.cambridge.arm.com (e110467-lin.cambridge.arm.com
 	[10.1.197.57])
-	by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPA id 635EE3F6C4; 
-	Fri, 25 Oct 2019 11:08:44 -0700 (PDT)
+	by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPA id 490793F6C4; 
+	Fri, 25 Oct 2019 11:08:45 -0700 (PDT)
 From: Robin Murphy <robin.murphy@arm.com>
 To: will@kernel.org
-Subject: [PATCH v2 02/10] iommu/io-pgtable-arm: Rationalise size check
-Date: Fri, 25 Oct 2019 19:08:31 +0100
-Message-Id: <cc922d355329ca346958e634b84abc7f6f3011b2.1572024120.git.robin.murphy@arm.com>
+Subject: [PATCH v2 03/10] iommu/io-pgtable-arm: Simplify bounds checks
+Date: Fri, 25 Oct 2019 19:08:32 +0100
+Message-Id: <d99122bf95b9a28e53ab416f19b0ea7082c933cf.1572024120.git.robin.murphy@arm.com>
 X-Mailer: git-send-email 2.21.0.dirty
 In-Reply-To: <cover.1572024119.git.robin.murphy@arm.com>
 References: <cover.1572024119.git.robin.murphy@arm.com>
@@ -63,64 +63,37 @@ Content-Transfer-Encoding: 7bit
 Sender: iommu-bounces@lists.linux-foundation.org
 Errors-To: iommu-bounces@lists.linux-foundation.org
 
-It makes little sense to only validate the requested size after we think
-we've found a matching block size - making the check up-front is simple,
-and far more logical than waiting to walk off the bottom of the table to
-infer that we must have been passed a bogus size to start with.
-
-We're missing an equivalent check on the unmap path, so add that as well
-for consistency.
+We're merely checking that the relevant upper bits of each address
+are all zero, so there are cheaper ways to achieve that.
 
 Signed-off-by: Robin Murphy <robin.murphy@arm.com>
 ---
- drivers/iommu/io-pgtable-arm.c | 10 +++++++++-
- 1 file changed, 9 insertions(+), 1 deletion(-)
+ drivers/iommu/io-pgtable-arm.c | 5 ++---
+ 1 file changed, 2 insertions(+), 3 deletions(-)
 
 diff --git a/drivers/iommu/io-pgtable-arm.c b/drivers/iommu/io-pgtable-arm.c
-index afa61b32b052..2cef0f5335e4 100644
+index 2cef0f5335e4..a9dff0ecf0c3 100644
 --- a/drivers/iommu/io-pgtable-arm.c
 +++ b/drivers/iommu/io-pgtable-arm.c
-@@ -392,7 +392,7 @@ static int __arm_lpae_map(struct arm_lpae_io_pgtable *data, unsigned long iova,
- 	ptep += ARM_LPAE_LVL_IDX(iova, lvl, data);
+@@ -491,8 +491,7 @@ static int arm_lpae_map(struct io_pgtable_ops *ops, unsigned long iova,
+ 	if (WARN_ON(!size || (size & cfg->pgsize_bitmap) != size))
+ 		return -EINVAL;
  
- 	/* If we can install a leaf entry at this level, then do so */
--	if (size == block_size && (size & cfg->pgsize_bitmap))
-+	if (size == block_size)
- 		return arm_lpae_init_pte(data, iova, paddr, prot, lvl, ptep);
- 
- 	/* We can't allocate tables at the final level */
-@@ -479,6 +479,7 @@ static int arm_lpae_map(struct io_pgtable_ops *ops, unsigned long iova,
- 			phys_addr_t paddr, size_t size, int iommu_prot)
- {
- 	struct arm_lpae_io_pgtable *data = io_pgtable_ops_to_data(ops);
-+	struct io_pgtable_cfg *cfg = &data->iop.cfg;
- 	arm_lpae_iopte *ptep = data->pgd;
- 	int ret, lvl = ARM_LPAE_START_LVL(data);
- 	arm_lpae_iopte prot;
-@@ -487,6 +488,9 @@ static int arm_lpae_map(struct io_pgtable_ops *ops, unsigned long iova,
- 	if (!(iommu_prot & (IOMMU_READ | IOMMU_WRITE)))
- 		return 0;
- 
-+	if (WARN_ON(!size || (size & cfg->pgsize_bitmap) != size))
-+		return -EINVAL;
-+
- 	if (WARN_ON(iova >= (1ULL << data->iop.cfg.ias) ||
- 		    paddr >= (1ULL << data->iop.cfg.oas)))
+-	if (WARN_ON(iova >= (1ULL << data->iop.cfg.ias) ||
+-		    paddr >= (1ULL << data->iop.cfg.oas)))
++	if (WARN_ON(iova >> data->iop.cfg.ias || paddr >> data->iop.cfg.oas))
  		return -ERANGE;
-@@ -652,9 +656,13 @@ static size_t arm_lpae_unmap(struct io_pgtable_ops *ops, unsigned long iova,
- 			     size_t size, struct iommu_iotlb_gather *gather)
- {
- 	struct arm_lpae_io_pgtable *data = io_pgtable_ops_to_data(ops);
-+	struct io_pgtable_cfg *cfg = &data->iop.cfg;
- 	arm_lpae_iopte *ptep = data->pgd;
- 	int lvl = ARM_LPAE_START_LVL(data);
  
-+	if (WARN_ON(!size || (size & cfg->pgsize_bitmap) != size))
-+		return 0;
-+
- 	if (WARN_ON(iova >= (1ULL << data->iop.cfg.ias)))
+ 	prot = arm_lpae_prot_to_pte(data, iommu_prot);
+@@ -663,7 +662,7 @@ static size_t arm_lpae_unmap(struct io_pgtable_ops *ops, unsigned long iova,
+ 	if (WARN_ON(!size || (size & cfg->pgsize_bitmap) != size))
  		return 0;
  
+-	if (WARN_ON(iova >= (1ULL << data->iop.cfg.ias)))
++	if (WARN_ON(iova >> data->iop.cfg.ias))
+ 		return 0;
+ 
+ 	return __arm_lpae_unmap(data, gather, iova, size, lvl, ptep);
 -- 
 2.21.0.dirty
 
