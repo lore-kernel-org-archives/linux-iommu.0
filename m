@@ -1,51 +1,74 @@
-Return-Path: <SRS0=3N47=YS=lists.linux-foundation.org=iommu-bounces@kernel.org>
+Return-Path: <SRS0=J3yl=YT=lists.linux-foundation.org=iommu-bounces@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-9.7 required=3.0 tests=HEADER_FROM_DIFFERENT_DOMAINS,
-	INCLUDES_PATCH,MAILING_LIST_MULTI,SIGNED_OFF_BY,SPF_HELO_NONE,SPF_PASS,
-	URIBL_BLOCKED,USER_AGENT_GIT autolearn=ham autolearn_force=no version=3.4.0
+X-Spam-Status: No, score=-9.5 required=3.0 tests=DKIM_INVALID,DKIM_SIGNED,
+	HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_PATCH,MAILING_LIST_MULTI,SIGNED_OFF_BY,
+	SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED,USER_AGENT_GIT autolearn=unavailable
+	autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 4F9B6CA9EA0
-	for <iommu@archiver.kernel.org>; Fri, 25 Oct 2019 18:09:30 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 3291ECA9EBD
+	for <iommu@archiver.kernel.org>; Sat, 26 Oct 2019 00:44:00 +0000 (UTC)
 Received: from mail.linuxfoundation.org (mail.linuxfoundation.org [140.211.169.12])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by mail.kernel.org (Postfix) with ESMTPS id 2DB122070B
-	for <iommu@archiver.kernel.org>; Fri, 25 Oct 2019 18:09:30 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 2DB122070B
-Authentication-Results: mail.kernel.org; dmarc=none (p=none dis=none) header.from=arm.com
+	by mail.kernel.org (Postfix) with ESMTPS id EBC05206DD
+	for <iommu@archiver.kernel.org>; Sat, 26 Oct 2019 00:43:59 +0000 (UTC)
+Authentication-Results: mail.kernel.org;
+	dkim=fail reason="key not found in DNS" (0-bit key) header.d=codeaurora.org header.i=@codeaurora.org header.b="Vh0c6Dcg";
+	dkim=fail reason="key not found in DNS" (0-bit key) header.d=codeaurora.org header.i=@codeaurora.org header.b="MnOao79j"
+DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org EBC05206DD
+Authentication-Results: mail.kernel.org; dmarc=none (p=none dis=none) header.from=codeaurora.org
 Authentication-Results: mail.kernel.org; spf=pass smtp.mailfrom=iommu-bounces@lists.linux-foundation.org
 Received: from mail.linux-foundation.org (localhost [127.0.0.1])
-	by mail.linuxfoundation.org (Postfix) with ESMTP id 47E35E28;
-	Fri, 25 Oct 2019 18:08:56 +0000 (UTC)
+	by mail.linuxfoundation.org (Postfix) with ESMTP id A7993CB2;
+	Sat, 26 Oct 2019 00:43:59 +0000 (UTC)
 Received: from smtp1.linuxfoundation.org (smtp1.linux-foundation.org
 	[172.17.192.35])
-	by mail.linuxfoundation.org (Postfix) with ESMTPS id 3A063E0E
+	by mail.linuxfoundation.org (Postfix) with ESMTPS id 2E512CB1
 	for <iommu@lists.linux-foundation.org>;
-	Fri, 25 Oct 2019 18:08:53 +0000 (UTC)
-X-Greylist: domain auto-whitelisted by SQLgrey-1.7.6
-Received: from foss.arm.com (foss.arm.com [217.140.110.172])
-	by smtp1.linuxfoundation.org (Postfix) with ESMTP id A976089D
+	Sat, 26 Oct 2019 00:43:58 +0000 (UTC)
+Received: from smtp.codeaurora.org (smtp.codeaurora.org [198.145.29.96])
+	by smtp1.linuxfoundation.org (Postfix) with ESMTPS id 5AF4114D
 	for <iommu@lists.linux-foundation.org>;
-	Fri, 25 Oct 2019 18:08:52 +0000 (UTC)
-Received: from usa-sjc-imap-foss1.foss.arm.com (unknown [10.121.207.14])
-	by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id 5B7D7337;
-	Fri, 25 Oct 2019 11:08:52 -0700 (PDT)
-Received: from e110467-lin.cambridge.arm.com (e110467-lin.cambridge.arm.com
-	[10.1.197.57])
-	by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPA id A95673F6C4; 
-	Fri, 25 Oct 2019 11:08:51 -0700 (PDT)
-From: Robin Murphy <robin.murphy@arm.com>
-To: will@kernel.org
-Subject: [PATCH v2 10/10] iommu/io-pgtable-arm: Prepare for TTBR1 usage
-Date: Fri, 25 Oct 2019 19:08:39 +0100
-Message-Id: <9ec05935de3f1c1da5d1780201147ed40e129295.1572024120.git.robin.murphy@arm.com>
-X-Mailer: git-send-email 2.21.0.dirty
-In-Reply-To: <cover.1572024119.git.robin.murphy@arm.com>
-References: <cover.1572024119.git.robin.murphy@arm.com>
-MIME-Version: 1.0
-Cc: iommu@lists.linux-foundation.org, linux-arm-kernel@lists.infradead.org
+	Sat, 26 Oct 2019 00:43:55 +0000 (UTC)
+Received: by smtp.codeaurora.org (Postfix, from userid 1000)
+	id 274A860D51; Sat, 26 Oct 2019 00:43:55 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=codeaurora.org;
+	s=default; t=1572050635;
+	bh=gOp7bQ1U59fV0k/2DQy6TdOt9caAaesaRY1XzyZQLVs=;
+	h=From:To:Cc:Subject:Date:From;
+	b=Vh0c6Dcg8c+yzCVre1dnWFc+tHk4i26zGkn7zokzBTZ+l4mKqJJAfYCx/ONJMCerV
+	qGVjl7kPSHE7BjaP/eqzpY+bgokFI4pDusa3XdBEiL4PLOiH6e2MX3SEPayuSHEPMx
+	3Fp6SW48c5sCyG8Giu/pEiHVjr6v+CQRrJ0z6Wuk=
+Received: from isaacm-linux.qualcomm.com (i-global254.qualcomm.com
+	[199.106.103.254])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES128-SHA256 (128/128 bits))
+	(No client certificate requested)
+	(Authenticated sender: isaacm@smtp.codeaurora.org)
+	by smtp.codeaurora.org (Postfix) with ESMTPSA id EDD2160240;
+	Sat, 26 Oct 2019 00:43:53 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=codeaurora.org;
+	s=default; t=1572050634;
+	bh=gOp7bQ1U59fV0k/2DQy6TdOt9caAaesaRY1XzyZQLVs=;
+	h=From:To:Cc:Subject:Date:From;
+	b=MnOao79jyuA6Yl413hUwILw4FIwIL/+LTvHhaeULPa49c62Ggu6LtqGgIgSauXZR1
+	6A5n4xSYOq4TM89S7YcU8n1KiuWywZCGArX9cBIH718RnPdYNTZG1F+cBdSsbe8ynl
+	daKkvUF8I4PBjKyWMnYB3+X2MWtYRNSSQUbc1Lno=
+DMARC-Filter: OpenDMARC Filter v1.3.2 smtp.codeaurora.org EDD2160240
+Authentication-Results: pdx-caf-mail.web.codeaurora.org;
+	dmarc=none (p=none dis=none) header.from=codeaurora.org
+Authentication-Results: pdx-caf-mail.web.codeaurora.org;
+	spf=none smtp.mailfrom=isaacm@codeaurora.org
+From: "Isaac J. Manjarres" <isaacm@codeaurora.org>
+To: iommu@lists.linux-foundation.org,
+	linux-kernel@vger.kernel.org
+Subject: [PATCH] iommu/dma: Add support for DMA_ATTR_SYS_CACHE
+Date: Fri, 25 Oct 2019 17:43:36 -0700
+Message-Id: <1572050616-6143-1-git-send-email-isaacm@codeaurora.org>
+X-Mailer: git-send-email 1.9.1
+Cc: "Isaac J. Manjarres" <isaacm@codeaurora.org>, robin.murphy@arm.com,
+	pratikp@codeaurora.org, lmark@codeaurora.org, will@kernel.org, hch@lst.de
 X-BeenThere: iommu@lists.linux-foundation.org
 X-Mailman-Version: 2.1.12
 Precedence: list
@@ -58,129 +81,67 @@ List-Post: <mailto:iommu@lists.linux-foundation.org>
 List-Help: <mailto:iommu-request@lists.linux-foundation.org?subject=help>
 List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
 	<mailto:iommu-request@lists.linux-foundation.org?subject=subscribe>
+MIME-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
 Sender: iommu-bounces@lists.linux-foundation.org
 Errors-To: iommu-bounces@lists.linux-foundation.org
 
-Now that we can correctly extract top-level indices without relying on
-the remaining upper bits being zero, the only remaining impediments to
-using a given table for TTBR1 are the address validation on map/unmap
-and the awkward TCR translation granule format. Add a quirk so that we
-can do the right thing at those points.
+Currently, IOMMU_QCOM_SYS_CACHE exists to allow non-coherent
+I/O masters on Qualcomm SoCs to upgrade to caching their
+buffers in the outer-level/system cache on these platforms.
+However, these masters are limited to managing the mapping
+of these buffers themselves through the IOMMU framework,
+as opposed to allowing the DMA-IOMMU framework to handle it,
+since there is no DMA attribute that maps to the
+IOMMU_QCOM_SYS_CACHE protection bit.
 
-Signed-off-by: Robin Murphy <robin.murphy@arm.com>
+Thus, introduce DMA_ATTR_SYS_CACHE so that clients
+can use the DMA-IOMMU layer to map their DMA buffers with
+the correct memory attributes to allow the buffers to be
+cached in the outer-level/system cache.
+
+Signed-off-by: Isaac J. Manjarres <isaacm@codeaurora.org>
 ---
- drivers/iommu/io-pgtable-arm.c | 25 +++++++++++++++++++------
- include/linux/io-pgtable.h     |  4 ++++
- 2 files changed, 23 insertions(+), 6 deletions(-)
+ drivers/iommu/dma-iommu.c   | 2 ++
+ include/linux/dma-mapping.h | 8 ++++++++
+ 2 files changed, 10 insertions(+)
 
-diff --git a/drivers/iommu/io-pgtable-arm.c b/drivers/iommu/io-pgtable-arm.c
-index 9b1912ede000..e53edff56e54 100644
---- a/drivers/iommu/io-pgtable-arm.c
-+++ b/drivers/iommu/io-pgtable-arm.c
-@@ -107,6 +107,10 @@
- #define ARM_LPAE_TCR_TG0_64K		1
- #define ARM_LPAE_TCR_TG0_16K		2
+diff --git a/drivers/iommu/dma-iommu.c b/drivers/iommu/dma-iommu.c
+index f321279..c433ece 100644
+--- a/drivers/iommu/dma-iommu.c
++++ b/drivers/iommu/dma-iommu.c
+@@ -369,6 +369,8 @@ static int dma_info_to_prot(enum dma_data_direction dir, bool coherent,
  
-+#define ARM_LPAE_TCR_TG1_16K		1
-+#define ARM_LPAE_TCR_TG1_4K		2
-+#define ARM_LPAE_TCR_TG1_64K		3
+ 	if (attrs & DMA_ATTR_PRIVILEGED)
+ 		prot |= IOMMU_PRIV;
++	if (attrs & DMA_ATTR_SYS_CACHE)
++		prot |= IOMMU_QCOM_SYS_CACHE;
+ 
+ 	switch (dir) {
+ 	case DMA_BIDIRECTIONAL:
+diff --git a/include/linux/dma-mapping.h b/include/linux/dma-mapping.h
+index 4a1c4fc..bdd4dcf 100644
+--- a/include/linux/dma-mapping.h
++++ b/include/linux/dma-mapping.h
+@@ -71,6 +71,14 @@
+ #define DMA_ATTR_PRIVILEGED		(1UL << 9)
+ 
+ /*
++ * DMA_ATTR_SYS_CACHE: This is a hint that non-coherent masters can use to
++ * tell the DMA-IOMMU layer to map their DMA buffers with the correct memory
++ * attributes that allow these buffers to be cached in an outer-level/system
++ * cache.
++ */
++#define DMA_ATTR_SYS_CACHE		(1UL << 10)
 +
- #define ARM_LPAE_TCR_SH0_SHIFT		12
- #define ARM_LPAE_TCR_SH_NS		0
- #define ARM_LPAE_TCR_SH_OS		2
-@@ -466,6 +470,7 @@ static int arm_lpae_map(struct io_pgtable_ops *ops, unsigned long iova,
- 	arm_lpae_iopte *ptep = data->pgd;
- 	int ret, lvl = data->start_level;
- 	arm_lpae_iopte prot;
-+	long iaext = (long)iova >> cfg->ias;
- 
- 	/* If no access, then nothing to do */
- 	if (!(iommu_prot & (IOMMU_READ | IOMMU_WRITE)))
-@@ -474,7 +479,9 @@ static int arm_lpae_map(struct io_pgtable_ops *ops, unsigned long iova,
- 	if (WARN_ON(!size || (size & cfg->pgsize_bitmap) != size))
- 		return -EINVAL;
- 
--	if (WARN_ON(iova >> data->iop.cfg.ias || paddr >> data->iop.cfg.oas))
-+	if (cfg->quirks & IO_PGTABLE_QUIRK_ARM_TTBR1)
-+		iaext = ~iaext;
-+	if (WARN_ON(iaext || paddr >> cfg->oas))
- 		return -ERANGE;
- 
- 	prot = arm_lpae_prot_to_pte(data, iommu_prot);
-@@ -640,11 +647,14 @@ static size_t arm_lpae_unmap(struct io_pgtable_ops *ops, unsigned long iova,
- 	struct arm_lpae_io_pgtable *data = io_pgtable_ops_to_data(ops);
- 	struct io_pgtable_cfg *cfg = &data->iop.cfg;
- 	arm_lpae_iopte *ptep = data->pgd;
-+	long iaext = (long)iova >> cfg->ias;
- 
- 	if (WARN_ON(!size || (size & cfg->pgsize_bitmap) != size))
- 		return 0;
- 
--	if (WARN_ON(iova >> data->iop.cfg.ias))
-+	if (cfg->quirks & IO_PGTABLE_QUIRK_ARM_TTBR1)
-+		iaext = ~iaext;
-+	if (WARN_ON(iaext))
- 		return 0;
- 
- 	return __arm_lpae_unmap(data, gather, iova, size, data->start_level, ptep);
-@@ -780,9 +790,11 @@ arm_64_lpae_alloc_pgtable_s1(struct io_pgtable_cfg *cfg, void *cookie)
- 	u64 reg;
- 	struct arm_lpae_io_pgtable *data;
- 	typeof(&cfg->arm_lpae_s1_cfg.tcr) tcr = &cfg->arm_lpae_s1_cfg.tcr;
-+	bool tg1;
- 
- 	if (cfg->quirks & ~(IO_PGTABLE_QUIRK_ARM_NS |
--			    IO_PGTABLE_QUIRK_NON_STRICT))
-+			    IO_PGTABLE_QUIRK_NON_STRICT |
-+			    IO_PGTABLE_QUIRK_ARM_TTBR1))
- 		return NULL;
- 
- 	data = arm_lpae_alloc_pgtable(cfg);
-@@ -800,15 +812,16 @@ arm_64_lpae_alloc_pgtable_s1(struct io_pgtable_cfg *cfg, void *cookie)
- 		tcr->orgn = ARM_LPAE_TCR_RGN_NC;
- 	}
- 
-+	tg1 = cfg->quirks & IO_PGTABLE_QUIRK_ARM_TTBR1;
- 	switch (ARM_LPAE_GRANULE(data)) {
- 	case SZ_4K:
--		tcr->tg = ARM_LPAE_TCR_TG0_4K;
-+		tcr->tg = tg1 ? ARM_LPAE_TCR_TG1_4K : ARM_LPAE_TCR_TG0_4K;
- 		break;
- 	case SZ_16K:
--		tcr->tg = ARM_LPAE_TCR_TG0_16K;
-+		tcr->tg = tg1 ? ARM_LPAE_TCR_TG1_16K : ARM_LPAE_TCR_TG0_16K;
- 		break;
- 	case SZ_64K:
--		tcr->tg = ARM_LPAE_TCR_TG0_64K;
-+		tcr->tg = tg1 ? ARM_LPAE_TCR_TG1_64K : ARM_LPAE_TCR_TG0_64K;
- 		break;
- 	}
- 
-diff --git a/include/linux/io-pgtable.h b/include/linux/io-pgtable.h
-index 6ae104cedfd7..d7c5cb685e50 100644
---- a/include/linux/io-pgtable.h
-+++ b/include/linux/io-pgtable.h
-@@ -83,12 +83,16 @@ struct io_pgtable_cfg {
- 	 * IO_PGTABLE_QUIRK_NON_STRICT: Skip issuing synchronous leaf TLBIs
- 	 *	on unmap, for DMA domains using the flush queue mechanism for
- 	 *	delayed invalidation.
-+	 *
-+	 * IO_PGTABLE_QUIRK_ARM_TTBR1: (ARM LPAE format) Configure the table
-+	 *	for use in the upper half of a split address space.
- 	 */
- 	#define IO_PGTABLE_QUIRK_ARM_NS		BIT(0)
- 	#define IO_PGTABLE_QUIRK_NO_PERMS	BIT(1)
- 	#define IO_PGTABLE_QUIRK_TLBI_ON_MAP	BIT(2)
- 	#define IO_PGTABLE_QUIRK_ARM_MTK_EXT	BIT(3)
- 	#define IO_PGTABLE_QUIRK_NON_STRICT	BIT(4)
-+	#define IO_PGTABLE_QUIRK_ARM_TTBR1	BIT(5)
- 	unsigned long			quirks;
- 	unsigned long			pgsize_bitmap;
- 	unsigned int			ias;
++/*
+  * A dma_addr_t can hold any valid DMA or bus address for the platform.
+  * It can be given to a device to use as a DMA source or target.  A CPU cannot
+  * reference a dma_addr_t directly because there may be translation between
 -- 
-2.21.0.dirty
+The Qualcomm Innovation Center, Inc. is a member of the Code Aurora Forum,
+a Linux Foundation Collaborative Project
 
 _______________________________________________
 iommu mailing list
