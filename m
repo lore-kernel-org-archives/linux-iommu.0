@@ -6,50 +6,50 @@ X-Spam-Status: No, score=-9.8 required=3.0 tests=DKIM_INVALID,DKIM_SIGNED,
 	INCLUDES_PATCH,MAILING_LIST_MULTI,SIGNED_OFF_BY,SPF_HELO_NONE,SPF_PASS,
 	URIBL_BLOCKED,USER_AGENT_GIT autolearn=ham autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 004ECCA9EB9
-	for <iommu@archiver.kernel.org>; Sat, 26 Oct 2019 13:21:14 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 1E44BCA9EBC
+	for <iommu@archiver.kernel.org>; Sat, 26 Oct 2019 13:22:21 +0000 (UTC)
 Received: from mail.linuxfoundation.org (mail.linuxfoundation.org [140.211.169.12])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by mail.kernel.org (Postfix) with ESMTPS id B82F620867
-	for <iommu@archiver.kernel.org>; Sat, 26 Oct 2019 13:21:13 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTPS id E9136222C1
+	for <iommu@archiver.kernel.org>; Sat, 26 Oct 2019 13:22:20 +0000 (UTC)
 Authentication-Results: mail.kernel.org;
-	dkim=fail reason="signature verification failed" (1024-bit key) header.d=kernel.org header.i=@kernel.org header.b="UsU+1yB3"
-DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org B82F620867
+	dkim=fail reason="signature verification failed" (1024-bit key) header.d=kernel.org header.i=@kernel.org header.b="xFNNd6qj"
+DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org E9136222C1
 Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=kernel.org
 Authentication-Results: mail.kernel.org; spf=pass smtp.mailfrom=iommu-bounces@lists.linux-foundation.org
 Received: from mail.linux-foundation.org (localhost [127.0.0.1])
-	by mail.linuxfoundation.org (Postfix) with ESMTP id 8EB59B6C;
-	Sat, 26 Oct 2019 13:21:13 +0000 (UTC)
+	by mail.linuxfoundation.org (Postfix) with ESMTP id CF89FB7A;
+	Sat, 26 Oct 2019 13:22:20 +0000 (UTC)
 Received: from smtp1.linuxfoundation.org (smtp1.linux-foundation.org
 	[172.17.192.35])
-	by mail.linuxfoundation.org (Postfix) with ESMTPS id 5D00EB59
+	by mail.linuxfoundation.org (Postfix) with ESMTPS id DC4DCB2F
 	for <iommu@lists.linux-foundation.org>;
-	Sat, 26 Oct 2019 13:21:12 +0000 (UTC)
+	Sat, 26 Oct 2019 13:22:19 +0000 (UTC)
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp1.linuxfoundation.org (Postfix) with ESMTPS id 190059A9
+	by smtp1.linuxfoundation.org (Postfix) with ESMTPS id A7EB9954
 	for <iommu@lists.linux-foundation.org>;
-	Sat, 26 Oct 2019 13:21:12 +0000 (UTC)
+	Sat, 26 Oct 2019 13:22:19 +0000 (UTC)
 Received: from sasha-vm.mshome.net (c-73-47-72-35.hsd1.nh.comcast.net
 	[73.47.72.35])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by mail.kernel.org (Postfix) with ESMTPSA id 3CD972070B;
-	Sat, 26 Oct 2019 13:21:11 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTPSA id D1933214DA;
+	Sat, 26 Oct 2019 13:22:18 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=default; t=1572096071;
-	bh=af3p0/s1/mz9NwY6vrVnhrPQVib0bzNLSeGM8cpc73Y=;
+	s=default; t=1572096139;
+	bh=AEHVKj6xR5EIQiNGael2/JtYKeP2TrD4V/dfE8l7vvA=;
 	h=From:To:Cc:Subject:Date:From;
-	b=UsU+1yB3+UjOg2VZlNl0rrjRIhBBZTK9GxEkjHnRbvX118tP2rVNrTFLY1tSHw8OM
-	mSKNSG9p/K8BHzHIuQmgtXoOz40G5yDGzS7CXna8nLZrMt8hq6NTMw2Mdt4Mi9lst/
-	IrbZfQigHU8yDe67sV6CIIZ7xFPbOKX24MeIODhw=
+	b=xFNNd6qjyMfEQ/BjJ8w5WYypNikoDH245i+REQqmx2khDZ5DUEQ6ekFNqrwxR9fdn
+	cK/DA3px3K3VHHFfMBmKFs4mz8IEM2rHjFdG81VKeHBPK5EpytkeTsI5Nmo3KhsWO+
+	tnMGRig0rL4nBE2gyr3qIfkzha6OUwRphVlm4CBs=
 From: Sasha Levin <sashal@kernel.org>
 To: linux-kernel@vger.kernel.org,
 	stable@vger.kernel.org
-Subject: [PATCH AUTOSEL 4.14 01/33] iommu/arm-smmu: Free context bitmap in the
+Subject: [PATCH AUTOSEL 4.9 01/21] iommu/arm-smmu: Free context bitmap in the
 	err path of arm_smmu_init_domain_context
-Date: Sat, 26 Oct 2019 09:20:38 -0400
-Message-Id: <20191026132110.4026-1-sashal@kernel.org>
+Date: Sat, 26 Oct 2019 09:21:57 -0400
+Message-Id: <20191026132217.4380-1-sashal@kernel.org>
 X-Mailer: git-send-email 2.20.1
 MIME-Version: 1.0
 X-stable: review
@@ -88,10 +88,10 @@ Signed-off-by: Sasha Levin <sashal@kernel.org>
  1 file changed, 1 insertion(+)
 
 diff --git a/drivers/iommu/arm-smmu.c b/drivers/iommu/arm-smmu.c
-index c38cf03c099ed..f97c26c90c41f 100644
+index f7ecb30a0bac8..5b3124eb184e7 100644
 --- a/drivers/iommu/arm-smmu.c
 +++ b/drivers/iommu/arm-smmu.c
-@@ -922,6 +922,7 @@ static int arm_smmu_init_domain_context(struct iommu_domain *domain,
+@@ -968,6 +968,7 @@ static int arm_smmu_init_domain_context(struct iommu_domain *domain,
  	return 0;
  
  out_clear_smmu:
