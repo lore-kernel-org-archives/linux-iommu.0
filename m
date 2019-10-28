@@ -2,115 +2,77 @@ Return-Path: <SRS0=m6Z5=YW=lists.linux-foundation.org=iommu-bounces@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-0.6 required=3.0 tests=DKIM_INVALID,DKIM_SIGNED,
-	HEADER_FROM_DIFFERENT_DOMAINS,MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS,
-	URIBL_BLOCKED autolearn=no autolearn_force=no version=3.4.0
+X-Spam-Status: No, score=-6.5 required=3.0 tests=DKIM_INVALID,DKIM_SIGNED,
+	HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_PATCH,MAILING_LIST_MULTI,SIGNED_OFF_BY,
+	SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED autolearn=unavailable autolearn_force=no
+	version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id F3DEBCA9EC2
-	for <iommu@archiver.kernel.org>; Tue, 29 Oct 2019 07:05:41 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 7DF73C47E49
+	for <iommu@archiver.kernel.org>; Tue, 29 Oct 2019 07:42:34 +0000 (UTC)
 Received: from mail.linuxfoundation.org (mail.linuxfoundation.org [140.211.169.12])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by mail.kernel.org (Postfix) with ESMTPS id B698B20830
-	for <iommu@archiver.kernel.org>; Tue, 29 Oct 2019 07:05:41 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTPS id 4492520717
+	for <iommu@archiver.kernel.org>; Tue, 29 Oct 2019 07:42:34 +0000 (UTC)
 Authentication-Results: mail.kernel.org;
-	dkim=fail reason="signature verification failed" (1024-bit key) header.d=nxp.com header.i=@nxp.com header.b="X5HUVrO6"
-DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org B698B20830
-Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=nxp.com
+	dkim=fail reason="signature verification failed" (1024-bit key) header.d=chromium.org header.i=@chromium.org header.b="KOtAhmLx"
+DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 4492520717
+Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=chromium.org
 Authentication-Results: mail.kernel.org; spf=pass smtp.mailfrom=iommu-bounces@lists.linux-foundation.org
 Received: from mail.linux-foundation.org (localhost [127.0.0.1])
-	by mail.linuxfoundation.org (Postfix) with ESMTP id 7453CDD5;
-	Tue, 29 Oct 2019 07:05:41 +0000 (UTC)
+	by mail.linuxfoundation.org (Postfix) with ESMTP id 06B13E7F;
+	Tue, 29 Oct 2019 07:42:34 +0000 (UTC)
 Received: from smtp1.linuxfoundation.org (smtp1.linux-foundation.org
 	[172.17.192.35])
-	by mail.linuxfoundation.org (Postfix) with ESMTPS id AD03CDCE
+	by mail.linuxfoundation.org (Postfix) with ESMTPS id 93EFAAD0
 	for <iommu@lists.linux-foundation.org>;
-	Tue, 29 Oct 2019 07:05:39 +0000 (UTC)
+	Mon, 28 Oct 2019 22:38:16 +0000 (UTC)
 X-Greylist: whitelisted by SQLgrey-1.7.6
-Received: from EUR03-AM5-obe.outbound.protection.outlook.com
-	(mail-eopbgr30085.outbound.protection.outlook.com [40.107.3.85])
-	by smtp1.linuxfoundation.org (Postfix) with ESMTPS id 0B93842D
+Received: from mail-il1-f194.google.com (mail-il1-f194.google.com
+	[209.85.166.194])
+	by smtp1.linuxfoundation.org (Postfix) with ESMTPS id 25DD842D
 	for <iommu@lists.linux-foundation.org>;
-	Tue, 29 Oct 2019 07:05:38 +0000 (UTC)
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
-	b=Jk4149nGWqpoUBCxeyVINNgdciy5BBPeX+i9P/e59TYZHRPKpgp4PoJLGX6HF05UTBi+huxjmU35oa9sjcVtVES0RNKRAasaMQ6h6ri7oaK8bFh8s+JizgIl/DwH3BGyIRM8GScWc7nZas709nGOG4IWKUubhdq9bZ5vp1Yfg5s9ngdya4jfuJeZG99Qu99DNqPCwW3Vv+r98cGKJNmaPllPBu4jAoyCev2Pa/81D7USDtqr/8Kh3aXAeDI1KKNDbb31p8WAL7WACC+5aXHqf1zxPS2tQ30q6MHf/PPzcPsBe8rzOqmRw8QAu0gOLMJxCKUQvjwnTIe5IFLbNV2zAw==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com; 
-	s=arcselector9901;
-	h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
-	bh=a0nGv4+Jux5Ik1K2x8sChxCQw3i7x0FLTh002Vsl/zs=;
-	b=SNm9IVby8Wn5O52/zHRsb9MI5jqjn4iRKb8ZX/I88k+cfCcqxwXBso4rPP0L5uKhCMLeEJ2oICjlnThqAuvg+cotQWlT+VG32b4A/EIzaZzuskL0Fhh1TJ37yz2Hm3TXJeLfBoMWY4wXPvpqsS2W8mC5dPBKtP476WZviNFfBRw75zjE8dgSZhuPnZENlYi+FGjtF/e1+LZRicnlW7MB+0pBDEfrNJwEUEgKVH+HjH27LIJgdxwz6qTIkSoXB3yncLwMsOFT+plBnD+T3UfjjntAZtzboX3xyL1S54TJhIUEcXFVu4EbZ/xzzlgYGZmZrHShhL0ysOaIBZNW6x4OsQ==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
-	smtp.mailfrom=nxp.com; dmarc=pass action=none header.from=nxp.com;
-	dkim=pass header.d=nxp.com; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=nxp.com; s=selector2; 
-	h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
-	bh=a0nGv4+Jux5Ik1K2x8sChxCQw3i7x0FLTh002Vsl/zs=;
-	b=X5HUVrO6ptsspd1q7tSCF+VD2r9rh76DwKsiz9CvWgo0xrWryQg9QT/nOjPbYiTyrqadX9KJnNXqw8xPk5v7DCFUaMWDTjwBUsVxwKeWQVoYTWRsJGwLHflmh/V1dqq1eI1kJNzHBQaaunNTeJOcuXTJZj/+hKzhg61APyka1pU=
-Received: from VI1PR04MB5134.eurprd04.prod.outlook.com (20.177.51.208) by
-	VI1PR04MB7118.eurprd04.prod.outlook.com (10.186.157.140) with Microsoft
-	SMTP
-	Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
-	15.20.2387.22; Tue, 29 Oct 2019 07:05:36 +0000
-Received: from VI1PR04MB5134.eurprd04.prod.outlook.com
-	([fe80::10f0:af2c:76ac:dfb]) by VI1PR04MB5134.eurprd04.prod.outlook.com
-	([fe80::10f0:af2c:76ac:dfb%7]) with mapi id 15.20.2387.025;
-	Tue, 29 Oct 2019 07:05:36 +0000
-From: Laurentiu Tudor <laurentiu.tudor@nxp.com>
-To: "hch@lst.de" <hch@lst.de>
-Subject: RE: [PATCH v2 1/3] dma-mapping: introduce new dma unmap and sync api
-	variants
-Thread-Topic: [PATCH v2 1/3] dma-mapping: introduce new dma unmap and sync api
-	variants
-Thread-Index: AQHVimhiysgNu4P7eUCr9wwTZY4WUadwBEWAgAE0mtA=
-Date: Tue, 29 Oct 2019 07:05:36 +0000
-Message-ID: <VI1PR04MB51340164BACC952498E46FFDEC610@VI1PR04MB5134.eurprd04.prod.outlook.com>
-References: <20191024124130.16871-1-laurentiu.tudor@nxp.com>
-	<20191024124130.16871-2-laurentiu.tudor@nxp.com>
-	<20191028123805.GA25160@lst.de>
-In-Reply-To: <20191028123805.GA25160@lst.de>
-Accept-Language: en-US
-Content-Language: en-US
-X-MS-Has-Attach: 
-X-MS-TNEF-Correlator: 
-authentication-results: spf=none (sender IP is )
-	smtp.mailfrom=laurentiu.tudor@nxp.com; 
-x-originating-ip: [86.123.56.226]
-x-ms-publictraffictype: Email
-x-ms-office365-filtering-ht: Tenant
-x-ms-office365-filtering-correlation-id: caffd9bc-47b8-495a-0b67-08d75c3e660b
-x-ms-traffictypediagnostic: VI1PR04MB7118:|VI1PR04MB7118:
-x-ms-exchange-transport-forked: True
-x-microsoft-antispam-prvs: <VI1PR04MB7118B1C5A1438512BA581A1FEC610@VI1PR04MB7118.eurprd04.prod.outlook.com>
-x-ms-oob-tlc-oobclassifiers: OLM:9508;
-x-forefront-prvs: 0205EDCD76
-x-forefront-antispam-report: SFV:NSPM;
-	SFS:(10009020)(4636009)(396003)(39860400002)(376002)(136003)(366004)(346002)(199004)(189003)(13464003)(305945005)(486006)(44832011)(7736002)(55016002)(11346002)(102836004)(6916009)(6506007)(316002)(54906003)(66556008)(186003)(14454004)(26005)(66476007)(5660300002)(3846002)(99286004)(76116006)(66446008)(64756008)(7696005)(14444005)(9686003)(2351001)(76176011)(256004)(6116002)(81156014)(476003)(8676002)(66066001)(446003)(71200400001)(71190400001)(74316002)(1730700003)(478600001)(6246003)(33656002)(81166006)(229853002)(4326008)(2501003)(8936002)(52536014)(6436002)(2906002)(5640700003)(86362001)(25786009)(66946007);
-	DIR:OUT; SFP:1101; SCL:1; SRVR:VI1PR04MB7118;
-	H:VI1PR04MB5134.eurprd04.prod.outlook.com; FPR:; SPF:None;
-	LANG:en; PTR:InfoNoRecords; A:1; MX:1; 
-received-spf: None (protection.outlook.com: nxp.com does not designate
-	permitted sender hosts)
-x-ms-exchange-senderadcheck: 1
-x-microsoft-antispam: BCL:0;
-x-microsoft-antispam-message-info: /0Cc5QupfQ/1ckzXmS4Rp6/zeiFxA4Q1606vLSI9S098Qf0fbBj35ZzJz4hPiqJelPKZ20KD0EMFw5yGFePSoRv5cGQ14y5CfROnO+A/oKF16WFAPMQoxjG+XzQVLzNy1DNakAHZL/GPn8stDZcIUnbX17bUEBryNGJ6pmnF7lgG8p2YElcDm5/Bty3JUhI85HXx5hl+8ZZMYkvGoCpvxW9+um9h6WiHbWZXxU+xUJVG2RzEjSrgp7FiJVmA41XPQsrOdA8D6YB/FC44IUReeNualsbLn7AO4fQW8o4p3WYa79imNgIn7LltOvLQIGZ1YM2aU6qDuF6k3/moC+FY57ItheZYYoD51hanPO/FpXI09ze88Eyva86c7huj/ioBnfVhyTVLcf7tdyonEsLJ4RJ4d7qLfCBluxGaIGPM7eWm4bNv0l2nIhOv/N1xVcvP
+	Mon, 28 Oct 2019 22:38:16 +0000 (UTC)
+Received: by mail-il1-f194.google.com with SMTP id s75so9658633ilc.3
+	for <iommu@lists.linux-foundation.org>;
+	Mon, 28 Oct 2019 15:38:16 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=chromium.org; s=google;
+	h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+	:cc; bh=1pqft6NUgSGPSsYgTI6KAW/EqfWsmOX+X7GP8nWIKRQ=;
+	b=KOtAhmLxM5DZQvf2Ll3f33KbklGMeTG2PKDxS+jixVpbEYv/r2fkX8rWW/POBAh8EZ
+	bhaa9F6E4wiUOAv7xzTF/OPYtmaoF81sAIOIN1D7uz2hMlzRn/GbsAID1pmlxlh0ULbu
+	KCWrpiKfUYuFXj/u1i4vCnm4AsCswlKrH1PH0=
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+	d=1e100.net; s=20161025;
+	h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+	:message-id:subject:to:cc;
+	bh=1pqft6NUgSGPSsYgTI6KAW/EqfWsmOX+X7GP8nWIKRQ=;
+	b=iM9yyEQKnry+MdhS9WCuHNqSqKpIw809CxfWLb6kykvrilY8g3HNJftLthQVFJiuyy
+	BCQXgZD0B3UpHazpdWIW5DXPjLY+7RtDjT8AO/sBAumzrZ5bE3Go+25X2HBq5+U5eJfA
+	fZz9EhWOmDFsp99LVrTXNmAom7iSLfawJacGmq/u9anRGbHs0qhgq7tkKd3Af8EDcF4+
+	y2tGV8pAs27xQsLSBXr4GFsS+krXmUnr6SXp+aKTugceAyGkpIZ0LRRgpVMFYqfN4q8w
+	kErpgXbJDMCLY3Nqqd+hSj2uE4krpRo4Z3yGRKeZVDyAcC6yDu60UKL6g11fpjjumVDO
+	Pemw==
+X-Gm-Message-State: APjAAAWWJ2f6MI9ie8Bo/RtkvGIm+tQc6SIttJcqOx3wfgt/hZx2meAo
+	CkWvUdmjzjux8eQyoW/QNYhr4KVkw9yxdM1VB//OZg==
+X-Google-Smtp-Source: APXvYqzOjbPZql47NIkJK7AmtptD85c0h2swAJ0981IFdP5pW7aIvp/4iQe9Q33o2yPDwnBDa7OGwzugpAmPA0ld6FE=
+X-Received: by 2002:a92:6e0a:: with SMTP id j10mr5422292ilc.26.1572302295420; 
+	Mon, 28 Oct 2019 15:38:15 -0700 (PDT)
 MIME-Version: 1.0
-X-OriginatorOrg: nxp.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: caffd9bc-47b8-495a-0b67-08d75c3e660b
-X-MS-Exchange-CrossTenant-originalarrivaltime: 29 Oct 2019 07:05:36.3983 (UTC)
-X-MS-Exchange-CrossTenant-fromentityheader: Hosted
-X-MS-Exchange-CrossTenant-id: 686ea1d3-bc2b-4c6f-a92c-d99c5c301635
-X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
-X-MS-Exchange-CrossTenant-userprincipalname: /aP4bRnk00Mi601WtGsCIALgf0nUPLLCvomfZv2gMlawlM7wJxNoOaayh5UlIsQsb6wg+b9AV1m8VCHQTfyZHA==
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: VI1PR04MB7118
-Cc: Ioana Ciocoi Radulescu <ruxandra.radulescu@nxp.com>,
-	Madalin Bucur <madalin.bucur@nxp.com>,
-	"netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-	"linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
-	Leo Li <leoyang.li@nxp.com>,
-	"iommu@lists.linux-foundation.org" <iommu@lists.linux-foundation.org>,
-	Ioana Ciornei <ioana.ciornei@nxp.com>,
-	"robin.murphy@arm.com" <robin.murphy@arm.com>,
-	"davem@davemloft.net" <davem@davemloft.net>
+References: <418d8426-f299-1269-2b2e-f86677cf22c2@arm.com>
+	<20191007204906.19571-1-robdclark@gmail.com>
+	<20191028222042.GB8532@willie-the-truck>
+In-Reply-To: <20191028222042.GB8532@willie-the-truck>
+From: Rob Clark <robdclark@chromium.org>
+Date: Mon, 28 Oct 2019 15:38:04 -0700
+Message-ID: <CAJs_Fx7zRWsTPiAg0PFt+8nJPpHpzSkxW6XMMJwozVO6vyB78A@mail.gmail.com>
+Subject: Re: [PATCH v2] iommu/arm-smmu: fix "hang" when games exit
+To: Will Deacon <will@kernel.org>
+X-Mailman-Approved-At: Tue, 29 Oct 2019 07:42:33 +0000
+Cc: freedreno <freedreno@lists.freedesktop.org>,
+	iommu@lists.linux-foundation.org, open list <linux-kernel@vger.kernel.org>,
+	Robin Murphy <robin.murphy@arm.com>, "moderated list:ARM SMMU DRIVERS"
+	<linux-arm-kernel@lists.infradead.org>
 X-BeenThere: iommu@lists.linux-foundation.org
 X-Mailman-Version: 2.1.12
 Precedence: list
@@ -128,33 +90,70 @@ Content-Transfer-Encoding: 7bit
 Sender: iommu-bounces@lists.linux-foundation.org
 Errors-To: iommu-bounces@lists.linux-foundation.org
 
-
-
-> -----Original Message-----
-> From: hch@lst.de <hch@lst.de>
-> Sent: Monday, October 28, 2019 2:38 PM
-> 
-> On Thu, Oct 24, 2019 at 12:41:41PM +0000, Laurentiu Tudor wrote:
-> > From: Laurentiu Tudor <laurentiu.tudor@nxp.com>
+On Mon, Oct 28, 2019 at 3:20 PM Will Deacon <will@kernel.org> wrote:
+>
+> Hi Rob,
+>
+> On Mon, Oct 07, 2019 at 01:49:06PM -0700, Rob Clark wrote:
+> > From: Rob Clark <robdclark@chromium.org>
 > >
-> > Introduce a few new dma unmap and sync variants that, on top of the
-> > original variants, return the virtual address corresponding to the
-> > input dma address.
-> > In order to implement this a new dma map op is added and used:
-> >     void *get_virt_addr(dev, dma_handle);
-> > It does the actual conversion of an input dma address to the output
-> > virtual address.
-> 
-> We'll definitively need an implementation for dma-direct at least as
-> well.  Also as said previously we need a dma_can_unmap_by_dma_addr()
-> or similar helper that tells the driver beforehand if this works, so
-> that the driver can either use a sub-optimal workaround or fail the
-> probe if this functionality isn't implemented.
+> > When games, browser, or anything using a lot of GPU buffers exits, there
+> > can be many hundreds or thousands of buffers to unmap and free.  If the
+> > GPU is otherwise suspended, this can cause arm-smmu to resume/suspend
+> > for each buffer, resulting 5-10 seconds worth of reprogramming the
+> > context bank (arm_smmu_write_context_bank()/arm_smmu_write_s2cr()/etc).
+> > To the user it would appear that the system just locked up.
+> >
+> > A simple solution is to use pm_runtime_put_autosuspend() instead, so we
+> > don't immediately suspend the SMMU device.
+>
+> Please can you reword the subject to be a bit more useful? The commit
+> message is great, but the subject is a bit like "fix bug in code" to me.
 
-Alright. On top of that I need to make this work on booke ppc as we have one driver that runs both on arm and ppc and will use these APIs.
+yeah, not the best $subject, but I wasn't quite sure how to fit
+something better in a reasonable # of chars.. maybe something like:
+"iommu/arm-smmu: optimize unmap but avoiding toggling runpm state"?
 
----
-Best Regards, Laurentiu
+BR,
+-R
+
+
+>
+> > Signed-off-by: Rob Clark <robdclark@chromium.org>
+> > ---
+> > v1: original
+> > v2: unconditionally use autosuspend, rather than deciding based on what
+> >     consumer does
+> >
+> >  drivers/iommu/arm-smmu.c | 5 ++++-
+> >  1 file changed, 4 insertions(+), 1 deletion(-)
+> >
+> > diff --git a/drivers/iommu/arm-smmu.c b/drivers/iommu/arm-smmu.c
+> > index 3f1d55fb43c4..b7b41f5001bc 100644
+> > --- a/drivers/iommu/arm-smmu.c
+> > +++ b/drivers/iommu/arm-smmu.c
+> > @@ -289,7 +289,7 @@ static inline int arm_smmu_rpm_get(struct arm_smmu_device *smmu)
+> >  static inline void arm_smmu_rpm_put(struct arm_smmu_device *smmu)
+> >  {
+> >       if (pm_runtime_enabled(smmu->dev))
+> > -             pm_runtime_put(smmu->dev);
+> > +             pm_runtime_put_autosuspend(smmu->dev);
+> >  }
+> >
+> >  static struct arm_smmu_domain *to_smmu_domain(struct iommu_domain *dom)
+> > @@ -1445,6 +1445,9 @@ static int arm_smmu_attach_dev(struct iommu_domain *domain, struct device *dev)
+> >       /* Looks ok, so add the device to the domain */
+> >       ret = arm_smmu_domain_add_master(smmu_domain, fwspec);
+>
+> Please can you put a comment here explaining what this is doing? An abridged
+> version of the commit message is fine.
+>
+> > +     pm_runtime_set_autosuspend_delay(smmu->dev, 20);
+> > +     pm_runtime_use_autosuspend(smmu->dev);
+>
+> Cheers,
+>
+> Will
 _______________________________________________
 iommu mailing list
 iommu@lists.linux-foundation.org
