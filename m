@@ -2,64 +2,62 @@ Return-Path: <SRS0=Xx/3=YV=lists.linux-foundation.org=iommu-bounces@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-2.3 required=3.0 tests=DKIM_INVALID,DKIM_SIGNED,
-	MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS,USER_AGENT_SANE_1 autolearn=no
-	autolearn_force=no version=3.4.0
+X-Spam-Status: No, score=-2.2 required=3.0 tests=HEADER_FROM_DIFFERENT_DOMAINS,
+	MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED,USER_AGENT_SANE_2
+	autolearn=no autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 87F69CA9EC2
-	for <iommu@archiver.kernel.org>; Mon, 28 Oct 2019 15:44:28 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 22B8FCA9EC2
+	for <iommu@archiver.kernel.org>; Mon, 28 Oct 2019 15:58:11 +0000 (UTC)
 Received: from mail.linuxfoundation.org (mail.linuxfoundation.org [140.211.169.12])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by mail.kernel.org (Postfix) with ESMTPS id 51ED321835
-	for <iommu@archiver.kernel.org>; Mon, 28 Oct 2019 15:44:28 +0000 (UTC)
-Authentication-Results: mail.kernel.org;
-	dkim=fail reason="signature verification failed" (1024-bit key) header.d=kernel.org header.i=@kernel.org header.b="Jgf2bZN9"
-DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 51ED321835
-Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=kernel.org
+	by mail.kernel.org (Postfix) with ESMTPS id EA325208C0
+	for <iommu@archiver.kernel.org>; Mon, 28 Oct 2019 15:58:10 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org EA325208C0
+Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=linux.intel.com
 Authentication-Results: mail.kernel.org; spf=pass smtp.mailfrom=iommu-bounces@lists.linux-foundation.org
 Received: from mail.linux-foundation.org (localhost [127.0.0.1])
-	by mail.linuxfoundation.org (Postfix) with ESMTP id 160BD105F;
-	Mon, 28 Oct 2019 15:44:28 +0000 (UTC)
+	by mail.linuxfoundation.org (Postfix) with ESMTP id AA1C410B3;
+	Mon, 28 Oct 2019 15:58:10 +0000 (UTC)
 Received: from smtp1.linuxfoundation.org (smtp1.linux-foundation.org
 	[172.17.192.35])
-	by mail.linuxfoundation.org (Postfix) with ESMTPS id 55A02C91
+	by mail.linuxfoundation.org (Postfix) with ESMTPS id 4404410B1
 	for <iommu@lists.linux-foundation.org>;
-	Mon, 28 Oct 2019 15:44:26 +0000 (UTC)
-Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp1.linuxfoundation.org (Postfix) with ESMTPS id 05EE1876
+	Mon, 28 Oct 2019 15:58:09 +0000 (UTC)
+X-Greylist: domain auto-whitelisted by SQLgrey-1.7.6
+Received: from mga04.intel.com (mga04.intel.com [192.55.52.120])
+	by smtp1.linuxfoundation.org (Postfix) with ESMTPS id DE6F0876
 	for <iommu@lists.linux-foundation.org>;
-	Mon, 28 Oct 2019 15:44:26 +0000 (UTC)
-Received: from willie-the-truck (236.31.169.217.in-addr.arpa [217.169.31.236])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256
-	bits)) (No client certificate requested)
-	by mail.kernel.org (Postfix) with ESMTPSA id 18827208C0;
-	Mon, 28 Oct 2019 15:44:23 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=default; t=1572277465;
-	bh=7uPygpMoCp7ibwc8iu0sNHmd386wanQ+5eE51BmIVT8=;
-	h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-	b=Jgf2bZN99RGiypkeTddFnVu/BSMG2XvMFb/v31sAn0o+vxrkUuUxuNG2+FGzqvuXh
-	yHEOGIpJWj+24KCiHiHzMXmhgL+vKM8GBouIwCWcc0pDEYB7wtZXVO9nC2FvvgBuMH
-	WfsYZfif5KDu6YlK5I9LhcBqZFURc/QW5Dbvfx4s=
-Date: Mon, 28 Oct 2019 15:44:20 +0000
-From: Will Deacon <will@kernel.org>
-To: Christoph Hellwig <hch@lst.de>
-Subject: Re: [PATCH] iommu/dma: Add support for DMA_ATTR_SYS_CACHE
-Message-ID: <20191028154420.GD5576@willie-the-truck>
-References: <1572050616-6143-1-git-send-email-isaacm@codeaurora.org>
-	<20191026053026.GA14545@lst.de>
-	<e5fe861d7d506eb41c23f3fc047efdfa@codeaurora.org>
-	<20191028074156.GB20443@lst.de>
-	<20191028112457.GB4122@willie-the-truck>
-	<20191028113728.GA24055@lst.de>
+	Mon, 28 Oct 2019 15:58:08 +0000 (UTC)
+X-Amp-Result: SKIPPED(no attachment in message)
+X-Amp-File-Uploaded: False
+Received: from orsmga005.jf.intel.com ([10.7.209.41])
+	by fmsmga104.fm.intel.com with ESMTP/TLS/DHE-RSA-AES256-GCM-SHA384;
+	28 Oct 2019 08:58:08 -0700
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="5.68,240,1569308400"; d="scan'208";a="374264720"
+Received: from jacob-builder.jf.intel.com (HELO jacob-builder) ([10.7.199.155])
+	by orsmga005.jf.intel.com with ESMTP; 28 Oct 2019 08:58:08 -0700
+Date: Mon, 28 Oct 2019 09:02:31 -0700
+From: Jacob Pan <jacob.jun.pan@linux.intel.com>
+To: "Tian, Kevin" <kevin.tian@intel.com>
+Subject: Re: [PATCH v7 09/11] iommu/vt-d: Add bind guest PASID support
+Message-ID: <20191028090231.4777c6a9@jacob-builder>
+In-Reply-To: <AADFC41AFE54684AB9EE6CBC0274A5D19D5DB7B8@SHSMSX104.ccr.corp.intel.com>
+References: <1571946904-86776-1-git-send-email-jacob.jun.pan@linux.intel.com>
+	<1571946904-86776-10-git-send-email-jacob.jun.pan@linux.intel.com>
+	<AADFC41AFE54684AB9EE6CBC0274A5D19D5CDDA6@SHSMSX104.ccr.corp.intel.com>
+	<20191025103337.1e51c0c9@jacob-builder>
+	<AADFC41AFE54684AB9EE6CBC0274A5D19D5DB7B8@SHSMSX104.ccr.corp.intel.com>
+Organization: OTC
+X-Mailer: Claws Mail 3.13.2 (GTK+ 2.24.30; x86_64-pc-linux-gnu)
 MIME-Version: 1.0
-Content-Disposition: inline
-In-Reply-To: <20191028113728.GA24055@lst.de>
-User-Agent: Mutt/1.10.1 (2018-07-13)
-Cc: isaacm@codeaurora.org, pratikp@codeaurora.org, linux-kernel@vger.kernel.org,
-	lmark@codeaurora.org, iommu@lists.linux-foundation.org,
-	robin.murphy@arm.com
+Cc: "Raj, Ashok" <ashok.raj@intel.com>, David Woodhouse <dwmw2@infradead.org>,
+	"iommu@lists.linux-foundation.org" <iommu@lists.linux-foundation.org>,
+	LKML <linux-kernel@vger.kernel.org>,
+	Alex Williamson <alex.williamson@redhat.com>,
+	Jean-Philippe Brucker <jean-philippe@linaro.com>,
+	Jonathan Cameron <jic23@kernel.org>
 X-BeenThere: iommu@lists.linux-foundation.org
 X-Mailman-Version: 2.1.12
 Precedence: list
@@ -77,36 +75,23 @@ Content-Transfer-Encoding: 7bit
 Sender: iommu-bounces@lists.linux-foundation.org
 Errors-To: iommu-bounces@lists.linux-foundation.org
 
-On Mon, Oct 28, 2019 at 12:37:28PM +0100, Christoph Hellwig wrote:
-> On Mon, Oct 28, 2019 at 11:24:58AM +0000, Will Deacon wrote:
-> > Agreed. The way I /think/ it works is that on many SoCs there is a
-> > system/last-level cache (LLC) which effectively sits in front of memory for
-> > all masters. Even if a device isn't coherent with the CPU caches, we still
-> > want to be able to allocate into the LLC. Why this doesn't happen
-> > automatically is beyond me, but it appears that on these Qualcomm designs
-> > you actually have to set the memory attributes up in the page-table to
-> > ensure that the resulting memory transactions are non-cacheable for the CPU
-> > but cacheable for the LLC. Without any changes, the transactions are
-> > non-cacheable in both of them which assumedly has a performance cost.
-> > 
-> > But you can see that I'm piecing things together myself here. Isaac?
+On Mon, 28 Oct 2019 06:03:36 +0000
+"Tian, Kevin" <kevin.tian@intel.com> wrote:
+
+> > > > +	.sva_bind_gpasid	= intel_svm_bind_gpasid,
+> > > > +	.sva_unbind_gpasid	= intel_svm_unbind_gpasid,
+> > > > +#endif  
+> > >
+> > > again, pure PASID management logic should be separated from SVM.
+> > >  
+> > I am not following, these two functions are SVM functionality, not
+> > pure PASID management which is already separated in ioasid.c  
 > 
-> If that is the case it sounds like we'd want to drive this through
-> DT properties, not the driver API.  But again, without an actual consumer
-> it pretty much is a moot point anyway.
-
-I think there's certainly a DT aspect to it so that the driver knows that
-the SoC is hooked up this way, but I agree that we need a consumer so that
-we can figure out how dynamic this needs to be. If it's just a
-fire-and-forget thing then it needn't escape the IOMMU layer, but I fear
-that it's probably more flexible than that.
-
-If nothing shows up for 5.6, I'll send a patch to remove it (since Jordan
-said there was something coming soon [1])
-
-Will
-
-[1] http://lkml.kernel.org/r/20191024153832.GA7966@jcrouse1-lnx.qualcomm.com
+> I should say pure "scalable mode" logic. Above callbacks are not
+> related to host SVM per se. They are serving gpasid requests from
+> guest side, thus part of generic scalable mode capability.
+Got your point, but we are sharing data structures with host SVM, it is
+very difficult and inefficient to separate the two.
 _______________________________________________
 iommu mailing list
 iommu@lists.linux-foundation.org
