@@ -2,52 +2,87 @@ Return-Path: <SRS0=Xx/3=YV=lists.linux-foundation.org=iommu-bounces@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-8.2 required=3.0 tests=HEADER_FROM_DIFFERENT_DOMAINS,
-	INCLUDES_PATCH,MAILING_LIST_MULTI,SIGNED_OFF_BY,SPF_HELO_NONE,SPF_PASS,
-	URIBL_BLOCKED,USER_AGENT_SANE_1 autolearn=ham autolearn_force=no version=3.4.0
+X-Spam-Status: No, score=-2.0 required=3.0 tests=DKIM_INVALID,DKIM_SIGNED,
+	HEADER_FROM_DIFFERENT_DOMAINS,MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS,
+	USER_AGENT_SANE_1 autolearn=no autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 24618CA9EC0
-	for <iommu@archiver.kernel.org>; Mon, 28 Oct 2019 15:09:30 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 80C61CA9EC0
+	for <iommu@archiver.kernel.org>; Mon, 28 Oct 2019 15:34:51 +0000 (UTC)
 Received: from mail.linuxfoundation.org (mail.linuxfoundation.org [140.211.169.12])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by mail.kernel.org (Postfix) with ESMTPS id E505020873
-	for <iommu@archiver.kernel.org>; Mon, 28 Oct 2019 15:09:29 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org E505020873
-Authentication-Results: mail.kernel.org; dmarc=none (p=none dis=none) header.from=arm.com
+	by mail.kernel.org (Postfix) with ESMTPS id 42ED7208C0
+	for <iommu@archiver.kernel.org>; Mon, 28 Oct 2019 15:34:51 +0000 (UTC)
+Authentication-Results: mail.kernel.org;
+	dkim=fail reason="key not found in DNS" (0-bit key) header.d=codeaurora.org header.i=@codeaurora.org header.b="deh2nyp9";
+	dkim=fail reason="key not found in DNS" (0-bit key) header.d=codeaurora.org header.i=@codeaurora.org header.b="hQQ03xOr"
+DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 42ED7208C0
+Authentication-Results: mail.kernel.org; dmarc=none (p=none dis=none) header.from=codeaurora.org
 Authentication-Results: mail.kernel.org; spf=pass smtp.mailfrom=iommu-bounces@lists.linux-foundation.org
 Received: from mail.linux-foundation.org (localhost [127.0.0.1])
-	by mail.linuxfoundation.org (Postfix) with ESMTP id A6430C79;
-	Mon, 28 Oct 2019 15:09:29 +0000 (UTC)
+	by mail.linuxfoundation.org (Postfix) with ESMTP id EE3531174;
+	Mon, 28 Oct 2019 15:34:50 +0000 (UTC)
 Received: from smtp1.linuxfoundation.org (smtp1.linux-foundation.org
 	[172.17.192.35])
-	by mail.linuxfoundation.org (Postfix) with ESMTPS id F382C1164
+	by mail.linuxfoundation.org (Postfix) with ESMTPS id CAD681164
 	for <iommu@lists.linux-foundation.org>;
-	Mon, 28 Oct 2019 15:09:27 +0000 (UTC)
-X-Greylist: domain auto-whitelisted by SQLgrey-1.7.6
-Received: from foss.arm.com (foss.arm.com [217.140.110.172])
-	by smtp1.linuxfoundation.org (Postfix) with ESMTP id 25F4287B
+	Mon, 28 Oct 2019 15:34:49 +0000 (UTC)
+Received: from smtp.codeaurora.org (smtp.codeaurora.org [198.145.29.96])
+	by smtp1.linuxfoundation.org (Postfix) with ESMTPS id 69F1087B
 	for <iommu@lists.linux-foundation.org>;
-	Mon, 28 Oct 2019 15:09:27 +0000 (UTC)
-Received: from usa-sjc-imap-foss1.foss.arm.com (unknown [10.121.207.14])
-	by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id 71A931F1;
-	Mon, 28 Oct 2019 08:09:26 -0700 (PDT)
-Received: from [10.1.194.43] (unknown [10.1.194.43])
-	by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPSA id BE1FC3F6C4;
-	Mon, 28 Oct 2019 08:09:25 -0700 (PDT)
-Subject: Re: [PATCH v2 08/10] iommu/io-pgtable-arm: Rationalise TTBRn handling
-To: Robin Murphy <robin.murphy@arm.com>, will@kernel.org
-References: <cover.1572024119.git.robin.murphy@arm.com>
-	<74ada0e6c488a2310206a553eb108cc28fd52457.1572024120.git.robin.murphy@arm.com>
-From: Steven Price <steven.price@arm.com>
-Message-ID: <5324d888-857a-b07c-439c-4ae4ea3a9784@arm.com>
-Date: Mon, 28 Oct 2019 15:09:24 +0000
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:60.0) Gecko/20100101
-	Thunderbird/60.9.0
+	Mon, 28 Oct 2019 15:34:49 +0000 (UTC)
+Received: by smtp.codeaurora.org (Postfix, from userid 1000)
+	id 3FDD160A19; Mon, 28 Oct 2019 15:34:49 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=codeaurora.org;
+	s=default; t=1572276889;
+	bh=bCbdiTSckyICpvwuvpK6d6BcawKxrhdEuu25eW7caFs=;
+	h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+	b=deh2nyp9QKwEe2IUBDz71a85Z8BLFSTPeuOPtic8Dwm/mGlWRrIePWVXV4pyWJukU
+	w9U01YmEHLIVHppiPIysSFkaB42VTLbuHeF4JtA3L2DWc7ne17OG3zIHBPp3KRixD6
+	l4UHWp5EfAkwsAU+gJ8QV0XFb9bfmSTTWFot0COA=
+Received: from jcrouse1-lnx.qualcomm.com (i-global254.qualcomm.com
+	[199.106.103.254])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+	(No client certificate requested)
+	(Authenticated sender: jcrouse@smtp.codeaurora.org)
+	by smtp.codeaurora.org (Postfix) with ESMTPSA id E38EF60850;
+	Mon, 28 Oct 2019 15:34:47 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=codeaurora.org;
+	s=default; t=1572276888;
+	bh=bCbdiTSckyICpvwuvpK6d6BcawKxrhdEuu25eW7caFs=;
+	h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+	b=hQQ03xOrt536qEv7tq/7vDv8eKBYgdppf6EnJZ0Gu2clNU7Y46/cT8vJo6vfb4aKv
+	rLmFgQEbpbccRx2ByIFJKdNSha+n0ewaTA+MPu5J1tZHWn6L9n0CU4NDdPmkCWOgdo
+	E7hMd5pe9cMzWqXYkAVbGV4/qTtp0JOMlkrwo41M=
+DMARC-Filter: OpenDMARC Filter v1.3.2 smtp.codeaurora.org E38EF60850
+Authentication-Results: pdx-caf-mail.web.codeaurora.org;
+	dmarc=none (p=none dis=none) header.from=codeaurora.org
+Authentication-Results: pdx-caf-mail.web.codeaurora.org;
+	spf=none smtp.mailfrom=jcrouse@codeaurora.org
+Date: Mon, 28 Oct 2019 09:34:46 -0600
+From: Jordan Crouse <jcrouse@codeaurora.org>
+To: Robin Murphy <robin.murphy@arm.com>
+Subject: Re: [PATCH] iommu/dma: Add support for DMA_ATTR_SYS_CACHE
+Message-ID: <20191028153445.GD7966@jcrouse1-lnx.qualcomm.com>
+Mail-Followup-To: Robin Murphy <robin.murphy@arm.com>,
+	Will Deacon <will@kernel.org>, Christoph Hellwig <hch@lst.de>,
+	isaacm@codeaurora.org, linux-kernel@vger.kernel.org,
+	lmark@codeaurora.org, iommu@lists.linux-foundation.org,
+	pratikp@codeaurora.org, smasetty@codeaurora.org
+References: <1572050616-6143-1-git-send-email-isaacm@codeaurora.org>
+	<20191026053026.GA14545@lst.de>
+	<e5fe861d7d506eb41c23f3fc047efdfa@codeaurora.org>
+	<20191028074156.GB20443@lst.de>
+	<20191028112457.GB4122@willie-the-truck>
+	<c1b37c8d-7bdc-eb81-19c2-29f50568150a@arm.com>
 MIME-Version: 1.0
-In-Reply-To: <74ada0e6c488a2310206a553eb108cc28fd52457.1572024120.git.robin.murphy@arm.com>
-Content-Language: en-GB
-Cc: iommu@lists.linux-foundation.org, linux-arm-kernel@lists.infradead.org
+Content-Disposition: inline
+In-Reply-To: <c1b37c8d-7bdc-eb81-19c2-29f50568150a@arm.com>
+User-Agent: Mutt/1.5.24 (2015-08-30)
+Cc: isaacm@codeaurora.org, pratikp@codeaurora.org, smasetty@codeaurora.org,
+	linux-kernel@vger.kernel.org, lmark@codeaurora.org,
+	iommu@lists.linux-foundation.org, Will Deacon <will@kernel.org>,
+	Christoph Hellwig <hch@lst.de>
 X-BeenThere: iommu@lists.linux-foundation.org
 X-Mailman-Version: 2.1.12
 Precedence: list
@@ -60,214 +95,56 @@ List-Post: <mailto:iommu@lists.linux-foundation.org>
 List-Help: <mailto:iommu-request@lists.linux-foundation.org?subject=help>
 List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
 	<mailto:iommu-request@lists.linux-foundation.org?subject=subscribe>
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: base64
 Sender: iommu-bounces@lists.linux-foundation.org
 Errors-To: iommu-bounces@lists.linux-foundation.org
 
-On 25/10/2019 19:08, Robin Murphy wrote:
-> TTBR1 values have so far been redundant since no users implement any
-> support for split address spaces. Crucially, though, one of the main
-> reasons for wanting to do so is to be able to manage each half entirely
-> independently, e.g. context-switching one set of mappings without
-> disturbing the other. Thus it seems unlikely that tying two tables
-> together in a single io_pgtable_cfg would ever be particularly desirable
-> or useful.
-> 
-> Streamline the configs to just a single conceptual TTBR value
-> representing the allocated table. This paves the way for future users to
-> support split address spaces by simply allocating a table and dealing
-> with the detailed TTBRn logistics themselves.
-> 
-> Signed-off-by: Robin Murphy <robin.murphy@arm.com>
-> ---
->  drivers/iommu/arm-smmu-v3.c        |  2 +-
->  drivers/iommu/arm-smmu.c           |  9 ++++-----
->  drivers/iommu/io-pgtable-arm-v7s.c | 16 +++++++---------
->  drivers/iommu/io-pgtable-arm.c     |  5 ++---
->  drivers/iommu/ipmmu-vmsa.c         |  2 +-
->  drivers/iommu/msm_iommu.c          |  4 ++--
->  drivers/iommu/mtk_iommu.c          |  4 ++--
->  drivers/iommu/qcom_iommu.c         |  3 +--
->  include/linux/io-pgtable.h         |  4 ++--
->  9 files changed, 22 insertions(+), 27 deletions(-)
-> 
-> diff --git a/drivers/iommu/arm-smmu-v3.c b/drivers/iommu/arm-smmu-v3.c
-> index 3f20e548f1ec..da31e607698f 100644
-> --- a/drivers/iommu/arm-smmu-v3.c
-> +++ b/drivers/iommu/arm-smmu-v3.c
-> @@ -2170,7 +2170,7 @@ static int arm_smmu_domain_finalise_s1(struct arm_smmu_domain *smmu_domain,
->  	}
->  
->  	cfg->cd.asid	= (u16)asid;
-> -	cfg->cd.ttbr	= pgtbl_cfg->arm_lpae_s1_cfg.ttbr[0];
-> +	cfg->cd.ttbr	= pgtbl_cfg->arm_lpae_s1_cfg.ttbr;
->  	cfg->cd.tcr	= pgtbl_cfg->arm_lpae_s1_cfg.tcr;
->  	cfg->cd.mair	= pgtbl_cfg->arm_lpae_s1_cfg.mair;
->  	return 0;
-> diff --git a/drivers/iommu/arm-smmu.c b/drivers/iommu/arm-smmu.c
-> index 2bc3e93b11e6..a249e4e49ead 100644
-> --- a/drivers/iommu/arm-smmu.c
-> +++ b/drivers/iommu/arm-smmu.c
-> @@ -534,13 +534,12 @@ static void arm_smmu_init_context_bank(struct arm_smmu_domain *smmu_domain,
->  	/* TTBRs */
->  	if (stage1) {
->  		if (cfg->fmt == ARM_SMMU_CTX_FMT_AARCH32_S) {
-> -			cb->ttbr[0] = pgtbl_cfg->arm_v7s_cfg.ttbr[0];
-> -			cb->ttbr[1] = pgtbl_cfg->arm_v7s_cfg.ttbr[1];
-> +			cb->ttbr[0] = pgtbl_cfg->arm_v7s_cfg.ttbr;
-> +			cb->ttbr[1] = 0;
->  		} else {
-> -			cb->ttbr[0] = pgtbl_cfg->arm_lpae_s1_cfg.ttbr[0];
-> +			cb->ttbr[0] = pgtbl_cfg->arm_lpae_s1_cfg.ttbr;
->  			cb->ttbr[0] |= FIELD_PREP(TTBRn_ASID, cfg->asid);
-> -			cb->ttbr[1] = pgtbl_cfg->arm_lpae_s1_cfg.ttbr[1];
-> -			cb->ttbr[1] |= FIELD_PREP(TTBRn_ASID, cfg->asid);
-> +			cb->ttbr[1] = FIELD_PREP(TTBRn_ASID, cfg->asid);
->  		}
->  	} else {
->  		cb->ttbr[0] = pgtbl_cfg->arm_lpae_s2_cfg.vttbr;
-> diff --git a/drivers/iommu/io-pgtable-arm-v7s.c b/drivers/iommu/io-pgtable-arm-v7s.c
-> index 7c3bd2c3cdca..4d2c1e7f67c4 100644
-> --- a/drivers/iommu/io-pgtable-arm-v7s.c
-> +++ b/drivers/iommu/io-pgtable-arm-v7s.c
-> @@ -822,15 +822,13 @@ static struct io_pgtable *arm_v7s_alloc_pgtable(struct io_pgtable_cfg *cfg,
->  	/* Ensure the empty pgd is visible before any actual TTBR write */
->  	wmb();
->  
-> -	/* TTBRs */
-> -	cfg->arm_v7s_cfg.ttbr[0] = virt_to_phys(data->pgd) |
-> -				   ARM_V7S_TTBR_S | ARM_V7S_TTBR_NOS |
-> -				   (cfg->coherent_walk ?
-> -				   (ARM_V7S_TTBR_IRGN_ATTR(ARM_V7S_RGN_WBWA) |
-> -				    ARM_V7S_TTBR_ORGN_ATTR(ARM_V7S_RGN_WBWA)) :
-> -				   (ARM_V7S_TTBR_IRGN_ATTR(ARM_V7S_RGN_NC) |
-> -				    ARM_V7S_TTBR_ORGN_ATTR(ARM_V7S_RGN_NC)));
-> -	cfg->arm_v7s_cfg.ttbr[1] = 0;
-> +	/* TTBR */
-> +	cfg->arm_v7s_cfg.ttbr = virt_to_phys(data->pgd) | ARM_V7S_TTBR_S |
-> +				(cfg->coherent_walk ? (ARM_V7S_TTBR_NOS |
-> +				  ARM_V7S_TTBR_IRGN_ATTR(ARM_V7S_RGN_WBWA) |
-> +				  ARM_V7S_TTBR_ORGN_ATTR(ARM_V7S_RGN_WBWA)) :
-> +				 (ARM_V7S_TTBR_IRGN_ATTR(ARM_V7S_RGN_NC) |
-> +				  ARM_V7S_TTBR_ORGN_ATTR(ARM_V7S_RGN_NC)));
-
-ARM_V7S_TTBR_NOS seems to have sneaked into the cfg->coherent_walk
-condition here - which you haven't mentioned in the commit log, so it
-doesn't look like it should be in this commit.
-
-Steve
-
->  	return &data->iop;
->  
->  out_free_data:
-> diff --git a/drivers/iommu/io-pgtable-arm.c b/drivers/iommu/io-pgtable-arm.c
-> index 1795df8f7a51..bc0841040ebe 100644
-> --- a/drivers/iommu/io-pgtable-arm.c
-> +++ b/drivers/iommu/io-pgtable-arm.c
-> @@ -872,9 +872,8 @@ arm_64_lpae_alloc_pgtable_s1(struct io_pgtable_cfg *cfg, void *cookie)
->  	/* Ensure the empty pgd is visible before any actual TTBR write */
->  	wmb();
->  
-> -	/* TTBRs */
-> -	cfg->arm_lpae_s1_cfg.ttbr[0] = virt_to_phys(data->pgd);
-> -	cfg->arm_lpae_s1_cfg.ttbr[1] = 0;
-> +	/* TTBR */
-> +	cfg->arm_lpae_s1_cfg.ttbr = virt_to_phys(data->pgd);
->  	return &data->iop;
->  
->  out_free_data:
-> diff --git a/drivers/iommu/ipmmu-vmsa.c b/drivers/iommu/ipmmu-vmsa.c
-> index e4da6efbda49..4fe0ff3216ce 100644
-> --- a/drivers/iommu/ipmmu-vmsa.c
-> +++ b/drivers/iommu/ipmmu-vmsa.c
-> @@ -416,7 +416,7 @@ static void ipmmu_domain_setup_context(struct ipmmu_vmsa_domain *domain)
->  	u32 tmp;
->  
->  	/* TTBR0 */
-> -	ttbr = domain->cfg.arm_lpae_s1_cfg.ttbr[0];
-> +	ttbr = domain->cfg.arm_lpae_s1_cfg.ttbr;
->  	ipmmu_ctx_write_root(domain, IMTTLBR0, ttbr);
->  	ipmmu_ctx_write_root(domain, IMTTUBR0, ttbr >> 32);
->  
-> diff --git a/drivers/iommu/msm_iommu.c b/drivers/iommu/msm_iommu.c
-> index be99d408cf35..9ceec140fa67 100644
-> --- a/drivers/iommu/msm_iommu.c
-> +++ b/drivers/iommu/msm_iommu.c
-> @@ -279,8 +279,8 @@ static void __program_context(void __iomem *base, int ctx,
->  	SET_V2PCFG(base, ctx, 0x3);
->  
->  	SET_TTBCR(base, ctx, priv->cfg.arm_v7s_cfg.tcr);
-> -	SET_TTBR0(base, ctx, priv->cfg.arm_v7s_cfg.ttbr[0]);
-> -	SET_TTBR1(base, ctx, priv->cfg.arm_v7s_cfg.ttbr[1]);
-> +	SET_TTBR0(base, ctx, priv->cfg.arm_v7s_cfg.ttbr);
-> +	SET_TTBR1(base, ctx, 0);
->  
->  	/* Set prrr and nmrr */
->  	SET_PRRR(base, ctx, priv->cfg.arm_v7s_cfg.prrr);
-> diff --git a/drivers/iommu/mtk_iommu.c b/drivers/iommu/mtk_iommu.c
-> index 67a483c1a935..ef0b36eeb83d 100644
-> --- a/drivers/iommu/mtk_iommu.c
-> +++ b/drivers/iommu/mtk_iommu.c
-> @@ -392,7 +392,7 @@ static int mtk_iommu_attach_device(struct iommu_domain *domain,
->  	/* Update the pgtable base address register of the M4U HW */
->  	if (!data->m4u_dom) {
->  		data->m4u_dom = dom;
-> -		writel(dom->cfg.arm_v7s_cfg.ttbr[0] & MMU_PT_ADDR_MASK,
-> +		writel(dom->cfg.arm_v7s_cfg.ttbr & MMU_PT_ADDR_MASK,
->  		       data->base + REG_MMU_PT_BASE_ADDR);
->  	}
->  
-> @@ -797,7 +797,7 @@ static int __maybe_unused mtk_iommu_resume(struct device *dev)
->  	writel_relaxed(reg->ivrp_paddr, base + REG_MMU_IVRP_PADDR);
->  	writel_relaxed(reg->vld_pa_rng, base + REG_MMU_VLD_PA_RNG);
->  	if (m4u_dom)
-> -		writel(m4u_dom->cfg.arm_v7s_cfg.ttbr[0] & MMU_PT_ADDR_MASK,
-> +		writel(m4u_dom->cfg.arm_v7s_cfg.ttbr & MMU_PT_ADDR_MASK,
->  		       base + REG_MMU_PT_BASE_ADDR);
->  	return 0;
->  }
-> diff --git a/drivers/iommu/qcom_iommu.c b/drivers/iommu/qcom_iommu.c
-> index 66e9b40e9275..9a57eb6c253c 100644
-> --- a/drivers/iommu/qcom_iommu.c
-> +++ b/drivers/iommu/qcom_iommu.c
-> @@ -269,10 +269,9 @@ static int qcom_iommu_init_domain(struct iommu_domain *domain,
->  
->  		/* TTBRs */
->  		iommu_writeq(ctx, ARM_SMMU_CB_TTBR0,
-> -				pgtbl_cfg.arm_lpae_s1_cfg.ttbr[0] |
-> +				pgtbl_cfg.arm_lpae_s1_cfg.ttbr |
->  				FIELD_PREP(TTBRn_ASID, ctx->asid));
->  		iommu_writeq(ctx, ARM_SMMU_CB_TTBR1,
-> -				pgtbl_cfg.arm_lpae_s1_cfg.ttbr[1] |
->  				FIELD_PREP(TTBRn_ASID, ctx->asid));
->  
->  		/* TCR */
-> diff --git a/include/linux/io-pgtable.h b/include/linux/io-pgtable.h
-> index ee21eedafe98..53bca5343f52 100644
-> --- a/include/linux/io-pgtable.h
-> +++ b/include/linux/io-pgtable.h
-> @@ -100,7 +100,7 @@ struct io_pgtable_cfg {
->  	/* Low-level data specific to the table format */
->  	union {
->  		struct {
-> -			u64	ttbr[2];
-> +			u64	ttbr;
->  			u64	tcr;
->  			u64	mair;
->  		} arm_lpae_s1_cfg;
-> @@ -111,7 +111,7 @@ struct io_pgtable_cfg {
->  		} arm_lpae_s2_cfg;
->  
->  		struct {
-> -			u32	ttbr[2];
-> +			u32	ttbr;
->  			u32	tcr;
->  			u32	nmrr;
->  			u32	prrr;
-> 
-
-_______________________________________________
-iommu mailing list
-iommu@lists.linux-foundation.org
-https://lists.linuxfoundation.org/mailman/listinfo/iommu
+T24gTW9uLCBPY3QgMjgsIDIwMTkgYXQgMTE6NTk6MDRBTSArMDAwMCwgUm9iaW4gTXVycGh5IHdy
+b3RlOgo+IE9uIDI4LzEwLzIwMTkgMTE6MjQsIFdpbGwgRGVhY29uIHdyb3RlOgo+ID5IaSBDaHJp
+c3RvcGgsCj4gPgo+ID5PbiBNb24sIE9jdCAyOCwgMjAxOSBhdCAwODo0MTo1NkFNICswMTAwLCBD
+aHJpc3RvcGggSGVsbHdpZyB3cm90ZToKPiA+Pk9uIFNhdCwgT2N0IDI2LCAyMDE5IGF0IDAzOjEy
+OjU3QU0gLTA3MDAsIGlzYWFjbUBjb2RlYXVyb3JhLm9yZyB3cm90ZToKPiA+Pj5PbiAyMDE5LTEw
+LTI1IDIyOjMwLCBDaHJpc3RvcGggSGVsbHdpZyB3cm90ZToKPiA+Pj4+VGhlIGRlZmluaXRpb24g
+bWFrZXMgdmVyeSBsaXR0bGUgc2Vuc2UuCj4gPj4+Q2FuIHlvdSBwbGVhc2UgY2xhcmlmeSB3aGF0
+IHBhcnQgZG9lc27igJl0IG1ha2Ugc2Vuc2UsIGFuZCB3aHk/Cj4gPj4KPiA+Pkl0IGxvb2tzIGxp
+a2UgY29tcGxldGUgZ2FyYmFnZSB0byBtZS4gIFRoYXQgbWlnaHQganVzdCBiZSBiZWNhdXNlIGl0
+Cj4gPj51c2VzIHRvbnMgb2YgdGVybXMgSSd2ZSBuZXZlciBoZWFyZCBvZiBvZiBhbmQgd2hpY2gg
+YXJlbid0IHVzZWQgYW55d2hlcmUKPiA+PmluIHRoZSBETUEgQVBJLiAgSXQgYWxzbyBtaWdodCBi
+ZSBiZWNhdXNlIGl0IGRvZXNuJ3QgZXhwbGFpbiBob3cgdGhlCj4gPj5mbGFnIG1pZ2h0IGFjdHVh
+bGx5IGJlIHByYWN0aWNhbGx5IHVzZWZ1bC4KPiA+Cj4gPkFncmVlZC4gVGhlIHdheSBJIC90aGlu
+ay8gaXQgd29ya3MgaXMgdGhhdCBvbiBtYW55IFNvQ3MgdGhlcmUgaXMgYQo+ID5zeXN0ZW0vbGFz
+dC1sZXZlbCBjYWNoZSAoTExDKSB3aGljaCBlZmZlY3RpdmVseSBzaXRzIGluIGZyb250IG9mIG1l
+bW9yeSBmb3IKPiA+YWxsIG1hc3RlcnMuIEV2ZW4gaWYgYSBkZXZpY2UgaXNuJ3QgY29oZXJlbnQg
+d2l0aCB0aGUgQ1BVIGNhY2hlcywgd2Ugc3RpbGwKPiA+d2FudCB0byBiZSBhYmxlIHRvIGFsbG9j
+YXRlIGludG8gdGhlIExMQy4gV2h5IHRoaXMgZG9lc24ndCBoYXBwZW4KPiA+YXV0b21hdGljYWxs
+eSBpcyBiZXlvbmQgbWUsIGJ1dCBpdCBhcHBlYXJzIHRoYXQgb24gdGhlc2UgUXVhbGNvbW0gZGVz
+aWducwo+ID55b3UgYWN0dWFsbHkgaGF2ZSB0byBzZXQgdGhlIG1lbW9yeSBhdHRyaWJ1dGVzIHVw
+IGluIHRoZSBwYWdlLXRhYmxlIHRvCj4gPmVuc3VyZSB0aGF0IHRoZSByZXN1bHRpbmcgbWVtb3J5
+IHRyYW5zYWN0aW9ucyBhcmUgbm9uLWNhY2hlYWJsZSBmb3IgdGhlIENQVQo+ID5idXQgY2FjaGVh
+YmxlIGZvciB0aGUgTExDLiBXaXRob3V0IGFueSBjaGFuZ2VzLCB0aGUgdHJhbnNhY3Rpb25zIGFy
+ZQo+ID5ub24tY2FjaGVhYmxlIGluIGJvdGggb2YgdGhlbSB3aGljaCBhc3N1bWVkbHkgaGFzIGEg
+cGVyZm9ybWFuY2UgY29zdC4KPiA+Cj4gPkJ1dCB5b3UgY2FuIHNlZSB0aGF0IEknbSBwaWVjaW5n
+IHRoaW5ncyB0b2dldGhlciBteXNlbGYgaGVyZS4gSXNhYWM/Cj4gCj4gRldJVywgdGhhdCdzIHBy
+ZXR0eSBtdWNoIGhvdyBQcmF0aWsgYW5kIEpvcmRhbiBleHBsYWluZWQgaXQgdG8gbWUgLSB0aGUg
+TExDCj4gc2l0cyBkaXJlY3RseSBpbiBmcm9udCBvZiBtZW1vcnkgYW5kIGlzIG1vcmUgb3IgbGVz
+cyB0cmFuc3BhcmVudCwgYWx0aG91Z2gKPiBpdCBtaWdodCB0cmVhdCBDUFUgYW5kIGRldmljZSBh
+Y2Nlc3NlcyBzbGlnaHRseSBkaWZmZXJlbnRseSAoSSBkb24ndAo+IHJlbWVtYmVyIGV4YWN0bHkg
+aG93IHRoZSBpbm5lciBjYWNoZWFibGlsaXR5IGF0dHJpYnV0ZSBpbnRlcmFjdHMpLiBDZXJ0YWlu
+Cj4gZGV2aWNlcyBkb24ndCBnZXQgbXVjaCBiZW5lZml0IGZyb20gdGhlIExMQywgaGVuY2UgdGhl
+IGRlc2lyZSBmb3IKPiBmaW5lci1ncmFpbmVkIGNvbnRyb2wgb2YgdGhlaXIgb3V0ZXIgYWxsb2Nh
+dGlvbiBwb2xpY3kgdG8gYXZvaWQgbW9yZQo+IHRocmFzaGluZyB0aGFuIG5lY2Vzc2FyeS4gRnVy
+dGhlcm1vcmUsIGZvciBzdHVmZiBpbiB0aGUgdmlkZW8vR1BVL2Rpc3BsYXkKPiBhcmVhIGNlcnRh
+aW4gam9icyBiZW5lZml0IG1vcmUgdGhhbiBvdGhlcnMsIGhlbmNlIHRoZSBkZXNpcmUgdG8gZ28g
+ZXZlbgo+IGZpbmVyLWdyYWluZWQgdGhhbiBhIHBlci1kZXZpY2UgY29udHJvbCBpbiBvcmRlciB0
+byBtYXhpbWlzZSBMTEMKPiBlZmZlY3RpdmVuZXNzLgoKUm9iaW4ncyBkZXNjcmlwdGlvbiBpcyBj
+b3JyZWN0LiBBbmQgd2UgZGlkIGhhdmUgYSBwYXRjaCBmb3IgYW4gaW4ta2VybmVsIHVzZXIKYnV0
+IGl0IGdvdCBsb3N0IGluIHRoZSB3YXNoLiBJJ20gaG9waW5nIFNoYXJhdCBjYW4gZ2V0IGEgcmVz
+cGluIGluIHRpbWUgZm9yIDUuNS4KCmh0dHBzOi8vbG9yZS5rZXJuZWwub3JnL2xpbnV4LWFybS1t
+c20vMTUzODc0NDkxNS0yNTQ5MC04LWdpdC1zZW5kLWVtYWlsLXNtYXNldHR5QGNvZGVhdXJvcmEu
+b3JnLwoKSm9yZGFuCgotLSAKVGhlIFF1YWxjb21tIElubm92YXRpb24gQ2VudGVyLCBJbmMuIGlz
+IGEgbWVtYmVyIG9mIENvZGUgQXVyb3JhIEZvcnVtLAphIExpbnV4IEZvdW5kYXRpb24gQ29sbGFi
+b3JhdGl2ZSBQcm9qZWN0Cl9fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19f
+X19fX19fCmlvbW11IG1haWxpbmcgbGlzdAppb21tdUBsaXN0cy5saW51eC1mb3VuZGF0aW9uLm9y
+ZwpodHRwczovL2xpc3RzLmxpbnV4Zm91bmRhdGlvbi5vcmcvbWFpbG1hbi9saXN0aW5mby9pb21t
+dQ==
