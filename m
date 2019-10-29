@@ -6,57 +6,54 @@ X-Spam-Status: No, score=-2.2 required=3.0 tests=HEADER_FROM_DIFFERENT_DOMAINS,
 	MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED,USER_AGENT_SANE_1
 	autolearn=no autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id B8E4DCA9EC0
-	for <iommu@archiver.kernel.org>; Tue, 29 Oct 2019 02:25:19 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id D8479CA9EC1
+	for <iommu@archiver.kernel.org>; Tue, 29 Oct 2019 02:36:36 +0000 (UTC)
 Received: from mail.linuxfoundation.org (mail.linuxfoundation.org [140.211.169.12])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by mail.kernel.org (Postfix) with ESMTPS id 7F97C21479
-	for <iommu@archiver.kernel.org>; Tue, 29 Oct 2019 02:25:19 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 7F97C21479
+	by mail.kernel.org (Postfix) with ESMTPS id A7CDA20862
+	for <iommu@archiver.kernel.org>; Tue, 29 Oct 2019 02:36:36 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org A7CDA20862
 Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=linux.intel.com
 Authentication-Results: mail.kernel.org; spf=pass smtp.mailfrom=iommu-bounces@lists.linux-foundation.org
 Received: from mail.linux-foundation.org (localhost [127.0.0.1])
-	by mail.linuxfoundation.org (Postfix) with ESMTP id 46F08E5E;
-	Tue, 29 Oct 2019 02:25:19 +0000 (UTC)
+	by mail.linuxfoundation.org (Postfix) with ESMTP id 6D2E1EDC;
+	Tue, 29 Oct 2019 02:36:36 +0000 (UTC)
 Received: from smtp1.linuxfoundation.org (smtp1.linux-foundation.org
 	[172.17.192.35])
-	by mail.linuxfoundation.org (Postfix) with ESMTPS id 97975E1E
+	by mail.linuxfoundation.org (Postfix) with ESMTPS id 9075BE1E
 	for <iommu@lists.linux-foundation.org>;
-	Tue, 29 Oct 2019 02:25:18 +0000 (UTC)
+	Tue, 29 Oct 2019 02:36:35 +0000 (UTC)
 X-Greylist: domain auto-whitelisted by SQLgrey-1.7.6
-Received: from mga05.intel.com (mga05.intel.com [192.55.52.43])
-	by smtp1.linuxfoundation.org (Postfix) with ESMTPS id 38DC042D
+Received: from mga18.intel.com (mga18.intel.com [134.134.136.126])
+	by smtp1.linuxfoundation.org (Postfix) with ESMTPS id 068D18A
 	for <iommu@lists.linux-foundation.org>;
-	Tue, 29 Oct 2019 02:25:18 +0000 (UTC)
+	Tue, 29 Oct 2019 02:36:34 +0000 (UTC)
 X-Amp-Result: SKIPPED(no attachment in message)
 X-Amp-File-Uploaded: False
 Received: from fmsmga004.fm.intel.com ([10.253.24.48])
-	by fmsmga105.fm.intel.com with ESMTP/TLS/DHE-RSA-AES256-GCM-SHA384;
-	28 Oct 2019 19:25:17 -0700
+	by orsmga106.jf.intel.com with ESMTP/TLS/DHE-RSA-AES256-GCM-SHA384;
+	28 Oct 2019 19:36:33 -0700
 X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.68,242,1569308400"; d="scan'208";a="224826095"
+X-IronPort-AV: E=Sophos;i="5.68,242,1569308400"; d="scan'208";a="224828056"
 Received: from allen-box.sh.intel.com (HELO [10.239.159.136])
 	([10.239.159.136])
-	by fmsmga004.fm.intel.com with ESMTP; 28 Oct 2019 19:25:15 -0700
-Subject: Re: [PATCH v7 03/11] iommu/vt-d: Add custom allocator for IOASID
-To: Jacob Pan <jacob.jun.pan@linux.intel.com>,
-	"Tian, Kevin" <kevin.tian@intel.com>
+	by fmsmga004.fm.intel.com with ESMTP; 28 Oct 2019 19:36:31 -0700
+Subject: Re: [PATCH v7 09/11] iommu/vt-d: Add bind guest PASID support
+To: "Tian, Kevin" <kevin.tian@intel.com>,
+	Jacob Pan <jacob.jun.pan@linux.intel.com>
 References: <1571946904-86776-1-git-send-email-jacob.jun.pan@linux.intel.com>
-	<1571946904-86776-4-git-send-email-jacob.jun.pan@linux.intel.com>
-	<ae437be4-e633-e670-0e1f-d07b4364f651@linux.intel.com>
-	<20191024214311.43d76a5c@jacob-builder>
-	<AADFC41AFE54684AB9EE6CBC0274A5D19D5CDC60@SHSMSX104.ccr.corp.intel.com>
-	<e950cde8-8cd9-6089-c833-23d2ffb539d1@linux.intel.com>
-	<AADFC41AFE54684AB9EE6CBC0274A5D19D5D0FF0@SHSMSX104.ccr.corp.intel.com>
-	<20191028154900.0be0a48f@jacob-builder>
+	<1571946904-86776-10-git-send-email-jacob.jun.pan@linux.intel.com>
+	<AADFC41AFE54684AB9EE6CBC0274A5D19D5CDDA6@SHSMSX104.ccr.corp.intel.com>
+	<20191025103337.1e51c0c9@jacob-builder>
+	<AADFC41AFE54684AB9EE6CBC0274A5D19D5DB7B8@SHSMSX104.ccr.corp.intel.com>
 From: Lu Baolu <baolu.lu@linux.intel.com>
-Message-ID: <0d8bd9c3-4e01-ab12-8671-ff25a4821ed7@linux.intel.com>
-Date: Tue, 29 Oct 2019 10:22:36 +0800
+Message-ID: <75d15d99-d8f8-c09f-e9a7-64c17d037e0e@linux.intel.com>
+Date: Tue, 29 Oct 2019 10:33:53 +0800
 User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:60.0) Gecko/20100101
 	Thunderbird/60.9.0
 MIME-Version: 1.0
-In-Reply-To: <20191028154900.0be0a48f@jacob-builder>
+In-Reply-To: <AADFC41AFE54684AB9EE6CBC0274A5D19D5DB7B8@SHSMSX104.ccr.corp.intel.com>
 Content-Language: en-US
 Cc: "Raj, Ashok" <ashok.raj@intel.com>,
 	Jean-Philippe Brucker <jean-philippe@linaro.com>,
@@ -83,41 +80,29 @@ Errors-To: iommu-bounces@lists.linux-foundation.org
 
 Hi,
 
-On 10/29/19 6:49 AM, Jacob Pan wrote:
->>>> I'm not sure whether tying above logic to SVA is the right
->>>> approach. If vcmd interface doesn't work, the whole SM mode
->>>> doesn't make sense which is based on PASID-granular protection
->>>> (SVA is only one usage atop). If the only remaining usage of SM
->>>> is to map gIOVA using reserved PASID#0, then why not disabling SM
->>>> and just fallback to legacy mode?
->>>>
->>>> Based on that I prefer to disabling the SM mode completely (better
->>>> through an interface), and move the logic out of CONFIG_INTEL_
->>>> IOMMU_SVM
->>>>   
->>> Unfortunately, it is dangerous to disable SM after boot. SM uses
->>> different root/device contexts and pasid table formats. Disabling SM
->>> after boot requires changing above from SM format into legacy
->>> format.
->> You are correct.
->>
->>> Since ioasid registration failure is a rare case. How about moving
->>> this part of code up to the early stage of intel_iommu_init() and
->>> returning error if hardware present vcmd capability but software
->>> fails to register a custom ioasid allocator?
->>>    
->> It makes sense to me.
->>
-> sounds good to me too, the earlier the less to clean up.
+On 10/28/19 2:03 PM, Tian, Kevin wrote:
+>>>>   	.dev_disable_feat	= intel_iommu_dev_disable_feat,
+>>>>   	.is_attach_deferred	=
+>>>> intel_iommu_is_attach_deferred, .pgsize_bitmap		=
+>>>> INTEL_IOMMU_PGSIZES, +#ifdef CONFIG_INTEL_IOMMU_SVM
+>>>> +	.sva_bind_gpasid	= intel_svm_bind_gpasid,
+>>>> +	.sva_unbind_gpasid	= intel_svm_unbind_gpasid,
+>>>> +#endif
+>>> again, pure PASID management logic should be separated from SVM.
+>>>
+>> I am not following, these two functions are SVM functionality, not
+>> pure PASID management which is already separated in ioasid.c
+> I should say pure "scalable mode" logic. Above callbacks are not
+> related to host SVM per se. They are serving gpasid requests from
+> guest side, thus part of generic scalable mode capability.
+> 
 
-Actually, we even could return error directly and abort the iommu
-initialization. The registration of custom ioasid allocator fails only
-when memory runs out or software is buggy. In either cases, we should
-abort iommu initialization.
+Currently these two callbacks are for sva only and the patch has been
+queued by Joerg for the next rc1. It could be extended to be generic.
+But it deserves a separated patch.
 
 Best regards,
 baolu
-
 _______________________________________________
 iommu mailing list
 iommu@lists.linux-foundation.org
