@@ -2,77 +2,87 @@ Return-Path: <SRS0=m6Z5=YW=lists.linux-foundation.org=iommu-bounces@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-6.5 required=3.0 tests=DKIM_INVALID,DKIM_SIGNED,
-	HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_PATCH,MAILING_LIST_MULTI,SIGNED_OFF_BY,
-	SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED autolearn=unavailable autolearn_force=no
-	version=3.4.0
+X-Spam-Status: No, score=-8.6 required=3.0 tests=DKIM_INVALID,DKIM_SIGNED,
+	HEADER_FROM_DIFFERENT_DOMAINS,MAILING_LIST_MULTI,MENTIONS_GIT_HOSTING,
+	SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED,USER_AGENT_GIT autolearn=unavailable
+	autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 7DF73C47E49
-	for <iommu@archiver.kernel.org>; Tue, 29 Oct 2019 07:42:34 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id F1360CA9EC2
+	for <iommu@archiver.kernel.org>; Tue, 29 Oct 2019 07:42:37 +0000 (UTC)
 Received: from mail.linuxfoundation.org (mail.linuxfoundation.org [140.211.169.12])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by mail.kernel.org (Postfix) with ESMTPS id 4492520717
-	for <iommu@archiver.kernel.org>; Tue, 29 Oct 2019 07:42:34 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTPS id C4DEE20717
+	for <iommu@archiver.kernel.org>; Tue, 29 Oct 2019 07:42:37 +0000 (UTC)
 Authentication-Results: mail.kernel.org;
-	dkim=fail reason="signature verification failed" (1024-bit key) header.d=chromium.org header.i=@chromium.org header.b="KOtAhmLx"
-DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 4492520717
-Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=chromium.org
+	dkim=fail reason="signature verification failed" (2048-bit key) header.d=linaro.org header.i=@linaro.org header.b="JQkFeI2C"
+DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org C4DEE20717
+Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=linaro.org
 Authentication-Results: mail.kernel.org; spf=pass smtp.mailfrom=iommu-bounces@lists.linux-foundation.org
 Received: from mail.linux-foundation.org (localhost [127.0.0.1])
-	by mail.linuxfoundation.org (Postfix) with ESMTP id 06B13E7F;
+	by mail.linuxfoundation.org (Postfix) with ESMTP id 26BAFE80;
 	Tue, 29 Oct 2019 07:42:34 +0000 (UTC)
 Received: from smtp1.linuxfoundation.org (smtp1.linux-foundation.org
 	[172.17.192.35])
-	by mail.linuxfoundation.org (Postfix) with ESMTPS id 93EFAAD0
+	by mail.linuxfoundation.org (Postfix) with ESMTPS id E9A6AAF3
 	for <iommu@lists.linux-foundation.org>;
-	Mon, 28 Oct 2019 22:38:16 +0000 (UTC)
+	Tue, 29 Oct 2019 06:40:48 +0000 (UTC)
 X-Greylist: whitelisted by SQLgrey-1.7.6
-Received: from mail-il1-f194.google.com (mail-il1-f194.google.com
-	[209.85.166.194])
-	by smtp1.linuxfoundation.org (Postfix) with ESMTPS id 25DD842D
+Received: from mail-pg1-f195.google.com (mail-pg1-f195.google.com
+	[209.85.215.195])
+	by smtp1.linuxfoundation.org (Postfix) with ESMTPS id 95FF2FD
 	for <iommu@lists.linux-foundation.org>;
-	Mon, 28 Oct 2019 22:38:16 +0000 (UTC)
-Received: by mail-il1-f194.google.com with SMTP id s75so9658633ilc.3
+	Tue, 29 Oct 2019 06:40:47 +0000 (UTC)
+Received: by mail-pg1-f195.google.com with SMTP id 15so8827204pgt.7
 	for <iommu@lists.linux-foundation.org>;
-	Mon, 28 Oct 2019 15:38:16 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=chromium.org; s=google;
-	h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-	:cc; bh=1pqft6NUgSGPSsYgTI6KAW/EqfWsmOX+X7GP8nWIKRQ=;
-	b=KOtAhmLxM5DZQvf2Ll3f33KbklGMeTG2PKDxS+jixVpbEYv/r2fkX8rWW/POBAh8EZ
-	bhaa9F6E4wiUOAv7xzTF/OPYtmaoF81sAIOIN1D7uz2hMlzRn/GbsAID1pmlxlh0ULbu
-	KCWrpiKfUYuFXj/u1i4vCnm4AsCswlKrH1PH0=
+	Mon, 28 Oct 2019 23:40:47 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linaro.org; s=google;
+	h=from:to:cc:subject:date:message-id;
+	bh=U351JvvrUIKbZl9hwurByEIrOwE1UTYWyu5RTXsff14=;
+	b=JQkFeI2Ckq2Rm5uRE42SdA2OmoBiV3N3O0ji0K24+rz9oayPgu9p2aNuNAJX7eYGEm
+	+vQHr39PPjIQNr3iuR2ox30KW25VpcaIUD+ko+4wV2A2KyNVaPubLc49586VDHHstWDG
+	PQ7TGmfTrqjwjpRl73pXZ+bTbRhoOG+R6ZzQZMBErhA4IS+/P7vaoDYEAreyiEhYzmaA
+	9ZSIcTE9EYjdJTJMFJw//R+lsQ3kepLb7bjsizhe6eBcX/OZOFf/BJDvl73+Qi/4lWBm
+	CriTvBxT0SdGxBYGqJ1KUIX9aV9YvnT6Io1/X4h8dXLpyjn+zKOA0xLPaLWI6SrMBtih
+	L4AQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
 	d=1e100.net; s=20161025;
-	h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-	:message-id:subject:to:cc;
-	bh=1pqft6NUgSGPSsYgTI6KAW/EqfWsmOX+X7GP8nWIKRQ=;
-	b=iM9yyEQKnry+MdhS9WCuHNqSqKpIw809CxfWLb6kykvrilY8g3HNJftLthQVFJiuyy
-	BCQXgZD0B3UpHazpdWIW5DXPjLY+7RtDjT8AO/sBAumzrZ5bE3Go+25X2HBq5+U5eJfA
-	fZz9EhWOmDFsp99LVrTXNmAom7iSLfawJacGmq/u9anRGbHs0qhgq7tkKd3Af8EDcF4+
-	y2tGV8pAs27xQsLSBXr4GFsS+krXmUnr6SXp+aKTugceAyGkpIZ0LRRgpVMFYqfN4q8w
-	kErpgXbJDMCLY3Nqqd+hSj2uE4krpRo4Z3yGRKeZVDyAcC6yDu60UKL6g11fpjjumVDO
-	Pemw==
-X-Gm-Message-State: APjAAAWWJ2f6MI9ie8Bo/RtkvGIm+tQc6SIttJcqOx3wfgt/hZx2meAo
-	CkWvUdmjzjux8eQyoW/QNYhr4KVkw9yxdM1VB//OZg==
-X-Google-Smtp-Source: APXvYqzOjbPZql47NIkJK7AmtptD85c0h2swAJ0981IFdP5pW7aIvp/4iQe9Q33o2yPDwnBDa7OGwzugpAmPA0ld6FE=
-X-Received: by 2002:a92:6e0a:: with SMTP id j10mr5422292ilc.26.1572302295420; 
-	Mon, 28 Oct 2019 15:38:15 -0700 (PDT)
-MIME-Version: 1.0
-References: <418d8426-f299-1269-2b2e-f86677cf22c2@arm.com>
-	<20191007204906.19571-1-robdclark@gmail.com>
-	<20191028222042.GB8532@willie-the-truck>
-In-Reply-To: <20191028222042.GB8532@willie-the-truck>
-From: Rob Clark <robdclark@chromium.org>
-Date: Mon, 28 Oct 2019 15:38:04 -0700
-Message-ID: <CAJs_Fx7zRWsTPiAg0PFt+8nJPpHpzSkxW6XMMJwozVO6vyB78A@mail.gmail.com>
-Subject: Re: [PATCH v2] iommu/arm-smmu: fix "hang" when games exit
-To: Will Deacon <will@kernel.org>
+	h=x-gm-message-state:from:to:cc:subject:date:message-id;
+	bh=U351JvvrUIKbZl9hwurByEIrOwE1UTYWyu5RTXsff14=;
+	b=QdNp4liAgbwU5OYn68e+oMkBVe5oBJ4wBQx9HkD0vH+fh8zZ/rVv4V8LkpzLAA4oqL
+	ysllWbVXMTldWFhoshH6DlFvgOaoX0FRMR++6KRvCtEd+BLxyrMsGbwLQEmasa4rDYbd
+	c+3LfPpVV5UsZDmcE+kHk35cYIsQP2IGeoajacf1gdg5E1f7w8drorzOd7WmOiZZgLHz
+	JhFGWk1vwyKwe5GUQx/tg0NBmKI4jWYfQKuLAA13Xj50D2VM+EITH5JLdP6q2s/Wdkh6
+	yLpA72jTkkwkFTkeoVsDrL5rAskxL2Bctok5YX1qlLz71O+xEOhnKGWBgUXPuptbo/MI
+	HN+A==
+X-Gm-Message-State: APjAAAVD973Ct2CPeXLjj5dmLF4TV56Z5Gpuzxv5o21I1ZeWRQJetq6d
+	A3AibYnSafY5M0PyAEux0PNetQ==
+X-Google-Smtp-Source: APXvYqzxk9YLnauE4EeIMy5M04DowOJ0Ut668MwZbsJjai1C+hYm0uAAb2XwqLPzQ9+gp8wqlagXpw==
+X-Received: by 2002:a17:90a:b118:: with SMTP id
+	z24mr4197182pjq.120.1572331246730; 
+	Mon, 28 Oct 2019 23:40:46 -0700 (PDT)
+Received: from localhost.localdomain ([240e:362:4dc:3a00:892e:70f7:f486:8f02])
+	by smtp.gmail.com with ESMTPSA id
+	e23sm13421834pgh.84.2019.10.28.23.40.31
+	(version=TLS1_2 cipher=ECDHE-RSA-AES128-SHA bits=128/128);
+	Mon, 28 Oct 2019 23:40:46 -0700 (PDT)
+From: Zhangfei Gao <zhangfei.gao@linaro.org>
+To: Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+	Arnd Bergmann <arnd@arndb.de>, Herbert Xu <herbert@gondor.apana.org.au>,
+	jonathan.cameron@huawei.com, grant.likely@arm.com,
+	jean-philippe <jean-philippe@linaro.org>,
+	Jerome Glisse <jglisse@redhat.com>, ilias.apalodimas@linaro.org,
+	francois.ozog@linaro.org, kenneth-lee-2012@foxmail.com,
+	Wangzhou <wangzhou1@hisilicon.com>,
+	"haojian . zhuang" <haojian.zhuang@linaro.org>, guodong.xu@linaro.org
+Subject: [PATCH v7 0/3] Add uacce module for Accelerator
+Date: Tue, 29 Oct 2019 14:40:13 +0800
+Message-Id: <1572331216-9503-1-git-send-email-zhangfei.gao@linaro.org>
+X-Mailer: git-send-email 2.7.4
 X-Mailman-Approved-At: Tue, 29 Oct 2019 07:42:33 +0000
-Cc: freedreno <freedreno@lists.freedesktop.org>,
-	iommu@lists.linux-foundation.org, open list <linux-kernel@vger.kernel.org>,
-	Robin Murphy <robin.murphy@arm.com>, "moderated list:ARM SMMU DRIVERS"
-	<linux-arm-kernel@lists.infradead.org>
+Cc: Zhangfei Gao <zhangfei.gao@linaro.org>, iommu@lists.linux-foundation.org,
+	linux-kernel@vger.kernel.org, linux-accelerators@lists.ozlabs.org,
+	linux-crypto@vger.kernel.org
 X-BeenThere: iommu@lists.linux-foundation.org
 X-Mailman-Version: 2.1.12
 Precedence: list
@@ -85,75 +95,241 @@ List-Post: <mailto:iommu@lists.linux-foundation.org>
 List-Help: <mailto:iommu-request@lists.linux-foundation.org?subject=help>
 List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
 	<mailto:iommu-request@lists.linux-foundation.org?subject=subscribe>
+MIME-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
 Sender: iommu-bounces@lists.linux-foundation.org
 Errors-To: iommu-bounces@lists.linux-foundation.org
 
-On Mon, Oct 28, 2019 at 3:20 PM Will Deacon <will@kernel.org> wrote:
->
-> Hi Rob,
->
-> On Mon, Oct 07, 2019 at 01:49:06PM -0700, Rob Clark wrote:
-> > From: Rob Clark <robdclark@chromium.org>
-> >
-> > When games, browser, or anything using a lot of GPU buffers exits, there
-> > can be many hundreds or thousands of buffers to unmap and free.  If the
-> > GPU is otherwise suspended, this can cause arm-smmu to resume/suspend
-> > for each buffer, resulting 5-10 seconds worth of reprogramming the
-> > context bank (arm_smmu_write_context_bank()/arm_smmu_write_s2cr()/etc).
-> > To the user it would appear that the system just locked up.
-> >
-> > A simple solution is to use pm_runtime_put_autosuspend() instead, so we
-> > don't immediately suspend the SMMU device.
->
-> Please can you reword the subject to be a bit more useful? The commit
-> message is great, but the subject is a bit like "fix bug in code" to me.
+Uacce (Unified/User-space-access-intended Accelerator Framework) targets to
+provide Shared Virtual Addressing (SVA) between accelerators and processes.
+So accelerator can access any data structure of the main cpu.
+This differs from the data sharing between cpu and io device, which share
+data content rather than address.
+Because of unified address, hardware and user space of process can share
+the same virtual address in the communication.
 
-yeah, not the best $subject, but I wasn't quite sure how to fit
-something better in a reasonable # of chars.. maybe something like:
-"iommu/arm-smmu: optimize unmap but avoiding toggling runpm state"?
+Uacce is intended to be used with Jean Philippe Brucker's SVA
+patchset[1], which enables IO side page fault and PASID support. 
+We have keep verifying with Jean's sva/current [2]
+We also keep verifying with Eric's SMMUv3 Nested Stage patch [3]
 
-BR,
--R
+This series and related zip & qm driver
+https://github.com/Linaro/linux-kernel-warpdrive/tree/5.4-rc4-uacce-v7
+
+The library and user application:
+https://github.com/Linaro/warpdrive/tree/wdprd-upstream-v7
+
+References:
+[1] http://jpbrucker.net/sva/
+[2] http://www.linux-arm.org/git?p=linux-jpb.git;a=shortlog;h=refs/heads/sva/current
+[3] https://github.com/eauger/linux/tree/v5.3.0-rc0-2stage-v9
+
+Change History:
+v7:
+As suggested by Jean and Jerome
+Only consider sva case and remove unused dma apis for the first patch.
+Also add mm_exit for sva and vm_ops.close etc
 
 
->
-> > Signed-off-by: Rob Clark <robdclark@chromium.org>
-> > ---
-> > v1: original
-> > v2: unconditionally use autosuspend, rather than deciding based on what
-> >     consumer does
-> >
-> >  drivers/iommu/arm-smmu.c | 5 ++++-
-> >  1 file changed, 4 insertions(+), 1 deletion(-)
-> >
-> > diff --git a/drivers/iommu/arm-smmu.c b/drivers/iommu/arm-smmu.c
-> > index 3f1d55fb43c4..b7b41f5001bc 100644
-> > --- a/drivers/iommu/arm-smmu.c
-> > +++ b/drivers/iommu/arm-smmu.c
-> > @@ -289,7 +289,7 @@ static inline int arm_smmu_rpm_get(struct arm_smmu_device *smmu)
-> >  static inline void arm_smmu_rpm_put(struct arm_smmu_device *smmu)
-> >  {
-> >       if (pm_runtime_enabled(smmu->dev))
-> > -             pm_runtime_put(smmu->dev);
-> > +             pm_runtime_put_autosuspend(smmu->dev);
-> >  }
-> >
-> >  static struct arm_smmu_domain *to_smmu_domain(struct iommu_domain *dom)
-> > @@ -1445,6 +1445,9 @@ static int arm_smmu_attach_dev(struct iommu_domain *domain, struct device *dev)
-> >       /* Looks ok, so add the device to the domain */
-> >       ret = arm_smmu_domain_add_master(smmu_domain, fwspec);
->
-> Please can you put a comment here explaining what this is doing? An abridged
-> version of the commit message is fine.
->
-> > +     pm_runtime_set_autosuspend_delay(smmu->dev, 20);
-> > +     pm_runtime_use_autosuspend(smmu->dev);
->
-> Cheers,
->
-> Will
+v6: https://lkml.org/lkml/2019/10/16/231
+Change sys qfrs_size to different file, suggested by Jonathan
+Fix crypto daily build issue and based on crypto code base, also 5.4-rc1.
+
+v5: https://lkml.org/lkml/2019/10/14/74
+Add an example patch using the uacce interface, suggested by Greg
+0003-crypto-hisilicon-register-zip-engine-to-uacce.patch
+
+v4: https://lkml.org/lkml/2019/9/17/116
+Based on 5.4-rc1
+Considering other driver integrating uacce, 
+if uacce not compiled, uacce_register return error and uacce_unregister is empty.
+Simplify uacce flag: UACCE_DEV_SVA.
+Address Greg's comments: 
+Fix state machine, remove potential syslog triggered from user space etc.
+
+v3: https://lkml.org/lkml/2019/9/2/990
+Recommended by Greg, use sturct uacce_device instead of struct uacce,
+and use struct *cdev in struct uacce_device, as a result, 
+cdev can be released by itself when refcount decreased to 0.
+So the two structures are decoupled and self-maintained by themsleves.
+Also add dev.release for put_device.
+
+v2: https://lkml.org/lkml/2019/8/28/565
+Address comments from Greg and Jonathan
+Modify interface uacce_register
+Drop noiommu mode first
+
+v1: https://lkml.org/lkml/2019/8/14/277
+1. Rebase to 5.3-rc1
+2. Build on iommu interface
+3. Verifying with Jean's sva and Eric's nested mode iommu.
+4. User library has developed a lot: support zlib, openssl etc.
+5. Move to misc first
+
+RFC3:
+https://lkml.org/lkml/2018/11/12/1951
+
+RFC2:
+https://lwn.net/Articles/763990/
+
+
+Background of why Uacce:
+Von Neumann processor is not good at general data manipulation.
+It is designed for control-bound rather than data-bound application.
+The latter need less control path facility and more/specific ALUs.
+So there are more and more heterogeneous processors, such as
+encryption/decryption accelerators, TPUs, or
+EDGE (Explicated Data Graph Execution) processors, introduced to gain
+better performance or power efficiency for particular applications
+these days.
+
+There are generally two ways to make use of these heterogeneous processors:
+
+The first is to make them co-processors, just like FPU.
+This is good for some application but it has its own cons:
+It changes the ISA set permanently.
+You must save all state elements when the process is switched out.
+But most data-bound processors have a huge set of state elements.
+It makes the kernel scheduler more complex.
+
+The second is Accelerator.
+It is taken as a IO device from the CPU's point of view
+(but it need not to be physically). The process, running on CPU,
+hold a context of the accelerator and send instructions to it as if
+it calls a function or thread running with FPU.
+The context is bound with the processor itself.
+So the state elements remain in the hardware context until
+the context is released.
+
+We believe this is the core feature of an "Accelerator" vs. Co-processor
+or other heterogeneous processors.
+
+The intention of Uacce is to provide the basic facility to backup
+this scenario. Its first step is to make sure the accelerator and process
+can share the same address space. So the accelerator ISA can directly
+address any data structure of the main CPU.
+This differs from the data sharing between CPU and IO device,
+which share data content rather than address.
+So it is different comparing to the other DMA libraries.
+
+In the future, we may add more facility to support linking accelerator
+library to the main application, or managing the accelerator context as
+special thread.
+But no matter how, this can be a solid start point for new processor
+to be used as an "accelerator" as this is the essential requirement.
+
+
+The Fork Scenario
+=================
+For a process with allocated queues and shared memory, what happen if it forks
+a child?
+
+The fd of the queue is duplicated on fork, but requests sent from the child
+process are blocked.
+
+It is recommended to add O_CLOEXEC to the queue file.
+
+The queue mmap space has a VM_DONTCOPY in its VMA. So the child will lose all
+those VMAs.
+
+This is a reason why Uacce does not adopt the mode used in VFIO and
+InfiniBand.  Both solutions can set any user pointer for hardware sharing.
+But they cannot support fork when the dma is in process. Or the
+"Copy-On-Write" procedure will make the parent process lost its physical
+pages.
+
+
+Difference to the VFIO and IB framework
+---------------------------------------
+The essential function of Uacce is to let the device access the user
+address directly. There are many device drivers doing the same in the kernel.
+And both VFIO and IB can provide similar functions in framework level.
+
+But Uacce has a different goal: "share address space". It is
+not taken the request to the accelerator as an enclosure data structure. It
+takes the accelerator as another thread of the same process. So the
+accelerator can refer to any address used by the process.
+
+Both VFIO and IB are taken this as "memory sharing", not "address sharing".
+They care more on sharing the block of memory. But if there is an address
+stored in the block and referring to another memory region. The address may
+not be valid.
+
+By adding more constraints to the VFIO and IB framework, in some sense, we may
+achieve a similar goal. But we gave it up finally. Both VFIO and IB have extra
+assumption which is unnecessary to Uacce. They may hurt each other if we
+try to merge them together.
+
+VFIO manages resource of a hardware as a "virtual device". If a device need to
+serve a separated application. It must isolate the resource as a separate
+virtual device.  And the life cycle of the application and virtual device are
+unnecessary unrelated. And most concepts, such as bus, driver, probe and
+so on, to make it as a "device" is unnecessary either. And the logic added to
+VFIO to make address sharing do no help on "creating a virtual device".
+
+IB creates a "verbs" standard for sharing memory region to another remote
+entity.  Most of these verbs are to make memory region between entities to be
+synchronized.  This is not what accelerator need. Accelerator is in the same
+memory system with the CPU. It refers to the same memory system among CPU and
+devices. So the local memory terms/verbs are good enough for it. Extra "verbs"
+are not necessary. And its queue (like queue pair in IB) is the communication
+channel direct to the accelerator hardware. There is nothing about memory
+itself.
+
+Further, both VFIO and IB use the "pin" (get_user_page) way to lock local
+memory in place.  This is flexible. But it can cause other problems. For
+example, if the user process fork a child process. The COW procedure may make
+the parent process lost its pages which are sharing with the device. These may
+be fixed in the future. But is not going to be easy. (There is a discussion
+about this on Linux Plumbers Conference 2018 [1])
+
+So we choose to build the solution directly on top of IOMMU interface. IOMMU
+is the essential way for device and process to share their page mapping from
+the hardware perspective. It will be safe to create a software solution on
+this assumption.  Uacce manages the IOMMU interface for the accelerator
+device, so the device driver can export some of the resources to the user
+space. Uacce than can make sure the device and the process have the same
+address space.
+
+
+References
+==========
+.. [1] https://lwn.net/Articles/774411/
+
+Kenneth Lee (2):
+  uacce: Add documents for uacce
+  uacce: add uacce driver
+
+Zhangfei Gao (1):
+  crypto: hisilicon - register zip engine to uacce
+
+ Documentation/ABI/testing/sysfs-driver-uacce |  53 +++
+ Documentation/misc-devices/uacce.rst         | 160 ++++++++
+ drivers/crypto/hisilicon/qm.c                | 253 +++++++++++-
+ drivers/crypto/hisilicon/qm.h                |  13 +-
+ drivers/crypto/hisilicon/zip/zip_main.c      |  39 +-
+ drivers/misc/Kconfig                         |   1 +
+ drivers/misc/Makefile                        |   1 +
+ drivers/misc/uacce/Kconfig                   |  13 +
+ drivers/misc/uacce/Makefile                  |   2 +
+ drivers/misc/uacce/uacce.c                   | 574 +++++++++++++++++++++++++++
+ include/linux/uacce.h                        | 163 ++++++++
+ include/uapi/misc/uacce/qm.h                 |  23 ++
+ include/uapi/misc/uacce/uacce.h              |  38 ++
+ 13 files changed, 1297 insertions(+), 36 deletions(-)
+ create mode 100644 Documentation/ABI/testing/sysfs-driver-uacce
+ create mode 100644 Documentation/misc-devices/uacce.rst
+ create mode 100644 drivers/misc/uacce/Kconfig
+ create mode 100644 drivers/misc/uacce/Makefile
+ create mode 100644 drivers/misc/uacce/uacce.c
+ create mode 100644 include/linux/uacce.h
+ create mode 100644 include/uapi/misc/uacce/qm.h
+ create mode 100644 include/uapi/misc/uacce/uacce.h
+
+-- 
+2.7.4
+
 _______________________________________________
 iommu mailing list
 iommu@lists.linux-foundation.org
