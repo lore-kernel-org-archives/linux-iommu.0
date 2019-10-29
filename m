@@ -2,64 +2,64 @@ Return-Path: <SRS0=m6Z5=YW=lists.linux-foundation.org=iommu-bounces@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-2.3 required=3.0 tests=DKIM_INVALID,DKIM_SIGNED,
-	MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED,USER_AGENT_SANE_1
+X-Spam-Status: No, score=-2.2 required=3.0 tests=HEADER_FROM_DIFFERENT_DOMAINS,
+	MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED,USER_AGENT_SANE_2
 	autolearn=no autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 9CEE8CA9EC3
-	for <iommu@archiver.kernel.org>; Tue, 29 Oct 2019 11:16:04 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 8523DCA9EC3
+	for <iommu@archiver.kernel.org>; Tue, 29 Oct 2019 16:07:17 +0000 (UTC)
 Received: from mail.linuxfoundation.org (mail.linuxfoundation.org [140.211.169.12])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by mail.kernel.org (Postfix) with ESMTPS id 6411620874
-	for <iommu@archiver.kernel.org>; Tue, 29 Oct 2019 11:16:04 +0000 (UTC)
-Authentication-Results: mail.kernel.org;
-	dkim=fail reason="signature verification failed" (1024-bit key) header.d=kernel.org header.i=@kernel.org header.b="GdaMUmmg"
-DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 6411620874
-Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=kernel.org
+	by mail.kernel.org (Postfix) with ESMTPS id 56E7321721
+	for <iommu@archiver.kernel.org>; Tue, 29 Oct 2019 16:07:17 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 56E7321721
+Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=linux.intel.com
 Authentication-Results: mail.kernel.org; spf=pass smtp.mailfrom=iommu-bounces@lists.linux-foundation.org
 Received: from mail.linux-foundation.org (localhost [127.0.0.1])
-	by mail.linuxfoundation.org (Postfix) with ESMTP id 34940B6D;
-	Tue, 29 Oct 2019 11:16:04 +0000 (UTC)
+	by mail.linuxfoundation.org (Postfix) with ESMTP id 1C5ACC91;
+	Tue, 29 Oct 2019 16:07:17 +0000 (UTC)
 Received: from smtp1.linuxfoundation.org (smtp1.linux-foundation.org
 	[172.17.192.35])
-	by mail.linuxfoundation.org (Postfix) with ESMTPS id 62ADE949
+	by mail.linuxfoundation.org (Postfix) with ESMTPS id 89407C3F
 	for <iommu@lists.linux-foundation.org>;
-	Tue, 29 Oct 2019 11:16:03 +0000 (UTC)
-Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp1.linuxfoundation.org (Postfix) with ESMTPS id D48C842D
+	Tue, 29 Oct 2019 16:07:16 +0000 (UTC)
+X-Greylist: domain auto-whitelisted by SQLgrey-1.7.6
+Received: from mga04.intel.com (mga04.intel.com [192.55.52.120])
+	by smtp1.linuxfoundation.org (Postfix) with ESMTPS id 218B087C
 	for <iommu@lists.linux-foundation.org>;
-	Tue, 29 Oct 2019 11:16:00 +0000 (UTC)
-Received: from willie-the-truck (236.31.169.217.in-addr.arpa [217.169.31.236])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256
-	bits)) (No client certificate requested)
-	by mail.kernel.org (Postfix) with ESMTPSA id 12913208E3;
-	Tue, 29 Oct 2019 11:15:58 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=default; t=1572347760;
-	bh=PYpYmLCcRCDnvoNd2S0sMHcaEM2JronWu9CsKftbO3I=;
-	h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-	b=GdaMUmmgMjWuXCjwK0dWZlcoWZbdkss1hf/IPKcAItun5DvAeYWYvYEXepIKuV8F4
-	Cgj6BmO5LCR5kVQSqH6TeJrA5sMtyubLtUhcJCViQ3HQZ9x8ffrdD48QttQIxJTdvs
-	cKuoCU3Lo8JRJ8savTdPFUcs8+VjcCEB/d/GTobo=
-Date: Tue, 29 Oct 2019 11:15:56 +0000
-From: Will Deacon <will@kernel.org>
-To: Robin Murphy <robin.murphy@arm.com>
-Subject: Re: [PATCH v2] iommu/arm-smmu: fix "hang" when games exit
-Message-ID: <20191029111555.GF11590@willie-the-truck>
-References: <418d8426-f299-1269-2b2e-f86677cf22c2@arm.com>
-	<20191007204906.19571-1-robdclark@gmail.com>
-	<20191028222042.GB8532@willie-the-truck>
-	<CAJs_Fx7zRWsTPiAg0PFt+8nJPpHpzSkxW6XMMJwozVO6vyB78A@mail.gmail.com>
-	<e3fc88d9-4934-0227-d9c7-b1cb37a8811e@arm.com>
+	Tue, 29 Oct 2019 16:07:15 +0000 (UTC)
+X-Amp-Result: SKIPPED(no attachment in message)
+X-Amp-File-Uploaded: False
+Received: from orsmga001.jf.intel.com ([10.7.209.18])
+	by fmsmga104.fm.intel.com with ESMTP/TLS/DHE-RSA-AES256-GCM-SHA384;
+	29 Oct 2019 09:07:15 -0700
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="5.68,244,1569308400"; d="scan'208";a="283283458"
+Received: from jacob-builder.jf.intel.com (HELO jacob-builder) ([10.7.199.155])
+	by orsmga001.jf.intel.com with ESMTP; 29 Oct 2019 09:07:14 -0700
+Date: Tue, 29 Oct 2019 09:11:39 -0700
+From: Jacob Pan <jacob.jun.pan@linux.intel.com>
+To: "Tian, Kevin" <kevin.tian@intel.com>
+Subject: Re: [PATCH v7 09/11] iommu/vt-d: Add bind guest PASID support
+Message-ID: <20191029091139.7ddc155f@jacob-builder>
+In-Reply-To: <AADFC41AFE54684AB9EE6CBC0274A5D19D5DE3D3@SHSMSX104.ccr.corp.intel.com>
+References: <1571946904-86776-1-git-send-email-jacob.jun.pan@linux.intel.com>
+	<1571946904-86776-10-git-send-email-jacob.jun.pan@linux.intel.com>
+	<AADFC41AFE54684AB9EE6CBC0274A5D19D5CDDA6@SHSMSX104.ccr.corp.intel.com>
+	<20191025103337.1e51c0c9@jacob-builder>
+	<AADFC41AFE54684AB9EE6CBC0274A5D19D5DB7B8@SHSMSX104.ccr.corp.intel.com>
+	<20191028090231.4777c6a9@jacob-builder>
+	<AADFC41AFE54684AB9EE6CBC0274A5D19D5DE3D3@SHSMSX104.ccr.corp.intel.com>
+Organization: OTC
+X-Mailer: Claws Mail 3.13.2 (GTK+ 2.24.30; x86_64-pc-linux-gnu)
 MIME-Version: 1.0
-Content-Disposition: inline
-In-Reply-To: <e3fc88d9-4934-0227-d9c7-b1cb37a8811e@arm.com>
-User-Agent: Mutt/1.10.1 (2018-07-13)
-Cc: Rob Clark <robdclark@chromium.org>, iommu@lists.linux-foundation.org,
-	open list <linux-kernel@vger.kernel.org>,
-	freedreno <freedreno@lists.freedesktop.org>,
-	"moderated list:ARM SMMU DRIVERS" <linux-arm-kernel@lists.infradead.org>
+Cc: "Raj, Ashok" <ashok.raj@intel.com>, David Woodhouse <dwmw2@infradead.org>,
+	"iommu@lists.linux-foundation.org" <iommu@lists.linux-foundation.org>,
+	LKML <linux-kernel@vger.kernel.org>,
+	Alex Williamson <alex.williamson@redhat.com>,
+	Jean-Philippe Brucker <jean-philippe@linaro.com>,
+	Jonathan Cameron <jic23@kernel.org>
 X-BeenThere: iommu@lists.linux-foundation.org
 X-Mailman-Version: 2.1.12
 Precedence: list
@@ -77,35 +77,52 @@ Content-Transfer-Encoding: 7bit
 Sender: iommu-bounces@lists.linux-foundation.org
 Errors-To: iommu-bounces@lists.linux-foundation.org
 
-On Mon, Oct 28, 2019 at 10:51:53PM +0000, Robin Murphy wrote:
-> On 2019-10-28 10:38 pm, Rob Clark wrote:
-> > On Mon, Oct 28, 2019 at 3:20 PM Will Deacon <will@kernel.org> wrote:
-> > > On Mon, Oct 07, 2019 at 01:49:06PM -0700, Rob Clark wrote:
-> > > > From: Rob Clark <robdclark@chromium.org>
-> > > > 
-> > > > When games, browser, or anything using a lot of GPU buffers exits, there
-> > > > can be many hundreds or thousands of buffers to unmap and free.  If the
-> > > > GPU is otherwise suspended, this can cause arm-smmu to resume/suspend
-> > > > for each buffer, resulting 5-10 seconds worth of reprogramming the
-> > > > context bank (arm_smmu_write_context_bank()/arm_smmu_write_s2cr()/etc).
-> > > > To the user it would appear that the system just locked up.
-> > > > 
-> > > > A simple solution is to use pm_runtime_put_autosuspend() instead, so we
-> > > > don't immediately suspend the SMMU device.
-> > > 
-> > > Please can you reword the subject to be a bit more useful? The commit
-> > > message is great, but the subject is a bit like "fix bug in code" to me.
+On Tue, 29 Oct 2019 07:57:21 +0000
+"Tian, Kevin" <kevin.tian@intel.com> wrote:
+
+> > From: Jacob Pan [mailto:jacob.jun.pan@linux.intel.com]
+> > Sent: Tuesday, October 29, 2019 12:03 AM
 > > 
-> > yeah, not the best $subject, but I wasn't quite sure how to fit
-> > something better in a reasonable # of chars.. maybe something like:
-> > "iommu/arm-smmu: optimize unmap but avoiding toggling runpm state"?
+> > On Mon, 28 Oct 2019 06:03:36 +0000
+> > "Tian, Kevin" <kevin.tian@intel.com> wrote:
+> >   
+> > > > > > +	.sva_bind_gpasid	= intel_svm_bind_gpasid,
+> > > > > > +	.sva_unbind_gpasid	=
+> > > > > > intel_svm_unbind_gpasid, +#endif  
+> > > > >
+> > > > > again, pure PASID management logic should be separated from
+> > > > > SVM. 
+> > > > I am not following, these two functions are SVM functionality,
+> > > > not pure PASID management which is already separated in
+> > > > ioasid.c  
+> > >
+> > > I should say pure "scalable mode" logic. Above callbacks are not
+> > > related to host SVM per se. They are serving gpasid requests from
+> > > guest side, thus part of generic scalable mode capability.  
+> > Got your point, but we are sharing data structures with host SVM,
+> > it is very difficult and inefficient to separate the two.  
 > 
-> FWIW, I'd be inclined to frame it as something like "avoid pathological RPM
-> behaviour for unmaps".
+> I don't think difficulty is the reason against such direction. We
+> need do things right. :-) I'm fine with putting it in a TODO list,
+> but at least need the right information in the 1st place to tell that
+> current way is just a short-term approach, and we should revisit
+> later.
+I guess the fundamental question is: Should the scalable mode logic,
+i.e. guest SVA at PASID granu device, be perceived as part of the
+overall SVA functionality?
 
-LGTM!
+My view is yes, we shall share SVA and gSVA whenever we can.
 
-Will
+The longer term, which I am working on right now, is to converge
+intel_svm_bind_mm to the generic iommu_sva_bind_device() and use common
+data structures as well. It is conceivable that these common structures
+span across hardware architectures, also guest vs host SVA usages.
+
+i.e. iommu_ops have
+iommu_sva_bind_gpasid() for SM/gSVA
+iommu_sva_bind_device() for native SVA
+
+Or I am missing your point completely?
 _______________________________________________
 iommu mailing list
 iommu@lists.linux-foundation.org
