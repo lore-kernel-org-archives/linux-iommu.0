@@ -2,48 +2,56 @@ Return-Path: <SRS0=11OQ=YX=lists.linux-foundation.org=iommu-bounces@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-8.2 required=3.0 tests=HEADER_FROM_DIFFERENT_DOMAINS,
-	INCLUDES_PATCH,MAILING_LIST_MULTI,SIGNED_OFF_BY,SPF_HELO_NONE,SPF_PASS,
-	URIBL_BLOCKED,USER_AGENT_SANE_1 autolearn=ham autolearn_force=no version=3.4.0
+X-Spam-Status: No, score=-2.2 required=3.0 tests=HEADER_FROM_DIFFERENT_DOMAINS,
+	MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED,USER_AGENT_SANE_1
+	autolearn=no autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 0D47CCA9EC7
-	for <iommu@archiver.kernel.org>; Wed, 30 Oct 2019 19:31:54 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 8B761CA9EC5
+	for <iommu@archiver.kernel.org>; Wed, 30 Oct 2019 19:45:37 +0000 (UTC)
 Received: from mail.linuxfoundation.org (mail.linuxfoundation.org [140.211.169.12])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by mail.kernel.org (Postfix) with ESMTPS id D312C20856
-	for <iommu@archiver.kernel.org>; Wed, 30 Oct 2019 19:31:53 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org D312C20856
-Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=8bytes.org
+	by mail.kernel.org (Postfix) with ESMTPS id 491AE2080F
+	for <iommu@archiver.kernel.org>; Wed, 30 Oct 2019 19:45:37 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 491AE2080F
+Authentication-Results: mail.kernel.org; dmarc=none (p=none dis=none) header.from=lst.de
 Authentication-Results: mail.kernel.org; spf=pass smtp.mailfrom=iommu-bounces@lists.linux-foundation.org
 Received: from mail.linux-foundation.org (localhost [127.0.0.1])
-	by mail.linuxfoundation.org (Postfix) with ESMTP id B4F7AE99;
-	Wed, 30 Oct 2019 19:31:53 +0000 (UTC)
+	by mail.linuxfoundation.org (Postfix) with ESMTP id 1C323D7A;
+	Wed, 30 Oct 2019 19:45:37 +0000 (UTC)
 Received: from smtp1.linuxfoundation.org (smtp1.linux-foundation.org
 	[172.17.192.35])
-	by mail.linuxfoundation.org (Postfix) with ESMTPS id D0647E7B
+	by mail.linuxfoundation.org (Postfix) with ESMTPS id 77CAFD4B
 	for <iommu@lists.linux-foundation.org>;
-	Wed, 30 Oct 2019 19:31:52 +0000 (UTC)
+	Wed, 30 Oct 2019 19:45:36 +0000 (UTC)
 X-Greylist: from auto-whitelisted by SQLgrey-1.7.6
-Received: from theia.8bytes.org (8bytes.org [81.169.241.247])
-	by smtp1.linuxfoundation.org (Postfix) with ESMTPS id F13BD174
+Received: from verein.lst.de (verein.lst.de [213.95.11.211])
+	by smtp1.linuxfoundation.org (Postfix) with ESMTPS id 2703A876
 	for <iommu@lists.linux-foundation.org>;
-	Wed, 30 Oct 2019 19:31:51 +0000 (UTC)
-Received: by theia.8bytes.org (Postfix, from userid 1000)
-	id 0CD73148; Wed, 30 Oct 2019 20:31:48 +0100 (CET)
-Date: Wed, 30 Oct 2019 20:31:48 +0100
-From: Joerg Roedel <joro@8bytes.org>
-To: Will Deacon <will@kernel.org>
-Subject: Re: [PATCH 5/7] iommu/arm-smmu-v3: Allow building as a module
-Message-ID: <20191030193148.GA8432@8bytes.org>
-References: <20191030145112.19738-1-will@kernel.org>
-	<20191030145112.19738-6-will@kernel.org>
+	Wed, 30 Oct 2019 19:45:36 +0000 (UTC)
+Received: by verein.lst.de (Postfix, from userid 2407)
+	id CE4BF68B05; Wed, 30 Oct 2019 20:45:32 +0100 (CET)
+Date: Wed, 30 Oct 2019 20:45:32 +0100
+From: Christoph Hellwig <hch@lst.de>
+To: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Subject: Re: [PATCH v4 1/2] dma-mapping: Add vmap checks to dma_map_single()
+Message-ID: <20191030194532.GA21020@lst.de>
+References: <20191029213423.28949-1-keescook@chromium.org>
+	<20191029213423.28949-2-keescook@chromium.org>
+	<20191030091849.GA637042@kroah.com> <20191030180921.GB19366@lst.de>
+	<20191030192640.GC709410@kroah.com>
 MIME-Version: 1.0
 Content-Disposition: inline
-In-Reply-To: <20191030145112.19738-6-will@kernel.org>
-User-Agent: Mutt/1.9.4 (2018-02-28)
-Cc: Bjorn Helgaas <bhelgaas@google.com>, iommu@lists.linux-foundation.org,
-	Robin Murphy <robin.murphy@arm.com>, linux-kernel@vger.kernel.org
+In-Reply-To: <20191030192640.GC709410@kroah.com>
+User-Agent: Mutt/1.5.17 (2007-11-01)
+Cc: Kees Cook <keescook@chromium.org>,
+	Semmle Security Reports <security-reports@semmle.com>,
+	linux-kernel@vger.kernel.org, Stephen Boyd <swboyd@chromium.org>,
+	iommu@lists.linux-foundation.org, Dan Carpenter <dan.carpenter@oracle.com>,
+	Jesper Dangaard Brouer <brouer@redhat.com>,
+	Thomas Gleixner <tglx@linutronix.de>, Laura Abbott <labbott@redhat.com>,
+	Robin Murphy <robin.murphy@arm.com>, Christoph Hellwig <hch@lst.de>,
+	Allison Randal <allison@lohutok.net>
 X-BeenThere: iommu@lists.linux-foundation.org
 X-Mailman-Version: 2.1.12
 Precedence: list
@@ -61,41 +69,11 @@ Content-Transfer-Encoding: 7bit
 Sender: iommu-bounces@lists.linux-foundation.org
 Errors-To: iommu-bounces@lists.linux-foundation.org
 
-Hi Will,
+On Wed, Oct 30, 2019 at 08:26:40PM +0100, Greg Kroah-Hartman wrote:
+> Looks good!  You can apply patch 2/2 as well if you want to take that
+> through your tree too.
 
-On Wed, Oct 30, 2019 at 02:51:10PM +0000, Will Deacon wrote:
-> By removing the redundant call to 'pci_request_acs()' we can allow the
-> ARM SMMUv3 driver to be built as a module.
-> 
-> Signed-off-by: Will Deacon <will@kernel.org>
-> ---
->  drivers/iommu/Kconfig       | 2 +-
->  drivers/iommu/arm-smmu-v3.c | 1 -
->  2 files changed, 1 insertion(+), 2 deletions(-)
-> 
-> diff --git a/drivers/iommu/Kconfig b/drivers/iommu/Kconfig
-> index e3842eabcfdd..7583d47fc4d5 100644
-> --- a/drivers/iommu/Kconfig
-> +++ b/drivers/iommu/Kconfig
-> @@ -388,7 +388,7 @@ config ARM_SMMU_DISABLE_BYPASS_BY_DEFAULT
->  	  config.
->  
->  config ARM_SMMU_V3
-> -	bool "ARM Ltd. System MMU Version 3 (SMMUv3) Support"
-> +	tristate "ARM Ltd. System MMU Version 3 (SMMUv3) Support"
->  	depends on ARM64
->  	select IOMMU_API
->  	select IOMMU_IO_PGTABLE_LPAEa
-
-Sorry for the stupid question, but what prevents the iommu module from
-being unloaded when there are active users? There are no symbol
-dependencies to endpoint device drivers, because the interface is only
-exposed through the iommu-api, right? Is some sort of manual module
-reference counting needed?
-
-
-	Joerg
-
+I can do that, I'll just need a formal ACK from you.
 _______________________________________________
 iommu mailing list
 iommu@lists.linux-foundation.org
