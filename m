@@ -6,50 +6,49 @@ X-Spam-Status: No, score=-9.8 required=3.0 tests=DKIM_INVALID,DKIM_SIGNED,
 	INCLUDES_PATCH,MAILING_LIST_MULTI,SIGNED_OFF_BY,SPF_HELO_NONE,SPF_PASS,
 	URIBL_BLOCKED,USER_AGENT_GIT autolearn=ham autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 886D7CA9EC5
-	for <iommu@archiver.kernel.org>; Wed, 30 Oct 2019 14:52:08 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id E5B91CA9EC5
+	for <iommu@archiver.kernel.org>; Wed, 30 Oct 2019 14:52:13 +0000 (UTC)
 Received: from mail.linuxfoundation.org (mail.linuxfoundation.org [140.211.169.12])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by mail.kernel.org (Postfix) with ESMTPS id 56EA52054F
-	for <iommu@archiver.kernel.org>; Wed, 30 Oct 2019 14:52:08 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTPS id B653F2054F
+	for <iommu@archiver.kernel.org>; Wed, 30 Oct 2019 14:52:13 +0000 (UTC)
 Authentication-Results: mail.kernel.org;
-	dkim=fail reason="signature verification failed" (1024-bit key) header.d=kernel.org header.i=@kernel.org header.b="11FfZgDS"
-DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 56EA52054F
+	dkim=fail reason="signature verification failed" (1024-bit key) header.d=kernel.org header.i=@kernel.org header.b="pbqeDhkO"
+DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org B653F2054F
 Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=kernel.org
 Authentication-Results: mail.kernel.org; spf=pass smtp.mailfrom=iommu-bounces@lists.linux-foundation.org
 Received: from mail.linux-foundation.org (localhost [127.0.0.1])
-	by mail.linuxfoundation.org (Postfix) with ESMTP id 5560CC90;
-	Wed, 30 Oct 2019 14:51:24 +0000 (UTC)
+	by mail.linuxfoundation.org (Postfix) with ESMTP id 794A4CB5;
+	Wed, 30 Oct 2019 14:51:26 +0000 (UTC)
 Received: from smtp1.linuxfoundation.org (smtp1.linux-foundation.org
 	[172.17.192.35])
-	by mail.linuxfoundation.org (Postfix) with ESMTPS id 9A394C87
+	by mail.linuxfoundation.org (Postfix) with ESMTPS id 6938DCAA
 	for <iommu@lists.linux-foundation.org>;
-	Wed, 30 Oct 2019 14:51:22 +0000 (UTC)
+	Wed, 30 Oct 2019 14:51:24 +0000 (UTC)
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp1.linuxfoundation.org (Postfix) with ESMTPS id 6543F8A
+	by smtp1.linuxfoundation.org (Postfix) with ESMTPS id 32E6542D
 	for <iommu@lists.linux-foundation.org>;
-	Wed, 30 Oct 2019 14:51:22 +0000 (UTC)
+	Wed, 30 Oct 2019 14:51:24 +0000 (UTC)
 Received: from localhost.localdomain (236.31.169.217.in-addr.arpa
 	[217.169.31.236])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by mail.kernel.org (Postfix) with ESMTPSA id E67412173E;
-	Wed, 30 Oct 2019 14:51:20 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTPSA id AB7ED2087F;
+	Wed, 30 Oct 2019 14:51:22 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=default; t=1572447082;
-	bh=pRODZ6zh4eXRE4Y4JwFU3ZKHlgD9TQRTXk+jdqEMR/Q=;
+	s=default; t=1572447084;
+	bh=uJ+ONkF7na6HukF09Y5O+tCeYJzoiaeeldARCnkP778=;
 	h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-	b=11FfZgDS1Kc++XBDo7UDXjFBbBwL6SQAX8nqkTaY/71fiz5LlcV7qu5FQHY3WEZrg
-	TQudhggghLGvkoEusSH8lQ9yOKUbko6SaA2wJk/dRJB7MBPXQLT1k45czTG2yAIQb/
-	sRnkWFddLobRZwVnUTZpqx5J3VtVrhRdM7nah8bI=
+	b=pbqeDhkOGkfRqL2AQ/1gpM9OKF9XhJuB/UP3bVnhIXyJzPuVTe/XN2YZT7US7Fbil
+	rN3L5Ph3uQTJZTjcxaDLfi/dGi/RjWjVaSPjZbGwfHMXTx+/MUKng67OPVZC43gtUk
+	ZyMaCBWuEQrtZrmNMqbUsF60JHTEkxJuQJefDrDU=
 From: Will Deacon <will@kernel.org>
 To: iommu@lists.linux-foundation.org,
 	linux-kernel@vger.kernel.org
-Subject: [PATCH 2/7] iommu/of: Request ACS from the PCI core when configuring
-	IOMMU linkage
-Date: Wed, 30 Oct 2019 14:51:07 +0000
-Message-Id: <20191030145112.19738-3-will@kernel.org>
+Subject: [PATCH 3/7] PCI: Export pci_ats_disabled() as a GPL symbol to modules
+Date: Wed, 30 Oct 2019 14:51:08 +0000
+Message-Id: <20191030145112.19738-4-will@kernel.org>
 X-Mailer: git-send-email 2.20.1
 In-Reply-To: <20191030145112.19738-1-will@kernel.org>
 References: <20191030145112.19738-1-will@kernel.org>
@@ -73,27 +72,26 @@ Content-Transfer-Encoding: 7bit
 Sender: iommu-bounces@lists.linux-foundation.org
 Errors-To: iommu-bounces@lists.linux-foundation.org
 
-To avoid having to export 'pci_request_acs()' to modular IOMMU drivers,
-move the call into the 'of_dma_configure()' path in a similar manner to
-the way in which ACS is configured when probing via ACPI/IORT.
+Building drivers for ATS-aware IOMMUs as modules requires access to
+pci_ats_disabled(). Export it as a GPL symbol to get things working.
 
 Signed-off-by: Will Deacon <will@kernel.org>
 ---
- drivers/iommu/of_iommu.c | 1 +
+ drivers/pci/pci.c | 1 +
  1 file changed, 1 insertion(+)
 
-diff --git a/drivers/iommu/of_iommu.c b/drivers/iommu/of_iommu.c
-index 614a93aa5305..78faa9f73a91 100644
---- a/drivers/iommu/of_iommu.c
-+++ b/drivers/iommu/of_iommu.c
-@@ -177,6 +177,7 @@ const struct iommu_ops *of_iommu_configure(struct device *dev,
- 			.np = master_np,
- 		};
+diff --git a/drivers/pci/pci.c b/drivers/pci/pci.c
+index a97e2571a527..4fbe5b576dd8 100644
+--- a/drivers/pci/pci.c
++++ b/drivers/pci/pci.c
+@@ -123,6 +123,7 @@ bool pci_ats_disabled(void)
+ {
+ 	return pcie_ats_disabled;
+ }
++EXPORT_SYMBOL_GPL(pci_ats_disabled);
  
-+		pci_request_acs();
- 		err = pci_for_each_dma_alias(to_pci_dev(dev),
- 					     of_pci_iommu_init, &info);
- 	} else if (dev_is_fsl_mc(dev)) {
+ /* Disable bridge_d3 for all PCIe ports */
+ static bool pci_bridge_d3_disable;
 -- 
 2.24.0.rc0.303.g954a862665-goog
 
