@@ -6,50 +6,49 @@ X-Spam-Status: No, score=-9.8 required=3.0 tests=DKIM_INVALID,DKIM_SIGNED,
 	INCLUDES_PATCH,MAILING_LIST_MULTI,SIGNED_OFF_BY,SPF_HELO_NONE,SPF_PASS,
 	USER_AGENT_GIT autolearn=unavailable autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id DAC37CA9EC5
-	for <iommu@archiver.kernel.org>; Wed, 30 Oct 2019 14:52:32 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 6CF08CA9EC5
+	for <iommu@archiver.kernel.org>; Wed, 30 Oct 2019 14:52:38 +0000 (UTC)
 Received: from mail.linuxfoundation.org (mail.linuxfoundation.org [140.211.169.12])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by mail.kernel.org (Postfix) with ESMTPS id A6B4D20856
-	for <iommu@archiver.kernel.org>; Wed, 30 Oct 2019 14:52:32 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTPS id 3A00820856
+	for <iommu@archiver.kernel.org>; Wed, 30 Oct 2019 14:52:38 +0000 (UTC)
 Authentication-Results: mail.kernel.org;
-	dkim=fail reason="signature verification failed" (1024-bit key) header.d=kernel.org header.i=@kernel.org header.b="gtcWtXeP"
-DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org A6B4D20856
+	dkim=fail reason="signature verification failed" (1024-bit key) header.d=kernel.org header.i=@kernel.org header.b="Zw9MuddC"
+DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 3A00820856
 Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=kernel.org
 Authentication-Results: mail.kernel.org; spf=pass smtp.mailfrom=iommu-bounces@lists.linux-foundation.org
 Received: from mail.linux-foundation.org (localhost [127.0.0.1])
-	by mail.linuxfoundation.org (Postfix) with ESMTP id E5FBDD84;
-	Wed, 30 Oct 2019 14:51:30 +0000 (UTC)
+	by mail.linuxfoundation.org (Postfix) with ESMTP id 15C2BC6C;
+	Wed, 30 Oct 2019 14:51:33 +0000 (UTC)
 Received: from smtp1.linuxfoundation.org (smtp1.linux-foundation.org
 	[172.17.192.35])
-	by mail.linuxfoundation.org (Postfix) with ESMTPS id CF2ADCC3
+	by mail.linuxfoundation.org (Postfix) with ESMTPS id E0D2DCC3
 	for <iommu@lists.linux-foundation.org>;
-	Wed, 30 Oct 2019 14:51:29 +0000 (UTC)
+	Wed, 30 Oct 2019 14:51:31 +0000 (UTC)
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp1.linuxfoundation.org (Postfix) with ESMTPS id 76D6F876
+	by smtp1.linuxfoundation.org (Postfix) with ESMTPS id 3F14E87B
 	for <iommu@lists.linux-foundation.org>;
-	Wed, 30 Oct 2019 14:51:29 +0000 (UTC)
+	Wed, 30 Oct 2019 14:51:31 +0000 (UTC)
 Received: from localhost.localdomain (236.31.169.217.in-addr.arpa
 	[217.169.31.236])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by mail.kernel.org (Postfix) with ESMTPSA id 04D3A2173E;
-	Wed, 30 Oct 2019 14:51:27 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTPSA id BEF9E20856;
+	Wed, 30 Oct 2019 14:51:29 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=default; t=1572447089;
-	bh=Y7Wp6GU5Oyk+alrElyQmk8CiRsQ2/tjDzyrdOHFPR+Q=;
+	s=default; t=1572447091;
+	bh=urx7f4IlQ673TogJHP3tvk6isS4vbCocLoayy01FY80=;
 	h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-	b=gtcWtXeP2ImWu8UdYtVV8tmUUrRuZW/n07psU5lH5Y4b9lbXnuScHKukYc/34Y3u4
-	oEqq4sOZwbr0A5iX/4CsoCIee1xRJL2ANNVK0Nm64fOem8jnTMIYOE73a7KgdvvpCq
-	TF2b1ymN8S96vV1QyOyDckOEI0urIOCgTGvOSYQI=
+	b=Zw9MuddC/OE9ze6pGGx+edFCBeJMO1sTbvSq/643T8IdJ+kKyQ1ZYzE5C0lobTwCQ
+	gX56C+VLeePawwj6yvaca2GZBIQfuU78L76lG6SPpMWU692o7cQEtdzMptfRoCPG/p
+	wcLyRXpg5br6uHMW5dyLvbxeqLxuvtDGcnnhRuVA=
 From: Will Deacon <will@kernel.org>
 To: iommu@lists.linux-foundation.org,
 	linux-kernel@vger.kernel.org
-Subject: [PATCH 6/7] Revert "iommu/arm-smmu: Make arm-smmu explicitly
-	non-modular"
-Date: Wed, 30 Oct 2019 14:51:11 +0000
-Message-Id: <20191030145112.19738-7-will@kernel.org>
+Subject: [PATCH 7/7] iommu/arm-smmu: Allow building as a module
+Date: Wed, 30 Oct 2019 14:51:12 +0000
+Message-Id: <20191030145112.19738-8-will@kernel.org>
 X-Mailer: git-send-email 2.20.1
 In-Reply-To: <20191030145112.19738-1-will@kernel.org>
 References: <20191030145112.19738-1-will@kernel.org>
@@ -73,99 +72,171 @@ Content-Transfer-Encoding: 7bit
 Sender: iommu-bounces@lists.linux-foundation.org
 Errors-To: iommu-bounces@lists.linux-foundation.org
 
-This reverts commit addb672f200f4e99368270da205320b83efe01a0.
-
-Let's get the SMMU driver building as a module, which means putting
-back some dead code that we used to carry.
+By conditionally dropping support for the legacy binding and exporting
+the newly introduced 'arm_smmu_impl_init()' function we can allow the
+ARM SMMU driver to be built as a module.
 
 Signed-off-by: Will Deacon <will@kernel.org>
 ---
- drivers/iommu/arm-smmu.c | 32 +++++++++++++++++++-------------
- 1 file changed, 19 insertions(+), 13 deletions(-)
+ drivers/iommu/Kconfig         | 14 ++++++++-
+ drivers/iommu/arm-smmu-impl.c |  6 ++++
+ drivers/iommu/arm-smmu.c      | 54 +++++++++++++++++++++--------------
+ 3 files changed, 51 insertions(+), 23 deletions(-)
 
-diff --git a/drivers/iommu/arm-smmu.c b/drivers/iommu/arm-smmu.c
-index 7c503a6bc585..53bbe0663b9e 100644
---- a/drivers/iommu/arm-smmu.c
-+++ b/drivers/iommu/arm-smmu.c
-@@ -27,8 +27,7 @@
- #include <linux/interrupt.h>
- #include <linux/io.h>
- #include <linux/iopoll.h>
--#include <linux/init.h>
--#include <linux/moduleparam.h>
+diff --git a/drivers/iommu/Kconfig b/drivers/iommu/Kconfig
+index 7583d47fc4d5..02703f51e533 100644
+--- a/drivers/iommu/Kconfig
++++ b/drivers/iommu/Kconfig
+@@ -350,7 +350,7 @@ config SPAPR_TCE_IOMMU
+ 
+ # ARM IOMMU support
+ config ARM_SMMU
+-	bool "ARM Ltd. System MMU (SMMU) Support"
++	tristate "ARM Ltd. System MMU (SMMU) Support"
+ 	depends on (ARM64 || ARM) && MMU
+ 	select IOMMU_API
+ 	select IOMMU_IO_PGTABLE_LPAE
+@@ -362,6 +362,18 @@ config ARM_SMMU
+ 	  Say Y here if your SoC includes an IOMMU device implementing
+ 	  the ARM SMMU architecture.
+ 
++config ARM_SMMU_LEGACY_DT_BINDINGS
++	bool "Support the legacy \"mmu-masters\" devicetree bindings"
++	depends on ARM_SMMU=y && OF
++	help
++	  Support for the badly designed and deprecated \"mmu-masters\"
++	  devicetree bindings. This allows some DMA masters to attach
++	  to the SMMU but does not provide any support via the DMA API.
++	  If you're lucky, you might be able to get VFIO up and running.
++
++	  If you say Y here then you'll make me very sad. Instead, say N
++	  and move your firmware to the utopian future that was 2016.
++
+ config ARM_SMMU_DISABLE_BYPASS_BY_DEFAULT
+ 	bool "Default to disabling bypass on ARM SMMU v1 and v2"
+ 	depends on ARM_SMMU
+diff --git a/drivers/iommu/arm-smmu-impl.c b/drivers/iommu/arm-smmu-impl.c
+index 5c87a38620c4..2f82d40317d6 100644
+--- a/drivers/iommu/arm-smmu-impl.c
++++ b/drivers/iommu/arm-smmu-impl.c
+@@ -5,6 +5,7 @@
+ #define pr_fmt(fmt) "arm-smmu: " fmt
+ 
+ #include <linux/bitfield.h>
 +#include <linux/module.h>
  #include <linux/of.h>
- #include <linux/of_address.h>
- #include <linux/of_device.h>
-@@ -59,10 +58,6 @@
- #define MSI_IOVA_LENGTH			0x100000
  
- static int force_stage;
--/*
-- * not really modular, but the easiest way to keep compat with existing
-- * bootargs behaviour is to continue using module_param() here.
-- */
- module_param(force_stage, int, S_IRUGO);
- MODULE_PARM_DESC(force_stage,
- 	"Force SMMU mappings to be installed at a particular stage of translation. A value of '1' or '2' forces the corresponding stage. All other values are ignored (i.e. no stage is forced). Note that selecting a specific stage will disable support for nested translation.");
-@@ -1878,6 +1873,7 @@ static const struct of_device_id arm_smmu_of_match[] = {
- 	{ .compatible = "qcom,smmu-v2", .data = &qcom_smmuv2 },
- 	{ },
- };
-+MODULE_DEVICE_TABLE(of, arm_smmu_of_match);
+ #include "arm-smmu.h"
+@@ -172,3 +173,8 @@ struct arm_smmu_device *arm_smmu_impl_init(struct arm_smmu_device *smmu)
  
- #ifdef CONFIG_ACPI
- static int acpi_smmu_get_data(u32 model, struct arm_smmu_device *smmu)
-@@ -2165,12 +2161,12 @@ static int arm_smmu_legacy_bus_init(void)
+ 	return smmu;
  }
- device_initcall_sync(arm_smmu_legacy_bus_init);
++EXPORT_SYMBOL_GPL(arm_smmu_impl_init);
++
++MODULE_DESCRIPTION("IOMMU quirks for ARM architected SMMU implementations");
++MODULE_AUTHOR("Robin Murphy <robin.murphy@arm.com>");
++MODULE_LICENSE("GPL v2");
+diff --git a/drivers/iommu/arm-smmu.c b/drivers/iommu/arm-smmu.c
+index 53bbe0663b9e..9ef14830546d 100644
+--- a/drivers/iommu/arm-smmu.c
++++ b/drivers/iommu/arm-smmu.c
+@@ -125,6 +125,12 @@ static struct arm_smmu_domain *to_smmu_domain(struct iommu_domain *dom)
+ 	return container_of(dom, struct arm_smmu_domain, domain);
+ }
  
--static void arm_smmu_device_shutdown(struct platform_device *pdev)
-+static int arm_smmu_device_remove(struct platform_device *pdev)
++static struct platform_driver arm_smmu_driver;
++static struct iommu_ops arm_smmu_ops;
++
++#ifdef CONFIG_ARM_SMMU_LEGACY_DT_BINDINGS
++static void arm_smmu_bus_init(void);
++
+ static struct device_node *dev_get_dev_node(struct device *dev)
  {
- 	struct arm_smmu_device *smmu = platform_get_drvdata(pdev);
+ 	if (dev_is_pci(dev)) {
+@@ -160,9 +166,6 @@ static int __find_legacy_master_phandle(struct device *dev, void *data)
+ 	return err == -ENOENT ? 0 : err;
+ }
  
- 	if (!smmu)
--		return;
-+		return -ENODEV;
+-static struct platform_driver arm_smmu_driver;
+-static struct iommu_ops arm_smmu_ops;
+-
+ static int arm_smmu_register_legacy_master(struct device *dev,
+ 					   struct arm_smmu_device **smmu)
+ {
+@@ -214,6 +217,27 @@ static int arm_smmu_register_legacy_master(struct device *dev,
+ 	return err;
+ }
  
- 	if (!bitmap_empty(smmu->context_map, ARM_SMMU_MAX_CBS))
- 		dev_err(&pdev->dev, "removing device with active domains!\n");
-@@ -2186,6 +2182,12 @@ static void arm_smmu_device_shutdown(struct platform_device *pdev)
- 		clk_bulk_disable(smmu->num_clks, smmu->clks);
- 
- 	clk_bulk_unprepare(smmu->num_clks, smmu->clks);
++/*
++ * With the legacy DT binding in play, we have no guarantees about
++ * probe order, but then we're also not doing default domains, so we can
++ * delay setting bus ops until we're sure every possible SMMU is ready,
++ * and that way ensure that no add_device() calls get missed.
++ */
++static int arm_smmu_legacy_bus_init(void)
++{
++	if (using_legacy_binding)
++		arm_smmu_bus_init();
 +	return 0;
 +}
-+
-+static void arm_smmu_device_shutdown(struct platform_device *pdev)
++device_initcall_sync(arm_smmu_legacy_bus_init);
++#else
++static int arm_smmu_register_legacy_master(struct device *dev,
++					   struct arm_smmu_device **smmu)
 +{
-+	arm_smmu_device_remove(pdev);
++	return -ENODEV;
++}
++#endif /* CONFIG_ARM_SMMU_LEGACY_DT_BINDINGS */
++
+ static int __arm_smmu_alloc_bitmap(unsigned long *map, int start, int end)
+ {
+ 	int idx;
+@@ -1960,8 +1984,10 @@ static int arm_smmu_device_dt_probe(struct platform_device *pdev,
+ 
+ 	legacy_binding = of_find_property(dev->of_node, "mmu-masters", NULL);
+ 	if (legacy_binding && !using_generic_binding) {
+-		if (!using_legacy_binding)
+-			pr_notice("deprecated \"mmu-masters\" DT property in use; DMA API support unavailable\n");
++		if (!using_legacy_binding) {
++			pr_notice("deprecated \"mmu-masters\" DT property in use; %s support unavailable\n",
++				  IS_ENABLED(CONFIG_ARM_SMMU_LEGACY_DT_BINDINGS) ? "DMA API" : "SMMU");
++		}
+ 		using_legacy_binding = true;
+ 	} else if (!legacy_binding && !using_legacy_binding) {
+ 		using_generic_binding = true;
+@@ -1986,10 +2012,8 @@ static void arm_smmu_bus_init(void)
+ 		bus_set_iommu(&amba_bustype, &arm_smmu_ops);
+ #endif
+ #ifdef CONFIG_PCI
+-	if (!iommu_present(&pci_bus_type)) {
+-		pci_request_acs();
++	if (!iommu_present(&pci_bus_type))
+ 		bus_set_iommu(&pci_bus_type, &arm_smmu_ops);
+-	}
+ #endif
+ #ifdef CONFIG_FSL_MC_BUS
+ 	if (!iommu_present(&fsl_mc_bus_type))
+@@ -2147,20 +2171,6 @@ static int arm_smmu_device_probe(struct platform_device *pdev)
+ 	return 0;
  }
  
- static int __maybe_unused arm_smmu_runtime_resume(struct device *dev)
-@@ -2235,12 +2237,16 @@ static const struct dev_pm_ops arm_smmu_pm_ops = {
- 
- static struct platform_driver arm_smmu_driver = {
- 	.driver	= {
--		.name			= "arm-smmu",
--		.of_match_table		= of_match_ptr(arm_smmu_of_match),
--		.pm			= &arm_smmu_pm_ops,
--		.suppress_bind_attrs	= true,
-+		.name		= "arm-smmu",
-+		.of_match_table	= of_match_ptr(arm_smmu_of_match),
-+		.pm		= &arm_smmu_pm_ops,
- 	},
- 	.probe	= arm_smmu_device_probe,
-+	.remove	= arm_smmu_device_remove,
- 	.shutdown = arm_smmu_device_shutdown,
- };
--builtin_platform_driver(arm_smmu_driver);
-+module_platform_driver(arm_smmu_driver);
-+
-+MODULE_DESCRIPTION("IOMMU API for ARM architected SMMU implementations");
-+MODULE_AUTHOR("Will Deacon <will.deacon@arm.com>");
-+MODULE_LICENSE("GPL v2");
+-/*
+- * With the legacy DT binding in play, though, we have no guarantees about
+- * probe order, but then we're also not doing default domains, so we can
+- * delay setting bus ops until we're sure every possible SMMU is ready,
+- * and that way ensure that no add_device() calls get missed.
+- */
+-static int arm_smmu_legacy_bus_init(void)
+-{
+-	if (using_legacy_binding)
+-		arm_smmu_bus_init();
+-	return 0;
+-}
+-device_initcall_sync(arm_smmu_legacy_bus_init);
+-
+ static int arm_smmu_device_remove(struct platform_device *pdev)
+ {
+ 	struct arm_smmu_device *smmu = platform_get_drvdata(pdev);
 -- 
 2.24.0.rc0.303.g954a862665-goog
 
