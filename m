@@ -2,65 +2,47 @@ Return-Path: <SRS0=11OQ=YX=lists.linux-foundation.org=iommu-bounces@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-13.1 required=3.0 tests=DKIM_INVALID,DKIM_SIGNED,
-	HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_PATCH,MAILING_LIST_MULTI,
-	MENTIONS_GIT_HOSTING,SIGNED_OFF_BY,SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED,
+X-Spam-Status: No, score=-5.2 required=3.0 tests=HEADER_FROM_DIFFERENT_DOMAINS,
+	MAILING_LIST_MULTI,SIGNED_OFF_BY,SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED,
 	USER_AGENT_SANE_1 autolearn=ham autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id C117ACA9EAF
-	for <iommu@archiver.kernel.org>; Wed, 30 Oct 2019 09:18:56 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 2CF1ACA9EAF
+	for <iommu@archiver.kernel.org>; Wed, 30 Oct 2019 09:24:44 +0000 (UTC)
 Received: from mail.linuxfoundation.org (mail.linuxfoundation.org [140.211.169.12])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by mail.kernel.org (Postfix) with ESMTPS id 9450E2087E
-	for <iommu@archiver.kernel.org>; Wed, 30 Oct 2019 09:18:56 +0000 (UTC)
-Authentication-Results: mail.kernel.org;
-	dkim=fail reason="signature verification failed" (1024-bit key) header.d=kernel.org header.i=@kernel.org header.b="2PfK0xiK"
-DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 9450E2087E
-Authentication-Results: mail.kernel.org; dmarc=none (p=none dis=none) header.from=linuxfoundation.org
+	by mail.kernel.org (Postfix) with ESMTPS id EB8CB205ED
+	for <iommu@archiver.kernel.org>; Wed, 30 Oct 2019 09:24:43 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org EB8CB205ED
+Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=8bytes.org
 Authentication-Results: mail.kernel.org; spf=pass smtp.mailfrom=iommu-bounces@lists.linux-foundation.org
 Received: from mail.linux-foundation.org (localhost [127.0.0.1])
-	by mail.linuxfoundation.org (Postfix) with ESMTP id 6B568DAF;
-	Wed, 30 Oct 2019 09:18:56 +0000 (UTC)
+	by mail.linuxfoundation.org (Postfix) with ESMTP id D090FEF0;
+	Wed, 30 Oct 2019 09:24:43 +0000 (UTC)
 Received: from smtp1.linuxfoundation.org (smtp1.linux-foundation.org
 	[172.17.192.35])
-	by mail.linuxfoundation.org (Postfix) with ESMTPS id 8310CDA3
+	by mail.linuxfoundation.org (Postfix) with ESMTPS id 52EEBEEB
 	for <iommu@lists.linux-foundation.org>;
-	Wed, 30 Oct 2019 09:18:54 +0000 (UTC)
-Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp1.linuxfoundation.org (Postfix) with ESMTPS id 97DF28A
+	Wed, 30 Oct 2019 09:24:42 +0000 (UTC)
+X-Greylist: from auto-whitelisted by SQLgrey-1.7.6
+Received: from theia.8bytes.org (8bytes.org [81.169.241.247])
+	by smtp1.linuxfoundation.org (Postfix) with ESMTPS id DC5498A
 	for <iommu@lists.linux-foundation.org>;
-	Wed, 30 Oct 2019 09:18:52 +0000 (UTC)
-Received: from localhost (unknown [91.217.168.176])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-	(No client certificate requested)
-	by mail.kernel.org (Postfix) with ESMTPSA id C9C35205ED;
-	Wed, 30 Oct 2019 09:18:51 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=default; t=1572427132;
-	bh=l0MLxBZudc4uU+Zxyk/+94yM1uRPca1KLUiWb6F2o58=;
-	h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-	b=2PfK0xiKm+k8UGwS7o+AjImlguwO/u1yygHJq2jWEkrnR2I7gKWoYyd21R9E1ZTOS
-	kzo/VJaajX15U/EN/K+CsybbiwRRr0ynjwi885L7Lv4l3W/96gnfDy9SC/bOD3vsUA
-	xrADAi7umiQKJMjunQZzIbjjCZQ25qTEmxZUGJKo=
-Date: Wed, 30 Oct 2019 10:18:49 +0100
-From: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-To: Kees Cook <keescook@chromium.org>
-Subject: Re: [PATCH v4 1/2] dma-mapping: Add vmap checks to dma_map_single()
-Message-ID: <20191030091849.GA637042@kroah.com>
-References: <20191029213423.28949-1-keescook@chromium.org>
-	<20191029213423.28949-2-keescook@chromium.org>
+	Wed, 30 Oct 2019 09:24:41 +0000 (UTC)
+Received: by theia.8bytes.org (Postfix, from userid 1000)
+	id 0617E34A; Wed, 30 Oct 2019 10:24:36 +0100 (CET)
+Date: Wed, 30 Oct 2019 10:24:34 +0100
+From: Joerg Roedel <joro@8bytes.org>
+To: Takashi Iwai <tiwai@suse.de>
+Subject: Re: [PATCH] iommu/amd: Apply the same IVRS IOAPIC workaround to Acer
+	Aspire A315-41
+Message-ID: <20191030092433.GA5968@8bytes.org>
+References: <20191021151721.12393-1-tiwai@suse.de>
 MIME-Version: 1.0
 Content-Disposition: inline
-In-Reply-To: <20191029213423.28949-2-keescook@chromium.org>
-User-Agent: Mutt/1.12.2 (2019-09-21)
-Cc: Semmle Security Reports <security-reports@semmle.com>,
-	linux-kernel@vger.kernel.org, Stephen Boyd <swboyd@chromium.org>,
-	iommu@lists.linux-foundation.org, Dan Carpenter <dan.carpenter@oracle.com>,
-	Jesper Dangaard Brouer <brouer@redhat.com>,
-	Thomas Gleixner <tglx@linutronix.de>, Laura Abbott <labbott@redhat.com>,
-	Robin Murphy <robin.murphy@arm.com>, Christoph Hellwig <hch@lst.de>,
-	Allison Randal <allison@lohutok.net>
+In-Reply-To: <20191021151721.12393-1-tiwai@suse.de>
+User-Agent: Mutt/1.10.1 (2018-07-13)
+Cc: iommu@lists.linux-foundation.org, linux-kernel@vger.kernel.org
 X-BeenThere: iommu@lists.linux-foundation.org
 X-Mailman-Version: 2.1.12
 Precedence: list
@@ -78,45 +60,18 @@ Content-Transfer-Encoding: 7bit
 Sender: iommu-bounces@lists.linux-foundation.org
 Errors-To: iommu-bounces@lists.linux-foundation.org
 
-On Tue, Oct 29, 2019 at 02:34:22PM -0700, Kees Cook wrote:
-> As we've seen from USB and other areas[1], we need to always do runtime
-> checks for DMA operating on memory regions that might be remapped. This
-> adds vmap checks (similar to those already in USB but missing in other
-> places) into dma_map_single() so all callers benefit from the checking.
+On Mon, Oct 21, 2019 at 05:17:21PM +0200, Takashi Iwai wrote:
+> Acer Aspire A315-41 requires the very same workaround as the existing
+> quirk for Dell Latitude 5495.  Add the new entry for that.
 > 
-> [1] https://git.kernel.org/linus/3840c5b78803b2b6cc1ff820100a74a092c40cbb
-> 
-> Suggested-by: Laura Abbott <labbott@redhat.com>
-> Signed-off-by: Kees Cook <keescook@chromium.org>
+> BugLink: https://bugzilla.suse.com/show_bug.cgi?id=1137799
+> Signed-off-by: Takashi Iwai <tiwai@suse.de>
 > ---
->  include/linux/dma-mapping.h | 6 ++++++
->  1 file changed, 6 insertions(+)
-> 
-> diff --git a/include/linux/dma-mapping.h b/include/linux/dma-mapping.h
-> index 4a1c4fca475a..54de3c496407 100644
-> --- a/include/linux/dma-mapping.h
-> +++ b/include/linux/dma-mapping.h
-> @@ -583,6 +583,12 @@ static inline unsigned long dma_get_merge_boundary(struct device *dev)
->  static inline dma_addr_t dma_map_single_attrs(struct device *dev, void *ptr,
->  		size_t size, enum dma_data_direction dir, unsigned long attrs)
->  {
-> +	/* DMA must never operate on areas that might be remapped. */
-> +	if (dev_WARN_ONCE(dev, is_vmalloc_addr(ptr),
-> +			  "wanted %zu bytes mapped in vmalloc\n", size)) {
-> +		return DMA_MAPPING_ERROR;
-> +	}
+>  drivers/iommu/amd_iommu_quirks.c | 13 +++++++++++++
+>  1 file changed, 13 insertions(+)
 
-That's a very odd error string, I know if I saw it for the first time, I
-would have no idea what it meant.  The USB message at least gives you a
-bit more context as to what went wrong and how to fix it.
+Applied for v5.4, thanks Takashi.
 
-How about something like "Memory is not DMA capabable, please fix the
-allocation of it to be correct", or "non-dma-able memory was attempted
-to be mapped, but this is impossible to to" or something else.
-
-thanks,
-
-greg k-h
 _______________________________________________
 iommu mailing list
 iommu@lists.linux-foundation.org
