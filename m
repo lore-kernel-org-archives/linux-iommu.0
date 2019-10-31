@@ -2,82 +2,88 @@ Return-Path: <SRS0=DWjf=YY=lists.linux-foundation.org=iommu-bounces@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-5.0 required=3.0 tests=DKIM_INVALID,DKIM_SIGNED,
-	HEADER_FROM_DIFFERENT_DOMAINS,MAILING_LIST_MULTI,SIGNED_OFF_BY,SPF_HELO_NONE,
-	SPF_PASS,URIBL_BLOCKED,USER_AGENT_SANE_1 autolearn=ham autolearn_force=no
+X-Spam-Status: No, score=-8.0 required=3.0 tests=DKIM_ADSP_CUSTOM_MED,
+	DKIM_INVALID,DKIM_SIGNED,FREEMAIL_FORGED_FROMDOMAIN,FREEMAIL_FROM,
+	HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_PATCH,MAILING_LIST_MULTI,SIGNED_OFF_BY,
+	SPF_HELO_NONE,SPF_PASS,USER_AGENT_SANE_1 autolearn=ham autolearn_force=no
 	version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id E8B23CA9ECF
-	for <iommu@archiver.kernel.org>; Thu, 31 Oct 2019 13:38:36 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 997EAC47E49
+	for <iommu@archiver.kernel.org>; Thu, 31 Oct 2019 15:11:40 +0000 (UTC)
 Received: from mail.linuxfoundation.org (mail.linuxfoundation.org [140.211.169.12])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by mail.kernel.org (Postfix) with ESMTPS id B134D20862
-	for <iommu@archiver.kernel.org>; Thu, 31 Oct 2019 13:38:36 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTPS id 56C2E2087E
+	for <iommu@archiver.kernel.org>; Thu, 31 Oct 2019 15:11:40 +0000 (UTC)
 Authentication-Results: mail.kernel.org;
-	dkim=fail reason="signature verification failed" (2048-bit key) header.d=infradead.org header.i=@infradead.org header.b="OewjRBc9"
-DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org B134D20862
-Authentication-Results: mail.kernel.org; dmarc=none (p=none dis=none) header.from=infradead.org
+	dkim=fail reason="signature verification failed" (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="fyHdS+HJ"
+DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 56C2E2087E
+Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=gmail.com
 Authentication-Results: mail.kernel.org; spf=pass smtp.mailfrom=iommu-bounces@lists.linux-foundation.org
 Received: from mail.linux-foundation.org (localhost [127.0.0.1])
-	by mail.linuxfoundation.org (Postfix) with ESMTP id 5A9EB1147;
-	Thu, 31 Oct 2019 13:38:36 +0000 (UTC)
+	by mail.linuxfoundation.org (Postfix) with ESMTP id 028C1B2F;
+	Thu, 31 Oct 2019 15:11:40 +0000 (UTC)
 Received: from smtp1.linuxfoundation.org (smtp1.linux-foundation.org
 	[172.17.192.35])
-	by mail.linuxfoundation.org (Postfix) with ESMTPS id 86A4EAD7
+	by mail.linuxfoundation.org (Postfix) with ESMTPS id 20D3FAF3
 	for <iommu@lists.linux-foundation.org>;
-	Thu, 31 Oct 2019 13:38:35 +0000 (UTC)
-X-Greylist: from auto-whitelisted by SQLgrey-1.7.6
-Received: from bombadil.infradead.org (bombadil.infradead.org
-	[198.137.202.133])
-	by smtp1.linuxfoundation.org (Postfix) with ESMTPS id 4A6A087B
+	Thu, 31 Oct 2019 15:11:38 +0000 (UTC)
+X-Greylist: whitelisted by SQLgrey-1.7.6
+Received: from mail-lj1-f196.google.com (mail-lj1-f196.google.com
+	[209.85.208.196])
+	by smtp1.linuxfoundation.org (Postfix) with ESMTPS id 344E787C
 	for <iommu@lists.linux-foundation.org>;
-	Thu, 31 Oct 2019 13:38:35 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
-	d=infradead.org; s=bombadil.20170209;
-	h=In-Reply-To:Content-Type:MIME-Version
-	:References:Message-ID:Subject:Cc:To:From:Date:Sender:Reply-To:
-	Content-Transfer-Encoding:Content-ID:Content-Description:Resent-Date:
-	Resent-From:Resent-Sender:Resent-To:Resent-Cc:Resent-Message-ID:List-Id:
-	List-Help:List-Unsubscribe:List-Subscribe:List-Post:List-Owner:List-Archive;
-	bh=QkB42TZaY19p2tUWLkDIEWFmICndZjJCiuu8c7FQUq4=;
-	b=OewjRBc9r9Xp8/PXv2ckSWK7N
-	WX5KxNtEnxuD88ukmOO+8iDivb6it9c5njv2xdlRHDV3ilOSkq+TQL1eZ8py0NxbpFJIK4xgwK6ux
-	7D5//CzzfbuOt0waXy9tZOoZuyaFaj6keBpC0pEGDXq0l0ZpuzSYhyoXX9IBE403iJ2khy33zpTr9
-	sJDM3/z9b9fFXeAnO2iZzJx16eN0zkdRxNCAyRmFcOIfHAWM7iod8Jv07lYmHFMQ2Rm4qWOBeNu/q
-	QKBxAgivmnYe77smiwpxolIuesXJq2NVe/USj+FRAOM5XgZaMqbOpfLsKJvOXgwLXdGuNFg0qOkS+
-	TMOLequjA==;
-Received: from hch by bombadil.infradead.org with local (Exim 4.92.3 #3 (Red
-	Hat Linux)) id 1iQAel-0005dF-3D; Thu, 31 Oct 2019 13:38:31 +0000
-Date: Thu, 31 Oct 2019 06:38:31 -0700
-From: Christoph Hellwig <hch@infradead.org>
-To: Nicolas Saenz Julienne <nsaenzjulienne@suse.de>
-Subject: Re: [PATCH RFC 1/5] dma/direct: turn ARCH_ZONE_DMA_BITS into a
-	variable
-Message-ID: <20191031133831.GA21509@infradead.org>
-References: <20191014183108.24804-1-nsaenzjulienne@suse.de>
-	<20191014183108.24804-2-nsaenzjulienne@suse.de>
-	<20191030214914.GA15939@infradead.org>
-	<8c525f66c1c0d9f07e0cff4948d1ec3229756220.camel@suse.de>
+	Thu, 31 Oct 2019 15:11:37 +0000 (UTC)
+Received: by mail-lj1-f196.google.com with SMTP id x9so2209266lji.3
+	for <iommu@lists.linux-foundation.org>;
+	Thu, 31 Oct 2019 08:11:37 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=gmail.com; s=20161025;
+	h=subject:to:cc:references:from:message-id:date:user-agent
+	:mime-version:in-reply-to:content-language:content-transfer-encoding;
+	bh=r0+SnsUBrU036ki/u9zXA8lU9FLF8N+QpK3TWylHn0Q=;
+	b=fyHdS+HJpockD668OHkgA5XWU4kJhvi09lJzp4Lmn0gj9ww3frs6YizoKFUG7/q5s5
+	yCrf77w2f2Ec/Lo7RSZMahCH6aELWJtf4xNXgGs5rRalLGmPCqVcD0mCbNvXySSIYMxN
+	dMvNxsvKV7KADWYduV6qnMSa/odUQs+3F0X55hIhYsCjmBkgGDjEGaAfngTyF6vbcDWT
+	C+AIMTh06LTnoNKZiH35xAx19YZVscI+ujNzkM7GmRwg/Txss7fn5kMaTgyxzeSwUEvi
+	1Xu/0Ot2YJI5sYZcAClB8Rz0WngryEDvOitG+TQfccG/GDx/5eAod7YMO+ew0PW7U06l
+	Nvjw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+	d=1e100.net; s=20161025;
+	h=x-gm-message-state:subject:to:cc:references:from:message-id:date
+	:user-agent:mime-version:in-reply-to:content-language
+	:content-transfer-encoding;
+	bh=r0+SnsUBrU036ki/u9zXA8lU9FLF8N+QpK3TWylHn0Q=;
+	b=l40mF2iKBWSLZmW93+QroRFfdYlAeVeVw3DuWIuixXr//ZP6f7QDpqRz8UKp4vIZJk
+	g6NRkvSxk22bqz3uzMHvrMhDXCPPCB1V6YG6Le1iouctbbk5URHjHBtSyY6jqwqt+0QP
+	MhPGy0IV+rDhTWG5XkI3VIyUqiVLh+gSTpEhRdiRUcfEH78YdVFYrKqXpr5VTU/+oCHX
+	mCmDq83z+6cWX3LHmh1K/DMcBhE4mMr6tDqQZUUd/r81WKA30tp6flbpXHzOKTu0qAw9
+	LqmoHK6pAA9cw0mrIUGgBQebJLoxj6FPdQSDQTpVf7EQ4cg9UIHsD56kkOpQaxDfGm8n
+	LZXw==
+X-Gm-Message-State: APjAAAXlzPupyF62p61Rx9IRTLYvZkR+7KK0onj5wiOHXSQ7LaSmQcd6
+	7NtDGhyEjAJZbvgxsJvPnqw=
+X-Google-Smtp-Source: APXvYqxfCFOTJwk0Wgd+b3I7BxOouq4x08OssycSq7/WciF8tOieiyeyL8dP8lEXb05tn7e5zQXg/g==
+X-Received: by 2002:a2e:3016:: with SMTP id w22mr4636537ljw.117.1572534695491; 
+	Thu, 31 Oct 2019 08:11:35 -0700 (PDT)
+Received: from [192.168.2.145] (94-29-10-250.dynamic.spd-mgts.ru.
+	[94.29.10.250]) by smtp.googlemail.com with ESMTPSA id
+	12sm1323631lju.55.2019.10.31.08.11.34
+	(version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+	Thu, 31 Oct 2019 08:11:34 -0700 (PDT)
+Subject: Re: [RFC 1/3] memory: Introduce memory controller mini-framework
+To: Thierry Reding <thierry.reding@gmail.com>, Arnd Bergmann <arnd@arndb.de>
+References: <20191015162945.1203736-1-thierry.reding@gmail.com>
+	<20191015162945.1203736-2-thierry.reding@gmail.com>
+From: Dmitry Osipenko <digetx@gmail.com>
+Message-ID: <0888ea6f-2092-001e-5663-3a1d3f305ba4@gmail.com>
+Date: Thu, 31 Oct 2019 18:11:33 +0300
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101
+	Thunderbird/68.1.1
 MIME-Version: 1.0
-Content-Disposition: inline
-In-Reply-To: <8c525f66c1c0d9f07e0cff4948d1ec3229756220.camel@suse.de>
-User-Agent: Mutt/1.12.1 (2019-06-15)
-X-SRS-Rewrite: SMTP reverse-path rewritten from <hch@infradead.org> by
-	bombadil.infradead.org. See http://www.infradead.org/rpr.html
-Cc: linux-s390@vger.kernel.org, mbrugger@suse.com,
-	Vasily Gorbik <gor@linux.ibm.com>, wahrenst@gmx.net,
-	Michael Ellerman <mpe@ellerman.id.au>,
-	Catalin Marinas <catalin.marinas@arm.com>,
-	linuxppc-dev@lists.ozlabs.org, Will Deacon <will@kernel.org>,
-	linux-kernel@vger.kernel.org, Heiko Carstens <heiko.carstens@de.ibm.com>,
-	Christian Borntraeger <borntraeger@de.ibm.com>,
-	iommu@lists.linux-foundation.org, f.fainelli@gmail.com,
-	bcm-kernel-feedback-list@broadcom.com,
-	linux-rpi-kernel@lists.infradead.org,
-	Benjamin Herrenschmidt <benh@kernel.crashing.org>,
-	Paul Mackerras <paulus@samba.org>, Robin Murphy <robin.murphy@arm.com>,
-	linux-arm-kernel@lists.infradead.org
+In-Reply-To: <20191015162945.1203736-2-thierry.reding@gmail.com>
+Content-Language: en-US
+Cc: Will Deacon <will@kernel.org>, Jonathan Hunter <jonathanh@nvidia.com>,
+	iommu@lists.linux-foundation.org, linux-tegra@vger.kernel.org,
+	Robin Murphy <robin.murphy@arm.com>, linux-arm-kernel@lists.infradead.org
 X-BeenThere: iommu@lists.linux-foundation.org
 X-Mailman-Version: 2.1.12
 Precedence: list
@@ -90,27 +96,113 @@ List-Post: <mailto:iommu@lists.linux-foundation.org>
 List-Help: <mailto:iommu-request@lists.linux-foundation.org?subject=help>
 List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
 	<mailto:iommu-request@lists.linux-foundation.org?subject=subscribe>
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: base64
 Sender: iommu-bounces@lists.linux-foundation.org
 Errors-To: iommu-bounces@lists.linux-foundation.org
 
-On Thu, Oct 31, 2019 at 11:30:36AM +0100, Nicolas Saenz Julienne wrote:
-> On Wed, 2019-10-30 at 14:49 -0700, Christoph Hellwig wrote:
-> > On Mon, Oct 14, 2019 at 08:31:03PM +0200, Nicolas Saenz Julienne wrote:
-> > > Some architectures, notably ARM, are interested in tweaking this
-> > > depending on their runtime DMA addressing limitations.
-> > > 
-> > > Signed-off-by: Nicolas Saenz Julienne <nsaenzjulienne@suse.de>
-> > 
-> > Do you want me to pick this up for the 5.5 dma-mapping tree, or do you
-> > want me to wait for the rest to settle?
-> 
-> I'd say take it, this will be ultimately needed once we push forward with ARM.
-
-Can you resend a version that applies against 5.4-rc?  The current one
-has conflicts in the arm64 code.
-_______________________________________________
-iommu mailing list
-iommu@lists.linux-foundation.org
-https://lists.linuxfoundation.org/mailman/listinfo/iommu
+MTUuMTAuMjAxOSAxOToyOSwgVGhpZXJyeSBSZWRpbmcg0L/QuNGI0LXRgjoKPiBGcm9tOiBUaGll
+cnJ5IFJlZGluZyA8dHJlZGluZ0BudmlkaWEuY29tPgo+IAo+IFRoaXMgbmV3IGZyYW1ld29yayBp
+cyBjdXJyZW50bHkgbm90aGluZyBtb3JlIHRoYW4gYSByZWdpc3RyeSBvZiBtZW1vcnkKPiBjb250
+cm9sbGVycywgd2l0aCB0aGUgZ29hbCBiZWluZyB0byBvcmRlciBkZXZpY2UgcHJvYmluZy4gT25l
+IHVzZS1jYXNlCj4gd2hlcmUgdGhpcyBpcyB1c2VmdWwsIGZvciBleGFtcGxlLCBpcyBhIG1lbW9y
+eSBjb250cm9sbGVyIGRldmljZSB3aGljaAo+IG5lZWRzIHRvIHByb2dyYW0gc29tZSByZWdpc3Rl
+cnMgYmVmb3JlIHRoZSBzeXN0ZW0gTU1VIGNhbiBiZSBlbmFibGVkLgo+IEFzc29jaWF0aW5nIHRo
+ZSBtZW1vcnkgY29udHJvbGxlciB3aXRoIHRoZSBTTU1VIGFsbG93cyB0aGUgU01NVSBkcml2ZXIK
+PiB0byBkZWZlciB0aGUgcHJvYmUgdW50aWwgdGhlIG1lbW9yeSBjb250cm9sbGVyIGhhcyBiZWVu
+IHJlZ2lzdGVyZWQuCj4gCj4gT25lIHN1Y2ggZXhhbXBsZSBpcyBUZWdyYTE4NiB3aGVyZSB0aGUg
+bWVtb3J5IGNvbnRyb2xsZXIgY29udGFpbnMgc29tZQo+IHJlZ2lzdGVycyB0aGF0IGFyZSB1c2Vk
+IHRvIHByb2dyYW0gc3RyZWFtIElEcyBmb3IgdGhlIHZhcmlvdXMgbWVtb3J5Cj4gY2xpZW50cyAo
+ZGlzcGxheSwgVVNCLCBQQ0ksIC4uLikgaW4gdGhlIHN5c3RlbS4gUHJvZ3JhbW1pbmcgdGhlc2Ug
+U0lEcwo+IGlzIHJlcXVpcmVkIGZvciB0aGUgbWVtb3J5IGNsaWVudHMgdG8gZW1pdCB0aGUgcHJv
+cGVyIFNJRHMgYXMgcGFydCBvZgo+IHRoZWlyIG1lbW9yeSByZXF1ZXN0cy4gVGhlIG1lbW9yeSBj
+b250cm9sbGVyIGRyaXZlciB0aGVyZWZvcmUgbmVlZHMgdG8KPiBiZSBwcm9ncmFtbWVkIHByaW9y
+IHRvIHRoZSBTTU1VIGRyaXZlci4gVG8gYWNoaWV2ZSB0aGF0LCB0aGUgbWVtb3J5Cj4gY29udHJv
+bGxlciB3aWxsIGJlIHJlZmVyZW5jZWQgdmlhIHBoYW5kbGUgZnJvbSB0aGUgU01NVSBkZXZpY2Ug
+dHJlZQo+IG5vZGUsIHRoZSBTTU1VIGRyaXZlciBjYW4gdGhlbiB1c2UgdGhlIG1lbW9yeSBjb250
+cm9sbGVyIGZyYW1ld29yayB0bwo+IGZpbmQgaXQgYW5kIGRlZmVyIHByb2JlIHVudGlsIGl0IGhh
+cyBiZWVuIHJlZ2lzdGVyZWQuCj4gCj4gU2lnbmVkLW9mZi1ieTogVGhpZXJyeSBSZWRpbmcgPHRy
+ZWRpbmdAbnZpZGlhLmNvbT4KPiAtLS0KPiAgZHJpdmVycy9tZW1vcnkvTWFrZWZpbGUgICAgICAg
+ICAgIHwgIDEgKwo+ICBkcml2ZXJzL21lbW9yeS9jb3JlLmMgICAgICAgICAgICAgfCA5OSArKysr
+KysrKysrKysrKysrKysrKysrKysrKysrKysrCj4gIGluY2x1ZGUvbGludXgvbWVtb3J5LWNvbnRy
+b2xsZXIuaCB8IDI1ICsrKysrKysrCj4gIDMgZmlsZXMgY2hhbmdlZCwgMTI1IGluc2VydGlvbnMo
+KykKPiAgY3JlYXRlIG1vZGUgMTAwNjQ0IGRyaXZlcnMvbWVtb3J5L2NvcmUuYwo+ICBjcmVhdGUg
+bW9kZSAxMDA2NDQgaW5jbHVkZS9saW51eC9tZW1vcnktY29udHJvbGxlci5oCgpIZWxsbyBUaGll
+cnJ5LAoKVGhpcyBsb29rcyBsaWtlIGEgdmVyeSBnb29kIGVuZGVhdm91ciEgSSBoYXZlIGNvdXBs
+ZSBjb21tZW50cywgcGxlYXNlCnNlZSB0aGVtIGJlbG93LgoKPiBkaWZmIC0tZ2l0IGEvZHJpdmVy
+cy9tZW1vcnkvTWFrZWZpbGUgYi9kcml2ZXJzL21lbW9yeS9NYWtlZmlsZQo+IGluZGV4IDI3YjQ5
+MzQzNWU2MS4uZDE2ZTdkY2E4ZWY5IDEwMDY0NAo+IC0tLSBhL2RyaXZlcnMvbWVtb3J5L01ha2Vm
+aWxlCj4gKysrIGIvZHJpdmVycy9tZW1vcnkvTWFrZWZpbGUKPiBAQCAtMyw2ICszLDcgQEAKPiAg
+IyBNYWtlZmlsZSBmb3IgbWVtb3J5IGRldmljZXMKPiAgIwo+ICAKPiArb2JqLXkJCQkJKz0gY29y
+ZS5vCj4gIG9iai0kKENPTkZJR19ERFIpCQkrPSBqZWRlY19kZHJfZGF0YS5vCj4gIGlmZXEgKCQo
+Q09ORklHX0REUikseSkKPiAgb2JqLSQoQ09ORklHX09GKQkJKz0gb2ZfbWVtb3J5Lm8KPiBkaWZm
+IC0tZ2l0IGEvZHJpdmVycy9tZW1vcnkvY29yZS5jIGIvZHJpdmVycy9tZW1vcnkvY29yZS5jCj4g
+bmV3IGZpbGUgbW9kZSAxMDA2NDQKPiBpbmRleCAwMDAwMDAwMDAwMDAuLjE3NzJlODM5MzA1YQo+
+IC0tLSAvZGV2L251bGwKPiArKysgYi9kcml2ZXJzL21lbW9yeS9jb3JlLmMKPiBAQCAtMCwwICsx
+LDk5IEBACj4gKy8vIFNQRFgtTGljZW5zZS1JZGVudGlmaWVyOiBHUEwtMi4wCj4gKy8qCj4gKyAq
+IENvcHlyaWdodCAoQykgMjAxOSBOVklESUEgQ29ycG9yYXRpb24uCj4gKyAqLwo+ICsKPiArI2lu
+Y2x1ZGUgPGxpbnV4L21lbW9yeS1jb250cm9sbGVyLmg+Cj4gKyNpbmNsdWRlIDxsaW51eC9vZi5o
+Pgo+ICsKPiArc3RhdGljIERFRklORV9NVVRFWChjb250cm9sbGVyc19sb2NrKTsKPiArc3RhdGlj
+IExJU1RfSEVBRChjb250cm9sbGVycyk7Cj4gKwo+ICtzdGF0aWMgdm9pZCBtZW1vcnlfY29udHJv
+bGxlcl9yZWxlYXNlKHN0cnVjdCBrcmVmICpyZWYpCj4gK3sKPiArCXN0cnVjdCBtZW1vcnlfY29u
+dHJvbGxlciAqbWMgPSBjb250YWluZXJfb2YocmVmLCBzdHJ1Y3QgbWVtb3J5X2NvbnRyb2xsZXIs
+IHJlZik7Cj4gKwo+ICsJV0FSTl9PTighbGlzdF9lbXB0eSgmbWMtPmxpc3QpKTsKPiArfQo+ICsK
+PiAraW50IG1lbW9yeV9jb250cm9sbGVyX3JlZ2lzdGVyKHN0cnVjdCBtZW1vcnlfY29udHJvbGxl
+ciAqbWMpCj4gK3sKPiArCWtyZWZfaW5pdCgmbWMtPnJlZik7Cj4gKwo+ICsJbXV0ZXhfbG9jaygm
+Y29udHJvbGxlcnNfbG9jayk7Cj4gKwlsaXN0X2FkZF90YWlsKCZtYy0+bGlzdCwgJmNvbnRyb2xs
+ZXJzKTsKPiArCW11dGV4X3VubG9jaygmY29udHJvbGxlcnNfbG9jayk7Cj4gKwo+ICsJcmV0dXJu
+IDA7Cj4gK30KPiArRVhQT1JUX1NZTUJPTF9HUEwobWVtb3J5X2NvbnRyb2xsZXJfcmVnaXN0ZXIp
+Owo+ICsKPiArdm9pZCBtZW1vcnlfY29udHJvbGxlcl91bnJlZ2lzdGVyKHN0cnVjdCBtZW1vcnlf
+Y29udHJvbGxlciAqbWMpCj4gK3sKPiArCW11dGV4X2xvY2soJmNvbnRyb2xsZXJzX2xvY2spOwo+
+ICsJbGlzdF9kZWxfaW5pdCgmbWMtPmxpc3QpOwo+ICsJbXV0ZXhfdW5sb2NrKCZjb250cm9sbGVy
+c19sb2NrKTsKPiArCj4gKwlrcmVmX3B1dCgmbWMtPnJlZiwgbWVtb3J5X2NvbnRyb2xsZXJfcmVs
+ZWFzZSk7Cj4gK30KPiArRVhQT1JUX1NZTUJPTF9HUEwobWVtb3J5X2NvbnRyb2xsZXJfdW5yZWdp
+c3Rlcik7Cj4gKwo+ICtzdGF0aWMgc3RydWN0IG1lbW9yeV9jb250cm9sbGVyICoKPiArb2ZfbWVt
+b3J5X2NvbnRyb2xsZXJfZ2V0KHN0cnVjdCBkZXZpY2UgKmRldiwgc3RydWN0IGRldmljZV9ub2Rl
+ICpucCwKPiArCQkJIGNvbnN0IGNoYXIgKmNvbl9pZCkKPiArewo+ICsJY29uc3QgY2hhciAqY2Vs
+bHMgPSAiI21lbW9yeS1jb250cm9sbGVyLWNlbGxzIjsKPiArCWNvbnN0IGNoYXIgKm5hbWVzID0g
+Im1lbW9yeS1jb250cm9sbGVyLW5hbWVzIjsKPiArCWNvbnN0IGNoYXIgKnByb3AgPSAibWVtb3J5
+LWNvbnRyb2xsZXJzIjsKPiArCXN0cnVjdCBtZW1vcnlfY29udHJvbGxlciAqbWM7Cj4gKwlzdHJ1
+Y3Qgb2ZfcGhhbmRsZV9hcmdzIGFyZ3M7Cj4gKwlpbnQgaW5kZXggPSAwLCBlcnI7Cj4gKwo+ICsJ
+aWYgKGNvbl9pZCkgewo+ICsJCWluZGV4ID0gb2ZfcHJvcGVydHlfbWF0Y2hfc3RyaW5nKG5wLCBu
+YW1lcywgY29uX2lkKTsKPiArCQlpZiAoaW5kZXggPCAwKQo+ICsJCQlyZXR1cm4gRVJSX1BUUihp
+bmRleCk7Cj4gKwl9Cj4gKwo+ICsJZXJyID0gb2ZfcGFyc2VfcGhhbmRsZV93aXRoX2FyZ3MobnAs
+IHByb3AsIGNlbGxzLCBpbmRleCwgJmFyZ3MpOwo+ICsJaWYgKGVycikgewo+ICsJCWlmIChlcnIg
+PT0gLUVOT0VOVCkKPiArCQkJZXJyID0gLUVOT0RFVjsKPiArCj4gKwkJcmV0dXJuIEVSUl9QVFIo
+ZXJyKTsKPiArCX0KPiArCj4gKwltdXRleF9sb2NrKCZjb250cm9sbGVyc19sb2NrKTsKPiArCj4g
+KwlsaXN0X2Zvcl9lYWNoX2VudHJ5KG1jLCAmY29udHJvbGxlcnMsIGxpc3QpIHsKPiArCQlpZiAo
+bWMtPmRldiAmJiBtYy0+ZGV2LT5vZl9ub2RlID09IGFyZ3MubnApIHsKPiArCQkJa3JlZl9nZXQo
+Jm1jLT5yZWYpOwoKVGhpcyBpcyBub3QgZW5vdWdoIGJlY2F1c2UgbWVtb3J5IGNvbnRyb2xsZXIg
+ZHJpdmVyIGNvdWxkIGJlIGEgbG9hZGFibGUKbW9kdWxlLCB0aHVzIHNvbWV0aGluZyBsaWtlIHRo
+aXMgaXMgbmVlZGVkIGhlcmU6CgoJX19tb2R1bGVfZ2V0KG1jLT5kZXYtPmRyaXZlci0+b3duZXIp
+OwoKVGhpcyB3b24ndCBhbGxvdyBNQyBkcml2ZXIgdG8gYmUgdW5sb2FkZWQgd2hpbGUgaXQgaGFz
+IGFjdGl2ZSB1c2Vycy4KCj4gKwkJCW11dGV4X3VubG9jaygmY29udHJvbGxlcnNfbG9jayk7Cj4g
+KwkJCWdvdG8gdW5sb2NrOwo+ICsJCX0KPiArCX0KPiArCj4gKwltYyA9IEVSUl9QVFIoLUVQUk9C
+RV9ERUZFUik7Cj4gKwo+ICt1bmxvY2s6Cj4gKwltdXRleF91bmxvY2soJmNvbnRyb2xsZXJzX2xv
+Y2spOwo+ICsJb2Zfbm9kZV9wdXQoYXJncy5ucCk7Cj4gKwlyZXR1cm4gbWM7Cj4gK30KPiArCj4g
+K3N0cnVjdCBtZW1vcnlfY29udHJvbGxlciAqCj4gK21lbW9yeV9jb250cm9sbGVyX2dldChzdHJ1
+Y3QgZGV2aWNlICpkZXYsIGNvbnN0IGNoYXIgKmNvbl9pZCkKPiArewo+ICsJaWYgKElTX0VOQUJM
+RUQoQ09ORklHX09GKSAmJiBkZXYgJiYgZGV2LT5vZl9ub2RlKQo+ICsJCXJldHVybiBvZl9tZW1v
+cnlfY29udHJvbGxlcl9nZXQoZGV2LCBkZXYtPm9mX25vZGUsIGNvbl9pZCk7Cj4gKwo+ICsJcmV0
+dXJuIEVSUl9QVFIoLUVOT0RFVik7Cj4gK30KPiArRVhQT1JUX1NZTUJPTF9HUEwobWVtb3J5X2Nv
+bnRyb2xsZXJfZ2V0KTsKCkluIG1vc3QgY2FzZXMgbWVtb3J5IGNvbnRyb2xsZXJzIGFyZSB1bmlx
+dWUgaW4gYSBzeXN0ZW0sIHNvIGl0IGxvb2tzIHRvCm1lIHRoYXQgaXQgd2lsbCBiZSBtb3JlIHVu
+aXZlcnNhbCB0byBoYXZlIGFiaWxpdHkgdG8gZ2V0IE1DIGJ5IGl0cwpkZXZpY2UtdHJlZSBjb21w
+YXRpYmxlIG5hbWUuIExpa2UgdGhpczoKCglvZl9tZW1vcnlfY29udHJvbGxlcl9nZXRfYnlfY29t
+cGF0aWJsZShjb25zdCBjaGFyICpjb21wYXRpYmxlKTsKClRoaXMgd2lsbCBhbGxvdyBjdXJyZW50
+IGRyaXZlcnMgKGxpa2UgVGVncmEyMCBkZXZmcmVxIGRyaXZlciBmb3IKZXhhbXBsZSkgdG8gdXRp
+bGl6ZSB0aGlzIG5ldyBBUEkgd2l0aG91dCBoYXZpbmcgdHJvdWJsZSBvZiBtYWludGFpbmluZwpi
+YWNrd2FyZHMgY29tcGF0aWJpbGl0eSB3aXRoIG9sZGVyIGRldmljZS10cmVlcyB0aGF0IGRvIG5v
+dCBoYXZlIGEKcGhhbmRsZSB0byBNQy4KCmh0dHBzOi8vZWxpeGlyLmJvb3RsaW4uY29tL2xpbnV4
+L3Y1LjQtcmM1L3NvdXJjZS9kcml2ZXJzL2RldmZyZXEvdGVncmEyMC1kZXZmcmVxLmMjTDEwMAoK
+T2YgY291cnNlIHRoZXJlIGNvdWxkIGJlIGNhc2VzIHdoZXJlIHRoZXJlIGFyZSBtdWx0aXBsZSBj
+b250cm9sbGVycyB3aXRoCnRoZSBzYW1lIGNvbXBhdGlibGUsIGJ1dCB0aGF0IGNhc2UgY291bGQg
+YmUgc3VwcG9ydGVkIGxhdGVyIG9uIGJ5IHRob3NlCndobyByZWFsbHkgbmVlZCBpdC4gSSBkb24n
+dCB0aGluayB0aGF0IGFueSBvZiBOVklESUEgVGVncmEgU29DcyBmYWxsCmludG8gdGhhdCBjYXRl
+Z29yeS4KCj4gK3ZvaWQgbWVtb3J5X2NvbnRyb2xsZXJfcHV0KHN0cnVjdCBtZW1vcnlfY29udHJv
+bGxlciAqbWMpCj4gK3sKPiArCWlmIChtYykKPiArCQlrcmVmX3B1dCgmbWMtPnJlZiwgbWVtb3J5
+X2NvbnRyb2xsZXJfcmVsZWFzZSk7CgkJbW9kdWxlX3B1dChtYy0+ZGV2LT5kcml2ZXItPm93bmVy
+KTsKCj4gK30KPiArRVhQT1JUX1NZTUJPTF9HUEwobWVtb3J5X2NvbnRyb2xsZXJfcHV0KTsKCgpb
+c25pcF0KX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX18KaW9t
+bXUgbWFpbGluZyBsaXN0CmlvbW11QGxpc3RzLmxpbnV4LWZvdW5kYXRpb24ub3JnCmh0dHBzOi8v
+bGlzdHMubGludXhmb3VuZGF0aW9uLm9yZy9tYWlsbWFuL2xpc3RpbmZvL2lvbW11
