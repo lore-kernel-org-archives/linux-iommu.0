@@ -2,83 +2,78 @@ Return-Path: <SRS0=DWjf=YY=lists.linux-foundation.org=iommu-bounces@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-9.5 required=3.0 tests=DKIM_ADSP_CUSTOM_MED,
-	DKIM_INVALID,DKIM_SIGNED,FREEMAIL_FORGED_FROMDOMAIN,FREEMAIL_FROM,
-	HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_PATCH,MAILING_LIST_MULTI,SIGNED_OFF_BY,
-	SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED,USER_AGENT_GIT autolearn=unavailable
-	autolearn_force=no version=3.4.0
+X-Spam-Status: No, score=-0.6 required=3.0 tests=DKIM_INVALID,DKIM_SIGNED,
+	HEADER_FROM_DIFFERENT_DOMAINS,MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS,
+	URIBL_BLOCKED autolearn=no autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 8C98FCA9ECF
-	for <iommu@archiver.kernel.org>; Thu, 31 Oct 2019 21:33:28 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 3A6A0CA9ECB
+	for <iommu@archiver.kernel.org>; Thu, 31 Oct 2019 23:34:56 +0000 (UTC)
 Received: from mail.linuxfoundation.org (mail.linuxfoundation.org [140.211.169.12])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by mail.kernel.org (Postfix) with ESMTPS id 52A412086D
-	for <iommu@archiver.kernel.org>; Thu, 31 Oct 2019 21:33:27 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTPS id E4EC520862
+	for <iommu@archiver.kernel.org>; Thu, 31 Oct 2019 23:34:55 +0000 (UTC)
 Authentication-Results: mail.kernel.org;
-	dkim=fail reason="signature verification failed" (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="oU/f2dvC"
-DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 52A412086D
-Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=gmail.com
+	dkim=fail reason="signature verification failed" (2048-bit key) header.d=google.com header.i=@google.com header.b="HQtder84"
+DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org E4EC520862
+Authentication-Results: mail.kernel.org; dmarc=none (p=none dis=none) header.from=lists.linux-foundation.org
 Authentication-Results: mail.kernel.org; spf=pass smtp.mailfrom=iommu-bounces@lists.linux-foundation.org
 Received: from mail.linux-foundation.org (localhost [127.0.0.1])
-	by mail.linuxfoundation.org (Postfix) with ESMTP id 3D823DC3;
-	Thu, 31 Oct 2019 21:33:27 +0000 (UTC)
+	by mail.linuxfoundation.org (Postfix) with ESMTP id E28A8DC5;
+	Thu, 31 Oct 2019 23:34:54 +0000 (UTC)
 Received: from smtp1.linuxfoundation.org (smtp1.linux-foundation.org
 	[172.17.192.35])
-	by mail.linuxfoundation.org (Postfix) with ESMTPS id CC344DBE
+	by mail.linuxfoundation.org (Postfix) with ESMTPS id 7787EDC2
 	for <iommu@lists.linux-foundation.org>;
-	Thu, 31 Oct 2019 21:33:25 +0000 (UTC)
+	Thu, 31 Oct 2019 23:34:53 +0000 (UTC)
 X-Greylist: whitelisted by SQLgrey-1.7.6
-Received: from mail-pl1-f196.google.com (mail-pl1-f196.google.com
-	[209.85.214.196])
-	by smtp1.linuxfoundation.org (Postfix) with ESMTPS id CC7D08A8
+Received: from mail-yw1-f66.google.com (mail-yw1-f66.google.com
+	[209.85.161.66])
+	by smtp1.linuxfoundation.org (Postfix) with ESMTPS id 62B30876
 	for <iommu@lists.linux-foundation.org>;
-	Thu, 31 Oct 2019 21:33:24 +0000 (UTC)
-Received: by mail-pl1-f196.google.com with SMTP id t12so3304573plo.6
+	Thu, 31 Oct 2019 23:34:52 +0000 (UTC)
+Received: by mail-yw1-f66.google.com with SMTP id v84so2845315ywc.4
 	for <iommu@lists.linux-foundation.org>;
-	Thu, 31 Oct 2019 14:33:24 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=gmail.com; s=20161025;
-	h=from:to:cc:subject:date:message-id:mime-version
-	:content-transfer-encoding;
-	bh=IVsbwFP8AeKgn5KuqXlWOVRdSf7M1xugTS7jUvEVQtc=;
-	b=oU/f2dvCHCBjQ55JB95SZcIANhYyJ9ITAqAZyUPy+8WCm30d3ew7K9ot3ljlismeG0
-	64ZZ6rY+w87JZZP2/a/NOpuKpPQSzTOlD6tYFFErCKbk2o/d38myrMyLZHkj0eGMRWrK
-	ZO4/0jwX0Y6hEQ1RTWCi/Wj/qeV6Wo9aIp8ZOQwP8c7XCPdeYxXsyETJzw4XyKMBU/lz
-	qM9LlLfdRcPdbBy3/9gWJq9L5Nx5jDZR2yKoRwucfTLbyKtZ15BBcdJfb9rJadDqa8HN
-	cFg/4VEnXCe2aLl7T7z7Yxd+De1QrhbV0OXFW9p/LS6zk0ELprOQr2XP2R2mafFphhso
-	jwwg==
+	Thu, 31 Oct 2019 16:34:52 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=google.com; s=20161025;
+	h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+	:cc; bh=HGoHxR3NtdOTWlkVc1ys+9ogvs4xOCVkWZMzaTeK/Gs=;
+	b=HQtder84SXthDEQwBji6Wsy9VT2+/SRQYc+S+MeUTDlOxw0hFW8bqJ+a+X8snz2dNE
+	7FIAiW6POXyLpwHx6hjXhQAS+UckZFmPFYlzqq0+qdD+iLJHFo7htSHoGX4OCE6+5r8+
+	aM09IhSLRdsCEiQvkk4r41k8/aWnIH6pSu5yBWWzBXDio1HAtxI98rlyRCMNF1jBlyBs
+	dc5nblXJB+jTL0NeLiM1MHXqd/P2LhrgetHsgw4y1qKNaOXwlPdB5ULbrhEEaObpp3yl
+	1hPiQbBuPAQVIVwOYGE6FENyP0Z2lfgGeYHyxVlB5iEfu32Htn6e50xrjPTn/RbmDvvr
+	vYiA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
 	d=1e100.net; s=20161025;
-	h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
-	:content-transfer-encoding;
-	bh=IVsbwFP8AeKgn5KuqXlWOVRdSf7M1xugTS7jUvEVQtc=;
-	b=MUb0NTCKF7CSZEMHLdS3Q9FRw7JvldwQwPTGpaOdP2zr5fB83ZdSkIgFsII+9I7vnU
-	GE7TeQ9JOQS39kcO3EaFfMRDyEvXnquYeKyntDCA97CeSx8rxcJtAMgLXyJ9kPmydQN3
-	p6+vJ9rdd/vtCM7cw87+CTuJ67vLaGfqE4qwbPY43g+AzCMrMbjfEHUenu6Y0WQGxUCU
-	t71ICgkoxo0DAddkNj9ujyWHuuIXNm6pfZ2b5ISkxiN/pP3maPN2KOUWOJMypWbveGuv
-	zqzzRyl6J4BHf7kD5tXKaflvQfprpfI3IoJdlTN2dtXFDQJiHXYaOhuNDQAa4xsJI33r
-	4eiA==
-X-Gm-Message-State: APjAAAUHf5m2AZ/zf11bhkTKQtMnqkWMjMg+IscUPp1eAj7t5L60qV2H
-	C6REnznDOOuxKOmPL7PVXvRsa/zigjg=
-X-Google-Smtp-Source: APXvYqzA8b8TES3q8RMzhJpNbYR+VN+AMBJwUdINXVcCiKsaNB6N/jCmLAzvR9lFLICCokguWu+7lg==
-X-Received: by 2002:a17:902:bb84:: with SMTP id
-	m4mr8839423pls.211.1572557603878; 
-	Thu, 31 Oct 2019 14:33:23 -0700 (PDT)
-Received: from localhost ([100.118.89.196]) by smtp.gmail.com with ESMTPSA id
-	135sm4038808pgh.89.2019.10.31.14.33.22
-	(version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-	Thu, 31 Oct 2019 14:33:22 -0700 (PDT)
-From: Rob Clark <robdclark@gmail.com>
-To: iommu@lists.linux-foundation.org
-Subject: [PATCH] iommu/arm-smmu: avoid pathological RPM behaviour for unmaps
-Date: Thu, 31 Oct 2019 14:31:02 -0700
-Message-Id: <20191031213102.17108-1-robdclark@gmail.com>
-X-Mailer: git-send-email 2.21.0
+	h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+	:message-id:subject:to:cc;
+	bh=HGoHxR3NtdOTWlkVc1ys+9ogvs4xOCVkWZMzaTeK/Gs=;
+	b=ee6RO7R1WkNmwuUB/iojHcFQkOm5eQ6EXxpt1GbW+dNR7R0mkk2+qGRkEZzkWHCD6I
+	2LIPrrgnA1Yh5ex/u0eY1QvYPi8C9OeL9kJuNzl1/8S+DzHJj5fBTgG57XXwIQPHX4mW
+	mVPDeDfvhyijtYrXmR1RG2l1Sn6AAy928BXWAobM/m7ea1jz7OkbrAh38m8Goy1PMEf7
+	ugIJ0cntEuDxHJL18XqvYMtcxAp9/zumts1UzYnp5B6zYo3orFyrn89XAgox/7czOVlO
+	b+Y2D69rzjZVHHtTRIJSBp2zyNQ4iBVdzz09P2qjPt97/Pzf6JHqZmJLpdgoAFbSTvlC
+	J86Q==
+X-Gm-Message-State: APjAAAUKyGkXZiaFPDHDCQ6bGTfmGgcsTgtz7LV6GLwXAGB5KEnZCyj4
+	NjLCm/KoB4AW4rWnXSMZqBFs+34YX6O790w7iYk0Cx1M
+X-Google-Smtp-Source: APXvYqyq4Hka8TmkQc4lrPzGiOEbFndI88qsPrqnNeYGuBIjsrcN16HG6GchhV9oD/01h4+w5hxHq7OrDp4ymWiFJ1U=
+X-Received: by 2002:a9d:3a3:: with SMTP id f32mr6914486otf.231.1572564890313; 
+	Thu, 31 Oct 2019 16:34:50 -0700 (PDT)
 MIME-Version: 1.0
-Cc: Rob Clark <robdclark@chromium.org>, Will Deacon <will@kernel.org>,
-	freedreno@lists.freedesktop.org, open list <linux-kernel@vger.kernel.org>,
-	linux-arm-msm@vger.kernel.org, Robin Murphy <robin.murphy@arm.com>,
-	"moderated list:ARM SMMU DRIVERS" <linux-arm-kernel@lists.infradead.org>
+References: <20191030145112.19738-1-will@kernel.org>
+	<6e457227-ca06-2998-4ffa-a58ab171ce32@arm.com>
+	<20191030155444.GC19096@willie-the-truck>
+	<CAGETcx9ogWQC1ZtnS_4xC3ShqBpuRSKudWEEWC22UZUEhdEU4A@mail.gmail.com>
+	<20191031193758.GA2607492@lophozonia>
+In-Reply-To: <20191031193758.GA2607492@lophozonia>
+Date: Thu, 31 Oct 2019 16:34:14 -0700
+Message-ID: <CAGETcx-MuMVvj0O-MFdfmLADEq=cQY_=x+irvhgwHhG4VeeSdg@mail.gmail.com>
+Subject: Re: [PATCH 0/7] iommu: Permit modular builds of ARM SMMU[v3] drivers
+To: Jean-Philippe Brucker <jean-philippe@linaro.org>
+Cc: Bjorn Helgaas <bhelgaas@google.com>, Robin Murphy <robin.murphy@arm.com>,
+	iommu@lists.linux-foundation.org, Will Deacon <will@kernel.org>,
+	LKML <linux-kernel@vger.kernel.org>
 X-BeenThere: iommu@lists.linux-foundation.org
 X-Mailman-Version: 2.1.12
 Precedence: list
@@ -91,65 +86,121 @@ List-Post: <mailto:iommu@lists.linux-foundation.org>
 List-Help: <mailto:iommu-request@lists.linux-foundation.org?subject=help>
 List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
 	<mailto:iommu-request@lists.linux-foundation.org?subject=subscribe>
+From: Saravana Kannan via iommu <iommu@lists.linux-foundation.org>
+Reply-To: Saravana Kannan <saravanak@google.com>
 Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
 Sender: iommu-bounces@lists.linux-foundation.org
 Errors-To: iommu-bounces@lists.linux-foundation.org
 
-From: Rob Clark <robdclark@chromium.org>
+On Thu, Oct 31, 2019 at 12:38 PM Jean-Philippe Brucker
+<jean-philippe@linaro.org> wrote:
+>
+> Hi Saravana, Will,
+>
+> On Wed, Oct 30, 2019 at 05:57:44PM -0700, Saravana Kannan via iommu wrote:
+> > > > > Obviously you need to be careful about using IOMMU drivers as modules,
+> > > > > since late loading of the driver for an IOMMU serving active DMA masters
+> > > > > is going to end badly in many cases. On Android, we're using device links
+> > > > > to ensure that the IOMMU probes first.
+> > > >
+> > > > Out of curiosity, which device links are those? Clearly not the RPM links
+> > > > created by the IOMMU drivers themselves... Is this some special Android
+> > > > magic, or is there actually a chance of replacing all the
+> > > > of_iommu_configure() machinery with something more generic?
+> > >
+> > > I'll admit that I haven't used them personally yet, but I'm referring to
+> > > this series from Saravana [CC'd]:
+> > >
+> > > https://lore.kernel.org/linux-acpi/20190904211126.47518-1-saravanak@google.com/
+> > >
+> > > which is currently sitting in linux-next now that we're upstreaming the
+> > > "special Android magic" ;)
+>
+> Neat, I'm trying to do the same for virtio-iommu. It needs to be modular
+> because it depends on the virtio transport, which distributions usually
+> build as a module. So far I've been managing the device links in
+> virtio-iommu's add_device() and remove_device() callbacks [1]. Since it
+> relies on the existing probe deferral, I had to make a special case for
+> virtio-iommu to avoid giving up after initcalls_done [2].
+>
+> Currently buggy, it explodes on the second modprobe.
+>
+> [1] http://jpbrucker.net/git/linux/commit/?h=virtio-iommu/module-2019-10-31&id=f72978be18cb52eaa2d46dc762711bacbfab5039
+> [2] http://jpbrucker.net/git/linux/commit/?h=virtio-iommu/module-2019-10-31&id=f5fe188bb7fde33422ef08b9aad956dc3c77ec39
+>
+> [...]
+> > Wrt IOMMUs, the only missing piece in upstream is a trivial change
+> > that does something like this in drivers/of/property.c
+> >
+> > +static struct device_node *parse_iommus(struct device_node *np,
+> > +                                        const char *prop_name, int index)
+> > +{
+> > +        return parse_prop_cells(np, prop_name, index, "iommus",
+> > +                                "#iommu-cells");
+> > +}
+>
+> The 'iommus' property only applies to platform devices,
 
-When games, browser, or anything using a lot of GPU buffers exits, there
-can be many hundreds or thousands of buffers to unmap and free.  If the
-GPU is otherwise suspended, this can cause arm-smmu to resume/suspend
-for each buffer, resulting 5-10 seconds worth of reprogramming the
-context bank (arm_smmu_write_context_bank()/arm_smmu_write_s2cr()/etc).
-To the user it would appear that the system just locked up.
+An early version of this patch series was limited to platform device,
+but that's not true with the version that Will pointed to and was
+merged into driver-core-next. The iommu parsing and creating device
+links applies to all devices that use DT. That's why this code is in
+of/property.c opposed to of/platform.c.
 
-A simple solution is to use pm_runtime_put_autosuspend() instead, so we
-don't immediately suspend the SMMU device.
+> do you have any
+> plan for PCI?  PCI devices generally don't have a DT node. Only their root
+> bridge has a node, with an 'iommu-map' property instead of 'iommus', so
+> I don't think add_links() would get called for them.
 
-Signed-off-by: Rob Clark <robdclark@chromium.org>
----
- drivers/iommu/arm-smmu.c | 16 +++++++++++++++-
- 1 file changed, 15 insertions(+), 1 deletion(-)
+I looked into the iommu-map property and it shouldn't be too hard to
+add support for it. Looks like we can simply hold off on probing the
+root bridge device till all the iommus in its iommu-map are probed and
+we should be fine.
 
-diff --git a/drivers/iommu/arm-smmu.c b/drivers/iommu/arm-smmu.c
-index 7c503a6bc585..5abc0d210d90 100644
---- a/drivers/iommu/arm-smmu.c
-+++ b/drivers/iommu/arm-smmu.c
-@@ -122,7 +122,7 @@ static inline int arm_smmu_rpm_get(struct arm_smmu_device *smmu)
- static inline void arm_smmu_rpm_put(struct arm_smmu_device *smmu)
- {
- 	if (pm_runtime_enabled(smmu->dev))
--		pm_runtime_put(smmu->dev);
-+		pm_runtime_put_autosuspend(smmu->dev);
- }
- 
- static struct arm_smmu_domain *to_smmu_domain(struct iommu_domain *dom)
-@@ -1154,6 +1154,20 @@ static int arm_smmu_attach_dev(struct iommu_domain *domain, struct device *dev)
- 	/* Looks ok, so add the device to the domain */
- 	ret = arm_smmu_domain_add_master(smmu_domain, fwspec);
- 
-+	/*
-+	 * Setup an autosuspend delay to avoid bouncing runpm state.
-+	 * Otherwise, if a driver for a suspendend consumer device
-+	 * unmaps buffers, it will runpm resume/suspend for each one.
-+	 *
-+	 * For example, when used by a GPU device, when an application
-+	 * or game exits, it can trigger unmapping 100s or 1000s of
-+	 * buffers.  With a runpm cycle for each buffer, that adds up
-+	 * to 5-10sec worth of reprogramming the context bank, while
-+	 * the system appears to be locked up to the user.
-+	 */
-+	pm_runtime_set_autosuspend_delay(smmu->dev, 20);
-+	pm_runtime_use_autosuspend(smmu->dev);
-+
- rpm_put:
- 	arm_smmu_rpm_put(smmu);
- 	return ret;
--- 
-2.21.0
+> I'm also unsure about distro vendors agreeing to a mandatory kernel
+> parameter (of_devlink). Do you plan to eventually enable it by default?
+>
+> > static const struct supplier_bindings of_supplier_bindings[] = {
+> >         { .parse_prop = parse_clocks, },
+> >         { .parse_prop = parse_interconnects, },
+> >         { .parse_prop = parse_regulators, },
+> > +        { .parse_prop = parse_iommus, },
+> >         {},
+> > };
+> >
+> > I plan to upstream this pretty soon, but I have other patches in
+> > flight that touch the same file and I'm waiting for those to get
+> > accepted. I also want to clean up the code a bit to reduce some
+> > repetition before I add support for more bindings.
+>
+> I'm also wondering about ACPI support.
 
+I'd love to add ACPI support too, but I have zero knowledge of ACPI.
+I'd be happy to help anyone who wants to add ACPI support that allows
+ACPI to add device links.
+
+> IOMMU already has a sort of
+> canonical code path that links endpoints to their IOMMU
+> (iommu_probe_device()), after the firmware descriptions have been parsed.
+> So if we created the device links in the iommu core, for example
+> iommu_bus_notifier(), we would support all firmware interface flavors.
+> Otherwise we'll have to create those device links in the IORT driver as
+> well (plus DMAR and IVRS if they want it).
+
+IOMMU driver/framework or whoever else can create device links as
+necessary. That's not mutually exclusive to the firmware adding device
+links (the device links APIs handle this nicely). While device probe
+ordering is one benefit of my patch series, that's not all of it
+though. It also deals with making sure suppliers known when they can
+clean up the boot state of their device even when the drivers for all
+their consumers are loaded as modules (so late initcall won't work). I
+can go into more details on this if needed, but that latter part is
+not very relevant in this context and you can find most of the details
+in my patch series/documentation I added.
+
+Thanks,
+Saravana
 _______________________________________________
 iommu mailing list
 iommu@lists.linux-foundation.org
