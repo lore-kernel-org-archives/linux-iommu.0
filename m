@@ -2,64 +2,63 @@ Return-Path: <SRS0=DWjf=YY=lists.linux-foundation.org=iommu-bounces@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-8.2 required=3.0 tests=HEADER_FROM_DIFFERENT_DOMAINS,
-	INCLUDES_PATCH,MAILING_LIST_MULTI,SIGNED_OFF_BY,SPF_HELO_NONE,SPF_PASS,
-	URIBL_BLOCKED,USER_AGENT_SANE_2 autolearn=unavailable autolearn_force=no
-	version=3.4.0
+X-Spam-Status: No, score=-7.2 required=3.0 tests=HEADER_FROM_DIFFERENT_DOMAINS,
+	MAILING_LIST_MULTI,MENTIONS_GIT_HOSTING,SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED,
+	USER_AGENT_SANE_1 autolearn=ham autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 88F9ACA9ECE
-	for <iommu@archiver.kernel.org>; Thu, 31 Oct 2019 17:54:07 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 8BE36CA9ECF
+	for <iommu@archiver.kernel.org>; Thu, 31 Oct 2019 18:06:26 +0000 (UTC)
 Received: from mail.linuxfoundation.org (mail.linuxfoundation.org [140.211.169.12])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by mail.kernel.org (Postfix) with ESMTPS id 6B5A92080F
-	for <iommu@archiver.kernel.org>; Thu, 31 Oct 2019 17:54:07 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 6B5A92080F
-Authentication-Results: mail.kernel.org; dmarc=none (p=none dis=none) header.from=huawei.com
+	by mail.kernel.org (Postfix) with ESMTPS id 5722B20650
+	for <iommu@archiver.kernel.org>; Thu, 31 Oct 2019 18:06:26 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 5722B20650
+Authentication-Results: mail.kernel.org; dmarc=none (p=none dis=none) header.from=arm.com
 Authentication-Results: mail.kernel.org; spf=pass smtp.mailfrom=iommu-bounces@lists.linux-foundation.org
 Received: from mail.linux-foundation.org (localhost [127.0.0.1])
-	by mail.linuxfoundation.org (Postfix) with ESMTP id 9D0D9E17;
-	Thu, 31 Oct 2019 17:54:06 +0000 (UTC)
+	by mail.linuxfoundation.org (Postfix) with ESMTP id 0B939DD8;
+	Thu, 31 Oct 2019 18:06:26 +0000 (UTC)
 Received: from smtp1.linuxfoundation.org (smtp1.linux-foundation.org
 	[172.17.192.35])
-	by mail.linuxfoundation.org (Postfix) with ESMTPS id EC9F4DDE
+	by mail.linuxfoundation.org (Postfix) with ESMTPS id 020CDDC5
 	for <iommu@lists.linux-foundation.org>;
-	Thu, 31 Oct 2019 17:54:04 +0000 (UTC)
+	Thu, 31 Oct 2019 18:06:24 +0000 (UTC)
 X-Greylist: domain auto-whitelisted by SQLgrey-1.7.6
-Received: from huawei.com (szxga07-in.huawei.com [45.249.212.35])
-	by smtp1.linuxfoundation.org (Postfix) with ESMTPS id CD68F87B
+Received: from foss.arm.com (foss.arm.com [217.140.110.172])
+	by smtp1.linuxfoundation.org (Postfix) with ESMTP id 5D69B87C
 	for <iommu@lists.linux-foundation.org>;
-	Thu, 31 Oct 2019 17:54:03 +0000 (UTC)
-Received: from DGGEMS405-HUB.china.huawei.com (unknown [172.30.72.58])
-	by Forcepoint Email with ESMTP id 9F120B745E310E6913F0;
-	Fri,  1 Nov 2019 01:53:58 +0800 (CST)
-Received: from localhost (10.202.226.61) by DGGEMS405-HUB.china.huawei.com
-	(10.3.19.205) with Microsoft SMTP Server id 14.3.439.0; Fri, 1 Nov 2019
-	01:53:51 +0800
-Date: Thu, 31 Oct 2019 15:37:11 +0000
-From: Jonathan Cameron <jonathan.cameron@huawei.com>
-To: Zhangfei Gao <zhangfei.gao@linaro.org>
-Subject: Re: [PATCH v7 1/3] uacce: Add documents for uacce
-Message-ID: <20191031153711.00001708@huawei.com>
-In-Reply-To: <1572331216-9503-2-git-send-email-zhangfei.gao@linaro.org>
-References: <1572331216-9503-1-git-send-email-zhangfei.gao@linaro.org>
-	<1572331216-9503-2-git-send-email-zhangfei.gao@linaro.org>
-Organization: Huawei
-X-Mailer: Claws Mail 3.17.4 (GTK+ 2.24.32; i686-w64-mingw32)
+	Thu, 31 Oct 2019 18:06:24 +0000 (UTC)
+Received: from usa-sjc-imap-foss1.foss.arm.com (unknown [10.121.207.14])
+	by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id AC1D41FB;
+	Thu, 31 Oct 2019 11:06:23 -0700 (PDT)
+Received: from arrakis.emea.arm.com (arrakis.cambridge.arm.com [10.1.197.42])
+	by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPSA id
+	A95563F6C4; Thu, 31 Oct 2019 11:06:21 -0700 (PDT)
+Date: Thu, 31 Oct 2019 18:06:19 +0000
+From: Catalin Marinas <catalin.marinas@arm.com>
+To: Christoph Hellwig <hch@lst.de>
+Subject: Re: [PATCH] dma/direct: turn ARCH_ZONE_DMA_BITS into a variable
+Message-ID: <20191031180619.GI39590@arrakis.emea.arm.com>
+References: <20191031152837.15253-1-nsaenzjulienne@suse.de>
+	<20191031154759.GA7162@lst.de>
+	<40d06d463c05d36968e8b64924d78f7794f8de50.camel@suse.de>
+	<20191031155750.GA7394@lst.de>
+	<6726a651c12d91ca22b9d8984745d90db5d507ec.camel@suse.de>
+	<20191031165853.GA8532@lst.de>
 MIME-Version: 1.0
-X-Originating-IP: [10.202.226.61]
-X-CFilter-Loop: Reflected
-Cc: jean-philippe <jean-philippe@linaro.org>,
-	Herbert Xu <herbert@gondor.apana.org.au>,
-	Arnd Bergmann <arnd@arndb.de>, francois.ozog@linaro.org,
-	Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-	ilias.apalodimas@linaro.org, iommu@lists.linux-foundation.org,
-	linux-kernel@vger.kernel.org, Jerome
-	Glisse <jglisse@redhat.com>, grant.likely@arm.com,
-	"haojian . zhuang" <haojian.zhuang@linaro.org>,
-	linux-accelerators@lists.ozlabs.org, linux-crypto@vger.kernel.org,
-	Kenneth Lee <liguozhu@hisilicon.com>, guodong.xu@linaro.org,
-	kenneth-lee-2012@foxmail.com
+Content-Disposition: inline
+In-Reply-To: <20191031165853.GA8532@lst.de>
+User-Agent: Mutt/1.10.1 (2018-07-13)
+Cc: linux-s390@vger.kernel.org, Vasily Gorbik <gor@linux.ibm.com>,
+	Benjamin Herrenschmidt <benh@kernel.crashing.org>,
+	linuxppc-dev@lists.ozlabs.org, Heiko Carstens <heiko.carstens@de.ibm.com>,
+	Robin Murphy <robin.murphy@arm.com>, linux-kernel@vger.kernel.org,
+	Christian Borntraeger <borntraeger@de.ibm.com>,
+	iommu@lists.linux-foundation.org, Paul Mackerras <paulus@samba.org>,
+	linux-arm-kernel@lists.infradead.org,
+	Michael Ellerman <mpe@ellerman.id.au>, Will Deacon <will@kernel.org>,
+	Nicolas Saenz Julienne <nsaenzjulienne@suse.de>
 X-BeenThere: iommu@lists.linux-foundation.org
 X-Mailman-Version: 2.1.12
 Precedence: list
@@ -77,213 +76,30 @@ Content-Transfer-Encoding: 7bit
 Sender: iommu-bounces@lists.linux-foundation.org
 Errors-To: iommu-bounces@lists.linux-foundation.org
 
-On Tue, 29 Oct 2019 14:40:14 +0800
-Zhangfei Gao <zhangfei.gao@linaro.org> wrote:
-
-> From: Kenneth Lee <liguozhu@hisilicon.com>
+On Thu, Oct 31, 2019 at 05:58:53PM +0100, Christoph Hellwig wrote:
+> On Thu, Oct 31, 2019 at 05:22:59PM +0100, Nicolas Saenz Julienne wrote:
+> > OK, I see what you mean now. It's wrong indeed.
+> > 
+> > The trouble is the ZONE_DMA series[1] in arm64, also due for v5.5, will be
+> > affected by this patch. I don't know the right way to approach this problem
+> > since depending on the merge order, this patch should be updated or the arm64
+> > ZONE_DMA series fixed.
+> > 
+> > Maybe it's easier to just wait for v5.6.
 > 
-> Uacce (Unified/User-space-access-intended Accelerator Framework) is
-> a kernel module targets to provide Shared Virtual Addressing (SVA)
-> between the accelerator and process.
-> 
-> This patch add document to explain how it works.
-> 
-> Signed-off-by: Kenneth Lee <liguozhu@hisilicon.com>
-> Signed-off-by: Zaibo Xu <xuzaibo@huawei.com>
-> Signed-off-by: Zhou Wang <wangzhou1@hisilicon.com>
-> Signed-off-by: Zhangfei Gao <zhangfei.gao@linaro.org>
-> ---
->  Documentation/misc-devices/uacce.rst | 160 +++++++++++++++++++++++++++++++++++
->  1 file changed, 160 insertions(+)
->  create mode 100644 Documentation/misc-devices/uacce.rst
-> 
-> diff --git a/Documentation/misc-devices/uacce.rst b/Documentation/misc-devices/uacce.rst
-> new file mode 100644
-> index 0000000..ecd5d8b
-> --- /dev/null
-> +++ b/Documentation/misc-devices/uacce.rst
-> @@ -0,0 +1,160 @@
-> +.. SPDX-License-Identifier: GPL-2.0
-> +
-> +Introduction of Uacce
-> +=========================
+> Ok, I can wait.  Or the arm64 maintainers can pick up this patch if
+> you want to add it to that series.
 
-Fix the underline length to match the title.
+This branch is stable (may add a fix but not I'm not rebasing it) if you
+want to base this patch on top:
 
-> +
-> +Uacce (Unified/User-space-access-intended Accelerator Framework) targets to
-> +provide Shared Virtual Addressing (SVA) between accelerators and processes.
-> +So accelerator can access any data structure of the main cpu.
-> +This differs from the data sharing between cpu and io device, which share
-> +data content rather than address.
+https://git.kernel.org/pub/scm/linux/kernel/git/arm64/linux.git/log/?h=for-next/zone-dma
 
-which share only data content rather than address.
+Otherwise, with your ack, I can add it on top of the above branch (aimed
+at 5.5).
 
-> +Because of the unified address, hardware and user space of process can
-> +share the same virtual address in the communication.
-> +Uacce takes the hardware accelerator as a heterogeneous processor, while
-> +IOMMU share the same CPU page tables and as a result the same translation
-> +from va to pa.
-> +
-> +	 __________________________       __________________________
-> +	|                          |     |                          |
-> +	|  User application (CPU)  |     |   Hardware Accelerator   |
-> +	|__________________________|     |__________________________|
-> +
-> +	             |                                 |
-> +	             | va                              | va
-> +	             V                                 V
-> +                 __________                        __________
-> +                |          |                      |          |
-> +                |   MMU    |                      |  IOMMU   |
-> +                |__________|                      |__________|
-> +		     |                                 |
-> +	             |                                 |
-> +	             V pa                              V pa
-> +		 _______________________________________
-> +		|                                       |
-> +		|              Memory                   |
-> +		|_______________________________________|
-> +
-> +
-> +
-> +Architecture
-> +------------
-> +
-> +Uacce is the kernel module, taking charge of iommu and address sharing.
-> +The user drivers and libraries are called WarpDrive.
-> +
-> +The uacce device, built around the IOMMU SVA API, can access multiple
-> +address spaces, including the one without PASID.
-> +
-> +A virtual concept, queue, is used for the communication. It provides a
-> +FIFO-like interface. And it maintains a unified address space between the
-> +application and all involved hardware.
-> +
-> +                             ___________________                  ________________
-> +                            |                   |   user API     |                |
-> +                            | WarpDrive library | ------------>  |  user driver   |
-> +                            |___________________|                |________________|
-> +                                     |                                    |
-> +                                     |                                    |
-> +                                     | queue fd                           |
-> +                                     |                                    |
-> +                                     |                                    |
-> +                                     v                                    |
-> +     ___________________         _________                                |
-> +    |                   |       |         |                               | mmap memory
-> +    | Other framework   |       |  uacce  |                               | r/w interface
-> +    | crypto/nic/others |       |_________|                               |
-> +    |___________________|                                                 |
-> +             |                       |                                    |
-> +             | register              | register                           |
-> +             |                       |                                    |
-> +             |                       |                                    |
-> +             |                _________________       __________          |
-> +             |               |                 |     |          |         |
-> +              -------------  |  Device Driver  |     |  IOMMU   |         |
-> +                             |_________________|     |__________|         |
-> +                                     |                                    |
-> +                                     |                                    V
-> +                                     |                            ___________________
-> +                                     |                           |                   |
-> +                                     --------------------------  |  Device(Hardware) |
-> +                                                                 |___________________|
-> +
-> +
-> +How does it work
-> +================
-> +
-> +Uacce uses mmap and IOMMU to play the trick.
-> +
-> +Uacce create a chrdev for every device registered to it. New queue is
-> +created when user application open the chrdev. The file descriptor is used
-> +as the user handle of the queue.
-> +The accelerator device present itself as an Uacce object, which exports as
-> +chrdev to the user space. The user application communicates with the
-> +hardware by ioctl (as control path) or share memory (as data path).
-> +
-> +The control path to the hardware is via file operation, while data path is
-> +via mmap space of the queue fd.
-> +
-> +The queue file address space:
-> +/**
-> + * enum uacce_qfrt: qfrt type
-> + * @UACCE_QFRT_MMIO: device mmio region
-> + * @UACCE_QFRT_DUS: device user share region
-> + */
-> +enum uacce_qfrt {
-> +	UACCE_QFRT_MMIO = 0,
-> +	UACCE_QFRT_DUS = 1,
-> +};
-> +
-> +All regions are optional and differ from device type to type. The
-> +communication protocol is wrapped by the user driver.
-
-Can you have more than one of each? If not state this clearly.
-
-> +
-> +The device mmio region is mapped to the hardware mmio space. It is generally
-> +used for doorbell or other notification to the hardware. It is not fast enough
-> +as data channel.
-> +
-> +The device user share region is used for share data buffer between user process
-> +and device.
-> +
-> +
-> +The Uacce register API
-> +-----------------------
-blank line here.
-
-> +The register API is defined in uacce.h.
-> +
-> +struct uacce_interface {
-> +	char name[UACCE_MAX_NAME_SIZE];
-> +	enum uacce_dev_flag flags;
-
-Having an enum for a flags variable / bitmap is odd.  Just use an
-appropriate sized integer.
-
-> +	struct uacce_ops *ops;
-> +};
-Use indenting to get literal formatting of this block. Will
-give formatting like the code blocks in here compiled:
-https://www.kernel.org/doc/html/latest/driver-api/iio/buffers.html
-
-> +
-> +According to the IOMMU capability, uacce_interface flags can be:
-> +
-> +/**
-> + * enum uacce_dev_flag: Device flags:
-> + * @UACCE_DEV_SVA: Shared Virtual Addresses
-> + *		   Support PASID
-> + *		   Support device page faults (PCI PRI or SMMU Stall)
-> + */
-> +enum uacce_dev_flag {
-> +	UACCE_DEV_SVA = BIT(0),
-> +};
-> +
-> +struct uacce_device *uacce_register(struct device *parent,
-> +				    struct uacce_interface *interface);
-> +void uacce_unregister(struct uacce_device *uacce);
-> +
-> +uacce_register results can be:
-> +a. If uacce module is not compiled, ERR_PTR(-ENODEV)
-> +b. Succeed with the desired flags
-> +c. Succeed with the negotiated flags, for example
-> +   uacce_interface.flags = UACCE_DEV_SVA but uacce->flags = ~UACCE_DEV_SVA
-> +So user driver need check return value as well as the negotiated uacce->flags.
-> +
-> +
-> +The user driver
-> +---------------
-> +
-> +The queue file mmap space will need a user driver to wrap the communication
-> +protocol. Uacce provides some attributes in sysfs for the user driver to
-> +match the right accelerator accordingly.
-> +More details in Documentation/ABI/testing/sysfs-driver-uacce.
-
-
+-- 
+Catalin
 _______________________________________________
 iommu mailing list
 iommu@lists.linux-foundation.org
