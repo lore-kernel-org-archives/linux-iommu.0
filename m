@@ -2,70 +2,62 @@ Return-Path: <SRS0=gESx=YZ=lists.linux-foundation.org=iommu-bounces@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-6.8 required=3.0 tests=DKIM_INVALID,DKIM_SIGNED,
+X-Spam-Status: No, score=-8.2 required=3.0 tests=HEADER_FROM_DIFFERENT_DOMAINS,
 	INCLUDES_PATCH,MAILING_LIST_MULTI,SIGNED_OFF_BY,SPF_HELO_NONE,SPF_PASS,
-	URIBL_BLOCKED autolearn=unavailable autolearn_force=no version=3.4.0
+	URIBL_BLOCKED,USER_AGENT_SANE_2 autolearn=unavailable autolearn_force=no
+	version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id BA91DCA9ED1
-	for <iommu@archiver.kernel.org>; Fri,  1 Nov 2019 20:14:20 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 2CCF0CA9ED0
+	for <iommu@archiver.kernel.org>; Fri,  1 Nov 2019 21:06:07 +0000 (UTC)
 Received: from mail.linuxfoundation.org (mail.linuxfoundation.org [140.211.169.12])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by mail.kernel.org (Postfix) with ESMTPS id 800A3217D9
-	for <iommu@archiver.kernel.org>; Fri,  1 Nov 2019 20:14:20 +0000 (UTC)
-Authentication-Results: mail.kernel.org;
-	dkim=fail reason="signature verification failed" (1024-bit key) header.d=kernel.org header.i=@kernel.org header.b="SlmgLXRP"
-DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 800A3217D9
-Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=kernel.org
+	by mail.kernel.org (Postfix) with ESMTPS id F2C3B208CB
+	for <iommu@archiver.kernel.org>; Fri,  1 Nov 2019 21:06:06 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org F2C3B208CB
+Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=linux.intel.com
 Authentication-Results: mail.kernel.org; spf=pass smtp.mailfrom=iommu-bounces@lists.linux-foundation.org
 Received: from mail.linux-foundation.org (localhost [127.0.0.1])
-	by mail.linuxfoundation.org (Postfix) with ESMTP id 4360AF05;
-	Fri,  1 Nov 2019 20:14:20 +0000 (UTC)
+	by mail.linuxfoundation.org (Postfix) with ESMTP id B7A62EFA;
+	Fri,  1 Nov 2019 21:06:06 +0000 (UTC)
 Received: from smtp1.linuxfoundation.org (smtp1.linux-foundation.org
 	[172.17.192.35])
-	by mail.linuxfoundation.org (Postfix) with ESMTPS id 4829AEFE
+	by mail.linuxfoundation.org (Postfix) with ESMTPS id 5693CE3C
 	for <iommu@lists.linux-foundation.org>;
-	Fri,  1 Nov 2019 20:14:19 +0000 (UTC)
-Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp1.linuxfoundation.org (Postfix) with ESMTPS id 400F4466
+	Fri,  1 Nov 2019 21:06:05 +0000 (UTC)
+X-Greylist: domain auto-whitelisted by SQLgrey-1.7.6
+Received: from mga02.intel.com (mga02.intel.com [134.134.136.20])
+	by smtp1.linuxfoundation.org (Postfix) with ESMTPS id 369AC8AA
 	for <iommu@lists.linux-foundation.org>;
-	Fri,  1 Nov 2019 20:14:18 +0000 (UTC)
-Received: from mail-qt1-f172.google.com (mail-qt1-f172.google.com
-	[209.85.160.172])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
-	(No client certificate requested)
-	by mail.kernel.org (Postfix) with ESMTPSA id EA25F217D9
-	for <iommu@lists.linux-foundation.org>;
-	Fri,  1 Nov 2019 20:14:17 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=default; t=1572639258;
-	bh=lunQWXbwftcs+7yMIfaidOHeL/YqBSClHBky0SgR7wE=;
-	h=References:In-Reply-To:From:Date:Subject:To:Cc:From;
-	b=SlmgLXRPl8uHE7aS8/mxIJwrV+QM8AjbfFFjnKWsVER1NKG6OJUlmsyMlqS2j5/03
-	Yz+VihHaTAxeZ64FLgSxIc1CQAc8zZ1QDs/DnDFMC0LVmWctfLquTW8WOv3axVgF2i
-	KhAsk5JpmjV+3MYt7lIc/QWUSJeALIDLrsTjGILQ=
-Received: by mail-qt1-f172.google.com with SMTP id h2so1298845qto.1
-	for <iommu@lists.linux-foundation.org>;
-	Fri, 01 Nov 2019 13:14:17 -0700 (PDT)
-X-Gm-Message-State: APjAAAV81vKyaCHEKpvhfTy33TDsDsXZRZePfyQ3qEvU9NimwOxsiqJh
-	a274Ig7r/lrZwf7FcMsDd6qVXhKvusw1yj1t8g==
-X-Google-Smtp-Source: APXvYqz/2b6NY6NgvOJ9O/tsdBnbptM389ZP3WBQKZTSQtyeLNhU2JaoDSnbvE3OXtxsWr0M+t1QxgR/42oqb66jKSw=
-X-Received: by 2002:ac8:7612:: with SMTP id t18mr1236558qtq.143.1572639257156; 
-	Fri, 01 Nov 2019 13:14:17 -0700 (PDT)
+	Fri,  1 Nov 2019 21:06:03 +0000 (UTC)
+X-Amp-Result: SKIPPED(no attachment in message)
+X-Amp-File-Uploaded: False
+Received: from orsmga002.jf.intel.com ([10.7.209.21])
+	by orsmga101.jf.intel.com with ESMTP/TLS/DHE-RSA-AES256-GCM-SHA384;
+	01 Nov 2019 14:06:02 -0700
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="5.68,257,1569308400"; d="scan'208";a="212891542"
+Received: from jacob-builder.jf.intel.com (HELO jacob-builder) ([10.7.199.155])
+	by orsmga002.jf.intel.com with ESMTP; 01 Nov 2019 14:06:02 -0700
+Date: Fri, 1 Nov 2019 14:10:28 -0700
+From: Jacob Pan <jacob.jun.pan@linux.intel.com>
+To: "Tian, Kevin" <kevin.tian@intel.com>
+Subject: Re: [PATCH v7 07/11] iommu/vt-d: Add nested translation helper
+	function
+Message-ID: <20191101141028.38798894@jacob-builder>
+In-Reply-To: <AADFC41AFE54684AB9EE6CBC0274A5D19D5CDD3C@SHSMSX104.ccr.corp.intel.com>
+References: <1571946904-86776-1-git-send-email-jacob.jun.pan@linux.intel.com>
+	<1571946904-86776-8-git-send-email-jacob.jun.pan@linux.intel.com>
+	<AADFC41AFE54684AB9EE6CBC0274A5D19D5CDD3C@SHSMSX104.ccr.corp.intel.com>
+Organization: OTC
+X-Mailer: Claws Mail 3.13.2 (GTK+ 2.24.30; x86_64-pc-linux-gnu)
 MIME-Version: 1.0
-References: <20191014191256.12697-1-robh@kernel.org>
-	<20191101170822.GE3603@willie-the-truck>
-In-Reply-To: <20191101170822.GE3603@willie-the-truck>
-From: Rob Herring <robh@kernel.org>
-Date: Fri, 1 Nov 2019 15:14:03 -0500
-X-Gmail-Original-Message-ID: <CAL_JsqLd52KfOc62b6Lg0nwy=xYqyJvM5Nqu5QR_2tYVvZbWOA@mail.gmail.com>
-Message-ID: <CAL_JsqLd52KfOc62b6Lg0nwy=xYqyJvM5Nqu5QR_2tYVvZbWOA@mail.gmail.com>
-Subject: Re: [PATCH v2] dt-bindings: iommu: Convert Arm SMMUv3 to DT schema
-To: Will Deacon <will@kernel.org>
-Cc: Mark Rutland <mark.rutland@arm.com>, devicetree@vger.kernel.org,
-	"linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
-	Linux IOMMU <iommu@lists.linux-foundation.org>,
-	Robin Murphy <Robin.Murphy@arm.com>
+Cc: "Raj, Ashok" <ashok.raj@intel.com>, David Woodhouse <dwmw2@infradead.org>,
+	"iommu@lists.linux-foundation.org" <iommu@lists.linux-foundation.org>,
+	LKML <linux-kernel@vger.kernel.org>,
+	Alex Williamson <alex.williamson@redhat.com>,
+	Jean-Philippe Brucker <jean-philippe@linaro.com>,
+	Jonathan Cameron <jic23@kernel.org>
 X-BeenThere: iommu@lists.linux-foundation.org
 X-Mailman-Version: 2.1.12
 Precedence: list
@@ -83,126 +75,350 @@ Content-Transfer-Encoding: 7bit
 Sender: iommu-bounces@lists.linux-foundation.org
 Errors-To: iommu-bounces@lists.linux-foundation.org
 
-On Fri, Nov 1, 2019 at 12:08 PM Will Deacon <will@kernel.org> wrote:
->
-> Hi Rob,
->
-> On Mon, Oct 14, 2019 at 02:12:56PM -0500, Rob Herring wrote:
-> > Convert the Arm SMMv3 binding to the DT schema format.
-> >
-> > Cc: Joerg Roedel <joro@8bytes.org>
-> > Cc: Mark Rutland <mark.rutland@arm.com>
-> > Cc: Will Deacon <will@kernel.org>
-> > Cc: Robin Murphy <Robin.Murphy@arm.com>
-> > Cc: iommu@lists.linux-foundation.org
-> > Signed-off-by: Rob Herring <robh@kernel.org>
+On Fri, 25 Oct 2019 07:04:28 +0000
+"Tian, Kevin" <kevin.tian@intel.com> wrote:
+
+> > From: Jacob Pan [mailto:jacob.jun.pan@linux.intel.com]
+> > Sent: Friday, October 25, 2019 3:55 AM
+> > 
+> > Nested translation mode is supported in VT-d 3.0 Spec.CH 3.8.
+> > With PASID granular translation type set to 0x11b, translation
+> > result from the first level(FL) also subject to a second level(SL)
+> > page table translation. This mode is used for SVA virtualization,
+> > where FL performs guest virtual to guest physical translation and
+> > SL performs guest physical to host physical translation.  
+> 
+> I think we really differentiate what is the common logic for
+> first-level usages (GVA, GIOVA, etc.) in scalable mode, and
+> what is specific to SVA. I have the feeling that SVA is over-used
+> to cause confusing interpretation.
+> 
+Good point, it should be clearly stated that nest mode is not for gSVA
+only, gIOVA shares this common code.
+> > 
+> > Signed-off-by: Jacob Pan <jacob.jun.pan@linux.intel.com>
+> > Signed-off-by: Liu, Yi L <yi.l.liu@linux.intel.com>
 > > ---
-> > v2:
-> > - Refine interrupt definition based on Robin's comments
-> >
-> >  .../devicetree/bindings/iommu/arm,smmu-v3.txt |  77 --------------
-> >  .../bindings/iommu/arm,smmu-v3.yaml           | 100 ++++++++++++++++++
-> >  2 files changed, 100 insertions(+), 77 deletions(-)
-> >  delete mode 100644 Documentation/devicetree/bindings/iommu/arm,smmu-v3.txt
-> >  create mode 100644 Documentation/devicetree/bindings/iommu/arm,smmu-v3.yaml
->
-> [...]
->
-> > diff --git a/Documentation/devicetree/bindings/iommu/arm,smmu-v3.yaml b/Documentation/devicetree/bindings/iommu/arm,smmu-v3.yaml
-> > new file mode 100644
-> > index 000000000000..662cbc4592c9
-> > --- /dev/null
-> > +++ b/Documentation/devicetree/bindings/iommu/arm,smmu-v3.yaml
-> > @@ -0,0 +1,100 @@
-> > +# SPDX-License-Identifier: GPL-2.0-only
-> > +%YAML 1.2
-> > +---
-> > +$id: http://devicetree.org/schemas/iommu/arm,smmu-v3.yaml#
-> > +$schema: http://devicetree.org/meta-schemas/core.yaml#
+> >  drivers/iommu/intel-pasid.c | 207
+> > ++++++++++++++++++++++++++++++++++++++++++++
+> >  drivers/iommu/intel-pasid.h |  12 +++
+> >  2 files changed, 219 insertions(+)
+> > 
+> > diff --git a/drivers/iommu/intel-pasid.c
+> > b/drivers/iommu/intel-pasid.c index ffbd416ed3b8..f846a907cfcf
+> > 100644 --- a/drivers/iommu/intel-pasid.c
+> > +++ b/drivers/iommu/intel-pasid.c
+> > @@ -415,6 +415,76 @@ pasid_set_flpm(struct pasid_entry *pe, u64
+> > value) pasid_set_bits(&pe->val[2], GENMASK_ULL(3, 2), value << 2);
+> >  }
+> > 
+> > +/*
+> > + * Setup the Extended Memory Type(EMT) field (Bits 91-93)
+> > + * of a scalable mode PASID entry.
+> > + */
+> > +static inline void
+> > +pasid_set_emt(struct pasid_entry *pe, u64 value)
+> > +{
+> > +	pasid_set_bits(&pe->val[1], GENMASK_ULL(29, 27), value <<
+> > 27); +}
 > > +
-> > +title: ARM SMMUv3 Architecture Implementation
+> > +/*
+> > + * Setup the Page Attribute Table (PAT) field (Bits 96-127)
+> > + * of a scalable mode PASID entry.
+> > + */
+> > +static inline void
+> > +pasid_set_pat(struct pasid_entry *pe, u64 value)
+> > +{
+> > +	pasid_set_bits(&pe->val[1], GENMASK_ULL(63, 32), value <<
+> > 27); +}
 > > +
-> > +maintainers:
-> > +  - Will Deacon <will@kernel.org>
-> > +  - Robin Murphy <Robin.Murphy@arm.com>
+> > +/*
+> > + * Setup the Cache Disable (CD) field (Bit 89)
+> > + * of a scalable mode PASID entry.
+> > + */
+> > +static inline void
+> > +pasid_set_cd(struct pasid_entry *pe)
+> > +{
+> > +	pasid_set_bits(&pe->val[1], 1 << 25, 1);
+> > +}
 > > +
-> > +description: |+
-> > +  The SMMUv3 architecture is a significant departure from previous
-> > +  revisions, replacing the MMIO register interface with in-memory command
-> > +  and event queues and adding support for the ATS and PRI components of
-> > +  the PCIe specification.
+> > +/*
+> > + * Setup the Extended Memory Type Enable (EMTE) field (Bit 90)
+> > + * of a scalable mode PASID entry.
+> > + */
+> > +static inline void
+> > +pasid_set_emte(struct pasid_entry *pe)
+> > +{
+> > +	pasid_set_bits(&pe->val[1], 1 << 26, 1);
+> > +}
 > > +
-> > +properties:
-> > +  $nodename:
-> > +    pattern: "^iommu@[0-9a-f]*"
-> > +  compatible:
-> > +    const: arm,smmu-v3
+> > +/*
+> > + * Setup the Extended Access Flag Enable (EAFE) field (Bit 135)
+> > + * of a scalable mode PASID entry.
+> > + */
+> > +static inline void
+> > +pasid_set_eafe(struct pasid_entry *pe)
+> > +{
+> > +	pasid_set_bits(&pe->val[2], 1 << 7, 1);
+> > +}
 > > +
-> > +  reg:
-> > +    maxItems: 1
+> > +/*
+> > + * Setup the Page-level Cache Disable (PCD) field (Bit 95)
+> > + * of a scalable mode PASID entry.
+> > + */
+> > +static inline void
+> > +pasid_set_pcd(struct pasid_entry *pe)
+> > +{
+> > +	pasid_set_bits(&pe->val[1], 1 << 31, 1);
+> > +}
 > > +
-> > +  interrupts:
-> > +    minItems: 1
-> > +    maxItems: 4
+> > +/*
+> > + * Setup the Page-level Write-Through (PWT)) field (Bit 94)
+> > + * of a scalable mode PASID entry.
+> > + */
+> > +static inline void
+> > +pasid_set_pwt(struct pasid_entry *pe)
+> > +{
+> > +	pasid_set_bits(&pe->val[1], 1 << 30, 1);
+> > +}
 > > +
-> > +  interrupt-names:
-> > +    oneOf:
-> > +      - const: combined
-> > +        description:
-> > +          The combined interrupt is optional, and should only be provided if the
-> > +          hardware supports just a single, combined interrupt line.
-> > +          If provided, then the combined interrupt will be used in preference to
-> > +          any others.
-> > +      - items:
-> > +          - const: eventq     # Event Queue not empt
-> > +          - const: priq       # PRI Queue not empty
-> > +          - const: cmdq-sync  # CMD_SYNC complete
-> > +          - const: gerror     # Global Error activated
-> > +      - minItems: 2
-> > +        maxItems: 4
-> > +        items:
-> > +          - const: eventq
-> > +          - const: gerror
-> > +          - const: priq
-> > +          - const: cmdq-sync
->
-> I find it a bit odd to say "minItems: 2" here since, for example, if you
-> have an SMMU that supports PRI then you really want the PRIQ interrupt
-> hooked up. The only one never care about in the current driver is cmdq-sync,
-> but that's just a driver quirk.
-
-I don't know. I'm just documenting what exists and doesn't seem like
-an outright error. The one case is TI:
-
-arch/arm64/boot/dts/ti/k3-j721e-main.dtsi:
-interrupt-names = "eventq", "gerror";
-
-If we want to make priq conditionally required, then I need to know
-which compatibles would imply supporting PRI. If that's discoverable,
-then we can't really enforce the interrupt being present in the
-schema.
-
-> Also, if the thing supports MSIs then it might not have any wired interrupts
-> at all. Hmm.
-
-That would be why 'interrupts' is optional. The schema only applies if
-a property is present.
-
-> > +  '#iommu-cells':
-> > +    const: 1
+> >  static void
+> >  pasid_cache_invalidation_with_pasid(struct intel_iommu *iommu,
+> >  				    u16 did, int pasid)
+> > @@ -647,3 +717,140 @@ int intel_pasid_setup_pass_through(struct
+> > intel_iommu *iommu,
+> > 
+> >  	return 0;
+> >  }
 > > +
-> > +  dma-coherent:
-> > +    description: |
-> > +      Present if page table walks made by the SMMU are cache coherent with the
-> > +      CPU.
->
-> This looks like you've taken the text from SMMUv2 by accident. For SMMUv3,
-> it's not just about page table walks, but *any* DMA operations made by the
-> SMMU (e.g. STE lookup). I don't see the need to change the current text tbh.
+> > +static int intel_pasid_setup_bind_data(struct intel_iommu *iommu,
+> > +				struct pasid_entry *pte,
+> > +				struct iommu_gpasid_bind_data_vtd
+> > *pasid_data)
+> > +{
+> > +	/*
+> > +	 * Not all guest PASID table entry fields are passed down
+> > during bind,
+> > +	 * here we only set up the ones that are dependent on guest
+> > settings.
+> > +	 * Execution related bits such as NXE, SMEP are not
+> > meaningful to IOMMU,
+> > +	 * therefore not set. Other fields, such as snoop related,
+> > are set based
+> > +	 * on host needs regardless of  guest settings.
+> > +	 */
+> > +	if (pasid_data->flags & IOMMU_SVA_VTD_GPASID_SRE) {
+> > +		if (!ecap_srs(iommu->ecap)) {
+> > +			pr_err("No supervisor request support on
+> > %s\n",
+> > +			       iommu->name);
+> > +			return -EINVAL;
+> > +		}
+> > +		pasid_set_sre(pte);
+> > +	}
+> > +
+> > +	if ((pasid_data->flags & IOMMU_SVA_VTD_GPASID_EAFE) &&
+> > ecap_eafs(iommu->ecap))
+> > +		pasid_set_eafe(pte);
+> > +
+> > +	if (pasid_data->flags & IOMMU_SVA_VTD_GPASID_EMTE) {
+> > +		pasid_set_emte(pte);
+> > +		pasid_set_emt(pte, pasid_data->emt);
+> > +	}  
+> 
+> above conditional checks are not consistent. The 1st check may
+> return error but latter two don't. Can you confirm whether it's
+> desired way?
+> 
+should be consistent and under the check of host MTS capability. Will
+change.
+> > +
+> > +	/*
+> > +	 * Memory type is only applicable to devices inside
+> > processor coherent
+> > +	 * domain. PCIe devices are not included. We can skip the
+> > rest of the
+> > +	 * flags if IOMMU does not support MTS.
+> > +	 */
+> > +	if (!ecap_mts(iommu->ecap)) {
+> > +		pr_info("%s does not support memory type bind guest
+> > PASID\n",
+> > +			iommu->name);
+> > +		return 0;  
+> 
+> why not -EINVAL?
+> 
+right, if host does not support MTS and guest wants to set MTS related
+bits, -EINVAL should be returned.
 
-Indeed. I'll do a follow-up as I've already applied these 2 patches.
+> > +	}
+> > +
+> > +	if (pasid_data->flags & IOMMU_SVA_VTD_GPASID_PCD)
+> > +		pasid_set_pcd(pte);
+> > +	if (pasid_data->flags & IOMMU_SVA_VTD_GPASID_PWT)
+> > +		pasid_set_pwt(pte);
+> > +	if (pasid_data->flags & IOMMU_SVA_VTD_GPASID_CD)
+> > +		pasid_set_cd(pte);
+> > +	pasid_set_pat(pte, pasid_data->pat);
+> > +
+> > +	return 0;
+> > +
+> > +}
+> > +
+> > +/**
+> > + * intel_pasid_setup_nested() - Set up PASID entry for nested
+> > translation
+> > + * which is used for vSVA. The first level page tables are used for
+> > + * GVA-GPA translation in the guest, second level page tables are
+> > used
+> > + * for GPA to HPA translation.  
+> 
+> It's too restricting on how 1st level is used by guest.
+> 
+will fix. stating FL can be used for gIOVA in nested mode.
+> > + *
+> > + * @iommu:      Iommu which the device belong to
+> > + * @dev:        Device to be set up for translation
+> > + * @gpgd:       FLPTPTR: First Level Page translation pointer in
+> > GPA
+> > + * @pasid:      PASID to be programmed in the device PASID table
+> > + * @pasid_data: Additional PASID info from the guest bind request
+> > + * @domain:     Domain info for setting up second level page tables
+> > + * @addr_width: Address width of the first level (guest)
+> > + */
+> > +int intel_pasid_setup_nested(struct intel_iommu *iommu,
+> > +			struct device *dev, pgd_t *gpgd,
+> > +			int pasid, struct
+> > iommu_gpasid_bind_data_vtd *pasid_data,
+> > +			struct dmar_domain *domain,
+> > +			int addr_width)
+> > +{
+> > +	struct pasid_entry *pte;
+> > +	struct dma_pte *pgd;
+> > +	u64 pgd_val;
+> > +	int agaw;
+> > +	u16 did;
+> > +
+> > +	if (!ecap_nest(iommu->ecap)) {
+> > +		pr_err("IOMMU: %s: No nested translation
+> > support\n",
+> > +		       iommu->name);
+> > +		return -EINVAL;
+> > +	}
+> > +
+> > +	pte = intel_pasid_get_entry(dev, pasid);
+> > +	if (WARN_ON(!pte))
+> > +		return -EINVAL;
+> > +
+> > +	pasid_clear_entry(pte);
+> > +
+> > +	/* Sanity checking performed by caller to make sure address
+> > +	 * width matching in two dimensions:
+> > +	 * 1. CPU vs. IOMMU
+> > +	 * 2. Guest vs. Host.
+> > +	 */
+> > +	switch (addr_width) {
+> > +	case 57:  
+> 
+> AW_5LEVEL
+> 
+> > +		pasid_set_flpm(pte, 1);
+> > +		break;
+> > +	case 48:  
+> 
+> AW_4LEVEL
+> 
+will add macros
 
-Rob
+> > +		pasid_set_flpm(pte, 0);
+> > +		break;
+> > +	default:
+> > +		dev_err(dev, "Invalid paging mode %d\n",
+> > addr_width);
+> > +		return -EINVAL;
+> > +	}
+> > +
+> > +	pasid_set_flptr(pte, (u64)gpgd);
+> > +
+> > +	intel_pasid_setup_bind_data(iommu, pte, pasid_data);
+> > +
+> > +	/* Setup the second level based on the given domain */
+> > +	pgd = domain->pgd;
+> > +
+> > +	for (agaw = domain->agaw; agaw != iommu->agaw; agaw--) {
+> > +		pgd = phys_to_virt(dma_pte_addr(pgd));
+> > +		if (!dma_pte_present(pgd)) {
+> > +			dev_err(dev, "Invalid domain page
+> > table\n");  
+> 
+> pasid_clear_entry?
+> 
+right, even though present bit is not set still a good practice to
+clear.
+
+> > +			return -EINVAL;
+> > +		}
+> > +	}
+> > +	pgd_val = virt_to_phys(pgd);
+> > +	pasid_set_slptr(pte, pgd_val);
+> > +	pasid_set_fault_enable(pte);
+> > +
+> > +	did = domain->iommu_did[iommu->seq_id];
+> > +	pasid_set_domain_id(pte, did);
+> > +
+> > +	pasid_set_address_width(pte, agaw);
+> > +	pasid_set_page_snoop(pte, !!ecap_smpwc(iommu->ecap));
+> > +
+> > +	pasid_set_translation_type(pte, PASID_ENTRY_PGTT_NESTED);
+> > +	pasid_set_present(pte);
+> > +	pasid_flush_caches(iommu, pte, pasid, did);
+> > +
+> > +	return 0;
+> > +}
+> > diff --git a/drivers/iommu/intel-pasid.h
+> > b/drivers/iommu/intel-pasid.h index e413e884e685..09c85db73b77
+> > 100644 --- a/drivers/iommu/intel-pasid.h
+> > +++ b/drivers/iommu/intel-pasid.h
+> > @@ -46,6 +46,7 @@
+> >   * to vmalloc or even module mappings.
+> >   */
+> >  #define PASID_FLAG_SUPERVISOR_MODE	BIT(0)
+> > +#define PASID_FLAG_NESTED		BIT(1)
+> > 
+> >  struct pasid_dir_entry {
+> >  	u64 val;
+> > @@ -55,6 +56,11 @@ struct pasid_entry {
+> >  	u64 val[8];
+> >  };
+> > 
+> > +#define PASID_ENTRY_PGTT_FL_ONLY	(1)
+> > +#define PASID_ENTRY_PGTT_SL_ONLY	(2)
+> > +#define PASID_ENTRY_PGTT_NESTED		(3)
+> > +#define PASID_ENTRY_PGTT_PT		(4)
+> > +
+> >  /* The representative of a PASID table */
+> >  struct pasid_table {
+> >  	void			*table;		/*
+> > pasid table pointer */ @@ -103,6 +109,12 @@ int
+> > intel_pasid_setup_second_level(struct intel_iommu *iommu,
+> >  int intel_pasid_setup_pass_through(struct intel_iommu *iommu,
+> >  				   struct dmar_domain *domain,
+> >  				   struct device *dev, int pasid);
+> > +int intel_pasid_setup_nested(struct intel_iommu *iommu,
+> > +			struct device *dev, pgd_t *pgd,
+> > +			int pasid,
+> > +			struct iommu_gpasid_bind_data_vtd
+> > *pasid_data,
+> > +			struct dmar_domain *domain,
+> > +			int addr_width);
+> >  void intel_pasid_tear_down_entry(struct intel_iommu *iommu,
+> >  				 struct device *dev, int pasid);
+> >  int vcmd_alloc_pasid(struct intel_iommu *iommu, unsigned int
+> > *pasid); --
+> > 2.7.4  
+> 
+
+[Jacob Pan]
 _______________________________________________
 iommu mailing list
 iommu@lists.linux-foundation.org
