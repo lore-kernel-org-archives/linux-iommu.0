@@ -2,73 +2,61 @@ Return-Path: <SRS0=gESx=YZ=lists.linux-foundation.org=iommu-bounces@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-0.6 required=3.0 tests=DKIM_INVALID,DKIM_SIGNED,
-	HEADER_FROM_DIFFERENT_DOMAINS,MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS,
-	URIBL_BLOCKED autolearn=no autolearn_force=no version=3.4.0
+X-Spam-Status: No, score=-5.2 required=3.0 tests=HEADER_FROM_DIFFERENT_DOMAINS,
+	MAILING_LIST_MULTI,SIGNED_OFF_BY,SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED,
+	USER_AGENT_SANE_2 autolearn=ham autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id B5BDCCA9ECF
-	for <iommu@archiver.kernel.org>; Fri,  1 Nov 2019 17:32:12 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 06491CA9ED1
+	for <iommu@archiver.kernel.org>; Fri,  1 Nov 2019 18:25:11 +0000 (UTC)
 Received: from mail.linuxfoundation.org (mail.linuxfoundation.org [140.211.169.12])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by mail.kernel.org (Postfix) with ESMTPS id 7893720862
-	for <iommu@archiver.kernel.org>; Fri,  1 Nov 2019 17:32:12 +0000 (UTC)
-Authentication-Results: mail.kernel.org;
-	dkim=fail reason="key not found in DNS" (0-bit key) header.d=codeaurora.org header.i=@codeaurora.org header.b="CQuGptTY";
-	dkim=fail reason="key not found in DNS" (0-bit key) header.d=codeaurora.org header.i=@codeaurora.org header.b="fQf4WVwF"
-DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 7893720862
-Authentication-Results: mail.kernel.org; dmarc=none (p=none dis=none) header.from=codeaurora.org
+	by mail.kernel.org (Postfix) with ESMTPS id CF3242086D
+	for <iommu@archiver.kernel.org>; Fri,  1 Nov 2019 18:25:10 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org CF3242086D
+Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=linux.intel.com
 Authentication-Results: mail.kernel.org; spf=pass smtp.mailfrom=iommu-bounces@lists.linux-foundation.org
 Received: from mail.linux-foundation.org (localhost [127.0.0.1])
-	by mail.linuxfoundation.org (Postfix) with ESMTP id 329361027;
-	Fri,  1 Nov 2019 17:32:12 +0000 (UTC)
+	by mail.linuxfoundation.org (Postfix) with ESMTP id 9F44910A7;
+	Fri,  1 Nov 2019 18:25:10 +0000 (UTC)
 Received: from smtp1.linuxfoundation.org (smtp1.linux-foundation.org
 	[172.17.192.35])
-	by mail.linuxfoundation.org (Postfix) with ESMTPS id 28582F27
+	by mail.linuxfoundation.org (Postfix) with ESMTPS id B11A510A5
 	for <iommu@lists.linux-foundation.org>;
-	Fri,  1 Nov 2019 17:32:11 +0000 (UTC)
-Received: from smtp.codeaurora.org (smtp.codeaurora.org [198.145.29.96])
-	by smtp1.linuxfoundation.org (Postfix) with ESMTPS id BEAFA466
+	Fri,  1 Nov 2019 18:25:09 +0000 (UTC)
+X-Greylist: domain auto-whitelisted by SQLgrey-1.7.6
+Received: from mga04.intel.com (mga04.intel.com [192.55.52.120])
+	by smtp1.linuxfoundation.org (Postfix) with ESMTPS id 4DAC0466
 	for <iommu@lists.linux-foundation.org>;
-	Fri,  1 Nov 2019 17:32:10 +0000 (UTC)
-Received: by smtp.codeaurora.org (Postfix, from userid 1000)
-	id 8A98361178; Fri,  1 Nov 2019 17:32:10 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=codeaurora.org;
-	s=default; t=1572629530;
-	bh=kTFcEII9VQ7VXdQiCsnxkwUwGz79YeOsQ0OeBBkuScg=;
-	h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-	b=CQuGptTYAsulci16RTV0J6ipXgQOt0+r11CVNmbWjV5UnJ1guHkvkHDY5F4ndeLjc
-	n7jJZlsjj8B6XgwLBfN2YRFUO+zbF12g5jju9xFrfnbfCQf5dulY0bC4Q1n1354F9O
-	8IfO8QKu2eooPdbNVMklYrZkO2Ci9spOlLEm5S+g=
-Received: from mail.codeaurora.org (localhost.localdomain [127.0.0.1])
-	by smtp.codeaurora.org (Postfix) with ESMTP id A5A6B6110B;
-	Fri,  1 Nov 2019 17:31:59 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=codeaurora.org;
-	s=default; t=1572629519;
-	bh=kTFcEII9VQ7VXdQiCsnxkwUwGz79YeOsQ0OeBBkuScg=;
-	h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-	b=fQf4WVwFGtfc1Wm6kx1nxc5oXiJWgVWuuikBGSz5IfoXqOJ2OvG24BLxdjkiA3Age
-	AO+oLYI4x2+RggoVwq0YVOaogZZM4qq/VW5y4d/mI4TOQFee8FG7cWeus748HT7TYr
-	Ukf5AJrLsyYsL8FQ+Em9swSjmWPSsgocl1JP6590=
+	Fri,  1 Nov 2019 18:25:09 +0000 (UTC)
+X-Amp-Result: SKIPPED(no attachment in message)
+X-Amp-File-Uploaded: False
+Received: from orsmga002.jf.intel.com ([10.7.209.21])
+	by fmsmga104.fm.intel.com with ESMTP/TLS/DHE-RSA-AES256-GCM-SHA384;
+	01 Nov 2019 11:25:08 -0700
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="5.68,256,1569308400"; d="scan'208";a="212854720"
+Received: from jacob-builder.jf.intel.com (HELO jacob-builder) ([10.7.199.155])
+	by orsmga002.jf.intel.com with ESMTP; 01 Nov 2019 11:25:07 -0700
+Date: Fri, 1 Nov 2019 11:29:33 -0700
+From: Jacob Pan <jacob.jun.pan@linux.intel.com>
+To: Lu Baolu <baolu.lu@linux.intel.com>
+Subject: Re: [PATCH v7 04/11] iommu/vt-d: Replace Intel specific PASID
+	allocator with IOASID
+Message-ID: <20191101112933.0e8a738f@jacob-builder>
+In-Reply-To: <87bb4356-136b-b395-894e-8cffa1709309@linux.intel.com>
+References: <1571946904-86776-1-git-send-email-jacob.jun.pan@linux.intel.com>
+	<1571946904-86776-5-git-send-email-jacob.jun.pan@linux.intel.com>
+	<87bb4356-136b-b395-894e-8cffa1709309@linux.intel.com>
+Organization: OTC
+X-Mailer: Claws Mail 3.13.2 (GTK+ 2.24.30; x86_64-pc-linux-gnu)
 MIME-Version: 1.0
-Date: Fri, 01 Nov 2019 23:01:59 +0530
-From: Sai Prakash Ranjan <saiprakash.ranjan@codeaurora.org>
-To: Will Deacon <will@kernel.org>, bjorn.andersson@linaro.org
-Subject: Re: [PATCHv7 0/3] QCOM smmu-500 wait-for-safe handling for sdm845
-In-Reply-To: <20191101172508.GB3983@willie-the-truck>
-References: <cover.1568966170.git.saiprakash.ranjan@codeaurora.org>
-	<20191101163136.GC3603@willie-the-truck>
-	<af7e9a14ae7512665f0cae32e08c8b06@codeaurora.org>
-	<20191101172508.GB3983@willie-the-truck>
-Message-ID: <119d4bcf5989d1aa0686fd674c6a3370@codeaurora.org>
-X-Sender: saiprakash.ranjan@codeaurora.org
-User-Agent: Roundcube Webmail/1.2.5
-Cc: Rajendra Nayak <rnayak@codeaurora.org>, linux-arm-msm@vger.kernel.org,
-	linux-kernel@vger.kernel.org, Stephen Boyd <swboyd@chromium.org>,
-	iommu@lists.linux-foundation.org, agross@kernel.org,
-	Vivek Gautam <vivek.gautam@codeaurora.org>,
-	bjorn.andersson@linaro.org, Robin Murphy <robin.murphy@arm.com>,
-	linux-arm-msm-owner@vger.kernel.org
+Cc: "Tian, Kevin" <kevin.tian@intel.com>, Raj Ashok <ashok.raj@intel.com>,
+	David Woodhouse <dwmw2@infradead.org>, iommu@lists.linux-foundation.org,
+	LKML <linux-kernel@vger.kernel.org>,
+	Alex Williamson <alex.williamson@redhat.com>,
+	Jean-Philippe Brucker <jean-philippe@linaro.com>,
+	Jonathan Cameron <jic23@kernel.org>
 X-BeenThere: iommu@lists.linux-foundation.org
 X-Mailman-Version: 2.1.12
 Precedence: list
@@ -81,83 +69,52 @@ List-Post: <mailto:iommu@lists.linux-foundation.org>
 List-Help: <mailto:iommu-request@lists.linux-foundation.org?subject=help>
 List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
 	<mailto:iommu-request@lists.linux-foundation.org?subject=subscribe>
+Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
-Content-Type: text/plain; charset="us-ascii"; Format="flowed"
 Sender: iommu-bounces@lists.linux-foundation.org
 Errors-To: iommu-bounces@lists.linux-foundation.org
 
-On 2019-11-01 22:55, Will Deacon wrote:
-> On Fri, Nov 01, 2019 at 10:49:00PM +0530, Sai Prakash Ranjan wrote:
->> On 2019-11-01 22:01, Will Deacon wrote:
->> > On Fri, Sep 20, 2019 at 01:34:26PM +0530, Sai Prakash Ranjan wrote:
->> > > Previous version of the patches are at [1]:
->> > >
->> > > QCOM's implementation of smmu-500 on sdm845 adds a hardware logic
->> > > called
->> > > wait-for-safe. This logic helps in meeting the invalidation
->> > > requirements
->> > > from 'real-time clients', such as display and camera. This
->> > > wait-for-safe
->> > > logic ensures that the invalidations happen after getting an ack
->> > > from these
->> > > devices.
->> > > In this patch-series we are disabling this wait-for-safe logic from
->> > > the
->> > > arm-smmu driver's probe as with this enabled the hardware tries to
->> > > throttle invalidations from 'non-real-time clients', such as USB and
->> > > UFS.
->> > >
->> > > For detailed information please refer to patch [3/4] in this series.
->> > > I have included the device tree patch too in this series for someone
->> > > who
->> > > would like to test out this. Here's a branch [2] that gets display
->> > > on MTP
->> > > SDM845 device.
->> > >
->> > > This patch series is inspired from downstream work to handle
->> > > under-performance
->> > > issues on real-time clients on sdm845. In downstream we add separate
->> > > page table
->> > > ops to handle TLB maintenance and toggle wait-for-safe in tlb_sync
->> > > call so that
->> > > achieve required performance for display and camera [3, 4].
->> >
->> > What's the plan for getting this merged? I'm not happy taking the
->> > firmware
->> > bits without Andy's ack, but I also think the SMMU changes should go via
->> > the IOMMU tree to avoid conflicts.
->> >
->> > Andy?
->> >
->> 
->> Bjorn maintains QCOM stuff now if I am not wrong and he has already 
->> reviewed
->> the firmware bits. So I'm hoping you could take all these through 
->> IOMMU
->> tree.
-> 
-> Oh, I didn't realise that. Is there a MAINTAINERS update someplace? If 
-> I
-> run:
-> 
-> $ ./scripts/get_maintainer.pl -f drivers/firmware/qcom_scm-64.c
-> 
-> in linux-next, I get:
-> 
-> Andy Gross <agross@kernel.org> (maintainer:ARM/QUALCOMM SUPPORT)
-> linux-arm-msm@vger.kernel.org (open list:ARM/QUALCOMM SUPPORT)
-> linux-kernel@vger.kernel.org (open list)
-> 
+On Fri, 25 Oct 2019 13:47:25 +0800
+Lu Baolu <baolu.lu@linux.intel.com> wrote:
 
-It hasn't been updated yet then. I will leave it to Bjorn or Andy to 
-comment on this.
+> Hi,
+> 
+> On 10/25/19 3:54 AM, Jacob Pan wrote:
+> > Make use of generic IOASID code to manage PASID allocation,
+> > free, and lookup. Replace Intel specific code.
+> > 
+> > Signed-off-by: Jacob Pan <jacob.jun.pan@linux.intel.com>
+> > ---
+> >   drivers/iommu/intel-iommu.c | 12 ++++++------
+> >   drivers/iommu/intel-pasid.c | 36
+> > ------------------------------------ drivers/iommu/intel-svm.c   |
+> > 39 +++++++++++++++++++++++---------------- 3 files changed, 29
+> > insertions(+), 58 deletions(-)  
+> 
+> [--cut--]
+> 
+> > @@ -458,10 +465,11 @@ int intel_svm_is_pasid_valid(struct device
+> > *dev, int pasid) if (!iommu)
+> >   		goto out;
+> >   
+> > -	svm = intel_pasid_lookup_id(pasid);
+> > -	if (!svm)
+> > +	svm = ioasid_find(NULL, pasid, NULL);
+> > +	if (IS_ERR(svm)) {  
+> 
+> Shall we check whether svm is NULL?
+> 
+Missed this earlier, you are right we need to check for NULL.
+Thanks,
 
--Sai
+> Others looks good to me.
+> 
+> Reviewed-by: Lu Baolu <baolu.lu@linux.intel.com>
+> 
+> Best regards,
+> baolu
 
--- 
-QUALCOMM INDIA, on behalf of Qualcomm Innovation Center, Inc. is a 
-member
-of Code Aurora Forum, hosted by The Linux Foundation
+[Jacob Pan]
 _______________________________________________
 iommu mailing list
 iommu@lists.linux-foundation.org
