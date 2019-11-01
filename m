@@ -2,62 +2,62 @@ Return-Path: <SRS0=gESx=YZ=lists.linux-foundation.org=iommu-bounces@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-8.3 required=3.0 tests=DKIM_INVALID,DKIM_SIGNED,
-	INCLUDES_PATCH,MAILING_LIST_MULTI,SIGNED_OFF_BY,SPF_HELO_NONE,SPF_PASS,
-	USER_AGENT_SANE_1 autolearn=ham autolearn_force=no version=3.4.0
+X-Spam-Status: No, score=-2.3 required=3.0 tests=DKIM_INVALID,DKIM_SIGNED,
+	MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED,USER_AGENT_SANE_1
+	autolearn=no autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id E322FC47E49
-	for <iommu@archiver.kernel.org>; Fri,  1 Nov 2019 16:28:31 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 3EEA7CA9ED1
+	for <iommu@archiver.kernel.org>; Fri,  1 Nov 2019 16:31:44 +0000 (UTC)
 Received: from mail.linuxfoundation.org (mail.linuxfoundation.org [140.211.169.12])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by mail.kernel.org (Postfix) with ESMTPS id A9FD920656
-	for <iommu@archiver.kernel.org>; Fri,  1 Nov 2019 16:28:31 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTPS id 15C7F208E3
+	for <iommu@archiver.kernel.org>; Fri,  1 Nov 2019 16:31:44 +0000 (UTC)
 Authentication-Results: mail.kernel.org;
-	dkim=fail reason="signature verification failed" (1024-bit key) header.d=kernel.org header.i=@kernel.org header.b="LWIoDTqv"
-DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org A9FD920656
+	dkim=fail reason="signature verification failed" (1024-bit key) header.d=kernel.org header.i=@kernel.org header.b="WyGXyw2K"
+DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 15C7F208E3
 Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=kernel.org
 Authentication-Results: mail.kernel.org; spf=pass smtp.mailfrom=iommu-bounces@lists.linux-foundation.org
 Received: from mail.linux-foundation.org (localhost [127.0.0.1])
-	by mail.linuxfoundation.org (Postfix) with ESMTP id 62B81FC1;
-	Fri,  1 Nov 2019 16:28:31 +0000 (UTC)
+	by mail.linuxfoundation.org (Postfix) with ESMTP id DCCCFF78;
+	Fri,  1 Nov 2019 16:31:43 +0000 (UTC)
 Received: from smtp1.linuxfoundation.org (smtp1.linux-foundation.org
 	[172.17.192.35])
-	by mail.linuxfoundation.org (Postfix) with ESMTPS id 357CEDAC
+	by mail.linuxfoundation.org (Postfix) with ESMTPS id 63909A7F
 	for <iommu@lists.linux-foundation.org>;
-	Fri,  1 Nov 2019 16:28:30 +0000 (UTC)
+	Fri,  1 Nov 2019 16:31:42 +0000 (UTC)
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp1.linuxfoundation.org (Postfix) with ESMTPS id E031187C
+	by smtp1.linuxfoundation.org (Postfix) with ESMTPS id 211E687C
 	for <iommu@lists.linux-foundation.org>;
-	Fri,  1 Nov 2019 16:28:29 +0000 (UTC)
+	Fri,  1 Nov 2019 16:31:42 +0000 (UTC)
 Received: from willie-the-truck (236.31.169.217.in-addr.arpa [217.169.31.236])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256
 	bits)) (No client certificate requested)
-	by mail.kernel.org (Postfix) with ESMTPSA id 285742080F;
-	Fri,  1 Nov 2019 16:28:27 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTPSA id 0798621855;
+	Fri,  1 Nov 2019 16:31:39 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=default; t=1572625709;
-	bh=AGQ8iiY4Sv5ExrC2tV2HF7L3Htvu/REfvE6er7pPcDE=;
+	s=default; t=1572625902;
+	bh=lcwuDtMMVht6znRRW2+vxRC911paPSnMy5ommgfPMo0=;
 	h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-	b=LWIoDTqvjr1SCA/3GbYgq+sLE9RAhMhlWeB1gGurTUZhTOIvM7KnkzLcVdTA5gedp
-	uAwRBvfPV03Q9adG3rLnJwhDhpqJDlKRj+Wct6rHI3OlwDxhXDqNkRnLPE+CSK/k4r
-	Fu02H3jtWb+tXTEXJgoOjKmVtX6ZO2qWHQZt38Ko=
-Date: Fri, 1 Nov 2019 16:28:24 +0000
+	b=WyGXyw2KNWgeMv/p+9wB4TlQogOYBPuCDvs/wMc3yEFpca+YjfRX24yiOHCWwrYhy
+	SGS8W7od9h4yQTvj9ZgCLshp3CPe6la+7U/LLWOsZJWI+9JXZXqE2YacivSJfSoilJ
+	MXowa3plebKou/xRmn1lhQyUCPFqgoseP/v/s2GU=
+Date: Fri, 1 Nov 2019 16:31:36 +0000
 From: Will Deacon <will@kernel.org>
-To: Rob Clark <robdclark@gmail.com>
-Subject: Re: [PATCH] iommu/arm-smmu: avoid pathological RPM behaviour for
-	unmaps
-Message-ID: <20191101162824.GB3603@willie-the-truck>
-References: <20191031213102.17108-1-robdclark@gmail.com>
+To: Sai Prakash Ranjan <saiprakash.ranjan@codeaurora.org>,
+	agross@kernel.org
+Subject: Re: [PATCHv7 0/3] QCOM smmu-500 wait-for-safe handling for sdm845
+Message-ID: <20191101163136.GC3603@willie-the-truck>
+References: <cover.1568966170.git.saiprakash.ranjan@codeaurora.org>
 MIME-Version: 1.0
 Content-Disposition: inline
-In-Reply-To: <20191031213102.17108-1-robdclark@gmail.com>
+In-Reply-To: <cover.1568966170.git.saiprakash.ranjan@codeaurora.org>
 User-Agent: Mutt/1.10.1 (2018-07-13)
-Cc: Rob Clark <robdclark@chromium.org>, Robin Murphy <robin.murphy@arm.com>,
-	open list <linux-kernel@vger.kernel.org>,
-	iommu@lists.linux-foundation.org, linux-arm-msm@vger.kernel.org,
-	freedreno@lists.freedesktop.org, "moderated list:ARM SMMU DRIVERS"
-	<linux-arm-kernel@lists.infradead.org>
+Cc: Rajendra Nayak <rnayak@codeaurora.org>, linux-arm-msm@vger.kernel.org,
+	linux-kernel@vger.kernel.org, bjorn.andersson@linaro.org,
+	iommu@lists.linux-foundation.org,
+	Vivek Gautam <vivek.gautam@codeaurora.org>,
+	Stephen Boyd <swboyd@chromium.org>, Robin Murphy <robin.murphy@arm.com>
 X-BeenThere: iommu@lists.linux-foundation.org
 X-Mailman-Version: 2.1.12
 Precedence: list
@@ -75,46 +75,33 @@ Content-Transfer-Encoding: 7bit
 Sender: iommu-bounces@lists.linux-foundation.org
 Errors-To: iommu-bounces@lists.linux-foundation.org
 
-On Thu, Oct 31, 2019 at 02:31:02PM -0700, Rob Clark wrote:
-> From: Rob Clark <robdclark@chromium.org>
+On Fri, Sep 20, 2019 at 01:34:26PM +0530, Sai Prakash Ranjan wrote:
+> Previous version of the patches are at [1]:
 > 
-> When games, browser, or anything using a lot of GPU buffers exits, there
-> can be many hundreds or thousands of buffers to unmap and free.  If the
-> GPU is otherwise suspended, this can cause arm-smmu to resume/suspend
-> for each buffer, resulting 5-10 seconds worth of reprogramming the
-> context bank (arm_smmu_write_context_bank()/arm_smmu_write_s2cr()/etc).
-> To the user it would appear that the system just locked up.
+> QCOM's implementation of smmu-500 on sdm845 adds a hardware logic called
+> wait-for-safe. This logic helps in meeting the invalidation requirements
+> from 'real-time clients', such as display and camera. This wait-for-safe
+> logic ensures that the invalidations happen after getting an ack from these
+> devices.
+> In this patch-series we are disabling this wait-for-safe logic from the
+> arm-smmu driver's probe as with this enabled the hardware tries to
+> throttle invalidations from 'non-real-time clients', such as USB and UFS.
 > 
-> A simple solution is to use pm_runtime_put_autosuspend() instead, so we
-> don't immediately suspend the SMMU device.
+> For detailed information please refer to patch [3/4] in this series.
+> I have included the device tree patch too in this series for someone who
+> would like to test out this. Here's a branch [2] that gets display on MTP
+> SDM845 device.
 > 
-> Signed-off-by: Rob Clark <robdclark@chromium.org>
-> ---
->  drivers/iommu/arm-smmu.c | 16 +++++++++++++++-
->  1 file changed, 15 insertions(+), 1 deletion(-)
-> 
-> diff --git a/drivers/iommu/arm-smmu.c b/drivers/iommu/arm-smmu.c
-> index 7c503a6bc585..5abc0d210d90 100644
-> --- a/drivers/iommu/arm-smmu.c
-> +++ b/drivers/iommu/arm-smmu.c
-> @@ -122,7 +122,7 @@ static inline int arm_smmu_rpm_get(struct arm_smmu_device *smmu)
->  static inline void arm_smmu_rpm_put(struct arm_smmu_device *smmu)
->  {
->  	if (pm_runtime_enabled(smmu->dev))
-> -		pm_runtime_put(smmu->dev);
-> +		pm_runtime_put_autosuspend(smmu->dev);
->  }
->  
->  static struct arm_smmu_domain *to_smmu_domain(struct iommu_domain *dom)
-> @@ -1154,6 +1154,20 @@ static int arm_smmu_attach_dev(struct iommu_domain *domain, struct device *dev)
->  	/* Looks ok, so add the device to the domain */
->  	ret = arm_smmu_domain_add_master(smmu_domain, fwspec);
->  
-> +	/*
-> +	 * Setup an autosuspend delay to avoid bouncing runpm state.
-> +	 * Otherwise, if a driver for a suspendend consumer device
+> This patch series is inspired from downstream work to handle under-performance
+> issues on real-time clients on sdm845. In downstream we add separate page table
+> ops to handle TLB maintenance and toggle wait-for-safe in tlb_sync call so that
+> achieve required performance for display and camera [3, 4].
 
-I fixed this typo and applied with Robin's reviewed-by from before.
+What's the plan for getting this merged? I'm not happy taking the firmware
+bits without Andy's ack, but I also think the SMMU changes should go via
+the IOMMU tree to avoid conflicts.
+
+Andy?
 
 Will
 _______________________________________________
