@@ -2,78 +2,131 @@ Return-Path: <SRS0=VhPo=Y2=lists.linux-foundation.org=iommu-bounces@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=1.0 required=3.0 tests=DKIM_ADSP_CUSTOM_MED,
-	DKIM_INVALID,DKIM_SIGNED,FREEMAIL_FORGED_FROMDOMAIN,FREEMAIL_FROM,
-	FROM_LOCAL_NOVOWEL,HEADER_FROM_DIFFERENT_DOMAINS,HK_RANDOM_FROM,
-	MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED autolearn=no
-	autolearn_force=no version=3.4.0
+X-Spam-Status: No, score=-0.6 required=3.0 tests=DKIM_INVALID,DKIM_SIGNED,
+	HEADER_FROM_DIFFERENT_DOMAINS,MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS,
+	URIBL_BLOCKED autolearn=no autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id E265DCA9ECF
-	for <iommu@archiver.kernel.org>; Sat,  2 Nov 2019 03:19:01 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 068ECCA9EC7
+	for <iommu@archiver.kernel.org>; Sat,  2 Nov 2019 19:31:22 +0000 (UTC)
 Received: from mail.linuxfoundation.org (mail.linuxfoundation.org [140.211.169.12])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by mail.kernel.org (Postfix) with ESMTPS id 958CE208E3
-	for <iommu@archiver.kernel.org>; Sat,  2 Nov 2019 03:19:01 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTPS id D923E20862
+	for <iommu@archiver.kernel.org>; Sat,  2 Nov 2019 19:31:20 +0000 (UTC)
 Authentication-Results: mail.kernel.org;
-	dkim=fail reason="signature verification failed" (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="tXNpvQIT"
-DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 958CE208E3
-Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=gmail.com
+	dkim=fail reason="signature verification failed" (1024-bit key) header.d=microsoft.com header.i=@microsoft.com header.b="Dy/nCnuY"
+DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org D923E20862
+Authentication-Results: mail.kernel.org; dmarc=none (p=none dis=none) header.from=lists.linux-foundation.org
 Authentication-Results: mail.kernel.org; spf=pass smtp.mailfrom=iommu-bounces@lists.linux-foundation.org
 Received: from mail.linux-foundation.org (localhost [127.0.0.1])
-	by mail.linuxfoundation.org (Postfix) with ESMTP id 4BE8FEB4;
-	Sat,  2 Nov 2019 03:19:01 +0000 (UTC)
+	by mail.linuxfoundation.org (Postfix) with ESMTP id 9D473B43;
+	Sat,  2 Nov 2019 19:31:20 +0000 (UTC)
 Received: from smtp1.linuxfoundation.org (smtp1.linux-foundation.org
 	[172.17.192.35])
-	by mail.linuxfoundation.org (Postfix) with ESMTPS id 52D6EEB2
+	by mail.linuxfoundation.org (Postfix) with ESMTPS id 8D0D6E26
 	for <iommu@lists.linux-foundation.org>;
-	Sat,  2 Nov 2019 03:19:00 +0000 (UTC)
+	Sat,  2 Nov 2019 06:17:32 +0000 (UTC)
 X-Greylist: whitelisted by SQLgrey-1.7.6
-Received: from mail-yw1-f49.google.com (mail-yw1-f49.google.com
-	[209.85.161.49])
-	by smtp1.linuxfoundation.org (Postfix) with ESMTPS id F12F263D
+Received: from APC01-SG2-obe.outbound.protection.outlook.com
+	(mail-eopbgr1310103.outbound.protection.outlook.com [40.107.131.103])
+	by smtp1.linuxfoundation.org (Postfix) with ESMTPS id 7EA8B8B8
 	for <iommu@lists.linux-foundation.org>;
-	Sat,  2 Nov 2019 03:18:59 +0000 (UTC)
-Received: by mail-yw1-f49.google.com with SMTP id z144so3017799ywd.1
-	for <iommu@lists.linux-foundation.org>;
-	Fri, 01 Nov 2019 20:18:59 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=gmail.com; s=20161025;
-	h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-	:cc; bh=XWouDuNtV+RDhaAG30q6oLZ0sfsZSnJ7v4vmZnTcjfA=;
-	b=tXNpvQIThdErkOxKdvwj4upuqkPgYohpmkUu8+ubSCRSDZsgOa6TPjMItnAvpXvUJT
-	9i3ap+UQryAGvMqftcy4AaLLA2v7rKcvLnaPATPpIuhp3HCV1rGvKQ84WgLXT+V3FEoZ
-	zqrHfE6bPGyyMiGbl8NpOiX5YBBvItB/XRBEaGZT6bXf9Lf9f7u5nvdoAIBU3yrdTt5x
-	m0q4KLg2IwXci6N7WMmQhK+Bevor+cz6bbpNhyJiBqIRDz6RR0gDR6UDeo/z7mNzz+B1
-	FxTZ6R2SzRx27FVYXtPeDWDuVBvsl8RgBXLZdzSnH/PJT/NX706H9yE84cxwySCrfEOu
-	Nq5Q==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-	d=1e100.net; s=20161025;
-	h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-	:message-id:subject:to:cc;
-	bh=XWouDuNtV+RDhaAG30q6oLZ0sfsZSnJ7v4vmZnTcjfA=;
-	b=PBPiihyZCkpWBMmCc83lEaiCykC0Z398DE32xUCasrrwNT3f47i3Bb0kVcRd8wE+DA
-	3TEjLct3HsTE2L/lGxdY/7TIU+VBZFqlNZFjs8izG/pSbJSNNX5MPSnOiH9MDcttyPvB
-	sEhR9T7mxAxmOYzVVzY62tIzQbg+abpjTQJU0nFp5Z3LBMIVQijcGmDGEJxrZeDToUt/
-	2HYNhvxUBNusme5r4SZiProWFxZyoUKyr1k17f6uvasQFF77Grej90Ij9iIFqqOMBT4v
-	MSW9CfdEk62gn1u7iDCkjqdbCchpVxBlmFqAtQYB2frCNvK9tj/Y/WLNUEQcgnZ0f6ul
-	vDKw==
-X-Gm-Message-State: APjAAAUOmxlx2McE6NEcvlzWXvBKuybWHFr+sKSNe6ogtEM84vaODtuI
-	sg6QpkwvZEe+qDfe4vZEcGF735T8ujg8iGc1RN0=
-X-Google-Smtp-Source: APXvYqz/vTyRv8Cpfcdwo79Mp38OZJMIk2+jn6NdV2t3BSMT5HGMV3seK5LqTkdWhhHRJUcCR4QF5FjPqFgbRY6jRJs=
-X-Received: by 2002:a81:5b43:: with SMTP id p64mr11250421ywb.234.1572664739036;
-	Fri, 01 Nov 2019 20:18:59 -0700 (PDT)
+	Sat,  2 Nov 2019 06:17:31 +0000 (UTC)
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+	b=f+Du7S6uSi5cJY2QzDCqW7iuEoboS2XTL4Teay42wSObyhkhmh6ZvzQVIohjQOYmCuYB3+HuqyeYMH2DDGJEfGsXQnQiBQAyiJ72BK9AWGQNgxMZNmygsge1LE/3x9oWSq2pPBm7M/dSNqQqsKz3DgIujVAc0BAiXaVCu48xNvlDYgPViGk67+PDZN56VW2SGv7IcREa6jfgh7l4CdUP0cuGx0mWASnfLCHBlJWo2wdbc2Wv4AyFYxeUAb7ZObpVuE5xdCM3zdHHZgURaslDzotSuF6BcH86YRYwAtB7dyr0FSEFYCUgvdj9qnNNdyXkDKhSbugQvHB3gFAI5Bw6wA==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com; 
+	s=arcselector9901;
+	h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+	bh=SO4sO1z+ffKrKW8H3i+vsIhAt/FsBZwTCu2jZkGHcSc=;
+	b=ImovqjVAvrORk14lUdbvT7lswIphm09ljgVoBsPZ7yfW5uLWMT4XTZNlNwYFrzRPbo5Z1Rfn7z7NrdXlHOUcVJNFMLd/ZvbUHelI6BYTVc6vYWKqyY6RXG84VS15EtXdViYQChwNPvEx91aXoekuv6jjhOdKfVWfB/j3rj5GwaNVI25fPvrXbmdSU9UTwRmjktLe5l9bsSOhg8kkXiNHpNrKpUEOhl5dQUq0SL53AmRGygTr8xgjW0qdDE3ZtbXFmCl3GZy8hDjoNdptrW+HkYrF9OYpeExtGCyX5W0O8/SuQirc7kbpmh8leUCfsZt8gAOr93+Ky4f5BMgr3+P+mw==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+	smtp.mailfrom=microsoft.com; dmarc=pass action=none
+	header.from=microsoft.com; dkim=pass header.d=microsoft.com; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+	s=selector2;
+	h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+	bh=SO4sO1z+ffKrKW8H3i+vsIhAt/FsBZwTCu2jZkGHcSc=;
+	b=Dy/nCnuY/t5SB5D9fWj3/pSwvVDWjBTIRvFz4y0img4qYBW/6r15YribGlXYTtqWk8lGlv+NhMbRXxtMzepqRT01Sz8bGoRpAmnSOimhw0f0m7oCLrpMPO99gGGM1svBdhdOCoX57R8+3jBVkyc32E5wWi5pjxFQpQcHp3YMRFI=
+Received: from PU1P153MB0169.APCP153.PROD.OUTLOOK.COM (10.170.189.13) by
+	PU1P153MB0186.APCP153.PROD.OUTLOOK.COM (10.170.187.144) with Microsoft
+	SMTP
+	Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+	15.20.2430.7; Sat, 2 Nov 2019 06:17:22 +0000
+Received: from PU1P153MB0169.APCP153.PROD.OUTLOOK.COM
+	([fe80::69f1:c9:209a:1809]) by PU1P153MB0169.APCP153.PROD.OUTLOOK.COM
+	([fe80::69f1:c9:209a:1809%2]) with mapi id 15.20.2430.010;
+	Sat, 2 Nov 2019 06:17:22 +0000
+To: Wei Hu <weh@microsoft.com>, "b.zolnierkie@samsung.com"
+	<b.zolnierkie@samsung.com>, KY Srinivasan <kys@microsoft.com>,
+	Haiyang Zhang
+	<haiyangz@microsoft.com>, Stephen Hemminger <sthemmin@microsoft.com>,
+	"sashal@kernel.org" <sashal@kernel.org>, "hch@lst.de" <hch@lst.de>,
+	"m.szyprowski@samsung.com" <m.szyprowski@samsung.com>,
+	"robin.murphy@arm.com" <robin.murphy@arm.com>, "mchehab+samsung@kernel.org"
+	<mchehab+samsung@kernel.org>, "sam@ravnborg.org" <sam@ravnborg.org>,
+	"gregkh@linuxfoundation.org" <gregkh@linuxfoundation.org>,
+	"alexandre.belloni@bootlin.com" <alexandre.belloni@bootlin.com>,
+	"info@metux.net" <info@metux.net>, "arnd@arndb.de" <arnd@arndb.de>,
+	"dri-devel@lists.freedesktop.org" <dri-devel@lists.freedesktop.org>,
+	"linux-fbdev@vger.kernel.org" <linux-fbdev@vger.kernel.org>,
+	"linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
+	"linux-hyperv@vger.kernel.org" <linux-hyperv@vger.kernel.org>,
+	"iommu@lists.linux-foundation.org" <iommu@lists.linux-foundation.org>, 
+	"dcui@microsoft.com" <dcui@microsoft.com>, Michael Kelley
+	<mikelley@microsoft.com>
+Subject: RE: [PATCH] video: hyperv: hyperv_fb: Use physical memory for fb on
+	HyperV Gen 1 VMs.
+Thread-Topic: [PATCH] video: hyperv: hyperv_fb: Use physical memory for fb on
+	HyperV Gen 1 VMs.
+Thread-Index: AQHViMlWrXYtpApox02C+wFzOSr7Mqd3cNRA
+Date: Sat, 2 Nov 2019 06:17:21 +0000
+Message-ID: <PU1P153MB01690579FA52DCDF964AE179BF7D0@PU1P153MB0169.APCP153.PROD.OUTLOOK.COM>
+References: <20191022110905.4032-1-weh@microsoft.com>
+In-Reply-To: <20191022110905.4032-1-weh@microsoft.com>
+Accept-Language: en-US
+Content-Language: en-US
+X-MS-Has-Attach: 
+X-MS-TNEF-Correlator: 
+msip_labels: MSIP_Label_f42aa342-8706-4288-bd11-ebb85995028c_Enabled=True;
+	MSIP_Label_f42aa342-8706-4288-bd11-ebb85995028c_SiteId=72f988bf-86f1-41af-91ab-2d7cd011db47;
+	MSIP_Label_f42aa342-8706-4288-bd11-ebb85995028c_Owner=decui@microsoft.com;
+	MSIP_Label_f42aa342-8706-4288-bd11-ebb85995028c_SetDate=2019-11-02T06:17:20.0215252Z;
+	MSIP_Label_f42aa342-8706-4288-bd11-ebb85995028c_Name=General;
+	MSIP_Label_f42aa342-8706-4288-bd11-ebb85995028c_Application=Microsoft
+	Azure Information Protection;
+	MSIP_Label_f42aa342-8706-4288-bd11-ebb85995028c_ActionId=4eba7dcd-726f-4dbc-aee3-a2c3ebaeee78;
+	MSIP_Label_f42aa342-8706-4288-bd11-ebb85995028c_Extended_MSFT_Method=Automatic
+authentication-results: spf=none (sender IP is )
+	smtp.mailfrom=decui@microsoft.com; 
+x-originating-ip: [2601:600:a280:7f70:f1df:b100:5b7:2fb9]
+x-ms-publictraffictype: Email
+x-ms-office365-filtering-ht: Tenant
+x-ms-office365-filtering-correlation-id: 7c71a8cf-bc8a-4aa3-ca6e-08d75f5c5278
+x-ms-traffictypediagnostic: PU1P153MB0186:|PU1P153MB0186:
+x-ms-exchange-transport-forked: True
+x-microsoft-antispam-prvs: <PU1P153MB018663BCF459F3D1D197BE2FBF7D0@PU1P153MB0186.APCP153.PROD.OUTLOOK.COM>
+x-ms-oob-tlc-oobclassifiers: OLM:6790;
+x-forefront-prvs: 0209425D0A
+x-forefront-antispam-report: SFV:NSPM;
+	SFS:(10019020)(396003)(366004)(376002)(39860400002)(346002)(136003)(189003)(199004)(76176011)(2906002)(9686003)(81166006)(6436002)(7416002)(2501003)(46003)(229853002)(5660300002)(186003)(52536014)(2201001)(14454004)(33656002)(102836004)(66556008)(74316002)(7736002)(81156014)(22452003)(305945005)(8676002)(66946007)(110136005)(66476007)(316002)(4744005)(8990500004)(7696005)(66446008)(86362001)(76116006)(99286004)(486006)(446003)(6506007)(14444005)(1511001)(64756008)(10290500003)(71190400001)(55016002)(8936002)(256004)(1250700005)(6116002)(11346002)(6246003)(476003)(478600001)(6636002)(71200400001)(25786009)(10090500001)(921003)(1121003);
+	DIR:OUT; SFP:1102; SCL:1; SRVR:PU1P153MB0186;
+	H:PU1P153MB0169.APCP153.PROD.OUTLOOK.COM; FPR:; SPF:None;
+	LANG:en; PTR:InfoNoRecords; MX:1; A:1; 
+received-spf: None (protection.outlook.com: microsoft.com does not designate
+	permitted sender hosts)
+x-ms-exchange-senderadcheck: 1
+x-microsoft-antispam: BCL:0;
+x-microsoft-antispam-message-info: agcJjU65hYd96Mz4pYn562usIB46stdUd0ocknLZsYReDTi+C1KewR4XaxJnPFtWnL0ieEilE0reWrdeGoipper05wIeOQ8zogG6nIAY2G2I99npwKwPd+mJdMNYUzbCNBNi+RLcd1O4xuiikSil+2wAFZwIGBoTQkCpt2gDbEbBPJqK7k3apW9UX7azev/NUzgiSwhBuKozUmHzLdlZojrnqtnXhYKZQhKBWtk3uufsbG5Ke9bPmSF0HANrKbYQHhfBmPKhUc2vZgM4GS93tCoCHjvd8mPip42KaSXRjvfNQqORiJAq0wc4M5c3Ln6mOHf7llrC0l/n/hdDbNxrSSOpuJoUGWJh0s8q3ryC5cy1Q3x5Jlc77nsC4fdYJmCgGVKPx5JNSSfAveFmbiEmbZ3ts+msX/1BrasGLVKdasgC2yBkCez2d5iw+0VYYN37
 MIME-Version: 1.0
-References: <20191101220213.28949-1-hch@lst.de>
-In-Reply-To: <20191101220213.28949-1-hch@lst.de>
-From: Max Filippov <jcmvbkbc@gmail.com>
-Date: Fri, 1 Nov 2019 20:18:49 -0700
-Message-ID: <CAMo8Bf+ctQN405SLVAHmycFx7uQuUixE_cqm1idAV8ZrPkoZQg@mail.gmail.com>
-Subject: Re: switch xtensa over to the generic DMA remap / uncached segment
-	code
-To: Christoph Hellwig <hch@lst.de>
-Cc: Chris Zankel <chris@zankel.net>, iommu@lists.linux-foundation.org,
-	"open list:TENSILICA XTENSA PORT \(xtensa\)"
-	<linux-xtensa@linux-xtensa.org>
+X-OriginatorOrg: microsoft.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: 7c71a8cf-bc8a-4aa3-ca6e-08d75f5c5278
+X-MS-Exchange-CrossTenant-originalarrivaltime: 02 Nov 2019 06:17:21.6105 (UTC)
+X-MS-Exchange-CrossTenant-fromentityheader: Hosted
+X-MS-Exchange-CrossTenant-id: 72f988bf-86f1-41af-91ab-2d7cd011db47
+X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
+X-MS-Exchange-CrossTenant-userprincipalname: SsM+tdNqUOiLKkfLPm6jswx+wJxwf/BI+oYiY1KA7KbDaZqSNbU4sQBCVJiJMA3ml28Iu9E+6ihZyhAhgCIYkQ==
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: PU1P153MB0186
+X-Mailman-Approved-At: Sat, 02 Nov 2019 19:31:18 +0000
 X-BeenThere: iommu@lists.linux-foundation.org
 X-Mailman-Version: 2.1.12
 Precedence: list
@@ -86,27 +139,39 @@ List-Post: <mailto:iommu@lists.linux-foundation.org>
 List-Help: <mailto:iommu-request@lists.linux-foundation.org?subject=help>
 List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
 	<mailto:iommu-request@lists.linux-foundation.org?subject=subscribe>
+From: Dexuan Cui via iommu <iommu@lists.linux-foundation.org>
+Reply-To: Dexuan Cui <decui@microsoft.com>
 Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
 Sender: iommu-bounces@lists.linux-foundation.org
 Errors-To: iommu-bounces@lists.linux-foundation.org
 
-On Fri, Nov 1, 2019 at 3:02 PM Christoph Hellwig <hch@lst.de> wrote:
-> this series switches over xtensa to use the generic DMA remap and
-> uncached code.  Xtensa is a little special because it uses an uncached
-> segment by default, but can still use page table bits for remapping
-> highmem.  To facilitate that there is some major refactoring in the
-> common DMA code that merges the remapping code into the main direct
-> mapping alloc / free routines.
+> From: linux-hyperv-owner@vger.kernel.org
+> <linux-hyperv-owner@vger.kernel.org> On Behalf Of Wei Hu
+> Sent: Tuesday, October 22, 2019 4:11 AM
+> ... 
+> +	/* Allocate from CMA */
+> +	// request_pages = (request_size >> PAGE_SHIFT) + 1;
 
-For the whole series:
-Reviewed-by: Max Filippov <jcmvbkbc@gmail.com>
-For the xtensa bits:
-Tested-by: Max Filippov <jcmvbkbc@gmail.com>
+"//" seems rare in Linux kernel code.
+IMO "/* */" is more common.
 
--- 
-Thanks.
--- Max
+> +			pr_info("Unable to allocate enough contiguous physical memory
+> on Gen 1 VM. Use MMIO instead.\n");
+
+The line exceeds 80 chars.
+ 
+> @@ -1060,6 +1168,7 @@ static int hvfb_probe(struct hv_device *hdev,
+>  	par = info->par;
+>  	par->info = info;
+>  	par->fb_ready = false;
+> +	par->need_docopy = false;
+
+Maybe it's better if we set the default value to true? This way we can save
+the "	par->need_docopy = true;" in hvfb_getmem().
+
+Thanks,
+-- Dexuan
 _______________________________________________
 iommu mailing list
 iommu@lists.linux-foundation.org
