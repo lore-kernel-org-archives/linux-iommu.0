@@ -2,62 +2,67 @@ Return-Path: <SRS0=uwQI=Y4=lists.linux-foundation.org=iommu-bounces@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-2.2 required=3.0 tests=HEADER_FROM_DIFFERENT_DOMAINS,
+X-Spam-Status: No, score=-2.3 required=3.0 tests=DKIM_INVALID,DKIM_SIGNED,
 	MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED,USER_AGENT_SANE_1
 	autolearn=no autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 88E0BCA9EB5
-	for <iommu@archiver.kernel.org>; Mon,  4 Nov 2019 13:29:45 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id DC921CA9ECF
+	for <iommu@archiver.kernel.org>; Mon,  4 Nov 2019 15:15:14 +0000 (UTC)
 Received: from mail.linuxfoundation.org (mail.linuxfoundation.org [140.211.169.12])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by mail.kernel.org (Postfix) with ESMTPS id 55BE421D7D
-	for <iommu@archiver.kernel.org>; Mon,  4 Nov 2019 13:29:45 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 55BE421D7D
-Authentication-Results: mail.kernel.org; dmarc=none (p=none dis=none) header.from=arm.com
+	by mail.kernel.org (Postfix) with ESMTPS id A64A520663
+	for <iommu@archiver.kernel.org>; Mon,  4 Nov 2019 15:15:14 +0000 (UTC)
+Authentication-Results: mail.kernel.org;
+	dkim=fail reason="signature verification failed" (1024-bit key) header.d=kernel.org header.i=@kernel.org header.b="SDuuFx6m"
+DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org A64A520663
+Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=kernel.org
 Authentication-Results: mail.kernel.org; spf=pass smtp.mailfrom=iommu-bounces@lists.linux-foundation.org
 Received: from mail.linux-foundation.org (localhost [127.0.0.1])
-	by mail.linuxfoundation.org (Postfix) with ESMTP id 14E68E3E;
-	Mon,  4 Nov 2019 13:29:45 +0000 (UTC)
+	by mail.linuxfoundation.org (Postfix) with ESMTP id 793F9DD9;
+	Mon,  4 Nov 2019 15:15:14 +0000 (UTC)
 Received: from smtp1.linuxfoundation.org (smtp1.linux-foundation.org
 	[172.17.192.35])
-	by mail.linuxfoundation.org (Postfix) with ESMTPS id 33BFCE38
+	by mail.linuxfoundation.org (Postfix) with ESMTPS id 2F372DCE
 	for <iommu@lists.linux-foundation.org>;
-	Mon,  4 Nov 2019 13:29:44 +0000 (UTC)
-X-Greylist: domain auto-whitelisted by SQLgrey-1.7.6
-Received: from foss.arm.com (foss.arm.com [217.140.110.172])
-	by smtp1.linuxfoundation.org (Postfix) with ESMTP id EAA01710
+	Mon,  4 Nov 2019 15:15:13 +0000 (UTC)
+Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
+	by smtp1.linuxfoundation.org (Postfix) with ESMTPS id DAE2C8A7
 	for <iommu@lists.linux-foundation.org>;
-	Mon,  4 Nov 2019 13:29:41 +0000 (UTC)
-Received: from usa-sjc-imap-foss1.foss.arm.com (unknown [10.121.207.14])
-	by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id 4814E1FB;
-	Mon,  4 Nov 2019 05:29:41 -0800 (PST)
-Received: from [10.1.196.37] (unknown [10.1.196.37])
-	by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPSA id 562063F6C4;
-	Mon,  4 Nov 2019 05:29:40 -0800 (PST)
-Subject: Re: [PATCH 0/7] iommu: Permit modular builds of ARM SMMU[v3] drivers
-To: John Garry <john.garry@huawei.com>, Saravana Kannan <saravanak@google.com>
-References: <20191030145112.19738-1-will@kernel.org>
-	<6e457227-ca06-2998-4ffa-a58ab171ce32@arm.com>
-	<20191030155444.GC19096@willie-the-truck>
-	<CAGETcx9ogWQC1ZtnS_4xC3ShqBpuRSKudWEEWC22UZUEhdEU4A@mail.gmail.com>
-	<20191031193758.GA2607492@lophozonia>
-	<CAGETcx-MuMVvj0O-MFdfmLADEq=cQY_=x+irvhgwHhG4VeeSdg@mail.gmail.com>
-	<6994ae35-2b89-2feb-2bcb-cffc5a01963c@huawei.com>
-	<CAGETcx-9M8vvHA2Lykcv0hHWoC2OAw5kfBrjcNJN2CYCwR4eWQ@mail.gmail.com>
-	<47418554-e7a7-f9f3-8852-60cecef3d5c7@huawei.com>
-From: Robin Murphy <robin.murphy@arm.com>
-Message-ID: <7e2429ed-6b25-a452-5e4d-51a5195b872f@arm.com>
-Date: Mon, 4 Nov 2019 13:29:31 +0000
-User-Agent: Mozilla/5.0 (X11; Linux aarch64; rv:60.0) Gecko/20100101
-	Thunderbird/60.9.0
+	Mon,  4 Nov 2019 15:15:12 +0000 (UTC)
+Received: from willie-the-truck (236.31.169.217.in-addr.arpa [217.169.31.236])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256
+	bits)) (No client certificate requested)
+	by mail.kernel.org (Postfix) with ESMTPSA id C8326204FD;
+	Mon,  4 Nov 2019 15:15:10 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+	s=default; t=1572880512;
+	bh=ZQlZhQmX7lrYzQG5MYT2kNnnAWDZXCmqTEyk5dpG6Z8=;
+	h=Date:From:To:Subject:References:In-Reply-To:From;
+	b=SDuuFx6ma6buOc+UZ2Fh9kNciDW/4g2aAwViZ/tAscQkpDDk2X/khHATq0qDYJ90k
+	NulUdDwv/cXglMaXefarN2Soxxqf1LYzANjZX1PHaMWRxnKCdHNNH6xOJG2CohcZ5d
+	cPoyCT5mnasLG2pBFi6C9AM3BQbIzgJHQH1RFw2k=
+Date: Mon, 4 Nov 2019 15:15:07 +0000
+From: Will Deacon <will@kernel.org>
+To: Sai Prakash Ranjan <saiprakash.ranjan@codeaurora.org>,
+	bjorn.andersson@linaro.org, Robin Murphy <robin.murphy@arm.com>,
+	Joerg Roedel <joro@8bytes.org>, iommu@lists.linux-foundation.org,
+	Stephen Boyd <swboyd@chromium.org>,
+	Vivek Gautam <vivek.gautam@codeaurora.org>,
+	linux-arm-msm@vger.kernel.org, linux-kernel@vger.kernel.org,
+	Rajendra Nayak <rnayak@codeaurora.org>, linux-arm-msm-owner@vger.kernel.org
+Subject: Re: [PATCHv7 0/3] QCOM smmu-500 wait-for-safe handling for sdm845
+Message-ID: <20191104151506.GB24909@willie-the-truck>
+References: <cover.1568966170.git.saiprakash.ranjan@codeaurora.org>
+	<20191101163136.GC3603@willie-the-truck>
+	<af7e9a14ae7512665f0cae32e08c8b06@codeaurora.org>
+	<20191101172508.GB3983@willie-the-truck>
+	<119d4bcf5989d1aa0686fd674c6a3370@codeaurora.org>
+	<20191104051925.GC5299@hector.lan>
 MIME-Version: 1.0
-In-Reply-To: <47418554-e7a7-f9f3-8852-60cecef3d5c7@huawei.com>
-Content-Language: en-GB
-Cc: Bjorn Helgaas <bhelgaas@google.com>,
-	Jean-Philippe Brucker <jean-philippe@linaro.org>,
-	"iommu@lists.linux-foundation.org" <iommu@lists.linux-foundation.org>,
-	Will Deacon <will@kernel.org>, LKML <linux-kernel@vger.kernel.org>
+Content-Disposition: inline
+In-Reply-To: <20191104051925.GC5299@hector.lan>
+User-Agent: Mutt/1.10.1 (2018-07-13)
 X-BeenThere: iommu@lists.linux-foundation.org
 X-Mailman-Version: 2.1.12
 Precedence: list
@@ -70,69 +75,50 @@ List-Post: <mailto:iommu@lists.linux-foundation.org>
 List-Help: <mailto:iommu-request@lists.linux-foundation.org?subject=help>
 List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
 	<mailto:iommu-request@lists.linux-foundation.org?subject=subscribe>
-Content-Transfer-Encoding: base64
-Content-Type: text/plain; charset="utf-8"; Format="flowed"
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: 7bit
 Sender: iommu-bounces@lists.linux-foundation.org
 Errors-To: iommu-bounces@lists.linux-foundation.org
 
-T24gMDQvMTEvMjAxOSAxMjoxNiwgSm9obiBHYXJyeSB3cm90ZToKPiBPbiAwMS8xMS8yMDE5IDIx
-OjEzLCBTYXJhdmFuYSBLYW5uYW4gd3JvdGU6Cj4+IE9uIEZyaSwgTm92IDEsIDIwMTkgYXQgMzoy
-OCBBTSBKb2huIEdhcnJ5IDxqb2huLmdhcnJ5QGh1YXdlaS5jb20+IHdyb3RlOgo+Pj4KPj4+IE9u
-IDMxLzEwLzIwMTkgMjM6MzQsIFNhcmF2YW5hIEthbm5hbiB2aWEgaW9tbXUgd3JvdGU6Cj4+Pj4g
-SSBsb29rZWQgaW50byB0aGUgaW9tbXUtbWFwIHByb3BlcnR5IGFuZCBpdCBzaG91bGRuJ3QgYmUg
-dG9vIGhhcmQgdG8KPj4+PiBhZGQgc3VwcG9ydCBmb3IgaXQuIExvb2tzIGxpa2Ugd2UgY2FuIHNp
-bXBseSBob2xkIG9mZiBvbiBwcm9iaW5nIHRoZQo+Pj4+IHJvb3QgYnJpZGdlIGRldmljZSB0aWxs
-IGFsbCB0aGUgaW9tbXVzIGluIGl0cyBpb21tdS1tYXAgYXJlIHByb2JlZCBhbmQKPj4+PiB3ZSBz
-aG91bGQgYmUgZmluZS4KPj4+Pgo+Pj4+PiBJJ20gYWxzbyB1bnN1cmUgYWJvdXQgZGlzdHJvIHZl
-bmRvcnMgYWdyZWVpbmcgdG8gYSBtYW5kYXRvcnkga2VybmVsCj4+Pj4+IHBhcmFtZXRlciAob2Zf
-ZGV2bGluaykuIERvIHlvdSBwbGFuIHRvIGV2ZW50dWFsbHkgZW5hYmxlIGl0IGJ5IAo+Pj4+PiBk
-ZWZhdWx0Pwo+Pj4+Pgo+Pj4+Pj4gc3RhdGljIGNvbnN0IHN0cnVjdCBzdXBwbGllcl9iaW5kaW5n
-cyBvZl9zdXBwbGllcl9iaW5kaW5nc1tdID0gewo+Pj4+Pj4gwqDCoMKgwqDCoMKgwqDCoMKgIHsg
-LnBhcnNlX3Byb3AgPSBwYXJzZV9jbG9ja3MsIH0sCj4+Pj4+PiDCoMKgwqDCoMKgwqDCoMKgwqAg
-eyAucGFyc2VfcHJvcCA9IHBhcnNlX2ludGVyY29ubmVjdHMsIH0sCj4+Pj4+PiDCoMKgwqDCoMKg
-wqDCoMKgwqAgeyAucGFyc2VfcHJvcCA9IHBhcnNlX3JlZ3VsYXRvcnMsIH0sCj4+Pj4+PiArwqDC
-oMKgwqDCoMKgwqAgeyAucGFyc2VfcHJvcCA9IHBhcnNlX2lvbW11cywgfSwKPj4+Pj4+IMKgwqDC
-oMKgwqDCoMKgwqDCoCB7fSwKPj4+Pj4+IH07Cj4+Pj4+Pgo+Pj4+Pj4gSSBwbGFuIHRvIHVwc3Ry
-ZWFtIHRoaXMgcHJldHR5IHNvb24sIGJ1dCBJIGhhdmUgb3RoZXIgcGF0Y2hlcyBpbgo+Pj4+Pj4g
-ZmxpZ2h0IHRoYXQgdG91Y2ggdGhlIHNhbWUgZmlsZSBhbmQgSSdtIHdhaXRpbmcgZm9yIHRob3Nl
-IHRvIGdldAo+Pj4+Pj4gYWNjZXB0ZWQuIEkgYWxzbyB3YW50IHRvIGNsZWFuIHVwIHRoZSBjb2Rl
-IGEgYml0IHRvIHJlZHVjZSBzb21lCj4+Pj4+PiByZXBldGl0aW9uIGJlZm9yZSBJIGFkZCBzdXBw
-b3J0IGZvciBtb3JlIGJpbmRpbmdzLgo+Pj4+PiBJJ20gYWxzbyB3b25kZXJpbmcgYWJvdXQgQUNQ
-SSBzdXBwb3J0Lgo+Pj4+IEknZCBsb3ZlIHRvIGFkZCBBQ1BJIHN1cHBvcnQgdG9vLCBidXQgSSBo
-YXZlIHplcm8ga25vd2xlZGdlIG9mIEFDUEkuCj4+Pj4gSSdkIGJlIGhhcHB5IHRvIGhlbHAgYW55
-b25lIHdobyB3YW50cyB0byBhZGQgQUNQSSBzdXBwb3J0IHRoYXQgYWxsb3dzCj4+Pj4gQUNQSSB0
-byBhZGQgZGV2aWNlIGxpbmtzLgo+Pj4KPj4+IElmIHBvc3NpYmxlIHRvIGFkZCwgdGhhdCBtYXkg
-YmUgdXNlZnVsIGZvciByZW1lZHlpbmcgdGhpczoKPj4+Cj4+PiBodHRwczovL2xvcmUua2VybmVs
-Lm9yZy9saW51eC1pb21tdS85NjI1ZmFmNC00OGVmLTJkZDMtZDgyZi05MzFkOWNmMjY5NzZAaHVh
-d2VpLmNvbS8gCj4+Pgo+Pgo+PiBJJ20gaGFwcHkgdGhhdCB0aGlzIGNoYW5nZSBtaWdodCBmaXgg
-dGhhdCBwcm9ibGVtLCBidXQgaXNuJ3QgdGhlCj4+IHByb2JsZW0gcmVwb3J0ZWQgaW4gdGhhdCB0
-aHJlYWQgbW9yZSB0byBkbyB3aXRoIGNoaWxkIGRldmljZXMgZ2V0dGluZwo+PiBhZGRlZCBiZWZv
-cmUgdGhlIHBhcmVudCBwcm9iZXMgc3VjY2Vzc2Z1bGx5PyBUaGF0IGRvZXNuJ3QgbWFrZSBzZW5z
-ZQo+PiB0byBtZS4gCj4gCj4gU28gdGhlIHBjaWVwb3J0IGRldmljZSBhbmQgdGhlbiB0aGUgY2hp
-bGQgZGV2aWNlIGFyZSBhZGRlZCBpbiB0aGUgUENJIAo+IHNjYW4sIGJ1dCBvbmx5IHNvbWUgdGlt
-ZSBsYXRlciBkbyB0aGUgZGV2aWNlIGRyaXZlcnMgcHJvYmUgZm9yIHRoZXNlIAo+IGRldmljZXM7
-IHNvIGl0J3Mgbm90IHRoYXQgdGhlIHRoYXQgcGNpZXBvcnQgZHJpdmVyIGNyZWF0ZXMgdGhlIGNo
-aWxkIAo+IGRldmljZS4KPiAKPiBUaGUgcHJvYmxlbSB0aGVuIG9jY3VycyBpbiB0aGF0IHRoZSBv
-cmRlcmluZyB0aGUgb2YgZGV2aWNlIGRyaXZlciBwcm9iZSAKPiBpcyBzdWNoIHRoYXQgd2UgaGF2
-ZSB0aGlzOiBwY2llcG9ydCBwcm9iZSArIGRlZmVyIChhcyBubyBJT01NVSBncm91cCAKPiByZWdp
-c3RlcmVkKSwgU01NVSBwcm9iZSAocmVnaXN0ZXJzIHRoZSBJT01NVSBncm91cCksIGNoaWxkIGRl
-dmljZSBwcm9iZSwgCj4gcGNpZXBvcnQgcmVhbGx5IHByb2JlLgo+IAo+IENhbid0IHRoZSBwaWNl
-cG9ydCBkcml2ZXIgbm90IGFkZCBpdHMgY2hpbGQgZGV2aWNlcyBiZWZvcmUgaXQKPj4gcHJvYmVz
-IHN1Y2Nlc3NmdWxseT8gT3IgbW9yZSBzcGVjaWZpY2FsbHksIHdobyBhZGRzIHRoZSBjaGlsZCBk
-ZXZpY2VzCj4+IG9mIHRoZSBwY2llcG9ydCBiZWZvcmUgdGhlIHBjaWVwb3J0IGl0c2VsZiBwcm9i
-ZXM/Cj4gCj4gVGhlIGRldmljZXMgYXJlIGFjdHVhbGx5IGFkZGVkIGluIG9yZGVyIHBjaWVwb3J0
-LCBjaGlsZCBkZXZpY2UsIGJ1dCBub3QgCj4gcmVhbGx5IHByb2JlZCBpbiB0aGF0IHNhbWUgb3Jk
-ZXIsIGFzIGFib3ZlLgoKUmlnaHQsIGluIHNob3J0IHRoZSBmdW5kYW1lbnRhbCBwcm9ibGVtIGlz
-IHRoYXQgb2ZfaW9tbXVfY29uZmlndXJlKCkgbm93IApkb2VzIHRoZSB3cm9uZyB0aGluZy4gRGVm
-ZXJyaW5nIHByb2JlIG9mIHRoZSBlbnRpcmUgaG9zdCBicmlkZ2Uvcm9vdCAKY29tcGxleCBiYXNl
-ZCBvbiAiaW9tbXUtbWFwIiB3b3VsZCBpbmRlZWQgaGFwcGVuIHRvIHNvbHZlIHRoZSBwcm9ibGVt
-IGJ5IApicnV0ZSBmb3JjZSwgSSB0aGluaywgYnV0IGNvdWxkIGxlYWQgdG8gYSBkZXBlbmRlbmN5
-IGN5Y2xlIGZvciBQQ0ktYmFzZWQgCklPTU1VcyBhcyBKZWFuIHBvaW50cyBvdXQuIEkgaG9wZSB0
-byBoYXZlIHRpbWUgdGhpcyB3ZWVrIHRvIHdvcmsgYSBiaXQgCm1vcmUgb24gcHVsbGluZyBvZl9p
-b21tdV9jb25maWd1cmUoKSBhcGFydCB0byBmaXggaXQgcHJvcGVybHksIGFmdGVyIAp3aGljaCBv
-Zl9kZXZsaW5rICpzaG91bGQqIG9ubHkgaGF2ZSB0byB3b3JyeSBhYm91dCB0aGUgY2hpbGQgZGV2
-aWNlcyAKdGhlbXNlbHZlcy4uLgoKUm9iaW4uCgo+IEknbGwgYWRkIHlvdSB0byB0aGF0IHRocmVh
-ZCBpZiB5b3Ugd2FudCB0byBkaXNjdXNzIGZ1cnRoZXIuCj4gCj4gVGhhbmtzLAo+IEpvaG4KPiAK
-X19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX18KaW9tbXUgbWFp
-bGluZyBsaXN0CmlvbW11QGxpc3RzLmxpbnV4LWZvdW5kYXRpb24ub3JnCmh0dHBzOi8vbGlzdHMu
-bGludXhmb3VuZGF0aW9uLm9yZy9tYWlsbWFuL2xpc3RpbmZvL2lvbW11
+On Sun, Nov 03, 2019 at 11:19:25PM -0600, Andy Gross wrote:
+> On Fri, Nov 01, 2019 at 11:01:59PM +0530, Sai Prakash Ranjan wrote:
+> > >>> What's the plan for getting this merged? I'm not happy taking the
+> > >>> firmware
+> > >>> bits without Andy's ack, but I also think the SMMU changes should go via
+> > >>> the IOMMU tree to avoid conflicts.
+> > >>>
+> > >>> Andy?
+> > >>>
+> > >>
+> > >>Bjorn maintains QCOM stuff now if I am not wrong and he has already
+> > >>reviewed
+> > >>the firmware bits. So I'm hoping you could take all these through IOMMU
+> > >>tree.
+> > >
+> > >Oh, I didn't realise that. Is there a MAINTAINERS update someplace? If I
+> > >run:
+> > >
+> > >$ ./scripts/get_maintainer.pl -f drivers/firmware/qcom_scm-64.c
+> > >
+> > >in linux-next, I get:
+> > >
+> > >Andy Gross <agross@kernel.org> (maintainer:ARM/QUALCOMM SUPPORT)
+> > >linux-arm-msm@vger.kernel.org (open list:ARM/QUALCOMM SUPPORT)
+> > >linux-kernel@vger.kernel.org (open list)
+> > >
+> > 
+> > It hasn't been updated yet then. I will leave it to Bjorn or Andy to comment
+> > on this.
+> 
+> The rumors of my demise have been greatly exaggerated.  All kidding aside, I
+> ack'ed both.  Bjorn will indeed be coming on as a co-maintener at some point.
+> He has already done a lot of yeomans work in helping me out the past 3 months.
+
+Cheers Andy, and I'm pleased to hear that you're still with us! I've queued
+this lot for 5.5 and I'll send to Joerg this week.
+
+Will
+_______________________________________________
+iommu mailing list
+iommu@lists.linux-foundation.org
+https://lists.linuxfoundation.org/mailman/listinfo/iommu
