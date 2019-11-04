@@ -2,58 +2,86 @@ Return-Path: <SRS0=uwQI=Y4=lists.linux-foundation.org=iommu-bounces@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-8.3 required=3.0 tests=DKIM_INVALID,DKIM_SIGNED,
-	INCLUDES_PATCH,MAILING_LIST_MULTI,SIGNED_OFF_BY,SPF_HELO_NONE,SPF_PASS,
-	URIBL_BLOCKED,USER_AGENT_SANE_1 autolearn=ham autolearn_force=no version=3.4.0
+X-Spam-Status: No, score=-8.0 required=3.0 tests=DKIM_INVALID,DKIM_SIGNED,
+	HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_PATCH,MAILING_LIST_MULTI,SIGNED_OFF_BY,
+	SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED,USER_AGENT_SANE_1 autolearn=ham
+	autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 213D4C47E49
-	for <iommu@archiver.kernel.org>; Mon,  4 Nov 2019 19:14:52 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 23A46CA9EB5
+	for <iommu@archiver.kernel.org>; Mon,  4 Nov 2019 19:15:31 +0000 (UTC)
 Received: from mail.linuxfoundation.org (mail.linuxfoundation.org [140.211.169.12])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by mail.kernel.org (Postfix) with ESMTPS id EFED720869
-	for <iommu@archiver.kernel.org>; Mon,  4 Nov 2019 19:14:51 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTPS id ED11D20848
+	for <iommu@archiver.kernel.org>; Mon,  4 Nov 2019 19:15:30 +0000 (UTC)
 Authentication-Results: mail.kernel.org;
-	dkim=fail reason="signature verification failed" (1024-bit key) header.d=kernel.org header.i=@kernel.org header.b="nRKmkkrN"
-DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org EFED720869
-Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=kernel.org
+	dkim=fail reason="signature verification failed" (2048-bit key) header.d=linaro.org header.i=@linaro.org header.b="ZWLhtpw5"
+DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org ED11D20848
+Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=linaro.org
 Authentication-Results: mail.kernel.org; spf=pass smtp.mailfrom=iommu-bounces@lists.linux-foundation.org
 Received: from mail.linux-foundation.org (localhost [127.0.0.1])
-	by mail.linuxfoundation.org (Postfix) with ESMTP id A57B6E58;
-	Mon,  4 Nov 2019 19:14:51 +0000 (UTC)
+	by mail.linuxfoundation.org (Postfix) with ESMTP id D7515E70;
+	Mon,  4 Nov 2019 19:15:30 +0000 (UTC)
 Received: from smtp1.linuxfoundation.org (smtp1.linux-foundation.org
 	[172.17.192.35])
-	by mail.linuxfoundation.org (Postfix) with ESMTPS id 4039DE57
+	by mail.linuxfoundation.org (Postfix) with ESMTPS id D2E32E6D
 	for <iommu@lists.linux-foundation.org>;
-	Mon,  4 Nov 2019 19:14:50 +0000 (UTC)
-Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp1.linuxfoundation.org (Postfix) with ESMTPS id A8B4EA9
+	Mon,  4 Nov 2019 19:15:29 +0000 (UTC)
+X-Greylist: whitelisted by SQLgrey-1.7.6
+Received: from mail-wr1-f67.google.com (mail-wr1-f67.google.com
+	[209.85.221.67])
+	by smtp1.linuxfoundation.org (Postfix) with ESMTPS id 92752A9
 	for <iommu@lists.linux-foundation.org>;
-	Mon,  4 Nov 2019 19:14:49 +0000 (UTC)
-Received: from willie-the-truck (236.31.169.217.in-addr.arpa [217.169.31.236])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256
-	bits)) (No client certificate requested)
-	by mail.kernel.org (Postfix) with ESMTPSA id AA5D120848;
-	Mon,  4 Nov 2019 19:14:48 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=default; t=1572894889;
-	bh=J/FulSPhriezH+aQ6FT9wgZqMXgNHCVHt/PPuaqWTM0=;
-	h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-	b=nRKmkkrNuSOOFLU3dBjKseriSoHJP6HBZZVLMJhR7XLIshlyNzZVe3mOl7sqRMoND
-	656hRxFAxVKTGg90i3OkHMprOudEFvjbrKXqtBsOOETp3GtAJyKb/S3uZOGBWACRi+
-	JIpqVIyS2y7ak0kulOA1hSPa4r6zbI7IYcEfEDcI=
-Date: Mon, 4 Nov 2019 19:14:45 +0000
-From: Will Deacon <will@kernel.org>
-To: Robin Murphy <robin.murphy@arm.com>
-Subject: Re: [PATCH v2 09/10] iommu/io-pgtable-arm: Rationalise TCR handling
-Message-ID: <20191104191444.GI24909@willie-the-truck>
-References: <cover.1572024119.git.robin.murphy@arm.com>
-	<84e56eb993fff3660376ffad3e915b972d29b008.1572024120.git.robin.murphy@arm.com>
+	Mon,  4 Nov 2019 19:15:28 +0000 (UTC)
+Received: by mail-wr1-f67.google.com with SMTP id t1so12495270wrv.4
+	for <iommu@lists.linux-foundation.org>;
+	Mon, 04 Nov 2019 11:15:28 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linaro.org; s=google;
+	h=date:from:to:cc:subject:message-id:references:mime-version
+	:content-disposition:in-reply-to:user-agent;
+	bh=CGfA4APfEubm1amTj9pnW92uq+9vWWfdcxYaVFU+qyQ=;
+	b=ZWLhtpw5Y8itG6RdER5q3n+rKh3sxSogacSppWVjEnucwPabPz7TSMwVd8Q3IxhR/x
+	xd9rJG0zFeNNRoegVWki21EcIlfG7MFA5px9clBkL3jwcQk357K3Pw73aaaQV74hbNKb
+	dZc75UJUpSvSNKGnKVMMnrJXiTRXKyXbWdOEJcHQ5CVvXSQpJ8OgjFg5grcjpjz0KKPx
+	ahYvImzL0jhEqszyhL/ifHOG/f66GN8xxUrErSK2+3BXgF5pyF3Xys7mQxpzfALLA6f5
+	dWziZCL+sx2eVzmnCLyKQxCPlpGAcBovAobu9+0gvmfTT1l7CcoVrUz6hQzp0Mc1orEc
+	I20Q==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+	d=1e100.net; s=20161025;
+	h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+	:mime-version:content-disposition:in-reply-to:user-agent;
+	bh=CGfA4APfEubm1amTj9pnW92uq+9vWWfdcxYaVFU+qyQ=;
+	b=QdioNSBDQx727jPk5BRTtZ9ph/EQ/fJRDXnZtDxFC22g/np4w+bxrByoutk8H9qIAk
+	ayf8uQs/8I+m6sB/+qxyRa0LfGTvMeUzxtg/DFA0yRAb3wDCOwq+P/hsDxSOAIZxuUXC
+	DSNeTIjb3Z33+vMj1C1JBWgIoAkVPn+sD6NXAJ8r6DQvejDiZSPidzvYeqoftOvG3PwM
+	CMdM5bstavjDSqHAQlaXqp0ncgg9t/yzK6Kz8EBLXUlxvsty65S5O3bEZQUGhXUooQQz
+	YlcMW+YlaubfsH62REsvih5aw85dE317XKnA7gwgVdAEu2+/Mr7TfgIblmb+tXFh9YXi
+	f1Fw==
+X-Gm-Message-State: APjAAAUJmzz9DALYRL46j/Xh31Qse7IsipKC+Xlu+OOMX12YCGLIIfMa
+	ubQEu/pC75t7up5jbmSCvQtaPA==
+X-Google-Smtp-Source: APXvYqzgRnspvZEPDvCYUC+JCKvP8etQsmMwHGGdX9adwW1yl8y7jQUzMGxQNSrYKNikdLccPHWlBg==
+X-Received: by 2002:adf:d1a3:: with SMTP id w3mr26484328wrc.9.1572894927195;
+	Mon, 04 Nov 2019 11:15:27 -0800 (PST)
+Received: from lophozonia ([85.195.192.192]) by smtp.gmail.com with ESMTPSA id
+	t24sm28146473wra.55.2019.11.04.11.15.25
+	(version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+	Mon, 04 Nov 2019 11:15:26 -0800 (PST)
+Date: Mon, 4 Nov 2019 20:15:24 +0100
+From: Jean-Philippe Brucker <jean-philippe@linaro.org>
+To: Will Deacon <will@kernel.org>
+Subject: Re: [PATCH 5/7] iommu/arm-smmu-v3: Allow building as a module
+Message-ID: <20191104191524.GA2786242@lophozonia>
+References: <20191030145112.19738-1-will@kernel.org>
+	<20191030145112.19738-6-will@kernel.org>
+	<20191030193148.GA8432@8bytes.org>
+	<20191031154247.GB28061@willie-the-truck>
 MIME-Version: 1.0
+Content-Type: multipart/mixed; boundary="UlVJffcvxoiEqYs2"
 Content-Disposition: inline
-In-Reply-To: <84e56eb993fff3660376ffad3e915b972d29b008.1572024120.git.robin.murphy@arm.com>
-User-Agent: Mutt/1.10.1 (2018-07-13)
-Cc: iommu@lists.linux-foundation.org, linux-arm-kernel@lists.infradead.org
+In-Reply-To: <20191031154247.GB28061@willie-the-truck>
+User-Agent: Mutt/1.12.2 (2019-09-21)
+Cc: Bjorn Helgaas <bhelgaas@google.com>, Robin Murphy <robin.murphy@arm.com>,
+	iommu@lists.linux-foundation.org, linux-kernel@vger.kernel.org
 X-BeenThere: iommu@lists.linux-foundation.org
 X-Mailman-Version: 2.1.12
 Precedence: list
@@ -66,181 +94,272 @@ List-Post: <mailto:iommu@lists.linux-foundation.org>
 List-Help: <mailto:iommu-request@lists.linux-foundation.org?subject=help>
 List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
 	<mailto:iommu-request@lists.linux-foundation.org?subject=subscribe>
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: 7bit
 Sender: iommu-bounces@lists.linux-foundation.org
 Errors-To: iommu-bounces@lists.linux-foundation.org
 
-On Fri, Oct 25, 2019 at 07:08:38PM +0100, Robin Murphy wrote:
-> Although it's conceptually nice for the io_pgtable_cfg to provide a
-> standard VMSA TCR value, the reality is that no VMSA-compliant IOMMU
-> looks exactly like an Arm CPU, and they all have various other TCR
-> controls which io-pgtable can't be expected to understand. Thus since
-> there is an expectation that drivers will have to add to the given TCR
-> value anyway, let's strip it down to just the essentials that are
-> directly relevant to io-pgatble's inner workings - namely the various
 
-typo: "io-pgatble"
+--UlVJffcvxoiEqYs2
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
 
-> sizes and the walk attributes.
+On Thu, Oct 31, 2019 at 03:42:47PM +0000, Will Deacon wrote:
+> > Sorry for the stupid question, but what prevents the iommu module from
+> > being unloaded when there are active users? There are no symbol
+> > dependencies to endpoint device drivers, because the interface is only
+> > exposed through the iommu-api, right? Is some sort of manual module
+> > reference counting needed?
 > 
-> Signed-off-by: Robin Murphy <robin.murphy@arm.com>
-> ---
->  drivers/iommu/arm-smmu-v3.c        | 41 +++----------
->  drivers/iommu/arm-smmu.c           |  7 ++-
->  drivers/iommu/arm-smmu.h           | 27 ++++++++
->  drivers/iommu/io-pgtable-arm-v7s.c |  6 +-
->  drivers/iommu/io-pgtable-arm.c     | 98 ++++++++++++------------------
->  drivers/iommu/io-pgtable.c         |  2 +-
->  drivers/iommu/qcom_iommu.c         |  8 +--
->  include/linux/io-pgtable.h         |  9 ++-
->  8 files changed, 94 insertions(+), 104 deletions(-)
+> Generally, I think unloading the IOMMU driver module while there are
+> active users is a pretty bad idea, much like unbinding the driver via
+> /sys in the same situation would also be fairly daft. However, I *think*
+> the code in __device_release_driver() tries to deal with this by
+> iterating over the active consumers and ->remove()ing them first.
 
-Generally, I *really* like this patch, but I do have a bunch of comments:
+> I'm without hardware access at the moment, so I haven't been able to
+> test this myself. We could nobble the module_exit() hook, but there's
+> still the "force unload" option depending on the .config.
 
-> @@ -2155,6 +2125,7 @@ static int arm_smmu_domain_finalise_s1(struct arm_smmu_domain *smmu_domain,
->  	int asid;
->  	struct arm_smmu_device *smmu = smmu_domain->smmu;
->  	struct arm_smmu_s1_cfg *cfg = &smmu_domain->s1_cfg;
-> +	typeof(&pgtbl_cfg->arm_lpae_s1_cfg.tcr) tcr = &pgtbl_cfg->arm_lpae_s1_cfg.tcr;
+Shame that we can't completely prevent module unloading, because handling
+rmmod cleanly is tricky.
 
-I find this pretty grotty, but I couldn't think of something better and
-exporting format-specific types out of the iopgtable layer also feels
-nasty.
+On module unload we also need to tidy up the bus->iommu_ops installed by
+bus_set_iommu(), and remove the IOMMU groups (and probably other leaks I
+missed). I have a solution for the bus->iommu_ops, which is simply adding
+a bus_unset_iommu() counterpart with a refcount, but it doesn't deal with
+the IOMMU groups cleanly. If there are multiple IOMMU instances managing
+one bus, then we should only remove the IOMMU groups belonging to the
+instance that is being removed.
 
-> diff --git a/drivers/iommu/arm-smmu.h b/drivers/iommu/arm-smmu.h
-> index 409716410b0d..98db074281ac 100644
-> --- a/drivers/iommu/arm-smmu.h
-> +++ b/drivers/iommu/arm-smmu.h
-> @@ -158,12 +158,24 @@ enum arm_smmu_cbar_type {
->  #define TCR2_SEP			GENMASK(17, 15)
->  #define TCR2_SEP_UPSTREAM		0x7
->  #define TCR2_AS				BIT(4)
-> +#define TCR2_PASIZE			GENMASK(3, 0)
->  
->  #define ARM_SMMU_CB_TTBR0		0x20
->  #define ARM_SMMU_CB_TTBR1		0x28
->  #define TTBRn_ASID			GENMASK_ULL(63, 48)
->  
-> +/* arm64 headers leak this somehow :( */
-> +#undef TCR_T0SZ
+I'll think about this more, but the simple solution is attached if you
+want to test. It at least works with a single IOMMU now:
 
-Urgh. I suppose we should prefix these things with ARM_SMMU too :(
-Obviously, that's a separate patch.
+$ modprobe virtio-iommu
+[   25.180965] virtio_iommu virtio0: input address: 64 bits
+[   25.181437] virtio_iommu virtio0: page mask: 0xfffffffffffff000
+[   25.214493] virtio-pci 0000:00:03.0: Adding to iommu group 0
+[   25.233252] virtio-pci 0000:00:03.0: enabling device (0000 -> 0003)
+[   25.334810] e1000e 0000:00:02.0: Adding to iommu group 1
+[   25.348997] e1000e 0000:00:02.0: enabling device (0000 -> 0002)
+... net test etc
 
->  #define ARM_SMMU_CB_TCR			0x30
-> +#define TCR_EAE				BIT(31)
-> +#define TCR_EPD1			BIT(23)
-> +#define TCR_TG0				GENMASK(15, 14)
-> +#define TCR_SH0				GENMASK(13, 12)
-> +#define TCR_ORGN0			GENMASK(11, 10)
-> +#define TCR_IRGN0			GENMASK(9, 8)
-> +#define TCR_T0SZ			GENMASK(5, 0)
-> +
->  #define ARM_SMMU_CB_CONTEXTIDR		0x34
->  #define ARM_SMMU_CB_S1_MAIR0		0x38
->  #define ARM_SMMU_CB_S1_MAIR1		0x3c
-> @@ -318,6 +330,21 @@ struct arm_smmu_domain {
->  	struct iommu_domain		domain;
->  };
->  
-> +static inline u32 arm_smmu_lpae_tcr(struct io_pgtable_cfg *cfg)
-> +{
-> +	return TCR_EPD1 |
-> +	       FIELD_PREP(TCR_TG0, cfg->arm_lpae_s1_cfg.tcr.tg) |
-> +	       FIELD_PREP(TCR_SH0, cfg->arm_lpae_s1_cfg.tcr.sh) |
-> +	       FIELD_PREP(TCR_ORGN0, cfg->arm_lpae_s1_cfg.tcr.orgn) |
-> +	       FIELD_PREP(TCR_IRGN0, cfg->arm_lpae_s1_cfg.tcr.irgn) |
-> +	       FIELD_PREP(TCR_T0SZ, cfg->arm_lpae_s1_cfg.tcr.tsz);
-> +}
-> +
-> +static inline u32 arm_smmu_lpae_tcr2(struct io_pgtable_cfg *cfg)
-> +{
-> +	return FIELD_PREP(TCR2_PASIZE, cfg->arm_lpae_s1_cfg.tcr.ips) |
-> +	       FIELD_PREP(TCR2_SEP, TCR2_SEP_UPSTREAM);
-> +}
->  
->  /* Implementation details, yay! */
->  struct arm_smmu_impl {
-> diff --git a/drivers/iommu/io-pgtable-arm-v7s.c b/drivers/iommu/io-pgtable-arm-v7s.c
-> index 4d2c1e7f67c4..d8e4562ce478 100644
-> --- a/drivers/iommu/io-pgtable-arm-v7s.c
-> +++ b/drivers/iommu/io-pgtable-arm-v7s.c
-> @@ -149,8 +149,6 @@
->  #define ARM_V7S_TTBR_IRGN_ATTR(attr)					\
->  	((((attr) & 0x1) << 6) | (((attr) & 0x2) >> 1))
->  
-> -#define ARM_V7S_TCR_PD1			BIT(5)
-> -
->  #ifdef CONFIG_ZONE_DMA32
->  #define ARM_V7S_TABLE_GFP_DMA GFP_DMA32
->  #define ARM_V7S_TABLE_SLAB_FLAGS SLAB_CACHE_DMA32
-> @@ -798,8 +796,8 @@ static struct io_pgtable *arm_v7s_alloc_pgtable(struct io_pgtable_cfg *cfg,
->  	 */
->  	cfg->pgsize_bitmap &= SZ_4K | SZ_64K | SZ_1M | SZ_16M;
->  
-> -	/* TCR: T0SZ=0, disable TTBR1 */
-> -	cfg->arm_v7s_cfg.tcr = ARM_V7S_TCR_PD1;
-> +	/* TCR: T0SZ=0, EAE=0 (if applicable) */
-> +	cfg->arm_v7s_cfg.tcr = 0;
->  
->  	/*
->  	 * TEX remap: the indices used map to the closest equivalent types
-> diff --git a/drivers/iommu/io-pgtable-arm.c b/drivers/iommu/io-pgtable-arm.c
-> index bc0841040ebe..9b1912ede000 100644
-> --- a/drivers/iommu/io-pgtable-arm.c
-> +++ b/drivers/iommu/io-pgtable-arm.c
-> @@ -100,40 +100,32 @@
->  #define ARM_LPAE_PTE_MEMATTR_DEV	(((arm_lpae_iopte)0x1) << 2)
->  
->  /* Register bits */
-> -#define ARM_32_LPAE_TCR_EAE		(1 << 31)
-> -#define ARM_64_LPAE_S2_TCR_RES1		(1 << 31)
-> +#define ARM_64_LPAE_VTCR_RES1		(1 << 31)
+$ rmmod virtio-iommu
+[   34.084816] e1000e: eth1 NIC Link is Down
+[   34.212152] pci 0000:00:02.0: Removing from iommu group 1
+[   34.250558] pci 0000:00:03.0: Removing from iommu group 0
+[   34.261570] virtio_iommu virtio0: device removed
 
-I know you're just renaming things here, but this looks really dodgy to
-me. Won't it be treated as signed...
+$ modprobe virtio-iommu
+[   34.828982] virtio_iommu virtio0: input address: 64 bits
+[   34.829442] virtio_iommu virtio0: page mask: 0xfffffffffffff000
+[   34.844576] virtio-pci 0000:00:03.0: Adding to iommu group 0
+[   34.916449] e1000e 0000:00:02.0: Adding to iommu group 1
 
-> @@ -910,7 +899,7 @@ arm_64_lpae_alloc_pgtable_s2(struct io_pgtable_cfg *cfg, void *cookie)
->  	}
->  
->  	/* VTCR */
-> -	reg = ARM_64_LPAE_S2_TCR_RES1 |
-> +	reg = ARM_64_LPAE_VTCR_RES1 |
->  	     (ARM_LPAE_TCR_SH_IS << ARM_LPAE_TCR_SH0_SHIFT) |
->  	     (ARM_LPAE_TCR_RGN_WBWA << ARM_LPAE_TCR_IRGN0_SHIFT) |
->  	     (ARM_LPAE_TCR_RGN_WBWA << ARM_LPAE_TCR_ORGN0_SHIFT);
+Thanks,
+Jean
 
-... and then sign-extended here?
+--UlVJffcvxoiEqYs2
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: attachment;
+	filename="0001-iommu-Add-bus_unset_iommu.patch"
 
-> @@ -919,45 +908,45 @@ arm_64_lpae_alloc_pgtable_s2(struct io_pgtable_cfg *cfg, void *cookie)
->  
->  	switch (ARM_LPAE_GRANULE(data)) {
->  	case SZ_4K:
-> -		reg |= ARM_LPAE_TCR_TG0_4K;
-> +		reg |= (ARM_LPAE_TCR_TG0_4K << ARM_LPAE_VTCR_TG0_SHIFT);
+From 5437fcaabe1d4671e2dc5b90b7898c0bf698111b Mon Sep 17 00:00:00 2001
+From: Jean-Philippe Brucker <jean-philippe@linaro.org>
+Date: Mon, 4 Nov 2019 15:52:36 +0100
+Subject: [PATCH] iommu: Add bus_unset_iommu()
 
-Why don't we do the bitfield thing for vtcr as well? Yeah, there's only one,
-but the nice thing about naming all of the fields in the structure is that
-it makes it obvious what you get back from the io-pgtable code.
+Let modular IOMMU drivers undo bus_set_iommu(). Keep track of bus
+registrations with a list and refcount, and remove the iommu_ops from
+the bus when there are no IOMMU providers anymore.
 
-> diff --git a/drivers/iommu/qcom_iommu.c b/drivers/iommu/qcom_iommu.c
-> index 9a57eb6c253c..059be7e21030 100644
-> --- a/drivers/iommu/qcom_iommu.c
-> +++ b/drivers/iommu/qcom_iommu.c
-> @@ -271,15 +271,13 @@ static int qcom_iommu_init_domain(struct iommu_domain *domain,
->  		iommu_writeq(ctx, ARM_SMMU_CB_TTBR0,
->  				pgtbl_cfg.arm_lpae_s1_cfg.ttbr |
->  				FIELD_PREP(TTBRn_ASID, ctx->asid));
-> -		iommu_writeq(ctx, ARM_SMMU_CB_TTBR1,
-> -				FIELD_PREP(TTBRn_ASID, ctx->asid));
-> +		iommu_writeq(ctx, ARM_SMMU_CB_TTBR1, 0);
+Signed-off-by: Jean-Philippe Brucker <jean-philippe@linaro.org>
+---
+ drivers/iommu/iommu.c | 101 ++++++++++++++++++++++++++++++++++--------
+ include/linux/iommu.h |   1 +
+ 2 files changed, 84 insertions(+), 18 deletions(-)
 
-Are you sure it's safe to drop the ASID here? Just want to make sure there
-wasn't some "quirk" this was helping with.
+diff --git a/drivers/iommu/iommu.c b/drivers/iommu/iommu.c
+index 393a5376d7c6..f9bac5633f2a 100644
+--- a/drivers/iommu/iommu.c
++++ b/drivers/iommu/iommu.c
+@@ -31,6 +31,9 @@ static unsigned int iommu_def_domain_type __read_mostly;
+ static bool iommu_dma_strict __read_mostly = true;
+ static u32 iommu_cmd_line __read_mostly;
+ 
++static DEFINE_MUTEX(iommu_bus_notifiers_lock);
++static LIST_HEAD(iommu_bus_notifiers);
++
+ struct iommu_group {
+ 	struct kobject kobj;
+ 	struct kobject *devices_kobj;
+@@ -58,6 +61,14 @@ struct iommu_group_attribute {
+ 			 const char *buf, size_t count);
+ };
+ 
++struct iommu_bus_notifier {
++	struct notifier_block	nb;
++	const struct iommu_ops	*ops;
++	struct bus_type		*bus;
++	struct list_head	list;
++	refcount_t		refs;
++};
++
+ static const char * const iommu_group_resv_type_string[] = {
+ 	[IOMMU_RESV_DIRECT]			= "direct",
+ 	[IOMMU_RESV_DIRECT_RELAXABLE]		= "direct-relaxable",
+@@ -1494,15 +1505,29 @@ static int iommu_bus_notifier(struct notifier_block *nb,
+ static int iommu_bus_init(struct bus_type *bus, const struct iommu_ops *ops)
+ {
+ 	int err;
+-	struct notifier_block *nb;
++	struct iommu_bus_notifier *iommu_notifier;
+ 
+-	nb = kzalloc(sizeof(struct notifier_block), GFP_KERNEL);
+-	if (!nb)
+-		return -ENOMEM;
++	list_for_each_entry(iommu_notifier, &iommu_bus_notifiers, list) {
++		if (iommu_notifier->ops == ops && iommu_notifier->bus == bus) {
++			refcount_inc(&iommu_notifier->refs);
++			return 0;
++		}
++	}
++
++	bus->iommu_ops = ops;
++
++	iommu_notifier = kzalloc(sizeof(*iommu_notifier), GFP_KERNEL);
++	if (!iommu_notifier) {
++		err = -ENOMEM;
++		goto out_clear;
++	}
+ 
+-	nb->notifier_call = iommu_bus_notifier;
++	iommu_notifier->ops = ops;
++	iommu_notifier->bus = bus;
++	iommu_notifier->nb.notifier_call = iommu_bus_notifier;
++	refcount_set(&iommu_notifier->refs, 1);
+ 
+-	err = bus_register_notifier(bus, nb);
++	err = bus_register_notifier(bus, &iommu_notifier->nb);
+ 	if (err)
+ 		goto out_free;
+ 
+@@ -1510,20 +1535,47 @@ static int iommu_bus_init(struct bus_type *bus, const struct iommu_ops *ops)
+ 	if (err)
+ 		goto out_err;
+ 
+-
++	list_add(&iommu_notifier->list, &iommu_bus_notifiers);
+ 	return 0;
+ 
+ out_err:
+ 	/* Clean up */
+ 	bus_for_each_dev(bus, NULL, NULL, remove_iommu_group);
+-	bus_unregister_notifier(bus, nb);
+-
++	bus_unregister_notifier(bus, &iommu_notifier->nb);
+ out_free:
+-	kfree(nb);
++	kfree(iommu_notifier);
++out_clear:
++	bus->iommu_ops = NULL;
+ 
+ 	return err;
+ }
+ 
++static int iommu_bus_remove(struct bus_type *bus, const struct iommu_ops *ops)
++{
++	struct iommu_bus_notifier *tmp;
++	struct iommu_bus_notifier *iommu_notifier = NULL;
++
++	list_for_each_entry(tmp, &iommu_bus_notifiers, list) {
++		if (tmp->ops == ops && tmp->bus == bus) {
++			iommu_notifier = tmp;
++			break;
++		}
++	}
++
++	if (!iommu_notifier)
++		return -ESRCH;
++
++	if (!refcount_dec_and_test(&iommu_notifier->refs))
++		return 0;
++
++	list_del(&iommu_notifier->list);
++	bus_for_each_dev(bus, NULL, NULL, remove_iommu_group);
++	bus_unregister_notifier(bus, &iommu_notifier->nb);
++	kfree(iommu_notifier);
++	bus->iommu_ops = NULL;
++	return 0;
++}
++
+ /**
+  * bus_set_iommu - set iommu-callbacks for the bus
+  * @bus: bus.
+@@ -1541,20 +1593,33 @@ int bus_set_iommu(struct bus_type *bus, const struct iommu_ops *ops)
+ {
+ 	int err;
+ 
+-	if (bus->iommu_ops != NULL)
+-		return -EBUSY;
+-
+-	bus->iommu_ops = ops;
+-
+ 	/* Do IOMMU specific setup for this bus-type */
+-	err = iommu_bus_init(bus, ops);
+-	if (err)
+-		bus->iommu_ops = NULL;
++	mutex_lock(&iommu_bus_notifiers_lock);
++	if (bus->iommu_ops != NULL && bus->iommu_ops != ops)
++		err = -EBUSY;
++	else
++		err = iommu_bus_init(bus, ops);
++	mutex_unlock(&iommu_bus_notifiers_lock);
+ 
+ 	return err;
+ }
+ EXPORT_SYMBOL_GPL(bus_set_iommu);
+ 
++int bus_unset_iommu(struct bus_type *bus, const struct iommu_ops *ops)
++{
++	int err;
++
++	mutex_lock(&iommu_bus_notifiers_lock);
++	if (bus->iommu_ops != ops)
++		err = -EINVAL;
++	else
++		err = iommu_bus_remove(bus, ops);
++	mutex_unlock(&iommu_bus_notifiers_lock);
++
++	return err;
++}
++EXPORT_SYMBOL_GPL(bus_unset_iommu);
++
+ bool iommu_present(struct bus_type *bus)
+ {
+ 	return bus->iommu_ops != NULL;
+diff --git a/include/linux/iommu.h b/include/linux/iommu.h
+index 29bac5345563..15c9115e31ff 100644
+--- a/include/linux/iommu.h
++++ b/include/linux/iommu.h
+@@ -408,6 +408,7 @@ static inline void iommu_iotlb_gather_init(struct iommu_iotlb_gather *gather)
+ #define IOMMU_GROUP_NOTIFY_UNBOUND_DRIVER	6 /* Post Driver unbind */
+ 
+ extern int bus_set_iommu(struct bus_type *bus, const struct iommu_ops *ops);
++extern int bus_unset_iommu(struct bus_type *bus, const struct iommu_ops *ops);
+ extern bool iommu_present(struct bus_type *bus);
+ extern bool iommu_capable(struct bus_type *bus, enum iommu_cap cap);
+ extern struct iommu_domain *iommu_domain_alloc(struct bus_type *bus);
+-- 
+2.23.0
 
-Will
+
+--UlVJffcvxoiEqYs2
+Content-Type: text/plain; charset="us-ascii"
+MIME-Version: 1.0
+Content-Transfer-Encoding: 7bit
+Content-Disposition: inline
+
 _______________________________________________
 iommu mailing list
 iommu@lists.linux-foundation.org
 https://lists.linuxfoundation.org/mailman/listinfo/iommu
+--UlVJffcvxoiEqYs2--
