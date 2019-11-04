@@ -2,67 +2,69 @@ Return-Path: <SRS0=uwQI=Y4=lists.linux-foundation.org=iommu-bounces@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-9.7 required=3.0 tests=HEADER_FROM_DIFFERENT_DOMAINS,
-	INCLUDES_PATCH,MAILING_LIST_MULTI,SIGNED_OFF_BY,SPF_HELO_NONE,SPF_PASS,
-	UNPARSEABLE_RELAY,URIBL_BLOCKED,USER_AGENT_GIT autolearn=unavailable
-	autolearn_force=no version=3.4.0
+X-Spam-Status: No, score=-2.2 required=3.0 tests=HEADER_FROM_DIFFERENT_DOMAINS,
+	MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED,USER_AGENT_SANE_1
+	autolearn=no autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 9BACBCA9EA0
-	for <iommu@archiver.kernel.org>; Mon,  4 Nov 2019 11:53:44 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id B8A22CA9ECF
+	for <iommu@archiver.kernel.org>; Mon,  4 Nov 2019 12:16:10 +0000 (UTC)
 Received: from mail.linuxfoundation.org (mail.linuxfoundation.org [140.211.169.12])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by mail.kernel.org (Postfix) with ESMTPS id 7BE3621D7F
-	for <iommu@archiver.kernel.org>; Mon,  4 Nov 2019 11:53:44 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 7BE3621D7F
-Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=mediatek.com
+	by mail.kernel.org (Postfix) with ESMTPS id 8E1A92184C
+	for <iommu@archiver.kernel.org>; Mon,  4 Nov 2019 12:16:10 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 8E1A92184C
+Authentication-Results: mail.kernel.org; dmarc=none (p=none dis=none) header.from=huawei.com
 Authentication-Results: mail.kernel.org; spf=pass smtp.mailfrom=iommu-bounces@lists.linux-foundation.org
 Received: from mail.linux-foundation.org (localhost [127.0.0.1])
-	by mail.linuxfoundation.org (Postfix) with ESMTP id 5B13CF13;
-	Mon,  4 Nov 2019 11:53:30 +0000 (UTC)
+	by mail.linuxfoundation.org (Postfix) with ESMTP id 5CBF2F26;
+	Mon,  4 Nov 2019 12:16:10 +0000 (UTC)
 Received: from smtp1.linuxfoundation.org (smtp1.linux-foundation.org
 	[172.17.192.35])
-	by mail.linuxfoundation.org (Postfix) with ESMTPS id BD607EF6
+	by mail.linuxfoundation.org (Postfix) with ESMTPS id 46312EBA
 	for <iommu@lists.linux-foundation.org>;
-	Mon,  4 Nov 2019 11:53:28 +0000 (UTC)
+	Mon,  4 Nov 2019 12:16:09 +0000 (UTC)
 X-Greylist: domain auto-whitelisted by SQLgrey-1.7.6
-Received: from mailgw02.mediatek.com (unknown [210.61.82.184])
-	by smtp1.linuxfoundation.org (Postfix) with ESMTP id 283DD89E
+Received: from huawei.com (lhrrgout.huawei.com [185.176.76.210])
+	by smtp1.linuxfoundation.org (Postfix) with ESMTPS id 6FF0C710
 	for <iommu@lists.linux-foundation.org>;
-	Mon,  4 Nov 2019 11:53:28 +0000 (UTC)
-X-UUID: 22d856d238704efaa7245c14feded0da-20191104
-X-UUID: 22d856d238704efaa7245c14feded0da-20191104
-Received: from mtkcas08.mediatek.inc [(172.21.101.126)] by
-	mailgw02.mediatek.com (envelope-from <chao.hao@mediatek.com>)
-	(Cellopoint E-mail Firewall v4.1.10 Build 0809 with TLS)
-	with ESMTP id 340143234; Mon, 04 Nov 2019 19:53:26 +0800
-Received: from MTKCAS06.mediatek.inc (172.21.101.30) by
-	mtkmbs06n2.mediatek.inc (172.21.101.130) with Microsoft SMTP Server
-	(TLS) id 15.0.1395.4; Mon, 4 Nov 2019 19:53:25 +0800
-Received: from localhost.localdomain (10.15.20.246) by MTKCAS06.mediatek.inc
-	(172.21.101.73) with Microsoft SMTP Server id 15.0.1395.4 via Frontend
-	Transport; Mon, 4 Nov 2019 19:53:14 +0800
-From: Chao Hao <chao.hao@mediatek.com>
-To: Joerg Roedel <joro@8bytes.org>, Rob Herring <robh+dt@kernel.org>, Matthias
-	Brugger <matthias.bgg@gmail.com>
-Subject: [RESEND,
-	PATCH 13/13] iommu/mediatek: Add multiple mtk_iommu_domain support
-	for mt6779
-Date: Mon, 4 Nov 2019 19:52:38 +0800
-Message-ID: <20191104115238.2394-14-chao.hao@mediatek.com>
-X-Mailer: git-send-email 2.18.0
-In-Reply-To: <20191104115238.2394-1-chao.hao@mediatek.com>
-References: <20191104115238.2394-1-chao.hao@mediatek.com>
+	Mon,  4 Nov 2019 12:16:08 +0000 (UTC)
+Received: from lhreml705-cah.china.huawei.com (unknown [172.18.7.107])
+	by Forcepoint Email with ESMTP id 49350A5C4F3C939F79D7;
+	Mon,  4 Nov 2019 12:16:06 +0000 (GMT)
+Received: from lhreml724-chm.china.huawei.com (10.201.108.75) by
+	lhreml705-cah.china.huawei.com (10.201.108.46) with Microsoft SMTP
+	Server (TLS) id 14.3.408.0; Mon, 4 Nov 2019 12:16:05 +0000
+Received: from [127.0.0.1] (10.202.226.46) by lhreml724-chm.china.huawei.com
+	(10.201.108.75) with Microsoft SMTP Server (version=TLS1_2,
+	cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256) id 15.1.1713.5;
+	Mon, 4 Nov 2019 12:16:05 +0000
+Subject: Re: [PATCH 0/7] iommu: Permit modular builds of ARM SMMU[v3] drivers
+To: Saravana Kannan <saravanak@google.com>
+References: <20191030145112.19738-1-will@kernel.org>
+	<6e457227-ca06-2998-4ffa-a58ab171ce32@arm.com>
+	<20191030155444.GC19096@willie-the-truck>
+	<CAGETcx9ogWQC1ZtnS_4xC3ShqBpuRSKudWEEWC22UZUEhdEU4A@mail.gmail.com>
+	<20191031193758.GA2607492@lophozonia>
+	<CAGETcx-MuMVvj0O-MFdfmLADEq=cQY_=x+irvhgwHhG4VeeSdg@mail.gmail.com>
+	<6994ae35-2b89-2feb-2bcb-cffc5a01963c@huawei.com>
+	<CAGETcx-9M8vvHA2Lykcv0hHWoC2OAw5kfBrjcNJN2CYCwR4eWQ@mail.gmail.com>
+From: John Garry <john.garry@huawei.com>
+Message-ID: <47418554-e7a7-f9f3-8852-60cecef3d5c7@huawei.com>
+Date: Mon, 4 Nov 2019 12:16:03 +0000
+User-Agent: Mozilla/5.0 (Windows NT 10.0; WOW64; rv:68.0) Gecko/20100101
+	Thunderbird/68.1.2
 MIME-Version: 1.0
-X-TM-SNTS-SMTP: F8AD794D9FEF6333CE5BE9CFD73E711FCAB89F13FD72EC4B1E68F3848BF91BB72000:8
-X-MTK: N
-Cc: Anan Sun <anan.sun@mediatek.com>, devicetree@vger.kernel.org,
-	Cui Zhang <cui.zhang@mediatek.com>,
-	Jun Yan <jun.yan@mediatek.com>, wsd_upstream@mediatek.com,
-	linux-kernel@vger.kernel.org, Chao Hao <chao.hao@mediatek.com>,
-	iommu@lists.linux-foundation.org, linux-mediatek@lists.infradead.org,
-	Miles Chen <miles.chen@mediatek.com>, linux-arm-kernel@lists.infradead.org,
-	Guangming Cao <guangming.cao@mediatek.com>
+In-Reply-To: <CAGETcx-9M8vvHA2Lykcv0hHWoC2OAw5kfBrjcNJN2CYCwR4eWQ@mail.gmail.com>
+Content-Language: en-US
+X-Originating-IP: [10.202.226.46]
+X-ClientProxiedBy: lhreml703-chm.china.huawei.com (10.201.108.52) To
+	lhreml724-chm.china.huawei.com (10.201.108.75)
+X-CFilter-Loop: Reflected
+Cc: Jean-Philippe Brucker <jean-philippe@linaro.org>, Will
+	Deacon <will@kernel.org>, LKML <linux-kernel@vger.kernel.org>,
+	"iommu@lists.linux-foundation.org" <iommu@lists.linux-foundation.org>,
+	Bjorn Helgaas <bhelgaas@google.com>, Robin Murphy <robin.murphy@arm.com>
 X-BeenThere: iommu@lists.linux-foundation.org
 X-Mailman-Version: 2.1.12
 Precedence: list
@@ -75,96 +77,69 @@ List-Post: <mailto:iommu@lists.linux-foundation.org>
 List-Help: <mailto:iommu-request@lists.linux-foundation.org?subject=help>
 List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
 	<mailto:iommu-request@lists.linux-foundation.org?subject=subscribe>
-Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset="us-ascii"; Format="flowed"
 Sender: iommu-bounces@lists.linux-foundation.org
 Errors-To: iommu-bounces@lists.linux-foundation.org
 
-For mt6779, it need to support three mtk_iommu_domains, every
-mtk_iommu_domain's iova space is different.
-Three mtk_iommu_domains is as below:
-1. Normal mtk_iommu_domain exclude 0x4000_0000~0x47ff_ffff and
-   0x7da0_0000~7fbf_ffff.
-2. CCU mtk_iommu_domain include 0x4000_0000~0x47ff_ffff.
-3. VPU mtk_iommu_domain 0x7da0_0000~0x7fbf_ffff.
+On 01/11/2019 21:13, Saravana Kannan wrote:
+> On Fri, Nov 1, 2019 at 3:28 AM John Garry <john.garry@huawei.com> wrote:
+>>
+>> On 31/10/2019 23:34, Saravana Kannan via iommu wrote:
+>>> I looked into the iommu-map property and it shouldn't be too hard to
+>>> add support for it. Looks like we can simply hold off on probing the
+>>> root bridge device till all the iommus in its iommu-map are probed and
+>>> we should be fine.
+>>>
+>>>> I'm also unsure about distro vendors agreeing to a mandatory kernel
+>>>> parameter (of_devlink). Do you plan to eventually enable it by default?
+>>>>
+>>>>> static const struct supplier_bindings of_supplier_bindings[] = {
+>>>>>           { .parse_prop = parse_clocks, },
+>>>>>           { .parse_prop = parse_interconnects, },
+>>>>>           { .parse_prop = parse_regulators, },
+>>>>> +        { .parse_prop = parse_iommus, },
+>>>>>           {},
+>>>>> };
+>>>>>
+>>>>> I plan to upstream this pretty soon, but I have other patches in
+>>>>> flight that touch the same file and I'm waiting for those to get
+>>>>> accepted. I also want to clean up the code a bit to reduce some
+>>>>> repetition before I add support for more bindings.
+>>>> I'm also wondering about ACPI support.
+>>> I'd love to add ACPI support too, but I have zero knowledge of ACPI.
+>>> I'd be happy to help anyone who wants to add ACPI support that allows
+>>> ACPI to add device links.
+>>
+>> If possible to add, that may be useful for remedying this:
+>>
+>> https://lore.kernel.org/linux-iommu/9625faf4-48ef-2dd3-d82f-931d9cf26976@huawei.com/
+> 
+> I'm happy that this change might fix that problem, but isn't the
+> problem reported in that thread more to do with child devices getting
+> added before the parent probes successfully? That doesn't make sense
+> to me. 
 
-Signed-off-by: Chao Hao <chao.hao@mediatek.com>
----
- drivers/iommu/mtk_iommu.c | 45 +++++++++++++++++++++++++++++++++++++--
- 1 file changed, 43 insertions(+), 2 deletions(-)
+So the pcieport device and then the child device are added in the PCI 
+scan, but only some time later do the device drivers probe for these 
+devices; so it's not that the that pcieport driver creates the child device.
 
-diff --git a/drivers/iommu/mtk_iommu.c b/drivers/iommu/mtk_iommu.c
-index c33ea55a1841..882fe01ff770 100644
---- a/drivers/iommu/mtk_iommu.c
-+++ b/drivers/iommu/mtk_iommu.c
-@@ -140,6 +140,30 @@ const struct mtk_domain_data single_dom = {
- 	.max_iova = DMA_BIT_MASK(32)
- };
- 
-+/*
-+ * related file: mt6779-larb-port.h
-+ */
-+const struct mtk_domain_data mt6779_multi_dom[] = {
-+	/* normal domain */
-+	{
-+	 .min_iova = 0x0,
-+	 .max_iova = DMA_BIT_MASK(32),
-+	},
-+	/* ccu domain */
-+	{
-+	 .min_iova = 0x40000000,
-+	 .max_iova = 0x48000000 - 1,
-+	 .port_mask = {MTK_M4U_ID(9, 21), MTK_M4U_ID(9, 22),
-+		       MTK_M4U_ID(12, 0), MTK_M4U_ID(12, 1)}
-+	},
-+	/* vpu domain */
-+	{
-+	 .min_iova = 0x7da00000,
-+	 .max_iova = 0x7fc00000 - 1,
-+	 .port_mask = {MTK_M4U_ID(13, 0)}
-+	}
-+};
-+
- static struct mtk_iommu_pgtable *share_pgtable;
- static const struct iommu_ops mtk_iommu_ops;
- 
-@@ -1055,6 +1079,21 @@ static const struct dev_pm_ops mtk_iommu_pm_ops = {
- 	SET_NOIRQ_SYSTEM_SLEEP_PM_OPS(mtk_iommu_suspend, mtk_iommu_resume)
- };
- 
-+static const struct mtk_iommu_resv_iova_region mt6779_iommu_rsv_list[] = {
-+	{
-+		.dom_id = 0,
-+		.iova_base = 0x40000000,	/* CCU */
-+		.iova_size = 0x8000000,
-+		.type = IOMMU_RESV_RESERVED,
-+	},
-+	{
-+		.dom_id = 0,
-+		.iova_base = 0x7da00000,	/* VPU/MDLA */
-+		.iova_size = 0x2700000,
-+		.type = IOMMU_RESV_RESERVED,
-+	},
-+};
-+
- static const struct mtk_iommu_plat_data mt2712_data = {
- 	.m4u_plat     = M4U_MT2712,
- 	.has_4gb_mode = true,
-@@ -1068,8 +1107,10 @@ static const struct mtk_iommu_plat_data mt2712_data = {
- 
- static const struct mtk_iommu_plat_data mt6779_data = {
- 	.m4u_plat = M4U_MT6779,
--	.dom_cnt = 1,
--	.dom_data = &single_dom,
-+	.resv_cnt     = ARRAY_SIZE(mt6779_iommu_rsv_list),
-+	.resv_region  = mt6779_iommu_rsv_list,
-+	.dom_cnt = ARRAY_SIZE(mt6779_multi_dom),
-+	.dom_data = mt6779_multi_dom,
- 	.larbid_remap[0] = {0, 1, 2, 3, 5, 7, 10, 9},
- 	/* vp6a, vp6b, mdla/core2, mdla/edmc*/
- 	.larbid_remap[1] = {2, 0, 3, 1},
--- 
-2.18.0
+The problem then occurs in that the ordering the of device driver probe 
+is such that we have this: pcieport probe + defer (as no IOMMU group 
+registered), SMMU probe (registers the IOMMU group), child device probe, 
+pcieport really probe.
+
+Can't the piceport driver not add its child devices before it
+> probes successfully? Or more specifically, who adds the child devices
+> of the pcieport before the pcieport itself probes?
+
+The devices are actually added in order pcieport, child device, but not 
+really probed in that same order, as above.
+
+I'll add you to that thread if you want to discuss further.
+
+Thanks,
+John
 
 _______________________________________________
 iommu mailing list
