@@ -1,132 +1,76 @@
-Return-Path: <SRS0=VhPo=Y2=lists.linux-foundation.org=iommu-bounces@kernel.org>
+Return-Path: <SRS0=uwQI=Y4=lists.linux-foundation.org=iommu-bounces@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-0.6 required=3.0 tests=DKIM_INVALID,DKIM_SIGNED,
+X-Spam-Status: No, score=-0.5 required=3.0 tests=DKIM_INVALID,DKIM_SIGNED,
 	HEADER_FROM_DIFFERENT_DOMAINS,MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS,
 	URIBL_BLOCKED autolearn=no autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 068ECCA9EC7
-	for <iommu@archiver.kernel.org>; Sat,  2 Nov 2019 19:31:22 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 20FABCA9ED2
+	for <iommu@archiver.kernel.org>; Mon,  4 Nov 2019 05:32:45 +0000 (UTC)
 Received: from mail.linuxfoundation.org (mail.linuxfoundation.org [140.211.169.12])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by mail.kernel.org (Postfix) with ESMTPS id D923E20862
-	for <iommu@archiver.kernel.org>; Sat,  2 Nov 2019 19:31:20 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTPS id CFC4F21D71
+	for <iommu@archiver.kernel.org>; Mon,  4 Nov 2019 05:32:44 +0000 (UTC)
 Authentication-Results: mail.kernel.org;
-	dkim=fail reason="signature verification failed" (1024-bit key) header.d=microsoft.com header.i=@microsoft.com header.b="Dy/nCnuY"
-DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org D923E20862
-Authentication-Results: mail.kernel.org; dmarc=none (p=none dis=none) header.from=lists.linux-foundation.org
+	dkim=fail reason="key not found in DNS" (0-bit key) header.d=codeaurora.org header.i=@codeaurora.org header.b="g7CpLTam";
+	dkim=fail reason="key not found in DNS" (0-bit key) header.d=codeaurora.org header.i=@codeaurora.org header.b="g7CpLTam"
+DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org CFC4F21D71
+Authentication-Results: mail.kernel.org; dmarc=none (p=none dis=none) header.from=codeaurora.org
 Authentication-Results: mail.kernel.org; spf=pass smtp.mailfrom=iommu-bounces@lists.linux-foundation.org
 Received: from mail.linux-foundation.org (localhost [127.0.0.1])
-	by mail.linuxfoundation.org (Postfix) with ESMTP id 9D473B43;
-	Sat,  2 Nov 2019 19:31:20 +0000 (UTC)
+	by mail.linuxfoundation.org (Postfix) with ESMTP id 8D6DCB1F;
+	Mon,  4 Nov 2019 05:32:44 +0000 (UTC)
 Received: from smtp1.linuxfoundation.org (smtp1.linux-foundation.org
 	[172.17.192.35])
-	by mail.linuxfoundation.org (Postfix) with ESMTPS id 8D0D6E26
+	by mail.linuxfoundation.org (Postfix) with ESMTPS id 6AAC3B0B
 	for <iommu@lists.linux-foundation.org>;
-	Sat,  2 Nov 2019 06:17:32 +0000 (UTC)
-X-Greylist: whitelisted by SQLgrey-1.7.6
-Received: from APC01-SG2-obe.outbound.protection.outlook.com
-	(mail-eopbgr1310103.outbound.protection.outlook.com [40.107.131.103])
-	by smtp1.linuxfoundation.org (Postfix) with ESMTPS id 7EA8B8B8
+	Mon,  4 Nov 2019 05:32:43 +0000 (UTC)
+Received: from smtp.codeaurora.org (smtp.codeaurora.org [198.145.29.96])
+	by smtp1.linuxfoundation.org (Postfix) with ESMTPS id 166605D0
 	for <iommu@lists.linux-foundation.org>;
-	Sat,  2 Nov 2019 06:17:31 +0000 (UTC)
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
-	b=f+Du7S6uSi5cJY2QzDCqW7iuEoboS2XTL4Teay42wSObyhkhmh6ZvzQVIohjQOYmCuYB3+HuqyeYMH2DDGJEfGsXQnQiBQAyiJ72BK9AWGQNgxMZNmygsge1LE/3x9oWSq2pPBm7M/dSNqQqsKz3DgIujVAc0BAiXaVCu48xNvlDYgPViGk67+PDZN56VW2SGv7IcREa6jfgh7l4CdUP0cuGx0mWASnfLCHBlJWo2wdbc2Wv4AyFYxeUAb7ZObpVuE5xdCM3zdHHZgURaslDzotSuF6BcH86YRYwAtB7dyr0FSEFYCUgvdj9qnNNdyXkDKhSbugQvHB3gFAI5Bw6wA==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com; 
-	s=arcselector9901;
-	h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
-	bh=SO4sO1z+ffKrKW8H3i+vsIhAt/FsBZwTCu2jZkGHcSc=;
-	b=ImovqjVAvrORk14lUdbvT7lswIphm09ljgVoBsPZ7yfW5uLWMT4XTZNlNwYFrzRPbo5Z1Rfn7z7NrdXlHOUcVJNFMLd/ZvbUHelI6BYTVc6vYWKqyY6RXG84VS15EtXdViYQChwNPvEx91aXoekuv6jjhOdKfVWfB/j3rj5GwaNVI25fPvrXbmdSU9UTwRmjktLe5l9bsSOhg8kkXiNHpNrKpUEOhl5dQUq0SL53AmRGygTr8xgjW0qdDE3ZtbXFmCl3GZy8hDjoNdptrW+HkYrF9OYpeExtGCyX5W0O8/SuQirc7kbpmh8leUCfsZt8gAOr93+Ky4f5BMgr3+P+mw==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
-	smtp.mailfrom=microsoft.com; dmarc=pass action=none
-	header.from=microsoft.com; dkim=pass header.d=microsoft.com; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
-	s=selector2;
-	h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
-	bh=SO4sO1z+ffKrKW8H3i+vsIhAt/FsBZwTCu2jZkGHcSc=;
-	b=Dy/nCnuY/t5SB5D9fWj3/pSwvVDWjBTIRvFz4y0img4qYBW/6r15YribGlXYTtqWk8lGlv+NhMbRXxtMzepqRT01Sz8bGoRpAmnSOimhw0f0m7oCLrpMPO99gGGM1svBdhdOCoX57R8+3jBVkyc32E5wWi5pjxFQpQcHp3YMRFI=
-Received: from PU1P153MB0169.APCP153.PROD.OUTLOOK.COM (10.170.189.13) by
-	PU1P153MB0186.APCP153.PROD.OUTLOOK.COM (10.170.187.144) with Microsoft
-	SMTP
-	Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
-	15.20.2430.7; Sat, 2 Nov 2019 06:17:22 +0000
-Received: from PU1P153MB0169.APCP153.PROD.OUTLOOK.COM
-	([fe80::69f1:c9:209a:1809]) by PU1P153MB0169.APCP153.PROD.OUTLOOK.COM
-	([fe80::69f1:c9:209a:1809%2]) with mapi id 15.20.2430.010;
-	Sat, 2 Nov 2019 06:17:22 +0000
-To: Wei Hu <weh@microsoft.com>, "b.zolnierkie@samsung.com"
-	<b.zolnierkie@samsung.com>, KY Srinivasan <kys@microsoft.com>,
-	Haiyang Zhang
-	<haiyangz@microsoft.com>, Stephen Hemminger <sthemmin@microsoft.com>,
-	"sashal@kernel.org" <sashal@kernel.org>, "hch@lst.de" <hch@lst.de>,
-	"m.szyprowski@samsung.com" <m.szyprowski@samsung.com>,
-	"robin.murphy@arm.com" <robin.murphy@arm.com>, "mchehab+samsung@kernel.org"
-	<mchehab+samsung@kernel.org>, "sam@ravnborg.org" <sam@ravnborg.org>,
-	"gregkh@linuxfoundation.org" <gregkh@linuxfoundation.org>,
-	"alexandre.belloni@bootlin.com" <alexandre.belloni@bootlin.com>,
-	"info@metux.net" <info@metux.net>, "arnd@arndb.de" <arnd@arndb.de>,
-	"dri-devel@lists.freedesktop.org" <dri-devel@lists.freedesktop.org>,
-	"linux-fbdev@vger.kernel.org" <linux-fbdev@vger.kernel.org>,
-	"linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
-	"linux-hyperv@vger.kernel.org" <linux-hyperv@vger.kernel.org>,
-	"iommu@lists.linux-foundation.org" <iommu@lists.linux-foundation.org>, 
-	"dcui@microsoft.com" <dcui@microsoft.com>, Michael Kelley
-	<mikelley@microsoft.com>
-Subject: RE: [PATCH] video: hyperv: hyperv_fb: Use physical memory for fb on
-	HyperV Gen 1 VMs.
-Thread-Topic: [PATCH] video: hyperv: hyperv_fb: Use physical memory for fb on
-	HyperV Gen 1 VMs.
-Thread-Index: AQHViMlWrXYtpApox02C+wFzOSr7Mqd3cNRA
-Date: Sat, 2 Nov 2019 06:17:21 +0000
-Message-ID: <PU1P153MB01690579FA52DCDF964AE179BF7D0@PU1P153MB0169.APCP153.PROD.OUTLOOK.COM>
-References: <20191022110905.4032-1-weh@microsoft.com>
-In-Reply-To: <20191022110905.4032-1-weh@microsoft.com>
-Accept-Language: en-US
-Content-Language: en-US
-X-MS-Has-Attach: 
-X-MS-TNEF-Correlator: 
-msip_labels: MSIP_Label_f42aa342-8706-4288-bd11-ebb85995028c_Enabled=True;
-	MSIP_Label_f42aa342-8706-4288-bd11-ebb85995028c_SiteId=72f988bf-86f1-41af-91ab-2d7cd011db47;
-	MSIP_Label_f42aa342-8706-4288-bd11-ebb85995028c_Owner=decui@microsoft.com;
-	MSIP_Label_f42aa342-8706-4288-bd11-ebb85995028c_SetDate=2019-11-02T06:17:20.0215252Z;
-	MSIP_Label_f42aa342-8706-4288-bd11-ebb85995028c_Name=General;
-	MSIP_Label_f42aa342-8706-4288-bd11-ebb85995028c_Application=Microsoft
-	Azure Information Protection;
-	MSIP_Label_f42aa342-8706-4288-bd11-ebb85995028c_ActionId=4eba7dcd-726f-4dbc-aee3-a2c3ebaeee78;
-	MSIP_Label_f42aa342-8706-4288-bd11-ebb85995028c_Extended_MSFT_Method=Automatic
-authentication-results: spf=none (sender IP is )
-	smtp.mailfrom=decui@microsoft.com; 
-x-originating-ip: [2601:600:a280:7f70:f1df:b100:5b7:2fb9]
-x-ms-publictraffictype: Email
-x-ms-office365-filtering-ht: Tenant
-x-ms-office365-filtering-correlation-id: 7c71a8cf-bc8a-4aa3-ca6e-08d75f5c5278
-x-ms-traffictypediagnostic: PU1P153MB0186:|PU1P153MB0186:
-x-ms-exchange-transport-forked: True
-x-microsoft-antispam-prvs: <PU1P153MB018663BCF459F3D1D197BE2FBF7D0@PU1P153MB0186.APCP153.PROD.OUTLOOK.COM>
-x-ms-oob-tlc-oobclassifiers: OLM:6790;
-x-forefront-prvs: 0209425D0A
-x-forefront-antispam-report: SFV:NSPM;
-	SFS:(10019020)(396003)(366004)(376002)(39860400002)(346002)(136003)(189003)(199004)(76176011)(2906002)(9686003)(81166006)(6436002)(7416002)(2501003)(46003)(229853002)(5660300002)(186003)(52536014)(2201001)(14454004)(33656002)(102836004)(66556008)(74316002)(7736002)(81156014)(22452003)(305945005)(8676002)(66946007)(110136005)(66476007)(316002)(4744005)(8990500004)(7696005)(66446008)(86362001)(76116006)(99286004)(486006)(446003)(6506007)(14444005)(1511001)(64756008)(10290500003)(71190400001)(55016002)(8936002)(256004)(1250700005)(6116002)(11346002)(6246003)(476003)(478600001)(6636002)(71200400001)(25786009)(10090500001)(921003)(1121003);
-	DIR:OUT; SFP:1102; SCL:1; SRVR:PU1P153MB0186;
-	H:PU1P153MB0169.APCP153.PROD.OUTLOOK.COM; FPR:; SPF:None;
-	LANG:en; PTR:InfoNoRecords; MX:1; A:1; 
-received-spf: None (protection.outlook.com: microsoft.com does not designate
-	permitted sender hosts)
-x-ms-exchange-senderadcheck: 1
-x-microsoft-antispam: BCL:0;
-x-microsoft-antispam-message-info: agcJjU65hYd96Mz4pYn562usIB46stdUd0ocknLZsYReDTi+C1KewR4XaxJnPFtWnL0ieEilE0reWrdeGoipper05wIeOQ8zogG6nIAY2G2I99npwKwPd+mJdMNYUzbCNBNi+RLcd1O4xuiikSil+2wAFZwIGBoTQkCpt2gDbEbBPJqK7k3apW9UX7azev/NUzgiSwhBuKozUmHzLdlZojrnqtnXhYKZQhKBWtk3uufsbG5Ke9bPmSF0HANrKbYQHhfBmPKhUc2vZgM4GS93tCoCHjvd8mPip42KaSXRjvfNQqORiJAq0wc4M5c3Ln6mOHf7llrC0l/n/hdDbNxrSSOpuJoUGWJh0s8q3ryC5cy1Q3x5Jlc77nsC4fdYJmCgGVKPx5JNSSfAveFmbiEmbZ3ts+msX/1BrasGLVKdasgC2yBkCez2d5iw+0VYYN37
+	Mon,  4 Nov 2019 05:32:43 +0000 (UTC)
+Received: by smtp.codeaurora.org (Postfix, from userid 1000)
+	id DBCCF60DD1; Mon,  4 Nov 2019 05:32:42 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=codeaurora.org;
+	s=default; t=1572845562;
+	bh=ezbKezKlX4+zOTa+yc+p0BT6Tq9ZQetmePWMW9F7z9E=;
+	h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
+	b=g7CpLTamjmunfR+2Jg8yFKzkSk8VhILq8RI/1T679wL4DuD6HZMr+Fsu0xrJk8CrC
+	tLf0JxM7m2n2LswnqOFNng8eBxpxDWsCSzQi6yoR5bMbIFaebuHPRR1wwy9qcU6DHy
+	XEewgw6Dfgjb5RMD3N/LaWfwbs/3zF8oGC8S5nQc=
+Received: from mail.codeaurora.org (localhost.localdomain [127.0.0.1])
+	by smtp.codeaurora.org (Postfix) with ESMTP id EF64760B69;
+	Mon,  4 Nov 2019 05:32:41 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=codeaurora.org;
+	s=default; t=1572845562;
+	bh=ezbKezKlX4+zOTa+yc+p0BT6Tq9ZQetmePWMW9F7z9E=;
+	h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
+	b=g7CpLTamjmunfR+2Jg8yFKzkSk8VhILq8RI/1T679wL4DuD6HZMr+Fsu0xrJk8CrC
+	tLf0JxM7m2n2LswnqOFNng8eBxpxDWsCSzQi6yoR5bMbIFaebuHPRR1wwy9qcU6DHy
+	XEewgw6Dfgjb5RMD3N/LaWfwbs/3zF8oGC8S5nQc=
 MIME-Version: 1.0
-X-OriginatorOrg: microsoft.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: 7c71a8cf-bc8a-4aa3-ca6e-08d75f5c5278
-X-MS-Exchange-CrossTenant-originalarrivaltime: 02 Nov 2019 06:17:21.6105 (UTC)
-X-MS-Exchange-CrossTenant-fromentityheader: Hosted
-X-MS-Exchange-CrossTenant-id: 72f988bf-86f1-41af-91ab-2d7cd011db47
-X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
-X-MS-Exchange-CrossTenant-userprincipalname: SsM+tdNqUOiLKkfLPm6jswx+wJxwf/BI+oYiY1KA7KbDaZqSNbU4sQBCVJiJMA3ml28Iu9E+6ihZyhAhgCIYkQ==
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: PU1P153MB0186
-X-Mailman-Approved-At: Sat, 02 Nov 2019 19:31:18 +0000
+Date: Mon, 04 Nov 2019 11:02:41 +0530
+From: Sai Prakash Ranjan <saiprakash.ranjan@codeaurora.org>
+To: Sai Prakash Ranjan <saiprakash.ranjan@codeaurora.org>
+Subject: Re: [PATCHv7 0/3] QCOM smmu-500 wait-for-safe handling for sdm845
+In-Reply-To: <20191104051925.GC5299@hector.lan>
+References: <cover.1568966170.git.saiprakash.ranjan@codeaurora.org>
+	<20191101163136.GC3603@willie-the-truck>
+	<af7e9a14ae7512665f0cae32e08c8b06@codeaurora.org>
+	<20191101172508.GB3983@willie-the-truck>
+	<119d4bcf5989d1aa0686fd674c6a3370@codeaurora.org>
+	<20191104051925.GC5299@hector.lan>
+Message-ID: <be2935ad22caae57ee1d755a14a9f4eb@codeaurora.org>
+X-Sender: saiprakash.ranjan@codeaurora.org
+User-Agent: Roundcube Webmail/1.2.5
+Cc: Rajendra Nayak <rnayak@codeaurora.org>, Will Deacon <will@kernel.org>,
+	linux-kernel@vger.kernel.org, Stephen Boyd <swboyd@chromium.org>,
+	iommu@lists.linux-foundation.org,
+	Vivek Gautam <vivek.gautam@codeaurora.org>,
+	linux-arm-msm@vger.kernel.org, bjorn.andersson@linaro.org,
+	Robin Murphy <robin.murphy@arm.com>, linux-arm-msm-owner@vger.kernel.org
 X-BeenThere: iommu@lists.linux-foundation.org
 X-Mailman-Version: 2.1.12
 Precedence: list
@@ -139,39 +83,58 @@ List-Post: <mailto:iommu@lists.linux-foundation.org>
 List-Help: <mailto:iommu-request@lists.linux-foundation.org?subject=help>
 List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
 	<mailto:iommu-request@lists.linux-foundation.org?subject=subscribe>
-From: Dexuan Cui via iommu <iommu@lists.linux-foundation.org>
-Reply-To: Dexuan Cui <decui@microsoft.com>
-Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset="us-ascii"; Format="flowed"
 Sender: iommu-bounces@lists.linux-foundation.org
 Errors-To: iommu-bounces@lists.linux-foundation.org
 
-> From: linux-hyperv-owner@vger.kernel.org
-> <linux-hyperv-owner@vger.kernel.org> On Behalf Of Wei Hu
-> Sent: Tuesday, October 22, 2019 4:11 AM
-> ... 
-> +	/* Allocate from CMA */
-> +	// request_pages = (request_size >> PAGE_SHIFT) + 1;
+On 2019-11-04 10:49, Andy Gross wrote:
+> On Fri, Nov 01, 2019 at 11:01:59PM +0530, Sai Prakash Ranjan wrote:
+>> >>> What's the plan for getting this merged? I'm not happy taking the
+>> >>> firmware
+>> >>> bits without Andy's ack, but I also think the SMMU changes should go via
+>> >>> the IOMMU tree to avoid conflicts.
+>> >>>
+>> >>> Andy?
+>> >>>
+>> >>
+>> >>Bjorn maintains QCOM stuff now if I am not wrong and he has already
+>> >>reviewed
+>> >>the firmware bits. So I'm hoping you could take all these through IOMMU
+>> >>tree.
+>> >
+>> >Oh, I didn't realise that. Is there a MAINTAINERS update someplace? If I
+>> >run:
+>> >
+>> >$ ./scripts/get_maintainer.pl -f drivers/firmware/qcom_scm-64.c
+>> >
+>> >in linux-next, I get:
+>> >
+>> >Andy Gross <agross@kernel.org> (maintainer:ARM/QUALCOMM SUPPORT)
+>> >linux-arm-msm@vger.kernel.org (open list:ARM/QUALCOMM SUPPORT)
+>> >linux-kernel@vger.kernel.org (open list)
+>> >
+>> 
+>> It hasn't been updated yet then. I will leave it to Bjorn or Andy to 
+>> comment
+>> on this.
+> 
+> The rumors of my demise have been greatly exaggerated.  All kidding 
+> aside, I
+> ack'ed both.  Bjorn will indeed be coming on as a co-maintener at some 
+> point.
+> He has already done a lot of yeomans work in helping me out the past 3 
+> months.
+> 
 
-"//" seems rare in Linux kernel code.
-IMO "/* */" is more common.
+Thanks for the acks and sorry for that exaggeration :p
 
-> +			pr_info("Unable to allocate enough contiguous physical memory
-> on Gen 1 VM. Use MMIO instead.\n");
+-Sai
 
-The line exceeds 80 chars.
- 
-> @@ -1060,6 +1168,7 @@ static int hvfb_probe(struct hv_device *hdev,
->  	par = info->par;
->  	par->info = info;
->  	par->fb_ready = false;
-> +	par->need_docopy = false;
-
-Maybe it's better if we set the default value to true? This way we can save
-the "	par->need_docopy = true;" in hvfb_getmem().
-
-Thanks,
--- Dexuan
+-- 
+QUALCOMM INDIA, on behalf of Qualcomm Innovation Center, Inc. is a 
+member
+of Code Aurora Forum, hosted by The Linux Foundation
 _______________________________________________
 iommu mailing list
 iommu@lists.linux-foundation.org
