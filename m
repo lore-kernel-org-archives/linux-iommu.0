@@ -1,81 +1,79 @@
-Return-Path: <SRS0=uwQI=Y4=lists.linux-foundation.org=iommu-bounces@kernel.org>
+Return-Path: <SRS0=ZmA0=Y5=lists.linux-foundation.org=iommu-bounces@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-8.0 required=3.0 tests=DKIM_INVALID,DKIM_SIGNED,
+X-Spam-Status: No, score=-6.5 required=3.0 tests=DKIM_INVALID,DKIM_SIGNED,
 	HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_PATCH,MAILING_LIST_MULTI,SIGNED_OFF_BY,
-	SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED,USER_AGENT_SANE_1 autolearn=ham
-	autolearn_force=no version=3.4.0
+	SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED autolearn=unavailable autolearn_force=no
+	version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id C4CADCA9EC9
-	for <iommu@archiver.kernel.org>; Mon,  4 Nov 2019 23:40:13 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 415F7CA9ED4
+	for <iommu@archiver.kernel.org>; Tue,  5 Nov 2019 02:29:21 +0000 (UTC)
 Received: from mail.linuxfoundation.org (mail.linuxfoundation.org [140.211.169.12])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by mail.kernel.org (Postfix) with ESMTPS id 8511320663
-	for <iommu@archiver.kernel.org>; Mon,  4 Nov 2019 23:40:13 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTPS id 0A539214E0
+	for <iommu@archiver.kernel.org>; Tue,  5 Nov 2019 02:29:20 +0000 (UTC)
 Authentication-Results: mail.kernel.org;
-	dkim=fail reason="key not found in DNS" (0-bit key) header.d=codeaurora.org header.i=@codeaurora.org header.b="EbFPcpNb";
-	dkim=fail reason="key not found in DNS" (0-bit key) header.d=codeaurora.org header.i=@codeaurora.org header.b="ZIIqA4Ni"
-DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 8511320663
+	dkim=fail reason="key not found in DNS" (0-bit key) header.d=codeaurora.org header.i=@codeaurora.org header.b="KMrEoYr7";
+	dkim=fail reason="key not found in DNS" (0-bit key) header.d=codeaurora.org header.i=@codeaurora.org header.b="nOZWF/Ro"
+DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 0A539214E0
 Authentication-Results: mail.kernel.org; dmarc=none (p=none dis=none) header.from=codeaurora.org
 Authentication-Results: mail.kernel.org; spf=pass smtp.mailfrom=iommu-bounces@lists.linux-foundation.org
 Received: from mail.linux-foundation.org (localhost [127.0.0.1])
-	by mail.linuxfoundation.org (Postfix) with ESMTP id 5E03DC97;
-	Mon,  4 Nov 2019 23:40:13 +0000 (UTC)
+	by mail.linuxfoundation.org (Postfix) with ESMTP id B4A57EB0;
+	Tue,  5 Nov 2019 02:29:20 +0000 (UTC)
 Received: from smtp1.linuxfoundation.org (smtp1.linux-foundation.org
 	[172.17.192.35])
-	by mail.linuxfoundation.org (Postfix) with ESMTPS id 6B73FC6D
+	by mail.linuxfoundation.org (Postfix) with ESMTPS id C024DEAF
 	for <iommu@lists.linux-foundation.org>;
-	Mon,  4 Nov 2019 23:40:11 +0000 (UTC)
+	Tue,  5 Nov 2019 02:29:18 +0000 (UTC)
 Received: from smtp.codeaurora.org (smtp.codeaurora.org [198.145.29.96])
-	by smtp1.linuxfoundation.org (Postfix) with ESMTPS id D2B9367F
+	by smtp1.linuxfoundation.org (Postfix) with ESMTPS id 51228189
 	for <iommu@lists.linux-foundation.org>;
-	Mon,  4 Nov 2019 23:40:10 +0000 (UTC)
+	Tue,  5 Nov 2019 02:29:18 +0000 (UTC)
 Received: by smtp.codeaurora.org (Postfix, from userid 1000)
-	id 9DAA360D7C; Mon,  4 Nov 2019 23:40:10 +0000 (UTC)
+	id 1ECDD60A50; Tue,  5 Nov 2019 02:29:17 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=codeaurora.org;
-	s=default; t=1572910810;
-	bh=XRZOS9iE7bkA+MdchCOi3kyQapjc8vlTcLgpjwNC+bA=;
-	h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-	b=EbFPcpNbmVbQHaEUXvMAFN0oJWFeP+NvTZHnCEEmzATW3BQsLm/xgRbuBtf/lsoOM
-	AA9RpUFNpiEV+niGdn3RzYo1dThEJGs41xbKPSAlCnPy80KcnBHjGvI1+3JVKYkHxf
-	NDx5uBS/GFZqKgv5dwSth5Fan6T8f+xozXZn3xbc=
-Received: from jcrouse1-lnx.qualcomm.com (i-global254.qualcomm.com
-	[199.106.103.254])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
-	(No client certificate requested)
-	(Authenticated sender: jcrouse@smtp.codeaurora.org)
-	by smtp.codeaurora.org (Postfix) with ESMTPSA id 85E0060CDD;
-	Mon,  4 Nov 2019 23:40:08 +0000 (UTC)
+	s=default; t=1572920958;
+	bh=Yz5Pb8QULVWB/wXiv94o8i3LmKowXMZZDYSjNSX+YYE=;
+	h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
+	b=KMrEoYr7M6bHTfQlUE95lDjwsoTzyLiP5R3gkcrVa1m4egtX/F0oemWDJVsxvY/hK
+	55B4UwnHgdG6cI8cHTOsd44mnaHy47UJRf3X79lQF5/H8POiJjFl5Q9ll4Go7gM45g
+	oO+gY50kDBXYlaUr4EkVgjxco1XG90Y7bWA9rWXg=
+Received: from mail.codeaurora.org (localhost.localdomain [127.0.0.1])
+	by smtp.codeaurora.org (Postfix) with ESMTP id D7C0A60A50;
+	Tue,  5 Nov 2019 02:29:16 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=codeaurora.org;
-	s=default; t=1572910809;
-	bh=XRZOS9iE7bkA+MdchCOi3kyQapjc8vlTcLgpjwNC+bA=;
-	h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-	b=ZIIqA4NiRmX7nZv+Z3KIH1nGER0A+y/FE30pI24dLIzyDeehKLUAxGZS4CLEQPdDt
-	fxpQKNhcWJlJD3PSv0v3sMTFDTR0fFjWqLywf3REqb0VWx02ukC4VeuENQpgLcZ8L/
-	+axH+bZku7bRe+HfqAKbACj7kHprxOXwD0akrtPU=
-DMARC-Filter: OpenDMARC Filter v1.3.2 smtp.codeaurora.org 85E0060CDD
-Authentication-Results: pdx-caf-mail.web.codeaurora.org;
-	dmarc=none (p=none dis=none) header.from=codeaurora.org
-Authentication-Results: pdx-caf-mail.web.codeaurora.org;
-	spf=none smtp.mailfrom=jcrouse@codeaurora.org
-Date: Mon, 4 Nov 2019 16:40:06 -0700
-From: Jordan Crouse <jcrouse@codeaurora.org>
-To: Robin Murphy <robin.murphy@arm.com>
-Subject: Re: [PATCH v2 10/10] iommu/io-pgtable-arm: Prepare for TTBR1 usage
-Message-ID: <20191104234006.GC16446@jcrouse1-lnx.qualcomm.com>
-Mail-Followup-To: Robin Murphy <robin.murphy@arm.com>, will@kernel.org,
-	iommu@lists.linux-foundation.org,
-	linux-arm-kernel@lists.infradead.org
-References: <cover.1572024119.git.robin.murphy@arm.com>
-	<9ec05935de3f1c1da5d1780201147ed40e129295.1572024120.git.robin.murphy@arm.com>
+	s=default; t=1572920956;
+	bh=Yz5Pb8QULVWB/wXiv94o8i3LmKowXMZZDYSjNSX+YYE=;
+	h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
+	b=nOZWF/RoEvUPPAGGW4QIZHLAQSS4OIBQOQLn7EYM2wnXbIbZKtcSskHUMqdzsXoQA
+	yydh3m/fcShh8F6O9tE18yXu/3en+U+vhsoNEvU+v8+h1q0yMoaY/pIBhTIcHGR+bw
+	ICPY3t+Qoie730Vb298af7ROBz0NB3l1zniDWxUw=
 MIME-Version: 1.0
-Content-Disposition: inline
-In-Reply-To: <9ec05935de3f1c1da5d1780201147ed40e129295.1572024120.git.robin.murphy@arm.com>
-User-Agent: Mutt/1.5.24 (2015-08-30)
-Cc: iommu@lists.linux-foundation.org, will@kernel.org,
-	linux-arm-kernel@lists.infradead.org
+Date: Tue, 05 Nov 2019 07:59:16 +0530
+From: Sai Prakash Ranjan <saiprakash.ranjan@codeaurora.org>
+To: Will Deacon <will@kernel.org>
+Subject: Re: [PATCHv7 0/3] QCOM smmu-500 wait-for-safe handling for sdm845
+In-Reply-To: <20191104162339.GD24909@willie-the-truck>
+References: <cover.1568966170.git.saiprakash.ranjan@codeaurora.org>
+	<20191101163136.GC3603@willie-the-truck>
+	<af7e9a14ae7512665f0cae32e08c8b06@codeaurora.org>
+	<20191101172508.GB3983@willie-the-truck>
+	<119d4bcf5989d1aa0686fd674c6a3370@codeaurora.org>
+	<20191104051925.GC5299@hector.lan>
+	<20191104151506.GB24909@willie-the-truck>
+	<20191104162339.GD24909@willie-the-truck>
+Message-ID: <8d20a6af33b80191d44db97b757d0dfa@codeaurora.org>
+X-Sender: saiprakash.ranjan@codeaurora.org
+User-Agent: Roundcube Webmail/1.2.5
+Cc: Rajendra Nayak <rnayak@codeaurora.org>, linux-arm-msm@vger.kernel.org,
+	linux-kernel@vger.kernel.org, Stephen Boyd <swboyd@chromium.org>,
+	iommu@lists.linux-foundation.org, Andy Gross <agross@kernel.org>,
+	Vivek Gautam <vivek.gautam@codeaurora.org>,
+	bjorn.andersson@linaro.org, Robin Murphy <robin.murphy@arm.com>,
+	linux-arm-msm-owner@vger.kernel.org
 X-BeenThere: iommu@lists.linux-foundation.org
 X-Mailman-Version: 2.1.12
 Precedence: list
@@ -88,145 +86,107 @@ List-Post: <mailto:iommu@lists.linux-foundation.org>
 List-Help: <mailto:iommu-request@lists.linux-foundation.org?subject=help>
 List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
 	<mailto:iommu-request@lists.linux-foundation.org?subject=subscribe>
-Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset="us-ascii"; Format="flowed"
 Sender: iommu-bounces@lists.linux-foundation.org
 Errors-To: iommu-bounces@lists.linux-foundation.org
 
-On Fri, Oct 25, 2019 at 07:08:39PM +0100, Robin Murphy wrote:
-> Now that we can correctly extract top-level indices without relying on
-> the remaining upper bits being zero, the only remaining impediments to
-> using a given table for TTBR1 are the address validation on map/unmap
-> and the awkward TCR translation granule format. Add a quirk so that we
-> can do the right thing at those points.
-
-This looks great.  I have one comment about the TCR.A1 bit below but otherwise
-this is sane. My immediate todo this week and next is to try to get something
-spun up and working on the db845 for verification.
-
-> Signed-off-by: Robin Murphy <robin.murphy@arm.com>
+On 2019-11-04 21:53, Will Deacon wrote:
+> On Mon, Nov 04, 2019 at 03:15:06PM +0000, Will Deacon wrote:
+>> On Sun, Nov 03, 2019 at 11:19:25PM -0600, Andy Gross wrote:
+>> > On Fri, Nov 01, 2019 at 11:01:59PM +0530, Sai Prakash Ranjan wrote:
+>> > > >>> What's the plan for getting this merged? I'm not happy taking the
+>> > > >>> firmware
+>> > > >>> bits without Andy's ack, but I also think the SMMU changes should go via
+>> > > >>> the IOMMU tree to avoid conflicts.
+>> > > >>>
+>> > > >>> Andy?
+>> > > >>>
+>> > > >>
+>> > > >>Bjorn maintains QCOM stuff now if I am not wrong and he has already
+>> > > >>reviewed
+>> > > >>the firmware bits. So I'm hoping you could take all these through IOMMU
+>> > > >>tree.
+>> > > >
+>> > > >Oh, I didn't realise that. Is there a MAINTAINERS update someplace? If I
+>> > > >run:
+>> > > >
+>> > > >$ ./scripts/get_maintainer.pl -f drivers/firmware/qcom_scm-64.c
+>> > > >
+>> > > >in linux-next, I get:
+>> > > >
+>> > > >Andy Gross <agross@kernel.org> (maintainer:ARM/QUALCOMM SUPPORT)
+>> > > >linux-arm-msm@vger.kernel.org (open list:ARM/QUALCOMM SUPPORT)
+>> > > >linux-kernel@vger.kernel.org (open list)
+>> > > >
+>> > >
+>> > > It hasn't been updated yet then. I will leave it to Bjorn or Andy to comment
+>> > > on this.
+>> >
+>> > The rumors of my demise have been greatly exaggerated.  All kidding aside, I
+>> > ack'ed both.  Bjorn will indeed be coming on as a co-maintener at some point.
+>> > He has already done a lot of yeomans work in helping me out the past 3 months.
+>> 
+>> Cheers Andy, and I'm pleased to hear that you're still with us! I've 
+>> queued
+>> this lot for 5.5 and I'll send to Joerg this week.
+> 
+> Bah, in doing so I spotted that the existing code doesn't handle error 
+> codes
+> properly because 'a0' is unsigned. I'll queue the patch below at the 
+> start
+> of the series.
+> 
+> Will
+> 
+> --->8
+> 
+> From a9a1047f08de0eff249fb65e2d5d6f6f8b2a87f0 Mon Sep 17 00:00:00 2001
+> From: Will Deacon <will@kernel.org>
+> Date: Mon, 4 Nov 2019 15:58:15 +0000
+> Subject: [PATCH] firmware: qcom: scm: Ensure 'a0' status code is 
+> treated as
+>  signed
+> 
+> The 'a0' member of 'struct arm_smccc_res' is declared as 'unsigned 
+> long',
+> however the Qualcomm SCM firmware interface driver expects to receive
+> negative error codes via this field, so ensure that it's cast to 'long'
+> before comparing to see if it is less than 0.
+> 
+> Cc: <stable@vger.kernel.org>
+> Signed-off-by: Will Deacon <will@kernel.org>
 > ---
->  drivers/iommu/io-pgtable-arm.c | 25 +++++++++++++++++++------
->  include/linux/io-pgtable.h     |  4 ++++
->  2 files changed, 23 insertions(+), 6 deletions(-)
+>  drivers/firmware/qcom_scm-64.c | 2 +-
+>  1 file changed, 1 insertion(+), 1 deletion(-)
 > 
-> diff --git a/drivers/iommu/io-pgtable-arm.c b/drivers/iommu/io-pgtable-arm.c
-> index 9b1912ede000..e53edff56e54 100644
-> --- a/drivers/iommu/io-pgtable-arm.c
-> +++ b/drivers/iommu/io-pgtable-arm.c
-> @@ -107,6 +107,10 @@
->  #define ARM_LPAE_TCR_TG0_64K		1
->  #define ARM_LPAE_TCR_TG0_16K		2
->  
-> +#define ARM_LPAE_TCR_TG1_16K		1
-> +#define ARM_LPAE_TCR_TG1_4K		2
-> +#define ARM_LPAE_TCR_TG1_64K		3
-> +
->  #define ARM_LPAE_TCR_SH0_SHIFT		12
->  #define ARM_LPAE_TCR_SH_NS		0
->  #define ARM_LPAE_TCR_SH_OS		2
-> @@ -466,6 +470,7 @@ static int arm_lpae_map(struct io_pgtable_ops *ops, unsigned long iova,
->  	arm_lpae_iopte *ptep = data->pgd;
->  	int ret, lvl = data->start_level;
->  	arm_lpae_iopte prot;
-> +	long iaext = (long)iova >> cfg->ias;
->  
->  	/* If no access, then nothing to do */
->  	if (!(iommu_prot & (IOMMU_READ | IOMMU_WRITE)))
-> @@ -474,7 +479,9 @@ static int arm_lpae_map(struct io_pgtable_ops *ops, unsigned long iova,
->  	if (WARN_ON(!size || (size & cfg->pgsize_bitmap) != size))
->  		return -EINVAL;
->  
-> -	if (WARN_ON(iova >> data->iop.cfg.ias || paddr >> data->iop.cfg.oas))
-> +	if (cfg->quirks & IO_PGTABLE_QUIRK_ARM_TTBR1)
-> +		iaext = ~iaext;
-> +	if (WARN_ON(iaext || paddr >> cfg->oas))
->  		return -ERANGE;
->  
->  	prot = arm_lpae_prot_to_pte(data, iommu_prot);
-> @@ -640,11 +647,14 @@ static size_t arm_lpae_unmap(struct io_pgtable_ops *ops, unsigned long iova,
->  	struct arm_lpae_io_pgtable *data = io_pgtable_ops_to_data(ops);
->  	struct io_pgtable_cfg *cfg = &data->iop.cfg;
->  	arm_lpae_iopte *ptep = data->pgd;
-> +	long iaext = (long)iova >> cfg->ias;
->  
->  	if (WARN_ON(!size || (size & cfg->pgsize_bitmap) != size))
->  		return 0;
->  
-> -	if (WARN_ON(iova >> data->iop.cfg.ias))
-> +	if (cfg->quirks & IO_PGTABLE_QUIRK_ARM_TTBR1)
-> +		iaext = ~iaext;
-> +	if (WARN_ON(iaext))
->  		return 0;
->  
->  	return __arm_lpae_unmap(data, gather, iova, size, data->start_level, ptep);
-> @@ -780,9 +790,11 @@ arm_64_lpae_alloc_pgtable_s1(struct io_pgtable_cfg *cfg, void *cookie)
->  	u64 reg;
->  	struct arm_lpae_io_pgtable *data;
->  	typeof(&cfg->arm_lpae_s1_cfg.tcr) tcr = &cfg->arm_lpae_s1_cfg.tcr;
-> +	bool tg1;
->  
->  	if (cfg->quirks & ~(IO_PGTABLE_QUIRK_ARM_NS |
-> -			    IO_PGTABLE_QUIRK_NON_STRICT))
-> +			    IO_PGTABLE_QUIRK_NON_STRICT |
-> +			    IO_PGTABLE_QUIRK_ARM_TTBR1))
->  		return NULL;
->  
->  	data = arm_lpae_alloc_pgtable(cfg);
-> @@ -800,15 +812,16 @@ arm_64_lpae_alloc_pgtable_s1(struct io_pgtable_cfg *cfg, void *cookie)
->  		tcr->orgn = ARM_LPAE_TCR_RGN_NC;
+> diff --git a/drivers/firmware/qcom_scm-64.c 
+> b/drivers/firmware/qcom_scm-64.c
+> index 91d5ad7cf58b..25e0f60c759a 100644
+> --- a/drivers/firmware/qcom_scm-64.c
+> +++ b/drivers/firmware/qcom_scm-64.c
+> @@ -150,7 +150,7 @@ static int qcom_scm_call(struct device *dev, u32
+> svc_id, u32 cmd_id,
+>  		kfree(args_virt);
 >  	}
->  
-> +	tg1 = cfg->quirks & IO_PGTABLE_QUIRK_ARM_TTBR1;
->  	switch (ARM_LPAE_GRANULE(data)) {
->  	case SZ_4K:
-> -		tcr->tg = ARM_LPAE_TCR_TG0_4K;
-> +		tcr->tg = tg1 ? ARM_LPAE_TCR_TG1_4K : ARM_LPAE_TCR_TG0_4K;
->  		break;
->  	case SZ_16K:
-> -		tcr->tg = ARM_LPAE_TCR_TG0_16K;
-> +		tcr->tg = tg1 ? ARM_LPAE_TCR_TG1_16K : ARM_LPAE_TCR_TG0_16K;
->  		break;
->  	case SZ_64K:
-> -		tcr->tg = ARM_LPAE_TCR_TG0_64K;
-> +		tcr->tg = tg1 ? ARM_LPAE_TCR_TG1_64K : ARM_LPAE_TCR_TG0_64K;
->  		break;
->  	}
-
-The comment in one of the previous patches about the ASID in TTBR1 triggered
-something in my brain. v2 TCR A1,bit[22] controls from which TTBR the ASID is
-used I'm not sure if that qualifies as a quirk here or if it should be entirely
-handled within arm_smmu_lpae_tcr() but I thought I should point it out.
-
->  
-> diff --git a/include/linux/io-pgtable.h b/include/linux/io-pgtable.h
-> index 6ae104cedfd7..d7c5cb685e50 100644
-> --- a/include/linux/io-pgtable.h
-> +++ b/include/linux/io-pgtable.h
-> @@ -83,12 +83,16 @@ struct io_pgtable_cfg {
->  	 * IO_PGTABLE_QUIRK_NON_STRICT: Skip issuing synchronous leaf TLBIs
->  	 *	on unmap, for DMA domains using the flush queue mechanism for
->  	 *	delayed invalidation.
-> +	 *
-> +	 * IO_PGTABLE_QUIRK_ARM_TTBR1: (ARM LPAE format) Configure the table
-> +	 *	for use in the upper half of a split address space.
->  	 */
->  	#define IO_PGTABLE_QUIRK_ARM_NS		BIT(0)
->  	#define IO_PGTABLE_QUIRK_NO_PERMS	BIT(1)
->  	#define IO_PGTABLE_QUIRK_TLBI_ON_MAP	BIT(2)
->  	#define IO_PGTABLE_QUIRK_ARM_MTK_EXT	BIT(3)
->  	#define IO_PGTABLE_QUIRK_NON_STRICT	BIT(4)
-> +	#define IO_PGTABLE_QUIRK_ARM_TTBR1	BIT(5)
->  	unsigned long			quirks;
->  	unsigned long			pgsize_bitmap;
->  	unsigned int			ias;
-> -- 
-> 2.21.0.dirty
 > 
+> -	if (res->a0 < 0)
+> +	if ((long)res->a0 < 0)
+>  		return qcom_scm_remap_error(res->a0);
+> 
+>  	return 0;
+
+Fixes: 6b1751a86ce2 ("firmware: qcom: scm: Add support for ARM64 SoCs") 
+?
+
+FWIW, Reviewed-by: Sai Prakash Ranjan <saiprakash.ranjan@codeaurora.org>
+
+-Sai
 
 -- 
-The Qualcomm Innovation Center, Inc. is a member of Code Aurora Forum,
-a Linux Foundation Collaborative Project
+QUALCOMM INDIA, on behalf of Qualcomm Innovation Center, Inc. is a 
+member
+of Code Aurora Forum, hosted by The Linux Foundation
 _______________________________________________
 iommu mailing list
 iommu@lists.linux-foundation.org
