@@ -2,79 +2,62 @@ Return-Path: <SRS0=/wjm=Y6=lists.linux-foundation.org=iommu-bounces@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-6.7 required=3.0 tests=HEADER_FROM_DIFFERENT_DOMAINS,
+X-Spam-Status: No, score=-8.2 required=3.0 tests=HEADER_FROM_DIFFERENT_DOMAINS,
 	INCLUDES_PATCH,MAILING_LIST_MULTI,SIGNED_OFF_BY,SPF_HELO_NONE,SPF_PASS,
-	URIBL_BLOCKED autolearn=unavailable autolearn_force=no version=3.4.0
+	URIBL_BLOCKED,USER_AGENT_SANE_1 autolearn=ham autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id EDBEAC5DF63
-	for <iommu@archiver.kernel.org>; Wed,  6 Nov 2019 13:27:50 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id DE248C5DF64
+	for <iommu@archiver.kernel.org>; Wed,  6 Nov 2019 14:09:38 +0000 (UTC)
 Received: from mail.linuxfoundation.org (mail.linuxfoundation.org [140.211.169.12])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by mail.kernel.org (Postfix) with ESMTPS id AADDD20663
-	for <iommu@archiver.kernel.org>; Wed,  6 Nov 2019 13:27:50 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org AADDD20663
-Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=intel.com
+	by mail.kernel.org (Postfix) with ESMTPS id 93DBA2067B
+	for <iommu@archiver.kernel.org>; Wed,  6 Nov 2019 14:09:38 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 93DBA2067B
+Authentication-Results: mail.kernel.org; dmarc=none (p=none dis=none) header.from=arm.com
 Authentication-Results: mail.kernel.org; spf=pass smtp.mailfrom=iommu-bounces@lists.linux-foundation.org
 Received: from mail.linux-foundation.org (localhost [127.0.0.1])
-	by mail.linuxfoundation.org (Postfix) with ESMTP id 7188DC4E;
-	Wed,  6 Nov 2019 13:27:50 +0000 (UTC)
+	by mail.linuxfoundation.org (Postfix) with ESMTP id 3FF11CCE;
+	Wed,  6 Nov 2019 14:09:38 +0000 (UTC)
 Received: from smtp1.linuxfoundation.org (smtp1.linux-foundation.org
 	[172.17.192.35])
-	by mail.linuxfoundation.org (Postfix) with ESMTPS id DBAE8C3A
+	by mail.linuxfoundation.org (Postfix) with ESMTPS id C34A3CA8
 	for <iommu@lists.linux-foundation.org>;
-	Wed,  6 Nov 2019 13:27:48 +0000 (UTC)
+	Wed,  6 Nov 2019 14:09:36 +0000 (UTC)
 X-Greylist: domain auto-whitelisted by SQLgrey-1.7.6
-Received: from mga05.intel.com (mga05.intel.com [192.55.52.43])
-	by smtp1.linuxfoundation.org (Postfix) with ESMTPS id 0B52D189
+Received: from foss.arm.com (foss.arm.com [217.140.110.172])
+	by smtp1.linuxfoundation.org (Postfix) with ESMTP id F22698B8
 	for <iommu@lists.linux-foundation.org>;
-	Wed,  6 Nov 2019 13:27:47 +0000 (UTC)
-X-Amp-Result: SKIPPED(no attachment in message)
-X-Amp-File-Uploaded: False
-Received: from orsmga005.jf.intel.com ([10.7.209.41])
-	by fmsmga105.fm.intel.com with ESMTP/TLS/DHE-RSA-AES256-GCM-SHA384;
-	06 Nov 2019 05:27:47 -0800
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.68,274,1569308400"; d="scan'208";a="377046284"
-Received: from fmsmsx103.amr.corp.intel.com ([10.18.124.201])
-	by orsmga005.jf.intel.com with ESMTP; 06 Nov 2019 05:27:46 -0800
-Received: from fmsmsx152.amr.corp.intel.com (10.18.125.5) by
-	FMSMSX103.amr.corp.intel.com (10.18.124.201) with Microsoft SMTP Server
-	(TLS) id 14.3.439.0; Wed, 6 Nov 2019 05:27:30 -0800
-Received: from shsmsx108.ccr.corp.intel.com (10.239.4.97) by
-	FMSMSX152.amr.corp.intel.com (10.18.125.5) with Microsoft SMTP Server
-	(TLS) id 14.3.439.0; Wed, 6 Nov 2019 05:27:29 -0800
-Received: from shsmsx104.ccr.corp.intel.com ([169.254.5.127]) by
-	SHSMSX108.ccr.corp.intel.com ([169.254.8.41]) with mapi id
-	14.03.0439.000; Wed, 6 Nov 2019 21:27:28 +0800
-From: "Liu, Yi L" <yi.l.liu@intel.com>
-To: Alex Williamson <alex.williamson@redhat.com>
-Subject: RE: [RFC v2 2/3] vfio/type1: VFIO_IOMMU_PASID_REQUEST(alloc/free)
-Thread-Topic: [RFC v2 2/3] vfio/type1: VFIO_IOMMU_PASID_REQUEST(alloc/free)
-Thread-Index: AQHVimn7Rf6XEKLwVUSEQeOMJH4V9ad8yIOAgAFk6nA=
-Date: Wed, 6 Nov 2019 13:27:26 +0000
-Message-ID: <A2975661238FB949B60364EF0F2C25743A0EF41B@SHSMSX104.ccr.corp.intel.com>
-References: <1571919983-3231-1-git-send-email-yi.l.liu@intel.com>
-	<1571919983-3231-3-git-send-email-yi.l.liu@intel.com>
-	<20191105163537.1935291c@x1.home>
-In-Reply-To: <20191105163537.1935291c@x1.home>
-Accept-Language: en-US
-Content-Language: en-US
-X-MS-Has-Attach: 
-X-MS-TNEF-Correlator: 
-dlp-product: dlpe-windows
-dlp-version: 11.2.0.6
-dlp-reaction: no-action
-x-ctpclassification: CTP_NT
-x-titus-metadata-40: eyJDYXRlZ29yeUxhYmVscyI6IiIsIk1ldGFkYXRhIjp7Im5zIjoiaHR0cDpcL1wvd3d3LnRpdHVzLmNvbVwvbnNcL0ludGVsMyIsImlkIjoiMjMzNWI0OTYtYTFkOC00MzRmLWFhMWItNmNmMDA2NDBkNTcwIiwicHJvcHMiOlt7Im4iOiJDVFBDbGFzc2lmaWNhdGlvbiIsInZhbHMiOlt7InZhbHVlIjoiQ1RQX05UIn1dfV19LCJTdWJqZWN0TGFiZWxzIjpbXSwiVE1DVmVyc2lvbiI6IjE3LjEwLjE4MDQuNDkiLCJUcnVzdGVkTGFiZWxIYXNoIjoicDFZWlRwSjQxcUJCZW5PajhsWVZmejlaUHZuSDZvejMwYThNb01zU3BsZ1M5RVdLcXBhazhleFkrN3NYWWNGRCJ9
-x-originating-ip: [10.239.127.40]
+	Wed,  6 Nov 2019 14:09:33 +0000 (UTC)
+Received: from usa-sjc-imap-foss1.foss.arm.com (unknown [10.121.207.14])
+	by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id 106DC30E;
+	Wed,  6 Nov 2019 06:09:32 -0800 (PST)
+Received: from [10.1.196.37] (e121345-lin.cambridge.arm.com [10.1.196.37])
+	by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPSA id 346943F6C4;
+	Wed,  6 Nov 2019 06:09:31 -0800 (PST)
+Subject: Re: Bug 205201 - overflow of DMA mask and bus mask
+To: Christoph Hellwig <hch@lst.de>, Christian Zigotzky <chzigotzky@xenosoft.de>
+References: <20181213112511.GA4574@lst.de>
+	<e109de27-f4af-147d-dc0e-067c8bafb29b@xenosoft.de>
+	<ad5a5a8a-d232-d523-a6f7-e9377fc3857b@xenosoft.de>
+	<e60d6ca3-860c-f01d-8860-c5e022ec7179@xenosoft.de>
+	<008c981e-bdd2-21a7-f5f7-c57e4850ae9a@xenosoft.de>
+	<20190103073622.GA24323@lst.de>
+	<71A251A5-FA06-4019-B324-7AED32F7B714@xenosoft.de>
+	<1b0c5c21-2761-d3a3-651b-3687bb6ae694@xenosoft.de>
+	<3504ee70-02de-049e-6402-2d530bf55a84@xenosoft.de>
+	<46025f1b-db20-ac23-7dcd-10bc43bbb6ee@xenosoft.de>
+	<20191105162856.GA15402@lst.de>
+From: Robin Murphy <robin.murphy@arm.com>
+Message-ID: <8b239ba6-29f3-9483-8696-ddfba2a49a49@arm.com>
+Date: Wed, 6 Nov 2019 14:09:26 +0000
+User-Agent: Mozilla/5.0 (X11; Linux aarch64; rv:60.0) Gecko/20100101
+	Thunderbird/60.9.0
 MIME-Version: 1.0
-Cc: "Tian, Kevin" <kevin.tian@intel.com>, "Raj, Ashok" <ashok.raj@intel.com>,
-	"kvm@vger.kernel.org" <kvm@vger.kernel.org>,
-	"jean-philippe.brucker@arm.com" <jean-philippe.brucker@arm.com>,
-	"Tian, Jun J" <jun.j.tian@intel.com>,
-	"iommu@lists.linux-foundation.org" <iommu@lists.linux-foundation.org>,
-	"Sun, Yi Y" <yi.y.sun@intel.com>
+In-Reply-To: <20191105162856.GA15402@lst.de>
+Content-Language: en-GB
+Cc: linux-arch@vger.kernel.org, linux-mm@kvack.org,
+	iommu@lists.linux-foundation.org, linux-kernel@vger.kernel.org
 X-BeenThere: iommu@lists.linux-foundation.org
 X-Mailman-Version: 2.1.12
 Precedence: list
@@ -87,276 +70,66 @@ List-Post: <mailto:iommu@lists.linux-foundation.org>
 List-Help: <mailto:iommu-request@lists.linux-foundation.org?subject=help>
 List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
 	<mailto:iommu-request@lists.linux-foundation.org?subject=subscribe>
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: 7bit
+Content-Transfer-Encoding: base64
+Content-Type: text/plain; charset="utf-8"; Format="flowed"
 Sender: iommu-bounces@lists.linux-foundation.org
 Errors-To: iommu-bounces@lists.linux-foundation.org
 
-> From: Alex Williamson <alex.williamson@redhat.com>
-> Sent: Wednesday, November 6, 2019 7:36 AM
-> To: Liu, Yi L <yi.l.liu@intel.com>
-> Subject: Re: [RFC v2 2/3] vfio/type1: VFIO_IOMMU_PASID_REQUEST(alloc/free)
-> 
-> On Thu, 24 Oct 2019 08:26:22 -0400
-> Liu Yi L <yi.l.liu@intel.com> wrote:
-> 
-> > This patch adds VFIO_IOMMU_PASID_REQUEST ioctl which aims
-> > to passdown PASID allocation/free request from the virtual
-> > iommu. This is required to get PASID managed in system-wide.
-> >
-> > Cc: Kevin Tian <kevin.tian@intel.com>
-> > Signed-off-by: Liu Yi L <yi.l.liu@intel.com>
-> > Signed-off-by: Yi Sun <yi.y.sun@linux.intel.com>
-> > Signed-off-by: Jacob Pan <jacob.jun.pan@linux.intel.com>
-> > ---
-> >  drivers/vfio/vfio_iommu_type1.c | 114
-> ++++++++++++++++++++++++++++++++++++++++
-> >  include/uapi/linux/vfio.h       |  25 +++++++++
-> >  2 files changed, 139 insertions(+)
-> >
-> > diff --git a/drivers/vfio/vfio_iommu_type1.c b/drivers/vfio/vfio_iommu_type1.c
-> > index cd8d3a5..3d73a7d 100644
-> > --- a/drivers/vfio/vfio_iommu_type1.c
-> > +++ b/drivers/vfio/vfio_iommu_type1.c
-> > @@ -2248,6 +2248,83 @@ static int vfio_cache_inv_fn(struct device *dev, void
-> *data)
-> >  	return iommu_cache_invalidate(dc->domain, dev, &ustruct->info);
-> >  }
-> >
-> > +static int vfio_iommu_type1_pasid_alloc(struct vfio_iommu *iommu,
-> > +					 int min_pasid,
-> > +					 int max_pasid)
-> > +{
-> > +	int ret;
-> > +	ioasid_t pasid;
-> > +	struct mm_struct *mm = NULL;
-> > +
-> > +	mutex_lock(&iommu->lock);
-> > +	if (!IS_IOMMU_CAP_DOMAIN_IN_CONTAINER(iommu)) {
-> > +		ret = -EINVAL;
-> > +		goto out_unlock;
-> > +	}
-> > +	mm = get_task_mm(current);
-> > +	/* Track ioasid allocation owner by mm */
-> > +	pasid = ioasid_alloc((struct ioasid_set *)mm, min_pasid,
-> > +				max_pasid, NULL);
-> 
-> Are we sure we want to tie this to the task mm vs perhaps the
-> vfio_iommu pointer?
-
-Here we want to have a kind of per-VM mark, which can be used to do
-ownership check on whether a pasid is held by a specific VM. This is
-very important to prevent across VM affect. vfio_iommu pointer is
-competent for vfio as vfio is both pasid alloc requester and pasid
-consumer. e.g. vfio requests pasid alloc from ioasid and also it will
-invoke bind_gpasid(). vfio can either check ownership before invoking
-bind_gpasid() or pass vfio_iommu pointer to iommu driver. But in future,
-there may be other modules which are just consumers of pasid. And they
-also want to do ownership check for a pasid. Then, it would be hard for
-them as they are not the pasid alloc requester. So here better to have
-a system wide structure to perform as the per-VM mark. task mm looks
-to be much competent.
-
-> > +	if (pasid == INVALID_IOASID) {
-> > +		ret = -ENOSPC;
-> > +		goto out_unlock;
-> > +	}
-> > +	ret = pasid;
-> > +out_unlock:
-> > +	mutex_unlock(&iommu->lock);
-> > +	if (mm)
-> > +		mmput(mm);
-> > +	return ret;
-> > +}
-> > +
-> > +static int vfio_iommu_type1_pasid_free(struct vfio_iommu *iommu,
-> > +				       unsigned int pasid)
-> > +{
-> > +	struct mm_struct *mm = NULL;
-> > +	void *pdata;
-> > +	int ret = 0;
-> > +
-> > +	mutex_lock(&iommu->lock);
-> > +	if (!IS_IOMMU_CAP_DOMAIN_IN_CONTAINER(iommu)) {
-> > +		ret = -EINVAL;
-> > +		goto out_unlock;
-> > +	}
-> > +
-> > +	/**
-> > +	 * REVISIT:
-> > +	 * There are two cases free could fail:
-> > +	 * 1. free pasid by non-owner, we use ioasid_set to track mm, if
-> > +	 * the set does not match, caller is not permitted to free.
-> > +	 * 2. free before unbind all devices, we can check if ioasid private
-> > +	 * data, if data != NULL, then fail to free.
-> > +	 */
-> > +	mm = get_task_mm(current);
-> > +	pdata = ioasid_find((struct ioasid_set *)mm, pasid, NULL);
-> > +	if (IS_ERR(pdata)) {
-> > +		if (pdata == ERR_PTR(-ENOENT))
-> > +			pr_err("PASID %u is not allocated\n", pasid);
-> > +		else if (pdata == ERR_PTR(-EACCES))
-> > +			pr_err("Free PASID %u by non-owner, denied", pasid);
-> > +		else
-> > +			pr_err("Error searching PASID %u\n", pasid);
-> 
-> This should be removed, errno is sufficient for the user, this just
-> provides the user with a trivial DoS vector filling logs.
-
-sure, will fix it. thanks.
-
-> > +		ret = -EPERM;
-> 
-> But why not return PTR_ERR(pdata)?
-
-aha, would do it.
-
-> > +		goto out_unlock;
-> > +	}
-> > +	if (pdata) {
-> > +		pr_debug("Cannot free pasid %d with private data\n", pasid);
-> > +		/* Expect PASID has no private data if not bond */
-> > +		ret = -EBUSY;
-> > +		goto out_unlock;
-> > +	}
-> > +	ioasid_free(pasid);
-> 
-> We only ever get here with pasid == NULL?! 
-
-I guess you meant only when pdata==NULL.
-
-> Something is wrong.  Should
-> that be 'if (!pdata)'?  (which also makes that pr_debug another DoS
-> vector)
-
-Oh, yes, just do it as below:
-
-if (!pdata) {
-	ioasid_free(pasid);
-	ret = SUCCESS;
-} else
-	ret = -EBUSY;
-
-Is it what you mean?
-
-> > +
-> > +out_unlock:
-> > +	if (mm)
-> > +		mmput(mm);
-> > +	mutex_unlock(&iommu->lock);
-> > +	return ret;
-> > +}
-> > +
-> >  static long vfio_iommu_type1_ioctl(void *iommu_data,
-> >  				   unsigned int cmd, unsigned long arg)
-> >  {
-> > @@ -2370,6 +2447,43 @@ static long vfio_iommu_type1_ioctl(void *iommu_data,
-> >  					    &ustruct);
-> >  		mutex_unlock(&iommu->lock);
-> >  		return ret;
-> > +
-> > +	} else if (cmd == VFIO_IOMMU_PASID_REQUEST) {
-> > +		struct vfio_iommu_type1_pasid_request req;
-> > +		int min_pasid, max_pasid, pasid;
-> > +
-> > +		minsz = offsetofend(struct vfio_iommu_type1_pasid_request,
-> > +				    flag);
-> > +
-> > +		if (copy_from_user(&req, (void __user *)arg, minsz))
-> > +			return -EFAULT;
-> > +
-> > +		if (req.argsz < minsz)
-> > +			return -EINVAL;
-> > +
-> > +		switch (req.flag) {
-> 
-> This works, but it's strange.  Let's make the code a little easier for
-> the next flag bit that gets used so they don't need to rework this case
-> statement.  I'd suggest creating a VFIO_IOMMU_PASID_OPS_MASK that is
-> the OR of the ALLOC/FREE options, test that no bits are set outside of
-> that mask, then AND that mask as the switch arg with the code below.
-
-Got it. Let me fix it in next version.
-
-> > +		/**
-> > +		 * TODO: min_pasid and max_pasid align with
-> > +		 * typedef unsigned int ioasid_t
-> > +		 */
-> > +		case VFIO_IOMMU_PASID_ALLOC:
-> > +			if (copy_from_user(&min_pasid,
-> > +				(void __user *)arg + minsz, sizeof(min_pasid)))
-> > +				return -EFAULT;
-> > +			if (copy_from_user(&max_pasid,
-> > +				(void __user *)arg + minsz + sizeof(min_pasid),
-> > +				sizeof(max_pasid)))
-> > +				return -EFAULT;
-> > +			return vfio_iommu_type1_pasid_alloc(iommu,
-> > +						min_pasid, max_pasid);
-> > +		case VFIO_IOMMU_PASID_FREE:
-> > +			if (copy_from_user(&pasid,
-> > +				(void __user *)arg + minsz, sizeof(pasid)))
-> > +				return -EFAULT;
-> > +			return vfio_iommu_type1_pasid_free(iommu, pasid);
-> > +		default:
-> > +			return -EINVAL;
-> > +		}
-> >  	}
-> >
-> >  	return -ENOTTY;
-> > diff --git a/include/uapi/linux/vfio.h b/include/uapi/linux/vfio.h
-> > index ccf60a2..04de290 100644
-> > --- a/include/uapi/linux/vfio.h
-> > +++ b/include/uapi/linux/vfio.h
-> > @@ -807,6 +807,31 @@ struct vfio_iommu_type1_cache_invalidate {
-> >  };
-> >  #define VFIO_IOMMU_CACHE_INVALIDATE      _IO(VFIO_TYPE, VFIO_BASE + 24)
-> >
-> > +/*
-> > + * @flag=VFIO_IOMMU_PASID_ALLOC, refer to the @min_pasid and
-> @max_pasid fields
-> > + * @flag=VFIO_IOMMU_PASID_FREE, refer to @pasid field
-> > + */
-> > +struct vfio_iommu_type1_pasid_request {
-> > +	__u32	argsz;
-> > +#define VFIO_IOMMU_PASID_ALLOC	(1 << 0)
-> > +#define VFIO_IOMMU_PASID_FREE	(1 << 1)
-> > +	__u32	flag;
-> > +	union {
-> > +		struct {
-> > +			int min_pasid;
-> > +			int max_pasid;
-> > +		};
-> > +		int pasid;
-> 
-> Perhaps:
-> 
-> 		struct {
-> 			u32 min;
-> 			u32 max;
-> 		} alloc_pasid;
-> 		u32 free_pasid;
-> 
-> (note also the s/int/u32/)
-
-got it. will fix it in next version. Thanks.
-
-> > +	};
-> > +};
-> > +
-> > +/**
-> > + * VFIO_IOMMU_PASID_REQUEST - _IOWR(VFIO_TYPE, VFIO_BASE + 27,
-> > + *				struct vfio_iommu_type1_pasid_request)
-> > + *
-> > + */
-> > +#define VFIO_IOMMU_PASID_REQUEST	_IO(VFIO_TYPE, VFIO_BASE + 27)
-> > +
-> >  /* -------- Additional API for SPAPR TCE (Server POWERPC) IOMMU -------- */
-> >
-> >  /*
-
-Regards,
-Yi Liu
-_______________________________________________
-iommu mailing list
-iommu@lists.linux-foundation.org
-https://lists.linuxfoundation.org/mailman/listinfo/iommu
+T24gMDUvMTEvMjAxOSAxNjoyOCwgQ2hyaXN0b3BoIEhlbGx3aWcgd3JvdGU6Cj4gT24gVHVlLCBO
+b3YgMDUsIDIwMTkgYXQgMDg6NTY6MjdBTSArMDEwMCwgQ2hyaXN0aWFuIFppZ290emt5IHdyb3Rl
+Ogo+PiBIaSBBbGwsCj4+Cj4+IFdlIHN0aWxsIGhhdmUgRE1BIHByb2JsZW1zIHdpdGggc29tZSBQ
+Q0kgZGV2aWNlcy4gU2luY2UgdGhlIFBvd2VyUEMgdXBkYXRlcwo+PiA0LjIxLTEgWzFdIHdlIG5l
+ZWQgdG8gZGVjcmVhc2UgdGhlIFJBTSB0byAzNTAwTUIgKG1lbT0zNTAwTSkgaWYgd2Ugd2FudCB0
+bwo+PiB3b3JrIHdpdGggb3VyIFBDSSBkZXZpY2VzLiBUaGUgRlNMIFA1MDIwIGFuZCBQNTA0MCBo
+YXZlIHRoZXNlIHByb2JsZW1zCj4+IGN1cnJlbnRseS4KPj4KPj4gRXJyb3IgbWVzc2FnZToKPj4K
+Pj4gW8KgwqAgMjUuNjU0ODUyXSBidHR2IDEwMDA6MDQ6MDUuMDogb3ZlcmZsb3cgMHgwMDAwMDAw
+MGZlMDc3MDAwKzQwOTYgb2YgRE1BCj4+IG1hc2sgZmZmZmZmZmYgYnVzIG1hc2sgZGYwMDAwMDAK
+CkhtbSwgdGhhdCBidXMgbWFzayBsb29rcyBwcmV0dHkgd2Fja3kgLSBhcmUgeW91IGFibGUgdG8g
+ZmlndXJlIG91dCB3aGVyZSAKdGhhdCdzIGNvbWluZyBmcm9tPwoKUm9iaW4uCgo+PiBBbGwgNS54
+IExpbnV4IGtlcm5lbHMgY2FuJ3QgaW5pdGlhbGl6ZSBhIFNDU0kgUENJIGNhcmQgYW55bW9yZSBz
+byBib290aW5nCj4+IG9mIGEgTGludXggdXNlcmxhbmQgaXNuJ3QgcG9zc2libGUuCj4+Cj4+IFBM
+RUFTRSBjaGVjayB0aGUgRE1BIGNoYW5nZXMgaW4gdGhlIFBvd2VyUEMgdXBkYXRlcyA0LjIxLTEg
+WzFdLiBUaGUga2VybmVsCj4+IDQuMjAgd29ya3Mgd2l0aCBhbGwgUENJIGRldmljZXMgd2l0aG91
+dCBsaW1pdGF0aW9uIG9mIFJBTS4KPiAKPiBDYW4geW91IHNlbmQgbWUgdGhlIC5jb25maWcgYW5k
+IGEgZG1lc2c/ICBBbmQgaW4gdGhlIG1lYW50aW1lIHRyeSB0aGUKPiBwYXRjaCBiZWxvdz8KPiAK
+PiAtLS0KPiAgRnJvbSA0ZDY1OWI3MzExYmQ0MTQxZmRkM2VlZWI4MGZhMmQ3NjAyZWEwMWQ0IE1v
+biBTZXAgMTcgMDA6MDA6MDAgMjAwMQo+IEZyb206IE5pY29sYXMgU2FlbnogSnVsaWVubmUgPG5z
+YWVuemp1bGllbm5lQHN1c2UuZGU+Cj4gRGF0ZTogRnJpLCAxOCBPY3QgMjAxOSAxMzowMDo0MyAr
+MDIwMAo+IFN1YmplY3Q6IGRtYS1kaXJlY3Q6IGNoZWNrIGZvciBvdmVyZmxvd3Mgb24gMzIgYml0
+IERNQSBhZGRyZXNzZXMKPiAKPiBBcyBzZWVuIG9uIHRoZSBuZXcgUmFzcGJlcnJ5IFBpIDQgYW5k
+IHN0YTJ4MTEncyBETUEgaW1wbGVtZW50YXRpb24gaXQgaXMKPiBwb3NzaWJsZSBmb3IgYSBkZXZp
+Y2UgY29uZmlndXJlZCB3aXRoIDMyIGJpdCBETUEgYWRkcmVzc2VzIGFuZCBhIHBhcnRpYWwKPiBE
+TUEgbWFwcGluZyBsb2NhdGVkIGF0IHRoZSBlbmQgb2YgdGhlIGFkZHJlc3Mgc3BhY2UgdG8gb3Zl
+cmZsb3cuIEl0Cj4gaGFwcGVucyB3aGVuIGEgaGlnaGVyIHBoeXNpY2FsIGFkZHJlc3MsIG5vdCBE
+TUFhYmxlLCBpcyB0cmFuc2xhdGVkIHRvCj4gaXQncyBETUEgY291bnRlcnBhcnQuCj4gCj4gRm9y
+IGV4YW1wbGUgdGhlIFJhc3BiZXJyeSBQaSA0LCBjb25maWd1cmFibGUgdXAgdG8gNCBHQiBvZiBt
+ZW1vcnksIGhhcwo+IGFuIGludGVyY29ubmVjdCBjYXBhYmxlIG9mIGFkZHJlc3NpbmcgdGhlIGxv
+d2VyIDEgR0Igb2YgcGh5c2ljYWwgbWVtb3J5Cj4gd2l0aCBhIERNQSBvZmZzZXQgb2YgMHhjMDAw
+MDAwMC4gSXQgdHJhbnNwaXJlcyB0aGF0LCBhbnkgYXR0ZW1wdCB0bwo+IHRyYW5zbGF0ZSBwaHlz
+aWNhbCBhZGRyZXNzZXMgaGlnaGVyIHRoYW4gdGhlIGZpcnN0IEdCIHdpbGwgcmVzdWx0IGluIGFu
+Cj4gb3ZlcmZsb3cgd2hpY2ggZG1hX2NhcGFibGUoKSBjYW4ndCBkZXRlY3QgYXMgaXQgb25seSBj
+aGVja3MgZm9yCj4gYWRkcmVzc2VzIGJpZ2dlciB0aGVuIHRoZSBtYXhpbXVtIGFsbG93ZWQgRE1B
+IGFkZHJlc3MuCj4gCj4gRml4IHRoaXMgYnkgdmVyaWZ5aW5nIGluIGRtYV9jYXBhYmxlKCkgaWYg
+dGhlIERNQSBhZGRyZXNzIHJhbmdlIHByb3ZpZGVkCj4gaXMgYXQgYW55IHBvaW50IGxvd2VyIHRo
+YW4gdGhlIG1pbmltdW0gcG9zc2libGUgRE1BIGFkZHJlc3Mgb24gdGhlIGJ1cy4KPiAKPiBTaWdu
+ZWQtb2ZmLWJ5OiBOaWNvbGFzIFNhZW56IEp1bGllbm5lIDxuc2FlbnpqdWxpZW5uZUBzdXNlLmRl
+Pgo+IC0tLQo+ICAgaW5jbHVkZS9saW51eC9kbWEtZGlyZWN0LmggfCA4ICsrKysrKysrCj4gICAx
+IGZpbGUgY2hhbmdlZCwgOCBpbnNlcnRpb25zKCspCj4gCj4gZGlmZiAtLWdpdCBhL2luY2x1ZGUv
+bGludXgvZG1hLWRpcmVjdC5oIGIvaW5jbHVkZS9saW51eC9kbWEtZGlyZWN0LmgKPiBpbmRleCBh
+ZGY5OTNhM2JkNTguLjZhZDllOWVhNzU2NCAxMDA2NDQKPiAtLS0gYS9pbmNsdWRlL2xpbnV4L2Rt
+YS1kaXJlY3QuaAo+ICsrKyBiL2luY2x1ZGUvbGludXgvZG1hLWRpcmVjdC5oCj4gQEAgLTMsNiAr
+Myw3IEBACj4gICAjZGVmaW5lIF9MSU5VWF9ETUFfRElSRUNUX0ggMQo+ICAgCj4gICAjaW5jbHVk
+ZSA8bGludXgvZG1hLW1hcHBpbmcuaD4KPiArI2luY2x1ZGUgPGxpbnV4L21lbWJsb2NrLmg+IC8q
+IGZvciBtaW5fbG93X3BmbiAqLwo+ICAgI2luY2x1ZGUgPGxpbnV4L21lbV9lbmNyeXB0Lmg+Cj4g
+ICAKPiAgICNpZmRlZiBDT05GSUdfQVJDSF9IQVNfUEhZU19UT19ETUEKPiBAQCAtMjcsNiArMjgs
+MTMgQEAgc3RhdGljIGlubGluZSBib29sIGRtYV9jYXBhYmxlKHN0cnVjdCBkZXZpY2UgKmRldiwg
+ZG1hX2FkZHJfdCBhZGRyLCBzaXplX3Qgc2l6ZSkKPiAgIAlpZiAoIWRldi0+ZG1hX21hc2spCj4g
+ICAJCXJldHVybiBmYWxzZTsKPiAgIAo+ICsjaWZuZGVmIENPTkZJR19BUkNIX0RNQV9BRERSX1Rf
+NjRCSVQKPiArCS8qIENoZWNrIGlmIERNQSBhZGRyZXNzIG92ZXJmbG93ZWQgKi8KPiArCWlmICht
+aW4oYWRkciwgYWRkciArIHNpemUgLSAxKSA8Cj4gKwkJX19waHlzX3RvX2RtYShkZXYsIChwaHlz
+X2FkZHJfdCkobWluX2xvd19wZm4gPDwgUEFHRV9TSElGVCkpKQo+ICsJCXJldHVybiBmYWxzZTsK
+PiArI2VuZGlmCj4gKwo+ICAgCXJldHVybiBhZGRyICsgc2l6ZSAtIDEgPD0KPiAgIAkJbWluX25v
+dF96ZXJvKCpkZXYtPmRtYV9tYXNrLCBkZXYtPmJ1c19kbWFfbWFzayk7Cj4gICB9Cj4gCl9fX19f
+X19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fCmlvbW11IG1haWxpbmcg
+bGlzdAppb21tdUBsaXN0cy5saW51eC1mb3VuZGF0aW9uLm9yZwpodHRwczovL2xpc3RzLmxpbnV4
+Zm91bmRhdGlvbi5vcmcvbWFpbG1hbi9saXN0aW5mby9pb21tdQ==
