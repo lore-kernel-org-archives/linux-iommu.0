@@ -2,56 +2,79 @@ Return-Path: <SRS0=/wjm=Y6=lists.linux-foundation.org=iommu-bounces@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-9.8 required=3.0 tests=DKIM_INVALID,DKIM_SIGNED,
+X-Spam-Status: No, score=-6.7 required=3.0 tests=HEADER_FROM_DIFFERENT_DOMAINS,
 	INCLUDES_PATCH,MAILING_LIST_MULTI,SIGNED_OFF_BY,SPF_HELO_NONE,SPF_PASS,
-	URIBL_BLOCKED,USER_AGENT_GIT autolearn=ham autolearn_force=no version=3.4.0
+	URIBL_BLOCKED autolearn=unavailable autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id C0D32C5DF63
-	for <iommu@archiver.kernel.org>; Wed,  6 Nov 2019 13:05:30 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id EDBEAC5DF63
+	for <iommu@archiver.kernel.org>; Wed,  6 Nov 2019 13:27:50 +0000 (UTC)
 Received: from mail.linuxfoundation.org (mail.linuxfoundation.org [140.211.169.12])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by mail.kernel.org (Postfix) with ESMTPS id 8DA952187F
-	for <iommu@archiver.kernel.org>; Wed,  6 Nov 2019 13:05:30 +0000 (UTC)
-Authentication-Results: mail.kernel.org;
-	dkim=fail reason="signature verification failed" (1024-bit key) header.d=kernel.org header.i=@kernel.org header.b="lI3v298d"
-DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 8DA952187F
-Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=kernel.org
+	by mail.kernel.org (Postfix) with ESMTPS id AADDD20663
+	for <iommu@archiver.kernel.org>; Wed,  6 Nov 2019 13:27:50 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org AADDD20663
+Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=intel.com
 Authentication-Results: mail.kernel.org; spf=pass smtp.mailfrom=iommu-bounces@lists.linux-foundation.org
 Received: from mail.linux-foundation.org (localhost [127.0.0.1])
-	by mail.linuxfoundation.org (Postfix) with ESMTP id E55EECAE;
-	Wed,  6 Nov 2019 13:03:59 +0000 (UTC)
+	by mail.linuxfoundation.org (Postfix) with ESMTP id 7188DC4E;
+	Wed,  6 Nov 2019 13:27:50 +0000 (UTC)
 Received: from smtp1.linuxfoundation.org (smtp1.linux-foundation.org
 	[172.17.192.35])
-	by mail.linuxfoundation.org (Postfix) with ESMTPS id CC105B2F
+	by mail.linuxfoundation.org (Postfix) with ESMTPS id DBAE8C3A
 	for <iommu@lists.linux-foundation.org>;
-	Wed,  6 Nov 2019 13:03:58 +0000 (UTC)
-Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp1.linuxfoundation.org (Postfix) with ESMTPS id 7FF4E67F
+	Wed,  6 Nov 2019 13:27:48 +0000 (UTC)
+X-Greylist: domain auto-whitelisted by SQLgrey-1.7.6
+Received: from mga05.intel.com (mga05.intel.com [192.55.52.43])
+	by smtp1.linuxfoundation.org (Postfix) with ESMTPS id 0B52D189
 	for <iommu@lists.linux-foundation.org>;
-	Wed,  6 Nov 2019 13:03:58 +0000 (UTC)
-Received: from localhost.localdomain (236.31.169.217.in-addr.arpa
-	[217.169.31.236])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
-	(No client certificate requested)
-	by mail.kernel.org (Postfix) with ESMTPSA id 51F62217F4;
-	Wed,  6 Nov 2019 13:03:57 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=default; t=1573045438;
-	bh=6WaCVDc7pfRWRO9QZ070Q1q5hzzHRBDNhxzTPhdW8P4=;
-	h=From:To:Cc:Subject:Date:From;
-	b=lI3v298diJ07G4ZqSbKvZgy79OwfBKcusuJkPT6DZpn4YHpaZT65Pff8K3IatTNS+
-	8QH7JytyH099Pj18ArgJsTe6ph9h9u7NKRgSfjDsnLFgmRipIw6OSeEbHCH1OfKr+k
-	5WK++iikcT09n1YgcQMAoIyQy2HmQvW6vxdML5Fg=
-From: Will Deacon <will@kernel.org>
-To: iommu@lists.linux-foundation.org
-Subject: [PATCH] iommu/io-pgtable-arm: Rename IOMMU_QCOM_SYS_CACHE and improve
-	doc
-Date: Wed,  6 Nov 2019 13:03:52 +0000
-Message-Id: <20191106130352.6457-1-will@kernel.org>
-X-Mailer: git-send-email 2.20.1
+	Wed,  6 Nov 2019 13:27:47 +0000 (UTC)
+X-Amp-Result: SKIPPED(no attachment in message)
+X-Amp-File-Uploaded: False
+Received: from orsmga005.jf.intel.com ([10.7.209.41])
+	by fmsmga105.fm.intel.com with ESMTP/TLS/DHE-RSA-AES256-GCM-SHA384;
+	06 Nov 2019 05:27:47 -0800
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="5.68,274,1569308400"; d="scan'208";a="377046284"
+Received: from fmsmsx103.amr.corp.intel.com ([10.18.124.201])
+	by orsmga005.jf.intel.com with ESMTP; 06 Nov 2019 05:27:46 -0800
+Received: from fmsmsx152.amr.corp.intel.com (10.18.125.5) by
+	FMSMSX103.amr.corp.intel.com (10.18.124.201) with Microsoft SMTP Server
+	(TLS) id 14.3.439.0; Wed, 6 Nov 2019 05:27:30 -0800
+Received: from shsmsx108.ccr.corp.intel.com (10.239.4.97) by
+	FMSMSX152.amr.corp.intel.com (10.18.125.5) with Microsoft SMTP Server
+	(TLS) id 14.3.439.0; Wed, 6 Nov 2019 05:27:29 -0800
+Received: from shsmsx104.ccr.corp.intel.com ([169.254.5.127]) by
+	SHSMSX108.ccr.corp.intel.com ([169.254.8.41]) with mapi id
+	14.03.0439.000; Wed, 6 Nov 2019 21:27:28 +0800
+From: "Liu, Yi L" <yi.l.liu@intel.com>
+To: Alex Williamson <alex.williamson@redhat.com>
+Subject: RE: [RFC v2 2/3] vfio/type1: VFIO_IOMMU_PASID_REQUEST(alloc/free)
+Thread-Topic: [RFC v2 2/3] vfio/type1: VFIO_IOMMU_PASID_REQUEST(alloc/free)
+Thread-Index: AQHVimn7Rf6XEKLwVUSEQeOMJH4V9ad8yIOAgAFk6nA=
+Date: Wed, 6 Nov 2019 13:27:26 +0000
+Message-ID: <A2975661238FB949B60364EF0F2C25743A0EF41B@SHSMSX104.ccr.corp.intel.com>
+References: <1571919983-3231-1-git-send-email-yi.l.liu@intel.com>
+	<1571919983-3231-3-git-send-email-yi.l.liu@intel.com>
+	<20191105163537.1935291c@x1.home>
+In-Reply-To: <20191105163537.1935291c@x1.home>
+Accept-Language: en-US
+Content-Language: en-US
+X-MS-Has-Attach: 
+X-MS-TNEF-Correlator: 
+dlp-product: dlpe-windows
+dlp-version: 11.2.0.6
+dlp-reaction: no-action
+x-ctpclassification: CTP_NT
+x-titus-metadata-40: eyJDYXRlZ29yeUxhYmVscyI6IiIsIk1ldGFkYXRhIjp7Im5zIjoiaHR0cDpcL1wvd3d3LnRpdHVzLmNvbVwvbnNcL0ludGVsMyIsImlkIjoiMjMzNWI0OTYtYTFkOC00MzRmLWFhMWItNmNmMDA2NDBkNTcwIiwicHJvcHMiOlt7Im4iOiJDVFBDbGFzc2lmaWNhdGlvbiIsInZhbHMiOlt7InZhbHVlIjoiQ1RQX05UIn1dfV19LCJTdWJqZWN0TGFiZWxzIjpbXSwiVE1DVmVyc2lvbiI6IjE3LjEwLjE4MDQuNDkiLCJUcnVzdGVkTGFiZWxIYXNoIjoicDFZWlRwSjQxcUJCZW5PajhsWVZmejlaUHZuSDZvejMwYThNb01zU3BsZ1M5RVdLcXBhazhleFkrN3NYWWNGRCJ9
+x-originating-ip: [10.239.127.40]
 MIME-Version: 1.0
-Cc: isaacm@codeaurora.org, Will Deacon <will@kernel.org>, robin.murphy@arm.com
+Cc: "Tian, Kevin" <kevin.tian@intel.com>, "Raj, Ashok" <ashok.raj@intel.com>,
+	"kvm@vger.kernel.org" <kvm@vger.kernel.org>,
+	"jean-philippe.brucker@arm.com" <jean-philippe.brucker@arm.com>,
+	"Tian, Jun J" <jun.j.tian@intel.com>,
+	"iommu@lists.linux-foundation.org" <iommu@lists.linux-foundation.org>,
+	"Sun, Yi Y" <yi.y.sun@intel.com>
 X-BeenThere: iommu@lists.linux-foundation.org
 X-Mailman-Version: 2.1.12
 Precedence: list
@@ -69,60 +92,270 @@ Content-Transfer-Encoding: 7bit
 Sender: iommu-bounces@lists.linux-foundation.org
 Errors-To: iommu-bounces@lists.linux-foundation.org
 
-The 'IOMMU_QCOM_SYS_CACHE' IOMMU protection flag is exposed to all
-users of the IOMMU API. Despite its name, the idea behind it isn't
-especially tied to Qualcomm implementations and could conceivably be
-used by other systems.
+> From: Alex Williamson <alex.williamson@redhat.com>
+> Sent: Wednesday, November 6, 2019 7:36 AM
+> To: Liu, Yi L <yi.l.liu@intel.com>
+> Subject: Re: [RFC v2 2/3] vfio/type1: VFIO_IOMMU_PASID_REQUEST(alloc/free)
+> 
+> On Thu, 24 Oct 2019 08:26:22 -0400
+> Liu Yi L <yi.l.liu@intel.com> wrote:
+> 
+> > This patch adds VFIO_IOMMU_PASID_REQUEST ioctl which aims
+> > to passdown PASID allocation/free request from the virtual
+> > iommu. This is required to get PASID managed in system-wide.
+> >
+> > Cc: Kevin Tian <kevin.tian@intel.com>
+> > Signed-off-by: Liu Yi L <yi.l.liu@intel.com>
+> > Signed-off-by: Yi Sun <yi.y.sun@linux.intel.com>
+> > Signed-off-by: Jacob Pan <jacob.jun.pan@linux.intel.com>
+> > ---
+> >  drivers/vfio/vfio_iommu_type1.c | 114
+> ++++++++++++++++++++++++++++++++++++++++
+> >  include/uapi/linux/vfio.h       |  25 +++++++++
+> >  2 files changed, 139 insertions(+)
+> >
+> > diff --git a/drivers/vfio/vfio_iommu_type1.c b/drivers/vfio/vfio_iommu_type1.c
+> > index cd8d3a5..3d73a7d 100644
+> > --- a/drivers/vfio/vfio_iommu_type1.c
+> > +++ b/drivers/vfio/vfio_iommu_type1.c
+> > @@ -2248,6 +2248,83 @@ static int vfio_cache_inv_fn(struct device *dev, void
+> *data)
+> >  	return iommu_cache_invalidate(dc->domain, dev, &ustruct->info);
+> >  }
+> >
+> > +static int vfio_iommu_type1_pasid_alloc(struct vfio_iommu *iommu,
+> > +					 int min_pasid,
+> > +					 int max_pasid)
+> > +{
+> > +	int ret;
+> > +	ioasid_t pasid;
+> > +	struct mm_struct *mm = NULL;
+> > +
+> > +	mutex_lock(&iommu->lock);
+> > +	if (!IS_IOMMU_CAP_DOMAIN_IN_CONTAINER(iommu)) {
+> > +		ret = -EINVAL;
+> > +		goto out_unlock;
+> > +	}
+> > +	mm = get_task_mm(current);
+> > +	/* Track ioasid allocation owner by mm */
+> > +	pasid = ioasid_alloc((struct ioasid_set *)mm, min_pasid,
+> > +				max_pasid, NULL);
+> 
+> Are we sure we want to tie this to the task mm vs perhaps the
+> vfio_iommu pointer?
 
-Rename it to 'IOMMU_SYS_CACHE_ONLY' and update the comment to describe
-a bit better the idea behind it.
+Here we want to have a kind of per-VM mark, which can be used to do
+ownership check on whether a pasid is held by a specific VM. This is
+very important to prevent across VM affect. vfio_iommu pointer is
+competent for vfio as vfio is both pasid alloc requester and pasid
+consumer. e.g. vfio requests pasid alloc from ioasid and also it will
+invoke bind_gpasid(). vfio can either check ownership before invoking
+bind_gpasid() or pass vfio_iommu pointer to iommu driver. But in future,
+there may be other modules which are just consumers of pasid. And they
+also want to do ownership check for a pasid. Then, it would be hard for
+them as they are not the pasid alloc requester. So here better to have
+a system wide structure to perform as the per-VM mark. task mm looks
+to be much competent.
 
-Signed-off-by: Will Deacon <will@kernel.org>
----
+> > +	if (pasid == INVALID_IOASID) {
+> > +		ret = -ENOSPC;
+> > +		goto out_unlock;
+> > +	}
+> > +	ret = pasid;
+> > +out_unlock:
+> > +	mutex_unlock(&iommu->lock);
+> > +	if (mm)
+> > +		mmput(mm);
+> > +	return ret;
+> > +}
+> > +
+> > +static int vfio_iommu_type1_pasid_free(struct vfio_iommu *iommu,
+> > +				       unsigned int pasid)
+> > +{
+> > +	struct mm_struct *mm = NULL;
+> > +	void *pdata;
+> > +	int ret = 0;
+> > +
+> > +	mutex_lock(&iommu->lock);
+> > +	if (!IS_IOMMU_CAP_DOMAIN_IN_CONTAINER(iommu)) {
+> > +		ret = -EINVAL;
+> > +		goto out_unlock;
+> > +	}
+> > +
+> > +	/**
+> > +	 * REVISIT:
+> > +	 * There are two cases free could fail:
+> > +	 * 1. free pasid by non-owner, we use ioasid_set to track mm, if
+> > +	 * the set does not match, caller is not permitted to free.
+> > +	 * 2. free before unbind all devices, we can check if ioasid private
+> > +	 * data, if data != NULL, then fail to free.
+> > +	 */
+> > +	mm = get_task_mm(current);
+> > +	pdata = ioasid_find((struct ioasid_set *)mm, pasid, NULL);
+> > +	if (IS_ERR(pdata)) {
+> > +		if (pdata == ERR_PTR(-ENOENT))
+> > +			pr_err("PASID %u is not allocated\n", pasid);
+> > +		else if (pdata == ERR_PTR(-EACCES))
+> > +			pr_err("Free PASID %u by non-owner, denied", pasid);
+> > +		else
+> > +			pr_err("Error searching PASID %u\n", pasid);
+> 
+> This should be removed, errno is sufficient for the user, this just
+> provides the user with a trivial DoS vector filling logs.
 
-I'll remove this entirely if we don't grow a user in 5.6, but for now
-let's make it a bit more generic.
+sure, will fix it. thanks.
 
- drivers/iommu/io-pgtable-arm.c | 2 +-
- include/linux/iommu.h          | 8 ++++----
- 2 files changed, 5 insertions(+), 5 deletions(-)
+> > +		ret = -EPERM;
+> 
+> But why not return PTR_ERR(pdata)?
 
-diff --git a/drivers/iommu/io-pgtable-arm.c b/drivers/iommu/io-pgtable-arm.c
-index ca51036aa53c..602ecac84645 100644
---- a/drivers/iommu/io-pgtable-arm.c
-+++ b/drivers/iommu/io-pgtable-arm.c
-@@ -464,7 +464,7 @@ static arm_lpae_iopte arm_lpae_prot_to_pte(struct arm_lpae_io_pgtable *data,
- 		else if (prot & IOMMU_CACHE)
- 			pte |= (ARM_LPAE_MAIR_ATTR_IDX_CACHE
- 				<< ARM_LPAE_PTE_ATTRINDX_SHIFT);
--		else if (prot & IOMMU_QCOM_SYS_CACHE)
-+		else if (prot & IOMMU_SYS_CACHE_ONLY)
- 			pte |= (ARM_LPAE_MAIR_ATTR_IDX_INC_OCACHE
- 				<< ARM_LPAE_PTE_ATTRINDX_SHIFT);
- 	}
-diff --git a/include/linux/iommu.h b/include/linux/iommu.h
-index 29bac5345563..a86bd21d08a9 100644
---- a/include/linux/iommu.h
-+++ b/include/linux/iommu.h
-@@ -31,11 +31,11 @@
-  */
- #define IOMMU_PRIV	(1 << 5)
- /*
-- * Non-coherent masters on few Qualcomm SoCs can use this page protection flag
-- * to set correct cacheability attributes to use an outer level of cache -
-- * last level cache, aka system cache.
-+ * Non-coherent masters can use this page protection flag to set cacheable
-+ * memory attributes for only a transparent outer level of cache, also known as
-+ * the last-level or system cache.
-  */
--#define IOMMU_QCOM_SYS_CACHE	(1 << 6)
-+#define IOMMU_SYS_CACHE_ONLY	(1 << 6)
- 
- struct iommu_ops;
- struct iommu_group;
--- 
-2.24.0.rc1.363.gb1bccd3e3d-goog
+aha, would do it.
 
+> > +		goto out_unlock;
+> > +	}
+> > +	if (pdata) {
+> > +		pr_debug("Cannot free pasid %d with private data\n", pasid);
+> > +		/* Expect PASID has no private data if not bond */
+> > +		ret = -EBUSY;
+> > +		goto out_unlock;
+> > +	}
+> > +	ioasid_free(pasid);
+> 
+> We only ever get here with pasid == NULL?! 
+
+I guess you meant only when pdata==NULL.
+
+> Something is wrong.  Should
+> that be 'if (!pdata)'?  (which also makes that pr_debug another DoS
+> vector)
+
+Oh, yes, just do it as below:
+
+if (!pdata) {
+	ioasid_free(pasid);
+	ret = SUCCESS;
+} else
+	ret = -EBUSY;
+
+Is it what you mean?
+
+> > +
+> > +out_unlock:
+> > +	if (mm)
+> > +		mmput(mm);
+> > +	mutex_unlock(&iommu->lock);
+> > +	return ret;
+> > +}
+> > +
+> >  static long vfio_iommu_type1_ioctl(void *iommu_data,
+> >  				   unsigned int cmd, unsigned long arg)
+> >  {
+> > @@ -2370,6 +2447,43 @@ static long vfio_iommu_type1_ioctl(void *iommu_data,
+> >  					    &ustruct);
+> >  		mutex_unlock(&iommu->lock);
+> >  		return ret;
+> > +
+> > +	} else if (cmd == VFIO_IOMMU_PASID_REQUEST) {
+> > +		struct vfio_iommu_type1_pasid_request req;
+> > +		int min_pasid, max_pasid, pasid;
+> > +
+> > +		minsz = offsetofend(struct vfio_iommu_type1_pasid_request,
+> > +				    flag);
+> > +
+> > +		if (copy_from_user(&req, (void __user *)arg, minsz))
+> > +			return -EFAULT;
+> > +
+> > +		if (req.argsz < minsz)
+> > +			return -EINVAL;
+> > +
+> > +		switch (req.flag) {
+> 
+> This works, but it's strange.  Let's make the code a little easier for
+> the next flag bit that gets used so they don't need to rework this case
+> statement.  I'd suggest creating a VFIO_IOMMU_PASID_OPS_MASK that is
+> the OR of the ALLOC/FREE options, test that no bits are set outside of
+> that mask, then AND that mask as the switch arg with the code below.
+
+Got it. Let me fix it in next version.
+
+> > +		/**
+> > +		 * TODO: min_pasid and max_pasid align with
+> > +		 * typedef unsigned int ioasid_t
+> > +		 */
+> > +		case VFIO_IOMMU_PASID_ALLOC:
+> > +			if (copy_from_user(&min_pasid,
+> > +				(void __user *)arg + minsz, sizeof(min_pasid)))
+> > +				return -EFAULT;
+> > +			if (copy_from_user(&max_pasid,
+> > +				(void __user *)arg + minsz + sizeof(min_pasid),
+> > +				sizeof(max_pasid)))
+> > +				return -EFAULT;
+> > +			return vfio_iommu_type1_pasid_alloc(iommu,
+> > +						min_pasid, max_pasid);
+> > +		case VFIO_IOMMU_PASID_FREE:
+> > +			if (copy_from_user(&pasid,
+> > +				(void __user *)arg + minsz, sizeof(pasid)))
+> > +				return -EFAULT;
+> > +			return vfio_iommu_type1_pasid_free(iommu, pasid);
+> > +		default:
+> > +			return -EINVAL;
+> > +		}
+> >  	}
+> >
+> >  	return -ENOTTY;
+> > diff --git a/include/uapi/linux/vfio.h b/include/uapi/linux/vfio.h
+> > index ccf60a2..04de290 100644
+> > --- a/include/uapi/linux/vfio.h
+> > +++ b/include/uapi/linux/vfio.h
+> > @@ -807,6 +807,31 @@ struct vfio_iommu_type1_cache_invalidate {
+> >  };
+> >  #define VFIO_IOMMU_CACHE_INVALIDATE      _IO(VFIO_TYPE, VFIO_BASE + 24)
+> >
+> > +/*
+> > + * @flag=VFIO_IOMMU_PASID_ALLOC, refer to the @min_pasid and
+> @max_pasid fields
+> > + * @flag=VFIO_IOMMU_PASID_FREE, refer to @pasid field
+> > + */
+> > +struct vfio_iommu_type1_pasid_request {
+> > +	__u32	argsz;
+> > +#define VFIO_IOMMU_PASID_ALLOC	(1 << 0)
+> > +#define VFIO_IOMMU_PASID_FREE	(1 << 1)
+> > +	__u32	flag;
+> > +	union {
+> > +		struct {
+> > +			int min_pasid;
+> > +			int max_pasid;
+> > +		};
+> > +		int pasid;
+> 
+> Perhaps:
+> 
+> 		struct {
+> 			u32 min;
+> 			u32 max;
+> 		} alloc_pasid;
+> 		u32 free_pasid;
+> 
+> (note also the s/int/u32/)
+
+got it. will fix it in next version. Thanks.
+
+> > +	};
+> > +};
+> > +
+> > +/**
+> > + * VFIO_IOMMU_PASID_REQUEST - _IOWR(VFIO_TYPE, VFIO_BASE + 27,
+> > + *				struct vfio_iommu_type1_pasid_request)
+> > + *
+> > + */
+> > +#define VFIO_IOMMU_PASID_REQUEST	_IO(VFIO_TYPE, VFIO_BASE + 27)
+> > +
+> >  /* -------- Additional API for SPAPR TCE (Server POWERPC) IOMMU -------- */
+> >
+> >  /*
+
+Regards,
+Yi Liu
 _______________________________________________
 iommu mailing list
 iommu@lists.linux-foundation.org
