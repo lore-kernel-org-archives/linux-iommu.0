@@ -2,52 +2,71 @@ Return-Path: <SRS0=3PM5=Y7=lists.linux-foundation.org=iommu-bounces@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-9.8 required=3.0 tests=HEADER_FROM_DIFFERENT_DOMAINS,
-	INCLUDES_PATCH,MAILING_LIST_MULTI,SIGNED_OFF_BY,SPF_HELO_NONE,SPF_PASS,
-	URIBL_BLOCKED,USER_AGENT_GIT autolearn=unavailable autolearn_force=no
-	version=3.4.0
+X-Spam-Status: No, score=-9.6 required=3.0 tests=DKIM_INVALID,DKIM_SIGNED,
+	HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_PATCH,MAILING_LIST_MULTI,SIGNED_OFF_BY,
+	SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED,USER_AGENT_GIT autolearn=unavailable
+	autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id B7C8EFC6197
-	for <iommu@archiver.kernel.org>; Thu,  7 Nov 2019 15:07:13 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 74785C43331
+	for <iommu@archiver.kernel.org>; Thu,  7 Nov 2019 17:41:38 +0000 (UTC)
 Received: from mail.linuxfoundation.org (mail.linuxfoundation.org [140.211.169.12])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by mail.kernel.org (Postfix) with ESMTPS id 975D1218AE
-	for <iommu@archiver.kernel.org>; Thu,  7 Nov 2019 15:07:13 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 975D1218AE
-Authentication-Results: mail.kernel.org; dmarc=none (p=none dis=none) header.from=suse.de
+	by mail.kernel.org (Postfix) with ESMTPS id 3BFE92077C
+	for <iommu@archiver.kernel.org>; Thu,  7 Nov 2019 17:41:38 +0000 (UTC)
+Authentication-Results: mail.kernel.org;
+	dkim=fail reason="signature verification failed" (2048-bit key) header.d=infradead.org header.i=@infradead.org header.b="p5VJ+Kzb"
+DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 3BFE92077C
+Authentication-Results: mail.kernel.org; dmarc=none (p=none dis=none) header.from=lst.de
 Authentication-Results: mail.kernel.org; spf=pass smtp.mailfrom=iommu-bounces@lists.linux-foundation.org
 Received: from mail.linux-foundation.org (localhost [127.0.0.1])
-	by mail.linuxfoundation.org (Postfix) with ESMTP id 495B31579;
-	Thu,  7 Nov 2019 15:07:10 +0000 (UTC)
+	by mail.linuxfoundation.org (Postfix) with ESMTP id 2C609DC8;
+	Thu,  7 Nov 2019 17:40:56 +0000 (UTC)
 Received: from smtp1.linuxfoundation.org (smtp1.linux-foundation.org
 	[172.17.192.35])
-	by mail.linuxfoundation.org (Postfix) with ESMTPS id A724B156E
+	by mail.linuxfoundation.org (Postfix) with ESMTPS id A3D70DBE
 	for <iommu@lists.linux-foundation.org>;
-	Thu,  7 Nov 2019 15:07:09 +0000 (UTC)
-X-Greylist: domain auto-whitelisted by SQLgrey-1.7.6
-Received: from mx1.suse.de (mx2.suse.de [195.135.220.15])
-	by smtp1.linuxfoundation.org (Postfix) with ESMTPS id 261848B1
+	Thu,  7 Nov 2019 17:40:55 +0000 (UTC)
+X-Greylist: from auto-whitelisted by SQLgrey-1.7.6
+Received: from bombadil.infradead.org (bombadil.infradead.org
+	[198.137.202.133])
+	by smtp1.linuxfoundation.org (Postfix) with ESMTPS id 2DAE1756
 	for <iommu@lists.linux-foundation.org>;
-	Thu,  7 Nov 2019 15:07:09 +0000 (UTC)
-X-Virus-Scanned: by amavisd-new at test-mx.suse.de
-Received: from relay2.suse.de (unknown [195.135.220.254])
-	by mx1.suse.de (Postfix) with ESMTP id 84B61B258;
-	Thu,  7 Nov 2019 15:07:07 +0000 (UTC)
-From: Nicolas Saenz Julienne <nsaenzjulienne@suse.de>
-To: rubini@gnudd.com, hch@infradead.org, linux-kernel@vger.kernel.org,
-	Christoph Hellwig <hch@lst.de>,
-	Marek Szyprowski <m.szyprowski@samsung.com>,
-	Robin Murphy <robin.murphy@arm.com>
-Subject: [PATCH v3 1/2] dma-direct: check for overflows on 32 bit DMA addresses
-Date: Thu,  7 Nov 2019 16:06:44 +0100
-Message-Id: <20191107150646.13485-2-nsaenzjulienne@suse.de>
-X-Mailer: git-send-email 2.23.0
-In-Reply-To: <20191107150646.13485-1-nsaenzjulienne@suse.de>
-References: <20191107150646.13485-1-nsaenzjulienne@suse.de>
+	Thu,  7 Nov 2019 17:40:55 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
+	d=infradead.org; s=bombadil.20170209; h=Content-Transfer-Encoding:
+	MIME-Version:References:In-Reply-To:Message-Id:Date:Subject:Cc:To:From:Sender
+	:Reply-To:Content-Type:Content-ID:Content-Description:Resent-Date:Resent-From
+	:Resent-Sender:Resent-To:Resent-Cc:Resent-Message-ID:List-Id:List-Help:
+	List-Unsubscribe:List-Subscribe:List-Post:List-Owner:List-Archive;
+	bh=V6oKP4lc+Qnv6sTHAaXs5ytofADvXNkCvxLyMCGZAGM=;
+	b=p5VJ+KzbAtdMWZHpt1z3zRLm9J
+	BuGBPRjHA8A17ctz38M7+c95xVBVezojpm5oFhjIdFVn7Y60AjqOaaJn+Fy33f6p4nWducN+uyhfG
+	aiAwjRn0MYfTFU1boeDjAdni7qM4goYe0VI55Rt8yn/jPqsDAbhbYK2qPZmjkKH+mXGymzsq4Y00g
+	1NvMd7wTMvwQ8Or0qVj0Oc0YyKi4bBH3UdEq5jr2YhuT5MFy74fP+XwvWFfRFyL85RPXhNHtNt1YT
+	j6rYqNfnmvCtdqcjjTvzIW2GYIm/6cuj68FvBKNA8hzm0BAOJPXkJpAcVXfPKida7k7xBN417alSF
+	ymNp+ikw==;
+Received: from [2001:4bb8:184:e48:c70:4a89:bc61:2] (helo=localhost)
+	by bombadil.infradead.org with esmtpsa (Exim 4.92.3 #3 (Red Hat Linux))
+	id 1iSllw-0002O1-MK; Thu, 07 Nov 2019 17:40:41 +0000
+From: Christoph Hellwig <hch@lst.de>
+To: Jonas Bonn <jonas@southpole.se>,
+	Stefan Kristiansson <stefan.kristiansson@saunalahti.fi>,
+	Stafford Horne <shorne@gmail.com>
+Subject: [PATCH 1/2] dma-mapping: support setting memory uncached in place
+Date: Thu,  7 Nov 2019 18:40:34 +0100
+Message-Id: <20191107174035.13783-2-hch@lst.de>
+X-Mailer: git-send-email 2.20.1
+In-Reply-To: <20191107174035.13783-1-hch@lst.de>
+References: <20191107174035.13783-1-hch@lst.de>
 MIME-Version: 1.0
-Cc: iommu@lists.linux-foundation.org,
-	Nicolas Saenz Julienne <nsaenzjulienne@suse.de>
+X-SRS-Rewrite: SMTP reverse-path rewritten from <hch@infradead.org> by
+	bombadil.infradead.org. See http://www.infradead.org/rpr.html
+Cc: Mark Rutland <mark.rutland@arm.com>, linux-arch@vger.kernel.org,
+	Robin Murphy <robin.murphy@arm.com>,
+	linux-kernel@vger.kernel.org, iommu@lists.linux-foundation.org,
+	openrisc@lists.librecores.org, Will Deacon <will@kernel.org>,
+	linux-arm-kernel@lists.infradead.org
 X-BeenThere: iommu@lists.linux-foundation.org
 X-Mailman-Version: 2.1.12
 Precedence: list
@@ -65,70 +84,144 @@ Content-Transfer-Encoding: 7bit
 Sender: iommu-bounces@lists.linux-foundation.org
 Errors-To: iommu-bounces@lists.linux-foundation.org
 
-As seen on the new Raspberry Pi 4 and sta2x11's DMA implementation it is
-possible for a device configured with 32 bit DMA addresses and a partial
-DMA mapping located at the end of the address space to overflow. It
-happens when a higher physical address, not DMAable, is translated to
-it's DMA counterpart.
+We currently only support remapping memory as uncached through vmap
+or a magic uncached segment provided by some architectures.  But there
+is a simpler and much better way available on some architectures where
+we can just remap the memory in place.  The advantages are:
 
-For example the Raspberry Pi 4, configurable up to 4 GB of memory, has
-an interconnect capable of addressing the lower 1 GB of physical memory
-with a DMA offset of 0xc0000000. It transpires that, any attempt to
-translate physical addresses higher than the first GB will result in an
-overflow which dma_capable() can't detect as it only checks for
-addresses bigger then the maximum allowed DMA address.
+ 1) no aliasing is possible, which prevents speculating into the
+    cached alias
+ 2) there is no need to allocate new ptes and thus no need for a special
+    pre-allocated pool of memory that can be used with GFP_ATOMIC DMA
+    allocations
 
-Fix this by verifying in dma_capable() if the DMA address range provided
-is at any point lower than the minimum possible DMA address on the bus.
+The downside is that architectures must provide a way to set arbitrary
+pages uncached in the kernel mapping, which might not be possible on
+architecture that have a special implicit kernel mapping, and requires
+splitting of huge page kernel mappings where they exist.
 
-Signed-off-by: Nicolas Saenz Julienne <nsaenzjulienne@suse.de>
-
+Signed-off-by: Christoph Hellwig <hch@lst.de>
 ---
+ include/linux/dma-noncoherent.h |  3 +++
+ kernel/dma/Kconfig              |  8 ++++++++
+ kernel/dma/direct.c             | 28 ++++++++++++++++++----------
+ 3 files changed, 29 insertions(+), 10 deletions(-)
 
-Changes since v2:
-  - Cleanup code: use IS_ENABLED, a tmp variable for end, and
-    use phys_to_dma().
-
- include/linux/dma-direct.h | 12 ++++++++++--
- 1 file changed, 10 insertions(+), 2 deletions(-)
-
-diff --git a/include/linux/dma-direct.h b/include/linux/dma-direct.h
-index adf993a3bd58..6a18a97b76a8 100644
---- a/include/linux/dma-direct.h
-+++ b/include/linux/dma-direct.h
-@@ -3,8 +3,11 @@
- #define _LINUX_DMA_DIRECT_H 1
+diff --git a/include/linux/dma-noncoherent.h b/include/linux/dma-noncoherent.h
+index e30fca1f1b12..c4be9697279a 100644
+--- a/include/linux/dma-noncoherent.h
++++ b/include/linux/dma-noncoherent.h
+@@ -111,4 +111,7 @@ static inline void arch_dma_prep_coherent(struct page *page, size_t size)
+ void *uncached_kernel_address(void *addr);
+ void *cached_kernel_address(void *addr);
  
- #include <linux/dma-mapping.h>
-+#include <linux/memblock.h> /* for min_low_pfn */
- #include <linux/mem_encrypt.h>
- 
-+static inline dma_addr_t phys_to_dma(struct device *dev, phys_addr_t paddr);
++int arch_dma_set_uncached(void *cpu_addr, size_t size);
++void arch_dma_clear_uncached(void *cpu_addr, size_t size);
 +
- #ifdef CONFIG_ARCH_HAS_PHYS_TO_DMA
- #include <asm/dma-direct.h>
- #else
-@@ -24,11 +27,16 @@ static inline phys_addr_t __dma_to_phys(struct device *dev, dma_addr_t dev_addr)
+ #endif /* _LINUX_DMA_NONCOHERENT_H */
+diff --git a/kernel/dma/Kconfig b/kernel/dma/Kconfig
+index 4c103a24e380..7bc0b77f1243 100644
+--- a/kernel/dma/Kconfig
++++ b/kernel/dma/Kconfig
+@@ -83,6 +83,14 @@ config DMA_DIRECT_REMAP
+ 	bool
+ 	select DMA_REMAP
  
- static inline bool dma_capable(struct device *dev, dma_addr_t addr, size_t size)
- {
-+	dma_addr_t end = addr + size - 1;
++#
++# Should be selected if the architecture can remap memory from the page
++# allocator and CMA as uncached and provides the arch_dma_set_uncached and
++# arch_dma_clear_uncached helpers
++#
++config ARCH_HAS_DMA_SET_UNCACHED
++	bool
 +
- 	if (!dev->dma_mask)
- 		return false;
+ config DMA_CMA
+ 	bool "DMA Contiguous Memory Allocator"
+ 	depends on HAVE_DMA_CONTIGUOUS && CMA
+diff --git a/kernel/dma/direct.c b/kernel/dma/direct.c
+index e37e7ab6e2ee..e2b46001c1b3 100644
+--- a/kernel/dma/direct.c
++++ b/kernel/dma/direct.c
+@@ -171,11 +171,8 @@ void *dma_direct_alloc_pages(struct device *dev, size_t size,
+ 		ret = dma_common_contiguous_remap(page, PAGE_ALIGN(size),
+ 				dma_pgprot(dev, PAGE_KERNEL, attrs),
+ 				__builtin_return_address(0));
+-		if (!ret) {
+-			dma_free_contiguous(dev, page, size);
+-			return ret;
+-		}
+-
++		if (!ret)
++			goto out_free_pages;
+ 		memset(ret, 0, size);
+ 		goto done;
+ 	}
+@@ -188,8 +185,7 @@ void *dma_direct_alloc_pages(struct device *dev, size_t size,
+ 		 * so log an error and fail.
+ 		 */
+ 		dev_info(dev, "Rejecting highmem page from CMA.\n");
+-		dma_free_contiguous(dev, page, size);
+-		return NULL;
++		goto out_free_pages;
+ 	}
  
--	return addr + size - 1 <=
--		min_not_zero(*dev->dma_mask, dev->bus_dma_mask);
-+	if (!IS_ENABLED(CONFIG_ARCH_DMA_ADDR_T_64BIT) &&
-+	    min(addr, end) < phys_to_dma(dev, PFN_PHYS(min_low_pfn)))
-+		return false;
+ 	ret = page_address(page);
+@@ -198,10 +194,15 @@ void *dma_direct_alloc_pages(struct device *dev, size_t size,
+ 
+ 	memset(ret, 0, size);
+ 
+-	if (IS_ENABLED(CONFIG_ARCH_HAS_UNCACHED_SEGMENT) &&
+-	    dma_alloc_need_uncached(dev, attrs)) {
++	if (dma_alloc_need_uncached(dev, attrs)) {
+ 		arch_dma_prep_coherent(page, size);
+-		ret = uncached_kernel_address(ret);
 +
-+	return end <= min_not_zero(*dev->dma_mask, dev->bus_dma_mask);
++		if (IS_ENABLED(CONFIG_ARCH_HAS_DMA_SET_UNCACHED)) {
++			if (!arch_dma_set_uncached(ret, size))
++				goto out_free_pages;
++		} else if (IS_ENABLED(CONFIG_ARCH_HAS_UNCACHED_SEGMENT)) {
++			ret = uncached_kernel_address(ret);
++		}
+ 	}
+ done:
+ 	if (force_dma_unencrypted(dev))
+@@ -209,6 +210,9 @@ void *dma_direct_alloc_pages(struct device *dev, size_t size,
+ 	else
+ 		*dma_handle = phys_to_dma(dev, page_to_phys(page));
+ 	return ret;
++out_free_pages:
++	dma_free_contiguous(dev, page, size);
++	return NULL;
  }
- #endif /* !CONFIG_ARCH_HAS_PHYS_TO_DMA */
  
+ void dma_direct_free_pages(struct device *dev, size_t size, void *cpu_addr,
+@@ -232,6 +236,8 @@ void dma_direct_free_pages(struct device *dev, size_t size, void *cpu_addr,
+ 
+ 	if (IS_ENABLED(CONFIG_DMA_REMAP) && is_vmalloc_addr(cpu_addr))
+ 		vunmap(cpu_addr);
++	else if (IS_ENABLED(CONFIG_ARCH_HAS_DMA_SET_UNCACHED))
++		arch_dma_clear_uncached(cpu_addr, size);
+ 
+ 	dma_free_contiguous(dev, dma_direct_to_page(dev, dma_addr), size);
+ }
+@@ -240,6 +246,7 @@ void *dma_direct_alloc(struct device *dev, size_t size,
+ 		dma_addr_t *dma_handle, gfp_t gfp, unsigned long attrs)
+ {
+ 	if (!IS_ENABLED(CONFIG_ARCH_HAS_UNCACHED_SEGMENT) &&
++	    !IS_ENABLED(CONFIG_ARCH_HAS_DMA_SET_UNCACHED) &&
+ 	    !IS_ENABLED(CONFIG_DMA_DIRECT_REMAP) &&
+ 	    dma_alloc_need_uncached(dev, attrs))
+ 		return arch_dma_alloc(dev, size, dma_handle, gfp, attrs);
+@@ -250,6 +257,7 @@ void dma_direct_free(struct device *dev, size_t size,
+ 		void *cpu_addr, dma_addr_t dma_addr, unsigned long attrs)
+ {
+ 	if (!IS_ENABLED(CONFIG_ARCH_HAS_UNCACHED_SEGMENT) &&
++	    !IS_ENABLED(CONFIG_ARCH_HAS_DMA_SET_UNCACHED) &&
+ 	    !IS_ENABLED(CONFIG_DMA_DIRECT_REMAP) &&
+ 	    dma_alloc_need_uncached(dev, attrs))
+ 		arch_dma_free(dev, size, cpu_addr, dma_addr, attrs);
 -- 
-2.23.0
+2.20.1
 
 _______________________________________________
 iommu mailing list
