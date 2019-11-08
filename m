@@ -6,32 +6,32 @@ X-Spam-Status: No, score=-2.1 required=3.0 tests=DKIM_INVALID,DKIM_SIGNED,
 	HEADER_FROM_DIFFERENT_DOMAINS,MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS,
 	USER_AGENT_SANE_2 autolearn=no autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id DAA94FC6194
-	for <iommu@archiver.kernel.org>; Fri,  8 Nov 2019 07:54:24 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 3FE4FFA372C
+	for <iommu@archiver.kernel.org>; Fri,  8 Nov 2019 08:57:19 +0000 (UTC)
 Received: from mail.linuxfoundation.org (mail.linuxfoundation.org [140.211.169.12])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by mail.kernel.org (Postfix) with ESMTPS id 9FA6B2087E
-	for <iommu@archiver.kernel.org>; Fri,  8 Nov 2019 07:54:24 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTPS id 04285214DA
+	for <iommu@archiver.kernel.org>; Fri,  8 Nov 2019 08:57:18 +0000 (UTC)
 Authentication-Results: mail.kernel.org;
-	dkim=fail reason="signature verification failed" (2048-bit key) header.d=infradead.org header.i=@infradead.org header.b="JNQXdFPU"
-DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 9FA6B2087E
+	dkim=fail reason="signature verification failed" (2048-bit key) header.d=infradead.org header.i=@infradead.org header.b="fqwZTHlJ"
+DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 04285214DA
 Authentication-Results: mail.kernel.org; dmarc=none (p=none dis=none) header.from=infradead.org
 Authentication-Results: mail.kernel.org; spf=pass smtp.mailfrom=iommu-bounces@lists.linux-foundation.org
 Received: from mail.linux-foundation.org (localhost [127.0.0.1])
-	by mail.linuxfoundation.org (Postfix) with ESMTP id 60A52C58;
-	Fri,  8 Nov 2019 07:54:24 +0000 (UTC)
+	by mail.linuxfoundation.org (Postfix) with ESMTP id C2B9DCB1;
+	Fri,  8 Nov 2019 08:57:18 +0000 (UTC)
 Received: from smtp1.linuxfoundation.org (smtp1.linux-foundation.org
 	[172.17.192.35])
-	by mail.linuxfoundation.org (Postfix) with ESMTPS id 48906AF5
+	by mail.linuxfoundation.org (Postfix) with ESMTPS id 5AD99941
 	for <iommu@lists.linux-foundation.org>;
-	Fri,  8 Nov 2019 07:54:23 +0000 (UTC)
+	Fri,  8 Nov 2019 08:57:18 +0000 (UTC)
 X-Greylist: from auto-whitelisted by SQLgrey-1.7.6
 Received: from bombadil.infradead.org (bombadil.infradead.org
 	[198.137.202.133])
-	by smtp1.linuxfoundation.org (Postfix) with ESMTPS id DDFC5710
+	by smtp1.linuxfoundation.org (Postfix) with ESMTPS id 008A9EC
 	for <iommu@lists.linux-foundation.org>;
-	Fri,  8 Nov 2019 07:54:22 +0000 (UTC)
+	Fri,  8 Nov 2019 08:57:17 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
 	d=infradead.org; s=bombadil.20170209;
 	h=Mime-Version:Content-Type:References:
@@ -39,30 +39,33 @@ DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
 	Content-Transfer-Encoding:Content-ID:Content-Description:Resent-Date:
 	Resent-From:Resent-Sender:Resent-To:Resent-Cc:Resent-Message-ID:List-Id:
 	List-Help:List-Unsubscribe:List-Subscribe:List-Post:List-Owner:List-Archive;
-	bh=m7F4yeQFXzq24Xcdu21wGwru8kTugv4RivTLmZPl0o0=;
-	b=JNQXdFPUQia7yG1YDFERMtCUt
-	HrNp7z2hHCQdQ+CYR/ORZH48MgMkqQBxQh3/ChhoDSZUNqiWXaO/PBccUZFI0sGuRAJnoXcNjHPA4
-	MrrYkfFkVM8JD085ZjjOCDwi8kYOCyZFH6c1aKIrP/BFAB/sbfn4GUlWIYrFBUxq+qGlvPe2A/s6q
-	l+8Z/f5j7xj3LWdbKcMrfdHjTAjSuUE1Gq0cknJyfDKSqOct/O6OtDTqOSFFMD3yXrRgG4RQp8lrW
-	A3BaYZ4YSt8PECXv1RKbFCchrZe4gfWIIt2dT3r/DQyVziFiUqVLDEIxen+FDs0gF+B3niDXGXxKL
-	1lFeeNtEw==;
+	bh=QYyRpsPHeR69Z3aCYkvGuNSmLiL20QAYuHafWXveSwQ=;
+	b=fqwZTHlJRJ43aBt80AWcNj29f
+	PBbvtSdPCwvA/wmA5cWZApdR6IkW0C4EIk721zsmibMThXxlxK4WqX+Y27T/FPQUCUBkAXQgR77wq
+	tc24HKr6YhytMB8WOXZZ4gzxNbrte6+DpLES5oXhuupT845VzGWAykTp2HGdwZOurd3OfTtSIk/p0
+	ErVrb5ZjvkCOViYLR3v9dEyIg21iGpVrWhqsCsLKxty0KITzMHvvQBRsvAEP5KtRU2R9fQ+uYhZf6
+	SUgzdAclI9KdwzcoAlFM1yLPuLSqBVNLMOLD5xLTagCfLUk3MU8fXJKWeOHhpKePp99X8tpJfKQe3
+	XNyANbDVA==;
 Received: from [54.239.6.185] (helo=freeip.amazon.com)
 	by bombadil.infradead.org with esmtpsa (Exim 4.92.3 #3 (Red Hat Linux))
-	id 1iSz64-00010Q-8W; Fri, 08 Nov 2019 07:54:20 +0000
-Message-ID: <1672a5861c82c2e3c0c54b5311fd413a8eee5e64.camel@infradead.org>
+	id 1iT04v-0002tI-Pf; Fri, 08 Nov 2019 08:57:14 +0000
+Message-ID: <addba4e401c3bf23b86cf8dff97256282895e29f.camel@infradead.org>
 Subject: Re: [PATCH] intel-iommu: Turn off translations at shutdown
 From: David Woodhouse <dwmw2@infradead.org>
-To: Deepa Dinamani <deepa.kernel@gmail.com>, joro@8bytes.org, 
-	linux-kernel@vger.kernel.org
-Date: Fri, 08 Nov 2019 07:54:17 +0000
-In-Reply-To: <20191107205914.10611-1-deepa.kernel@gmail.com>
+To: "Zeng, Jason" <jason.zeng@intel.com>, Deepa Dinamani
+	<deepa.kernel@gmail.com>, "joro@8bytes.org" <joro@8bytes.org>, 
+	"linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>
+Date: Fri, 08 Nov 2019 08:57:11 +0000
+In-Reply-To: <8D8B600C3EC1B64FAD4503F0B66C61F23BB95B@SHSMSX103.ccr.corp.intel.com>
 References: <20191107205914.10611-1-deepa.kernel@gmail.com>
+	<1672a5861c82c2e3c0c54b5311fd413a8eee5e64.camel@infradead.org>
+	<8D8B600C3EC1B64FAD4503F0B66C61F23BB95B@SHSMSX103.ccr.corp.intel.com>
 X-Mailer: Evolution 3.28.5-0ubuntu0.18.04.1 
 Mime-Version: 1.0
 X-SRS-Rewrite: SMTP reverse-path rewritten from <dwmw2@infradead.org> by
 	bombadil.infradead.org. See http://www.infradead.org/rpr.html
-Cc: iommu@lists.linux-foundation.org, "Tian, Kevin" <kevin.tian@intel.com>,
-	Jason.Zeng@intel.com
+Cc: "iommu@lists.linux-foundation.org" <iommu@lists.linux-foundation.org>,
+	"Tian, Kevin" <kevin.tian@intel.com>
 X-BeenThere: iommu@lists.linux-foundation.org
 X-Mailman-Version: 2.1.12
 Precedence: list
@@ -75,43 +78,60 @@ List-Post: <mailto:iommu@lists.linux-foundation.org>
 List-Help: <mailto:iommu-request@lists.linux-foundation.org?subject=help>
 List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
 	<mailto:iommu-request@lists.linux-foundation.org?subject=subscribe>
-Content-Type: multipart/mixed; boundary="===============4117991983615233700=="
+Content-Type: multipart/mixed; boundary="===============7181219729466554224=="
 Sender: iommu-bounces@lists.linux-foundation.org
 Errors-To: iommu-bounces@lists.linux-foundation.org
 
 
---===============4117991983615233700==
+--===============7181219729466554224==
 Content-Type: multipart/signed; micalg="sha-256";
 	protocol="application/x-pkcs7-signature";
-	boundary="=-NB4SzEZqNjpYNZDwWzUK"
+	boundary="=-bAANH9QIqFdDq6Cjmsl+"
 
 
---=-NB4SzEZqNjpYNZDwWzUK
+--=-bAANH9QIqFdDq6Cjmsl+
 Content-Type: text/plain; charset="UTF-8"
 Content-Transfer-Encoding: quoted-printable
 
-On Thu, 2019-11-07 at 12:59 -0800, Deepa Dinamani wrote:
-> The intel-iommu driver assumes that the iommu state is
-> cleaned up at the start of the new kernel.
-> But, when we try to kexec boot something other than the
-> Linux kernel, the cleanup cannot be relied upon.
-> Hence, cleanup before we go down for reboot.
+On Fri, 2019-11-08 at 08:47 +0000, Zeng, Jason wrote:
+> > -----Original Message-----
+> > From: David Woodhouse <dwmw2@infradead.org>
+> > Sent: Friday, November 8, 2019 3:54 PM
+> > To: Deepa Dinamani <deepa.kernel@gmail.com>; joro@8bytes.org; linux-
+> > kernel@vger.kernel.org
+> > Cc: iommu@lists.linux-foundation.org; Zeng, Jason <jason.zeng@intel.com=
+>;
+> > Tian, Kevin <kevin.tian@intel.com>
+> > Subject: Re: [PATCH] intel-iommu: Turn off translations at shutdown
+> >=20
+> > On Thu, 2019-11-07 at 12:59 -0800, Deepa Dinamani wrote:
+> > > The intel-iommu driver assumes that the iommu state is
+> > > cleaned up at the start of the new kernel.
+> > > But, when we try to kexec boot something other than the
+> > > Linux kernel, the cleanup cannot be relied upon.
+> > > Hence, cleanup before we go down for reboot.
+> > >=20
+> > > Keeping the cleanup at initialization also, in case BIOS
+> > > leaves the IOMMU enabled.
+> > >=20
+> > > I considered turning off iommu only during kexec reboot,
+> > > but a clean shutdown seems always a good idea. But if
+> > > someone wants to make it conditional, we can do that.
+> >=20
+> > This is going to break things for the VMM live update scheme that Jason
+> > presented at KVM Forum, isn't it?
+> >=20
+> > In that case we rely on the IOMMU still operating during the
+> > transition.
 >=20
-> Keeping the cleanup at initialization also, in case BIOS
-> leaves the IOMMU enabled.
->=20
-> I considered turning off iommu only during kexec reboot,
-> but a clean shutdown seems always a good idea. But if
-> someone wants to make it conditional, we can do that.
+> For VMM live update case, we should be able to detect and bypass
+> the shutdown that Deepa introduced here, so keep IOMMU still operating?
 
-This is going to break things for the VMM live update scheme that Jason
-presented at KVM Forum, isn't it?
-
-In that case we rely on the IOMMU still operating during the
-transition.
+Is that a 'yes' to Deepa's "if someone wants to make it conditional, we
+can do that" ?=20
 
 
---=-NB4SzEZqNjpYNZDwWzUK
+--=-bAANH9QIqFdDq6Cjmsl+
 Content-Type: application/x-pkcs7-signature; name="smime.p7s"
 Content-Disposition: attachment; filename="smime.p7s"
 Content-Transfer-Encoding: base64
@@ -194,25 +214,25 @@ BAYTAkdCMRswGQYDVQQIExJHcmVhdGVyIE1hbmNoZXN0ZXIxEDAOBgNVBAcTB1NhbGZvcmQxGjAY
 BgNVBAoTEUNPTU9ETyBDQSBMaW1pdGVkMT0wOwYDVQQDEzRDT01PRE8gUlNBIENsaWVudCBBdXRo
 ZW50aWNhdGlvbiBhbmQgU2VjdXJlIEVtYWlsIENBAhEA4rtJSHkq7AnpxKUY8ZlYZjANBglghkgB
 ZQMEAgEFAKCCAe0wGAYJKoZIhvcNAQkDMQsGCSqGSIb3DQEHATAcBgkqhkiG9w0BCQUxDxcNMTkx
-MTA4MDc1NDE3WjAvBgkqhkiG9w0BCQQxIgQgT4V6Tx/KpizQd0dhMKcHoVUWLuI2GYSRbYF6AkQ3
-mLswgb4GCSsGAQQBgjcQBDGBsDCBrTCBlzELMAkGA1UEBhMCR0IxGzAZBgNVBAgTEkdyZWF0ZXIg
+MTA4MDg1NzExWjAvBgkqhkiG9w0BCQQxIgQgBhQzTfdgZIXrVRRZDI9n241fGtG44/+J3F/TfXoj
+omkwgb4GCSsGAQQBgjcQBDGBsDCBrTCBlzELMAkGA1UEBhMCR0IxGzAZBgNVBAgTEkdyZWF0ZXIg
 TWFuY2hlc3RlcjEQMA4GA1UEBxMHU2FsZm9yZDEaMBgGA1UEChMRQ09NT0RPIENBIExpbWl0ZWQx
 PTA7BgNVBAMTNENPTU9ETyBSU0EgQ2xpZW50IEF1dGhlbnRpY2F0aW9uIGFuZCBTZWN1cmUgRW1h
 aWwgQ0ECEQDiu0lIeSrsCenEpRjxmVhmMIHABgsqhkiG9w0BCRACCzGBsKCBrTCBlzELMAkGA1UE
 BhMCR0IxGzAZBgNVBAgTEkdyZWF0ZXIgTWFuY2hlc3RlcjEQMA4GA1UEBxMHU2FsZm9yZDEaMBgG
 A1UEChMRQ09NT0RPIENBIExpbWl0ZWQxPTA7BgNVBAMTNENPTU9ETyBSU0EgQ2xpZW50IEF1dGhl
 bnRpY2F0aW9uIGFuZCBTZWN1cmUgRW1haWwgQ0ECEQDiu0lIeSrsCenEpRjxmVhmMA0GCSqGSIb3
-DQEBAQUABIIBAFhyiQjzvFx/bPU8WraOSATVC0U7Zj9nAbq7j2CtX4rzQPcwZyziCPjc7jiIlaM+
-uJAar7AxeGMeE6MLYsaaelgq4qBGZ9kkBSoSmb0ClH3oe3gRsdk0FVgDnHtOTyRdNFG3JdAnln3R
-ZK7cxeLtXijoftT2C70Lg4sZjISxnrplGQWKzdgICmNm+L0wVB7xIf7wZGtWNeJwuFA9H2zTCP7+
-h51vue9n+x87uoRotE5MmGy5KRIGt3XELxiGyt4tCLNfCCaR7mr0145ESNCj9S4jSnG1EykSKU7i
-qrBWSWz3Z7WqI/MVU41h3cjlSoQaoAioBIKJu6Yv04YWNI6eaKoAAAAAAAA=
+DQEBAQUABIIBAKdrNj2mANKL0Q3aSOju6fUy0RHRTCv0iarS2yBFrKkg8dbCbZt7fJRfgp/poqXE
+aN0iAj+thOeLucLFLDs1Ah5Qwqdax9ewDWjnOjcmJO0Z7ZvCHBQHDkvKaGQcsx+ywuboKB/bk1eP
+XBahHRBYks6Ab60qJ/QKBjnlY/WIWjG1oKyMqV165GzWtrlCU6LqiPPvmF/8DGJbiCZV7eYfXqB5
+bYWhZtjGHaf7M62QepfvFSCDP42fexMq/SNwuMd6k/oMMaHNOBucHeAneSBHUK1uabAndL8r7f6/
+iUxaCl5/QT5wpiT9lAeB4T1ScuVMFoDA0SMnYM0hzLHaktPO1J0AAAAAAAA=
 
 
---=-NB4SzEZqNjpYNZDwWzUK--
+--=-bAANH9QIqFdDq6Cjmsl+--
 
 
---===============4117991983615233700==
+--===============7181219729466554224==
 Content-Type: text/plain; charset="us-ascii"
 MIME-Version: 1.0
 Content-Transfer-Encoding: 7bit
@@ -222,5 +242,5 @@ _______________________________________________
 iommu mailing list
 iommu@lists.linux-foundation.org
 https://lists.linuxfoundation.org/mailman/listinfo/iommu
---===============4117991983615233700==--
+--===============7181219729466554224==--
 
