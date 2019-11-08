@@ -2,81 +2,86 @@ Return-Path: <SRS0=V12C=ZA=lists.linux-foundation.org=iommu-bounces@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-6.8 required=3.0 tests=HEADER_FROM_DIFFERENT_DOMAINS,
-	INCLUDES_PATCH,MAILING_LIST_MULTI,SIGNED_OFF_BY,SPF_HELO_NONE,SPF_PASS
-	autolearn=unavailable autolearn_force=no version=3.4.0
+X-Spam-Status: No, score=-8.6 required=3.0 tests=DKIM_INVALID,DKIM_SIGNED,
+	HEADER_FROM_DIFFERENT_DOMAINS,MAILING_LIST_MULTI,MENTIONS_GIT_HOSTING,
+	SPF_HELO_NONE,SPF_PASS,USER_AGENT_GIT autolearn=unavailable
+	autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 78DF2FA372C
-	for <iommu@archiver.kernel.org>; Fri,  8 Nov 2019 12:23:50 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id E5253FC6194
+	for <iommu@archiver.kernel.org>; Fri,  8 Nov 2019 12:35:00 +0000 (UTC)
 Received: from mail.linuxfoundation.org (mail.linuxfoundation.org [140.211.169.12])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by mail.kernel.org (Postfix) with ESMTPS id 494D722480
-	for <iommu@archiver.kernel.org>; Fri,  8 Nov 2019 12:23:49 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 494D722480
-Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=intel.com
+	by mail.kernel.org (Postfix) with ESMTPS id AB1A9222C9
+	for <iommu@archiver.kernel.org>; Fri,  8 Nov 2019 12:35:00 +0000 (UTC)
+Authentication-Results: mail.kernel.org;
+	dkim=fail reason="signature verification failed" (2048-bit key) header.d=linaro.org header.i=@linaro.org header.b="lN56hA8V"
+DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org AB1A9222C9
+Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=linaro.org
 Authentication-Results: mail.kernel.org; spf=pass smtp.mailfrom=iommu-bounces@lists.linux-foundation.org
 Received: from mail.linux-foundation.org (localhost [127.0.0.1])
-	by mail.linuxfoundation.org (Postfix) with ESMTP id 3324D141F;
-	Fri,  8 Nov 2019 12:23:49 +0000 (UTC)
+	by mail.linuxfoundation.org (Postfix) with ESMTP id 682BBD13;
+	Fri,  8 Nov 2019 12:35:00 +0000 (UTC)
 Received: from smtp1.linuxfoundation.org (smtp1.linux-foundation.org
 	[172.17.192.35])
-	by mail.linuxfoundation.org (Postfix) with ESMTPS id 18207CDF
+	by mail.linuxfoundation.org (Postfix) with ESMTPS id 93E81B65
 	for <iommu@lists.linux-foundation.org>;
-	Fri,  8 Nov 2019 12:23:48 +0000 (UTC)
-X-Greylist: domain auto-whitelisted by SQLgrey-1.7.6
-Received: from mga09.intel.com (mga09.intel.com [134.134.136.24])
-	by smtp1.linuxfoundation.org (Postfix) with ESMTPS id F3C30710
+	Fri,  8 Nov 2019 12:34:59 +0000 (UTC)
+X-Greylist: whitelisted by SQLgrey-1.7.6
+Received: from mail-pl1-f195.google.com (mail-pl1-f195.google.com
+	[209.85.214.195])
+	by smtp1.linuxfoundation.org (Postfix) with ESMTPS id 9794BEC
 	for <iommu@lists.linux-foundation.org>;
-	Fri,  8 Nov 2019 12:23:46 +0000 (UTC)
-X-Amp-Result: SKIPPED(no attachment in message)
-X-Amp-File-Uploaded: False
-Received: from fmsmga005.fm.intel.com ([10.253.24.32])
-	by orsmga102.jf.intel.com with ESMTP/TLS/DHE-RSA-AES256-GCM-SHA384;
-	08 Nov 2019 04:23:45 -0800
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.68,281,1569308400"; d="scan'208";a="403057430"
-Received: from fmsmsx107.amr.corp.intel.com ([10.18.124.205])
-	by fmsmga005.fm.intel.com with ESMTP; 08 Nov 2019 04:23:44 -0800
-Received: from fmsmsx155.amr.corp.intel.com (10.18.116.71) by
-	fmsmsx107.amr.corp.intel.com (10.18.124.205) with Microsoft SMTP Server
-	(TLS) id 14.3.439.0; Fri, 8 Nov 2019 04:23:44 -0800
-Received: from shsmsx102.ccr.corp.intel.com (10.239.4.154) by
-	FMSMSX155.amr.corp.intel.com (10.18.116.71) with Microsoft SMTP Server
-	(TLS) id 14.3.439.0; Fri, 8 Nov 2019 04:23:44 -0800
-Received: from shsmsx104.ccr.corp.intel.com ([169.254.5.127]) by
-	shsmsx102.ccr.corp.intel.com ([169.254.2.108]) with mapi id
-	14.03.0439.000; Fri, 8 Nov 2019 20:23:42 +0800
-From: "Liu, Yi L" <yi.l.liu@intel.com>
-To: Alex Williamson <alex.williamson@redhat.com>
-Subject: RE: [RFC v2 2/3] vfio/type1: VFIO_IOMMU_PASID_REQUEST(alloc/free)
-Thread-Topic: [RFC v2 2/3] vfio/type1: VFIO_IOMMU_PASID_REQUEST(alloc/free)
-Thread-Index: AQHVimn7Rf6XEKLwVUSEQeOMJH4V9ad8yIOAgAFk6nCAAab8gIABawdg
-Date: Fri, 8 Nov 2019 12:23:41 +0000
-Message-ID: <A2975661238FB949B60364EF0F2C25743A0F305A@SHSMSX104.ccr.corp.intel.com>
-References: <1571919983-3231-1-git-send-email-yi.l.liu@intel.com>
-	<1571919983-3231-3-git-send-email-yi.l.liu@intel.com>
-	<20191105163537.1935291c@x1.home>
-	<A2975661238FB949B60364EF0F2C25743A0EF41B@SHSMSX104.ccr.corp.intel.com>
-	<20191107150659.05fa7548@x1.home>
-In-Reply-To: <20191107150659.05fa7548@x1.home>
-Accept-Language: en-US
-Content-Language: en-US
-X-MS-Has-Attach: 
-X-MS-TNEF-Correlator: 
-dlp-product: dlpe-windows
-dlp-version: 11.2.0.6
-dlp-reaction: no-action
-x-ctpclassification: CTP_NT
-x-titus-metadata-40: eyJDYXRlZ29yeUxhYmVscyI6IiIsIk1ldGFkYXRhIjp7Im5zIjoiaHR0cDpcL1wvd3d3LnRpdHVzLmNvbVwvbnNcL0ludGVsMyIsImlkIjoiMDk0ZjMwM2UtYTQyMS00ZGM1LWFhZmUtOTAxOTkwNTdjYTBiIiwicHJvcHMiOlt7Im4iOiJDVFBDbGFzc2lmaWNhdGlvbiIsInZhbHMiOlt7InZhbHVlIjoiQ1RQX05UIn1dfV19LCJTdWJqZWN0TGFiZWxzIjpbXSwiVE1DVmVyc2lvbiI6IjE3LjEwLjE4MDQuNDkiLCJUcnVzdGVkTGFiZWxIYXNoIjoiVXR5RTh5Mk1IODduUE92WHFOK2JMWnRkbmgwR3J2RWFlTjM1Sk1cL2h6SmhhNHFtbVZUaEhkVkhmTitFMWg5NmQifQ==
-x-originating-ip: [10.239.127.40]
-MIME-Version: 1.0
-Cc: "Tian, Kevin" <kevin.tian@intel.com>, "Raj, Ashok" <ashok.raj@intel.com>,
-	"kvm@vger.kernel.org" <kvm@vger.kernel.org>,
-	"jean-philippe.brucker@arm.com" <jean-philippe.brucker@arm.com>,
-	"Tian, Jun J" <jun.j.tian@intel.com>,
-	"iommu@lists.linux-foundation.org" <iommu@lists.linux-foundation.org>,
-	"Sun, Yi Y" <yi.y.sun@intel.com>
+	Fri,  8 Nov 2019 12:34:58 +0000 (UTC)
+Received: by mail-pl1-f195.google.com with SMTP id e3so4023521plt.7
+	for <iommu@lists.linux-foundation.org>;
+	Fri, 08 Nov 2019 04:34:58 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linaro.org; s=google;
+	h=from:to:cc:subject:date:message-id;
+	bh=ACOVm636HpclbJ5jp/0ogh0hZMDawdcD+OUvE73U5FA=;
+	b=lN56hA8VRMwOz3fGYSb844mu0cBuTBBh07tSzvpYvV6MdLENUXdJmXrBBeH3Qp7Yei
+	8roCivrNoV4uz6UhOIQ5zP+tJLyTX/5FTOjF6272sVatqgF3L76kpqjPtgZL1QkGp8w3
+	ct48oB/3NII8qTbXKcMoS703zTUu7VwWAodiZGWbbOK3YysBc3q6soT/KDw1OhZ/jIHT
+	DPu6+niNGhgAh2TliI1BN4u7EDT3cqhZlECwWd6Pr8dXdxzYus4m3lrk6aGl2u9zAmTJ
+	uHaCp0B2hrXgNTQEtrg8Y/l2XW4LfZ0f/e59HiI7u8IUbtYKEKHx2bamsQNxI1u0g7X9
+	KSPg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+	d=1e100.net; s=20161025;
+	h=x-gm-message-state:from:to:cc:subject:date:message-id;
+	bh=ACOVm636HpclbJ5jp/0ogh0hZMDawdcD+OUvE73U5FA=;
+	b=eCbu+Md5jYRxMIWKzVvQT7DO2u+0QPzU/bJOrGYm8hRjor/Afzdin710BsyNH2m4uo
+	ZU913JMB80VksI+aC0/+SyHqAUcNCbB8f+OzVefrLThjFUa79AZV0QVibTCrTdoIfrBD
+	zKvjbrxREZK2YzH14KQpa+sm/ev0wGgz463oKyj4r84cYX2wCj/wpht8/O6y60A1HB2U
+	pOfwZfr1IxEGSpkgtBZby7kTBqqzfVwvZIZ2dJ9Ib0kqveKfH4es6aZeaqFv7Hhnfom5
+	5tOaLHWuzaRpyg294IkvtVHpXn8A0RCsEtYv8NSkqbdvAj4vHBhpYN7BvPXWsVeREbrP
+	TVhw==
+X-Gm-Message-State: APjAAAW3EoVvHeEM06VRsjRvEIhxkZGRSpoALKpNLBowb7rgiym2OlF6
+	nEXDDJegeq5iYjwL+2LmskOpOg==
+X-Google-Smtp-Source: APXvYqw0r6a4YGoyxsYUl0Feqz84Gx74MYrfjUaxNPk+tVu7X8/PJobkKhKwVQU6ifAJzUm6f4EywA==
+X-Received: by 2002:a17:902:7b87:: with SMTP id
+	w7mr10526983pll.325.1573216497840; 
+	Fri, 08 Nov 2019 04:34:57 -0800 (PST)
+Received: from localhost.localdomain ([240e:362:48f:8f00:79bd:a8a7:1834:2d1a])
+	by smtp.gmail.com with ESMTPSA id
+	q34sm5430926pjb.15.2019.11.08.04.34.41
+	(version=TLS1_2 cipher=ECDHE-RSA-AES128-SHA bits=128/128);
+	Fri, 08 Nov 2019 04:34:57 -0800 (PST)
+From: Zhangfei Gao <zhangfei.gao@linaro.org>
+To: Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+	Arnd Bergmann <arnd@arndb.de>, Herbert Xu <herbert@gondor.apana.org.au>,
+	jonathan.cameron@huawei.com, grant.likely@arm.com,
+	jean-philippe <jean-philippe@linaro.org>,
+	Jerome Glisse <jglisse@redhat.com>, ilias.apalodimas@linaro.org,
+	francois.ozog@linaro.org, kenneth-lee-2012@foxmail.com,
+	Wangzhou <wangzhou1@hisilicon.com>,
+	"haojian . zhuang" <haojian.zhuang@linaro.org>, guodong.xu@linaro.org
+Subject: [PATCH v8 0/3] Add uacce module for Accelerator
+Date: Fri,  8 Nov 2019 20:34:25 +0800
+Message-Id: <1573216468-10379-1-git-send-email-zhangfei.gao@linaro.org>
+X-Mailer: git-send-email 2.7.4
+Cc: Zhangfei Gao <zhangfei.gao@linaro.org>, iommu@lists.linux-foundation.org,
+	linux-kernel@vger.kernel.org, linux-accelerators@lists.ozlabs.org,
+	linux-crypto@vger.kernel.org
 X-BeenThere: iommu@lists.linux-foundation.org
 X-Mailman-Version: 2.1.12
 Precedence: list
@@ -89,342 +94,244 @@ List-Post: <mailto:iommu@lists.linux-foundation.org>
 List-Help: <mailto:iommu-request@lists.linux-foundation.org?subject=help>
 List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
 	<mailto:iommu-request@lists.linux-foundation.org?subject=subscribe>
+MIME-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
 Sender: iommu-bounces@lists.linux-foundation.org
 Errors-To: iommu-bounces@lists.linux-foundation.org
 
-> From: Alex Williamson [mailto:alex.williamson@redhat.com]
-> Sent: Friday, November 8, 2019 6:07 AM
-> To: Liu, Yi L <yi.l.liu@intel.com>
-> Subject: Re: [RFC v2 2/3] vfio/type1: VFIO_IOMMU_PASID_REQUEST(alloc/free)
-> 
-> On Wed, 6 Nov 2019 13:27:26 +0000
-> "Liu, Yi L" <yi.l.liu@intel.com> wrote:
-> 
-> > > From: Alex Williamson <alex.williamson@redhat.com>
-> > > Sent: Wednesday, November 6, 2019 7:36 AM
-> > > To: Liu, Yi L <yi.l.liu@intel.com>
-> > > Subject: Re: [RFC v2 2/3] vfio/type1: VFIO_IOMMU_PASID_REQUEST(alloc/free)
-> > >
-> > > On Thu, 24 Oct 2019 08:26:22 -0400
-> > > Liu Yi L <yi.l.liu@intel.com> wrote:
-> > >
-> > > > This patch adds VFIO_IOMMU_PASID_REQUEST ioctl which aims
-> > > > to passdown PASID allocation/free request from the virtual
-> > > > iommu. This is required to get PASID managed in system-wide.
-> > > >
-> > > > Cc: Kevin Tian <kevin.tian@intel.com>
-> > > > Signed-off-by: Liu Yi L <yi.l.liu@intel.com>
-> > > > Signed-off-by: Yi Sun <yi.y.sun@linux.intel.com>
-> > > > Signed-off-by: Jacob Pan <jacob.jun.pan@linux.intel.com>
-> > > > ---
-> > > >  drivers/vfio/vfio_iommu_type1.c | 114
-> > > ++++++++++++++++++++++++++++++++++++++++
-> > > >  include/uapi/linux/vfio.h       |  25 +++++++++
-> > > >  2 files changed, 139 insertions(+)
-> > > >
-> > > > diff --git a/drivers/vfio/vfio_iommu_type1.c
-> b/drivers/vfio/vfio_iommu_type1.c
-> > > > index cd8d3a5..3d73a7d 100644
-> > > > --- a/drivers/vfio/vfio_iommu_type1.c
-> > > > +++ b/drivers/vfio/vfio_iommu_type1.c
-> > > > @@ -2248,6 +2248,83 @@ static int vfio_cache_inv_fn(struct device *dev,
-> void
-> > > *data)
-> > > >  	return iommu_cache_invalidate(dc->domain, dev, &ustruct->info);
-> > > >  }
-> > > >
-> > > > +static int vfio_iommu_type1_pasid_alloc(struct vfio_iommu *iommu,
-> > > > +					 int min_pasid,
-> > > > +					 int max_pasid)
-> > > > +{
-> > > > +	int ret;
-> > > > +	ioasid_t pasid;
-> > > > +	struct mm_struct *mm = NULL;
-> > > > +
-> > > > +	mutex_lock(&iommu->lock);
-> > > > +	if (!IS_IOMMU_CAP_DOMAIN_IN_CONTAINER(iommu)) {
-> > > > +		ret = -EINVAL;
-> > > > +		goto out_unlock;
-> > > > +	}
-> > > > +	mm = get_task_mm(current);
-> > > > +	/* Track ioasid allocation owner by mm */
-> > > > +	pasid = ioasid_alloc((struct ioasid_set *)mm, min_pasid,
-> > > > +				max_pasid, NULL);
-> > >
-> > > Are we sure we want to tie this to the task mm vs perhaps the
-> > > vfio_iommu pointer?
-> >
-> > Here we want to have a kind of per-VM mark, which can be used to do
-> > ownership check on whether a pasid is held by a specific VM. This is
-> > very important to prevent across VM affect. vfio_iommu pointer is
-> > competent for vfio as vfio is both pasid alloc requester and pasid
-> > consumer. e.g. vfio requests pasid alloc from ioasid and also it will
-> > invoke bind_gpasid(). vfio can either check ownership before invoking
-> > bind_gpasid() or pass vfio_iommu pointer to iommu driver. But in future,
-> > there may be other modules which are just consumers of pasid. And they
-> > also want to do ownership check for a pasid. Then, it would be hard for
-> > them as they are not the pasid alloc requester. So here better to have
-> > a system wide structure to perform as the per-VM mark. task mm looks
-> > to be much competent.
-> 
-> Ok, so it's intentional to have a VM-wide token.  Elsewhere in the
-> type1 code (vfio_dma_do_map) we record the task_struct per dma mapping
-> so that we can get the task mm as needed.  Would the task_struct
-> pointer provide any advantage?
+Uacce (Unified/User-space-access-intended Accelerator Framework) targets to
+provide Shared Virtual Addressing (SVA) between accelerators and processes.
+So accelerator can access any data structure of the main cpu.
+This differs from the data sharing between cpu and io device, which share
+data content rather than address.
+Because of unified address, hardware and user space of process can share
+the same virtual address in the communication.
 
-I think we may use task_struct pointer to make type1 code consistent.
-How do you think?
+Uacce is intended to be used with Jean Philippe Brucker's SVA
+patchset[1], which enables IO side page fault and PASID support. 
+We have keep verifying with Jean's sva/current [2]
+We also keep verifying with Eric's SMMUv3 Nested Stage patch [3]
 
-> Also, an overall question, this provides userspace with pasid alloc and
-> free ioctls, (1) what prevents a userspace process from consuming every
-> available pasid, and (2) if the process exits or crashes without
-> freeing pasids, how are they recovered aside from a reboot?
+This series and related zip & qm driver
+https://github.com/Linaro/linux-kernel-warpdrive/tree/5.4-rc4-uacce-v7
 
-For question (1), I think we only need to take care about malicious
-userspace process. As vfio usage is under privilege mode, so we may
-be safe on it so far. However, we may need to introduce a kind of credit
-mechanism to protect it. I've thought it, but no good idea yet. Would be
-happy to hear from you.
+The library and user application:
+https://github.com/Linaro/warpdrive/tree/wdprd-upstream-v7
 
-For question (2), I think we need to reclaim the allocated pasids when
-the vfio container fd is released just like what vfio does to the domain
-mappings. I didn't add it yet. But I can add it in next version if you think
-it would make the pasid alloc/free be much sound.
+References:
+[1] http://jpbrucker.net/sva/
+[2] http://www.linux-arm.org/git?p=linux-jpb.git;a=shortlog;h=refs/heads/sva/current
+[3] https://github.com/eauger/linux/tree/v5.3.0-rc0-2stage-v9
 
-> > > > +	if (pasid == INVALID_IOASID) {
-> > > > +		ret = -ENOSPC;
-> > > > +		goto out_unlock;
-> > > > +	}
-> > > > +	ret = pasid;
-> > > > +out_unlock:
-> > > > +	mutex_unlock(&iommu->lock);
-> 
-> What does holding this lock protect?  That the vfio_iommu remains
-> backed by an iommu during this operation, even though we don't do
-> anything to release allocated pasids when that iommu backing is removed?
+Change History:
+v8:
+Address some comments from Jonathan
+Merge Jean's patch, using uacce_mm instead of pid for sva_exit
 
-yes, it is unnecessary to hold the lock here. At least for the operations in
-this patch. will remove it. :-)
+v7:
+As suggested by Jean and Jerome
+Only consider sva case and remove unused dma apis for the first patch.
+Also add mm_exit for sva and vm_ops.close etc
 
-> > > > +	if (mm)
-> > > > +		mmput(mm);
-> > > > +	return ret;
-> > > > +}
-> > > > +
-> > > > +static int vfio_iommu_type1_pasid_free(struct vfio_iommu *iommu,
-> > > > +				       unsigned int pasid)
-> > > > +{
-> > > > +	struct mm_struct *mm = NULL;
-> > > > +	void *pdata;
-> > > > +	int ret = 0;
-> > > > +
-> > > > +	mutex_lock(&iommu->lock);
-> > > > +	if (!IS_IOMMU_CAP_DOMAIN_IN_CONTAINER(iommu)) {
-> > > > +		ret = -EINVAL;
-> > > > +		goto out_unlock;
-> > > > +	}
-> > > > +
-> > > > +	/**
-> > > > +	 * REVISIT:
-> > > > +	 * There are two cases free could fail:
-> > > > +	 * 1. free pasid by non-owner, we use ioasid_set to track mm, if
-> > > > +	 * the set does not match, caller is not permitted to free.
-> > > > +	 * 2. free before unbind all devices, we can check if ioasid private
-> > > > +	 * data, if data != NULL, then fail to free.
-> > > > +	 */
-> > > > +	mm = get_task_mm(current);
-> > > > +	pdata = ioasid_find((struct ioasid_set *)mm, pasid, NULL);
-> > > > +	if (IS_ERR(pdata)) {
-> > > > +		if (pdata == ERR_PTR(-ENOENT))
-> > > > +			pr_err("PASID %u is not allocated\n", pasid);
-> > > > +		else if (pdata == ERR_PTR(-EACCES))
-> > > > +			pr_err("Free PASID %u by non-owner, denied", pasid);
-> > > > +		else
-> > > > +			pr_err("Error searching PASID %u\n", pasid);
-> > >
-> > > This should be removed, errno is sufficient for the user, this just
-> > > provides the user with a trivial DoS vector filling logs.
-> >
-> > sure, will fix it. thanks.
-> >
-> > > > +		ret = -EPERM;
-> > >
-> > > But why not return PTR_ERR(pdata)?
-> >
-> > aha, would do it.
-> >
-> > > > +		goto out_unlock;
-> > > > +	}
-> > > > +	if (pdata) {
-> > > > +		pr_debug("Cannot free pasid %d with private data\n", pasid);
-> > > > +		/* Expect PASID has no private data if not bond */
-> > > > +		ret = -EBUSY;
-> > > > +		goto out_unlock;
-> > > > +	}
-> > > > +	ioasid_free(pasid);
-> > >
-> > > We only ever get here with pasid == NULL?!
-> >
-> > I guess you meant only when pdata==NULL.
-> >
-> > > Something is wrong.  Should
-> > > that be 'if (!pdata)'?  (which also makes that pr_debug another DoS
-> > > vector)
-> >
-> > Oh, yes, just do it as below:
-> >
-> > if (!pdata) {
-> > 	ioasid_free(pasid);
-> > 	ret = SUCCESS;
-> > } else
-> > 	ret = -EBUSY;
-> >
-> > Is it what you mean?
-> 
-> No, I think I was just confusing pdata and pasid, but I am still
-> confused about testing pdata.  We call ioasid_alloc() with private =
-> NULL, and I don't see any of your patches calling ioasid_set_data() to
-> change the private data after allocation, so how could this ever be
-> set?  Should this just be a BUG_ON(pdata) as the integrity of the
-> system is in question should this state ever occur?  Thanks,
 
-ioasid_set_data() was called  in one patch from Jacob's vSVA patchset.
-[PATCH v6 08/10] iommu/vt-d: Add bind guest PASID support
-https://lkml.org/lkml/2019/10/22/946
+v6: https://lkml.org/lkml/2019/10/16/231
+Change sys qfrs_size to different file, suggested by Jonathan
+Fix crypto daily build issue and based on crypto code base, also 5.4-rc1.
 
-The basic idea is to allocate pasid with private=NULL, and set it when the
-pasid is actually bind to a device (bind_gpasid()). Each bind_gpasid() will
-increase the ref_cnt in the private data, and each unbind_gpasid() will
-decrease the ref_cnt. So if bind/unbind_gpasid() is called in mirror, the
-private data should be null when comes to free operation. If not, vfio can
-believe that the pasid is still in use.
+v5: https://lkml.org/lkml/2019/10/14/74
+Add an example patch using the uacce interface, suggested by Greg
+0003-crypto-hisilicon-register-zip-engine-to-uacce.patch
 
-> Alex
+v4: https://lkml.org/lkml/2019/9/17/116
+Based on 5.4-rc1
+Considering other driver integrating uacce, 
+if uacce not compiled, uacce_register return error and uacce_unregister is empty.
+Simplify uacce flag: UACCE_DEV_SVA.
+Address Greg's comments: 
+Fix state machine, remove potential syslog triggered from user space etc.
 
-Thanks,
-Yi Liu
- 
-> > > > +
-> > > > +out_unlock:
-> > > > +	if (mm)
-> > > > +		mmput(mm);
-> > > > +	mutex_unlock(&iommu->lock);
-> > > > +	return ret;
-> > > > +}
-> > > > +
-> > > >  static long vfio_iommu_type1_ioctl(void *iommu_data,
-> > > >  				   unsigned int cmd, unsigned long arg)
-> > > >  {
-> > > > @@ -2370,6 +2447,43 @@ static long vfio_iommu_type1_ioctl(void
-> *iommu_data,
-> > > >  					    &ustruct);
-> > > >  		mutex_unlock(&iommu->lock);
-> > > >  		return ret;
-> > > > +
-> > > > +	} else if (cmd == VFIO_IOMMU_PASID_REQUEST) {
-> > > > +		struct vfio_iommu_type1_pasid_request req;
-> > > > +		int min_pasid, max_pasid, pasid;
-> > > > +
-> > > > +		minsz = offsetofend(struct vfio_iommu_type1_pasid_request,
-> > > > +				    flag);
-> > > > +
-> > > > +		if (copy_from_user(&req, (void __user *)arg, minsz))
-> > > > +			return -EFAULT;
-> > > > +
-> > > > +		if (req.argsz < minsz)
-> > > > +			return -EINVAL;
-> > > > +
-> > > > +		switch (req.flag) {
-> > >
-> > > This works, but it's strange.  Let's make the code a little easier for
-> > > the next flag bit that gets used so they don't need to rework this case
-> > > statement.  I'd suggest creating a VFIO_IOMMU_PASID_OPS_MASK that is
-> > > the OR of the ALLOC/FREE options, test that no bits are set outside of
-> > > that mask, then AND that mask as the switch arg with the code below.
-> >
-> > Got it. Let me fix it in next version.
-> >
-> > > > +		/**
-> > > > +		 * TODO: min_pasid and max_pasid align with
-> > > > +		 * typedef unsigned int ioasid_t
-> > > > +		 */
-> > > > +		case VFIO_IOMMU_PASID_ALLOC:
-> > > > +			if (copy_from_user(&min_pasid,
-> > > > +				(void __user *)arg + minsz, sizeof(min_pasid)))
-> > > > +				return -EFAULT;
-> > > > +			if (copy_from_user(&max_pasid,
-> > > > +				(void __user *)arg + minsz + sizeof(min_pasid),
-> > > > +				sizeof(max_pasid)))
-> > > > +				return -EFAULT;
-> > > > +			return vfio_iommu_type1_pasid_alloc(iommu,
-> > > > +						min_pasid, max_pasid);
-> > > > +		case VFIO_IOMMU_PASID_FREE:
-> > > > +			if (copy_from_user(&pasid,
-> > > > +				(void __user *)arg + minsz, sizeof(pasid)))
-> > > > +				return -EFAULT;
-> > > > +			return vfio_iommu_type1_pasid_free(iommu, pasid);
-> > > > +		default:
-> > > > +			return -EINVAL;
-> > > > +		}
-> > > >  	}
-> > > >
-> > > >  	return -ENOTTY;
-> > > > diff --git a/include/uapi/linux/vfio.h b/include/uapi/linux/vfio.h
-> > > > index ccf60a2..04de290 100644
-> > > > --- a/include/uapi/linux/vfio.h
-> > > > +++ b/include/uapi/linux/vfio.h
-> > > > @@ -807,6 +807,31 @@ struct vfio_iommu_type1_cache_invalidate {
-> > > >  };
-> > > >  #define VFIO_IOMMU_CACHE_INVALIDATE      _IO(VFIO_TYPE, VFIO_BASE +
-> 24)
-> > > >
-> > > > +/*
-> > > > + * @flag=VFIO_IOMMU_PASID_ALLOC, refer to the @min_pasid and
-> > > @max_pasid fields
-> > > > + * @flag=VFIO_IOMMU_PASID_FREE, refer to @pasid field
-> > > > + */
-> > > > +struct vfio_iommu_type1_pasid_request {
-> > > > +	__u32	argsz;
-> > > > +#define VFIO_IOMMU_PASID_ALLOC	(1 << 0)
-> > > > +#define VFIO_IOMMU_PASID_FREE	(1 << 1)
-> > > > +	__u32	flag;
-> > > > +	union {
-> > > > +		struct {
-> > > > +			int min_pasid;
-> > > > +			int max_pasid;
-> > > > +		};
-> > > > +		int pasid;
-> > >
-> > > Perhaps:
-> > >
-> > > 		struct {
-> > > 			u32 min;
-> > > 			u32 max;
-> > > 		} alloc_pasid;
-> > > 		u32 free_pasid;
-> > >
-> > > (note also the s/int/u32/)
-> >
-> > got it. will fix it in next version. Thanks.
-> >
-> > > > +	};
-> > > > +};
-> > > > +
-> > > > +/**
-> > > > + * VFIO_IOMMU_PASID_REQUEST - _IOWR(VFIO_TYPE, VFIO_BASE + 27,
-> > > > + *				struct vfio_iommu_type1_pasid_request)
-> > > > + *
-> > > > + */
-> > > > +#define VFIO_IOMMU_PASID_REQUEST	_IO(VFIO_TYPE, VFIO_BASE + 27)
-> > > > +
-> > > >  /* -------- Additional API for SPAPR TCE (Server POWERPC) IOMMU -------- */
-> > > >
-> > > >  /*
-> >
-> > Regards,
-> > Yi Liu
+v3: https://lkml.org/lkml/2019/9/2/990
+Recommended by Greg, use sturct uacce_device instead of struct uacce,
+and use struct *cdev in struct uacce_device, as a result, 
+cdev can be released by itself when refcount decreased to 0.
+So the two structures are decoupled and self-maintained by themsleves.
+Also add dev.release for put_device.
+
+v2: https://lkml.org/lkml/2019/8/28/565
+Address comments from Greg and Jonathan
+Modify interface uacce_register
+Drop noiommu mode first
+
+v1: https://lkml.org/lkml/2019/8/14/277
+1. Rebase to 5.3-rc1
+2. Build on iommu interface
+3. Verifying with Jean's sva and Eric's nested mode iommu.
+4. User library has developed a lot: support zlib, openssl etc.
+5. Move to misc first
+
+RFC3:
+https://lkml.org/lkml/2018/11/12/1951
+
+RFC2:
+https://lwn.net/Articles/763990/
+
+
+Background of why Uacce:
+Von Neumann processor is not good at general data manipulation.
+It is designed for control-bound rather than data-bound application.
+The latter need less control path facility and more/specific ALUs.
+So there are more and more heterogeneous processors, such as
+encryption/decryption accelerators, TPUs, or
+EDGE (Explicated Data Graph Execution) processors, introduced to gain
+better performance or power efficiency for particular applications
+these days.
+
+There are generally two ways to make use of these heterogeneous processors:
+
+The first is to make them co-processors, just like FPU.
+This is good for some application but it has its own cons:
+It changes the ISA set permanently.
+You must save all state elements when the process is switched out.
+But most data-bound processors have a huge set of state elements.
+It makes the kernel scheduler more complex.
+
+The second is Accelerator.
+It is taken as a IO device from the CPU's point of view
+(but it need not to be physically). The process, running on CPU,
+hold a context of the accelerator and send instructions to it as if
+it calls a function or thread running with FPU.
+The context is bound with the processor itself.
+So the state elements remain in the hardware context until
+the context is released.
+
+We believe this is the core feature of an "Accelerator" vs. Co-processor
+or other heterogeneous processors.
+
+The intention of Uacce is to provide the basic facility to backup
+this scenario. Its first step is to make sure the accelerator and process
+can share the same address space. So the accelerator ISA can directly
+address any data structure of the main CPU.
+This differs from the data sharing between CPU and IO device,
+which share data content rather than address.
+So it is different comparing to the other DMA libraries.
+
+In the future, we may add more facility to support linking accelerator
+library to the main application, or managing the accelerator context as
+special thread.
+But no matter how, this can be a solid start point for new processor
+to be used as an "accelerator" as this is the essential requirement.
+
+
+The Fork Scenario
+=================
+For a process with allocated queues and shared memory, what happen if it forks
+a child?
+
+The fd of the queue is duplicated on fork, but requests sent from the child
+process are blocked.
+
+It is recommended to add O_CLOEXEC to the queue file.
+
+The queue mmap space has a VM_DONTCOPY in its VMA. So the child will lose all
+those VMAs.
+
+This is a reason why Uacce does not adopt the mode used in VFIO and
+InfiniBand.  Both solutions can set any user pointer for hardware sharing.
+But they cannot support fork when the dma is in process. Or the
+"Copy-On-Write" procedure will make the parent process lost its physical
+pages.
+
+
+Difference to the VFIO and IB framework
+---------------------------------------
+The essential function of Uacce is to let the device access the user
+address directly. There are many device drivers doing the same in the kernel.
+And both VFIO and IB can provide similar functions in framework level.
+
+But Uacce has a different goal: "share address space". It is
+not taken the request to the accelerator as an enclosure data structure. It
+takes the accelerator as another thread of the same process. So the
+accelerator can refer to any address used by the process.
+
+Both VFIO and IB are taken this as "memory sharing", not "address sharing".
+They care more on sharing the block of memory. But if there is an address
+stored in the block and referring to another memory region. The address may
+not be valid.
+
+By adding more constraints to the VFIO and IB framework, in some sense, we may
+achieve a similar goal. But we gave it up finally. Both VFIO and IB have extra
+assumption which is unnecessary to Uacce. They may hurt each other if we
+try to merge them together.
+
+VFIO manages resource of a hardware as a "virtual device". If a device need to
+serve a separated application. It must isolate the resource as a separate
+virtual device.  And the life cycle of the application and virtual device are
+unnecessary unrelated. And most concepts, such as bus, driver, probe and
+so on, to make it as a "device" is unnecessary either. And the logic added to
+VFIO to make address sharing do no help on "creating a virtual device".
+
+IB creates a "verbs" standard for sharing memory region to another remote
+entity.  Most of these verbs are to make memory region between entities to be
+synchronized.  This is not what accelerator need. Accelerator is in the same
+memory system with the CPU. It refers to the same memory system among CPU and
+devices. So the local memory terms/verbs are good enough for it. Extra "verbs"
+are not necessary. And its queue (like queue pair in IB) is the communication
+channel direct to the accelerator hardware. There is nothing about memory
+itself.
+
+Further, both VFIO and IB use the "pin" (get_user_page) way to lock local
+memory in place.  This is flexible. But it can cause other problems. For
+example, if the user process fork a child process. The COW procedure may make
+the parent process lost its pages which are sharing with the device. These may
+be fixed in the future. But is not going to be easy. (There is a discussion
+about this on Linux Plumbers Conference 2018 [1])
+
+So we choose to build the solution directly on top of IOMMU interface. IOMMU
+is the essential way for device and process to share their page mapping from
+the hardware perspective. It will be safe to create a software solution on
+this assumption.  Uacce manages the IOMMU interface for the accelerator
+device, so the device driver can export some of the resources to the user
+space. Uacce than can make sure the device and the process have the same
+address space.
+
+
+References
+==========
+.. [1] https://lwn.net/Articles/774411/
+
+Kenneth Lee (2):
+  uacce: Add documents for uacce
+  uacce: add uacce driver
+
+Zhangfei Gao (1):
+  crypto: hisilicon - register zip engine to uacce
+
+ Documentation/ABI/testing/sysfs-driver-uacce |  53 +++
+ Documentation/misc-devices/uacce.rst         | 159 +++++++
+ drivers/crypto/hisilicon/qm.c                | 256 ++++++++++-
+ drivers/crypto/hisilicon/qm.h                |  11 +
+ drivers/crypto/hisilicon/zip/zip_main.c      |  38 +-
+ drivers/misc/Kconfig                         |   1 +
+ drivers/misc/Makefile                        |   1 +
+ drivers/misc/uacce/Kconfig                   |  13 +
+ drivers/misc/uacce/Makefile                  |   2 +
+ drivers/misc/uacce/uacce.c                   | 634 +++++++++++++++++++++++++++
+ include/linux/uacce.h                        | 155 +++++++
+ include/uapi/misc/uacce/hisi_qm.h            |  23 +
+ include/uapi/misc/uacce/uacce.h              |  36 ++
+ 13 files changed, 1343 insertions(+), 39 deletions(-)
+ create mode 100644 Documentation/ABI/testing/sysfs-driver-uacce
+ create mode 100644 Documentation/misc-devices/uacce.rst
+ create mode 100644 drivers/misc/uacce/Kconfig
+ create mode 100644 drivers/misc/uacce/Makefile
+ create mode 100644 drivers/misc/uacce/uacce.c
+ create mode 100644 include/linux/uacce.h
+ create mode 100644 include/uapi/misc/uacce/hisi_qm.h
+ create mode 100644 include/uapi/misc/uacce/uacce.h
+
+-- 
+2.7.4
 
 _______________________________________________
 iommu mailing list
