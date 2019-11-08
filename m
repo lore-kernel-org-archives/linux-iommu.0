@@ -2,80 +2,62 @@ Return-Path: <SRS0=V12C=ZA=lists.linux-foundation.org=iommu-bounces@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-8.1 required=3.0 tests=DKIM_INVALID,DKIM_SIGNED,
-	HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_PATCH,MAILING_LIST_MULTI,SIGNED_OFF_BY,
-	SPF_HELO_NONE,SPF_PASS,USER_AGENT_SANE_1 autolearn=ham autolearn_force=no
-	version=3.4.0
+X-Spam-Status: No, score=-5.3 required=3.0 tests=DKIM_INVALID,DKIM_SIGNED,
+	MAILING_LIST_MULTI,SIGNED_OFF_BY,SPF_HELO_NONE,SPF_PASS,USER_AGENT_SANE_1
+	autolearn=ham autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 67C09C5DF60
-	for <iommu@archiver.kernel.org>; Fri,  8 Nov 2019 13:55:54 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 34A34C5DF60
+	for <iommu@archiver.kernel.org>; Fri,  8 Nov 2019 14:54:20 +0000 (UTC)
 Received: from mail.linuxfoundation.org (mail.linuxfoundation.org [140.211.169.12])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by mail.kernel.org (Postfix) with ESMTPS id 2F6C621D6C
-	for <iommu@archiver.kernel.org>; Fri,  8 Nov 2019 13:55:54 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTPS id F3A21222C2
+	for <iommu@archiver.kernel.org>; Fri,  8 Nov 2019 14:54:19 +0000 (UTC)
 Authentication-Results: mail.kernel.org;
-	dkim=fail reason="signature verification failed" (1024-bit key) header.d=redhat.com header.i=@redhat.com header.b="SbhfjNml"
-DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 2F6C621D6C
-Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=redhat.com
+	dkim=fail reason="signature verification failed" (1024-bit key) header.d=kernel.org header.i=@kernel.org header.b="nkvt+iRM"
+DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org F3A21222C2
+Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=kernel.org
 Authentication-Results: mail.kernel.org; spf=pass smtp.mailfrom=iommu-bounces@lists.linux-foundation.org
 Received: from mail.linux-foundation.org (localhost [127.0.0.1])
-	by mail.linuxfoundation.org (Postfix) with ESMTP id 11AA51479;
-	Fri,  8 Nov 2019 13:55:54 +0000 (UTC)
+	by mail.linuxfoundation.org (Postfix) with ESMTP id B3B7D14D3;
+	Fri,  8 Nov 2019 14:54:19 +0000 (UTC)
 Received: from smtp1.linuxfoundation.org (smtp1.linux-foundation.org
 	[172.17.192.35])
-	by mail.linuxfoundation.org (Postfix) with ESMTPS id 76A581478
+	by mail.linuxfoundation.org (Postfix) with ESMTPS id 483E71457
 	for <iommu@lists.linux-foundation.org>;
-	Fri,  8 Nov 2019 13:55:53 +0000 (UTC)
-X-Greylist: domain auto-whitelisted by SQLgrey-1.7.6
-Received: from us-smtp-1.mimecast.com (us-smtp-2.mimecast.com [207.211.31.81])
-	by smtp1.linuxfoundation.org (Postfix) with ESMTP id 52875196
+	Fri,  8 Nov 2019 14:54:18 +0000 (UTC)
+Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
+	by smtp1.linuxfoundation.org (Postfix) with ESMTPS id C07B787D
 	for <iommu@lists.linux-foundation.org>;
-	Fri,  8 Nov 2019 13:55:52 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-	s=mimecast20190719; t=1573221351;
-	h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-	to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-	content-transfer-encoding:content-transfer-encoding:
-	in-reply-to:in-reply-to:references:references;
-	bh=POOAOo3UbsazSgAaio5sRRSw+QDs6Cpf36t92K3ueEo=;
-	b=SbhfjNmlYnPgg1YQSONw1TLiSLJ9z1HuLuf8+BMsC4sdYe0clikxfAL1vYtbD5cZPUaybC
-	2dgoOQnn6BbMUrXAsf9mAwsYnvZIU1B8fsX8hPvl+GOSlb+0+C3yz37jS84KvT2V2MuNHk
-	KdeNsWalVtgX1+cHQmk4ZdRfSFUwqhU=
-Received: from mimecast-mx01.redhat.com (mimecast-mx01.redhat.com
-	[209.132.183.4]) (Using TLS) by relay.mimecast.com with ESMTP id
-	us-mta-245-PSmf9Gf4McWli0-LE5bWuw-1; Fri, 08 Nov 2019 08:55:46 -0500
-Received: from smtp.corp.redhat.com (int-mx07.intmail.prod.int.phx2.redhat.com
-	[10.5.11.22])
-	(using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
-	(No client certificate requested)
-	by mimecast-mx01.redhat.com (Postfix) with ESMTPS id 0DE351005500;
-	Fri,  8 Nov 2019 13:55:45 +0000 (UTC)
-Received: from [10.36.116.54] (ovpn-116-54.ams2.redhat.com [10.36.116.54])
-	by smtp.corp.redhat.com (Postfix) with ESMTPS id D078A1001938;
-	Fri,  8 Nov 2019 13:55:40 +0000 (UTC)
-Subject: Re: [PATCH v7 07/11] iommu/vt-d: Add nested translation helper
-	function
-To: Jacob Pan <jacob.jun.pan@linux.intel.com>,
-	iommu@lists.linux-foundation.org, LKML <linux-kernel@vger.kernel.org>, 
-	Joerg Roedel <joro@8bytes.org>, David Woodhouse <dwmw2@infradead.org>, 
-	Alex Williamson <alex.williamson@redhat.com>,
-	Jean-Philippe Brucker <jean-philippe@linaro.com>
-References: <1571946904-86776-1-git-send-email-jacob.jun.pan@linux.intel.com>
-	<1571946904-86776-8-git-send-email-jacob.jun.pan@linux.intel.com>
-From: Auger Eric <eric.auger@redhat.com>
-Message-ID: <162b418a-dea3-eabb-1833-a8cd56ab829f@redhat.com>
-Date: Fri, 8 Nov 2019 14:55:39 +0100
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:60.0) Gecko/20100101
-	Thunderbird/60.4.0
+	Fri,  8 Nov 2019 14:54:17 +0000 (UTC)
+Received: from willie-the-truck (236.31.169.217.in-addr.arpa [217.169.31.236])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256
+	bits)) (No client certificate requested)
+	by mail.kernel.org (Postfix) with ESMTPSA id 7CD6221882;
+	Fri,  8 Nov 2019 14:54:16 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+	s=default; t=1573224857;
+	bh=jWYLwllCUqtBV7+ph/RRP8l2m0z8U4KXT030/BVvZOA=;
+	h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+	b=nkvt+iRMc3rdFHFWdBuMtoO6m4lR1p55i8Wiy6/DYfzZuuXhcv3YkJJ/z6p28gacd
+	1bOGxMcHIXM9y7iOHwDFwwKLvr9UEl2FiR0QXOKXqvPNCJy153NRYiVb1+zP7NfBnL
+	McG6LFA56dt8cwTO7JE+kLQSaBJ55RiQG8AFnpOs=
+Date: Fri, 8 Nov 2019 14:54:13 +0000
+From: Will Deacon <will@kernel.org>
+To: Jean-Philippe Brucker <jean-philippe@linaro.org>
+Subject: Re: [PATCH 5/7] iommu/arm-smmu-v3: Allow building as a module
+Message-ID: <20191108145407.GA20024@willie-the-truck>
+References: <20191030145112.19738-1-will@kernel.org>
+	<20191030145112.19738-6-will@kernel.org>
+	<20191030193148.GA8432@8bytes.org>
+	<20191031154247.GB28061@willie-the-truck>
+	<20191104191524.GA2786242@lophozonia>
 MIME-Version: 1.0
-In-Reply-To: <1571946904-86776-8-git-send-email-jacob.jun.pan@linux.intel.com>
-Content-Language: en-US
-X-Scanned-By: MIMEDefang 2.84 on 10.5.11.22
-X-MC-Unique: PSmf9Gf4McWli0-LE5bWuw-1
-X-Mimecast-Spam-Score: 0
-Cc: "Tian, Kevin" <kevin.tian@intel.com>, Raj Ashok <ashok.raj@intel.com>,
-	Jonathan Cameron <jic23@kernel.org>
+Content-Disposition: inline
+In-Reply-To: <20191104191524.GA2786242@lophozonia>
+User-Agent: Mutt/1.10.1 (2018-07-13)
+Cc: Bjorn Helgaas <bhelgaas@google.com>, Robin Murphy <robin.murphy@arm.com>,
+	iommu@lists.linux-foundation.org, linux-kernel@vger.kernel.org
 X-BeenThere: iommu@lists.linux-foundation.org
 X-Mailman-Version: 2.1.12
 Precedence: list
@@ -93,299 +75,97 @@ Content-Transfer-Encoding: 7bit
 Sender: iommu-bounces@lists.linux-foundation.org
 Errors-To: iommu-bounces@lists.linux-foundation.org
 
-Hi Jacob,
+Hi Jean-Philippe,
 
-On 10/24/19 9:55 PM, Jacob Pan wrote:
-> Nested translation mode is supported in VT-d 3.0 Spec.CH 3.8.
-> With PASID granular translation type set to 0x11b, translation
-> result from the first level(FL) also subject to a second level(SL)
-> page table translation. This mode is used for SVA virtualization,
-> where FL performs guest virtual to guest physical translation and
-> SL performs guest physical to host physical translation.
+On Mon, Nov 04, 2019 at 08:15:24PM +0100, Jean-Philippe Brucker wrote:
+> On Thu, Oct 31, 2019 at 03:42:47PM +0000, Will Deacon wrote:
+> > > Sorry for the stupid question, but what prevents the iommu module from
+> > > being unloaded when there are active users? There are no symbol
+> > > dependencies to endpoint device drivers, because the interface is only
+> > > exposed through the iommu-api, right? Is some sort of manual module
+> > > reference counting needed?
+> > 
+> > Generally, I think unloading the IOMMU driver module while there are
+> > active users is a pretty bad idea, much like unbinding the driver via
+> > /sys in the same situation would also be fairly daft. However, I *think*
+> > the code in __device_release_driver() tries to deal with this by
+> > iterating over the active consumers and ->remove()ing them first.
 > 
-> Signed-off-by: Jacob Pan <jacob.jun.pan@linux.intel.com>
-> Signed-off-by: Liu, Yi L <yi.l.liu@linux.intel.com>
+> > I'm without hardware access at the moment, so I haven't been able to
+> > test this myself. We could nobble the module_exit() hook, but there's
+> > still the "force unload" option depending on the .config.
+> 
+> Shame that we can't completely prevent module unloading, because handling
+> rmmod cleanly is tricky.
+> 
+> On module unload we also need to tidy up the bus->iommu_ops installed by
+> bus_set_iommu(), and remove the IOMMU groups (and probably other leaks I
+> missed). I have a solution for the bus->iommu_ops, which is simply adding
+> a bus_unset_iommu() counterpart with a refcount, but it doesn't deal with
+> the IOMMU groups cleanly. If there are multiple IOMMU instances managing
+> one bus, then we should only remove the IOMMU groups belonging to the
+> instance that is being removed.
+
+Hmm, but all of those IOMMU instances must be driven by the same driver,
+right, since bus_set_iommu() can only take one set of callbacks for a given
+bus? In which case, removing the driver module effectively removes all
+instances of the IOMMU for that bus and I think we're ok.
+
+If we couple that with Joerg's suggestion to take a reference to the driver
+module in add_device(), then I think that actually it's harmless to leave
+the bus ops installed and the groups should be sorted too. It means it's
+pretty difficult to unload the module, but that's probably not a bad thing.
+
+I'll post a v2 shortly...
+
+> I'll think about this more, but the simple solution is attached if you
+> want to test. It at least works with a single IOMMU now:
+> 
+> $ modprobe virtio-iommu
+> [   25.180965] virtio_iommu virtio0: input address: 64 bits
+> [   25.181437] virtio_iommu virtio0: page mask: 0xfffffffffffff000
+> [   25.214493] virtio-pci 0000:00:03.0: Adding to iommu group 0
+> [   25.233252] virtio-pci 0000:00:03.0: enabling device (0000 -> 0003)
+> [   25.334810] e1000e 0000:00:02.0: Adding to iommu group 1
+> [   25.348997] e1000e 0000:00:02.0: enabling device (0000 -> 0002)
+> ... net test etc
+> 
+> $ rmmod virtio-iommu
+> [   34.084816] e1000e: eth1 NIC Link is Down
+> [   34.212152] pci 0000:00:02.0: Removing from iommu group 1
+> [   34.250558] pci 0000:00:03.0: Removing from iommu group 0
+> [   34.261570] virtio_iommu virtio0: device removed
+> 
+> $ modprobe virtio-iommu
+> [   34.828982] virtio_iommu virtio0: input address: 64 bits
+> [   34.829442] virtio_iommu virtio0: page mask: 0xfffffffffffff000
+> [   34.844576] virtio-pci 0000:00:03.0: Adding to iommu group 0
+> [   34.916449] e1000e 0000:00:02.0: Adding to iommu group 1
+> 
+> Thanks,
+> Jean
+
+> From 5437fcaabe1d4671e2dc5b90b7898c0bf698111b Mon Sep 17 00:00:00 2001
+> From: Jean-Philippe Brucker <jean-philippe@linaro.org>
+> Date: Mon, 4 Nov 2019 15:52:36 +0100
+> Subject: [PATCH] iommu: Add bus_unset_iommu()
+> 
+> Let modular IOMMU drivers undo bus_set_iommu(). Keep track of bus
+> registrations with a list and refcount, and remove the iommu_ops from
+> the bus when there are no IOMMU providers anymore.
+> 
+> Signed-off-by: Jean-Philippe Brucker <jean-philippe@linaro.org>
 > ---
->  drivers/iommu/intel-pasid.c | 207 ++++++++++++++++++++++++++++++++++++++++++++
->  drivers/iommu/intel-pasid.h |  12 +++
->  2 files changed, 219 insertions(+)
-> 
-> diff --git a/drivers/iommu/intel-pasid.c b/drivers/iommu/intel-pasid.c
-> index ffbd416ed3b8..f846a907cfcf 100644
-> --- a/drivers/iommu/intel-pasid.c
-> +++ b/drivers/iommu/intel-pasid.c
-> @@ -415,6 +415,76 @@ pasid_set_flpm(struct pasid_entry *pe, u64 value)
->  	pasid_set_bits(&pe->val[2], GENMASK_ULL(3, 2), value << 2);
->  }
->  
-> +/*
-> + * Setup the Extended Memory Type(EMT) field (Bits 91-93)
-> + * of a scalable mode PASID entry.
-> + */
-> +static inline void
-> +pasid_set_emt(struct pasid_entry *pe, u64 value)
-> +{
-> +	pasid_set_bits(&pe->val[1], GENMASK_ULL(29, 27), value << 27);
-> +}
-> +
-> +/*
-> + * Setup the Page Attribute Table (PAT) field (Bits 96-127)
-> + * of a scalable mode PASID entry.
-> + */
-> +static inline void
-> +pasid_set_pat(struct pasid_entry *pe, u64 value)
-> +{
-> +	pasid_set_bits(&pe->val[1], GENMASK_ULL(63, 32), value << 27);
-> +}
-> +
-> +/*
-> + * Setup the Cache Disable (CD) field (Bit 89)
-> + * of a scalable mode PASID entry.
-> + */
-> +static inline void
-> +pasid_set_cd(struct pasid_entry *pe)
-> +{
-> +	pasid_set_bits(&pe->val[1], 1 << 25, 1);
-should be pasid_set_bits(&pe->val[1], 1 << 25, 1 << 25);
-and same for below individual bit settings.
+>  drivers/iommu/iommu.c | 101 ++++++++++++++++++++++++++++++++++--------
+>  include/linux/iommu.h |   1 +
+>  2 files changed, 84 insertions(+), 18 deletions(-)
 
-a macro could be introduced, taking the offset (up to 511) and the size
-and this would automatically select the right pe->val[n] and convert the
-offset into a 64b one. I think the readability would be improved versus
-the spec.
+To be honest, I think we should be trying to move *away* from the bus-ops
+abstraction rather than extending it. We already don't need it for DMA
+domains on arm64, and I think it's really just a bit of a wart now because
+iommu_domain_alloc() takes a 'struct bus_type *' as its argument.
 
-Not related to this patch but it may be worth to "&" the "bits" value
-with the mask to avoid any wrong value to overwrite other fields?
-
-> +}
-> +
-> +/*
-> + * Setup the Extended Memory Type Enable (EMTE) field (Bit 90)
-> + * of a scalable mode PASID entry.
-> + */
-> +static inline void
-> +pasid_set_emte(struct pasid_entry *pe)
-> +{
-> +	pasid_set_bits(&pe->val[1], 1 << 26, 1);
-> +}
-> +
-> +/*
-> + * Setup the Extended Access Flag Enable (EAFE) field (Bit 135)
-> + * of a scalable mode PASID entry.
-> + */
-> +static inline void
-> +pasid_set_eafe(struct pasid_entry *pe)
-> +{
-> +	pasid_set_bits(&pe->val[2], 1 << 7, 1);> +}
-> +
-> +/*
-> + * Setup the Page-level Cache Disable (PCD) field (Bit 95)
-> + * of a scalable mode PASID entry.
-> + */
-> +static inline void
-> +pasid_set_pcd(struct pasid_entry *pe)
-> +{
-> +	pasid_set_bits(&pe->val[1], 1 << 31, 1);
-> +}
-> +
-> +/*
-> + * Setup the Page-level Write-Through (PWT)) field (Bit 94)
-> + * of a scalable mode PASID entry.
-> + */
-> +static inline void
-> +pasid_set_pwt(struct pasid_entry *pe)
-> +{
-> +	pasid_set_bits(&pe->val[1], 1 << 30, 1);
-> +}
-> +
->  static void
->  pasid_cache_invalidation_with_pasid(struct intel_iommu *iommu,
->  				    u16 did, int pasid)
-> @@ -647,3 +717,140 @@ int intel_pasid_setup_pass_through(struct intel_iommu *iommu,
->  
->  	return 0;
->  }
-> +
-> +static int intel_pasid_setup_bind_data(struct intel_iommu *iommu,
-> +				struct pasid_entry *pte,
-> +				struct iommu_gpasid_bind_data_vtd *pasid_data)
-> +{
-> +	/*
-> +	 * Not all guest PASID table entry fields are passed down during bind,
-> +	 * here we only set up the ones that are dependent on guest settings.
-> +	 * Execution related bits such as NXE, SMEP are not meaningful to IOMMU,
-> +	 * therefore not set. Other fields, such as snoop related, are set based
-> +	 * on host needs regardless of  guest settings.
-> +	 */
-> +	if (pasid_data->flags & IOMMU_SVA_VTD_GPASID_SRE) {
-> +		if (!ecap_srs(iommu->ecap)) {
-> +			pr_err("No supervisor request support on %s\n",
-> +			       iommu->name);
-> +			return -EINVAL;
-> +		}
-> +		pasid_set_sre(pte);
-> +	}
-> +
-> +	if ((pasid_data->flags & IOMMU_SVA_VTD_GPASID_EAFE) && ecap_eafs(iommu->ecap))
-> +		pasid_set_eafe(pte);
-> +
-> +	if (pasid_data->flags & IOMMU_SVA_VTD_GPASID_EMTE) {
-> +		pasid_set_emte(pte);
-> +		pasid_set_emt(pte, pasid_data->emt);
-> +	}
-> +
-> +	/*
-> +	 * Memory type is only applicable to devices inside processor coherent
-> +	 * domain. PCIe devices are not included. We can skip the rest of the
-> +	 * flags if IOMMU does not support MTS.
-> +	 */
-> +	if (!ecap_mts(iommu->ecap)) {
-> +		pr_info("%s does not support memory type bind guest PASID\n",
-> +			iommu->name);
-> +		return 0;
-> +	}
-> +
-> +	if (pasid_data->flags & IOMMU_SVA_VTD_GPASID_PCD)
-> +		pasid_set_pcd(pte);
-> +	if (pasid_data->flags & IOMMU_SVA_VTD_GPASID_PWT)
-> +		pasid_set_pwt(pte);
-> +	if (pasid_data->flags & IOMMU_SVA_VTD_GPASID_CD)
-> +		pasid_set_cd(pte);
-> +	pasid_set_pat(pte, pasid_data->pat);
-> +
-> +	return 0;
-> +
-> +}
-> +
-> +/**
-> + * intel_pasid_setup_nested() - Set up PASID entry for nested translation
-> + * which is used for vSVA. The first level page tables are used for
-> + * GVA-GPA translation in the guest, second level page tables are used
-> + * for GPA to HPA translation.
-> + *
-> + * @iommu:      Iommu which the device belong to
-belongs
-> + * @dev:        Device to be set up for translation
-> + * @gpgd:       FLPTPTR: First Level Page translation pointer in GPA
-> + * @pasid:      PASID to be programmed in the device PASID table
-> + * @pasid_data: Additional PASID info from the guest bind request
-> + * @domain:     Domain info for setting up second level page tables
-> + * @addr_width: Address width of the first level (guest)
-> + */
-> +int intel_pasid_setup_nested(struct intel_iommu *iommu,
-> +			struct device *dev, pgd_t *gpgd,
-> +			int pasid, struct iommu_gpasid_bind_data_vtd *pasid_data,
-> +			struct dmar_domain *domain,
-> +			int addr_width)
-> +{
-> +	struct pasid_entry *pte;
-> +	struct dma_pte *pgd;
-> +	u64 pgd_val;
-> +	int agaw;
-> +	u16 did;
-> +
-> +	if (!ecap_nest(iommu->ecap)) {
-> +		pr_err("IOMMU: %s: No nested translation support\n",
-> +		       iommu->name);
-> +		return -EINVAL;
-> +	}
-> +
-> +	pte = intel_pasid_get_entry(dev, pasid);
-> +	if (WARN_ON(!pte))
-> +		return -EINVAL;
-> +
-> +	pasid_clear_entry(pte);
-> +
-> +	/* Sanity checking performed by caller to make sure address
-> +	 * width matching in two dimensions:
-s/matching/match
-> +	 * 1. CPU vs. IOMMU
-> +	 * 2. Guest vs. Host.
-> +	 */
-> +	switch (addr_width) {
-> +	case 57:
-> +		pasid_set_flpm(pte, 1);
-> +		break;
-> +	case 48:
-> +		pasid_set_flpm(pte, 0);
-> +		break;
-> +	default:
-> +		dev_err(dev, "Invalid paging mode %d\n", addr_width);
-> +		return -EINVAL;
-> +	}
-> +
-> +	pasid_set_flptr(pte, (u64)gpgd);
-> +
-> +	intel_pasid_setup_bind_data(iommu, pte, pasid_data);
-> +
-> +	/* Setup the second level based on the given domain */
-> +	pgd = domain->pgd;
-> +
-> +	for (agaw = domain->agaw; agaw != iommu->agaw; agaw--) {
-> +		pgd = phys_to_virt(dma_pte_addr(pgd));
-> +		if (!dma_pte_present(pgd)) {
-> +			dev_err(dev, "Invalid domain page table\n");
-> +			return -EINVAL;
-> +		}
-> +	}
-> +	pgd_val = virt_to_phys(pgd);
-> +	pasid_set_slptr(pte, pgd_val);
-> +	pasid_set_fault_enable(pte);
-> +
-> +	did = domain->iommu_did[iommu->seq_id];
-> +	pasid_set_domain_id(pte, did);
-> +
-> +	pasid_set_address_width(pte, agaw);
-> +	pasid_set_page_snoop(pte, !!ecap_smpwc(iommu->ecap));
-> +
-> +	pasid_set_translation_type(pte, PASID_ENTRY_PGTT_NESTED);
-> +	pasid_set_present(pte);
-> +	pasid_flush_caches(iommu, pte, pasid, did);
-> +
-> +	return 0;
-> +}
-> diff --git a/drivers/iommu/intel-pasid.h b/drivers/iommu/intel-pasid.h
-> index e413e884e685..09c85db73b77 100644
-> --- a/drivers/iommu/intel-pasid.h
-> +++ b/drivers/iommu/intel-pasid.h
-> @@ -46,6 +46,7 @@
->   * to vmalloc or even module mappings.
->   */
->  #define PASID_FLAG_SUPERVISOR_MODE	BIT(0)
-> +#define PASID_FLAG_NESTED		BIT(1)
->  
->  struct pasid_dir_entry {
->  	u64 val;
-> @@ -55,6 +56,11 @@ struct pasid_entry {
->  	u64 val[8];
->  };
->  
-> +#define PASID_ENTRY_PGTT_FL_ONLY	(1)
-> +#define PASID_ENTRY_PGTT_SL_ONLY	(2)
-> +#define PASID_ENTRY_PGTT_NESTED		(3)
-> +#define PASID_ENTRY_PGTT_PT		(4)
-> +
->  /* The representative of a PASID table */
->  struct pasid_table {
->  	void			*table;		/* pasid table pointer */
-> @@ -103,6 +109,12 @@ int intel_pasid_setup_second_level(struct intel_iommu *iommu,
->  int intel_pasid_setup_pass_through(struct intel_iommu *iommu,
->  				   struct dmar_domain *domain,
->  				   struct device *dev, int pasid);
-> +int intel_pasid_setup_nested(struct intel_iommu *iommu,
-> +			struct device *dev, pgd_t *pgd,
-> +			int pasid,
-> +			struct iommu_gpasid_bind_data_vtd *pasid_data,
-> +			struct dmar_domain *domain,
-> +			int addr_width);
->  void intel_pasid_tear_down_entry(struct intel_iommu *iommu,
->  				 struct device *dev, int pasid);
->  int vcmd_alloc_pasid(struct intel_iommu *iommu, unsigned int *pasid);
-> 
-Thanks
-
-Eric
-
+Will
 _______________________________________________
 iommu mailing list
 iommu@lists.linux-foundation.org
