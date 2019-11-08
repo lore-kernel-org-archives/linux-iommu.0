@@ -2,67 +2,65 @@ Return-Path: <SRS0=V12C=ZA=lists.linux-foundation.org=iommu-bounces@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-6.6 required=3.0 tests=DKIM_INVALID,DKIM_SIGNED,
-	HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_PATCH,MAILING_LIST_MULTI,SIGNED_OFF_BY,
-	SPF_HELO_NONE,SPF_PASS autolearn=ham autolearn_force=no version=3.4.0
+X-Spam-Status: No, score=-2.3 required=3.0 tests=HEADER_FROM_DIFFERENT_DOMAINS,
+	MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS,USER_AGENT_SANE_1 autolearn=no
+	autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 1F22AFC6195
-	for <iommu@archiver.kernel.org>; Fri,  8 Nov 2019 15:58:19 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id A3F4DFA372C
+	for <iommu@archiver.kernel.org>; Fri,  8 Nov 2019 16:17:53 +0000 (UTC)
 Received: from mail.linuxfoundation.org (mail.linuxfoundation.org [140.211.169.12])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by mail.kernel.org (Postfix) with ESMTPS id DE2D0215EA
-	for <iommu@archiver.kernel.org>; Fri,  8 Nov 2019 15:58:18 +0000 (UTC)
-Authentication-Results: mail.kernel.org;
-	dkim=fail reason="signature verification failed" (1024-bit key) header.d=redhat.com header.i=@redhat.com header.b="Ez6wFgyQ"
-DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org DE2D0215EA
-Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=redhat.com
+	by mail.kernel.org (Postfix) with ESMTPS id 74F1521924
+	for <iommu@archiver.kernel.org>; Fri,  8 Nov 2019 16:17:53 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 74F1521924
+Authentication-Results: mail.kernel.org; dmarc=none (p=none dis=none) header.from=huawei.com
 Authentication-Results: mail.kernel.org; spf=pass smtp.mailfrom=iommu-bounces@lists.linux-foundation.org
 Received: from mail.linux-foundation.org (localhost [127.0.0.1])
-	by mail.linuxfoundation.org (Postfix) with ESMTP id 8CD76E62;
-	Fri,  8 Nov 2019 15:58:18 +0000 (UTC)
+	by mail.linuxfoundation.org (Postfix) with ESMTP id 4C35DC64;
+	Fri,  8 Nov 2019 16:17:53 +0000 (UTC)
 Received: from smtp1.linuxfoundation.org (smtp1.linux-foundation.org
 	[172.17.192.35])
-	by mail.linuxfoundation.org (Postfix) with ESMTPS id B7282E5A
+	by mail.linuxfoundation.org (Postfix) with ESMTPS id 35753AC7
 	for <iommu@lists.linux-foundation.org>;
-	Fri,  8 Nov 2019 15:58:17 +0000 (UTC)
+	Fri,  8 Nov 2019 16:17:51 +0000 (UTC)
 X-Greylist: domain auto-whitelisted by SQLgrey-1.7.6
-Received: from us-smtp-1.mimecast.com (us-smtp-1.mimecast.com [207.211.31.81])
-	by smtp1.linuxfoundation.org (Postfix) with ESMTP id 4A8D1712
+Received: from huawei.com (lhrrgout.huawei.com [185.176.76.210])
+	by smtp1.linuxfoundation.org (Postfix) with ESMTPS id 47CA5196
 	for <iommu@lists.linux-foundation.org>;
-	Fri,  8 Nov 2019 15:58:17 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-	s=mimecast20190719; t=1573228696;
-	h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-	to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-	content-transfer-encoding:content-transfer-encoding;
-	bh=WVGyPRF7RXvpkN+DYqK8XkR5RcJbFrIwVJCV9hO4uQ4=;
-	b=Ez6wFgyQlybj2XPiq+In3pm8HjlNfNBMceyRfTb68M07BtOyBXNiWnhwFcq5BKud43ZPr+
-	2z8QqhJ6Q/QzsKGMfh5p4iF3jOliYe/tJXT/xDD9jzAHNhmAYIAzQURz9WVwWVpNJbwOQY
-	lZ6hPHDZMzg6qQ/DHN6B+WcyWuEMfvg=
-Received: from mimecast-mx01.redhat.com (mimecast-mx01.redhat.com
-	[209.132.183.4]) (Using TLS) by relay.mimecast.com with ESMTP id
-	us-mta-425-I0hVNY5rMoWygyD2R1k9xA-1; Fri, 08 Nov 2019 10:58:14 -0500
-Received: from smtp.corp.redhat.com (int-mx06.intmail.prod.int.phx2.redhat.com
-	[10.5.11.16])
-	(using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
-	(No client certificate requested)
-	by mimecast-mx01.redhat.com (Postfix) with ESMTPS id 57E2B800C72;
-	Fri,  8 Nov 2019 15:58:13 +0000 (UTC)
-Received: from laptop.redhat.com (ovpn-116-54.ams2.redhat.com [10.36.116.54])
-	by smtp.corp.redhat.com (Postfix) with ESMTP id 2EB475C1BB;
-	Fri,  8 Nov 2019 15:58:08 +0000 (UTC)
-From: Eric Auger <eric.auger@redhat.com>
-To: eric.auger.pro@gmail.com, eric.auger@redhat.com, joro@8bytes.org,
-	iommu@lists.linux-foundation.org
-Subject: [PATCH] iommu/vt-d: Fix QI_DEV_IOTLB_PFSID and QI_DEV_EIOTLB_PFSID
-	macros
-Date: Fri,  8 Nov 2019 16:58:03 +0100
-Message-Id: <20191108155803.15051-1-eric.auger@redhat.com>
+	Fri,  8 Nov 2019 16:17:49 +0000 (UTC)
+Received: from LHREML710-CAH.china.huawei.com (unknown [172.18.7.107])
+	by Forcepoint Email with ESMTP id 2D181470A7A6746D7EF5;
+	Fri,  8 Nov 2019 16:17:47 +0000 (GMT)
+Received: from lhreml724-chm.china.huawei.com (10.201.108.75) by
+	LHREML710-CAH.china.huawei.com (10.201.108.33) with Microsoft SMTP
+	Server (TLS) id 14.3.408.0; Fri, 8 Nov 2019 16:17:46 +0000
+Received: from [127.0.0.1] (10.202.226.46) by lhreml724-chm.china.huawei.com
+	(10.201.108.75) with Microsoft SMTP Server (version=TLS1_2,
+	cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256) id 15.1.1713.5;
+	Fri, 8 Nov 2019 16:17:46 +0000
+Subject: Re: [PATCH v2 6/9] Revert "iommu/arm-smmu: Make arm-smmu-v3
+	explicitly non-modular"
+To: Will Deacon <will@kernel.org>, <iommu@lists.linux-foundation.org>,
+	<linux-kernel@vger.kernel.org>
+References: <20191108151608.20932-1-will@kernel.org>
+	<20191108151608.20932-7-will@kernel.org>
+From: John Garry <john.garry@huawei.com>
+Message-ID: <06dfd385-1af0-3106-4cc5-6a5b8e864759@huawei.com>
+Date: Fri, 8 Nov 2019 16:17:45 +0000
+User-Agent: Mozilla/5.0 (Windows NT 10.0; WOW64; rv:68.0) Gecko/20100101
+	Thunderbird/68.1.2
 MIME-Version: 1.0
-X-Scanned-By: MIMEDefang 2.79 on 10.5.11.16
-X-MC-Unique: I0hVNY5rMoWygyD2R1k9xA-1
-X-Mimecast-Spam-Score: 0
+In-Reply-To: <20191108151608.20932-7-will@kernel.org>
+Content-Language: en-US
+X-Originating-IP: [10.202.226.46]
+X-ClientProxiedBy: lhreml703-chm.china.huawei.com (10.201.108.52) To
+	lhreml724-chm.china.huawei.com (10.201.108.75)
+X-CFilter-Loop: Reflected
+Cc: "Isaac J. Manjarres" <isaacm@codeaurora.org>,
+	Jean-Philippe Brucker <jean-philippe@linaro.org>, Saravana
+	Kannan <saravanak@google.com>, Bjorn Helgaas <bhelgaas@google.com>,
+	Robin Murphy <robin.murphy@arm.com>
 X-BeenThere: iommu@lists.linux-foundation.org
 X-Mailman-Version: 2.1.12
 Precedence: list
@@ -75,51 +73,47 @@ List-Post: <mailto:iommu@lists.linux-foundation.org>
 List-Help: <mailto:iommu-request@lists.linux-foundation.org?subject=help>
 List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
 	<mailto:iommu-request@lists.linux-foundation.org?subject=subscribe>
-Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset="us-ascii"; Format="flowed"
 Sender: iommu-bounces@lists.linux-foundation.org
 Errors-To: iommu-bounces@lists.linux-foundation.org
 
-For both PASID-based-Device-TLB Invalidate Descriptor and
-Device-TLB Invalidate Descriptor, the Physical Function Source-ID
-value is split according to this layout:
+On 08/11/2019 15:16, Will Deacon wrote:
+> +MODULE_DEVICE_TABLE(of, arm_smmu_of_match);
 
-PFSID[3:0] is set at offset 12 and PFSID[15:4] is put at offset 52.
-Fix the part laid out at offset 52.
+Hi Will,
 
-Fixes: 0f725561e1684 ("iommu/vt-d: Add definitions for PFSID")
-Signed-off-by: Eric Auger <eric.auger@redhat.com>
----
- include/linux/intel-iommu.h | 6 ++++--
- 1 file changed, 4 insertions(+), 2 deletions(-)
+>   
+>   static struct platform_driver arm_smmu_driver = {
+>   	.driver	= {
+>   		.name		= "arm-smmu-v3",
+>   		.of_match_table	= of_match_ptr(arm_smmu_of_match),
+> -		.suppress_bind_attrs = true,
 
-diff --git a/include/linux/intel-iommu.h b/include/linux/intel-iommu.h
-index ed11ef594378..6d8bf4bdf240 100644
---- a/include/linux/intel-iommu.h
-+++ b/include/linux/intel-iommu.h
-@@ -336,7 +336,8 @@ enum {
- #define QI_DEV_IOTLB_SID(sid)	((u64)((sid) & 0xffff) << 32)
- #define QI_DEV_IOTLB_QDEP(qdep)	(((qdep) & 0x1f) << 16)
- #define QI_DEV_IOTLB_ADDR(addr)	((u64)(addr) & VTD_PAGE_MASK)
--#define QI_DEV_IOTLB_PFSID(pfsid) (((u64)(pfsid & 0xf) << 12) | ((u64)(pfsid & 0xfff) << 52))
-+#define QI_DEV_IOTLB_PFSID(pfsid) (((u64)(pfsid & 0xf) << 12) | \
-+				   ((u64)((pfsid >> 4) & 0xfff) << 52))
- #define QI_DEV_IOTLB_SIZE	1
- #define QI_DEV_IOTLB_MAX_INVS	32
- 
-@@ -360,7 +361,8 @@ enum {
- #define QI_DEV_EIOTLB_PASID(p)	(((u64)p) << 32)
- #define QI_DEV_EIOTLB_SID(sid)	((u64)((sid) & 0xffff) << 16)
- #define QI_DEV_EIOTLB_QDEP(qd)	((u64)((qd) & 0x1f) << 4)
--#define QI_DEV_EIOTLB_PFSID(pfsid) (((u64)(pfsid & 0xf) << 12) | ((u64)(pfsid & 0xfff) << 52))
-+#define QI_DEV_EIOTLB_PFSID(pfsid) (((u64)(pfsid & 0xf) << 12) | \
-+				    ((u64)((pfsid >> 4) & 0xfff) << 52))
- #define QI_DEV_EIOTLB_MAX_INVS	32
- 
- /* Page group response descriptor QW0 */
--- 
-2.20.1
+Does this mean that we can now manually unbind this driver from the SMMU 
+device?
 
+Seems dangerous. Here's what happens for me:
+
+root@ubuntu:/sys# cd ./bus/platform/drivers/arm-smmu-v3
+ind @ubuntu:/sys/bus/platform/drivers/arm-smmu-v3# echo 
+arm-smmu-v3.0.auto > unbind
+[   77.580351] hisi_sas_v2_hw HISI0162:01: CQE_AXI_W_ERR (0x800) found!
+ho [   78.635473] platform arm-smmu-v3.0.auto: CMD_SYNC timeout at 
+0x00000146 [hwprod 0x00000146, hwcons 0x00000000]
+
+>   	},
+>   	.probe	= arm_smmu_device_probe,
+> +	.remove	= arm_smmu_device_remove,
+>   	.shutdown = arm_smmu_device_shutdown,
+>   };
+> -builtin_platform_driver(arm_smmu_driver);
+> +module_platform_driver(arm_smmu_driver);
+> +
+
+
+Thanks,
+John
 _______________________________________________
 iommu mailing list
 iommu@lists.linux-foundation.org
