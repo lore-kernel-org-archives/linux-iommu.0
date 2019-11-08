@@ -2,71 +2,69 @@ Return-Path: <SRS0=V12C=ZA=lists.linux-foundation.org=iommu-bounces@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-9.6 required=3.0 tests=DKIM_INVALID,DKIM_SIGNED,
-	HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_PATCH,MAILING_LIST_MULTI,SIGNED_OFF_BY,
+X-Spam-Status: No, score=-8.6 required=3.0 tests=DKIM_INVALID,DKIM_SIGNED,
+	HEADER_FROM_DIFFERENT_DOMAINS,MAILING_LIST_MULTI,MENTIONS_GIT_HOSTING,
 	SPF_HELO_NONE,SPF_PASS,USER_AGENT_GIT autolearn=unavailable
 	autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 56F09C5DF60
-	for <iommu@archiver.kernel.org>; Fri,  8 Nov 2019 12:35:56 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id EB1B0C5DF60
+	for <iommu@archiver.kernel.org>; Fri,  8 Nov 2019 13:32:29 +0000 (UTC)
 Received: from mail.linuxfoundation.org (mail.linuxfoundation.org [140.211.169.12])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by mail.kernel.org (Postfix) with ESMTPS id 2C1EB224D5
-	for <iommu@archiver.kernel.org>; Fri,  8 Nov 2019 12:35:56 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTPS id 9EFF921848
+	for <iommu@archiver.kernel.org>; Fri,  8 Nov 2019 13:32:29 +0000 (UTC)
 Authentication-Results: mail.kernel.org;
-	dkim=fail reason="signature verification failed" (2048-bit key) header.d=linaro.org header.i=@linaro.org header.b="zRMBHUV2"
-DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 2C1EB224D5
+	dkim=fail reason="signature verification failed" (2048-bit key) header.d=linaro.org header.i=@linaro.org header.b="T++exa4C"
+DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 9EFF921848
 Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=linaro.org
 Authentication-Results: mail.kernel.org; spf=pass smtp.mailfrom=iommu-bounces@lists.linux-foundation.org
 Received: from mail.linux-foundation.org (localhost [127.0.0.1])
-	by mail.linuxfoundation.org (Postfix) with ESMTP id EF64BD38;
-	Fri,  8 Nov 2019 12:35:55 +0000 (UTC)
+	by mail.linuxfoundation.org (Postfix) with ESMTP id 50D5A1442;
+	Fri,  8 Nov 2019 13:32:29 +0000 (UTC)
 Received: from smtp1.linuxfoundation.org (smtp1.linux-foundation.org
 	[172.17.192.35])
-	by mail.linuxfoundation.org (Postfix) with ESMTPS id C36A3AF0
+	by mail.linuxfoundation.org (Postfix) with ESMTPS id 16FC11426
 	for <iommu@lists.linux-foundation.org>;
-	Fri,  8 Nov 2019 12:35:54 +0000 (UTC)
+	Fri,  8 Nov 2019 13:32:28 +0000 (UTC)
 X-Greylist: whitelisted by SQLgrey-1.7.6
 Received: from mail-pf1-f193.google.com (mail-pf1-f193.google.com
 	[209.85.210.193])
-	by smtp1.linuxfoundation.org (Postfix) with ESMTPS id C5E0BEC
+	by smtp1.linuxfoundation.org (Postfix) with ESMTPS id F306BEC
 	for <iommu@lists.linux-foundation.org>;
-	Fri,  8 Nov 2019 12:35:53 +0000 (UTC)
-Received: by mail-pf1-f193.google.com with SMTP id p24so4496134pfn.4
+	Fri,  8 Nov 2019 13:32:26 +0000 (UTC)
+Received: by mail-pf1-f193.google.com with SMTP id c13so4580584pfp.5
 	for <iommu@lists.linux-foundation.org>;
-	Fri, 08 Nov 2019 04:35:53 -0800 (PST)
+	Fri, 08 Nov 2019 05:32:26 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linaro.org; s=google;
-	h=from:to:cc:subject:date:message-id:in-reply-to:references;
-	bh=ih0gjgftVSq40UymBQOagIAp1xQi1B6tEC0FaP+FShA=;
-	b=zRMBHUV2eEjt87Zf74mcwV96xH1462ElpJ7oq3OdcoEDXpHsxKR+2ziWjaoiBOzuNS
-	5/Jzoy38Iprz4CD/qZpBz8TYT5i9eeL1gq6EvQF93MpSXuX4soZQU0Oo6xwBnZLAu9hj
-	MqSf4do/ggD6wBeB6UTe6PdClRbaueszP2xSWpdF811hYTxLobUtBQkMwRe7xrZSJMDR
-	sEGG1Fko/RAWj2bnlduTF7m6euAGU7dx5QW8fUPx/A5R3PzVYXbYmArbtvbF346+GJi8
-	1fT16j1gs3a20deEMxbJlR+k8OcsdeCuya6tZNAEOA9WN/c+TsWAs/i6syRlBfFpu9Fd
-	tRpw==
+	h=from:to:cc:subject:date:message-id;
+	bh=3QDG6k3YwH00AmH5whxYaYGGcKZRwUoSrOavZRy7f9U=;
+	b=T++exa4ClZUvzquTgDGnIelvUvreR8gk/pO2hXck6eUZADD8gT4GqIgjc1O/gxc15g
+	iRcw2I5Ri2mYjREiJz984I4TM25YRaloNqffAQd0qPSAUl5c9Tx+cni+0hv8BrQT0R8s
+	wEZh1LmchMgYSHwa16abWJoOMuM185G5xZYwkYkBSqcxqmqK+Ig/fGAIrEChU/x0CZji
+	RMyLb5VJO9/Xp4KFM2gOFdL4Xier22IYzEDBw5Rku8rSY3JBA7n8FN2uYjBEgDHrkkTD
+	SVa/qH6UHg8HH2sr5Ekw/D9O5dq3VUxv6Q6G6b4GMMVnUh4DoGwKmczbj6KkR6nJveG0
+	NJQA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
 	d=1e100.net; s=20161025;
-	h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
-	:references;
-	bh=ih0gjgftVSq40UymBQOagIAp1xQi1B6tEC0FaP+FShA=;
-	b=pd0DYznMQRKSC05+geFhpEXStTunHiGac0eKiew5MHw+JFZchjTPG4yKySocngIBK0
-	LVT9bx+g4B+IafScfdrWUHsVj7HghKH+KZLYWpYt9x8/lSLur+yRyXWxv1OLEJsCKFzP
-	i3pGnK7o+D8KthxZ6z1gGQnFOUICedMR27lYayB6Yt2a5mlp79U7I4PvE1vtM28Y95NH
-	fXpu4i6epdbWtxWUX8qFrn+IAk164ie9n6VzRd8Dgv4Eyq3syhZdX/vvxwuAnmzbR9NH
-	BGITiF8pvIsZiGvYfYBHuO3o7XI03zInpMtWff6v79s++p/jjO9mGSNIBaPvs03iRQ+j
-	JJ3A==
-X-Gm-Message-State: APjAAAUHVLyrWbU7+nbiZfgSZYLJAVLSdwtM2/lyzsh1sGl3QoWl6wvM
-	7YJaV19/Ctq0n2JndIjnPkyWOg==
-X-Google-Smtp-Source: APXvYqxOZoGymw/L++nI8ROIiwlWbWKfb+bsFGBsrZ7Vwhw6WypPNbYJHUqHo7bFXfAIEXlvqUg6PA==
-X-Received: by 2002:a17:90a:2623:: with SMTP id
-	l32mr13709025pje.70.1573216553168; 
-	Fri, 08 Nov 2019 04:35:53 -0800 (PST)
+	h=x-gm-message-state:from:to:cc:subject:date:message-id;
+	bh=3QDG6k3YwH00AmH5whxYaYGGcKZRwUoSrOavZRy7f9U=;
+	b=qO3xfifEq0y4ldHmjXcGtiVLFyMEWsju+isn4YOLJhTxL6xzDGSaNffdg3a+hu/u1p
+	2x0niPiB0J9O1MH0OX6K5l0VopTGyQ2Of8m8EXs/zvK+A+3tfUNmEYk9rWkfoGnqfsvO
+	joQ+y/ElO+4Xxfn0svWnJalixQe/aS5P4srrkztc9jX6RF9hP5Yv5Y9KEOMgHPm/TKdl
+	4CAo4uG0O482no6Cx386eoKgdncLx6/uMgQX3b0oLva61JEdgk97FJKu1S/24n+PFNk4
+	O7xyHItdkA4RXjIdgYixZ1WYD0gJ9rhg60lIy3Da8RNeFDi/j5c1lEEIdEst/9HVv/xG
+	KIhw==
+X-Gm-Message-State: APjAAAVkXZsUyS0iDyg3Xh5dxf/h7c82pUKBWK6GJsBiSWaEOorwoefc
+	1PaURPf4ISiz8asbglLrCCZkDw==
+X-Google-Smtp-Source: APXvYqzh3EKiWdBjEjoAHRkm+rKim73wNr6rWClv5o5rnIc64bbPbH0yj+xiBjJMVHE2WNn6vaqeAQ==
+X-Received: by 2002:a63:3cd:: with SMTP id 196mr12022869pgd.150.1573219946145; 
+	Fri, 08 Nov 2019 05:32:26 -0800 (PST)
 Received: from localhost.localdomain ([240e:362:48f:8f00:79bd:a8a7:1834:2d1a])
 	by smtp.gmail.com with ESMTPSA id
-	q34sm5430926pjb.15.2019.11.08.04.35.39
+	12sm7626483pjm.11.2019.11.08.05.31.59
 	(version=TLS1_2 cipher=ECDHE-RSA-AES128-SHA bits=128/128);
-	Fri, 08 Nov 2019 04:35:52 -0800 (PST)
+	Fri, 08 Nov 2019 05:32:24 -0800 (PST)
 From: Zhangfei Gao <zhangfei.gao@linaro.org>
 To: Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
 	Arnd Bergmann <arnd@arndb.de>, Herbert Xu <herbert@gondor.apana.org.au>,
@@ -76,12 +74,10 @@ To: Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
 	francois.ozog@linaro.org, kenneth-lee-2012@foxmail.com,
 	Wangzhou <wangzhou1@hisilicon.com>,
 	"haojian . zhuang" <haojian.zhuang@linaro.org>, guodong.xu@linaro.org
-Subject: [PATCH v8 3/3] crypto: hisilicon - register zip engine to uacce
-Date: Fri,  8 Nov 2019 20:34:28 +0800
-Message-Id: <1573216468-10379-4-git-send-email-zhangfei.gao@linaro.org>
+Subject: [RESEND PATCH v8 0/3] Add uacce module for Accelerator
+Date: Fri,  8 Nov 2019 21:31:41 +0800
+Message-Id: <1573219904-17594-1-git-send-email-zhangfei.gao@linaro.org>
 X-Mailer: git-send-email 2.7.4
-In-Reply-To: <1573216468-10379-1-git-send-email-zhangfei.gao@linaro.org>
-References: <1573216468-10379-1-git-send-email-zhangfei.gao@linaro.org>
 Cc: Zhangfei Gao <zhangfei.gao@linaro.org>, iommu@lists.linux-foundation.org,
 	linux-kernel@vger.kernel.org, linux-accelerators@lists.ozlabs.org,
 	linux-crypto@vger.kernel.org
@@ -103,488 +99,236 @@ Content-Transfer-Encoding: 7bit
 Sender: iommu-bounces@lists.linux-foundation.org
 Errors-To: iommu-bounces@lists.linux-foundation.org
 
-Register qm to uacce framework for user crypto driver
+Uacce (Unified/User-space-access-intended Accelerator Framework) targets to
+provide Shared Virtual Addressing (SVA) between accelerators and processes.
+So accelerator can access any data structure of the main cpu.
+This differs from the data sharing between cpu and io device, which share
+data content rather than address.
+Because of unified address, hardware and user space of process can share
+the same virtual address in the communication.
 
-Signed-off-by: Zhangfei Gao <zhangfei.gao@linaro.org>
-Signed-off-by: Zhou Wang <wangzhou1@hisilicon.com>
----
- drivers/crypto/hisilicon/qm.c           | 256 ++++++++++++++++++++++++++++++--
- drivers/crypto/hisilicon/qm.h           |  11 ++
- drivers/crypto/hisilicon/zip/zip_main.c |  38 ++---
- include/uapi/misc/uacce/hisi_qm.h       |  23 +++
- 4 files changed, 289 insertions(+), 39 deletions(-)
+Uacce is intended to be used with Jean Philippe Brucker's SVA
+patchset[1], which enables IO side page fault and PASID support. 
+We have keep verifying with Jean's sva/current [2]
+We also keep verifying with Eric's SMMUv3 Nested Stage patch [3]
+
+This series and related zip & qm driver
+https://github.com/Linaro/linux-kernel-warpdrive/tree/5.4-rc4-uacce-v8
+
+The library and user application:
+https://github.com/Linaro/warpdrive/tree/wdprd-upstream-v8
+
+References:
+[1] http://jpbrucker.net/sva/
+[2] http://www.linux-arm.org/git?p=linux-jpb.git;a=shortlog;h=refs/heads/sva/current
+[3] https://github.com/eauger/linux/tree/v5.3.0-rc0-2stage-v9
+
+Change History:
+v8:
+Address some comments from Jonathan
+Merge Jean's patch, using uacce_mm instead of pid for sva_exit
+
+v7:
+As suggested by Jean and Jerome
+Only consider sva case and remove unused dma apis for the first patch.
+Also add mm_exit for sva and vm_ops.close etc
+
+
+v6: https://lkml.org/lkml/2019/10/16/231
+Change sys qfrs_size to different file, suggested by Jonathan
+Fix crypto daily build issue and based on crypto code base, also 5.4-rc1.
+
+v5: https://lkml.org/lkml/2019/10/14/74
+Add an example patch using the uacce interface, suggested by Greg
+0003-crypto-hisilicon-register-zip-engine-to-uacce.patch
+
+v4: https://lkml.org/lkml/2019/9/17/116
+Based on 5.4-rc1
+Considering other driver integrating uacce, 
+if uacce not compiled, uacce_register return error and uacce_unregister is empty.
+Simplify uacce flag: UACCE_DEV_SVA.
+Address Greg's comments: 
+Fix state machine, remove potential syslog triggered from user space etc.
+
+v3: https://lkml.org/lkml/2019/9/2/990
+Recommended by Greg, use sturct uacce_device instead of struct uacce,
+and use struct *cdev in struct uacce_device, as a result, 
+cdev can be released by itself when refcount decreased to 0.
+So the two structures are decoupled and self-maintained by themsleves.
+Also add dev.release for put_device.
+
+v2: https://lkml.org/lkml/2019/8/28/565
+Address comments from Greg and Jonathan
+Modify interface uacce_register
+Drop noiommu mode first
+
+v1: https://lkml.org/lkml/2019/8/14/277
+1. Rebase to 5.3-rc1
+2. Build on iommu interface
+3. Verifying with Jean's sva and Eric's nested mode iommu.
+4. User library has developed a lot: support zlib, openssl etc.
+5. Move to misc first
+
+RFC3:
+https://lkml.org/lkml/2018/11/12/1951
+
+RFC2:
+https://lwn.net/Articles/763990/
+
+
+Background of why Uacce:
+Von Neumann processor is not good at general data manipulation.
+It is designed for control-bound rather than data-bound application.
+The latter need less control path facility and more/specific ALUs.
+So there are more and more heterogeneous processors, such as
+encryption/decryption accelerators, TPUs, or
+EDGE (Explicated Data Graph Execution) processors, introduced to gain
+better performance or power efficiency for particular applications
+these days.
+
+There are generally two ways to make use of these heterogeneous processors:
+
+The first is to make them co-processors, just like FPU.
+This is good for some application but it has its own cons:
+It changes the ISA set permanently.
+You must save all state elements when the process is switched out.
+But most data-bound processors have a huge set of state elements.
+It makes the kernel scheduler more complex.
+
+The second is Accelerator.
+It is taken as a IO device from the CPU's point of view
+(but it need not to be physically). The process, running on CPU,
+hold a context of the accelerator and send instructions to it as if
+it calls a function or thread running with FPU.
+The context is bound with the processor itself.
+So the state elements remain in the hardware context until
+the context is released.
+
+We believe this is the core feature of an "Accelerator" vs. Co-processor
+or other heterogeneous processors.
+
+The intention of Uacce is to provide the basic facility to backup
+this scenario. Its first step is to make sure the accelerator and process
+can share the same address space. So the accelerator ISA can directly
+address any data structure of the main CPU.
+This differs from the data sharing between CPU and IO device,
+which share data content rather than address.
+So it is different comparing to the other DMA libraries.
+
+In the future, we may add more facility to support linking accelerator
+library to the main application, or managing the accelerator context as
+special thread.
+But no matter how, this can be a solid start point for new processor
+to be used as an "accelerator" as this is the essential requirement.
+
+
+The Fork Scenario
+=================
+For a process with allocated queues and shared memory, what happen if it forks
+a child?
+
+The fd of the queue is duplicated on fork, but requests sent from the child
+process are blocked.
+
+It is recommended to add O_CLOEXEC to the queue file.
+
+The queue mmap space has a VM_DONTCOPY in its VMA. So the child will lose all
+those VMAs.
+
+This is a reason why Uacce does not adopt the mode used in VFIO and
+InfiniBand.  Both solutions can set any user pointer for hardware sharing.
+But they cannot support fork when the dma is in process. Or the
+"Copy-On-Write" procedure will make the parent process lost its physical
+pages.
+
+
+Difference to the VFIO and IB framework
+---------------------------------------
+The essential function of Uacce is to let the device access the user
+address directly. There are many device drivers doing the same in the kernel.
+And both VFIO and IB can provide similar functions in framework level.
+
+But Uacce has a different goal: "share address space". It is
+not taken the request to the accelerator as an enclosure data structure. It
+takes the accelerator as another thread of the same process. So the
+accelerator can refer to any address used by the process.
+
+Both VFIO and IB are taken this as "memory sharing", not "address sharing".
+They care more on sharing the block of memory. But if there is an address
+stored in the block and referring to another memory region. The address may
+not be valid.
+
+By adding more constraints to the VFIO and IB framework, in some sense, we may
+achieve a similar goal. But we gave it up finally. Both VFIO and IB have extra
+assumption which is unnecessary to Uacce. They may hurt each other if we
+try to merge them together.
+
+VFIO manages resource of a hardware as a "virtual device". If a device need to
+serve a separated application. It must isolate the resource as a separate
+virtual device.  And the life cycle of the application and virtual device are
+unnecessary unrelated. And most concepts, such as bus, driver, probe and
+so on, to make it as a "device" is unnecessary either. And the logic added to
+VFIO to make address sharing do no help on "creating a virtual device".
+
+IB creates a "verbs" standard for sharing memory region to another remote
+entity.  Most of these verbs are to make memory region between entities to be
+synchronized.  This is not what accelerator need. Accelerator is in the same
+memory system with the CPU. It refers to the same memory system among CPU and
+devices. So the local memory terms/verbs are good enough for it. Extra "verbs"
+are not necessary. And its queue (like queue pair in IB) is the communication
+channel direct to the accelerator hardware. There is nothing about memory
+itself.
+
+Further, both VFIO and IB use the "pin" (get_user_page) way to lock local
+memory in place.  This is flexible. But it can cause other problems. For
+example, if the user process fork a child process. The COW procedure may make
+the parent process lost its pages which are sharing with the device. These may
+be fixed in the future. But is not going to be easy. (There is a discussion
+about this on Linux Plumbers Conference 2018 [1])
+
+So we choose to build the solution directly on top of IOMMU interface. IOMMU
+is the essential way for device and process to share their page mapping from
+the hardware perspective. It will be safe to create a software solution on
+this assumption.  Uacce manages the IOMMU interface for the accelerator
+device, so the device driver can export some of the resources to the user
+space. Uacce than can make sure the device and the process have the same
+address space.
+
+
+References
+==========
+.. [1] https://lwn.net/Articles/774411/
+
+Kenneth Lee (2):
+  uacce: Add documents for uacce
+  uacce: add uacce driver
+
+Zhangfei Gao (1):
+  crypto: hisilicon - register zip engine to uacce
+
+ Documentation/ABI/testing/sysfs-driver-uacce |  53 +++
+ Documentation/misc-devices/uacce.rst         | 159 +++++++
+ drivers/crypto/hisilicon/qm.c                | 256 ++++++++++-
+ drivers/crypto/hisilicon/qm.h                |  11 +
+ drivers/crypto/hisilicon/zip/zip_main.c      |  38 +-
+ drivers/misc/Kconfig                         |   1 +
+ drivers/misc/Makefile                        |   1 +
+ drivers/misc/uacce/Kconfig                   |  13 +
+ drivers/misc/uacce/Makefile                  |   2 +
+ drivers/misc/uacce/uacce.c                   | 634 +++++++++++++++++++++++++++
+ include/linux/uacce.h                        | 155 +++++++
+ include/uapi/misc/uacce/hisi_qm.h            |  23 +
+ include/uapi/misc/uacce/uacce.h              |  36 ++
+ 13 files changed, 1343 insertions(+), 39 deletions(-)
+ create mode 100644 Documentation/ABI/testing/sysfs-driver-uacce
+ create mode 100644 Documentation/misc-devices/uacce.rst
+ create mode 100644 drivers/misc/uacce/Kconfig
+ create mode 100644 drivers/misc/uacce/Makefile
+ create mode 100644 drivers/misc/uacce/uacce.c
+ create mode 100644 include/linux/uacce.h
  create mode 100644 include/uapi/misc/uacce/hisi_qm.h
+ create mode 100644 include/uapi/misc/uacce/uacce.h
 
-diff --git a/drivers/crypto/hisilicon/qm.c b/drivers/crypto/hisilicon/qm.c
-index a8ed6990..bf8442d 100644
---- a/drivers/crypto/hisilicon/qm.c
-+++ b/drivers/crypto/hisilicon/qm.c
-@@ -9,6 +9,9 @@
- #include <linux/log2.h>
- #include <linux/seq_file.h>
- #include <linux/slab.h>
-+#include <linux/uacce.h>
-+#include <linux/uaccess.h>
-+#include <uapi/misc/uacce/hisi_qm.h>
- #include "qm.h"
- 
- /* eq/aeq irq enable */
-@@ -465,17 +468,22 @@ static void qm_cq_head_update(struct hisi_qp *qp)
- 
- static void qm_poll_qp(struct hisi_qp *qp, struct hisi_qm *qm)
- {
--	struct qm_cqe *cqe = qp->cqe + qp->qp_status.cq_head;
--
--	if (qp->req_cb) {
--		while (QM_CQE_PHASE(cqe) == qp->qp_status.cqc_phase) {
--			dma_rmb();
--			qp->req_cb(qp, qp->sqe + qm->sqe_size * cqe->sq_head);
--			qm_cq_head_update(qp);
--			cqe = qp->cqe + qp->qp_status.cq_head;
--			qm_db(qm, qp->qp_id, QM_DOORBELL_CMD_CQ,
--			      qp->qp_status.cq_head, 0);
--			atomic_dec(&qp->qp_status.used);
-+	struct qm_cqe *cqe;
-+
-+	if (qp->event_cb) {
-+		qp->event_cb(qp);
-+	} else {
-+		cqe = qp->cqe + qp->qp_status.cq_head;
-+
-+		if (qp->req_cb) {
-+			while (QM_CQE_PHASE(cqe) == qp->qp_status.cqc_phase) {
-+				dma_rmb();
-+				qp->req_cb(qp, qp->sqe + qm->sqe_size *
-+					   cqe->sq_head);
-+				qm_cq_head_update(qp);
-+				cqe = qp->cqe + qp->qp_status.cq_head;
-+				atomic_dec(&qp->qp_status.used);
-+			}
- 		}
- 
- 		/* set c_flag */
-@@ -1271,7 +1279,7 @@ static int qm_qp_ctx_cfg(struct hisi_qp *qp, int qp_id, int pasid)
-  * @qp: The qp we want to start to run.
-  * @arg: Accelerator specific argument.
-  *
-- * After this function, qp can receive request from user. Return qp_id if
-+ * After this function, qp can receive request from user. Return 0 if
-  * successful, Return -EBUSY if failed.
-  */
- int hisi_qm_start_qp(struct hisi_qp *qp, unsigned long arg)
-@@ -1316,7 +1324,7 @@ int hisi_qm_start_qp(struct hisi_qp *qp, unsigned long arg)
- 
- 	dev_dbg(dev, "queue %d started\n", qp_id);
- 
--	return qp_id;
-+	return 0;
- }
- EXPORT_SYMBOL_GPL(hisi_qm_start_qp);
- 
-@@ -1397,6 +1405,213 @@ static void hisi_qm_cache_wb(struct hisi_qm *qm)
- 	}
- }
- 
-+static void qm_qp_event_notifier(struct hisi_qp *qp)
-+{
-+	wake_up_interruptible(&qp->uacce_q->wait);
-+}
-+
-+static int hisi_qm_get_available_instances(struct uacce_device *uacce)
-+{
-+	int i, ret;
-+	struct hisi_qm *qm = uacce->priv;
-+
-+	read_lock(&qm->qps_lock);
-+	for (i = 0, ret = 0; i < qm->qp_num; i++)
-+		if (!qm->qp_array[i])
-+			ret++;
-+	read_unlock(&qm->qps_lock);
-+
-+	return ret;
-+}
-+
-+static int hisi_qm_uacce_get_queue(struct uacce_device *uacce,
-+				   unsigned long arg,
-+				   struct uacce_queue *q)
-+{
-+	struct hisi_qm *qm = uacce->priv;
-+	struct hisi_qp *qp;
-+	u8 alg_type = 0;
-+
-+	qp = hisi_qm_create_qp(qm, alg_type);
-+	if (IS_ERR(qp))
-+		return PTR_ERR(qp);
-+
-+	q->priv = qp;
-+	q->uacce = uacce;
-+	qp->uacce_q = q;
-+	qp->event_cb = qm_qp_event_notifier;
-+	qp->pasid = arg;
-+
-+	return 0;
-+}
-+
-+static void hisi_qm_uacce_put_queue(struct uacce_queue *q)
-+{
-+	struct hisi_qp *qp = q->priv;
-+
-+	hisi_qm_cache_wb(qp->qm);
-+	hisi_qm_release_qp(qp);
-+}
-+
-+/* map sq/cq/doorbell to user space */
-+static int hisi_qm_uacce_mmap(struct uacce_queue *q,
-+			      struct vm_area_struct *vma,
-+			      struct uacce_qfile_region *qfr)
-+{
-+	struct hisi_qp *qp = q->priv;
-+	struct hisi_qm *qm = qp->qm;
-+	size_t sz = vma->vm_end - vma->vm_start;
-+	struct pci_dev *pdev = qm->pdev;
-+	struct device *dev = &pdev->dev;
-+	unsigned long vm_pgoff;
-+	int ret;
-+
-+	switch (qfr->type) {
-+	case UACCE_QFRT_MMIO:
-+		if (qm->ver == QM_HW_V2) {
-+			if (sz > PAGE_SIZE * (QM_DOORBELL_PAGE_NR +
-+			    QM_DOORBELL_SQ_CQ_BASE_V2 / PAGE_SIZE))
-+				return -EINVAL;
-+		} else {
-+			if (sz > PAGE_SIZE * QM_DOORBELL_PAGE_NR)
-+				return -EINVAL;
-+		}
-+
-+		vma->vm_flags |= VM_IO;
-+
-+		return remap_pfn_range(vma, vma->vm_start,
-+				       qm->phys_base >> PAGE_SHIFT,
-+				       sz, pgprot_noncached(vma->vm_page_prot));
-+	case UACCE_QFRT_DUS:
-+		if (sz != qp->qdma.size)
-+			return -EINVAL;
-+
-+		/*
-+		 * dma_mmap_coherent() requires vm_pgoff as 0
-+		 * restore vm_pfoff to initial value for mmap()
-+		 */
-+		vm_pgoff = vma->vm_pgoff;
-+		vma->vm_pgoff = 0;
-+		ret = dma_mmap_coherent(dev, vma, qp->qdma.va,
-+					qp->qdma.dma, sz);
-+		vma->vm_pgoff = vm_pgoff;
-+		return ret;
-+
-+	default:
-+		return -EINVAL;
-+	}
-+}
-+
-+static int hisi_qm_uacce_start_queue(struct uacce_queue *q)
-+{
-+	struct hisi_qp *qp = q->priv;
-+
-+	return hisi_qm_start_qp(qp, qp->pasid);
-+}
-+
-+static void hisi_qm_uacce_stop_queue(struct uacce_queue *q)
-+{
-+	hisi_qm_stop_qp(q->priv);
-+}
-+
-+static int qm_set_sqctype(struct uacce_queue *q, u16 type)
-+{
-+	struct hisi_qm *qm = q->uacce->priv;
-+	struct hisi_qp *qp = q->priv;
-+
-+	write_lock(&qm->qps_lock);
-+	qp->alg_type = type;
-+	write_unlock(&qm->qps_lock);
-+
-+	return 0;
-+}
-+
-+static long hisi_qm_uacce_ioctl(struct uacce_queue *q, unsigned int cmd,
-+				unsigned long arg)
-+{
-+	struct hisi_qp *qp = q->priv;
-+	struct hisi_qp_ctx qp_ctx;
-+
-+	if (cmd == UACCE_CMD_QM_SET_QP_CTX) {
-+		if (copy_from_user(&qp_ctx, (void __user *)arg,
-+				   sizeof(struct hisi_qp_ctx)))
-+			return -EFAULT;
-+
-+		if (qp_ctx.qc_type != 0 && qp_ctx.qc_type != 1)
-+			return -EINVAL;
-+
-+		qm_set_sqctype(q, qp_ctx.qc_type);
-+		qp_ctx.id = qp->qp_id;
-+
-+		if (copy_to_user((void __user *)arg, &qp_ctx,
-+				 sizeof(struct hisi_qp_ctx)))
-+			return -EFAULT;
-+	} else {
-+		return -EINVAL;
-+	}
-+
-+	return 0;
-+}
-+
-+static const struct uacce_ops uacce_qm_ops = {
-+	.get_available_instances = hisi_qm_get_available_instances,
-+	.get_queue = hisi_qm_uacce_get_queue,
-+	.put_queue = hisi_qm_uacce_put_queue,
-+	.start_queue = hisi_qm_uacce_start_queue,
-+	.stop_queue = hisi_qm_uacce_stop_queue,
-+	.mmap = hisi_qm_uacce_mmap,
-+	.ioctl = hisi_qm_uacce_ioctl,
-+};
-+
-+static int qm_register_uacce(struct hisi_qm *qm)
-+{
-+	struct pci_dev *pdev = qm->pdev;
-+	struct uacce_device *uacce;
-+	unsigned long mmio_page_nr;
-+	unsigned long dus_page_nr;
-+	struct uacce_interface interface = {
-+		.flags = UACCE_DEV_SVA,
-+		.ops = &uacce_qm_ops,
-+	};
-+
-+	strncpy(interface.name, pdev->driver->name, sizeof(interface.name));
-+
-+	uacce = uacce_register(&pdev->dev, &interface);
-+	if (IS_ERR(uacce))
-+		return PTR_ERR(uacce);
-+
-+	if (uacce->flags & UACCE_DEV_SVA) {
-+		qm->use_sva = true;
-+	} else {
-+		/* only consider sva case */
-+		uacce_unregister(uacce);
-+		return -EINVAL;
-+	}
-+
-+	uacce->is_vf = pdev->is_virtfn;
-+	uacce->priv = qm;
-+	uacce->algs = qm->algs;
-+
-+	if (qm->ver == QM_HW_V1) {
-+		mmio_page_nr = QM_DOORBELL_PAGE_NR;
-+		uacce->api_ver = HISI_QM_API_VER_BASE;
-+	} else {
-+		mmio_page_nr = QM_DOORBELL_PAGE_NR +
-+			QM_DOORBELL_SQ_CQ_BASE_V2 / PAGE_SIZE;
-+		uacce->api_ver = HISI_QM_API_VER2_BASE;
-+	}
-+
-+	dus_page_nr = (PAGE_SIZE - 1 + qm->sqe_size * QM_Q_DEPTH +
-+		       sizeof(struct qm_cqe) * QM_Q_DEPTH) >> PAGE_SHIFT;
-+
-+	uacce->qf_pg_num[UACCE_QFRT_MMIO] = mmio_page_nr;
-+	uacce->qf_pg_num[UACCE_QFRT_DUS]  = dus_page_nr;
-+
-+	qm->uacce = uacce;
-+
-+	return 0;
-+}
-+
- /**
-  * hisi_qm_init() - Initialize configures about qm.
-  * @qm: The qm needing init.
-@@ -1421,10 +1636,14 @@ int hisi_qm_init(struct hisi_qm *qm)
- 		return -EINVAL;
- 	}
- 
-+	ret = qm_register_uacce(qm);
-+	if (ret < 0)
-+		dev_warn(&pdev->dev, "fail to register uacce (%d)\n", ret);
-+
- 	ret = pci_enable_device_mem(pdev);
- 	if (ret < 0) {
- 		dev_err(&pdev->dev, "Failed to enable device mem!\n");
--		return ret;
-+		goto err_unregister_uacce;
- 	}
- 
- 	ret = pci_request_mem_regions(pdev, qm->dev_name);
-@@ -1433,8 +1652,9 @@ int hisi_qm_init(struct hisi_qm *qm)
- 		goto err_disable_pcidev;
- 	}
- 
--	qm->io_base = ioremap(pci_resource_start(pdev, PCI_BAR_2),
--			      pci_resource_len(qm->pdev, PCI_BAR_2));
-+	qm->phys_base = pci_resource_start(pdev, PCI_BAR_2);
-+	qm->phys_size = pci_resource_len(qm->pdev, PCI_BAR_2);
-+	qm->io_base = ioremap(qm->phys_base, qm->phys_size);
- 	if (!qm->io_base) {
- 		ret = -EIO;
- 		goto err_release_mem_regions;
-@@ -1476,6 +1696,8 @@ int hisi_qm_init(struct hisi_qm *qm)
- 	pci_release_mem_regions(pdev);
- err_disable_pcidev:
- 	pci_disable_device(pdev);
-+err_unregister_uacce:
-+	uacce_unregister(qm->uacce);
- 
- 	return ret;
- }
-@@ -1504,6 +1726,8 @@ void hisi_qm_uninit(struct hisi_qm *qm)
- 	iounmap(qm->io_base);
- 	pci_release_mem_regions(pdev);
- 	pci_disable_device(pdev);
-+
-+	uacce_unregister(qm->uacce);
- }
- EXPORT_SYMBOL_GPL(hisi_qm_uninit);
- 
-diff --git a/drivers/crypto/hisilicon/qm.h b/drivers/crypto/hisilicon/qm.h
-index 103e2fd..16a176f 100644
---- a/drivers/crypto/hisilicon/qm.h
-+++ b/drivers/crypto/hisilicon/qm.h
-@@ -77,6 +77,9 @@
- 
- #define HISI_ACC_SGL_SGE_NR_MAX		255
- 
-+/* page number for queue file region */
-+#define QM_DOORBELL_PAGE_NR		1
-+
- enum qp_state {
- 	QP_STOP,
- };
-@@ -161,7 +164,12 @@ struct hisi_qm {
- 	u32 error_mask;
- 	u32 msi_mask;
- 
-+	const char *algs;
- 	bool use_dma_api;
-+	bool use_sva;
-+	resource_size_t phys_base;
-+	resource_size_t phys_size;
-+	struct uacce_device *uacce;
- };
- 
- struct hisi_qp_status {
-@@ -191,10 +199,13 @@ struct hisi_qp {
- 	struct hisi_qp_ops *hw_ops;
- 	void *qp_ctx;
- 	void (*req_cb)(struct hisi_qp *qp, void *data);
-+	void (*event_cb)(struct hisi_qp *qp);
- 	struct work_struct work;
- 	struct workqueue_struct *wq;
- 
- 	struct hisi_qm *qm;
-+	u16 pasid;
-+	struct uacce_queue *uacce_q;
- };
- 
- int hisi_qm_init(struct hisi_qm *qm);
-diff --git a/drivers/crypto/hisilicon/zip/zip_main.c b/drivers/crypto/hisilicon/zip/zip_main.c
-index 1b2ee96..1c91587 100644
---- a/drivers/crypto/hisilicon/zip/zip_main.c
-+++ b/drivers/crypto/hisilicon/zip/zip_main.c
-@@ -316,8 +316,14 @@ static void hisi_zip_set_user_domain_and_cache(struct hisi_zip *hisi_zip)
- 	writel(AXUSER_BASE, base + HZIP_BD_RUSER_32_63);
- 	writel(AXUSER_BASE, base + HZIP_SGL_RUSER_32_63);
- 	writel(AXUSER_BASE, base + HZIP_BD_WUSER_32_63);
--	writel(AXUSER_BASE, base + HZIP_DATA_RUSER_32_63);
--	writel(AXUSER_BASE, base + HZIP_DATA_WUSER_32_63);
-+
-+	if (hisi_zip->qm.use_sva) {
-+		writel(AXUSER_BASE | AXUSER_SSV, base + HZIP_DATA_RUSER_32_63);
-+		writel(AXUSER_BASE | AXUSER_SSV, base + HZIP_DATA_WUSER_32_63);
-+	} else {
-+		writel(AXUSER_BASE, base + HZIP_DATA_RUSER_32_63);
-+		writel(AXUSER_BASE, base + HZIP_DATA_WUSER_32_63);
-+	}
- 
- 	/* let's open all compression/decompression cores */
- 	writel(DECOMP_CHECK_ENABLE | ALL_COMP_DECOMP_EN,
-@@ -672,23 +678,12 @@ static int hisi_zip_probe(struct pci_dev *pdev, const struct pci_device_id *id)
- 	qm->pdev = pdev;
- 	qm->ver = rev_id;
- 
-+	qm->use_dma_api = true;
-+	qm->algs = "zlib\ngzip\n";
- 	qm->sqe_size = HZIP_SQE_SIZE;
- 	qm->dev_name = hisi_zip_name;
- 	qm->fun_type = (pdev->device == PCI_DEVICE_ID_ZIP_PF) ? QM_HW_PF :
- 								QM_HW_VF;
--	switch (uacce_mode) {
--	case 0:
--		qm->use_dma_api = true;
--		break;
--	case 1:
--		qm->use_dma_api = false;
--		break;
--	case 2:
--		qm->use_dma_api = true;
--		break;
--	default:
--		return -EINVAL;
--	}
- 
- 	ret = hisi_qm_init(qm);
- 	if (ret) {
-@@ -976,12 +971,10 @@ static int __init hisi_zip_init(void)
- 		goto err_pci;
- 	}
- 
--	if (uacce_mode == 0 || uacce_mode == 2) {
--		ret = hisi_zip_register_to_crypto();
--		if (ret < 0) {
--			pr_err("Failed to register driver to crypto.\n");
--			goto err_crypto;
--		}
-+	ret = hisi_zip_register_to_crypto();
-+	if (ret < 0) {
-+		pr_err("Failed to register driver to crypto.\n");
-+		goto err_crypto;
- 	}
- 
- 	return 0;
-@@ -996,8 +989,7 @@ static int __init hisi_zip_init(void)
- 
- static void __exit hisi_zip_exit(void)
- {
--	if (uacce_mode == 0 || uacce_mode == 2)
--		hisi_zip_unregister_from_crypto();
-+	hisi_zip_unregister_from_crypto();
- 	pci_unregister_driver(&hisi_zip_pci_driver);
- 	hisi_zip_unregister_debugfs();
- }
-diff --git a/include/uapi/misc/uacce/hisi_qm.h b/include/uapi/misc/uacce/hisi_qm.h
-new file mode 100644
-index 0000000..6435f0b
---- /dev/null
-+++ b/include/uapi/misc/uacce/hisi_qm.h
-@@ -0,0 +1,23 @@
-+/* SPDX-License-Identifier: GPL-2.0+ WITH Linux-syscall-note */
-+#ifndef _UAPI_HISI_QM_H
-+#define _UAPI_HISI_QM_H
-+
-+#include <linux/types.h>
-+
-+/**
-+ * struct hisi_qp_ctx - User data for hisi qp.
-+ * @id: qp_index return to user space
-+ * @qc_type: Accelerator algorithm type
-+ */
-+struct hisi_qp_ctx {
-+	__u16 id;
-+	__u16 qc_type;
-+};
-+
-+#define HISI_QM_API_VER_BASE "hisi_qm_v1"
-+#define HISI_QM_API_VER2_BASE "hisi_qm_v2"
-+
-+/* UACCE_CMD_QM_SET_QP_CTX: Set qp algorithm type */
-+#define UACCE_CMD_QM_SET_QP_CTX	_IOWR('H', 10, struct hisi_qp_ctx)
-+
-+#endif
 -- 
 2.7.4
 
