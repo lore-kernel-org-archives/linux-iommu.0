@@ -2,54 +2,57 @@ Return-Path: <SRS0=V12C=ZA=lists.linux-foundation.org=iommu-bounces@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-3.8 required=3.0 tests=DKIM_INVALID,DKIM_SIGNED,
-	MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS,USER_AGENT_GIT autolearn=no
-	autolearn_force=no version=3.4.0
+X-Spam-Status: No, score=-9.8 required=3.0 tests=DKIM_INVALID,DKIM_SIGNED,
+	INCLUDES_PATCH,MAILING_LIST_MULTI,SIGNED_OFF_BY,SPF_HELO_NONE,SPF_PASS,
+	USER_AGENT_GIT autolearn=ham autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 35CA5FA372C
-	for <iommu@archiver.kernel.org>; Fri,  8 Nov 2019 15:16:17 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 5BA1CC5DF60
+	for <iommu@archiver.kernel.org>; Fri,  8 Nov 2019 15:16:20 +0000 (UTC)
 Received: from mail.linuxfoundation.org (mail.linuxfoundation.org [140.211.169.12])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by mail.kernel.org (Postfix) with ESMTPS id 05C66222C4
-	for <iommu@archiver.kernel.org>; Fri,  8 Nov 2019 15:16:16 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTPS id 2D4D6222C5
+	for <iommu@archiver.kernel.org>; Fri,  8 Nov 2019 15:16:20 +0000 (UTC)
 Authentication-Results: mail.kernel.org;
-	dkim=fail reason="signature verification failed" (1024-bit key) header.d=kernel.org header.i=@kernel.org header.b="p2x2OLB9"
-DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 05C66222C4
+	dkim=fail reason="signature verification failed" (1024-bit key) header.d=kernel.org header.i=@kernel.org header.b="NtPL57/k"
+DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 2D4D6222C5
 Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=kernel.org
 Authentication-Results: mail.kernel.org; spf=pass smtp.mailfrom=iommu-bounces@lists.linux-foundation.org
 Received: from mail.linux-foundation.org (localhost [127.0.0.1])
-	by mail.linuxfoundation.org (Postfix) with ESMTP id CD711DB5;
-	Fri,  8 Nov 2019 15:16:16 +0000 (UTC)
+	by mail.linuxfoundation.org (Postfix) with ESMTP id 07F4ADC1;
+	Fri,  8 Nov 2019 15:16:20 +0000 (UTC)
 Received: from smtp1.linuxfoundation.org (smtp1.linux-foundation.org
 	[172.17.192.35])
-	by mail.linuxfoundation.org (Postfix) with ESMTPS id 33F28DB4
+	by mail.linuxfoundation.org (Postfix) with ESMTPS id B27C6DB6
 	for <iommu@lists.linux-foundation.org>;
-	Fri,  8 Nov 2019 15:16:16 +0000 (UTC)
+	Fri,  8 Nov 2019 15:16:18 +0000 (UTC)
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp1.linuxfoundation.org (Postfix) with ESMTPS id C2FE8196
+	by smtp1.linuxfoundation.org (Postfix) with ESMTPS id 565F187D
 	for <iommu@lists.linux-foundation.org>;
-	Fri,  8 Nov 2019 15:16:15 +0000 (UTC)
+	Fri,  8 Nov 2019 15:16:18 +0000 (UTC)
 Received: from localhost.localdomain (236.31.169.217.in-addr.arpa
 	[217.169.31.236])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by mail.kernel.org (Postfix) with ESMTPSA id 8EBE2214DB;
-	Fri,  8 Nov 2019 15:16:12 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTPSA id 1CA6B21882;
+	Fri,  8 Nov 2019 15:16:15 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=default; t=1573226175;
-	bh=nD47Fyavvt+u4/f0W65Gr+cRRT2ED6dF9mWsjBW13dc=;
-	h=From:To:Cc:Subject:Date:From;
-	b=p2x2OLB9c0MkLxp4toBA4qT2FhiYuS31bX+d7J29WYWWLOgeJ+Y7yso8TiOKCaPJ9
-	+N/wg4fwi0M12IGed/UzywZb4K/G9EiVycGbhAdw4ACh1Tuo9xw11EnSZ/BDXEXz7c
-	UhLbZj/ZNuo/+4fCyWbeiNITXN2d+NxNy9daP8eA=
+	s=default; t=1573226178;
+	bh=AvmBPQEpvYrOUJG7q9FRz0pUESCUkvDpcTQVZktsyOY=;
+	h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
+	b=NtPL57/k26fyzf4NNvvs5S8R8X0FXAXL3B66KI0zNhYxwlVBxSoRHJh9ZAdPDxJk8
+	djtXrpWNZt7hqQUcsKDDPT9H5BtqcEKR/0eYrefW0+kb6nobqBeO2vPIHrK3d9ICgd
+	SZsldDV740THSHDODJUz7C9lt3ngUF7/hgkMerlw=
 From: Will Deacon <will@kernel.org>
 To: iommu@lists.linux-foundation.org,
 	linux-kernel@vger.kernel.org
-Subject: [PATCH v2 0/9] iommu: Permit modular builds of ARM SMMU[v3] drivers
-Date: Fri,  8 Nov 2019 15:15:59 +0000
-Message-Id: <20191108151608.20932-1-will@kernel.org>
+Subject: [PATCH v2 1/9] drivers/iommu: Export core IOMMU API symbols to permit
+	modular drivers
+Date: Fri,  8 Nov 2019 15:16:00 +0000
+Message-Id: <20191108151608.20932-2-will@kernel.org>
 X-Mailer: git-send-email 2.20.1
+In-Reply-To: <20191108151608.20932-1-will@kernel.org>
+References: <20191108151608.20932-1-will@kernel.org>
 MIME-Version: 1.0
 Cc: "Isaac J. Manjarres" <isaacm@codeaurora.org>,
 	Jean-Philippe Brucker <jean-philippe@linaro.org>,
@@ -73,60 +76,117 @@ Content-Transfer-Encoding: 7bit
 Sender: iommu-bounces@lists.linux-foundation.org
 Errors-To: iommu-bounces@lists.linux-foundation.org
 
-Hi all,
+Building IOMMU drivers as modules requires that the core IOMMU API
+symbols are exported as GPL symbols.
 
-This is version two of the patches I previously posted here:
+Signed-off-by: Will Deacon <will@kernel.org>
+---
+ drivers/iommu/iommu-sysfs.c | 5 +++++
+ drivers/iommu/iommu.c       | 8 ++++++++
+ 2 files changed, 13 insertions(+)
 
-  https://lore.kernel.org/lkml/20191030145112.19738-1-will@kernel.org/
-
-Changes since v1 include:
-
-  * Build single "arm-smmu-mod.ko" module for the Arm SMMU driver
-  * Hold a reference to the IOMMU driver module across {add,remove}_device()
-  * Take a reference to the IOMMU driver module during of_xlate()
-  * Added Bjorn's ack on the PCI export patch
-
-Please note that I haven't been able to test this properly, since I don't
-currently have access to any Arm SMMU hardware.
-
-Cheers,
-
-Will
-
-Cc: Jean-Philippe Brucker <jean-philippe@linaro.org>
-Cc: Jordan Crouse <jcrouse@codeaurora.org>
-Cc: John Garry <john.garry@huawei.com>
-Cc: Bjorn Helgaas <bhelgaas@google.com>
-Cc: Saravana Kannan <saravanak@google.com>
-Cc: "Isaac J. Manjarres" <isaacm@codeaurora.org>
-Cc: Robin Murphy <robin.murphy@arm.com>
-Cc: Lorenzo Pieralisi <lorenzo.pieralisi@arm.com>
-Cc: Joerg Roedel <joro@8bytes.org>
-
---->8
-
-Will Deacon (9):
-  drivers/iommu: Export core IOMMU API symbols to permit modular drivers
-  iommu/of: Request ACS from the PCI core when configuring IOMMU linkage
-  PCI: Export pci_ats_disabled() as a GPL symbol to modules
-  drivers/iommu: Take a ref to the IOMMU driver prior to ->add_device()
-  iommu/of: Take a ref to the IOMMU driver during ->of_xlate()
-  Revert "iommu/arm-smmu: Make arm-smmu-v3 explicitly non-modular"
-  iommu/arm-smmu-v3: Allow building as a module
-  Revert "iommu/arm-smmu: Make arm-smmu explicitly non-modular"
-  iommu/arm-smmu: Allow building as a module
-
- drivers/iommu/Kconfig       | 16 ++++++-
- drivers/iommu/Makefile      |  3 +-
- drivers/iommu/arm-smmu-v3.c | 27 +++++++-----
- drivers/iommu/arm-smmu.c    | 87 ++++++++++++++++++++++---------------
- drivers/iommu/iommu-sysfs.c |  5 +++
- drivers/iommu/iommu.c       | 27 +++++++++++-
- drivers/iommu/of_iommu.c    | 17 +++++---
- drivers/pci/pci.c           |  1 +
- include/linux/iommu.h       |  2 +
- 9 files changed, 130 insertions(+), 55 deletions(-)
-
+diff --git a/drivers/iommu/iommu-sysfs.c b/drivers/iommu/iommu-sysfs.c
+index e436ff813e7e..99869217fbec 100644
+--- a/drivers/iommu/iommu-sysfs.c
++++ b/drivers/iommu/iommu-sysfs.c
+@@ -87,6 +87,7 @@ int iommu_device_sysfs_add(struct iommu_device *iommu,
+ 	put_device(iommu->dev);
+ 	return ret;
+ }
++EXPORT_SYMBOL_GPL(iommu_device_sysfs_add);
+ 
+ void iommu_device_sysfs_remove(struct iommu_device *iommu)
+ {
+@@ -94,6 +95,8 @@ void iommu_device_sysfs_remove(struct iommu_device *iommu)
+ 	device_unregister(iommu->dev);
+ 	iommu->dev = NULL;
+ }
++EXPORT_SYMBOL_GPL(iommu_device_sysfs_remove);
++
+ /*
+  * IOMMU drivers can indicate a device is managed by a given IOMMU using
+  * this interface.  A link to the device will be created in the "devices"
+@@ -119,6 +122,7 @@ int iommu_device_link(struct iommu_device *iommu, struct device *link)
+ 
+ 	return ret;
+ }
++EXPORT_SYMBOL_GPL(iommu_device_link);
+ 
+ void iommu_device_unlink(struct iommu_device *iommu, struct device *link)
+ {
+@@ -128,3 +132,4 @@ void iommu_device_unlink(struct iommu_device *iommu, struct device *link)
+ 	sysfs_remove_link(&link->kobj, "iommu");
+ 	sysfs_remove_link_from_group(&iommu->dev->kobj, "devices", dev_name(link));
+ }
++EXPORT_SYMBOL_GPL(iommu_device_unlink);
+diff --git a/drivers/iommu/iommu.c b/drivers/iommu/iommu.c
+index d658c7c6a2ab..c1aadb570145 100644
+--- a/drivers/iommu/iommu.c
++++ b/drivers/iommu/iommu.c
+@@ -141,6 +141,7 @@ int iommu_device_register(struct iommu_device *iommu)
+ 	spin_unlock(&iommu_device_lock);
+ 	return 0;
+ }
++EXPORT_SYMBOL_GPL(iommu_device_register);
+ 
+ void iommu_device_unregister(struct iommu_device *iommu)
+ {
+@@ -148,6 +149,7 @@ void iommu_device_unregister(struct iommu_device *iommu)
+ 	list_del(&iommu->list);
+ 	spin_unlock(&iommu_device_lock);
+ }
++EXPORT_SYMBOL_GPL(iommu_device_unregister);
+ 
+ static struct iommu_param *iommu_get_dev_param(struct device *dev)
+ {
+@@ -886,6 +888,7 @@ struct iommu_group *iommu_group_ref_get(struct iommu_group *group)
+ 	kobject_get(group->devices_kobj);
+ 	return group;
+ }
++EXPORT_SYMBOL_GPL(iommu_group_ref_get);
+ 
+ /**
+  * iommu_group_put - Decrement group reference
+@@ -1259,6 +1262,7 @@ struct iommu_group *generic_device_group(struct device *dev)
+ {
+ 	return iommu_group_alloc();
+ }
++EXPORT_SYMBOL_GPL(generic_device_group);
+ 
+ /*
+  * Use standard PCI bus topology, isolation features, and DMA alias quirks
+@@ -1326,6 +1330,7 @@ struct iommu_group *pci_device_group(struct device *dev)
+ 	/* No shared group found, allocate new */
+ 	return iommu_group_alloc();
+ }
++EXPORT_SYMBOL_GPL(pci_device_group);
+ 
+ /* Get the IOMMU group for device on fsl-mc bus */
+ struct iommu_group *fsl_mc_device_group(struct device *dev)
+@@ -1338,6 +1343,7 @@ struct iommu_group *fsl_mc_device_group(struct device *dev)
+ 		group = iommu_group_alloc();
+ 	return group;
+ }
++EXPORT_SYMBOL_GPL(fsl_mc_device_group);
+ 
+ /**
+  * iommu_group_get_for_dev - Find or create the IOMMU group for a device
+@@ -1406,6 +1412,7 @@ struct iommu_group *iommu_group_get_for_dev(struct device *dev)
+ 
+ 	return group;
+ }
++EXPORT_SYMBOL(iommu_group_get_for_dev);
+ 
+ struct iommu_domain *iommu_group_default_domain(struct iommu_group *group)
+ {
+@@ -2185,6 +2192,7 @@ struct iommu_resv_region *iommu_alloc_resv_region(phys_addr_t start,
+ 	region->type = type;
+ 	return region;
+ }
++EXPORT_SYMBOL_GPL(iommu_alloc_resv_region);
+ 
+ static int
+ request_default_domain_for_dev(struct device *dev, unsigned long type)
 -- 
 2.24.0.rc1.363.gb1bccd3e3d-goog
 
