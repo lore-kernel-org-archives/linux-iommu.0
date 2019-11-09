@@ -2,56 +2,52 @@ Return-Path: <SRS0=RXoQ=ZB=lists.linux-foundation.org=iommu-bounces@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-8.3 required=3.0 tests=HEADER_FROM_DIFFERENT_DOMAINS,
+X-Spam-Status: No, score=-9.8 required=3.0 tests=HEADER_FROM_DIFFERENT_DOMAINS,
 	INCLUDES_PATCH,MAILING_LIST_MULTI,SIGNED_OFF_BY,SPF_HELO_NONE,SPF_PASS,
-	USER_AGENT_SANE_1 autolearn=ham autolearn_force=no version=3.4.0
+	USER_AGENT_GIT autolearn=ham autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id BBA87C17440
-	for <iommu@archiver.kernel.org>; Sat,  9 Nov 2019 00:48:08 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id E02BDC43331
+	for <iommu@archiver.kernel.org>; Sat,  9 Nov 2019 03:43:42 +0000 (UTC)
 Received: from mail.linuxfoundation.org (mail.linuxfoundation.org [140.211.169.12])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by mail.kernel.org (Postfix) with ESMTPS id 862D820869
-	for <iommu@archiver.kernel.org>; Sat,  9 Nov 2019 00:48:08 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 862D820869
+	by mail.kernel.org (Postfix) with ESMTPS id B1E6E21019
+	for <iommu@archiver.kernel.org>; Sat,  9 Nov 2019 03:43:42 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org B1E6E21019
 Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=linux.intel.com
 Authentication-Results: mail.kernel.org; spf=pass smtp.mailfrom=iommu-bounces@lists.linux-foundation.org
 Received: from mail.linux-foundation.org (localhost [127.0.0.1])
-	by mail.linuxfoundation.org (Postfix) with ESMTP id 3EB88C4E;
-	Sat,  9 Nov 2019 00:48:08 +0000 (UTC)
+	by mail.linuxfoundation.org (Postfix) with ESMTP id 6C54CD2E;
+	Sat,  9 Nov 2019 03:43:42 +0000 (UTC)
 Received: from smtp1.linuxfoundation.org (smtp1.linux-foundation.org
 	[172.17.192.35])
-	by mail.linuxfoundation.org (Postfix) with ESMTPS id C46F0B4B
+	by mail.linuxfoundation.org (Postfix) with ESMTPS id 14EEBB59
 	for <iommu@lists.linux-foundation.org>;
-	Sat,  9 Nov 2019 00:48:06 +0000 (UTC)
+	Sat,  9 Nov 2019 03:43:41 +0000 (UTC)
 X-Greylist: domain auto-whitelisted by SQLgrey-1.7.6
-Received: from mga09.intel.com (mga09.intel.com [134.134.136.24])
-	by smtp1.linuxfoundation.org (Postfix) with ESMTPS id 51E635F4
+Received: from mga05.intel.com (mga05.intel.com [192.55.52.43])
+	by smtp1.linuxfoundation.org (Postfix) with ESMTPS id 61295710
 	for <iommu@lists.linux-foundation.org>;
-	Sat,  9 Nov 2019 00:48:06 +0000 (UTC)
+	Sat,  9 Nov 2019 03:43:39 +0000 (UTC)
 X-Amp-Result: SKIPPED(no attachment in message)
 X-Amp-File-Uploaded: False
-Received: from fmsmga001.fm.intel.com ([10.253.24.23])
-	by orsmga102.jf.intel.com with ESMTP/TLS/DHE-RSA-AES256-GCM-SHA384;
-	08 Nov 2019 16:48:05 -0800
+Received: from fmsmga004.fm.intel.com ([10.253.24.48])
+	by fmsmga105.fm.intel.com with ESMTP/TLS/DHE-RSA-AES256-GCM-SHA384;
+	08 Nov 2019 19:43:37 -0800
 X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.68,283,1569308400"; d="scan'208";a="213338989"
-Received: from allen-box.sh.intel.com (HELO [10.239.159.136])
-	([10.239.159.136])
-	by fmsmga001.fm.intel.com with ESMTP; 08 Nov 2019 16:48:03 -0800
-Subject: Re: [PATCH] iommu/vt-d: Fix QI_DEV_IOTLB_PFSID and
-	QI_DEV_EIOTLB_PFSID macros
-To: Eric Auger <eric.auger@redhat.com>, eric.auger.pro@gmail.com,
-	joro@8bytes.org, iommu@lists.linux-foundation.org
-References: <20191108155803.15051-1-eric.auger@redhat.com>
+X-IronPort-AV: E=Sophos;i="5.68,283,1569308400"; d="scan'208";a="228378624"
+Received: from allen-box.sh.intel.com ([10.239.159.136])
+	by fmsmga004.fm.intel.com with ESMTP; 08 Nov 2019 19:43:36 -0800
 From: Lu Baolu <baolu.lu@linux.intel.com>
-Message-ID: <6c3be6b6-18ac-e0ad-cd41-6f9efe4e02e3@linux.intel.com>
-Date: Sat, 9 Nov 2019 08:45:12 +0800
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:60.0) Gecko/20100101
-	Thunderbird/60.9.0
-MIME-Version: 1.0
-In-Reply-To: <20191108155803.15051-1-eric.auger@redhat.com>
-Content-Language: en-US
+To: Joerg Roedel <joro@8bytes.org>,
+	David Woodhouse <dwmw2@infradead.org>
+Subject: [PATCH v2 1/1] iommu/vt-d: Add Kconfig option to enable/disable
+	scalable mode
+Date: Sat,  9 Nov 2019 11:40:39 +0800
+Message-Id: <20191109034039.27964-1-baolu.lu@linux.intel.com>
+X-Mailer: git-send-email 2.17.1
+Cc: kevin.tian@intel.com, ashok.raj@intel.com, linux-kernel@vger.kernel.org,
+	iommu@lists.linux-foundation.org, jacob.jun.pan@intel.com
 X-BeenThere: iommu@lists.linux-foundation.org
 X-Mailman-Version: 2.1.12
 Precedence: list
@@ -64,65 +60,65 @@ List-Post: <mailto:iommu@lists.linux-foundation.org>
 List-Help: <mailto:iommu-request@lists.linux-foundation.org?subject=help>
 List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
 	<mailto:iommu-request@lists.linux-foundation.org?subject=subscribe>
+MIME-Version: 1.0
+Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
-Content-Type: text/plain; charset="us-ascii"; Format="flowed"
 Sender: iommu-bounces@lists.linux-foundation.org
 Errors-To: iommu-bounces@lists.linux-foundation.org
 
-Hi Eric,
+This adds Kconfig option INTEL_IOMMU_SCALABLE_MODE_DEFAULT_ON
+to make it easier for distributions to enable or disable the
+Intel IOMMU scalable mode by default during kernel build.
 
-On 11/8/19 11:58 PM, Eric Auger wrote:
-> For both PASID-based-Device-TLB Invalidate Descriptor and
-> Device-TLB Invalidate Descriptor, the Physical Function Source-ID
-> value is split according to this layout:
-> 
-> PFSID[3:0] is set at offset 12 and PFSID[15:4] is put at offset 52.
-> Fix the part laid out at offset 52.
-> 
-> Fixes: 0f725561e1684 ("iommu/vt-d: Add definitions for PFSID")
-> Signed-off-by: Eric Auger <eric.auger@redhat.com>
+Signed-off-by: Lu Baolu <baolu.lu@linux.intel.com>
+---
+ drivers/iommu/Kconfig       | 9 +++++++++
+ drivers/iommu/intel-iommu.c | 7 ++++++-
+ 2 files changed, 15 insertions(+), 1 deletion(-)
 
-Please cc this to stable as well.
+diff --git a/drivers/iommu/Kconfig b/drivers/iommu/Kconfig
+index e3842eabcfdd..fbdf3fd291d9 100644
+--- a/drivers/iommu/Kconfig
++++ b/drivers/iommu/Kconfig
+@@ -242,6 +242,15 @@ config INTEL_IOMMU_FLOPPY_WA
+ 	  workaround will setup a 1:1 mapping for the first
+ 	  16MiB to make floppy (an ISA device) work.
+ 
++config INTEL_IOMMU_SCALABLE_MODE_DEFAULT_ON
++	prompt "Enable Intel IOMMU scalable mode by default"
++	depends on INTEL_IOMMU
++	help
++	  Selecting this option will enable the scalable mode if
++	  hardware presents the capability. If this option is not
++	  selected, scalable mode support could also be enabled
++	  by passing intel_iommu=sm_on to the kernel.
++
+ config IRQ_REMAP
+ 	bool "Support for Interrupt Remapping"
+ 	depends on X86_64 && X86_IO_APIC && PCI_MSI && ACPI
+diff --git a/drivers/iommu/intel-iommu.c b/drivers/iommu/intel-iommu.c
+index 6db6d969e31c..6051fe790c61 100644
+--- a/drivers/iommu/intel-iommu.c
++++ b/drivers/iommu/intel-iommu.c
+@@ -355,9 +355,14 @@ static phys_addr_t intel_iommu_iova_to_phys(struct iommu_domain *domain,
+ int dmar_disabled = 0;
+ #else
+ int dmar_disabled = 1;
+-#endif /*CONFIG_INTEL_IOMMU_DEFAULT_ON*/
++#endif /* CONFIG_INTEL_IOMMU_DEFAULT_ON */
+ 
++#ifdef INTEL_IOMMU_SCALABLE_MODE_DEFAULT_ON
++int intel_iommu_sm = 1;
++#else
+ int intel_iommu_sm;
++#endif /* INTEL_IOMMU_SCALABLE_MODE_DEFAULT_ON */
++
+ int intel_iommu_enabled = 0;
+ EXPORT_SYMBOL_GPL(intel_iommu_enabled);
+ 
+-- 
+2.17.1
 
-Cc: stable@vger.kernel.org # v4.19+
-
-Good catch!
-
-Acked-by: Lu Baolu <baolu.lu@linux.intel.com>
-
-Best regards,
-baolu
-
-
-> ---
->   include/linux/intel-iommu.h | 6 ++++--
->   1 file changed, 4 insertions(+), 2 deletions(-)
-> 
-> diff --git a/include/linux/intel-iommu.h b/include/linux/intel-iommu.h
-> index ed11ef594378..6d8bf4bdf240 100644
-> --- a/include/linux/intel-iommu.h
-> +++ b/include/linux/intel-iommu.h
-> @@ -336,7 +336,8 @@ enum {
->   #define QI_DEV_IOTLB_SID(sid)	((u64)((sid) & 0xffff) << 32)
->   #define QI_DEV_IOTLB_QDEP(qdep)	(((qdep) & 0x1f) << 16)
->   #define QI_DEV_IOTLB_ADDR(addr)	((u64)(addr) & VTD_PAGE_MASK)
-> -#define QI_DEV_IOTLB_PFSID(pfsid) (((u64)(pfsid & 0xf) << 12) | ((u64)(pfsid & 0xfff) << 52))
-> +#define QI_DEV_IOTLB_PFSID(pfsid) (((u64)(pfsid & 0xf) << 12) | \
-> +				   ((u64)((pfsid >> 4) & 0xfff) << 52))
->   #define QI_DEV_IOTLB_SIZE	1
->   #define QI_DEV_IOTLB_MAX_INVS	32
->   
-> @@ -360,7 +361,8 @@ enum {
->   #define QI_DEV_EIOTLB_PASID(p)	(((u64)p) << 32)
->   #define QI_DEV_EIOTLB_SID(sid)	((u64)((sid) & 0xffff) << 16)
->   #define QI_DEV_EIOTLB_QDEP(qd)	((u64)((qd) & 0x1f) << 4)
-> -#define QI_DEV_EIOTLB_PFSID(pfsid) (((u64)(pfsid & 0xf) << 12) | ((u64)(pfsid & 0xfff) << 52))
-> +#define QI_DEV_EIOTLB_PFSID(pfsid) (((u64)(pfsid & 0xf) << 12) | \
-> +				    ((u64)((pfsid >> 4) & 0xfff) << 52))
->   #define QI_DEV_EIOTLB_MAX_INVS	32
->   
->   /* Page group response descriptor QW0 */
-> 
 _______________________________________________
 iommu mailing list
 iommu@lists.linux-foundation.org
