@@ -2,56 +2,59 @@ Return-Path: <SRS0=z06/=ZD=lists.linux-foundation.org=iommu-bounces@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-8.3 required=3.0 tests=HEADER_FROM_DIFFERENT_DOMAINS,
-	INCLUDES_PATCH,MAILING_LIST_MULTI,SIGNED_OFF_BY,SPF_HELO_NONE,SPF_PASS,
-	USER_AGENT_SANE_1 autolearn=unavailable autolearn_force=no version=3.4.0
+X-Spam-Status: No, score=-2.3 required=3.0 tests=HEADER_FROM_DIFFERENT_DOMAINS,
+	MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS,USER_AGENT_SANE_1 autolearn=no
+	autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 4E0C1C43331
-	for <iommu@archiver.kernel.org>; Mon, 11 Nov 2019 05:03:15 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id D0FF3C43331
+	for <iommu@archiver.kernel.org>; Mon, 11 Nov 2019 05:23:51 +0000 (UTC)
 Received: from mail.linuxfoundation.org (mail.linuxfoundation.org [140.211.169.12])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by mail.kernel.org (Postfix) with ESMTPS id 2B0B0214E0
-	for <iommu@archiver.kernel.org>; Mon, 11 Nov 2019 05:03:15 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 2B0B0214E0
+	by mail.kernel.org (Postfix) with ESMTPS id A299D20869
+	for <iommu@archiver.kernel.org>; Mon, 11 Nov 2019 05:23:51 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org A299D20869
 Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=linux.intel.com
 Authentication-Results: mail.kernel.org; spf=pass smtp.mailfrom=iommu-bounces@lists.linux-foundation.org
 Received: from mail.linux-foundation.org (localhost [127.0.0.1])
-	by mail.linuxfoundation.org (Postfix) with ESMTP id 063B7C79;
-	Mon, 11 Nov 2019 05:03:15 +0000 (UTC)
+	by mail.linuxfoundation.org (Postfix) with ESMTP id 4EA53C6F;
+	Mon, 11 Nov 2019 05:23:51 +0000 (UTC)
 Received: from smtp1.linuxfoundation.org (smtp1.linux-foundation.org
 	[172.17.192.35])
-	by mail.linuxfoundation.org (Postfix) with ESMTPS id 36B54B5F
+	by mail.linuxfoundation.org (Postfix) with ESMTPS id 5FDC5B6D
 	for <iommu@lists.linux-foundation.org>;
-	Mon, 11 Nov 2019 05:03:14 +0000 (UTC)
+	Mon, 11 Nov 2019 05:23:49 +0000 (UTC)
 X-Greylist: domain auto-whitelisted by SQLgrey-1.7.6
-Received: from mga12.intel.com (mga12.intel.com [192.55.52.136])
-	by smtp1.linuxfoundation.org (Postfix) with ESMTPS id B89A14C3
+Received: from mga11.intel.com (mga11.intel.com [192.55.52.93])
+	by smtp1.linuxfoundation.org (Postfix) with ESMTPS id 0C17A12E
 	for <iommu@lists.linux-foundation.org>;
-	Mon, 11 Nov 2019 05:03:13 +0000 (UTC)
+	Mon, 11 Nov 2019 05:23:48 +0000 (UTC)
 X-Amp-Result: SKIPPED(no attachment in message)
 X-Amp-File-Uploaded: False
 Received: from fmsmga004.fm.intel.com ([10.253.24.48])
-	by fmsmga106.fm.intel.com with ESMTP/TLS/DHE-RSA-AES256-GCM-SHA384;
-	10 Nov 2019 21:03:13 -0800
+	by fmsmga102.fm.intel.com with ESMTP/TLS/DHE-RSA-AES256-GCM-SHA384;
+	10 Nov 2019 21:23:47 -0800
 X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.68,291,1569308400"; d="scan'208";a="228820825"
+X-IronPort-AV: E=Sophos;i="5.68,291,1569308400"; d="scan'208";a="228824039"
 Received: from allen-box.sh.intel.com (HELO [10.239.159.136])
 	([10.239.159.136])
-	by fmsmga004.fm.intel.com with ESMTP; 10 Nov 2019 21:03:12 -0800
-Subject: Re: [PATCH v2] iommu/vt-d: Turn off translations at shutdown
-To: Deepa Dinamani <deepa.kernel@gmail.com>, linux-kernel@vger.kernel.org,
-	joro@8bytes.org
-References: <20191110172744.12541-1-deepa.kernel@gmail.com>
+	by fmsmga004.fm.intel.com with ESMTP; 10 Nov 2019 21:23:46 -0800
+Subject: Re: [PATCH v2 1/1] iommu/vt-d: Add Kconfig option to enable/disable
+	scalable mode
+To: Qian Cai <cai@lca.pw>
+References: <20191109034039.27964-1-baolu.lu@linux.intel.com>
+	<472617D4-1652-45FB-90A4-0D45766DB78B@lca.pw>
 From: Lu Baolu <baolu.lu@linux.intel.com>
-Message-ID: <9f6b30fd-a827-c555-cc8f-f182e1be711f@linux.intel.com>
-Date: Mon, 11 Nov 2019 13:00:18 +0800
+Message-ID: <f5b8521e-d88d-5439-34e2-f7b54a77c9d3@linux.intel.com>
+Date: Mon, 11 Nov 2019 13:20:52 +0800
 User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:60.0) Gecko/20100101
 	Thunderbird/60.9.0
 MIME-Version: 1.0
-In-Reply-To: <20191110172744.12541-1-deepa.kernel@gmail.com>
+In-Reply-To: <472617D4-1652-45FB-90A4-0D45766DB78B@lca.pw>
 Content-Language: en-US
-Cc: iommu@lists.linux-foundation.org, dwmw2@infradead.org
+Cc: kevin.tian@intel.com, ashok.raj@intel.com, linux-kernel@vger.kernel.org,
+	iommu@lists.linux-foundation.org, jacob.jun.pan@intel.com,
+	David Woodhouse <dwmw2@infradead.org>
 X-BeenThere: iommu@lists.linux-foundation.org
 X-Mailman-Version: 2.1.12
 Precedence: list
@@ -71,113 +74,33 @@ Errors-To: iommu-bounces@lists.linux-foundation.org
 
 Hi,
 
-On 11/11/19 1:27 AM, Deepa Dinamani wrote:
-> The intel-iommu driver assumes that the iommu state is
-> cleaned up at the start of the new kernel.
-> But, when we try to kexec boot something other than the
-> Linux kernel, the cleanup cannot be relied upon.
-> Hence, cleanup before we go down for reboot.
+On 11/11/19 10:58 AM, Qian Cai wrote:
 > 
-> Keeping the cleanup at initialization also, in case BIOS
-> leaves the IOMMU enabled.
 > 
-> I considered turning off iommu only during kexec reboot, but a clean
-> shutdown seems always a good idea. But if someone wants to make it
-> conditional, such as VMM live update, we can do that.  There doesn't
-> seem to be such a condition at this time.
+>> On Nov 8, 2019, at 10:43 PM, Lu Baolu <baolu.lu@linux.intel.com> wrote:
+>>
+>> +config INTEL_IOMMU_SCALABLE_MODE_DEFAULT_ON
+>> +    prompt "Enable Intel IOMMU scalable mode by default"
+>> +    depends on INTEL_IOMMU
+>> +    help
+>> +      Selecting this option will enable the scalable mode if
+>> +      hardware presents the capability. If this option is not
+>> +      selected, scalable mode support could also be enabled
+>> +      by passing intel_iommu=sm_on to the kernel.
+>> +
 > 
-> Tested that before, the info message
-> 'DMAR: Translation was enabled for <iommu> but we are not in kdump mode'
-> would be reported for each iommu. The message will not appear when the
-> DMA-remapping is not enabled on entry to the kernel.
+> Does it also make sense to mention which hardware presents this capability or how to check it?
 > 
-> Signed-off-by: Deepa Dinamani <deepa.kernel@gmail.com>
 
-This patch looks good to me.
-
-Acked-by: Lu Baolu <baolu.lu@linux.intel.com>
+The scalable mode is defined in VT-d 3.0. The scalable mode capability
+could be checked by reading /sys/devices/virtual/iommu/dmar*/intel-
+iommu/ecap. It's currently not friendly for reading. You need to decode
+it according to the spec.
 
 Best regards,
 baolu
 
-> ---
-> Changes since v1:
-> * move shutdown registration to iommu detection
-> 
->   drivers/iommu/dmar.c        |  5 ++++-
->   drivers/iommu/intel-iommu.c | 20 ++++++++++++++++++++
->   include/linux/dmar.h        |  2 ++
->   3 files changed, 26 insertions(+), 1 deletion(-)
-> 
-> diff --git a/drivers/iommu/dmar.c b/drivers/iommu/dmar.c
-> index eecd6a421667..3acfa6a25fa2 100644
-> --- a/drivers/iommu/dmar.c
-> +++ b/drivers/iommu/dmar.c
-> @@ -895,8 +895,11 @@ int __init detect_intel_iommu(void)
->   	}
->   
->   #ifdef CONFIG_X86
-> -	if (!ret)
-> +	if (!ret) {
->   		x86_init.iommu.iommu_init = intel_iommu_init;
-> +		x86_platform.iommu_shutdown = intel_iommu_shutdown;
-> +	}
-> +
->   #endif
->   
->   	if (dmar_tbl) {
-> diff --git a/drivers/iommu/intel-iommu.c b/drivers/iommu/intel-iommu.c
-> index fe8097078669..7ac73410ba8e 100644
-> --- a/drivers/iommu/intel-iommu.c
-> +++ b/drivers/iommu/intel-iommu.c
-> @@ -4764,6 +4764,26 @@ static void intel_disable_iommus(void)
->   		iommu_disable_translation(iommu);
->   }
->   
-> +void intel_iommu_shutdown(void)
-> +{
-> +	struct dmar_drhd_unit *drhd;
-> +	struct intel_iommu *iommu = NULL;
-> +
-> +	if (no_iommu || dmar_disabled)
-> +		return;
-> +
-> +	down_write(&dmar_global_lock);
-> +
-> +	/* Disable PMRs explicitly here. */
-> +	for_each_iommu(iommu, drhd)
-> +		iommu_disable_protect_mem_regions(iommu);
-> +
-> +	/* Make sure the IOMMUs are switched off */
-> +	intel_disable_iommus();
-> +
-> +	up_write(&dmar_global_lock);
-> +}
-> +
->   static inline struct intel_iommu *dev_to_intel_iommu(struct device *dev)
->   {
->   	struct iommu_device *iommu_dev = dev_to_iommu_device(dev);
-> diff --git a/include/linux/dmar.h b/include/linux/dmar.h
-> index a7cf3599d9a1..f64ca27dc210 100644
-> --- a/include/linux/dmar.h
-> +++ b/include/linux/dmar.h
-> @@ -129,6 +129,7 @@ static inline int dmar_res_noop(struct acpi_dmar_header *hdr, void *arg)
->   #ifdef CONFIG_INTEL_IOMMU
->   extern int iommu_detected, no_iommu;
->   extern int intel_iommu_init(void);
-> +extern void intel_iommu_shutdown(void);
->   extern int dmar_parse_one_rmrr(struct acpi_dmar_header *header, void *arg);
->   extern int dmar_parse_one_atsr(struct acpi_dmar_header *header, void *arg);
->   extern int dmar_check_one_atsr(struct acpi_dmar_header *hdr, void *arg);
-> @@ -137,6 +138,7 @@ extern int dmar_iommu_hotplug(struct dmar_drhd_unit *dmaru, bool insert);
->   extern int dmar_iommu_notify_scope_dev(struct dmar_pci_notify_info *info);
->   #else /* !CONFIG_INTEL_IOMMU: */
->   static inline int intel_iommu_init(void) { return -ENODEV; }
-> +static inline void intel_iommu_shutdown(void) { }
->   
->   #define	dmar_parse_one_rmrr		dmar_res_noop
->   #define	dmar_parse_one_atsr		dmar_res_noop
-> 
+
 _______________________________________________
 iommu mailing list
 iommu@lists.linux-foundation.org
