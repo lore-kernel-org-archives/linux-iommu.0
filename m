@@ -6,43 +6,43 @@ X-Spam-Status: No, score=-5.3 required=3.0 tests=HEADER_FROM_DIFFERENT_DOMAINS,
 	MAILING_LIST_MULTI,SIGNED_OFF_BY,SPF_HELO_NONE,SPF_PASS,USER_AGENT_SANE_1
 	autolearn=ham autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 6FD03C43331
-	for <iommu@archiver.kernel.org>; Mon, 11 Nov 2019 15:11:23 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id A28CAC17445
+	for <iommu@archiver.kernel.org>; Mon, 11 Nov 2019 15:11:54 +0000 (UTC)
 Received: from mail.linuxfoundation.org (mail.linuxfoundation.org [140.211.169.12])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by mail.kernel.org (Postfix) with ESMTPS id 4D3D821655
-	for <iommu@archiver.kernel.org>; Mon, 11 Nov 2019 15:11:23 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 4D3D821655
+	by mail.kernel.org (Postfix) with ESMTPS id 81E50206A3
+	for <iommu@archiver.kernel.org>; Mon, 11 Nov 2019 15:11:54 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 81E50206A3
 Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=8bytes.org
 Authentication-Results: mail.kernel.org; spf=pass smtp.mailfrom=iommu-bounces@lists.linux-foundation.org
 Received: from mail.linux-foundation.org (localhost [127.0.0.1])
-	by mail.linuxfoundation.org (Postfix) with ESMTP id 37738CD4;
-	Mon, 11 Nov 2019 15:11:23 +0000 (UTC)
+	by mail.linuxfoundation.org (Postfix) with ESMTP id 6A15CCD4;
+	Mon, 11 Nov 2019 15:11:54 +0000 (UTC)
 Received: from smtp1.linuxfoundation.org (smtp1.linux-foundation.org
 	[172.17.192.35])
-	by mail.linuxfoundation.org (Postfix) with ESMTPS id DAAFBCC0
+	by mail.linuxfoundation.org (Postfix) with ESMTPS id 29F65CC0
 	for <iommu@lists.linux-foundation.org>;
-	Mon, 11 Nov 2019 15:11:21 +0000 (UTC)
+	Mon, 11 Nov 2019 15:11:53 +0000 (UTC)
 X-Greylist: from auto-whitelisted by SQLgrey-1.7.6
 Received: from theia.8bytes.org (8bytes.org [81.169.241.247])
-	by smtp1.linuxfoundation.org (Postfix) with ESMTPS id 487DE8AB
+	by smtp1.linuxfoundation.org (Postfix) with ESMTPS id 833E68AB
 	for <iommu@lists.linux-foundation.org>;
-	Mon, 11 Nov 2019 15:11:21 +0000 (UTC)
+	Mon, 11 Nov 2019 15:11:52 +0000 (UTC)
 Received: by theia.8bytes.org (Postfix, from userid 1000)
-	id B286C1E6; Mon, 11 Nov 2019 16:11:19 +0100 (CET)
-Date: Mon, 11 Nov 2019 16:11:18 +0100
+	id 0A1881E6; Mon, 11 Nov 2019 16:11:50 +0100 (CET)
+Date: Mon, 11 Nov 2019 16:11:49 +0100
 From: Joerg Roedel <joro@8bytes.org>
-To: Eric Auger <eric.auger@redhat.com>
-Subject: Re: [PATCH] iommu/vt-d: Fix QI_DEV_IOTLB_PFSID and
-	QI_DEV_EIOTLB_PFSID macros
-Message-ID: <20191111151118.GH18333@8bytes.org>
-References: <20191108155803.15051-1-eric.auger@redhat.com>
+To: Lu Baolu <baolu.lu@linux.intel.com>
+Subject: Re: [PATCH 1/1] MAINTAINERS: Update for INTEL IOMMU (VT-d) entry
+Message-ID: <20191111151149.GI18333@8bytes.org>
+References: <20191102025311.3440-1-baolu.lu@linux.intel.com>
 MIME-Version: 1.0
 Content-Disposition: inline
-In-Reply-To: <20191108155803.15051-1-eric.auger@redhat.com>
+In-Reply-To: <20191102025311.3440-1-baolu.lu@linux.intel.com>
 User-Agent: Mutt/1.10.1 (2018-07-13)
-Cc: iommu@lists.linux-foundation.org, eric.auger.pro@gmail.com
+Cc: kevin.tian@intel.com, ashok.raj@intel.com, linux-kernel@vger.kernel.org,
+	iommu@lists.linux-foundation.org, David Woodhouse <dwmw2@infradead.org>
 X-BeenThere: iommu@lists.linux-foundation.org
 X-Mailman-Version: 2.1.12
 Precedence: list
@@ -60,21 +60,25 @@ Content-Transfer-Encoding: 7bit
 Sender: iommu-bounces@lists.linux-foundation.org
 Errors-To: iommu-bounces@lists.linux-foundation.org
 
-On Fri, Nov 08, 2019 at 04:58:03PM +0100, Eric Auger wrote:
-> For both PASID-based-Device-TLB Invalidate Descriptor and
-> Device-TLB Invalidate Descriptor, the Physical Function Source-ID
-> value is split according to this layout:
+On Sat, Nov 02, 2019 at 10:53:11AM +0800, Lu Baolu wrote:
+> Update the INTEL IOMMU (VT-d) entry and add myself as the
+> co-maintainer. I have several years of VT-d development
+> experience and have actively contributed to Intel VT-d
+> driver during recent two years. I volunteer to take this
+> rule. With this role, I can better help review and test
+> patches.
 > 
-> PFSID[3:0] is set at offset 12 and PFSID[15:4] is put at offset 52.
-> Fix the part laid out at offset 52.
-> 
-> Fixes: 0f725561e1684 ("iommu/vt-d: Add definitions for PFSID")
-> Signed-off-by: Eric Auger <eric.auger@redhat.com>
+> Cc: David Woodhouse <dwmw2@infradead.org>
+> Cc: Joerg Roedel <joro@8bytes.org>
+> Cc: Ashok Raj <ashok.raj@intel.com>
+> Cc: Jacob Pan <jacob.jun.pan@linux.intel.com>
+> Cc: Kevin Tian <kevin.tian@intel.com>
+> Signed-off-by: Lu Baolu <baolu.lu@linux.intel.com>
 > ---
->  include/linux/intel-iommu.h | 6 ++++--
->  1 file changed, 4 insertions(+), 2 deletions(-)
+>  MAINTAINERS | 7 +++++--
+>  1 file changed, 5 insertions(+), 2 deletions(-)
 
-Applied for v5.4, thanks.
+Applied for v5.4, thanks a lot, Lu Baolu.
 _______________________________________________
 iommu mailing list
 iommu@lists.linux-foundation.org
