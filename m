@@ -2,45 +2,40 @@ Return-Path: <SRS0=M1C0=ZF=lists.linux-foundation.org=iommu-bounces@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-2.3 required=3.0 tests=HEADER_FROM_DIFFERENT_DOMAINS,
+X-Spam-Status: No, score=-2.2 required=3.0 tests=HEADER_FROM_DIFFERENT_DOMAINS,
 	MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS,USER_AGENT_SANE_1 autolearn=no
 	autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 02273C43331
-	for <iommu@archiver.kernel.org>; Wed, 13 Nov 2019 02:53:31 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 6DB9FC43331
+	for <iommu@archiver.kernel.org>; Wed, 13 Nov 2019 07:03:21 +0000 (UTC)
 Received: from mail.linuxfoundation.org (mail.linuxfoundation.org [140.211.169.12])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by mail.kernel.org (Postfix) with ESMTPS id CB29A2196E
-	for <iommu@archiver.kernel.org>; Wed, 13 Nov 2019 02:53:30 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org CB29A2196E
-Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=linux.intel.com
+	by mail.kernel.org (Postfix) with ESMTPS id 292452196E
+	for <iommu@archiver.kernel.org>; Wed, 13 Nov 2019 07:03:20 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 292452196E
+Authentication-Results: mail.kernel.org; dmarc=none (p=none dis=none) header.from=lst.de
 Authentication-Results: mail.kernel.org; spf=pass smtp.mailfrom=iommu-bounces@lists.linux-foundation.org
 Received: from mail.linux-foundation.org (localhost [127.0.0.1])
-	by mail.linuxfoundation.org (Postfix) with ESMTP id 81C8ACAA;
-	Wed, 13 Nov 2019 02:53:30 +0000 (UTC)
+	by mail.linuxfoundation.org (Postfix) with ESMTP id B4025C77;
+	Wed, 13 Nov 2019 07:03:20 +0000 (UTC)
 Received: from smtp1.linuxfoundation.org (smtp1.linux-foundation.org
 	[172.17.192.35])
-	by mail.linuxfoundation.org (Postfix) with ESMTPS id 82E94AE0
+	by mail.linuxfoundation.org (Postfix) with ESMTPS id 61519C59
 	for <iommu@lists.linux-foundation.org>;
-	Wed, 13 Nov 2019 02:53:28 +0000 (UTC)
-X-Greylist: domain auto-whitelisted by SQLgrey-1.7.6
-Received: from mga09.intel.com (mga09.intel.com [134.134.136.24])
-	by smtp1.linuxfoundation.org (Postfix) with ESMTPS id 0D7FA623
+	Wed, 13 Nov 2019 07:03:19 +0000 (UTC)
+X-Greylist: from auto-whitelisted by SQLgrey-1.7.6
+Received: from verein.lst.de (verein.lst.de [213.95.11.211])
+	by smtp1.linuxfoundation.org (Postfix) with ESMTPS id BF85ECF
 	for <iommu@lists.linux-foundation.org>;
-	Wed, 13 Nov 2019 02:53:27 +0000 (UTC)
-X-Amp-Result: SKIPPED(no attachment in message)
-X-Amp-File-Uploaded: False
-Received: from fmsmga004.fm.intel.com ([10.253.24.48])
-	by orsmga102.jf.intel.com with ESMTP/TLS/DHE-RSA-AES256-GCM-SHA384;
-	12 Nov 2019 18:53:27 -0800
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.68,298,1569308400"; d="scan'208";a="229611856"
-Received: from allen-box.sh.intel.com (HELO [10.239.159.136])
-	([10.239.159.136])
-	by fmsmga004.fm.intel.com with ESMTP; 12 Nov 2019 18:53:23 -0800
+	Wed, 13 Nov 2019 07:03:18 +0000 (UTC)
+Received: by verein.lst.de (Postfix, from userid 2407)
+	id 3AA5868C4E; Wed, 13 Nov 2019 08:03:13 +0100 (CET)
+Date: Wed, 13 Nov 2019 08:03:12 +0100
+From: Christoph Hellwig <hch@lst.de>
+To: Lu Baolu <baolu.lu@linux.intel.com>
 Subject: Re: [PATCH v5 02/10] iommu/vt-d: Use per-device dma_ops
-To: Christoph Hellwig <hch@lst.de>
+Message-ID: <20191113070312.GA2735@lst.de>
 References: <20190725031717.32317-1-baolu.lu@linux.intel.com>
 	<20190725031717.32317-3-baolu.lu@linux.intel.com>
 	<20190725054413.GC24527@lst.de>
@@ -48,17 +43,15 @@ References: <20190725031717.32317-1-baolu.lu@linux.intel.com>
 	<20190725114348.GA30957@lst.de>
 	<a098359a-0f89-6028-68df-9f83718df256@linux.intel.com>
 	<20191112071640.GA3343@lst.de>
-From: Lu Baolu <baolu.lu@linux.intel.com>
-Message-ID: <0885617e-8390-6d18-987f-40d49f9f563e@linux.intel.com>
-Date: Wed, 13 Nov 2019 10:50:27 +0800
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:60.0) Gecko/20100101
-	Thunderbird/60.9.0
+	<0885617e-8390-6d18-987f-40d49f9f563e@linux.intel.com>
 MIME-Version: 1.0
-In-Reply-To: <20191112071640.GA3343@lst.de>
-Content-Language: en-US
-Cc: alan.cox@intel.com, Stefano Stabellini <sstabellini@kernel.org>,
-	ashok.raj@intel.com, Jonathan Corbet <corbet@lwn.net>,
-	pengfei.xu@intel.com, Ingo Molnar <mingo@redhat.com>,
+Content-Disposition: inline
+In-Reply-To: <0885617e-8390-6d18-987f-40d49f9f563e@linux.intel.com>
+User-Agent: Mutt/1.5.17 (2007-11-01)
+Cc: alan.cox@intel.com, Christoph Hellwig <hch@lst.de>,
+	Stefano Stabellini <sstabellini@kernel.org>, ashok.raj@intel.com,
+	Jonathan Corbet <corbet@lwn.net>, pengfei.xu@intel.com,
+	Ingo Molnar <mingo@redhat.com>,
 	David Woodhouse <dwmw2@infradead.org>, kevin.tian@intel.com,
 	Konrad Rzeszutek Wilk <konrad.wilk@oracle.com>,
 	Steven Rostedt <rostedt@goodmis.org>, Bjorn Helgaas <bhelgaas@google.com>,
@@ -79,52 +72,37 @@ List-Post: <mailto:iommu@lists.linux-foundation.org>
 List-Help: <mailto:iommu-request@lists.linux-foundation.org?subject=help>
 List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
 	<mailto:iommu-request@lists.linux-foundation.org?subject=subscribe>
+Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
-Content-Type: text/plain; charset="us-ascii"; Format="flowed"
 Sender: iommu-bounces@lists.linux-foundation.org
 Errors-To: iommu-bounces@lists.linux-foundation.org
 
-Hi Christoph,
+On Wed, Nov 13, 2019 at 10:50:27AM +0800, Lu Baolu wrote:
+> Currently, this is a block issue for using per-device dma ops in Intel
+> IOMMU driver. Hence block this driver from using the generic iommu dma
+> ops.
 
-On 11/12/19 3:16 PM, Christoph Hellwig wrote:
-> On Fri, Jul 26, 2019 at 09:56:51AM +0800, Lu Baolu wrote:
->> I think current code doesn't do the right thing. The user asks the iommu
->> driver to use identity domain for a device, but the driver force it back
->> to DMA domain because of the device address capability.
->>
->>> expensive.  I don't think that this change is a good idea, and even if
->>> we decide that this is a good idea after all that should be done in a
->>> separate prep patch that explains the rationale.
->>
->> Yes. Make sense.
-> 
-> Now that the bounce code has landed it might be good time to revisit
-> this patch in isolation and with a better explanation.
-> 
+That is in fact the reason why I bring it up :)
 
-Yes. Thanks for bringing this up.
+> I'd like to align Intel IOMMU driver with other vendors. Use iommu dma
+> ops for devices which have been selected to go through iommu. And use
+> direct dma ops if selected to by pass.
+>
+> One concern of this propose is that for devices with limited address
+> capability, shall we force it to use iommu or alternatively use swiotlb
+> if user decides to let it by pass iommu.
+>
+> I understand that using swiotlb will cause some overhead due to the
+> bounced buffer, but Intel IOMMU is default on hence any users who use a
+> default kernel won't suffer this. We only need to document this so that
+> users understand this overhead when they decide to let such devices by
+> pass iommu. This is common to all vendor iommu drivers as far as I can
+> see.
 
-Currently, this is a block issue for using per-device dma ops in Intel
-IOMMU driver. Hence block this driver from using the generic iommu dma
-ops.
-
-I'd like to align Intel IOMMU driver with other vendors. Use iommu dma
-ops for devices which have been selected to go through iommu. And use
-direct dma ops if selected to by pass.
-
-One concern of this propose is that for devices with limited address
-capability, shall we force it to use iommu or alternatively use swiotlb
-if user decides to let it by pass iommu.
-
-I understand that using swiotlb will cause some overhead due to the
-bounced buffer, but Intel IOMMU is default on hence any users who use a
-default kernel won't suffer this. We only need to document this so that
-users understand this overhead when they decide to let such devices by
-pass iommu. This is common to all vendor iommu drivers as far as I can
-see.
-
-Best regards,
-baolu
+Indeed.  And one idea would be to lift the code in the powerpc
+dma_iommu_ops that check a flag and use the direct ops to the generic
+dma code and a flag in struct device.  We can then switch the intel
+iommu ops (and AMD Gart) over to it.
 _______________________________________________
 iommu mailing list
 iommu@lists.linux-foundation.org
