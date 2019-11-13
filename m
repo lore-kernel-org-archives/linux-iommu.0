@@ -2,78 +2,62 @@ Return-Path: <SRS0=M1C0=ZF=lists.linux-foundation.org=iommu-bounces@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-0.4 required=3.0 tests=DKIM_ADSP_CUSTOM_MED,
-	DKIM_INVALID,DKIM_SIGNED,FREEMAIL_FORGED_FROMDOMAIN,FREEMAIL_FROM,
-	HEADER_FROM_DIFFERENT_DOMAINS,MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS
-	autolearn=no autolearn_force=no version=3.4.0
+X-Spam-Status: No, score=-9.8 required=3.0 tests=DKIM_INVALID,DKIM_SIGNED,
+	INCLUDES_PATCH,MAILING_LIST_MULTI,SIGNED_OFF_BY,SPF_HELO_NONE,SPF_PASS,
+	USER_AGENT_GIT autolearn=unavailable autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 6A85EC43331
-	for <iommu@archiver.kernel.org>; Wed, 13 Nov 2019 01:05:17 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id D414FC17448
+	for <iommu@archiver.kernel.org>; Wed, 13 Nov 2019 01:51:16 +0000 (UTC)
 Received: from mail.linuxfoundation.org (mail.linuxfoundation.org [140.211.169.12])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by mail.kernel.org (Postfix) with ESMTPS id 2C0B620818
-	for <iommu@archiver.kernel.org>; Wed, 13 Nov 2019 01:05:17 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTPS id 9E32D222D4
+	for <iommu@archiver.kernel.org>; Wed, 13 Nov 2019 01:51:16 +0000 (UTC)
 Authentication-Results: mail.kernel.org;
-	dkim=fail reason="signature verification failed" (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="Y5Fp5Vhb"
-DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 2C0B620818
-Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=gmail.com
+	dkim=fail reason="signature verification failed" (1024-bit key) header.d=kernel.org header.i=@kernel.org header.b="qmz8FHqA"
+DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 9E32D222D4
+Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=kernel.org
 Authentication-Results: mail.kernel.org; spf=pass smtp.mailfrom=iommu-bounces@lists.linux-foundation.org
 Received: from mail.linux-foundation.org (localhost [127.0.0.1])
-	by mail.linuxfoundation.org (Postfix) with ESMTP id E32E6CB0;
-	Wed, 13 Nov 2019 01:05:16 +0000 (UTC)
+	by mail.linuxfoundation.org (Postfix) with ESMTP id 95F05CC6;
+	Wed, 13 Nov 2019 01:50:51 +0000 (UTC)
 Received: from smtp1.linuxfoundation.org (smtp1.linux-foundation.org
 	[172.17.192.35])
-	by mail.linuxfoundation.org (Postfix) with ESMTPS id 0658CB9E
+	by mail.linuxfoundation.org (Postfix) with ESMTPS id 856FBACD
 	for <iommu@lists.linux-foundation.org>;
-	Wed, 13 Nov 2019 01:05:16 +0000 (UTC)
-X-Greylist: whitelisted by SQLgrey-1.7.6
-Received: from mail-io1-f66.google.com (mail-io1-f66.google.com
-	[209.85.166.66])
-	by smtp1.linuxfoundation.org (Postfix) with ESMTPS id 9E76DCF
+	Wed, 13 Nov 2019 01:50:50 +0000 (UTC)
+Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
+	by smtp1.linuxfoundation.org (Postfix) with ESMTPS id 2FFCD623
 	for <iommu@lists.linux-foundation.org>;
-	Wed, 13 Nov 2019 01:05:15 +0000 (UTC)
-Received: by mail-io1-f66.google.com with SMTP id k1so592053ioj.6
-	for <iommu@lists.linux-foundation.org>;
-	Tue, 12 Nov 2019 17:05:15 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=gmail.com; s=20161025;
-	h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-	:cc; bh=ROzB2ZmxmBX3lUHjDBqJcCo+bXPWhjbF/n5oiHmNVaA=;
-	b=Y5Fp5Vhbf6CkqTJcCqDjo48R7DoK9f4TKDSWAMx0MR9Z5FM/xMSu6n5HuhenvkU8PU
-	r+aGn8q9ZWsPg7EBlP//PoMjpg+u5Cp3lFB332p0EVWic7XLfYcTz+Gik3WNprJY7x93
-	kZs6l3q8/ThnHTsAVFU+ssQR3/S7ibjoQ+C5dblGCNgcBtI7gQ+pZAMDpHdhG5cLtKxz
-	bQbSOAXTWOEB3O4CNV9G9llL+4kCs85FJn8gIbJ+Xg8QNfXMUK2o6bU1hc8Cn34JXPYX
-	PadnbwQubG6955PPSZtZFYD9a5mgr1Cv0fIjtSz3vBkFjC+9NbaPdsyTiAy56ycimTwS
-	AYgQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-	d=1e100.net; s=20161025;
-	h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-	:message-id:subject:to:cc;
-	bh=ROzB2ZmxmBX3lUHjDBqJcCo+bXPWhjbF/n5oiHmNVaA=;
-	b=SEDCy12k+9HFBO5YsL0ePxlwWRaG6tgmBoQdISG0jC0Jxif6aZ+3WpWI7Y//QcVab9
-	gyqT8HBR5hW3c/VXFmyugPiedI9fa7qDILfGyR7EIKIRCgOpMjMQfER/syVd86sPIpL5
-	gbdOn5DLfBI4myqxnBHvNb8C5NP7yBCjth8xsRhM7GHsAAD8SpnzpPR7t03havHG8N8w
-	SZ90/mv74LLHY0fRONSM8SF+w0fMmfWfecWUKFXlsuNnN9wDXJu+lzNjv1UmxtvzHqCi
-	rI35iVyK7q5ERuXUPk79CxwwcqbILCQR9odaRTn+aktojqxI8CUPJOt3e9xMVTpuQmZx
-	h0Gw==
-X-Gm-Message-State: APjAAAXTdaWX4QjtuUvhuWB+l/pmTR5plwiNoO1vHcqJuQBhBLPqjaVf
-	0+mbU0U3sxfiBt6m34VZdDEDZYwF74ymAJoYtpE=
-X-Google-Smtp-Source: APXvYqxf+lhcqtMQnP9ltVNRZU6t6rxIE/+Q8bOUWTNRsywq9UkbZLTi1xXS4lruu4txcobUpuCsDeiCNcFrX3oXGzw=
-X-Received: by 2002:a5e:9617:: with SMTP id a23mr764452ioq.191.1573607114622; 
-	Tue, 12 Nov 2019 17:05:14 -0800 (PST)
+	Wed, 13 Nov 2019 01:50:50 +0000 (UTC)
+Received: from sasha-vm.mshome.net (c-73-47-72-35.hsd1.nh.comcast.net
+	[73.47.72.35])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+	(No client certificate requested)
+	by mail.kernel.org (Postfix) with ESMTPSA id 58CDF22466;
+	Wed, 13 Nov 2019 01:50:49 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+	s=default; t=1573609850;
+	bh=I3ZLCnIDcjBuO+pE/ZPwAvwz5deLJv3WIzNphLQ4FDQ=;
+	h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
+	b=qmz8FHqA7pWushjdnAS2MizU9JmTDQh8wdOjK1cjo2w+JtbFhAkUKp8ahetnMPqeW
+	fqhx8B2bG3OUYn7KAseFhtUaQ2PYEoKtQWKHytslwDSKH27brliV8LBHvlGlPxzFoz
+	JU8hmFH10+yvyKJrdHN2YKOJy0XvJWAA3K4Uyhao=
+From: Sasha Levin <sashal@kernel.org>
+To: linux-kernel@vger.kernel.org,
+	stable@vger.kernel.org
+Subject: [PATCH AUTOSEL 4.19 021/209] iommu/io-pgtable-arm: Fix race handling
+	in split_blk_unmap()
+Date: Tue, 12 Nov 2019 20:47:17 -0500
+Message-Id: <20191113015025.9685-21-sashal@kernel.org>
+X-Mailer: git-send-email 2.20.1
+In-Reply-To: <20191113015025.9685-1-sashal@kernel.org>
+References: <20191113015025.9685-1-sashal@kernel.org>
 MIME-Version: 1.0
-References: <20191104055852.24395-1-ahuang12@lenovo.com>
-	<20191111152203.GJ18333@8bytes.org>
-	<CAHKZfL2Zoj-585mHti3_ZAgUNs0s43T=fxGZYt9cKfhQMnUd3w@mail.gmail.com>
-	<20191112160539.GA3884@8bytes.org>
-In-Reply-To: <20191112160539.GA3884@8bytes.org>
-From: Huang Adrian <adrianhuang0701@gmail.com>
-Date: Wed, 13 Nov 2019 09:05:03 +0800
-Message-ID: <CAHKZfL0pZwpAjxnJuLaUOvdd8ALcDucW==Go9VpAZoJDtPCAKg@mail.gmail.com>
-Subject: Re: [PATCH 1/1] iommu/amd: Fix the overwritten exclusion range with
-	multiple IVMDs
-To: Joerg Roedel <joro@8bytes.org>
-Cc: iommu@lists.linux-foundation.org, Adrian Huang <ahuang12@lenovo.com>
+X-stable: review
+X-Patchwork-Hint: Ignore
+Cc: Sasha Levin <sashal@kernel.org>, Will Deacon <will.deacon@arm.com>,
+	iommu@lists.linux-foundation.org, Robin Murphy <robin.murphy@arm.com>
 X-BeenThere: iommu@lists.linux-foundation.org
 X-Mailman-Version: 2.1.12
 Precedence: list
@@ -91,44 +75,59 @@ Content-Transfer-Encoding: 7bit
 Sender: iommu-bounces@lists.linux-foundation.org
 Errors-To: iommu-bounces@lists.linux-foundation.org
 
-On Wed, Nov 13, 2019 at 12:05 AM Joerg Roedel <joro@8bytes.org> wrote:
->
-> On Tue, Nov 12, 2019 at 05:32:31PM +0800, Huang Adrian wrote:
-> > > On Mon, Nov 11, 2019 at 11:22 PM Joerg Roedel <joro@8bytes.org> wrote:
->
-> > > So there are a couple of options here:
-> > >
-> > >         1) Bail out and disable the IOMMU as the BIOS screwed up
-> > >
-> > >         2) Treat per-device exclusion ranges just as r/w unity-mapped
-> > >            regions.
-> > >
-> > >
-> > > I think option 2) is the best fix here.
-> >
-> > Yes. This is what this patch does (The first exclusion region still
-> > uses the exclusion range while the remaining exclusion regions are
-> > modified to be r/w unity-mapped regions when detecting multiple
-> > exclusion regions) .
->
-> Yeah, but I think it is better to just stop using the exclusion-range
-> feature of the hardware (because it meand BIOSes are correct) and just
-> treat every exclusion range (also the first one) as an r/w unity range.
+From: Robin Murphy <robin.murphy@arm.com>
 
-Okay, I see. If you're okay with this (treat per-device exclusion
-ranges as r/w unity-mapped regions - including the first one), I can
-prepare the patch.
+[ Upstream commit 85c7a0f1ef624ef58173ef52ea77780257bdfe04 ]
 
->
-> > But, I'm guessing you're talking about that BIOS has to define r/w
-> > unity-mapped regions instead of the per-device exclusions (Fix from
-> > BIOS, not prevent the failure from kernel). Right?
->
-> That would be best, but I fear this is too much to wish for.
+In removing the pagetable-wide lock, we gained the possibility of the
+vanishingly unlikely case where we have a race between two concurrent
+unmappers splitting the same block entry. The logic to handle this is
+fairly straightforward - whoever loses the race frees their partial
+next-level table and instead dereferences the winner's newly-installed
+entry in order to fall back to a regular unmap, which intentionally
+echoes the pre-existing case of recursively splitting a 1GB block down
+to 4KB pages by installing a full table of 2MB blocks first.
 
-Totally agree. That's why I submit this patch. :-)
+Unfortunately, the chump who implemented that logic failed to update the
+condition check for that fallback, meaning that if said race occurs at
+the last level (where the loser's unmap_idx is valid) then the unmap
+won't actually happen. Fix that to properly account for both the race
+and recursive cases.
 
--- Adrian
+Fixes: 2c3d273eabe8 ("iommu/io-pgtable-arm: Support lockless operation")
+Signed-off-by: Robin Murphy <robin.murphy@arm.com>
+[will: re-jig control flow to avoid duplicate cmpxchg test]
+Signed-off-by: Will Deacon <will.deacon@arm.com>
+Signed-off-by: Sasha Levin <sashal@kernel.org>
+---
+ drivers/iommu/io-pgtable-arm.c | 9 ++++-----
+ 1 file changed, 4 insertions(+), 5 deletions(-)
+
+diff --git a/drivers/iommu/io-pgtable-arm.c b/drivers/iommu/io-pgtable-arm.c
+index 88641b4560bc8..2f79efd16a052 100644
+--- a/drivers/iommu/io-pgtable-arm.c
++++ b/drivers/iommu/io-pgtable-arm.c
+@@ -574,13 +574,12 @@ static size_t arm_lpae_split_blk_unmap(struct arm_lpae_io_pgtable *data,
+ 			return 0;
+ 
+ 		tablep = iopte_deref(pte, data);
++	} else if (unmap_idx >= 0) {
++		io_pgtable_tlb_add_flush(&data->iop, iova, size, size, true);
++		return size;
+ 	}
+ 
+-	if (unmap_idx < 0)
+-		return __arm_lpae_unmap(data, iova, size, lvl, tablep);
+-
+-	io_pgtable_tlb_add_flush(&data->iop, iova, size, size, true);
+-	return size;
++	return __arm_lpae_unmap(data, iova, size, lvl, tablep);
+ }
+ 
+ static size_t __arm_lpae_unmap(struct arm_lpae_io_pgtable *data,
+-- 
+2.20.1
+
 _______________________________________________
 iommu mailing list
 iommu@lists.linux-foundation.org
