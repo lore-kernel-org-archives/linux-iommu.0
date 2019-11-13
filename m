@@ -2,66 +2,63 @@ Return-Path: <SRS0=M1C0=ZF=lists.linux-foundation.org=iommu-bounces@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-9.6 required=3.0 tests=DKIM_INVALID,DKIM_SIGNED,
-	HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_PATCH,MAILING_LIST_MULTI,SIGNED_OFF_BY,
-	SPF_HELO_NONE,SPF_PASS,USER_AGENT_GIT autolearn=ham autolearn_force=no
-	version=3.4.0
+X-Spam-Status: No, score=-3.5 required=3.0 tests=DKIM_INVALID,DKIM_SIGNED,
+	HEADER_FROM_DIFFERENT_DOMAINS,MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS,
+	USER_AGENT_GIT autolearn=no autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id BD067C17447
-	for <iommu@archiver.kernel.org>; Wed, 13 Nov 2019 07:18:55 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 24DACC17442
+	for <iommu@archiver.kernel.org>; Wed, 13 Nov 2019 07:32:21 +0000 (UTC)
 Received: from mail.linuxfoundation.org (mail.linuxfoundation.org [140.211.169.12])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by mail.kernel.org (Postfix) with ESMTPS id 910A121D7F
-	for <iommu@archiver.kernel.org>; Wed, 13 Nov 2019 07:18:55 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTPS id E38FC21A49
+	for <iommu@archiver.kernel.org>; Wed, 13 Nov 2019 07:32:20 +0000 (UTC)
 Authentication-Results: mail.kernel.org;
-	dkim=fail reason="signature verification failed" (2048-bit key) header.d=infradead.org header.i=@infradead.org header.b="TUJ4g+rU"
-DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 910A121D7F
+	dkim=fail reason="signature verification failed" (2048-bit key) header.d=infradead.org header.i=@infradead.org header.b="RsudJmSm"
+DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org E38FC21A49
 Authentication-Results: mail.kernel.org; dmarc=none (p=none dis=none) header.from=lst.de
 Authentication-Results: mail.kernel.org; spf=pass smtp.mailfrom=iommu-bounces@lists.linux-foundation.org
 Received: from mail.linux-foundation.org (localhost [127.0.0.1])
-	by mail.linuxfoundation.org (Postfix) with ESMTP id ED8F3CAD;
-	Wed, 13 Nov 2019 07:18:48 +0000 (UTC)
+	by mail.linuxfoundation.org (Postfix) with ESMTP id C4BC4F21;
+	Wed, 13 Nov 2019 07:32:20 +0000 (UTC)
 Received: from smtp1.linuxfoundation.org (smtp1.linux-foundation.org
 	[172.17.192.35])
-	by mail.linuxfoundation.org (Postfix) with ESMTPS id DC540CA4
+	by mail.linuxfoundation.org (Postfix) with ESMTPS id 40D18F21
 	for <iommu@lists.linux-foundation.org>;
-	Wed, 13 Nov 2019 07:18:47 +0000 (UTC)
+	Wed, 13 Nov 2019 07:32:19 +0000 (UTC)
 X-Greylist: from auto-whitelisted by SQLgrey-1.7.6
 Received: from bombadil.infradead.org (bombadil.infradead.org
 	[198.137.202.133])
-	by smtp1.linuxfoundation.org (Postfix) with ESMTPS id 912A1CF
+	by smtp1.linuxfoundation.org (Postfix) with ESMTPS id 0B829102
 	for <iommu@lists.linux-foundation.org>;
-	Wed, 13 Nov 2019 07:18:47 +0000 (UTC)
+	Wed, 13 Nov 2019 07:32:19 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
 	d=infradead.org; s=bombadil.20170209; h=Content-Transfer-Encoding:
-	MIME-Version:References:In-Reply-To:Message-Id:Date:Subject:Cc:To:From:Sender
-	:Reply-To:Content-Type:Content-ID:Content-Description:Resent-Date:Resent-From
-	:Resent-Sender:Resent-To:Resent-Cc:Resent-Message-ID:List-Id:List-Help:
-	List-Unsubscribe:List-Subscribe:List-Post:List-Owner:List-Archive;
-	bh=F5dHQdVRAaTpNRp+BuVlBL9qm+RFyST7QY7CQw03Vh4=;
-	b=TUJ4g+rUo104R/CBZ+5wCzOi/q
-	HTPOTOzTpwhFePhYrf5p+SaLvdHPZEhtU/u4WJt++bx+hOrpaVo13X6cmI53EYiYsbvNFMf3mMc1w
-	0O3ooX5m29IslHOHXmf4zjnNSLCz4GMFdGIoDEfLHKvqjtUjstJoujky9CJxbDfjq+Mpsp9Qevpf5
-	ei4UqXh3WBXPhlfTAGEhl/VRUR9fpf5t5jnJGfnkh+r8MgmgPb8lRmuRWcTM/dus5SGAng95GWiYv
-	vOTmNdyQapjjpjrv30GvOeCLFi8W+DGXmRICwAYQLsQTyOcSJ17qk5lVlMvOqFLk7WjlcCBql8A+o
-	NrSrFKXg==;
+	MIME-Version:Message-Id:Date:Subject:Cc:To:From:Sender:Reply-To:Content-Type:
+	Content-ID:Content-Description:Resent-Date:Resent-From:Resent-Sender:
+	Resent-To:Resent-Cc:Resent-Message-ID:In-Reply-To:References:List-Id:
+	List-Help:List-Unsubscribe:List-Subscribe:List-Post:List-Owner:List-Archive;
+	bh=U6DH1QSowvu6LETtPO1B1oHlFjT7uBOtz6fVqlVLip0=;
+	b=RsudJmSmKim0oEYcXcZOUcyhj
+	SV3uKDell/ryfxj25r7DQiv8uTeNLQCR6F0ohKS9BCDSwCaH0y3q/z9IOReMlZD+lWHwFy5o9sW53
+	0YJSm/VzWwMoTG68nRjiEmMdXGcixFFUQX//Q3kGrgr8N+COGzma7SimVMUIIBnBhTADVkapCD6BX
+	GJTtoPdECIAMp/6Qf76tnHRe8Q+rPAcH5U9/ER3sagqqDc885GfUosDC5rQnIbY70O0y13h6Hoc6v
+	uOmF4zVa+MhrxPcaxGNIS8e66BEW+8G+6AFwoP6e0xSiOpotQVzq+hGLMmE6zNdlPWlukbSYPsHOd
+	yAH70Irqg==;
 Received: from [2001:4bb8:180:3806:c70:4a89:bc61:5] (helo=localhost)
 	by bombadil.infradead.org with esmtpsa (Exim 4.92.3 #3 (Red Hat Linux))
-	id 1iUmvO-0008Bq-52; Wed, 13 Nov 2019 07:18:46 +0000
+	id 1iUn8R-0006qp-UU; Wed, 13 Nov 2019 07:32:16 +0000
 From: Christoph Hellwig <hch@lst.de>
-To: Muli Ben-Yehuda <mulix@mulix.org>, Jon Mason <jdmason@kudzu.us>,
-	x86@kernel.org
-Subject: [PATCH 3/3] x86/pci: Remove #ifdef __KERNEL__ guard from <asm/pci.h>
-Date: Wed, 13 Nov 2019 08:18:36 +0100
-Message-Id: <20191113071836.21041-4-hch@lst.de>
+To: Doug Ledford <dledford@redhat.com>, Jason Gunthorpe <jgg@mellanox.com>,
+	iommu@lists.linux-foundation.org
+Subject: remove DMA_ATTR_WRITE_BARRIER
+Date: Wed, 13 Nov 2019 08:32:12 +0100
+Message-Id: <20191113073214.9514-1-hch@lst.de>
 X-Mailer: git-send-email 2.20.1
-In-Reply-To: <20191113071836.21041-1-hch@lst.de>
-References: <20191113071836.21041-1-hch@lst.de>
 MIME-Version: 1.0
 X-SRS-Rewrite: SMTP reverse-path rewritten from <hch@infradead.org> by
 	bombadil.infradead.org. See http://www.infradead.org/rpr.html
-Cc: iommu@lists.linux-foundation.org, linux-kernel@vger.kernel.org
+Cc: linux-rdma@vger.kernel.org
 X-BeenThere: iommu@lists.linux-foundation.org
 X-Mailman-Version: 2.1.12
 Precedence: list
@@ -79,37 +76,9 @@ Content-Transfer-Encoding: 7bit
 Sender: iommu-bounces@lists.linux-foundation.org
 Errors-To: iommu-bounces@lists.linux-foundation.org
 
-pci.h is not a UAPI header, so the __KERNEL__ ifdef is rather pointless.
-
-Signed-off-by: Christoph Hellwig <hch@lst.de>
----
- arch/x86/include/asm/pci.h | 3 ---
- 1 file changed, 3 deletions(-)
-
-diff --git a/arch/x86/include/asm/pci.h b/arch/x86/include/asm/pci.h
-index d9e28aad2738..90d0731fdcb6 100644
---- a/arch/x86/include/asm/pci.h
-+++ b/arch/x86/include/asm/pci.h
-@@ -12,8 +12,6 @@
- #include <asm/pat.h>
- #include <asm/x86_init.h>
- 
--#ifdef __KERNEL__
--
- struct pci_sysdata {
- 	int		domain;		/* PCI domain */
- 	int		node;		/* NUMA node */
-@@ -118,7 +116,6 @@ void native_restore_msi_irqs(struct pci_dev *dev);
- #define native_setup_msi_irqs		NULL
- #define native_teardown_msi_irq		NULL
- #endif
--#endif  /* __KERNEL__ */
- 
- /* generic pci stuff */
- #include <asm-generic/pci.h>
--- 
-2.20.1
-
+There is no implementation of the DMA_ATTR_WRITE_BARRIER flag left
+now that the ia64 sn2 code has been removed.  Drop the flag and
+the calling convention to set it in the RDMA code.
 _______________________________________________
 iommu mailing list
 iommu@lists.linux-foundation.org
