@@ -2,66 +2,67 @@ Return-Path: <SRS0=E0xS=ZG=lists.linux-foundation.org=iommu-bounces@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-6.5 required=3.0 tests=DKIM_INVALID,DKIM_SIGNED,
-	HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_PATCH,MAILING_LIST_MULTI,SIGNED_OFF_BY,
-	SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED autolearn=ham autolearn_force=no
-	version=3.4.0
+X-Spam-Status: No, score=-3.7 required=3.0 tests=HEADER_FROM_DIFFERENT_DOMAINS,
+	INCLUDES_PATCH,MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED
+	autolearn=no autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 08356C43141
-	for <iommu@archiver.kernel.org>; Thu, 14 Nov 2019 08:48:52 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 53634C43215
+	for <iommu@archiver.kernel.org>; Thu, 14 Nov 2019 09:47:10 +0000 (UTC)
 Received: from mail.linuxfoundation.org (mail.linuxfoundation.org [140.211.169.12])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by mail.kernel.org (Postfix) with ESMTPS id D5CD72070E
-	for <iommu@archiver.kernel.org>; Thu, 14 Nov 2019 08:48:51 +0000 (UTC)
-Authentication-Results: mail.kernel.org;
-	dkim=fail reason="signature verification failed" (2048-bit key) header.d=ellerman.id.au header.i=@ellerman.id.au header.b="h8xc1Vk4"
-DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org D5CD72070E
-Authentication-Results: mail.kernel.org; dmarc=none (p=none dis=none) header.from=ellerman.id.au
+	by mail.kernel.org (Postfix) with ESMTPS id 280B020715
+	for <iommu@archiver.kernel.org>; Thu, 14 Nov 2019 09:47:10 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 280B020715
+Authentication-Results: mail.kernel.org; dmarc=none (p=none dis=none) header.from=suse.de
 Authentication-Results: mail.kernel.org; spf=pass smtp.mailfrom=iommu-bounces@lists.linux-foundation.org
 Received: from mail.linux-foundation.org (localhost [127.0.0.1])
-	by mail.linuxfoundation.org (Postfix) with ESMTP id AE6A5BDC;
-	Thu, 14 Nov 2019 08:48:51 +0000 (UTC)
+	by mail.linuxfoundation.org (Postfix) with ESMTP id DD3E210BC;
+	Thu, 14 Nov 2019 09:47:09 +0000 (UTC)
 Received: from smtp1.linuxfoundation.org (smtp1.linux-foundation.org
 	[172.17.192.35])
-	by mail.linuxfoundation.org (Postfix) with ESMTPS id BB940B8A
+	by mail.linuxfoundation.org (Postfix) with ESMTPS id 9397710B9
 	for <iommu@lists.linux-foundation.org>;
-	Thu, 14 Nov 2019 08:48:50 +0000 (UTC)
+	Thu, 14 Nov 2019 09:47:08 +0000 (UTC)
 X-Greylist: domain auto-whitelisted by SQLgrey-1.7.6
-Received: from ozlabs.org (bilbo.ozlabs.org [203.11.71.1])
-	by smtp1.linuxfoundation.org (Postfix) with ESMTPS id 48D5FCF
+Received: from mx1.suse.de (mx2.suse.de [195.135.220.15])
+	by smtp1.linuxfoundation.org (Postfix) with ESMTPS id 94B08CF
 	for <iommu@lists.linux-foundation.org>;
-	Thu, 14 Nov 2019 08:48:50 +0000 (UTC)
-Received: from authenticated.ozlabs.org (localhost [127.0.0.1])
-	(using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-	key-exchange ECDHE (P-256) server-signature RSA-PSS (4096 bits)
-	server-digest SHA256) (No client certificate requested)
-	by mail.ozlabs.org (Postfix) with ESMTPSA id 47DFWh1KCJz9sNT;
-	Thu, 14 Nov 2019 19:48:48 +1100 (AEDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=ellerman.id.au;
-	s=201909; t=1573721328;
-	bh=bDF+Yyy88Fi18Ty7c9txdLpa+ezncf6v+l29k9UorgE=;
-	h=From:To:Cc:Subject:In-Reply-To:References:Date:From;
-	b=h8xc1Vk45YLl9MzdGeCdPvVM/gZgFW8kGJAtTantRRnTOlPRUk++Y13aiXGqk/x0i
-	+uYEKQ6YmW092dWaZrlWweY0cIjcwmDub4jkR/wcrMJYEUmFGPzEJ2z6Ihh2l9l84s
-	VWu2apAPX2+lF206X5eZXVLXEk+Z4OjWoh3rvv3tb1AO83VqhnrRpa/I0Gcb49rzlo
-	KnNUrtMjeae+4ZLyJp+BqjmUzhV2MqmSlAxK7/LELcl2os+oGvZOJwGpAm8mUJEh5W
-	erpXofYK/ZCFPUo11Pk1SoU/EupeIr+q89BxoSTnukj3aY8zV7vWldzixXShJN/wTN
-	wKlQaaHzA3RhQ==
-From: Michael Ellerman <mpe@ellerman.id.au>
-To: Christoph Hellwig <hch@lst.de>,
-	Nicolas Saenz Julienne <nsaenzjulienne@suse.de>,
-	iommu@lists.linux-foundation.org, Russell King <linux@armlinux.org.uk>
-Subject: Re: [PATCH 3/3] powerpc: remove support for NULL dev in __phys_to_dma
-	/ __dma_to_phys
-In-Reply-To: <20191113073539.9660-4-hch@lst.de>
-References: <20191113073539.9660-1-hch@lst.de>
-	<20191113073539.9660-4-hch@lst.de>
-Date: Thu, 14 Nov 2019 19:48:47 +1100
-Message-ID: <8736eq268g.fsf@mpe.ellerman.id.au>
+	Thu, 14 Nov 2019 09:47:07 +0000 (UTC)
+X-Virus-Scanned: by amavisd-new at test-mx.suse.de
+Received: from relay2.suse.de (unknown [195.135.220.254])
+	by mx1.suse.de (Postfix) with ESMTP id B254CB14D;
+	Thu, 14 Nov 2019 09:47:04 +0000 (UTC)
+Message-ID: <33ba915ee84839286c69d048b15758a911c02844.camel@suse.de>
+Subject: Re: [PATCH] dma-mapping: treat dev->bus_dma_mask as a DMA limit
+From: Nicolas Saenz Julienne <nsaenzjulienne@suse.de>
+To: Robin Murphy <robin.murphy@arm.com>, Dave Hansen
+	<dave.hansen@linux.intel.com>, Andy Lutomirski <luto@kernel.org>, Peter
+	Zijlstra <peterz@infradead.org>, Bjorn Helgaas <bhelgaas@google.com>,
+	Lorenzo Pieralisi <lorenzo.pieralisi@arm.com>, Hanjun Guo
+	<guohanjun@huawei.com>, Sudeep Holla <sudeep.holla@arm.com>, Jens Axboe
+	<axboe@kernel.dk>, Joerg Roedel <joro@8bytes.org>, Rob Herring
+	<robh+dt@kernel.org>, Frank Rowand <frowand.list@gmail.com>, Christoph
+	Hellwig <hch@lst.de>, Marek Szyprowski <m.szyprowski@samsung.com>
+Date: Thu, 14 Nov 2019 10:47:00 +0100
+In-Reply-To: <f74cd8a6-00bf-46c3-8e2e-d278e72d6e0e@arm.com>
+References: <20191113161340.27228-1-nsaenzjulienne@suse.de>
+	<f74cd8a6-00bf-46c3-8e2e-d278e72d6e0e@arm.com>
+User-Agent: Evolution 3.34.1 
 MIME-Version: 1.0
-Cc: linuxppc-dev@lists.ozlabs.org, linux-mips@vger.kernel.org,
-	linux-arm-kernel@lists.infradead.org
+Cc: Benjamin Herrenschmidt <benh@kernel.crashing.org>,
+	linux-mips@vger.kernel.org, linux-ide@vger.kernel.org,
+	Paul Mackerras <paulus@samba.org>, "H. Peter
+	Anvin" <hpa@zytor.com>, Paul Burton <paulburton@kernel.org>,
+	Michael Ellerman <mpe@ellerman.id.au>, x86@kernel.org,
+	phil@raspberrypi.org, linux-acpi@vger.kernel.org,
+	Ingo Molnar <mingo@redhat.com>, linux-pci@vger.kernel.org,
+	James Hogan <jhogan@kernel.org>, Len Brown <lenb@kernel.org>,
+	devicetree@vger.kernel.org, Borislav Petkov <bp@alien8.de>,
+	Thomas Gleixner <tglx@linutronix.de>, linux-arm-kernel@lists.infradead.org,
+	"Rafael J. Wysocki" <rjw@rjwysocki.net>,
+	linux-kernel@vger.kernel.org, Ralf Baechle <ralf@linux-mips.org>,
+	iommu@lists.linux-foundation.org, linuxppc-dev@lists.ozlabs.org
 X-BeenThere: iommu@lists.linux-foundation.org
 X-Mailman-Version: 2.1.12
 Precedence: list
@@ -74,48 +75,146 @@ List-Post: <mailto:iommu@lists.linux-foundation.org>
 List-Help: <mailto:iommu-request@lists.linux-foundation.org?subject=help>
 List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
 	<mailto:iommu-request@lists.linux-foundation.org?subject=subscribe>
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: 7bit
+Content-Type: multipart/mixed; boundary="===============0362105650644559760=="
 Sender: iommu-bounces@lists.linux-foundation.org
 Errors-To: iommu-bounces@lists.linux-foundation.org
 
-Christoph Hellwig <hch@lst.de> writes:
-> Support for calling the DMA API functions without a valid device pointer
-> was removed a while ago, so remove the stale support for that from the
-> powerpc __phys_to_dma / __dma_to_phys helpers.
->
-> Signed-off-by: Christoph Hellwig <hch@lst.de>
-> ---
->  arch/powerpc/include/asm/dma-direct.h | 4 ----
->  1 file changed, 4 deletions(-)
 
-Acked-by: Michael Ellerman <mpe@ellerman.id.au>
+--===============0362105650644559760==
+Content-Type: multipart/signed; micalg="pgp-sha256";
+	protocol="application/pgp-signature"; boundary="=-wOQXYnHdB19ozhE01VMB"
 
-cheers
 
-> diff --git a/arch/powerpc/include/asm/dma-direct.h b/arch/powerpc/include/asm/dma-direct.h
-> index e29e8a236b8d..abc154d784b0 100644
-> --- a/arch/powerpc/include/asm/dma-direct.h
-> +++ b/arch/powerpc/include/asm/dma-direct.h
-> @@ -4,15 +4,11 @@
->  
->  static inline dma_addr_t __phys_to_dma(struct device *dev, phys_addr_t paddr)
->  {
-> -	if (!dev)
-> -		return paddr + PCI_DRAM_OFFSET;
->  	return paddr + dev->archdata.dma_offset;
->  }
->  
->  static inline phys_addr_t __dma_to_phys(struct device *dev, dma_addr_t daddr)
->  {
-> -	if (!dev)
-> -		return daddr - PCI_DRAM_OFFSET;
->  	return daddr - dev->archdata.dma_offset;
->  }
->  #endif /* ASM_POWERPC_DMA_DIRECT_H */
-> -- 
-> 2.20.1
+--=-wOQXYnHdB19ozhE01VMB
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
+
+On Wed, 2019-11-13 at 20:34 +0000, Robin Murphy wrote:
+> On 13/11/2019 4:13 pm, Nicolas Saenz Julienne wrote:
+> > Using a mask to represent bus DMA constraints has a set of limitations.
+> > The biggest one being it can only hold a power of two (minus one). The
+> > DMA mapping code is already aware of this and treats dev->bus_dma_mask
+> > as a limit. This quirk is already used by some architectures although
+> > still rare.
+> >=20
+> > With the introduction of the Raspberry Pi 4 we've found a new contender
+> > for the use of bus DMA limits, as its PCIe bus can only address the
+> > lower 3GB of memory (of a total of 4GB). This is impossible to represen=
+t
+> > with a mask. To make things worse the device-tree code rounds non power
+> > of two bus DMA limits to the next power of two, which is unacceptable i=
+n
+> > this case.
+> >=20
+> > In the light of this, rename dev->bus_dma_mask to dev->bus_dma_limit al=
+l
+> > over the tree and treat it as such. Note that dev->bus_dma_limit is
+> > meant to contain the higher accesible DMA address.
+>=20
+> Neat, you win a "why didn't I do it that way in the first place?" :)
+
+:)
+
+> Looking at it without all the history of previous attempts, this looks=
+=20
+> entirely reasonable, and definitely a step in the right direction.
+>=20
+> [...]
+> > diff --git a/drivers/acpi/arm64/iort.c b/drivers/acpi/arm64/iort.c
+> > index 5a7551d060f2..f18827cf96df 100644
+> > --- a/drivers/acpi/arm64/iort.c
+> > +++ b/drivers/acpi/arm64/iort.c
+> > @@ -1097,7 +1097,7 @@ void iort_dma_setup(struct device *dev, u64 *dma_=
+addr,
+> > u64 *dma_size)
+> >   		 * Limit coherent and dma mask based on size
+> >   		 * retrieved from firmware.
+> >   		 */
+> > -		dev->bus_dma_mask =3D mask;
+> > +		dev->bus_dma_limit =3D mask;
+>=20
+> Although this preserves the existing behaviour, as in of_dma_configure()=
+=20
+> we can do better here since we have the original address range to hand.=
+=20
+> I think it's worth keeping the ACPI and OF paths in sync for minor=20
+> tweaks like this, rather than letting them diverge unnecessarily.
+
+I figure you mean something like this:
+
+@@ -1085,19 +1085,15 @@ void iort_dma_setup(struct device *dev, u64 *dma_ad=
+dr,
+u64 *dma_size)
+        }
+
+        if (!ret) {
+-               msb =3D fls64(dmaaddr + size - 1);
+-               /*
+-                * Round-up to the power-of-two mask or set
+-                * the mask to the whole 64-bit address space
+-                * in case the DMA region covers the full
+-                * memory window.
+-                */
+-               mask =3D msb =3D=3D 64 ? U64_MAX : (1ULL << msb) - 1;
++               /* Round-up to the power-of-two */
++               end =3D dmaddr + size - 1;
++               mask =3D DMA_BIT_MASK(ilog2(end) + 1);
++
+                /*
+                 * Limit coherent and dma mask based on size
+                 * retrieved from firmware.
+                 */
+-               dev->bus_dma_limit =3D mask;
++               dev->bus_dma_limit =3D end;
+                dev->coherent_dma_mask =3D mask;
+                *dev->dma_mask =3D mask;
+        }
+
+> Otherwise, the rest looks OK to me - in principle we could store it as=
+=20
+> an exclusive limit such that we could then streamline the min_not_zero()=
+=20
+> tests to just min(mask, limit - 1), but that's probably too clever for=
+=20
+> its own good.
+
+Yes, that was my first intuition and in a perfect world I'd prefer it like
+that. But as you say, it's probably going to cause more trouble than anythi=
+ng.
+
+Regards,
+Nicolas
+
+
+--=-wOQXYnHdB19ozhE01VMB
+Content-Type: application/pgp-signature; name="signature.asc"
+Content-Description: This is a digitally signed message part
+Content-Transfer-Encoding: 7bit
+
+-----BEGIN PGP SIGNATURE-----
+
+iQEzBAABCAAdFiEErOkkGDHCg2EbPcGjlfZmHno8x/4FAl3NIpQACgkQlfZmHno8
+x/4XNggAtctjofJ4XldVo+K1/P/rLILA/Y+cKWu8qACkyx4o0VedANdaK2iANvY3
+NSFryeYrZSSQS9AGVUcXKwxvBIuLvE2BX6jm7CLSMgir0EIWBOQLWq/RidFZYqm7
+OGFkiOaN1/+XW8Gh8tLu63CtAYXisZ7O7jsxv+qqlXqAmBpChHR3+NimdDsxevgf
+zm6Uk7GEgwPcenlzAFYGaVyhIelfXxB64OJoGJZ3xybsLmBBoa8nlL/vC1QfzNsj
+kGlc4Mc3c6ySI9vpf2Mgn/9pSkOoFvoOsXGEsrbz/qtrpQrC+gpBvYbeLZicVl6G
+Z5EX/OFky1O9iMZTL99Sb2tEonSNlw==
+=17Ah
+-----END PGP SIGNATURE-----
+
+--=-wOQXYnHdB19ozhE01VMB--
+
+
+--===============0362105650644559760==
+Content-Type: text/plain; charset="us-ascii"
+MIME-Version: 1.0
+Content-Transfer-Encoding: 7bit
+Content-Disposition: inline
+
 _______________________________________________
 iommu mailing list
 iommu@lists.linux-foundation.org
 https://lists.linuxfoundation.org/mailman/listinfo/iommu
+--===============0362105650644559760==--
+
