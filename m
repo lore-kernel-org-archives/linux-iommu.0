@@ -2,65 +2,64 @@ Return-Path: <SRS0=E0xS=ZG=lists.linux-foundation.org=iommu-bounces@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-2.2 required=3.0 tests=HEADER_FROM_DIFFERENT_DOMAINS,
-	MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED,USER_AGENT_SANE_1
-	autolearn=no autolearn_force=no version=3.4.0
+X-Spam-Status: No, score=-6.5 required=3.0 tests=DKIM_INVALID,DKIM_SIGNED,
+	HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_PATCH,MAILING_LIST_MULTI,SIGNED_OFF_BY,
+	SPF_HELO_NONE,SPF_PASS autolearn=unavailable autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 8EEA2C432C3
-	for <iommu@archiver.kernel.org>; Thu, 14 Nov 2019 08:14:30 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 5D737C432C3
+	for <iommu@archiver.kernel.org>; Thu, 14 Nov 2019 08:47:19 +0000 (UTC)
 Received: from mail.linuxfoundation.org (mail.linuxfoundation.org [140.211.169.12])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by mail.kernel.org (Postfix) with ESMTPS id 63374206EF
-	for <iommu@archiver.kernel.org>; Thu, 14 Nov 2019 08:14:30 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 63374206EF
-Authentication-Results: mail.kernel.org; dmarc=none (p=none dis=none) header.from=lst.de
+	by mail.kernel.org (Postfix) with ESMTPS id 20A892070E
+	for <iommu@archiver.kernel.org>; Thu, 14 Nov 2019 08:47:18 +0000 (UTC)
+Authentication-Results: mail.kernel.org;
+	dkim=fail reason="signature verification failed" (2048-bit key) header.d=ellerman.id.au header.i=@ellerman.id.au header.b="kVBnH1S6"
+DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 20A892070E
+Authentication-Results: mail.kernel.org; dmarc=none (p=none dis=none) header.from=ellerman.id.au
 Authentication-Results: mail.kernel.org; spf=pass smtp.mailfrom=iommu-bounces@lists.linux-foundation.org
 Received: from mail.linux-foundation.org (localhost [127.0.0.1])
-	by mail.linuxfoundation.org (Postfix) with ESMTP id 04DA2AD0;
-	Thu, 14 Nov 2019 08:14:30 +0000 (UTC)
+	by mail.linuxfoundation.org (Postfix) with ESMTP id E9AC0AC8;
+	Thu, 14 Nov 2019 08:47:17 +0000 (UTC)
 Received: from smtp1.linuxfoundation.org (smtp1.linux-foundation.org
 	[172.17.192.35])
-	by mail.linuxfoundation.org (Postfix) with ESMTPS id D2AA9A67
+	by mail.linuxfoundation.org (Postfix) with ESMTPS id 5D2FEA67
 	for <iommu@lists.linux-foundation.org>;
-	Thu, 14 Nov 2019 08:14:28 +0000 (UTC)
-X-Greylist: from auto-whitelisted by SQLgrey-1.7.6
-Received: from verein.lst.de (verein.lst.de [213.95.11.211])
-	by smtp1.linuxfoundation.org (Postfix) with ESMTPS id 5F969CF
+	Thu, 14 Nov 2019 08:47:17 +0000 (UTC)
+X-Greylist: domain auto-whitelisted by SQLgrey-1.7.6
+Received: from ozlabs.org (ozlabs.org [203.11.71.1])
+	by smtp1.linuxfoundation.org (Postfix) with ESMTPS id AD6438A
 	for <iommu@lists.linux-foundation.org>;
-	Thu, 14 Nov 2019 08:14:28 +0000 (UTC)
-Received: by verein.lst.de (Postfix, from userid 2407)
-	id 3B6EC68BFE; Thu, 14 Nov 2019 09:14:23 +0100 (CET)
-Date: Thu, 14 Nov 2019 09:14:23 +0100
-From: Christoph Hellwig <hch@lst.de>
-To: Lu Baolu <baolu.lu@linux.intel.com>
-Subject: Re: [PATCH v5 02/10] iommu/vt-d: Use per-device dma_ops
-Message-ID: <20191114081423.GA27407@lst.de>
-References: <20190725031717.32317-3-baolu.lu@linux.intel.com>
-	<20190725054413.GC24527@lst.de>
-	<bc831f88-5b19-7531-00aa-a7577dd5c1ac@linux.intel.com>
-	<20190725114348.GA30957@lst.de>
-	<a098359a-0f89-6028-68df-9f83718df256@linux.intel.com>
-	<20191112071640.GA3343@lst.de>
-	<0885617e-8390-6d18-987f-40d49f9f563e@linux.intel.com>
-	<20191113070312.GA2735@lst.de> <20191113095353.GA5937@lst.de>
-	<0ddc8aff-783a-97b9-f5cc-9e27990de278@linux.intel.com>
+	Thu, 14 Nov 2019 08:47:16 +0000 (UTC)
+Received: from authenticated.ozlabs.org (localhost [127.0.0.1])
+	(using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+	key-exchange ECDHE (P-256) server-signature RSA-PSS (4096 bits)
+	server-digest SHA256) (No client certificate requested)
+	by mail.ozlabs.org (Postfix) with ESMTPSA id 47DFTs20Lqz9sNT;
+	Thu, 14 Nov 2019 19:47:13 +1100 (AEDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=ellerman.id.au;
+	s=201909; t=1573721233;
+	bh=6stxD/P99Wd0VO3VjYcBYgKRhWGeDRkv4DHJwuG5urg=;
+	h=From:To:Cc:Subject:In-Reply-To:References:Date:From;
+	b=kVBnH1S6jcLglXb05iWLAEiHR10k0w1FhIdJdWvuStzBNsnARBl4+uSum5s2brxqP
+	GJKfzNUU9xlPnXpQFoB7VITQ2OqfqOQs0rAG0CLQ3W5073nN2M00BOeOkimq3YeKkP
+	TdbSxqMAPGijfnL7OZRTBDoHc2ILG5v5wUC02n346N7mpwNn7+Y3H79hl5XiAfFXSw
+	F8JTEaftbfxSAu4IoLR1A6JgSW2EAokcIko7HMU6NHZhO+81GjkLbdvKtMguFykaGo
+	58U9wlWqYA3jIl1yb8C1Zlgl6ro+izLPJI1NtywgXb/5daBLLgSe7ziWWtYWYEOEvc
+	1a0vKhm4Wgi6g==
+From: Michael Ellerman <mpe@ellerman.id.au>
+To: Christoph Hellwig <hch@lst.de>,
+	Nicolas Saenz Julienne <nsaenzjulienne@suse.de>,
+	iommu@lists.linux-foundation.org, Russell King <linux@armlinux.org.uk>
+Subject: Re: [PATCH 1/3] dma-direct: unify the dma_capable definitions
+In-Reply-To: <20191113073539.9660-2-hch@lst.de>
+References: <20191113073539.9660-1-hch@lst.de>
+	<20191113073539.9660-2-hch@lst.de>
+Date: Thu, 14 Nov 2019 19:47:09 +1100
+Message-ID: <875zjm26b6.fsf@mpe.ellerman.id.au>
 MIME-Version: 1.0
-Content-Disposition: inline
-In-Reply-To: <0ddc8aff-783a-97b9-f5cc-9e27990de278@linux.intel.com>
-User-Agent: Mutt/1.5.17 (2007-11-01)
-Cc: alan.cox@intel.com, Christoph Hellwig <hch@lst.de>,
-	Stefano Stabellini <sstabellini@kernel.org>, ashok.raj@intel.com,
-	Jonathan Corbet <corbet@lwn.net>, pengfei.xu@intel.com,
-	Ingo Molnar <mingo@redhat.com>,
-	David Woodhouse <dwmw2@infradead.org>, kevin.tian@intel.com,
-	Konrad Rzeszutek Wilk <konrad.wilk@oracle.com>,
-	Steven Rostedt <rostedt@goodmis.org>, Bjorn Helgaas <bhelgaas@google.com>,
-	Boris Ostrovsky <boris.ostrovsky@oracle.com>,
-	mika.westerberg@linux.intel.com, Juergen Gross <jgross@suse.com>,
-	Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-	linux-kernel@vger.kernel.org, iommu@lists.linux-foundation.org,
-	jacob.jun.pan@intel.com, Robin Murphy <robin.murphy@arm.com>
+Cc: linuxppc-dev@lists.ozlabs.org, linux-mips@vger.kernel.org,
+	linux-arm-kernel@lists.infradead.org
 X-BeenThere: iommu@lists.linux-foundation.org
 X-Mailman-Version: 2.1.12
 Precedence: list
@@ -78,35 +77,115 @@ Content-Transfer-Encoding: 7bit
 Sender: iommu-bounces@lists.linux-foundation.org
 Errors-To: iommu-bounces@lists.linux-foundation.org
 
-On Thu, Nov 14, 2019 at 01:14:11PM +0800, Lu Baolu wrote:
-> Could you please educate me what dma_supported() is exactly for? Will
-> it always get called during boot? When will it be called?
-
-->dma_supported is set when setting either the dma_mask or
-dma_coherent_mask. These days it serves too primary purposes: reject
-too small masks that can't be addressed, and provide any hooks needed
-in the driver based on the mask.
-
-> In above implementation, why do we need to check dma_direct_supported()
-> at the beginning? And why
-
-Because the existing driver called dma_direct_supported, which I added
-based on x86 arch overrides doings the same a while ago.  I suspect
-it is related to addressing for tiny dma masks, but I'm not entirely
-sure.  The longer term intel-iommu maintainers or x86 maintainers might
-be able to shed more light how this was supposed to work and/or how
-systems with the Intel IOMMU deal with e.g. ISA devices with 24-bit
-addressing.
-
+Christoph Hellwig <hch@lst.de> writes:
+> Currently each architectures that wants to override dma_to_phys and
+> phys_to_dma also has to provide dma_capable.  But there isn't really
+> any good reason for that.  powerpc and mips just have copies of the
+> generic one minus the latests fix, and the arm one was the inspiration
+> for said fix, but misses the bus_dma_mask handling.
+> Make all architectures use the generic version instead.
 >
-> 	if (!info || info == DUMMY_DEVICE_DOMAIN_INFO ||
-> 			info == DEFER_DEVICE_DOMAIN_INFO) {
-> 		dev->dma_ops_bypass = true;
+> Signed-off-by: Christoph Hellwig <hch@lst.de>
+> ---
+>  arch/arm/include/asm/dma-direct.h     | 19 -------------------
+>  arch/mips/include/asm/dma-direct.h    |  8 --------
+>  arch/powerpc/include/asm/dma-direct.h |  9 ---------
 
-This was supposed to transform the checks from iommu_dummy and
-identity_mapping.  But I think it actually isn't entirely correct and
-already went bad in the patch to remove identity_mapping.  Pleae check 
-the branch I just re-pushed, which should be correct now.
+Looks OK to me.
+
+Acked-by: Michael Ellerman <mpe@ellerman.id.au> (powerpc)
+
+cheers
+
+> diff --git a/arch/arm/include/asm/dma-direct.h b/arch/arm/include/asm/dma-direct.h
+> index b67e5fc1fe43..7c3001a6a775 100644
+> --- a/arch/arm/include/asm/dma-direct.h
+> +++ b/arch/arm/include/asm/dma-direct.h
+> @@ -14,23 +14,4 @@ static inline phys_addr_t __dma_to_phys(struct device *dev, dma_addr_t dev_addr)
+>  	return __pfn_to_phys(dma_to_pfn(dev, dev_addr)) + offset;
+>  }
+>  
+> -static inline bool dma_capable(struct device *dev, dma_addr_t addr, size_t size)
+> -{
+> -	u64 limit, mask;
+> -
+> -	if (!dev->dma_mask)
+> -		return 0;
+> -
+> -	mask = *dev->dma_mask;
+> -
+> -	limit = (mask + 1) & ~mask;
+> -	if (limit && size > limit)
+> -		return 0;
+> -
+> -	if ((addr | (addr + size - 1)) & ~mask)
+> -		return 0;
+> -
+> -	return 1;
+> -}
+> -
+>  #endif /* ASM_ARM_DMA_DIRECT_H */
+> diff --git a/arch/mips/include/asm/dma-direct.h b/arch/mips/include/asm/dma-direct.h
+> index b5c240806e1b..14e352651ce9 100644
+> --- a/arch/mips/include/asm/dma-direct.h
+> +++ b/arch/mips/include/asm/dma-direct.h
+> @@ -2,14 +2,6 @@
+>  #ifndef _MIPS_DMA_DIRECT_H
+>  #define _MIPS_DMA_DIRECT_H 1
+>  
+> -static inline bool dma_capable(struct device *dev, dma_addr_t addr, size_t size)
+> -{
+> -	if (!dev->dma_mask)
+> -		return false;
+> -
+> -	return addr + size - 1 <= *dev->dma_mask;
+> -}
+> -
+>  dma_addr_t __phys_to_dma(struct device *dev, phys_addr_t paddr);
+>  phys_addr_t __dma_to_phys(struct device *dev, dma_addr_t daddr);
+>  
+> diff --git a/arch/powerpc/include/asm/dma-direct.h b/arch/powerpc/include/asm/dma-direct.h
+> index a2912b47102c..e29e8a236b8d 100644
+> --- a/arch/powerpc/include/asm/dma-direct.h
+> +++ b/arch/powerpc/include/asm/dma-direct.h
+> @@ -2,15 +2,6 @@
+>  #ifndef ASM_POWERPC_DMA_DIRECT_H
+>  #define ASM_POWERPC_DMA_DIRECT_H 1
+>  
+> -static inline bool dma_capable(struct device *dev, dma_addr_t addr, size_t size)
+> -{
+> -	if (!dev->dma_mask)
+> -		return false;
+> -
+> -	return addr + size - 1 <=
+> -		min_not_zero(*dev->dma_mask, dev->bus_dma_mask);
+> -}
+> -
+>  static inline dma_addr_t __phys_to_dma(struct device *dev, phys_addr_t paddr)
+>  {
+>  	if (!dev)
+> diff --git a/include/linux/dma-direct.h b/include/linux/dma-direct.h
+> index 6db863c3eb93..991f8aa2676e 100644
+> --- a/include/linux/dma-direct.h
+> +++ b/include/linux/dma-direct.h
+> @@ -24,6 +24,7 @@ static inline phys_addr_t __dma_to_phys(struct device *dev, dma_addr_t dev_addr)
+>  
+>  	return paddr + ((phys_addr_t)dev->dma_pfn_offset << PAGE_SHIFT);
+>  }
+> +#endif /* !CONFIG_ARCH_HAS_PHYS_TO_DMA */
+>  
+>  static inline bool dma_capable(struct device *dev, dma_addr_t addr, size_t size)
+>  {
+> @@ -38,7 +39,6 @@ static inline bool dma_capable(struct device *dev, dma_addr_t addr, size_t size)
+>  
+>  	return end <= min_not_zero(*dev->dma_mask, dev->bus_dma_mask);
+>  }
+> -#endif /* !CONFIG_ARCH_HAS_PHYS_TO_DMA */
+>  
+>  #ifdef CONFIG_ARCH_HAS_FORCE_DMA_UNENCRYPTED
+>  bool force_dma_unencrypted(struct device *dev);
+> -- 
+> 2.20.1
 _______________________________________________
 iommu mailing list
 iommu@lists.linux-foundation.org
