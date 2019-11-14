@@ -1,75 +1,74 @@
-Return-Path: <SRS0=M1C0=ZF=lists.linux-foundation.org=iommu-bounces@kernel.org>
+Return-Path: <SRS0=E0xS=ZG=lists.linux-foundation.org=iommu-bounces@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-2.2 required=3.0 tests=HEADER_FROM_DIFFERENT_DOMAINS,
-	MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED,USER_AGENT_SANE_1
-	autolearn=no autolearn_force=no version=3.4.0
+X-Spam-Status: No, score=-7.2 required=3.0 tests=HEADER_FROM_DIFFERENT_DOMAINS,
+	MAILING_LIST_MULTI,MENTIONS_GIT_HOSTING,SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED,
+	USER_AGENT_SANE_1 autolearn=ham autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 75EF9C43215
-	for <iommu@archiver.kernel.org>; Wed, 13 Nov 2019 21:25:09 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 0289BC432C3
+	for <iommu@archiver.kernel.org>; Thu, 14 Nov 2019 05:17:18 +0000 (UTC)
 Received: from mail.linuxfoundation.org (mail.linuxfoundation.org [140.211.169.12])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by mail.kernel.org (Postfix) with ESMTPS id 4E21F206ED
-	for <iommu@archiver.kernel.org>; Wed, 13 Nov 2019 21:25:10 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 4E21F206ED
-Authentication-Results: mail.kernel.org; dmarc=none (p=none dis=none) header.from=arm.com
+	by mail.kernel.org (Postfix) with ESMTPS id DD4D120659
+	for <iommu@archiver.kernel.org>; Thu, 14 Nov 2019 05:17:17 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org DD4D120659
+Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=linux.intel.com
 Authentication-Results: mail.kernel.org; spf=pass smtp.mailfrom=iommu-bounces@lists.linux-foundation.org
 Received: from mail.linux-foundation.org (localhost [127.0.0.1])
-	by mail.linuxfoundation.org (Postfix) with ESMTP id 13227C6C;
-	Wed, 13 Nov 2019 21:25:09 +0000 (UTC)
+	by mail.linuxfoundation.org (Postfix) with ESMTP id 7ED77AD0;
+	Thu, 14 Nov 2019 05:17:17 +0000 (UTC)
 Received: from smtp1.linuxfoundation.org (smtp1.linux-foundation.org
 	[172.17.192.35])
-	by mail.linuxfoundation.org (Postfix) with ESMTPS id ABC63C6A
+	by mail.linuxfoundation.org (Postfix) with ESMTPS id AA90AAC7
 	for <iommu@lists.linux-foundation.org>;
-	Wed, 13 Nov 2019 21:25:07 +0000 (UTC)
+	Thu, 14 Nov 2019 05:17:15 +0000 (UTC)
 X-Greylist: domain auto-whitelisted by SQLgrey-1.7.6
-Received: from foss.arm.com (foss.arm.com [217.140.110.172])
-	by smtp1.linuxfoundation.org (Postfix) with ESMTP id 342F382B
+Received: from mga04.intel.com (mga04.intel.com [192.55.52.120])
+	by smtp1.linuxfoundation.org (Postfix) with ESMTPS id B81534C3
 	for <iommu@lists.linux-foundation.org>;
-	Wed, 13 Nov 2019 21:25:06 +0000 (UTC)
-Received: from usa-sjc-imap-foss1.foss.arm.com (unknown [10.121.207.14])
-	by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id 7D87D7A7;
-	Wed, 13 Nov 2019 13:25:06 -0800 (PST)
-Received: from [192.168.1.123] (unknown [172.31.20.19])
-	by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPSA id F30ED3F52E;
-	Wed, 13 Nov 2019 13:25:00 -0800 (PST)
-Subject: Re: [PATCH] dma-mapping: treat dev->bus_dma_mask as a DMA limit
-To: Florian Fainelli <f.fainelli@gmail.com>,
-	Nicolas Saenz Julienne <nsaenzjulienne@suse.de>,
-	Dave Hansen <dave.hansen@linux.intel.com>, Andy Lutomirski
-	<luto@kernel.org>, Peter Zijlstra <peterz@infradead.org>,
-	Bjorn Helgaas <bhelgaas@google.com>,
-	Lorenzo Pieralisi <lorenzo.pieralisi@arm.com>,
-	Hanjun Guo <guohanjun@huawei.com>, Sudeep Holla <sudeep.holla@arm.com>, 
-	Jens Axboe <axboe@kernel.dk>, Joerg Roedel <joro@8bytes.org>,
-	Rob Herring <robh+dt@kernel.org>, Frank Rowand <frowand.list@gmail.com>,
-	Christoph Hellwig <hch@lst.de>, Marek Szyprowski <m.szyprowski@samsung.com>
-References: <20191113161340.27228-1-nsaenzjulienne@suse.de>
-	<f74cd8a6-00bf-46c3-8e2e-d278e72d6e0e@arm.com>
-	<48da05e0-5acf-8ab3-a6c9-be4988a9450b@gmail.com>
-From: Robin Murphy <robin.murphy@arm.com>
-Message-ID: <b8e4d303-f226-53d9-f383-73872e41002b@arm.com>
-Date: Wed, 13 Nov 2019 21:24:52 +0000
-User-Agent: Mozilla/5.0 (Windows NT 10.0; rv:68.0) Gecko/20100101
-	Thunderbird/68.2.1
+	Thu, 14 Nov 2019 05:17:13 +0000 (UTC)
+X-Amp-Result: SKIPPED(no attachment in message)
+X-Amp-File-Uploaded: False
+Received: from fmsmga004.fm.intel.com ([10.253.24.48])
+	by fmsmga104.fm.intel.com with ESMTP/TLS/DHE-RSA-AES256-GCM-SHA384;
+	13 Nov 2019 21:17:12 -0800
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="5.68,302,1569308400"; d="scan'208";a="229995322"
+Received: from allen-box.sh.intel.com (HELO [10.239.159.136])
+	([10.239.159.136])
+	by fmsmga004.fm.intel.com with ESMTP; 13 Nov 2019 21:17:08 -0800
+Subject: Re: [PATCH v5 02/10] iommu/vt-d: Use per-device dma_ops
+To: Christoph Hellwig <hch@lst.de>
+References: <20190725031717.32317-1-baolu.lu@linux.intel.com>
+	<20190725031717.32317-3-baolu.lu@linux.intel.com>
+	<20190725054413.GC24527@lst.de>
+	<bc831f88-5b19-7531-00aa-a7577dd5c1ac@linux.intel.com>
+	<20190725114348.GA30957@lst.de>
+	<a098359a-0f89-6028-68df-9f83718df256@linux.intel.com>
+	<20191112071640.GA3343@lst.de>
+	<0885617e-8390-6d18-987f-40d49f9f563e@linux.intel.com>
+	<20191113070312.GA2735@lst.de> <20191113095353.GA5937@lst.de>
+From: Lu Baolu <baolu.lu@linux.intel.com>
+Message-ID: <0ddc8aff-783a-97b9-f5cc-9e27990de278@linux.intel.com>
+Date: Thu, 14 Nov 2019 13:14:11 +0800
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:60.0) Gecko/20100101
+	Thunderbird/60.9.0
 MIME-Version: 1.0
-In-Reply-To: <48da05e0-5acf-8ab3-a6c9-be4988a9450b@gmail.com>
-Content-Language: en-GB
-Cc: linux-pci@vger.kernel.org, linux-kernel@vger.kernel.org,
-	linux-ide@vger.kernel.org, Paul Mackerras <paulus@samba.org>,
-	"H. Peter Anvin" <hpa@zytor.com>, Paul Burton <paulburton@kernel.org>,
-	Michael Ellerman <mpe@ellerman.id.au>, x86@kernel.org,
-	phil@raspberrypi.org, linux-acpi@vger.kernel.org,
-	Ingo Molnar <mingo@redhat.com>,
-	Benjamin Herrenschmidt <benh@kernel.crashing.org>,
-	James Hogan <jhogan@kernel.org>, Len Brown <lenb@kernel.org>,
-	devicetree@vger.kernel.org, Borislav Petkov <bp@alien8.de>,
-	Thomas Gleixner <tglx@linutronix.de>, linux-arm-kernel@lists.infradead.org,
-	"Rafael J. Wysocki" <rjw@rjwysocki.net>,
-	linux-mips@vger.kernel.org, Ralf Baechle <ralf@linux-mips.org>,
-	iommu@lists.linux-foundation.org, linuxppc-dev@lists.ozlabs.org
+In-Reply-To: <20191113095353.GA5937@lst.de>
+Content-Language: en-US
+Cc: alan.cox@intel.com, Stefano Stabellini <sstabellini@kernel.org>,
+	ashok.raj@intel.com, Jonathan Corbet <corbet@lwn.net>,
+	pengfei.xu@intel.com, Ingo Molnar <mingo@redhat.com>,
+	David Woodhouse <dwmw2@infradead.org>, kevin.tian@intel.com,
+	Konrad Rzeszutek Wilk <konrad.wilk@oracle.com>,
+	Steven Rostedt <rostedt@goodmis.org>, Bjorn Helgaas <bhelgaas@google.com>,
+	Boris Ostrovsky <boris.ostrovsky@oracle.com>,
+	mika.westerberg@linux.intel.com, Juergen Gross <jgross@suse.com>,
+	Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+	linux-kernel@vger.kernel.org, iommu@lists.linux-foundation.org,
+	jacob.jun.pan@intel.com, Robin Murphy <robin.murphy@arm.com>
 X-BeenThere: iommu@lists.linux-foundation.org
 X-Mailman-Version: 2.1.12
 Precedence: list
@@ -87,42 +86,64 @@ Content-Type: text/plain; charset="us-ascii"; Format="flowed"
 Sender: iommu-bounces@lists.linux-foundation.org
 Errors-To: iommu-bounces@lists.linux-foundation.org
 
-On 2019-11-13 8:41 pm, Florian Fainelli wrote:
-> On 11/13/19 12:34 PM, Robin Murphy wrote:
->> On 13/11/2019 4:13 pm, Nicolas Saenz Julienne wrote:
->>> Using a mask to represent bus DMA constraints has a set of limitations.
->>> The biggest one being it can only hold a power of two (minus one). The
->>> DMA mapping code is already aware of this and treats dev->bus_dma_mask
->>> as a limit. This quirk is already used by some architectures although
->>> still rare.
->>>
->>> With the introduction of the Raspberry Pi 4 we've found a new contender
->>> for the use of bus DMA limits, as its PCIe bus can only address the
->>> lower 3GB of memory (of a total of 4GB). This is impossible to represent
->>> with a mask. To make things worse the device-tree code rounds non power
->>> of two bus DMA limits to the next power of two, which is unacceptable in
->>> this case.
->>>
->>> In the light of this, rename dev->bus_dma_mask to dev->bus_dma_limit all
->>> over the tree and treat it as such. Note that dev->bus_dma_limit is
->>> meant to contain the higher accesible DMA address.
->>
->> Neat, you win a "why didn't I do it that way in the first place?" :)
->>
->> Looking at it without all the history of previous attempts, this looks
->> entirely reasonable, and definitely a step in the right direction.
+Hi Christoph,
+
+On 11/13/19 5:53 PM, Christoph Hellwig wrote:
+> On Wed, Nov 13, 2019 at 08:03:12AM +0100, Christoph Hellwig wrote:
+>> Indeed.  And one idea would be to lift the code in the powerpc
+>> dma_iommu_ops that check a flag and use the direct ops to the generic
+>> dma code and a flag in struct device.  We can then switch the intel
+>> iommu ops (and AMD Gart) over to it.
 > 
-> And while you are changing those, would it make sense to not only rename
-> the structure member but introduce a getter and setter in order to ease
-> future work where this would no longer be a scalar?
+> Let me know what you think of the branch below.  Only compile tested
+> and booted on qemu with an emulated intel iommu:
+> 
+> 	http://git.infradead.org/users/hch/misc.git/shortlog/refs/heads/dma-bypass
+> 
 
-I doubt it - once we get as a far as supporting multiple DMA ranges, 
-there will be a whole load of infrastructure churn anyway if only to 
-replace dma_pfn_offset, and I'm not sure a simple get/set paradigm would 
-even be viable, so it's probably better to save that until clearly 
-necessary.
+I took a quick look at the related patches on the branch. Most of them
+look good to me. But I would like to understand more about below logic.
 
-Robin.
+static int intel_dma_supported(struct device *dev, u64 mask)
+{
+	struct device_domain_info *info = dev->archdata.iommu;
+	int ret;
+
+	ret = dma_direct_supported(dev, mask);
+	if (ret < 0)
+		return ret;
+
+	if (!info || info == DUMMY_DEVICE_DOMAIN_INFO ||
+			info == DEFER_DEVICE_DOMAIN_INFO) {
+		dev->dma_ops_bypass = true;
+	} else if (info->domain == si_domain) {
+		if (mask < dma_direct_get_required_mask(dev)) {
+			dev->dma_ops_bypass = false;
+			intel_iommu_set_dma_domain(dev);
+			dev_info(dev, "32bit DMA uses non-identity mapping\n");
+		} else {
+			dev->dma_ops_bypass = true;
+		}
+	} else {
+		dev->dma_ops_bypass = false;
+	}
+
+	return 0;
+}
+
+Could you please educate me what dma_supported() is exactly for? Will
+it always get called during boot? When will it be called?
+
+In above implementation, why do we need to check dma_direct_supported()
+at the beginning? And why
+
+	if (!info || info == DUMMY_DEVICE_DOMAIN_INFO ||
+			info == DEFER_DEVICE_DOMAIN_INFO) {
+		dev->dma_ops_bypass = true;
+
+Best regards,
+baolu
+
 _______________________________________________
 iommu mailing list
 iommu@lists.linux-foundation.org
