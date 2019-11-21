@@ -6,61 +6,58 @@ X-Spam-Status: No, score=-2.2 required=3.0 tests=HEADER_FROM_DIFFERENT_DOMAINS,
 	MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED,USER_AGENT_SANE_1
 	autolearn=no autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id C6E62C43215
-	for <iommu@archiver.kernel.org>; Thu, 21 Nov 2019 17:16:57 +0000 (UTC)
-Received: from silver.osuosl.org (smtp3.osuosl.org [140.211.166.136])
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 9375DC432C0
+	for <iommu@archiver.kernel.org>; Thu, 21 Nov 2019 17:17:19 +0000 (UTC)
+Received: from hemlock.osuosl.org (smtp2.osuosl.org [140.211.166.133])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by mail.kernel.org (Postfix) with ESMTPS id 95F46206CC
-	for <iommu@archiver.kernel.org>; Thu, 21 Nov 2019 17:16:55 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 95F46206CC
+	by mail.kernel.org (Postfix) with ESMTPS id 73174206CC
+	for <iommu@archiver.kernel.org>; Thu, 21 Nov 2019 17:17:19 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 73174206CC
 Authentication-Results: mail.kernel.org; dmarc=none (p=none dis=none) header.from=lst.de
 Authentication-Results: mail.kernel.org; spf=pass smtp.mailfrom=iommu-bounces@lists.linux-foundation.org
 Received: from localhost (localhost [127.0.0.1])
-	by silver.osuosl.org (Postfix) with ESMTP id C61922153B;
-	Thu, 21 Nov 2019 17:16:55 +0000 (UTC)
+	by hemlock.osuosl.org (Postfix) with ESMTP id 4F025880CC;
+	Thu, 21 Nov 2019 17:17:19 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from silver.osuosl.org ([127.0.0.1])
+Received: from hemlock.osuosl.org ([127.0.0.1])
 	by localhost (.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
-	with ESMTP id ATrk0cfrtd5F; Thu, 21 Nov 2019 17:16:55 +0000 (UTC)
+	with ESMTP id kRHo9o3CA38O; Thu, 21 Nov 2019 17:17:18 +0000 (UTC)
 Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [140.211.9.56])
-	by silver.osuosl.org (Postfix) with ESMTP id 08DD920513;
-	Thu, 21 Nov 2019 17:16:55 +0000 (UTC)
+	by hemlock.osuosl.org (Postfix) with ESMTP id 501BB87B81;
+	Thu, 21 Nov 2019 17:17:18 +0000 (UTC)
 Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
-	by lists.linuxfoundation.org (Postfix) with ESMTP id EF60FC1DD8;
-	Thu, 21 Nov 2019 17:16:54 +0000 (UTC)
-Received: from whitealder.osuosl.org (smtp1.osuosl.org [140.211.166.138])
- by lists.linuxfoundation.org (Postfix) with ESMTP id 7A94FC18DA
- for <iommu@lists.linux-foundation.org>; Thu, 21 Nov 2019 17:16:53 +0000 (UTC)
+	by lists.linuxfoundation.org (Postfix) with ESMTP id 34AD8C1DD8;
+	Thu, 21 Nov 2019 17:17:18 +0000 (UTC)
+Received: from hemlock.osuosl.org (smtp2.osuosl.org [140.211.166.133])
+ by lists.linuxfoundation.org (Postfix) with ESMTP id E6CC8C18DA
+ for <iommu@lists.linux-foundation.org>; Thu, 21 Nov 2019 17:17:16 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
- by whitealder.osuosl.org (Postfix) with ESMTP id 63BBF87C37
- for <iommu@lists.linux-foundation.org>; Thu, 21 Nov 2019 17:16:53 +0000 (UTC)
+ by hemlock.osuosl.org (Postfix) with ESMTP id E213187B81
+ for <iommu@lists.linux-foundation.org>; Thu, 21 Nov 2019 17:17:16 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from whitealder.osuosl.org ([127.0.0.1])
+Received: from hemlock.osuosl.org ([127.0.0.1])
  by localhost (.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
- with ESMTP id sWPbkiMKURbC for <iommu@lists.linux-foundation.org>;
- Thu, 21 Nov 2019 17:16:52 +0000 (UTC)
+ with ESMTP id 4J0+WXW2n+B1 for <iommu@lists.linux-foundation.org>;
+ Thu, 21 Nov 2019 17:17:16 +0000 (UTC)
 X-Greylist: from auto-whitelisted by SQLgrey-1.7.6
 Received: from verein.lst.de (verein.lst.de [213.95.11.211])
- by whitealder.osuosl.org (Postfix) with ESMTPS id B9F4C8748A
- for <iommu@lists.linux-foundation.org>; Thu, 21 Nov 2019 17:16:52 +0000 (UTC)
+ by hemlock.osuosl.org (Postfix) with ESMTPS id 6626F879CD
+ for <iommu@lists.linux-foundation.org>; Thu, 21 Nov 2019 17:17:16 +0000 (UTC)
 Received: by verein.lst.de (Postfix, from userid 2407)
- id 7656368BFE; Thu, 21 Nov 2019 18:16:47 +0100 (CET)
-Date: Thu, 21 Nov 2019 18:16:47 +0100
+ id A77C768BFE; Thu, 21 Nov 2019 18:17:13 +0100 (CET)
+Date: Thu, 21 Nov 2019 18:17:13 +0100
 From: Christoph Hellwig <hch@lst.de>
-To: Will Deacon <will@kernel.org>
+To: Robin Murphy <robin.murphy@arm.com>
 Subject: Re: [PATCH v2] dma-mapping: treat dev->bus_dma_mask as a DMA limit
-Message-ID: <20191121171647.GA2932@lst.de>
+Message-ID: <20191121171713.GB2932@lst.de>
 References: <20191121092646.8449-1-nsaenzjulienne@suse.de>
- <20191121152457.GA525@lst.de> <20191121152650.GA651@lst.de>
- <70359d2a-10c6-09c7-a857-805085affb0a@arm.com> <20191121160217.GA1583@lst.de>
- <20191121165348.GC4905@willie-the-truck>
+ <c407877d-a812-de85-5e8f-e0915f5a517f@arm.com>
 MIME-Version: 1.0
 Content-Disposition: inline
-In-Reply-To: <20191121165348.GC4905@willie-the-truck>
+In-Reply-To: <c407877d-a812-de85-5e8f-e0915f5a517f@arm.com>
 User-Agent: Mutt/1.5.17 (2007-11-01)
-Cc: Catalin Marinas <catalin.marinas@arm.com>,
- Peter Zijlstra <peterz@infradead.org>,
+Cc: Peter Zijlstra <peterz@infradead.org>,
  Benjamin Herrenschmidt <benh@kernel.crashing.org>,
  Dave Hansen <dave.hansen@linux.intel.com>, linux-pci@vger.kernel.org,
  linux-kernel@vger.kernel.org, linux-ide@vger.kernel.org,
@@ -74,10 +71,9 @@ Cc: Catalin Marinas <catalin.marinas@arm.com>,
  Borislav Petkov <bp@alien8.de>, Andy Lutomirski <luto@kernel.org>,
  Bjorn Helgaas <bhelgaas@google.com>, Thomas Gleixner <tglx@linutronix.de>,
  linux-arm-kernel@lists.infradead.org, Jens Axboe <axboe@kernel.dk>,
- linuxppc-dev@lists.ozlabs.org, "Rafael J. Wysocki" <rjw@rjwysocki.net>,
- linux-mips@vger.kernel.org, Ralf Baechle <ralf@linux-mips.org>,
- iommu@lists.linux-foundation.org, Sudeep Holla <sudeep.holla@arm.com>,
- Robin Murphy <robin.murphy@arm.com>,
+ "Rafael J. Wysocki" <rjw@rjwysocki.net>, linux-mips@vger.kernel.org,
+ Ralf Baechle <ralf@linux-mips.org>, iommu@lists.linux-foundation.org,
+ Sudeep Holla <sudeep.holla@arm.com>, linuxppc-dev@lists.ozlabs.org,
  Nicolas Saenz Julienne <nsaenzjulienne@suse.de>
 X-BeenThere: iommu@lists.linux-foundation.org
 X-Mailman-Version: 2.1.15
@@ -96,13 +92,16 @@ Content-Transfer-Encoding: 7bit
 Errors-To: iommu-bounces@lists.linux-foundation.org
 Sender: "iommu" <iommu-bounces@lists.linux-foundation.org>
 
-On Thu, Nov 21, 2019 at 04:53:48PM +0000, Will Deacon wrote:
-> Please go ahead and pull in our for-next/zone-dma branch if you need it.
-> We're not going to rebase it, and I suspect we won't even be queueing
-> anything else there at this stage in the game.
+On Thu, Nov 21, 2019 at 05:07:54PM +0000, Robin Murphy wrote:
+> ^^ super-nit only because I can't not see my editor currently highlighting 
+> the typo: "accessible"
+>
+> Regardless of that though,
+>
+> Reviewed-by: Robin Murphy <robin.murphy@arm.com>
 
-Ok.  I've pulled it in and will wait with sending the dma-mapping
-pull request until the arm64 one made it to Linus.
+Applied for real now with that typo fixed and on top of the pulled in
+arm64 branch.
 _______________________________________________
 iommu mailing list
 iommu@lists.linux-foundation.org
