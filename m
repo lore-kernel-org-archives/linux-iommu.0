@@ -6,65 +6,66 @@ X-Spam-Status: No, score=-9.8 required=3.0 tests=DKIM_INVALID,DKIM_SIGNED,
 	INCLUDES_PATCH,MAILING_LIST_MULTI,SIGNED_OFF_BY,SPF_HELO_NONE,SPF_PASS,
 	USER_AGENT_GIT autolearn=unavailable autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id EB2D1C432C0
-	for <iommu@archiver.kernel.org>; Thu, 21 Nov 2019 11:49:42 +0000 (UTC)
-Received: from whitealder.osuosl.org (smtp1.osuosl.org [140.211.166.138])
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 3DE6BC43215
+	for <iommu@archiver.kernel.org>; Thu, 21 Nov 2019 11:49:46 +0000 (UTC)
+Received: from hemlock.osuosl.org (smtp2.osuosl.org [140.211.166.133])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by mail.kernel.org (Postfix) with ESMTPS id C0430208A3
-	for <iommu@archiver.kernel.org>; Thu, 21 Nov 2019 11:49:42 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTPS id 10AB720C01
+	for <iommu@archiver.kernel.org>; Thu, 21 Nov 2019 11:49:45 +0000 (UTC)
 Authentication-Results: mail.kernel.org;
-	dkim=fail reason="signature verification failed" (1024-bit key) header.d=kernel.org header.i=@kernel.org header.b="k+E3SA9k"
-DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org C0430208A3
+	dkim=fail reason="signature verification failed" (1024-bit key) header.d=kernel.org header.i=@kernel.org header.b="w7yST8Yn"
+DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 10AB720C01
 Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=kernel.org
 Authentication-Results: mail.kernel.org; spf=pass smtp.mailfrom=iommu-bounces@lists.linux-foundation.org
 Received: from localhost (localhost [127.0.0.1])
-	by whitealder.osuosl.org (Postfix) with ESMTP id A045687EAF;
-	Thu, 21 Nov 2019 11:49:42 +0000 (UTC)
+	by hemlock.osuosl.org (Postfix) with ESMTP id DB2F8887B1;
+	Thu, 21 Nov 2019 11:49:45 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from whitealder.osuosl.org ([127.0.0.1])
+Received: from hemlock.osuosl.org ([127.0.0.1])
 	by localhost (.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
-	with ESMTP id gxgsKV1p9V4b; Thu, 21 Nov 2019 11:49:42 +0000 (UTC)
+	with ESMTP id 9n1FE0dD47Pd; Thu, 21 Nov 2019 11:49:45 +0000 (UTC)
 Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [140.211.9.56])
-	by whitealder.osuosl.org (Postfix) with ESMTP id 3E56387E94;
-	Thu, 21 Nov 2019 11:49:42 +0000 (UTC)
+	by hemlock.osuosl.org (Postfix) with ESMTP id 72AB8887AA;
+	Thu, 21 Nov 2019 11:49:45 +0000 (UTC)
 Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
-	by lists.linuxfoundation.org (Postfix) with ESMTP id 39D34C1DD8;
-	Thu, 21 Nov 2019 11:49:42 +0000 (UTC)
+	by lists.linuxfoundation.org (Postfix) with ESMTP id 60E78C1DD8;
+	Thu, 21 Nov 2019 11:49:45 +0000 (UTC)
 Received: from whitealder.osuosl.org (smtp1.osuosl.org [140.211.166.138])
- by lists.linuxfoundation.org (Postfix) with ESMTP id 27B29C18DA
- for <iommu@lists.linuxfoundation.org>; Thu, 21 Nov 2019 11:49:41 +0000 (UTC)
+ by lists.linuxfoundation.org (Postfix) with ESMTP id 1DD10C18DA
+ for <iommu@lists.linuxfoundation.org>; Thu, 21 Nov 2019 11:49:44 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
- by whitealder.osuosl.org (Postfix) with ESMTP id 17A3187E94
- for <iommu@lists.linuxfoundation.org>; Thu, 21 Nov 2019 11:49:41 +0000 (UTC)
+ by whitealder.osuosl.org (Postfix) with ESMTP id 0CDA487EF9
+ for <iommu@lists.linuxfoundation.org>; Thu, 21 Nov 2019 11:49:44 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
 Received: from whitealder.osuosl.org ([127.0.0.1])
  by localhost (.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
- with ESMTP id bcURT9qYPEIp for <iommu@lists.linuxfoundation.org>;
- Thu, 21 Nov 2019 11:49:40 +0000 (UTC)
+ with ESMTP id zxlV8zKpzCSO for <iommu@lists.linuxfoundation.org>;
+ Thu, 21 Nov 2019 11:49:43 +0000 (UTC)
 X-Greylist: domain auto-whitelisted by SQLgrey-1.7.6
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
- by whitealder.osuosl.org (Postfix) with ESMTPS id 8C82B87EB1
- for <iommu@lists.linuxfoundation.org>; Thu, 21 Nov 2019 11:49:40 +0000 (UTC)
+ by whitealder.osuosl.org (Postfix) with ESMTPS id 9393D87E9B
+ for <iommu@lists.linuxfoundation.org>; Thu, 21 Nov 2019 11:49:43 +0000 (UTC)
 Received: from localhost.localdomain (236.31.169.217.in-addr.arpa
  [217.169.31.236])
  (using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
  (No client certificate requested)
- by mail.kernel.org (Postfix) with ESMTPSA id 2F4C120898;
- Thu, 21 Nov 2019 11:49:38 +0000 (UTC)
+ by mail.kernel.org (Postfix) with ESMTPSA id D8D192133F;
+ Thu, 21 Nov 2019 11:49:40 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
- s=default; t=1574336980;
- bh=QFUkeMh2cozH/3aW8Dt6eBLsD3SxxmEo/ZkMadr5dlA=;
+ s=default; t=1574336983;
+ bh=ueWNsuTfkO93GpwiABTSPkL/u5WAIuE3ce00RdDBHLU=;
  h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
- b=k+E3SA9k3JVY4mHqNt1OdB2QBv50OD/1h46PyL/Ci2wLWVR7TQ25noB3MFDFqC4y6
- iqN4OIHAJ4SvQPylMV1jpM3XYittDSPi0SNTHDicQsnwLTEE7byjsLeks197MhMOef
- 57/e4dKo39fKVS5pYv7rO1QuJBt0VoyoK4uKyicw=
+ b=w7yST8Ynr+/JBBdbGHY47s1B4OU5vot4tZeyGlN+2WrKEdde2bL0xf8H6c4IRdSxs
+ XBF6pawNV9ohxKBhANvbESRNxAtLC+KvZKqu1/J06IKSpg9hxOMoR93GheLu88/UqC
+ ttEkYlEo9QXGaujNEwkwBq9/FKAaKdvp1ilwWpaU=
 From: Will Deacon <will@kernel.org>
 To: iommu@lists.linuxfoundation.org,
 	linux-kernel@vger.kernel.org
-Subject: [PATCH v3 06/14] drivers/iommu: Allow IOMMU bus ops to be unregistered
-Date: Thu, 21 Nov 2019 11:49:10 +0000
-Message-Id: <20191121114918.2293-7-will@kernel.org>
+Subject: [PATCH v3 07/14] Revert "iommu/arm-smmu: Make arm-smmu-v3 explicitly
+ non-modular"
+Date: Thu, 21 Nov 2019 11:49:11 +0000
+Message-Id: <20191121114918.2293-8-will@kernel.org>
 X-Mailer: git-send-email 2.20.1
 In-Reply-To: <20191121114918.2293-1-will@kernel.org>
 References: <20191121114918.2293-1-will@kernel.org>
@@ -92,35 +93,82 @@ Content-Transfer-Encoding: 7bit
 Errors-To: iommu-bounces@lists.linux-foundation.org
 Sender: "iommu" <iommu-bounces@lists.linux-foundation.org>
 
-'bus_set_iommu()' allows IOMMU drivers to register their ops for a given
-bus type. Unfortunately, it then doesn't allow them to be removed, which
-is necessary for modular drivers to shutdown cleanly so that they can be
-reloaded later on.
+This reverts commit c07b6426df922d21a13a959cf785d46e9c531941.
 
-Allow 'bus_set_iommu()' to take a NULL 'ops' argument, which clear the
-ops pointer for the selected bus_type.
+Let's get the SMMUv3 driver building as a module, which means putting
+back some dead code that we used to carry.
 
 Signed-off-by: Will Deacon <will@kernel.org>
 ---
- drivers/iommu/iommu.c | 5 +++++
- 1 file changed, 5 insertions(+)
+ drivers/iommu/arm-smmu-v3.c | 25 ++++++++++++++++---------
+ 1 file changed, 16 insertions(+), 9 deletions(-)
 
-diff --git a/drivers/iommu/iommu.c b/drivers/iommu/iommu.c
-index 4bfecfbbe2cf..e99704c2e06b 100644
---- a/drivers/iommu/iommu.c
-+++ b/drivers/iommu/iommu.c
-@@ -1558,6 +1558,11 @@ int bus_set_iommu(struct bus_type *bus, const struct iommu_ops *ops)
+diff --git a/drivers/iommu/arm-smmu-v3.c b/drivers/iommu/arm-smmu-v3.c
+index 8da93e730d6f..2ad8e2ca0583 100644
+--- a/drivers/iommu/arm-smmu-v3.c
++++ b/drivers/iommu/arm-smmu-v3.c
+@@ -21,8 +21,7 @@
+ #include <linux/io-pgtable.h>
+ #include <linux/iommu.h>
+ #include <linux/iopoll.h>
+-#include <linux/init.h>
+-#include <linux/moduleparam.h>
++#include <linux/module.h>
+ #include <linux/msi.h>
+ #include <linux/of.h>
+ #include <linux/of_address.h>
+@@ -384,10 +383,6 @@
+ #define MSI_IOVA_BASE			0x8000000
+ #define MSI_IOVA_LENGTH			0x100000
+ 
+-/*
+- * not really modular, but the easiest way to keep compat with existing
+- * bootargs behaviour is to continue using module_param_named here.
+- */
+ static bool disable_bypass = 1;
+ module_param_named(disable_bypass, disable_bypass, bool, S_IRUGO);
+ MODULE_PARM_DESC(disable_bypass,
+@@ -3683,25 +3678,37 @@ static int arm_smmu_device_probe(struct platform_device *pdev)
+ 	return 0;
+ }
+ 
+-static void arm_smmu_device_shutdown(struct platform_device *pdev)
++static int arm_smmu_device_remove(struct platform_device *pdev)
  {
- 	int err;
+ 	struct arm_smmu_device *smmu = platform_get_drvdata(pdev);
  
-+	if (ops == NULL) {
-+		bus->iommu_ops = NULL;
-+		return 0;
-+	}
+ 	arm_smmu_device_disable(smmu);
 +
- 	if (bus->iommu_ops != NULL)
- 		return -EBUSY;
++	return 0;
++}
++
++static void arm_smmu_device_shutdown(struct platform_device *pdev)
++{
++	arm_smmu_device_remove(pdev);
+ }
  
+ static const struct of_device_id arm_smmu_of_match[] = {
+ 	{ .compatible = "arm,smmu-v3", },
+ 	{ },
+ };
++MODULE_DEVICE_TABLE(of, arm_smmu_of_match);
+ 
+ static struct platform_driver arm_smmu_driver = {
+ 	.driver	= {
+ 		.name		= "arm-smmu-v3",
+ 		.of_match_table	= of_match_ptr(arm_smmu_of_match),
+-		.suppress_bind_attrs = true,
+ 	},
+ 	.probe	= arm_smmu_device_probe,
++	.remove	= arm_smmu_device_remove,
+ 	.shutdown = arm_smmu_device_shutdown,
+ };
+-builtin_platform_driver(arm_smmu_driver);
++module_platform_driver(arm_smmu_driver);
++
++MODULE_DESCRIPTION("IOMMU API for ARM architected SMMUv3 implementations");
++MODULE_AUTHOR("Will Deacon <will.deacon@arm.com>");
++MODULE_LICENSE("GPL v2");
 -- 
 2.24.0.432.g9d3f5f5b63-goog
 
