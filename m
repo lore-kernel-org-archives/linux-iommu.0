@@ -2,90 +2,90 @@ Return-Path: <SRS0=Z7Xn=ZO=lists.linux-foundation.org=iommu-bounces@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-9.6 required=3.0 tests=DKIM_INVALID,DKIM_SIGNED,
+X-Spam-Status: No, score=-8.0 required=3.0 tests=DKIM_INVALID,DKIM_SIGNED,
 	HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_PATCH,MAILING_LIST_MULTI,SIGNED_OFF_BY,
-	SPF_HELO_NONE,SPF_PASS,USER_AGENT_GIT autolearn=unavailable
+	SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED,USER_AGENT_SANE_1 autolearn=ham
 	autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 7EBDCC432C0
-	for <iommu@archiver.kernel.org>; Fri, 22 Nov 2019 19:17:15 +0000 (UTC)
-Received: from whitealder.osuosl.org (smtp1.osuosl.org [140.211.166.138])
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 55DB4C432C0
+	for <iommu@archiver.kernel.org>; Fri, 22 Nov 2019 22:03:16 +0000 (UTC)
+Received: from silver.osuosl.org (smtp3.osuosl.org [140.211.166.136])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by mail.kernel.org (Postfix) with ESMTPS id 3FD7020707
-	for <iommu@archiver.kernel.org>; Fri, 22 Nov 2019 19:17:15 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTPS id 16BD320708
+	for <iommu@archiver.kernel.org>; Fri, 22 Nov 2019 22:03:15 +0000 (UTC)
 Authentication-Results: mail.kernel.org;
-	dkim=fail reason="signature verification failed" (2048-bit key) header.d=lca.pw header.i=@lca.pw header.b="n28AV1LN"
-DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 3FD7020707
-Authentication-Results: mail.kernel.org; dmarc=none (p=none dis=none) header.from=lca.pw
+	dkim=fail reason="key not found in DNS" (0-bit key) header.d=codeaurora.org header.i=@codeaurora.org header.b="WVLEwQno";
+	dkim=fail reason="signature verification failed" (1024-bit key) header.d=amazonses.com header.i=@amazonses.com header.b="HlQ2S/13"
+DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 16BD320708
+Authentication-Results: mail.kernel.org; dmarc=none (p=none dis=none) header.from=codeaurora.org
 Authentication-Results: mail.kernel.org; spf=pass smtp.mailfrom=iommu-bounces@lists.linux-foundation.org
 Received: from localhost (localhost [127.0.0.1])
-	by whitealder.osuosl.org (Postfix) with ESMTP id F2900883B8;
-	Fri, 22 Nov 2019 19:17:14 +0000 (UTC)
+	by silver.osuosl.org (Postfix) with ESMTP id C3C1420420;
+	Fri, 22 Nov 2019 22:03:15 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from whitealder.osuosl.org ([127.0.0.1])
+Received: from silver.osuosl.org ([127.0.0.1])
 	by localhost (.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
-	with ESMTP id 0iEaO-bVjXBe; Fri, 22 Nov 2019 19:17:13 +0000 (UTC)
+	with ESMTP id DkDJcnxHQlTZ; Fri, 22 Nov 2019 22:03:14 +0000 (UTC)
 Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [140.211.9.56])
-	by whitealder.osuosl.org (Postfix) with ESMTP id 12BED88372;
-	Fri, 22 Nov 2019 19:17:13 +0000 (UTC)
+	by silver.osuosl.org (Postfix) with ESMTP id ADD9D203A0;
+	Fri, 22 Nov 2019 22:03:14 +0000 (UTC)
 Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
-	by lists.linuxfoundation.org (Postfix) with ESMTP id EB0E2C1DD8;
-	Fri, 22 Nov 2019 19:17:12 +0000 (UTC)
+	by lists.linuxfoundation.org (Postfix) with ESMTP id 9F700C1DD8;
+	Fri, 22 Nov 2019 22:03:14 +0000 (UTC)
 Received: from silver.osuosl.org (smtp3.osuosl.org [140.211.166.136])
- by lists.linuxfoundation.org (Postfix) with ESMTP id 75770C18DA
- for <iommu@lists.linux-foundation.org>; Fri, 22 Nov 2019 19:17:11 +0000 (UTC)
+ by lists.linuxfoundation.org (Postfix) with ESMTP id 075A6C18DA
+ for <iommu@lists.linux-foundation.org>; Fri, 22 Nov 2019 22:03:14 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
- by silver.osuosl.org (Postfix) with ESMTP id 6B3A120354
- for <iommu@lists.linux-foundation.org>; Fri, 22 Nov 2019 19:17:11 +0000 (UTC)
+ by silver.osuosl.org (Postfix) with ESMTP id 0009420420
+ for <iommu@lists.linux-foundation.org>; Fri, 22 Nov 2019 22:03:13 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
 Received: from silver.osuosl.org ([127.0.0.1])
  by localhost (.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
- with ESMTP id IC5KHeNoK9nE for <iommu@lists.linux-foundation.org>;
- Fri, 22 Nov 2019 19:17:08 +0000 (UTC)
-X-Greylist: from auto-whitelisted by SQLgrey-1.7.6
-Received: from mail-qt1-f193.google.com (mail-qt1-f193.google.com
- [209.85.160.193])
- by silver.osuosl.org (Postfix) with ESMTPS id 5ED9A20243
- for <iommu@lists.linux-foundation.org>; Fri, 22 Nov 2019 19:17:08 +0000 (UTC)
-Received: by mail-qt1-f193.google.com with SMTP id 30so9015816qtz.12
- for <iommu@lists.linux-foundation.org>; Fri, 22 Nov 2019 11:17:08 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=lca.pw; s=google;
- h=from:to:cc:subject:date:message-id;
- bh=Qb3jkfznea5AOIJ97DEoFWbKQNlXPlyeiYtdLKGq9UA=;
- b=n28AV1LNImQJRoVO3F0upOGhmdimfpNQYUUthfTCs0OL20Xe6Az2zBBSy0WPnLpVsb
- +9jh+Q5azPcP2FPOd091ezksFEoC9bzAo2yNpu55N58TpOk38iTyWY3Tvf0xioQt2A6j
- KXHTgzuBtnLKZqJI80Yki3x6LmLb7uVFGK4D8yFfJt4layvGi1Vtr0E4xe89wfOVgtkN
- 5TEt6BjJ7HQJOixNdDFhabcbjUP06vdvuSIUlRMqs2yu81ExlY3/iCB9Hty19WOqLJgJ
- +lf7Wsu8AfOd0M1GO0kAmYrhKl4dXYPl4FXLr/G2Xm2akGQ0M7CJ5bVjzswjz9mPy+4u
- fqcg==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
- d=1e100.net; s=20161025;
- h=x-gm-message-state:from:to:cc:subject:date:message-id;
- bh=Qb3jkfznea5AOIJ97DEoFWbKQNlXPlyeiYtdLKGq9UA=;
- b=KcIHvpkhbcKa6WzdsYdXWKeBdSIyyQUUd90+oBH6dMRVXI3sUnJiHeIKZNghYf+qAK
- Q3cCa4V+HFXG1frUK2OGoYtPJtK4IlfaOVIzqA2ySCDOQDyYmbmOL2BZ+kzFMnvg068+
- Plz0VWfyiyNyy9YBn1OR7Wr6CdSIHXVc4ttJ8HS0Jsc0VP21dpir7wfs07JdKpWdzK60
- FbjamQeSDVDMU3a/FJm/qRak1W9K9wI77UzyGhPDfTYbiR2e0wd4sqiSN8wyAMglWv2o
- XSUNQfQD8uRlV+1iJLiuZJ/0VmYbq9I49Ys1ibzDMpvdUU99yI8EguhwB4zl2k77MLrM
- QMnQ==
-X-Gm-Message-State: APjAAAU4Pgc59Ja1Hj9I8HEEz+lgaCmAiOQU3ej1hUWGQlafhMEA2sUM
- PvgzKji8PXoliS8cj34G/CPPEg==
-X-Google-Smtp-Source: APXvYqwCJjI7cVRSiYbFakX35Oih35f8INaRnbpgBab4tlcf9hU/GTJsIJ1qisnMfSf5rCvVSWNeHg==
-X-Received: by 2002:ac8:2f4e:: with SMTP id k14mr5309709qta.357.1574450227230; 
- Fri, 22 Nov 2019 11:17:07 -0800 (PST)
-Received: from qcai.nay.com (nat-pool-bos-t.redhat.com. [66.187.233.206])
- by smtp.gmail.com with ESMTPSA id y28sm3915540qtk.65.2019.11.22.11.17.05
- (version=TLS1_2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128/128);
- Fri, 22 Nov 2019 11:17:06 -0800 (PST)
-From: Qian Cai <cai@lca.pw>
-To: jroedel@suse.de
-Subject: [PATCH v4] iommu/iova: silence warnings under memory pressure
-Date: Fri, 22 Nov 2019 14:16:54 -0500
-Message-Id: <1574450214-19432-1-git-send-email-cai@lca.pw>
-X-Mailer: git-send-email 1.8.3.1
-Cc: linux-kernel@vger.kernel.org, iommu@lists.linux-foundation.org,
- joe@perches.com, dwmw2@infradead.org
+ with ESMTP id KIEQVcHpgNc3 for <iommu@lists.linux-foundation.org>;
+ Fri, 22 Nov 2019 22:03:12 +0000 (UTC)
+X-Greylist: domain auto-whitelisted by SQLgrey-1.7.6
+Received: from a27-188.smtp-out.us-west-2.amazonses.com
+ (a27-188.smtp-out.us-west-2.amazonses.com [54.240.27.188])
+ by silver.osuosl.org (Postfix) with ESMTPS id 6FD71203A0
+ for <iommu@lists.linux-foundation.org>; Fri, 22 Nov 2019 22:03:12 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/simple;
+ s=zsmsymrwgfyinv5wlfyidntwsjeeldzt; d=codeaurora.org; t=1574460191;
+ h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:Content-Type:In-Reply-To;
+ bh=qC7xMp4BM4MB08ZmDKowhrKl8rje0tvkPqC4FVJlDfw=;
+ b=WVLEwQnoIZGFWR1Pjq4mWPXm8FKryFNdG+hGFaNhX9LZJ8Hq//Kxut9Dm3hfUDP6
+ RWXHkys7gPbFJJwy/MGIsidyxNy+3dy2a/S1E12fX9vHDYZzUhvf+xho55+xNHnrU8B
+ 6r65feKH9YzeNXALHcvShLVy5QXoqIwa8cbpd3P4=
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/simple;
+ s=gdwg2y3kokkkj5a55z2ilkup5wp5hhxx; d=amazonses.com; t=1574460191;
+ h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:Content-Type:In-Reply-To:Feedback-ID;
+ bh=qC7xMp4BM4MB08ZmDKowhrKl8rje0tvkPqC4FVJlDfw=;
+ b=HlQ2S/133s59FEyoYysQdxyPtyufrI1UaiKDX6ahlGvCJhkFiHhqrMbPXrifVtJ4
+ NoS2YGSzz4Etr7WfMf2sidb9qmagoa/ULpxNcDl2DBewk+Cv0wsowntLWefJ4QPUw0q
+ emCYNgAIXhig197gzbwS9tpZxJ9jkIfLUo5AcsuE=
+DMARC-Filter: OpenDMARC Filter v1.3.2 smtp.codeaurora.org CD5EEC4479F
+Authentication-Results: aws-us-west-2-caf-mail-1.web.codeaurora.org;
+ dmarc=none (p=none dis=none) header.from=codeaurora.org
+Authentication-Results: aws-us-west-2-caf-mail-1.web.codeaurora.org;
+ spf=none smtp.mailfrom=jcrouse@codeaurora.org
+Date: Fri, 22 Nov 2019 22:03:11 +0000
+From: Jordan Crouse <jcrouse@codeaurora.org>
+To: Robin Murphy <robin.murphy@arm.com>
+Subject: Re: [PATCH v2 10/10] iommu/io-pgtable-arm: Prepare for TTBR1 usage
+Message-ID: <0101016e9523f24b-59eb52d1-e5de-4742-9072-3d6ef23b0645-000000@us-west-2.amazonses.com>
+Mail-Followup-To: Robin Murphy <robin.murphy@arm.com>, will@kernel.org,
+ iommu@lists.linux-foundation.org,
+ linux-arm-kernel@lists.infradead.org
+References: <cover.1572024119.git.robin.murphy@arm.com>
+ <9ec05935de3f1c1da5d1780201147ed40e129295.1572024120.git.robin.murphy@arm.com>
+MIME-Version: 1.0
+Content-Disposition: inline
+In-Reply-To: <9ec05935de3f1c1da5d1780201147ed40e129295.1572024120.git.robin.murphy@arm.com>
+User-Agent: Mutt/1.5.24 (2015-08-30)
+X-SES-Outgoing: 2019.11.22-54.240.27.188
+Feedback-ID: 1.us-west-2.CZuq2qbDmUIuT3qdvXlRHZZCpfZqZ4GtG9v3VKgRyF0=:AmazonSES
+Cc: iommu@lists.linux-foundation.org, will@kernel.org,
+ linux-arm-kernel@lists.infradead.org
 X-BeenThere: iommu@lists.linux-foundation.org
 X-Mailman-Version: 2.1.15
 Precedence: list
@@ -98,167 +98,137 @@ List-Post: <mailto:iommu@lists.linux-foundation.org>
 List-Help: <mailto:iommu-request@lists.linux-foundation.org?subject=help>
 List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
  <mailto:iommu-request@lists.linux-foundation.org?subject=subscribe>
-MIME-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
 Errors-To: iommu-bounces@lists.linux-foundation.org
 Sender: "iommu" <iommu-bounces@lists.linux-foundation.org>
 
-When running heavy memory pressure workloads, this 5+ old system is
-throwing endless warnings below because disk IO is too slow to recover
-from swapping. Since the volume from alloc_iova_fast() could be large,
-once it calls printk(), it will trigger disk IO (writing to the log
-files) and pending softirqs which could cause an infinite loop and make
-no progress for days by the ongoimng memory reclaim. This is the counter
-part for Intel where the AMD part has already been merged. See the
-commit 3d708895325b ("iommu/amd: Silence warnings under memory
-pressure"). Since the allocation failure will be reported in
-intel_alloc_iova(), so just call dev_err_once() there because even the
-"ratelimited" is too much, and silence the one in alloc_iova_mem() to
-avoid the expensive warn_alloc().
+On Fri, Oct 25, 2019 at 07:08:39PM +0100, Robin Murphy wrote:
+> Now that we can correctly extract top-level indices without relying on
+> the remaining upper bits being zero, the only remaining impediments to
+> using a given table for TTBR1 are the address validation on map/unmap
+> and the awkward TCR translation granule format. Add a quirk so that we
+> can do the right thing at those points.
 
- hpsa 0000:03:00.0: DMAR: Allocating 1-page iova failed
- hpsa 0000:03:00.0: DMAR: Allocating 1-page iova failed
- hpsa 0000:03:00.0: DMAR: Allocating 1-page iova failed
- hpsa 0000:03:00.0: DMAR: Allocating 1-page iova failed
- hpsa 0000:03:00.0: DMAR: Allocating 1-page iova failed
- hpsa 0000:03:00.0: DMAR: Allocating 1-page iova failed
- hpsa 0000:03:00.0: DMAR: Allocating 1-page iova failed
- hpsa 0000:03:00.0: DMAR: Allocating 1-page iova failed
- slab_out_of_memory: 66 callbacks suppressed
- SLUB: Unable to allocate memory on node -1, gfp=0xa20(GFP_ATOMIC)
-   cache: iommu_iova, object size: 40, buffer size: 448, default order:
-0, min order: 0
-   node 0: slabs: 1822, objs: 16398, free: 0
-   node 1: slabs: 2051, objs: 18459, free: 31
- SLUB: Unable to allocate memory on node -1, gfp=0xa20(GFP_ATOMIC)
-   cache: iommu_iova, object size: 40, buffer size: 448, default order:
-0, min order: 0
-   node 0: slabs: 1822, objs: 16398, free: 0
-   node 1: slabs: 2051, objs: 18459, free: 31
- SLUB: Unable to allocate memory on node -1, gfp=0xa20(GFP_ATOMIC)
-   cache: iommu_iova, object size: 40, buffer size: 448, default order:
-0, min order: 0
- SLUB: Unable to allocate memory on node -1, gfp=0xa20(GFP_ATOMIC)
- SLUB: Unable to allocate memory on node -1, gfp=0xa20(GFP_ATOMIC)
- SLUB: Unable to allocate memory on node -1, gfp=0xa20(GFP_ATOMIC)
- SLUB: Unable to allocate memory on node -1, gfp=0xa20(GFP_ATOMIC)
- SLUB: Unable to allocate memory on node -1, gfp=0xa20(GFP_ATOMIC)
-   cache: skbuff_head_cache, object size: 208, buffer size: 640, default
-order: 0, min order: 0
-   cache: skbuff_head_cache, object size: 208, buffer size: 640, default
-order: 0, min order: 0
-   cache: skbuff_head_cache, object size: 208, buffer size: 640, default
-order: 0, min order: 0
-   cache: skbuff_head_cache, object size: 208, buffer size: 640, default
-order: 0, min order: 0
-   node 0: slabs: 697, objs: 4182, free: 0
-   node 0: slabs: 697, objs: 4182, free: 0
-   node 0: slabs: 697, objs: 4182, free: 0
-   node 0: slabs: 697, objs: 4182, free: 0
-   node 1: slabs: 381, objs: 2286, free: 27
-   node 1: slabs: 381, objs: 2286, free: 27
-   node 1: slabs: 381, objs: 2286, free: 27
-   node 1: slabs: 381, objs: 2286, free: 27
-   node 0: slabs: 1822, objs: 16398, free: 0
-   cache: skbuff_head_cache, object size: 208, buffer size: 640, default
-order: 0, min order: 0
-   node 1: slabs: 2051, objs: 18459, free: 31
-   node 0: slabs: 697, objs: 4182, free: 0
- SLUB: Unable to allocate memory on node -1, gfp=0xa20(GFP_ATOMIC)
-   node 1: slabs: 381, objs: 2286, free: 27
-   cache: skbuff_head_cache, object size: 208, buffer size: 640, default
-order: 0, min order: 0
-   node 0: slabs: 697, objs: 4182, free: 0
-   node 1: slabs: 381, objs: 2286, free: 27
- hpsa 0000:03:00.0: DMAR: Allocating 1-page iova failed
- warn_alloc: 96 callbacks suppressed
- kworker/11:1H: page allocation failure: order:0,
-mode:0xa20(GFP_ATOMIC), nodemask=(null),cpuset=/,mems_allowed=0-1
- CPU: 11 PID: 1642 Comm: kworker/11:1H Tainted: G    B
- Hardware name: HP ProLiant XL420 Gen9/ProLiant XL420 Gen9, BIOS U19
-12/27/2015
- Workqueue: kblockd blk_mq_run_work_fn
- Call Trace:
-  dump_stack+0xa0/0xea
-  warn_alloc.cold.94+0x8a/0x12d
-  __alloc_pages_slowpath+0x1750/0x1870
-  __alloc_pages_nodemask+0x58a/0x710
-  alloc_pages_current+0x9c/0x110
-  alloc_slab_page+0xc9/0x760
-  allocate_slab+0x48f/0x5d0
-  new_slab+0x46/0x70
-  ___slab_alloc+0x4ab/0x7b0
-  __slab_alloc+0x43/0x70
-  kmem_cache_alloc+0x2dd/0x450
- SLUB: Unable to allocate memory on node -1, gfp=0xa20(GFP_ATOMIC)
-  alloc_iova+0x33/0x210
-   cache: skbuff_head_cache, object size: 208, buffer size: 640, default
-order: 0, min order: 0
-   node 0: slabs: 697, objs: 4182, free: 0
-  alloc_iova_fast+0x62/0x3d1
-   node 1: slabs: 381, objs: 2286, free: 27
-  intel_alloc_iova+0xce/0xe0
-  intel_map_sg+0xed/0x410
-  scsi_dma_map+0xd7/0x160
-  scsi_queue_rq+0xbf7/0x1310
-  blk_mq_dispatch_rq_list+0x4d9/0xbc0
-  blk_mq_sched_dispatch_requests+0x24a/0x300
-  __blk_mq_run_hw_queue+0x156/0x230
-  blk_mq_run_work_fn+0x3b/0x40
-  process_one_work+0x579/0xb90
-  worker_thread+0x63/0x5b0
-  kthread+0x1e6/0x210
-  ret_from_fork+0x3a/0x50
- Mem-Info:
- active_anon:2422723 inactive_anon:361971 isolated_anon:34403
-  active_file:2285 inactive_file:1838 isolated_file:0
-  unevictable:0 dirty:1 writeback:5 unstable:0
-  slab_reclaimable:13972 slab_unreclaimable:453879
-  mapped:2380 shmem:154 pagetables:6948 bounce:0
-  free:19133 free_pcp:7363 free_cma:0
+Tested-by: Jordan Crouse <jcrouse@codeaurora.org>
 
-Signed-off-by: Qian Cai <cai@lca.pw>
----
+> Signed-off-by: Robin Murphy <robin.murphy@arm.com>
+> ---
+>  drivers/iommu/io-pgtable-arm.c | 25 +++++++++++++++++++------
+>  include/linux/io-pgtable.h     |  4 ++++
+>  2 files changed, 23 insertions(+), 6 deletions(-)
+> 
+> diff --git a/drivers/iommu/io-pgtable-arm.c b/drivers/iommu/io-pgtable-arm.c
+> index 9b1912ede000..e53edff56e54 100644
+> --- a/drivers/iommu/io-pgtable-arm.c
+> +++ b/drivers/iommu/io-pgtable-arm.c
+> @@ -107,6 +107,10 @@
+>  #define ARM_LPAE_TCR_TG0_64K		1
+>  #define ARM_LPAE_TCR_TG0_16K		2
+>  
+> +#define ARM_LPAE_TCR_TG1_16K		1
+> +#define ARM_LPAE_TCR_TG1_4K		2
+> +#define ARM_LPAE_TCR_TG1_64K		3
+> +
+>  #define ARM_LPAE_TCR_SH0_SHIFT		12
+>  #define ARM_LPAE_TCR_SH_NS		0
+>  #define ARM_LPAE_TCR_SH_OS		2
+> @@ -466,6 +470,7 @@ static int arm_lpae_map(struct io_pgtable_ops *ops, unsigned long iova,
+>  	arm_lpae_iopte *ptep = data->pgd;
+>  	int ret, lvl = data->start_level;
+>  	arm_lpae_iopte prot;
+> +	long iaext = (long)iova >> cfg->ias;
+>  
+>  	/* If no access, then nothing to do */
+>  	if (!(iommu_prot & (IOMMU_READ | IOMMU_WRITE)))
+> @@ -474,7 +479,9 @@ static int arm_lpae_map(struct io_pgtable_ops *ops, unsigned long iova,
+>  	if (WARN_ON(!size || (size & cfg->pgsize_bitmap) != size))
+>  		return -EINVAL;
+>  
+> -	if (WARN_ON(iova >> data->iop.cfg.ias || paddr >> data->iop.cfg.oas))
+> +	if (cfg->quirks & IO_PGTABLE_QUIRK_ARM_TTBR1)
+> +		iaext = ~iaext;
+> +	if (WARN_ON(iaext || paddr >> cfg->oas))
+>  		return -ERANGE;
+>  
+>  	prot = arm_lpae_prot_to_pte(data, iommu_prot);
+> @@ -640,11 +647,14 @@ static size_t arm_lpae_unmap(struct io_pgtable_ops *ops, unsigned long iova,
+>  	struct arm_lpae_io_pgtable *data = io_pgtable_ops_to_data(ops);
+>  	struct io_pgtable_cfg *cfg = &data->iop.cfg;
+>  	arm_lpae_iopte *ptep = data->pgd;
+> +	long iaext = (long)iova >> cfg->ias;
+>  
+>  	if (WARN_ON(!size || (size & cfg->pgsize_bitmap) != size))
+>  		return 0;
+>  
+> -	if (WARN_ON(iova >> data->iop.cfg.ias))
+> +	if (cfg->quirks & IO_PGTABLE_QUIRK_ARM_TTBR1)
+> +		iaext = ~iaext;
+> +	if (WARN_ON(iaext))
+>  		return 0;
+>  
+>  	return __arm_lpae_unmap(data, gather, iova, size, data->start_level, ptep);
+> @@ -780,9 +790,11 @@ arm_64_lpae_alloc_pgtable_s1(struct io_pgtable_cfg *cfg, void *cookie)
+>  	u64 reg;
+>  	struct arm_lpae_io_pgtable *data;
+>  	typeof(&cfg->arm_lpae_s1_cfg.tcr) tcr = &cfg->arm_lpae_s1_cfg.tcr;
+> +	bool tg1;
+>  
+>  	if (cfg->quirks & ~(IO_PGTABLE_QUIRK_ARM_NS |
+> -			    IO_PGTABLE_QUIRK_NON_STRICT))
+> +			    IO_PGTABLE_QUIRK_NON_STRICT |
+> +			    IO_PGTABLE_QUIRK_ARM_TTBR1))
+>  		return NULL;
+>  
+>  	data = arm_lpae_alloc_pgtable(cfg);
+> @@ -800,15 +812,16 @@ arm_64_lpae_alloc_pgtable_s1(struct io_pgtable_cfg *cfg, void *cookie)
+>  		tcr->orgn = ARM_LPAE_TCR_RGN_NC;
+>  	}
+>  
+> +	tg1 = cfg->quirks & IO_PGTABLE_QUIRK_ARM_TTBR1;
+>  	switch (ARM_LPAE_GRANULE(data)) {
+>  	case SZ_4K:
+> -		tcr->tg = ARM_LPAE_TCR_TG0_4K;
+> +		tcr->tg = tg1 ? ARM_LPAE_TCR_TG1_4K : ARM_LPAE_TCR_TG0_4K;
+>  		break;
+>  	case SZ_16K:
+> -		tcr->tg = ARM_LPAE_TCR_TG0_16K;
+> +		tcr->tg = tg1 ? ARM_LPAE_TCR_TG1_16K : ARM_LPAE_TCR_TG0_16K;
+>  		break;
+>  	case SZ_64K:
+> -		tcr->tg = ARM_LPAE_TCR_TG0_64K;
+> +		tcr->tg = tg1 ? ARM_LPAE_TCR_TG1_64K : ARM_LPAE_TCR_TG0_64K;
+>  		break;
+>  	}
+>  
+> diff --git a/include/linux/io-pgtable.h b/include/linux/io-pgtable.h
+> index 6ae104cedfd7..d7c5cb685e50 100644
+> --- a/include/linux/io-pgtable.h
+> +++ b/include/linux/io-pgtable.h
+> @@ -83,12 +83,16 @@ struct io_pgtable_cfg {
+>  	 * IO_PGTABLE_QUIRK_NON_STRICT: Skip issuing synchronous leaf TLBIs
+>  	 *	on unmap, for DMA domains using the flush queue mechanism for
+>  	 *	delayed invalidation.
+> +	 *
+> +	 * IO_PGTABLE_QUIRK_ARM_TTBR1: (ARM LPAE format) Configure the table
+> +	 *	for use in the upper half of a split address space.
+>  	 */
+>  	#define IO_PGTABLE_QUIRK_ARM_NS		BIT(0)
+>  	#define IO_PGTABLE_QUIRK_NO_PERMS	BIT(1)
+>  	#define IO_PGTABLE_QUIRK_TLBI_ON_MAP	BIT(2)
+>  	#define IO_PGTABLE_QUIRK_ARM_MTK_EXT	BIT(3)
+>  	#define IO_PGTABLE_QUIRK_NON_STRICT	BIT(4)
+> +	#define IO_PGTABLE_QUIRK_ARM_TTBR1	BIT(5)
+>  	unsigned long			quirks;
+>  	unsigned long			pgsize_bitmap;
+>  	unsigned int			ias;
+> -- 
+> 2.21.0.dirty
+> 
 
-v4: use dev_err_once() instead as mentioned above.
-v3: insert a "\n" in dev_err_ratelimited() per Joe.
-v2: use dev_err_ratelimited() and improve the commit messages.
-
- drivers/iommu/intel-iommu.c | 3 ++-
- drivers/iommu/iova.c        | 2 +-
- 2 files changed, 3 insertions(+), 2 deletions(-)
-
-diff --git a/drivers/iommu/intel-iommu.c b/drivers/iommu/intel-iommu.c
-index 0c8d81f56a30..8c944bbbed8a 100644
---- a/drivers/iommu/intel-iommu.c
-+++ b/drivers/iommu/intel-iommu.c
-@@ -3406,7 +3406,8 @@ static unsigned long intel_alloc_iova(struct device *dev,
- 	iova_pfn = alloc_iova_fast(&domain->iovad, nrpages,
- 				   IOVA_PFN(dma_mask), true);
- 	if (unlikely(!iova_pfn)) {
--		dev_err(dev, "Allocating %ld-page iova failed", nrpages);
-+		dev_err_once(dev, "Allocating %ld-page iova failed\n",
-+			     nrpages);
- 		return 0;
- 	}
- 
-diff --git a/drivers/iommu/iova.c b/drivers/iommu/iova.c
-index 41c605b0058f..aa1a56aaa5ee 100644
---- a/drivers/iommu/iova.c
-+++ b/drivers/iommu/iova.c
-@@ -233,7 +233,7 @@ static int __alloc_and_insert_iova_range(struct iova_domain *iovad,
- 
- struct iova *alloc_iova_mem(void)
- {
--	return kmem_cache_alloc(iova_cache, GFP_ATOMIC);
-+	return kmem_cache_alloc(iova_cache, GFP_ATOMIC | __GFP_NOWARN);
- }
- EXPORT_SYMBOL(alloc_iova_mem);
- 
 -- 
-1.8.3.1
-
+The Qualcomm Innovation Center, Inc. is a member of Code Aurora Forum,
+a Linux Foundation Collaborative Project
 _______________________________________________
 iommu mailing list
 iommu@lists.linux-foundation.org
