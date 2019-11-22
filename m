@@ -2,87 +2,87 @@ Return-Path: <SRS0=Z7Xn=ZO=lists.linux-foundation.org=iommu-bounces@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-9.5 required=3.0 tests=DKIM_INVALID,DKIM_SIGNED,
+X-Spam-Status: No, score=-9.6 required=3.0 tests=DKIM_INVALID,DKIM_SIGNED,
 	HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_PATCH,MAILING_LIST_MULTI,SIGNED_OFF_BY,
-	SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED,USER_AGENT_GIT autolearn=unavailable
+	SPF_HELO_NONE,SPF_PASS,USER_AGENT_GIT autolearn=unavailable
 	autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id D4D62C432C0
-	for <iommu@archiver.kernel.org>; Fri, 22 Nov 2019 17:01:11 +0000 (UTC)
-Received: from fraxinus.osuosl.org (smtp4.osuosl.org [140.211.166.137])
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 7EBDCC432C0
+	for <iommu@archiver.kernel.org>; Fri, 22 Nov 2019 19:17:15 +0000 (UTC)
+Received: from whitealder.osuosl.org (smtp1.osuosl.org [140.211.166.138])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by mail.kernel.org (Postfix) with ESMTPS id 9C6E92068F
-	for <iommu@archiver.kernel.org>; Fri, 22 Nov 2019 17:01:11 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTPS id 3FD7020707
+	for <iommu@archiver.kernel.org>; Fri, 22 Nov 2019 19:17:15 +0000 (UTC)
 Authentication-Results: mail.kernel.org;
-	dkim=fail reason="signature verification failed" (2048-bit key) header.d=lca.pw header.i=@lca.pw header.b="CbMuYu9h"
-DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 9C6E92068F
+	dkim=fail reason="signature verification failed" (2048-bit key) header.d=lca.pw header.i=@lca.pw header.b="n28AV1LN"
+DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 3FD7020707
 Authentication-Results: mail.kernel.org; dmarc=none (p=none dis=none) header.from=lca.pw
 Authentication-Results: mail.kernel.org; spf=pass smtp.mailfrom=iommu-bounces@lists.linux-foundation.org
 Received: from localhost (localhost [127.0.0.1])
-	by fraxinus.osuosl.org (Postfix) with ESMTP id 80F7D8744B;
-	Fri, 22 Nov 2019 17:01:11 +0000 (UTC)
+	by whitealder.osuosl.org (Postfix) with ESMTP id F2900883B8;
+	Fri, 22 Nov 2019 19:17:14 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from fraxinus.osuosl.org ([127.0.0.1])
+Received: from whitealder.osuosl.org ([127.0.0.1])
 	by localhost (.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
-	with ESMTP id HkjsrjEPB7wx; Fri, 22 Nov 2019 17:01:10 +0000 (UTC)
+	with ESMTP id 0iEaO-bVjXBe; Fri, 22 Nov 2019 19:17:13 +0000 (UTC)
 Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [140.211.9.56])
-	by fraxinus.osuosl.org (Postfix) with ESMTP id 6CA9687449;
-	Fri, 22 Nov 2019 17:01:10 +0000 (UTC)
+	by whitealder.osuosl.org (Postfix) with ESMTP id 12BED88372;
+	Fri, 22 Nov 2019 19:17:13 +0000 (UTC)
 Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
-	by lists.linuxfoundation.org (Postfix) with ESMTP id 54BE9C1D74;
-	Fri, 22 Nov 2019 17:01:10 +0000 (UTC)
+	by lists.linuxfoundation.org (Postfix) with ESMTP id EB0E2C1DD8;
+	Fri, 22 Nov 2019 19:17:12 +0000 (UTC)
 Received: from silver.osuosl.org (smtp3.osuosl.org [140.211.166.136])
- by lists.linuxfoundation.org (Postfix) with ESMTP id 35619C18DA
- for <iommu@lists.linux-foundation.org>; Fri, 22 Nov 2019 17:01:08 +0000 (UTC)
+ by lists.linuxfoundation.org (Postfix) with ESMTP id 75770C18DA
+ for <iommu@lists.linux-foundation.org>; Fri, 22 Nov 2019 19:17:11 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
- by silver.osuosl.org (Postfix) with ESMTP id 224FB20382
- for <iommu@lists.linux-foundation.org>; Fri, 22 Nov 2019 17:01:08 +0000 (UTC)
+ by silver.osuosl.org (Postfix) with ESMTP id 6B3A120354
+ for <iommu@lists.linux-foundation.org>; Fri, 22 Nov 2019 19:17:11 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
 Received: from silver.osuosl.org ([127.0.0.1])
  by localhost (.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
- with ESMTP id v6rueZbnzRaN for <iommu@lists.linux-foundation.org>;
- Fri, 22 Nov 2019 17:01:06 +0000 (UTC)
+ with ESMTP id IC5KHeNoK9nE for <iommu@lists.linux-foundation.org>;
+ Fri, 22 Nov 2019 19:17:08 +0000 (UTC)
 X-Greylist: from auto-whitelisted by SQLgrey-1.7.6
-Received: from mail-qt1-f195.google.com (mail-qt1-f195.google.com
- [209.85.160.195])
- by silver.osuosl.org (Postfix) with ESMTPS id 8CA37263CC
- for <iommu@lists.linux-foundation.org>; Fri, 22 Nov 2019 17:01:06 +0000 (UTC)
-Received: by mail-qt1-f195.google.com with SMTP id w47so4467395qtk.4
- for <iommu@lists.linux-foundation.org>; Fri, 22 Nov 2019 09:01:06 -0800 (PST)
+Received: from mail-qt1-f193.google.com (mail-qt1-f193.google.com
+ [209.85.160.193])
+ by silver.osuosl.org (Postfix) with ESMTPS id 5ED9A20243
+ for <iommu@lists.linux-foundation.org>; Fri, 22 Nov 2019 19:17:08 +0000 (UTC)
+Received: by mail-qt1-f193.google.com with SMTP id 30so9015816qtz.12
+ for <iommu@lists.linux-foundation.org>; Fri, 22 Nov 2019 11:17:08 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=lca.pw; s=google;
  h=from:to:cc:subject:date:message-id;
- bh=pWsBqIbKYWYWQhST9oJt9JgHbawkwTncjF3B7rnat0w=;
- b=CbMuYu9hYHEWliCO6W1ulBmLeJrmf0Xlhc7Bphy1lYpCeTgBVL22O/X2RK0pgMK+EE
- ZrWi5mXtdHqw5ec/shCd7FwhYRr1A9dZiUfp/wfu5tNgJe0czTTbT1JYcWeij67g/esT
- 7CUOcrX6TriEv+QrftR2fWaFVihjkgetIyUHsvlYZInYBCuZVEKokWhvWTvdvYGL1tmn
- 9/ElsgEm+PhJcfl0TD2UbHjk/bMeyC3Aexc48jR6+mvFjk/jlgXtlUAFLX8uiQAKfLab
- rzBVlprhMyZH/3UCsPvhX3i1/CV+yf3OeRf6FdaSiiuOX6XusjlbVhxeRehyHCP+BzZS
- VBJA==
+ bh=Qb3jkfznea5AOIJ97DEoFWbKQNlXPlyeiYtdLKGq9UA=;
+ b=n28AV1LNImQJRoVO3F0upOGhmdimfpNQYUUthfTCs0OL20Xe6Az2zBBSy0WPnLpVsb
+ +9jh+Q5azPcP2FPOd091ezksFEoC9bzAo2yNpu55N58TpOk38iTyWY3Tvf0xioQt2A6j
+ KXHTgzuBtnLKZqJI80Yki3x6LmLb7uVFGK4D8yFfJt4layvGi1Vtr0E4xe89wfOVgtkN
+ 5TEt6BjJ7HQJOixNdDFhabcbjUP06vdvuSIUlRMqs2yu81ExlY3/iCB9Hty19WOqLJgJ
+ +lf7Wsu8AfOd0M1GO0kAmYrhKl4dXYPl4FXLr/G2Xm2akGQ0M7CJ5bVjzswjz9mPy+4u
+ fqcg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
  d=1e100.net; s=20161025;
  h=x-gm-message-state:from:to:cc:subject:date:message-id;
- bh=pWsBqIbKYWYWQhST9oJt9JgHbawkwTncjF3B7rnat0w=;
- b=dx/sGXEDrp4JxpYDrLU+2yDqJOuL9UKYAAXzI/kBU+roFfobDWA6/4F7kwY4pVhXnI
- BoUjwK7DwVR+B+115S1s+wnGU3cAZHIiHcaeiOKLKHRFyulx8Z9gIkWLkm5jZ1hKV76d
- gTpJEkA63xlvGZ/4mirm8gYQaUoI48G60SfdvFmpUHwtv+w+vkIr6hizvi8TqS9vuCdU
- e0A8H0z9RrlB65MP250tDUR555aCsskCq6sTY6C7vNCwGZud4e6oAajp65pIc8TlROBK
- ihGueTCCIdP79iqblfMLF/dOyCrcNvjGSzONtw8fdaz9Hna+u2BgsehkYXM5iq0OCXkb
- TkQA==
-X-Gm-Message-State: APjAAAUQYKuf59bwKKiAukGQHJQKG9aUmBzZKuI1OufltObfRYgK67Ru
- FHh53hH/T4udo0y2Svwj6Z4MiA==
-X-Google-Smtp-Source: APXvYqzhCO0YqZ3MbISkcxOuab42Hq7epijhhLR0FagPFiSheL2qamzu2VSRis3ydcI5BIKnVqrfLw==
-X-Received: by 2002:aed:3762:: with SMTP id i89mr15676564qtb.69.1574442064122; 
- Fri, 22 Nov 2019 09:01:04 -0800 (PST)
+ bh=Qb3jkfznea5AOIJ97DEoFWbKQNlXPlyeiYtdLKGq9UA=;
+ b=KcIHvpkhbcKa6WzdsYdXWKeBdSIyyQUUd90+oBH6dMRVXI3sUnJiHeIKZNghYf+qAK
+ Q3cCa4V+HFXG1frUK2OGoYtPJtK4IlfaOVIzqA2ySCDOQDyYmbmOL2BZ+kzFMnvg068+
+ Plz0VWfyiyNyy9YBn1OR7Wr6CdSIHXVc4ttJ8HS0Jsc0VP21dpir7wfs07JdKpWdzK60
+ FbjamQeSDVDMU3a/FJm/qRak1W9K9wI77UzyGhPDfTYbiR2e0wd4sqiSN8wyAMglWv2o
+ XSUNQfQD8uRlV+1iJLiuZJ/0VmYbq9I49Ys1ibzDMpvdUU99yI8EguhwB4zl2k77MLrM
+ QMnQ==
+X-Gm-Message-State: APjAAAU4Pgc59Ja1Hj9I8HEEz+lgaCmAiOQU3ej1hUWGQlafhMEA2sUM
+ PvgzKji8PXoliS8cj34G/CPPEg==
+X-Google-Smtp-Source: APXvYqwCJjI7cVRSiYbFakX35Oih35f8INaRnbpgBab4tlcf9hU/GTJsIJ1qisnMfSf5rCvVSWNeHg==
+X-Received: by 2002:ac8:2f4e:: with SMTP id k14mr5309709qta.357.1574450227230; 
+ Fri, 22 Nov 2019 11:17:07 -0800 (PST)
 Received: from qcai.nay.com (nat-pool-bos-t.redhat.com. [66.187.233.206])
- by smtp.gmail.com with ESMTPSA id c21sm3688975qtg.61.2019.11.22.09.01.02
+ by smtp.gmail.com with ESMTPSA id y28sm3915540qtk.65.2019.11.22.11.17.05
  (version=TLS1_2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128/128);
- Fri, 22 Nov 2019 09:01:03 -0800 (PST)
+ Fri, 22 Nov 2019 11:17:06 -0800 (PST)
 From: Qian Cai <cai@lca.pw>
 To: jroedel@suse.de
-Subject: [PATCH v3] iommu/iova: silence warnings under memory pressure
-Date: Fri, 22 Nov 2019 12:00:45 -0500
-Message-Id: <1574442045-9210-1-git-send-email-cai@lca.pw>
+Subject: [PATCH v4] iommu/iova: silence warnings under memory pressure
+Date: Fri, 22 Nov 2019 14:16:54 -0500
+Message-Id: <1574450214-19432-1-git-send-email-cai@lca.pw>
 X-Mailer: git-send-email 1.8.3.1
 Cc: linux-kernel@vger.kernel.org, iommu@lists.linux-foundation.org,
  joe@perches.com, dwmw2@infradead.org
@@ -113,8 +113,9 @@ no progress for days by the ongoimng memory reclaim. This is the counter
 part for Intel where the AMD part has already been merged. See the
 commit 3d708895325b ("iommu/amd: Silence warnings under memory
 pressure"). Since the allocation failure will be reported in
-intel_alloc_iova(), so just call printk_ratelimted() there and silence
-the one in alloc_iova_mem() to avoid the expensive warn_alloc().
+intel_alloc_iova(), so just call dev_err_once() there because even the
+"ratelimited" is too much, and silence the one in alloc_iova_mem() to
+avoid the expensive warn_alloc().
 
  hpsa 0000:03:00.0: DMAR: Allocating 1-page iova failed
  hpsa 0000:03:00.0: DMAR: Allocating 1-page iova failed
@@ -220,6 +221,7 @@ order: 0, min order: 0
 Signed-off-by: Qian Cai <cai@lca.pw>
 ---
 
+v4: use dev_err_once() instead as mentioned above.
 v3: insert a "\n" in dev_err_ratelimited() per Joe.
 v2: use dev_err_ratelimited() and improve the commit messages.
 
@@ -228,7 +230,7 @@ v2: use dev_err_ratelimited() and improve the commit messages.
  2 files changed, 3 insertions(+), 2 deletions(-)
 
 diff --git a/drivers/iommu/intel-iommu.c b/drivers/iommu/intel-iommu.c
-index 0c8d81f56a30..855a7bb272d8 100644
+index 0c8d81f56a30..8c944bbbed8a 100644
 --- a/drivers/iommu/intel-iommu.c
 +++ b/drivers/iommu/intel-iommu.c
 @@ -3406,7 +3406,8 @@ static unsigned long intel_alloc_iova(struct device *dev,
@@ -236,8 +238,8 @@ index 0c8d81f56a30..855a7bb272d8 100644
  				   IOVA_PFN(dma_mask), true);
  	if (unlikely(!iova_pfn)) {
 -		dev_err(dev, "Allocating %ld-page iova failed", nrpages);
-+		dev_err_ratelimited(dev, "Allocating %ld-page iova failed\n",
-+				    nrpages);
++		dev_err_once(dev, "Allocating %ld-page iova failed\n",
++			     nrpages);
  		return 0;
  	}
  
