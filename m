@@ -6,69 +6,69 @@ X-Spam-Status: No, score=-9.8 required=3.0 tests=DKIM_INVALID,DKIM_SIGNED,
 	INCLUDES_PATCH,MAILING_LIST_MULTI,SIGNED_OFF_BY,SPF_HELO_NONE,SPF_PASS,
 	URIBL_BLOCKED,USER_AGENT_GIT autolearn=ham autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 391A0C43215
-	for <iommu@archiver.kernel.org>; Fri, 22 Nov 2019 05:58:03 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id D2BF7C432C0
+	for <iommu@archiver.kernel.org>; Fri, 22 Nov 2019 06:03:08 +0000 (UTC)
 Received: from fraxinus.osuosl.org (smtp4.osuosl.org [140.211.166.137])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by mail.kernel.org (Postfix) with ESMTPS id 08BEB2084B
-	for <iommu@archiver.kernel.org>; Fri, 22 Nov 2019 05:58:03 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTPS id 955102068F
+	for <iommu@archiver.kernel.org>; Fri, 22 Nov 2019 06:03:08 +0000 (UTC)
 Authentication-Results: mail.kernel.org;
-	dkim=fail reason="signature verification failed" (1024-bit key) header.d=kernel.org header.i=@kernel.org header.b="R5JZpB8J"
-DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 08BEB2084B
+	dkim=fail reason="signature verification failed" (1024-bit key) header.d=kernel.org header.i=@kernel.org header.b="gEwSR93y"
+DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 955102068F
 Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=kernel.org
 Authentication-Results: mail.kernel.org; spf=pass smtp.mailfrom=iommu-bounces@lists.linux-foundation.org
 Received: from localhost (localhost [127.0.0.1])
-	by fraxinus.osuosl.org (Postfix) with ESMTP id F10CD8615E;
-	Fri, 22 Nov 2019 05:58:02 +0000 (UTC)
+	by fraxinus.osuosl.org (Postfix) with ESMTP id 7442C861A3;
+	Fri, 22 Nov 2019 06:03:08 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
 Received: from fraxinus.osuosl.org ([127.0.0.1])
 	by localhost (.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
-	with ESMTP id NDrfDQkMMN79; Fri, 22 Nov 2019 05:58:02 +0000 (UTC)
+	with ESMTP id Tcm1f88QPKGV; Fri, 22 Nov 2019 06:03:07 +0000 (UTC)
 Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [140.211.9.56])
-	by fraxinus.osuosl.org (Postfix) with ESMTP id 3FAFA86008;
-	Fri, 22 Nov 2019 05:58:02 +0000 (UTC)
+	by fraxinus.osuosl.org (Postfix) with ESMTP id EF5DF85DDC;
+	Fri, 22 Nov 2019 06:03:07 +0000 (UTC)
 Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
-	by lists.linuxfoundation.org (Postfix) with ESMTP id 24C50C1D74;
-	Fri, 22 Nov 2019 05:58:02 +0000 (UTC)
-Received: from silver.osuosl.org (smtp3.osuosl.org [140.211.166.136])
- by lists.linuxfoundation.org (Postfix) with ESMTP id DD8D8C18DA
- for <iommu@lists.linux-foundation.org>; Fri, 22 Nov 2019 05:58:00 +0000 (UTC)
+	by lists.linuxfoundation.org (Postfix) with ESMTP id D308DC1D74;
+	Fri, 22 Nov 2019 06:03:07 +0000 (UTC)
+Received: from hemlock.osuosl.org (smtp2.osuosl.org [140.211.166.133])
+ by lists.linuxfoundation.org (Postfix) with ESMTP id F1B98C18DA
+ for <iommu@lists.linux-foundation.org>; Fri, 22 Nov 2019 06:03:06 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
- by silver.osuosl.org (Postfix) with ESMTP id CC2BB21541
- for <iommu@lists.linux-foundation.org>; Fri, 22 Nov 2019 05:58:00 +0000 (UTC)
+ by hemlock.osuosl.org (Postfix) with ESMTP id E4788889CC
+ for <iommu@lists.linux-foundation.org>; Fri, 22 Nov 2019 06:03:06 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from silver.osuosl.org ([127.0.0.1])
+Received: from hemlock.osuosl.org ([127.0.0.1])
  by localhost (.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
- with ESMTP id Ig18t22PUU4p for <iommu@lists.linux-foundation.org>;
- Fri, 22 Nov 2019 05:58:00 +0000 (UTC)
+ with ESMTP id 3rSOt55QwFbf for <iommu@lists.linux-foundation.org>;
+ Fri, 22 Nov 2019 06:03:05 +0000 (UTC)
 X-Greylist: domain auto-whitelisted by SQLgrey-1.7.6
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
- by silver.osuosl.org (Postfix) with ESMTPS id 3C9012048B
- for <iommu@lists.linux-foundation.org>; Fri, 22 Nov 2019 05:58:00 +0000 (UTC)
+ by hemlock.osuosl.org (Postfix) with ESMTPS id A207F889A0
+ for <iommu@lists.linux-foundation.org>; Fri, 22 Nov 2019 06:03:05 +0000 (UTC)
 Received: from sasha-vm.mshome.net (c-73-47-72-35.hsd1.nh.comcast.net
  [73.47.72.35])
  (using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
  (No client certificate requested)
- by mail.kernel.org (Postfix) with ESMTPSA id 5D75B207FA;
- Fri, 22 Nov 2019 05:57:59 +0000 (UTC)
+ by mail.kernel.org (Postfix) with ESMTPSA id BA96720717;
+ Fri, 22 Nov 2019 06:03:04 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
- s=default; t=1574402280;
- bh=lHb8nb/xLhqlCfKyPOxFc1Drdc9QqB8nk+WE0IyxIF8=;
+ s=default; t=1574402585;
+ bh=b/jHQB1x+5NehrmLNVjMgte8dWT+yjMVkd02sMqx1aQ=;
  h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
- b=R5JZpB8J4ZwZ5HyiLGC4OV7avZDTB+WhhToWJElUF4bEVji4FOmep4dGTsasFR/n2
- 3Q8yB8+0mo1YJv1u3puP248qOqvb3WwwcAWUbzEBIJpT2Gy3qwBEOlhycigFiV5rXK
- 00f8mbKFHDzdfUSmIiwyfC0q5P5y6tIKkVTftra4=
+ b=gEwSR93yKSMCQXhMkaZujy8KPT1WUN2R/n+yLqcUyXbgEI8rRnPd940kuX1WURdOZ
+ tHF4z0DLqRT5hR6ivQ9hpJYTeSk8KKE4wwGFcY5NuzpuX8w1eUUdDUGNq5Sr0xSF/A
+ z1IADrnW+gIV7XJu3uD1JInkO5BSIzRov7kmvrTk=
 From: Sasha Levin <sashal@kernel.org>
 To: linux-kernel@vger.kernel.org,
 	stable@vger.kernel.org
-Subject: [PATCH AUTOSEL 4.14 119/127] iommu/amd: Fix NULL dereference bug in
+Subject: [PATCH AUTOSEL 4.9 86/91] iommu/amd: Fix NULL dereference bug in
  match_hid_uid
-Date: Fri, 22 Nov 2019 00:55:36 -0500
-Message-Id: <20191122055544.3299-117-sashal@kernel.org>
+Date: Fri, 22 Nov 2019 01:01:24 -0500
+Message-Id: <20191122060129.4239-85-sashal@kernel.org>
 X-Mailer: git-send-email 2.20.1
-In-Reply-To: <20191122055544.3299-1-sashal@kernel.org>
-References: <20191122055544.3299-1-sashal@kernel.org>
+In-Reply-To: <20191122060129.4239-1-sashal@kernel.org>
+References: <20191122060129.4239-1-sashal@kernel.org>
 MIME-Version: 1.0
 X-stable: review
 X-Patchwork-Hint: Ignore
@@ -107,10 +107,10 @@ Signed-off-by: Sasha Levin <sashal@kernel.org>
  1 file changed, 6 insertions(+), 2 deletions(-)
 
 diff --git a/drivers/iommu/amd_iommu.c b/drivers/iommu/amd_iommu.c
-index 07b6cf58fd99b..d09c24825734e 100644
+index e81acb2b6ee7d..c898c70472bb2 100644
 --- a/drivers/iommu/amd_iommu.c
 +++ b/drivers/iommu/amd_iommu.c
-@@ -139,10 +139,14 @@ static struct lock_class_key reserved_rbtree_key;
+@@ -176,10 +176,14 @@ static struct lock_class_key reserved_rbtree_key;
  static inline int match_hid_uid(struct device *dev,
  				struct acpihid_map_entry *entry)
  {
