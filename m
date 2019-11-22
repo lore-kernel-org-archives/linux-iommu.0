@@ -2,83 +2,85 @@ Return-Path: <SRS0=Z7Xn=ZO=lists.linux-foundation.org=iommu-bounces@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-8.5 required=3.0 tests=DKIM_INVALID,DKIM_SIGNED,
-	HEADER_FROM_DIFFERENT_DOMAINS,MAILING_LIST_MULTI,MENTIONS_GIT_HOSTING,
+X-Spam-Status: No, score=-9.5 required=3.0 tests=DKIM_INVALID,DKIM_SIGNED,
+	HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_PATCH,MAILING_LIST_MULTI,SIGNED_OFF_BY,
 	SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED,USER_AGENT_GIT autolearn=unavailable
 	autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 42B70C432C0
-	for <iommu@archiver.kernel.org>; Fri, 22 Nov 2019 15:15:11 +0000 (UTC)
-Received: from fraxinus.osuosl.org (smtp4.osuosl.org [140.211.166.137])
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 3F4EFC432C0
+	for <iommu@archiver.kernel.org>; Fri, 22 Nov 2019 15:15:22 +0000 (UTC)
+Received: from whitealder.osuosl.org (smtp1.osuosl.org [140.211.166.138])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by mail.kernel.org (Postfix) with ESMTPS id 0343B2071B
-	for <iommu@archiver.kernel.org>; Fri, 22 Nov 2019 15:15:10 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTPS id 0E93D2071B
+	for <iommu@archiver.kernel.org>; Fri, 22 Nov 2019 15:15:21 +0000 (UTC)
 Authentication-Results: mail.kernel.org;
-	dkim=fail reason="signature verification failed" (2048-bit key) header.d=linaro.org header.i=@linaro.org header.b="VVOTNfON"
-DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 0343B2071B
+	dkim=fail reason="signature verification failed" (2048-bit key) header.d=linaro.org header.i=@linaro.org header.b="tbFyIT+t"
+DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 0E93D2071B
 Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=linaro.org
 Authentication-Results: mail.kernel.org; spf=pass smtp.mailfrom=iommu-bounces@lists.linux-foundation.org
 Received: from localhost (localhost [127.0.0.1])
-	by fraxinus.osuosl.org (Postfix) with ESMTP id BDFA5873E5;
-	Fri, 22 Nov 2019 15:15:10 +0000 (UTC)
+	by whitealder.osuosl.org (Postfix) with ESMTP id C3DE4882A1;
+	Fri, 22 Nov 2019 15:15:21 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from fraxinus.osuosl.org ([127.0.0.1])
+Received: from whitealder.osuosl.org ([127.0.0.1])
 	by localhost (.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
-	with ESMTP id H90j3EvY_bbe; Fri, 22 Nov 2019 15:15:09 +0000 (UTC)
+	with ESMTP id 1YcHkp7KGwbG; Fri, 22 Nov 2019 15:15:19 +0000 (UTC)
 Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [140.211.9.56])
-	by fraxinus.osuosl.org (Postfix) with ESMTP id B502D873E4;
-	Fri, 22 Nov 2019 15:15:09 +0000 (UTC)
+	by whitealder.osuosl.org (Postfix) with ESMTP id 0745388246;
+	Fri, 22 Nov 2019 15:15:19 +0000 (UTC)
 Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
-	by lists.linuxfoundation.org (Postfix) with ESMTP id AA423C1D74;
-	Fri, 22 Nov 2019 15:15:09 +0000 (UTC)
-Received: from hemlock.osuosl.org (smtp2.osuosl.org [140.211.166.133])
- by lists.linuxfoundation.org (Postfix) with ESMTP id 0C499C18DA
- for <iommu@lists.linux-foundation.org>; Fri, 22 Nov 2019 15:15:09 +0000 (UTC)
+	by lists.linuxfoundation.org (Postfix) with ESMTP id E9688C1D74;
+	Fri, 22 Nov 2019 15:15:18 +0000 (UTC)
+Received: from silver.osuosl.org (smtp3.osuosl.org [140.211.166.136])
+ by lists.linuxfoundation.org (Postfix) with ESMTP id 79DB5C18DA
+ for <iommu@lists.linux-foundation.org>; Fri, 22 Nov 2019 15:15:17 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
- by hemlock.osuosl.org (Postfix) with ESMTP id EEA2788C7B
- for <iommu@lists.linux-foundation.org>; Fri, 22 Nov 2019 15:15:08 +0000 (UTC)
+ by silver.osuosl.org (Postfix) with ESMTP id 468B920469
+ for <iommu@lists.linux-foundation.org>; Fri, 22 Nov 2019 15:15:17 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from hemlock.osuosl.org ([127.0.0.1])
+Received: from silver.osuosl.org ([127.0.0.1])
  by localhost (.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
- with ESMTP id Jtjl-fe4tJTs for <iommu@lists.linux-foundation.org>;
- Fri, 22 Nov 2019 15:15:07 +0000 (UTC)
-X-Greylist: delayed 00:05:13 by SQLgrey-1.7.6
-Received: from mail-pf1-f193.google.com (mail-pf1-f193.google.com
- [209.85.210.193])
- by hemlock.osuosl.org (Postfix) with ESMTPS id B5B7988C7E
- for <iommu@lists.linux-foundation.org>; Fri, 22 Nov 2019 15:15:07 +0000 (UTC)
-Received: by mail-pf1-f193.google.com with SMTP id z4so3607339pfn.12
- for <iommu@lists.linux-foundation.org>; Fri, 22 Nov 2019 07:15:07 -0800 (PST)
+ with ESMTP id n-HOYlvVqcQw for <iommu@lists.linux-foundation.org>;
+ Fri, 22 Nov 2019 15:15:14 +0000 (UTC)
+X-Greylist: delayed 00:06:52 by SQLgrey-1.7.6
+Received: from mail-pg1-f193.google.com (mail-pg1-f193.google.com
+ [209.85.215.193])
+ by silver.osuosl.org (Postfix) with ESMTPS id 0AC5E203E0
+ for <iommu@lists.linux-foundation.org>; Fri, 22 Nov 2019 15:15:14 +0000 (UTC)
+Received: by mail-pg1-f193.google.com with SMTP id b1so3463630pgq.10
+ for <iommu@lists.linux-foundation.org>; Fri, 22 Nov 2019 07:15:14 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linaro.org; s=google;
- h=from:to:cc:subject:date:message-id;
- bh=oUN3iQCUGPzQjEmQvyvcyo6uCS4nILEZENAGQ+GO5zI=;
- b=VVOTNfONORYl5eucCir8fZ+O5joXPQj/Eqt1Z0N42/hfKF955UelzQXOgru3Y0c8uO
- RLGm4JaapXj2RZ1dQ7iovqGjfOxoAC50ayBJw7M9u8ghZB/IrcwxFWzC3ijJC5LWiwy3
- HA2J+5IKF9ogpdxZSFlc9EQB7fmRMO9CoT0nf0Xwa0YqOQsr7KBYpiZ5foED5QH75cmp
- qgAJ1kp7QvFqm8Ai4uab8weSRl0Dxr4vLeXHCfgej2VX2uf/thFszd4w5iryui2UsQDT
- OxH3d27nDqXaOrKNI5HPXM0ZMZVcfC66oedFvWY9D1DQPwPIdgfi4bAKH/9yAkTte59F
- q9dA==
+ h=from:to:cc:subject:date:message-id:in-reply-to:references;
+ bh=zVdjk1XO1dM6Bzbo/eaZYwm9QQy1zxKbEJe37rDDC6I=;
+ b=tbFyIT+tI7FvNiQnu6+7PD9QqoZfHeBiocUxsOhotHveWdZnpf3pSruzrIX3D3Ofct
+ lcJ9J32j3a377iHlzuL6NDU+tvkFDGwM3w20bP1ZVJTO050Se2mmGo95lagm7yIKC1xD
+ qgIlMEvT/2nV8d3oBswdIZEDcg184iXSsiIAEZ2K03jRJe5SwBKuUM5rIj7Fvukk53Ps
+ o5N1OgMUaXLPySK430CuCAvHFAP2jUF707+z1yHkYhhKjiCKVcgRCwNChbxUKMbliY/u
+ ei6DnR4AhqkQIQN8ZkEpw+GhJ52pMbnu2TtjOvybqaW+pXuMOtvT8vVI4zPSfZoKZE8j
+ MY5w==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
  d=1e100.net; s=20161025;
- h=x-gm-message-state:from:to:cc:subject:date:message-id;
- bh=oUN3iQCUGPzQjEmQvyvcyo6uCS4nILEZENAGQ+GO5zI=;
- b=Ww/LzGvHY7ezaVjboq7z16OqYFv2AtN5bSoouKO0lL/j6syWXfTaLakOHUi/p6Cr+5
- CUbK/3G+0VF0dz19/zdEb/48iFvx8Qolj2MILtSYUlkxSxJr3DG1jlAt3m0W6U7RtRyr
- CL1N7+umWHjwI9yzT98NKMLWCg+/6XOQE6egAY/WDUdVbXVr9FHB4TTFpIcCNIHOYqPW
- YLka1KO25KxNnDLAO74OtbPRhIoM+JE+LUMz+I/BTE975SYtOXTChXrKDC8De7qBM6Gy
- LS8MDn294JLMlgxsGq6HxlZ0MSBCQYwHEC5w3M12Cus1/1i9/FeFuiN6pkKrnP5Bnkw0
- Oaew==
-X-Gm-Message-State: APjAAAWwk3Qz71unqMHZ9wowlaiGcYP6cl+J71bIta9diQlEdgWujHI3
- C0hc7y9CcyD7i7+of5v+WOAGFg==
-X-Google-Smtp-Source: APXvYqwHgWcw8JYKN29pB6wUmTjNVMp/ENGuUGfEPLaSpwqxSVa1xdW23XdiFMFXVE2oDQJkPe20Vg==
-X-Received: by 2002:aa7:9a86:: with SMTP id w6mr17940610pfi.169.1574435301951; 
- Fri, 22 Nov 2019 07:08:21 -0800 (PST)
+ h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
+ :references;
+ bh=zVdjk1XO1dM6Bzbo/eaZYwm9QQy1zxKbEJe37rDDC6I=;
+ b=ST9a6abHXSSCSKaepkkgfLBv1M+9wssyX3WvUSjKqVIKInTmN+f1XS/XMPui3Sx9E1
+ 7t80asGG59cUxWHBCAyV5nxPU2s/pWnLS02+fyvbk6agpeLi2gcXf93sqm0GQCGlgOuB
+ F9/BuGEydGSrRyEOe1octaUjPwON0vT1QiPvhnQBzHNfcoJPld8ZT61u6a7wuDwr3Zw6
+ TYffEkUShuKiWVgKSoSc1eo1lwEbhMEk6wwUnC+hcd5DP11Y8ouaZlXH81SWsdfFk9S+
+ ngEWKFHWJo944e2/7nvStiaTw3GpNb6z/RNihe5E7HpYXf3P2ypmrPSUaxQ3AgEEWY7x
+ G8iA==
+X-Gm-Message-State: APjAAAXCJX4i+vLOU58EtIrz4Pq7eIr5h0mccNNE2xyMp5nskY7rsDPS
+ JORe0S66tU089siNy82Y+7nonF/CSgKVfQ==
+X-Google-Smtp-Source: APXvYqzM2FFZs4Uw+g4QOLk3ag/xZJnHy4hsoPPtbvq+CllzGmj0ba1PB8GdCBoVDSjpYtAzCaKtig==
+X-Received: by 2002:a17:902:5a44:: with SMTP id
+ f4mr14689275plm.174.1574435358177; 
+ Fri, 22 Nov 2019 07:09:18 -0800 (PST)
 Received: from localhost.localdomain ([240e:362:496:8600:f5af:2744:25c3:d01a])
  by smtp.gmail.com with ESMTPSA id
- a19sm8066021pfn.144.2019.11.22.07.08.03
+ a19sm8066021pfn.144.2019.11.22.07.08.54
  (version=TLS1_2 cipher=ECDHE-RSA-AES128-SHA bits=128/128);
- Fri, 22 Nov 2019 07:08:20 -0800 (PST)
+ Fri, 22 Nov 2019 07:09:17 -0800 (PST)
 From: Zhangfei Gao <zhangfei.gao@linaro.org>
 To: Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
  Arnd Bergmann <arnd@arndb.de>, Herbert Xu <herbert@gondor.apana.org.au>,
@@ -88,13 +90,15 @@ To: Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
  francois.ozog@linaro.org, kenneth-lee-2012@foxmail.com,
  Wangzhou <wangzhou1@hisilicon.com>,
  "haojian . zhuang" <haojian.zhuang@linaro.org>, guodong.xu@linaro.org
-Subject: [PATCH v9 0/4] Add uacce module for Accelerator
-Date: Fri, 22 Nov 2019 23:07:37 +0800
-Message-Id: <1574435261-6031-1-git-send-email-zhangfei.gao@linaro.org>
+Subject: [PATCH v9 2/4] uacce: add uacce driver
+Date: Fri, 22 Nov 2019 23:07:39 +0800
+Message-Id: <1574435261-6031-3-git-send-email-zhangfei.gao@linaro.org>
 X-Mailer: git-send-email 2.7.4
-Cc: Zhangfei Gao <zhangfei.gao@linaro.org>, iommu@lists.linux-foundation.org,
- linux-kernel@vger.kernel.org, linux-accelerators@lists.ozlabs.org,
- linux-crypto@vger.kernel.org
+In-Reply-To: <1574435261-6031-1-git-send-email-zhangfei.gao@linaro.org>
+References: <1574435261-6031-1-git-send-email-zhangfei.gao@linaro.org>
+Cc: linux-kernel@vger.kernel.org, iommu@lists.linux-foundation.org,
+ linux-crypto@vger.kernel.org, Zhangfei Gao <zhangfei.gao@linaro.org>,
+ Kenneth Lee <liguozhu@hisilicon.com>, linux-accelerators@lists.ozlabs.org
 X-BeenThere: iommu@lists.linux-foundation.org
 X-Mailman-Version: 2.1.15
 Precedence: list
@@ -113,248 +117,998 @@ Content-Transfer-Encoding: 7bit
 Errors-To: iommu-bounces@lists.linux-foundation.org
 Sender: "iommu" <iommu-bounces@lists.linux-foundation.org>
 
+From: Kenneth Lee <liguozhu@hisilicon.com>
+
 Uacce (Unified/User-space-access-intended Accelerator Framework) targets to
 provide Shared Virtual Addressing (SVA) between accelerators and processes.
 So accelerator can access any data structure of the main cpu.
 This differs from the data sharing between cpu and io device, which share
-data content rather than address.
-Because of unified address, hardware and user space of process can share
-the same virtual address in the communication.
+only data content rather than address.
+Since unified address, hardware and user space of process can share the
+same virtual address in the communication.
 
-Uacce is intended to be used with Jean Philippe Brucker's SVA
-patchset[1], which enables IO side page fault and PASID support. 
-We have keep verifying with Jean's sva/current [2]
-We also keep verifying with Eric's SMMUv3 Nested Stage patch [3]
+Uacce create a chrdev for every registration, the queue is allocated to
+the process when the chrdev is opened. Then the process can access the
+hardware resource by interact with the queue file. By mmap the queue
+file space to user space, the process can directly put requests to the
+hardware without syscall to the kernel space.
 
-This series and related zip & qm driver
-https://github.com/Linaro/linux-kernel-warpdrive/tree/5.4-rc4-uacce-v9
+The IOMMU core only tracks mm<->device bonds at the moment, because it
+only needs to handle IOTLB invalidation and PASID table entries. However
+uacce needs a finer granularity since multiple queues from the same
+device can be bound to an mm. When the mm exits, all bound queues must
+be stopped so that the IOMMU can safely clear the PASID table entry and
+reallocate the PASID.
 
-The library and user application:
-https://github.com/Linaro/warpdrive/tree/wdprd-upstream-v9
+An intermediate struct uacce_mm links uacce devices and queues.
+Note that an mm may be bound to multiple devices but an uacce_mm
+structure only ever belongs to a single device, because we don't need
+anything more complex (if multiple devices are bound to one mm, then
+we'll create one uacce_mm for each bond).
 
-References:
-[1] http://jpbrucker.net/sva/
-[2] http://www.linux-arm.org/git?p=linux-jpb.git;a=shortlog;h=refs/heads/sva/current
-[3] https://github.com/eauger/linux/tree/v5.3.0-rc0-2stage-v9
+        uacce_device --+-- uacce_mm --+-- uacce_queue
+                       |              '-- uacce_queue
+                       |
+                       '-- uacce_mm --+-- uacce_queue
+                                      +-- uacce_queue
+                                      '-- uacce_queue
 
-Change History:
-v9:
-Suggested by Jonathan
-1. Remove sysfs: numa_distance, node_id, id.
-2. Split the api to solve the potential race
-struct uacce_device *uacce_alloc(struct device *parent,
-				 struct uacce_interface *interface)
-int uacce_register(struct uacce_device *uacce)
-void uacce_remove(struct uacce_device *uacce)
-3. Split clean up patch 03
-
-v8:
-Address some comments from Jonathan
-Merge Jean's patch, using uacce_mm instead of pid for sva_exit
-
-v7:
-As suggested by Jean and Jerome
-Only consider sva case and remove unused dma apis for the first patch.
-Also add mm_exit for sva and vm_ops.close etc
-
-
-v6: https://lkml.org/lkml/2019/10/16/231
-Change sys qfrs_size to different file, suggested by Jonathan
-Fix crypto daily build issue and based on crypto code base, also 5.4-rc1.
-
-v5: https://lkml.org/lkml/2019/10/14/74
-Add an example patch using the uacce interface, suggested by Greg
-0003-crypto-hisilicon-register-zip-engine-to-uacce.patch
-
-v4: https://lkml.org/lkml/2019/9/17/116
-Based on 5.4-rc1
-Considering other driver integrating uacce, 
-if uacce not compiled, uacce_register return error and uacce_unregister is empty.
-Simplify uacce flag: UACCE_DEV_SVA.
-Address Greg's comments: 
-Fix state machine, remove potential syslog triggered from user space etc.
-
-v3: https://lkml.org/lkml/2019/9/2/990
-Recommended by Greg, use sturct uacce_device instead of struct uacce,
-and use struct *cdev in struct uacce_device, as a result, 
-cdev can be released by itself when refcount decreased to 0.
-So the two structures are decoupled and self-maintained by themsleves.
-Also add dev.release for put_device.
-
-v2: https://lkml.org/lkml/2019/8/28/565
-Address comments from Greg and Jonathan
-Modify interface uacce_register
-Drop noiommu mode first
-
-v1: https://lkml.org/lkml/2019/8/14/277
-1. Rebase to 5.3-rc1
-2. Build on iommu interface
-3. Verifying with Jean's sva and Eric's nested mode iommu.
-4. User library has developed a lot: support zlib, openssl etc.
-5. Move to misc first
-
-RFC3:
-https://lkml.org/lkml/2018/11/12/1951
-
-RFC2:
-https://lwn.net/Articles/763990/
-
-
-Background of why Uacce:
-Von Neumann processor is not good at general data manipulation.
-It is designed for control-bound rather than data-bound application.
-The latter need less control path facility and more/specific ALUs.
-So there are more and more heterogeneous processors, such as
-encryption/decryption accelerators, TPUs, or
-EDGE (Explicated Data Graph Execution) processors, introduced to gain
-better performance or power efficiency for particular applications
-these days.
-
-There are generally two ways to make use of these heterogeneous processors:
-
-The first is to make them co-processors, just like FPU.
-This is good for some application but it has its own cons:
-It changes the ISA set permanently.
-You must save all state elements when the process is switched out.
-But most data-bound processors have a huge set of state elements.
-It makes the kernel scheduler more complex.
-
-The second is Accelerator.
-It is taken as a IO device from the CPU's point of view
-(but it need not to be physically). The process, running on CPU,
-hold a context of the accelerator and send instructions to it as if
-it calls a function or thread running with FPU.
-The context is bound with the processor itself.
-So the state elements remain in the hardware context until
-the context is released.
-
-We believe this is the core feature of an "Accelerator" vs. Co-processor
-or other heterogeneous processors.
-
-The intention of Uacce is to provide the basic facility to backup
-this scenario. Its first step is to make sure the accelerator and process
-can share the same address space. So the accelerator ISA can directly
-address any data structure of the main CPU.
-This differs from the data sharing between CPU and IO device,
-which share data content rather than address.
-So it is different comparing to the other DMA libraries.
-
-In the future, we may add more facility to support linking accelerator
-library to the main application, or managing the accelerator context as
-special thread.
-But no matter how, this can be a solid start point for new processor
-to be used as an "accelerator" as this is the essential requirement.
-
-
-The Fork Scenario
-=================
-For a process with allocated queues and shared memory, what happen if it forks
-a child?
-
-The fd of the queue is duplicated on fork, but requests sent from the child
-process are blocked.
-
-It is recommended to add O_CLOEXEC to the queue file.
-
-The queue mmap space has a VM_DONTCOPY in its VMA. So the child will lose all
-those VMAs.
-
-This is a reason why Uacce does not adopt the mode used in VFIO and
-InfiniBand.  Both solutions can set any user pointer for hardware sharing.
-But they cannot support fork when the dma is in process. Or the
-"Copy-On-Write" procedure will make the parent process lost its physical
-pages.
-
-
-Difference to the VFIO and IB framework
----------------------------------------
-The essential function of Uacce is to let the device access the user
-address directly. There are many device drivers doing the same in the kernel.
-And both VFIO and IB can provide similar functions in framework level.
-
-But Uacce has a different goal: "share address space". It is
-not taken the request to the accelerator as an enclosure data structure. It
-takes the accelerator as another thread of the same process. So the
-accelerator can refer to any address used by the process.
-
-Both VFIO and IB are taken this as "memory sharing", not "address sharing".
-They care more on sharing the block of memory. But if there is an address
-stored in the block and referring to another memory region. The address may
-not be valid.
-
-By adding more constraints to the VFIO and IB framework, in some sense, we may
-achieve a similar goal. But we gave it up finally. Both VFIO and IB have extra
-assumption which is unnecessary to Uacce. They may hurt each other if we
-try to merge them together.
-
-VFIO manages resource of a hardware as a "virtual device". If a device need to
-serve a separated application. It must isolate the resource as a separate
-virtual device.  And the life cycle of the application and virtual device are
-unnecessary unrelated. And most concepts, such as bus, driver, probe and
-so on, to make it as a "device" is unnecessary either. And the logic added to
-VFIO to make address sharing do no help on "creating a virtual device".
-
-IB creates a "verbs" standard for sharing memory region to another remote
-entity.  Most of these verbs are to make memory region between entities to be
-synchronized.  This is not what accelerator need. Accelerator is in the same
-memory system with the CPU. It refers to the same memory system among CPU and
-devices. So the local memory terms/verbs are good enough for it. Extra "verbs"
-are not necessary. And its queue (like queue pair in IB) is the communication
-channel direct to the accelerator hardware. There is nothing about memory
-itself.
-
-Further, both VFIO and IB use the "pin" (get_user_page) way to lock local
-memory in place.  This is flexible. But it can cause other problems. For
-example, if the user process fork a child process. The COW procedure may make
-the parent process lost its pages which are sharing with the device. These may
-be fixed in the future. But is not going to be easy. (There is a discussion
-about this on Linux Plumbers Conference 2018 [1])
-
-So we choose to build the solution directly on top of IOMMU interface. IOMMU
-is the essential way for device and process to share their page mapping from
-the hardware perspective. It will be safe to create a software solution on
-this assumption.  Uacce manages the IOMMU interface for the accelerator
-device, so the device driver can export some of the resources to the user
-space. Uacce than can make sure the device and the process have the same
-address space.
-
-
-References
-==========
-.. [1] https://lwn.net/Articles/774411/
-Subject: [PATCH 0/3] *** SUBJECT HERE ***
-
-Kenneth Lee (2):
-  uacce: Add documents for uacce
-  uacce: add uacce driver
-
-Zhangfei Gao (2):
-  crypto: hisilicon - Remove module_param uacce_mode
-  crypto: hisilicon - register zip engine to uacce
-
+Signed-off-by: Kenneth Lee <liguozhu@hisilicon.com>
+Signed-off-by: Zaibo Xu <xuzaibo@huawei.com>
+Signed-off-by: Zhou Wang <wangzhou1@hisilicon.com>
+Signed-off-by: Jean-Philippe Brucker <jean-philippe@linaro.org>
+Signed-off-by: Zhangfei Gao <zhangfei.gao@linaro.org>
+---
  Documentation/ABI/testing/sysfs-driver-uacce |  37 ++
- Documentation/misc-devices/uacce.rst         | 176 ++++++++
- drivers/crypto/hisilicon/qm.c                | 234 +++++++++-
- drivers/crypto/hisilicon/qm.h                |  11 +
- drivers/crypto/hisilicon/zip/zip_main.c      |  47 +-
  drivers/misc/Kconfig                         |   1 +
  drivers/misc/Makefile                        |   1 +
  drivers/misc/uacce/Kconfig                   |  13 +
  drivers/misc/uacce/Makefile                  |   2 +
  drivers/misc/uacce/uacce.c                   | 627 +++++++++++++++++++++++++++
  include/linux/uacce.h                        | 161 +++++++
- include/uapi/misc/uacce/hisi_qm.h            |  23 +
  include/uapi/misc/uacce/uacce.h              |  38 ++
- 13 files changed, 1339 insertions(+), 32 deletions(-)
+ 8 files changed, 880 insertions(+)
  create mode 100644 Documentation/ABI/testing/sysfs-driver-uacce
- create mode 100644 Documentation/misc-devices/uacce.rst
  create mode 100644 drivers/misc/uacce/Kconfig
  create mode 100644 drivers/misc/uacce/Makefile
  create mode 100644 drivers/misc/uacce/uacce.c
  create mode 100644 include/linux/uacce.h
- create mode 100644 include/uapi/misc/uacce/hisi_qm.h
  create mode 100644 include/uapi/misc/uacce/uacce.h
 
+diff --git a/Documentation/ABI/testing/sysfs-driver-uacce b/Documentation/ABI/testing/sysfs-driver-uacce
+new file mode 100644
+index 0000000..0fc6c957
+--- /dev/null
++++ b/Documentation/ABI/testing/sysfs-driver-uacce
+@@ -0,0 +1,37 @@
++What:           /sys/class/uacce/<dev_name>/api
++Date:           Nov 2019
++KernelVersion:  5.5
++Contact:        linux-accelerators@lists.ozlabs.org
++Description:    Api of the device, no requirement of the format
++                Application use the api to match the correct driver
++
++What:           /sys/class/uacce/<dev_name>/flags
++Date:           Nov 2019
++KernelVersion:  5.5
++Contact:        linux-accelerators@lists.ozlabs.org
++Description:    Attributes of the device, see UACCE_DEV_xxx flag defined in uacce.h
++
++What:           /sys/class/uacce/<dev_name>/available_instances
++Date:           Nov 2019
++KernelVersion:  5.5
++Contact:        linux-accelerators@lists.ozlabs.org
++Description:    Available instances left of the device
++                Return -ENODEV if uacce_ops get_available_instances is not provided
++
++What:           /sys/class/uacce/<dev_name>/algorithms
++Date:           Nov 2019
++KernelVersion:  5.5
++Contact:        linux-accelerators@lists.ozlabs.org
++Description:    Algorithms supported by this accelerator, separated by new line.
++
++What:           /sys/class/uacce/<dev_name>/region_mmio_size
++Date:           Nov 2019
++KernelVersion:  5.5
++Contact:        linux-accelerators@lists.ozlabs.org
++Description:    Size (bytes) of mmio region queue file
++
++What:           /sys/class/uacce/<dev_name>/region_dus_size
++Date:           Nov 2019
++KernelVersion:  5.5
++Contact:        linux-accelerators@lists.ozlabs.org
++Description:    Size (bytes) of dus region queue file
+diff --git a/drivers/misc/Kconfig b/drivers/misc/Kconfig
+index c55b637..929feb0 100644
+--- a/drivers/misc/Kconfig
++++ b/drivers/misc/Kconfig
+@@ -481,4 +481,5 @@ source "drivers/misc/cxl/Kconfig"
+ source "drivers/misc/ocxl/Kconfig"
+ source "drivers/misc/cardreader/Kconfig"
+ source "drivers/misc/habanalabs/Kconfig"
++source "drivers/misc/uacce/Kconfig"
+ endmenu
+diff --git a/drivers/misc/Makefile b/drivers/misc/Makefile
+index c1860d3..9abf292 100644
+--- a/drivers/misc/Makefile
++++ b/drivers/misc/Makefile
+@@ -56,4 +56,5 @@ obj-$(CONFIG_OCXL)		+= ocxl/
+ obj-y				+= cardreader/
+ obj-$(CONFIG_PVPANIC)   	+= pvpanic.o
+ obj-$(CONFIG_HABANA_AI)		+= habanalabs/
++obj-$(CONFIG_UACCE)		+= uacce/
+ obj-$(CONFIG_XILINX_SDFEC)	+= xilinx_sdfec.o
+diff --git a/drivers/misc/uacce/Kconfig b/drivers/misc/uacce/Kconfig
+new file mode 100644
+index 0000000..5e39b60
+--- /dev/null
++++ b/drivers/misc/uacce/Kconfig
+@@ -0,0 +1,13 @@
++config UACCE
++	tristate "Accelerator Framework for User Land"
++	depends on IOMMU_API
++	help
++	  UACCE provides interface for the user process to access the hardware
++	  without interaction with the kernel space in data path.
++
++	  The user-space interface is described in
++	  include/uapi/misc/uacce/uacce.h
++
++	  See Documentation/misc-devices/uacce.rst for more details.
++
++	  If you don't know what to do here, say N.
+diff --git a/drivers/misc/uacce/Makefile b/drivers/misc/uacce/Makefile
+new file mode 100644
+index 0000000..5b4374e
+--- /dev/null
++++ b/drivers/misc/uacce/Makefile
+@@ -0,0 +1,2 @@
++# SPDX-License-Identifier: GPL-2.0-or-later
++obj-$(CONFIG_UACCE) += uacce.o
+diff --git a/drivers/misc/uacce/uacce.c b/drivers/misc/uacce/uacce.c
+new file mode 100644
+index 0000000..d7452b1
+--- /dev/null
++++ b/drivers/misc/uacce/uacce.c
+@@ -0,0 +1,627 @@
++// SPDX-License-Identifier: GPL-2.0-or-later
++#include <linux/compat.h>
++#include <linux/dma-iommu.h>
++#include <linux/module.h>
++#include <linux/poll.h>
++#include <linux/uacce.h>
++
++static struct class *uacce_class;
++static dev_t uacce_devt;
++static DEFINE_MUTEX(uacce_mutex);
++static DEFINE_XARRAY_ALLOC(uacce_xa);
++
++static int uacce_start_queue(struct uacce_queue *q)
++{
++	int ret = 0;
++
++	mutex_lock(&uacce_mutex);
++
++	if (q->state != UACCE_Q_INIT) {
++		ret = -EINVAL;
++		goto out_with_lock;
++	}
++
++	if (q->uacce->ops->start_queue) {
++		ret = q->uacce->ops->start_queue(q);
++		if (ret < 0)
++			goto out_with_lock;
++	}
++
++	q->state = UACCE_Q_STARTED;
++
++out_with_lock:
++	mutex_unlock(&uacce_mutex);
++
++	return ret;
++}
++
++static int uacce_put_queue(struct uacce_queue *q)
++{
++	struct uacce_device *uacce = q->uacce;
++
++	mutex_lock(&uacce_mutex);
++
++	if (q->state == UACCE_Q_ZOMBIE)
++		goto out;
++
++	if ((q->state == UACCE_Q_STARTED) && uacce->ops->stop_queue)
++		uacce->ops->stop_queue(q);
++
++	if ((q->state == UACCE_Q_INIT || q->state == UACCE_Q_STARTED) &&
++	     uacce->ops->put_queue)
++		uacce->ops->put_queue(q);
++
++	q->state = UACCE_Q_ZOMBIE;
++out:
++	mutex_unlock(&uacce_mutex);
++
++	return 0;
++}
++
++static long uacce_fops_unl_ioctl(struct file *filep,
++				 unsigned int cmd, unsigned long arg)
++{
++	struct uacce_queue *q = filep->private_data;
++	struct uacce_device *uacce = q->uacce;
++
++	switch (cmd) {
++	case UACCE_CMD_START_Q:
++		return uacce_start_queue(q);
++
++	case UACCE_CMD_PUT_Q:
++		return uacce_put_queue(q);
++
++	default:
++		if (!uacce->ops->ioctl)
++			return -EINVAL;
++
++		return uacce->ops->ioctl(q, cmd, arg);
++	}
++}
++
++#ifdef CONFIG_COMPAT
++static long uacce_fops_compat_ioctl(struct file *filep,
++				   unsigned int cmd, unsigned long arg)
++{
++	arg = (unsigned long)compat_ptr(arg);
++
++	return uacce_fops_unl_ioctl(filep, cmd, arg);
++}
++#endif
++
++static int uacce_sva_exit(struct device *dev, struct iommu_sva *handle,
++			  void *data)
++{
++	struct uacce_mm *uacce_mm = data;
++	struct uacce_queue *q;
++
++	/*
++	 * No new queue can be added concurrently because no caller can have a
++	 * reference to this mm. But there may be concurrent calls to
++	 * uacce_mm_put(), so we need the lock.
++	 */
++	mutex_lock(&uacce_mm->lock);
++	list_for_each_entry(q, &uacce_mm->queues, list)
++		uacce_put_queue(q);
++	uacce_mm->mm = NULL;
++	mutex_unlock(&uacce_mm->lock);
++
++	return 0;
++}
++
++static struct iommu_sva_ops uacce_sva_ops = {
++	.mm_exit = uacce_sva_exit,
++};
++
++static struct uacce_mm *uacce_mm_get(struct uacce_device *uacce,
++				     struct uacce_queue *q,
++				     struct mm_struct *mm)
++{
++	struct uacce_mm *uacce_mm = NULL;
++	struct iommu_sva *handle = NULL;
++	int ret;
++
++	lockdep_assert_held(&uacce->mm_lock);
++
++	list_for_each_entry(uacce_mm, &uacce->mm_list, list) {
++		if (uacce_mm->mm == mm) {
++			mutex_lock(&uacce_mm->lock);
++			list_add(&q->list, &uacce_mm->queues);
++			mutex_unlock(&uacce_mm->lock);
++			return uacce_mm;
++		}
++	}
++
++	uacce_mm = kzalloc(sizeof(*uacce_mm), GFP_KERNEL);
++	if (!uacce_mm)
++		return NULL;
++
++	if (uacce->flags & UACCE_DEV_SVA) {
++		/*
++		 * Safe to pass an incomplete uacce_mm, since mm_exit cannot
++		 * fire while we hold a reference to the mm.
++		 */
++		handle = iommu_sva_bind_device(uacce->parent, mm, uacce_mm);
++		if (IS_ERR(handle))
++			goto err_free;
++
++		ret = iommu_sva_set_ops(handle, &uacce_sva_ops);
++		if (ret)
++			goto err_unbind;
++
++		uacce_mm->pasid = iommu_sva_get_pasid(handle);
++		if (uacce_mm->pasid == IOMMU_PASID_INVALID)
++			goto err_unbind;
++	}
++
++	uacce_mm->mm = mm;
++	uacce_mm->handle = handle;
++	INIT_LIST_HEAD(&uacce_mm->queues);
++	mutex_init(&uacce_mm->lock);
++	list_add(&q->list, &uacce_mm->queues);
++	list_add(&uacce_mm->list, &uacce->mm_list);
++
++	return uacce_mm;
++
++err_unbind:
++	if (handle)
++		iommu_sva_unbind_device(handle);
++err_free:
++	kfree(uacce_mm);
++	return NULL;
++}
++
++static void uacce_mm_put(struct uacce_queue *q)
++{
++	struct uacce_mm *uacce_mm = q->uacce_mm;
++
++	lockdep_assert_held(&q->uacce->mm_lock);
++
++	mutex_lock(&uacce_mm->lock);
++	list_del(&q->list);
++	mutex_unlock(&uacce_mm->lock);
++
++	if (list_empty(&uacce_mm->queues)) {
++		if (uacce_mm->handle)
++			iommu_sva_unbind_device(uacce_mm->handle);
++		list_del(&uacce_mm->list);
++		kfree(uacce_mm);
++	}
++}
++
++static int uacce_fops_open(struct inode *inode, struct file *filep)
++{
++	struct uacce_mm *uacce_mm = NULL;
++	struct uacce_device *uacce;
++	struct uacce_queue *q;
++	int ret = 0;
++
++	uacce = xa_load(&uacce_xa, iminor(inode));
++	if (!uacce)
++		return -ENODEV;
++
++	if (!try_module_get(uacce->parent->driver->owner))
++		return -ENODEV;
++
++	q = kzalloc(sizeof(struct uacce_queue), GFP_KERNEL);
++	if (!q) {
++		ret = -ENOMEM;
++		goto out_with_module;
++	}
++
++	mutex_lock(&uacce->mm_lock);
++	uacce_mm = uacce_mm_get(uacce, q, current->mm);
++	mutex_unlock(&uacce->mm_lock);
++	if (!uacce_mm) {
++		ret = -ENOMEM;
++		goto out_with_mem;
++	}
++
++	q->uacce = uacce;
++	q->uacce_mm = uacce_mm;
++
++	if (uacce->ops->get_queue) {
++		ret = uacce->ops->get_queue(uacce, uacce_mm->pasid, q);
++		if (ret < 0)
++			goto out_with_mm;
++	}
++
++	init_waitqueue_head(&q->wait);
++	filep->private_data = q;
++	q->state = UACCE_Q_INIT;
++
++	return 0;
++
++out_with_mm:
++	mutex_lock(&uacce->mm_lock);
++	uacce_mm_put(q);
++	mutex_unlock(&uacce->mm_lock);
++out_with_mem:
++	kfree(q);
++out_with_module:
++	module_put(uacce->parent->driver->owner);
++	return ret;
++}
++
++static int uacce_fops_release(struct inode *inode, struct file *filep)
++{
++	struct uacce_queue *q = filep->private_data;
++	struct uacce_device *uacce = q->uacce;
++
++	uacce_put_queue(q);
++
++	mutex_lock(&uacce->mm_lock);
++	uacce_mm_put(q);
++	mutex_unlock(&uacce->mm_lock);
++
++	kfree(q);
++	module_put(uacce->parent->driver->owner);
++
++	return 0;
++}
++
++static void uacce_vma_close(struct vm_area_struct *vma)
++{
++	struct uacce_queue *q = vma->vm_private_data;
++	struct uacce_qfile_region *qfr = NULL;
++
++	if (vma->vm_pgoff < UACCE_MAX_REGION)
++		qfr = q->qfrs[vma->vm_pgoff];
++
++	kfree(qfr);
++}
++
++static const struct vm_operations_struct uacce_vm_ops = {
++	.close = uacce_vma_close,
++};
++
++static int uacce_fops_mmap(struct file *filep, struct vm_area_struct *vma)
++{
++	struct uacce_queue *q = filep->private_data;
++	struct uacce_device *uacce = q->uacce;
++	struct uacce_qfile_region *qfr;
++	enum uacce_qfrt type = UACCE_MAX_REGION;
++	int ret = 0;
++
++	if (vma->vm_pgoff < UACCE_MAX_REGION)
++		type = vma->vm_pgoff;
++	else
++		return -EINVAL;
++
++	qfr = kzalloc(sizeof(*qfr), GFP_KERNEL);
++	if (!qfr)
++		return -ENOMEM;
++
++	vma->vm_flags |= VM_DONTCOPY | VM_DONTEXPAND | VM_WIPEONFORK;
++	vma->vm_ops = &uacce_vm_ops;
++	vma->vm_private_data = q;
++	qfr->type = type;
++
++	mutex_lock(&uacce_mutex);
++
++	if (q->state != UACCE_Q_INIT && q->state != UACCE_Q_STARTED) {
++		ret = -EINVAL;
++		goto out_with_lock;
++	}
++
++	if (q->qfrs[type]) {
++		ret = -EEXIST;
++		goto out_with_lock;
++	}
++
++	switch (type) {
++	case UACCE_QFRT_MMIO:
++		if (!uacce->ops->mmap) {
++			ret = -EINVAL;
++			goto out_with_lock;
++		}
++
++		ret = uacce->ops->mmap(q, vma, qfr);
++		if (ret)
++			goto out_with_lock;
++
++		break;
++
++	case UACCE_QFRT_DUS:
++		if (uacce->flags & UACCE_DEV_SVA) {
++			if (!uacce->ops->mmap) {
++				ret = -EINVAL;
++				goto out_with_lock;
++			}
++
++			ret = uacce->ops->mmap(q, vma, qfr);
++			if (ret)
++				goto out_with_lock;
++		}
++		break;
++
++	default:
++		ret = -EINVAL;
++		goto out_with_lock;
++	}
++
++	q->qfrs[type] = qfr;
++	mutex_unlock(&uacce_mutex);
++
++	return ret;
++
++out_with_lock:
++	mutex_unlock(&uacce_mutex);
++	kfree(qfr);
++	return ret;
++}
++
++static __poll_t uacce_fops_poll(struct file *file, poll_table *wait)
++{
++	struct uacce_queue *q = file->private_data;
++	struct uacce_device *uacce = q->uacce;
++
++	poll_wait(file, &q->wait, wait);
++	if (uacce->ops->is_q_updated && uacce->ops->is_q_updated(q))
++		return EPOLLIN | EPOLLRDNORM;
++
++	return 0;
++}
++
++static const struct file_operations uacce_fops = {
++	.owner		= THIS_MODULE,
++	.open		= uacce_fops_open,
++	.release	= uacce_fops_release,
++	.unlocked_ioctl	= uacce_fops_unl_ioctl,
++#ifdef CONFIG_COMPAT
++	.compat_ioctl	= uacce_fops_compat_ioctl,
++#endif
++	.mmap		= uacce_fops_mmap,
++	.poll		= uacce_fops_poll,
++};
++
++#define to_uacce_device(dev) container_of(dev, struct uacce_device, dev)
++
++static ssize_t api_show(struct device *dev,
++			struct device_attribute *attr, char *buf)
++{
++	struct uacce_device *uacce = to_uacce_device(dev);
++
++	return sprintf(buf, "%s\n", uacce->api_ver);
++}
++
++static ssize_t flags_show(struct device *dev,
++			  struct device_attribute *attr, char *buf)
++{
++	struct uacce_device *uacce = to_uacce_device(dev);
++
++	return sprintf(buf, "%u\n", uacce->flags);
++}
++
++static ssize_t available_instances_show(struct device *dev,
++					struct device_attribute *attr,
++					char *buf)
++{
++	struct uacce_device *uacce = to_uacce_device(dev);
++	int val = -ENODEV;
++
++	if (uacce->ops->get_available_instances)
++		val = uacce->ops->get_available_instances(uacce);
++
++	return sprintf(buf, "%d\n", val);
++}
++
++static ssize_t algorithms_show(struct device *dev,
++			       struct device_attribute *attr, char *buf)
++{
++	struct uacce_device *uacce = to_uacce_device(dev);
++
++	return sprintf(buf, "%s\n", uacce->algs);
++}
++
++static ssize_t region_mmio_size_show(struct device *dev,
++				     struct device_attribute *attr, char *buf)
++{
++	struct uacce_device *uacce = to_uacce_device(dev);
++
++	return sprintf(buf, "%lu\n",
++		       uacce->qf_pg_num[UACCE_QFRT_MMIO] << PAGE_SHIFT);
++}
++
++static ssize_t region_dus_size_show(struct device *dev,
++				    struct device_attribute *attr, char *buf)
++{
++	struct uacce_device *uacce = to_uacce_device(dev);
++
++	return sprintf(buf, "%lu\n",
++		       uacce->qf_pg_num[UACCE_QFRT_DUS] << PAGE_SHIFT);
++}
++
++static DEVICE_ATTR_RO(api);
++static DEVICE_ATTR_RO(flags);
++static DEVICE_ATTR_RO(available_instances);
++static DEVICE_ATTR_RO(algorithms);
++static DEVICE_ATTR_RO(region_mmio_size);
++static DEVICE_ATTR_RO(region_dus_size);
++
++static struct attribute *uacce_dev_attrs[] = {
++	&dev_attr_api.attr,
++	&dev_attr_flags.attr,
++	&dev_attr_available_instances.attr,
++	&dev_attr_algorithms.attr,
++	&dev_attr_region_mmio_size.attr,
++	&dev_attr_region_dus_size.attr,
++	NULL,
++};
++
++static umode_t uacce_dev_is_visible(struct kobject *kobj,
++				    struct attribute *attr, int n)
++{
++	struct device *dev = container_of(kobj, struct device, kobj);
++	struct uacce_device *uacce = to_uacce_device(dev);
++
++	if (((attr == &dev_attr_region_mmio_size.attr) &&
++	    (!uacce->qf_pg_num[UACCE_QFRT_MMIO])) ||
++	    ((attr == &dev_attr_region_dus_size.attr) &&
++	    (!uacce->qf_pg_num[UACCE_QFRT_DUS])))
++		return 0;
++
++	return attr->mode;
++}
++
++static struct attribute_group uacce_dev_group = {
++	.is_visible	= uacce_dev_is_visible,
++	.attrs		= uacce_dev_attrs,
++};
++
++__ATTRIBUTE_GROUPS(uacce_dev);
++
++static void uacce_release(struct device *dev)
++{
++	struct uacce_device *uacce = to_uacce_device(dev);
++
++	kfree(uacce);
++	uacce = NULL;
++}
++
++/**
++ * uacce_alloc() - alloc an accelerator
++ * @parent: pointer of uacce parent device
++ * @interface: pointer of uacce_interface for register
++ *
++ * Returns uacce pointer if success and ERR_PTR if not
++ * Need check returned negotiated uacce->flags
++ */
++struct uacce_device *uacce_alloc(struct device *parent,
++				 struct uacce_interface *interface)
++{
++	unsigned int flags = interface->flags;
++	struct uacce_device *uacce;
++	int ret;
++
++	uacce = kzalloc(sizeof(struct uacce_device), GFP_KERNEL);
++	if (!uacce)
++		return ERR_PTR(-ENOMEM);
++
++	if (flags & UACCE_DEV_SVA) {
++		ret = iommu_dev_enable_feature(parent, IOMMU_DEV_FEAT_SVA);
++		if (ret)
++			flags &= ~UACCE_DEV_SVA;
++	}
++
++	uacce->parent = parent;
++	uacce->flags = flags;
++	uacce->ops = interface->ops;
++
++	ret = xa_alloc(&uacce_xa, &uacce->dev_id, uacce, xa_limit_32b,
++		       GFP_KERNEL);
++	if (ret < 0)
++		goto err_with_uacce;
++
++	INIT_LIST_HEAD(&uacce->mm_list);
++	mutex_init(&uacce->mm_lock);
++	device_initialize(&uacce->dev);
++	uacce->dev.devt = MKDEV(MAJOR(uacce_devt), uacce->dev_id);
++	uacce->dev.class = uacce_class;
++	uacce->dev.groups = uacce_dev_groups;
++	uacce->dev.parent = uacce->parent;
++	uacce->dev.release = uacce_release;
++	dev_set_name(&uacce->dev, "%s-%d", interface->name, uacce->dev_id);
++
++	return uacce;
++
++err_with_uacce:
++	if (flags & UACCE_DEV_SVA)
++		iommu_dev_disable_feature(uacce->parent, IOMMU_DEV_FEAT_SVA);
++	kfree(uacce);
++	return ERR_PTR(ret);
++}
++EXPORT_SYMBOL_GPL(uacce_alloc);
++
++/**
++ * uacce_register() - add the accelerator to cdev and export to user space
++ * @uacce: The initialized uacce device
++ *
++ * Return 0 if register succeeded, or an error.
++ */
++int uacce_register(struct uacce_device *uacce)
++{
++	if (!uacce)
++		return -ENODEV;
++
++	uacce->cdev = cdev_alloc();
++	if (!uacce->cdev)
++		return -ENOMEM;
++
++	uacce->cdev->ops = &uacce_fops;
++	uacce->cdev->owner = THIS_MODULE;
++
++	return cdev_device_add(uacce->cdev, &uacce->dev);
++}
++EXPORT_SYMBOL_GPL(uacce_register);
++
++/**
++ * uacce_remove() - remove the accelerator
++ * @uacce: the accelerator to remove
++ */
++void uacce_remove(struct uacce_device *uacce)
++{
++	struct uacce_mm *uacce_mm;
++	struct uacce_queue *q;
++
++	if (!uacce)
++		return;
++
++	/* ensure no open queue remains */
++	mutex_lock(&uacce->mm_lock);
++	list_for_each_entry(uacce_mm, &uacce->mm_list, list) {
++		/*
++		 * We don't take the uacce_mm->lock here. Since we hold the
++		 * device's mm_lock, no queue can be added to or removed from
++		 * this uacce_mm. We may run concurrently with mm_exit, but
++		 * uacce_put_queue() is serialized and iommu_sva_unbind_device()
++		 * waits for the lock that mm_exit is holding.
++		 */
++		list_for_each_entry(q, &uacce_mm->queues, list)
++			uacce_put_queue(q);
++
++		if (uacce->flags & UACCE_DEV_SVA) {
++			iommu_sva_unbind_device(uacce_mm->handle);
++			uacce_mm->handle = NULL;
++		}
++	}
++	mutex_unlock(&uacce->mm_lock);
++
++	/* disable sva now since no opened queues */
++	if (uacce->flags & UACCE_DEV_SVA)
++		iommu_dev_disable_feature(uacce->parent, IOMMU_DEV_FEAT_SVA);
++
++	if (uacce->cdev)
++		cdev_device_del(uacce->cdev, &uacce->dev);
++	xa_erase(&uacce_xa, uacce->dev_id);
++	put_device(&uacce->dev);
++}
++EXPORT_SYMBOL_GPL(uacce_remove);
++
++static int __init uacce_init(void)
++{
++	int ret;
++
++	uacce_class = class_create(THIS_MODULE, UACCE_NAME);
++	if (IS_ERR(uacce_class))
++		return PTR_ERR(uacce_class);
++
++	ret = alloc_chrdev_region(&uacce_devt, 0, MINORMASK, UACCE_NAME);
++	if (ret)
++		class_destroy(uacce_class);
++
++	return ret;
++}
++
++static __exit void uacce_exit(void)
++{
++	unregister_chrdev_region(uacce_devt, MINORMASK);
++	class_destroy(uacce_class);
++}
++
++subsys_initcall(uacce_init);
++module_exit(uacce_exit);
++
++MODULE_LICENSE("GPL");
++MODULE_AUTHOR("Hisilicon Tech. Co., Ltd.");
++MODULE_DESCRIPTION("Accelerator interface for Userland applications");
+diff --git a/include/linux/uacce.h b/include/linux/uacce.h
+new file mode 100644
+index 0000000..904a461
+--- /dev/null
++++ b/include/linux/uacce.h
+@@ -0,0 +1,161 @@
++/* SPDX-License-Identifier: GPL-2.0-or-later */
++#ifndef _LINUX_UACCE_H
++#define _LINUX_UACCE_H
++
++#include <linux/cdev.h>
++#include <uapi/misc/uacce/uacce.h>
++
++#define UACCE_NAME		"uacce"
++#define UACCE_MAX_REGION	2
++#define UACCE_MAX_NAME_SIZE	64
++
++struct uacce_queue;
++struct uacce_device;
++
++/**
++ * struct uacce_qfile_region - structure of queue file region
++ * @type: type of the region
++ */
++struct uacce_qfile_region {
++	enum uacce_qfrt type;
++};
++
++/**
++ * struct uacce_ops - uacce device operations
++ * @get_available_instances:  get available instances left of the device
++ * @get_queue: get a queue from the device
++ * @put_queue: free a queue to the device
++ * @start_queue: make the queue start work after get_queue
++ * @stop_queue: make the queue stop work before put_queue
++ * @is_q_updated: check whether the task is finished
++ * @mmap: mmap addresses of queue to user space
++ * @ioctl: ioctl for user space users of the queue
++ */
++struct uacce_ops {
++	int (*get_available_instances)(struct uacce_device *uacce);
++	int (*get_queue)(struct uacce_device *uacce, unsigned long arg,
++			 struct uacce_queue *q);
++	void (*put_queue)(struct uacce_queue *q);
++	int (*start_queue)(struct uacce_queue *q);
++	void (*stop_queue)(struct uacce_queue *q);
++	int (*is_q_updated)(struct uacce_queue *q);
++	int (*mmap)(struct uacce_queue *q, struct vm_area_struct *vma,
++		    struct uacce_qfile_region *qfr);
++	long (*ioctl)(struct uacce_queue *q, unsigned int cmd,
++		      unsigned long arg);
++};
++
++/**
++ * struct uacce_interface - interface required for uacce_register()
++ * @name: the uacce device name.  Will show up in sysfs
++ * @flags: uacce device attributes
++ * @ops: pointer to the struct uacce_ops
++ */
++struct uacce_interface {
++	char name[UACCE_MAX_NAME_SIZE];
++	unsigned int flags;
++	const struct uacce_ops *ops;
++};
++
++enum uacce_q_state {
++	UACCE_Q_ZOMBIE = 0,
++	UACCE_Q_INIT,
++	UACCE_Q_STARTED,
++};
++
++/**
++ * struct uacce_queue
++ * @uacce: pointer to uacce
++ * @priv: private pointer
++ * @wait: wait queue head
++ * @list: index into uacce_mm
++ * @uacce_mm: the corresponding mm
++ * @qfrs: pointer of qfr regions
++ * @state: queue state machine
++ */
++struct uacce_queue {
++	struct uacce_device *uacce;
++	void *priv;
++	wait_queue_head_t wait;
++	struct list_head list;
++	struct uacce_mm *uacce_mm;
++	struct uacce_qfile_region *qfrs[UACCE_MAX_REGION];
++	enum uacce_q_state state;
++};
++
++/**
++ * struct uacce_device
++ * @algs: supported algorithms
++ * @api_ver: api version
++ * @ops: pointer to the struct uacce_ops
++ * @qf_pg_num: page numbers of the queue file regions
++ * @parent: pointer to the parent device
++ * @is_vf: whether virtual function
++ * @flags: uacce attributes
++ * @dev_id: id of the uacce device
++ * @cdev: cdev of the uacce
++ * @dev: dev of the uacce
++ * @priv: private pointer of the uacce
++ * @mm_list: list head of uacce_mm->list
++ * @mm_lock: lock for mm_list
++ */
++struct uacce_device {
++	const char *algs;
++	const char *api_ver;
++	const struct uacce_ops *ops;
++	unsigned long qf_pg_num[UACCE_MAX_REGION];
++	struct device *parent;
++	bool is_vf;
++	u32 flags;
++	u32 dev_id;
++	struct cdev *cdev;
++	struct device dev;
++	void *priv;
++	struct list_head mm_list;
++	struct mutex mm_lock;
++};
++
++/**
++ * struct uacce_mm - keep track of queues bound to a process
++ * @list: index into uacce_device
++ * @queues: list of queues
++ * @mm: the mm struct
++ * @lock: protects the list of queues
++ * @pasid: pasid of the uacce_mm
++ * @handle: iommu_sva handle return from iommu_sva_bind_device
++ */
++struct uacce_mm {
++	struct list_head list;
++	struct list_head queues;
++	struct mm_struct *mm;
++	struct mutex lock;
++	int pasid;
++	struct iommu_sva *handle;
++};
++
++#if IS_ENABLED(CONFIG_UACCE)
++
++struct uacce_device *uacce_alloc(struct device *parent,
++				 struct uacce_interface *interface);
++int uacce_register(struct uacce_device *uacce);
++void uacce_remove(struct uacce_device *uacce);
++
++#else /* CONFIG_UACCE */
++
++static inline
++struct uacce_device *uacce_alloc(struct device *parent,
++				 struct uacce_interface *interface)
++{
++	return ERR_PTR(-ENODEV);
++}
++
++static inline int uacce_register(struct uacce_device *uacce)
++{
++	return -EINVAL;
++}
++
++static inline void uacce_remove(struct uacce_device *uacce) {}
++
++#endif /* CONFIG_UACCE */
++
++#endif /* _LINUX_UACCE_H */
+diff --git a/include/uapi/misc/uacce/uacce.h b/include/uapi/misc/uacce/uacce.h
+new file mode 100644
+index 0000000..cc71856
+--- /dev/null
++++ b/include/uapi/misc/uacce/uacce.h
+@@ -0,0 +1,38 @@
++/* SPDX-License-Identifier: GPL-2.0+ WITH Linux-syscall-note */
++#ifndef _UAPIUUACCE_H
++#define _UAPIUUACCE_H
++
++#include <linux/types.h>
++#include <linux/ioctl.h>
++
++/*
++ * UACCE_CMD_START_Q: Start queue
++ */
++#define UACCE_CMD_START_Q	_IO('W', 0)
++
++/*
++ * UACCE_CMD_PUT_Q:
++ * User actively stop queue and free queue resource immediately
++ * Optimization method since close fd may delay
++ */
++#define UACCE_CMD_PUT_Q		_IO('W', 1)
++
++/*
++ * UACCE Device flags:
++ * UACCE_DEV_SVA: Shared Virtual Addresses
++ *		  Support PASID
++ *		  Support device page faults (PCI PRI or SMMU Stall)
++ */
++#define UACCE_DEV_SVA		BIT(0)
++
++/**
++ * enum uacce_qfrt: queue file region type
++ * @UACCE_QFRT_MMIO: device mmio region
++ * @UACCE_QFRT_DUS: device user share region
++ */
++enum uacce_qfrt {
++	UACCE_QFRT_MMIO = 0,
++	UACCE_QFRT_DUS = 1,
++};
++
++#endif
 -- 
 2.7.4
 
