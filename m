@@ -7,83 +7,82 @@ X-Spam-Status: No, score=-9.5 required=3.0 tests=DKIM_INVALID,DKIM_SIGNED,
 	SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED,USER_AGENT_GIT autolearn=ham
 	autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 789CCC432C3
-	for <iommu@archiver.kernel.org>; Fri, 22 Nov 2019 23:32:09 +0000 (UTC)
-Received: from hemlock.osuosl.org (smtp2.osuosl.org [140.211.166.133])
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 59531C43215
+	for <iommu@archiver.kernel.org>; Fri, 22 Nov 2019 23:32:12 +0000 (UTC)
+Received: from silver.osuosl.org (smtp3.osuosl.org [140.211.166.136])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by mail.kernel.org (Postfix) with ESMTPS id 4C12B20714
-	for <iommu@archiver.kernel.org>; Fri, 22 Nov 2019 23:32:09 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTPS id 2B05F2071F
+	for <iommu@archiver.kernel.org>; Fri, 22 Nov 2019 23:32:12 +0000 (UTC)
 Authentication-Results: mail.kernel.org;
-	dkim=fail reason="key not found in DNS" (0-bit key) header.d=codeaurora.org header.i=@codeaurora.org header.b="etHKw3vE";
-	dkim=fail reason="signature verification failed" (1024-bit key) header.d=amazonses.com header.i=@amazonses.com header.b="P0Cz1EPb"
-DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 4C12B20714
+	dkim=fail reason="key not found in DNS" (0-bit key) header.d=codeaurora.org header.i=@codeaurora.org header.b="U8YBVXC9";
+	dkim=fail reason="signature verification failed" (1024-bit key) header.d=amazonses.com header.i=@amazonses.com header.b="PX90zE2J"
+DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 2B05F2071F
 Authentication-Results: mail.kernel.org; dmarc=none (p=none dis=none) header.from=codeaurora.org
 Authentication-Results: mail.kernel.org; spf=pass smtp.mailfrom=iommu-bounces@lists.linux-foundation.org
 Received: from localhost (localhost [127.0.0.1])
-	by hemlock.osuosl.org (Postfix) with ESMTP id 2C7C388D64;
-	Fri, 22 Nov 2019 23:32:09 +0000 (UTC)
-X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from hemlock.osuosl.org ([127.0.0.1])
-	by localhost (.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
-	with ESMTP id 4jfh1HxmxTWm; Fri, 22 Nov 2019 23:32:08 +0000 (UTC)
-Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [140.211.9.56])
-	by hemlock.osuosl.org (Postfix) with ESMTP id B29F8891CA;
-	Fri, 22 Nov 2019 23:32:08 +0000 (UTC)
-Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
-	by lists.linuxfoundation.org (Postfix) with ESMTP id 9ADABC1DD8;
-	Fri, 22 Nov 2019 23:32:08 +0000 (UTC)
-Received: from silver.osuosl.org (smtp3.osuosl.org [140.211.166.136])
- by lists.linuxfoundation.org (Postfix) with ESMTP id 362B6C18DA
- for <iommu@lists.linux-foundation.org>; Fri, 22 Nov 2019 23:32:07 +0000 (UTC)
-Received: from localhost (localhost [127.0.0.1])
- by silver.osuosl.org (Postfix) with ESMTP id 22B9B20420
- for <iommu@lists.linux-foundation.org>; Fri, 22 Nov 2019 23:32:07 +0000 (UTC)
+	by silver.osuosl.org (Postfix) with ESMTP id 09752203FF;
+	Fri, 22 Nov 2019 23:32:12 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
 Received: from silver.osuosl.org ([127.0.0.1])
+	by localhost (.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
+	with ESMTP id t-Kkyb1KAfqZ; Fri, 22 Nov 2019 23:32:10 +0000 (UTC)
+Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [140.211.9.56])
+	by silver.osuosl.org (Postfix) with ESMTP id E566B203DA;
+	Fri, 22 Nov 2019 23:32:10 +0000 (UTC)
+Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
+	by lists.linuxfoundation.org (Postfix) with ESMTP id DB19CC1DD8;
+	Fri, 22 Nov 2019 23:32:10 +0000 (UTC)
+Received: from fraxinus.osuosl.org (smtp4.osuosl.org [140.211.166.137])
+ by lists.linuxfoundation.org (Postfix) with ESMTP id 0F64BC18DA
+ for <iommu@lists.linux-foundation.org>; Fri, 22 Nov 2019 23:32:08 +0000 (UTC)
+Received: from localhost (localhost [127.0.0.1])
+ by fraxinus.osuosl.org (Postfix) with ESMTP id EE4BB87589
+ for <iommu@lists.linux-foundation.org>; Fri, 22 Nov 2019 23:32:07 +0000 (UTC)
+X-Virus-Scanned: amavisd-new at osuosl.org
+Received: from fraxinus.osuosl.org ([127.0.0.1])
  by localhost (.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
- with ESMTP id NSD18xZZVsFM for <iommu@lists.linux-foundation.org>;
- Fri, 22 Nov 2019 23:32:06 +0000 (UTC)
+ with ESMTP id pLTsvJ1IVIcD for <iommu@lists.linux-foundation.org>;
+ Fri, 22 Nov 2019 23:32:07 +0000 (UTC)
 X-Greylist: domain auto-whitelisted by SQLgrey-1.7.6
-Received: from a27-186.smtp-out.us-west-2.amazonses.com
- (a27-186.smtp-out.us-west-2.amazonses.com [54.240.27.186])
- by silver.osuosl.org (Postfix) with ESMTPS id 90EDA203DA
- for <iommu@lists.linux-foundation.org>; Fri, 22 Nov 2019 23:32:06 +0000 (UTC)
+Received: from a27-21.smtp-out.us-west-2.amazonses.com
+ (a27-21.smtp-out.us-west-2.amazonses.com [54.240.27.21])
+ by fraxinus.osuosl.org (Postfix) with ESMTPS id 5346387400
+ for <iommu@lists.linux-foundation.org>; Fri, 22 Nov 2019 23:32:07 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/simple;
  s=zsmsymrwgfyinv5wlfyidntwsjeeldzt; d=codeaurora.org; t=1574465526;
  h=From:To:Cc:Subject:Date:Message-Id:In-Reply-To:References;
- bh=IT10Q4XCr31Jq/WEe8X5Birx5D7BngHgTwImSyhbjdU=;
- b=etHKw3vEqufzpS0QNMYJCyELCAbBdCTWi5JrbYvdgF0pZEUp8kONUKYXc6my7Dcp
- YC3+n2RRJlt66wUH3PBu+k0M8SEbYlZE4R9pIdcHyIF8y84ci+CprhqqfGKv7J+DnVm
- leJFUAAx7H8CnwrPJ8VsX8kLx9xzdsd5fXx6zhoo=
+ bh=81ys/5oVCzoSQIqDE8l251BF02aMdA0az+eobjsIwPs=;
+ b=U8YBVXC9EqLB3EOmaPinG7sOCnfyfxnvQGHSSqH0HFqp1HIOMASXGfop7GauquGJ
+ CM7RbR/6XDcunEJaDG8Go4SKoiDelPngv82eN+Spl8eym8kfjojjWdlRQo/J/XNSr/3
+ NYGxGVaE1GZPEUnHZzm9njylQJB4KS/kioLok4YA=
 DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/simple;
  s=gdwg2y3kokkkj5a55z2ilkup5wp5hhxx; d=amazonses.com; t=1574465526;
  h=From:To:Cc:Subject:Date:Message-Id:In-Reply-To:References:Feedback-ID;
- bh=IT10Q4XCr31Jq/WEe8X5Birx5D7BngHgTwImSyhbjdU=;
- b=P0Cz1EPb1OmOJVIWFdOTCYaDSWeocQeQUBr+oA+3wu1s5snwieucNYAr0wTgko47
- sndy5oxiHNe19wjbzEKJYih9uDHEDQFvdYD/SAg5XKGcxkH+N2ER7a8ms8NLK3poa+7
- kd0jyajHHI5T7l/tLQfWOdBZx03tO5/fbluPZVKM=
-DMARC-Filter: OpenDMARC Filter v1.3.2 smtp.codeaurora.org 365FCC48B0E
+ bh=81ys/5oVCzoSQIqDE8l251BF02aMdA0az+eobjsIwPs=;
+ b=PX90zE2J+F8QhnhQyTG4ecN3OuB4OtXJFMlAD7tgmhgqHLpuwvLTZiJwsVpY0X1D
+ taBDlKIFzEL8ck4EcUM8yXXzTX2yybN9PSc0xDXlsb9Y5ao+hpdqIjEo4JOhC/uK5v1
+ txBPuxO84ccJyo0G5FAfTMandIyowtUuJxcEUpxM=
+DMARC-Filter: OpenDMARC Filter v1.3.2 smtp.codeaurora.org A71CEC76F67
 Authentication-Results: aws-us-west-2-caf-mail-1.web.codeaurora.org;
  dmarc=none (p=none dis=none) header.from=codeaurora.org
 Authentication-Results: aws-us-west-2-caf-mail-1.web.codeaurora.org;
  spf=none smtp.mailfrom=jcrouse@codeaurora.org
 From: Jordan Crouse <jcrouse@codeaurora.org>
 To: iommu@lists.linux-foundation.org
-Subject: [PATCH v2 8/8] arm64: dts: qcom: sdm845: Update Adreno GPU SMMU
- compatible string
+Subject: [PATCH v2 7/8] drm/msm/a6xx: Support split pagetables
 Date: Fri, 22 Nov 2019 23:32:06 +0000
-Message-ID: <0101016e957559fa-548de4d5-e5e8-494f-ba5c-284e17b7d1d4-000000@us-west-2.amazonses.com>
+Message-ID: <0101016e95755b5e-0f074aaa-59a7-4149-882a-707cd0157fdc-000000@us-west-2.amazonses.com>
 X-Mailer: git-send-email 2.7.4
 In-Reply-To: <1574465484-7115-1-git-send-email-jcrouse@codeaurora.org>
 References: <1574465484-7115-1-git-send-email-jcrouse@codeaurora.org>
-X-SES-Outgoing: 2019.11.22-54.240.27.186
+X-SES-Outgoing: 2019.11.22-54.240.27.21
 Feedback-ID: 1.us-west-2.CZuq2qbDmUIuT3qdvXlRHZZCpfZqZ4GtG9v3VKgRyF0=:AmazonSES
-Cc: Mark Rutland <mark.rutland@arm.com>, devicetree@vger.kernel.org,
- robin.murphy@arm.com, linux-kernel@vger.kernel.org,
- Rob Herring <robh+dt@kernel.org>, Bjorn Andersson <bjorn.andersson@linaro.org>,
- Andy Gross <agross@kernel.org>, linux-arm-msm@vger.kernel.org, will@kernel.org,
- linux-arm-kernel@lists.infradead.org
+Cc: freedreno@lists.freedesktop.org, David Airlie <airlied@linux.ie>,
+ will@kernel.org, robin.murphy@arm.com, dri-devel@lists.freedesktop.org,
+ linux-kernel@vger.kernel.org, Mamta Shukla <mamtashukla555@gmail.com>,
+ Daniel Vetter <daniel@ffwll.ch>, linux-arm-msm@vger.kernel.org,
+ Sean Paul <sean@poorly.run>, linux-arm-kernel@lists.infradead.org
 X-BeenThere: iommu@lists.linux-foundation.org
 X-Mailman-Version: 2.1.15
 Precedence: list
@@ -102,28 +101,82 @@ Content-Transfer-Encoding: 7bit
 Errors-To: iommu-bounces@lists.linux-foundation.org
 Sender: "iommu" <iommu-bounces@lists.linux-foundation.org>
 
-Add "qcom,adreno-smmu-v2" compatible string for the Adreno GPU SMMU node
-to enable split pagetable support.
+Attempt to enable split pagetables if the arm-smmu driver supports it.
+This will move the default address space from the default region to
+the address range assigned to TTBR1. The behavior should be transparent
+to the driver for now but it gets the default buffers out of the way
+when we want to start swapping TTBR0 for context-specific pagetables.
 
 Signed-off-by: Jordan Crouse <jcrouse@codeaurora.org>
 ---
 
- arch/arm64/boot/dts/qcom/sdm845.dtsi | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+ drivers/gpu/drm/msm/adreno/a6xx_gpu.c | 46 ++++++++++++++++++++++++++++++++++-
+ 1 file changed, 45 insertions(+), 1 deletion(-)
 
-diff --git a/arch/arm64/boot/dts/qcom/sdm845.dtsi b/arch/arm64/boot/dts/qcom/sdm845.dtsi
-index ddb1f23..d90ba6eda 100644
---- a/arch/arm64/boot/dts/qcom/sdm845.dtsi
-+++ b/arch/arm64/boot/dts/qcom/sdm845.dtsi
-@@ -2869,7 +2869,7 @@
- 		};
+diff --git a/drivers/gpu/drm/msm/adreno/a6xx_gpu.c b/drivers/gpu/drm/msm/adreno/a6xx_gpu.c
+index 5dc0b2c..96b3b28 100644
+--- a/drivers/gpu/drm/msm/adreno/a6xx_gpu.c
++++ b/drivers/gpu/drm/msm/adreno/a6xx_gpu.c
+@@ -811,6 +811,50 @@ static unsigned long a6xx_gpu_busy(struct msm_gpu *gpu)
+ 	return (unsigned long)busy_time;
+ }
  
- 		adreno_smmu: iommu@5040000 {
--			compatible = "qcom,sdm845-smmu-v2", "qcom,smmu-v2";
-+			compatible = "qcom,adreno-smmu-v2", "qcom,smmu-v2";
- 			reg = <0 0x5040000 0 0x10000>;
- 			#iommu-cells = <1>;
- 			#global-interrupts = <2>;
++static struct msm_gem_address_space *
++a6xx_create_address_space(struct msm_gpu *gpu, struct platform_device *pdev)
++{
++	struct iommu_domain *iommu = iommu_domain_alloc(&platform_bus_type);
++	struct msm_gem_address_space *aspace;
++	struct msm_mmu *mmu;
++	u64 start, size;
++	u32 val = 1;
++	int ret;
++
++	if (!iommu)
++		return ERR_PTR(-ENOMEM);
++
++	/* Try to request split pagetables */
++	iommu_domain_set_attr(iommu, DOMAIN_ATTR_SPLIT_TABLES, &val);
++
++	mmu = msm_iommu_new(&pdev->dev, iommu);
++	if (IS_ERR(mmu)) {
++		iommu_domain_free(iommu);
++		return ERR_CAST(mmu);
++	}
++
++	/* Check to see if split pagetables were successful */
++	ret = iommu_domain_get_attr(iommu, DOMAIN_ATTR_SPLIT_TABLES, &val);
++	if (!ret && val) {
++		/*
++		 * The aperture start will be at the beginning of the TTBR1
++		 * space so use that as a base
++		 */
++		start = iommu->geometry.aperture_start;
++		size = 0xffffffff;
++	} else {
++		/* Otherwise use the legacy 32 bit region */
++		start = SZ_16M;
++		size = 0xffffffff - SZ_16M;
++	}
++
++	aspace = msm_gem_address_space_create(mmu, "gpu", start, size);
++	if (IS_ERR(aspace))
++		iommu_domain_free(iommu);
++
++	return aspace;
++}
++
+ static const struct adreno_gpu_funcs funcs = {
+ 	.base = {
+ 		.get_param = adreno_get_param,
+@@ -832,7 +876,7 @@ static const struct adreno_gpu_funcs funcs = {
+ #if defined(CONFIG_DRM_MSM_GPU_STATE)
+ 		.gpu_state_get = a6xx_gpu_state_get,
+ 		.gpu_state_put = a6xx_gpu_state_put,
+-		.create_address_space = adreno_iommu_create_address_space,
++		.create_address_space = a6xx_create_address_space,
+ #endif
+ 	},
+ 	.get_timestamp = a6xx_get_timestamp,
 -- 
 2.7.4
 
