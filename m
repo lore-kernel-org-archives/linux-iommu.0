@@ -2,94 +2,99 @@ Return-Path: <SRS0=Z7Xn=ZO=lists.linux-foundation.org=iommu-bounces@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-2.0 required=3.0 tests=DKIM_INVALID,DKIM_SIGNED,
-	HEADER_FROM_DIFFERENT_DOMAINS,MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS,
-	URIBL_BLOCKED,USER_AGENT_SANE_2 autolearn=no autolearn_force=no version=3.4.0
+X-Spam-Status: No, score=-8.5 required=3.0 tests=DKIM_INVALID,DKIM_SIGNED,
+	HEADER_FROM_DIFFERENT_DOMAINS,MAILING_LIST_MULTI,MENTIONS_GIT_HOSTING,
+	SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED,USER_AGENT_GIT autolearn=unavailable
+	autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 60616C432C0
-	for <iommu@archiver.kernel.org>; Fri, 22 Nov 2019 15:06:26 +0000 (UTC)
-Received: from hemlock.osuosl.org (smtp2.osuosl.org [140.211.166.133])
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 42B70C432C0
+	for <iommu@archiver.kernel.org>; Fri, 22 Nov 2019 15:15:11 +0000 (UTC)
+Received: from fraxinus.osuosl.org (smtp4.osuosl.org [140.211.166.137])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by mail.kernel.org (Postfix) with ESMTPS id 2B1B82071C
-	for <iommu@archiver.kernel.org>; Fri, 22 Nov 2019 15:06:26 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTPS id 0343B2071B
+	for <iommu@archiver.kernel.org>; Fri, 22 Nov 2019 15:15:10 +0000 (UTC)
 Authentication-Results: mail.kernel.org;
-	dkim=fail reason="signature verification failed" (2048-bit key) header.d=lca.pw header.i=@lca.pw header.b="oKs4Z5Sl"
-DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 2B1B82071C
-Authentication-Results: mail.kernel.org; dmarc=none (p=none dis=none) header.from=lca.pw
+	dkim=fail reason="signature verification failed" (2048-bit key) header.d=linaro.org header.i=@linaro.org header.b="VVOTNfON"
+DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 0343B2071B
+Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=linaro.org
 Authentication-Results: mail.kernel.org; spf=pass smtp.mailfrom=iommu-bounces@lists.linux-foundation.org
 Received: from localhost (localhost [127.0.0.1])
-	by hemlock.osuosl.org (Postfix) with ESMTP id EC6C4873B6;
-	Fri, 22 Nov 2019 15:06:25 +0000 (UTC)
+	by fraxinus.osuosl.org (Postfix) with ESMTP id BDFA5873E5;
+	Fri, 22 Nov 2019 15:15:10 +0000 (UTC)
+X-Virus-Scanned: amavisd-new at osuosl.org
+Received: from fraxinus.osuosl.org ([127.0.0.1])
+	by localhost (.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
+	with ESMTP id H90j3EvY_bbe; Fri, 22 Nov 2019 15:15:09 +0000 (UTC)
+Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [140.211.9.56])
+	by fraxinus.osuosl.org (Postfix) with ESMTP id B502D873E4;
+	Fri, 22 Nov 2019 15:15:09 +0000 (UTC)
+Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
+	by lists.linuxfoundation.org (Postfix) with ESMTP id AA423C1D74;
+	Fri, 22 Nov 2019 15:15:09 +0000 (UTC)
+Received: from hemlock.osuosl.org (smtp2.osuosl.org [140.211.166.133])
+ by lists.linuxfoundation.org (Postfix) with ESMTP id 0C499C18DA
+ for <iommu@lists.linux-foundation.org>; Fri, 22 Nov 2019 15:15:09 +0000 (UTC)
+Received: from localhost (localhost [127.0.0.1])
+ by hemlock.osuosl.org (Postfix) with ESMTP id EEA2788C7B
+ for <iommu@lists.linux-foundation.org>; Fri, 22 Nov 2019 15:15:08 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
 Received: from hemlock.osuosl.org ([127.0.0.1])
-	by localhost (.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
-	with ESMTP id vmD+r69FNnoK; Fri, 22 Nov 2019 15:06:25 +0000 (UTC)
-Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [140.211.9.56])
-	by hemlock.osuosl.org (Postfix) with ESMTP id 0169585BB1;
-	Fri, 22 Nov 2019 15:06:24 +0000 (UTC)
-Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
-	by lists.linuxfoundation.org (Postfix) with ESMTP id D30C4C1DD8;
-	Fri, 22 Nov 2019 15:06:24 +0000 (UTC)
-Received: from whitealder.osuosl.org (smtp1.osuosl.org [140.211.166.138])
- by lists.linuxfoundation.org (Postfix) with ESMTP id C6743C18DA
- for <iommu@lists.linux-foundation.org>; Fri, 22 Nov 2019 15:06:23 +0000 (UTC)
-Received: from localhost (localhost [127.0.0.1])
- by whitealder.osuosl.org (Postfix) with ESMTP id C16BA88293
- for <iommu@lists.linux-foundation.org>; Fri, 22 Nov 2019 15:06:23 +0000 (UTC)
-X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from whitealder.osuosl.org ([127.0.0.1])
  by localhost (.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
- with ESMTP id sf2wbXB42P4X for <iommu@lists.linux-foundation.org>;
- Fri, 22 Nov 2019 15:06:22 +0000 (UTC)
-X-Greylist: from auto-whitelisted by SQLgrey-1.7.6
-Received: from mail-qt1-f194.google.com (mail-qt1-f194.google.com
- [209.85.160.194])
- by whitealder.osuosl.org (Postfix) with ESMTPS id 8916088270
- for <iommu@lists.linux-foundation.org>; Fri, 22 Nov 2019 15:06:22 +0000 (UTC)
-Received: by mail-qt1-f194.google.com with SMTP id g24so1306026qtq.11
- for <iommu@lists.linux-foundation.org>; Fri, 22 Nov 2019 07:06:22 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=lca.pw; s=google;
- h=message-id:subject:from:to:cc:date:mime-version
- :content-transfer-encoding;
- bh=OmzPhk5Yyy7WolfhIXiZJLsVO7n+CH8VihE0LLeqRTQ=;
- b=oKs4Z5SlBXUmL/uMk286NbOKufC/Y+aGw0d7HrAQcGeV7i2dRuJOnB/N1ZgTFFBzOt
- ZoU+iNhGTnAut3ksC6+0vuAufn12yeMmU97A4WlUCACClJ97evqlF4K42VkwF2ibDd5g
- d2RS2uwVSZbaZ2nK44z9kaZG/SGD5fnfE1xJJPa8WLx4HFwaHrDNdcso+t+Y1FYc56rM
- xpNyO7j7G6M7iJs3nPzpM2clszt8Cd4Y7QS7TefUWWBtuEbRzRe6RHyeQeOCggERp4VS
- /d24jTqh5u7WctddAs1x2FtZz1U/ssXdMOVUatStlRjx8yBq4xuUALt9fd/ar4Xj0w/J
- YI0Q==
+ with ESMTP id Jtjl-fe4tJTs for <iommu@lists.linux-foundation.org>;
+ Fri, 22 Nov 2019 15:15:07 +0000 (UTC)
+X-Greylist: delayed 00:05:13 by SQLgrey-1.7.6
+Received: from mail-pf1-f193.google.com (mail-pf1-f193.google.com
+ [209.85.210.193])
+ by hemlock.osuosl.org (Postfix) with ESMTPS id B5B7988C7E
+ for <iommu@lists.linux-foundation.org>; Fri, 22 Nov 2019 15:15:07 +0000 (UTC)
+Received: by mail-pf1-f193.google.com with SMTP id z4so3607339pfn.12
+ for <iommu@lists.linux-foundation.org>; Fri, 22 Nov 2019 07:15:07 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linaro.org; s=google;
+ h=from:to:cc:subject:date:message-id;
+ bh=oUN3iQCUGPzQjEmQvyvcyo6uCS4nILEZENAGQ+GO5zI=;
+ b=VVOTNfONORYl5eucCir8fZ+O5joXPQj/Eqt1Z0N42/hfKF955UelzQXOgru3Y0c8uO
+ RLGm4JaapXj2RZ1dQ7iovqGjfOxoAC50ayBJw7M9u8ghZB/IrcwxFWzC3ijJC5LWiwy3
+ HA2J+5IKF9ogpdxZSFlc9EQB7fmRMO9CoT0nf0Xwa0YqOQsr7KBYpiZ5foED5QH75cmp
+ qgAJ1kp7QvFqm8Ai4uab8weSRl0Dxr4vLeXHCfgej2VX2uf/thFszd4w5iryui2UsQDT
+ OxH3d27nDqXaOrKNI5HPXM0ZMZVcfC66oedFvWY9D1DQPwPIdgfi4bAKH/9yAkTte59F
+ q9dA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
  d=1e100.net; s=20161025;
- h=x-gm-message-state:message-id:subject:from:to:cc:date:mime-version
- :content-transfer-encoding;
- bh=OmzPhk5Yyy7WolfhIXiZJLsVO7n+CH8VihE0LLeqRTQ=;
- b=CXiAXCOPFGVPQFgRaTnzbkDluvmrTdyU7PNR4yXTv5nvKUv0YhVpaM7w2LKGFA3Lp4
- f8PNRrXPY1T5pMoemXvl8VXRmGHQiIHOc9WZGJP8Rso5pdFBxaLUKHUNxDq07irFqD12
- M32J8bBWn+kQzTpzSaMsYMRe33V2cFJxyhbtjK1VicOcdSsUiygJCBnaTEsVURoT75sB
- TO9qEMSsu1X14PmK04NFYE92xfOliMOK5v0oYfORnyeeKdU0Z+q/kaaTbdL3pKBqXCQc
- jv2tLCZN5ArrQ0IycyomIQG+SxsB0XfdL1ms+PmFBq16+0WUlypOIYwixpzsC7MtV4oU
- XJQA==
-X-Gm-Message-State: APjAAAXN4RIQeF3ZU7KfaLszf7x/FGgrGhn8m/W+vor1h2lWmcBan8yO
- JE5/cJazL+TO1exlKyZH3RxdBw==
-X-Google-Smtp-Source: APXvYqzCevE0A/1bfl+JMaiiwfk+z2ye83k9BU4q7Y44lJg6cBIrsRO/uTBPuppULvSxOYhk8bpSqQ==
-X-Received: by 2002:ac8:7a83:: with SMTP id x3mr3837022qtr.141.1574435181217; 
- Fri, 22 Nov 2019 07:06:21 -0800 (PST)
-Received: from dhcp-41-57.bos.redhat.com (nat-pool-bos-t.redhat.com.
- [66.187.233.206])
- by smtp.gmail.com with ESMTPSA id h186sm3105239qkf.64.2019.11.22.07.06.20
- (version=TLS1_2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128/128);
- Fri, 22 Nov 2019 07:06:20 -0800 (PST)
-Message-ID: <1574435179.9585.21.camel@lca.pw>
-Subject: "Revisit iommu_insert_resv_region() implementation" causes
- use-after-free
-From: Qian Cai <cai@lca.pw>
-To: Joerg Roedel <jroedel@suse.de>, Eric Auger <eric.auger@redhat.com>
-Date: Fri, 22 Nov 2019 10:06:19 -0500
-X-Mailer: Evolution 3.22.6 (3.22.6-10.el7) 
-Mime-Version: 1.0
-Cc: iommu@lists.linux-foundation.org, Christoph Hellwig <hch@lst.de>,
- linux-kernel@vger.kernel.org
+ h=x-gm-message-state:from:to:cc:subject:date:message-id;
+ bh=oUN3iQCUGPzQjEmQvyvcyo6uCS4nILEZENAGQ+GO5zI=;
+ b=Ww/LzGvHY7ezaVjboq7z16OqYFv2AtN5bSoouKO0lL/j6syWXfTaLakOHUi/p6Cr+5
+ CUbK/3G+0VF0dz19/zdEb/48iFvx8Qolj2MILtSYUlkxSxJr3DG1jlAt3m0W6U7RtRyr
+ CL1N7+umWHjwI9yzT98NKMLWCg+/6XOQE6egAY/WDUdVbXVr9FHB4TTFpIcCNIHOYqPW
+ YLka1KO25KxNnDLAO74OtbPRhIoM+JE+LUMz+I/BTE975SYtOXTChXrKDC8De7qBM6Gy
+ LS8MDn294JLMlgxsGq6HxlZ0MSBCQYwHEC5w3M12Cus1/1i9/FeFuiN6pkKrnP5Bnkw0
+ Oaew==
+X-Gm-Message-State: APjAAAWwk3Qz71unqMHZ9wowlaiGcYP6cl+J71bIta9diQlEdgWujHI3
+ C0hc7y9CcyD7i7+of5v+WOAGFg==
+X-Google-Smtp-Source: APXvYqwHgWcw8JYKN29pB6wUmTjNVMp/ENGuUGfEPLaSpwqxSVa1xdW23XdiFMFXVE2oDQJkPe20Vg==
+X-Received: by 2002:aa7:9a86:: with SMTP id w6mr17940610pfi.169.1574435301951; 
+ Fri, 22 Nov 2019 07:08:21 -0800 (PST)
+Received: from localhost.localdomain ([240e:362:496:8600:f5af:2744:25c3:d01a])
+ by smtp.gmail.com with ESMTPSA id
+ a19sm8066021pfn.144.2019.11.22.07.08.03
+ (version=TLS1_2 cipher=ECDHE-RSA-AES128-SHA bits=128/128);
+ Fri, 22 Nov 2019 07:08:20 -0800 (PST)
+From: Zhangfei Gao <zhangfei.gao@linaro.org>
+To: Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+ Arnd Bergmann <arnd@arndb.de>, Herbert Xu <herbert@gondor.apana.org.au>,
+ jonathan.cameron@huawei.com, grant.likely@arm.com,
+ jean-philippe <jean-philippe@linaro.org>,
+ Jerome Glisse <jglisse@redhat.com>, ilias.apalodimas@linaro.org,
+ francois.ozog@linaro.org, kenneth-lee-2012@foxmail.com,
+ Wangzhou <wangzhou1@hisilicon.com>,
+ "haojian . zhuang" <haojian.zhuang@linaro.org>, guodong.xu@linaro.org
+Subject: [PATCH v9 0/4] Add uacce module for Accelerator
+Date: Fri, 22 Nov 2019 23:07:37 +0800
+Message-Id: <1574435261-6031-1-git-send-email-zhangfei.gao@linaro.org>
+X-Mailer: git-send-email 2.7.4
+Cc: Zhangfei Gao <zhangfei.gao@linaro.org>, iommu@lists.linux-foundation.org,
+ linux-kernel@vger.kernel.org, linux-accelerators@lists.ozlabs.org,
+ linux-crypto@vger.kernel.org
 X-BeenThere: iommu@lists.linux-foundation.org
 X-Mailman-Version: 2.1.15
 Precedence: list
@@ -102,180 +107,258 @@ List-Post: <mailto:iommu@lists.linux-foundation.org>
 List-Help: <mailto:iommu-request@lists.linux-foundation.org?subject=help>
 List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
  <mailto:iommu-request@lists.linux-foundation.org?subject=subscribe>
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: base64
+MIME-Version: 1.0
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: 7bit
 Errors-To: iommu-bounces@lists.linux-foundation.org
 Sender: "iommu" <iommu-bounces@lists.linux-foundation.org>
 
-UmVhZCBmaWxlcyB1bmRlciAvc3lzL2tlcm5lbC9pb21tdV9ncm91cHMvIHRyaWdnZXJzIGFuIHVz
-ZS1hZnRlci1mcmVlLiBSZXZlcnRlZAp0aGUgY29tbWl0IDRkYmQyNThmZjYzZSAoImlvbW11OiBS
-ZXZpc2l0IGlvbW11X2luc2VydF9yZXN2X3JlZ2lvbigpCmltcGxlbWVudGF0aW9uIikgZml4ZWQg
-dGhlIGlzc3VlLgoKLyogbm8gbWVyZ2UgbmVlZGVkIG9uIGVsZW1lbnRzIG9mIGRpZmZlcmVudCB0
-eXBlcyB0aGFuIEBuciAqLwppZiAoaXRlci0+dHlwZSAhPSBuci0+dHlwZSkgewoJbGlzdF9tb3Zl
-X3RhaWwoJml0ZXItPmxpc3QsICZzdGFjayk7Cgljb250aW51ZTsKClvCoMKgMTYwLjE1Njk2NF1b
-IFQzMTAwXSBCVUc6IEtBU0FOOiB1c2UtYWZ0ZXItZnJlZSBpbgppb21tdV9pbnNlcnRfcmVzdl9y
-ZWdpb24rMHgzNGIvMHg1MjAKW8KgwqAxNjAuMTk3NzU4XVsgVDMxMDBdIFJlYWQgb2Ygc2l6ZSA0
-IGF0IGFkZHIgZmZmZjg4ODdhYmE3ODQ2NCBieSB0YXNrIGNhdC8zMTAwClvCoMKgMTYwLjIzMDY0
-NV1bIFQzMTAwXcKgClvCoMKgMTYwLjI0MDkwN11bIFQzMTAwXSBDUFU6IDE0IFBJRDogMzEwMCBD
-b21tOiBjYXQgTm90IHRhaW50ZWQgNS40LjAtcmM4LW5leHQtCjIwMTkxMTIyKyAjMTEKW8KgwqAx
-NjAuMjc4NjcxXVsgVDMxMDBdIEhhcmR3YXJlIG5hbWU6IEhQIFByb0xpYW50IFhMNDIwIEdlbjkv
-UHJvTGlhbnQgWEw0MjAKR2VuOSwgQklPUyBVMTkgMTIvMjcvMjAxNQpbwqDCoDE2MC4zMjA1ODld
-WyBUMzEwMF0gQ2FsbCBUcmFjZToKW8KgwqAxNjAuMzM1MjI5XVsgVDMxMDBdwqDCoGR1bXBfc3Rh
-Y2srMHhhMC8weGVhClvCoMKgMTYwLjM1NDAxMV1bIFQzMTAwXcKgwqBwcmludF9hZGRyZXNzX2Rl
-c2NyaXB0aW9uLmNvbnN0cHJvcC41LmNvbGQuNysweDkvMHgzODQKW8KgwqAxNjAuMzg2NTY5XVsg
-VDMxMDBdwqDCoF9fa2FzYW5fcmVwb3J0LmNvbGQuOCsweDdhLzB4YzAKW8KgwqAxNjAuNDA5ODEx
-XVsgVDMxMDBdwqDCoD8gaW9tbXVfaW5zZXJ0X3Jlc3ZfcmVnaW9uKzB4MzRiLzB4NTIwClvCoMKg
-MTYwLjQzNTY2OF1bIFQzMTAwXcKgwqBrYXNhbl9yZXBvcnQrMHgxMi8weDIwClvCoMKgMTYwLjQ1
-NTM4N11bIFQzMTAwXcKgwqBfX2FzYW5fbG9hZDQrMHg5NS8weGEwClvCoMKgMTYwLjQ3NDgwOF1b
-IFQzMTAwXcKgwqBpb21tdV9pbnNlcnRfcmVzdl9yZWdpb24rMHgzNGIvMHg1MjAKW8KgwqAxNjAu
-NTAwMjI4XVsgVDMxMDBdwqDCoD8gaW9tbXVfYnVzX25vdGlmaWVyKzB4ZTAvMHhlMApbwqDCoDE2
-MC41MjI5MDRdWyBUMzEwMF3CoMKgPyBpbnRlbF9pb21tdV9nZXRfcmVzdl9yZWdpb25zKzB4MzQ4
-LzB4NDAwClvCoMKgMTYwLjU1MDQ2MV1bIFQzMTAwXcKgwqBpb21tdV9nZXRfZ3JvdXBfcmVzdl9y
-ZWdpb25zKzB4MTZkLzB4MmYwClvCoMKgMTYwLjU3NzYxMV1bIFQzMTAwXcKgwqA/IGlvbW11X2lu
-c2VydF9yZXN2X3JlZ2lvbisweDUyMC8weDUyMApbwqDCoDE2MC42MDM3NTZdWyBUMzEwMF3CoMKg
-PyByZWdpc3Rlcl9sb2NrX2NsYXNzKzB4OTQwLzB4OTQwClvCoMKgMTYwLjYyODI2NV1bIFQzMTAw
-XcKgwqBpb21tdV9ncm91cF9zaG93X3Jlc3ZfcmVnaW9ucysweDhkLzB4MWYwClvCoMKgMTYwLjY1
-NTM3MF1bIFQzMTAwXcKgwqA/IGlvbW11X2dldF9ncm91cF9yZXN2X3JlZ2lvbnMrMHgyZjAvMHgy
-ZjAKW8KgwqAxNjAuNjg0MTY4XVsgVDMxMDBdwqDCoGlvbW11X2dyb3VwX2F0dHJfc2hvdysweDM0
-LzB4NTAKW8KgwqAxNjAuNzA4Mzk1XVsgVDMxMDBdwqDCoHN5c2ZzX2tmX3NlcV9zaG93KzB4MTFj
-LzB4MjIwClvCoMKgMTYwLjczMTc1OF1bIFQzMTAwXcKgwqA/IGlvbW11X2RlZmF1bHRfcGFzc3Ro
-cm91Z2grMHgyMC8weDIwClvCoMKgMTYwLjc1Njg5OF1bIFQzMTAwXcKgwqBrZXJuZnNfc2VxX3No
-b3crMHhhNC8weGIwClvCoMKgMTYwLjc3NzA5N11bIFQzMTAwXcKgwqBzZXFfcmVhZCsweDI3ZS8w
-eDcxMApbwqDCoDE2MC43OTUxOTVdWyBUMzEwMF3CoMKga2VybmZzX2ZvcF9yZWFkKzB4N2QvMHgy
-YzAKW8KgwqAxNjAuODE1MzQ5XVsgVDMxMDBdwqDCoF9fdmZzX3JlYWQrMHg1MC8weGEwClvCoMKg
-MTYwLjgzNDE1NF1bIFQzMTAwXcKgwqB2ZnNfcmVhZCsweGNiLzB4MWUwClvCoMKgMTYwLjg1MjMz
-Ml1bIFQzMTAwXcKgwqBrc3lzX3JlYWQrMHhjNi8weDE2MApbwqDCoDE2MC44NzEwMjhdWyBUMzEw
-MF3CoMKgPyBrZXJuZWxfd3JpdGUrMHhjMC8weGMwClvCoMKgMTYwLjg5MTMwN11bIFQzMTAwXcKg
-wqA/IGRvX3N5c2NhbGxfNjQrMHg3OS8weGFlYwpbwqDCoDE2MC45MTI0NDZdWyBUMzEwMF3CoMKg
-PyBkb19zeXNjYWxsXzY0KzB4NzkvMHhhZWMKW8KgwqAxNjAuOTMzNjQwXVsgVDMxMDBdwqDCoF9f
-eDY0X3N5c19yZWFkKzB4NDMvMHg1MApbwqDCoDE2MC45NTM5NTddWyBUMzEwMF3CoMKgZG9fc3lz
-Y2FsbF82NCsweGNjLzB4YWVjClvCoMKgMTYwLjk3NDMyMl1bIFQzMTAwXcKgwqA/IHRyYWNlX2hh
-cmRpcnFzX29uX3RodW5rKzB4MWEvMHgxYwpbwqDCoDE2MC45OTkxMzBdWyBUMzEwMF3CoMKgPyBz
-eXNjYWxsX3JldHVybl9zbG93cGF0aCsweDU4MC8weDU4MApbwqDCoDE2MS4wMjQ3NTNdWyBUMzEw
-MF3CoMKgPyBlbnRyeV9TWVNDQUxMXzY0X2FmdGVyX2h3ZnJhbWUrMHgzZS8weGJlClvCoMKgMTYx
-LjA1MjQxNl1bIFQzMTAwXcKgwqA/IHRyYWNlX2hhcmRpcnFzX29mZl9jYWxsZXIrMHgzYS8weDE1
-MApbwqDCoDE2MS4wNzg0MDBdWyBUMzEwMF3CoMKgPyB0cmFjZV9oYXJkaXJxc19vZmZfdGh1bmsr
-MHgxYS8weDFjClvCoMKgMTYxLjEwMzcxMV1bIFQzMTAwXcKgwqBlbnRyeV9TWVNDQUxMXzY0X2Fm
-dGVyX2h3ZnJhbWUrMHg0OS8weGJlClvCoMKgMTYxLjEzMDc5M11bIFQzMTAwXSBSSVA6IDAwMzM6
-MHg3ZjMzZTBkODlkNzUKW8KgwqAxNjEuMTUwNzMyXVsgVDMxMDBdIENvZGU6IGZlIGZmIGZmIDUw
-IDQ4IDhkIDNkIDRhIGRjIDA5IDAwIGU4IDI1IDBlIDAyIDAwIDBmCjFmIDQ0IDAwIDAwIGYzIDBm
-IDFlIGZhIDQ4IDhkIDA1IGE1IDU5IDJkIDAwIDhiIDAwIDg1IGMwIDc1IDBmIDMxIGMwIDBmIDA1
-IDw0OD4KM2QgMDAgZjAgZmYgZmYgNzcgNTMgYzMgNjYgOTAgNDEgNTQgNDkgODkgZDQgNTUgNDgg
-ODkgZjUgNTMgODkKW8KgwqAxNjEuMjQ1NTAzXVsgVDMxMDBdIFJTUDogMDAyYjowMDAwN2ZmZjg4
-ZjBkYjg4IEVGTEFHUzogMDAwMDAyNDYgT1JJR19SQVg6CjAwMDAwMDAwMDAwMDAwMDAKW8KgwqAx
-NjEuMjg0NTQ3XVsgVDMxMDBdIFJBWDogZmZmZmZmZmZmZmZmZmZkYSBSQlg6IDAwMDAwMDAwMDAw
-MjAwMDAgUkNYOgowMDAwN2YzM2UwZDg5ZDc1ClvCoMKgMTYxLjMyMTEyM11bIFQzMTAwXSBSRFg6
-IDAwMDAwMDAwMDAwMjAwMDAgUlNJOiAwMDAwN2YzM2UxMjAxMDAwIFJESToKMDAwMDAwMDAwMDAw
-MDAwMwpbwqDCoDE2MS4zNTc2MTddWyBUMzEwMF0gUkJQOiAwMDAwN2YzM2UxMjAxMDAwIFIwODog
-MDAwMDAwMDBmZmZmZmZmZiBSMDk6CjAwMDAwMDAwMDAwMDAwMDAKW8KgwqAxNjEuMzk0MTczXVsg
-VDMxMDBdIFIxMDogMDAwMDAwMDAwMDAwMDAyMiBSMTE6IDAwMDAwMDAwMDAwMDAyNDYgUjEyOgow
-MDAwN2YzM2UxMjAxMDAwClvCoMKgMTYxLjQzMDczNl1bIFQzMTAwXSBSMTM6IDAwMDAwMDAwMDAw
-MDAwMDMgUjE0OiAwMDAwMDAwMDAwMDAwZmZmIFIxNToKMDAwMDAwMDAwMDAyMDAwMApbwqDCoDE2
-MS40NjczMzddWyBUMzEwMF3CoApbwqDCoDE2MS40Nzc1MjldWyBUMzEwMF0gQWxsb2NhdGVkIGJ5
-IHRhc2sgMzEwMDoKW8KgwqAxNjEuNDk3MTMzXVsgVDMxMDBdwqDCoHNhdmVfc3RhY2srMHgyMS8w
-eDkwClvCoMKgMTYxLjUxNTc3N11bIFQzMTAwXcKgwqBfX2thc2FuX2ttYWxsb2MuY29uc3Rwcm9w
-LjEzKzB4YzEvMHhkMApbwqDCoDE2MS41NDE3NDNdWyBUMzEwMF3CoMKga2FzYW5fa21hbGxvYysw
-eDkvMHgxMApbwqDCoDE2MS41NjEzMzBdWyBUMzEwMF3CoMKga21lbV9jYWNoZV9hbGxvY190cmFj
-ZSsweDFmOC8weDQ3MApbwqDCoDE2MS41ODU5NDldWyBUMzEwMF3CoMKgaW9tbXVfaW5zZXJ0X3Jl
-c3ZfcmVnaW9uKzB4ZWIvMHg1MjAKW8KgwqAxNjEuNjEwODc2XVsgVDMxMDBdwqDCoGlvbW11X2dl
-dF9ncm91cF9yZXN2X3JlZ2lvbnMrMHgxNmQvMHgyZjAKW8KgwqAxNjEuNjM4MzE4XVsgVDMxMDBd
-wqDCoGlvbW11X2dyb3VwX3Nob3dfcmVzdl9yZWdpb25zKzB4OGQvMHgxZjAKW8KgwqAxNjEuNjY1
-MzIyXVsgVDMxMDBdwqDCoGlvbW11X2dyb3VwX2F0dHJfc2hvdysweDM0LzB4NTAKW8KgwqAxNjEu
-Njg4NTI2XVsgVDMxMDBdwqDCoHN5c2ZzX2tmX3NlcV9zaG93KzB4MTFjLzB4MjIwClvCoMKgMTYx
-LjcxMTk5Ml1bIFQzMTAwXcKgwqBrZXJuZnNfc2VxX3Nob3crMHhhNC8weGIwClvCoMKgMTYxLjcz
-NDI1Ml1bIFQzMTAwXcKgwqBzZXFfcmVhZCsweDI3ZS8weDcxMApbwqDCoDE2MS43NTQ0MTJdWyBU
-MzEwMF3CoMKga2VybmZzX2ZvcF9yZWFkKzB4N2QvMHgyYzAKW8KgwqAxNjEuNzc1NDkzXVsgVDMx
-MDBdwqDCoF9fdmZzX3JlYWQrMHg1MC8weGEwClvCoMKgMTYxLjc5NDMyOF1bIFQzMTAwXcKgwqB2
-ZnNfcmVhZCsweGNiLzB4MWUwClvCoMKgMTYxLjgxMjU1OV1bIFQzMTAwXcKgwqBrc3lzX3JlYWQr
-MHhjNi8weDE2MApbwqDCoDE2MS44MzE1NTRdWyBUMzEwMF3CoMKgX194NjRfc3lzX3JlYWQrMHg0
-My8weDUwClvCoMKgMTYxLjg1MTc3Ml1bIFQzMTAwXcKgwqBkb19zeXNjYWxsXzY0KzB4Y2MvMHhh
-ZWMKW8KgwqAxNjEuODcyMDk4XVsgVDMxMDBdwqDCoGVudHJ5X1NZU0NBTExfNjRfYWZ0ZXJfaHdm
-cmFtZSsweDQ5LzB4YmUKW8KgwqAxNjEuODk4OTE5XVsgVDMxMDBdwqAKW8KgwqAxNjEuOTA5MTEz
-XVsgVDMxMDBdIEZyZWVkIGJ5IHRhc2sgMzEwMDoKW8KgwqAxNjEuOTI3MDcwXVsgVDMxMDBdwqDC
-oHNhdmVfc3RhY2srMHgyMS8weDkwClvCoMKgMTYxLjk0NTcxMV1bIFQzMTAwXcKgwqBfX2thc2Fu
-X3NsYWJfZnJlZSsweDExYy8weDE3MApbwqDCoDE2MS45NjgxMTJdWyBUMzEwMF3CoMKga2FzYW5f
-c2xhYl9mcmVlKzB4ZS8weDEwClvCoMKgMTYxLjk4ODYwMV1bIFQzMTAwXcKgwqBzbGFiX2ZyZWVf
-ZnJlZWxpc3RfaG9vaysweDVmLzB4MWQwClvCoMKgMTYyLjAxMjkxOF1bIFQzMTAwXcKgwqBrZnJl
-ZSsweGU5LzB4NDEwClvCoMKgMTYyLjAyOTQ1NF1bIFQzMTAwXcKgwqBpb21tdV9pbnNlcnRfcmVz
-dl9yZWdpb24rMHg0N2QvMHg1MjAKW8KgwqAxNjIuMDUzNzAxXVsgVDMxMDBdwqDCoGlvbW11X2dl
-dF9ncm91cF9yZXN2X3JlZ2lvbnMrMHgxNmQvMHgyZjAKW8KgwqAxNjIuMDc5NjcxXVsgVDMxMDBd
-wqDCoGlvbW11X2dyb3VwX3Nob3dfcmVzdl9yZWdpb25zKzB4OGQvMHgxZjAKW8KgwqAxNjIuMTA1
-NDg0XVsgVDMxMDBdwqDCoGlvbW11X2dyb3VwX2F0dHJfc2hvdysweDM0LzB4NTAKW8KgwqAxNjIu
-MTI3NzA5XVsgVDMxMDBdwqDCoHN5c2ZzX2tmX3NlcV9zaG93KzB4MTFjLzB4MjIwClvCoMKgMTYy
-LjE0OTI1MF1bIFQzMTAwXcKgwqBrZXJuZnNfc2VxX3Nob3crMHhhNC8weGIwClvCoMKgMTYyLjE2
-OTA4NV1bIFQzMTAwXcKgwqBzZXFfcmVhZCsweDI3ZS8weDcxMApbwqDCoDE2Mi4xODcwMzhdWyBU
-MzEwMF3CoMKga2VybmZzX2ZvcF9yZWFkKzB4N2QvMHgyYzAKW8KgwqAxNjIuMjA3MzkxXVsgVDMx
-MDBdwqDCoF9fdmZzX3JlYWQrMHg1MC8weGEwClvCoMKgMTYyLjIyNzgyOV1bIFQzMTAwXcKgwqB2
-ZnNfcmVhZCsweGNiLzB4MWUwClvCoMKgMTYyLjI0Nzc4OF1bIFQzMTAwXcKgwqBrc3lzX3JlYWQr
-MHhjNi8weDE2MApbwqDCoDE2Mi4yNjU0NzFdWyBUMzEwMF3CoMKgX194NjRfc3lzX3JlYWQrMHg0
-My8weDUwClvCoMKgMTYyLjI4NTA0MV1bIFQzMTAwXcKgwqBkb19zeXNjYWxsXzY0KzB4Y2MvMHhh
-ZWMKW8KgwqAxNjIuMzA0NjI3XVsgVDMxMDBdwqDCoGVudHJ5X1NZU0NBTExfNjRfYWZ0ZXJfaHdm
-cmFtZSsweDQ5LzB4YmUKW8KgwqAxNjIuMzMwNDI5XVsgVDMxMDBdwqAKW8KgwqAxNjIuMzQwMTk5
-XVsgVDMxMDBdIFRoZSBidWdneSBhZGRyZXNzIGJlbG9uZ3MgdG8gdGhlIG9iamVjdCBhdApmZmZm
-ODg4N2FiYTc4NDQwClvCoMKgMTYyLjM0MDE5OV1bIFQzMTAwXcKgwqB3aGljaCBiZWxvbmdzIHRv
-IHRoZSBjYWNoZSBrbWFsbG9jLTY0IG9mIHNpemUgNjQKW8KgwqAxNjIuNDAyMDUwXVsgVDMxMDBd
-IFRoZSBidWdneSBhZGRyZXNzIGlzIGxvY2F0ZWQgMzYgYnl0ZXMgaW5zaWRlIG9mClvCoMKgMTYy
-LjQwMjA1MF1bIFQzMTAwXcKgwqA2NC1ieXRlIHJlZ2lvbiBbZmZmZjg4ODdhYmE3ODQ0MCwgZmZm
-Zjg4ODdhYmE3ODQ4MCkKW8KgwqAxNjIuNDYwMTI3XVsgVDMxMDBdIFRoZSBidWdneSBhZGRyZXNz
-IGJlbG9uZ3MgdG8gdGhlIHBhZ2U6ClvCoMKgMTYyLjQ4NDY5Nl1bIFQzMTAwXSBwYWdlOmZmZmZl
-YTAwMWVhZTllMDAgcmVmY291bnQ6MSBtYXBjb3VudDowCm1hcHBpbmc6ZmZmZjg4ODIwN2MwMmFj
-MCBpbmRleDoweGZmZmY4ODg3YWJhNzhlNDAKW8KgwqAxNjIuNTMxMDQ1XVsgVDMxMDBdIHJhdzog
-MDE1ZmZmZTAwMDAwMDIwMCBmZmZmODg4NDg3YzAwNzQwIGZmZmY4ODg0ODdjMDA3NDAKZmZmZjg4
-ODIwN2MwMmFjMApbwqDCoDE2Mi41Njk0NTVdWyBUMzEwMF0gcmF3OiBmZmZmODg4N2FiYTc4ZTQw
-IDAwMDAwMDAwMDAwODAwMDMgMDAwMDAwMDFmZmZmZmZmZgowMDAwMDAwMDAwMDAwMDAwClvCoMKg
-MTYyLjYwNzgwMV1bIFQzMTAwXSBwYWdlIGR1bXBlZCBiZWNhdXNlOiBrYXNhbjogYmFkIGFjY2Vz
-cyBkZXRlY3RlZApbwqDCoDE2Mi42MzY2MDNdWyBUMzEwMF0gcGFnZV9vd25lciB0cmFja3MgdGhl
-IHBhZ2UgYXMgYWxsb2NhdGVkClvCoMKgMTYyLjY2MTYzNF1bIFQzMTAwXSBwYWdlIGxhc3QgYWxs
-b2NhdGVkIHZpYSBvcmRlciAwLCBtaWdyYXRldHlwZSBVbm1vdmFibGUsCmdmcF9tYXNrIDB4MTJj
-YzAoR0ZQX0tFUk5FTHxfX0dGUF9OT1dBUk58X19HRlBfTk9SRVRSWSkKW8KgwqAxNjIuNzE2MzEw
-XVsgVDMxMDBdwqDCoHByZXBfbmV3X3BhZ2UrMHgyZWQvMHgzMTAKW8KgwqAxNjIuNzM5MTU4XVsg
-VDMxMDBdwqDCoGdldF9wYWdlX2Zyb21fZnJlZWxpc3QrMHgyMGJiLzB4MzA5MApbwqDCoDE2Mi43
-NjUwMTddWyBUMzEwMF3CoMKgX19hbGxvY19wYWdlc19ub2RlbWFzaysweDJlNC8weDcyMApbwqDC
-oDE2Mi43ODg0NDBdWyBUMzEwMF3CoMKgYWxsb2NfcGFnZXNfY3VycmVudCsweDljLzB4MTEwClvC
-oMKgMTYyLjgxMDMyNF1bIFQzMTAwXcKgwqBhbGxvY19zbGFiX3BhZ2UrMHhjOS8weDRlMApbwqDC
-oDE2Mi44MzEwNDRdWyBUMzEwMF3CoMKgYWxsb2NhdGVfc2xhYisweDcwLzB4NWQwClvCoMKgMTYy
-Ljg1MTQ1MF1bIFQzMTAwXcKgwqBuZXdfc2xhYisweDQ2LzB4NzAKW8KgwqAxNjIuODY5MzI2XVsg
-VDMxMDBdwqDCoF9fX3NsYWJfYWxsb2MrMHg0YWIvMHg3YjAKW8KgwqAxNjIuODg5NTU0XVsgVDMx
-MDBdwqDCoF9fc2xhYl9hbGxvYysweDQzLzB4NzAKW8KgwqAxNjIuOTA4NDMwXVsgVDMxMDBdwqDC
-oGttZW1fY2FjaGVfYWxsb2NfdHJhY2UrMHgyZjEvMHg0NzAKW8KgwqAxNjIuOTMyMDM2XVsgVDMx
-MDBdwqDCoGlvbW11X2luc2VydF9yZXN2X3JlZ2lvbisweGViLzB4NTIwClvCoMKgMTYyLjk1NjE3
-OV1bIFQzMTAwXcKgwqBpb21tdV9nZXRfZ3JvdXBfcmVzdl9yZWdpb25zKzB4MTZkLzB4MmYwClvC
-oMKgMTYyLjk4MjA4M11bIFQzMTAwXcKgwqBpb21tdV9ncm91cF9zaG93X3Jlc3ZfcmVnaW9ucysw
-eDhkLzB4MWYwClvCoMKgMTYzLjAwODM3M11bIFQzMTAwXcKgwqBpb21tdV9ncm91cF9hdHRyX3No
-b3crMHgzNC8weDUwClvCoMKgMTYzLjAzMDU1N11bIFQzMTAwXcKgwqBzeXNmc19rZl9zZXFfc2hv
-dysweDExYy8weDIyMApbwqDCoDE2My4wNTIwMzhdWyBUMzEwMF3CoMKga2VybmZzX3NlcV9zaG93
-KzB4YTQvMHhiMApbwqDCoDE2My4wNzIxNzldWyBUMzEwMF0gcGFnZSBsYXN0IGZyZWUgc3RhY2sg
-dHJhY2U6ClvCoMKgMTYzLjA5MjYxMl1bIFQzMTAwXcKgwqBfX2ZyZWVfcGFnZXNfb2srMHhhM2Uv
-MHhiMjAKW8KgwqAxNjMuMTEzMzYxXVsgVDMxMDBdwqDCoF9fZnJlZV9wYWdlcysweDk0LzB4ZDAK
-W8KgwqAxNjMuMTMyMTk4XVsgVDMxMDBdwqDCoF9fZnJlZV9zbGFiKzB4MTc3LzB4NTIwClvCoMKg
-MTYzLjE1MDkyMl1bIFQzMTAwXcKgwqBkaXNjYXJkX3NsYWIrMHg0MS8weDgwClvCoMKgMTYzLjE2
-OTcwOF1bIFQzMTAwXcKgwqBfX3NsYWJfZnJlZSsweDRiNy8weDUyMApbwqDCoDE2My4xODg4NTZd
-WyBUMzEwMF3CoMKgX19fY2FjaGVfZnJlZSsweGMzLzB4MTIwClvCoMKgMTYzLjIwODQ1Ml1bIFQz
-MTAwXcKgwqBxbGlzdF9mcmVlX2FsbCsweDQ0LzB4YTAKW8KgwqAxNjMuMjI4MzM1XVsgVDMxMDBd
-wqDCoHF1YXJhbnRpbmVfcmVkdWNlKzB4MWIwLzB4MjQwClvCoMKgMTYzLjI1MzEyMF1bIFQzMTAw
-XcKgwqBfX2thc2FuX2ttYWxsb2MuY29uc3Rwcm9wLjEzKzB4OTgvMHhkMApbwqDCoDE2My4yNzk4
-NjVdWyBUMzEwMF3CoMKga2FzYW5fc2xhYl9hbGxvYysweDExLzB4MjAKW8KgwqAxNjMuMzAwMTc1
-XVsgVDMxMDBdwqDCoGttZW1fY2FjaGVfYWxsb2MrMHgxN2EvMHg0NTAKW8KgwqAxNjMuMzIxMzcz
-XVsgVDMxMDBdwqDCoHB0bG9ja19hbGxvYysweDIwLzB4NTAKW8KgwqAxNjMuMzQwMTY4XVsgVDMx
-MDBdwqDCoHB0ZV9hbGxvY19vbmUrMHg0MC8weGYwClvCoMKgMTYzLjM1OTMxMF1bIFQzMTAwXcKg
-wqBfX2hhbmRsZV9tbV9mYXVsdCsweDEyNTcvMHgxMzAwClvCoMKgMTYzLjM4MTYwM11bIFQzMTAw
-XcKgwqBoYW5kbGVfbW1fZmF1bHQrMHgyMDUvMHg0YzAKW8KgwqAxNjMuNDAyMzEyXVsgVDMxMDBd
-wqDCoF9fZG9fcGFnZV9mYXVsdCsweDI5Yy8weDY0MApbwqDCoDE2My40MjMwODJdWyBUMzEwMF3C
-oApbwqDCoDE2My40MzI1NTZdWyBUMzEwMF0gTWVtb3J5IHN0YXRlIGFyb3VuZCB0aGUgYnVnZ3kg
-YWRkcmVzczoKW8KgwqAxNjMuNDU3MjkyXVsgVDMxMDBdwqDCoGZmZmY4ODg3YWJhNzgzMDA6IGZj
-IGZjIGZjIGZjIGZjIGZjIGZjIGZjIGZjIGZjIGZjIGZjIGZjCmZjIGZjIGZjClvCoMKgMTYzLjQ5
-Mjk5NF1bIFQzMTAwXcKgwqBmZmZmODg4N2FiYTc4MzgwOiBmYyBmYyBmYyBmYyBmYyBmYyBmYyBm
-YyBmYyBmYyBmYyBmYyBmYwpmYyBmYyBmYwpbwqDCoDE2My41Mjg1MzBdWyBUMzEwMF0gPmZmZmY4
-ODg3YWJhNzg0MDA6IGZjIGZjIGZjIGZjIGZjIGZjIGZjIGZjIGZiIGZiIGZiIGZiIGZiCmZiIGZi
-IGZiClvCoMKgMTYzLjU2NTAyM11bIFQzMTAwXcKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDC
-oMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKg
-wqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqBeClvCoMKgMTYzLjU5ODAyN11bIFQzMTAwXcKgwqBm
-ZmZmODg4N2FiYTc4NDgwOiBmYyBmYyBmYyBmYyBmYyBmYyBmYyBmYyBmYyBmYyBmYyBmYyBmYwpm
-YyBmYyBmYwpbwqDCoDE2My42MzM3NDddWyBUMzEwMF3CoMKgZmZmZjg4ODdhYmE3ODUwMDogZmMg
-ZmMgZmMgZmMgZmMgZmMgZmMgZmMgZmMgZmMgZmMgZmMgZmMKZmMgZmMgZmMKW8KgwqAxNjMuNjY5
-ODI4XVsgVDMxMDBdCj09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09
-PT09PT09PT09PT09PT09PT09PT09PQpbwqDCoDE2My43MDU0MTddWyBUMzEwMF0gRGlzYWJsaW5n
-IGxvY2sgZGVidWdnaW5nIGR1ZSB0byBrZXJuZWwgdGFpbnQKX19fX19fX19fX19fX19fX19fX19f
-X19fX19fX19fX19fX19fX19fX19fX19fX18KaW9tbXUgbWFpbGluZyBsaXN0CmlvbW11QGxpc3Rz
-LmxpbnV4LWZvdW5kYXRpb24ub3JnCmh0dHBzOi8vbGlzdHMubGludXhmb3VuZGF0aW9uLm9yZy9t
-YWlsbWFuL2xpc3RpbmZvL2lvbW11
+Uacce (Unified/User-space-access-intended Accelerator Framework) targets to
+provide Shared Virtual Addressing (SVA) between accelerators and processes.
+So accelerator can access any data structure of the main cpu.
+This differs from the data sharing between cpu and io device, which share
+data content rather than address.
+Because of unified address, hardware and user space of process can share
+the same virtual address in the communication.
+
+Uacce is intended to be used with Jean Philippe Brucker's SVA
+patchset[1], which enables IO side page fault and PASID support. 
+We have keep verifying with Jean's sva/current [2]
+We also keep verifying with Eric's SMMUv3 Nested Stage patch [3]
+
+This series and related zip & qm driver
+https://github.com/Linaro/linux-kernel-warpdrive/tree/5.4-rc4-uacce-v9
+
+The library and user application:
+https://github.com/Linaro/warpdrive/tree/wdprd-upstream-v9
+
+References:
+[1] http://jpbrucker.net/sva/
+[2] http://www.linux-arm.org/git?p=linux-jpb.git;a=shortlog;h=refs/heads/sva/current
+[3] https://github.com/eauger/linux/tree/v5.3.0-rc0-2stage-v9
+
+Change History:
+v9:
+Suggested by Jonathan
+1. Remove sysfs: numa_distance, node_id, id.
+2. Split the api to solve the potential race
+struct uacce_device *uacce_alloc(struct device *parent,
+				 struct uacce_interface *interface)
+int uacce_register(struct uacce_device *uacce)
+void uacce_remove(struct uacce_device *uacce)
+3. Split clean up patch 03
+
+v8:
+Address some comments from Jonathan
+Merge Jean's patch, using uacce_mm instead of pid for sva_exit
+
+v7:
+As suggested by Jean and Jerome
+Only consider sva case and remove unused dma apis for the first patch.
+Also add mm_exit for sva and vm_ops.close etc
+
+
+v6: https://lkml.org/lkml/2019/10/16/231
+Change sys qfrs_size to different file, suggested by Jonathan
+Fix crypto daily build issue and based on crypto code base, also 5.4-rc1.
+
+v5: https://lkml.org/lkml/2019/10/14/74
+Add an example patch using the uacce interface, suggested by Greg
+0003-crypto-hisilicon-register-zip-engine-to-uacce.patch
+
+v4: https://lkml.org/lkml/2019/9/17/116
+Based on 5.4-rc1
+Considering other driver integrating uacce, 
+if uacce not compiled, uacce_register return error and uacce_unregister is empty.
+Simplify uacce flag: UACCE_DEV_SVA.
+Address Greg's comments: 
+Fix state machine, remove potential syslog triggered from user space etc.
+
+v3: https://lkml.org/lkml/2019/9/2/990
+Recommended by Greg, use sturct uacce_device instead of struct uacce,
+and use struct *cdev in struct uacce_device, as a result, 
+cdev can be released by itself when refcount decreased to 0.
+So the two structures are decoupled and self-maintained by themsleves.
+Also add dev.release for put_device.
+
+v2: https://lkml.org/lkml/2019/8/28/565
+Address comments from Greg and Jonathan
+Modify interface uacce_register
+Drop noiommu mode first
+
+v1: https://lkml.org/lkml/2019/8/14/277
+1. Rebase to 5.3-rc1
+2. Build on iommu interface
+3. Verifying with Jean's sva and Eric's nested mode iommu.
+4. User library has developed a lot: support zlib, openssl etc.
+5. Move to misc first
+
+RFC3:
+https://lkml.org/lkml/2018/11/12/1951
+
+RFC2:
+https://lwn.net/Articles/763990/
+
+
+Background of why Uacce:
+Von Neumann processor is not good at general data manipulation.
+It is designed for control-bound rather than data-bound application.
+The latter need less control path facility and more/specific ALUs.
+So there are more and more heterogeneous processors, such as
+encryption/decryption accelerators, TPUs, or
+EDGE (Explicated Data Graph Execution) processors, introduced to gain
+better performance or power efficiency for particular applications
+these days.
+
+There are generally two ways to make use of these heterogeneous processors:
+
+The first is to make them co-processors, just like FPU.
+This is good for some application but it has its own cons:
+It changes the ISA set permanently.
+You must save all state elements when the process is switched out.
+But most data-bound processors have a huge set of state elements.
+It makes the kernel scheduler more complex.
+
+The second is Accelerator.
+It is taken as a IO device from the CPU's point of view
+(but it need not to be physically). The process, running on CPU,
+hold a context of the accelerator and send instructions to it as if
+it calls a function or thread running with FPU.
+The context is bound with the processor itself.
+So the state elements remain in the hardware context until
+the context is released.
+
+We believe this is the core feature of an "Accelerator" vs. Co-processor
+or other heterogeneous processors.
+
+The intention of Uacce is to provide the basic facility to backup
+this scenario. Its first step is to make sure the accelerator and process
+can share the same address space. So the accelerator ISA can directly
+address any data structure of the main CPU.
+This differs from the data sharing between CPU and IO device,
+which share data content rather than address.
+So it is different comparing to the other DMA libraries.
+
+In the future, we may add more facility to support linking accelerator
+library to the main application, or managing the accelerator context as
+special thread.
+But no matter how, this can be a solid start point for new processor
+to be used as an "accelerator" as this is the essential requirement.
+
+
+The Fork Scenario
+=================
+For a process with allocated queues and shared memory, what happen if it forks
+a child?
+
+The fd of the queue is duplicated on fork, but requests sent from the child
+process are blocked.
+
+It is recommended to add O_CLOEXEC to the queue file.
+
+The queue mmap space has a VM_DONTCOPY in its VMA. So the child will lose all
+those VMAs.
+
+This is a reason why Uacce does not adopt the mode used in VFIO and
+InfiniBand.  Both solutions can set any user pointer for hardware sharing.
+But they cannot support fork when the dma is in process. Or the
+"Copy-On-Write" procedure will make the parent process lost its physical
+pages.
+
+
+Difference to the VFIO and IB framework
+---------------------------------------
+The essential function of Uacce is to let the device access the user
+address directly. There are many device drivers doing the same in the kernel.
+And both VFIO and IB can provide similar functions in framework level.
+
+But Uacce has a different goal: "share address space". It is
+not taken the request to the accelerator as an enclosure data structure. It
+takes the accelerator as another thread of the same process. So the
+accelerator can refer to any address used by the process.
+
+Both VFIO and IB are taken this as "memory sharing", not "address sharing".
+They care more on sharing the block of memory. But if there is an address
+stored in the block and referring to another memory region. The address may
+not be valid.
+
+By adding more constraints to the VFIO and IB framework, in some sense, we may
+achieve a similar goal. But we gave it up finally. Both VFIO and IB have extra
+assumption which is unnecessary to Uacce. They may hurt each other if we
+try to merge them together.
+
+VFIO manages resource of a hardware as a "virtual device". If a device need to
+serve a separated application. It must isolate the resource as a separate
+virtual device.  And the life cycle of the application and virtual device are
+unnecessary unrelated. And most concepts, such as bus, driver, probe and
+so on, to make it as a "device" is unnecessary either. And the logic added to
+VFIO to make address sharing do no help on "creating a virtual device".
+
+IB creates a "verbs" standard for sharing memory region to another remote
+entity.  Most of these verbs are to make memory region between entities to be
+synchronized.  This is not what accelerator need. Accelerator is in the same
+memory system with the CPU. It refers to the same memory system among CPU and
+devices. So the local memory terms/verbs are good enough for it. Extra "verbs"
+are not necessary. And its queue (like queue pair in IB) is the communication
+channel direct to the accelerator hardware. There is nothing about memory
+itself.
+
+Further, both VFIO and IB use the "pin" (get_user_page) way to lock local
+memory in place.  This is flexible. But it can cause other problems. For
+example, if the user process fork a child process. The COW procedure may make
+the parent process lost its pages which are sharing with the device. These may
+be fixed in the future. But is not going to be easy. (There is a discussion
+about this on Linux Plumbers Conference 2018 [1])
+
+So we choose to build the solution directly on top of IOMMU interface. IOMMU
+is the essential way for device and process to share their page mapping from
+the hardware perspective. It will be safe to create a software solution on
+this assumption.  Uacce manages the IOMMU interface for the accelerator
+device, so the device driver can export some of the resources to the user
+space. Uacce than can make sure the device and the process have the same
+address space.
+
+
+References
+==========
+.. [1] https://lwn.net/Articles/774411/
+Subject: [PATCH 0/3] *** SUBJECT HERE ***
+
+Kenneth Lee (2):
+  uacce: Add documents for uacce
+  uacce: add uacce driver
+
+Zhangfei Gao (2):
+  crypto: hisilicon - Remove module_param uacce_mode
+  crypto: hisilicon - register zip engine to uacce
+
+ Documentation/ABI/testing/sysfs-driver-uacce |  37 ++
+ Documentation/misc-devices/uacce.rst         | 176 ++++++++
+ drivers/crypto/hisilicon/qm.c                | 234 +++++++++-
+ drivers/crypto/hisilicon/qm.h                |  11 +
+ drivers/crypto/hisilicon/zip/zip_main.c      |  47 +-
+ drivers/misc/Kconfig                         |   1 +
+ drivers/misc/Makefile                        |   1 +
+ drivers/misc/uacce/Kconfig                   |  13 +
+ drivers/misc/uacce/Makefile                  |   2 +
+ drivers/misc/uacce/uacce.c                   | 627 +++++++++++++++++++++++++++
+ include/linux/uacce.h                        | 161 +++++++
+ include/uapi/misc/uacce/hisi_qm.h            |  23 +
+ include/uapi/misc/uacce/uacce.h              |  38 ++
+ 13 files changed, 1339 insertions(+), 32 deletions(-)
+ create mode 100644 Documentation/ABI/testing/sysfs-driver-uacce
+ create mode 100644 Documentation/misc-devices/uacce.rst
+ create mode 100644 drivers/misc/uacce/Kconfig
+ create mode 100644 drivers/misc/uacce/Makefile
+ create mode 100644 drivers/misc/uacce/uacce.c
+ create mode 100644 include/linux/uacce.h
+ create mode 100644 include/uapi/misc/uacce/hisi_qm.h
+ create mode 100644 include/uapi/misc/uacce/uacce.h
+
+-- 
+2.7.4
+
+_______________________________________________
+iommu mailing list
+iommu@lists.linux-foundation.org
+https://lists.linuxfoundation.org/mailman/listinfo/iommu
