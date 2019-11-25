@@ -2,78 +2,101 @@ Return-Path: <SRS0=OkKq=ZR=lists.linux-foundation.org=iommu-bounces@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-5.3 required=3.0 tests=DKIM_INVALID,DKIM_SIGNED,
-	INCLUDES_PATCH,MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED,
-	USER_AGENT_SANE_1 autolearn=ham autolearn_force=no version=3.4.0
+X-Spam-Status: No, score=-6.7 required=3.0 tests=HEADER_FROM_DIFFERENT_DOMAINS,
+	INCLUDES_PATCH,MAILING_LIST_MULTI,SIGNED_OFF_BY,SPF_HELO_NONE,SPF_PASS,
+	URIBL_BLOCKED autolearn=unavailable autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id E0ECFC432C0
-	for <iommu@archiver.kernel.org>; Mon, 25 Nov 2019 07:58:29 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 6249CC432C0
+	for <iommu@archiver.kernel.org>; Mon, 25 Nov 2019 08:32:49 +0000 (UTC)
 Received: from whitealder.osuosl.org (smtp1.osuosl.org [140.211.166.138])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by mail.kernel.org (Postfix) with ESMTPS id A1DD420823
-	for <iommu@archiver.kernel.org>; Mon, 25 Nov 2019 07:58:29 +0000 (UTC)
-Authentication-Results: mail.kernel.org;
-	dkim=fail reason="signature verification failed" (1024-bit key) header.d=kernel.org header.i=@kernel.org header.b="o0G2U2Vn"
-DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org A1DD420823
-Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=kernel.org
+	by mail.kernel.org (Postfix) with ESMTPS id 2D9B720748
+	for <iommu@archiver.kernel.org>; Mon, 25 Nov 2019 08:32:49 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 2D9B720748
+Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=intel.com
 Authentication-Results: mail.kernel.org; spf=pass smtp.mailfrom=iommu-bounces@lists.linux-foundation.org
 Received: from localhost (localhost [127.0.0.1])
-	by whitealder.osuosl.org (Postfix) with ESMTP id 7B758854C0;
-	Mon, 25 Nov 2019 07:58:29 +0000 (UTC)
+	by whitealder.osuosl.org (Postfix) with ESMTP id EA272840FF;
+	Mon, 25 Nov 2019 08:32:48 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
 Received: from whitealder.osuosl.org ([127.0.0.1])
 	by localhost (.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
-	with ESMTP id JwL1lWlcVHIU; Mon, 25 Nov 2019 07:58:28 +0000 (UTC)
+	with ESMTP id xHuTZCljZdB9; Mon, 25 Nov 2019 08:32:45 +0000 (UTC)
 Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [140.211.9.56])
-	by whitealder.osuosl.org (Postfix) with ESMTP id BBEC385C7D;
-	Mon, 25 Nov 2019 07:58:28 +0000 (UTC)
+	by whitealder.osuosl.org (Postfix) with ESMTP id 96C7D838F6;
+	Mon, 25 Nov 2019 08:32:45 +0000 (UTC)
 Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
-	by lists.linuxfoundation.org (Postfix) with ESMTP id 99D5AC0881;
-	Mon, 25 Nov 2019 07:58:28 +0000 (UTC)
+	by lists.linuxfoundation.org (Postfix) with ESMTP id 6047AC1DDB;
+	Mon, 25 Nov 2019 08:32:45 +0000 (UTC)
 Received: from hemlock.osuosl.org (smtp2.osuosl.org [140.211.166.133])
- by lists.linuxfoundation.org (Postfix) with ESMTP id 15760C0878
- for <iommu@lists.linux-foundation.org>; Mon, 25 Nov 2019 07:58:27 +0000 (UTC)
+ by lists.linuxfoundation.org (Postfix) with ESMTP id CE3B9C0878
+ for <iommu@lists.linux-foundation.org>; Mon, 25 Nov 2019 08:32:43 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
- by hemlock.osuosl.org (Postfix) with ESMTP id 1150387A04
- for <iommu@lists.linux-foundation.org>; Mon, 25 Nov 2019 07:58:27 +0000 (UTC)
+ by hemlock.osuosl.org (Postfix) with ESMTP id 6299485B48
+ for <iommu@lists.linux-foundation.org>; Mon, 25 Nov 2019 08:32:43 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
 Received: from hemlock.osuosl.org ([127.0.0.1])
  by localhost (.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
- with ESMTP id 2BfTtm1LWJDr for <iommu@lists.linux-foundation.org>;
- Mon, 25 Nov 2019 07:58:26 +0000 (UTC)
+ with ESMTP id soK7pi-BoKa5 for <iommu@lists.linux-foundation.org>;
+ Mon, 25 Nov 2019 08:32:41 +0000 (UTC)
 X-Greylist: domain auto-whitelisted by SQLgrey-1.7.6
-Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
- by hemlock.osuosl.org (Postfix) with ESMTPS id 809B1879FD
- for <iommu@lists.linux-foundation.org>; Mon, 25 Nov 2019 07:58:26 +0000 (UTC)
-Received: from willie-the-truck (236.31.169.217.in-addr.arpa [217.169.31.236])
- (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256
- bits)) (No client certificate requested)
- by mail.kernel.org (Postfix) with ESMTPSA id A6AC220823;
- Mon, 25 Nov 2019 07:58:25 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
- s=default; t=1574668706;
- bh=A7pWspbn6rDJXjkXLCpGQzVngua33NeY7NRRSZ6S5mE=;
- h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
- b=o0G2U2Vn+YUqEqQoG4pQ4g2rmyimyN24oveZaciT4tvi4VE4L3oH9VEKfxVNkN5fw
- cBniffaxKd4WxgXmgoUyKNCp/xDIFjrPnfY8q9qTek5Yl+Bk1ZiNkzllaTl2u9kjjz
- c4A0JdPbo6mH4h/Xn1fP06o8mi9G9LGptormh0YI=
-Date: Mon, 25 Nov 2019 07:58:22 +0000
-From: Will Deacon <will@kernel.org>
-To: Robin Murphy <robin.murphy@arm.com>
-Subject: Re: [PATCH v2 09/10] iommu/io-pgtable-arm: Rationalise TCR handling
-Message-ID: <20191125075821.GB1809@willie-the-truck>
-References: <cover.1572024119.git.robin.murphy@arm.com>
- <84e56eb993fff3660376ffad3e915b972d29b008.1572024120.git.robin.murphy@arm.com>
- <20191104191444.GI24909@willie-the-truck>
- <20191104232756.GB16446@jcrouse1-lnx.qualcomm.com>
- <20191120151142.GA26714@willie-the-truck>
- <6e14584c-6942-b3b5-5691-faec4fc345f1@arm.com>
+Received: from mga12.intel.com (mga12.intel.com [192.55.52.136])
+ by hemlock.osuosl.org (Postfix) with ESMTPS id CE6A485787
+ for <iommu@lists.linux-foundation.org>; Mon, 25 Nov 2019 08:32:41 +0000 (UTC)
+X-Amp-Result: SKIPPED(no attachment in message)
+X-Amp-File-Uploaded: False
+Received: from orsmga002.jf.intel.com ([10.7.209.21])
+ by fmsmga106.fm.intel.com with ESMTP/TLS/DHE-RSA-AES256-GCM-SHA384;
+ 25 Nov 2019 00:32:41 -0800
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="5.69,241,1571727600"; d="scan'208";a="220196844"
+Received: from fmsmsx108.amr.corp.intel.com ([10.18.124.206])
+ by orsmga002.jf.intel.com with ESMTP; 25 Nov 2019 00:32:40 -0800
+Received: from fmsmsx157.amr.corp.intel.com (10.18.116.73) by
+ FMSMSX108.amr.corp.intel.com (10.18.124.206) with Microsoft SMTP Server (TLS)
+ id 14.3.439.0; Mon, 25 Nov 2019 00:32:40 -0800
+Received: from shsmsx101.ccr.corp.intel.com (10.239.4.153) by
+ FMSMSX157.amr.corp.intel.com (10.18.116.73) with Microsoft SMTP Server (TLS)
+ id 14.3.439.0; Mon, 25 Nov 2019 00:32:39 -0800
+Received: from shsmsx104.ccr.corp.intel.com ([169.254.5.127]) by
+ SHSMSX101.ccr.corp.intel.com ([169.254.1.213]) with mapi id 14.03.0439.000;
+ Mon, 25 Nov 2019 16:32:38 +0800
+From: "Liu, Yi L" <yi.l.liu@intel.com>
+To: Jacob Pan <jacob.jun.pan@linux.intel.com>, Alex Williamson
+ <alex.williamson@redhat.com>
+Subject: RE: [RFC v2 2/3] vfio/type1: VFIO_IOMMU_PASID_REQUEST(alloc/free)
+Thread-Topic: [RFC v2 2/3] vfio/type1: VFIO_IOMMU_PASID_REQUEST(alloc/free)
+Thread-Index: AQHVimn7Rf6XEKLwVUSEQeOMJH4V9ad8yIOAgAFk6nCAAab8gIABawdg//+0NoCAB/hJQP//53UAgABHd4CAEqMsMA==
+Date: Mon, 25 Nov 2019 08:32:38 +0000
+Message-ID: <A2975661238FB949B60364EF0F2C25743A10D4C9@SHSMSX104.ccr.corp.intel.com>
+References: <1571919983-3231-1-git-send-email-yi.l.liu@intel.com>
+ <1571919983-3231-3-git-send-email-yi.l.liu@intel.com>
+ <20191105163537.1935291c@x1.home>
+ <A2975661238FB949B60364EF0F2C25743A0EF41B@SHSMSX104.ccr.corp.intel.com>
+ <20191107150659.05fa7548@x1.home>
+ <A2975661238FB949B60364EF0F2C25743A0F305A@SHSMSX104.ccr.corp.intel.com>
+ <20191108081503.29a7a800@x1.home>
+ <A2975661238FB949B60364EF0F2C25743A0F8CB4@SHSMSX104.ccr.corp.intel.com>
+ <20191113082940.1b415d00@x1.home> <20191113114527.2c933e67@jacob-builder>
+In-Reply-To: <20191113114527.2c933e67@jacob-builder>
+Accept-Language: en-US
+Content-Language: en-US
+X-MS-Has-Attach: 
+X-MS-TNEF-Correlator: 
+dlp-product: dlpe-windows
+dlp-version: 11.2.0.6
+dlp-reaction: no-action
+x-ctpclassification: CTP_NT
+x-titus-metadata-40: eyJDYXRlZ29yeUxhYmVscyI6IiIsIk1ldGFkYXRhIjp7Im5zIjoiaHR0cDpcL1wvd3d3LnRpdHVzLmNvbVwvbnNcL0ludGVsMyIsImlkIjoiMDVmNmYxZTgtMTNhYi00OGViLTkxZjktYWY4NDkwNmE4NTRjIiwicHJvcHMiOlt7Im4iOiJDVFBDbGFzc2lmaWNhdGlvbiIsInZhbHMiOlt7InZhbHVlIjoiQ1RQX05UIn1dfV19LCJTdWJqZWN0TGFiZWxzIjpbXSwiVE1DVmVyc2lvbiI6IjE3LjEwLjE4MDQuNDkiLCJUcnVzdGVkTGFiZWxIYXNoIjoiMmFRWW1YWCszSTRtYXhNZnR0bEFGQWxSeWR5c0R0MVhvbUVzM2xvWVlteFhLUWdZakNtTCswUW5PbmNxUmI0SyJ9
+x-originating-ip: [10.239.127.40]
 MIME-Version: 1.0
-Content-Disposition: inline
-In-Reply-To: <6e14584c-6942-b3b5-5691-faec4fc345f1@arm.com>
-User-Agent: Mutt/1.10.1 (2018-07-13)
-Cc: iommu@lists.linux-foundation.org, linux-arm-kernel@lists.infradead.org
+Cc: "Tian, Kevin" <kevin.tian@intel.com>, "Raj, Ashok" <ashok.raj@intel.com>,
+ "kvm@vger.kernel.org" <kvm@vger.kernel.org>,
+ "jean-philippe.brucker@arm.com" <jean-philippe.brucker@arm.com>, "Tian,
+ Jun J" <jun.j.tian@intel.com>,
+ "iommu@lists.linux-foundation.org" <iommu@lists.linux-foundation.org>, "Sun,
+ Yi Y" <yi.y.sun@intel.com>
 X-BeenThere: iommu@lists.linux-foundation.org
 X-Mailman-Version: 2.1.15
 Precedence: list
@@ -91,46 +114,370 @@ Content-Transfer-Encoding: 7bit
 Errors-To: iommu-bounces@lists.linux-foundation.org
 Sender: "iommu" <iommu-bounces@lists.linux-foundation.org>
 
-On Fri, Nov 22, 2019 at 03:51:26PM +0000, Robin Murphy wrote:
-> On 20/11/2019 3:11 pm, Will Deacon wrote:
-> > On Mon, Nov 04, 2019 at 04:27:56PM -0700, Jordan Crouse wrote:
-> > > On Mon, Nov 04, 2019 at 07:14:45PM +0000, Will Deacon wrote:
-> > > > On Fri, Oct 25, 2019 at 07:08:38PM +0100, Robin Murphy wrote:
-> > > > > diff --git a/drivers/iommu/qcom_iommu.c b/drivers/iommu/qcom_iommu.c
-> > > > > index 9a57eb6c253c..059be7e21030 100644
-> > > > > --- a/drivers/iommu/qcom_iommu.c
-> > > > > +++ b/drivers/iommu/qcom_iommu.c
-> > > > > @@ -271,15 +271,13 @@ static int qcom_iommu_init_domain(struct iommu_domain *domain,
-> > > > >   		iommu_writeq(ctx, ARM_SMMU_CB_TTBR0,
-> > > > >   				pgtbl_cfg.arm_lpae_s1_cfg.ttbr |
-> > > > >   				FIELD_PREP(TTBRn_ASID, ctx->asid));
-> > > > > -		iommu_writeq(ctx, ARM_SMMU_CB_TTBR1,
-> > > > > -				FIELD_PREP(TTBRn_ASID, ctx->asid));
-> > > > > +		iommu_writeq(ctx, ARM_SMMU_CB_TTBR1, 0);
-> > > > 
-> > > > Are you sure it's safe to drop the ASID here? Just want to make sure there
-> > > > wasn't some "quirk" this was helping with.
-> > > 
-> > > I was reminded of this recently. Some of our SMMU guys told me that a 0x0 in
-> > > TTBR1 could cause a S2 fault if a faulty transaction caused a ttbr1 lookup so
-> > > the "quirk" was writing the ASID so the register wasn't zero. I'm not sure if
-> > > this is a vendor specific blip or not.
-> > 
-> > You should be able to set EPD1 to prevent walks via TTBR1 in that case,
-> > though. Sticking the ASID in there is still dodgy if EPD1 is clear and
-> > TTBR1 points at junk (or even physical address 0x0).
-> > 
-> > That's probably something which should be folded into this patch.
+Hi Alex,
+
+I think the major opens in this thread are the pasid allocation limit for
+each VM and pasid lifecycle management. For lifecycle management, we will
+free pasid when userspace requests and reclaim pasids when VM is crashed.
+For the pasid allocation limit, may have a tunable quota and scaled per
+assigned device number. If no apparent issue, we may prepare a version
+to see if it is workable.
+
+Thanks,
+Yi Liu
+
+> From: Jacob Pan [mailto:jacob.jun.pan@linux.intel.com]
+> Sent: Thursday, November 14, 2019 3:45 AM
+> To: Alex Williamson <alex.williamson@redhat.com>
+> Cc: Liu, Yi L <yi.l.liu@intel.com>; eric.auger@redhat.com; Tian, Kevin
+> <kevin.tian@intel.com>; joro@8bytes.org; Raj, Ashok <ashok.raj@intel.com>; Tian,
+> Jun J <jun.j.tian@intel.com>; Sun, Yi Y <yi.y.sun@intel.com>; jean-
+> philippe.brucker@arm.com; peterx@redhat.com; iommu@lists.linux-foundation.org;
+> kvm@vger.kernel.org; jacob.jun.pan@linux.intel.com
+> Subject: Re: [RFC v2 2/3] vfio/type1: VFIO_IOMMU_PASID_REQUEST(alloc/free)
 > 
-> Note that EPD1 was being set by io-pgtable-arm before this patch, and
-> remains set by virtue of arm_smmu_lpae_tcr() afterwards, so presumably the
-> brokenness might run a bit deeper than that. Either way, though, I'm
-> somewhat dubious since the ASID could well be 0 anyway :/
-
-Ah, I missed that the qcom driver was calling arm_smmu_lpae_tcr() with
-your patches. In which case, everything should be fine, no?
-
-Will
+> On Wed, 13 Nov 2019 08:29:40 -0700
+> Alex Williamson <alex.williamson@redhat.com> wrote:
+> 
+> > On Wed, 13 Nov 2019 11:03:17 +0000
+> > "Liu, Yi L" <yi.l.liu@intel.com> wrote:
+> >
+> > > > From: Alex Williamson [mailto:alex.williamson@redhat.com]
+> > > > Sent: Friday, November 8, 2019 11:15 PM
+> > > > To: Liu, Yi L <yi.l.liu@intel.com>
+> > > > Subject: Re: [RFC v2 2/3] vfio/type1:
+> > > > VFIO_IOMMU_PASID_REQUEST(alloc/free)
+> > > >
+> > > > On Fri, 8 Nov 2019 12:23:41 +0000
+> > > > "Liu, Yi L" <yi.l.liu@intel.com> wrote:
+> > > >
+> > > > > > From: Alex Williamson [mailto:alex.williamson@redhat.com]
+> > > > > > Sent: Friday, November 8, 2019 6:07 AM
+> > > > > > To: Liu, Yi L <yi.l.liu@intel.com>
+> > > > > > Subject: Re: [RFC v2 2/3] vfio/type1:
+> > > > > > VFIO_IOMMU_PASID_REQUEST(alloc/free)
+> > > > > >
+> > > > > > On Wed, 6 Nov 2019 13:27:26 +0000
+> > > > > > "Liu, Yi L" <yi.l.liu@intel.com> wrote:
+> > > > > >
+> > > > > > > > From: Alex Williamson <alex.williamson@redhat.com>
+> > > > > > > > Sent: Wednesday, November 6, 2019 7:36 AM
+> > > > > > > > To: Liu, Yi L <yi.l.liu@intel.com>
+> > > > > > > > Subject: Re: [RFC v2 2/3] vfio/type1:
+> > > > VFIO_IOMMU_PASID_REQUEST(alloc/free)
+> > > > > > > >
+> > > > > > > > On Thu, 24 Oct 2019 08:26:22 -0400
+> > > > > > > > Liu Yi L <yi.l.liu@intel.com> wrote:
+> > > > > > > >
+> > > > > > > > > This patch adds VFIO_IOMMU_PASID_REQUEST ioctl which
+> > > > > > > > > aims to passdown PASID allocation/free request from the
+> > > > > > > > > virtual iommu. This is required to get PASID managed in
+> > > > > > > > > system-wide.
+> > > > > > > > >
+> > > > > > > > > Cc: Kevin Tian <kevin.tian@intel.com>
+> > > > > > > > > Signed-off-by: Liu Yi L <yi.l.liu@intel.com>
+> > > > > > > > > Signed-off-by: Yi Sun <yi.y.sun@linux.intel.com>
+> > > > > > > > > Signed-off-by: Jacob Pan <jacob.jun.pan@linux.intel.com>
+> > > > > > > > > ---
+> > > > > > > > >  drivers/vfio/vfio_iommu_type1.c | 114
+> > > > > > > > ++++++++++++++++++++++++++++++++++++++++
+> > > > > > > > >  include/uapi/linux/vfio.h       |  25 +++++++++
+> > > > > > > > >  2 files changed, 139 insertions(+)
+> > > > > > > > >
+> > > > > > > > > diff --git a/drivers/vfio/vfio_iommu_type1.c
+> > > > > > b/drivers/vfio/vfio_iommu_type1.c
+> > > > > > > > > index cd8d3a5..3d73a7d 100644
+> > > > > > > > > --- a/drivers/vfio/vfio_iommu_type1.c
+> > > > > > > > > +++ b/drivers/vfio/vfio_iommu_type1.c
+> > > > > > > > > @@ -2248,6 +2248,83 @@ static int
+> > > > > > > > > vfio_cache_inv_fn(struct device *dev,
+> > > > > > void
+> > > > > > > > *data)
+> > > > > > > > >  	return iommu_cache_invalidate(dc->domain, dev,
+> > > > > > > > > &ustruct->info); }
+> > > > > > > > >
+> > > > > > > > > +static int vfio_iommu_type1_pasid_alloc(struct
+> > > > > > > > > vfio_iommu *iommu,
+> > > > > > > > > +					 int min_pasid,
+> > > > > > > > > +					 int max_pasid)
+> > > > > > > > > +{
+> > > > > > > > > +	int ret;
+> > > > > > > > > +	ioasid_t pasid;
+> > > > > > > > > +	struct mm_struct *mm = NULL;
+> > > > > > > > > +
+> > > > > > > > > +	mutex_lock(&iommu->lock);
+> > > > > > > > > +	if (!IS_IOMMU_CAP_DOMAIN_IN_CONTAINER(iommu)) {
+> > > > > > > > > +		ret = -EINVAL;
+> > > > > > > > > +		goto out_unlock;
+> > > > > > > > > +	}
+> > > > > > > > > +	mm = get_task_mm(current);
+> > > > > > > > > +	/* Track ioasid allocation owner by mm */
+> > > > > > > > > +	pasid = ioasid_alloc((struct ioasid_set *)mm,
+> > > > > > > > > min_pasid,
+> > > > > > > > > +				max_pasid, NULL);
+> > > > > > > >
+> > > > > > > > Are we sure we want to tie this to the task mm vs perhaps
+> > > > > > > > the vfio_iommu pointer?
+> > > > > > >
+> > > > > > > Here we want to have a kind of per-VM mark, which can be
+> > > > > > > used to do ownership check on whether a pasid is held by a
+> > > > > > > specific VM. This is very important to prevent across VM
+> > > > > > > affect. vfio_iommu pointer is competent for vfio as vfio is
+> > > > > > > both pasid alloc requester and pasid consumer. e.g. vfio
+> > > > > > > requests pasid alloc from ioasid and also it will invoke
+> > > > > > > bind_gpasid(). vfio can either check ownership before
+> > > > > > > invoking bind_gpasid() or pass vfio_iommu pointer to iommu
+> > > > > > > driver. But in future, there may be other modules which are
+> > > > > > > just consumers of pasid. And they also want to do ownership
+> > > > > > > check for a pasid. Then, it would be hard for them as they
+> > > > > > > are not the pasid alloc requester. So here better to have a
+> > > > > > > system wide structure to perform as the per-VM mark. task
+> > > > > > > mm looks to be much competent.
+> > > > > >
+> > > > > > Ok, so it's intentional to have a VM-wide token.  Elsewhere
+> > > > > > in the type1 code (vfio_dma_do_map) we record the task_struct
+> > > > > > per dma mapping so that we can get the task mm as needed.
+> > > > > > Would the task_struct pointer provide any advantage?
+> > > > >
+> > > > > I think we may use task_struct pointer to make type1 code
+> > > > > consistent. How do you think?
+> > > >
+> > > > If it has the same utility, sure.
+> > >
+> > > thanks, I'll make this change.
+> > >
+> > > > > > Also, an overall question, this provides userspace with pasid
+> > > > > > alloc and free ioctls, (1) what prevents a userspace process
+> > > > > > from consuming every available pasid, and (2) if the process
+> > > > > > exits or crashes without freeing pasids, how are they
+> > > > > > recovered aside from a reboot?
+> > > > >
+> > > > > For question (1), I think we only need to take care about
+> > > > > malicious userspace process. As vfio usage is under privilege
+> > > > > mode, so we may be safe on it so far.
+> > > >
+> > > > No, where else do we ever make this assumption?  vfio requires a
+> > > > privileged entity to configure the system for vfio, bind devices
+> > > > for user use, and grant those devices to the user, but the usage
+> > > > of the device is always assumed to be by an unprivileged user.
+> > > > It is absolutely not acceptable require a privileged user.  It's
+> > > > vfio's responsibility to protect the system from the user.
+> > >
+> > > My assumption is not precise here. sorry for it... Maybe to further
+> > > check with you to better understand your point. I think the user
+> > > (QEMU) of vfio needs to have a root permission. Thus it can open
+> > > the vfio fds. At this point, the user is a privileged one. Also I
+> > > guess that's why vfio can grant the user with the usage of
+> > > VFIO_MAP/UNMAP to config mappings into iommu page tables. But I'm
+> > > not quite sure when will the user be an unprivileged one.
+> >
+> > QEMU does NOT need to be run as root to use vfio.  This is NOT the
+> > model libvirt follows.  libvirt grants a user access to a device, or
+> > rather a set of one or more devices (ie. the group) via standard file
+> > permission access to the group file (/dev/vfio/$GROUP).  Ownership of
+> > a device allows the user permission to make use of the IOMMU.  The
+> > user's ability to create DMA mappings is restricted by their process
+> > locked memory limits, where libvirt elevates the user limit
+> > sufficient for the size of the VM.  QEMU should never need to be run
+> > as root and doing so is entirely unacceptable from a security
+> > perspective.  The only mode of vfio that requires elevated privilege
+> > for use is when making use of no-iommu, where we have no IOMMU
+> > protection or translation.
+> >
+> > > > > However, we may need to introduce a kind of credit
+> > > > > mechanism to protect it. I've thought it, but no good idea yet.
+> > > > > Would be happy to hear from you.
+> > > >
+> > > > It's a limited system resource and it's unclear how many might
+> > > > reasonably used by a user.  I don't have an easy answer.
+> > >
+> > > How about the below method? based on some offline chat with Jacob.
+> > > a. some reasonable defaults for the initial per VM quota, e.g. 1000
+> > > per process
+> > > b. IOASID should be able to enforce per ioasid_set (it is kind of
+> > > per VM mark) limit
+> >
+> > We support large numbers of assigned devices, how many IOASIDs might
+> > be reasonably used per device?  Is the mm or the task still the
+> > correct "set" in this scenario?  I don't have any better ideas than
+> > setting a limit, but it probably needs a kernel or module tunable,
+> > and it needs to match the scaling we expect to see when multiple
+> > devices are involved.
+> >
+> I think mm/task is still the correct set in that we try to prevent
+> abuse based on mm not device. Or we need to have some notion of super
+> container (Ashok proposed a while ago) that maps to a VM.
+> 
+> I am guessing you are suggesting the per mm quota should also be
+> scaled against number of devices assigned. I think that is very
+> reasonable. Perhaps we can do:
+> 
+> 1. A tunable per iommu group PASID quota with a default of 1000, e.g.
+> nr_pasid_per_group. Since we are dealing with nested translation and
+> each device has its own second level so we pretty much have one device
+> per group. Call it nr_pasid_per_group?
+> 
+> 2. Limit number of PASIDs per VM with nr_pasid_per_group * nr_groups.
+> Probably update the limit when group is added to a container with the
+> same mm.
+> 
+> I guess we could also use a cgroup controller for PASIDs.
+> 
+> > > > > For question (2), I think we need to reclaim the allocated
+> > > > > pasids when the vfio container fd is released just like what
+> > > > > vfio does to the domain mappings. I didn't add it yet. But I
+> > > > > can add it in next version if you think it would make the pasid
+> > > > > alloc/free be much sound.
+> > > >
+> > > > Consider it required, the interface is susceptible to abuse
+> > > > without it.
+> > >
+> > > sure, let me add it in next version.
+> > >
+> > > > > > > > > +	if (pasid == INVALID_IOASID) {
+> > > > > > > > > +		ret = -ENOSPC;
+> > > > > > > > > +		goto out_unlock;
+> > > > > > > > > +	}
+> > > > > > > > > +	ret = pasid;
+> > > > > > > > > +out_unlock:
+> > > > > > > > > +	mutex_unlock(&iommu->lock);
+> > > > > >
+> > > > > > What does holding this lock protect?  That the vfio_iommu
+> > > > > > remains backed by an iommu during this operation, even though
+> > > > > > we don't do anything to release allocated pasids when that
+> > > > > > iommu backing is removed?
+> > > > >
+> > > > > yes, it is unnecessary to hold the lock here. At least for the
+> > > > > operations in this patch. will remove it. :-)
+> > > > >
+> > > > > > > > > +	if (mm)
+> > > > > > > > > +		mmput(mm);
+> > > > > > > > > +	return ret;
+> > > > > > > > > +}
+> > > > > > > > > +
+> > > > > > > > > +static int vfio_iommu_type1_pasid_free(struct
+> > > > > > > > > vfio_iommu *iommu,
+> > > > > > > > > +				       unsigned int
+> > > > > > > > > pasid) +{
+> > > > > > > > > +	struct mm_struct *mm = NULL;
+> > > > > > > > > +	void *pdata;
+> > > > > > > > > +	int ret = 0;
+> > > > > > > > > +
+> > > > > > > > > +	mutex_lock(&iommu->lock);
+> > > > > > > > > +	if (!IS_IOMMU_CAP_DOMAIN_IN_CONTAINER(iommu)) {
+> > > > > > > > > +		ret = -EINVAL;
+> > > > > > > > > +		goto out_unlock;
+> > > > > > > > > +	}
+> > > > > > > > > +
+> > > > > > > > > +	/**
+> > > > > > > > > +	 * REVISIT:
+> > > > > > > > > +	 * There are two cases free could fail:
+> > > > > > > > > +	 * 1. free pasid by non-owner, we use
+> > > > > > > > > ioasid_set to track mm, if
+> > > > > > > > > +	 * the set does not match, caller is not
+> > > > > > > > > permitted to free.
+> > > > > > > > > +	 * 2. free before unbind all devices, we can
+> > > > > > > > > check if ioasid private
+> > > > > > > > > +	 * data, if data != NULL, then fail to free.
+> > > > > > > > > +	 */
+> > > > > > > > > +	mm = get_task_mm(current);
+> > > > > > > > > +	pdata = ioasid_find((struct ioasid_set *)mm,
+> > > > > > > > > pasid, NULL);
+> > > > > > > > > +	if (IS_ERR(pdata)) {
+> > > > > > > > > +		if (pdata == ERR_PTR(-ENOENT))
+> > > > > > > > > +			pr_err("PASID %u is not
+> > > > > > > > > allocated\n", pasid);
+> > > > > > > > > +		else if (pdata == ERR_PTR(-EACCES))
+> > > > > > > > > +			pr_err("Free PASID %u by
+> > > > > > > > > non-owner, denied",
+> > > > pasid);
+> > > > > > > > > +		else
+> > > > > > > > > +			pr_err("Error searching PASID
+> > > > > > > > > %u\n", pasid);
+> > > > > > > >
+> > > > > > > > This should be removed, errno is sufficient for the user,
+> > > > > > > > this just provides the user with a trivial DoS vector
+> > > > > > > > filling logs.
+> > > > > > >
+> > > > > > > sure, will fix it. thanks.
+> > > > > > >
+> > > > > > > > > +		ret = -EPERM;
+> > > > > > > >
+> > > > > > > > But why not return PTR_ERR(pdata)?
+> > > > > > >
+> > > > > > > aha, would do it.
+> > > > > > >
+> > > > > > > > > +		goto out_unlock;
+> > > > > > > > > +	}
+> > > > > > > > > +	if (pdata) {
+> > > > > > > > > +		pr_debug("Cannot free pasid %d with
+> > > > > > > > > private data\n", pasid);
+> > > > > > > > > +		/* Expect PASID has no private data if
+> > > > > > > > > not bond */
+> > > > > > > > > +		ret = -EBUSY;
+> > > > > > > > > +		goto out_unlock;
+> > > > > > > > > +	}
+> > > > > > > > > +	ioasid_free(pasid);
+> > > > > > > >
+> > > > > > > > We only ever get here with pasid == NULL?!
+> > > > > > >
+> > > > > > > I guess you meant only when pdata==NULL.
+> > > > > > >
+> > > > > > > > Something is wrong.  Should
+> > > > > > > > that be 'if (!pdata)'?  (which also makes that pr_debug
+> > > > > > > > another DoS vector)
+> > > > > > >
+> > > > > > > Oh, yes, just do it as below:
+> > > > > > >
+> > > > > > > if (!pdata) {
+> > > > > > > 	ioasid_free(pasid);
+> > > > > > > 	ret = SUCCESS;
+> > > > > > > } else
+> > > > > > > 	ret = -EBUSY;
+> > > > > > >
+> > > > > > > Is it what you mean?
+> > > > > >
+> > > > > > No, I think I was just confusing pdata and pasid, but I am
+> > > > > > still confused about testing pdata.  We call ioasid_alloc()
+> > > > > > with private = NULL, and I don't see any of your patches
+> > > > > > calling ioasid_set_data() to change the private data after
+> > > > > > allocation, so how could this ever be set?  Should this just
+> > > > > > be a BUG_ON(pdata) as the integrity of the system is in
+> > > > > > question should this state ever occur?  Thanks,
+> > > > >
+> > > > > ioasid_set_data() was called  in one patch from Jacob's vSVA
+> > > > > patchset. [PATCH v6 08/10] iommu/vt-d: Add bind guest PASID
+> > > > > support https://lkml.org/lkml/2019/10/22/946
+> > > > >
+> > > > > The basic idea is to allocate pasid with private=NULL, and set
+> > > > > it when the pasid is actually bind to a device (bind_gpasid()).
+> > > > > Each bind_gpasid() will increase the ref_cnt in the private
+> > > > > data, and each unbind_gpasid() will decrease the ref_cnt. So if
+> > > > > bind/unbind_gpasid() is called in mirror, the private data
+> > > > > should be null when comes to free operation. If not, vfio can
+> > > > > believe that the pasid is still in use.
+> > > >
+> > > > So this is another opportunity to leak pasids.  What's a user
+> > > > supposed to do when their attempt to free a pasid fails?  It
+> > > > invites leaks to allow this path to fail.  Thanks,
+> > >
+> > > Agreed, may no need to fail pasid free as it may leak pasid. How
+> > > about always let free successful? If the ref_cnt is non-zero,
+> > > notify the remaining users to release their reference.
+> >
+> > If a user frees an PASID, they've done their due diligence in
+> > indicating it's no longer used.  The kernel should handle reclaiming
+> > it from that point.  Thanks,
+> 
+> Yeah, I think we can add a atomic notifier for each PASID.
+> Consumers such as IOMMU driver and KVM gets notified when IOASID is
+> freed by VFIO. IOMMU driver can do the unbind and tear down.
+> 
+> In case of all the users already did unbind() before ioasid_free(), the
+> free will proceed as usual.
+> 
+> > Alex
+> >
 _______________________________________________
 iommu mailing list
 iommu@lists.linux-foundation.org
