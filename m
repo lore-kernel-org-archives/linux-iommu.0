@@ -2,122 +2,83 @@ Return-Path: <SRS0=OkKq=ZR=lists.linux-foundation.org=iommu-bounces@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-5.2 required=3.0 tests=HEADER_FROM_DIFFERENT_DOMAINS,
-	INCLUDES_PATCH,MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS,USER_AGENT_SANE_1
-	autolearn=unavailable autolearn_force=no version=3.4.0
+X-Spam-Status: No, score=-6.5 required=3.0 tests=DKIM_INVALID,DKIM_SIGNED,
+	HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_PATCH,MAILING_LIST_MULTI,SIGNED_OFF_BY,
+	SPF_HELO_NONE,SPF_PASS autolearn=ham autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id C10CBC432C0
-	for <iommu@archiver.kernel.org>; Mon, 25 Nov 2019 09:32:15 +0000 (UTC)
-Received: from silver.osuosl.org (smtp3.osuosl.org [140.211.166.136])
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 46994C432C3
+	for <iommu@archiver.kernel.org>; Mon, 25 Nov 2019 10:35:52 +0000 (UTC)
+Received: from hemlock.osuosl.org (smtp2.osuosl.org [140.211.166.133])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by mail.kernel.org (Postfix) with ESMTPS id 989592071E
-	for <iommu@archiver.kernel.org>; Mon, 25 Nov 2019 09:32:15 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 989592071E
-Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=linux.ibm.com
+	by mail.kernel.org (Postfix) with ESMTPS id 0EF942082F
+	for <iommu@archiver.kernel.org>; Mon, 25 Nov 2019 10:35:51 +0000 (UTC)
+Authentication-Results: mail.kernel.org;
+	dkim=fail reason="signature verification failed" (1024-bit key) header.d=redhat.com header.i=@redhat.com header.b="dyy2ZVwk"
+DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 0EF942082F
+Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=redhat.com
 Authentication-Results: mail.kernel.org; spf=pass smtp.mailfrom=iommu-bounces@lists.linux-foundation.org
 Received: from localhost (localhost [127.0.0.1])
-	by silver.osuosl.org (Postfix) with ESMTP id 83F92204BE;
-	Mon, 25 Nov 2019 09:32:15 +0000 (UTC)
+	by hemlock.osuosl.org (Postfix) with ESMTP id ADF3487B2E;
+	Mon, 25 Nov 2019 10:35:51 +0000 (UTC)
+X-Virus-Scanned: amavisd-new at osuosl.org
+Received: from hemlock.osuosl.org ([127.0.0.1])
+	by localhost (.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
+	with ESMTP id bw8QP2IQa1hW; Mon, 25 Nov 2019 10:35:51 +0000 (UTC)
+Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [140.211.9.56])
+	by hemlock.osuosl.org (Postfix) with ESMTP id 0F04B87A9C;
+	Mon, 25 Nov 2019 10:35:51 +0000 (UTC)
+Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
+	by lists.linuxfoundation.org (Postfix) with ESMTP id EC371C1DD7;
+	Mon, 25 Nov 2019 10:35:50 +0000 (UTC)
+Received: from silver.osuosl.org (smtp3.osuosl.org [140.211.166.136])
+ by lists.linuxfoundation.org (Postfix) with ESMTP id 42031C0878
+ for <iommu@lists.linux-foundation.org>; Mon, 25 Nov 2019 10:35:49 +0000 (UTC)
+Received: from localhost (localhost [127.0.0.1])
+ by silver.osuosl.org (Postfix) with ESMTP id 386B9204B0
+ for <iommu@lists.linux-foundation.org>; Mon, 25 Nov 2019 10:35:49 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
 Received: from silver.osuosl.org ([127.0.0.1])
-	by localhost (.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
-	with ESMTP id iT2Xgi0mddUv; Mon, 25 Nov 2019 09:32:14 +0000 (UTC)
-Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [140.211.9.56])
-	by silver.osuosl.org (Postfix) with ESMTP id 940AA20006;
-	Mon, 25 Nov 2019 09:32:14 +0000 (UTC)
-Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
-	by lists.linuxfoundation.org (Postfix) with ESMTP id 79E49C0881;
-	Mon, 25 Nov 2019 09:32:14 +0000 (UTC)
-Received: from fraxinus.osuosl.org (smtp4.osuosl.org [140.211.166.137])
- by lists.linuxfoundation.org (Postfix) with ESMTP id A5BB4C0878
- for <iommu@lists.linux-foundation.org>; Mon, 25 Nov 2019 09:32:13 +0000 (UTC)
-Received: from localhost (localhost [127.0.0.1])
- by fraxinus.osuosl.org (Postfix) with ESMTP id A100A85BEC
- for <iommu@lists.linux-foundation.org>; Mon, 25 Nov 2019 09:32:13 +0000 (UTC)
-X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from fraxinus.osuosl.org ([127.0.0.1])
  by localhost (.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
- with ESMTP id gozDHDmkXcyF for <iommu@lists.linux-foundation.org>;
- Mon, 25 Nov 2019 09:32:13 +0000 (UTC)
+ with ESMTP id t8FjbuoGgGzs for <iommu@lists.linux-foundation.org>;
+ Mon, 25 Nov 2019 10:35:48 +0000 (UTC)
 X-Greylist: domain auto-whitelisted by SQLgrey-1.7.6
-Received: from mx0a-001b2d01.pphosted.com (mx0b-001b2d01.pphosted.com
- [148.163.158.5])
- by fraxinus.osuosl.org (Postfix) with ESMTPS id 028A285BE4
- for <iommu@lists.linux-foundation.org>; Mon, 25 Nov 2019 09:32:12 +0000 (UTC)
-Received: from pps.filterd (m0098421.ppops.net [127.0.0.1])
- by mx0a-001b2d01.pphosted.com (8.16.0.42/8.16.0.42) with SMTP id
- xAP9Rq00061893
- for <iommu@lists.linux-foundation.org>; Mon, 25 Nov 2019 04:32:12 -0500
-Received: from e06smtp03.uk.ibm.com (e06smtp03.uk.ibm.com [195.75.94.99])
- by mx0a-001b2d01.pphosted.com with ESMTP id 2wfk9aane8-1
- (version=TLSv1.2 cipher=AES256-GCM-SHA384 bits=256 verify=NOT)
- for <iommu@lists.linux-foundation.org>; Mon, 25 Nov 2019 04:32:11 -0500
-Received: from localhost
- by e06smtp03.uk.ibm.com with IBM ESMTP SMTP Gateway: Authorized Use Only!
- Violators will be prosecuted
- for <iommu@lists.linux-foundation.org> from <rppt@linux.ibm.com>;
- Mon, 25 Nov 2019 09:32:08 -0000
-Received: from b06avi18878370.portsmouth.uk.ibm.com (9.149.26.194)
- by e06smtp03.uk.ibm.com (192.168.101.133) with IBM ESMTP SMTP Gateway:
- Authorized Use Only! Violators will be prosecuted; 
- (version=TLSv1/SSLv3 cipher=AES256-GCM-SHA384 bits=256/256)
- Mon, 25 Nov 2019 09:32:04 -0000
-Received: from d06av26.portsmouth.uk.ibm.com (d06av26.portsmouth.uk.ibm.com
- [9.149.105.62])
- by b06avi18878370.portsmouth.uk.ibm.com (8.14.9/8.14.9/NCO v10.0) with ESMTP
- id xAP9W37i46334404
- (version=TLSv1/SSLv3 cipher=DHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
- Mon, 25 Nov 2019 09:32:03 GMT
-Received: from d06av26.portsmouth.uk.ibm.com (unknown [127.0.0.1])
- by IMSVA (Postfix) with ESMTP id 44DFAAE058;
- Mon, 25 Nov 2019 09:32:03 +0000 (GMT)
-Received: from d06av26.portsmouth.uk.ibm.com (unknown [127.0.0.1])
- by IMSVA (Postfix) with ESMTP id 22A35AE045;
- Mon, 25 Nov 2019 09:32:02 +0000 (GMT)
-Received: from linux.ibm.com (unknown [9.148.8.137])
- by d06av26.portsmouth.uk.ibm.com (Postfix) with ESMTPS;
- Mon, 25 Nov 2019 09:32:02 +0000 (GMT)
-Date: Mon, 25 Nov 2019 11:32:00 +0200
-From: Mike Rapoport <rppt@linux.ibm.com>
-To: Christoph Hellwig <hch@lst.de>
-Subject: Re: Bug 205201 - Booting halts if Dawicontrol DC-2976 UW SCSI board
- installed, unless RAM size limited to 3500M
-References: <F1EBB706-73DF-430E-9020-C214EC8ED5DA@xenosoft.de>
- <20191121072943.GA24024@lst.de>
- <dbde2252-035e-6183-7897-43348e60647e@xenosoft.de>
- <6eec5c42-019c-a988-fc2a-cb804194683d@xenosoft.de>
- <d0252d29-7a03-20e1-ccd7-e12d906e4bdf@arm.com>
- <b3217742-2c0b-8447-c9ac-608b93265363@xenosoft.de>
- <20191121180226.GA3852@lst.de>
- <2fde79cf-875f-94e6-4a1b-f73ebb2e2c32@xenosoft.de>
- <20191125073923.GA30168@lst.de>
+Received: from us-smtp-delivery-1.mimecast.com (us-smtp-2.mimecast.com
+ [207.211.31.81])
+ by silver.osuosl.org (Postfix) with ESMTPS id 3DDB6204A2
+ for <iommu@lists.linux-foundation.org>; Mon, 25 Nov 2019 10:35:48 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+ s=mimecast20190719; t=1574678146;
+ h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+ to:to:cc:mime-version:mime-version:content-type:content-type:
+ content-transfer-encoding:content-transfer-encoding;
+ bh=ZMYkA3jI8+ywNR+OhV3jpIlPger7eOA5dEPy09p1d6E=;
+ b=dyy2ZVwk9P1P6CI6YlUeRdXMkmj6h6DHx9ZsORsqi1X17W72/3ZEjvkJOIvgx3m9ld2TXV
+ Uvtq8M8mdf6s9NdiPIamRF7qrZUtQGpUBdMiDlZld3P9c/skUY258gtks+g2R5ODR2/shS
+ +qQELQDJeZOF1C3S/b5fbyYkOe8Q2/o=
+Received: from mimecast-mx01.redhat.com (mimecast-mx01.redhat.com
+ [209.132.183.4]) (Using TLS) by relay.mimecast.com with ESMTP id
+ us-mta-337-8pbgYF59MamGTDCxyCAzoQ-1; Mon, 25 Nov 2019 05:35:45 -0500
+Received: from smtp.corp.redhat.com (int-mx08.intmail.prod.int.phx2.redhat.com
+ [10.5.11.23])
+ (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
+ (No client certificate requested)
+ by mimecast-mx01.redhat.com (Postfix) with ESMTPS id 10B44107B765;
+ Mon, 25 Nov 2019 10:35:44 +0000 (UTC)
+Received: from laptop.redhat.com (ovpn-116-37.ams2.redhat.com [10.36.116.37])
+ by smtp.corp.redhat.com (Postfix) with ESMTP id 8C39319C69;
+ Mon, 25 Nov 2019 10:35:39 +0000 (UTC)
+From: Eric Auger <eric.auger@redhat.com>
+To: eric.auger.pro@gmail.com, eric.auger@redhat.com, joro@8bytes.org,
+ hch@lst.de, cai@lca.pw, iommu@lists.linux-foundation.org,
+ linux-kernel@vger.kernel.org
+Subject: [PATCH] iommu: fix KASAN use-after-free in iommu_insert_resv_region
+Date: Mon, 25 Nov 2019 11:35:35 +0100
+Message-Id: <20191125103535.22782-1-eric.auger@redhat.com>
 MIME-Version: 1.0
-Content-Disposition: inline
-In-Reply-To: <20191125073923.GA30168@lst.de>
-User-Agent: Mutt/1.5.24 (2015-08-30)
-X-TM-AS-GCONF: 00
-x-cbid: 19112509-0012-0000-0000-0000036BE3F5
-X-IBM-AV-DETECTION: SAVI=unused REMOTE=unused XFE=unused
-x-cbparentid: 19112509-0013-0000-0000-000021A78322
-Message-Id: <20191125093159.GA23118@linux.ibm.com>
-X-Proofpoint-Virus-Version: vendor=fsecure engine=2.50.10434:6.0.95,18.0.572
- definitions=2019-11-25_02:2019-11-21,2019-11-25 signatures=0
-X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0
- suspectscore=0
- impostorscore=0 clxscore=1011 mlxscore=0 priorityscore=1501
- mlxlogscore=999 phishscore=0 lowpriorityscore=0 malwarescore=0 bulkscore=0
- adultscore=0 spamscore=0 classifier=spam adjust=0 reason=mlx scancount=1
- engine=8.12.0-1910280000 definitions=main-1911250087
-Cc: linux-arch@vger.kernel.org, darren@stevens-zone.net, rtd2@xtra.co.nz,
- Benjamin Herrenschmidt <benh@kernel.crashing.org>,
- linuxppc-dev <linuxppc-dev@lists.ozlabs.org>, linux-kernel@vger.kernel.org,
- linux-mm@kvack.org, iommu@lists.linux-foundation.org,
- Rob Herring <robh+dt@kernel.org>, paulus@samba.org,
- mad skateman <madskateman@gmail.com>,
- Christian Zigotzky <chzigotzky@xenosoft.de>,
- "contact@a-eon.com" <contact@a-eon.com>, Robin Murphy <robin.murphy@arm.com>,
- nsaenzjulienne@suse.de
+X-Scanned-By: MIMEDefang 2.84 on 10.5.11.23
+X-MC-Unique: 8pbgYF59MamGTDCxyCAzoQ-1
+X-Mimecast-Spam-Score: 0
 X-BeenThere: iommu@lists.linux-foundation.org
 X-Mailman-Version: 2.1.15
 Precedence: list
@@ -135,85 +96,43 @@ Content-Transfer-Encoding: 7bit
 Errors-To: iommu-bounces@lists.linux-foundation.org
 Sender: "iommu" <iommu-bounces@lists.linux-foundation.org>
 
-On Mon, Nov 25, 2019 at 08:39:23AM +0100, Christoph Hellwig wrote:
-> On Sat, Nov 23, 2019 at 12:42:27PM +0100, Christian Zigotzky wrote:
-> > Hello Christoph,
-> >
-> > Please find attached the dmesg of your Git kernel.
-> 
-> Thanks.  It looks like on your platform the swiotlb buffer isn't
-> actually addressable based on the bus dma mask limit, which is rather
-> interesting.  swiotlb_init uses memblock_alloc_low to allocate the
-> buffer, and I'll need some help from Mike and the powerpc maintainers
-> to figure out how that select where to allocate the buffer from, and
-> how we can move it to a lower address.  My gut feeling would be to try
-> to do what arm64 does and define a new ARCH_LOW_ADDRESS_LIMIT, preferably
-> without needing too much arch specific magic.
+Store the new region type in a variable. In case the new region
+gets merged into another one, the new node is freed and nr shall
+not be used anymore.
 
-Presuming the problem is relevant for all CoreNet boards something like
-this could work:
- 
-diff --git a/arch/powerpc/include/asm/dma.h b/arch/powerpc/include/asm/dma.h
-index 1b4f0254868f..7c6cfeeaff52 100644
---- a/arch/powerpc/include/asm/dma.h
-+++ b/arch/powerpc/include/asm/dma.h
-@@ -347,5 +347,11 @@ extern int isa_dma_bridge_buggy;
- #define isa_dma_bridge_buggy	(0)
- #endif
- 
-+#ifdef CONFIG_CORENET_GENERIC
-+extern phys_addr_t ppc_dma_phys_limit;
-+#define ARCH_LOW_ADDRESS_LIMIT	(ppc_dma_phys_limit - 1)
-+#endif
-+
-+
- #endif /* __KERNEL__ */
- #endif	/* _ASM_POWERPC_DMA_H */
-diff --git a/arch/powerpc/platforms/85xx/common.c b/arch/powerpc/platforms/85xx/common.c
-index fe0606439b5a..346b436b6d3f 100644
---- a/arch/powerpc/platforms/85xx/common.c
-+++ b/arch/powerpc/platforms/85xx/common.c
-@@ -126,3 +126,7 @@ void __init mpc85xx_qe_par_io_init(void)
- 	}
- }
- #endif
-+
-+#ifdef CONFIG_CORENET_GENERIC
-+phys_addr_t ppc_dma_phys_limit = 0xffffffffUL;
-+#endif
-diff --git a/arch/powerpc/platforms/85xx/corenet_generic.c b/arch/powerpc/platforms/85xx/corenet_generic.c
-index 7ee2c6628f64..673bcbdc7c75 100644
---- a/arch/powerpc/platforms/85xx/corenet_generic.c
-+++ b/arch/powerpc/platforms/85xx/corenet_generic.c
-@@ -64,7 +64,7 @@ void __init corenet_gen_setup_arch(void)
- 	mpc85xx_smp_init();
- 
- 	swiotlb_detect_4g();
--
-+	ppc_dma_phys_limit = 0x0fffffffUL;
- 	pr_info("%s board\n", ppc_md.name);
- 
- 	mpc85xx_qe_init();
+Fixes: 4dbd258ff63e ("iommu: Revisit iommu_insert_resv_region()
+implementation")
+Signed-off-by: Eric Auger <eric.auger@redhat.com>
+Reported-by: Qian Cai <cai@lca.pw>
+CC: Stable <stable@vger.kernel.org> #v5.3+
+---
+ drivers/iommu/iommu.c | 4 +++-
+ 1 file changed, 3 insertions(+), 1 deletion(-)
 
-> As a quick hack can you try this patch on top of the tree from Friday?
-> 
-> diff --git a/include/linux/memblock.h b/include/linux/memblock.h
-> index f491690d54c6..e3f95c362922 100644
-> --- a/include/linux/memblock.h
-> +++ b/include/linux/memblock.h
-> @@ -344,7 +344,7 @@ static inline int memblock_get_region_node(const struct memblock_region *r)
->  #define MEMBLOCK_LOW_LIMIT 0
->  
->  #ifndef ARCH_LOW_ADDRESS_LIMIT
-> -#define ARCH_LOW_ADDRESS_LIMIT  0xffffffffUL
-> +#define ARCH_LOW_ADDRESS_LIMIT  0x0fffffffUL
->  #endif
->  
->  phys_addr_t memblock_phys_alloc_range(phys_addr_t size, phys_addr_t align,
-
+diff --git a/drivers/iommu/iommu.c b/drivers/iommu/iommu.c
+index d658c7c6a2ab..338769f96d17 100644
+--- a/drivers/iommu/iommu.c
++++ b/drivers/iommu/iommu.c
+@@ -293,6 +293,8 @@ int iommu_insert_resv_region(struct iommu_resv_region *new,
+ 			     struct list_head *regions)
+ {
+ 	struct iommu_resv_region *iter, *tmp, *nr, *top;
++	enum iommu_resv_type nr_type = new->type;
++
+ 	LIST_HEAD(stack);
+ 
+ 	nr = iommu_alloc_resv_region(new->start, new->length,
+@@ -313,7 +315,7 @@ int iommu_insert_resv_region(struct iommu_resv_region *new,
+ 		phys_addr_t top_end, iter_end = iter->start + iter->length - 1;
+ 
+ 		/* no merge needed on elements of different types than @nr */
+-		if (iter->type != nr->type) {
++		if (iter->type != nr_type) {
+ 			list_move_tail(&iter->list, &stack);
+ 			continue;
+ 		}
 -- 
-Sincerely yours,
-Mike.
+2.20.1
 
 _______________________________________________
 iommu mailing list
