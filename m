@@ -2,98 +2,102 @@ Return-Path: <SRS0=OkKq=ZR=lists.linux-foundation.org=iommu-bounces@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-5.0 required=3.0 tests=DKIM_INVALID,DKIM_SIGNED,
-	HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_PATCH,MAILING_LIST_MULTI,SPF_HELO_NONE,
-	SPF_PASS,USER_AGENT_SANE_1 autolearn=unavailable autolearn_force=no
-	version=3.4.0
+X-Spam-Status: No, score=-2.0 required=3.0 tests=DKIM_INVALID,DKIM_SIGNED,
+	HEADER_FROM_DIFFERENT_DOMAINS,MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS,
+	USER_AGENT_SANE_1 autolearn=no autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id BD548C432C0
-	for <iommu@archiver.kernel.org>; Mon, 25 Nov 2019 16:38:51 +0000 (UTC)
-Received: from hemlock.osuosl.org (smtp2.osuosl.org [140.211.166.133])
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 6A269C432C0
+	for <iommu@archiver.kernel.org>; Mon, 25 Nov 2019 17:48:27 +0000 (UTC)
+Received: from silver.osuosl.org (smtp3.osuosl.org [140.211.166.136])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by mail.kernel.org (Postfix) with ESMTPS id 6DE6A2068E
-	for <iommu@archiver.kernel.org>; Mon, 25 Nov 2019 16:38:51 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTPS id 2C7FE20679
+	for <iommu@archiver.kernel.org>; Mon, 25 Nov 2019 17:48:27 +0000 (UTC)
 Authentication-Results: mail.kernel.org;
-	dkim=fail reason="signature verification failed" (2048-bit key) header.d=xenosoft.de header.i=@xenosoft.de header.b="dsWokQo9"
-DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 6DE6A2068E
-Authentication-Results: mail.kernel.org; dmarc=none (p=none dis=none) header.from=xenosoft.de
+	dkim=fail reason="signature verification failed" (2048-bit key) header.d=linaro.org header.i=@linaro.org header.b="avnCZcmn"
+DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 2C7FE20679
+Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=linaro.org
 Authentication-Results: mail.kernel.org; spf=pass smtp.mailfrom=iommu-bounces@lists.linux-foundation.org
 Received: from localhost (localhost [127.0.0.1])
-	by hemlock.osuosl.org (Postfix) with ESMTP id 36A2787A2F;
-	Mon, 25 Nov 2019 16:38:51 +0000 (UTC)
+	by silver.osuosl.org (Postfix) with ESMTP id EA25120033;
+	Mon, 25 Nov 2019 17:48:26 +0000 (UTC)
+X-Virus-Scanned: amavisd-new at osuosl.org
+Received: from silver.osuosl.org ([127.0.0.1])
+	by localhost (.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
+	with ESMTP id moRyZzea9pUY; Mon, 25 Nov 2019 17:48:26 +0000 (UTC)
+Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [140.211.9.56])
+	by silver.osuosl.org (Postfix) with ESMTP id 27C4D203D4;
+	Mon, 25 Nov 2019 17:48:26 +0000 (UTC)
+Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
+	by lists.linuxfoundation.org (Postfix) with ESMTP id E94FDC0881;
+	Mon, 25 Nov 2019 17:48:25 +0000 (UTC)
+Received: from hemlock.osuosl.org (smtp2.osuosl.org [140.211.166.133])
+ by lists.linuxfoundation.org (Postfix) with ESMTP id E8A7BC0878
+ for <iommu@lists.linux-foundation.org>; Mon, 25 Nov 2019 17:48:24 +0000 (UTC)
+Received: from localhost (localhost [127.0.0.1])
+ by hemlock.osuosl.org (Postfix) with ESMTP id C71908797A
+ for <iommu@lists.linux-foundation.org>; Mon, 25 Nov 2019 17:48:24 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
 Received: from hemlock.osuosl.org ([127.0.0.1])
-	by localhost (.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
-	with ESMTP id GHqdJa8z4uQE; Mon, 25 Nov 2019 16:38:50 +0000 (UTC)
-Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [140.211.9.56])
-	by hemlock.osuosl.org (Postfix) with ESMTP id 9CD8D87A12;
-	Mon, 25 Nov 2019 16:38:50 +0000 (UTC)
-Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
-	by lists.linuxfoundation.org (Postfix) with ESMTP id 6CF2EC1DD7;
-	Mon, 25 Nov 2019 16:38:50 +0000 (UTC)
-Received: from whitealder.osuosl.org (smtp1.osuosl.org [140.211.166.138])
- by lists.linuxfoundation.org (Postfix) with ESMTP id B6E71C0878
- for <iommu@lists.linux-foundation.org>; Mon, 25 Nov 2019 16:38:48 +0000 (UTC)
-Received: from localhost (localhost [127.0.0.1])
- by whitealder.osuosl.org (Postfix) with ESMTP id 9FA798610A
- for <iommu@lists.linux-foundation.org>; Mon, 25 Nov 2019 16:38:48 +0000 (UTC)
-X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from whitealder.osuosl.org ([127.0.0.1])
  by localhost (.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
- with ESMTP id BanJQLVH13mW for <iommu@lists.linux-foundation.org>;
- Mon, 25 Nov 2019 16:38:48 +0000 (UTC)
-X-Greylist: from auto-whitelisted by SQLgrey-1.7.6
-Received: from mo4-p02-ob.smtp.rzone.de (mo4-p02-ob.smtp.rzone.de
- [85.215.255.80])
- by whitealder.osuosl.org (Postfix) with ESMTPS id B3E0486165
- for <iommu@lists.linux-foundation.org>; Mon, 25 Nov 2019 16:38:47 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; t=1574699925;
- s=strato-dkim-0002; d=xenosoft.de;
- h=In-Reply-To:Date:Message-ID:From:References:Cc:To:Subject:
- X-RZG-CLASS-ID:X-RZG-AUTH:From:Subject:Sender;
- bh=gq/GyN0XSt4ZyXeob4dkH3Ai2PFxE9jquzF6wyzI+SE=;
- b=dsWokQo9jAh7j5sCjnSbIqnXYaJm9odg8Kqc1bNNWv57bZiKbnDOVJCNLoXqQyY8nR
- x+VV1yZsON+/cKuzlPf8CN9Lz2iwGMfeA3BXjlG9XYGXGcGmc7FDA1M00vyoJxlnjDxm
- xTPW8/7GReJi26uU6ltwCNwj8OTv2r84Iwa1QSgqEz9FbtTm6JglUDqawPWrpBawcElj
- ciMa0A3zzCG+BJdQa68/UkHaRVgnZ1hRLJ2jGIKa/kyLibgbtgQid5L12ZsNHtUmGD2j
- jZu00uZiU/2dKwSt427Sp6u0F4GTqBve+rNf9HD35f0cNl7fmx84E7TABB48X9JsGCz+
- O2Wg==
-X-RZG-AUTH: ":L2QefEenb+UdBJSdRCXu93KJ1bmSGnhMdmOod1DhGM4l4Hio94KKxRySfLxnHfJ+Dkjp5DdBJSrwuuqxvPhXJixqXRlXNgnQNtnHeat+VHo="
-X-RZG-CLASS-ID: mo00
-Received: from [IPv6:2a02:8109:89c0:ebfc:40cb:202:5c2:453d]
- by smtp.strato.de (RZmta 45.0.2 AUTH) with ESMTPSA id x0678cvAPGcX2cB
- (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (curve secp521r1 with
- 521 ECDH bits, eq. 15360 bits RSA))
- (Client did not present a certificate);
- Mon, 25 Nov 2019 17:38:33 +0100 (CET)
-Subject: Re: Bug 205201 - Booting halts if Dawicontrol DC-2976 UW SCSI board
- installed, unless RAM size limited to 3500M
-To: Mike Rapoport <rppt@linux.ibm.com>, Christoph Hellwig <hch@lst.de>
-References: <F1EBB706-73DF-430E-9020-C214EC8ED5DA@xenosoft.de>
- <20191121072943.GA24024@lst.de>
- <dbde2252-035e-6183-7897-43348e60647e@xenosoft.de>
- <6eec5c42-019c-a988-fc2a-cb804194683d@xenosoft.de>
- <d0252d29-7a03-20e1-ccd7-e12d906e4bdf@arm.com>
- <b3217742-2c0b-8447-c9ac-608b93265363@xenosoft.de>
- <20191121180226.GA3852@lst.de>
- <2fde79cf-875f-94e6-4a1b-f73ebb2e2c32@xenosoft.de>
- <20191125073923.GA30168@lst.de> <20191125093159.GA23118@linux.ibm.com>
-From: Christian Zigotzky <chzigotzky@xenosoft.de>
-Message-ID: <1521ec47-f358-0304-da23-313e6bebb66d@xenosoft.de>
-Date: Mon, 25 Nov 2019 17:38:33 +0100
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:60.0) Gecko/20100101
- Thunderbird/60.9.1
+ with ESMTP id HyHtnDUvaU0z for <iommu@lists.linux-foundation.org>;
+ Mon, 25 Nov 2019 17:48:22 +0000 (UTC)
+X-Greylist: domain auto-whitelisted by SQLgrey-1.7.6
+Received: from mail-wr1-f68.google.com (mail-wr1-f68.google.com
+ [209.85.221.68])
+ by hemlock.osuosl.org (Postfix) with ESMTPS id 7E7588796C
+ for <iommu@lists.linux-foundation.org>; Mon, 25 Nov 2019 17:48:22 +0000 (UTC)
+Received: by mail-wr1-f68.google.com with SMTP id z10so19152381wrs.12
+ for <iommu@lists.linux-foundation.org>; Mon, 25 Nov 2019 09:48:22 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linaro.org; s=google;
+ h=date:from:to:cc:subject:message-id:references:mime-version
+ :content-disposition:in-reply-to:user-agent;
+ bh=BgkOCn6dEkaCecb5ZyLmsM0vtVrRc/X2TTNPZzp0BGs=;
+ b=avnCZcmnWQYRn2ejXtbreBr+2fzx+QirQ6jMfKAMwEDo3jyctcQvSS6SM6aBRJCAeP
+ kfDeyJNKwf8Ww1fdC45IB/7jKdswYHhGPaF1CAK1k/eHulj1Z8NDM4NLugYgnTl5DEOo
+ YefFZFkbA6n3NhXip9hDUOr85MJpTQj4qNSE9VQlJPLdQNIY7YvpyPpEkKFXnyOnZTKk
+ zxPRxvEFW8WTSxxiqEYBqSc/EW+pCq8OXdDzqUhlOxxL17HZqZAjCdkw8lFuH7Nliyrm
+ MDDF0iP1wW7sCg4O3wkJdWYO3+EHez48clfhcdiT/8bJ80T/RuVV1xpWQm7lYwPafspo
+ 67oQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+ d=1e100.net; s=20161025;
+ h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+ :mime-version:content-disposition:in-reply-to:user-agent;
+ bh=BgkOCn6dEkaCecb5ZyLmsM0vtVrRc/X2TTNPZzp0BGs=;
+ b=NHklXT1uKDspql21Q174cWmuuGkt4Cp8102ATAB+iKCris7uiS0ATwYecUjpP2xb90
+ Wo3WnQBdUhSwq6xXaFiD4soUUb+KBNUbwlE8hIffVlKbc6glptkXDsT12vP3ZBcRZHwD
+ PtqVACvCx3p4+qKB61ipkSk18D0YUbPyPBVunqb548/dBJEHUJnYoIAk05QPL6oCvGTQ
+ yAsEsWJhi+FvuWF9/leZjtU/XTIMwOh0rwk1+6jCVy3VqCr12Mzp27T79/l8WMLviUnA
+ gVSv6HwGkpBqzi60CtJ7/c/9g8Owq/K7s2s3iZ5qeZu0H9Ad072ccWWkwrFavNLvQNyi
+ YIsQ==
+X-Gm-Message-State: APjAAAWZ1zbp2+C8eB4RosqDYLmxP3TNzaZcEjcNmqCT0cy3Na4kIaR8
+ DBP2j20P28cksXt+WvqEvKlNLw==
+X-Google-Smtp-Source: APXvYqzTUYJqRjRrvNHNtPJwWI/KyemjW5baiqCvdsWHNGy9hgofkwoCe9NS+y/KmUwV3VIZ5E9NFQ==
+X-Received: by 2002:a5d:4acb:: with SMTP id y11mr12150855wrs.106.1574704100857; 
+ Mon, 25 Nov 2019 09:48:20 -0800 (PST)
+Received: from lophozonia (xdsl-188-155-204-106.adslplus.ch. [188.155.204.106])
+ by smtp.gmail.com with ESMTPSA id x7sm11127238wrq.41.2019.11.25.09.48.19
+ (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+ Mon, 25 Nov 2019 09:48:20 -0800 (PST)
+Date: Mon, 25 Nov 2019 18:48:17 +0100
+From: Jean-Philippe Brucker <jean-philippe@linaro.org>
+To: "Michael S. Tsirkin" <mst@redhat.com>
+Subject: Re: [RFC 13/13] iommu/virtio: Add topology description to
+Message-ID: <20191125174817.GB945122@lophozonia>
+References: <20191122105000.800410-1-jean-philippe@linaro.org>
+ <20191122105000.800410-14-jean-philippe@linaro.org>
+ <20191122072753-mutt-send-email-mst@kernel.org>
 MIME-Version: 1.0
-In-Reply-To: <20191125093159.GA23118@linux.ibm.com>
-Content-Language: de-DE
-Cc: linux-arch@vger.kernel.org, darren@stevens-zone.net, rtd2@xtra.co.nz,
- Benjamin Herrenschmidt <benh@kernel.crashing.org>,
- linuxppc-dev <linuxppc-dev@lists.ozlabs.org>, linux-kernel@vger.kernel.org,
- linux-mm@kvack.org, iommu@lists.linux-foundation.org,
- Rob Herring <robh+dt@kernel.org>, paulus@samba.org,
- mad skateman <madskateman@gmail.com>, "contact@a-eon.com" <contact@a-eon.com>,
- Robin Murphy <robin.murphy@arm.com>, nsaenzjulienne@suse.de
+Content-Disposition: inline
+In-Reply-To: <20191122072753-mutt-send-email-mst@kernel.org>
+User-Agent: Mutt/1.12.2 (2019-09-21)
+Cc: virtio-dev@lists.oasis-open.org, kevin.tian@intel.com,
+ gregkh@linuxfoundation.org, linux-pci@vger.kernel.org, sudeep.holla@arm.com,
+ rjw@rjwysocki.net, virtualization@lists.linux-foundation.org,
+ linux-acpi@vger.kernel.org, iommu@lists.linux-foundation.org,
+ sebastien.boeuf@intel.com, jacob.jun.pan@intel.com, guohanjun@huawei.com,
+ bhelgaas@google.com, jasowang@redhat.com, linux-arm-kernel@lists.infradead.org,
+ lenb@kernel.org
 X-BeenThere: iommu@lists.linux-foundation.org
 X-Mailman-Version: 2.1.15
 Precedence: list
@@ -106,91 +110,79 @@ List-Post: <mailto:iommu@lists.linux-foundation.org>
 List-Help: <mailto:iommu-request@lists.linux-foundation.org?subject=help>
 List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
  <mailto:iommu-request@lists.linux-foundation.org?subject=subscribe>
+Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
-Content-Type: text/plain; charset="us-ascii"; Format="flowed"
 Errors-To: iommu-bounces@lists.linux-foundation.org
 Sender: "iommu" <iommu-bounces@lists.linux-foundation.org>
 
-On 25 November 2019 at 10:32 am, Mike Rapoport wrote:
-> On Mon, Nov 25, 2019 at 08:39:23AM +0100, Christoph Hellwig wrote:
->> On Sat, Nov 23, 2019 at 12:42:27PM +0100, Christian Zigotzky wrote:
->>> Hello Christoph,
->>>
->>> Please find attached the dmesg of your Git kernel.
->> Thanks.  It looks like on your platform the swiotlb buffer isn't
->> actually addressable based on the bus dma mask limit, which is rather
->> interesting.  swiotlb_init uses memblock_alloc_low to allocate the
->> buffer, and I'll need some help from Mike and the powerpc maintainers
->> to figure out how that select where to allocate the buffer from, and
->> how we can move it to a lower address.  My gut feeling would be to try
->> to do what arm64 does and define a new ARCH_LOW_ADDRESS_LIMIT, preferably
->> without needing too much arch specific magic.
-> Presuming the problem is relevant for all CoreNet boards something like
-> this could work:
->   
-> diff --git a/arch/powerpc/include/asm/dma.h b/arch/powerpc/include/asm/dma.h
-> index 1b4f0254868f..7c6cfeeaff52 100644
-> --- a/arch/powerpc/include/asm/dma.h
-> +++ b/arch/powerpc/include/asm/dma.h
-> @@ -347,5 +347,11 @@ extern int isa_dma_bridge_buggy;
->   #define isa_dma_bridge_buggy	(0)
->   #endif
->   
-> +#ifdef CONFIG_CORENET_GENERIC
-> +extern phys_addr_t ppc_dma_phys_limit;
-> +#define ARCH_LOW_ADDRESS_LIMIT	(ppc_dma_phys_limit - 1)
-> +#endif
-> +
-> +
->   #endif /* __KERNEL__ */
->   #endif	/* _ASM_POWERPC_DMA_H */
-> diff --git a/arch/powerpc/platforms/85xx/common.c b/arch/powerpc/platforms/85xx/common.c
-> index fe0606439b5a..346b436b6d3f 100644
-> --- a/arch/powerpc/platforms/85xx/common.c
-> +++ b/arch/powerpc/platforms/85xx/common.c
-> @@ -126,3 +126,7 @@ void __init mpc85xx_qe_par_io_init(void)
->   	}
->   }
->   #endif
-> +
-> +#ifdef CONFIG_CORENET_GENERIC
-> +phys_addr_t ppc_dma_phys_limit = 0xffffffffUL;
-> +#endif
-> diff --git a/arch/powerpc/platforms/85xx/corenet_generic.c b/arch/powerpc/platforms/85xx/corenet_generic.c
-> index 7ee2c6628f64..673bcbdc7c75 100644
-> --- a/arch/powerpc/platforms/85xx/corenet_generic.c
-> +++ b/arch/powerpc/platforms/85xx/corenet_generic.c
-> @@ -64,7 +64,7 @@ void __init corenet_gen_setup_arch(void)
->   	mpc85xx_smp_init();
->   
->   	swiotlb_detect_4g();
-> -
-> +	ppc_dma_phys_limit = 0x0fffffffUL;
->   	pr_info("%s board\n", ppc_md.name);
->   
->   	mpc85xx_qe_init();
->
->> As a quick hack can you try this patch on top of the tree from Friday?
->>
->> diff --git a/include/linux/memblock.h b/include/linux/memblock.h
->> index f491690d54c6..e3f95c362922 100644
->> --- a/include/linux/memblock.h
->> +++ b/include/linux/memblock.h
->> @@ -344,7 +344,7 @@ static inline int memblock_get_region_node(const struct memblock_region *r)
->>   #define MEMBLOCK_LOW_LIMIT 0
->>   
->>   #ifndef ARCH_LOW_ADDRESS_LIMIT
->> -#define ARCH_LOW_ADDRESS_LIMIT  0xffffffffUL
->> +#define ARCH_LOW_ADDRESS_LIMIT  0x0fffffffUL
->>   #endif
->>   
->>   phys_addr_t memblock_phys_alloc_range(phys_addr_t size, phys_addr_t align,
-Hello Mike,
+On Fri, Nov 22, 2019 at 07:53:19AM -0500, Michael S. Tsirkin wrote:
+> Overall this looks good to me. The only point is that
+> I think the way the interface is designed makes writing
+> the driver a bit too difficult. Idea: if instead we just
+> have a length field and then an array of records
+> (preferably unions so we don't need to work hard),
+> we can shadow that into memory, then iterate over
+> the unions.
+> 
+> Maybe add a uniform record length + number of records field.
+> Then just skip types you do not know how to handle.
+> This will also help make sure it's within bounds.
+> 
+> What do you think?
 
-Many thanks for your patch! I will test it tomorrow.
+Sounds good, that should simplify the implementation a bit.
 
-Cheers,
-Christian
+> You will need to do something to address the TODO I think.
+
+Yes, I'll try to figure out a way to test platform devices.
+
+> > +static void viommu_cwrite(struct pci_dev *dev, int cfg,
+> > +			  struct viommu_cap_config *cap, u32 length, u32 offset,
+> > +			  u32 val)
+> 
+> A single user with 4 byte parameter. Just open-code?
+
+Ok
+
+> > +		cap.head.type = viommu_cread(dev, pci_cfg, dev_cfg, 2, offset);
+> > +		cap.head.next = viommu_cread(dev, pci_cfg, dev_cfg, 2, offset + 2);
+> 
+> All of this doesn't seem to be endian-clean. Try running sparse I think
+> it will complain.
+
+It does, I'll fix this
+
+> > @@ -36,6 +37,31 @@ struct virtio_iommu_config {
+> >  	struct virtio_iommu_range_32		domain_range;
+> >  	/* Probe buffer size */
+> >  	__le32					probe_size;
+> > +	/* Offset to the beginning of the topology table */
+> > +	__le16					topo_offset;
+> 
+> why do we need an offset?
+
+I find it awkward to put a variable-size array in the middle of the
+config. The virtio_iommu_config struct would be easier to extend later if
+we keep the array at the end and only define small static fields here.
+
+> 
+> > +};
+> > +
+> > +struct virtio_iommu_topo_head {
+> > +	__le16					type;
+> > +	__le16					next;
+> > +};
+> 
+> So this linked list makes things harder than necessary imho.
+> It will be easier to just have a counter with # of records.
+> Then make all records the same size.
+> Then just read each record out into a buffer, and
+> handle it there.
+
+Yes, that should simplify things.
+
+Thanks,
+Jean
 _______________________________________________
 iommu mailing list
 iommu@lists.linux-foundation.org
