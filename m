@@ -6,78 +6,78 @@ X-Spam-Status: No, score=-6.5 required=3.0 tests=DKIM_INVALID,DKIM_SIGNED,
 	HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_PATCH,MAILING_LIST_MULTI,SIGNED_OFF_BY,
 	SPF_HELO_NONE,SPF_PASS autolearn=ham autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 46994C432C3
-	for <iommu@archiver.kernel.org>; Mon, 25 Nov 2019 10:35:52 +0000 (UTC)
-Received: from hemlock.osuosl.org (smtp2.osuosl.org [140.211.166.133])
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 3B44EC432C0
+	for <iommu@archiver.kernel.org>; Mon, 25 Nov 2019 10:45:25 +0000 (UTC)
+Received: from silver.osuosl.org (smtp3.osuosl.org [140.211.166.136])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by mail.kernel.org (Postfix) with ESMTPS id 0EF942082F
-	for <iommu@archiver.kernel.org>; Mon, 25 Nov 2019 10:35:51 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTPS id F37B820740
+	for <iommu@archiver.kernel.org>; Mon, 25 Nov 2019 10:45:24 +0000 (UTC)
 Authentication-Results: mail.kernel.org;
-	dkim=fail reason="signature verification failed" (1024-bit key) header.d=redhat.com header.i=@redhat.com header.b="dyy2ZVwk"
-DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 0EF942082F
+	dkim=fail reason="signature verification failed" (1024-bit key) header.d=redhat.com header.i=@redhat.com header.b="esZ8r/Ys"
+DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org F37B820740
 Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=redhat.com
 Authentication-Results: mail.kernel.org; spf=pass smtp.mailfrom=iommu-bounces@lists.linux-foundation.org
 Received: from localhost (localhost [127.0.0.1])
-	by hemlock.osuosl.org (Postfix) with ESMTP id ADF3487B2E;
-	Mon, 25 Nov 2019 10:35:51 +0000 (UTC)
-X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from hemlock.osuosl.org ([127.0.0.1])
-	by localhost (.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
-	with ESMTP id bw8QP2IQa1hW; Mon, 25 Nov 2019 10:35:51 +0000 (UTC)
-Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [140.211.9.56])
-	by hemlock.osuosl.org (Postfix) with ESMTP id 0F04B87A9C;
-	Mon, 25 Nov 2019 10:35:51 +0000 (UTC)
-Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
-	by lists.linuxfoundation.org (Postfix) with ESMTP id EC371C1DD7;
-	Mon, 25 Nov 2019 10:35:50 +0000 (UTC)
-Received: from silver.osuosl.org (smtp3.osuosl.org [140.211.166.136])
- by lists.linuxfoundation.org (Postfix) with ESMTP id 42031C0878
- for <iommu@lists.linux-foundation.org>; Mon, 25 Nov 2019 10:35:49 +0000 (UTC)
-Received: from localhost (localhost [127.0.0.1])
- by silver.osuosl.org (Postfix) with ESMTP id 386B9204B0
- for <iommu@lists.linux-foundation.org>; Mon, 25 Nov 2019 10:35:49 +0000 (UTC)
+	by silver.osuosl.org (Postfix) with ESMTP id A2A1C204B0;
+	Mon, 25 Nov 2019 10:45:24 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
 Received: from silver.osuosl.org ([127.0.0.1])
+	by localhost (.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
+	with ESMTP id 5by6ZlxhaD+x; Mon, 25 Nov 2019 10:45:23 +0000 (UTC)
+Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [140.211.9.56])
+	by silver.osuosl.org (Postfix) with ESMTP id ECA81203A6;
+	Mon, 25 Nov 2019 10:45:23 +0000 (UTC)
+Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
+	by lists.linuxfoundation.org (Postfix) with ESMTP id D027FC1DD7;
+	Mon, 25 Nov 2019 10:45:23 +0000 (UTC)
+Received: from hemlock.osuosl.org (smtp2.osuosl.org [140.211.166.133])
+ by lists.linuxfoundation.org (Postfix) with ESMTP id 5B542C0878
+ for <iommu@lists.linux-foundation.org>; Mon, 25 Nov 2019 10:45:22 +0000 (UTC)
+Received: from localhost (localhost [127.0.0.1])
+ by hemlock.osuosl.org (Postfix) with ESMTP id 4666687AAE
+ for <iommu@lists.linux-foundation.org>; Mon, 25 Nov 2019 10:45:22 +0000 (UTC)
+X-Virus-Scanned: amavisd-new at osuosl.org
+Received: from hemlock.osuosl.org ([127.0.0.1])
  by localhost (.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
- with ESMTP id t8FjbuoGgGzs for <iommu@lists.linux-foundation.org>;
- Mon, 25 Nov 2019 10:35:48 +0000 (UTC)
+ with ESMTP id JYx84i+FdamQ for <iommu@lists.linux-foundation.org>;
+ Mon, 25 Nov 2019 10:45:21 +0000 (UTC)
 X-Greylist: domain auto-whitelisted by SQLgrey-1.7.6
-Received: from us-smtp-delivery-1.mimecast.com (us-smtp-2.mimecast.com
- [207.211.31.81])
- by silver.osuosl.org (Postfix) with ESMTPS id 3DDB6204A2
- for <iommu@lists.linux-foundation.org>; Mon, 25 Nov 2019 10:35:48 +0000 (UTC)
+Received: from us-smtp-delivery-1.mimecast.com (us-smtp-1.mimecast.com
+ [205.139.110.61])
+ by hemlock.osuosl.org (Postfix) with ESMTPS id EC04887A9C
+ for <iommu@lists.linux-foundation.org>; Mon, 25 Nov 2019 10:45:20 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
- s=mimecast20190719; t=1574678146;
+ s=mimecast20190719; t=1574678719;
  h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
  to:to:cc:mime-version:mime-version:content-type:content-type:
  content-transfer-encoding:content-transfer-encoding;
- bh=ZMYkA3jI8+ywNR+OhV3jpIlPger7eOA5dEPy09p1d6E=;
- b=dyy2ZVwk9P1P6CI6YlUeRdXMkmj6h6DHx9ZsORsqi1X17W72/3ZEjvkJOIvgx3m9ld2TXV
- Uvtq8M8mdf6s9NdiPIamRF7qrZUtQGpUBdMiDlZld3P9c/skUY258gtks+g2R5ODR2/shS
- +qQELQDJeZOF1C3S/b5fbyYkOe8Q2/o=
+ bh=QRAeg6sofwTZ7IMOF1+XpMax8/HjXNDIA5l6w+nYTIs=;
+ b=esZ8r/Ysi1SGaDPAFo1bldoMmA6Y3ZGL8wXJyBjWdAnwTiLjZXaYc1/RP78Qe2XN6NyWeP
+ 66+i3ElbP6y3tVBfQXw09Ir+6gaN8LnVGTd0sT38wf4ZL/bQts8ImBw5HxE4ehjuyR75rZ
+ DnsIQHnUCdOPulk1zxWsYBO0rRID2Qk=
 Received: from mimecast-mx01.redhat.com (mimecast-mx01.redhat.com
  [209.132.183.4]) (Using TLS) by relay.mimecast.com with ESMTP id
- us-mta-337-8pbgYF59MamGTDCxyCAzoQ-1; Mon, 25 Nov 2019 05:35:45 -0500
-Received: from smtp.corp.redhat.com (int-mx08.intmail.prod.int.phx2.redhat.com
- [10.5.11.23])
+ us-mta-174-N6dA0LuNPl2MuZqUDdLEIA-1; Mon, 25 Nov 2019 05:45:16 -0500
+Received: from smtp.corp.redhat.com (int-mx06.intmail.prod.int.phx2.redhat.com
+ [10.5.11.16])
  (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
  (No client certificate requested)
- by mimecast-mx01.redhat.com (Postfix) with ESMTPS id 10B44107B765;
- Mon, 25 Nov 2019 10:35:44 +0000 (UTC)
+ by mimecast-mx01.redhat.com (Postfix) with ESMTPS id 05DBC80058E;
+ Mon, 25 Nov 2019 10:45:15 +0000 (UTC)
 Received: from laptop.redhat.com (ovpn-116-37.ams2.redhat.com [10.36.116.37])
- by smtp.corp.redhat.com (Postfix) with ESMTP id 8C39319C69;
- Mon, 25 Nov 2019 10:35:39 +0000 (UTC)
+ by smtp.corp.redhat.com (Postfix) with ESMTP id 8E9665C1D4;
+ Mon, 25 Nov 2019 10:45:10 +0000 (UTC)
 From: Eric Auger <eric.auger@redhat.com>
 To: eric.auger.pro@gmail.com, eric.auger@redhat.com, joro@8bytes.org,
  hch@lst.de, cai@lca.pw, iommu@lists.linux-foundation.org,
  linux-kernel@vger.kernel.org
-Subject: [PATCH] iommu: fix KASAN use-after-free in iommu_insert_resv_region
-Date: Mon, 25 Nov 2019 11:35:35 +0100
-Message-Id: <20191125103535.22782-1-eric.auger@redhat.com>
+Subject: [PATCH v2] iommu: fix KASAN use-after-free in iommu_insert_resv_region
+Date: Mon, 25 Nov 2019 11:45:07 +0100
+Message-Id: <20191125104507.23704-1-eric.auger@redhat.com>
 MIME-Version: 1.0
-X-Scanned-By: MIMEDefang 2.84 on 10.5.11.23
-X-MC-Unique: 8pbgYF59MamGTDCxyCAzoQ-1
+X-Scanned-By: MIMEDefang 2.79 on 10.5.11.16
+X-MC-Unique: N6dA0LuNPl2MuZqUDdLEIA-1
 X-Mimecast-Spam-Score: 0
 X-BeenThere: iommu@lists.linux-foundation.org
 X-Mailman-Version: 2.1.15
@@ -104,25 +104,28 @@ Fixes: 4dbd258ff63e ("iommu: Revisit iommu_insert_resv_region()
 implementation")
 Signed-off-by: Eric Auger <eric.auger@redhat.com>
 Reported-by: Qian Cai <cai@lca.pw>
-CC: Stable <stable@vger.kernel.org> #v5.3+
+Cc: Stable <stable@vger.kernel.org> #v5.3+
+
 ---
- drivers/iommu/iommu.c | 4 +++-
- 1 file changed, 3 insertions(+), 1 deletion(-)
+
+- remove spurious new line
+---
+ drivers/iommu/iommu.c | 3 ++-
+ 1 file changed, 2 insertions(+), 1 deletion(-)
 
 diff --git a/drivers/iommu/iommu.c b/drivers/iommu/iommu.c
-index d658c7c6a2ab..338769f96d17 100644
+index d658c7c6a2ab..4412b876250c 100644
 --- a/drivers/iommu/iommu.c
 +++ b/drivers/iommu/iommu.c
-@@ -293,6 +293,8 @@ int iommu_insert_resv_region(struct iommu_resv_region *new,
+@@ -293,6 +293,7 @@ int iommu_insert_resv_region(struct iommu_resv_region *new,
  			     struct list_head *regions)
  {
  	struct iommu_resv_region *iter, *tmp, *nr, *top;
 +	enum iommu_resv_type nr_type = new->type;
-+
  	LIST_HEAD(stack);
  
  	nr = iommu_alloc_resv_region(new->start, new->length,
-@@ -313,7 +315,7 @@ int iommu_insert_resv_region(struct iommu_resv_region *new,
+@@ -313,7 +314,7 @@ int iommu_insert_resv_region(struct iommu_resv_region *new,
  		phys_addr_t top_end, iter_end = iter->start + iter->length - 1;
  
  		/* no merge needed on elements of different types than @nr */
