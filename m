@@ -2,78 +2,77 @@ Return-Path: <SRS0=2ATj=ZS=lists.linux-foundation.org=iommu-bounces@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-2.3 required=3.0 tests=HEADER_FROM_DIFFERENT_DOMAINS,
-	MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS,USER_AGENT_SANE_1 autolearn=no
-	autolearn_force=no version=3.4.0
+X-Spam-Status: No, score=-8.2 required=3.0 tests=HEADER_FROM_DIFFERENT_DOMAINS,
+	INCLUDES_PATCH,MAILING_LIST_MULTI,SIGNED_OFF_BY,SPF_HELO_NONE,SPF_PASS,
+	URIBL_BLOCKED,USER_AGENT_SANE_1 autolearn=unavailable autolearn_force=no
+	version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 3D60FC432C0
-	for <iommu@archiver.kernel.org>; Tue, 26 Nov 2019 16:40:38 +0000 (UTC)
-Received: from whitealder.osuosl.org (smtp1.osuosl.org [140.211.166.138])
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 4ABBDC43141
+	for <iommu@archiver.kernel.org>; Tue, 26 Nov 2019 17:07:06 +0000 (UTC)
+Received: from silver.osuosl.org (smtp3.osuosl.org [140.211.166.136])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by mail.kernel.org (Postfix) with ESMTPS id 027EE20835
-	for <iommu@archiver.kernel.org>; Tue, 26 Nov 2019 16:40:37 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 027EE20835
-Authentication-Results: mail.kernel.org; dmarc=none (p=none dis=none) header.from=lst.de
+	by mail.kernel.org (Postfix) with ESMTPS id 1A7C0207DD
+	for <iommu@archiver.kernel.org>; Tue, 26 Nov 2019 17:07:05 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 1A7C0207DD
+Authentication-Results: mail.kernel.org; dmarc=none (p=none dis=none) header.from=deltatee.com
 Authentication-Results: mail.kernel.org; spf=pass smtp.mailfrom=iommu-bounces@lists.linux-foundation.org
 Received: from localhost (localhost [127.0.0.1])
-	by whitealder.osuosl.org (Postfix) with ESMTP id F18D486117;
-	Tue, 26 Nov 2019 16:40:36 +0000 (UTC)
+	by silver.osuosl.org (Postfix) with ESMTP id DD711203E5;
+	Tue, 26 Nov 2019 17:07:05 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from whitealder.osuosl.org ([127.0.0.1])
+Received: from silver.osuosl.org ([127.0.0.1])
 	by localhost (.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
-	with ESMTP id TEqMkxXMJGRP; Tue, 26 Nov 2019 16:40:36 +0000 (UTC)
+	with ESMTP id KK9ZIGw7OhjZ; Tue, 26 Nov 2019 17:07:04 +0000 (UTC)
 Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [140.211.9.56])
-	by whitealder.osuosl.org (Postfix) with ESMTP id 6B9ED855F1;
-	Tue, 26 Nov 2019 16:40:36 +0000 (UTC)
+	by silver.osuosl.org (Postfix) with ESMTP id 6947C20334;
+	Tue, 26 Nov 2019 17:07:04 +0000 (UTC)
 Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
-	by lists.linuxfoundation.org (Postfix) with ESMTP id 5A02EC0880;
-	Tue, 26 Nov 2019 16:40:36 +0000 (UTC)
+	by lists.linuxfoundation.org (Postfix) with ESMTP id 544DFC0880;
+	Tue, 26 Nov 2019 17:07:04 +0000 (UTC)
 Received: from whitealder.osuosl.org (smtp1.osuosl.org [140.211.166.138])
- by lists.linuxfoundation.org (Postfix) with ESMTP id D018EC0878
- for <iommu@lists.linux-foundation.org>; Tue, 26 Nov 2019 16:40:34 +0000 (UTC)
+ by lists.linuxfoundation.org (Postfix) with ESMTP id 0003EC0878
+ for <iommu@lists.linux-foundation.org>; Tue, 26 Nov 2019 17:07:02 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
- by whitealder.osuosl.org (Postfix) with ESMTP id CAA3386117
- for <iommu@lists.linux-foundation.org>; Tue, 26 Nov 2019 16:40:34 +0000 (UTC)
+ by whitealder.osuosl.org (Postfix) with ESMTP id DFDF786E6F
+ for <iommu@lists.linux-foundation.org>; Tue, 26 Nov 2019 17:07:02 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
 Received: from whitealder.osuosl.org ([127.0.0.1])
  by localhost (.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
- with ESMTP id IXmZttcR1NW8 for <iommu@lists.linux-foundation.org>;
- Tue, 26 Nov 2019 16:40:33 +0000 (UTC)
+ with ESMTP id UStLHhZW1N5S for <iommu@lists.linux-foundation.org>;
+ Tue, 26 Nov 2019 17:07:01 +0000 (UTC)
 X-Greylist: from auto-whitelisted by SQLgrey-1.7.6
-Received: from verein.lst.de (verein.lst.de [213.95.11.211])
- by whitealder.osuosl.org (Postfix) with ESMTPS id 3B10F855F1
- for <iommu@lists.linux-foundation.org>; Tue, 26 Nov 2019 16:40:33 +0000 (UTC)
-Received: by verein.lst.de (Postfix, from userid 2407)
- id C1C2068C4E; Tue, 26 Nov 2019 17:40:27 +0100 (CET)
-Date: Tue, 26 Nov 2019 17:40:26 +0100
-From: Christoph Hellwig <hch@lst.de>
-To: Christian Zigotzky <chzigotzky@xenosoft.de>
-Subject: Re: Bug 205201 - Booting halts if Dawicontrol DC-2976 UW SCSI
- board installed, unless RAM size limited to 3500M
-Message-ID: <20191126164026.GA8026@lst.de>
-References: <F1EBB706-73DF-430E-9020-C214EC8ED5DA@xenosoft.de>
- <20191121072943.GA24024@lst.de>
- <dbde2252-035e-6183-7897-43348e60647e@xenosoft.de>
- <6eec5c42-019c-a988-fc2a-cb804194683d@xenosoft.de>
- <d0252d29-7a03-20e1-ccd7-e12d906e4bdf@arm.com>
- <b3217742-2c0b-8447-c9ac-608b93265363@xenosoft.de>
- <20191121180226.GA3852@lst.de>
- <2fde79cf-875f-94e6-4a1b-f73ebb2e2c32@xenosoft.de>
- <20191125073923.GA30168@lst.de>
- <4681f5fe-c095-15f5-9221-4b55e940bafc@xenosoft.de>
+Received: from ale.deltatee.com (ale.deltatee.com [207.54.116.67])
+ by whitealder.osuosl.org (Postfix) with ESMTPS id 9480886E49
+ for <iommu@lists.linux-foundation.org>; Tue, 26 Nov 2019 17:07:01 +0000 (UTC)
+Received: from guinness.priv.deltatee.com ([172.16.1.162])
+ by ale.deltatee.com with esmtp (Exim 4.92)
+ (envelope-from <logang@deltatee.com>)
+ id 1iZeIk-0004un-K7; Tue, 26 Nov 2019 10:06:59 -0700
+To: James Sewart <jamessewart@arista.com>, linux-pci@vger.kernel.org
+References: <20191120193228.GA103670@google.com>
+ <6A902F0D-FE98-4760-ADBB-4D5987D866BE@arista.com>
+From: Logan Gunthorpe <logang@deltatee.com>
+Message-ID: <3cd1d36f-a8ba-92dc-f991-19e2f9196eba@deltatee.com>
+Date: Tue, 26 Nov 2019 10:06:56 -0700
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:60.0) Gecko/20100101
+ Thunderbird/60.9.0
 MIME-Version: 1.0
-Content-Disposition: inline
-In-Reply-To: <4681f5fe-c095-15f5-9221-4b55e940bafc@xenosoft.de>
-User-Agent: Mutt/1.5.17 (2007-11-01)
-Cc: linux-arch@vger.kernel.org, darren@stevens-zone.net, rtd2@xtra.co.nz,
- Benjamin Herrenschmidt <benh@kernel.crashing.org>,
- linuxppc-dev <linuxppc-dev@lists.ozlabs.org>, linux-kernel@vger.kernel.org,
- Mike Rapoport <rppt@linux.ibm.com>, linux-mm@kvack.org,
- iommu@lists.linux-foundation.org, Rob Herring <robh+dt@kernel.org>,
- paulus@samba.org, mad skateman <madskateman@gmail.com>,
- "contact@a-eon.com" <contact@a-eon.com>, Robin Murphy <robin.murphy@arm.com>,
- Christoph Hellwig <hch@lst.de>, nsaenzjulienne@suse.de
+In-Reply-To: <6A902F0D-FE98-4760-ADBB-4D5987D866BE@arista.com>
+Content-Language: en-CA
+X-SA-Exim-Connect-IP: 172.16.1.162
+X-SA-Exim-Rcpt-To: helgaas@kernel.org, alex.williamson@redhat.com,
+ dima@arista.com, linux-kernel@vger.kernel.org,
+ iommu@lists.linux-foundation.org, 0x7f454c46@gmail.com,
+ linux-pci@vger.kernel.org, jamessewart@arista.com
+X-SA-Exim-Mail-From: logang@deltatee.com
+Subject: Re: [PATCH v2] PCI: Add DMA alias quirk for PLX PEX NTB
+X-SA-Exim-Version: 4.2.1 (built Wed, 08 May 2019 21:11:16 +0000)
+X-SA-Exim-Scanned: Yes (on ale.deltatee.com)
+Cc: Dmitry Safonov <dima@arista.com>, Dmitry Safonov <0x7f454c46@gmail.com>,
+ iommu@lists.linux-foundation.org, linux-kernel@vger.kernel.org,
+ Alex Williamson <alex.williamson@redhat.com>,
+ Bjorn Helgaas <helgaas@kernel.org>
 X-BeenThere: iommu@lists.linux-foundation.org
 X-Mailman-Version: 2.1.15
 Precedence: list
@@ -91,18 +90,128 @@ Content-Transfer-Encoding: 7bit
 Errors-To: iommu-bounces@lists.linux-foundation.org
 Sender: "iommu" <iommu-bounces@lists.linux-foundation.org>
 
-On Tue, Nov 26, 2019 at 12:26:38PM +0100, Christian Zigotzky wrote:
-> Hello Christoph,
->
-> The PCI TV card works with your patch! I was able to patch your Git kernel 
-> with the patch above.
->
-> I haven't found any error messages in the dmesg yet.
 
-Thanks.  Unfortunately this is a bit of a hack as we need to set
-the mask based on runtime information like the magic FSL PCIe window.
-Let me try to draft something better up, and thanks already for testing
-this one!
+
+On 2019-11-26 10:03 a.m., James Sewart wrote:
+> The PLX PEX NTB forwards DMA transactions using Requester ID's that
+> don't exist as PCI devices. The devfn for a transaction is used as an
+> index into a lookup table storing the origin of a transaction on the
+> other side of the bridge.
+> 
+> Add helper pci_add_dma_alias_range that can alias a range of devfns in 
+> dma_alias_mask.
+> 
+> This patch aliases all possible devfn's to the NTB device so that any
+> transaction coming in is governed by the mappings for the NTB.
+> 
+> Signed-off-by: James Sewart <jamessewart@arista.com>
+
+Looks good to me, save a nit below; and you may want to split this into
+two patches: one that introduces the new interface and one that uses it.
+
+Reviewed-by: Logan Gunthorpe <logang@deltatee.com>
+
+> ---
+>  drivers/pci/pci.c    | 29 ++++++++++++++++++++++-------
+>  drivers/pci/quirks.c | 15 +++++++++++++++
+>  include/linux/pci.h  |  1 +
+>  3 files changed, 38 insertions(+), 7 deletions(-)
+> 
+> diff --git a/drivers/pci/pci.c b/drivers/pci/pci.c
+> index a97e2571a527..f502af1b5d10 100644
+> --- a/drivers/pci/pci.c
+> +++ b/drivers/pci/pci.c
+> @@ -5854,6 +5854,18 @@ int pci_set_vga_state(struct pci_dev *dev, bool decode,
+>  	return 0;
+>  }
+>  
+> +int _pci_add_dma_alias_range(struct pci_dev *dev, u8 devfn_from, int len)
+> +{
+> +	if (!dev->dma_alias_mask)
+> +		dev->dma_alias_mask = bitmap_zalloc(U8_MAX, GFP_KERNEL);
+> +	if (!dev->dma_alias_mask) {
+> +		pci_warn(dev, "Unable to allocate DMA alias mask\n");
+> +		return -ENOMEM;
+> +	}
+> +	bitmap_set(dev->dma_alias_mask, devfn_from, len);
+> +	return 0;
+> +}
+> +
+>  /**
+>   * pci_add_dma_alias - Add a DMA devfn alias for a device
+>   * @dev: the PCI device for which alias is added
+> @@ -5875,18 +5887,21 @@ int pci_set_vga_state(struct pci_dev *dev, bool decode,
+>   */
+>  void pci_add_dma_alias(struct pci_dev *dev, u8 devfn)
+>  {
+> -	if (!dev->dma_alias_mask)
+> -		dev->dma_alias_mask = bitmap_zalloc(U8_MAX, GFP_KERNEL);
+> -	if (!dev->dma_alias_mask) {
+> -		pci_warn(dev, "Unable to allocate DMA alias mask\n");
+> +	if (_pci_add_dma_alias_range(dev, devfn, 1) != 0)
+>  		return;
+> -	}
+> -
+> -	set_bit(devfn, dev->dma_alias_mask);
+>  	pci_info(dev, "Enabling fixed DMA alias to %02x.%d\n",
+>  		 PCI_SLOT(devfn), PCI_FUNC(devfn));
+>  }
+>  
+> +void pci_add_dma_alias_range(struct pci_dev *dev, u8 devfn_from, int len)
+> +{
+> +	int devfn_to = devfn_from + len - 1;
+
+Nit: there should be a blank line between the variable declarations and
+the code in the functions.
+
+> +	if (_pci_add_dma_alias_range(dev, devfn_from, len) != 0)
+> +		return;
+> +	pci_info(dev, "Enabling fixed DMA alias for devfn range from %02x.%d to %02x.%d\n",
+> +		 PCI_SLOT(devfn_from), PCI_FUNC(devfn_from), PCI_SLOT(devfn_to), PCI_FUNC(devfn_to));
+> +}
+> +
+>  bool pci_devs_are_dma_aliases(struct pci_dev *dev1, struct pci_dev *dev2)
+>  {
+>  	return (dev1->dma_alias_mask &&
+> diff --git a/drivers/pci/quirks.c b/drivers/pci/quirks.c
+> index 320255e5e8f8..1ed230f739a4 100644
+> --- a/drivers/pci/quirks.c
+> +++ b/drivers/pci/quirks.c
+> @@ -5315,6 +5315,21 @@ SWITCHTEC_QUIRK(0x8574);  /* PFXI 64XG3 */
+>  SWITCHTEC_QUIRK(0x8575);  /* PFXI 80XG3 */
+>  SWITCHTEC_QUIRK(0x8576);  /* PFXI 96XG3 */
+>  
+> +/*
+> + * PLX NTB uses devfn proxy IDs to move TLPs between NT endpoints. These IDs
+> + * are used to forward responses to the originator on the other side of the
+> + * NTB. Alias all possible IDs to the NTB to permit access when the IOMMU is
+> + * turned on.
+> + */
+> +static void quirk_plx_ntb_dma_alias(struct pci_dev *pdev)
+> +{
+> +	pci_info(pdev, "Setting PLX NTB proxy ID aliases\n");
+> +	/* PLX NTB may use all 256 devfns */
+> +	pci_add_dma_alias_range(pdev, 0, 256);
+> +}
+> +DECLARE_PCI_FIXUP_HEADER(PCI_VENDOR_ID_PLX, 0x87b0, quirk_plx_ntb_dma_alias);
+> +DECLARE_PCI_FIXUP_HEADER(PCI_VENDOR_ID_PLX, 0x87b1, quirk_plx_ntb_dma_alias);
+> +
+>  /*
+>   * On Lenovo Thinkpad P50 SKUs with a Nvidia Quadro M1000M, the BIOS does
+>   * not always reset the secondary Nvidia GPU between reboots if the system
+> diff --git a/include/linux/pci.h b/include/linux/pci.h
+> index 1a6cf19eac2d..6765f3d0102b 100644
+> --- a/include/linux/pci.h
+> +++ b/include/linux/pci.h
+> @@ -2324,6 +2324,7 @@ static inline struct eeh_dev *pci_dev_to_eeh_dev(struct pci_dev *pdev)
+>  #endif
+>  
+>  void pci_add_dma_alias(struct pci_dev *dev, u8 devfn);
+> +void pci_add_dma_alias_range(struct pci_dev *dev, u8 devfn_from, int len);
+>  bool pci_devs_are_dma_aliases(struct pci_dev *dev1, struct pci_dev *dev2);
+>  int pci_for_each_dma_alias(struct pci_dev *pdev,
+>  			   int (*fn)(struct pci_dev *pdev,
+> 
 _______________________________________________
 iommu mailing list
 iommu@lists.linux-foundation.org
