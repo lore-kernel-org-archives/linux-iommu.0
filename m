@@ -2,84 +2,99 @@ Return-Path: <SRS0=2ATj=ZS=lists.linux-foundation.org=iommu-bounces@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-6.5 required=3.0 tests=DKIM_INVALID,DKIM_SIGNED,
-	HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_PATCH,MAILING_LIST_MULTI,SIGNED_OFF_BY,
-	SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED autolearn=ham autolearn_force=no
+X-Spam-Status: No, score=-5.0 required=3.0 tests=DKIM_INVALID,DKIM_SIGNED,
+	HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_PATCH,MAILING_LIST_MULTI,SPF_HELO_NONE,
+	SPF_PASS,URIBL_BLOCKED,USER_AGENT_SANE_1 autolearn=ham autolearn_force=no
 	version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id E61DEC432C0
-	for <iommu@archiver.kernel.org>; Tue, 26 Nov 2019 10:27:59 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id B2671C432C0
+	for <iommu@archiver.kernel.org>; Tue, 26 Nov 2019 11:27:01 +0000 (UTC)
 Received: from whitealder.osuosl.org (smtp1.osuosl.org [140.211.166.138])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by mail.kernel.org (Postfix) with ESMTPS id AFB162073F
-	for <iommu@archiver.kernel.org>; Tue, 26 Nov 2019 10:27:59 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTPS id 7821E2075C
+	for <iommu@archiver.kernel.org>; Tue, 26 Nov 2019 11:27:01 +0000 (UTC)
 Authentication-Results: mail.kernel.org;
-	dkim=fail reason="signature verification failed" (1024-bit key) header.d=redhat.com header.i=@redhat.com header.b="PYzJRRWX"
-DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org AFB162073F
-Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=redhat.com
+	dkim=fail reason="signature verification failed" (2048-bit key) header.d=xenosoft.de header.i=@xenosoft.de header.b="gUid2v1W"
+DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 7821E2075C
+Authentication-Results: mail.kernel.org; dmarc=none (p=none dis=none) header.from=xenosoft.de
 Authentication-Results: mail.kernel.org; spf=pass smtp.mailfrom=iommu-bounces@lists.linux-foundation.org
 Received: from localhost (localhost [127.0.0.1])
-	by whitealder.osuosl.org (Postfix) with ESMTP id 74B8184DDD;
-	Tue, 26 Nov 2019 10:27:59 +0000 (UTC)
+	by whitealder.osuosl.org (Postfix) with ESMTP id 3AF5086ACD;
+	Tue, 26 Nov 2019 11:27:01 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
 Received: from whitealder.osuosl.org ([127.0.0.1])
 	by localhost (.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
-	with ESMTP id SryDMofQ5uQY; Tue, 26 Nov 2019 10:27:58 +0000 (UTC)
+	with ESMTP id lFAH9VW6o9VY; Tue, 26 Nov 2019 11:27:00 +0000 (UTC)
 Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [140.211.9.56])
-	by whitealder.osuosl.org (Postfix) with ESMTP id DADD484BA5;
-	Tue, 26 Nov 2019 10:27:58 +0000 (UTC)
+	by whitealder.osuosl.org (Postfix) with ESMTP id 673AF85168;
+	Tue, 26 Nov 2019 11:27:00 +0000 (UTC)
 Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
-	by lists.linuxfoundation.org (Postfix) with ESMTP id CCDD3C0881;
-	Tue, 26 Nov 2019 10:27:58 +0000 (UTC)
-Received: from silver.osuosl.org (smtp3.osuosl.org [140.211.166.136])
- by lists.linuxfoundation.org (Postfix) with ESMTP id B200FC0878
- for <iommu@lists.linux-foundation.org>; Tue, 26 Nov 2019 10:27:57 +0000 (UTC)
+	by lists.linuxfoundation.org (Postfix) with ESMTP id 484C6C0880;
+	Tue, 26 Nov 2019 11:27:00 +0000 (UTC)
+Received: from whitealder.osuosl.org (smtp1.osuosl.org [140.211.166.138])
+ by lists.linuxfoundation.org (Postfix) with ESMTP id 2B637C0878
+ for <iommu@lists.linux-foundation.org>; Tue, 26 Nov 2019 11:26:58 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
- by silver.osuosl.org (Postfix) with ESMTP id 97DC92052A
- for <iommu@lists.linux-foundation.org>; Tue, 26 Nov 2019 10:27:57 +0000 (UTC)
+ by whitealder.osuosl.org (Postfix) with ESMTP id 1205B86ACB
+ for <iommu@lists.linux-foundation.org>; Tue, 26 Nov 2019 11:26:58 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from silver.osuosl.org ([127.0.0.1])
+Received: from whitealder.osuosl.org ([127.0.0.1])
  by localhost (.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
- with ESMTP id HD9fEF6AUVNs for <iommu@lists.linux-foundation.org>;
- Tue, 26 Nov 2019 10:27:56 +0000 (UTC)
-X-Greylist: domain auto-whitelisted by SQLgrey-1.7.6
-Received: from us-smtp-delivery-1.mimecast.com (us-smtp-2.mimecast.com
- [205.139.110.61])
- by silver.osuosl.org (Postfix) with ESMTPS id A095C1FEE0
- for <iommu@lists.linux-foundation.org>; Tue, 26 Nov 2019 10:27:56 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
- s=mimecast20190719; t=1574764075;
- h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
- to:to:cc:mime-version:mime-version:content-type:content-type:
- content-transfer-encoding:content-transfer-encoding;
- bh=tTo+z7GRdEpyDEyvmGX1mKfcZRDUg8TD8VPVW7nr34c=;
- b=PYzJRRWXwh4JNevkCkpxdwTxOzRCImDouNmGgX5mAeub/qqzSPIPA6RZRNwVq7t+oe1R3B
- E+bFn9+nRDkRx8Bze/bp704m6AI9EM58pq6fcV8QcI4/jVQO3E4D01VdL3drngNFpa5UIm
- FnuuAZxdIjFwMl7HwdZgN/RlsmWhTYw=
-Received: from mimecast-mx01.redhat.com (mimecast-mx01.redhat.com
- [209.132.183.4]) (Using TLS) by relay.mimecast.com with ESMTP id
- us-mta-324-Ns7fCixZMkCzNmMzbMTBrw-1; Tue, 26 Nov 2019 05:27:53 -0500
-Received: from smtp.corp.redhat.com (int-mx05.intmail.prod.int.phx2.redhat.com
- [10.5.11.15])
- (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
- (No client certificate requested)
- by mimecast-mx01.redhat.com (Postfix) with ESMTPS id 57F468017CC;
- Tue, 26 Nov 2019 10:27:52 +0000 (UTC)
-Received: from laptop.redhat.com (ovpn-116-37.ams2.redhat.com [10.36.116.37])
- by smtp.corp.redhat.com (Postfix) with ESMTP id 5E7165D6BE;
- Tue, 26 Nov 2019 10:27:47 +0000 (UTC)
-From: Eric Auger <eric.auger@redhat.com>
-To: eric.auger.pro@gmail.com, eric.auger@redhat.com, joro@8bytes.org,
- hch@lst.de, cai@lca.pw, iommu@lists.linux-foundation.org,
- linux-kernel@vger.kernel.org
-Subject: [PATCH v3] iommu: fix KASAN use-after-free in iommu_insert_resv_region
-Date: Tue, 26 Nov 2019 11:27:43 +0100
-Message-Id: <20191126102743.3269-1-eric.auger@redhat.com>
+ with ESMTP id Kb7nDUFvvpzX for <iommu@lists.linux-foundation.org>;
+ Tue, 26 Nov 2019 11:26:55 +0000 (UTC)
+X-Greylist: from auto-whitelisted by SQLgrey-1.7.6
+Received: from mo4-p01-ob.smtp.rzone.de (mo4-p01-ob.smtp.rzone.de
+ [85.215.255.54])
+ by whitealder.osuosl.org (Postfix) with ESMTPS id 9C24D85168
+ for <iommu@lists.linux-foundation.org>; Tue, 26 Nov 2019 11:26:55 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; t=1574767613;
+ s=strato-dkim-0002; d=xenosoft.de;
+ h=In-Reply-To:Date:Message-ID:From:References:Cc:To:Subject:
+ X-RZG-CLASS-ID:X-RZG-AUTH:From:Subject:Sender;
+ bh=XMLW3ZOSKguCOTt53NHCRHDrLj4NFW5PozSyNNqJ0vs=;
+ b=gUid2v1W5o5H70S+r2A1LVsgesfgIE5R6nw1YcDZEqV4zrLVWSsVRgWfRHMqMTlRge
+ M2lHnecRDCsdmN58DDbdELXPFnzLgAZIq0iq3o3mUvRoxgErERBI4+EJeNpJRGTbSdSd
+ rvAQXQIZ8c0gcvXh6cyay4kjQ++W8jnU2Xl6QBKzzb7fIWwvjlzCYDz/oVWYX8zXnn9B
+ CqbVAIXwqc3yScKrdlTyRtesUZQa6Vz9AlacNSGXljwPk4YPhSC0bipbHzuY5Aq97pB0
+ qOv9UbL/11XdlwJ8M+pCBPgaAirUHp7dRN85eeS4gUfEK3JBxDHIJR9k5wk1ZO1go9Wi
+ 5zRA==
+X-RZG-AUTH: ":L2QefEenb+UdBJSdRCXu93KJ1bmSGnhMdmOod1DhGM4l4Hio94KKxRySfLxnHfJ+Dkjp5DdBJSrwuuqxvPhSIh0PhkEvMsMre1rbZ/xz+jsR"
+X-RZG-CLASS-ID: mo00
+Received: from [IPv6:2a02:8109:89c0:ebfc:14bb:b5af:17db:dc1]
+ by smtp.strato.de (RZmta 45.0.2 AUTH) with ESMTPSA id x0678cvAQBQc8Vv
+ (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (curve secp521r1 with
+ 521 ECDH bits, eq. 15360 bits RSA))
+ (Client did not present a certificate);
+ Tue, 26 Nov 2019 12:26:38 +0100 (CET)
+Subject: Re: Bug 205201 - Booting halts if Dawicontrol DC-2976 UW SCSI board
+ installed, unless RAM size limited to 3500M
+To: Christoph Hellwig <hch@lst.de>
+References: <F1EBB706-73DF-430E-9020-C214EC8ED5DA@xenosoft.de>
+ <20191121072943.GA24024@lst.de>
+ <dbde2252-035e-6183-7897-43348e60647e@xenosoft.de>
+ <6eec5c42-019c-a988-fc2a-cb804194683d@xenosoft.de>
+ <d0252d29-7a03-20e1-ccd7-e12d906e4bdf@arm.com>
+ <b3217742-2c0b-8447-c9ac-608b93265363@xenosoft.de>
+ <20191121180226.GA3852@lst.de>
+ <2fde79cf-875f-94e6-4a1b-f73ebb2e2c32@xenosoft.de>
+ <20191125073923.GA30168@lst.de>
+From: Christian Zigotzky <chzigotzky@xenosoft.de>
+Message-ID: <4681f5fe-c095-15f5-9221-4b55e940bafc@xenosoft.de>
+Date: Tue, 26 Nov 2019 12:26:38 +0100
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:60.0) Gecko/20100101
+ Thunderbird/60.9.1
 MIME-Version: 1.0
-X-Scanned-By: MIMEDefang 2.79 on 10.5.11.15
-X-MC-Unique: Ns7fCixZMkCzNmMzbMTBrw-1
-X-Mimecast-Spam-Score: 0
+In-Reply-To: <20191125073923.GA30168@lst.de>
+Content-Language: de-DE
+Cc: linux-arch@vger.kernel.org, darren@stevens-zone.net, rtd2@xtra.co.nz,
+ Benjamin Herrenschmidt <benh@kernel.crashing.org>,
+ linuxppc-dev <linuxppc-dev@lists.ozlabs.org>, linux-kernel@vger.kernel.org,
+ Mike Rapoport <rppt@linux.ibm.com>, linux-mm@kvack.org,
+ iommu@lists.linux-foundation.org, Rob Herring <robh+dt@kernel.org>,
+ paulus@samba.org, mad skateman <madskateman@gmail.com>,
+ "contact@a-eon.com" <contact@a-eon.com>, Robin Murphy <robin.murphy@arm.com>,
+ nsaenzjulienne@suse.de
 X-BeenThere: iommu@lists.linux-foundation.org
 X-Mailman-Version: 2.1.15
 Precedence: list
@@ -92,49 +107,52 @@ List-Post: <mailto:iommu@lists.linux-foundation.org>
 List-Help: <mailto:iommu-request@lists.linux-foundation.org?subject=help>
 List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
  <mailto:iommu-request@lists.linux-foundation.org?subject=subscribe>
-Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset="us-ascii"; Format="flowed"
 Errors-To: iommu-bounces@lists.linux-foundation.org
 Sender: "iommu" <iommu-bounces@lists.linux-foundation.org>
 
-In case the new region gets merged into another one, the nr
-list node is freed. Checking its type while completing the
-merge algorithm leads to a use-after-free. Use new->type
-instead.
+On 25 November 2019 at 08:39 am, Christoph Hellwig wrote:
+> On Sat, Nov 23, 2019 at 12:42:27PM +0100, Christian Zigotzky wrote:
+>> Hello Christoph,
+>>
+>> Please find attached the dmesg of your Git kernel.
+> Thanks.  It looks like on your platform the swiotlb buffer isn't
+> actually addressable based on the bus dma mask limit, which is rather
+> interesting.  swiotlb_init uses memblock_alloc_low to allocate the
+> buffer, and I'll need some help from Mike and the powerpc maintainers
+> to figure out how that select where to allocate the buffer from, and
+> how we can move it to a lower address.  My gut feeling would be to try
+> to do what arm64 does and define a new ARCH_LOW_ADDRESS_LIMIT, preferably
+> without needing too much arch specific magic.
+>
+> As a quick hack can you try this patch on top of the tree from Friday?
+>
+> diff --git a/include/linux/memblock.h b/include/linux/memblock.h
+> index f491690d54c6..e3f95c362922 100644
+> --- a/include/linux/memblock.h
+> +++ b/include/linux/memblock.h
+> @@ -344,7 +344,7 @@ static inline int memblock_get_region_node(const struct memblock_region *r)
+>   #define MEMBLOCK_LOW_LIMIT 0
+>   
+>   #ifndef ARCH_LOW_ADDRESS_LIMIT
+> -#define ARCH_LOW_ADDRESS_LIMIT  0xffffffffUL
+> +#define ARCH_LOW_ADDRESS_LIMIT  0x0fffffffUL
+>   #endif
+>   
+>   phys_addr_t memblock_phys_alloc_range(phys_addr_t size, phys_addr_t align,
+>
+Hello Christoph,
 
-Fixes: 4dbd258ff63e ("iommu: Revisit iommu_insert_resv_region()
-implementation")
-Signed-off-by: Eric Auger <eric.auger@redhat.com>
-Reported-by: Qian Cai <cai@lca.pw>
-Cc: Stable <stable@vger.kernel.org> #v5.3+
+The PCI TV card works with your patch! I was able to patch your Git 
+kernel with the patch above.
 
----
+I haven't found any error messages in the dmesg yet.
 
-v2 -> v3:
-- directly use new->type
+Thank you!
 
-v1 -> v2:
-- remove spurious new line
----
- drivers/iommu/iommu.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
-
-diff --git a/drivers/iommu/iommu.c b/drivers/iommu/iommu.c
-index d658c7c6a2ab..285ad4a4c7f2 100644
---- a/drivers/iommu/iommu.c
-+++ b/drivers/iommu/iommu.c
-@@ -313,7 +313,7 @@ int iommu_insert_resv_region(struct iommu_resv_region *new,
- 		phys_addr_t top_end, iter_end = iter->start + iter->length - 1;
- 
- 		/* no merge needed on elements of different types than @nr */
--		if (iter->type != nr->type) {
-+		if (iter->type != new->type) {
- 			list_move_tail(&iter->list, &stack);
- 			continue;
- 		}
--- 
-2.20.1
-
+Cheers,
+Christian
 _______________________________________________
 iommu mailing list
 iommu@lists.linux-foundation.org
