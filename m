@@ -2,81 +2,124 @@ Return-Path: <SRS0=T/MU=ZT=lists.linux-foundation.org=iommu-bounces@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-3.7 required=3.0 tests=HEADER_FROM_DIFFERENT_DOMAINS,
-	INCLUDES_PATCH,MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED
-	autolearn=no autolearn_force=no version=3.4.0
+X-Spam-Status: No, score=-6.5 required=3.0 tests=DKIM_INVALID,DKIM_SIGNED,
+	HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_PATCH,MAILING_LIST_MULTI,SIGNED_OFF_BY,
+	SPF_HELO_NONE,SPF_PASS autolearn=ham autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id A8FDAC432C0
-	for <iommu@archiver.kernel.org>; Wed, 27 Nov 2019 19:16:44 +0000 (UTC)
-Received: from hemlock.osuosl.org (smtp2.osuosl.org [140.211.166.133])
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 7046AC432C0
+	for <iommu@archiver.kernel.org>; Wed, 27 Nov 2019 19:56:53 +0000 (UTC)
+Received: from fraxinus.osuosl.org (smtp4.osuosl.org [140.211.166.137])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by mail.kernel.org (Postfix) with ESMTPS id 840F320835
-	for <iommu@archiver.kernel.org>; Wed, 27 Nov 2019 19:16:44 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 840F320835
-Authentication-Results: mail.kernel.org; dmarc=none (p=none dis=none) header.from=suse.de
+	by mail.kernel.org (Postfix) with ESMTPS id 100362051A
+	for <iommu@archiver.kernel.org>; Wed, 27 Nov 2019 19:56:52 +0000 (UTC)
+Authentication-Results: mail.kernel.org;
+	dkim=fail reason="signature verification failed" (1024-bit key) header.d=vmware.com header.i=@vmware.com header.b="2gmajf1R"
+DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 100362051A
+Authentication-Results: mail.kernel.org; dmarc=none (p=none dis=none) header.from=lists.linux-foundation.org
 Authentication-Results: mail.kernel.org; spf=pass smtp.mailfrom=iommu-bounces@lists.linux-foundation.org
 Received: from localhost (localhost [127.0.0.1])
-	by hemlock.osuosl.org (Postfix) with ESMTP id 49C09850BE;
-	Wed, 27 Nov 2019 19:16:44 +0000 (UTC)
+	by fraxinus.osuosl.org (Postfix) with ESMTP id AF21F85F8B;
+	Wed, 27 Nov 2019 19:56:52 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from hemlock.osuosl.org ([127.0.0.1])
+Received: from fraxinus.osuosl.org ([127.0.0.1])
 	by localhost (.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
-	with ESMTP id nwEcREVcdftG; Wed, 27 Nov 2019 19:16:43 +0000 (UTC)
+	with ESMTP id ZabFlFCxz-yF; Wed, 27 Nov 2019 19:56:52 +0000 (UTC)
 Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [140.211.9.56])
-	by hemlock.osuosl.org (Postfix) with ESMTP id 8E1CD81DF8;
-	Wed, 27 Nov 2019 19:16:43 +0000 (UTC)
+	by fraxinus.osuosl.org (Postfix) with ESMTP id EDFB9859EF;
+	Wed, 27 Nov 2019 19:56:51 +0000 (UTC)
 Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
-	by lists.linuxfoundation.org (Postfix) with ESMTP id 7A25FC1DDA;
-	Wed, 27 Nov 2019 19:16:43 +0000 (UTC)
+	by lists.linuxfoundation.org (Postfix) with ESMTP id DF307C1DDA;
+	Wed, 27 Nov 2019 19:56:51 +0000 (UTC)
 Received: from fraxinus.osuosl.org (smtp4.osuosl.org [140.211.166.137])
- by lists.linuxfoundation.org (Postfix) with ESMTP id 076B4C0881
- for <iommu@lists.linux-foundation.org>; Wed, 27 Nov 2019 19:16:41 +0000 (UTC)
+ by lists.linuxfoundation.org (Postfix) with ESMTP id 86507C0881
+ for <iommu@lists.linux-foundation.org>; Wed, 27 Nov 2019 19:56:50 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
- by fraxinus.osuosl.org (Postfix) with ESMTP id E9F5085F7C
- for <iommu@lists.linux-foundation.org>; Wed, 27 Nov 2019 19:16:40 +0000 (UTC)
+ by fraxinus.osuosl.org (Postfix) with ESMTP id 7718D85DF1
+ for <iommu@lists.linux-foundation.org>; Wed, 27 Nov 2019 19:56:50 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
 Received: from fraxinus.osuosl.org ([127.0.0.1])
  by localhost (.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
- with ESMTP id yTr-eNAOOjNB for <iommu@lists.linux-foundation.org>;
- Wed, 27 Nov 2019 19:16:39 +0000 (UTC)
-X-Greylist: domain auto-whitelisted by SQLgrey-1.7.6
-Received: from mx1.suse.de (mx2.suse.de [195.135.220.15])
- by fraxinus.osuosl.org (Postfix) with ESMTPS id 61D9A85F78
- for <iommu@lists.linux-foundation.org>; Wed, 27 Nov 2019 19:16:39 +0000 (UTC)
-X-Virus-Scanned: by amavisd-new at test-mx.suse.de
-Received: from relay2.suse.de (unknown [195.135.220.254])
- by mx1.suse.de (Postfix) with ESMTP id C825BACEF;
- Wed, 27 Nov 2019 19:16:36 +0000 (UTC)
-Message-ID: <c3885c2ed8bec892290c3d957c8c5012039b6759.camel@suse.de>
-Subject: Re: [PATCH v3 1/7] linux/log2.h: Add roundup/rounddown_pow_two64()
- family of functions
-From: Nicolas Saenz Julienne <nsaenzjulienne@suse.de>
-To: Robin Murphy <robin.murphy@arm.com>, Leon Romanovsky <leon@kernel.org>
-Date: Wed, 27 Nov 2019 20:16:27 +0100
-In-Reply-To: <c08863a7-49c6-962e-e968-92adb8ee2cc9@arm.com>
-References: <20191126091946.7970-1-nsaenzjulienne@suse.de>
- <20191126091946.7970-2-nsaenzjulienne@suse.de>
- <20191126125137.GA10331@unreal>
- <6e0b9079-9efd-2884-26d1-3db2d622079d@arm.com>
- <b30002d48c9d010a1ee81c16cd29beee914c3b1d.camel@suse.de>
- <c08863a7-49c6-962e-e968-92adb8ee2cc9@arm.com>
-User-Agent: Evolution 3.34.1 
+ with ESMTP id V6KCQtC40d9M for <iommu@lists.linux-foundation.org>;
+ Wed, 27 Nov 2019 19:56:49 +0000 (UTC)
+X-Greylist: delayed 01:33:50 by SQLgrey-1.7.6
+Received: from NAM04-SN1-obe.outbound.protection.outlook.com
+ (mail-eopbgr700046.outbound.protection.outlook.com [40.107.70.46])
+ by fraxinus.osuosl.org (Postfix) with ESMTPS id 27803859EF
+ for <iommu@lists.linux-foundation.org>; Wed, 27 Nov 2019 19:56:49 +0000 (UTC)
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=KAn5DFfOLuxfyKbe1t2cxVy7fEtMjLep9tltV0uo267GxBJTWqUi+Vy+S9gU2S0/rMj7RdbpiVXGb4UQ7+w4qdABut4Qb39MZTfqoK7EundEb2YRTAevOPhfswAV3LOqRgbUb8HCepr1t8jN8SchXoCFPxpff1McUeNRetyfa6DVKOu5tWPwVa1H6PVL3TFaQ5rpUvZe3lM5bPWuXS40kYOtUXFzERDg8PHGdrvjWKIqg/TmEll2gwcVyolwhgRHKh1txKKcbvOeNX0P0iGEs7NE3WItYVmapyI3d8n4ZPIlpK9IZgoxTKwftoiFclJZR1NaAOIngevms7kqWV4xfQ==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com; 
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=OuMgHDOn5lHvGjALlQNF3yph+H4Iqy1nTFO6QNLrOGA=;
+ b=AA+MbEpzkHVGLCki7oeJvnTL+5U5rwl5vAlwojq8rE2nZjQ+idVCi/ja5Y4zPwWDAFgLquJ0nQRz9qDUmg92J0EUtpelDsvkngnqZvTy15sleaC4RXR26qfPiF0fthCNhuEOI8xOZFwQsqi7OQmOizSg47RrCqXn6/SHjU6TdzKH5VKq7DuRn+Qyt6KP4xSJL0pEyWe/tBn0UR1eICPcZHY1pYQ78KXG0ddudS3DGhIT5o/Pj/G7Q2njSWxN61hZ3pisTlVscLXyX/B9bMtd93k6A1lKzhTGFPK4rCrQgSgVdmKV+As7snEkuOHlG+51b/iwS0a2BqTxuaA/jzir/w==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=vmware.com; dmarc=pass action=none header.from=vmware.com;
+ dkim=pass header.d=vmware.com; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=vmware.com;
+ s=selector2;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=OuMgHDOn5lHvGjALlQNF3yph+H4Iqy1nTFO6QNLrOGA=;
+ b=2gmajf1RtUtrsnCIem0MrMGAobiqBC8WpqcoEMwOnsATuoRRtKRWLvwmG5PHBh9crSM+0qyyq7v8D3spz7eJ9iIBNBHCRM2TKXUBJUdqySezhSOQQhAmSeSaScbNcdB9DS7o2E0WK/7n+9tCDEf7LtHv/g7LR0anux7pZMcbh/k=
+Received: from MN2PR05MB6141.namprd05.prod.outlook.com (20.178.241.217) by
+ MN2PR05MB6656.namprd05.prod.outlook.com (20.178.248.150) with Microsoft SMTP
+ Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.20.2495.13; Wed, 27 Nov 2019 18:22:58 +0000
+Received: from MN2PR05MB6141.namprd05.prod.outlook.com
+ ([fe80::611e:6a6b:9109:5aa8]) by MN2PR05MB6141.namprd05.prod.outlook.com
+ ([fe80::611e:6a6b:9109:5aa8%7]) with mapi id 15.20.2495.014; Wed, 27 Nov 2019
+ 18:22:57 +0000
+To: "hch@lst.de" <hch@lst.de>
+Subject: Re: [PATCH 2/2] dma-mapping: force unencryped devices are always
+ addressing limited
+Thread-Topic: [PATCH 2/2] dma-mapping: force unencryped devices are always
+ addressing limited
+Thread-Index: AQHVpTCUSCVjXh+W+0SSCl6TSmyYRqefVP8A
+Date: Wed, 27 Nov 2019 18:22:57 +0000
+Message-ID: <a95d9115fc2a80de2f97f001bbcd9aba6636e685.camel@vmware.com>
+References: <20191127144006.25998-1-hch@lst.de>
+ <20191127144006.25998-3-hch@lst.de>
+In-Reply-To: <20191127144006.25998-3-hch@lst.de>
+Accept-Language: en-US
+Content-Language: en-US
+X-MS-Has-Attach: 
+X-MS-TNEF-Correlator: 
+authentication-results: spf=none (sender IP is )
+ smtp.mailfrom=thellstrom@vmware.com; 
+x-originating-ip: [155.4.205.35]
+x-ms-publictraffictype: Email
+x-ms-office365-filtering-correlation-id: 42b7cdaa-ddb7-4565-f003-08d77366d41f
+x-ms-traffictypediagnostic: MN2PR05MB6656:
+x-microsoft-antispam-prvs: <MN2PR05MB6656B6716DAA261E8F4F920EA1440@MN2PR05MB6656.namprd05.prod.outlook.com>
+x-ms-oob-tlc-oobclassifiers: OLM:7691;
+x-forefront-prvs: 023495660C
+x-forefront-antispam-report: SFV:NSPM;
+ SFS:(10009020)(4636009)(136003)(376002)(346002)(396003)(366004)(39860400002)(189003)(199004)(6246003)(81166006)(81156014)(99286004)(71190400001)(64756008)(66476007)(66446008)(66556008)(71200400001)(5640700003)(76116006)(5660300002)(86362001)(4001150100001)(305945005)(2906002)(3846002)(4744005)(2351001)(8936002)(6116002)(478600001)(2501003)(1730700003)(66066001)(66946007)(4326008)(14454004)(66574012)(8676002)(91956017)(6506007)(6916009)(36756003)(102836004)(26005)(6512007)(316002)(76176011)(2616005)(11346002)(446003)(6436002)(6486002)(54906003)(186003)(14444005)(229853002)(25786009)(7736002)(118296001)(256004);
+ DIR:OUT; SFP:1101; SCL:1; SRVR:MN2PR05MB6656;
+ H:MN2PR05MB6141.namprd05.prod.outlook.com; FPR:; SPF:None; LANG:en;
+ PTR:InfoNoRecords; MX:1; A:1; 
+received-spf: None (protection.outlook.com: vmware.com does not designate
+ permitted sender hosts)
+x-ms-exchange-senderadcheck: 1
+x-microsoft-antispam: BCL:0;
+x-microsoft-antispam-message-info: 5WSTzJQWxhcLb668CNC7xze7ZTWu4qQozikCotT108+wIhC8jVCF5fn0kkwp/PO9m4RU4jvNEClw0iSUtgEa+rYHtXEBE5PgoHBrYMxqGeWozztLgdKP3SX7ufaRXSnCMUhnoLouyc0NrgThkjzGwqDFkm5pU67RL7kH690kC+xtvoWFyvVDGmJH6JDFBo3u5RnJhPPBUwNRSs2O1ZnBqcmvI7l/T1qISM+BZwdx60rK9ZdZOHOk1LE2aQF/VhV8UYrl6PUZoCPqT5qiL83luMKII3Ek2QDxogQr+ym0xoLTCNnsypIWvm0MuQvv+nvVCVtAGuJFXqPrYNTt2/j5RPNt8xDY8lH/UTOFgbgV8tG4nNRaLS2OqiRbQImRvwCw1fZhxP0SUDtyI1jIr/pbI5OjCOIKycm2DE3O4tCfp+vRM46PsJ9fGoCFjHpnxKOz
+x-ms-exchange-transport-forked: True
+Content-ID: <38743A5396C8804FAD8F2C094844A946@namprd05.prod.outlook.com>
 MIME-Version: 1.0
-Cc: Heiko Stuebner <heiko@sntech.de>, linux-pci@vger.kernel.org,
- Shawn Lin <shawn.lin@rock-chips.com>, Hanjun Guo <guohanjun@huawei.com>,
- Frank Rowand <frowand.list@gmail.com>, Christoph Hellwig <hch@lst.de>,
- f.fainelli@gmail.com, linux-rockchip@lists.infradead.org,
- linux-rdma@vger.kernel.org, maz@kernel.org, phil@raspberrypi.org,
- linux-acpi@vger.kernel.org, Len Brown <lenb@kernel.org>,
- devicetree@vger.kernel.org, linux-rpi-kernel@lists.infradead.org,
- Bjorn Helgaas <bhelgaas@google.com>, linux-arm-kernel@lists.infradead.org,
- mbrugger@suse.com, netdev@vger.kernel.org,
- "Rafael J. Wysocki" <rjw@rjwysocki.net>, linux-kernel@vger.kernel.org,
- jeremy.linton@arm.com, iommu@lists.linux-foundation.org,
- Rob Herring <robh+dt@kernel.org>, wahrenst@gmx.net, james.quinlan@broadcom.com,
- Sudeep Holla <sudeep.holla@arm.com>, "David S. Miller" <davem@davemloft.net>,
- Tariq Toukan <tariqt@mellanox.com>
+X-OriginatorOrg: vmware.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: 42b7cdaa-ddb7-4565-f003-08d77366d41f
+X-MS-Exchange-CrossTenant-originalarrivaltime: 27 Nov 2019 18:22:57.7446 (UTC)
+X-MS-Exchange-CrossTenant-fromentityheader: Hosted
+X-MS-Exchange-CrossTenant-id: b39138ca-3cee-4b4a-a4d6-cd83d9dd62f0
+X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
+X-MS-Exchange-CrossTenant-userprincipalname: mFuKIitcxg1bU+jJpzc3UvRD0/8SFpicolcDaOpS+7RRAOdMAu39N779TODqXV2DIVM515VZ2Dh6X0apkuquJA==
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: MN2PR05MB6656
+Cc: "linux-mm@kvack.org" <linux-mm@kvack.org>,
+ "thomas.lendacky@amd.com" <thomas.lendacky@amd.com>,
+ "iommu@lists.linux-foundation.org" <iommu@lists.linux-foundation.org>,
+ "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
+ "christian.koenig@amd.com" <christian.koenig@amd.com>
 X-BeenThere: iommu@lists.linux-foundation.org
 X-Mailman-Version: 2.1.15
 Precedence: list
@@ -89,135 +132,30 @@ List-Post: <mailto:iommu@lists.linux-foundation.org>
 List-Help: <mailto:iommu-request@lists.linux-foundation.org?subject=help>
 List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
  <mailto:iommu-request@lists.linux-foundation.org?subject=subscribe>
-Content-Type: multipart/mixed; boundary="===============3058927755399643942=="
+From: Thomas Hellstrom via iommu <iommu@lists.linux-foundation.org>
+Reply-To: Thomas Hellstrom <thellstrom@vmware.com>
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: base64
 Errors-To: iommu-bounces@lists.linux-foundation.org
 Sender: "iommu" <iommu-bounces@lists.linux-foundation.org>
 
-
---===============3058927755399643942==
-Content-Type: multipart/signed; micalg="pgp-sha256";
-	protocol="application/pgp-signature"; boundary="=-O+wgk4AZ6l++1CDkyqmb"
-
-
---=-O+wgk4AZ6l++1CDkyqmb
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
-
-On Wed, 2019-11-27 at 19:06 +0000, Robin Murphy wrote:
-> On 27/11/2019 6:24 pm, Nicolas Saenz Julienne wrote:
-> > On Wed, 2019-11-27 at 18:06 +0000, Robin Murphy wrote:
-> > > On 26/11/2019 12:51 pm, Leon Romanovsky wrote:
-> > > > On Tue, Nov 26, 2019 at 10:19:39AM +0100, Nicolas Saenz Julienne wr=
-ote:
-> > > > > Some users need to make sure their rounding function accepts and
-> > > > > returns
-> > > > > 64bit long variables regardless of the architecture. Sadly
-> > > > > roundup/rounddown_pow_two() takes and returns unsigned longs. Cre=
-ate a
-> > > > > new generic 64bit variant of the function and cleanup rougue cust=
-om
-> > > > > implementations.
-> > > >=20
-> > > > Is it possible to create general roundup/rounddown_pow_two() which =
-will
-> > > > work correctly for any type of variables, instead of creating speci=
-al
-> > > > variant for every type?
-> > >=20
-> > > In fact, that is sort of the case already - roundup_pow_of_two() itse=
-lf
-> > > wraps ilog2() such that the constant case *is* type-independent. And
-> > > since ilog2() handles non-constant values anyway, might it be reasona=
-ble
-> > > to just take the strongly-typed __roundup_pow_of_two() helper out of =
-the
-> > > loop as below?
-> > >=20
-> > > Robin
-> > >=20
-> >=20
-> > That looks way better that's for sure. Some questions.
-> >=20
-> > > ----->8-----
-> > > diff --git a/include/linux/log2.h b/include/linux/log2.h
-> > > index 83a4a3ca3e8a..e825f8a6e8b5 100644
-> > > --- a/include/linux/log2.h
-> > > +++ b/include/linux/log2.h
-> > > @@ -172,11 +172,8 @@ unsigned long __rounddown_pow_of_two(unsigned lo=
-ng n)
-> > >     */
-> > >    #define roundup_pow_of_two(n)			\
-> > >    (						\
-> > > -	__builtin_constant_p(n) ? (		\
-> > > -		(n =3D=3D 1) ? 1 :			\
-> > > -		(1UL << (ilog2((n) - 1) + 1))	\
-> > > -				   ) :		\
-> > > -	__roundup_pow_of_two(n)			\
-> > > +	(__builtin_constant_p(n) && (n =3D=3D 1)) ?	\
-> > > +	1 : (1UL << (ilog2((n) - 1) + 1))	\
-> >=20
-> > Then here you'd have to use ULL instead of UL, right? I want my 64bit v=
-alue
-> > everywhere regardless of the CPU arch. The downside is that would affec=
-t
-> > performance to some extent (i.e. returning a 64bit value where you used=
- to
-> > have
-> > a 32bit one)?
->=20
-> True, although it's possible that 1ULL might result in the same codegen=
-=20
-> if the compiler can see that the result is immediately truncated back to=
-=20
-> long anyway. Or at worst, I suppose "(typeof(n))1" could suffice,=20
-> however ugly. Either way, this diff was only an illustration rather than=
-=20
-> a concrete proposal, but it might be an interesting diversion to=20
-> investigate.
->=20
-> On that note, though, you should probably be using ULL in your current=
-=20
-> patch too.
-
-I actually meant to, the fix got lost. Thanks for pointing it out.
-
-As I see Leon also likes this, I'll try out this implementation and come ba=
-ck
-with some results.
-
-Regards,
-Nicolas
-
-
---=-O+wgk4AZ6l++1CDkyqmb
-Content-Type: application/pgp-signature; name="signature.asc"
-Content-Description: This is a digitally signed message part
-Content-Transfer-Encoding: 7bit
-
------BEGIN PGP SIGNATURE-----
-
-iQEzBAABCAAdFiEErOkkGDHCg2EbPcGjlfZmHno8x/4FAl3ey4sACgkQlfZmHno8
-x/4qGggAi4+Q7jM0+bmigNE35y3GihyLXM3ahA2qmQ9ftiZshh+Z8XQUYcRi7852
-LsPNmYpHjwV3LyoaBXdnHaIVR5I1rE6RXSAZEK4xRF872qqm9rKDeMGF1GXxrw3u
-BJl/LR2xhGkhYepUUAiZ+vGy3FyTfl8ADH/V9AHtFtvXuFTpStBZS3/xYgaO9mRa
-E0hCB01yKy14h+FAXRiEB0E6onkyAqWjLHPmAXCGmk4ZsJwAjdVr3QyVq6AUBBKt
-CaBQ7gUU8NOTg8ZE9WDRdTfIlQ+1Gpiu2xk1jML8Y1eCGxB3wtXy0t5GdjOaiwzi
-fzp73AN5N4UigGnR/sl3LgJQXPe3yA==
-=ixwn
------END PGP SIGNATURE-----
-
---=-O+wgk4AZ6l++1CDkyqmb--
-
-
---===============3058927755399643942==
-Content-Type: text/plain; charset="us-ascii"
-MIME-Version: 1.0
-Content-Transfer-Encoding: 7bit
-Content-Disposition: inline
-
-_______________________________________________
-iommu mailing list
-iommu@lists.linux-foundation.org
-https://lists.linuxfoundation.org/mailman/listinfo/iommu
---===============3058927755399643942==--
-
+SGksDQoNCk9uIFdlZCwgMjAxOS0xMS0yNyBhdCAxNTo0MCArMDEwMCwgQ2hyaXN0b3BoIEhlbGx3
+aWcgd3JvdGU6DQo+IERldmljZXMgdGhhdCBhcmUgZm9yY2VkIHRvIERNQSB0aHJvdWdoIHVuZW5j
+cnlwdGVkIGJvdW5jZSBidWZmZXJzDQo+IG5lZWQgdG8gYmUgdHJlYXRlZCBhcyBpZiB0aGV5IGFy
+ZSBhZGRyZXNzaW5nIGxpbWl0ZWQuDQo+IA0KPiBTaWduZWQtb2ZmLWJ5OiBDaHJpc3RvcGggSGVs
+bHdpZyA8aGNoQGxzdC5kZT4NCj4gLS0tDQo+ICBrZXJuZWwvZG1hL21hcHBpbmcuYyB8IDIgKysN
+Cj4gIDEgZmlsZSBjaGFuZ2VkLCAyIGluc2VydGlvbnMoKykNCj4gDQo+IGRpZmYgLS1naXQgYS9r
+ZXJuZWwvZG1hL21hcHBpbmcuYyBiL2tlcm5lbC9kbWEvbWFwcGluZy5jDQo+IGluZGV4IDFkYmU2
+ZDcyNTk2Mi4uZjZjMzViNTNkOTk2IDEwMDY0NA0KPiAtLS0gYS9rZXJuZWwvZG1hL21hcHBpbmcu
+Yw0KPiArKysgYi9rZXJuZWwvZG1hL21hcHBpbmcuYw0KPiBAQCAtNDE2LDYgKzQxNiw4IEBAIEVY
+UE9SVF9TWU1CT0xfR1BMKGRtYV9nZXRfbWVyZ2VfYm91bmRhcnkpOw0KPiAgICovDQo+ICBib29s
+IGRtYV9hZGRyZXNzaW5nX2xpbWl0ZWQoc3RydWN0IGRldmljZSAqZGV2KQ0KPiAgew0KPiArCWlm
+IChmb3JjZV9kbWFfdW5lbmNyeXB0ZWQoZGV2KSkNCj4gKwkJcmV0dXJuIHRydWU7DQo+ICAJcmV0
+dXJuIG1pbl9ub3RfemVybyhkbWFfZ2V0X21hc2soZGV2KSwgZGV2LT5idXNfZG1hX2xpbWl0KSA8
+DQo+ICAJCQkgICAgZG1hX2dldF9yZXF1aXJlZF9tYXNrKGRldik7DQo+ICB9DQoNCkFueSBjaGFu
+Y2UgdG8gaGF2ZSB0aGUgY2FzZQ0KDQooc3dpb3RsYl9mb3JjZSA9PSBTV0lPVExCX0ZPUkNFKQ0K
+DQphbHNvIGluY2x1ZGVkPw0KDQpPdGhlcndpc2UgZm9yIHRoZSBzZXJpZXMNCg0KUmV2aWV3ZWQt
+Ynk6IFRob21hcyBIZWxsc3Ryw7ZtIDx0aGVsbHN0cm9tQHZtd2FyZS5jb20+DQoNCiANCg0KX19f
+X19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX18KaW9tbXUgbWFpbGlu
+ZyBsaXN0CmlvbW11QGxpc3RzLmxpbnV4LWZvdW5kYXRpb24ub3JnCmh0dHBzOi8vbGlzdHMubGlu
+dXhmb3VuZGF0aW9uLm9yZy9tYWlsbWFuL2xpc3RpbmZvL2lvbW11
