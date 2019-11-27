@@ -2,98 +2,72 @@ Return-Path: <SRS0=T/MU=ZT=lists.linux-foundation.org=iommu-bounces@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-5.0 required=3.0 tests=DKIM_INVALID,DKIM_SIGNED,
-	HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_PATCH,MAILING_LIST_MULTI,SPF_HELO_NONE,
-	SPF_PASS,URIBL_BLOCKED,USER_AGENT_SANE_1 autolearn=ham autolearn_force=no
-	version=3.4.0
+X-Spam-Status: No, score=-2.2 required=3.0 tests=HEADER_FROM_DIFFERENT_DOMAINS,
+	MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED,USER_AGENT_SANE_1
+	autolearn=no autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id D26FDC432C0
-	for <iommu@archiver.kernel.org>; Wed, 27 Nov 2019 15:15:16 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 7B1E1C432C0
+	for <iommu@archiver.kernel.org>; Wed, 27 Nov 2019 17:09:50 +0000 (UTC)
 Received: from whitealder.osuosl.org (smtp1.osuosl.org [140.211.166.138])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by mail.kernel.org (Postfix) with ESMTPS id 95F8E206F0
-	for <iommu@archiver.kernel.org>; Wed, 27 Nov 2019 15:15:16 +0000 (UTC)
-Authentication-Results: mail.kernel.org;
-	dkim=fail reason="signature verification failed" (2048-bit key) header.d=xenosoft.de header.i=@xenosoft.de header.b="ph9lVf4u"
-DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 95F8E206F0
-Authentication-Results: mail.kernel.org; dmarc=none (p=none dis=none) header.from=xenosoft.de
+	by mail.kernel.org (Postfix) with ESMTPS id 487FF206E0
+	for <iommu@archiver.kernel.org>; Wed, 27 Nov 2019 17:09:50 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 487FF206E0
+Authentication-Results: mail.kernel.org; dmarc=none (p=none dis=none) header.from=arm.com
 Authentication-Results: mail.kernel.org; spf=pass smtp.mailfrom=iommu-bounces@lists.linux-foundation.org
 Received: from localhost (localhost [127.0.0.1])
-	by whitealder.osuosl.org (Postfix) with ESMTP id CF44486C18;
-	Wed, 27 Nov 2019 15:15:15 +0000 (UTC)
+	by whitealder.osuosl.org (Postfix) with ESMTP id EB43C86462;
+	Wed, 27 Nov 2019 17:09:49 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
 Received: from whitealder.osuosl.org ([127.0.0.1])
 	by localhost (.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
-	with ESMTP id FpOvHzegr4Ha; Wed, 27 Nov 2019 15:15:14 +0000 (UTC)
+	with ESMTP id Rxqgix4hZtzr; Wed, 27 Nov 2019 17:09:49 +0000 (UTC)
 Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [140.211.9.56])
-	by whitealder.osuosl.org (Postfix) with ESMTP id 055B58665D;
-	Wed, 27 Nov 2019 15:15:12 +0000 (UTC)
+	by whitealder.osuosl.org (Postfix) with ESMTP id 4994885B7C;
+	Wed, 27 Nov 2019 17:09:49 +0000 (UTC)
 Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
-	by lists.linuxfoundation.org (Postfix) with ESMTP id E846CC1DDA;
-	Wed, 27 Nov 2019 15:15:12 +0000 (UTC)
-Received: from silver.osuosl.org (smtp3.osuosl.org [140.211.166.136])
- by lists.linuxfoundation.org (Postfix) with ESMTP id DD1E9C0881
- for <iommu@lists.linux-foundation.org>; Wed, 27 Nov 2019 15:15:10 +0000 (UTC)
+	by lists.linuxfoundation.org (Postfix) with ESMTP id 2B3D1C1DD5;
+	Wed, 27 Nov 2019 17:09:49 +0000 (UTC)
+Received: from whitealder.osuosl.org (smtp1.osuosl.org [140.211.166.138])
+ by lists.linuxfoundation.org (Postfix) with ESMTP id 21792C0881
+ for <iommu@lists.linux-foundation.org>; Wed, 27 Nov 2019 17:09:48 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
- by silver.osuosl.org (Postfix) with ESMTP id D8AFC20468
- for <iommu@lists.linux-foundation.org>; Wed, 27 Nov 2019 15:15:10 +0000 (UTC)
+ by whitealder.osuosl.org (Postfix) with ESMTP id 0E58085B8D
+ for <iommu@lists.linux-foundation.org>; Wed, 27 Nov 2019 17:09:48 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from silver.osuosl.org ([127.0.0.1])
+Received: from whitealder.osuosl.org ([127.0.0.1])
  by localhost (.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
- with ESMTP id dBso6yXhTn5V for <iommu@lists.linux-foundation.org>;
- Wed, 27 Nov 2019 15:15:08 +0000 (UTC)
-X-Greylist: from auto-whitelisted by SQLgrey-1.7.6
-Received: from mo4-p01-ob.smtp.rzone.de (mo4-p01-ob.smtp.rzone.de
- [85.215.255.53])
- by silver.osuosl.org (Postfix) with ESMTPS id 6E213204B9
- for <iommu@lists.linux-foundation.org>; Wed, 27 Nov 2019 15:15:07 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; t=1574867705;
- s=strato-dkim-0002; d=xenosoft.de;
- h=In-Reply-To:Date:Message-ID:From:References:Cc:To:Subject:
- X-RZG-CLASS-ID:X-RZG-AUTH:From:Subject:Sender;
- bh=rU6EJZnQMWHiAAMrDnvCSg5GJl/7kaL3qM/q2ihcwWc=;
- b=ph9lVf4uZCtsNHV5En2AFDgYlF3Nc3pOQpoMIiG5L0aKsKfTUtK61fJysZJ352sHGn
- qs6hirz5guL+KODjKkRHVIsD49mDdpn8tmu+/c3sFvE3S9MwrQ2MV7cnxKYIjIUcMQQd
- f5+k1ed2L9olHIL9dXKi+M1jq96msuMTdzK3ZI5fZhovH3RDqQsSUrZ0NPS7oDEj8VLN
- mwOFuvYbPhovmadu1iIlxJsQCQBz3UxhZhfwTwMCrZmFFbfCzp7Mq7g7ONLR0/4/2QSV
- xVL/FSrtZeFOucbVuqI2HYl/aGHRhnvEykoZ8K3AjdH6YF1qI0PjWL4CkemqzM04kG7e
- FFZQ==
-X-RZG-AUTH: ":L2QefEenb+UdBJSdRCXu93KJ1bmSGnhMdmOod1DhGM4l4Hio94KKxRySfLxnHfJ+Dkjp5DdBJSrwuuqxvPhUIxnPrrzntHiDgpTRUbNSOXek"
-X-RZG-CLASS-ID: mo00
-Received: from [IPv6:2a02:8109:89c0:ebfc:7591:d54e:863:4581]
- by smtp.strato.de (RZmta 46.0.0 AUTH) with ESMTPSA id n05ae1vARFEh10O
- (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256 bits))
- (Client did not present a certificate);
- Wed, 27 Nov 2019 16:14:43 +0100 (CET)
-Subject: Re: Bug 205201 - Booting halts if Dawicontrol DC-2976 UW SCSI board
- installed, unless RAM size limited to 3500M
-To: Mike Rapoport <rppt@linux.ibm.com>, Christoph Hellwig <hch@lst.de>
-References: <20191121072943.GA24024@lst.de>
- <dbde2252-035e-6183-7897-43348e60647e@xenosoft.de>
- <6eec5c42-019c-a988-fc2a-cb804194683d@xenosoft.de>
- <d0252d29-7a03-20e1-ccd7-e12d906e4bdf@arm.com>
- <b3217742-2c0b-8447-c9ac-608b93265363@xenosoft.de>
- <20191121180226.GA3852@lst.de>
- <2fde79cf-875f-94e6-4a1b-f73ebb2e2c32@xenosoft.de>
- <20191125073923.GA30168@lst.de>
- <4681f5fe-c095-15f5-9221-4b55e940bafc@xenosoft.de>
- <20191126164026.GA8026@lst.de> <20191127065624.GB16913@linux.ibm.com>
-From: Christian Zigotzky <chzigotzky@xenosoft.de>
-Message-ID: <6a4289cf-d2b5-2357-f1ad-eeab44ab3b1e@xenosoft.de>
-Date: Wed, 27 Nov 2019 16:14:43 +0100
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:60.0) Gecko/20100101
- Thunderbird/60.9.1
+ with ESMTP id 4uzvA8mnFri3 for <iommu@lists.linux-foundation.org>;
+ Wed, 27 Nov 2019 17:09:46 +0000 (UTC)
+X-Greylist: domain auto-whitelisted by SQLgrey-1.7.6
+Received: from foss.arm.com (foss.arm.com [217.140.110.172])
+ by whitealder.osuosl.org (Postfix) with ESMTP id D31DA85B7C
+ for <iommu@lists.linux-foundation.org>; Wed, 27 Nov 2019 17:09:46 +0000 (UTC)
+Received: from usa-sjc-imap-foss1.foss.arm.com (unknown [10.121.207.14])
+ by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id 12FDB30E;
+ Wed, 27 Nov 2019 09:09:46 -0800 (PST)
+Received: from [10.1.196.37] (e121345-lin.cambridge.arm.com [10.1.196.37])
+ by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPSA id 019323F6C4;
+ Wed, 27 Nov 2019 09:09:44 -0800 (PST)
+Subject: Re: [PATCH 2/2] iommu: dma: Use of_iommu_get_resv_regions()
+To: Thierry Reding <thierry.reding@gmail.com>, Will Deacon <will@kernel.org>
+References: <20190829111407.17191-1-thierry.reding@gmail.com>
+ <20190829111407.17191-3-thierry.reding@gmail.com>
+ <1caeaaa0-c5aa-b630-6d42-055b26764f40@arm.com> <20190902145245.GC1445@ulmo>
+ <20190917175950.wrwiqnh5bp62uy3c@willie-the-truck>
+ <20191126172910.GA2669319@ulmo> <20191127141631.GA280099@ulmo>
+From: Robin Murphy <robin.murphy@arm.com>
+Message-ID: <864d5afb-72b4-a3ef-9c93-3a8ad4864c56@arm.com>
+Date: Wed, 27 Nov 2019 17:09:41 +0000
+User-Agent: Mozilla/5.0 (X11; Linux aarch64; rv:60.0) Gecko/20100101
+ Thunderbird/60.9.0
 MIME-Version: 1.0
-In-Reply-To: <20191127065624.GB16913@linux.ibm.com>
-Content-Language: de-DE
-Cc: linux-arch@vger.kernel.org, darren@stevens-zone.net, rtd2@xtra.co.nz,
- Benjamin Herrenschmidt <benh@kernel.crashing.org>,
- linuxppc-dev <linuxppc-dev@lists.ozlabs.org>, linux-kernel@vger.kernel.org,
- linux-mm@kvack.org, iommu@lists.linux-foundation.org,
- Rob Herring <robh+dt@kernel.org>, paulus@samba.org,
- mad skateman <madskateman@gmail.com>, "contact@a-eon.com" <contact@a-eon.com>,
- Robin Murphy <robin.murphy@arm.com>, nsaenzjulienne@suse.de
+In-Reply-To: <20191127141631.GA280099@ulmo>
+Content-Language: en-GB
+Cc: devicetree@vger.kernel.org, linux-kernel@vger.kernel.org,
+ iommu@lists.linux-foundation.org, Rob Herring <robh+dt@kernel.org>,
+ Frank Rowand <frowand.list@gmail.com>
 X-BeenThere: iommu@lists.linux-foundation.org
 X-Mailman-Version: 2.1.15
 Precedence: list
@@ -111,40 +85,35 @@ Content-Type: text/plain; charset="us-ascii"; Format="flowed"
 Errors-To: iommu-bounces@lists.linux-foundation.org
 Sender: "iommu" <iommu-bounces@lists.linux-foundation.org>
 
-On 27 November 2019 at 07:56 am, Mike Rapoport wrote:
->
-> Maybe we'll simply force bottom up allocation before calling
-> swiotlb_init()? Anyway, it's the last memblock allocation.
->
->
-> diff --git a/arch/powerpc/mm/mem.c b/arch/powerpc/mm/mem.c
-> index 62f74b1b33bd..771e6cf7e2b9 100644
-> --- a/arch/powerpc/mm/mem.c
-> +++ b/arch/powerpc/mm/mem.c
-> @@ -286,14 +286,15 @@ void __init mem_init(void)
->   	/*
->   	 * book3s is limited to 16 page sizes due to encoding this in
->   	 * a 4-bit field for slices.
->   	 */
->   	BUILD_BUG_ON(MMU_PAGE_COUNT > 16);
->   
->   #ifdef CONFIG_SWIOTLB
-> +	memblock_set_bottom_up(true);
->   	swiotlb_init(0);
->   #endif
->   
->   	high_memory = (void *) __va(max_low_pfn * PAGE_SIZE);
->   	set_max_mapnr(max_pfn);
->   	memblock_free_all();
->   
->   
-Hello Mike,
+On 27/11/2019 2:16 pm, Thierry Reding wrote:
+[...]
+> Nevermind that, I figured out that I was missingthe initialization of
+> some of the S2CR variables. I've got something that I think is working
+> now, though I don't know yet how to go about cleaning up the initial
+> mapping and "recycling" it.
+> 
+> I'll clean things up a bit, run some more tests and post a new patch
+> that can serve as a basis for discussion.
 
-I tested the latest Git kernel with your new patch today. My PCI TV card 
-works without any problems.
+I'm a little puzzled by the smmu->identity domain - disregarding the 
+fact that it's not actually used by the given diff ;) - if isolation is 
+the reason for not simply using a bypass S2CR for the window between 
+reset and the relevant .add_device call where the default domain proper 
+comes in[1], then surely exposing the union of memory regions to the 
+union of all associated devices isn't all that desirable either.
 
-Thanks,
-Christian
+Either way, I'll give you the pre-emptive warning that this is the SMMU 
+in the way of my EFI framebuffer ;)
+
+...
+arm-smmu 7fb20000.iommu: 	1 context banks (1 stage-2 only)
+...
+
+Robin.
+
+[1] the fact that it currently depends on probe order whether getting 
+that .add_device call requires a driver probing for the device is an 
+error as discussed elsewhere, and will get fixed separately, I promise.
 _______________________________________________
 iommu mailing list
 iommu@lists.linux-foundation.org
