@@ -2,124 +2,108 @@ Return-Path: <SRS0=T/MU=ZT=lists.linux-foundation.org=iommu-bounces@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-6.5 required=3.0 tests=DKIM_INVALID,DKIM_SIGNED,
-	HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_PATCH,MAILING_LIST_MULTI,SIGNED_OFF_BY,
-	SPF_HELO_NONE,SPF_PASS autolearn=ham autolearn_force=no version=3.4.0
+X-Spam-Status: No, score=-5.0 required=3.0 tests=DKIM_INVALID,DKIM_SIGNED,
+	HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_PATCH,MAILING_LIST_MULTI,SPF_HELO_NONE,
+	SPF_PASS,URIBL_BLOCKED,USER_AGENT_SANE_1 autolearn=unavailable
+	autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 7046AC432C0
-	for <iommu@archiver.kernel.org>; Wed, 27 Nov 2019 19:56:53 +0000 (UTC)
-Received: from fraxinus.osuosl.org (smtp4.osuosl.org [140.211.166.137])
+	by smtp.lore.kernel.org (Postfix) with ESMTP id A1CBAC432C0
+	for <iommu@archiver.kernel.org>; Wed, 27 Nov 2019 22:19:42 +0000 (UTC)
+Received: from hemlock.osuosl.org (smtp2.osuosl.org [140.211.166.133])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by mail.kernel.org (Postfix) with ESMTPS id 100362051A
-	for <iommu@archiver.kernel.org>; Wed, 27 Nov 2019 19:56:52 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTPS id 5F0212158A
+	for <iommu@archiver.kernel.org>; Wed, 27 Nov 2019 22:19:42 +0000 (UTC)
 Authentication-Results: mail.kernel.org;
-	dkim=fail reason="signature verification failed" (1024-bit key) header.d=vmware.com header.i=@vmware.com header.b="2gmajf1R"
-DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 100362051A
+	dkim=fail reason="signature verification failed" (2048-bit key) header.d=google.com header.i=@google.com header.b="rk3/E/zf"
+DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 5F0212158A
 Authentication-Results: mail.kernel.org; dmarc=none (p=none dis=none) header.from=lists.linux-foundation.org
 Authentication-Results: mail.kernel.org; spf=pass smtp.mailfrom=iommu-bounces@lists.linux-foundation.org
 Received: from localhost (localhost [127.0.0.1])
-	by fraxinus.osuosl.org (Postfix) with ESMTP id AF21F85F8B;
-	Wed, 27 Nov 2019 19:56:52 +0000 (UTC)
+	by hemlock.osuosl.org (Postfix) with ESMTP id 262B187CD6;
+	Wed, 27 Nov 2019 22:19:42 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from fraxinus.osuosl.org ([127.0.0.1])
+Received: from hemlock.osuosl.org ([127.0.0.1])
 	by localhost (.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
-	with ESMTP id ZabFlFCxz-yF; Wed, 27 Nov 2019 19:56:52 +0000 (UTC)
+	with ESMTP id j+d7hHL2ujmm; Wed, 27 Nov 2019 22:19:41 +0000 (UTC)
 Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [140.211.9.56])
-	by fraxinus.osuosl.org (Postfix) with ESMTP id EDFB9859EF;
-	Wed, 27 Nov 2019 19:56:51 +0000 (UTC)
+	by hemlock.osuosl.org (Postfix) with ESMTP id 0BBAA877AE;
+	Wed, 27 Nov 2019 22:19:41 +0000 (UTC)
 Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
-	by lists.linuxfoundation.org (Postfix) with ESMTP id DF307C1DDA;
-	Wed, 27 Nov 2019 19:56:51 +0000 (UTC)
+	by lists.linuxfoundation.org (Postfix) with ESMTP id F0832C1DD5;
+	Wed, 27 Nov 2019 22:19:40 +0000 (UTC)
 Received: from fraxinus.osuosl.org (smtp4.osuosl.org [140.211.166.137])
- by lists.linuxfoundation.org (Postfix) with ESMTP id 86507C0881
- for <iommu@lists.linux-foundation.org>; Wed, 27 Nov 2019 19:56:50 +0000 (UTC)
+ by lists.linuxfoundation.org (Postfix) with ESMTP id 9D66EC0881
+ for <iommu@lists.linux-foundation.org>; Wed, 27 Nov 2019 22:19:39 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
- by fraxinus.osuosl.org (Postfix) with ESMTP id 7718D85DF1
- for <iommu@lists.linux-foundation.org>; Wed, 27 Nov 2019 19:56:50 +0000 (UTC)
+ by fraxinus.osuosl.org (Postfix) with ESMTP id 86D32859E3
+ for <iommu@lists.linux-foundation.org>; Wed, 27 Nov 2019 22:19:39 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
 Received: from fraxinus.osuosl.org ([127.0.0.1])
  by localhost (.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
- with ESMTP id V6KCQtC40d9M for <iommu@lists.linux-foundation.org>;
- Wed, 27 Nov 2019 19:56:49 +0000 (UTC)
-X-Greylist: delayed 01:33:50 by SQLgrey-1.7.6
-Received: from NAM04-SN1-obe.outbound.protection.outlook.com
- (mail-eopbgr700046.outbound.protection.outlook.com [40.107.70.46])
- by fraxinus.osuosl.org (Postfix) with ESMTPS id 27803859EF
- for <iommu@lists.linux-foundation.org>; Wed, 27 Nov 2019 19:56:49 +0000 (UTC)
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=KAn5DFfOLuxfyKbe1t2cxVy7fEtMjLep9tltV0uo267GxBJTWqUi+Vy+S9gU2S0/rMj7RdbpiVXGb4UQ7+w4qdABut4Qb39MZTfqoK7EundEb2YRTAevOPhfswAV3LOqRgbUb8HCepr1t8jN8SchXoCFPxpff1McUeNRetyfa6DVKOu5tWPwVa1H6PVL3TFaQ5rpUvZe3lM5bPWuXS40kYOtUXFzERDg8PHGdrvjWKIqg/TmEll2gwcVyolwhgRHKh1txKKcbvOeNX0P0iGEs7NE3WItYVmapyI3d8n4ZPIlpK9IZgoxTKwftoiFclJZR1NaAOIngevms7kqWV4xfQ==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com; 
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=OuMgHDOn5lHvGjALlQNF3yph+H4Iqy1nTFO6QNLrOGA=;
- b=AA+MbEpzkHVGLCki7oeJvnTL+5U5rwl5vAlwojq8rE2nZjQ+idVCi/ja5Y4zPwWDAFgLquJ0nQRz9qDUmg92J0EUtpelDsvkngnqZvTy15sleaC4RXR26qfPiF0fthCNhuEOI8xOZFwQsqi7OQmOizSg47RrCqXn6/SHjU6TdzKH5VKq7DuRn+Qyt6KP4xSJL0pEyWe/tBn0UR1eICPcZHY1pYQ78KXG0ddudS3DGhIT5o/Pj/G7Q2njSWxN61hZ3pisTlVscLXyX/B9bMtd93k6A1lKzhTGFPK4rCrQgSgVdmKV+As7snEkuOHlG+51b/iwS0a2BqTxuaA/jzir/w==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=vmware.com; dmarc=pass action=none header.from=vmware.com;
- dkim=pass header.d=vmware.com; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=vmware.com;
- s=selector2;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=OuMgHDOn5lHvGjALlQNF3yph+H4Iqy1nTFO6QNLrOGA=;
- b=2gmajf1RtUtrsnCIem0MrMGAobiqBC8WpqcoEMwOnsATuoRRtKRWLvwmG5PHBh9crSM+0qyyq7v8D3spz7eJ9iIBNBHCRM2TKXUBJUdqySezhSOQQhAmSeSaScbNcdB9DS7o2E0WK/7n+9tCDEf7LtHv/g7LR0anux7pZMcbh/k=
-Received: from MN2PR05MB6141.namprd05.prod.outlook.com (20.178.241.217) by
- MN2PR05MB6656.namprd05.prod.outlook.com (20.178.248.150) with Microsoft SMTP
- Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.20.2495.13; Wed, 27 Nov 2019 18:22:58 +0000
-Received: from MN2PR05MB6141.namprd05.prod.outlook.com
- ([fe80::611e:6a6b:9109:5aa8]) by MN2PR05MB6141.namprd05.prod.outlook.com
- ([fe80::611e:6a6b:9109:5aa8%7]) with mapi id 15.20.2495.014; Wed, 27 Nov 2019
- 18:22:57 +0000
-To: "hch@lst.de" <hch@lst.de>
-Subject: Re: [PATCH 2/2] dma-mapping: force unencryped devices are always
- addressing limited
-Thread-Topic: [PATCH 2/2] dma-mapping: force unencryped devices are always
- addressing limited
-Thread-Index: AQHVpTCUSCVjXh+W+0SSCl6TSmyYRqefVP8A
-Date: Wed, 27 Nov 2019 18:22:57 +0000
-Message-ID: <a95d9115fc2a80de2f97f001bbcd9aba6636e685.camel@vmware.com>
-References: <20191127144006.25998-1-hch@lst.de>
- <20191127144006.25998-3-hch@lst.de>
-In-Reply-To: <20191127144006.25998-3-hch@lst.de>
-Accept-Language: en-US
-Content-Language: en-US
-X-MS-Has-Attach: 
-X-MS-TNEF-Correlator: 
-authentication-results: spf=none (sender IP is )
- smtp.mailfrom=thellstrom@vmware.com; 
-x-originating-ip: [155.4.205.35]
-x-ms-publictraffictype: Email
-x-ms-office365-filtering-correlation-id: 42b7cdaa-ddb7-4565-f003-08d77366d41f
-x-ms-traffictypediagnostic: MN2PR05MB6656:
-x-microsoft-antispam-prvs: <MN2PR05MB6656B6716DAA261E8F4F920EA1440@MN2PR05MB6656.namprd05.prod.outlook.com>
-x-ms-oob-tlc-oobclassifiers: OLM:7691;
-x-forefront-prvs: 023495660C
-x-forefront-antispam-report: SFV:NSPM;
- SFS:(10009020)(4636009)(136003)(376002)(346002)(396003)(366004)(39860400002)(189003)(199004)(6246003)(81166006)(81156014)(99286004)(71190400001)(64756008)(66476007)(66446008)(66556008)(71200400001)(5640700003)(76116006)(5660300002)(86362001)(4001150100001)(305945005)(2906002)(3846002)(4744005)(2351001)(8936002)(6116002)(478600001)(2501003)(1730700003)(66066001)(66946007)(4326008)(14454004)(66574012)(8676002)(91956017)(6506007)(6916009)(36756003)(102836004)(26005)(6512007)(316002)(76176011)(2616005)(11346002)(446003)(6436002)(6486002)(54906003)(186003)(14444005)(229853002)(25786009)(7736002)(118296001)(256004);
- DIR:OUT; SFP:1101; SCL:1; SRVR:MN2PR05MB6656;
- H:MN2PR05MB6141.namprd05.prod.outlook.com; FPR:; SPF:None; LANG:en;
- PTR:InfoNoRecords; MX:1; A:1; 
-received-spf: None (protection.outlook.com: vmware.com does not designate
- permitted sender hosts)
-x-ms-exchange-senderadcheck: 1
-x-microsoft-antispam: BCL:0;
-x-microsoft-antispam-message-info: 5WSTzJQWxhcLb668CNC7xze7ZTWu4qQozikCotT108+wIhC8jVCF5fn0kkwp/PO9m4RU4jvNEClw0iSUtgEa+rYHtXEBE5PgoHBrYMxqGeWozztLgdKP3SX7ufaRXSnCMUhnoLouyc0NrgThkjzGwqDFkm5pU67RL7kH690kC+xtvoWFyvVDGmJH6JDFBo3u5RnJhPPBUwNRSs2O1ZnBqcmvI7l/T1qISM+BZwdx60rK9ZdZOHOk1LE2aQF/VhV8UYrl6PUZoCPqT5qiL83luMKII3Ek2QDxogQr+ym0xoLTCNnsypIWvm0MuQvv+nvVCVtAGuJFXqPrYNTt2/j5RPNt8xDY8lH/UTOFgbgV8tG4nNRaLS2OqiRbQImRvwCw1fZhxP0SUDtyI1jIr/pbI5OjCOIKycm2DE3O4tCfp+vRM46PsJ9fGoCFjHpnxKOz
-x-ms-exchange-transport-forked: True
-Content-ID: <38743A5396C8804FAD8F2C094844A946@namprd05.prod.outlook.com>
+ with ESMTP id Wfzq1TbYeHHY for <iommu@lists.linux-foundation.org>;
+ Wed, 27 Nov 2019 22:19:38 +0000 (UTC)
+X-Greylist: delayed 00:08:07 by SQLgrey-1.7.6
+Received: from mail-pj1-f68.google.com (mail-pj1-f68.google.com
+ [209.85.216.68])
+ by fraxinus.osuosl.org (Postfix) with ESMTPS id DCF1B858D2
+ for <iommu@lists.linux-foundation.org>; Wed, 27 Nov 2019 22:19:38 +0000 (UTC)
+Received: by mail-pj1-f68.google.com with SMTP id a16so10764324pjs.13
+ for <iommu@lists.linux-foundation.org>; Wed, 27 Nov 2019 14:19:38 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=google.com; s=20161025;
+ h=date:from:to:cc:subject:in-reply-to:message-id:references
+ :user-agent:mime-version;
+ bh=B5LqWF3rYDR89Yh3BXrMDS+UXYNZjHzn7pTz6vzOHlY=;
+ b=rk3/E/zffHsy8rz63sYN92yC6wWOr9BEwOQrb0DBNMRIVHSNUsagH6qMud3IIp3iBQ
+ K81EH++9mhuZaeBiaC566bAbrNPfSUxK4HznlqvK6p/q6NhRjHuV3kTmszjaPq8aS78y
+ Zq5lNx9maFh2os9tmgXOznf+4ilhdWlIYpXfp+gc2SHTX2ShpNuvz3EsWJd/LcMnqX5Q
+ 63L5SiWS7u+Z0xF578Q9n1Z/Vq0Z8gI81DovTK8aVPhOPg6ZiiRvkjERrdrguTixDRbE
+ iXIO0BjOVgIlRFgSqFIYxlwj3nGD5BpCnxEXw5e7wqwshBBCrKCoBc99XgU6uPl8RLP6
+ EHHA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+ d=1e100.net; s=20161025;
+ h=x-gm-message-state:date:from:to:cc:subject:in-reply-to:message-id
+ :references:user-agent:mime-version;
+ bh=B5LqWF3rYDR89Yh3BXrMDS+UXYNZjHzn7pTz6vzOHlY=;
+ b=t2dokX7IwOYDBSDcy00ckeEzNfnPshnF+xf/pfo2BD9yBpoVjLLPfcD+NEQrVNIkZb
+ K+zQA4mhU46dtiss7CBFV7YPIMzSg0I6JC+r9Mrn3RVfFETPPylRkFkKgdEx9vPLfyc/
+ cEZsPnIh8KM08E1pPWnBUd8piBtQ8q0sEC8ust0N+Up5Hh9+L8z2EKhfuh1qJdFpm8Gp
+ WjrJVHIPw+r+M76yXt0cHPHWF/3FU3s3WDbDfypL9PfC/HyInW9/mJ2hLNp6SNHA0g9E
+ EXx4hzoOmThtCAkEv4XVo4WeTLGBHnaMF4lZn7LXBGlriKvqnyfx1fazdDsNuuxGKP/j
+ 6DkQ==
+X-Gm-Message-State: APjAAAX5Jv6JK1VG5O/AFcvkV0StZN3p4f+5HNycJIG2j/wxIjAQoMh3
+ ECkWsz0GwZwBe2EQJy9y4mi9aHriy3w=
+X-Google-Smtp-Source: APXvYqy8/zn33Ofgd+uyq7QIQadaZYFdnkrUQTrzDDCOnkS+RZCfAzYTFN3HsvKXPHxBVLC+LLRdig==
+X-Received: by 2002:a17:902:7089:: with SMTP id
+ z9mr6367022plk.292.1574892691057; 
+ Wed, 27 Nov 2019 14:11:31 -0800 (PST)
+Received: from [2620:15c:17:3:3a5:23a7:5e32:4598]
+ ([2620:15c:17:3:3a5:23a7:5e32:4598])
+ by smtp.gmail.com with ESMTPSA id a21sm7818948pjv.20.2019.11.27.14.11.29
+ (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+ Wed, 27 Nov 2019 14:11:29 -0800 (PST)
+Date: Wed, 27 Nov 2019 14:11:28 -0800 (PST)
+X-X-Sender: rientjes@chino.kir.corp.google.com
+To: Christoph Hellwig <hch@lst.de>
+Subject: Re: [bug] __blk_mq_run_hw_queue suspicious rcu usage
+In-Reply-To: <20190918132242.GA16133@lst.de>
+Message-ID: <alpine.DEB.2.21.1911271359000.135363@chino.kir.corp.google.com>
+References: <alpine.DEB.2.21.1909041434580.160038@chino.kir.corp.google.com>
+ <20190905060627.GA1753@lst.de>
+ <alpine.DEB.2.21.1909051534050.245316@chino.kir.corp.google.com>
+ <alpine.DEB.2.21.1909161641320.9200@chino.kir.corp.google.com>
+ <alpine.DEB.2.21.1909171121300.151243@chino.kir.corp.google.com>
+ <1d74607e-37f7-56ca-aba3-5a3bd7a68561@amd.com>
+ <20190918132242.GA16133@lst.de>
+User-Agent: Alpine 2.21 (DEB 202 2017-01-01)
 MIME-Version: 1.0
-X-OriginatorOrg: vmware.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: 42b7cdaa-ddb7-4565-f003-08d77366d41f
-X-MS-Exchange-CrossTenant-originalarrivaltime: 27 Nov 2019 18:22:57.7446 (UTC)
-X-MS-Exchange-CrossTenant-fromentityheader: Hosted
-X-MS-Exchange-CrossTenant-id: b39138ca-3cee-4b4a-a4d6-cd83d9dd62f0
-X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
-X-MS-Exchange-CrossTenant-userprincipalname: mFuKIitcxg1bU+jJpzc3UvRD0/8SFpicolcDaOpS+7RRAOdMAu39N779TODqXV2DIVM515VZ2Dh6X0apkuquJA==
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: MN2PR05MB6656
-Cc: "linux-mm@kvack.org" <linux-mm@kvack.org>,
- "thomas.lendacky@amd.com" <thomas.lendacky@amd.com>,
- "iommu@lists.linux-foundation.org" <iommu@lists.linux-foundation.org>,
+Cc: Jens Axboe <axboe@kernel.dk>, "Lendacky, Thomas" <Thomas.Lendacky@amd.com>,
+ "Singh, Brijesh" <brijesh.singh@amd.com>, "x86@kernel.org" <x86@kernel.org>,
  "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
- "christian.koenig@amd.com" <christian.koenig@amd.com>
+ Ming Lei <ming.lei@redhat.com>,
+ "iommu@lists.linux-foundation.org" <iommu@lists.linux-foundation.org>,
+ Peter Gonda <pgonda@google.com>, Keith Busch <kbusch@kernel.org>,
+ Jianxiong Gao <jxgao@google.com>
 X-BeenThere: iommu@lists.linux-foundation.org
 X-Mailman-Version: 2.1.15
 Precedence: list
@@ -132,30 +116,64 @@ List-Post: <mailto:iommu@lists.linux-foundation.org>
 List-Help: <mailto:iommu-request@lists.linux-foundation.org?subject=help>
 List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
  <mailto:iommu-request@lists.linux-foundation.org?subject=subscribe>
-From: Thomas Hellstrom via iommu <iommu@lists.linux-foundation.org>
-Reply-To: Thomas Hellstrom <thellstrom@vmware.com>
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: base64
+From: David Rientjes via iommu <iommu@lists.linux-foundation.org>
+Reply-To: David Rientjes <rientjes@google.com>
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: 7bit
 Errors-To: iommu-bounces@lists.linux-foundation.org
 Sender: "iommu" <iommu-bounces@lists.linux-foundation.org>
 
-SGksDQoNCk9uIFdlZCwgMjAxOS0xMS0yNyBhdCAxNTo0MCArMDEwMCwgQ2hyaXN0b3BoIEhlbGx3
-aWcgd3JvdGU6DQo+IERldmljZXMgdGhhdCBhcmUgZm9yY2VkIHRvIERNQSB0aHJvdWdoIHVuZW5j
-cnlwdGVkIGJvdW5jZSBidWZmZXJzDQo+IG5lZWQgdG8gYmUgdHJlYXRlZCBhcyBpZiB0aGV5IGFy
-ZSBhZGRyZXNzaW5nIGxpbWl0ZWQuDQo+IA0KPiBTaWduZWQtb2ZmLWJ5OiBDaHJpc3RvcGggSGVs
-bHdpZyA8aGNoQGxzdC5kZT4NCj4gLS0tDQo+ICBrZXJuZWwvZG1hL21hcHBpbmcuYyB8IDIgKysN
-Cj4gIDEgZmlsZSBjaGFuZ2VkLCAyIGluc2VydGlvbnMoKykNCj4gDQo+IGRpZmYgLS1naXQgYS9r
-ZXJuZWwvZG1hL21hcHBpbmcuYyBiL2tlcm5lbC9kbWEvbWFwcGluZy5jDQo+IGluZGV4IDFkYmU2
-ZDcyNTk2Mi4uZjZjMzViNTNkOTk2IDEwMDY0NA0KPiAtLS0gYS9rZXJuZWwvZG1hL21hcHBpbmcu
-Yw0KPiArKysgYi9rZXJuZWwvZG1hL21hcHBpbmcuYw0KPiBAQCAtNDE2LDYgKzQxNiw4IEBAIEVY
-UE9SVF9TWU1CT0xfR1BMKGRtYV9nZXRfbWVyZ2VfYm91bmRhcnkpOw0KPiAgICovDQo+ICBib29s
-IGRtYV9hZGRyZXNzaW5nX2xpbWl0ZWQoc3RydWN0IGRldmljZSAqZGV2KQ0KPiAgew0KPiArCWlm
-IChmb3JjZV9kbWFfdW5lbmNyeXB0ZWQoZGV2KSkNCj4gKwkJcmV0dXJuIHRydWU7DQo+ICAJcmV0
-dXJuIG1pbl9ub3RfemVybyhkbWFfZ2V0X21hc2soZGV2KSwgZGV2LT5idXNfZG1hX2xpbWl0KSA8
-DQo+ICAJCQkgICAgZG1hX2dldF9yZXF1aXJlZF9tYXNrKGRldik7DQo+ICB9DQoNCkFueSBjaGFu
-Y2UgdG8gaGF2ZSB0aGUgY2FzZQ0KDQooc3dpb3RsYl9mb3JjZSA9PSBTV0lPVExCX0ZPUkNFKQ0K
-DQphbHNvIGluY2x1ZGVkPw0KDQpPdGhlcndpc2UgZm9yIHRoZSBzZXJpZXMNCg0KUmV2aWV3ZWQt
-Ynk6IFRob21hcyBIZWxsc3Ryw7ZtIDx0aGVsbHN0cm9tQHZtd2FyZS5jb20+DQoNCiANCg0KX19f
-X19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX18KaW9tbXUgbWFpbGlu
-ZyBsaXN0CmlvbW11QGxpc3RzLmxpbnV4LWZvdW5kYXRpb24ub3JnCmh0dHBzOi8vbGlzdHMubGlu
-dXhmb3VuZGF0aW9uLm9yZy9tYWlsbWFuL2xpc3RpbmZvL2lvbW11
+On Wed, 18 Sep 2019, Christoph Hellwig wrote:
+
+> On Tue, Sep 17, 2019 at 06:41:02PM +0000, Lendacky, Thomas wrote:
+> > > diff --git a/drivers/nvme/host/pci.c b/drivers/nvme/host/pci.c
+> > > --- a/drivers/nvme/host/pci.c
+> > > +++ b/drivers/nvme/host/pci.c
+> > > @@ -1613,7 +1613,8 @@ static int nvme_alloc_admin_tags(struct nvme_dev *dev)
+> > >  		dev->admin_tagset.timeout = ADMIN_TIMEOUT;
+> > >  		dev->admin_tagset.numa_node = dev_to_node(dev->dev);
+> > >  		dev->admin_tagset.cmd_size = sizeof(struct nvme_iod);
+> > > -		dev->admin_tagset.flags = BLK_MQ_F_NO_SCHED;
+> > > +		dev->admin_tagset.flags = BLK_MQ_F_NO_SCHED |
+> > > +					  BLK_MQ_F_BLOCKING;
+> > 
+> > I think you want to only set the BLK_MQ_F_BLOCKING if the DMA is required
+> > to be unencrypted. Unfortunately, force_dma_unencrypted() can't be called
+> > from a module. Is there a DMA API that could be called to get that info?
+> 
+> The DMA API must support non-blocking calls, and various drivers rely
+> on that.  So we need to provide that even for the SEV case.  If the
+> actual blocking can't be made to work we'll need to wire up the DMA
+> pool in kernel/dma/remap.c for it (and probably move it to separate
+> file).
+> 
+
+Resurrecting this thread from a couple months ago because it appears that 
+this is still an issue with 5.4 guests.
+
+dma_pool_alloc(), regardless of whether mem_flags allows blocking or not, 
+can always sleep if the device's DMA must be unencrypted and 
+mem_encrypt_active() == true.  We know this because vm_unmap_aliases() can 
+always block.
+
+NVMe's setup of PRPs and SGLs uses dma_pool_alloc(GFP_ATOMIC) but when 
+this is a SEV-enabled guest this allocation may block due to the 
+possibility of allocating DMA coherent memory through dma_direct_alloc().
+
+It seems like one solution would be to add significant latency by doing 
+BLK_MQ_F_BLOCKING if force_dma_unencrypted() is true for the device but 
+this comes with significant downsides.
+
+So we're left with making dma_pool_alloc(GFP_ATOMIC) actually be atomic 
+even when the DMA needs to be unencrypted for SEV.  Christoph's suggestion 
+was to wire up dmapool in kernel/dma/remap.c for this.  Is that necessary 
+to be done for all devices that need to do dma_pool_alloc(GFP_ATOMIC) or 
+can we do it within the DMA API itself so it's transparent to the driver?
+
+Thomas/Brijesh: separately, it seems the use of set_memory_encrypted() or 
+set_memory_decrypted() must be possible without blocking; is this only an 
+issue from the DMA API point of view or can it be done elsewhere?
+_______________________________________________
+iommu mailing list
+iommu@lists.linux-foundation.org
+https://lists.linuxfoundation.org/mailman/listinfo/iommu
