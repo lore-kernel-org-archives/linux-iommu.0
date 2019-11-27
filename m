@@ -1,80 +1,124 @@
-Return-Path: <SRS0=2ATj=ZS=lists.linux-foundation.org=iommu-bounces@kernel.org>
+Return-Path: <SRS0=T/MU=ZT=lists.linux-foundation.org=iommu-bounces@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-2.3 required=3.0 tests=DKIM_INVALID,DKIM_SIGNED,
-	FAKE_REPLY_C,MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED,
-	USER_AGENT_SANE_1 autolearn=no autolearn_force=no version=3.4.0
+X-Spam-Status: No, score=-5.2 required=3.0 tests=HEADER_FROM_DIFFERENT_DOMAINS,
+	INCLUDES_PATCH,MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED,
+	USER_AGENT_SANE_1 autolearn=ham autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id EC032C432C0
-	for <iommu@archiver.kernel.org>; Tue, 26 Nov 2019 21:50:26 +0000 (UTC)
-Received: from silver.osuosl.org (smtp3.osuosl.org [140.211.166.136])
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 9D6CCC432C3
+	for <iommu@archiver.kernel.org>; Wed, 27 Nov 2019 06:56:41 +0000 (UTC)
+Received: from hemlock.osuosl.org (smtp2.osuosl.org [140.211.166.133])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by mail.kernel.org (Postfix) with ESMTPS id B82682068E
-	for <iommu@archiver.kernel.org>; Tue, 26 Nov 2019 21:50:26 +0000 (UTC)
-Authentication-Results: mail.kernel.org;
-	dkim=fail reason="signature verification failed" (1024-bit key) header.d=kernel.org header.i=@kernel.org header.b="uUIlGVPy"
-DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org B82682068E
-Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=kernel.org
+	by mail.kernel.org (Postfix) with ESMTPS id 6DC1D2075C
+	for <iommu@archiver.kernel.org>; Wed, 27 Nov 2019 06:56:41 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 6DC1D2075C
+Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=linux.ibm.com
 Authentication-Results: mail.kernel.org; spf=pass smtp.mailfrom=iommu-bounces@lists.linux-foundation.org
 Received: from localhost (localhost [127.0.0.1])
-	by silver.osuosl.org (Postfix) with ESMTP id 98E57204CD;
-	Tue, 26 Nov 2019 21:50:26 +0000 (UTC)
+	by hemlock.osuosl.org (Postfix) with ESMTP id 15E5C88046;
+	Wed, 27 Nov 2019 06:56:41 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from silver.osuosl.org ([127.0.0.1])
+Received: from hemlock.osuosl.org ([127.0.0.1])
 	by localhost (.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
-	with ESMTP id 9+1YxvPdUVsW; Tue, 26 Nov 2019 21:50:26 +0000 (UTC)
+	with ESMTP id MWf8Q1XQI41b; Wed, 27 Nov 2019 06:56:40 +0000 (UTC)
 Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [140.211.9.56])
-	by silver.osuosl.org (Postfix) with ESMTP id 00ED020464;
-	Tue, 26 Nov 2019 21:50:25 +0000 (UTC)
+	by hemlock.osuosl.org (Postfix) with ESMTP id 8086E87FF7;
+	Wed, 27 Nov 2019 06:56:40 +0000 (UTC)
 Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
-	by lists.linuxfoundation.org (Postfix) with ESMTP id DE9F8C1DDA;
-	Tue, 26 Nov 2019 21:50:25 +0000 (UTC)
-Received: from fraxinus.osuosl.org (smtp4.osuosl.org [140.211.166.137])
- by lists.linuxfoundation.org (Postfix) with ESMTP id 9510AC0881
- for <iommu@lists.linux-foundation.org>; Tue, 26 Nov 2019 21:50:24 +0000 (UTC)
+	by lists.linuxfoundation.org (Postfix) with ESMTP id 6AD33C1DDA;
+	Wed, 27 Nov 2019 06:56:40 +0000 (UTC)
+Received: from whitealder.osuosl.org (smtp1.osuosl.org [140.211.166.138])
+ by lists.linuxfoundation.org (Postfix) with ESMTP id 44C37C0881
+ for <iommu@lists.linux-foundation.org>; Wed, 27 Nov 2019 06:56:38 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
- by fraxinus.osuosl.org (Postfix) with ESMTP id 7F3EC855F6
- for <iommu@lists.linux-foundation.org>; Tue, 26 Nov 2019 21:50:24 +0000 (UTC)
+ by whitealder.osuosl.org (Postfix) with ESMTP id 3668D86FBB
+ for <iommu@lists.linux-foundation.org>; Wed, 27 Nov 2019 06:56:38 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from fraxinus.osuosl.org ([127.0.0.1])
+Received: from whitealder.osuosl.org ([127.0.0.1])
  by localhost (.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
- with ESMTP id VzD53eq0Y7Yl for <iommu@lists.linux-foundation.org>;
- Tue, 26 Nov 2019 21:50:23 +0000 (UTC)
+ with ESMTP id MN82OXj8Kjj2 for <iommu@lists.linux-foundation.org>;
+ Wed, 27 Nov 2019 06:56:37 +0000 (UTC)
 X-Greylist: domain auto-whitelisted by SQLgrey-1.7.6
-Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
- by fraxinus.osuosl.org (Postfix) with ESMTPS id EC31B84FDD
- for <iommu@lists.linux-foundation.org>; Tue, 26 Nov 2019 21:50:23 +0000 (UTC)
-Received: from localhost (unknown [69.71.4.100])
- (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
- (No client certificate requested)
- by mail.kernel.org (Postfix) with ESMTPSA id 5A4D32064B;
- Tue, 26 Nov 2019 21:50:23 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
- s=default; t=1574805023;
- bh=fviU4DYleNx/9leEWr8KlLRaZcRV5/31mbcIkscLwXI=;
- h=Date:From:To:Cc:Subject:In-Reply-To:From;
- b=uUIlGVPyKOrvuHVpQv/b+ruVHCQDTlDu1+qzEemw7EkSDCS8/n4JPZHteVMdX0WFZ
- 91sGaPq8CDozUc+9UqG1loem0V7LuABz1cFlkueEdKM8Bnyqsc6Xkrw3oMKIRDoyoo
- AdKDLXRSe79ve81TcXBrMFWSSipAW0nQkoXOLgX0=
-Date: Tue, 26 Nov 2019 15:50:21 -0600
-From: Bjorn Helgaas <helgaas@kernel.org>
-To: Nicolas Saenz Julienne <nsaenzjulienne@suse.de>
-Subject: Re: [PATCH v3 0/7] Raspberry Pi 4 PCIe support
-Message-ID: <20191126215020.GA191414@google.com>
+Received: from mx0a-001b2d01.pphosted.com (mx0b-001b2d01.pphosted.com
+ [148.163.158.5])
+ by whitealder.osuosl.org (Postfix) with ESMTPS id 80D5B86F9E
+ for <iommu@lists.linux-foundation.org>; Wed, 27 Nov 2019 06:56:37 +0000 (UTC)
+Received: from pps.filterd (m0098420.ppops.net [127.0.0.1])
+ by mx0b-001b2d01.pphosted.com (8.16.0.42/8.16.0.42) with SMTP id
+ xAR6pYex091801
+ for <iommu@lists.linux-foundation.org>; Wed, 27 Nov 2019 01:56:36 -0500
+Received: from e06smtp03.uk.ibm.com (e06smtp03.uk.ibm.com [195.75.94.99])
+ by mx0b-001b2d01.pphosted.com with ESMTP id 2whh5dwd0g-1
+ (version=TLSv1.2 cipher=AES256-GCM-SHA384 bits=256 verify=NOT)
+ for <iommu@lists.linux-foundation.org>; Wed, 27 Nov 2019 01:56:35 -0500
+Received: from localhost
+ by e06smtp03.uk.ibm.com with IBM ESMTP SMTP Gateway: Authorized Use Only!
+ Violators will be prosecuted
+ for <iommu@lists.linux-foundation.org> from <rppt@linux.ibm.com>;
+ Wed, 27 Nov 2019 06:56:34 -0000
+Received: from b06cxnps3074.portsmouth.uk.ibm.com (9.149.109.194)
+ by e06smtp03.uk.ibm.com (192.168.101.133) with IBM ESMTP SMTP Gateway:
+ Authorized Use Only! Violators will be prosecuted; 
+ (version=TLSv1/SSLv3 cipher=AES256-GCM-SHA384 bits=256/256)
+ Wed, 27 Nov 2019 06:56:29 -0000
+Received: from d06av25.portsmouth.uk.ibm.com (d06av25.portsmouth.uk.ibm.com
+ [9.149.105.61])
+ by b06cxnps3074.portsmouth.uk.ibm.com (8.14.9/8.14.9/NCO v10.0) with ESMTP id
+ xAR6uSmL44302394
+ (version=TLSv1/SSLv3 cipher=DHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
+ Wed, 27 Nov 2019 06:56:28 GMT
+Received: from d06av25.portsmouth.uk.ibm.com (unknown [127.0.0.1])
+ by IMSVA (Postfix) with ESMTP id 2F16711C054;
+ Wed, 27 Nov 2019 06:56:28 +0000 (GMT)
+Received: from d06av25.portsmouth.uk.ibm.com (unknown [127.0.0.1])
+ by IMSVA (Postfix) with ESMTP id 07AD911C04A;
+ Wed, 27 Nov 2019 06:56:27 +0000 (GMT)
+Received: from linux.ibm.com (unknown [9.148.8.105])
+ by d06av25.portsmouth.uk.ibm.com (Postfix) with ESMTPS;
+ Wed, 27 Nov 2019 06:56:26 +0000 (GMT)
+Date: Wed, 27 Nov 2019 08:56:25 +0200
+From: Mike Rapoport <rppt@linux.ibm.com>
+To: Christoph Hellwig <hch@lst.de>
+Subject: Re: Bug 205201 - Booting halts if Dawicontrol DC-2976 UW SCSI board
+ installed, unless RAM size limited to 3500M
+References: <20191121072943.GA24024@lst.de>
+ <dbde2252-035e-6183-7897-43348e60647e@xenosoft.de>
+ <6eec5c42-019c-a988-fc2a-cb804194683d@xenosoft.de>
+ <d0252d29-7a03-20e1-ccd7-e12d906e4bdf@arm.com>
+ <b3217742-2c0b-8447-c9ac-608b93265363@xenosoft.de>
+ <20191121180226.GA3852@lst.de>
+ <2fde79cf-875f-94e6-4a1b-f73ebb2e2c32@xenosoft.de>
+ <20191125073923.GA30168@lst.de>
+ <4681f5fe-c095-15f5-9221-4b55e940bafc@xenosoft.de>
+ <20191126164026.GA8026@lst.de>
 MIME-Version: 1.0
 Content-Disposition: inline
-In-Reply-To: <20191126091946.7970-1-nsaenzjulienne@suse.de>
-User-Agent: Mutt/1.10.1 (2018-07-13)
-Cc: devicetree@vger.kernel.org, f.fainelli@gmail.com,
- linux-rockchip@lists.infradead.org, linux-rdma@vger.kernel.org, maz@kernel.org,
- phil@raspberrypi.org, linux-kernel@vger.kernel.org, jeremy.linton@arm.com,
- linux-acpi@vger.kernel.org, iommu@lists.linux-foundation.org,
- mbrugger@suse.com, bcm-kernel-feedback-list@broadcom.com, wahrenst@gmx.net,
- james.quinlan@broadcom.com, linux-pci@vger.kernel.org,
- Robin Murphy <robin.murphy@arm.com>, netdev@vger.kernel.org,
- linux-arm-kernel@lists.infradead.org, linux-rpi-kernel@lists.infradead.org
+In-Reply-To: <20191126164026.GA8026@lst.de>
+User-Agent: Mutt/1.5.24 (2015-08-30)
+X-TM-AS-GCONF: 00
+x-cbid: 19112706-0012-0000-0000-0000036CCE06
+X-IBM-AV-DETECTION: SAVI=unused REMOTE=unused XFE=unused
+x-cbparentid: 19112706-0013-0000-0000-000021A875C1
+Message-Id: <20191127065624.GB16913@linux.ibm.com>
+X-Proofpoint-Virus-Version: vendor=fsecure engine=2.50.10434:6.0.95,18.0.572
+ definitions=2019-11-27_01:2019-11-26,2019-11-27 signatures=0
+X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0
+ mlxlogscore=999
+ priorityscore=1501 bulkscore=0 impostorscore=0 lowpriorityscore=0
+ adultscore=0 suspectscore=2 phishscore=0 malwarescore=0 mlxscore=0
+ clxscore=1015 spamscore=0 classifier=spam adjust=0 reason=mlx scancount=1
+ engine=8.12.0-1910280000 definitions=main-1911270055
+Cc: linux-arch@vger.kernel.org, darren@stevens-zone.net, rtd2@xtra.co.nz,
+ Benjamin Herrenschmidt <benh@kernel.crashing.org>,
+ linuxppc-dev <linuxppc-dev@lists.ozlabs.org>, linux-kernel@vger.kernel.org,
+ linux-mm@kvack.org, iommu@lists.linux-foundation.org,
+ Rob Herring <robh+dt@kernel.org>, paulus@samba.org,
+ mad skateman <madskateman@gmail.com>,
+ Christian Zigotzky <chzigotzky@xenosoft.de>,
+ "contact@a-eon.com" <contact@a-eon.com>, Robin Murphy <robin.murphy@arm.com>,
+ nsaenzjulienne@suse.de
 X-BeenThere: iommu@lists.linux-foundation.org
 X-Mailman-Version: 2.1.15
 Precedence: list
@@ -92,28 +136,51 @@ Content-Transfer-Encoding: 7bit
 Errors-To: iommu-bounces@lists.linux-foundation.org
 Sender: "iommu" <iommu-bounces@lists.linux-foundation.org>
 
-On Tue, Nov 26, 2019 at 10:19:38AM +0100, Nicolas Saenz Julienne wrote:
-> This series aims at providing support for Raspberry Pi 4's PCIe
-> controller, which is also shared with the Broadcom STB family of
-> devices.
+On Tue, Nov 26, 2019 at 05:40:26PM +0100, Christoph Hellwig wrote:
+> On Tue, Nov 26, 2019 at 12:26:38PM +0100, Christian Zigotzky wrote:
+> > Hello Christoph,
+> >
+> > The PCI TV card works with your patch! I was able to patch your Git kernel 
+> > with the patch above.
+> >
+> > I haven't found any error messages in the dmesg yet.
+> 
+> Thanks.  Unfortunately this is a bit of a hack as we need to set
+> the mask based on runtime information like the magic FSL PCIe window.
+> Let me try to draft something better up, and thanks already for testing
+> this one!
 
-> Jim Quinlan (3):
->   dt-bindings: PCI: Add bindings for brcmstb's PCIe device
->   PCI: brcmstb: add Broadcom STB PCIe host controller driver
->   PCI: brcmstb: add MSI capability
+Maybe we'll simply force bottom up allocation before calling
+swiotlb_init()? Anyway, it's the last memblock allocation.
 
-Please update these subjects to match the others, i.e., capitalize
-"Add".  Also, I think "Add MSI capability" really means "Add support
-for MSI ..."; in PCIe terms the "MSI Capability" is a structure in
-config space and it's there whether the OS supports it or not.
 
-No need to repost just for this.
+diff --git a/arch/powerpc/mm/mem.c b/arch/powerpc/mm/mem.c
+index 62f74b1b33bd..771e6cf7e2b9 100644
+--- a/arch/powerpc/mm/mem.c
++++ b/arch/powerpc/mm/mem.c
+@@ -286,14 +286,15 @@ void __init mem_init(void)
+ 	/*
+ 	 * book3s is limited to 16 page sizes due to encoding this in
+ 	 * a 4-bit field for slices.
+ 	 */
+ 	BUILD_BUG_ON(MMU_PAGE_COUNT > 16);
+ 
+ #ifdef CONFIG_SWIOTLB
++	memblock_set_bottom_up(true);
+ 	swiotlb_init(0);
+ #endif
+ 
+ 	high_memory = (void *) __va(max_low_pfn * PAGE_SIZE);
+ 	set_max_mapnr(max_pfn);
+ 	memblock_free_all();
+ 
+ 
 
-> Nicolas Saenz Julienne (4):
->   linux/log2.h: Add roundup/rounddown_pow_two64() family of functions
->   ARM: dts: bcm2711: Enable PCIe controller
->   MAINTAINERS: Add brcmstb PCIe controller
->   arm64: defconfig: Enable Broadcom's STB PCIe controller
+
+-- 
+Sincerely yours,
+Mike.
+
 _______________________________________________
 iommu mailing list
 iommu@lists.linux-foundation.org
