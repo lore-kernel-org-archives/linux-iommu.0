@@ -1,95 +1,84 @@
-Return-Path: <SRS0=2ATj=ZS=lists.linux-foundation.org=iommu-bounces@kernel.org>
+Return-Path: <SRS0=T/MU=ZT=lists.linux-foundation.org=iommu-bounces@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-0.5 required=3.0 tests=DKIM_INVALID,DKIM_SIGNED,
-	HEADER_FROM_DIFFERENT_DOMAINS,MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS,
-	URIBL_BLOCKED autolearn=no autolearn_force=no version=3.4.0
+X-Spam-Status: No, score=-2.2 required=3.0 tests=HEADER_FROM_DIFFERENT_DOMAINS,
+	MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED,USER_AGENT_SANE_1
+	autolearn=no autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 302CAC432C0
-	for <iommu@archiver.kernel.org>; Tue, 26 Nov 2019 20:28:34 +0000 (UTC)
-Received: from whitealder.osuosl.org (smtp1.osuosl.org [140.211.166.138])
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 2FCD4C432C0
+	for <iommu@archiver.kernel.org>; Wed, 27 Nov 2019 11:04:35 +0000 (UTC)
+Received: from fraxinus.osuosl.org (smtp4.osuosl.org [140.211.166.137])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by mail.kernel.org (Postfix) with ESMTPS id E4E2E20863
-	for <iommu@archiver.kernel.org>; Tue, 26 Nov 2019 20:28:33 +0000 (UTC)
-Authentication-Results: mail.kernel.org;
-	dkim=fail reason="signature verification failed" (2048-bit key) header.d=google.com header.i=@google.com header.b="CBhYcMif"
-DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org E4E2E20863
-Authentication-Results: mail.kernel.org; dmarc=none (p=none dis=none) header.from=lists.linux-foundation.org
+	by mail.kernel.org (Postfix) with ESMTPS id EC71B2068E
+	for <iommu@archiver.kernel.org>; Wed, 27 Nov 2019 11:04:34 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org EC71B2068E
+Authentication-Results: mail.kernel.org; dmarc=none (p=none dis=none) header.from=huawei.com
 Authentication-Results: mail.kernel.org; spf=pass smtp.mailfrom=iommu-bounces@lists.linux-foundation.org
 Received: from localhost (localhost [127.0.0.1])
-	by whitealder.osuosl.org (Postfix) with ESMTP id D412186D2F;
-	Tue, 26 Nov 2019 20:28:32 +0000 (UTC)
+	by fraxinus.osuosl.org (Postfix) with ESMTP id BA58B84463;
+	Wed, 27 Nov 2019 11:04:34 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from whitealder.osuosl.org ([127.0.0.1])
+Received: from fraxinus.osuosl.org ([127.0.0.1])
 	by localhost (.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
-	with ESMTP id y02sgB99o8t3; Tue, 26 Nov 2019 20:28:32 +0000 (UTC)
+	with ESMTP id l0TSZqH28jzx; Wed, 27 Nov 2019 11:04:33 +0000 (UTC)
 Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [140.211.9.56])
-	by whitealder.osuosl.org (Postfix) with ESMTP id 06D748637D;
-	Tue, 26 Nov 2019 20:28:32 +0000 (UTC)
+	by fraxinus.osuosl.org (Postfix) with ESMTP id D815B84400;
+	Wed, 27 Nov 2019 11:04:33 +0000 (UTC)
 Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
-	by lists.linuxfoundation.org (Postfix) with ESMTP id D5775C0880;
-	Tue, 26 Nov 2019 20:28:31 +0000 (UTC)
-Received: from whitealder.osuosl.org (smtp1.osuosl.org [140.211.166.138])
- by lists.linuxfoundation.org (Postfix) with ESMTP id 84745C0878
- for <iommu@lists.linuxfoundation.org>; Tue, 26 Nov 2019 20:28:30 +0000 (UTC)
+	by lists.linuxfoundation.org (Postfix) with ESMTP id BD85FC1DDA;
+	Wed, 27 Nov 2019 11:04:33 +0000 (UTC)
+Received: from fraxinus.osuosl.org (smtp4.osuosl.org [140.211.166.137])
+ by lists.linuxfoundation.org (Postfix) with ESMTP id 05192C0881
+ for <iommu@lists.linuxfoundation.org>; Wed, 27 Nov 2019 11:04:32 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
- by whitealder.osuosl.org (Postfix) with ESMTP id 7E0CF86ACB
- for <iommu@lists.linuxfoundation.org>; Tue, 26 Nov 2019 20:28:30 +0000 (UTC)
+ by fraxinus.osuosl.org (Postfix) with ESMTP id 6B0B284463
+ for <iommu@lists.linuxfoundation.org>; Wed, 27 Nov 2019 11:04:31 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from whitealder.osuosl.org ([127.0.0.1])
+Received: from fraxinus.osuosl.org ([127.0.0.1])
  by localhost (.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
- with ESMTP id MfEeXDSPeLpZ for <iommu@lists.linuxfoundation.org>;
- Tue, 26 Nov 2019 20:28:29 +0000 (UTC)
-X-Greylist: domain auto-whitelisted by SQLgrey-1.7.6
-Received: from mail-oi1-f195.google.com (mail-oi1-f195.google.com
- [209.85.167.195])
- by whitealder.osuosl.org (Postfix) with ESMTPS id CBBDB8637D
- for <iommu@lists.linuxfoundation.org>; Tue, 26 Nov 2019 20:28:29 +0000 (UTC)
-Received: by mail-oi1-f195.google.com with SMTP id s71so17879847oih.11
- for <iommu@lists.linuxfoundation.org>; Tue, 26 Nov 2019 12:28:29 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=google.com; s=20161025;
- h=mime-version:references:in-reply-to:from:date:message-id:subject:to
- :cc; bh=/XSZa4W/M2aE/Tb/1KifHz0unDdEO/TbPc4sPZEojwc=;
- b=CBhYcMifwObV8FiaLv3qnDm8tmxQesbOiKmpfYuLwQcoURmaoskF1BM3VvvuJsOxEg
- FeS4PEx1RfrQfekKtivjkgF7pV4uIh0nmFJIkzU+WBK1uEM80zbJa80xMaETFFZjGlva
- 4jz3NvIlnC3RdVDU0YgJOoe+Ksz95PefmhbLQK2Er0F5wZZXWu1YtF8I64NxENNF3vG9
- f4F3WKam+EMzAwKbkar25ZPTlk/l3cK0HaHyZUbAJsyZaSckG4r44N/f88GEKvx4k8NE
- Kxv+bW0pCp6LKZVFQriQBDAFdj6bVkWKsjR52Mu1HC/KAImOfK+rNMbhfqVdA2byccjd
- 3KLQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
- d=1e100.net; s=20161025;
- h=x-gm-message-state:mime-version:references:in-reply-to:from:date
- :message-id:subject:to:cc;
- bh=/XSZa4W/M2aE/Tb/1KifHz0unDdEO/TbPc4sPZEojwc=;
- b=Bolx/MxTBOB3dFK3lu5K94CCHMHFCoMDhcno0nBzzGXZzz2IpSgy0caRojlHaGjtaP
- TFwgD5kyPJjYSY9PPgnsCBXbjDMRYgXEK3tPbR21XZ2Ru2ZvGTnFz6usM3tlgANmEWMN
- vuRiNEjoD9/eyVXpIbzRSYJfUqcLcarWM4Sxt/PZJPK7LLvUCHCrzyCWXNsAPWpkPpYz
- xOdPSssp57smkuO5uW0jOUJn/Gt0UqKsxp1+27ESOYMmZBerw3c748XjzN9YTvxCBSF7
- r9m+9OZx7yA5srk2n2oGdb4Af64mm3Kdz5Ups3HiGLlfZLQrcUofWC0Ww1+irncj1SXS
- AxYA==
-X-Gm-Message-State: APjAAAVq/718iQPoEWkDo8wupyU7gphJBSG6IC9YOOkbuJ3xPtI5WZU5
- ATXrkJX3YT3koHi32gj+wzK5W8A9wtWpFheEKotjDQ==
-X-Google-Smtp-Source: APXvYqwYoqI9ebTNGSoRQFaPjS4xFGjozMV1PMYVPuvzl4n6+yfP1MFkD0UBucO5QOZTVwhOiGWpwNsqbdfl5iQJkQ4=
-X-Received: by 2002:a05:6808:611:: with SMTP id
- y17mr814072oih.24.1574800108635; 
- Tue, 26 Nov 2019 12:28:28 -0800 (PST)
-MIME-Version: 1.0
+ with ESMTP id RBro9KtbBDm7 for <iommu@lists.linuxfoundation.org>;
+ Wed, 27 Nov 2019 11:04:30 +0000 (UTC)
+X-Greylist: from auto-whitelisted by SQLgrey-1.7.6
+Received: from huawei.com (lhrrgout.huawei.com [185.176.76.210])
+ by fraxinus.osuosl.org (Postfix) with ESMTPS id 0D5B584400
+ for <iommu@lists.linuxfoundation.org>; Wed, 27 Nov 2019 11:04:29 +0000 (UTC)
+Received: from LHREML711-CAH.china.huawei.com (unknown [172.18.7.107])
+ by Forcepoint Email with ESMTP id 3E497451C88F8A6FF950;
+ Wed, 27 Nov 2019 11:04:27 +0000 (GMT)
+Received: from lhreml724-chm.china.huawei.com (10.201.108.75) by
+ LHREML711-CAH.china.huawei.com (10.201.108.34) with Microsoft SMTP Server
+ (TLS) id 14.3.408.0; Wed, 27 Nov 2019 11:04:26 +0000
+Received: from [127.0.0.1] (10.202.226.46) by lhreml724-chm.china.huawei.com
+ (10.201.108.75) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.1713.5; Wed, 27 Nov
+ 2019 11:04:26 +0000
+Subject: Re: [PATCH v3 09/14] iommu/arm-smmu: Prevent forced unbinding of Arm
+ SMMU drivers
+To: Saravana Kannan <saravanak@google.com>
 References: <20191121114918.2293-1-will@kernel.org>
  <20191121114918.2293-10-will@kernel.org>
  <5c91d467-5e59-482b-8f4f-e0cfa3db9028@huawei.com>
-In-Reply-To: <5c91d467-5e59-482b-8f4f-e0cfa3db9028@huawei.com>
-Date: Tue, 26 Nov 2019 12:27:52 -0800
-Message-ID: <CAGETcx8Hkta6scFdiG=eQypsQ--jrR1YisaOQATCbMiu+aG8sg@mail.gmail.com>
-Subject: Re: [PATCH v3 09/14] iommu/arm-smmu: Prevent forced unbinding of Arm
- SMMU drivers
-To: John Garry <john.garry@huawei.com>
+ <CAGETcx8Hkta6scFdiG=eQypsQ--jrR1YisaOQATCbMiu+aG8sg@mail.gmail.com>
+From: John Garry <john.garry@huawei.com>
+Message-ID: <af1dc92a-ca98-fb22-835f-5ceb85e86b1b@huawei.com>
+Date: Wed, 27 Nov 2019 11:04:25 +0000
+User-Agent: Mozilla/5.0 (Windows NT 10.0; WOW64; rv:68.0) Gecko/20100101
+ Thunderbird/68.1.2
+MIME-Version: 1.0
+In-Reply-To: <CAGETcx8Hkta6scFdiG=eQypsQ--jrR1YisaOQATCbMiu+aG8sg@mail.gmail.com>
+Content-Language: en-US
+X-Originating-IP: [10.202.226.46]
+X-ClientProxiedBy: lhreml720-chm.china.huawei.com (10.201.108.71) To
+ lhreml724-chm.china.huawei.com (10.201.108.75)
+X-CFilter-Loop: Reflected
 Cc: iommu@lists.linuxfoundation.org,
  Jean-Philippe Brucker <jean-philippe@linaro.org>,
  Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
- LKML <linux-kernel@vger.kernel.org>, Bjorn Helgaas <bhelgaas@google.com>,
- Will Deacon <will@kernel.org>, "Isaac J. Manjarres" <isaacm@codeaurora.org>,
+ LKML <linux-kernel@vger.kernel.org>, Bjorn
+ Helgaas <bhelgaas@google.com>, Will Deacon <will@kernel.org>,
+ "Isaac J. Manjarres" <isaacm@codeaurora.org>,
  Robin Murphy <robin.murphy@arm.com>
 X-BeenThere: iommu@lists.linux-foundation.org
 X-Mailman-Version: 2.1.15
@@ -103,49 +92,61 @@ List-Post: <mailto:iommu@lists.linux-foundation.org>
 List-Help: <mailto:iommu-request@lists.linux-foundation.org?subject=help>
 List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
  <mailto:iommu-request@lists.linux-foundation.org?subject=subscribe>
-From: Saravana Kannan via iommu <iommu@lists.linux-foundation.org>
-Reply-To: Saravana Kannan <saravanak@google.com>
-Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset="us-ascii"; Format="flowed"
 Errors-To: iommu-bounces@lists.linux-foundation.org
 Sender: "iommu" <iommu-bounces@lists.linux-foundation.org>
 
-On Tue, Nov 26, 2019 at 1:13 AM John Garry <john.garry@huawei.com> wrote:
->
-> On 21/11/2019 11:49, Will Deacon wrote:
-> > Forcefully unbinding the Arm SMMU drivers is a pretty dangerous operation,
-> > since it will likely lead to catastrophic failure for any DMA devices
-> > mastering through the SMMU being unbound. When the driver then attempts
-> > to "handle" the fatal faults, it's very easy to trip over dead data
-> > structures, leading to use-after-free.
-> >
-> > On John's machine, he reports that the machine was "unusable" due to
-> > loss of the storage controller following a forced unbind of the SMMUv3
-> > driver:
-> >
-> >    | # cd ./bus/platform/drivers/arm-smmu-v3
-> >    | # echo arm-smmu-v3.0.auto > unbind
-> >    | hisi_sas_v2_hw HISI0162:01: CQE_AXI_W_ERR (0x800) found!
-> >    | platform arm-smmu-v3.0.auto: CMD_SYNC timeout at 0x00000146
-> >    | [hwprod 0x00000146, hwcons 0x00000000]
-> >
-> > Prevent this forced unbinding of the drivers by setting "suppress_bind_attrs"
-> > to true.
->
-> This seems a reasonable approach for now.
->
-> BTW, I'll give this series a spin this week, which again looks to be
-> your iommu/module branch, excluding the new IORT patch.
+On 26/11/2019 20:27, Saravana Kannan wrote:
+> On Tue, Nov 26, 2019 at 1:13 AM John Garry <john.garry@huawei.com> wrote:
+>>
+>> On 21/11/2019 11:49, Will Deacon wrote:
+>>> Forcefully unbinding the Arm SMMU drivers is a pretty dangerous operation,
+>>> since it will likely lead to catastrophic failure for any DMA devices
+>>> mastering through the SMMU being unbound. When the driver then attempts
+>>> to "handle" the fatal faults, it's very easy to trip over dead data
+>>> structures, leading to use-after-free.
+>>>
+>>> On John's machine, he reports that the machine was "unusable" due to
+>>> loss of the storage controller following a forced unbind of the SMMUv3
+>>> driver:
+>>>
+>>>     | # cd ./bus/platform/drivers/arm-smmu-v3
+>>>     | # echo arm-smmu-v3.0.auto > unbind
+>>>     | hisi_sas_v2_hw HISI0162:01: CQE_AXI_W_ERR (0x800) found!
+>>>     | platform arm-smmu-v3.0.auto: CMD_SYNC timeout at 0x00000146
+>>>     | [hwprod 0x00000146, hwcons 0x00000000]
+>>>
+>>> Prevent this forced unbinding of the drivers by setting "suppress_bind_attrs"
+>>> to true.
+>>
+>> This seems a reasonable approach for now.
+>>
+>> BTW, I'll give this series a spin this week, which again looks to be
+>> your iommu/module branch, excluding the new IORT patch.
+> 
 
-Is this on a platform where of_devlink creates device links between
-the iommu device and its suppliers? I'm guessing no? Because device
-links should for unbinding of all the consumers before unbinding the
-supplier.
+Hi Saravana,
 
-Looks like it'll still allow the supplier to unbind if the consumers
-don't allow unbinding. Is that the case here?
+> Is this on a platform where of_devlink creates device links between
+> the iommu device and its suppliers?I'm guessing no? Because device
+> links should for unbinding of all the consumers before unbinding the
+> supplier.
 
--Saravana
+I'm only really interested in ACPI, TBH.
+
+> 
+> Looks like it'll still allow the supplier to unbind if the consumers
+> don't allow unbinding. Is that the case here?
+
+So just unbinding the driver from a device does not delete the device 
+nor exit the device from it's IOMMU group - so we keep the reference to 
+the SMMU ko. As such, I don't know how to realistically test unloading 
+the SMMU ko when we have platform devices involved. Maybe someone can 
+enlighten me...
+
+Thanks,
+John
 _______________________________________________
 iommu mailing list
 iommu@lists.linux-foundation.org
