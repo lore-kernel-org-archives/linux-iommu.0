@@ -2,85 +2,70 @@ Return-Path: <SRS0=S8Y4=ZU=lists.linux-foundation.org=iommu-bounces@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-0.3 required=3.0 tests=DKIM_ADSP_CUSTOM_MED,
-	DKIM_INVALID,DKIM_SIGNED,FREEMAIL_FORGED_FROMDOMAIN,FREEMAIL_FROM,
-	HEADER_FROM_DIFFERENT_DOMAINS,MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS,
-	URIBL_BLOCKED autolearn=no autolearn_force=no version=3.4.0
+X-Spam-Status: No, score=-9.7 required=3.0 tests=HEADER_FROM_DIFFERENT_DOMAINS,
+	INCLUDES_PATCH,MAILING_LIST_MULTI,SIGNED_OFF_BY,SPF_HELO_NONE,SPF_PASS,
+	URIBL_BLOCKED,USER_AGENT_GIT autolearn=unavailable autolearn_force=no
+	version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 7FF1CC432C0
-	for <iommu@archiver.kernel.org>; Thu, 28 Nov 2019 01:18:14 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id E49E8C432C3
+	for <iommu@archiver.kernel.org>; Thu, 28 Nov 2019 02:30:03 +0000 (UTC)
 Received: from whitealder.osuosl.org (smtp1.osuosl.org [140.211.166.138])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by mail.kernel.org (Postfix) with ESMTPS id 384732158A
-	for <iommu@archiver.kernel.org>; Thu, 28 Nov 2019 01:18:14 +0000 (UTC)
-Authentication-Results: mail.kernel.org;
-	dkim=fail reason="signature verification failed" (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="td7BZspJ"
-DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 384732158A
-Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=gmail.com
+	by mail.kernel.org (Postfix) with ESMTPS id BFD5E2166E
+	for <iommu@archiver.kernel.org>; Thu, 28 Nov 2019 02:30:03 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org BFD5E2166E
+Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=linux.intel.com
 Authentication-Results: mail.kernel.org; spf=pass smtp.mailfrom=iommu-bounces@lists.linux-foundation.org
 Received: from localhost (localhost [127.0.0.1])
-	by whitealder.osuosl.org (Postfix) with ESMTP id EB45E86E88;
-	Thu, 28 Nov 2019 01:18:13 +0000 (UTC)
+	by whitealder.osuosl.org (Postfix) with ESMTP id 09C798113D;
+	Thu, 28 Nov 2019 02:30:03 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
 Received: from whitealder.osuosl.org ([127.0.0.1])
 	by localhost (.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
-	with ESMTP id etTtFIDTpMP3; Thu, 28 Nov 2019 01:18:12 +0000 (UTC)
+	with ESMTP id YzVpQy37Z2RC; Thu, 28 Nov 2019 02:30:02 +0000 (UTC)
 Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [140.211.9.56])
-	by whitealder.osuosl.org (Postfix) with ESMTP id DD80083AF8;
-	Thu, 28 Nov 2019 01:18:12 +0000 (UTC)
+	by whitealder.osuosl.org (Postfix) with ESMTP id 5F50A877DD;
+	Thu, 28 Nov 2019 02:30:02 +0000 (UTC)
 Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
-	by lists.linuxfoundation.org (Postfix) with ESMTP id B0CCAC1DDA;
-	Thu, 28 Nov 2019 01:18:12 +0000 (UTC)
-Received: from fraxinus.osuosl.org (smtp4.osuosl.org [140.211.166.137])
- by lists.linuxfoundation.org (Postfix) with ESMTP id 32770C0881
- for <iommu@lists.linux-foundation.org>; Thu, 28 Nov 2019 01:18:11 +0000 (UTC)
+	by lists.linuxfoundation.org (Postfix) with ESMTP id 45105C1DD5;
+	Thu, 28 Nov 2019 02:30:02 +0000 (UTC)
+Received: from whitealder.osuosl.org (smtp1.osuosl.org [140.211.166.138])
+ by lists.linuxfoundation.org (Postfix) with ESMTP id A559FC0881
+ for <iommu@lists.linux-foundation.org>; Thu, 28 Nov 2019 02:30:01 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
- by fraxinus.osuosl.org (Postfix) with ESMTP id 2C2C184138
- for <iommu@lists.linux-foundation.org>; Thu, 28 Nov 2019 01:18:11 +0000 (UTC)
+ by whitealder.osuosl.org (Postfix) with ESMTP id 90C60877D3
+ for <iommu@lists.linux-foundation.org>; Thu, 28 Nov 2019 02:30:01 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from fraxinus.osuosl.org ([127.0.0.1])
+Received: from whitealder.osuosl.org ([127.0.0.1])
  by localhost (.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
- with ESMTP id UTcMRpJm09eL for <iommu@lists.linux-foundation.org>;
- Thu, 28 Nov 2019 01:18:09 +0000 (UTC)
+ with ESMTP id EEC9fiEkQCCq for <iommu@lists.linux-foundation.org>;
+ Thu, 28 Nov 2019 02:29:59 +0000 (UTC)
 X-Greylist: domain auto-whitelisted by SQLgrey-1.7.6
-Received: from mail-lj1-f171.google.com (mail-lj1-f171.google.com
- [209.85.208.171])
- by fraxinus.osuosl.org (Postfix) with ESMTPS id E46C7835CD
- for <iommu@lists.linux-foundation.org>; Thu, 28 Nov 2019 01:18:08 +0000 (UTC)
-Received: by mail-lj1-f171.google.com with SMTP id g3so26515147ljl.11
- for <iommu@lists.linux-foundation.org>; Wed, 27 Nov 2019 17:18:08 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=gmail.com; s=20161025;
- h=mime-version:from:date:message-id:subject:to;
- bh=JMQdYJyn4DZq+HXMjxQakd49p+RuvCwuEXKGIF9rqTI=;
- b=td7BZspJ5Xsl83MelXI11nerSudeInN1dov3tywp9Hovx/ySwez9UXMND2e1ouhfG4
- /10vSg83C2Vhx5p8DHPlhZegPsUcnLpA6XUfIYIhq8X7TtXHqZmIb9eSq6BwZXXCApzx
- K45DuwlPrlJkDvz/dXPvOmdO9d9jlT2PM7z926PjB8RQMnBu3F46YCyq9uJSrpP7alwz
- 4KEAKfJef/nezV3ly7DF/nK10VbbM6M2fFdbY1M5BRiLlRmbkR2VpTjfzij6FvxjtNvx
- M+og1v2CfIdYOLVFJlbzREX7jIM65vqK2twHNWTN4ae0qnZe/UJIxsmbc7q87OEvFosu
- XjSw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
- d=1e100.net; s=20161025;
- h=x-gm-message-state:mime-version:from:date:message-id:subject:to;
- bh=JMQdYJyn4DZq+HXMjxQakd49p+RuvCwuEXKGIF9rqTI=;
- b=heAscgmGXWC30Z6Dj6gyWG7tDeOTw8Hhw8197dT3mxq/KpFq8M8hewIJPQ4jKCD/De
- n7bZPkVfS65Hc2X/ZTVamaf8ydmorB35nK8FRbUf93rLsiVEPQK82H5/7QKOJVaycDzH
- flDedWFoYo2umTAi1m/wiDYCJ0I+xPHEXEPB/A1dG9utTpr/FgHgosgF3X7Akpvx9Oi5
- UPYZgpPsKbxjnUidtjvJ/LUDzu37WW36ZqmQf53exlS7HdY8rRFZZDHlZ+wwORnWG+Ns
- hg2AhR9iXnZ5BGEl9D5PAb56rubHSIEkoSYtArnRPzt155PyLRFhmc51O44iAjTFyM9a
- gZeg==
-X-Gm-Message-State: APjAAAV9CO6EOOMfjNNI6bswGvGa0dVw13uZlnCVAjkFMbZVtU99nsYU
- vGc6owiX/x6Fy3YtCUMD/1Ihze2bDzLQC8MOd26PaHT/
-X-Google-Smtp-Source: APXvYqwNI2Fn5vC7EN8OmFJ14kSZpXPfxH3nPk3/O6TZYFxT3mCT14/zMqKHMucTYlDtMco1octC6bGk+3BoFLsY54Q=
-X-Received: by 2002:a2e:2283:: with SMTP id
- i125mr17406903lji.244.1574903886798; 
- Wed, 27 Nov 2019 17:18:06 -0800 (PST)
-MIME-Version: 1.0
-From: Aaron Gray <aaronngray.lists@gmail.com>
-Date: Thu, 28 Nov 2019 01:17:50 +0000
-Message-ID: <CANkmNDekywL6p7q48pG0_-RqF+LakRze8b7FPbR+kz620Ngwcw@mail.gmail.com>
-Subject: How to read BIOS'es memory from IOMMU
-To: iommu@lists.linux-foundation.org
+Received: from mga07.intel.com (mga07.intel.com [134.134.136.100])
+ by whitealder.osuosl.org (Postfix) with ESMTPS id 8B482877DD
+ for <iommu@lists.linux-foundation.org>; Thu, 28 Nov 2019 02:29:59 +0000 (UTC)
+X-Amp-Result: SKIPPED(no attachment in message)
+X-Amp-File-Uploaded: False
+Received: from orsmga002.jf.intel.com ([10.7.209.21])
+ by orsmga105.jf.intel.com with ESMTP/TLS/DHE-RSA-AES256-GCM-SHA384;
+ 27 Nov 2019 18:29:59 -0800
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="5.69,251,1571727600"; d="scan'208";a="221176111"
+Received: from allen-box.sh.intel.com ([10.239.159.136])
+ by orsmga002.jf.intel.com with ESMTP; 27 Nov 2019 18:29:57 -0800
+From: Lu Baolu <baolu.lu@linux.intel.com>
+To: Joerg Roedel <joro@8bytes.org>, David Woodhouse <dwmw2@infradead.org>,
+ Alex Williamson <alex.williamson@redhat.com>
+Subject: [PATCH v2 1/8] iommu/vt-d: Add per domain page table ops
+Date: Thu, 28 Nov 2019 10:25:43 +0800
+Message-Id: <20191128022550.9832-2-baolu.lu@linux.intel.com>
+X-Mailer: git-send-email 2.17.1
+In-Reply-To: <20191128022550.9832-1-baolu.lu@linux.intel.com>
+References: <20191128022550.9832-1-baolu.lu@linux.intel.com>
+Cc: kevin.tian@intel.com, ashok.raj@intel.com, kvm@vger.kernel.org,
+ sanjay.k.kumar@intel.com, iommu@lists.linux-foundation.org,
+ linux-kernel@vger.kernel.org, yi.y.sun@intel.com
 X-BeenThere: iommu@lists.linux-foundation.org
 X-Mailman-Version: 2.1.15
 Precedence: list
@@ -93,27 +78,76 @@ List-Post: <mailto:iommu@lists.linux-foundation.org>
 List-Help: <mailto:iommu-request@lists.linux-foundation.org?subject=help>
 List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
  <mailto:iommu-request@lists.linux-foundation.org?subject=subscribe>
+MIME-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
 Errors-To: iommu-bounces@lists.linux-foundation.org
 Sender: "iommu" <iommu-bounces@lists.linux-foundation.org>
 
-Hi, I am interested in writing a program to verify BIOS integrity via
-SHA512. Most modern BIOS'es seem to be accessible through IOMMU. I'm
-wondering if there is a device driver for IOMMU or whether one could
-be created for the purposes of accessing BIOS memory.
+The Intel VT-d in scalable mode supports two types of
+page talbes for DMA translation: the first level page
+table and the second level page table. The IOMMU driver
+is able to choose one of them for DMA remapping according
+to the use case. The first level page table uses the same
+format as the CPU page table, while the second level page
+table keeps compatible with previous formats.
 
-If anyone has any leads or advice or even can show me how to do this
-in code via example/pseudo code I would appreciate it.
+This abstracts the page tables used in Intel IOMMU driver
+by defining a per domain page table ops structure which
+contains callbacks for various page table operations.
 
-Regards,
-Aaron
+Signed-off-by: Lu Baolu <baolu.lu@linux.intel.com>
+---
+ include/linux/intel-iommu.h | 24 ++++++++++++++++++++++++
+ 1 file changed, 24 insertions(+)
 
+diff --git a/include/linux/intel-iommu.h b/include/linux/intel-iommu.h
+index 326146a36dbf..e8bfe7466ebb 100644
+--- a/include/linux/intel-iommu.h
++++ b/include/linux/intel-iommu.h
+@@ -499,6 +499,28 @@ struct context_entry {
+ 	u64 hi;
+ };
+ 
++struct dmar_domain;
++
++/*
++ * struct pgtable_ops - page table ops
++ * @map_range: map a physically contiguous memory region to iova
++ * @unmap_range: unmap a physically contiguous memory region
++ * @iova_to_phys: return the physical address mapped to @iova
++ * @flush_tlb_range: flush the tlb caches as the result of map or unmap
++ */
++struct pgtable_ops {
++	int (*map_range)(struct dmar_domain *domain,
++			 unsigned long iova, phys_addr_t paddr,
++			 size_t size, int prot);
++	struct page *(*unmap_range)(struct dmar_domain *domain,
++				    unsigned long iova, size_t size);
++	phys_addr_t (*iova_to_phys)(struct dmar_domain *domain,
++				    unsigned long iova);
++	void (*flush_tlb_range)(struct dmar_domain *domain,
++				struct intel_iommu *iommu,
++				unsigned long iova, size_t size, bool ih);
++};
++
+ struct dmar_domain {
+ 	int	nid;			/* node id */
+ 
+@@ -517,8 +539,10 @@ struct dmar_domain {
+ 	struct list_head auxd;		/* link to device's auxiliary list */
+ 	struct iova_domain iovad;	/* iova's that belong to this domain */
+ 
++	/* page table used by this domain */
+ 	struct dma_pte	*pgd;		/* virtual address */
+ 	int		gaw;		/* max guest address width */
++	const struct pgtable_ops *ops;	/* page table ops */
+ 
+ 	/* adjusted guest address width, 0 is level 2 30-bit */
+ 	int		agaw;
 -- 
-Aaron Gray
+2.17.1
 
-Independent Open Source Software Engineer, Computer Language
-Researcher, Information Theorist, and amateur computer scientist.
 _______________________________________________
 iommu mailing list
 iommu@lists.linux-foundation.org
