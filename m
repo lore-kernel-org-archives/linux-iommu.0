@@ -5,87 +5,87 @@ X-Spam-Level:
 X-Spam-Status: No, score=-9.3 required=3.0 tests=DKIM_ADSP_CUSTOM_MED,
 	DKIM_INVALID,DKIM_SIGNED,FREEMAIL_FORGED_FROMDOMAIN,FREEMAIL_FROM,
 	HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_PATCH,MAILING_LIST_MULTI,SIGNED_OFF_BY,
-	SPF_HELO_NONE,SPF_PASS,USER_AGENT_GIT autolearn=ham autolearn_force=no
-	version=3.4.0
+	SPF_HELO_NONE,SPF_PASS,USER_AGENT_GIT autolearn=unavailable
+	autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 641B9C43141
+	by smtp.lore.kernel.org (Postfix) with ESMTP id A5967C47411
 	for <iommu@archiver.kernel.org>; Fri, 29 Nov 2019 00:49:24 +0000 (UTC)
 Received: from silver.osuosl.org (smtp3.osuosl.org [140.211.166.136])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by mail.kernel.org (Postfix) with ESMTPS id 39B4E2176D
+	by mail.kernel.org (Postfix) with ESMTPS id 79C1B21775
 	for <iommu@archiver.kernel.org>; Fri, 29 Nov 2019 00:49:24 +0000 (UTC)
 Authentication-Results: mail.kernel.org;
-	dkim=fail reason="signature verification failed" (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="pxhxNTnn"
-DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 39B4E2176D
+	dkim=fail reason="signature verification failed" (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="I7tupLbF"
+DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 79C1B21775
 Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=gmail.com
 Authentication-Results: mail.kernel.org; spf=pass smtp.mailfrom=iommu-bounces@lists.linux-foundation.org
 Received: from localhost (localhost [127.0.0.1])
-	by silver.osuosl.org (Postfix) with ESMTP id 2AEE32041B;
+	by silver.osuosl.org (Postfix) with ESMTP id 4492620425;
 	Fri, 29 Nov 2019 00:49:24 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
 Received: from silver.osuosl.org ([127.0.0.1])
 	by localhost (.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
-	with ESMTP id Rgg+HIRQEz4B; Fri, 29 Nov 2019 00:49:23 +0000 (UTC)
+	with ESMTP id mbMWBUtWmoPt; Fri, 29 Nov 2019 00:49:23 +0000 (UTC)
 Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [140.211.9.56])
-	by silver.osuosl.org (Postfix) with ESMTP id 37FC12042D;
+	by silver.osuosl.org (Postfix) with ESMTP id 0CBBE203F4;
 	Fri, 29 Nov 2019 00:49:23 +0000 (UTC)
 Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
-	by lists.linuxfoundation.org (Postfix) with ESMTP id 1FB30C1DE5;
-	Fri, 29 Nov 2019 00:49:23 +0000 (UTC)
+	by lists.linuxfoundation.org (Postfix) with ESMTP id F38EAC1DC9;
+	Fri, 29 Nov 2019 00:49:22 +0000 (UTC)
 Received: from hemlock.osuosl.org (smtp2.osuosl.org [140.211.166.133])
- by lists.linuxfoundation.org (Postfix) with ESMTP id 06369C0881
- for <iommu@lists.linux-foundation.org>; Fri, 29 Nov 2019 00:49:22 +0000 (UTC)
+ by lists.linuxfoundation.org (Postfix) with ESMTP id 509BCC0881
+ for <iommu@lists.linux-foundation.org>; Fri, 29 Nov 2019 00:49:21 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
- by hemlock.osuosl.org (Postfix) with ESMTP id E305E8845E
+ by hemlock.osuosl.org (Postfix) with ESMTP id 49395884C3
  for <iommu@lists.linux-foundation.org>; Fri, 29 Nov 2019 00:49:21 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
 Received: from hemlock.osuosl.org ([127.0.0.1])
  by localhost (.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
- with ESMTP id dmas5AgkRTcd for <iommu@lists.linux-foundation.org>;
- Fri, 29 Nov 2019 00:49:21 +0000 (UTC)
+ with ESMTP id pjnbjiHauq9d for <iommu@lists.linux-foundation.org>;
+ Fri, 29 Nov 2019 00:49:20 +0000 (UTC)
 X-Greylist: domain auto-whitelisted by SQLgrey-1.7.6
-Received: from mail-pf1-f195.google.com (mail-pf1-f195.google.com
- [209.85.210.195])
- by hemlock.osuosl.org (Postfix) with ESMTPS id 35322884B9
- for <iommu@lists.linux-foundation.org>; Fri, 29 Nov 2019 00:49:21 +0000 (UTC)
-Received: by mail-pf1-f195.google.com with SMTP id l22so1398086pff.9
- for <iommu@lists.linux-foundation.org>; Thu, 28 Nov 2019 16:49:21 -0800 (PST)
+Received: from mail-pf1-f196.google.com (mail-pf1-f196.google.com
+ [209.85.210.196])
+ by hemlock.osuosl.org (Postfix) with ESMTPS id 652958845E
+ for <iommu@lists.linux-foundation.org>; Fri, 29 Nov 2019 00:49:20 +0000 (UTC)
+Received: by mail-pf1-f196.google.com with SMTP id l22so1398073pff.9
+ for <iommu@lists.linux-foundation.org>; Thu, 28 Nov 2019 16:49:20 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=gmail.com; s=20161025;
  h=from:to:cc:subject:date:message-id:in-reply-to:references
  :mime-version:content-transfer-encoding;
- bh=v5zqGpmnTc6SxNeb5w/Q1Y9kq3jWnzDuFhNnFCBX/qU=;
- b=pxhxNTnnkSAXUci2pIu0+EV0WX14xp63D61nJdMYEhol8f3vQLhGpbS56tdfJLxLAd
- Z3an68S0UbHmAp88r8befGd/JiO0fYYOQcRgFIqs2V68FWJ42MomZvbP+Q6XaGPsYvsk
- UlUxzYRSv4zgIZc8LwLaI1eczRSlnQbbese4rzlHLxmnl5cSGSIs0+n3Ik+K8Otf44J8
- 3JI+Ecqw9GuPi4gPDry+j2z/Icq9vhL5ErsK5iPmSpi9iHz6v2/5VIS26R57kiPYQmXj
- 3WpeAd5n03RsAr6eQBNy754eT/yyQ9J0APR1duwu4q3vp/UL3ZL4/j/z9r/gnWg9b39H
- SkzQ==
+ bh=PR8QywMOUlein0EdyppPpotpplTPCMqHeye2o9IVQQA=;
+ b=I7tupLbF49ytr8XzpyjD19m/9+prtks7AxK5bBuoDxbLOZwpFaMPntKGaxaBxfJFg1
+ MbNqlvk5r8McxHt7kVTMRS9GT6+j1tQCo2vE8WGdvZWZi2cTZb7p4STKZTMPAAEZlnb2
+ H9bX/+rMQOkhNdp3r8xgH+mLk1+YfLYCbm7ZbYgH93JaJQ7Ztqga9LRbsL4533ChT/2t
+ NOl4rYi2+60tvDbxozB5pKBcBeYNXZuqSMp/y9JasWrs6Xhb7L9wSsgtULo8dAjqnlO+
+ DBDmTaM/TMfqvfoAFC8gsKpFAwr8LMOzu9V0jbdNLEohcn+Vg9Ju4qhymgk028labXcU
+ L+bQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
  d=1e100.net; s=20161025;
  h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
  :references:mime-version:content-transfer-encoding;
- bh=v5zqGpmnTc6SxNeb5w/Q1Y9kq3jWnzDuFhNnFCBX/qU=;
- b=H3QBdmaWxU55zSqok/nIo5t/q8zQ8X1vNZX/QbZQfc1dXp8UhA1mTZEAGdYCVEGM7q
- VEedfY1sqBTLSU1bwkDEE3wOU/M5r5elAshwWWFsglLkvfU9P10iUqG2/H394GlUQEuo
- 72hNEtcJU+fFM6j0LpsJukJn7zZ63ARfHOmDIQ/8TGnNIAPCIgzjzF1irKCKl0w23MYZ
- sRoyfjIZafAsFQ43/Qx1+M3aWzc751toQf7GtBhas3OW3QURV9SIYMZvRE4yRrvbD5jY
- p6yxMi8ZwXZ7fuzOpqDNnXIFHVQIWmmzVGz+2E/Zs4yENcKxW2bgulu2NPjZ734je2dm
- fRKw==
-X-Gm-Message-State: APjAAAUHfnTMPXd8u/ewadJsgx5q4loM8uNVsIHLrwKEVGd95RYKvv50
- T1nSDypXQGFLLuiz7G5XZYG9gjSBrMI=
-X-Google-Smtp-Source: APXvYqwA0F6jKEcoyaP+Gbo67KhumBWjnESPPjQgXKURaT8QeqLrAp9F0H265OL4vWrTkcVAc+cxnQ==
-X-Received: by 2002:a63:c406:: with SMTP id h6mr14263803pgd.213.1574988560678; 
- Thu, 28 Nov 2019 16:49:20 -0800 (PST)
+ bh=PR8QywMOUlein0EdyppPpotpplTPCMqHeye2o9IVQQA=;
+ b=C7F8DMxMiAMWZG0IeJKeydF2OV/Q8TqaB6TnDSoHNRhDg4chNDez3QRwjMHNihoe78
+ SUSFBcQmHGJy4s4paZZTP6DrIkmW0DTI+3B2giuOxnbGIzZo/za3mKf2HBJYVEAb5E+u
+ EktY2M76TSIRjSY4hV6HkXk6FvD91KgNzMOFA4E2TViIAWLz7kUInjHZk/Sz2Xp5Ef8z
+ lgU/TCWVctly6cVi6xsRSjyOxSG4r3FWFvry1KvIhy8UrpSJVOx9DmjfMLcFfhWTxyVL
+ n04BzYtVvgZahqrnkMROStkufDseHIGwbcFETNHU02lMiTJSeoFChws3swBgLsNIongQ
+ yBcw==
+X-Gm-Message-State: APjAAAWQc80gouvUhlNgJtTkcLDdH+ngdcS5u9pqFTf4J8axOUP3U6ZP
+ aVd5ID/8MorI3i+vE9uWy23b3dFUdUk=
+X-Google-Smtp-Source: APXvYqwhP6ctTo70BI7YPdC+6gWhQb8kGN1VNmnI+MJ+lI3k0QYaFCJPlXmgV+Sk7tqdVu0ct27dgg==
+X-Received: by 2002:a63:115c:: with SMTP id 28mr13790143pgr.6.1574988559690;
+ Thu, 28 Nov 2019 16:49:19 -0800 (PST)
 Received: from tw-172-25-31-76.office.twttr.net ([8.25.197.24])
- by smtp.gmail.com with ESMTPSA id 64sm22418202pfe.147.2019.11.28.16.49.19
+ by smtp.gmail.com with ESMTPSA id 64sm22418202pfe.147.2019.11.28.16.49.18
  (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
- Thu, 28 Nov 2019 16:49:20 -0800 (PST)
+ Thu, 28 Nov 2019 16:49:19 -0800 (PST)
 From: Cong Wang <xiyou.wangcong@gmail.com>
 To: iommu@lists.linux-foundation.org
-Subject: [Patch v2 2/3] iommu: optimize iova_magazine_free_pfns()
-Date: Thu, 28 Nov 2019 16:48:54 -0800
-Message-Id: <20191129004855.18506-3-xiyou.wangcong@gmail.com>
+Subject: [Patch v2 1/3] iommu: match the original algorithm
+Date: Thu, 28 Nov 2019 16:48:53 -0800
+Message-Id: <20191129004855.18506-2-xiyou.wangcong@gmail.com>
 X-Mailer: git-send-email 2.21.0
 In-Reply-To: <20191129004855.18506-1-xiyou.wangcong@gmail.com>
 References: <20191129004855.18506-1-xiyou.wangcong@gmail.com>
@@ -108,65 +108,117 @@ Content-Transfer-Encoding: 7bit
 Errors-To: iommu-bounces@lists.linux-foundation.org
 Sender: "iommu" <iommu-bounces@lists.linux-foundation.org>
 
-If the maganize is empty, iova_magazine_free_pfns() should
-be a nop, however it misses the case of mag->size==0. So we
-should just call iova_magazine_empty().
+The IOVA cache algorithm implemented in IOMMU code does not
+exactly match the original algorithm described in the paper.
 
-This should reduce the contention on iovad->iova_rbtree_lock
-a little bit.
+Particularly, it doesn't need to free the loaded empty magazine
+when trying to put it back to global depot. To make it work, we
+have to pre-allocate magazines in the depot and only recycle them
+when all of them are full.
+
+Before this patch, rcache->depot[] contains either full or
+freed entries, after this patch, it contains either full or
+empty (but allocated) entries.
 
 Cc: Joerg Roedel <joro@8bytes.org>
 Signed-off-by: Cong Wang <xiyou.wangcong@gmail.com>
 ---
- drivers/iommu/iova.c | 22 +++++++++++-----------
- 1 file changed, 11 insertions(+), 11 deletions(-)
+ drivers/iommu/iova.c | 45 +++++++++++++++++++++++++++-----------------
+ 1 file changed, 28 insertions(+), 17 deletions(-)
 
 diff --git a/drivers/iommu/iova.c b/drivers/iommu/iova.c
-index cb473ddce4cf..184d4c0e20b5 100644
+index 41c605b0058f..cb473ddce4cf 100644
 --- a/drivers/iommu/iova.c
 +++ b/drivers/iommu/iova.c
-@@ -797,13 +797,23 @@ static void iova_magazine_free(struct iova_magazine *mag)
- 	kfree(mag);
- }
+@@ -862,12 +862,16 @@ static void init_iova_rcaches(struct iova_domain *iovad)
+ 	struct iova_cpu_rcache *cpu_rcache;
+ 	struct iova_rcache *rcache;
+ 	unsigned int cpu;
+-	int i;
++	int i, j;
  
-+static bool iova_magazine_full(struct iova_magazine *mag)
-+{
-+	return (mag && mag->size == IOVA_MAG_SIZE);
-+}
+ 	for (i = 0; i < IOVA_RANGE_CACHE_MAX_SIZE; ++i) {
+ 		rcache = &iovad->rcaches[i];
+ 		spin_lock_init(&rcache->lock);
+ 		rcache->depot_size = 0;
++		for (j = 0; j < MAX_GLOBAL_MAGS; ++j) {
++			rcache->depot[j] = iova_magazine_alloc(GFP_KERNEL);
++			WARN_ON(!rcache->depot[j]);
++		}
+ 		rcache->cpu_rcaches = __alloc_percpu(sizeof(*cpu_rcache), cache_line_size());
+ 		if (WARN_ON(!rcache->cpu_rcaches))
+ 			continue;
+@@ -900,24 +904,30 @@ static bool __iova_rcache_insert(struct iova_domain *iovad,
+ 
+ 	if (!iova_magazine_full(cpu_rcache->loaded)) {
+ 		can_insert = true;
+-	} else if (!iova_magazine_full(cpu_rcache->prev)) {
++	} else if (iova_magazine_empty(cpu_rcache->prev)) {
+ 		swap(cpu_rcache->prev, cpu_rcache->loaded);
+ 		can_insert = true;
+ 	} else {
+-		struct iova_magazine *new_mag = iova_magazine_alloc(GFP_ATOMIC);
++		spin_lock(&rcache->lock);
++		if (rcache->depot_size < MAX_GLOBAL_MAGS) {
++			swap(rcache->depot[rcache->depot_size], cpu_rcache->prev);
++			swap(cpu_rcache->prev, cpu_rcache->loaded);
++			rcache->depot_size++;
++			can_insert = true;
++		} else {
++			mag_to_free = cpu_rcache->loaded;
++		}
++		spin_unlock(&rcache->lock);
 +
-+static bool iova_magazine_empty(struct iova_magazine *mag)
-+{
-+	return (!mag || mag->size == 0);
-+}
-+
- static void
- iova_magazine_free_pfns(struct iova_magazine *mag, struct iova_domain *iovad)
- {
- 	unsigned long flags;
- 	int i;
++		if (mag_to_free) {
++			struct iova_magazine *new_mag = iova_magazine_alloc(GFP_ATOMIC);
  
--	if (!mag)
-+	if (iova_magazine_empty(mag))
- 		return;
+-		if (new_mag) {
+-			spin_lock(&rcache->lock);
+-			if (rcache->depot_size < MAX_GLOBAL_MAGS) {
+-				rcache->depot[rcache->depot_size++] =
+-						cpu_rcache->loaded;
++			if (new_mag) {
++				cpu_rcache->loaded = new_mag;
++				can_insert = true;
+ 			} else {
+-				mag_to_free = cpu_rcache->loaded;
++				mag_to_free = NULL;
+ 			}
+-			spin_unlock(&rcache->lock);
+-
+-			cpu_rcache->loaded = new_mag;
+-			can_insert = true;
+ 		}
+ 	}
  
- 	spin_lock_irqsave(&iovad->iova_rbtree_lock, flags);
-@@ -820,16 +830,6 @@ iova_magazine_free_pfns(struct iova_magazine *mag, struct iova_domain *iovad)
- 	mag->size = 0;
+@@ -963,14 +973,15 @@ static unsigned long __iova_rcache_get(struct iova_rcache *rcache,
+ 
+ 	if (!iova_magazine_empty(cpu_rcache->loaded)) {
+ 		has_pfn = true;
+-	} else if (!iova_magazine_empty(cpu_rcache->prev)) {
++	} else if (iova_magazine_full(cpu_rcache->prev)) {
+ 		swap(cpu_rcache->prev, cpu_rcache->loaded);
+ 		has_pfn = true;
+ 	} else {
+ 		spin_lock(&rcache->lock);
+ 		if (rcache->depot_size > 0) {
+-			iova_magazine_free(cpu_rcache->loaded);
+-			cpu_rcache->loaded = rcache->depot[--rcache->depot_size];
++			swap(rcache->depot[rcache->depot_size - 1], cpu_rcache->prev);
++			swap(cpu_rcache->prev, cpu_rcache->loaded);
++			rcache->depot_size--;
+ 			has_pfn = true;
+ 		}
+ 		spin_unlock(&rcache->lock);
+@@ -1019,7 +1030,7 @@ static void free_iova_rcaches(struct iova_domain *iovad)
+ 			iova_magazine_free(cpu_rcache->prev);
+ 		}
+ 		free_percpu(rcache->cpu_rcaches);
+-		for (j = 0; j < rcache->depot_size; ++j)
++		for (j = 0; j < MAX_GLOBAL_MAGS; ++j)
+ 			iova_magazine_free(rcache->depot[j]);
+ 	}
  }
- 
--static bool iova_magazine_full(struct iova_magazine *mag)
--{
--	return (mag && mag->size == IOVA_MAG_SIZE);
--}
--
--static bool iova_magazine_empty(struct iova_magazine *mag)
--{
--	return (!mag || mag->size == 0);
--}
--
- static unsigned long iova_magazine_pop(struct iova_magazine *mag,
- 				       unsigned long limit_pfn)
- {
 -- 
 2.21.0
 
