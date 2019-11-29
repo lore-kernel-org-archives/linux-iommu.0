@@ -2,105 +2,100 @@ Return-Path: <SRS0=o1xy=ZV=lists.linux-foundation.org=iommu-bounces@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-6.5 required=3.0 tests=DKIM_INVALID,DKIM_SIGNED,
+X-Spam-Status: No, score=-7.8 required=3.0 tests=DKIM_ADSP_CUSTOM_MED,
+	DKIM_INVALID,DKIM_SIGNED,FREEMAIL_FORGED_FROMDOMAIN,FREEMAIL_FROM,
 	HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_PATCH,MAILING_LIST_MULTI,SIGNED_OFF_BY,
-	SPF_HELO_NONE,SPF_PASS autolearn=ham autolearn_force=no version=3.4.0
+	SPF_HELO_NONE,SPF_PASS,USER_AGENT_SANE_1 autolearn=unavailable
+	autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 3AB29C432C3
-	for <iommu@archiver.kernel.org>; Fri, 29 Nov 2019 18:56:15 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id E1A61C432C3
+	for <iommu@archiver.kernel.org>; Fri, 29 Nov 2019 20:27:41 +0000 (UTC)
 Received: from silver.osuosl.org (smtp3.osuosl.org [140.211.166.136])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by mail.kernel.org (Postfix) with ESMTPS id DA9AC21721
-	for <iommu@archiver.kernel.org>; Fri, 29 Nov 2019 18:56:14 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTPS id 9F68221774
+	for <iommu@archiver.kernel.org>; Fri, 29 Nov 2019 20:27:41 +0000 (UTC)
 Authentication-Results: mail.kernel.org;
-	dkim=fail reason="signature verification failed" (2048-bit key) header.d=arista.com header.i=@arista.com header.b="YOA8tU6R"
-DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org DA9AC21721
-Authentication-Results: mail.kernel.org; dmarc=none (p=none dis=none) header.from=lists.linux-foundation.org
+	dkim=fail reason="signature verification failed" (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="nOjUJ9We"
+DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 9F68221774
+Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=gmail.com
 Authentication-Results: mail.kernel.org; spf=pass smtp.mailfrom=iommu-bounces@lists.linux-foundation.org
 Received: from localhost (localhost [127.0.0.1])
-	by silver.osuosl.org (Postfix) with ESMTP id 94100231A8;
-	Fri, 29 Nov 2019 18:56:14 +0000 (UTC)
+	by silver.osuosl.org (Postfix) with ESMTP id 7CB6B2049F;
+	Fri, 29 Nov 2019 20:27:41 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
 Received: from silver.osuosl.org ([127.0.0.1])
 	by localhost (.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
-	with ESMTP id GVp-QiVMINi5; Fri, 29 Nov 2019 18:56:13 +0000 (UTC)
+	with ESMTP id YO9auswDmAOT; Fri, 29 Nov 2019 20:27:40 +0000 (UTC)
 Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [140.211.9.56])
-	by silver.osuosl.org (Postfix) with ESMTP id 747B520461;
-	Fri, 29 Nov 2019 18:56:13 +0000 (UTC)
+	by silver.osuosl.org (Postfix) with ESMTP id 602622037A;
+	Fri, 29 Nov 2019 20:27:40 +0000 (UTC)
 Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
-	by lists.linuxfoundation.org (Postfix) with ESMTP id 49242C1DD5;
-	Fri, 29 Nov 2019 18:56:13 +0000 (UTC)
-Received: from silver.osuosl.org (smtp3.osuosl.org [140.211.166.136])
- by lists.linuxfoundation.org (Postfix) with ESMTP id 94170C0881
- for <iommu@lists.linux-foundation.org>; Fri, 29 Nov 2019 18:56:11 +0000 (UTC)
+	by lists.linuxfoundation.org (Postfix) with ESMTP id 4E560C1DD5;
+	Fri, 29 Nov 2019 20:27:40 +0000 (UTC)
+Received: from hemlock.osuosl.org (smtp2.osuosl.org [140.211.166.133])
+ by lists.linuxfoundation.org (Postfix) with ESMTP id 291E6C0881
+ for <iommu@lists.linux-foundation.org>; Fri, 29 Nov 2019 20:27:39 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
- by silver.osuosl.org (Postfix) with ESMTP id 75823231A8
- for <iommu@lists.linux-foundation.org>; Fri, 29 Nov 2019 18:56:11 +0000 (UTC)
+ by hemlock.osuosl.org (Postfix) with ESMTP id 1F36C87009
+ for <iommu@lists.linux-foundation.org>; Fri, 29 Nov 2019 20:27:39 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from silver.osuosl.org ([127.0.0.1])
+Received: from hemlock.osuosl.org ([127.0.0.1])
  by localhost (.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
- with ESMTP id XgdnkfanbsoA for <iommu@lists.linux-foundation.org>;
- Fri, 29 Nov 2019 18:56:10 +0000 (UTC)
-X-Greylist: delayed 00:28:00 by SQLgrey-1.7.6
-Received: from mail-io1-f66.google.com (mail-io1-f66.google.com
- [209.85.166.66])
- by silver.osuosl.org (Postfix) with ESMTPS id 3DE9020461
- for <iommu@lists.linux-foundation.org>; Fri, 29 Nov 2019 18:56:10 +0000 (UTC)
-Received: by mail-io1-f66.google.com with SMTP id j13so33486457ioe.0
- for <iommu@lists.linux-foundation.org>; Fri, 29 Nov 2019 10:56:10 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
- d=arista.com; s=googlenew;
- h=mime-version:subject:from:in-reply-to:date:cc
- :content-transfer-encoding:message-id:references:to;
- bh=qRbvRGI95q9n8HmLSu7axtCeZCjpjfZCyst7xGr13mA=;
- b=YOA8tU6R8Q32dCBcenMm/PsZbZlt/QOW7oQA6kvbFcfemmSpUti2yX6o2bT6xy4IUs
- rfGyEbX2vQWY3Stbj+TDXnF2DrZQjTpIX/mgmmYSr2QtQHsTnBPSlwggTRfsf8yYICPq
- CDNlmBE8FK3Eb5xv7jNiETGY8VR0iBUxsyAsxwU9stA0F3OEJFx89HNjQvN7N2Xe4nNb
- FvaqSKguwEQJq++MmxTky5tULwQeZAFAauLtby/OeHQvoDqeCB0QHX7fIVbrMQg4Q2M1
- fF7N+vn3GA6DC7rRIQ4j4kJYQkm2wYuEmjNx89MdfG+NT27RtiktQEXUdTZTvXkI8eVv
- u1Pg==
+ with ESMTP id UogSBZ6fQjdO for <iommu@lists.linux-foundation.org>;
+ Fri, 29 Nov 2019 20:27:38 +0000 (UTC)
+X-Greylist: domain auto-whitelisted by SQLgrey-1.7.6
+Received: from mail-wr1-f65.google.com (mail-wr1-f65.google.com
+ [209.85.221.65])
+ by hemlock.osuosl.org (Postfix) with ESMTPS id 4035086F85
+ for <iommu@lists.linux-foundation.org>; Fri, 29 Nov 2019 20:27:38 +0000 (UTC)
+Received: by mail-wr1-f65.google.com with SMTP id a15so36592478wrf.9
+ for <iommu@lists.linux-foundation.org>; Fri, 29 Nov 2019 12:27:38 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=gmail.com; s=20161025;
+ h=to:cc:from:subject:message-id:date:user-agent:mime-version
+ :content-language:content-transfer-encoding;
+ bh=GaR4QDEogICF6BoaruX/4IK4ATxHu4FHjlnq71myPpQ=;
+ b=nOjUJ9WefKRISz8pdtkaNVefywLGLBDpj6gXWxGMC2ExoM3nJ1lCKeVwuc0vsJDOAg
+ uj6hrRZXQhL2OBAlFmDRYK0iM6RB5qAJIJ8vdU9s0ldJqY6poi0olxbATpRoZGJ87luB
+ KHyyE7uF9pGmX3AAeRwF1IwFNDbgtb2xLLqiDzudTbxAHV41lnSLE948R4uL/7L7HNhw
+ aMmYCb+1W49+eIoESQEjLAhoNYqr7SDPKm+Lq/L3JeN3ssfwQiYZo/FMJlphq/2PPU2g
+ EqqEElDU705FXGvb1A0rFeExl8hDtsGAX7DOLrL8VMMMkVwEXR6pYDMfYQcLQ7nSVpch
+ kcpw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
  d=1e100.net; s=20161025;
- h=x-gm-message-state:mime-version:subject:from:in-reply-to:date:cc
- :content-transfer-encoding:message-id:references:to;
- bh=qRbvRGI95q9n8HmLSu7axtCeZCjpjfZCyst7xGr13mA=;
- b=dPYeGYOX4GExLBBDNSwDialxfbuEG05FViAj52E7cgdnY/N2lXLC7api1LyvbtoVuM
- t3bN4OyO+u4QDF+aDKcLBflkR9UnNzPj7Lc/d+gwgveRjSjI8aV6A+FAq/xqLqzhc25m
- SmnNO0TTem32d4sVZcWct/dgKyHwWuy1HOB9TpX7ycv/J2JkQRcThIRfbR564+y190WK
- 9a3CSdIa+BZyAbnLqCX5wYv0goZ5+YCxBq230G1Nkhp6L5jqoWXR29W+oWH3QieBlMYF
- MCxrkdOI3zI7L6mwUV3RDCnCu1VVUVo7vaeRZRBMu2QjluZNQmbX3ivNxfVxjlg0jbBN
- VPUg==
-X-Gm-Message-State: APjAAAVWZ4gse83kRMSC71wYdeIq6q5FhIkn7ONf6OfirLTE+DYX94pO
- N+PJPvFI53hL9bwkJ4CjnBbtUUHRnG6rxQ==
-X-Google-Smtp-Source: APXvYqwAT3uzkjkz+anc+nX8KobmkmHzI+Sw5M0xnZcf5Ma8eI4N+Ywc38p5EMTNNnf1LcnLtmCCyg==
-X-Received: by 2002:a63:da13:: with SMTP id c19mr17488191pgh.435.1575050218308; 
- Fri, 29 Nov 2019 09:56:58 -0800 (PST)
-Received: from [10.83.36.220] ([217.173.96.166])
- by smtp.gmail.com with ESMTPSA id s7sm9962922pfe.22.2019.11.29.09.56.55
+ h=x-gm-message-state:to:cc:from:subject:message-id:date:user-agent
+ :mime-version:content-language:content-transfer-encoding;
+ bh=GaR4QDEogICF6BoaruX/4IK4ATxHu4FHjlnq71myPpQ=;
+ b=JEZasXYJydGCYafVDEYWmxCZ0nKogyeyuZCQ0LGitgBYgjncKIv7dNMoMRNiAIvYRr
+ /OZ7KFe1/v+AG807QgrvtTI4i/EmI7ysJUNAky/3NxZ2zHXeEmjvroNpMNhcuZNb2sCK
+ YSMENafcwFMZV7ErWJT8GSD3GQ0ejyff859vnYxG7sYkKvlvw55loCF0kCiY80l2QhhL
+ gMMV+UHqG4N2IGXg9kzpg35o5sIbzEIMQgtk9vMmJ2WDQZzzUdTf4qOwRCJnFjQ5HJ8R
+ gosC3iXjrxsYK3fNnAMIIcXwSJ9HQFLP10MhLM5zxnn7RUTyleMSgoX8bNyjI7/ioruW
+ VWKA==
+X-Gm-Message-State: APjAAAVjbTuo9CN5ek/yNTxnnYxjylYhK+P70zD8vZf4YHCSUN3lZ9SR
+ YhvUh07P803Sq0W/Otq8emY=
+X-Google-Smtp-Source: APXvYqwCWLkhuY4gUim7D5NcneA/7GsKTl1OvkTU9avBdQAZ+oBVs5uMGl1ZybX4kFXLObkmxf85Bw==
+X-Received: by 2002:adf:f20f:: with SMTP id p15mr5798599wro.370.1575059256587; 
+ Fri, 29 Nov 2019 12:27:36 -0800 (PST)
+Received: from ?IPv6:2003:ea:8f2d:7d00:f057:eef9:f4e2:a741?
+ (p200300EA8F2D7D00F057EEF9F4E2A741.dip0.t-ipconnect.de.
+ [2003:ea:8f2d:7d00:f057:eef9:f4e2:a741])
+ by smtp.googlemail.com with ESMTPSA id k127sm8728103wmk.31.2019.11.29.12.27.35
  (version=TLS1_2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128/128);
- Fri, 29 Nov 2019 09:56:57 -0800 (PST)
-Mime-Version: 1.0 (Mac OS X Mail 12.2 \(3445.102.3\))
-Subject: [PATCH v5 2/3] PCI: Add parameter nr_devfns to pci_add_dma_alias
-In-Reply-To: <9DD82D05-6B9E-4AF5-9A3C-D459B75C0089@arista.com>
-Date: Fri, 29 Nov 2019 17:56:55 +0000
-Message-Id: <07D724A1-308F-44C3-8937-EE0C21EF3170@arista.com>
-References: <20191120193228.GA103670@google.com>
- <6A902F0D-FE98-4760-ADBB-4D5987D866BE@arista.com>
- <20191126173833.GA16069@infradead.org>
- <547214A9-9FD0-4DD5-80E1-1F5A467A0913@arista.com>
- <9c54c5dd-702c-a19b-38ba-55ab73b24729@deltatee.com>
- <435064D4-00F0-47F5-94D2-2C354F6B1206@arista.com>
- <058383d9-69fe-65e3-e410-eebd99840261@deltatee.com>
- <F26CC19F-66C2-466B-AE30-D65E10BA3022@arista.com>
- <d811576e-0f89-2303-a554-2701af5c5647@deltatee.com>
- <9DD82D05-6B9E-4AF5-9A3C-D459B75C0089@arista.com>
-To: linux-pci@vger.kernel.org
-X-Mailer: Apple Mail (2.3445.102.3)
-Cc: Alex Williamson <alex.williamson@redhat.com>,
- Dmitry Safonov <dima@arista.com>, Dmitry Safonov <0x7f454c46@gmail.com>,
- linux-kernel@vger.kernel.org, iommu@lists.linux-foundation.org,
- Bjorn Helgaas <helgaas@kernel.org>, Logan Gunthorpe <logang@deltatee.com>
+ Fri, 29 Nov 2019 12:27:35 -0800 (PST)
+To: Christoph Hellwig <hch@lst.de>,
+ Marek Szyprowski <m.szyprowski@samsung.com>,
+ Robin Murphy <robin.murphy@arm.com>
+From: Heiner Kallweit <hkallweit1@gmail.com>
+Subject: dma-mapping: use bit macros
+Message-ID: <1519de9e-0bd6-c7e7-a911-d51481dfb415@gmail.com>
+Date: Fri, 29 Nov 2019 21:27:26 +0100
+User-Agent: Mozilla/5.0 (Windows NT 10.0; WOW64; rv:60.0) Gecko/20100101
+ Thunderbird/60.9.1
+MIME-Version: 1.0
+Content-Language: en-US
+Cc: "open list:AMD IOMMU \(AMD-VI\)" <iommu@lists.linux-foundation.org>,
+ Linux Kernel Mailing List <linux-kernel@vger.kernel.org>
 X-BeenThere: iommu@lists.linux-foundation.org
 X-Mailman-Version: 2.1.15
 Precedence: list
@@ -113,141 +108,104 @@ List-Post: <mailto:iommu@lists.linux-foundation.org>
 List-Help: <mailto:iommu-request@lists.linux-foundation.org?subject=help>
 List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
  <mailto:iommu-request@lists.linux-foundation.org?subject=subscribe>
-From: James Sewart via iommu <iommu@lists.linux-foundation.org>
-Reply-To: James Sewart <jamessewart@arista.com>
 Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
 Errors-To: iommu-bounces@lists.linux-foundation.org
 Sender: "iommu" <iommu-bounces@lists.linux-foundation.org>
 
-pci_add_dma_alias can now be used to create a dma alias for a range of
-devfns.
+Not necessarily a big leap for mankind, but using bit macros makes
+the code better readable, especially the definition of DMA_BIT_MASK
+is more intuitive.
 
-Signed-off-by: James Sewart <jamessewart@arista.com>
+Signed-off-by: Heiner Kallweit <hkallweit1@gmail.com>
 ---
- drivers/pci/pci.c    | 23 ++++++++++++++++++-----
- drivers/pci/quirks.c | 14 +++++++-------
- include/linux/pci.h  |  2 +-
- 3 files changed, 26 insertions(+), 13 deletions(-)
+ include/linux/dma-mapping.h | 21 +++++++++++----------
+ 1 file changed, 11 insertions(+), 10 deletions(-)
 
-diff --git a/drivers/pci/pci.c b/drivers/pci/pci.c
-index 0a4449a30ace..f9800a610ca1 100644
---- a/drivers/pci/pci.c
-+++ b/drivers/pci/pci.c
-@@ -5857,7 +5857,8 @@ int pci_set_vga_state(struct pci_dev *dev, bool decode,
- /**
-  * pci_add_dma_alias - Add a DMA devfn alias for a device
-  * @dev: the PCI device for which alias is added
-- * @devfn: alias slot and function
-+ * @devfn_from: alias slot and function
-+ * @nr_devfns: Number of subsequent devfns to alias
-  *
-  * This helper encodes an 8-bit devfn as a bit number in dma_alias_mask
-  * which is used to program permissible bus-devfn source addresses for DMA
-@@ -5873,8 +5874,14 @@ int pci_set_vga_state(struct pci_dev *dev, bool decode,
-  * cannot be left as a userspace activity).  DMA aliases should therefore
-  * be configured via quirks, such as the PCI fixup header quirk.
+diff --git a/include/linux/dma-mapping.h b/include/linux/dma-mapping.h
+index a4930310d..a39a6a8d5 100644
+--- a/include/linux/dma-mapping.h
++++ b/include/linux/dma-mapping.h
+@@ -2,6 +2,7 @@
+ #ifndef _LINUX_DMA_MAPPING_H
+ #define _LINUX_DMA_MAPPING_H
+ 
++#include <linux/bits.h>
+ #include <linux/sizes.h>
+ #include <linux/string.h>
+ #include <linux/device.h>
+@@ -21,51 +22,51 @@
+  * DMA_ATTR_WEAK_ORDERING: Specifies that reads and writes to the mapping
+  * may be weakly ordered, that is that reads and writes may pass each other.
   */
--void pci_add_dma_alias(struct pci_dev *dev, u8 devfn)
-+void pci_add_dma_alias(struct pci_dev *dev, u8 devfn_from, unsigned nr_devfns)
- {
-+	int devfn_to;
-+
-+	if (nr_devfns > U8_MAX+1)
-+		nr_devfns = U8_MAX+1;
-+	devfn_to = devfn_from + nr_devfns - 1;
-+
- 	if (!dev->dma_alias_mask)
- 		dev->dma_alias_mask = bitmap_zalloc(U8_MAX+1, GFP_KERNEL);
- 	if (!dev->dma_alias_mask) {
-@@ -5882,9 +5889,15 @@ void pci_add_dma_alias(struct pci_dev *dev, u8 devfn)
- 		return;
- 	}
- 
--	set_bit(devfn, dev->dma_alias_mask);
--	pci_info(dev, "Enabling fixed DMA alias to %02x.%d\n",
--		 PCI_SLOT(devfn), PCI_FUNC(devfn));
-+	bitmap_set(dev->dma_alias_mask, devfn_from, nr_devfns);
-+
-+	if (nr_devfns == 1)
-+		pci_info(dev, "Enabling fixed DMA alias to %02x.%d\n",
-+				PCI_SLOT(devfn_from), PCI_FUNC(devfn_from));
-+	else if (nr_devfns > 1)
-+		pci_info(dev, "Enabling fixed DMA alias for devfn range from %02x.%d to %02x.%d\n",
-+				PCI_SLOT(devfn_from), PCI_FUNC(devfn_from),
-+				PCI_SLOT(devfn_to), PCI_FUNC(devfn_to));
- }
- 
- bool pci_devs_are_dma_aliases(struct pci_dev *dev1, struct pci_dev *dev2)
-diff --git a/drivers/pci/quirks.c b/drivers/pci/quirks.c
-index 320255e5e8f8..0f3f5afc73fd 100644
---- a/drivers/pci/quirks.c
-+++ b/drivers/pci/quirks.c
-@@ -3932,7 +3932,7 @@ int pci_dev_specific_reset(struct pci_dev *dev, int probe)
- static void quirk_dma_func0_alias(struct pci_dev *dev)
- {
- 	if (PCI_FUNC(dev->devfn) != 0)
--		pci_add_dma_alias(dev, PCI_DEVFN(PCI_SLOT(dev->devfn), 0));
-+		pci_add_dma_alias(dev, PCI_DEVFN(PCI_SLOT(dev->devfn), 0), 1);
- }
+-#define DMA_ATTR_WEAK_ORDERING		(1UL << 1)
++#define DMA_ATTR_WEAK_ORDERING		BIT(1)
+ /*
+  * DMA_ATTR_WRITE_COMBINE: Specifies that writes to the mapping may be
+  * buffered to improve performance.
+  */
+-#define DMA_ATTR_WRITE_COMBINE		(1UL << 2)
++#define DMA_ATTR_WRITE_COMBINE		BIT(2)
+ /*
+  * DMA_ATTR_NON_CONSISTENT: Lets the platform to choose to return either
+  * consistent or non-consistent memory as it sees fit.
+  */
+-#define DMA_ATTR_NON_CONSISTENT		(1UL << 3)
++#define DMA_ATTR_NON_CONSISTENT		BIT(3)
+ /*
+  * DMA_ATTR_NO_KERNEL_MAPPING: Lets the platform to avoid creating a kernel
+  * virtual mapping for the allocated buffer.
+  */
+-#define DMA_ATTR_NO_KERNEL_MAPPING	(1UL << 4)
++#define DMA_ATTR_NO_KERNEL_MAPPING	BIT(4)
+ /*
+  * DMA_ATTR_SKIP_CPU_SYNC: Allows platform code to skip synchronization of
+  * the CPU cache for the given buffer assuming that it has been already
+  * transferred to 'device' domain.
+  */
+-#define DMA_ATTR_SKIP_CPU_SYNC		(1UL << 5)
++#define DMA_ATTR_SKIP_CPU_SYNC		BIT(5)
+ /*
+  * DMA_ATTR_FORCE_CONTIGUOUS: Forces contiguous allocation of the buffer
+  * in physical memory.
+  */
+-#define DMA_ATTR_FORCE_CONTIGUOUS	(1UL << 6)
++#define DMA_ATTR_FORCE_CONTIGUOUS	BIT(6)
+ /*
+  * DMA_ATTR_ALLOC_SINGLE_PAGES: This is a hint to the DMA-mapping subsystem
+  * that it's probably not worth the time to try to allocate memory to in a way
+  * that gives better TLB efficiency.
+  */
+-#define DMA_ATTR_ALLOC_SINGLE_PAGES	(1UL << 7)
++#define DMA_ATTR_ALLOC_SINGLE_PAGES	BIT(7)
+ /*
+  * DMA_ATTR_NO_WARN: This tells the DMA-mapping subsystem to suppress
+  * allocation failure reports (similarly to __GFP_NOWARN).
+  */
+-#define DMA_ATTR_NO_WARN	(1UL << 8)
++#define DMA_ATTR_NO_WARN		BIT(8)
  
  /*
-@@ -3946,7 +3946,7 @@ DECLARE_PCI_FIXUP_HEADER(PCI_VENDOR_ID_RICOH, 0xe476, quirk_dma_func0_alias);
- static void quirk_dma_func1_alias(struct pci_dev *dev)
- {
- 	if (PCI_FUNC(dev->devfn) != 1)
--		pci_add_dma_alias(dev, PCI_DEVFN(PCI_SLOT(dev->devfn), 1));
-+		pci_add_dma_alias(dev, PCI_DEVFN(PCI_SLOT(dev->devfn), 1), 1);
- }
+  * DMA_ATTR_PRIVILEGED: used to indicate that the buffer is fully
+  * accessible at an elevated privilege level (and ideally inaccessible or
+  * at least read-only at lesser-privileged levels).
+  */
+-#define DMA_ATTR_PRIVILEGED		(1UL << 9)
++#define DMA_ATTR_PRIVILEGED		BIT(9)
  
  /*
-@@ -4031,7 +4031,7 @@ static void quirk_fixed_dma_alias(struct pci_dev *dev)
+  * A dma_addr_t can hold any valid DMA or bus address for the platform.
+@@ -136,7 +137,7 @@ struct dma_map_ops {
+ extern const struct dma_map_ops dma_virt_ops;
+ extern const struct dma_map_ops dma_dummy_ops;
  
- 	id = pci_match_id(fixed_dma_alias_tbl, dev);
- 	if (id)
--		pci_add_dma_alias(dev, id->driver_data);
-+		pci_add_dma_alias(dev, id->driver_data, 1);
- }
+-#define DMA_BIT_MASK(n)	(((n) == 64) ? ~0ULL : ((1ULL<<(n))-1))
++#define DMA_BIT_MASK(n)	GENMASK_ULL(n - 1, 0)
  
- DECLARE_PCI_FIXUP_HEADER(PCI_VENDOR_ID_ADAPTEC2, 0x0285, quirk_fixed_dma_alias);
-@@ -4073,9 +4073,9 @@ DECLARE_PCI_FIXUP_HEADER(0x8086, 0x244e, quirk_use_pcie_bridge_dma_alias);
-  */
- static void quirk_mic_x200_dma_alias(struct pci_dev *pdev)
- {
--	pci_add_dma_alias(pdev, PCI_DEVFN(0x10, 0x0));
--	pci_add_dma_alias(pdev, PCI_DEVFN(0x11, 0x0));
--	pci_add_dma_alias(pdev, PCI_DEVFN(0x12, 0x3));
-+	pci_add_dma_alias(pdev, PCI_DEVFN(0x10, 0x0), 1);
-+	pci_add_dma_alias(pdev, PCI_DEVFN(0x11, 0x0), 1);
-+	pci_add_dma_alias(pdev, PCI_DEVFN(0x12, 0x3), 1);
- }
- DECLARE_PCI_FIXUP_HEADER(PCI_VENDOR_ID_INTEL, 0x2260, quirk_mic_x200_dma_alias);
- DECLARE_PCI_FIXUP_HEADER(PCI_VENDOR_ID_INTEL, 0x2264, quirk_mic_x200_dma_alias);
-@@ -5273,7 +5273,7 @@ static void quirk_switchtec_ntb_dma_alias(struct pci_dev *pdev)
- 			pci_dbg(pdev,
- 				"Aliasing Partition %d Proxy ID %02x.%d\n",
- 				pp, PCI_SLOT(devfn), PCI_FUNC(devfn));
--			pci_add_dma_alias(pdev, devfn);
-+			pci_add_dma_alias(pdev, devfn, 1);
- 		}
- 	}
+ #define DMA_MASK_NONE	0x0ULL
  
-diff --git a/include/linux/pci.h b/include/linux/pci.h
-index 1a6cf19eac2d..84a8d4c2b24e 100644
---- a/include/linux/pci.h
-+++ b/include/linux/pci.h
-@@ -2323,7 +2323,7 @@ static inline struct eeh_dev *pci_dev_to_eeh_dev(struct pci_dev *pdev)
- }
- #endif
- 
--void pci_add_dma_alias(struct pci_dev *dev, u8 devfn);
-+void pci_add_dma_alias(struct pci_dev *dev, u8 devfn_from, unsigned nr_devfns);
- bool pci_devs_are_dma_aliases(struct pci_dev *dev1, struct pci_dev *dev2);
- int pci_for_each_dma_alias(struct pci_dev *pdev,
- 			   int (*fn)(struct pci_dev *pdev,
 -- 
 2.24.0
-
 
 _______________________________________________
 iommu mailing list
