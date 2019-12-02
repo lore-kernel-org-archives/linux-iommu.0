@@ -6,124 +6,102 @@ X-Spam-Status: No, score=-0.6 required=3.0 tests=DKIM_INVALID,DKIM_SIGNED,
 	HEADER_FROM_DIFFERENT_DOMAINS,MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS
 	autolearn=no autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 4D4D2C432C0
-	for <iommu@archiver.kernel.org>; Mon,  2 Dec 2019 15:14:05 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id D08B0C432C3
+	for <iommu@archiver.kernel.org>; Mon,  2 Dec 2019 16:13:43 +0000 (UTC)
 Received: from silver.osuosl.org (smtp3.osuosl.org [140.211.166.136])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by mail.kernel.org (Postfix) with ESMTPS id 0CE5520748
-	for <iommu@archiver.kernel.org>; Mon,  2 Dec 2019 15:14:04 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTPS id 9AFD720722
+	for <iommu@archiver.kernel.org>; Mon,  2 Dec 2019 16:13:43 +0000 (UTC)
 Authentication-Results: mail.kernel.org;
-	dkim=fail reason="signature verification failed" (1024-bit key) header.d=nxp.com header.i=@nxp.com header.b="p73Y+i3L"
-DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 0CE5520748
-Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=nxp.com
+	dkim=fail reason="signature verification failed" (1024-bit key) header.d=redhat.com header.i=@redhat.com header.b="LpQ+uqbf"
+DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 9AFD720722
+Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=redhat.com
 Authentication-Results: mail.kernel.org; spf=pass smtp.mailfrom=iommu-bounces@lists.linux-foundation.org
 Received: from localhost (localhost [127.0.0.1])
-	by silver.osuosl.org (Postfix) with ESMTP id C4CC220472;
-	Mon,  2 Dec 2019 15:14:04 +0000 (UTC)
+	by silver.osuosl.org (Postfix) with ESMTP id 5A00D21532;
+	Mon,  2 Dec 2019 16:13:43 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
 Received: from silver.osuosl.org ([127.0.0.1])
 	by localhost (.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
-	with ESMTP id HBv8JiagcUyG; Mon,  2 Dec 2019 15:14:03 +0000 (UTC)
+	with ESMTP id lE7r1MoTSegC; Mon,  2 Dec 2019 16:13:41 +0000 (UTC)
 Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [140.211.9.56])
-	by silver.osuosl.org (Postfix) with ESMTP id CC4B71FEE0;
-	Mon,  2 Dec 2019 15:14:03 +0000 (UTC)
+	by silver.osuosl.org (Postfix) with ESMTP id 6C86C204B9;
+	Mon,  2 Dec 2019 16:13:41 +0000 (UTC)
 Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
-	by lists.linuxfoundation.org (Postfix) with ESMTP id B068AC1798;
-	Mon,  2 Dec 2019 15:14:03 +0000 (UTC)
-Received: from silver.osuosl.org (smtp3.osuosl.org [140.211.166.136])
- by lists.linuxfoundation.org (Postfix) with ESMTP id 607DBC087F
- for <iommu@lists.linux-foundation.org>; Mon,  2 Dec 2019 15:14:02 +0000 (UTC)
+	by lists.linuxfoundation.org (Postfix) with ESMTP id 584CEC1797;
+	Mon,  2 Dec 2019 16:13:41 +0000 (UTC)
+Received: from hemlock.osuosl.org (smtp2.osuosl.org [140.211.166.133])
+ by lists.linuxfoundation.org (Postfix) with ESMTP id 0134BC087F
+ for <iommu@lists.linux-foundation.org>; Mon,  2 Dec 2019 16:13:40 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
- by silver.osuosl.org (Postfix) with ESMTP id 4B14E1FF11
- for <iommu@lists.linux-foundation.org>; Mon,  2 Dec 2019 15:14:02 +0000 (UTC)
+ by hemlock.osuosl.org (Postfix) with ESMTP id E420E8868E
+ for <iommu@lists.linux-foundation.org>; Mon,  2 Dec 2019 16:13:39 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from silver.osuosl.org ([127.0.0.1])
+Received: from hemlock.osuosl.org ([127.0.0.1])
  by localhost (.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
- with ESMTP id dgJGMKgC-Wc0 for <iommu@lists.linux-foundation.org>;
- Mon,  2 Dec 2019 15:14:00 +0000 (UTC)
+ with ESMTP id ExgYCXmYY2hR for <iommu@lists.linux-foundation.org>;
+ Mon,  2 Dec 2019 16:13:38 +0000 (UTC)
 X-Greylist: domain auto-whitelisted by SQLgrey-1.7.6
-Received: from EUR01-DB5-obe.outbound.protection.outlook.com
- (mail-eopbgr150071.outbound.protection.outlook.com [40.107.15.71])
- by silver.osuosl.org (Postfix) with ESMTPS id DE4001FEE0
- for <iommu@lists.linux-foundation.org>; Mon,  2 Dec 2019 15:13:59 +0000 (UTC)
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=hbfRMt7LxrceG5jOGZJ249IHrBiqInyZSuI3ONjJEmuAmRIfEdBYX++H3/XQVDsplHRaf27l8xdw8GwbrvdToMubcmrPK/PpJ9zzaEy2TyrVIivsrWdclQtFoFcKT890BTPjGQ35p9LRh413AxFrhawATXoGxXPMIfrozLHw0HbUQHYX03BAybOHnFFbmr2jNchFGzRWwsGNG8b+WCXf5G4WM5gwhN52sl0L5ZyciNTAmlp0YDiHJ0qp4WrHgHAvNWJiseg0u0yNhg94j94F7Zxc6JagqweonjIuNzkP+26Dq66H4Pkc2MYQ8k/YKB3U3IGxF4yxoPEx/MaYtbwo7w==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com; 
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=0vE09OtzXsJFEEW42YBsiEeYQCVnAhNFms4j0eDrQ8o=;
- b=JpnKt17GYZB9skH7CRuIzEzZGuPiv2S0t4tcO5x35piRqNHSZ8rrcSPFEmwy9cowWOeP9ueLtA06GTQ+3TvCCjRp2ziHujCFUOew3yfVkuFyQaZPJXBcLbonEkAVsLFuDIrWywY6MYR9qrlbRMTbdwOJZ7IB7wGwVuXEXxzAytTrua/GvtRvag/rVDdibyu364uigI7a2mekXNHODHk2FlXWD4jCEld/XgK0cBsrzEnqGXMfNIQVtEB6cyK3jTxUY9YVQlgEWLHWLGNQbYfL4B1BhOBiwHH2oDvEdJpFwxtjMcptbRU6TTC5a4cvr7HgUrMaVRSk0jgjIatajYUTgQ==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=nxp.com; dmarc=pass action=none header.from=nxp.com; dkim=pass
- header.d=nxp.com; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=nxp.com; s=selector2; 
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=0vE09OtzXsJFEEW42YBsiEeYQCVnAhNFms4j0eDrQ8o=;
- b=p73Y+i3Lu/0szmFLVF24Ksxqp2klrXqKc2d84bKsV8YVbt5rl1L2edfOM/MWaR7sw6iPx9ew8fdT0i88fSUUGUv+lDQF19S2JN44xqQtNv7UTzZMjtfd3TcQ5cukVbaYTjJ4k+li1RzT3Un7Dl4CDWRhdnS9PtnWnidPBv8KuYU=
-Received: from VI1PR04MB5567.eurprd04.prod.outlook.com (20.178.123.83) by
- VI1PR04MB7135.eurprd04.prod.outlook.com (10.186.158.214) with Microsoft SMTP
- Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.20.2495.18; Mon, 2 Dec 2019 14:58:41 +0000
-Received: from VI1PR04MB5567.eurprd04.prod.outlook.com
- ([fe80::64f5:d1f5:2356:bdcb]) by VI1PR04MB5567.eurprd04.prod.outlook.com
- ([fe80::64f5:d1f5:2356:bdcb%6]) with mapi id 15.20.2495.014; Mon, 2 Dec 2019
- 14:58:41 +0000
-From: Madalin Bucur <madalin.bucur@nxp.com>
-To: Christoph Hellwig <hch@lst.de>, David Miller <davem@davemloft.net>
-Subject: RE: [PATCH v3 0/4] dma-mapping: introduce new dma unmap and sync
- variants
-Thread-Topic: [PATCH v3 0/4] dma-mapping: introduce new dma unmap and sync
- variants
-Thread-Index: AQHVmh1EAM9HSxnkaEm+5zOWq0YV/qeJiNoAgAvA9ACAEcGhEA==
-Date: Mon, 2 Dec 2019 14:58:41 +0000
-Message-ID: <VI1PR04MB55678E303E4EF6AB2C416793EC430@VI1PR04MB5567.eurprd04.prod.outlook.com>
-References: <20191113122407.1171-1-laurentiu.tudor@nxp.com>
- <20191113.121132.1658930697082028145.davem@davemloft.net>
- <20191121074100.GD24024@lst.de>
-In-Reply-To: <20191121074100.GD24024@lst.de>
-Accept-Language: en-US
-Content-Language: en-US
-X-MS-Has-Attach: 
-X-MS-TNEF-Correlator: 
-authentication-results: spf=none (sender IP is )
- smtp.mailfrom=madalin.bucur@nxp.com; 
-x-originating-ip: [212.146.100.6]
-x-ms-publictraffictype: Email
-x-ms-office365-filtering-ht: Tenant
-x-ms-office365-filtering-correlation-id: ce85849c-3f4a-40da-4a83-08d777381eb4
-x-ms-traffictypediagnostic: VI1PR04MB7135:|VI1PR04MB7135:
-x-ms-exchange-transport-forked: True
-x-microsoft-antispam-prvs: <VI1PR04MB71358A039784CF9C40CCDA16EC430@VI1PR04MB7135.eurprd04.prod.outlook.com>
-x-ms-oob-tlc-oobclassifiers: OLM:10000;
-x-forefront-prvs: 0239D46DB6
-x-forefront-antispam-report: SFV:NSPM;
- SFS:(10009020)(4636009)(136003)(39860400002)(376002)(366004)(346002)(396003)(13464003)(189003)(199004)(71190400001)(9686003)(71200400001)(66066001)(86362001)(33656002)(52536014)(478600001)(446003)(5660300002)(6436002)(55016002)(14454004)(76116006)(99286004)(66446008)(64756008)(66556008)(66476007)(66946007)(26005)(81156014)(81166006)(8676002)(44832011)(25786009)(53546011)(6506007)(2906002)(316002)(305945005)(74316002)(4326008)(7736002)(54906003)(6116002)(110136005)(3846002)(6246003)(229853002)(11346002)(7696005)(8936002)(102836004)(14444005)(256004)(76176011)(186003);
- DIR:OUT; SFP:1101; SCL:1; SRVR:VI1PR04MB7135;
- H:VI1PR04MB5567.eurprd04.prod.outlook.com; FPR:; SPF:None; LANG:en;
- PTR:InfoNoRecords; MX:1; A:1; 
-received-spf: None (protection.outlook.com: nxp.com does not designate
- permitted sender hosts)
-x-ms-exchange-senderadcheck: 1
-x-microsoft-antispam: BCL:0;
-x-microsoft-antispam-message-info: ohgFxc5fid2ww2GNnMYArieMyFaK1ByDJc7FP2o0TAaiBhJEIM830sS0O34N3BtuqUB03d5l8xYlbMcz0Hyt8PjgWMlTEdq1FjHUzLuLRIOUSeoT0iwCun2Ns0+o1q8BRiO3ktiMAOq0CNe077+X/ewYGDqSEZykrO1Z/nsqNAT5s2a75iY7TgPKekENvbMhSneyngxX1au3vRQYp3z9pOEdEoB0S6gEzosgOYv9UupC0O1SNEEWU20xHeeQt8xBqg+HW2mUscPjuNlJ+idWTix14JH7W6ve8a/eud04JypU0CZLBqChQAb49/02EWdnERlwmjQh+sLYoaN1dIYy+nYykyCXcvSUMf2+dr5UW9GSHTATP1yCw8n0SExk2vrYFD6nJnNJuiPisYccLPbLwXEQfzQJhiN5/1EHDmksqiEqSdBRcM6gSIDJUC2A7l5X
+Received: from us-smtp-1.mimecast.com (us-smtp-delivery-1.mimecast.com
+ [205.139.110.120])
+ by hemlock.osuosl.org (Postfix) with ESMTPS id ABF6C88680
+ for <iommu@lists.linux-foundation.org>; Mon,  2 Dec 2019 16:13:38 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+ s=mimecast20190719; t=1575303217;
+ h=from:from:reply-to:reply-to:subject:subject:date:date:
+ message-id:message-id:to:to:cc:mime-version:mime-version:
+ content-type:content-type:
+ content-transfer-encoding:content-transfer-encoding:
+ in-reply-to:in-reply-to:references:references;
+ bh=Y3LXPhEISt/lT7I5COItPrPZAUekStpNeinC0naM/6M=;
+ b=LpQ+uqbfSQCbZnFbTlPUpSMODV6k4DaW57k8HXkUqpV2rL7cLqP+mcNm42mxT1r15dR/Le
+ Rk6JKZnniLflsuJtZgaOwNUhNq6ETKochDjMXUzuhZsobq+sR+G88W1mB6u4pDg3DqBFOX
+ 7iHelT23AImXxhsVbtLLe/oxgqAY400=
+Received: from mail-pj1-f72.google.com (mail-pj1-f72.google.com
+ [209.85.216.72]) (Using TLS) by relay.mimecast.com with ESMTP id
+ us-mta-140-hN9Tmt4zNVCMBX2xQwoQrA-1; Mon, 02 Dec 2019 11:13:35 -0500
+Received: by mail-pj1-f72.google.com with SMTP id z24so174785pjt.19
+ for <iommu@lists.linux-foundation.org>; Mon, 02 Dec 2019 08:13:35 -0800 (PST)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+ d=1e100.net; s=20161025;
+ h=x-gm-message-state:date:from:to:subject:message-id:reply-to
+ :references:mime-version:content-disposition
+ :content-transfer-encoding:in-reply-to;
+ bh=g9BzGKlaYjl7jGcc4Esh+S3bK6Y7AiEWBjPDqmW8Syo=;
+ b=pNI9qvwb1t9zqpDu8CBcM4x2Q9mnkYvsygRBh+zp8HXNTvX9BYepCvj0SsQ1GKSGiz
+ JRjIfm1lRoOpJTAleWcGDZVR6lXAlfepWFb5nxgkMtdGWpj4l/xvd0FEttspCvj8xIB3
+ 8a3XfgE3gmk70Wvj4HXBvnF9l3fjdwDPeN6pUo0H0OUYQwsVoPZHAdXJqH0tTa16t8J/
+ 6NVuO7wVzONMCq1Nn3o+UXpeGmbzzjiHxzbtv5yKJjPJfr78vaPtQG/yScmSfmP+CgV2
+ nD6wlJSxkiW9wZ8TxD0TKHwtP99enrjb2b/Ka4XsICSR+SjL1qXTxaWa9yk6tYvbMkod
+ wcDw==
+X-Gm-Message-State: APjAAAWo/r4oW3pVjatEBfeCANe6pgPyUR8Gvo15sytNGp0gZkg9TLwI
+ hUMgizJq0nXtH5btqO5IIAyszjrXDymHp+ljcbRYi7zz8UVrUAARN8TBEwflFGxcpdRtYArf5cF
+ p4o7DNwkeoPPNFCp1qYAsFvi/B1QxRw==
+X-Received: by 2002:a63:d047:: with SMTP id s7mr1067931pgi.81.1575303214682;
+ Mon, 02 Dec 2019 08:13:34 -0800 (PST)
+X-Google-Smtp-Source: APXvYqwf6oTDK7ZIss7qnHDz0PXbekI64gNgaYQodeB+snulP0ElT1I6+zYVPNmR8FGChpdQRD50kg==
+X-Received: by 2002:a63:d047:: with SMTP id s7mr1067889pgi.81.1575303214304;
+ Mon, 02 Dec 2019 08:13:34 -0800 (PST)
+Received: from localhost (ip70-163-223-149.ph.ph.cox.net. [70.163.223.149])
+ by smtp.gmail.com with ESMTPSA id f10sm34564989pfd.28.2019.12.02.08.13.32
+ (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+ Mon, 02 Dec 2019 08:13:33 -0800 (PST)
+Date: Mon, 2 Dec 2019 09:13:32 -0700
+From: Jerry Snitselaar <jsnitsel@redhat.com>
+To: Lu Baolu <baolu.lu@linux.intel.com>, iommu@lists.linux-foundation.org,
+ Joerg Roedel <joro@8bytes.org>
+Subject: Re: dmar pte read access not set error messages on hp dl388 gen8
+ systems
+Message-ID: <20191202161332.ctc3y5cvdgqwnz7l@cantor>
+References: <20191202063422.3lyfoerkejig4num@cantor>
+ <702d8a8a-88de-bffb-911e-9eb9a6a7845d@linux.intel.com>
+ <20191202071406.jpq5qobbtnwhktlc@cantor>
 MIME-Version: 1.0
-X-OriginatorOrg: nxp.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: ce85849c-3f4a-40da-4a83-08d777381eb4
-X-MS-Exchange-CrossTenant-originalarrivaltime: 02 Dec 2019 14:58:41.1911 (UTC)
-X-MS-Exchange-CrossTenant-fromentityheader: Hosted
-X-MS-Exchange-CrossTenant-id: 686ea1d3-bc2b-4c6f-a92c-d99c5c301635
-X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
-X-MS-Exchange-CrossTenant-userprincipalname: 3HxSTMlUstwePboW87XjVA22HRpy3rA7bU064VRRLQHPtQYbrgIJXdHwKNFvppQTkRSrAVLO2LHFBzUICMjjVA==
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: VI1PR04MB7135
-Cc: Ioana Ciocoi Radulescu <ruxandra.radulescu@nxp.com>,
- "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
- "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
- Leo Li <leoyang.li@nxp.com>,
- "iommu@lists.linux-foundation.org" <iommu@lists.linux-foundation.org>,
- Camelia Alexandra Groza <camelia.groza@nxp.com>,
- Ioana Ciornei <ioana.ciornei@nxp.com>,
- "robin.murphy@arm.com" <robin.murphy@arm.com>
+In-Reply-To: <20191202071406.jpq5qobbtnwhktlc@cantor>
+X-MC-Unique: hN9Tmt4zNVCMBX2xQwoQrA-1
+X-Mimecast-Spam-Score: 0
+Content-Disposition: inline
 X-BeenThere: iommu@lists.linux-foundation.org
 X-Mailman-Version: 2.1.15
 Precedence: list
@@ -136,62 +114,56 @@ List-Post: <mailto:iommu@lists.linux-foundation.org>
 List-Help: <mailto:iommu-request@lists.linux-foundation.org?subject=help>
 List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
  <mailto:iommu-request@lists.linux-foundation.org?subject=subscribe>
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: 7bit
+Reply-To: Jerry Snitselaar <jsnitsel@redhat.com>
+Content-Transfer-Encoding: base64
+Content-Type: text/plain; charset="utf-8"; Format="flowed"
 Errors-To: iommu-bounces@lists.linux-foundation.org
 Sender: "iommu" <iommu-bounces@lists.linux-foundation.org>
 
-> -----Original Message-----
-> From: Christoph Hellwig <hch@lst.de>
-> To: David Miller <davem@davemloft.net>
-> Subject: Re: [PATCH v3 0/4] dma-mapping: introduce new dma unmap and sync
-> variants
-> 
-> On Wed, Nov 13, 2019 at 12:11:32PM -0800, David Miller wrote:
-> > > This series introduces a few new dma unmap and sync api variants
-> that,
-> > > on top of what the originals do, return the virtual address
-> > > corresponding to the input dma address. In order to do that a new dma
-> > > map op is added, .get_virt_addr that takes the input dma address and
-> > > returns the virtual address backing it up.
-> > > The second patch adds an implementation for this new dma map op in
-> the
-> > > generic iommu dma glue code and wires it in.
-> > > The third patch updates the dpaa2-eth driver to use the new apis.
-> >
-> > The driver should store the mapping in it's private software state if
-> > it needs this kind of conversion.
-> 
-> I think the problem for this driver (and a few others) is that they
-> somehow manage to split I/O completions at a different boundary
-> than submissions.  For me with my block I/O background this seems
-> weird, but I'll need networking folks to double check the theory.
-> 
-> > This is huge precendence for this, and there is therefore no need to
-> > add even more complication and methods and burdon to architecture code
-> > for the sake of this.
-> 
-> Unfortunately there are various drivers that abuse iommu_iova_to_phys
-> to get a struct page to unmap.  Two of theose are network drivers
-> that went in through you (dpaa2 and thunder), additonally the
-> caam crypto driver (which I think is the same SOC family as dpaa,
-> but I'm not sure) and the AMD GPU driver.
-> 
-> We also have drivers that just don't unmap and this don't work with
-> iommus or dma-debug (IBM EMAC another net driver).
-> 
-> That being said I hate these new API, but I still think they are less
-> bad than these IOMMU API abuses people do now.  If experienced
-> networking folks know a way to get rid of both I'm all for it.
-
-Hi,
-
-will this API be included during the v5.5 kernel development cycle or is
-there an alternative solution?
-
-Thank you,
-Madalin
-_______________________________________________
-iommu mailing list
-iommu@lists.linux-foundation.org
-https://lists.linuxfoundation.org/mailman/listinfo/iommu
+T24gTW9uIERlYyAwMiAxOSwgSmVycnkgU25pdHNlbGFhciB3cm90ZToKPk9uIE1vbiBEZWMgMDIg
+MTksIEx1IEJhb2x1IHdyb3RlOgo+PkhpLAo+Pgo+Pk9uIDEyLzIvMTkgMjozNCBQTSwgSmVycnkg
+U25pdHNlbGFhciB3cm90ZToKPj4+V2UgYXJlIHNlZWluZyBETUFSIFBURSByZWFkIGFjY2VzcyBu
+b3Qgc2V0IGVycm9ycyB3aGVuIGJvb3RpbmcgYQo+Pj5rZXJuZWwgd2l0aCBkZWZhdWx0IHBhc3N0
+aHJvdWdoLCBib3RoIHdpdGggYSB0ZXN0IGtlcm5lbCBhbmQgd2l0aAo+Pj5hIDUuNC4wIGtlcm5l
+bC4gUHJldmlvdXNseSB3ZSB3b3VsZCBzZWUgYSBudW1iZXIgb2YgaWRlbnRpdHkgbWFwcGluZ3MK
+Pj4+YmVpbmcgc2V0IHJlbGF0ZWQgdG8gdGhlIHJtcnJzLCBhbmQgbm93IHRoZXkgYXJlbid0IHNl
+ZW4gYW5kIHdlIGdldAo+Pj50aGUgZG1hciBwdGUgZXJyb3JzIGFzIGRldmljZXMgdG91Y2ggdGhv
+c2UgcmVnaW9ucy4gRnJvbSB3aGF0IEkgY2FuIHRlbGwKPj4+Y3VycmVudGx5IGRmNGYzYzYwM2Fl
+YiAoImlvbW11L3Z0LWQ6IFJlbW92ZSBzdGF0aWMgaWRlbnRpdHkgbWFwIGNvZGUiKQo+Pj5yZW1v
+dmVkIHRoZSBiaXQgb2YgY29kZSBpbiBpbml0X2RtYXJzIHRoYXQgdXNlZCB0byBzZXQgdXAgdGhv
+c2UKPj4+bWFwcGluZ3M6Cj4+Pgo+Pj4twqDCoMKgwqDCoMKgIC8qCj4+Pi3CoMKgwqDCoMKgwqDC
+oCAqIEZvciBlYWNoIHJtcnIKPj4+LcKgwqDCoMKgwqDCoMKgICrCoMKgIGZvciBlYWNoIGRldiBh
+dHRhY2hlZCB0byBybXJyCj4+Pi3CoMKgwqDCoMKgwqDCoCAqwqDCoCBkbwo+Pj4twqDCoMKgwqDC
+oMKgwqAgKsKgwqDCoMKgIGxvY2F0ZSBkcmhkIGZvciBkZXYsIGFsbG9jIGRvbWFpbiBmb3IgZGV2
+Cj4+Pi3CoMKgwqDCoMKgwqDCoCAqwqDCoMKgwqAgYWxsb2NhdGUgZnJlZSBkb21haW4KPj4+LcKg
+wqDCoMKgwqDCoMKgICrCoMKgwqDCoCBhbGxvY2F0ZSBwYWdlIHRhYmxlIGVudHJpZXMgZm9yIHJt
+cnIKPj4+LcKgwqDCoMKgwqDCoMKgICrCoMKgwqDCoCBpZiBjb250ZXh0IG5vdCBhbGxvY2F0ZWQg
+Zm9yIGJ1cwo+Pj4twqDCoMKgwqDCoMKgwqAgKsKgwqDCoMKgwqDCoMKgwqDCoMKgIGFsbG9jYXRl
+IGFuZCBpbml0IGNvbnRleHQKPj4+LcKgwqDCoMKgwqDCoMKgICrCoMKgwqDCoMKgwqDCoMKgwqDC
+oCBzZXQgcHJlc2VudCBpbiByb290IHRhYmxlIGZvciB0aGlzIGJ1cwo+Pj4twqDCoMKgwqDCoMKg
+wqAgKsKgwqDCoMKgIGluaXQgY29udGV4dCB3aXRoIGRvbWFpbiwgdHJhbnNsYXRpb24gZXRjCj4+
+Pi3CoMKgwqDCoMKgwqDCoCAqwqDCoMKgIGVuZGZvcgo+Pj4twqDCoMKgwqDCoMKgwqAgKiBlbmRm
+b3IKPj4+LcKgwqDCoMKgwqDCoMKgICovCj4+Pi3CoMKgwqDCoMKgwqAgcHJfaW5mbygiU2V0dGlu
+ZyBSTVJSOlxuIik7Cj4+Pi3CoMKgwqDCoMKgwqAgZm9yX2VhY2hfcm1ycl91bml0cyhybXJyKSB7
+Cj4+Pi3CoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgIC8qIHNvbWUgQklPUyBsaXN0cyBub24t
+ZXhpc3QgZGV2aWNlcyBpbiBETUFSIHRhYmxlLiAqLwo+Pj4twqDCoMKgwqDCoMKgwqDCoMKgwqDC
+oMKgwqDCoCBmb3JfZWFjaF9hY3RpdmVfZGV2X3Njb3BlKHJtcnItPmRldmljZXMsIHJtcnItPmRl
+dmljZXNfY250LAo+Pj4twqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKg
+wqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqAgaSwgZGV2KSB7Cj4+Pi3CoMKg
+wqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoCByZXQgPSBpb21tdV9wcmVw
+YXJlX3JtcnJfZGV2KHJtcnIsIGRldik7Cj4+Pi3CoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKg
+wqDCoMKgwqDCoMKgwqDCoCBpZiAocmV0KQo+Pj4twqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDC
+oMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgIHByX2VycigiTWFwcGluZyByZXNlcnZl
+ZCByZWdpb24gZmFpbGVkXG4iKTsKPj4+LcKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqAgfQo+
+Pj4twqDCoMKgwqDCoMKgIH0KPj4+Cj4+PnNpX2RvbWFpbl9pbml0IG5vdyBoYXMgY29kZSB0aGF0
+IHNldHMgaWRlbnRpdHkgbWFwcyBmb3IgZGV2aWNlcyBpbiAKPj4+cm1ycnMsIGJ1dAo+Pj5vbmx5
+IGZvciBjZXJ0YWluIGRldmljZXMuCj4+Cj4+T24gd2hpY2ggZGV2aWNlLCBhcmUgeW91IHNlZWlu
+ZyB0aGlzIGVycm9yPyBJcyBpdCBhIHJtcnIgbG9ja2VkIGRldmljZT8KPj4KPj5CZXN0IHJlZ2Fy
+ZHMsCj4+YmFvbHUKPj4KPgo+QWxtb3N0IGFsbCBvZiB0aGUgbWVzc2FnZXMgYXJlIGZvciB0aGUg
+aWxvLCBidXQgdGhlcmUgYWxzbyBpcyBhIG1lc3NhZ2UgZm9yCj50aGUgc21hcnQgYXJyYXkgcmFp
+ZCBidXMgY29udHJvbGxlci4KPgoKQWxzbyBzZWVpbmcgaXQgd2l0aCBhIGRsMzgwIGdlbjkgc3lz
+dGVtLCB3aGVyZSB0aGUgcmFpZCBidXMgY29udHJvbGxlcgppcyBnZXR0aW5nIHRoZSBlcnJvci4K
+Cj4+Pgo+Pj5XaXRoIGlvbW11PW5vcHQsIHRoZSBzeXN0ZW0gYm9vdHMgdXAgd2l0aG91dCBpc3N1
+ZS4KPj4+Cj4+CgpfX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19f
+Xwppb21tdSBtYWlsaW5nIGxpc3QKaW9tbXVAbGlzdHMubGludXgtZm91bmRhdGlvbi5vcmcKaHR0
+cHM6Ly9saXN0cy5saW51eGZvdW5kYXRpb24ub3JnL21haWxtYW4vbGlzdGluZm8vaW9tbXU=
