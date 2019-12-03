@@ -1,74 +1,100 @@
-Return-Path: <SRS0=Z2AP=ZY=lists.linux-foundation.org=iommu-bounces@kernel.org>
+Return-Path: <SRS0=C308=ZZ=lists.linux-foundation.org=iommu-bounces@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-8.2 required=3.0 tests=HEADER_FROM_DIFFERENT_DOMAINS,
-	INCLUDES_PATCH,MAILING_LIST_MULTI,SIGNED_OFF_BY,SPF_HELO_NONE,SPF_PASS,
-	USER_AGENT_SANE_2 autolearn=ham autolearn_force=no version=3.4.0
+X-Spam-Status: No, score=-0.6 required=3.0 tests=DKIM_INVALID,DKIM_SIGNED,
+	HEADER_FROM_DIFFERENT_DOMAINS,MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS
+	autolearn=no autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id B2780C432C0
-	for <iommu@archiver.kernel.org>; Mon,  2 Dec 2019 23:22:57 +0000 (UTC)
-Received: from hemlock.osuosl.org (smtp2.osuosl.org [140.211.166.133])
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 2661AC43215
+	for <iommu@archiver.kernel.org>; Tue,  3 Dec 2019 00:12:04 +0000 (UTC)
+Received: from fraxinus.osuosl.org (smtp4.osuosl.org [140.211.166.137])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by mail.kernel.org (Postfix) with ESMTPS id 88B4C20718
-	for <iommu@archiver.kernel.org>; Mon,  2 Dec 2019 23:22:57 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 88B4C20718
-Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=linux.intel.com
+	by mail.kernel.org (Postfix) with ESMTPS id DFC7220656
+	for <iommu@archiver.kernel.org>; Tue,  3 Dec 2019 00:12:03 +0000 (UTC)
+Authentication-Results: mail.kernel.org;
+	dkim=fail reason="signature verification failed" (1024-bit key) header.d=redhat.com header.i=@redhat.com header.b="TMFhSgHj"
+DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org DFC7220656
+Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=redhat.com
 Authentication-Results: mail.kernel.org; spf=pass smtp.mailfrom=iommu-bounces@lists.linux-foundation.org
 Received: from localhost (localhost [127.0.0.1])
-	by hemlock.osuosl.org (Postfix) with ESMTP id 7233088271;
-	Mon,  2 Dec 2019 23:22:57 +0000 (UTC)
+	by fraxinus.osuosl.org (Postfix) with ESMTP id 91ED4862C9;
+	Tue,  3 Dec 2019 00:12:03 +0000 (UTC)
+X-Virus-Scanned: amavisd-new at osuosl.org
+Received: from fraxinus.osuosl.org ([127.0.0.1])
+	by localhost (.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
+	with ESMTP id FNDHfEvNXvrb; Tue,  3 Dec 2019 00:12:02 +0000 (UTC)
+Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [140.211.9.56])
+	by fraxinus.osuosl.org (Postfix) with ESMTP id 5EDEB8629B;
+	Tue,  3 Dec 2019 00:12:02 +0000 (UTC)
+Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
+	by lists.linuxfoundation.org (Postfix) with ESMTP id 45807C1798;
+	Tue,  3 Dec 2019 00:12:02 +0000 (UTC)
+Received: from hemlock.osuosl.org (smtp2.osuosl.org [140.211.166.133])
+ by lists.linuxfoundation.org (Postfix) with ESMTP id CFF3EC087F
+ for <iommu@lists.linux-foundation.org>; Tue,  3 Dec 2019 00:11:59 +0000 (UTC)
+Received: from localhost (localhost [127.0.0.1])
+ by hemlock.osuosl.org (Postfix) with ESMTP id B31B288667
+ for <iommu@lists.linux-foundation.org>; Tue,  3 Dec 2019 00:11:59 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
 Received: from hemlock.osuosl.org ([127.0.0.1])
-	by localhost (.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
-	with ESMTP id aJajdAqmFNMt; Mon,  2 Dec 2019 23:22:55 +0000 (UTC)
-Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [140.211.9.56])
-	by hemlock.osuosl.org (Postfix) with ESMTP id 891828826F;
-	Mon,  2 Dec 2019 23:22:55 +0000 (UTC)
-Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
-	by lists.linuxfoundation.org (Postfix) with ESMTP id 71B45C1798;
-	Mon,  2 Dec 2019 23:22:55 +0000 (UTC)
-Received: from whitealder.osuosl.org (smtp1.osuosl.org [140.211.166.138])
- by lists.linuxfoundation.org (Postfix) with ESMTP id 819E1C087F
- for <iommu@lists.linux-foundation.org>; Mon,  2 Dec 2019 23:22:54 +0000 (UTC)
-Received: from localhost (localhost [127.0.0.1])
- by whitealder.osuosl.org (Postfix) with ESMTP id 6628786439
- for <iommu@lists.linux-foundation.org>; Mon,  2 Dec 2019 23:22:54 +0000 (UTC)
-X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from whitealder.osuosl.org ([127.0.0.1])
  by localhost (.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
- with ESMTP id ct8k0mybLr1B for <iommu@lists.linux-foundation.org>;
- Mon,  2 Dec 2019 23:22:52 +0000 (UTC)
+ with ESMTP id RKzF4i64cSYY for <iommu@lists.linux-foundation.org>;
+ Tue,  3 Dec 2019 00:11:58 +0000 (UTC)
 X-Greylist: domain auto-whitelisted by SQLgrey-1.7.6
-Received: from mga11.intel.com (mga11.intel.com [192.55.52.93])
- by whitealder.osuosl.org (Postfix) with ESMTPS id C4E288640E
- for <iommu@lists.linux-foundation.org>; Mon,  2 Dec 2019 23:22:52 +0000 (UTC)
-X-Amp-Result: SKIPPED(no attachment in message)
-X-Amp-File-Uploaded: False
-Received: from orsmga008.jf.intel.com ([10.7.209.65])
- by fmsmga102.fm.intel.com with ESMTP/TLS/DHE-RSA-AES256-GCM-SHA384;
- 02 Dec 2019 15:22:52 -0800
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.69,270,1571727600"; d="scan'208";a="204753844"
-Received: from jacob-builder.jf.intel.com (HELO jacob-builder) ([10.7.199.155])
- by orsmga008.jf.intel.com with ESMTP; 02 Dec 2019 15:22:49 -0800
-Date: Mon, 2 Dec 2019 15:27:32 -0800
-From: Jacob Pan <jacob.jun.pan@linux.intel.com>
-To: Lu Baolu <baolu.lu@linux.intel.com>
-Subject: Re: [PATCH v2 5/8] iommu/vt-d: Add first level page table interfaces
-Message-ID: <20191202152732.3d9c6589@jacob-builder>
-In-Reply-To: <20191128022550.9832-6-baolu.lu@linux.intel.com>
-References: <20191128022550.9832-1-baolu.lu@linux.intel.com>
- <20191128022550.9832-6-baolu.lu@linux.intel.com>
-Organization: OTC
-X-Mailer: Claws Mail 3.13.2 (GTK+ 2.24.30; x86_64-pc-linux-gnu)
+Received: from us-smtp-delivery-1.mimecast.com (us-smtp-2.mimecast.com
+ [207.211.31.81])
+ by hemlock.osuosl.org (Postfix) with ESMTPS id 3C22987EAD
+ for <iommu@lists.linux-foundation.org>; Tue,  3 Dec 2019 00:11:58 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+ s=mimecast20190719; t=1575331917;
+ h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+ to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+ content-transfer-encoding:content-transfer-encoding:
+ in-reply-to:in-reply-to:references:references;
+ bh=QwslN0ESh7G3atu+sEDSOpZk2f+hv1EosGWGmAtx8T4=;
+ b=TMFhSgHjau1+hRLFd9O/P0q87gocr8e7Hs+SK32YKiXityD7D3F1ytDM063bYLHgRvqq62
+ FJgYXoyL41c/EecYXJqwSzUZZLdpiLXks+ZpK2cdJr14Vu4w+NcZP0jyRMSikysArbgK5X
+ 4ZGZX8gGWKSKXbpfV0OHwigy7KPWjgE=
+Received: from mimecast-mx01.redhat.com (mimecast-mx01.redhat.com
+ [209.132.183.4]) (Using TLS) by relay.mimecast.com with ESMTP id
+ us-mta-387-8rNTbQokON28R37LVCUJpA-1; Mon, 02 Dec 2019 19:11:55 -0500
+Received: from smtp.corp.redhat.com (int-mx05.intmail.prod.int.phx2.redhat.com
+ [10.5.11.15])
+ (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
+ (No client certificate requested)
+ by mimecast-mx01.redhat.com (Postfix) with ESMTPS id 00256800D41;
+ Tue,  3 Dec 2019 00:11:53 +0000 (UTC)
+Received: from x1.home (ovpn-116-56.phx2.redhat.com [10.3.116.56])
+ by smtp.corp.redhat.com (Postfix) with ESMTP id 81CC65D6A7;
+ Tue,  3 Dec 2019 00:11:49 +0000 (UTC)
+Date: Mon, 2 Dec 2019 17:11:49 -0700
+From: Alex Williamson <alex.williamson@redhat.com>
+To: "Liu, Yi L" <yi.l.liu@intel.com>
+Subject: Re: [RFC v2 3/3] vfio/type1: bind guest pasid (guest page tables)
+ to host
+Message-ID: <20191202171149.12092335@x1.home>
+In-Reply-To: <A2975661238FB949B60364EF0F2C25743A10D40B@SHSMSX104.ccr.corp.intel.com>
+References: <1571919983-3231-1-git-send-email-yi.l.liu@intel.com>
+ <1571919983-3231-4-git-send-email-yi.l.liu@intel.com>
+ <20191107162041.31e620a4@x1.home>
+ <A2975661238FB949B60364EF0F2C25743A0F6894@SHSMSX104.ccr.corp.intel.com>
+ <20191112102534.75968ccd@x1.home>
+ <A2975661238FB949B60364EF0F2C25743A0F8A70@SHSMSX104.ccr.corp.intel.com>
+ <20191113102913.GA40832@lophozonia>
+ <A2975661238FB949B60364EF0F2C25743A10D40B@SHSMSX104.ccr.corp.intel.com>
+Organization: Red Hat
 MIME-Version: 1.0
-Cc: kevin.tian@intel.com, Yi Sun <yi.y.sun@linux.intel.com>,
- ashok.raj@intel.com, kvm@vger.kernel.org, sanjay.k.kumar@intel.com,
- yi.y.sun@intel.com, linux-kernel@vger.kernel.org,
- Alex Williamson <alex.williamson@redhat.com>, iommu@lists.linux-foundation.org,
- David Woodhouse <dwmw2@infradead.org>
+X-Scanned-By: MIMEDefang 2.79 on 10.5.11.15
+X-MC-Unique: 8rNTbQokON28R37LVCUJpA-1
+X-Mimecast-Spam-Score: 0
+Cc: Jean-Philippe Brucker <jean-philippe@linaro.org>, "Tian,
+ Kevin" <kevin.tian@intel.com>, "Raj, Ashok" <ashok.raj@intel.com>,
+ "kvm@vger.kernel.org" <kvm@vger.kernel.org>, "Tian,
+ Jun J" <jun.j.tian@intel.com>, "Sun, Yi Y" <yi.y.sun@intel.com>,
+ "iommu@lists.linux-foundation.org" <iommu@lists.linux-foundation.org>, "Lu,
+ Baolu" <baolu.lu@intel.com>, "Wu, Hao" <hao.wu@intel.com>
 X-BeenThere: iommu@lists.linux-foundation.org
 X-Mailman-Version: 2.1.15
 Precedence: list
@@ -86,633 +112,265 @@ Content-Transfer-Encoding: 7bit
 Errors-To: iommu-bounces@lists.linux-foundation.org
 Sender: "iommu" <iommu-bounces@lists.linux-foundation.org>
 
-On Thu, 28 Nov 2019 10:25:47 +0800
-Lu Baolu <baolu.lu@linux.intel.com> wrote:
+On Mon, 25 Nov 2019 07:45:18 +0000
+"Liu, Yi L" <yi.l.liu@intel.com> wrote:
 
-> This adds functions to manipulate first level page tables
-> which could be used by a scalale mode capable IOMMU unit.
+> Hi Alex,
 > 
-FL and SL page tables are very similar, and I presume we are not using
-all the flag bits in FL paging structures for DMA mapping. Are there
-enough relevant differences to warrant a new set of helper functions
-for FL? Or we can merge into one.
-
-> Cc: Ashok Raj <ashok.raj@intel.com>
-> Cc: Jacob Pan <jacob.jun.pan@linux.intel.com>
-> Cc: Kevin Tian <kevin.tian@intel.com>
-> Cc: Liu Yi L <yi.l.liu@intel.com>
-> Cc: Yi Sun <yi.y.sun@linux.intel.com>
-> Signed-off-by: Lu Baolu <baolu.lu@linux.intel.com>
-> ---
->  drivers/iommu/Makefile             |   2 +-
->  drivers/iommu/intel-iommu.c        |  33 +++
->  drivers/iommu/intel-pgtable.c      | 376
-> +++++++++++++++++++++++++++++ include/linux/intel-iommu.h        |
-> 33 ++- include/trace/events/intel_iommu.h |  60 +++++
->  5 files changed, 502 insertions(+), 2 deletions(-)
->  create mode 100644 drivers/iommu/intel-pgtable.c
+> Thanks for the review. Here I'd like to conclude the major opens in this
+> thread and see if we can get some agreements to prepare a new version.
 > 
-> diff --git a/drivers/iommu/Makefile b/drivers/iommu/Makefile
-> index 35d17094fe3b..aa04f4c3ae26 100644
-> --- a/drivers/iommu/Makefile
-> +++ b/drivers/iommu/Makefile
-> @@ -18,7 +18,7 @@ obj-$(CONFIG_ARM_SMMU) += arm-smmu.o arm-smmu-impl.o
->  obj-$(CONFIG_ARM_SMMU_V3) += arm-smmu-v3.o
->  obj-$(CONFIG_DMAR_TABLE) += dmar.o
->  obj-$(CONFIG_INTEL_IOMMU) += intel-iommu.o intel-pasid.o
-> -obj-$(CONFIG_INTEL_IOMMU) += intel-trace.o
-> +obj-$(CONFIG_INTEL_IOMMU) += intel-trace.o intel-pgtable.o
->  obj-$(CONFIG_INTEL_IOMMU_DEBUGFS) += intel-iommu-debugfs.o
->  obj-$(CONFIG_INTEL_IOMMU_SVM) += intel-svm.o
->  obj-$(CONFIG_IPMMU_VMSA) += ipmmu-vmsa.o
-> diff --git a/drivers/iommu/intel-iommu.c b/drivers/iommu/intel-iommu.c
-> index 66f76f6df2c2..a314892ee72b 100644
-> --- a/drivers/iommu/intel-iommu.c
-> +++ b/drivers/iommu/intel-iommu.c
-> @@ -1670,6 +1670,37 @@ static void free_dmar_iommu(struct intel_iommu
-> *iommu) #endif
->  }
->  
-> +/* First level 5-level paging support */
-> +static bool first_lvl_5lp_support(void)
-> +{
-> +	struct dmar_drhd_unit *drhd;
-> +	struct intel_iommu *iommu;
-> +	static int first_level_5lp_supported = -1;
-> +
-> +	if (likely(first_level_5lp_supported != -1))
-> +		return first_level_5lp_supported;
-> +
-> +	first_level_5lp_supported = 1;
-> +#ifdef CONFIG_X86
-> +	/* Match IOMMU first level and CPU paging mode */
-> +	if (!cpu_feature_enabled(X86_FEATURE_LA57)) {
-> +		first_level_5lp_supported = 0;
-> +		return first_level_5lp_supported;
-> +	}
-> +#endif /* #ifdef CONFIG_X86 */
-> +
-> +	rcu_read_lock();
-> +	for_each_active_iommu(iommu, drhd) {
-> +		if (!cap_5lp_support(iommu->cap)) {
-> +			first_level_5lp_supported = 0;
-> +			break;
-> +		}
-> +	}
-> +	rcu_read_unlock();
-> +
-> +	return first_level_5lp_supported;
-> +}
-> +
->  static struct dmar_domain *alloc_domain(int flags)
->  {
->  	struct dmar_domain *domain;
-> @@ -1683,6 +1714,8 @@ static struct dmar_domain *alloc_domain(int
-> flags) domain->flags = flags;
->  	domain->has_iotlb_device = false;
->  	domain->ops = &second_lvl_pgtable_ops;
-> +	domain->first_lvl_5lp = first_lvl_5lp_support();
-> +	spin_lock_init(&domain->page_table_lock);
->  	INIT_LIST_HEAD(&domain->devices);
->  
->  	return domain;
-> diff --git a/drivers/iommu/intel-pgtable.c
-> b/drivers/iommu/intel-pgtable.c new file mode 100644
-> index 000000000000..4a26d08a7570
-> --- /dev/null
-> +++ b/drivers/iommu/intel-pgtable.c
-> @@ -0,0 +1,376 @@
-> +// SPDX-License-Identifier: GPL-2.0
-> +/**
-> + * intel-pgtable.c - Intel IOMMU page table manipulation library
-> + *
-> + * Copyright (C) 2019 Intel Corporation
-> + *
-> + * Author: Lu Baolu <baolu.lu@linux.intel.com>
-> + */
-> +
-> +#define pr_fmt(fmt)     "DMAR: " fmt
-> +#include <linux/vmalloc.h>
-> +#include <linux/mm.h>
-> +#include <linux/sched.h>
-> +#include <linux/io.h>
-> +#include <linux/export.h>
-> +#include <linux/intel-iommu.h>
-> +#include <asm/cacheflush.h>
-> +#include <asm/pgtable.h>
-> +#include <asm/pgalloc.h>
-> +#include <trace/events/intel_iommu.h>
-> +
-> +/*
-> + * first_lvl_map: Map a range of IO virtual address to physical
-> addresses.
-> + */
-> +#ifdef CONFIG_X86
-> +#define pgtable_populate(domain,
-> nm)					\ +do
-> {
-> \
-> +	void *__new =
-> alloc_pgtable_page(domain->nid);			\
-> +	if
-> (!__new)							\
-> +		return
-> -ENOMEM;						\
-> +
-> smp_wmb();							\
-> +
-> spin_lock(&(domain)->page_table_lock);
-> \
-> +	if (nm ## _present(*nm))
-> {					\
-> +
-> free_pgtable_page(__new);				\
-> +	} else
-> {							\
-> +		set_##nm(nm, __##nm(__pa(__new) |
-> _PAGE_TABLE));	\
-> +		domain_flush_cache(domain, nm,
-> sizeof(nm##_t));		\
-> +	}
-> \
-> +
-> spin_unlock(&(domain)->page_table_lock);			\ +}
-> while (0) +
-> +static int
-> +first_lvl_map_pte_range(struct dmar_domain *domain, pmd_t *pmd,
-> +			unsigned long addr, unsigned long end,
-> +			phys_addr_t phys_addr, pgprot_t prot)
-> +{
-> +	pte_t *pte, *first_pte;
-> +	u64 pfn;
-> +
-> +	pfn = phys_addr >> PAGE_SHIFT;
-> +	if (unlikely(pmd_none(*pmd)))
-> +		pgtable_populate(domain, pmd);
-> +
-> +	first_pte = pte = pte_offset_kernel(pmd, addr);
-> +
-> +	do {
-> +		if (pte_present(*pte))
-> +			pr_crit("ERROR: PTE for vPFN 0x%llx already
-> set to 0x%llx\n",
-> +				pfn, (unsigned long
-> long)pte_val(*pte));
-> +		set_pte(pte, pfn_pte(pfn, prot));
-> +		pfn++;
-> +	} while (pte++, addr += PAGE_SIZE, addr != end);
-> +
-> +	domain_flush_cache(domain, first_pte, (void *)pte - (void
-> *)first_pte); +
-> +	return 0;
-> +}
-> +
-> +static int
-> +first_lvl_map_pmd_range(struct dmar_domain *domain, pud_t *pud,
-> +			unsigned long addr, unsigned long end,
-> +			phys_addr_t phys_addr, pgprot_t prot)
-> +{
-> +	unsigned long next;
-> +	pmd_t *pmd;
-> +
-> +	if (unlikely(pud_none(*pud)))
-> +		pgtable_populate(domain, pud);
-> +	pmd = pmd_offset(pud, addr);
-> +
-> +	phys_addr -= addr;
-> +	do {
-> +		next = pmd_addr_end(addr, end);
-> +		if (first_lvl_map_pte_range(domain, pmd, addr, next,
-> +					    phys_addr + addr, prot))
-> +			return -ENOMEM;
-> +	} while (pmd++, addr = next, addr != end);
-> +
-> +	return 0;
-> +}
-> +
-> +static int
-> +first_lvl_map_pud_range(struct dmar_domain *domain, p4d_t *p4d,
-> +			unsigned long addr, unsigned long end,
-> +			phys_addr_t phys_addr, pgprot_t prot)
-> +{
-> +	unsigned long next;
-> +	pud_t *pud;
-> +
-> +	if (unlikely(p4d_none(*p4d)))
-> +		pgtable_populate(domain, p4d);
-> +
-> +	pud = pud_offset(p4d, addr);
-> +
-> +	phys_addr -= addr;
-> +	do {
-> +		next = pud_addr_end(addr, end);
-> +		if (first_lvl_map_pmd_range(domain, pud, addr, next,
-> +					    phys_addr + addr, prot))
-> +			return -ENOMEM;
-> +	} while (pud++, addr = next, addr != end);
-> +
-> +	return 0;
-> +}
-> +
-> +static int
-> +first_lvl_map_p4d_range(struct dmar_domain *domain, pgd_t *pgd,
-> +			unsigned long addr, unsigned long end,
-> +			phys_addr_t phys_addr, pgprot_t prot)
-> +{
-> +	unsigned long next;
-> +	p4d_t *p4d;
-> +
-> +	if (domain->first_lvl_5lp && unlikely(pgd_none(*pgd)))
-> +		pgtable_populate(domain, pgd);
-> +
-> +	p4d = p4d_offset(pgd, addr);
-> +
-> +	phys_addr -= addr;
-> +	do {
-> +		next = p4d_addr_end(addr, end);
-> +		if (first_lvl_map_pud_range(domain, p4d, addr, next,
-> +					    phys_addr + addr, prot))
-> +			return -ENOMEM;
-> +	} while (p4d++, addr = next, addr != end);
-> +
-> +	return 0;
-> +}
-> +
-> +int first_lvl_map_range(struct dmar_domain *domain, unsigned long
-> addr,
-> +			unsigned long end, phys_addr_t phys_addr,
-> int dma_prot) +{
-> +	unsigned long next;
-> +	pgprot_t prot;
-> +	pgd_t *pgd;
-> +
-> +	trace_domain_mm_map(domain, addr, end, phys_addr);
-> +
-> +	/*
-> +	 * There is no PAGE_KERNEL_WO for a pte entry, so let's use
-> RW
-> +	 * for a pte that requires write operation.
-> +	 */
-> +	prot = dma_prot & DMA_PTE_WRITE ? PAGE_KERNEL :
-> PAGE_KERNEL_RO;
-> +	if (WARN_ON(addr >= end))
-> +		return -EINVAL;
-> +
-> +	phys_addr -= addr;
-> +	pgd = pgd_offset_pgd(domain->pgd, addr);
-> +	do {
-> +		next = pgd_addr_end(addr, end);
-> +		if (first_lvl_map_p4d_range(domain, pgd, addr, next,
-> +					    phys_addr + addr, prot))
-> +			return -ENOMEM;
-> +	} while (pgd++, addr = next, addr != end);
-> +
-> +	return 0;
-> +}
-> +
-> +/*
-> + * first_lvl_unmap: Unmap an existing mapping between a range of IO
-> virtual
-> + *		    address and physical addresses.
-> + */
-> +static struct page *
-> +first_lvl_unmap_pte_range(struct dmar_domain *domain, pmd_t *pmd,
-> +			  unsigned long addr, unsigned long end,
-> +			  struct page *freelist)
-> +{
-> +	unsigned long start;
-> +	pte_t *pte, *first_pte;
-> +
-> +	start = addr;
-> +	pte = pte_offset_kernel(pmd, addr);
-> +	first_pte = pte;
-> +	do {
-> +		set_pte(pte, __pte(0));
-> +	} while (pte++, addr += PAGE_SIZE, addr != end);
-> +
-> +	domain_flush_cache(domain, first_pte, (void *)pte - (void
-> *)first_pte); +
-> +	/*
-> +	 * Reclaim pmd page, lock is unnecessary here if it owns
-> +	 * the whole range.
-> +	 */
-> +	if (start != end && IS_ALIGNED(start | end, PMD_SIZE)) {
-> +		struct page *pte_page;
-> +
-> +		pte_page = pmd_page(*pmd);
-> +		pte_page->freelist = freelist;
-> +		freelist = pte_page;
-> +		pmd_clear(pmd);
-> +		domain_flush_cache(domain, pmd, sizeof(pmd_t));
-> +	}
-> +
-> +	return freelist;
-> +}
-> +
-> +static struct page *
-> +first_lvl_unmap_pmd_range(struct dmar_domain *domain, pud_t *pud,
-> +			  unsigned long addr, unsigned long end,
-> +			  struct page *freelist)
-> +{
-> +	pmd_t *pmd;
-> +	unsigned long start, next;
-> +
-> +	start = addr;
-> +	pmd = pmd_offset(pud, addr);
-> +	do {
-> +		next = pmd_addr_end(addr, end);
-> +		if (pmd_none_or_clear_bad(pmd))
-> +			continue;
-> +		freelist = first_lvl_unmap_pte_range(domain, pmd,
-> +						     addr, next,
-> freelist);
-> +	} while (pmd++, addr = next, addr != end);
-> +
-> +	/*
-> +	 * Reclaim pud page, lock is unnecessary here if it owns
-> +	 * the whole range.
-> +	 */
-> +	if (start != end && IS_ALIGNED(start | end, PUD_SIZE)) {
-> +		struct page *pmd_page;
-> +
-> +		pmd_page = pud_page(*pud);
-> +		pmd_page->freelist = freelist;
-> +		freelist = pmd_page;
-> +		pud_clear(pud);
-> +		domain_flush_cache(domain, pud, sizeof(pud_t));
-> +	}
-> +
-> +	return freelist;
-> +}
-> +
-> +static struct page *
-> +first_lvl_unmap_pud_range(struct dmar_domain *domain, p4d_t *p4d,
-> +			  unsigned long addr, unsigned long end,
-> +			  struct page *freelist)
-> +{
-> +	pud_t *pud;
-> +	unsigned long start, next;
-> +
-> +	start = addr;
-> +	pud = pud_offset(p4d, addr);
-> +	do {
-> +		next = pud_addr_end(addr, end);
-> +		if (pud_none_or_clear_bad(pud))
-> +			continue;
-> +		freelist = first_lvl_unmap_pmd_range(domain, pud,
-> +						     addr, next,
-> freelist);
-> +	} while (pud++, addr = next, addr != end);
-> +
-> +	/*
-> +	 * Reclaim p4d page, lock is unnecessary here if it owns
-> +	 * the whole range.
-> +	 */
-> +	if (start != end && IS_ALIGNED(start | end, P4D_SIZE)) {
-> +		struct page *pud_page;
-> +
-> +		pud_page = p4d_page(*p4d);
-> +		pud_page->freelist = freelist;
-> +		freelist = pud_page;
-> +		p4d_clear(p4d);
-> +		domain_flush_cache(domain, p4d, sizeof(p4d_t));
-> +	}
-> +
-> +	return freelist;
-> +}
-> +
-> +static struct page *
-> +first_lvl_unmap_p4d_range(struct dmar_domain *domain, pgd_t *pgd,
-> +			  unsigned long addr, unsigned long end,
-> +			  struct page *freelist)
-> +{
-> +	p4d_t *p4d;
-> +	unsigned long start, next;
-> +
-> +	start = addr;
-> +	p4d = p4d_offset(pgd, addr);
-> +	do {
-> +		next = p4d_addr_end(addr, end);
-> +		if (p4d_none_or_clear_bad(p4d))
-> +			continue;
-> +		freelist = first_lvl_unmap_pud_range(domain, p4d,
-> +						     addr, next,
-> freelist);
-> +	} while (p4d++, addr = next, addr != end);
-> +
-> +	/*
-> +	 * Reclaim pgd page, lock is unnecessary here if it owns
-> +	 * the whole range.
-> +	 */
-> +	if (domain->first_lvl_5lp && start != end &&
-> +	    IS_ALIGNED(start | end, PGDIR_SIZE)) {
-> +		struct page *p4d_page;
-> +
-> +		p4d_page = pgd_page(*pgd);
-> +		p4d_page->freelist = freelist;
-> +		freelist = p4d_page;
-> +		pgd_clear(pgd);
-> +		domain_flush_cache(domain, pgd, sizeof(pgd_t));
-> +	}
-> +
-> +	return freelist;
-> +}
-> +
-> +struct page *first_lvl_unmap_range(struct dmar_domain *domain,
-> +				   unsigned long addr, unsigned long
-> end) +{
-> +	pgd_t *pgd;
-> +	unsigned long next;
-> +	struct page *freelist = NULL;
-> +
-> +	trace_domain_mm_unmap(domain, addr, end);
-> +
-> +	if (WARN_ON(addr >= end))
-> +		return NULL;
-> +
-> +	pgd = pgd_offset_pgd(domain->pgd, addr);
-> +	do {
-> +		next = pgd_addr_end(addr, end);
-> +		if (pgd_none_or_clear_bad(pgd))
-> +			continue;
-> +		freelist = first_lvl_unmap_p4d_range(domain, pgd,
-> +						     addr, next,
-> freelist);
-> +	} while (pgd++, addr = next, addr != end);
-> +
-> +	return freelist;
-> +}
-> +
-> +static pte_t *iova_to_pte(struct dmar_domain *domain, unsigned long
-> iova) +{
-> +	pgd_t *pgd;
-> +	p4d_t *p4d;
-> +	pud_t *pud;
-> +	pmd_t *pmd;
-> +
-> +	if (WARN_ON_ONCE(!IS_ALIGNED(iova, PAGE_SIZE)))
-> +		return NULL;
-> +
-> +	pgd = pgd_offset_pgd(domain->pgd, iova);
-> +	if (pgd_none_or_clear_bad(pgd))
-> +		return NULL;
-> +
-> +	p4d = p4d_offset(pgd, iova);
-> +	if (p4d_none_or_clear_bad(p4d))
-> +		return NULL;
-> +
-> +	pud = pud_offset(p4d, iova);
-> +	if (pud_none_or_clear_bad(pud))
-> +		return NULL;
-> +
-> +	pmd = pmd_offset(pud, iova);
-> +	if (pmd_none_or_clear_bad(pmd))
-> +		return NULL;
-> +
-> +	return pte_offset_kernel(pmd, iova);
-> +}
-> +
-> +phys_addr_t
-> +first_lvl_iova_to_phys(struct dmar_domain *domain, unsigned long
-> iova) +{
-> +	pte_t *pte = iova_to_pte(domain, PAGE_ALIGN(iova));
-> +
-> +	if (!pte || !pte_present(*pte))
-> +		return 0;
-> +
-> +	return (pte_val(*pte) & PTE_PFN_MASK) | (iova & ~PAGE_MASK);
-> +}
-> +#endif /* CONFIG_X86 */
-> diff --git a/include/linux/intel-iommu.h b/include/linux/intel-iommu.h
-> index 9b259756057b..9273e3f59078 100644
-> --- a/include/linux/intel-iommu.h
-> +++ b/include/linux/intel-iommu.h
-> @@ -540,9 +540,11 @@ struct dmar_domain {
->  	struct iova_domain iovad;	/* iova's that belong to
-> this domain */ 
->  	/* page table used by this domain */
-> -	struct dma_pte	*pgd;		/* virtual
-> address */
-> +	void		*pgd;		/* virtual address
-> */
-> +	spinlock_t page_table_lock;	/* Protects page tables */
->  	int		gaw;		/* max guest address
-> width */ const struct pgtable_ops *ops;	/* page table ops */
-> +	bool		first_lvl_5lp;	/* First level
-> 5-level paging support */ 
->  	/* adjusted guest address width, 0 is level 2 30-bit */
->  	int		agaw;
-> @@ -708,6 +710,35 @@ int for_each_device_domain(int (*fn)(struct
-> device_domain_info *info, void iommu_flush_write_buffer(struct
-> intel_iommu *iommu); int intel_iommu_enable_pasid(struct intel_iommu
-> *iommu, struct device *dev); 
-> +#ifdef CONFIG_X86
-> +int first_lvl_map_range(struct dmar_domain *domain, unsigned long
-> addr,
-> +			unsigned long end, phys_addr_t phys_addr,
-> int dma_prot); +struct page *first_lvl_unmap_range(struct dmar_domain
-> *domain,
-> +				   unsigned long addr, unsigned long
-> end); +phys_addr_t first_lvl_iova_to_phys(struct dmar_domain *domain,
-> +				   unsigned long iova);
-> +#else
-> +static inline int
-> +first_lvl_map_range(struct dmar_domain *domain, unsigned long addr,
-> +		    unsigned long end, phys_addr_t phys_addr, int
-> dma_prot) +{
-> +	return -ENODEV;
-> +}
-> +
-> +static inline struct page *
-> +first_lvl_unmap_range(struct dmar_domain *domain,
-> +		      unsigned long addr, unsigned long end)
-> +{
-> +	return NULL;
-> +}
-> +
-> +static inline phys_addr_t
-> +first_lvl_iova_to_phys(struct dmar_domain *domain, unsigned long
-> iova) +{
-> +	return 0;
-> +}
-> +#endif /* CONFIG_X86 */
-> +
->  #ifdef CONFIG_INTEL_IOMMU_SVM
->  extern void intel_svm_check(struct intel_iommu *iommu);
->  extern int intel_svm_enable_prq(struct intel_iommu *iommu);
-> diff --git a/include/trace/events/intel_iommu.h
-> b/include/trace/events/intel_iommu.h index 54e61d456cdf..e8c95290fd13
-> 100644 --- a/include/trace/events/intel_iommu.h
-> +++ b/include/trace/events/intel_iommu.h
-> @@ -99,6 +99,66 @@ DEFINE_EVENT(dma_unmap, bounce_unmap_single,
->  	TP_ARGS(dev, dev_addr, size)
->  );
->  
-> +DECLARE_EVENT_CLASS(domain_map,
-> +	TP_PROTO(struct dmar_domain *domain, unsigned long addr,
-> +		 unsigned long end, phys_addr_t phys_addr),
-> +
-> +	TP_ARGS(domain, addr, end, phys_addr),
-> +
-> +	TP_STRUCT__entry(
-> +		__field(struct dmar_domain *, domain)
-> +		__field(unsigned long, addr)
-> +		__field(unsigned long, end)
-> +		__field(phys_addr_t, phys_addr)
-> +	),
-> +
-> +	TP_fast_assign(
-> +		__entry->domain = domain;
-> +		__entry->addr = addr;
-> +		__entry->end = end;
-> +		__entry->phys_addr = phys_addr;
-> +	),
-> +
-> +	TP_printk("domain=%p addr=0x%lx end=0x%lx phys_addr=0x%llx",
-> +		  __entry->domain, __entry->addr, __entry->end,
-> +		  (unsigned long long)__entry->phys_addr)
-> +);
-> +
-> +DEFINE_EVENT(domain_map, domain_mm_map,
-> +	TP_PROTO(struct dmar_domain *domain, unsigned long addr,
-> +		 unsigned long end, phys_addr_t phys_addr),
-> +
-> +	TP_ARGS(domain, addr, end, phys_addr)
-> +);
-> +
-> +DECLARE_EVENT_CLASS(domain_unmap,
-> +	TP_PROTO(struct dmar_domain *domain, unsigned long addr,
-> +		 unsigned long end),
-> +
-> +	TP_ARGS(domain, addr, end),
-> +
-> +	TP_STRUCT__entry(
-> +		__field(struct dmar_domain *, domain)
-> +		__field(unsigned long, addr)
-> +		__field(unsigned long, end)
-> +	),
-> +
-> +	TP_fast_assign(
-> +		__entry->domain = domain;
-> +		__entry->addr = addr;
-> +		__entry->end = end;
-> +	),
-> +
-> +	TP_printk("domain=%p addr=0x%lx end=0x%lx",
-> +		  __entry->domain, __entry->addr, __entry->end)
-> +);
-> +
-> +DEFINE_EVENT(domain_unmap, domain_mm_unmap,
-> +	TP_PROTO(struct dmar_domain *domain, unsigned long addr,
-> +		 unsigned long end),
-> +
-> +	TP_ARGS(domain, addr, end)
-> +);
->  #endif /* _TRACE_INTEL_IOMMU_H */
->  
->  /* This part must be outside protection */
+> a) IOCTLs for BIND_GPASID and BIND_PROCESS, share a single IOCTL or two
+>    separate IOCTLs?
+>    Yi: It may be helpful to have separate IOCTLs. The bind data conveyed
+>    for BIND_GPASID and BIND_PROCESS are totally different, and the struct
+>    iommu_gpasid_bind_data has vendor specific data and may even have more
+>    versions in future. To better maintain it, I guess separate IOCTLs for
+>    the two bind types would be better. The structure for BIND_GPASID is
+>    as below:
+> 
+>         struct vfio_iommu_type1_bind {
+>                 __u32                           argsz;
+>                 struct iommu_gpasid_bind_data   bind_data;
+>         };
 
-[Jacob Pan]
+
+We've been rather successful at extending ioctls in vfio and I'm
+generally opposed to rampant ioctl proliferation.  If we added @flags
+to the above struct (as pretty much the standard for vfio ioctls), then
+we could use it to describe the type of binding to perform and
+therefore the type of data provided.  I think my major complaint here
+was that we were defining PROCESS but not implementing it.  We can
+design the ioctl to enable it, but not define it until it's implemented.
+ 
+> b) how kernel-space learns the number of bytes to be copied (a.k.a. the
+>    usage of @version field and @format field of struct
+>    iommu_gpasid_bind_data)
+>    Yi: Jean has an excellent recap in prior reply on the plan of future
+>    extensions regards to @version field and @format field. Based on the
+>    plan, kernel space needs to parse the @version field and @format field
+>    to get the length of the current BIND_GPASID request. Also kernel needs
+>    to maintain the new and old structure versions. Follow specific
+>    deprecation policy in future.
+
+Yes, it seems reasonable, so from the struct above (plus @flags) we
+could determine we have struct iommu_gpasid_bind_data as the payload
+and read that using @version and @format as outlined.
+
+> c) how can vIOMMU emulator know that the vfio interface supports to config
+>    dual stage translation for vIOMMU?
+>    Yi: may do it via VFIO_IOMMU_GET_INFO.
+
+Yes please.
+
+> d) how can vIOMMU emulator know what @version and @format should be set
+>    in struct iommu_gpasid_bind_data?
+>    Yi: currently, we have two ways. First one, may do it via
+>    VFIO_IOMMU_GET_INFO. This is a natural idea as here @version and @format
+>    are used in vfio apis. It makes sense to let vfio to provide related info
+>    to vIOMMU emulator after checking with vendor specific iommu driver. Also,
+>    there is idea to do it via sysfs (/sys/class/iommu/dmar#) as we have plan
+>    to do IOMMU capability sync between vIOMMU and pIOMMU via sysfs. I have
+>    two concern on this option. Current iommu sysfs only provides vendor
+>    specific hardware infos. I'm not sure if it is good to expose infos
+>    defined in IOMMU generic layer via iommu sysfs. If this concern is not
+>    a big thing, I'm fine with both options.
+
+This seems like the same issue we had with IOMMU reserved regions, I'd
+prefer that a user can figure out how to interact with the vfio
+interface through the vfio interface.  Forcing the user to poke around
+in sysfs requires the user to have read permissions to sysfs in places
+they otherwise wouldn't need.  Thanks,
+
+Alex
+
+> > From: Jean-Philippe Brucker [mailto:jean-philippe@linaro.org]
+> > Sent: Wednesday, November 13, 2019 6:29 PM
+> > To: Liu, Yi L <yi.l.liu@intel.com>
+> > Subject: Re: [RFC v2 3/3] vfio/type1: bind guest pasid (guest page tables) to host
+> > 
+> > On Wed, Nov 13, 2019 at 07:43:43AM +0000, Liu, Yi L wrote:  
+> > > > From: Alex Williamson <alex.williamson@redhat.com>
+> > > > Sent: Wednesday, November 13, 2019 1:26 AM
+> > > > To: Liu, Yi L <yi.l.liu@intel.com>
+> > > > Subject: Re: [RFC v2 3/3] vfio/type1: bind guest pasid (guest page tables) to host
+> > > >
+> > > > On Tue, 12 Nov 2019 11:21:40 +0000
+> > > > "Liu, Yi L" <yi.l.liu@intel.com> wrote:
+> > > >  
+> > > > > > From: Alex Williamson < alex.williamson@redhat.com >
+> > > > > > Sent: Friday, November 8, 2019 7:21 AM
+> > > > > > To: Liu, Yi L <yi.l.liu@intel.com>
+> > > > > > Subject: Re: [RFC v2 3/3] vfio/type1: bind guest pasid (guest page tables) to  
+> > host  
+> > > > > >
+> > > > > > On Thu, 24 Oct 2019 08:26:23 -0400
+> > > > > > Liu Yi L <yi.l.liu@intel.com> wrote:
+> > > > > >  
+> > > > > > > This patch adds vfio support to bind guest translation structure
+> > > > > > > to host iommu. VFIO exposes iommu programming capability to user-
+> > > > > > > space. Guest is a user-space application in host under KVM solution.
+> > > > > > > For SVA usage in Virtual Machine, guest owns GVA->GPA translation
+> > > > > > > structure. And this part should be passdown to host to enable nested
+> > > > > > > translation (or say two stage translation). This patch reuses the
+> > > > > > > VFIO_IOMMU_BIND proposal from Jean-Philippe Brucker, and adds new
+> > > > > > > bind type for binding guest owned translation structure to host.
+> > > > > > >
+> > > > > > > *) Add two new ioctls for VFIO containers.
+> > > > > > >
+> > > > > > >   - VFIO_IOMMU_BIND: for bind request from userspace, it could be
+> > > > > > >                    bind a process to a pasid or bind a guest pasid
+> > > > > > >                    to a device, this is indicated by type
+> > > > > > >   - VFIO_IOMMU_UNBIND: for unbind request from userspace, it could be
+> > > > > > >                    unbind a process to a pasid or unbind a guest pasid
+> > > > > > >                    to a device, also indicated by type
+> > > > > > >   - Bind type:
+> > > > > > > 	VFIO_IOMMU_BIND_PROCESS: user-space request to bind a  
+> > process  
+> > > > > > >                    to a device
+> > > > > > > 	VFIO_IOMMU_BIND_GUEST_PASID: bind guest owned translation
+> > > > > > >                    structure to host iommu. e.g. guest page table
+> > > > > > >
+> > > > > > > *) Code logic in vfio_iommu_type1_ioctl() to handle  
+> > > > VFIO_IOMMU_BIND/UNBIND  
+> > > > > > >  
+> > > [...]  
+> > > > > > > +static long vfio_iommu_type1_unbind_gpasid(struct vfio_iommu *iommu,
+> > > > > > > +					    void __user *arg,
+> > > > > > > +					    struct vfio_iommu_type1_bind  
+> > *bind)  
+> > > > > > > +{
+> > > > > > > +	struct iommu_gpasid_bind_data gbind_data;
+> > > > > > > +	unsigned long minsz;
+> > > > > > > +	int ret = 0;
+> > > > > > > +
+> > > > > > > +	minsz = sizeof(*bind) + sizeof(gbind_data);
+> > > > > > > +	if (bind->argsz < minsz)
+> > > > > > > +		return -EINVAL;  
+> > > > > >
+> > > > > > But gbind_data can change size if new vendor specific data is added to
+> > > > > > the union, so kernel updates break existing userspace.  Fail.  
+> > 
+> > I guess we could take minsz up to the vendor-specific data, copy @format,
+> > and then check the size of vendor-specific data?
+> >   
+> > > > >
+> > > > > yes, we have a version field in struct iommu_gpasid_bind_data. How
+> > > > > about doing sanity check per versions? kernel knows the gbind_data
+> > > > > size of specific versions. Does it make sense? If yes, I'll also apply it
+> > > > > to the other sanity check in this series to avoid userspace fail after
+> > > > > kernel update.  
+> > > >
+> > > > Has it already been decided that the version field will be updated for
+> > > > every addition to the union?  
+> > >
+> > > No, just my proposal. Jacob may help to explain the purpose of version
+> > > field. But if we may be too  "frequent" for an uapi version number updating
+> > > if we inc version for each change in the union part. I may vote for the
+> > > second option from you below.
+> > >  
+> > > > It seems there are two options, either
+> > > > the version definition includes the possible contents of the union,
+> > > > which means we need to support multiple versions concurrently in the
+> > > > kernel to maintain compatibility with userspace and follow deprecation
+> > > > protocols for removing that support, or we need to consider version to
+> > > > be the general form of the structure and interpret the format field to
+> > > > determine necessary length to copy from the user.  
+> > >
+> > > As I mentioned above, may be better to let @version field only over the
+> > > general fields and let format to cover the possible changes in union. e.g.
+> > > IOMMU_PASID_FORMAT_INTEL_VTD2 may means version 2 of Intel
+> > > VT-d bind. But either way, I think we need to let kernel maintain multiple
+> > > versions to support compatible userspace. e.g. may have multiple versions
+> > > iommu_gpasid_bind_data_vtd struct in the union part.  
+> > 
+> > I couldn't find where the @version field originated in our old
+> > discussions, but I believe our plan for allowing future extensions was:
+> > 
+> > * Add new vendor-specific data by introducing a new format
+> >   (IOMMU_PASID_FORMAT_INTEL_VTD2,
+> > IOMMU_PASID_FORMAT_ARM_SMMUV2...), and
+> >   extend the union.
+> > 
+> > * Add a new common field, if it fits in the existing padding bytes, by
+> >   adding a flag (IOMMU_SVA_GPASID_*).
+> > 
+> > * Add a new common field, if it doesn't fit in the current padding bytes,
+> >   or completely change the structure layout, by introducing a new version
+> >   (IOMMU_GPASID_BIND_VERSION_2). In that case the kernel has to handle
+> >   both new and old structure versions. It would have both
+> >   iommu_gpasid_bind_data and iommu_gpasid_bind_data_v2 structs.
+> > 
+> > I think iommu_cache_invalidate_info and iommu_page_response use the same
+> > scheme. iommu_fault is a bit more complicated because it's
+> > kernel->userspace and requires some negotiation:
+> > https://lore.kernel.org/linux-iommu/77405d39-81a4-d9a8-5d35-
+> > 27602199867a@arm.com/
+> > 
+> > [...]  
+> > > > If the ioctls have similar purpose and form, then re-using a single
+> > > > ioctl might make sense, but BIND_PROCESS is only a place-holder in this
+> > > > series, which is not acceptable.  A dual purpose ioctl does not
+> > > > preclude that we could also use a union for the data field to make the
+> > > > structure well specified.  
+> > >
+> > > yes, BIND_PROCESS is only a place-holder here. From kernel p.o.v., both
+> > > BIND_GUEST_PASID and BIND_PROCESS are bind requests from userspace.
+> > > So the purposes are aligned. Below is the content the @data[] field
+> > > supposed to convey for BIND_PROCESS. If we use union, it would leave
+> > > space for extending it to support BIND_PROCESS. If only data[], it is a little
+> > > bit confusing why we define it in such manner if BIND_PROCESS is included
+> > > in this series. Please feel free let me know which one suits better.
+> > >
+> > > +struct vfio_iommu_type1_bind_process {
+> > > +	__u32	flags;
+> > > +#define VFIO_IOMMU_BIND_PID		(1 << 0)
+> > > +	__u32	pasid;
+> > > +	__s32	pid;
+> > > +};
+> > > https://patchwork.kernel.org/patch/10394927/  
+> > 
+> > Note that I don't plan to upstream BIND_PROCESS at the moment. It was
+> > useful for testing but I don't know of anyone actually needing it.
+> >   
+> > > > > > That bind data
+> > > > > > structure expects a format (ex. IOMMU_PASID_FORMAT_INTEL_VTD).  How  
+> > > > does  
+> > > > > > a user determine what formats are accepted from within the vfio API (or
+> > > > > > even outside of the vfio API)?  
+> > > > >
+> > > > > The info is provided by vIOMMU emulator (e.g. virtual VT-d). The vSVA patch
+> > > > > from Jacob has a sanity check on it.
+> > > > > https://lkml.org/lkml/2019/10/28/873  
+> > > >
+> > > > The vIOMMU emulator runs at a layer above vfio.  How does the vIOMMU
+> > > > emulator know that the vfio interface supports virtual VT-d?  IMO, it's
+> > > > not acceptable that the user simply assume that an Intel host platform
+> > > > supports VT-d.  For example, consider what happens when we need to
+> > > > define IOMMU_PASID_FORMAT_INTEL_VTDv2.  How would the user learn that
+> > > > VTDv2 is supported and the original VTD format is not supported?  
+> > >
+> > > I guess this may be another info VFIO_IOMMU_GET_INFO should provide.
+> > > It makes sense that vfio be aware of what platform it is running on. right?
+> > > After vfio gets the info, may let vfio fill in the format info. Is it the correct
+> > > direction?  
+> > 
+> > I thought you were planning to put that information in sysfs?  We last
+> > discussed this over a year ago so I don't remember where we left it. I
+> > know Alex isn't keen on putting in sysfs what can be communicated through
+> > VFIO, but it is a convenient way to describe IOMMU features:
+> > http://www.linux-arm.org/git?p=linux-
+> > jpb.git;a=commitdiff;h=665370d5b5e0022c24b2d2b57975ef6fe7b40870;hp=7ce780
+> > d838889b53f5e04ba5d444520621261eda
+> > 
+> > My problem with GET_INFO was that it could be difficult to extend, and
+> > to describe things like variable-size list of supported page table
+> > formats, but I guess the new info capabilities make this easier.
+> > 
+> > Thanks,
+> > Jean  
+> 
+
 _______________________________________________
 iommu mailing list
 iommu@lists.linux-foundation.org
