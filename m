@@ -2,72 +2,79 @@ Return-Path: <SRS0=C308=ZZ=lists.linux-foundation.org=iommu-bounces@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-2.2 required=3.0 tests=HEADER_FROM_DIFFERENT_DOMAINS,
-	MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS,USER_AGENT_SANE_1 autolearn=no
-	autolearn_force=no version=3.4.0
+X-Spam-Status: No, score=-2.0 required=3.0 tests=DKIM_INVALID,DKIM_SIGNED,
+	HEADER_FROM_DIFFERENT_DOMAINS,MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS,
+	USER_AGENT_SANE_2 autolearn=no autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 4A396C432C3
-	for <iommu@archiver.kernel.org>; Tue,  3 Dec 2019 02:45:28 +0000 (UTC)
-Received: from silver.osuosl.org (smtp3.osuosl.org [140.211.166.136])
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 61607C432C0
+	for <iommu@archiver.kernel.org>; Tue,  3 Dec 2019 08:49:55 +0000 (UTC)
+Received: from hemlock.osuosl.org (smtp2.osuosl.org [140.211.166.133])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by mail.kernel.org (Postfix) with ESMTPS id 1DC8420684
-	for <iommu@archiver.kernel.org>; Tue,  3 Dec 2019 02:45:27 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 1DC8420684
-Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=linux.intel.com
+	by mail.kernel.org (Postfix) with ESMTPS id 24C3020640
+	for <iommu@archiver.kernel.org>; Tue,  3 Dec 2019 08:49:55 +0000 (UTC)
+Authentication-Results: mail.kernel.org;
+	dkim=fail reason="signature verification failed" (2048-bit key) header.d=infradead.org header.i=@infradead.org header.b="tRxPtyuw"
+DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 24C3020640
+Authentication-Results: mail.kernel.org; dmarc=none (p=none dis=none) header.from=infradead.org
 Authentication-Results: mail.kernel.org; spf=pass smtp.mailfrom=iommu-bounces@lists.linux-foundation.org
 Received: from localhost (localhost [127.0.0.1])
-	by silver.osuosl.org (Postfix) with ESMTP id D49822076F;
-	Tue,  3 Dec 2019 02:45:27 +0000 (UTC)
+	by hemlock.osuosl.org (Postfix) with ESMTP id D461C88159;
+	Tue,  3 Dec 2019 08:49:54 +0000 (UTC)
+X-Virus-Scanned: amavisd-new at osuosl.org
+Received: from hemlock.osuosl.org ([127.0.0.1])
+	by localhost (.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
+	with ESMTP id Kk034dAhnrh4; Tue,  3 Dec 2019 08:49:53 +0000 (UTC)
+Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [140.211.9.56])
+	by hemlock.osuosl.org (Postfix) with ESMTP id A83B188031;
+	Tue,  3 Dec 2019 08:49:53 +0000 (UTC)
+Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
+	by lists.linuxfoundation.org (Postfix) with ESMTP id 8FEE4C1798;
+	Tue,  3 Dec 2019 08:49:53 +0000 (UTC)
+Received: from silver.osuosl.org (smtp3.osuosl.org [140.211.166.136])
+ by lists.linuxfoundation.org (Postfix) with ESMTP id 00C1EC087F
+ for <iommu@lists.linux-foundation.org>; Tue,  3 Dec 2019 08:49:49 +0000 (UTC)
+Received: from localhost (localhost [127.0.0.1])
+ by silver.osuosl.org (Postfix) with ESMTP id DC7E5203FE
+ for <iommu@lists.linux-foundation.org>; Tue,  3 Dec 2019 08:49:49 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
 Received: from silver.osuosl.org ([127.0.0.1])
-	by localhost (.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
-	with ESMTP id oPNKNUGApYKV; Tue,  3 Dec 2019 02:45:26 +0000 (UTC)
-Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [140.211.9.56])
-	by silver.osuosl.org (Postfix) with ESMTP id C014D203F1;
-	Tue,  3 Dec 2019 02:45:26 +0000 (UTC)
-Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
-	by lists.linuxfoundation.org (Postfix) with ESMTP id B7ECDC1797;
-	Tue,  3 Dec 2019 02:45:26 +0000 (UTC)
-Received: from fraxinus.osuosl.org (smtp4.osuosl.org [140.211.166.137])
- by lists.linuxfoundation.org (Postfix) with ESMTP id 65621C087F
- for <iommu@lists.linux-foundation.org>; Tue,  3 Dec 2019 02:45:24 +0000 (UTC)
-Received: from localhost (localhost [127.0.0.1])
- by fraxinus.osuosl.org (Postfix) with ESMTP id 51CCE85AD6
- for <iommu@lists.linux-foundation.org>; Tue,  3 Dec 2019 02:45:24 +0000 (UTC)
-X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from fraxinus.osuosl.org ([127.0.0.1])
  by localhost (.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
- with ESMTP id Pni6tYATboqO for <iommu@lists.linux-foundation.org>;
- Tue,  3 Dec 2019 02:45:23 +0000 (UTC)
-X-Greylist: domain auto-whitelisted by SQLgrey-1.7.6
-Received: from mga02.intel.com (mga02.intel.com [134.134.136.20])
- by fraxinus.osuosl.org (Postfix) with ESMTPS id B59C185ABB
- for <iommu@lists.linux-foundation.org>; Tue,  3 Dec 2019 02:45:23 +0000 (UTC)
-X-Amp-Result: SKIPPED(no attachment in message)
-X-Amp-File-Uploaded: False
-Received: from orsmga002.jf.intel.com ([10.7.209.21])
- by orsmga101.jf.intel.com with ESMTP/TLS/DHE-RSA-AES256-GCM-SHA384;
- 02 Dec 2019 18:45:22 -0800
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.69,271,1571727600"; d="scan'208";a="222659631"
-Received: from allen-box.sh.intel.com (HELO [10.239.159.136])
- ([10.239.159.136])
- by orsmga002.jf.intel.com with ESMTP; 02 Dec 2019 18:45:20 -0800
+ with ESMTP id YES-CDvepU0x for <iommu@lists.linux-foundation.org>;
+ Tue,  3 Dec 2019 08:49:49 +0000 (UTC)
+X-Greylist: from auto-whitelisted by SQLgrey-1.7.6
+Received: from merlin.infradead.org (merlin.infradead.org [205.233.59.134])
+ by silver.osuosl.org (Postfix) with ESMTPS id 02EA7203F9
+ for <iommu@lists.linux-foundation.org>; Tue,  3 Dec 2019 08:49:48 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
+ d=infradead.org; s=merlin.20170209; h=Mime-Version:Content-Type:References:
+ In-Reply-To:Date:Cc:To:From:Subject:Message-ID:Sender:Reply-To:
+ Content-Transfer-Encoding:Content-ID:Content-Description:Resent-Date:
+ Resent-From:Resent-Sender:Resent-To:Resent-Cc:Resent-Message-ID:List-Id:
+ List-Help:List-Unsubscribe:List-Subscribe:List-Post:List-Owner:List-Archive;
+ bh=WwFDtZgasQwOVeBM51FCw3HTZE84OeLDdPuKuPl8FPg=; b=tRxPtyuw+67n7FDwchSgFnZoQ
+ PJsxkWKEoif914fqHljEaVN3+offZt1ZjzMMsAqfmLd1a5k4cLfr8qsSWFNK216vsPdE1AgRpL0RN
+ NGh82hHZT2leuNekhN/raX34n77cQLbeDozlfVwX15iyyjFEE9E8chBACyX6s3RC9iCKYyetqWdOB
+ 1GNO4aYbrEZuBR0wdMJA0LLuQY1JXoQL09QlwIpknMbSf1dSck5DHl1gMNdKl2NAvinIFo6r9dtPH
+ PyXti870ATLhUyegw2GNcjuq44lYrvbq7oFOyGQSutFSK6Hkrn6KPKfa8sPX8Xi+r4g1STilDgSfi
+ O/63V5PeA==;
+Received: from 54-240-197-228.amazon.com ([54.240.197.228]
+ helo=freeip.amazon.com)
+ by merlin.infradead.org with esmtpsa (Exim 4.92.3 #3 (Red Hat Linux))
+ id 1ic3sD-0005Af-NQ; Tue, 03 Dec 2019 08:49:34 +0000
+Message-ID: <22759c43f440eecee60b2d318b6f8e8fe2587bcb.camel@infradead.org>
 Subject: Re: [PATCH 0/5] iommu/vt-d: Consolidate various cache flush ops
-To: Jacob Pan <jacob.jun.pan@linux.intel.com>
+From: David Woodhouse <dwmw2@infradead.org>
+To: Lu Baolu <baolu.lu@linux.intel.com>, Joerg Roedel <joro@8bytes.org>
+Date: Tue, 03 Dec 2019 08:49:30 +0000
+In-Reply-To: <20191122030449.28892-1-baolu.lu@linux.intel.com>
 References: <20191122030449.28892-1-baolu.lu@linux.intel.com>
- <20191202120252.45606c47@jacob-builder>
-From: Lu Baolu <baolu.lu@linux.intel.com>
-Message-ID: <f703c267-c946-30cf-7e0e-4de16edcde18@linux.intel.com>
-Date: Tue, 3 Dec 2019 10:44:45 +0800
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101
- Thunderbird/68.2.1
-MIME-Version: 1.0
-In-Reply-To: <20191202120252.45606c47@jacob-builder>
-Content-Language: en-US
+X-Mailer: Evolution 3.28.5-0ubuntu0.18.04.1 
+Mime-Version: 1.0
+X-SRS-Rewrite: SMTP reverse-path rewritten from <dwmw2@infradead.org> by
+ merlin.infradead.org. See http://www.infradead.org/rpr.html
 Cc: kevin.tian@intel.com, ashok.raj@intel.com, linux-kernel@vger.kernel.org,
- iommu@lists.linux-foundation.org, David Woodhouse <dwmw2@infradead.org>
+ iommu@lists.linux-foundation.org
 X-BeenThere: iommu@lists.linux-foundation.org
 X-Mailman-Version: 2.1.15
 Precedence: list
@@ -80,76 +87,189 @@ List-Post: <mailto:iommu@lists.linux-foundation.org>
 List-Help: <mailto:iommu-request@lists.linux-foundation.org?subject=help>
 List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
  <mailto:iommu-request@lists.linux-foundation.org?subject=subscribe>
-Content-Transfer-Encoding: 7bit
-Content-Type: text/plain; charset="us-ascii"; Format="flowed"
+Content-Type: multipart/mixed; boundary="===============5159150039248866140=="
 Errors-To: iommu-bounces@lists.linux-foundation.org
 Sender: "iommu" <iommu-bounces@lists.linux-foundation.org>
 
-Hi Jacob,
 
-On 12/3/19 4:02 AM, Jacob Pan wrote:
-> On Fri, 22 Nov 2019 11:04:44 +0800
-> Lu Baolu<baolu.lu@linux.intel.com>  wrote:
-> 
->> Intel VT-d 3.0 introduces more caches and interfaces for software to
->> flush when it runs in the scalable mode. Currently various cache flush
->> helpers are scattered around. This consolidates them by putting them
->> in the existing iommu_flush structure.
->>
->> /* struct iommu_flush - Intel IOMMU cache invalidation ops
->>   *
->>   * @cc_inv: invalidate context cache
->>   * @iotlb_inv: Invalidate IOTLB and paging structure caches when
->> software
->>   *             has changed second-level tables.
->>   * @p_iotlb_inv: Invalidate IOTLB and paging structure caches when
->> software
->>   *               has changed first-level tables.
->>   * @pc_inv: invalidate pasid cache
->>   * @dev_tlb_inv: invalidate cached mappings used by
->> requests-without-PASID
->>   *               from the Device-TLB on a endpoint device.
->>   * @p_dev_tlb_inv: invalidate cached mappings used by
->> requests-with-PASID
->>   *                 from the Device-TLB on an endpoint device
->>   */
->> struct iommu_flush {
->>          void (*cc_inv)(struct intel_iommu *iommu, u16 did,
->>                         u16 sid, u8 fm, u64 type);
->>          void (*iotlb_inv)(struct intel_iommu *iommu, u16 did, u64
->> addr, unsigned int size_order, u64 type);
->>          void (*p_iotlb_inv)(struct intel_iommu *iommu, u16 did, u32
->> pasid, u64 addr, unsigned long npages, bool ih);
->>          void (*pc_inv)(struct intel_iommu *iommu, u16 did, u32 pasid,
->>                         u64 granu);
->>          void (*dev_tlb_inv)(struct intel_iommu *iommu, u16 sid, u16
->> pfsid, u16 qdep, u64 addr, unsigned int mask);
->>          void (*p_dev_tlb_inv)(struct intel_iommu *iommu, u16 sid, u16
->> pfsid, u32 pasid, u16 qdep, u64 addr,
->>                                unsigned long npages);
->> };
->>
->> The name of each cache flush ops is defined according to the spec
->> section 6.5 so that people are easy to look up them in the spec.
->>
-> Nice consolidation. For nested SVM, I also introduced cache flushed
-> helpers as needed.
-> https://lkml.org/lkml/2019/10/24/857
-> 
-> Should I wait for yours to be merged or you want to extend the this
-> consolidation after SVA/SVM cache flush? I expect to send my v8 shortly.
-> 
+--===============5159150039248866140==
+Content-Type: multipart/signed; micalg="sha-256";
+	protocol="application/x-pkcs7-signature";
+	boundary="=-nKLBqJ9F3U+5FqcatPT0"
 
-Please base your v8 patch on this series. So it could get more chances
-for test.
 
-I will queue this patch series for internal test after 5.5-rc1 and if
-everything goes well, I will forward it to Joerg around rc4 for linux-
-next.
+--=-nKLBqJ9F3U+5FqcatPT0
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
 
-Best regards,
-baolu
+On Fri, 2019-11-22 at 11:04 +0800, Lu Baolu wrote:
+> Intel VT-d 3.0 introduces more caches and interfaces for software to
+> flush when it runs in the scalable mode. Currently various cache flush
+> helpers are scattered around. This consolidates them by putting them in
+> the existing iommu_flush structure.
+>=20
+> /* struct iommu_flush - Intel IOMMU cache invalidation ops
+>  *
+>  * @cc_inv: invalidate context cache
+>  * @iotlb_inv: Invalidate IOTLB and paging structure caches when software
+>  *             has changed second-level tables.
+>  * @p_iotlb_inv: Invalidate IOTLB and paging structure caches when softwa=
+re
+>  *               has changed first-level tables.
+>  * @pc_inv: invalidate pasid cache
+>  * @dev_tlb_inv: invalidate cached mappings used by requests-without-PASI=
+D
+>  *               from the Device-TLB on a endpoint device.
+>  * @p_dev_tlb_inv: invalidate cached mappings used by requests-with-PASID
+>  *                 from the Device-TLB on an endpoint device
+>  */
+> struct iommu_flush {
+>         void (*cc_inv)(struct intel_iommu *iommu, u16 did,
+>                        u16 sid, u8 fm, u64 type);
+>         void (*iotlb_inv)(struct intel_iommu *iommu, u16 did, u64 addr,
+>                           unsigned int size_order, u64 type);
+>         void (*p_iotlb_inv)(struct intel_iommu *iommu, u16 did, u32 pasid=
+,
+>                             u64 addr, unsigned long npages, bool ih);
+>         void (*pc_inv)(struct intel_iommu *iommu, u16 did, u32 pasid,
+>                        u64 granu);
+>         void (*dev_tlb_inv)(struct intel_iommu *iommu, u16 sid, u16 pfsid=
+,
+>                             u16 qdep, u64 addr, unsigned int mask);
+>         void (*p_dev_tlb_inv)(struct intel_iommu *iommu, u16 sid, u16 pfs=
+id,
+>                               u32 pasid, u16 qdep, u64 addr,
+>                               unsigned long npages);
+> };
+>=20
+> The name of each cache flush ops is defined according to the spec section=
+ 6.5
+> so that people are easy to look up them in the spec.
+
+Hm, indirect function calls are quite expensive these days.
+
+I would have preferred to go in the opposite direction, since surely
+aren't going to have *many* of these implementations. Currently there's
+only one for register-based and one for queued invalidation, right?
+Even if VT-d 3.0 throws an extra version in, I think I'd prefer to take
+out the indirection completely and have an if/then helper.
+
+Would love to see a microbenchmark of unmap operations before and after
+this patch series with retpoline enabled, to see the effect.
+
+
+
+
+--=-nKLBqJ9F3U+5FqcatPT0
+Content-Type: application/x-pkcs7-signature; name="smime.p7s"
+Content-Disposition: attachment; filename="smime.p7s"
+Content-Transfer-Encoding: base64
+
+MIAGCSqGSIb3DQEHAqCAMIACAQExDzANBglghkgBZQMEAgEFADCABgkqhkiG9w0BBwEAAKCCECow
+ggUcMIIEBKADAgECAhEA4rtJSHkq7AnpxKUY8ZlYZjANBgkqhkiG9w0BAQsFADCBlzELMAkGA1UE
+BhMCR0IxGzAZBgNVBAgTEkdyZWF0ZXIgTWFuY2hlc3RlcjEQMA4GA1UEBxMHU2FsZm9yZDEaMBgG
+A1UEChMRQ09NT0RPIENBIExpbWl0ZWQxPTA7BgNVBAMTNENPTU9ETyBSU0EgQ2xpZW50IEF1dGhl
+bnRpY2F0aW9uIGFuZCBTZWN1cmUgRW1haWwgQ0EwHhcNMTkwMTAyMDAwMDAwWhcNMjIwMTAxMjM1
+OTU5WjAkMSIwIAYJKoZIhvcNAQkBFhNkd213MkBpbmZyYWRlYWQub3JnMIIBIjANBgkqhkiG9w0B
+AQEFAAOCAQ8AMIIBCgKCAQEAsv3wObLTCbUA7GJqKj9vHGf+Fa+tpkO+ZRVve9EpNsMsfXhvFpb8
+RgL8vD+L133wK6csYoDU7zKiAo92FMUWaY1Hy6HqvVr9oevfTV3xhB5rQO1RHJoAfkvhy+wpjo7Q
+cXuzkOpibq2YurVStHAiGqAOMGMXhcVGqPuGhcVcVzVUjsvEzAV9Po9K2rpZ52FE4rDkpDK1pBK+
+uOAyOkgIg/cD8Kugav5tyapydeWMZRJQH1vMQ6OVT24CyAn2yXm2NgTQMS1mpzStP2ioPtTnszIQ
+Ih7ASVzhV6csHb8Yrkx8mgllOyrt9Y2kWRRJFm/FPRNEurOeNV6lnYAXOymVJwIDAQABo4IB0zCC
+Ac8wHwYDVR0jBBgwFoAUgq9sjPjF/pZhfOgfPStxSF7Ei8AwHQYDVR0OBBYEFLfuNf820LvaT4AK
+xrGK3EKx1DE7MA4GA1UdDwEB/wQEAwIFoDAMBgNVHRMBAf8EAjAAMB0GA1UdJQQWMBQGCCsGAQUF
+BwMEBggrBgEFBQcDAjBGBgNVHSAEPzA9MDsGDCsGAQQBsjEBAgEDBTArMCkGCCsGAQUFBwIBFh1o
+dHRwczovL3NlY3VyZS5jb21vZG8ubmV0L0NQUzBaBgNVHR8EUzBRME+gTaBLhklodHRwOi8vY3Js
+LmNvbW9kb2NhLmNvbS9DT01PRE9SU0FDbGllbnRBdXRoZW50aWNhdGlvbmFuZFNlY3VyZUVtYWls
+Q0EuY3JsMIGLBggrBgEFBQcBAQR/MH0wVQYIKwYBBQUHMAKGSWh0dHA6Ly9jcnQuY29tb2RvY2Eu
+Y29tL0NPTU9ET1JTQUNsaWVudEF1dGhlbnRpY2F0aW9uYW5kU2VjdXJlRW1haWxDQS5jcnQwJAYI
+KwYBBQUHMAGGGGh0dHA6Ly9vY3NwLmNvbW9kb2NhLmNvbTAeBgNVHREEFzAVgRNkd213MkBpbmZy
+YWRlYWQub3JnMA0GCSqGSIb3DQEBCwUAA4IBAQALbSykFusvvVkSIWttcEeifOGGKs7Wx2f5f45b
+nv2ghcxK5URjUvCnJhg+soxOMoQLG6+nbhzzb2rLTdRVGbvjZH0fOOzq0LShq0EXsqnJbbuwJhK+
+PnBtqX5O23PMHutP1l88AtVN+Rb72oSvnD+dK6708JqqUx2MAFLMevrhJRXLjKb2Mm+/8XBpEw+B
+7DisN4TMlLB/d55WnT9UPNHmQ+3KFL7QrTO8hYExkU849g58Dn3Nw3oCbMUgny81ocrLlB2Z5fFG
+Qu1AdNiBA+kg/UxzyJZpFbKfCITd5yX49bOriL692aMVDyqUvh8fP+T99PqorH4cIJP6OxSTdxKM
+MIIFHDCCBASgAwIBAgIRAOK7SUh5KuwJ6cSlGPGZWGYwDQYJKoZIhvcNAQELBQAwgZcxCzAJBgNV
+BAYTAkdCMRswGQYDVQQIExJHcmVhdGVyIE1hbmNoZXN0ZXIxEDAOBgNVBAcTB1NhbGZvcmQxGjAY
+BgNVBAoTEUNPTU9ETyBDQSBMaW1pdGVkMT0wOwYDVQQDEzRDT01PRE8gUlNBIENsaWVudCBBdXRo
+ZW50aWNhdGlvbiBhbmQgU2VjdXJlIEVtYWlsIENBMB4XDTE5MDEwMjAwMDAwMFoXDTIyMDEwMTIz
+NTk1OVowJDEiMCAGCSqGSIb3DQEJARYTZHdtdzJAaW5mcmFkZWFkLm9yZzCCASIwDQYJKoZIhvcN
+AQEBBQADggEPADCCAQoCggEBALL98Dmy0wm1AOxiaio/bxxn/hWvraZDvmUVb3vRKTbDLH14bxaW
+/EYC/Lw/i9d98CunLGKA1O8yogKPdhTFFmmNR8uh6r1a/aHr301d8YQea0DtURyaAH5L4cvsKY6O
+0HF7s5DqYm6tmLq1UrRwIhqgDjBjF4XFRqj7hoXFXFc1VI7LxMwFfT6PStq6WedhROKw5KQytaQS
+vrjgMjpICIP3A/CroGr+bcmqcnXljGUSUB9bzEOjlU9uAsgJ9sl5tjYE0DEtZqc0rT9oqD7U57My
+ECIewElc4VenLB2/GK5MfJoJZTsq7fWNpFkUSRZvxT0TRLqznjVepZ2AFzsplScCAwEAAaOCAdMw
+ggHPMB8GA1UdIwQYMBaAFIKvbIz4xf6WYXzoHz0rcUhexIvAMB0GA1UdDgQWBBS37jX/NtC72k+A
+CsaxitxCsdQxOzAOBgNVHQ8BAf8EBAMCBaAwDAYDVR0TAQH/BAIwADAdBgNVHSUEFjAUBggrBgEF
+BQcDBAYIKwYBBQUHAwIwRgYDVR0gBD8wPTA7BgwrBgEEAbIxAQIBAwUwKzApBggrBgEFBQcCARYd
+aHR0cHM6Ly9zZWN1cmUuY29tb2RvLm5ldC9DUFMwWgYDVR0fBFMwUTBPoE2gS4ZJaHR0cDovL2Ny
+bC5jb21vZG9jYS5jb20vQ09NT0RPUlNBQ2xpZW50QXV0aGVudGljYXRpb25hbmRTZWN1cmVFbWFp
+bENBLmNybDCBiwYIKwYBBQUHAQEEfzB9MFUGCCsGAQUFBzAChklodHRwOi8vY3J0LmNvbW9kb2Nh
+LmNvbS9DT01PRE9SU0FDbGllbnRBdXRoZW50aWNhdGlvbmFuZFNlY3VyZUVtYWlsQ0EuY3J0MCQG
+CCsGAQUFBzABhhhodHRwOi8vb2NzcC5jb21vZG9jYS5jb20wHgYDVR0RBBcwFYETZHdtdzJAaW5m
+cmFkZWFkLm9yZzANBgkqhkiG9w0BAQsFAAOCAQEAC20spBbrL71ZEiFrbXBHonzhhirO1sdn+X+O
+W579oIXMSuVEY1LwpyYYPrKMTjKECxuvp24c829qy03UVRm742R9Hzjs6tC0oatBF7KpyW27sCYS
+vj5wbal+TttzzB7rT9ZfPALVTfkW+9qEr5w/nSuu9PCaqlMdjABSzHr64SUVy4ym9jJvv/FwaRMP
+gew4rDeEzJSwf3eeVp0/VDzR5kPtyhS+0K0zvIWBMZFPOPYOfA59zcN6AmzFIJ8vNaHKy5QdmeXx
+RkLtQHTYgQPpIP1Mc8iWaRWynwiE3ecl+PWzq4i+vdmjFQ8qlL4fHz/k/fT6qKx+HCCT+jsUk3cS
+jDCCBeYwggPOoAMCAQICEGqb4Tg7/ytrnwHV2binUlYwDQYJKoZIhvcNAQEMBQAwgYUxCzAJBgNV
+BAYTAkdCMRswGQYDVQQIExJHcmVhdGVyIE1hbmNoZXN0ZXIxEDAOBgNVBAcTB1NhbGZvcmQxGjAY
+BgNVBAoTEUNPTU9ETyBDQSBMaW1pdGVkMSswKQYDVQQDEyJDT01PRE8gUlNBIENlcnRpZmljYXRp
+b24gQXV0aG9yaXR5MB4XDTEzMDExMDAwMDAwMFoXDTI4MDEwOTIzNTk1OVowgZcxCzAJBgNVBAYT
+AkdCMRswGQYDVQQIExJHcmVhdGVyIE1hbmNoZXN0ZXIxEDAOBgNVBAcTB1NhbGZvcmQxGjAYBgNV
+BAoTEUNPTU9ETyBDQSBMaW1pdGVkMT0wOwYDVQQDEzRDT01PRE8gUlNBIENsaWVudCBBdXRoZW50
+aWNhdGlvbiBhbmQgU2VjdXJlIEVtYWlsIENBMIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKC
+AQEAvrOeV6wodnVAFsc4A5jTxhh2IVDzJXkLTLWg0X06WD6cpzEup/Y0dtmEatrQPTRI5Or1u6zf
++bGBSyD9aH95dDSmeny1nxdlYCeXIoymMv6pQHJGNcIDpFDIMypVpVSRsivlJTRENf+RKwrB6vcf
+WlP8dSsE3Rfywq09N0ZfxcBa39V0wsGtkGWC+eQKiz4pBZYKjrc5NOpG9qrxpZxyb4o4yNNwTqza
+aPpGRqXB7IMjtf7tTmU2jqPMLxFNe1VXj9XB1rHvbRikw8lBoNoSWY66nJN/VCJv5ym6Q0mdCbDK
+CMPybTjoNCQuelc0IAaO4nLUXk0BOSxSxt8kCvsUtQIDAQABo4IBPDCCATgwHwYDVR0jBBgwFoAU
+u69+Aj36pvE8hI6t7jiY7NkyMtQwHQYDVR0OBBYEFIKvbIz4xf6WYXzoHz0rcUhexIvAMA4GA1Ud
+DwEB/wQEAwIBhjASBgNVHRMBAf8ECDAGAQH/AgEAMBEGA1UdIAQKMAgwBgYEVR0gADBMBgNVHR8E
+RTBDMEGgP6A9hjtodHRwOi8vY3JsLmNvbW9kb2NhLmNvbS9DT01PRE9SU0FDZXJ0aWZpY2F0aW9u
+QXV0aG9yaXR5LmNybDBxBggrBgEFBQcBAQRlMGMwOwYIKwYBBQUHMAKGL2h0dHA6Ly9jcnQuY29t
+b2RvY2EuY29tL0NPTU9ET1JTQUFkZFRydXN0Q0EuY3J0MCQGCCsGAQUFBzABhhhodHRwOi8vb2Nz
+cC5jb21vZG9jYS5jb20wDQYJKoZIhvcNAQEMBQADggIBAHhcsoEoNE887l9Wzp+XVuyPomsX9vP2
+SQgG1NgvNc3fQP7TcePo7EIMERoh42awGGsma65u/ITse2hKZHzT0CBxhuhb6txM1n/y78e/4ZOs
+0j8CGpfb+SJA3GaBQ+394k+z3ZByWPQedXLL1OdK8aRINTsjk/H5Ns77zwbjOKkDamxlpZ4TKSDM
+KVmU/PUWNMKSTvtlenlxBhh7ETrN543j/Q6qqgCWgWuMAXijnRglp9fyadqGOncjZjaaSOGTTFB+
+E2pvOUtY+hPebuPtTbq7vODqzCM6ryEhNhzf+enm0zlpXK7q332nXttNtjv7VFNYG+I31gnMrwfH
+M5tdhYF/8v5UY5g2xANPECTQdu9vWPoqNSGDt87b3gXb1AiGGaI06vzgkejL580ul+9hz9D0S0U4
+jkhJiA7EuTecP/CFtR72uYRBcunwwH3fciPjviDDAI9SnC/2aPY8ydehzuZutLbZdRJ5PDEJM/1t
+yZR2niOYihZ+FCbtf3D9mB12D4ln9icgc7CwaxpNSCPt8i/GqK2HsOgkL3VYnwtx7cJUmpvVdZ4o
+gnzgXtgtdk3ShrtOS1iAN2ZBXFiRmjVzmehoMof06r1xub+85hFQzVxZx5/bRaTKTlL8YXLI8nAb
+R9HWdFqzcOoB/hxfEyIQpx9/s81rgzdEZOofSlZHynoSMYIDyjCCA8YCAQEwga0wgZcxCzAJBgNV
+BAYTAkdCMRswGQYDVQQIExJHcmVhdGVyIE1hbmNoZXN0ZXIxEDAOBgNVBAcTB1NhbGZvcmQxGjAY
+BgNVBAoTEUNPTU9ETyBDQSBMaW1pdGVkMT0wOwYDVQQDEzRDT01PRE8gUlNBIENsaWVudCBBdXRo
+ZW50aWNhdGlvbiBhbmQgU2VjdXJlIEVtYWlsIENBAhEA4rtJSHkq7AnpxKUY8ZlYZjANBglghkgB
+ZQMEAgEFAKCCAe0wGAYJKoZIhvcNAQkDMQsGCSqGSIb3DQEHATAcBgkqhkiG9w0BCQUxDxcNMTkx
+MjAzMDg0OTMxWjAvBgkqhkiG9w0BCQQxIgQgRxZyrTjhuFtfsBnPVtOpN++j2t7tsEKMnA97rydD
+DMkwgb4GCSsGAQQBgjcQBDGBsDCBrTCBlzELMAkGA1UEBhMCR0IxGzAZBgNVBAgTEkdyZWF0ZXIg
+TWFuY2hlc3RlcjEQMA4GA1UEBxMHU2FsZm9yZDEaMBgGA1UEChMRQ09NT0RPIENBIExpbWl0ZWQx
+PTA7BgNVBAMTNENPTU9ETyBSU0EgQ2xpZW50IEF1dGhlbnRpY2F0aW9uIGFuZCBTZWN1cmUgRW1h
+aWwgQ0ECEQDiu0lIeSrsCenEpRjxmVhmMIHABgsqhkiG9w0BCRACCzGBsKCBrTCBlzELMAkGA1UE
+BhMCR0IxGzAZBgNVBAgTEkdyZWF0ZXIgTWFuY2hlc3RlcjEQMA4GA1UEBxMHU2FsZm9yZDEaMBgG
+A1UEChMRQ09NT0RPIENBIExpbWl0ZWQxPTA7BgNVBAMTNENPTU9ETyBSU0EgQ2xpZW50IEF1dGhl
+bnRpY2F0aW9uIGFuZCBTZWN1cmUgRW1haWwgQ0ECEQDiu0lIeSrsCenEpRjxmVhmMA0GCSqGSIb3
+DQEBAQUABIIBAEUpmQB82Q7RiDSKiP8sIM6m2WFR3YsUbu4/YU/XrfKNEyKjMM26yb/RCZ5w8Qcs
+WRn+4XzlOzfBHNHbGc7C8tWVYal44aQprVN/82ZJw8EdysdWKA4W4QGPC5Zpr6y1fgWfqs3BKIUz
+rENQ54meX7V5I6AC2akxfCTESx2DsOQl7evKfNPruM7gyzj1wcmx2U6IGDxfrdmxQO9lIzdVKkJ8
+l9YTbghtJ1o3aNM0VbWq15HArDB0qA4DS31x6eI2UONDNyv1nAKAo97Vn9/jSas9AauRwVMkOWJv
+kpuzi9vbWVnVhLXS8EQQYPA9Mzz7WCecSR3BvcTblOb1iHNyRYcAAAAAAAA=
+
+
+--=-nKLBqJ9F3U+5FqcatPT0--
+
+
+--===============5159150039248866140==
+Content-Type: text/plain; charset="us-ascii"
+MIME-Version: 1.0
+Content-Transfer-Encoding: 7bit
+Content-Disposition: inline
+
 _______________________________________________
 iommu mailing list
 iommu@lists.linux-foundation.org
 https://lists.linuxfoundation.org/mailman/listinfo/iommu
+--===============5159150039248866140==--
+
