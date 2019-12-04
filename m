@@ -6,72 +6,68 @@ X-Spam-Status: No, score=-2.2 required=3.0 tests=HEADER_FROM_DIFFERENT_DOMAINS,
 	MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS,USER_AGENT_SANE_1 autolearn=no
 	autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 74046C432C0
-	for <iommu@archiver.kernel.org>; Wed,  4 Dec 2019 00:18:43 +0000 (UTC)
-Received: from silver.osuosl.org (smtp3.osuosl.org [140.211.166.136])
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 4DC4DC432C0
+	for <iommu@archiver.kernel.org>; Wed,  4 Dec 2019 00:28:19 +0000 (UTC)
+Received: from fraxinus.osuosl.org (smtp4.osuosl.org [140.211.166.137])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by mail.kernel.org (Postfix) with ESMTPS id 36F6C2054F
-	for <iommu@archiver.kernel.org>; Wed,  4 Dec 2019 00:18:43 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 36F6C2054F
+	by mail.kernel.org (Postfix) with ESMTPS id 18A9E206E4
+	for <iommu@archiver.kernel.org>; Wed,  4 Dec 2019 00:28:18 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 18A9E206E4
 Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=linux.intel.com
 Authentication-Results: mail.kernel.org; spf=pass smtp.mailfrom=iommu-bounces@lists.linux-foundation.org
 Received: from localhost (localhost [127.0.0.1])
-	by silver.osuosl.org (Postfix) with ESMTP id 085D9203D5;
-	Wed,  4 Dec 2019 00:18:43 +0000 (UTC)
+	by fraxinus.osuosl.org (Postfix) with ESMTP id D1CF586A53;
+	Wed,  4 Dec 2019 00:28:18 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from silver.osuosl.org ([127.0.0.1])
+Received: from fraxinus.osuosl.org ([127.0.0.1])
 	by localhost (.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
-	with ESMTP id KDO-c9M-addD; Wed,  4 Dec 2019 00:18:40 +0000 (UTC)
+	with ESMTP id 1JdfV-tyUml0; Wed,  4 Dec 2019 00:28:18 +0000 (UTC)
 Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [140.211.9.56])
-	by silver.osuosl.org (Postfix) with ESMTP id 2A39B203D1;
-	Wed,  4 Dec 2019 00:18:40 +0000 (UTC)
+	by fraxinus.osuosl.org (Postfix) with ESMTP id 43BF886407;
+	Wed,  4 Dec 2019 00:28:18 +0000 (UTC)
 Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
-	by lists.linuxfoundation.org (Postfix) with ESMTP id 10875C18DC;
-	Wed,  4 Dec 2019 00:18:40 +0000 (UTC)
-Received: from whitealder.osuosl.org (smtp1.osuosl.org [140.211.166.138])
- by lists.linuxfoundation.org (Postfix) with ESMTP id 779ABC1798
- for <iommu@lists.linux-foundation.org>; Wed,  4 Dec 2019 00:18:38 +0000 (UTC)
+	by lists.linuxfoundation.org (Postfix) with ESMTP id 3B685C18DC;
+	Wed,  4 Dec 2019 00:28:18 +0000 (UTC)
+Received: from hemlock.osuosl.org (smtp2.osuosl.org [140.211.166.133])
+ by lists.linuxfoundation.org (Postfix) with ESMTP id 7C926C1798
+ for <iommu@lists.linux-foundation.org>; Wed,  4 Dec 2019 00:28:17 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
- by whitealder.osuosl.org (Postfix) with ESMTP id 62A328760D
- for <iommu@lists.linux-foundation.org>; Wed,  4 Dec 2019 00:18:38 +0000 (UTC)
+ by hemlock.osuosl.org (Postfix) with ESMTP id B19E2881BB
+ for <iommu@lists.linux-foundation.org>; Wed,  4 Dec 2019 00:27:49 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from whitealder.osuosl.org ([127.0.0.1])
+Received: from hemlock.osuosl.org ([127.0.0.1])
  by localhost (.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
- with ESMTP id 2dl5UgzAQGl4 for <iommu@lists.linux-foundation.org>;
- Wed,  4 Dec 2019 00:18:37 +0000 (UTC)
+ with ESMTP id R-DCassjTXx4 for <iommu@lists.linux-foundation.org>;
+ Wed,  4 Dec 2019 00:27:49 +0000 (UTC)
 X-Greylist: domain auto-whitelisted by SQLgrey-1.7.6
-Received: from mga02.intel.com (mga02.intel.com [134.134.136.20])
- by whitealder.osuosl.org (Postfix) with ESMTPS id 9144D875D4
- for <iommu@lists.linux-foundation.org>; Wed,  4 Dec 2019 00:18:37 +0000 (UTC)
+Received: from mga03.intel.com (mga03.intel.com [134.134.136.65])
+ by hemlock.osuosl.org (Postfix) with ESMTPS id 206CC87F5D
+ for <iommu@lists.linux-foundation.org>; Wed,  4 Dec 2019 00:27:49 +0000 (UTC)
 X-Amp-Result: SKIPPED(no attachment in message)
 X-Amp-File-Uploaded: False
 Received: from orsmga002.jf.intel.com ([10.7.209.21])
- by orsmga101.jf.intel.com with ESMTP/TLS/DHE-RSA-AES256-GCM-SHA384;
- 03 Dec 2019 16:18:30 -0800
+ by orsmga103.jf.intel.com with ESMTP/TLS/DHE-RSA-AES256-GCM-SHA384;
+ 03 Dec 2019 16:27:48 -0800
 X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.69,275,1571727600"; d="scan'208";a="223025607"
+X-IronPort-AV: E=Sophos;i="5.69,275,1571727600"; d="scan'208";a="223028262"
 Received: from allen-box.sh.intel.com (HELO [10.239.159.136])
  ([10.239.159.136])
- by orsmga002.jf.intel.com with ESMTP; 03 Dec 2019 16:18:30 -0800
-Subject: Re: dmar pte read access not set error messages on hp dl388 gen8
- systems
-To: Jerry Snitselaar <jsnitsel@redhat.com>
-References: <20191202063422.3lyfoerkejig4num@cantor>
- <702d8a8a-88de-bffb-911e-9eb9a6a7845d@linux.intel.com>
- <20191202071406.jpq5qobbtnwhktlc@cantor>
- <20191202161332.ctc3y5cvdgqwnz7l@cantor>
- <14bbe41c-61e9-d2b6-31cb-67c0b1ad11da@linux.intel.com>
- <20191203095636.epmuinnrpykecfda@cantor>
+ by orsmga002.jf.intel.com with ESMTP; 03 Dec 2019 16:27:46 -0800
+Subject: Re: [PATCH 0/5] iommu/vt-d: Consolidate various cache flush ops
+To: David Woodhouse <dwmw2@infradead.org>, Joerg Roedel <joro@8bytes.org>
+References: <20191122030449.28892-1-baolu.lu@linux.intel.com>
+ <22759c43f440eecee60b2d318b6f8e8fe2587bcb.camel@infradead.org>
 From: Lu Baolu <baolu.lu@linux.intel.com>
-Message-ID: <5ce8d57e-25f0-5d28-7408-92c650ba54aa@linux.intel.com>
-Date: Wed, 4 Dec 2019 08:17:53 +0800
+Message-ID: <4100ad7a-0818-7fc1-aaf5-bf0ef44f3f54@linux.intel.com>
+Date: Wed, 4 Dec 2019 08:27:10 +0800
 User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101
  Thunderbird/68.2.1
 MIME-Version: 1.0
-In-Reply-To: <20191203095636.epmuinnrpykecfda@cantor>
+In-Reply-To: <22759c43f440eecee60b2d318b6f8e8fe2587bcb.camel@infradead.org>
 Content-Language: en-US
-Cc: iommu@lists.linux-foundation.org
+Cc: kevin.tian@intel.com, ashok.raj@intel.com, linux-kernel@vger.kernel.org,
+ iommu@lists.linux-foundation.org
 X-BeenThere: iommu@lists.linux-foundation.org
 X-Mailman-Version: 2.1.15
 Precedence: list
@@ -84,67 +80,71 @@ List-Post: <mailto:iommu@lists.linux-foundation.org>
 List-Help: <mailto:iommu-request@lists.linux-foundation.org?subject=help>
 List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
  <mailto:iommu-request@lists.linux-foundation.org?subject=subscribe>
-Content-Transfer-Encoding: base64
-Content-Type: text/plain; charset="utf-8"; Format="flowed"
+Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset="us-ascii"; Format="flowed"
 Errors-To: iommu-bounces@lists.linux-foundation.org
 Sender: "iommu" <iommu-bounces@lists.linux-foundation.org>
 
-SGksCgpPbiAxMi8zLzE5IDU6NTYgUE0sIEplcnJ5IFNuaXRzZWxhYXIgd3JvdGU6Cj4gT24gVHVl
-IERlYyAwMyAxOSwgTHUgQmFvbHUgd3JvdGU6Cj4+IEhpLAo+Pgo+PiBPbiAxMi8zLzE5IDEyOjEz
-IEFNLCBKZXJyeSBTbml0c2VsYWFyIHdyb3RlOgo+Pj4gT24gTW9uIERlYyAwMiAxOSwgSmVycnkg
-U25pdHNlbGFhciB3cm90ZToKPj4+PiBPbiBNb24gRGVjIDAyIDE5LCBMdSBCYW9sdSB3cm90ZToK
-Pj4+Pj4gSGksCj4+Pj4+Cj4+Pj4+IE9uIDEyLzIvMTkgMjozNCBQTSwgSmVycnkgU25pdHNlbGFh
-ciB3cm90ZToKPj4+Pj4+IFdlIGFyZSBzZWVpbmcgRE1BUiBQVEUgcmVhZCBhY2Nlc3Mgbm90IHNl
-dCBlcnJvcnMgd2hlbiBib290aW5nIGEKPj4+Pj4+IGtlcm5lbCB3aXRoIGRlZmF1bHQgcGFzc3Ro
-cm91Z2gsIGJvdGggd2l0aCBhIHRlc3Qga2VybmVsIGFuZCB3aXRoCj4+Pj4+PiBhIDUuNC4wIGtl
-cm5lbC4gUHJldmlvdXNseSB3ZSB3b3VsZCBzZWUgYSBudW1iZXIgb2YgaWRlbnRpdHkgbWFwcGlu
-Z3MKPj4+Pj4+IGJlaW5nIHNldCByZWxhdGVkIHRvIHRoZSBybXJycywgYW5kIG5vdyB0aGV5IGFy
-ZW4ndCBzZWVuIGFuZCB3ZSBnZXQKPj4+Pj4+IHRoZSBkbWFyIHB0ZSBlcnJvcnMgYXMgZGV2aWNl
-cyB0b3VjaCB0aG9zZSByZWdpb25zLiBGcm9tIHdoYXQgSSAKPj4+Pj4+IGNhbiB0ZWxsCj4+Pj4+
-PiBjdXJyZW50bHkgZGY0ZjNjNjAzYWViICgiaW9tbXUvdnQtZDogUmVtb3ZlIHN0YXRpYyBpZGVu
-dGl0eSBtYXAgCj4+Pj4+PiBjb2RlIikKPj4+Pj4+IHJlbW92ZWQgdGhlIGJpdCBvZiBjb2RlIGlu
-IGluaXRfZG1hcnMgdGhhdCB1c2VkIHRvIHNldCB1cCB0aG9zZQo+Pj4+Pj4gbWFwcGluZ3M6Cj4+
-Pj4+Pgo+Pj4+Pj4gLcKgwqDCoMKgwqDCoCAvKgo+Pj4+Pj4gLcKgwqDCoMKgwqDCoMKgICogRm9y
-IGVhY2ggcm1ycgo+Pj4+Pj4gLcKgwqDCoMKgwqDCoMKgICrCoMKgIGZvciBlYWNoIGRldiBhdHRh
-Y2hlZCB0byBybXJyCj4+Pj4+PiAtwqDCoMKgwqDCoMKgwqAgKsKgwqAgZG8KPj4+Pj4+IC3CoMKg
-wqDCoMKgwqDCoCAqwqDCoMKgwqAgbG9jYXRlIGRyaGQgZm9yIGRldiwgYWxsb2MgZG9tYWluIGZv
-ciBkZXYKPj4+Pj4+IC3CoMKgwqDCoMKgwqDCoCAqwqDCoMKgwqAgYWxsb2NhdGUgZnJlZSBkb21h
-aW4KPj4+Pj4+IC3CoMKgwqDCoMKgwqDCoCAqwqDCoMKgwqAgYWxsb2NhdGUgcGFnZSB0YWJsZSBl
-bnRyaWVzIGZvciBybXJyCj4+Pj4+PiAtwqDCoMKgwqDCoMKgwqAgKsKgwqDCoMKgIGlmIGNvbnRl
-eHQgbm90IGFsbG9jYXRlZCBmb3IgYnVzCj4+Pj4+PiAtwqDCoMKgwqDCoMKgwqAgKsKgwqDCoMKg
-wqDCoMKgwqDCoMKgIGFsbG9jYXRlIGFuZCBpbml0IGNvbnRleHQKPj4+Pj4+IC3CoMKgwqDCoMKg
-wqDCoCAqwqDCoMKgwqDCoMKgwqDCoMKgwqAgc2V0IHByZXNlbnQgaW4gcm9vdCB0YWJsZSBmb3Ig
-dGhpcyBidXMKPj4+Pj4+IC3CoMKgwqDCoMKgwqDCoCAqwqDCoMKgwqAgaW5pdCBjb250ZXh0IHdp
-dGggZG9tYWluLCB0cmFuc2xhdGlvbiBldGMKPj4+Pj4+IC3CoMKgwqDCoMKgwqDCoCAqwqDCoMKg
-IGVuZGZvcgo+Pj4+Pj4gLcKgwqDCoMKgwqDCoMKgICogZW5kZm9yCj4+Pj4+PiAtwqDCoMKgwqDC
-oMKgwqAgKi8KPj4+Pj4+IC3CoMKgwqDCoMKgwqAgcHJfaW5mbygiU2V0dGluZyBSTVJSOlxuIik7
-Cj4+Pj4+PiAtwqDCoMKgwqDCoMKgIGZvcl9lYWNoX3JtcnJfdW5pdHMocm1ycikgewo+Pj4+Pj4g
-LcKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqAgLyogc29tZSBCSU9TIGxpc3RzIG5vbi1leGlz
-dCBkZXZpY2VzIGluIERNQVIgCj4+Pj4+PiB0YWJsZS4gKi8KPj4+Pj4+IC3CoMKgwqDCoMKgwqDC
-oMKgwqDCoMKgwqDCoMKgIGZvcl9lYWNoX2FjdGl2ZV9kZXZfc2NvcGUocm1yci0+ZGV2aWNlcywg
-Cj4+Pj4+PiBybXJyLT5kZXZpY2VzX2NudCwKPj4+Pj4+IC3CoMKgwqDCoMKgwqDCoMKgwqDCoMKg
-wqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDC
-oCBpLCBkZXYpIHsKPj4+Pj4+IC3CoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDC
-oMKgwqDCoCByZXQgPSBpb21tdV9wcmVwYXJlX3JtcnJfZGV2KHJtcnIsIGRldik7Cj4+Pj4+PiAt
-wqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqAgaWYgKHJldCkKPj4+
-Pj4+IC3CoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKg
-wqDCoMKgwqAgcHJfZXJyKCJNYXBwaW5nIHJlc2VydmVkIHJlZ2lvbiAKPj4+Pj4+IGZhaWxlZFxu
-Iik7Cj4+Pj4+PiAtwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoCB9Cj4+Pj4+PiAtwqDCoMKg
-wqDCoMKgIH0KPj4+Pj4+Cj4+Pj4+PiBzaV9kb21haW5faW5pdCBub3cgaGFzIGNvZGUgdGhhdCBz
-ZXRzIGlkZW50aXR5IG1hcHMgZm9yIGRldmljZXMgaW4gCj4+Pj4+PiBybXJycywgYnV0Cj4+Pj4+
-PiBvbmx5IGZvciBjZXJ0YWluIGRldmljZXMuCj4+Pj4+Cj4+Pj4+IE9uIHdoaWNoIGRldmljZSwg
-YXJlIHlvdSBzZWVpbmcgdGhpcyBlcnJvcj8gSXMgaXQgYSBybXJyIGxvY2tlZCAKPj4+Pj4gZGV2
-aWNlPwo+Pj4+Pgo+Pj4+PiBCZXN0IHJlZ2FyZHMsCj4+Pj4+IGJhb2x1Cj4+Pj4+Cj4+Pj4KPj4+
-PiBBbG1vc3QgYWxsIG9mIHRoZSBtZXNzYWdlcyBhcmUgZm9yIHRoZSBpbG8sIGJ1dCB0aGVyZSBh
-bHNvIGlzIGEgCj4+Pj4gbWVzc2FnZSBmb3IKPj4+PiB0aGUgc21hcnQgYXJyYXkgcmFpZCBidXMg
-Y29udHJvbGxlci4KPj4+Pgo+Pj4KPj4+IEFsc28gc2VlaW5nIGl0IHdpdGggYSBkbDM4MCBnZW45
-IHN5c3RlbSwgd2hlcmUgdGhlIHJhaWQgYnVzIGNvbnRyb2xsZXIKPj4+IGlzIGdldHRpbmcgdGhl
-IGVycm9yLgo+Pgo+PiBEb2VzIGl0IGhlbHAgaWYgeW91IHJlbW92ZQo+Pgo+PiDCoMKgwqDCoMKg
-wqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoCBpZiAoZGV2aWNlX2lzX3JtcnJfbG9j
-a2VkKGRldikpCj4+IMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKg
-wqDCoMKgwqDCoMKgwqDCoCBjb250aW51ZTsKPj4KPj4gaW4gc2lfZG9tYWluX2luaXQoKT8KPj4K
-PiAKPiBVbmZvcnR1bmF0ZWx5IGl0IHN0aWxsIHNwaXRzIG91dCBhIGJ1bmNoIG9mIGVycm9yIG1l
-c3NhZ2VzLgoKQ2FuIHlvdSBwbGVhc2Ugc2hvdyBtZSB0aGUgd2hvbGUgZG1lc2c/CgpCZXN0IHJl
-Z2FyZHMsCi1iYW9sdQpfX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19f
-X19fXwppb21tdSBtYWlsaW5nIGxpc3QKaW9tbXVAbGlzdHMubGludXgtZm91bmRhdGlvbi5vcmcK
-aHR0cHM6Ly9saXN0cy5saW51eGZvdW5kYXRpb24ub3JnL21haWxtYW4vbGlzdGluZm8vaW9tbXU=
+Hi David,
+
+On 12/3/19 4:49 PM, David Woodhouse wrote:
+> On Fri, 2019-11-22 at 11:04 +0800, Lu Baolu wrote:
+>> Intel VT-d 3.0 introduces more caches and interfaces for software to
+>> flush when it runs in the scalable mode. Currently various cache flush
+>> helpers are scattered around. This consolidates them by putting them in
+>> the existing iommu_flush structure.
+>>
+>> /* struct iommu_flush - Intel IOMMU cache invalidation ops
+>>   *
+>>   * @cc_inv: invalidate context cache
+>>   * @iotlb_inv: Invalidate IOTLB and paging structure caches when software
+>>   *             has changed second-level tables.
+>>   * @p_iotlb_inv: Invalidate IOTLB and paging structure caches when software
+>>   *               has changed first-level tables.
+>>   * @pc_inv: invalidate pasid cache
+>>   * @dev_tlb_inv: invalidate cached mappings used by requests-without-PASID
+>>   *               from the Device-TLB on a endpoint device.
+>>   * @p_dev_tlb_inv: invalidate cached mappings used by requests-with-PASID
+>>   *                 from the Device-TLB on an endpoint device
+>>   */
+>> struct iommu_flush {
+>>          void (*cc_inv)(struct intel_iommu *iommu, u16 did,
+>>                         u16 sid, u8 fm, u64 type);
+>>          void (*iotlb_inv)(struct intel_iommu *iommu, u16 did, u64 addr,
+>>                            unsigned int size_order, u64 type);
+>>          void (*p_iotlb_inv)(struct intel_iommu *iommu, u16 did, u32 pasid,
+>>                              u64 addr, unsigned long npages, bool ih);
+>>          void (*pc_inv)(struct intel_iommu *iommu, u16 did, u32 pasid,
+>>                         u64 granu);
+>>          void (*dev_tlb_inv)(struct intel_iommu *iommu, u16 sid, u16 pfsid,
+>>                              u16 qdep, u64 addr, unsigned int mask);
+>>          void (*p_dev_tlb_inv)(struct intel_iommu *iommu, u16 sid, u16 pfsid,
+>>                                u32 pasid, u16 qdep, u64 addr,
+>>                                unsigned long npages);
+>> };
+>>
+>> The name of each cache flush ops is defined according to the spec section 6.5
+>> so that people are easy to look up them in the spec.
+> 
+> Hm, indirect function calls are quite expensive these days.
+
+Good consideration. Thanks!
+
+> 
+> I would have preferred to go in the opposite direction, since surely
+> aren't going to have *many* of these implementations. Currently there's
+> only one for register-based and one for queued invalidation, right?
+> Even if VT-d 3.0 throws an extra version in, I think I'd prefer to take
+> out the indirection completely and have an if/then helper.
+> 
+> Would love to see a microbenchmark of unmap operations before and after
+> this patch series with retpoline enabled, to see the effect.
+
+Yes. Need some micro-bench tests to address the concern.
+
+Best regards,
+baolu
+_______________________________________________
+iommu mailing list
+iommu@lists.linux-foundation.org
+https://lists.linuxfoundation.org/mailman/listinfo/iommu
