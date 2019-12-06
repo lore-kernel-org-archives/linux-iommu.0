@@ -2,125 +2,124 @@ Return-Path: <SRS0=JKdE=Z4=lists.linux-foundation.org=iommu-bounces@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-8.1 required=3.0 tests=DKIM_INVALID,DKIM_SIGNED,
+X-Spam-Status: No, score=-6.5 required=3.0 tests=DKIM_INVALID,DKIM_SIGNED,
 	HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_PATCH,MAILING_LIST_MULTI,SIGNED_OFF_BY,
-	SPF_HELO_NONE,SPF_PASS,USER_AGENT_SANE_1 autolearn=unavailable
-	autolearn_force=no version=3.4.0
+	SPF_HELO_NONE,SPF_PASS autolearn=ham autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id D119BC43603
-	for <iommu@archiver.kernel.org>; Fri,  6 Dec 2019 09:29:09 +0000 (UTC)
-Received: from fraxinus.osuosl.org (smtp4.osuosl.org [140.211.166.137])
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 6E6A5C43603
+	for <iommu@archiver.kernel.org>; Fri,  6 Dec 2019 14:43:06 +0000 (UTC)
+Received: from whitealder.osuosl.org (smtp1.osuosl.org [140.211.166.138])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by mail.kernel.org (Postfix) with ESMTPS id 782C921823
-	for <iommu@archiver.kernel.org>; Fri,  6 Dec 2019 09:29:09 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTPS id 2EAF620706
+	for <iommu@archiver.kernel.org>; Fri,  6 Dec 2019 14:43:06 +0000 (UTC)
 Authentication-Results: mail.kernel.org;
-	dkim=fail reason="signature verification failed" (1024-bit key) header.d=amdcloud.onmicrosoft.com header.i=@amdcloud.onmicrosoft.com header.b="fWMRBa9T"
-DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 782C921823
-Authentication-Results: mail.kernel.org; dmarc=none (p=none dis=none) header.from=amd.com
+	dkim=fail reason="signature verification failed" (1024-bit key) header.d=vmware.com header.i=@vmware.com header.b="nV6kfa7Q"
+DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 2EAF620706
+Authentication-Results: mail.kernel.org; dmarc=none (p=none dis=none) header.from=lists.linux-foundation.org
 Authentication-Results: mail.kernel.org; spf=pass smtp.mailfrom=iommu-bounces@lists.linux-foundation.org
 Received: from localhost (localhost [127.0.0.1])
-	by fraxinus.osuosl.org (Postfix) with ESMTP id 3DC8F87559;
-	Fri,  6 Dec 2019 09:29:09 +0000 (UTC)
+	by whitealder.osuosl.org (Postfix) with ESMTP id EEBD688307;
+	Fri,  6 Dec 2019 14:43:05 +0000 (UTC)
+X-Virus-Scanned: amavisd-new at osuosl.org
+Received: from whitealder.osuosl.org ([127.0.0.1])
+	by localhost (.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
+	with ESMTP id PFmvqrIUkEd6; Fri,  6 Dec 2019 14:43:05 +0000 (UTC)
+Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [140.211.9.56])
+	by whitealder.osuosl.org (Postfix) with ESMTP id 0D39E884F6;
+	Fri,  6 Dec 2019 14:43:05 +0000 (UTC)
+Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
+	by lists.linuxfoundation.org (Postfix) with ESMTP id F2A36C1D7D;
+	Fri,  6 Dec 2019 14:43:04 +0000 (UTC)
+Received: from fraxinus.osuosl.org (smtp4.osuosl.org [140.211.166.137])
+ by lists.linuxfoundation.org (Postfix) with ESMTP id 0CECBC077D
+ for <iommu@lists.linux-foundation.org>; Fri,  6 Dec 2019 14:43:03 +0000 (UTC)
+Received: from localhost (localhost [127.0.0.1])
+ by fraxinus.osuosl.org (Postfix) with ESMTP id E9BB886D80
+ for <iommu@lists.linux-foundation.org>; Fri,  6 Dec 2019 14:43:02 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
 Received: from fraxinus.osuosl.org ([127.0.0.1])
-	by localhost (.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
-	with ESMTP id 6hOSHpC8Kuop; Fri,  6 Dec 2019 09:29:08 +0000 (UTC)
-Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [140.211.9.56])
-	by fraxinus.osuosl.org (Postfix) with ESMTP id 416A287394;
-	Fri,  6 Dec 2019 09:29:08 +0000 (UTC)
-Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
-	by lists.linuxfoundation.org (Postfix) with ESMTP id 202D0C18DD;
-	Fri,  6 Dec 2019 09:29:08 +0000 (UTC)
-Received: from silver.osuosl.org (smtp3.osuosl.org [140.211.166.136])
- by lists.linuxfoundation.org (Postfix) with ESMTP id 5253BC077D
- for <iommu@lists.linux-foundation.org>; Fri,  6 Dec 2019 09:29:06 +0000 (UTC)
-Received: from localhost (localhost [127.0.0.1])
- by silver.osuosl.org (Postfix) with ESMTP id 44F7A2076B
- for <iommu@lists.linux-foundation.org>; Fri,  6 Dec 2019 09:29:06 +0000 (UTC)
-X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from silver.osuosl.org ([127.0.0.1])
  by localhost (.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
- with ESMTP id F49UMV4dyvu9 for <iommu@lists.linux-foundation.org>;
- Fri,  6 Dec 2019 09:29:04 +0000 (UTC)
-X-Greylist: delayed 00:31:28 by SQLgrey-1.7.6
-Received: from NAM02-SN1-obe.outbound.protection.outlook.com
- (mail-eopbgr770088.outbound.protection.outlook.com [40.107.77.88])
- by silver.osuosl.org (Postfix) with ESMTPS id 79FD820488
- for <iommu@lists.linux-foundation.org>; Fri,  6 Dec 2019 09:29:04 +0000 (UTC)
+ with ESMTP id bFt-4_HwQ_rc for <iommu@lists.linux-foundation.org>;
+ Fri,  6 Dec 2019 14:43:02 +0000 (UTC)
+X-Greylist: delayed 00:17:48 by SQLgrey-1.7.6
+Received: from NAM04-CO1-obe.outbound.protection.outlook.com
+ (mail-eopbgr690059.outbound.protection.outlook.com [40.107.69.59])
+ by fraxinus.osuosl.org (Postfix) with ESMTPS id D03B486D2E
+ for <iommu@lists.linux-foundation.org>; Fri,  6 Dec 2019 14:43:01 +0000 (UTC)
 ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=dwSJXN7ZHNxjAJG2vLaGDyVZWKrB/4VnWjZ4NO+YCCSxZphaB3+XJYHZSoifsS04c0pHbJMf04tRJ/a84AkaBbQ6DSdeFJFVEroli2WWBxWgYXcM1Uw1D/QLIt8k7ZjrlFKiXRb/jFp5kJaPz/CDDSjM+zXwHTzPmTYs34b74drRrRx1j2Cd0X+lxdzSNHMH9MJI4R/Bk9pwnBuY8d1x4HLPs/O6AFlF7NEVi2Ga17RWGpo9pRJuZ48eg3quwLsa1bHjBWwgZbLG1LidFDrL+JHedr0lbNyegDTA5EQTm70jQmxkT0Sr1eK6lpYuUk086e1pLO26newTuRas+/V37A==
+ b=lw2YdsVpbPAASPf5HLfoMwze/rZyxD01Tnwt4UmhUMYyaM+w1+2aBpDlZk6cKz50xB0rIa3AA3kJM0z9GM1g5Vn6VRAcknEPwetzQLgUjqSFSRVsFq2Yq1E5Q9x7H/Y7XKh1DbcXWihmbalA3/VYLBts2QVOP3tfwejT/AZpFS6AXnhXYbpczKYZANbX9W1MmMgWE6Sz4qE8qmLBqQLihG43IXm2PfGZ5dmVpXymu9VY/rUM/WaWCCqD+IqRVj8nvGWa8F9gZhuhigKgWW/FyGRmh4+DGUFB9r7xt9SPDYi+AiefPqgzAvDxsC2ZcH6655wXaJ4ggrJ91Cvh044+pg==
 ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com; 
  s=arcselector9901;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=R/0nqTuYCUANJbhSzeEIyHfUKRK+UE0WbrRlVNoplbo=;
- b=BMRJoRfKCQ+LAscK2sIxlOMdKmOrPazbR0iY+ECvC08b1aIJdiTSh/FF9ZCIQzRcPnHeTSHldcVqZmpTSJi/zHbeKEu4wrrTqTiToUzVsHHbq50vfeflFMXAdcT3WnV/ZDTJ2BwxITo1afbJfrUaaLE9nLj78UHAYnOYlf99ev4IDZTH3DEPqZl/B250LaSnJZHsZBW+dUZ3Fb1Xlj+wnBormQSQpxHBbLeASimumN1EXLO8dtU8ZtnsbgpcUVPaCtGYeitgupumt7WjTIhh5C+ynBs7sLURsas2tNKn8tarR4qgOihYRjKUrRACuWASEoCZYZJHhRQEsEALmsJLdg==
+ bh=Od4pN0+qEhGfsdE3/dEeHS9fPLMbYL+0sqtYoqoaV1U=;
+ b=HzDlddk0TMfFdTgG/itw1u8fvtrwd64Or4WMbYvfSR8v56fZLq60Hi7IafFXZ/NBAUN1VTLwlI7gOD2z9y3uM7lWrw9K0ehfvVyp4AQ0nkvWogyDF7xVQMqWb0lRFLntWMoBZkjrEP5KBosnCTya9VKgrCoFsN7I2Cv+jRKVxVf7n5DjbkakYOWHjSxbhMbmRZ0w1H4mceGWiojHzTviTfXV8CyuLIb9t3Hoe7u1rkTXgAwqukv8tnQSvluHzFr1HCcOa39eVW19+7rzfeCjixSjEZEghOfBxPCvLa042EMwkJWHUSV1/kOEmtFMo+u0Op2ybKaim+o5JhViDVXkpw==
 ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=amd.com; dmarc=pass action=none header.from=amd.com; dkim=pass
- header.d=amd.com; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
- d=amdcloud.onmicrosoft.com; s=selector2-amdcloud-onmicrosoft-com;
+ smtp.mailfrom=vmware.com; dmarc=pass action=none header.from=vmware.com;
+ dkim=pass header.d=vmware.com; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=vmware.com;
+ s=selector2;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=R/0nqTuYCUANJbhSzeEIyHfUKRK+UE0WbrRlVNoplbo=;
- b=fWMRBa9Trkk6Y/Lk/kAracefyiSq0g1C1eoACPWBXpdkbmiM//IO+cTAZuB+hA1y7iZQ7L2cY3womo5Ozt0Fam3ZtaJfnCWdRtIv2XpQVyLS4lqjdUMGAZCyIVE/g0EZ9iyFOBHgys2FyuGxcWs8zeS7UW47igfPwyGaoHnJA3Q=
-Authentication-Results: spf=none (sender IP is )
- smtp.mailfrom=Christian.Koenig@amd.com; 
-Received: from DM5PR12MB1705.namprd12.prod.outlook.com (10.175.88.22) by
- DM5PR12MB1435.namprd12.prod.outlook.com (10.168.240.19) with Microsoft SMTP
+ bh=Od4pN0+qEhGfsdE3/dEeHS9fPLMbYL+0sqtYoqoaV1U=;
+ b=nV6kfa7Q7ZK2EmASYDB835dq9LlMl75tZkRFmwKs++JkpVu3+94KPBiAvuSShubHn/0GADPs8elIwm7E5zQV5H7yT37WCNebxEawG9ZWYKlS9/sY8dVlyRaWc+lIXH+G1vLB1fsFtxCLeqMx6DJBtedHfioMIroXvewpPAOEu0c=
+Received: from MN2PR05MB6141.namprd05.prod.outlook.com (20.178.241.217) by
+ MN2PR05MB6814.namprd05.prod.outlook.com (52.132.172.91) with Microsoft SMTP
  Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.20.2516.17; Fri, 6 Dec 2019 08:57:34 +0000
-Received: from DM5PR12MB1705.namprd12.prod.outlook.com
- ([fe80::80df:f8b:e547:df84]) by DM5PR12MB1705.namprd12.prod.outlook.com
- ([fe80::80df:f8b:e547:df84%12]) with mapi id 15.20.2495.026; Fri, 6 Dec 2019
- 08:57:34 +0000
-Subject: Re: [PATCH v2] iommu/amd: Disable IOMMU on Stoney Ridge systems
-To: "Deucher, Alexander" <Alexander.Deucher@amd.com>,
- Lucas Stach <dev@lynxeye.de>, Kai-Heng Feng <kai.heng.feng@canonical.com>,
- "joro@8bytes.org" <joro@8bytes.org>
-References: <20191129142154.29658-1-kai.heng.feng@canonical.com>
- <5b2097e8c4172a8516fcfc8c56dc98e3d105ffe2.camel@lynxeye.de>
- <MWHPR12MB1358891F2AC2AAA41E9BA835F7430@MWHPR12MB1358.namprd12.prod.outlook.com>
- <MWHPR12MB135851B49EEDEE17DE873506F75D0@MWHPR12MB1358.namprd12.prod.outlook.com>
-From: =?UTF-8?Q?Christian_K=c3=b6nig?= <christian.koenig@amd.com>
-Message-ID: <3b61c31f-57bd-1fe6-f2e9-52c24f1eb3e4@amd.com>
-Date: Fri, 6 Dec 2019 09:57:28 +0100
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:60.0) Gecko/20100101
- Thunderbird/60.9.0
-In-Reply-To: <MWHPR12MB135851B49EEDEE17DE873506F75D0@MWHPR12MB1358.namprd12.prod.outlook.com>
+ 15.20.2516.5; Fri, 6 Dec 2019 14:10:59 +0000
+Received: from MN2PR05MB6141.namprd05.prod.outlook.com
+ ([fe80::611e:6a6b:9109:5aa8]) by MN2PR05MB6141.namprd05.prod.outlook.com
+ ([fe80::611e:6a6b:9109:5aa8%7]) with mapi id 15.20.2516.003; Fri, 6 Dec 2019
+ 14:10:59 +0000
+To: "hch@lst.de" <hch@lst.de>, "christian.koenig@amd.com"
+ <christian.koenig@amd.com>
+Subject: Re: [PATCH 2/2] dma-mapping: force unencryped devices are always
+ addressing limited
+Thread-Topic: [PATCH 2/2] dma-mapping: force unencryped devices are always
+ addressing limited
+Thread-Index: AQHVqqNPg/9Qsdg+60Sr+vJTCD2APKetKK8A
+Date: Fri, 6 Dec 2019 14:10:59 +0000
+Message-ID: <c98d594b465d3d8228743bc54017b8c456695219.camel@vmware.com>
+References: <20191204130339.22804-1-hch@lst.de>
+ <20191204130339.22804-3-hch@lst.de>
+In-Reply-To: <20191204130339.22804-3-hch@lst.de>
+Accept-Language: en-US
 Content-Language: en-US
-X-ClientProxiedBy: AM4PR0202CA0013.eurprd02.prod.outlook.com
- (2603:10a6:200:89::23) To DM5PR12MB1705.namprd12.prod.outlook.com
- (2603:10b6:3:10c::22)
-MIME-Version: 1.0
-X-Originating-IP: [2a02:908:1252:fb60:be8a:bd56:1f94:86e7]
-X-MS-PublicTrafficType: Email
-X-MS-Office365-Filtering-HT: Tenant
-X-MS-Office365-Filtering-Correlation-Id: 8f70376f-1e69-4869-50df-08d77a2a5585
-X-MS-TrafficTypeDiagnostic: DM5PR12MB1435:|DM5PR12MB1435:
-X-MS-Exchange-Transport-Forked: True
-X-Microsoft-Antispam-PRVS: <DM5PR12MB143543C03DED96EF9FFC3269835F0@DM5PR12MB1435.namprd12.prod.outlook.com>
-X-MS-Oob-TLC-OOBClassifiers: OLM:9508;
-X-Forefront-PRVS: 0243E5FD68
-X-Forefront-Antispam-Report: SFV:NSPM;
- SFS:(10009020)(4636009)(396003)(366004)(376002)(136003)(346002)(39860400002)(13464003)(189003)(199004)(36756003)(14454004)(230700001)(2616005)(14444005)(229853002)(6486002)(66476007)(2906002)(478600001)(966005)(66946007)(66556008)(45080400002)(23676004)(11346002)(52116002)(65956001)(31686004)(76176011)(305945005)(99286004)(186003)(8936002)(5660300002)(81156014)(81166006)(6666004)(8676002)(50466002)(6506007)(53546011)(316002)(25786009)(86362001)(6512007)(31696002)(58126008)(4326008)(54906003)(110136005);
- DIR:OUT; SFP:1101; SCL:1; SRVR:DM5PR12MB1435;
- H:DM5PR12MB1705.namprd12.prod.outlook.com; FPR:; SPF:None; LANG:en;
- PTR:InfoNoRecords; MX:1; A:1; 
-Received-SPF: None (protection.outlook.com: amd.com does not designate
+X-MS-Has-Attach: 
+X-MS-TNEF-Correlator: 
+authentication-results: spf=none (sender IP is )
+ smtp.mailfrom=thellstrom@vmware.com; 
+x-originating-ip: [155.4.205.35]
+x-ms-publictraffictype: Email
+x-ms-office365-filtering-correlation-id: 25e2256e-836c-485f-9ad7-08d77a561eb0
+x-ms-traffictypediagnostic: MN2PR05MB6814:
+x-microsoft-antispam-prvs: <MN2PR05MB68143162087E1B6829692182A15F0@MN2PR05MB6814.namprd05.prod.outlook.com>
+x-ms-oob-tlc-oobclassifiers: OLM:9508;
+x-forefront-prvs: 0243E5FD68
+x-forefront-antispam-report: SFV:NSPM;
+ SFS:(10009020)(4636009)(366004)(396003)(376002)(346002)(39860400002)(136003)(199004)(189003)(66446008)(316002)(8936002)(71190400001)(66556008)(71200400001)(66476007)(305945005)(5660300002)(91956017)(36756003)(54906003)(110136005)(2906002)(118296001)(66946007)(229853002)(6512007)(86362001)(99286004)(478600001)(102836004)(6506007)(8676002)(81166006)(76176011)(6486002)(186003)(2616005)(81156014)(26005)(4326008)(64756008)(76116006);
+ DIR:OUT; SFP:1101; SCL:1; SRVR:MN2PR05MB6814;
+ H:MN2PR05MB6141.namprd05.prod.outlook.com; FPR:; SPF:None; LANG:en;
+ PTR:InfoNoRecords; A:1; MX:1; 
+received-spf: None (protection.outlook.com: vmware.com does not designate
  permitted sender hosts)
-X-MS-Exchange-SenderADCheck: 1
-X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info: XKiCJCjhda7OoA5hOLSxYpaRvDGANzEvEEQvLLHPbXzEJdQd2/tf+NP/nKoUTrdGyclNwXODQ8N6+iwfhHdpZ/qJc5CS/Y9mKfg4eWeo4BXSv3OaCvM29Q2qzgiZ5/1OkIX3p3VzrPFeAjH22up08CRiO0EEZgD9bden8UMfoY4n34xh9bZE/btB3JvKWgrKt0FwjqkMyMCwu0lDyt/8QjVFrenSBXgw14R5jvNjAtklojHMTmx86jtnL0KbZYVfKMT/toKDL+JZU9YMGuQ1FWUh8SOTdLU9puMJEFdIhn3Msripwi5Y4IIWFJuFUe4O2JoM1kWOvAfjgnGnD3qmVs5yAm9RUItARVoGQEVO6+ABrDZS6E6biesIjHpL13Nq49WtlEb2dVgEJDcY9EVxjgEo83n47Fw1c3G5+6XYqa9yu6jjY9yU74qQUYSZRSI7y4w47FTHWNH5BeReDTj2CYTaQJAO+JzjOX+CMlQZITSyA2ihWFOLw8z3wLdXHqLH8uVDEfA5Ss5yc1K7ZuBgTa/lN9xXpFpc5kVREtllL2M=
-X-OriginatorOrg: amd.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: 8f70376f-1e69-4869-50df-08d77a2a5585
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 06 Dec 2019 08:57:34.2118 (UTC)
-X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
-X-MS-Exchange-CrossTenant-Id: 3dd8961f-e488-4e60-8e11-a82d994e183d
-X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: gS4bMWVAsA7C9CoQAzWfzujLaS0CKhAodEoTfQ6MmCsDs9BzaX5yvZNGt41/eVhg
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: DM5PR12MB1435
-Cc: "iommu@lists.linux-foundation.org" <iommu@lists.linux-foundation.org>,
- "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>
+x-ms-exchange-senderadcheck: 1
+x-microsoft-antispam: BCL:0;
+x-microsoft-antispam-message-info: 0vNigA4u55E/GOHw8i99hED6wtGY8NN0R1cxCSIzed7w9PEAmjNNOjccHq2+i+UT4XDsY/zkd5rPsAxelKmAfPmsA6VszMwnEmJWyP46XMGco85yjJIKJuZjJh3IfmBdtwZNLYB5skCnJqPUsWomvbWPCNTCsCKyLZL9igp6ZkpzzpdjzESGX7anz8rC6dHDEi6Wm6mUKumJAgtGl4LC2oqtr276TnqylT/s4cF5YwHq944mPFzPHzGSQ009MjPy1uxEVtUPGWC2urgDATzzJu3HOBd9MXHM1znK5MCVo6nA0v5uxdIUuTMMyOg2E8/WAYtyFQNQ8Y8ODoOhZS3w/V4wT4kLA94wTKXHz4BwQwcnEUCTvm6pl271B6lBXmFY5NE7PXZtwXBV+8ssQ9ZnjrMRbyYvwC93hcHLjd28AKuDTtHJFYqgUZI5jIlf6UIr
+x-ms-exchange-transport-forked: True
+Content-ID: <4EF5620F9EA7224F9ACF5E0AA5D5D863@namprd05.prod.outlook.com>
+MIME-Version: 1.0
+X-OriginatorOrg: vmware.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: 25e2256e-836c-485f-9ad7-08d77a561eb0
+X-MS-Exchange-CrossTenant-originalarrivaltime: 06 Dec 2019 14:10:59.5092 (UTC)
+X-MS-Exchange-CrossTenant-fromentityheader: Hosted
+X-MS-Exchange-CrossTenant-id: b39138ca-3cee-4b4a-a4d6-cd83d9dd62f0
+X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
+X-MS-Exchange-CrossTenant-userprincipalname: +BJ8IvB8xVjAvaPpbl3nqsXbhX+NXOBjkTRaLjlb/SnblsahndquM+UWf/hxPfMyo2qxUUBL6aEj9YWc90K7eA==
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: MN2PR05MB6814
+Cc: "thomas.lendacky@amd.com" <thomas.lendacky@amd.com>,
+ "iommu@lists.linux-foundation.org" <iommu@lists.linux-foundation.org>,
+ "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
+ "linux-mm@kvack.org" <linux-mm@kvack.org>
 X-BeenThere: iommu@lists.linux-foundation.org
 X-Mailman-Version: 2.1.15
 Precedence: list
@@ -133,158 +132,97 @@ List-Post: <mailto:iommu@lists.linux-foundation.org>
 List-Help: <mailto:iommu-request@lists.linux-foundation.org?subject=help>
 List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
  <mailto:iommu-request@lists.linux-foundation.org?subject=subscribe>
+From: Thomas Hellstrom via iommu <iommu@lists.linux-foundation.org>
+Reply-To: Thomas Hellstrom <thellstrom@vmware.com>
+Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
-Content-Type: text/plain; charset="us-ascii"; Format="flowed"
 Errors-To: iommu-bounces@lists.linux-foundation.org
 Sender: "iommu" <iommu-bounces@lists.linux-foundation.org>
 
-Am 04.12.19 um 17:08 schrieb Deucher, Alexander:
->> -----Original Message-----
->> From: Deucher, Alexander
->> Sent: Monday, December 2, 2019 11:37 AM
->> To: Lucas Stach <dev@lynxeye.de>; Kai-Heng Feng
->> <kai.heng.feng@canonical.com>; joro@8bytes.org; Koenig, Christian
->> (Christian.Koenig@amd.com) <Christian.Koenig@amd.com>
->> Cc: iommu@lists.linux-foundation.org; linux-kernel@vger.kernel.org
->> Subject: RE: [PATCH v2] iommu/amd: Disable IOMMU on Stoney Ridge
->> systems
->>
->>> -----Original Message-----
->>> From: Lucas Stach <dev@lynxeye.de>
->>> Sent: Sunday, December 1, 2019 7:43 AM
->>> To: Kai-Heng Feng <kai.heng.feng@canonical.com>; joro@8bytes.org
->>> Cc: Deucher, Alexander <Alexander.Deucher@amd.com>;
->>> iommu@lists.linux-foundation.org; linux-kernel@vger.kernel.org
->>> Subject: Re: [PATCH v2] iommu/amd: Disable IOMMU on Stoney Ridge
->>> systems
->>>
->>> Am Freitag, den 29.11.2019, 22:21 +0800 schrieb Kai-Heng Feng:
->>>> Serious screen flickering when Stoney Ridge outputs to a 4K monitor.
->>>>
->>>> According to Alex Deucher, IOMMU isn't enabled on Windows, so let's
->>>> do the same here to avoid screen flickering on 4K monitor.
->>> This doesn't seem like a good solution, especially if there isn't a
->>> method for the user to opt-out.  Some users might prefer having the
->>> IOMMU support to 4K display output.
->>>
->>> But before using the big hammer of disabling or breaking one of those
->>> features, we should take a look at what's the issue here. Screen
->>> flickering caused by the IOMMU being active hints to the IOMMU not
->>> being able to sustain the translation bandwidth required by the high-
->>> bandwidth isochronous transfers caused by 4K scanout, most likely due
->>> to insufficient TLB space.
->>>
->>> As far as I know the framebuffer memory for the display buffers is
->>> located in stolen RAM, and thus contigous in memory. I don't know the
->>> details of the GPU integration on those APUs, but maybe there even is
->>> a way to bypass the IOMMU for the stolen VRAM regions?
->>>
->>> If there isn't and all GPU traffic passes through the IOMMU when
->>> active, we should check if the stolen RAM is mapped with hugepages on
->>> the IOMMU side. All the stolen RAM can most likely be mapped with a
->>> few hugepage mappings, which should reduce IOMMU TLB demand by a
->> large margin.
->>
->> The is no issue when we scan out of the carve out region.  The issue occurs
->> when we scan out of regular system memory (scatter/gather).  Many newer
->> laptops have very small carve out regions (e.g., 32 MB), so we have to use
->> regular system pages to support multiple high resolution displays.  The
->> problem is, the latency gets too high at some point when the IOMMU is
->> involved.  Huge pages would probably help in this case, but I'm not sure if
->> there is any way to guarantee that we get huge pages for system memory.  I
->> guess we could use CMA or something like that.
-> Thomas recently sent out a patch set to add huge page support to ttm:
-> https://patchwork.freedesktop.org/series/70090/
-> We'd still need a way to guarantee huge pages for the display buffer.
+Hi, Christoph.
 
-That unfortunately won't help in this case since the TTM work Thomas is 
-doing only affects the CPU page tables.
 
-Additional to that we already allocate huge pages for the display buffer 
-in a best effort manner and it doesn't seem to help.
+On Wed, 2019-12-04 at 14:03 +0100, Christoph Hellwig wrote:
+> Devices that are forced to DMA through swiotlb need to be treated as
+> if
+> they are addressing limited.
+> 
+> Signed-off-by: Christoph Hellwig <hch@lst.de>
+> ---
+>  include/linux/dma-direct.h | 1 +
+>  kernel/dma/direct.c        | 8 ++++++--
+>  kernel/dma/mapping.c       | 3 +++
+>  3 files changed, 10 insertions(+), 2 deletions(-)
+> 
+> diff --git a/include/linux/dma-direct.h b/include/linux/dma-direct.h
+> index 24b8684aa21d..83aac21434c6 100644
+> --- a/include/linux/dma-direct.h
+> +++ b/include/linux/dma-direct.h
+> @@ -85,4 +85,5 @@ int dma_direct_mmap(struct device *dev, struct
+> vm_area_struct *vma,
+>  		void *cpu_addr, dma_addr_t dma_addr, size_t size,
+>  		unsigned long attrs);
+>  int dma_direct_supported(struct device *dev, u64 mask);
+> +bool dma_direct_addressing_limited(struct device *dev);
+>  #endif /* _LINUX_DMA_DIRECT_H */
+> diff --git a/kernel/dma/direct.c b/kernel/dma/direct.c
+> index 6af7ae83c4ad..450f3abe5cb5 100644
+> --- a/kernel/dma/direct.c
+> +++ b/kernel/dma/direct.c
+> @@ -497,11 +497,15 @@ int dma_direct_supported(struct device *dev,
+> u64 mask)
+>  	return mask >= __phys_to_dma(dev, min_mask);
+>  }
+>  
+> +bool dma_direct_addressing_limited(struct device *dev)
+> +{
+> +	return force_dma_unencrypted(dev) || swiotlb_force ==
+> SWIOTLB_FORCE;
+> +}
+> +
+>  size_t dma_direct_max_mapping_size(struct device *dev)
+>  {
+>  	/* If SWIOTLB is active, use its maximum mapping size */
+> -	if (is_swiotlb_active() &&
+> -	    (dma_addressing_limited(dev) || swiotlb_force ==
+> SWIOTLB_FORCE))
+> +	if (is_swiotlb_active() && dma_addressing_limited(dev))
+>  		return swiotlb_max_mapping_size(dev);
+>  	return SIZE_MAX;
+>  }
+> diff --git a/kernel/dma/mapping.c b/kernel/dma/mapping.c
+> index 1dbe6d725962..ebc60633d89a 100644
+> --- a/kernel/dma/mapping.c
+> +++ b/kernel/dma/mapping.c
+> @@ -416,6 +416,9 @@ EXPORT_SYMBOL_GPL(dma_get_merge_boundary);
+>   */
+>  bool dma_addressing_limited(struct device *dev)
+>  {
+> +	if (dma_is_direct(get_dma_ops(dev)) &&
+> +	    dma_direct_addressing_limited(dev))
+> +		return true;
 
-If I understood the hardware guys correctly even transparent mode adds 
-to much latency so that the display block might run into an underflow.
+This works fine for vmwgfx, for which the below expression is always 0.
+But it looks like the only current user of dma_addressing_limited
+outside of the dma code, radeon, actually wants only the below
+expression to force GFP_DMA32 page allocations when the devices have
+limited dma address space. Perhaps Christian can elaborate on that.
 
-The only solution documented to work is to either disabling the IOMMU or 
-not using scan-out from system memory.
+So in the end it looks like we have two different use cases. One to
+force coherent memory (vmwgfx, possibly other grahpics drivers) or
+reduced queue depth (vmw_pvscsi) when we have bounce-buffering.
 
-Alex, we should probably kick of another internal discussion with the 
-hardware guys about that.
+The other one is to force GFP_DMA32 page allocation when the device
+dma-addressing is limited. Perhaps this mode can be replaced by using
+dma_coherent memory and stripped that functionality from TTM?
 
-Christian.
+>  	return min_not_zero(dma_get_mask(dev), dev->bus_dma_limit) <
+>  			    dma_get_required_mask(dev);
+>  }
 
->
-> Alex
->
->> Alex
->>
->>> Regards,
->>> Lucas
->>>
->>>> Cc: Alex Deucher <alexander.deucher@amd.com>
->>>> Bug:
->>>>
->> https://nam11.safelinks.protection.outlook.com/?url=https%3A%2F%2Fgi
->>>> tl
->>>>
->> ab.freedesktop.org%2Fdrm%2Famd%2Fissues%2F961&amp;data=02%7C01%
->>> 7Calexa
->> nder.deucher%40amd.com%7C30540b2bf2be417c4d9508d7765bf07f%7C3dd
->>> 8961fe4
->> 884e608e11a82d994e183d%7C0%7C0%7C637108010075463266&amp;sdata=1
->>> ZIZUWos
->>>> cPiB4auOY10jlGzoFeWszYMDBQG0CtrrOO8%3D&amp;reserved=0
->>>> Signed-off-by: Kai-Heng Feng <kai.heng.feng@canonical.com>
->>>> ---
->>>> v2:
->>>> - Find Stoney graphics instead of host bridge.
->>>>
->>>>   drivers/iommu/amd_iommu_init.c | 13 ++++++++++++-
->>>>   1 file changed, 12 insertions(+), 1 deletion(-)
->>>>
->>>> diff --git a/drivers/iommu/amd_iommu_init.c
->>>> b/drivers/iommu/amd_iommu_init.c index 568c52317757..139aa6fdadda
->>>> 100644
->>>> --- a/drivers/iommu/amd_iommu_init.c
->>>> +++ b/drivers/iommu/amd_iommu_init.c
->>>> @@ -2516,6 +2516,7 @@ static int __init early_amd_iommu_init(void)
->>>>   	struct acpi_table_header *ivrs_base;
->>>>   	acpi_status status;
->>>>   	int i, remap_cache_sz, ret = 0;
->>>> +	u32 pci_id;
->>>>
->>>>   	if (!amd_iommu_detected)
->>>>   		return -ENODEV;
->>>> @@ -2603,6 +2604,16 @@ static int __init early_amd_iommu_init(void)
->>>>   	if (ret)
->>>>   		goto out;
->>>>
->>>> +	/* Disable IOMMU if there's Stoney Ridge graphics */
->>>> +	for (i = 0; i < 32; i++) {
->>>> +		pci_id = read_pci_config(0, i, 0, 0);
->>>> +		if ((pci_id & 0xffff) == 0x1002 && (pci_id >> 16) == 0x98e4) {
->>>> +			pr_info("Disable IOMMU on Stoney Ridge\n");
->>>> +			amd_iommu_disabled = true;
->>>> +			break;
->>>> +		}
->>>> +	}
->>>> +
->>>>   	/* Disable any previously enabled IOMMUs */
->>>>   	if (!is_kdump_kernel() || amd_iommu_disabled)
->>>>   		disable_iommus();
->>>> @@ -2711,7 +2722,7 @@ static int __init state_next(void)
->>>>   		ret = early_amd_iommu_init();
->>>>   		init_state = ret ? IOMMU_INIT_ERROR :
->>> IOMMU_ACPI_FINISHED;
->>>>   		if (init_state == IOMMU_ACPI_FINISHED &&
->>> amd_iommu_disabled) {
->>>> -			pr_info("AMD IOMMU disabled on kernel command-
->>> line\n");
->>>> +			pr_info("AMD IOMMU disabled\n");
->>>>   			init_state = IOMMU_CMDLINE_DISABLED;
->>>>   			ret = -EINVAL;
->>>>   		}
+
+Thanks,
+Thomas
 
 _______________________________________________
 iommu mailing list
