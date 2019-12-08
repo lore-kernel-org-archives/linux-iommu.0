@@ -1,4 +1,4 @@
-Return-Path: <SRS0=31RM=Z5=lists.linux-foundation.org=iommu-bounces@kernel.org>
+Return-Path: <SRS0=Veyj=Z6=lists.linux-foundation.org=iommu-bounces@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
@@ -6,74 +6,72 @@ X-Spam-Status: No, score=-7.2 required=3.0 tests=HEADER_FROM_DIFFERENT_DOMAINS,
 	MAILING_LIST_MULTI,MENTIONS_GIT_HOSTING,SPF_HELO_NONE,SPF_PASS,
 	USER_AGENT_SANE_1 autolearn=unavailable autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 4C2E7C2BBE2
-	for <iommu@archiver.kernel.org>; Sat,  7 Dec 2019 11:44:32 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 160BFC43603
+	for <iommu@archiver.kernel.org>; Sun,  8 Dec 2019 00:48:49 +0000 (UTC)
 Received: from silver.osuosl.org (smtp3.osuosl.org [140.211.166.136])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by mail.kernel.org (Postfix) with ESMTPS id 17EEB2253D
-	for <iommu@archiver.kernel.org>; Sat,  7 Dec 2019 11:44:31 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 17EEB2253D
+	by mail.kernel.org (Postfix) with ESMTPS id D06AB205F4
+	for <iommu@archiver.kernel.org>; Sun,  8 Dec 2019 00:48:48 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org D06AB205F4
 Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=intel.com
 Authentication-Results: mail.kernel.org; spf=pass smtp.mailfrom=iommu-bounces@lists.linux-foundation.org
 Received: from localhost (localhost [127.0.0.1])
-	by silver.osuosl.org (Postfix) with ESMTP id B3B8D20485;
-	Sat,  7 Dec 2019 11:44:31 +0000 (UTC)
+	by silver.osuosl.org (Postfix) with ESMTP id 9254C20412;
+	Sun,  8 Dec 2019 00:48:48 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
 Received: from silver.osuosl.org ([127.0.0.1])
 	by localhost (.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
-	with ESMTP id G6ZaufxniEYX; Sat,  7 Dec 2019 11:44:30 +0000 (UTC)
+	with ESMTP id CvAWOU4FPvrD; Sun,  8 Dec 2019 00:48:45 +0000 (UTC)
 Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [140.211.9.56])
-	by silver.osuosl.org (Postfix) with ESMTP id D492D2046F;
-	Sat,  7 Dec 2019 11:44:30 +0000 (UTC)
+	by silver.osuosl.org (Postfix) with ESMTP id 881F0203AA;
+	Sun,  8 Dec 2019 00:48:45 +0000 (UTC)
 Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
-	by lists.linuxfoundation.org (Postfix) with ESMTP id C0D74C1D7D;
-	Sat,  7 Dec 2019 11:44:30 +0000 (UTC)
-Received: from silver.osuosl.org (smtp3.osuosl.org [140.211.166.136])
- by lists.linuxfoundation.org (Postfix) with ESMTP id E544BC077D
- for <iommu@lists.linux-foundation.org>; Sat,  7 Dec 2019 11:44:28 +0000 (UTC)
+	by lists.linuxfoundation.org (Postfix) with ESMTP id 7B50AC1D7E;
+	Sun,  8 Dec 2019 00:48:45 +0000 (UTC)
+Received: from whitealder.osuosl.org (smtp1.osuosl.org [140.211.166.138])
+ by lists.linuxfoundation.org (Postfix) with ESMTP id DB8C1C077D
+ for <iommu@lists.linux-foundation.org>; Sun,  8 Dec 2019 00:48:43 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
- by silver.osuosl.org (Postfix) with ESMTP id B5A4520483
- for <iommu@lists.linux-foundation.org>; Sat,  7 Dec 2019 11:44:28 +0000 (UTC)
+ by whitealder.osuosl.org (Postfix) with ESMTP id BF41D86759
+ for <iommu@lists.linux-foundation.org>; Sun,  8 Dec 2019 00:48:43 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from silver.osuosl.org ([127.0.0.1])
+Received: from whitealder.osuosl.org ([127.0.0.1])
  by localhost (.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
- with ESMTP id tiGk+d2w6Jk2 for <iommu@lists.linux-foundation.org>;
- Sat,  7 Dec 2019 11:44:27 +0000 (UTC)
+ with ESMTP id 8JPEqA2ap4kJ for <iommu@lists.linux-foundation.org>;
+ Sun,  8 Dec 2019 00:48:42 +0000 (UTC)
 X-Greylist: domain auto-whitelisted by SQLgrey-1.7.6
-Received: from mga14.intel.com (mga14.intel.com [192.55.52.115])
- by silver.osuosl.org (Postfix) with ESMTPS id 7B2192046F
- for <iommu@lists.linux-foundation.org>; Sat,  7 Dec 2019 11:44:27 +0000 (UTC)
+Received: from mga02.intel.com (mga02.intel.com [134.134.136.20])
+ by whitealder.osuosl.org (Postfix) with ESMTPS id 9182886747
+ for <iommu@lists.linux-foundation.org>; Sun,  8 Dec 2019 00:48:42 +0000 (UTC)
 X-Amp-Result: UNKNOWN
 X-Amp-Original-Verdict: FILE UNKNOWN
 X-Amp-File-Uploaded: False
-Received: from orsmga008.jf.intel.com ([10.7.209.65])
- by fmsmga103.fm.intel.com with ESMTP/TLS/DHE-RSA-AES256-GCM-SHA384;
- 07 Dec 2019 03:44:26 -0800
+Received: from orsmga007.jf.intel.com ([10.7.209.58])
+ by orsmga101.jf.intel.com with ESMTP/TLS/DHE-RSA-AES256-GCM-SHA384;
+ 07 Dec 2019 16:48:41 -0800
 X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.69,287,1571727600"; 
- d="gz'50?scan'50,208,50";a="206391560"
+X-IronPort-AV: E=Sophos;i="5.69,290,1571727600"; d="scan'208";a="202479633"
 Received: from lkp-server01.sh.intel.com (HELO lkp-server01) ([10.239.97.150])
- by orsmga008.jf.intel.com with ESMTP; 07 Dec 2019 03:44:23 -0800
+ by orsmga007.jf.intel.com with ESMTP; 07 Dec 2019 16:48:39 -0800
 Received: from kbuild by lkp-server01 with local (Exim 4.89)
  (envelope-from <lkp@intel.com>)
- id 1idYVa-000HSL-Ug; Sat, 07 Dec 2019 19:44:22 +0800
-Date: Sat, 7 Dec 2019 19:44:18 +0800
+ id 1idkkY-00094a-Do; Sun, 08 Dec 2019 08:48:38 +0800
+Date: Sun, 8 Dec 2019 08:48:29 +0800
 From: kbuild test robot <lkp@intel.com>
-To: Ashish Kalra <Ashish.Kalra@amd.com>
-Subject: Re: [PATCH] swiotlb: Adjust SWIOTBL bounce buffer size for SEV guests.
-Message-ID: <201912071913.N8iDqXct%lkp@intel.com>
-References: <20191206003652.14102-1-Ashish.Kalra@amd.com>
+To: James Sewart <jamessewart@arista.com>
+Subject: Re: [PATCH v6 2/3] PCI: Add parameter nr_devfns to pci_add_dma_alias
+Message-ID: <201912080729.iJaJfY0k%lkp@intel.com>
+References: <D4C7374E-4DFE-4024-8E76-9F54BF421B62@arista.com>
 MIME-Version: 1.0
-Content-Type: multipart/mixed; boundary="6f26a4mbvvngazog"
 Content-Disposition: inline
-In-Reply-To: <20191206003652.14102-1-Ashish.Kalra@amd.com>
+In-Reply-To: <D4C7374E-4DFE-4024-8E76-9F54BF421B62@arista.com>
 User-Agent: NeoMutt/20170113 (1.7.2)
-Cc: Thomas.Lendacky@amd.com, kbuild-all@lists.01.org,
- dave.hansen@linux-intel.com, konrad.wilk@oracle.com, peterz@infradead.org,
- x86@kernel.org, linux-kernel@vger.kernel.org, iommu@lists.linux-foundation.org,
- mingo@redhat.com, bp@alien8.de, luto@kernel.org, hpa@zytor.com,
- brijesh.singh@amd.com, tglx@linutronix.de, hch@lst.de
+Cc: Alex Williamson <alex.williamson@redhat.com>, kbuild-all@lists.01.org,
+ Dmitry Safonov <dima@arista.com>, linux-pci@vger.kernel.org,
+ Dmitry Safonov <0x7f454c46@gmail.com>, linux-kernel@vger.kernel.org,
+ iommu@lists.linux-foundation.org, Bjorn Helgaas <helgaas@kernel.org>,
+ Logan Gunthorpe <logang@deltatee.com>
 X-BeenThere: iommu@lists.linux-foundation.org
 X-Mailman-Version: 2.1.15
 Precedence: list
@@ -86,211 +84,113 @@ List-Post: <mailto:iommu@lists.linux-foundation.org>
 List-Help: <mailto:iommu-request@lists.linux-foundation.org?subject=help>
 List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
  <mailto:iommu-request@lists.linux-foundation.org?subject=subscribe>
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: 7bit
 Errors-To: iommu-bounces@lists.linux-foundation.org
 Sender: "iommu" <iommu-bounces@lists.linux-foundation.org>
 
+Hi James,
 
---6f26a4mbvvngazog
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
+Thank you for the patch! Perhaps something to improve:
 
-Hi Ashish,
-
-Thank you for the patch! Yet something to improve:
-
-[auto build test ERROR on hch-configfs/for-next]
-[also build test ERROR on linus/master v5.4 next-20191202]
+[auto build test WARNING on v5.4-rc8]
+[also build test WARNING on next-20191206]
+[cannot apply to pci/next]
 [if your patch is applied to the wrong git tree, please drop us a note to help
 improve the system. BTW, we also suggest to use '--base' option to specify the
 base tree in git format-patch, please see https://stackoverflow.com/a/37406982]
 
-url:    https://github.com/0day-ci/linux/commits/Ashish-Kalra/swiotlb-Adjust-SWIOTBL-bounce-buffer-size-for-SEV-guests/20191207-184151
-base:   git://git.infradead.org/users/hch/configfs.git for-next
-config: i386-tinyconfig (attached as .config)
-compiler: gcc-7 (Debian 7.5.0-1) 7.5.0
+url:    https://github.com/0day-ci/linux/commits/James-Sewart/PCI-Fix-off-by-one-in-dma_alias_mask-allocation-size/20191204-034421
+base:    af42d3466bdc8f39806b26f593604fdc54140bcb
 reproduce:
-        # save the attached .config to linux build tree
-        make ARCH=i386 
+        # apt-get install sparse
+        # sparse version: v0.6.1-91-g817270f-dirty
+        make ARCH=x86_64 allmodconfig
+        make C=1 CF='-fdiagnostic-prefix -D__CHECK_ENDIAN__'
 
 If you fix the issue, kindly add following tag
 Reported-by: kbuild test robot <lkp@intel.com>
 
-All errors (new ones prefixed by >>):
 
-   In file included from arch/x86/kernel/pci-dma.c:2:0:
->> include/linux/dma-direct.h:49:1: error: expected identifier or '(' before '{' token
-    {
-    ^
-   include/linux/dma-direct.h:47:29: warning: 'adjust_swiotlb_default_size' declared 'static' but never defined [-Wunused-function]
-    static inline unsigned long adjust_swiotlb_default_size
-                                ^~~~~~~~~~~~~~~~~~~~~~~~~~~
+sparse warnings: (new ones prefixed by >>)
 
-vim +49 include/linux/dma-direct.h
+>> drivers/iommu/amd_iommu.c:288:34: sparse: sparse: not enough arguments for function pci_add_dma_alias
 
-    43	
-    44	#ifdef CONFIG_ARCH_HAS_ADJUST_SWIOTLB_DEFAULT
-    45	unsigned long adjust_swiotlb_default_size(unsigned long default_size);
-    46	#else
-    47	static inline unsigned long adjust_swiotlb_default_size
-    48			(unsigned long default_size);
-  > 49	{
-    50		return default_size;
-    51	}
-    52	#endif	/* CONFIG_ARCH_HAS_ADJUST_SWIOTLB_DEFAULT */
-    53	
+vim +288 drivers/iommu/amd_iommu.c
+
+e3156048346c28 Joerg Roedel   2016-04-08  234  
+e3156048346c28 Joerg Roedel   2016-04-08  235  static u16 get_alias(struct device *dev)
+e3156048346c28 Joerg Roedel   2016-04-08  236  {
+e3156048346c28 Joerg Roedel   2016-04-08  237  	struct pci_dev *pdev = to_pci_dev(dev);
+e3156048346c28 Joerg Roedel   2016-04-08  238  	u16 devid, ivrs_alias, pci_alias;
+e3156048346c28 Joerg Roedel   2016-04-08  239  
+6c0b43df74f900 Joerg Roedel   2016-05-09  240  	/* The callers make sure that get_device_id() does not fail here */
+e3156048346c28 Joerg Roedel   2016-04-08  241  	devid = get_device_id(dev);
+5ebb1bc2d63d90 Arindam Nath   2018-09-18  242  
+5ebb1bc2d63d90 Arindam Nath   2018-09-18  243  	/* For ACPI HID devices, we simply return the devid as such */
+5ebb1bc2d63d90 Arindam Nath   2018-09-18  244  	if (!dev_is_pci(dev))
+5ebb1bc2d63d90 Arindam Nath   2018-09-18  245  		return devid;
+5ebb1bc2d63d90 Arindam Nath   2018-09-18  246  
+e3156048346c28 Joerg Roedel   2016-04-08  247  	ivrs_alias = amd_iommu_alias_table[devid];
+5ebb1bc2d63d90 Arindam Nath   2018-09-18  248  
+e3156048346c28 Joerg Roedel   2016-04-08  249  	pci_for_each_dma_alias(pdev, __last_alias, &pci_alias);
+e3156048346c28 Joerg Roedel   2016-04-08  250  
+e3156048346c28 Joerg Roedel   2016-04-08  251  	if (ivrs_alias == pci_alias)
+e3156048346c28 Joerg Roedel   2016-04-08  252  		return ivrs_alias;
+e3156048346c28 Joerg Roedel   2016-04-08  253  
+e3156048346c28 Joerg Roedel   2016-04-08  254  	/*
+e3156048346c28 Joerg Roedel   2016-04-08  255  	 * DMA alias showdown
+e3156048346c28 Joerg Roedel   2016-04-08  256  	 *
+e3156048346c28 Joerg Roedel   2016-04-08  257  	 * The IVRS is fairly reliable in telling us about aliases, but it
+e3156048346c28 Joerg Roedel   2016-04-08  258  	 * can't know about every screwy device.  If we don't have an IVRS
+e3156048346c28 Joerg Roedel   2016-04-08  259  	 * reported alias, use the PCI reported alias.  In that case we may
+e3156048346c28 Joerg Roedel   2016-04-08  260  	 * still need to initialize the rlookup and dev_table entries if the
+e3156048346c28 Joerg Roedel   2016-04-08  261  	 * alias is to a non-existent device.
+e3156048346c28 Joerg Roedel   2016-04-08  262  	 */
+e3156048346c28 Joerg Roedel   2016-04-08  263  	if (ivrs_alias == devid) {
+e3156048346c28 Joerg Roedel   2016-04-08  264  		if (!amd_iommu_rlookup_table[pci_alias]) {
+e3156048346c28 Joerg Roedel   2016-04-08  265  			amd_iommu_rlookup_table[pci_alias] =
+e3156048346c28 Joerg Roedel   2016-04-08  266  				amd_iommu_rlookup_table[devid];
+e3156048346c28 Joerg Roedel   2016-04-08  267  			memcpy(amd_iommu_dev_table[pci_alias].data,
+e3156048346c28 Joerg Roedel   2016-04-08  268  			       amd_iommu_dev_table[devid].data,
+e3156048346c28 Joerg Roedel   2016-04-08  269  			       sizeof(amd_iommu_dev_table[pci_alias].data));
+e3156048346c28 Joerg Roedel   2016-04-08  270  		}
+e3156048346c28 Joerg Roedel   2016-04-08  271  
+e3156048346c28 Joerg Roedel   2016-04-08  272  		return pci_alias;
+e3156048346c28 Joerg Roedel   2016-04-08  273  	}
+e3156048346c28 Joerg Roedel   2016-04-08  274  
+5f226da1b1d706 Bjorn Helgaas  2019-02-08  275  	pci_info(pdev, "Using IVRS reported alias %02x:%02x.%d "
+5f226da1b1d706 Bjorn Helgaas  2019-02-08  276  		"for device [%04x:%04x], kernel reported alias "
+e3156048346c28 Joerg Roedel   2016-04-08  277  		"%02x:%02x.%d\n", PCI_BUS_NUM(ivrs_alias), PCI_SLOT(ivrs_alias),
+5f226da1b1d706 Bjorn Helgaas  2019-02-08  278  		PCI_FUNC(ivrs_alias), pdev->vendor, pdev->device,
+e3156048346c28 Joerg Roedel   2016-04-08  279  		PCI_BUS_NUM(pci_alias), PCI_SLOT(pci_alias),
+e3156048346c28 Joerg Roedel   2016-04-08  280  		PCI_FUNC(pci_alias));
+e3156048346c28 Joerg Roedel   2016-04-08  281  
+e3156048346c28 Joerg Roedel   2016-04-08  282  	/*
+e3156048346c28 Joerg Roedel   2016-04-08  283  	 * If we don't have a PCI DMA alias and the IVRS alias is on the same
+e3156048346c28 Joerg Roedel   2016-04-08  284  	 * bus, then the IVRS table may know about a quirk that we don't.
+e3156048346c28 Joerg Roedel   2016-04-08  285  	 */
+e3156048346c28 Joerg Roedel   2016-04-08  286  	if (pci_alias == devid &&
+e3156048346c28 Joerg Roedel   2016-04-08  287  	    PCI_BUS_NUM(ivrs_alias) == pdev->bus->number) {
+7afd16f882887c Linus Torvalds 2016-05-19 @288  		pci_add_dma_alias(pdev, ivrs_alias & 0xff);
+5f226da1b1d706 Bjorn Helgaas  2019-02-08  289  		pci_info(pdev, "Added PCI DMA alias %02x.%d\n",
+5f226da1b1d706 Bjorn Helgaas  2019-02-08  290  			PCI_SLOT(ivrs_alias), PCI_FUNC(ivrs_alias));
+e3156048346c28 Joerg Roedel   2016-04-08  291  	}
+e3156048346c28 Joerg Roedel   2016-04-08  292  
+e3156048346c28 Joerg Roedel   2016-04-08  293  	return ivrs_alias;
+e3156048346c28 Joerg Roedel   2016-04-08  294  }
+e3156048346c28 Joerg Roedel   2016-04-08  295  
+
+:::::: The code at line 288 was first introduced by commit
+:::::: 7afd16f882887c9adc69cd1794f5e57777723217 Merge tag 'pci-v4.7-changes' of git://git.kernel.org/pub/scm/linux/kernel/git/helgaas/pci
+
+:::::: TO: Linus Torvalds <torvalds@linux-foundation.org>
+:::::: CC: Linus Torvalds <torvalds@linux-foundation.org>
 
 ---
 0-DAY kernel test infrastructure                 Open Source Technology Center
 https://lists.01.org/hyperkitty/list/kbuild-all@lists.01.org Intel Corporation
-
---6f26a4mbvvngazog
-Content-Type: application/gzip
-Content-Disposition: attachment; filename=".config.gz"
-Content-Transfer-Encoding: base64
-
-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
-NoKq3Bk6omqnx9YJDhR+ABLGPtEMaAAA
-
---6f26a4mbvvngazog
-Content-Type: text/plain; charset="us-ascii"
-MIME-Version: 1.0
-Content-Transfer-Encoding: 7bit
-Content-Disposition: inline
-
 _______________________________________________
 iommu mailing list
 iommu@lists.linux-foundation.org
 https://lists.linuxfoundation.org/mailman/listinfo/iommu
---6f26a4mbvvngazog--
