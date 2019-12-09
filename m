@@ -2,92 +2,96 @@ Return-Path: <SRS0=4RPJ=Z7=lists.linux-foundation.org=iommu-bounces@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-3.5 required=3.0 tests=DKIM_INVALID,DKIM_SIGNED,
-	HEADER_FROM_DIFFERENT_DOMAINS,MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS,
-	USER_AGENT_GIT autolearn=no autolearn_force=no version=3.4.0
+X-Spam-Status: No, score=-9.6 required=3.0 tests=DKIM_INVALID,DKIM_SIGNED,
+	HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_PATCH,MAILING_LIST_MULTI,SIGNED_OFF_BY,
+	SPF_HELO_NONE,SPF_PASS,USER_AGENT_GIT autolearn=unavailable
+	autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 4D3BBC00454
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 99506C2D0BE
 	for <iommu@archiver.kernel.org>; Mon,  9 Dec 2019 18:12:02 +0000 (UTC)
-Received: from whitealder.osuosl.org (smtp1.osuosl.org [140.211.166.138])
+Received: from hemlock.osuosl.org (smtp2.osuosl.org [140.211.166.133])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by mail.kernel.org (Postfix) with ESMTPS id 1545021556
-	for <iommu@archiver.kernel.org>; Mon,  9 Dec 2019 18:12:01 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTPS id 7029D21556
+	for <iommu@archiver.kernel.org>; Mon,  9 Dec 2019 18:12:02 +0000 (UTC)
 Authentication-Results: mail.kernel.org;
-	dkim=fail reason="signature verification failed" (2048-bit key) header.d=linaro.org header.i=@linaro.org header.b="eChG24Hv"
-DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 1545021556
+	dkim=fail reason="signature verification failed" (2048-bit key) header.d=linaro.org header.i=@linaro.org header.b="DKcEK1cO"
+DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 7029D21556
 Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=linaro.org
 Authentication-Results: mail.kernel.org; spf=pass smtp.mailfrom=iommu-bounces@lists.linux-foundation.org
 Received: from localhost (localhost [127.0.0.1])
-	by whitealder.osuosl.org (Postfix) with ESMTP id 8F0DF877D0;
-	Mon,  9 Dec 2019 18:12:01 +0000 (UTC)
-X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from whitealder.osuosl.org ([127.0.0.1])
-	by localhost (.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
-	with ESMTP id EPzO9WsDB90Q; Mon,  9 Dec 2019 18:12:00 +0000 (UTC)
-Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [140.211.9.56])
-	by whitealder.osuosl.org (Postfix) with ESMTP id 41B2F877A7;
-	Mon,  9 Dec 2019 18:12:00 +0000 (UTC)
-Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
-	by lists.linuxfoundation.org (Postfix) with ESMTP id 2AB1FC1D7F;
-	Mon,  9 Dec 2019 18:12:00 +0000 (UTC)
-Received: from hemlock.osuosl.org (smtp2.osuosl.org [140.211.166.133])
- by lists.linuxfoundation.org (Postfix) with ESMTP id B32C4C0881
- for <iommu@lists.linux-foundation.org>; Mon,  9 Dec 2019 18:11:58 +0000 (UTC)
-Received: from localhost (localhost [127.0.0.1])
- by hemlock.osuosl.org (Postfix) with ESMTP id AEB6187C41
- for <iommu@lists.linux-foundation.org>; Mon,  9 Dec 2019 18:11:58 +0000 (UTC)
+	by hemlock.osuosl.org (Postfix) with ESMTP id 2AD6987C20;
+	Mon,  9 Dec 2019 18:12:02 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
 Received: from hemlock.osuosl.org ([127.0.0.1])
+	by localhost (.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
+	with ESMTP id Hf9h46tc-cVE; Mon,  9 Dec 2019 18:12:01 +0000 (UTC)
+Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [140.211.9.56])
+	by hemlock.osuosl.org (Postfix) with ESMTP id 81CAC87C41;
+	Mon,  9 Dec 2019 18:12:01 +0000 (UTC)
+Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
+	by lists.linuxfoundation.org (Postfix) with ESMTP id 6EB9FC1796;
+	Mon,  9 Dec 2019 18:12:01 +0000 (UTC)
+Received: from silver.osuosl.org (smtp3.osuosl.org [140.211.166.136])
+ by lists.linuxfoundation.org (Postfix) with ESMTP id 02B68C0881
+ for <iommu@lists.linux-foundation.org>; Mon,  9 Dec 2019 18:12:00 +0000 (UTC)
+Received: from localhost (localhost [127.0.0.1])
+ by silver.osuosl.org (Postfix) with ESMTP id DD4F42038B
+ for <iommu@lists.linux-foundation.org>; Mon,  9 Dec 2019 18:11:59 +0000 (UTC)
+X-Virus-Scanned: amavisd-new at osuosl.org
+Received: from silver.osuosl.org ([127.0.0.1])
  by localhost (.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
- with ESMTP id 1zcVrxg6ANIU for <iommu@lists.linux-foundation.org>;
- Mon,  9 Dec 2019 18:11:58 +0000 (UTC)
+ with ESMTP id HGFPk27tyOEP for <iommu@lists.linux-foundation.org>;
+ Mon,  9 Dec 2019 18:11:59 +0000 (UTC)
 X-Greylist: domain auto-whitelisted by SQLgrey-1.7.6
-Received: from mail-wr1-f66.google.com (mail-wr1-f66.google.com
- [209.85.221.66])
- by hemlock.osuosl.org (Postfix) with ESMTPS id B387887C20
- for <iommu@lists.linux-foundation.org>; Mon,  9 Dec 2019 18:11:57 +0000 (UTC)
-Received: by mail-wr1-f66.google.com with SMTP id z7so17177197wrl.13
- for <iommu@lists.linux-foundation.org>; Mon, 09 Dec 2019 10:11:57 -0800 (PST)
+Received: from mail-wm1-f66.google.com (mail-wm1-f66.google.com
+ [209.85.128.66])
+ by silver.osuosl.org (Postfix) with ESMTPS id B73031FEED
+ for <iommu@lists.linux-foundation.org>; Mon,  9 Dec 2019 18:11:58 +0000 (UTC)
+Received: by mail-wm1-f66.google.com with SMTP id p17so299915wmi.3
+ for <iommu@lists.linux-foundation.org>; Mon, 09 Dec 2019 10:11:58 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linaro.org; s=google;
- h=from:to:cc:subject:date:message-id:mime-version
- :content-transfer-encoding;
- bh=EPZYuKzuHS01ypbpAypAPWL2i1nnzUw0mtei/SOU8FI=;
- b=eChG24HveCLJr1w7htcnEaSdvHwWYy3dopCe7PzKjFIohfKepun/JzeHDOVtJdhFBX
- krj9dCfZna5uDRah00TO6hMrC5CxJ839KjvhzTUWqxzJ0nzCKaHhF508qHSSy0GZtoSx
- KJKhRNuYym1oZf7HWKmhQjbPY2WwKkqcLV/aEZnMdOGhN7+MIwQiCiCZ6KKFGROEzZxL
- Htj1QWdRJqh6WeQx5GUmgHJil8TmhNhDhDAyvl7+sHEzB6M95GtfmZ/PLcNOaeZEdyGj
- IBWYXgi+wPjUJZNb7Xjum2/nBvekCA934r8JznZDGI55yX51UEARM1sRTsF7H8bRaJoC
- 7XyA==
+ h=from:to:cc:subject:date:message-id:in-reply-to:references
+ :mime-version:content-transfer-encoding;
+ bh=tMr0YtGSE17WnD557NimiGUSbd3CWS+6jPhD283bpnk=;
+ b=DKcEK1cOMdwaV5V0f6q2cMbZmPW7gZYu64KpfMr2+WQ6ycKdbRUfNWPgfRV3F0vBHs
+ 7UKDB03yyST3MYk9fbA9XVMuoUvaJKKQkwof4LICYRJRS3vsx2X/+IRlHHkrXtj38MZd
+ XN4l1HDeDs1f9EUr0SUtKlD6xRtsiEHYQeTGaBmIRKMTj5SVqV4HFWpcGuqRRJGdZ1gI
+ kfKDRtVBKeIares4//dnkrP4bvMLWjLbHQGX8fRDR5CGx0bHULy1wklyi2xjvByTGucj
+ bVReQzCTfZvXJkf6xdLU0s7b5fdCwsUjRbzpjiO9Igfd/61c10uwJW+il7syzp8yFqe6
+ fhoA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
  d=1e100.net; s=20161025;
- h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
- :content-transfer-encoding;
- bh=EPZYuKzuHS01ypbpAypAPWL2i1nnzUw0mtei/SOU8FI=;
- b=gCoTWXUx5fkmDmsrw0mZHRZcmX5RYPq9z0Nrfg9IQiUdwlf1fAXdoIdjgq5iLj/Aen
- stoMknkn1pyh/rFDjHR55Yh3i7XOhUzTDw1fdPltOx1JG2YvBs3d2QEkSP/m2gUPY1uL
- Oy/c5GtOUn1uW34r3laA24Ew4ygofXcS7Zc8l/UflQO4P6734ZcIawQtH7z82/cQOlwx
- yx6adMmJnzSd49jK4z/958G+nwD9+4pBHqSrEKlmD3LuC/fRWqOBvVNVZ1lTlPGYD0I5
- tqYF5f/RMtuJE18au9rdKoCXIRwXHsBO7d2VaJHFYIHQY9bE6U11snZrqqBJ39dJ+PoA
- eG9w==
-X-Gm-Message-State: APjAAAWP4Qxdn9QqNTN5gESXOdDf7jY4sTW4oxOusghDaltmO1RrVYpY
- FTB28LhygD3H9hFJdaZ/4+igEw==
-X-Google-Smtp-Source: APXvYqzT1ymN3phudM5XMKZ/AIHs5aojcXL1B8J2G48oy5R7vLLmgXJx0GUEWH2l1syk1oV2bTStlA==
-X-Received: by 2002:a5d:5704:: with SMTP id a4mr3593884wrv.198.1575915116081; 
- Mon, 09 Dec 2019 10:11:56 -0800 (PST)
+ h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
+ :references:mime-version:content-transfer-encoding;
+ bh=tMr0YtGSE17WnD557NimiGUSbd3CWS+6jPhD283bpnk=;
+ b=sNfHiCzc9CvfKCSozroBBdvekfdH8ogdlhQTxmFiNWAZA5DZ41d/i6sqHxELjkjsmD
+ 3oY31qUZWl/z88GkVonFFuOijhc6L4/0Gyudypnnhc+l/VOAljNArJE/18yLnosrpbYZ
+ g4mlJWeQW8xzvKKPF8RUrpGryU7/qaFwbmF+gH8TterhE3QQoIpwNqKUeE/3zk0Y5X/r
+ e/ikZTQXe8sTbhT/8pKtDGMkCtN6/LtPdTDO3BDrm9wfTgn35BRzQ/SyGaJYnZD3hUZq
+ oc7emEi11PzN7qny+JZtQOsNo+Va3Tekw/ZneBNumkBVmfwyCg9rciZdYH1nkWMtpnEC
+ 8nXQ==
+X-Gm-Message-State: APjAAAU9IOUO4X+63yacwXsT55Q+keZ1VKaNIvpk5OiLkIEixcBlAYgJ
+ clEn1Vc/p86EUvd1h9b1ZJwXVQ==
+X-Google-Smtp-Source: APXvYqyn5PjD8xxtXCXK1S6VlNWGbZuYGwg+csNTdA3fwLmXia8edlDe7V+Gqp7sUAYQaaZu77s53Q==
+X-Received: by 2002:a1c:7d92:: with SMTP id y140mr276297wmc.145.1575915117196; 
+ Mon, 09 Dec 2019 10:11:57 -0800 (PST)
 Received: from localhost.localdomain (adsl-62-167-101-88.adslplus.ch.
  [62.167.101.88])
- by smtp.gmail.com with ESMTPSA id h2sm309838wrv.66.2019.12.09.10.11.54
+ by smtp.gmail.com with ESMTPSA id h2sm309838wrv.66.2019.12.09.10.11.56
  (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
- Mon, 09 Dec 2019 10:11:55 -0800 (PST)
+ Mon, 09 Dec 2019 10:11:56 -0800 (PST)
 From: Jean-Philippe Brucker <jean-philippe@linaro.org>
 To: linux-pci@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
  linux-acpi@vger.kernel.org, devicetree@vger.kernel.org,
  iommu@lists.linux-foundation.org
-Subject: [PATCH v3 00/13] iommu: Add PASID support to Arm SMMUv3
-Date: Mon,  9 Dec 2019 19:05:01 +0100
-Message-Id: <20191209180514.272727-1-jean-philippe@linaro.org>
+Subject: [PATCH v3 01/13] iommu/arm-smmu-v3: Drop __GFP_ZERO flag from DMA
+ allocation
+Date: Mon,  9 Dec 2019 19:05:02 +0100
+Message-Id: <20191209180514.272727-2-jean-philippe@linaro.org>
 X-Mailer: git-send-email 2.24.0
+In-Reply-To: <20191209180514.272727-1-jean-philippe@linaro.org>
+References: <20191209180514.272727-1-jean-philippe@linaro.org>
 MIME-Version: 1.0
 Cc: mark.rutland@arm.com, robin.murphy@arm.com, guohanjun@huawei.com,
  rjw@rjwysocki.net, robh+dt@kernel.org, sudeep.holla@arm.com,
@@ -109,47 +113,60 @@ Content-Transfer-Encoding: 7bit
 Errors-To: iommu-bounces@lists.linux-foundation.org
 Sender: "iommu" <iommu-bounces@lists.linux-foundation.org>
 
-Add support for Substream ID and PASIDs to the SMMUv3 driver.
-Changes since v2 [1]:
+Since commit 518a2f1925c3 ("dma-mapping: zero memory returned from
+dma_alloc_*"), dma_alloc_* always initializes memory to zero, so there
+is no need to use dma_zalloc_* or pass the __GFP_ZERO flag anymore.
 
-* Split preparatory work into patches 5, 6, 8 and 9.
+The flag was introduced by commit 04fa26c71be5 ("iommu/arm-smmu: Convert
+DMA buffer allocations to the managed API"), since the managed API
+didn't provide a dmam_zalloc_coherent() function.
 
-* Added patch 1. Not strictly relevant, but since we're moving the DMA
-  allocations and adding a new one, we might as well clean the flags
-  first.
+Signed-off-by: Jean-Philippe Brucker <jean-philippe@linaro.org>
+---
+ drivers/iommu/arm-smmu-v3.c | 9 ++++-----
+ 1 file changed, 4 insertions(+), 5 deletions(-)
 
-* Fixed a double free reported by Jonathan, and other small
-  issues.
-
-* Added patch 12. Upstream commit c6e9aefbf9db ("PCI/ATS: Remove unused
-  PRI and PASID stubs") removed the unused PASID stubs. Since the SMMU
-  driver can be built without PCI, the stubs are now needed.
-
-[1] https://lore.kernel.org/linux-iommu/20191108152508.4039168-1-jean-philippe@linaro.org/
-
-Jean-Philippe Brucker (13):
-  iommu/arm-smmu-v3: Drop __GFP_ZERO flag from DMA allocation
-  dt-bindings: document PASID property for IOMMU masters
-  iommu/arm-smmu-v3: Support platform SSID
-  ACPI/IORT: Support PASID for platform devices
-  iommu/arm-smmu-v3: Prepare arm_smmu_s1_cfg for SSID support
-  iommu/arm-smmu-v3: Add context descriptor tables allocators
-  iommu/arm-smmu-v3: Add support for Substream IDs
-  iommu/arm-smmu-v3: Propate ssid_bits
-  iommu/arm-smmu-v3: Handle failure of arm_smmu_write_ctx_desc()
-  iommu/arm-smmu-v3: Add second level of context descriptor table
-  iommu/arm-smmu-v3: Improve add_device() error handling
-  PCI/ATS: Add PASID stubs
-  iommu/arm-smmu-v3: Add support for PCI PASID
-
- .../devicetree/bindings/iommu/iommu.txt       |   6 +
- drivers/acpi/arm64/iort.c                     |  18 +
- drivers/iommu/arm-smmu-v3.c                   | 462 +++++++++++++++---
- drivers/iommu/of_iommu.c                      |   6 +-
- include/linux/iommu.h                         |   2 +
- include/linux/pci-ats.h                       |   3 +
- 6 files changed, 437 insertions(+), 60 deletions(-)
-
+diff --git a/drivers/iommu/arm-smmu-v3.c b/drivers/iommu/arm-smmu-v3.c
+index effe72eb89e7..d4e8b7f8d9f4 100644
+--- a/drivers/iommu/arm-smmu-v3.c
++++ b/drivers/iommu/arm-smmu-v3.c
+@@ -1675,7 +1675,7 @@ static int arm_smmu_init_l2_strtab(struct arm_smmu_device *smmu, u32 sid)
+ 
+ 	desc->span = STRTAB_SPLIT + 1;
+ 	desc->l2ptr = dmam_alloc_coherent(smmu->dev, size, &desc->l2ptr_dma,
+-					  GFP_KERNEL | __GFP_ZERO);
++					  GFP_KERNEL);
+ 	if (!desc->l2ptr) {
+ 		dev_err(smmu->dev,
+ 			"failed to allocate l2 stream table for SID %u\n",
+@@ -2161,8 +2161,7 @@ static int arm_smmu_domain_finalise_s1(struct arm_smmu_domain *smmu_domain,
+ 		return asid;
+ 
+ 	cfg->cdptr = dmam_alloc_coherent(smmu->dev, CTXDESC_CD_DWORDS << 3,
+-					 &cfg->cdptr_dma,
+-					 GFP_KERNEL | __GFP_ZERO);
++					 &cfg->cdptr_dma, GFP_KERNEL);
+ 	if (!cfg->cdptr) {
+ 		dev_warn(smmu->dev, "failed to allocate context descriptor\n");
+ 		ret = -ENOMEM;
+@@ -2883,7 +2882,7 @@ static int arm_smmu_init_strtab_2lvl(struct arm_smmu_device *smmu)
+ 
+ 	l1size = cfg->num_l1_ents * (STRTAB_L1_DESC_DWORDS << 3);
+ 	strtab = dmam_alloc_coherent(smmu->dev, l1size, &cfg->strtab_dma,
+-				     GFP_KERNEL | __GFP_ZERO);
++				     GFP_KERNEL);
+ 	if (!strtab) {
+ 		dev_err(smmu->dev,
+ 			"failed to allocate l1 stream table (%u bytes)\n",
+@@ -2910,7 +2909,7 @@ static int arm_smmu_init_strtab_linear(struct arm_smmu_device *smmu)
+ 
+ 	size = (1 << smmu->sid_bits) * (STRTAB_STE_DWORDS << 3);
+ 	strtab = dmam_alloc_coherent(smmu->dev, size, &cfg->strtab_dma,
+-				     GFP_KERNEL | __GFP_ZERO);
++				     GFP_KERNEL);
+ 	if (!strtab) {
+ 		dev_err(smmu->dev,
+ 			"failed to allocate linear stream table (%u bytes)\n",
 -- 
 2.24.0
 
