@@ -4,91 +4,91 @@ X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 X-Spam-Level: 
 X-Spam-Status: No, score=-9.6 required=3.0 tests=DKIM_INVALID,DKIM_SIGNED,
 	HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_PATCH,MAILING_LIST_MULTI,SIGNED_OFF_BY,
-	SPF_HELO_NONE,SPF_PASS,USER_AGENT_GIT autolearn=ham autolearn_force=no
-	version=3.4.0
+	SPF_HELO_NONE,SPF_PASS,USER_AGENT_GIT autolearn=unavailable
+	autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 6BA51C2BD09
-	for <iommu@archiver.kernel.org>; Mon,  9 Dec 2019 18:12:03 +0000 (UTC)
-Received: from whitealder.osuosl.org (smtp1.osuosl.org [140.211.166.138])
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 489A0C2D0CB
+	for <iommu@archiver.kernel.org>; Mon,  9 Dec 2019 18:12:05 +0000 (UTC)
+Received: from fraxinus.osuosl.org (smtp4.osuosl.org [140.211.166.137])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by mail.kernel.org (Postfix) with ESMTPS id 3B2712467C
-	for <iommu@archiver.kernel.org>; Mon,  9 Dec 2019 18:12:03 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTPS id 19520208C3
+	for <iommu@archiver.kernel.org>; Mon,  9 Dec 2019 18:12:05 +0000 (UTC)
 Authentication-Results: mail.kernel.org;
-	dkim=fail reason="signature verification failed" (2048-bit key) header.d=linaro.org header.i=@linaro.org header.b="Tts/uxwA"
-DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 3B2712467C
+	dkim=fail reason="signature verification failed" (2048-bit key) header.d=linaro.org header.i=@linaro.org header.b="JMfFh5ck"
+DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 19520208C3
 Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=linaro.org
 Authentication-Results: mail.kernel.org; spf=pass smtp.mailfrom=iommu-bounces@lists.linux-foundation.org
 Received: from localhost (localhost [127.0.0.1])
-	by whitealder.osuosl.org (Postfix) with ESMTP id 1BDEA877A7;
-	Mon,  9 Dec 2019 18:12:03 +0000 (UTC)
+	by fraxinus.osuosl.org (Postfix) with ESMTP id DC94386A8D;
+	Mon,  9 Dec 2019 18:12:04 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from whitealder.osuosl.org ([127.0.0.1])
+Received: from fraxinus.osuosl.org ([127.0.0.1])
 	by localhost (.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
-	with ESMTP id Hi8Pj0TAStIU; Mon,  9 Dec 2019 18:12:02 +0000 (UTC)
+	with ESMTP id Z00Y765rkIdL; Mon,  9 Dec 2019 18:12:03 +0000 (UTC)
 Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [140.211.9.56])
-	by whitealder.osuosl.org (Postfix) with ESMTP id AB80F8777D;
-	Mon,  9 Dec 2019 18:12:02 +0000 (UTC)
+	by fraxinus.osuosl.org (Postfix) with ESMTP id DBC0F85FD6;
+	Mon,  9 Dec 2019 18:12:03 +0000 (UTC)
 Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
-	by lists.linuxfoundation.org (Postfix) with ESMTP id 99818C1796;
-	Mon,  9 Dec 2019 18:12:02 +0000 (UTC)
+	by lists.linuxfoundation.org (Postfix) with ESMTP id D492AC1796;
+	Mon,  9 Dec 2019 18:12:03 +0000 (UTC)
 Received: from hemlock.osuosl.org (smtp2.osuosl.org [140.211.166.133])
- by lists.linuxfoundation.org (Postfix) with ESMTP id 8F18CC0881
- for <iommu@lists.linux-foundation.org>; Mon,  9 Dec 2019 18:12:00 +0000 (UTC)
+ by lists.linuxfoundation.org (Postfix) with ESMTP id 2BD03C0881
+ for <iommu@lists.linux-foundation.org>; Mon,  9 Dec 2019 18:12:02 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
- by hemlock.osuosl.org (Postfix) with ESMTP id 7BED887C76
- for <iommu@lists.linux-foundation.org>; Mon,  9 Dec 2019 18:12:00 +0000 (UTC)
+ by hemlock.osuosl.org (Postfix) with ESMTP id 2496687C76
+ for <iommu@lists.linux-foundation.org>; Mon,  9 Dec 2019 18:12:02 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
 Received: from hemlock.osuosl.org ([127.0.0.1])
  by localhost (.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
- with ESMTP id ebyRQEHZ08eZ for <iommu@lists.linux-foundation.org>;
- Mon,  9 Dec 2019 18:12:00 +0000 (UTC)
+ with ESMTP id x18W2k6nJZ-L for <iommu@lists.linux-foundation.org>;
+ Mon,  9 Dec 2019 18:12:01 +0000 (UTC)
 X-Greylist: domain auto-whitelisted by SQLgrey-1.7.6
-Received: from mail-wr1-f67.google.com (mail-wr1-f67.google.com
- [209.85.221.67])
- by hemlock.osuosl.org (Postfix) with ESMTPS id B03D187C20
- for <iommu@lists.linux-foundation.org>; Mon,  9 Dec 2019 18:11:59 +0000 (UTC)
-Received: by mail-wr1-f67.google.com with SMTP id d16so17240187wre.10
- for <iommu@lists.linux-foundation.org>; Mon, 09 Dec 2019 10:11:59 -0800 (PST)
+Received: from mail-wm1-f68.google.com (mail-wm1-f68.google.com
+ [209.85.128.68])
+ by hemlock.osuosl.org (Postfix) with ESMTPS id E076987C20
+ for <iommu@lists.linux-foundation.org>; Mon,  9 Dec 2019 18:12:00 +0000 (UTC)
+Received: by mail-wm1-f68.google.com with SMTP id b11so316117wmj.4
+ for <iommu@lists.linux-foundation.org>; Mon, 09 Dec 2019 10:12:00 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linaro.org; s=google;
  h=from:to:cc:subject:date:message-id:in-reply-to:references
  :mime-version:content-transfer-encoding;
- bh=KOPwmsVGim8uksddBYEL5Xr/XEk+fQ6sygiouqBeFpU=;
- b=Tts/uxwAulwDWx38JQ7vQN1vchjW9BMQPwqFcz5u8er0ybt0fOUvBHt+WEAB24gXyc
- BlO6xJwA59upCQs0IseN693yMmNMgDbbFgWrWiT8ZWofkwrA7Seq9O/D4Gx//cyDdaGE
- /guIbq5MoYH70/5n63vUCderClZlhJs3YBa2U9WpDRuoNG3S47hAE8+Ww4p9KU6i+ziJ
- sceo5n1ghS7WbisS3mMyOWUi5Kf2+viwAkPdhnJOYSbUXUfLBHgRWi46jnVUHnae9E52
- Wr8TWOQ6BMPwQ+bvP0D1ypo0U6Cun3Y1noijEKy7UPoDC+Idhr8iP2SN8THAoGBBnKww
- bVHQ==
+ bh=B8BypQ1D+CaqFBtDE2c69vGRS8hRXLPOwwy0I1wmRy8=;
+ b=JMfFh5ck7ruppTPVZqznNBMI/hxmWCjBpPowpLszgpJgLI9svpqtubPWnw++UtquCe
+ 9/EsqaBZQOZiD9DeL4JMlv+RlivsGqAkmZEbjLdWnnircfNMMlJ+KtlYSYx/gvCJ8YNI
+ 8DhuuCIuawo38qojPOQ0Q7TnHAfbBJQJQiSSNgSOEUR7IiulB5I0UhAtV/G1D1eUVOpn
+ 7oy3FXhiC+cIOJIgiTqxwFhjpW5BOeV9b84Rc0pZnpwcG6kdaKbEAJ8w/ZWYfQ4X4F1E
+ +MH4HodDir1ZRCvOKwV6mJVBSYrCv2uLhUaQ7DaUcVhzKdSMZItcR33jnufY5u22jwGq
+ /Uzg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
  d=1e100.net; s=20161025;
  h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
  :references:mime-version:content-transfer-encoding;
- bh=KOPwmsVGim8uksddBYEL5Xr/XEk+fQ6sygiouqBeFpU=;
- b=ERUgXtmL8/ZBjJe/XzUmMaY0jl+TZszjjQL5X73PBgpQk1DyZTts0N7XEyHWeie63x
- Bzhn4TfUHPCtsxS4ZOdgYOoKZVjjfq+E2HSeL0yy8t0sL3qYsIBPRvZS3Lsgd3GkU5Gw
- SudmoY1OLQpRQtFs2a9JdgG93Ti93keD0gwV+unBol0Ua5f3ZJC3zSK5ZyIMQOwMqEL8
- GVEe8fwrlqYzHAS7VPBUIvLK2joOsx9Xme/zIZd/vRi6UmaT4RrkhSCt+BVzij/S9ftk
- yKmq0c46WeTyxGgECQWLtDyx/hwBd1NNIMRmnsOnII9Sj4/LzBqCCDPprJeVMMPPB4EO
- lqbQ==
-X-Gm-Message-State: APjAAAWa5aMWX8UGAGx01DFTqJhSl/tcQ+SeqVxY/ZbwMk1bnLeqHXgn
- HpL6bw9mVLJbMQY5ew5N+NyoGg==
-X-Google-Smtp-Source: APXvYqwd75VErNxunler74D2aYIuUwxtIPPyshTDCbkZm56YpyIMcPHPAkjo50SdxP2In7GjOAaXhw==
-X-Received: by 2002:adf:f581:: with SMTP id f1mr3704624wro.264.1575915118236; 
- Mon, 09 Dec 2019 10:11:58 -0800 (PST)
+ bh=B8BypQ1D+CaqFBtDE2c69vGRS8hRXLPOwwy0I1wmRy8=;
+ b=cgp5VZh8DubBIsSJ7UgYOtfkfhau8bLz+tO3iOfuwlJgdt5PunAdoSDD1G8NRssDB4
+ gguNmlBLid1nw8UdzflqKIxppNMgrtSLiiOK7vOkKR5Qp6R5fa7cKM0Tsg0wM77VeG8A
+ Ww8Wdx367dh4Ud8sM7QGnUdIQgXhxeX97ZIrRCPyJvHVGJL5BkssqNEaCT2DFcTQwYyw
+ wWRkOe1X1EdfQq07gwaLrRrmxxzQcnFq5pkcFSSSIJEAOJX9ogJqwqvRh0Jg7k52rAqL
+ GYVu6usAfxR6rZrlfMHAwQwWYQ3CGxYOtlOUj+EOAi89ygTa4FiPwHu3cVEVi9gVzeWP
+ 7Zng==
+X-Gm-Message-State: APjAAAUAD+ED4qWYv+zZaz6s4eV3yUXDoXeQBtV4iailsAAOvR3Jn50J
+ 0kY7iyr7/X5tISdEpGSF9UHKfA==
+X-Google-Smtp-Source: APXvYqy1n0Wv9Ft0LN1Rvvok34SZLAdZtkxTAoI3MM3VwUT99d0zPnBGlzSTfWyEenShrdSM85zXbw==
+X-Received: by 2002:a05:600c:2113:: with SMTP id
+ u19mr298745wml.157.1575915119329; 
+ Mon, 09 Dec 2019 10:11:59 -0800 (PST)
 Received: from localhost.localdomain (adsl-62-167-101-88.adslplus.ch.
  [62.167.101.88])
- by smtp.gmail.com with ESMTPSA id h2sm309838wrv.66.2019.12.09.10.11.57
+ by smtp.gmail.com with ESMTPSA id h2sm309838wrv.66.2019.12.09.10.11.58
  (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
- Mon, 09 Dec 2019 10:11:57 -0800 (PST)
+ Mon, 09 Dec 2019 10:11:58 -0800 (PST)
 From: Jean-Philippe Brucker <jean-philippe@linaro.org>
 To: linux-pci@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
  linux-acpi@vger.kernel.org, devicetree@vger.kernel.org,
  iommu@lists.linux-foundation.org
-Subject: [PATCH v3 02/13] dt-bindings: document PASID property for IOMMU
- masters
-Date: Mon,  9 Dec 2019 19:05:03 +0100
-Message-Id: <20191209180514.272727-3-jean-philippe@linaro.org>
+Subject: [PATCH v3 03/13] iommu/arm-smmu-v3: Support platform SSID
+Date: Mon,  9 Dec 2019 19:05:04 +0100
+Message-Id: <20191209180514.272727-4-jean-philippe@linaro.org>
 X-Mailer: git-send-email 2.24.0
 In-Reply-To: <20191209180514.272727-1-jean-philippe@linaro.org>
 References: <20191209180514.272727-1-jean-philippe@linaro.org>
@@ -113,34 +113,94 @@ Content-Transfer-Encoding: 7bit
 Errors-To: iommu-bounces@lists.linux-foundation.org
 Sender: "iommu" <iommu-bounces@lists.linux-foundation.org>
 
-On Arm systems, some platform devices behind an SMMU may support the PASID
-feature, which offers multiple address space. Let the firmware tell us
-when a device supports PASID.
+For platform devices that support SubstreamID (SSID), firmware provides
+the number of supported SSID bits. Restrict it to what the SMMU supports
+and cache it into master->ssid_bits, which will also be used for PCI
+PASID.
 
-Reviewed-by: Rob Herring <robh@kernel.org>
-Reviewed-by: Eric Auger <eric.auger@redhat.com>
 Signed-off-by: Jean-Philippe Brucker <jean-philippe@linaro.org>
 ---
- Documentation/devicetree/bindings/iommu/iommu.txt | 6 ++++++
- 1 file changed, 6 insertions(+)
+ drivers/iommu/arm-smmu-v3.c | 13 +++++++++++++
+ drivers/iommu/of_iommu.c    |  6 +++++-
+ include/linux/iommu.h       |  2 ++
+ 3 files changed, 20 insertions(+), 1 deletion(-)
 
-diff --git a/Documentation/devicetree/bindings/iommu/iommu.txt b/Documentation/devicetree/bindings/iommu/iommu.txt
-index 5a8b4624defc..3c36334e4f94 100644
---- a/Documentation/devicetree/bindings/iommu/iommu.txt
-+++ b/Documentation/devicetree/bindings/iommu/iommu.txt
-@@ -86,6 +86,12 @@ have a means to turn off translation. But it is invalid in such cases to
- disable the IOMMU's device tree node in the first place because it would
- prevent any driver from properly setting up the translations.
+diff --git a/drivers/iommu/arm-smmu-v3.c b/drivers/iommu/arm-smmu-v3.c
+index d4e8b7f8d9f4..837b4283b4dc 100644
+--- a/drivers/iommu/arm-smmu-v3.c
++++ b/drivers/iommu/arm-smmu-v3.c
+@@ -292,6 +292,12 @@
  
-+Optional properties:
-+--------------------
-+- pasid-num-bits: Some masters support multiple address spaces for DMA, by
-+  tagging DMA transactions with an address space identifier. By default,
-+  this is 0, which means that the device only has one address space.
+ #define CTXDESC_CD_1_TTB0_MASK		GENMASK_ULL(51, 4)
+ 
++/*
++ * When the SMMU only supports linear context descriptor tables, pick a
++ * reasonable size limit (64kB).
++ */
++#define CTXDESC_LINEAR_CDMAX		ilog2(SZ_64K / (CTXDESC_CD_DWORDS << 3))
 +
+ /* Convert between AArch64 (CPU) TCR format and SMMU CD format */
+ #define ARM_SMMU_TCR2CD(tcr, fld)	FIELD_PREP(CTXDESC_CD_0_TCR_##fld, \
+ 					FIELD_GET(ARM64_TCR_##fld, tcr))
+@@ -638,6 +644,7 @@ struct arm_smmu_master {
+ 	u32				*sids;
+ 	unsigned int			num_sids;
+ 	bool				ats_enabled;
++	unsigned int			ssid_bits;
+ };
  
- Notes:
- ======
+ /* SMMU private data for an IOMMU domain */
+@@ -2571,6 +2578,12 @@ static int arm_smmu_add_device(struct device *dev)
+ 		}
+ 	}
+ 
++	master->ssid_bits = min(smmu->ssid_bits, fwspec->num_pasid_bits);
++
++	if (!(smmu->features & ARM_SMMU_FEAT_2_LVL_CDTAB))
++		master->ssid_bits = min_t(u8, master->ssid_bits,
++					  CTXDESC_LINEAR_CDMAX);
++
+ 	group = iommu_group_get_for_dev(dev);
+ 	if (!IS_ERR(group)) {
+ 		iommu_group_put(group);
+diff --git a/drivers/iommu/of_iommu.c b/drivers/iommu/of_iommu.c
+index 026ad2b29dcd..b3ccb2f7f1c7 100644
+--- a/drivers/iommu/of_iommu.c
++++ b/drivers/iommu/of_iommu.c
+@@ -196,8 +196,12 @@ const struct iommu_ops *of_iommu_configure(struct device *dev,
+ 			if (err)
+ 				break;
+ 		}
+-	}
+ 
++		fwspec = dev_iommu_fwspec_get(dev);
++		if (!err && fwspec)
++			of_property_read_u32(master_np, "pasid-num-bits",
++					     &fwspec->num_pasid_bits);
++	}
+ 
+ 	/*
+ 	 * Two success conditions can be represented by non-negative err here:
+diff --git a/include/linux/iommu.h b/include/linux/iommu.h
+index 3a113c5d7394..bd46775c3329 100644
+--- a/include/linux/iommu.h
++++ b/include/linux/iommu.h
+@@ -581,6 +581,7 @@ struct iommu_group *fsl_mc_device_group(struct device *dev);
+  * @ops: ops for this device's IOMMU
+  * @iommu_fwnode: firmware handle for this device's IOMMU
+  * @iommu_priv: IOMMU driver private data for this device
++ * @num_pasid_bits: number of PASID bits supported by this device
+  * @num_ids: number of associated device IDs
+  * @ids: IDs which this device may present to the IOMMU
+  */
+@@ -589,6 +590,7 @@ struct iommu_fwspec {
+ 	struct fwnode_handle	*iommu_fwnode;
+ 	void			*iommu_priv;
+ 	u32			flags;
++	u32			num_pasid_bits;
+ 	unsigned int		num_ids;
+ 	u32			ids[1];
+ };
 -- 
 2.24.0
 
