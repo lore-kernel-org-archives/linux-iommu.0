@@ -6,57 +6,58 @@ X-Spam-Status: No, score=-9.8 required=3.0 tests=HEADER_FROM_DIFFERENT_DOMAINS,
 	INCLUDES_PATCH,MAILING_LIST_MULTI,SIGNED_OFF_BY,SPF_HELO_NONE,SPF_PASS,
 	USER_AGENT_GIT autolearn=unavailable autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 52255C3F68F
-	for <iommu@archiver.kernel.org>; Mon,  9 Dec 2019 08:46:53 +0000 (UTC)
-Received: from fraxinus.osuosl.org (smtp4.osuosl.org [140.211.166.137])
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 951CDC43603
+	for <iommu@archiver.kernel.org>; Mon,  9 Dec 2019 08:46:55 +0000 (UTC)
+Received: from hemlock.osuosl.org (smtp2.osuosl.org [140.211.166.133])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by mail.kernel.org (Postfix) with ESMTPS id 31190207FF
-	for <iommu@archiver.kernel.org>; Mon,  9 Dec 2019 08:46:53 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 31190207FF
+	by mail.kernel.org (Postfix) with ESMTPS id 752662073D
+	for <iommu@archiver.kernel.org>; Mon,  9 Dec 2019 08:46:55 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 752662073D
 Authentication-Results: mail.kernel.org; dmarc=none (p=none dis=none) header.from=windriver.com
 Authentication-Results: mail.kernel.org; spf=pass smtp.mailfrom=iommu-bounces@lists.linux-foundation.org
 Received: from localhost (localhost [127.0.0.1])
-	by fraxinus.osuosl.org (Postfix) with ESMTP id D9E748651A;
-	Mon,  9 Dec 2019 08:46:52 +0000 (UTC)
+	by hemlock.osuosl.org (Postfix) with ESMTP id 521B0881F9;
+	Mon,  9 Dec 2019 08:46:55 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from fraxinus.osuosl.org ([127.0.0.1])
+Received: from hemlock.osuosl.org ([127.0.0.1])
 	by localhost (.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
-	with ESMTP id acpKghqVS638; Mon,  9 Dec 2019 08:46:51 +0000 (UTC)
+	with ESMTP id hXnmRSUgj1Wa; Mon,  9 Dec 2019 08:46:53 +0000 (UTC)
 Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [140.211.9.56])
-	by fraxinus.osuosl.org (Postfix) with ESMTP id 6C3BB86502;
+	by hemlock.osuosl.org (Postfix) with ESMTP id 9F6AE8821D;
 	Mon,  9 Dec 2019 08:46:51 +0000 (UTC)
 Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
-	by lists.linuxfoundation.org (Postfix) with ESMTP id 461A1C1D7F;
+	by lists.linuxfoundation.org (Postfix) with ESMTP id 98C22C1796;
 	Mon,  9 Dec 2019 08:46:51 +0000 (UTC)
-Received: from whitealder.osuosl.org (smtp1.osuosl.org [140.211.166.138])
- by lists.linuxfoundation.org (Postfix) with ESMTP id 5F09CC0881
- for <iommu@lists.linux-foundation.org>; Mon,  9 Dec 2019 08:01:00 +0000 (UTC)
+Received: from fraxinus.osuosl.org (smtp4.osuosl.org [140.211.166.137])
+ by lists.linuxfoundation.org (Postfix) with ESMTP id E356BC0881
+ for <iommu@lists.linux-foundation.org>; Mon,  9 Dec 2019 08:24:12 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
- by whitealder.osuosl.org (Postfix) with ESMTP id 4242C8766D
- for <iommu@lists.linux-foundation.org>; Mon,  9 Dec 2019 08:01:00 +0000 (UTC)
+ by fraxinus.osuosl.org (Postfix) with ESMTP id D223986505
+ for <iommu@lists.linux-foundation.org>; Mon,  9 Dec 2019 08:24:12 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from whitealder.osuosl.org ([127.0.0.1])
+Received: from fraxinus.osuosl.org ([127.0.0.1])
  by localhost (.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
- with ESMTP id NG7Dd+xIjo6f for <iommu@lists.linux-foundation.org>;
- Mon,  9 Dec 2019 08:00:55 +0000 (UTC)
+ with ESMTP id Q3ndU9V3b9YF for <iommu@lists.linux-foundation.org>;
+ Mon,  9 Dec 2019 08:24:12 +0000 (UTC)
 X-Greylist: from auto-whitelisted by SQLgrey-1.7.6
-Received: from mail1.windriver.com (mail1.windriver.com [147.11.146.13])
- by whitealder.osuosl.org (Postfix) with ESMTPS id 0822E8768A
- for <iommu@lists.linux-foundation.org>; Mon,  9 Dec 2019 08:00:47 +0000 (UTC)
+Received: from mail5.wrs.com (mail5.windriver.com [192.103.53.11])
+ by fraxinus.osuosl.org (Postfix) with ESMTPS id 4DA5E86502
+ for <iommu@lists.linux-foundation.org>; Mon,  9 Dec 2019 08:24:12 +0000 (UTC)
 Received: from ALA-HCA.corp.ad.wrs.com (ala-hca.corp.ad.wrs.com
  [147.11.189.40])
- by mail1.windriver.com (8.15.2/8.15.2) with ESMTPS id xB97GCpH029717
+ by mail5.wrs.com (8.15.2/8.15.2) with ESMTPS id xB98O7id020065
  (version=TLSv1 cipher=AES256-SHA bits=256 verify=FAIL);
- Sun, 8 Dec 2019 23:16:12 -0800 (PST)
+ Mon, 9 Dec 2019 00:24:07 -0800
 Received: from pek-lpggp4.wrs.com (128.224.153.77) by ALA-HCA.corp.ad.wrs.com
  (147.11.189.50) with Microsoft SMTP Server id 14.3.468.0;
- Sun, 8 Dec 2019 23:16:11 -0800
+ Mon, 9 Dec 2019 00:24:06 -0800
 From: Xiaotao Yin <xiaotao.yin@windriver.com>
 To: <joro@8bytes.org>, <iommu@lists.linux-foundation.org>
-Subject: [PATCH] iommu/iova: kmemleak when pfn_lo equals IOVA_ANCHOR
-Date: Mon, 9 Dec 2019 15:16:09 +0800
-Message-ID: <20191209071609.35690-1-xiaotao.yin@windriver.com>
+Subject: [PATCH V2] iommu/iova: Init the struct iova to fix the possible
+ memleak
+Date: Mon, 9 Dec 2019 16:24:04 +0800
+Message-ID: <20191209082404.40166-1-xiaotao.yin@windriver.com>
 X-Mailer: git-send-email 2.17.1
 MIME-Version: 1.0
 X-Mailman-Approved-At: Mon, 09 Dec 2019 08:46:49 +0000
