@@ -8,84 +8,84 @@ X-Spam-Status: No, score=-9.3 required=3.0 tests=DKIM_ADSP_CUSTOM_MED,
 	SPF_HELO_NONE,SPF_PASS,USER_AGENT_GIT autolearn=ham autolearn_force=no
 	version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id C67A3C43603
-	for <iommu@archiver.kernel.org>; Mon,  9 Dec 2019 14:50:24 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id B4E22C3F68F
+	for <iommu@archiver.kernel.org>; Mon,  9 Dec 2019 14:50:29 +0000 (UTC)
 Received: from hemlock.osuosl.org (smtp2.osuosl.org [140.211.166.133])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by mail.kernel.org (Postfix) with ESMTPS id 98A862068E
-	for <iommu@archiver.kernel.org>; Mon,  9 Dec 2019 14:50:24 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTPS id 8A710207FD
+	for <iommu@archiver.kernel.org>; Mon,  9 Dec 2019 14:50:29 +0000 (UTC)
 Authentication-Results: mail.kernel.org;
-	dkim=fail reason="signature verification failed" (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="p+zUhOwB"
-DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 98A862068E
+	dkim=fail reason="signature verification failed" (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="qMW40Gli"
+DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 8A710207FD
 Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=gmail.com
 Authentication-Results: mail.kernel.org; spf=pass smtp.mailfrom=iommu-bounces@lists.linux-foundation.org
 Received: from localhost (localhost [127.0.0.1])
-	by hemlock.osuosl.org (Postfix) with ESMTP id 61FEC88075;
-	Mon,  9 Dec 2019 14:50:24 +0000 (UTC)
+	by hemlock.osuosl.org (Postfix) with ESMTP id 6690488301;
+	Mon,  9 Dec 2019 14:50:29 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
 Received: from hemlock.osuosl.org ([127.0.0.1])
 	by localhost (.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
-	with ESMTP id m4ayZiD5KoI2; Mon,  9 Dec 2019 14:50:21 +0000 (UTC)
+	with ESMTP id 3uQLlqkWUNgN; Mon,  9 Dec 2019 14:50:28 +0000 (UTC)
 Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [140.211.9.56])
-	by hemlock.osuosl.org (Postfix) with ESMTP id 2ED5487F9C;
-	Mon,  9 Dec 2019 14:50:21 +0000 (UTC)
+	by hemlock.osuosl.org (Postfix) with ESMTP id 336878829D;
+	Mon,  9 Dec 2019 14:50:28 +0000 (UTC)
 Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
-	by lists.linuxfoundation.org (Postfix) with ESMTP id 17D7DC1D8B;
-	Mon,  9 Dec 2019 14:50:21 +0000 (UTC)
-Received: from silver.osuosl.org (smtp3.osuosl.org [140.211.166.136])
- by lists.linuxfoundation.org (Postfix) with ESMTP id 0EF26C0881;
- Mon,  9 Dec 2019 14:50:19 +0000 (UTC)
+	by lists.linuxfoundation.org (Postfix) with ESMTP id 02A18C1DD5;
+	Mon,  9 Dec 2019 14:50:27 +0000 (UTC)
+Received: from hemlock.osuosl.org (smtp2.osuosl.org [140.211.166.133])
+ by lists.linuxfoundation.org (Postfix) with ESMTP id DA43FC1D8C;
+ Mon,  9 Dec 2019 14:50:25 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
- by silver.osuosl.org (Postfix) with ESMTP id 07AF72041C;
- Mon,  9 Dec 2019 14:50:19 +0000 (UTC)
+ by hemlock.osuosl.org (Postfix) with ESMTP id AD97988189;
+ Mon,  9 Dec 2019 14:50:25 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from silver.osuosl.org ([127.0.0.1])
+Received: from hemlock.osuosl.org ([127.0.0.1])
  by localhost (.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
- with ESMTP id J8YPaomHSEY6; Mon,  9 Dec 2019 14:50:16 +0000 (UTC)
+ with ESMTP id HJXo1OZtHms5; Mon,  9 Dec 2019 14:50:24 +0000 (UTC)
 X-Greylist: domain auto-whitelisted by SQLgrey-1.7.6
 X-Greylist: domain auto-whitelisted by SQLgrey-1.7.6
 Received: from mail-wr1-f65.google.com (mail-wr1-f65.google.com
  [209.85.221.65])
- by silver.osuosl.org (Postfix) with ESMTPS id 83F66203F4;
- Mon,  9 Dec 2019 14:50:16 +0000 (UTC)
-Received: by mail-wr1-f65.google.com with SMTP id c9so16518034wrw.8;
- Mon, 09 Dec 2019 06:50:16 -0800 (PST)
+ by hemlock.osuosl.org (Postfix) with ESMTPS id 8A2BE881D0;
+ Mon,  9 Dec 2019 14:50:22 +0000 (UTC)
+Received: by mail-wr1-f65.google.com with SMTP id a15so16482606wrf.9;
+ Mon, 09 Dec 2019 06:50:22 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=gmail.com; s=20161025;
  h=from:to:cc:subject:date:message-id:in-reply-to:references
  :mime-version:content-transfer-encoding;
- bh=irY1spgwK2zJfffTq8hx9QkgkytRwMbw4YTsIN/qTSs=;
- b=p+zUhOwB6ukKqHU1wRnWzmuH1Syry5ctKEBh4K/KnTuMWlFphp+kHl1BAjCMzE8bUn
- JbitSWNYgIJs1Er1uTZ1En5urRIyaOTjdzHSFqWqc6PNayKiJfVSjxdVCnuENRIsqGdZ
- x29ePNxjRxb7+2m0SLIjPgfiL35pn/FNg8zbhtqmtSzgVLotzYNhu0j9rT6izICcYOJ9
- D7obuCApHHIprX+PvKaHEOuN3f94riINTAds1kDs95ws/34M1XPS33udUgaQs9ZdlhvB
- NUixRBi/sfBfmORbHV3VsUJ8qvyPKTYy5ife5AH6b1OYstx8p1mmh3N3omkpyvpvw+1X
- W/nQ==
+ bh=v6i9DrODxvVzc7sEu1n26IoTawSzw3EOrGL5427sW0Q=;
+ b=qMW40Glimuk8RCsOpQuJ/pexDlbz4FJLVtFyjhBvedGJfjxS4yJweoEhUs42NkR8ym
+ ceaQO7flrjft3Ema57FQ4RUg5SaisdUyht8l2r3bp27a3Yqvf9KqWMFIb5hcuQD0MDck
+ 6aTI0aVh5Kx5Gs/FBgPYx3Vvu043B0vg+XvmlVjhhNE/JHmgzKamOdPGvIxNv21VtyoU
+ YBqmv46iNclra+yjNW58pyG8B0uXyXVQM2HgfWVZlMvZMgNNKD8zTu5wRNc6W7Fsb2oH
+ sL+3hR/RGv9m+EYzbye8FGIEJijiVk6ee10zp4cGSW8cLTfwtxrCZ41IRcihwAKbQ30G
+ xo6g==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
  d=1e100.net; s=20161025;
  h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
  :references:mime-version:content-transfer-encoding;
- bh=irY1spgwK2zJfffTq8hx9QkgkytRwMbw4YTsIN/qTSs=;
- b=oXYm/dMvi6WYNVQ0VFa5v0tBZLsvdUXnF0tUNSyZqcgiAc4JudAhNiFiAxkMxAu6z9
- NPU1pZEHgIFHLzJnS3Mrzp03UsUFjEt7cs3Oij/gM/NwU9Fsou+lbSnjuIHIecmHM27Y
- xY+VZj08e0nSFZSWG8tr9lEx20GvCdVhfWXLM2hJwuzgrynWKGry5/tUyGBKm6RNG7Sc
- FNnxgOPbudnMNYzDxX+8l79LvIPTbnMUA9NFC5aB08v1ZWuKta5SDPdk3NwmiMO5FKXn
- WAhneB824azFz7hnkzyeBwdo3yRk6r3K+xHUeL99CGRZ8D7m9XBYTklivPGKq1fW0uQD
- 1sXQ==
-X-Gm-Message-State: APjAAAXUD2JSE7z2bBMwIglM8OWsZyGePsjShyKajZdzCUhik/0VvzZn
- irfd7qt5EK8iIYlv0YaSF8I=
-X-Google-Smtp-Source: APXvYqwsN0YOpBRkErf/6RtkAtfpULTvJ5FiPJAY1U9wSh3s2TnoIO21C8Ievdu6ssFmIdevGhFIbA==
-X-Received: by 2002:adf:f508:: with SMTP id q8mr2587731wro.334.1575903014734; 
- Mon, 09 Dec 2019 06:50:14 -0800 (PST)
+ bh=v6i9DrODxvVzc7sEu1n26IoTawSzw3EOrGL5427sW0Q=;
+ b=SGW3EFfPVVdNKUCmnTl+J2AN958b2G/vomCrfZCUEfPXkSzq6G9MeaJL0G2IIaeiAV
+ QBpbAmOEfun3Jhj1/KSeG1jhJH0WWSWUpjQ/UqRUTghhgl18KwOKB2NFwnHfjboE0QRc
+ i62M7yAe/5AaoowK4ZLSU7rFVsn/92dJOhuMt8fxoyaRNK1siW5XqtVQssGGLdiLS0s3
+ OCb/XW11Kb/zBJyOew/J70EbPdJr+V7GrcQnYzenyiRS4GatwR/vy7y4pSxKoDCHVTN3
+ 4Ig/ievTefBWiauHA2Nj1sUEsCG5pox81IyxQqCrCrJJ940Fl19lk8usmksS0ef0YcBC
+ CuOQ==
+X-Gm-Message-State: APjAAAXGYxIy0edjXzM5dbYDiVp8TTwTAZ6/mKPQddoNmmGPAWsbzsa4
+ wiU8Yjfct0vI5zwY4QFQRrQ=
+X-Google-Smtp-Source: APXvYqycPV9EZHFU8VN58XAVcMErrL4NDZbeMSU6cPaHd0nxxJDiVJbBvYMs0iBbchsEY0d1dIwJOQ==
+X-Received: by 2002:adf:f6c8:: with SMTP id y8mr2576924wrp.167.1575903020783; 
+ Mon, 09 Dec 2019 06:50:20 -0800 (PST)
 Received: from localhost (pD9E518ED.dip0.t-ipconnect.de. [217.229.24.237])
- by smtp.gmail.com with ESMTPSA id g9sm27179539wro.67.2019.12.09.06.50.13
+ by smtp.gmail.com with ESMTPSA id a16sm26990396wrt.37.2019.12.09.06.50.19
  (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
- Mon, 09 Dec 2019 06:50:13 -0800 (PST)
+ Mon, 09 Dec 2019 06:50:19 -0800 (PST)
 From: Thierry Reding <thierry.reding@gmail.com>
 To: Joerg Roedel <joro@8bytes.org>
-Subject: [PATCH v2 2/5] iommu: arm: Use iommu_put_resv_regions_simple()
-Date: Mon,  9 Dec 2019 15:50:04 +0100
-Message-Id: <20191209145007.2433144-3-thierry.reding@gmail.com>
+Subject: [PATCH v2 5/5] iommu: virtio: Use iommu_put_resv_regions_simple()
+Date: Mon,  9 Dec 2019 15:50:07 +0100
+Message-Id: <20191209145007.2433144-6-thierry.reding@gmail.com>
 X-Mailer: git-send-email 2.23.0
 In-Reply-To: <20191209145007.2433144-1-thierry.reding@gmail.com>
 References: <20191209145007.2433144-1-thierry.reding@gmail.com>
@@ -116,24 +116,25 @@ From: Thierry Reding <treding@nvidia.com>
 
 Use the new standard function instead of open-coding it.
 
-Cc: Will Deacon <will@kernel.org>
-Cc: Robin Murphy <robin.murphy@arm.com>
+Cc: Jean-Philippe Brucker <jean-philippe@linaro.org>
+Cc: virtualization@lists.linux-foundation.org
 Signed-off-by: Thierry Reding <treding@nvidia.com>
 ---
- drivers/iommu/arm-smmu-v3.c | 11 +----------
- drivers/iommu/arm-smmu.c    | 11 +----------
- 2 files changed, 2 insertions(+), 20 deletions(-)
+Changes in v2:
+- change subject prefix to 'iommu: virt:' to 'iommu: virtio:'
 
-diff --git a/drivers/iommu/arm-smmu-v3.c b/drivers/iommu/arm-smmu-v3.c
-index effe72eb89e7..eebf6086080f 100644
---- a/drivers/iommu/arm-smmu-v3.c
-+++ b/drivers/iommu/arm-smmu-v3.c
-@@ -2710,15 +2710,6 @@ static void arm_smmu_get_resv_regions(struct device *dev,
+ drivers/iommu/virtio-iommu.c | 14 +++-----------
+ 1 file changed, 3 insertions(+), 11 deletions(-)
+
+diff --git a/drivers/iommu/virtio-iommu.c b/drivers/iommu/virtio-iommu.c
+index 315c7cc4f99d..834e56a28d4d 100644
+--- a/drivers/iommu/virtio-iommu.c
++++ b/drivers/iommu/virtio-iommu.c
+@@ -837,14 +837,6 @@ static void viommu_get_resv_regions(struct device *dev, struct list_head *head)
  	iommu_dma_get_resv_regions(dev, head);
  }
  
--static void arm_smmu_put_resv_regions(struct device *dev,
--				      struct list_head *head)
+-static void viommu_put_resv_regions(struct device *dev, struct list_head *head)
 -{
 -	struct iommu_resv_region *entry, *next;
 -
@@ -141,45 +142,34 @@ index effe72eb89e7..eebf6086080f 100644
 -		kfree(entry);
 -}
 -
- static struct iommu_ops arm_smmu_ops = {
- 	.capable		= arm_smmu_capable,
- 	.domain_alloc		= arm_smmu_domain_alloc,
-@@ -2736,7 +2727,7 @@ static struct iommu_ops arm_smmu_ops = {
- 	.domain_set_attr	= arm_smmu_domain_set_attr,
- 	.of_xlate		= arm_smmu_of_xlate,
- 	.get_resv_regions	= arm_smmu_get_resv_regions,
--	.put_resv_regions	= arm_smmu_put_resv_regions,
-+	.put_resv_regions	= iommu_put_resv_regions_simple,
- 	.pgsize_bitmap		= -1UL, /* Restricted during device attach */
- };
+ static struct iommu_ops viommu_ops;
+ static struct virtio_driver virtio_iommu_drv;
  
-diff --git a/drivers/iommu/arm-smmu.c b/drivers/iommu/arm-smmu.c
-index 31ad3fe9a6d1..d1aef07bb784 100644
---- a/drivers/iommu/arm-smmu.c
-+++ b/drivers/iommu/arm-smmu.c
-@@ -1576,15 +1576,6 @@ static void arm_smmu_get_resv_regions(struct device *dev,
- 	iommu_dma_get_resv_regions(dev, head);
+@@ -914,7 +906,7 @@ static int viommu_add_device(struct device *dev)
+ err_unlink_dev:
+ 	iommu_device_unlink(&viommu->iommu, dev);
+ err_free_dev:
+-	viommu_put_resv_regions(dev, &vdev->resv_regions);
++	iommu_put_resv_regions_simple(dev, &vdev->resv_regions);
+ 	kfree(vdev);
+ 
+ 	return ret;
+@@ -932,7 +924,7 @@ static void viommu_remove_device(struct device *dev)
+ 
+ 	iommu_group_remove_device(dev);
+ 	iommu_device_unlink(&vdev->viommu->iommu, dev);
+-	viommu_put_resv_regions(dev, &vdev->resv_regions);
++	iommu_put_resv_regions_simple(dev, &vdev->resv_regions);
+ 	kfree(vdev);
  }
  
--static void arm_smmu_put_resv_regions(struct device *dev,
--				      struct list_head *head)
--{
--	struct iommu_resv_region *entry, *next;
--
--	list_for_each_entry_safe(entry, next, head, list)
--		kfree(entry);
--}
--
- static struct iommu_ops arm_smmu_ops = {
- 	.capable		= arm_smmu_capable,
- 	.domain_alloc		= arm_smmu_domain_alloc,
-@@ -1602,7 +1593,7 @@ static struct iommu_ops arm_smmu_ops = {
- 	.domain_set_attr	= arm_smmu_domain_set_attr,
- 	.of_xlate		= arm_smmu_of_xlate,
- 	.get_resv_regions	= arm_smmu_get_resv_regions,
--	.put_resv_regions	= arm_smmu_put_resv_regions,
+@@ -961,7 +953,7 @@ static struct iommu_ops viommu_ops = {
+ 	.remove_device		= viommu_remove_device,
+ 	.device_group		= viommu_device_group,
+ 	.get_resv_regions	= viommu_get_resv_regions,
+-	.put_resv_regions	= viommu_put_resv_regions,
 +	.put_resv_regions	= iommu_put_resv_regions_simple,
- 	.pgsize_bitmap		= -1UL, /* Restricted during device attach */
+ 	.of_xlate		= viommu_of_xlate,
  };
  
 -- 
