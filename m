@@ -2,72 +2,77 @@ Return-Path: <SRS0=4E9V=2A=lists.linux-foundation.org=iommu-bounces@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-7.2 required=3.0 tests=HEADER_FROM_DIFFERENT_DOMAINS,
-	MAILING_LIST_MULTI,MENTIONS_GIT_HOSTING,SPF_HELO_NONE,SPF_PASS,
-	USER_AGENT_SANE_2 autolearn=unavailable autolearn_force=no version=3.4.0
+X-Spam-Status: No, score=-8.3 required=3.0 tests=DKIM_INVALID,DKIM_SIGNED,
+	FAKE_REPLY_C,INCLUDES_PATCH,MAILING_LIST_MULTI,SIGNED_OFF_BY,SPF_HELO_NONE,
+	SPF_PASS,USER_AGENT_SANE_1 autolearn=ham autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 7E2E6C43603
-	for <iommu@archiver.kernel.org>; Tue, 10 Dec 2019 20:24:56 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id D748BC43603
+	for <iommu@archiver.kernel.org>; Tue, 10 Dec 2019 21:07:47 +0000 (UTC)
 Received: from fraxinus.osuosl.org (smtp4.osuosl.org [140.211.166.137])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by mail.kernel.org (Postfix) with ESMTPS id 51F4720652
-	for <iommu@archiver.kernel.org>; Tue, 10 Dec 2019 20:24:56 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 51F4720652
-Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=linux.intel.com
+	by mail.kernel.org (Postfix) with ESMTPS id 9917E20836
+	for <iommu@archiver.kernel.org>; Tue, 10 Dec 2019 21:07:47 +0000 (UTC)
+Authentication-Results: mail.kernel.org;
+	dkim=fail reason="signature verification failed" (1024-bit key) header.d=kernel.org header.i=@kernel.org header.b="tiZ5TXWG"
+DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 9917E20836
+Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=kernel.org
 Authentication-Results: mail.kernel.org; spf=pass smtp.mailfrom=iommu-bounces@lists.linux-foundation.org
 Received: from localhost (localhost [127.0.0.1])
-	by fraxinus.osuosl.org (Postfix) with ESMTP id 2C7D486C1B;
-	Tue, 10 Dec 2019 20:24:56 +0000 (UTC)
+	by fraxinus.osuosl.org (Postfix) with ESMTP id 039B081BD6;
+	Tue, 10 Dec 2019 21:07:47 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
 Received: from fraxinus.osuosl.org ([127.0.0.1])
 	by localhost (.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
-	with ESMTP id 8vDjtnvYTiaR; Tue, 10 Dec 2019 20:24:55 +0000 (UTC)
+	with ESMTP id mYfN-cmb5aUN; Tue, 10 Dec 2019 21:07:46 +0000 (UTC)
 Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [140.211.9.56])
-	by fraxinus.osuosl.org (Postfix) with ESMTP id 19F7386C1D;
-	Tue, 10 Dec 2019 20:24:55 +0000 (UTC)
+	by fraxinus.osuosl.org (Postfix) with ESMTP id 91FC381E18;
+	Tue, 10 Dec 2019 21:07:46 +0000 (UTC)
 Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
-	by lists.linuxfoundation.org (Postfix) with ESMTP id F2CEBC1796;
-	Tue, 10 Dec 2019 20:24:54 +0000 (UTC)
+	by lists.linuxfoundation.org (Postfix) with ESMTP id 7E29EC1796;
+	Tue, 10 Dec 2019 21:07:46 +0000 (UTC)
 Received: from hemlock.osuosl.org (smtp2.osuosl.org [140.211.166.133])
- by lists.linuxfoundation.org (Postfix) with ESMTP id 7F28EC0881
- for <iommu@lists.linux-foundation.org>; Tue, 10 Dec 2019 20:24:52 +0000 (UTC)
+ by lists.linuxfoundation.org (Postfix) with ESMTP id E83B8C0881
+ for <iommu@lists.linux-foundation.org>; Tue, 10 Dec 2019 21:07:44 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
- by hemlock.osuosl.org (Postfix) with ESMTP id 558518849C
- for <iommu@lists.linux-foundation.org>; Tue, 10 Dec 2019 20:24:52 +0000 (UTC)
+ by hemlock.osuosl.org (Postfix) with ESMTP id DFF47874F3
+ for <iommu@lists.linux-foundation.org>; Tue, 10 Dec 2019 21:07:44 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
 Received: from hemlock.osuosl.org ([127.0.0.1])
  by localhost (.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
- with ESMTP id o8DS08w686zO for <iommu@lists.linux-foundation.org>;
- Tue, 10 Dec 2019 20:24:50 +0000 (UTC)
+ with ESMTP id oHCmcSw+SlxC for <iommu@lists.linux-foundation.org>;
+ Tue, 10 Dec 2019 21:07:44 +0000 (UTC)
 X-Greylist: domain auto-whitelisted by SQLgrey-1.7.6
-Received: from mga05.intel.com (mga05.intel.com [192.55.52.43])
- by hemlock.osuosl.org (Postfix) with ESMTPS id 4C7D288499
- for <iommu@lists.linux-foundation.org>; Tue, 10 Dec 2019 20:24:50 +0000 (UTC)
-X-Amp-Result: SKIPPED(no attachment in message)
-X-Amp-File-Uploaded: False
-Received: from orsmga007.jf.intel.com ([10.7.209.58])
- by fmsmga105.fm.intel.com with ESMTP/TLS/DHE-RSA-AES256-GCM-SHA384;
- 10 Dec 2019 12:24:49 -0800
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.69,300,1571727600"; d="scan'208";a="203317843"
-Received: from jacob-builder.jf.intel.com (HELO jacob-builder) ([10.7.199.155])
- by orsmga007.jf.intel.com with ESMTP; 10 Dec 2019 12:24:49 -0800
-Date: Tue, 10 Dec 2019 12:29:36 -0800
-From: Jacob Pan <jacob.jun.pan@linux.intel.com>
-To: Lu Baolu <baolu.lu@linux.intel.com>
-Subject: Re: [PATCH v5 0/8] VT-d Native Shared virtual memory cleanup and fixes
-Message-ID: <20191210122936.4e110666@jacob-builder>
-In-Reply-To: <8a437e65-f380-d5c8-6615-a4d9d3ef1c56@linux.intel.com>
-References: <1575316709-54903-1-git-send-email-jacob.jun.pan@linux.intel.com>
- <20191209091415.0a733af6@jacob-builder>
- <8a437e65-f380-d5c8-6615-a4d9d3ef1c56@linux.intel.com>
-Organization: OTC
-X-Mailer: Claws Mail 3.13.2 (GTK+ 2.24.30; x86_64-pc-linux-gnu)
+Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
+ by hemlock.osuosl.org (Postfix) with ESMTPS id 609E9871DE
+ for <iommu@lists.linux-foundation.org>; Tue, 10 Dec 2019 21:07:44 +0000 (UTC)
+Received: from localhost (mobile-166-170-223-177.mycingular.net
+ [166.170.223.177])
+ (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+ (No client certificate requested)
+ by mail.kernel.org (Postfix) with ESMTPSA id C86E82467E;
+ Tue, 10 Dec 2019 21:07:43 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+ s=default; t=1576012064;
+ bh=2ykNyvGZMJo7g3XX2Ffo2Sm4t/OZWneo6t2EKj0O0vs=;
+ h=Date:From:To:Cc:Subject:In-Reply-To:From;
+ b=tiZ5TXWGgfMMcgH1qAGW16vBSyFbf8QVFgba/3MyF+aPuDTbo4hJyiKvDLa/T3dHf
+ QC17RvTnsNWgjsiKExbDTckPZJk/RCI/j1M9mCOmDjgARxC0K8V6pKEybDPhvvojm+
+ 0dNknNsvmHuDSPRrzN1/QfLHPNP0Fm1IwVXvM5HU=
+Date: Tue, 10 Dec 2019 15:07:41 -0600
+From: Bjorn Helgaas <helgaas@kernel.org>
+To: Jean-Philippe Brucker <jean-philippe@linaro.org>
+Subject: Re: [PATCH v3 12/13] PCI/ATS: Add PASID stubs
+Message-ID: <20191210210741.GA143420@google.com>
 MIME-Version: 1.0
-Cc: "Tian, Kevin" <kevin.tian@intel.com>, Raj Ashok <ashok.raj@intel.com>,
- LKML <linux-kernel@vger.kernel.org>, iommu@lists.linux-foundation.org,
- Joe Perches <joe@perches.com>, David Woodhouse <dwmw2@infradead.org>
+Content-Disposition: inline
+In-Reply-To: <20191209180514.272727-13-jean-philippe@linaro.org>
+User-Agent: Mutt/1.10.1 (2018-07-13)
+Cc: mark.rutland@arm.com, devicetree@vger.kernel.org, linux-pci@vger.kernel.org,
+ sudeep.holla@arm.com, rjw@rjwysocki.net, robin.murphy@arm.com,
+ linux-acpi@vger.kernel.org, iommu@lists.linux-foundation.org,
+ robh+dt@kernel.org, guohanjun@huawei.com, zhangfei.gao@linaro.org,
+ will@kernel.org, linux-arm-kernel@lists.infradead.org, lenb@kernel.org
 X-BeenThere: iommu@lists.linux-foundation.org
 X-Mailman-Version: 2.1.15
 Precedence: list
@@ -85,87 +90,37 @@ Content-Transfer-Encoding: 7bit
 Errors-To: iommu-bounces@lists.linux-foundation.org
 Sender: "iommu" <iommu-bounces@lists.linux-foundation.org>
 
-On Tue, 10 Dec 2019 09:14:07 +0800
-Lu Baolu <baolu.lu@linux.intel.com> wrote:
-
-> Hi Jacob,
+On Mon, Dec 09, 2019 at 07:05:13PM +0100, Jean-Philippe Brucker wrote:
+> The SMMUv3 driver, which may be built without CONFIG_PCI, will soon gain
+> PASID support.  Partially revert commit c6e9aefbf9db ("PCI/ATS: Remove
+> unused PRI and PASID stubs") to re-introduce the PASID stubs, and avoid
+> adding more #ifdefs to the SMMU driver.
 > 
-> This has been queued for internal test. I will forward it to Joerg if
-> everything goes well (probably around rc4).
+> Signed-off-by: Jean-Philippe Brucker <jean-philippe@linaro.org>
+
+Acked-by: Bjorn Helgaas <bhelgaas@google.com>
+
+> ---
+>  include/linux/pci-ats.h | 3 +++
+>  1 file changed, 3 insertions(+)
 > 
-Thanks for the confirmation. I will send out further patches based on
-this series.
-
-
-> Best regards,
-> -baolu
+> diff --git a/include/linux/pci-ats.h b/include/linux/pci-ats.h
+> index 5d62e78946a3..d08f0869f121 100644
+> --- a/include/linux/pci-ats.h
+> +++ b/include/linux/pci-ats.h
+> @@ -33,6 +33,9 @@ void pci_disable_pasid(struct pci_dev *pdev);
+>  int pci_pasid_features(struct pci_dev *pdev);
+>  int pci_max_pasids(struct pci_dev *pdev);
+>  #else /* CONFIG_PCI_PASID */
+> +static inline int pci_enable_pasid(struct pci_dev *pdev, int features)
+> +{ return -EINVAL; }
+> +static inline void pci_disable_pasid(struct pci_dev *pdev) { }
+>  static inline int pci_pasid_features(struct pci_dev *pdev)
+>  { return -EINVAL; }
+>  static inline int pci_max_pasids(struct pci_dev *pdev)
+> -- 
+> 2.24.0
 > 
-> On 12/10/19 1:14 AM, Jacob Pan wrote:
-> > Hi Joerg and Baolu,
-> > 
-> > Any more comments on this series? I rebased it on v5.5-rc1 without
-> > changes.
-> > 
-> > 
-> > Thanks,
-> > 
-> > Jacob
-> > 
-> > On Mon,  2 Dec 2019 11:58:21 -0800
-> > Jacob Pan <jacob.jun.pan@linux.intel.com> wrote:
-> >   
-> >> Mostly extracted from nested SVA/SVM series based on review
-> >> comments of v7. https://lkml.org/lkml/2019/10/24/852
-> >>
-> >> This series also adds a few important fixes for native use of SVA.
-> >> Nested SVA new code will be submitted separately as a smaller set.
-> >> Based on the core branch of IOMMU tree staged for v5.5, where
-> >> common APIs for vSVA were applied.
-> >> git://git.kernel.org/pub/scm/linux/kernel/git/joro/iommu.git core
-> >>
-> >> Changelog:
-> >> v5	- Regrouped patch 6 and 8, added comments suggested by
-> >> Joe Perches v4	- Commit message fix
-> >>
-> >> V3
-> >> 	- Squashed 1/10 & 2/10
-> >> 	- Deleted "8/10 Fix PASID cache flush" from this series
-> >> 	- Addressed reviews from Eric Auger and Baolu
-> >> V2
-> >> 	- Coding style fixes based on Baolu's input, no functional
-> >> change
-> >> 	- Added Acked-by tags.
-> >>
-> >> Thanks,
-> >>
-> >> Jacob
-> >>
-> >>
-> >> *** BLURB HERE ***
-> >>
-> >> Jacob Pan (8):
-> >>    iommu/vt-d: Fix CPU and IOMMU SVM feature matching checks
-> >>    iommu/vt-d: Match CPU and IOMMU paging mode
-> >>    iommu/vt-d: Reject SVM bind for failed capability check
-> >>    iommu/vt-d: Avoid duplicated code for PASID setup
-> >>    iommu/vt-d: Fix off-by-one in PASID allocation
-> >>    iommu/vt-d: Replace Intel specific PASID allocator with IOASID
-> >>    iommu/vt-d: Avoid sending invalid page response
-> >>    iommu/vt-d: Misc macro clean up for SVM
-> >>
-> >>   drivers/iommu/Kconfig       |   1 +
-> >>   drivers/iommu/intel-iommu.c |  23 +++----
-> >>   drivers/iommu/intel-pasid.c |  96 ++++++++------------------
-> >>   drivers/iommu/intel-svm.c   | 163
-> >> +++++++++++++++++++++++++-------------------
-> >> include/linux/intel-iommu.h |   5 +- 5 files changed, 135
-> >> insertions(+), 153 deletions(-)
-> >>  
-> > 
-> > [Jacob Pan]
-> >   
-
-[Jacob Pan]
 _______________________________________________
 iommu mailing list
 iommu@lists.linux-foundation.org
