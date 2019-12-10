@@ -2,103 +2,113 @@ Return-Path: <SRS0=4E9V=2A=lists.linux-foundation.org=iommu-bounces@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-9.6 required=3.0 tests=DKIM_INVALID,DKIM_SIGNED,
-	HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_PATCH,MAILING_LIST_MULTI,SIGNED_OFF_BY,
-	SPF_HELO_NONE,SPF_PASS,USER_AGENT_GIT autolearn=unavailable
-	autolearn_force=no version=3.4.0
+X-Spam-Status: No, score=-3.5 required=3.0 tests=DKIM_INVALID,DKIM_SIGNED,
+	HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_PATCH,MAILING_LIST_MULTI,SPF_HELO_NONE,
+	SPF_PASS autolearn=no autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 0A1E8C43603
-	for <iommu@archiver.kernel.org>; Tue, 10 Dec 2019 02:50:45 +0000 (UTC)
-Received: from silver.osuosl.org (smtp3.osuosl.org [140.211.166.136])
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 11CEDC43603
+	for <iommu@archiver.kernel.org>; Tue, 10 Dec 2019 03:48:06 +0000 (UTC)
+Received: from hemlock.osuosl.org (smtp2.osuosl.org [140.211.166.133])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by mail.kernel.org (Postfix) with ESMTPS id CB82F206E0
-	for <iommu@archiver.kernel.org>; Tue, 10 Dec 2019 02:50:44 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTPS id C3A0D20692
+	for <iommu@archiver.kernel.org>; Tue, 10 Dec 2019 03:48:05 +0000 (UTC)
 Authentication-Results: mail.kernel.org;
-	dkim=fail reason="signature verification failed" (2048-bit key) header.d=linaro.org header.i=@linaro.org header.b="pbfPE1fn"
-DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org CB82F206E0
-Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=linaro.org
+	dkim=fail reason="signature verification failed" (1024-bit key) header.d=redhat.com header.i=@redhat.com header.b="QoeZFC8K"
+DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org C3A0D20692
+Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=redhat.com
 Authentication-Results: mail.kernel.org; spf=pass smtp.mailfrom=iommu-bounces@lists.linux-foundation.org
 Received: from localhost (localhost [127.0.0.1])
-	by silver.osuosl.org (Postfix) with ESMTP id AAA2720437;
-	Tue, 10 Dec 2019 02:50:44 +0000 (UTC)
+	by hemlock.osuosl.org (Postfix) with ESMTP id 72EA987B8E;
+	Tue, 10 Dec 2019 03:48:05 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from silver.osuosl.org ([127.0.0.1])
+Received: from hemlock.osuosl.org ([127.0.0.1])
 	by localhost (.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
-	with ESMTP id AVOqXZ1eXI0J; Tue, 10 Dec 2019 02:50:42 +0000 (UTC)
+	with ESMTP id pCtBFkRmHeDE; Tue, 10 Dec 2019 03:48:04 +0000 (UTC)
 Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [140.211.9.56])
-	by silver.osuosl.org (Postfix) with ESMTP id 8B5FB2038B;
-	Tue, 10 Dec 2019 02:50:41 +0000 (UTC)
+	by hemlock.osuosl.org (Postfix) with ESMTP id 8A2DB87B7D;
+	Tue, 10 Dec 2019 03:48:04 +0000 (UTC)
 Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
-	by lists.linuxfoundation.org (Postfix) with ESMTP id 85704C1796;
-	Tue, 10 Dec 2019 02:50:41 +0000 (UTC)
+	by lists.linuxfoundation.org (Postfix) with ESMTP id 6EFEAC1D7D;
+	Tue, 10 Dec 2019 03:48:04 +0000 (UTC)
 Received: from silver.osuosl.org (smtp3.osuosl.org [140.211.166.136])
- by lists.linuxfoundation.org (Postfix) with ESMTP id 7B1CAC0881
- for <iommu@lists.linux-foundation.org>; Tue, 10 Dec 2019 02:50:40 +0000 (UTC)
+ by lists.linuxfoundation.org (Postfix) with ESMTP id 582FDC0881
+ for <iommu@lists.linux-foundation.org>; Tue, 10 Dec 2019 03:48:03 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
- by silver.osuosl.org (Postfix) with ESMTP id 59C3C2044F
- for <iommu@lists.linux-foundation.org>; Tue, 10 Dec 2019 02:50:39 +0000 (UTC)
+ by silver.osuosl.org (Postfix) with ESMTP id B59CD2041C
+ for <iommu@lists.linux-foundation.org>; Tue, 10 Dec 2019 03:48:02 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
 Received: from silver.osuosl.org ([127.0.0.1])
  by localhost (.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
- with ESMTP id NXEhBKWd63xK for <iommu@lists.linux-foundation.org>;
- Tue, 10 Dec 2019 02:50:23 +0000 (UTC)
-X-Greylist: from auto-whitelisted by SQLgrey-1.7.6
-Received: from mail-pl1-f196.google.com (mail-pl1-f196.google.com
- [209.85.214.196])
- by silver.osuosl.org (Postfix) with ESMTPS id 78D682038B
- for <iommu@lists.linux-foundation.org>; Tue, 10 Dec 2019 02:50:21 +0000 (UTC)
-Received: by mail-pl1-f196.google.com with SMTP id s10so6654933plp.2
- for <iommu@lists.linux-foundation.org>; Mon, 09 Dec 2019 18:50:21 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linaro.org; s=google;
- h=from:to:cc:subject:date:message-id:in-reply-to:references;
- bh=+bRiwaZbPquw1dVyodPBM5AZDtxtJGlBtZC7kUTRNWM=;
- b=pbfPE1fnt0Ng2jLsC5A0Vw7L4En5ydP/gDEu2eTvfjeqO5u9z7J2eceqfVyFl77amY
- E2l/fq665ZjWdMB0KMMhKeWzX5xVZvFjLAzCArHtB79nwKbWoTrfDL30Y2fZK3mTGJ3q
- q/L8CNwxRI/Frv5XoMx8ZWgwdhKUeO/avGpz1Xs9mI3a6J+OH7/WGG4kPauKuNCXSV6p
- IRIW4+ZlBU0w1K8pHBQTtSYDsEIdArt6iQksECj/QbpSWo9Ncj8mQG52WWzEos+kzJIK
- qqv7SrmqWBouVStFVDXT+vRbO62n8+DCUmQqpdwNzqWswBjfyf3PDYmvEOb6FEOD0juK
- xvmg==
+ with ESMTP id sc49lm8yzcUV for <iommu@lists.linux-foundation.org>;
+ Tue, 10 Dec 2019 03:48:00 +0000 (UTC)
+X-Greylist: domain auto-whitelisted by SQLgrey-1.7.6
+Received: from us-smtp-delivery-1.mimecast.com (us-smtp-2.mimecast.com
+ [207.211.31.81])
+ by silver.osuosl.org (Postfix) with ESMTPS id 77AD820006
+ for <iommu@lists.linux-foundation.org>; Tue, 10 Dec 2019 03:48:00 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+ s=mimecast20190719; t=1575949679;
+ h=from:from:reply-to:reply-to:subject:subject:date:date:
+ message-id:message-id:to:to:cc:cc:mime-version:mime-version:
+ content-type:content-type:
+ content-transfer-encoding:content-transfer-encoding:
+ in-reply-to:in-reply-to:references:references;
+ bh=EFSLg9bFjSuk01in6M0otnoospF1Dv/l5jzBs0YBIzc=;
+ b=QoeZFC8Kxr2X4/Xm/CdsqSncbDZPX15/8u6B7L4fnmhCfJ/Plv3d33n5Gf1NxVG52yrgHT
+ QU5u7V/G2gTO1RAZmFHTkIm2jtk/KzUlUOp+uL95jqD/8+sc45T17BuxlpW/gblN5DG36B
+ BuGxksLKZSB2KiH9Y0DxQcyCG9LP4lM=
+Received: from mail-yb1-f197.google.com (mail-yb1-f197.google.com
+ [209.85.219.197]) (Using TLS) by relay.mimecast.com with ESMTP id
+ us-mta-331-AXaQ_OgkMqK_WHsR_6dhXw-1; Mon, 09 Dec 2019 22:47:57 -0500
+Received: by mail-yb1-f197.google.com with SMTP id v186so869277ybc.4
+ for <iommu@lists.linux-foundation.org>; Mon, 09 Dec 2019 19:47:57 -0800 (PST)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
  d=1e100.net; s=20161025;
- h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
- :references;
- bh=+bRiwaZbPquw1dVyodPBM5AZDtxtJGlBtZC7kUTRNWM=;
- b=rRkFq8ZdL/LSrocC4V6Pe+RvMlyPlC8IIB9T9m+k1OYgOTL6wtiTNkYF/m3j3GJtkp
- YM45qO2Xbc2URn9kxs97uYnpiTRFkySujjHFbi54x/2UNPBWHKf4hVAfchGaD878q14V
- OY6S7isJdBcDazmopl6B7ysjph7gPfFzQzvZpTwlrnKPv6nsCbDo56vhsMx7KZWnFP0K
- aaFzi/P8EqMwDkW3QqhsUpZOs62E4KV1fZj4nw7lWwsZXCGyWiSWxtlbhijIpt7sBcAo
- wRzZM5Qiixp9UDhcBX3tmFiTUk/KmE31zHtjv3rqIEGzFH95SjkELIOiQynGKqzsPCah
- USdA==
-X-Gm-Message-State: APjAAAU7Qcshf4MtPwP95zkQShuelCwtwAYBWUvemW7HVgzOURJ3EVoC
- efTIi8zXzXYLX1eZf52v7C/y+mxHu3Rz2g==
-X-Google-Smtp-Source: APXvYqwBu48+INTAKxmQcPvV6f3Kf/XI+JndtlpOiBlffPMsY+odY/SwT4ZyXUNH7QvrlK+uHSMIcQ==
-X-Received: by 2002:a17:902:6802:: with SMTP id
- h2mr32288458plk.135.1575945818715; 
- Mon, 09 Dec 2019 18:43:38 -0800 (PST)
-Received: from localhost.localdomain ([240e:362:417:e00:ed89:9d55:8cd5:6d38])
- by smtp.gmail.com with ESMTPSA id
- r6sm826422pfh.91.2019.12.09.18.43.21
- (version=TLS1_2 cipher=ECDHE-RSA-AES128-SHA bits=128/128);
- Mon, 09 Dec 2019 18:43:38 -0800 (PST)
-From: Zhangfei Gao <zhangfei.gao@linaro.org>
-To: Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
- Arnd Bergmann <arnd@arndb.de>, Herbert Xu <herbert@gondor.apana.org.au>,
- jonathan.cameron@huawei.com, grant.likely@arm.com,
- jean-philippe <jean-philippe@linaro.org>,
- Jerome Glisse <jglisse@redhat.com>, ilias.apalodimas@linaro.org,
- francois.ozog@linaro.org, kenneth-lee-2012@foxmail.com,
- Wangzhou <wangzhou1@hisilicon.com>,
- "haojian . zhuang" <haojian.zhuang@linaro.org>, guodong.xu@linaro.org
-Subject: [RESEND PATCH v9 2/4] uacce: add uacce driver
-Date: Tue, 10 Dec 2019 10:42:33 +0800
-Message-Id: <1575945755-27380-3-git-send-email-zhangfei.gao@linaro.org>
-X-Mailer: git-send-email 2.7.4
-In-Reply-To: <1575945755-27380-1-git-send-email-zhangfei.gao@linaro.org>
-References: <1575945755-27380-1-git-send-email-zhangfei.gao@linaro.org>
-Cc: linux-kernel@vger.kernel.org, iommu@lists.linux-foundation.org,
- linux-crypto@vger.kernel.org, Zhangfei Gao <zhangfei.gao@linaro.org>,
- Kenneth Lee <liguozhu@hisilicon.com>, linux-accelerators@lists.ozlabs.org
+ h=x-gm-message-state:date:from:to:cc:subject:message-id:reply-to
+ :references:mime-version:content-disposition
+ :content-transfer-encoding:in-reply-to;
+ bh=SgmyUmCFJPcbQIAgqEp5TcBgxGJxIEaQY8xaleg7zBE=;
+ b=SYHeuPBZCkPsdvD2kcc5WEwQmieEb/7OO9wTe/f7fHxHnDscUVex2RNB7hfU380Kj3
+ emlK/hEK8A6gLAY1KFyvepsPiSLbYCpV5uxmMwKi3vcwIw2XkQI9bFT1nbAqv3N1QIrk
+ R2ZGnJORRHn7WWblpm8UXu80P6NLWtSeAOHjG+6SB7hfFmFLkMj+wAZdTGG3NvB4RohH
+ p9v5l+vZIt2ILrEnNEdIqUiNqurUlkz1dPiAng0Z035eQWbRLBu6f3D4L1AYR8RChjjx
+ I7BVeA9BfnIU83VHEx04KweRxMll/YKbTQviimQMIdxWfzCoZ0GsfwCtPvxky6GvBVdi
+ D/iw==
+X-Gm-Message-State: APjAAAUF2xlIY5FBPVPGF3yYFk0nYK74gQSJtO2sZ+Ry96x+YN/kIWRb
+ NJDwib6qZhdPCwaRWt1u+D92olZ85YddAfPttkzloy7EEibNKuIGNYNBFyqWX1df2CybTJRKUlS
+ DS7S2VlkysLTUS8EbKp9QCEzjltb5Eg==
+X-Received: by 2002:a25:d652:: with SMTP id n79mr1017076ybg.341.1575949676593; 
+ Mon, 09 Dec 2019 19:47:56 -0800 (PST)
+X-Google-Smtp-Source: APXvYqy3rKCStK8cZnpQfWuK+lrhmkGRmpvqC9wh/IUILyeDHSEbVttG88XCl0p4ITT8yI3J67aI1A==
+X-Received: by 2002:a25:d652:: with SMTP id n79mr1017066ybg.341.1575949676165; 
+ Mon, 09 Dec 2019 19:47:56 -0800 (PST)
+Received: from localhost (ip70-163-223-149.ph.ph.cox.net. [70.163.223.149])
+ by smtp.gmail.com with ESMTPSA id d207sm944523ywa.62.2019.12.09.19.47.54
+ (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+ Mon, 09 Dec 2019 19:47:55 -0800 (PST)
+Date: Mon, 9 Dec 2019 20:47:53 -0700
+From: Jerry Snitselaar <jsnitsel@redhat.com>
+To: Lu Baolu <baolu.lu@linux.intel.com>
+Subject: Re: dmar pte read access not set error messages on hp dl388 gen8
+ systems
+Message-ID: <20191210034753.wlmbqdvqpcnzfxyl@cantor>
+References: <d5981dee-d37b-a725-ed94-8864f3dd7602@linux.intel.com>
+ <20191205025320.oiulo3msfcggdlv5@cantor>
+ <d5fbedce-7a06-79b4-75fa-0aa3cc3ef73b@linux.intel.com>
+ <20191206072453.5jjwrjedqbjimx45@cantor>
+ <0f82007e-9887-d6b2-08e5-9c430c920b36@linux.intel.com>
+ <20191207022914.7uccwkmgadz4hvbf@cantor>
+ <20191207024118.uwwzthqifh2dca5q@cantor>
+ <7979b838-e2c5-4064-490c-8e0884909715@linux.intel.com>
+ <20191210005234.kanygdcjgsgo7z6j@cantor>
+ <77d3ca8e-cb8c-4392-fa99-c55daa263b8e@linux.intel.com>
+MIME-Version: 1.0
+In-Reply-To: <77d3ca8e-cb8c-4392-fa99-c55daa263b8e@linux.intel.com>
+X-MC-Unique: AXaQ_OgkMqK_WHsR_6dhXw-1
+X-Mimecast-Spam-Score: 0
+Content-Disposition: inline
+Cc: iommu@lists.linux-foundation.org
 X-BeenThere: iommu@lists.linux-foundation.org
 X-Mailman-Version: 2.1.15
 Precedence: list
@@ -111,1008 +121,180 @@ List-Post: <mailto:iommu@lists.linux-foundation.org>
 List-Help: <mailto:iommu-request@lists.linux-foundation.org?subject=help>
 List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
  <mailto:iommu-request@lists.linux-foundation.org?subject=subscribe>
-MIME-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: 7bit
+Reply-To: Jerry Snitselaar <jsnitsel@redhat.com>
+Content-Transfer-Encoding: base64
+Content-Type: text/plain; charset="utf-8"; Format="flowed"
 Errors-To: iommu-bounces@lists.linux-foundation.org
 Sender: "iommu" <iommu-bounces@lists.linux-foundation.org>
 
-From: Kenneth Lee <liguozhu@hisilicon.com>
-
-Uacce (Unified/User-space-access-intended Accelerator Framework) targets to
-provide Shared Virtual Addressing (SVA) between accelerators and processes.
-So accelerator can access any data structure of the main cpu.
-This differs from the data sharing between cpu and io device, which share
-only data content rather than address.
-Since unified address, hardware and user space of process can share the
-same virtual address in the communication.
-
-Uacce create a chrdev for every registration, the queue is allocated to
-the process when the chrdev is opened. Then the process can access the
-hardware resource by interact with the queue file. By mmap the queue
-file space to user space, the process can directly put requests to the
-hardware without syscall to the kernel space.
-
-The IOMMU core only tracks mm<->device bonds at the moment, because it
-only needs to handle IOTLB invalidation and PASID table entries. However
-uacce needs a finer granularity since multiple queues from the same
-device can be bound to an mm. When the mm exits, all bound queues must
-be stopped so that the IOMMU can safely clear the PASID table entry and
-reallocate the PASID.
-
-An intermediate struct uacce_mm links uacce devices and queues.
-Note that an mm may be bound to multiple devices but an uacce_mm
-structure only ever belongs to a single device, because we don't need
-anything more complex (if multiple devices are bound to one mm, then
-we'll create one uacce_mm for each bond).
-
-        uacce_device --+-- uacce_mm --+-- uacce_queue
-                       |              '-- uacce_queue
-                       |
-                       '-- uacce_mm --+-- uacce_queue
-                                      +-- uacce_queue
-                                      '-- uacce_queue
-
-Signed-off-by: Kenneth Lee <liguozhu@hisilicon.com>
-Signed-off-by: Zaibo Xu <xuzaibo@huawei.com>
-Signed-off-by: Zhou Wang <wangzhou1@hisilicon.com>
-Signed-off-by: Jean-Philippe Brucker <jean-philippe@linaro.org>
-Signed-off-by: Zhangfei Gao <zhangfei.gao@linaro.org>
----
- Documentation/ABI/testing/sysfs-driver-uacce |  37 ++
- drivers/misc/Kconfig                         |   1 +
- drivers/misc/Makefile                        |   1 +
- drivers/misc/uacce/Kconfig                   |  13 +
- drivers/misc/uacce/Makefile                  |   2 +
- drivers/misc/uacce/uacce.c                   | 627 +++++++++++++++++++++++++++
- include/linux/uacce.h                        | 161 +++++++
- include/uapi/misc/uacce/uacce.h              |  38 ++
- 8 files changed, 880 insertions(+)
- create mode 100644 Documentation/ABI/testing/sysfs-driver-uacce
- create mode 100644 drivers/misc/uacce/Kconfig
- create mode 100644 drivers/misc/uacce/Makefile
- create mode 100644 drivers/misc/uacce/uacce.c
- create mode 100644 include/linux/uacce.h
- create mode 100644 include/uapi/misc/uacce/uacce.h
-
-diff --git a/Documentation/ABI/testing/sysfs-driver-uacce b/Documentation/ABI/testing/sysfs-driver-uacce
-new file mode 100644
-index 0000000..8520d68
---- /dev/null
-+++ b/Documentation/ABI/testing/sysfs-driver-uacce
-@@ -0,0 +1,37 @@
-+What:           /sys/class/uacce/<dev_name>/api
-+Date:           Dec 2019
-+KernelVersion:  5.6
-+Contact:        linux-accelerators@lists.ozlabs.org
-+Description:    Api of the device, no requirement of the format
-+                Application use the api to match the correct driver
-+
-+What:           /sys/class/uacce/<dev_name>/flags
-+Date:           Dec 2019
-+KernelVersion:  5.6
-+Contact:        linux-accelerators@lists.ozlabs.org
-+Description:    Attributes of the device, see UACCE_DEV_xxx flag defined in uacce.h
-+
-+What:           /sys/class/uacce/<dev_name>/available_instances
-+Date:           Dec 2019
-+KernelVersion:  5.6
-+Contact:        linux-accelerators@lists.ozlabs.org
-+Description:    Available instances left of the device
-+                Return -ENODEV if uacce_ops get_available_instances is not provided
-+
-+What:           /sys/class/uacce/<dev_name>/algorithms
-+Date:           Dec 2019
-+KernelVersion:  5.6
-+Contact:        linux-accelerators@lists.ozlabs.org
-+Description:    Algorithms supported by this accelerator, separated by new line.
-+
-+What:           /sys/class/uacce/<dev_name>/region_mmio_size
-+Date:           Dec 2019
-+KernelVersion:  5.6
-+Contact:        linux-accelerators@lists.ozlabs.org
-+Description:    Size (bytes) of mmio region queue file
-+
-+What:           /sys/class/uacce/<dev_name>/region_dus_size
-+Date:           Dec 2019
-+KernelVersion:  5.6
-+Contact:        linux-accelerators@lists.ozlabs.org
-+Description:    Size (bytes) of dus region queue file
-diff --git a/drivers/misc/Kconfig b/drivers/misc/Kconfig
-index 7f0d48f..99e1514 100644
---- a/drivers/misc/Kconfig
-+++ b/drivers/misc/Kconfig
-@@ -480,4 +480,5 @@ source "drivers/misc/cxl/Kconfig"
- source "drivers/misc/ocxl/Kconfig"
- source "drivers/misc/cardreader/Kconfig"
- source "drivers/misc/habanalabs/Kconfig"
-+source "drivers/misc/uacce/Kconfig"
- endmenu
-diff --git a/drivers/misc/Makefile b/drivers/misc/Makefile
-index c1860d3..9abf292 100644
---- a/drivers/misc/Makefile
-+++ b/drivers/misc/Makefile
-@@ -56,4 +56,5 @@ obj-$(CONFIG_OCXL)		+= ocxl/
- obj-y				+= cardreader/
- obj-$(CONFIG_PVPANIC)   	+= pvpanic.o
- obj-$(CONFIG_HABANA_AI)		+= habanalabs/
-+obj-$(CONFIG_UACCE)		+= uacce/
- obj-$(CONFIG_XILINX_SDFEC)	+= xilinx_sdfec.o
-diff --git a/drivers/misc/uacce/Kconfig b/drivers/misc/uacce/Kconfig
-new file mode 100644
-index 0000000..5e39b60
---- /dev/null
-+++ b/drivers/misc/uacce/Kconfig
-@@ -0,0 +1,13 @@
-+config UACCE
-+	tristate "Accelerator Framework for User Land"
-+	depends on IOMMU_API
-+	help
-+	  UACCE provides interface for the user process to access the hardware
-+	  without interaction with the kernel space in data path.
-+
-+	  The user-space interface is described in
-+	  include/uapi/misc/uacce/uacce.h
-+
-+	  See Documentation/misc-devices/uacce.rst for more details.
-+
-+	  If you don't know what to do here, say N.
-diff --git a/drivers/misc/uacce/Makefile b/drivers/misc/uacce/Makefile
-new file mode 100644
-index 0000000..5b4374e
---- /dev/null
-+++ b/drivers/misc/uacce/Makefile
-@@ -0,0 +1,2 @@
-+# SPDX-License-Identifier: GPL-2.0-or-later
-+obj-$(CONFIG_UACCE) += uacce.o
-diff --git a/drivers/misc/uacce/uacce.c b/drivers/misc/uacce/uacce.c
-new file mode 100644
-index 0000000..d7452b1
---- /dev/null
-+++ b/drivers/misc/uacce/uacce.c
-@@ -0,0 +1,627 @@
-+// SPDX-License-Identifier: GPL-2.0-or-later
-+#include <linux/compat.h>
-+#include <linux/dma-iommu.h>
-+#include <linux/module.h>
-+#include <linux/poll.h>
-+#include <linux/uacce.h>
-+
-+static struct class *uacce_class;
-+static dev_t uacce_devt;
-+static DEFINE_MUTEX(uacce_mutex);
-+static DEFINE_XARRAY_ALLOC(uacce_xa);
-+
-+static int uacce_start_queue(struct uacce_queue *q)
-+{
-+	int ret = 0;
-+
-+	mutex_lock(&uacce_mutex);
-+
-+	if (q->state != UACCE_Q_INIT) {
-+		ret = -EINVAL;
-+		goto out_with_lock;
-+	}
-+
-+	if (q->uacce->ops->start_queue) {
-+		ret = q->uacce->ops->start_queue(q);
-+		if (ret < 0)
-+			goto out_with_lock;
-+	}
-+
-+	q->state = UACCE_Q_STARTED;
-+
-+out_with_lock:
-+	mutex_unlock(&uacce_mutex);
-+
-+	return ret;
-+}
-+
-+static int uacce_put_queue(struct uacce_queue *q)
-+{
-+	struct uacce_device *uacce = q->uacce;
-+
-+	mutex_lock(&uacce_mutex);
-+
-+	if (q->state == UACCE_Q_ZOMBIE)
-+		goto out;
-+
-+	if ((q->state == UACCE_Q_STARTED) && uacce->ops->stop_queue)
-+		uacce->ops->stop_queue(q);
-+
-+	if ((q->state == UACCE_Q_INIT || q->state == UACCE_Q_STARTED) &&
-+	     uacce->ops->put_queue)
-+		uacce->ops->put_queue(q);
-+
-+	q->state = UACCE_Q_ZOMBIE;
-+out:
-+	mutex_unlock(&uacce_mutex);
-+
-+	return 0;
-+}
-+
-+static long uacce_fops_unl_ioctl(struct file *filep,
-+				 unsigned int cmd, unsigned long arg)
-+{
-+	struct uacce_queue *q = filep->private_data;
-+	struct uacce_device *uacce = q->uacce;
-+
-+	switch (cmd) {
-+	case UACCE_CMD_START_Q:
-+		return uacce_start_queue(q);
-+
-+	case UACCE_CMD_PUT_Q:
-+		return uacce_put_queue(q);
-+
-+	default:
-+		if (!uacce->ops->ioctl)
-+			return -EINVAL;
-+
-+		return uacce->ops->ioctl(q, cmd, arg);
-+	}
-+}
-+
-+#ifdef CONFIG_COMPAT
-+static long uacce_fops_compat_ioctl(struct file *filep,
-+				   unsigned int cmd, unsigned long arg)
-+{
-+	arg = (unsigned long)compat_ptr(arg);
-+
-+	return uacce_fops_unl_ioctl(filep, cmd, arg);
-+}
-+#endif
-+
-+static int uacce_sva_exit(struct device *dev, struct iommu_sva *handle,
-+			  void *data)
-+{
-+	struct uacce_mm *uacce_mm = data;
-+	struct uacce_queue *q;
-+
-+	/*
-+	 * No new queue can be added concurrently because no caller can have a
-+	 * reference to this mm. But there may be concurrent calls to
-+	 * uacce_mm_put(), so we need the lock.
-+	 */
-+	mutex_lock(&uacce_mm->lock);
-+	list_for_each_entry(q, &uacce_mm->queues, list)
-+		uacce_put_queue(q);
-+	uacce_mm->mm = NULL;
-+	mutex_unlock(&uacce_mm->lock);
-+
-+	return 0;
-+}
-+
-+static struct iommu_sva_ops uacce_sva_ops = {
-+	.mm_exit = uacce_sva_exit,
-+};
-+
-+static struct uacce_mm *uacce_mm_get(struct uacce_device *uacce,
-+				     struct uacce_queue *q,
-+				     struct mm_struct *mm)
-+{
-+	struct uacce_mm *uacce_mm = NULL;
-+	struct iommu_sva *handle = NULL;
-+	int ret;
-+
-+	lockdep_assert_held(&uacce->mm_lock);
-+
-+	list_for_each_entry(uacce_mm, &uacce->mm_list, list) {
-+		if (uacce_mm->mm == mm) {
-+			mutex_lock(&uacce_mm->lock);
-+			list_add(&q->list, &uacce_mm->queues);
-+			mutex_unlock(&uacce_mm->lock);
-+			return uacce_mm;
-+		}
-+	}
-+
-+	uacce_mm = kzalloc(sizeof(*uacce_mm), GFP_KERNEL);
-+	if (!uacce_mm)
-+		return NULL;
-+
-+	if (uacce->flags & UACCE_DEV_SVA) {
-+		/*
-+		 * Safe to pass an incomplete uacce_mm, since mm_exit cannot
-+		 * fire while we hold a reference to the mm.
-+		 */
-+		handle = iommu_sva_bind_device(uacce->parent, mm, uacce_mm);
-+		if (IS_ERR(handle))
-+			goto err_free;
-+
-+		ret = iommu_sva_set_ops(handle, &uacce_sva_ops);
-+		if (ret)
-+			goto err_unbind;
-+
-+		uacce_mm->pasid = iommu_sva_get_pasid(handle);
-+		if (uacce_mm->pasid == IOMMU_PASID_INVALID)
-+			goto err_unbind;
-+	}
-+
-+	uacce_mm->mm = mm;
-+	uacce_mm->handle = handle;
-+	INIT_LIST_HEAD(&uacce_mm->queues);
-+	mutex_init(&uacce_mm->lock);
-+	list_add(&q->list, &uacce_mm->queues);
-+	list_add(&uacce_mm->list, &uacce->mm_list);
-+
-+	return uacce_mm;
-+
-+err_unbind:
-+	if (handle)
-+		iommu_sva_unbind_device(handle);
-+err_free:
-+	kfree(uacce_mm);
-+	return NULL;
-+}
-+
-+static void uacce_mm_put(struct uacce_queue *q)
-+{
-+	struct uacce_mm *uacce_mm = q->uacce_mm;
-+
-+	lockdep_assert_held(&q->uacce->mm_lock);
-+
-+	mutex_lock(&uacce_mm->lock);
-+	list_del(&q->list);
-+	mutex_unlock(&uacce_mm->lock);
-+
-+	if (list_empty(&uacce_mm->queues)) {
-+		if (uacce_mm->handle)
-+			iommu_sva_unbind_device(uacce_mm->handle);
-+		list_del(&uacce_mm->list);
-+		kfree(uacce_mm);
-+	}
-+}
-+
-+static int uacce_fops_open(struct inode *inode, struct file *filep)
-+{
-+	struct uacce_mm *uacce_mm = NULL;
-+	struct uacce_device *uacce;
-+	struct uacce_queue *q;
-+	int ret = 0;
-+
-+	uacce = xa_load(&uacce_xa, iminor(inode));
-+	if (!uacce)
-+		return -ENODEV;
-+
-+	if (!try_module_get(uacce->parent->driver->owner))
-+		return -ENODEV;
-+
-+	q = kzalloc(sizeof(struct uacce_queue), GFP_KERNEL);
-+	if (!q) {
-+		ret = -ENOMEM;
-+		goto out_with_module;
-+	}
-+
-+	mutex_lock(&uacce->mm_lock);
-+	uacce_mm = uacce_mm_get(uacce, q, current->mm);
-+	mutex_unlock(&uacce->mm_lock);
-+	if (!uacce_mm) {
-+		ret = -ENOMEM;
-+		goto out_with_mem;
-+	}
-+
-+	q->uacce = uacce;
-+	q->uacce_mm = uacce_mm;
-+
-+	if (uacce->ops->get_queue) {
-+		ret = uacce->ops->get_queue(uacce, uacce_mm->pasid, q);
-+		if (ret < 0)
-+			goto out_with_mm;
-+	}
-+
-+	init_waitqueue_head(&q->wait);
-+	filep->private_data = q;
-+	q->state = UACCE_Q_INIT;
-+
-+	return 0;
-+
-+out_with_mm:
-+	mutex_lock(&uacce->mm_lock);
-+	uacce_mm_put(q);
-+	mutex_unlock(&uacce->mm_lock);
-+out_with_mem:
-+	kfree(q);
-+out_with_module:
-+	module_put(uacce->parent->driver->owner);
-+	return ret;
-+}
-+
-+static int uacce_fops_release(struct inode *inode, struct file *filep)
-+{
-+	struct uacce_queue *q = filep->private_data;
-+	struct uacce_device *uacce = q->uacce;
-+
-+	uacce_put_queue(q);
-+
-+	mutex_lock(&uacce->mm_lock);
-+	uacce_mm_put(q);
-+	mutex_unlock(&uacce->mm_lock);
-+
-+	kfree(q);
-+	module_put(uacce->parent->driver->owner);
-+
-+	return 0;
-+}
-+
-+static void uacce_vma_close(struct vm_area_struct *vma)
-+{
-+	struct uacce_queue *q = vma->vm_private_data;
-+	struct uacce_qfile_region *qfr = NULL;
-+
-+	if (vma->vm_pgoff < UACCE_MAX_REGION)
-+		qfr = q->qfrs[vma->vm_pgoff];
-+
-+	kfree(qfr);
-+}
-+
-+static const struct vm_operations_struct uacce_vm_ops = {
-+	.close = uacce_vma_close,
-+};
-+
-+static int uacce_fops_mmap(struct file *filep, struct vm_area_struct *vma)
-+{
-+	struct uacce_queue *q = filep->private_data;
-+	struct uacce_device *uacce = q->uacce;
-+	struct uacce_qfile_region *qfr;
-+	enum uacce_qfrt type = UACCE_MAX_REGION;
-+	int ret = 0;
-+
-+	if (vma->vm_pgoff < UACCE_MAX_REGION)
-+		type = vma->vm_pgoff;
-+	else
-+		return -EINVAL;
-+
-+	qfr = kzalloc(sizeof(*qfr), GFP_KERNEL);
-+	if (!qfr)
-+		return -ENOMEM;
-+
-+	vma->vm_flags |= VM_DONTCOPY | VM_DONTEXPAND | VM_WIPEONFORK;
-+	vma->vm_ops = &uacce_vm_ops;
-+	vma->vm_private_data = q;
-+	qfr->type = type;
-+
-+	mutex_lock(&uacce_mutex);
-+
-+	if (q->state != UACCE_Q_INIT && q->state != UACCE_Q_STARTED) {
-+		ret = -EINVAL;
-+		goto out_with_lock;
-+	}
-+
-+	if (q->qfrs[type]) {
-+		ret = -EEXIST;
-+		goto out_with_lock;
-+	}
-+
-+	switch (type) {
-+	case UACCE_QFRT_MMIO:
-+		if (!uacce->ops->mmap) {
-+			ret = -EINVAL;
-+			goto out_with_lock;
-+		}
-+
-+		ret = uacce->ops->mmap(q, vma, qfr);
-+		if (ret)
-+			goto out_with_lock;
-+
-+		break;
-+
-+	case UACCE_QFRT_DUS:
-+		if (uacce->flags & UACCE_DEV_SVA) {
-+			if (!uacce->ops->mmap) {
-+				ret = -EINVAL;
-+				goto out_with_lock;
-+			}
-+
-+			ret = uacce->ops->mmap(q, vma, qfr);
-+			if (ret)
-+				goto out_with_lock;
-+		}
-+		break;
-+
-+	default:
-+		ret = -EINVAL;
-+		goto out_with_lock;
-+	}
-+
-+	q->qfrs[type] = qfr;
-+	mutex_unlock(&uacce_mutex);
-+
-+	return ret;
-+
-+out_with_lock:
-+	mutex_unlock(&uacce_mutex);
-+	kfree(qfr);
-+	return ret;
-+}
-+
-+static __poll_t uacce_fops_poll(struct file *file, poll_table *wait)
-+{
-+	struct uacce_queue *q = file->private_data;
-+	struct uacce_device *uacce = q->uacce;
-+
-+	poll_wait(file, &q->wait, wait);
-+	if (uacce->ops->is_q_updated && uacce->ops->is_q_updated(q))
-+		return EPOLLIN | EPOLLRDNORM;
-+
-+	return 0;
-+}
-+
-+static const struct file_operations uacce_fops = {
-+	.owner		= THIS_MODULE,
-+	.open		= uacce_fops_open,
-+	.release	= uacce_fops_release,
-+	.unlocked_ioctl	= uacce_fops_unl_ioctl,
-+#ifdef CONFIG_COMPAT
-+	.compat_ioctl	= uacce_fops_compat_ioctl,
-+#endif
-+	.mmap		= uacce_fops_mmap,
-+	.poll		= uacce_fops_poll,
-+};
-+
-+#define to_uacce_device(dev) container_of(dev, struct uacce_device, dev)
-+
-+static ssize_t api_show(struct device *dev,
-+			struct device_attribute *attr, char *buf)
-+{
-+	struct uacce_device *uacce = to_uacce_device(dev);
-+
-+	return sprintf(buf, "%s\n", uacce->api_ver);
-+}
-+
-+static ssize_t flags_show(struct device *dev,
-+			  struct device_attribute *attr, char *buf)
-+{
-+	struct uacce_device *uacce = to_uacce_device(dev);
-+
-+	return sprintf(buf, "%u\n", uacce->flags);
-+}
-+
-+static ssize_t available_instances_show(struct device *dev,
-+					struct device_attribute *attr,
-+					char *buf)
-+{
-+	struct uacce_device *uacce = to_uacce_device(dev);
-+	int val = -ENODEV;
-+
-+	if (uacce->ops->get_available_instances)
-+		val = uacce->ops->get_available_instances(uacce);
-+
-+	return sprintf(buf, "%d\n", val);
-+}
-+
-+static ssize_t algorithms_show(struct device *dev,
-+			       struct device_attribute *attr, char *buf)
-+{
-+	struct uacce_device *uacce = to_uacce_device(dev);
-+
-+	return sprintf(buf, "%s\n", uacce->algs);
-+}
-+
-+static ssize_t region_mmio_size_show(struct device *dev,
-+				     struct device_attribute *attr, char *buf)
-+{
-+	struct uacce_device *uacce = to_uacce_device(dev);
-+
-+	return sprintf(buf, "%lu\n",
-+		       uacce->qf_pg_num[UACCE_QFRT_MMIO] << PAGE_SHIFT);
-+}
-+
-+static ssize_t region_dus_size_show(struct device *dev,
-+				    struct device_attribute *attr, char *buf)
-+{
-+	struct uacce_device *uacce = to_uacce_device(dev);
-+
-+	return sprintf(buf, "%lu\n",
-+		       uacce->qf_pg_num[UACCE_QFRT_DUS] << PAGE_SHIFT);
-+}
-+
-+static DEVICE_ATTR_RO(api);
-+static DEVICE_ATTR_RO(flags);
-+static DEVICE_ATTR_RO(available_instances);
-+static DEVICE_ATTR_RO(algorithms);
-+static DEVICE_ATTR_RO(region_mmio_size);
-+static DEVICE_ATTR_RO(region_dus_size);
-+
-+static struct attribute *uacce_dev_attrs[] = {
-+	&dev_attr_api.attr,
-+	&dev_attr_flags.attr,
-+	&dev_attr_available_instances.attr,
-+	&dev_attr_algorithms.attr,
-+	&dev_attr_region_mmio_size.attr,
-+	&dev_attr_region_dus_size.attr,
-+	NULL,
-+};
-+
-+static umode_t uacce_dev_is_visible(struct kobject *kobj,
-+				    struct attribute *attr, int n)
-+{
-+	struct device *dev = container_of(kobj, struct device, kobj);
-+	struct uacce_device *uacce = to_uacce_device(dev);
-+
-+	if (((attr == &dev_attr_region_mmio_size.attr) &&
-+	    (!uacce->qf_pg_num[UACCE_QFRT_MMIO])) ||
-+	    ((attr == &dev_attr_region_dus_size.attr) &&
-+	    (!uacce->qf_pg_num[UACCE_QFRT_DUS])))
-+		return 0;
-+
-+	return attr->mode;
-+}
-+
-+static struct attribute_group uacce_dev_group = {
-+	.is_visible	= uacce_dev_is_visible,
-+	.attrs		= uacce_dev_attrs,
-+};
-+
-+__ATTRIBUTE_GROUPS(uacce_dev);
-+
-+static void uacce_release(struct device *dev)
-+{
-+	struct uacce_device *uacce = to_uacce_device(dev);
-+
-+	kfree(uacce);
-+	uacce = NULL;
-+}
-+
-+/**
-+ * uacce_alloc() - alloc an accelerator
-+ * @parent: pointer of uacce parent device
-+ * @interface: pointer of uacce_interface for register
-+ *
-+ * Returns uacce pointer if success and ERR_PTR if not
-+ * Need check returned negotiated uacce->flags
-+ */
-+struct uacce_device *uacce_alloc(struct device *parent,
-+				 struct uacce_interface *interface)
-+{
-+	unsigned int flags = interface->flags;
-+	struct uacce_device *uacce;
-+	int ret;
-+
-+	uacce = kzalloc(sizeof(struct uacce_device), GFP_KERNEL);
-+	if (!uacce)
-+		return ERR_PTR(-ENOMEM);
-+
-+	if (flags & UACCE_DEV_SVA) {
-+		ret = iommu_dev_enable_feature(parent, IOMMU_DEV_FEAT_SVA);
-+		if (ret)
-+			flags &= ~UACCE_DEV_SVA;
-+	}
-+
-+	uacce->parent = parent;
-+	uacce->flags = flags;
-+	uacce->ops = interface->ops;
-+
-+	ret = xa_alloc(&uacce_xa, &uacce->dev_id, uacce, xa_limit_32b,
-+		       GFP_KERNEL);
-+	if (ret < 0)
-+		goto err_with_uacce;
-+
-+	INIT_LIST_HEAD(&uacce->mm_list);
-+	mutex_init(&uacce->mm_lock);
-+	device_initialize(&uacce->dev);
-+	uacce->dev.devt = MKDEV(MAJOR(uacce_devt), uacce->dev_id);
-+	uacce->dev.class = uacce_class;
-+	uacce->dev.groups = uacce_dev_groups;
-+	uacce->dev.parent = uacce->parent;
-+	uacce->dev.release = uacce_release;
-+	dev_set_name(&uacce->dev, "%s-%d", interface->name, uacce->dev_id);
-+
-+	return uacce;
-+
-+err_with_uacce:
-+	if (flags & UACCE_DEV_SVA)
-+		iommu_dev_disable_feature(uacce->parent, IOMMU_DEV_FEAT_SVA);
-+	kfree(uacce);
-+	return ERR_PTR(ret);
-+}
-+EXPORT_SYMBOL_GPL(uacce_alloc);
-+
-+/**
-+ * uacce_register() - add the accelerator to cdev and export to user space
-+ * @uacce: The initialized uacce device
-+ *
-+ * Return 0 if register succeeded, or an error.
-+ */
-+int uacce_register(struct uacce_device *uacce)
-+{
-+	if (!uacce)
-+		return -ENODEV;
-+
-+	uacce->cdev = cdev_alloc();
-+	if (!uacce->cdev)
-+		return -ENOMEM;
-+
-+	uacce->cdev->ops = &uacce_fops;
-+	uacce->cdev->owner = THIS_MODULE;
-+
-+	return cdev_device_add(uacce->cdev, &uacce->dev);
-+}
-+EXPORT_SYMBOL_GPL(uacce_register);
-+
-+/**
-+ * uacce_remove() - remove the accelerator
-+ * @uacce: the accelerator to remove
-+ */
-+void uacce_remove(struct uacce_device *uacce)
-+{
-+	struct uacce_mm *uacce_mm;
-+	struct uacce_queue *q;
-+
-+	if (!uacce)
-+		return;
-+
-+	/* ensure no open queue remains */
-+	mutex_lock(&uacce->mm_lock);
-+	list_for_each_entry(uacce_mm, &uacce->mm_list, list) {
-+		/*
-+		 * We don't take the uacce_mm->lock here. Since we hold the
-+		 * device's mm_lock, no queue can be added to or removed from
-+		 * this uacce_mm. We may run concurrently with mm_exit, but
-+		 * uacce_put_queue() is serialized and iommu_sva_unbind_device()
-+		 * waits for the lock that mm_exit is holding.
-+		 */
-+		list_for_each_entry(q, &uacce_mm->queues, list)
-+			uacce_put_queue(q);
-+
-+		if (uacce->flags & UACCE_DEV_SVA) {
-+			iommu_sva_unbind_device(uacce_mm->handle);
-+			uacce_mm->handle = NULL;
-+		}
-+	}
-+	mutex_unlock(&uacce->mm_lock);
-+
-+	/* disable sva now since no opened queues */
-+	if (uacce->flags & UACCE_DEV_SVA)
-+		iommu_dev_disable_feature(uacce->parent, IOMMU_DEV_FEAT_SVA);
-+
-+	if (uacce->cdev)
-+		cdev_device_del(uacce->cdev, &uacce->dev);
-+	xa_erase(&uacce_xa, uacce->dev_id);
-+	put_device(&uacce->dev);
-+}
-+EXPORT_SYMBOL_GPL(uacce_remove);
-+
-+static int __init uacce_init(void)
-+{
-+	int ret;
-+
-+	uacce_class = class_create(THIS_MODULE, UACCE_NAME);
-+	if (IS_ERR(uacce_class))
-+		return PTR_ERR(uacce_class);
-+
-+	ret = alloc_chrdev_region(&uacce_devt, 0, MINORMASK, UACCE_NAME);
-+	if (ret)
-+		class_destroy(uacce_class);
-+
-+	return ret;
-+}
-+
-+static __exit void uacce_exit(void)
-+{
-+	unregister_chrdev_region(uacce_devt, MINORMASK);
-+	class_destroy(uacce_class);
-+}
-+
-+subsys_initcall(uacce_init);
-+module_exit(uacce_exit);
-+
-+MODULE_LICENSE("GPL");
-+MODULE_AUTHOR("Hisilicon Tech. Co., Ltd.");
-+MODULE_DESCRIPTION("Accelerator interface for Userland applications");
-diff --git a/include/linux/uacce.h b/include/linux/uacce.h
-new file mode 100644
-index 0000000..904a461
---- /dev/null
-+++ b/include/linux/uacce.h
-@@ -0,0 +1,161 @@
-+/* SPDX-License-Identifier: GPL-2.0-or-later */
-+#ifndef _LINUX_UACCE_H
-+#define _LINUX_UACCE_H
-+
-+#include <linux/cdev.h>
-+#include <uapi/misc/uacce/uacce.h>
-+
-+#define UACCE_NAME		"uacce"
-+#define UACCE_MAX_REGION	2
-+#define UACCE_MAX_NAME_SIZE	64
-+
-+struct uacce_queue;
-+struct uacce_device;
-+
-+/**
-+ * struct uacce_qfile_region - structure of queue file region
-+ * @type: type of the region
-+ */
-+struct uacce_qfile_region {
-+	enum uacce_qfrt type;
-+};
-+
-+/**
-+ * struct uacce_ops - uacce device operations
-+ * @get_available_instances:  get available instances left of the device
-+ * @get_queue: get a queue from the device
-+ * @put_queue: free a queue to the device
-+ * @start_queue: make the queue start work after get_queue
-+ * @stop_queue: make the queue stop work before put_queue
-+ * @is_q_updated: check whether the task is finished
-+ * @mmap: mmap addresses of queue to user space
-+ * @ioctl: ioctl for user space users of the queue
-+ */
-+struct uacce_ops {
-+	int (*get_available_instances)(struct uacce_device *uacce);
-+	int (*get_queue)(struct uacce_device *uacce, unsigned long arg,
-+			 struct uacce_queue *q);
-+	void (*put_queue)(struct uacce_queue *q);
-+	int (*start_queue)(struct uacce_queue *q);
-+	void (*stop_queue)(struct uacce_queue *q);
-+	int (*is_q_updated)(struct uacce_queue *q);
-+	int (*mmap)(struct uacce_queue *q, struct vm_area_struct *vma,
-+		    struct uacce_qfile_region *qfr);
-+	long (*ioctl)(struct uacce_queue *q, unsigned int cmd,
-+		      unsigned long arg);
-+};
-+
-+/**
-+ * struct uacce_interface - interface required for uacce_register()
-+ * @name: the uacce device name.  Will show up in sysfs
-+ * @flags: uacce device attributes
-+ * @ops: pointer to the struct uacce_ops
-+ */
-+struct uacce_interface {
-+	char name[UACCE_MAX_NAME_SIZE];
-+	unsigned int flags;
-+	const struct uacce_ops *ops;
-+};
-+
-+enum uacce_q_state {
-+	UACCE_Q_ZOMBIE = 0,
-+	UACCE_Q_INIT,
-+	UACCE_Q_STARTED,
-+};
-+
-+/**
-+ * struct uacce_queue
-+ * @uacce: pointer to uacce
-+ * @priv: private pointer
-+ * @wait: wait queue head
-+ * @list: index into uacce_mm
-+ * @uacce_mm: the corresponding mm
-+ * @qfrs: pointer of qfr regions
-+ * @state: queue state machine
-+ */
-+struct uacce_queue {
-+	struct uacce_device *uacce;
-+	void *priv;
-+	wait_queue_head_t wait;
-+	struct list_head list;
-+	struct uacce_mm *uacce_mm;
-+	struct uacce_qfile_region *qfrs[UACCE_MAX_REGION];
-+	enum uacce_q_state state;
-+};
-+
-+/**
-+ * struct uacce_device
-+ * @algs: supported algorithms
-+ * @api_ver: api version
-+ * @ops: pointer to the struct uacce_ops
-+ * @qf_pg_num: page numbers of the queue file regions
-+ * @parent: pointer to the parent device
-+ * @is_vf: whether virtual function
-+ * @flags: uacce attributes
-+ * @dev_id: id of the uacce device
-+ * @cdev: cdev of the uacce
-+ * @dev: dev of the uacce
-+ * @priv: private pointer of the uacce
-+ * @mm_list: list head of uacce_mm->list
-+ * @mm_lock: lock for mm_list
-+ */
-+struct uacce_device {
-+	const char *algs;
-+	const char *api_ver;
-+	const struct uacce_ops *ops;
-+	unsigned long qf_pg_num[UACCE_MAX_REGION];
-+	struct device *parent;
-+	bool is_vf;
-+	u32 flags;
-+	u32 dev_id;
-+	struct cdev *cdev;
-+	struct device dev;
-+	void *priv;
-+	struct list_head mm_list;
-+	struct mutex mm_lock;
-+};
-+
-+/**
-+ * struct uacce_mm - keep track of queues bound to a process
-+ * @list: index into uacce_device
-+ * @queues: list of queues
-+ * @mm: the mm struct
-+ * @lock: protects the list of queues
-+ * @pasid: pasid of the uacce_mm
-+ * @handle: iommu_sva handle return from iommu_sva_bind_device
-+ */
-+struct uacce_mm {
-+	struct list_head list;
-+	struct list_head queues;
-+	struct mm_struct *mm;
-+	struct mutex lock;
-+	int pasid;
-+	struct iommu_sva *handle;
-+};
-+
-+#if IS_ENABLED(CONFIG_UACCE)
-+
-+struct uacce_device *uacce_alloc(struct device *parent,
-+				 struct uacce_interface *interface);
-+int uacce_register(struct uacce_device *uacce);
-+void uacce_remove(struct uacce_device *uacce);
-+
-+#else /* CONFIG_UACCE */
-+
-+static inline
-+struct uacce_device *uacce_alloc(struct device *parent,
-+				 struct uacce_interface *interface)
-+{
-+	return ERR_PTR(-ENODEV);
-+}
-+
-+static inline int uacce_register(struct uacce_device *uacce)
-+{
-+	return -EINVAL;
-+}
-+
-+static inline void uacce_remove(struct uacce_device *uacce) {}
-+
-+#endif /* CONFIG_UACCE */
-+
-+#endif /* _LINUX_UACCE_H */
-diff --git a/include/uapi/misc/uacce/uacce.h b/include/uapi/misc/uacce/uacce.h
-new file mode 100644
-index 0000000..cc71856
---- /dev/null
-+++ b/include/uapi/misc/uacce/uacce.h
-@@ -0,0 +1,38 @@
-+/* SPDX-License-Identifier: GPL-2.0+ WITH Linux-syscall-note */
-+#ifndef _UAPIUUACCE_H
-+#define _UAPIUUACCE_H
-+
-+#include <linux/types.h>
-+#include <linux/ioctl.h>
-+
-+/*
-+ * UACCE_CMD_START_Q: Start queue
-+ */
-+#define UACCE_CMD_START_Q	_IO('W', 0)
-+
-+/*
-+ * UACCE_CMD_PUT_Q:
-+ * User actively stop queue and free queue resource immediately
-+ * Optimization method since close fd may delay
-+ */
-+#define UACCE_CMD_PUT_Q		_IO('W', 1)
-+
-+/*
-+ * UACCE Device flags:
-+ * UACCE_DEV_SVA: Shared Virtual Addresses
-+ *		  Support PASID
-+ *		  Support device page faults (PCI PRI or SMMU Stall)
-+ */
-+#define UACCE_DEV_SVA		BIT(0)
-+
-+/**
-+ * enum uacce_qfrt: queue file region type
-+ * @UACCE_QFRT_MMIO: device mmio region
-+ * @UACCE_QFRT_DUS: device user share region
-+ */
-+enum uacce_qfrt {
-+	UACCE_QFRT_MMIO = 0,
-+	UACCE_QFRT_DUS = 1,
-+};
-+
-+#endif
--- 
-2.7.4
-
-_______________________________________________
-iommu mailing list
-iommu@lists.linux-foundation.org
-https://lists.linuxfoundation.org/mailman/listinfo/iommu
+T24gVHVlIERlYyAxMCAxOSwgTHUgQmFvbHUgd3JvdGU6Cj5IaSwKPgo+T24gMTIvMTAvMTkgODo1
+MiBBTSwgSmVycnkgU25pdHNlbGFhciB3cm90ZToKPj5PbiBTdW4gRGVjIDA4IDE5LCBMdSBCYW9s
+dSB3cm90ZToKPj4+SGksCj4+Pgo+Pj5PbiAxMi83LzE5IDEwOjQxIEFNLCBKZXJyeSBTbml0c2Vs
+YWFyIHdyb3RlOgo+Pj4+T24gRnJpIERlYyAwNiAxOSwgSmVycnkgU25pdHNlbGFhciB3cm90ZToK
+Pj4+Pj5PbiBTYXQgRGVjIDA3IDE5LCBMdSBCYW9sdSB3cm90ZToKPj4+Pj4+SGkgSmVycnksCj4+
+Pj4+Pgo+Pj4+Pj5PbiAxMi82LzE5IDM6MjQgUE0sIEplcnJ5IFNuaXRzZWxhYXIgd3JvdGU6Cj4+
+Pj4+Pj5PbiBGcmkgRGVjIDA2IDE5LCBMdSBCYW9sdSB3cm90ZToKPj4+Pj4+PltzbmlwXQo+Pj4+
+Pj4+Pgo+Pj4+Pj4+PkNhbiB5b3UgcGxlYXNlIHRyeSBiZWxvdyBjaGFuZ2U/IExldCdzIGNoZWNr
+IHdoZXRoZXIgdGhlIGFmZW5kaW5nCj4+Pj4+Pj4+YWRkcmVzcyBoYXMgYmVlbiBtYXBwZWQgZm9y
+IGRldmljZSAwMS4wMC4yLgo+Pj4+Pj4+Pgo+Pj4+Pj4+PiQgZ2l0IGRpZmYKPj4+Pj4+Pj5kaWZm
+IC0tZ2l0IGEvZHJpdmVycy9pb21tdS9pb21tdS5jIGIvZHJpdmVycy9pb21tdS9pb21tdS5jCj4+
+Pj4+Pj4+aW5kZXggZGI3YmZkNGYyZDIwLi5kOWRhZjY2YmU4NDkgMTAwNjQ0Cj4+Pj4+Pj4+LS0t
+IGEvZHJpdmVycy9pb21tdS9pb21tdS5jCj4+Pj4+Pj4+KysrIGIvZHJpdmVycy9pb21tdS9pb21t
+dS5jCj4+Pj4+Pj4+QEAgLTY2Myw2ICs2NjMsOCBAQCBzdGF0aWMgaW50IAo+Pj4+Pj4+PmlvbW11
+X2dyb3VwX2NyZWF0ZV9kaXJlY3RfbWFwcGluZ3Moc3RydWN0IGlvbW11X2dyb3VwIAo+Pj4+Pj4+
+Pipncm91cCwKPj4+Pj4+Pj7CoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKg
+wqDCoCByZXQgPSBpb21tdV9tYXAoZG9tYWluLCBhZGRyLCAKPj4+Pj4+Pj5hZGRyLCBwZ19zaXpl
+LCBlbnRyeS0+cHJvdCk7Cj4+Pj4+Pj4+wqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDC
+oMKgwqDCoMKgwqAgaWYgKHJldCkKPj4+Pj4+Pj7CoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKg
+wqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqAgZ290byBvdXQ7Cj4+Pj4+Pj4+Kwo+Pj4+
+Pj4+PivCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoCBkZXZfaW5m
+byhkZXYsICJTZXR0aW5nIGlkZW50aXR5IAo+Pj4+Pj4+Pm1hcCBbMHglTHggLSAweCVMeF0gZm9y
+IGdyb3VwICVkXG4iLCBhZGRyLCBhZGRyICsgCj4+Pj4+Pj4+cGdfc2l6ZSwgZ3JvdXAtPmlkKTsK
+Pj4+Pj4+Pj7CoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgIH0KPj4+Pj4+Pj4KPj4+Pj4+Pj7C
+oMKgwqDCoMKgwqAgfQo+Pj4+Pj4+Pgo+Pj4+Pj4+PkkgYW0gZG91YnRpbmcgdGhhdCBkZXZpY2Ug
+MDEuMDAuMiBpcyBub3QgaW4gdGhlIGRldmljZSBzY29wZSBvZgo+Pj4+Pj4+Pgo+Pj4+Pj4+PlvC
+oMKgwqAgNC40ODUxMDhdIERNQVI6IFJNUlIgYmFzZTogMHgwMDAwMDBiZGY2ZjAwMCBlbmQ6IAo+
+Pj4+Pj4+PjB4MDAwMDAwYmRmN2VmZmYKPj4+Pj4+Pj4KPj4+Pj4+Pj5CeSB0aGUgd2F5LCBkb2Vz
+IGRldmljZSAwMS4wMC4yIHdvcmtzIHdlbGwgYWZ0ZXIgYmluZGluZyB0aGUgZHJpdmVyPwo+Pj4+
+Pj4+Pgo+Pj4+Pj4+Cj4+Pj4+Pj5XaGVuIEkgYm9vdCBpdCB3aXRoIHBhc3N0aHJvdWdoIGl0IGRv
+ZXNuJ3QgZ2V0IHRvIGEgcG9pbnQgd2hlcmUgSSBjYW4KPj4+Pj4+PmxvZ2luLiBJIHRoaW5rIHRo
+ZSBzZXJpYWwgY29uc29sZSBvbiB0aGVzZSBzeXN0ZW1zIGlzIHRpZWQgCj4+Pj4+Pj50byB0aGUg
+aWxvLAo+Pj4+Pj4+c28gdGhlIGNvbnNlcnZlciBjb25uZWN0aW9uIGNvdWxkIGJlIG1ha2luZyB0
+aGluZ3MKPj4+Pj4+PndvcnNlLiBVbmZvcnR1bmF0ZWx5IHRoZSBzeXN0ZW0gaXMgcmVtb3RlLiBJ
+IHNob3VsZCBoYXZlIAo+Pj4+Pj4+bW9yZSB0aW1lIG5vdwo+Pj4+Pj4+dG8gZm9jdXMgb24gZGVi
+dWdnaW5nIHRoaXMuCj4+Pj4+Pj4KPj4+Pj4+PkF0dGFjaGluZyBjb25zb2xlIG91dHB1dCBmb3Ig
+dGhlIGFib3ZlIHBhdGNoLgo+Pj4+Pj4KPj4+Pj4+SXQgc2VlbXMgdGhhdCBkZXZpY2UgMDEuMDAu
+MiBpc24ndCBpbiB0aGUgc2NvcGUgb2YgUk1SUiBbYmFzZToKPj4+Pj4+MHgwMDAwMDBiZGY2ZjAw
+MCBlbmQ6IDB4MDAwMDAwYmRmN2VmZmZdLiBCdXQgaXQgc3RpbGwgdHJpZXMgdG8gYWNjZXNzCj4+
+Pj4+PnRoZSBhZGRyZXNzIHdpdGhpbiBpdCwgaGVuY2UgZmF1bHRzIGdlbmVyYXRlZC4KPj4+Pj4+
+Cj4+Pj4+PllvdSBjYW4gY2hlY2sgaXQgd2l0aCBBQ1BJL0RNQVIgdGFibGUuCj4+Pj4+Pgo+Pj4+
+Pj5CZXN0IHJlZ2FyZHMsCj4+Pj4+PmJhb2x1Cj4+Pj4+Pgo+Pj4+Pgo+Pj4+PkkgYmVsaWV2ZSBp
+dCBpcyB0aGUgM3JkIGVuZHBvaW50IGRldmljZSBlbnRyeSBpbiBkbWFyIGRhdGEgYmVsb3cuCj4+
+Pj4+U28gcXVlc3Rpb24gYWJvdXQgcmVxdWVzdF9kZWZhdWx0X2RvbWFpbl9mb3JfZGV2LiBTaW5j
+ZSBhIGRtYSBtYXBwaW5nCj4+Pj4+aXMgYWxyZWFkeSBkb25lIGZvciAxLjAwLjAsIGFuZCB0aGF0
+IHNldHMgdGhlIGRlZmF1bHRfZG9tYWluIGZvciB0aGUKPj4+Pj5ncm91cCAoSSB0aGluayksIHdv
+bid0IGl0IGJhaWwgb3V0IGZvciAxLjAwLjIgYXQgdGhpcyBjaGVjaz8KPj4+Pj4KPj4+Pj7CoMKg
+wqDCoGlmIChncm91cC0+ZGVmYXVsdF9kb21haW4gJiYgZ3JvdXAtPmRlZmF1bHRfZG9tYWluLT50
+eXBlID09IHR5cGUpCj4+Pj4+wqDCoMKgwqDCoMKgwqAgZ290byBvdXQ7Cj4+Pj4+Cj4+Pj4KPj4+
+Pk9yIEkgZ3Vlc3MgcmVxdWVzdF9kZWZhdWx0X2RvbWFpbl9mb3JfZGV2IHdvdWxkbid0IGV2ZW4g
+YmUgCj4+Pj5jYWxsZWQgZm9yIDEuMDAuMi4KPj4+PmludGVsX2lvbW11X2FkZF9kZXZpY2UgaXQg
+d291bGRuJ3QgZXZlbiBjYWxsIG9uZSBvZiB0aGUgcmVxdWVzdAo+Pj4+ZnVuY3Rpb25zIHdpdGgg
+MS4wMC4yIHNpbmNlIGRvbWFpbi0+dHlwZSB3b3VsZCBiZSBkbWEgZnJvbSAKPj4+PjEuMDAuMCwg
+YW5kIGRldmljZV9kZWZfZG9tYWluX3R5cGUKPj4+PnNob3VsZCByZXR1cm4gZG1hLgo+Pj4KPj4+
+Q2FuIHlvdSBwbGVhc2UgYWRkIHNvbWUgZGVidWcgbWVzc2FnZXMgYW5kIGNoZWNrIHdoYXQgcmVh
+bGx5IGhhcHBlbnMKPj4+aGVyZT8KPj4+Cj4+PkJlc3QgcmVnYXJkcywKPj4+YmFvbHUKPj4+Cj4+
+Cj4+W8KgwqAgMjUuMDAwNTQ0XSBwY2kgMDAwMDowMTowMC4wOiBBZGRpbmcgdG8gaW9tbXUgZ3Jv
+dXAgMjUKPj5bwqDCoCAyNS41MDIyNDNdIHBjaSAwMDAwOjAxOjAwLjA6IERNQVI6IGRvbWFpbi0+
+dHlwZSBpcyBpZGVudGl0ecKgIDw8IAo+PmludGVsX2lvbW11X2FkZF9kZXZpY2UgKGFsbG9jZWQg
+aW4gaW9tbXVfZ3JvdXBfZ2V0X2Zvcl9kZXYpCj4+W8KgwqAgMjUuNTA0MjM5XSBwY2kgMDAwMDow
+MTowMC4wOiBETUFSOiBkZXZpY2UgZGVmYXVsdCBkb21haW4gdHlwZSBpcyAKPj5kbWEuIHJlcXVl
+c3RpbmcgZG1hIGRvbWFpbsKgIDw8IGludGVsX2lvbW11X2FkZF9kZXZpY2UKPj5bwqDCoCAyNS41
+MDc5NTRdIHBjaSAwMDAwOjAxOjAwLjA6IFVzaW5nIGlvbW11IGRtYSBtYXBwaW5nwqDCoMKgIDw8
+IAo+PnJlcXVlc3RfZGVmYXVsdF9kb21haW5fZm9yX2RldsKgIChub3cgZGVmYXVsdCBkb21haW4g
+Zm9yIGdyb3VwIGlzIAo+PmRtYSkKPj5bwqDCoCAyNS41MDk3NjVdIHBjaSAwMDAwOjAxOjAwLjE6
+IEFkZGluZyB0byBpb21tdSBncm91cCAyNQo+PlvCoMKgIDI1LjUxMTUxNF0gcGNpIDAwMDA6MDE6
+MDAuMTogRE1BUjogZG9tYWluLT50eXBlIGlzIGRtYcKgIDw8IAo+PmludGVsX2lvbW11X2FkZF9k
+ZXZpY2UKPj5bwqDCoCAyNS41MTMyNjNdIHBjaSAwMDAwOjAxOjAwLjE6IERNQVI6IGRldmljZSBk
+ZWZhdWx0IGRvbWFpbiB0eXBlIGlzIAo+PmlkZW50aXR5LiByZXF1ZXN0aW5nIGlkZW50aXR5IGRv
+bWFpbsKgIDw8IGludGVsX2lvbW11X2FkZF9kZXZpY2UKPj5bwqDCoCAyNS41MTY0MzVdIHBjaSAw
+MDAwOjAxOjAwLjE6IGRvbid0IGNoYW5nZSBtYXBwaW5ncyBvZiBleGlzdGluZyAKPj5kZXZpY2Vz
+LsKgwqDCoCA8PCByZXF1ZXN0X2RlZmF1bHRfZG9tYWluX2Zvcl9kZXYKPj5bwqDCoCAyNS41MTg2
+NjldIHBjaSAwMDAwOjAxOjAwLjE6IERNQVI6IERldmljZSB1c2VzIGEgcHJpdmF0ZSAKPj5pZGVu
+dGl0eSBkb21haW4uwqAgPDwgaW50ZWxfaW9tbXVfYWRkX2RldmljZQo+PlvCoMKgIDI1LjUyMTA2
+MV0gcGNpIDAwMDA6MDE6MDAuMjogQWRkaW5nIHRvIGlvbW11IGdyb3VwIDI1Cj4+W8KgwqAgMjUu
+NTIyNzkxXSBwY2kgMDAwMDowMTowMC4yOiBETUFSOiBkb21haW4tPnR5cGUgaXMgZG1hwqAgPDwg
+Cj4+aW50ZWxfaW9tbXVfYWRkX2RldmljZQo+PlvCoMKgIDI1LjUyNDcwNl0gcGNpIDAwMDA6MDE6
+MDAuNDogQWRkaW5nIHRvIGlvbW11IGdyb3VwIDI1Cj4+W8KgwqAgMjUuNTI2NDU4XSBwY2kgMDAw
+MDowMTowMC40OiBETUFSOiBkb21haW4tPnR5cGUgaXMgZG1hwqAgPDwgCj4+aW50ZWxfaW9tbXVf
+YWRkX2RldmljZQo+PlvCoMKgIDI1LjUyODIxM10gcGNpIDAwMDA6MDE6MDAuNDogRE1BUjogZGV2
+aWNlIGRlZmF1bHQgZG9tYWluIHR5cGUgaXMgCj4+aWRlbnRpdHkuIHJlcXVlc3RpbmcgaWRlbnRp
+dHkgZG9tYWluwqAgPDwgaW50ZWxfaW9tbXVfYWRkX2RldmljZQo+PlvCoMKgIDI1LjUzMTI4NF0g
+cGNpIDAwMDA6MDE6MDAuNDogZG9uJ3QgY2hhbmdlIG1hcHBpbmdzIG9mIGV4aXN0aW5nIAo+PmRl
+dmljZXMuwqDCoMKgIDw8IHJlcXVlc3RfZGVmYXVsdF9kb21haW5fZm9yX2Rldgo+PlvCoMKgIDI1
+LjUzMzUwMF0gcGNpIDAwMDA6MDE6MDAuNDogRE1BUjogRGV2aWNlIHVzZXMgYSBwcml2YXRlIAo+
+PmlkZW50aXR5IGRvbWFpbi7CoCA8PCBpbnRlbF9pb21tdV9hZGRfZGV2aWNlCj4+Cj4+U28gdGhl
+IGRvbWFpbiB0eXBlIGlzIGRtYSBhZnRlciAwMTowMC4wIGdldHMgYWRkZWQsIGFuZCB3aGVuCj4+
+aW50ZWxfaW9tbXVfYWRkX2RldmljZSBpcyBjYWxsZWQgZm9yIDAxOjAwLjIgaXQgd2lsbCBnbyBp
+bnRvIHRoZSBpZgo+PnNlY3Rpb24uIFNpbmNlIHRoZSBkZXZpY2UgZGVmYXVsdCBkb21haW4gdHlw
+ZSBmb3IgMDE6MDAuMiBpcyBkbWEKPj5ub3RoaW5nIGhhcHBlbnMgaW4gdGhlcmUsIGFuZCBpdCBn
+b2VzIG9uIHRvIDAxOjAwLjQuIElzIHRoZSAicHJpdmF0ZQo+PmlkZW50aXR5IGRvbWFpbiIgbWVz
+c2FnZSByZWFsbHkgYWNjdXJhdGUgc2luY2UgZXZlcnlvbmUgd2lsbCB1c2UKPj5zaV9kb21haW4/
+IEFkZGluZyBzb21lIG1vcmUgZGVidWdnaW5nLgo+Cj5UaGUgZmFjdHMgdGhhdCB3ZSBoYXZlIHNl
+ZW46Cj4KPjEpIDAxLjAwLjIgdXNlcyB0aGUgZGVmYXVsdCBkb21haW4gaW4gZ3JvdXAgMjUuIFRo
+ZSBkb21haW4gdHlwZSBvZiB0aGlzCj4gICBkZWZhdWx0IGRvbWFpbiBpcyBETUEuCj4KPjIpIGlv
+bW11X2dyb3VwX2NyZWF0ZV9kaXJlY3RfbWFwcGluZ3MoKSAqc2hvdWxkKiBiZSBjYWxsZWQgd2hl
+biBhZGRpbmcKPiAgIDAxLjAwLjIgaW50byBncm91cCAyNS4gQXMgdGhlIHJlc3VsdCwgUk1SUiBm
+b3IgdGhpcyBkZXZpY2UgKnNob3VsZCoKPiAgIGJlIGlkZW50aXR5IG1hcHBlZC4KPgo+MykgQnkg
+Y2hlY2tpbmcgRE1BUiB0YWJsZSwgUk1SUiAoMHgwMDAwMDBiZGY2ZjAwMCB+IDB4MDAwMDAwYmRm
+N2VmZmYpIGlzCj4gICByZXBvcnRlZCBmb3IgZGV2aWNlIDAxLjAwLjIuCj4KPlRoZSBwcm9ibGVt
+IGlzIHRoYXQgUk1SUiAoMHgwMDAwMDBiZGY2ZjAwMCB+IDB4MDAwMDAwYmRmN2VmZmYpIGhhc24n
+dAo+YWN0dWFsbHkgYmVlbiBtYXBwZWQsIGFzIHRoZSByZXN1bHQgSU9NTVUgZmF1bHRzIGdlbmVy
+YXRlZCB3aGVuIGRldmljZQo+dHJ5IHRvIGFjY2VzcyB0aGlzIHJhbmdlLgo+Cj5TbyBJIGd1ZXNz
+IHlvdSBjb3VsZCBhZGQgbW9yZSBkZWJ1ZyBtZXNzYWdlIHRvIGNoZWNrIHdoeQo+aW9tbXVfZ3Jv
+dXBfY3JlYXRlX2RpcmVjdF9tYXBwaW5ncygpIGRvZXNuJ3QgZG8gdGhlIHJpZ2h0IHRoaW5nPwo+
+Cj5CZXN0IHJlZ2FyZHMsCj5iYW9sdQo+CgpBIGNhbGwgdG8gaW9tbXVfbWFwIGlzIGZhaWxpbmcu
+CgpbICAgMzYuNjg2ODgxXSBwY2kgMDAwMDowMTowMC4yOiBpb21tdV9ncm91cF9hZGRfZGV2aWNl
+OiBjYWxsaW5nIGlvbW11X2dyb3VwX2NyZWF0ZV9kaXJlY3RfbWFwcGluZ3MKWyAgIDM2LjY4OTg0
+M10gcGNpIDAwMDA6MDE6MDAuMjogaW9tbXVfZ3JvdXBfY3JlYXRlX2RpcmVjdF9tYXBwaW5nczog
+aXRlcmF0aW5nIHRocm91Z2ggbWFwcGluZ3MKWyAgIDM2LjY5Mjc1N10gcGNpIDAwMDA6MDE6MDAu
+MjogaW9tbXVfZ3JvdXBfY3JlYXRlX2RpcmVjdF9tYXBwaW5nczogY2FsbGluZyBhcHBseV9yZXN2
+X3JlZ2lvbgpbICAgMzYuNjk1NTI2XSBwY2kgMDAwMDowMTowMC4yOiBlX2RpcmVjdF9tYXBwaW5n
+czogZW50cnkgdHlwZSBpcyBkaXJlY3QKWyAgIDM3LjE5ODA1M10gaW9tbXU6IGlvbW11X21hcDog
+b3BzLT5tYXAgZmFpbGVkIGlvdmEgMHhiZGRkZTAwMCBwYSAweDAwMDAwMDAwYmRkZGUwMDAgcGdz
+aXplIDB4MTAwMApbICAgMzcuMjAxMzU3XSBwY2kgMDAwMDowMTowMC4yOiBpb21tdV9ncm91cF9j
+cmVhdGVfZGlyZWN0X21hcHBpbmdzOiBpb21tdV9tYXAgZmFpbGVkClsgICAzNy4yMDM5NzNdIHBj
+aSAwMDAwOjAxOjAwLjI6IGlvbW11X2dyb3VwX2NyZWF0ZV9kaXJlY3RfbWFwcGluZ3M6IGxlYXZp
+bmcgZnVuYwpbICAgMzcuMjA2Mzg1XSBwY2kgMDAwMDowMTowMC4yOiBpb21tdV9ncm91cF9hZGRf
+ZGV2aWNlOiBjYWxsaW5nIF9faW9tbXVfYXR0YWNoX2RldmljZQpbICAgMzcuMjA4OTUwXSBwY2kg
+MDAwMDowMTowMC4yOiBBZGRpbmcgdG8gaW9tbXUgZ3JvdXAgMjUKWyAgIDM3LjIxMDY2MF0gcGNp
+IDAwMDA6MDE6MDAuMjogRE1BUjogZG9tYWluLT50eXBlIGlzIGRtYQoKQWxzbyBmYWlscyBmb3Ig
+MDE6MDAuNDoKClsgICAzNy4yMTI0NDhdIHBjaSAwMDAwOjAxOjAwLjQ6IGlvbW11X2dyb3VwX2Fk
+ZF9kZXZpY2U6IGNhbGxpbmcgaW9tbXVfZ3JvdXBfY3JlYXRlX2RpcmVjdF9tYXBwaW5ncwpbICAg
+MzcuMjE1MzgyXSBwY2kgMDAwMDowMTowMC40OiBpb21tdV9ncm91cF9jcmVhdGVfZGlyZWN0X21h
+cHBpbmdzOiBpdGVyYXRpbmcgdGhyb3VnaCBtYXBwaW5ncwpbICAgMzcuMjE4MTcwXSBwY2kgMDAw
+MDowMTowMC40OiBpb21tdV9ncm91cF9jcmVhdGVfZGlyZWN0X21hcHBpbmdzOiBjYWxsaW5nIGFw
+cGx5X3Jlc3ZfcmVnaW9uClsgICAzNy4yMjA5MzNdIHBjaSAwMDAwOjAxOjAwLjQ6IGlvbW11X2dy
+b3VwX2NyZWF0ZV9kaXJlY3RfbWFwcGluZ3M6IGVudHJ5IHR5cGUgaXMgZGlyZWN0LXJlbGF4YWJs
+ZQpbICAgMzcuMjIzOTMyXSBpb21tdTogaW9tbXVfbWFwOiBvcHMtPm1hcCBmYWlsZWQgaW92YSAw
+eGJkZGRlMDAwIHBhIDB4MDAwMDAwMDBiZGRkZTAwMCBwZ3NpemUgMHgxMDAwClsgICAzNy4yMjY4
+NTddIHBjaSAwMDAwOjAxOjAwLjQ6IGlvbW11X2dyb3VwX2NyZWF0ZV9kaXJlY3RfbWFwcGluZ3M6
+IGlvbW11X21hcCBmYWlsZWQKWyAgIDM3LjIyOTMwMF0gcGNpIDAwMDA6MDE6MDAuNDogaW9tbXVf
+Z3JvdXBfY3JlYXRlX2RpcmVjdF9tYXBwaW5nczogbGVhdmluZyBmdW5jClsgICAzNy4yMzE2NDhd
+IHBjaSAwMDAwOjAxOjAwLjQ6IGlvbW11X2dyb3VwX2FkZF9kZXZpY2U6IGNhbGxpbmcgX19pb21t
+dV9hdHRhY2hfZGV2aWNlClsgICAzNy4yMzQxOTRdIHBjaSAwMDAwOjAxOjAwLjQ6IEFkZGluZyB0
+byBpb21tdSBncm91cCAyNQpbICAgMzcuMjM2MTkyXSBwY2kgMDAwMDowMTowMC40OiBETUFSOiBk
+b21haW4tPnR5cGUgaXMgZG1hClsgICAzNy4yMzc5NThdIHBjaSAwMDAwOjAxOjAwLjQ6IERNQVI6
+IGRldmljZSBkZWZhdWx0IGRvbWFpbiB0eXBlIGlzIGlkZW50aXR5LiByZXF1ZXN0aW5nIGlkZW50
+aXR5IGRvbWFpbgpbICAgMzcuMjQxMDYxXSBwY2kgMDAwMDowMTowMC40OiBkb24ndCBjaGFuZ2Ug
+bWFwcGluZ3Mgb2YgZXhpc3RpbmcgZDM3LjQ4OTg3MF0gcGNpIDAwMDA6MDE6MDAuNDogRE1BUjog
+RGV2aWNlIHVzZXMgYSBwcml2YXRlIGlkZW50aXR5IGRvbWFpbi4KClRoZXJlIGlzIGFuIFJNUlIg
+Zm9yIDB4YmRkZGUwMDAtMHhkZGRkZWZmZjoKCls2M0FoIDE1OTQgICAyXSAgICAgICAgICAgICAg
+ICBTdWJ0YWJsZSBUeXBlIDogMDAwMSBbUmVzZXJ2ZWQgTWVtb3J5IFJlZ2lvbl0KWzYzQ2ggMTU5
+NiAgIDJdICAgICAgICAgICAgICAgICAgICAgICBMZW5ndGggOiAwMDM2CgpbNjNFaCAxNTk4ICAg
+Ml0gICAgICAgICAgICAgICAgICAgICBSZXNlcnZlZCA6IDAwMDAKWzY0MGggMTYwMCAgIDJdICAg
+ICAgICAgICBQQ0kgU2VnbWVudCBOdW1iZXIgOiAwMDAwCls2NDJoIDE2MDIgICA4XSAgICAgICAg
+ICAgICAgICAgQmFzZSBBZGRyZXNzIDogMDAwMDAwMDBCRERERTAwMApbNjRBaCAxNjEwICAgOF0g
+ICAgICAgICAgRW5kIEFkZHJlc3MgKGxpbWl0KSA6IDAwMDAwMDAwQkREREVGRkYKCls2NTJoIDE2
+MTggICAxXSAgICAgICAgICAgIERldmljZSBTY29wZSBUeXBlIDogMDEgW1BDSSBFbmRwb2ludCBE
+ZXZpY2VdCls2NTNoIDE2MTkgICAxXSAgICAgICAgICAgICAgICAgRW50cnkgTGVuZ3RoIDogMEEK
+WzY1NGggMTYyMCAgIDJdICAgICAgICAgICAgICAgICAgICAgUmVzZXJ2ZWQgOiAwMDAwCls2NTZo
+IDE2MjIgICAxXSAgICAgICAgICAgICAgIEVudW1lcmF0aW9uIElEIDogMDAKWzY1N2ggMTYyMyAg
+IDFdICAgICAgICAgICAgICAgUENJIEJ1cyBOdW1iZXIgOiAwMAoKWzY1OGggMTYyNCAgIDJdICAg
+ICAgICAgICAgICAgICAgICAgUENJIFBhdGggOiAxQywwNwoKWzY1QWggMTYyNiAgIDJdICAgICAg
+ICAgICAgICAgICAgICAgUENJIFBhdGggOiAwMCwwMAoKCls2NUNoIDE2MjggICAxXSAgICAgICAg
+ICAgIERldmljZSBTY29wZSBUeXBlIDogMDEgW1BDSSBFbmRwb2ludCBEZXZpY2VdCls2NURoIDE2
+MjkgICAxXSAgICAgICAgICAgICAgICAgRW50cnkgTGVuZ3RoIDogMEEKWzY1RWggMTYzMCAgIDJd
+ICAgICAgICAgICAgICAgICAgICAgUmVzZXJ2ZWQgOiAwMDAwCls2NjBoIDE2MzIgICAxXSAgICAg
+ICAgICAgICAgIEVudW1lcmF0aW9uIElEIDogMDAKWzY2MWggMTYzMyAgIDFdICAgICAgICAgICAg
+ICAgUENJIEJ1cyBOdW1iZXIgOiAwMAoKWzY2MmggMTYzNCAgIDJdICAgICAgICAgICAgICAgICAg
+ICAgUENJIFBhdGggOiAxQywwNwoKWzY2NGggMTYzNiAgIDJdICAgICAgICAgICAgICAgICAgICAg
+UENJIFBhdGggOiAwMCwwMgoKCls2NjZoIDE2MzggICAxXSAgICAgICAgICAgIERldmljZSBTY29w
+ZSBUeXBlIDogMDEgW1BDSSBFbmRwb2ludCBEZXZpY2VdCls2NjdoIDE2MzkgICAxXSAgICAgICAg
+ICAgICAgICAgRW50cnkgTGVuZ3RoIDogMEEKWzY2OGggMTY0MCAgIDJdICAgICAgICAgICAgICAg
+ICAgICAgUmVzZXJ2ZWQgOiAwMDAwCls2NkFoIDE2NDIgICAxXSAgICAgICAgICAgICAgIEVudW1l
+cmF0aW9uIElEIDogMDAKWzY2QmggMTY0MyAgIDFdICAgICAgICAgICAgICAgUENJIEJ1cyBOdW1i
+ZXIgOiAwMAoKWzY2Q2ggMTY0NCAgIDJdICAgICAgICAgICAgICAgICAgICAgUENJIFBhdGggOiAx
+QywwNwoKWzY2RWggMTY0NiAgIDJdICAgICAgICAgICAgICAgICAgICAgUENJIFBhdGggOiAwMCww
+NAoKX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX18KaW9tbXUg
+bWFpbGluZyBsaXN0CmlvbW11QGxpc3RzLmxpbnV4LWZvdW5kYXRpb24ub3JnCmh0dHBzOi8vbGlz
+dHMubGludXhmb3VuZGF0aW9uLm9yZy9tYWlsbWFuL2xpc3RpbmZvL2lvbW11
