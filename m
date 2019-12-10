@@ -2,81 +2,72 @@ Return-Path: <SRS0=4E9V=2A=lists.linux-foundation.org=iommu-bounces@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-9.8 required=3.0 tests=HEADER_FROM_DIFFERENT_DOMAINS,
-	INCLUDES_PATCH,MAILING_LIST_MULTI,SIGNED_OFF_BY,SPF_HELO_NONE,SPF_PASS,
-	USER_AGENT_GIT autolearn=unavailable autolearn_force=no version=3.4.0
+X-Spam-Status: No, score=-7.2 required=3.0 tests=HEADER_FROM_DIFFERENT_DOMAINS,
+	MAILING_LIST_MULTI,MENTIONS_GIT_HOSTING,SPF_HELO_NONE,SPF_PASS,
+	USER_AGENT_SANE_2 autolearn=unavailable autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id A2CC0C43603
-	for <iommu@archiver.kernel.org>; Tue, 10 Dec 2019 19:58:19 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 7E2E6C43603
+	for <iommu@archiver.kernel.org>; Tue, 10 Dec 2019 20:24:56 +0000 (UTC)
 Received: from fraxinus.osuosl.org (smtp4.osuosl.org [140.211.166.137])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by mail.kernel.org (Postfix) with ESMTPS id 6A155207FF
-	for <iommu@archiver.kernel.org>; Tue, 10 Dec 2019 19:58:19 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 6A155207FF
-Authentication-Results: mail.kernel.org; dmarc=none (p=none dis=none) header.from=arndb.de
+	by mail.kernel.org (Postfix) with ESMTPS id 51F4720652
+	for <iommu@archiver.kernel.org>; Tue, 10 Dec 2019 20:24:56 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 51F4720652
+Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=linux.intel.com
 Authentication-Results: mail.kernel.org; spf=pass smtp.mailfrom=iommu-bounces@lists.linux-foundation.org
 Received: from localhost (localhost [127.0.0.1])
-	by fraxinus.osuosl.org (Postfix) with ESMTP id 3D6AE86BD0;
-	Tue, 10 Dec 2019 19:58:19 +0000 (UTC)
+	by fraxinus.osuosl.org (Postfix) with ESMTP id 2C7D486C1B;
+	Tue, 10 Dec 2019 20:24:56 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
 Received: from fraxinus.osuosl.org ([127.0.0.1])
 	by localhost (.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
-	with ESMTP id 4kHfDcvb6_km; Tue, 10 Dec 2019 19:58:18 +0000 (UTC)
+	with ESMTP id 8vDjtnvYTiaR; Tue, 10 Dec 2019 20:24:55 +0000 (UTC)
 Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [140.211.9.56])
-	by fraxinus.osuosl.org (Postfix) with ESMTP id A453E86BE1;
-	Tue, 10 Dec 2019 19:58:18 +0000 (UTC)
+	by fraxinus.osuosl.org (Postfix) with ESMTP id 19F7386C1D;
+	Tue, 10 Dec 2019 20:24:55 +0000 (UTC)
 Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
-	by lists.linuxfoundation.org (Postfix) with ESMTP id A03B5C1797;
-	Tue, 10 Dec 2019 19:58:18 +0000 (UTC)
-Received: from whitealder.osuosl.org (smtp1.osuosl.org [140.211.166.138])
- by lists.linuxfoundation.org (Postfix) with ESMTP id 1179BC0881
- for <iommu@lists.linux-foundation.org>; Tue, 10 Dec 2019 19:58:17 +0000 (UTC)
+	by lists.linuxfoundation.org (Postfix) with ESMTP id F2CEBC1796;
+	Tue, 10 Dec 2019 20:24:54 +0000 (UTC)
+Received: from hemlock.osuosl.org (smtp2.osuosl.org [140.211.166.133])
+ by lists.linuxfoundation.org (Postfix) with ESMTP id 7F28EC0881
+ for <iommu@lists.linux-foundation.org>; Tue, 10 Dec 2019 20:24:52 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
- by whitealder.osuosl.org (Postfix) with ESMTP id F273486BF9
- for <iommu@lists.linux-foundation.org>; Tue, 10 Dec 2019 19:58:16 +0000 (UTC)
+ by hemlock.osuosl.org (Postfix) with ESMTP id 558518849C
+ for <iommu@lists.linux-foundation.org>; Tue, 10 Dec 2019 20:24:52 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from whitealder.osuosl.org ([127.0.0.1])
+Received: from hemlock.osuosl.org ([127.0.0.1])
  by localhost (.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
- with ESMTP id hWkzUFYF7Csz for <iommu@lists.linux-foundation.org>;
- Tue, 10 Dec 2019 19:58:15 +0000 (UTC)
-X-Greylist: from auto-whitelisted by SQLgrey-1.7.6
-Received: from mout.kundenserver.de (mout.kundenserver.de [212.227.17.24])
- by whitealder.osuosl.org (Postfix) with ESMTPS id 1419584EB9
- for <iommu@lists.linux-foundation.org>; Tue, 10 Dec 2019 19:58:14 +0000 (UTC)
-Received: from threadripper.lan ([149.172.19.189]) by mrelayeu.kundenserver.de
- (mreue107 [212.227.15.145]) with ESMTPA (Nemesis) id
- 1M3lHZ-1idwhK3twp-000urC; Tue, 10 Dec 2019 20:58:06 +0100
-From: Arnd Bergmann <arnd@arndb.de>
-To: Christoph Hellwig <hch@lst.de>, Joerg Roedel <joro@8bytes.org>,
- Robin Murphy <robin.murphy@arm.com>,
- Nicolas Saenz Julienne <nsaenzjulienne@suse.de>
-Subject: [PATCH] iommu: fix min_not_zero() type mismatch warning
-Date: Tue, 10 Dec 2019 20:57:56 +0100
-Message-Id: <20191210195803.866126-1-arnd@arndb.de>
-X-Mailer: git-send-email 2.20.0
+ with ESMTP id o8DS08w686zO for <iommu@lists.linux-foundation.org>;
+ Tue, 10 Dec 2019 20:24:50 +0000 (UTC)
+X-Greylist: domain auto-whitelisted by SQLgrey-1.7.6
+Received: from mga05.intel.com (mga05.intel.com [192.55.52.43])
+ by hemlock.osuosl.org (Postfix) with ESMTPS id 4C7D288499
+ for <iommu@lists.linux-foundation.org>; Tue, 10 Dec 2019 20:24:50 +0000 (UTC)
+X-Amp-Result: SKIPPED(no attachment in message)
+X-Amp-File-Uploaded: False
+Received: from orsmga007.jf.intel.com ([10.7.209.58])
+ by fmsmga105.fm.intel.com with ESMTP/TLS/DHE-RSA-AES256-GCM-SHA384;
+ 10 Dec 2019 12:24:49 -0800
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="5.69,300,1571727600"; d="scan'208";a="203317843"
+Received: from jacob-builder.jf.intel.com (HELO jacob-builder) ([10.7.199.155])
+ by orsmga007.jf.intel.com with ESMTP; 10 Dec 2019 12:24:49 -0800
+Date: Tue, 10 Dec 2019 12:29:36 -0800
+From: Jacob Pan <jacob.jun.pan@linux.intel.com>
+To: Lu Baolu <baolu.lu@linux.intel.com>
+Subject: Re: [PATCH v5 0/8] VT-d Native Shared virtual memory cleanup and fixes
+Message-ID: <20191210122936.4e110666@jacob-builder>
+In-Reply-To: <8a437e65-f380-d5c8-6615-a4d9d3ef1c56@linux.intel.com>
+References: <1575316709-54903-1-git-send-email-jacob.jun.pan@linux.intel.com>
+ <20191209091415.0a733af6@jacob-builder>
+ <8a437e65-f380-d5c8-6615-a4d9d3ef1c56@linux.intel.com>
+Organization: OTC
+X-Mailer: Claws Mail 3.13.2 (GTK+ 2.24.30; x86_64-pc-linux-gnu)
 MIME-Version: 1.0
-X-Provags-ID: V03:K1:V0PTrzRDmYv2osv56dZM7Vo+oE2UI7e/kklN8s5/0zdjDkWO6PK
- Syr2cpC870aQUfBxI/LQKX9UnQ52eZYLqOSd2qvQkBpN//NCWo0iM81Nxw+2YBrXdGcQ4RB
- pg0vsdCSmVp9qll1ByW2hslofn4NGZNapb5tmHEmAu28G2OCyKJQ2/VNjecSBSVvQ+huvVa
- bOG58DgSx5dcelzI2jpqw==
-X-UI-Out-Filterresults: notjunk:1;V03:K0:NXJLDdAXMEU=:NSSpjT2T1r5c0ziBNCNW/r
- 5vnGk8xhvaVmVr+eAbSykEY0l8MXV0Wx2rALNBcOoWZLDtTbils0slf3We/yHQ0rs7OGAsgYf
- 5BlmvFI+7ar5wj3br9ulKnVBH1vDniBmMjOmeTjw5BF/n83OaZw/FTW/VPkUBnGpCiYQwa1Bm
- TtbQRFXz1pB9U8xQASCg9cMF+tXDUpiL+wvTbvcLYmhg8FbgQbTcAmTx8R19l3DW4foPflf2J
- 7m+PywNID43s/9dvT18yzrYBJImDKwLg7zWCAgC0/dIgW7X2Xfl8TwuMZZti4aROTSOj5TbzL
- V//i43puiGW4XEntyk/qJzHB62ulXThNiQeIYgzwOJWK+0INVtjJoa7GYtf6I1Tt4cmA8Fc9z
- xf17zZt2tyfoPl6Sl/YzBTxoUMIOlnNwjYOSHmv/s8bmFg1glL7zuRxFtSdkwDuTzHKKLxk4P
- OVnL+x7WQUXg48TuZhF4KXwo2uD7dLYZf/gZZdq8KfjhgIt+T8NrPi3mydPt2+kHY2D/zqAu8
- QN4FGFLqeKLlce1sU0SrUWhrhOPeBH06pkZR8YBLrnvBdR9exwt/T2okQ2SmxBG0/KZiAEwdt
- ODgDVfocrwulKZkzpuWKllnc7mpI8nJFeejNINauyVZVxqwjbSfLEqXxpTCOIlAgDEG91gpA5
- pXgdP8WGTsOK2C4wPIF4wgFDaXpmPX3JdJ/IPRv9sJ2Wtysigw43HPuRfwR7vf6LFykoeABW7
- HqP1mV1W5NEmJ08yjYYay3e8yVEpVCGDEx/Ra6f9NTK4FiRNRaOxRupAJsPwWjHncFdRIrG/r
- ZEH8CT6uQv3PclquS/i8WgYVHUM/WAVkYqVNjSsA+aV3RNVBXjAhyVc9C3JQskKFCHOpdvtef
- m75EGNB98XOtH3nYdf4Q==
-Cc: Julien Grall <julien.grall@arm.com>, iommu@lists.linux-foundation.org,
- Tom Murphy <murphyt7@tcd.ie>, Arnd Bergmann <arnd@arndb.de>,
- linux-kernel@vger.kernel.org
+Cc: "Tian, Kevin" <kevin.tian@intel.com>, Raj Ashok <ashok.raj@intel.com>,
+ LKML <linux-kernel@vger.kernel.org>, iommu@lists.linux-foundation.org,
+ Joe Perches <joe@perches.com>, David Woodhouse <dwmw2@infradead.org>
 X-BeenThere: iommu@lists.linux-foundation.org
 X-Mailman-Version: 2.1.15
 Precedence: list
@@ -94,63 +85,87 @@ Content-Transfer-Encoding: 7bit
 Errors-To: iommu-bounces@lists.linux-foundation.org
 Sender: "iommu" <iommu-bounces@lists.linux-foundation.org>
 
-min()/max() require the arguments to be of the same type.
+On Tue, 10 Dec 2019 09:14:07 +0800
+Lu Baolu <baolu.lu@linux.intel.com> wrote:
 
-When dma_addr_t is not compatible with __u64, this causes
-a warning:
+> Hi Jacob,
+> 
+> This has been queued for internal test. I will forward it to Joerg if
+> everything goes well (probably around rc4).
+> 
+Thanks for the confirmation. I will send out further patches based on
+this series.
 
-In file included from include/linux/list.h:9,
-                 from include/linux/kobject.h:19,
-                 from include/linux/of.h:17,
-                 from include/linux/irqdomain.h:35,
-                 from include/linux/acpi.h:13,
-                 from include/linux/acpi_iort.h:10,
-                 from drivers/iommu/dma-iommu.c:11:
-drivers/iommu/dma-iommu.c: In function 'iommu_dma_alloc_iova':
-include/linux/kernel.h:844:29: error: comparison of distinct pointer types lacks a cast [-Werror]
-   (!!(sizeof((typeof(x) *)1 == (typeof(y) *)1)))
-                             ^~
-include/linux/kernel.h:858:4: note: in expansion of macro '__typecheck'
-   (__typecheck(x, y) && __no_side_effects(x, y))
-    ^~~~~~~~~~~
-include/linux/kernel.h:868:24: note: in expansion of macro '__safe_cmp'
-  __builtin_choose_expr(__safe_cmp(x, y), \
-                        ^~~~~~~~~~
-include/linux/kernel.h:877:19: note: in expansion of macro '__careful_cmp'
- #define min(x, y) __careful_cmp(x, y, <)
-                   ^~~~~~~~~~~~~
-include/linux/kernel.h:910:39: note: in expansion of macro 'min'
-  __x == 0 ? __y : ((__y == 0) ? __x : min(__x, __y)); })
-                                       ^~~
-drivers/iommu/dma-iommu.c:424:14: note: in expansion of macro 'min_not_zero'
-  dma_limit = min_not_zero(dma_limit, dev->bus_dma_limit);
-              ^~~~~~~~~~~~
 
-Add an explicit cast to work around it, as there is no min_not_zero_t()
-equivalent of min_t().
+> Best regards,
+> -baolu
+> 
+> On 12/10/19 1:14 AM, Jacob Pan wrote:
+> > Hi Joerg and Baolu,
+> > 
+> > Any more comments on this series? I rebased it on v5.5-rc1 without
+> > changes.
+> > 
+> > 
+> > Thanks,
+> > 
+> > Jacob
+> > 
+> > On Mon,  2 Dec 2019 11:58:21 -0800
+> > Jacob Pan <jacob.jun.pan@linux.intel.com> wrote:
+> >   
+> >> Mostly extracted from nested SVA/SVM series based on review
+> >> comments of v7. https://lkml.org/lkml/2019/10/24/852
+> >>
+> >> This series also adds a few important fixes for native use of SVA.
+> >> Nested SVA new code will be submitted separately as a smaller set.
+> >> Based on the core branch of IOMMU tree staged for v5.5, where
+> >> common APIs for vSVA were applied.
+> >> git://git.kernel.org/pub/scm/linux/kernel/git/joro/iommu.git core
+> >>
+> >> Changelog:
+> >> v5	- Regrouped patch 6 and 8, added comments suggested by
+> >> Joe Perches v4	- Commit message fix
+> >>
+> >> V3
+> >> 	- Squashed 1/10 & 2/10
+> >> 	- Deleted "8/10 Fix PASID cache flush" from this series
+> >> 	- Addressed reviews from Eric Auger and Baolu
+> >> V2
+> >> 	- Coding style fixes based on Baolu's input, no functional
+> >> change
+> >> 	- Added Acked-by tags.
+> >>
+> >> Thanks,
+> >>
+> >> Jacob
+> >>
+> >>
+> >> *** BLURB HERE ***
+> >>
+> >> Jacob Pan (8):
+> >>    iommu/vt-d: Fix CPU and IOMMU SVM feature matching checks
+> >>    iommu/vt-d: Match CPU and IOMMU paging mode
+> >>    iommu/vt-d: Reject SVM bind for failed capability check
+> >>    iommu/vt-d: Avoid duplicated code for PASID setup
+> >>    iommu/vt-d: Fix off-by-one in PASID allocation
+> >>    iommu/vt-d: Replace Intel specific PASID allocator with IOASID
+> >>    iommu/vt-d: Avoid sending invalid page response
+> >>    iommu/vt-d: Misc macro clean up for SVM
+> >>
+> >>   drivers/iommu/Kconfig       |   1 +
+> >>   drivers/iommu/intel-iommu.c |  23 +++----
+> >>   drivers/iommu/intel-pasid.c |  96 ++++++++------------------
+> >>   drivers/iommu/intel-svm.c   | 163
+> >> +++++++++++++++++++++++++-------------------
+> >> include/linux/intel-iommu.h |   5 +- 5 files changed, 135
+> >> insertions(+), 153 deletions(-)
+> >>  
+> > 
+> > [Jacob Pan]
+> >   
 
-Fixes: a7ba70f1787f ("dma-mapping: treat dev->bus_dma_mask as a DMA limit")
-Signed-off-by: Arnd Bergmann <arnd@arndb.de>
----
- drivers/iommu/dma-iommu.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
-
-diff --git a/drivers/iommu/dma-iommu.c b/drivers/iommu/dma-iommu.c
-index 0cc702a70a96..6fa32231dc9f 100644
---- a/drivers/iommu/dma-iommu.c
-+++ b/drivers/iommu/dma-iommu.c
-@@ -421,7 +421,7 @@ static dma_addr_t iommu_dma_alloc_iova(struct iommu_domain *domain,
- 	if (iova_len < (1 << (IOVA_RANGE_CACHE_MAX_SIZE - 1)))
- 		iova_len = roundup_pow_of_two(iova_len);
- 
--	dma_limit = min_not_zero(dma_limit, dev->bus_dma_limit);
-+	dma_limit = min_not_zero((u64)dma_limit, dev->bus_dma_limit);
- 
- 	if (domain->geometry.force_aperture)
- 		dma_limit = min(dma_limit, domain->geometry.aperture_end);
--- 
-2.20.0
-
+[Jacob Pan]
 _______________________________________________
 iommu mailing list
 iommu@lists.linux-foundation.org
