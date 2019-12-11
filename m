@@ -6,69 +6,69 @@ X-Spam-Status: No, score=-9.8 required=3.0 tests=DKIM_INVALID,DKIM_SIGNED,
 	INCLUDES_PATCH,MAILING_LIST_MULTI,SIGNED_OFF_BY,SPF_HELO_NONE,SPF_PASS,
 	URIBL_BLOCKED,USER_AGENT_GIT autolearn=ham autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 0980BC43603
-	for <iommu@archiver.kernel.org>; Wed, 11 Dec 2019 15:28:40 +0000 (UTC)
-Received: from fraxinus.osuosl.org (smtp4.osuosl.org [140.211.166.137])
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 31C4DC43603
+	for <iommu@archiver.kernel.org>; Wed, 11 Dec 2019 15:35:18 +0000 (UTC)
+Received: from silver.osuosl.org (smtp3.osuosl.org [140.211.166.136])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by mail.kernel.org (Postfix) with ESMTPS id C767B222C4
-	for <iommu@archiver.kernel.org>; Wed, 11 Dec 2019 15:28:39 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTPS id F421D2077B
+	for <iommu@archiver.kernel.org>; Wed, 11 Dec 2019 15:35:17 +0000 (UTC)
 Authentication-Results: mail.kernel.org;
-	dkim=fail reason="signature verification failed" (1024-bit key) header.d=kernel.org header.i=@kernel.org header.b="svBKBZp9"
-DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org C767B222C4
+	dkim=fail reason="signature verification failed" (1024-bit key) header.d=kernel.org header.i=@kernel.org header.b="H4SuOr0j"
+DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org F421D2077B
 Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=kernel.org
 Authentication-Results: mail.kernel.org; spf=pass smtp.mailfrom=iommu-bounces@lists.linux-foundation.org
 Received: from localhost (localhost [127.0.0.1])
-	by fraxinus.osuosl.org (Postfix) with ESMTP id 957F786599;
-	Wed, 11 Dec 2019 15:28:39 +0000 (UTC)
+	by silver.osuosl.org (Postfix) with ESMTP id D3DF7226B3;
+	Wed, 11 Dec 2019 15:35:17 +0000 (UTC)
+X-Virus-Scanned: amavisd-new at osuosl.org
+Received: from silver.osuosl.org ([127.0.0.1])
+	by localhost (.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
+	with ESMTP id LLsWcNXwMNda; Wed, 11 Dec 2019 15:35:17 +0000 (UTC)
+Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [140.211.9.56])
+	by silver.osuosl.org (Postfix) with ESMTP id 5183420454;
+	Wed, 11 Dec 2019 15:35:17 +0000 (UTC)
+Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
+	by lists.linuxfoundation.org (Postfix) with ESMTP id 3C631C1796;
+	Wed, 11 Dec 2019 15:35:17 +0000 (UTC)
+Received: from fraxinus.osuosl.org (smtp4.osuosl.org [140.211.166.137])
+ by lists.linuxfoundation.org (Postfix) with ESMTP id DF261C0881
+ for <iommu@lists.linux-foundation.org>; Wed, 11 Dec 2019 15:35:15 +0000 (UTC)
+Received: from localhost (localhost [127.0.0.1])
+ by fraxinus.osuosl.org (Postfix) with ESMTP id CA91F85F8D
+ for <iommu@lists.linux-foundation.org>; Wed, 11 Dec 2019 15:35:15 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
 Received: from fraxinus.osuosl.org ([127.0.0.1])
-	by localhost (.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
-	with ESMTP id Bftq5iPlX9IX; Wed, 11 Dec 2019 15:28:39 +0000 (UTC)
-Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [140.211.9.56])
-	by fraxinus.osuosl.org (Postfix) with ESMTP id 1BD448615E;
-	Wed, 11 Dec 2019 15:28:39 +0000 (UTC)
-Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
-	by lists.linuxfoundation.org (Postfix) with ESMTP id 14C57C1796;
-	Wed, 11 Dec 2019 15:28:39 +0000 (UTC)
-Received: from hemlock.osuosl.org (smtp2.osuosl.org [140.211.166.133])
- by lists.linuxfoundation.org (Postfix) with ESMTP id 5C094C0881
- for <iommu@lists.linux-foundation.org>; Wed, 11 Dec 2019 15:28:38 +0000 (UTC)
-Received: from localhost (localhost [127.0.0.1])
- by hemlock.osuosl.org (Postfix) with ESMTP id 54FFE883F8
- for <iommu@lists.linux-foundation.org>; Wed, 11 Dec 2019 15:28:38 +0000 (UTC)
-X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from hemlock.osuosl.org ([127.0.0.1])
  by localhost (.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
- with ESMTP id 0B7D0uPkvmbl for <iommu@lists.linux-foundation.org>;
- Wed, 11 Dec 2019 15:28:37 +0000 (UTC)
+ with ESMTP id iCxgMcxGISfh for <iommu@lists.linux-foundation.org>;
+ Wed, 11 Dec 2019 15:35:15 +0000 (UTC)
 X-Greylist: domain auto-whitelisted by SQLgrey-1.7.6
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
- by hemlock.osuosl.org (Postfix) with ESMTPS id C52CA87032
- for <iommu@lists.linux-foundation.org>; Wed, 11 Dec 2019 15:28:37 +0000 (UTC)
+ by fraxinus.osuosl.org (Postfix) with ESMTPS id 55E4C85F7D
+ for <iommu@lists.linux-foundation.org>; Wed, 11 Dec 2019 15:35:15 +0000 (UTC)
 Received: from sasha-vm.mshome.net (c-73-47-72-35.hsd1.nh.comcast.net
  [73.47.72.35])
  (using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
  (No client certificate requested)
- by mail.kernel.org (Postfix) with ESMTPSA id DD64D208C3;
- Wed, 11 Dec 2019 15:28:36 +0000 (UTC)
+ by mail.kernel.org (Postfix) with ESMTPSA id 6C05924687;
+ Wed, 11 Dec 2019 15:35:14 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
- s=default; t=1576078117;
- bh=noZpgBJuRpZhcBM0WoGd9PdBBtglvU5KAndjmBZUy7I=;
+ s=default; t=1576078515;
+ bh=fW7kFxv3HidorxygJ1mFCfCniAqwY8GjxNIzsLGC5+w=;
  h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
- b=svBKBZp947ObmheO0S6p/4n8xiYw8ru8Z/wh5jLn7W1aFXpcwpnYnhA73G+zbtlg1
- rYwvOGSsoXWTdoWEx8VCgowFEw+dV02nOx47JRlyPg6kUM9rHI9L1f19LC1YV+Fu9h
- w8oaQhEi3oFp6fFqdSbsD1I8ptSRZTO49HpriHZY=
+ b=H4SuOr0jIMDov1Hv/noXx2GMTc5WmuZS2e137sFpAErQiHb0tond9t1FZ4WMmA9zG
+ rifu9UiYmmOgpm5ok3o0H74YYd303hSkWpTZjmPnS3KCillbIFS8kcYgV3cXRCQGyE
+ 2FNhcNp5la7GXta6gHBgsqn2BgU8arEd0hv7RnF8=
 From: Sasha Levin <sashal@kernel.org>
 To: linux-kernel@vger.kernel.org,
 	stable@vger.kernel.org
-Subject: [PATCH AUTOSEL 4.14 05/58] iommu/tegra-smmu: Fix page tables in > 4
+Subject: [PATCH AUTOSEL 4.9 04/42] iommu/tegra-smmu: Fix page tables in > 4
  GiB memory
-Date: Wed, 11 Dec 2019 10:27:38 -0500
-Message-Id: <20191211152831.23507-5-sashal@kernel.org>
+Date: Wed, 11 Dec 2019 10:34:32 -0500
+Message-Id: <20191211153510.23861-4-sashal@kernel.org>
 X-Mailer: git-send-email 2.20.1
-In-Reply-To: <20191211152831.23507-1-sashal@kernel.org>
-References: <20191211152831.23507-1-sashal@kernel.org>
+In-Reply-To: <20191211153510.23861-1-sashal@kernel.org>
+References: <20191211153510.23861-1-sashal@kernel.org>
 MIME-Version: 1.0
 X-stable: review
 X-Patchwork-Hint: Ignore
@@ -113,10 +113,10 @@ Signed-off-by: Sasha Levin <sashal@kernel.org>
  1 file changed, 6 insertions(+), 5 deletions(-)
 
 diff --git a/drivers/iommu/tegra-smmu.c b/drivers/iommu/tegra-smmu.c
-index 40eb8138546ad..848dac3e4580f 100644
+index c4eb293b15242..04cec050e42bf 100644
 --- a/drivers/iommu/tegra-smmu.c
 +++ b/drivers/iommu/tegra-smmu.c
-@@ -156,9 +156,9 @@ static bool smmu_dma_addr_valid(struct tegra_smmu *smmu, dma_addr_t addr)
+@@ -153,9 +153,9 @@ static bool smmu_dma_addr_valid(struct tegra_smmu *smmu, dma_addr_t addr)
  	return (addr & smmu->pfn_mask) == addr;
  }
  
@@ -128,7 +128,7 @@ index 40eb8138546ad..848dac3e4580f 100644
  }
  
  static void smmu_flush_ptc_all(struct tegra_smmu *smmu)
-@@ -543,6 +543,7 @@ static u32 *tegra_smmu_pte_lookup(struct tegra_smmu_as *as, unsigned long iova,
+@@ -540,6 +540,7 @@ static u32 *tegra_smmu_pte_lookup(struct tegra_smmu_as *as, unsigned long iova,
  				  dma_addr_t *dmap)
  {
  	unsigned int pd_index = iova_pd_index(iova);
@@ -136,7 +136,7 @@ index 40eb8138546ad..848dac3e4580f 100644
  	struct page *pt_page;
  	u32 *pd;
  
-@@ -551,7 +552,7 @@ static u32 *tegra_smmu_pte_lookup(struct tegra_smmu_as *as, unsigned long iova,
+@@ -548,7 +549,7 @@ static u32 *tegra_smmu_pte_lookup(struct tegra_smmu_as *as, unsigned long iova,
  		return NULL;
  
  	pd = page_address(as->pd);
@@ -145,7 +145,7 @@ index 40eb8138546ad..848dac3e4580f 100644
  
  	return tegra_smmu_pte_offset(pt_page, iova);
  }
-@@ -593,7 +594,7 @@ static u32 *as_get_pte(struct tegra_smmu_as *as, dma_addr_t iova,
+@@ -590,7 +591,7 @@ static u32 *as_get_pte(struct tegra_smmu_as *as, dma_addr_t iova,
  	} else {
  		u32 *pd = page_address(as->pd);
  
@@ -154,7 +154,7 @@ index 40eb8138546ad..848dac3e4580f 100644
  	}
  
  	return tegra_smmu_pte_offset(as->pts[pde], iova);
-@@ -618,7 +619,7 @@ static void tegra_smmu_pte_put_use(struct tegra_smmu_as *as, unsigned long iova)
+@@ -615,7 +616,7 @@ static void tegra_smmu_pte_put_use(struct tegra_smmu_as *as, unsigned long iova)
  	if (--as->count[pde] == 0) {
  		struct tegra_smmu *smmu = as->smmu;
  		u32 *pd = page_address(as->pd);
