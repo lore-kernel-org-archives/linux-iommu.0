@@ -2,88 +2,77 @@ Return-Path: <SRS0=PSAu=2C=lists.linux-foundation.org=iommu-bounces@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-0.8 required=3.0 tests=HEADER_FROM_DIFFERENT_DOMAINS,
-	MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS autolearn=no autolearn_force=no
-	version=3.4.0
+X-Spam-Status: No, score=-6.8 required=3.0 tests=HEADER_FROM_DIFFERENT_DOMAINS,
+	INCLUDES_PATCH,MAILING_LIST_MULTI,SIGNED_OFF_BY,SPF_HELO_NONE,SPF_PASS
+	autolearn=ham autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id D1A92C43603
-	for <iommu@archiver.kernel.org>; Thu, 12 Dec 2019 13:16:46 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id A14DEC43603
+	for <iommu@archiver.kernel.org>; Thu, 12 Dec 2019 13:21:10 +0000 (UTC)
 Received: from whitealder.osuosl.org (smtp1.osuosl.org [140.211.166.138])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by mail.kernel.org (Postfix) with ESMTPS id A5D5721655
-	for <iommu@archiver.kernel.org>; Thu, 12 Dec 2019 13:16:46 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org A5D5721655
+	by mail.kernel.org (Postfix) with ESMTPS id 7846721655
+	for <iommu@archiver.kernel.org>; Thu, 12 Dec 2019 13:21:10 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 7846721655
 Authentication-Results: mail.kernel.org; dmarc=none (p=none dis=none) header.from=suse.de
 Authentication-Results: mail.kernel.org; spf=pass smtp.mailfrom=iommu-bounces@lists.linux-foundation.org
 Received: from localhost (localhost [127.0.0.1])
-	by whitealder.osuosl.org (Postfix) with ESMTP id 7B261882E1;
-	Thu, 12 Dec 2019 13:16:46 +0000 (UTC)
+	by whitealder.osuosl.org (Postfix) with ESMTP id 59E7D882E1;
+	Thu, 12 Dec 2019 13:21:10 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
 Received: from whitealder.osuosl.org ([127.0.0.1])
 	by localhost (.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
-	with ESMTP id fv5pmwCN1Qdn; Thu, 12 Dec 2019 13:16:44 +0000 (UTC)
+	with ESMTP id xuWtUL6LXnkL; Thu, 12 Dec 2019 13:21:09 +0000 (UTC)
 Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [140.211.9.56])
-	by whitealder.osuosl.org (Postfix) with ESMTP id 7A3F1882C5;
-	Thu, 12 Dec 2019 13:16:44 +0000 (UTC)
+	by whitealder.osuosl.org (Postfix) with ESMTP id 38694882ED;
+	Thu, 12 Dec 2019 13:21:09 +0000 (UTC)
 Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
-	by lists.linuxfoundation.org (Postfix) with ESMTP id 5A911C1D81;
-	Thu, 12 Dec 2019 13:16:44 +0000 (UTC)
-Received: from fraxinus.osuosl.org (smtp4.osuosl.org [140.211.166.137])
- by lists.linuxfoundation.org (Postfix) with ESMTP id 03335C0881
- for <iommu@lists.linux-foundation.org>; Thu, 12 Dec 2019 13:16:42 +0000 (UTC)
+	by lists.linuxfoundation.org (Postfix) with ESMTP id 158F5C1D81;
+	Thu, 12 Dec 2019 13:21:09 +0000 (UTC)
+Received: from silver.osuosl.org (smtp3.osuosl.org [140.211.166.136])
+ by lists.linuxfoundation.org (Postfix) with ESMTP id 70D41C0881
+ for <iommu@lists.linux-foundation.org>; Thu, 12 Dec 2019 13:21:07 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
- by fraxinus.osuosl.org (Postfix) with ESMTP id E54F58706F
- for <iommu@lists.linux-foundation.org>; Thu, 12 Dec 2019 13:16:41 +0000 (UTC)
+ by silver.osuosl.org (Postfix) with ESMTP id 52DA520506
+ for <iommu@lists.linux-foundation.org>; Thu, 12 Dec 2019 13:21:07 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from fraxinus.osuosl.org ([127.0.0.1])
+Received: from silver.osuosl.org ([127.0.0.1])
  by localhost (.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
- with ESMTP id nFKH9Zt5Cn5n for <iommu@lists.linux-foundation.org>;
- Thu, 12 Dec 2019 13:16:40 +0000 (UTC)
+ with ESMTP id NU5YF8qSP550 for <iommu@lists.linux-foundation.org>;
+ Thu, 12 Dec 2019 13:21:06 +0000 (UTC)
 X-Greylist: domain auto-whitelisted by SQLgrey-1.7.6
 Received: from mx1.suse.de (mx2.suse.de [195.135.220.15])
- by fraxinus.osuosl.org (Postfix) with ESMTPS id 973D68706E
- for <iommu@lists.linux-foundation.org>; Thu, 12 Dec 2019 13:16:40 +0000 (UTC)
+ by silver.osuosl.org (Postfix) with ESMTPS id 24B9E20489
+ for <iommu@lists.linux-foundation.org>; Thu, 12 Dec 2019 13:21:06 +0000 (UTC)
 X-Virus-Scanned: by amavisd-new at test-mx.suse.de
 Received: from relay2.suse.de (unknown [195.135.220.254])
- by mx1.suse.de (Postfix) with ESMTP id 9BC24AD07;
- Thu, 12 Dec 2019 13:16:36 +0000 (UTC)
-Message-ID: <b35922dfd7f62489d35ab15362891a90bf46c3d2.camel@suse.de>
-Subject: Re: [PATCH v4 7/8] linux/log2.h: Fix 64bit calculations in
- roundup/down_pow_two()
+ by mx1.suse.de (Postfix) with ESMTP id B70EFAFD8;
+ Thu, 12 Dec 2019 13:21:03 +0000 (UTC)
+Message-ID: <ff60337c5f6f324fb121fa7cad24e763af29cfe2.camel@suse.de>
+Subject: Re: [PATCH v4 8/8] linux/log2.h: Use roundup/dow_pow_two() on 64bit
+ calculations
 From: Nicolas Saenz Julienne <nsaenzjulienne@suse.de>
 To: Bjorn Helgaas <helgaas@kernel.org>
-Date: Thu, 12 Dec 2019 14:16:27 +0100
-In-Reply-To: <20191205223044.GA250573@google.com>
-References: <20191205223044.GA250573@google.com>
+Date: Thu, 12 Dec 2019 14:21:00 +0100
+In-Reply-To: <20191205203845.GA243596@google.com>
+References: <20191205203845.GA243596@google.com>
 User-Agent: Evolution 3.34.2 
 MIME-Version: 1.0
-Cc: linux-pci@vger.kernel.org, Michael Turquette <mturquette@baylibre.com>,
- "J. Bruce Fields" <bfields@fieldses.org>, linux-nfs@vger.kernel.org,
- Edward Cree <ecree@solarflare.com>, linux-clk@vger.kernel.org,
- f.fainelli@gmail.com, Herbert Xu <herbert@gondor.apana.org.au>,
- Emilio =?ISO-8859-1?Q?L=F3pez?= <emilio@elopez.com.ar>, maz@kernel.org,
- phil@raspberrypi.org, Doug Ledford <dledford@redhat.com>,
- Jason Gunthorpe <jgg@ziepe.ca>, Chen-Yu Tsai <wens@csie.org>,
- Chuck Lever <chuck.lever@oracle.com>, Martin Habets <mhabets@solarflare.com>,
- wahrenst@gmx.net, Tom Lendacky <thomas.lendacky@amd.com>,
- Jiri Pirko <jiri@resnulli.us>,
- Solarflare linux maintainers <linux-net-drivers@solarflare.com>,
- Maxime Ripard <mripard@kernel.org>, linux-rpi-kernel@lists.infradead.org,
- Anna Schumaker <anna.schumaker@netapp.com>,
- Trond Myklebust <trond.myklebust@hammerspace.com>,
- linux-arm-kernel@lists.infradead.org, Mirko Lindner <mlindner@marvell.com>,
- Mike Marciniszyn <mike.marciniszyn@intel.com>, mbrugger@suse.com,
- Stephen Boyd <sboyd@kernel.org>, netdev@vger.kernel.org,
- Yishai Hadas <yishaih@mellanox.com>, kexec@lists.infradead.org,
- linux-kernel@vger.kernel.org, jeremy.linton@arm.com, "David
- S. Miller" <davem@davemloft.net>,
- Stephen Hemminger <stephen@networkplumber.org>, linux-rdma@vger.kernel.org,
- iommu@lists.linux-foundation.org, Moni Shoua <monis@mellanox.com>,
- Eric Biederman <ebiederm@xmission.com>, james.quinlan@broadcom.com,
- Thomas Graf <tgraf@suug.ch>, Robin Murphy <robin.murphy@arm.con>,
- David Woodhouse <dwmw2@infradead.org>,
- Dennis Dalessandro <dennis.dalessandro@intel.com>
+Cc: Heiko Stuebner <heiko@sntech.de>, linux-pci@vger.kernel.org,
+ Shawn Lin <shawn.lin@rock-chips.com>, Eric Anholt <eric@anholt.net>,
+ Hanjun Guo <guohanjun@huawei.com>, Frank Rowand <frowand.list@gmail.com>,
+ Christoph Hellwig <hch@lst.de>, Florian Fainelli <f.fainelli@gmail.com>,
+ linux-rockchip@lists.infradead.org, linux-rdma@vger.kernel.org, maz@kernel.org,
+ phil@raspberrypi.org, linux-acpi@vger.kernel.org,
+ bcm-kernel-feedback-list@broadcom.com, Len Brown <lenb@kernel.org>,
+ devicetree@vger.kernel.org, linux-rpi-kernel@lists.infradead.org,
+ linux-arm-kernel@lists.infradead.org, mbrugger@suse.com,
+ netdev@vger.kernel.org, "Rafael J. Wysocki" <rjw@rjwysocki.net>,
+ linux-kernel@vger.kernel.org, jeremy.linton@arm.com,
+ iommu@lists.linux-foundation.org, Rob Herring <robh+dt@kernel.org>,
+ Stefan Wahren <wahrenst@gmx.net>, james.quinlan@broadcom.com,
+ Sudeep Holla <sudeep.holla@arm.com>, Robin Murphy <robin.murphy@arm.com>,
+ "David S. Miller" <davem@davemloft.net>, Tariq Toukan <tariqt@mellanox.com>
 X-BeenThere: iommu@lists.linux-foundation.org
 X-Mailman-Version: 2.1.15
 Precedence: list
@@ -96,111 +85,121 @@ List-Post: <mailto:iommu@lists.linux-foundation.org>
 List-Help: <mailto:iommu-request@lists.linux-foundation.org?subject=help>
 List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
  <mailto:iommu-request@lists.linux-foundation.org?subject=subscribe>
-Content-Type: multipart/mixed; boundary="===============3734289617452540184=="
+Content-Type: multipart/mixed; boundary="===============5670420179505825945=="
 Errors-To: iommu-bounces@lists.linux-foundation.org
 Sender: "iommu" <iommu-bounces@lists.linux-foundation.org>
 
 
---===============3734289617452540184==
+--===============5670420179505825945==
 Content-Type: multipart/signed; micalg="pgp-sha256";
-	protocol="application/pgp-signature"; boundary="=-vpJ9shRBsDfxzY4jD4N5"
+	protocol="application/pgp-signature"; boundary="=-lcx9Dpdc/nSfdN+F0tca"
 
 
---=-vpJ9shRBsDfxzY4jD4N5
+--=-lcx9Dpdc/nSfdN+F0tca
 Content-Type: text/plain; charset="UTF-8"
 Content-Transfer-Encoding: quoted-printable
 
-On Thu, 2019-12-05 at 16:30 -0600, Bjorn Helgaas wrote:
-> You got the "n" on "down" in the subject, but still missing "of" ;)
+On Thu, 2019-12-05 at 14:38 -0600, Bjorn Helgaas wrote:
+> The subject contains a couple typos: it's missing "of" and it's
+> missing the "n" on "down".
 
-Yes, sorry about that, I tend to re-read what I meant to say instead of wha=
-t
-it's actually written.
-
-> On Tue, Dec 03, 2019 at 12:47:40PM +0100, Nicolas Saenz Julienne wrote:
-> > Some users need to make sure their rounding function accepts and return=
-s
-> > 64bit long variables regardless of the architecture. Sadly
-> > roundup/rounddown_pow_two() takes and returns unsigned longs. It turns
-> > out ilog2() already handles 32/64bit calculations properly, and being
-> > the building block to the round functions we can rework them as a
-> > wrapper around it.
+Noted >=20
+> On Tue, Dec 03, 2019 at 12:47:41PM +0100, Nicolas Saenz Julienne wrote:
+> > The function now is safe to use while expecting a 64bit value. Use it
+> > where relevant.
 >=20
-> Missing "of" in the function names here.
-> s/a wrapper/wrappers/
+> Please include the function names ("roundup_pow_of_two()",
+> "rounddown_pow_of_two()") in the changelog so it is self-contained and
+> doesn't depend on the subject.
 
 Noted
 
-> IIUC the point of this is that roundup_pow_of_two() returned
-> "unsigned long", which can be either 32 or 64 bits (worth pointing
-> out, I think), and many callers need something that returns
-> "unsigned long long" (always 64 bits).
-
-I'll update the commit message to be a more explicit.
-
-> It's a nice simplification to remove the "__" variants.  Just as a
-> casual reader of this commit message, I'd like to know why we had both
-> the roundup and the __roundup versions in the first place, and why we
-> no longer need both.
-
-So, the commit that introduced it (312a0c170945b) meant to use the '__' var=
-iant
-as a helper, but, due to the fact this is a header file, some found it and =
-made
-use of it. I went over some if the commits introducing '__' usages and none=
- of
-them seem to acknowledge its use as opposed to the macro version. I think i=
-t's
-fair to say it's a case of cargo-culting.
-
-> > -#define roundup_pow_of_two(n)			\
-> > -(						\
-> > -	__builtin_constant_p(n) ? (		\
-> > -		(n =3D=3D 1) ? 1 :			\
-> > -		(1UL << (ilog2((n) - 1) + 1))	\
-> > -				   ) :		\
-> > -	__roundup_pow_of_two(n)			\
-> > - )
-> > +#define roundup_pow_of_two(n)			  \
-> > +(						  \
-> > +	(__builtin_constant_p(n) && ((n) =3D=3D 1)) ? \
-> > +	1 : (1ULL << (ilog2((n) - 1) + 1))        \
-> > +)
+> > Signed-off-by: Nicolas Saenz Julienne <nsaenzjulienne@suse.de>
 >=20
-> Should the resulting type of this expression always be a ULL, even
-> when n=3D=3D1, i.e., should it be this?
+> With the nits above and below addressed,
 >=20
->   1ULL : (1ULL << (ilog2((n) - 1) + 1))        \
->=20
-> Or maybe there's no case where that makes a difference?
+> Acked-by: Bjorn Helgaas <bhelgaas@google.com>	# drivers/pci
 
-It should be 1ULL on either case.
+Thanks!
+
+> > ---
+> >  drivers/acpi/arm64/iort.c                        | 2 +-
+> >  drivers/net/ethernet/mellanox/mlx4/en_clock.c    | 3 ++-
+> >  drivers/of/device.c                              | 3 ++-
+> >  drivers/pci/controller/cadence/pcie-cadence-ep.c | 3 ++-
+> >  drivers/pci/controller/cadence/pcie-cadence.c    | 3 ++-
+> >  drivers/pci/controller/pcie-brcmstb.c            | 3 ++-
+> >  drivers/pci/controller/pcie-rockchip-ep.c        | 5 +++--
+> >  kernel/dma/direct.c                              | 2 +-
+> >  8 files changed, 15 insertions(+), 9 deletions(-)
+> > --- a/drivers/pci/controller/cadence/pcie-cadence-ep.c
+> > +++ b/drivers/pci/controller/cadence/pcie-cadence-ep.c
+> > @@ -10,6 +10,7 @@
+> >  #include <linux/platform_device.h>
+> >  #include <linux/pm_runtime.h>
+> >  #include <linux/sizes.h>
+> > +#include <linux/log2.h>
+> > =20
+> >  #include "pcie-cadence.h"
+> > =20
+> > @@ -65,7 +66,7 @@ static int cdns_pcie_ep_set_bar(struct pci_epc *epc, =
+u8
+> > fn,
+> >  	 * roundup_pow_of_two() returns an unsigned long, which is not suited
+> >  	 * for 64bit values.
+> >  	 */
+>=20
+> Please remove the comment above since it no longer applies.
+
+Noted
+
+[...]
+
+> > diff --git a/kernel/dma/direct.c b/kernel/dma/direct.c
+> > index 6af7ae83c4ad..056886c4efec 100644
+> > --- a/kernel/dma/direct.c
+> > +++ b/kernel/dma/direct.c
+> > @@ -53,7 +53,7 @@ u64 dma_direct_get_required_mask(struct device *dev)
+> >  {
+> >  	u64 max_dma =3D phys_to_dma_direct(dev, (max_pfn - 1) << PAGE_SHIFT);
+> > =20
+> > -	return (1ULL << (fls64(max_dma) - 1)) * 2 - 1;
+> > +	return rounddown_pow_of_two(max_dma) * 2 - 1;
+>=20
+> Personally I would probably make this one a separate patch since it's
+> qualitatively different than the others and it would avoid the slight
+> awkwardness of the non-greppable "roundup/down_pow_of_two()"
+> construction in the commit subject.
+>=20
+> But it's fine either way.
+
+I'll split it into two parts, as RobH made a similar complaint.
 
 Regards,
 Nicolas
 
 
---=-vpJ9shRBsDfxzY4jD4N5
+--=-lcx9Dpdc/nSfdN+F0tca
 Content-Type: application/pgp-signature; name="signature.asc"
 Content-Description: This is a digitally signed message part
 Content-Transfer-Encoding: 7bit
 
 -----BEGIN PGP SIGNATURE-----
 
-iQEzBAABCAAdFiEErOkkGDHCg2EbPcGjlfZmHno8x/4FAl3yPasACgkQlfZmHno8
-x/4qrgf9GTaIX4ZRG0TCYwOuyJCzR/7cg3GMSsuHo8bknRFfBKmZUwtS0JmNNrn7
-f1Av7IZ0OAbAWPJQkzOXw4OxNhVxq0ItdXAktetVKaF6U5Dz/5tWkkwHLFdhSepV
-FcS4qxWo8nOugcgYRzN6kDaihMFUqbAIioU7n1HGLRGN2s9vaJM1rNmOrGMPovU3
-BbGTs4/7BMM3FmqoGwWUKX5FPFNamYrxAaaOknMUVa16iI7MN7hYH5scWUUK56ER
-57y4jC6vGu17Cku4HBlynsoZpm6z6SvHDoXIMZCbUKbJogsiQo+b1+cZTWLVGi2P
-qQGX/jHjIhYWNVa2Le9F3qgxxmf0uA==
-=hg1F
+iQEzBAABCAAdFiEErOkkGDHCg2EbPcGjlfZmHno8x/4FAl3yPrwACgkQlfZmHno8
+x/4DxAf/dUNU44c6C5UlupKkHs1V09AR3yPNPOe8GrxrtpnzWAaNQ9L4S0ZG9ocS
+gey8W3CCPJPrWmqSAjQ8ddX9w+wKaaRaGFE3wHRFiGVMDSN8kGzHySuWi1ytfy0Y
+x0msb/bX87L3SwSegRTGlvbRJ1rDZl4WxCVFSrhCNRwem2R+v668VGifVS24Ay1f
+dwS7xyDUcMTmaiCfpK8KyJK1GdbScI6kVPFUM57deANw/I60zWGWykBnTeTQtlrM
+gLN2fGNP1wLRKZ5IEHObKLWo0rXTRKBjsouzL4/D5dW69LXZK1nS02rJsdu5bpUl
+WepA96OKnIgxngbBiO8z4btiMgZ1Jw==
+=QTsG
 -----END PGP SIGNATURE-----
 
---=-vpJ9shRBsDfxzY4jD4N5--
+--=-lcx9Dpdc/nSfdN+F0tca--
 
 
---===============3734289617452540184==
+--===============5670420179505825945==
 Content-Type: text/plain; charset="us-ascii"
 MIME-Version: 1.0
 Content-Transfer-Encoding: 7bit
@@ -210,5 +209,5 @@ _______________________________________________
 iommu mailing list
 iommu@lists.linux-foundation.org
 https://lists.linuxfoundation.org/mailman/listinfo/iommu
---===============3734289617452540184==--
+--===============5670420179505825945==--
 
