@@ -6,69 +6,67 @@ X-Spam-Status: No, score=-8.2 required=3.0 tests=HEADER_FROM_DIFFERENT_DOMAINS,
 	INCLUDES_PATCH,MAILING_LIST_MULTI,SIGNED_OFF_BY,SPF_HELO_NONE,SPF_PASS,
 	USER_AGENT_SANE_1 autolearn=ham autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 673A4C43603
-	for <iommu@archiver.kernel.org>; Thu, 12 Dec 2019 01:01:13 +0000 (UTC)
-Received: from hemlock.osuosl.org (smtp2.osuosl.org [140.211.166.133])
+	by smtp.lore.kernel.org (Postfix) with ESMTP id CFCBDC43603
+	for <iommu@archiver.kernel.org>; Thu, 12 Dec 2019 01:17:25 +0000 (UTC)
+Received: from whitealder.osuosl.org (smtp1.osuosl.org [140.211.166.138])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by mail.kernel.org (Postfix) with ESMTPS id 38AFD2173E
-	for <iommu@archiver.kernel.org>; Thu, 12 Dec 2019 01:01:12 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 38AFD2173E
+	by mail.kernel.org (Postfix) with ESMTPS id 9152B205C9
+	for <iommu@archiver.kernel.org>; Thu, 12 Dec 2019 01:17:25 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 9152B205C9
 Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=linux.intel.com
 Authentication-Results: mail.kernel.org; spf=pass smtp.mailfrom=iommu-bounces@lists.linux-foundation.org
 Received: from localhost (localhost [127.0.0.1])
-	by hemlock.osuosl.org (Postfix) with ESMTP id 2DCC288719;
-	Thu, 12 Dec 2019 01:01:12 +0000 (UTC)
+	by whitealder.osuosl.org (Postfix) with ESMTP id 4875088138;
+	Thu, 12 Dec 2019 01:17:25 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from hemlock.osuosl.org ([127.0.0.1])
+Received: from whitealder.osuosl.org ([127.0.0.1])
 	by localhost (.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
-	with ESMTP id k-oBxPwCJyj8; Thu, 12 Dec 2019 01:01:11 +0000 (UTC)
+	with ESMTP id HRix18WJkGU2; Thu, 12 Dec 2019 01:17:24 +0000 (UTC)
 Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [140.211.9.56])
-	by hemlock.osuosl.org (Postfix) with ESMTP id 7B524886D0;
-	Thu, 12 Dec 2019 01:01:11 +0000 (UTC)
+	by whitealder.osuosl.org (Postfix) with ESMTP id F3DA08811A;
+	Thu, 12 Dec 2019 01:17:23 +0000 (UTC)
 Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
-	by lists.linuxfoundation.org (Postfix) with ESMTP id 6F1ABC18DC;
-	Thu, 12 Dec 2019 01:01:11 +0000 (UTC)
-Received: from hemlock.osuosl.org (smtp2.osuosl.org [140.211.166.133])
- by lists.linuxfoundation.org (Postfix) with ESMTP id 16E81C0881
- for <iommu@lists.linux-foundation.org>; Thu, 12 Dec 2019 01:01:10 +0000 (UTC)
+	by lists.linuxfoundation.org (Postfix) with ESMTP id C92E4C1796;
+	Thu, 12 Dec 2019 01:17:23 +0000 (UTC)
+Received: from whitealder.osuosl.org (smtp1.osuosl.org [140.211.166.138])
+ by lists.linuxfoundation.org (Postfix) with ESMTP id 47E4FC0881
+ for <iommu@lists.linux-foundation.org>; Thu, 12 Dec 2019 01:17:22 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
- by hemlock.osuosl.org (Postfix) with ESMTP id 054CC88718
- for <iommu@lists.linux-foundation.org>; Thu, 12 Dec 2019 01:01:10 +0000 (UTC)
+ by whitealder.osuosl.org (Postfix) with ESMTP id 37A7888141
+ for <iommu@lists.linux-foundation.org>; Thu, 12 Dec 2019 01:17:22 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from hemlock.osuosl.org ([127.0.0.1])
+Received: from whitealder.osuosl.org ([127.0.0.1])
  by localhost (.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
- with ESMTP id SvGlHMLMo21V for <iommu@lists.linux-foundation.org>;
- Thu, 12 Dec 2019 01:01:08 +0000 (UTC)
+ with ESMTP id 5coVkLlHp8lq for <iommu@lists.linux-foundation.org>;
+ Thu, 12 Dec 2019 01:17:19 +0000 (UTC)
 X-Greylist: domain auto-whitelisted by SQLgrey-1.7.6
-Received: from mga11.intel.com (mga11.intel.com [192.55.52.93])
- by hemlock.osuosl.org (Postfix) with ESMTPS id 9B166886D0
- for <iommu@lists.linux-foundation.org>; Thu, 12 Dec 2019 01:01:08 +0000 (UTC)
+Received: from mga14.intel.com (mga14.intel.com [192.55.52.115])
+ by whitealder.osuosl.org (Postfix) with ESMTPS id E8FA18813D
+ for <iommu@lists.linux-foundation.org>; Thu, 12 Dec 2019 01:17:18 +0000 (UTC)
 X-Amp-Result: SKIPPED(no attachment in message)
 X-Amp-File-Uploaded: False
 Received: from orsmga002.jf.intel.com ([10.7.209.21])
- by fmsmga102.fm.intel.com with ESMTP/TLS/DHE-RSA-AES256-GCM-SHA384;
- 11 Dec 2019 17:01:08 -0800
+ by fmsmga103.fm.intel.com with ESMTP/TLS/DHE-RSA-AES256-GCM-SHA384;
+ 11 Dec 2019 17:17:01 -0800
 X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.69,303,1571727600"; d="scan'208";a="225733894"
+X-IronPort-AV: E=Sophos;i="5.69,303,1571727600"; d="scan'208";a="225737035"
 Received: from allen-box.sh.intel.com (HELO [10.239.159.136])
  ([10.239.159.136])
- by orsmga002.jf.intel.com with ESMTP; 11 Dec 2019 17:01:04 -0800
-Subject: Re: [PATCH 1/1] iommu/vt-d: Fix dmar pte read access not set error
-To: Joerg Roedel <joro@8bytes.org>, David Woodhouse <dwmw2@infradead.org>,
- ashok.raj@intel.com, jacob.jun.pan@intel.com, kevin.tian@intel.com,
- iommu@lists.linux-foundation.org, linux-kernel@vger.kernel.org,
- stable@vger.kernel.org
-References: <20191211014015.7898-1-baolu.lu@linux.intel.com>
- <20191211163511.gjju2s3yy4sus44w@cantor>
+ by orsmga002.jf.intel.com with ESMTP; 11 Dec 2019 17:16:59 -0800
+Subject: Re: [PATCH] iommu/vt-d: Set ISA bridge reserved region as relaxable
+To: Alex Williamson <alex.williamson@redhat.com>, joro@8bytes.org,
+ iommu@lists.linux-foundation.org
+References: <157609608124.14870.10855090013879818212.stgit@gimli.home>
 From: Lu Baolu <baolu.lu@linux.intel.com>
-Message-ID: <86270320-efae-1c37-4c5a-6e5415e36a95@linux.intel.com>
-Date: Thu, 12 Dec 2019 09:00:18 +0800
+Message-ID: <f5160d16-ea8d-6bcb-cad8-56e59b11f924@linux.intel.com>
+Date: Thu, 12 Dec 2019 09:16:14 +0800
 User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101
  Thunderbird/68.2.1
 MIME-Version: 1.0
-In-Reply-To: <20191211163511.gjju2s3yy4sus44w@cantor>
+In-Reply-To: <157609608124.14870.10855090013879818212.stgit@gimli.home>
 Content-Language: en-US
+Cc: cprt@protonmail.com, eauger@redhat.com
 X-BeenThere: iommu@lists.linux-foundation.org
 X-Mailman-Version: 2.1.15
 Precedence: list
@@ -81,62 +79,72 @@ List-Post: <mailto:iommu@lists.linux-foundation.org>
 List-Help: <mailto:iommu-request@lists.linux-foundation.org?subject=help>
 List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
  <mailto:iommu-request@lists.linux-foundation.org?subject=subscribe>
-Content-Transfer-Encoding: base64
-Content-Type: text/plain; charset="utf-8"; Format="flowed"
+Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset="us-ascii"; Format="flowed"
 Errors-To: iommu-bounces@lists.linux-foundation.org
 Sender: "iommu" <iommu-bounces@lists.linux-foundation.org>
 
-SGksCgpPbiAxMi8xMi8xOSAxMjozNSBBTSwgSmVycnkgU25pdHNlbGFhciB3cm90ZToKPiBPbiBX
-ZWQgRGVjIDExIDE5LCBMdSBCYW9sdSB3cm90ZToKPj4gSWYgdGhlIGRlZmF1bHQgRE1BIGRvbWFp
-biBvZiBhIGdyb3VwIGRvZXNuJ3QgZml0IGEgZGV2aWNlLCBpdAo+PiB3aWxsIHN0aWxsIHNpdCBp
-biB0aGUgZ3JvdXAgYnV0IHVzZSBhIHByaXZhdGUgaWRlbnRpdHkgZG9tYWluLgo+PiBXaGVuIG1h
-cC91bm1hcC9pb3ZhX3RvX3BoeXMgY29tZSB0aHJvdWdoIGlvbW11IEFQSSwgdGhlIGRyaXZlcgo+
-PiBzaG91bGQgc3RpbGwgc2VydmUgdGhlbSwgb3RoZXJ3aXNlLCBvdGhlciBkZXZpY2VzIGluIHRo
-ZSBzYW1lCj4+IGdyb3VwIHdpbGwgYmUgaW1wYWN0ZWQuIFNpbmNlIGlkZW50aXR5IGRvbWFpbiBo
-YXMgYmVlbiBtYXBwZWQKPj4gd2l0aCB0aGUgd2hvbGUgYXZhaWxhYmxlIG1lbW9yeSBzcGFjZSBh
-bmQgUk1SUnMsIHdlIGRvbid0IG5lZWQKPj4gdG8gd29ycnkgYWJvdXQgdGhlIGltcGFjdCBvbiBp
-dC4KPj4KPiAKPiBEb2VzIHRoaXMgcG9zZSBhbnkgcG90ZW50aWFsIGlzc3VlcyB3aXRoIHRoZSBy
-ZXZlcnNlIGNhc2Ugd2hlcmUgdGhlCj4gZ3JvdXAgaGFzIGEgZGVmYXVsdCBpZGVudGl0eSBkb21h
-aW4sIGFuZCB0aGUgZmlyc3QgZGV2aWNlIGZpdHMgdGhhdCwKPiBidXQgYSBsYXRlciBkZXZpY2Ug
-aW4gdGhlIGdyb3VwIG5lZWRzIGRtYSBhbmQgZ2V0cyBhIHByaXZhdGUgZG1hCj4gZG9tYWluPwoK
-Tm8uIGlvbW11X21hcC91bm1hcCgpIHNob3VsZCBub3QgYmUgY2FsbGVkIGZvciBkZWZhdWx0IGlk
-ZW50aXR5IGRvbWFpbi4KCiAgICAgICAgIGlmICh1bmxpa2VseSghKGRvbWFpbi0+dHlwZSAmIF9f
-SU9NTVVfRE9NQUlOX1BBR0lORykpKQogICAgICAgICAgICAgICAgIHJldHVybiAtRUlOVkFMOwoK
-QmVzdCByZWdhcmRzLApiYW9sdQoKPiAKPj4gTGluazogaHR0cHM6Ly93d3cuc3Bpbmljcy5uZXQv
-bGlzdHMvaW9tbXUvbXNnNDA0MTYuaHRtbAo+PiBDYzogSmVycnkgU25pdHNlbGFhciA8anNuaXRz
-ZWxAcmVkaGF0LmNvbT4KPj4gUmVwb3J0ZWQtYnk6IEplcnJ5IFNuaXRzZWxhYXIgPGpzbml0c2Vs
-QHJlZGhhdC5jb20+Cj4+IEZpeGVzOiA5NDIwNjdmMWI2Yjk3ICgiaW9tbXUvdnQtZDogSWRlbnRp
-ZnkgZGVmYXVsdCBkb21haW5zIHJlcGxhY2VkIAo+PiB3aXRoIHByaXZhdGUiKQo+PiBDYzogc3Rh
-YmxlQHZnZXIua2VybmVsLm9yZyAjIHY1LjMrCj4+IFNpZ25lZC1vZmYtYnk6IEx1IEJhb2x1IDxi
-YW9sdS5sdUBsaW51eC5pbnRlbC5jb20+Cj4+IC0tLQo+PiBkcml2ZXJzL2lvbW11L2ludGVsLWlv
-bW11LmMgfCA4IC0tLS0tLS0tCj4+IDEgZmlsZSBjaGFuZ2VkLCA4IGRlbGV0aW9ucygtKQo+Pgo+
-PiBkaWZmIC0tZ2l0IGEvZHJpdmVycy9pb21tdS9pbnRlbC1pb21tdS5jIGIvZHJpdmVycy9pb21t
-dS9pbnRlbC1pb21tdS5jCj4+IGluZGV4IDBjOGQ4MWY1NmEzMC4uYjczYmViZWE5MTQ4IDEwMDY0
-NAo+PiAtLS0gYS9kcml2ZXJzL2lvbW11L2ludGVsLWlvbW11LmMKPj4gKysrIGIvZHJpdmVycy9p
-b21tdS9pbnRlbC1pb21tdS5jCj4+IEBAIC01NDc4LDkgKzU0NzgsNiBAQCBzdGF0aWMgaW50IGlu
-dGVsX2lvbW11X21hcChzdHJ1Y3QgaW9tbXVfZG9tYWluIAo+PiAqZG9tYWluLAo+PiDCoMKgwqDC
-oGludCBwcm90ID0gMDsKPj4gwqDCoMKgwqBpbnQgcmV0Owo+Pgo+PiAtwqDCoMKgIGlmIChkbWFy
-X2RvbWFpbi0+ZmxhZ3MgJiBET01BSU5fRkxBR19MT1NFX0NISUxEUkVOKQo+PiAtwqDCoMKgwqDC
-oMKgwqAgcmV0dXJuIC1FSU5WQUw7Cj4+IC0KPj4gwqDCoMKgwqBpZiAoaW9tbXVfcHJvdCAmIElP
-TU1VX1JFQUQpCj4+IMKgwqDCoMKgwqDCoMKgIHByb3QgfD0gRE1BX1BURV9SRUFEOwo+PiDCoMKg
-wqDCoGlmIChpb21tdV9wcm90ICYgSU9NTVVfV1JJVEUpCj4+IEBAIC01NTIzLDggKzU1MjAsNiBA
-QCBzdGF0aWMgc2l6ZV90IGludGVsX2lvbW11X3VubWFwKHN0cnVjdCAKPj4gaW9tbXVfZG9tYWlu
-ICpkb21haW4sCj4+IMKgwqDCoMKgLyogQ29wZSB3aXRoIGhvcnJpZCBBUEkgd2hpY2ggcmVxdWly
-ZXMgdXMgdG8gdW5tYXAgbW9yZSB0aGFuIHRoZQo+PiDCoMKgwqDCoMKgwqAgc2l6ZSBhcmd1bWVu
-dCBpZiBpdCBoYXBwZW5zIHRvIGJlIGEgbGFyZ2UtcGFnZSBtYXBwaW5nLiAqLwo+PiDCoMKgwqDC
-oEJVR19PTighcGZuX3RvX2RtYV9wdGUoZG1hcl9kb21haW4sIGlvdmEgPj4gVlREX1BBR0VfU0hJ
-RlQsICZsZXZlbCkpOwo+PiAtwqDCoMKgIGlmIChkbWFyX2RvbWFpbi0+ZmxhZ3MgJiBET01BSU5f
-RkxBR19MT1NFX0NISUxEUkVOKQo+PiAtwqDCoMKgwqDCoMKgwqAgcmV0dXJuIDA7Cj4+Cj4+IMKg
-wqDCoMKgaWYgKHNpemUgPCBWVERfUEFHRV9TSVpFIDw8IGxldmVsX3RvX29mZnNldF9iaXRzKGxl
-dmVsKSkKPj4gwqDCoMKgwqDCoMKgwqAgc2l6ZSA9IFZURF9QQUdFX1NJWkUgPDwgbGV2ZWxfdG9f
-b2Zmc2V0X2JpdHMobGV2ZWwpOwo+PiBAQCAtNTU1Niw5ICs1NTUxLDYgQEAgc3RhdGljIHBoeXNf
-YWRkcl90IAo+PiBpbnRlbF9pb21tdV9pb3ZhX3RvX3BoeXMoc3RydWN0IGlvbW11X2RvbWFpbiAq
-ZG9tYWluLAo+PiDCoMKgwqDCoGludCBsZXZlbCA9IDA7Cj4+IMKgwqDCoMKgdTY0IHBoeXMgPSAw
-Owo+Pgo+PiAtwqDCoMKgIGlmIChkbWFyX2RvbWFpbi0+ZmxhZ3MgJiBET01BSU5fRkxBR19MT1NF
-X0NISUxEUkVOKQo+PiAtwqDCoMKgwqDCoMKgwqAgcmV0dXJuIDA7Cj4+IC0KPj4gwqDCoMKgwqBw
-dGUgPSBwZm5fdG9fZG1hX3B0ZShkbWFyX2RvbWFpbiwgaW92YSA+PiBWVERfUEFHRV9TSElGVCwg
-JmxldmVsKTsKPj4gwqDCoMKgwqBpZiAocHRlKQo+PiDCoMKgwqDCoMKgwqDCoCBwaHlzID0gZG1h
-X3B0ZV9hZGRyKHB0ZSk7Cj4+IC0tIAo+PiAyLjE3LjEKPj4KPiAKX19fX19fX19fX19fX19fX19f
-X19fX19fX19fX19fX19fX19fX19fX19fX19fX18KaW9tbXUgbWFpbGluZyBsaXN0CmlvbW11QGxp
-c3RzLmxpbnV4LWZvdW5kYXRpb24ub3JnCmh0dHBzOi8vbGlzdHMubGludXhmb3VuZGF0aW9uLm9y
-Zy9tYWlsbWFuL2xpc3RpbmZvL2lvbW11
+Hi,
+
+On 12/12/19 4:28 AM, Alex Williamson wrote:
+> Commit d850c2ee5fe2 ("iommu/vt-d: Expose ISA direct mapping region via
+> iommu_get_resv_regions") created a direct-mapped reserved memory region
+> in order to replace the static identity mapping of the ISA address
+> space, where the latter was then removed in commit df4f3c603aeb
+> ("iommu/vt-d: Remove static identity map code").  According to the
+> history of this code and the Kconfig option surrounding it, this direct
+> mapping exists for the benefit of legacy ISA drivers that are not
+> compatible with the DMA API.
+> 
+> In conjuntion with commit 9b77e5c79840 ("vfio/type1: check dma map
+> request is within a valid iova range") this change introduced a
+> regression where the vfio IOMMU backend enforces reserved memory regions
+> per IOMMU group, preventing userspace from creating IOMMU mappings
+> conflicting with prescribed reserved regions.  A necessary prerequisite
+> for the vfio change was the introduction of "relaxable" direct mappings
+> introduced by commit adfd37382090 ("iommu: Introduce
+> IOMMU_RESV_DIRECT_RELAXABLE reserved memory regions").  These relaxable
+> direct mappings provide the same identity mapping support in the default
+> domain, but also indicate that the reservation is software imposed and
+> may be relaxed under some conditions, such as device assignment.
+> 
+> Convert the ISA bridge direct-mapped reserved region to relaxable to
+> reflect that the restriction is self imposed and need not be enforced
+> by drivers such as vfio.
+> 
+> Fixes: d850c2ee5fe2 ("iommu/vt-d: Expose ISA direct mapping region via iommu_get_resv_regions")
+> Cc: stable@vger.kernel.org # v5.3+
+> Link: https://lore.kernel.org/linux-iommu/20191211082304.2d4fab45@x1.home
+> Reported-by: cprt <cprt@protonmail.com>
+> Tested-by: cprt <cprt@protonmail.com>
+> Signed-off-by: Alex Williamson <alex.williamson@redhat.com>
+
+This fix looks reasonable to me.
+
+Acked-by: Lu Baolu <baolu.lu@linux.intel.com>
+
+Best regards,
+baolu
+
+> ---
+>   drivers/iommu/intel-iommu.c |    2 +-
+>   1 file changed, 1 insertion(+), 1 deletion(-)
+> 
+> diff --git a/drivers/iommu/intel-iommu.c b/drivers/iommu/intel-iommu.c
+> index 0c8d81f56a30..6eb0dd7489a1 100644
+> --- a/drivers/iommu/intel-iommu.c
+> +++ b/drivers/iommu/intel-iommu.c
+> @@ -5737,7 +5737,7 @@ static void intel_iommu_get_resv_regions(struct device *device,
+>   
+>   		if ((pdev->class >> 8) == PCI_CLASS_BRIDGE_ISA) {
+>   			reg = iommu_alloc_resv_region(0, 1UL << 24, 0,
+> -						      IOMMU_RESV_DIRECT);
+> +						   IOMMU_RESV_DIRECT_RELAXABLE);
+>   			if (reg)
+>   				list_add_tail(&reg->list, head);
+>   		}
+> 
+_______________________________________________
+iommu mailing list
+iommu@lists.linux-foundation.org
+https://lists.linuxfoundation.org/mailman/listinfo/iommu
