@@ -1,81 +1,110 @@
-Return-Path: <SRS0=0Wzb=2E=lists.linux-foundation.org=iommu-bounces@kernel.org>
+Return-Path: <SRS0=ocWU=2F=lists.linux-foundation.org=iommu-bounces@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-8.2 required=3.0 tests=HEADER_FROM_DIFFERENT_DOMAINS,
-	INCLUDES_PATCH,MAILING_LIST_MULTI,SIGNED_OFF_BY,SPF_HELO_NONE,SPF_PASS,
-	USER_AGENT_SANE_1 autolearn=unavailable autolearn_force=no version=3.4.0
+X-Spam-Status: No, score=-2.0 required=3.0 tests=DKIM_INVALID,DKIM_SIGNED,
+	HEADER_FROM_DIFFERENT_DOMAINS,MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS,
+	USER_AGENT_SANE_1 autolearn=no autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 09E29C2D0C9
-	for <iommu@archiver.kernel.org>; Sat, 14 Dec 2019 03:25:07 +0000 (UTC)
-Received: from hemlock.osuosl.org (smtp2.osuosl.org [140.211.166.133])
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 2D2EDC43603
+	for <iommu@archiver.kernel.org>; Sun, 15 Dec 2019 05:38:26 +0000 (UTC)
+Received: from silver.osuosl.org (smtp3.osuosl.org [140.211.166.136])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by mail.kernel.org (Postfix) with ESMTPS id D260424125
-	for <iommu@archiver.kernel.org>; Sat, 14 Dec 2019 03:25:06 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org D260424125
-Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=linux.intel.com
+	by mail.kernel.org (Postfix) with ESMTPS id E02152465B
+	for <iommu@archiver.kernel.org>; Sun, 15 Dec 2019 05:38:25 +0000 (UTC)
+Authentication-Results: mail.kernel.org;
+	dkim=fail reason="signature verification failed" (2048-bit key) header.d=google.com header.i=@google.com header.b="cVq5RUxu"
+DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org E02152465B
+Authentication-Results: mail.kernel.org; dmarc=none (p=none dis=none) header.from=lists.linux-foundation.org
 Authentication-Results: mail.kernel.org; spf=pass smtp.mailfrom=iommu-bounces@lists.linux-foundation.org
 Received: from localhost (localhost [127.0.0.1])
-	by hemlock.osuosl.org (Postfix) with ESMTP id 9CC268869F;
-	Sat, 14 Dec 2019 03:25:06 +0000 (UTC)
+	by silver.osuosl.org (Postfix) with ESMTP id AFBCF20365;
+	Sun, 15 Dec 2019 05:38:25 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from hemlock.osuosl.org ([127.0.0.1])
+Received: from silver.osuosl.org ([127.0.0.1])
 	by localhost (.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
-	with ESMTP id nhXtmSWyVmTy; Sat, 14 Dec 2019 03:25:06 +0000 (UTC)
+	with ESMTP id pt-FztwCWMjg; Sun, 15 Dec 2019 05:38:24 +0000 (UTC)
 Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [140.211.9.56])
-	by hemlock.osuosl.org (Postfix) with ESMTP id F10C7885CA;
-	Sat, 14 Dec 2019 03:25:05 +0000 (UTC)
+	by silver.osuosl.org (Postfix) with ESMTP id D1A2F20347;
+	Sun, 15 Dec 2019 05:38:24 +0000 (UTC)
 Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
-	by lists.linuxfoundation.org (Postfix) with ESMTP id E5160C18DD;
-	Sat, 14 Dec 2019 03:25:05 +0000 (UTC)
-Received: from hemlock.osuosl.org (smtp2.osuosl.org [140.211.166.133])
- by lists.linuxfoundation.org (Postfix) with ESMTP id 5E672C0881
- for <iommu@lists.linux-foundation.org>; Sat, 14 Dec 2019 03:25:05 +0000 (UTC)
+	by lists.linuxfoundation.org (Postfix) with ESMTP id C1FA1C18DD;
+	Sun, 15 Dec 2019 05:38:24 +0000 (UTC)
+Received: from whitealder.osuosl.org (smtp1.osuosl.org [140.211.166.138])
+ by lists.linuxfoundation.org (Postfix) with ESMTP id 1022EC0881
+ for <iommu@lists.linux-foundation.org>; Sun, 15 Dec 2019 05:38:23 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
- by hemlock.osuosl.org (Postfix) with ESMTP id 47F7C885D9
- for <iommu@lists.linux-foundation.org>; Sat, 14 Dec 2019 03:25:05 +0000 (UTC)
+ by whitealder.osuosl.org (Postfix) with ESMTP id F30B9875A1
+ for <iommu@lists.linux-foundation.org>; Sun, 15 Dec 2019 05:38:22 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from hemlock.osuosl.org ([127.0.0.1])
+Received: from whitealder.osuosl.org ([127.0.0.1])
  by localhost (.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
- with ESMTP id L59-rXiN5c9a for <iommu@lists.linux-foundation.org>;
- Sat, 14 Dec 2019 03:25:04 +0000 (UTC)
+ with ESMTP id tnrniKRYWbnf for <iommu@lists.linux-foundation.org>;
+ Sun, 15 Dec 2019 05:38:21 +0000 (UTC)
 X-Greylist: domain auto-whitelisted by SQLgrey-1.7.6
-Received: from mga17.intel.com (mga17.intel.com [192.55.52.151])
- by hemlock.osuosl.org (Postfix) with ESMTPS id 773ED885CA
- for <iommu@lists.linux-foundation.org>; Sat, 14 Dec 2019 03:25:04 +0000 (UTC)
-X-Amp-Result: SKIPPED(no attachment in message)
-X-Amp-File-Uploaded: False
-Received: from orsmga002.jf.intel.com ([10.7.209.21])
- by fmsmga107.fm.intel.com with ESMTP/TLS/DHE-RSA-AES256-GCM-SHA384;
- 13 Dec 2019 19:25:02 -0800
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.69,312,1571727600"; d="scan'208";a="226478760"
-Received: from allen-box.sh.intel.com (HELO [10.239.159.136])
- ([10.239.159.136])
- by orsmga002.jf.intel.com with ESMTP; 13 Dec 2019 19:24:59 -0800
-Subject: Re: [PATCH v3 5/6] iommu/vt-d: Flush PASID-based iotlb for iova over
- first level
-To: "Liu, Yi L" <yi.l.liu@intel.com>, Joerg Roedel <joro@8bytes.org>,
- David Woodhouse <dwmw2@infradead.org>,
- Alex Williamson <alex.williamson@redhat.com>
-References: <20191211021219.8997-1-baolu.lu@linux.intel.com>
- <20191211021219.8997-6-baolu.lu@linux.intel.com>
- <A2975661238FB949B60364EF0F2C25743A130C08@SHSMSX104.ccr.corp.intel.com>
-From: Lu Baolu <baolu.lu@linux.intel.com>
-Message-ID: <f1e5cfea-8b11-6d72-8e57-65daea51c050@linux.intel.com>
-Date: Sat, 14 Dec 2019 11:24:11 +0800
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101
- Thunderbird/68.2.1
+Received: from mail-pg1-f174.google.com (mail-pg1-f174.google.com
+ [209.85.215.174])
+ by whitealder.osuosl.org (Postfix) with ESMTPS id 9AD8687610
+ for <iommu@lists.linux-foundation.org>; Sun, 15 Dec 2019 05:38:21 +0000 (UTC)
+Received: by mail-pg1-f174.google.com with SMTP id b9so1724309pgk.12
+ for <iommu@lists.linux-foundation.org>; Sat, 14 Dec 2019 21:38:21 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=google.com; s=20161025;
+ h=date:from:to:cc:subject:in-reply-to:message-id:references
+ :user-agent:mime-version;
+ bh=rYhW8ESLkaBmTx7qrwRV9ukpRcsTp5ZieGL9xLqhxqg=;
+ b=cVq5RUxuoKRkBf5bRNowyvHttDHrpqivGM7mkFO6t77Q5EJexqHpl9Htjk0T96CQuj
+ S0G8JrJ4G3Hyg890YJb+MHVqaVjA2svy6Fi8IFebbuKlxLnaLqtbanrJq96QUn9u3fs7
+ G0FYimTXWqGNC7YEhZue5i/kIMXHrw2X4eJY6L76matWOp3yHT39QdazEmINyfGXUI6j
+ asmhjJRETatjXBx6n2SAcjmYHRehILcZHIyFz/6Au0vmc1vfu9mC5y1d22mvBoPUbBw2
+ sVWZuvDQE6jMJgettug1rPDLOFXGN3IZs6NvYKq2v9Z57VHR+jRDNWx85Hf7OxkkZIBt
+ 2+yA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+ d=1e100.net; s=20161025;
+ h=x-gm-message-state:date:from:to:cc:subject:in-reply-to:message-id
+ :references:user-agent:mime-version;
+ bh=rYhW8ESLkaBmTx7qrwRV9ukpRcsTp5ZieGL9xLqhxqg=;
+ b=Nga4/xaB8yc0RVc9C7RMzVaByanJdxLVHScBtrKWyJf8HfroP71Aquio90q/IPG5fU
+ HlUvx0sYWv6zD6BoiQU/FuAb9q1wo9Rm45X2KE7hMija6Q8n8ean4ZAn+LuFI8BAIWfT
+ rtuR3yPHLbj0kLUQwFyfYyHqBwGs7c2TK2xyJkumQB+MaV6ngS/0rPB7vSBabgmuaZRS
+ TtidLHfFZqSAO4w2zwLLCk1dI2v2kzfXtaeK/1yDRbn5iiQZhc0hw4zfAtUQZLicFWg+
+ XKGyzU3XRBx6imrlnRC+9ty8L0KGZzAkSmPyouxDrhb8TtnkR2tft/k8wxeIQ4mVi4BL
+ 5HcA==
+X-Gm-Message-State: APjAAAWjBceAbkjVviMQ1J6YV/fZw48DWCd1+10clvdiaOETX+hm+5rC
+ lXn09W4m215jVvbpc07vrw1QSg==
+X-Google-Smtp-Source: APXvYqzT+FaHGqEnJrAVRzuXE5zg4gCcrhA3as3C3sjQD2G5tvRVpe7lYVzaZ7Z4aaCqB2S1c5AXMw==
+X-Received: by 2002:a62:3043:: with SMTP id w64mr9342707pfw.227.1576388301007; 
+ Sat, 14 Dec 2019 21:38:21 -0800 (PST)
+Received: from [2620:15c:17:3:3a5:23a7:5e32:4598]
+ ([2620:15c:17:3:3a5:23a7:5e32:4598])
+ by smtp.gmail.com with ESMTPSA id q13sm14923566pjc.4.2019.12.14.21.38.19
+ (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+ Sat, 14 Dec 2019 21:38:19 -0800 (PST)
+Date: Sat, 14 Dec 2019 21:38:18 -0800 (PST)
+X-X-Sender: rientjes@chino.kir.corp.google.com
+To: Christoph Hellwig <hch@lst.de>
+Subject: Re: [bug] __blk_mq_run_hw_queue suspicious rcu usage
+In-Reply-To: <alpine.DEB.2.21.1912121550230.148507@chino.kir.corp.google.com>
+Message-ID: <alpine.DEB.2.21.1912142118080.202749@chino.kir.corp.google.com>
+References: <alpine.DEB.2.21.1909041434580.160038@chino.kir.corp.google.com>
+ <20190905060627.GA1753@lst.de>
+ <alpine.DEB.2.21.1909051534050.245316@chino.kir.corp.google.com>
+ <alpine.DEB.2.21.1909161641320.9200@chino.kir.corp.google.com>
+ <alpine.DEB.2.21.1909171121300.151243@chino.kir.corp.google.com>
+ <1d74607e-37f7-56ca-aba3-5a3bd7a68561@amd.com>
+ <20190918132242.GA16133@lst.de>
+ <alpine.DEB.2.21.1911271359000.135363@chino.kir.corp.google.com>
+ <20191128064056.GA19822@lst.de>
+ <alpine.DEB.2.21.1912121550230.148507@chino.kir.corp.google.com>
+User-Agent: Alpine 2.21 (DEB 202 2017-01-01)
 MIME-Version: 1.0
-In-Reply-To: <A2975661238FB949B60364EF0F2C25743A130C08@SHSMSX104.ccr.corp.intel.com>
-Content-Language: en-US
-Cc: "Tian, Kevin" <kevin.tian@intel.com>, "Raj, Ashok" <ashok.raj@intel.com>,
- "kvm@vger.kernel.org" <kvm@vger.kernel.org>, "Kumar,
- Sanjay K" <sanjay.k.kumar@intel.com>,
+Cc: Jens Axboe <axboe@kernel.dk>, "Lendacky, Thomas" <Thomas.Lendacky@amd.com>,
+ "Singh, Brijesh" <brijesh.singh@amd.com>, "x86@kernel.org" <x86@kernel.org>,
+ "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
+ Ming Lei <ming.lei@redhat.com>,
  "iommu@lists.linux-foundation.org" <iommu@lists.linux-foundation.org>,
- "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>, "Sun,
- Yi Y" <yi.y.sun@intel.com>
+ Peter Gonda <pgonda@google.com>, Keith Busch <kbusch@kernel.org>,
+ Jianxiong Gao <jxgao@google.com>
 X-BeenThere: iommu@lists.linux-foundation.org
 X-Mailman-Version: 2.1.15
 Precedence: list
@@ -88,132 +117,63 @@ List-Post: <mailto:iommu@lists.linux-foundation.org>
 List-Help: <mailto:iommu-request@lists.linux-foundation.org?subject=help>
 List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
  <mailto:iommu-request@lists.linux-foundation.org?subject=subscribe>
+From: David Rientjes via iommu <iommu@lists.linux-foundation.org>
+Reply-To: David Rientjes <rientjes@google.com>
+Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
-Content-Type: text/plain; charset="us-ascii"; Format="flowed"
 Errors-To: iommu-bounces@lists.linux-foundation.org
 Sender: "iommu" <iommu-bounces@lists.linux-foundation.org>
 
-Hi Liu Yi,
+On Thu, 12 Dec 2019, David Rientjes wrote:
 
-On 12/13/19 7:42 PM, Liu, Yi L wrote:
->> From: kvm-owner@vger.kernel.org [mailto:kvm-owner@vger.kernel.org] On Behalf
->> Of Lu Baolu
->> Sent: Wednesday, December 11, 2019 10:12 AM
->> To: Joerg Roedel <joro@8bytes.org>; David Woodhouse <dwmw2@infradead.org>;
->> Subject: [PATCH v3 5/6] iommu/vt-d: Flush PASID-based iotlb for iova over first level
->>
->> When software has changed first-level tables, it should invalidate
->> the affected IOTLB and the paging-structure-caches using the PASID-
->> based-IOTLB Invalidate Descriptor defined in spec 6.5.2.4.
->>
->> Signed-off-by: Lu Baolu <baolu.lu@linux.intel.com>
->> ---
->>   drivers/iommu/dmar.c        | 41 ++++++++++++++++++++++++++++++++++
->>   drivers/iommu/intel-iommu.c | 44 ++++++++++++++++++++++++-------------
->>   include/linux/intel-iommu.h |  2 ++
->>   3 files changed, 72 insertions(+), 15 deletions(-)
->>
->> diff --git a/drivers/iommu/dmar.c b/drivers/iommu/dmar.c
->> index 3acfa6a25fa2..fb30d5053664 100644
->> --- a/drivers/iommu/dmar.c
->> +++ b/drivers/iommu/dmar.c
->> @@ -1371,6 +1371,47 @@ void qi_flush_dev_iotlb(struct intel_iommu *iommu, u16
->> sid, u16 pfsid,
->>   	qi_submit_sync(&desc, iommu);
->>   }
->>
->> +/* PASID-based IOTLB invalidation */
->> +void qi_flush_piotlb(struct intel_iommu *iommu, u16 did, u32 pasid, u64 addr,
->> +		     unsigned long npages, bool ih)
->> +{
->> +	struct qi_desc desc = {.qw2 = 0, .qw3 = 0};
->> +
->> +	/*
->> +	 * npages == -1 means a PASID-selective invalidation, otherwise,
->> +	 * a positive value for Page-selective-within-PASID invalidation.
->> +	 * 0 is not a valid input.
->> +	 */
->> +	if (WARN_ON(!npages)) {
->> +		pr_err("Invalid input npages = %ld\n", npages);
->> +		return;
->> +	}
->> +
->> +	if (npages == -1) {
->> +		desc.qw0 = QI_EIOTLB_PASID(pasid) |
->> +				QI_EIOTLB_DID(did) |
->> +				QI_EIOTLB_GRAN(QI_GRAN_NONG_PASID) |
->> +				QI_EIOTLB_TYPE;
->> +		desc.qw1 = 0;
->> +	} else {
->> +		int mask = ilog2(__roundup_pow_of_two(npages));
->> +		unsigned long align = (1ULL << (VTD_PAGE_SHIFT + mask));
->> +
->> +		if (WARN_ON_ONCE(!ALIGN(addr, align)))
->> +			addr &= ~(align - 1);
->> +
->> +		desc.qw0 = QI_EIOTLB_PASID(pasid) |
->> +				QI_EIOTLB_DID(did) |
->> +				QI_EIOTLB_GRAN(QI_GRAN_PSI_PASID) |
->> +				QI_EIOTLB_TYPE;
->> +		desc.qw1 = QI_EIOTLB_ADDR(addr) |
->> +				QI_EIOTLB_IH(ih) |
->> +				QI_EIOTLB_AM(mask);
->> +	}
->> +
->> +	qi_submit_sync(&desc, iommu);
->> +}
->> +
->>   /*
->>    * Disable Queued Invalidation interface.
->>    */
->> diff --git a/drivers/iommu/intel-iommu.c b/drivers/iommu/intel-iommu.c
->> index 83a7abf0c4f0..e47f5fe37b59 100644
->> --- a/drivers/iommu/intel-iommu.c
->> +++ b/drivers/iommu/intel-iommu.c
->> @@ -1520,18 +1520,24 @@ static void iommu_flush_iotlb_psi(struct intel_iommu
->> *iommu,
->>
->>   	if (ih)
->>   		ih = 1 << 6;
->> -	/*
->> -	 * Fallback to domain selective flush if no PSI support or the size is
->> -	 * too big.
->> -	 * PSI requires page size to be 2 ^ x, and the base address is naturally
->> -	 * aligned to the size
->> -	 */
->> -	if (!cap_pgsel_inv(iommu->cap) || mask > cap_max_amask_val(iommu-
->>> cap))
->> -		iommu->flush.flush_iotlb(iommu, did, 0, 0,
->> -						DMA_TLB_DSI_FLUSH);
->> -	else
->> -		iommu->flush.flush_iotlb(iommu, did, addr | ih, mask,
->> -						DMA_TLB_PSI_FLUSH);
->> +
->> +	if (domain_use_first_level(domain)) {
->> +		qi_flush_piotlb(iommu, did, domain->default_pasid,
->> +				addr, pages, ih);
+> Since all DMA must be unencrypted in this case, what happens if all 
+> dma_direct_alloc_pages() calls go through the DMA pool in 
+> kernel/dma/remap.c when force_dma_unencrypted(dev) == true since 
+> __PAGE_ENC is cleared for these ptes?  (Ignoring for a moment that this 
+> special pool should likely be a separate dma pool.)
 > 
-> I'm not sure if my understanding is correct. But let me tell a story.
-> Assuming we assign a mdev and a PF/VF to a single VM, then there
-> will be p_iotlb tagged with PASID_RID2PASID and p_iotlb tagged with
-> default_pasid. We may want to flush both... If this operation is
+> I assume a general depletion of that atomic pool so 
+> DEFAULT_DMA_COHERENT_POOL_SIZE becomes insufficient.  I'm not sure what 
+> size any DMA pool wired up for this specific purpose would need to be 
+> sized at, so I assume dynamic resizing is required.
+> 
+> It shouldn't be *that* difficult to supplement kernel/dma/remap.c with the 
+> ability to do background expansion of the atomic pool when nearing its 
+> capacity for this purpose?  I imagine that if we just can't allocate pages 
+> within the DMA mask that it's the only blocker to dynamic expansion and we 
+> don't oom kill for lowmem.  But perhaps vm.lowmem_reserve_ratio is good 
+> enough protection?
+> 
+> Beyond that, I'm not sure what sizing would be appropriate if this is to 
+> be a generic solution in the DMA API for all devices that may require 
+> unecrypted memory.
+> 
 
-I assume that SRIOV and SIOV are exclusive. You can't enable both SRIOV
-and SIOV on a single device. So the mdev and PF/VF are from different
-devices, right?
+Optimizations involving lowmem reserve ratio aside, is it ok that 
+CONFIG_AMD_MEM_ENCRYPT develops a dependency on DMA_DIRECT_REMAP because 
+set_memory_decrypted() must be allowed to block?
 
-Or, in SRIOV case, you can wrap a PF or VF as a mediated device. But
-this mdev still be backed with a pasid of RID2PASID.
+If so, we could allocate from the atomic pool when we can't block and the 
+device requires unencrypted DMA from dma_direct_alloc_pages().  I assume 
+we need this to be its own atomic pool specifically for 
+force_dma_unencrypted() devices and to check addr_in_gen_pool() for this 
+new unencrypted pool in dma_direct_free_pages().
 
-> invoked per-device, then need to pass in a hint to indicate whether
-> to use PASID_RID2PASID or default_pasid, or you may just issue two
-> flush with the two PASID values. Thoughts?
+I have no idea how large this unencrypted atomic pool should be sized.  We 
+could determine a nice default and grow size for nvme itself, but as 
+Christoph mentioned many drivers require non-blockable allocations that 
+can be run inside a SEV encrypted guest.
 
-This is per-domain and each domain has specific domain id and default
-pasid (assume default domain is 0 in RID2PASID case).
+Trivial implementation would be to just double the size of the unencrypted 
+pool when it reaches half capacity.  Perhaps done with GFP_KERNEL | 
+__GFP_DMA allocations in a workqueue.  We can reclaim from ZONE_DMA or 
+ZONE_DMA32 in this context but when that fails I'm not sure if it's 
+satisfactory to just fail the dma_pool_alloc() when the unecrypted pool 
+runs out.
 
-Best regards,
-baolu
+Heuristics can be tweaked, of course, but I want to make sure I'm not 
+missing anything obvious with this approach before implementing it.  
+Please let me know, thanks.
 _______________________________________________
 iommu mailing list
 iommu@lists.linux-foundation.org
