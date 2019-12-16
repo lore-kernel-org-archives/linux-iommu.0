@@ -2,69 +2,104 @@ Return-Path: <SRS0=eHMU=2G=lists.linux-foundation.org=iommu-bounces@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-9.8 required=3.0 tests=HEADER_FROM_DIFFERENT_DOMAINS,
-	INCLUDES_PATCH,MAILING_LIST_MULTI,SIGNED_OFF_BY,SPF_HELO_NONE,SPF_PASS,
-	USER_AGENT_GIT autolearn=ham autolearn_force=no version=3.4.0
+X-Spam-Status: No, score=-8.1 required=3.0 tests=DKIM_INVALID,DKIM_SIGNED,
+	HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_PATCH,MAILING_LIST_MULTI,SIGNED_OFF_BY,
+	SPF_HELO_NONE,SPF_PASS,USER_AGENT_SANE_1 autolearn=ham autolearn_force=no
+	version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id DF999C43603
-	for <iommu@archiver.kernel.org>; Mon, 16 Dec 2019 19:19:32 +0000 (UTC)
-Received: from hemlock.osuosl.org (smtp2.osuosl.org [140.211.166.133])
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 5077AC2D0BF
+	for <iommu@archiver.kernel.org>; Mon, 16 Dec 2019 19:35:33 +0000 (UTC)
+Received: from whitealder.osuosl.org (smtp1.osuosl.org [140.211.166.138])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by mail.kernel.org (Postfix) with ESMTPS id BC0C320717
-	for <iommu@archiver.kernel.org>; Mon, 16 Dec 2019 19:19:32 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org BC0C320717
-Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=linux.intel.com
+	by mail.kernel.org (Postfix) with ESMTPS id 1618F21582
+	for <iommu@archiver.kernel.org>; Mon, 16 Dec 2019 19:35:32 +0000 (UTC)
+Authentication-Results: mail.kernel.org;
+	dkim=fail reason="signature verification failed" (2048-bit key) header.d=google.com header.i=@google.com header.b="V6QZCNSy"
+DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 1618F21582
+Authentication-Results: mail.kernel.org; dmarc=none (p=none dis=none) header.from=lists.linux-foundation.org
 Authentication-Results: mail.kernel.org; spf=pass smtp.mailfrom=iommu-bounces@lists.linux-foundation.org
 Received: from localhost (localhost [127.0.0.1])
-	by hemlock.osuosl.org (Postfix) with ESMTP id ADABB88293;
-	Mon, 16 Dec 2019 19:19:32 +0000 (UTC)
-X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from hemlock.osuosl.org ([127.0.0.1])
-	by localhost (.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
-	with ESMTP id V3QC86cnFw-t; Mon, 16 Dec 2019 19:19:31 +0000 (UTC)
-Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [140.211.9.56])
-	by hemlock.osuosl.org (Postfix) with ESMTP id 9C4348826F;
-	Mon, 16 Dec 2019 19:19:31 +0000 (UTC)
-Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
-	by lists.linuxfoundation.org (Postfix) with ESMTP id 9626DC1AE8;
-	Mon, 16 Dec 2019 19:19:31 +0000 (UTC)
-Received: from whitealder.osuosl.org (smtp1.osuosl.org [140.211.166.138])
- by lists.linuxfoundation.org (Postfix) with ESMTP id 51A9CC1D83
- for <iommu@lists.linux-foundation.org>; Mon, 16 Dec 2019 19:19:29 +0000 (UTC)
-Received: from localhost (localhost [127.0.0.1])
- by whitealder.osuosl.org (Postfix) with ESMTP id 4004E87789
- for <iommu@lists.linux-foundation.org>; Mon, 16 Dec 2019 19:19:29 +0000 (UTC)
+	by whitealder.osuosl.org (Postfix) with ESMTP id C682B87749;
+	Mon, 16 Dec 2019 19:35:32 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
 Received: from whitealder.osuosl.org ([127.0.0.1])
+	by localhost (.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
+	with ESMTP id hy-8VUY8bV4o; Mon, 16 Dec 2019 19:35:32 +0000 (UTC)
+Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [140.211.9.56])
+	by whitealder.osuosl.org (Postfix) with ESMTP id 1016287740;
+	Mon, 16 Dec 2019 19:35:32 +0000 (UTC)
+Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
+	by lists.linuxfoundation.org (Postfix) with ESMTP id 02F41C1AE8;
+	Mon, 16 Dec 2019 19:35:32 +0000 (UTC)
+Received: from silver.osuosl.org (smtp3.osuosl.org [140.211.166.136])
+ by lists.linuxfoundation.org (Postfix) with ESMTP id 7F21EC077D
+ for <iommu@lists.linux-foundation.org>; Mon, 16 Dec 2019 19:35:30 +0000 (UTC)
+Received: from localhost (localhost [127.0.0.1])
+ by silver.osuosl.org (Postfix) with ESMTP id 6858C22219
+ for <iommu@lists.linux-foundation.org>; Mon, 16 Dec 2019 19:35:30 +0000 (UTC)
+X-Virus-Scanned: amavisd-new at osuosl.org
+Received: from silver.osuosl.org ([127.0.0.1])
  by localhost (.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
- with ESMTP id 8lwZUaN6hX1a for <iommu@lists.linux-foundation.org>;
- Mon, 16 Dec 2019 19:19:23 +0000 (UTC)
+ with ESMTP id AGn8arJjzwpv for <iommu@lists.linux-foundation.org>;
+ Mon, 16 Dec 2019 19:35:29 +0000 (UTC)
 X-Greylist: domain auto-whitelisted by SQLgrey-1.7.6
-Received: from mga05.intel.com (mga05.intel.com [192.55.52.43])
- by whitealder.osuosl.org (Postfix) with ESMTPS id C33FA8772F
- for <iommu@lists.linux-foundation.org>; Mon, 16 Dec 2019 19:19:23 +0000 (UTC)
-X-Amp-Result: SKIPPED(no attachment in message)
-X-Amp-File-Uploaded: False
-Received: from orsmga008.jf.intel.com ([10.7.209.65])
- by fmsmga105.fm.intel.com with ESMTP/TLS/DHE-RSA-AES256-GCM-SHA384;
- 16 Dec 2019 11:19:23 -0800
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.69,322,1571727600"; d="scan'208";a="209411635"
-Received: from jacob-builder.jf.intel.com ([10.7.199.155])
- by orsmga008.jf.intel.com with ESMTP; 16 Dec 2019 11:19:22 -0800
-From: Jacob Pan <jacob.jun.pan@linux.intel.com>
-To: iommu@lists.linux-foundation.org, LKML <linux-kernel@vger.kernel.org>,
- Joerg Roedel <joro@8bytes.org>, "Lu Baolu" <baolu.lu@linux.intel.com>,
- David Woodhouse <dwmw2@infradead.org>
-Subject: [PATCH v8 02/10] iommu/vt-d: Add nested translation helper function
-Date: Mon, 16 Dec 2019 11:24:04 -0800
-Message-Id: <1576524252-79116-3-git-send-email-jacob.jun.pan@linux.intel.com>
-X-Mailer: git-send-email 2.7.4
-In-Reply-To: <1576524252-79116-1-git-send-email-jacob.jun.pan@linux.intel.com>
-References: <1576524252-79116-1-git-send-email-jacob.jun.pan@linux.intel.com>
-Cc: Yi L <yi.l.liu@linux.intel.com>, "Tian, Kevin" <kevin.tian@intel.com>,
- Raj Ashok <ashok.raj@intel.com>, Liu@osuosl.org
+Received: from mail-pf1-f195.google.com (mail-pf1-f195.google.com
+ [209.85.210.195])
+ by silver.osuosl.org (Postfix) with ESMTPS id 5F3B7221F8
+ for <iommu@lists.linux-foundation.org>; Mon, 16 Dec 2019 19:35:29 +0000 (UTC)
+Received: by mail-pf1-f195.google.com with SMTP id q8so6155089pfh.7
+ for <iommu@lists.linux-foundation.org>; Mon, 16 Dec 2019 11:35:29 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=google.com; s=20161025;
+ h=subject:to:cc:references:from:message-id:date:user-agent
+ :mime-version:in-reply-to:content-language:content-transfer-encoding;
+ bh=CkQ65CjNVt4hNQc5fIVwGwBcjZEAsNi6X9HREDxycBo=;
+ b=V6QZCNSyM+juWCR4X2eqZmLVQ6jevW5eE/xWhjKgwrHxE+dfA9pKL4I8NMlNgy8p1U
+ dLJkUfasvP8rJALOAqxvawWRnHUgtdAR4kWzSYBfS2xCqZna65xnOZY35ujuEJ+sQXWw
+ bg3lw9JNoQUblP3TnXxrvCQDeRLKLjOvlCTufd0EXdjEFEwlTSuGZkDjmM6HazAhx6B/
+ zDw6Di5WncWNx39QBbmL8QOO/n928cQoDEFb/w2/7uXTKh71V/bfcDNxHy5rFr/1VLvC
+ 2g4aPB0NuqJYTU/iM9pca0JsIPN/4Bs3FX+0QchEGJTiFZs7VsERnPjU/zJzw/80InW5
+ uBiA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+ d=1e100.net; s=20161025;
+ h=x-gm-message-state:subject:to:cc:references:from:message-id:date
+ :user-agent:mime-version:in-reply-to:content-language
+ :content-transfer-encoding;
+ bh=CkQ65CjNVt4hNQc5fIVwGwBcjZEAsNi6X9HREDxycBo=;
+ b=CqD6aVLTTo8pkPsCyV+I0TNGcXJ/lMMFtlEsU1XmJHsLCEmLqZJPAqHc0pQGoVE1wI
+ Zyly7/+xD4Z1yNquJfj9CZYNwTsNw4cYbNDjiGnzeFqi5S6aWoyCogiyxN5SSgZgybzM
+ g0qPoSYb5+dbCTok4qqWQ7CzXRhuM3uL6ia061comRQgK5pwxU79WdcO3/gOo05jX2rX
+ LT2ZGuXmOpYHEsEMGGz9cTBb3paCC4SY1ZiBXEzSgtS0UHzeZ10/okHgtiKDFn1LHiZg
+ CXLLoPW0yNgjmrWSC41h3QKE/2L0ot1efOobxocLPyam0d1THGOj5M9IV+rQcHstA5LK
+ ccXQ==
+X-Gm-Message-State: APjAAAU97cn9RiioOoUcLEp2qovOW4cPbfCIq8jKsanmjaaEnXZrChsB
+ /CoCAUhwanzvLFT4AY5DTECAZA==
+X-Google-Smtp-Source: APXvYqzgOZ1uRhn9JxOPVQ4nRzUnloZT6mVaYm126ILaYf0ERKQKahlEFl5v5phKXCzBWat2/J5yrA==
+X-Received: by 2002:aa7:9988:: with SMTP id k8mr17217363pfh.200.1576524928619; 
+ Mon, 16 Dec 2019 11:35:28 -0800 (PST)
+Received: from gnomeregan.cam.corp.google.com
+ ([2620:15c:6:14:ad22:1cbb:d8fa:7d55])
+ by smtp.googlemail.com with ESMTPSA id q9sm23976818pgc.5.2019.12.16.11.35.27
+ (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+ Mon, 16 Dec 2019 11:35:28 -0800 (PST)
+Subject: Re: [PATCH 1/3] iommu/vt-d: skip RMRR entries that fail the sanity
+ check
+To: "Chen, Yian" <yian.chen@intel.com>, Thomas Gleixner <tglx@linutronix.de>, 
+ Ingo Molnar <mingo@redhat.com>, Borislav Petkov <bp@alien8.de>,
+ "H. Peter Anvin" <hpa@zytor.com>, David Woodhouse <dwmw2@infradead.org>,
+ Joerg Roedel <joro@8bytes.org>, Sohil Mehta <sohil.mehta@intel.com>
+References: <20191211194606.87940-1-brho@google.com>
+ <20191211194606.87940-2-brho@google.com>
+ <99a294a0-444e-81f9-19a2-216aef03f356@intel.com>
+Message-ID: <93820c21-8a37-d8f0-dacb-29cee694a91d@google.com>
+Date: Mon, 16 Dec 2019 14:35:26 -0500
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:60.0) Gecko/20100101
+ Thunderbird/60.9.0
+MIME-Version: 1.0
+In-Reply-To: <99a294a0-444e-81f9-19a2-216aef03f356@intel.com>
+Content-Language: en-US
+Cc: iommu@lists.linux-foundation.org, x86@kernel.org,
+ linux-kernel@vger.kernel.org
 X-BeenThere: iommu@lists.linux-foundation.org
 X-Mailman-Version: 2.1.15
 Precedence: list
@@ -77,327 +112,71 @@ List-Post: <mailto:iommu@lists.linux-foundation.org>
 List-Help: <mailto:iommu-request@lists.linux-foundation.org?subject=help>
 List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
  <mailto:iommu-request@lists.linux-foundation.org?subject=subscribe>
-MIME-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: 7bit
+From: Barret Rhoden via iommu <iommu@lists.linux-foundation.org>
+Reply-To: Barret Rhoden <brho@google.com>
+Content-Transfer-Encoding: base64
+Content-Type: text/plain; charset="utf-8"; Format="flowed"
 Errors-To: iommu-bounces@lists.linux-foundation.org
 Sender: "iommu" <iommu-bounces@lists.linux-foundation.org>
 
-Nested translation mode is supported in VT-d 3.0 Spec.CH 3.8.
-With PASID granular translation type set to 0x11b, translation
-result from the first level(FL) also subject to a second level(SL)
-page table translation. This mode is used for SVA virtualization,
-where FL performs guest virtual to guest physical translation and
-SL performs guest physical to host physical translation.
-
-Signed-off-by: Jacob Pan <jacob.jun.pan@linux.intel.com>
-Signed-off-by: Liu, Yi L <yi.l.liu@linux.intel.com>
----
- drivers/iommu/intel-pasid.c | 213 ++++++++++++++++++++++++++++++++++++++++++++
- drivers/iommu/intel-pasid.h |  12 +++
- include/linux/intel-iommu.h |   3 +
- include/uapi/linux/iommu.h  |   5 +-
- 4 files changed, 232 insertions(+), 1 deletion(-)
-
-diff --git a/drivers/iommu/intel-pasid.c b/drivers/iommu/intel-pasid.c
-index 3cb569e76642..b178ad9e47ae 100644
---- a/drivers/iommu/intel-pasid.c
-+++ b/drivers/iommu/intel-pasid.c
-@@ -359,6 +359,76 @@ pasid_set_flpm(struct pasid_entry *pe, u64 value)
- 	pasid_set_bits(&pe->val[2], GENMASK_ULL(3, 2), value << 2);
- }
- 
-+/*
-+ * Setup the Extended Memory Type(EMT) field (Bits 91-93)
-+ * of a scalable mode PASID entry.
-+ */
-+static inline void
-+pasid_set_emt(struct pasid_entry *pe, u64 value)
-+{
-+	pasid_set_bits(&pe->val[1], GENMASK_ULL(29, 27), value << 27);
-+}
-+
-+/*
-+ * Setup the Page Attribute Table (PAT) field (Bits 96-127)
-+ * of a scalable mode PASID entry.
-+ */
-+static inline void
-+pasid_set_pat(struct pasid_entry *pe, u64 value)
-+{
-+	pasid_set_bits(&pe->val[1], GENMASK_ULL(63, 32), value << 27);
-+}
-+
-+/*
-+ * Setup the Cache Disable (CD) field (Bit 89)
-+ * of a scalable mode PASID entry.
-+ */
-+static inline void
-+pasid_set_cd(struct pasid_entry *pe)
-+{
-+	pasid_set_bits(&pe->val[1], 1 << 25, 1);
-+}
-+
-+/*
-+ * Setup the Extended Memory Type Enable (EMTE) field (Bit 90)
-+ * of a scalable mode PASID entry.
-+ */
-+static inline void
-+pasid_set_emte(struct pasid_entry *pe)
-+{
-+	pasid_set_bits(&pe->val[1], 1 << 26, 1);
-+}
-+
-+/*
-+ * Setup the Extended Access Flag Enable (EAFE) field (Bit 135)
-+ * of a scalable mode PASID entry.
-+ */
-+static inline void
-+pasid_set_eafe(struct pasid_entry *pe)
-+{
-+	pasid_set_bits(&pe->val[2], 1 << 7, 1);
-+}
-+
-+/*
-+ * Setup the Page-level Cache Disable (PCD) field (Bit 95)
-+ * of a scalable mode PASID entry.
-+ */
-+static inline void
-+pasid_set_pcd(struct pasid_entry *pe)
-+{
-+	pasid_set_bits(&pe->val[1], 1 << 31, 1);
-+}
-+
-+/*
-+ * Setup the Page-level Write-Through (PWT)) field (Bit 94)
-+ * of a scalable mode PASID entry.
-+ */
-+static inline void
-+pasid_set_pwt(struct pasid_entry *pe)
-+{
-+	pasid_set_bits(&pe->val[1], 1 << 30, 1);
-+}
-+
- static void
- pasid_cache_invalidation_with_pasid(struct intel_iommu *iommu,
- 				    u16 did, int pasid)
-@@ -599,3 +669,146 @@ int intel_pasid_setup_pass_through(struct intel_iommu *iommu,
- 
- 	return 0;
- }
-+
-+static int intel_pasid_setup_bind_data(struct intel_iommu *iommu,
-+				struct pasid_entry *pte,
-+				struct iommu_gpasid_bind_data_vtd *pasid_data)
-+{
-+	/*
-+	 * Not all guest PASID table entry fields are passed down during bind,
-+	 * here we only set up the ones that are dependent on guest settings.
-+	 * Execution related bits such as NXE, SMEP are not meaningful to IOMMU,
-+	 * therefore not set. Other fields, such as snoop related, are set based
-+	 * on host needs regardless of  guest settings.
-+	 */
-+	if (pasid_data->flags & IOMMU_SVA_VTD_GPASID_SRE) {
-+		if (!ecap_srs(iommu->ecap)) {
-+			pr_err("No supervisor request support on %s\n",
-+			       iommu->name);
-+			return -EINVAL;
-+		}
-+		pasid_set_sre(pte);
-+	}
-+
-+	if (pasid_data->flags & IOMMU_SVA_VTD_GPASID_EAFE) {
-+		if (!ecap_eafs(iommu->ecap)) {
-+			pr_err("No extended access flag support on %s\n",
-+				iommu->name);
-+			return -EINVAL;
-+		}
-+		pasid_set_eafe(pte);
-+	}
-+
-+	/*
-+	 * Memory type is only applicable to devices inside processor coherent
-+	 * domain. PCIe devices are not included. We can skip the rest of the
-+	 * flags if IOMMU does not support MTS.
-+	 */
-+	if (ecap_mts(iommu->ecap)) {
-+		if (pasid_data->flags & IOMMU_SVA_VTD_GPASID_EMTE) {
-+			pasid_set_emte(pte);
-+			pasid_set_emt(pte, pasid_data->emt);
-+		}
-+		if (pasid_data->flags & IOMMU_SVA_VTD_GPASID_PCD)
-+			pasid_set_pcd(pte);
-+		if (pasid_data->flags & IOMMU_SVA_VTD_GPASID_PWT)
-+			pasid_set_pwt(pte);
-+		if (pasid_data->flags & IOMMU_SVA_VTD_GPASID_CD)
-+			pasid_set_cd(pte);
-+		pasid_set_pat(pte, pasid_data->pat);
-+	} else if (pasid_data->flags & IOMMU_SVA_VTD_GPASID_EMT_MASK) {
-+		pr_warn("No memory type support for bind guest PASID on %s\n",
-+			iommu->name);
-+		return -EINVAL;
-+	}
-+
-+	return 0;
-+
-+}
-+
-+/**
-+ * intel_pasid_setup_nested() - Set up PASID entry for nested translation
-+ * which is used for vSVA. The first level page tables are used for
-+ * GVA-GPA or GIOVA-GPA translation in the guest, second level page tables
-+ *  are used for GPA-HPA translation.
-+ *
-+ * @iommu:      Iommu which the device belong to
-+ * @dev:        Device to be set up for translation
-+ * @gpgd:       FLPTPTR: First Level Page translation pointer in GPA
-+ * @pasid:      PASID to be programmed in the device PASID table
-+ * @pasid_data: Additional PASID info from the guest bind request
-+ * @domain:     Domain info for setting up second level page tables
-+ * @addr_width: Address width of the first level (guest)
-+ */
-+int intel_pasid_setup_nested(struct intel_iommu *iommu,
-+			struct device *dev, pgd_t *gpgd,
-+			int pasid, struct iommu_gpasid_bind_data_vtd *pasid_data,
-+			struct dmar_domain *domain,
-+			int addr_width)
-+{
-+	struct pasid_entry *pte;
-+	struct dma_pte *pgd;
-+	u64 pgd_val;
-+	int agaw;
-+	u16 did;
-+
-+	if (!ecap_nest(iommu->ecap)) {
-+		pr_err("IOMMU: %s: No nested translation support\n",
-+		       iommu->name);
-+		return -EINVAL;
-+	}
-+
-+	pte = intel_pasid_get_entry(dev, pasid);
-+	if (WARN_ON(!pte))
-+		return -EINVAL;
-+
-+	pasid_clear_entry(pte);
-+
-+	/* Sanity checking performed by caller to make sure address
-+	 * width matching in two dimensions:
-+	 * 1. CPU vs. IOMMU
-+	 * 2. Guest vs. Host.
-+	 */
-+	switch (addr_width) {
-+	case ADDR_WIDTH_5LEVEL:
-+		pasid_set_flpm(pte, 1);
-+		break;
-+	case ADDR_WIDTH_4LEVEL:
-+		pasid_set_flpm(pte, 0);
-+		break;
-+	default:
-+		dev_err(dev, "Invalid paging mode %d\n", addr_width);
-+		return -EINVAL;
-+	}
-+
-+	pasid_set_flptr(pte, (u64)gpgd);
-+
-+	intel_pasid_setup_bind_data(iommu, pte, pasid_data);
-+
-+	/* Setup the second level based on the given domain */
-+	pgd = domain->pgd;
-+
-+	for (agaw = domain->agaw; agaw != iommu->agaw; agaw--) {
-+		pgd = phys_to_virt(dma_pte_addr(pgd));
-+		if (!dma_pte_present(pgd)) {
-+			pasid_clear_entry(pte);
-+			dev_err(dev, "Invalid domain page table\n");
-+			return -EINVAL;
-+		}
-+	}
-+	pgd_val = virt_to_phys(pgd);
-+	pasid_set_slptr(pte, pgd_val);
-+	pasid_set_fault_enable(pte);
-+
-+	did = domain->iommu_did[iommu->seq_id];
-+	pasid_set_domain_id(pte, did);
-+
-+	pasid_set_address_width(pte, agaw);
-+	pasid_set_page_snoop(pte, !!ecap_smpwc(iommu->ecap));
-+
-+	pasid_set_translation_type(pte, PASID_ENTRY_PGTT_NESTED);
-+	pasid_set_present(pte);
-+	pasid_flush_caches(iommu, pte, pasid, did);
-+
-+	return 0;
-+}
-diff --git a/drivers/iommu/intel-pasid.h b/drivers/iommu/intel-pasid.h
-index fc8cd8f17de1..95ed160b1947 100644
---- a/drivers/iommu/intel-pasid.h
-+++ b/drivers/iommu/intel-pasid.h
-@@ -36,6 +36,7 @@
-  * to vmalloc or even module mappings.
-  */
- #define PASID_FLAG_SUPERVISOR_MODE	BIT(0)
-+#define PASID_FLAG_NESTED		BIT(1)
- 
- struct pasid_dir_entry {
- 	u64 val;
-@@ -45,6 +46,11 @@ struct pasid_entry {
- 	u64 val[8];
- };
- 
-+#define PASID_ENTRY_PGTT_FL_ONLY	(1)
-+#define PASID_ENTRY_PGTT_SL_ONLY	(2)
-+#define PASID_ENTRY_PGTT_NESTED		(3)
-+#define PASID_ENTRY_PGTT_PT		(4)
-+
- /* The representative of a PASID table */
- struct pasid_table {
- 	void			*table;		/* pasid table pointer */
-@@ -93,6 +99,12 @@ int intel_pasid_setup_second_level(struct intel_iommu *iommu,
- int intel_pasid_setup_pass_through(struct intel_iommu *iommu,
- 				   struct dmar_domain *domain,
- 				   struct device *dev, int pasid);
-+int intel_pasid_setup_nested(struct intel_iommu *iommu,
-+			struct device *dev, pgd_t *pgd,
-+			int pasid,
-+			struct iommu_gpasid_bind_data_vtd *pasid_data,
-+			struct dmar_domain *domain,
-+			int addr_width);
- void intel_pasid_tear_down_entry(struct intel_iommu *iommu,
- 				 struct device *dev, int pasid);
- 
-diff --git a/include/linux/intel-iommu.h b/include/linux/intel-iommu.h
-index 74b79e2e6a73..19bf9ff180ae 100644
---- a/include/linux/intel-iommu.h
-+++ b/include/linux/intel-iommu.h
-@@ -34,6 +34,9 @@
- #define VTD_STRIDE_SHIFT        (9)
- #define VTD_STRIDE_MASK         (((u64)-1) << VTD_STRIDE_SHIFT)
- 
-+#define ADDR_WIDTH_5LEVEL	(57)
-+#define ADDR_WIDTH_4LEVEL	(48)
-+
- #define DMA_PTE_READ (1)
- #define DMA_PTE_WRITE (2)
- #define DMA_PTE_LARGE_PAGE (1 << 7)
-diff --git a/include/uapi/linux/iommu.h b/include/uapi/linux/iommu.h
-index 4ad3496e5c43..fcafb6401430 100644
---- a/include/uapi/linux/iommu.h
-+++ b/include/uapi/linux/iommu.h
-@@ -284,7 +284,10 @@ struct iommu_gpasid_bind_data_vtd {
- 	__u32 pat;
- 	__u32 emt;
- };
--
-+#define IOMMU_SVA_VTD_GPASID_EMT_MASK	(IOMMU_SVA_VTD_GPASID_CD | \
-+					 IOMMU_SVA_VTD_GPASID_EMTE | \
-+					 IOMMU_SVA_VTD_GPASID_PCD |  \
-+					 IOMMU_SVA_VTD_GPASID_PWT)
- /**
-  * struct iommu_gpasid_bind_data - Information about device and guest PASID binding
-  * @version:	Version of this data structure
--- 
-2.7.4
-
-_______________________________________________
-iommu mailing list
-iommu@lists.linux-foundation.org
-https://lists.linuxfoundation.org/mailman/listinfo/iommu
+T24gMTIvMTYvMTkgMjowNyBQTSwgQ2hlbiwgWWlhbiB3cm90ZToKPiAKPiAKPiBPbiAxMi8xMS8y
+MDE5IDExOjQ2IEFNLCBCYXJyZXQgUmhvZGVuIHdyb3RlOgo+PiBSTVJSIGVudHJpZXMgZGVzY3Jp
+YmUgbWVtb3J5IHJlZ2lvbnMgdGhhdCBhcmUgRE1BIHRhcmdldHMgZm9yIGRldmljZXMKPj4gb3V0
+c2lkZSB0aGUga2VybmVsJ3MgY29udHJvbC4KPj4KPj4gUk1SUiBlbnRyaWVzIHRoYXQgZmFpbCB0
+aGUgc2FuaXR5IGNoZWNrIGFyZSBwb2ludGluZyB0byByZWdpb25zIG9mCj4+IG1lbW9yeSB0aGF0
+IHRoZSBmaXJtd2FyZSBkaWQgbm90IHRlbGwgdGhlIGtlcm5lbCBhcmUgcmVzZXJ2ZWQgb3IKPj4g
+b3RoZXJ3aXNlIHNob3VsZCBub3QgYmUgdXNlZC4KPj4KPj4gSW5zdGVhZCBvZiBhYm9ydGluZyBE
+TUFSIHByb2Nlc3NpbmcsIHRoaXMgY29tbWl0IHNraXBzIHRoZXNlIFJNUlIKPj4gZW50cmllcy7C
+oCBUaGV5IHdpbGwgbm90IGJlIG1hcHBlZCBpbnRvIHRoZSBJT01NVSwgYnV0IHRoZSBJT01NVSBj
+YW4KPj4gc3RpbGwgYmUgdXRpbGl6ZWQuwqAgSWYgYW55dGhpbmcsIHdoZW4gdGhlIElPTU1VIGlz
+IG9uLCB0aG9zZSBkZXZpY2VzCj4+IHdpbGwgbm90IGJlIGFibGUgdG8gY2xvYmJlciBSQU0gdGhh
+dCB0aGUga2VybmVsIGhhcyBhbGxvY2F0ZWQgZnJvbSB0aG9zZQo+PiByZWdpb25zLgo+Pgo+PiBT
+aWduZWQtb2ZmLWJ5OiBCYXJyZXQgUmhvZGVuIDxicmhvQGdvb2dsZS5jb20+Cj4+IC0tLQo+PiDC
+oCBkcml2ZXJzL2lvbW11L2ludGVsLWlvbW11LmMgfCAyICstCj4+IMKgIDEgZmlsZSBjaGFuZ2Vk
+LCAxIGluc2VydGlvbigrKSwgMSBkZWxldGlvbigtKQo+Pgo+PiBkaWZmIC0tZ2l0IGEvZHJpdmVy
+cy9pb21tdS9pbnRlbC1pb21tdS5jIGIvZHJpdmVycy9pb21tdS9pbnRlbC1pb21tdS5jCj4+IGlu
+ZGV4IGYxNjhjZDhlZTU3MC4uZjdlMDkyNDRjOWU0IDEwMDY0NAo+PiAtLS0gYS9kcml2ZXJzL2lv
+bW11L2ludGVsLWlvbW11LmMKPj4gKysrIGIvZHJpdmVycy9pb21tdS9pbnRlbC1pb21tdS5jCj4+
+IEBAIC00MzE2LDcgKzQzMTYsNyBAQCBpbnQgX19pbml0IGRtYXJfcGFyc2Vfb25lX3JtcnIoc3Ry
+dWN0IAo+PiBhY3BpX2RtYXJfaGVhZGVyICpoZWFkZXIsIHZvaWQgKmFyZykKPj4gwqDCoMKgwqDC
+oCBybXJyID0gKHN0cnVjdCBhY3BpX2RtYXJfcmVzZXJ2ZWRfbWVtb3J5ICopaGVhZGVyOwo+PiDC
+oMKgwqDCoMKgIHJldCA9IGFyY2hfcm1ycl9zYW5pdHlfY2hlY2socm1ycik7Cj4+IMKgwqDCoMKg
+wqAgaWYgKHJldCkKPj4gLcKgwqDCoMKgwqDCoMKgIHJldHVybiByZXQ7Cj4+ICvCoMKgwqDCoMKg
+wqDCoCByZXR1cm4gMDsKPj4gwqDCoMKgwqDCoCBybXJydSA9IGt6YWxsb2Moc2l6ZW9mKCpybXJy
+dSksIEdGUF9LRVJORUwpOwo+PiDCoMKgwqDCoMKgIGlmICghcm1ycnUpCj4gUGFyc2luZyBybXJy
+IGZ1bmN0aW9uIHNob3VsZCByZXBvcnQgdGhlIGVycm9yIHRvIGNhbGxlci4gVGhlIGJlaGF2aW9y
+IHRvIAo+IHJlc3BvbnNlIHRoZSBlcnJvciBjYW4gYmUKPiBjaG9zZcKgIGJ5IHRoZSBjYWxsZXIg
+aW4gdGhlIGNhbGxpbmcgc3RhY2ssIGZvciBleGFtcGxlLCAKPiBkbWFyX3dhbGtfcmVtYXBwaW5n
+X2VudHJpZXMoKS4KPiBBIGNvbmNlcm4gaXMgdGhhdCBpZ25vcmluZyBhIGRldGVjdGVkIGZpcm13
+YXJlIGJ1ZyBtaWdodCBoYXZlIGEgCj4gcG90ZW50aWFsIHNpZGUgaW1wYWN0IHRob3VnaAo+IGl0
+IHNlZW1lZCBzYWZlIGZvciB5b3VyIGNhc2UuCgpUaGF0J3MgYSBsaXR0bGUgZGlmZmljdWx0IGdp
+dmVuIHRoZSBjdXJyZW50IGNvZGUuICBPbmNlIHdlIGFyZSBpbgpkbWFyX3dhbGtfcmVtYXBwaW5n
+X2VudHJpZXMoKSwgdGhlIHNwZWNpZmljIGZ1bmN0aW9uIChwYXJzZV9vbmVfcm1ycikgaXMgCmNh
+bGxlZCB2aWEgY2FsbGJhY2s6CgoJcmV0ID0gY2ItPmNiW2l0ZXItPnR5cGVdKGl0ZXIsIGNiLT5h
+cmdbaXRlci0+dHlwZV0pOwoJaWYgKHJldCkKCQlyZXR1cm4gcmV0OwoKSWYgdGhlcmUncyBhbiBl
+cnJvciBvZiBhbnkgc29ydCwgaXQgYWJvcnRzIHRoZSB3YWxrLiAgSGFuZGxpbmcgdGhlIApzcGVj
+aWZpYyBlcnJvcnMgaGVyZSBpcyBkaWZmaWN1bHQsIHNpbmNlIHdlIGRvbid0IGtub3cgd2hhdCB0
+aGUgZXJyb3JzIAptZWFuIHRvIHRoZSBzcGVjaWZpYyBjYWxsYmFjay4gIElzIHRoZXJlIHNvbWUg
+ZXJybm8gd2UgY2FuIHVzZSB0aGF0IAptZWFucyAidGhlcmUgd2FzIGEgcHJvYmxlbSwgYnV0IGl0
+J3Mgbm90IHNvIGJhZCB0aGF0IHlvdSBoYXZlIHRvIGFib3J0LCAKYnV0IEkgZmlndXJlZCB5b3Ug
+b3VnaHQgdG8ga25vdyI/ICBOb3QgdGhhdCBJIHRoaW5rIHRoYXQncyBhIGdvb2QgaWRlYS4KClRo
+ZSBrbm93bGVkZ2Ugb2Ygd2hldGhlciBvciBub3QgYSBzcGVjaWZpYyBlcnJvciBpcyB3b3J0aCBh
+Ym9ydGluZyBhbGwgCkRNQVIgZnVuY3Rpb25hbGl0eSBpcyBiZXN0IGtub3duIGluc2lkZSB0aGUg
+c3BlY2lmaWMgY2FsbGJhY2suICBUaGUgb25seSAKaGFuZGxpbmcgdG8gZG8gaXMgcHJpbnQgYSB3
+YXJuaW5nIGFuZCBlaXRoZXIgc2tpcCBpdCBvciBhYm9ydC4KCkkgdGhpbmsgc2tpcHBpbmcgdGhl
+IGVudHJ5IGZvciBhIGJhZCBSTVJSIGlzIGJldHRlciB0aGFuIGFib3J0aW5nIApjb21wbGV0ZWx5
+LCB0aG91Z2ggSSB1bmRlcnN0YW5kIGlmIHBlb3BsZSBkb24ndCBsaWtlIHRoYXQuICBJdCdzIApk
+ZWJhdGFibGUuICBCeSBhYm9ydGluZywgd2UgbG9zZSB0aGUgYWJpbGl0eSB0byB1c2UgdGhlIElP
+TU1VIGF0IGFsbCwgCmJ1dCB3ZSBhcmUgc3RpbGwgaW4gYSBzaXR1YXRpb24gd2hlcmUgdGhlIGRl
+dmljZXMgdXNpbmcgdGhlIFJNUlIgcmVnaW9ucyAKbWlnaHQgYmUgY2xvYmJlcmluZyBrZXJuZWwg
+bWVtb3J5LCByaWdodD8gIFVzaW5nIHRoZSBJT01NVSAod2l0aCBubyAKbWFwcGluZ3MgZm9yIHRo
+ZSBiYWQgUk1SUnMpIHdvdWxkIHN0b3AgdGhvc2UgZGV2aWNlcyBmcm9tIGNsb2JiZXJpbmcgbWVt
+b3J5LgoKUmVnYXJkbGVzcywgSSBoYXZlIHR3byBvdGhlciBwYXRjaGVzIGluIHRoaXMgc2VyaWVz
+IHRoYXQgY291bGQgcmVzb2x2ZSAKdGhlIHByb2JsZW0gZm9yIG1lIGFuZCBwcm9iYWJseSBvdGhl
+ciBwZW9wbGUuICBJJ2QganVzdCBsaWtlIGF0IGxlYXN0IApvbmUgb2YgdGhlIHRocmVlIHBhdGNo
+ZXMgdG8gZ2V0IG1lcmdlZCBzbyB0aGF0IG15IG1hY2hpbmUgYm9vdHMgd2hlbiB0aGUgCm9yaWdp
+bmFsIGNvbW1pdCBmMDM2YzdmYTBhYjYgKCJpb21tdS92dC1kOiBDaGVjayBWVC1kIFJNUlIgcmVn
+aW9uIGluIApCSU9TIGlzIHJlcG9ydGVkIGFzIHJlc2VydmVkIikgZ2V0cyByZWxlYXNlZC4KClRo
+YW5rcywKCkJhcnJldAoKX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19f
+X19fX18KaW9tbXUgbWFpbGluZyBsaXN0CmlvbW11QGxpc3RzLmxpbnV4LWZvdW5kYXRpb24ub3Jn
+Cmh0dHBzOi8vbGlzdHMubGludXhmb3VuZGF0aW9uLm9yZy9tYWlsbWFuL2xpc3RpbmZvL2lvbW11
