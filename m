@@ -2,80 +2,80 @@ Return-Path: <SRS0=eHMU=2G=lists.linux-foundation.org=iommu-bounces@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-8.0 required=3.0 tests=DKIM_INVALID,DKIM_SIGNED,
+X-Spam-Status: No, score=-5.2 required=3.0 tests=DKIM_INVALID,DKIM_SIGNED,
 	HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_PATCH,MAILING_LIST_MULTI,SIGNED_OFF_BY,
-	SPF_HELO_NONE,SPF_PASS,UNPARSEABLE_RELAY,USER_AGENT_SANE_2
-	autolearn=unavailable autolearn_force=no version=3.4.0
+	SPF_HELO_NONE,SPF_PASS,UNPARSEABLE_RELAY,UNWANTED_LANGUAGE_BODY,
+	USER_AGENT_SANE_2 autolearn=unavailable autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 66144C43603
-	for <iommu@archiver.kernel.org>; Mon, 16 Dec 2019 12:10:20 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id E50B3C43603
+	for <iommu@archiver.kernel.org>; Mon, 16 Dec 2019 12:13:05 +0000 (UTC)
 Received: from hemlock.osuosl.org (smtp2.osuosl.org [140.211.166.133])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by mail.kernel.org (Postfix) with ESMTPS id 286E6206D3
-	for <iommu@archiver.kernel.org>; Mon, 16 Dec 2019 12:10:20 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTPS id B4AE3206CB
+	for <iommu@archiver.kernel.org>; Mon, 16 Dec 2019 12:13:05 +0000 (UTC)
 Authentication-Results: mail.kernel.org;
-	dkim=fail reason="signature verification failed" (1024-bit key) header.d=mediatek.com header.i=@mediatek.com header.b="nDJx9W5K"
-DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 286E6206D3
+	dkim=fail reason="signature verification failed" (1024-bit key) header.d=mediatek.com header.i=@mediatek.com header.b="uOsTI51t"
+DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org B4AE3206CB
 Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=mediatek.com
 Authentication-Results: mail.kernel.org; spf=pass smtp.mailfrom=iommu-bounces@lists.linux-foundation.org
 Received: from localhost (localhost [127.0.0.1])
-	by hemlock.osuosl.org (Postfix) with ESMTP id D5334865EE;
-	Mon, 16 Dec 2019 12:10:19 +0000 (UTC)
+	by hemlock.osuosl.org (Postfix) with ESMTP id 68D4D87823;
+	Mon, 16 Dec 2019 12:13:05 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
 Received: from hemlock.osuosl.org ([127.0.0.1])
 	by localhost (.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
-	with ESMTP id IOOjLvm-Vyyl; Mon, 16 Dec 2019 12:10:17 +0000 (UTC)
+	with ESMTP id ZYweyzxl9RqD; Mon, 16 Dec 2019 12:13:04 +0000 (UTC)
 Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [140.211.9.56])
-	by hemlock.osuosl.org (Postfix) with ESMTP id E1A3082226;
-	Mon, 16 Dec 2019 12:10:17 +0000 (UTC)
+	by hemlock.osuosl.org (Postfix) with ESMTP id 599E48768B;
+	Mon, 16 Dec 2019 12:13:04 +0000 (UTC)
 Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
-	by lists.linuxfoundation.org (Postfix) with ESMTP id C44C3C18DD;
-	Mon, 16 Dec 2019 12:10:17 +0000 (UTC)
-Received: from fraxinus.osuosl.org (smtp4.osuosl.org [140.211.166.137])
- by lists.linuxfoundation.org (Postfix) with ESMTP id D40EDC077D
- for <iommu@lists.linux-foundation.org>; Mon, 16 Dec 2019 12:10:16 +0000 (UTC)
+	by lists.linuxfoundation.org (Postfix) with ESMTP id 426C3C18DD;
+	Mon, 16 Dec 2019 12:13:04 +0000 (UTC)
+Received: from hemlock.osuosl.org (smtp2.osuosl.org [140.211.166.133])
+ by lists.linuxfoundation.org (Postfix) with ESMTP id 4001FC077D
+ for <iommu@lists.linux-foundation.org>; Mon, 16 Dec 2019 12:13:03 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
- by fraxinus.osuosl.org (Postfix) with ESMTP id C238685B80
- for <iommu@lists.linux-foundation.org>; Mon, 16 Dec 2019 12:10:16 +0000 (UTC)
+ by hemlock.osuosl.org (Postfix) with ESMTP id 2EDCA877B1
+ for <iommu@lists.linux-foundation.org>; Mon, 16 Dec 2019 12:13:03 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from fraxinus.osuosl.org ([127.0.0.1])
+Received: from hemlock.osuosl.org ([127.0.0.1])
  by localhost (.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
- with ESMTP id 5_JU4xa1-1p0 for <iommu@lists.linux-foundation.org>;
- Mon, 16 Dec 2019 12:10:15 +0000 (UTC)
-X-Greylist: delayed 00:05:04 by SQLgrey-1.7.6
-Received: from mailgw01.mediatek.com (unknown [1.203.163.78])
- by fraxinus.osuosl.org (Postfix) with ESMTP id 908DC85B7C
- for <iommu@lists.linux-foundation.org>; Mon, 16 Dec 2019 12:10:14 +0000 (UTC)
-X-UUID: 99596b7cd1b34e16ad389c4c76883501-20191216
+ with ESMTP id M5kN0b1yTmV9 for <iommu@lists.linux-foundation.org>;
+ Mon, 16 Dec 2019 12:13:02 +0000 (UTC)
+X-Greylist: delayed 00:05:03 by SQLgrey-1.7.6
+Received: from mailgw02.mediatek.com (unknown [1.203.163.81])
+ by hemlock.osuosl.org (Postfix) with ESMTP id 5B2948768B
+ for <iommu@lists.linux-foundation.org>; Mon, 16 Dec 2019 12:13:01 +0000 (UTC)
+X-UUID: bb46f94224c747da8dab4df32ad56664-20191216
 DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=mediatek.com;
  s=dk; 
  h=Content-Transfer-Encoding:MIME-Version:Content-Type:References:In-Reply-To:Date:CC:To:From:Subject:Message-ID;
- bh=Clqeu4fvpnmS/ZiCD2V6ResMoNTOcGR52Rz6w11NnqM=; 
- b=nDJx9W5KJFahX1t1CcbTr7Djqfdsn5p3qRV2ehZQXEYnybufZMQXcAT/Oj81dnmmwA2ooS79lPFVO8zU0vyQpWzRzcmssPJtIXM8iCqxY1dK+KxMLFHsSRTfr4PFH4sx1CanzsQOM6iSgwbLOIR2V0mO7l3V3QqUfJ8CLX23g8k=;
-X-UUID: 99596b7cd1b34e16ad389c4c76883501-20191216
-Received: from mtkcas35.mediatek.inc [(172.27.4.253)] by mailgw01.mediatek.com
+ bh=GeJYaSSTviQGKC+jAYdPZIk4wLCbJe9Ewnhq0SJZGGQ=; 
+ b=uOsTI51tocohCkTABdbaGNiljpGH8Miv1RGczY0gCzXdvtxERE1RsSJe06wyaI+7r+vg3swuQP7csMt53bsL7Qx8N08TaI6xFIcPJhAqBfhX1bsCm2aYC4xcfNhbhCTTU4f6E+e7P9Aalfv15ftlKtxFk+x2Bsfqe0zCSdE/e2A=;
+X-UUID: bb46f94224c747da8dab4df32ad56664-20191216
+Received: from mtkcas35.mediatek.inc [(172.27.4.253)] by mailgw02.mediatek.com
  (envelope-from <yong.wu@mediatek.com>)
  (mailgw01.mediatek.com ESMTP with TLS)
- with ESMTP id 60780563; Mon, 16 Dec 2019 20:05:03 +0800
-Received: from MTKCAS36.mediatek.inc (172.27.4.186) by MTKMBS31N2.mediatek.inc
- (172.27.4.87) with Microsoft SMTP Server (TLS) id 15.0.1395.4;
- Mon, 16 Dec 2019 20:04:02 +0800
+ with ESMTP id 782335631; Mon, 16 Dec 2019 20:07:45 +0800
+Received: from MTKCAS36.mediatek.inc (172.27.4.186) by MTKMBS33N2.mediatek.inc
+ (172.27.4.76) with Microsoft SMTP Server (TLS) id 15.0.1395.4;
+ Mon, 16 Dec 2019 20:08:05 +0800
 Received: from [10.17.3.153] (172.27.4.253) by MTKCAS36.mediatek.inc
  (172.27.4.170) with Microsoft SMTP Server id 15.0.1395.4 via Frontend
- Transport; Mon, 16 Dec 2019 20:04:44 +0800
-Message-ID: <1576497901.28043.71.camel@mhfsdcap03>
-Subject: Re: [RESEND,PATCH 01/13] dt-bindings: mediatek: Add bindings for
- MT6779
+ Transport; Mon, 16 Dec 2019 20:07:26 +0800
+Message-ID: <1576498063.28043.74.camel@mhfsdcap03>
+Subject: Re: [RESEND,PATCH 02/13] iommu/mediatek: Add mt6779 IOMMU basic
+ support
 From: Yong Wu <yong.wu@mediatek.com>
 To: Chao Hao <chao.hao@mediatek.com>
-Date: Mon, 16 Dec 2019 20:05:01 +0800
-In-Reply-To: <20191104115238.2394-2-chao.hao@mediatek.com>
+Date: Mon, 16 Dec 2019 20:07:43 +0800
+In-Reply-To: <20191104115238.2394-3-chao.hao@mediatek.com>
 References: <20191104115238.2394-1-chao.hao@mediatek.com>
- <20191104115238.2394-2-chao.hao@mediatek.com>
+ <20191104115238.2394-3-chao.hao@mediatek.com>
 X-Mailer: Evolution 3.10.4-0ubuntu2 
 MIME-Version: 1.0
-X-TM-SNTS-SMTP: A9E5E71080A842134B9DA6CCB99242C492F30F72968470E68E8786C7F60B10FC2000:8
+X-TM-SNTS-SMTP: 7791763B64BF2B57A9BC52F627E5B0DC36BFAB124FEDC002E5773B2BE4DD279C2000:8
 X-MTK: N
 Cc: Anan Sun <anan.sun@mediatek.com>, devicetree@vger.kernel.org,
  Cui Zhang <cui.zhang@mediatek.com>, Jun Yan <jun.yan@mediatek.com>,
@@ -103,180 +103,329 @@ Errors-To: iommu-bounces@lists.linux-foundation.org
 Sender: "iommu" <iommu-bounces@lists.linux-foundation.org>
 
 On Mon, 2019-11-04 at 19:52 +0800, Chao Hao wrote:
-> This patch adds description for MT6779 IOMMU.
-> 
-> MT6779 has two iommus, they are MM_IOMMU and APU_IOMMU which
-> use ARM Short-Descriptor translation format.
-> 
-> The MT6779 IOMMU hardware diagram is as below, it is only a brief
-> diagram about iommu, it don't focus on the part of smi_larb, so
-> I don't describe the smi_larb detailedly.
-> 
-> 			     EMI
-> 			      |
-> 	   --------------------------------------
-> 	   |					|
->         MM_IOMMU                            APU_IOMMU
-> 	   |					|
->        SMI_COMMOM-----------		     APU_BUS
->           |		   |			|
->     SMI_LARB(0~11)  SMI_LARB12(FAKE)	    SMI_LARB13(FAKE)
-> 	  |		   |			|
-> 	  |		   |		   --------------
-> 	  |		   |		   |	 |	|
->    Multimedia engine	  CCU		  VPU   MDLA   EMDA
-> 
-> All the connections are hardware fixed, software can not adjust it.
-> 
-> From the diagram above, MM_IOMMU provides mapping for multimedia engine,
-> but CCU is connected with smi_common directly, we can take them as larb12.
-> APU_IOMMU provides mapping for APU engine, we can take them larb13.
-> Larb12 and Larb13 are fake larbs.
+> 1. Add mt6779 registers define for iommu.
+> 2. Add mt6779_data define to support mt6779 iommu HW init.
+> 3. There are two iommus, one is mm_iommu, the other is vpu_iommu.
+> MM_IOMMU is connected smi_larb to support multimedia engine to
+> access DRAM, and VPU_IOMMU is connected to APU_bus to support
+> VPU,MDLA,EDMA to access DRAM. MM_IOMMU and VPU_IOMMU use the same
+> page table to simplify design by "mtk_iommu_get_m4u_data".
+> 4. For smi_larb6, it doesn't use mm_iommu, so we can distinguish
+> vpu_iommu by it when excutes iommu_probe.
+> 5. For mt6779 APU_IOMMU fault id is irregular, so it was treated
+> specially.
 > 
 > Signed-off-by: Chao Hao <chao.hao@mediatek.com>
 > ---
->  .../bindings/iommu/mediatek,iommu.txt         |   2 +
->  include/dt-bindings/memory/mt6779-larb-port.h | 217 ++++++++++++++++++
->  2 files changed, 219 insertions(+)
->  create mode 100644 include/dt-bindings/memory/mt6779-larb-port.h
+>  drivers/iommu/mtk_iommu.c | 91 +++++++++++++++++++++++++++++++++------
+>  drivers/iommu/mtk_iommu.h | 10 ++++-
+>  2 files changed, 87 insertions(+), 14 deletions(-)
 > 
-> diff --git a/Documentation/devicetree/bindings/iommu/mediatek,iommu.txt b/Documentation/devicetree/bindings/iommu/mediatek,iommu.txt
-> index ce59a505f5a4..c1ccd8582eb2 100644
-> --- a/Documentation/devicetree/bindings/iommu/mediatek,iommu.txt
-> +++ b/Documentation/devicetree/bindings/iommu/mediatek,iommu.txt
-> @@ -58,6 +58,7 @@ Required properties:
->  - compatible : must be one of the following string:
->  	"mediatek,mt2701-m4u" for mt2701 which uses generation one m4u HW.
->  	"mediatek,mt2712-m4u" for mt2712 which uses generation two m4u HW.
-> +	"mediatek,mt6779-m4u" for mt6779 which uses generation two m4u HW.
->  	"mediatek,mt7623-m4u", "mediatek,mt2701-m4u" for mt7623 which uses
->  						     generation one m4u HW.
->  	"mediatek,mt8173-m4u" for mt8173 which uses generation two m4u HW.
-> @@ -78,6 +79,7 @@ Required properties:
->  	Specifies the mtk_m4u_id as defined in
->  	dt-binding/memory/mt2701-larb-port.h for mt2701, mt7623
->  	dt-binding/memory/mt2712-larb-port.h for mt2712,
-> +	dt-binding/memory/mt6779-larb-port.h for mt6779,
->  	dt-binding/memory/mt8173-larb-port.h for mt8173, and
->  	dt-binding/memory/mt8183-larb-port.h for mt8183.
+> diff --git a/drivers/iommu/mtk_iommu.c b/drivers/iommu/mtk_iommu.c
+> index 8ca2e99964fe..f2847e661137 100644
+> --- a/drivers/iommu/mtk_iommu.c
+> +++ b/drivers/iommu/mtk_iommu.c
+> @@ -38,12 +38,24 @@
+>  #define REG_MMU_INVLD_END_A			0x028
 >  
-> diff --git a/include/dt-bindings/memory/mt6779-larb-port.h b/include/dt-bindings/memory/mt6779-larb-port.h
-> new file mode 100644
-> index 000000000000..8b7f2d2446ea
-> --- /dev/null
-> +++ b/include/dt-bindings/memory/mt6779-larb-port.h
-> @@ -0,0 +1,217 @@
-> +/* SPDX-License-Identifier: GPL-2.0 */
-> +/*
-> + * Copyright (c) 2019 MediaTek Inc.
-> + * Author: Chao Hao <chao.hao@mediatek.com>
-> + */
+>  #define REG_MMU_INV_SEL				0x038
+> +#define REG_MMU_INV_SEL_MT6779			0x02c
+>  #define F_INVLD_EN0				BIT(0)
+>  #define F_INVLD_EN1				BIT(1)
+>  
+>  #define REG_MMU_STANDARD_AXI_MODE		0x048
 > +
-> +#ifndef _DTS_IOMMU_PORT_MT6779_H_
-> +#define _DTS_IOMMU_PORT_MT6779_H_
-> +
-> +#define MTK_M4U_ID(larb, port)		 (((larb) << 5) | (port))
-> +
-> +#define M4U_LARB0_ID			 0
-> +#define M4U_LARB1_ID			 1
-> +#define M4U_LARB2_ID			 2
-> +#define M4U_LARB3_ID			 3
-> +#define M4U_LARB4_ID			 4
-> +#define M4U_LARB5_ID			 5
-> +#define M4U_LARB6_ID			 6
-> +#define M4U_LARB7_ID			 7
-> +#define M4U_LARB8_ID			 8
-> +#define M4U_LARB9_ID			 9
-> +#define M4U_LARB10_ID			 10
-> +#define M4U_LARB11_ID			 11
-> +#define M4U_LARB12_ID			 12
-> +#define M4U_LARB13_ID			 13
-> +
-> +/* larb0 */
-> +#define M4U_PORT_DISP_POSTMASK0		 MTK_M4U_ID(M4U_LARB0_ID, 0)
-> +#define M4U_PORT_DISP_OVL0_HDR		 MTK_M4U_ID(M4U_LARB0_ID, 1)
-> +#define M4U_PORT_DISP_OVL1_HDR		 MTK_M4U_ID(M4U_LARB0_ID, 2)
-> +#define M4U_PORT_DISP_OVL0		 MTK_M4U_ID(M4U_LARB0_ID, 3)
-> +#define M4U_PORT_DISP_OVL1		 MTK_M4U_ID(M4U_LARB0_ID, 4)
-> +#define M4U_PORT_DISP_PVRIC0		 MTK_M4U_ID(M4U_LARB0_ID, 5)
-> +#define M4U_PORT_DISP_RDMA0		 MTK_M4U_ID(M4U_LARB0_ID, 6)
-> +#define M4U_PORT_DISP_WDMA0		 MTK_M4U_ID(M4U_LARB0_ID, 7)
-> +#define M4U_PORT_DISP_FAKE0		 MTK_M4U_ID(M4U_LARB0_ID, 8)
-> +
-> +/* larb1 */
-> +#define M4U_PORT_DISP_OVL0_2L_HDR	 MTK_M4U_ID(M4U_LARB1_ID, 0)
-> +#define M4U_PORT_DISP_OVL1_2L_HDR	 MTK_M4U_ID(M4U_LARB1_ID, 1)
-> +#define M4U_PORT_DISP_OVL0_2L		 MTK_M4U_ID(M4U_LARB1_ID, 2)
-> +#define M4U_PORT_DISP_OVL1_2L		 MTK_M4U_ID(M4U_LARB1_ID, 3)
-> +#define M4U_PORT_DISP_RDMA1		 MTK_M4U_ID(M4U_LARB1_ID, 4)
-> +#define M4U_PORT_MDP_PVRIC0		 MTK_M4U_ID(M4U_LARB1_ID, 5)
-> +#define M4U_PORT_MDP_PVRIC1		 MTK_M4U_ID(M4U_LARB1_ID, 6)
-> +#define M4U_PORT_MDP_RDMA0		 MTK_M4U_ID(M4U_LARB1_ID, 7)
-> +#define M4U_PORT_MDP_RDMA1		 MTK_M4U_ID(M4U_LARB1_ID, 8)
-> +#define M4U_PORT_MDP_WROT0_R		 MTK_M4U_ID(M4U_LARB1_ID, 9)
-> +#define M4U_PORT_MDP_WROT0_W		 MTK_M4U_ID(M4U_LARB1_ID, 10)
-> +#define M4U_PORT_MDP_WROT1_R		 MTK_M4U_ID(M4U_LARB1_ID, 11)
-> +#define M4U_PORT_MDP_WROT1_W		 MTK_M4U_ID(M4U_LARB1_ID, 12)
-> +#define M4U_PORT_DISP_FAKE1		 MTK_M4U_ID(M4U_LARB1_ID, 13)
-> +
-> +/* larb2-VDEC */
-> +#define M4U_PORT_HW_VDEC_MC_EXT          MTK_M4U_ID(M4U_LARB2_ID, 0)
-> +#define M4U_PORT_HW_VDEC_UFO_EXT         MTK_M4U_ID(M4U_LARB2_ID, 1)
-> +#define M4U_PORT_HW_VDEC_PP_EXT          MTK_M4U_ID(M4U_LARB2_ID, 2)
-> +#define M4U_PORT_HW_VDEC_PRED_RD_EXT     MTK_M4U_ID(M4U_LARB2_ID, 3)
-> +#define M4U_PORT_HW_VDEC_PRED_WR_EXT     MTK_M4U_ID(M4U_LARB2_ID, 4)
-> +#define M4U_PORT_HW_VDEC_PPWRAP_EXT      MTK_M4U_ID(M4U_LARB2_ID, 5)
-> +#define M4U_PORT_HW_VDEC_TILE_EXT        MTK_M4U_ID(M4U_LARB2_ID, 6)
-> +#define M4U_PORT_HW_VDEC_VLD_EXT         MTK_M4U_ID(M4U_LARB2_ID, 7)
-> +#define M4U_PORT_HW_VDEC_VLD2_EXT        MTK_M4U_ID(M4U_LARB2_ID, 8)
-> +#define M4U_PORT_HW_VDEC_AVC_MV_EXT      MTK_M4U_ID(M4U_LARB2_ID, 9)
-> +#define M4U_PORT_HW_VDEC_UFO_ENC_EXT     MTK_M4U_ID(M4U_LARB2_ID, 10)
-> +#define M4U_PORT_HW_VDEC_RG_CTRL_DMA_EXT MTK_M4U_ID(M4U_LARB2_ID, 11)
-> +
-> +/*larb3-VENC*/
+> +#define REG_MMU_MISC_CRTL_MT6779		0x048
 
-Normally add space before and after the word. Like: /* larb3-VENC */
+Defining two register in the same offset look strange. see below.
 
-below are the same.
+> +#define REG_MMU_STANDARD_AXI_MODE_MT6779	(BIT(3) | BIT(19))
+> +#define REG_MMU_COHERENCE_EN			(BIT(0) | BIT(16))
+> +#define REG_MMU_IN_ORDER_WR_EN			(BIT(1) | BIT(17))
+> +#define F_MMU_HALF_ENTRY_MODE_L			(BIT(5) | BIT(21))
+> +#define F_MMU_BLOCKING_MODE_L			(BIT(4) | BIT(20))
 
-> +#define M4U_PORT_VENC_RCPU		 MTK_M4U_ID(M4U_LARB3_ID, 0)
-> +#define M4U_PORT_VENC_REC		 MTK_M4U_ID(M4U_LARB3_ID, 1)
-> +#define M4U_PORT_VENC_BSDMA		 MTK_M4U_ID(M4U_LARB3_ID, 2)
-> +#define M4U_PORT_VENC_SV_COMV		 MTK_M4U_ID(M4U_LARB3_ID, 3)
-> +#define M4U_PORT_VENC_RD_COMV		 MTK_M4U_ID(M4U_LARB3_ID, 4)
-> +#define M4U_PORT_VENC_NBM_RDMA		 MTK_M4U_ID(M4U_LARB3_ID, 5)
-> +#define M4U_PORT_VENC_NBM_RDMA_LITE	 MTK_M4U_ID(M4U_LARB3_ID, 6)
-> +#define M4U_PORT_JPGENC_Y_RDMA		 MTK_M4U_ID(M4U_LARB3_ID, 7)
-> +#define M4U_PORT_JPGENC_C_RDMA		 MTK_M4U_ID(M4U_LARB3_ID, 8)
-> +#define M4U_PORT_JPGENC_Q_TABLE		 MTK_M4U_ID(M4U_LARB3_ID, 9)
-> +#define M4U_PORT_JPGENC_BSDMA		 MTK_M4U_ID(M4U_LARB3_ID, 10)
-> +#define M4U_PORT_JPGDEC_WDMA		 MTK_M4U_ID(M4U_LARB3_ID, 11)
-> +#define M4U_PORT_JPGDEC_BSDMA		 MTK_M4U_ID(M4U_LARB3_ID, 12)
-> +#define M4U_PORT_VENC_NBM_WDMA		 MTK_M4U_ID(M4U_LARB3_ID, 13)
-> +#define M4U_PORT_VENC_NBM_WDMA_LITE	 MTK_M4U_ID(M4U_LARB3_ID, 14)
-> +#define M4U_PORT_VENC_CUR_LUMA		 MTK_M4U_ID(M4U_LARB3_ID, 15)
-> +#define M4U_PORT_VENC_CUR_CHROMA	 MTK_M4U_ID(M4U_LARB3_ID, 16)
-> +#define M4U_PORT_VENC_REF_LUMA		 MTK_M4U_ID(M4U_LARB3_ID, 17)
-> +#define M4U_PORT_VENC_REF_CHROMA	 MTK_M4U_ID(M4U_LARB3_ID, 18)
-> +
-> +/*larb4-dummy*/
-> +
-> +/*larb5-IMG*/
-
-[snip]
+The last four ones are not used. Please remove.
 
 > +
-> +#define M4U_PORT_VPU			 MTK_M4U_ID(M4U_LARB13_ID, 0)
-> +#define M4U_PORT_MDLA			 MTK_M4U_ID(M4U_LARB13_ID, 1)
-> +#define M4U_PORT_EDMA			 MTK_M4U_ID(M4U_LARB13_ID, 2)
+>  #define REG_MMU_DCM_DIS				0x050
+>  
+> +#define REG_MMU_WR_LEN				0x054
+> +#define F_MMU_WR_THROT_DIS			(BIT(5) |  BIT(21))
 > +
-> +#define M4U_PORT_UNKNOWN		 (M4U_PORT_EDMA + 1)
+>  #define REG_MMU_CTRL_REG			0x110
+>  #define F_MMU_TF_PROT_TO_PROGRAM_ADDR		(2 << 4)
+>  #define F_MMU_PREFETCH_RT_REPLACE_MOD		BIT(4)
+> @@ -88,10 +100,14 @@
+>  #define REG_MMU1_INVLD_PA			0x148
+>  #define REG_MMU0_INT_ID				0x150
+>  #define REG_MMU1_INT_ID				0x154
+> +#define F_MMU_INT_ID_COMM_ID(a)			(((a) >> 9) & 0x7)
+> +#define F_MMU_INT_ID_SUB_COMM_ID(a)		(((a) >> 7) & 0x3)
+>  #define F_MMU_INT_ID_LARB_ID(a)			(((a) >> 7) & 0x7)
+>  #define F_MMU_INT_ID_PORT_ID(a)			(((a) >> 2) & 0x1f)
+> +#define F_MMU_INT_ID_COMM_APU_ID(a)		((a) & 0x3)
+> +#define F_MMU_INT_ID_SUB_APU_ID(a)		(((a) >> 2) & 0x3)
+>  
+> -#define MTK_PROTECT_PA_ALIGN			128
+> +#define MTK_PROTECT_PA_ALIGN			256
+>  
+>  /*
+>   * Get the local arbiter ID and the portid within the larb arbiter
+> @@ -165,7 +181,7 @@ static void mtk_iommu_tlb_flush_all(void *cookie)
+>  
+>  	for_each_m4u(data) {
+>  		writel_relaxed(F_INVLD_EN1 | F_INVLD_EN0,
+> -			       data->base + REG_MMU_INV_SEL);
+> +			       data->base + data->plat_data->inv_sel_reg);
+>  		writel_relaxed(F_ALL_INVLD, data->base + REG_MMU_INVALIDATE);
+>  		wmb(); /* Make sure the tlb flush all done */
+>  	}
+> @@ -182,7 +198,7 @@ static void mtk_iommu_tlb_flush_range_sync(unsigned long iova, size_t size,
+>  	for_each_m4u(data) {
+>  		spin_lock_irqsave(&data->tlb_lock, flags);
+>  		writel_relaxed(F_INVLD_EN1 | F_INVLD_EN0,
+> -			       data->base + REG_MMU_INV_SEL);
+> +			       data->base + data->plat_data->inv_sel_reg);
+>  
+>  		writel_relaxed(iova, data->base + REG_MMU_INVLD_START_A);
+>  		writel_relaxed(iova + size - 1,
+> @@ -226,7 +242,7 @@ static irqreturn_t mtk_iommu_isr(int irq, void *dev_id)
+>  	struct mtk_iommu_data *data = dev_id;
+>  	struct mtk_iommu_domain *dom = data->m4u_dom;
+>  	u32 int_state, regval, fault_iova, fault_pa;
+> -	unsigned int fault_larb, fault_port;
+> +	unsigned int fault_larb, fault_port, sub_comm = 0;
+>  	bool layer, write;
+>  
+>  	/* Read error info from registers */
+> @@ -242,17 +258,30 @@ static irqreturn_t mtk_iommu_isr(int irq, void *dev_id)
+>  	}
+>  	layer = fault_iova & F_MMU_FAULT_VA_LAYER_BIT;
+>  	write = fault_iova & F_MMU_FAULT_VA_WRITE_BIT;
+> -	fault_larb = F_MMU_INT_ID_LARB_ID(regval);
+>  	fault_port = F_MMU_INT_ID_PORT_ID(regval);
+> +	if (data->plat_data->has_sub_comm[data->m4u_id]) {
+> +		/* m4u1 is VPU in mt6779.*/
+> +		if (data->m4u_id && data->plat_data->m4u_plat == M4U_MT6779) {
+> +			fault_larb = F_MMU_INT_ID_COMM_APU_ID(regval);
+> +			sub_comm = F_MMU_INT_ID_SUB_APU_ID(regval);
+> +			fault_port = 0; /* for mt6779 APU ID is irregular */
+> +		} else {
+> +			fault_larb = F_MMU_INT_ID_COMM_ID(regval);
+> +			sub_comm = F_MMU_INT_ID_SUB_COMM_ID(regval);
+> +		}
+> +	} else {
+> +		fault_larb = F_MMU_INT_ID_LARB_ID(regval);
+> +	}
+>  
+> -	fault_larb = data->plat_data->larbid_remap[fault_larb];
+> +	fault_larb = data->plat_data->larbid_remap[data->m4u_id][fault_larb];
+>  
+>  	if (report_iommu_fault(&dom->domain, data->dev, fault_iova,
+>  			       write ? IOMMU_FAULT_WRITE : IOMMU_FAULT_READ)) {
+>  		dev_err_ratelimited(
+>  			data->dev,
+> -			"fault type=0x%x iova=0x%x pa=0x%x larb=%d port=%d layer=%d %s\n",
+> -			int_state, fault_iova, fault_pa, fault_larb, fault_port,
+> +			"fault type=0x%x iova=0x%x pa=0x%x larb=%d sub_comm=%d port=%d regval=0x%x layer=%d %s\n",
+> +			int_state, fault_iova, fault_pa, fault_larb,
+> +			sub_comm, fault_port, regval,
+>  			layer, write ? "write" : "read");
+>  	}
+>  
+> @@ -545,11 +574,12 @@ static int mtk_iommu_hw_init(const struct mtk_iommu_data *data)
+>  		return ret;
+>  	}
+>  
+> +	regval = readl_relaxed(data->base + REG_MMU_CTRL_REG);
+>  	if (data->plat_data->m4u_plat == M4U_MT8173)
+> -		regval = F_MMU_PREFETCH_RT_REPLACE_MOD |
+> +		regval |= F_MMU_PREFETCH_RT_REPLACE_MOD |
+>  			 F_MMU_TF_PROT_TO_PROGRAM_ADDR_MT8173;
+>  	else
+> -		regval = F_MMU_TF_PROT_TO_PROGRAM_ADDR;
+> +		regval |= F_MMU_TF_PROT_TO_PROGRAM_ADDR;
+>  	writel_relaxed(regval, data->base + REG_MMU_CTRL_REG);
+>  
+>  	regval = F_L2_MULIT_HIT_EN |
+> @@ -589,6 +619,20 @@ static int mtk_iommu_hw_init(const struct mtk_iommu_data *data)
+>  	if (data->plat_data->reset_axi)
+>  		writel_relaxed(0, data->base + REG_MMU_STANDARD_AXI_MODE);
+>  
+> +	if (data->plat_data->has_wr_len) {
+> +		/* write command throttling mode */
+> +		regval = readl_relaxed(data->base + REG_MMU_WR_LEN);
+> +		regval &= ~F_MMU_WR_THROT_DIS;
+> +		writel_relaxed(regval, data->base + REG_MMU_WR_LEN);
+> +	}
+> +	/* special settings for mmu0 (multimedia iommu) */
+> +	if (data->plat_data->has_misc_ctrl[data->m4u_id]) {
+> +		regval = readl_relaxed(data->base + REG_MMU_MISC_CRTL_MT6779);
+> +		/* non-standard AXI mode */
+> +		regval &= ~REG_MMU_STANDARD_AXI_MODE_MT6779;
+> +		writel_relaxed(regval, data->base + REG_MMU_MISC_CRTL_MT6779);
+> +	}
 
-When do you need this UNKNOWN one? The other SoC doesn't have it. Please
-remove if it is unnecessary.
+     0x48 are REG_MMU_STANDARD_AXI_MODE in both mt8173 and mt8183, while
+it is REG_MMU_MISC_CRTL in mt2712, mt6779 and the latest soc, right? I
+think we can use one defining, like this:
+
+          #define  REG_MMU_MISC_CTRL 0x48
+
+         if (!data->plat_data->has_misc_ctrl[data->m4u_id]) {
+               /* Disable standard axi mode while it is
+REG_MMU_STANDARD_AXI_MODE */
+		writel_relaxed(0, data->base + REG_MMU_MISC_CTRL);
+	 } else if (data->m4u_id == 0) {
+		regval = readl_relaxed(data->base + REG_MMU_MISC_CTRL);
+		regval &= ~REG_MMU_STANDARD_AXI_MODE_MT6779;
+		writel_relaxed(regval, data->base + REG_MMU_MISC_CTRL);
+         }
+
+	 Meanwhile remove the setting for REG_MMU_STANDARD_AXI_MODE above.
 
 > +
-> +#endif
+>  	if (devm_request_irq(data->dev, data->irq, mtk_iommu_isr, 0,
+>  			     dev_name(data->dev), (void *)data)) {
+>  		writel_relaxed(0, data->base + REG_MMU_PT_BASE_ADDR);
+> @@ -678,6 +722,9 @@ static int mtk_iommu_probe(struct platform_device *pdev)
+>  		}
+>  		data->larb_imu[id].dev = &plarbdev->dev;
+>  
+> +		if (data->plat_data->m4u1_mask == (1 << id))
+> +			data->m4u_id = 1;
+> +
+>  		component_match_add_release(dev, &match, release_of,
+>  					    compare_of, larbnode);
+>  	}
+> @@ -731,6 +778,7 @@ static int __maybe_unused mtk_iommu_suspend(struct device *dev)
+>  	struct mtk_iommu_suspend_reg *reg = &data->reg;
+>  	void __iomem *base = data->base;
+>  
+> +	reg->wr_len = readl_relaxed(base + REG_MMU_WR_LEN);
+>  	reg->standard_axi_mode = readl_relaxed(base +
+>  					       REG_MMU_STANDARD_AXI_MODE);
+>  	reg->dcm_dis = readl_relaxed(base + REG_MMU_DCM_DIS);
+> @@ -756,6 +804,7 @@ static int __maybe_unused mtk_iommu_resume(struct device *dev)
+>  		dev_err(data->dev, "Failed to enable clk(%d) in resume\n", ret);
+>  		return ret;
+>  	}
+> +	writel_relaxed(reg->wr_len, base + REG_MMU_WR_LEN);
+>  	writel_relaxed(reg->standard_axi_mode,
+>  		       base + REG_MMU_STANDARD_AXI_MODE);
+>  	writel_relaxed(reg->dcm_dis, base + REG_MMU_DCM_DIS);
+> @@ -779,7 +828,20 @@ static const struct mtk_iommu_plat_data mt2712_data = {
+>  	.has_4gb_mode = true,
+>  	.has_bclk     = true,
+>  	.has_vld_pa_rng   = true,
+> -	.larbid_remap = {0, 1, 2, 3, 4, 5, 6, 7, 8, 9},
+> +	.larbid_remap[0] = {0, 1, 2, 3, 4, 5, 6, 7, 8, 9},
+> +	.inv_sel_reg = REG_MMU_INV_SEL,
+> +};
+> +
+> +static const struct mtk_iommu_plat_data mt6779_data = {
+> +	.m4u_plat = M4U_MT6779,
+> +	.larbid_remap[0] = {0, 1, 2, 3, 5, 7, 10, 9},
+> +	/* vp6a, vp6b, mdla/core2, mdla/edmc*/
+> +	.larbid_remap[1] = {2, 0, 3, 1},
+> +	.has_sub_comm = {true, true},
+> +	.has_wr_len = true,
+> +	.has_misc_ctrl = {true, false},
+> +	.inv_sel_reg = REG_MMU_INV_SEL_MT6779,
+> +	.m4u1_mask =  BIT(6),
+>  };
+>  
+>  static const struct mtk_iommu_plat_data mt8173_data = {
+> @@ -787,17 +849,20 @@ static const struct mtk_iommu_plat_data mt8173_data = {
+>  	.has_4gb_mode = true,
+>  	.has_bclk     = true,
+>  	.reset_axi    = true,
+> -	.larbid_remap = {0, 1, 2, 3, 4, 5}, /* Linear mapping. */
+> +	.larbid_remap[0] = {0, 1, 2, 3, 4, 5}, /* Linear mapping. */
+> +	.inv_sel_reg = REG_MMU_INV_SEL,
+>  };
+>  
+>  static const struct mtk_iommu_plat_data mt8183_data = {
+>  	.m4u_plat     = M4U_MT8183,
+>  	.reset_axi    = true,
+> -	.larbid_remap = {0, 4, 5, 6, 7, 2, 3, 1},
+> +	.larbid_remap[0] = {0, 4, 5, 6, 7, 2, 3, 1},
+> +	.inv_sel_reg = REG_MMU_INV_SEL,
+>  };
+>  
+>  static const struct of_device_id mtk_iommu_of_ids[] = {
+>  	{ .compatible = "mediatek,mt2712-m4u", .data = &mt2712_data},
+> +	{ .compatible = "mediatek,mt6779-m4u", .data = &mt6779_data},
+>  	{ .compatible = "mediatek,mt8173-m4u", .data = &mt8173_data},
+>  	{ .compatible = "mediatek,mt8183-m4u", .data = &mt8183_data},
+>  	{}
+> diff --git a/drivers/iommu/mtk_iommu.h b/drivers/iommu/mtk_iommu.h
+> index ea949a324e33..132dc765a40b 100644
+> --- a/drivers/iommu/mtk_iommu.h
+> +++ b/drivers/iommu/mtk_iommu.h
+> @@ -25,11 +25,13 @@ struct mtk_iommu_suspend_reg {
+>  	u32				int_main_control;
+>  	u32				ivrp_paddr;
+>  	u32				vld_pa_rng;
+> +	u32				wr_len;
+>  };
+>  
+>  enum mtk_iommu_plat {
+>  	M4U_MT2701,
+>  	M4U_MT2712,
+> +	M4U_MT6779,
+>  	M4U_MT8173,
+>  	M4U_MT8183,
+>  };
+> @@ -42,7 +44,12 @@ struct mtk_iommu_plat_data {
+>  	bool                has_bclk;
+>  	bool                has_vld_pa_rng;
+>  	bool                reset_axi;
+> -	unsigned char       larbid_remap[MTK_LARB_NR_MAX];
+> +	bool                has_sub_comm[2];
+> +	bool                has_wr_len;
+> +	bool                has_misc_ctrl[2];
+> +	u32                 inv_sel_reg;
+> +	u32                 m4u1_mask;
+
+alphabetically for the new ones.
+
+> +	unsigned char       larbid_remap[2][MTK_LARB_NR_MAX];
+>  };
+>  
+>  struct mtk_iommu_domain;
+> @@ -59,6 +66,7 @@ struct mtk_iommu_data {
+>  	bool                            enable_4GB;
+>  	spinlock_t			tlb_lock; /* lock for tlb range flush */
+>  
+> +	u32				m4u_id;
+>  	struct iommu_device		iommu;
+>  	const struct mtk_iommu_plat_data *plat_data;
+
+Basically this patch looks ok for me. But please split it to several
+patches:
+
+1) Extend larbid_remap to larbid_remap[2].
+   Actually mt2712 also need this. this is the mt2712 definition.
+   larbid_remap[0] = {0, 1, 2, 3},
+   larbid_remap[1] = {4, 5, 7, 8, 9},
+
+2) Regarding the 0x48(misc_ctrl register)
+
+3) Add m4u1_mask to distinguish the m4u_id.
+
+4) Add REG_MMU_WR_LEN if you need.
+
+5) Put inv_sel_reg in the plat_data for preparing add 0x2c support in
+mt6779.
+
+6) Add new flow to get SUB_COMMON ID and VPU larbid in the translation
+fault.
+
+7) Add mt6779 support.
+
+>  
 
 _______________________________________________
 iommu mailing list
