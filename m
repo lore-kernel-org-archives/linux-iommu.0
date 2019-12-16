@@ -6,60 +6,60 @@ X-Spam-Status: No, score=-9.8 required=3.0 tests=HEADER_FROM_DIFFERENT_DOMAINS,
 	INCLUDES_PATCH,MAILING_LIST_MULTI,SIGNED_OFF_BY,SPF_HELO_NONE,SPF_PASS,
 	USER_AGENT_GIT autolearn=ham autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id B9DD9C2D0BF
-	for <iommu@archiver.kernel.org>; Mon, 16 Dec 2019 19:19:28 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 49FBCC43603
+	for <iommu@archiver.kernel.org>; Mon, 16 Dec 2019 19:19:30 +0000 (UTC)
 Received: from fraxinus.osuosl.org (smtp4.osuosl.org [140.211.166.137])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by mail.kernel.org (Postfix) with ESMTPS id 9680020717
-	for <iommu@archiver.kernel.org>; Mon, 16 Dec 2019 19:19:28 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 9680020717
+	by mail.kernel.org (Postfix) with ESMTPS id 2500C2146E
+	for <iommu@archiver.kernel.org>; Mon, 16 Dec 2019 19:19:29 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 2500C2146E
 Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=linux.intel.com
 Authentication-Results: mail.kernel.org; spf=pass smtp.mailfrom=iommu-bounces@lists.linux-foundation.org
 Received: from localhost (localhost [127.0.0.1])
-	by fraxinus.osuosl.org (Postfix) with ESMTP id 735038691C;
-	Mon, 16 Dec 2019 19:19:28 +0000 (UTC)
+	by fraxinus.osuosl.org (Postfix) with ESMTP id 35E538699B;
+	Mon, 16 Dec 2019 19:19:29 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
 Received: from fraxinus.osuosl.org ([127.0.0.1])
 	by localhost (.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
-	with ESMTP id SpFZpiaQXlR6; Mon, 16 Dec 2019 19:19:27 +0000 (UTC)
+	with ESMTP id XVfhG-_KWbWg; Mon, 16 Dec 2019 19:19:27 +0000 (UTC)
 Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [140.211.9.56])
-	by fraxinus.osuosl.org (Postfix) with ESMTP id 33BCC86928;
+	by fraxinus.osuosl.org (Postfix) with ESMTP id 6A5BB868C7;
 	Mon, 16 Dec 2019 19:19:27 +0000 (UTC)
 Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
-	by lists.linuxfoundation.org (Postfix) with ESMTP id 0C586C1D87;
+	by lists.linuxfoundation.org (Postfix) with ESMTP id 5AE9CC1AE8;
 	Mon, 16 Dec 2019 19:19:27 +0000 (UTC)
-Received: from hemlock.osuosl.org (smtp2.osuosl.org [140.211.166.133])
- by lists.linuxfoundation.org (Postfix) with ESMTP id 104D0C1AE8
+Received: from whitealder.osuosl.org (smtp1.osuosl.org [140.211.166.138])
+ by lists.linuxfoundation.org (Postfix) with ESMTP id 318F7C077D
  for <iommu@lists.linux-foundation.org>; Mon, 16 Dec 2019 19:19:25 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
- by hemlock.osuosl.org (Postfix) with ESMTP id F222F881AB
- for <iommu@lists.linux-foundation.org>; Mon, 16 Dec 2019 19:19:24 +0000 (UTC)
+ by whitealder.osuosl.org (Postfix) with ESMTP id 1F0B587048
+ for <iommu@lists.linux-foundation.org>; Mon, 16 Dec 2019 19:19:25 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from hemlock.osuosl.org ([127.0.0.1])
+Received: from whitealder.osuosl.org ([127.0.0.1])
  by localhost (.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
- with ESMTP id T937s5Psv+YR for <iommu@lists.linux-foundation.org>;
+ with ESMTP id qAh+mAuolgKy for <iommu@lists.linux-foundation.org>;
  Mon, 16 Dec 2019 19:19:24 +0000 (UTC)
 X-Greylist: domain auto-whitelisted by SQLgrey-1.7.6
-Received: from mga17.intel.com (mga17.intel.com [192.55.52.151])
- by hemlock.osuosl.org (Postfix) with ESMTPS id 447088815E
+Received: from mga05.intel.com (mga05.intel.com [192.55.52.43])
+ by whitealder.osuosl.org (Postfix) with ESMTPS id 2DB008774F
  for <iommu@lists.linux-foundation.org>; Mon, 16 Dec 2019 19:19:24 +0000 (UTC)
 X-Amp-Result: SKIPPED(no attachment in message)
 X-Amp-File-Uploaded: False
 Received: from orsmga008.jf.intel.com ([10.7.209.65])
- by fmsmga107.fm.intel.com with ESMTP/TLS/DHE-RSA-AES256-GCM-SHA384;
+ by fmsmga105.fm.intel.com with ESMTP/TLS/DHE-RSA-AES256-GCM-SHA384;
  16 Dec 2019 11:19:23 -0800
 X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.69,322,1571727600"; d="scan'208";a="209411664"
+X-IronPort-AV: E=Sophos;i="5.69,322,1571727600"; d="scan'208";a="209411653"
 Received: from jacob-builder.jf.intel.com ([10.7.199.155])
  by orsmga008.jf.intel.com with ESMTP; 16 Dec 2019 11:19:23 -0800
 From: Jacob Pan <jacob.jun.pan@linux.intel.com>
 To: iommu@lists.linux-foundation.org, LKML <linux-kernel@vger.kernel.org>,
  Joerg Roedel <joro@8bytes.org>, "Lu Baolu" <baolu.lu@linux.intel.com>,
  David Woodhouse <dwmw2@infradead.org>
-Subject: [PATCH v8 09/10] iommu/ioasid: Add notifier for status change
-Date: Mon, 16 Dec 2019 11:24:11 -0800
-Message-Id: <1576524252-79116-10-git-send-email-jacob.jun.pan@linux.intel.com>
+Subject: [PATCH v8 06/10] iommu/vt-d: Cache virtual command capability register
+Date: Mon, 16 Dec 2019 11:24:08 -0800
+Message-Id: <1576524252-79116-7-git-send-email-jacob.jun.pan@linux.intel.com>
 X-Mailer: git-send-email 2.7.4
 In-Reply-To: <1576524252-79116-1-git-send-email-jacob.jun.pan@linux.intel.com>
 References: <1576524252-79116-1-git-send-email-jacob.jun.pan@linux.intel.com>
@@ -82,150 +82,49 @@ Content-Transfer-Encoding: 7bit
 Errors-To: iommu-bounces@lists.linux-foundation.org
 Sender: "iommu" <iommu-bounces@lists.linux-foundation.org>
 
-IOASIDs are system resources that can be shared by multiple drivers or
-subsystems. When status of an IOASID changes at runtime, there is need
-to notify all current users such that proper actions can be taken.
-
-For example, an IOASID can be used by IOMMU subsystem for guest SVM as
-well as KVM. When the guest is terminating unexpectedly, both KVM and
-IOMMU need to perform clean up action before the IOASID is reclaimed.
-
-This patch adds a per IOASID notifier that can be registered by
-interesting parties.
+Virtual command registers are used in the guest only, to prevent
+vmexit cost, we cache the capability and store it during initialization.
 
 Signed-off-by: Jacob Pan <jacob.jun.pan@linux.intel.com>
 ---
- drivers/iommu/ioasid.c | 43 +++++++++++++++++++++++++++++++++++++++++++
- include/linux/ioasid.h | 20 ++++++++++++++++++++
- 2 files changed, 63 insertions(+)
+ drivers/iommu/dmar.c        | 1 +
+ include/linux/intel-iommu.h | 4 ++++
+ 2 files changed, 5 insertions(+)
 
-diff --git a/drivers/iommu/ioasid.c b/drivers/iommu/ioasid.c
-index 0f8dd377aada..53a2ab287f7d 100644
---- a/drivers/iommu/ioasid.c
-+++ b/drivers/iommu/ioasid.c
-@@ -15,6 +15,7 @@ struct ioasid_data {
- 	struct ioasid_set *set;
- 	void *private;
- 	struct rcu_head rcu;
-+	struct atomic_notifier_head notifications;
- };
- 
- /*
-@@ -314,6 +315,7 @@ ioasid_t ioasid_alloc(struct ioasid_set *set, ioasid_t min, ioasid_t max,
- 
- 	data->set = set;
- 	data->private = private;
-+	ATOMIC_INIT_NOTIFIER_HEAD(&data->notifications);
- 
- 	/*
- 	 * Custom allocator needs allocator data to perform platform specific
-@@ -360,6 +362,9 @@ void ioasid_free(ioasid_t ioasid)
- 		goto exit_unlock;
+diff --git a/drivers/iommu/dmar.c b/drivers/iommu/dmar.c
+index f2f5d75da94a..3f98dd9ad004 100644
+--- a/drivers/iommu/dmar.c
++++ b/drivers/iommu/dmar.c
+@@ -953,6 +953,7 @@ static int map_iommu(struct intel_iommu *iommu, u64 phys_addr)
+ 		warn_invalid_dmar(phys_addr, " returns all ones");
+ 		goto unmap;
  	}
++	iommu->vccap = dmar_readq(iommu->reg + DMAR_VCCAP_REG);
  
-+	/* Notify all users that this IOASID is being freed */
-+	atomic_notifier_call_chain(&ioasid_data->notifications, IOASID_FREE,
-+				     &ioasid);
- 	active_allocator->ops->free(ioasid, active_allocator->ops->pdata);
- 	/* Custom allocator needs additional steps to free the xa element */
- 	if (active_allocator->flags & IOASID_ALLOCATOR_CUSTOM) {
-@@ -416,6 +421,44 @@ void *ioasid_find(struct ioasid_set *set, ioasid_t ioasid,
- }
- EXPORT_SYMBOL_GPL(ioasid_find);
+ 	/* the registers might be more than one page */
+ 	map_size = max_t(int, ecap_max_iotlb_offset(iommu->ecap),
+diff --git a/include/linux/intel-iommu.h b/include/linux/intel-iommu.h
+index ee26989df008..4d25141ec3df 100644
+--- a/include/linux/intel-iommu.h
++++ b/include/linux/intel-iommu.h
+@@ -189,6 +189,9 @@
+ #define ecap_max_handle_mask(e) ((e >> 20) & 0xf)
+ #define ecap_sc_support(e)	((e >> 7) & 0x1) /* Snooping Control */
  
-+int ioasid_add_notifier(ioasid_t ioasid, struct notifier_block *nb)
-+{
-+	struct ioasid_allocator_data *idata;
-+	struct ioasid_data *data;
-+	int ret = 0;
++/* Virtual command interface capabilities */
++#define vccap_pasid(v)		((v & DMA_VCS_PAS)) /* PASID allocation */
 +
-+	rcu_read_lock();
-+	idata = rcu_dereference(active_allocator);
-+	data = xa_load(&idata->xa, ioasid);
-+	if (!data) {
-+		ret = -ENOENT;
-+		goto unlock;
-+	}
-+	ret = atomic_notifier_chain_register(&data->notifications, nb);
-+unlock:
-+	rcu_read_unlock();
-+	return ret;
-+}
-+EXPORT_SYMBOL_GPL(ioasid_add_notifier);
-+
-+void ioasid_remove_notifier(ioasid_t ioasid, struct notifier_block *nb)
-+{
-+	struct ioasid_allocator_data *idata;
-+	struct ioasid_data *data;
-+
-+	rcu_read_lock();
-+	idata = rcu_dereference(active_allocator);
-+	data = xa_load(&idata->xa, ioasid);
-+	rcu_read_unlock();
-+	if (!data) {
-+		pr_err("IOASID %d not found\n", ioasid);
-+		return;
-+	}
-+	/* Unregister can sleep, called outside RCU critical section. */
-+	atomic_notifier_chain_unregister(&data->notifications, nb);
-+}
-+EXPORT_SYMBOL_GPL(ioasid_remove_notifier);
-+
- MODULE_AUTHOR("Jean-Philippe Brucker <jean-philippe.brucker@arm.com>");
- MODULE_AUTHOR("Jacob Pan <jacob.jun.pan@linux.intel.com>");
- MODULE_DESCRIPTION("IO Address Space ID (IOASID) allocator");
-diff --git a/include/linux/ioasid.h b/include/linux/ioasid.h
-index 6f000d7a0ddc..4517c4be4088 100644
---- a/include/linux/ioasid.h
-+++ b/include/linux/ioasid.h
-@@ -4,6 +4,7 @@
- 
- #include <linux/types.h>
- #include <linux/errno.h>
-+#include <linux/notifier.h>
- 
- #define INVALID_IOASID ((ioasid_t)-1)
- typedef unsigned int ioasid_t;
-@@ -29,6 +30,12 @@ struct ioasid_allocator_ops {
- 	void *pdata;
- };
- 
-+/* Notification data when IOASID status changed */
-+enum ioasid_notify_val {
-+	IOASID_FREE = 1,
-+	IOASID_SUSPEND,
-+};
-+
- #define DECLARE_IOASID_SET(name) struct ioasid_set name = { 0 }
- 
- #if IS_ENABLED(CONFIG_IOASID)
-@@ -40,6 +47,8 @@ void *ioasid_find(struct ioasid_set *set, ioasid_t ioasid,
- int ioasid_register_allocator(struct ioasid_allocator_ops *allocator);
- void ioasid_unregister_allocator(struct ioasid_allocator_ops *allocator);
- int ioasid_set_data(ioasid_t ioasid, void *data);
-+int ioasid_add_notifier(ioasid_t ioasid, struct notifier_block *nb);
-+void ioasid_remove_notifier(ioasid_t ioasid, struct notifier_block *nb);
- 
- #else /* !CONFIG_IOASID */
- static inline ioasid_t ioasid_alloc(struct ioasid_set *set, ioasid_t min,
-@@ -58,6 +67,17 @@ static inline void *ioasid_find(struct ioasid_set *set, ioasid_t ioasid,
- 	return NULL;
- }
- 
-+static inline int ioasid_add_notifier(ioasid_t ioasid,
-+				      struct notifier_block *nb)
-+{
-+	return -ENOTSUPP;
-+}
-+
-+static inline void ioasid_remove_notifier(ioasid_t ioasid,
-+				       struct notifier_block *nb)
-+{
-+}
-+
- static inline int ioasid_register_allocator(struct ioasid_allocator_ops *allocator)
- {
- 	return -ENOTSUPP;
+ /* IOTLB_REG */
+ #define DMA_TLB_FLUSH_GRANU_OFFSET  60
+ #define DMA_TLB_GLOBAL_FLUSH (((u64)1) << 60)
+@@ -531,6 +534,7 @@ struct intel_iommu {
+ 	u64		reg_size; /* size of hw register set */
+ 	u64		cap;
+ 	u64		ecap;
++	u64		vccap;
+ 	u32		gcmd; /* Holds TE, EAFL. Don't need SRTP, SFL, WBF */
+ 	raw_spinlock_t	register_lock; /* protect register handling */
+ 	int		seq_id;	/* sequence id of the iommu */
 -- 
 2.7.4
 
