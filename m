@@ -2,65 +2,62 @@ Return-Path: <SRS0=3Hz1=2H=lists.linux-foundation.org=iommu-bounces@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-2.3 required=3.0 tests=HEADER_FROM_DIFFERENT_DOMAINS,
-	MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS,USER_AGENT_SANE_1 autolearn=no
-	autolearn_force=no version=3.4.0
+X-Spam-Status: No, score=-5.3 required=3.0 tests=HEADER_FROM_DIFFERENT_DOMAINS,
+	MAILING_LIST_MULTI,SIGNED_OFF_BY,SPF_HELO_NONE,SPF_PASS,USER_AGENT_SANE_1
+	autolearn=ham autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id EB480C43603
-	for <iommu@archiver.kernel.org>; Tue, 17 Dec 2019 10:08:57 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 9777FC43603
+	for <iommu@archiver.kernel.org>; Tue, 17 Dec 2019 10:12:46 +0000 (UTC)
 Received: from fraxinus.osuosl.org (smtp4.osuosl.org [140.211.166.137])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by mail.kernel.org (Postfix) with ESMTPS id BA7C02072D
-	for <iommu@archiver.kernel.org>; Tue, 17 Dec 2019 10:08:57 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org BA7C02072D
+	by mail.kernel.org (Postfix) with ESMTPS id 703862072D
+	for <iommu@archiver.kernel.org>; Tue, 17 Dec 2019 10:12:46 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 703862072D
 Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=8bytes.org
 Authentication-Results: mail.kernel.org; spf=pass smtp.mailfrom=iommu-bounces@lists.linux-foundation.org
 Received: from localhost (localhost [127.0.0.1])
-	by fraxinus.osuosl.org (Postfix) with ESMTP id 765AD85F09;
-	Tue, 17 Dec 2019 10:08:57 +0000 (UTC)
+	by fraxinus.osuosl.org (Postfix) with ESMTP id 4F19685DD8;
+	Tue, 17 Dec 2019 10:12:46 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
 Received: from fraxinus.osuosl.org ([127.0.0.1])
 	by localhost (.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
-	with ESMTP id mLlgGjY9OGvx; Tue, 17 Dec 2019 10:08:56 +0000 (UTC)
+	with ESMTP id 7dRZ1H0mfgsV; Tue, 17 Dec 2019 10:12:45 +0000 (UTC)
 Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [140.211.9.56])
-	by fraxinus.osuosl.org (Postfix) with ESMTP id EF9EB85C4C;
-	Tue, 17 Dec 2019 10:08:56 +0000 (UTC)
+	by fraxinus.osuosl.org (Postfix) with ESMTP id D9CBE85BCA;
+	Tue, 17 Dec 2019 10:12:45 +0000 (UTC)
 Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
-	by lists.linuxfoundation.org (Postfix) with ESMTP id CD900C1AE8;
-	Tue, 17 Dec 2019 10:08:56 +0000 (UTC)
+	by lists.linuxfoundation.org (Postfix) with ESMTP id BE69FC1AE8;
+	Tue, 17 Dec 2019 10:12:45 +0000 (UTC)
 Received: from hemlock.osuosl.org (smtp2.osuosl.org [140.211.166.133])
- by lists.linuxfoundation.org (Postfix) with ESMTP id 83227C077D;
- Tue, 17 Dec 2019 10:08:55 +0000 (UTC)
+ by lists.linuxfoundation.org (Postfix) with ESMTP id 64A06C077D
+ for <iommu@lists.linux-foundation.org>; Tue, 17 Dec 2019 10:12:44 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
- by hemlock.osuosl.org (Postfix) with ESMTP id 71DDC877A0;
- Tue, 17 Dec 2019 10:08:55 +0000 (UTC)
+ by hemlock.osuosl.org (Postfix) with ESMTP id 5B76C87216
+ for <iommu@lists.linux-foundation.org>; Tue, 17 Dec 2019 10:12:44 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
 Received: from hemlock.osuosl.org ([127.0.0.1])
  by localhost (.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
- with ESMTP id if6tcDxsm2Oo; Tue, 17 Dec 2019 10:08:54 +0000 (UTC)
-X-Greylist: from auto-whitelisted by SQLgrey-1.7.6
+ with ESMTP id K81xTRkEfGgm for <iommu@lists.linux-foundation.org>;
+ Tue, 17 Dec 2019 10:12:44 +0000 (UTC)
 X-Greylist: from auto-whitelisted by SQLgrey-1.7.6
 Received: from theia.8bytes.org (8bytes.org [81.169.241.247])
- by hemlock.osuosl.org (Postfix) with ESMTPS id 4099A8777C;
- Tue, 17 Dec 2019 10:08:54 +0000 (UTC)
+ by hemlock.osuosl.org (Postfix) with ESMTPS id D6150870A9
+ for <iommu@lists.linux-foundation.org>; Tue, 17 Dec 2019 10:12:43 +0000 (UTC)
 Received: by theia.8bytes.org (Postfix, from userid 1000)
- id AAE48286; Tue, 17 Dec 2019 11:08:51 +0100 (CET)
-Date: Tue, 17 Dec 2019 11:08:50 +0100
+ id 00D53286; Tue, 17 Dec 2019 11:12:41 +0100 (CET)
+Date: Tue, 17 Dec 2019 11:12:40 +0100
 From: Joerg Roedel <joro@8bytes.org>
-To: Thierry Reding <thierry.reding@gmail.com>
-Subject: Re: [PATCH v2 0/5] iommu: Implement iommu_put_resv_regions_simple()
-Message-ID: <20191217100850.GI8689@8bytes.org>
-References: <20191209145007.2433144-1-thierry.reding@gmail.com>
+To: Robin Murphy <robin.murphy@arm.com>
+Subject: Re: [PATCH v2] iommu/dma: Relax locking in iommu_dma_prepare_msi()
+Message-ID: <20191217101240.GJ8689@8bytes.org>
+References: <6fe5ef45ebfa613d098c1b7f59f6599dabd589c7.1575920766.git.robin.murphy@arm.com>
 MIME-Version: 1.0
 Content-Disposition: inline
-In-Reply-To: <20191209145007.2433144-1-thierry.reding@gmail.com>
+In-Reply-To: <6fe5ef45ebfa613d098c1b7f59f6599dabd589c7.1575920766.git.robin.murphy@arm.com>
 User-Agent: Mutt/1.10.1 (2018-07-13)
 Cc: Jean-Philippe Brucker <jean-philippe@linaro.org>,
- Will Deacon <will@kernel.org>, linux-kernel@vger.kernel.org,
- virtualization@lists.linux-foundation.org, iommu@lists.linux-foundation.org,
- Robin Murphy <robin.murphy@arm.com>, David Woodhouse <dwmw2@infradead.org>,
- linux-arm-kernel@lists.infradead.org
+ iommu@lists.linux-foundation.org
 X-BeenThere: iommu@lists.linux-foundation.org
 X-Mailman-Version: 2.1.15
 Precedence: list
@@ -78,36 +75,24 @@ Content-Transfer-Encoding: 7bit
 Errors-To: iommu-bounces@lists.linux-foundation.org
 Sender: "iommu" <iommu-bounces@lists.linux-foundation.org>
 
-Hi Thierry
-
-On Mon, Dec 09, 2019 at 03:50:02PM +0100, Thierry Reding wrote:
-> From: Thierry Reding <treding@nvidia.com>
+On Mon, Dec 09, 2019 at 07:47:25PM +0000, Robin Murphy wrote:
+> Since commit ece6e6f0218b ("iommu/dma-iommu: Split iommu_dma_map_msi_msg()
+> in two parts"), iommu_dma_prepare_msi() should no longer have to worry
+> about preempting itself, nor being called in atomic context at all. Thus
+> we can downgrade the IRQ-safe locking to a simple mutex to avoid angering
+> the new might_sleep() check in iommu_map().
 > 
-> Most IOMMU drivers only need to free the memory allocated for each
-> reserved region. Instead of open-coding the loop to do this in each
-> driver, extract the code into a common function that can be used by
-> all these drivers.
+> Reported-by: Qian Cai <cai@lca.pw>
+> Tested-by: Jean-Philippe Brucker <jean-philippe@linaro.org>
+> Signed-off-by: Robin Murphy <robin.murphy@arm.com>
+> ---
 > 
-> Changes in v2:
-> - change subject prefix to "iommu: virtio: " for virtio-iommu.c driver
+> v2: Clarify comments a bit
 > 
-> Thierry
-> 
-> Thierry Reding (5):
->   iommu: Implement iommu_put_resv_regions_simple()
->   iommu: arm: Use iommu_put_resv_regions_simple()
->   iommu: amd: Use iommu_put_resv_regions_simple()
->   iommu: intel: Use iommu_put_resv_regions_simple()
->   iommu: virtio: Use iommu_put_resv_regions_simple()
+>  drivers/iommu/dma-iommu.c | 17 ++++++++---------
+>  1 file changed, 8 insertions(+), 9 deletions(-)
 
-Thanks, that is a nice consolidation. Just a minor nit, can you please
-rename iommu_put_resv_regions_simple to
-generic_iommu_put_resv_regsions(). That matches the naming in other
-places where we have done similar things.
-
-Thanks,
-
-	Joerg
+Applied, thanks.
 _______________________________________________
 iommu mailing list
 iommu@lists.linux-foundation.org
