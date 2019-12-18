@@ -2,94 +2,97 @@ Return-Path: <SRS0=Tv0G=2I=lists.linux-foundation.org=iommu-bounces@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-5.2 required=3.0 tests=DKIM_INVALID,DKIM_SIGNED,
-	HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_PATCH,MAILING_LIST_MULTI,SIGNED_OFF_BY,
-	SPF_HELO_NONE,SPF_PASS,UNWANTED_LANGUAGE_BODY,USER_AGENT_SANE_1
-	autolearn=unavailable autolearn_force=no version=3.4.0
+X-Spam-Status: No, score=-3.8 required=3.0 tests=HEADER_FROM_DIFFERENT_DOMAINS,
+	INCLUDES_PATCH,MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS autolearn=no
+	autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 0C277C43603
-	for <iommu@archiver.kernel.org>; Wed, 18 Dec 2019 17:03:50 +0000 (UTC)
-Received: from silver.osuosl.org (smtp3.osuosl.org [140.211.166.136])
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 96ECCC2D0BF
+	for <iommu@archiver.kernel.org>; Wed, 18 Dec 2019 17:45:22 +0000 (UTC)
+Received: from hemlock.osuosl.org (smtp2.osuosl.org [140.211.166.133])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by mail.kernel.org (Postfix) with ESMTPS id CD51A2176D
-	for <iommu@archiver.kernel.org>; Wed, 18 Dec 2019 17:03:49 +0000 (UTC)
-Authentication-Results: mail.kernel.org;
-	dkim=fail reason="signature verification failed" (1024-bit key) header.d=redhat.com header.i=@redhat.com header.b="ACSABPaZ"
-DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org CD51A2176D
-Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=redhat.com
+	by mail.kernel.org (Postfix) with ESMTPS id 6DCE7206E0
+	for <iommu@archiver.kernel.org>; Wed, 18 Dec 2019 17:45:22 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 6DCE7206E0
+Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=canonical.com
 Authentication-Results: mail.kernel.org; spf=pass smtp.mailfrom=iommu-bounces@lists.linux-foundation.org
 Received: from localhost (localhost [127.0.0.1])
-	by silver.osuosl.org (Postfix) with ESMTP id 90A5D20484;
-	Wed, 18 Dec 2019 17:03:49 +0000 (UTC)
+	by hemlock.osuosl.org (Postfix) with ESMTP id 1D95D884F3;
+	Wed, 18 Dec 2019 17:45:22 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from silver.osuosl.org ([127.0.0.1])
+Received: from hemlock.osuosl.org ([127.0.0.1])
 	by localhost (.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
-	with ESMTP id ze-owF3liEQ9; Wed, 18 Dec 2019 17:03:48 +0000 (UTC)
+	with ESMTP id MnU8ThD-bbQ1; Wed, 18 Dec 2019 17:45:21 +0000 (UTC)
 Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [140.211.9.56])
-	by silver.osuosl.org (Postfix) with ESMTP id 3F96420448;
-	Wed, 18 Dec 2019 17:03:48 +0000 (UTC)
+	by hemlock.osuosl.org (Postfix) with ESMTP id EF4D881E74;
+	Wed, 18 Dec 2019 17:45:20 +0000 (UTC)
 Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
-	by lists.linuxfoundation.org (Postfix) with ESMTP id 25FACC1797;
-	Wed, 18 Dec 2019 17:03:48 +0000 (UTC)
-Received: from whitealder.osuosl.org (smtp1.osuosl.org [140.211.166.138])
- by lists.linuxfoundation.org (Postfix) with ESMTP id 3339AC077D
- for <iommu@lists.linux-foundation.org>; Wed, 18 Dec 2019 17:03:46 +0000 (UTC)
+	by lists.linuxfoundation.org (Postfix) with ESMTP id DA09EC1AE8;
+	Wed, 18 Dec 2019 17:45:20 +0000 (UTC)
+Received: from hemlock.osuosl.org (smtp2.osuosl.org [140.211.166.133])
+ by lists.linuxfoundation.org (Postfix) with ESMTP id 00997C077D
+ for <iommu@lists.linux-foundation.org>; Wed, 18 Dec 2019 17:45:19 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
- by whitealder.osuosl.org (Postfix) with ESMTP id 13FE687A9D
- for <iommu@lists.linux-foundation.org>; Wed, 18 Dec 2019 17:03:46 +0000 (UTC)
+ by hemlock.osuosl.org (Postfix) with ESMTP id E7652884D9
+ for <iommu@lists.linux-foundation.org>; Wed, 18 Dec 2019 17:45:19 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from whitealder.osuosl.org ([127.0.0.1])
+Received: from hemlock.osuosl.org ([127.0.0.1])
  by localhost (.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
- with ESMTP id AjnF3RHnoSIh for <iommu@lists.linux-foundation.org>;
- Wed, 18 Dec 2019 17:03:44 +0000 (UTC)
+ with ESMTP id MjisXpLHHrJT for <iommu@lists.linux-foundation.org>;
+ Wed, 18 Dec 2019 17:45:18 +0000 (UTC)
 X-Greylist: domain auto-whitelisted by SQLgrey-1.7.6
-Received: from us-smtp-1.mimecast.com (us-smtp-delivery-1.mimecast.com
- [207.211.31.120])
- by whitealder.osuosl.org (Postfix) with ESMTPS id BA55887A84
- for <iommu@lists.linux-foundation.org>; Wed, 18 Dec 2019 17:03:44 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
- s=mimecast20190719; t=1576688623;
- h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
- to:to:cc:cc:mime-version:mime-version:content-type:content-type:
- content-transfer-encoding:content-transfer-encoding:
- in-reply-to:in-reply-to:references:references;
- bh=WDREvgNKYOH4tkQtqNRCg/aN7CchlzmlFIIJzKjPaNM=;
- b=ACSABPaZ5ytR8IPuOFhl3CexmbuAq5s8Beh6FgP4lZbMQ+GT7MAYrufd4uVYNIy99PyXGj
- 1BueY1L5LhS7JdU2MeovZ4uDFZodm6EN+GsKkY023T6qqt7g9E866nRaBl96mQM8X2ycqf
- oAz+iTsQ2zKqu+mh7j0bWNc57BzbBzI=
-Received: from mimecast-mx01.redhat.com (mimecast-mx01.redhat.com
- [209.132.183.4]) (Using TLS) by relay.mimecast.com with ESMTP id
- us-mta-417-p9XJiJe8NUSgQ2icRxKShA-1; Wed, 18 Dec 2019 12:03:41 -0500
-X-MC-Unique: p9XJiJe8NUSgQ2icRxKShA-1
-Received: from smtp.corp.redhat.com (int-mx08.intmail.prod.int.phx2.redhat.com
- [10.5.11.23])
- (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
- (No client certificate requested)
- by mimecast-mx01.redhat.com (Postfix) with ESMTPS id 0803A10054E3;
- Wed, 18 Dec 2019 17:03:38 +0000 (UTC)
-Received: from [10.36.116.117] (ovpn-116-117.ams2.redhat.com [10.36.116.117])
- by smtp.corp.redhat.com (Postfix) with ESMTPS id B1E3726DE4;
- Wed, 18 Dec 2019 17:03:33 +0000 (UTC)
-Subject: Re: [PATCH v3 07/13] iommu/arm-smmu-v3: Add support for Substream IDs
-To: Jean-Philippe Brucker <jean-philippe@linaro.org>,
- linux-pci@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
- linux-acpi@vger.kernel.org, devicetree@vger.kernel.org,
- iommu@lists.linux-foundation.org
-References: <20191209180514.272727-1-jean-philippe@linaro.org>
- <20191209180514.272727-8-jean-philippe@linaro.org>
-From: Auger Eric <eric.auger@redhat.com>
-Message-ID: <4da9ca12-6a81-bddb-96f7-1afdf0a7d38c@redhat.com>
-Date: Wed, 18 Dec 2019 18:03:32 +0100
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:60.0) Gecko/20100101
- Thunderbird/60.4.0
-MIME-Version: 1.0
-In-Reply-To: <20191209180514.272727-8-jean-philippe@linaro.org>
-Content-Language: en-US
-X-Scanned-By: MIMEDefang 2.84 on 10.5.11.23
-Cc: mark.rutland@arm.com, robin.murphy@arm.com, guohanjun@huawei.com,
- rjw@rjwysocki.net, robh+dt@kernel.org, sudeep.holla@arm.com,
- bhelgaas@google.com, zhangfei.gao@linaro.org, will@kernel.org, lenb@kernel.org
+Received: from youngberry.canonical.com (youngberry.canonical.com
+ [91.189.89.112])
+ by hemlock.osuosl.org (Postfix) with ESMTPS id B960E81E74
+ for <iommu@lists.linux-foundation.org>; Wed, 18 Dec 2019 17:45:18 +0000 (UTC)
+Received: from mail-pg1-f198.google.com ([209.85.215.198])
+ by youngberry.canonical.com with esmtps
+ (TLS1.2:ECDHE_RSA_AES_128_GCM_SHA256:128) (Exim 4.86_2)
+ (envelope-from <kai.heng.feng@canonical.com>) id 1ihdNs-0004ja-EC
+ for iommu@lists.linux-foundation.org; Wed, 18 Dec 2019 17:45:16 +0000
+Received: by mail-pg1-f198.google.com with SMTP id r30so1592007pgm.8
+ for <iommu@lists.linux-foundation.org>; Wed, 18 Dec 2019 09:45:16 -0800 (PST)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+ d=1e100.net; s=20161025;
+ h=x-gm-message-state:mime-version:subject:from:in-reply-to:date:cc
+ :content-transfer-encoding:message-id:references:to;
+ bh=CzJIe/ffK0Cy9dGmo5snkYTLNlJ7h/X98lBF+TTzmE4=;
+ b=Mc/+CrG2dsMGVvC4NP9SShjl/n0lU6VGxb/IqBROsktKJSihODbqo0Pxd91QP+Bl1T
+ f76NxgoPhutAKGxwqfTItWwhUpJcDVtNuf5mHy4luBLdI1eDq/qaCwbPKy+eEKlGFyI1
+ Bo7JtWhbySMzPOsU3GRZKHPphUepSegyTTz0Zsjv7+bI65Sljj+Vyi/EduO6rXqKXL0P
+ w/S4wPyYdvR5l0WtGHytM4VwuKJ9izyJCkHK5XcKk2t0zZpXIrgiOjKNesWDI96vInaA
+ GOTEh9DbJAWenyzpaVeOIOzja+oI8tRcgAJywkhiQnuz8XWg1fmv3wEthY7Ssuc5RFSF
+ 2JIw==
+X-Gm-Message-State: APjAAAWpjjKS9pIgpfVl9UVJl0XOKJBqC34N0rO07Gu0l+ryLrAKaF0P
+ dQDcGAVRButkA8tzf05fcV81X0lRRW6g/3wYbXFGDsYtD493VIkqNfIE3rs5KsYF1FsFM+4OdgT
+ Alkp6Ud/inx7zNC/X0CuCCrOD1QpR8nVJOyXTuSPuP+5yqh8=
+X-Received: by 2002:a17:90a:2569:: with SMTP id
+ j96mr4155626pje.79.1576691115177; 
+ Wed, 18 Dec 2019 09:45:15 -0800 (PST)
+X-Google-Smtp-Source: APXvYqwyH6xcPAWhSHy2jU3nxyhUJ0d9R0PRxz/YrDqBUWuZ5HtCjckFpIx1XRhjduqoXafMoPYHgw==
+X-Received: by 2002:a17:90a:2569:: with SMTP id
+ j96mr4155589pje.79.1576691114779; 
+ Wed, 18 Dec 2019 09:45:14 -0800 (PST)
+Received: from 2001-b011-380f-35a3-692d-81ea-6119-88ec.dynamic-ip6.hinet.net
+ (2001-b011-380f-35a3-692d-81ea-6119-88ec.dynamic-ip6.hinet.net.
+ [2001:b011:380f:35a3:692d:81ea:6119:88ec])
+ by smtp.gmail.com with ESMTPSA id a195sm4141574pfa.120.2019.12.18.09.45.13
+ (version=TLS1_2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128/128);
+ Wed, 18 Dec 2019 09:45:14 -0800 (PST)
+Mime-Version: 1.0 (Mac OS X Mail 13.0 \(3608.40.2.2.4\))
+Subject: Re: [PATCH v2] iommu/amd: Disable IOMMU on Stoney Ridge systems
+From: Kai-Heng Feng <kai.heng.feng@canonical.com>
+In-Reply-To: <20191217095341.GG8689@8bytes.org>
+Date: Thu, 19 Dec 2019 01:45:12 +0800
+Message-Id: <6DC0EAB3-89B5-4A16-9A38-D7AD954DDF1C@canonical.com>
+References: <20191129142154.29658-1-kai.heng.feng@canonical.com>
+ <20191202170011.GC30032@infradead.org>
+ <974A8EB3-70B6-4A33-B36C-CFF69464493C@canonical.com>
+ <20191217095341.GG8689@8bytes.org>
+To: Joerg Roedel <joro@8bytes.org>
+X-Mailer: Apple Mail (2.3608.40.2.2.4)
+Cc: Alex Deucher <alexander.deucher@amd.com>, iommu@lists.linux-foundation.org,
+ Kernel development list <linux-kernel@vger.kernel.org>
 X-BeenThere: iommu@lists.linux-foundation.org
 X-Mailman-Version: 2.1.15
 Precedence: list
@@ -107,263 +110,95 @@ Content-Transfer-Encoding: 7bit
 Errors-To: iommu-bounces@lists.linux-foundation.org
 Sender: "iommu" <iommu-bounces@lists.linux-foundation.org>
 
-Hi jean,
 
-On 12/9/19 7:05 PM, Jean-Philippe Brucker wrote:
-> At the moment, the SMMUv3 driver implements only one stage-1 or stage-2
-> page directory per device. However SMMUv3 allows more than one address
-> space for some devices, by providing multiple stage-1 page directories. In
-> addition to the Stream ID (SID), that identifies a device, we can now have
-> Substream IDs (SSID) identifying an address space. In PCIe, SID is called
-> Requester ID (RID) and SSID is called Process Address-Space ID (PASID).
-> A complete stage-1 walk goes through the context descriptor table:
-> 
->       Stream tables       Ctx. Desc. tables       Page tables
->         +--------+   ,------->+-------+   ,------->+-------+
->         :        :   |        :       :   |        :       :
->         +--------+   |        +-------+   |        +-------+
->    SID->|  STE   |---'  SSID->|  CD   |---'  IOVA->|  PTE  |--> IPA
->         +--------+            +-------+            +-------+
->         :        :            :       :            :       :
->         +--------+            +-------+            +-------+
-> 
-> Rewrite arm_smmu_write_ctx_desc() to modify context descriptor table
-> entries. To keep things simple we only implement one level of context
-> descriptor tables here, but as with stream and page tables, an SSID can
-> be split to index multiple levels of tables.
-> 
-> Reviewed-by: Jonathan Cameron <Jonathan.Cameron@huawei.com>
-> Signed-off-by: Jean-Philippe Brucker <jean-philippe@linaro.org>
-Reviewed-by: Eric Auger <eric.auger@redhat.com>
 
-Thanks
-
-Eric
-
-> ---
->  drivers/iommu/arm-smmu-v3.c | 125 +++++++++++++++++++++++++++++-------
->  1 file changed, 102 insertions(+), 23 deletions(-)
+> On Dec 17, 2019, at 17:53, Joerg Roedel <joro@8bytes.org> wrote:
 > 
-> diff --git a/drivers/iommu/arm-smmu-v3.c b/drivers/iommu/arm-smmu-v3.c
-> index 43d6a7ded6e4..a01071123c34 100644
-> --- a/drivers/iommu/arm-smmu-v3.c
-> +++ b/drivers/iommu/arm-smmu-v3.c
-> @@ -227,6 +227,11 @@
->  #define STRTAB_STE_0_S1CTXPTR_MASK	GENMASK_ULL(51, 6)
->  #define STRTAB_STE_0_S1CDMAX		GENMASK_ULL(63, 59)
->  
-> +#define STRTAB_STE_1_S1DSS		GENMASK_ULL(1, 0)
-> +#define STRTAB_STE_1_S1DSS_TERMINATE	0x0
-> +#define STRTAB_STE_1_S1DSS_BYPASS	0x1
-> +#define STRTAB_STE_1_S1DSS_SSID0	0x2
-> +
->  #define STRTAB_STE_1_S1C_CACHE_NC	0UL
->  #define STRTAB_STE_1_S1C_CACHE_WBRA	1UL
->  #define STRTAB_STE_1_S1C_CACHE_WT	2UL
-> @@ -329,6 +334,7 @@
->  #define CMDQ_PREFETCH_1_SIZE		GENMASK_ULL(4, 0)
->  #define CMDQ_PREFETCH_1_ADDR_MASK	GENMASK_ULL(63, 12)
->  
-> +#define CMDQ_CFGI_0_SSID		GENMASK_ULL(31, 12)
->  #define CMDQ_CFGI_0_SID			GENMASK_ULL(63, 32)
->  #define CMDQ_CFGI_1_LEAF		(1UL << 0)
->  #define CMDQ_CFGI_1_RANGE		GENMASK_ULL(4, 0)
-> @@ -446,8 +452,11 @@ struct arm_smmu_cmdq_ent {
->  
->  		#define CMDQ_OP_CFGI_STE	0x3
->  		#define CMDQ_OP_CFGI_ALL	0x4
-> +		#define CMDQ_OP_CFGI_CD		0x5
-> +		#define CMDQ_OP_CFGI_CD_ALL	0x6
->  		struct {
->  			u32			sid;
-> +			u32			ssid;
->  			union {
->  				bool		leaf;
->  				u8		span;
-> @@ -568,6 +577,7 @@ struct arm_smmu_cd_table {
->  struct arm_smmu_s1_cfg {
->  	struct arm_smmu_cd_table	table;
->  	struct arm_smmu_ctx_desc	cd;
-> +	u8				s1fmt;
->  	u8				s1cdmax;
->  };
->  
-> @@ -860,10 +870,16 @@ static int arm_smmu_cmdq_build_cmd(u64 *cmd, struct arm_smmu_cmdq_ent *ent)
->  		cmd[1] |= FIELD_PREP(CMDQ_PREFETCH_1_SIZE, ent->prefetch.size);
->  		cmd[1] |= ent->prefetch.addr & CMDQ_PREFETCH_1_ADDR_MASK;
->  		break;
-> +	case CMDQ_OP_CFGI_CD:
-> +		cmd[0] |= FIELD_PREP(CMDQ_CFGI_0_SSID, ent->cfgi.ssid);
-> +		/* Fallthrough */
->  	case CMDQ_OP_CFGI_STE:
->  		cmd[0] |= FIELD_PREP(CMDQ_CFGI_0_SID, ent->cfgi.sid);
->  		cmd[1] |= FIELD_PREP(CMDQ_CFGI_1_LEAF, ent->cfgi.leaf);
->  		break;
-> +	case CMDQ_OP_CFGI_CD_ALL:
-> +		cmd[0] |= FIELD_PREP(CMDQ_CFGI_0_SID, ent->cfgi.sid);
-> +		break;
->  	case CMDQ_OP_CFGI_ALL:
->  		/* Cover the entire SID range */
->  		cmd[1] |= FIELD_PREP(CMDQ_CFGI_1_RANGE, 31);
-> @@ -1456,6 +1472,33 @@ static int arm_smmu_cmdq_issue_sync(struct arm_smmu_device *smmu)
->  }
->  
->  /* Context descriptor manipulation functions */
-> +static void arm_smmu_sync_cd(struct arm_smmu_domain *smmu_domain,
-> +			     int ssid, bool leaf)
-> +{
-> +	size_t i;
-> +	unsigned long flags;
-> +	struct arm_smmu_master *master;
-> +	struct arm_smmu_device *smmu = smmu_domain->smmu;
-> +	struct arm_smmu_cmdq_ent cmd = {
-> +		.opcode	= CMDQ_OP_CFGI_CD,
-> +		.cfgi	= {
-> +			.ssid	= ssid,
-> +			.leaf	= leaf,
-> +		},
-> +	};
-> +
-> +	spin_lock_irqsave(&smmu_domain->devices_lock, flags);
-> +	list_for_each_entry(master, &smmu_domain->devices, domain_head) {
-> +		for (i = 0; i < master->num_sids; i++) {
-> +			cmd.cfgi.sid = master->sids[i];
-> +			arm_smmu_cmdq_issue_cmd(smmu, &cmd);
-> +		}
-> +	}
-> +	spin_unlock_irqrestore(&smmu_domain->devices_lock, flags);
-> +
-> +	arm_smmu_cmdq_issue_sync(smmu);
-> +}
-> +
->  static int arm_smmu_alloc_cd_leaf_table(struct arm_smmu_device *smmu,
->  					struct arm_smmu_cd_table *table,
->  					size_t num_entries)
-> @@ -1498,34 +1541,65 @@ static u64 arm_smmu_cpu_tcr_to_cd(u64 tcr)
->  	return val;
->  }
->  
-> -static void arm_smmu_write_ctx_desc(struct arm_smmu_device *smmu,
-> -				    struct arm_smmu_s1_cfg *cfg)
-> +static int arm_smmu_write_ctx_desc(struct arm_smmu_domain *smmu_domain,
-> +				   int ssid, struct arm_smmu_ctx_desc *cd)
->  {
-> -	u64 val;
-> -	__le64 *cdptr = cfg->table.ptr;
-> -
->  	/*
-> -	 * We don't need to issue any invalidation here, as we'll invalidate
-> -	 * the STE when installing the new entry anyway.
-> +	 * This function handles the following cases:
-> +	 *
-> +	 * (1) Install primary CD, for normal DMA traffic (SSID = 0).
-> +	 * (2) Install a secondary CD, for SID+SSID traffic.
-> +	 * (3) Update ASID of a CD. Atomically write the first 64 bits of the
-> +	 *     CD, then invalidate the old entry and mappings.
-> +	 * (4) Remove a secondary CD.
->  	 */
-> -	val = arm_smmu_cpu_tcr_to_cd(cfg->cd.tcr) |
-> -#ifdef __BIG_ENDIAN
-> -	      CTXDESC_CD_0_ENDI |
-> -#endif
-> -	      CTXDESC_CD_0_R | CTXDESC_CD_0_A | CTXDESC_CD_0_ASET |
-> -	      CTXDESC_CD_0_AA64 | FIELD_PREP(CTXDESC_CD_0_ASID, cfg->cd.asid) |
-> -	      CTXDESC_CD_0_V;
-> +	u64 val;
-> +	bool cd_live;
-> +	struct arm_smmu_device *smmu = smmu_domain->smmu;
-> +	__le64 *cdptr = smmu_domain->s1_cfg.table.ptr + ssid *
-> +			CTXDESC_CD_DWORDS;
->  
-> -	/* STALL_MODEL==0b10 && CD.S==0 is ILLEGAL */
-> -	if (smmu->features & ARM_SMMU_FEAT_STALL_FORCE)
-> -		val |= CTXDESC_CD_0_S;
-> +	val = le64_to_cpu(cdptr[0]);
-> +	cd_live = !!(val & CTXDESC_CD_0_V);
->  
-> -	cdptr[0] = cpu_to_le64(val);
-> +	if (!cd) { /* (4) */
-> +		val = 0;
-> +	} else if (cd_live) { /* (3) */
-> +		val &= ~CTXDESC_CD_0_ASID;
-> +		val |= FIELD_PREP(CTXDESC_CD_0_ASID, cd->asid);
-> +		/*
-> +		 * Until CD+TLB invalidation, both ASIDs may be used for tagging
-> +		 * this substream's traffic
-> +		 */
-> +	} else { /* (1) and (2) */
-> +		cdptr[1] = cpu_to_le64(cd->ttbr & CTXDESC_CD_1_TTB0_MASK);
-> +		cdptr[2] = 0;
-> +		cdptr[3] = cpu_to_le64(cd->mair);
-> +
-> +		/*
-> +		 * STE is live, and the SMMU might fetch this CD at any
-> +		 * time. Ensure that it observes the rest of the CD before we
-> +		 * enable it.
-> +		 */
-> +		arm_smmu_sync_cd(smmu_domain, ssid, true);
->  
-> -	val = cfg->cd.ttbr & CTXDESC_CD_1_TTB0_MASK;
-> -	cdptr[1] = cpu_to_le64(val);
-> +		val = arm_smmu_cpu_tcr_to_cd(cd->tcr) |
-> +#ifdef __BIG_ENDIAN
-> +			CTXDESC_CD_0_ENDI |
-> +#endif
-> +			CTXDESC_CD_0_R | CTXDESC_CD_0_A | CTXDESC_CD_0_ASET |
-> +			CTXDESC_CD_0_AA64 |
-> +			FIELD_PREP(CTXDESC_CD_0_ASID, cd->asid) |
-> +			CTXDESC_CD_0_V;
->  
-> -	cdptr[3] = cpu_to_le64(cfg->cd.mair);
-> +		/* STALL_MODEL==0b10 && CD.S==0 is ILLEGAL */
-> +		if (smmu->features & ARM_SMMU_FEAT_STALL_FORCE)
-> +			val |= CTXDESC_CD_0_S;
-> +	}
-> +
-> +	WRITE_ONCE(cdptr[0], cpu_to_le64(val));
-> +	arm_smmu_sync_cd(smmu_domain, ssid, true);
-> +	return 0;
->  }
->  
->  static int arm_smmu_alloc_cd_tables(struct arm_smmu_domain *smmu_domain)
-> @@ -1533,6 +1607,7 @@ static int arm_smmu_alloc_cd_tables(struct arm_smmu_domain *smmu_domain)
->  	struct arm_smmu_device *smmu = smmu_domain->smmu;
->  	struct arm_smmu_s1_cfg *cfg = &smmu_domain->s1_cfg;
->  
-> +	cfg->s1fmt = STRTAB_STE_0_S1FMT_LINEAR;
->  	return arm_smmu_alloc_cd_leaf_table(smmu, &cfg->table,
->  					    1 << cfg->s1cdmax);
->  }
-> @@ -1664,6 +1739,7 @@ static void arm_smmu_write_strtab_ent(struct arm_smmu_master *master, u32 sid,
->  	if (s1_cfg) {
->  		BUG_ON(ste_live);
->  		dst[1] = cpu_to_le64(
-> +			 FIELD_PREP(STRTAB_STE_1_S1DSS, STRTAB_STE_1_S1DSS_SSID0) |
->  			 FIELD_PREP(STRTAB_STE_1_S1CIR, STRTAB_STE_1_S1C_CACHE_WBRA) |
->  			 FIELD_PREP(STRTAB_STE_1_S1COR, STRTAB_STE_1_S1C_CACHE_WBRA) |
->  			 FIELD_PREP(STRTAB_STE_1_S1CSH, ARM_SMMU_SH_ISH) |
-> @@ -1674,7 +1750,9 @@ static void arm_smmu_write_strtab_ent(struct arm_smmu_master *master, u32 sid,
->  			dst[1] |= cpu_to_le64(STRTAB_STE_1_S1STALLD);
->  
->  		val |= (s1_cfg->table.ptr_dma & STRTAB_STE_0_S1CTXPTR_MASK) |
-> -			FIELD_PREP(STRTAB_STE_0_CFG, STRTAB_STE_0_CFG_S1_TRANS);
-> +			FIELD_PREP(STRTAB_STE_0_CFG, STRTAB_STE_0_CFG_S1_TRANS) |
-> +			FIELD_PREP(STRTAB_STE_0_S1CDMAX, s1_cfg->s1cdmax) |
-> +			FIELD_PREP(STRTAB_STE_0_S1FMT, s1_cfg->s1fmt);
->  	}
->  
->  	if (s2_cfg) {
-> @@ -2479,7 +2557,8 @@ static int arm_smmu_attach_dev(struct iommu_domain *domain, struct device *dev)
->  		master->ats_enabled = arm_smmu_ats_supported(master);
->  
->  	if (smmu_domain->stage == ARM_SMMU_DOMAIN_S1)
-> -		arm_smmu_write_ctx_desc(smmu, &smmu_domain->s1_cfg);
-> +		arm_smmu_write_ctx_desc(smmu_domain, 0,
-> +					&smmu_domain->s1_cfg.cd);
->  
->  	arm_smmu_install_ste_for_dev(master);
->  
+> On Fri, Dec 06, 2019 at 01:57:41PM +0800, Kai-Heng Feng wrote:
+>> Hi Joerg,
+>> 
+>>> On Dec 3, 2019, at 01:00, Christoph Hellwig <hch@infradead.org> wrote:
+>>> 
+>>> On Fri, Nov 29, 2019 at 10:21:54PM +0800, Kai-Heng Feng wrote:
+>>>> Serious screen flickering when Stoney Ridge outputs to a 4K monitor.
+>>>> 
+>>>> According to Alex Deucher, IOMMU isn't enabled on Windows, so let's do
+>>>> the same here to avoid screen flickering on 4K monitor.
+>>> 
+>>> Disabling the IOMMU entirely seem pretty severe.  Isn't it enough to
+>>> identity map the GPU device?
+>> 
+>> Ok, there's set_device_exclusion_range() to exclude the device from IOMMU.
+>> However I don't know how to generate range_start and range_length, which are read from ACPI.
 > 
+> set_device_exclusion_range() is not the solution here. The best is if
+> the GPU device is put into a passthrough domain at boot, in which it
+> will be identity mapped. DMA still goes through the IOMMU in this case,
+> but it only needs to lookup the device-table, page-table walks will not
+> be done anymore.
+> 
+> The best way to implement this is to put it into the
+> amd_iommu_add_device() in drivers/iommu/amd_iommu.c. There is this
+> check:
+> 
+>        if (dev_data->iommu_v2)
+> 		iommu_request_dm_for_dev(dev);
+> 
+> The iommu_request_dm_for_dev() function causes the device to be identity
+> mapped. The check can be extended to also check for a device white-list
+> for devices that need identity mapping.
+
+My patch looks like this but the original behavior (4K screen flickering) is still the same:
+
+diff --git a/drivers/iommu/amd_iommu.c b/drivers/iommu/amd_iommu.c
+index bd25674ee4db..f913a25c9e92 100644
+--- a/drivers/iommu/amd_iommu.c
++++ b/drivers/iommu/amd_iommu.c
+@@ -42,6 +42,7 @@
+ #include <asm/iommu.h>
+ #include <asm/gart.h>
+ #include <asm/dma.h>
++#include <asm/pci-direct.h>
+ 
+ #include "amd_iommu_proto.h"
+ #include "amd_iommu_types.h"
+@@ -2159,6 +2160,8 @@ static int amd_iommu_add_device(struct device *dev)
+        struct iommu_domain *domain;
+        struct amd_iommu *iommu;
+        int ret, devid;
++       bool need_identity_mapping = false;
++       u32 header;
+ 
+        if (!check_device(dev) || get_dev_data(dev))
+                return 0;
+@@ -2184,7 +2187,11 @@ static int amd_iommu_add_device(struct device *dev)
+ 
+        BUG_ON(!dev_data);
+ 
+-       if (dev_data->iommu_v2)
++       header = read_pci_config(0, PCI_BUS_NUM(devid), PCI_SLOT(devid), PCI_FUNC(devid));
++       if ((header & 0xffff) == 0x1002 && (header >> 16) == 0x98e4)
++               need_identity_mapping = true;
++
++       if (dev_data->iommu_v2 || need_identity_mapping)
+                iommu_request_dm_for_dev(dev);
+ 
+        /* Domains are initialized for this device - have a look what we ended up with */
+
+
+$ dmesg | grep -i direct
+[    0.011446] Using GB pages for direct mapping
+[    0.703369] pci 0000:00:01.0: Using iommu direct mapping
+[    0.703830] pci 0000:00:08.0: Using iommu direct mapping
+
+So the graphics device (pci 0000:00:01.0:) is using direct mapping after the change.
+
+Kai-Heng
+
+> 
+> HTH,
+> 
+> 	Joerg
 
 _______________________________________________
 iommu mailing list
