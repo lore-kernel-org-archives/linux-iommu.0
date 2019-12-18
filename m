@@ -2,94 +2,89 @@ Return-Path: <SRS0=Tv0G=2I=lists.linux-foundation.org=iommu-bounces@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-0.6 required=3.0 tests=DKIM_INVALID,DKIM_SIGNED,
-	HEADER_FROM_DIFFERENT_DOMAINS,MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS
-	autolearn=no autolearn_force=no version=3.4.0
+X-Spam-Status: No, score=-2.0 required=3.0 tests=DKIM_INVALID,DKIM_SIGNED,
+	HEADER_FROM_DIFFERENT_DOMAINS,MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS,
+	USER_AGENT_SANE_1 autolearn=no autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 80295C43603
-	for <iommu@archiver.kernel.org>; Wed, 18 Dec 2019 16:13:35 +0000 (UTC)
-Received: from fraxinus.osuosl.org (smtp4.osuosl.org [140.211.166.137])
+	by smtp.lore.kernel.org (Postfix) with ESMTP id BAA71C43603
+	for <iommu@archiver.kernel.org>; Wed, 18 Dec 2019 16:59:47 +0000 (UTC)
+Received: from hemlock.osuosl.org (smtp2.osuosl.org [140.211.166.133])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by mail.kernel.org (Postfix) with ESMTPS id 403992072B
-	for <iommu@archiver.kernel.org>; Wed, 18 Dec 2019 16:13:35 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTPS id 82E3F2176D
+	for <iommu@archiver.kernel.org>; Wed, 18 Dec 2019 16:59:47 +0000 (UTC)
 Authentication-Results: mail.kernel.org;
-	dkim=fail reason="signature verification failed" (2048-bit key) header.d=linaro.org header.i=@linaro.org header.b="TO3udsaM"
-DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 403992072B
-Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=linaro.org
+	dkim=fail reason="signature verification failed" (1024-bit key) header.d=redhat.com header.i=@redhat.com header.b="AiYbgD+5"
+DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 82E3F2176D
+Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=redhat.com
 Authentication-Results: mail.kernel.org; spf=pass smtp.mailfrom=iommu-bounces@lists.linux-foundation.org
 Received: from localhost (localhost [127.0.0.1])
-	by fraxinus.osuosl.org (Postfix) with ESMTP id F2CFD86BC4;
-	Wed, 18 Dec 2019 16:13:34 +0000 (UTC)
+	by hemlock.osuosl.org (Postfix) with ESMTP id 399EB884D8;
+	Wed, 18 Dec 2019 16:59:47 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from fraxinus.osuosl.org ([127.0.0.1])
+Received: from hemlock.osuosl.org ([127.0.0.1])
 	by localhost (.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
-	with ESMTP id 2L76Bi1aedcg; Wed, 18 Dec 2019 16:13:34 +0000 (UTC)
+	with ESMTP id kUesUPzUG0vu; Wed, 18 Dec 2019 16:59:46 +0000 (UTC)
 Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [140.211.9.56])
-	by fraxinus.osuosl.org (Postfix) with ESMTP id 521C885BC8;
-	Wed, 18 Dec 2019 16:13:34 +0000 (UTC)
+	by hemlock.osuosl.org (Postfix) with ESMTP id 7486E8837C;
+	Wed, 18 Dec 2019 16:59:46 +0000 (UTC)
 Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
-	by lists.linuxfoundation.org (Postfix) with ESMTP id 3D986C1797;
-	Wed, 18 Dec 2019 16:13:34 +0000 (UTC)
+	by lists.linuxfoundation.org (Postfix) with ESMTP id 471E4C1797;
+	Wed, 18 Dec 2019 16:59:46 +0000 (UTC)
 Received: from hemlock.osuosl.org (smtp2.osuosl.org [140.211.166.133])
- by lists.linuxfoundation.org (Postfix) with ESMTP id E5FE0C077D
- for <iommu@lists.linux-foundation.org>; Wed, 18 Dec 2019 16:13:32 +0000 (UTC)
+ by lists.linuxfoundation.org (Postfix) with ESMTP id F2F51C077D
+ for <iommu@lists.linux-foundation.org>; Wed, 18 Dec 2019 16:59:44 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
- by hemlock.osuosl.org (Postfix) with ESMTP id D3EC6876F4
- for <iommu@lists.linux-foundation.org>; Wed, 18 Dec 2019 16:13:32 +0000 (UTC)
+ by hemlock.osuosl.org (Postfix) with ESMTP id DCE82883D7
+ for <iommu@lists.linux-foundation.org>; Wed, 18 Dec 2019 16:59:44 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
 Received: from hemlock.osuosl.org ([127.0.0.1])
  by localhost (.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
- with ESMTP id d8uJFtLZial9 for <iommu@lists.linux-foundation.org>;
- Wed, 18 Dec 2019 16:13:32 +0000 (UTC)
+ with ESMTP id 9U6qQ+02pIBf for <iommu@lists.linux-foundation.org>;
+ Wed, 18 Dec 2019 16:59:42 +0000 (UTC)
 X-Greylist: domain auto-whitelisted by SQLgrey-1.7.6
-Received: from mail-wr1-f68.google.com (mail-wr1-f68.google.com
- [209.85.221.68])
- by hemlock.osuosl.org (Postfix) with ESMTPS id 13EBF87635
- for <iommu@lists.linux-foundation.org>; Wed, 18 Dec 2019 16:13:32 +0000 (UTC)
-Received: by mail-wr1-f68.google.com with SMTP id q10so2894804wrm.11
- for <iommu@lists.linux-foundation.org>; Wed, 18 Dec 2019 08:13:31 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linaro.org; s=google;
- h=date:from:to:cc:subject:message-id:references:mime-version
- :content-disposition:in-reply-to;
- bh=PXvdq6qWFeAmRkgUP6ivkMlcnTIDIWAWnzZnITD9gIQ=;
- b=TO3udsaM0wHSFHtqq3lx9Vpw/cuxpABpx0ZL6fQor8a23g56txPXE2jNc4FuScZ3Fi
- LXZKSp/98TUo9nRfA1Ld8V1forbku0Bk8tJ7SeCtxPlk3DYZ/BK9L2TwV3xh0U+J3QHt
- JSei+y68UXeLCYVSEiEOrmRm+hf9jKrLSy3waZ06SVfY3S32E4pocftRNi7yO6SsbTOE
- unPpzZIPwL0bn7imVjhmGKGqJ7kxahOEYFOwX2CzXvusbd5u0aHn0r4+JtE8EWQKZb4G
- tXYPPjKJCaNiGfLjAylBAAaSiaK44cjKb9WiZ+3GgVPYjq+oQZQM5pfgoyCaaxXTBT4G
- e4hA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
- d=1e100.net; s=20161025;
- h=x-gm-message-state:date:from:to:cc:subject:message-id:references
- :mime-version:content-disposition:in-reply-to;
- bh=PXvdq6qWFeAmRkgUP6ivkMlcnTIDIWAWnzZnITD9gIQ=;
- b=fkxaWMmGfI7h0gfedNFgem50+0X2iiUCwR9QKGtEia0hlq8nk4CiMMvlZ3HzwHZz5n
- 2Irz+KY0QtmnUNxaaE84GD4Glvzdoro99BCZ0XLfD7Qyw3vyRz9IjmrnOsSbLhakLemM
- Dj97iWVc6LH6bJQkUH4FVjePH5JhpdctcptH6spmJYgl+HVvslV7bQGzzy5cYiw3L27B
- mjjPONjLa5FGiqPMt2i9gKXVqZxT5w+oHrsKsb6v8PeODBOvF1HNeJW9M5Rw7qHAwtsw
- ClCoUNaA+ALqf6yK3WuXxNpViXZmTLdnXo51I590PZPmMbkwMERXaKz3kT2rC8KRo0AW
- +Wvw==
-X-Gm-Message-State: APjAAAXXJl1fJ4SclCTMhp0p8GTRwc+xUm+gLjbJVlkGlgUyTefXUFyC
- vGpXQtO0hIIAD+adrPViWCc35g==
-X-Google-Smtp-Source: APXvYqz3/O6xngUMvfQZDBfpU617F1qkmNRS56a4TzmWh1A2QPAdGPRnlUyBsXlERsvvTcYDCOXcBA==
-X-Received: by 2002:adf:f244:: with SMTP id b4mr3692481wrp.88.1576685610515;
- Wed, 18 Dec 2019 08:13:30 -0800 (PST)
-Received: from myrica (adsl-84-227-176-239.adslplus.ch. [84.227.176.239])
- by smtp.gmail.com with ESMTPSA id b17sm3034639wrp.49.2019.12.18.08.13.28
- (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
- Wed, 18 Dec 2019 08:13:29 -0800 (PST)
-Date: Wed, 18 Dec 2019 17:13:23 +0100
-From: Jean-Philippe Brucker <jean-philippe@linaro.org>
-To: Auger Eric <eric.auger@redhat.com>
-Subject: Re: [PATCH v3 13/13] iommu/arm-smmu-v3: Add support for PCI PASID
-Message-ID: <20191218161323.GI2371701@myrica>
+Received: from us-smtp-delivery-1.mimecast.com (us-smtp-2.mimecast.com
+ [207.211.31.81])
+ by hemlock.osuosl.org (Postfix) with ESMTPS id 7C7DE8837C
+ for <iommu@lists.linux-foundation.org>; Wed, 18 Dec 2019 16:59:42 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+ s=mimecast20190719; t=1576688381;
+ h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+ to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+ content-transfer-encoding:content-transfer-encoding:
+ in-reply-to:in-reply-to:references:references;
+ bh=4Za81kYce2Fs+Hb3XKFLJLsPu+11LvEPxuKMd/7XIn8=;
+ b=AiYbgD+5NB4VmxHdqO1teLpK0+feyS2jKU8OgEqTmBBnmwXGL7i9DGNk/dXOFDjeAnvk00
+ xEjrbSqns4sHqWtlpZVUnM355QO2M/Os7NK5ZMTo7t/MYB5lSnhr5HIC2VTzkk7QKFuo0l
+ bGzNi5i+ZzEEbbmqRTymTmJ2FKApaR4=
+Received: from mimecast-mx01.redhat.com (mimecast-mx01.redhat.com
+ [209.132.183.4]) (Using TLS) by relay.mimecast.com with ESMTP id
+ us-mta-371-BHfeu4x5N7OvigT_OZNnDg-1; Wed, 18 Dec 2019 11:59:36 -0500
+X-MC-Unique: BHfeu4x5N7OvigT_OZNnDg-1
+Received: from smtp.corp.redhat.com (int-mx08.intmail.prod.int.phx2.redhat.com
+ [10.5.11.23])
+ (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
+ (No client certificate requested)
+ by mimecast-mx01.redhat.com (Postfix) with ESMTPS id 409E219586C2;
+ Wed, 18 Dec 2019 16:59:34 +0000 (UTC)
+Received: from [10.36.116.117] (ovpn-116-117.ams2.redhat.com [10.36.116.117])
+ by smtp.corp.redhat.com (Postfix) with ESMTPS id B6E3F26DEC;
+ Wed, 18 Dec 2019 16:59:29 +0000 (UTC)
+Subject: Re: [PATCH v3 07/13] iommu/arm-smmu-v3: Add support for Substream IDs
+To: Jean-Philippe Brucker <jean-philippe@linaro.org>
 References: <20191209180514.272727-1-jean-philippe@linaro.org>
- <20191209180514.272727-14-jean-philippe@linaro.org>
- <551ce08c-4160-72c9-05b5-97799f6e5d25@redhat.com>
+ <20191209180514.272727-8-jean-philippe@linaro.org>
+ <aeed148a-3c55-6e97-8d97-efa4f8c6d9f4@redhat.com>
+ <20191218160759.GF2371701@myrica>
+From: Auger Eric <eric.auger@redhat.com>
+Message-ID: <3f8e85f6-92ac-79a2-f048-780b8712ae99@redhat.com>
+Date: Wed, 18 Dec 2019 17:59:28 +0100
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:60.0) Gecko/20100101
+ Thunderbird/60.4.0
 MIME-Version: 1.0
-Content-Disposition: inline
-In-Reply-To: <551ce08c-4160-72c9-05b5-97799f6e5d25@redhat.com>
+In-Reply-To: <20191218160759.GF2371701@myrica>
+Content-Language: en-US
+X-Scanned-By: MIMEDefang 2.84 on 10.5.11.23
 Cc: mark.rutland@arm.com, devicetree@vger.kernel.org, linux-pci@vger.kernel.org,
  sudeep.holla@arm.com, rjw@rjwysocki.net, robin.murphy@arm.com,
  linux-acpi@vger.kernel.org, iommu@lists.linux-foundation.org,
@@ -113,75 +108,141 @@ Content-Transfer-Encoding: 7bit
 Errors-To: iommu-bounces@lists.linux-foundation.org
 Sender: "iommu" <iommu-bounces@lists.linux-foundation.org>
 
-On Wed, Dec 18, 2019 at 11:17:55AM +0100, Auger Eric wrote:
-> > +static int arm_smmu_enable_pasid(struct arm_smmu_master *master)
-> > +{
-> > +	int ret;
-> > +	int features;
-> > +	int num_pasids;
-> > +	struct pci_dev *pdev;
-> > +
-> > +	if (!dev_is_pci(master->dev))
-> > +		return -ENODEV;
-> > +
-> > +	pdev = to_pci_dev(master->dev);
-> > +
-> > +	features = pci_pasid_features(pdev);
-> > +	if (features < 0)
-> > +		return -ENODEV;
-> why -ENODEV?
+Hi Jean,
 
-Right that should return features. The below should return num_pasids.
+On 12/18/19 5:07 PM, Jean-Philippe Brucker wrote:
+> On Tue, Dec 17, 2019 at 05:43:59PM +0100, Auger Eric wrote:
+>>> -static void arm_smmu_write_ctx_desc(struct arm_smmu_device *smmu,
+>>> -				    struct arm_smmu_s1_cfg *cfg)
+>>> +static int arm_smmu_write_ctx_desc(struct arm_smmu_domain *smmu_domain,
+>>> +				   int ssid, struct arm_smmu_ctx_desc *cd)
+>>>  {
+>>> -	u64 val;
+>>> -	__le64 *cdptr = cfg->table.ptr;
+>>> -
+>>>  	/*
+>>> -	 * We don't need to issue any invalidation here, as we'll invalidate
+>>> -	 * the STE when installing the new entry anyway.
+>>> +	 * This function handles the following cases:
+>>> +	 *
+>>> +	 * (1) Install primary CD, for normal DMA traffic (SSID = 0).
+>>> +	 * (2) Install a secondary CD, for SID+SSID traffic.
+>>> +	 * (3) Update ASID of a CD. Atomically write the first 64 bits of the
+>>> +	 *     CD, then invalidate the old entry and mappings.
+>>> +	 * (4) Remove a secondary CD.
+>> I see arm_smmu_write_ctx_desc getting called with non null cd in
+>> arm_smmu_attach_dev but I do not see it removed in the detach path?
+> 
+> No we don't have to remove the primary CD, since detach clears the STE and
+> frees the CD tables.
+OK
+> 
+>>>  	 */
+>>> -	val = arm_smmu_cpu_tcr_to_cd(cfg->cd.tcr) |
+>>> -#ifdef __BIG_ENDIAN
+>>> -	      CTXDESC_CD_0_ENDI |
+>>> -#endif
+>>> -	      CTXDESC_CD_0_R | CTXDESC_CD_0_A | CTXDESC_CD_0_ASET |
+>>> -	      CTXDESC_CD_0_AA64 | FIELD_PREP(CTXDESC_CD_0_ASID, cfg->cd.asid) |
+>>> -	      CTXDESC_CD_0_V;
+>>> +	u64 val;
+>>> +	bool cd_live;
+>>> +	struct arm_smmu_device *smmu = smmu_domain->smmu;
+>>> +	__le64 *cdptr = smmu_domain->s1_cfg.table.ptr + ssid *
+>>> +			CTXDESC_CD_DWORDS;>
+>>> -	/* STALL_MODEL==0b10 && CD.S==0 is ILLEGAL */
+>>> -	if (smmu->features & ARM_SMMU_FEAT_STALL_FORCE)
+>>> -		val |= CTXDESC_CD_0_S;
+>>> +	val = le64_to_cpu(cdptr[0]);
+>>> +	cd_live = !!(val & CTXDESC_CD_0_V);
+>>>  
+>>> -	cdptr[0] = cpu_to_le64(val);
+>>> +	if (!cd) { /* (4) */
+>>> +		val = 0;
+>>> +	} else if (cd_live) { /* (3) */
+>>> +		val &= ~CTXDESC_CD_0_ASID;
+>>> +		val |= FIELD_PREP(CTXDESC_CD_0_ASID, cd->asid);
+>>> +		/*
+>>> +		 * Until CD+TLB invalidation, both ASIDs may be used for tagging
+>>> +		 * this substream's traffic
+>>> +		 */
+>>> +	} else { /* (1) and (2) */
+>>> +		cdptr[1] = cpu_to_le64(cd->ttbr & CTXDESC_CD_1_TTB0_MASK);
+>>> +		cdptr[2] = 0;
+>>> +		cdptr[3] = cpu_to_le64(cd->mair);
+>>> +
+>>> +		/*
+>>> +		 * STE is live, and the SMMU might fetch this CD at any
+>>> +		 * time. Ensure that it observes the rest of the CD before we
+>>> +		 * enable it.
+>> Mostly, on't you want the invalid state to be seen?
+Sorry I wanted to say you mostly want to enforce the INVALID bit (what I
+understand from your below explanations). I was confused by the wording
+"Ensure that it observes the rest of the CD before we enable it".
+> 
+> Sorry I didn't get your question. Without the sync, the SMMU could read an
+> invalid address in CD[1], read V=1 in CD[0] and proceed with dereferencing
+> the bogus pointer before seeing our update to CD[1].
+> 
+> To prevent this we follow the update procedure described in IHI0070Ca
+> 3.21.3.1 (Configuration structure update procedure):
+> 
+>     Because the SMMU can read any reachable structure at any time, and is not
+>     required to read the double-words of the structure in order, Arm
+>     recommends that the following procedure is used to initialize structures:
+>     1. Structure starts invalid, having V == 0.
+>     2. Fill in all fields, leaving V == 0, then perform a DSB operation to
+>        ensure written data is observable from the SMMU.
+>     3. Issue a CMD_CFGI_<STRUCT>, as appropriate.
+>     4. Issue a CMD_SYNC, and wait for completion.
+>     5. Set V to 1, then perform a DSB operation to ensure write is
+>        observable by the SMMU.
+>     6. Issue CMD_CFGI_<STRUCT>, as appropriate.
+>     7. Optionally issue a CMD_SYNC, and wait for completion. This must be
+>        done if a subsequent software operation, such as enabling device
+>        DMA, depends on the SMMU using the new structure.
+> 
+>>> @@ -1664,6 +1739,7 @@ static void arm_smmu_write_strtab_ent(struct arm_smmu_master *master, u32 sid,
+>>>  	if (s1_cfg) {
+>>>  		BUG_ON(ste_live);
+>>>  		dst[1] = cpu_to_le64(
+>>> +			 FIELD_PREP(STRTAB_STE_1_S1DSS, STRTAB_STE_1_S1DSS_SSID0) |
+>>>  			 FIELD_PREP(STRTAB_STE_1_S1CIR, STRTAB_STE_1_S1C_CACHE_WBRA) |
+>>>  			 FIELD_PREP(STRTAB_STE_1_S1COR, STRTAB_STE_1_S1C_CACHE_WBRA) |
+>>>  			 FIELD_PREP(STRTAB_STE_1_S1CSH, ARM_SMMU_SH_ISH) |
+>>> @@ -1674,7 +1750,9 @@ static void arm_smmu_write_strtab_ent(struct arm_smmu_master *master, u32 sid,
+>>>  			dst[1] |= cpu_to_le64(STRTAB_STE_1_S1STALLD);
+>>>  
+>>>  		val |= (s1_cfg->table.ptr_dma & STRTAB_STE_0_S1CTXPTR_MASK) |
+>>> -			FIELD_PREP(STRTAB_STE_0_CFG, STRTAB_STE_0_CFG_S1_TRANS);
+>>> +			FIELD_PREP(STRTAB_STE_0_CFG, STRTAB_STE_0_CFG_S1_TRANS) |
+>>> +			FIELD_PREP(STRTAB_STE_0_S1CDMAX, s1_cfg->s1cdmax) |
+>>> +			FIELD_PREP(STRTAB_STE_0_S1FMT, s1_cfg->s1fmt);
+>> Do I understand correctly that each time we update the CD, we also
+>> update the STE. This is not wrong but theoretically this is not needed,
+>> right?
+> 
+> Only the primary CD. Once we add SVA (or auxiliary domains) we need to
+> update secondary CDs while the STE is live. This series is just
+> preparation for SVA support. I didn't include the full support because it
+> requires another 25+ patches.
+OK
+> 
+>> This also explains why you do not need the CMD_PREFETCH_CONFIG with ssid
+>> because you invalidate the config per sid?
+> 
+> Hm, I didn't add a CMD_PREFETCH_CONFIG to CDs because I don't know if it's
+> useful. Maybe as future optimization.
+OK
 
-> > +
-> > +	num_pasids = pci_max_pasids(pdev);
-> > +	if (num_pasids <= 0)
-> > +		return -ENODEV;
-> > +
-> > +	ret = pci_enable_pasid(pdev, features);
-> > +	if (!ret)
-> > +		master->ssid_bits = min_t(u8, ilog2(num_pasids),
-> > +					  master->smmu->ssid_bits);
-> so here we are ;-)
-> > +	return ret;
-> > +}
-> > +
-> > +static void arm_smmu_disable_pasid(struct arm_smmu_master *master)
-> > +{
-> > +	struct pci_dev *pdev;
-> > +
-> > +	if (!dev_is_pci(master->dev))
-> > +		return;
-> > +
-> > +	pdev = to_pci_dev(master->dev);
-> > +
-> > +	if (!pdev->pasid_enabled)
-> > +		return;
-> > +
-> > +	master->ssid_bits = 0;
-> > +	pci_disable_pasid(pdev);
-> > +}
-> > +
-> >  static void arm_smmu_detach_dev(struct arm_smmu_master *master)
-> >  {
-> >  	unsigned long flags;
-> > @@ -2851,13 +2894,16 @@ static int arm_smmu_add_device(struct device *dev)
-> >  
-> >  	master->ssid_bits = min(smmu->ssid_bits, fwspec->num_pasid_bits);
-> >  
-> > +	/* Note that PASID must be enabled before, and disabled after ATS */
-> > +	arm_smmu_enable_pasid(master);
-> No error handling?
+Thanks
 
-The device still works if PASID isn't supported or cannot be enabled, it
-just won't have some capabilities (IOMMU_DEV_FEAT_AUX and
-IOMMU_DEV_FEAT_SVA), so I don't think add_device should return an error.
+Eric
+> 
+> Thanks,
+> Jean
+> 
 
-But it's a good point, I think at least printing an error like
-arm_smmu_enable_ats() does would be better.
-
-Thanks,
-Jean
 _______________________________________________
 iommu mailing list
 iommu@lists.linux-foundation.org
