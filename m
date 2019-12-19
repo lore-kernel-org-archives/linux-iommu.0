@@ -2,64 +2,65 @@ Return-Path: <SRS0=c0M2=2J=lists.linux-foundation.org=iommu-bounces@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-9.8 required=3.0 tests=HEADER_FROM_DIFFERENT_DOMAINS,
+X-Spam-Status: No, score=-7.0 required=3.0 tests=HEADER_FROM_DIFFERENT_DOMAINS,
 	INCLUDES_PATCH,MAILING_LIST_MULTI,SIGNED_OFF_BY,SPF_HELO_NONE,SPF_PASS,
-	USER_AGENT_GIT autolearn=ham autolearn_force=no version=3.4.0
+	UNWANTED_LANGUAGE_BODY,USER_AGENT_GIT autolearn=ham autolearn_force=no
+	version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 741F6C47409
-	for <iommu@archiver.kernel.org>; Thu, 19 Dec 2019 03:17:45 +0000 (UTC)
-Received: from whitealder.osuosl.org (smtp1.osuosl.org [140.211.166.138])
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 10C10C2D0D1
+	for <iommu@archiver.kernel.org>; Thu, 19 Dec 2019 03:17:48 +0000 (UTC)
+Received: from hemlock.osuosl.org (smtp2.osuosl.org [140.211.166.133])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by mail.kernel.org (Postfix) with ESMTPS id 54F5421D7D
-	for <iommu@archiver.kernel.org>; Thu, 19 Dec 2019 03:17:45 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 54F5421D7D
+	by mail.kernel.org (Postfix) with ESMTPS id E3FA021D7D
+	for <iommu@archiver.kernel.org>; Thu, 19 Dec 2019 03:17:47 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org E3FA021D7D
 Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=linux.intel.com
 Authentication-Results: mail.kernel.org; spf=pass smtp.mailfrom=iommu-bounces@lists.linux-foundation.org
 Received: from localhost (localhost [127.0.0.1])
-	by whitealder.osuosl.org (Postfix) with ESMTP id 171F886092;
-	Thu, 19 Dec 2019 03:17:45 +0000 (UTC)
+	by hemlock.osuosl.org (Postfix) with ESMTP id B381B88538;
+	Thu, 19 Dec 2019 03:17:47 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from whitealder.osuosl.org ([127.0.0.1])
+Received: from hemlock.osuosl.org ([127.0.0.1])
 	by localhost (.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
-	with ESMTP id LI61f7UAc6tl; Thu, 19 Dec 2019 03:17:43 +0000 (UTC)
+	with ESMTP id ePumqzCq7fOo; Thu, 19 Dec 2019 03:17:47 +0000 (UTC)
 Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [140.211.9.56])
-	by whitealder.osuosl.org (Postfix) with ESMTP id B178C85CE0;
-	Thu, 19 Dec 2019 03:17:42 +0000 (UTC)
+	by hemlock.osuosl.org (Postfix) with ESMTP id EBB7D883FF;
+	Thu, 19 Dec 2019 03:17:46 +0000 (UTC)
 Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
-	by lists.linuxfoundation.org (Postfix) with ESMTP id 93B4EC1D84;
-	Thu, 19 Dec 2019 03:17:42 +0000 (UTC)
+	by lists.linuxfoundation.org (Postfix) with ESMTP id E6EA0C1AE8;
+	Thu, 19 Dec 2019 03:17:46 +0000 (UTC)
 Received: from whitealder.osuosl.org (smtp1.osuosl.org [140.211.166.138])
- by lists.linuxfoundation.org (Postfix) with ESMTP id 94CC6C077D
- for <iommu@lists.linux-foundation.org>; Thu, 19 Dec 2019 03:17:41 +0000 (UTC)
+ by lists.linuxfoundation.org (Postfix) with ESMTP id 68F9DC077D
+ for <iommu@lists.linux-foundation.org>; Thu, 19 Dec 2019 03:17:45 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
- by whitealder.osuosl.org (Postfix) with ESMTP id 8342F84973
- for <iommu@lists.linux-foundation.org>; Thu, 19 Dec 2019 03:17:41 +0000 (UTC)
+ by whitealder.osuosl.org (Postfix) with ESMTP id 600E985CE0
+ for <iommu@lists.linux-foundation.org>; Thu, 19 Dec 2019 03:17:45 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
 Received: from whitealder.osuosl.org ([127.0.0.1])
  by localhost (.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
- with ESMTP id I-wLXgsrqqnO for <iommu@lists.linux-foundation.org>;
- Thu, 19 Dec 2019 03:17:41 +0000 (UTC)
+ with ESMTP id S8BJ+-8BCLSV for <iommu@lists.linux-foundation.org>;
+ Thu, 19 Dec 2019 03:17:44 +0000 (UTC)
 X-Greylist: domain auto-whitelisted by SQLgrey-1.7.6
 Received: from mga09.intel.com (mga09.intel.com [134.134.136.24])
- by whitealder.osuosl.org (Postfix) with ESMTPS id E528280CF3
- for <iommu@lists.linux-foundation.org>; Thu, 19 Dec 2019 03:17:40 +0000 (UTC)
+ by whitealder.osuosl.org (Postfix) with ESMTPS id 107DE85F6D
+ for <iommu@lists.linux-foundation.org>; Thu, 19 Dec 2019 03:17:43 +0000 (UTC)
 X-Amp-Result: SKIPPED(no attachment in message)
 X-Amp-File-Uploaded: False
 Received: from fmsmga001.fm.intel.com ([10.253.24.23])
  by orsmga102.jf.intel.com with ESMTP/TLS/DHE-RSA-AES256-GCM-SHA384;
- 18 Dec 2019 19:17:40 -0800
+ 18 Dec 2019 19:17:42 -0800
 X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.69,330,1571727600"; d="scan'208";a="222160411"
+X-IronPort-AV: E=Sophos;i="5.69,330,1571727600"; d="scan'208";a="222160419"
 Received: from allen-box.sh.intel.com ([10.239.159.136])
- by fmsmga001.fm.intel.com with ESMTP; 18 Dec 2019 19:17:38 -0800
+ by fmsmga001.fm.intel.com with ESMTP; 18 Dec 2019 19:17:40 -0800
 From: Lu Baolu <baolu.lu@linux.intel.com>
 To: Joerg Roedel <joro@8bytes.org>, David Woodhouse <dwmw2@infradead.org>,
  Alex Williamson <alex.williamson@redhat.com>
-Subject: [PATCH v4 3/7] iommu/vt-d: Add PASID_FLAG_FL5LP for first-level pasid
- setup
-Date: Thu, 19 Dec 2019 11:16:30 +0800
-Message-Id: <20191219031634.15168-4-baolu.lu@linux.intel.com>
+Subject: [PATCH v4 4/7] iommu/vt-d: Setup pasid entries for iova over first
+ level
+Date: Thu, 19 Dec 2019 11:16:31 +0800
+Message-Id: <20191219031634.15168-5-baolu.lu@linux.intel.com>
 X-Mailer: git-send-email 2.17.1
 In-Reply-To: <20191219031634.15168-1-baolu.lu@linux.intel.com>
 References: <20191219031634.15168-1-baolu.lu@linux.intel.com>
@@ -84,89 +85,141 @@ Content-Transfer-Encoding: 7bit
 Errors-To: iommu-bounces@lists.linux-foundation.org
 Sender: "iommu" <iommu-bounces@lists.linux-foundation.org>
 
-Current intel_pasid_setup_first_level() use 5-level paging for
-first level translation if CPUs use 5-level paging mode too.
-This makes sense for SVA usages since the page table is shared
-between CPUs and IOMMUs. But it makes no sense if we only want
-to use first level for IOVA translation. Add PASID_FLAG_FL5LP
-bit in the flags which indicates whether the 5-level paging
-mode should be used.
+Intel VT-d in scalable mode supports two types of page tables for
+IOVA translation: first level and second level. The IOMMU driver
+can choose one from both for IOVA translation according to the use
+case. This sets up the pasid entry if a domain is selected to use
+the first-level page table for iova translation.
 
 Signed-off-by: Lu Baolu <baolu.lu@linux.intel.com>
 ---
- drivers/iommu/intel-pasid.c | 7 ++-----
- drivers/iommu/intel-pasid.h | 6 ++++++
- drivers/iommu/intel-svm.c   | 8 ++++++--
- 3 files changed, 14 insertions(+), 7 deletions(-)
+ drivers/iommu/intel-iommu.c | 48 +++++++++++++++++++++++++++++++++++--
+ include/linux/intel-iommu.h | 16 ++++++++-----
+ 2 files changed, 56 insertions(+), 8 deletions(-)
 
-diff --git a/drivers/iommu/intel-pasid.c b/drivers/iommu/intel-pasid.c
-index 3cb569e76642..22b30f10b396 100644
---- a/drivers/iommu/intel-pasid.c
-+++ b/drivers/iommu/intel-pasid.c
-@@ -477,18 +477,15 @@ int intel_pasid_setup_first_level(struct intel_iommu *iommu,
- 		pasid_set_sre(pte);
- 	}
+diff --git a/drivers/iommu/intel-iommu.c b/drivers/iommu/intel-iommu.c
+index 2b5a47584baf..f0813997dea2 100644
+--- a/drivers/iommu/intel-iommu.c
++++ b/drivers/iommu/intel-iommu.c
+@@ -571,6 +571,11 @@ static inline int domain_type_is_si(struct dmar_domain *domain)
+ 	return domain->flags & DOMAIN_FLAG_STATIC_IDENTITY;
+ }
  
--#ifdef CONFIG_X86
--	/* Both CPU and IOMMU paging mode need to match */
--	if (cpu_feature_enabled(X86_FEATURE_LA57)) {
-+	if (flags & PASID_FLAG_FL5LP) {
- 		if (cap_5lp_support(iommu->cap)) {
- 			pasid_set_flpm(pte, 1);
- 		} else {
--			pr_err("VT-d has no 5-level paging support for CPU\n");
-+			pr_err("No 5-level paging support for first-level\n");
- 			pasid_clear_entry(pte);
- 			return -EINVAL;
- 		}
- 	}
--#endif /* CONFIG_X86 */
- 
- 	pasid_set_domain_id(pte, did);
- 	pasid_set_address_width(pte, iommu->agaw);
-diff --git a/drivers/iommu/intel-pasid.h b/drivers/iommu/intel-pasid.h
-index fc8cd8f17de1..92de6df24ccb 100644
---- a/drivers/iommu/intel-pasid.h
-+++ b/drivers/iommu/intel-pasid.h
-@@ -37,6 +37,12 @@
-  */
- #define PASID_FLAG_SUPERVISOR_MODE	BIT(0)
- 
-+/*
-+ * The PASID_FLAG_FL5LP flag Indicates using 5-level paging for first-
-+ * level translation, otherwise, 4-level paging will be used.
-+ */
-+#define PASID_FLAG_FL5LP		BIT(1)
++static inline bool domain_use_first_level(struct dmar_domain *domain)
++{
++	return domain->flags & DOMAIN_FLAG_USE_FIRST_LEVEL;
++}
 +
- struct pasid_dir_entry {
- 	u64 val;
- };
-diff --git a/drivers/iommu/intel-svm.c b/drivers/iommu/intel-svm.c
-index 04023033b79f..d7f2a5358900 100644
---- a/drivers/iommu/intel-svm.c
-+++ b/drivers/iommu/intel-svm.c
-@@ -364,7 +364,9 @@ int intel_svm_bind_mm(struct device *dev, int *pasid, int flags, struct svm_dev_
- 		ret = intel_pasid_setup_first_level(iommu, dev,
- 				mm ? mm->pgd : init_mm.pgd,
- 				svm->pasid, FLPT_DEFAULT_DID,
--				mm ? 0 : PASID_FLAG_SUPERVISOR_MODE);
-+				(mm ? 0 : PASID_FLAG_SUPERVISOR_MODE) |
-+				(cpu_feature_enabled(X86_FEATURE_LA57) ?
-+				 PASID_FLAG_FL5LP : 0));
- 		spin_unlock(&iommu->lock);
- 		if (ret) {
- 			if (mm)
-@@ -385,7 +387,9 @@ int intel_svm_bind_mm(struct device *dev, int *pasid, int flags, struct svm_dev_
- 		ret = intel_pasid_setup_first_level(iommu, dev,
- 						mm ? mm->pgd : init_mm.pgd,
- 						svm->pasid, FLPT_DEFAULT_DID,
--						mm ? 0 : PASID_FLAG_SUPERVISOR_MODE);
-+						(mm ? 0 : PASID_FLAG_SUPERVISOR_MODE) |
-+						(cpu_feature_enabled(X86_FEATURE_LA57) ?
-+						PASID_FLAG_FL5LP : 0));
- 		spin_unlock(&iommu->lock);
- 		if (ret) {
- 			kfree(sdev);
+ static inline int domain_pfn_supported(struct dmar_domain *domain,
+ 				       unsigned long pfn)
+ {
+@@ -2288,6 +2293,8 @@ static int __domain_mapping(struct dmar_domain *domain, unsigned long iov_pfn,
+ 		return -EINVAL;
+ 
+ 	prot &= DMA_PTE_READ | DMA_PTE_WRITE | DMA_PTE_SNP;
++	if (domain_use_first_level(domain))
++		prot |= DMA_FL_PTE_PRESENT | DMA_FL_PTE_XD;
+ 
+ 	if (!sg) {
+ 		sg_res = nr_pages;
+@@ -2515,6 +2522,36 @@ dmar_search_domain_by_dev_info(int segment, int bus, int devfn)
+ 	return NULL;
+ }
+ 
++static int domain_setup_first_level(struct intel_iommu *iommu,
++				    struct dmar_domain *domain,
++				    struct device *dev,
++				    int pasid)
++{
++	int flags = PASID_FLAG_SUPERVISOR_MODE;
++	struct dma_pte *pgd = domain->pgd;
++	int agaw, level;
++
++	/*
++	 * Skip top levels of page tables for iommu which has
++	 * less agaw than default. Unnecessary for PT mode.
++	 */
++	for (agaw = domain->agaw; agaw > iommu->agaw; agaw--) {
++		pgd = phys_to_virt(dma_pte_addr(pgd));
++		if (!dma_pte_present(pgd))
++			return -ENOMEM;
++	}
++
++	level = agaw_to_level(agaw);
++	if (level != 4 && level != 5)
++		return -EINVAL;
++
++	flags |= (level == 5) ? PASID_FLAG_FL5LP : 0;
++
++	return intel_pasid_setup_first_level(iommu, dev, (pgd_t *)pgd, pasid,
++					     domain->iommu_did[iommu->seq_id],
++					     flags);
++}
++
+ static struct dmar_domain *dmar_insert_one_dev_info(struct intel_iommu *iommu,
+ 						    int bus, int devfn,
+ 						    struct device *dev,
+@@ -2614,6 +2651,9 @@ static struct dmar_domain *dmar_insert_one_dev_info(struct intel_iommu *iommu,
+ 		if (hw_pass_through && domain_type_is_si(domain))
+ 			ret = intel_pasid_setup_pass_through(iommu, domain,
+ 					dev, PASID_RID2PASID);
++		else if (domain_use_first_level(domain))
++			ret = domain_setup_first_level(iommu, domain, dev,
++					PASID_RID2PASID);
+ 		else
+ 			ret = intel_pasid_setup_second_level(iommu, domain,
+ 					dev, PASID_RID2PASID);
+@@ -5369,8 +5409,12 @@ static int aux_domain_add_dev(struct dmar_domain *domain,
+ 		goto attach_failed;
+ 
+ 	/* Setup the PASID entry for mediated devices: */
+-	ret = intel_pasid_setup_second_level(iommu, domain, dev,
+-					     domain->default_pasid);
++	if (domain_use_first_level(domain))
++		ret = domain_setup_first_level(iommu, domain, dev,
++					       domain->default_pasid);
++	else
++		ret = intel_pasid_setup_second_level(iommu, domain, dev,
++						     domain->default_pasid);
+ 	if (ret)
+ 		goto table_failed;
+ 	spin_unlock(&iommu->lock);
+diff --git a/include/linux/intel-iommu.h b/include/linux/intel-iommu.h
+index aaece25c055f..454c69712131 100644
+--- a/include/linux/intel-iommu.h
++++ b/include/linux/intel-iommu.h
+@@ -34,10 +34,13 @@
+ #define VTD_STRIDE_SHIFT        (9)
+ #define VTD_STRIDE_MASK         (((u64)-1) << VTD_STRIDE_SHIFT)
+ 
+-#define DMA_PTE_READ (1)
+-#define DMA_PTE_WRITE (2)
+-#define DMA_PTE_LARGE_PAGE (1 << 7)
+-#define DMA_PTE_SNP (1 << 11)
++#define DMA_PTE_READ		BIT_ULL(0)
++#define DMA_PTE_WRITE		BIT_ULL(1)
++#define DMA_PTE_LARGE_PAGE	BIT_ULL(7)
++#define DMA_PTE_SNP		BIT_ULL(11)
++
++#define DMA_FL_PTE_PRESENT	BIT_ULL(0)
++#define DMA_FL_PTE_XD		BIT_ULL(63)
+ 
+ #define CONTEXT_TT_MULTI_LEVEL	0
+ #define CONTEXT_TT_DEV_IOTLB	1
+@@ -610,10 +613,11 @@ static inline void dma_clear_pte(struct dma_pte *pte)
+ static inline u64 dma_pte_addr(struct dma_pte *pte)
+ {
+ #ifdef CONFIG_64BIT
+-	return pte->val & VTD_PAGE_MASK;
++	return pte->val & VTD_PAGE_MASK & (~DMA_FL_PTE_XD);
+ #else
+ 	/* Must have a full atomic 64-bit read */
+-	return  __cmpxchg64(&pte->val, 0ULL, 0ULL) & VTD_PAGE_MASK;
++	return  __cmpxchg64(&pte->val, 0ULL, 0ULL) &
++			VTD_PAGE_MASK & (~DMA_FL_PTE_XD);
+ #endif
+ }
+ 
 -- 
 2.17.1
 
