@@ -1,94 +1,79 @@
-Return-Path: <SRS0=hfNk=2U=lists.linux-foundation.org=iommu-bounces@kernel.org>
+Return-Path: <SRS0=c0M2=2J=lists.linux-foundation.org=iommu-bounces@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-9.4 required=3.0 tests=DKIM_ADSP_CUSTOM_MED,
-	DKIM_INVALID,DKIM_SIGNED,FREEMAIL_FORGED_FROMDOMAIN,FREEMAIL_FROM,
-	HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_PATCH,MAILING_LIST_MULTI,SIGNED_OFF_BY,
-	SPF_HELO_NONE,SPF_PASS,USER_AGENT_GIT autolearn=ham autolearn_force=no
-	version=3.4.0
+X-Spam-Status: No, score=-3.8 required=3.0 tests=DKIM_INVALID,DKIM_SIGNED,
+	MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS,USER_AGENT_GIT autolearn=no
+	autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 01D70C2D0C3
-	for <iommu@archiver.kernel.org>; Mon, 30 Dec 2019 05:57:30 +0000 (UTC)
-Received: from hemlock.osuosl.org (smtp2.osuosl.org [140.211.166.133])
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 5418EC2D0C1
+	for <iommu@archiver.kernel.org>; Thu, 19 Dec 2019 12:04:04 +0000 (UTC)
+Received: from silver.osuosl.org (smtp3.osuosl.org [140.211.166.136])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by mail.kernel.org (Postfix) with ESMTPS id B5DAA206DB
-	for <iommu@archiver.kernel.org>; Mon, 30 Dec 2019 05:57:29 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTPS id 1CD092468A
+	for <iommu@archiver.kernel.org>; Thu, 19 Dec 2019 12:04:04 +0000 (UTC)
 Authentication-Results: mail.kernel.org;
-	dkim=fail reason="signature verification failed" (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="pwsqqy8R"
-DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org B5DAA206DB
-Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=gmail.com
+	dkim=fail reason="signature verification failed" (1024-bit key) header.d=kernel.org header.i=@kernel.org header.b="UPODlAUR"
+DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 1CD092468A
+Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=kernel.org
 Authentication-Results: mail.kernel.org; spf=pass smtp.mailfrom=iommu-bounces@lists.linux-foundation.org
 Received: from localhost (localhost [127.0.0.1])
-	by hemlock.osuosl.org (Postfix) with ESMTP id 70CF586111;
-	Mon, 30 Dec 2019 05:57:29 +0000 (UTC)
+	by silver.osuosl.org (Postfix) with ESMTP id E11022322B;
+	Thu, 19 Dec 2019 12:04:03 +0000 (UTC)
+X-Virus-Scanned: amavisd-new at osuosl.org
+Received: from silver.osuosl.org ([127.0.0.1])
+	by localhost (.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
+	with ESMTP id onRQWSrOZaF0; Thu, 19 Dec 2019 12:04:03 +0000 (UTC)
+Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [140.211.9.56])
+	by silver.osuosl.org (Postfix) with ESMTP id 171CF203BE;
+	Thu, 19 Dec 2019 12:04:03 +0000 (UTC)
+Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
+	by lists.linuxfoundation.org (Postfix) with ESMTP id E1FCFC18DC;
+	Thu, 19 Dec 2019 12:04:02 +0000 (UTC)
+Received: from hemlock.osuosl.org (smtp2.osuosl.org [140.211.166.133])
+ by lists.linuxfoundation.org (Postfix) with ESMTP id B2BE3C077D
+ for <iommu@lists.linuxfoundation.org>; Thu, 19 Dec 2019 12:04:01 +0000 (UTC)
+Received: from localhost (localhost [127.0.0.1])
+ by hemlock.osuosl.org (Postfix) with ESMTP id AC54A886B7
+ for <iommu@lists.linuxfoundation.org>; Thu, 19 Dec 2019 12:04:01 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
 Received: from hemlock.osuosl.org ([127.0.0.1])
-	by localhost (.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
-	with ESMTP id Y61kNk6fw6Oi; Mon, 30 Dec 2019 05:57:28 +0000 (UTC)
-Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [140.211.9.56])
-	by hemlock.osuosl.org (Postfix) with ESMTP id D222986003;
-	Mon, 30 Dec 2019 05:57:28 +0000 (UTC)
-Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
-	by lists.linuxfoundation.org (Postfix) with ESMTP id BDFF2C1796;
-	Mon, 30 Dec 2019 05:57:28 +0000 (UTC)
-Received: from whitealder.osuosl.org (smtp1.osuosl.org [140.211.166.138])
- by lists.linuxfoundation.org (Postfix) with ESMTP id 7166DC077D
- for <iommu@lists.linux-foundation.org>; Mon, 30 Dec 2019 05:57:26 +0000 (UTC)
-Received: from localhost (localhost [127.0.0.1])
- by whitealder.osuosl.org (Postfix) with ESMTP id 59610848F0
- for <iommu@lists.linux-foundation.org>; Mon, 30 Dec 2019 05:57:26 +0000 (UTC)
-X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from whitealder.osuosl.org ([127.0.0.1])
  by localhost (.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
- with ESMTP id A8VivVZ9+BE5 for <iommu@lists.linux-foundation.org>;
- Mon, 30 Dec 2019 05:57:25 +0000 (UTC)
+ with ESMTP id sXuGh0SFlDnb for <iommu@lists.linuxfoundation.org>;
+ Thu, 19 Dec 2019 12:04:01 +0000 (UTC)
 X-Greylist: domain auto-whitelisted by SQLgrey-1.7.6
-Received: from mail-pl1-f195.google.com (mail-pl1-f195.google.com
- [209.85.214.195])
- by whitealder.osuosl.org (Postfix) with ESMTPS id B3A32814C9
- for <iommu@lists.linux-foundation.org>; Mon, 30 Dec 2019 05:57:25 +0000 (UTC)
-Received: by mail-pl1-f195.google.com with SMTP id a6so13488675plm.3
- for <iommu@lists.linux-foundation.org>; Sun, 29 Dec 2019 21:57:25 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=gmail.com; s=20161025;
- h=from:to:cc:subject:date:message-id;
- bh=dYzDa2WqHwUT+3MkcVhYul9GkntVB+kwzpl6/aw1YO8=;
- b=pwsqqy8RTmYUfATQQ3ynUWUNaSRuSJ7FgWqfZoJRKsLp1HwHnL9X4P8CuRAkYms9zz
- 5fZiHT5L97QBu6tyaMILE3XzOKWtLK+/zYN522G6i3WSLOGUJhmp/427IsCQyrHBpLc3
- bFmUSegPUQDMJGoDtBozdaOYuqwL0BHWjbFy3CAOQ9z3h9EZ2Ct8IeevoQE7qz3P2tqP
- oLR+5FpK04SSflnyGB5AoKVpp7qqAHkSJ66pud+zrGchMUBXmfP8KFei95w0SYc9ItlO
- g4Wnant9Gjpdn2+KNVJourdQ4AsfmBNQkzqizUjsrMgWr6Nrxac2Kz0p5bPW0iQr3dz7
- /baA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
- d=1e100.net; s=20161025;
- h=x-gm-message-state:from:to:cc:subject:date:message-id;
- bh=dYzDa2WqHwUT+3MkcVhYul9GkntVB+kwzpl6/aw1YO8=;
- b=WcStnjYSyL/3+oUPhcoGD8EE2FX9ocnLJNrgXYvfD9MrW9AOrzYIJyvO5fVNoAzhrE
- k4hMrm2OcL922EP5XQqhXARA06GbI6sroiGShZLmjF2nkTcTIT538KY4Y0A8DVQVT0PL
- rAO7RtKXoT9kvCYnx+LU6AIuBDjGxKNeJsAIEbsYRf1vduRa+czrTcG7wguG8LmB9hnA
- vGOudVcEK6H47YNiwQcr0zonMFBBy1iInH0n2NeBu3zupD0bGgbkpaJR/JusPYNSXQNd
- Xgmyq36HQVhJknxo3r01UaERzrHErW3YvlPgRPETNbbXB/66Yx+KZA/RYyGC1U7L2YyS
- Kjdw==
-X-Gm-Message-State: APjAAAUpnsOdSfo7S5/MbGXzfoNhoOMIDcbmorAe+VUb3HwNmoIL1F+b
- DETIZoqmuPo8Jp9oKxxJwto=
-X-Google-Smtp-Source: APXvYqyf2XVz14nN4sNJiYy/n/zkoWFcA9pZ5EpIIQPzSJzcKiW7jSpixSvKvy3H+JwYCdFCjgpFUA==
-X-Received: by 2002:a17:902:8646:: with SMTP id
- y6mr66004759plt.191.1577685445244; 
- Sun, 29 Dec 2019 21:57:25 -0800 (PST)
-Received: from AHUANG12-1LT7M0.lenovo.com
- (218-164-16-162.dynamic-ip.hinet.net. [218.164.16.162])
- by smtp.googlemail.com with ESMTPSA id n1sm49531269pfd.47.2019.12.29.21.57.24
- (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
- Sun, 29 Dec 2019 21:57:24 -0800 (PST)
-From: Adrian Huang <adrianhuang0701@gmail.com>
-X-Google-Original-From: Adrian Huang <ahuang12@lenovo.com>
-To: Joerg Roedel <joro@8bytes.org>
-Subject: [PATCH 1/1] iommu/amd: Fix typos for PPR macros
-Date: Mon, 30 Dec 2019 13:56:54 +0800
-Message-Id: <20191230055654.16029-1-ahuang12@lenovo.com>
-X-Mailer: git-send-email 2.17.1
-Cc: iommu@lists.linux-foundation.org, Adrian Huang <ahuang12@lenovo.com>
+Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
+ by hemlock.osuosl.org (Postfix) with ESMTPS id 176B5886B6
+ for <iommu@lists.linuxfoundation.org>; Thu, 19 Dec 2019 12:04:01 +0000 (UTC)
+Received: from localhost.localdomain (236.31.169.217.in-addr.arpa
+ [217.169.31.236])
+ (using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+ (No client certificate requested)
+ by mail.kernel.org (Postfix) with ESMTPSA id 763C1222C2;
+ Thu, 19 Dec 2019 12:03:58 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+ s=default; t=1576757040;
+ bh=RJ3mvIaVqDC3kz+hjtWcHLqxdB4ZpdxAR3Q1j/eZavs=;
+ h=From:To:Cc:Subject:Date:From;
+ b=UPODlAURU4Z6I+ZrIbrO0SwBJGmkgWWMDyFoiiFjTqfXFRdrfca7ndq+YCw86qEvK
+ dUWwMDy+/62dPQbFI2VNuPVd6OYISizRVts5FY3fimLiL+5N+7iJwev74E6KNf52Dh
+ 2oXUJOsfYsvuV0fRDMezfl0w/bexYbzxGEVXyWQU=
+From: Will Deacon <will@kernel.org>
+To: linux-kernel@vger.kernel.org,
+	iommu@lists.linuxfoundation.org
+Subject: [PATCH v4 00/16] iommu: Permit modular builds of ARM SMMU[v3] drivers
+Date: Thu, 19 Dec 2019 12:03:36 +0000
+Message-Id: <20191219120352.382-1-will@kernel.org>
+X-Mailer: git-send-email 2.20.1
+MIME-Version: 1.0
+Cc: "Isaac J. Manjarres" <isaacm@codeaurora.org>,
+ Jean-Philippe Brucker <jean-philippe@linaro.org>,
+ Saravana Kannan <saravanak@google.com>, kernel-team@android.com,
+ Robin Murphy <robin.murphy@arm.com>,
+ Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+ Bjorn Helgaas <bhelgaas@google.com>, Will Deacon <will@kernel.org>,
+ Ard Biesheuvel <ardb@kernel.org>
 X-BeenThere: iommu@lists.linux-foundation.org
 X-Mailman-Version: 2.1.15
 Precedence: list
@@ -101,63 +86,83 @@ List-Post: <mailto:iommu@lists.linux-foundation.org>
 List-Help: <mailto:iommu-request@lists.linux-foundation.org?subject=help>
 List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
  <mailto:iommu-request@lists.linux-foundation.org?subject=subscribe>
-MIME-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
 Errors-To: iommu-bounces@lists.linux-foundation.org
 Sender: "iommu" <iommu-bounces@lists.linux-foundation.org>
 
-From: Adrian Huang <ahuang12@lenovo.com>
+Hi all,
 
-The bit 13 and bit 14 of the IOMMU control register are
-PPRLogEn and PPRIntEn. They are related to PPR (Peripheral Page
-Request) instead of 'PPF'. Fix them accrodingly.
+This is version four of the patches I previously posted here:
 
-Signed-off-by: Adrian Huang <ahuang12@lenovo.com>
----
- drivers/iommu/amd_iommu_init.c  | 4 ++--
- drivers/iommu/amd_iommu_types.h | 4 ++--
- 2 files changed, 4 insertions(+), 4 deletions(-)
+  v1: https://lore.kernel.org/lkml/20191030145112.19738-1-will@kernel.org/
+  v2: https://lore.kernel.org/lkml/20191108151608.20932-1-will@kernel.org
+  v3: https://lore.kernel.org/lkml/20191121114918.2293-1-will@kernel.org
 
-diff --git a/drivers/iommu/amd_iommu_init.c b/drivers/iommu/amd_iommu_init.c
-index ba7ee4aa04f9..6e82aa606e2b 100644
---- a/drivers/iommu/amd_iommu_init.c
-+++ b/drivers/iommu/amd_iommu_init.c
-@@ -716,7 +716,7 @@ static void iommu_enable_ppr_log(struct amd_iommu *iommu)
- 	writel(0x00, iommu->mmio_base + MMIO_PPR_HEAD_OFFSET);
- 	writel(0x00, iommu->mmio_base + MMIO_PPR_TAIL_OFFSET);
- 
--	iommu_feature_enable(iommu, CONTROL_PPFLOG_EN);
-+	iommu_feature_enable(iommu, CONTROL_PPRLOG_EN);
- 	iommu_feature_enable(iommu, CONTROL_PPR_EN);
- }
- 
-@@ -2035,7 +2035,7 @@ static int iommu_init_msi(struct amd_iommu *iommu)
- 	iommu_feature_enable(iommu, CONTROL_EVT_INT_EN);
- 
- 	if (iommu->ppr_log != NULL)
--		iommu_feature_enable(iommu, CONTROL_PPFINT_EN);
-+		iommu_feature_enable(iommu, CONTROL_PPRINT_EN);
- 
- 	iommu_ga_log_enable(iommu);
- 
-diff --git a/drivers/iommu/amd_iommu_types.h b/drivers/iommu/amd_iommu_types.h
-index 798e1533a147..500f0b78879d 100644
---- a/drivers/iommu/amd_iommu_types.h
-+++ b/drivers/iommu/amd_iommu_types.h
-@@ -147,8 +147,8 @@
- #define CONTROL_COHERENT_EN     0x0aULL
- #define CONTROL_ISOC_EN         0x0bULL
- #define CONTROL_CMDBUF_EN       0x0cULL
--#define CONTROL_PPFLOG_EN       0x0dULL
--#define CONTROL_PPFINT_EN       0x0eULL
-+#define CONTROL_PPRLOG_EN       0x0dULL
-+#define CONTROL_PPRINT_EN       0x0eULL
- #define CONTROL_PPR_EN          0x0fULL
- #define CONTROL_GT_EN           0x10ULL
- #define CONTROL_GA_EN           0x11ULL
+Changes since v3 include:
+
+  * Based on v5.5-rc1
+  * ACPI/IORT support (thanks to Ard)
+  * Export pci_{enable,disable}_ats() (thanks to Greg)
+  * Added review tags
+
+I tested this on AMD Seattle by loading arm-smmu-mod.ko from the initrd.
+
+Cheers,
+
+Will
+
+Cc: Jean-Philippe Brucker <jean-philippe@linaro.org>
+Cc: Jordan Crouse <jcrouse@codeaurora.org>
+Cc: John Garry <john.garry@huawei.com>
+Cc: Bjorn Helgaas <bhelgaas@google.com>
+Cc: Saravana Kannan <saravanak@google.com>
+Cc: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Cc: "Isaac J. Manjarres" <isaacm@codeaurora.org>
+Cc: Robin Murphy <robin.murphy@arm.com>
+Cc: Lorenzo Pieralisi <lorenzo.pieralisi@arm.com>
+Cc: Joerg Roedel <joro@8bytes.org>
+Cc: Ard Biesheuvel <ardb@kernel.org>
+
+--->8
+
+Ard Biesheuvel (1):
+  iommu/arm-smmu: Support SMMU module probing from the IORT
+
+Greg Kroah-Hartman (1):
+  PCI/ATS: Restore EXPORT_SYMBOL_GPL() for pci_{enable,disable}_ats()
+
+Will Deacon (14):
+  drivers/iommu: Export core IOMMU API symbols to permit modular drivers
+  iommu/of: Request ACS from the PCI core when configuring IOMMU linkage
+  PCI: Export pci_ats_disabled() as a GPL symbol to modules
+  drivers/iommu: Take a ref to the IOMMU driver prior to ->add_device()
+  iommu/of: Take a ref to the IOMMU driver during ->of_xlate()
+  drivers/iommu: Allow IOMMU bus ops to be unregistered
+  Revert "iommu/arm-smmu: Make arm-smmu-v3 explicitly non-modular"
+  Revert "iommu/arm-smmu: Make arm-smmu explicitly non-modular"
+  iommu/arm-smmu: Prevent forced unbinding of Arm SMMU drivers
+  iommu/arm-smmu-v3: Unregister IOMMU and bus ops on device removal
+  iommu/arm-smmu-v3: Allow building as a module
+  iommu/arm-smmu: Unregister IOMMU and bus ops on device removal
+  iommu/arm-smmu: Allow building as a module
+  iommu/arm-smmu: Update my email address in MODULE_AUTHOR()
+
+ drivers/acpi/arm64/iort.c   |   4 +-
+ drivers/iommu/Kconfig       |  16 ++++-
+ drivers/iommu/Makefile      |   3 +-
+ drivers/iommu/arm-smmu-v3.c |  94 +++++++++++++++++---------
+ drivers/iommu/arm-smmu.c    | 128 +++++++++++++++++++++++++-----------
+ drivers/iommu/iommu-sysfs.c |   5 ++
+ drivers/iommu/iommu.c       |  32 ++++++++-
+ drivers/iommu/of_iommu.c    |  19 ++++--
+ drivers/pci/ats.c           |   2 +
+ drivers/pci/pci.c           |   1 +
+ include/linux/iommu.h       |   4 +-
+ 11 files changed, 223 insertions(+), 85 deletions(-)
+
 -- 
-2.17.1
+2.24.1.735.g03f4e72817-goog
 
 _______________________________________________
 iommu mailing list
