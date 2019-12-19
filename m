@@ -2,67 +2,93 @@ Return-Path: <SRS0=c0M2=2J=lists.linux-foundation.org=iommu-bounces@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-5.2 required=3.0 tests=HEADER_FROM_DIFFERENT_DOMAINS,
-	INCLUDES_PATCH,MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS,USER_AGENT_SANE_1
-	autolearn=unavailable autolearn_force=no version=3.4.0
+X-Spam-Status: No, score=-8.1 required=3.0 tests=DKIM_INVALID,DKIM_SIGNED,
+	HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_PATCH,MAILING_LIST_MULTI,SIGNED_OFF_BY,
+	SPF_HELO_NONE,SPF_PASS,USER_AGENT_SANE_1 autolearn=unavailable
+	autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 709E0C2D0C0
-	for <iommu@archiver.kernel.org>; Thu, 19 Dec 2019 15:03:09 +0000 (UTC)
-Received: from fraxinus.osuosl.org (smtp4.osuosl.org [140.211.166.137])
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 08927C43603
+	for <iommu@archiver.kernel.org>; Thu, 19 Dec 2019 15:11:11 +0000 (UTC)
+Received: from silver.osuosl.org (smtp3.osuosl.org [140.211.166.136])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by mail.kernel.org (Postfix) with ESMTPS id 32A36222C2
-	for <iommu@archiver.kernel.org>; Thu, 19 Dec 2019 15:03:09 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 32A36222C2
-Authentication-Results: mail.kernel.org; dmarc=none (p=none dis=none) header.from=lst.de
+	by mail.kernel.org (Postfix) with ESMTPS id BFC20206EC
+	for <iommu@archiver.kernel.org>; Thu, 19 Dec 2019 15:11:10 +0000 (UTC)
+Authentication-Results: mail.kernel.org;
+	dkim=fail reason="signature verification failed" (1024-bit key) header.d=ti.com header.i=@ti.com header.b="Zr7PbJD0"
+DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org BFC20206EC
+Authentication-Results: mail.kernel.org; dmarc=none (p=none dis=none) header.from=lists.linux-foundation.org
 Authentication-Results: mail.kernel.org; spf=pass smtp.mailfrom=iommu-bounces@lists.linux-foundation.org
 Received: from localhost (localhost [127.0.0.1])
-	by fraxinus.osuosl.org (Postfix) with ESMTP id 08C2D86B82;
-	Thu, 19 Dec 2019 15:03:09 +0000 (UTC)
+	by silver.osuosl.org (Postfix) with ESMTP id 9B4CE20406;
+	Thu, 19 Dec 2019 15:11:10 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from fraxinus.osuosl.org ([127.0.0.1])
+Received: from silver.osuosl.org ([127.0.0.1])
 	by localhost (.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
-	with ESMTP id YXJ9nUyT_eyl; Thu, 19 Dec 2019 15:03:08 +0000 (UTC)
+	with ESMTP id KUVGIapKHBdv; Thu, 19 Dec 2019 15:11:08 +0000 (UTC)
 Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [140.211.9.56])
-	by fraxinus.osuosl.org (Postfix) with ESMTP id 4DB3F80342;
-	Thu, 19 Dec 2019 15:03:08 +0000 (UTC)
+	by silver.osuosl.org (Postfix) with ESMTP id DC81C203E6;
+	Thu, 19 Dec 2019 15:11:08 +0000 (UTC)
 Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
-	by lists.linuxfoundation.org (Postfix) with ESMTP id 2BFE0C1AE8;
-	Thu, 19 Dec 2019 15:03:08 +0000 (UTC)
-Received: from fraxinus.osuosl.org (smtp4.osuosl.org [140.211.166.137])
- by lists.linuxfoundation.org (Postfix) with ESMTP id 0531AC077D
- for <iommu@lists.linux-foundation.org>; Thu, 19 Dec 2019 15:03:07 +0000 (UTC)
+	by lists.linuxfoundation.org (Postfix) with ESMTP id D3845C1AE8;
+	Thu, 19 Dec 2019 15:11:08 +0000 (UTC)
+Received: from whitealder.osuosl.org (smtp1.osuosl.org [140.211.166.138])
+ by lists.linuxfoundation.org (Postfix) with ESMTP id 1CF7BC077D
+ for <iommu@lists.linux-foundation.org>; Thu, 19 Dec 2019 14:56:48 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
- by fraxinus.osuosl.org (Postfix) with ESMTP id E7BEE86BAE
- for <iommu@lists.linux-foundation.org>; Thu, 19 Dec 2019 15:03:06 +0000 (UTC)
+ by whitealder.osuosl.org (Postfix) with ESMTP id 1449787E25
+ for <iommu@lists.linux-foundation.org>; Thu, 19 Dec 2019 14:56:48 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from fraxinus.osuosl.org ([127.0.0.1])
+Received: from whitealder.osuosl.org ([127.0.0.1])
  by localhost (.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
- with ESMTP id tUeOvumlX-7S for <iommu@lists.linux-foundation.org>;
- Thu, 19 Dec 2019 15:03:05 +0000 (UTC)
-X-Greylist: from auto-whitelisted by SQLgrey-1.7.6
-Received: from verein.lst.de (verein.lst.de [213.95.11.211])
- by fraxinus.osuosl.org (Postfix) with ESMTPS id 1A3C086BBB
- for <iommu@lists.linux-foundation.org>; Thu, 19 Dec 2019 15:03:04 +0000 (UTC)
-Received: by verein.lst.de (Postfix, from userid 2407)
- id 5D62768B20; Thu, 19 Dec 2019 16:03:00 +0100 (CET)
-Date: Thu, 19 Dec 2019 16:02:59 +0100
-From: Christoph Hellwig <hch@lst.de>
-To: Peter Ujfalusi <peter.ujfalusi@ti.com>
+ with ESMTP id 2lZDroc4rEm7 for <iommu@lists.linux-foundation.org>;
+ Thu, 19 Dec 2019 14:56:46 +0000 (UTC)
+X-Greylist: delayed 01:46:40 by SQLgrey-1.7.6
+Received: from lelv0142.ext.ti.com (lelv0142.ext.ti.com [198.47.23.249])
+ by whitealder.osuosl.org (Postfix) with ESMTPS id 98DC787E23
+ for <iommu@lists.linux-foundation.org>; Thu, 19 Dec 2019 14:56:46 +0000 (UTC)
+Received: from lelv0266.itg.ti.com ([10.180.67.225])
+ by lelv0142.ext.ti.com (8.15.2/8.15.2) with ESMTP id xBJD9qoB119219;
+ Thu, 19 Dec 2019 07:09:52 -0600
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ti.com;
+ s=ti-com-17Q1; t=1576760992;
+ bh=KPTaXXChfGBr8xeIZyTJTzwL0VMjgUoCfi9xmVb1/QQ=;
+ h=Subject:To:CC:References:From:Date:In-Reply-To;
+ b=Zr7PbJD0v5nO6UIOrFxPn4K/g2xlUgJrKdWMY4RiXc7AJffkOo/7BnMxkJntVI7gc
+ NduzKu+KiLjOxdZze5UG3WPykLx9Gsg12dnSWffU7GANZ7G5vbdMs6eRw5xC/SgTwX
+ L9D0EzprnKdontG2ksaAAw9G6zfxJPz+hQv3u9zI=
+Received: from DLEE113.ent.ti.com (dlee113.ent.ti.com [157.170.170.24])
+ by lelv0266.itg.ti.com (8.15.2/8.15.2) with ESMTPS id xBJD9qM8016350
+ (version=TLSv1.2 cipher=AES256-GCM-SHA384 bits=256 verify=FAIL);
+ Thu, 19 Dec 2019 07:09:52 -0600
+Received: from DLEE105.ent.ti.com (157.170.170.35) by DLEE113.ent.ti.com
+ (157.170.170.24) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256_P256) id 15.1.1847.3; Thu, 19
+ Dec 2019 07:09:52 -0600
+Received: from fllv0039.itg.ti.com (10.64.41.19) by DLEE105.ent.ti.com
+ (157.170.170.35) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256_P256) id 15.1.1847.3 via
+ Frontend Transport; Thu, 19 Dec 2019 07:09:52 -0600
+Received: from [192.168.2.6] (ileax41-snat.itg.ti.com [10.172.224.153])
+ by fllv0039.itg.ti.com (8.15.2/8.15.2) with ESMTP id xBJD9nhP078884;
+ Thu, 19 Dec 2019 07:09:50 -0600
 Subject: Re: [PATCH 2/2] arm: use swiotlb for bounce buffer on LPAE configs
-Message-ID: <20191219150259.GA3003@lst.de>
+To: Christoph Hellwig <hch@lst.de>, Russell King - ARM Linux admin
+ <linux@armlinux.org.uk>
 References: <20190709142011.24984-1-hch@lst.de>
  <20190709142011.24984-3-hch@lst.de>
- <9bbd87c2-5b6c-069c-dd22-5105dc827428@ti.com>
+Message-ID: <9bbd87c2-5b6c-069c-dd22-5105dc827428@ti.com>
+Date: Thu, 19 Dec 2019 15:10:06 +0200
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:60.0) Gecko/20100101
+ Thunderbird/60.9.0
 MIME-Version: 1.0
-Content-Disposition: inline
-In-Reply-To: <9bbd87c2-5b6c-069c-dd22-5105dc827428@ti.com>
-User-Agent: Mutt/1.5.17 (2007-11-01)
+In-Reply-To: <20190709142011.24984-3-hch@lst.de>
+Content-Language: en-US
+X-EXCLAIMER-MD-CONFIG: e1e8a2fd-e40a-4ac6-ac9b-f7e9cc9ee180
+X-Mailman-Approved-At: Thu, 19 Dec 2019 15:11:07 +0000
 Cc: Vignesh Raghavendra <vigneshr@ti.com>,
- Konrad Rzeszutek Wilk <konrad.wilk@oracle.com>,
- Russell King - ARM Linux admin <linux@armlinux.org.uk>,
- linux-kernel@vger.kernel.org, iommu@lists.linux-foundation.org,
- Christoph Hellwig <hch@lst.de>, linux-arm-kernel@lists.infradead.org,
+ Konrad Rzeszutek Wilk <konrad.wilk@oracle.com>, linux-kernel@vger.kernel.org,
+ iommu@lists.linux-foundation.org, linux-arm-kernel@lists.infradead.org,
  Roger Quadros <rogerq@ti.com>
 X-BeenThere: iommu@lists.linux-foundation.org
 X-Mailman-Version: 2.1.15
@@ -76,220 +102,172 @@ List-Post: <mailto:iommu@lists.linux-foundation.org>
 List-Help: <mailto:iommu-request@lists.linux-foundation.org?subject=help>
 List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
  <mailto:iommu-request@lists.linux-foundation.org?subject=subscribe>
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: 7bit
+From: Peter Ujfalusi via iommu <iommu@lists.linux-foundation.org>
+Reply-To: Peter Ujfalusi <peter.ujfalusi@ti.com>
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: base64
 Errors-To: iommu-bounces@lists.linux-foundation.org
 Sender: "iommu" <iommu-bounces@lists.linux-foundation.org>
 
-Hi Peter,
-
-can you try the patch below (it will need to be split into two):
-
-diff --git a/arch/arm/mm/dma-mapping.c b/arch/arm/mm/dma-mapping.c
-index e822af0d9219..30b9c6786ce3 100644
---- a/arch/arm/mm/dma-mapping.c
-+++ b/arch/arm/mm/dma-mapping.c
-@@ -221,7 +221,8 @@ EXPORT_SYMBOL(arm_coherent_dma_ops);
- 
- static int __dma_supported(struct device *dev, u64 mask, bool warn)
- {
--	unsigned long max_dma_pfn = min(max_pfn, arm_dma_pfn_limit);
-+	unsigned long max_dma_pfn =
-+		min_t(unsigned long, max_pfn, zone_dma_limit >> PAGE_SHIFT);
- 
- 	/*
- 	 * Translate the device's DMA mask to a PFN limit.  This
-diff --git a/arch/arm/mm/init.c b/arch/arm/mm/init.c
-index 3ef204137e73..dd0e169a1bb1 100644
---- a/arch/arm/mm/init.c
-+++ b/arch/arm/mm/init.c
-@@ -19,6 +19,7 @@
- #include <linux/gfp.h>
- #include <linux/memblock.h>
- #include <linux/dma-contiguous.h>
-+#include <linux/dma-direct.h>
- #include <linux/sizes.h>
- #include <linux/stop_machine.h>
- #include <linux/swiotlb.h>
-@@ -84,15 +85,6 @@ static void __init find_limits(unsigned long *min, unsigned long *max_low,
- phys_addr_t arm_dma_zone_size __read_mostly;
- EXPORT_SYMBOL(arm_dma_zone_size);
- 
--/*
-- * The DMA mask corresponding to the maximum bus address allocatable
-- * using GFP_DMA.  The default here places no restriction on DMA
-- * allocations.  This must be the smallest DMA mask in the system,
-- * so a successful GFP_DMA allocation will always satisfy this.
-- */
--phys_addr_t arm_dma_limit;
--unsigned long arm_dma_pfn_limit;
--
- static void __init arm_adjust_dma_zone(unsigned long *size, unsigned long *hole,
- 	unsigned long dma_size)
- {
-@@ -108,14 +100,14 @@ static void __init arm_adjust_dma_zone(unsigned long *size, unsigned long *hole,
- 
- void __init setup_dma_zone(const struct machine_desc *mdesc)
- {
--#ifdef CONFIG_ZONE_DMA
--	if (mdesc->dma_zone_size) {
-+	if (!IS_ENABLED(CONFIG_ZONE_DMA)) {
-+		zone_dma_limit = ((phys_addr_t)~0);
-+	} else if (mdesc->dma_zone_size) {
- 		arm_dma_zone_size = mdesc->dma_zone_size;
--		arm_dma_limit = PHYS_OFFSET + arm_dma_zone_size - 1;
--	} else
--		arm_dma_limit = 0xffffffff;
--	arm_dma_pfn_limit = arm_dma_limit >> PAGE_SHIFT;
--#endif
-+		zone_dma_limit = PHYS_OFFSET + arm_dma_zone_size - 1;
-+	} else {
-+		zone_dma_limit = 0xffffffff;
-+	}
- }
- 
- static void __init zone_sizes_init(unsigned long min, unsigned long max_low,
-@@ -279,7 +271,7 @@ void __init arm_memblock_init(const struct machine_desc *mdesc)
- 	early_init_fdt_scan_reserved_mem();
- 
- 	/* reserve memory for DMA contiguous allocations */
--	dma_contiguous_reserve(arm_dma_limit);
-+	dma_contiguous_reserve(zone_dma_limit);
- 
- 	arm_memblock_steal_permitted = false;
- 	memblock_dump_all();
-diff --git a/arch/arm/mm/mm.h b/arch/arm/mm/mm.h
-index 88c121ac14b3..7dbd77554273 100644
---- a/arch/arm/mm/mm.h
-+++ b/arch/arm/mm/mm.h
-@@ -82,14 +82,6 @@ extern __init void add_static_vm_early(struct static_vm *svm);
- 
- #endif
- 
--#ifdef CONFIG_ZONE_DMA
--extern phys_addr_t arm_dma_limit;
--extern unsigned long arm_dma_pfn_limit;
--#else
--#define arm_dma_limit ((phys_addr_t)~0)
--#define arm_dma_pfn_limit (~0ul >> PAGE_SHIFT)
--#endif
--
- extern phys_addr_t arm_lowmem_limit;
- 
- void __init bootmem_init(void);
-diff --git a/arch/arm64/mm/init.c b/arch/arm64/mm/init.c
-index b65dffdfb201..7a7501acd763 100644
---- a/arch/arm64/mm/init.c
-+++ b/arch/arm64/mm/init.c
-@@ -441,7 +441,7 @@ void __init arm64_memblock_init(void)
- 	early_init_fdt_scan_reserved_mem();
- 
- 	if (IS_ENABLED(CONFIG_ZONE_DMA)) {
--		zone_dma_bits = ARM64_ZONE_DMA_BITS;
-+		zone_dma_limit = DMA_BIT_MASK(ARM64_ZONE_DMA_BITS);
- 		arm64_dma_phys_limit = max_zone_phys(ARM64_ZONE_DMA_BITS);
- 	}
- 
-diff --git a/arch/powerpc/mm/mem.c b/arch/powerpc/mm/mem.c
-index 9488b63dfc87..337ace03d3f0 100644
---- a/arch/powerpc/mm/mem.c
-+++ b/arch/powerpc/mm/mem.c
-@@ -223,7 +223,7 @@ static int __init mark_nonram_nosave(void)
-  * everything else. GFP_DMA32 page allocations automatically fall back to
-  * ZONE_DMA.
-  *
-- * By using 31-bit unconditionally, we can exploit zone_dma_bits to inform the
-+ * By using 31-bit unconditionally, we can exploit zone_dma_limit to inform the
-  * generic DMA mapping code.  32-bit only devices (if not handled by an IOMMU
-  * anyway) will take a first dip into ZONE_NORMAL and get otherwise served by
-  * ZONE_DMA.
-@@ -257,18 +257,20 @@ void __init paging_init(void)
- 	printk(KERN_DEBUG "Memory hole size: %ldMB\n",
- 	       (long int)((top_of_ram - total_ram) >> 20));
- 
-+#ifdef CONFIG_ZONE_DMA
- 	/*
- 	 * Allow 30-bit DMA for very limited Broadcom wifi chips on many
- 	 * powerbooks.
- 	 */
--	if (IS_ENABLED(CONFIG_PPC32))
--		zone_dma_bits = 30;
--	else
--		zone_dma_bits = 31;
--
--#ifdef CONFIG_ZONE_DMA
--	max_zone_pfns[ZONE_DMA]	= min(max_low_pfn,
--				      1UL << (zone_dma_bits - PAGE_SHIFT));
-+	if (IS_ENABLED(CONFIG_PPC32)) {
-+		zone_dma_limit = DMA_BIT_MASK(30);
-+		max_zone_pfns[ZONE_DMA]	= min(max_low_pfn,
-+					      1UL << (30 - PAGE_SHIFT));
-+	} else {
-+		zone_dma_limit = DMA_BIT_MASK(31);
-+		max_zone_pfns[ZONE_DMA]	= min(max_low_pfn,
-+					      1UL << (31 - PAGE_SHIFT));
-+	}
- #endif
- 	max_zone_pfns[ZONE_NORMAL] = max_low_pfn;
- #ifdef CONFIG_HIGHMEM
-diff --git a/arch/s390/mm/init.c b/arch/s390/mm/init.c
-index f0ce22220565..c403f61cb56b 100644
---- a/arch/s390/mm/init.c
-+++ b/arch/s390/mm/init.c
-@@ -118,7 +118,7 @@ void __init paging_init(void)
- 
- 	sparse_memory_present_with_active_regions(MAX_NUMNODES);
- 	sparse_init();
--	zone_dma_bits = 31;
-+	zone_dma_limit = DMA_BIT_MASK(31);
- 	memset(max_zone_pfns, 0, sizeof(max_zone_pfns));
- 	max_zone_pfns[ZONE_DMA] = PFN_DOWN(MAX_DMA_ADDRESS);
- 	max_zone_pfns[ZONE_NORMAL] = max_low_pfn;
-diff --git a/include/linux/dma-direct.h b/include/linux/dma-direct.h
-index 24b8684aa21d..20d56d597506 100644
---- a/include/linux/dma-direct.h
-+++ b/include/linux/dma-direct.h
-@@ -6,7 +6,7 @@
- #include <linux/memblock.h> /* for min_low_pfn */
- #include <linux/mem_encrypt.h>
- 
--extern unsigned int zone_dma_bits;
-+extern phys_addr_t zone_dma_limit;
- 
- #ifdef CONFIG_ARCH_HAS_PHYS_TO_DMA
- #include <asm/dma-direct.h>
-diff --git a/kernel/dma/direct.c b/kernel/dma/direct.c
-index 6af7ae83c4ad..5ea1bed2ba6f 100644
---- a/kernel/dma/direct.c
-+++ b/kernel/dma/direct.c
-@@ -21,7 +21,7 @@
-  * it for entirely different regions. In that case the arch code needs to
-  * override the variable below for dma-direct to work properly.
-  */
--unsigned int zone_dma_bits __ro_after_init = 24;
-+phys_addr_t zone_dma_limit __ro_after_init = DMA_BIT_MASK(24);
- 
- static void report_addr(struct device *dev, dma_addr_t dma_addr, size_t size)
- {
-@@ -74,7 +74,7 @@ static gfp_t __dma_direct_optimal_gfp_mask(struct device *dev, u64 dma_mask,
- 	 * Note that GFP_DMA32 and GFP_DMA are no ops without the corresponding
- 	 * zones.
- 	 */
--	if (*phys_limit <= DMA_BIT_MASK(zone_dma_bits))
-+	if (*phys_limit <= zone_dma_limit)
- 		return GFP_DMA;
- 	if (*phys_limit <= DMA_BIT_MASK(32))
- 		return GFP_DMA32;
-@@ -483,7 +483,7 @@ int dma_direct_supported(struct device *dev, u64 mask)
- 	u64 min_mask;
- 
- 	if (IS_ENABLED(CONFIG_ZONE_DMA))
--		min_mask = DMA_BIT_MASK(zone_dma_bits);
-+		min_mask = zone_dma_limit;
- 	else
- 		min_mask = DMA_BIT_MASK(32);
- 
-_______________________________________________
-iommu mailing list
-iommu@lists.linux-foundation.org
-https://lists.linuxfoundation.org/mailman/listinfo/iommu
+SGksCgpPbiAwOS8wNy8yMDE5IDE3LjIwLCBDaHJpc3RvcGggSGVsbHdpZyB3cm90ZToKPiBUaGUg
+RE1BIEFQSSByZXF1aXJlcyB0aGF0IDMyLWJpdCBETUEgbWFza3MgYXJlIGFsd2F5cyBzdXBwb3J0
+ZWQsIGJ1dCBvbgo+IGFybSBMUEFFIGNvbmZpZ3MgdGhleSBkbyBub3QgY3VycmVudGx5IHdvcmsg
+d2hlbiBtZW1vcnkgaXMgcHJlc2VudAo+IGFib3ZlIDRHQi4gIFdpcmUgdXAgdGhlIHN3aW90bGIg
+Y29kZSBsaWtlIGZvciBhbGwgb3RoZXIgYXJjaGl0ZWN0dXJlcwo+IHRvIHByb3ZpZGUgdGhlIGJv
+dW5jZSBidWZmZXJpbmcgaW4gdGhhdCBjYXNlLgoKYmlzZWN0IHBvaW50ZWQgbWUgdG8gdGhpcyBj
+b21taXQgYXMgdGhlIHJlYXNvbiB3aHkgRURNQSBmYWlscyB0byBwcm9iZSBhbmQgc2RoY2kgaXMg
+ZmFsbGluZyBiYWNrIHRvIFBJTyBtb2RlIChub3QgdXNpbmcgaXQncyBidWlsdCBpbiBETUEpLgoK
+SW4gYm90aCBjYXNlcyB0aGUgcmVhc29uIGlzIHRoYXQKZG1hX3NldF9tYXNrX2FuZF9jb2hlcmVu
+dChkZXYsIERNQV9CSVRfTUFTSygzMikpOwpmYWlscywgYmVjYXVzZSBkbWFfZGlyZWN0X3N1cHBv
+cnRlZCgpIGlzIHJldHVybmluZyBmYWxzZS4KCgpQcmludHMgaW5zaWRlIGRtYV9kaXJlY3Rfc3Vw
+cG9ydGVkKCk6CnNkaGNpLW9tYXAgMjMwMDAwMDAubW1jOiBtYXhfcGZuOiA4ODAwMDAKc2RoY2kt
+b21hcCAyMzAwMDAwMC5tbWM6IG1pbl9tYXNrICMxOiBmZmZmZmYKc2RoY2ktb21hcCAyMzAwMDAw
+MC5tbWM6IG1pbl9tYXNrICMyOiBmZmZmZmYKc2RoY2ktb21hcCAyMzAwMDAwMC5tbWM6IGRldi0+
+ZG1hX3Bmbl9vZmZzZXQ6IDc4MDAwMApzZGhjaS1vbWFwIDIzMDAwMDAwLm1tYzogUEFHRV9TSElG
+VDogMTIKc2RoY2ktb21hcCAyMzAwMDAwMC5tbWM6IF9fcGh5c190b19kbWEoZGV2LCBtaW5fbWFz
+ayk6IGZmODgwZmZmZmZmCnNkaGNpLW9tYXAgMjMwMDAwMDAubW1jOiBtYXNrOiBmZmZmZmZmZgoK
+UHJpbnQgaW4gZG1hX3N1cHBvcnRlZCgpIGFmdGVyIHJldHVybmluZyBmcm9tIGRtYV9kaXJlY3Rf
+c3VwcG9ydGVkKCk6CnNkaGNpLW9tYXAgMjMwMDAwMDAubW1jOiBkbWFfaXNfZGlyZWN0LCByZXQg
+PSAwCgpzZGhjaS1vbWFwIDIzMTAwMDAwLm1tYzogRE1BIGlzIG5vdCBzdXBwb3J0ZWQgZm9yIHRo
+ZSBkZXZpY2UKCmtleXN0b25lLWsyZyBoYXZlIHRoaXMgaW4gc29jMCBub2RlOgpkbWEtcmFuZ2Vz
+ID0gPDB4ODAwMDAwMDAgMHg4IDB4MDAwMDAwMDAgMHg4MDAwMDAwMD47CgpERFIgc3RhcnRzIGF0
+IDB4OCAwMDAwIDAwMDAgKDhHKSBhbmQgMkcgaXMgYWxpYXNlZCBhdCAweDgwMDAgMDAwMC4KClRo
+aXMgZ2l2ZXMgdGhlIDB4NzgwMDAwIGZvciBkbWFfcGZuX29mZnNldCBmb3IgYWxsIGRldmljZXMg
+dW5kZXJuZWF0aCBpdC4KClRoZSBETUFfQklUX01BU0soMjQpIGlzIHBhc3NlZCB0byBfX3BoeXNf
+dG9fZG1hKCkgYmVjYXVzZSBDT05GSUdfWk9ORV9ETUEgaXMgZW5hYmxlZC4KClNXSU9UTEIgaXMg
+ZW5hYmxlZCBpbiBrY29uZmlnLgoKSSdtIG5vdCBzdXJlIGhvdyB0byBjb3JyZWN0bHkgZml4IGl0
+LCBidXQgdGhlIGZvbGxvd2luZyBwYXRjaCBtYWtlcyB0aGluZ3Mgd29ya2luZzoKCkZyb20gYjY4
+MmE2MTc3NmYwODYxNzU1YzlkNTRlNWViY2NmODQ3MWQ4NWJmZCBNb24gU2VwIDE3IDAwOjAwOjAw
+IDIwMDEKRnJvbTogUGV0ZXIgVWpmYWx1c2kgPHBldGVyLnVqZmFsdXNpQHRpLmNvbT4KRGF0ZTog
+VGh1LCAxOSBEZWMgMjAxOSAxNTowNzoyNSArMDIwMApTdWJqZWN0OiBbUEFUQ0hdIGFybTogbW06
+IGRtYS1tYXBwaW5nOiBGaXggZG1hX3N1cHBvcnRlZCgpIHdoZW4KIGRldi0+ZG1hX3Bmbl9vZmZz
+ZXQgaXMgbm90IDAKCldlIGNhbiBvbmx5IHVzZSBkaXJlY3QgbWFwcGluZyB3aGVuIExQQUUgaXMg
+ZW5hYmxlZCBpZiB0aGUgZG1hX3Bmbl9vZmZzZXQKaXMgMCwgb3RoZXJ3aXNlIHZhbGlkIGRtYV9t
+YXNrcyB3aWxsIGJlIHJlamVjdGVkIGFuZCB0aGUgRE1BIHN1cHBvcnQgaXMKZ29pbmcgdG8gYmUg
+ZGVuaWVkIGZvciBwZXJpcGhlcmFscywgb3IgRE1BIGRyaXZlcnMuCgpTaWduZWQtb2ZmLWJ5OiBQ
+ZXRlciBVamZhbHVzaSA8cGV0ZXIudWpmYWx1c2lAdGkuY29tPgotLS0KIGFyY2gvYXJtL21tL2Rt
+YS1tYXBwaW5nLmMgfCAxOCArKysrKysrKystLS0tLS0tLS0KIDEgZmlsZSBjaGFuZ2VkLCA5IGlu
+c2VydGlvbnMoKyksIDkgZGVsZXRpb25zKC0pCgpkaWZmIC0tZ2l0IGEvYXJjaC9hcm0vbW0vZG1h
+LW1hcHBpbmcuYyBiL2FyY2gvYXJtL21tL2RtYS1tYXBwaW5nLmMKaW5kZXggN2QwNDJkNWM0M2Uz
+Li5iZjE5OWIxZTgyYmQgMTAwNjQ0Ci0tLSBhL2FyY2gvYXJtL21tL2RtYS1tYXBwaW5nLmMKKysr
+IGIvYXJjaC9hcm0vbW0vZG1hLW1hcHBpbmcuYwpAQCAtMTEwMCwxNSArMTEwMCw2IEBAIGludCBh
+cm1fZG1hX3N1cHBvcnRlZChzdHJ1Y3QgZGV2aWNlICpkZXYsIHU2NCBtYXNrKQogCiBzdGF0aWMg
+Y29uc3Qgc3RydWN0IGRtYV9tYXBfb3BzICphcm1fZ2V0X2RtYV9tYXBfb3BzKGJvb2wgY29oZXJl
+bnQpCiB7Ci0JLyoKLQkgKiBXaGVuIENPTkZJR19BUk1fTFBBRSBpcyBzZXQsIHBoeXNpY2FsIGFk
+ZHJlc3MgY2FuIGV4dGVuZCBhYm92ZQotCSAqIDMyLWJpdHMsIHdoaWNoIHRoZW4gY2FuJ3QgYmUg
+YWRkcmVzc2VkIGJ5IGRldmljZXMgdGhhdCBvbmx5IHN1cHBvcnQKLQkgKiAzMi1iaXQgRE1BLgot
+CSAqIFVzZSB0aGUgZ2VuZXJpYyBkbWEtZGlyZWN0IC8gc3dpb3RsYiBvcHMgY29kZSBpbiB0aGF0
+IGNhc2UsIGFzIHRoYXQKLQkgKiBoYW5kbGVzIGJvdW5jZSBidWZmZXJpbmcgZm9yIHVzLgotCSAq
+LwotCWlmIChJU19FTkFCTEVEKENPTkZJR19BUk1fTFBBRSkpCi0JCXJldHVybiBOVUxMOwogCXJl
+dHVybiBjb2hlcmVudCA/ICZhcm1fY29oZXJlbnRfZG1hX29wcyA6ICZhcm1fZG1hX29wczsKIH0K
+IApAQCAtMjMwOSw2ICsyMzAwLDE1IEBAIHZvaWQgYXJjaF9zZXR1cF9kbWFfb3BzKHN0cnVjdCBk
+ZXZpY2UgKmRldiwgdTY0IGRtYV9iYXNlLCB1NjQgc2l6ZSwKIAogCWlmIChhcm1fc2V0dXBfaW9t
+bXVfZG1hX29wcyhkZXYsIGRtYV9iYXNlLCBzaXplLCBpb21tdSkpCiAJCWRtYV9vcHMgPSBhcm1f
+Z2V0X2lvbW11X2RtYV9tYXBfb3BzKGNvaGVyZW50KTsKKwllbHNlIGlmIChJU19FTkFCTEVEKENP
+TkZJR19BUk1fTFBBRSkgJiYgIWRldi0+ZG1hX3Bmbl9vZmZzZXQpCisJCS8qCisJCSAqIFdoZW4g
+Q09ORklHX0FSTV9MUEFFIGlzIHNldCwgcGh5c2ljYWwgYWRkcmVzcyBjYW4gZXh0ZW5kCisJCSAq
+IGFib3ZlICogMzItYml0cywgd2hpY2ggdGhlbiBjYW4ndCBiZSBhZGRyZXNzZWQgYnkgZGV2aWNl
+cworCQkgKiB0aGF0IG9ubHkgc3VwcG9ydCAzMi1iaXQgRE1BLgorCQkgKiBVc2UgdGhlIGdlbmVy
+aWMgZG1hLWRpcmVjdCAvIHN3aW90bGIgb3BzIGNvZGUgaW4gdGhhdCBjYXNlLAorCQkgKiBhcyB0
+aGF0IGhhbmRsZXMgYm91bmNlIGJ1ZmZlcmluZyBmb3IgdXMuCisJCSAqLworCQlkbWFfb3BzID0g
+TlVMTDsKIAllbHNlCiAJCWRtYV9vcHMgPSBhcm1fZ2V0X2RtYV9tYXBfb3BzKGNvaGVyZW50KTsK
+IAotLSAKLSBQw6l0ZXIKCj4gRml4ZXM6IDIxZTA3ZGJhOWZiMTEgKCJzY3NpOiByZWR1Y2UgdXNl
+IG9mIGJsb2NrIGJvdW5jZSBidWZmZXJzIikuCj4gUmVwb3J0ZWQtYnk6IFJvZ2VyIFF1YWRyb3Mg
+PHJvZ2VycUB0aS5jb20+Cj4gU2lnbmVkLW9mZi1ieTogQ2hyaXN0b3BoIEhlbGx3aWcgPGhjaEBs
+c3QuZGU+Cj4gLS0tCj4gIGFyY2gvYXJtL2luY2x1ZGUvYXNtL2RtYS1tYXBwaW5nLmggfCAgNCAr
+LQo+ICBhcmNoL2FybS9tbS9LY29uZmlnICAgICAgICAgICAgICAgIHwgIDUgKysrCj4gIGFyY2gv
+YXJtL21tL2RtYS1tYXBwaW5nLmMgICAgICAgICAgfCA2MSArKysrKysrKysrKysrKysrKysrKysr
+KysrKysrKysKPiAgYXJjaC9hcm0vbW0vaW5pdC5jICAgICAgICAgICAgICAgICB8ICA1ICsrKwo+
+ICA0IGZpbGVzIGNoYW5nZWQsIDc0IGluc2VydGlvbnMoKyksIDEgZGVsZXRpb24oLSkKPiAKPiBk
+aWZmIC0tZ2l0IGEvYXJjaC9hcm0vaW5jbHVkZS9hc20vZG1hLW1hcHBpbmcuaCBiL2FyY2gvYXJt
+L2luY2x1ZGUvYXNtL2RtYS1tYXBwaW5nLmgKPiBpbmRleCAwM2JhOTBmZmMwZjguLjA1NDExOWNk
+Nzc1NyAxMDA2NDQKPiAtLS0gYS9hcmNoL2FybS9pbmNsdWRlL2FzbS9kbWEtbWFwcGluZy5oCj4g
+KysrIGIvYXJjaC9hcm0vaW5jbHVkZS9hc20vZG1hLW1hcHBpbmcuaAo+IEBAIC0xOCw3ICsxOCw5
+IEBAIGV4dGVybiBjb25zdCBzdHJ1Y3QgZG1hX21hcF9vcHMgYXJtX2NvaGVyZW50X2RtYV9vcHM7
+Cj4gIAo+ICBzdGF0aWMgaW5saW5lIGNvbnN0IHN0cnVjdCBkbWFfbWFwX29wcyAqZ2V0X2FyY2hf
+ZG1hX29wcyhzdHJ1Y3QgYnVzX3R5cGUgKmJ1cykKPiAgewo+IC0JcmV0dXJuIElTX0VOQUJMRUQo
+Q09ORklHX01NVSkgPyAmYXJtX2RtYV9vcHMgOiBOVUxMOwo+ICsJaWYgKElTX0VOQUJMRUQoQ09O
+RklHX01NVSkgJiYgIUlTX0VOQUJMRUQoQ09ORklHX0FSTV9MUEFFKSkKPiArCQlyZXR1cm4gJmFy
+bV9kbWFfb3BzOwo+ICsJcmV0dXJuIE5VTEw7Cj4gIH0KPiAgCj4gICNpZmRlZiBfX2FyY2hfcGFn
+ZV90b19kbWEKPiBkaWZmIC0tZ2l0IGEvYXJjaC9hcm0vbW0vS2NvbmZpZyBiL2FyY2gvYXJtL21t
+L0tjb25maWcKPiBpbmRleCBiMTY5ZTU4MGJmODIuLjJkZDM2MTgzZDBlNiAxMDA2NDQKPiAtLS0g
+YS9hcmNoL2FybS9tbS9LY29uZmlnCj4gKysrIGIvYXJjaC9hcm0vbW0vS2NvbmZpZwo+IEBAIC02
+NjMsNiArNjYzLDExIEBAIGNvbmZpZyBBUk1fTFBBRQo+ICAJZGVwZW5kcyBvbiBNTVUgJiYgQ1BV
+XzMydjcgJiYgIUNQVV8zMnY2ICYmICFDUFVfMzJ2NSAmJiBcCj4gIAkJIUNQVV8zMnY0ICYmICFD
+UFVfMzJ2Mwo+ICAJc2VsZWN0IFBIWVNfQUREUl9UXzY0QklUCj4gKwlzZWxlY3QgU1dJT1RMQgo+
+ICsJc2VsZWN0IEFSQ0hfSEFTX0RNQV9DT0hFUkVOVF9UT19QRk4KPiArCXNlbGVjdCBBUkNIX0hB
+U19ETUFfTU1BUF9QR1BST1QKPiArCXNlbGVjdCBBUkNIX0hBU19TWU5DX0RNQV9GT1JfREVWSUNF
+Cj4gKwlzZWxlY3QgQVJDSF9IQVNfU1lOQ19ETUFfRk9SX0NQVQo+ICAJaGVscAo+ICAJICBTYXkg
+WSBpZiB5b3UgaGF2ZSBhbiBBUk12NyBwcm9jZXNzb3Igc3VwcG9ydGluZyB0aGUgTFBBRSBwYWdl
+Cj4gIAkgIHRhYmxlIGZvcm1hdCBhbmQgeW91IHdvdWxkIGxpa2UgdG8gYWNjZXNzIG1lbW9yeSBi
+ZXlvbmQgdGhlCj4gZGlmZiAtLWdpdCBhL2FyY2gvYXJtL21tL2RtYS1tYXBwaW5nLmMgYi9hcmNo
+L2FybS9tbS9kbWEtbWFwcGluZy5jCj4gaW5kZXggYmRmMGQyMzZhYWVlLi4wMWE1Yjk2ZDc2YTcg
+MTAwNjQ0Cj4gLS0tIGEvYXJjaC9hcm0vbW0vZG1hLW1hcHBpbmcuYwo+ICsrKyBiL2FyY2gvYXJt
+L21tL2RtYS1tYXBwaW5nLmMKPiBAQCAtMTgsNiArMTgsNyBAQAo+ICAjaW5jbHVkZSA8bGludXgv
+aW5pdC5oPgo+ICAjaW5jbHVkZSA8bGludXgvZGV2aWNlLmg+Cj4gICNpbmNsdWRlIDxsaW51eC9k
+bWEtbWFwcGluZy5oPgo+ICsjaW5jbHVkZSA8bGludXgvZG1hLW5vbmNvaGVyZW50Lmg+Cj4gICNp
+bmNsdWRlIDxsaW51eC9kbWEtY29udGlndW91cy5oPgo+ICAjaW5jbHVkZSA8bGludXgvaGlnaG1l
+bS5oPgo+ICAjaW5jbHVkZSA8bGludXgvbWVtYmxvY2suaD4KPiBAQCAtMTEyOSw2ICsxMTMwLDE5
+IEBAIGludCBhcm1fZG1hX3N1cHBvcnRlZChzdHJ1Y3QgZGV2aWNlICpkZXYsIHU2NCBtYXNrKQo+
+ICAKPiAgc3RhdGljIGNvbnN0IHN0cnVjdCBkbWFfbWFwX29wcyAqYXJtX2dldF9kbWFfbWFwX29w
+cyhib29sIGNvaGVyZW50KQo+ICB7Cj4gKwkvKgo+ICsJICogV2hlbiBDT05GSUdfQVJNX0xQQUUg
+aXMgc2V0LCBwaHlzaWNhbCBhZGRyZXNzIGNhbiBleHRlbmQgYWJvdmUKPiArCSAqIDMyLWJpdHMs
+IHdoaWNoIHRoZW4gY2FuJ3QgYmUgYWRkcmVzc2VkIGJ5IGRldmljZXMgdGhhdCBvbmx5IHN1cHBv
+cnQKPiArCSAqIDMyLWJpdCBETUEuCj4gKwkgKiBVc2UgdGhlIGdlbmVyaWMgZG1hLWRpcmVjdCAv
+IHN3aW90bGIgb3BzIGNvZGUgaW4gdGhhdCBjYXNlLCBhcyB0aGF0Cj4gKwkgKiBoYW5kbGVzIGJv
+dW5jZSBidWZmZXJpbmcgZm9yIHVzLgo+ICsJICoKPiArCSAqIE5vdGU6IHRoaXMgY2hlY2tzIENP
+TkZJR19BUk1fTFBBRSBpbnN0ZWFkIG9mIENPTkZJR19TV0lPVExCIGFzIHRoZQo+ICsJICogbGF0
+dGVyIGlzIGFsc28gc2VsZWN0ZWQgYnkgdGhlIFhlbiBjb2RlLCBidXQgdGhhdCBjb2RlIGZvciBu
+b3cgcmVsaWVzCj4gKwkgKiBvbiBub24tTlVMTCBkZXZfZG1hX29wcy4gIFRvIGJlIGNsZWFuZWQg
+dXAgbGF0ZXIuCj4gKwkgKi8KPiArCWlmIChJU19FTkFCTEVEKENPTkZJR19BUk1fTFBBRSkpCj4g
+KwkJcmV0dXJuIE5VTEw7Cj4gIAlyZXR1cm4gY29oZXJlbnQgPyAmYXJtX2NvaGVyZW50X2RtYV9v
+cHMgOiAmYXJtX2RtYV9vcHM7Cj4gIH0KPiAgCj4gQEAgLTIzMzMsNiArMjM0Nyw5IEBAIHZvaWQg
+YXJjaF9zZXR1cF9kbWFfb3BzKHN0cnVjdCBkZXZpY2UgKmRldiwgdTY0IGRtYV9iYXNlLCB1NjQg
+c2l6ZSwKPiAgCWNvbnN0IHN0cnVjdCBkbWFfbWFwX29wcyAqZG1hX29wczsKPiAgCj4gIAlkZXYt
+PmFyY2hkYXRhLmRtYV9jb2hlcmVudCA9IGNvaGVyZW50Owo+ICsjaWZkZWYgQ09ORklHX1NXSU9U
+TEIKPiArCWRldi0+ZG1hX2NvaGVyZW50ID0gY29oZXJlbnQ7Cj4gKyNlbmRpZgo+ICAKPiAgCS8q
+Cj4gIAkgKiBEb24ndCBvdmVycmlkZSB0aGUgZG1hX29wcyBpZiB0aGV5IGhhdmUgYWxyZWFkeSBi
+ZWVuIHNldC4gSWRlYWxseQo+IEBAIC0yMzY3LDMgKzIzODQsNDcgQEAgdm9pZCBhcmNoX3RlYXJk
+b3duX2RtYV9vcHMoc3RydWN0IGRldmljZSAqZGV2KQo+ICAJLyogTGV0IGFyY2hfc2V0dXBfZG1h
+X29wcygpIHN0YXJ0IGFnYWluIGZyb20gc2NyYXRjaCB1cG9uIHJlLXByb2JlICovCj4gIAlzZXRf
+ZG1hX29wcyhkZXYsIE5VTEwpOwo+ICB9Cj4gKwo+ICsjaWZkZWYgQ09ORklHX1NXSU9UTEIKPiAr
+dm9pZCBhcmNoX3N5bmNfZG1hX2Zvcl9kZXZpY2Uoc3RydWN0IGRldmljZSAqZGV2LCBwaHlzX2Fk
+ZHJfdCBwYWRkciwKPiArCQlzaXplX3Qgc2l6ZSwgZW51bSBkbWFfZGF0YV9kaXJlY3Rpb24gZGly
+KQo+ICt7Cj4gKwlfX2RtYV9wYWdlX2NwdV90b19kZXYocGh5c190b19wYWdlKHBhZGRyKSwgcGFk
+ZHIgJiAoUEFHRV9TSVpFIC0gMSksCj4gKwkJCSAgICAgIHNpemUsIGRpcik7Cj4gK30KPiArCj4g
+K3ZvaWQgYXJjaF9zeW5jX2RtYV9mb3JfY3B1KHN0cnVjdCBkZXZpY2UgKmRldiwgcGh5c19hZGRy
+X3QgcGFkZHIsCj4gKwkJc2l6ZV90IHNpemUsIGVudW0gZG1hX2RhdGFfZGlyZWN0aW9uIGRpcikK
+PiArewo+ICsJX19kbWFfcGFnZV9kZXZfdG9fY3B1KHBoeXNfdG9fcGFnZShwYWRkciksIHBhZGRy
+ICYgKFBBR0VfU0laRSAtIDEpLAo+ICsJCQkgICAgICBzaXplLCBkaXIpOwo+ICt9Cj4gKwo+ICts
+b25nIGFyY2hfZG1hX2NvaGVyZW50X3RvX3BmbihzdHJ1Y3QgZGV2aWNlICpkZXYsIHZvaWQgKmNw
+dV9hZGRyLAo+ICsJCWRtYV9hZGRyX3QgZG1hX2FkZHIpCj4gK3sKPiArCXJldHVybiBkbWFfdG9f
+cGZuKGRldiwgZG1hX2FkZHIpOwo+ICt9Cj4gKwo+ICtwZ3Byb3RfdCBhcmNoX2RtYV9tbWFwX3Bn
+cHJvdChzdHJ1Y3QgZGV2aWNlICpkZXYsIHBncHJvdF90IHByb3QsCj4gKwkJdW5zaWduZWQgbG9u
+ZyBhdHRycykKPiArewo+ICsJaWYgKCFkZXZfaXNfZG1hX2NvaGVyZW50KGRldikpCj4gKwkJcmV0
+dXJuIF9fZ2V0X2RtYV9wZ3Byb3QoYXR0cnMsIHByb3QpOwo+ICsJcmV0dXJuIHByb3Q7Cj4gK30K
+PiArCj4gK3ZvaWQgKmFyY2hfZG1hX2FsbG9jKHN0cnVjdCBkZXZpY2UgKmRldiwgc2l6ZV90IHNp
+emUsIGRtYV9hZGRyX3QgKmRtYV9oYW5kbGUsCj4gKwkJZ2ZwX3QgZ2ZwLCB1bnNpZ25lZCBsb25n
+IGF0dHJzKQo+ICt7Cj4gKwlyZXR1cm4gX19kbWFfYWxsb2MoZGV2LCBzaXplLCBkbWFfaGFuZGxl
+LCBnZnAsCj4gKwkJCSAgIF9fZ2V0X2RtYV9wZ3Byb3QoYXR0cnMsIFBBR0VfS0VSTkVMKSwgZmFs
+c2UsCj4gKwkJCSAgIGF0dHJzLCBfX2J1aWx0aW5fcmV0dXJuX2FkZHJlc3MoMCkpOwo+ICt9Cj4g
+Kwo+ICt2b2lkIGFyY2hfZG1hX2ZyZWUoc3RydWN0IGRldmljZSAqZGV2LCBzaXplX3Qgc2l6ZSwg
+dm9pZCAqY3B1X2FkZHIsCj4gKwkJZG1hX2FkZHJfdCBkbWFfaGFuZGxlLCB1bnNpZ25lZCBsb25n
+IGF0dHJzKQo+ICt7Cj4gKwlfX2FybV9kbWFfZnJlZShkZXYsIHNpemUsIGNwdV9hZGRyLCBkbWFf
+aGFuZGxlLCBhdHRycywgZmFsc2UpOwo+ICt9Cj4gKyNlbmRpZiAvKiBDT05GSUdfU1dJT1RMQiAq
+Lwo+IGRpZmYgLS1naXQgYS9hcmNoL2FybS9tbS9pbml0LmMgYi9hcmNoL2FybS9tbS9pbml0LmMK
+PiBpbmRleCBiZTBiNDI5Mzc4ODguLjY0NTQxYmUxNWQ0MyAxMDA2NDQKPiAtLS0gYS9hcmNoL2Fy
+bS9tbS9pbml0LmMKPiArKysgYi9hcmNoL2FybS9tbS9pbml0LmMKPiBAQCAtMjQsNiArMjQsNyBA
+QAo+ICAjaW5jbHVkZSA8bGludXgvZG1hLWNvbnRpZ3VvdXMuaD4KPiAgI2luY2x1ZGUgPGxpbnV4
+L3NpemVzLmg+Cj4gICNpbmNsdWRlIDxsaW51eC9zdG9wX21hY2hpbmUuaD4KPiArI2luY2x1ZGUg
+PGxpbnV4L3N3aW90bGIuaD4KPiAgCj4gICNpbmNsdWRlIDxhc20vY3AxNS5oPgo+ICAjaW5jbHVk
+ZSA8YXNtL21hY2gtdHlwZXMuaD4KPiBAQCAtNDU2LDYgKzQ1NywxMCBAQCB2b2lkIF9faW5pdCBt
+ZW1faW5pdCh2b2lkKQo+ICAJZXh0ZXJuIHUzMiBpdGNtX2VuZDsKPiAgI2VuZGlmCj4gIAo+ICsj
+aWZkZWYgQ09ORklHX0FSTV9MUEFFCj4gKwlzd2lvdGxiX2luaXQoMSk7Cj4gKyNlbmRpZgo+ICsK
+PiAgCXNldF9tYXhfbWFwbnIocGZuX3RvX3BhZ2UobWF4X3BmbikgLSBtZW1fbWFwKTsKPiAgCj4g
+IAkvKiB0aGlzIHdpbGwgcHV0IGFsbCB1bnVzZWQgbG93IG1lbW9yeSBvbnRvIHRoZSBmcmVlbGlz
+dHMgKi8KPiAKClRleGFzIEluc3RydW1lbnRzIEZpbmxhbmQgT3ksIFBvcmtrYWxhbmthdHUgMjIs
+IDAwMTgwIEhlbHNpbmtpLiBZLXR1bm51cy9CdXNpbmVzcyBJRDogMDYxNTUyMS00LiBLb3RpcGFp
+a2thL0RvbWljaWxlOiBIZWxzaW5raQpfX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19f
+X19fX19fX19fX19fXwppb21tdSBtYWlsaW5nIGxpc3QKaW9tbXVAbGlzdHMubGludXgtZm91bmRh
+dGlvbi5vcmcKaHR0cHM6Ly9saXN0cy5saW51eGZvdW5kYXRpb24ub3JnL21haWxtYW4vbGlzdGlu
+Zm8vaW9tbXU=
