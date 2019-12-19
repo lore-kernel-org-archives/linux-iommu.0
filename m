@@ -2,92 +2,90 @@ Return-Path: <SRS0=c0M2=2J=lists.linux-foundation.org=iommu-bounces@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-9.6 required=3.0 tests=DKIM_INVALID,DKIM_SIGNED,
-	HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_PATCH,MAILING_LIST_MULTI,SIGNED_OFF_BY,
-	SPF_HELO_NONE,SPF_PASS,USER_AGENT_GIT autolearn=unavailable
-	autolearn_force=no version=3.4.0
+X-Spam-Status: No, score=-7.0 required=3.0 tests=DKIM_INVALID,DKIM_SIGNED,
+	HEADER_FROM_DIFFERENT_DOMAINS,MAILING_LIST_MULTI,MENTIONS_GIT_HOSTING,
+	SPF_HELO_NONE,SPF_PASS,USER_AGENT_SANE_1 autolearn=ham autolearn_force=no
+	version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id A9C4EC2D0D3
-	for <iommu@archiver.kernel.org>; Thu, 19 Dec 2019 13:54:51 +0000 (UTC)
-Received: from hemlock.osuosl.org (smtp2.osuosl.org [140.211.166.133])
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 3C30CC43603
+	for <iommu@archiver.kernel.org>; Thu, 19 Dec 2019 13:55:01 +0000 (UTC)
+Received: from silver.osuosl.org (smtp3.osuosl.org [140.211.166.136])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by mail.kernel.org (Postfix) with ESMTPS id 7E87E24672
-	for <iommu@archiver.kernel.org>; Thu, 19 Dec 2019 13:54:51 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTPS id 0B9B5218AC
+	for <iommu@archiver.kernel.org>; Thu, 19 Dec 2019 13:55:01 +0000 (UTC)
 Authentication-Results: mail.kernel.org;
-	dkim=fail reason="key not found in DNS" (0-bit key) header.d=mg.codeaurora.org header.i=@mg.codeaurora.org header.b="sZv/sQQF"
-DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 7E87E24672
-Authentication-Results: mail.kernel.org; dmarc=none (p=none dis=none) header.from=codeaurora.org
+	dkim=fail reason="signature verification failed" (2048-bit key) header.d=xenosoft.de header.i=@xenosoft.de header.b="I9EzaqNJ"
+DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 0B9B5218AC
+Authentication-Results: mail.kernel.org; dmarc=none (p=none dis=none) header.from=xenosoft.de
 Authentication-Results: mail.kernel.org; spf=pass smtp.mailfrom=iommu-bounces@lists.linux-foundation.org
 Received: from localhost (localhost [127.0.0.1])
-	by hemlock.osuosl.org (Postfix) with ESMTP id 5A7A2880C3;
-	Thu, 19 Dec 2019 13:54:51 +0000 (UTC)
+	by silver.osuosl.org (Postfix) with ESMTP id E61FD203F9;
+	Thu, 19 Dec 2019 13:55:00 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from hemlock.osuosl.org ([127.0.0.1])
+Received: from silver.osuosl.org ([127.0.0.1])
 	by localhost (.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
-	with ESMTP id CnxyIGiuKMYm; Thu, 19 Dec 2019 13:54:49 +0000 (UTC)
+	with ESMTP id zp2nIMSdOnOq; Thu, 19 Dec 2019 13:55:00 +0000 (UTC)
 Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [140.211.9.56])
-	by hemlock.osuosl.org (Postfix) with ESMTP id D24B487EB5;
-	Thu, 19 Dec 2019 13:54:48 +0000 (UTC)
+	by silver.osuosl.org (Postfix) with ESMTP id 128E9203C9;
+	Thu, 19 Dec 2019 13:55:00 +0000 (UTC)
 Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
-	by lists.linuxfoundation.org (Postfix) with ESMTP id B8243C18DC;
-	Thu, 19 Dec 2019 13:54:48 +0000 (UTC)
-Received: from hemlock.osuosl.org (smtp2.osuosl.org [140.211.166.133])
- by lists.linuxfoundation.org (Postfix) with ESMTP id 370EFC18DC
- for <iommu@lists.linux-foundation.org>; Thu, 19 Dec 2019 13:15:58 +0000 (UTC)
+	by lists.linuxfoundation.org (Postfix) with ESMTP id ED1A8C18DC;
+	Thu, 19 Dec 2019 13:54:59 +0000 (UTC)
+Received: from silver.osuosl.org (smtp3.osuosl.org [140.211.166.136])
+ by lists.linuxfoundation.org (Postfix) with ESMTP id 7B493C077D
+ for <iommu@lists.linux-foundation.org>; Thu, 19 Dec 2019 13:54:58 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
- by hemlock.osuosl.org (Postfix) with ESMTP id 2C0FA884CA
- for <iommu@lists.linux-foundation.org>; Thu, 19 Dec 2019 13:15:58 +0000 (UTC)
+ by silver.osuosl.org (Postfix) with ESMTP id 67EEC203F9
+ for <iommu@lists.linux-foundation.org>; Thu, 19 Dec 2019 13:54:58 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from hemlock.osuosl.org ([127.0.0.1])
+Received: from silver.osuosl.org ([127.0.0.1])
  by localhost (.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
- with ESMTP id nM+P6eeLwBxt for <iommu@lists.linux-foundation.org>;
- Thu, 19 Dec 2019 13:15:57 +0000 (UTC)
+ with ESMTP id P5laHE2SGqlJ for <iommu@lists.linux-foundation.org>;
+ Thu, 19 Dec 2019 13:54:55 +0000 (UTC)
 X-Greylist: from auto-whitelisted by SQLgrey-1.7.6
-Received: from mail25.static.mailgun.info (mail25.static.mailgun.info
- [104.130.122.25])
- by hemlock.osuosl.org (Postfix) with ESMTPS id 9FED3884B3
- for <iommu@lists.linux-foundation.org>; Thu, 19 Dec 2019 13:15:56 +0000 (UTC)
-DKIM-Signature: a=rsa-sha256; v=1; c=relaxed/relaxed; d=mg.codeaurora.org;
- q=dns/txt; 
- s=smtp; t=1576761357; h=References: In-Reply-To: Message-Id: Date:
- Subject: Cc: To: From: Sender;
- bh=Kzd3Ff/63q0KSXouv0vNewRLNbcKAkneVhefNQhqKp4=;
- b=sZv/sQQF3yikzeZUjdAM50t9o6ZfMCg5qErpLYWXb2nHUEeuyuyQON4z4PrFNvp5FpQ05isl
- vwqWQwo2sfUprsj4DK/y1OkpEG/W61L72fBPyxyg7/qy6IldPW91hfT9rau6bJ446R4nsUX2
- d9rLgxFm1wSTkhtHjnCvEKF3WAo=
-X-Mailgun-Sending-Ip: 104.130.122.25
-X-Mailgun-Sid: WyI3NDkwMCIsICJpb21tdUBsaXN0cy5saW51eC1mb3VuZGF0aW9uLm9yZyIsICJiZTllNGEiXQ==
-Received: from smtp.codeaurora.org
- (ec2-35-166-182-171.us-west-2.compute.amazonaws.com [35.166.182.171])
- by mxa.mailgun.org with ESMTP id 5dfb780b.7fb69f692810-smtp-out-n01;
- Thu, 19 Dec 2019 13:15:55 -0000 (UTC)
-Received: by smtp.codeaurora.org (Postfix, from userid 1001)
- id E9D14C447A4; Thu, 19 Dec 2019 13:15:54 +0000 (UTC)
-Received: from smasetty-linux.qualcomm.com
- (blr-c-bdr-fw-01_globalnat_allzones-outside.qualcomm.com [103.229.19.19])
- (using TLSv1.2 with cipher ECDHE-RSA-AES128-SHA256 (128/128 bits))
- (No client certificate requested) (Authenticated sender: smasetty)
- by smtp.codeaurora.org (Postfix) with ESMTPSA id E771CC447AF;
- Thu, 19 Dec 2019 13:15:46 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.3.2 smtp.codeaurora.org E771CC447AF
-Authentication-Results: aws-us-west-2-caf-mail-1.web.codeaurora.org;
- dmarc=none (p=none dis=none) header.from=codeaurora.org
-Authentication-Results: aws-us-west-2-caf-mail-1.web.codeaurora.org;
- spf=none smtp.mailfrom=smasetty@codeaurora.org
-From: Sharat Masetty <smasetty@codeaurora.org>
-To: freedreno@lists.freedesktop.org
-Subject: [PATCH 5/5] drm/msm/a6xx: Add support for using system cache(LLC)
-Date: Thu, 19 Dec 2019 18:44:46 +0530
-Message-Id: <1576761286-20451-6-git-send-email-smasetty@codeaurora.org>
-X-Mailer: git-send-email 1.9.1
-In-Reply-To: <1576761286-20451-1-git-send-email-smasetty@codeaurora.org>
-References: <1576761286-20451-1-git-send-email-smasetty@codeaurora.org>
-X-Mailman-Approved-At: Thu, 19 Dec 2019 13:54:46 +0000
-Cc: will@kernel.org, linux-arm-msm@vger.kernel.org,
- linux-kernel@vger.kernel.org, iommu@lists.linux-foundation.org,
- dri-devel@freedesktop.org, robin.murphy@arm.com,
- Sharat Masetty <smasetty@codeaurora.org>
+Received: from mo4-p01-ob.smtp.rzone.de (mo4-p01-ob.smtp.rzone.de
+ [85.215.255.52])
+ by silver.osuosl.org (Postfix) with ESMTPS id 55540203C9
+ for <iommu@lists.linux-foundation.org>; Thu, 19 Dec 2019 13:54:54 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; t=1576763693;
+ s=strato-dkim-0002; d=xenosoft.de;
+ h=In-Reply-To:Date:Message-ID:References:Cc:To:From:Subject:
+ X-RZG-CLASS-ID:X-RZG-AUTH:From:Subject:Sender;
+ bh=kI2ukjRy7KCFsfSWtfjMgsGPbi2sbVneeGOg1X7LIV8=;
+ b=I9EzaqNJHOW94rgUr45Ri+W4i2OpRHfjdpPfuSmsxVEPI0sZUdtLPQbTuCos00/aM7
+ RWDnnAJvLGyDO3v8hEPK7FUc32f8lHlwemx40pQlIPU/TFPP/2qs5+CAMcYBAdHHBvV8
+ 5Km3wwztogCN4SzyW117ra78kYjdvXqHBdCwhcuz9N+enPUx6x0eKWcCCwbnvlCCbgkg
+ CduXNTN0dhT+JpE45ueINpYAvy6guJfSKyvRLM0NZRqfigr1leyFrMO/hgs/ijC04anf
+ R4wvwD0L877nuNoKj4NKaBLx4/zvp9lr21MTSHqBnJtH9HteX5FS2iPoDi0eOEGGIasN
+ NPfA==
+X-RZG-AUTH: ":L2QefEenb+UdBJSdRCXu93KJ1bmSGnhMdmOod1DhGM4l4Hio94KKxRySfLxnHfJ+Dkjp5DdBJSrwuuqxvPhSIk4IhhIsapUrtwdiemkXf6zUCQ=="
+X-RZG-CLASS-ID: mo00
+Received: from [IPv6:2a02:8109:89c0:ebfc:141e:1690:4104:28ad]
+ by smtp.strato.de (RZmta 46.1.1 AUTH) with ESMTPSA id 40080evBJDsS14t
+ (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256 bits))
+ (Client did not present a certificate);
+ Thu, 19 Dec 2019 14:54:28 +0100 (CET)
+Subject: Re: use generic DMA mapping code in powerpc V4
+From: Christian Zigotzky <chzigotzky@xenosoft.de>
+To: Michael Ellerman <mpe@ellerman.id.au>, Christoph Hellwig <hch@lst.de>,
+ Benjamin Herrenschmidt <benh@kernel.crashing.org>,
+ Paul Mackerras <paulus@samba.org>
+References: <20181114082314.8965-1-hch@lst.de> <20181127074253.GB30186@lst.de>
+ <87zhttfonk.fsf@concordia.ellerman.id.au>
+ <535776df-dea3-eb26-6bf3-83f225e977df@xenosoft.de>
+Message-ID: <ea5433f6-ef8d-3cd0-0645-dd89c4806dca@xenosoft.de>
+Date: Thu, 19 Dec 2019 14:54:27 +0100
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101
+ Thunderbird/68.3.1
+MIME-Version: 1.0
+In-Reply-To: <535776df-dea3-eb26-6bf3-83f225e977df@xenosoft.de>
+Content-Language: de-DE
+Cc: linux-arch@vger.kernel.org, Darren Stevens <darren@stevens-zone.net>,
+ mad skateman <madskateman@gmail.com>, linux-kernel@vger.kernel.org,
+ linux-mm@kvack.org, iommu@lists.linux-foundation.org,
+ "contact@a-eon.com" <contact@a-eon.com>, "R.T.Dickinson" <rtd2@xtra.co.nz>,
+ linuxppc-dev@lists.ozlabs.org
 X-BeenThere: iommu@lists.linux-foundation.org
 X-Mailman-Version: 2.1.15
 Precedence: list
@@ -100,281 +98,59 @@ List-Post: <mailto:iommu@lists.linux-foundation.org>
 List-Help: <mailto:iommu-request@lists.linux-foundation.org?subject=help>
 List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
  <mailto:iommu-request@lists.linux-foundation.org?subject=subscribe>
-MIME-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset="us-ascii"; Format="flowed"
 Errors-To: iommu-bounces@lists.linux-foundation.org
 Sender: "iommu" <iommu-bounces@lists.linux-foundation.org>
 
-The last level system cache can be partitioned to 32 different slices
-of which GPU has two slices preallocated. One slice is used for caching GPU
-buffers and the other slice is used for caching the GPU SMMU pagetables.
-This patch talks to the core system cache driver to acquire the slice handles,
-configure the SCID's to those slices and activates and deactivates the slices
-upon GPU power collapse and restore.
+Hi All,
 
-Some support from the IOMMU driver is also needed to make use of the
-system cache. IOMMU_QCOM_SYS_CACHE is a buffer protection flag which enables
-caching GPU data buffers in the system cache with memory attributes such
-as outer cacheable, read-allocate, write-allocate for buffers. The GPU
-then has the ability to override a few cacheability parameters which it
-does to override write-allocate to write-no-allocate as the GPU hardware
-does not benefit much from it.
+We still have some issues with PCI cards in our FSL P5020 and P5040 
+systems since the DMA mapping updates. [1, 2]
 
-Similarly DOMAIN_ATTR_QCOM_SYS_CACHE is another domain level attribute
-used by the IOMMU driver to set the right attributes to cache the hardware
-pagetables into the system cache.
+We have to limit the RAM to 3500MB for some problematic PCI cards. 
+(kernel boot argument 'mem=3500M')
 
-Signed-off-by: Sharat Masetty <smasetty@codeaurora.org>
----
- drivers/gpu/drm/msm/adreno/a6xx_gpu.c | 122 +++++++++++++++++++++++++++++++++-
- drivers/gpu/drm/msm/adreno/a6xx_gpu.h |   9 +++
- drivers/gpu/drm/msm/msm_iommu.c       |  13 ++++
- drivers/gpu/drm/msm/msm_mmu.h         |   3 +
- 4 files changed, 146 insertions(+), 1 deletion(-)
+The problematic DMA mapping code was added with the PowerPC updates 
+4.21-1 to the official kernel source code last year. [3]
 
-diff --git a/drivers/gpu/drm/msm/adreno/a6xx_gpu.c b/drivers/gpu/drm/msm/adreno/a6xx_gpu.c
-index faff6ff..0c7fdee 100644
---- a/drivers/gpu/drm/msm/adreno/a6xx_gpu.c
-+++ b/drivers/gpu/drm/msm/adreno/a6xx_gpu.c
-@@ -9,6 +9,7 @@
- #include "a6xx_gmu.xml.h"
+We have created a bug report. [4]
 
- #include <linux/devfreq.h>
-+#include <linux/soc/qcom/llcc-qcom.h>
+The old 4.x kernels aren't affected because they use the old DMA code.
 
- #define GPU_PAS_ID 13
+Please check the new DMA code again.
 
-@@ -781,6 +782,117 @@ static void a6xx_bus_clear_pending_transactions(struct adreno_gpu *adreno_gpu)
- 	gpu_write(gpu, REG_A6XX_GBIF_HALT, 0x0);
- }
+Thanks,
+Christian
 
-+#define A6XX_LLC_NUM_GPU_SCIDS		5
-+#define A6XX_GPU_LLC_SCID_NUM_BITS	5
-+
-+#define A6XX_GPU_LLC_SCID_MASK \
-+	((1 << (A6XX_LLC_NUM_GPU_SCIDS * A6XX_GPU_LLC_SCID_NUM_BITS)) - 1)
-+
-+#define A6XX_GPUHTW_LLC_SCID_SHIFT	25
-+#define A6XX_GPUHTW_LLC_SCID_MASK \
-+	(((1 << A6XX_GPU_LLC_SCID_NUM_BITS) - 1) << A6XX_GPUHTW_LLC_SCID_SHIFT)
-+
-+static inline void a6xx_gpu_cx_rmw(struct a6xx_llc *llc,
-+	u32 reg, u32 mask, u32 or)
-+{
-+	msm_rmw(llc->mmio + (reg << 2), mask, or);
-+}
-+
-+static void a6xx_llc_deactivate(struct a6xx_llc *llc)
-+{
-+	llcc_slice_deactivate(llc->gpu_llc_slice);
-+	llcc_slice_deactivate(llc->gpuhtw_llc_slice);
-+}
-+
-+static void a6xx_llc_activate(struct a6xx_llc *llc)
-+{
-+	if (!llc->mmio)
-+		return;
-+
-+	/* Program the sub-cache ID for all GPU blocks */
-+	if (!llcc_slice_activate(llc->gpu_llc_slice))
-+		a6xx_gpu_cx_rmw(llc,
-+				REG_A6XX_CX_MISC_SYSTEM_CACHE_CNTL_1,
-+				A6XX_GPU_LLC_SCID_MASK,
-+				(llc->cntl1_regval &
-+				 A6XX_GPU_LLC_SCID_MASK));
-+
-+	/* Program the sub-cache ID for the GPU pagetables */
-+	if (!llcc_slice_activate(llc->gpuhtw_llc_slice))
-+		a6xx_gpu_cx_rmw(llc,
-+				REG_A6XX_CX_MISC_SYSTEM_CACHE_CNTL_1,
-+				A6XX_GPUHTW_LLC_SCID_MASK,
-+				(llc->cntl1_regval &
-+				 A6XX_GPUHTW_LLC_SCID_MASK));
-+
-+	/* Program cacheability overrides */
-+	a6xx_gpu_cx_rmw(llc, REG_A6XX_CX_MISC_SYSTEM_CACHE_CNTL_0, 0xF,
-+		llc->cntl0_regval);
-+}
-+
-+static void a6xx_llc_slices_destroy(struct a6xx_llc *llc)
-+{
-+	if (llc->mmio)
-+		iounmap(llc->mmio);
-+
-+	llcc_slice_putd(llc->gpu_llc_slice);
-+	llcc_slice_putd(llc->gpuhtw_llc_slice);
-+}
-+
-+static int a6xx_llc_slices_init(struct platform_device *pdev,
-+		struct a6xx_llc *llc)
-+{
-+	llc->mmio = msm_ioremap(pdev, "cx_mem", "gpu_cx");
-+	if (IS_ERR_OR_NULL(llc->mmio))
-+		return -ENODEV;
-+
-+	llc->gpu_llc_slice = llcc_slice_getd(LLCC_GPU);
-+	llc->gpuhtw_llc_slice = llcc_slice_getd(LLCC_GPUHTW);
-+	if (IS_ERR(llc->gpu_llc_slice) && IS_ERR(llc->gpuhtw_llc_slice))
-+		return -ENODEV;
-+
-+	/*
-+	 * CNTL0 provides options to override the settings for the
-+	 * read and write allocation policies for the LLC. These
-+	 * overrides are global for all memory transactions from
-+	 * the GPU.
-+	 *
-+	 * 0x3: read-no-alloc-overridden = 0
-+	 *      read-no-alloc = 0 - Allocate lines on read miss
-+	 *      write-no-alloc-overridden = 1
-+	 *      write-no-alloc = 1 - Do not allocates lines on write miss
-+	 */
-+	llc->cntl0_regval = 0x03;
-+
-+	/*
-+	 * CNTL1 is used to specify SCID for (CP, TP, VFD, CCU and UBWC
-+	 * FLAG cache) GPU blocks. This value will be passed along with
-+	 * the address for any memory transaction from GPU to identify
-+	 * the sub-cache for that transaction.
-+	 */
-+	if (!IS_ERR(llc->gpu_llc_slice)) {
-+		u32 gpu_scid = llcc_get_slice_id(llc->gpu_llc_slice);
-+		int i;
-+
-+		for (i = 0; i < A6XX_LLC_NUM_GPU_SCIDS; i++)
-+			llc->cntl1_regval |=
-+				gpu_scid << (A6XX_GPU_LLC_SCID_NUM_BITS * i);
-+	}
-+
-+	/*
-+	 * Set SCID for GPU IOMMU. This will be used to access
-+	 * page tables that are cached in LLC.
-+	 */
-+	if (!IS_ERR(llc->gpuhtw_llc_slice)) {
-+		u32 gpuhtw_scid = llcc_get_slice_id(llc->gpuhtw_llc_slice);
-+
-+		llc->cntl1_regval |=
-+			gpuhtw_scid << A6XX_GPUHTW_LLC_SCID_SHIFT;
-+	}
-+
-+	return 0;
-+}
-+
- static int a6xx_pm_resume(struct msm_gpu *gpu)
- {
- 	struct adreno_gpu *adreno_gpu = to_adreno_gpu(gpu);
-@@ -795,6 +907,8 @@ static int a6xx_pm_resume(struct msm_gpu *gpu)
+[1] 
+http://forum.hyperion-entertainment.com/viewtopic.php?f=58&p=49486#p49486
+[2] 
+http://forum.hyperion-entertainment.com/viewtopic.php?f=58&t=4349&start=50#p49099
+[3] 
+https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git/commit/?id=8d6973327ee84c2f40dd9efd8928d4a1186c96e2
+[4] https://bugzilla.kernel.org/show_bug.cgi?id=205201
 
- 	msm_gpu_resume_devfreq(gpu);
 
-+	a6xx_llc_activate(&a6xx_gpu->llc);
-+
- 	return 0;
- }
+On 28 November 2018 at 4:55 pm, Christian Zigotzky wrote:
+> On 28 November 2018 at 12:05PM, Michael Ellerman wrote:
+>> Nothing specific yet.
+>>
+>> I'm a bit worried it might break one of the many old obscure platforms
+>> we have that aren't well tested.
+>>
+> Please don't apply the new DMA mapping code if you don't be sure if it 
+> works on all supported PowerPC machines. Is the new DMA mapping code 
+> really necessary? It's not really nice, to rewrote code if the old 
+> code works perfect. We must not forget, that we work for the end 
+> users. Does the end user have advantages with this new code? Is it 
+> faster? The old code works without any problems. I am also worried 
+> about this code. How can I test this new DMA mapping code?
+>
+> Thanks
+>
+>
 
-@@ -803,6 +917,8 @@ static int a6xx_pm_suspend(struct msm_gpu *gpu)
- 	struct adreno_gpu *adreno_gpu = to_adreno_gpu(gpu);
- 	struct a6xx_gpu *a6xx_gpu = to_a6xx_gpu(adreno_gpu);
-
-+	a6xx_llc_deactivate(&a6xx_gpu->llc);
-+
- 	devfreq_suspend_device(gpu->devfreq.devfreq);
-
- 	/*
-@@ -851,6 +967,7 @@ static void a6xx_destroy(struct msm_gpu *gpu)
- 		drm_gem_object_put_unlocked(a6xx_gpu->sqe_bo);
- 	}
-
-+	a6xx_llc_slices_destroy(&a6xx_gpu->llc);
- 	a6xx_gmu_remove(a6xx_gpu);
-
- 	adreno_gpu_cleanup(adreno_gpu);
-@@ -924,7 +1041,10 @@ struct msm_gpu *a6xx_gpu_init(struct drm_device *dev)
- 	adreno_gpu->registers = NULL;
- 	adreno_gpu->reg_offsets = a6xx_register_offsets;
-
--	ret = adreno_gpu_init(dev, pdev, adreno_gpu, &funcs, 1, 0);
-+	ret = a6xx_llc_slices_init(pdev, &a6xx_gpu->llc);
-+
-+	ret = adreno_gpu_init(dev, pdev, adreno_gpu, &funcs, 1,
-+			ret ? 0 : MMU_FEATURE_USE_SYSTEM_CACHE);
- 	if (ret) {
- 		a6xx_destroy(&(a6xx_gpu->base.base));
- 		return ERR_PTR(ret);
-diff --git a/drivers/gpu/drm/msm/adreno/a6xx_gpu.h b/drivers/gpu/drm/msm/adreno/a6xx_gpu.h
-index 7239b8b..09b9ad0 100644
---- a/drivers/gpu/drm/msm/adreno/a6xx_gpu.h
-+++ b/drivers/gpu/drm/msm/adreno/a6xx_gpu.h
-@@ -12,6 +12,14 @@
-
- extern bool hang_debug;
-
-+struct a6xx_llc {
-+	void __iomem *mmio;
-+	void *gpu_llc_slice;
-+	void *gpuhtw_llc_slice;
-+	u32 cntl0_regval;
-+	u32 cntl1_regval;
-+};
-+
- struct a6xx_gpu {
- 	struct adreno_gpu base;
-
-@@ -21,6 +29,7 @@ struct a6xx_gpu {
- 	struct msm_ringbuffer *cur_ring;
-
- 	struct a6xx_gmu gmu;
-+	struct a6xx_llc llc;
- };
-
- #define to_a6xx_gpu(x) container_of(x, struct a6xx_gpu, base)
-diff --git a/drivers/gpu/drm/msm/msm_iommu.c b/drivers/gpu/drm/msm/msm_iommu.c
-index 8c95c31..4699367 100644
---- a/drivers/gpu/drm/msm/msm_iommu.c
-+++ b/drivers/gpu/drm/msm/msm_iommu.c
-@@ -27,6 +27,16 @@ static int msm_iommu_attach(struct msm_mmu *mmu, const char * const *names,
- 			    int cnt)
- {
- 	struct msm_iommu *iommu = to_msm_iommu(mmu);
-+	int gpu_htw_llc = 1;
-+
-+	/*
-+	 * This allows GPU to set the bus attributes required
-+	 * to use system cache on behalf of the iommu page table
-+	 * walker.
-+	 */
-+	if (msm_mmu_has_feature(mmu, MMU_FEATURE_USE_SYSTEM_CACHE))
-+		iommu_domain_set_attr(iommu->domain,
-+				DOMAIN_ATTR_QCOM_SYS_CACHE, &gpu_htw_llc);
-
- 	return iommu_attach_device(iommu->domain, mmu->dev);
- }
-@@ -45,6 +55,9 @@ static int msm_iommu_map(struct msm_mmu *mmu, uint64_t iova,
- 	struct msm_iommu *iommu = to_msm_iommu(mmu);
- 	size_t ret;
-
-+	if (msm_mmu_has_feature(mmu, MMU_FEATURE_USE_SYSTEM_CACHE))
-+		prot |= IOMMU_QCOM_SYS_CACHE;
-+
- 	ret = iommu_map_sg(iommu->domain, iova, sgt->sgl, sgt->nents, prot);
- 	WARN_ON(!ret);
-
-diff --git a/drivers/gpu/drm/msm/msm_mmu.h b/drivers/gpu/drm/msm/msm_mmu.h
-index 1e4ac36d..3e6bdad 100644
---- a/drivers/gpu/drm/msm/msm_mmu.h
-+++ b/drivers/gpu/drm/msm/msm_mmu.h
-@@ -18,6 +18,9 @@ struct msm_mmu_funcs {
- 	void (*destroy)(struct msm_mmu *mmu);
- };
-
-+/* MMU features */
-+#define MMU_FEATURE_USE_SYSTEM_CACHE (1 << 0)
-+
- struct msm_mmu {
- 	const struct msm_mmu_funcs *funcs;
- 	struct device *dev;
---
-1.9.1
 _______________________________________________
 iommu mailing list
 iommu@lists.linux-foundation.org
