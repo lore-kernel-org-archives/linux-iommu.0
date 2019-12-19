@@ -6,66 +6,66 @@ X-Spam-Status: No, score=-9.8 required=3.0 tests=DKIM_INVALID,DKIM_SIGNED,
 	INCLUDES_PATCH,MAILING_LIST_MULTI,SIGNED_OFF_BY,SPF_HELO_NONE,SPF_PASS,
 	USER_AGENT_GIT autolearn=unavailable autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 75186C43603
-	for <iommu@archiver.kernel.org>; Thu, 19 Dec 2019 12:04:32 +0000 (UTC)
-Received: from whitealder.osuosl.org (smtp1.osuosl.org [140.211.166.138])
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 590BEC43603
+	for <iommu@archiver.kernel.org>; Thu, 19 Dec 2019 12:04:35 +0000 (UTC)
+Received: from silver.osuosl.org (smtp3.osuosl.org [140.211.166.136])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by mail.kernel.org (Postfix) with ESMTPS id 4A4AF24672
-	for <iommu@archiver.kernel.org>; Thu, 19 Dec 2019 12:04:32 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTPS id 2C435206D3
+	for <iommu@archiver.kernel.org>; Thu, 19 Dec 2019 12:04:35 +0000 (UTC)
 Authentication-Results: mail.kernel.org;
-	dkim=fail reason="signature verification failed" (1024-bit key) header.d=kernel.org header.i=@kernel.org header.b="XL+3ciAA"
-DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 4A4AF24672
+	dkim=fail reason="signature verification failed" (1024-bit key) header.d=kernel.org header.i=@kernel.org header.b="eNN7UrwM"
+DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 2C435206D3
 Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=kernel.org
 Authentication-Results: mail.kernel.org; spf=pass smtp.mailfrom=iommu-bounces@lists.linux-foundation.org
 Received: from localhost (localhost [127.0.0.1])
-	by whitealder.osuosl.org (Postfix) with ESMTP id 180C587F08;
-	Thu, 19 Dec 2019 12:04:32 +0000 (UTC)
+	by silver.osuosl.org (Postfix) with ESMTP id 173932324B;
+	Thu, 19 Dec 2019 12:04:35 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from whitealder.osuosl.org ([127.0.0.1])
+Received: from silver.osuosl.org ([127.0.0.1])
 	by localhost (.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
-	with ESMTP id uyN7Yg8eI448; Thu, 19 Dec 2019 12:04:31 +0000 (UTC)
+	with ESMTP id 8aKts1D24YVG; Thu, 19 Dec 2019 12:04:34 +0000 (UTC)
 Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [140.211.9.56])
-	by whitealder.osuosl.org (Postfix) with ESMTP id 12F3787EFB;
-	Thu, 19 Dec 2019 12:04:31 +0000 (UTC)
+	by silver.osuosl.org (Postfix) with ESMTP id 6188D231EF;
+	Thu, 19 Dec 2019 12:04:34 +0000 (UTC)
 Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
-	by lists.linuxfoundation.org (Postfix) with ESMTP id 0E39FC18DC;
-	Thu, 19 Dec 2019 12:04:31 +0000 (UTC)
+	by lists.linuxfoundation.org (Postfix) with ESMTP id 4D2AAC1D81;
+	Thu, 19 Dec 2019 12:04:34 +0000 (UTC)
 Received: from fraxinus.osuosl.org (smtp4.osuosl.org [140.211.166.137])
- by lists.linuxfoundation.org (Postfix) with ESMTP id 60DE8C077D
- for <iommu@lists.linuxfoundation.org>; Thu, 19 Dec 2019 12:04:30 +0000 (UTC)
+ by lists.linuxfoundation.org (Postfix) with ESMTP id 32916C077D
+ for <iommu@lists.linuxfoundation.org>; Thu, 19 Dec 2019 12:04:33 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
- by fraxinus.osuosl.org (Postfix) with ESMTP id 5AD7F86F41
- for <iommu@lists.linuxfoundation.org>; Thu, 19 Dec 2019 12:04:30 +0000 (UTC)
+ by fraxinus.osuosl.org (Postfix) with ESMTP id 223FB86F38
+ for <iommu@lists.linuxfoundation.org>; Thu, 19 Dec 2019 12:04:33 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
 Received: from fraxinus.osuosl.org ([127.0.0.1])
  by localhost (.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
- with ESMTP id wZ2WJu1NpiYI for <iommu@lists.linuxfoundation.org>;
- Thu, 19 Dec 2019 12:04:29 +0000 (UTC)
+ with ESMTP id BMWR9Wq71G1G for <iommu@lists.linuxfoundation.org>;
+ Thu, 19 Dec 2019 12:04:32 +0000 (UTC)
 X-Greylist: domain auto-whitelisted by SQLgrey-1.7.6
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
- by fraxinus.osuosl.org (Postfix) with ESMTPS id D880D81E4F
- for <iommu@lists.linuxfoundation.org>; Thu, 19 Dec 2019 12:04:29 +0000 (UTC)
+ by fraxinus.osuosl.org (Postfix) with ESMTPS id A6CC786BBC
+ for <iommu@lists.linuxfoundation.org>; Thu, 19 Dec 2019 12:04:32 +0000 (UTC)
 Received: from localhost.localdomain (236.31.169.217.in-addr.arpa
  [217.169.31.236])
  (using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
  (No client certificate requested)
- by mail.kernel.org (Postfix) with ESMTPSA id 576E7222C2;
- Thu, 19 Dec 2019 12:04:27 +0000 (UTC)
+ by mail.kernel.org (Postfix) with ESMTPSA id 2AEE224679;
+ Thu, 19 Dec 2019 12:04:30 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
- s=default; t=1576757069;
- bh=3tpbtnl8OY57w2rdlJWwXlJgag79sYKXgNFcccIKSe4=;
+ s=default; t=1576757072;
+ bh=hr0j2ciKuJVzbWUymTBVFfm1s+/LxgMJpRZN60cwSuw=;
  h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
- b=XL+3ciAAMACO2HKpFvxi0nRHLegR8Vt+TjRCNvBEv+grJOqV00RgTzinj0z6gAcrt
- qoQWFRj8DKrlJaVwOnl1Vjs3uyVPVL0Fu5GTgg+i+ScfWenIhTL98VixOPjWirl53d
- tsRxwCPrdQTnfACHG1eQHfjQ/7hRKyL3M4qfVqxY=
+ b=eNN7UrwM6z6VgCYQJmtp1gol6K5vWJCuBjE/bc4COHcvIrw9aWiZc7T2NLOHKW1Ci
+ 1Qk1Q4J8mOsJKtNxjpsTfmpl3PR0o69nPh6uOr7GojdaZ7dBngKIeSzkHkohjfcR4B
+ c6NsAQzjX20C/z7I0EdM7QPmEneYXkv0pnEqsQP0=
 From: Will Deacon <will@kernel.org>
 To: linux-kernel@vger.kernel.org,
 	iommu@lists.linuxfoundation.org
-Subject: [PATCH v4 10/16] iommu/arm-smmu: Prevent forced unbinding of Arm SMMU
- drivers
-Date: Thu, 19 Dec 2019 12:03:46 +0000
-Message-Id: <20191219120352.382-11-will@kernel.org>
+Subject: [PATCH v4 11/16] iommu/arm-smmu-v3: Unregister IOMMU and bus ops on
+ device removal
+Date: Thu, 19 Dec 2019 12:03:47 +0000
+Message-Id: <20191219120352.382-12-will@kernel.org>
 X-Mailer: git-send-email 2.20.1
 In-Reply-To: <20191219120352.382-1-will@kernel.org>
 References: <20191219120352.382-1-will@kernel.org>
@@ -94,67 +94,103 @@ Content-Transfer-Encoding: 7bit
 Errors-To: iommu-bounces@lists.linux-foundation.org
 Sender: "iommu" <iommu-bounces@lists.linux-foundation.org>
 
-Forcefully unbinding the Arm SMMU drivers is a pretty dangerous operation,
-since it will likely lead to catastrophic failure for any DMA devices
-mastering through the SMMU being unbound. When the driver then attempts
-to "handle" the fatal faults, it's very easy to trip over dead data
-structures, leading to use-after-free.
+When removing the SMMUv3 driver, we need to clear any state that we
+registered during probe. This includes our bus ops, sysfs entries and
+the IOMMU device registered for early firmware probing of masters.
 
-On John's machine, he reports that the machine was "unusable" due to
-loss of the storage controller following a forced unbind of the SMMUv3
-driver:
-
-  | # cd ./bus/platform/drivers/arm-smmu-v3
-  | # echo arm-smmu-v3.0.auto > unbind
-  | hisi_sas_v2_hw HISI0162:01: CQE_AXI_W_ERR (0x800) found!
-  | platform arm-smmu-v3.0.auto: CMD_SYNC timeout at 0x00000146
-  | [hwprod 0x00000146, hwcons 0x00000000]
-
-Prevent this forced unbinding of the drivers by setting "suppress_bind_attrs"
-to true.
-
-Link: https://lore.kernel.org/lkml/06dfd385-1af0-3106-4cc5-6a5b8e864759@huawei.com
-Reported-by: John Garry <john.garry@huawei.com>
 Signed-off-by: Will Deacon <will@kernel.org>
 ---
- drivers/iommu/arm-smmu-v3.c | 5 +++--
- drivers/iommu/arm-smmu.c    | 7 ++++---
- 2 files changed, 7 insertions(+), 5 deletions(-)
+ drivers/iommu/arm-smmu-v3.c | 64 +++++++++++++++++++++++++------------
+ 1 file changed, 43 insertions(+), 21 deletions(-)
 
 diff --git a/drivers/iommu/arm-smmu-v3.c b/drivers/iommu/arm-smmu-v3.c
-index 68163b1d680d..9d4c9de6172d 100644
+index 9d4c9de6172d..46160a2fec3e 100644
 --- a/drivers/iommu/arm-smmu-v3.c
 +++ b/drivers/iommu/arm-smmu-v3.c
-@@ -3700,8 +3700,9 @@ MODULE_DEVICE_TABLE(of, arm_smmu_of_match);
+@@ -3565,6 +3565,45 @@ static unsigned long arm_smmu_resource_size(struct arm_smmu_device *smmu)
+ 		return SZ_128K;
+ }
  
- static struct platform_driver arm_smmu_driver = {
- 	.driver	= {
--		.name		= "arm-smmu-v3",
--		.of_match_table	= of_match_ptr(arm_smmu_of_match),
-+		.name			= "arm-smmu-v3",
-+		.of_match_table		= of_match_ptr(arm_smmu_of_match),
-+		.suppress_bind_attrs	= true,
- 	},
- 	.probe	= arm_smmu_device_probe,
- 	.remove	= arm_smmu_device_remove,
-diff --git a/drivers/iommu/arm-smmu.c b/drivers/iommu/arm-smmu.c
-index 7c768f771001..5cbee88a3b83 100644
---- a/drivers/iommu/arm-smmu.c
-+++ b/drivers/iommu/arm-smmu.c
-@@ -2268,9 +2268,10 @@ static const struct dev_pm_ops arm_smmu_pm_ops = {
++static int arm_smmu_set_bus_ops(struct iommu_ops *ops)
++{
++	int err;
++
++#ifdef CONFIG_PCI
++	if (pci_bus_type.iommu_ops != ops) {
++		if (ops)
++			pci_request_acs();
++		err = bus_set_iommu(&pci_bus_type, ops);
++		if (err)
++			return err;
++	}
++#endif
++#ifdef CONFIG_ARM_AMBA
++	if (amba_bustype.iommu_ops != ops) {
++		err = bus_set_iommu(&amba_bustype, ops);
++		if (err)
++			goto err_reset_pci_ops;
++	}
++#endif
++	if (platform_bus_type.iommu_ops != ops) {
++		err = bus_set_iommu(&platform_bus_type, ops);
++		if (err)
++			goto err_reset_amba_ops;
++	}
++
++	return 0;
++
++err_reset_amba_ops:
++#ifdef CONFIG_ARM_AMBA
++	bus_set_iommu(&amba_bustype, NULL);
++#endif
++err_reset_pci_ops: __maybe_unused;
++#ifdef CONFIG_PCI
++	bus_set_iommu(&pci_bus_type, NULL);
++#endif
++	return err;
++}
++
+ static int arm_smmu_device_probe(struct platform_device *pdev)
+ {
+ 	int irq, ret;
+@@ -3655,33 +3694,16 @@ static int arm_smmu_device_probe(struct platform_device *pdev)
+ 		return ret;
+ 	}
  
- static struct platform_driver arm_smmu_driver = {
- 	.driver	= {
--		.name		= "arm-smmu",
--		.of_match_table	= of_match_ptr(arm_smmu_of_match),
--		.pm		= &arm_smmu_pm_ops,
-+		.name			= "arm-smmu",
-+		.of_match_table		= of_match_ptr(arm_smmu_of_match),
-+		.pm			= &arm_smmu_pm_ops,
-+		.suppress_bind_attrs    = true,
- 	},
- 	.probe	= arm_smmu_device_probe,
- 	.remove	= arm_smmu_device_remove,
+-#ifdef CONFIG_PCI
+-	if (pci_bus_type.iommu_ops != &arm_smmu_ops) {
+-		pci_request_acs();
+-		ret = bus_set_iommu(&pci_bus_type, &arm_smmu_ops);
+-		if (ret)
+-			return ret;
+-	}
+-#endif
+-#ifdef CONFIG_ARM_AMBA
+-	if (amba_bustype.iommu_ops != &arm_smmu_ops) {
+-		ret = bus_set_iommu(&amba_bustype, &arm_smmu_ops);
+-		if (ret)
+-			return ret;
+-	}
+-#endif
+-	if (platform_bus_type.iommu_ops != &arm_smmu_ops) {
+-		ret = bus_set_iommu(&platform_bus_type, &arm_smmu_ops);
+-		if (ret)
+-			return ret;
+-	}
+-	return 0;
++	return arm_smmu_set_bus_ops(&arm_smmu_ops);
+ }
+ 
+ static int arm_smmu_device_remove(struct platform_device *pdev)
+ {
+ 	struct arm_smmu_device *smmu = platform_get_drvdata(pdev);
+ 
++	arm_smmu_set_bus_ops(NULL);
++	iommu_device_unregister(&smmu->iommu);
++	iommu_device_sysfs_remove(&smmu->iommu);
+ 	arm_smmu_device_disable(smmu);
+ 
+ 	return 0;
 -- 
 2.24.1.735.g03f4e72817-goog
 
