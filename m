@@ -2,99 +2,123 @@ Return-Path: <SRS0=c0M2=2J=lists.linux-foundation.org=iommu-bounces@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-2.0 required=3.0 tests=DKIM_INVALID,DKIM_SIGNED,
-	HEADER_FROM_DIFFERENT_DOMAINS,MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS,
-	USER_AGENT_SANE_1 autolearn=no autolearn_force=no version=3.4.0
+X-Spam-Status: No, score=-3.5 required=3.0 tests=DKIM_INVALID,DKIM_SIGNED,
+	HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_PATCH,MAILING_LIST_MULTI,SPF_HELO_NONE,
+	SPF_PASS autolearn=no autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id CE333C43603
-	for <iommu@archiver.kernel.org>; Thu, 19 Dec 2019 20:10:52 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 1777EC43603
+	for <iommu@archiver.kernel.org>; Thu, 19 Dec 2019 21:49:51 +0000 (UTC)
 Received: from whitealder.osuosl.org (smtp1.osuosl.org [140.211.166.138])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by mail.kernel.org (Postfix) with ESMTPS id 9A10E2467E
-	for <iommu@archiver.kernel.org>; Thu, 19 Dec 2019 20:10:52 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTPS id C59C524672
+	for <iommu@archiver.kernel.org>; Thu, 19 Dec 2019 21:49:50 +0000 (UTC)
 Authentication-Results: mail.kernel.org;
-	dkim=fail reason="key not found in DNS" (0-bit key) header.d=mg.codeaurora.org header.i=@mg.codeaurora.org header.b="bp22UgZa"
-DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 9A10E2467E
-Authentication-Results: mail.kernel.org; dmarc=none (p=none dis=none) header.from=codeaurora.org
+	dkim=fail reason="signature verification failed" (1024-bit key) header.d=amdcloud.onmicrosoft.com header.i=@amdcloud.onmicrosoft.com header.b="IeudtLmI"
+DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org C59C524672
+Authentication-Results: mail.kernel.org; dmarc=none (p=none dis=none) header.from=amd.com
 Authentication-Results: mail.kernel.org; spf=pass smtp.mailfrom=iommu-bounces@lists.linux-foundation.org
 Received: from localhost (localhost [127.0.0.1])
-	by whitealder.osuosl.org (Postfix) with ESMTP id 717348808C;
-	Thu, 19 Dec 2019 20:10:52 +0000 (UTC)
+	by whitealder.osuosl.org (Postfix) with ESMTP id 9A08688090;
+	Thu, 19 Dec 2019 21:49:50 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
 Received: from whitealder.osuosl.org ([127.0.0.1])
 	by localhost (.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
-	with ESMTP id Y70aRCQnncXL; Thu, 19 Dec 2019 20:10:50 +0000 (UTC)
+	with ESMTP id 3tn6gzQr2cvJ; Thu, 19 Dec 2019 21:49:49 +0000 (UTC)
 Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [140.211.9.56])
-	by whitealder.osuosl.org (Postfix) with ESMTP id 89DFA86914;
-	Thu, 19 Dec 2019 20:10:50 +0000 (UTC)
+	by whitealder.osuosl.org (Postfix) with ESMTP id 9AE868808F;
+	Thu, 19 Dec 2019 21:49:49 +0000 (UTC)
 Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
-	by lists.linuxfoundation.org (Postfix) with ESMTP id 7BEB6C1AE8;
-	Thu, 19 Dec 2019 20:10:50 +0000 (UTC)
-Received: from hemlock.osuosl.org (smtp2.osuosl.org [140.211.166.133])
- by lists.linuxfoundation.org (Postfix) with ESMTP id 1C8E4C077D
- for <iommu@lists.linux-foundation.org>; Thu, 19 Dec 2019 20:10:49 +0000 (UTC)
+	by lists.linuxfoundation.org (Postfix) with ESMTP id 7DEC2C18DC;
+	Thu, 19 Dec 2019 21:49:49 +0000 (UTC)
+Received: from fraxinus.osuosl.org (smtp4.osuosl.org [140.211.166.137])
+ by lists.linuxfoundation.org (Postfix) with ESMTP id 63627C077D
+ for <iommu@lists.linux-foundation.org>; Thu, 19 Dec 2019 21:49:47 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
- by hemlock.osuosl.org (Postfix) with ESMTP id EFD2F88763
- for <iommu@lists.linux-foundation.org>; Thu, 19 Dec 2019 20:10:48 +0000 (UTC)
+ by fraxinus.osuosl.org (Postfix) with ESMTP id 4D2FE86F66
+ for <iommu@lists.linux-foundation.org>; Thu, 19 Dec 2019 21:49:47 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from hemlock.osuosl.org ([127.0.0.1])
+Received: from fraxinus.osuosl.org ([127.0.0.1])
  by localhost (.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
- with ESMTP id SBTKOJEa-tp5 for <iommu@lists.linux-foundation.org>;
- Thu, 19 Dec 2019 20:10:48 +0000 (UTC)
-X-Greylist: from auto-whitelisted by SQLgrey-1.7.6
-Received: from mail25.static.mailgun.info (mail25.static.mailgun.info
- [104.130.122.25])
- by hemlock.osuosl.org (Postfix) with ESMTPS id 704BB8875D
- for <iommu@lists.linux-foundation.org>; Thu, 19 Dec 2019 20:10:47 +0000 (UTC)
-DKIM-Signature: a=rsa-sha256; v=1; c=relaxed/relaxed; d=mg.codeaurora.org;
- q=dns/txt; 
- s=smtp; t=1576786247; h=In-Reply-To: Content-Type: MIME-Version:
- References: Message-ID: Subject: To: From: Date: Sender;
- bh=/5veci3IX8iV9Lr7OinmX1GSclV5/3Uya8rEs4CH8nA=;
- b=bp22UgZaER7TTqUPXf0BoAfh4ZnDDFDQhTnnqn65R3YuQI4TWT4gjv254XIe0/7zRH+5UdbZ
- DPXFCJHFdhP9+nhoV5pMyAyajLoRcCNJMwT3SHYRXKkGP7m2GJ6Sn9czA+wyGNHu7DKzDWc7
- FoE0Zb40TSX/eeaobxZTC7lQIzs=
-X-Mailgun-Sending-Ip: 104.130.122.25
-X-Mailgun-Sid: WyI3NDkwMCIsICJpb21tdUBsaXN0cy5saW51eC1mb3VuZGF0aW9uLm9yZyIsICJiZTllNGEiXQ==
-Received: from smtp.codeaurora.org
- (ec2-35-166-182-171.us-west-2.compute.amazonaws.com [35.166.182.171])
- by mxa.mailgun.org with ESMTP id 5dfbd944.7f0b92678298-smtp-out-n03;
- Thu, 19 Dec 2019 20:10:44 -0000 (UTC)
-Received: by smtp.codeaurora.org (Postfix, from userid 1001)
- id ABEDEC447A4; Thu, 19 Dec 2019 20:10:44 +0000 (UTC)
-Received: from jcrouse1-lnx.qualcomm.com (i-global254.qualcomm.com
- [199.106.103.254])
- (using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
- (No client certificate requested) (Authenticated sender: jcrouse)
- by smtp.codeaurora.org (Postfix) with ESMTPSA id 5878AC447A0;
- Thu, 19 Dec 2019 20:10:43 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.3.2 smtp.codeaurora.org 5878AC447A0
-Authentication-Results: aws-us-west-2-caf-mail-1.web.codeaurora.org;
- dmarc=none (p=none dis=none) header.from=codeaurora.org
-Authentication-Results: aws-us-west-2-caf-mail-1.web.codeaurora.org;
- spf=none smtp.mailfrom=jcrouse@codeaurora.org
-Date: Thu, 19 Dec 2019 13:10:41 -0700
-From: Jordan Crouse <jcrouse@codeaurora.org>
-To: Sharat Masetty <smasetty@codeaurora.org>,
- freedreno@lists.freedesktop.org, dri-devel@freedesktop.org,
- linux-arm-msm@vger.kernel.org, linux-kernel@vger.kernel.org,
- will@kernel.org, robin.murphy@arm.com, joro@8bytes.org,
- iommu@lists.linux-foundation.org, saiprakash.ranjan@codeaurora.org
-Subject: Re: [PATCH 5/5] drm/msm/a6xx: Add support for using system cache(LLC)
-Message-ID: <20191219201041.GB23673@jcrouse1-lnx.qualcomm.com>
-Mail-Followup-To: Sharat Masetty <smasetty@codeaurora.org>,
- freedreno@lists.freedesktop.org, dri-devel@freedesktop.org,
- linux-arm-msm@vger.kernel.org, linux-kernel@vger.kernel.org,
- will@kernel.org, robin.murphy@arm.com, joro@8bytes.org,
- iommu@lists.linux-foundation.org, saiprakash.ranjan@codeaurora.org
-References: <1576761286-20451-1-git-send-email-smasetty@codeaurora.org>
- <1576761286-20451-6-git-send-email-smasetty@codeaurora.org>
- <20191219195814.GA23673@jcrouse1-lnx.qualcomm.com>
+ with ESMTP id X6eGIa0d1SBM for <iommu@lists.linux-foundation.org>;
+ Thu, 19 Dec 2019 21:49:45 +0000 (UTC)
+X-Greylist: delayed 02:18:18 by SQLgrey-1.7.6
+Received: from NAM04-BN3-obe.outbound.protection.outlook.com
+ (mail-eopbgr680064.outbound.protection.outlook.com [40.107.68.64])
+ by fraxinus.osuosl.org (Postfix) with ESMTPS id 712D986F54
+ for <iommu@lists.linux-foundation.org>; Thu, 19 Dec 2019 21:49:45 +0000 (UTC)
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=Nrl1UGNqNH7ZEtgHTrvFNpBfgm1QIiIJmhE8d89mKNU1ZvIYZp+0JUtHJwf6MH8wSTnci6bUzpqdcb6jSdrPFWWxOATnSahXKbCrzvNmOs3JfXHCiONFJL3axxRwwycSL4z8qUoQqSlk3jraXBIAQzaf6BRzJy/10Zp5pdkUpTgAJhhT/33MkNa/nqZMLAT4V95Soc+mKSR52SdPdLcERVEu/+5WZKIbXmFN7psl5LYUeE2TZEwd5ia+oKXs4ds7lQag1/uL4eRD6QNG51rrBXn7FSqnNpbSOGAwQDrrZB+QzwaZKLQH6aNnaKk84wMEcUT91ECAPO4i+r0+sAQpBA==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com; 
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=B00Evl5Ap4uGxLA9CFlsB1BWEmflAn5Dzc0+/mQgHTU=;
+ b=ZusbQBbmSL3qq+Sa7KrbUsxLN94D45AW9UhxQEJq6EC5og7nZ1xkDmU7UgxnmFVQAw+XkgtU86yJ5MWbKEfplvtGWThmZG0JnW0wmmCjuuIIhm+ZfUe17CMiios/d7KcsN1EOJ9yxaScTSIdYH5+785dzZrS78TatphQio8jHbLMRkRn3X2eXEiqiUx92nkx9LcWADzYA7G3MhkmLkakE5UN1gPwgq8ftBAKtY5EaykeX0FcqhXv1dHaspx9C21A1bsoLu57CukfzCvOdKuJ6H5Krj/nIUKut0tkCv37rFNQvWVLODgLk5Np1hvMVBM1fAdu7HnLGJNcCW2ecwS7rg==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=amd.com; dmarc=pass action=none header.from=amd.com; dkim=pass
+ header.d=amd.com; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+ d=amdcloud.onmicrosoft.com; s=selector2-amdcloud-onmicrosoft-com;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=B00Evl5Ap4uGxLA9CFlsB1BWEmflAn5Dzc0+/mQgHTU=;
+ b=IeudtLmIpsSfEFjULCqJq+J/bZNDz4hcQugXycsD9LJQsTy8bsy1jn5wokFp4xCWdjUTHZaHGYKaZlcPBXPEeVajsGl2fsX0xNumb0+qzBx0xBs46tngSA3tkhBVlJpLbU25uWlWcS6zp2a4JO0hU+1PSh+z4G7nLPTp08yGPAM=
+Received: from CY4PR12MB1350.namprd12.prod.outlook.com (10.168.169.7) by
+ CY4PR12MB1847.namprd12.prod.outlook.com (10.175.60.23) with Microsoft SMTP
+ Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.20.2538.19; Thu, 19 Dec 2019 19:15:33 +0000
+Received: from CY4PR12MB1350.namprd12.prod.outlook.com
+ ([fe80::a853:ee41:9aca:ecdd]) by CY4PR12MB1350.namprd12.prod.outlook.com
+ ([fe80::a853:ee41:9aca:ecdd%9]) with mapi id 15.20.2559.012; Thu, 19 Dec 2019
+ 19:15:33 +0000
+From: "Deucher, Alexander" <Alexander.Deucher@amd.com>
+To: Kai-Heng Feng <kai.heng.feng@canonical.com>, Joerg Roedel <joro@8bytes.org>
+Subject: RE: [PATCH v2] iommu/amd: Disable IOMMU on Stoney Ridge systems
+Thread-Topic: [PATCH v2] iommu/amd: Disable IOMMU on Stoney Ridge systems
+Thread-Index: AQHVpsBguKm4D8iWWkiQt39oc44V0aenFmmAgAWQOoCAEYuVgIACFhIAgAGraTA=
+Date: Thu, 19 Dec 2019 19:15:32 +0000
+Message-ID: <CY4PR12MB13505BE6EFF95F7C48253120F7520@CY4PR12MB1350.namprd12.prod.outlook.com>
+References: <20191129142154.29658-1-kai.heng.feng@canonical.com>
+ <20191202170011.GC30032@infradead.org>
+ <974A8EB3-70B6-4A33-B36C-CFF69464493C@canonical.com>
+ <20191217095341.GG8689@8bytes.org>
+ <6DC0EAB3-89B5-4A16-9A38-D7AD954DDF1C@canonical.com>
+In-Reply-To: <6DC0EAB3-89B5-4A16-9A38-D7AD954DDF1C@canonical.com>
+Accept-Language: en-US
+Content-Language: en-US
+X-MS-Has-Attach: 
+X-MS-TNEF-Correlator: 
+authentication-results: spf=none (sender IP is )
+ smtp.mailfrom=Alexander.Deucher@amd.com; 
+x-originating-ip: [165.204.84.11]
+x-ms-publictraffictype: Email
+x-ms-office365-filtering-ht: Tenant
+x-ms-office365-filtering-correlation-id: 24d18bb8-0f56-48f5-8a3c-08d784b7d203
+x-ms-traffictypediagnostic: CY4PR12MB1847:
+x-microsoft-antispam-prvs: <CY4PR12MB184768C14646FBDC435BC601F7520@CY4PR12MB1847.namprd12.prod.outlook.com>
+x-ms-oob-tlc-oobclassifiers: OLM:9508;
+x-forefront-prvs: 0256C18696
+x-forefront-antispam-report: SFV:NSPM;
+ SFS:(10009020)(4636009)(346002)(376002)(396003)(39860400002)(366004)(136003)(189003)(199004)(13464003)(478600001)(52536014)(55016002)(186003)(81156014)(81166006)(8936002)(26005)(6506007)(86362001)(4326008)(53546011)(66556008)(66476007)(64756008)(66446008)(33656002)(9686003)(76116006)(54906003)(2906002)(7696005)(5660300002)(66946007)(110136005)(8676002)(71200400001)(316002);
+ DIR:OUT; SFP:1101; SCL:1; SRVR:CY4PR12MB1847;
+ H:CY4PR12MB1350.namprd12.prod.outlook.com; FPR:; SPF:None; LANG:en;
+ PTR:InfoNoRecords; MX:1; A:1; 
+received-spf: None (protection.outlook.com: amd.com does not designate
+ permitted sender hosts)
+x-ms-exchange-senderadcheck: 1
+x-microsoft-antispam: BCL:0;
+x-microsoft-antispam-message-info: eA/hRlCKVYcW38LtA1TQJFnIb9SYi1tcWlFFZXL4xDuYMqH9c/UO/inprBWueot1rGIepOfb1eFLn1pUt6CRqqmjSZWF1NbBei/rdLeRZIQrIp13vc2ZiHB2YATa3OBQJ5t/Tg3IvCgadXnJ5weZh1+R6b+1kM4slX1rgF2hjJAUFzAfsBsdalOtWwZSEo36Ltk8WUiV7sdsHv/KnC70CM/82xHeR5XZg1/NrobRJduERohNfIDmqYETDwr+drXSYQ3R2VstfA6vsq1E7bDubPNlPvnaHUda6uJVtuuI4iZen96XNlY8hcdt11/ihqBFwP/g3eBsc2kKO18VeNbOKbwUxKdG2tJLAvbxVOrTLLE2ZNcCcO0TqWHgp7hPIeRGXDqelxuzahsLiB2pJ8NdnZ1Ls0beorfSpUZ4gVMnYSLBaMY5l6kXX8XR2RVOb0N/oxxQTDsEmm1lcG/1rtAA3XRmG2MWjHmKT1Yy8PVaSJ/Z50u5s0FDkdKLZvggJkDW
+x-ms-exchange-transport-forked: True
 MIME-Version: 1.0
-Content-Disposition: inline
-In-Reply-To: <20191219195814.GA23673@jcrouse1-lnx.qualcomm.com>
-User-Agent: Mutt/1.5.24 (2015-08-30)
+X-OriginatorOrg: amd.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: 24d18bb8-0f56-48f5-8a3c-08d784b7d203
+X-MS-Exchange-CrossTenant-originalarrivaltime: 19 Dec 2019 19:15:33.1734 (UTC)
+X-MS-Exchange-CrossTenant-fromentityheader: Hosted
+X-MS-Exchange-CrossTenant-id: 3dd8961f-e488-4e60-8e11-a82d994e183d
+X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
+X-MS-Exchange-CrossTenant-userprincipalname: cIx+oFVQMUvHF/MbgBwz5Oa2BVSrP+2cxgAzvb3aJPNJwgMTeWjScpN+sv7a3wwbBOKt8nY58+0qzCWuk1eklw==
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: CY4PR12MB1847
+Cc: "iommu@lists.linux-foundation.org" <iommu@lists.linux-foundation.org>,
+ Kernel development list <linux-kernel@vger.kernel.org>
 X-BeenThere: iommu@lists.linux-foundation.org
 X-Mailman-Version: 2.1.15
 Precedence: list
@@ -112,45 +136,119 @@ Content-Transfer-Encoding: 7bit
 Errors-To: iommu-bounces@lists.linux-foundation.org
 Sender: "iommu" <iommu-bounces@lists.linux-foundation.org>
 
-On Thu, Dec 19, 2019 at 12:58:15PM -0700, Jordan Crouse wrote:
-> On Thu, Dec 19, 2019 at 06:44:46PM +0530, Sharat Masetty wrote:
-
-
-<snip>
-
-> > +
-> > +	/*
-> > +	 * CNTL1 is used to specify SCID for (CP, TP, VFD, CCU and UBWC
-> > +	 * FLAG cache) GPU blocks. This value will be passed along with
-> > +	 * the address for any memory transaction from GPU to identify
-> > +	 * the sub-cache for that transaction.
-> > +	 */
-> > +	if (!IS_ERR(llc->gpu_llc_slice)) {
-> > +		u32 gpu_scid = llcc_get_slice_id(llc->gpu_llc_slice);
-> > +		int i;
-> > +
-> > +		for (i = 0; i < A6XX_LLC_NUM_GPU_SCIDS; i++)
-> > +			llc->cntl1_regval |=
-> > +				gpu_scid << (A6XX_GPU_LLC_SCID_NUM_BITS * i);
+> -----Original Message-----
+> From: Kai-Heng Feng <kai.heng.feng@canonical.com>
+> Sent: Wednesday, December 18, 2019 12:45 PM
+> To: Joerg Roedel <joro@8bytes.org>
+> Cc: Christoph Hellwig <hch@infradead.org>; Deucher, Alexander
+> <Alexander.Deucher@amd.com>; iommu@lists.linux-foundation.org; Kernel
+> development list <linux-kernel@vger.kernel.org>
+> Subject: Re: [PATCH v2] iommu/amd: Disable IOMMU on Stoney Ridge
+> systems
 > 
-> As above, i'm not sure a loop is better than just:
 > 
-> gpu_scid &= 0x1f;
 > 
-> llc->cntl1_regval = (gpu_scid << 0) || (gpu_scid << 5) | (gpu_scid << 10)
->  | (gpu_scid << 15) | (gpu_scid << 20);
+> > On Dec 17, 2019, at 17:53, Joerg Roedel <joro@8bytes.org> wrote:
+> >
+> > On Fri, Dec 06, 2019 at 01:57:41PM +0800, Kai-Heng Feng wrote:
+> >> Hi Joerg,
+> >>
+> >>> On Dec 3, 2019, at 01:00, Christoph Hellwig <hch@infradead.org> wrote:
+> >>>
+> >>> On Fri, Nov 29, 2019 at 10:21:54PM +0800, Kai-Heng Feng wrote:
+> >>>> Serious screen flickering when Stoney Ridge outputs to a 4K monitor.
+> >>>>
+> >>>> According to Alex Deucher, IOMMU isn't enabled on Windows, so let's
+> >>>> do the same here to avoid screen flickering on 4K monitor.
+> >>>
+> >>> Disabling the IOMMU entirely seem pretty severe.  Isn't it enough to
+> >>> identity map the GPU device?
+> >>
+> >> Ok, there's set_device_exclusion_range() to exclude the device from
+> IOMMU.
+> >> However I don't know how to generate range_start and range_length,
+> which are read from ACPI.
+> >
+> > set_device_exclusion_range() is not the solution here. The best is if
+> > the GPU device is put into a passthrough domain at boot, in which it
+> > will be identity mapped. DMA still goes through the IOMMU in this
+> > case, but it only needs to lookup the device-table, page-table walks
+> > will not be done anymore.
+> >
+> > The best way to implement this is to put it into the
+> > amd_iommu_add_device() in drivers/iommu/amd_iommu.c. There is this
+> > check:
+> >
+> >        if (dev_data->iommu_v2)
+> > 		iommu_request_dm_for_dev(dev);
+> >
+> > The iommu_request_dm_for_dev() function causes the device to be
+> > identity mapped. The check can be extended to also check for a device
+> > white-list for devices that need identity mapping.
 > 
-> And I'm not even sure we need do this math here in the first place.
+> My patch looks like this but the original behavior (4K screen flickering) is still
+> the same:
 
-One more question - can you get a valid slice id before activation?
+Does reverting the patch to disable ATS along with this patch help?
 
-<snip>
+Alex
 
-Jordan
+> 
+> diff --git a/drivers/iommu/amd_iommu.c b/drivers/iommu/amd_iommu.c
+> index bd25674ee4db..f913a25c9e92 100644
+> --- a/drivers/iommu/amd_iommu.c
+> +++ b/drivers/iommu/amd_iommu.c
+> @@ -42,6 +42,7 @@
+>  #include <asm/iommu.h>
+>  #include <asm/gart.h>
+>  #include <asm/dma.h>
+> +#include <asm/pci-direct.h>
+> 
+>  #include "amd_iommu_proto.h"
+>  #include "amd_iommu_types.h"
+> @@ -2159,6 +2160,8 @@ static int amd_iommu_add_device(struct device
+> *dev)
+>         struct iommu_domain *domain;
+>         struct amd_iommu *iommu;
+>         int ret, devid;
+> +       bool need_identity_mapping = false;
+> +       u32 header;
+> 
+>         if (!check_device(dev) || get_dev_data(dev))
+>                 return 0;
+> @@ -2184,7 +2187,11 @@ static int amd_iommu_add_device(struct device
+> *dev)
+> 
+>         BUG_ON(!dev_data);
+> 
+> -       if (dev_data->iommu_v2)
+> +       header = read_pci_config(0, PCI_BUS_NUM(devid), PCI_SLOT(devid),
+> PCI_FUNC(devid));
+> +       if ((header & 0xffff) == 0x1002 && (header >> 16) == 0x98e4)
+> +               need_identity_mapping = true;
+> +
+> +       if (dev_data->iommu_v2 || need_identity_mapping)
+>                 iommu_request_dm_for_dev(dev);
+> 
+>         /* Domains are initialized for this device - have a look what we ended up
+> with */
+> 
+> 
+> $ dmesg | grep -i direct
+> [    0.011446] Using GB pages for direct mapping
+> [    0.703369] pci 0000:00:01.0: Using iommu direct mapping
+> [    0.703830] pci 0000:00:08.0: Using iommu direct mapping
+> 
+> So the graphics device (pci 0000:00:01.0:) is using direct mapping after the
+> change.
+> 
+> Kai-Heng
+> 
+> >
+> > HTH,
+> >
+> > 	Joerg
 
--- 
-The Qualcomm Innovation Center, Inc. is a member of Code Aurora Forum,
-a Linux Foundation Collaborative Project
 _______________________________________________
 iommu mailing list
 iommu@lists.linux-foundation.org
