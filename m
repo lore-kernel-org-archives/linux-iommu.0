@@ -2,79 +2,103 @@ Return-Path: <SRS0=Sm7F=2K=lists.linux-foundation.org=iommu-bounces@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-2.2 required=3.0 tests=HEADER_FROM_DIFFERENT_DOMAINS,
-	MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS,USER_AGENT_SANE_2 autolearn=no
+X-Spam-Status: No, score=-8.1 required=3.0 tests=DKIM_INVALID,DKIM_SIGNED,
+	HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_PATCH,MAILING_LIST_MULTI,SIGNED_OFF_BY,
+	SPF_HELO_NONE,SPF_PASS,USER_AGENT_SANE_1 autolearn=unavailable
 	autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id E1587C2D0C8
-	for <iommu@archiver.kernel.org>; Fri, 20 Dec 2019 18:54:37 +0000 (UTC)
-Received: from silver.osuosl.org (smtp3.osuosl.org [140.211.166.136])
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 4ECF4C43603
+	for <iommu@archiver.kernel.org>; Fri, 20 Dec 2019 19:58:15 +0000 (UTC)
+Received: from hemlock.osuosl.org (smtp2.osuosl.org [140.211.166.133])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by mail.kernel.org (Postfix) with ESMTPS id B73AA206D8
-	for <iommu@archiver.kernel.org>; Fri, 20 Dec 2019 18:54:37 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org B73AA206D8
-Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=intel.com
+	by mail.kernel.org (Postfix) with ESMTPS id 0E4382072B
+	for <iommu@archiver.kernel.org>; Fri, 20 Dec 2019 19:58:14 +0000 (UTC)
+Authentication-Results: mail.kernel.org;
+	dkim=fail reason="key not found in DNS" (0-bit key) header.d=mg.codeaurora.org header.i=@mg.codeaurora.org header.b="kDgOXDlA"
+DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 0E4382072B
+Authentication-Results: mail.kernel.org; dmarc=none (p=none dis=none) header.from=codeaurora.org
 Authentication-Results: mail.kernel.org; spf=pass smtp.mailfrom=iommu-bounces@lists.linux-foundation.org
 Received: from localhost (localhost [127.0.0.1])
-	by silver.osuosl.org (Postfix) with ESMTP id 875C4226C2;
-	Fri, 20 Dec 2019 18:54:37 +0000 (UTC)
+	by hemlock.osuosl.org (Postfix) with ESMTP id D37B288995;
+	Fri, 20 Dec 2019 19:58:14 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from silver.osuosl.org ([127.0.0.1])
+Received: from hemlock.osuosl.org ([127.0.0.1])
 	by localhost (.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
-	with ESMTP id SKU0nsFbN63t; Fri, 20 Dec 2019 18:54:35 +0000 (UTC)
+	with ESMTP id O+XhZk1nQU3b; Fri, 20 Dec 2019 19:58:13 +0000 (UTC)
 Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [140.211.9.56])
-	by silver.osuosl.org (Postfix) with ESMTP id E8DF920474;
-	Fri, 20 Dec 2019 18:54:35 +0000 (UTC)
+	by hemlock.osuosl.org (Postfix) with ESMTP id 9150F8857C;
+	Fri, 20 Dec 2019 19:58:13 +0000 (UTC)
 Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
-	by lists.linuxfoundation.org (Postfix) with ESMTP id DD94CC1796;
-	Fri, 20 Dec 2019 18:54:35 +0000 (UTC)
+	by lists.linuxfoundation.org (Postfix) with ESMTP id 761C9C18DC;
+	Fri, 20 Dec 2019 19:58:13 +0000 (UTC)
 Received: from fraxinus.osuosl.org (smtp4.osuosl.org [140.211.166.137])
- by lists.linuxfoundation.org (Postfix) with ESMTP id 1A0E2C077D;
- Fri, 20 Dec 2019 18:54:34 +0000 (UTC)
+ by lists.linuxfoundation.org (Postfix) with ESMTP id 24631C077D
+ for <iommu@lists.linux-foundation.org>; Fri, 20 Dec 2019 19:58:12 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
- by fraxinus.osuosl.org (Postfix) with ESMTP id 084ED87319;
- Fri, 20 Dec 2019 18:54:34 +0000 (UTC)
+ by fraxinus.osuosl.org (Postfix) with ESMTP id 1196F85AB5
+ for <iommu@lists.linux-foundation.org>; Fri, 20 Dec 2019 19:58:12 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
 Received: from fraxinus.osuosl.org ([127.0.0.1])
  by localhost (.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
- with ESMTP id IY5ul91a3J2A; Fri, 20 Dec 2019 18:54:32 +0000 (UTC)
-X-Greylist: domain auto-whitelisted by SQLgrey-1.7.6
-X-Greylist: domain auto-whitelisted by SQLgrey-1.7.6
-Received: from mga11.intel.com (mga11.intel.com [192.55.52.93])
- by fraxinus.osuosl.org (Postfix) with ESMTPS id C545787317;
- Fri, 20 Dec 2019 18:54:32 +0000 (UTC)
-X-Amp-Result: SKIPPED(no attachment in message)
-X-Amp-File-Uploaded: False
-Received: from fmsmga003.fm.intel.com ([10.253.24.29])
- by fmsmga102.fm.intel.com with ESMTP/TLS/DHE-RSA-AES256-GCM-SHA384;
- 20 Dec 2019 10:54:32 -0800
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.69,336,1571727600"; d="scan'208";a="267593304"
-Received: from jpan9-mobl2.amr.corp.intel.com (HELO localhost)
- ([10.254.180.107])
- by FMSMGA003.fm.intel.com with ESMTP; 20 Dec 2019 10:54:31 -0800
-Date: Fri, 20 Dec 2019 10:54:30 -0800
-From: "Jacob Pan (Jun)" <jacob.jun.pan@intel.com>
-To: Jean-Philippe Brucker <jean-philippe@linaro.org>
-Subject: Re: [RFC 00/13] virtio-iommu on non-devicetree platforms
-Message-ID: <20191220105430.0000437b@intel.com>
-In-Reply-To: <20191218112044.GA2371701@myrica>
-References: <20191122105000.800410-1-jean-philippe@linaro.org>
- <20191122160102.00004489@intel.com>
- <20191125180247.GD945122@lophozonia>
- <20191203190136.00007171@intel.com>
- <20191218112044.GA2371701@myrica>
-Organization: intel
-X-Mailer: Claws Mail 3.17.3 (GTK+ 2.24.32; i686-w64-mingw32)
+ with ESMTP id 5712k_BwtbQp for <iommu@lists.linux-foundation.org>;
+ Fri, 20 Dec 2019 19:58:10 +0000 (UTC)
+X-Greylist: from auto-whitelisted by SQLgrey-1.7.6
+Received: from mail25.static.mailgun.info (mail25.static.mailgun.info
+ [104.130.122.25])
+ by fraxinus.osuosl.org (Postfix) with ESMTPS id CAEC885A76
+ for <iommu@lists.linux-foundation.org>; Fri, 20 Dec 2019 19:58:09 +0000 (UTC)
+DKIM-Signature: a=rsa-sha256; v=1; c=relaxed/relaxed; d=mg.codeaurora.org;
+ q=dns/txt; 
+ s=smtp; t=1576871890; h=In-Reply-To: Content-Type: MIME-Version:
+ References: Message-ID: Subject: Cc: To: From: Date: Sender;
+ bh=qqzsE6iE6h9c38qi8OJwL6QizKwmkcXr+epT82FyQ1U=;
+ b=kDgOXDlAtnA8H5sWNa2ydV5HKnl6OVenqxh8DhAcf7fC3n2oslX4EvhThMIaxPRa7LhxJgyb
+ gizhyE6jvdj75HdLAvY5jZyou05jUmEwxiAGSuIJBmStcRtEOjyUo2D8/58tT56bt4tZoyQV
+ qWxuy1zTr4Avt3UWteWhrS7Z5HM=
+X-Mailgun-Sending-Ip: 104.130.122.25
+X-Mailgun-Sid: WyI3NDkwMCIsICJpb21tdUBsaXN0cy5saW51eC1mb3VuZGF0aW9uLm9yZyIsICJiZTllNGEiXQ==
+Received: from smtp.codeaurora.org
+ (ec2-35-166-182-171.us-west-2.compute.amazonaws.com [35.166.182.171])
+ by mxa.mailgun.org with ESMTP id 5dfd27cb.7f958efac688-smtp-out-n03;
+ Fri, 20 Dec 2019 19:58:03 -0000 (UTC)
+Received: by smtp.codeaurora.org (Postfix, from userid 1001)
+ id 345DBC4479F; Fri, 20 Dec 2019 19:58:03 +0000 (UTC)
+Received: from jcrouse1-lnx.qualcomm.com (i-global254.qualcomm.com
+ [199.106.103.254])
+ (using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+ (No client certificate requested) (Authenticated sender: jcrouse)
+ by smtp.codeaurora.org (Postfix) with ESMTPSA id A3857C43383;
+ Fri, 20 Dec 2019 19:58:00 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.3.2 smtp.codeaurora.org A3857C43383
+Authentication-Results: aws-us-west-2-caf-mail-1.web.codeaurora.org;
+ dmarc=none (p=none dis=none) header.from=codeaurora.org
+Authentication-Results: aws-us-west-2-caf-mail-1.web.codeaurora.org;
+ spf=none smtp.mailfrom=jcrouse@codeaurora.org
+Date: Fri, 20 Dec 2019 12:57:58 -0700
+From: Jordan Crouse <jcrouse@codeaurora.org>
+To: smasetty@codeaurora.org
+Subject: Re: [Freedreno] [PATCH 5/5] drm/msm/a6xx: Add support for using
+ system cache(LLC)
+Message-ID: <20191220195758.GA12730@jcrouse1-lnx.qualcomm.com>
+Mail-Followup-To: smasetty@codeaurora.org, freedreno@lists.freedesktop.org,
+ saiprakash.ranjan@codeaurora.org, will@kernel.org,
+ linux-arm-msm@vger.kernel.org, joro@8bytes.org,
+ linux-kernel@vger.kernel.org, iommu@lists.linux-foundation.org,
+ dri-devel@freedesktop.org, robin.murphy@arm.com,
+ linux-arm-msm-owner@vger.kernel.org
+References: <1576761286-20451-1-git-send-email-smasetty@codeaurora.org>
+ <1576761286-20451-6-git-send-email-smasetty@codeaurora.org>
+ <20191219195814.GA23673@jcrouse1-lnx.qualcomm.com>
+ <9c32a63c7300cb68e459f58a1b6fe3f8@codeaurora.org>
 MIME-Version: 1.0
-Cc: virtio-dev@lists.oasis-open.org, kevin.tian@intel.com,
- gregkh@linuxfoundation.org, linux-pci@vger.kernel.org, sudeep.holla@arm.com,
- rjw@rjwysocki.net, virtualization@lists.linux-foundation.org,
- linux-acpi@vger.kernel.org, iommu@lists.linux-foundation.org,
- sebastien.boeuf@intel.com, mst@redhat.com, jacob.jun.pan@intel.com,
- guohanjun@huawei.com, bhelgaas@google.com, jasowang@redhat.com,
- linux-arm-kernel@lists.infradead.org, lenb@kernel.org
+Content-Disposition: inline
+In-Reply-To: <9c32a63c7300cb68e459f58a1b6fe3f8@codeaurora.org>
+User-Agent: Mutt/1.5.24 (2015-08-30)
+Cc: freedreno@lists.freedesktop.org, linux-kernel@vger.kernel.org,
+ iommu@lists.linux-foundation.org, dri-devel@freedesktop.org,
+ linux-arm-msm@vger.kernel.org, will@kernel.org,
+ linux-arm-msm-owner@vger.kernel.org, robin.murphy@arm.com
 X-BeenThere: iommu@lists.linux-foundation.org
 X-Mailman-Version: 2.1.15
 Precedence: list
@@ -92,136 +116,301 @@ Content-Transfer-Encoding: 7bit
 Errors-To: iommu-bounces@lists.linux-foundation.org
 Sender: "iommu" <iommu-bounces@lists.linux-foundation.org>
 
-On Wed, 18 Dec 2019 12:20:44 +0100
-Jean-Philippe Brucker <jean-philippe@linaro.org> wrote:
+On Fri, Dec 20, 2019 at 03:40:59PM +0530, smasetty@codeaurora.org wrote:
+> On 2019-12-20 01:28, Jordan Crouse wrote:
+> >On Thu, Dec 19, 2019 at 06:44:46PM +0530, Sharat Masetty wrote:
+> >>The last level system cache can be partitioned to 32 different slices
+> >>of which GPU has two slices preallocated. One slice is used for caching
+> >>GPU
+> >>buffers and the other slice is used for caching the GPU SMMU pagetables.
+> >>This patch talks to the core system cache driver to acquire the slice
+> >>handles,
+> >>configure the SCID's to those slices and activates and deactivates the
+> >>slices
+> >>upon GPU power collapse and restore.
+> >>
+> >>Some support from the IOMMU driver is also needed to make use of the
+> >>system cache. IOMMU_QCOM_SYS_CACHE is a buffer protection flag which
+> >>enables
+> >>caching GPU data buffers in the system cache with memory attributes such
+> >>as outer cacheable, read-allocate, write-allocate for buffers. The GPU
+> >>then has the ability to override a few cacheability parameters which it
+> >>does to override write-allocate to write-no-allocate as the GPU hardware
+> >>does not benefit much from it.
+> >>
+> >>Similarly DOMAIN_ATTR_QCOM_SYS_CACHE is another domain level attribute
+> >>used by the IOMMU driver to set the right attributes to cache the
+> >>hardware
+> >>pagetables into the system cache.
+> >>
+> >>Signed-off-by: Sharat Masetty <smasetty@codeaurora.org>
+> >>---
+> >> drivers/gpu/drm/msm/adreno/a6xx_gpu.c | 122
+> >>+++++++++++++++++++++++++++++++++-
+> >> drivers/gpu/drm/msm/adreno/a6xx_gpu.h |   9 +++
+> >> drivers/gpu/drm/msm/msm_iommu.c       |  13 ++++
+> >> drivers/gpu/drm/msm/msm_mmu.h         |   3 +
+> >> 4 files changed, 146 insertions(+), 1 deletion(-)
+> >>
+> >>diff --git a/drivers/gpu/drm/msm/adreno/a6xx_gpu.c
+> >>b/drivers/gpu/drm/msm/adreno/a6xx_gpu.c
+> >>index faff6ff..0c7fdee 100644
+> >>--- a/drivers/gpu/drm/msm/adreno/a6xx_gpu.c
+> >>+++ b/drivers/gpu/drm/msm/adreno/a6xx_gpu.c
+> >>@@ -9,6 +9,7 @@
+> >> #include "a6xx_gmu.xml.h"
+> >>
+> >> #include <linux/devfreq.h>
+> >>+#include <linux/soc/qcom/llcc-qcom.h>
+> >>
+> >> #define GPU_PAS_ID 13
+> >>
+> >>@@ -781,6 +782,117 @@ static void
+> >>a6xx_bus_clear_pending_transactions(struct adreno_gpu *adreno_gpu)
+> >> 	gpu_write(gpu, REG_A6XX_GBIF_HALT, 0x0);
+> >> }
+> >>
+> >>+#define A6XX_LLC_NUM_GPU_SCIDS		5
+> >>+#define A6XX_GPU_LLC_SCID_NUM_BITS	5
+> >
+> >As I mention below, I'm not sure if we need these
+> >
+> >>+#define A6XX_GPU_LLC_SCID_MASK \
+> >>+	((1 << (A6XX_LLC_NUM_GPU_SCIDS * A6XX_GPU_LLC_SCID_NUM_BITS)) - 1)
+> >>+
+> >>+#define A6XX_GPUHTW_LLC_SCID_SHIFT	25
+> >>+#define A6XX_GPUHTW_LLC_SCID_MASK \
+> >>+	(((1 << A6XX_GPU_LLC_SCID_NUM_BITS) - 1) <<
+> >>A6XX_GPUHTW_LLC_SCID_SHIFT)
+> >>+
+> >
+> >Normally these go into the envytools regmap but if we're going to do these
+> >guys
+> >lets use the power of <linux/bitfield.h> for good.
+> >
+> >#define A6XX_GPU_LLC_SCID GENMASK(24, 0)
+> >#define A6XX_GPUHTW_LLC_SCID GENMASK(29, 25)
+> >
+> >>+static inline void a6xx_gpu_cx_rmw(struct a6xx_llc *llc,
+> >
+> >Don't mark C functions as inline - let the compiler figure it out for you.
+> >
+> >>+	u32 reg, u32 mask, u32 or)
+> >>+{
+> >>+	msm_rmw(llc->mmio + (reg << 2), mask, or);
+> >>+}
+> >>+
+> >>+static void a6xx_llc_deactivate(struct a6xx_llc *llc)
+> >>+{
+> >>+	llcc_slice_deactivate(llc->gpu_llc_slice);
+> >>+	llcc_slice_deactivate(llc->gpuhtw_llc_slice);
+> >>+}
+> >>+
+> >>+static void a6xx_llc_activate(struct a6xx_llc *llc)
+> >>+{
+> >>+	if (!llc->mmio)
+> >>+		return;
+> >>+
+> >>+	/* Program the sub-cache ID for all GPU blocks */
+> >>+	if (!llcc_slice_activate(llc->gpu_llc_slice))
+> >>+		a6xx_gpu_cx_rmw(llc,
+> >>+				REG_A6XX_CX_MISC_SYSTEM_CACHE_CNTL_1,
+> >>+				A6XX_GPU_LLC_SCID_MASK,
+> >>+				(llc->cntl1_regval &
+> >>+				 A6XX_GPU_LLC_SCID_MASK));
+> >
+> >This is out of order with the comments below, but if we store the slice id
+> >then
+> >you could calculate regval here and not have to store it.
+> >
+> >>+
+> >>+	/* Program the sub-cache ID for the GPU pagetables */
+> >>+	if (!llcc_slice_activate(llc->gpuhtw_llc_slice))
+> >
+> >val |= FIELD_SET(A6XX_GPUHTW_LLC_SCID, htw_llc_sliceid);
+> >
+> >>+		a6xx_gpu_cx_rmw(llc,
+> >>+				REG_A6XX_CX_MISC_SYSTEM_CACHE_CNTL_1,
+> >>+				A6XX_GPUHTW_LLC_SCID_MASK,
+> >>+				(llc->cntl1_regval &
+> >>+				 A6XX_GPUHTW_LLC_SCID_MASK));
+> >
+> >And this could be FIELD_SET(A6XX_GPUHTW_LLC_SCID, sliceid);
+> >
+> >In theory you could just calculate the u32 and write it directly without a
+> >rmw.
+> >In fact, that might be preferable - if the slice activate failed, you
+> >don't want
+> >to run the risk that the scid for htw is still populated.
+> >
+> >>+
+> >>+	/* Program cacheability overrides */
+> >>+	a6xx_gpu_cx_rmw(llc, REG_A6XX_CX_MISC_SYSTEM_CACHE_CNTL_0, 0xF,
+> >>+		llc->cntl0_regval);
+> >
+> >As below, this could easily be a constant.
+> >
+> >>+}
+> >>+
+> >>+static void a6xx_llc_slices_destroy(struct a6xx_llc *llc)
+> >>+{
+> >>+	if (llc->mmio)
+> >>+		iounmap(llc->mmio);
+> >
+> >msm_ioremap returns a devm_ managed resource, so do not use iounmap() to
+> >free
+> >it. Bets to just leave it and let the gpu device handle it when it goes
+> >boom.
+> >
+> >>+
+> >>+	llcc_slice_putd(llc->gpu_llc_slice);
+> >>+	llcc_slice_putd(llc->gpuhtw_llc_slice);
+> >>+}
+> >>+
+> >>+static int a6xx_llc_slices_init(struct platform_device *pdev,
+> >T
+> >This can be void, I don't think we care if it passes or fails.
+> >
+> >>+		struct a6xx_llc *llc)
+> >>+{
+> >>+	llc->mmio = msm_ioremap(pdev, "cx_mem", "gpu_cx");
+> >>+	if (IS_ERR_OR_NULL(llc->mmio))
+> >
+> >msm_ioremap can not return NULL.
+> >
+> >>+		return -ENODEV;
+> >>+
+> >>+	llc->gpu_llc_slice = llcc_slice_getd(LLCC_GPU);
+> >>+	llc->gpuhtw_llc_slice = llcc_slice_getd(LLCC_GPUHTW);
+> >>+	if (IS_ERR(llc->gpu_llc_slice) && IS_ERR(llc->gpuhtw_llc_slice))
+> >>+		return -ENODEV;
+> >>+
+> >>+	/*
+> >>+	 * CNTL0 provides options to override the settings for the
+> >>+	 * read and write allocation policies for the LLC. These
+> >>+	 * overrides are global for all memory transactions from
+> >>+	 * the GPU.
+> >>+	 *
+> >>+	 * 0x3: read-no-alloc-overridden = 0
+> >>+	 *      read-no-alloc = 0 - Allocate lines on read miss
+> >>+	 *      write-no-alloc-overridden = 1
+> >>+	 *      write-no-alloc = 1 - Do not allocates lines on write miss
+> >>+	 */
+> >>+	llc->cntl0_regval = 0x03;
+> >
+> >This is a fixed value isn't it?  We should be able to get away with
+> >writing a
+> >constant.
+> >
+> >>+
+> >>+	/*
+> >>+	 * CNTL1 is used to specify SCID for (CP, TP, VFD, CCU and UBWC
+> >>+	 * FLAG cache) GPU blocks. This value will be passed along with
+> >>+	 * the address for any memory transaction from GPU to identify
+> >>+	 * the sub-cache for that transaction.
+> >>+	 */
+> >>+	if (!IS_ERR(llc->gpu_llc_slice)) {
+> >>+		u32 gpu_scid = llcc_get_slice_id(llc->gpu_llc_slice);
+> >>+		int i;
+> >>+
+> >>+		for (i = 0; i < A6XX_LLC_NUM_GPU_SCIDS; i++)
+> >>+			llc->cntl1_regval |=
+> >>+				gpu_scid << (A6XX_GPU_LLC_SCID_NUM_BITS * i);
+> >
+> >As above, i'm not sure a loop is better than just:
+> >
+> >gpu_scid &= 0x1f;
+> >
+> >llc->cntl1_regval = (gpu_scid << 0) || (gpu_scid << 5) | (gpu_scid << 10)
+> > | (gpu_scid << 15) | (gpu_scid << 20);
+> >
+> >And I'm not even sure we need do this math here in the first place.
+> >
+> >>+	}
+> >>+
+> >>+	/*
+> >>+	 * Set SCID for GPU IOMMU. This will be used to access
+> >>+	 * page tables that are cached in LLC.
+> >>+	 */
+> >>+	if (!IS_ERR(llc->gpuhtw_llc_slice)) {
+> >>+		u32 gpuhtw_scid = llcc_get_slice_id(llc->gpuhtw_llc_slice);
+> >>+
+> >>+		llc->cntl1_regval |=
+> >>+			gpuhtw_scid << A6XX_GPUHTW_LLC_SCID_SHIFT;
+> >>+	}
+> >
+> >As above, I think storing the slice id could be more beneficial than
+> >calculating
+> >a value, but if we do calculate a value, use
+> >FIELD_SET(A6XX_GPUHTW_LLC_SCID, )
+> >
+> >>+
+> >>+	return 0;
+> >>+}
+> >>+
+> >> static int a6xx_pm_resume(struct msm_gpu *gpu)
+> >> {
+> >> 	struct adreno_gpu *adreno_gpu = to_adreno_gpu(gpu);
+> >>@@ -795,6 +907,8 @@ static int a6xx_pm_resume(struct msm_gpu *gpu)
+> >>
+> >> 	msm_gpu_resume_devfreq(gpu);
+> >>
+> >>+	a6xx_llc_activate(&a6xx_gpu->llc);
+> >>+
+> >> 	return 0;
+> >> }
+> >>
+> >>@@ -803,6 +917,8 @@ static int a6xx_pm_suspend(struct msm_gpu *gpu)
+> >> 	struct adreno_gpu *adreno_gpu = to_adreno_gpu(gpu);
+> >> 	struct a6xx_gpu *a6xx_gpu = to_a6xx_gpu(adreno_gpu);
+> >>
+> >>+	a6xx_llc_deactivate(&a6xx_gpu->llc);
+> >>+
+> >> 	devfreq_suspend_device(gpu->devfreq.devfreq);
+> >>
+> >> 	/*
+> >>@@ -851,6 +967,7 @@ static void a6xx_destroy(struct msm_gpu *gpu)
+> >> 		drm_gem_object_put_unlocked(a6xx_gpu->sqe_bo);
+> >> 	}
+> >>
+> >>+	a6xx_llc_slices_destroy(&a6xx_gpu->llc);
+> >> 	a6xx_gmu_remove(a6xx_gpu);
+> >>
+> >> 	adreno_gpu_cleanup(adreno_gpu);
+> >>@@ -924,7 +1041,10 @@ struct msm_gpu *a6xx_gpu_init(struct drm_device
+> >>*dev)
+> >> 	adreno_gpu->registers = NULL;
+> >> 	adreno_gpu->reg_offsets = a6xx_register_offsets;
+> >>
+> >>-	ret = adreno_gpu_init(dev, pdev, adreno_gpu, &funcs, 1, 0);
+> >>+	ret = a6xx_llc_slices_init(pdev, &a6xx_gpu->llc);
+> >>+
+> >
+> >Confirming we don't care if a6xx_llc_slices_init passes or fails.
+> 
+> Are you suggesting to unconditionally set the memory attributes in iommu(see
+> the code below in msm_iommu.c).
+> We probably wouldn't need this patch too in that case:
+> https://patchwork.freedesktop.org/patch/346097/
+> 
+> The return code  is used in the line below to pass
+> MMU_FEATURE_USE_SYSTEM_CACHE. Am I missing something here?
 
-> On Tue, Dec 03, 2019 at 07:01:36PM -0800, Jacob Pan (Jun) wrote:
-> > Hi Jean,
-> > 
-> > Sorry for the delay, I was out last week. Comments inline below.
-> > 
-> > On Mon, 25 Nov 2019 19:02:47 +0100
-> > Jean-Philippe Brucker <jean-philippe@linaro.org> wrote:
-> >   
-> > > On Fri, Nov 22, 2019 at 04:01:02PM -0800, Jacob Pan (Jun) wrote:  
-> > > > > (1) ACPI has one table per vendor (DMAR for Intel, IVRS for
-> > > > > AMD and IORT for Arm). From my point of view IORT is easier to
-> > > > > extend, since we just need to introduce a new node type. There
-> > > > > are no dependencies to Arm in the Linux IORT driver, so it
-> > > > > works well with CONFIG_X86.   
-> > > > From my limited understanding, IORT and VIOT is to solve device
-> > > > topology enumeration only? I am not sure how it can be expanded
-> > > > to cover information beyond device topology. e.g. DMAR has NUMA
-> > > > information and root port ATS, I guess they are not used today
-> > > > in the guest but might be additions in the future.    
-> > > 
-> > > The PCI root-complex node of IORT has an ATS attribute, which we
-> > > can already use. However its scope is the root complex, not
-> > > individual root ports like with DMAR.
-> > > 
-> > > I'm not very familiar with NUMA, but it looks like we just need to
-> > > specify a proximity domain in relation to the SRAT table, for each
-> > > viommu? The SMMUv3 node in IORT has a 4-bytes "proximity domain"
-> > > field for this. We can add the same to the VIOT virtio-iommu nodes
-> > > later, since the structures are extensible.
-> > >   
-> > I think there the proximity domain is more for each assigned device
-> > than vIOMMU. vIOMMU in the guest can have assigned devices belong to
-> > different pIOMMU and proximity domains. If the guest owns the first
-> > level page tables (gIOVA or SVA), we want to make sure page tables
-> > are allocated from the close proximity domain.
-> > 
-> > My understanding is virtio IOMMU supports both virtio devices and
-> > assigned devices. we could care less about the former in terms of
-> > NUMA.
-> > 
-> > In ACPI, we have _PXM method to retrieve device proximity domain. I
-> > don't know if there is something equivalent or a generic way to get
-> > _PXM information. I think VMM also need to make sure when an
-> > assigned device is used with vIOMMU, there are some memory is
-> > allocated from the device's proximity domain.
-> >   
-> > > But it might be better to keep the bare minimum information in
-> > > the FW descriptor, and put the rest in the virtio-iommu. So yes
-> > > topology enumeration is something the device cannot do itself
-> > > (not fully that is, see (2)) but for the rest, virtio-iommu's
-> > > PROBE request can provide details about each endpoint in relation
-> > > to their physical IOMMU.
-> > > 
-> > > We could for example add a bit in a PROBE property saying that the
-> > > whole path between the IOMMU and the endpoint supports ATS. For
-> > > NUMA it might also be more interesting to have a finer
-> > > granularity, since one viommu could be managing endpoints that
-> > > are behind different physical IOMMUs. If in the future we want to
-> > > allocate page tables close to the physical IOMMU for example, we
-> > > might need to describe multiple NUMA nodes per viommu, using the
-> > > PROBE request. 
-> > Should we reinvent something for NUMA or use ACPI's SRAT, _PXM?   
-> 
-> Regardless whether we put it in the VIOT or in the virtio-iommu PROBE
-> request, we necessarily need to reuse the node IDs defined by SRAT (or
-> numa-node-id on devicetree, also a 32-bit value). A virtio-pci based
-> virtio-iommu already has the _PXM of its closest bridge and wouldn't
-> need anything more in the VIOT, while a virtio-mmio based
-> virtio-iommu would need a proximity domain field in the VIOT. That
-> could be added later since the table is extensible, but as you
-> pointed out, that information might not be very useful.
-> 
-> > I am not sure how it is handled today in QEMU in terms of guest-host
-> > NUMA proximity domain mapping.  
-> 
-> It looks like the user can specify this guest-host mapping on the
-> command-line:
-> 
->   -object memory-backend-ram,id=mem0,size=4G,host-nodes=3,policy=bind
->   -object memory-backend-ram,id=mem1,size=4G,host-nodes=4,policy=bind
->   -numa node,memdev=mem0,nodeid=numa0
->   -numa node,memdev=mem1,nodeid=numa1
->   -numa cpu,node-id=numa0,socket-id=0
->   -numa cpu,node-id=numa1,socket-id=1
-> 
-> numa0 and numa1 would get proximity domains 0 and 1, corresponding to
-> host domains 3 and 4. It is also possible to specify the NUMA node of
-> a PCI bus (via the PCI expander bridge), and therefore to assign a
-> VFIO PCI device in the same proximity domain as its physical location.
-> 
->   -device pxb,id=bridge1,bus=pci.0,numa_node=1 (simplified)
->   -device vfio-pci,host=03:01.0,bus=bridge1
-> 
-Thanks a lot for the thorough explanation. I will give that a try on
-x86, I assume the ACPI tables also built to match these cmdline options.
-> Linux can use this information to allocate DMA close to the endpoint
-> (see for example __iommu_dma_alloc_pages()). For page tables
-> allocation, io-pgtables currently takes the node ID of the IOMMU
-> device, not the endpoint. For the scenario you describe (virtio-iommu
-> endpoints managed by different physical IOMMU), we would need to take
-> for example the node ID of the first endpoint in the iommu_domain for
-> which we're allocating page tables.
-> 
-If iommu_domain is shared by multiple device from different NUMA node,
-I guess taking the first one is as good as anyone. It would not be
-an optimal configuration.
-> Is it safe to assume that the pIOMMU is in the same proximity domain
-> as the physical endpoint?
-I think it is a safe assumption.
->  If that's the case, then the guest already
-> has all the information it needs. Otherwise it's easy to add a
-> proximity domain PROBE property for each endpoint. Configuring the
-> host to pass that information might be more difficult.
-> 
-I agree, guest should always allocate DMA and IOVA page tables basedon
-the endpoint. VT-d currently allocates page table pages based on IOMMU
-NUMA node, that might have to change.
-> 
-> Off topic, I've been wondering how to make iommu-sva aware of NUMA
-> topology as well, so that when handling a page request we allocate
-> memory on the faulting device's NUMA node, but I think it might
-> require invasive changes to the mm subsystem, to pass a NUMA node to
-> handle_mm_fault().
-> 
-> Thanks,
-> Jean
+Oh, I see. Please don't do that. Set a separate flag if you need to.
 
+features = 0;
+
+ if (a6xx_llc_slices_init(pdev, &a6xx_gpu->llc))
+    features = MMU_FEATURE_USE_SYSTEM_CACHE;
+
+Hiding ret in a function that also sets ret has a tendency to confuse people
+like me.
+
+Jordan
+
+-- 
+The Qualcomm Innovation Center, Inc. is a member of Code Aurora Forum,
+a Linux Foundation Collaborative Project
 _______________________________________________
 iommu mailing list
 iommu@lists.linux-foundation.org
