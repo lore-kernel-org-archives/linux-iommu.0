@@ -1,104 +1,81 @@
-Return-Path: <SRS0=Sm7F=2K=lists.linux-foundation.org=iommu-bounces@kernel.org>
+Return-Path: <SRS0=gCe8=2L=lists.linux-foundation.org=iommu-bounces@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-8.1 required=3.0 tests=DKIM_INVALID,DKIM_SIGNED,
-	HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_PATCH,MAILING_LIST_MULTI,SIGNED_OFF_BY,
-	SPF_HELO_NONE,SPF_PASS,USER_AGENT_SANE_1 autolearn=unavailable
-	autolearn_force=no version=3.4.0
+X-Spam-Status: No, score=-8.2 required=3.0 tests=HEADER_FROM_DIFFERENT_DOMAINS,
+	INCLUDES_PATCH,MAILING_LIST_MULTI,SIGNED_OFF_BY,SPF_HELO_NONE,SPF_PASS,
+	USER_AGENT_SANE_1 autolearn=unavailable autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 4ECF4C43603
-	for <iommu@archiver.kernel.org>; Fri, 20 Dec 2019 19:58:15 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 2E7FDC2D0C8
+	for <iommu@archiver.kernel.org>; Sat, 21 Dec 2019 02:27:53 +0000 (UTC)
 Received: from hemlock.osuosl.org (smtp2.osuosl.org [140.211.166.133])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by mail.kernel.org (Postfix) with ESMTPS id 0E4382072B
-	for <iommu@archiver.kernel.org>; Fri, 20 Dec 2019 19:58:14 +0000 (UTC)
-Authentication-Results: mail.kernel.org;
-	dkim=fail reason="key not found in DNS" (0-bit key) header.d=mg.codeaurora.org header.i=@mg.codeaurora.org header.b="kDgOXDlA"
-DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 0E4382072B
-Authentication-Results: mail.kernel.org; dmarc=none (p=none dis=none) header.from=codeaurora.org
+	by mail.kernel.org (Postfix) with ESMTPS id C54242070C
+	for <iommu@archiver.kernel.org>; Sat, 21 Dec 2019 02:27:52 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org C54242070C
+Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=linux.intel.com
 Authentication-Results: mail.kernel.org; spf=pass smtp.mailfrom=iommu-bounces@lists.linux-foundation.org
 Received: from localhost (localhost [127.0.0.1])
-	by hemlock.osuosl.org (Postfix) with ESMTP id D37B288995;
-	Fri, 20 Dec 2019 19:58:14 +0000 (UTC)
+	by hemlock.osuosl.org (Postfix) with ESMTP id 99B0C8827C;
+	Sat, 21 Dec 2019 02:27:52 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
 Received: from hemlock.osuosl.org ([127.0.0.1])
 	by localhost (.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
-	with ESMTP id O+XhZk1nQU3b; Fri, 20 Dec 2019 19:58:13 +0000 (UTC)
+	with ESMTP id uO5bMk79uwdz; Sat, 21 Dec 2019 02:27:51 +0000 (UTC)
 Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [140.211.9.56])
-	by hemlock.osuosl.org (Postfix) with ESMTP id 9150F8857C;
-	Fri, 20 Dec 2019 19:58:13 +0000 (UTC)
+	by hemlock.osuosl.org (Postfix) with ESMTP id 63A408820A;
+	Sat, 21 Dec 2019 02:27:51 +0000 (UTC)
 Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
-	by lists.linuxfoundation.org (Postfix) with ESMTP id 761C9C18DC;
-	Fri, 20 Dec 2019 19:58:13 +0000 (UTC)
-Received: from fraxinus.osuosl.org (smtp4.osuosl.org [140.211.166.137])
- by lists.linuxfoundation.org (Postfix) with ESMTP id 24631C077D
- for <iommu@lists.linux-foundation.org>; Fri, 20 Dec 2019 19:58:12 +0000 (UTC)
+	by lists.linuxfoundation.org (Postfix) with ESMTP id 49549C1796;
+	Sat, 21 Dec 2019 02:27:51 +0000 (UTC)
+Received: from silver.osuosl.org (smtp3.osuosl.org [140.211.166.136])
+ by lists.linuxfoundation.org (Postfix) with ESMTP id D4C13C077D
+ for <iommu@lists.linux-foundation.org>; Sat, 21 Dec 2019 02:27:49 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
- by fraxinus.osuosl.org (Postfix) with ESMTP id 1196F85AB5
- for <iommu@lists.linux-foundation.org>; Fri, 20 Dec 2019 19:58:12 +0000 (UTC)
+ by silver.osuosl.org (Postfix) with ESMTP id BDD4F20519
+ for <iommu@lists.linux-foundation.org>; Sat, 21 Dec 2019 02:27:49 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from fraxinus.osuosl.org ([127.0.0.1])
+Received: from silver.osuosl.org ([127.0.0.1])
  by localhost (.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
- with ESMTP id 5712k_BwtbQp for <iommu@lists.linux-foundation.org>;
- Fri, 20 Dec 2019 19:58:10 +0000 (UTC)
-X-Greylist: from auto-whitelisted by SQLgrey-1.7.6
-Received: from mail25.static.mailgun.info (mail25.static.mailgun.info
- [104.130.122.25])
- by fraxinus.osuosl.org (Postfix) with ESMTPS id CAEC885A76
- for <iommu@lists.linux-foundation.org>; Fri, 20 Dec 2019 19:58:09 +0000 (UTC)
-DKIM-Signature: a=rsa-sha256; v=1; c=relaxed/relaxed; d=mg.codeaurora.org;
- q=dns/txt; 
- s=smtp; t=1576871890; h=In-Reply-To: Content-Type: MIME-Version:
- References: Message-ID: Subject: Cc: To: From: Date: Sender;
- bh=qqzsE6iE6h9c38qi8OJwL6QizKwmkcXr+epT82FyQ1U=;
- b=kDgOXDlAtnA8H5sWNa2ydV5HKnl6OVenqxh8DhAcf7fC3n2oslX4EvhThMIaxPRa7LhxJgyb
- gizhyE6jvdj75HdLAvY5jZyou05jUmEwxiAGSuIJBmStcRtEOjyUo2D8/58tT56bt4tZoyQV
- qWxuy1zTr4Avt3UWteWhrS7Z5HM=
-X-Mailgun-Sending-Ip: 104.130.122.25
-X-Mailgun-Sid: WyI3NDkwMCIsICJpb21tdUBsaXN0cy5saW51eC1mb3VuZGF0aW9uLm9yZyIsICJiZTllNGEiXQ==
-Received: from smtp.codeaurora.org
- (ec2-35-166-182-171.us-west-2.compute.amazonaws.com [35.166.182.171])
- by mxa.mailgun.org with ESMTP id 5dfd27cb.7f958efac688-smtp-out-n03;
- Fri, 20 Dec 2019 19:58:03 -0000 (UTC)
-Received: by smtp.codeaurora.org (Postfix, from userid 1001)
- id 345DBC4479F; Fri, 20 Dec 2019 19:58:03 +0000 (UTC)
-Received: from jcrouse1-lnx.qualcomm.com (i-global254.qualcomm.com
- [199.106.103.254])
- (using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
- (No client certificate requested) (Authenticated sender: jcrouse)
- by smtp.codeaurora.org (Postfix) with ESMTPSA id A3857C43383;
- Fri, 20 Dec 2019 19:58:00 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.3.2 smtp.codeaurora.org A3857C43383
-Authentication-Results: aws-us-west-2-caf-mail-1.web.codeaurora.org;
- dmarc=none (p=none dis=none) header.from=codeaurora.org
-Authentication-Results: aws-us-west-2-caf-mail-1.web.codeaurora.org;
- spf=none smtp.mailfrom=jcrouse@codeaurora.org
-Date: Fri, 20 Dec 2019 12:57:58 -0700
-From: Jordan Crouse <jcrouse@codeaurora.org>
-To: smasetty@codeaurora.org
-Subject: Re: [Freedreno] [PATCH 5/5] drm/msm/a6xx: Add support for using
- system cache(LLC)
-Message-ID: <20191220195758.GA12730@jcrouse1-lnx.qualcomm.com>
-Mail-Followup-To: smasetty@codeaurora.org, freedreno@lists.freedesktop.org,
- saiprakash.ranjan@codeaurora.org, will@kernel.org,
- linux-arm-msm@vger.kernel.org, joro@8bytes.org,
- linux-kernel@vger.kernel.org, iommu@lists.linux-foundation.org,
- dri-devel@freedesktop.org, robin.murphy@arm.com,
- linux-arm-msm-owner@vger.kernel.org
-References: <1576761286-20451-1-git-send-email-smasetty@codeaurora.org>
- <1576761286-20451-6-git-send-email-smasetty@codeaurora.org>
- <20191219195814.GA23673@jcrouse1-lnx.qualcomm.com>
- <9c32a63c7300cb68e459f58a1b6fe3f8@codeaurora.org>
+ with ESMTP id x5u0+S3h9FDA for <iommu@lists.linux-foundation.org>;
+ Sat, 21 Dec 2019 02:27:48 +0000 (UTC)
+X-Greylist: domain auto-whitelisted by SQLgrey-1.7.6
+Received: from mga06.intel.com (mga06.intel.com [134.134.136.31])
+ by silver.osuosl.org (Postfix) with ESMTPS id B88572034C
+ for <iommu@lists.linux-foundation.org>; Sat, 21 Dec 2019 02:27:48 +0000 (UTC)
+X-Amp-Result: SKIPPED(no attachment in message)
+X-Amp-File-Uploaded: False
+Received: from orsmga002.jf.intel.com ([10.7.209.21])
+ by orsmga104.jf.intel.com with ESMTP/TLS/DHE-RSA-AES256-GCM-SHA384;
+ 20 Dec 2019 18:27:47 -0800
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="5.69,338,1571727600"; d="scan'208";a="228779440"
+Received: from allen-box.sh.intel.com (HELO [10.239.159.136])
+ ([10.239.159.136])
+ by orsmga002.jf.intel.com with ESMTP; 20 Dec 2019 18:27:45 -0800
+Subject: Re: [PATCH v4 4/7] iommu/vt-d: Setup pasid entries for iova over
+ first level
+To: "Liu, Yi L" <yi.l.liu@intel.com>, Joerg Roedel <joro@8bytes.org>,
+ David Woodhouse <dwmw2@infradead.org>,
+ Alex Williamson <alex.williamson@redhat.com>
+References: <20191219031634.15168-1-baolu.lu@linux.intel.com>
+ <20191219031634.15168-5-baolu.lu@linux.intel.com>
+ <A2975661238FB949B60364EF0F2C25743A13A334@SHSMSX104.ccr.corp.intel.com>
+From: Lu Baolu <baolu.lu@linux.intel.com>
+Message-ID: <84fd6b9e-0226-cc5f-b51a-884f834d4556@linux.intel.com>
+Date: Sat, 21 Dec 2019 10:26:49 +0800
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101
+ Thunderbird/68.2.1
 MIME-Version: 1.0
-Content-Disposition: inline
-In-Reply-To: <9c32a63c7300cb68e459f58a1b6fe3f8@codeaurora.org>
-User-Agent: Mutt/1.5.24 (2015-08-30)
-Cc: freedreno@lists.freedesktop.org, linux-kernel@vger.kernel.org,
- iommu@lists.linux-foundation.org, dri-devel@freedesktop.org,
- linux-arm-msm@vger.kernel.org, will@kernel.org,
- linux-arm-msm-owner@vger.kernel.org, robin.murphy@arm.com
+In-Reply-To: <A2975661238FB949B60364EF0F2C25743A13A334@SHSMSX104.ccr.corp.intel.com>
+Content-Language: en-US
+Cc: "Tian, Kevin" <kevin.tian@intel.com>, "Raj, Ashok" <ashok.raj@intel.com>,
+ "kvm@vger.kernel.org" <kvm@vger.kernel.org>, "Kumar,
+ Sanjay K" <sanjay.k.kumar@intel.com>,
+ "iommu@lists.linux-foundation.org" <iommu@lists.linux-foundation.org>,
+ "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>, "Sun,
+ Yi Y" <yi.y.sun@intel.com>
 X-BeenThere: iommu@lists.linux-foundation.org
 X-Mailman-Version: 2.1.15
 Precedence: list
@@ -111,306 +88,83 @@ List-Post: <mailto:iommu@lists.linux-foundation.org>
 List-Help: <mailto:iommu-request@lists.linux-foundation.org?subject=help>
 List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
  <mailto:iommu-request@lists.linux-foundation.org?subject=subscribe>
-Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset="us-ascii"; Format="flowed"
 Errors-To: iommu-bounces@lists.linux-foundation.org
 Sender: "iommu" <iommu-bounces@lists.linux-foundation.org>
 
-On Fri, Dec 20, 2019 at 03:40:59PM +0530, smasetty@codeaurora.org wrote:
-> On 2019-12-20 01:28, Jordan Crouse wrote:
-> >On Thu, Dec 19, 2019 at 06:44:46PM +0530, Sharat Masetty wrote:
-> >>The last level system cache can be partitioned to 32 different slices
-> >>of which GPU has two slices preallocated. One slice is used for caching
-> >>GPU
-> >>buffers and the other slice is used for caching the GPU SMMU pagetables.
-> >>This patch talks to the core system cache driver to acquire the slice
-> >>handles,
-> >>configure the SCID's to those slices and activates and deactivates the
-> >>slices
-> >>upon GPU power collapse and restore.
-> >>
-> >>Some support from the IOMMU driver is also needed to make use of the
-> >>system cache. IOMMU_QCOM_SYS_CACHE is a buffer protection flag which
-> >>enables
-> >>caching GPU data buffers in the system cache with memory attributes such
-> >>as outer cacheable, read-allocate, write-allocate for buffers. The GPU
-> >>then has the ability to override a few cacheability parameters which it
-> >>does to override write-allocate to write-no-allocate as the GPU hardware
-> >>does not benefit much from it.
-> >>
-> >>Similarly DOMAIN_ATTR_QCOM_SYS_CACHE is another domain level attribute
-> >>used by the IOMMU driver to set the right attributes to cache the
-> >>hardware
-> >>pagetables into the system cache.
-> >>
-> >>Signed-off-by: Sharat Masetty <smasetty@codeaurora.org>
-> >>---
-> >> drivers/gpu/drm/msm/adreno/a6xx_gpu.c | 122
-> >>+++++++++++++++++++++++++++++++++-
-> >> drivers/gpu/drm/msm/adreno/a6xx_gpu.h |   9 +++
-> >> drivers/gpu/drm/msm/msm_iommu.c       |  13 ++++
-> >> drivers/gpu/drm/msm/msm_mmu.h         |   3 +
-> >> 4 files changed, 146 insertions(+), 1 deletion(-)
-> >>
-> >>diff --git a/drivers/gpu/drm/msm/adreno/a6xx_gpu.c
-> >>b/drivers/gpu/drm/msm/adreno/a6xx_gpu.c
-> >>index faff6ff..0c7fdee 100644
-> >>--- a/drivers/gpu/drm/msm/adreno/a6xx_gpu.c
-> >>+++ b/drivers/gpu/drm/msm/adreno/a6xx_gpu.c
-> >>@@ -9,6 +9,7 @@
-> >> #include "a6xx_gmu.xml.h"
-> >>
-> >> #include <linux/devfreq.h>
-> >>+#include <linux/soc/qcom/llcc-qcom.h>
-> >>
-> >> #define GPU_PAS_ID 13
-> >>
-> >>@@ -781,6 +782,117 @@ static void
-> >>a6xx_bus_clear_pending_transactions(struct adreno_gpu *adreno_gpu)
-> >> 	gpu_write(gpu, REG_A6XX_GBIF_HALT, 0x0);
-> >> }
-> >>
-> >>+#define A6XX_LLC_NUM_GPU_SCIDS		5
-> >>+#define A6XX_GPU_LLC_SCID_NUM_BITS	5
-> >
-> >As I mention below, I'm not sure if we need these
-> >
-> >>+#define A6XX_GPU_LLC_SCID_MASK \
-> >>+	((1 << (A6XX_LLC_NUM_GPU_SCIDS * A6XX_GPU_LLC_SCID_NUM_BITS)) - 1)
-> >>+
-> >>+#define A6XX_GPUHTW_LLC_SCID_SHIFT	25
-> >>+#define A6XX_GPUHTW_LLC_SCID_MASK \
-> >>+	(((1 << A6XX_GPU_LLC_SCID_NUM_BITS) - 1) <<
-> >>A6XX_GPUHTW_LLC_SCID_SHIFT)
-> >>+
-> >
-> >Normally these go into the envytools regmap but if we're going to do these
-> >guys
-> >lets use the power of <linux/bitfield.h> for good.
-> >
-> >#define A6XX_GPU_LLC_SCID GENMASK(24, 0)
-> >#define A6XX_GPUHTW_LLC_SCID GENMASK(29, 25)
-> >
-> >>+static inline void a6xx_gpu_cx_rmw(struct a6xx_llc *llc,
-> >
-> >Don't mark C functions as inline - let the compiler figure it out for you.
-> >
-> >>+	u32 reg, u32 mask, u32 or)
-> >>+{
-> >>+	msm_rmw(llc->mmio + (reg << 2), mask, or);
-> >>+}
-> >>+
-> >>+static void a6xx_llc_deactivate(struct a6xx_llc *llc)
-> >>+{
-> >>+	llcc_slice_deactivate(llc->gpu_llc_slice);
-> >>+	llcc_slice_deactivate(llc->gpuhtw_llc_slice);
-> >>+}
-> >>+
-> >>+static void a6xx_llc_activate(struct a6xx_llc *llc)
-> >>+{
-> >>+	if (!llc->mmio)
-> >>+		return;
-> >>+
-> >>+	/* Program the sub-cache ID for all GPU blocks */
-> >>+	if (!llcc_slice_activate(llc->gpu_llc_slice))
-> >>+		a6xx_gpu_cx_rmw(llc,
-> >>+				REG_A6XX_CX_MISC_SYSTEM_CACHE_CNTL_1,
-> >>+				A6XX_GPU_LLC_SCID_MASK,
-> >>+				(llc->cntl1_regval &
-> >>+				 A6XX_GPU_LLC_SCID_MASK));
-> >
-> >This is out of order with the comments below, but if we store the slice id
-> >then
-> >you could calculate regval here and not have to store it.
-> >
-> >>+
-> >>+	/* Program the sub-cache ID for the GPU pagetables */
-> >>+	if (!llcc_slice_activate(llc->gpuhtw_llc_slice))
-> >
-> >val |= FIELD_SET(A6XX_GPUHTW_LLC_SCID, htw_llc_sliceid);
-> >
-> >>+		a6xx_gpu_cx_rmw(llc,
-> >>+				REG_A6XX_CX_MISC_SYSTEM_CACHE_CNTL_1,
-> >>+				A6XX_GPUHTW_LLC_SCID_MASK,
-> >>+				(llc->cntl1_regval &
-> >>+				 A6XX_GPUHTW_LLC_SCID_MASK));
-> >
-> >And this could be FIELD_SET(A6XX_GPUHTW_LLC_SCID, sliceid);
-> >
-> >In theory you could just calculate the u32 and write it directly without a
-> >rmw.
-> >In fact, that might be preferable - if the slice activate failed, you
-> >don't want
-> >to run the risk that the scid for htw is still populated.
-> >
-> >>+
-> >>+	/* Program cacheability overrides */
-> >>+	a6xx_gpu_cx_rmw(llc, REG_A6XX_CX_MISC_SYSTEM_CACHE_CNTL_0, 0xF,
-> >>+		llc->cntl0_regval);
-> >
-> >As below, this could easily be a constant.
-> >
-> >>+}
-> >>+
-> >>+static void a6xx_llc_slices_destroy(struct a6xx_llc *llc)
-> >>+{
-> >>+	if (llc->mmio)
-> >>+		iounmap(llc->mmio);
-> >
-> >msm_ioremap returns a devm_ managed resource, so do not use iounmap() to
-> >free
-> >it. Bets to just leave it and let the gpu device handle it when it goes
-> >boom.
-> >
-> >>+
-> >>+	llcc_slice_putd(llc->gpu_llc_slice);
-> >>+	llcc_slice_putd(llc->gpuhtw_llc_slice);
-> >>+}
-> >>+
-> >>+static int a6xx_llc_slices_init(struct platform_device *pdev,
-> >T
-> >This can be void, I don't think we care if it passes or fails.
-> >
-> >>+		struct a6xx_llc *llc)
-> >>+{
-> >>+	llc->mmio = msm_ioremap(pdev, "cx_mem", "gpu_cx");
-> >>+	if (IS_ERR_OR_NULL(llc->mmio))
-> >
-> >msm_ioremap can not return NULL.
-> >
-> >>+		return -ENODEV;
-> >>+
-> >>+	llc->gpu_llc_slice = llcc_slice_getd(LLCC_GPU);
-> >>+	llc->gpuhtw_llc_slice = llcc_slice_getd(LLCC_GPUHTW);
-> >>+	if (IS_ERR(llc->gpu_llc_slice) && IS_ERR(llc->gpuhtw_llc_slice))
-> >>+		return -ENODEV;
-> >>+
-> >>+	/*
-> >>+	 * CNTL0 provides options to override the settings for the
-> >>+	 * read and write allocation policies for the LLC. These
-> >>+	 * overrides are global for all memory transactions from
-> >>+	 * the GPU.
-> >>+	 *
-> >>+	 * 0x3: read-no-alloc-overridden = 0
-> >>+	 *      read-no-alloc = 0 - Allocate lines on read miss
-> >>+	 *      write-no-alloc-overridden = 1
-> >>+	 *      write-no-alloc = 1 - Do not allocates lines on write miss
-> >>+	 */
-> >>+	llc->cntl0_regval = 0x03;
-> >
-> >This is a fixed value isn't it?  We should be able to get away with
-> >writing a
-> >constant.
-> >
-> >>+
-> >>+	/*
-> >>+	 * CNTL1 is used to specify SCID for (CP, TP, VFD, CCU and UBWC
-> >>+	 * FLAG cache) GPU blocks. This value will be passed along with
-> >>+	 * the address for any memory transaction from GPU to identify
-> >>+	 * the sub-cache for that transaction.
-> >>+	 */
-> >>+	if (!IS_ERR(llc->gpu_llc_slice)) {
-> >>+		u32 gpu_scid = llcc_get_slice_id(llc->gpu_llc_slice);
-> >>+		int i;
-> >>+
-> >>+		for (i = 0; i < A6XX_LLC_NUM_GPU_SCIDS; i++)
-> >>+			llc->cntl1_regval |=
-> >>+				gpu_scid << (A6XX_GPU_LLC_SCID_NUM_BITS * i);
-> >
-> >As above, i'm not sure a loop is better than just:
-> >
-> >gpu_scid &= 0x1f;
-> >
-> >llc->cntl1_regval = (gpu_scid << 0) || (gpu_scid << 5) | (gpu_scid << 10)
-> > | (gpu_scid << 15) | (gpu_scid << 20);
-> >
-> >And I'm not even sure we need do this math here in the first place.
-> >
-> >>+	}
-> >>+
-> >>+	/*
-> >>+	 * Set SCID for GPU IOMMU. This will be used to access
-> >>+	 * page tables that are cached in LLC.
-> >>+	 */
-> >>+	if (!IS_ERR(llc->gpuhtw_llc_slice)) {
-> >>+		u32 gpuhtw_scid = llcc_get_slice_id(llc->gpuhtw_llc_slice);
-> >>+
-> >>+		llc->cntl1_regval |=
-> >>+			gpuhtw_scid << A6XX_GPUHTW_LLC_SCID_SHIFT;
-> >>+	}
-> >
-> >As above, I think storing the slice id could be more beneficial than
-> >calculating
-> >a value, but if we do calculate a value, use
-> >FIELD_SET(A6XX_GPUHTW_LLC_SCID, )
-> >
-> >>+
-> >>+	return 0;
-> >>+}
-> >>+
-> >> static int a6xx_pm_resume(struct msm_gpu *gpu)
-> >> {
-> >> 	struct adreno_gpu *adreno_gpu = to_adreno_gpu(gpu);
-> >>@@ -795,6 +907,8 @@ static int a6xx_pm_resume(struct msm_gpu *gpu)
-> >>
-> >> 	msm_gpu_resume_devfreq(gpu);
-> >>
-> >>+	a6xx_llc_activate(&a6xx_gpu->llc);
-> >>+
-> >> 	return 0;
-> >> }
-> >>
-> >>@@ -803,6 +917,8 @@ static int a6xx_pm_suspend(struct msm_gpu *gpu)
-> >> 	struct adreno_gpu *adreno_gpu = to_adreno_gpu(gpu);
-> >> 	struct a6xx_gpu *a6xx_gpu = to_a6xx_gpu(adreno_gpu);
-> >>
-> >>+	a6xx_llc_deactivate(&a6xx_gpu->llc);
-> >>+
-> >> 	devfreq_suspend_device(gpu->devfreq.devfreq);
-> >>
-> >> 	/*
-> >>@@ -851,6 +967,7 @@ static void a6xx_destroy(struct msm_gpu *gpu)
-> >> 		drm_gem_object_put_unlocked(a6xx_gpu->sqe_bo);
-> >> 	}
-> >>
-> >>+	a6xx_llc_slices_destroy(&a6xx_gpu->llc);
-> >> 	a6xx_gmu_remove(a6xx_gpu);
-> >>
-> >> 	adreno_gpu_cleanup(adreno_gpu);
-> >>@@ -924,7 +1041,10 @@ struct msm_gpu *a6xx_gpu_init(struct drm_device
-> >>*dev)
-> >> 	adreno_gpu->registers = NULL;
-> >> 	adreno_gpu->reg_offsets = a6xx_register_offsets;
-> >>
-> >>-	ret = adreno_gpu_init(dev, pdev, adreno_gpu, &funcs, 1, 0);
-> >>+	ret = a6xx_llc_slices_init(pdev, &a6xx_gpu->llc);
-> >>+
-> >
-> >Confirming we don't care if a6xx_llc_slices_init passes or fails.
+Hi Yi,
+
+On 12/20/19 7:44 PM, Liu, Yi L wrote:
+>> From: Lu Baolu [mailto:baolu.lu@linux.intel.com]
+>> Sent: Thursday, December 19, 2019 11:17 AM
+>> To: Joerg Roedel <joro@8bytes.org>; David Woodhouse <dwmw2@infradead.org>;
+>> Alex Williamson <alex.williamson@redhat.com>
+>> Subject: [PATCH v4 4/7] iommu/vt-d: Setup pasid entries for iova over first level
+>>
+>> Intel VT-d in scalable mode supports two types of page tables for IOVA translation:
+>> first level and second level. The IOMMU driver can choose one from both for IOVA
+>> translation according to the use case. This sets up the pasid entry if a domain is
+>> selected to use the first-level page table for iova translation.
+>>
+>> Signed-off-by: Lu Baolu <baolu.lu@linux.intel.com>
+>> ---
+>>   drivers/iommu/intel-iommu.c | 48 +++++++++++++++++++++++++++++++++++--
+>>   include/linux/intel-iommu.h | 16 ++++++++-----
+>>   2 files changed, 56 insertions(+), 8 deletions(-)
+>>
+>> diff --git a/drivers/iommu/intel-iommu.c b/drivers/iommu/intel-iommu.c index
+>> 2b5a47584baf..f0813997dea2 100644
+>> --- a/drivers/iommu/intel-iommu.c
+>> +++ b/drivers/iommu/intel-iommu.c
+>> @@ -571,6 +571,11 @@ static inline int domain_type_is_si(struct dmar_domain
+>> *domain)
+>>   	return domain->flags & DOMAIN_FLAG_STATIC_IDENTITY;  }
+>>
+>> +static inline bool domain_use_first_level(struct dmar_domain *domain) {
+>> +	return domain->flags & DOMAIN_FLAG_USE_FIRST_LEVEL; }
+>> +
+>>   static inline int domain_pfn_supported(struct dmar_domain *domain,
+>>   				       unsigned long pfn)
+>>   {
+>> @@ -2288,6 +2293,8 @@ static int __domain_mapping(struct dmar_domain
+>> *domain, unsigned long iov_pfn,
+>>   		return -EINVAL;
+>>
+>>   	prot &= DMA_PTE_READ | DMA_PTE_WRITE | DMA_PTE_SNP;
+>> +	if (domain_use_first_level(domain))
+>> +		prot |= DMA_FL_PTE_PRESENT | DMA_FL_PTE_XD;
+>>
+>>   	if (!sg) {
+>>   		sg_res = nr_pages;
+>> @@ -2515,6 +2522,36 @@ dmar_search_domain_by_dev_info(int segment, int bus,
+>> int devfn)
+>>   	return NULL;
+>>   }
+>>
+>> +static int domain_setup_first_level(struct intel_iommu *iommu,
+>> +				    struct dmar_domain *domain,
+>> +				    struct device *dev,
+>> +				    int pasid)
+>> +{
+>> +	int flags = PASID_FLAG_SUPERVISOR_MODE;
 > 
-> Are you suggesting to unconditionally set the memory attributes in iommu(see
-> the code below in msm_iommu.c).
-> We probably wouldn't need this patch too in that case:
-> https://patchwork.freedesktop.org/patch/346097/
+> Hi Baolu,
 > 
-> The return code  is used in the line below to pass
-> MMU_FEATURE_USE_SYSTEM_CACHE. Am I missing something here?
+> Could you explain a bit why PASID_FLAG_SUPERVISOR_MODE is
+> required?
+> 
 
-Oh, I see. Please don't do that. Set a separate flag if you need to.
+This flag indicates a PASID which can be used for access to kernel
+addresses (static 1:1 only). Otherwise, DMA requests requesting
+supervisor level privilege level will be blocked.
 
-features = 0;
+> Regards,
+> Yi Liu
+> 
 
- if (a6xx_llc_slices_init(pdev, &a6xx_gpu->llc))
-    features = MMU_FEATURE_USE_SYSTEM_CACHE;
-
-Hiding ret in a function that also sets ret has a tendency to confuse people
-like me.
-
-Jordan
-
--- 
-The Qualcomm Innovation Center, Inc. is a member of Code Aurora Forum,
-a Linux Foundation Collaborative Project
+Best regards,
+baolu
 _______________________________________________
 iommu mailing list
 iommu@lists.linux-foundation.org
