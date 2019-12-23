@@ -8,79 +8,78 @@ X-Spam-Status: No, score=-9.3 required=3.0 tests=DKIM_ADSP_CUSTOM_MED,
 	SPF_HELO_NONE,SPF_PASS,USER_AGENT_GIT autolearn=ham autolearn_force=no
 	version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 63F01C2D0D2
-	for <iommu@archiver.kernel.org>; Mon, 23 Dec 2019 18:59:35 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 11B18C2D0D5
+	for <iommu@archiver.kernel.org>; Mon, 23 Dec 2019 18:59:36 +0000 (UTC)
 Received: from silver.osuosl.org (smtp3.osuosl.org [140.211.166.136])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by mail.kernel.org (Postfix) with ESMTPS id 3CC7A206B7
+	by mail.kernel.org (Postfix) with ESMTPS id E0EB2206B7
 	for <iommu@archiver.kernel.org>; Mon, 23 Dec 2019 18:59:35 +0000 (UTC)
 Authentication-Results: mail.kernel.org;
-	dkim=fail reason="signature verification failed" (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="RjgIjnGy"
-DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 3CC7A206B7
+	dkim=fail reason="signature verification failed" (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="bIrbocA7"
+DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org E0EB2206B7
 Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=gmail.com
 Authentication-Results: mail.kernel.org; spf=pass smtp.mailfrom=iommu-bounces@lists.linux-foundation.org
 Received: from localhost (localhost [127.0.0.1])
-	by silver.osuosl.org (Postfix) with ESMTP id 226BD2050E;
+	by silver.osuosl.org (Postfix) with ESMTP id D0AF52050B;
 	Mon, 23 Dec 2019 18:59:35 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
 Received: from silver.osuosl.org ([127.0.0.1])
 	by localhost (.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
-	with ESMTP id Lr4Zgic5f6Vu; Mon, 23 Dec 2019 18:59:33 +0000 (UTC)
+	with ESMTP id M2-fLBM0eM5u; Mon, 23 Dec 2019 18:59:33 +0000 (UTC)
 Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [140.211.9.56])
-	by silver.osuosl.org (Postfix) with ESMTP id 7CDB82050F;
+	by silver.osuosl.org (Postfix) with ESMTP id CFEF82051D;
 	Mon, 23 Dec 2019 18:59:31 +0000 (UTC)
 Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
-	by lists.linuxfoundation.org (Postfix) with ESMTP id 6A071C1D88;
+	by lists.linuxfoundation.org (Postfix) with ESMTP id BE14CC1D82;
 	Mon, 23 Dec 2019 18:59:31 +0000 (UTC)
-Received: from whitealder.osuosl.org (smtp1.osuosl.org [140.211.166.138])
- by lists.linuxfoundation.org (Postfix) with ESMTP id 22AFDC0881;
- Mon, 23 Dec 2019 18:59:29 +0000 (UTC)
+Received: from fraxinus.osuosl.org (smtp4.osuosl.org [140.211.166.137])
+ by lists.linuxfoundation.org (Postfix) with ESMTP id 78936C0881;
+ Mon, 23 Dec 2019 18:59:30 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
- by whitealder.osuosl.org (Postfix) with ESMTP id DF59D8528B;
- Mon, 23 Dec 2019 18:59:28 +0000 (UTC)
+ by fraxinus.osuosl.org (Postfix) with ESMTP id 755F385A1E;
+ Mon, 23 Dec 2019 18:59:30 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from whitealder.osuosl.org ([127.0.0.1])
+Received: from fraxinus.osuosl.org ([127.0.0.1])
  by localhost (.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
- with ESMTP id CKKEMdgVlPt7; Mon, 23 Dec 2019 18:59:28 +0000 (UTC)
+ with ESMTP id vZJ22D1f6TLM; Mon, 23 Dec 2019 18:59:30 +0000 (UTC)
 X-Greylist: domain auto-whitelisted by SQLgrey-1.7.6
 X-Greylist: domain auto-whitelisted by SQLgrey-1.7.6
-Received: from mail-pl1-f193.google.com (mail-pl1-f193.google.com
- [209.85.214.193])
- by whitealder.osuosl.org (Postfix) with ESMTPS id D6FD0834E6;
- Mon, 23 Dec 2019 18:59:27 +0000 (UTC)
-Received: by mail-pl1-f193.google.com with SMTP id a6so6784478plm.3;
- Mon, 23 Dec 2019 10:59:27 -0800 (PST)
+Received: from mail-pg1-f195.google.com (mail-pg1-f195.google.com
+ [209.85.215.195])
+ by fraxinus.osuosl.org (Postfix) with ESMTPS id 0EAC685778;
+ Mon, 23 Dec 2019 18:59:30 +0000 (UTC)
+Received: by mail-pg1-f195.google.com with SMTP id k3so9248909pgc.3;
+ Mon, 23 Dec 2019 10:59:30 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=gmail.com; s=20161025;
  h=from:to:cc:subject:date:message-id:in-reply-to:references;
- bh=bLznaHMy4KKZ0cyTMqudvu5r2Rqk/jELD1oKLNSR2dU=;
- b=RjgIjnGy+JvVdj2w8xB8Td7Jcp/uaEDjiyOG1FJNw7ItOBOMlDiBexx/UkW6dkkAGm
- voY0QC4zCFHaNyKdZbneErqsNlEEsUkH+mUTUEX4IGwRuLutautx5/QiGR7Dg54OfMF4
- Pzd2xf3gtJb7iLRKy3oLhDhaoannVg2g07KyLU/4m8Tg9yffQkks69i7RNV4T7iLy6Dw
- leXWNSpzbps7unh9oz1fwH+msb7iJL7CO2jLuJIISG1WX9/pxpG18Yu7So73y4H8ZtNa
- 74d58L/NAst17PBprENwJOgzCuTFMGvNh/uHdQUQxylZpO1+sNfkhBafPyxxAqhwGPS0
- uB1A==
+ bh=yYuhXbk2VYWkJUHqsC8Dp7ziko2oh3QWGKXaw3BKzKQ=;
+ b=bIrbocA75GjiXkwSJP3C51ubVyAnSLI/fBMTmh6962W79PT4Tqv+1+Mjw3cq7AGKFU
+ jHYIhsxDoH7RHVORa6yJexdhOgetkpm/PkZ6ybiEGu0rEOpFeiagFzU/A8ajKUUkgukz
+ 3AsjKYBf3/aZo2PMmRXKMgxEkfrblyUVI3V0AYfA5DshVaGFTRxoepTY4p6RKBua5+RC
+ hwdBV6ESUTN2NcyHSsnNvmOAqmENn4PYY7sviRlsrgrPKRl79k7z6YX1VvUkJpHwbF8l
+ d6ihCxrqxgEDPq21x1NWyz3OWGl9kB/2yiUVsYw2xw4mEWhcBS8hcPRUPF2UdAVwvS+g
+ 6lSA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
  d=1e100.net; s=20161025;
  h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
  :references;
- bh=bLznaHMy4KKZ0cyTMqudvu5r2Rqk/jELD1oKLNSR2dU=;
- b=cwGj3Eeth19+pVB/oGbgzfGfbla89DHEqrn/J1p1eQoUwTfhXAWvl++QqvkVyUTo/V
- VWkQlBShwBclrarQSNyqYS90doTxHnI1bHJAmCPFi+7PFtttpWsDqwaq2ke8CX4KnH9n
- zqBy9G0SSSCGS7Zw/DCAFxA/h4C13g3LEwDGbZIWAapyaVVLg/d/VEFBsUDj2xHNR2Az
- Nacm6xZB6DnD2AyQLqCOqRZvnICjwHxqP+G2MP9LbtOV3QRm7HzcqtT9XhthwHwxkixj
- 1/ycJwRk3eGJWom1bRAx0VauzXCaOUrHM8ZHjZ7Bxn2kT+1enbD18tHRDzOYdF6Qngkk
- jxaA==
-X-Gm-Message-State: APjAAAUlCod1JtQTNkwXptgBY8yhsBKT0gLxVN5Z1MEtxdi94yqP7qw3
- w4L0z+fk39FlLgmABOtSlM4=
-X-Google-Smtp-Source: APXvYqwSmasDf38gpvZQ5kYkHfbJ9oeF2AFKtP2Fehgro57BEHYXKQsly+hr8s0/HHHdkDEArOHtIA==
-X-Received: by 2002:a17:902:b788:: with SMTP id
- e8mr32700948pls.1.1577127567423; 
- Mon, 23 Dec 2019 10:59:27 -0800 (PST)
+ bh=yYuhXbk2VYWkJUHqsC8Dp7ziko2oh3QWGKXaw3BKzKQ=;
+ b=hFZS+daRAYLC+a+0dzMAWVkXx9janf0AOG8wi6mpwx9cVqu5BlUCDVQL+8UwwjRmNb
+ 7fPfg5q3BoZV3mPtcqCnGfrNBZ+7zSDhFpY0KVTFZ7o+80FnCHuov+EVPcFYT4ArJyk8
+ oKnExP5haW6DKEIsKwb6So+OicIqyFnz3Uuk//J7vqdzF9CdOSpRDd6WigP1iRNGBmf2
+ 4gZMlmFntuj4ZT8O+JQNaQUhA8PoVbxtsWZMWUg5EaVt+qx2HEJXQZ2nDkeaTrKJMEeX
+ SFl1HbMG/Qqj7VOadZDZ8PQo4hCrTG1ElCkkJbJMmJzdVz7szmtEeBkgkv0OVAvgQeD9
+ /JFw==
+X-Gm-Message-State: APjAAAXwyeB0yQY91Qan6fiENqdPkV5s0LHnJQ6djNgfO9se+hHAI9g5
+ ShAOTjn2OJkLXYj1KPqINcM=
+X-Google-Smtp-Source: APXvYqxUB7sZmq8y8VINmqjxcxw1nx5P7rd/13e79L+vtzHV6ANBCs8nm6SgxE2CIKPWmst9f3sWdw==
+X-Received: by 2002:aa7:9ab6:: with SMTP id x22mr33198806pfi.260.1577127569760; 
+ Mon, 23 Dec 2019 10:59:29 -0800 (PST)
 Received: from localhost ([2001:19f0:6001:12c8:5400:2ff:fe72:6403])
- by smtp.gmail.com with ESMTPSA id x4sm25703139pff.143.2019.12.23.10.59.26
+ by smtp.gmail.com with ESMTPSA id e1sm26283596pfl.98.2019.12.23.10.59.29
  (version=TLS1_2 cipher=ECDHE-RSA-CHACHA20-POLY1305 bits=256/256);
- Mon, 23 Dec 2019 10:59:26 -0800 (PST)
+ Mon, 23 Dec 2019 10:59:29 -0800 (PST)
 From: Yangtao Li <tiny.windzz@gmail.com>
 To: m.szyprowski@samsung.com, joro@8bytes.org, kgene@kernel.org,
  krzk@kernel.org, matthias.bgg@gmail.com, agross@kernel.org,
@@ -90,9 +89,10 @@ To: m.szyprowski@samsung.com, joro@8bytes.org, kgene@kernel.org,
  linux-kernel@vger.kernel.org, linux-mediatek@lists.infradead.org,
  linux-arm-msm@vger.kernel.org, linux-rockchip@lists.infradead.org,
  virtualization@lists.linux-foundation.org
-Subject: [PATCH 3/6] iommu/qcom: convert to devm_platform_ioremap_resource
-Date: Mon, 23 Dec 2019 18:59:15 +0000
-Message-Id: <20191223185918.9877-4-tiny.windzz@gmail.com>
+Subject: [PATCH 4/6] iommu/ipmmu-vmsa: convert to
+ devm_platform_ioremap_resource
+Date: Mon, 23 Dec 2019 18:59:16 +0000
+Message-Id: <20191223185918.9877-5-tiny.windzz@gmail.com>
 X-Mailer: git-send-email 2.17.1
 In-Reply-To: <20191223185918.9877-1-tiny.windzz@gmail.com>
 References: <20191223185918.9877-1-tiny.windzz@gmail.com>
@@ -119,30 +119,30 @@ Use devm_platform_ioremap_resource() to simplify code.
 
 Signed-off-by: Yangtao Li <tiny.windzz@gmail.com>
 ---
- drivers/iommu/qcom_iommu.c | 4 +---
+ drivers/iommu/ipmmu-vmsa.c | 4 +---
  1 file changed, 1 insertion(+), 3 deletions(-)
 
-diff --git a/drivers/iommu/qcom_iommu.c b/drivers/iommu/qcom_iommu.c
-index 52f38292df5b..bf94d4d67da4 100644
---- a/drivers/iommu/qcom_iommu.c
-+++ b/drivers/iommu/qcom_iommu.c
-@@ -709,7 +709,6 @@ static int qcom_iommu_ctx_probe(struct platform_device *pdev)
- 	struct qcom_iommu_ctx *ctx;
- 	struct device *dev = &pdev->dev;
- 	struct qcom_iommu_dev *qcom_iommu = dev_get_drvdata(dev->parent);
+diff --git a/drivers/iommu/ipmmu-vmsa.c b/drivers/iommu/ipmmu-vmsa.c
+index d02edd2751f3..3124e28fee85 100644
+--- a/drivers/iommu/ipmmu-vmsa.c
++++ b/drivers/iommu/ipmmu-vmsa.c
+@@ -1015,7 +1015,6 @@ static const struct of_device_id ipmmu_of_ids[] = {
+ static int ipmmu_probe(struct platform_device *pdev)
+ {
+ 	struct ipmmu_vmsa_device *mmu;
 -	struct resource *res;
- 	int ret, irq;
+ 	int irq;
+ 	int ret;
  
- 	ctx = devm_kzalloc(dev, sizeof(*ctx), GFP_KERNEL);
-@@ -719,8 +718,7 @@ static int qcom_iommu_ctx_probe(struct platform_device *pdev)
- 	ctx->dev = dev;
- 	platform_set_drvdata(pdev, ctx);
+@@ -1033,8 +1032,7 @@ static int ipmmu_probe(struct platform_device *pdev)
+ 	dma_set_mask_and_coherent(&pdev->dev, DMA_BIT_MASK(40));
  
+ 	/* Map I/O memory and request IRQ. */
 -	res = platform_get_resource(pdev, IORESOURCE_MEM, 0);
--	ctx->base = devm_ioremap_resource(dev, res);
-+	ctx->base = devm_platform_ioremap_resource(pdev, 0);
- 	if (IS_ERR(ctx->base))
- 		return PTR_ERR(ctx->base);
+-	mmu->base = devm_ioremap_resource(&pdev->dev, res);
++	mmu->base = devm_platform_ioremap_resource(pdev, 0);
+ 	if (IS_ERR(mmu->base))
+ 		return PTR_ERR(mmu->base);
  
 -- 
 2.17.1
