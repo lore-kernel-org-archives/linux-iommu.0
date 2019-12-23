@@ -8,79 +8,78 @@ X-Spam-Status: No, score=-9.3 required=3.0 tests=DKIM_ADSP_CUSTOM_MED,
 	SPF_HELO_NONE,SPF_PASS,USER_AGENT_GIT autolearn=ham autolearn_force=no
 	version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id E2849C2D0D2
-	for <iommu@archiver.kernel.org>; Mon, 23 Dec 2019 18:59:28 +0000 (UTC)
-Received: from silver.osuosl.org (smtp3.osuosl.org [140.211.166.136])
+	by smtp.lore.kernel.org (Postfix) with ESMTP id AD403C2D0D0
+	for <iommu@archiver.kernel.org>; Mon, 23 Dec 2019 18:59:31 +0000 (UTC)
+Received: from hemlock.osuosl.org (smtp2.osuosl.org [140.211.166.133])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by mail.kernel.org (Postfix) with ESMTPS id BE20821D7E
-	for <iommu@archiver.kernel.org>; Mon, 23 Dec 2019 18:59:28 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTPS id 8825D2075B
+	for <iommu@archiver.kernel.org>; Mon, 23 Dec 2019 18:59:31 +0000 (UTC)
 Authentication-Results: mail.kernel.org;
-	dkim=fail reason="signature verification failed" (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="H87+VOrx"
-DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org BE20821D7E
+	dkim=fail reason="signature verification failed" (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="HqLoU5Ov"
+DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 8825D2075B
 Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=gmail.com
 Authentication-Results: mail.kernel.org; spf=pass smtp.mailfrom=iommu-bounces@lists.linux-foundation.org
 Received: from localhost (localhost [127.0.0.1])
-	by silver.osuosl.org (Postfix) with ESMTP id 8AFFE204F2;
-	Mon, 23 Dec 2019 18:59:28 +0000 (UTC)
+	by hemlock.osuosl.org (Postfix) with ESMTP id 4723D8796D;
+	Mon, 23 Dec 2019 18:59:31 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from silver.osuosl.org ([127.0.0.1])
+Received: from hemlock.osuosl.org ([127.0.0.1])
 	by localhost (.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
-	with ESMTP id VUv2oSye087t; Mon, 23 Dec 2019 18:59:27 +0000 (UTC)
+	with ESMTP id TlIHRacrapyx; Mon, 23 Dec 2019 18:59:30 +0000 (UTC)
 Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [140.211.9.56])
-	by silver.osuosl.org (Postfix) with ESMTP id 78D4E20489;
-	Mon, 23 Dec 2019 18:59:27 +0000 (UTC)
+	by hemlock.osuosl.org (Postfix) with ESMTP id B97888788D;
+	Mon, 23 Dec 2019 18:59:30 +0000 (UTC)
 Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
-	by lists.linuxfoundation.org (Postfix) with ESMTP id 66841C1D80;
-	Mon, 23 Dec 2019 18:59:27 +0000 (UTC)
-Received: from silver.osuosl.org (smtp3.osuosl.org [140.211.166.136])
- by lists.linuxfoundation.org (Postfix) with ESMTP id 6BBA2C0881;
- Mon, 23 Dec 2019 18:59:24 +0000 (UTC)
+	by lists.linuxfoundation.org (Postfix) with ESMTP id A4064C1D82;
+	Mon, 23 Dec 2019 18:59:30 +0000 (UTC)
+Received: from hemlock.osuosl.org (smtp2.osuosl.org [140.211.166.133])
+ by lists.linuxfoundation.org (Postfix) with ESMTP id DE3F6C0881;
+ Mon, 23 Dec 2019 18:59:26 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
- by silver.osuosl.org (Postfix) with ESMTP id 674AE2048E;
- Mon, 23 Dec 2019 18:59:24 +0000 (UTC)
+ by hemlock.osuosl.org (Postfix) with ESMTP id CC71C8788D;
+ Mon, 23 Dec 2019 18:59:26 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from silver.osuosl.org ([127.0.0.1])
+Received: from hemlock.osuosl.org ([127.0.0.1])
  by localhost (.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
- with ESMTP id xBAGz6gkz7rK; Mon, 23 Dec 2019 18:59:23 +0000 (UTC)
+ with ESMTP id XSpkU9Sf7iRU; Mon, 23 Dec 2019 18:59:25 +0000 (UTC)
 X-Greylist: domain auto-whitelisted by SQLgrey-1.7.6
 X-Greylist: domain auto-whitelisted by SQLgrey-1.7.6
-Received: from mail-pj1-f67.google.com (mail-pj1-f67.google.com
- [209.85.216.67])
- by silver.osuosl.org (Postfix) with ESMTPS id A669520489;
- Mon, 23 Dec 2019 18:59:23 +0000 (UTC)
-Received: by mail-pj1-f67.google.com with SMTP id n59so150420pjb.1;
- Mon, 23 Dec 2019 10:59:23 -0800 (PST)
+Received: from mail-pg1-f194.google.com (mail-pg1-f194.google.com
+ [209.85.215.194])
+ by hemlock.osuosl.org (Postfix) with ESMTPS id B316F8789B;
+ Mon, 23 Dec 2019 18:59:25 +0000 (UTC)
+Received: by mail-pg1-f194.google.com with SMTP id x7so9229646pgl.11;
+ Mon, 23 Dec 2019 10:59:25 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=gmail.com; s=20161025;
  h=from:to:cc:subject:date:message-id:in-reply-to:references;
- bh=t2pcE/zB/zRFa+D+0DGOcMCSuy9rY9vAk3qxszJwLvo=;
- b=H87+VOrxrVlOydWiSP/CZqoU2QHdFei/jyBu887pLm+G9l7owgyTBs5Yc2xPwbf+cF
- 2A/Z2a957FZNCq5ePoWmbgsjUXO3HoS2RterAFvRDcnuiWFq56AITBhwSig4wDQpcjod
- 4UmZ3oPM57B75+90Uv4tfswd7l2D+miZNLWKs0PV7rIN2f9huUDrTjekZev4ZwKgAUda
- 6IdAK5hLSt1s2wgiIbrUOfWBdEzP2VVYq8u8Y8LmWMrBcEdnkb/nE9GJJn6AL9IGTi9Y
- 9UVTNDE1xGhL2hu+PsmhLP30C51H8vCllgDS25vuLUF3UF2qxiMgSIeF5F2AfFw97/ZA
- GdnQ==
+ bh=dMVf+vh+cYX5uqjs+l++BphNgREG8uxW+2Ovm+/JNJw=;
+ b=HqLoU5OvR8ugzzxNAKVEVtBkjiqSufaKIUZEDpKdXp94Y/bUt4KrKLTKl5UQqNAl44
+ KA1fNRoJ6aNwieatce2GqNLQOnq3UaqeJtl909ctqCyPbdF0LXDmaJcS432q9CSkhn4B
+ dtiCTNvUBMjcOk0W2u3xT65sebwLH0CmduWcb75OfItc8DLFy4cAVoitzIDAMhzcNtfg
+ Io5nLgK9BvT4faeoz5v59U2R5s86MLJT3XvGKf64+RHwRrSqizeESPFrxInRHcYca0GM
+ 6LqgvwaDt95S1xY3LDJ6L2k9xpIofsqFoI/ZRs3ID25B6iWoEeKIDGA52xAh1bQzdw9z
+ aAjA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
  d=1e100.net; s=20161025;
  h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
  :references;
- bh=t2pcE/zB/zRFa+D+0DGOcMCSuy9rY9vAk3qxszJwLvo=;
- b=kVZiTrtzFHWIKmtOby97Ta5LngfdnVwWEfsXxyJmG5InOBhbi7k0dlF6xllB+MmNLU
- zLJKnFlmfWPOeDdfgsUePFDFF5o5YfzRStIbIfDrI9GB+8PnMTg2kUm7ssuU1ID8r9HE
- 51BVrqq4ivNJL2DCx8LgKIIzSeji7HFxArre1z6QfKDR+6eL64yBA5GAYELIl4Qu/yXW
- bi4Oye/A3ZVw35SDnqhKI45gIP6c6oBgp97/KOGzAiWXVylZ/PIZOh0Wp6MosQEy3O7M
- GLYbt/sGRMrQ4wPQJzJr28044GyizECLH8zk8szDW69XiqHZH1bAvh6RAxkCARSUZhDv
- 1b2g==
-X-Gm-Message-State: APjAAAWg60T5P2aH57/+jjpFBA20xU75aiiY8p0fN05Dd29jDwS1gIUa
- Pt4eJ+E1EipX4shsi2MPo5A=
-X-Google-Smtp-Source: APXvYqxwTeofmvSQXzsVzn9vv5ovtl+Qlq7vr/WZrlMMh2w/A1BzAZFQoZorn2f8/xm484BESZek6A==
-X-Received: by 2002:a17:902:7b91:: with SMTP id
- w17mr31189741pll.94.1577127563256; 
- Mon, 23 Dec 2019 10:59:23 -0800 (PST)
+ bh=dMVf+vh+cYX5uqjs+l++BphNgREG8uxW+2Ovm+/JNJw=;
+ b=WabRJVWqL+w46riZx28Dt5RnptEE5zYr17RNHkTPuOqICBFxrmEVTGDESgZ9Nr02Uc
+ GUq1Tvs1YQefgPkgb/lovF8zr4DWqrBp8wLaWabn3dTpWJdpY8UdRNkfXilK3bQhUlyX
+ L6OGoFi6BnHgaitGVRi71hcwyJD0gOCGNnpvzR5birEsn3M0LYbNZDqbCfKWEiwguO04
+ 8qNY6RggNlKF42hCuL2+oixnZjyQuALhkib7Uuhvh4/TFarvBfkeDFf6rkB2TuZy+3MT
+ MPagOXA3V/IdhDwVPB6HGy/8XYYUXgkZBYRPOarg4WfyWShiYWW+PDvpXmEhZ0aDNvoB
+ Zbiw==
+X-Gm-Message-State: APjAAAWpNvqquVyunTdJ6UcHqrVej2REtD2xPmttn9lzimCZpyxSIT3s
+ 4FAeafl3DdWr2Fu0EcQQN+I=
+X-Google-Smtp-Source: APXvYqzDhJWagEWSF5CD+5+GERxPnQgzx1vAVm8NgEcWmvblC2Ftuyzdp3PuA5nDZwdfH/7PhfYRpw==
+X-Received: by 2002:a62:3343:: with SMTP id z64mr32628043pfz.150.1577127565404; 
+ Mon, 23 Dec 2019 10:59:25 -0800 (PST)
 Received: from localhost ([2001:19f0:6001:12c8:5400:2ff:fe72:6403])
- by smtp.gmail.com with ESMTPSA id v8sm24823853pff.151.2019.12.23.10.59.22
+ by smtp.gmail.com with ESMTPSA id u12sm3892956pfm.165.2019.12.23.10.59.24
  (version=TLS1_2 cipher=ECDHE-RSA-CHACHA20-POLY1305 bits=256/256);
- Mon, 23 Dec 2019 10:59:22 -0800 (PST)
+ Mon, 23 Dec 2019 10:59:25 -0800 (PST)
 From: Yangtao Li <tiny.windzz@gmail.com>
 To: m.szyprowski@samsung.com, joro@8bytes.org, kgene@kernel.org,
  krzk@kernel.org, matthias.bgg@gmail.com, agross@kernel.org,
@@ -90,9 +89,9 @@ To: m.szyprowski@samsung.com, joro@8bytes.org, kgene@kernel.org,
  linux-kernel@vger.kernel.org, linux-mediatek@lists.infradead.org,
  linux-arm-msm@vger.kernel.org, linux-rockchip@lists.infradead.org,
  virtualization@lists.linux-foundation.org
-Subject: [PATCH] virtio-mmio: convert to devm_platform_ioremap_resource
-Date: Mon, 23 Dec 2019 18:59:13 +0000
-Message-Id: <20191223185918.9877-2-tiny.windzz@gmail.com>
+Subject: [PATCH 2/6] iommu/exynos: convert to devm_platform_ioremap_resource
+Date: Mon, 23 Dec 2019 18:59:14 +0000
+Message-Id: <20191223185918.9877-3-tiny.windzz@gmail.com>
 X-Mailer: git-send-email 2.17.1
 In-Reply-To: <20191223185918.9877-1-tiny.windzz@gmail.com>
 References: <20191223185918.9877-1-tiny.windzz@gmail.com>
@@ -115,51 +114,33 @@ Content-Transfer-Encoding: 7bit
 Errors-To: iommu-bounces@lists.linux-foundation.org
 Sender: "iommu" <iommu-bounces@lists.linux-foundation.org>
 
-Use devm_platform_ioremap_resource() to simplify code, which
-contains platform_get_resource, devm_request_mem_region and
-devm_ioremap.
+Use devm_platform_ioremap_resource() to simplify code.
 
 Signed-off-by: Yangtao Li <tiny.windzz@gmail.com>
 ---
- drivers/virtio/virtio_mmio.c | 15 +++------------
- 1 file changed, 3 insertions(+), 12 deletions(-)
+ drivers/iommu/exynos-iommu.c | 4 +---
+ 1 file changed, 1 insertion(+), 3 deletions(-)
 
-diff --git a/drivers/virtio/virtio_mmio.c b/drivers/virtio/virtio_mmio.c
-index e09edb5c5e06..97d5725fd9a2 100644
---- a/drivers/virtio/virtio_mmio.c
-+++ b/drivers/virtio/virtio_mmio.c
-@@ -531,18 +531,9 @@ static void virtio_mmio_release_dev(struct device *_d)
- static int virtio_mmio_probe(struct platform_device *pdev)
- {
- 	struct virtio_mmio_device *vm_dev;
--	struct resource *mem;
- 	unsigned long magic;
- 	int rc;
+diff --git a/drivers/iommu/exynos-iommu.c b/drivers/iommu/exynos-iommu.c
+index 186ff5cc975c..42d8407267ef 100644
+--- a/drivers/iommu/exynos-iommu.c
++++ b/drivers/iommu/exynos-iommu.c
+@@ -571,14 +571,12 @@ static int exynos_sysmmu_probe(struct platform_device *pdev)
+ 	int irq, ret;
+ 	struct device *dev = &pdev->dev;
+ 	struct sysmmu_drvdata *data;
+-	struct resource *res;
  
--	mem = platform_get_resource(pdev, IORESOURCE_MEM, 0);
--	if (!mem)
--		return -EINVAL;
--
--	if (!devm_request_mem_region(&pdev->dev, mem->start,
--			resource_size(mem), pdev->name))
--		return -EBUSY;
--
- 	vm_dev = devm_kzalloc(&pdev->dev, sizeof(*vm_dev), GFP_KERNEL);
- 	if (!vm_dev)
+ 	data = devm_kzalloc(dev, sizeof(*data), GFP_KERNEL);
+ 	if (!data)
  		return -ENOMEM;
-@@ -554,9 +545,9 @@ static int virtio_mmio_probe(struct platform_device *pdev)
- 	INIT_LIST_HEAD(&vm_dev->virtqueues);
- 	spin_lock_init(&vm_dev->lock);
  
--	vm_dev->base = devm_ioremap(&pdev->dev, mem->start, resource_size(mem));
--	if (vm_dev->base == NULL)
--		return -EFAULT;
-+	vm_dev->base = devm_platform_ioremap_resource(pdev, 0);
-+	if (IS_ERR(vm_dev->base))
-+		return PTR_ERR(vm_dev->base);
+-	res = platform_get_resource(pdev, IORESOURCE_MEM, 0);
+-	data->sfrbase = devm_ioremap_resource(dev, res);
++	data->sfrbase = devm_platform_ioremap_resource(pdev, 0);
+ 	if (IS_ERR(data->sfrbase))
+ 		return PTR_ERR(data->sfrbase);
  
- 	/* Check magic value */
- 	magic = readl(vm_dev->base + VIRTIO_MMIO_MAGIC_VALUE);
 -- 
 2.17.1
 
