@@ -6,66 +6,66 @@ X-Spam-Status: No, score=-9.8 required=3.0 tests=HEADER_FROM_DIFFERENT_DOMAINS,
 	INCLUDES_PATCH,MAILING_LIST_MULTI,SIGNED_OFF_BY,SPF_HELO_NONE,SPF_PASS,
 	USER_AGENT_GIT autolearn=ham autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 82203C2D0CF
-	for <iommu@archiver.kernel.org>; Tue, 24 Dec 2019 07:46:19 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 860F8C2D0CF
+	for <iommu@archiver.kernel.org>; Tue, 24 Dec 2019 07:46:21 +0000 (UTC)
 Received: from whitealder.osuosl.org (smtp1.osuosl.org [140.211.166.138])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by mail.kernel.org (Postfix) with ESMTPS id 5ED0220706
-	for <iommu@archiver.kernel.org>; Tue, 24 Dec 2019 07:46:19 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 5ED0220706
+	by mail.kernel.org (Postfix) with ESMTPS id 662DB2071A
+	for <iommu@archiver.kernel.org>; Tue, 24 Dec 2019 07:46:21 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 662DB2071A
 Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=linux.intel.com
 Authentication-Results: mail.kernel.org; spf=pass smtp.mailfrom=iommu-bounces@lists.linux-foundation.org
 Received: from localhost (localhost [127.0.0.1])
-	by whitealder.osuosl.org (Postfix) with ESMTP id 32EE8859C2;
-	Tue, 24 Dec 2019 07:46:19 +0000 (UTC)
+	by whitealder.osuosl.org (Postfix) with ESMTP id 4633585A8B;
+	Tue, 24 Dec 2019 07:46:21 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
 Received: from whitealder.osuosl.org ([127.0.0.1])
 	by localhost (.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
-	with ESMTP id ww299kOr969o; Tue, 24 Dec 2019 07:46:18 +0000 (UTC)
+	with ESMTP id ue--YY4EjApz; Tue, 24 Dec 2019 07:46:20 +0000 (UTC)
 Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [140.211.9.56])
-	by whitealder.osuosl.org (Postfix) with ESMTP id 56CCE855D9;
-	Tue, 24 Dec 2019 07:46:18 +0000 (UTC)
+	by whitealder.osuosl.org (Postfix) with ESMTP id 997AD858B5;
+	Tue, 24 Dec 2019 07:46:20 +0000 (UTC)
 Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
-	by lists.linuxfoundation.org (Postfix) with ESMTP id 47C94C1D81;
-	Tue, 24 Dec 2019 07:46:18 +0000 (UTC)
+	by lists.linuxfoundation.org (Postfix) with ESMTP id 88445C1D81;
+	Tue, 24 Dec 2019 07:46:20 +0000 (UTC)
 Received: from fraxinus.osuosl.org (smtp4.osuosl.org [140.211.166.137])
- by lists.linuxfoundation.org (Postfix) with ESMTP id 8BD07C0881
- for <iommu@lists.linux-foundation.org>; Tue, 24 Dec 2019 07:46:16 +0000 (UTC)
+ by lists.linuxfoundation.org (Postfix) with ESMTP id 77066C0881
+ for <iommu@lists.linux-foundation.org>; Tue, 24 Dec 2019 07:46:18 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
- by fraxinus.osuosl.org (Postfix) with ESMTP id 72A0785650
- for <iommu@lists.linux-foundation.org>; Tue, 24 Dec 2019 07:46:16 +0000 (UTC)
+ by fraxinus.osuosl.org (Postfix) with ESMTP id 6E8DB856E9
+ for <iommu@lists.linux-foundation.org>; Tue, 24 Dec 2019 07:46:18 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
 Received: from fraxinus.osuosl.org ([127.0.0.1])
  by localhost (.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
- with ESMTP id tSbaAl0KAuUC for <iommu@lists.linux-foundation.org>;
- Tue, 24 Dec 2019 07:46:15 +0000 (UTC)
+ with ESMTP id xFNq1IjHoBbL for <iommu@lists.linux-foundation.org>;
+ Tue, 24 Dec 2019 07:46:17 +0000 (UTC)
 X-Greylist: domain auto-whitelisted by SQLgrey-1.7.6
 Received: from mga12.intel.com (mga12.intel.com [192.55.52.136])
- by fraxinus.osuosl.org (Postfix) with ESMTPS id A4A65856E9
- for <iommu@lists.linux-foundation.org>; Tue, 24 Dec 2019 07:46:15 +0000 (UTC)
+ by fraxinus.osuosl.org (Postfix) with ESMTPS id E260E8535D
+ for <iommu@lists.linux-foundation.org>; Tue, 24 Dec 2019 07:46:17 +0000 (UTC)
 X-Amp-Result: SKIPPED(no attachment in message)
 X-Amp-File-Uploaded: False
 Received: from fmsmga001.fm.intel.com ([10.253.24.23])
  by fmsmga106.fm.intel.com with ESMTP/TLS/DHE-RSA-AES256-GCM-SHA384;
- 23 Dec 2019 23:46:15 -0800
+ 23 Dec 2019 23:46:17 -0800
 X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.69,350,1571727600"; d="scan'208";a="223177066"
+X-IronPort-AV: E=Sophos;i="5.69,350,1571727600"; d="scan'208";a="223177073"
 Received: from allen-box.sh.intel.com ([10.239.159.136])
- by fmsmga001.fm.intel.com with ESMTP; 23 Dec 2019 23:46:13 -0800
+ by fmsmga001.fm.intel.com with ESMTP; 23 Dec 2019 23:46:15 -0800
 From: Lu Baolu <baolu.lu@linux.intel.com>
 To: Joerg Roedel <joro@8bytes.org>, David Woodhouse <dwmw2@infradead.org>,
  Alex Williamson <alex.williamson@redhat.com>
-Subject: [PATCH v5 2/9] iommu/vt-d: Add set domain DOMAIN_ATTR_NESTING attr
-Date: Tue, 24 Dec 2019 15:44:55 +0800
-Message-Id: <20191224074502.5545-3-baolu.lu@linux.intel.com>
+Subject: [PATCH v5 3/9] iommu/vt-d: Add PASID_FLAG_FL5LP for first-level pasid
+ setup
+Date: Tue, 24 Dec 2019 15:44:56 +0800
+Message-Id: <20191224074502.5545-4-baolu.lu@linux.intel.com>
 X-Mailer: git-send-email 2.17.1
 In-Reply-To: <20191224074502.5545-1-baolu.lu@linux.intel.com>
 References: <20191224074502.5545-1-baolu.lu@linux.intel.com>
-Cc: kevin.tian@intel.com, Yi Sun <yi.y.sun@linux.intel.com>,
- ashok.raj@intel.com, kvm@vger.kernel.org, sanjay.k.kumar@intel.com,
- iommu@lists.linux-foundation.org, linux-kernel@vger.kernel.org,
- yi.y.sun@intel.com
+Cc: kevin.tian@intel.com, ashok.raj@intel.com, kvm@vger.kernel.org,
+ sanjay.k.kumar@intel.com, iommu@lists.linux-foundation.org,
+ linux-kernel@vger.kernel.org, yi.y.sun@intel.com
 X-BeenThere: iommu@lists.linux-foundation.org
 X-Mailman-Version: 2.1.15
 Precedence: list
@@ -84,104 +84,89 @@ Content-Transfer-Encoding: 7bit
 Errors-To: iommu-bounces@lists.linux-foundation.org
 Sender: "iommu" <iommu-bounces@lists.linux-foundation.org>
 
-This adds the Intel VT-d specific callback of setting
-DOMAIN_ATTR_NESTING domain attribution. It is necessary
-to let the VT-d driver know that the domain represents
-a virtual machine which requires the IOMMU hardware to
-support nested translation mode. Return success if the
-IOMMU hardware suports nested mode, otherwise failure.
+Current intel_pasid_setup_first_level() use 5-level paging for
+first level translation if CPUs use 5-level paging mode too.
+This makes sense for SVA usages since the page table is shared
+between CPUs and IOMMUs. But it makes no sense if we only want
+to use first level for IOVA translation. Add PASID_FLAG_FL5LP
+bit in the flags which indicates whether the 5-level paging
+mode should be used.
 
-Signed-off-by: Yi Sun <yi.y.sun@linux.intel.com>
 Signed-off-by: Lu Baolu <baolu.lu@linux.intel.com>
 ---
- drivers/iommu/intel-iommu.c | 56 +++++++++++++++++++++++++++++++++++++
- 1 file changed, 56 insertions(+)
+ drivers/iommu/intel-pasid.c | 7 ++-----
+ drivers/iommu/intel-pasid.h | 6 ++++++
+ drivers/iommu/intel-svm.c   | 8 ++++++--
+ 3 files changed, 14 insertions(+), 7 deletions(-)
 
-diff --git a/drivers/iommu/intel-iommu.c b/drivers/iommu/intel-iommu.c
-index 71ad5e5feae2..35f65628202c 100644
---- a/drivers/iommu/intel-iommu.c
-+++ b/drivers/iommu/intel-iommu.c
-@@ -315,6 +315,12 @@ static int hw_pass_through = 1;
+diff --git a/drivers/iommu/intel-pasid.c b/drivers/iommu/intel-pasid.c
+index 3cb569e76642..22b30f10b396 100644
+--- a/drivers/iommu/intel-pasid.c
++++ b/drivers/iommu/intel-pasid.c
+@@ -477,18 +477,15 @@ int intel_pasid_setup_first_level(struct intel_iommu *iommu,
+ 		pasid_set_sre(pte);
+ 	}
+ 
+-#ifdef CONFIG_X86
+-	/* Both CPU and IOMMU paging mode need to match */
+-	if (cpu_feature_enabled(X86_FEATURE_LA57)) {
++	if (flags & PASID_FLAG_FL5LP) {
+ 		if (cap_5lp_support(iommu->cap)) {
+ 			pasid_set_flpm(pte, 1);
+ 		} else {
+-			pr_err("VT-d has no 5-level paging support for CPU\n");
++			pr_err("No 5-level paging support for first-level\n");
+ 			pasid_clear_entry(pte);
+ 			return -EINVAL;
+ 		}
+ 	}
+-#endif /* CONFIG_X86 */
+ 
+ 	pasid_set_domain_id(pte, did);
+ 	pasid_set_address_width(pte, iommu->agaw);
+diff --git a/drivers/iommu/intel-pasid.h b/drivers/iommu/intel-pasid.h
+index fc8cd8f17de1..92de6df24ccb 100644
+--- a/drivers/iommu/intel-pasid.h
++++ b/drivers/iommu/intel-pasid.h
+@@ -37,6 +37,12 @@
   */
- #define DOMAIN_FLAG_USE_FIRST_LEVEL		BIT(2)
+ #define PASID_FLAG_SUPERVISOR_MODE	BIT(0)
  
 +/*
-+ * Domain represents a virtual machine which demands iommu nested
-+ * translation mode support.
++ * The PASID_FLAG_FL5LP flag Indicates using 5-level paging for first-
++ * level translation, otherwise, 4-level paging will be used.
 + */
-+#define DOMAIN_FLAG_NESTING_MODE		BIT(3)
++#define PASID_FLAG_FL5LP		BIT(1)
 +
- #define for_each_domain_iommu(idx, domain)			\
- 	for (idx = 0; idx < g_num_of_iommus; idx++)		\
- 		if (domain->iommu_refcnt[idx])
-@@ -5640,6 +5646,24 @@ static inline bool iommu_pasid_support(void)
- 	return ret;
- }
- 
-+static inline bool nested_mode_support(void)
-+{
-+	struct dmar_drhd_unit *drhd;
-+	struct intel_iommu *iommu;
-+	bool ret = true;
-+
-+	rcu_read_lock();
-+	for_each_active_iommu(iommu, drhd) {
-+		if (!sm_supported(iommu) || !ecap_nest(iommu->ecap)) {
-+			ret = false;
-+			break;
-+		}
-+	}
-+	rcu_read_unlock();
-+
-+	return ret;
-+}
-+
- static bool intel_iommu_capable(enum iommu_cap cap)
- {
- 	if (cap == IOMMU_CAP_CACHE_COHERENCY)
-@@ -6018,10 +6042,42 @@ static bool intel_iommu_is_attach_deferred(struct iommu_domain *domain,
- 	return dev->archdata.iommu == DEFER_DEVICE_DOMAIN_INFO;
- }
- 
-+static int
-+intel_iommu_domain_set_attr(struct iommu_domain *domain,
-+			    enum iommu_attr attr, void *data)
-+{
-+	struct dmar_domain *dmar_domain = to_dmar_domain(domain);
-+	unsigned long flags;
-+	int ret = 0;
-+
-+	if (domain->type != IOMMU_DOMAIN_UNMANAGED)
-+		return -EINVAL;
-+
-+	switch (attr) {
-+	case DOMAIN_ATTR_NESTING:
-+		spin_lock_irqsave(&device_domain_lock, flags);
-+		if (nested_mode_support() &&
-+		    list_empty(&dmar_domain->devices)) {
-+			dmar_domain->flags |= DOMAIN_FLAG_NESTING_MODE;
-+			dmar_domain->flags &= ~DOMAIN_FLAG_USE_FIRST_LEVEL;
-+		} else {
-+			ret = -ENODEV;
-+		}
-+		spin_unlock_irqrestore(&device_domain_lock, flags);
-+		break;
-+	default:
-+		ret = -EINVAL;
-+		break;
-+	}
-+
-+	return ret;
-+}
-+
- const struct iommu_ops intel_iommu_ops = {
- 	.capable		= intel_iommu_capable,
- 	.domain_alloc		= intel_iommu_domain_alloc,
- 	.domain_free		= intel_iommu_domain_free,
-+	.domain_set_attr	= intel_iommu_domain_set_attr,
- 	.attach_dev		= intel_iommu_attach_device,
- 	.detach_dev		= intel_iommu_detach_device,
- 	.aux_attach_dev		= intel_iommu_aux_attach_device,
+ struct pasid_dir_entry {
+ 	u64 val;
+ };
+diff --git a/drivers/iommu/intel-svm.c b/drivers/iommu/intel-svm.c
+index 04023033b79f..d7f2a5358900 100644
+--- a/drivers/iommu/intel-svm.c
++++ b/drivers/iommu/intel-svm.c
+@@ -364,7 +364,9 @@ int intel_svm_bind_mm(struct device *dev, int *pasid, int flags, struct svm_dev_
+ 		ret = intel_pasid_setup_first_level(iommu, dev,
+ 				mm ? mm->pgd : init_mm.pgd,
+ 				svm->pasid, FLPT_DEFAULT_DID,
+-				mm ? 0 : PASID_FLAG_SUPERVISOR_MODE);
++				(mm ? 0 : PASID_FLAG_SUPERVISOR_MODE) |
++				(cpu_feature_enabled(X86_FEATURE_LA57) ?
++				 PASID_FLAG_FL5LP : 0));
+ 		spin_unlock(&iommu->lock);
+ 		if (ret) {
+ 			if (mm)
+@@ -385,7 +387,9 @@ int intel_svm_bind_mm(struct device *dev, int *pasid, int flags, struct svm_dev_
+ 		ret = intel_pasid_setup_first_level(iommu, dev,
+ 						mm ? mm->pgd : init_mm.pgd,
+ 						svm->pasid, FLPT_DEFAULT_DID,
+-						mm ? 0 : PASID_FLAG_SUPERVISOR_MODE);
++						(mm ? 0 : PASID_FLAG_SUPERVISOR_MODE) |
++						(cpu_feature_enabled(X86_FEATURE_LA57) ?
++						PASID_FLAG_FL5LP : 0));
+ 		spin_unlock(&iommu->lock);
+ 		if (ret) {
+ 			kfree(sdev);
 -- 
 2.17.1
 
