@@ -2,88 +2,79 @@ Return-Path: <SRS0=A6MP=2O=lists.linux-foundation.org=iommu-bounces@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-6.5 required=3.0 tests=DKIM_INVALID,DKIM_SIGNED,
-	HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_PATCH,MAILING_LIST_MULTI,SIGNED_OFF_BY,
-	SPF_HELO_NONE,SPF_PASS autolearn=unavailable autolearn_force=no version=3.4.0
+X-Spam-Status: No, score=-6.8 required=3.0 tests=HEADER_FROM_DIFFERENT_DOMAINS,
+	INCLUDES_PATCH,MAILING_LIST_MULTI,SIGNED_OFF_BY,SPF_HELO_NONE,SPF_PASS
+	autolearn=ham autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 4008DC2D0C0
-	for <iommu@archiver.kernel.org>; Tue, 24 Dec 2019 02:57:36 +0000 (UTC)
-Received: from fraxinus.osuosl.org (smtp4.osuosl.org [140.211.166.137])
+	by smtp.lore.kernel.org (Postfix) with ESMTP id BD21AC2D0C3
+	for <iommu@archiver.kernel.org>; Tue, 24 Dec 2019 03:24:35 +0000 (UTC)
+Received: from silver.osuosl.org (smtp3.osuosl.org [140.211.166.136])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by mail.kernel.org (Postfix) with ESMTPS id 05B18206B7
-	for <iommu@archiver.kernel.org>; Tue, 24 Dec 2019 02:57:35 +0000 (UTC)
-Authentication-Results: mail.kernel.org;
-	dkim=fail reason="key not found in DNS" (0-bit key) header.d=mg.codeaurora.org header.i=@mg.codeaurora.org header.b="fyUPyHHm"
-DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 05B18206B7
-Authentication-Results: mail.kernel.org; dmarc=none (p=none dis=none) header.from=codeaurora.org
+	by mail.kernel.org (Postfix) with ESMTPS id 68ED720705
+	for <iommu@archiver.kernel.org>; Tue, 24 Dec 2019 03:24:35 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 68ED720705
+Authentication-Results: mail.kernel.org; dmarc=none (p=none dis=none) header.from=baidu.com
 Authentication-Results: mail.kernel.org; spf=pass smtp.mailfrom=iommu-bounces@lists.linux-foundation.org
 Received: from localhost (localhost [127.0.0.1])
-	by fraxinus.osuosl.org (Postfix) with ESMTP id C73C784AA7;
-	Tue, 24 Dec 2019 02:57:35 +0000 (UTC)
+	by silver.osuosl.org (Postfix) with ESMTP id 3830920431;
+	Tue, 24 Dec 2019 03:24:35 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from fraxinus.osuosl.org ([127.0.0.1])
+Received: from silver.osuosl.org ([127.0.0.1])
 	by localhost (.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
-	with ESMTP id OTfG1Pn_2thb; Tue, 24 Dec 2019 02:57:34 +0000 (UTC)
+	with ESMTP id aslej10QrQNZ; Tue, 24 Dec 2019 03:24:33 +0000 (UTC)
 Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [140.211.9.56])
-	by fraxinus.osuosl.org (Postfix) with ESMTP id B2B8B84A0D;
-	Tue, 24 Dec 2019 02:57:34 +0000 (UTC)
+	by silver.osuosl.org (Postfix) with ESMTP id 8D685203B0;
+	Tue, 24 Dec 2019 03:24:33 +0000 (UTC)
 Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
-	by lists.linuxfoundation.org (Postfix) with ESMTP id 8A142C1D80;
-	Tue, 24 Dec 2019 02:57:34 +0000 (UTC)
-Received: from fraxinus.osuosl.org (smtp4.osuosl.org [140.211.166.137])
- by lists.linuxfoundation.org (Postfix) with ESMTP id 764A0C0881
- for <iommu@lists.linux-foundation.org>; Tue, 24 Dec 2019 02:57:33 +0000 (UTC)
+	by lists.linuxfoundation.org (Postfix) with ESMTP id 6CF95C1D81;
+	Tue, 24 Dec 2019 03:24:33 +0000 (UTC)
+Received: from whitealder.osuosl.org (smtp1.osuosl.org [140.211.166.138])
+ by lists.linuxfoundation.org (Postfix) with ESMTP id 1BF24C0881
+ for <iommu@lists.linux-foundation.org>; Tue, 24 Dec 2019 03:24:32 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
- by fraxinus.osuosl.org (Postfix) with ESMTP id 6B6B784AA7
- for <iommu@lists.linux-foundation.org>; Tue, 24 Dec 2019 02:57:33 +0000 (UTC)
+ by whitealder.osuosl.org (Postfix) with ESMTP id 0FC258527F
+ for <iommu@lists.linux-foundation.org>; Tue, 24 Dec 2019 03:24:32 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from fraxinus.osuosl.org ([127.0.0.1])
+Received: from whitealder.osuosl.org ([127.0.0.1])
  by localhost (.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
- with ESMTP id t623AZCz90kb for <iommu@lists.linux-foundation.org>;
- Tue, 24 Dec 2019 02:57:32 +0000 (UTC)
-X-Greylist: from auto-whitelisted by SQLgrey-1.7.6
-Received: from mail26.static.mailgun.info (mail26.static.mailgun.info
- [104.130.122.26])
- by fraxinus.osuosl.org (Postfix) with ESMTPS id 1ED5084A0D
- for <iommu@lists.linux-foundation.org>; Tue, 24 Dec 2019 02:57:32 +0000 (UTC)
-DKIM-Signature: a=rsa-sha256; v=1; c=relaxed/relaxed; d=mg.codeaurora.org;
- q=dns/txt; 
- s=smtp; t=1577156252; h=Message-ID: References: In-Reply-To: Subject:
- Cc: To: From: Date: Content-Transfer-Encoding: Content-Type:
- MIME-Version: Sender; bh=mF5Yk5W/LFHhcmsl8A7AIYFZxAxJ+b22oU+U2E97r6g=;
- b=fyUPyHHmBvx/agVGAUfT4mVUQdJEIMIsPHnBBB/PqZnAmAaWwOwqoxvF+QAzk94xoRxCrPF2
- RqbIImfncF+QMyqlScrMm0AQ4M9+bNRkLWxcYEyWlLH2Tv7hOPYXn0gJjZusxXs33sQt4vxM
- 0YpPKCGN5Yk1YycluRvBQE0q/e4=
-X-Mailgun-Sending-Ip: 104.130.122.26
-X-Mailgun-Sid: WyI3NDkwMCIsICJpb21tdUBsaXN0cy5saW51eC1mb3VuZGF0aW9uLm9yZyIsICJiZTllNGEiXQ==
-Received: from smtp.codeaurora.org
- (ec2-35-166-182-171.us-west-2.compute.amazonaws.com [35.166.182.171])
- by mxa.mailgun.org with ESMTP id 5e017e9a.7f2ca45c9260-smtp-out-n02;
- Tue, 24 Dec 2019 02:57:30 -0000 (UTC)
-Received: by smtp.codeaurora.org (Postfix, from userid 1001)
- id 9DFC0C4479D; Tue, 24 Dec 2019 02:57:29 +0000 (UTC)
-Received: from mail.codeaurora.org (localhost.localdomain [127.0.0.1])
- (using TLSv1 with cipher ECDHE-RSA-AES256-SHA (256/256 bits))
- (No client certificate requested) (Authenticated sender: smasetty)
- by smtp.codeaurora.org (Postfix) with ESMTPSA id C5E8DC43383;
- Tue, 24 Dec 2019 02:57:28 +0000 (UTC)
+ with ESMTP id ZRrA5r+eGKYu for <iommu@lists.linux-foundation.org>;
+ Tue, 24 Dec 2019 03:24:30 +0000 (UTC)
+X-Greylist: delayed 19:09:06 by SQLgrey-1.7.6
+Received: from baidu.com (mx21.baidu.com [220.181.3.85])
+ by whitealder.osuosl.org (Postfix) with ESMTP id B55DC84FC0
+ for <iommu@lists.linux-foundation.org>; Tue, 24 Dec 2019 03:24:30 +0000 (UTC)
+Received: from BC-Mail-Ex20.internal.baidu.com (unknown [172.31.51.14])
+ by Forcepoint Email with ESMTPS id 4B48D1892EE3D18B334E;
+ Tue, 24 Dec 2019 11:24:25 +0800 (CST)
+Received: from BC-Mail-Ex03.internal.baidu.com (172.31.51.43) by
+ BC-Mail-Ex20.internal.baidu.com (172.31.51.14) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256_P256) id
+ 15.1.1713.5; Tue, 24 Dec 2019 11:24:25 +0800
+Received: from BC-Mail-Ex03.internal.baidu.com ([100.100.100.102]) by
+ BC-Mail-Ex03.internal.baidu.com ([100.100.100.102]) with mapi id
+ 15.01.1531.010; Tue, 24 Dec 2019 11:24:25 +0800
+From: "Jim,Yan" <jimyan@baidu.com>
+To: Lu Baolu <baolu.lu@linux.intel.com>, Jerry Snitselaar <jsnitsel@redhat.com>
+Subject: =?utf-8?B?562U5aSNOiDnrZTlpI06IFtQQVRDSF0gaW9tbXUvdnQtZDogRG9uJ3QgcmVq?=
+ =?utf-8?Q?ect_nvme_host_due_to_scope_mismatch?=
+Thread-Topic: =?utf-8?B?562U5aSNOiBbUEFUQ0hdIGlvbW11L3Z0LWQ6IERvbid0IHJlamVjdCBudm1l?=
+ =?utf-8?Q?_host_due_to_scope_mismatch?=
+Thread-Index: AdW6BKk3WRIzqftPRCuhhluvn9v6Mg==
+Date: Tue, 24 Dec 2019 03:24:24 +0000
+Message-ID: <4b77511069cb4fbc982eebaad941cd23@baidu.com>
+Accept-Language: zh-CN, en-US
+Content-Language: zh-CN
+X-MS-Has-Attach: 
+X-MS-TNEF-Correlator: 
+x-originating-ip: [172.22.200.92]
+x-baidu-bdmsfe-datecheck: 1_BC-Mail-Ex20_2019-12-24 11:24:25:189
+x-baidu-bdmsfe-viruscheck: BC-Mail-Ex20_GRAY_Inside_WithoutAtta_2019-12-24
+ 11:24:25:158
 MIME-Version: 1.0
-Date: Tue, 24 Dec 2019 08:27:28 +0530
-From: smasetty@codeaurora.org
-To: Jordan Crouse <jcrouse@codeaurora.org>
-Subject: Re: [PATCH v3 5/5] drm/msm/a6xx: Support split pagetables
-In-Reply-To: <1576514271-15687-6-git-send-email-jcrouse@codeaurora.org>
-References: <1576514271-15687-1-git-send-email-jcrouse@codeaurora.org>
- <1576514271-15687-6-git-send-email-jcrouse@codeaurora.org>
-Message-ID: <8aec2a4f74fede1cf616b9e2eece3e8e@codeaurora.org>
-X-Sender: smasetty@codeaurora.org
-User-Agent: Roundcube Webmail/1.3.9
-Cc: Sean Paul <sean@poorly.run>, David Airlie <airlied@linux.ie>,
- freedreno@lists.freedesktop.org, robin.murphy@arm.com,
- dri-devel@lists.freedesktop.org, linux-kernel@vger.kernel.org,
- iommu@lists.linux-foundation.org, linux-arm-msm@vger.kernel.org,
- will@kernel.org, linux-arm-kernel@lists.infradead.org
+Cc: "Jim, Yan" <jimyan@baidu.com>,
+ "iommu@lists.linux-foundation.org" <iommu@lists.linux-foundation.org>,
+ "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>
 X-BeenThere: iommu@lists.linux-foundation.org
 X-Mailman-Version: 2.1.15
 Precedence: list
@@ -96,103 +87,102 @@ List-Post: <mailto:iommu@lists.linux-foundation.org>
 List-Help: <mailto:iommu-request@lists.linux-foundation.org?subject=help>
 List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
  <mailto:iommu-request@lists.linux-foundation.org?subject=subscribe>
-Content-Transfer-Encoding: 7bit
-Content-Type: text/plain; charset="us-ascii"; Format="flowed"
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: base64
 Errors-To: iommu-bounces@lists.linux-foundation.org
 Sender: "iommu" <iommu-bounces@lists.linux-foundation.org>
 
-On 2019-12-16 22:07, Jordan Crouse wrote:
-> Attempt to enable split pagetables if the arm-smmu driver supports it.
-> This will move the default address space from the default region to
-> the address range assigned to TTBR1. The behavior should be transparent
-> to the driver for now but it gets the default buffers out of the way
-> when we want to start swapping TTBR0 for context-specific pagetables.
-> 
-> Signed-off-by: Jordan Crouse <jcrouse@codeaurora.org>
-> ---
-> 
->  drivers/gpu/drm/msm/adreno/a6xx_gpu.c | 52 
-> ++++++++++++++++++++++++++++++++++-
->  1 file changed, 51 insertions(+), 1 deletion(-)
-> 
-> diff --git a/drivers/gpu/drm/msm/adreno/a6xx_gpu.c
-> b/drivers/gpu/drm/msm/adreno/a6xx_gpu.c
-> index 5dc0b2c..1c6da93 100644
-> --- a/drivers/gpu/drm/msm/adreno/a6xx_gpu.c
-> +++ b/drivers/gpu/drm/msm/adreno/a6xx_gpu.c
-> @@ -811,6 +811,56 @@ static unsigned long a6xx_gpu_busy(struct msm_gpu 
-> *gpu)
->  	return (unsigned long)busy_time;
->  }
-> 
-> +static struct msm_gem_address_space *
-> +a6xx_create_address_space(struct msm_gpu *gpu, struct platform_device 
-> *pdev)
-> +{
-> +	struct iommu_domain *iommu = iommu_domain_alloc(&platform_bus_type);
-> +	struct msm_gem_address_space *aspace;
-> +	struct msm_mmu *mmu;
-> +	u64 start, size;
-> +	u32 val = 1;
-> +	int ret;
-> +
-> +	if (!iommu)
-> +		return ERR_PTR(-ENOMEM);
-> +
-> +	/*
-> +	 * Try to request split pagetables - the request has to be made 
-> before
-> +	 * the domian is attached
-> +	 */
-> +	iommu_domain_set_attr(iommu, DOMAIN_ATTR_SPLIT_TABLES, &val);
-> +
-> +	mmu = msm_iommu_new(&pdev->dev, iommu);
-> +	if (IS_ERR(mmu)) {
-> +		iommu_domain_free(iommu);
-> +		return ERR_CAST(mmu);
-> +	}
-> +
-> +	/*
-> +	 * After the domain is attached, see if the split tables were 
-> actually
-> +	 * successful.
-> +	 */
-> +	ret = iommu_domain_get_attr(iommu, DOMAIN_ATTR_SPLIT_TABLES, &val);
-> +	if (!ret && val) {
-> +		/*
-> +		 * The aperture start will be at the beginning of the TTBR1
-> +		 * space so use that as a base
-> +		 */
-> +		start = iommu->geometry.aperture_start;
-> +		size = 0xffffffff;
-This should be the va_end and not the size
-> +	} else {
-> +		/* Otherwise use the legacy 32 bit region */
-> +		start = SZ_16M;
-> +		size = 0xffffffff - SZ_16M;
-same as above
-> +	}
-> +
-> +	aspace = msm_gem_address_space_create(mmu, "gpu", start, size);
-> +	if (IS_ERR(aspace))
-> +		iommu_domain_free(iommu);
-> +
-> +	return aspace;
-> +}
-> +
->  static const struct adreno_gpu_funcs funcs = {
->  	.base = {
->  		.get_param = adreno_get_param,
-> @@ -832,7 +882,7 @@ static const struct adreno_gpu_funcs funcs = {
->  #if defined(CONFIG_DRM_MSM_GPU_STATE)
->  		.gpu_state_get = a6xx_gpu_state_get,
->  		.gpu_state_put = a6xx_gpu_state_put,
-> -		.create_address_space = adreno_iommu_create_address_space,
-> +		.create_address_space = a6xx_create_address_space,
->  #endif
->  	},
->  	.get_timestamp = a6xx_get_timestamp,
-_______________________________________________
-iommu mailing list
-iommu@lists.linux-foundation.org
-https://lists.linuxfoundation.org/mailman/listinfo/iommu
+PiAtLS0tLemCruS7tuWOn+S7ti0tLS0tDQo+IOWPkeS7tuS6ujogTHUgQmFvbHUgW21haWx0bzpi
+YW9sdS5sdUBsaW51eC5pbnRlbC5jb21dDQo+IOWPkemAgeaXtumXtDogMjAxOeW5tDEy5pyIMjPm
+l6UgMjE6MDUNCj4g5pS25Lu25Lq6OiBKaW0sWWFuIDxqaW15YW5AYmFpZHUuY29tPjsgSmVycnkg
+U25pdHNlbGFhciA8anNuaXRzZWxAcmVkaGF0LmNvbT4NCj4g5oqE6YCBOiBpb21tdUBsaXN0cy5s
+aW51eC1mb3VuZGF0aW9uLm9yZzsgbGludXgta2VybmVsQHZnZXIua2VybmVsLm9yZw0KPiDkuLvp
+opg6IFJlOiDnrZTlpI06IFtQQVRDSF0gaW9tbXUvdnQtZDogRG9uJ3QgcmVqZWN0IG52bWUgaG9z
+dCBkdWUgdG8gc2NvcGUNCj4gbWlzbWF0Y2gNCj4gDQo+IEhpLA0KPiANCj4gT24gMjAxOS8xMi8y
+MyAxNTo1OSwgSmltLFlhbiB3cm90ZToNCj4gPj4gLS0tLS3pgq7ku7bljp/ku7YtLS0tLQ0KPiA+
+PiDlj5Hku7bkuro6IEplcnJ5IFNuaXRzZWxhYXIgW21haWx0bzpqc25pdHNlbEByZWRoYXQuY29t
+XQ0KPiA+PiDlj5HpgIHml7bpl7Q6IDIwMTnlubQxMuaciDIw5pelIDE3OjIzDQo+ID4+IOaUtuS7
+tuS6ujogSmltLFlhbiA8amlteWFuQGJhaWR1LmNvbT4NCj4gPj4g5oqE6YCBOiBqb3JvQDhieXRl
+cy5vcmc7IGlvbW11QGxpc3RzLmxpbnV4LWZvdW5kYXRpb24ub3JnOw0KPiA+PiBsaW51eC1rZXJu
+ZWxAdmdlci5rZXJuZWwub3JnDQo+ID4+IOS4u+mimDogUmU6IFtQQVRDSF0gaW9tbXUvdnQtZDog
+RG9uJ3QgcmVqZWN0IG52bWUgaG9zdCBkdWUgdG8gc2NvcGUNCj4gPj4gbWlzbWF0Y2gNCj4gPj4N
+Cj4gPj4gT24gRnJpIERlYyAyMCAxOSwgamlteWFuIHdyb3RlOg0KPiA+Pj4gT24gYSBzeXN0ZW0g
+d2l0aCBhbiBJbnRlbCBQQ0llIHBvcnQgY29uZmlndXJlZCBhcyBhIG52bWUgaG9zdA0KPiA+Pj4g
+ZGV2aWNlLCBpb21tdSBpbml0aWFsaXphdGlvbiBmYWlscyB3aXRoDQo+ID4+Pg0KPiA+Pj4gICAg
+IERNQVI6IERldmljZSBzY29wZSB0eXBlIGRvZXMgbm90IG1hdGNoIGZvciAwMDAwOjgwOjAwLjAN
+Cj4gPj4+DQo+ID4+PiBUaGlzIGlzIGJlY2F1c2UgdGhlIERNQVIgdGFibGUgcmVwb3J0cyB0aGlz
+IGRldmljZSBhcyBoYXZpbmcgc2NvcGUgMg0KPiA+Pj4gKEFDUElfRE1BUl9TQ09QRV9UWVBFX0JS
+SURHRSk6DQo+ID4+Pg0KPiA+Pg0KPiA+PiBJc24ndCB0aGF0IGEgcHJvYmxlbSB0byBiZSBmaXhl
+ZCBpbiB0aGUgRE1BUiB0YWJsZSB0aGVuPw0KPiA+Pg0KPiA+Pj4gYnV0IHRoZSBkZXZpY2UgaGFz
+IGEgdHlwZSAwIFBDSSBoZWFkZXI6DQo+ID4+PiA4MDowMC4wIENsYXNzIDA2MDA6IERldmljZSA4
+MDg2OjIwMjAgKHJldiAwNikNCj4gPj4+IDAwOiA4NiA4MCAyMCAyMCA0NyAwNSAxMCAwMCAwNiAw
+MCAwMCAwNiAxMCAwMCAwMCAwMA0KPiA+Pj4gMTA6IDAwIDAwIDAwIDAwIDAwIDAwIDAwIDAwIDAw
+IDAwIDAwIDAwIDAwIDAwIDAwIDAwDQo+ID4+PiAyMDogMDAgMDAgMDAgMDAgMDAgMDAgMDAgMDAg
+MDAgMDAgMDAgMDAgODYgODAgMDAgMDANCj4gPj4+IDMwOiAwMCAwMCAwMCAwMCA5MCAwMCAwMCAw
+MCAwMCAwMCAwMCAwMCAwMCAwMSAwMCAwMA0KPiA+Pj4NCj4gPj4+IFZULWQgd29ya3MgcGVyZmVj
+dGx5IG9uIHRoaXMgc3lzdGVtLCBzbyB0aGVyZSdzIG5vIHJlYXNvbiB0byBiYWlsDQo+ID4+PiBv
+dXQgb24gaW5pdGlhbGl6YXRpb24gZHVlIHRvIHRoaXMgYXBwYXJlbnQgc2NvcGUgbWlzbWF0Y2gu
+IEFkZCB0aGUNCj4gPj4+IGNsYXNzDQo+ID4+PiAweDYwMCAoIlBDSV9DTEFTU19CUklER0VfSE9T
+VCIpIGFzIGEgaGV1cmlzdGljIGZvciBhbGxvd2luZyBETUFSDQo+ID4+PiBpbml0aWFsaXphdGlv
+biBmb3Igbm9uLWJyaWRnZSBQQ0kgZGV2aWNlcyBsaXN0ZWQgd2l0aCBzY29wZSBicmlkZ2UuDQo+
+ID4+Pg0KPiA+Pj4gU2lnbmVkLW9mZi1ieTogamlteWFuIDxqaW15YW5AYmFpZHUuY29tPg0KPiA+
+Pj4gLS0tDQo+ID4+PiBkcml2ZXJzL2lvbW11L2RtYXIuYyB8IDEgKw0KPiA+Pj4gMSBmaWxlIGNo
+YW5nZWQsIDEgaW5zZXJ0aW9uKCspDQo+ID4+Pg0KPiA+Pj4gZGlmZiAtLWdpdCBhL2RyaXZlcnMv
+aW9tbXUvZG1hci5jIGIvZHJpdmVycy9pb21tdS9kbWFyLmMgaW5kZXgNCj4gPj4+IGVlY2Q2YTQy
+MTY2Ny4uOWZhZjJmMGUwMjM3IDEwMDY0NA0KPiA+Pj4gLS0tIGEvZHJpdmVycy9pb21tdS9kbWFy
+LmMNCj4gPj4+ICsrKyBiL2RyaXZlcnMvaW9tbXUvZG1hci5jDQo+ID4+PiBAQCAtMjQ0LDYgKzI0
+NCw3IEBAIGludCBkbWFyX2luc2VydF9kZXZfc2NvcGUoc3RydWN0DQo+ID4+IGRtYXJfcGNpX25v
+dGlmeV9pbmZvICppbmZvLA0KPiA+Pj4gCQkgICAgIGluZm8tPmRldi0+aGRyX3R5cGUgIT0gUENJ
+X0hFQURFUl9UWVBFX05PUk1BTCkgfHwNCj4gPj4+IAkJICAgIChzY29wZS0+ZW50cnlfdHlwZSA9
+PSBBQ1BJX0RNQVJfU0NPUEVfVFlQRV9CUklER0UNCj4gJiYNCj4gPj4+IAkJICAgICAoaW5mby0+
+ZGV2LT5oZHJfdHlwZSA9PSBQQ0lfSEVBREVSX1RZUEVfTk9STUFMICYmDQo+ID4+PiArCQkJICBp
+bmZvLT5kZXYtPmNsYXNzID4+IDggIT0gUENJX0NMQVNTX0JSSURHRV9IT1NUICYmDQo+ID4+PiAJ
+CSAgICAgIGluZm8tPmRldi0+Y2xhc3MgPj4gOCAhPSBQQ0lfQ0xBU1NfQlJJREdFX09USEVSKSkp
+IHsNCj4gPj4+IAkJCXByX3dhcm4oIkRldmljZSBzY29wZSB0eXBlIGRvZXMgbm90IG1hdGNoIGZv
+ciAlc1xuIiwNCj4gPj4+IAkJCQlwY2lfbmFtZShpbmZvLT5kZXYpKTsNCj4gPj4+IC0tDQo+ID4+
+PiAyLjExLjANCj4gPj4+DQo+ID4+PiBfX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19f
+X19fX19fX19fX19fXw0KPiA+Pj4gaW9tbXUgbWFpbGluZyBsaXN0DQo+ID4+PiBpb21tdUBsaXN0
+cy5saW51eC1mb3VuZGF0aW9uLm9yZw0KPiA+Pj4gaHR0cHM6Ly9saXN0cy5saW51eGZvdW5kYXRp
+b24ub3JnL21haWxtYW4vbGlzdGluZm8vaW9tbXUNCj4gPj4+DQo+ID4gQWN0dWFsbHkgdGhpcyBw
+YXRjaCBpcyBzaW1pbGFyIHRvIHRoZSBjb21taXQ6IGZmYjJkMWViODhjMygiaW9tbXUvdnQtZDog
+RG9uJ3QNCj4gcmVqZWN0IE5UQiBkZXZpY2VzIGR1ZSB0byBzY29wZSBtaXNtYXRjaCIpLiBCZXNp
+ZGVzLCBtb2RpZnlpbmcgRE1BUiB0YWJsZQ0KPiBuZWVkIE9FTSB1cGRhdGUgQklPUy4gSXQgaXMg
+aGFyZCB0byBpbXBsZW1lbnQuDQo+ID4NCj4gDQo+IEZvciBib3RoIGNhc2VzLCBhIHF1aXJrIGZs
+YWcgc2VlbXMgdG8gYmUgbW9yZSByZWFzb25hYmxlLCBzbyB0aGF0IHVucmVsYXRlZA0KPiBkZXZp
+Y2VzIHdpbGwgbm90IGJlIGltcGFjdGVkLg0KPiANCj4gQmVzdCByZWdhcmRzLA0KPiBiYW9sdQ0K
+DQpIaSBCYW9sdSwNCglUaGFua3MgZm9yIHlvdXIgYWR2aWNlLiBBbmQgSSBtb2RpZnkgdGhlIHBh
+dGNoIGFzIGZvbGxvdy4NCg0KICAgIE9uIGEgc3lzdGVtIHdpdGggYW4gSW50ZWwgUENJZSBwb3J0
+IGNvbmZpZ3VyZWQgYXMgYSBudm1lIGhvc3QgZGV2aWNlLCBpb21tdQ0KICAgIGluaXRpYWxpemF0
+aW9uIGZhaWxzIHdpdGgNCiAgICANCiAgICAgICAgRE1BUjogRGV2aWNlIHNjb3BlIHR5cGUgZG9l
+cyBub3QgbWF0Y2ggZm9yIDAwMDA6ODA6MDAuMA0KICAgIA0KICAgIFRoaXMgaXMgYmVjYXVzZSB0
+aGUgRE1BUiB0YWJsZSByZXBvcnRzIHRoaXMgZGV2aWNlIGFzIGhhdmluZyBzY29wZSAyDQogICAg
+KEFDUElfRE1BUl9TQ09QRV9UWVBFX0JSSURHRSk6DQogICAgDQogICAgYnV0IHRoZSBkZXZpY2Ug
+aGFzIGEgdHlwZSAwIFBDSSBoZWFkZXI6DQogICAgODA6MDAuMCBDbGFzcyAwNjAwOiBEZXZpY2Ug
+ODA4NjoyMDIwIChyZXYgMDYpDQogICAgMDA6IDg2IDgwIDIwIDIwIDQ3IDA1IDEwIDAwIDA2IDAw
+IDAwIDA2IDEwIDAwIDAwIDAwDQogICAgMTA6IDAwIDAwIDAwIDAwIDAwIDAwIDAwIDAwIDAwIDAw
+IDAwIDAwIDAwIDAwIDAwIDAwDQogICAgMjA6IDAwIDAwIDAwIDAwIDAwIDAwIDAwIDAwIDAwIDAw
+IDAwIDAwIDg2IDgwIDAwIDAwDQogICAgMzA6IDAwIDAwIDAwIDAwIDkwIDAwIDAwIDAwIDAwIDAw
+IDAwIDAwIDAwIDAxIDAwIDAwDQogICAgDQogICAgVlQtZCB3b3JrcyBwZXJmZWN0bHkgb24gdGhp
+cyBzeXN0ZW0sIHNvIHRoZXJlJ3Mgbm8gcmVhc29uIHRvIGJhaWwgb3V0DQogICAgb24gaW5pdGlh
+bGl6YXRpb24gZHVlIHRvIHRoaXMgYXBwYXJlbnQgc2NvcGUgbWlzbWF0Y2guIEFkZCB0aGUgY2xh
+c3MNCiAgICAweDA2ICgiUENJX0JBU0VfQ0xBU1NfQlJJREdFIikgYXMgYSBoZXVyaXN0aWMgZm9y
+IGFsbG93aW5nIERNQVINCiAgICBpbml0aWFsaXphdGlvbiBmb3Igbm9uLWJyaWRnZSBQQ0kgZGV2
+aWNlcyBsaXN0ZWQgd2l0aCBzY29wZSBicmlkZ2UuDQogICAgDQogICAgU2lnbmVkLW9mZi1ieTog
+amlteWFuIDxqaW15YW5AYmFpZHUuY29tPg0KDQpkaWZmIC0tZ2l0IGEvZHJpdmVycy9pb21tdS9k
+bWFyLmMgYi9kcml2ZXJzL2lvbW11L2RtYXIuYw0KaW5kZXggZWVjZDZhNDIxNjY3Li41MGM5MmVi
+MjNlZTQgMTAwNjQ0DQotLS0gYS9kcml2ZXJzL2lvbW11L2RtYXIuYw0KKysrIGIvZHJpdmVycy9p
+b21tdS9kbWFyLmMNCkBAIC0yNDQsNyArMjQ0LDcgQEAgaW50IGRtYXJfaW5zZXJ0X2Rldl9zY29w
+ZShzdHJ1Y3QgZG1hcl9wY2lfbm90aWZ5X2luZm8gKmluZm8sDQogICAgICAgICAgICAgICAgICAg
+ICBpbmZvLT5kZXYtPmhkcl90eXBlICE9IFBDSV9IRUFERVJfVFlQRV9OT1JNQUwpIHx8DQogICAg
+ICAgICAgICAgICAgICAgIChzY29wZS0+ZW50cnlfdHlwZSA9PSBBQ1BJX0RNQVJfU0NPUEVfVFlQ
+RV9CUklER0UgJiYNCiAgICAgICAgICAgICAgICAgICAgIChpbmZvLT5kZXYtPmhkcl90eXBlID09
+IFBDSV9IRUFERVJfVFlQRV9OT1JNQUwgJiYNCi0gICAgICAgICAgICAgICAgICAgICBpbmZvLT5k
+ZXYtPmNsYXNzID4+IDggIT0gUENJX0NMQVNTX0JSSURHRV9PVEhFUikpKSB7DQorICAgICAgICAg
+ICAgICAgICAgICAgaW5mby0+ZGV2LT5jbGFzcyA+PiAxNiAhPSBQQ0lfQkFTRV9DTEFTU19CUklE
+R0UpKSkgew0KICAgICAgICAgICAgICAgICAgICAgICAgcHJfd2FybigiRGV2aWNlIHNjb3BlIHR5
+cGUgZG9lcyBub3QgbWF0Y2ggZm9yICVzXG4iLA0KICAgICAgICAgICAgICAgICAgICAgICAgICAg
+ICAgICBwY2lfbmFtZShpbmZvLT5kZXYpKTsNCiAgICAgICAgICAgICAgICAgICAgICAgIHJldHVy
+biAtRUlOVkFMOw0KDQoNCkppbQ0KDQpfX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19f
+X19fX19fX19fX19fXwppb21tdSBtYWlsaW5nIGxpc3QKaW9tbXVAbGlzdHMubGludXgtZm91bmRh
+dGlvbi5vcmcKaHR0cHM6Ly9saXN0cy5saW51eGZvdW5kYXRpb24ub3JnL21haWxtYW4vbGlzdGlu
+Zm8vaW9tbXU=
