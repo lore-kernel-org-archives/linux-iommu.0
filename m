@@ -2,93 +2,109 @@ Return-Path: <SRS0=A6MP=2O=lists.linux-foundation.org=iommu-bounces@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-9.3 required=3.0 tests=DKIM_ADSP_CUSTOM_MED,
-	DKIM_INVALID,DKIM_SIGNED,FREEMAIL_FORGED_FROMDOMAIN,FREEMAIL_FROM,
-	HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_PATCH,MAILING_LIST_MULTI,SIGNED_OFF_BY,
-	SPF_HELO_NONE,SPF_PASS,USER_AGENT_GIT autolearn=ham autolearn_force=no
-	version=3.4.0
+X-Spam-Status: No, score=-3.5 required=3.0 tests=DKIM_INVALID,DKIM_SIGNED,
+	HEADER_FROM_DIFFERENT_DOMAINS,MAILING_LIST_MULTI,SIGNED_OFF_BY,SPF_HELO_NONE,
+	SPF_PASS autolearn=no autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 5CE24C2D0CF
-	for <iommu@archiver.kernel.org>; Tue, 24 Dec 2019 14:47:06 +0000 (UTC)
-Received: from whitealder.osuosl.org (smtp1.osuosl.org [140.211.166.138])
+	by smtp.lore.kernel.org (Postfix) with ESMTP id BABF3C2D0C3
+	for <iommu@archiver.kernel.org>; Tue, 24 Dec 2019 19:09:07 +0000 (UTC)
+Received: from silver.osuosl.org (smtp3.osuosl.org [140.211.166.136])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by mail.kernel.org (Postfix) with ESMTPS id 1F80F206B7
-	for <iommu@archiver.kernel.org>; Tue, 24 Dec 2019 14:47:06 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTPS id 78FAA206D3
+	for <iommu@archiver.kernel.org>; Tue, 24 Dec 2019 19:09:07 +0000 (UTC)
 Authentication-Results: mail.kernel.org;
-	dkim=fail reason="signature verification failed" (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="VXjpYhuu"
-DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 1F80F206B7
-Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=gmail.com
+	dkim=fail reason="signature verification failed" (1024-bit key) header.d=redhat.com header.i=@redhat.com header.b="fozZi9x1"
+DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 78FAA206D3
+Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=redhat.com
 Authentication-Results: mail.kernel.org; spf=pass smtp.mailfrom=iommu-bounces@lists.linux-foundation.org
 Received: from localhost (localhost [127.0.0.1])
-	by whitealder.osuosl.org (Postfix) with ESMTP id DFA0885455;
-	Tue, 24 Dec 2019 14:47:05 +0000 (UTC)
+	by silver.osuosl.org (Postfix) with ESMTP id 2BE4A203E1;
+	Tue, 24 Dec 2019 19:09:07 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from whitealder.osuosl.org ([127.0.0.1])
+Received: from silver.osuosl.org ([127.0.0.1])
 	by localhost (.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
-	with ESMTP id OnPe-c6u-+1F; Tue, 24 Dec 2019 14:47:05 +0000 (UTC)
+	with ESMTP id ENjI1oSaZARx; Tue, 24 Dec 2019 19:09:06 +0000 (UTC)
 Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [140.211.9.56])
-	by whitealder.osuosl.org (Postfix) with ESMTP id 4520484C3C;
-	Tue, 24 Dec 2019 14:47:05 +0000 (UTC)
+	by silver.osuosl.org (Postfix) with ESMTP id 7314220015;
+	Tue, 24 Dec 2019 19:09:06 +0000 (UTC)
 Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
-	by lists.linuxfoundation.org (Postfix) with ESMTP id 21124C18DD;
-	Tue, 24 Dec 2019 14:47:05 +0000 (UTC)
-Received: from fraxinus.osuosl.org (smtp4.osuosl.org [140.211.166.137])
- by lists.linuxfoundation.org (Postfix) with ESMTP id A36BDC0881
- for <iommu@lists.linux-foundation.org>; Tue, 24 Dec 2019 14:47:03 +0000 (UTC)
+	by lists.linuxfoundation.org (Postfix) with ESMTP id 59D00C18DD;
+	Tue, 24 Dec 2019 19:09:06 +0000 (UTC)
+Received: from hemlock.osuosl.org (smtp2.osuosl.org [140.211.166.133])
+ by lists.linuxfoundation.org (Postfix) with ESMTP id B8784C0881
+ for <iommu@lists.linux-foundation.org>; Tue, 24 Dec 2019 19:09:04 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
- by fraxinus.osuosl.org (Postfix) with ESMTP id 8E41284A0F
- for <iommu@lists.linux-foundation.org>; Tue, 24 Dec 2019 14:47:03 +0000 (UTC)
+ by hemlock.osuosl.org (Postfix) with ESMTP id A176386CDC
+ for <iommu@lists.linux-foundation.org>; Tue, 24 Dec 2019 19:09:04 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from fraxinus.osuosl.org ([127.0.0.1])
+Received: from hemlock.osuosl.org ([127.0.0.1])
  by localhost (.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
- with ESMTP id xkJeNXPljHw8 for <iommu@lists.linux-foundation.org>;
- Tue, 24 Dec 2019 14:47:02 +0000 (UTC)
+ with ESMTP id i+-supUQ+7Gh for <iommu@lists.linux-foundation.org>;
+ Tue, 24 Dec 2019 19:09:04 +0000 (UTC)
 X-Greylist: domain auto-whitelisted by SQLgrey-1.7.6
-Received: from mail-pl1-f194.google.com (mail-pl1-f194.google.com
- [209.85.214.194])
- by fraxinus.osuosl.org (Postfix) with ESMTPS id 23F31849B7
- for <iommu@lists.linux-foundation.org>; Tue, 24 Dec 2019 14:47:02 +0000 (UTC)
-Received: by mail-pl1-f194.google.com with SMTP id g6so5596783plp.6
- for <iommu@lists.linux-foundation.org>; Tue, 24 Dec 2019 06:47:02 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=gmail.com; s=20161025;
- h=from:to:cc:subject:date:message-id;
- bh=GkExCG2DHt8H34ZdrbZclhbhYd3kEbl8+/TGe4GGMP0=;
- b=VXjpYhuu3thC1XwrKwpLpDUSlTSqgYCLMqu0SGmI+o9BU46mP8HIuzIc89AGazUJMd
- gJV72undeLZ/zt0TS2y9ntI2kSKTn1tnb452AB/fkMOrTH1H1XmW7Tjvw25mZ9sbfczJ
- I0komnqdUDVep8gfiW4TxaVJJ67sGIkej84tnVFgjOnYSll5aID0HKJFqLwDOzeVQr+I
- N9nqHZw69egm8hJSRYBsGOVIFeTXHIQCZall/9A5F4SEL4kw9P2+WSqqYPM61G38jokP
- OtTQQlW2MBzii8G5u9XCZijHbM6/tIP4nSxHQw3JdM9F4/PoZ0iG/pYS5cSkuAFYJJWx
- rlXg==
+Received: from us-smtp-1.mimecast.com (us-smtp-delivery-1.mimecast.com
+ [205.139.110.120])
+ by hemlock.osuosl.org (Postfix) with ESMTPS id D7B8886CD7
+ for <iommu@lists.linux-foundation.org>; Tue, 24 Dec 2019 19:09:03 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+ s=mimecast20190719; t=1577214542;
+ h=from:from:reply-to:reply-to:subject:subject:date:date:
+ message-id:message-id:to:to:cc:cc:mime-version:mime-version:
+ content-type:content-type:in-reply-to:in-reply-to:  references:references;
+ bh=sN9oy8InhvYTWTcIBE/ApxS/MBEGLGguoOVJTgKsavo=;
+ b=fozZi9x1Ple9UyanOnGziPsYTV58zSsoSg2xtnY/xRVN4TOBQxryTPNj+1ap9xZitKbCfF
+ fkxfUtQSz2T8CfOb4wUwKKyi0FhVlc1g9LwhvR8B5vC9+0GKkUiZ1X3Rq8AVvgdwIeQ5P5
+ Q6D7EsxSmwMHszKJyZwBFthhrymgqT0=
+Received: from mail-yw1-f69.google.com (mail-yw1-f69.google.com
+ [209.85.161.69]) (Using TLS) by relay.mimecast.com with ESMTP id
+ us-mta-350-G3i7YeiQOMuTC38ca6JmTA-1; Tue, 24 Dec 2019 14:09:00 -0500
+Received: by mail-yw1-f69.google.com with SMTP id q130so15929268ywh.11
+ for <iommu@lists.linux-foundation.org>; Tue, 24 Dec 2019 11:09:00 -0800 (PST)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
  d=1e100.net; s=20161025;
- h=x-gm-message-state:from:to:cc:subject:date:message-id;
- bh=GkExCG2DHt8H34ZdrbZclhbhYd3kEbl8+/TGe4GGMP0=;
- b=M85l9NHKCNNoLfCQT34ZVmgsk8xPNkgmlPfm7MPO7ED7ovjv9xwoUSntW6iw1o2tlN
- etlqDDh8SQXf5RtfBaCDs/PQIs3E3aiaW9obBB2GZQNe6j3fCNGwJR3Hb6782PC61J2q
- JDVPCWZJaeYsSmrkWMAir5Wl7i8xkRCyaQv1gwepGWEVEkhpn8ONDMNQnqUK76KtMkql
- EsT5LTsURpARyomZClcobXNq3Ro/foKwfBrlI5IFBPGoQJrFaZEAH/mVenwIw9KXD30l
- 0hyOSZnJhAruSIlkmpJqdE1j2xydJ8Xwks9Auj2zeAmdUDhR0nxplYgWRbvj7E8DIOjI
- aOxA==
-X-Gm-Message-State: APjAAAVpaDJmCKO5OnwS68koQhFKbygJ1JhJA+XcmHjmroM9TpW4ex+H
- 4XuYRQamM6Owjq8IGQsmOls=
-X-Google-Smtp-Source: APXvYqxCiOjvtxh8ME8+8SviNtQ09l3KRj6BrsO6yTe6mxFuxeEdSvyRMFJIpoqSA7jkKsMvq7VmoA==
-X-Received: by 2002:a17:902:ba86:: with SMTP id
- k6mr1106802pls.96.1577198821605; 
- Tue, 24 Dec 2019 06:47:01 -0800 (PST)
-Received: from AHUANG12-1LT7M0.lenovo.com (1-175-124-65.dynamic-ip.hinet.net.
- [1.175.124.65])
- by smtp.googlemail.com with ESMTPSA id m6sm3586861pjn.21.2019.12.24.06.46.59
+ h=x-gm-message-state:date:from:to:cc:subject:message-id:reply-to
+ :mail-followup-to:references:mime-version:content-disposition
+ :in-reply-to;
+ bh=sN9oy8InhvYTWTcIBE/ApxS/MBEGLGguoOVJTgKsavo=;
+ b=KtmCmK2lvCWe4CfrBPN8IxvXUNcnKKec7B+Ng0Gpf63oKXE2JjDcmlCTYV+3+m4sSY
+ OVPcwZIgqhp8yod3/BmdXg26UIGwRNPxW6GV7a1xzzMaOtMsP14zuQIX5Ixua3jr7iYV
+ sHJ7YzOlxUkwUdqewQy2s+RCSduVCNHBn0PvEOVS+WY0SdxWCWKVU6JuaRsq4pPgns8g
+ KeSo/eQ7ge9CnBo9t/gzgxc0Kksf+vWcg2VzR8cWnBr1+Rl1vn0K6tfrcbq1GH0j1Hv8
+ RYCG0N0sgKXgWCeg7TP6kItOyGhhApM9WfQiaui8OIUeZCqo7XLozfgNp4tF6K758Dp8
+ BpTw==
+X-Gm-Message-State: APjAAAWIdoaNOjUzaktQkY3aibLuLf2ZpdA2FE0OVBw7qsZ7hroZOGIJ
+ 4J4A2ldFB97UJu/2LcQNImmnjmuiBnHh7ojr0mllF/F/txbYUowX6ZXw3g/70HsGsKbKzusf7Am
+ 50HcypLphdA6eaSUaX128/izDpxRpTg==
+X-Received: by 2002:a25:68d2:: with SMTP id
+ d201mr27072872ybc.177.1577214540288; 
+ Tue, 24 Dec 2019 11:09:00 -0800 (PST)
+X-Google-Smtp-Source: APXvYqz0S3EZ46tOP4qqPj6eQg1Mo8wV9UwKPT4m38jrGBN38s6oteTQkqrcrF05/SG735A3VfXw9w==
+X-Received: by 2002:a25:68d2:: with SMTP id
+ d201mr27072853ybc.177.1577214540042; 
+ Tue, 24 Dec 2019 11:09:00 -0800 (PST)
+Received: from localhost (ip70-163-223-149.ph.ph.cox.net. [70.163.223.149])
+ by smtp.gmail.com with ESMTPSA id e131sm9679917ywb.81.2019.12.24.11.08.58
  (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
- Tue, 24 Dec 2019 06:47:00 -0800 (PST)
-From: Adrian Huang <adrianhuang0701@gmail.com>
-X-Google-Original-From: Adrian Huang <ahuang12@lenovo.com>
-To: Joerg Roedel <joro@8bytes.org>
-Subject: [PATCH 1/1] iommu/amd: Remove local variables
-Date: Tue, 24 Dec 2019 22:46:47 +0800
-Message-Id: <20191224144647.17885-1-ahuang12@lenovo.com>
-X-Mailer: git-send-email 2.17.1
-Cc: iommu@lists.linux-foundation.org, Adrian Huang <ahuang12@lenovo.com>
+ Tue, 24 Dec 2019 11:08:59 -0800 (PST)
+Date: Tue, 24 Dec 2019 12:08:57 -0700
+From: Jerry Snitselaar <jsnitsel@redhat.com>
+To: Lu Baolu <baolu.lu@linux.intel.com>
+Subject: Re: [PATCH 1/1] iommu/vt-d: Add a quirk flag for scope mismatched
+ devices
+Message-ID: <20191224190857.kb32qjogzumoh4xv@cantor>
+Mail-Followup-To: Lu Baolu <baolu.lu@linux.intel.com>,
+ Joerg Roedel <joro@8bytes.org>,
+ Roland Dreier <roland@purestorage.com>, Jim Yan <jimyan@baidu.com>,
+ iommu@lists.linux-foundation.org, linux-kernel@vger.kernel.org
+References: <20191224062240.4796-1-baolu.lu@linux.intel.com>
+MIME-Version: 1.0
+In-Reply-To: <20191224062240.4796-1-baolu.lu@linux.intel.com>
+X-MC-Unique: G3i7YeiQOMuTC38ca6JmTA-1
+X-Mimecast-Spam-Score: 0
+Content-Disposition: inline
+Cc: Roland Dreier <roland@purestorage.com>, Jim Yan <jimyan@baidu.com>,
+ iommu@lists.linux-foundation.org, linux-kernel@vger.kernel.org
 X-BeenThere: iommu@lists.linux-foundation.org
 X-Mailman-Version: 2.1.15
 Precedence: list
@@ -101,50 +117,25 @@ List-Post: <mailto:iommu@lists.linux-foundation.org>
 List-Help: <mailto:iommu-request@lists.linux-foundation.org?subject=help>
 List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
  <mailto:iommu-request@lists.linux-foundation.org?subject=subscribe>
-MIME-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
+Reply-To: Jerry Snitselaar <jsnitsel@redhat.com>
 Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset="us-ascii"; Format="flowed"
 Errors-To: iommu-bounces@lists.linux-foundation.org
 Sender: "iommu" <iommu-bounces@lists.linux-foundation.org>
 
-From: Adrian Huang <ahuang12@lenovo.com>
+On Tue Dec 24 19, Lu Baolu wrote:
+>We expect devices with endpoint scope to have normal PCI headers,
+>and devices with bridge scope to have bridge PCI headers.  However
+>Some PCI devices may be listed in the DMAR table with bridge scope,
+>even though they have a normal PCI header. Add a quirk flag for
+>those special devices.
+>
+>Cc: Roland Dreier <roland@purestorage.com>
+>Cc: Jim Yan <jimyan@baidu.com>
+>Signed-off-by: Lu Baolu <baolu.lu@linux.intel.com>
+>---
 
-The usage of the local variables 'range' and 'misc' was removed
-from commit 226e889b20a9 ("iommu/amd: Remove first/last_device handling")
-and commit 23c742db2171 ("iommu/amd: Split out PCI related parts of
-IOMMU initialization"). So, remove them accrodingly.
-
-Signed-off-by: Adrian Huang <ahuang12@lenovo.com>
----
- drivers/iommu/amd_iommu_init.c | 6 +-----
- 1 file changed, 1 insertion(+), 5 deletions(-)
-
-diff --git a/drivers/iommu/amd_iommu_init.c b/drivers/iommu/amd_iommu_init.c
-index ba7ee4aa04f9..2cc7d61b1802 100644
---- a/drivers/iommu/amd_iommu_init.c
-+++ b/drivers/iommu/amd_iommu_init.c
-@@ -1718,7 +1718,7 @@ static const struct attribute_group *amd_iommu_groups[] = {
- static int __init iommu_init_pci(struct amd_iommu *iommu)
- {
- 	int cap_ptr = iommu->cap_ptr;
--	u32 range, misc, low, high;
-+	u32 low, high;
- 	int ret;
- 
- 	iommu->dev = pci_get_domain_bus_and_slot(0, PCI_BUS_NUM(iommu->devid),
-@@ -1731,10 +1731,6 @@ static int __init iommu_init_pci(struct amd_iommu *iommu)
- 
- 	pci_read_config_dword(iommu->dev, cap_ptr + MMIO_CAP_HDR_OFFSET,
- 			      &iommu->cap);
--	pci_read_config_dword(iommu->dev, cap_ptr + MMIO_RANGE_OFFSET,
--			      &range);
--	pci_read_config_dword(iommu->dev, cap_ptr + MMIO_MISC_OFFSET,
--			      &misc);
- 
- 	if (!(iommu->cap & (1 << IOMMU_CAP_IOTLB)))
- 		amd_iommu_iotlb_sup = false;
--- 
-2.17.1
+Reviewed-by: Jerry Snitselaar <jsnitsel@redhat.com>
 
 _______________________________________________
 iommu mailing list
