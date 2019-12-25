@@ -1,110 +1,90 @@
-Return-Path: <SRS0=A6MP=2O=lists.linux-foundation.org=iommu-bounces@kernel.org>
+Return-Path: <SRS0=lUsJ=2P=lists.linux-foundation.org=iommu-bounces@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-3.5 required=3.0 tests=DKIM_INVALID,DKIM_SIGNED,
-	HEADER_FROM_DIFFERENT_DOMAINS,MAILING_LIST_MULTI,SIGNED_OFF_BY,SPF_HELO_NONE,
-	SPF_PASS autolearn=no autolearn_force=no version=3.4.0
+X-Spam-Status: No, score=-0.8 required=3.0 tests=HEADER_FROM_DIFFERENT_DOMAINS,
+	MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS autolearn=no autolearn_force=no
+	version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id BABF3C2D0C3
-	for <iommu@archiver.kernel.org>; Tue, 24 Dec 2019 19:09:07 +0000 (UTC)
-Received: from silver.osuosl.org (smtp3.osuosl.org [140.211.166.136])
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 0398AC2D0C3
+	for <iommu@archiver.kernel.org>; Wed, 25 Dec 2019 01:52:49 +0000 (UTC)
+Received: from fraxinus.osuosl.org (smtp4.osuosl.org [140.211.166.137])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by mail.kernel.org (Postfix) with ESMTPS id 78FAA206D3
-	for <iommu@archiver.kernel.org>; Tue, 24 Dec 2019 19:09:07 +0000 (UTC)
-Authentication-Results: mail.kernel.org;
-	dkim=fail reason="signature verification failed" (1024-bit key) header.d=redhat.com header.i=@redhat.com header.b="fozZi9x1"
-DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 78FAA206D3
-Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=redhat.com
+	by mail.kernel.org (Postfix) with ESMTPS id 974F82063A
+	for <iommu@archiver.kernel.org>; Wed, 25 Dec 2019 01:52:48 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 974F82063A
+Authentication-Results: mail.kernel.org; dmarc=none (p=none dis=none) header.from=baidu.com
 Authentication-Results: mail.kernel.org; spf=pass smtp.mailfrom=iommu-bounces@lists.linux-foundation.org
 Received: from localhost (localhost [127.0.0.1])
-	by silver.osuosl.org (Postfix) with ESMTP id 2BE4A203E1;
-	Tue, 24 Dec 2019 19:09:07 +0000 (UTC)
+	by fraxinus.osuosl.org (Postfix) with ESMTP id 5D46884647;
+	Wed, 25 Dec 2019 01:52:48 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from silver.osuosl.org ([127.0.0.1])
+Received: from fraxinus.osuosl.org ([127.0.0.1])
 	by localhost (.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
-	with ESMTP id ENjI1oSaZARx; Tue, 24 Dec 2019 19:09:06 +0000 (UTC)
+	with ESMTP id RgzHGHlzLCE5; Wed, 25 Dec 2019 01:52:45 +0000 (UTC)
 Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [140.211.9.56])
-	by silver.osuosl.org (Postfix) with ESMTP id 7314220015;
-	Tue, 24 Dec 2019 19:09:06 +0000 (UTC)
+	by fraxinus.osuosl.org (Postfix) with ESMTP id 76775845D9;
+	Wed, 25 Dec 2019 01:52:45 +0000 (UTC)
 Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
-	by lists.linuxfoundation.org (Postfix) with ESMTP id 59D00C18DD;
-	Tue, 24 Dec 2019 19:09:06 +0000 (UTC)
-Received: from hemlock.osuosl.org (smtp2.osuosl.org [140.211.166.133])
- by lists.linuxfoundation.org (Postfix) with ESMTP id B8784C0881
- for <iommu@lists.linux-foundation.org>; Tue, 24 Dec 2019 19:09:04 +0000 (UTC)
+	by lists.linuxfoundation.org (Postfix) with ESMTP id 6AF8EC1D80;
+	Wed, 25 Dec 2019 01:52:45 +0000 (UTC)
+Received: from fraxinus.osuosl.org (smtp4.osuosl.org [140.211.166.137])
+ by lists.linuxfoundation.org (Postfix) with ESMTP id C6BC0C0881
+ for <iommu@lists.linux-foundation.org>; Wed, 25 Dec 2019 01:52:44 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
- by hemlock.osuosl.org (Postfix) with ESMTP id A176386CDC
- for <iommu@lists.linux-foundation.org>; Tue, 24 Dec 2019 19:09:04 +0000 (UTC)
+ by fraxinus.osuosl.org (Postfix) with ESMTP id C197F845D9
+ for <iommu@lists.linux-foundation.org>; Wed, 25 Dec 2019 01:52:44 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from hemlock.osuosl.org ([127.0.0.1])
+Received: from fraxinus.osuosl.org ([127.0.0.1])
  by localhost (.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
- with ESMTP id i+-supUQ+7Gh for <iommu@lists.linux-foundation.org>;
- Tue, 24 Dec 2019 19:09:04 +0000 (UTC)
+ with ESMTP id Vf5mMit334aS for <iommu@lists.linux-foundation.org>;
+ Wed, 25 Dec 2019 01:52:43 +0000 (UTC)
 X-Greylist: domain auto-whitelisted by SQLgrey-1.7.6
-Received: from us-smtp-1.mimecast.com (us-smtp-delivery-1.mimecast.com
- [205.139.110.120])
- by hemlock.osuosl.org (Postfix) with ESMTPS id D7B8886CD7
- for <iommu@lists.linux-foundation.org>; Tue, 24 Dec 2019 19:09:03 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
- s=mimecast20190719; t=1577214542;
- h=from:from:reply-to:reply-to:subject:subject:date:date:
- message-id:message-id:to:to:cc:cc:mime-version:mime-version:
- content-type:content-type:in-reply-to:in-reply-to:  references:references;
- bh=sN9oy8InhvYTWTcIBE/ApxS/MBEGLGguoOVJTgKsavo=;
- b=fozZi9x1Ple9UyanOnGziPsYTV58zSsoSg2xtnY/xRVN4TOBQxryTPNj+1ap9xZitKbCfF
- fkxfUtQSz2T8CfOb4wUwKKyi0FhVlc1g9LwhvR8B5vC9+0GKkUiZ1X3Rq8AVvgdwIeQ5P5
- Q6D7EsxSmwMHszKJyZwBFthhrymgqT0=
-Received: from mail-yw1-f69.google.com (mail-yw1-f69.google.com
- [209.85.161.69]) (Using TLS) by relay.mimecast.com with ESMTP id
- us-mta-350-G3i7YeiQOMuTC38ca6JmTA-1; Tue, 24 Dec 2019 14:09:00 -0500
-Received: by mail-yw1-f69.google.com with SMTP id q130so15929268ywh.11
- for <iommu@lists.linux-foundation.org>; Tue, 24 Dec 2019 11:09:00 -0800 (PST)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
- d=1e100.net; s=20161025;
- h=x-gm-message-state:date:from:to:cc:subject:message-id:reply-to
- :mail-followup-to:references:mime-version:content-disposition
- :in-reply-to;
- bh=sN9oy8InhvYTWTcIBE/ApxS/MBEGLGguoOVJTgKsavo=;
- b=KtmCmK2lvCWe4CfrBPN8IxvXUNcnKKec7B+Ng0Gpf63oKXE2JjDcmlCTYV+3+m4sSY
- OVPcwZIgqhp8yod3/BmdXg26UIGwRNPxW6GV7a1xzzMaOtMsP14zuQIX5Ixua3jr7iYV
- sHJ7YzOlxUkwUdqewQy2s+RCSduVCNHBn0PvEOVS+WY0SdxWCWKVU6JuaRsq4pPgns8g
- KeSo/eQ7ge9CnBo9t/gzgxc0Kksf+vWcg2VzR8cWnBr1+Rl1vn0K6tfrcbq1GH0j1Hv8
- RYCG0N0sgKXgWCeg7TP6kItOyGhhApM9WfQiaui8OIUeZCqo7XLozfgNp4tF6K758Dp8
- BpTw==
-X-Gm-Message-State: APjAAAWIdoaNOjUzaktQkY3aibLuLf2ZpdA2FE0OVBw7qsZ7hroZOGIJ
- 4J4A2ldFB97UJu/2LcQNImmnjmuiBnHh7ojr0mllF/F/txbYUowX6ZXw3g/70HsGsKbKzusf7Am
- 50HcypLphdA6eaSUaX128/izDpxRpTg==
-X-Received: by 2002:a25:68d2:: with SMTP id
- d201mr27072872ybc.177.1577214540288; 
- Tue, 24 Dec 2019 11:09:00 -0800 (PST)
-X-Google-Smtp-Source: APXvYqz0S3EZ46tOP4qqPj6eQg1Mo8wV9UwKPT4m38jrGBN38s6oteTQkqrcrF05/SG735A3VfXw9w==
-X-Received: by 2002:a25:68d2:: with SMTP id
- d201mr27072853ybc.177.1577214540042; 
- Tue, 24 Dec 2019 11:09:00 -0800 (PST)
-Received: from localhost (ip70-163-223-149.ph.ph.cox.net. [70.163.223.149])
- by smtp.gmail.com with ESMTPSA id e131sm9679917ywb.81.2019.12.24.11.08.58
- (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
- Tue, 24 Dec 2019 11:08:59 -0800 (PST)
-Date: Tue, 24 Dec 2019 12:08:57 -0700
-From: Jerry Snitselaar <jsnitsel@redhat.com>
-To: Lu Baolu <baolu.lu@linux.intel.com>
-Subject: Re: [PATCH 1/1] iommu/vt-d: Add a quirk flag for scope mismatched
- devices
-Message-ID: <20191224190857.kb32qjogzumoh4xv@cantor>
-Mail-Followup-To: Lu Baolu <baolu.lu@linux.intel.com>,
- Joerg Roedel <joro@8bytes.org>,
- Roland Dreier <roland@purestorage.com>, Jim Yan <jimyan@baidu.com>,
- iommu@lists.linux-foundation.org, linux-kernel@vger.kernel.org
-References: <20191224062240.4796-1-baolu.lu@linux.intel.com>
+Received: from baidu.com (mx20.baidu.com [111.202.115.85])
+ by fraxinus.osuosl.org (Postfix) with ESMTP id DD15F845A0
+ for <iommu@lists.linux-foundation.org>; Wed, 25 Dec 2019 01:52:42 +0000 (UTC)
+Received: from BJHW-Mail-Ex11.internal.baidu.com (unknown [10.127.64.34])
+ by Forcepoint Email with ESMTPS id 0060560D3E4A6E54201B;
+ Wed, 25 Dec 2019 09:52:40 +0800 (CST)
+Received: from BJHW-Mail-Ex03.internal.baidu.com (10.127.64.13) by
+ BJHW-Mail-Ex11.internal.baidu.com (10.127.64.34) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256_P256) id
+ 15.1.1713.5; Wed, 25 Dec 2019 09:52:40 +0800
+Received: from BC-Mail-Ex03.internal.baidu.com (172.31.51.43) by
+ BJHW-Mail-Ex03.internal.baidu.com (10.127.64.13) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256_P256) id
+ 15.1.1713.5; Wed, 25 Dec 2019 09:52:40 +0800
+Received: from BC-Mail-Ex03.internal.baidu.com ([100.100.100.102]) by
+ BC-Mail-Ex03.internal.baidu.com ([100.100.100.102]) with mapi id
+ 15.01.1531.010; Wed, 25 Dec 2019 09:52:40 +0800
+From: "Jim,Yan" <jimyan@baidu.com>
+To: Lu Baolu <baolu.lu@linux.intel.com>, Jerry Snitselaar <jsnitsel@redhat.com>
+Subject: =?utf-8?B?562U5aSNOiDnrZTlpI06IOetlOWkjTog562U5aSNOiBbUEFUQ0hdIGlvbW11?=
+ =?utf-8?B?L3Z0LWQ6IERvbid0IHJlamVjdCBudm1lIGhvc3QgZHVlIHRvIHNjb3BlIG1p?=
+ =?utf-8?Q?smatch?=
+Thread-Topic: =?utf-8?B?562U5aSNOiDnrZTlpI06IOetlOWkjTogW1BBVENIXSBpb21tdS92dC1kOiBE?=
+ =?utf-8?Q?on't_reject_nvme_host_due_to_scope_mismatch?=
+Thread-Index: AdW6BKk3WRIzqftPRCuhhluvn9v6Mv//tuqA//9dBfCAAPa3gP//eOkw
+Date: Wed, 25 Dec 2019 01:52:40 +0000
+Message-ID: <062f5fd1611940b083ec34603eca94e1@baidu.com>
+References: <4b77511069cb4fbc982eebaad941cd23@baidu.com>
+ <149a454d-96ea-1e25-74d1-04a08f8b261e@linux.intel.com>
+ <8fbd6988b0a94c5e9e4b23eed59114dc@baidu.com>
+ <273a4cc4-f17b-63a6-177d-9830e683bf52@linux.intel.com>
+In-Reply-To: <273a4cc4-f17b-63a6-177d-9830e683bf52@linux.intel.com>
+Accept-Language: zh-CN, en-US
+Content-Language: zh-CN
+X-MS-Has-Attach: 
+X-MS-TNEF-Correlator: 
+x-originating-ip: [172.22.200.92]
+x-baidu-bdmsfe-datecheck: 1_BJHW-Mail-Ex03_2019-12-25 09:52:40:801
+x-baidu-bdmsfe-viruscheck: BJHW-Mail-Ex03_GRAY_Inside_WithoutAtta_2019-12-25
+ 09:52:40:785
 MIME-Version: 1.0
-In-Reply-To: <20191224062240.4796-1-baolu.lu@linux.intel.com>
-X-MC-Unique: G3i7YeiQOMuTC38ca6JmTA-1
-X-Mimecast-Spam-Score: 0
-Content-Disposition: inline
-Cc: Roland Dreier <roland@purestorage.com>, Jim Yan <jimyan@baidu.com>,
- iommu@lists.linux-foundation.org, linux-kernel@vger.kernel.org
+X-Baidu-BdMsfe-DateCheck: 1_BJHW-Mail-Ex11_2019-12-25 09:52:41:032
+Cc: "iommu@lists.linux-foundation.org" <iommu@lists.linux-foundation.org>,
+ "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>
 X-BeenThere: iommu@lists.linux-foundation.org
 X-Mailman-Version: 2.1.15
 Precedence: list
@@ -117,27 +97,34 @@ List-Post: <mailto:iommu@lists.linux-foundation.org>
 List-Help: <mailto:iommu-request@lists.linux-foundation.org?subject=help>
 List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
  <mailto:iommu-request@lists.linux-foundation.org?subject=subscribe>
-Reply-To: Jerry Snitselaar <jsnitsel@redhat.com>
-Content-Transfer-Encoding: 7bit
-Content-Type: text/plain; charset="us-ascii"; Format="flowed"
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: base64
 Errors-To: iommu-bounces@lists.linux-foundation.org
 Sender: "iommu" <iommu-bounces@lists.linux-foundation.org>
 
-On Tue Dec 24 19, Lu Baolu wrote:
->We expect devices with endpoint scope to have normal PCI headers,
->and devices with bridge scope to have bridge PCI headers.  However
->Some PCI devices may be listed in the DMAR table with bridge scope,
->even though they have a normal PCI header. Add a quirk flag for
->those special devices.
->
->Cc: Roland Dreier <roland@purestorage.com>
->Cc: Jim Yan <jimyan@baidu.com>
->Signed-off-by: Lu Baolu <baolu.lu@linux.intel.com>
->---
-
-Reviewed-by: Jerry Snitselaar <jsnitsel@redhat.com>
-
-_______________________________________________
-iommu mailing list
-iommu@lists.linux-foundation.org
-https://lists.linuxfoundation.org/mailman/listinfo/iommu
+SGksDQoNCj4gLS0tLS3pgq7ku7bljp/ku7YtLS0tLQ0KPiDlj5Hku7bkuro6IEx1IEJhb2x1IFtt
+YWlsdG86YmFvbHUubHVAbGludXguaW50ZWwuY29tXQ0KPiDlj5HpgIHml7bpl7Q6IDIwMTnlubQx
+MuaciDI05pelIDE5OjI3DQo+IOaUtuS7tuS6ujogSmltLFlhbiA8amlteWFuQGJhaWR1LmNvbT47
+IEplcnJ5IFNuaXRzZWxhYXIgPGpzbml0c2VsQHJlZGhhdC5jb20+DQo+IOaKhOmAgTogaW9tbXVA
+bGlzdHMubGludXgtZm91bmRhdGlvbi5vcmc7IGxpbnV4LWtlcm5lbEB2Z2VyLmtlcm5lbC5vcmcN
+Cj4g5Li76aKYOiBSZTog562U5aSNOiDnrZTlpI06IOetlOWkjTogW1BBVENIXSBpb21tdS92dC1k
+OiBEb24ndCByZWplY3QgbnZtZSBob3N0IGR1ZQ0KPiB0byBzY29wZSBtaXNtYXRjaA0KPiANCj4g
+SGksDQo+IA0KPiBPbiAyMDE5LzEyLzI0IDE2OjE4LCBKaW0sWWFuIHdyb3RlOg0KPiA+Pj4+IEZv
+ciBib3RoIGNhc2VzLCBhIHF1aXJrIGZsYWcgc2VlbXMgdG8gYmUgbW9yZSByZWFzb25hYmxlLCBz
+byB0aGF0DQo+ID4+Pj4gdW5yZWxhdGVkIGRldmljZXMgd2lsbCBub3QgYmUgaW1wYWN0ZWQuDQo+
+ID4+Pj4NCj4gPj4+PiBCZXN0IHJlZ2FyZHMsDQo+ID4+Pj4gYmFvbHUNCj4gPj4+IEhpIEJhb2x1
+LA0KPiA+Pj4gCVRoYW5rcyBmb3IgeW91ciBhZHZpY2UuIEFuZCBJIG1vZGlmeSB0aGUgcGF0Y2gg
+YXMgZm9sbG93Lg0KPiA+PiBJIGp1c3QgcG9zdGVkIGEgcGF0Y2ggZm9yIGJvdGggTlRHIGFuZCBO
+Vk1FIGNhc2VzLiBDYW4geW91IHBsZWFzZSB0YWtlIGENCj4gbG9vaz8NCj4gPj4gRG9lcyBpdCB3
+b3JrIGZvciB5b3U/DQo+ID4+DQo+ID4+IEJlc3QgcmVnYXJkcywNCj4gPj4gYmFvbHUNCj4gPj4N
+Cj4gPiBJIGhhdmUgdGVzdGVkIHlvdXIgcGF0Y2guIEl0IGRvZXMgd29yayBmb3IgbWUuIEJ1dCBJ
+IHByZWZlciBteSBzZWNvbmQgdmVyc2lvbiwNCj4gaXQgaXMgbW9yZSBmbGV4aWJsZSwgYW5kIG1h
+eSB1c2UgZm9yIHNpbWlsYXIgdW5rbm93biBkZXZpY2VzLg0KPiA+DQo+IA0KPiBJIGRpZG4ndCBn
+ZXQgeW91ciBwb2ludC4gRG8geW91IG1pbmQgZXhwbGFpbmluZyB3aHkgaXQncyBtb3JlIGZsZXhp
+YmxlPw0KPiANCj4gQmVzdCByZWdhcmRzLA0KPiBCYW9sdQ0KRm9yIGV4YW1wbGUsIGFuIHVua25v
+d24gZGV2aWNlIGhhcyBhIG5vcm1hbCBQQ0kgaGVhZGVyIGFuZCBicmlkZ2Ugc2NvcGUgYW5kIGEg
+Y2xhc3Mgb2YgUENJX0NMQVNTX0JSSURHRV9QQ0kuIA0KVGhlc2UgZGV2aWNlcyBkbyBoYXZlIGEg
+Y2xhc3Mgb2YgUENJX0JBU0VfQ0xBU1NfQlJJREdFIGluIGNvbW1vbi4NCg0KSmltDQpfX19fX19f
+X19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fXwppb21tdSBtYWlsaW5nIGxp
+c3QKaW9tbXVAbGlzdHMubGludXgtZm91bmRhdGlvbi5vcmcKaHR0cHM6Ly9saXN0cy5saW51eGZv
+dW5kYXRpb24ub3JnL21haWxtYW4vbGlzdGluZm8vaW9tbXU=
