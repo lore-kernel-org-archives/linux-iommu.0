@@ -4,60 +4,60 @@ X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 X-Spam-Level: 
 X-Spam-Status: No, score=-9.8 required=3.0 tests=DKIM_INVALID,DKIM_SIGNED,
 	INCLUDES_PATCH,MAILING_LIST_MULTI,SIGNED_OFF_BY,SPF_HELO_NONE,SPF_PASS,
-	USER_AGENT_GIT autolearn=ham autolearn_force=no version=3.4.0
+	USER_AGENT_GIT autolearn=unavailable autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 7EA53C2D0C2
-	for <iommu@archiver.kernel.org>; Mon, 30 Dec 2019 17:26:35 +0000 (UTC)
-Received: from whitealder.osuosl.org (smtp1.osuosl.org [140.211.166.138])
+	by smtp.lore.kernel.org (Postfix) with ESMTP id EB5D4C3F68F
+	for <iommu@archiver.kernel.org>; Mon, 30 Dec 2019 17:26:36 +0000 (UTC)
+Received: from hemlock.osuosl.org (smtp2.osuosl.org [140.211.166.133])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by mail.kernel.org (Postfix) with ESMTPS id 5065B206DB
-	for <iommu@archiver.kernel.org>; Mon, 30 Dec 2019 17:26:33 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTPS id C305E2071E
+	for <iommu@archiver.kernel.org>; Mon, 30 Dec 2019 17:26:36 +0000 (UTC)
 Authentication-Results: mail.kernel.org;
-	dkim=fail reason="signature verification failed" (1024-bit key) header.d=kernel.org header.i=@kernel.org header.b="YljdSTY8"
-DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 5065B206DB
+	dkim=fail reason="signature verification failed" (1024-bit key) header.d=kernel.org header.i=@kernel.org header.b="Ztprat6+"
+DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org C305E2071E
 Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=kernel.org
 Authentication-Results: mail.kernel.org; spf=pass smtp.mailfrom=iommu-bounces@lists.linux-foundation.org
 Received: from localhost (localhost [127.0.0.1])
-	by whitealder.osuosl.org (Postfix) with ESMTP id 8361A8609C;
-	Mon, 30 Dec 2019 17:26:33 +0000 (UTC)
+	by hemlock.osuosl.org (Postfix) with ESMTP id B3FA182998;
+	Mon, 30 Dec 2019 17:26:36 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from whitealder.osuosl.org ([127.0.0.1])
+Received: from hemlock.osuosl.org ([127.0.0.1])
 	by localhost (.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
-	with ESMTP id 3iQEA+WCv3WO; Mon, 30 Dec 2019 17:26:33 +0000 (UTC)
+	with ESMTP id sCKPEL8of-t2; Mon, 30 Dec 2019 17:26:36 +0000 (UTC)
 Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [140.211.9.56])
-	by whitealder.osuosl.org (Postfix) with ESMTP id 019F586064;
-	Mon, 30 Dec 2019 17:26:33 +0000 (UTC)
+	by hemlock.osuosl.org (Postfix) with ESMTP id 488C0822F7;
+	Mon, 30 Dec 2019 17:26:36 +0000 (UTC)
 Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
-	by lists.linuxfoundation.org (Postfix) with ESMTP id E351FC1796;
-	Mon, 30 Dec 2019 17:26:32 +0000 (UTC)
-Received: from silver.osuosl.org (smtp3.osuosl.org [140.211.166.136])
- by lists.linuxfoundation.org (Postfix) with ESMTP id A8305C077D
- for <iommu@lists.linux-foundation.org>; Mon, 30 Dec 2019 17:26:31 +0000 (UTC)
+	by lists.linuxfoundation.org (Postfix) with ESMTP id 367E2C1796;
+	Mon, 30 Dec 2019 17:26:36 +0000 (UTC)
+Received: from hemlock.osuosl.org (smtp2.osuosl.org [140.211.166.133])
+ by lists.linuxfoundation.org (Postfix) with ESMTP id 05087C077D
+ for <iommu@lists.linux-foundation.org>; Mon, 30 Dec 2019 17:26:34 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
- by silver.osuosl.org (Postfix) with ESMTP id 96FEE204F1
- for <iommu@lists.linux-foundation.org>; Mon, 30 Dec 2019 17:26:31 +0000 (UTC)
+ by hemlock.osuosl.org (Postfix) with ESMTP id E872B81EBE
+ for <iommu@lists.linux-foundation.org>; Mon, 30 Dec 2019 17:26:33 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from silver.osuosl.org ([127.0.0.1])
+Received: from hemlock.osuosl.org ([127.0.0.1])
  by localhost (.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
- with ESMTP id XbCpVWbKkZCb for <iommu@lists.linux-foundation.org>;
- Mon, 30 Dec 2019 17:26:30 +0000 (UTC)
+ with ESMTP id U9t9Y8JStj8n for <iommu@lists.linux-foundation.org>;
+ Mon, 30 Dec 2019 17:26:33 +0000 (UTC)
 X-Greylist: domain auto-whitelisted by SQLgrey-1.7.6
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
- by silver.osuosl.org (Postfix) with ESMTPS id A2285204EE
- for <iommu@lists.linux-foundation.org>; Mon, 30 Dec 2019 17:26:30 +0000 (UTC)
+ by hemlock.osuosl.org (Postfix) with ESMTPS id 4A47481B3B
+ for <iommu@lists.linux-foundation.org>; Mon, 30 Dec 2019 17:26:33 +0000 (UTC)
 Received: from localhost.localdomain (unknown [194.230.155.138])
  (using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
  (No client certificate requested)
- by mail.kernel.org (Postfix) with ESMTPSA id 624E22071E;
- Mon, 30 Dec 2019 17:26:28 +0000 (UTC)
+ by mail.kernel.org (Postfix) with ESMTPSA id EFD5E20730;
+ Mon, 30 Dec 2019 17:26:30 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
- s=default; t=1577726790;
- bh=hpl/Co9KS2/LOKvrmlKkOwb9bVMQhrdELM9/mYvA0mA=;
+ s=default; t=1577726793;
+ bh=WI3AUEHv2mSX/rTgYvCDyLE6KFEp215twOVaWTDYKaU=;
  h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
- b=YljdSTY8qMLQXFtcQUD+tseAIbH85X09zfrYeOaKxNX76qV9rOa6XYOpMvzGcJfS1
- 6Bi6MvXfoL9Tzu0mtaINRfCGeXfaIBqHASTe4n4BlzG3Vvcy1TgB5Nq809XWxBdCUA
- MgQhpM1Ty8oyJIrxW270k6WOqqtMG3MJJXunOIN4=
+ b=Ztprat6+2eMdb9X7G5j1siqsB9e3xMO55Md9+qDr8sGe7WzbaMmbqDQLhJXQmFm1j
+ S9dq9mJqNu0mQ6fDQaBpjtww0njsAut5iW1wSFnt11UcrZZfYA11/Fcv+D10iQ8EIa
+ Uzu15c6R1mhrOCXeLD595LB06GqLdoyu73tj33RY=
 From: Krzysztof Kozlowski <krzk@kernel.org>
 To: Joerg Roedel <joro@8bytes.org>, Robin Murphy <robin.murphy@arm.com>,
  Jean-Philippe Brucker <jean-philippe@linaro.org>,
@@ -65,13 +65,12 @@ To: Joerg Roedel <joro@8bytes.org>, Robin Murphy <robin.murphy@arm.com>,
  Douglas Anderson <dianders@chromium.org>, Suman Anna <s-anna@ti.com>,
  Tero Kristo <t-kristo@ti.com>, iommu@lists.linux-foundation.org,
  linux-kernel@vger.kernel.org
-Subject: [PATCH 2/3] iommu: omap: Fix printing format for size_t on 64-bit
-Date: Mon, 30 Dec 2019 18:26:18 +0100
-Message-Id: <20191230172619.17814-2-krzk@kernel.org>
+Subject: [PATCH 3/3] iommu: Enable compile testing for some of drivers
+Date: Mon, 30 Dec 2019 18:26:19 +0100
+Message-Id: <20191230172619.17814-3-krzk@kernel.org>
 X-Mailer: git-send-email 2.17.1
 In-Reply-To: <20191230172619.17814-1-krzk@kernel.org>
 References: <20191230172619.17814-1-krzk@kernel.org>
-MIME-Version: 1.0
 Cc: Krzysztof Kozlowski <krzk@kernel.org>
 X-BeenThere: iommu@lists.linux-foundation.org
 X-Mailman-Version: 2.1.15
@@ -85,45 +84,103 @@ List-Post: <mailto:iommu@lists.linux-foundation.org>
 List-Help: <mailto:iommu-request@lists.linux-foundation.org?subject=help>
 List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
  <mailto:iommu-request@lists.linux-foundation.org?subject=subscribe>
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: base64
+MIME-Version: 1.0
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: 7bit
 Errors-To: iommu-bounces@lists.linux-foundation.org
 Sender: "iommu" <iommu-bounces@lists.linux-foundation.org>
 
-UHJpbnQgc2l6ZV90IGFzICV6dSBvciAlenggdG8gZml4IC1XZm9ybWF0IHdhcm5pbmdzIHdoZW4g
-Y29tcGlsaW5nIG9uCjY0LWJpdCBwbGF0Zm9ybSAoZS5nLiB3aXRoIENPTVBJTEVfVEVTVCk6Cgog
-ICAgZHJpdmVycy9pb21tdS9vbWFwLWlvbW11LmM6IEluIGZ1bmN0aW9uIOKAmGZsdXNoX2lvdGxi
-X3BhZ2XigJk6CiAgICBkcml2ZXJzL2lvbW11L29tYXAtaW9tbXUuYzo0Mzc6NDc6IHdhcm5pbmc6
-CiAgICAgICAgZm9ybWF0IOKAmCV44oCZIGV4cGVjdHMgYXJndW1lbnQgb2YgdHlwZSDigJh1bnNp
-Z25lZCBpbnTigJksCiAgICAgICAgYnV0IGFyZ3VtZW50IDcgaGFzIHR5cGUg4oCYc2l6ZV90IHth
-a2EgbG9uZyB1bnNpZ25lZCBpbnR94oCZIFstV2Zvcm1hdD1dCgpTaWduZWQtb2ZmLWJ5OiBLcnp5
-c3p0b2YgS296bG93c2tpIDxrcnprQGtlcm5lbC5vcmc+Ci0tLQogZHJpdmVycy9pb21tdS9vbWFw
-LWlvbW11LmMgfCA4ICsrKystLS0tCiAxIGZpbGUgY2hhbmdlZCwgNCBpbnNlcnRpb25zKCspLCA0
-IGRlbGV0aW9ucygtKQoKZGlmZiAtLWdpdCBhL2RyaXZlcnMvaW9tbXUvb21hcC1pb21tdS5jIGIv
-ZHJpdmVycy9pb21tdS9vbWFwLWlvbW11LmMKaW5kZXggNTBlOGFjZjg4ZWM0Li44ODdmZWZjYjAz
-YjQgMTAwNjQ0Ci0tLSBhL2RyaXZlcnMvaW9tbXUvb21hcC1pb21tdS5jCisrKyBiL2RyaXZlcnMv
-aW9tbXUvb21hcC1pb21tdS5jCkBAIC00MzQsNyArNDM0LDcgQEAgc3RhdGljIHZvaWQgZmx1c2hf
-aW90bGJfcGFnZShzdHJ1Y3Qgb21hcF9pb21tdSAqb2JqLCB1MzIgZGEpCiAJCWJ5dGVzID0gaW9w
-Z3N6X3RvX2J5dGVzKGNyLmNhbSAmIDMpOwogCiAJCWlmICgoc3RhcnQgPD0gZGEpICYmIChkYSA8
-IHN0YXJ0ICsgYnl0ZXMpKSB7Ci0JCQlkZXZfZGJnKG9iai0+ZGV2LCAiJXM6ICUwOHg8PSUwOHgo
-JXgpXG4iLAorCQkJZGV2X2RiZyhvYmotPmRldiwgIiVzOiAlMDh4PD0lMDh4KCV6eClcbiIsCiAJ
-CQkJX19mdW5jX18sIHN0YXJ0LCBkYSwgYnl0ZXMpOwogCQkJaW90bGJfbG9hZF9jcihvYmosICZj
-cik7CiAJCQlpb21tdV93cml0ZV9yZWcob2JqLCAxLCBNTVVfRkxVU0hfRU5UUlkpOwpAQCAtMTM1
-MiwxMSArMTM1MiwxMSBAQCBzdGF0aWMgaW50IG9tYXBfaW9tbXVfbWFwKHN0cnVjdCBpb21tdV9k
-b21haW4gKmRvbWFpbiwgdW5zaWduZWQgbG9uZyBkYSwKIAogCW9tYXBfcGdzeiA9IGJ5dGVzX3Rv
-X2lvcGdzeihieXRlcyk7CiAJaWYgKG9tYXBfcGdzeiA8IDApIHsKLQkJZGV2X2VycihkZXYsICJp
-bnZhbGlkIHNpemUgdG8gbWFwOiAlZFxuIiwgYnl0ZXMpOworCQlkZXZfZXJyKGRldiwgImludmFs
-aWQgc2l6ZSB0byBtYXA6ICV6dVxuIiwgYnl0ZXMpOwogCQlyZXR1cm4gLUVJTlZBTDsKIAl9CiAK
-LQlkZXZfZGJnKGRldiwgIm1hcHBpbmcgZGEgMHglbHggdG8gcGEgJXBhIHNpemUgMHgleFxuIiwg
-ZGEsICZwYSwgYnl0ZXMpOworCWRldl9kYmcoZGV2LCAibWFwcGluZyBkYSAweCVseCB0byBwYSAl
-cGEgc2l6ZSAweCV6eFxuIiwgZGEsICZwYSwgYnl0ZXMpOwogCiAJaW90bGJfaW5pdF9lbnRyeSgm
-ZSwgZGEsIHBhLCBvbWFwX3Bnc3opOwogCkBAIC0xMzkzLDcgKzEzOTMsNyBAQCBzdGF0aWMgc2l6
-ZV90IG9tYXBfaW9tbXVfdW5tYXAoc3RydWN0IGlvbW11X2RvbWFpbiAqZG9tYWluLCB1bnNpZ25l
-ZCBsb25nIGRhLAogCXNpemVfdCBieXRlcyA9IDA7CiAJaW50IGk7CiAKLQlkZXZfZGJnKGRldiwg
-InVubWFwcGluZyBkYSAweCVseCBzaXplICV1XG4iLCBkYSwgc2l6ZSk7CisJZGV2X2RiZyhkZXYs
-ICJ1bm1hcHBpbmcgZGEgMHglbHggc2l6ZSAlenVcbiIsIGRhLCBzaXplKTsKIAogCWlvbW11ID0g
-b21hcF9kb21haW4tPmlvbW11czsKIAlmb3IgKGkgPSAwOyBpIDwgb21hcF9kb21haW4tPm51bV9p
-b21tdXM7IGkrKywgaW9tbXUrKykgewotLSAKMi4xNy4xCgpfX19fX19fX19fX19fX19fX19fX19f
-X19fX19fX19fX19fX19fX19fX19fX19fXwppb21tdSBtYWlsaW5nIGxpc3QKaW9tbXVAbGlzdHMu
-bGludXgtZm91bmRhdGlvbi5vcmcKaHR0cHM6Ly9saXN0cy5saW51eGZvdW5kYXRpb24ub3JnL21h
-aWxtYW4vbGlzdGluZm8vaW9tbXU=
+Some of the IOMMU drivers can be compile tested to increase build
+coverage.  The OMAP, Rockchip and Exynos drivers use
+device.dev_archdata.iommu field which does not exist on all platforms.
+The sPAPR TCE and ARM SMMU have also restrictions where they can be
+built.
+
+Signed-off-by: Krzysztof Kozlowski <krzk@kernel.org>
+---
+ drivers/iommu/Kconfig | 16 ++++++++--------
+ 1 file changed, 8 insertions(+), 8 deletions(-)
+
+diff --git a/drivers/iommu/Kconfig b/drivers/iommu/Kconfig
+index 0b9d78a0f3ac..fa27192ad166 100644
+--- a/drivers/iommu/Kconfig
++++ b/drivers/iommu/Kconfig
+@@ -260,7 +260,7 @@ config IRQ_REMAP
+ # OMAP IOMMU support
+ config OMAP_IOMMU
+ 	bool "OMAP IOMMU Support"
+-	depends on ARM && MMU
++	depends on ARM && MMU || (COMPILE_TEST && (ARM || ARM64 || IA64 || SPARC))
+ 	depends on ARCH_OMAP2PLUS || COMPILE_TEST
+ 	select IOMMU_API
+ 	---help---
+@@ -278,7 +278,7 @@ config OMAP_IOMMU_DEBUG
+ 
+ config ROCKCHIP_IOMMU
+ 	bool "Rockchip IOMMU Support"
+-	depends on ARM || ARM64
++	depends on ARM || ARM64 || (COMPILE_TEST && (ARM64 || IA64 || SPARC))
+ 	depends on ARCH_ROCKCHIP || COMPILE_TEST
+ 	select IOMMU_API
+ 	select ARM_DMA_USE_IOMMU
+@@ -312,7 +312,7 @@ config TEGRA_IOMMU_SMMU
+ 
+ config EXYNOS_IOMMU
+ 	bool "Exynos IOMMU Support"
+-	depends on ARCH_EXYNOS && MMU
++	depends on ARCH_EXYNOS && MMU || (COMPILE_TEST && (ARM || ARM64 || IA64 || SPARC))
+ 	depends on !CPU_BIG_ENDIAN # revisit driver if we can enable big-endian ptes
+ 	select IOMMU_API
+ 	select ARM_DMA_USE_IOMMU
+@@ -348,7 +348,7 @@ config IPMMU_VMSA
+ 
+ config SPAPR_TCE_IOMMU
+ 	bool "sPAPR TCE IOMMU Support"
+-	depends on PPC_POWERNV || PPC_PSERIES
++	depends on PPC_POWERNV || PPC_PSERIES || (PPC && COMPILE_TEST)
+ 	select IOMMU_API
+ 	help
+ 	  Enables bits of IOMMU API required by VFIO. The iommu_ops
+@@ -357,7 +357,7 @@ config SPAPR_TCE_IOMMU
+ # ARM IOMMU support
+ config ARM_SMMU
+ 	bool "ARM Ltd. System MMU (SMMU) Support"
+-	depends on (ARM64 || ARM) && MMU
++	depends on (ARM64 || ARM || (COMPILE_TEST && !GENERIC_ATOMIC64)) && MMU
+ 	select IOMMU_API
+ 	select IOMMU_IO_PGTABLE_LPAE
+ 	select ARM_DMA_USE_IOMMU if ARM
+@@ -415,7 +415,7 @@ config S390_IOMMU
+ 
+ config S390_CCW_IOMMU
+ 	bool "S390 CCW IOMMU Support"
+-	depends on S390 && CCW
++	depends on S390 && CCW || COMPILE_TEST
+ 	select IOMMU_API
+ 	help
+ 	  Enables bits of IOMMU API required by VFIO. The iommu_ops
+@@ -423,7 +423,7 @@ config S390_CCW_IOMMU
+ 
+ config S390_AP_IOMMU
+ 	bool "S390 AP IOMMU Support"
+-	depends on S390 && ZCRYPT
++	depends on S390 && ZCRYPT || COMPILE_TEST
+ 	select IOMMU_API
+ 	help
+ 	  Enables bits of IOMMU API required by VFIO. The iommu_ops
+@@ -431,7 +431,7 @@ config S390_AP_IOMMU
+ 
+ config MTK_IOMMU
+ 	bool "MTK IOMMU Support"
+-	depends on ARM || ARM64
++	depends on ARM || ARM64 || COMPILE_TEST
+ 	depends on ARCH_MEDIATEK || COMPILE_TEST
+ 	select ARM_DMA_USE_IOMMU
+ 	select IOMMU_API
+-- 
+2.17.1
+
+_______________________________________________
+iommu mailing list
+iommu@lists.linux-foundation.org
+https://lists.linuxfoundation.org/mailman/listinfo/iommu
