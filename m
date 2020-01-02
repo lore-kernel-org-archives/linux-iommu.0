@@ -6,58 +6,59 @@ X-Spam-Status: No, score=-9.8 required=3.0 tests=HEADER_FROM_DIFFERENT_DOMAINS,
 	INCLUDES_PATCH,MAILING_LIST_MULTI,SIGNED_OFF_BY,SPF_HELO_NONE,SPF_PASS,
 	USER_AGENT_GIT autolearn=ham autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id C7698C2D0DF
-	for <iommu@archiver.kernel.org>; Thu,  2 Jan 2020 00:19:57 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id BDE55C2D0DE
+	for <iommu@archiver.kernel.org>; Thu,  2 Jan 2020 00:19:58 +0000 (UTC)
 Received: from whitealder.osuosl.org (smtp1.osuosl.org [140.211.166.138])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by mail.kernel.org (Postfix) with ESMTPS id A5AA820672
-	for <iommu@archiver.kernel.org>; Thu,  2 Jan 2020 00:19:57 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org A5AA820672
+	by mail.kernel.org (Postfix) with ESMTPS id 9C5EB20842
+	for <iommu@archiver.kernel.org>; Thu,  2 Jan 2020 00:19:58 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 9C5EB20842
 Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=linux.intel.com
 Authentication-Results: mail.kernel.org; spf=pass smtp.mailfrom=iommu-bounces@lists.linux-foundation.org
 Received: from localhost (localhost [127.0.0.1])
-	by whitealder.osuosl.org (Postfix) with ESMTP id 992DE85D5C;
-	Thu,  2 Jan 2020 00:19:57 +0000 (UTC)
+	by whitealder.osuosl.org (Postfix) with ESMTP id 847F086055;
+	Thu,  2 Jan 2020 00:19:58 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
 Received: from whitealder.osuosl.org ([127.0.0.1])
 	by localhost (.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
-	with ESMTP id U2ECM5nz4+Ek; Thu,  2 Jan 2020 00:19:56 +0000 (UTC)
+	with ESMTP id 4IAgKfMdCXLE; Thu,  2 Jan 2020 00:19:56 +0000 (UTC)
 Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [140.211.9.56])
-	by whitealder.osuosl.org (Postfix) with ESMTP id 744F286239;
+	by whitealder.osuosl.org (Postfix) with ESMTP id 4DA3D86224;
 	Thu,  2 Jan 2020 00:19:56 +0000 (UTC)
 Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
-	by lists.linuxfoundation.org (Postfix) with ESMTP id 67BB8C1D8A;
+	by lists.linuxfoundation.org (Postfix) with ESMTP id 3A303C18DC;
 	Thu,  2 Jan 2020 00:19:56 +0000 (UTC)
 Received: from whitealder.osuosl.org (smtp1.osuosl.org [140.211.166.138])
- by lists.linuxfoundation.org (Postfix) with ESMTP id CC367C18DC
- for <iommu@lists.linux-foundation.org>; Thu,  2 Jan 2020 00:19:53 +0000 (UTC)
+ by lists.linuxfoundation.org (Postfix) with ESMTP id BE91EC18DC
+ for <iommu@lists.linux-foundation.org>; Thu,  2 Jan 2020 00:19:52 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
- by whitealder.osuosl.org (Postfix) with ESMTP id A8A288608B
- for <iommu@lists.linux-foundation.org>; Thu,  2 Jan 2020 00:19:53 +0000 (UTC)
+ by whitealder.osuosl.org (Postfix) with ESMTP id ADFD8854E8
+ for <iommu@lists.linux-foundation.org>; Thu,  2 Jan 2020 00:19:52 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
 Received: from whitealder.osuosl.org ([127.0.0.1])
  by localhost (.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
- with ESMTP id EaE15TnJ5DXZ for <iommu@lists.linux-foundation.org>;
- Thu,  2 Jan 2020 00:19:51 +0000 (UTC)
+ with ESMTP id zbojBNuK1HZ4 for <iommu@lists.linux-foundation.org>;
+ Thu,  2 Jan 2020 00:19:52 +0000 (UTC)
 X-Greylist: domain auto-whitelisted by SQLgrey-1.7.6
 Received: from mga14.intel.com (mga14.intel.com [192.55.52.115])
- by whitealder.osuosl.org (Postfix) with ESMTPS id 04D13861A0
- for <iommu@lists.linux-foundation.org>; Thu,  2 Jan 2020 00:19:50 +0000 (UTC)
+ by whitealder.osuosl.org (Postfix) with ESMTPS id DD74D85F37
+ for <iommu@lists.linux-foundation.org>; Thu,  2 Jan 2020 00:19:51 +0000 (UTC)
 X-Amp-Result: SKIPPED(no attachment in message)
 X-Amp-File-Uploaded: False
 Received: from fmsmga004.fm.intel.com ([10.253.24.48])
  by fmsmga103.fm.intel.com with ESMTP/TLS/DHE-RSA-AES256-GCM-SHA384;
- 01 Jan 2020 16:19:50 -0800
+ 01 Jan 2020 16:19:51 -0800
 X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.69,384,1571727600"; d="scan'208";a="244475950"
+X-IronPort-AV: E=Sophos;i="5.69,384,1571727600"; d="scan'208";a="244475954"
 Received: from allen-box.sh.intel.com ([10.239.159.136])
- by fmsmga004.fm.intel.com with ESMTP; 01 Jan 2020 16:19:50 -0800
+ by fmsmga004.fm.intel.com with ESMTP; 01 Jan 2020 16:19:51 -0800
 From: Lu Baolu <baolu.lu@linux.intel.com>
 To: Joerg Roedel <joro@8bytes.org>
-Subject: [PATCH 20/22] iommu/vt-d: Use iova over first level
-Date: Thu,  2 Jan 2020 08:18:21 +0800
-Message-Id: <20200102001823.21976-21-baolu.lu@linux.intel.com>
+Subject: [PATCH 21/22] iommu/vt-d: debugfs: Add support to show page table
+ internals
+Date: Thu,  2 Jan 2020 08:18:22 +0800
+Message-Id: <20200102001823.21976-22-baolu.lu@linux.intel.com>
 X-Mailer: git-send-email 2.17.1
 In-Reply-To: <20200102001823.21976-1-baolu.lu@linux.intel.com>
 References: <20200102001823.21976-1-baolu.lu@linux.intel.com>
@@ -80,36 +81,186 @@ Content-Transfer-Encoding: 7bit
 Errors-To: iommu-bounces@lists.linux-foundation.org
 Sender: "iommu" <iommu-bounces@lists.linux-foundation.org>
 
-After we make all map/unmap paths support first level page table.
-Let's turn it on if hardware supports scalable mode.
+Export page table internals of the domain attached to each device.
+Example of such dump on a Skylake machine:
+
+$ sudo cat /sys/kernel/debug/iommu/intel/domain_translation_struct
+[ ... ]
+Device 0000:00:14.0 with pasid 0 @0x15f3d9000
+IOVA_PFN                PML5E                   PML4E
+0x000000008ced0 |       0x0000000000000000      0x000000015f3da003
+0x000000008ced1 |       0x0000000000000000      0x000000015f3da003
+0x000000008ced2 |       0x0000000000000000      0x000000015f3da003
+0x000000008ced3 |       0x0000000000000000      0x000000015f3da003
+0x000000008ced4 |       0x0000000000000000      0x000000015f3da003
+0x000000008ced5 |       0x0000000000000000      0x000000015f3da003
+0x000000008ced6 |       0x0000000000000000      0x000000015f3da003
+0x000000008ced7 |       0x0000000000000000      0x000000015f3da003
+0x000000008ced8 |       0x0000000000000000      0x000000015f3da003
+0x000000008ced9 |       0x0000000000000000      0x000000015f3da003
+
+PDPE                    PDE                     PTE
+0x000000015f3db003      0x000000015f3dc003      0x000000008ced0003
+0x000000015f3db003      0x000000015f3dc003      0x000000008ced1003
+0x000000015f3db003      0x000000015f3dc003      0x000000008ced2003
+0x000000015f3db003      0x000000015f3dc003      0x000000008ced3003
+0x000000015f3db003      0x000000015f3dc003      0x000000008ced4003
+0x000000015f3db003      0x000000015f3dc003      0x000000008ced5003
+0x000000015f3db003      0x000000015f3dc003      0x000000008ced6003
+0x000000015f3db003      0x000000015f3dc003      0x000000008ced7003
+0x000000015f3db003      0x000000015f3dc003      0x000000008ced8003
+0x000000015f3db003      0x000000015f3dc003      0x000000008ced9003
+[ ... ]
 
 Signed-off-by: Lu Baolu <baolu.lu@linux.intel.com>
 ---
- drivers/iommu/intel-iommu.c | 6 ++----
- 1 file changed, 2 insertions(+), 4 deletions(-)
+ drivers/iommu/intel-iommu-debugfs.c | 75 +++++++++++++++++++++++++++++
+ drivers/iommu/intel-iommu.c         |  4 +-
+ include/linux/intel-iommu.h         |  2 +
+ 3 files changed, 79 insertions(+), 2 deletions(-)
 
+diff --git a/drivers/iommu/intel-iommu-debugfs.c b/drivers/iommu/intel-iommu-debugfs.c
+index 471f05d452e0..c1257bef553c 100644
+--- a/drivers/iommu/intel-iommu-debugfs.c
++++ b/drivers/iommu/intel-iommu-debugfs.c
+@@ -5,6 +5,7 @@
+  * Authors: Gayatri Kammela <gayatri.kammela@intel.com>
+  *	    Sohil Mehta <sohil.mehta@intel.com>
+  *	    Jacob Pan <jacob.jun.pan@linux.intel.com>
++ *	    Lu Baolu <baolu.lu@linux.intel.com>
+  */
+ 
+ #include <linux/debugfs.h>
+@@ -283,6 +284,77 @@ static int dmar_translation_struct_show(struct seq_file *m, void *unused)
+ }
+ DEFINE_SHOW_ATTRIBUTE(dmar_translation_struct);
+ 
++static inline unsigned long level_to_directory_size(int level)
++{
++	return BIT_ULL(VTD_PAGE_SHIFT + VTD_STRIDE_SHIFT * (level - 1));
++}
++
++static inline void
++dump_page_info(struct seq_file *m, unsigned long iova, u64 *path)
++{
++	seq_printf(m, "0x%013lx |\t0x%016llx\t0x%016llx\t0x%016llx\t0x%016llx\t0x%016llx\n",
++		   iova >> VTD_PAGE_SHIFT, path[5], path[4],
++		   path[3], path[2], path[1]);
++}
++
++static void pgtable_walk_level(struct seq_file *m, struct dma_pte *pde,
++			       int level, unsigned long start,
++			       u64 *path)
++{
++	int i;
++
++	if (level > 5 || level < 1)
++		return;
++
++	for (i = 0; i < BIT_ULL(VTD_STRIDE_SHIFT);
++			i++, pde++, start += level_to_directory_size(level)) {
++		if (!dma_pte_present(pde))
++			continue;
++
++		path[level] = pde->val;
++		if (dma_pte_superpage(pde) || level == 1)
++			dump_page_info(m, start, path);
++		else
++			pgtable_walk_level(m, phys_to_virt(dma_pte_addr(pde)),
++					   level - 1, start, path);
++		path[level] = 0;
++	}
++}
++
++static int show_device_domain_translation(struct device *dev, void *data)
++{
++	struct dmar_domain *domain = find_domain(dev);
++	struct seq_file *m = data;
++	u64 path[6] = { 0 };
++
++	if (!domain)
++		return 0;
++
++	seq_printf(m, "Device %s with pasid %d @0x%llx\n",
++		   dev_name(dev), domain->default_pasid,
++		   (u64)virt_to_phys(domain->pgd));
++	seq_puts(m, "IOVA_PFN\t\tPML5E\t\t\tPML4E\t\t\tPDPE\t\t\tPDE\t\t\tPTE\n");
++
++	pgtable_walk_level(m, domain->pgd, domain->agaw + 2, 0, path);
++	seq_putc(m, '\n');
++
++	return 0;
++}
++
++static int domain_translation_struct_show(struct seq_file *m, void *unused)
++{
++	unsigned long flags;
++	int ret;
++
++	spin_lock_irqsave(&device_domain_lock, flags);
++	ret = bus_for_each_dev(&pci_bus_type, NULL, m,
++			       show_device_domain_translation);
++	spin_unlock_irqrestore(&device_domain_lock, flags);
++
++	return ret;
++}
++DEFINE_SHOW_ATTRIBUTE(domain_translation_struct);
++
+ #ifdef CONFIG_IRQ_REMAP
+ static void ir_tbl_remap_entry_show(struct seq_file *m,
+ 				    struct intel_iommu *iommu)
+@@ -396,6 +468,9 @@ void __init intel_iommu_debugfs_init(void)
+ 			    &iommu_regset_fops);
+ 	debugfs_create_file("dmar_translation_struct", 0444, intel_iommu_debug,
+ 			    NULL, &dmar_translation_struct_fops);
++	debugfs_create_file("domain_translation_struct", 0444,
++			    intel_iommu_debug, NULL,
++			    &domain_translation_struct_fops);
+ #ifdef CONFIG_IRQ_REMAP
+ 	debugfs_create_file("ir_translation_struct", 0444, intel_iommu_debug,
+ 			    NULL, &ir_translation_struct_fops);
 diff --git a/drivers/iommu/intel-iommu.c b/drivers/iommu/intel-iommu.c
-index 34e619318f64..51d60bad0b1d 100644
+index 51d60bad0b1d..609931f6d771 100644
 --- a/drivers/iommu/intel-iommu.c
 +++ b/drivers/iommu/intel-iommu.c
-@@ -1770,15 +1770,13 @@ static void free_dmar_iommu(struct intel_iommu *iommu)
+@@ -396,7 +396,7 @@ EXPORT_SYMBOL_GPL(intel_iommu_gfx_mapped);
  
- /*
-  * Check and return whether first level is used by default for
-- * DMA translation. Currently, we make it off by setting
-- * first_level_support = 0, and will change it to -1 after all
-- * map/unmap paths support first level page table.
-+ * DMA translation.
-  */
- static bool first_level_by_default(void)
+ #define DUMMY_DEVICE_DOMAIN_INFO ((struct device_domain_info *)(-1))
+ #define DEFER_DEVICE_DOMAIN_INFO ((struct device_domain_info *)(-2))
+-static DEFINE_SPINLOCK(device_domain_lock);
++DEFINE_SPINLOCK(device_domain_lock);
+ static LIST_HEAD(device_domain_list);
+ 
+ #define device_needs_bounce(d) (!intel_no_bounce && dev_is_pci(d) &&	\
+@@ -2513,7 +2513,7 @@ static void domain_remove_dev_info(struct dmar_domain *domain)
+ 	spin_unlock_irqrestore(&device_domain_lock, flags);
+ }
+ 
+-static struct dmar_domain *find_domain(struct device *dev)
++struct dmar_domain *find_domain(struct device *dev)
  {
- 	struct dmar_drhd_unit *drhd;
- 	struct intel_iommu *iommu;
--	static int first_level_support = 0;
-+	static int first_level_support = -1;
+ 	struct device_domain_info *info;
  
- 	if (likely(first_level_support != -1))
- 		return first_level_support;
+diff --git a/include/linux/intel-iommu.h b/include/linux/intel-iommu.h
+index 3a4708a8a414..4a16b39ae353 100644
+--- a/include/linux/intel-iommu.h
++++ b/include/linux/intel-iommu.h
+@@ -441,6 +441,7 @@ enum {
+ #define VTD_FLAG_SVM_CAPABLE		(1 << 2)
+ 
+ extern int intel_iommu_sm;
++extern spinlock_t device_domain_lock;
+ 
+ #define sm_supported(iommu)	(intel_iommu_sm && ecap_smts((iommu)->ecap))
+ #define pasid_supported(iommu)	(sm_supported(iommu) &&			\
+@@ -663,6 +664,7 @@ int for_each_device_domain(int (*fn)(struct device_domain_info *info,
+ 				     void *data), void *data);
+ void iommu_flush_write_buffer(struct intel_iommu *iommu);
+ int intel_iommu_enable_pasid(struct intel_iommu *iommu, struct device *dev);
++struct dmar_domain *find_domain(struct device *dev);
+ 
+ #ifdef CONFIG_INTEL_IOMMU_SVM
+ extern void intel_svm_check(struct intel_iommu *iommu);
 -- 
 2.17.1
 
