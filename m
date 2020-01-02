@@ -7,86 +7,87 @@ X-Spam-Status: No, score=-9.6 required=3.0 tests=DKIM_INVALID,DKIM_SIGNED,
 	SPF_HELO_NONE,SPF_PASS,USER_AGENT_GIT autolearn=unavailable
 	autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 86A95C3276C
-	for <iommu@archiver.kernel.org>; Thu,  2 Jan 2020 11:02:37 +0000 (UTC)
-Received: from hemlock.osuosl.org (smtp2.osuosl.org [140.211.166.133])
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 9FECDC2D0DC
+	for <iommu@archiver.kernel.org>; Thu,  2 Jan 2020 11:02:42 +0000 (UTC)
+Received: from silver.osuosl.org (smtp3.osuosl.org [140.211.166.136])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by mail.kernel.org (Postfix) with ESMTPS id 5AFA6215A4
-	for <iommu@archiver.kernel.org>; Thu,  2 Jan 2020 11:02:37 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTPS id 6FE6B215A4
+	for <iommu@archiver.kernel.org>; Thu,  2 Jan 2020 11:02:42 +0000 (UTC)
 Authentication-Results: mail.kernel.org;
-	dkim=fail reason="key not found in DNS" (0-bit key) header.d=mg.codeaurora.org header.i=@mg.codeaurora.org header.b="Bhr10hcV"
-DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 5AFA6215A4
+	dkim=fail reason="key not found in DNS" (0-bit key) header.d=mg.codeaurora.org header.i=@mg.codeaurora.org header.b="JnChjLQS"
+DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 6FE6B215A4
 Authentication-Results: mail.kernel.org; dmarc=none (p=none dis=none) header.from=codeaurora.org
 Authentication-Results: mail.kernel.org; spf=pass smtp.mailfrom=iommu-bounces@lists.linux-foundation.org
 Received: from localhost (localhost [127.0.0.1])
-	by hemlock.osuosl.org (Postfix) with ESMTP id 3755087935;
-	Thu,  2 Jan 2020 11:02:37 +0000 (UTC)
+	by silver.osuosl.org (Postfix) with ESMTP id 24C3B204BF;
+	Thu,  2 Jan 2020 11:02:42 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from hemlock.osuosl.org ([127.0.0.1])
+Received: from silver.osuosl.org ([127.0.0.1])
 	by localhost (.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
-	with ESMTP id dHuFj+qzTv6l; Thu,  2 Jan 2020 11:02:36 +0000 (UTC)
+	with ESMTP id quonPWLO91pu; Thu,  2 Jan 2020 11:02:41 +0000 (UTC)
 Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [140.211.9.56])
-	by hemlock.osuosl.org (Postfix) with ESMTP id 255FC874E0;
-	Thu,  2 Jan 2020 11:02:36 +0000 (UTC)
+	by silver.osuosl.org (Postfix) with ESMTP id 6295C20110;
+	Thu,  2 Jan 2020 11:02:41 +0000 (UTC)
 Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
-	by lists.linuxfoundation.org (Postfix) with ESMTP id 10E40C1D80;
-	Thu,  2 Jan 2020 11:02:36 +0000 (UTC)
+	by lists.linuxfoundation.org (Postfix) with ESMTP id 4D046C1D80;
+	Thu,  2 Jan 2020 11:02:41 +0000 (UTC)
 Received: from hemlock.osuosl.org (smtp2.osuosl.org [140.211.166.133])
- by lists.linuxfoundation.org (Postfix) with ESMTP id BB3A7C077D
- for <iommu@lists.linux-foundation.org>; Thu,  2 Jan 2020 11:02:34 +0000 (UTC)
+ by lists.linuxfoundation.org (Postfix) with ESMTP id 4955BC077D
+ for <iommu@lists.linux-foundation.org>; Thu,  2 Jan 2020 11:02:40 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
- by hemlock.osuosl.org (Postfix) with ESMTP id B5016877ED
- for <iommu@lists.linux-foundation.org>; Thu,  2 Jan 2020 11:02:34 +0000 (UTC)
+ by hemlock.osuosl.org (Postfix) with ESMTP id 388EB877ED
+ for <iommu@lists.linux-foundation.org>; Thu,  2 Jan 2020 11:02:40 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
 Received: from hemlock.osuosl.org ([127.0.0.1])
  by localhost (.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
- with ESMTP id Rus2+wf8pJkG for <iommu@lists.linux-foundation.org>;
- Thu,  2 Jan 2020 11:02:33 +0000 (UTC)
+ with ESMTP id K+0el8kjoRxr for <iommu@lists.linux-foundation.org>;
+ Thu,  2 Jan 2020 11:02:39 +0000 (UTC)
 X-Greylist: from auto-whitelisted by SQLgrey-1.7.6
 Received: from mail25.static.mailgun.info (mail25.static.mailgun.info
  [104.130.122.25])
- by hemlock.osuosl.org (Postfix) with ESMTPS id DEB91874E0
- for <iommu@lists.linux-foundation.org>; Thu,  2 Jan 2020 11:02:32 +0000 (UTC)
+ by hemlock.osuosl.org (Postfix) with ESMTPS id 0BC48874E0
+ for <iommu@lists.linux-foundation.org>; Thu,  2 Jan 2020 11:02:38 +0000 (UTC)
 DKIM-Signature: a=rsa-sha256; v=1; c=relaxed/relaxed; d=mg.codeaurora.org;
  q=dns/txt; 
- s=smtp; t=1577962953; h=References: In-Reply-To: Message-Id: Date:
+ s=smtp; t=1577962959; h=References: In-Reply-To: Message-Id: Date:
  Subject: Cc: To: From: Sender;
- bh=9VwTwVyLiN8SGjokwTKpUwqmUyn5dWpdqG4Z60OsnzQ=;
- b=Bhr10hcVHl7wDP1MzrrB8ey2pLQ0DU5CWWPRNql7+NHIcOSOhykkAqZBnddxrvEqGCseE2+k
- ABUD3Us/TA7j9gGiT5CtcgtfCjahNHg5C1V0ztcjnJ+RH8kWWswp2NXeYhTcWIoPMYad4Q0s
- a/iU+q/tzdcriU+fHaG0rkB/IW0=
+ bh=ey3WkaTUT+/okXLTbhjw6mNVNY5gdOyxxVH0V4Lo0/s=;
+ b=JnChjLQSp0+8rGEKnBaRXFi1DE3mZ3mquRoiFvw9MEyX27sSdiAvY7E4PpLHiNPomDEo+hnJ
+ xDWb7h56qFwRdQEiIPQ9Qql5LPERFeh7u07rWL4/zlWm/3FUSBit9L+Dtmrv0pBXZA5IQTkt
+ VJ2r3GOBZeJVCPj12lzn88vxCp0=
 X-Mailgun-Sending-Ip: 104.130.122.25
 X-Mailgun-Sid: WyI3NDkwMCIsICJpb21tdUBsaXN0cy5saW51eC1mb3VuZGF0aW9uLm9yZyIsICJiZTllNGEiXQ==
 Received: from smtp.codeaurora.org
  (ec2-35-166-182-171.us-west-2.compute.amazonaws.com [35.166.182.171])
- by mxa.mailgun.org with ESMTP id 5e0dcdc6.7f6b5378c260-smtp-out-n03;
- Thu, 02 Jan 2020 11:02:30 -0000 (UTC)
+ by mxa.mailgun.org with ESMTP id 5e0dcdcb.7f61c72088b8-smtp-out-n01;
+ Thu, 02 Jan 2020 11:02:35 -0000 (UTC)
 Received: by smtp.codeaurora.org (Postfix, from userid 1001)
- id 86273C433A2; Thu,  2 Jan 2020 11:02:30 +0000 (UTC)
+ id 64911C4479F; Thu,  2 Jan 2020 11:02:35 +0000 (UTC)
 Received: from smasetty-linux.qualcomm.com
  (blr-c-bdr-fw-01_GlobalNAT_AllZones-Outside.qualcomm.com [103.229.19.19])
  (using TLSv1.2 with cipher ECDHE-RSA-AES128-SHA256 (128/128 bits))
  (No client certificate requested) (Authenticated sender: smasetty)
- by smtp.codeaurora.org (Postfix) with ESMTPSA id 4293CC447A2;
- Thu,  2 Jan 2020 11:02:25 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.3.2 smtp.codeaurora.org 4293CC447A2
+ by smtp.codeaurora.org (Postfix) with ESMTPSA id 757ACC4479C;
+ Thu,  2 Jan 2020 11:02:30 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.3.2 smtp.codeaurora.org 757ACC4479C
 Authentication-Results: aws-us-west-2-caf-mail-1.web.codeaurora.org;
  dmarc=none (p=none dis=none) header.from=codeaurora.org
 Authentication-Results: aws-us-west-2-caf-mail-1.web.codeaurora.org;
  spf=none smtp.mailfrom=smasetty@codeaurora.org
 From: Sharat Masetty <smasetty@codeaurora.org>
 To: freedreno@lists.freedesktop.org
-Subject: [PATCH v2 1/7] iommu/arm-smmu: Pass io_pgtable_cfg to impl specific
- init_context
-Date: Thu,  2 Jan 2020 16:32:07 +0530
-Message-Id: <1577962933-13577-2-git-send-email-smasetty@codeaurora.org>
+Subject: [PATCH v2 2/7] iommu/arm-smmu: Add domain attribute for QCOM system
+ cache
+Date: Thu,  2 Jan 2020 16:32:08 +0530
+Message-Id: <1577962933-13577-3-git-send-email-smasetty@codeaurora.org>
 X-Mailer: git-send-email 1.9.1
 In-Reply-To: <1577962933-13577-1-git-send-email-smasetty@codeaurora.org>
 References: <1577962933-13577-1-git-send-email-smasetty@codeaurora.org>
 Cc: will@kernel.org, linux-arm-msm@vger.kernel.org,
  linux-kernel@vger.kernel.org, iommu@lists.linux-foundation.org,
- dri-devel@freedesktop.org, robin.murphy@arm.com
+ dri-devel@freedesktop.org, Vivek Gautam <vivek.gautam@codeaurora.org>,
+ robin.murphy@arm.com
 X-BeenThere: iommu@lists.linux-foundation.org
 X-Mailman-Version: 2.1.15
 Precedence: list
@@ -105,78 +106,101 @@ Content-Transfer-Encoding: 7bit
 Errors-To: iommu-bounces@lists.linux-foundation.org
 Sender: "iommu" <iommu-bounces@lists.linux-foundation.org>
 
-From: Jordan Crouse <jcrouse@codeaurora.org>
+From: Vivek Gautam <vivek.gautam@codeaurora.org>
 
-Pass the propposed io_pgtable_cfg to the implementation specific
-init_context() function to give the implementation an opportunity to
-to modify it before it gets passed to io-pgtable.
+Add iommu domain attribute for using system cache aka last level
+cache on QCOM SoCs by client drivers like GPU to set right
+attributes for caching the hardware pagetables into the system cache.
 
-Signed-off-by: Jordan Crouse <jcrouse@codeaurora.org>
+Signed-off-by: Vivek Gautam <vivek.gautam@codeaurora.org>
+Co-developed-by: Sai Prakash Ranjan <saiprakash.ranjan@codeaurora.org>
 Signed-off-by: Sai Prakash Ranjan <saiprakash.ranjan@codeaurora.org>
 ---
- drivers/iommu/arm-smmu-impl.c |  3 ++-
- drivers/iommu/arm-smmu.c      | 11 ++++++-----
- drivers/iommu/arm-smmu.h      |  3 ++-
- 3 files changed, 10 insertions(+), 7 deletions(-)
+ drivers/iommu/arm-smmu-qcom.c | 10 ++++++++++
+ drivers/iommu/arm-smmu.c      | 14 ++++++++++++++
+ drivers/iommu/arm-smmu.h      |  1 +
+ include/linux/iommu.h         |  1 +
+ 4 files changed, 26 insertions(+)
 
-diff --git a/drivers/iommu/arm-smmu-impl.c b/drivers/iommu/arm-smmu-impl.c
-index b2fe72a..33ed682 100644
---- a/drivers/iommu/arm-smmu-impl.c
-+++ b/drivers/iommu/arm-smmu-impl.c
-@@ -68,7 +68,8 @@ static int cavium_cfg_probe(struct arm_smmu_device *smmu)
- 	return 0;
+diff --git a/drivers/iommu/arm-smmu-qcom.c b/drivers/iommu/arm-smmu-qcom.c
+index 24c071c..d1d22df 100644
+--- a/drivers/iommu/arm-smmu-qcom.c
++++ b/drivers/iommu/arm-smmu-qcom.c
+@@ -30,7 +30,17 @@ static int qcom_sdm845_smmu500_reset(struct arm_smmu_device *smmu)
+ 	return ret;
  }
-
--static int cavium_init_context(struct arm_smmu_domain *smmu_domain)
-+static int cavium_init_context(struct arm_smmu_domain *smmu_domain,
-+		struct io_pgtable_cfg *pgtbl_cfg)
- {
- 	struct cavium_smmu *cs = container_of(smmu_domain->smmu,
- 					      struct cavium_smmu, smmu);
+ 
++static int qcom_smmu_init_context(struct arm_smmu_domain *smmu_domain,
++				  struct io_pgtable_cfg *pgtbl_cfg)
++{
++	if (smmu_domain->sys_cache)
++		pgtbl_cfg->coherent_walk = false;
++
++	return 0;
++}
++
+ static const struct arm_smmu_impl qcom_smmu_impl = {
++	.init_context = qcom_smmu_init_context,
+ 	.reset = qcom_sdm845_smmu500_reset,
+ };
+ 
 diff --git a/drivers/iommu/arm-smmu.c b/drivers/iommu/arm-smmu.c
-index eee48f9..4f7e0c0 100644
+index 4f7e0c0..055b548 100644
 --- a/drivers/iommu/arm-smmu.c
 +++ b/drivers/iommu/arm-smmu.c
-@@ -758,11 +758,6 @@ static int arm_smmu_init_domain_context(struct iommu_domain *domain,
- 		cfg->asid = cfg->cbndx;
-
- 	smmu_domain->smmu = smmu;
--	if (smmu->impl && smmu->impl->init_context) {
--		ret = smmu->impl->init_context(smmu_domain);
--		if (ret)
--			goto out_unlock;
--	}
-
- 	smmu_domain->pgtbl_cfg = (struct io_pgtable_cfg) {
- 		.pgsize_bitmap	= smmu->pgsize_bitmap,
-@@ -773,6 +768,12 @@ static int arm_smmu_init_domain_context(struct iommu_domain *domain,
- 		.iommu_dev	= smmu->dev,
- 	};
-
-+	if (smmu->impl && smmu->impl->init_context) {
-+		ret = smmu->impl->init_context(smmu_domain, &smmu_domain->pgtbl_cfg);
-+		if (ret)
-+			goto out_unlock;
-+	}
+@@ -1466,6 +1466,9 @@ static int arm_smmu_domain_get_attr(struct iommu_domain *domain,
+ 		case DOMAIN_ATTR_NESTING:
+ 			*(int *)data = (smmu_domain->stage == ARM_SMMU_DOMAIN_NESTED);
+ 			return 0;
++		case DOMAIN_ATTR_QCOM_SYS_CACHE:
++			*((int *)data) = smmu_domain->sys_cache;
++			return 0;
+ 		default:
+ 			return -ENODEV;
+ 		}
+@@ -1506,6 +1509,17 @@ static int arm_smmu_domain_set_attr(struct iommu_domain *domain,
+ 			else
+ 				smmu_domain->stage = ARM_SMMU_DOMAIN_S1;
+ 			break;
++		case DOMAIN_ATTR_QCOM_SYS_CACHE:
++			if (smmu_domain->smmu) {
++				ret = -EPERM;
++				goto out_unlock;
++			}
 +
- 	if (smmu_domain->non_strict)
- 		smmu_domain->pgtbl_cfg.quirks |= IO_PGTABLE_QUIRK_NON_STRICT;
-
++			if (*((int *)data))
++				smmu_domain->sys_cache = true;
++			else
++				smmu_domain->sys_cache = false;
++			break;
+ 		default:
+ 			ret = -ENODEV;
+ 		}
 diff --git a/drivers/iommu/arm-smmu.h b/drivers/iommu/arm-smmu.h
-index b2df38c..f57cdbe 100644
+index f57cdbe..8aeaaf0 100644
 --- a/drivers/iommu/arm-smmu.h
 +++ b/drivers/iommu/arm-smmu.h
-@@ -335,7 +335,8 @@ struct arm_smmu_impl {
- 			    u64 val);
- 	int (*cfg_probe)(struct arm_smmu_device *smmu);
- 	int (*reset)(struct arm_smmu_device *smmu);
--	int (*init_context)(struct arm_smmu_domain *smmu_domain);
-+	int (*init_context)(struct arm_smmu_domain *smmu_domain,
-+			    struct io_pgtable_cfg *pgtbl_cfg);
+@@ -322,6 +322,7 @@ struct arm_smmu_domain {
+ 	struct mutex			init_mutex; /* Protects smmu pointer */
+ 	spinlock_t			cb_lock; /* Serialises ATS1* ops and TLB syncs */
+ 	struct iommu_domain		domain;
++	bool				sys_cache;
  };
-
- static inline void __iomem *arm_smmu_page(struct arm_smmu_device *smmu, int n)
---
+ 
+ 
+diff --git a/include/linux/iommu.h b/include/linux/iommu.h
+index 0c60e75..bd61c60 100644
+--- a/include/linux/iommu.h
++++ b/include/linux/iommu.h
+@@ -127,6 +127,7 @@ enum iommu_attr {
+ 	DOMAIN_ATTR_FSL_PAMUV1,
+ 	DOMAIN_ATTR_NESTING,	/* two stages of translation */
+ 	DOMAIN_ATTR_DMA_USE_FLUSH_QUEUE,
++	DOMAIN_ATTR_QCOM_SYS_CACHE,
+ 	DOMAIN_ATTR_MAX,
+ };
+ 
+-- 
 1.9.1
 _______________________________________________
 iommu mailing list
