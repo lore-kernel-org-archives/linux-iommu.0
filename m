@@ -2,63 +2,63 @@ Return-Path: <SRS0=eP4Y=2X=lists.linux-foundation.org=iommu-bounces@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-9.8 required=3.0 tests=HEADER_FROM_DIFFERENT_DOMAINS,
+X-Spam-Status: No, score=-7.0 required=3.0 tests=HEADER_FROM_DIFFERENT_DOMAINS,
 	INCLUDES_PATCH,MAILING_LIST_MULTI,SIGNED_OFF_BY,SPF_HELO_NONE,SPF_PASS,
-	USER_AGENT_GIT autolearn=ham autolearn_force=no version=3.4.0
+	UNWANTED_LANGUAGE_BODY,USER_AGENT_GIT autolearn=ham autolearn_force=no
+	version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 228B9C2D0DF
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 9FD0BC32765
 	for <iommu@archiver.kernel.org>; Thu,  2 Jan 2020 00:19:54 +0000 (UTC)
-Received: from hemlock.osuosl.org (smtp2.osuosl.org [140.211.166.133])
+Received: from whitealder.osuosl.org (smtp1.osuosl.org [140.211.166.138])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by mail.kernel.org (Postfix) with ESMTPS id F420B20672
-	for <iommu@archiver.kernel.org>; Thu,  2 Jan 2020 00:19:53 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org F420B20672
+	by mail.kernel.org (Postfix) with ESMTPS id 7E40920842
+	for <iommu@archiver.kernel.org>; Thu,  2 Jan 2020 00:19:54 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 7E40920842
 Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=linux.intel.com
 Authentication-Results: mail.kernel.org; spf=pass smtp.mailfrom=iommu-bounces@lists.linux-foundation.org
 Received: from localhost (localhost [127.0.0.1])
-	by hemlock.osuosl.org (Postfix) with ESMTP id C264D873BC;
-	Thu,  2 Jan 2020 00:19:53 +0000 (UTC)
+	by whitealder.osuosl.org (Postfix) with ESMTP id 6AF3A85CE0;
+	Thu,  2 Jan 2020 00:19:54 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from hemlock.osuosl.org ([127.0.0.1])
+Received: from whitealder.osuosl.org ([127.0.0.1])
 	by localhost (.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
-	with ESMTP id 1YFTe+XTmZ8l; Thu,  2 Jan 2020 00:19:52 +0000 (UTC)
+	with ESMTP id u410M1nhUIxu; Thu,  2 Jan 2020 00:19:52 +0000 (UTC)
 Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [140.211.9.56])
-	by hemlock.osuosl.org (Postfix) with ESMTP id AEC368741F;
+	by whitealder.osuosl.org (Postfix) with ESMTP id D2B1E85F37;
 	Thu,  2 Jan 2020 00:19:52 +0000 (UTC)
 Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
-	by lists.linuxfoundation.org (Postfix) with ESMTP id 9CD35C18DC;
+	by lists.linuxfoundation.org (Postfix) with ESMTP id CCFE9C1D8A;
 	Thu,  2 Jan 2020 00:19:52 +0000 (UTC)
 Received: from whitealder.osuosl.org (smtp1.osuosl.org [140.211.166.138])
- by lists.linuxfoundation.org (Postfix) with ESMTP id 6A3B1C077D
+ by lists.linuxfoundation.org (Postfix) with ESMTP id DE8BCC077D
  for <iommu@lists.linux-foundation.org>; Thu,  2 Jan 2020 00:19:51 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
- by whitealder.osuosl.org (Postfix) with ESMTP id 658F28609C
+ by whitealder.osuosl.org (Postfix) with ESMTP id CDAE586224
  for <iommu@lists.linux-foundation.org>; Thu,  2 Jan 2020 00:19:51 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
 Received: from whitealder.osuosl.org ([127.0.0.1])
  by localhost (.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
- with ESMTP id ZK1AE-CHGIfR for <iommu@lists.linux-foundation.org>;
- Thu,  2 Jan 2020 00:19:48 +0000 (UTC)
+ with ESMTP id 1gn7vDasCEBY for <iommu@lists.linux-foundation.org>;
+ Thu,  2 Jan 2020 00:19:50 +0000 (UTC)
 X-Greylist: domain auto-whitelisted by SQLgrey-1.7.6
 Received: from mga14.intel.com (mga14.intel.com [192.55.52.115])
- by whitealder.osuosl.org (Postfix) with ESMTPS id 9F76385D5C
- for <iommu@lists.linux-foundation.org>; Thu,  2 Jan 2020 00:19:48 +0000 (UTC)
+ by whitealder.osuosl.org (Postfix) with ESMTPS id 23AEE85F37
+ for <iommu@lists.linux-foundation.org>; Thu,  2 Jan 2020 00:19:50 +0000 (UTC)
 X-Amp-Result: SKIPPED(no attachment in message)
 X-Amp-File-Uploaded: False
 Received: from fmsmga004.fm.intel.com ([10.253.24.48])
  by fmsmga103.fm.intel.com with ESMTP/TLS/DHE-RSA-AES256-GCM-SHA384;
- 01 Jan 2020 16:19:48 -0800
+ 01 Jan 2020 16:19:50 -0800
 X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.69,384,1571727600"; d="scan'208";a="244475940"
+X-IronPort-AV: E=Sophos;i="5.69,384,1571727600"; d="scan'208";a="244475946"
 Received: from allen-box.sh.intel.com ([10.239.159.136])
- by fmsmga004.fm.intel.com with ESMTP; 01 Jan 2020 16:19:47 -0800
+ by fmsmga004.fm.intel.com with ESMTP; 01 Jan 2020 16:19:49 -0800
 From: Lu Baolu <baolu.lu@linux.intel.com>
 To: Joerg Roedel <joro@8bytes.org>
-Subject: [PATCH 17/22] iommu/vt-d: Flush PASID-based iotlb for iova over first
- level
-Date: Thu,  2 Jan 2020 08:18:18 +0800
-Message-Id: <20200102001823.21976-18-baolu.lu@linux.intel.com>
+Subject: [PATCH 19/22] iommu/vt-d: Update first level super page capability
+Date: Thu,  2 Jan 2020 08:18:20 +0800
+Message-Id: <20200102001823.21976-20-baolu.lu@linux.intel.com>
 X-Mailer: git-send-email 2.17.1
 In-Reply-To: <20200102001823.21976-1-baolu.lu@linux.intel.com>
 References: <20200102001823.21976-1-baolu.lu@linux.intel.com>
@@ -81,170 +81,69 @@ Content-Transfer-Encoding: 7bit
 Errors-To: iommu-bounces@lists.linux-foundation.org
 Sender: "iommu" <iommu-bounces@lists.linux-foundation.org>
 
-When software has changed first-level tables, it should invalidate
-the affected IOTLB and the paging-structure-caches using the PASID-
-based-IOTLB Invalidate Descriptor defined in spec 6.5.2.4.
+First-level translation may map input addresses to 4-KByte pages,
+2-MByte pages, or 1-GByte pages. Support for 4-KByte pages and
+2-Mbyte pages are mandatory for first-level translation. Hardware
+support for 1-GByte page is reported through the FL1GP field in
+the Capability Register.
 
 Signed-off-by: Lu Baolu <baolu.lu@linux.intel.com>
 ---
- drivers/iommu/dmar.c        | 41 +++++++++++++++++++++++++++
- drivers/iommu/intel-iommu.c | 56 +++++++++++++++++++++++++++----------
- include/linux/intel-iommu.h |  2 ++
- 3 files changed, 84 insertions(+), 15 deletions(-)
+ drivers/iommu/intel-iommu.c | 17 ++++++++++++-----
+ 1 file changed, 12 insertions(+), 5 deletions(-)
 
-diff --git a/drivers/iommu/dmar.c b/drivers/iommu/dmar.c
-index 3acfa6a25fa2..fb30d5053664 100644
---- a/drivers/iommu/dmar.c
-+++ b/drivers/iommu/dmar.c
-@@ -1371,6 +1371,47 @@ void qi_flush_dev_iotlb(struct intel_iommu *iommu, u16 sid, u16 pfsid,
- 	qi_submit_sync(&desc, iommu);
- }
- 
-+/* PASID-based IOTLB invalidation */
-+void qi_flush_piotlb(struct intel_iommu *iommu, u16 did, u32 pasid, u64 addr,
-+		     unsigned long npages, bool ih)
-+{
-+	struct qi_desc desc = {.qw2 = 0, .qw3 = 0};
-+
-+	/*
-+	 * npages == -1 means a PASID-selective invalidation, otherwise,
-+	 * a positive value for Page-selective-within-PASID invalidation.
-+	 * 0 is not a valid input.
-+	 */
-+	if (WARN_ON(!npages)) {
-+		pr_err("Invalid input npages = %ld\n", npages);
-+		return;
-+	}
-+
-+	if (npages == -1) {
-+		desc.qw0 = QI_EIOTLB_PASID(pasid) |
-+				QI_EIOTLB_DID(did) |
-+				QI_EIOTLB_GRAN(QI_GRAN_NONG_PASID) |
-+				QI_EIOTLB_TYPE;
-+		desc.qw1 = 0;
-+	} else {
-+		int mask = ilog2(__roundup_pow_of_two(npages));
-+		unsigned long align = (1ULL << (VTD_PAGE_SHIFT + mask));
-+
-+		if (WARN_ON_ONCE(!ALIGN(addr, align)))
-+			addr &= ~(align - 1);
-+
-+		desc.qw0 = QI_EIOTLB_PASID(pasid) |
-+				QI_EIOTLB_DID(did) |
-+				QI_EIOTLB_GRAN(QI_GRAN_PSI_PASID) |
-+				QI_EIOTLB_TYPE;
-+		desc.qw1 = QI_EIOTLB_ADDR(addr) |
-+				QI_EIOTLB_IH(ih) |
-+				QI_EIOTLB_AM(mask);
-+	}
-+
-+	qi_submit_sync(&desc, iommu);
-+}
-+
- /*
-  * Disable Queued Invalidation interface.
-  */
 diff --git a/drivers/iommu/intel-iommu.c b/drivers/iommu/intel-iommu.c
-index 071cbc172ce8..54db6bc0b281 100644
+index 1ebf5ed460cf..34e619318f64 100644
 --- a/drivers/iommu/intel-iommu.c
 +++ b/drivers/iommu/intel-iommu.c
-@@ -1509,6 +1509,20 @@ static void iommu_flush_dev_iotlb(struct dmar_domain *domain,
- 	spin_unlock_irqrestore(&device_domain_lock, flags);
+@@ -685,11 +685,12 @@ static int domain_update_iommu_snooping(struct intel_iommu *skip)
+ 	return ret;
  }
  
-+static void domain_flush_piotlb(struct intel_iommu *iommu,
-+				struct dmar_domain *domain,
-+				u64 addr, unsigned long npages, bool ih)
-+{
-+	u16 did = domain->iommu_did[iommu->seq_id];
-+
-+	if (domain->default_pasid)
-+		qi_flush_piotlb(iommu, did, domain->default_pasid,
-+				addr, npages, ih);
-+
-+	if (!list_empty(&domain->devices))
-+		qi_flush_piotlb(iommu, did, PASID_RID2PASID, addr, npages, ih);
-+}
-+
- static void iommu_flush_iotlb_psi(struct intel_iommu *iommu,
- 				  struct dmar_domain *domain,
- 				  unsigned long pfn, unsigned int pages,
-@@ -1522,18 +1536,23 @@ static void iommu_flush_iotlb_psi(struct intel_iommu *iommu,
- 
- 	if (ih)
- 		ih = 1 << 6;
--	/*
--	 * Fallback to domain selective flush if no PSI support or the size is
--	 * too big.
--	 * PSI requires page size to be 2 ^ x, and the base address is naturally
--	 * aligned to the size
--	 */
--	if (!cap_pgsel_inv(iommu->cap) || mask > cap_max_amask_val(iommu->cap))
--		iommu->flush.flush_iotlb(iommu, did, 0, 0,
--						DMA_TLB_DSI_FLUSH);
--	else
--		iommu->flush.flush_iotlb(iommu, did, addr | ih, mask,
--						DMA_TLB_PSI_FLUSH);
-+
-+	if (domain_use_first_level(domain)) {
-+		domain_flush_piotlb(iommu, domain, addr, pages, ih);
-+	} else {
-+		/*
-+		 * Fallback to domain selective flush if no PSI support or
-+		 * the size is too big. PSI requires page size to be 2 ^ x,
-+		 * and the base address is naturally aligned to the size.
-+		 */
-+		if (!cap_pgsel_inv(iommu->cap) ||
-+		    mask > cap_max_amask_val(iommu->cap))
-+			iommu->flush.flush_iotlb(iommu, did, 0, 0,
-+							DMA_TLB_DSI_FLUSH);
-+		else
-+			iommu->flush.flush_iotlb(iommu, did, addr | ih, mask,
-+							DMA_TLB_PSI_FLUSH);
-+	}
- 
- 	/*
- 	 * In caching mode, changes of pages from non-present to present require
-@@ -1548,8 +1567,11 @@ static inline void __mapping_notify_one(struct intel_iommu *iommu,
- 					struct dmar_domain *domain,
- 					unsigned long pfn, unsigned int pages)
+-static int domain_update_iommu_superpage(struct intel_iommu *skip)
++static int domain_update_iommu_superpage(struct dmar_domain *domain,
++					 struct intel_iommu *skip)
  {
--	/* It's a non-present to present mapping. Only flush if caching mode */
--	if (cap_caching_mode(iommu->cap))
-+	/*
-+	 * It's a non-present to present mapping. Only flush if caching mode
-+	 * and second level.
-+	 */
-+	if (cap_caching_mode(iommu->cap) && !domain_use_first_level(domain))
- 		iommu_flush_iotlb_psi(iommu, domain, pfn, pages, 0, 1);
- 	else
- 		iommu_flush_write_buffer(iommu);
-@@ -1566,7 +1588,11 @@ static void iommu_flush_iova(struct iova_domain *iovad)
- 		struct intel_iommu *iommu = g_iommus[idx];
- 		u16 did = domain->iommu_did[iommu->seq_id];
+ 	struct dmar_drhd_unit *drhd;
+ 	struct intel_iommu *iommu;
+-	int mask = 0xf;
++	int mask = 0x3;
  
--		iommu->flush.flush_iotlb(iommu, did, 0, 0, DMA_TLB_DSI_FLUSH);
-+		if (domain_use_first_level(domain))
-+			domain_flush_piotlb(iommu, domain, 0, -1, 0);
-+		else
-+			iommu->flush.flush_iotlb(iommu, did, 0, 0,
-+						 DMA_TLB_DSI_FLUSH);
+ 	if (!intel_iommu_superpage) {
+ 		return 0;
+@@ -699,7 +700,13 @@ static int domain_update_iommu_superpage(struct intel_iommu *skip)
+ 	rcu_read_lock();
+ 	for_each_active_iommu(iommu, drhd) {
+ 		if (iommu != skip) {
+-			mask &= cap_super_page_val(iommu->cap);
++			if (domain && domain_use_first_level(domain)) {
++				if (!cap_fl1gp_support(iommu->cap))
++					mask = 0x1;
++			} else {
++				mask &= cap_super_page_val(iommu->cap);
++			}
++
+ 			if (!mask)
+ 				break;
+ 		}
+@@ -714,7 +721,7 @@ static void domain_update_iommu_cap(struct dmar_domain *domain)
+ {
+ 	domain_update_iommu_coherency(domain);
+ 	domain->iommu_snooping = domain_update_iommu_snooping(NULL);
+-	domain->iommu_superpage = domain_update_iommu_superpage(NULL);
++	domain->iommu_superpage = domain_update_iommu_superpage(domain, NULL);
+ }
  
- 		if (!cap_caching_mode(iommu->cap))
- 			iommu_flush_dev_iotlb(get_iommu_domain(iommu, did),
-diff --git a/include/linux/intel-iommu.h b/include/linux/intel-iommu.h
-index 454c69712131..3a4708a8a414 100644
---- a/include/linux/intel-iommu.h
-+++ b/include/linux/intel-iommu.h
-@@ -650,6 +650,8 @@ extern void qi_flush_iotlb(struct intel_iommu *iommu, u16 did, u64 addr,
- 			  unsigned int size_order, u64 type);
- extern void qi_flush_dev_iotlb(struct intel_iommu *iommu, u16 sid, u16 pfsid,
- 			u16 qdep, u64 addr, unsigned mask);
-+void qi_flush_piotlb(struct intel_iommu *iommu, u16 did, u32 pasid, u64 addr,
-+		     unsigned long npages, bool ih);
- extern int qi_submit_sync(struct qi_desc *desc, struct intel_iommu *iommu);
- 
- extern int dmar_ir_support(void);
+ struct context_entry *iommu_context_addr(struct intel_iommu *iommu, u8 bus,
+@@ -4604,7 +4611,7 @@ static int intel_iommu_add(struct dmar_drhd_unit *dmaru)
+ 			iommu->name);
+ 		return -ENXIO;
+ 	}
+-	sp = domain_update_iommu_superpage(iommu) - 1;
++	sp = domain_update_iommu_superpage(NULL, iommu) - 1;
+ 	if (sp >= 0 && !(cap_super_page_val(iommu->cap) & (1 << sp))) {
+ 		pr_warn("%s: Doesn't support large page.\n",
+ 			iommu->name);
 -- 
 2.17.1
 
