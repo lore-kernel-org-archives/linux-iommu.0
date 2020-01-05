@@ -2,74 +2,74 @@ Return-Path: <SRS0=m4R2=22=lists.linux-foundation.org=iommu-bounces@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-9.5 required=3.0 tests=DKIM_INVALID,DKIM_SIGNED,
+X-Spam-Status: No, score=-6.7 required=3.0 tests=DKIM_INVALID,DKIM_SIGNED,
 	HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_PATCH,MAILING_LIST_MULTI,SIGNED_OFF_BY,
-	SPF_HELO_NONE,SPF_PASS,UNPARSEABLE_RELAY,USER_AGENT_GIT autolearn=ham
-	autolearn_force=no version=3.4.0
+	SPF_HELO_NONE,SPF_PASS,UNPARSEABLE_RELAY,UNWANTED_LANGUAGE_BODY,
+	USER_AGENT_GIT autolearn=ham autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 7F702C33C8C
-	for <iommu@archiver.kernel.org>; Sun,  5 Jan 2020 10:52:17 +0000 (UTC)
-Received: from silver.osuosl.org (smtp3.osuosl.org [140.211.166.136])
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 2D986C33C8C
+	for <iommu@archiver.kernel.org>; Sun,  5 Jan 2020 10:52:20 +0000 (UTC)
+Received: from fraxinus.osuosl.org (smtp4.osuosl.org [140.211.166.137])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by mail.kernel.org (Postfix) with ESMTPS id 5194621582
-	for <iommu@archiver.kernel.org>; Sun,  5 Jan 2020 10:52:17 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTPS id 023AD21582
+	for <iommu@archiver.kernel.org>; Sun,  5 Jan 2020 10:52:20 +0000 (UTC)
 Authentication-Results: mail.kernel.org;
-	dkim=fail reason="signature verification failed" (1024-bit key) header.d=mediatek.com header.i=@mediatek.com header.b="MqMWF4yq"
-DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 5194621582
+	dkim=fail reason="signature verification failed" (1024-bit key) header.d=mediatek.com header.i=@mediatek.com header.b="bFs2cIlw"
+DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 023AD21582
 Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=mediatek.com
 Authentication-Results: mail.kernel.org; spf=pass smtp.mailfrom=iommu-bounces@lists.linux-foundation.org
 Received: from localhost (localhost [127.0.0.1])
-	by silver.osuosl.org (Postfix) with ESMTP id 44C66203D5;
-	Sun,  5 Jan 2020 10:52:17 +0000 (UTC)
+	by fraxinus.osuosl.org (Postfix) with ESMTP id E521B85D2B;
+	Sun,  5 Jan 2020 10:52:19 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from silver.osuosl.org ([127.0.0.1])
+Received: from fraxinus.osuosl.org ([127.0.0.1])
 	by localhost (.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
-	with ESMTP id EqrSZbxvTmC8; Sun,  5 Jan 2020 10:52:16 +0000 (UTC)
+	with ESMTP id OkIXBocjrAsV; Sun,  5 Jan 2020 10:52:19 +0000 (UTC)
 Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [140.211.9.56])
-	by silver.osuosl.org (Postfix) with ESMTP id 2963820031;
-	Sun,  5 Jan 2020 10:52:16 +0000 (UTC)
+	by fraxinus.osuosl.org (Postfix) with ESMTP id 75ECC85C5E;
+	Sun,  5 Jan 2020 10:52:19 +0000 (UTC)
 Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
-	by lists.linuxfoundation.org (Postfix) with ESMTP id 2440FC1D84;
-	Sun,  5 Jan 2020 10:52:16 +0000 (UTC)
+	by lists.linuxfoundation.org (Postfix) with ESMTP id 62880C1D84;
+	Sun,  5 Jan 2020 10:52:19 +0000 (UTC)
 Received: from whitealder.osuosl.org (smtp1.osuosl.org [140.211.166.138])
- by lists.linuxfoundation.org (Postfix) with ESMTP id 44B7CC0881
- for <iommu@lists.linux-foundation.org>; Sun,  5 Jan 2020 10:52:15 +0000 (UTC)
+ by lists.linuxfoundation.org (Postfix) with ESMTP id 3F1A5C0881
+ for <iommu@lists.linux-foundation.org>; Sun,  5 Jan 2020 10:52:18 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
- by whitealder.osuosl.org (Postfix) with ESMTP id 2EB5685B36
- for <iommu@lists.linux-foundation.org>; Sun,  5 Jan 2020 10:52:15 +0000 (UTC)
+ by whitealder.osuosl.org (Postfix) with ESMTP id 2D5A485CE0
+ for <iommu@lists.linux-foundation.org>; Sun,  5 Jan 2020 10:52:18 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
 Received: from whitealder.osuosl.org ([127.0.0.1])
  by localhost (.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
- with ESMTP id sFoRPIOtETsv for <iommu@lists.linux-foundation.org>;
- Sun,  5 Jan 2020 10:52:14 +0000 (UTC)
+ with ESMTP id tjIRZ5ab5LGb for <iommu@lists.linux-foundation.org>;
+ Sun,  5 Jan 2020 10:52:17 +0000 (UTC)
 X-Greylist: from auto-whitelisted by SQLgrey-1.7.6
 Received: from mailgw02.mediatek.com (unknown [210.61.82.184])
- by whitealder.osuosl.org (Postfix) with ESMTP id 4FD7085CE0
- for <iommu@lists.linux-foundation.org>; Sun,  5 Jan 2020 10:52:14 +0000 (UTC)
-X-UUID: 5bf3b63f330444bfa9e261eede22e1b7-20200105
+ by whitealder.osuosl.org (Postfix) with ESMTP id 522F585B36
+ for <iommu@lists.linux-foundation.org>; Sun,  5 Jan 2020 10:52:17 +0000 (UTC)
+X-UUID: a6ec5ce760754a7484ce00383978b84f-20200105
 DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=mediatek.com;
  s=dk; 
  h=Content-Transfer-Encoding:Content-Type:MIME-Version:References:In-Reply-To:Message-ID:Date:Subject:CC:To:From;
- bh=BU3FHHq8lyI4GErrRVuqeiEhzwtLbu5dCFfMXEQDW1k=; 
- b=MqMWF4yqiWhgMsbK53C3+P3W1eBxvElV/CXXkEw03l+esiqkv78SUOxUtGSxx1c0RViWO/gGPSAYam1uJPrfxgplbmxWpcPe07/O5JBfuGlaqZFrk3LU5PD/ViMpYAMQkeIdFIQZeCFyBOy6769EvpwkIQSfG3AJTfsKGdtDlcU=;
-X-UUID: 5bf3b63f330444bfa9e261eede22e1b7-20200105
+ bh=gy4tHLXRv2FvAOvp3/caFYhMAq0QdVmLmvhz6NoN0hg=; 
+ b=bFs2cIlwC35DlAIaD5o5geMasFYxn+VOky0UUpJrpUOVpFdeSiU10Ew7KkQt2bT/H1kYbOV6qFo+4IWcTM6OQj9XQAe9LeV18DXJa/SHduypc3wWhVLaJ2Bg3+G1gw1ZhWnG/SLFjkhzcU1ZdjAb1QrdKF/SbjKnxKrxOJkSY9w=;
+X-UUID: a6ec5ce760754a7484ce00383978b84f-20200105
 Received: from mtkcas09.mediatek.inc [(172.21.101.178)] by
  mailgw02.mediatek.com (envelope-from <chao.hao@mediatek.com>)
  (Cellopoint E-mail Firewall v4.1.10 Build 0809 with TLS)
- with ESMTP id 1428780349; Sun, 05 Jan 2020 18:47:10 +0800
+ with ESMTP id 352062431; Sun, 05 Jan 2020 18:47:12 +0800
 Received: from MTKCAS06.mediatek.inc (172.21.101.30) by
- mtkmbs07n1.mediatek.inc (172.21.101.16) with Microsoft SMTP Server (TLS) id
- 15.0.1395.4; Sun, 5 Jan 2020 18:46:44 +0800
+ mtkmbs07n2.mediatek.inc (172.21.101.141) with Microsoft SMTP Server (TLS) id
+ 15.0.1395.4; Sun, 5 Jan 2020 18:46:45 +0800
 Received: from localhost.localdomain (10.15.20.246) by MTKCAS06.mediatek.inc
  (172.21.101.73) with Microsoft SMTP Server id 15.0.1395.4 via Frontend
- Transport; Sun, 5 Jan 2020 18:45:40 +0800
+ Transport; Sun, 5 Jan 2020 18:45:42 +0800
 From: Chao Hao <chao.hao@mediatek.com>
 To: Joerg Roedel <joro@8bytes.org>, Rob Herring <robh+dt@kernel.org>, Matthias
  Brugger <matthias.bgg@gmail.com>
-Subject: [PATCH v2 14/19] iommu/mediatek: Add mtk_domain_data structure
-Date: Sun, 5 Jan 2020 18:45:18 +0800
-Message-ID: <20200105104523.31006-15-chao.hao@mediatek.com>
+Subject: [PATCH v2 15/19] iommu/mediatek: Remove the usage of m4u_dom variable
+Date: Sun, 5 Jan 2020 18:45:19 +0800
+Message-ID: <20200105104523.31006-16-chao.hao@mediatek.com>
 X-Mailer: git-send-email 2.18.0
 In-Reply-To: <20200105104523.31006-1-chao.hao@mediatek.com>
 References: <20200105104523.31006-1-chao.hao@mediatek.com>
@@ -97,123 +97,87 @@ Content-Transfer-Encoding: 7bit
 Errors-To: iommu-bounces@lists.linux-foundation.org
 Sender: "iommu" <iommu-bounces@lists.linux-foundation.org>
 
-Add mtk_domain_data structure to describe how many iova regions
-there are and the relevant the start and end address of each
-iova region. The number of iova region is equal to the number
-of mtk_iommu_domain. So we will use mtk_domain_data to initialize
-the start and end iova of mtk_iommu_domain.
+This patch will remove the usage of the m4u_dom variable.
+
+We have already redefined mtk_iommu_domain structure and it
+includes iommu_domain, so m4u_dom variable will not be used.
 
 Signed-off-by: Chao Hao <chao.hao@mediatek.com>
 ---
- drivers/iommu/mtk_iommu.c | 17 +++++++++++++++--
- drivers/iommu/mtk_iommu.h | 17 +++++++++++++++++
- 2 files changed, 32 insertions(+), 2 deletions(-)
+ drivers/iommu/mtk_iommu.c | 27 ++++++++++++++++++++-------
+ 1 file changed, 20 insertions(+), 7 deletions(-)
 
 diff --git a/drivers/iommu/mtk_iommu.c b/drivers/iommu/mtk_iommu.c
-index f2137033ec59..b1ce0a2df583 100644
+index b1ce0a2df583..bfb1831afae9 100644
 --- a/drivers/iommu/mtk_iommu.c
 +++ b/drivers/iommu/mtk_iommu.c
-@@ -122,6 +122,12 @@ struct mtk_iommu_pgtable {
- 	struct io_pgtable_ops	*iop;
- 	struct device		*init_dev;
- 	struct list_head	m4u_dom_v2;
-+	const struct mtk_domain_data	*dom_region;
-+};
+@@ -107,6 +107,7 @@
+  * Get the local arbiter ID and the portid within the larb arbiter
+  * from mtk_m4u_id which is defined by MTK_M4U_ID.
+  */
++#define MTK_M4U_ID(larb, port)		(((larb) << 5) | (port))
+ #define MTK_M4U_TO_LARB(id)		(((id) >> 5) & 0xf)
+ #define MTK_M4U_TO_PORT(id)		((id) & 0x1f)
+ 
+@@ -199,6 +200,22 @@ static u32 mtk_iommu_get_domain_id(struct device *dev)
+ 	return get_domain_id(data, portid);
+ }
+ 
++static struct iommu_domain *_get_mtk_domain(struct mtk_iommu_data *data,
++					    u32 larbid, u32 portid)
++{
++	u32 domain_id;
++	u32 port_mask = MTK_M4U_ID(larbid, portid);
++	struct mtk_iommu_domain *dom;
 +
-+const struct mtk_domain_data single_dom = {
-+	.min_iova = 0x0,
-+	.max_iova = DMA_BIT_MASK(32)
- };
- 
- static struct mtk_iommu_pgtable *share_pgtable;
-@@ -400,6 +406,7 @@ static struct mtk_iommu_pgtable *create_pgtable(struct mtk_iommu_data *data)
- 		dev_err(data->dev, "Failed to alloc io pgtable\n");
- 		return ERR_PTR(-EINVAL);
- 	}
-+	pgtable->dom_region = data->plat_data->dom_data;
- 
- 	dev_info(data->dev, "%s create pgtable done\n", __func__);
- 
-@@ -470,8 +477,10 @@ static struct iommu_domain *mtk_iommu_domain_alloc(unsigned type)
- 	/* Update our support page sizes bitmap */
- 	dom->domain.pgsize_bitmap = pgtable->cfg.pgsize_bitmap;
- 
--	dom->domain.geometry.aperture_start = 0;
--	dom->domain.geometry.aperture_end = DMA_BIT_MASK(32);
-+	dom->domain.geometry.aperture_start =
-+				pgtable->dom_region->min_iova;
-+	dom->domain.geometry.aperture_end =
-+				pgtable->dom_region->max_iova;
- 	dom->domain.geometry.force_aperture = true;
- 	list_add_tail(&dom->list, &pgtable->m4u_dom_v2);
- 
-@@ -953,6 +962,7 @@ static const struct mtk_iommu_plat_data mt2712_data = {
- 	.has_bclk     = true,
- 	.has_vld_pa_rng   = true,
- 	.dom_cnt = 1,
-+	.dom_data = &single_dom,
- 	.larbid_remap[0] = {0, 1, 2, 3, 4, 5, 6, 7, 8, 9},
- 	.inv_sel_reg = REG_MMU_INV_SEL,
- };
-@@ -960,6 +970,7 @@ static const struct mtk_iommu_plat_data mt2712_data = {
- static const struct mtk_iommu_plat_data mt6779_data = {
- 	.m4u_plat = M4U_MT6779,
- 	.dom_cnt = 1,
-+	.dom_data = &single_dom,
- 	.larbid_remap[0] = {0, 1, 2, 3, 5, 7, 10, 9},
- 	/* vp6a, vp6b, mdla/core2, mdla/edmc*/
- 	.larbid_remap[1] = {2, 0, 3, 1},
-@@ -976,6 +987,7 @@ static const struct mtk_iommu_plat_data mt8173_data = {
- 	.has_bclk     = true,
- 	.reset_axi    = true,
- 	.dom_cnt = 1,
-+	.dom_data = &single_dom,
- 	.larbid_remap[0] = {0, 1, 2, 3, 4, 5}, /* Linear mapping. */
- 	.inv_sel_reg = REG_MMU_INV_SEL,
- };
-@@ -984,6 +996,7 @@ static const struct mtk_iommu_plat_data mt8183_data = {
- 	.m4u_plat     = M4U_MT8183,
- 	.reset_axi    = true,
- 	.dom_cnt = 1,
-+	.dom_data = &single_dom,
- 	.larbid_remap[0] = {0, 4, 5, 6, 7, 2, 3, 1},
- 	.inv_sel_reg = REG_MMU_INV_SEL,
- };
-diff --git a/drivers/iommu/mtk_iommu.h b/drivers/iommu/mtk_iommu.h
-index 3a1c79222d09..a38b26018abe 100644
---- a/drivers/iommu/mtk_iommu.h
-+++ b/drivers/iommu/mtk_iommu.h
-@@ -36,6 +36,22 @@ enum mtk_iommu_plat {
- 	M4U_MT8183,
- };
- 
-+/*
-+ * reserved IOVA Domain for IOMMU users of HW limitation.
-+ */
++	domain_id = get_domain_id(data, port_mask);
 +
-+/*
-+ * struct mtk_domain_data:	domain configuration
-+ * @min_iova:	Start address of iova
-+ * @max_iova:	End address of iova
-+ * Note: one user can only belong to one domain
-+ */
++	list_for_each_entry(dom, &data->pgtable->m4u_dom_v2, list) {
++		if (dom->id == domain_id)
++			return &dom->domain;
++	}
++	return NULL;
++}
 +
-+struct mtk_domain_data {
-+	dma_addr_t	min_iova;
-+	dma_addr_t	max_iova;
-+};
-+
- struct mtk_iommu_plat_data {
- 	enum mtk_iommu_plat m4u_plat;
- 	bool                has_4gb_mode;
-@@ -51,6 +67,7 @@ struct mtk_iommu_plat_data {
- 	u32                 m4u1_mask;
- 	u32                 inv_sel_reg;
- 	unsigned char       larbid_remap[2][MTK_LARB_NR_MAX];
-+	const struct mtk_domain_data	*dom_data;
- };
+ static struct mtk_iommu_domain *get_mtk_domain(struct device *dev)
+ {
+ 	struct mtk_iommu_data *data = dev->iommu_fwspec->iommu_priv;
+@@ -301,7 +318,7 @@ static const struct iommu_flush_ops mtk_iommu_flush_ops = {
+ static irqreturn_t mtk_iommu_isr(int irq, void *dev_id)
+ {
+ 	struct mtk_iommu_data *data = dev_id;
+-	struct mtk_iommu_domain *dom = data->m4u_dom;
++	struct iommu_domain *domain;
+ 	u32 int_state, regval, fault_iova, fault_pa;
+ 	unsigned int fault_larb, fault_port, sub_comm = 0;
+ 	bool layer, write;
+@@ -336,7 +353,8 @@ static irqreturn_t mtk_iommu_isr(int irq, void *dev_id)
  
- struct mtk_iommu_domain;
+ 	fault_larb = data->plat_data->larbid_remap[data->m4u_id][fault_larb];
+ 
+-	if (report_iommu_fault(&dom->domain, data->dev, fault_iova,
++	domain = _get_mtk_domain(data, fault_larb, fault_port);
++	if (report_iommu_fault(domain, data->dev, fault_iova,
+ 			       write ? IOMMU_FAULT_WRITE : IOMMU_FAULT_READ)) {
+ 		dev_err_ratelimited(
+ 			data->dev,
+@@ -506,16 +524,11 @@ static void mtk_iommu_domain_free(struct iommu_domain *domain)
+ static int mtk_iommu_attach_device(struct iommu_domain *domain,
+ 				   struct device *dev)
+ {
+-	struct mtk_iommu_domain *dom = to_mtk_domain(domain);
+ 	struct mtk_iommu_data *data = dev_iommu_fwspec_get(dev)->iommu_priv;
+ 
+ 	if (!data)
+ 		return -ENODEV;
+ 
+-	/* Update the pgtable base address register of the M4U HW */
+-	if (!data->m4u_dom)
+-		data->m4u_dom = dom;
+-
+ 	mtk_iommu_config(data, dev, true);
+ 	return 0;
+ }
 -- 
 2.18.0
 _______________________________________________
