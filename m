@@ -4,73 +4,72 @@ X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 X-Spam-Level: 
 X-Spam-Status: No, score=-9.5 required=3.0 tests=DKIM_INVALID,DKIM_SIGNED,
 	HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_PATCH,MAILING_LIST_MULTI,SIGNED_OFF_BY,
-	SPF_HELO_NONE,SPF_PASS,UNPARSEABLE_RELAY,USER_AGENT_GIT autolearn=unavailable
+	SPF_HELO_NONE,SPF_PASS,UNPARSEABLE_RELAY,USER_AGENT_GIT autolearn=ham
 	autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 5D00FC33C8C
-	for <iommu@archiver.kernel.org>; Sun,  5 Jan 2020 10:51:56 +0000 (UTC)
-Received: from silver.osuosl.org (smtp3.osuosl.org [140.211.166.136])
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 86EA1C33C8C
+	for <iommu@archiver.kernel.org>; Sun,  5 Jan 2020 10:52:08 +0000 (UTC)
+Received: from whitealder.osuosl.org (smtp1.osuosl.org [140.211.166.138])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by mail.kernel.org (Postfix) with ESMTPS id 2ECC221582
-	for <iommu@archiver.kernel.org>; Sun,  5 Jan 2020 10:51:56 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTPS id 59F9E21582
+	for <iommu@archiver.kernel.org>; Sun,  5 Jan 2020 10:52:08 +0000 (UTC)
 Authentication-Results: mail.kernel.org;
-	dkim=fail reason="signature verification failed" (1024-bit key) header.d=mediatek.com header.i=@mediatek.com header.b="pFdgz2uZ"
-DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 2ECC221582
+	dkim=fail reason="signature verification failed" (1024-bit key) header.d=mediatek.com header.i=@mediatek.com header.b="Hmv/NN7D"
+DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 59F9E21582
 Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=mediatek.com
 Authentication-Results: mail.kernel.org; spf=pass smtp.mailfrom=iommu-bounces@lists.linux-foundation.org
 Received: from localhost (localhost [127.0.0.1])
-	by silver.osuosl.org (Postfix) with ESMTP id E6B7920501;
-	Sun,  5 Jan 2020 10:51:55 +0000 (UTC)
+	by whitealder.osuosl.org (Postfix) with ESMTP id 4A1E685CE2;
+	Sun,  5 Jan 2020 10:52:08 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from silver.osuosl.org ([127.0.0.1])
+Received: from whitealder.osuosl.org ([127.0.0.1])
 	by localhost (.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
-	with ESMTP id Wykb3zIjvsqg; Sun,  5 Jan 2020 10:51:54 +0000 (UTC)
+	with ESMTP id 0AZBsLZ+qkx9; Sun,  5 Jan 2020 10:52:07 +0000 (UTC)
 Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [140.211.9.56])
-	by silver.osuosl.org (Postfix) with ESMTP id 982332047E;
-	Sun,  5 Jan 2020 10:51:54 +0000 (UTC)
+	by whitealder.osuosl.org (Postfix) with ESMTP id C7CF185CC7;
+	Sun,  5 Jan 2020 10:52:07 +0000 (UTC)
 Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
-	by lists.linuxfoundation.org (Postfix) with ESMTP id 83001C1D84;
-	Sun,  5 Jan 2020 10:51:54 +0000 (UTC)
+	by lists.linuxfoundation.org (Postfix) with ESMTP id C2DEBC1D84;
+	Sun,  5 Jan 2020 10:52:07 +0000 (UTC)
 Received: from whitealder.osuosl.org (smtp1.osuosl.org [140.211.166.138])
- by lists.linuxfoundation.org (Postfix) with ESMTP id 29906C0881
- for <iommu@lists.linux-foundation.org>; Sun,  5 Jan 2020 10:51:53 +0000 (UTC)
+ by lists.linuxfoundation.org (Postfix) with ESMTP id 4401BC0881
+ for <iommu@lists.linux-foundation.org>; Sun,  5 Jan 2020 10:52:06 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
- by whitealder.osuosl.org (Postfix) with ESMTP id 2452185D26
- for <iommu@lists.linux-foundation.org>; Sun,  5 Jan 2020 10:51:53 +0000 (UTC)
+ by whitealder.osuosl.org (Postfix) with ESMTP id 306A485CE0
+ for <iommu@lists.linux-foundation.org>; Sun,  5 Jan 2020 10:52:06 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
 Received: from whitealder.osuosl.org ([127.0.0.1])
  by localhost (.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
- with ESMTP id 2O+zu7Amxn3K for <iommu@lists.linux-foundation.org>;
- Sun,  5 Jan 2020 10:51:52 +0000 (UTC)
+ with ESMTP id QaXqsHxSnvyc for <iommu@lists.linux-foundation.org>;
+ Sun,  5 Jan 2020 10:52:05 +0000 (UTC)
 X-Greylist: from auto-whitelisted by SQLgrey-1.7.6
 Received: from mailgw02.mediatek.com (unknown [210.61.82.184])
- by whitealder.osuosl.org (Postfix) with ESMTP id 4F8FD85CE2
- for <iommu@lists.linux-foundation.org>; Sun,  5 Jan 2020 10:51:52 +0000 (UTC)
-X-UUID: e2bc8ee6dc254265b5b1e3f3b70a7945-20200105
+ by whitealder.osuosl.org (Postfix) with ESMTP id 540EA85CC7
+ for <iommu@lists.linux-foundation.org>; Sun,  5 Jan 2020 10:52:05 +0000 (UTC)
+X-UUID: 07f00fd078c34ac68ce2c55ac1e2529d-20200105
 DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=mediatek.com;
  s=dk; 
  h=Content-Transfer-Encoding:Content-Type:MIME-Version:References:In-Reply-To:Message-ID:Date:Subject:CC:To:From;
- bh=DGmQNidlzNQc5LwY8YiBP+cNsBp8IGVfEGVlTvoknPc=; 
- b=pFdgz2uZ7V1zo4Yv/x7kvKtd2o4M60g9bGE8U5fdzYIpObJ/yx9XExN8aKYXv8aL5WOiGI/eKPVswIAOKYqTKaiDaWgKYUsIG6HGZ/j9eYSTzngXFzg+aOU7pq6FdEX038OEPLwM15tbgreK731chEcqvWTtwqe4HVTUiP3lWbg=;
-X-UUID: e2bc8ee6dc254265b5b1e3f3b70a7945-20200105
-Received: from mtkmrs01.mediatek.inc [(172.21.131.159)] by
- mailgw02.mediatek.com (envelope-from <chao.hao@mediatek.com>)
+ bh=TnjVeJwcbvQSB0jZ1PBholvwkjk3w09NdGN4BC3AJAw=; 
+ b=Hmv/NN7D8PjriN6jrcKvYf4YXOEUgjQVL0MWl4qoKl6IbktWbKdTKkGtm+DI2TVBy6oCfTHnqCYJVzKEiM38srAddUQjSCWcRJvpUYea7RN/GDC4xvQeM4Gbf9LBmkZ5IHhbKor92s0ExxtCoKKaA11diISLH4djY4rKl3tvfl8=;
+X-UUID: 07f00fd078c34ac68ce2c55ac1e2529d-20200105
+Received: from mtkcas07.mediatek.inc [(172.21.101.84)] by mailgw02.mediatek.com
+ (envelope-from <chao.hao@mediatek.com>)
  (Cellopoint E-mail Firewall v4.1.10 Build 0809 with TLS)
- with ESMTP id 103566578; Sun, 05 Jan 2020 18:46:47 +0800
+ with ESMTP id 1400420485; Sun, 05 Jan 2020 18:47:00 +0800
 Received: from MTKCAS06.mediatek.inc (172.21.101.30) by
  mtkmbs07n1.mediatek.inc (172.21.101.16) with Microsoft SMTP Server (TLS) id
- 15.0.1395.4; Sun, 5 Jan 2020 18:46:22 +0800
+ 15.0.1395.4; Sun, 5 Jan 2020 18:46:35 +0800
 Received: from localhost.localdomain (10.15.20.246) by MTKCAS06.mediatek.inc
  (172.21.101.73) with Microsoft SMTP Server id 15.0.1395.4 via Frontend
- Transport; Sun, 5 Jan 2020 18:45:17 +0800
+ Transport; Sun, 5 Jan 2020 18:45:30 +0800
 From: Chao Hao <chao.hao@mediatek.com>
 To: Joerg Roedel <joro@8bytes.org>, Rob Herring <robh+dt@kernel.org>, Matthias
  Brugger <matthias.bgg@gmail.com>
-Subject: [PATCH v2 07/19] iommu/mediatek: Add REG_MMU_WR_LEN reg define
- prepare for mt6779
-Date: Sun, 5 Jan 2020 18:45:11 +0800
-Message-ID: <20200105104523.31006-8-chao.hao@mediatek.com>
+Subject: [PATCH v2 10/19] iommu/mediatek: Remove mtk_iommu_domain_finalise
+Date: Sun, 5 Jan 2020 18:45:14 +0800
+Message-ID: <20200105104523.31006-11-chao.hao@mediatek.com>
 X-Mailer: git-send-email 2.18.0
 In-Reply-To: <20200105104523.31006-1-chao.hao@mediatek.com>
 References: <20200105104523.31006-1-chao.hao@mediatek.com>
@@ -98,79 +97,100 @@ Content-Transfer-Encoding: 7bit
 Errors-To: iommu-bounces@lists.linux-foundation.org
 Sender: "iommu" <iommu-bounces@lists.linux-foundation.org>
 
-When some platforms(ex:later mt6779) define has_wr_len variable,
-we need to set REG_MMU_WR_LEN to improve performance. So we add
-REG_MMU_WR_LEN register define in this patch.
+We already have global mtk_iommu_pgtable structure to describe
+page table and create it in group_device, "mtk_iommu_domain_finalise"
+is as the same as that, so so we will remove mtk_iommu_domain_finalise.
 
 Signed-off-by: Chao Hao <chao.hao@mediatek.com>
 ---
- drivers/iommu/mtk_iommu.c | 11 +++++++++++
- drivers/iommu/mtk_iommu.h |  2 ++
- 2 files changed, 13 insertions(+)
+ drivers/iommu/mtk_iommu.c | 48 ++++++++-------------------------------
+ 1 file changed, 10 insertions(+), 38 deletions(-)
 
 diff --git a/drivers/iommu/mtk_iommu.c b/drivers/iommu/mtk_iommu.c
-index 5de13ab1094e..ad5690350d6a 100644
+index 50c6a01eb517..cfefdd638f1a 100644
 --- a/drivers/iommu/mtk_iommu.c
 +++ b/drivers/iommu/mtk_iommu.c
-@@ -44,6 +44,8 @@
- 
- #define REG_MMU_MISC_CTRL			0x048
- #define REG_MMU_DCM_DIS				0x050
-+#define REG_MMU_WR_LEN				0x054
-+#define F_MMU_WR_THROT_DIS			(BIT(5) |  BIT(21))
- 
- #define REG_MMU_CTRL_REG			0x110
- #define F_MMU_TF_PROT_TO_PROGRAM_ADDR		(2 << 4)
-@@ -595,6 +597,13 @@ static int mtk_iommu_hw_init(const struct mtk_iommu_data *data)
+@@ -323,40 +323,6 @@ static void mtk_iommu_config(struct mtk_iommu_data *data,
  	}
- 	writel_relaxed(0, data->base + REG_MMU_DCM_DIS);
+ }
  
-+	if (data->plat_data->has_wr_len) {
-+		/* write command throttling mode */
-+		regval = readl_relaxed(data->base + REG_MMU_WR_LEN);
-+		regval &= ~F_MMU_WR_THROT_DIS;
-+		writel_relaxed(regval, data->base + REG_MMU_WR_LEN);
+-static int mtk_iommu_domain_finalise(struct mtk_iommu_domain *dom)
+-{
+-	struct mtk_iommu_data *data = mtk_iommu_get_m4u_data();
+-
+-	if (data->pgtable) {
+-		dom->cfg = data->pgtable->cfg;
+-		dom->iop = data->pgtable->iop;
+-		dom->domain.pgsize_bitmap = data->pgtable->cfg.pgsize_bitmap;
+-		return 0;
+-	}
+-
+-	dom->cfg = (struct io_pgtable_cfg) {
+-		.quirks = IO_PGTABLE_QUIRK_ARM_NS |
+-			IO_PGTABLE_QUIRK_NO_PERMS |
+-			IO_PGTABLE_QUIRK_TLBI_ON_MAP |
+-			IO_PGTABLE_QUIRK_ARM_MTK_EXT,
+-		.pgsize_bitmap = mtk_iommu_ops.pgsize_bitmap,
+-		.ias = 32,
+-		.oas = 34,
+-		.tlb = &mtk_iommu_flush_ops,
+-		.iommu_dev = data->dev,
+-	};
+-
+-	dom->iop = alloc_io_pgtable_ops(ARM_V7S, &dom->cfg, data);
+-	if (!dom->iop) {
+-		dev_err(data->dev, "Failed to alloc io pgtable\n");
+-		return -EINVAL;
+-	}
+-
+-	/* Update our support page sizes bitmap */
+-	dom->domain.pgsize_bitmap = dom->cfg.pgsize_bitmap;
+-	return 0;
+-}
+-
+ static struct mtk_iommu_pgtable *create_pgtable(struct mtk_iommu_data *data)
+ {
+ 	struct mtk_iommu_pgtable *pgtable;
+@@ -414,11 +380,17 @@ static int mtk_iommu_attach_pgtable(struct mtk_iommu_data *data,
+ 
+ static struct iommu_domain *mtk_iommu_domain_alloc(unsigned type)
+ {
++	struct mtk_iommu_pgtable *pgtable = mtk_iommu_get_pgtable();
+ 	struct mtk_iommu_domain *dom;
+ 
+ 	if (type != IOMMU_DOMAIN_DMA)
+ 		return NULL;
+ 
++	if (!pgtable) {
++		pr_err("%s, pgtable is not ready\n", __func__);
++		return NULL;
 +	}
 +
- 	if (data->plat_data->reset_axi)
- 		writel_relaxed(0, data->base + REG_MMU_MISC_CTRL);
+ 	dom = kzalloc(sizeof(*dom), GFP_KERNEL);
+ 	if (!dom)
+ 		return NULL;
+@@ -426,8 +398,10 @@ static struct iommu_domain *mtk_iommu_domain_alloc(unsigned type)
+ 	if (iommu_get_dma_cookie(&dom->domain))
+ 		goto  free_dom;
  
-@@ -743,6 +752,7 @@ static int __maybe_unused mtk_iommu_suspend(struct device *dev)
- 	struct mtk_iommu_suspend_reg *reg = &data->reg;
- 	void __iomem *base = data->base;
+-	if (mtk_iommu_domain_finalise(dom))
+-		goto  put_dma_cookie;
++	dom->cfg = pgtable->cfg;
++	dom->iop = pgtable->iop;
++	/* Update our support page sizes bitmap */
++	dom->domain.pgsize_bitmap = pgtable->cfg.pgsize_bitmap;
  
-+	reg->wr_len = readl_relaxed(base + REG_MMU_WR_LEN);
- 	reg->standard_axi_mode = readl_relaxed(base +
- 					       REG_MMU_MISC_CTRL);
- 	reg->dcm_dis = readl_relaxed(base + REG_MMU_DCM_DIS);
-@@ -768,6 +778,7 @@ static int __maybe_unused mtk_iommu_resume(struct device *dev)
- 		dev_err(data->dev, "Failed to enable clk(%d) in resume\n", ret);
- 		return ret;
- 	}
-+	writel_relaxed(reg->wr_len, base + REG_MMU_WR_LEN);
- 	writel_relaxed(reg->standard_axi_mode,
- 		       base + REG_MMU_MISC_CTRL);
- 	writel_relaxed(reg->dcm_dis, base + REG_MMU_DCM_DIS);
-diff --git a/drivers/iommu/mtk_iommu.h b/drivers/iommu/mtk_iommu.h
-index d4495230c6e7..0623f199e96f 100644
---- a/drivers/iommu/mtk_iommu.h
-+++ b/drivers/iommu/mtk_iommu.h
-@@ -25,6 +25,7 @@ struct mtk_iommu_suspend_reg {
- 	u32				int_main_control;
- 	u32				ivrp_paddr;
- 	u32				vld_pa_rng;
-+	u32				wr_len;
- };
+ 	dom->domain.geometry.aperture_start = 0;
+ 	dom->domain.geometry.aperture_end = DMA_BIT_MASK(32);
+@@ -435,8 +409,6 @@ static struct iommu_domain *mtk_iommu_domain_alloc(unsigned type)
  
- enum mtk_iommu_plat {
-@@ -43,6 +44,7 @@ struct mtk_iommu_plat_data {
- 	bool                has_sub_comm[2];
- 	bool                has_vld_pa_rng;
- 	bool                reset_axi;
-+	bool                has_wr_len;
- 	u32                 m4u1_mask;
- 	u32                 inv_sel_reg;
- 	unsigned char       larbid_remap[2][MTK_LARB_NR_MAX];
+ 	return &dom->domain;
+ 
+-put_dma_cookie:
+-	iommu_put_dma_cookie(&dom->domain);
+ free_dom:
+ 	kfree(dom);
+ 	return NULL;
 -- 
 2.18.0
 _______________________________________________
