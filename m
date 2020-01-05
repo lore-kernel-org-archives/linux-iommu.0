@@ -2,77 +2,84 @@ Return-Path: <SRS0=m4R2=22=lists.linux-foundation.org=iommu-bounces@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-2.2 required=3.0 tests=HEADER_FROM_DIFFERENT_DOMAINS,
-	MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS,USER_AGENT_SANE_1 autolearn=no
-	autolearn_force=no version=3.4.0
+X-Spam-Status: No, score=-6.7 required=3.0 tests=DKIM_INVALID,DKIM_SIGNED,
+	HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_PATCH,MAILING_LIST_MULTI,SIGNED_OFF_BY,
+	SPF_HELO_NONE,SPF_PASS,UNPARSEABLE_RELAY,UNWANTED_LANGUAGE_BODY,
+	USER_AGENT_GIT autolearn=ham autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 9E6DCC00523
-	for <iommu@archiver.kernel.org>; Sun,  5 Jan 2020 03:44:25 +0000 (UTC)
-Received: from silver.osuosl.org (smtp3.osuosl.org [140.211.166.136])
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 5C68DC3F68F
+	for <iommu@archiver.kernel.org>; Sun,  5 Jan 2020 10:46:42 +0000 (UTC)
+Received: from whitealder.osuosl.org (smtp1.osuosl.org [140.211.166.138])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by mail.kernel.org (Postfix) with ESMTPS id 09E4B21582
-	for <iommu@archiver.kernel.org>; Sun,  5 Jan 2020 03:44:24 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 09E4B21582
-Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=linux.intel.com
+	by mail.kernel.org (Postfix) with ESMTPS id 2449120866
+	for <iommu@archiver.kernel.org>; Sun,  5 Jan 2020 10:46:41 +0000 (UTC)
+Authentication-Results: mail.kernel.org;
+	dkim=fail reason="signature verification failed" (1024-bit key) header.d=mediatek.com header.i=@mediatek.com header.b="VgznuY2l"
+DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 2449120866
+Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=mediatek.com
 Authentication-Results: mail.kernel.org; spf=pass smtp.mailfrom=iommu-bounces@lists.linux-foundation.org
 Received: from localhost (localhost [127.0.0.1])
-	by silver.osuosl.org (Postfix) with ESMTP id B389D203CA;
-	Sun,  5 Jan 2020 03:44:24 +0000 (UTC)
+	by whitealder.osuosl.org (Postfix) with ESMTP id 9D439860F1;
+	Sun,  5 Jan 2020 10:46:41 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from silver.osuosl.org ([127.0.0.1])
+Received: from whitealder.osuosl.org ([127.0.0.1])
 	by localhost (.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
-	with ESMTP id n9RHtZAaz92Y; Sun,  5 Jan 2020 03:44:23 +0000 (UTC)
+	with ESMTP id XTNiKpZXmyZs; Sun,  5 Jan 2020 10:46:40 +0000 (UTC)
 Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [140.211.9.56])
-	by silver.osuosl.org (Postfix) with ESMTP id 37D9120384;
-	Sun,  5 Jan 2020 03:44:23 +0000 (UTC)
+	by whitealder.osuosl.org (Postfix) with ESMTP id 95D9785CE0;
+	Sun,  5 Jan 2020 10:46:40 +0000 (UTC)
 Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
-	by lists.linuxfoundation.org (Postfix) with ESMTP id 2B5D7C1797;
-	Sun,  5 Jan 2020 03:44:23 +0000 (UTC)
-Received: from fraxinus.osuosl.org (smtp4.osuosl.org [140.211.166.137])
- by lists.linuxfoundation.org (Postfix) with ESMTP id D31B5C077D
- for <iommu@lists.linux-foundation.org>; Sun,  5 Jan 2020 03:44:21 +0000 (UTC)
+	by lists.linuxfoundation.org (Postfix) with ESMTP id 80929C0881;
+	Sun,  5 Jan 2020 10:46:40 +0000 (UTC)
+Received: from whitealder.osuosl.org (smtp1.osuosl.org [140.211.166.138])
+ by lists.linuxfoundation.org (Postfix) with ESMTP id 40371C0881
+ for <iommu@lists.linux-foundation.org>; Sun,  5 Jan 2020 10:46:38 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
- by fraxinus.osuosl.org (Postfix) with ESMTP id CD6CD85BD3
- for <iommu@lists.linux-foundation.org>; Sun,  5 Jan 2020 03:44:21 +0000 (UTC)
+ by whitealder.osuosl.org (Postfix) with ESMTP id 22EF885CE0
+ for <iommu@lists.linux-foundation.org>; Sun,  5 Jan 2020 10:46:38 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from fraxinus.osuosl.org ([127.0.0.1])
+Received: from whitealder.osuosl.org ([127.0.0.1])
  by localhost (.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
- with ESMTP id 8b5cyC2jwnGh for <iommu@lists.linux-foundation.org>;
- Sun,  5 Jan 2020 03:44:20 +0000 (UTC)
+ with ESMTP id frUVJoenoe-G for <iommu@lists.linux-foundation.org>;
+ Sun,  5 Jan 2020 10:46:37 +0000 (UTC)
 X-Greylist: domain auto-whitelisted by SQLgrey-1.7.6
-Received: from mga02.intel.com (mga02.intel.com [134.134.136.20])
- by fraxinus.osuosl.org (Postfix) with ESMTPS id 9D88B8574A
- for <iommu@lists.linux-foundation.org>; Sun,  5 Jan 2020 03:44:20 +0000 (UTC)
-X-Amp-Result: SKIPPED(no attachment in message)
-X-Amp-File-Uploaded: False
-Received: from fmsmga004.fm.intel.com ([10.253.24.48])
- by orsmga101.jf.intel.com with ESMTP/TLS/DHE-RSA-AES256-GCM-SHA384;
- 04 Jan 2020 19:44:19 -0800
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.69,397,1571727600"; d="scan'208";a="245265714"
-Received: from allen-box.sh.intel.com (HELO [10.239.159.136])
- ([10.239.159.136])
- by fmsmga004.fm.intel.com with ESMTP; 04 Jan 2020 19:44:18 -0800
-Subject: Re: [PATCH 22/22] iommu/vt-d: Add a quirk flag for scope mismatched
- devices
-To: Roland Dreier <roland@purestorage.com>
-References: <20200102001823.21976-1-baolu.lu@linux.intel.com>
- <20200102001823.21976-23-baolu.lu@linux.intel.com>
- <CAL1RGDWU=s6nVArvkci1cXyZVw-fvdtcOjuY+9E+rgBi65q=Aw@mail.gmail.com>
- <567f1506-4a13-535b-ce41-aac079941510@linux.intel.com>
- <CAL1RGDVF1icaeEWMe0r0VA8AaxtHGJZ8NHCpvJfT8+1duOUYAQ@mail.gmail.com>
- <5097d738-352b-92ad-c8ac-0b3e2805aa97@linux.intel.com>
- <CAL1RGDXm8LC0OAtOjVrDBCjf=6n6jpgSoHRz1L3y2vj6NhAXMg@mail.gmail.com>
-From: Lu Baolu <baolu.lu@linux.intel.com>
-Message-ID: <f03fac7b-133e-8ce3-4b6f-dbab56591385@linux.intel.com>
-Date: Sun, 5 Jan 2020 11:43:07 +0800
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101
- Thunderbird/68.2.2
+Received: from mailgw01.mediatek.com (unknown [210.61.82.183])
+ by whitealder.osuosl.org (Postfix) with ESMTP id 8DCD885C90
+ for <iommu@lists.linux-foundation.org>; Sun,  5 Jan 2020 10:46:36 +0000 (UTC)
+X-UUID: 203e6e9241554a088f4db1757d32f1b7-20200105
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=mediatek.com;
+ s=dk; 
+ h=Content-Transfer-Encoding:Content-Type:MIME-Version:References:In-Reply-To:Message-ID:Date:Subject:CC:To:From;
+ bh=5wwx9zI1tNRihK2T3I1D2qJUFCK1MtGL2mDXTtoZpp8=; 
+ b=VgznuY2lEDk/TQh0Moc4gZ6TFqXdF9AB69olMhdi0x8V5gILcVQIxenSJOSV/W/Jw1GoivQ25cIO57D/fiGTynCFP4SK0HidvqtAncp9auIfGpeZSefLTl6bSZQpTRQSail3nNVhNFodftubJR+GpsQawUXYBIknsxopjSzfpZA=;
+X-UUID: 203e6e9241554a088f4db1757d32f1b7-20200105
+Received: from mtkcas09.mediatek.inc [(172.21.101.178)] by
+ mailgw01.mediatek.com (envelope-from <chao.hao@mediatek.com>)
+ (Cellopoint E-mail Firewall v4.1.10 Build 0809 with TLS)
+ with ESMTP id 387808072; Sun, 05 Jan 2020 18:46:33 +0800
+Received: from MTKCAS06.mediatek.inc (172.21.101.30) by
+ mtkmbs07n2.mediatek.inc (172.21.101.141) with Microsoft SMTP Server (TLS) id
+ 15.0.1395.4; Sun, 5 Jan 2020 18:46:06 +0800
+Received: from localhost.localdomain (10.15.20.246) by MTKCAS06.mediatek.inc
+ (172.21.101.73) with Microsoft SMTP Server id 15.0.1395.4 via Frontend
+ Transport; Sun, 5 Jan 2020 18:45:03 +0800
+From: Chao Hao <chao.hao@mediatek.com>
+To: Joerg Roedel <joro@8bytes.org>, Rob Herring <robh+dt@kernel.org>, Matthias
+ Brugger <matthias.bgg@gmail.com>
+Subject: [PATCH v2 03/19] iommu/mediatek: Extend larb_remap to larb_remap[2]
+Date: Sun, 5 Jan 2020 18:45:07 +0800
+Message-ID: <20200105104523.31006-4-chao.hao@mediatek.com>
+X-Mailer: git-send-email 2.18.0
+In-Reply-To: <20200105104523.31006-1-chao.hao@mediatek.com>
+References: <20200105104523.31006-1-chao.hao@mediatek.com>
 MIME-Version: 1.0
-In-Reply-To: <CAL1RGDXm8LC0OAtOjVrDBCjf=6n6jpgSoHRz1L3y2vj6NhAXMg@mail.gmail.com>
-Content-Language: en-US
-Cc: Jim Yan <jimyan@baidu.com>, iommu@lists.linux-foundation.org
+X-MTK: N
+Cc: Anan Sun <anan.sun@mediatek.com>, devicetree@vger.kernel.org,
+ Jun Yan <jun.yan@mediatek.com>, wsd_upstream@mediatek.com,
+ linux-kernel@vger.kernel.org, Chao Hao <chao.hao@mediatek.com>,
+ iommu@lists.linux-foundation.org, linux-mediatek@lists.infradead.org,
+ Cui Zhang <zhang.cui@mediatek.com>, linux-arm-kernel@lists.infradead.org
 X-BeenThere: iommu@lists.linux-foundation.org
 X-Mailman-Version: 2.1.15
 Precedence: list
@@ -85,32 +92,74 @@ List-Post: <mailto:iommu@lists.linux-foundation.org>
 List-Help: <mailto:iommu-request@lists.linux-foundation.org?subject=help>
 List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
  <mailto:iommu-request@lists.linux-foundation.org?subject=subscribe>
+Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
-Content-Type: text/plain; charset="us-ascii"; Format="flowed"
 Errors-To: iommu-bounces@lists.linux-foundation.org
 Sender: "iommu" <iommu-bounces@lists.linux-foundation.org>
 
-Hi Jim,
+For more than one IOMMUs, they are corresponding to different
+smi_larb id, so we need to extend larb_remap to larb_remap[2]
+to distinguish it by index.
 
-On 1/5/20 12:52 AM, Roland Dreier wrote:
->> Jim proposed another solution.
->>
->> https://lkml.org/lkml/2019/12/23/653
->>
->> Does this work for you?
-> 
-> Yes, that's OK for the cases I've seen too.  All the NTB devices I've
-> seen are PCI_CLASS_BRIDGE_OTHER with type 0 headers, so this patch
-> would not break anything.  And I think the idea of allowing DMAR
-> bridge scope for all devices with PCI class bridge is logical - BIOS
-> writers probably are going by PCI class rather than header type when
-> assigning scope.
+Signed-off-by: Chao Hao <chao.hao@mediatek.com>
+---
+ drivers/iommu/mtk_iommu.c | 8 ++++----
+ drivers/iommu/mtk_iommu.h | 2 +-
+ 2 files changed, 5 insertions(+), 5 deletions(-)
 
-Can you please post a v2 of this patch with the change you proposed in
-https://lkml.org/lkml/2019/12/23/653?
-
-Best regards,
-baolu
+diff --git a/drivers/iommu/mtk_iommu.c b/drivers/iommu/mtk_iommu.c
+index 09192edef1f7..f2d953fc09df 100644
+--- a/drivers/iommu/mtk_iommu.c
++++ b/drivers/iommu/mtk_iommu.c
+@@ -245,7 +245,7 @@ static irqreturn_t mtk_iommu_isr(int irq, void *dev_id)
+ 	fault_larb = F_MMU_INT_ID_LARB_ID(regval);
+ 	fault_port = F_MMU_INT_ID_PORT_ID(regval);
+ 
+-	fault_larb = data->plat_data->larbid_remap[fault_larb];
++	fault_larb = data->plat_data->larbid_remap[data->m4u_id][fault_larb];
+ 
+ 	if (report_iommu_fault(&dom->domain, data->dev, fault_iova,
+ 			       write ? IOMMU_FAULT_WRITE : IOMMU_FAULT_READ)) {
+@@ -782,7 +782,7 @@ static const struct mtk_iommu_plat_data mt2712_data = {
+ 	.has_4gb_mode = true,
+ 	.has_bclk     = true,
+ 	.has_vld_pa_rng   = true,
+-	.larbid_remap = {0, 1, 2, 3, 4, 5, 6, 7, 8, 9},
++	.larbid_remap[0] = {0, 1, 2, 3, 4, 5, 6, 7, 8, 9},
+ };
+ 
+ static const struct mtk_iommu_plat_data mt8173_data = {
+@@ -790,13 +790,13 @@ static const struct mtk_iommu_plat_data mt8173_data = {
+ 	.has_4gb_mode = true,
+ 	.has_bclk     = true,
+ 	.reset_axi    = true,
+-	.larbid_remap = {0, 1, 2, 3, 4, 5}, /* Linear mapping. */
++	.larbid_remap[0] = {0, 1, 2, 3, 4, 5}, /* Linear mapping. */
+ };
+ 
+ static const struct mtk_iommu_plat_data mt8183_data = {
+ 	.m4u_plat     = M4U_MT8183,
+ 	.reset_axi    = true,
+-	.larbid_remap = {0, 4, 5, 6, 7, 2, 3, 1},
++	.larbid_remap[0] = {0, 4, 5, 6, 7, 2, 3, 1},
+ };
+ 
+ static const struct of_device_id mtk_iommu_of_ids[] = {
+diff --git a/drivers/iommu/mtk_iommu.h b/drivers/iommu/mtk_iommu.h
+index b4bd76548615..c585811a957c 100644
+--- a/drivers/iommu/mtk_iommu.h
++++ b/drivers/iommu/mtk_iommu.h
+@@ -43,7 +43,7 @@ struct mtk_iommu_plat_data {
+ 	bool                has_vld_pa_rng;
+ 	bool                reset_axi;
+ 	u32                 m4u1_mask;
+-	unsigned char       larbid_remap[MTK_LARB_NR_MAX];
++	unsigned char       larbid_remap[2][MTK_LARB_NR_MAX];
+ };
+ 
+ struct mtk_iommu_domain;
+-- 
+2.18.0
 _______________________________________________
 iommu mailing list
 iommu@lists.linux-foundation.org
