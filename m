@@ -2,70 +2,94 @@ Return-Path: <SRS0=Oi6h=23=lists.linux-foundation.org=iommu-bounces@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-5.2 required=3.0 tests=HEADER_FROM_DIFFERENT_DOMAINS,
-	INCLUDES_PATCH,MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS,USER_AGENT_SANE_1
-	autolearn=unavailable autolearn_force=no version=3.4.0
+X-Spam-Status: No, score=-9.6 required=3.0 tests=DKIM_INVALID,DKIM_SIGNED,
+	HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_PATCH,MAILING_LIST_MULTI,SIGNED_OFF_BY,
+	SPF_HELO_NONE,SPF_PASS,USER_AGENT_GIT autolearn=ham autolearn_force=no
+	version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 4F416C33C8C
-	for <iommu@archiver.kernel.org>; Mon,  6 Jan 2020 13:27:06 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 12535C33C8C
+	for <iommu@archiver.kernel.org>; Mon,  6 Jan 2020 15:27:43 +0000 (UTC)
 Received: from silver.osuosl.org (smtp3.osuosl.org [140.211.166.136])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by mail.kernel.org (Postfix) with ESMTPS id 0486C20731
-	for <iommu@archiver.kernel.org>; Mon,  6 Jan 2020 13:27:05 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 0486C20731
-Authentication-Results: mail.kernel.org; dmarc=none (p=none dis=none) header.from=arm.com
+	by mail.kernel.org (Postfix) with ESMTPS id CAA0B207FD
+	for <iommu@archiver.kernel.org>; Mon,  6 Jan 2020 15:27:42 +0000 (UTC)
+Authentication-Results: mail.kernel.org;
+	dkim=fail reason="signature verification failed" (2048-bit key) header.d=lca.pw header.i=@lca.pw header.b="DsPu+SD2"
+DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org CAA0B207FD
+Authentication-Results: mail.kernel.org; dmarc=none (p=none dis=none) header.from=lca.pw
 Authentication-Results: mail.kernel.org; spf=pass smtp.mailfrom=iommu-bounces@lists.linux-foundation.org
 Received: from localhost (localhost [127.0.0.1])
-	by silver.osuosl.org (Postfix) with ESMTP id B9F9D204BE;
-	Mon,  6 Jan 2020 13:27:05 +0000 (UTC)
+	by silver.osuosl.org (Postfix) with ESMTP id 8DC11204D3;
+	Mon,  6 Jan 2020 15:27:42 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
 Received: from silver.osuosl.org ([127.0.0.1])
 	by localhost (.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
-	with ESMTP id 8D--ZyttwgHP; Mon,  6 Jan 2020 13:27:04 +0000 (UTC)
+	with ESMTP id dR9wUGdDK4fo; Mon,  6 Jan 2020 15:27:41 +0000 (UTC)
 Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [140.211.9.56])
-	by silver.osuosl.org (Postfix) with ESMTP id 70B222033B;
-	Mon,  6 Jan 2020 13:27:04 +0000 (UTC)
+	by silver.osuosl.org (Postfix) with ESMTP id CC3A620119;
+	Mon,  6 Jan 2020 15:27:41 +0000 (UTC)
 Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
-	by lists.linuxfoundation.org (Postfix) with ESMTP id 64037C1D84;
-	Mon,  6 Jan 2020 13:27:04 +0000 (UTC)
-Received: from silver.osuosl.org (smtp3.osuosl.org [140.211.166.136])
- by lists.linuxfoundation.org (Postfix) with ESMTP id 8A03EC0881
- for <iommu@lists.linux-foundation.org>; Mon,  6 Jan 2020 13:27:03 +0000 (UTC)
+	by lists.linuxfoundation.org (Postfix) with ESMTP id BD721C1D84;
+	Mon,  6 Jan 2020 15:27:41 +0000 (UTC)
+Received: from whitealder.osuosl.org (smtp1.osuosl.org [140.211.166.138])
+ by lists.linuxfoundation.org (Postfix) with ESMTP id 01CF2C0881
+ for <iommu@lists.linux-foundation.org>; Mon,  6 Jan 2020 15:27:40 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
- by silver.osuosl.org (Postfix) with ESMTP id 6D3D5204BE
- for <iommu@lists.linux-foundation.org>; Mon,  6 Jan 2020 13:27:03 +0000 (UTC)
+ by whitealder.osuosl.org (Postfix) with ESMTP id F270384854
+ for <iommu@lists.linux-foundation.org>; Mon,  6 Jan 2020 15:27:39 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from silver.osuosl.org ([127.0.0.1])
+Received: from whitealder.osuosl.org ([127.0.0.1])
  by localhost (.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
- with ESMTP id geZt9d-+bE2p for <iommu@lists.linux-foundation.org>;
- Mon,  6 Jan 2020 13:27:01 +0000 (UTC)
-X-Greylist: domain auto-whitelisted by SQLgrey-1.7.6
-Received: from foss.arm.com (foss.arm.com [217.140.110.172])
- by silver.osuosl.org (Postfix) with ESMTP id 8CE262033B
- for <iommu@lists.linux-foundation.org>; Mon,  6 Jan 2020 13:27:01 +0000 (UTC)
-Received: from usa-sjc-imap-foss1.foss.arm.com (unknown [10.121.207.14])
- by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id 9B110328;
- Mon,  6 Jan 2020 05:27:00 -0800 (PST)
-Received: from [10.1.196.37] (e121345-lin.cambridge.arm.com [10.1.196.37])
- by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPSA id 5AB993F534;
- Mon,  6 Jan 2020 05:26:59 -0800 (PST)
-Subject: Re: [PATCH v2] iommu/qcom: fix NULL pointer dereference during probe
- deferral
-To: Brian Masney <masneyb@onstation.org>, robdclark@gmail.com,
- bjorn.andersson@linaro.org, joro@8bytes.org
-References: <20200104002024.37335-1-masneyb@onstation.org>
-From: Robin Murphy <robin.murphy@arm.com>
-Message-ID: <fc055443-8716-4a0e-b4d5-311517d71ea0@arm.com>
-Date: Mon, 6 Jan 2020 13:26:58 +0000
-User-Agent: Mozilla/5.0 (X11; Linux aarch64; rv:60.0) Gecko/20100101
- Thunderbird/60.9.0
+ with ESMTP id k3etQ+ZW-cn5 for <iommu@lists.linux-foundation.org>;
+ Mon,  6 Jan 2020 15:27:39 +0000 (UTC)
+X-Greylist: from auto-whitelisted by SQLgrey-1.7.6
+Received: from mail-qk1-f194.google.com (mail-qk1-f194.google.com
+ [209.85.222.194])
+ by whitealder.osuosl.org (Postfix) with ESMTPS id 4F82F847D9
+ for <iommu@lists.linux-foundation.org>; Mon,  6 Jan 2020 15:27:39 +0000 (UTC)
+Received: by mail-qk1-f194.google.com with SMTP id w127so39705921qkb.11
+ for <iommu@lists.linux-foundation.org>; Mon, 06 Jan 2020 07:27:39 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=lca.pw; s=google;
+ h=from:to:cc:subject:date:message-id:mime-version
+ :content-transfer-encoding;
+ bh=EFnpNY+6QaoLE3QL0daZSOcFms2OzGtmAouUn+Z/oVc=;
+ b=DsPu+SD2lOfczXptpS0IMN16HQIFVV9+QMxOZ2iDWyHPWcgFyZKhupGFKDnYdPvKb/
+ GI7aEfCS5r8YkNaHLaIKjfRsDE9rCssKskjnqtp3UnpFGqcFnIdYvLTWHs1vUkBTVjG6
+ yG8I9Kl9AjqqOyaf+IAS+EINi61EBVwEk6Xj8n3tT1XneH7pk2sQ5qFkvB73YFiVr3jO
+ +nLBfK/p4Fv12xb+MjV2H0c231T6yGyeowOVhN4Fg8kSHukx4iHJd6+wfxZPzscCXrtv
+ qoSSuWXOHxaare3odrncmLp1/Ub4QJ+qBLaMAg4e8ztbRfsuCGDDSDyg0lYJUqWhGxh5
+ xPmg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+ d=1e100.net; s=20161025;
+ h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+ :content-transfer-encoding;
+ bh=EFnpNY+6QaoLE3QL0daZSOcFms2OzGtmAouUn+Z/oVc=;
+ b=W88mEpBo7N/avWg/XAtqeQfuAli9P1TTAkDo1zRp5qB6wRJrJUd1naxKuBss2fIvg6
+ 1aLescFEPrKUAkUoRkEG7rVKdhj49cgI1JD7e3SLI9zvWBDqBjycT0yLTFl7Ay32p69d
+ hvTkyI9LoRj9jKokQauqUJBQ1eDSoBhwwiuhGwOw4rdlTSOi1C1e84YDgxiNuwuiZaGb
+ 4g7Jdjif40zgPZ09Q0V/K8qCbzh/6enKTlvvHAJzDaIJYLNch6STVhIscd5x7vJZQs2d
+ RVRfa9xWHuavY17ILuaSyYjvqgq/VITKU/QtReKOzSwd5Ka2SIPtcrUHbcqPpYyC5n3s
+ 533g==
+X-Gm-Message-State: APjAAAWNsx1LMFBzyPlJtca3Ha5JF4S22gNJBw6bn+y6HiMvwpOsZ0IU
+ Sq6CWlK8NXRaCAj4LMBWFkIFDg==
+X-Google-Smtp-Source: APXvYqzfojOxjHxLFLBXN8zM7+ZD66O2Wx2gD4w5lRbMNdGv7OEevDWI5WnfDzJwZBY8yMi2hNt69A==
+X-Received: by 2002:ae9:ea08:: with SMTP id f8mr77776178qkg.489.1578324458269; 
+ Mon, 06 Jan 2020 07:27:38 -0800 (PST)
+Received: from ovpn-121-70.rdu2.redhat.com
+ (pool-71-184-117-43.bstnma.fios.verizon.net. [71.184.117.43])
+ by smtp.gmail.com with ESMTPSA id f23sm20757695qke.104.2020.01.06.07.27.37
+ (version=TLS1_2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128/128);
+ Mon, 06 Jan 2020 07:27:37 -0800 (PST)
+From: Qian Cai <cai@lca.pw>
+To: jroedel@suse.de
+Subject: [PATCH] iommu/dma: fix variable 'cookie' set but not used
+Date: Mon,  6 Jan 2020 10:27:27 -0500
+Message-Id: <20200106152727.1589-1-cai@lca.pw>
+X-Mailer: git-send-email 2.21.0 (Apple Git-122.2)
 MIME-Version: 1.0
-In-Reply-To: <20200104002024.37335-1-masneyb@onstation.org>
-Content-Language: en-GB
-Cc: stephan@gerhold.net, linux-arm-msm@vger.kernel.org,
- linux-kernel@vger.kernel.org, j.neuschaefer@gmx.net,
- iommu@lists.linux-foundation.org, agross@kernel.org
+Cc: iommu@lists.linux-foundation.org, robin.murphy@arm.com,
+ linux-kernel@vger.kernel.org
 X-BeenThere: iommu@lists.linux-foundation.org
 X-Mailman-Version: 2.1.15
 Precedence: list
@@ -78,186 +102,50 @@ List-Post: <mailto:iommu@lists.linux-foundation.org>
 List-Help: <mailto:iommu-request@lists.linux-foundation.org?subject=help>
 List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
  <mailto:iommu-request@lists.linux-foundation.org?subject=subscribe>
+Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
-Content-Type: text/plain; charset="us-ascii"; Format="flowed"
 Errors-To: iommu-bounces@lists.linux-foundation.org
 Sender: "iommu" <iommu-bounces@lists.linux-foundation.org>
 
-On 04/01/2020 12:20 am, Brian Masney wrote:
-> When attempting to load the qcom-iommu driver, and an -EPROBE_DEFER
-> error occurs, the following attempted NULL pointer deference occurs:
-> 
->      Unable to handle kernel NULL pointer dereference at virtual address 00000014
->      pgd = (ptrval)
->      [00000014] *pgd=00000000
->      Internal error: Oops: 5 [#1] PREEMPT SMP ARM
->      Modules linked in:
->      CPU: 0 PID: 1 Comm: swapper/0 Not tainted 5.5.0-rc2-next-20191220-00010-gfb6b8e8bced6-dirty #3
->      Hardware name: Generic DT based system
->      PC is at qcom_iommu_domain_free (include/linux/pm_runtime.h:226
->        drivers/iommu/qcom_iommu.c:358)
->      LR is at release_iommu_mapping (arch/arm/mm/dma-mapping.c:2141)
->      pc : lr : psr: 60000013
->      sp : ee89dc48  ip : 00000000  fp : c13a6684
->      r10: c13a661c  r9 : 00000000  r8 : c13a1240
->      r7 : fffffdfb  r6 : 00000000  r5 : edc32f00  r4 : edc32f1c
->      r3 : 00000000  r2 : 00000001  r1 : 00000004  r0 : edc32f1c
->      Flags: nZCv  IRQs on  FIQs on  Mode SVC_32  ISA ARM  Segment none
->      Control: 10c5787d  Table: 0020406a  DAC: 00000051
->      Process swapper/0 (pid: 1, stack limit = 0x(ptrval))
->      Stack: (0xee89dc48 to 0xee89e000)
->      dc40:                   edc3d010 edc37020 00000000 c0316af8 edc3d010 edc37000
->      dc60: 00000000 c0319684 c14341ac edc3d010 00000000 c083bd88 edc3d010 c13a1240
->      dc80: c083c2e8 c13a6684 c13a661c c13a6508 c13a661c c083c134 c13a1240 ee89dcec
->      dca0: edc3d010 00000000 ee89dcec c083c2e8 c13a6684 c13a661c c13a6508 c13a661c
->      dcc0: c13a6684 c083a31c c13a6684 ee82a86c edc327b8 c1304e48 edc3d010 00000001
->      dce0: edc3d054 c083bc08 ee82a880 edc3d010 00000001 c1304e48 edc3d010 edc3d010
->      dd00: c13a69e8 c083b010 edc3d010 00000000 eea1fc10 c0837aac 00000200 00000000
->      dd20: 00000000 00000000 00000000 c1304e48 00000000 edc3d000 eea1fc10 00000000
->      dd40: 00000000 eeff42f4 00000000 00000001 00000000 c09e96e0 eeff42a4 00000000
->      dd60: 00000000 00000000 eea1fc10 c09e98bc 00000001 eea1fc10 00000000 eea1fc10
->      dd80: edc32c00 c1391580 eea1fc10 00000001 eea1fc10 c0850f90 c2706dec c14368c0
->      dda0: 60000013 c1304e48 00000106 eeff42a4 eeff3fa0 00000000 00000000 eea1fc10
->      ddc0: 00000001 c1248900 00000106 c09e9bd0 00000001 c0c2ee64 eea1fc00 eea1fc10
->      dde0: eea1fc10 00000000 c13a5b70 00000000 c1248900 c081496c c1023d84 00000000
->      de00: eeff3fa0 c2706e48 c2706e48 c1304e48 00000001 00000000 eea1fc10 c13a5b70
->      de20: 00000000 c13a5b70 00000000 c1248900 00000106 c083dfb8 c14341ac eea1fc10
->      de40: 00000000 c083be58 eea1fc10 c13a5b70 c13a5b70 c13a69e8 c12003ec c123a854
->      de60: c1248900 c083c134 c1248900 c09e6f3c c0d8d514 eea1fc10 00000000 c13a5b70
->      de80: c13a69e8 c12003ec c123a854 c1248900 00000106 c083c3e0 00000000 c13a5b70
->      dea0: eea1fc10 c083c440 00000000 c13a5b70 c083c3e8 c083a23c 00000106 ee82a858
->      dec0: eea052b4 c1304e48 c13a5b70 edc32b80 00000000 c083b270 c1043084 c121d1d8
->      dee0: ffffe000 c13a5b70 c121d1d8 ffffe000 00000000 c083cfcc c13ece60 c121d1d8
->      df00: ffffe000 c0302f90 00000106 c034407c 00000000 c10e3a00 c1044dd0 c12003ec
->      df20: 00000000 00000006 00000006 c0fbecac c0fada88 c0fada3c 00000000 efffcbf8
->      df40: efffcc0d c1304e48 00000000 00000006 c13f9500 c1304e48 c123a830 00000007
->      df60: c13f9500 c13f9500 c123a834 c1200f64 00000006 00000006 00000000 c12003ec
->      df80: c0c28194 00000000 c0c28194 00000000 00000000 00000000 00000000 00000000
->      dfa0: 00000000 c0c2819c 00000000 c03010e8 00000000 00000000 00000000 00000000
->      dfc0: 00000000 00000000 00000000 00000000 00000000 00000000 00000000 00000000
->      dfe0: 00000000 00000000 00000000 00000000 00000013 00000000 00000000 00000000
->      (qcom_iommu_domain_free) from release_iommu_mapping
->        (arch/arm/mm/dma-mapping.c:2141)
->      (release_iommu_mapping) from arch_teardown_dma_ops
->        (include/linux/dma-mapping.h:271 arch/arm/mm/dma-mapping.c:2335)
->      (arch_teardown_dma_ops) from really_probe (drivers/base/dd.c:607)
->      (really_probe) from driver_probe_device (drivers/base/dd.c:721)
->      (driver_probe_device) from bus_for_each_drv (drivers/base/bus.c:431)
->      (bus_for_each_drv) from __device_attach (drivers/base/dd.c:896)
->      (__device_attach) from bus_probe_device (drivers/base/bus.c:491)
->      (bus_probe_device) from device_add (drivers/base/core.c:2488)
->      (device_add) from of_platform_device_create_pdata
->        (drivers/of/platform.c:189)
->      (of_platform_device_create_pdata) from of_platform_bus_create
->        (drivers/of/platform.c:393 drivers/of/platform.c:346)
->      (of_platform_bus_create) from of_platform_populate
->        (drivers/of/platform.c:486)
->      (of_platform_populate) from msm_pdev_probe
->        (drivers/gpu/drm/msm/msm_drv.c:1197 drivers/gpu/drm/msm/msm_drv.c:1281)
->      (msm_pdev_probe) from platform_drv_probe (drivers/base/platform.c:726)
->      (platform_drv_probe) from really_probe (drivers/base/dd.c:553)
->      (really_probe) from driver_probe_device (drivers/base/dd.c:721)
->      (driver_probe_device) from device_driver_attach (drivers/base/dd.c:995)
->      (device_driver_attach) from __driver_attach (drivers/base/dd.c:1074)
->      (__driver_attach) from bus_for_each_dev (drivers/base/bus.c:304)
->      (bus_for_each_dev) from bus_add_driver (drivers/base/bus.c:623)
->      (bus_add_driver) from driver_register (drivers/base/driver.c:172)
->      (driver_register) from do_one_initcall (include/linux/compiler.h:232
->        include/linux/jump_label.h:254 include/linux/jump_label.h:264
->        include/trace/events/initcall.h:48 init/main.c:941)
->      (do_one_initcall) from kernel_init_freeable (init/main.c:1013
->        init/main.c:1022 init/main.c:1039 init/main.c:1231)
->      (kernel_init_freeable) from kernel_init (init/main.c:1127)
->      (kernel_init) from ret_from_fork (arch/arm/kernel/entry-common.S:156)
-> 
-> qcom_iommu_domain_free() has a WARN_ON() that checks to see if the value
-> of iommu is NULL and returns early, so iommu->dev will always be NULL.
-> qcom_iommu_detach_dev() is called prior to freeing the IOMMU domain and
-> is what sets the iommu member to NULL.
-> 
-> Let's fix this by adding the 'struct dev' pointer to the
-> qcom_iommu_domain struct.
+The commit c18647900ec8 ("iommu/dma: Relax locking in
+iommu_dma_prepare_msi()") introduced a compliation warning,
 
-Actually, it looks like the qcom_domain->iommu logic is fundamentally 
-broken anyway - this sequence of calls is perfectly valid, but AFAICS 
-will make qcom-iommu go horribly wrong:
+drivers/iommu/dma-iommu.c: In function 'iommu_dma_prepare_msi':
+drivers/iommu/dma-iommu.c:1206:27: warning: variable 'cookie' set but
+not used [-Wunused-but-set-variable]
+  struct iommu_dma_cookie *cookie;
+                           ^~~~~~
 
-	dom = iommu_domain_alloc(...);
-	iommu_attach_device(dom, dev1);
-	iommu_attach_device(dom, dev2);
-	iommu_detach_device(dom, dev2);
-	// dev1 still attached but dom->iommu now NULL
+Fixes: c18647900ec8 ("iommu/dma: Relax locking in iommu_dma_prepare_msi()")
+Signed-off-by: Qian Cai <cai@lca.pw>
+---
+ drivers/iommu/dma-iommu.c | 3 ---
+ 1 file changed, 3 deletions(-)
 
-Furthermore, even this should technically be valid:
-
-	dom = iommu_domain_alloc(...);
-	iommu_attach_device(dom, dev);
-	iommu_map(dom, addr, ...);
-	iommu_detach_device(dom, dev);
-	iommu_unmap(dom, addr, ...); // oops, dereferences NULL again
-
-Does something like the diff below work?
-
-Robin.
-
------>8-----
-diff --git a/drivers/iommu/qcom_iommu.c b/drivers/iommu/qcom_iommu.c
-index c31e7bc4ccbe..af6ee4bf1712 100644
---- a/drivers/iommu/qcom_iommu.c
-+++ b/drivers/iommu/qcom_iommu.c
-@@ -345,21 +345,20 @@ static void qcom_iommu_domain_free(struct 
-iommu_domain *domain)
-  {
-  	struct qcom_iommu_domain *qcom_domain = to_qcom_iommu_domain(domain);
-
--	if (WARN_ON(qcom_domain->iommu))    /* forgot to detach? */
--		return;
+diff --git a/drivers/iommu/dma-iommu.c b/drivers/iommu/dma-iommu.c
+index c363294b3bb9..a2e96a5fd9a7 100644
+--- a/drivers/iommu/dma-iommu.c
++++ b/drivers/iommu/dma-iommu.c
+@@ -1203,7 +1203,6 @@ int iommu_dma_prepare_msi(struct msi_desc *desc, phys_addr_t msi_addr)
+ {
+ 	struct device *dev = msi_desc_to_dev(desc);
+ 	struct iommu_domain *domain = iommu_get_domain_for_dev(dev);
+-	struct iommu_dma_cookie *cookie;
+ 	struct iommu_dma_msi_page *msi_page;
+ 	static DEFINE_MUTEX(msi_prepare_lock); /* see below */
+ 
+@@ -1212,8 +1211,6 @@ int iommu_dma_prepare_msi(struct msi_desc *desc, phys_addr_t msi_addr)
+ 		return 0;
+ 	}
+ 
+-	cookie = domain->iova_cookie;
 -
-  	iommu_put_dma_cookie(domain);
+ 	/*
+ 	 * In fact the whole prepare operation should already be serialised by
+ 	 * irq_domain_mutex further up the callchain, but that's pretty subtle
+-- 
+2.21.0 (Apple Git-122.2)
 
--	/* NOTE: unmap can be called after client device is powered off,
--	 * for example, with GPUs or anything involving dma-buf.  So we
--	 * cannot rely on the device_link.  Make sure the IOMMU is on to
--	 * avoid unclocked accesses in the TLB inv path:
--	 */
--	pm_runtime_get_sync(qcom_domain->iommu->dev);
-+	if (qcom_domain->iommu) {
-+		/* NOTE: unmap can be called after client device is powered off,
-+		 * for example, with GPUs or anything involving dma-buf.  So we
-+		 * cannot rely on the device_link.  Make sure the IOMMU is on to
-+		 * avoid unclocked accesses in the TLB inv path:
-+		 */
-+		pm_runtime_get_sync(qcom_domain->iommu->dev);
-
--	free_io_pgtable_ops(qcom_domain->pgtbl_ops);
-+		free_io_pgtable_ops(qcom_domain->pgtbl_ops);
-
--	pm_runtime_put_sync(qcom_domain->iommu->dev);
-+		pm_runtime_put_sync(qcom_domain->iommu->dev);
-+	}
-
-  	kfree(qcom_domain);
-  }
-@@ -405,7 +404,7 @@ static void qcom_iommu_detach_dev(struct 
-iommu_domain *domain, struct device *de
-  	struct qcom_iommu_domain *qcom_domain = to_qcom_iommu_domain(domain);
-  	unsigned i;
-
--	if (!qcom_domain->iommu)
-+	if (WARN_ON(!qcom_domain->iommu))
-  		return;
-
-  	pm_runtime_get_sync(qcom_iommu->dev);
-@@ -418,8 +417,6 @@ static void qcom_iommu_detach_dev(struct 
-iommu_domain *domain, struct device *de
-  		ctx->domain = NULL;
-  	}
-  	pm_runtime_put_sync(qcom_iommu->dev);
--
--	qcom_domain->iommu = NULL;
-  }
-
-  static int qcom_iommu_map(struct iommu_domain *domain, unsigned long iova,
 _______________________________________________
 iommu mailing list
 iommu@lists.linux-foundation.org
