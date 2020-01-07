@@ -2,82 +2,87 @@ Return-Path: <SRS0=zmEc=24=lists.linux-foundation.org=iommu-bounces@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-3.5 required=3.0 tests=DKIM_INVALID,DKIM_SIGNED,
-	HEADER_FROM_DIFFERENT_DOMAINS,MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS,
-	USER_AGENT_GIT autolearn=no autolearn_force=no version=3.4.0
+X-Spam-Status: No, score=-9.6 required=3.0 tests=DKIM_INVALID,DKIM_SIGNED,
+	HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_PATCH,MAILING_LIST_MULTI,SIGNED_OFF_BY,
+	SPF_HELO_NONE,SPF_PASS,USER_AGENT_GIT autolearn=ham autolearn_force=no
+	version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id B2D7AC282DD
-	for <iommu@archiver.kernel.org>; Tue,  7 Jan 2020 19:22:21 +0000 (UTC)
-Received: from hemlock.osuosl.org (smtp2.osuosl.org [140.211.166.133])
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 2B755C282DD
+	for <iommu@archiver.kernel.org>; Tue,  7 Jan 2020 19:24:53 +0000 (UTC)
+Received: from fraxinus.osuosl.org (smtp4.osuosl.org [140.211.166.137])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by mail.kernel.org (Postfix) with ESMTPS id 6B07F20656
-	for <iommu@archiver.kernel.org>; Tue,  7 Jan 2020 19:22:21 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTPS id E8D1D20656
+	for <iommu@archiver.kernel.org>; Tue,  7 Jan 2020 19:24:52 +0000 (UTC)
 Authentication-Results: mail.kernel.org;
-	dkim=fail reason="signature verification failed" (2048-bit key) header.d=google.com header.i=@google.com header.b="pfn+eN2a"
-DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 6B07F20656
+	dkim=fail reason="signature verification failed" (2048-bit key) header.d=google.com header.i=@google.com header.b="DDuMzPBT"
+DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org E8D1D20656
 Authentication-Results: mail.kernel.org; dmarc=none (p=none dis=none) header.from=lists.linux-foundation.org
 Authentication-Results: mail.kernel.org; spf=pass smtp.mailfrom=iommu-bounces@lists.linux-foundation.org
 Received: from localhost (localhost [127.0.0.1])
-	by hemlock.osuosl.org (Postfix) with ESMTP id 3C2E58778F;
-	Tue,  7 Jan 2020 19:22:21 +0000 (UTC)
+	by fraxinus.osuosl.org (Postfix) with ESMTP id C1294842FF;
+	Tue,  7 Jan 2020 19:24:52 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from hemlock.osuosl.org ([127.0.0.1])
+Received: from fraxinus.osuosl.org ([127.0.0.1])
 	by localhost (.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
-	with ESMTP id PJsYa8b9PrgT; Tue,  7 Jan 2020 19:22:20 +0000 (UTC)
+	with ESMTP id 3e7EiKz4W4nS; Tue,  7 Jan 2020 19:24:52 +0000 (UTC)
 Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [140.211.9.56])
-	by hemlock.osuosl.org (Postfix) with ESMTP id C31528763E;
-	Tue,  7 Jan 2020 19:22:20 +0000 (UTC)
+	by fraxinus.osuosl.org (Postfix) with ESMTP id 5081684029;
+	Tue,  7 Jan 2020 19:24:52 +0000 (UTC)
 Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
-	by lists.linuxfoundation.org (Postfix) with ESMTP id B2207C1796;
-	Tue,  7 Jan 2020 19:22:20 +0000 (UTC)
-Received: from hemlock.osuosl.org (smtp2.osuosl.org [140.211.166.133])
- by lists.linuxfoundation.org (Postfix) with ESMTP id 9E9D2C0881
- for <iommu@lists.linux-foundation.org>; Tue,  7 Jan 2020 19:22:19 +0000 (UTC)
+	by lists.linuxfoundation.org (Postfix) with ESMTP id 2B444C1796;
+	Tue,  7 Jan 2020 19:24:52 +0000 (UTC)
+Received: from silver.osuosl.org (smtp3.osuosl.org [140.211.166.136])
+ by lists.linuxfoundation.org (Postfix) with ESMTP id E0DEFC0881
+ for <iommu@lists.linux-foundation.org>; Tue,  7 Jan 2020 19:24:50 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
- by hemlock.osuosl.org (Postfix) with ESMTP id 9AA80876F2
- for <iommu@lists.linux-foundation.org>; Tue,  7 Jan 2020 19:22:19 +0000 (UTC)
+ by silver.osuosl.org (Postfix) with ESMTP id CDD0620454
+ for <iommu@lists.linux-foundation.org>; Tue,  7 Jan 2020 19:24:50 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from hemlock.osuosl.org ([127.0.0.1])
+Received: from silver.osuosl.org ([127.0.0.1])
  by localhost (.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
- with ESMTP id uGoepIaf3gVq for <iommu@lists.linux-foundation.org>;
- Tue,  7 Jan 2020 19:22:19 +0000 (UTC)
+ with ESMTP id j41tBOb9vV87 for <iommu@lists.linux-foundation.org>;
+ Tue,  7 Jan 2020 19:24:50 +0000 (UTC)
 X-Greylist: domain auto-whitelisted by SQLgrey-1.7.6
 Received: from mail-il1-f201.google.com (mail-il1-f201.google.com
  [209.85.166.201])
- by hemlock.osuosl.org (Postfix) with ESMTPS id ECDB88763E
- for <iommu@lists.linux-foundation.org>; Tue,  7 Jan 2020 19:22:18 +0000 (UTC)
-Received: by mail-il1-f201.google.com with SMTP id l13so370311ils.1
- for <iommu@lists.linux-foundation.org>; Tue, 07 Jan 2020 11:22:18 -0800 (PST)
+ by silver.osuosl.org (Postfix) with ESMTPS id 0BC8D20451
+ for <iommu@lists.linux-foundation.org>; Tue,  7 Jan 2020 19:24:50 +0000 (UTC)
+Received: by mail-il1-f201.google.com with SMTP id i68so329367ill.23
+ for <iommu@lists.linux-foundation.org>; Tue, 07 Jan 2020 11:24:49 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=google.com; s=20161025;
- h=date:message-id:mime-version:subject:from:to:cc;
- bh=sJ1qiuOaFddjvV3EMxT41XqJKgGLuuRJHE45bF9B8p8=;
- b=pfn+eN2a9Rhsgq25lRpdSPWFyexvrpgZxlkFxEffR4y2X33KinzvvzUEOliF9ZQXOa
- E9Zi2ic+Cfqxvy8R8Xp2NJI8gMfjf1W+jZbZoKcTdsYB7iiFZBP2EaBMbgYS5DqpzwbV
- oLHxtWvAaWs+zZMFzsUfQoncykLzPOePuvMA5QJ1U0XCUYcNWB/ca9CsJzVFIVBu3BI2
- D2lQNHBi196qYBwh3pHdylg1lq6hQ25y/ppShxK+ARBePcb2uc6tcQVtn663/Xe38XmE
- obk68R+QC9jVqcBuOFHZHkcFnjomB79L+YnaU0rqjx200WEp8/+dsOA18NDtaeluiLFL
- ds7w==
+ h=date:in-reply-to:message-id:mime-version:references:subject:from:to
+ :cc; bh=y/3Y+84X8KGEdDu3mHYqqD83QSqQOnGFBhxM1gmAosg=;
+ b=DDuMzPBTfb5mTvk2tA0RozQW5ie2aNod7wT4RViu8B/nf9vMcTUrU7ULbhgLqQBN6r
+ KDpUsLWDVLM4QYBI+8UBuswpKPwKpQnpknMuen5j0BiphGzq7teMMOLFy+e/ZY6jTqh/
+ 3/DYSfpKiP2S0EeuJgK0VDUxHz+92VyRWYeGMVYQ1moikKsJf6wuEr5nQIMuZOW1Bolo
+ xqcaJ0eZ+JBMgJb79jhkbnOh3Ov2ZsCljwZ9aQetJM0UjKZt1sEEi1JzypSZ5epcWGji
+ uPyALoRNMRPwe9iYTwsSzSMaXY1On2suH5Qdh8tiiZUZamEpBJQj/jHiwYyGaYulglN2
+ Oniw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
  d=1e100.net; s=20161025;
- h=x-gm-message-state:date:message-id:mime-version:subject:from:to:cc;
- bh=sJ1qiuOaFddjvV3EMxT41XqJKgGLuuRJHE45bF9B8p8=;
- b=nuUSrOiJ+yNn87rJz7ViYKoYrgVxBdNl4NOlBbnzk2MFNWs7MAgY8r7HKEUuMNgxwY
- jU7BS0KAhRakM9i2B5+PNPGPga3RrhwUb4S5tp54nRvd3GL9Ej78V1cMbRodSvmqZ+E8
- 2yZBKpaP62DSw3eO2H4ujjPAFRilrLPTrOLaiUXslfO/nvGh7VvsRVf4sPDVuvmCNMSs
- kiKUQFcT4qN68ptVZDaURwaK/ftkq0WkG55eLsnvoaqXFjOAE0l5hiZcwLrDNsi4WPLw
- XUFU+f+X1oZoMaN6Y5LAvIBSfF/S9YWgp1tlkMDp4oNxnX+JW7ceCtL/lJ4wTZGB+3ql
- anwQ==
-X-Gm-Message-State: APjAAAWdhkXMKezMZ27O4TTL28Qpa2eaYqLGUqx9owIphD50c9WfYXgb
- K1/36+Be5NMtgFXayRVyLBmNFHsE
-X-Google-Smtp-Source: APXvYqwMv03rImdYnn2HT29d0/88N85XQwfq+7kYtU+0TlQRwOEQO7ZfsOWZXNizMiJDGtrzHo5xlgQz
-X-Received: by 2002:a63:f403:: with SMTP id g3mr1104543pgi.62.1578424581543;
- Tue, 07 Jan 2020 11:16:21 -0800 (PST)
-Date: Tue,  7 Jan 2020 14:16:08 -0500
-Message-Id: <20200107191610.178185-1-brho@google.com>
+ h=x-gm-message-state:date:in-reply-to:message-id:mime-version
+ :references:subject:from:to:cc;
+ bh=y/3Y+84X8KGEdDu3mHYqqD83QSqQOnGFBhxM1gmAosg=;
+ b=lqrFYG/5dtXTzEXiPWPkkUT3n1d6iuVkrK2hA8qkdOFcLK/QYl+9V79eKFws+Ks6i8
+ MXLk/nF9H7yIAHco0DVvQJ82a2tq6OafIYIhTRdkX7sjOVHTSnH4bO8cDDCRuub5GHxC
+ d6B1oPOnXTvHUlFZrQZBCuwt3er5ILaWBjwNoJjjtRYos44xIFJXvuH1owOGWn/v5nqs
+ UxGmrs1mvWSAi01G3hOmd2/GInIVX5Eoi77GQ6rKXYdV3xza3/jFq1j2DU3gklzJLIEz
+ xsE2ZvTw5yyy5ng53PITrelyKlKOPIGl/HcBbXOO+RMfNIKxxE8RfhmYuG6wlEwOXlx3
+ TIvg==
+X-Gm-Message-State: APjAAAVEKYt1AZ82worCYfEj1nce1THKGRB79CT2R0mSwyInmIdo6uOx
+ 6VHUN84K0FsLOLNDp2QMWbEojZmS
+X-Google-Smtp-Source: APXvYqzxgfDpppOV0rhBZT5hf3y4f+cubh/6cVj4eEfl3doeV+8L9UDvhdRPV0zPeLffKAyoDzGD3Xav
+X-Received: by 2002:a05:620a:911:: with SMTP id
+ v17mr822843qkv.251.1578424589791; 
+ Tue, 07 Jan 2020 11:16:29 -0800 (PST)
+Date: Tue,  7 Jan 2020 14:16:10 -0500
+In-Reply-To: <20200107191610.178185-1-brho@google.com>
+Message-Id: <20200107191610.178185-3-brho@google.com>
 Mime-Version: 1.0
+References: <20200107191610.178185-1-brho@google.com>
 X-Mailer: git-send-email 2.24.1.735.g03f4e72817-goog
-Subject: [PATCH v2 0/2] iommu/vt-d bad RMRR workarounds
+Subject: [PATCH v2 2/2] iommu/vt-d: skip invalid RMRR entries
 To: Thomas Gleixner <tglx@linutronix.de>, Ingo Molnar <mingo@redhat.com>,
  Borislav Petkov <bp@alien8.de>, 
  "H. Peter Anvin" <hpa@zytor.com>, David Woodhouse <dwmw2@infradead.org>,
@@ -104,28 +109,49 @@ Content-Transfer-Encoding: 7bit
 Errors-To: iommu-bounces@lists.linux-foundation.org
 Sender: "iommu" <iommu-bounces@lists.linux-foundation.org>
 
-Commit f036c7fa0ab6 ("iommu/vt-d: Check VT-d RMRR region in BIOS is
-reported as reserved") caused a machine to fail to boot for me, but only
-after a kexec.
+The VT-d docs specify requirements for the RMRR entries base and end
+(called 'Limit' in the docs) addresses.
 
-Buggy firmware provided an RMRR entry with base and end both == 0.  That
-is an invalid RMRR format, and only happens to pass the RMRR sanity
-check.  After a kexec, that entry fails the RMRR sanity check, due to a
-slight change in the first e820 mapping.  See the v1 link for details.
+This commit will cause the DMAR processing to skip any RMRR entries that
+do not meet these requirements and mark the firmware as tainted, since
+the firmware is giving us junk.
 
-v1->v2:
-v1: https://lore.kernel.org/lkml/20191211194606.87940-1-brho@google.com/
-- Added the TAINT_FIRMWARE_WORKAROUND
-- Dropped the commit that treated missing e820 regions as "RMRR OK"
+Signed-off-by: Barret Rhoden <brho@google.com>
+---
+ drivers/iommu/intel-iommu.c | 14 +++++++++++++-
+ 1 file changed, 13 insertions(+), 1 deletion(-)
 
-
-Barret Rhoden (2):
-  iommu/vt-d: skip RMRR entries that fail the sanity check
-  iommu/vt-d: skip invalid RMRR entries
-
- drivers/iommu/intel-iommu.c | 26 ++++++++++++++++++++++----
- 1 file changed, 22 insertions(+), 4 deletions(-)
-
+diff --git a/drivers/iommu/intel-iommu.c b/drivers/iommu/intel-iommu.c
+index a8bb458845bc..32c3c6338a3d 100644
+--- a/drivers/iommu/intel-iommu.c
++++ b/drivers/iommu/intel-iommu.c
+@@ -4315,13 +4315,25 @@ static void __init init_iommu_pm_ops(void)
+ static inline void init_iommu_pm_ops(void) {}
+ #endif	/* CONFIG_PM */
+ 
++static int rmrr_validity_check(struct acpi_dmar_reserved_memory *rmrr)
++{
++	if ((rmrr->base_address & PAGE_MASK) ||
++	    (rmrr->end_address <= rmrr->base_address) ||
++	    ((rmrr->end_address - rmrr->base_address + 1) & PAGE_MASK)) {
++		pr_err(FW_BUG "Broken RMRR base: %#018Lx end: %#018Lx\n",
++		       rmrr->base_address, rmrr->end_address);
++		return -EINVAL;
++	}
++	return 0;
++}
++
+ int __init dmar_parse_one_rmrr(struct acpi_dmar_header *header, void *arg)
+ {
+ 	struct acpi_dmar_reserved_memory *rmrr;
+ 	struct dmar_rmrr_unit *rmrru;
+ 
+ 	rmrr = (struct acpi_dmar_reserved_memory *)header;
+-	if (arch_rmrr_sanity_check(rmrr)) {
++	if (rmrr_validity_check(rmrr) || arch_rmrr_sanity_check(rmrr)) {
+ 		WARN_TAINT(1, TAINT_FIRMWARE_WORKAROUND,
+ 			   "Your BIOS is broken; bad RMRR [%#018Lx-%#018Lx]\n"
+ 			   "BIOS vendor: %s; Ver: %s; Product Version: %s\n",
 -- 
 2.24.1.735.g03f4e72817-goog
 
