@@ -1,128 +1,78 @@
-Return-Path: <SRS0=Oi6h=23=lists.linux-foundation.org=iommu-bounces@kernel.org>
+Return-Path: <SRS0=zmEc=24=lists.linux-foundation.org=iommu-bounces@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-8.1 required=3.0 tests=DKIM_INVALID,DKIM_SIGNED,
-	HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_PATCH,MAILING_LIST_MULTI,SIGNED_OFF_BY,
-	SPF_HELO_NONE,SPF_PASS,USER_AGENT_SANE_1 autolearn=unavailable
+X-Spam-Status: No, score=-2.2 required=3.0 tests=HEADER_FROM_DIFFERENT_DOMAINS,
+	MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS,USER_AGENT_SANE_1 autolearn=no
 	autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id C21FBC33C9B
-	for <iommu@archiver.kernel.org>; Mon,  6 Jan 2020 21:59:35 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 42A31C32771
+	for <iommu@archiver.kernel.org>; Tue,  7 Jan 2020 00:36:29 +0000 (UTC)
 Received: from whitealder.osuosl.org (smtp1.osuosl.org [140.211.166.138])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by mail.kernel.org (Postfix) with ESMTPS id 8A8FB2080A
-	for <iommu@archiver.kernel.org>; Mon,  6 Jan 2020 21:59:35 +0000 (UTC)
-Authentication-Results: mail.kernel.org;
-	dkim=fail reason="key not found in DNS" (0-bit key) header.d=mg.codeaurora.org header.i=@mg.codeaurora.org header.b="VY8NNoaQ"
-DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 8A8FB2080A
-Authentication-Results: mail.kernel.org; dmarc=none (p=none dis=none) header.from=codeaurora.org
+	by mail.kernel.org (Postfix) with ESMTPS id 078832073D
+	for <iommu@archiver.kernel.org>; Tue,  7 Jan 2020 00:36:28 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 078832073D
+Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=linux.intel.com
 Authentication-Results: mail.kernel.org; spf=pass smtp.mailfrom=iommu-bounces@lists.linux-foundation.org
 Received: from localhost (localhost [127.0.0.1])
-	by whitealder.osuosl.org (Postfix) with ESMTP id 444F18757D;
-	Mon,  6 Jan 2020 21:59:35 +0000 (UTC)
+	by whitealder.osuosl.org (Postfix) with ESMTP id BB7388760D;
+	Tue,  7 Jan 2020 00:36:28 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
 Received: from whitealder.osuosl.org ([127.0.0.1])
 	by localhost (.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
-	with ESMTP id y0icm3udzbWG; Mon,  6 Jan 2020 21:59:34 +0000 (UTC)
+	with ESMTP id d6dkWKyR9pbK; Tue,  7 Jan 2020 00:36:26 +0000 (UTC)
 Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [140.211.9.56])
-	by whitealder.osuosl.org (Postfix) with ESMTP id 20AB583883;
-	Mon,  6 Jan 2020 21:59:34 +0000 (UTC)
+	by whitealder.osuosl.org (Postfix) with ESMTP id BA2778543B;
+	Tue,  7 Jan 2020 00:36:26 +0000 (UTC)
 Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
-	by lists.linuxfoundation.org (Postfix) with ESMTP id 0CFA2C1D84;
-	Mon,  6 Jan 2020 21:59:34 +0000 (UTC)
-Received: from silver.osuosl.org (smtp3.osuosl.org [140.211.166.136])
- by lists.linuxfoundation.org (Postfix) with ESMTP id 341D7C0881
- for <iommu@lists.linux-foundation.org>; Mon,  6 Jan 2020 21:59:32 +0000 (UTC)
+	by lists.linuxfoundation.org (Postfix) with ESMTP id A1C79C1D83;
+	Tue,  7 Jan 2020 00:36:26 +0000 (UTC)
+Received: from fraxinus.osuosl.org (smtp4.osuosl.org [140.211.166.137])
+ by lists.linuxfoundation.org (Postfix) with ESMTP id 34BC0C0881
+ for <iommu@lists.linux-foundation.org>; Tue,  7 Jan 2020 00:36:26 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
- by silver.osuosl.org (Postfix) with ESMTP id 19BA3204E4
- for <iommu@lists.linux-foundation.org>; Mon,  6 Jan 2020 21:59:32 +0000 (UTC)
+ by fraxinus.osuosl.org (Postfix) with ESMTP id 31204868C9
+ for <iommu@lists.linux-foundation.org>; Tue,  7 Jan 2020 00:36:26 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from silver.osuosl.org ([127.0.0.1])
+Received: from fraxinus.osuosl.org ([127.0.0.1])
  by localhost (.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
- with ESMTP id sZHiNtKJu0Q3 for <iommu@lists.linux-foundation.org>;
- Mon,  6 Jan 2020 21:59:30 +0000 (UTC)
-X-Greylist: from auto-whitelisted by SQLgrey-1.7.6
-Received: from mail26.static.mailgun.info (mail26.static.mailgun.info
- [104.130.122.26])
- by silver.osuosl.org (Postfix) with ESMTPS id E8B2F1FEE0
- for <iommu@lists.linux-foundation.org>; Mon,  6 Jan 2020 21:59:29 +0000 (UTC)
-DKIM-Signature: a=rsa-sha256; v=1; c=relaxed/relaxed; d=mg.codeaurora.org;
- q=dns/txt; 
- s=smtp; t=1578347970; h=In-Reply-To: Content-Type: MIME-Version:
- References: Message-ID: Subject: Cc: To: From: Date: Sender;
- bh=HsoYzjx0yR+InjrIWJUImkkZr0gTiuqGAFHtBnKjCBo=;
- b=VY8NNoaQtt/QI6vm/wAgfNnZGwj1UmWb3GKuRJsm5zoMHydQBG5+IIBuwSHM1kyIk6woQO6z
- mAxGf2T9vQ6S9S96iL5yycm2kNkXlVOu1A9l+bne/Hc/7vIOKPdhUTP2j0SdRjSc7uBrm+5X
- G4JX5yxJPZoaiK/jayj6wlPdvyw=
-X-Mailgun-Sending-Ip: 104.130.122.26
-X-Mailgun-Sid: WyI3NDkwMCIsICJpb21tdUBsaXN0cy5saW51eC1mb3VuZGF0aW9uLm9yZyIsICJiZTllNGEiXQ==
-Received: from smtp.codeaurora.org
- (ec2-35-166-182-171.us-west-2.compute.amazonaws.com [35.166.182.171])
- by mxa.mailgun.org with ESMTP id 5e13adbf.7fc37c177260-smtp-out-n02;
- Mon, 06 Jan 2020 21:59:27 -0000 (UTC)
-Received: by smtp.codeaurora.org (Postfix, from userid 1001)
- id 41627C447A1; Mon,  6 Jan 2020 21:59:27 +0000 (UTC)
-Received: from jcrouse1-lnx.qualcomm.com (i-global254.qualcomm.com
- [199.106.103.254])
- (using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
- (No client certificate requested) (Authenticated sender: jcrouse)
- by smtp.codeaurora.org (Postfix) with ESMTPSA id 5048AC433CB;
- Mon,  6 Jan 2020 21:59:21 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.3.2 smtp.codeaurora.org 5048AC433CB
-Authentication-Results: aws-us-west-2-caf-mail-1.web.codeaurora.org;
- dmarc=none (p=none dis=none) header.from=codeaurora.org
-Authentication-Results: aws-us-west-2-caf-mail-1.web.codeaurora.org;
- spf=none smtp.mailfrom=jcrouse@codeaurora.org
-Date: Mon, 6 Jan 2020 14:59:19 -0700
-From: Jordan Crouse <jcrouse@codeaurora.org>
-To: iommu@lists.linux-foundation.org
-Subject: Re: [Freedreno] [PATCH v3 4/5] drm/msm: Refactor address space
- initialization
-Message-ID: <20200106215919.GB4341@jcrouse1-lnx.qualcomm.com>
-Mail-Followup-To: iommu@lists.linux-foundation.org,
- Jeffrey Hugo <jeffrey.l.hugo@gmail.com>,
- David Airlie <airlied@linux.ie>, dri-devel@lists.freedesktop.org,
- linux-kernel@vger.kernel.org,
- AngeloGioacchino Del Regno <kholk11@gmail.com>,
- Sam Ravnborg <sam@ravnborg.org>,
- Thomas Gleixner <tglx@linutronix.de>, will@kernel.org,
- Wen Yang <wen.yang99@zte.com.cn>,
- Ben Dooks <ben.dooks@codethink.co.uk>,
- linux-arm-kernel@lists.infradead.org,
- Brian Masney <masneyb@onstation.org>,
- freedreno@lists.freedesktop.org, Fritz Koenig <frkoenig@google.com>,
- linux-arm-msm@vger.kernel.org,
- Alexios Zavras <alexios.zavras@intel.com>,
- Jeykumar Sankaran <jsanka@codeaurora.org>,
- Sean Paul <sean@poorly.run>, Allison Randal <allison@lohutok.net>,
- Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
- Douglas Anderson <dianders@chromium.org>,
- zhengbin <zhengbin13@huawei.com>, Rob Clark <robdclark@gmail.com>,
- Daniel Vetter <daniel@ffwll.ch>,
- Drew Davenport <ddavenport@chromium.org>, robin.murphy@arm.com,
- Georgi Djakov <georgi.djakov@linaro.org>
-References: <1576514271-15687-1-git-send-email-jcrouse@codeaurora.org>
- <1576514271-15687-5-git-send-email-jcrouse@codeaurora.org>
+ with ESMTP id gp5h7Ld-Zu4U for <iommu@lists.linux-foundation.org>;
+ Tue,  7 Jan 2020 00:36:25 +0000 (UTC)
+X-Greylist: domain auto-whitelisted by SQLgrey-1.7.6
+Received: from mga02.intel.com (mga02.intel.com [134.134.136.20])
+ by fraxinus.osuosl.org (Postfix) with ESMTPS id 7A9A7868C7
+ for <iommu@lists.linux-foundation.org>; Tue,  7 Jan 2020 00:36:25 +0000 (UTC)
+X-Amp-Result: SKIPPED(no attachment in message)
+X-Amp-File-Uploaded: False
+Received: from fmsmga004.fm.intel.com ([10.253.24.48])
+ by orsmga101.jf.intel.com with ESMTP/TLS/DHE-RSA-AES256-GCM-SHA384;
+ 06 Jan 2020 16:36:24 -0800
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="5.69,404,1571727600"; d="scan'208";a="245757764"
+Received: from allen-box.sh.intel.com (HELO [10.239.159.136])
+ ([10.239.159.136])
+ by fmsmga004.fm.intel.com with ESMTP; 06 Jan 2020 16:36:23 -0800
+Subject: Re: [PATCH 22/22] iommu/vt-d: Add a quirk flag for scope mismatched
+ devices
+To: Jerry Snitselaar <jsnitsel@redhat.com>,
+ Roland Dreier <roland@purestorage.com>
+References: <20200102001823.21976-1-baolu.lu@linux.intel.com>
+ <20200102001823.21976-23-baolu.lu@linux.intel.com>
+ <CAL1RGDWU=s6nVArvkci1cXyZVw-fvdtcOjuY+9E+rgBi65q=Aw@mail.gmail.com>
+ <567f1506-4a13-535b-ce41-aac079941510@linux.intel.com>
+ <CAL1RGDVF1icaeEWMe0r0VA8AaxtHGJZ8NHCpvJfT8+1duOUYAQ@mail.gmail.com>
+ <20200106170551.ykphn6couhxozrid@cantor>
+From: Lu Baolu <baolu.lu@linux.intel.com>
+Message-ID: <799d7ab1-c496-e3f8-719e-e52fbabb8d1c@linux.intel.com>
+Date: Tue, 7 Jan 2020 08:35:10 +0800
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101
+ Thunderbird/68.2.2
 MIME-Version: 1.0
-Content-Disposition: inline
-In-Reply-To: <1576514271-15687-5-git-send-email-jcrouse@codeaurora.org>
-User-Agent: Mutt/1.5.24 (2015-08-30)
-Cc: Jeffrey Hugo <jeffrey.l.hugo@gmail.com>, David Airlie <airlied@linux.ie>,
- dri-devel@lists.freedesktop.org, Douglas Anderson <dianders@chromium.org>,
- AngeloGioacchino Del Regno <kholk11@gmail.com>, will@kernel.org,
- Thomas Gleixner <tglx@linutronix.de>, Sam Ravnborg <sam@ravnborg.org>,
- Wen Yang <wen.yang99@zte.com.cn>, Ben Dooks <ben.dooks@codethink.co.uk>,
- linux-arm-kernel@lists.infradead.org, Brian Masney <masneyb@onstation.org>,
- Fritz Koenig <frkoenig@google.com>, linux-arm-msm@vger.kernel.org,
- robin.murphy@arm.com, Alexios Zavras <alexios.zavras@intel.com>,
- Jeykumar Sankaran <jsanka@codeaurora.org>, Sean Paul <sean@poorly.run>,
- Allison Randal <allison@lohutok.net>,
- Greg Kroah-Hartman <gregkh@linuxfoundation.org>, linux-kernel@vger.kernel.org,
- zhengbin <zhengbin13@huawei.com>, Daniel Vetter <daniel@ffwll.ch>,
- Drew Davenport <ddavenport@chromium.org>, freedreno@lists.freedesktop.org,
- Georgi Djakov <georgi.djakov@linaro.org>
+In-Reply-To: <20200106170551.ykphn6couhxozrid@cantor>
+Content-Language: en-US
+Cc: Jim Yan <jimyan@baidu.com>, iommu@lists.linux-foundation.org
 X-BeenThere: iommu@lists.linux-foundation.org
 X-Mailman-Version: 2.1.15
 Precedence: list
@@ -135,393 +85,34 @@ List-Post: <mailto:iommu@lists.linux-foundation.org>
 List-Help: <mailto:iommu-request@lists.linux-foundation.org?subject=help>
 List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
  <mailto:iommu-request@lists.linux-foundation.org?subject=subscribe>
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: 7bit
+Content-Transfer-Encoding: base64
+Content-Type: text/plain; charset="utf-8"; Format="flowed"
 Errors-To: iommu-bounces@lists.linux-foundation.org
 Sender: "iommu" <iommu-bounces@lists.linux-foundation.org>
 
-On Mon, Dec 16, 2019 at 09:37:50AM -0700, Jordan Crouse wrote:
-> Refactor how address space initialization works. Instead of having the
-> address space function create the MMU object (and thus require separate but
-> equal functions for gpummu and iommu) use a single function and pass the
-> MMU struct. Make the generic code cleaner by using target specific
-> functions to create the address space so a2xx can do its own thing in its
-> own space.  For all the other targets use a generic helper to initialize
-> IOMMU but leave the door open for newer targets to use customization
-> if they need it.
-> 
-> Signed-off-by: Jordan Crouse <jcrouse@codeaurora.org>
-> ---
-> 
->  drivers/gpu/drm/msm/adreno/a2xx_gpu.c    | 16 ++++++++++
->  drivers/gpu/drm/msm/adreno/a3xx_gpu.c    |  1 +
->  drivers/gpu/drm/msm/adreno/a4xx_gpu.c    |  1 +
->  drivers/gpu/drm/msm/adreno/a5xx_gpu.c    |  1 +
->  drivers/gpu/drm/msm/adreno/a6xx_gpu.c    |  1 +
->  drivers/gpu/drm/msm/adreno/adreno_gpu.c  | 23 ++++++++++----
->  drivers/gpu/drm/msm/adreno/adreno_gpu.h  |  8 +++++
->  drivers/gpu/drm/msm/disp/dpu1/dpu_kms.c  | 10 +++---
->  drivers/gpu/drm/msm/disp/mdp4/mdp4_kms.c | 14 +++++----
->  drivers/gpu/drm/msm/disp/mdp5/mdp5_cfg.c |  4 ---
->  drivers/gpu/drm/msm/disp/mdp5/mdp5_kms.c | 11 +++++--
->  drivers/gpu/drm/msm/msm_drv.h            |  8 ++---
->  drivers/gpu/drm/msm/msm_gem_vma.c        | 52 +++++---------------------------
->  drivers/gpu/drm/msm/msm_gpu.c            | 40 ++----------------------
->  drivers/gpu/drm/msm/msm_gpu.h            |  4 +--
->  drivers/gpu/drm/msm/msm_iommu.c          |  3 ++
->  16 files changed, 83 insertions(+), 114 deletions(-)
-> 
-> diff --git a/drivers/gpu/drm/msm/adreno/a2xx_gpu.c b/drivers/gpu/drm/msm/adreno/a2xx_gpu.c
-> index 1f83bc1..60f6472 100644
-> --- a/drivers/gpu/drm/msm/adreno/a2xx_gpu.c
-> +++ b/drivers/gpu/drm/msm/adreno/a2xx_gpu.c
-> @@ -401,6 +401,21 @@ static struct msm_gpu_state *a2xx_gpu_state_get(struct msm_gpu *gpu)
->  	return state;
->  }
->  
-> +static struct msm_gem_address_space *
-> +a2xx_create_address_space(struct msm_gpu *gpu, struct platform_device *pdev)
-> +{
-> +	struct msm_mmu *mmu = msm_gpummu_new(&pdev->dev, gpu);
-> +	struct msm_gem_address_space *aspace;
-> +
-> +	aspace = msm_gem_address_space_create(mmu, "gpu", SZ_16M,
-> +		SZ_16M + 0xfff * SZ_64K);
-> +
-> +	if (IS_ERR(aspace) && !IS_ERR(mmu))
-> +		mmu->funcs->destroy(mmu);
-> +
-> +	return aspace;
-> +}
-> +
->  /* Register offset defines for A2XX - copy of A3XX */
->  static const unsigned int a2xx_register_offsets[REG_ADRENO_REGISTER_MAX] = {
->  	REG_ADRENO_DEFINE(REG_ADRENO_CP_RB_BASE, REG_AXXX_CP_RB_BASE),
-> @@ -429,6 +444,7 @@ static const struct adreno_gpu_funcs funcs = {
->  #endif
->  		.gpu_state_get = a2xx_gpu_state_get,
->  		.gpu_state_put = adreno_gpu_state_put,
-> +		.create_address_space = a2xx_create_address_space,
->  	},
->  };
->  
-> diff --git a/drivers/gpu/drm/msm/adreno/a3xx_gpu.c b/drivers/gpu/drm/msm/adreno/a3xx_gpu.c
-> index 7ad1493..41e51e0 100644
-> --- a/drivers/gpu/drm/msm/adreno/a3xx_gpu.c
-> +++ b/drivers/gpu/drm/msm/adreno/a3xx_gpu.c
-> @@ -441,6 +441,7 @@ static const struct adreno_gpu_funcs funcs = {
->  #endif
->  		.gpu_state_get = a3xx_gpu_state_get,
->  		.gpu_state_put = adreno_gpu_state_put,
-> +		.create_address_space = adreno_iommu_create_address_space,
->  	},
->  };
->  
-> diff --git a/drivers/gpu/drm/msm/adreno/a4xx_gpu.c b/drivers/gpu/drm/msm/adreno/a4xx_gpu.c
-> index b01388a..3655440 100644
-> --- a/drivers/gpu/drm/msm/adreno/a4xx_gpu.c
-> +++ b/drivers/gpu/drm/msm/adreno/a4xx_gpu.c
-> @@ -532,6 +532,7 @@ static const struct adreno_gpu_funcs funcs = {
->  #endif
->  		.gpu_state_get = a4xx_gpu_state_get,
->  		.gpu_state_put = adreno_gpu_state_put,
-> +		.create_address_space = adreno_iommu_create_address_space,
->  	},
->  	.get_timestamp = a4xx_get_timestamp,
->  };
-> diff --git a/drivers/gpu/drm/msm/adreno/a5xx_gpu.c b/drivers/gpu/drm/msm/adreno/a5xx_gpu.c
-> index b02e204..0f5db72 100644
-> --- a/drivers/gpu/drm/msm/adreno/a5xx_gpu.c
-> +++ b/drivers/gpu/drm/msm/adreno/a5xx_gpu.c
-> @@ -1432,6 +1432,7 @@ static const struct adreno_gpu_funcs funcs = {
->  		.gpu_busy = a5xx_gpu_busy,
->  		.gpu_state_get = a5xx_gpu_state_get,
->  		.gpu_state_put = a5xx_gpu_state_put,
-> +		.create_address_space = adreno_iommu_create_address_space,
->  	},
->  	.get_timestamp = a5xx_get_timestamp,
->  };
-> diff --git a/drivers/gpu/drm/msm/adreno/a6xx_gpu.c b/drivers/gpu/drm/msm/adreno/a6xx_gpu.c
-> index dc8ec2c..5dc0b2c 100644
-> --- a/drivers/gpu/drm/msm/adreno/a6xx_gpu.c
-> +++ b/drivers/gpu/drm/msm/adreno/a6xx_gpu.c
-> @@ -832,6 +832,7 @@ static const struct adreno_gpu_funcs funcs = {
->  #if defined(CONFIG_DRM_MSM_GPU_STATE)
->  		.gpu_state_get = a6xx_gpu_state_get,
->  		.gpu_state_put = a6xx_gpu_state_put,
-> +		.create_address_space = adreno_iommu_create_address_space,
->  #endif
->  	},
->  	.get_timestamp = a6xx_get_timestamp,
-> diff --git a/drivers/gpu/drm/msm/adreno/adreno_gpu.c b/drivers/gpu/drm/msm/adreno/adreno_gpu.c
-> index 0783e4b..09c57891 100644
-> --- a/drivers/gpu/drm/msm/adreno/adreno_gpu.c
-> +++ b/drivers/gpu/drm/msm/adreno/adreno_gpu.c
-> @@ -157,6 +157,23 @@ int adreno_zap_shader_load(struct msm_gpu *gpu, u32 pasid)
->  	return zap_shader_load_mdt(gpu, adreno_gpu->info->zapfw, pasid);
->  }
->  
-> +struct msm_gem_address_space *
-> +adreno_iommu_create_address_space(struct msm_gpu *gpu,
-> +		struct platform_device *pdev)
-> +{
-> +	struct iommu_domain *iommu = iommu_domain_alloc(&platform_bus_type);
-> +	struct msm_mmu *mmu = msm_iommu_new(&pdev->dev, iommu);
-> +	struct msm_gem_address_space *aspace;
-> +
-> +	aspace = msm_gem_address_space_create(mmu, "gpu", SZ_16M,
-> +		0xfffffff);
-> +
-> +	if (IS_ERR(aspace) && !IS_ERR(mmu))
-> +		mmu->funcs->destroy(mmu);
-> +
-> +	return aspace;
-> +}
-> +
->  int adreno_get_param(struct msm_gpu *gpu, uint32_t param, uint64_t *value)
->  {
->  	struct adreno_gpu *adreno_gpu = to_adreno_gpu(gpu);
-> @@ -949,12 +966,6 @@ int adreno_gpu_init(struct drm_device *drm, struct platform_device *pdev,
->  
->  	adreno_gpu_config.ioname = "kgsl_3d0_reg_memory";
->  
-> -	adreno_gpu_config.va_start = SZ_16M;
-> -	adreno_gpu_config.va_end = 0xffffffff;
-> -	/* maximum range of a2xx mmu */
-> -	if (adreno_is_a2xx(adreno_gpu))
-> -		adreno_gpu_config.va_end = SZ_16M + 0xfff * SZ_64K;
-> -
->  	adreno_gpu_config.nr_rings = nr_rings;
->  
->  	adreno_get_pwrlevels(&pdev->dev, gpu);
-> diff --git a/drivers/gpu/drm/msm/adreno/adreno_gpu.h b/drivers/gpu/drm/msm/adreno/adreno_gpu.h
-> index e71a757..5c1aa12 100644
-> --- a/drivers/gpu/drm/msm/adreno/adreno_gpu.h
-> +++ b/drivers/gpu/drm/msm/adreno/adreno_gpu.h
-> @@ -263,6 +263,14 @@ int adreno_gpu_state_get(struct msm_gpu *gpu, struct msm_gpu_state *state);
->  int adreno_gpu_state_put(struct msm_gpu_state *state);
->  
->  /*
-> + * Common helper function to initialize the default address space for arm-smmu
-> + * attached targets
-> + */
-> +struct msm_gem_address_space *
-> +adreno_iommu_create_address_space(struct msm_gpu *gpu,
-> +		struct platform_device *pdev);
-> +
-> +/*
->   * For a5xx and a6xx targets load the zap shader that is used to pull the GPU
->   * out of secure mode
->   */
-> diff --git a/drivers/gpu/drm/msm/disp/dpu1/dpu_kms.c b/drivers/gpu/drm/msm/disp/dpu1/dpu_kms.c
-> index b082b23..4e6ebbd 100644
-> --- a/drivers/gpu/drm/msm/disp/dpu1/dpu_kms.c
-> +++ b/drivers/gpu/drm/msm/disp/dpu1/dpu_kms.c
-> @@ -704,18 +704,18 @@ static int _dpu_kms_mmu_init(struct dpu_kms *dpu_kms)
->  {
->  	struct iommu_domain *domain;
->  	struct msm_gem_address_space *aspace;
-> +	struct msm_mmu *mmu;
->  
->  	domain = iommu_domain_alloc(&platform_bus_type);
->  	if (!domain)
->  		return 0;
->  
-> -	domain->geometry.aperture_start = 0x1000;
-> -	domain->geometry.aperture_end = 0xffffffff;
-> +	mmu = msm_iommu_new(dpu_kms->dev->dev, domain);
-> +	aspace = msm_gem_address_space_create(mmu, "dpu1",
-> +		0x1000, 0xfffffff);
->  
-> -	aspace = msm_gem_address_space_create(dpu_kms->dev->dev,
-> -			domain, "dpu1");
->  	if (IS_ERR(aspace)) {
-> -		iommu_domain_free(domain);
-> +		mmu->funcs->destroy(mmu);
->  		return PTR_ERR(aspace);
->  	}
->  
-> diff --git a/drivers/gpu/drm/msm/disp/mdp4/mdp4_kms.c b/drivers/gpu/drm/msm/disp/mdp4/mdp4_kms.c
-> index 9dba37c..0889718 100644
-> --- a/drivers/gpu/drm/msm/disp/mdp4/mdp4_kms.c
-> +++ b/drivers/gpu/drm/msm/disp/mdp4/mdp4_kms.c
-> @@ -510,9 +510,15 @@ struct msm_kms *mdp4_kms_init(struct drm_device *dev)
->  	mdelay(16);
->  
->  	if (config->iommu) {
-> -		aspace = msm_gem_address_space_create(&pdev->dev,
-> -				config->iommu, "mdp4");
-> +		struct msm_mmu *mmu = msm_iommu_new(&pdev->dev,
-> +			config->iommu);
-> +
-> +		aspace  = msm_gem_address_space_create(mmu,
-> +			"mdp4", 0x1000, 0xffffffff);
-> +
->  		if (IS_ERR(aspace)) {
-> +			if (!IS_ERR(mmu))
-> +				mmu->funcs->destroy(mmu);
->  			ret = PTR_ERR(aspace);
->  			goto fail;
->  		}
-> @@ -565,10 +571,6 @@ static struct mdp4_platform_config *mdp4_get_config(struct platform_device *dev)
->  	/* TODO: Chips that aren't apq8064 have a 200 Mhz max_clk */
->  	config.max_clk = 266667000;
->  	config.iommu = iommu_domain_alloc(&platform_bus_type);
-> -	if (config.iommu) {
-> -		config.iommu->geometry.aperture_start = 0x1000;
-> -		config.iommu->geometry.aperture_end = 0xffffffff;
-> -	}
->  
->  	return &config;
->  }
-> diff --git a/drivers/gpu/drm/msm/disp/mdp5/mdp5_cfg.c b/drivers/gpu/drm/msm/disp/mdp5/mdp5_cfg.c
-> index 1f48f64..ebd651a 100644
-> --- a/drivers/gpu/drm/msm/disp/mdp5/mdp5_cfg.c
-> +++ b/drivers/gpu/drm/msm/disp/mdp5/mdp5_cfg.c
-> @@ -941,10 +941,6 @@ static struct mdp5_cfg_platform *mdp5_get_config(struct platform_device *dev)
->  	static struct mdp5_cfg_platform config = {};
->  
->  	config.iommu = iommu_domain_alloc(&platform_bus_type);
-> -	if (config.iommu) {
-> -		config.iommu->geometry.aperture_start = 0x1000;
-> -		config.iommu->geometry.aperture_end = 0xffffffff;
-> -	}
->  
->  	return &config;
->  }
-> diff --git a/drivers/gpu/drm/msm/disp/mdp5/mdp5_kms.c b/drivers/gpu/drm/msm/disp/mdp5/mdp5_kms.c
-> index 653dab2..20bdff9 100644
-> --- a/drivers/gpu/drm/msm/disp/mdp5/mdp5_kms.c
-> +++ b/drivers/gpu/drm/msm/disp/mdp5/mdp5_kms.c
-> @@ -724,13 +724,20 @@ struct msm_kms *mdp5_kms_init(struct drm_device *dev)
->  	mdelay(16);
->  
->  	if (config->platform.iommu) {
-> +		struct msm_mmu *mmu;
-> +
->  		iommu_dev = &pdev->dev;
->  		if (!iommu_dev->iommu_fwspec)
->  			iommu_dev = iommu_dev->parent;
->  
-> -		aspace = msm_gem_address_space_create(iommu_dev,
-> -				config->platform.iommu, "mdp5");
-> +		mmu = msm_iommu_new(iommu_dev, config->platform.iommu);
-> +
-> +		aspace = msm_gem_address_space_create(mmu, "mdp5",
-> +			0x1000, 0xffffffff);
-> +
->  		if (IS_ERR(aspace)) {
-> +			if (!IS_ERR(mmu))
-> +				mmu->funcs->destroy(mmu);
->  			ret = PTR_ERR(aspace);
->  			goto fail;
->  		}
-> diff --git a/drivers/gpu/drm/msm/msm_drv.h b/drivers/gpu/drm/msm/msm_drv.h
-> index 71547e7..2203729 100644
-> --- a/drivers/gpu/drm/msm/msm_drv.h
-> +++ b/drivers/gpu/drm/msm/msm_drv.h
-> @@ -247,12 +247,8 @@ void msm_gem_close_vma(struct msm_gem_address_space *aspace,
->  void msm_gem_address_space_put(struct msm_gem_address_space *aspace);
->  
->  struct msm_gem_address_space *
-> -msm_gem_address_space_create(struct device *dev, struct iommu_domain *domain,
-> -		const char *name);
-> -
-> -struct msm_gem_address_space *
-> -msm_gem_address_space_create_a2xx(struct device *dev, struct msm_gpu *gpu,
-> -		const char *name, uint64_t va_start, uint64_t va_end);
-> +msm_gem_address_space_create(struct msm_mmu *mmu, const char *name,
-> +		u64 va_start, u64 va_end);
->  
->  int msm_register_mmu(struct drm_device *dev, struct msm_mmu *mmu);
->  void msm_unregister_mmu(struct drm_device *dev, struct msm_mmu *mmu);
-> diff --git a/drivers/gpu/drm/msm/msm_gem_vma.c b/drivers/gpu/drm/msm/msm_gem_vma.c
-> index 91d993a..075ce52 100644
-> --- a/drivers/gpu/drm/msm/msm_gem_vma.c
-> +++ b/drivers/gpu/drm/msm/msm_gem_vma.c
-> @@ -125,63 +125,25 @@ int msm_gem_init_vma(struct msm_gem_address_space *aspace,
->  	return 0;
->  }
->  
-> -
->  struct msm_gem_address_space *
-> -msm_gem_address_space_create(struct device *dev, struct iommu_domain *domain,
-> -		const char *name)
-> -{
-> -	struct msm_gem_address_space *aspace;
-> -	u64 start = domain->geometry.aperture_start;
-> -	u64 size = domain->geometry.aperture_end - start;
-> -
-> -	aspace = kzalloc(sizeof(*aspace), GFP_KERNEL);
-> -	if (!aspace)
-> -		return ERR_PTR(-ENOMEM);
-> -
-> -	spin_lock_init(&aspace->lock);
-> -	aspace->name = name;
-> -	aspace->mmu = msm_iommu_new(dev, domain);
-> -	if (IS_ERR(aspace->mmu)) {
-> -		int ret = PTR_ERR(aspace->mmu);
-> -
-> -		kfree(aspace);
-> -		return ERR_PTR(ret);
-> -	}
-> -
-> -	/*
-> -	 * Attaching the IOMMU device changes the aperture values so use the
-> -	 * cached values instead
-> -	 */
-> -	drm_mm_init(&aspace->mm, start >> PAGE_SHIFT, size >> PAGE_SHIFT);
-> -
-> -	kref_init(&aspace->kref);
-> -
-> -	return aspace;
-> -}
-> -
-> -struct msm_gem_address_space *
-> -msm_gem_address_space_create_a2xx(struct device *dev, struct msm_gpu *gpu,
-> -		const char *name, uint64_t va_start, uint64_t va_end)
-> +msm_gem_address_space_create(struct msm_mmu *mmu, const char *name,
-> +		u64 va_start, u64 va_end)
-
-The last parameter should be size.
-
->  {
->  	struct msm_gem_address_space *aspace;
->  	u64 size = va_end - va_start;
-
-And this line should go poof.
-
->  
-> +	if (IS_ERR(mmu))
-> +		return ERR_CAST(mmu);
-> +
->  	aspace = kzalloc(sizeof(*aspace), GFP_KERNEL);
->  	if (!aspace)
->  		return ERR_PTR(-ENOMEM);
->  
->  	spin_lock_init(&aspace->lock);
->  	aspace->name = name;
-> -	aspace->mmu = msm_gpummu_new(dev, gpu);
-> -	if (IS_ERR(aspace->mmu)) {
-> -		int ret = PTR_ERR(aspace->mmu);
-> -
-> -		kfree(aspace);
-> -		return ERR_PTR(ret);
-> -	}
-> +	aspace->mmu = mmu;
->  
-> -	drm_mm_init(&aspace->mm, (va_start >> PAGE_SHIFT),
-> -		size >> PAGE_SHIFT);
-> +	drm_mm_init(&aspace->mm, va_start >> PAGE_SHIFT, size >> PAGE_SHIFT);
->  
->  	kref_init(&aspace->kref);
-
-Jordan
-
--- 
-The Qualcomm Innovation Center, Inc. is a member of Code Aurora Forum,
-a Linux Foundation Collaborative Project
-_______________________________________________
-iommu mailing list
-iommu@lists.linux-foundation.org
-https://lists.linuxfoundation.org/mailman/listinfo/iommu
+SGkgSmVycnksCgpPbiAxLzcvMjAgMTowNSBBTSwgSmVycnkgU25pdHNlbGFhciB3cm90ZToKPiBP
+biBXZWQgSmFuIDAxIDIwLCBSb2xhbmQgRHJlaWVyIHZpYSBpb21tdSB3cm90ZToKPj4+IFdlIHNh
+dyBtb3JlIGRldmljZXMgd2l0aCB0aGUgc2FtZSBtaXNtYXRjaCBxdWlyay4gU28gbWFpbnRhaW5p
+bmcgdGhlbSBpbgo+Pj4gYSBxdWlyayB0YWJsZSB3aWxsIG1ha2UgaXQgbW9yZSByZWFkYWJsZSBh
+bmQgbWFpbnRhaW5hYmxlLgo+Pgo+PiBJIGd1ZXNzIEkgZGlzYWdyZWUgYWJvdXQgdGhlIG1haW50
+YWluYWJsZSBwYXJ0LCBnaXZlbiB0aGF0IHRoaXMgcGF0Y2gKPj4gYWxyZWFkeSByZWdyZXNzZXMg
+QnJvYWR3ZWxsIE5UQi4KPj4KPj4gSSdtIG5vdCBldmVuIHN1cmUgd2hhdCB0aGUgRE1BUiB0YWJs
+ZSBzYXlzIGFib3V0IE5UQiBvbiBteSBTa3lsYWtlCj4+IHN5c3RlbXMsIGV4YWN0bHkgYmVjYXVz
+ZSB0aGUgZXhpc3RpbmcgY29kZSBtZWFucyBJIGRpZCBub3QgaGF2ZSBhbnkKPj4gcHJvYmxlbXMu
+wqAgQnV0IHdlIG1pZ2h0IG5lZWQgdG8gYWRkIGRldmljZSAyMDFDaCB0b28uCj4+Cj4+IE1heWJl
+IHdlIGRvbid0IG5lZWQgdGhlIG1pc21hdGNoIGNoZWNrIGF0IGFsbD/CoCBZb3VyIHBhdGNoIHNl
+dHMgdGhlCj4+IHF1aXJrIGlmIGFueSBwb3NzaWJseSBtaXNtYXRjaGluZyBkZXZpY2UgaXMgcHJl
+c2VudCBpbiB0aGUgc3lzdGVtLCBzbwo+PiB3ZSdsbCBpZ25vcmUgYW55IHNjb3BlIG1pc21hdGNo
+IG9uIGEgc3lzdGVtIHdpdGgsIHNheSwgdGhlIDgwODY6MjAyMAo+PiBOVk1lIGhvc3QgaW4gaXQu
+wqAgU28gY291bGQgd2UganVzdCBkcm9wIHRoZSBjaGVjayBjb21wbGV0ZWx5IGFuZCBub3QKPj4g
+aGF2ZSBhIHF1aXJrIHRvIGRpc2FibGUgdGhlIGNoZWNrPwo+Pgo+PiAtIFIuCj4gCj4gSWYgdGhl
+IGNoZWNrIGlzIHJlbW92ZWQgd2hhdCBoYXBwZW5zIGZvciBjYXNlcyB3aGVyZSB0aGVyZSBpcyBh
+biBhY3R1YWwKPiBwcm9ibGVtIGluIHRoZSBkbWFyIHRhYmxlPyBJIGp1c3Qgd29ya2VkIGFuIGlz
+c3VlIHdpdGggc29tZSBJbnRlbAo+IHBlb3BsZSB3aGVyZSBhIHB1cmxleSBzeXN0ZW0gaGFkIGFu
+IHJtcnIgZW50cnkgcG9pbnRpbmcgdG8gYSBicmlkZ2UgYXMKPiB0aGUgZW5kcG9pbnQgZGV2aWNl
+IGluc3RlYWQgb2YgdGhlIHJhaWQgbW9kdWxlIHNpdHRpbmcgYmVoaW5kIGl0LgoKVGhlIGxhdGVz
+dCBzb2x1dGlvbiB3YXMgaGVyZS4gaHR0cHM6Ly9sa21sLm9yZy9sa21sLzIwMjAvMS81LzEwMywg
+ZG9lcwp0aGlzIHdvcmsgZm9yIHlvdT8KCkJlc3QgcmVnYXJkcywKYmFvbHUKX19fX19fX19fX19f
+X19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX18KaW9tbXUgbWFpbGluZyBsaXN0Cmlv
+bW11QGxpc3RzLmxpbnV4LWZvdW5kYXRpb24ub3JnCmh0dHBzOi8vbGlzdHMubGludXhmb3VuZGF0
+aW9uLm9yZy9tYWlsbWFuL2xpc3RpbmZvL2lvbW11
