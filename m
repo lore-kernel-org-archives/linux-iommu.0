@@ -2,94 +2,100 @@ Return-Path: <SRS0=zmEc=24=lists.linux-foundation.org=iommu-bounces@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-9.6 required=3.0 tests=DKIM_INVALID,DKIM_SIGNED,
-	HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_PATCH,MAILING_LIST_MULTI,SIGNED_OFF_BY,
-	SPF_HELO_NONE,SPF_PASS,USER_AGENT_GIT autolearn=ham autolearn_force=no
-	version=3.4.0
+X-Spam-Status: No, score=-2.0 required=3.0 tests=DKIM_INVALID,DKIM_SIGNED,
+	HEADER_FROM_DIFFERENT_DOMAINS,MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS,
+	USER_AGENT_SANE_1 autolearn=no autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 87D91C282DD
-	for <iommu@archiver.kernel.org>; Tue,  7 Jan 2020 19:39:42 +0000 (UTC)
-Received: from fraxinus.osuosl.org (smtp4.osuosl.org [140.211.166.137])
+	by smtp.lore.kernel.org (Postfix) with ESMTP id E78EEC282DD
+	for <iommu@archiver.kernel.org>; Tue,  7 Jan 2020 19:57:31 +0000 (UTC)
+Received: from hemlock.osuosl.org (smtp2.osuosl.org [140.211.166.133])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by mail.kernel.org (Postfix) with ESMTPS id 4D0DF20848
-	for <iommu@archiver.kernel.org>; Tue,  7 Jan 2020 19:39:42 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTPS id AAE68206DB
+	for <iommu@archiver.kernel.org>; Tue,  7 Jan 2020 19:57:31 +0000 (UTC)
 Authentication-Results: mail.kernel.org;
-	dkim=fail reason="signature verification failed" (2048-bit key) header.d=google.com header.i=@google.com header.b="rTG3oakS"
-DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 4D0DF20848
+	dkim=fail reason="signature verification failed" (2048-bit key) header.d=google.com header.i=@google.com header.b="PHyPQo+y"
+DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org AAE68206DB
 Authentication-Results: mail.kernel.org; dmarc=none (p=none dis=none) header.from=lists.linux-foundation.org
 Authentication-Results: mail.kernel.org; spf=pass smtp.mailfrom=iommu-bounces@lists.linux-foundation.org
 Received: from localhost (localhost [127.0.0.1])
-	by fraxinus.osuosl.org (Postfix) with ESMTP id 270C983487;
-	Tue,  7 Jan 2020 19:39:42 +0000 (UTC)
-X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from fraxinus.osuosl.org ([127.0.0.1])
-	by localhost (.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
-	with ESMTP id CUcQPO5m4U-c; Tue,  7 Jan 2020 19:39:41 +0000 (UTC)
-Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [140.211.9.56])
-	by fraxinus.osuosl.org (Postfix) with ESMTP id A8D0581BC4;
-	Tue,  7 Jan 2020 19:39:41 +0000 (UTC)
-Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
-	by lists.linuxfoundation.org (Postfix) with ESMTP id 98AD1C1796;
-	Tue,  7 Jan 2020 19:39:41 +0000 (UTC)
-Received: from hemlock.osuosl.org (smtp2.osuosl.org [140.211.166.133])
- by lists.linuxfoundation.org (Postfix) with ESMTP id 5135CC0881
- for <iommu@lists.linux-foundation.org>; Tue,  7 Jan 2020 19:39:40 +0000 (UTC)
-Received: from localhost (localhost [127.0.0.1])
- by hemlock.osuosl.org (Postfix) with ESMTP id 3F5F387850
- for <iommu@lists.linux-foundation.org>; Tue,  7 Jan 2020 19:39:40 +0000 (UTC)
+	by hemlock.osuosl.org (Postfix) with ESMTP id 7633F87823;
+	Tue,  7 Jan 2020 19:57:31 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
 Received: from hemlock.osuosl.org ([127.0.0.1])
+	by localhost (.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
+	with ESMTP id hE7hVjIQ3S-u; Tue,  7 Jan 2020 19:57:29 +0000 (UTC)
+Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [140.211.9.56])
+	by hemlock.osuosl.org (Postfix) with ESMTP id E20E587812;
+	Tue,  7 Jan 2020 19:57:27 +0000 (UTC)
+Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
+	by lists.linuxfoundation.org (Postfix) with ESMTP id D4368C1796;
+	Tue,  7 Jan 2020 19:57:27 +0000 (UTC)
+Received: from fraxinus.osuosl.org (smtp4.osuosl.org [140.211.166.137])
+ by lists.linuxfoundation.org (Postfix) with ESMTP id 8CC1BC0881
+ for <iommu@lists.linux-foundation.org>; Tue,  7 Jan 2020 19:57:26 +0000 (UTC)
+Received: from localhost (localhost [127.0.0.1])
+ by fraxinus.osuosl.org (Postfix) with ESMTP id 88FB985516
+ for <iommu@lists.linux-foundation.org>; Tue,  7 Jan 2020 19:57:26 +0000 (UTC)
+X-Virus-Scanned: amavisd-new at osuosl.org
+Received: from fraxinus.osuosl.org ([127.0.0.1])
  by localhost (.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
- with ESMTP id AttjgwUmi5Ss for <iommu@lists.linux-foundation.org>;
- Tue,  7 Jan 2020 19:39:39 +0000 (UTC)
-X-Greylist: delayed 00:17:37 by SQLgrey-1.7.6
-Received: from mail-qv1-f74.google.com (mail-qv1-f74.google.com
- [209.85.219.74])
- by hemlock.osuosl.org (Postfix) with ESMTPS id 7954D874E4
- for <iommu@lists.linux-foundation.org>; Tue,  7 Jan 2020 19:39:39 +0000 (UTC)
-Received: by mail-qv1-f74.google.com with SMTP id d7so569184qvq.12
- for <iommu@lists.linux-foundation.org>; Tue, 07 Jan 2020 11:39:39 -0800 (PST)
+ with ESMTP id mN89m2rktA6N for <iommu@lists.linux-foundation.org>;
+ Tue,  7 Jan 2020 19:57:26 +0000 (UTC)
+X-Greylist: domain auto-whitelisted by SQLgrey-1.7.6
+Received: from mail-pf1-f172.google.com (mail-pf1-f172.google.com
+ [209.85.210.172])
+ by fraxinus.osuosl.org (Postfix) with ESMTPS id 08C4585495
+ for <iommu@lists.linux-foundation.org>; Tue,  7 Jan 2020 19:57:26 +0000 (UTC)
+Received: by mail-pf1-f172.google.com with SMTP id q10so382095pfs.6
+ for <iommu@lists.linux-foundation.org>; Tue, 07 Jan 2020 11:57:26 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=google.com; s=20161025;
- h=date:in-reply-to:message-id:mime-version:references:subject:from:to
- :cc; bh=0CZJko/qdfQtke3cSJ7hp5iCIDiC0gTMp9RSBpUuJOk=;
- b=rTG3oakSdnKidDuXwG4ZZs5fx3OQ+4GtXtAX3iWIs4Z9OLjOUGTuyOkhixGJ5wjqin
- jB9KfpGs26CsfP3NsA1aA/3ekAszm7fbstk9CB6gzSN5cbPzbhxca94l/V6O1Jmd2ouJ
- JGXH5EXr6vE+59a7yJehUo84xKsWJfzBSbaqiT6Jl6wDlufqvPj89kBecDvM1wZ2rQCG
- a2qzC6LTkRePvRi/b3RKNPRDPMkK+EyoIIYHT4yDs7ov6F43GSg13PkleH260MxdgPWj
- nZZ/yyWu/5Hg1fg3o/COD+Y7CNb3jUIzpLumKyILA9SjoEF5cymE6PAGeiOYf+0w4Amo
- 9RCg==
+ h=date:from:to:cc:subject:in-reply-to:message-id:references
+ :user-agent:mime-version;
+ bh=Yxkh8StDu3vfVeGtFseg/gks40WP5yhSnsk2dLl/57E=;
+ b=PHyPQo+yCzPgAyKjg4UI6suHI+/ilkeRBuy3mWhSA7DVXVKUcuiIVjWuDG0hXVodbp
+ mcEUZ8yoRDIY3DPtWAuhFQ88QZR7soYmQyLQTqZEszF+yPWu2wMSk1CpA4LR0pAbrVDd
+ q4LBK2ljorr++qqoPelhCd8t1EggBBdeX0WFOtKW4VJUvq6lJa/RNpWb1Q+6eNYfCjNr
+ T9NWKpNAY1pnkoHSYx9wgQ+JL6d2py3WTMFS5HkJExIw+lWTzuUQDmzDKTyKEcA43Sv9
+ oa3NoHBG3bOurQC3DwKeSF7NSDYXgga0LPUAg3n7pfsZ+UJCxf0vDwgnCF7ayUcKrSKK
+ GNLA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
  d=1e100.net; s=20161025;
- h=x-gm-message-state:date:in-reply-to:message-id:mime-version
- :references:subject:from:to:cc;
- bh=0CZJko/qdfQtke3cSJ7hp5iCIDiC0gTMp9RSBpUuJOk=;
- b=Daipof2VkjaUTnKxBXAXpo8YeBzCQBG2KzLPPzwUo3TUuGdVQzc+YpOzauka077G9l
- CxCGcbUDUB0XP1B9o5eUIvZw00QYzZWUmwbh/vDsjftQJMxS43WA7TG2ql0MCbRheiBN
- YOvUXAxhbsHARDYl4cvZM0fYj96TIfXbXVIDKAVk5fP9i7Xo7IrCewPQJ57JkbD4xU6G
- 1GuLi2YOJtilfJQBupigG0aljGdFd9XVxlat8TOZyZFyKOQwntJbXryzi8DOsXPRMaNf
- eq+UmmuBUzEi7XYsduAtzs/lScafXU8zP//bqnV4fwgrA+dr/si/UV4L2rB+FeXysUhO
- zJdA==
-X-Gm-Message-State: APjAAAUdMMGP9Uz9HggIXSKiDriEegwC18M9SPU48cNHBtJwzodK+Wup
- YQb+VISuatmiYicCjXgdMhpjuwy3
-X-Google-Smtp-Source: APXvYqy1XuWeSkKDVL3EoMMtcHhFWGHomaPsgpaJfot96+/U98N9OEGR9ZJgyWYhVGpflnd/U05ZRLSm
-X-Received: by 2002:a37:801:: with SMTP id 1mr885696qki.326.1578424585781;
- Tue, 07 Jan 2020 11:16:25 -0800 (PST)
-Date: Tue,  7 Jan 2020 14:16:09 -0500
-In-Reply-To: <20200107191610.178185-1-brho@google.com>
-Message-Id: <20200107191610.178185-2-brho@google.com>
-Mime-Version: 1.0
-References: <20200107191610.178185-1-brho@google.com>
-X-Mailer: git-send-email 2.24.1.735.g03f4e72817-goog
-Subject: [PATCH v2 1/2] iommu/vt-d: skip RMRR entries that fail the sanity
- check
-To: Thomas Gleixner <tglx@linutronix.de>, Ingo Molnar <mingo@redhat.com>,
- Borislav Petkov <bp@alien8.de>, 
- "H. Peter Anvin" <hpa@zytor.com>, David Woodhouse <dwmw2@infradead.org>,
- Joerg Roedel <joro@8bytes.org>, 
- Yian Chen <yian.chen@intel.com>, Sohil Mehta <sohil.mehta@intel.com>
-Cc: iommu@lists.linux-foundation.org, x86@kernel.org,
- linux-kernel@vger.kernel.org
+ h=x-gm-message-state:date:from:to:cc:subject:in-reply-to:message-id
+ :references:user-agent:mime-version;
+ bh=Yxkh8StDu3vfVeGtFseg/gks40WP5yhSnsk2dLl/57E=;
+ b=GtDcKH/zfTwaL2zUfLjpVuvgStbGZyDORiz78VCc2t+0Zj2UGZYlaTgAwoF5JMDPFw
+ MlwFretjn+sE3zy6U3x24AhddF7iLcO/zG5GUeqfSUbwn3+arVFDV1pfI5sL+4PcVK9g
+ zpglnSurFd7qsxEx82Y2v/bAxQ9WAz1jLvmqerIoMECgeAOhRJDCBCOHMmTQgXASw0Tz
+ ymFoj7BfnamLiLNlzjGhJEBBfhJ9RQG+KmdKC9u58bdsau+pqxgkLeAzQef2PKu2HZXr
+ lU1B5Z7iRzOwBs03LpCWES4plaZ+RBI+WUXB5ZrDozsu4reN0dna5T5jgRoYN183AnN7
+ ci8w==
+X-Gm-Message-State: APjAAAVk+37ZDqBIu8MAnFmOj6K3EXbavn9wl9JGiXAv52r9/poutp+S
+ K1JSUbRZSavEboaaSJvtE/ec1A==
+X-Google-Smtp-Source: APXvYqxGdQcWNlWl+zmmQVooo+EnW/Y+CbADoGAw4kD88ujWmMJ3/b6XJYMmHmJAn2JPkQWEtaw04g==
+X-Received: by 2002:a65:538b:: with SMTP id x11mr1139153pgq.395.1578427045338; 
+ Tue, 07 Jan 2020 11:57:25 -0800 (PST)
+Received: from [2620:15c:17:3:3a5:23a7:5e32:4598]
+ ([2620:15c:17:3:3a5:23a7:5e32:4598])
+ by smtp.gmail.com with ESMTPSA id 2sm373729pjh.19.2020.01.07.11.57.24
+ (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+ Tue, 07 Jan 2020 11:57:24 -0800 (PST)
+Date: Tue, 7 Jan 2020 11:57:24 -0800 (PST)
+X-X-Sender: rientjes@chino.kir.corp.google.com
+To: Christoph Hellwig <hch@lst.de>
+Subject: Re: [rfc] dma-mapping: preallocate unencrypted DMA atomic pool
+In-Reply-To: <20200107105458.GA3139@lst.de>
+Message-ID: <alpine.DEB.2.21.2001071152020.183706@chino.kir.corp.google.com>
+References: <alpine.DEB.2.21.1912311738130.68206@chino.kir.corp.google.com>
+ <3213a6ac-5aad-62bc-bf95-fae8ba088b9e@arm.com> <20200107105458.GA3139@lst.de>
+User-Agent: Alpine 2.21 (DEB 202 2017-01-01)
+MIME-Version: 1.0
+Cc: "Lendacky, Thomas" <Thomas.Lendacky@amd.com>, "Singh,
+ Brijesh" <brijesh.singh@amd.com>, "Grimm, Jon" <jon.grimm@amd.com>,
+ baekhw@google.com,
+ "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
+ "iommu@lists.linux-foundation.org" <iommu@lists.linux-foundation.org>,
+ Robin Murphy <robin.murphy@arm.com>
 X-BeenThere: iommu@lists.linux-foundation.org
 X-Mailman-Version: 2.1.15
 Precedence: list
@@ -102,61 +108,52 @@ List-Post: <mailto:iommu@lists.linux-foundation.org>
 List-Help: <mailto:iommu-request@lists.linux-foundation.org?subject=help>
 List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
  <mailto:iommu-request@lists.linux-foundation.org?subject=subscribe>
-From: Barret Rhoden via iommu <iommu@lists.linux-foundation.org>
-Reply-To: Barret Rhoden <brho@google.com>
+From: David Rientjes via iommu <iommu@lists.linux-foundation.org>
+Reply-To: David Rientjes <rientjes@google.com>
 Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
 Errors-To: iommu-bounces@lists.linux-foundation.org
 Sender: "iommu" <iommu-bounces@lists.linux-foundation.org>
 
-RMRR entries describe memory regions that are DMA targets for devices
-outside the kernel's control.
+On Tue, 7 Jan 2020, Christoph Hellwig wrote:
 
-RMRR entries that fail the sanity check are pointing to regions of
-memory that the firmware did not tell the kernel are reserved or
-otherwise should not be used.
+> > On 01/01/2020 1:54 am, David Rientjes via iommu wrote:
+> >> Christoph, Thomas, is something like this (without the diagnosic
+> >> information included in this patch) acceptable for these allocations?
+> >> Adding expansion support when the pool is half depleted wouldn't be *that*
+> >> hard.
+> >>
+> >> Or are there alternatives we should consider?  Thanks!
+> >
+> > Are there any platforms which require both non-cacheable remapping *and* 
+> > unencrypted remapping for distinct subsets of devices?
+> >
+> > If not (and I'm assuming there aren't, because otherwise this patch is 
+> > incomplete in covering only 2 of the 3 possible combinations), then 
+> > couldn't we keep things simpler by just attributing both properties to the 
+> > single "atomic pool" on the basis that one or the other will always be a 
+> > no-op? In other words, basically just tweaking the existing "!coherent" 
+> > tests to "!coherent || force_dma_unencrypted()" and doing 
+> > set_dma_unencrypted() unconditionally in atomic_pool_init().
+> 
+> I think that would make most sense.
+> 
 
-Instead of aborting DMAR processing, this commit skips these RMRR
-entries and marks the firmware as tainted.  They will not be mapped into
-the IOMMU, but the IOMMU can still be utilized.  If anything, when the
-IOMMU is on, those devices will not be able to clobber RAM that the
-kernel has allocated from those regions.
+I'll rely on Thomas to chime in if this doesn't make sense for the SEV 
+usecase.
 
-Signed-off-by: Barret Rhoden <brho@google.com>
----
- drivers/iommu/intel-iommu.c | 14 ++++++++++----
- 1 file changed, 10 insertions(+), 4 deletions(-)
+I think the sizing of the single atomic pool needs to be determined.  Our 
+peak usage that we have measured from NVMe is ~1.4MB and atomic_pool is 
+currently sized to 256KB by default.  I'm unsure at this time if we need 
+to be able to dynamically expand this pool with a kworker.
 
-diff --git a/drivers/iommu/intel-iommu.c b/drivers/iommu/intel-iommu.c
-index 0c8d81f56a30..a8bb458845bc 100644
---- a/drivers/iommu/intel-iommu.c
-+++ b/drivers/iommu/intel-iommu.c
-@@ -4319,12 +4319,18 @@ int __init dmar_parse_one_rmrr(struct acpi_dmar_header *header, void *arg)
- {
- 	struct acpi_dmar_reserved_memory *rmrr;
- 	struct dmar_rmrr_unit *rmrru;
--	int ret;
- 
- 	rmrr = (struct acpi_dmar_reserved_memory *)header;
--	ret = arch_rmrr_sanity_check(rmrr);
--	if (ret)
--		return ret;
-+	if (arch_rmrr_sanity_check(rmrr)) {
-+		WARN_TAINT(1, TAINT_FIRMWARE_WORKAROUND,
-+			   "Your BIOS is broken; bad RMRR [%#018Lx-%#018Lx]\n"
-+			   "BIOS vendor: %s; Ver: %s; Product Version: %s\n",
-+			   rmrr->base_address, rmrr->end_address,
-+			   dmi_get_system_info(DMI_BIOS_VENDOR),
-+			   dmi_get_system_info(DMI_BIOS_VERSION),
-+			   dmi_get_system_info(DMI_PRODUCT_VERSION));
-+		return 0;
-+	}
- 
- 	rmrru = kzalloc(sizeof(*rmrru), GFP_KERNEL);
- 	if (!rmrru)
--- 
-2.24.1.735.g03f4e72817-goog
+Maybe when CONFIG_AMD_MEM_ENCRYPT is enabled this atomic pool should be 
+sized to 2MB or so and then when it reaches half capacity we schedule some 
+background work to dynamically increase it?  That wouldn't be hard unless 
+the pool can be rapidly depleted.
 
+Do we want to increase the atomic pool size by default and then do 
+background dynamic expansion?
 _______________________________________________
 iommu mailing list
 iommu@lists.linux-foundation.org
