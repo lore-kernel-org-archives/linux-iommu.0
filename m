@@ -6,69 +6,78 @@ X-Spam-Status: No, score=-8.2 required=3.0 tests=HEADER_FROM_DIFFERENT_DOMAINS,
 	INCLUDES_PATCH,MAILING_LIST_MULTI,SIGNED_OFF_BY,SPF_HELO_NONE,SPF_PASS,
 	USER_AGENT_SANE_2 autolearn=unavailable autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 43D7EC33CA1
-	for <iommu@archiver.kernel.org>; Thu,  9 Jan 2020 17:46:25 +0000 (UTC)
-Received: from hemlock.osuosl.org (smtp2.osuosl.org [140.211.166.133])
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 09286C282DD
+	for <iommu@archiver.kernel.org>; Thu,  9 Jan 2020 17:49:10 +0000 (UTC)
+Received: from whitealder.osuosl.org (smtp1.osuosl.org [140.211.166.138])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by mail.kernel.org (Postfix) with ESMTPS id 1C69820678
-	for <iommu@archiver.kernel.org>; Thu,  9 Jan 2020 17:46:25 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 1C69820678
-Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=linux.intel.com
+	by mail.kernel.org (Postfix) with ESMTPS id A316120678
+	for <iommu@archiver.kernel.org>; Thu,  9 Jan 2020 17:49:09 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org A316120678
+Authentication-Results: mail.kernel.org; dmarc=none (p=none dis=none) header.from=Huawei.com
 Authentication-Results: mail.kernel.org; spf=pass smtp.mailfrom=iommu-bounces@lists.linux-foundation.org
 Received: from localhost (localhost [127.0.0.1])
-	by hemlock.osuosl.org (Postfix) with ESMTP id E3C9088396;
-	Thu,  9 Jan 2020 17:46:24 +0000 (UTC)
+	by whitealder.osuosl.org (Postfix) with ESMTP id 6F2CC820FC;
+	Thu,  9 Jan 2020 17:49:09 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from hemlock.osuosl.org ([127.0.0.1])
+Received: from whitealder.osuosl.org ([127.0.0.1])
 	by localhost (.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
-	with ESMTP id XlMe4qqDsWDJ; Thu,  9 Jan 2020 17:46:23 +0000 (UTC)
+	with ESMTP id h0QXMBHx7SZw; Thu,  9 Jan 2020 17:49:07 +0000 (UTC)
 Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [140.211.9.56])
-	by hemlock.osuosl.org (Postfix) with ESMTP id A48268833B;
-	Thu,  9 Jan 2020 17:46:23 +0000 (UTC)
+	by whitealder.osuosl.org (Postfix) with ESMTP id 3921D81DD2;
+	Thu,  9 Jan 2020 17:49:07 +0000 (UTC)
 Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
-	by lists.linuxfoundation.org (Postfix) with ESMTP id 99D69C1796;
-	Thu,  9 Jan 2020 17:46:23 +0000 (UTC)
+	by lists.linuxfoundation.org (Postfix) with ESMTP id 2444AC1796;
+	Thu,  9 Jan 2020 17:49:07 +0000 (UTC)
 Received: from silver.osuosl.org (smtp3.osuosl.org [140.211.166.136])
- by lists.linuxfoundation.org (Postfix) with ESMTP id E9C98C0881
- for <iommu@lists.linux-foundation.org>; Thu,  9 Jan 2020 17:46:22 +0000 (UTC)
+ by lists.linuxfoundation.org (Postfix) with ESMTP id 64A73C0881
+ for <iommu@lists.linux-foundation.org>; Thu,  9 Jan 2020 17:49:06 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
- by silver.osuosl.org (Postfix) with ESMTP id D7F4F21539
- for <iommu@lists.linux-foundation.org>; Thu,  9 Jan 2020 17:46:22 +0000 (UTC)
+ by silver.osuosl.org (Postfix) with ESMTP id 524E921549
+ for <iommu@lists.linux-foundation.org>; Thu,  9 Jan 2020 17:49:06 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
 Received: from silver.osuosl.org ([127.0.0.1])
  by localhost (.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
- with ESMTP id FewlgW575yXx for <iommu@lists.linux-foundation.org>;
- Thu,  9 Jan 2020 17:46:21 +0000 (UTC)
+ with ESMTP id JcBaebq8Xy79 for <iommu@lists.linux-foundation.org>;
+ Thu,  9 Jan 2020 17:49:04 +0000 (UTC)
 X-Greylist: domain auto-whitelisted by SQLgrey-1.7.6
-Received: from mga07.intel.com (mga07.intel.com [134.134.136.100])
- by silver.osuosl.org (Postfix) with ESMTPS id 491E621532
- for <iommu@lists.linux-foundation.org>; Thu,  9 Jan 2020 17:46:21 +0000 (UTC)
-X-Amp-Result: SKIPPED(no attachment in message)
-X-Amp-File-Uploaded: False
-Received: from orsmga002.jf.intel.com ([10.7.209.21])
- by orsmga105.jf.intel.com with ESMTP/TLS/DHE-RSA-AES256-GCM-SHA384;
- 09 Jan 2020 09:46:20 -0800
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.69,414,1571727600"; d="scan'208";a="235592525"
-Received: from jacob-builder.jf.intel.com (HELO jacob-builder) ([10.7.199.155])
- by orsmga002.jf.intel.com with ESMTP; 09 Jan 2020 09:46:20 -0800
-Date: Thu, 9 Jan 2020 09:51:23 -0800
-From: Jacob Pan <jacob.jun.pan@linux.intel.com>
-To: Lu Baolu <baolu.lu@linux.intel.com>
-Subject: Re: [PATCH v8 02/10] iommu/vt-d: Add nested translation helper
- function
-Message-ID: <20200109095123.17ed5e6b@jacob-builder>
-In-Reply-To: <eeb67c06-a66c-fbbc-e273-09c4ab1f62b1@linux.intel.com>
-References: <1576524252-79116-1-git-send-email-jacob.jun.pan@linux.intel.com>
- <1576524252-79116-3-git-send-email-jacob.jun.pan@linux.intel.com>
- <eeb67c06-a66c-fbbc-e273-09c4ab1f62b1@linux.intel.com>
-Organization: OTC
-X-Mailer: Claws Mail 3.13.2 (GTK+ 2.24.30; x86_64-pc-linux-gnu)
+Received: from huawei.com (lhrrgout.huawei.com [185.176.76.210])
+ by silver.osuosl.org (Postfix) with ESMTPS id ACB1421532
+ for <iommu@lists.linux-foundation.org>; Thu,  9 Jan 2020 17:49:03 +0000 (UTC)
+Received: from lhreml702-cah.china.huawei.com (unknown [172.18.7.106])
+ by Forcepoint Email with ESMTP id 14BB684F6CF6BC7F6570;
+ Thu,  9 Jan 2020 17:49:01 +0000 (GMT)
+Received: from lhreml710-chm.china.huawei.com (10.201.108.61) by
+ lhreml702-cah.china.huawei.com (10.201.108.43) with Microsoft SMTP Server
+ (TLS) id 14.3.408.0; Thu, 9 Jan 2020 17:49:00 +0000
+Received: from localhost (10.202.226.57) by lhreml710-chm.china.huawei.com
+ (10.201.108.61) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.1713.5; Thu, 9 Jan 2020
+ 17:49:00 +0000
+Date: Thu, 9 Jan 2020 17:48:59 +0000
+From: Jonathan Cameron <Jonathan.Cameron@Huawei.com>
+To: Zhangfei Gao <zhangfei.gao@linaro.org>
+Subject: Re: [PATCH v10 4/4] crypto: hisilicon - register zip engine to uacce
+Message-ID: <20200109174859.00004b7b@Huawei.com>
+In-Reply-To: <1576465697-27946-5-git-send-email-zhangfei.gao@linaro.org>
+References: <1576465697-27946-1-git-send-email-zhangfei.gao@linaro.org>
+ <1576465697-27946-5-git-send-email-zhangfei.gao@linaro.org>
+Organization: Huawei Technologies Research and Development (UK) Ltd.
+X-Mailer: Claws Mail 3.17.4 (GTK+ 2.24.32; i686-w64-mingw32)
 MIME-Version: 1.0
-Cc: "Tian, Kevin" <kevin.tian@intel.com>, Raj Ashok <ashok.raj@intel.com>,
- LKML <linux-kernel@vger.kernel.org>, iommu@lists.linux-foundation.org,
- David Woodhouse <dwmw2@infradead.org>
+X-Originating-IP: [10.202.226.57]
+X-ClientProxiedBy: lhreml711-chm.china.huawei.com (10.201.108.62) To
+ lhreml710-chm.china.huawei.com (10.201.108.61)
+X-CFilter-Loop: Reflected
+Cc: jean-philippe <jean-philippe@linaro.org>,
+ Herbert Xu <herbert@gondor.apana.org.au>, Arnd Bergmann <arnd@arndb.de>,
+ francois.ozog@linaro.org, Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+ ilias.apalodimas@linaro.org, iommu@lists.linux-foundation.org,
+ linux-kernel@vger.kernel.org, Jerome
+ Glisse <jglisse@redhat.com>, grant.likely@arm.com,
+ "haojian . zhuang" <haojian.zhuang@linaro.org>,
+ linux-accelerators@lists.ozlabs.org, linux-crypto@vger.kernel.org,
+ guodong.xu@linaro.org, kenneth-lee-2012@foxmail.com
 X-BeenThere: iommu@lists.linux-foundation.org
 X-Mailman-Version: 2.1.15
 Precedence: list
@@ -86,411 +95,463 @@ Content-Transfer-Encoding: 7bit
 Errors-To: iommu-bounces@lists.linux-foundation.org
 Sender: "iommu" <iommu-bounces@lists.linux-foundation.org>
 
-Hi Baolu,
+On Mon, 16 Dec 2019 11:08:17 +0800
+Zhangfei Gao <zhangfei.gao@linaro.org> wrote:
 
-Appreciate the review. Comments inline below.
+> Register qm to uacce framework for user crypto driver
+> 
+> Signed-off-by: Zhangfei Gao <zhangfei.gao@linaro.org>
+> Signed-off-by: Zhou Wang <wangzhou1@hisilicon.com>
 
-On Wed, 18 Dec 2019 10:01:17 +0800
-Lu Baolu <baolu.lu@linux.intel.com> wrote:
+Very nice to see how minimal the changes are.
 
-> Hi Jacob,
-> 
-> On 12/17/19 3:24 AM, Jacob Pan wrote:
-> > Nested translation mode is supported in VT-d 3.0 Spec.CH 3.8.
-> > With PASID granular translation type set to 0x11b, translation
-> > result from the first level(FL) also subject to a second level(SL)
-> > page table translation. This mode is used for SVA virtualization,
-> > where FL performs guest virtual to guest physical translation and
-> > SL performs guest physical to host physical translation.
-> > 
-> > Signed-off-by: Jacob Pan <jacob.jun.pan@linux.intel.com>
-> > Signed-off-by: Liu, Yi L <yi.l.liu@linux.intel.com>
-> > ---
-> >   drivers/iommu/intel-pasid.c | 213
-> > ++++++++++++++++++++++++++++++++++++++++++++
-> > drivers/iommu/intel-pasid.h |  12 +++ include/linux/intel-iommu.h
-> > |   3 + include/uapi/linux/iommu.h  |   5 +-
-> >   4 files changed, 232 insertions(+), 1 deletion(-)
-> > 
-> > diff --git a/drivers/iommu/intel-pasid.c
-> > b/drivers/iommu/intel-pasid.c index 3cb569e76642..b178ad9e47ae
-> > 100644 --- a/drivers/iommu/intel-pasid.c
-> > +++ b/drivers/iommu/intel-pasid.c
-> > @@ -359,6 +359,76 @@ pasid_set_flpm(struct pasid_entry *pe, u64
-> > value) pasid_set_bits(&pe->val[2], GENMASK_ULL(3, 2), value << 2);
-> >   }
-> >   
-> > +/*
-> > + * Setup the Extended Memory Type(EMT) field (Bits 91-93)
-> > + * of a scalable mode PASID entry.
-> > + */
-> > +static inline void
-> > +pasid_set_emt(struct pasid_entry *pe, u64 value)
-> > +{
-> > +	pasid_set_bits(&pe->val[1], GENMASK_ULL(29, 27), value <<
-> > 27); +}
-> > +
-> > +/*
-> > + * Setup the Page Attribute Table (PAT) field (Bits 96-127)
-> > + * of a scalable mode PASID entry.
-> > + */
-> > +static inline void
-> > +pasid_set_pat(struct pasid_entry *pe, u64 value)
-> > +{
-> > +	pasid_set_bits(&pe->val[1], GENMASK_ULL(63, 32), value <<
-> > 27);  
-> 
-> The last input should be "value << 32".
-> 
-you are right. will fix.
-> > +}
-> > +
-> > +/*
-> > + * Setup the Cache Disable (CD) field (Bit 89)
-> > + * of a scalable mode PASID entry.
-> > + */
-> > +static inline void
-> > +pasid_set_cd(struct pasid_entry *pe)
-> > +{
-> > +	pasid_set_bits(&pe->val[1], 1 << 25, 1);  
-> 
-> The last input should be "1 << 25".
-> 
-right, i misunderstood the argument of pasid_set_bits(), same for the
-other bits below.
-> > +}
-> > +
-> > +/*
-> > + * Setup the Extended Memory Type Enable (EMTE) field (Bit 90)
-> > + * of a scalable mode PASID entry.
-> > + */
-> > +static inline void
-> > +pasid_set_emte(struct pasid_entry *pe)
-> > +{
-> > +	pasid_set_bits(&pe->val[1], 1 << 26, 1);  
-> 
-> The last input should be "1 << 26".
-> 
-> > +}
-> > +
-> > +/*
-> > + * Setup the Extended Access Flag Enable (EAFE) field (Bit 135)
-> > + * of a scalable mode PASID entry.
-> > + */
-> > +static inline void
-> > +pasid_set_eafe(struct pasid_entry *pe)
-> > +{
-> > +	pasid_set_bits(&pe->val[2], 1 << 7, 1);  
-> 
-> The last input should be "1 << 7".
-> 
-> > +}
-> > +
-> > +/*
-> > + * Setup the Page-level Cache Disable (PCD) field (Bit 95)
-> > + * of a scalable mode PASID entry.
-> > + */
-> > +static inline void
-> > +pasid_set_pcd(struct pasid_entry *pe)
-> > +{
-> > +	pasid_set_bits(&pe->val[1], 1 << 31, 1);  
-> 
-> The last input should be "1 << 31".
-> 
-> > +}
-> > +
-> > +/*
-> > + * Setup the Page-level Write-Through (PWT)) field (Bit 94)
-> > + * of a scalable mode PASID entry.
-> > + */
-> > +static inline void
-> > +pasid_set_pwt(struct pasid_entry *pe)
-> > +{
-> > +	pasid_set_bits(&pe->val[1], 1 << 30, 1);  
-> 
-> The last input should be "1 << 30".
-> 
-> > +}
-> > +
-> >   static void
-> >   pasid_cache_invalidation_with_pasid(struct intel_iommu *iommu,
-> >   				    u16 did, int pasid)
-> > @@ -599,3 +669,146 @@ int intel_pasid_setup_pass_through(struct
-> > intel_iommu *iommu, 
-> >   	return 0;
-> >   }
-> > +
-> > +static int intel_pasid_setup_bind_data(struct intel_iommu *iommu,
-> > +				struct pasid_entry *pte,
-> > +				struct iommu_gpasid_bind_data_vtd
-> > *pasid_data) +{
-> > +	/*
-> > +	 * Not all guest PASID table entry fields are passed down
-> > during bind,
-> > +	 * here we only set up the ones that are dependent on
-> > guest settings.
-> > +	 * Execution related bits such as NXE, SMEP are not
-> > meaningful to IOMMU,
-> > +	 * therefore not set. Other fields, such as snoop related,
-> > are set based
-> > +	 * on host needs regardless of  guest settings.
-> > +	 */
-> > +	if (pasid_data->flags & IOMMU_SVA_VTD_GPASID_SRE) {
-> > +		if (!ecap_srs(iommu->ecap)) {
-> > +			pr_err("No supervisor request support on
-> > %s\n",
-> > +			       iommu->name);
-> > +			return -EINVAL;
-> > +		}
-> > +		pasid_set_sre(pte);
-> > +	}
-> > +
-> > +	if (pasid_data->flags & IOMMU_SVA_VTD_GPASID_EAFE) {
-> > +		if (!ecap_eafs(iommu->ecap)) {
-> > +			pr_err("No extended access flag support on
-> > %s\n",
-> > +				iommu->name);
-> > +			return -EINVAL;
-> > +		}
-> > +		pasid_set_eafe(pte);
-> > +	}
-> > +
-> > +	/*
-> > +	 * Memory type is only applicable to devices inside
-> > processor coherent
-> > +	 * domain. PCIe devices are not included. We can skip the
-> > rest of the
-> > +	 * flags if IOMMU does not support MTS.
-> > +	 */
-> > +	if (ecap_mts(iommu->ecap)) {
-> > +		if (pasid_data->flags & IOMMU_SVA_VTD_GPASID_EMTE)
-> > {
-> > +			pasid_set_emte(pte);
-> > +			pasid_set_emt(pte, pasid_data->emt);
-> > +		}
-> > +		if (pasid_data->flags & IOMMU_SVA_VTD_GPASID_PCD)
-> > +			pasid_set_pcd(pte);
-> > +		if (pasid_data->flags & IOMMU_SVA_VTD_GPASID_PWT)
-> > +			pasid_set_pwt(pte);
-> > +		if (pasid_data->flags & IOMMU_SVA_VTD_GPASID_CD)
-> > +			pasid_set_cd(pte);
-> > +		pasid_set_pat(pte, pasid_data->pat);
-> > +	} else if (pasid_data->flags &
-> > IOMMU_SVA_VTD_GPASID_EMT_MASK) {
-> > +		pr_warn("No memory type support for bind guest
-> > PASID on %s\n",
-> > +			iommu->name);
-> > +		return -EINVAL;
-> > +	}
-> > +
-> > +	return 0;
-> > +
-> > +}
-> > +
-> > +/**
-> > + * intel_pasid_setup_nested() - Set up PASID entry for nested
-> > translation
-> > + * which is used for vSVA. The first level page tables are used
-> > for  
-> 
-> Please remove "which is used for vSVA". It should be a generic
-> interface for setting up nested translation mode?
-> 
-Right, perhaps just mention vSVA as an example such that readers can
-have some idea of how nested translation can be used? e.g.
-"
- * intel_pasid_setup_nested() - Set up PASID entry for nested translation.
- * This could be used for guest shared virtual address. In this case, the
- * first level page tables are used for GVA-GPA translation in the guest,
- * second level page tables are used for GPA-HPA translation.
-"
+Whilst uacce in general isn't crypto specific, as we are looking
+at changes in a crypto driver, this will need a crypto Ack.
 
-> > + * GVA-GPA or GIOVA-GPA translation in the guest, second level
-> > page tables
-> > + *  are used for GPA-HPA translation.  
-> 
-> Nit: align with the last line.
-> 
-Will do.
-> > + *
-> > + * @iommu:      Iommu which the device belong to
-> > + * @dev:        Device to be set up for translation
-> > + * @gpgd:       FLPTPTR: First Level Page translation pointer in
-> > GPA
-> > + * @pasid:      PASID to be programmed in the device PASID table
-> > + * @pasid_data: Additional PASID info from the guest bind request
-> > + * @domain:     Domain info for setting up second level page tables
-> > + * @addr_width: Address width of the first level (guest)
-> > + */
-> > +int intel_pasid_setup_nested(struct intel_iommu *iommu,
-> > +			struct device *dev, pgd_t *gpgd,
-> > +			int pasid, struct
-> > iommu_gpasid_bind_data_vtd *pasid_data,
-> > +			struct dmar_domain *domain,
-> > +			int addr_width)
-> > +{
-> > +	struct pasid_entry *pte;
-> > +	struct dma_pte *pgd;
-> > +	u64 pgd_val;
-> > +	int agaw;
-> > +	u16 did;
-> > +
-> > +	if (!ecap_nest(iommu->ecap)) {
-> > +		pr_err("IOMMU: %s: No nested translation
-> > support\n",
-> > +		       iommu->name);
-> > +		return -EINVAL;
-> > +	}
-> > +
-> > +	pte = intel_pasid_get_entry(dev, pasid);
-> > +	if (WARN_ON(!pte))
-> > +		return -EINVAL;
-> > +
-> > +	pasid_clear_entry(pte);
-> > +
-> > +	/* Sanity checking performed by caller to make sure address
-> > +	 * width matching in two dimensions:
-> > +	 * 1. CPU vs. IOMMU
-> > +	 * 2. Guest vs. Host.
-> > +	 */
-> > +	switch (addr_width) {
-> > +	case ADDR_WIDTH_5LEVEL:
-> > +		pasid_set_flpm(pte, 1);
-> > +		break;
-> > +	case ADDR_WIDTH_4LEVEL:
-> > +		pasid_set_flpm(pte, 0);
-> > +		break;
-> > +	default:
-> > +		dev_err(dev, "Invalid paging mode %d\n",
-> > addr_width);  
-> 
-> Invalid guest address width?
-> 
-Sounds better, will do.
-> > +		return -EINVAL;
-> > +	}
-> > +
-> > +	pasid_set_flptr(pte, (u64)gpgd);
-> > +
-> > +	intel_pasid_setup_bind_data(iommu, pte, pasid_data);  
-> 
-> Do you want to check and handle the errors returned from this
-> function?
-> 
-yes, that would be necessary in case of unsupported bind data. Thanks!
-> > +
-> > +	/* Setup the second level based on the given domain */
-> > +	pgd = domain->pgd;
-> > +
-> > +	for (agaw = domain->agaw; agaw != iommu->agaw; agaw--) {
-> > +		pgd = phys_to_virt(dma_pte_addr(pgd));
-> > +		if (!dma_pte_present(pgd)) {
-> > +			pasid_clear_entry(pte);
-> > +			dev_err(dev, "Invalid domain page
-> > table\n");
-> > +			return -EINVAL;
-> > +		}
-> > +	}
-> > +	pgd_val = virt_to_phys(pgd);
-> > +	pasid_set_slptr(pte, pgd_val);
-> > +	pasid_set_fault_enable(pte);
-> > +
-> > +	did = domain->iommu_did[iommu->seq_id];
-> > +	pasid_set_domain_id(pte, did);
-> > +
-> > +	pasid_set_address_width(pte, agaw);
-> > +	pasid_set_page_snoop(pte, !!ecap_smpwc(iommu->ecap));
-> > +
-> > +	pasid_set_translation_type(pte, PASID_ENTRY_PGTT_NESTED);
-> > +	pasid_set_present(pte);
-> > +	pasid_flush_caches(iommu, pte, pasid, did);
-> > +
-> > +	return 0;
-> > +}
-> > diff --git a/drivers/iommu/intel-pasid.h
-> > b/drivers/iommu/intel-pasid.h index fc8cd8f17de1..95ed160b1947
-> > 100644 --- a/drivers/iommu/intel-pasid.h
-> > +++ b/drivers/iommu/intel-pasid.h
-> > @@ -36,6 +36,7 @@
-> >    * to vmalloc or even module mappings.
-> >    */
-> >   #define PASID_FLAG_SUPERVISOR_MODE	BIT(0)
-> > +#define PASID_FLAG_NESTED		BIT(1)
-> >   
-> >   struct pasid_dir_entry {
-> >   	u64 val;
-> > @@ -45,6 +46,11 @@ struct pasid_entry {
-> >   	u64 val[8];
-> >   };
-> >   
-> > +#define PASID_ENTRY_PGTT_FL_ONLY	(1)
-> > +#define PASID_ENTRY_PGTT_SL_ONLY	(2)
-> > +#define PASID_ENTRY_PGTT_NESTED		(3)
-> > +#define PASID_ENTRY_PGTT_PT		(4)
-> > +
-> >   /* The representative of a PASID table */
-> >   struct pasid_table {
-> >   	void			*table;		/*
-> > pasid table pointer */ @@ -93,6 +99,12 @@ int
-> > intel_pasid_setup_second_level(struct intel_iommu *iommu, int
-> > intel_pasid_setup_pass_through(struct intel_iommu *iommu, struct
-> > dmar_domain *domain, struct device *dev, int pasid);
-> > +int intel_pasid_setup_nested(struct intel_iommu *iommu,
-> > +			struct device *dev, pgd_t *pgd,
-> > +			int pasid,
-> > +			struct iommu_gpasid_bind_data_vtd
-> > *pasid_data,
-> > +			struct dmar_domain *domain,
-> > +			int addr_width);
-> >   void intel_pasid_tear_down_entry(struct intel_iommu *iommu,
-> >   				 struct device *dev, int pasid);
-> >   
-> > diff --git a/include/linux/intel-iommu.h
-> > b/include/linux/intel-iommu.h index 74b79e2e6a73..19bf9ff180ae
-> > 100644 --- a/include/linux/intel-iommu.h
-> > +++ b/include/linux/intel-iommu.h
-> > @@ -34,6 +34,9 @@
-> >   #define VTD_STRIDE_SHIFT        (9)
-> >   #define VTD_STRIDE_MASK         (((u64)-1) << VTD_STRIDE_SHIFT)
-> >   
-> > +#define ADDR_WIDTH_5LEVEL	(57)
-> > +#define ADDR_WIDTH_4LEVEL	(48)
-> > +
-> >   #define DMA_PTE_READ (1)
-> >   #define DMA_PTE_WRITE (2)
-> >   #define DMA_PTE_LARGE_PAGE (1 << 7)
-> > diff --git a/include/uapi/linux/iommu.h b/include/uapi/linux/iommu.h
-> > index 4ad3496e5c43..fcafb6401430 100644
-> > --- a/include/uapi/linux/iommu.h
-> > +++ b/include/uapi/linux/iommu.h
-> > @@ -284,7 +284,10 @@ struct iommu_gpasid_bind_data_vtd {
-> >   	__u32 pat;
-> >   	__u32 emt;
-> >   };
-> > -
-> > +#define IOMMU_SVA_VTD_GPASID_EMT_MASK
-> > (IOMMU_SVA_VTD_GPASID_CD | \
-> > +					 IOMMU_SVA_VTD_GPASID_EMTE
-> > | \
-> > +					 IOMMU_SVA_VTD_GPASID_PCD
-> > |  \
-> > +
-> > IOMMU_SVA_VTD_GPASID_PWT)  
-> 
-> Might need a seperated patch?
-> 
-Sure. I have other uapi changes, may group them as a separate series.
+Herbert, this is about as non invasive as things can get and
+provide a user space shared virtual addressing based interface.
+What do you think?
 
-> >   /**
-> >    * struct iommu_gpasid_bind_data - Information about device and
-> > guest PASID binding
-> >    * @version:	Version of this data structure
-> >   
-> 
-> Best regards,
-> baolu
+From my side, for what it's worth...
 
-[Jacob Pan]
+Reviewed-by: Jonathan Cameron <Jonathan.Cameron@huawei.com>
+
+> ---
+>  drivers/crypto/hisilicon/qm.c           | 236 +++++++++++++++++++++++++++++++-
+>  drivers/crypto/hisilicon/qm.h           |  11 ++
+>  drivers/crypto/hisilicon/zip/zip_main.c |  16 ++-
+>  include/uapi/misc/uacce/hisi_qm.h       |  23 ++++
+>  4 files changed, 278 insertions(+), 8 deletions(-)
+>  create mode 100644 include/uapi/misc/uacce/hisi_qm.h
+> 
+> diff --git a/drivers/crypto/hisilicon/qm.c b/drivers/crypto/hisilicon/qm.c
+> index b57da5e..1e923bc 100644
+> --- a/drivers/crypto/hisilicon/qm.c
+> +++ b/drivers/crypto/hisilicon/qm.c
+> @@ -9,6 +9,9 @@
+>  #include <linux/log2.h>
+>  #include <linux/seq_file.h>
+>  #include <linux/slab.h>
+> +#include <linux/uacce.h>
+> +#include <linux/uaccess.h>
+> +#include <uapi/misc/uacce/hisi_qm.h>
+>  #include "qm.h"
+>  
+>  /* eq/aeq irq enable */
+> @@ -465,9 +468,14 @@ static void qm_cq_head_update(struct hisi_qp *qp)
+>  
+>  static void qm_poll_qp(struct hisi_qp *qp, struct hisi_qm *qm)
+>  {
+> -	struct qm_cqe *cqe = qp->cqe + qp->qp_status.cq_head;
+> +	if (qp->event_cb) {
+> +		qp->event_cb(qp);
+> +		return;
+> +	}
+>  
+>  	if (qp->req_cb) {
+> +		struct qm_cqe *cqe = qp->cqe + qp->qp_status.cq_head;
+> +
+>  		while (QM_CQE_PHASE(cqe) == qp->qp_status.cqc_phase) {
+>  			dma_rmb();
+>  			qp->req_cb(qp, qp->sqe + qm->sqe_size *
+> @@ -1269,7 +1277,7 @@ static int qm_qp_ctx_cfg(struct hisi_qp *qp, int qp_id, int pasid)
+>   * @qp: The qp we want to start to run.
+>   * @arg: Accelerator specific argument.
+>   *
+> - * After this function, qp can receive request from user. Return qp_id if
+> + * After this function, qp can receive request from user. Return 0 if
+>   * successful, Return -EBUSY if failed.
+>   */
+>  int hisi_qm_start_qp(struct hisi_qp *qp, unsigned long arg)
+> @@ -1314,7 +1322,7 @@ int hisi_qm_start_qp(struct hisi_qp *qp, unsigned long arg)
+>  
+>  	dev_dbg(dev, "queue %d started\n", qp_id);
+>  
+> -	return qp_id;
+> +	return 0;
+>  }
+>  EXPORT_SYMBOL_GPL(hisi_qm_start_qp);
+>  
+> @@ -1395,6 +1403,213 @@ static void hisi_qm_cache_wb(struct hisi_qm *qm)
+>  	}
+>  }
+>  
+> +static void qm_qp_event_notifier(struct hisi_qp *qp)
+> +{
+> +	wake_up_interruptible(&qp->uacce_q->wait);
+> +}
+> +
+> +static int hisi_qm_get_available_instances(struct uacce_device *uacce)
+> +{
+> +	int i, ret;
+> +	struct hisi_qm *qm = uacce->priv;
+> +
+> +	read_lock(&qm->qps_lock);
+> +	for (i = 0, ret = 0; i < qm->qp_num; i++)
+> +		if (!qm->qp_array[i])
+> +			ret++;
+> +	read_unlock(&qm->qps_lock);
+> +
+> +	return ret;
+> +}
+> +
+> +static int hisi_qm_uacce_get_queue(struct uacce_device *uacce,
+> +				   unsigned long arg,
+> +				   struct uacce_queue *q)
+> +{
+> +	struct hisi_qm *qm = uacce->priv;
+> +	struct hisi_qp *qp;
+> +	u8 alg_type = 0;
+> +
+> +	qp = hisi_qm_create_qp(qm, alg_type);
+> +	if (IS_ERR(qp))
+> +		return PTR_ERR(qp);
+> +
+> +	q->priv = qp;
+> +	q->uacce = uacce;
+> +	qp->uacce_q = q;
+> +	qp->event_cb = qm_qp_event_notifier;
+> +	qp->pasid = arg;
+> +
+> +	return 0;
+> +}
+> +
+> +static void hisi_qm_uacce_put_queue(struct uacce_queue *q)
+> +{
+> +	struct hisi_qp *qp = q->priv;
+> +
+> +	hisi_qm_cache_wb(qp->qm);
+> +	hisi_qm_release_qp(qp);
+> +}
+> +
+> +/* map sq/cq/doorbell to user space */
+> +static int hisi_qm_uacce_mmap(struct uacce_queue *q,
+> +			      struct vm_area_struct *vma,
+> +			      struct uacce_qfile_region *qfr)
+> +{
+> +	struct hisi_qp *qp = q->priv;
+> +	struct hisi_qm *qm = qp->qm;
+> +	size_t sz = vma->vm_end - vma->vm_start;
+> +	struct pci_dev *pdev = qm->pdev;
+> +	struct device *dev = &pdev->dev;
+> +	unsigned long vm_pgoff;
+> +	int ret;
+> +
+> +	switch (qfr->type) {
+> +	case UACCE_QFRT_MMIO:
+> +		if (qm->ver == QM_HW_V2) {
+> +			if (sz > PAGE_SIZE * (QM_DOORBELL_PAGE_NR +
+> +			    QM_DOORBELL_SQ_CQ_BASE_V2 / PAGE_SIZE))
+> +				return -EINVAL;
+> +		} else {
+> +			if (sz > PAGE_SIZE * QM_DOORBELL_PAGE_NR)
+> +				return -EINVAL;
+> +		}
+> +
+> +		vma->vm_flags |= VM_IO;
+> +
+> +		return remap_pfn_range(vma, vma->vm_start,
+> +				       qm->phys_base >> PAGE_SHIFT,
+> +				       sz, pgprot_noncached(vma->vm_page_prot));
+> +	case UACCE_QFRT_DUS:
+> +		if (sz != qp->qdma.size)
+> +			return -EINVAL;
+> +
+> +		/*
+> +		 * dma_mmap_coherent() requires vm_pgoff as 0
+> +		 * restore vm_pfoff to initial value for mmap()
+> +		 */
+> +		vm_pgoff = vma->vm_pgoff;
+> +		vma->vm_pgoff = 0;
+> +		ret = dma_mmap_coherent(dev, vma, qp->qdma.va,
+> +					qp->qdma.dma, sz);
+> +		vma->vm_pgoff = vm_pgoff;
+> +		return ret;
+> +
+> +	default:
+> +		return -EINVAL;
+> +	}
+> +}
+> +
+> +static int hisi_qm_uacce_start_queue(struct uacce_queue *q)
+> +{
+> +	struct hisi_qp *qp = q->priv;
+> +
+> +	return hisi_qm_start_qp(qp, qp->pasid);
+> +}
+> +
+> +static void hisi_qm_uacce_stop_queue(struct uacce_queue *q)
+> +{
+> +	hisi_qm_stop_qp(q->priv);
+> +}
+> +
+> +static int qm_set_sqctype(struct uacce_queue *q, u16 type)
+> +{
+> +	struct hisi_qm *qm = q->uacce->priv;
+> +	struct hisi_qp *qp = q->priv;
+> +
+> +	write_lock(&qm->qps_lock);
+> +	qp->alg_type = type;
+> +	write_unlock(&qm->qps_lock);
+> +
+> +	return 0;
+> +}
+> +
+> +static long hisi_qm_uacce_ioctl(struct uacce_queue *q, unsigned int cmd,
+> +				unsigned long arg)
+> +{
+> +	struct hisi_qp *qp = q->priv;
+> +	struct hisi_qp_ctx qp_ctx;
+> +
+> +	if (cmd == UACCE_CMD_QM_SET_QP_CTX) {
+> +		if (copy_from_user(&qp_ctx, (void __user *)arg,
+> +				   sizeof(struct hisi_qp_ctx)))
+> +			return -EFAULT;
+> +
+> +		if (qp_ctx.qc_type != 0 && qp_ctx.qc_type != 1)
+> +			return -EINVAL;
+> +
+> +		qm_set_sqctype(q, qp_ctx.qc_type);
+> +		qp_ctx.id = qp->qp_id;
+> +
+> +		if (copy_to_user((void __user *)arg, &qp_ctx,
+> +				 sizeof(struct hisi_qp_ctx)))
+> +			return -EFAULT;
+> +	} else {
+> +		return -EINVAL;
+> +	}
+> +
+> +	return 0;
+> +}
+> +
+> +static const struct uacce_ops uacce_qm_ops = {
+> +	.get_available_instances = hisi_qm_get_available_instances,
+> +	.get_queue = hisi_qm_uacce_get_queue,
+> +	.put_queue = hisi_qm_uacce_put_queue,
+> +	.start_queue = hisi_qm_uacce_start_queue,
+> +	.stop_queue = hisi_qm_uacce_stop_queue,
+> +	.mmap = hisi_qm_uacce_mmap,
+> +	.ioctl = hisi_qm_uacce_ioctl,
+> +};
+> +
+> +static int qm_alloc_uacce(struct hisi_qm *qm)
+> +{
+> +	struct pci_dev *pdev = qm->pdev;
+> +	struct uacce_device *uacce;
+> +	unsigned long mmio_page_nr;
+> +	unsigned long dus_page_nr;
+> +	struct uacce_interface interface = {
+> +		.flags = UACCE_DEV_SVA,
+> +		.ops = &uacce_qm_ops,
+> +	};
+> +
+> +	strncpy(interface.name, pdev->driver->name, sizeof(interface.name));
+> +
+> +	uacce = uacce_alloc(&pdev->dev, &interface);
+> +	if (IS_ERR(uacce))
+> +		return PTR_ERR(uacce);
+> +
+> +	if (uacce->flags & UACCE_DEV_SVA) {
+> +		qm->use_sva = true;
+> +	} else {
+> +		/* only consider sva case */
+> +		uacce_remove(uacce);
+> +		return -EINVAL;
+> +	}
+> +
+> +	uacce->is_vf = pdev->is_virtfn;
+> +	uacce->priv = qm;
+> +	uacce->algs = qm->algs;
+> +
+> +	if (qm->ver == QM_HW_V1) {
+> +		mmio_page_nr = QM_DOORBELL_PAGE_NR;
+> +		uacce->api_ver = HISI_QM_API_VER_BASE;
+> +	} else {
+> +		mmio_page_nr = QM_DOORBELL_PAGE_NR +
+> +			QM_DOORBELL_SQ_CQ_BASE_V2 / PAGE_SIZE;
+> +		uacce->api_ver = HISI_QM_API_VER2_BASE;
+> +	}
+> +
+> +	dus_page_nr = (PAGE_SIZE - 1 + qm->sqe_size * QM_Q_DEPTH +
+> +		       sizeof(struct qm_cqe) * QM_Q_DEPTH) >> PAGE_SHIFT;
+> +
+> +	uacce->qf_pg_num[UACCE_QFRT_MMIO] = mmio_page_nr;
+> +	uacce->qf_pg_num[UACCE_QFRT_DUS]  = dus_page_nr;
+> +
+> +	qm->uacce = uacce;
+> +
+> +	return 0;
+> +}
+> +
+>  /**
+>   * hisi_qm_get_free_qp_num() - Get free number of qp in qm.
+>   * @qm: The qm which want to get free qp.
+> @@ -1437,10 +1652,14 @@ int hisi_qm_init(struct hisi_qm *qm)
+>  		return -EINVAL;
+>  	}
+>  
+> +	ret = qm_alloc_uacce(qm);
+> +	if (ret < 0)
+> +		dev_warn(&pdev->dev, "fail to alloc uacce (%d)\n", ret);
+> +
+>  	ret = pci_enable_device_mem(pdev);
+>  	if (ret < 0) {
+>  		dev_err(&pdev->dev, "Failed to enable device mem!\n");
+> -		return ret;
+> +		goto err_remove_uacce;
+>  	}
+>  
+>  	ret = pci_request_mem_regions(pdev, qm->dev_name);
+> @@ -1449,8 +1668,9 @@ int hisi_qm_init(struct hisi_qm *qm)
+>  		goto err_disable_pcidev;
+>  	}
+>  
+> -	qm->io_base = ioremap(pci_resource_start(pdev, PCI_BAR_2),
+> -			      pci_resource_len(qm->pdev, PCI_BAR_2));
+> +	qm->phys_base = pci_resource_start(pdev, PCI_BAR_2);
+> +	qm->phys_size = pci_resource_len(qm->pdev, PCI_BAR_2);
+> +	qm->io_base = ioremap(qm->phys_base, qm->phys_size);
+>  	if (!qm->io_base) {
+>  		ret = -EIO;
+>  		goto err_release_mem_regions;
+> @@ -1493,6 +1713,8 @@ int hisi_qm_init(struct hisi_qm *qm)
+>  	pci_release_mem_regions(pdev);
+>  err_disable_pcidev:
+>  	pci_disable_device(pdev);
+> +err_remove_uacce:
+> +	uacce_remove(qm->uacce);
+>  
+>  	return ret;
+>  }
+> @@ -1509,6 +1731,8 @@ void hisi_qm_uninit(struct hisi_qm *qm)
+>  	struct pci_dev *pdev = qm->pdev;
+>  	struct device *dev = &pdev->dev;
+>  
+> +	uacce_remove(qm->uacce);
+> +
+>  	if (qm->use_dma_api && qm->qdma.va) {
+>  		hisi_qm_cache_wb(qm);
+>  		dma_free_coherent(dev, qm->qdma.size,
+> diff --git a/drivers/crypto/hisilicon/qm.h b/drivers/crypto/hisilicon/qm.h
+> index 078b8f1..c096f80 100644
+> --- a/drivers/crypto/hisilicon/qm.h
+> +++ b/drivers/crypto/hisilicon/qm.h
+> @@ -77,6 +77,9 @@
+>  
+>  #define HISI_ACC_SGL_SGE_NR_MAX		255
+>  
+> +/* page number for queue file region */
+> +#define QM_DOORBELL_PAGE_NR		1
+> +
+>  enum qp_state {
+>  	QP_STOP,
+>  };
+> @@ -162,7 +165,12 @@ struct hisi_qm {
+>  	u32 error_mask;
+>  	u32 msi_mask;
+>  
+> +	const char *algs;
+>  	bool use_dma_api;
+> +	bool use_sva;
+> +	resource_size_t phys_base;
+> +	resource_size_t phys_size;
+> +	struct uacce_device *uacce;
+>  };
+>  
+>  struct hisi_qp_status {
+> @@ -192,10 +200,13 @@ struct hisi_qp {
+>  	struct hisi_qp_ops *hw_ops;
+>  	void *qp_ctx;
+>  	void (*req_cb)(struct hisi_qp *qp, void *data);
+> +	void (*event_cb)(struct hisi_qp *qp);
+>  	struct work_struct work;
+>  	struct workqueue_struct *wq;
+>  
+>  	struct hisi_qm *qm;
+> +	u16 pasid;
+> +	struct uacce_queue *uacce_q;
+>  };
+>  
+>  int hisi_qm_init(struct hisi_qm *qm);
+> diff --git a/drivers/crypto/hisilicon/zip/zip_main.c b/drivers/crypto/hisilicon/zip/zip_main.c
+> index 93345f0..575faa3 100644
+> --- a/drivers/crypto/hisilicon/zip/zip_main.c
+> +++ b/drivers/crypto/hisilicon/zip/zip_main.c
+> @@ -11,6 +11,7 @@
+>  #include <linux/pci.h>
+>  #include <linux/seq_file.h>
+>  #include <linux/topology.h>
+> +#include <linux/uacce.h>
+>  #include "zip.h"
+>  
+>  #define PCI_DEVICE_ID_ZIP_PF		0xa250
+> @@ -350,8 +351,14 @@ static void hisi_zip_set_user_domain_and_cache(struct hisi_zip *hisi_zip)
+>  	writel(AXUSER_BASE, base + HZIP_BD_RUSER_32_63);
+>  	writel(AXUSER_BASE, base + HZIP_SGL_RUSER_32_63);
+>  	writel(AXUSER_BASE, base + HZIP_BD_WUSER_32_63);
+> -	writel(AXUSER_BASE, base + HZIP_DATA_RUSER_32_63);
+> -	writel(AXUSER_BASE, base + HZIP_DATA_WUSER_32_63);
+> +
+> +	if (hisi_zip->qm.use_sva) {
+> +		writel(AXUSER_BASE | AXUSER_SSV, base + HZIP_DATA_RUSER_32_63);
+> +		writel(AXUSER_BASE | AXUSER_SSV, base + HZIP_DATA_WUSER_32_63);
+> +	} else {
+> +		writel(AXUSER_BASE, base + HZIP_DATA_RUSER_32_63);
+> +		writel(AXUSER_BASE, base + HZIP_DATA_WUSER_32_63);
+> +	}
+>  
+>  	/* let's open all compression/decompression cores */
+>  	writel(DECOMP_CHECK_ENABLE | ALL_COMP_DECOMP_EN,
+> @@ -792,6 +799,7 @@ static int hisi_zip_probe(struct pci_dev *pdev, const struct pci_device_id *id)
+>  	qm->pdev = pdev;
+>  	qm->ver = rev_id;
+>  
+> +	qm->algs = "zlib\ngzip";
+>  	qm->sqe_size = HZIP_SQE_SIZE;
+>  	qm->dev_name = hisi_zip_name;
+>  	qm->fun_type = (pdev->device == PCI_DEVICE_ID_ZIP_PF) ? QM_HW_PF :
+> @@ -835,6 +843,10 @@ static int hisi_zip_probe(struct pci_dev *pdev, const struct pci_device_id *id)
+>  
+>  	hisi_zip_add_to_list(hisi_zip);
+>  
+> +	ret = uacce_register(qm->uacce);
+> +	if (ret)
+> +		goto err_qm_uninit;
+> +
+>  	if (qm->fun_type == QM_HW_PF && vfs_num > 0) {
+>  		ret = hisi_zip_sriov_enable(pdev, vfs_num);
+>  		if (ret < 0)
+> diff --git a/include/uapi/misc/uacce/hisi_qm.h b/include/uapi/misc/uacce/hisi_qm.h
+> new file mode 100644
+> index 0000000..6435f0b
+> --- /dev/null
+> +++ b/include/uapi/misc/uacce/hisi_qm.h
+> @@ -0,0 +1,23 @@
+> +/* SPDX-License-Identifier: GPL-2.0+ WITH Linux-syscall-note */
+> +#ifndef _UAPI_HISI_QM_H
+> +#define _UAPI_HISI_QM_H
+> +
+> +#include <linux/types.h>
+> +
+> +/**
+> + * struct hisi_qp_ctx - User data for hisi qp.
+> + * @id: qp_index return to user space
+> + * @qc_type: Accelerator algorithm type
+> + */
+> +struct hisi_qp_ctx {
+> +	__u16 id;
+> +	__u16 qc_type;
+> +};
+> +
+> +#define HISI_QM_API_VER_BASE "hisi_qm_v1"
+> +#define HISI_QM_API_VER2_BASE "hisi_qm_v2"
+> +
+> +/* UACCE_CMD_QM_SET_QP_CTX: Set qp algorithm type */
+> +#define UACCE_CMD_QM_SET_QP_CTX	_IOWR('H', 10, struct hisi_qp_ctx)
+> +
+> +#endif
+
+
 _______________________________________________
 iommu mailing list
 iommu@lists.linux-foundation.org
