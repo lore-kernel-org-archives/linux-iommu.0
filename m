@@ -2,73 +2,76 @@ Return-Path: <SRS0=4b30=26=lists.linux-foundation.org=iommu-bounces@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-5.5 required=3.0 tests=HEADER_FROM_DIFFERENT_DOMAINS,
-	INCLUDES_PATCH,MAILING_LIST_MULTI,SIGNED_OFF_BY,SPF_HELO_NONE,SPF_PASS,
-	UNWANTED_LANGUAGE_BODY,USER_AGENT_SANE_2 autolearn=unavailable
-	autolearn_force=no version=3.4.0
+X-Spam-Status: No, score=-8.3 required=3.0 tests=DKIM_INVALID,DKIM_SIGNED,
+	FAKE_REPLY_C,INCLUDES_PATCH,MAILING_LIST_MULTI,SIGNED_OFF_BY,SPF_HELO_NONE,
+	SPF_PASS,USER_AGENT_SANE_1 autolearn=unavailable autolearn_force=no
+	version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id A8BCDC33CA3
-	for <iommu@archiver.kernel.org>; Thu,  9 Jan 2020 22:01:31 +0000 (UTC)
-Received: from hemlock.osuosl.org (smtp2.osuosl.org [140.211.166.133])
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 19EB8C282DD
+	for <iommu@archiver.kernel.org>; Thu,  9 Jan 2020 23:11:48 +0000 (UTC)
+Received: from fraxinus.osuosl.org (smtp4.osuosl.org [140.211.166.137])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by mail.kernel.org (Postfix) with ESMTPS id 353BE20838
-	for <iommu@archiver.kernel.org>; Thu,  9 Jan 2020 22:01:31 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 353BE20838
-Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=linux.intel.com
+	by mail.kernel.org (Postfix) with ESMTPS id D524020656
+	for <iommu@archiver.kernel.org>; Thu,  9 Jan 2020 23:11:46 +0000 (UTC)
+Authentication-Results: mail.kernel.org;
+	dkim=fail reason="signature verification failed" (1024-bit key) header.d=kernel.org header.i=@kernel.org header.b="tvWR4qyi"
+DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org D524020656
+Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=kernel.org
 Authentication-Results: mail.kernel.org; spf=pass smtp.mailfrom=iommu-bounces@lists.linux-foundation.org
 Received: from localhost (localhost [127.0.0.1])
-	by hemlock.osuosl.org (Postfix) with ESMTP id E6B5E8841A;
-	Thu,  9 Jan 2020 22:01:30 +0000 (UTC)
+	by fraxinus.osuosl.org (Postfix) with ESMTP id DD6BC86AB5;
+	Thu,  9 Jan 2020 23:11:46 +0000 (UTC)
+X-Virus-Scanned: amavisd-new at osuosl.org
+Received: from fraxinus.osuosl.org ([127.0.0.1])
+	by localhost (.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
+	with ESMTP id l1ODXSZFV0Dy; Thu,  9 Jan 2020 23:11:45 +0000 (UTC)
+Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [140.211.9.56])
+	by fraxinus.osuosl.org (Postfix) with ESMTP id DABAE86AAE;
+	Thu,  9 Jan 2020 23:11:45 +0000 (UTC)
+Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
+	by lists.linuxfoundation.org (Postfix) with ESMTP id BF979C1796;
+	Thu,  9 Jan 2020 23:11:45 +0000 (UTC)
+Received: from hemlock.osuosl.org (smtp2.osuosl.org [140.211.166.133])
+ by lists.linuxfoundation.org (Postfix) with ESMTP id 4131FC0881
+ for <iommu@lists.linux-foundation.org>; Thu,  9 Jan 2020 23:11:44 +0000 (UTC)
+Received: from localhost (localhost [127.0.0.1])
+ by hemlock.osuosl.org (Postfix) with ESMTP id 38B6586C82
+ for <iommu@lists.linux-foundation.org>; Thu,  9 Jan 2020 23:11:44 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
 Received: from hemlock.osuosl.org ([127.0.0.1])
-	by localhost (.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
-	with ESMTP id 7H53FqxHbUIF; Thu,  9 Jan 2020 22:01:29 +0000 (UTC)
-Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [140.211.9.56])
-	by hemlock.osuosl.org (Postfix) with ESMTP id A5E8D88026;
-	Thu,  9 Jan 2020 22:01:29 +0000 (UTC)
-Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
-	by lists.linuxfoundation.org (Postfix) with ESMTP id 79099C1796;
-	Thu,  9 Jan 2020 22:01:29 +0000 (UTC)
-Received: from whitealder.osuosl.org (smtp1.osuosl.org [140.211.166.138])
- by lists.linuxfoundation.org (Postfix) with ESMTP id B6B30C0881
- for <iommu@lists.linux-foundation.org>; Thu,  9 Jan 2020 22:01:27 +0000 (UTC)
-Received: from localhost (localhost [127.0.0.1])
- by whitealder.osuosl.org (Postfix) with ESMTP id AD41B86E59
- for <iommu@lists.linux-foundation.org>; Thu,  9 Jan 2020 22:01:27 +0000 (UTC)
-X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from whitealder.osuosl.org ([127.0.0.1])
  by localhost (.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
- with ESMTP id fXGH9kztB5p1 for <iommu@lists.linux-foundation.org>;
- Thu,  9 Jan 2020 22:01:26 +0000 (UTC)
+ with ESMTP id r7IPrl7sJpUW for <iommu@lists.linux-foundation.org>;
+ Thu,  9 Jan 2020 23:11:43 +0000 (UTC)
 X-Greylist: domain auto-whitelisted by SQLgrey-1.7.6
-Received: from mga07.intel.com (mga07.intel.com [134.134.136.100])
- by whitealder.osuosl.org (Postfix) with ESMTPS id 8F5E786E0A
- for <iommu@lists.linux-foundation.org>; Thu,  9 Jan 2020 22:01:26 +0000 (UTC)
-X-Amp-Result: SKIPPED(no attachment in message)
-X-Amp-File-Uploaded: False
-Received: from orsmga004.jf.intel.com ([10.7.209.38])
- by orsmga105.jf.intel.com with ESMTP/TLS/DHE-RSA-AES256-GCM-SHA384;
- 09 Jan 2020 14:01:25 -0800
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.69,414,1571727600"; d="scan'208";a="371424636"
-Received: from jacob-builder.jf.intel.com (HELO jacob-builder) ([10.7.199.155])
- by orsmga004.jf.intel.com with ESMTP; 09 Jan 2020 14:01:25 -0800
-Date: Thu, 9 Jan 2020 14:06:29 -0800
-From: Jacob Pan <jacob.jun.pan@linux.intel.com>
-To: Lu Baolu <baolu.lu@linux.intel.com>
-Subject: Re: [PATCH v8 08/10] iommu/vt-d: Add custom allocator for IOASID
-Message-ID: <20200109140629.0e15c3f3@jacob-builder>
-In-Reply-To: <9c9c818c-ccb1-544d-2041-cf7017c4d898@linux.intel.com>
-References: <1576524252-79116-1-git-send-email-jacob.jun.pan@linux.intel.com>
- <1576524252-79116-9-git-send-email-jacob.jun.pan@linux.intel.com>
- <9c9c818c-ccb1-544d-2041-cf7017c4d898@linux.intel.com>
-Organization: OTC
-X-Mailer: Claws Mail 3.13.2 (GTK+ 2.24.30; x86_64-pc-linux-gnu)
+Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
+ by hemlock.osuosl.org (Postfix) with ESMTPS id 6CCA58567A
+ for <iommu@lists.linux-foundation.org>; Thu,  9 Jan 2020 23:11:43 +0000 (UTC)
+Received: from localhost (mobile-166-170-223-177.mycingular.net
+ [166.170.223.177])
+ (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+ (No client certificate requested)
+ by mail.kernel.org (Postfix) with ESMTPSA id E04C22073A;
+ Thu,  9 Jan 2020 23:11:42 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+ s=default; t=1578611503;
+ bh=dhPLAlyVcnx4/SDqpz6V/KM2GWr4mIZ3arCcmlZBD14=;
+ h=Date:From:To:Cc:Subject:In-Reply-To:From;
+ b=tvWR4qyiWV0MqUDef2PBNapevfkoIbFPg7BPm9xBxDNCP81sqJYBhw+OV2unLD377
+ 0+ENfwOSwat8qiFfMjRKhcl2smTZuE7b6Ub3cdXDzW/0FdEOMb7Ah3cR85F1wbQQRp
+ Mm+HkkztNXtfss+ZexcW3Ib4aPs++lfL7m7iY3iI=
+Date: Thu, 9 Jan 2020 17:11:41 -0600
+From: Bjorn Helgaas <helgaas@kernel.org>
+To: Jon Derrick <jonathan.derrick@intel.com>
+Subject: Re: [PATCH v2 3/5] PCI: Introduce direct dma alias
+Message-ID: <20200109231141.GA41540@google.com>
 MIME-Version: 1.0
-Cc: "Tian, Kevin" <kevin.tian@intel.com>, Raj Ashok <ashok.raj@intel.com>,
- LKML <linux-kernel@vger.kernel.org>, iommu@lists.linux-foundation.org,
- David Woodhouse <dwmw2@infradead.org>
+Content-Disposition: inline
+In-Reply-To: <1578580256-3483-4-git-send-email-jonathan.derrick@intel.com>
+User-Agent: Mutt/1.10.1 (2018-07-13)
+Cc: linux-pci@vger.kernel.org, iommu@lists.linux-foundation.org,
+ Keith Busch <kbusch@kernel.org>, David Woodhouse <dwmw2@infradead.org>,
+ Christoph Hellwig <hch@lst.de>
 X-BeenThere: iommu@lists.linux-foundation.org
 X-Mailman-Version: 2.1.15
 Precedence: list
@@ -86,178 +89,122 @@ Content-Transfer-Encoding: 7bit
 Errors-To: iommu-bounces@lists.linux-foundation.org
 Sender: "iommu" <iommu-bounces@lists.linux-foundation.org>
 
-On Wed, 18 Dec 2019 12:10:55 +0800
-Lu Baolu <baolu.lu@linux.intel.com> wrote:
+In subject:
+s/Introduce direct dma alias/Add pci_direct_dma_alias()/
 
-> Hi,
-> 
-> On 12/17/19 3:24 AM, Jacob Pan wrote:
-> > When VT-d driver runs in the guest, PASID allocation must be
-> > performed via virtual command interface. This patch registers a
-> > custom IOASID allocator which takes precedence over the default
-> > XArray based allocator. The resulting IOASID allocation will always
-> > come from the host. This ensures that PASID namespace is system-
-> > wide.
-> > 
-> > Signed-off-by: Lu Baolu <baolu.lu@linux.intel.com>
-> > Signed-off-by: Liu, Yi L <yi.l.liu@intel.com>
-> > Signed-off-by: Jacob Pan <jacob.jun.pan@linux.intel.com>
-> > ---
-> >   drivers/iommu/intel-iommu.c | 75
-> > +++++++++++++++++++++++++++++++++++++++++++++
-> > include/linux/intel-iommu.h |  2 ++ 2 files changed, 77
-> > insertions(+)
-> > 
-> > diff --git a/drivers/iommu/intel-iommu.c
-> > b/drivers/iommu/intel-iommu.c index e90102c7540d..b0c0bb6f740e
-> > 100644 --- a/drivers/iommu/intel-iommu.c
-> > +++ b/drivers/iommu/intel-iommu.c
-> > @@ -1700,6 +1700,9 @@ static void free_dmar_iommu(struct
-> > intel_iommu *iommu) if (ecap_prs(iommu->ecap))
-> >   			intel_svm_finish_prq(iommu);
-> >   	}
-> > +	if (ecap_vcs(iommu->ecap) && vccap_pasid(iommu->vccap))
-> > +
-> > ioasid_unregister_allocator(&iommu->pasid_allocator); +
-> >   #endif
-> >   }
-> >   
-> > @@ -3181,6 +3184,75 @@ static int copy_translation_tables(struct
-> > intel_iommu *iommu) return ret;
-> >   }
-> >   
-> > +#ifdef CONFIG_INTEL_IOMMU_SVM
-> > +static ioasid_t intel_ioasid_alloc(ioasid_t min, ioasid_t max,
-> > void *data) +{
-> > +	struct intel_iommu *iommu = data;
-> > +	ioasid_t ioasid;
-> > +  
-> 
-> Check !iommu just like the free api?
-> 
-sounds good, will return INVALID_IOASID if NULL.
+On Thu, Jan 09, 2020 at 07:30:54AM -0700, Jon Derrick wrote:
+> The current dma alias implementation requires the aliased device be on
+> the same bus as the dma parent. This introduces an arch-specific
+> mechanism to point to an arbitrary struct device when doing mapping and
+> pci alias search.
 
-> > +	/*
-> > +	 * VT-d virtual command interface always uses the full 20
-> > bit
-> > +	 * PASID range. Host can partition guest PASID range based
-> > on
-> > +	 * policies but it is out of guest's control.
-> > +	 */
-> > +	if (min < PASID_MIN || max > intel_pasid_max_id)
-> > +		return INVALID_IOASID;
-> > +
-> > +	if (vcmd_alloc_pasid(iommu, &ioasid))
-> > +		return INVALID_IOASID;
-> > +
-> > +	return ioasid;
-> > +}
-> > +
-> > +static void intel_ioasid_free(ioasid_t ioasid, void *data)
-> > +{
-> > +	struct intel_iommu *iommu = data;
-> > +
-> > +	if (!iommu)
-> > +		return;
-> > +	/*
-> > +	 * Sanity check the ioasid owner is done at upper layer,
-> > e.g. VFIO
-> > +	 * We can only free the PASID when all the devices are
-> > unbound.
-> > +	 */
-> > +	if (ioasid_find(NULL, ioasid, NULL)) {
-> > +		pr_alert("Cannot free active IOASID %d\n", ioasid);
-> > +		return;
-> > +	}
-> > +	vcmd_free_pasid(iommu, ioasid);
-> > +}
-> > +
-> > +static void register_pasid_allocator(struct intel_iommu *iommu)
-> > +{
-> > +	if (!intel_iommu_sm) {  
-> 
-> Use sm_supported(iommu) instead.
-> 
-sounds good, seems we could separate the sm code more cleanly in the
-future to avoid all these checks.
+"arbitrary struct device" is a little weird since an arbitrary device
+doesn't have to be a PCI device, but these mappings and aliases only
+make sense in the PCI domain.
 
-> > +		pr_warn("VT-d scalable mode not enabled\n");
-> > +		return;
-> > +	}
-> > +
-> > +	/*
-> > +	 * Register a custom PASID allocator if we are running in
-> > a guest,
-> > +	 * guest PASID must be obtained via virtual command
-> > interface.
-> > +	 * There can be multiple vIOMMUs in each guest but only
-> > one allocator
-> > +	 * is active. All vIOMMU allocators will eventually be
-> > calling the same
-> > +	 * host allocator.
-> > +	 */
-> > +	if (ecap_vcs(iommu->ecap) && vccap_pasid(iommu->vccap)) {
-> > +		pr_info("Register custom PASID allocator\n");
-> > +		iommu->pasid_allocator.alloc = intel_ioasid_alloc;
-> > +		iommu->pasid_allocator.free = intel_ioasid_free;
-> > +		iommu->pasid_allocator.pdata = (void *)iommu;
-> > +		if
-> > (!ioasid_register_allocator(&iommu->pasid_allocator)) {
-> > +			pr_warn("Custom PASID allocator failed,
-> > scalable mode disabled\n");
-> > +			/*
-> > +			 * Disable scalable mode on this IOMMU if
-> > there
-> > +			 * is no custom allocator. Mixing SM
-> > capable vIOMMU
-> > +			 * and non-SM vIOMMU are not supported.
-> > +			 */
-> > +			intel_iommu_sm = 0;
-> > +		}
-> > +	}
-> > +}
-> > +#endif
-> > +
-> >   static int __init init_dmars(void)
-> >   {
-> >   	struct dmar_drhd_unit *drhd;
-> > @@ -3298,6 +3370,9 @@ static int __init init_dmars(void)
-> >   	 */
-> >   	for_each_active_iommu(iommu, drhd) {
-> >   		iommu_flush_write_buffer(iommu);
-> > +#ifdef CONFIG_INTEL_IOMMU_SVM
-> > +		register_pasid_allocator(iommu);
-> > +#endif
-> >   		iommu_set_root_entry(iommu);
-> >   		iommu->flush.flush_context(iommu, 0, 0, 0,
-> > DMA_CCMD_GLOBAL_INVL); iommu->flush.flush_iotlb(iommu, 0, 0, 0,
-> > DMA_TLB_GLOBAL_FLUSH); diff --git a/include/linux/intel-iommu.h
-> > b/include/linux/intel-iommu.h index 1e11560b0e59..8c30b23bd838
-> > 100644 --- a/include/linux/intel-iommu.h
-> > +++ b/include/linux/intel-iommu.h
-> > @@ -19,6 +19,7 @@
-> >   #include <linux/iommu.h>
-> >   #include <linux/io-64-nonatomic-lo-hi.h>
-> >   #include <linux/dmar.h>
-> > +#include <linux/ioasid.h>
-> >   
-> >   #include <asm/cacheflush.h>
-> >   #include <asm/iommu.h>
-> > @@ -557,6 +558,7 @@ struct intel_iommu {
-> >   #ifdef CONFIG_INTEL_IOMMU_SVM
-> >   	struct page_req_dsc *prq;
-> >   	unsigned char prq_name[16];    /* Name for PRQ interrupt
-> > */
-> > +	struct ioasid_allocator_ops pasid_allocator; /* Custom
-> > allocator for PASIDs */ #endif
-> >   	struct q_inval  *qi;            /* Queued invalidation
-> > info */ u32 *iommu_state; /* Store iommu states between suspend and
-> > resume.*/ 
-> 
-> Best regards,
-> baolu
+Maybe it has something to do with pci_sysdata.vmd_dev being a
+"struct device *" rather than a "struct pci_dev *"?  I don't know why
+that is, because it looks like every place you use it, you use
+to_pci_dev() to get the pci_dev pointer back anyway.  But I assume you
+have some good reason for that.
 
-[Jacob Pan]
+s/dma/DMA/
+s/pci/PCI/
+(above and also in code comments below)
+
+> Signed-off-by: Jon Derrick <jonathan.derrick@intel.com>
+> ---
+>  arch/x86/pci/common.c |  7 +++++++
+>  drivers/pci/pci.c     | 17 ++++++++++++++++-
+>  drivers/pci/search.c  |  9 +++++++++
+>  include/linux/pci.h   |  1 +
+>  4 files changed, 33 insertions(+), 1 deletion(-)
+> 
+> diff --git a/arch/x86/pci/common.c b/arch/x86/pci/common.c
+> index 1e59df0..565cc17 100644
+> --- a/arch/x86/pci/common.c
+> +++ b/arch/x86/pci/common.c
+> @@ -736,3 +736,10 @@ int pci_ext_cfg_avail(void)
+>  	else
+>  		return 0;
+>  }
+> +
+> +#if IS_ENABLED(CONFIG_VMD)
+> +struct device *pci_direct_dma_alias(struct pci_dev *dev)
+> +{
+> +	return to_pci_sysdata(dev->bus)->vmd_dev;
+> +}
+> +#endif
+> diff --git a/drivers/pci/pci.c b/drivers/pci/pci.c
+> index ad746d9..e4269e9 100644
+> --- a/drivers/pci/pci.c
+> +++ b/drivers/pci/pci.c
+> @@ -6034,7 +6034,9 @@ bool pci_devs_are_dma_aliases(struct pci_dev *dev1, struct pci_dev *dev2)
+>  	return (dev1->dma_alias_mask &&
+>  		test_bit(dev2->devfn, dev1->dma_alias_mask)) ||
+>  	       (dev2->dma_alias_mask &&
+> -		test_bit(dev1->devfn, dev2->dma_alias_mask));
+> +		test_bit(dev1->devfn, dev2->dma_alias_mask)) ||
+> +	       (pci_direct_dma_alias(dev1) == &dev2->dev) ||
+> +	       (pci_direct_dma_alias(dev2) == &dev1->dev);
+>  }
+>  
+>  bool pci_device_is_present(struct pci_dev *pdev)
+> @@ -6058,6 +6060,19 @@ void pci_ignore_hotplug(struct pci_dev *dev)
+>  }
+>  EXPORT_SYMBOL_GPL(pci_ignore_hotplug);
+>  
+> +/**
+> + * pci_direct_dma_alias - Get dma alias for pci device
+> + * @dev: the PCI device that may have a dma alias
+> + *
+> + * Permits the platform to provide architecture-specific functionality to
+> + * devices needing to alias dma to another device. This is the default
+> + * implementation. Architecture implementations can override this.
+> + */
+> +struct device __weak *pci_direct_dma_alias(struct pci_dev *dev)
+> +{
+> +	return NULL;
+> +}
+> +
+>  resource_size_t __weak pcibios_default_alignment(void)
+>  {
+>  	return 0;
+> diff --git a/drivers/pci/search.c b/drivers/pci/search.c
+> index bade140..6d61209 100644
+> --- a/drivers/pci/search.c
+> +++ b/drivers/pci/search.c
+> @@ -32,6 +32,15 @@ int pci_for_each_dma_alias(struct pci_dev *pdev,
+>  	struct pci_bus *bus;
+>  	int ret;
+>  
+> +	if (unlikely(pci_direct_dma_alias(pdev))) {
+> +		struct device *dev = pci_direct_dma_alias(pdev);
+> +
+> +		if (dev_is_pci(dev))
+> +			pdev = to_pci_dev(dev);
+> +		return fn(pdev, PCI_DEVID(pdev->bus->number, pdev->devfn),
+> +			  data);
+> +	}
+> +
+>  	ret = fn(pdev, pci_dev_id(pdev), data);
+>  	if (ret)
+>  		return ret;
+> diff --git a/include/linux/pci.h b/include/linux/pci.h
+> index c393dff..82494d3 100644
+> --- a/include/linux/pci.h
+> +++ b/include/linux/pci.h
+> @@ -1202,6 +1202,7 @@ u32 pcie_bandwidth_available(struct pci_dev *dev, struct pci_dev **limiting_dev,
+>  int pci_select_bars(struct pci_dev *dev, unsigned long flags);
+>  bool pci_device_is_present(struct pci_dev *pdev);
+>  void pci_ignore_hotplug(struct pci_dev *dev);
+> +struct device *pci_direct_dma_alias(struct pci_dev *dev);
+>  
+>  int __printf(6, 7) pci_request_irq(struct pci_dev *dev, unsigned int nr,
+>  		irq_handler_t handler, irq_handler_t thread_fn, void *dev_id,
+> -- 
+> 1.8.3.1
+> 
 _______________________________________________
 iommu mailing list
 iommu@lists.linux-foundation.org
