@@ -2,83 +2,83 @@ Return-Path: <SRS0=4b30=26=lists.linux-foundation.org=iommu-bounces@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-0.8 required=3.0 tests=HEADER_FROM_DIFFERENT_DOMAINS,
-	MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS autolearn=no autolearn_force=no
-	version=3.4.0
+X-Spam-Status: No, score=-5.2 required=3.0 tests=HEADER_FROM_DIFFERENT_DOMAINS,
+	MAILING_LIST_MULTI,SIGNED_OFF_BY,SPF_HELO_NONE,SPF_PASS,USER_AGENT_SANE_2
+	autolearn=unavailable autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 8DBB2C282DD
-	for <iommu@archiver.kernel.org>; Thu,  9 Jan 2020 16:45:39 +0000 (UTC)
-Received: from hemlock.osuosl.org (smtp2.osuosl.org [140.211.166.133])
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 641BCC282DD
+	for <iommu@archiver.kernel.org>; Thu,  9 Jan 2020 17:38:41 +0000 (UTC)
+Received: from whitealder.osuosl.org (smtp1.osuosl.org [140.211.166.138])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by mail.kernel.org (Postfix) with ESMTPS id 6069D2072A
-	for <iommu@archiver.kernel.org>; Thu,  9 Jan 2020 16:45:39 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 6069D2072A
-Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=intel.com
+	by mail.kernel.org (Postfix) with ESMTPS id F373620661
+	for <iommu@archiver.kernel.org>; Thu,  9 Jan 2020 17:38:40 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org F373620661
+Authentication-Results: mail.kernel.org; dmarc=none (p=none dis=none) header.from=Huawei.com
 Authentication-Results: mail.kernel.org; spf=pass smtp.mailfrom=iommu-bounces@lists.linux-foundation.org
 Received: from localhost (localhost [127.0.0.1])
-	by hemlock.osuosl.org (Postfix) with ESMTP id 2B27A882B6;
-	Thu,  9 Jan 2020 16:45:39 +0000 (UTC)
+	by whitealder.osuosl.org (Postfix) with ESMTP id CA7FC8442D;
+	Thu,  9 Jan 2020 17:38:40 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from hemlock.osuosl.org ([127.0.0.1])
+Received: from whitealder.osuosl.org ([127.0.0.1])
 	by localhost (.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
-	with ESMTP id nRprT9-cHHio; Thu,  9 Jan 2020 16:45:38 +0000 (UTC)
+	with ESMTP id olLPR-eYjXdr; Thu,  9 Jan 2020 17:38:40 +0000 (UTC)
 Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [140.211.9.56])
-	by hemlock.osuosl.org (Postfix) with ESMTP id A35DE882A7;
-	Thu,  9 Jan 2020 16:45:38 +0000 (UTC)
+	by whitealder.osuosl.org (Postfix) with ESMTP id 17565867CC;
+	Thu,  9 Jan 2020 17:38:40 +0000 (UTC)
 Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
-	by lists.linuxfoundation.org (Postfix) with ESMTP id 890C5C18DC;
-	Thu,  9 Jan 2020 16:45:38 +0000 (UTC)
-Received: from silver.osuosl.org (smtp3.osuosl.org [140.211.166.136])
- by lists.linuxfoundation.org (Postfix) with ESMTP id 09D31C0881
- for <iommu@lists.linux-foundation.org>; Thu,  9 Jan 2020 16:45:37 +0000 (UTC)
+	by lists.linuxfoundation.org (Postfix) with ESMTP id F0735C1796;
+	Thu,  9 Jan 2020 17:38:39 +0000 (UTC)
+Received: from whitealder.osuosl.org (smtp1.osuosl.org [140.211.166.138])
+ by lists.linuxfoundation.org (Postfix) with ESMTP id 623C3C1D85
+ for <iommu@lists.linux-foundation.org>; Thu,  9 Jan 2020 17:38:38 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
- by silver.osuosl.org (Postfix) with ESMTP id 027FC20371
- for <iommu@lists.linux-foundation.org>; Thu,  9 Jan 2020 16:45:37 +0000 (UTC)
+ by whitealder.osuosl.org (Postfix) with ESMTP id 52E0A86C18
+ for <iommu@lists.linux-foundation.org>; Thu,  9 Jan 2020 17:38:38 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from silver.osuosl.org ([127.0.0.1])
+Received: from whitealder.osuosl.org ([127.0.0.1])
  by localhost (.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
- with ESMTP id hlS7zkyBbS7z for <iommu@lists.linux-foundation.org>;
- Thu,  9 Jan 2020 16:45:36 +0000 (UTC)
+ with ESMTP id E8bx6keT9REW for <iommu@lists.linux-foundation.org>;
+ Thu,  9 Jan 2020 17:38:34 +0000 (UTC)
 X-Greylist: domain auto-whitelisted by SQLgrey-1.7.6
-Received: from mga02.intel.com (mga02.intel.com [134.134.136.20])
- by silver.osuosl.org (Postfix) with ESMTPS id 6F6F720337
- for <iommu@lists.linux-foundation.org>; Thu,  9 Jan 2020 16:45:36 +0000 (UTC)
-X-Amp-Result: SKIPPED(no attachment in message)
-X-Amp-File-Uploaded: False
-Received: from orsmga008.jf.intel.com ([10.7.209.65])
- by orsmga101.jf.intel.com with ESMTP/TLS/DHE-RSA-AES256-GCM-SHA384;
- 09 Jan 2020 08:45:17 -0800
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.69,414,1571727600"; d="scan'208";a="216358154"
-Received: from orsmsx108.amr.corp.intel.com ([10.22.240.6])
- by orsmga008.jf.intel.com with ESMTP; 09 Jan 2020 08:45:16 -0800
-Received: from orsmsx101.amr.corp.intel.com ([169.254.8.147]) by
- ORSMSX108.amr.corp.intel.com ([169.254.2.134]) with mapi id 14.03.0439.000;
- Thu, 9 Jan 2020 08:45:16 -0800
-From: "Derrick, Jonathan" <jonathan.derrick@intel.com>
-To: "hch@lst.de" <hch@lst.de>
-Subject: Re: [RFC 3/5] x86/PCI: Expose VMD's device in pci_sysdata
-Thread-Topic: [RFC 3/5] x86/PCI: Expose VMD's device in pci_sysdata
-Thread-Index: AQHVwEr2DDGpqCrTpUazRoVkAefkIKfi+SsAgAAkowA=
-Date: Thu, 9 Jan 2020 16:45:16 +0000
-Message-ID: <096f9166b55a8af5911daab0ba8ecc6649e2f0e4.camel@intel.com>
-References: <1577823863-3303-1-git-send-email-jonathan.derrick@intel.com>
- <1577823863-3303-4-git-send-email-jonathan.derrick@intel.com>
- <20200109143356.GB22656@lst.de>
-In-Reply-To: <20200109143356.GB22656@lst.de>
-Accept-Language: en-US
-Content-Language: en-US
-X-MS-Has-Attach: 
-X-MS-TNEF-Correlator: 
-x-originating-ip: [10.255.4.146]
-Content-ID: <83B3277B29EA5A478FE40B4A67278E8D@intel.com>
+Received: from huawei.com (lhrrgout.huawei.com [185.176.76.210])
+ by whitealder.osuosl.org (Postfix) with ESMTPS id 3C0AB86F92
+ for <iommu@lists.linux-foundation.org>; Thu,  9 Jan 2020 17:38:25 +0000 (UTC)
+Received: from lhreml702-cah.china.huawei.com (unknown [172.18.7.106])
+ by Forcepoint Email with ESMTP id 63D7074D89B6C389E9A8;
+ Thu,  9 Jan 2020 17:38:21 +0000 (GMT)
+Received: from lhreml710-chm.china.huawei.com (10.201.108.61) by
+ lhreml702-cah.china.huawei.com (10.201.108.43) with Microsoft SMTP Server
+ (TLS) id 14.3.408.0; Thu, 9 Jan 2020 17:38:20 +0000
+Received: from localhost (10.202.226.57) by lhreml710-chm.china.huawei.com
+ (10.201.108.61) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.1713.5; Thu, 9 Jan 2020
+ 17:38:20 +0000
+Date: Thu, 9 Jan 2020 17:38:19 +0000
+From: Jonathan Cameron <Jonathan.Cameron@Huawei.com>
+To: Zhangfei Gao <zhangfei.gao@linaro.org>, Kenneth Lee
+ <liguozhu@hisilicon.com>
+Subject: Re: [PATCH v10 2/4] uacce: add uacce driver
+Message-ID: <20200109173819.00003cbf@Huawei.com>
+In-Reply-To: <1576465697-27946-3-git-send-email-zhangfei.gao@linaro.org>
+References: <1576465697-27946-1-git-send-email-zhangfei.gao@linaro.org>
+ <1576465697-27946-3-git-send-email-zhangfei.gao@linaro.org>
+Organization: Huawei Technologies Research and Development (UK) Ltd.
+X-Mailer: Claws Mail 3.17.4 (GTK+ 2.24.32; i686-w64-mingw32)
 MIME-Version: 1.0
-Cc: "linux-pci@vger.kernel.org" <linux-pci@vger.kernel.org>,
- "iommu@lists.linux-foundation.org" <iommu@lists.linux-foundation.org>,
- "helgaas@kernel.org" <helgaas@kernel.org>,
- "kbusch@kernel.org" <kbusch@kernel.org>,
- "dwmw2@infradead.org" <dwmw2@infradead.org>
+X-Originating-IP: [10.202.226.57]
+X-ClientProxiedBy: lhreml711-chm.china.huawei.com (10.201.108.62) To
+ lhreml710-chm.china.huawei.com (10.201.108.61)
+X-CFilter-Loop: Reflected
+Cc: jean-philippe <jean-philippe@linaro.org>,
+ Herbert Xu <herbert@gondor.apana.org.au>, Arnd Bergmann <arnd@arndb.de>,
+ francois.ozog@linaro.org, Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+ ilias.apalodimas@linaro.org, iommu@lists.linux-foundation.org,
+ linux-kernel@vger.kernel.org, Jerome
+ Glisse <jglisse@redhat.com>, grant.likely@arm.com,
+ "haojian . zhuang" <haojian.zhuang@linaro.org>,
+ linux-accelerators@lists.ozlabs.org, linux-crypto@vger.kernel.org,
+ guodong.xu@linaro.org, kenneth-lee-2012@foxmail.com
 X-BeenThere: iommu@lists.linux-foundation.org
 X-Mailman-Version: 2.1.15
 Precedence: list
@@ -96,14 +96,209 @@ Content-Transfer-Encoding: 7bit
 Errors-To: iommu-bounces@lists.linux-foundation.org
 Sender: "iommu" <iommu-bounces@lists.linux-foundation.org>
 
-On Thu, 2020-01-09 at 15:33 +0100, Christoph Hellwig wrote:
-> On Tue, Dec 31, 2019 at 01:24:21PM -0700, Jon Derrick wrote:
-> > To be used by intel-iommu code to find the correct domain.
-> 
-> Any reason to prefer this version over my patches 2 and 3 from the
-> series in August?
+On Mon, 16 Dec 2019 11:08:15 +0800
+Zhangfei Gao <zhangfei.gao@linaro.org> wrote:
 
-2 & 3 of your set is fine.
+> From: Kenneth Lee <liguozhu@hisilicon.com>
+> 
+> Uacce (Unified/User-space-access-intended Accelerator Framework) targets to
+> provide Shared Virtual Addressing (SVA) between accelerators and processes.
+> So accelerator can access any data structure of the main cpu.
+> This differs from the data sharing between cpu and io device, which share
+> only data content rather than address.
+> Since unified address, hardware and user space of process can share the
+> same virtual address in the communication.
+> 
+> Uacce create a chrdev for every registration, the queue is allocated to
+> the process when the chrdev is opened. Then the process can access the
+> hardware resource by interact with the queue file. By mmap the queue
+> file space to user space, the process can directly put requests to the
+> hardware without syscall to the kernel space.
+> 
+> The IOMMU core only tracks mm<->device bonds at the moment, because it
+> only needs to handle IOTLB invalidation and PASID table entries. However
+> uacce needs a finer granularity since multiple queues from the same
+> device can be bound to an mm. When the mm exits, all bound queues must
+> be stopped so that the IOMMU can safely clear the PASID table entry and
+> reallocate the PASID.
+> 
+> An intermediate struct uacce_mm links uacce devices and queues.
+> Note that an mm may be bound to multiple devices but an uacce_mm
+> structure only ever belongs to a single device, because we don't need
+> anything more complex (if multiple devices are bound to one mm, then
+> we'll create one uacce_mm for each bond).
+> 
+>         uacce_device --+-- uacce_mm --+-- uacce_queue
+>                        |              '-- uacce_queue
+>                        |
+>                        '-- uacce_mm --+-- uacce_queue
+>                                       +-- uacce_queue
+>                                       '-- uacce_queue
+> 
+> Signed-off-by: Kenneth Lee <liguozhu@hisilicon.com>
+> Signed-off-by: Zaibo Xu <xuzaibo@huawei.com>
+> Signed-off-by: Zhou Wang <wangzhou1@hisilicon.com>
+> Signed-off-by: Jean-Philippe Brucker <jean-philippe@linaro.org>
+> Signed-off-by: Zhangfei Gao <zhangfei.gao@linaro.org>
+
+Hi,
+
+Two small things I'd missed previously.  Fix those and for
+what it's worth
+
+Reviewed-by: Jonathan Cameron <Jonathan.Cameron@huawei.com>
+
+> ---
+>  Documentation/ABI/testing/sysfs-driver-uacce |  37 ++
+>  drivers/misc/Kconfig                         |   1 +
+>  drivers/misc/Makefile                        |   1 +
+>  drivers/misc/uacce/Kconfig                   |  13 +
+>  drivers/misc/uacce/Makefile                  |   2 +
+>  drivers/misc/uacce/uacce.c                   | 628 +++++++++++++++++++++++++++
+>  include/linux/uacce.h                        | 161 +++++++
+>  include/uapi/misc/uacce/uacce.h              |  38 ++
+>  8 files changed, 881 insertions(+)
+>  create mode 100644 Documentation/ABI/testing/sysfs-driver-uacce
+>  create mode 100644 drivers/misc/uacce/Kconfig
+>  create mode 100644 drivers/misc/uacce/Makefile
+>  create mode 100644 drivers/misc/uacce/uacce.c
+>  create mode 100644 include/linux/uacce.h
+>  create mode 100644 include/uapi/misc/uacce/uacce.h
+> 
+...
+> +
+> +What:           /sys/class/uacce/<dev_name>/available_instances
+> +Date:           Dec 2019
+> +KernelVersion:  5.6
+> +Contact:        linux-accelerators@lists.ozlabs.org
+> +Description:    Available instances left of the device
+> +                Return -ENODEV if uacce_ops get_available_instances is not provided
+> +
+
+See below.  It doesn't "return" it prints it currently.
+
+...
+
+> +static int uacce_fops_mmap(struct file *filep, struct vm_area_struct *vma)
+> +{
+> +	struct uacce_queue *q = filep->private_data;
+> +	struct uacce_device *uacce = q->uacce;
+> +	struct uacce_qfile_region *qfr;
+> +	enum uacce_qfrt type = UACCE_MAX_REGION;
+> +	int ret = 0;
+> +
+> +	if (vma->vm_pgoff < UACCE_MAX_REGION)
+> +		type = vma->vm_pgoff;
+> +	else
+> +		return -EINVAL;
+> +
+> +	qfr = kzalloc(sizeof(*qfr), GFP_KERNEL);
+> +	if (!qfr)
+> +		return -ENOMEM;
+> +
+> +	vma->vm_flags |= VM_DONTCOPY | VM_DONTEXPAND | VM_WIPEONFORK;
+> +	vma->vm_ops = &uacce_vm_ops;
+> +	vma->vm_private_data = q;
+> +	qfr->type = type;
+> +
+> +	mutex_lock(&uacce_mutex);
+> +
+> +	if (q->state != UACCE_Q_INIT && q->state != UACCE_Q_STARTED) {
+> +		ret = -EINVAL;
+> +		goto out_with_lock;
+> +	}
+> +
+> +	if (q->qfrs[type]) {
+> +		ret = -EEXIST;
+> +		goto out_with_lock;
+> +	}
+> +
+> +	switch (type) {
+> +	case UACCE_QFRT_MMIO:
+> +		if (!uacce->ops->mmap) {
+> +			ret = -EINVAL;
+> +			goto out_with_lock;
+> +		}
+> +
+> +		ret = uacce->ops->mmap(q, vma, qfr);
+> +		if (ret)
+> +			goto out_with_lock;
+> +
+> +		break;
+> +
+> +	case UACCE_QFRT_DUS:
+> +		if (uacce->flags & UACCE_DEV_SVA) {
+> +			if (!uacce->ops->mmap) {
+> +				ret = -EINVAL;
+> +				goto out_with_lock;
+> +			}
+> +
+> +			ret = uacce->ops->mmap(q, vma, qfr);
+> +			if (ret)
+> +				goto out_with_lock;
+> +		}
+
+Slightly odd corner case, but what stops us getting here with
+the UACCE_DEV_SVA flag not set?  If that happened I'd expect to
+return an error but looks like we return 0.
+
+
+
+> +		break;
+> +
+> +	default:
+> +		ret = -EINVAL;
+> +		goto out_with_lock;
+> +	}
+> +
+> +	q->qfrs[type] = qfr;
+> +	mutex_unlock(&uacce_mutex);
+> +
+> +	return ret;
+> +
+> +out_with_lock:
+> +	mutex_unlock(&uacce_mutex);
+> +	kfree(qfr);
+> +	return ret;
+> +}
+
+...
+
+> +static ssize_t available_instances_show(struct device *dev,
+> +					struct device_attribute *attr,
+> +					char *buf)
+> +{
+> +	struct uacce_device *uacce = to_uacce_device(dev);
+> +	int val = -ENODEV;
+> +
+> +	if (uacce->ops->get_available_instances)
+> +		val = uacce->ops->get_available_instances(uacce);
+> +
+> +	return sprintf(buf, "%d\n", val);
+
+It's unusual to pass an error value back as a string.
+I'd expect some logic like..
+
+	if (val < 0)
+		return val;
+
+	return sprintf(buf, "%d\n", val);
+
+Note this is the documented behavior "returns -ENODEV".
+
+> +}
+> +
+> +static ssize_t algorithms_show(struct device *dev,
+> +			       struct device_attribute *attr, char *buf)
+> +{
+> +	struct uacce_device *uacce = to_uacce_device(dev);
+> +
+> +	return sprintf(buf, "%s\n", uacce->algs);
+> +}
+> +
+...
+
+
 _______________________________________________
 iommu mailing list
 iommu@lists.linux-foundation.org
