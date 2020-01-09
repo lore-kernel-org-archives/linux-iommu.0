@@ -2,69 +2,68 @@ Return-Path: <SRS0=4b30=26=lists.linux-foundation.org=iommu-bounces@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-8.2 required=3.0 tests=HEADER_FROM_DIFFERENT_DOMAINS,
-	INCLUDES_PATCH,MAILING_LIST_MULTI,SIGNED_OFF_BY,SPF_HELO_NONE,SPF_PASS,
-	USER_AGENT_SANE_1 autolearn=ham autolearn_force=no version=3.4.0
+X-Spam-Status: No, score=-2.2 required=3.0 tests=HEADER_FROM_DIFFERENT_DOMAINS,
+	MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS,USER_AGENT_SANE_1 autolearn=no
+	autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 6EE07C282DD
-	for <iommu@archiver.kernel.org>; Thu,  9 Jan 2020 13:42:03 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id BCBCCC282DD
+	for <iommu@archiver.kernel.org>; Thu,  9 Jan 2020 14:31:19 +0000 (UTC)
 Received: from silver.osuosl.org (smtp3.osuosl.org [140.211.166.136])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by mail.kernel.org (Postfix) with ESMTPS id 330CB20661
-	for <iommu@archiver.kernel.org>; Thu,  9 Jan 2020 13:42:03 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 330CB20661
-Authentication-Results: mail.kernel.org; dmarc=none (p=none dis=none) header.from=arm.com
+	by mail.kernel.org (Postfix) with ESMTPS id 6DEEE20673
+	for <iommu@archiver.kernel.org>; Thu,  9 Jan 2020 14:31:19 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 6DEEE20673
+Authentication-Results: mail.kernel.org; dmarc=none (p=none dis=none) header.from=lst.de
 Authentication-Results: mail.kernel.org; spf=pass smtp.mailfrom=iommu-bounces@lists.linux-foundation.org
 Received: from localhost (localhost [127.0.0.1])
-	by silver.osuosl.org (Postfix) with ESMTP id DBF1F207A8;
-	Thu,  9 Jan 2020 13:42:02 +0000 (UTC)
+	by silver.osuosl.org (Postfix) with ESMTP id 319A720C41;
+	Thu,  9 Jan 2020 14:31:19 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
 Received: from silver.osuosl.org ([127.0.0.1])
 	by localhost (.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
-	with ESMTP id zoNwRd4pknI9; Thu,  9 Jan 2020 13:42:01 +0000 (UTC)
+	with ESMTP id Ts2Zj-+C+aYM; Thu,  9 Jan 2020 14:31:17 +0000 (UTC)
 Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [140.211.9.56])
-	by silver.osuosl.org (Postfix) with ESMTP id D65CF2039E;
-	Thu,  9 Jan 2020 13:42:01 +0000 (UTC)
+	by silver.osuosl.org (Postfix) with ESMTP id EF45520429;
+	Thu,  9 Jan 2020 14:31:16 +0000 (UTC)
 Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
-	by lists.linuxfoundation.org (Postfix) with ESMTP id C44DEC1796;
-	Thu,  9 Jan 2020 13:42:01 +0000 (UTC)
-Received: from fraxinus.osuosl.org (smtp4.osuosl.org [140.211.166.137])
- by lists.linuxfoundation.org (Postfix) with ESMTP id CF917C0881
- for <iommu@lists.linux-foundation.org>; Thu,  9 Jan 2020 13:42:00 +0000 (UTC)
+	by lists.linuxfoundation.org (Postfix) with ESMTP id E1834C18DC;
+	Thu,  9 Jan 2020 14:31:16 +0000 (UTC)
+Received: from hemlock.osuosl.org (smtp2.osuosl.org [140.211.166.133])
+ by lists.linuxfoundation.org (Postfix) with ESMTP id 8BD6AC0881
+ for <iommu@lists.linux-foundation.org>; Thu,  9 Jan 2020 14:31:14 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
- by fraxinus.osuosl.org (Postfix) with ESMTP id B219C85F7B
- for <iommu@lists.linux-foundation.org>; Thu,  9 Jan 2020 13:42:00 +0000 (UTC)
+ by hemlock.osuosl.org (Postfix) with ESMTP id 81C8588007
+ for <iommu@lists.linux-foundation.org>; Thu,  9 Jan 2020 14:31:14 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from fraxinus.osuosl.org ([127.0.0.1])
+Received: from hemlock.osuosl.org ([127.0.0.1])
  by localhost (.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
- with ESMTP id 2cqjzZBIl-jW for <iommu@lists.linux-foundation.org>;
- Thu,  9 Jan 2020 13:41:59 +0000 (UTC)
-X-Greylist: domain auto-whitelisted by SQLgrey-1.7.6
-Received: from foss.arm.com (foss.arm.com [217.140.110.172])
- by fraxinus.osuosl.org (Postfix) with ESMTP id D44E085F72
- for <iommu@lists.linux-foundation.org>; Thu,  9 Jan 2020 13:41:59 +0000 (UTC)
-Received: from usa-sjc-imap-foss1.foss.arm.com (unknown [10.121.207.14])
- by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id 2492031B;
- Thu,  9 Jan 2020 05:41:59 -0800 (PST)
-Received: from [10.1.196.37] (e121345-lin.cambridge.arm.com [10.1.196.37])
- by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPSA id 329D43F534;
- Thu,  9 Jan 2020 05:41:58 -0800 (PST)
-Subject: Re: [PATCH 2/2] iommu/arm-smmu-v3: simplify parse_driver_options()
-To: Masahiro Yamada <yamada.masahiro@socionext.com>,
- Will Deacon <will@kernel.org>, linux-arm-kernel@lists.infradead.org,
- Joerg Roedel <joro@8bytes.org>, iommu@lists.linux-foundation.org
-References: <20191226095141.30352-1-yamada.masahiro@socionext.com>
- <20191226095141.30352-2-yamada.masahiro@socionext.com>
-From: Robin Murphy <robin.murphy@arm.com>
-Message-ID: <1383eeb0-4148-a798-5e24-81ce33013f1d@arm.com>
-Date: Thu, 9 Jan 2020 13:41:56 +0000
-User-Agent: Mozilla/5.0 (X11; Linux aarch64; rv:60.0) Gecko/20100101
- Thunderbird/60.9.0
+ with ESMTP id f-V4aorZfswG for <iommu@lists.linux-foundation.org>;
+ Thu,  9 Jan 2020 14:31:13 +0000 (UTC)
+X-Greylist: from auto-whitelisted by SQLgrey-1.7.6
+Received: from verein.lst.de (verein.lst.de [213.95.11.211])
+ by hemlock.osuosl.org (Postfix) with ESMTPS id 2AAF487FFB
+ for <iommu@lists.linux-foundation.org>; Thu,  9 Jan 2020 14:31:12 +0000 (UTC)
+Received: by verein.lst.de (Postfix, from userid 2407)
+ id 7011068BFE; Thu,  9 Jan 2020 15:31:08 +0100 (CET)
+Date: Thu, 9 Jan 2020 15:31:08 +0100
+From: Christoph Hellwig <hch@lst.de>
+To: David Rientjes <rientjes@google.com>
+Subject: Re: [rfc] dma-mapping: preallocate unencrypted DMA atomic pool
+Message-ID: <20200109143108.GA22656@lst.de>
+References: <alpine.DEB.2.21.1912311738130.68206@chino.kir.corp.google.com>
+ <3213a6ac-5aad-62bc-bf95-fae8ba088b9e@arm.com> <20200107105458.GA3139@lst.de>
+ <alpine.DEB.2.21.2001071152020.183706@chino.kir.corp.google.com>
 MIME-Version: 1.0
-In-Reply-To: <20191226095141.30352-2-yamada.masahiro@socionext.com>
-Content-Language: en-GB
-Cc: linux-kernel@vger.kernel.org
+Content-Disposition: inline
+In-Reply-To: <alpine.DEB.2.21.2001071152020.183706@chino.kir.corp.google.com>
+User-Agent: Mutt/1.5.17 (2007-11-01)
+Cc: "Lendacky, Thomas" <Thomas.Lendacky@amd.com>, "Singh,
+ Brijesh" <brijesh.singh@amd.com>, "Grimm, Jon" <jon.grimm@amd.com>,
+ baekhw@google.com,
+ "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
+ "iommu@lists.linux-foundation.org" <iommu@lists.linux-foundation.org>,
+ Robin Murphy <robin.murphy@arm.com>, Christoph Hellwig <hch@lst.de>
 X-BeenThere: iommu@lists.linux-foundation.org
 X-Mailman-Version: 2.1.15
 Precedence: list
@@ -77,60 +76,33 @@ List-Post: <mailto:iommu@lists.linux-foundation.org>
 List-Help: <mailto:iommu-request@lists.linux-foundation.org?subject=help>
 List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
  <mailto:iommu-request@lists.linux-foundation.org?subject=subscribe>
+Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
-Content-Type: text/plain; charset="us-ascii"; Format="flowed"
 Errors-To: iommu-bounces@lists.linux-foundation.org
 Sender: "iommu" <iommu-bounces@lists.linux-foundation.org>
 
-On 26/12/2019 9:51 am, Masahiro Yamada wrote:
-> Using ARRAY_SIZE() instead of the sentinel is slightly simpler, IMHO.
-
-Given that it's fairly well-decided that we don't want to add any more 
-of these anyway, I'd be inclined to lose the array/loop machinery 
-altogether. As it is we'd need a lot more options for it to actually 
-offer any kind of code size saving.
-
-Robin.
-
-> Signed-off-by: Masahiro Yamada <yamada.masahiro@socionext.com>
-> ---
+On Tue, Jan 07, 2020 at 11:57:24AM -0800, David Rientjes wrote:
+> I'll rely on Thomas to chime in if this doesn't make sense for the SEV 
+> usecase.
 > 
->   drivers/iommu/arm-smmu-v3.c | 7 +++----
->   1 file changed, 3 insertions(+), 4 deletions(-)
+> I think the sizing of the single atomic pool needs to be determined.  Our 
+> peak usage that we have measured from NVMe is ~1.4MB and atomic_pool is 
+> currently sized to 256KB by default.  I'm unsure at this time if we need 
+> to be able to dynamically expand this pool with a kworker.
+>
+> Maybe when CONFIG_AMD_MEM_ENCRYPT is enabled this atomic pool should be 
+> sized to 2MB or so and then when it reaches half capacity we schedule some 
+> background work to dynamically increase it?  That wouldn't be hard unless 
+> the pool can be rapidly depleted.
 > 
-> diff --git a/drivers/iommu/arm-smmu-v3.c b/drivers/iommu/arm-smmu-v3.c
-> index ed9933960370..b27489b7f9d8 100644
-> --- a/drivers/iommu/arm-smmu-v3.c
-> +++ b/drivers/iommu/arm-smmu-v3.c
-> @@ -676,7 +676,6 @@ struct arm_smmu_option_prop {
->   static const struct arm_smmu_option_prop arm_smmu_options[] = {
->   	{ ARM_SMMU_OPT_SKIP_PREFETCH, "hisilicon,broken-prefetch-cmd" },
->   	{ ARM_SMMU_OPT_PAGE0_REGS_ONLY, "cavium,cn9900-broken-page1-regspace"},
-> -	{ 0, NULL},
->   };
->   
->   static inline void __iomem *arm_smmu_page1_fixup(unsigned long offset,
-> @@ -696,16 +695,16 @@ static struct arm_smmu_domain *to_smmu_domain(struct iommu_domain *dom)
->   
->   static void parse_driver_options(struct arm_smmu_device *smmu)
->   {
-> -	int i = 0;
-> +	int i;
->   
-> -	do {
-> +	for (i = 0; i < ARRAY_SIZE(arm_smmu_options); i++) {
->   		if (of_property_read_bool(smmu->dev->of_node,
->   						arm_smmu_options[i].prop)) {
->   			smmu->options |= arm_smmu_options[i].opt;
->   			dev_notice(smmu->dev, "option %s\n",
->   				arm_smmu_options[i].prop);
->   		}
-> -	} while (arm_smmu_options[++i].opt);
-> +	};
->   }
->   
->   /* Low-level queue manipulation functions */
-> 
+
+Note that a non-coherent architecture with the same workload would need
+the same size.
+
+> Do we want to increase the atomic pool size by default and then do 
+> background dynamic expansion?
+
+For now I'd just scale with system memory size.
 _______________________________________________
 iommu mailing list
 iommu@lists.linux-foundation.org
