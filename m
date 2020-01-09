@@ -7,59 +7,59 @@ X-Spam-Status: No, score=-8.6 required=3.0 tests=DATE_IN_PAST_06_12,
 	SPF_HELO_NONE,SPF_PASS,USER_AGENT_GIT autolearn=unavailable
 	autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 9831BC33CA2
-	for <iommu@archiver.kernel.org>; Thu,  9 Jan 2020 20:33:47 +0000 (UTC)
-Received: from fraxinus.osuosl.org (smtp4.osuosl.org [140.211.166.137])
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 4EA0FC282DD
+	for <iommu@archiver.kernel.org>; Thu,  9 Jan 2020 20:33:49 +0000 (UTC)
+Received: from hemlock.osuosl.org (smtp2.osuosl.org [140.211.166.133])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by mail.kernel.org (Postfix) with ESMTPS id 76BF920721
-	for <iommu@archiver.kernel.org>; Thu,  9 Jan 2020 20:33:47 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 76BF920721
+	by mail.kernel.org (Postfix) with ESMTPS id 29B2C206ED
+	for <iommu@archiver.kernel.org>; Thu,  9 Jan 2020 20:33:49 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 29B2C206ED
 Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=intel.com
 Authentication-Results: mail.kernel.org; spf=pass smtp.mailfrom=iommu-bounces@lists.linux-foundation.org
 Received: from localhost (localhost [127.0.0.1])
-	by fraxinus.osuosl.org (Postfix) with ESMTP id 248BD8695E;
-	Thu,  9 Jan 2020 20:33:47 +0000 (UTC)
+	by hemlock.osuosl.org (Postfix) with ESMTP id DE0AC883B6;
+	Thu,  9 Jan 2020 20:33:48 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from fraxinus.osuosl.org ([127.0.0.1])
+Received: from hemlock.osuosl.org ([127.0.0.1])
 	by localhost (.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
-	with ESMTP id HHc3Z-B_XTjo; Thu,  9 Jan 2020 20:33:46 +0000 (UTC)
+	with ESMTP id JBKwVpxfaarM; Thu,  9 Jan 2020 20:33:48 +0000 (UTC)
 Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [140.211.9.56])
-	by fraxinus.osuosl.org (Postfix) with ESMTP id BAABF868A8;
-	Thu,  9 Jan 2020 20:33:45 +0000 (UTC)
+	by hemlock.osuosl.org (Postfix) with ESMTP id 26FAC878E3;
+	Thu,  9 Jan 2020 20:33:48 +0000 (UTC)
 Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
-	by lists.linuxfoundation.org (Postfix) with ESMTP id B66BEC1D87;
-	Thu,  9 Jan 2020 20:33:45 +0000 (UTC)
+	by lists.linuxfoundation.org (Postfix) with ESMTP id 0FD61C18DC;
+	Thu,  9 Jan 2020 20:33:48 +0000 (UTC)
 Received: from fraxinus.osuosl.org (smtp4.osuosl.org [140.211.166.137])
- by lists.linuxfoundation.org (Postfix) with ESMTP id 5416EC0881
- for <iommu@lists.linux-foundation.org>; Thu,  9 Jan 2020 20:33:44 +0000 (UTC)
+ by lists.linuxfoundation.org (Postfix) with ESMTP id 4B643C0881
+ for <iommu@lists.linux-foundation.org>; Thu,  9 Jan 2020 20:33:47 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
- by fraxinus.osuosl.org (Postfix) with ESMTP id 3CC0A868D0
- for <iommu@lists.linux-foundation.org>; Thu,  9 Jan 2020 20:33:44 +0000 (UTC)
+ by fraxinus.osuosl.org (Postfix) with ESMTP id B9EC286943
+ for <iommu@lists.linux-foundation.org>; Thu,  9 Jan 2020 20:33:46 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
 Received: from fraxinus.osuosl.org ([127.0.0.1])
  by localhost (.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
- with ESMTP id YFtuG6f7DdKc for <iommu@lists.linux-foundation.org>;
- Thu,  9 Jan 2020 20:33:43 +0000 (UTC)
+ with ESMTP id 0DwK3M069vT7 for <iommu@lists.linux-foundation.org>;
+ Thu,  9 Jan 2020 20:33:45 +0000 (UTC)
 X-Greylist: domain auto-whitelisted by SQLgrey-1.7.6
 Received: from mga03.intel.com (mga03.intel.com [134.134.136.65])
- by fraxinus.osuosl.org (Postfix) with ESMTPS id 9AE07868A8
- for <iommu@lists.linux-foundation.org>; Thu,  9 Jan 2020 20:33:43 +0000 (UTC)
+ by fraxinus.osuosl.org (Postfix) with ESMTPS id E1F23868D0
+ for <iommu@lists.linux-foundation.org>; Thu,  9 Jan 2020 20:33:44 +0000 (UTC)
 X-Amp-Result: SKIPPED(no attachment in message)
 X-Amp-File-Uploaded: False
 Received: from orsmga005.jf.intel.com ([10.7.209.41])
  by orsmga103.jf.intel.com with ESMTP/TLS/DHE-RSA-AES256-GCM-SHA384;
- 09 Jan 2020 12:33:43 -0800
+ 09 Jan 2020 12:33:44 -0800
 X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.69,414,1571727600"; d="scan'208";a="396206715"
+X-IronPort-AV: E=Sophos;i="5.69,414,1571727600"; d="scan'208";a="396206723"
 Received: from unknown (HELO nsgsw-rhel7p6.lm.intel.com) ([10.232.116.226])
- by orsmga005.jf.intel.com with ESMTP; 09 Jan 2020 12:33:42 -0800
+ by orsmga005.jf.intel.com with ESMTP; 09 Jan 2020 12:33:44 -0800
 From: Jon Derrick <jonathan.derrick@intel.com>
 To: <iommu@lists.linux-foundation.org>,
 	<linux-pci@vger.kernel.org>
-Subject: [PATCH v2 3/5] PCI: Introduce direct dma alias
-Date: Thu,  9 Jan 2020 07:30:54 -0700
-Message-Id: <1578580256-3483-4-git-send-email-jonathan.derrick@intel.com>
+Subject: [PATCH v2 5/5] x86/pci: Remove X86_DEV_DMA_OPS
+Date: Thu,  9 Jan 2020 07:30:56 -0700
+Message-Id: <1578580256-3483-6-git-send-email-jonathan.derrick@intel.com>
 X-Mailer: git-send-email 1.8.3.1
 In-Reply-To: <1578580256-3483-1-git-send-email-jonathan.derrick@intel.com>
 References: <1578580256-3483-1-git-send-email-jonathan.derrick@intel.com>
@@ -84,101 +84,109 @@ Content-Transfer-Encoding: 7bit
 Errors-To: iommu-bounces@lists.linux-foundation.org
 Sender: "iommu" <iommu-bounces@lists.linux-foundation.org>
 
-The current dma alias implementation requires the aliased device be on
-the same bus as the dma parent. This introduces an arch-specific
-mechanism to point to an arbitrary struct device when doing mapping and
-pci alias search.
+From: Christoph Hellwig <hch@lst.de>
 
-Signed-off-by: Jon Derrick <jonathan.derrick@intel.com>
+There are no users of X86_DEV_DMA_OPS left, so remove the code.
+
+Reviewed-by: Jon Derrick <jonathan.derrick@intel.com>
+Signed-off-by: Christoph Hellwig <hch@lst.de>
 ---
- arch/x86/pci/common.c |  7 +++++++
- drivers/pci/pci.c     | 17 ++++++++++++++++-
- drivers/pci/search.c  |  9 +++++++++
- include/linux/pci.h   |  1 +
- 4 files changed, 33 insertions(+), 1 deletion(-)
+ arch/x86/Kconfig              |  3 ---
+ arch/x86/include/asm/device.h | 10 ----------
+ arch/x86/pci/common.c         | 38 --------------------------------------
+ 3 files changed, 51 deletions(-)
 
+diff --git a/arch/x86/Kconfig b/arch/x86/Kconfig
+index 5e89499..77f9426 100644
+--- a/arch/x86/Kconfig
++++ b/arch/x86/Kconfig
+@@ -2955,9 +2955,6 @@ config HAVE_ATOMIC_IOMAP
+ 	def_bool y
+ 	depends on X86_32
+ 
+-config X86_DEV_DMA_OPS
+-	bool
+-
+ source "drivers/firmware/Kconfig"
+ 
+ source "arch/x86/kvm/Kconfig"
+diff --git a/arch/x86/include/asm/device.h b/arch/x86/include/asm/device.h
+index 5e12c63..7e31f7f 100644
+--- a/arch/x86/include/asm/device.h
++++ b/arch/x86/include/asm/device.h
+@@ -8,16 +8,6 @@ struct dev_archdata {
+ #endif
+ };
+ 
+-#if defined(CONFIG_X86_DEV_DMA_OPS) && defined(CONFIG_PCI_DOMAINS)
+-struct dma_domain {
+-	struct list_head node;
+-	const struct dma_map_ops *dma_ops;
+-	int domain_nr;
+-};
+-void add_dma_domain(struct dma_domain *domain);
+-void del_dma_domain(struct dma_domain *domain);
+-#endif
+-
+ struct pdev_archdata {
+ };
+ 
 diff --git a/arch/x86/pci/common.c b/arch/x86/pci/common.c
-index 1e59df0..565cc17 100644
+index 565cc17..5a9fb00 100644
 --- a/arch/x86/pci/common.c
 +++ b/arch/x86/pci/common.c
-@@ -736,3 +736,10 @@ int pci_ext_cfg_avail(void)
- 	else
- 		return 0;
- }
-+
-+#if IS_ENABLED(CONFIG_VMD)
-+struct device *pci_direct_dma_alias(struct pci_dev *dev)
-+{
-+	return to_pci_sysdata(dev->bus)->vmd_dev;
-+}
-+#endif
-diff --git a/drivers/pci/pci.c b/drivers/pci/pci.c
-index ad746d9..e4269e9 100644
---- a/drivers/pci/pci.c
-+++ b/drivers/pci/pci.c
-@@ -6034,7 +6034,9 @@ bool pci_devs_are_dma_aliases(struct pci_dev *dev1, struct pci_dev *dev2)
- 	return (dev1->dma_alias_mask &&
- 		test_bit(dev2->devfn, dev1->dma_alias_mask)) ||
- 	       (dev2->dma_alias_mask &&
--		test_bit(dev1->devfn, dev2->dma_alias_mask));
-+		test_bit(dev1->devfn, dev2->dma_alias_mask)) ||
-+	       (pci_direct_dma_alias(dev1) == &dev2->dev) ||
-+	       (pci_direct_dma_alias(dev2) == &dev1->dev);
+@@ -625,43 +625,6 @@ unsigned int pcibios_assign_all_busses(void)
+ 	return (pci_probe & PCI_ASSIGN_ALL_BUSSES) ? 1 : 0;
  }
  
- bool pci_device_is_present(struct pci_dev *pdev)
-@@ -6058,6 +6060,19 @@ void pci_ignore_hotplug(struct pci_dev *dev)
- }
- EXPORT_SYMBOL_GPL(pci_ignore_hotplug);
- 
-+/**
-+ * pci_direct_dma_alias - Get dma alias for pci device
-+ * @dev: the PCI device that may have a dma alias
-+ *
-+ * Permits the platform to provide architecture-specific functionality to
-+ * devices needing to alias dma to another device. This is the default
-+ * implementation. Architecture implementations can override this.
-+ */
-+struct device __weak *pci_direct_dma_alias(struct pci_dev *dev)
-+{
-+	return NULL;
-+}
-+
- resource_size_t __weak pcibios_default_alignment(void)
+-#if defined(CONFIG_X86_DEV_DMA_OPS) && defined(CONFIG_PCI_DOMAINS)
+-static LIST_HEAD(dma_domain_list);
+-static DEFINE_SPINLOCK(dma_domain_list_lock);
+-
+-void add_dma_domain(struct dma_domain *domain)
+-{
+-	spin_lock(&dma_domain_list_lock);
+-	list_add(&domain->node, &dma_domain_list);
+-	spin_unlock(&dma_domain_list_lock);
+-}
+-EXPORT_SYMBOL_GPL(add_dma_domain);
+-
+-void del_dma_domain(struct dma_domain *domain)
+-{
+-	spin_lock(&dma_domain_list_lock);
+-	list_del(&domain->node);
+-	spin_unlock(&dma_domain_list_lock);
+-}
+-EXPORT_SYMBOL_GPL(del_dma_domain);
+-
+-static void set_dma_domain_ops(struct pci_dev *pdev)
+-{
+-	struct dma_domain *domain;
+-
+-	spin_lock(&dma_domain_list_lock);
+-	list_for_each_entry(domain, &dma_domain_list, node) {
+-		if (pci_domain_nr(pdev->bus) == domain->domain_nr) {
+-			pdev->dev.dma_ops = domain->dma_ops;
+-			break;
+-		}
+-	}
+-	spin_unlock(&dma_domain_list_lock);
+-}
+-#else
+-static void set_dma_domain_ops(struct pci_dev *pdev) {}
+-#endif
+-
+ static void set_dev_domain_options(struct pci_dev *pdev)
  {
+ 	if (is_vmd(pdev->bus))
+@@ -697,7 +660,6 @@ int pcibios_add_device(struct pci_dev *dev)
+ 		pa_data = data->next;
+ 		memunmap(data);
+ 	}
+-	set_dma_domain_ops(dev);
+ 	set_dev_domain_options(dev);
  	return 0;
-diff --git a/drivers/pci/search.c b/drivers/pci/search.c
-index bade140..6d61209 100644
---- a/drivers/pci/search.c
-+++ b/drivers/pci/search.c
-@@ -32,6 +32,15 @@ int pci_for_each_dma_alias(struct pci_dev *pdev,
- 	struct pci_bus *bus;
- 	int ret;
- 
-+	if (unlikely(pci_direct_dma_alias(pdev))) {
-+		struct device *dev = pci_direct_dma_alias(pdev);
-+
-+		if (dev_is_pci(dev))
-+			pdev = to_pci_dev(dev);
-+		return fn(pdev, PCI_DEVID(pdev->bus->number, pdev->devfn),
-+			  data);
-+	}
-+
- 	ret = fn(pdev, pci_dev_id(pdev), data);
- 	if (ret)
- 		return ret;
-diff --git a/include/linux/pci.h b/include/linux/pci.h
-index c393dff..82494d3 100644
---- a/include/linux/pci.h
-+++ b/include/linux/pci.h
-@@ -1202,6 +1202,7 @@ u32 pcie_bandwidth_available(struct pci_dev *dev, struct pci_dev **limiting_dev,
- int pci_select_bars(struct pci_dev *dev, unsigned long flags);
- bool pci_device_is_present(struct pci_dev *pdev);
- void pci_ignore_hotplug(struct pci_dev *dev);
-+struct device *pci_direct_dma_alias(struct pci_dev *dev);
- 
- int __printf(6, 7) pci_request_irq(struct pci_dev *dev, unsigned int nr,
- 		irq_handler_t handler, irq_handler_t thread_fn, void *dev_id,
+ }
 -- 
 1.8.3.1
 
