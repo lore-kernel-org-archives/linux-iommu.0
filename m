@@ -2,63 +2,72 @@ Return-Path: <SRS0=ishi=27=lists.linux-foundation.org=iommu-bounces@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-9.8 required=3.0 tests=HEADER_FROM_DIFFERENT_DOMAINS,
-	INCLUDES_PATCH,MAILING_LIST_MULTI,SIGNED_OFF_BY,SPF_HELO_NONE,SPF_PASS,
-	USER_AGENT_GIT autolearn=ham autolearn_force=no version=3.4.0
+X-Spam-Status: No, score=-3.8 required=3.0 tests=DKIM_INVALID,DKIM_SIGNED,
+	MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS,USER_AGENT_GIT autolearn=no
+	autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 22A62C282DD
-	for <iommu@archiver.kernel.org>; Fri, 10 Jan 2020 15:26:12 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 8D06DC282DD
+	for <iommu@archiver.kernel.org>; Fri, 10 Jan 2020 15:29:00 +0000 (UTC)
 Received: from fraxinus.osuosl.org (smtp4.osuosl.org [140.211.166.137])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by mail.kernel.org (Postfix) with ESMTPS id EC5972072E
-	for <iommu@archiver.kernel.org>; Fri, 10 Jan 2020 15:26:11 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org EC5972072E
-Authentication-Results: mail.kernel.org; dmarc=none (p=none dis=none) header.from=arm.com
+	by mail.kernel.org (Postfix) with ESMTPS id 5108020838
+	for <iommu@archiver.kernel.org>; Fri, 10 Jan 2020 15:29:00 +0000 (UTC)
+Authentication-Results: mail.kernel.org;
+	dkim=fail reason="signature verification failed" (1024-bit key) header.d=kernel.org header.i=@kernel.org header.b="PLkuLRiH"
+DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 5108020838
+Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=kernel.org
 Authentication-Results: mail.kernel.org; spf=pass smtp.mailfrom=iommu-bounces@lists.linux-foundation.org
 Received: from localhost (localhost [127.0.0.1])
-	by fraxinus.osuosl.org (Postfix) with ESMTP id C346586B87;
-	Fri, 10 Jan 2020 15:26:11 +0000 (UTC)
+	by fraxinus.osuosl.org (Postfix) with ESMTP id 3387186B83;
+	Fri, 10 Jan 2020 15:29:00 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
 Received: from fraxinus.osuosl.org ([127.0.0.1])
 	by localhost (.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
-	with ESMTP id ADS9jSHKteN5; Fri, 10 Jan 2020 15:26:11 +0000 (UTC)
+	with ESMTP id QeWRwcFB6jlH; Fri, 10 Jan 2020 15:28:59 +0000 (UTC)
 Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [140.211.9.56])
-	by fraxinus.osuosl.org (Postfix) with ESMTP id 3782286B20;
-	Fri, 10 Jan 2020 15:26:11 +0000 (UTC)
+	by fraxinus.osuosl.org (Postfix) with ESMTP id AFDCA86B20;
+	Fri, 10 Jan 2020 15:28:59 +0000 (UTC)
 Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
-	by lists.linuxfoundation.org (Postfix) with ESMTP id 195D1C1D7D;
-	Fri, 10 Jan 2020 15:26:11 +0000 (UTC)
-Received: from fraxinus.osuosl.org (smtp4.osuosl.org [140.211.166.137])
- by lists.linuxfoundation.org (Postfix) with ESMTP id 0EA46C0881
- for <iommu@lists.linux-foundation.org>; Fri, 10 Jan 2020 15:26:10 +0000 (UTC)
+	by lists.linuxfoundation.org (Postfix) with ESMTP id 92770C1D7D;
+	Fri, 10 Jan 2020 15:28:59 +0000 (UTC)
+Received: from hemlock.osuosl.org (smtp2.osuosl.org [140.211.166.133])
+ by lists.linuxfoundation.org (Postfix) with ESMTP id 3DC6BC0881
+ for <iommu@lists.linux-foundation.org>; Fri, 10 Jan 2020 15:28:58 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
- by fraxinus.osuosl.org (Postfix) with ESMTP id EFC0186B39
- for <iommu@lists.linux-foundation.org>; Fri, 10 Jan 2020 15:26:09 +0000 (UTC)
+ by hemlock.osuosl.org (Postfix) with ESMTP id 2045D87C91
+ for <iommu@lists.linux-foundation.org>; Fri, 10 Jan 2020 15:28:58 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from fraxinus.osuosl.org ([127.0.0.1])
+Received: from hemlock.osuosl.org ([127.0.0.1])
  by localhost (.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
- with ESMTP id mZGFL4qSHXZI for <iommu@lists.linux-foundation.org>;
- Fri, 10 Jan 2020 15:26:09 +0000 (UTC)
+ with ESMTP id vc2lTGKDPFJh for <iommu@lists.linux-foundation.org>;
+ Fri, 10 Jan 2020 15:28:57 +0000 (UTC)
 X-Greylist: domain auto-whitelisted by SQLgrey-1.7.6
-Received: from foss.arm.com (foss.arm.com [217.140.110.172])
- by fraxinus.osuosl.org (Postfix) with ESMTP id 2197886B20
- for <iommu@lists.linux-foundation.org>; Fri, 10 Jan 2020 15:26:09 +0000 (UTC)
-Received: from usa-sjc-imap-foss1.foss.arm.com (unknown [10.121.207.14])
- by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id 81E8D30E;
- Fri, 10 Jan 2020 07:26:08 -0800 (PST)
-Received: from e121345-lin.cambridge.arm.com (e121345-lin.cambridge.arm.com
- [10.1.196.37])
- by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPA id E99363F6C4;
- Fri, 10 Jan 2020 07:26:07 -0800 (PST)
-From: Robin Murphy <robin.murphy@arm.com>
-To: will@kernel.org
-Subject: [PATCH] iommu/arm-smmu: Improve SMR mask test
-Date: Fri, 10 Jan 2020 15:25:02 +0000
-Message-Id: <2e0f837b38671a322d33a18b7447b95ac2fba796.1578669732.git.robin.murphy@arm.com>
-X-Mailer: git-send-email 2.23.0.dirty
+Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
+ by hemlock.osuosl.org (Postfix) with ESMTPS id 7FA1187C8C
+ for <iommu@lists.linux-foundation.org>; Fri, 10 Jan 2020 15:28:57 +0000 (UTC)
+Received: from localhost.localdomain (236.31.169.217.in-addr.arpa
+ [217.169.31.236])
+ (using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+ (No client certificate requested)
+ by mail.kernel.org (Postfix) with ESMTPSA id 35C6E2072E;
+ Fri, 10 Jan 2020 15:28:56 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+ s=default; t=1578670137;
+ bh=ahdxfdIjALO4E1DfYPrQ3mWPi2V7mWynaKkIQzETaJ0=;
+ h=From:To:Cc:Subject:Date:From;
+ b=PLkuLRiHhENh4kbiHti7nMQR83afwfNZ1SCnF9R8bBSi/5+zaXkGEWh2ZFnR8fWGi
+ 0LVlLE1TFGJ4df+gdQzGuj0Fcf6kpQSBKB0r6Ubph2C2XR6+EGWYecSCV01RR5piEh
+ jAj5CE4jIsyosrFSO+SusBszgYX5LYqbGhdEKSOA=
+From: Will Deacon <will@kernel.org>
+To: iommu@lists.linux-foundation.org
+Subject: [PATCH 0/8] Finish off the split page table prep work
+Date: Fri, 10 Jan 2020 15:28:44 +0000
+Message-Id: <20200110152852.24259-1-will@kernel.org>
+X-Mailer: git-send-email 2.20.1
 MIME-Version: 1.0
-Cc: iommu@lists.linux-foundation.org, linux-arm-kernel@lists.infradead.org
+Cc: Will Deacon <will@kernel.org>, kernel-team@android.com,
+ Robin Murphy <robin.murphy@arm.com>, linux-arm-kernel@lists.infradead.org
 X-BeenThere: iommu@lists.linux-foundation.org
 X-Mailman-Version: 2.1.15
 Precedence: list
@@ -76,63 +85,57 @@ Content-Transfer-Encoding: 7bit
 Errors-To: iommu-bounces@lists.linux-foundation.org
 Sender: "iommu" <iommu-bounces@lists.linux-foundation.org>
 
-Make the SMR mask test more robust against SMR0 being live
-at probe time, which might happen once we start supporting
-firmware reservations for framebuffers and suchlike.
+Hi all,
 
-Signed-off-by: Robin Murphy <robin.murphy@arm.com>
----
- drivers/iommu/arm-smmu.c | 23 ++++++++++++++++++-----
- 1 file changed, 18 insertions(+), 5 deletions(-)
+Last merge window, I merged most of the split page table prep work from Robin
+[1], but there were a few patches left pending some rework. I think Robin was
+hoping to get that done for 5.5, but what with the holidays falling like they
+did and other committments, I've ended up picked up the bits that were left
+over.
 
-diff --git a/drivers/iommu/arm-smmu.c b/drivers/iommu/arm-smmu.c
-index 4f1a350d9529..df6490bc7700 100644
---- a/drivers/iommu/arm-smmu.c
-+++ b/drivers/iommu/arm-smmu.c
-@@ -946,23 +946,36 @@ static void arm_smmu_write_sme(struct arm_smmu_device *smmu, int idx)
- static void arm_smmu_test_smr_masks(struct arm_smmu_device *smmu)
- {
- 	u32 smr;
-+	int i;
- 
- 	if (!smmu->smrs)
- 		return;
--
-+	/*
-+	 * If we've had to accommodate firmware memory regions, we may
-+	 * have live SMRs by now; tread carefully...
-+	 *
-+	 * Somewhat perversely, not having a free SMR for this test implies we
-+	 * can get away without it anyway, as we'll only be able to 'allocate'
-+	 * these SMRs for the ID/mask values we're already trusting to be OK.
-+	 */
-+	for (i = 0; i < smmu->num_mapping_groups; i++)
-+		if (!smmu->smrs[i].valid)
-+			goto smr_ok;
-+	return;
-+smr_ok:
- 	/*
- 	 * SMR.ID bits may not be preserved if the corresponding MASK
- 	 * bits are set, so check each one separately. We can reject
- 	 * masters later if they try to claim IDs outside these masks.
- 	 */
- 	smr = FIELD_PREP(SMR_ID, smmu->streamid_mask);
--	arm_smmu_gr0_write(smmu, ARM_SMMU_GR0_SMR(0), smr);
--	smr = arm_smmu_gr0_read(smmu, ARM_SMMU_GR0_SMR(0));
-+	arm_smmu_gr0_write(smmu, ARM_SMMU_GR0_SMR(i), smr);
-+	smr = arm_smmu_gr0_read(smmu, ARM_SMMU_GR0_SMR(i));
- 	smmu->streamid_mask = FIELD_GET(SMR_ID, smr);
- 
- 	smr = FIELD_PREP(SMR_MASK, smmu->streamid_mask);
--	arm_smmu_gr0_write(smmu, ARM_SMMU_GR0_SMR(0), smr);
--	smr = arm_smmu_gr0_read(smmu, ARM_SMMU_GR0_SMR(0));
-+	arm_smmu_gr0_write(smmu, ARM_SMMU_GR0_SMR(i), smr);
-+	smr = arm_smmu_gr0_read(smmu, ARM_SMMU_GR0_SMR(i));
- 	smmu->smr_mask_mask = FIELD_GET(SMR_MASK, smr);
- }
- 
+I'm pretty limited with regards to SMMU hardware on which I can test this lot,
+so I might have broken something.
+
+Applies against for-joerg/arm-smmu/updates.
+
+Will
+
+[1] https://lore.kernel.org/lkml/20191104202012.GN24909@willie-the-truck
+
+Cc: Robin Murphy <robin.murphy@arm.com>
+Cc: Jordan Crouse <jcrouse@codeaurora.org>
+
+--->8
+
+Robin Murphy (3):
+  iommu/io-pgtable-arm: Rationalise TTBRn handling
+  iommu/io-pgtable-arm: Rationalise TCR handling
+  iommu/io-pgtable-arm: Prepare for TTBR1 usage
+
+Will Deacon (5):
+  iommu/io-pgtable-arm: Support non-coherent stage-2 page tables
+  iommu/io-pgtable-arm: Ensure non-cacheable mappings are Outer
+    Shareable
+  iommu/io-pgtable-arm: Ensure ARM_64_LPAE_S2_TCR_RES1 is unsigned
+  iommu/arm-smmu: Rename public #defines under ARM_SMMU_ namespace
+  iommu/io-pgtable-arm: Rationalise VTCR handling
+
+ drivers/iommu/arm-smmu-impl.c      |   2 +-
+ drivers/iommu/arm-smmu-v3.c        |  60 ++++----
+ drivers/iommu/arm-smmu.c           | 171 ++++++++++++----------
+ drivers/iommu/arm-smmu.h           | 228 ++++++++++++++++++-----------
+ drivers/iommu/io-pgtable-arm-v7s.c |  23 ++-
+ drivers/iommu/io-pgtable-arm.c     | 155 +++++++++-----------
+ drivers/iommu/io-pgtable.c         |   2 +-
+ drivers/iommu/ipmmu-vmsa.c         |   2 +-
+ drivers/iommu/msm_iommu.c          |   4 +-
+ drivers/iommu/mtk_iommu.c          |   4 +-
+ drivers/iommu/qcom_iommu.c         |  25 ++--
+ include/linux/io-pgtable.h         |  27 +++-
+ 12 files changed, 381 insertions(+), 322 deletions(-)
+
 -- 
-2.23.0.dirty
+2.25.0.rc1.283.g88dfdc4193-goog
 
 _______________________________________________
 iommu mailing list
