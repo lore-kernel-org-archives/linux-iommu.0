@@ -2,62 +2,63 @@ Return-Path: <SRS0=ishi=27=lists.linux-foundation.org=iommu-bounces@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-2.2 required=3.0 tests=HEADER_FROM_DIFFERENT_DOMAINS,
-	MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS,USER_AGENT_SANE_1 autolearn=no
-	autolearn_force=no version=3.4.0
+X-Spam-Status: No, score=-9.8 required=3.0 tests=HEADER_FROM_DIFFERENT_DOMAINS,
+	INCLUDES_PATCH,MAILING_LIST_MULTI,SIGNED_OFF_BY,SPF_HELO_NONE,SPF_PASS,
+	USER_AGENT_GIT autolearn=ham autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id E095AC282DD
-	for <iommu@archiver.kernel.org>; Fri, 10 Jan 2020 16:28:43 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 184B3C282DD
+	for <iommu@archiver.kernel.org>; Fri, 10 Jan 2020 17:20:01 +0000 (UTC)
 Received: from hemlock.osuosl.org (smtp2.osuosl.org [140.211.166.133])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by mail.kernel.org (Postfix) with ESMTPS id 9833A206ED
-	for <iommu@archiver.kernel.org>; Fri, 10 Jan 2020 16:28:43 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 9833A206ED
-Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=8bytes.org
+	by mail.kernel.org (Postfix) with ESMTPS id C4ADD20838
+	for <iommu@archiver.kernel.org>; Fri, 10 Jan 2020 17:20:00 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org C4ADD20838
+Authentication-Results: mail.kernel.org; dmarc=none (p=none dis=none) header.from=suse.de
 Authentication-Results: mail.kernel.org; spf=pass smtp.mailfrom=iommu-bounces@lists.linux-foundation.org
 Received: from localhost (localhost [127.0.0.1])
-	by hemlock.osuosl.org (Postfix) with ESMTP id 7CA5187F71;
-	Fri, 10 Jan 2020 16:28:43 +0000 (UTC)
+	by hemlock.osuosl.org (Postfix) with ESMTP id 9E4B5884CF;
+	Fri, 10 Jan 2020 17:20:00 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
 Received: from hemlock.osuosl.org ([127.0.0.1])
 	by localhost (.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
-	with ESMTP id 8ghbadxio69y; Fri, 10 Jan 2020 16:28:42 +0000 (UTC)
+	with ESMTP id U5juhyb8lulI; Fri, 10 Jan 2020 17:19:59 +0000 (UTC)
 Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [140.211.9.56])
-	by hemlock.osuosl.org (Postfix) with ESMTP id B1DA287ED2;
-	Fri, 10 Jan 2020 16:28:42 +0000 (UTC)
+	by hemlock.osuosl.org (Postfix) with ESMTP id 198AC884CD;
+	Fri, 10 Jan 2020 17:19:59 +0000 (UTC)
 Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
-	by lists.linuxfoundation.org (Postfix) with ESMTP id 9C3E6C1796;
-	Fri, 10 Jan 2020 16:28:42 +0000 (UTC)
-Received: from whitealder.osuosl.org (smtp1.osuosl.org [140.211.166.138])
- by lists.linuxfoundation.org (Postfix) with ESMTP id C7DA1C0881
- for <iommu@lists.linux-foundation.org>; Fri, 10 Jan 2020 16:28:40 +0000 (UTC)
+	by lists.linuxfoundation.org (Postfix) with ESMTP id 017F3C1D7D;
+	Fri, 10 Jan 2020 17:19:59 +0000 (UTC)
+Received: from silver.osuosl.org (smtp3.osuosl.org [140.211.166.136])
+ by lists.linuxfoundation.org (Postfix) with ESMTP id D0C8CC0881
+ for <iommu@lists.linux-foundation.org>; Fri, 10 Jan 2020 17:19:57 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
- by whitealder.osuosl.org (Postfix) with ESMTP id BEFEA869C7
- for <iommu@lists.linux-foundation.org>; Fri, 10 Jan 2020 16:28:40 +0000 (UTC)
+ by silver.osuosl.org (Postfix) with ESMTP id CAB3D203A0
+ for <iommu@lists.linux-foundation.org>; Fri, 10 Jan 2020 17:19:57 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from whitealder.osuosl.org ([127.0.0.1])
+Received: from silver.osuosl.org ([127.0.0.1])
  by localhost (.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
- with ESMTP id 87eM0T7oIvgx for <iommu@lists.linux-foundation.org>;
- Fri, 10 Jan 2020 16:28:39 +0000 (UTC)
-X-Greylist: from auto-whitelisted by SQLgrey-1.7.6
-Received: from theia.8bytes.org (8bytes.org [81.169.241.247])
- by whitealder.osuosl.org (Postfix) with ESMTPS id 32C59869B4
- for <iommu@lists.linux-foundation.org>; Fri, 10 Jan 2020 16:28:39 +0000 (UTC)
-Received: by theia.8bytes.org (Postfix, from userid 1000)
- id 71D0C546; Fri, 10 Jan 2020 17:28:34 +0100 (CET)
-Date: Fri, 10 Jan 2020 17:28:32 +0100
-From: Joerg Roedel <joro@8bytes.org>
-To: Lu Baolu <baolu.lu@linux.intel.com>
-Subject: Re: Regression iommu/vt-d bounce buffer
-Message-ID: <20200110162831.GC28359@8bytes.org>
-References: <fe41dfaa-e899-0d6c-69e4-0379be376c09@linux.com>
+ with ESMTP id 1+AadWQuJtMb for <iommu@lists.linux-foundation.org>;
+ Fri, 10 Jan 2020 17:19:56 +0000 (UTC)
+X-Greylist: domain auto-whitelisted by SQLgrey-1.7.6
+Received: from mx2.suse.de (mx2.suse.de [195.135.220.15])
+ by silver.osuosl.org (Postfix) with ESMTPS id 8B75E22264
+ for <iommu@lists.linux-foundation.org>; Fri, 10 Jan 2020 17:19:56 +0000 (UTC)
+X-Virus-Scanned: by amavisd-new at test-mx.suse.de
+Received: from relay2.suse.de (unknown [195.135.220.254])
+ by mx2.suse.de (Postfix) with ESMTP id D9D29B2B7;
+ Fri, 10 Jan 2020 17:19:53 +0000 (UTC)
+From: Nicolas Saenz Julienne <nsaenzjulienne@suse.de>
+To: Christoph Hellwig <hch@lst.de>,
+ Marek Szyprowski <m.szyprowski@samsung.com>,
+ Robin Murphy <robin.murphy@arm.com>
+Subject: [PATCH] dma-contiguous: CMA: give precedence to cmdline
+Date: Fri, 10 Jan 2020 18:19:33 +0100
+Message-Id: <20200110171933.15014-1-nsaenzjulienne@suse.de>
+X-Mailer: git-send-email 2.24.1
 MIME-Version: 1.0
-Content-Disposition: inline
-In-Reply-To: <fe41dfaa-e899-0d6c-69e4-0379be376c09@linux.com>
-User-Agent: Mutt/1.10.1 (2018-07-13)
-Cc: Frederik Schwan <frederik.schwan@linux.com>,
- David Woodhouse <dwmw2@infradead.org>, iommu@lists.linux-foundation.org
+Cc: iommu@lists.linux-foundation.org, phil@raspberrypi.org,
+ linux-kernel@vger.kernel.org, Nicolas Saenz Julienne <nsaenzjulienne@suse.de>
 X-BeenThere: iommu@lists.linux-foundation.org
 X-Mailman-Version: 2.1.15
 Precedence: list
@@ -75,48 +76,53 @@ Content-Transfer-Encoding: 7bit
 Errors-To: iommu-bounces@lists.linux-foundation.org
 Sender: "iommu" <iommu-bounces@lists.linux-foundation.org>
 
-Hi Baolu,
+Although the device tree might contain a reserved-memory DT node
+dedicated as the default CMA pool, users might want to change CMA's
+parameters using the kernel command line for debugging purposes and
+whatnot. Honor this by bypassing the reserved memory CMA setup, which
+will ultimately end up freeing the memblock and allow the command line
+CMA configuration routine to run.
 
-any ideas here?
+Signed-off-by: Nicolas Saenz Julienne <nsaenzjulienne@suse.de>
+---
 
-On Mon, Jan 06, 2020 at 04:43:05PM +0100, Frederik Schwan wrote:
-> Hello people,
-> since the introduction of the bounce buffer, a regression with TB3 devices has been introduced.
-> USB devices attached to TB3 refuse to work since. Removing the commits that introduced the bounce buffer, fixes the issue.
-> 
-> Commits:
-> 3b53034c268d550d9e8522e613a14ab53b8840d8
-> c5a5dc4cbbf4540c1891cdb2b70cf469405ea61f
-> cfb94a372f2d4ee226247447c863f8709863d170
-> e5e04d051979dbd636a99099b7a595093c50a4bc
-> 
-> 
-> An excerpt of the trace:
-> > [  +0,000005] WARNING: CPU: 10 PID: 0 at drivers/iommu/intel-iommu.c:3916 bounce_unmap_single+0x103/0x110
-> > [...]
-> > [  +0,000001] Call Trace:
-> > [  +0,000002]  <IRQ>
-> > [  +0,000003]  usb_hcd_unmap_urb_setup_for_dma+0x9f/0xe0
-> > [  +0,000001]  usb_hcd_unmap_urb_for_dma+0x1c/0x170
-> > [  +0,000002]  __usb_hcd_giveback_urb+0x36/0x120
-> > [  +0,000008]  xhci_giveback_urb_in_irq.isra.0+0x72/0x100 [xhci_hcd]
-> > [  +0,000007]  xhci_td_cleanup+0x101/0x140 [xhci_hcd]
-> > [  +0,000007]  xhci_irq+0xbf0/0x1db0 [xhci_hcd]
-> > [  +0,000005]  __handle_irq_event_percpu+0x44/0x1b0
-> > [  +0,000002]  handle_irq_event_percpu+0x34/0x80
-> > [  +0,000002]  handle_irq_event+0x37/0x54
-> > [  +0,000002]  handle_edge_irq+0xae/0x1f0
-> > [  +0,000002]  do_IRQ+0x84/0x140
-> > [  +0,000003]  common_interrupt+0xf/0xf
-> > [  +0,000001]  </IRQ>
-> 
-> Dmesg log and further information have been posted here: https://bugzilla.kernel.org/show_bug.cgi?id=205893
-> 
-> Cheers,
-> Frederik
-> 
+NOTE: Tested this on arm and arm64 with the Raspberry Pi 4.
 
+ kernel/dma/contiguous.c | 9 ++++++++-
+ 1 file changed, 8 insertions(+), 1 deletion(-)
 
+diff --git a/kernel/dma/contiguous.c b/kernel/dma/contiguous.c
+index daa4e6eefdde..8bc6f2d670f9 100644
+--- a/kernel/dma/contiguous.c
++++ b/kernel/dma/contiguous.c
+@@ -302,9 +302,16 @@ static int __init rmem_cma_setup(struct reserved_mem *rmem)
+ 	phys_addr_t align = PAGE_SIZE << max(MAX_ORDER - 1, pageblock_order);
+ 	phys_addr_t mask = align - 1;
+ 	unsigned long node = rmem->fdt_node;
++	bool default_cma = of_get_flat_dt_prop(node, "linux,cma-default", NULL);
+ 	struct cma *cma;
+ 	int err;
+ 
++	if (size_cmdline != -1 && default_cma) {
++		pr_info("Reserved memory: bypass %s node, using cmdline CMA params instead\n",
++			rmem->name);
++		return -EBUSY;
++	}
++
+ 	if (!of_get_flat_dt_prop(node, "reusable", NULL) ||
+ 	    of_get_flat_dt_prop(node, "no-map", NULL))
+ 		return -EINVAL;
+@@ -322,7 +329,7 @@ static int __init rmem_cma_setup(struct reserved_mem *rmem)
+ 	/* Architecture specific contiguous memory fixup. */
+ 	dma_contiguous_early_fixup(rmem->base, rmem->size);
+ 
+-	if (of_get_flat_dt_prop(node, "linux,cma-default", NULL))
++	if (default_cma)
+ 		dma_contiguous_set_default(cma);
+ 
+ 	rmem->ops = &rmem_cma_ops;
+-- 
+2.24.1
 
 _______________________________________________
 iommu mailing list
