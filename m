@@ -2,94 +2,79 @@ Return-Path: <SRS0=+KdK=3D=lists.linux-foundation.org=iommu-bounces@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-9.6 required=3.0 tests=DKIM_INVALID,DKIM_SIGNED,
-	HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_PATCH,MAILING_LIST_MULTI,SIGNED_OFF_BY,
-	SPF_HELO_NONE,SPF_PASS,USER_AGENT_GIT autolearn=ham autolearn_force=no
-	version=3.4.0
+X-Spam-Status: No, score=-8.3 required=3.0 tests=DKIM_INVALID,DKIM_SIGNED,
+	INCLUDES_PATCH,MAILING_LIST_MULTI,SIGNED_OFF_BY,SPF_HELO_NONE,SPF_PASS,
+	USER_AGENT_SANE_1 autolearn=unavailable autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 4612BC33CB1
-	for <iommu@archiver.kernel.org>; Tue, 14 Jan 2020 15:17:42 +0000 (UTC)
-Received: from hemlock.osuosl.org (smtp2.osuosl.org [140.211.166.133])
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 80BC9C33CB1
+	for <iommu@archiver.kernel.org>; Tue, 14 Jan 2020 15:25:57 +0000 (UTC)
+Received: from silver.osuosl.org (smtp3.osuosl.org [140.211.166.136])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by mail.kernel.org (Postfix) with ESMTPS id 0897D222C4
-	for <iommu@archiver.kernel.org>; Tue, 14 Jan 2020 15:17:41 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTPS id 48E5D2072B
+	for <iommu@archiver.kernel.org>; Tue, 14 Jan 2020 15:25:57 +0000 (UTC)
 Authentication-Results: mail.kernel.org;
-	dkim=fail reason="signature verification failed" (1024-bit key) header.d=linuxfoundation.org header.i=@linuxfoundation.org header.b="UXrUv4mD"
-DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 0897D222C4
-Authentication-Results: mail.kernel.org; dmarc=none (p=none dis=none) header.from=linuxfoundation.org
+	dkim=fail reason="signature verification failed" (1024-bit key) header.d=kernel.org header.i=@kernel.org header.b="RkN7x9BH"
+DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 48E5D2072B
+Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=kernel.org
 Authentication-Results: mail.kernel.org; spf=pass smtp.mailfrom=iommu-bounces@lists.linux-foundation.org
 Received: from localhost (localhost [127.0.0.1])
-	by hemlock.osuosl.org (Postfix) with ESMTP id D358986C03;
-	Tue, 14 Jan 2020 15:17:41 +0000 (UTC)
+	by silver.osuosl.org (Postfix) with ESMTP id 89DFE1FFFF;
+	Tue, 14 Jan 2020 15:25:56 +0000 (UTC)
+X-Virus-Scanned: amavisd-new at osuosl.org
+Received: from silver.osuosl.org ([127.0.0.1])
+	by localhost (.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
+	with ESMTP id fHJVtDluLCxA; Tue, 14 Jan 2020 15:25:52 +0000 (UTC)
+Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [140.211.9.56])
+	by silver.osuosl.org (Postfix) with ESMTP id 8C68E20012;
+	Tue, 14 Jan 2020 15:25:52 +0000 (UTC)
+Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
+	by lists.linuxfoundation.org (Postfix) with ESMTP id 71487C18DD;
+	Tue, 14 Jan 2020 15:25:52 +0000 (UTC)
+Received: from hemlock.osuosl.org (smtp2.osuosl.org [140.211.166.133])
+ by lists.linuxfoundation.org (Postfix) with ESMTP id 67FD0C077D
+ for <iommu@lists.linux-foundation.org>; Tue, 14 Jan 2020 15:25:50 +0000 (UTC)
+Received: from localhost (localhost [127.0.0.1])
+ by hemlock.osuosl.org (Postfix) with ESMTP id 4FBB3820C9
+ for <iommu@lists.linux-foundation.org>; Tue, 14 Jan 2020 15:25:50 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
 Received: from hemlock.osuosl.org ([127.0.0.1])
-	by localhost (.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
-	with ESMTP id C8ooIgrrjAg8; Tue, 14 Jan 2020 15:17:36 +0000 (UTC)
-Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [140.211.9.56])
-	by hemlock.osuosl.org (Postfix) with ESMTP id 40FBB8545D;
-	Tue, 14 Jan 2020 15:16:46 +0000 (UTC)
-Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
-	by lists.linuxfoundation.org (Postfix) with ESMTP id 28E77C18DD;
-	Tue, 14 Jan 2020 15:16:46 +0000 (UTC)
-Received: from whitealder.osuosl.org (smtp1.osuosl.org [140.211.166.138])
- by lists.linuxfoundation.org (Postfix) with ESMTP id 1C2DEC077D
- for <iommu@lists.linux-foundation.org>; Tue, 14 Jan 2020 15:12:29 +0000 (UTC)
-Received: from localhost (localhost [127.0.0.1])
- by whitealder.osuosl.org (Postfix) with ESMTP id 0938B86074
- for <iommu@lists.linux-foundation.org>; Tue, 14 Jan 2020 15:12:29 +0000 (UTC)
-X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from whitealder.osuosl.org ([127.0.0.1])
  by localhost (.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
- with ESMTP id uKNd82w+wJTz for <iommu@lists.linux-foundation.org>;
- Tue, 14 Jan 2020 15:12:23 +0000 (UTC)
+ with ESMTP id 6NObQBlQFw8W for <iommu@lists.linux-foundation.org>;
+ Tue, 14 Jan 2020 15:25:45 +0000 (UTC)
 X-Greylist: domain auto-whitelisted by SQLgrey-1.7.6
-Received: from mail-io1-f65.google.com (mail-io1-f65.google.com
- [209.85.166.65])
- by whitealder.osuosl.org (Postfix) with ESMTPS id CD649839C1
- for <iommu@lists.linux-foundation.org>; Tue, 14 Jan 2020 15:12:23 +0000 (UTC)
-Received: by mail-io1-f65.google.com with SMTP id i7so5757853ioo.5
- for <iommu@lists.linux-foundation.org>; Tue, 14 Jan 2020 07:12:23 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
- d=linuxfoundation.org; s=google;
- h=from:to:cc:subject:date:message-id:mime-version
- :content-transfer-encoding;
- bh=nkGZG7SrCg/dkC5ag7U6FC/+BJoAtyAPaz4N+sK3NTU=;
- b=UXrUv4mDNhE+LH+9At0LmtyxUu2Z40+9NS0Ktltdfw4q6iyq6yksNKateEPraVHvkM
- b9GWB7C4mBdDiOES6HOfWXBe/0MMUg5+9nNgoB52WFEDKHAt8UkdzxeI+IadsQBCsBd5
- EArO0SwQWXOGFiXKu7oun4s5rm2kd2HdlRlto=
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
- d=1e100.net; s=20161025;
- h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
- :content-transfer-encoding;
- bh=nkGZG7SrCg/dkC5ag7U6FC/+BJoAtyAPaz4N+sK3NTU=;
- b=R/bIIC2NUnM6uu7fw67I5m2qFLN1eJwxBlvXTgVQH3F+B0UNSkkfN256Vuh4L54iUV
- MlHcMnJ4wHUUVhPKvTJnGp0GuLy6/NLDmG/9CbjYG/cbn7GYO1V6qs0NrQD+0sMYe5/q
- +AlJTnZ38n4Kgy3F9gqivB4XyODEl9xd8PvSgTxudTHC502QdVdnFfYeqscYe2yp7K6B
- c+GQcsaIYL4rG4AuqNjpecc5agDr9+VeB/9l6jwzFZ5TLdfHIGYv+W0nPQB/Vh6cgoU4
- /AWht0kkvGbMsHIfo34SbFSsVHwogipbkkIQgi8qs89wxWnrC6coc9TEQjy2rBi6nHCg
- XZ1A==
-X-Gm-Message-State: APjAAAVodhu91JtJoRcgS/nQZnHpod+G1IvkgP663zTsm7y33O26NHRj
- XSiwTY1g6mDa9zdBWkAK4Vho0B7r
-X-Google-Smtp-Source: APXvYqx7NRi22leRc5ddyOl/X7SLLbpIm7rIxKyIP+F/4ZOOcaI37n9oV2Ou7EI/V2rDZItw6s/SwQ==
-X-Received: by 2002:a05:6602:235b:: with SMTP id
- r27mr17579379iot.51.1579014743030; 
- Tue, 14 Jan 2020 07:12:23 -0800 (PST)
-Received: from shuah-t480s.internal (c-24-9-64-241.hsd1.co.comcast.net.
- [24.9.64.241])
- by smtp.gmail.com with ESMTPSA id a9sm4958922ilk.14.2020.01.14.07.12.22
- (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
- Tue, 14 Jan 2020 07:12:22 -0800 (PST)
-From: Shuah Khan <skhan@linuxfoundation.org>
-To: joro@8bytes.org
-Subject: [PATCH] iommu: amd: Fix IOMMU perf counter clobbering during init
-Date: Tue, 14 Jan 2020 08:12:20 -0700
-Message-Id: <20200114151220.29578-1-skhan@linuxfoundation.org>
-X-Mailer: git-send-email 2.20.1
+Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
+ by hemlock.osuosl.org (Postfix) with ESMTPS id D78CB815B9
+ for <iommu@lists.linux-foundation.org>; Tue, 14 Jan 2020 15:25:45 +0000 (UTC)
+Received: from willie-the-truck (236.31.169.217.in-addr.arpa [217.169.31.236])
+ (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256
+ bits)) (No client certificate requested)
+ by mail.kernel.org (Postfix) with ESMTPSA id 945E02072B;
+ Tue, 14 Jan 2020 15:25:42 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+ s=default; t=1579015545;
+ bh=lCzT2r10t8tKjNMq10HvvXZufirJmV3nQEiebEYP3gc=;
+ h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+ b=RkN7x9BHeMRrLPT+H/Vs2eAvyxwdMCtxWZmirmotOXrXKM50Xkbz2VUrqG8FcVImK
+ P8szE3NrMlFvQuC5m4VfQX6pJmIKvCFzay0rFPkLwzHVZLgYMzftKk7hUjTc4jYYru
+ GRgHe2lPXAh9kwyaBFQssQ72gTeD94bIFnjasRYo=
+Date: Tue, 14 Jan 2020 15:25:39 +0000
+From: Will Deacon <will@kernel.org>
+To: Jean-Philippe Brucker <jean-philippe@linaro.org>, robin.murphy@arm.com
+Subject: Re: [PATCH v4 11/13] iommu/arm-smmu-v3: Improve add_device() error
+ handling
+Message-ID: <20200114152538.GB2579@willie-the-truck>
+References: <20191219163033.2608177-1-jean-philippe@linaro.org>
+ <20191219163033.2608177-12-jean-philippe@linaro.org>
 MIME-Version: 1.0
-X-Mailman-Approved-At: Tue, 14 Jan 2020 15:16:45 +0000
-Cc: iommu@lists.linux-foundation.org, linux-kernel@vger.kernel.org,
- Shuah Khan <skhan@linuxfoundation.org>
+Content-Disposition: inline
+In-Reply-To: <20191219163033.2608177-12-jean-philippe@linaro.org>
+User-Agent: Mutt/1.10.1 (2018-07-13)
+Cc: mark.rutland@arm.com, devicetree@vger.kernel.org, linux-pci@vger.kernel.org,
+ sudeep.holla@arm.com, rjw@rjwysocki.net, linux-acpi@vger.kernel.org,
+ iommu@lists.linux-foundation.org, robh+dt@kernel.org, guohanjun@huawei.com,
+ bhelgaas@google.com, zhangfei.gao@linaro.org, robin.murphy@arm.com,
+ linux-arm-kernel@lists.infradead.org, lenb@kernel.org
 X-BeenThere: iommu@lists.linux-foundation.org
 X-Mailman-Version: 2.1.15
 Precedence: list
@@ -107,67 +92,99 @@ Content-Transfer-Encoding: 7bit
 Errors-To: iommu-bounces@lists.linux-foundation.org
 Sender: "iommu" <iommu-bounces@lists.linux-foundation.org>
 
-init_iommu_perf_ctr() clobbers the register when it checks write access
-to IOMMU perf counters and fails to restore when they are writable.
+On Thu, Dec 19, 2019 at 05:30:31PM +0100, Jean-Philippe Brucker wrote:
+> Let add_device() clean up after itself. The iommu_bus_init() function
+> does call remove_device() on error, but other sites (e.g. of_iommu) do
+> not.
+> 
+> Don't free level-2 stream tables because we'd have to track if we
+> allocated each of them or if they are used by other endpoints. It's not
+> worth the hassle since they are managed resources.
+> 
+> Reviewed-by: Eric Auger <eric.auger@redhat.com>
+> Reviewed-by: Jonathan Cameron <Jonathan.Cameron@huawei.com>
+> Signed-off-by: Jean-Philippe Brucker <jean-philippe@linaro.org>
+> ---
+>  drivers/iommu/arm-smmu-v3.c | 28 +++++++++++++++++++++-------
+>  1 file changed, 21 insertions(+), 7 deletions(-)
 
-Add save and restore to fix it.
+I think this is alright, with one caveat relating to:
 
-Signed-off-by: Shuah Khan <skhan@linuxfoundation.org>
----
- drivers/iommu/amd_iommu_init.c | 22 ++++++++++++++++------
- 1 file changed, 16 insertions(+), 6 deletions(-)
 
-diff --git a/drivers/iommu/amd_iommu_init.c b/drivers/iommu/amd_iommu_init.c
-index 568c52317757..c0ad4f293522 100644
---- a/drivers/iommu/amd_iommu_init.c
-+++ b/drivers/iommu/amd_iommu_init.c
-@@ -1655,27 +1655,37 @@ static int iommu_pc_get_set_reg(struct amd_iommu *iommu, u8 bank, u8 cntr,
- static void init_iommu_perf_ctr(struct amd_iommu *iommu)
- {
- 	struct pci_dev *pdev = iommu->dev;
--	u64 val = 0xabcd, val2 = 0;
-+	u64 val = 0xabcd, val2 = 0, save_reg = 0;
+	/*
+	 * We _can_ actually withstand dodgy bus code re-calling add_device()
+	 * without an intervening remove_device()/of_xlate() sequence, but
+	 * we're not going to do so quietly...
+	 */
+	if (WARN_ON_ONCE(fwspec->iommu_priv)) {
+		master = fwspec->iommu_priv;
+		smmu = master->smmu;
+	} ...
+
+
+which may be on shakey ground if the subsequent add_device() call can fail
+and free stuff that the first one allocated. At least, I don't know what
+we're trying to support with this, so it's hard to tell whether or not it
+still works as intended after your change.
+
+How is this supposed to work? I don't recall ever seeing that WARN fire,
+so can we just remove this and bail instead? Robin?
+
+Something like below before your changes...
+
+Will
+
+--->8
+
+diff --git a/drivers/iommu/arm-smmu-v3.c b/drivers/iommu/arm-smmu-v3.c
+index effe72eb89e7..6ae3df2f3495 100644
+--- a/drivers/iommu/arm-smmu-v3.c
++++ b/drivers/iommu/arm-smmu-v3.c
+@@ -2534,28 +2534,23 @@ static int arm_smmu_add_device(struct device *dev)
  
- 	if (!iommu_feature(iommu, FEATURE_PC))
- 		return;
+ 	if (!fwspec || fwspec->ops != &arm_smmu_ops)
+ 		return -ENODEV;
+-	/*
+-	 * We _can_ actually withstand dodgy bus code re-calling add_device()
+-	 * without an intervening remove_device()/of_xlate() sequence, but
+-	 * we're not going to do so quietly...
+-	 */
+-	if (WARN_ON_ONCE(fwspec->iommu_priv)) {
+-		master = fwspec->iommu_priv;
+-		smmu = master->smmu;
+-	} else {
+-		smmu = arm_smmu_get_by_fwnode(fwspec->iommu_fwnode);
+-		if (!smmu)
+-			return -ENODEV;
+-		master = kzalloc(sizeof(*master), GFP_KERNEL);
+-		if (!master)
+-			return -ENOMEM;
  
- 	amd_iommu_pc_present = true;
- 
-+	/* save the value to restore, if writable */
-+	if (iommu_pc_get_set_reg(iommu, 0, 0, 0, &save_reg, false))
-+		goto pc_false;
-+
- 	/* Check if the performance counters can be written to */
- 	if ((iommu_pc_get_set_reg(iommu, 0, 0, 0, &val, true)) ||
- 	    (iommu_pc_get_set_reg(iommu, 0, 0, 0, &val2, false)) ||
--	    (val != val2)) {
--		pci_err(pdev, "Unable to write to IOMMU perf counter.\n");
--		amd_iommu_pc_present = false;
--		return;
+-		master->dev = dev;
+-		master->smmu = smmu;
+-		master->sids = fwspec->ids;
+-		master->num_sids = fwspec->num_ids;
+-		fwspec->iommu_priv = master;
 -	}
-+	    (val != val2))
-+		goto pc_false;
++	if (WARN_ON_ONCE(fwspec->iommu_priv))
++		return -EBUSY;
 +
-+	/* restore */
-+	if (iommu_pc_get_set_reg(iommu, 0, 0, 0, &save_reg, true))
-+		goto pc_false;
- 
- 	pci_info(pdev, "IOMMU performance counters supported\n");
- 
- 	val = readl(iommu->mmio_base + MMIO_CNTR_CONF_OFFSET);
- 	iommu->max_banks = (u8) ((val >> 12) & 0x3f);
- 	iommu->max_counters = (u8) ((val >> 7) & 0xf);
++	smmu = arm_smmu_get_by_fwnode(fwspec->iommu_fwnode);
++	if (!smmu)
++		return -ENODEV;
 +
-+pc_false:
-+	pci_err(pdev, "Unable to read/write to IOMMU perf counter.\n");
-+	amd_iommu_pc_present = false;
-+	return;
- }
++	master = kzalloc(sizeof(*master), GFP_KERNEL);
++	if (!master)
++		return -ENOMEM;
++
++	master->dev = dev;
++	master->smmu = smmu;
++	master->sids = fwspec->ids;
++	master->num_sids = fwspec->num_ids;
++	fwspec->iommu_priv = master;
  
- static ssize_t amd_iommu_show_cap(struct device *dev,
--- 
-2.20.1
-
+ 	/* Check the SIDs are in range of the SMMU and our stream table */
+ 	for (i = 0; i < master->num_sids; i++) {
 _______________________________________________
 iommu mailing list
 iommu@lists.linux-foundation.org
