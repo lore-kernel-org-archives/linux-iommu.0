@@ -6,59 +6,58 @@ X-Spam-Status: No, score=-9.8 required=3.0 tests=HEADER_FROM_DIFFERENT_DOMAINS,
 	INCLUDES_PATCH,MAILING_LIST_MULTI,SIGNED_OFF_BY,SPF_HELO_NONE,SPF_PASS,
 	USER_AGENT_GIT autolearn=ham autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id AA6D0C33C9E
-	for <iommu@archiver.kernel.org>; Wed, 15 Jan 2020 03:05:32 +0000 (UTC)
-Received: from whitealder.osuosl.org (smtp1.osuosl.org [140.211.166.138])
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 567A2C33C9E
+	for <iommu@archiver.kernel.org>; Wed, 15 Jan 2020 03:05:34 +0000 (UTC)
+Received: from hemlock.osuosl.org (smtp2.osuosl.org [140.211.166.133])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by mail.kernel.org (Postfix) with ESMTPS id 8BA4224679
-	for <iommu@archiver.kernel.org>; Wed, 15 Jan 2020 03:05:32 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 8BA4224679
+	by mail.kernel.org (Postfix) with ESMTPS id 2FEA224673
+	for <iommu@archiver.kernel.org>; Wed, 15 Jan 2020 03:05:34 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 2FEA224673
 Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=linux.intel.com
 Authentication-Results: mail.kernel.org; spf=pass smtp.mailfrom=iommu-bounces@lists.linux-foundation.org
 Received: from localhost (localhost [127.0.0.1])
-	by whitealder.osuosl.org (Postfix) with ESMTP id 6CDA28627B;
-	Wed, 15 Jan 2020 03:05:32 +0000 (UTC)
+	by hemlock.osuosl.org (Postfix) with ESMTP id DB4BD86887;
+	Wed, 15 Jan 2020 03:05:33 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from whitealder.osuosl.org ([127.0.0.1])
+Received: from hemlock.osuosl.org ([127.0.0.1])
 	by localhost (.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
-	with ESMTP id vnMI6Qz6RPPM; Wed, 15 Jan 2020 03:05:30 +0000 (UTC)
+	with ESMTP id GW0wzoyA5C1X; Wed, 15 Jan 2020 03:05:30 +0000 (UTC)
 Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [140.211.9.56])
-	by whitealder.osuosl.org (Postfix) with ESMTP id 79032861D5;
+	by hemlock.osuosl.org (Postfix) with ESMTP id B4290878A8;
 	Wed, 15 Jan 2020 03:05:30 +0000 (UTC)
 Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
-	by lists.linuxfoundation.org (Postfix) with ESMTP id 66875C1D83;
+	by lists.linuxfoundation.org (Postfix) with ESMTP id 9C973C1D8B;
 	Wed, 15 Jan 2020 03:05:30 +0000 (UTC)
 Received: from silver.osuosl.org (smtp3.osuosl.org [140.211.166.136])
- by lists.linuxfoundation.org (Postfix) with ESMTP id C70EAC077D
+ by lists.linuxfoundation.org (Postfix) with ESMTP id DC85FC1D83
  for <iommu@lists.linux-foundation.org>; Wed, 15 Jan 2020 03:05:29 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
- by silver.osuosl.org (Postfix) with ESMTP id AD7C11FEF0
- for <iommu@lists.linux-foundation.org>; Wed, 15 Jan 2020 03:05:28 +0000 (UTC)
+ by silver.osuosl.org (Postfix) with ESMTP id 482B3204FE
+ for <iommu@lists.linux-foundation.org>; Wed, 15 Jan 2020 03:05:29 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
 Received: from silver.osuosl.org ([127.0.0.1])
  by localhost (.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
- with ESMTP id mO+fuZGYBdk9 for <iommu@lists.linux-foundation.org>;
- Wed, 15 Jan 2020 03:05:27 +0000 (UTC)
+ with ESMTP id SIHFsa-zhNDu for <iommu@lists.linux-foundation.org>;
+ Wed, 15 Jan 2020 03:05:28 +0000 (UTC)
 X-Greylist: domain auto-whitelisted by SQLgrey-1.7.6
 Received: from mga05.intel.com (mga05.intel.com [192.55.52.43])
- by silver.osuosl.org (Postfix) with ESMTPS id 7DFCF204F6
- for <iommu@lists.linux-foundation.org>; Wed, 15 Jan 2020 03:05:27 +0000 (UTC)
+ by silver.osuosl.org (Postfix) with ESMTPS id 5A4DC1FEDF
+ for <iommu@lists.linux-foundation.org>; Wed, 15 Jan 2020 03:05:28 +0000 (UTC)
 X-Amp-Result: SKIPPED(no attachment in message)
 X-Amp-File-Uploaded: False
 Received: from fmsmga007.fm.intel.com ([10.253.24.52])
  by fmsmga105.fm.intel.com with ESMTP/TLS/DHE-RSA-AES256-GCM-SHA384;
- 14 Jan 2020 19:05:27 -0800
+ 14 Jan 2020 19:05:28 -0800
 X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.70,321,1574150400"; d="scan'208";a="219138454"
+X-IronPort-AV: E=Sophos;i="5.70,321,1574150400"; d="scan'208";a="219138461"
 Received: from unknown (HELO allen-box.sh.intel.com) ([10.239.159.138])
- by fmsmga007.fm.intel.com with ESMTP; 14 Jan 2020 19:05:26 -0800
+ by fmsmga007.fm.intel.com with ESMTP; 14 Jan 2020 19:05:27 -0800
 From: Lu Baolu <baolu.lu@linux.intel.com>
 To: Joerg Roedel <joro@8bytes.org>
-Subject: [PATCH 4/5] iommu/vt-d: Allow devices with RMRRs to use identity
- domain
-Date: Wed, 15 Jan 2020 11:03:58 +0800
-Message-Id: <20200115030359.13471-5-baolu.lu@linux.intel.com>
+Subject: [PATCH 5/5] iommu/vt-d: Unnecessary to handle default identity domain
+Date: Wed, 15 Jan 2020 11:03:59 +0800
+Message-Id: <20200115030359.13471-6-baolu.lu@linux.intel.com>
 X-Mailer: git-send-email 2.17.1
 In-Reply-To: <20200115030359.13471-1-baolu.lu@linux.intel.com>
 References: <20200115030359.13471-1-baolu.lu@linux.intel.com>
@@ -81,66 +80,56 @@ Content-Transfer-Encoding: 7bit
 Errors-To: iommu-bounces@lists.linux-foundation.org
 Sender: "iommu" <iommu-bounces@lists.linux-foundation.org>
 
-Since commit ea2447f700cab ("intel-iommu: Prevent devices with
-RMRRs from being placed into SI Domain"), the Intel IOMMU driver
-doesn't allow any devices with RMRR locked to use the identity
-domain. This was added to to fix the issue where the RMRR info
-for devices being placed in and out of the identity domain gets
-lost. This identity maps all RMRRs when setting up the identity
-domain, so that devices with RMRRs could also use it.
+The iommu default domain framework has been designed to take
+care of setting identity default domain type. It's unnecessary
+to handle this again in the VT-d driver. Hence, remove it.
 
 Signed-off-by: Lu Baolu <baolu.lu@linux.intel.com>
 ---
- drivers/iommu/intel-iommu.c | 15 ++-------------
- 1 file changed, 2 insertions(+), 13 deletions(-)
+ drivers/iommu/intel-iommu.c | 9 ++-------
+ 1 file changed, 2 insertions(+), 7 deletions(-)
 
 diff --git a/drivers/iommu/intel-iommu.c b/drivers/iommu/intel-iommu.c
-index c6843642f462..3446da5a2186 100644
+index 3446da5a2186..f1f812cb7b9d 100644
 --- a/drivers/iommu/intel-iommu.c
 +++ b/drivers/iommu/intel-iommu.c
-@@ -2893,10 +2893,8 @@ static int __init si_domain_init(int hw)
- 	}
+@@ -387,7 +387,6 @@ static int intel_iommu_superpage = 1;
+ static int iommu_identity_mapping;
+ static int intel_no_bounce;
  
- 	/*
--	 * Normally we use DMA domains for devices which have RMRRs. But we
--	 * loose this requirement for graphic and usb devices. Identity map
--	 * the RMRRs for graphic and USB devices so that they could use the
--	 * si_domain.
-+	 * Identity map the RMRRs so that devices with RMRRs could also use
-+	 * the si_domain.
- 	 */
- 	for_each_rmrr_units(rmrr) {
- 		for_each_active_dev_scope(rmrr->devices, rmrr->devices_cnt,
-@@ -2904,9 +2902,6 @@ static int __init si_domain_init(int hw)
- 			unsigned long long start = rmrr->base_address;
- 			unsigned long long end = rmrr->end_address;
+-#define IDENTMAP_ALL		1
+ #define IDENTMAP_GFX		2
+ #define IDENTMAP_AZALIA		4
  
--			if (device_is_rmrr_locked(dev))
--				continue;
--
- 			if (WARN_ON(end < start ||
- 				    end >> agaw_to_width(si_domain->agaw)))
- 				continue;
-@@ -3045,9 +3040,6 @@ static int device_def_domain_type(struct device *dev)
- 	if (dev_is_pci(dev)) {
- 		struct pci_dev *pdev = to_pci_dev(dev);
- 
--		if (device_is_rmrr_locked(dev))
--			return IOMMU_DOMAIN_DMA;
--
- 		/*
- 		 * Prevent any device marked as untrusted from getting
- 		 * placed into the statically identity mapping domain.
-@@ -3085,9 +3077,6 @@ static int device_def_domain_type(struct device *dev)
- 				return IOMMU_DOMAIN_DMA;
- 		} else if (pci_pcie_type(pdev) == PCI_EXP_TYPE_PCI_BRIDGE)
+@@ -3079,8 +3078,7 @@ static int device_def_domain_type(struct device *dev)
  			return IOMMU_DOMAIN_DMA;
--	} else {
--		if (device_has_rmrr(dev))
--			return IOMMU_DOMAIN_DMA;
  	}
  
- 	return (iommu_identity_mapping & IDENTMAP_ALL) ?
+-	return (iommu_identity_mapping & IDENTMAP_ALL) ?
+-			IOMMU_DOMAIN_IDENTITY : 0;
++	return 0;
+ }
+ 
+ static void intel_iommu_init_qi(struct intel_iommu *iommu)
+@@ -3424,9 +3422,6 @@ static int __init init_dmars(void)
+ 		iommu->flush.flush_iotlb(iommu, 0, 0, 0, DMA_TLB_GLOBAL_FLUSH);
+ 	}
+ 
+-	if (iommu_default_passthrough())
+-		iommu_identity_mapping |= IDENTMAP_ALL;
+-
+ #ifdef CONFIG_INTEL_IOMMU_BROKEN_GFX_WA
+ 	dmar_map_gfx = 0;
+ #endif
+@@ -5038,7 +5033,7 @@ static int __init platform_optin_force_iommu(void)
+ 	 * map for all devices except those marked as being untrusted.
+ 	 */
+ 	if (dmar_disabled)
+-		iommu_identity_mapping |= IDENTMAP_ALL;
++		iommu_set_default_passthrough(false);
+ 
+ 	dmar_disabled = 0;
+ 	no_iommu = 0;
 -- 
 2.17.1
 
