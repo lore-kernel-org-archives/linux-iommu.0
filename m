@@ -2,99 +2,91 @@ Return-Path: <SRS0=En+E=3E=lists.linux-foundation.org=iommu-bounces@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-0.6 required=3.0 tests=DKIM_INVALID,DKIM_SIGNED,
-	HEADER_FROM_DIFFERENT_DOMAINS,MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS
-	autolearn=no autolearn_force=no version=3.4.0
+X-Spam-Status: No, score=-8.1 required=3.0 tests=DKIM_INVALID,DKIM_SIGNED,
+	HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_PATCH,MAILING_LIST_MULTI,SIGNED_OFF_BY,
+	SPF_HELO_NONE,SPF_PASS,USER_AGENT_SANE_1 autolearn=unavailable
+	autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 3555DC33CB1
-	for <iommu@archiver.kernel.org>; Wed, 15 Jan 2020 07:57:58 +0000 (UTC)
-Received: from silver.osuosl.org (smtp3.osuosl.org [140.211.166.136])
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 5E464C33CB2
+	for <iommu@archiver.kernel.org>; Wed, 15 Jan 2020 09:21:50 +0000 (UTC)
+Received: from hemlock.osuosl.org (smtp2.osuosl.org [140.211.166.133])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by mail.kernel.org (Postfix) with ESMTPS id EECAE214AF
-	for <iommu@archiver.kernel.org>; Wed, 15 Jan 2020 07:57:57 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTPS id 2424A24655
+	for <iommu@archiver.kernel.org>; Wed, 15 Jan 2020 09:21:49 +0000 (UTC)
 Authentication-Results: mail.kernel.org;
-	dkim=fail reason="signature verification failed" (2048-bit key) header.d=linaro.org header.i=@linaro.org header.b="i8ACrPmC"
-DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org EECAE214AF
-Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=linaro.org
+	dkim=fail reason="signature verification failed" (1024-bit key) header.d=redhat.com header.i=@redhat.com header.b="ZzVaV5WZ"
+DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 2424A24655
+Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=redhat.com
 Authentication-Results: mail.kernel.org; spf=pass smtp.mailfrom=iommu-bounces@lists.linux-foundation.org
 Received: from localhost (localhost [127.0.0.1])
-	by silver.osuosl.org (Postfix) with ESMTP id A964B2039E;
-	Wed, 15 Jan 2020 07:57:57 +0000 (UTC)
-X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from silver.osuosl.org ([127.0.0.1])
-	by localhost (.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
-	with ESMTP id XTldLNbRpNUs; Wed, 15 Jan 2020 07:57:56 +0000 (UTC)
-Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [140.211.9.56])
-	by silver.osuosl.org (Postfix) with ESMTP id CB8F12010A;
-	Wed, 15 Jan 2020 07:57:56 +0000 (UTC)
-Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
-	by lists.linuxfoundation.org (Postfix) with ESMTP id 9881AC18DD;
-	Wed, 15 Jan 2020 07:57:56 +0000 (UTC)
-Received: from hemlock.osuosl.org (smtp2.osuosl.org [140.211.166.133])
- by lists.linuxfoundation.org (Postfix) with ESMTP id E8027C077D
- for <iommu@lists.linux-foundation.org>; Wed, 15 Jan 2020 07:57:54 +0000 (UTC)
-Received: from localhost (localhost [127.0.0.1])
- by hemlock.osuosl.org (Postfix) with ESMTP id DE80686E88
- for <iommu@lists.linux-foundation.org>; Wed, 15 Jan 2020 07:57:54 +0000 (UTC)
+	by hemlock.osuosl.org (Postfix) with ESMTP id 2359685B29;
+	Wed, 15 Jan 2020 09:21:49 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
 Received: from hemlock.osuosl.org ([127.0.0.1])
+	by localhost (.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
+	with ESMTP id Ap-XQIk133Ls; Wed, 15 Jan 2020 09:21:45 +0000 (UTC)
+Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [140.211.9.56])
+	by hemlock.osuosl.org (Postfix) with ESMTP id 318F984FFF;
+	Wed, 15 Jan 2020 09:21:45 +0000 (UTC)
+Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
+	by lists.linuxfoundation.org (Postfix) with ESMTP id 1558BC1D83;
+	Wed, 15 Jan 2020 09:21:45 +0000 (UTC)
+Received: from fraxinus.osuosl.org (smtp4.osuosl.org [140.211.166.137])
+ by lists.linuxfoundation.org (Postfix) with ESMTP id 639ECC077D
+ for <iommu@lists.linux-foundation.org>; Wed, 15 Jan 2020 09:21:43 +0000 (UTC)
+Received: from localhost (localhost [127.0.0.1])
+ by fraxinus.osuosl.org (Postfix) with ESMTP id 521CD85C97
+ for <iommu@lists.linux-foundation.org>; Wed, 15 Jan 2020 09:21:43 +0000 (UTC)
+X-Virus-Scanned: amavisd-new at osuosl.org
+Received: from fraxinus.osuosl.org ([127.0.0.1])
  by localhost (.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
- with ESMTP id CEcuVah5wny7 for <iommu@lists.linux-foundation.org>;
- Wed, 15 Jan 2020 07:57:53 +0000 (UTC)
+ with ESMTP id v8cI54rZXEax for <iommu@lists.linux-foundation.org>;
+ Wed, 15 Jan 2020 09:21:39 +0000 (UTC)
 X-Greylist: domain auto-whitelisted by SQLgrey-1.7.6
-Received: from mail-wm1-f68.google.com (mail-wm1-f68.google.com
- [209.85.128.68])
- by hemlock.osuosl.org (Postfix) with ESMTPS id 7E0BE86E2C
- for <iommu@lists.linux-foundation.org>; Wed, 15 Jan 2020 07:57:53 +0000 (UTC)
-Received: by mail-wm1-f68.google.com with SMTP id u2so16639640wmc.3
- for <iommu@lists.linux-foundation.org>; Tue, 14 Jan 2020 23:57:53 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linaro.org; s=google;
- h=date:from:to:cc:subject:message-id:references:mime-version
- :content-disposition:in-reply-to;
- bh=6Ia3VncVrF7c3ZybtE0PPF5JK9Ck+5/tRhdE7y0iz1s=;
- b=i8ACrPmCSBs+LYW5GnsySs7+9Wv84u6t9RSSW45kj5ZeFcp32dD8ehSZC7Xt1/5Bqg
- h1DjGveoSyal45wtXHcZT12ieGr2xy/e8wo3G3CDUp4cnmrVk2dBMBHelGHp79Fony6U
- PzxYeHpAPCO7OJlHOgT9kJnoaQxA/TYufvx/R4aFz+DWsO6XAAmRO/6BrT+Ih8WgpQdu
- c6ekNSgZ6GiY2J08rJXJvTGQ1oEZ9kxZNs4IRe/nMDFb9UnQ9GcYUYMB+eaE+qqao7xg
- 33CsbG7zAeSpBNRqs3YmXjFWPmjtHKVWEZJY7FefO2sA/OEizZXaufWIgyH59yrGNt8Q
- Yk/Q==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
- d=1e100.net; s=20161025;
- h=x-gm-message-state:date:from:to:cc:subject:message-id:references
- :mime-version:content-disposition:in-reply-to;
- bh=6Ia3VncVrF7c3ZybtE0PPF5JK9Ck+5/tRhdE7y0iz1s=;
- b=EzSs+OQv8Ry6yO2TSBwpiNBs17VUKHZyiz+agY4RJMTcr7j/+pLcDDxpifxTh3D61K
- 3EUMLaHQwkYcqvB81bhET23aASHgb5v/vGCoym0NUmllPkKYZKfY/G22EWVAfpidcqrt
- cui5HrNPS4N1AhMPpgfehAhUqzJWLC0IUeLVF9JSOEQ+io+bPxANvmrm/gVvOS7/isOi
- YhL79WsABPI0QYHdAjpe1m0M9DG4oDoRM1zGovP/lqvgE+IPeXmM4eSqimJHwgeVcTv3
- FLoNYl/BFMWD6uPaBvv+7v2MIsOSmOT3BBNeYqigc5Zb0fXnIleRcCHGn9elGV2I+P/R
- ep3A==
-X-Gm-Message-State: APjAAAWVUMlF3fqDspEZWScEWnGn3Q+2iJRY9WaFjCj5wVie3ixWxVL9
- gYbNNPd48sLIAbTAWxkR25Amkw==
-X-Google-Smtp-Source: APXvYqyNEYvahUX2hjnKrrpMAXYUfqqL20FGP88ce7WRH3XP7tUR3FPmbPiIfTuZpy5b/JjF1w/zZg==
-X-Received: by 2002:a7b:cd07:: with SMTP id f7mr30916595wmj.37.1579075071790; 
- Tue, 14 Jan 2020 23:57:51 -0800 (PST)
-Received: from myrica ([2001:171b:2266:ba60:116c:c27a:3e7f:5eaf])
- by smtp.gmail.com with ESMTPSA id h2sm23782648wrv.66.2020.01.14.23.57.50
- (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
- Tue, 14 Jan 2020 23:57:51 -0800 (PST)
-Date: Wed, 15 Jan 2020 08:57:46 +0100
-From: Jean-Philippe Brucker <jean-philippe@linaro.org>
-To: Will Deacon <will@kernel.org>
-Subject: Re: [PATCH v4 13/13] iommu/arm-smmu-v3: Add support for PCI PASID
-Message-ID: <20200115075746.GA32782@myrica>
-References: <20191219163033.2608177-1-jean-philippe@linaro.org>
- <20191219163033.2608177-14-jean-philippe@linaro.org>
- <20200114124541.GE29222@willie-the-truck>
+Received: from us-smtp-1.mimecast.com (us-smtp-delivery-1.mimecast.com
+ [207.211.31.120])
+ by fraxinus.osuosl.org (Postfix) with ESMTPS id D747985BCD
+ for <iommu@lists.linux-foundation.org>; Wed, 15 Jan 2020 09:21:38 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+ s=mimecast20190719; t=1579080097;
+ h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+ to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+ content-transfer-encoding:content-transfer-encoding:
+ in-reply-to:in-reply-to:references:references;
+ bh=Eiw17BZqQMy1phRlzdakGYNq15F5XtxHay/deSq4pFE=;
+ b=ZzVaV5WZjizyt8bib0u/A3gu5kwk38UCCZwCfzVjMAg6oHauvi5jvIQsSSC4PqYNWRwwCB
+ clRvC+zzWmU6TNkeVLKSQVMY5h9awTc6HqZ2OkLDVxTUvBmAQi8idBRRXprbAMIDjy1JZm
+ patpRH2uJ1/o8IZLl5WM3BriecA+WoU=
+Received: from mimecast-mx01.redhat.com (mimecast-mx01.redhat.com
+ [209.132.183.4]) (Using TLS) by relay.mimecast.com with ESMTP id
+ us-mta-423-oyoxPCwDMLK4UwYtYhkY9g-1; Wed, 15 Jan 2020 04:21:31 -0500
+Received: from smtp.corp.redhat.com (int-mx07.intmail.prod.int.phx2.redhat.com
+ [10.5.11.22])
+ (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
+ (No client certificate requested)
+ by mimecast-mx01.redhat.com (Postfix) with ESMTPS id 60BF78024D7;
+ Wed, 15 Jan 2020 09:21:29 +0000 (UTC)
+Received: from [10.36.117.108] (ovpn-117-108.ams2.redhat.com [10.36.117.108])
+ by smtp.corp.redhat.com (Postfix) with ESMTPS id 6B5221084381;
+ Wed, 15 Jan 2020 09:21:27 +0000 (UTC)
+Subject: Re: [PATCH] iommu/arm-smmu-v3: Add SMMUv3.2 range invalidation support
+To: Rob Herring <robh@kernel.org>, iommu@lists.linux-foundation.org
+References: <20200113143924.11576-1-robh@kernel.org>
+From: Auger Eric <eric.auger@redhat.com>
+Message-ID: <2ee87a12-1a0e-bd48-0209-b5e205342d44@redhat.com>
+Date: Wed, 15 Jan 2020 10:21:25 +0100
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:60.0) Gecko/20100101
+ Thunderbird/60.4.0
 MIME-Version: 1.0
-Content-Disposition: inline
-In-Reply-To: <20200114124541.GE29222@willie-the-truck>
-Cc: mark.rutland@arm.com, devicetree@vger.kernel.org, linux-pci@vger.kernel.org,
- sudeep.holla@arm.com, rjw@rjwysocki.net, linux-acpi@vger.kernel.org,
- iommu@lists.linux-foundation.org, robh+dt@kernel.org, guohanjun@huawei.com,
- bhelgaas@google.com, zhangfei.gao@linaro.org, robin.murphy@arm.com,
- linux-arm-kernel@lists.infradead.org, lenb@kernel.org
+In-Reply-To: <20200113143924.11576-1-robh@kernel.org>
+Content-Language: en-US
+X-Scanned-By: MIMEDefang 2.84 on 10.5.11.22
+X-MC-Unique: oyoxPCwDMLK4UwYtYhkY9g-1
+X-Mimecast-Spam-Score: 0
+Cc: Jean-Philippe Brucker <jean-philippe@linaro.org>,
+ Will Deacon <will@kernel.org>, Robin Murphy <robin.murphy@arm.com>,
+ linux-arm-kernel@lists.infradead.org
 X-BeenThere: iommu@lists.linux-foundation.org
 X-Mailman-Version: 2.1.15
 Precedence: list
@@ -112,46 +104,165 @@ Content-Transfer-Encoding: 7bit
 Errors-To: iommu-bounces@lists.linux-foundation.org
 Sender: "iommu" <iommu-bounces@lists.linux-foundation.org>
 
-On Tue, Jan 14, 2020 at 12:45:42PM +0000, Will Deacon wrote:
-> On Thu, Dec 19, 2019 at 05:30:33PM +0100, Jean-Philippe Brucker wrote:
-> > Enable PASID for PCI devices that support it. Since the SSID tables are
-> > allocated by arm_smmu_attach_dev(), PASID has to be enabled early enough.
-> > arm_smmu_dev_feature_enable() would be too late, since by that time the
+Hi Rob,
+
+On 1/13/20 3:39 PM, Rob Herring wrote:
+> Arm SMMUv3.2 adds support for TLB range invalidate operations.
+> Support for range invalidate is determined by the RIL bit in the IDR3
+> register.
 > 
-> What is arm_smmu_dev_feature_enable()?
-
-It's the implementation of the IOMMU op .dev_enable_feat(), which I'll add
-later (called by a device driver to enable the SVA feature). I'll reword
-this comment, since the only real requirement is enabling PASID before
-ATS.
-
-> >  static void arm_smmu_detach_dev(struct arm_smmu_master *master)
-> >  {
-> >  	unsigned long flags;
-> > @@ -2852,13 +2899,16 @@ static int arm_smmu_add_device(struct device *dev)
-> >  
-> >  	master->ssid_bits = min(smmu->ssid_bits, fwspec->num_pasid_bits);
-> >  
-> > +	/* Note that PASID must be enabled before, and disabled after ATS */
-> > +	arm_smmu_enable_pasid(master);
+> The range invalidate is in units of the leaf page size and operates on
+> 1-32 chunks of a power of 2 multiple pages. First we determine from the
+> size what power of 2 multiple we can use and then adjust the granule to
+> 32x that size.
 > 
-> Is that part of the PCIe specs? If so, please can you add a citation to the
-> comment?
+> Cc: Eric Auger <eric.auger@redhat.com>
+> Cc: Jean-Philippe Brucker <jean-philippe@linaro.org>
+> Cc: Will Deacon <will@kernel.org>
+> Cc: Robin Murphy <robin.murphy@arm.com>
+> Cc: Joerg Roedel <joro@8bytes.org>
+> Signed-off-by: Rob Herring <robh@kernel.org>
+> ---
+>  drivers/iommu/arm-smmu-v3.c | 53 +++++++++++++++++++++++++++++++++++++
+>  1 file changed, 53 insertions(+)
+> 
+> diff --git a/drivers/iommu/arm-smmu-v3.c b/drivers/iommu/arm-smmu-v3.c
+> index e91b4a098215..8b6b3e2aa383 100644
+> --- a/drivers/iommu/arm-smmu-v3.c
+> +++ b/drivers/iommu/arm-smmu-v3.c
+> @@ -70,6 +70,9 @@
+>  #define IDR1_SSIDSIZE			GENMASK(10, 6)
+>  #define IDR1_SIDSIZE			GENMASK(5, 0)
+>  
+> +#define ARM_SMMU_IDR3			0xc
+> +#define IDR3_RIL			(1 << 10)
+> +
+>  #define ARM_SMMU_IDR5			0x14
+>  #define IDR5_STALL_MAX			GENMASK(31, 16)
+>  #define IDR5_GRAN64K			(1 << 6)
+> @@ -327,9 +330,14 @@
+>  #define CMDQ_CFGI_1_LEAF		(1UL << 0)
+>  #define CMDQ_CFGI_1_RANGE		GENMASK_ULL(4, 0)
+>  
+> +#define CMDQ_TLBI_0_NUM			GENMASK_ULL(16, 12)
+> +#define CMDQ_TLBI_RANGE_NUM_MAX		32
+> +#define CMDQ_TLBI_0_SCALE		GENMASK_ULL(24, 20)
+>  #define CMDQ_TLBI_0_VMID		GENMASK_ULL(47, 32)
+>  #define CMDQ_TLBI_0_ASID		GENMASK_ULL(63, 48)
+>  #define CMDQ_TLBI_1_LEAF		(1UL << 0)
+> +#define CMDQ_TLBI_1_TTL			GENMASK_ULL(9, 8)
+> +#define CMDQ_TLBI_1_TG			GENMASK_ULL(11, 10)
+>  #define CMDQ_TLBI_1_VA_MASK		GENMASK_ULL(63, 12)
+>  #define CMDQ_TLBI_1_IPA_MASK		GENMASK_ULL(51, 12)
+>  
+> @@ -455,9 +463,13 @@ struct arm_smmu_cmdq_ent {
+>  		#define CMDQ_OP_TLBI_S2_IPA	0x2a
+>  		#define CMDQ_OP_TLBI_NSNH_ALL	0x30
+>  		struct {
+> +			u8			num;
+> +			u8			scale;
+>  			u16			asid;
+>  			u16			vmid;
+>  			bool			leaf;
+> +			u8			ttl;
+> +			u8			tg;
+>  			u64			addr;
+>  		} tlbi;
+>  
+> @@ -595,6 +607,7 @@ struct arm_smmu_device {
+>  #define ARM_SMMU_FEAT_HYP		(1 << 12)
+>  #define ARM_SMMU_FEAT_STALL_FORCE	(1 << 13)
+>  #define ARM_SMMU_FEAT_VAX		(1 << 14)
+> +#define ARM_SMMU_FEAT_RANGE_INV		(1 << 15)
+>  	u32				features;
+>  
+>  #define ARM_SMMU_OPT_SKIP_PREFETCH	(1 << 0)
+> @@ -856,13 +869,21 @@ static int arm_smmu_cmdq_build_cmd(u64 *cmd, struct arm_smmu_cmdq_ent *ent)
+>  		cmd[1] |= FIELD_PREP(CMDQ_CFGI_1_RANGE, 31);
+>  		break;
+>  	case CMDQ_OP_TLBI_NH_VA:
+> +		cmd[0] |= FIELD_PREP(CMDQ_TLBI_0_NUM, ent->tlbi.num);
+> +		cmd[0] |= FIELD_PREP(CMDQ_TLBI_0_SCALE, ent->tlbi.scale);
+>  		cmd[0] |= FIELD_PREP(CMDQ_TLBI_0_ASID, ent->tlbi.asid);
+>  		cmd[1] |= FIELD_PREP(CMDQ_TLBI_1_LEAF, ent->tlbi.leaf);
+> +		cmd[1] |= FIELD_PREP(CMDQ_TLBI_1_TTL, ent->tlbi.ttl);
+> +		cmd[1] |= FIELD_PREP(CMDQ_TLBI_1_TG, ent->tlbi.tg);
+>  		cmd[1] |= ent->tlbi.addr & CMDQ_TLBI_1_VA_MASK;
+>  		break;
+>  	case CMDQ_OP_TLBI_S2_IPA:
+> +		cmd[0] |= FIELD_PREP(CMDQ_TLBI_0_NUM, ent->tlbi.num);
+> +		cmd[0] |= FIELD_PREP(CMDQ_TLBI_0_SCALE, ent->tlbi.scale);
+>  		cmd[0] |= FIELD_PREP(CMDQ_TLBI_0_VMID, ent->tlbi.vmid);
+>  		cmd[1] |= FIELD_PREP(CMDQ_TLBI_1_LEAF, ent->tlbi.leaf);
+> +		cmd[1] |= FIELD_PREP(CMDQ_TLBI_1_TTL, ent->tlbi.ttl);
+> +		cmd[1] |= FIELD_PREP(CMDQ_TLBI_1_TG, ent->tlbi.tg);
+>  		cmd[1] |= ent->tlbi.addr & CMDQ_TLBI_1_IPA_MASK;
+>  		break;
+>  	case CMDQ_OP_TLBI_NH_ASID:
+> @@ -2022,12 +2043,39 @@ static void arm_smmu_tlb_inv_range(unsigned long iova, size_t size,
+>  		cmd.tlbi.vmid	= smmu_domain->s2_cfg.vmid;
+>  	}
+>  
+> +	if (smmu->features & ARM_SMMU_FEAT_RANGE_INV) {
+> +		unsigned long tg, scale;
+> +
+> +		/* Get the leaf page size */
+> +		tg = __ffs(smmu_domain->domain.pgsize_bitmap);
+it is unclear to me why you can't set tg with the granule parameter.
+> +
+> +		/* Determine the power of 2 multiple number of pages */
+> +		scale = __ffs(size / (1UL << tg));
+> +		cmd.tlbi.scale = scale;
+> +
+> +		cmd.tlbi.num = CMDQ_TLBI_RANGE_NUM_MAX - 1;
+Also could you explain why you use CMDQ_TLBI_RANGE_NUM_MAX.
 
-Yes (PCIe 4.0r1.0 10.5.1.3 ATS Control register).
 
-> Are there any other ordering requirements, i.e. with respect to enabling
-> substreams at the SMMU? For example, can a speculative ATS request provide
-> a PASID?
+> +
+> +		/* Convert page size of 12,14,16 (log2) to 1,2,3 */
+> +		cmd.tlbi.tg = ((tg - ilog2(SZ_4K)) / 2) + 1;
+> +
+> +		/* Determine what level the granule is at */
+> +		cmd.tlbi.ttl = 4 - ((ilog2(granule) - 3) / (tg - 3));
+> +
+> +		/* Adjust granule to the maximum range */
+> +		granule = CMDQ_TLBI_RANGE_NUM_MAX * (1 << scale) * (1UL << tg);
+spec says
+Range = ((NUM+1)*2 ^ SCALE )*Translation_Granule_Size
 
-You recent fix bfff88ec1afe ("iommu/arm-smmu-v3: Rework enabling/disabling
-of ATS for PCI masters") should prevent from speculative ATS requests.
-More generally both ATS and SSID are enabled and disabled at the same time
-in the SMMU, when toggling STE.V, so any request arriving before STE
-enablement will be aborted regardless of SSID.
+Thanks
 
-Thanks,
-Jean
+Eric
+
+> +	}
+> +
+>  	while (iova < end) {
+>  		if (i == CMDQ_BATCH_ENTRIES) {
+>  			arm_smmu_cmdq_issue_cmdlist(smmu, cmds, i, false);
+>  			i = 0;
+>  		}
+>  
+> +		/* Only possible for range invalidate */
+> +		if (granule > (end - iova))
+> +			cmd.tlbi.num = ((end - iova) /
+> +					(granule / CMDQ_TLBI_RANGE_NUM_MAX)) - 1;
+> +
+>  		cmd.tlbi.addr = iova;
+>  		arm_smmu_cmdq_build_cmd(&cmds[i * CMDQ_ENT_DWORDS], &cmd);
+>  		iova += granule;
+> @@ -3449,6 +3497,11 @@ static int arm_smmu_device_hw_probe(struct arm_smmu_device *smmu)
+>  	if (smmu->sid_bits <= STRTAB_SPLIT)
+>  		smmu->features &= ~ARM_SMMU_FEAT_2_LVL_STRTAB;
+>  
+> +	/* IDR3 */
+> +	reg = readl_relaxed(smmu->base + ARM_SMMU_IDR3);
+> +	if (FIELD_GET(IDR3_RIL, reg))
+> +		smmu->features |= ARM_SMMU_FEAT_RANGE_INV;
+> +
+>  	/* IDR5 */
+>  	reg = readl_relaxed(smmu->base + ARM_SMMU_IDR5);
+>  
+> 
 
 _______________________________________________
 iommu mailing list
