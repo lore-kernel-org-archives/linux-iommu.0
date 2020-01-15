@@ -2,80 +2,95 @@ Return-Path: <SRS0=En+E=3E=lists.linux-foundation.org=iommu-bounces@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-8.3 required=3.0 tests=DKIM_INVALID,DKIM_SIGNED,
-	INCLUDES_PATCH,MAILING_LIST_MULTI,SIGNED_OFF_BY,SPF_HELO_NONE,SPF_PASS,
-	USER_AGENT_SANE_1 autolearn=unavailable autolearn_force=no version=3.4.0
+X-Spam-Status: No, score=-8.1 required=3.0 tests=DKIM_INVALID,DKIM_SIGNED,
+	HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_PATCH,MAILING_LIST_MULTI,SIGNED_OFF_BY,
+	SPF_HELO_NONE,SPF_PASS,USER_AGENT_SANE_1 autolearn=unavailable
+	autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 9FF4AC33CB1
-	for <iommu@archiver.kernel.org>; Wed, 15 Jan 2020 16:17:31 +0000 (UTC)
-Received: from silver.osuosl.org (smtp3.osuosl.org [140.211.166.136])
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 29C4FC33CB2
+	for <iommu@archiver.kernel.org>; Wed, 15 Jan 2020 16:33:20 +0000 (UTC)
+Received: from hemlock.osuosl.org (smtp2.osuosl.org [140.211.166.133])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by mail.kernel.org (Postfix) with ESMTPS id 662E5222C3
-	for <iommu@archiver.kernel.org>; Wed, 15 Jan 2020 16:17:31 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTPS id E962E24656
+	for <iommu@archiver.kernel.org>; Wed, 15 Jan 2020 16:33:19 +0000 (UTC)
 Authentication-Results: mail.kernel.org;
-	dkim=fail reason="signature verification failed" (1024-bit key) header.d=kernel.org header.i=@kernel.org header.b="nyuW482l"
-DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 662E5222C3
-Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=kernel.org
+	dkim=fail reason="signature verification failed" (1024-bit key) header.d=redhat.com header.i=@redhat.com header.b="NQr+44Tw"
+DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org E962E24656
+Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=redhat.com
 Authentication-Results: mail.kernel.org; spf=pass smtp.mailfrom=iommu-bounces@lists.linux-foundation.org
 Received: from localhost (localhost [127.0.0.1])
-	by silver.osuosl.org (Postfix) with ESMTP id 20BD3204CC;
-	Wed, 15 Jan 2020 16:17:31 +0000 (UTC)
+	by hemlock.osuosl.org (Postfix) with ESMTP id BCB61865B8;
+	Wed, 15 Jan 2020 16:33:19 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from silver.osuosl.org ([127.0.0.1])
+Received: from hemlock.osuosl.org ([127.0.0.1])
 	by localhost (.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
-	with ESMTP id Md1hX3QI+hau; Wed, 15 Jan 2020 16:17:27 +0000 (UTC)
+	with ESMTP id uZvL9JDDhccH; Wed, 15 Jan 2020 16:33:16 +0000 (UTC)
 Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [140.211.9.56])
-	by silver.osuosl.org (Postfix) with ESMTP id 10B06204F9;
-	Wed, 15 Jan 2020 16:17:27 +0000 (UTC)
+	by hemlock.osuosl.org (Postfix) with ESMTP id EA179862B2;
+	Wed, 15 Jan 2020 16:33:15 +0000 (UTC)
 Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
-	by lists.linuxfoundation.org (Postfix) with ESMTP id F1835C1D82;
-	Wed, 15 Jan 2020 16:17:26 +0000 (UTC)
-Received: from whitealder.osuosl.org (smtp1.osuosl.org [140.211.166.138])
- by lists.linuxfoundation.org (Postfix) with ESMTP id E261AC077D
- for <iommu@lists.linux-foundation.org>; Wed, 15 Jan 2020 16:17:25 +0000 (UTC)
+	by lists.linuxfoundation.org (Postfix) with ESMTP id CC4BBC1D82;
+	Wed, 15 Jan 2020 16:33:15 +0000 (UTC)
+Received: from fraxinus.osuosl.org (smtp4.osuosl.org [140.211.166.137])
+ by lists.linuxfoundation.org (Postfix) with ESMTP id 637FFC077D
+ for <iommu@lists.linux-foundation.org>; Wed, 15 Jan 2020 16:33:14 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
- by whitealder.osuosl.org (Postfix) with ESMTP id D0C80862A0
- for <iommu@lists.linux-foundation.org>; Wed, 15 Jan 2020 16:17:25 +0000 (UTC)
+ by fraxinus.osuosl.org (Postfix) with ESMTP id 516E685E25
+ for <iommu@lists.linux-foundation.org>; Wed, 15 Jan 2020 16:33:14 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from whitealder.osuosl.org ([127.0.0.1])
+Received: from fraxinus.osuosl.org ([127.0.0.1])
  by localhost (.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
- with ESMTP id r2ZYETFjDGf9 for <iommu@lists.linux-foundation.org>;
- Wed, 15 Jan 2020 16:17:21 +0000 (UTC)
+ with ESMTP id ce08UjhS4rcl for <iommu@lists.linux-foundation.org>;
+ Wed, 15 Jan 2020 16:33:10 +0000 (UTC)
 X-Greylist: domain auto-whitelisted by SQLgrey-1.7.6
-Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
- by whitealder.osuosl.org (Postfix) with ESMTPS id 8E35F86117
- for <iommu@lists.linux-foundation.org>; Wed, 15 Jan 2020 16:17:21 +0000 (UTC)
-Received: from willie-the-truck (236.31.169.217.in-addr.arpa [217.169.31.236])
- (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256
- bits)) (No client certificate requested)
- by mail.kernel.org (Postfix) with ESMTPSA id 617A6222C3;
- Wed, 15 Jan 2020 16:17:18 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
- s=default; t=1579105041;
- bh=ukrQNfklcHgQLcXCXuNtN53CWWqys1txNDvrg263c4M=;
- h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
- b=nyuW482lUGZB2PULa3IQt7cUjuRCEQEVx2g3VQ4GXNPaKyQojamqURrbldP4Ev0Wh
- SPzO+PCTcua153EUkXezNqb0c41e+W10ZK+DHfcoFD2dUxDSwI3nk111kPYmcMzWYU
- lJM9yUOkJu2WkDpF+kKpoe0IhAp1tOWD3ho1Y08Y=
-Date: Wed, 15 Jan 2020 16:17:15 +0000
-From: Will Deacon <will@kernel.org>
-To: Jean-Philippe Brucker <jean-philippe@linaro.org>, robin.murphy@arm.com
-Subject: Re: [PATCH v4 11/13] iommu/arm-smmu-v3: Improve add_device() error
- handling
-Message-ID: <20200115161714.GA30746@willie-the-truck>
-References: <20191219163033.2608177-1-jean-philippe@linaro.org>
- <20191219163033.2608177-12-jean-philippe@linaro.org>
- <20200114152538.GB2579@willie-the-truck>
+Received: from us-smtp-delivery-1.mimecast.com (us-smtp-1.mimecast.com
+ [205.139.110.61])
+ by fraxinus.osuosl.org (Postfix) with ESMTPS id 127A185E24
+ for <iommu@lists.linux-foundation.org>; Wed, 15 Jan 2020 16:33:09 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+ s=mimecast20190719; t=1579105988;
+ h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+ to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+ content-transfer-encoding:content-transfer-encoding:
+ in-reply-to:in-reply-to:references:references;
+ bh=IfKcg2RJIAeBY1dOct65tL/7hpdrsAPuh4+8nk4PQ8Q=;
+ b=NQr+44TwCTc5zMLRN/jVQn4ZqFuqUSrDxT9xxiphkVKA9GxpOtXloI/kh87ic7bjt2GSlG
+ HlEpqA2r/UwvNzf63BJhfgO04TL3H+ceO0uO4A6b+1zDhkPCx1GTjNQTRwHuyqVIh1K//G
+ x7dcz0GhhF2Z1zrnxj8vP/yFzSlJkCI=
+Received: from mimecast-mx01.redhat.com (mimecast-mx01.redhat.com
+ [209.132.183.4]) (Using TLS) by relay.mimecast.com with ESMTP id
+ us-mta-276-X2SmgdIHMiWD2c5Jdrk1FQ-1; Wed, 15 Jan 2020 11:33:02 -0500
+Received: from smtp.corp.redhat.com (int-mx08.intmail.prod.int.phx2.redhat.com
+ [10.5.11.23])
+ (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
+ (No client certificate requested)
+ by mimecast-mx01.redhat.com (Postfix) with ESMTPS id 3FDBD800EBF;
+ Wed, 15 Jan 2020 16:33:01 +0000 (UTC)
+Received: from [10.36.117.108] (ovpn-117-108.ams2.redhat.com [10.36.117.108])
+ by smtp.corp.redhat.com (Postfix) with ESMTPS id 2D7C519757;
+ Wed, 15 Jan 2020 16:32:58 +0000 (UTC)
+Subject: Re: [PATCH] iommu/arm-smmu-v3: Add SMMUv3.2 range invalidation support
+To: Rob Herring <robh@kernel.org>
+References: <20200113143924.11576-1-robh@kernel.org>
+ <2ee87a12-1a0e-bd48-0209-b5e205342d44@redhat.com>
+ <CAL_JsqKrh0nLuoRgi1-bKyEErwCFpWPRPNVDuoeJrbFMCz60KQ@mail.gmail.com>
+From: Auger Eric <eric.auger@redhat.com>
+Message-ID: <bc72f4c5-de47-8684-c7d5-0e60a4a78ee2@redhat.com>
+Date: Wed, 15 Jan 2020 17:32:57 +0100
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:60.0) Gecko/20100101
+ Thunderbird/60.4.0
 MIME-Version: 1.0
-Content-Disposition: inline
-In-Reply-To: <20200114152538.GB2579@willie-the-truck>
-User-Agent: Mutt/1.10.1 (2018-07-13)
-Cc: mark.rutland@arm.com, devicetree@vger.kernel.org, guohanjun@huawei.com,
- linux-acpi@vger.kernel.org, linux-pci@vger.kernel.org, rjw@rjwysocki.net,
- iommu@lists.linux-foundation.org, robh+dt@kernel.org, sudeep.holla@arm.com,
- bhelgaas@google.com, zhangfei.gao@linaro.org,
- linux-arm-kernel@lists.infradead.org, lenb@kernel.org
+In-Reply-To: <CAL_JsqKrh0nLuoRgi1-bKyEErwCFpWPRPNVDuoeJrbFMCz60KQ@mail.gmail.com>
+Content-Language: en-US
+X-Scanned-By: MIMEDefang 2.84 on 10.5.11.23
+X-MC-Unique: X2SmgdIHMiWD2c5Jdrk1FQ-1
+X-Mimecast-Spam-Score: 0
+Cc: Jean-Philippe Brucker <jean-philippe@linaro.org>,
+ Will Deacon <will@kernel.org>, Linux IOMMU <iommu@lists.linux-foundation.org>,
+ Robin Murphy <robin.murphy@arm.com>,
+ "moderated list:ARM/FREESCALE IMX / MXC ARM ARCHITECTURE"
+ <linux-arm-kernel@lists.infradead.org>
 X-BeenThere: iommu@lists.linux-foundation.org
 X-Mailman-Version: 2.1.15
 Precedence: list
@@ -93,128 +108,169 @@ Content-Transfer-Encoding: 7bit
 Errors-To: iommu-bounces@lists.linux-foundation.org
 Sender: "iommu" <iommu-bounces@lists.linux-foundation.org>
 
-On Tue, Jan 14, 2020 at 03:25:39PM +0000, Will Deacon wrote:
-> On Thu, Dec 19, 2019 at 05:30:31PM +0100, Jean-Philippe Brucker wrote:
-> > Let add_device() clean up after itself. The iommu_bus_init() function
-> > does call remove_device() on error, but other sites (e.g. of_iommu) do
-> > not.
-> > 
-> > Don't free level-2 stream tables because we'd have to track if we
-> > allocated each of them or if they are used by other endpoints. It's not
-> > worth the hassle since they are managed resources.
-> > 
-> > Reviewed-by: Eric Auger <eric.auger@redhat.com>
-> > Reviewed-by: Jonathan Cameron <Jonathan.Cameron@huawei.com>
-> > Signed-off-by: Jean-Philippe Brucker <jean-philippe@linaro.org>
-> > ---
-> >  drivers/iommu/arm-smmu-v3.c | 28 +++++++++++++++++++++-------
-> >  1 file changed, 21 insertions(+), 7 deletions(-)
+Hi Rob,
+
+On 1/15/20 3:02 PM, Rob Herring wrote:
+> On Wed, Jan 15, 2020 at 3:21 AM Auger Eric <eric.auger@redhat.com> wrote:
+>>
+>> Hi Rob,
+>>
+>> On 1/13/20 3:39 PM, Rob Herring wrote:
+>>> Arm SMMUv3.2 adds support for TLB range invalidate operations.
+>>> Support for range invalidate is determined by the RIL bit in the IDR3
+>>> register.
+>>>
+>>> The range invalidate is in units of the leaf page size and operates on
+>>> 1-32 chunks of a power of 2 multiple pages. First we determine from the
+>>> size what power of 2 multiple we can use and then adjust the granule to
+>>> 32x that size.
+>>>
+>>> Cc: Eric Auger <eric.auger@redhat.com>
+>>> Cc: Jean-Philippe Brucker <jean-philippe@linaro.org>
+>>> Cc: Will Deacon <will@kernel.org>
+>>> Cc: Robin Murphy <robin.murphy@arm.com>
+>>> Cc: Joerg Roedel <joro@8bytes.org>
+>>> Signed-off-by: Rob Herring <robh@kernel.org>
+>>> ---
+>>>  drivers/iommu/arm-smmu-v3.c | 53 +++++++++++++++++++++++++++++++++++++
+>>>  1 file changed, 53 insertions(+)
+>>>
+>>> diff --git a/drivers/iommu/arm-smmu-v3.c b/drivers/iommu/arm-smmu-v3.c
+>>> index e91b4a098215..8b6b3e2aa383 100644
+>>> --- a/drivers/iommu/arm-smmu-v3.c
+>>> +++ b/drivers/iommu/arm-smmu-v3.c
+>>> @@ -70,6 +70,9 @@
+>>>  #define IDR1_SSIDSIZE                        GENMASK(10, 6)
+>>>  #define IDR1_SIDSIZE                 GENMASK(5, 0)
+>>>
+>>> +#define ARM_SMMU_IDR3                        0xc
+>>> +#define IDR3_RIL                     (1 << 10)
+>>> +
+>>>  #define ARM_SMMU_IDR5                        0x14
+>>>  #define IDR5_STALL_MAX                       GENMASK(31, 16)
+>>>  #define IDR5_GRAN64K                 (1 << 6)
+>>> @@ -327,9 +330,14 @@
+>>>  #define CMDQ_CFGI_1_LEAF             (1UL << 0)
+>>>  #define CMDQ_CFGI_1_RANGE            GENMASK_ULL(4, 0)
+>>>
+>>> +#define CMDQ_TLBI_0_NUM                      GENMASK_ULL(16, 12)
+>>> +#define CMDQ_TLBI_RANGE_NUM_MAX              32
+>>> +#define CMDQ_TLBI_0_SCALE            GENMASK_ULL(24, 20)
+>>>  #define CMDQ_TLBI_0_VMID             GENMASK_ULL(47, 32)
+>>>  #define CMDQ_TLBI_0_ASID             GENMASK_ULL(63, 48)
+>>>  #define CMDQ_TLBI_1_LEAF             (1UL << 0)
+>>> +#define CMDQ_TLBI_1_TTL                      GENMASK_ULL(9, 8)
+>>> +#define CMDQ_TLBI_1_TG                       GENMASK_ULL(11, 10)
+>>>  #define CMDQ_TLBI_1_VA_MASK          GENMASK_ULL(63, 12)
+>>>  #define CMDQ_TLBI_1_IPA_MASK         GENMASK_ULL(51, 12)
+>>>
+>>> @@ -455,9 +463,13 @@ struct arm_smmu_cmdq_ent {
+>>>               #define CMDQ_OP_TLBI_S2_IPA     0x2a
+>>>               #define CMDQ_OP_TLBI_NSNH_ALL   0x30
+>>>               struct {
+>>> +                     u8                      num;
+>>> +                     u8                      scale;
+>>>                       u16                     asid;
+>>>                       u16                     vmid;
+>>>                       bool                    leaf;
+>>> +                     u8                      ttl;
+>>> +                     u8                      tg;
+>>>                       u64                     addr;
+>>>               } tlbi;
+>>>
+>>> @@ -595,6 +607,7 @@ struct arm_smmu_device {
+>>>  #define ARM_SMMU_FEAT_HYP            (1 << 12)
+>>>  #define ARM_SMMU_FEAT_STALL_FORCE    (1 << 13)
+>>>  #define ARM_SMMU_FEAT_VAX            (1 << 14)
+>>> +#define ARM_SMMU_FEAT_RANGE_INV              (1 << 15)
+>>>       u32                             features;
+>>>
+>>>  #define ARM_SMMU_OPT_SKIP_PREFETCH   (1 << 0)
+>>> @@ -856,13 +869,21 @@ static int arm_smmu_cmdq_build_cmd(u64 *cmd, struct arm_smmu_cmdq_ent *ent)
+>>>               cmd[1] |= FIELD_PREP(CMDQ_CFGI_1_RANGE, 31);
+>>>               break;
+>>>       case CMDQ_OP_TLBI_NH_VA:
+>>> +             cmd[0] |= FIELD_PREP(CMDQ_TLBI_0_NUM, ent->tlbi.num);
+>>> +             cmd[0] |= FIELD_PREP(CMDQ_TLBI_0_SCALE, ent->tlbi.scale);
+>>>               cmd[0] |= FIELD_PREP(CMDQ_TLBI_0_ASID, ent->tlbi.asid);
+>>>               cmd[1] |= FIELD_PREP(CMDQ_TLBI_1_LEAF, ent->tlbi.leaf);
+>>> +             cmd[1] |= FIELD_PREP(CMDQ_TLBI_1_TTL, ent->tlbi.ttl);
+>>> +             cmd[1] |= FIELD_PREP(CMDQ_TLBI_1_TG, ent->tlbi.tg);
+>>>               cmd[1] |= ent->tlbi.addr & CMDQ_TLBI_1_VA_MASK;
+>>>               break;
+>>>       case CMDQ_OP_TLBI_S2_IPA:
+>>> +             cmd[0] |= FIELD_PREP(CMDQ_TLBI_0_NUM, ent->tlbi.num);
+>>> +             cmd[0] |= FIELD_PREP(CMDQ_TLBI_0_SCALE, ent->tlbi.scale);
+>>>               cmd[0] |= FIELD_PREP(CMDQ_TLBI_0_VMID, ent->tlbi.vmid);
+>>>               cmd[1] |= FIELD_PREP(CMDQ_TLBI_1_LEAF, ent->tlbi.leaf);
+>>> +             cmd[1] |= FIELD_PREP(CMDQ_TLBI_1_TTL, ent->tlbi.ttl);
+>>> +             cmd[1] |= FIELD_PREP(CMDQ_TLBI_1_TG, ent->tlbi.tg);
+>>>               cmd[1] |= ent->tlbi.addr & CMDQ_TLBI_1_IPA_MASK;
+>>>               break;
+>>>       case CMDQ_OP_TLBI_NH_ASID:
+>>> @@ -2022,12 +2043,39 @@ static void arm_smmu_tlb_inv_range(unsigned long iova, size_t size,
+>>>               cmd.tlbi.vmid   = smmu_domain->s2_cfg.vmid;
+>>>       }
+>>>
+>>> +     if (smmu->features & ARM_SMMU_FEAT_RANGE_INV) {
+>>> +             unsigned long tg, scale;
+>>> +
+>>> +             /* Get the leaf page size */
+>>> +             tg = __ffs(smmu_domain->domain.pgsize_bitmap);
+>> it is unclear to me why you can't set tg with the granule parameter.
 > 
-> I think this is alright, with one caveat relating to:
+> granule could be 2MB sections if THP is enabled, right?
+
+Ah OK I thought it was a page size and not a block size.
+
+I requested this feature a long time ago for virtual SMMUv3. With
+DPDK/VFIO the guest was sending page TLB invalidation for each page
+(granule=4K or 64K) part of the hugepage buffer and those were trapped
+by the VMM. This stalled qemu.
 > 
+>>> +
+>>> +             /* Determine the power of 2 multiple number of pages */
+>>> +             scale = __ffs(size / (1UL << tg));
+>>> +             cmd.tlbi.scale = scale;
+>>> +
+>>> +             cmd.tlbi.num = CMDQ_TLBI_RANGE_NUM_MAX - 1;
+>> Also could you explain why you use CMDQ_TLBI_RANGE_NUM_MAX.
 > 
-> 	/*
-> 	 * We _can_ actually withstand dodgy bus code re-calling add_device()
-> 	 * without an intervening remove_device()/of_xlate() sequence, but
-> 	 * we're not going to do so quietly...
-> 	 */
-> 	if (WARN_ON_ONCE(fwspec->iommu_priv)) {
-> 		master = fwspec->iommu_priv;
-> 		smmu = master->smmu;
-> 	} ...
+> How's this:
+> /* The invalidation loop defaults to the maximum range */
+I would have expected num=0 directly. Don't we invalidate the &size in
+one shot as 2^scale * pages of granularity @tg? I fail to understand
+when NUM > 0.
+
+
+Thanks
+
+Eric
 > 
+> And perhaps I'll move it next to setting granule.
 > 
-> which may be on shakey ground if the subsequent add_device() call can fail
-> and free stuff that the first one allocated. At least, I don't know what
-> we're trying to support with this, so it's hard to tell whether or not it
-> still works as intended after your change.
+>>> +
+>>> +             /* Convert page size of 12,14,16 (log2) to 1,2,3 */
+>>> +             cmd.tlbi.tg = ((tg - ilog2(SZ_4K)) / 2) + 1;
+>>> +
+>>> +             /* Determine what level the granule is at */
+>>> +             cmd.tlbi.ttl = 4 - ((ilog2(granule) - 3) / (tg - 3));
+>>> +
+>>> +             /* Adjust granule to the maximum range */
+>>> +             granule = CMDQ_TLBI_RANGE_NUM_MAX * (1 << scale) * (1UL << tg);
+>> spec says
+>> Range = ((NUM+1)*2 ^ SCALE )*Translation_Granule_Size
 > 
-> How is this supposed to work? I don't recall ever seeing that WARN fire,
-> so can we just remove this and bail instead? Robin?
+> (NUM+1) can be 1-32. I went with the logical max for
+> CMDQ_TLBI_RANGE_NUM_MAX rather than the NUM field value max.
 > 
-> Something like below before your changes...
-
-FWIW, I've written this as a patch locally, since I'd like to apply it
-on top of v5 of your series.
-
-Will
-
---->8
-
-From 6029102f406d4db5e7a465da5fd2e08a5b12c532 Mon Sep 17 00:00:00 2001
-From: Will Deacon <will@kernel.org>
-Date: Wed, 15 Jan 2020 15:35:16 +0000
-Subject: [PATCH] iommu/arm-smmu-v3: Return -EBUSY when trying to re-add a
- device
-
-Although we WARN in arm_smmu_add_device() if the device being added has
-been added already without a subsequent call to arm_smmu_remove_device(),
-we still continue half-heartedly, initialising the stream-table for any
-new StreamIDs that may have magically appeared and re-establishing device
-links that should still be there from last time.
-
-Given that calling ->add_device() twice without removing the device in the
-meantime is indicative of an error in the caller, just return -EBUSY after
-warning.
-
-Cc: Robin Murphy <robin.murphy@arm.com>
-Cc: Jean Philippe-Brucker <jean-philippe@linaro.org>
-Signed-off-by: Will Deacon <will@kernel.org>
----
- drivers/iommu/arm-smmu-v3.c | 37 ++++++++++++++++---------------------
- 1 file changed, 16 insertions(+), 21 deletions(-)
-
-diff --git a/drivers/iommu/arm-smmu-v3.c b/drivers/iommu/arm-smmu-v3.c
-index efa326601308..cc26e1323da3 100644
---- a/drivers/iommu/arm-smmu-v3.c
-+++ b/drivers/iommu/arm-smmu-v3.c
-@@ -2841,28 +2841,23 @@ static int arm_smmu_add_device(struct device *dev)
- 
- 	if (!fwspec || fwspec->ops != &arm_smmu_ops)
- 		return -ENODEV;
--	/*
--	 * We _can_ actually withstand dodgy bus code re-calling add_device()
--	 * without an intervening remove_device()/of_xlate() sequence, but
--	 * we're not going to do so quietly...
--	 */
--	if (WARN_ON_ONCE(fwspec->iommu_priv)) {
--		master = fwspec->iommu_priv;
--		smmu = master->smmu;
--	} else {
--		smmu = arm_smmu_get_by_fwnode(fwspec->iommu_fwnode);
--		if (!smmu)
--			return -ENODEV;
--		master = kzalloc(sizeof(*master), GFP_KERNEL);
--		if (!master)
--			return -ENOMEM;
- 
--		master->dev = dev;
--		master->smmu = smmu;
--		master->sids = fwspec->ids;
--		master->num_sids = fwspec->num_ids;
--		fwspec->iommu_priv = master;
--	}
-+	if (WARN_ON_ONCE(fwspec->iommu_priv))
-+		return -EBUSY;
-+
-+	smmu = arm_smmu_get_by_fwnode(fwspec->iommu_fwnode);
-+	if (!smmu)
-+		return -ENODEV;
-+
-+	master = kzalloc(sizeof(*master), GFP_KERNEL);
-+	if (!master)
-+		return -ENOMEM;
-+
-+	master->dev = dev;
-+	master->smmu = smmu;
-+	master->sids = fwspec->ids;
-+	master->num_sids = fwspec->num_ids;
-+	fwspec->iommu_priv = master;
- 
- 	/* Check the SIDs are in range of the SMMU and our stream table */
- 	for (i = 0; i < master->num_sids; i++) {
--- 
-2.25.0.rc1.283.g88dfdc4193-goog
+> Rob
+> 
+> _______________________________________________
+> linux-arm-kernel mailing list
+> linux-arm-kernel@lists.infradead.org
+> http://lists.infradead.org/mailman/listinfo/linux-arm-kernel
+> 
 
 _______________________________________________
 iommu mailing list
