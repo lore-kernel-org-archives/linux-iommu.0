@@ -3,98 +3,84 @@ X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
 X-Spam-Status: No, score=-6.8 required=3.0 tests=DKIM_INVALID,DKIM_SIGNED,
-	HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_PATCH,MAILING_LIST_MULTI,SIGNED_OFF_BY,
-	SPF_HELO_NONE,SPF_PASS,UNWANTED_LANGUAGE_BODY,USER_AGENT_GIT
-	autolearn=unavailable autolearn_force=no version=3.4.0
+	INCLUDES_PATCH,MAILING_LIST_MULTI,SIGNED_OFF_BY,SPF_HELO_NONE,SPF_PASS
+	autolearn=ham autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 17F5BC35242
-	for <iommu@archiver.kernel.org>; Wed, 15 Jan 2020 12:53:48 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id CD2D3C33CB1
+	for <iommu@archiver.kernel.org>; Wed, 15 Jan 2020 14:02:44 +0000 (UTC)
 Received: from fraxinus.osuosl.org (smtp4.osuosl.org [140.211.166.137])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by mail.kernel.org (Postfix) with ESMTPS id DF37E206D7
-	for <iommu@archiver.kernel.org>; Wed, 15 Jan 2020 12:53:47 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTPS id 8A370222C3
+	for <iommu@archiver.kernel.org>; Wed, 15 Jan 2020 14:02:44 +0000 (UTC)
 Authentication-Results: mail.kernel.org;
-	dkim=fail reason="signature verification failed" (2048-bit key) header.d=linaro.org header.i=@linaro.org header.b="N5YUZNbi"
-DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org DF37E206D7
-Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=linaro.org
+	dkim=fail reason="signature verification failed" (1024-bit key) header.d=kernel.org header.i=@kernel.org header.b="htoTppDa"
+DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 8A370222C3
+Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=kernel.org
 Authentication-Results: mail.kernel.org; spf=pass smtp.mailfrom=iommu-bounces@lists.linux-foundation.org
 Received: from localhost (localhost [127.0.0.1])
-	by fraxinus.osuosl.org (Postfix) with ESMTP id C294D85549;
-	Wed, 15 Jan 2020 12:53:47 +0000 (UTC)
+	by fraxinus.osuosl.org (Postfix) with ESMTP id 6912085F51;
+	Wed, 15 Jan 2020 14:02:44 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
 Received: from fraxinus.osuosl.org ([127.0.0.1])
 	by localhost (.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
-	with ESMTP id ea4NTZa7YbkQ; Wed, 15 Jan 2020 12:53:44 +0000 (UTC)
+	with ESMTP id OEt-SfTbGJ-i; Wed, 15 Jan 2020 14:02:40 +0000 (UTC)
 Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [140.211.9.56])
-	by fraxinus.osuosl.org (Postfix) with ESMTP id 1721C85A7D;
-	Wed, 15 Jan 2020 12:53:44 +0000 (UTC)
+	by fraxinus.osuosl.org (Postfix) with ESMTP id 8A6BF85F49;
+	Wed, 15 Jan 2020 14:02:40 +0000 (UTC)
 Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
-	by lists.linuxfoundation.org (Postfix) with ESMTP id 033A2C1D82;
-	Wed, 15 Jan 2020 12:53:44 +0000 (UTC)
-Received: from hemlock.osuosl.org (smtp2.osuosl.org [140.211.166.133])
- by lists.linuxfoundation.org (Postfix) with ESMTP id 15A61C077D
- for <iommu@lists.linux-foundation.org>; Wed, 15 Jan 2020 12:53:42 +0000 (UTC)
+	by lists.linuxfoundation.org (Postfix) with ESMTP id 52AC0C1D83;
+	Wed, 15 Jan 2020 14:02:40 +0000 (UTC)
+Received: from silver.osuosl.org (smtp3.osuosl.org [140.211.166.136])
+ by lists.linuxfoundation.org (Postfix) with ESMTP id C146BC077D
+ for <iommu@lists.linux-foundation.org>; Wed, 15 Jan 2020 14:02:38 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
- by hemlock.osuosl.org (Postfix) with ESMTP id 0DE5F86D41
- for <iommu@lists.linux-foundation.org>; Wed, 15 Jan 2020 12:53:42 +0000 (UTC)
+ by silver.osuosl.org (Postfix) with ESMTP id A88122050B
+ for <iommu@lists.linux-foundation.org>; Wed, 15 Jan 2020 14:02:38 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from hemlock.osuosl.org ([127.0.0.1])
+Received: from silver.osuosl.org ([127.0.0.1])
  by localhost (.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
- with ESMTP id pH5vpgOdpNdS for <iommu@lists.linux-foundation.org>;
- Wed, 15 Jan 2020 12:53:37 +0000 (UTC)
+ with ESMTP id mwtfHtiUiuwo for <iommu@lists.linux-foundation.org>;
+ Wed, 15 Jan 2020 14:02:34 +0000 (UTC)
 X-Greylist: domain auto-whitelisted by SQLgrey-1.7.6
-Received: from mail-wr1-f68.google.com (mail-wr1-f68.google.com
- [209.85.221.68])
- by hemlock.osuosl.org (Postfix) with ESMTPS id 52D55865CD
- for <iommu@lists.linux-foundation.org>; Wed, 15 Jan 2020 12:53:37 +0000 (UTC)
-Received: by mail-wr1-f68.google.com with SMTP id y17so15643793wrh.5
- for <iommu@lists.linux-foundation.org>; Wed, 15 Jan 2020 04:53:37 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linaro.org; s=google;
- h=from:to:cc:subject:date:message-id:in-reply-to:references
- :mime-version:content-transfer-encoding;
- bh=4bZ/CepjtRIujasbtp83zulcnzN4LuxoEHojLEWXBkU=;
- b=N5YUZNbidCd+0mRzNLc+mAf25KsWhHqQsu6E/BD8m6TCk1+jFs4VYYA9pSDDDBWId4
- Y5hApgNqdB2zC57TbPT6FWU3AmGXIiVAnflDFar9Vj/5v3nxG0RgzdIJ1hqJv13ymIyH
- xuIkuGjlQJGe/xXOKWEDD9Qt4OZ3IdYsJfxr4Xg2X39vpP+1/UP68dmEs0vkR8U5EAZE
- 1Cmoyvl9ipEHHe+paOdzaYxtCyOLtlOSb8OkZvzriI0mbrTKq0wH3IFz42TCEKLRnxp6
- Niz9VcbUIE5HnEsIaK0Y2MD0lCcKevC/g6R+3zJCSnfG+V5zIYecAb8eB+Wf4/XxEOMY
- mhzQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
- d=1e100.net; s=20161025;
- h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
- :references:mime-version:content-transfer-encoding;
- bh=4bZ/CepjtRIujasbtp83zulcnzN4LuxoEHojLEWXBkU=;
- b=sDiOv5Pi8aLDxxmc9TnELmbm7/Vj6vvUJ7wuJwspGG0pBUVx952AsXfR186O0aXnQd
- eUDUDKI6IC00reDKzgGyH25gI3OWv+zyPJ4H8nC4A4nb8pqRLSi/aIoXP1EeD8fxBvDp
- Vtqu7bel+fxfm9rO6avMZmLDmCfkGcyftuCmncrXeW95FC03nb5+D/ZaW3FqN2jnm+nE
- oYo5eHpxneUcYJv0JaYWIqZAe+uhzixZO6TDcohUIaAai9gL9NsCr3uJEJyV4AKPWkt/
- ZX8xso1YAhcKyTS2fAQvl19+L2Pxi8z5Q8dFoK+4DHiMVyJXguY9dCv+BgYdUkXNZFGA
- M5MA==
-X-Gm-Message-State: APjAAAVpICuDEIsPzmeWuzqAdSTdqCpzff0M/tFUNyt95MQ7rxzVvKjF
- 0Jyu2bebo4YGZx1dRTgZ7GF7Zg==
-X-Google-Smtp-Source: APXvYqzJswflwzFBqrDS/iyaXJeEyvdokU6gQySM/KfhP173tNwKFAxkpp71PBxmimx3BWyqBHC8LA==
-X-Received: by 2002:adf:ef0b:: with SMTP id e11mr30902781wro.128.1579092815640; 
- Wed, 15 Jan 2020 04:53:35 -0800 (PST)
-Received: from localhost.localdomain
- ([2001:171b:2266:ba60:116c:c27a:3e7f:5eaf])
- by smtp.gmail.com with ESMTPSA id d12sm25196171wrp.62.2020.01.15.04.53.34
- (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
- Wed, 15 Jan 2020 04:53:35 -0800 (PST)
-From: Jean-Philippe Brucker <jean-philippe@linaro.org>
-To: linux-pci@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
- linux-acpi@vger.kernel.org, devicetree@vger.kernel.org,
- iommu@lists.linux-foundation.org, will@kernel.org
-Subject: [PATCH v5 07/13] iommu/arm-smmu-v3: Add support for Substream IDs
-Date: Wed, 15 Jan 2020 13:52:33 +0100
-Message-Id: <20200115125239.136759-8-jean-philippe@linaro.org>
-X-Mailer: git-send-email 2.24.1
-In-Reply-To: <20200115125239.136759-1-jean-philippe@linaro.org>
-References: <20200115125239.136759-1-jean-philippe@linaro.org>
+Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
+ by silver.osuosl.org (Postfix) with ESMTPS id 5E0BE20517
+ for <iommu@lists.linux-foundation.org>; Wed, 15 Jan 2020 14:02:34 +0000 (UTC)
+Received: from mail-qv1-f48.google.com (mail-qv1-f48.google.com
+ [209.85.219.48])
+ (using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+ (No client certificate requested)
+ by mail.kernel.org (Postfix) with ESMTPSA id 0B2AC222C3
+ for <iommu@lists.linux-foundation.org>; Wed, 15 Jan 2020 14:02:34 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+ s=default; t=1579096954;
+ bh=IaBwdiDgwCIx5BuPQB2+IqtMn+SaycRtfHqCIpsVFb0=;
+ h=References:In-Reply-To:From:Date:Subject:To:Cc:From;
+ b=htoTppDa67SpEBkWpOJkMNyOkvAIkppVDquQhnGk5qkzQDBEhzQannWa5D9eguHhH
+ 1a5n8eJPWHJ7A7dYL8H2DZ31QHZk4bziE7YPDk0gfmU1gr4l/xHd6sS47Kd4RD75p7
+ sr/dwsN4i7Dc58ySFewX2+wJSdcYrXmETW1h8m3U=
+Received: by mail-qv1-f48.google.com with SMTP id l14so7366475qvu.12
+ for <iommu@lists.linux-foundation.org>; Wed, 15 Jan 2020 06:02:33 -0800 (PST)
+X-Gm-Message-State: APjAAAW59dHJexOLtQsSfqMz5Qn1+mtsntthZXdCJ7brL/5wdemUR39G
+ 13cFv7Y9X7QzGSPcdbT8rfIVYatDkNXPin81BA==
+X-Google-Smtp-Source: APXvYqyTO5ScFKQX7y6OlWvH+iZhwV9J4A3B9PFR1YHjDWpvx4cGMN9sSfATF4v/fRml/9x75CiZVoWPo/lcDZgSL34=
+X-Received: by 2002:ad4:450a:: with SMTP id k10mr24687823qvu.136.1579096953208; 
+ Wed, 15 Jan 2020 06:02:33 -0800 (PST)
 MIME-Version: 1.0
-Cc: mark.rutland@arm.com, guohanjun@huawei.com, rjw@rjwysocki.net,
- robh+dt@kernel.org, sudeep.holla@arm.com, bhelgaas@google.com,
- zhangfei.gao@linaro.org, robin.murphy@arm.com, lenb@kernel.org
+References: <20200113143924.11576-1-robh@kernel.org>
+ <2ee87a12-1a0e-bd48-0209-b5e205342d44@redhat.com>
+In-Reply-To: <2ee87a12-1a0e-bd48-0209-b5e205342d44@redhat.com>
+From: Rob Herring <robh@kernel.org>
+Date: Wed, 15 Jan 2020 08:02:22 -0600
+X-Gmail-Original-Message-ID: <CAL_JsqKrh0nLuoRgi1-bKyEErwCFpWPRPNVDuoeJrbFMCz60KQ@mail.gmail.com>
+Message-ID: <CAL_JsqKrh0nLuoRgi1-bKyEErwCFpWPRPNVDuoeJrbFMCz60KQ@mail.gmail.com>
+Subject: Re: [PATCH] iommu/arm-smmu-v3: Add SMMUv3.2 range invalidation support
+To: Auger Eric <eric.auger@redhat.com>
+Cc: Jean-Philippe Brucker <jean-philippe@linaro.org>,
+ Robin Murphy <robin.murphy@arm.com>,
+ Linux IOMMU <iommu@lists.linux-foundation.org>, Will Deacon <will@kernel.org>,
+ "moderated list:ARM/FREESCALE IMX / MXC ARM ARCHITECTURE"
+ <linux-arm-kernel@lists.infradead.org>
 X-BeenThere: iommu@lists.linux-foundation.org
 X-Mailman-Version: 2.1.15
 Precedence: list
@@ -112,265 +98,145 @@ Content-Transfer-Encoding: 7bit
 Errors-To: iommu-bounces@lists.linux-foundation.org
 Sender: "iommu" <iommu-bounces@lists.linux-foundation.org>
 
-At the moment, the SMMUv3 driver implements only one stage-1 or stage-2
-page directory per device. However SMMUv3 allows more than one address
-space for some devices, by providing multiple stage-1 page directories. In
-addition to the Stream ID (SID), that identifies a device, we can now have
-Substream IDs (SSID) identifying an address space. In PCIe, SID is called
-Requester ID (RID) and SSID is called Process Address-Space ID (PASID).
-A complete stage-1 walk goes through the context descriptor table:
+On Wed, Jan 15, 2020 at 3:21 AM Auger Eric <eric.auger@redhat.com> wrote:
+>
+> Hi Rob,
+>
+> On 1/13/20 3:39 PM, Rob Herring wrote:
+> > Arm SMMUv3.2 adds support for TLB range invalidate operations.
+> > Support for range invalidate is determined by the RIL bit in the IDR3
+> > register.
+> >
+> > The range invalidate is in units of the leaf page size and operates on
+> > 1-32 chunks of a power of 2 multiple pages. First we determine from the
+> > size what power of 2 multiple we can use and then adjust the granule to
+> > 32x that size.
+> >
+> > Cc: Eric Auger <eric.auger@redhat.com>
+> > Cc: Jean-Philippe Brucker <jean-philippe@linaro.org>
+> > Cc: Will Deacon <will@kernel.org>
+> > Cc: Robin Murphy <robin.murphy@arm.com>
+> > Cc: Joerg Roedel <joro@8bytes.org>
+> > Signed-off-by: Rob Herring <robh@kernel.org>
+> > ---
+> >  drivers/iommu/arm-smmu-v3.c | 53 +++++++++++++++++++++++++++++++++++++
+> >  1 file changed, 53 insertions(+)
+> >
+> > diff --git a/drivers/iommu/arm-smmu-v3.c b/drivers/iommu/arm-smmu-v3.c
+> > index e91b4a098215..8b6b3e2aa383 100644
+> > --- a/drivers/iommu/arm-smmu-v3.c
+> > +++ b/drivers/iommu/arm-smmu-v3.c
+> > @@ -70,6 +70,9 @@
+> >  #define IDR1_SSIDSIZE                        GENMASK(10, 6)
+> >  #define IDR1_SIDSIZE                 GENMASK(5, 0)
+> >
+> > +#define ARM_SMMU_IDR3                        0xc
+> > +#define IDR3_RIL                     (1 << 10)
+> > +
+> >  #define ARM_SMMU_IDR5                        0x14
+> >  #define IDR5_STALL_MAX                       GENMASK(31, 16)
+> >  #define IDR5_GRAN64K                 (1 << 6)
+> > @@ -327,9 +330,14 @@
+> >  #define CMDQ_CFGI_1_LEAF             (1UL << 0)
+> >  #define CMDQ_CFGI_1_RANGE            GENMASK_ULL(4, 0)
+> >
+> > +#define CMDQ_TLBI_0_NUM                      GENMASK_ULL(16, 12)
+> > +#define CMDQ_TLBI_RANGE_NUM_MAX              32
+> > +#define CMDQ_TLBI_0_SCALE            GENMASK_ULL(24, 20)
+> >  #define CMDQ_TLBI_0_VMID             GENMASK_ULL(47, 32)
+> >  #define CMDQ_TLBI_0_ASID             GENMASK_ULL(63, 48)
+> >  #define CMDQ_TLBI_1_LEAF             (1UL << 0)
+> > +#define CMDQ_TLBI_1_TTL                      GENMASK_ULL(9, 8)
+> > +#define CMDQ_TLBI_1_TG                       GENMASK_ULL(11, 10)
+> >  #define CMDQ_TLBI_1_VA_MASK          GENMASK_ULL(63, 12)
+> >  #define CMDQ_TLBI_1_IPA_MASK         GENMASK_ULL(51, 12)
+> >
+> > @@ -455,9 +463,13 @@ struct arm_smmu_cmdq_ent {
+> >               #define CMDQ_OP_TLBI_S2_IPA     0x2a
+> >               #define CMDQ_OP_TLBI_NSNH_ALL   0x30
+> >               struct {
+> > +                     u8                      num;
+> > +                     u8                      scale;
+> >                       u16                     asid;
+> >                       u16                     vmid;
+> >                       bool                    leaf;
+> > +                     u8                      ttl;
+> > +                     u8                      tg;
+> >                       u64                     addr;
+> >               } tlbi;
+> >
+> > @@ -595,6 +607,7 @@ struct arm_smmu_device {
+> >  #define ARM_SMMU_FEAT_HYP            (1 << 12)
+> >  #define ARM_SMMU_FEAT_STALL_FORCE    (1 << 13)
+> >  #define ARM_SMMU_FEAT_VAX            (1 << 14)
+> > +#define ARM_SMMU_FEAT_RANGE_INV              (1 << 15)
+> >       u32                             features;
+> >
+> >  #define ARM_SMMU_OPT_SKIP_PREFETCH   (1 << 0)
+> > @@ -856,13 +869,21 @@ static int arm_smmu_cmdq_build_cmd(u64 *cmd, struct arm_smmu_cmdq_ent *ent)
+> >               cmd[1] |= FIELD_PREP(CMDQ_CFGI_1_RANGE, 31);
+> >               break;
+> >       case CMDQ_OP_TLBI_NH_VA:
+> > +             cmd[0] |= FIELD_PREP(CMDQ_TLBI_0_NUM, ent->tlbi.num);
+> > +             cmd[0] |= FIELD_PREP(CMDQ_TLBI_0_SCALE, ent->tlbi.scale);
+> >               cmd[0] |= FIELD_PREP(CMDQ_TLBI_0_ASID, ent->tlbi.asid);
+> >               cmd[1] |= FIELD_PREP(CMDQ_TLBI_1_LEAF, ent->tlbi.leaf);
+> > +             cmd[1] |= FIELD_PREP(CMDQ_TLBI_1_TTL, ent->tlbi.ttl);
+> > +             cmd[1] |= FIELD_PREP(CMDQ_TLBI_1_TG, ent->tlbi.tg);
+> >               cmd[1] |= ent->tlbi.addr & CMDQ_TLBI_1_VA_MASK;
+> >               break;
+> >       case CMDQ_OP_TLBI_S2_IPA:
+> > +             cmd[0] |= FIELD_PREP(CMDQ_TLBI_0_NUM, ent->tlbi.num);
+> > +             cmd[0] |= FIELD_PREP(CMDQ_TLBI_0_SCALE, ent->tlbi.scale);
+> >               cmd[0] |= FIELD_PREP(CMDQ_TLBI_0_VMID, ent->tlbi.vmid);
+> >               cmd[1] |= FIELD_PREP(CMDQ_TLBI_1_LEAF, ent->tlbi.leaf);
+> > +             cmd[1] |= FIELD_PREP(CMDQ_TLBI_1_TTL, ent->tlbi.ttl);
+> > +             cmd[1] |= FIELD_PREP(CMDQ_TLBI_1_TG, ent->tlbi.tg);
+> >               cmd[1] |= ent->tlbi.addr & CMDQ_TLBI_1_IPA_MASK;
+> >               break;
+> >       case CMDQ_OP_TLBI_NH_ASID:
+> > @@ -2022,12 +2043,39 @@ static void arm_smmu_tlb_inv_range(unsigned long iova, size_t size,
+> >               cmd.tlbi.vmid   = smmu_domain->s2_cfg.vmid;
+> >       }
+> >
+> > +     if (smmu->features & ARM_SMMU_FEAT_RANGE_INV) {
+> > +             unsigned long tg, scale;
+> > +
+> > +             /* Get the leaf page size */
+> > +             tg = __ffs(smmu_domain->domain.pgsize_bitmap);
+> it is unclear to me why you can't set tg with the granule parameter.
 
-      Stream tables       Ctx. Desc. tables       Page tables
-        +--------+   ,------->+-------+   ,------->+-------+
-        :        :   |        :       :   |        :       :
-        +--------+   |        +-------+   |        +-------+
-   SID->|  STE   |---'  SSID->|  CD   |---'  IOVA->|  PTE  |--> IPA
-        +--------+            +-------+            +-------+
-        :        :            :       :            :       :
-        +--------+            +-------+            +-------+
+granule could be 2MB sections if THP is enabled, right?
 
-Rewrite arm_smmu_write_ctx_desc() to modify context descriptor table
-entries. To keep things simple we only implement one level of context
-descriptor tables here, but as with stream and page tables, an SSID can
-be split to index multiple levels of tables.
+> > +
+> > +             /* Determine the power of 2 multiple number of pages */
+> > +             scale = __ffs(size / (1UL << tg));
+> > +             cmd.tlbi.scale = scale;
+> > +
+> > +             cmd.tlbi.num = CMDQ_TLBI_RANGE_NUM_MAX - 1;
+> Also could you explain why you use CMDQ_TLBI_RANGE_NUM_MAX.
 
-Signed-off-by: Jean-Philippe Brucker <jean-philippe@linaro.org>
----
- drivers/iommu/arm-smmu-v3.c | 135 ++++++++++++++++++++++++++++++------
- 1 file changed, 112 insertions(+), 23 deletions(-)
+How's this:
+/* The invalidation loop defaults to the maximum range */
 
-diff --git a/drivers/iommu/arm-smmu-v3.c b/drivers/iommu/arm-smmu-v3.c
-index a3438e256bd0..6ab0e93518f6 100644
---- a/drivers/iommu/arm-smmu-v3.c
-+++ b/drivers/iommu/arm-smmu-v3.c
-@@ -227,6 +227,11 @@
- #define STRTAB_STE_0_S1CTXPTR_MASK	GENMASK_ULL(51, 6)
- #define STRTAB_STE_0_S1CDMAX		GENMASK_ULL(63, 59)
- 
-+#define STRTAB_STE_1_S1DSS		GENMASK_ULL(1, 0)
-+#define STRTAB_STE_1_S1DSS_TERMINATE	0x0
-+#define STRTAB_STE_1_S1DSS_BYPASS	0x1
-+#define STRTAB_STE_1_S1DSS_SSID0	0x2
-+
- #define STRTAB_STE_1_S1C_CACHE_NC	0UL
- #define STRTAB_STE_1_S1C_CACHE_WBRA	1UL
- #define STRTAB_STE_1_S1C_CACHE_WT	2UL
-@@ -329,6 +334,7 @@
- #define CMDQ_PREFETCH_1_SIZE		GENMASK_ULL(4, 0)
- #define CMDQ_PREFETCH_1_ADDR_MASK	GENMASK_ULL(63, 12)
- 
-+#define CMDQ_CFGI_0_SSID		GENMASK_ULL(31, 12)
- #define CMDQ_CFGI_0_SID			GENMASK_ULL(63, 32)
- #define CMDQ_CFGI_1_LEAF		(1UL << 0)
- #define CMDQ_CFGI_1_RANGE		GENMASK_ULL(4, 0)
-@@ -446,8 +452,11 @@ struct arm_smmu_cmdq_ent {
- 
- 		#define CMDQ_OP_CFGI_STE	0x3
- 		#define CMDQ_OP_CFGI_ALL	0x4
-+		#define CMDQ_OP_CFGI_CD		0x5
-+		#define CMDQ_OP_CFGI_CD_ALL	0x6
- 		struct {
- 			u32			sid;
-+			u32			ssid;
- 			union {
- 				bool		leaf;
- 				u8		span;
-@@ -569,6 +578,7 @@ struct arm_smmu_ctx_desc_cfg {
- struct arm_smmu_s1_cfg {
- 	struct arm_smmu_ctx_desc_cfg	cdcfg;
- 	struct arm_smmu_ctx_desc	cd;
-+	u8				s1fmt;
- 	u8				s1cdmax;
- };
- 
-@@ -861,10 +871,16 @@ static int arm_smmu_cmdq_build_cmd(u64 *cmd, struct arm_smmu_cmdq_ent *ent)
- 		cmd[1] |= FIELD_PREP(CMDQ_PREFETCH_1_SIZE, ent->prefetch.size);
- 		cmd[1] |= ent->prefetch.addr & CMDQ_PREFETCH_1_ADDR_MASK;
- 		break;
-+	case CMDQ_OP_CFGI_CD:
-+		cmd[0] |= FIELD_PREP(CMDQ_CFGI_0_SSID, ent->cfgi.ssid);
-+		/* Fallthrough */
- 	case CMDQ_OP_CFGI_STE:
- 		cmd[0] |= FIELD_PREP(CMDQ_CFGI_0_SID, ent->cfgi.sid);
- 		cmd[1] |= FIELD_PREP(CMDQ_CFGI_1_LEAF, ent->cfgi.leaf);
- 		break;
-+	case CMDQ_OP_CFGI_CD_ALL:
-+		cmd[0] |= FIELD_PREP(CMDQ_CFGI_0_SID, ent->cfgi.sid);
-+		break;
- 	case CMDQ_OP_CFGI_ALL:
- 		/* Cover the entire SID range */
- 		cmd[1] |= FIELD_PREP(CMDQ_CFGI_1_RANGE, 31);
-@@ -1457,6 +1473,33 @@ static int arm_smmu_cmdq_issue_sync(struct arm_smmu_device *smmu)
- }
- 
- /* Context descriptor manipulation functions */
-+static void arm_smmu_sync_cd(struct arm_smmu_domain *smmu_domain,
-+			     int ssid, bool leaf)
-+{
-+	size_t i;
-+	unsigned long flags;
-+	struct arm_smmu_master *master;
-+	struct arm_smmu_device *smmu = smmu_domain->smmu;
-+	struct arm_smmu_cmdq_ent cmd = {
-+		.opcode	= CMDQ_OP_CFGI_CD,
-+		.cfgi	= {
-+			.ssid	= ssid,
-+			.leaf	= leaf,
-+		},
-+	};
-+
-+	spin_lock_irqsave(&smmu_domain->devices_lock, flags);
-+	list_for_each_entry(master, &smmu_domain->devices, domain_head) {
-+		for (i = 0; i < master->num_sids; i++) {
-+			cmd.cfgi.sid = master->sids[i];
-+			arm_smmu_cmdq_issue_cmd(smmu, &cmd);
-+		}
-+	}
-+	spin_unlock_irqrestore(&smmu_domain->devices_lock, flags);
-+
-+	arm_smmu_cmdq_issue_sync(smmu);
-+}
-+
- static u64 arm_smmu_cpu_tcr_to_cd(u64 tcr)
- {
- 	u64 val = 0;
-@@ -1474,34 +1517,74 @@ static u64 arm_smmu_cpu_tcr_to_cd(u64 tcr)
- 	return val;
- }
- 
--static void arm_smmu_write_ctx_desc(struct arm_smmu_device *smmu,
--				    struct arm_smmu_s1_cfg *cfg)
-+static int arm_smmu_write_ctx_desc(struct arm_smmu_domain *smmu_domain,
-+				   int ssid, struct arm_smmu_ctx_desc *cd)
- {
--	u64 val;
--	__le64 *cdptr = cfg->cdcfg.cdtab;
--
- 	/*
--	 * We don't need to issue any invalidation here, as we'll invalidate
--	 * the STE when installing the new entry anyway.
-+	 * This function handles the following cases:
-+	 *
-+	 * (1) Install primary CD, for normal DMA traffic (SSID = 0).
-+	 * (2) Install a secondary CD, for SID+SSID traffic.
-+	 * (3) Update ASID of a CD. Atomically write the first 64 bits of the
-+	 *     CD, then invalidate the old entry and mappings.
-+	 * (4) Remove a secondary CD.
- 	 */
--	val = arm_smmu_cpu_tcr_to_cd(cfg->cd.tcr) |
--#ifdef __BIG_ENDIAN
--	      CTXDESC_CD_0_ENDI |
--#endif
--	      CTXDESC_CD_0_R | CTXDESC_CD_0_A | CTXDESC_CD_0_ASET |
--	      CTXDESC_CD_0_AA64 | FIELD_PREP(CTXDESC_CD_0_ASID, cfg->cd.asid) |
--	      CTXDESC_CD_0_V;
-+	u64 val;
-+	bool cd_live;
-+	struct arm_smmu_device *smmu = smmu_domain->smmu;
-+	__le64 *cdptr = smmu_domain->s1_cfg.cdcfg.cdtab + ssid *
-+			CTXDESC_CD_DWORDS;
-+
-+	val = le64_to_cpu(cdptr[0]);
-+	cd_live = !!(val & CTXDESC_CD_0_V);
-+
-+	if (!cd) { /* (4) */
-+		val = 0;
-+	} else if (cd_live) { /* (3) */
-+		val &= ~CTXDESC_CD_0_ASID;
-+		val |= FIELD_PREP(CTXDESC_CD_0_ASID, cd->asid);
-+		/*
-+		 * Until CD+TLB invalidation, both ASIDs may be used for tagging
-+		 * this substream's traffic
-+		 */
-+	} else { /* (1) and (2) */
-+		cdptr[1] = cpu_to_le64(cd->ttbr & CTXDESC_CD_1_TTB0_MASK);
-+		cdptr[2] = 0;
-+		cdptr[3] = cpu_to_le64(cd->mair);
- 
--	/* STALL_MODEL==0b10 && CD.S==0 is ILLEGAL */
--	if (smmu->features & ARM_SMMU_FEAT_STALL_FORCE)
--		val |= CTXDESC_CD_0_S;
-+		/*
-+		 * STE is live, and the SMMU might read dwords of this CD in any
-+		 * order. Ensure that it observes valid values before reading
-+		 * V=1.
-+		 */
-+		arm_smmu_sync_cd(smmu_domain, ssid, true);
- 
--	cdptr[0] = cpu_to_le64(val);
-+		val = arm_smmu_cpu_tcr_to_cd(cd->tcr) |
-+#ifdef __BIG_ENDIAN
-+			CTXDESC_CD_0_ENDI |
-+#endif
-+			CTXDESC_CD_0_R | CTXDESC_CD_0_A | CTXDESC_CD_0_ASET |
-+			CTXDESC_CD_0_AA64 |
-+			FIELD_PREP(CTXDESC_CD_0_ASID, cd->asid) |
-+			CTXDESC_CD_0_V;
- 
--	val = cfg->cd.ttbr & CTXDESC_CD_1_TTB0_MASK;
--	cdptr[1] = cpu_to_le64(val);
-+		/* STALL_MODEL==0b10 && CD.S==0 is ILLEGAL */
-+		if (smmu->features & ARM_SMMU_FEAT_STALL_FORCE)
-+			val |= CTXDESC_CD_0_S;
-+	}
- 
--	cdptr[3] = cpu_to_le64(cfg->cd.mair);
-+	/*
-+	 * The SMMU accesses 64-bit values atomically. See IHI0070Ca 3.21.3
-+	 * "Configuration structures and configuration invalidation completion"
-+	 *
-+	 *   The size of single-copy atomic reads made by the SMMU is
-+	 *   IMPLEMENTATION DEFINED but must be at least 64 bits. Any single
-+	 *   field within an aligned 64-bit span of a structure can be altered
-+	 *   without first making the structure invalid.
-+	 */
-+	WRITE_ONCE(cdptr[0], cpu_to_le64(val));
-+	arm_smmu_sync_cd(smmu_domain, ssid, true);
-+	return 0;
- }
- 
- static int arm_smmu_alloc_cd_tables(struct arm_smmu_domain *smmu_domain)
-@@ -1511,6 +1594,8 @@ static int arm_smmu_alloc_cd_tables(struct arm_smmu_domain *smmu_domain)
- 	struct arm_smmu_s1_cfg *cfg = &smmu_domain->s1_cfg;
- 	struct arm_smmu_ctx_desc_cfg *cdcfg = &cfg->cdcfg;
- 
-+	cfg->s1fmt = STRTAB_STE_0_S1FMT_LINEAR;
-+
- 	cdcfg->num_l1_ents = 1UL << cfg->s1cdmax;
- 	l1size = cdcfg->num_l1_ents * (CTXDESC_CD_DWORDS << 3);
- 	cdcfg->cdtab = dmam_alloc_coherent(smmu->dev, l1size, &cdcfg->cdtab_dma,
-@@ -1652,6 +1737,7 @@ static void arm_smmu_write_strtab_ent(struct arm_smmu_master *master, u32 sid,
- 	if (s1_cfg) {
- 		BUG_ON(ste_live);
- 		dst[1] = cpu_to_le64(
-+			 FIELD_PREP(STRTAB_STE_1_S1DSS, STRTAB_STE_1_S1DSS_SSID0) |
- 			 FIELD_PREP(STRTAB_STE_1_S1CIR, STRTAB_STE_1_S1C_CACHE_WBRA) |
- 			 FIELD_PREP(STRTAB_STE_1_S1COR, STRTAB_STE_1_S1C_CACHE_WBRA) |
- 			 FIELD_PREP(STRTAB_STE_1_S1CSH, ARM_SMMU_SH_ISH) |
-@@ -1662,7 +1748,9 @@ static void arm_smmu_write_strtab_ent(struct arm_smmu_master *master, u32 sid,
- 			dst[1] |= cpu_to_le64(STRTAB_STE_1_S1STALLD);
- 
- 		val |= (s1_cfg->cdcfg.cdtab_dma & STRTAB_STE_0_S1CTXPTR_MASK) |
--			FIELD_PREP(STRTAB_STE_0_CFG, STRTAB_STE_0_CFG_S1_TRANS);
-+			FIELD_PREP(STRTAB_STE_0_CFG, STRTAB_STE_0_CFG_S1_TRANS) |
-+			FIELD_PREP(STRTAB_STE_0_S1CDMAX, s1_cfg->s1cdmax) |
-+			FIELD_PREP(STRTAB_STE_0_S1FMT, s1_cfg->s1fmt);
- 	}
- 
- 	if (s2_cfg) {
-@@ -2467,7 +2555,8 @@ static int arm_smmu_attach_dev(struct iommu_domain *domain, struct device *dev)
- 		master->ats_enabled = arm_smmu_ats_supported(master);
- 
- 	if (smmu_domain->stage == ARM_SMMU_DOMAIN_S1)
--		arm_smmu_write_ctx_desc(smmu, &smmu_domain->s1_cfg);
-+		arm_smmu_write_ctx_desc(smmu_domain, 0,
-+					&smmu_domain->s1_cfg.cd);
- 
- 	arm_smmu_install_ste_for_dev(master);
- 
--- 
-2.24.1
+And perhaps I'll move it next to setting granule.
 
+> > +
+> > +             /* Convert page size of 12,14,16 (log2) to 1,2,3 */
+> > +             cmd.tlbi.tg = ((tg - ilog2(SZ_4K)) / 2) + 1;
+> > +
+> > +             /* Determine what level the granule is at */
+> > +             cmd.tlbi.ttl = 4 - ((ilog2(granule) - 3) / (tg - 3));
+> > +
+> > +             /* Adjust granule to the maximum range */
+> > +             granule = CMDQ_TLBI_RANGE_NUM_MAX * (1 << scale) * (1UL << tg);
+> spec says
+> Range = ((NUM+1)*2 ^ SCALE )*Translation_Granule_Size
+
+(NUM+1) can be 1-32. I went with the logical max for
+CMDQ_TLBI_RANGE_NUM_MAX rather than the NUM field value max.
+
+Rob
 _______________________________________________
 iommu mailing list
 iommu@lists.linux-foundation.org
