@@ -7,88 +7,88 @@ X-Spam-Status: No, score=-9.6 required=3.0 tests=DKIM_INVALID,DKIM_SIGNED,
 	SPF_HELO_NONE,SPF_PASS,USER_AGENT_GIT autolearn=unavailable
 	autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 7E4D1C33CB8
-	for <iommu@archiver.kernel.org>; Wed, 15 Jan 2020 12:53:51 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id DE74EC33CB1
+	for <iommu@archiver.kernel.org>; Wed, 15 Jan 2020 12:53:50 +0000 (UTC)
 Received: from whitealder.osuosl.org (smtp1.osuosl.org [140.211.166.138])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by mail.kernel.org (Postfix) with ESMTPS id 4EC1B207FF
-	for <iommu@archiver.kernel.org>; Wed, 15 Jan 2020 12:53:51 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTPS id B2355206D7
+	for <iommu@archiver.kernel.org>; Wed, 15 Jan 2020 12:53:50 +0000 (UTC)
 Authentication-Results: mail.kernel.org;
-	dkim=fail reason="signature verification failed" (2048-bit key) header.d=linaro.org header.i=@linaro.org header.b="KYkxSNqG"
-DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 4EC1B207FF
+	dkim=fail reason="signature verification failed" (2048-bit key) header.d=linaro.org header.i=@linaro.org header.b="pq6uZQps"
+DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org B2355206D7
 Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=linaro.org
 Authentication-Results: mail.kernel.org; spf=pass smtp.mailfrom=iommu-bounces@lists.linux-foundation.org
 Received: from localhost (localhost [127.0.0.1])
-	by whitealder.osuosl.org (Postfix) with ESMTP id 158F586294;
-	Wed, 15 Jan 2020 12:53:51 +0000 (UTC)
+	by whitealder.osuosl.org (Postfix) with ESMTP id 9569F8643F;
+	Wed, 15 Jan 2020 12:53:50 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
 Received: from whitealder.osuosl.org ([127.0.0.1])
 	by localhost (.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
-	with ESMTP id YH07akkRDBD9; Wed, 15 Jan 2020 12:53:46 +0000 (UTC)
+	with ESMTP id b1XlW2lWibNe; Wed, 15 Jan 2020 12:53:46 +0000 (UTC)
 Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [140.211.9.56])
-	by whitealder.osuosl.org (Postfix) with ESMTP id 7A04F862A0;
+	by whitealder.osuosl.org (Postfix) with ESMTP id 61D4D81FCC;
 	Wed, 15 Jan 2020 12:53:46 +0000 (UTC)
 Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
-	by lists.linuxfoundation.org (Postfix) with ESMTP id 748C6C1D8E;
+	by lists.linuxfoundation.org (Postfix) with ESMTP id 45620C1D82;
 	Wed, 15 Jan 2020 12:53:46 +0000 (UTC)
-Received: from fraxinus.osuosl.org (smtp4.osuosl.org [140.211.166.137])
- by lists.linuxfoundation.org (Postfix) with ESMTP id 8FB28C1D82
+Received: from hemlock.osuosl.org (smtp2.osuosl.org [140.211.166.133])
+ by lists.linuxfoundation.org (Postfix) with ESMTP id 731DDC077D
  for <iommu@lists.linux-foundation.org>; Wed, 15 Jan 2020 12:53:44 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
- by fraxinus.osuosl.org (Postfix) with ESMTP id 7D2D38531D
+ by hemlock.osuosl.org (Postfix) with ESMTP id 5E1EF86D41
  for <iommu@lists.linux-foundation.org>; Wed, 15 Jan 2020 12:53:44 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from fraxinus.osuosl.org ([127.0.0.1])
+Received: from hemlock.osuosl.org ([127.0.0.1])
  by localhost (.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
- with ESMTP id dKSab4TWrSqD for <iommu@lists.linux-foundation.org>;
+ with ESMTP id Ksxia6dM1Q0v for <iommu@lists.linux-foundation.org>;
  Wed, 15 Jan 2020 12:53:39 +0000 (UTC)
 X-Greylist: domain auto-whitelisted by SQLgrey-1.7.6
 Received: from mail-wm1-f67.google.com (mail-wm1-f67.google.com
  [209.85.128.67])
- by fraxinus.osuosl.org (Postfix) with ESMTPS id F3CF385549
- for <iommu@lists.linux-foundation.org>; Wed, 15 Jan 2020 12:53:35 +0000 (UTC)
-Received: by mail-wm1-f67.google.com with SMTP id q9so17757240wmj.5
- for <iommu@lists.linux-foundation.org>; Wed, 15 Jan 2020 04:53:35 -0800 (PST)
+ by hemlock.osuosl.org (Postfix) with ESMTPS id 5CE1D86C03
+ for <iommu@lists.linux-foundation.org>; Wed, 15 Jan 2020 12:53:38 +0000 (UTC)
+Received: by mail-wm1-f67.google.com with SMTP id p17so17747591wmb.0
+ for <iommu@lists.linux-foundation.org>; Wed, 15 Jan 2020 04:53:38 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linaro.org; s=google;
  h=from:to:cc:subject:date:message-id:in-reply-to:references
  :mime-version:content-transfer-encoding;
- bh=in26yMaZg6abF2yqvUJjPFZYANziWWa0eLADh6G3Ifo=;
- b=KYkxSNqGoykHOtMF+QyweVPd8z8QHaDFJVOOc82qJ9FI/2oPuBi1AFY3YgT9l6pkPL
- ynQwh/VbngNEoEnwC9LmKtcklVpWETBB2Ha8Kd8oI7sx82tx8Udfgc5ZjFjeFwD1/Wuh
- clU032RmX0bz4skodakrFBabzvmrj4eyUSoIpbKPqu5YLQ5MPO9VrstW/PZAR14aI920
- MHgh+jcXHtVnEEms5hTJ3MtiNE3Ffl3TxLuRiYRGWbxq15sDaKrIZU0y8HgNBJxGoKa6
- s2gU7h9se5LnGBCRJKbKaBCC/0VH8TTIhEHK/BWjyF3CwfAMX2My9A7j1V6uDO5lvMEq
- Ginw==
+ bh=VkGjwbrGa1wrMcO/KHo5uF2vFnVmce44IDO/Kf1WvcM=;
+ b=pq6uZQpsX3gU3Tcd0g31MBx+lVvCLRX8nZbjge2zbaX0o40wceneHPuMBzBFtJbnQL
+ rUphD/LvuXhsWoPi1Og8NoDIG7QjYbtE3v8hHk2uxTgndgP2lfnwgtXQ+UZsMAzgPKNE
+ 6wxRLnJXPFcRyy2v8Krf7yS5doZHoY6lsNnNvZDBYlAoiS23SYnwL89liofvY0J2F/AX
+ ZYOl+WxomfHZtKAsdCpkAaCuyZSIRGodHQmCd7TdNUhI+LGOanQE085hqGg/w3JJ2o0b
+ I1QBD0/XrJyW23s8DR7txRnM8g1bWYQkQEz7aKlLGCKfhG3uLoGTHeVG9WQmgfSvDZbH
+ jWxw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
  d=1e100.net; s=20161025;
  h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
  :references:mime-version:content-transfer-encoding;
- bh=in26yMaZg6abF2yqvUJjPFZYANziWWa0eLADh6G3Ifo=;
- b=kLLpQdmcFUEE2dM3lg/TeyPx5K6JaGb2wKUtgcjd9H/NkESUwt+FCt3zFgNwnxbp6t
- 2tF0nZSaMLgd8oKNVlGtiZ1SqVp4CWBSyK4fMoBdO+AbpYNDNMUYv9BBEw9YMNzXiTmV
- 2RgkIj0xM4BypG1AbkxvR8WLQGf3gmri0H0intU0tSAa+0mIrUmsfSCLVOc3t5eGASsA
- 7jVArb6mYkxRjPxBPDbQZITHklPnsicC7KS/HEivhJocVpbmRe82hSg2jFSv92VAUuno
- fVq6l53LUV43ZssUKQoe1mLoSpmS7d4Rxvp9YBJuDg1f0f46IZo8NTcPuGjg63O8v5gN
- U41g==
-X-Gm-Message-State: APjAAAWGNTilRFDp9q+XdY2KiVETlE8mAyDuxlwoRfaw9W7BnqmD1tk9
- wfe9eWsYR8iua+cbwrd7JmqLLA==
-X-Google-Smtp-Source: APXvYqyohJNdvB6MKflgoRReAN7/MUNP/x8LeCEXk7CBOIMa+UpMWhsowT73ysRp4ydr7ualZQdvEg==
-X-Received: by 2002:a1c:a702:: with SMTP id q2mr34068062wme.6.1579092814518;
- Wed, 15 Jan 2020 04:53:34 -0800 (PST)
+ bh=VkGjwbrGa1wrMcO/KHo5uF2vFnVmce44IDO/Kf1WvcM=;
+ b=XPqH76vei5CdSSZ69LHcM1soA4cr1PcejaleWnB/mOYFmA2Vb0RKOlAhyiIlxoJ6vC
+ juQrVstsTurJpkkb9/liGF6j+oxiV+o8MoHHjlHD5Bc/KryYc4huMiJ5/7FSm6kmvZut
+ wtty2FUveRDsjtNY8rhoSenb7aj2RCYVJIEIIkM7iUFFOoaLBk7lStWhIFgK88ZGxmZo
+ bstVTnWChKl0x9+CGz0Z4A6U6OC4raYUhAaHwYwNKWe5v+qYGHXayFOdiYNZl3wm65uM
+ 0lznBzivEnAx9IrfOpSkShymikZ8b5UQw9EGj6GK38CfGpQgGCdE+SFIQX4L97b+9NI0
+ 6GzA==
+X-Gm-Message-State: APjAAAVvumjiIGR7MGSmJmyKlBzWuJNcFlDZyeNjtvk5soVB3LnW2f9G
+ p7Hjx/7m4IF6tmw0BBQvA0CFzw==
+X-Google-Smtp-Source: APXvYqxppRXM7W0rog1akfsKD1HDFU2AmK5typwsSWE2NQJlIYz8KU9v6BH6h5H2FeKoNTAxdXO+4Q==
+X-Received: by 2002:a1c:7d8b:: with SMTP id
+ y133mr32316515wmc.165.1579092816792; 
+ Wed, 15 Jan 2020 04:53:36 -0800 (PST)
 Received: from localhost.localdomain
  ([2001:171b:2266:ba60:116c:c27a:3e7f:5eaf])
- by smtp.gmail.com with ESMTPSA id d12sm25196171wrp.62.2020.01.15.04.53.33
+ by smtp.gmail.com with ESMTPSA id d12sm25196171wrp.62.2020.01.15.04.53.35
  (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
- Wed, 15 Jan 2020 04:53:34 -0800 (PST)
+ Wed, 15 Jan 2020 04:53:36 -0800 (PST)
 From: Jean-Philippe Brucker <jean-philippe@linaro.org>
 To: linux-pci@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
  linux-acpi@vger.kernel.org, devicetree@vger.kernel.org,
  iommu@lists.linux-foundation.org, will@kernel.org
-Subject: [PATCH v5 06/13] iommu/arm-smmu-v3: Add context descriptor tables
- allocators
-Date: Wed, 15 Jan 2020 13:52:32 +0100
-Message-Id: <20200115125239.136759-7-jean-philippe@linaro.org>
+Subject: [PATCH v5 08/13] iommu/arm-smmu-v3: Propagate ssid_bits
+Date: Wed, 15 Jan 2020 13:52:34 +0100
+Message-Id: <20200115125239.136759-9-jean-philippe@linaro.org>
 X-Mailer: git-send-email 2.24.1
 In-Reply-To: <20200115125239.136759-1-jean-philippe@linaro.org>
 References: <20200115125239.136759-1-jean-philippe@linaro.org>
@@ -113,99 +113,107 @@ Content-Transfer-Encoding: 7bit
 Errors-To: iommu-bounces@lists.linux-foundation.org
 Sender: "iommu" <iommu-bounces@lists.linux-foundation.org>
 
-Support for SSID will require allocating context descriptor tables. Move
-the context descriptor allocation to separate functions.
+Now that we support substream IDs, initialize s1cdmax with the number of
+SSID bits supported by a master and the SMMU.
 
+Context descriptor tables are allocated once for the first master
+attached to a domain. Therefore attaching multiple devices with
+different SSID sizes is tricky, and we currently don't support it.
+
+As a future improvement it would be nice to at least support attaching a
+SSID-capable device to a domain that isn't using SSID, by reallocating
+the SSID table. This would allow supporting a SSID-capable device that
+is in the same IOMMU group as a bridge, for example. Varying SSID size
+is less of a concern, since the PCIe specification "highly recommends"
+that devices supporting PASID implement all 20 bits of it.
+
+Tested-by: Zhangfei Gao <zhangfei.gao@linaro.org>
+Reviewed-by: Eric Auger <eric.auger@redhat.com>
+Reviewed-by: Jonathan Cameron <Jonathan.Cameron@huawei.com>
 Signed-off-by: Jean-Philippe Brucker <jean-philippe@linaro.org>
 ---
- drivers/iommu/arm-smmu-v3.c | 47 +++++++++++++++++++++++++++----------
- 1 file changed, 34 insertions(+), 13 deletions(-)
+ drivers/iommu/arm-smmu-v3.c | 19 ++++++++++++++++---
+ 1 file changed, 16 insertions(+), 3 deletions(-)
 
 diff --git a/drivers/iommu/arm-smmu-v3.c b/drivers/iommu/arm-smmu-v3.c
-index e7c7e34d385f..a3438e256bd0 100644
+index 6ab0e93518f6..7b7dea596f60 100644
 --- a/drivers/iommu/arm-smmu-v3.c
 +++ b/drivers/iommu/arm-smmu-v3.c
-@@ -563,11 +563,13 @@ struct arm_smmu_ctx_desc {
- struct arm_smmu_ctx_desc_cfg {
- 	__le64				*cdtab;
- 	dma_addr_t			cdtab_dma;
-+	unsigned int			num_l1_ents;
- };
- 
- struct arm_smmu_s1_cfg {
- 	struct arm_smmu_ctx_desc_cfg	cdcfg;
- 	struct arm_smmu_ctx_desc	cd;
-+	u8				s1cdmax;
- };
- 
- struct arm_smmu_s2_cfg {
-@@ -1502,6 +1504,35 @@ static void arm_smmu_write_ctx_desc(struct arm_smmu_device *smmu,
- 	cdptr[3] = cpu_to_le64(cfg->cd.mair);
+@@ -2277,6 +2277,7 @@ static void arm_smmu_domain_free(struct iommu_domain *domain)
  }
  
-+static int arm_smmu_alloc_cd_tables(struct arm_smmu_domain *smmu_domain)
-+{
-+	size_t l1size;
-+	struct arm_smmu_device *smmu = smmu_domain->smmu;
-+	struct arm_smmu_s1_cfg *cfg = &smmu_domain->s1_cfg;
-+	struct arm_smmu_ctx_desc_cfg *cdcfg = &cfg->cdcfg;
-+
-+	cdcfg->num_l1_ents = 1UL << cfg->s1cdmax;
-+	l1size = cdcfg->num_l1_ents * (CTXDESC_CD_DWORDS << 3);
-+	cdcfg->cdtab = dmam_alloc_coherent(smmu->dev, l1size, &cdcfg->cdtab_dma,
-+					   GFP_KERNEL);
-+	if (!cdcfg->cdtab) {
-+		dev_warn(smmu->dev, "failed to allocate context descriptor\n");
-+		return -ENOMEM;
-+	}
-+	return 0;
-+}
-+
-+static void arm_smmu_free_cd_tables(struct arm_smmu_domain *smmu_domain)
-+{
-+	struct arm_smmu_device *smmu = smmu_domain->smmu;
-+	struct arm_smmu_ctx_desc_cfg *cdcfg = &smmu_domain->s1_cfg.cdcfg;
-+	size_t l1size = cdcfg->num_l1_ents * (CTXDESC_CD_DWORDS << 3);
-+
-+	dmam_free_coherent(smmu->dev, l1size, cdcfg->cdtab, cdcfg->cdtab_dma);
-+	cdcfg->cdtab_dma = 0;
-+	cdcfg->cdtab = NULL;
-+}
-+
- /* Stream table manipulation functions */
- static void
- arm_smmu_write_strtab_l1_desc(__le64 *dst, struct arm_smmu_strtab_l1_desc *desc)
-@@ -2145,11 +2176,7 @@ static void arm_smmu_domain_free(struct iommu_domain *domain)
- 		struct arm_smmu_s1_cfg *cfg = &smmu_domain->s1_cfg;
- 
- 		if (cfg->cdcfg.cdtab) {
--			dmam_free_coherent(smmu_domain->smmu->dev,
--					   CTXDESC_CD_DWORDS << 3,
--					   cfg->cdcfg.cdtab,
--					   cfg->cdcfg.cdtab_dma);
--
-+			arm_smmu_free_cd_tables(smmu_domain);
- 			arm_smmu_bitmap_free(smmu->asid_map, cfg->cd.asid);
- 		}
- 	} else {
-@@ -2173,15 +2200,9 @@ static int arm_smmu_domain_finalise_s1(struct arm_smmu_domain *smmu_domain,
+ static int arm_smmu_domain_finalise_s1(struct arm_smmu_domain *smmu_domain,
++				       struct arm_smmu_master *master,
+ 				       struct io_pgtable_cfg *pgtbl_cfg)
+ {
+ 	int ret;
+@@ -2288,6 +2289,8 @@ static int arm_smmu_domain_finalise_s1(struct arm_smmu_domain *smmu_domain,
  	if (asid < 0)
  		return asid;
  
--	cfg->cdcfg.cdtab = dmam_alloc_coherent(smmu->dev,
--					       CTXDESC_CD_DWORDS << 3,
--					       &cfg->cdcfg.cdtab_dma,
--					       GFP_KERNEL);
--	if (!cfg->cdcfg.cdtab) {
--		dev_warn(smmu->dev, "failed to allocate context descriptor\n");
--		ret = -ENOMEM;
-+	ret = arm_smmu_alloc_cd_tables(smmu_domain);
-+	if (ret)
++	cfg->s1cdmax = master->ssid_bits;
++
+ 	ret = arm_smmu_alloc_cd_tables(smmu_domain);
+ 	if (ret)
  		goto out_free_asid;
--	}
+@@ -2304,6 +2307,7 @@ static int arm_smmu_domain_finalise_s1(struct arm_smmu_domain *smmu_domain,
+ }
  
- 	cfg->cd.asid	= (u16)asid;
- 	cfg->cd.ttbr	= pgtbl_cfg->arm_lpae_s1_cfg.ttbr[0];
+ static int arm_smmu_domain_finalise_s2(struct arm_smmu_domain *smmu_domain,
++				       struct arm_smmu_master *master,
+ 				       struct io_pgtable_cfg *pgtbl_cfg)
+ {
+ 	int vmid;
+@@ -2320,7 +2324,8 @@ static int arm_smmu_domain_finalise_s2(struct arm_smmu_domain *smmu_domain,
+ 	return 0;
+ }
+ 
+-static int arm_smmu_domain_finalise(struct iommu_domain *domain)
++static int arm_smmu_domain_finalise(struct iommu_domain *domain,
++				    struct arm_smmu_master *master)
+ {
+ 	int ret;
+ 	unsigned long ias, oas;
+@@ -2328,6 +2333,7 @@ static int arm_smmu_domain_finalise(struct iommu_domain *domain)
+ 	struct io_pgtable_cfg pgtbl_cfg;
+ 	struct io_pgtable_ops *pgtbl_ops;
+ 	int (*finalise_stage_fn)(struct arm_smmu_domain *,
++				 struct arm_smmu_master *,
+ 				 struct io_pgtable_cfg *);
+ 	struct arm_smmu_domain *smmu_domain = to_smmu_domain(domain);
+ 	struct arm_smmu_device *smmu = smmu_domain->smmu;
+@@ -2382,7 +2388,7 @@ static int arm_smmu_domain_finalise(struct iommu_domain *domain)
+ 	domain->geometry.aperture_end = (1UL << pgtbl_cfg.ias) - 1;
+ 	domain->geometry.force_aperture = true;
+ 
+-	ret = finalise_stage_fn(smmu_domain, &pgtbl_cfg);
++	ret = finalise_stage_fn(smmu_domain, master, &pgtbl_cfg);
+ 	if (ret < 0) {
+ 		free_io_pgtable_ops(pgtbl_ops);
+ 		return ret;
+@@ -2535,7 +2541,7 @@ static int arm_smmu_attach_dev(struct iommu_domain *domain, struct device *dev)
+ 
+ 	if (!smmu_domain->smmu) {
+ 		smmu_domain->smmu = smmu;
+-		ret = arm_smmu_domain_finalise(domain);
++		ret = arm_smmu_domain_finalise(domain, master);
+ 		if (ret) {
+ 			smmu_domain->smmu = NULL;
+ 			goto out_unlock;
+@@ -2547,6 +2553,13 @@ static int arm_smmu_attach_dev(struct iommu_domain *domain, struct device *dev)
+ 			dev_name(smmu->dev));
+ 		ret = -ENXIO;
+ 		goto out_unlock;
++	} else if (smmu_domain->stage == ARM_SMMU_DOMAIN_S1 &&
++		   master->ssid_bits != smmu_domain->s1_cfg.s1cdmax) {
++		dev_err(dev,
++			"cannot attach to incompatible domain (%u SSID bits != %u)\n",
++			smmu_domain->s1_cfg.s1cdmax, master->ssid_bits);
++		ret = -EINVAL;
++		goto out_unlock;
+ 	}
+ 
+ 	master->domain = smmu_domain;
 -- 
 2.24.1
 
