@@ -6,75 +6,74 @@ X-Spam-Status: No, score=-9.8 required=3.0 tests=DKIM_INVALID,DKIM_SIGNED,
 	INCLUDES_PATCH,MAILING_LIST_MULTI,SIGNED_OFF_BY,SPF_HELO_NONE,SPF_PASS,
 	USER_AGENT_GIT autolearn=ham autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 1745DC33CB6
-	for <iommu@archiver.kernel.org>; Thu, 16 Jan 2020 17:29:11 +0000 (UTC)
-Received: from fraxinus.osuosl.org (smtp4.osuosl.org [140.211.166.137])
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 1635FC33CB3
+	for <iommu@archiver.kernel.org>; Thu, 16 Jan 2020 17:29:48 +0000 (UTC)
+Received: from hemlock.osuosl.org (smtp2.osuosl.org [140.211.166.133])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by mail.kernel.org (Postfix) with ESMTPS id D7DC4246F4
-	for <iommu@archiver.kernel.org>; Thu, 16 Jan 2020 17:29:10 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTPS id DCE592470D
+	for <iommu@archiver.kernel.org>; Thu, 16 Jan 2020 17:29:47 +0000 (UTC)
 Authentication-Results: mail.kernel.org;
-	dkim=fail reason="signature verification failed" (1024-bit key) header.d=kernel.org header.i=@kernel.org header.b="unL8Yjmu"
-DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org D7DC4246F4
+	dkim=fail reason="signature verification failed" (1024-bit key) header.d=kernel.org header.i=@kernel.org header.b="hjksb+TU"
+DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org DCE592470D
 Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=kernel.org
 Authentication-Results: mail.kernel.org; spf=pass smtp.mailfrom=iommu-bounces@lists.linux-foundation.org
 Received: from localhost (localhost [127.0.0.1])
-	by fraxinus.osuosl.org (Postfix) with ESMTP id B560484469;
-	Thu, 16 Jan 2020 17:29:10 +0000 (UTC)
+	by hemlock.osuosl.org (Postfix) with ESMTP id A5E3D87F0C;
+	Thu, 16 Jan 2020 17:29:47 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from fraxinus.osuosl.org ([127.0.0.1])
+Received: from hemlock.osuosl.org ([127.0.0.1])
 	by localhost (.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
-	with ESMTP id T1FqbKh5w7Rz; Thu, 16 Jan 2020 17:29:07 +0000 (UTC)
+	with ESMTP id uxHJIkw7Govy; Thu, 16 Jan 2020 17:29:43 +0000 (UTC)
 Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [140.211.9.56])
-	by fraxinus.osuosl.org (Postfix) with ESMTP id 3B1A4842A8;
-	Thu, 16 Jan 2020 17:29:07 +0000 (UTC)
+	by hemlock.osuosl.org (Postfix) with ESMTP id 7D07987F1F;
+	Thu, 16 Jan 2020 17:29:43 +0000 (UTC)
 Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
-	by lists.linuxfoundation.org (Postfix) with ESMTP id 28A0DC1D82;
-	Thu, 16 Jan 2020 17:29:07 +0000 (UTC)
+	by lists.linuxfoundation.org (Postfix) with ESMTP id 6846DC1D82;
+	Thu, 16 Jan 2020 17:29:43 +0000 (UTC)
 Received: from fraxinus.osuosl.org (smtp4.osuosl.org [140.211.166.137])
- by lists.linuxfoundation.org (Postfix) with ESMTP id 0D075C077D
- for <iommu@lists.linux-foundation.org>; Thu, 16 Jan 2020 17:29:06 +0000 (UTC)
+ by lists.linuxfoundation.org (Postfix) with ESMTP id 568B1C077D
+ for <iommu@lists.linux-foundation.org>; Thu, 16 Jan 2020 17:29:42 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
- by fraxinus.osuosl.org (Postfix) with ESMTP id 07EF2842C3
- for <iommu@lists.linux-foundation.org>; Thu, 16 Jan 2020 17:29:06 +0000 (UTC)
+ by fraxinus.osuosl.org (Postfix) with ESMTP id 45391845E0
+ for <iommu@lists.linux-foundation.org>; Thu, 16 Jan 2020 17:29:42 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
 Received: from fraxinus.osuosl.org ([127.0.0.1])
  by localhost (.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
- with ESMTP id F5Iy2c7b-Utw for <iommu@lists.linux-foundation.org>;
- Thu, 16 Jan 2020 17:29:02 +0000 (UTC)
+ with ESMTP id XEib6En1NBxa for <iommu@lists.linux-foundation.org>;
+ Thu, 16 Jan 2020 17:29:37 +0000 (UTC)
 X-Greylist: domain auto-whitelisted by SQLgrey-1.7.6
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
- by fraxinus.osuosl.org (Postfix) with ESMTPS id 45261842A8
- for <iommu@lists.linux-foundation.org>; Thu, 16 Jan 2020 17:29:02 +0000 (UTC)
+ by fraxinus.osuosl.org (Postfix) with ESMTPS id 45BAE845D2
+ for <iommu@lists.linux-foundation.org>; Thu, 16 Jan 2020 17:29:37 +0000 (UTC)
 Received: from sasha-vm.mshome.net (c-73-47-72-35.hsd1.nh.comcast.net
  [73.47.72.35])
  (using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
  (No client certificate requested)
- by mail.kernel.org (Postfix) with ESMTPSA id 39659246FC;
- Thu, 16 Jan 2020 17:29:01 +0000 (UTC)
+ by mail.kernel.org (Postfix) with ESMTPSA id 684FC24710;
+ Thu, 16 Jan 2020 17:29:36 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
- s=default; t=1579195742;
- bh=7VfQO9ZHJ8yQoCe1ayEZQ4PCtEclkhVMbtwss1+KNpg=;
+ s=default; t=1579195777;
+ bh=2R4B2/vf3mjrXyH9tuvIXZbFvpPaJG90eTaq68jtLPU=;
  h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
- b=unL8YjmuExZMASV3330PgDjwSSRjUpYojhHvxSFiZaT/UMq5Y/5D1umLByPSvEJ41
- GIlqhA806ODCjI+KNZIIUwkKO4hxWwZEjQMtreTOpZ+Mio7GHa2zLgjJMXSv1ktUI1
- Q374bYQptw5AlcmsgMdyY6OleHyFZ7WYYzmOWD+w=
+ b=hjksb+TUUuU8hl4i1P4K2hn4oSz/PK4vrnojL0P34mZtpJ17Kdk19n1+Q/H3V3gGn
+ N+KNv1eHMokJVFxCukVepG5yORNX0ivdXGExvI1NC3Q1OHcqYoRgbhZhTMF/nI9Acu
+ UEDduoAU7ucMYAWnTGknhX9zr/8uYF/DJWRa3lB0=
 From: Sasha Levin <sashal@kernel.org>
 To: linux-kernel@vger.kernel.org,
 	stable@vger.kernel.org
-Subject: [PATCH AUTOSEL 4.14 277/371] iommu/mediatek: Fix iova_to_phys PA
- start for 4GB mode
-Date: Thu, 16 Jan 2020 12:22:29 -0500
-Message-Id: <20200116172403.18149-220-sashal@kernel.org>
+Subject: [PATCH AUTOSEL 4.14 302/371] iommu/amd: Wait for completion of IOTLB
+ flush in attach_device
+Date: Thu, 16 Jan 2020 12:22:54 -0500
+Message-Id: <20200116172403.18149-245-sashal@kernel.org>
 X-Mailer: git-send-email 2.20.1
 In-Reply-To: <20200116172403.18149-1-sashal@kernel.org>
 References: <20200116172403.18149-1-sashal@kernel.org>
 MIME-Version: 1.0
 X-stable: review
 X-Patchwork-Hint: Ignore
-Cc: Sasha Levin <sashal@kernel.org>, Joerg Roedel <jroedel@suse.de>,
- iommu@lists.linux-foundation.org, linux-mediatek@lists.infradead.org,
- linux-arm-kernel@lists.infradead.org
+Cc: Sasha Levin <sashal@kernel.org>, Filippo Sironi <sironi@amazon.de>,
+ iommu@lists.linux-foundation.org, Joerg Roedel <jroedel@suse.de>
 X-BeenThere: iommu@lists.linux-foundation.org
 X-Mailman-Version: 2.1.15
 Precedence: list
@@ -92,94 +91,35 @@ Content-Transfer-Encoding: 7bit
 Errors-To: iommu-bounces@lists.linux-foundation.org
 Sender: "iommu" <iommu-bounces@lists.linux-foundation.org>
 
-From: Yong Wu <yong.wu@mediatek.com>
+From: Filippo Sironi <sironi@amazon.de>
 
-[ Upstream commit 76ce65464fcd2c21db84391572b7938b716aceb0 ]
+[ Upstream commit 0b15e02f0cc4fb34a9160de7ba6db3a4013dc1b7 ]
 
-In M4U 4GB mode, the physical address is remapped as below:
+To make sure the domain tlb flush completes before the
+function returns, explicitly wait for its completion.
 
-CPU Physical address:
-
-====================
-
-0      1G       2G     3G       4G     5G
-|---A---|---B---|---C---|---D---|---E---|
-+--I/O--+------------Memory-------------+
-
-IOMMU output physical address:
- =============================
-
-                                4G      5G     6G      7G      8G
-                                |---E---|---B---|---C---|---D---|
-                                +------------Memory-------------+
-
-The Region 'A'(I/O) can not be mapped by M4U; For Region 'B'/'C'/'D', the
-bit32 of the CPU physical address always is needed to set, and for Region
-'E', the CPU physical address keep as is. something looks like this:
-CPU PA         ->    M4U OUTPUT PA
-0x4000_0000          0x1_4000_0000 (Add bit32)
-0x8000_0000          0x1_8000_0000 ...
-0xc000_0000          0x1_c000_0000 ...
-0x1_0000_0000        0x1_0000_0000 (No change)
-
-Additionally, the iommu consumers always use the CPU phyiscal address.
-
-The PA in the iova_to_phys that is got from v7s always is u32, But
-from the CPU point of view, PA only need add BIT(32) when PA < 0x4000_0000.
-
-Fixes: 30e2fccf9512 ("iommu/mediatek: Enlarge the validate PA range
-for 4GB mode")
-Signed-off-by: Yong Wu <yong.wu@mediatek.com>
+Signed-off-by: Filippo Sironi <sironi@amazon.de>
+Fixes: 42a49f965a8d ("amd-iommu: flush domain tlb when attaching a new device")
+[joro: Added commit message and fixes tag]
 Signed-off-by: Joerg Roedel <jroedel@suse.de>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/iommu/mtk_iommu.c | 26 +++++++++++++++++++++++++-
- 1 file changed, 25 insertions(+), 1 deletion(-)
+ drivers/iommu/amd_iommu.c | 2 ++
+ 1 file changed, 2 insertions(+)
 
-diff --git a/drivers/iommu/mtk_iommu.c b/drivers/iommu/mtk_iommu.c
-index c30f62700431..0f99e95a1a73 100644
---- a/drivers/iommu/mtk_iommu.c
-+++ b/drivers/iommu/mtk_iommu.c
-@@ -115,6 +115,30 @@ struct mtk_iommu_domain {
+diff --git a/drivers/iommu/amd_iommu.c b/drivers/iommu/amd_iommu.c
+index d09c24825734..778f167be2d3 100644
+--- a/drivers/iommu/amd_iommu.c
++++ b/drivers/iommu/amd_iommu.c
+@@ -2160,6 +2160,8 @@ static int attach_device(struct device *dev,
+ 	 */
+ 	domain_flush_tlb_pde(domain);
  
- static struct iommu_ops mtk_iommu_ops;
- 
-+/*
-+ * In M4U 4GB mode, the physical address is remapped as below:
-+ *
-+ * CPU Physical address:
-+ * ====================
-+ *
-+ * 0      1G       2G     3G       4G     5G
-+ * |---A---|---B---|---C---|---D---|---E---|
-+ * +--I/O--+------------Memory-------------+
-+ *
-+ * IOMMU output physical address:
-+ *  =============================
-+ *
-+ *                                 4G      5G     6G      7G      8G
-+ *                                 |---E---|---B---|---C---|---D---|
-+ *                                 +------------Memory-------------+
-+ *
-+ * The Region 'A'(I/O) can NOT be mapped by M4U; For Region 'B'/'C'/'D', the
-+ * bit32 of the CPU physical address always is needed to set, and for Region
-+ * 'E', the CPU physical address keep as is.
-+ * Additionally, The iommu consumers always use the CPU phyiscal address.
-+ */
-+#define MTK_IOMMU_4GB_MODE_REMAP_BASE	 0x40000000
++	domain_flush_complete(domain);
 +
- static LIST_HEAD(m4ulist);	/* List all the M4U HWs */
+ 	return ret;
+ }
  
- #define for_each_m4u(data)	list_for_each_entry(data, &m4ulist, list)
-@@ -404,7 +428,7 @@ static phys_addr_t mtk_iommu_iova_to_phys(struct iommu_domain *domain,
- 	pa = dom->iop->iova_to_phys(dom->iop, iova);
- 	spin_unlock_irqrestore(&dom->pgtlock, flags);
- 
--	if (data->enable_4GB)
-+	if (data->enable_4GB && pa < MTK_IOMMU_4GB_MODE_REMAP_BASE)
- 		pa |= BIT_ULL(32);
- 
- 	return pa;
 -- 
 2.20.1
 
