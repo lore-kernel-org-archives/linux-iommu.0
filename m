@@ -6,66 +6,65 @@ X-Spam-Status: No, score=-9.8 required=3.0 tests=DKIM_INVALID,DKIM_SIGNED,
 	INCLUDES_PATCH,MAILING_LIST_MULTI,SIGNED_OFF_BY,SPF_HELO_NONE,SPF_PASS,
 	USER_AGENT_GIT autolearn=ham autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 6193AC33CAF
-	for <iommu@archiver.kernel.org>; Thu, 16 Jan 2020 17:45:15 +0000 (UTC)
-Received: from silver.osuosl.org (smtp3.osuosl.org [140.211.166.136])
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 3A565C33CAF
+	for <iommu@archiver.kernel.org>; Thu, 16 Jan 2020 17:45:26 +0000 (UTC)
+Received: from fraxinus.osuosl.org (smtp4.osuosl.org [140.211.166.137])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by mail.kernel.org (Postfix) with ESMTPS id 3B78224782
-	for <iommu@archiver.kernel.org>; Thu, 16 Jan 2020 17:45:15 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTPS id 0E7D024767
+	for <iommu@archiver.kernel.org>; Thu, 16 Jan 2020 17:45:25 +0000 (UTC)
 Authentication-Results: mail.kernel.org;
-	dkim=fail reason="signature verification failed" (1024-bit key) header.d=kernel.org header.i=@kernel.org header.b="AZnTlRvp"
-DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 3B78224782
+	dkim=fail reason="signature verification failed" (1024-bit key) header.d=kernel.org header.i=@kernel.org header.b="JPcVmICo"
+DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 0E7D024767
 Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=kernel.org
 Authentication-Results: mail.kernel.org; spf=pass smtp.mailfrom=iommu-bounces@lists.linux-foundation.org
 Received: from localhost (localhost [127.0.0.1])
-	by silver.osuosl.org (Postfix) with ESMTP id 075DC20440;
-	Thu, 16 Jan 2020 17:45:15 +0000 (UTC)
+	by fraxinus.osuosl.org (Postfix) with ESMTP id D073686447;
+	Thu, 16 Jan 2020 17:45:25 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from silver.osuosl.org ([127.0.0.1])
+Received: from fraxinus.osuosl.org ([127.0.0.1])
 	by localhost (.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
-	with ESMTP id 5TKxfq1FAUJf; Thu, 16 Jan 2020 17:45:10 +0000 (UTC)
+	with ESMTP id 0ub6XzUD2-8l; Thu, 16 Jan 2020 17:45:21 +0000 (UTC)
 Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [140.211.9.56])
-	by silver.osuosl.org (Postfix) with ESMTP id A420321552;
-	Thu, 16 Jan 2020 17:45:10 +0000 (UTC)
+	by fraxinus.osuosl.org (Postfix) with ESMTP id D03A18659E;
+	Thu, 16 Jan 2020 17:45:21 +0000 (UTC)
 Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
-	by lists.linuxfoundation.org (Postfix) with ESMTP id 80A5EC1D82;
-	Thu, 16 Jan 2020 17:45:10 +0000 (UTC)
-Received: from silver.osuosl.org (smtp3.osuosl.org [140.211.166.136])
- by lists.linuxfoundation.org (Postfix) with ESMTP id 74056C077D
- for <iommu@lists.linux-foundation.org>; Thu, 16 Jan 2020 17:45:09 +0000 (UTC)
+	by lists.linuxfoundation.org (Postfix) with ESMTP id C4BA1C1D82;
+	Thu, 16 Jan 2020 17:45:21 +0000 (UTC)
+Received: from hemlock.osuosl.org (smtp2.osuosl.org [140.211.166.133])
+ by lists.linuxfoundation.org (Postfix) with ESMTP id 539BBC077D
+ for <iommu@lists.linux-foundation.org>; Thu, 16 Jan 2020 17:45:20 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
- by silver.osuosl.org (Postfix) with ESMTP id 6180F20440
- for <iommu@lists.linux-foundation.org>; Thu, 16 Jan 2020 17:45:09 +0000 (UTC)
+ by hemlock.osuosl.org (Postfix) with ESMTP id 4017F87F52
+ for <iommu@lists.linux-foundation.org>; Thu, 16 Jan 2020 17:45:20 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from silver.osuosl.org ([127.0.0.1])
+Received: from hemlock.osuosl.org ([127.0.0.1])
  by localhost (.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
- with ESMTP id mYYkRns6uvd4 for <iommu@lists.linux-foundation.org>;
- Thu, 16 Jan 2020 17:45:04 +0000 (UTC)
+ with ESMTP id zQ41mEx85P4b for <iommu@lists.linux-foundation.org>;
+ Thu, 16 Jan 2020 17:45:18 +0000 (UTC)
 X-Greylist: domain auto-whitelisted by SQLgrey-1.7.6
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
- by silver.osuosl.org (Postfix) with ESMTPS id E025B20336
- for <iommu@lists.linux-foundation.org>; Thu, 16 Jan 2020 17:45:04 +0000 (UTC)
+ by hemlock.osuosl.org (Postfix) with ESMTPS id B6FFC87F3F
+ for <iommu@lists.linux-foundation.org>; Thu, 16 Jan 2020 17:45:18 +0000 (UTC)
 Received: from sasha-vm.mshome.net (c-73-47-72-35.hsd1.nh.comcast.net
  [73.47.72.35])
  (using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
  (No client certificate requested)
- by mail.kernel.org (Postfix) with ESMTPSA id B4EAC2475B;
- Thu, 16 Jan 2020 17:45:03 +0000 (UTC)
+ by mail.kernel.org (Postfix) with ESMTPSA id E7C8924785;
+ Thu, 16 Jan 2020 17:45:17 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
- s=default; t=1579196704;
- bh=YLZdc2UqRoOMt0oa38NEZj96bJP/9FVIzfbPmOQjxfE=;
+ s=default; t=1579196718;
+ bh=e8+2yTxwb5wnNROjgDT9FXPawJMmzUI9+GsSNddkQRg=;
  h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
- b=AZnTlRvpXCh0Uorfxp2qlzxl/mHOvHcS2sv38/YCwYVUkY1VHYptnGFSXfFqv23L1
- 363uDw4nDRZIInL6eyKFDAZ3PH01l9M8z4mCouC00uE5NwOcEObQ3wdWH9rPE9f67C
- KRQOfvZXU2Em+LZ28djanKN+kI3upV3oq07s1uR4=
+ b=JPcVmICoNSuLzOi5JVuIIhywoP8v48pFap2bVeSBHp16+je9/nqTAtDqCyQUKptnB
+ q3i8qeG2QSn2e4ngbhIW5uWTgCPgDU7YKLlzJocl1oNRy5/Vin4aPdg+LpKrbvjZTH
+ CydLYM7CyGTxaCMWJAiyvQSVrdTOk3UeWEwvjY5c=
 From: Sasha Levin <sashal@kernel.org>
 To: linux-kernel@vger.kernel.org,
 	stable@vger.kernel.org
-Subject: [PATCH AUTOSEL 4.4 096/174] iommu: Use right function to get group
- for device
-Date: Thu, 16 Jan 2020 12:41:33 -0500
-Message-Id: <20200116174251.24326-96-sashal@kernel.org>
+Subject: [PATCH AUTOSEL 4.4 106/174] iommu/amd: Make iommu_disable safer
+Date: Thu, 16 Jan 2020 12:41:43 -0500
+Message-Id: <20200116174251.24326-106-sashal@kernel.org>
 X-Mailer: git-send-email 2.20.1
 In-Reply-To: <20200116174251.24326-1-sashal@kernel.org>
 References: <20200116174251.24326-1-sashal@kernel.org>
@@ -91,39 +90,37 @@ Content-Transfer-Encoding: 7bit
 Errors-To: iommu-bounces@lists.linux-foundation.org
 Sender: "iommu" <iommu-bounces@lists.linux-foundation.org>
 
-From: Lu Baolu <baolu.lu@linux.intel.com>
+From: Kevin Mitchell <kevmitch@arista.com>
 
-[ Upstream commit 57274ea25736496ee019a5c40479855b21888839 ]
+[ Upstream commit 3ddbe913e55516d3e2165d43d4d5570761769878 ]
 
-The iommu_group_get_for_dev() will allocate a group for a
-device if it isn't in any group. This isn't the use case
-in iommu_request_dm_for_dev(). Let's use iommu_group_get()
-instead.
+Make it safe to call iommu_disable during early init error conditions
+before mmio_base is set, but after the struct amd_iommu has been added
+to the amd_iommu_list. For example, this happens if firmware fails to
+fill in mmio_phys in the ACPI table leading to a NULL pointer
+dereference in iommu_feature_disable.
 
-Fixes: d290f1e70d85a ("iommu: Introduce iommu_request_dm_for_dev()")
-Signed-off-by: Lu Baolu <baolu.lu@linux.intel.com>
+Fixes: 2c0ae1720c09c ('iommu/amd: Convert iommu initialization to state machine')
+Signed-off-by: Kevin Mitchell <kevmitch@arista.com>
 Signed-off-by: Joerg Roedel <jroedel@suse.de>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/iommu/iommu.c | 6 +++---
- 1 file changed, 3 insertions(+), 3 deletions(-)
+ drivers/iommu/amd_iommu_init.c | 3 +++
+ 1 file changed, 3 insertions(+)
 
-diff --git a/drivers/iommu/iommu.c b/drivers/iommu/iommu.c
-index a070fa39521a..2fddea9e2965 100644
---- a/drivers/iommu/iommu.c
-+++ b/drivers/iommu/iommu.c
-@@ -1593,9 +1593,9 @@ int iommu_request_dm_for_dev(struct device *dev)
- 	int ret;
+diff --git a/drivers/iommu/amd_iommu_init.c b/drivers/iommu/amd_iommu_init.c
+index 6a69b5bb231f..036fb186a3be 100644
+--- a/drivers/iommu/amd_iommu_init.c
++++ b/drivers/iommu/amd_iommu_init.c
+@@ -360,6 +360,9 @@ static void iommu_enable(struct amd_iommu *iommu)
  
- 	/* Device must already be in a group before calling this function */
--	group = iommu_group_get_for_dev(dev);
--	if (IS_ERR(group))
--		return PTR_ERR(group);
-+	group = iommu_group_get(dev);
-+	if (!group)
-+		return -EINVAL;
- 
- 	mutex_lock(&group->mutex);
+ static void iommu_disable(struct amd_iommu *iommu)
+ {
++	if (!iommu->mmio_base)
++		return;
++
+ 	/* Disable command buffer */
+ 	iommu_feature_disable(iommu, CONTROL_CMDBUF_EN);
  
 -- 
 2.20.1
