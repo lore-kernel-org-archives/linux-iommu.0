@@ -6,75 +6,75 @@ X-Spam-Status: No, score=-9.8 required=3.0 tests=DKIM_INVALID,DKIM_SIGNED,
 	INCLUDES_PATCH,MAILING_LIST_MULTI,SIGNED_OFF_BY,SPF_HELO_NONE,SPF_PASS,
 	USER_AGENT_GIT autolearn=ham autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 9B5AFC33CAF
-	for <iommu@archiver.kernel.org>; Thu, 16 Jan 2020 17:02:33 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 642A7C33CAF
+	for <iommu@archiver.kernel.org>; Thu, 16 Jan 2020 17:06:55 +0000 (UTC)
 Received: from hemlock.osuosl.org (smtp2.osuosl.org [140.211.166.133])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by mail.kernel.org (Postfix) with ESMTPS id 71E932087E
-	for <iommu@archiver.kernel.org>; Thu, 16 Jan 2020 17:02:33 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTPS id 26C372081E
+	for <iommu@archiver.kernel.org>; Thu, 16 Jan 2020 17:06:55 +0000 (UTC)
 Authentication-Results: mail.kernel.org;
-	dkim=fail reason="signature verification failed" (1024-bit key) header.d=kernel.org header.i=@kernel.org header.b="2XniqBRC"
-DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 71E932087E
+	dkim=fail reason="signature verification failed" (1024-bit key) header.d=kernel.org header.i=@kernel.org header.b="N6Ah5QQ6"
+DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 26C372081E
 Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=kernel.org
 Authentication-Results: mail.kernel.org; spf=pass smtp.mailfrom=iommu-bounces@lists.linux-foundation.org
 Received: from localhost (localhost [127.0.0.1])
-	by hemlock.osuosl.org (Postfix) with ESMTP id 4FDD487EC4;
-	Thu, 16 Jan 2020 17:02:33 +0000 (UTC)
+	by hemlock.osuosl.org (Postfix) with ESMTP id 086A38782E;
+	Thu, 16 Jan 2020 17:06:55 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
 Received: from hemlock.osuosl.org ([127.0.0.1])
 	by localhost (.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
-	with ESMTP id 6qcZAdvg0n9Z; Thu, 16 Jan 2020 17:02:29 +0000 (UTC)
+	with ESMTP id NqH4unsHjdSh; Thu, 16 Jan 2020 17:06:51 +0000 (UTC)
 Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [140.211.9.56])
-	by hemlock.osuosl.org (Postfix) with ESMTP id 3F5DC86554;
-	Thu, 16 Jan 2020 17:02:29 +0000 (UTC)
+	by hemlock.osuosl.org (Postfix) with ESMTP id 0615586C1D;
+	Thu, 16 Jan 2020 17:06:51 +0000 (UTC)
 Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
-	by lists.linuxfoundation.org (Postfix) with ESMTP id 17C9BC1D81;
-	Thu, 16 Jan 2020 17:02:29 +0000 (UTC)
+	by lists.linuxfoundation.org (Postfix) with ESMTP id D82D7C1D82;
+	Thu, 16 Jan 2020 17:06:50 +0000 (UTC)
 Received: from fraxinus.osuosl.org (smtp4.osuosl.org [140.211.166.137])
- by lists.linuxfoundation.org (Postfix) with ESMTP id 8424BC077D
- for <iommu@lists.linux-foundation.org>; Thu, 16 Jan 2020 17:02:27 +0000 (UTC)
+ by lists.linuxfoundation.org (Postfix) with ESMTP id 3AEEBC077D
+ for <iommu@lists.linux-foundation.org>; Thu, 16 Jan 2020 17:06:50 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
- by fraxinus.osuosl.org (Postfix) with ESMTP id 80420864D0
- for <iommu@lists.linux-foundation.org>; Thu, 16 Jan 2020 17:02:27 +0000 (UTC)
+ by fraxinus.osuosl.org (Postfix) with ESMTP id 3738A86444
+ for <iommu@lists.linux-foundation.org>; Thu, 16 Jan 2020 17:06:50 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
 Received: from fraxinus.osuosl.org ([127.0.0.1])
  by localhost (.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
- with ESMTP id E5puiGOsyxl2 for <iommu@lists.linux-foundation.org>;
- Thu, 16 Jan 2020 17:02:23 +0000 (UTC)
+ with ESMTP id SvScmX0PLAjm for <iommu@lists.linux-foundation.org>;
+ Thu, 16 Jan 2020 17:06:45 +0000 (UTC)
 X-Greylist: domain auto-whitelisted by SQLgrey-1.7.6
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
- by fraxinus.osuosl.org (Postfix) with ESMTPS id 9D7268648E
- for <iommu@lists.linux-foundation.org>; Thu, 16 Jan 2020 17:02:23 +0000 (UTC)
+ by fraxinus.osuosl.org (Postfix) with ESMTPS id BD85186502
+ for <iommu@lists.linux-foundation.org>; Thu, 16 Jan 2020 17:06:45 +0000 (UTC)
 Received: from sasha-vm.mshome.net (c-73-47-72-35.hsd1.nh.comcast.net
  [73.47.72.35])
  (using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
  (No client certificate requested)
- by mail.kernel.org (Postfix) with ESMTPSA id 7EEC62073A;
- Thu, 16 Jan 2020 17:02:22 +0000 (UTC)
+ by mail.kernel.org (Postfix) with ESMTPSA id 30CE6217F4;
+ Thu, 16 Jan 2020 17:06:44 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
- s=default; t=1579194143;
- bh=LYNpR484DPPn0EQwZovPvoMildHHBmqnttNUBD+W6As=;
+ s=default; t=1579194405;
+ bh=lflPgxhwfakmTwvoiX71ANfAd/cbGj8aPeWesa75Bnc=;
  h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
- b=2XniqBRCAQxEhMIQ1YhOdHRzw7gDLlKwQxp/WoRMz+4P+s6VXX1B8pbd6gM67rXz+
- PmTr91KMetWynBxHDZu40J+LbS+LZBbc0by6zQrA3aSAaqcFRz5gqELSZ8loxD0OOW
- aVMTjheN4zE5Tf48C7Bl6wYJIfH7U0GqEXyaMTfw=
+ b=N6Ah5QQ6PWuka0HqlbvnMODfHNugLvjNRBeF0uEQA2yvlZ0afmbAiP7O0pCV3yOYc
+ h2K1GfaviunJu+ynFVv8h0RhhASPzO13/2tN9JefmTEpzQpZUPACHTR//dHaOiWAW2
+ /SgIf+cZ/PeIiHL/VgSfELPkYEJcryJjPUUOxi3k=
 From: Sasha Levin <sashal@kernel.org>
 To: linux-kernel@vger.kernel.org,
 	stable@vger.kernel.org
-Subject: [PATCH AUTOSEL 4.19 229/671] iommu/vt-d: Fix NULL pointer reference
- in intel_svm_bind_mm()
-Date: Thu, 16 Jan 2020 11:52:18 -0500
-Message-Id: <20200116165940.10720-112-sashal@kernel.org>
+Subject: [PATCH AUTOSEL 4.19 329/671] iommu/vt-d: Make kernel parameter
+ igfx_off work with vIOMMU
+Date: Thu, 16 Jan 2020 11:59:27 -0500
+Message-Id: <20200116170509.12787-66-sashal@kernel.org>
 X-Mailer: git-send-email 2.20.1
-In-Reply-To: <20200116165940.10720-1-sashal@kernel.org>
-References: <20200116165940.10720-1-sashal@kernel.org>
+In-Reply-To: <20200116170509.12787-1-sashal@kernel.org>
+References: <20200116170509.12787-1-sashal@kernel.org>
 MIME-Version: 1.0
 X-stable: review
 X-Patchwork-Hint: Ignore
-Cc: Sasha Levin <sashal@kernel.org>, Dave Jiang <dave.jiang@intel.com>,
- Ashok Raj <ashok.raj@intel.com>, iommu@lists.linux-foundation.org,
- Joerg Roedel <jroedel@suse.de>
+Cc: Sasha Levin <sashal@kernel.org>, Kevin Tian <kevin.tian@intel.com>,
+ Joerg Roedel <jroedel@suse.de>, Ashok Raj <ashok.raj@intel.com>,
+ Zhenyu Wang <zhenyuw@linux.intel.com>, iommu@lists.linux-foundation.org
 X-BeenThere: iommu@lists.linux-foundation.org
 X-Mailman-Version: 2.1.15
 Precedence: list
@@ -94,39 +94,45 @@ Sender: "iommu" <iommu-bounces@lists.linux-foundation.org>
 
 From: Lu Baolu <baolu.lu@linux.intel.com>
 
-[ Upstream commit c56cba5daf45d2d091ef1cfe2f1d6a930446687b ]
+[ Upstream commit 5daab58043ee2bca861068e2595564828f3bc663 ]
 
-Intel IOMMU could be turned off with intel_iommu=off. If Intel
-IOMMU is off,  the intel_iommu struct will not be initialized.
-When device drivers call intel_svm_bind_mm(), the NULL pointer
-reference will happen there.
-
-Add dmar_disabled check to avoid NULL pointer reference.
+The kernel parameter igfx_off is used by users to disable
+DMA remapping for the Intel integrated graphic device. It
+was designed for bare metal cases where a dedicated IOMMU
+is used for graphic. This doesn't apply to virtual IOMMU
+case where an include-all IOMMU is used.  This makes the
+kernel parameter work with virtual IOMMU as well.
 
 Cc: Ashok Raj <ashok.raj@intel.com>
 Cc: Jacob Pan <jacob.jun.pan@linux.intel.com>
-Reported-by: Dave Jiang <dave.jiang@intel.com>
-Fixes: 2f26e0a9c9860 ("iommu/vt-d: Add basic SVM PASID support")
+Suggested-by: Kevin Tian <kevin.tian@intel.com>
+Fixes: c0771df8d5297 ("intel-iommu: Export a flag indicating that the IOMMU is used for iGFX.")
 Signed-off-by: Lu Baolu <baolu.lu@linux.intel.com>
+Tested-by: Zhenyu Wang <zhenyuw@linux.intel.com>
 Signed-off-by: Joerg Roedel <jroedel@suse.de>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/iommu/intel-svm.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+ drivers/iommu/intel-iommu.c | 5 ++++-
+ 1 file changed, 4 insertions(+), 1 deletion(-)
 
-diff --git a/drivers/iommu/intel-svm.c b/drivers/iommu/intel-svm.c
-index 188f4eaed6e5..fd8730b2cd46 100644
---- a/drivers/iommu/intel-svm.c
-+++ b/drivers/iommu/intel-svm.c
-@@ -293,7 +293,7 @@ int intel_svm_bind_mm(struct device *dev, int *pasid, int flags, struct svm_dev_
- 	int pasid_max;
- 	int ret;
+diff --git a/drivers/iommu/intel-iommu.c b/drivers/iommu/intel-iommu.c
+index b9af2419006f..abbbc614c522 100644
+--- a/drivers/iommu/intel-iommu.c
++++ b/drivers/iommu/intel-iommu.c
+@@ -3387,9 +3387,12 @@ static int __init init_dmars(void)
+ 		iommu_identity_mapping |= IDENTMAP_ALL;
  
--	if (!iommu)
-+	if (!iommu || dmar_disabled)
- 		return -EINVAL;
+ #ifdef CONFIG_INTEL_IOMMU_BROKEN_GFX_WA
+-	iommu_identity_mapping |= IDENTMAP_GFX;
++	dmar_map_gfx = 0;
+ #endif
  
- 	if (dev_is_pci(dev)) {
++	if (!dmar_map_gfx)
++		iommu_identity_mapping |= IDENTMAP_GFX;
++
+ 	check_tylersburg_isoch();
+ 
+ 	if (iommu_identity_mapping) {
 -- 
 2.20.1
 
