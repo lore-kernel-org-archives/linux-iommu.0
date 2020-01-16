@@ -6,75 +6,73 @@ X-Spam-Status: No, score=-9.8 required=3.0 tests=DKIM_INVALID,DKIM_SIGNED,
 	INCLUDES_PATCH,MAILING_LIST_MULTI,SIGNED_OFF_BY,SPF_HELO_NONE,SPF_PASS,
 	USER_AGENT_GIT autolearn=ham autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 642A7C33CAF
-	for <iommu@archiver.kernel.org>; Thu, 16 Jan 2020 17:06:55 +0000 (UTC)
-Received: from hemlock.osuosl.org (smtp2.osuosl.org [140.211.166.133])
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 175F3C33CB6
+	for <iommu@archiver.kernel.org>; Thu, 16 Jan 2020 17:08:10 +0000 (UTC)
+Received: from fraxinus.osuosl.org (smtp4.osuosl.org [140.211.166.137])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by mail.kernel.org (Postfix) with ESMTPS id 26C372081E
-	for <iommu@archiver.kernel.org>; Thu, 16 Jan 2020 17:06:55 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTPS id E25B521D56
+	for <iommu@archiver.kernel.org>; Thu, 16 Jan 2020 17:08:09 +0000 (UTC)
 Authentication-Results: mail.kernel.org;
-	dkim=fail reason="signature verification failed" (1024-bit key) header.d=kernel.org header.i=@kernel.org header.b="N6Ah5QQ6"
-DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 26C372081E
+	dkim=fail reason="signature verification failed" (1024-bit key) header.d=kernel.org header.i=@kernel.org header.b="D3pcXu8v"
+DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org E25B521D56
 Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=kernel.org
 Authentication-Results: mail.kernel.org; spf=pass smtp.mailfrom=iommu-bounces@lists.linux-foundation.org
 Received: from localhost (localhost [127.0.0.1])
-	by hemlock.osuosl.org (Postfix) with ESMTP id 086A38782E;
-	Thu, 16 Jan 2020 17:06:55 +0000 (UTC)
-X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from hemlock.osuosl.org ([127.0.0.1])
-	by localhost (.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
-	with ESMTP id NqH4unsHjdSh; Thu, 16 Jan 2020 17:06:51 +0000 (UTC)
-Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [140.211.9.56])
-	by hemlock.osuosl.org (Postfix) with ESMTP id 0615586C1D;
-	Thu, 16 Jan 2020 17:06:51 +0000 (UTC)
-Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
-	by lists.linuxfoundation.org (Postfix) with ESMTP id D82D7C1D82;
-	Thu, 16 Jan 2020 17:06:50 +0000 (UTC)
-Received: from fraxinus.osuosl.org (smtp4.osuosl.org [140.211.166.137])
- by lists.linuxfoundation.org (Postfix) with ESMTP id 3AEEBC077D
- for <iommu@lists.linux-foundation.org>; Thu, 16 Jan 2020 17:06:50 +0000 (UTC)
-Received: from localhost (localhost [127.0.0.1])
- by fraxinus.osuosl.org (Postfix) with ESMTP id 3738A86444
- for <iommu@lists.linux-foundation.org>; Thu, 16 Jan 2020 17:06:50 +0000 (UTC)
+	by fraxinus.osuosl.org (Postfix) with ESMTP id 8363086511;
+	Thu, 16 Jan 2020 17:08:09 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
 Received: from fraxinus.osuosl.org ([127.0.0.1])
+	by localhost (.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
+	with ESMTP id JkXaQhyCyoBM; Thu, 16 Jan 2020 17:08:05 +0000 (UTC)
+Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [140.211.9.56])
+	by fraxinus.osuosl.org (Postfix) with ESMTP id 95F6B86388;
+	Thu, 16 Jan 2020 17:08:05 +0000 (UTC)
+Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
+	by lists.linuxfoundation.org (Postfix) with ESMTP id 7BA4DC1D82;
+	Thu, 16 Jan 2020 17:08:05 +0000 (UTC)
+Received: from silver.osuosl.org (smtp3.osuosl.org [140.211.166.136])
+ by lists.linuxfoundation.org (Postfix) with ESMTP id A4A24C077D
+ for <iommu@lists.linux-foundation.org>; Thu, 16 Jan 2020 17:08:03 +0000 (UTC)
+Received: from localhost (localhost [127.0.0.1])
+ by silver.osuosl.org (Postfix) with ESMTP id 9204421552
+ for <iommu@lists.linux-foundation.org>; Thu, 16 Jan 2020 17:08:03 +0000 (UTC)
+X-Virus-Scanned: amavisd-new at osuosl.org
+Received: from silver.osuosl.org ([127.0.0.1])
  by localhost (.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
- with ESMTP id SvScmX0PLAjm for <iommu@lists.linux-foundation.org>;
- Thu, 16 Jan 2020 17:06:45 +0000 (UTC)
+ with ESMTP id IRL7AJcjO073 for <iommu@lists.linux-foundation.org>;
+ Thu, 16 Jan 2020 17:07:59 +0000 (UTC)
 X-Greylist: domain auto-whitelisted by SQLgrey-1.7.6
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
- by fraxinus.osuosl.org (Postfix) with ESMTPS id BD85186502
- for <iommu@lists.linux-foundation.org>; Thu, 16 Jan 2020 17:06:45 +0000 (UTC)
+ by silver.osuosl.org (Postfix) with ESMTPS id 1F4AA1FD43
+ for <iommu@lists.linux-foundation.org>; Thu, 16 Jan 2020 17:07:59 +0000 (UTC)
 Received: from sasha-vm.mshome.net (c-73-47-72-35.hsd1.nh.comcast.net
  [73.47.72.35])
  (using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
  (No client certificate requested)
- by mail.kernel.org (Postfix) with ESMTPSA id 30CE6217F4;
- Thu, 16 Jan 2020 17:06:44 +0000 (UTC)
+ by mail.kernel.org (Postfix) with ESMTPSA id 46BB4206D9;
+ Thu, 16 Jan 2020 17:07:58 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
- s=default; t=1579194405;
- bh=lflPgxhwfakmTwvoiX71ANfAd/cbGj8aPeWesa75Bnc=;
+ s=default; t=1579194479;
+ bh=g4t8kFndCxD6s/8W5gK5vLLMfA5wtpfK7dLthKUgN6I=;
  h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
- b=N6Ah5QQ6PWuka0HqlbvnMODfHNugLvjNRBeF0uEQA2yvlZ0afmbAiP7O0pCV3yOYc
- h2K1GfaviunJu+ynFVv8h0RhhASPzO13/2tN9JefmTEpzQpZUPACHTR//dHaOiWAW2
- /SgIf+cZ/PeIiHL/VgSfELPkYEJcryJjPUUOxi3k=
+ b=D3pcXu8vL+Fmw9KJui888lvTtBP+o1hP7ikuOxRqtGrzzoq3ZWihEp/1eF5Psh1NM
+ 2kFGUDQs2enm32RDGAvtlVT/XVAtj5Ime2zuhj1hCRFj8t6xXawovP/PtMM8v/mZdX
+ OHSyH/XXJ7pEihAeuLszDhuGQ4F4ou0WMEdGj9xA=
 From: Sasha Levin <sashal@kernel.org>
 To: linux-kernel@vger.kernel.org,
 	stable@vger.kernel.org
-Subject: [PATCH AUTOSEL 4.19 329/671] iommu/vt-d: Make kernel parameter
- igfx_off work with vIOMMU
-Date: Thu, 16 Jan 2020 11:59:27 -0500
-Message-Id: <20200116170509.12787-66-sashal@kernel.org>
+Subject: [PATCH AUTOSEL 4.19 381/671] iommu: Add missing new line for dma type
+Date: Thu, 16 Jan 2020 12:00:19 -0500
+Message-Id: <20200116170509.12787-118-sashal@kernel.org>
 X-Mailer: git-send-email 2.20.1
 In-Reply-To: <20200116170509.12787-1-sashal@kernel.org>
 References: <20200116170509.12787-1-sashal@kernel.org>
 MIME-Version: 1.0
 X-stable: review
 X-Patchwork-Hint: Ignore
-Cc: Sasha Levin <sashal@kernel.org>, Kevin Tian <kevin.tian@intel.com>,
- Joerg Roedel <jroedel@suse.de>, Ashok Raj <ashok.raj@intel.com>,
- Zhenyu Wang <zhenyuw@linux.intel.com>, iommu@lists.linux-foundation.org
+Cc: Sasha Levin <sashal@kernel.org>, iommu@lists.linux-foundation.org,
+ Joerg Roedel <jroedel@suse.de>
 X-BeenThere: iommu@lists.linux-foundation.org
 X-Mailman-Version: 2.1.15
 Precedence: list
@@ -94,45 +92,31 @@ Sender: "iommu" <iommu-bounces@lists.linux-foundation.org>
 
 From: Lu Baolu <baolu.lu@linux.intel.com>
 
-[ Upstream commit 5daab58043ee2bca861068e2595564828f3bc663 ]
+[ Upstream commit 24f307d8abf79486dd3c1b645037df7d91602aaa ]
 
-The kernel parameter igfx_off is used by users to disable
-DMA remapping for the Intel integrated graphic device. It
-was designed for bare metal cases where a dedicated IOMMU
-is used for graphic. This doesn't apply to virtual IOMMU
-case where an include-all IOMMU is used.  This makes the
-kernel parameter work with virtual IOMMU as well.
+So that all types are printed in the same format.
 
-Cc: Ashok Raj <ashok.raj@intel.com>
-Cc: Jacob Pan <jacob.jun.pan@linux.intel.com>
-Suggested-by: Kevin Tian <kevin.tian@intel.com>
-Fixes: c0771df8d5297 ("intel-iommu: Export a flag indicating that the IOMMU is used for iGFX.")
+Fixes: c52c72d3dee81 ("iommu: Add sysfs attribyte for domain type")
 Signed-off-by: Lu Baolu <baolu.lu@linux.intel.com>
-Tested-by: Zhenyu Wang <zhenyuw@linux.intel.com>
 Signed-off-by: Joerg Roedel <jroedel@suse.de>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/iommu/intel-iommu.c | 5 ++++-
- 1 file changed, 4 insertions(+), 1 deletion(-)
+ drivers/iommu/iommu.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-diff --git a/drivers/iommu/intel-iommu.c b/drivers/iommu/intel-iommu.c
-index b9af2419006f..abbbc614c522 100644
---- a/drivers/iommu/intel-iommu.c
-+++ b/drivers/iommu/intel-iommu.c
-@@ -3387,9 +3387,12 @@ static int __init init_dmars(void)
- 		iommu_identity_mapping |= IDENTMAP_ALL;
- 
- #ifdef CONFIG_INTEL_IOMMU_BROKEN_GFX_WA
--	iommu_identity_mapping |= IDENTMAP_GFX;
-+	dmar_map_gfx = 0;
- #endif
- 
-+	if (!dmar_map_gfx)
-+		iommu_identity_mapping |= IDENTMAP_GFX;
-+
- 	check_tylersburg_isoch();
- 
- 	if (iommu_identity_mapping) {
+diff --git a/drivers/iommu/iommu.c b/drivers/iommu/iommu.c
+index bc14825edc9c..d588b6844f5f 100644
+--- a/drivers/iommu/iommu.c
++++ b/drivers/iommu/iommu.c
+@@ -317,7 +317,7 @@ static ssize_t iommu_group_show_type(struct iommu_group *group,
+ 			type = "unmanaged\n";
+ 			break;
+ 		case IOMMU_DOMAIN_DMA:
+-			type = "DMA";
++			type = "DMA\n";
+ 			break;
+ 		}
+ 	}
 -- 
 2.20.1
 
