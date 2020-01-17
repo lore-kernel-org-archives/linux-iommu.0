@@ -2,64 +2,62 @@ Return-Path: <SRS0=0DsW=3G=lists.linux-foundation.org=iommu-bounces@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-12.3 required=3.0
-	tests=HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_PULL_REQUEST,MAILING_LIST_MULTI,
-	MENTIONS_GIT_HOSTING,SPF_HELO_NONE,SPF_PASS,USER_AGENT_SANE_1 autolearn=ham
+X-Spam-Status: No, score=-2.3 required=3.0 tests=HEADER_FROM_DIFFERENT_DOMAINS,
+	MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS,USER_AGENT_SANE_1 autolearn=no
 	autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 5EF7AC33CB1
-	for <iommu@archiver.kernel.org>; Fri, 17 Jan 2020 10:03:16 +0000 (UTC)
-Received: from whitealder.osuosl.org (smtp1.osuosl.org [140.211.166.138])
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 02BEDC33CB1
+	for <iommu@archiver.kernel.org>; Fri, 17 Jan 2020 10:07:09 +0000 (UTC)
+Received: from hemlock.osuosl.org (smtp2.osuosl.org [140.211.166.133])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by mail.kernel.org (Postfix) with ESMTPS id 360012082F
-	for <iommu@archiver.kernel.org>; Fri, 17 Jan 2020 10:03:16 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 360012082F
+	by mail.kernel.org (Postfix) with ESMTPS id C8A0A206E6
+	for <iommu@archiver.kernel.org>; Fri, 17 Jan 2020 10:07:08 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org C8A0A206E6
 Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=8bytes.org
 Authentication-Results: mail.kernel.org; spf=pass smtp.mailfrom=iommu-bounces@lists.linux-foundation.org
 Received: from localhost (localhost [127.0.0.1])
-	by whitealder.osuosl.org (Postfix) with ESMTP id CB32A86E1D;
-	Fri, 17 Jan 2020 10:03:15 +0000 (UTC)
+	by hemlock.osuosl.org (Postfix) with ESMTP id A03D282A97;
+	Fri, 17 Jan 2020 10:07:08 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from whitealder.osuosl.org ([127.0.0.1])
+Received: from hemlock.osuosl.org ([127.0.0.1])
 	by localhost (.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
-	with ESMTP id XJAHB3vP3Ioe; Fri, 17 Jan 2020 10:03:11 +0000 (UTC)
+	with ESMTP id ugbMDI46cbj5; Fri, 17 Jan 2020 10:07:03 +0000 (UTC)
 Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [140.211.9.56])
-	by whitealder.osuosl.org (Postfix) with ESMTP id 0D39686CC0;
-	Fri, 17 Jan 2020 10:03:11 +0000 (UTC)
+	by hemlock.osuosl.org (Postfix) with ESMTP id B2DC186BB4;
+	Fri, 17 Jan 2020 10:06:33 +0000 (UTC)
 Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
-	by lists.linuxfoundation.org (Postfix) with ESMTP id F0477C1D81;
-	Fri, 17 Jan 2020 10:03:10 +0000 (UTC)
-Received: from whitealder.osuosl.org (smtp1.osuosl.org [140.211.166.138])
- by lists.linuxfoundation.org (Postfix) with ESMTP id 066C2C077D
- for <iommu@lists.linux-foundation.org>; Fri, 17 Jan 2020 10:03:09 +0000 (UTC)
+	by lists.linuxfoundation.org (Postfix) with ESMTP id 99E7AC1D81;
+	Fri, 17 Jan 2020 10:06:33 +0000 (UTC)
+Received: from silver.osuosl.org (smtp3.osuosl.org [140.211.166.136])
+ by lists.linuxfoundation.org (Postfix) with ESMTP id F3480C077D
+ for <iommu@lists.linux-foundation.org>; Fri, 17 Jan 2020 10:06:32 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
- by whitealder.osuosl.org (Postfix) with ESMTP id E2FB186CDB
- for <iommu@lists.linux-foundation.org>; Fri, 17 Jan 2020 10:03:08 +0000 (UTC)
+ by silver.osuosl.org (Postfix) with ESMTP id EC4A12040C
+ for <iommu@lists.linux-foundation.org>; Fri, 17 Jan 2020 10:06:32 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from whitealder.osuosl.org ([127.0.0.1])
+Received: from silver.osuosl.org ([127.0.0.1])
  by localhost (.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
- with ESMTP id qfaNvLuueMIX for <iommu@lists.linux-foundation.org>;
- Fri, 17 Jan 2020 10:03:01 +0000 (UTC)
+ with ESMTP id 686VwPjZKy9V for <iommu@lists.linux-foundation.org>;
+ Fri, 17 Jan 2020 10:06:27 +0000 (UTC)
 X-Greylist: from auto-whitelisted by SQLgrey-1.7.6
 Received: from theia.8bytes.org (8bytes.org [81.169.241.247])
- by whitealder.osuosl.org (Postfix) with ESMTPS id 6C51E86CC0
- for <iommu@lists.linux-foundation.org>; Fri, 17 Jan 2020 10:03:01 +0000 (UTC)
+ by silver.osuosl.org (Postfix) with ESMTPS id 2DA7B1FEDF
+ for <iommu@lists.linux-foundation.org>; Fri, 17 Jan 2020 10:06:27 +0000 (UTC)
 Received: by theia.8bytes.org (Postfix, from userid 1000)
- id F0116327; Fri, 17 Jan 2020 11:02:56 +0100 (CET)
-Date: Fri, 17 Jan 2020 11:02:55 +0100
+ id 96FDE327; Fri, 17 Jan 2020 11:06:25 +0100 (CET)
+Date: Fri, 17 Jan 2020 11:06:24 +0100
 From: Joerg Roedel <joro@8bytes.org>
-To: Will Deacon <will@kernel.org>
-Subject: Re: [GIT PULL] iommu/arm-smmu: Updates for 5.6
-Message-ID: <20200117100255.GC15760@8bytes.org>
-References: <20200116102548.GA14761@willie-the-truck>
+To: Adrian Huang <adrianhuang0701@gmail.com>
+Subject: Re: [PATCH 0/2] iommu/amd: Optimization and cleanup for unused
+ variables
+Message-ID: <20200117100623.GD15760@8bytes.org>
+References: <20200109030251.5782-1-ahuang12@lenovo.com>
 MIME-Version: 1.0
 Content-Disposition: inline
-In-Reply-To: <20200116102548.GA14761@willie-the-truck>
+In-Reply-To: <20200109030251.5782-1-ahuang12@lenovo.com>
 User-Agent: Mutt/1.10.1 (2018-07-13)
-Cc: jean-philippe@linaro.org, robin.murphy@arm.com,
- linux-kernel@vger.kernel.org, iommu@lists.linux-foundation.org,
- kernel-team@android.com, linux-arm-kernel@lists.infradead.org
+Cc: iommu@lists.linux-foundation.org, Adrian Huang <ahuang12@lenovo.com>
 X-BeenThere: iommu@lists.linux-foundation.org
 X-Mailman-Version: 2.1.15
 Precedence: list
@@ -77,34 +75,15 @@ Content-Transfer-Encoding: 7bit
 Errors-To: iommu-bounces@lists.linux-foundation.org
 Sender: "iommu" <iommu-bounces@lists.linux-foundation.org>
 
-On Thu, Jan 16, 2020 at 10:25:49AM +0000, Will Deacon wrote:
-> Hi Joerg,
+On Thu, Jan 09, 2020 at 11:02:49AM +0800, Adrian Huang wrote:
+> This series optimizes the register reading by using readq instead of
+> readl and cleans up the unused variables.
 > 
-> Please pull these Arm SMMU updates for 5.6. The branch is based on your
-> arm/smmu branch and includes a patch addressing the feedback from Greg
-> about setting the module 'owner' field in the 'iommu_ops'.
-> 
-> I've used a signed tag this time, so you can see the summary of the
-> changes listed in there. The big deal is that we're laying the groundwork
-> for PCIe PASID support in SMMUv3, and I expect to hook that up for PCIe
-> masters in 5.7 once we've exported the necessary symbols to do so.
-> 
-> Cheers,
-> 
-> Will
-> 
-> --->8
-> 
-> The following changes since commit 1ea27ee2f76e67f98b9942988f1336a70d351317:
-> 
->   iommu/arm-smmu: Update my email address in MODULE_AUTHOR() (2019-12-23 14:06:06 +0100)
-> 
-> are available in the Git repository at:
-> 
->   git://git.kernel.org/pub/scm/linux/kernel/git/will/linux.git tags/arm-smmu-updates
+> Adrian Huang (2):
+>   iommu/amd: Replace two consecutive readl calls with one readq
+>   iommu/amd: Remove unused struct member
 
-Pulled, thanks Will.
-
+Applied, thanks Adrian.
 _______________________________________________
 iommu mailing list
 iommu@lists.linux-foundation.org
