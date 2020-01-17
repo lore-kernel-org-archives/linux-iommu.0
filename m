@@ -2,82 +2,68 @@ Return-Path: <SRS0=0DsW=3G=lists.linux-foundation.org=iommu-bounces@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-10.0 required=3.0 tests=INCLUDES_PATCH,
-	MAILING_LIST_MULTI,SIGNED_OFF_BY,SPF_HELO_NONE,SPF_PASS,USER_AGENT_GIT
-	autolearn=ham autolearn_force=no version=3.4.0
+X-Spam-Status: No, score=-7.6 required=3.0 tests=DATE_IN_PAST_06_12,
+	HEADER_FROM_DIFFERENT_DOMAINS,MAILING_LIST_MULTI,MENTIONS_GIT_HOSTING,
+	SPF_HELO_NONE,SPF_PASS,USER_AGENT_GIT autolearn=unavailable
+	autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 7681BC33C9E
-	for <iommu@archiver.kernel.org>; Fri, 17 Jan 2020 21:16:36 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 561C1C33C9E
+	for <iommu@archiver.kernel.org>; Fri, 17 Jan 2020 22:32:25 +0000 (UTC)
 Received: from silver.osuosl.org (smtp3.osuosl.org [140.211.166.136])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by mail.kernel.org (Postfix) with ESMTPS id 45A4520748
-	for <iommu@archiver.kernel.org>; Fri, 17 Jan 2020 21:16:36 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 45A4520748
-Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=kernel.org
+	by mail.kernel.org (Postfix) with ESMTPS id 14A7E21582
+	for <iommu@archiver.kernel.org>; Fri, 17 Jan 2020 22:32:25 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 14A7E21582
+Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=intel.com
 Authentication-Results: mail.kernel.org; spf=pass smtp.mailfrom=iommu-bounces@lists.linux-foundation.org
 Received: from localhost (localhost [127.0.0.1])
-	by silver.osuosl.org (Postfix) with ESMTP id 121B420347;
-	Fri, 17 Jan 2020 21:16:36 +0000 (UTC)
+	by silver.osuosl.org (Postfix) with ESMTP id DD14B221AF;
+	Fri, 17 Jan 2020 22:32:24 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
 Received: from silver.osuosl.org ([127.0.0.1])
 	by localhost (.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
-	with ESMTP id fXFS9mJJQ-6x; Fri, 17 Jan 2020 21:16:33 +0000 (UTC)
+	with ESMTP id 8IqItLsK5gyD; Fri, 17 Jan 2020 22:32:24 +0000 (UTC)
 Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [140.211.9.56])
-	by silver.osuosl.org (Postfix) with ESMTP id 2331020010;
-	Fri, 17 Jan 2020 21:16:33 +0000 (UTC)
+	by silver.osuosl.org (Postfix) with ESMTP id 3AFE122176;
+	Fri, 17 Jan 2020 22:32:24 +0000 (UTC)
 Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
-	by lists.linuxfoundation.org (Postfix) with ESMTP id EFC8BC1D81;
-	Fri, 17 Jan 2020 21:16:32 +0000 (UTC)
-Received: from fraxinus.osuosl.org (smtp4.osuosl.org [140.211.166.137])
- by lists.linuxfoundation.org (Postfix) with ESMTP id 789D4C077D
- for <iommu@lists.linux-foundation.org>; Fri, 17 Jan 2020 21:16:32 +0000 (UTC)
+	by lists.linuxfoundation.org (Postfix) with ESMTP id 2ED02C18DC;
+	Fri, 17 Jan 2020 22:32:24 +0000 (UTC)
+Received: from whitealder.osuosl.org (smtp1.osuosl.org [140.211.166.138])
+ by lists.linuxfoundation.org (Postfix) with ESMTP id C5936C077D
+ for <iommu@lists.linux-foundation.org>; Fri, 17 Jan 2020 22:32:23 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
- by fraxinus.osuosl.org (Postfix) with ESMTP id 605A886934
- for <iommu@lists.linux-foundation.org>; Fri, 17 Jan 2020 21:16:32 +0000 (UTC)
+ by whitealder.osuosl.org (Postfix) with ESMTP id AE52C84D9F
+ for <iommu@lists.linux-foundation.org>; Fri, 17 Jan 2020 22:32:23 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from fraxinus.osuosl.org ([127.0.0.1])
+Received: from whitealder.osuosl.org ([127.0.0.1])
  by localhost (.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
- with ESMTP id 7gAr5OSZepok for <iommu@lists.linux-foundation.org>;
- Fri, 17 Jan 2020 21:16:31 +0000 (UTC)
+ with ESMTP id vq6JbWnlQ6PY for <iommu@lists.linux-foundation.org>;
+ Fri, 17 Jan 2020 22:32:22 +0000 (UTC)
 X-Greylist: domain auto-whitelisted by SQLgrey-1.7.6
-Received: from mail-oi1-f194.google.com (mail-oi1-f194.google.com
- [209.85.167.194])
- by fraxinus.osuosl.org (Postfix) with ESMTPS id 7432586931
- for <iommu@lists.linux-foundation.org>; Fri, 17 Jan 2020 21:16:31 +0000 (UTC)
-Received: by mail-oi1-f194.google.com with SMTP id 13so23423351oij.13
- for <iommu@lists.linux-foundation.org>; Fri, 17 Jan 2020 13:16:31 -0800 (PST)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
- d=1e100.net; s=20161025;
- h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
- :content-transfer-encoding;
- bh=Tb+Ls2cqj87y+nWH3s10NH3pHi0E9uc7+PCEniFRuAI=;
- b=Y26LY2M1zrxOAJOwtbFXGucdWEXuh0VQBWCQDYk69MxjKDZ/KZ2ELCvElrD1ZLviI4
- psGg7F9aEKrzV9HzZgJ7L1coJNlAoZRCuC241578WSa3zYT1FMqJ30y07mpwXg8cC+fe
- kAmIztS/SJAqyARKlVEh36XV0KcqeOAMFWiUPycfUdWbAYyTBFmMXixPm5pJ4GBn9mKq
- NRKWJ2XhtyXbOgZigMd9Lj2xUItDVFiAAQ/fbIT4BBzDIUMTzMRtOiKgK0EX0FfOJAGn
- MTfHOPJDlrZGo0ZJxlaFjBxLDKiX5aU1B//vCCp4QfVJhQ6hnuUZJ66jCSBErB+ZvVZt
- OxGQ==
-X-Gm-Message-State: APjAAAXRaAntGGVEkVU+j17Ven5DmSgbn4ZnLechidmTFXEaLznYjNKC
- AdGyTgXicwwKBFZMK7eJT42r8JU=
-X-Google-Smtp-Source: APXvYqwF25mTR3buvDsX53QQ4KB2QbYu9nBFkcNrSy0S7l9aiCyN1PGnncO9f4Jd8UVJ5WctnCKmpw==
-X-Received: by 2002:aca:815:: with SMTP id 21mr5003069oii.52.1579295790324;
- Fri, 17 Jan 2020 13:16:30 -0800 (PST)
-Received: from xps15.herring.priv (24-155-109-49.dyn.grandenetworks.net.
- [24.155.109.49])
- by smtp.googlemail.com with ESMTPSA id m3sm9255508otf.13.2020.01.17.13.16.29
- (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
- Fri, 17 Jan 2020 13:16:29 -0800 (PST)
-From: Rob Herring <robh@kernel.org>
-To: iommu@lists.linux-foundation.org
-Subject: [PATCH v2] iommu/arm-smmu-v3: Add SMMUv3.2 range invalidation support
-Date: Fri, 17 Jan 2020 15:16:28 -0600
-Message-Id: <20200117211628.27888-1-robh@kernel.org>
-X-Mailer: git-send-email 2.20.1
-MIME-Version: 1.0
-Cc: Jean-Philippe Brucker <jean-philippe@linaro.org>,
- Robin Murphy <robin.murphy@arm.com>, Will Deacon <will@kernel.org>,
- linux-arm-kernel@lists.infradead.org
+Received: from mga07.intel.com (mga07.intel.com [134.134.136.100])
+ by whitealder.osuosl.org (Postfix) with ESMTPS id C438384C2A
+ for <iommu@lists.linux-foundation.org>; Fri, 17 Jan 2020 22:32:22 +0000 (UTC)
+X-Amp-Result: SKIPPED(no attachment in message)
+X-Amp-File-Uploaded: False
+Received: from orsmga008.jf.intel.com ([10.7.209.65])
+ by orsmga105.jf.intel.com with ESMTP/TLS/DHE-RSA-AES256-GCM-SHA384;
+ 17 Jan 2020 14:30:27 -0800
+X-IronPort-AV: E=Sophos;i="5.70,331,1574150400"; d="scan'208";a="219052190"
+Received: from nsgsw-rhel7p6.lm.intel.com ([10.232.116.83])
+ by orsmga008-auth.jf.intel.com with ESMTP/TLS/DHE-RSA-AES256-GCM-SHA384;
+ 17 Jan 2020 14:30:27 -0800
+From: Jon Derrick <jonathan.derrick@intel.com>
+To: <linux-pci@vger.kernel.org>, Bjorn Helgaas <helgaas@kernel.org>,
+ Lorenzo Pieralisi <lorenzo.pieralisi@arm.com>
+Subject: [PATCH v4 0/7] Clean up VMD DMA Map Ops
+Date: Fri, 17 Jan 2020 09:27:22 -0700
+Message-Id: <1579278449-174098-1-git-send-email-jonathan.derrick@intel.com>
+X-Mailer: git-send-email 1.8.3.1
+Cc: iommu@lists.linux-foundation.org, Keith Busch <kbusch@kernel.org>,
+ David Woodhouse <dwmw2@infradead.org>, Christoph Hellwig <hch@lst.de>,
+ Jon Derrick <jonathan.derrick@intel.com>
 X-BeenThere: iommu@lists.linux-foundation.org
 X-Mailman-Version: 2.1.15
 Precedence: list
@@ -90,178 +76,93 @@ List-Post: <mailto:iommu@lists.linux-foundation.org>
 List-Help: <mailto:iommu-request@lists.linux-foundation.org?subject=help>
 List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
  <mailto:iommu-request@lists.linux-foundation.org?subject=subscribe>
+MIME-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
 Errors-To: iommu-bounces@lists.linux-foundation.org
 Sender: "iommu" <iommu-bounces@lists.linux-foundation.org>
 
-Arm SMMUv3.2 adds support for TLB range invalidate operations.
-Support for range invalidate is determined by the RIL bit in the IDR3
-register.
+v3 Set: https://lore.kernel.org/linux-iommu/20200113181742.GA27623@e121166-lin.cambridge.arm.com/T/#t
+v2 Set: https://lore.kernel.org/linux-iommu/1578580256-3483-1-git-send-email-jonathan.derrick@intel.com/T/#t
+v1 Set: https://lore.kernel.org/linux-iommu/20200107134125.GD30750@8bytes.org/T/#t
 
-The range invalidate is in units of the leaf page size and operates on
-1-32 chunks of a power of 2 multiple pages. First, we determine from the
-size what power of 2 multiple we can use. Then we calculate how many
-chunks (1-31) of the power of 2 size for the range on the iteration. On
-each iteration, we move up in size by at least 5 bits.
+VMD currently works with VT-d enabled by pointing DMA and IOMMU actions at the
+VMD endpoint. The problem with this approach is that the VMD endpoint's
+device-specific attributes, such as the DMA Mask Bits, are used instead of the
+child device's attributes.
 
-Cc: Eric Auger <eric.auger@redhat.com>
-Cc: Jean-Philippe Brucker <jean-philippe@linaro.org>
-Cc: Will Deacon <will@kernel.org>
-Cc: Robin Murphy <robin.murphy@arm.com>
-Cc: Joerg Roedel <joro@8bytes.org>
-Signed-off-by: Rob Herring <robh@kernel.org>
----
- drivers/iommu/arm-smmu-v3.c | 66 ++++++++++++++++++++++++++++++++++++-
- 1 file changed, 65 insertions(+), 1 deletion(-)
+This set cleans up VMD by removing the override that redirects DMA map
+operations to the VMD endpoint. Instead it introduces a new DMA alias mechanism
+into the existing DMA alias infrastructure. This new DMA alias mechanism allows
+an architecture-specific pci_real_dma_dev() function to provide a pointer from
+a pci_dev to its PCI DMA device, where by default it returns the original
+pci_dev.
 
-diff --git a/drivers/iommu/arm-smmu-v3.c b/drivers/iommu/arm-smmu-v3.c
-index e91b4a098215..0ee561db7149 100644
---- a/drivers/iommu/arm-smmu-v3.c
-+++ b/drivers/iommu/arm-smmu-v3.c
-@@ -70,6 +70,9 @@
- #define IDR1_SSIDSIZE			GENMASK(10, 6)
- #define IDR1_SIDSIZE			GENMASK(5, 0)
- 
-+#define ARM_SMMU_IDR3			0xc
-+#define IDR3_RIL			(1 << 10)
-+
- #define ARM_SMMU_IDR5			0x14
- #define IDR5_STALL_MAX			GENMASK(31, 16)
- #define IDR5_GRAN64K			(1 << 6)
-@@ -327,9 +330,14 @@
- #define CMDQ_CFGI_1_LEAF		(1UL << 0)
- #define CMDQ_CFGI_1_RANGE		GENMASK_ULL(4, 0)
- 
-+#define CMDQ_TLBI_0_NUM			GENMASK_ULL(16, 12)
-+#define CMDQ_TLBI_RANGE_NUM_MAX		31
-+#define CMDQ_TLBI_0_SCALE		GENMASK_ULL(24, 20)
- #define CMDQ_TLBI_0_VMID		GENMASK_ULL(47, 32)
- #define CMDQ_TLBI_0_ASID		GENMASK_ULL(63, 48)
- #define CMDQ_TLBI_1_LEAF		(1UL << 0)
-+#define CMDQ_TLBI_1_TTL			GENMASK_ULL(9, 8)
-+#define CMDQ_TLBI_1_TG			GENMASK_ULL(11, 10)
- #define CMDQ_TLBI_1_VA_MASK		GENMASK_ULL(63, 12)
- #define CMDQ_TLBI_1_IPA_MASK		GENMASK_ULL(51, 12)
- 
-@@ -455,9 +463,13 @@ struct arm_smmu_cmdq_ent {
- 		#define CMDQ_OP_TLBI_S2_IPA	0x2a
- 		#define CMDQ_OP_TLBI_NSNH_ALL	0x30
- 		struct {
-+			u8			num;
-+			u8			scale;
- 			u16			asid;
- 			u16			vmid;
- 			bool			leaf;
-+			u8			ttl;
-+			u8			tg;
- 			u64			addr;
- 		} tlbi;
- 
-@@ -595,6 +607,7 @@ struct arm_smmu_device {
- #define ARM_SMMU_FEAT_HYP		(1 << 12)
- #define ARM_SMMU_FEAT_STALL_FORCE	(1 << 13)
- #define ARM_SMMU_FEAT_VAX		(1 << 14)
-+#define ARM_SMMU_FEAT_RANGE_INV		(1 << 15)
- 	u32				features;
- 
- #define ARM_SMMU_OPT_SKIP_PREFETCH	(1 << 0)
-@@ -856,13 +869,21 @@ static int arm_smmu_cmdq_build_cmd(u64 *cmd, struct arm_smmu_cmdq_ent *ent)
- 		cmd[1] |= FIELD_PREP(CMDQ_CFGI_1_RANGE, 31);
- 		break;
- 	case CMDQ_OP_TLBI_NH_VA:
-+		cmd[0] |= FIELD_PREP(CMDQ_TLBI_0_NUM, ent->tlbi.num);
-+		cmd[0] |= FIELD_PREP(CMDQ_TLBI_0_SCALE, ent->tlbi.scale);
- 		cmd[0] |= FIELD_PREP(CMDQ_TLBI_0_ASID, ent->tlbi.asid);
- 		cmd[1] |= FIELD_PREP(CMDQ_TLBI_1_LEAF, ent->tlbi.leaf);
-+		cmd[1] |= FIELD_PREP(CMDQ_TLBI_1_TTL, ent->tlbi.ttl);
-+		cmd[1] |= FIELD_PREP(CMDQ_TLBI_1_TG, ent->tlbi.tg);
- 		cmd[1] |= ent->tlbi.addr & CMDQ_TLBI_1_VA_MASK;
- 		break;
- 	case CMDQ_OP_TLBI_S2_IPA:
-+		cmd[0] |= FIELD_PREP(CMDQ_TLBI_0_NUM, ent->tlbi.num);
-+		cmd[0] |= FIELD_PREP(CMDQ_TLBI_0_SCALE, ent->tlbi.scale);
- 		cmd[0] |= FIELD_PREP(CMDQ_TLBI_0_VMID, ent->tlbi.vmid);
- 		cmd[1] |= FIELD_PREP(CMDQ_TLBI_1_LEAF, ent->tlbi.leaf);
-+		cmd[1] |= FIELD_PREP(CMDQ_TLBI_1_TTL, ent->tlbi.ttl);
-+		cmd[1] |= FIELD_PREP(CMDQ_TLBI_1_TG, ent->tlbi.tg);
- 		cmd[1] |= ent->tlbi.addr & CMDQ_TLBI_1_IPA_MASK;
- 		break;
- 	case CMDQ_OP_TLBI_NH_ASID:
-@@ -2003,7 +2024,7 @@ static void arm_smmu_tlb_inv_range(unsigned long iova, size_t size,
- {
- 	u64 cmds[CMDQ_BATCH_ENTRIES * CMDQ_ENT_DWORDS];
- 	struct arm_smmu_device *smmu = smmu_domain->smmu;
--	unsigned long start = iova, end = iova + size;
-+	unsigned long start = iova, end = iova + size, num_pages = 0, tg = 0;
- 	int i = 0;
- 	struct arm_smmu_cmdq_ent cmd = {
- 		.tlbi = {
-@@ -2022,12 +2043,50 @@ static void arm_smmu_tlb_inv_range(unsigned long iova, size_t size,
- 		cmd.tlbi.vmid	= smmu_domain->s2_cfg.vmid;
- 	}
- 
-+	if (smmu->features & ARM_SMMU_FEAT_RANGE_INV) {
-+		/* Get the leaf page size */
-+		tg = __ffs(smmu_domain->domain.pgsize_bitmap);
-+
-+		/* Convert page size of 12,14,16 (log2) to 1,2,3 */
-+		cmd.tlbi.tg = ((tg - ilog2(SZ_4K)) / 2) + 1;
-+
-+		/* Determine what level the granule is at */
-+		cmd.tlbi.ttl = 4 - ((ilog2(granule) - 3) / (tg - 3));
-+
-+		num_pages = size / (1UL << tg);
-+	}
-+
- 	while (iova < end) {
- 		if (i == CMDQ_BATCH_ENTRIES) {
- 			arm_smmu_cmdq_issue_cmdlist(smmu, cmds, i, false);
- 			i = 0;
- 		}
- 
-+		if (smmu->features & ARM_SMMU_FEAT_RANGE_INV) {
-+			/*
-+			 * On each iteration of the loop, the range is 5 bits
-+			 * worth of the aligned size remaining.
-+			 * The range in pages is:
-+			 *
-+			 * range = (num_pages & (0x1f << __ffs(num_pages)))
-+			 */
-+			unsigned long scale, num;
-+
-+			/* Determine the power of 2 multiple number of pages */
-+			scale = __ffs(num_pages);
-+			cmd.tlbi.scale = scale;
-+
-+			/* Determine how many chunks of 2^scale size we have */
-+			num = (num_pages >> scale) & CMDQ_TLBI_RANGE_NUM_MAX;
-+			cmd.tlbi.num = num - 1;
-+
-+			/* range is num * 2^scale * pgsize */
-+			granule = num << (scale + tg);
-+
-+			/* Clear out the lower order bits for the next iteration */
-+			num_pages -= num << scale;
-+		}
-+
- 		cmd.tlbi.addr = iova;
- 		arm_smmu_cmdq_build_cmd(&cmds[i * CMDQ_ENT_DWORDS], &cmd);
- 		iova += granule;
-@@ -3449,6 +3508,11 @@ static int arm_smmu_device_hw_probe(struct arm_smmu_device *smmu)
- 	if (smmu->sid_bits <= STRTAB_SPLIT)
- 		smmu->features &= ~ARM_SMMU_FEAT_2_LVL_STRTAB;
- 
-+	/* IDR3 */
-+	reg = readl_relaxed(smmu->base + ARM_SMMU_IDR3);
-+	if (FIELD_GET(IDR3_RIL, reg))
-+		smmu->features |= ARM_SMMU_FEAT_RANGE_INV;
-+
- 	/* IDR5 */
- 	reg = readl_relaxed(smmu->base + ARM_SMMU_IDR5);
- 
+In addition, this set removes the sanity check that was added to prevent
+assigning VMD child devices. By using the DMA alias mechanism, all child
+devices are assigned the same IOMMU group as the VMD endpoint. This removes the
+need for restricting VMD child devices from assignment, as the whole group
+would have to be assigned, requiring unbinding the VMD driver and removing the
+child device domain.
+
+v1 added a pointer in struct pci_dev that pointed to the DMA alias' struct
+pci_dev and did the necessary DMA alias and IOMMU modifications.
+
+v2 introduced a new weak function to reference the 'Direct DMA Alias', and
+removed the need to add a pointer in struct device or pci_dev. Weak functions
+are generally frowned upon when it's a single architecture implementation, so I
+am open to alternatives.
+
+v3 referenced the pci_dev rather than the struct device for the PCI
+'Direct DMA Alias' (pci_direct_dma_alias()). This revision also allowed
+pci_for_each_dma_alias() to call any DMA aliases for the Direct DMA alias
+device, though I don't expect the VMD endpoint to need intra-bus DMA aliases.
+
+v4 changes the 'Direct DMA Alias' to instead refer to the 'Real DMA Dev', which
+either returns the PCI device itself or the PCI DMA device.
+
+
+Changes from v3:
+Uses pci_real_dma_dev() instead of pci_direct_dma_alias()
+Split IOMMU enabling, IOMMU VMD sanity check and VMD dma_map_ops cleanup into three patches
+
+Changes from v2:
+Uses struct pci_dev for PCI Device 'Direct DMA aliasing' (pci_direct_dma_alias)
+Allows pci_for_each_dma_alias to iterate over the alias mask of the 'Direct DMA alias'
+
+Changes from v1:
+Removed 1/5 & 2/5 misc fix patches that were merged
+Uses Christoph's staging/cleanup patches
+Introduce weak function rather than including pointer in struct device or pci_dev.
+
+Based on Bjorn's next:
+https://git.kernel.org/pub/scm/linux/kernel/git/helgaas/pci.git/log/?h=next
+
+Christoph Hellwig (2):
+  x86/PCI: Add a to_pci_sysdata helper
+  x86/PCI: Remove X86_DEV_DMA_OPS
+
+Jon Derrick (5):
+  x86/PCI: Expose VMD's PCI Device in pci_sysdata
+  PCI: Introduce pci_real_dma_dev()
+  iommu/vt-d: Use pci_real_dma_dev() for mapping
+  iommu/vt-d: Remove VMD child device sanity check
+  PCI: vmd: Stop overriding dma_map_ops
+
+ arch/x86/Kconfig               |   3 -
+ arch/x86/include/asm/device.h  |  10 ---
+ arch/x86/include/asm/pci.h     |  31 ++++-----
+ arch/x86/pci/common.c          |  48 +++----------
+ drivers/iommu/intel-iommu.c    |  15 ++--
+ drivers/pci/controller/Kconfig |   1 -
+ drivers/pci/controller/vmd.c   | 152 +----------------------------------------
+ drivers/pci/pci.c              |  19 +++++-
+ drivers/pci/search.c           |   6 ++
+ include/linux/pci.h            |   1 +
+ 10 files changed, 58 insertions(+), 228 deletions(-)
+
 -- 
-2.20.1
+1.8.3.1
 
 _______________________________________________
 iommu mailing list
