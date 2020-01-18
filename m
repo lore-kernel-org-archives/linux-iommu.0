@@ -1,70 +1,78 @@
-Return-Path: <SRS0=0DsW=3G=lists.linux-foundation.org=iommu-bounces@kernel.org>
+Return-Path: <SRS0=Kz9i=3H=lists.linux-foundation.org=iommu-bounces@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-8.6 required=3.0 tests=DATE_IN_PAST_06_12,
-	HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_PATCH,MAILING_LIST_MULTI,SIGNED_OFF_BY,
-	SPF_HELO_NONE,SPF_PASS,USER_AGENT_GIT autolearn=unavailable
-	autolearn_force=no version=3.4.0
+X-Spam-Status: No, score=-8.3 required=3.0 tests=DKIM_INVALID,DKIM_SIGNED,
+	FAKE_REPLY_C,INCLUDES_PATCH,MAILING_LIST_MULTI,SIGNED_OFF_BY,SPF_HELO_NONE,
+	SPF_PASS,USER_AGENT_SANE_1 autolearn=unavailable autolearn_force=no
+	version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 08682C33CB7
-	for <iommu@archiver.kernel.org>; Fri, 17 Jan 2020 22:32:42 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 84424C33C9E
+	for <iommu@archiver.kernel.org>; Sat, 18 Jan 2020 00:18:54 +0000 (UTC)
 Received: from hemlock.osuosl.org (smtp2.osuosl.org [140.211.166.133])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by mail.kernel.org (Postfix) with ESMTPS id DA4F821D7D
-	for <iommu@archiver.kernel.org>; Fri, 17 Jan 2020 22:32:41 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org DA4F821D7D
-Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=intel.com
+	by mail.kernel.org (Postfix) with ESMTPS id 4DC1F22464
+	for <iommu@archiver.kernel.org>; Sat, 18 Jan 2020 00:18:54 +0000 (UTC)
+Authentication-Results: mail.kernel.org;
+	dkim=fail reason="signature verification failed" (1024-bit key) header.d=kernel.org header.i=@kernel.org header.b="I8Exl2Nr"
+DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 4DC1F22464
+Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=kernel.org
 Authentication-Results: mail.kernel.org; spf=pass smtp.mailfrom=iommu-bounces@lists.linux-foundation.org
 Received: from localhost (localhost [127.0.0.1])
-	by hemlock.osuosl.org (Postfix) with ESMTP id 7F55F87BD4;
-	Fri, 17 Jan 2020 22:32:41 +0000 (UTC)
+	by hemlock.osuosl.org (Postfix) with ESMTP id 1D5E98821D;
+	Sat, 18 Jan 2020 00:18:54 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
 Received: from hemlock.osuosl.org ([127.0.0.1])
 	by localhost (.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
-	with ESMTP id 5iugeDtJUZhm; Fri, 17 Jan 2020 22:32:40 +0000 (UTC)
+	with ESMTP id 3DI3+shxf8DT; Sat, 18 Jan 2020 00:18:53 +0000 (UTC)
 Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [140.211.9.56])
-	by hemlock.osuosl.org (Postfix) with ESMTP id A128487C63;
-	Fri, 17 Jan 2020 22:32:40 +0000 (UTC)
+	by hemlock.osuosl.org (Postfix) with ESMTP id EF299881B7;
+	Sat, 18 Jan 2020 00:18:52 +0000 (UTC)
 Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
-	by lists.linuxfoundation.org (Postfix) with ESMTP id 8D970C1D88;
-	Fri, 17 Jan 2020 22:32:40 +0000 (UTC)
+	by lists.linuxfoundation.org (Postfix) with ESMTP id D2D44C18DC;
+	Sat, 18 Jan 2020 00:18:52 +0000 (UTC)
 Received: from silver.osuosl.org (smtp3.osuosl.org [140.211.166.136])
- by lists.linuxfoundation.org (Postfix) with ESMTP id B4912C077D
- for <iommu@lists.linux-foundation.org>; Fri, 17 Jan 2020 22:32:38 +0000 (UTC)
+ by lists.linuxfoundation.org (Postfix) with ESMTP id D1B7AC077D
+ for <iommu@lists.linux-foundation.org>; Sat, 18 Jan 2020 00:18:51 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
- by silver.osuosl.org (Postfix) with ESMTP id A30E2221AF
- for <iommu@lists.linux-foundation.org>; Fri, 17 Jan 2020 22:32:38 +0000 (UTC)
+ by silver.osuosl.org (Postfix) with ESMTP id BC7C422115
+ for <iommu@lists.linux-foundation.org>; Sat, 18 Jan 2020 00:18:51 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
 Received: from silver.osuosl.org ([127.0.0.1])
  by localhost (.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
- with ESMTP id BS-ai0SovRYc for <iommu@lists.linux-foundation.org>;
- Fri, 17 Jan 2020 22:32:36 +0000 (UTC)
+ with ESMTP id 1SqR0B+E6Kua for <iommu@lists.linux-foundation.org>;
+ Sat, 18 Jan 2020 00:18:50 +0000 (UTC)
 X-Greylist: domain auto-whitelisted by SQLgrey-1.7.6
-Received: from mga07.intel.com (mga07.intel.com [134.134.136.100])
- by silver.osuosl.org (Postfix) with ESMTPS id 05EDD2226B
- for <iommu@lists.linux-foundation.org>; Fri, 17 Jan 2020 22:32:35 +0000 (UTC)
-X-Amp-Result: SKIPPED(no attachment in message)
-X-Amp-File-Uploaded: False
-Received: from orsmga008.jf.intel.com ([10.7.209.65])
- by orsmga105.jf.intel.com with ESMTP/TLS/DHE-RSA-AES256-GCM-SHA384;
- 17 Jan 2020 14:30:33 -0800
-X-IronPort-AV: E=Sophos;i="5.70,331,1574150400"; d="scan'208";a="219052229"
-Received: from nsgsw-rhel7p6.lm.intel.com ([10.232.116.83])
- by orsmga008-auth.jf.intel.com with ESMTP/TLS/DHE-RSA-AES256-GCM-SHA384;
- 17 Jan 2020 14:30:32 -0800
-From: Jon Derrick <jonathan.derrick@intel.com>
-To: <linux-pci@vger.kernel.org>, Bjorn Helgaas <helgaas@kernel.org>,
- Lorenzo Pieralisi <lorenzo.pieralisi@arm.com>
-Subject: [PATCH v4 7/7] x86/PCI: Remove X86_DEV_DMA_OPS
-Date: Fri, 17 Jan 2020 09:27:29 -0700
-Message-Id: <1579278449-174098-8-git-send-email-jonathan.derrick@intel.com>
-X-Mailer: git-send-email 1.8.3.1
-In-Reply-To: <1579278449-174098-1-git-send-email-jonathan.derrick@intel.com>
-References: <1579278449-174098-1-git-send-email-jonathan.derrick@intel.com>
-Cc: iommu@lists.linux-foundation.org, Keith Busch <kbusch@kernel.org>,
- David Woodhouse <dwmw2@infradead.org>, Christoph Hellwig <hch@lst.de>
+Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
+ by silver.osuosl.org (Postfix) with ESMTPS id 95D7520377
+ for <iommu@lists.linux-foundation.org>; Sat, 18 Jan 2020 00:18:50 +0000 (UTC)
+Received: from localhost (187.sub-174-234-133.myvzw.com [174.234.133.187])
+ (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+ (No client certificate requested)
+ by mail.kernel.org (Postfix) with ESMTPSA id 1BC9C22464;
+ Sat, 18 Jan 2020 00:18:50 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+ s=default; t=1579306730;
+ bh=gSDrQaOdpG8so50JR4QbBrnND0Qmuf7RzbL8om1tDgI=;
+ h=Date:From:To:Cc:Subject:In-Reply-To:From;
+ b=I8Exl2NrIfZJx/X2Mt2KL0FoOsXTjdC21eetR92F+Y9kZLZbLE23+TCDiAiKJhTg5
+ pCrNxmdwgJum+wwghrjSuZFGYcU4J+H8o/KM119A/wm8fFlDtvQB6Nfa7GOXgMneWP
+ LLjtiZuvzf4qg0B9hR2l9Cqvoq8emb1A+LwDS67k=
+Date: Fri, 17 Jan 2020 18:18:47 -0600
+From: Bjorn Helgaas <helgaas@kernel.org>
+To: Lu Baolu <baolu.lu@linux.intel.com>
+Subject: Re: [RFC PATCH 2/4] PCI: Add "pci=iommu_passthrough=" parameter for
+ iommu passthrough
+Message-ID: <20200117232403.GA142078@google.com>
+MIME-Version: 1.0
+Content-Disposition: inline
+In-Reply-To: <20200101052648.14295-3-baolu.lu@linux.intel.com>
+User-Agent: Mutt/1.10.1 (2018-07-13)
+Cc: kevin.tian@intel.com, ashok.raj@intel.com,
+ Greg Kroah-Hartman <gregkh@linuxfoundation.org>, linux-kernel@vger.kernel.org,
+ iommu@lists.linux-foundation.org, jacob.jun.pan@intel.com,
+ Robin Murphy <robin.murphy@arm.com>, Christoph Hellwig <hch@lst.de>
 X-BeenThere: iommu@lists.linux-foundation.org
 X-Mailman-Version: 2.1.15
 Precedence: list
@@ -77,118 +85,84 @@ List-Post: <mailto:iommu@lists.linux-foundation.org>
 List-Help: <mailto:iommu-request@lists.linux-foundation.org?subject=help>
 List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
  <mailto:iommu-request@lists.linux-foundation.org?subject=subscribe>
-MIME-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
 Errors-To: iommu-bounces@lists.linux-foundation.org
 Sender: "iommu" <iommu-bounces@lists.linux-foundation.org>
 
-From: Christoph Hellwig <hch@lst.de>
+On Wed, Jan 01, 2020 at 01:26:46PM +0800, Lu Baolu wrote:
+> The new parameter takes a list of devices separated by a semicolon.
+> Each device specified will have its iommu_passthrough bit in struct
+> device set. This is very similar to the existing 'disable_acs_redir'
+> parameter.
+> 
+> Signed-off-by: Lu Baolu <baolu.lu@linux.intel.com>
+> ---
+>  .../admin-guide/kernel-parameters.txt         |  5 +++
+>  drivers/pci/pci.c                             | 34 +++++++++++++++++++
+>  drivers/pci/pci.h                             |  1 +
+>  drivers/pci/probe.c                           |  2 ++
+>  4 files changed, 42 insertions(+)
+> 
+> diff --git a/Documentation/admin-guide/kernel-parameters.txt b/Documentation/admin-guide/kernel-parameters.txt
+> index ade4e6ec23e0..d3edc2cb6696 100644
+> --- a/Documentation/admin-guide/kernel-parameters.txt
+> +++ b/Documentation/admin-guide/kernel-parameters.txt
+> @@ -3583,6 +3583,11 @@
+>  				may put more devices in an IOMMU group.
+>  		force_floating	[S390] Force usage of floating interrupts.
+>  		nomio		[S390] Do not use MIO instructions.
+> +		iommu_passthrough=<pci_dev>[; ...]
+> +				Specify one or more PCI devices (in the format
+> +				specified above) separated by semicolons.
+> +				Each device specified will bypass IOMMU DMA
+> +				translation.
+>  
+>  	pcie_aspm=	[PCIE] Forcibly enable or disable PCIe Active State Power
+>  			Management.
+> diff --git a/drivers/pci/pci.c b/drivers/pci/pci.c
+> index 90dbd7c70371..05bf3f4acc36 100644
+> --- a/drivers/pci/pci.c
+> +++ b/drivers/pci/pci.c
+> @@ -6401,6 +6401,37 @@ void __weak pci_fixup_cardbus(struct pci_bus *bus)
+>  }
+>  EXPORT_SYMBOL(pci_fixup_cardbus);
+>  
+> +static const char *iommu_passthrough_param;
+> +bool pci_iommu_passthrough_match(struct pci_dev *dev)
+> +{
+> +	int ret = 0;
+> +	const char *p = iommu_passthrough_param;
+> +
+> +	if (!p)
+> +		return false;
+> +
+> +	while (*p) {
+> +		ret = pci_dev_str_match(dev, p, &p);
+> +		if (ret < 0) {
+> +			pr_info_once("PCI: Can't parse iommu_passthrough parameter: %s\n",
+> +				     iommu_passthrough_param);
+> +
+> +			break;
+> +		} else if (ret == 1) {
+> +			pci_info(dev, "PCI: IOMMU passthrough\n");
+> +			return true;
+> +		}
+> +
+> +		if (*p != ';' && *p != ',') {
+> +			/* End of param or invalid format */
+> +			break;
+> +		}
+> +		p++;
+> +	}
+> +
+> +	return false;
+> +}
 
-There are no users of X86_DEV_DMA_OPS left, so remove the code.
+This duplicates a lot of the code in pci_disable_acs_redir().  That
+needs to be factored out somehow so we don't duplicate it.
 
-Reviewed-by: Jon Derrick <jonathan.derrick@intel.com>
-Signed-off-by: Christoph Hellwig <hch@lst.de>
----
- arch/x86/Kconfig              |  3 ---
- arch/x86/include/asm/device.h | 10 ----------
- arch/x86/pci/common.c         | 38 --------------------------------------
- 3 files changed, 51 deletions(-)
-
-diff --git a/arch/x86/Kconfig b/arch/x86/Kconfig
-index 5e89499..77f9426 100644
---- a/arch/x86/Kconfig
-+++ b/arch/x86/Kconfig
-@@ -2955,9 +2955,6 @@ config HAVE_ATOMIC_IOMAP
- 	def_bool y
- 	depends on X86_32
- 
--config X86_DEV_DMA_OPS
--	bool
--
- source "drivers/firmware/Kconfig"
- 
- source "arch/x86/kvm/Kconfig"
-diff --git a/arch/x86/include/asm/device.h b/arch/x86/include/asm/device.h
-index 5e12c63..7e31f7f 100644
---- a/arch/x86/include/asm/device.h
-+++ b/arch/x86/include/asm/device.h
-@@ -8,16 +8,6 @@ struct dev_archdata {
- #endif
- };
- 
--#if defined(CONFIG_X86_DEV_DMA_OPS) && defined(CONFIG_PCI_DOMAINS)
--struct dma_domain {
--	struct list_head node;
--	const struct dma_map_ops *dma_ops;
--	int domain_nr;
--};
--void add_dma_domain(struct dma_domain *domain);
--void del_dma_domain(struct dma_domain *domain);
--#endif
--
- struct pdev_archdata {
- };
- 
-diff --git a/arch/x86/pci/common.c b/arch/x86/pci/common.c
-index fe21a5c..df1d959 100644
---- a/arch/x86/pci/common.c
-+++ b/arch/x86/pci/common.c
-@@ -625,43 +625,6 @@ unsigned int pcibios_assign_all_busses(void)
- 	return (pci_probe & PCI_ASSIGN_ALL_BUSSES) ? 1 : 0;
- }
- 
--#if defined(CONFIG_X86_DEV_DMA_OPS) && defined(CONFIG_PCI_DOMAINS)
--static LIST_HEAD(dma_domain_list);
--static DEFINE_SPINLOCK(dma_domain_list_lock);
--
--void add_dma_domain(struct dma_domain *domain)
--{
--	spin_lock(&dma_domain_list_lock);
--	list_add(&domain->node, &dma_domain_list);
--	spin_unlock(&dma_domain_list_lock);
--}
--EXPORT_SYMBOL_GPL(add_dma_domain);
--
--void del_dma_domain(struct dma_domain *domain)
--{
--	spin_lock(&dma_domain_list_lock);
--	list_del(&domain->node);
--	spin_unlock(&dma_domain_list_lock);
--}
--EXPORT_SYMBOL_GPL(del_dma_domain);
--
--static void set_dma_domain_ops(struct pci_dev *pdev)
--{
--	struct dma_domain *domain;
--
--	spin_lock(&dma_domain_list_lock);
--	list_for_each_entry(domain, &dma_domain_list, node) {
--		if (pci_domain_nr(pdev->bus) == domain->domain_nr) {
--			pdev->dev.dma_ops = domain->dma_ops;
--			break;
--		}
--	}
--	spin_unlock(&dma_domain_list_lock);
--}
--#else
--static void set_dma_domain_ops(struct pci_dev *pdev) {}
--#endif
--
- static void set_dev_domain_options(struct pci_dev *pdev)
- {
- 	if (is_vmd(pdev->bus))
-@@ -697,7 +660,6 @@ int pcibios_add_device(struct pci_dev *dev)
- 		pa_data = data->next;
- 		memunmap(data);
- 	}
--	set_dma_domain_ops(dev);
- 	set_dev_domain_options(dev);
- 	return 0;
- }
--- 
-1.8.3.1
-
+Bjorn
 _______________________________________________
 iommu mailing list
 iommu@lists.linux-foundation.org
