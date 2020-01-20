@@ -2,78 +2,69 @@ Return-Path: <SRS0=4rPt=3J=lists.linux-foundation.org=iommu-bounces@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-2.2 required=3.0 tests=HEADER_FROM_DIFFERENT_DOMAINS,
-	MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS,USER_AGENT_SANE_1 autolearn=no
-	autolearn_force=no version=3.4.0
+X-Spam-Status: No, score=-8.2 required=3.0 tests=HEADER_FROM_DIFFERENT_DOMAINS,
+	INCLUDES_PATCH,MAILING_LIST_MULTI,SIGNED_OFF_BY,SPF_HELO_NONE,SPF_PASS,
+	USER_AGENT_SANE_1 autolearn=unavailable autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 55500C33CB1
-	for <iommu@archiver.kernel.org>; Mon, 20 Jan 2020 09:45:08 +0000 (UTC)
-Received: from fraxinus.osuosl.org (smtp4.osuosl.org [140.211.166.137])
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 30784C2D0DB
+	for <iommu@archiver.kernel.org>; Mon, 20 Jan 2020 10:59:13 +0000 (UTC)
+Received: from hemlock.osuosl.org (smtp2.osuosl.org [140.211.166.133])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by mail.kernel.org (Postfix) with ESMTPS id 0F15E207E0
-	for <iommu@archiver.kernel.org>; Mon, 20 Jan 2020 09:45:07 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 0F15E207E0
-Authentication-Results: mail.kernel.org; dmarc=none (p=none dis=none) header.from=huawei.com
+	by mail.kernel.org (Postfix) with ESMTPS id EE7CE20674
+	for <iommu@archiver.kernel.org>; Mon, 20 Jan 2020 10:59:12 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org EE7CE20674
+Authentication-Results: mail.kernel.org; dmarc=none (p=none dis=none) header.from=arm.com
 Authentication-Results: mail.kernel.org; spf=pass smtp.mailfrom=iommu-bounces@lists.linux-foundation.org
 Received: from localhost (localhost [127.0.0.1])
-	by fraxinus.osuosl.org (Postfix) with ESMTP id D922685478;
-	Mon, 20 Jan 2020 09:45:07 +0000 (UTC)
+	by hemlock.osuosl.org (Postfix) with ESMTP id C5AA486DE2;
+	Mon, 20 Jan 2020 10:59:12 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from fraxinus.osuosl.org ([127.0.0.1])
+Received: from hemlock.osuosl.org ([127.0.0.1])
 	by localhost (.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
-	with ESMTP id di-F9_zEst6f; Mon, 20 Jan 2020 09:45:03 +0000 (UTC)
+	with ESMTP id 9Oi0cDFbUG17; Mon, 20 Jan 2020 10:59:06 +0000 (UTC)
 Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [140.211.9.56])
-	by fraxinus.osuosl.org (Postfix) with ESMTP id 69B7D853E5;
-	Mon, 20 Jan 2020 09:45:03 +0000 (UTC)
+	by hemlock.osuosl.org (Postfix) with ESMTP id EAEB986C94;
+	Mon, 20 Jan 2020 10:59:06 +0000 (UTC)
 Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
-	by lists.linuxfoundation.org (Postfix) with ESMTP id 4A502C0176;
-	Mon, 20 Jan 2020 09:45:03 +0000 (UTC)
-Received: from fraxinus.osuosl.org (smtp4.osuosl.org [140.211.166.137])
- by lists.linuxfoundation.org (Postfix) with ESMTP id 23FBEC0174
- for <iommu@lists.linux-foundation.org>; Mon, 20 Jan 2020 09:45:01 +0000 (UTC)
+	by lists.linuxfoundation.org (Postfix) with ESMTP id D0237C0178;
+	Mon, 20 Jan 2020 10:59:06 +0000 (UTC)
+Received: from silver.osuosl.org (smtp3.osuosl.org [140.211.166.136])
+ by lists.linuxfoundation.org (Postfix) with ESMTP id 51390C0174
+ for <iommu@lists.linux-foundation.org>; Mon, 20 Jan 2020 10:59:05 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
- by fraxinus.osuosl.org (Postfix) with ESMTP id 208598544C
- for <iommu@lists.linux-foundation.org>; Mon, 20 Jan 2020 09:45:01 +0000 (UTC)
+ by silver.osuosl.org (Postfix) with ESMTP id 38AAC2012D
+ for <iommu@lists.linux-foundation.org>; Mon, 20 Jan 2020 10:59:05 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from fraxinus.osuosl.org ([127.0.0.1])
+Received: from silver.osuosl.org ([127.0.0.1])
  by localhost (.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
- with ESMTP id 7Rr-8MnjTLBg for <iommu@lists.linux-foundation.org>;
- Mon, 20 Jan 2020 09:44:57 +0000 (UTC)
+ with ESMTP id n1i-Qw-LHdnm for <iommu@lists.linux-foundation.org>;
+ Mon, 20 Jan 2020 10:58:59 +0000 (UTC)
 X-Greylist: domain auto-whitelisted by SQLgrey-1.7.6
-Received: from huawei.com (lhrrgout.huawei.com [185.176.76.210])
- by fraxinus.osuosl.org (Postfix) with ESMTPS id D2D0C853E5
- for <iommu@lists.linux-foundation.org>; Mon, 20 Jan 2020 09:44:56 +0000 (UTC)
-Received: from LHREML710-CAH.china.huawei.com (unknown [172.18.7.106])
- by Forcepoint Email with ESMTP id 3DA39BD29D6DA30D2A22;
- Mon, 20 Jan 2020 09:44:53 +0000 (GMT)
-Received: from lhreml724-chm.china.huawei.com (10.201.108.75) by
- LHREML710-CAH.china.huawei.com (10.201.108.33) with Microsoft SMTP Server
- (TLS) id 14.3.408.0; Mon, 20 Jan 2020 09:44:52 +0000
-Received: from [127.0.0.1] (10.202.226.43) by lhreml724-chm.china.huawei.com
- (10.201.108.75) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.1713.5; Mon, 20 Jan
- 2020 09:44:52 +0000
-Subject: Re: [RFC PATCH 0/4] iommu: Per-group default domain type
-To: Lu Baolu <baolu.lu@linux.intel.com>, Joerg Roedel <joro@8bytes.org>,
- "Greg Kroah-Hartman" <gregkh@linuxfoundation.org>, Bjorn Helgaas
- <bhelgaas@google.com>
-References: <20200101052648.14295-1-baolu.lu@linux.intel.com>
-From: John Garry <john.garry@huawei.com>
-Message-ID: <ba7a7e6a-8b23-fca0-a8bb-72c4dbfa8390@huawei.com>
-Date: Mon, 20 Jan 2020 09:44:51 +0000
-User-Agent: Mozilla/5.0 (Windows NT 10.0; WOW64; rv:68.0) Gecko/20100101
- Thunderbird/68.1.2
+Received: from foss.arm.com (foss.arm.com [217.140.110.172])
+ by silver.osuosl.org (Postfix) with ESMTP id DA3702010A
+ for <iommu@lists.linux-foundation.org>; Mon, 20 Jan 2020 10:58:58 +0000 (UTC)
+Received: from usa-sjc-imap-foss1.foss.arm.com (unknown [10.121.207.14])
+ by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id CEFF730E;
+ Mon, 20 Jan 2020 02:58:57 -0800 (PST)
+Received: from e121166-lin.cambridge.arm.com (e121166-lin.cambridge.arm.com
+ [10.1.196.255])
+ by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPSA id 9A4163F68E;
+ Mon, 20 Jan 2020 02:58:56 -0800 (PST)
+Date: Mon, 20 Jan 2020 10:58:51 +0000
+From: Lorenzo Pieralisi <lorenzo.pieralisi@arm.com>
+To: Jon Derrick <jonathan.derrick@intel.com>
+Subject: Re: [PATCH v4 6/7] PCI: vmd: Stop overriding dma_map_ops
+Message-ID: <20200120105851.GA17267@e121166-lin.cambridge.arm.com>
+References: <1579278449-174098-1-git-send-email-jonathan.derrick@intel.com>
+ <1579278449-174098-7-git-send-email-jonathan.derrick@intel.com>
 MIME-Version: 1.0
-In-Reply-To: <20200101052648.14295-1-baolu.lu@linux.intel.com>
-Content-Language: en-US
-X-Originating-IP: [10.202.226.43]
-X-ClientProxiedBy: lhreml718-chm.china.huawei.com (10.201.108.69) To
- lhreml724-chm.china.huawei.com (10.201.108.75)
-X-CFilter-Loop: Reflected
-Cc: kevin.tian@intel.com, ashok.raj@intel.com, linux-kernel@vger.kernel.org,
- iommu@lists.linux-foundation.org, jacob.jun.pan@intel.com,
- Robin Murphy <robin.murphy@arm.com>, Christoph Hellwig <hch@lst.de>
+Content-Disposition: inline
+In-Reply-To: <1579278449-174098-7-git-send-email-jonathan.derrick@intel.com>
+User-Agent: Mutt/1.9.4 (2018-02-28)
+Cc: linux-pci@vger.kernel.org, iommu@lists.linux-foundation.org,
+ Bjorn Helgaas <helgaas@kernel.org>, Keith Busch <kbusch@kernel.org>,
+ David Woodhouse <dwmw2@infradead.org>, Christoph Hellwig <hch@lst.de>
 X-BeenThere: iommu@lists.linux-foundation.org
 X-Mailman-Version: 2.1.15
 Precedence: list
@@ -86,75 +77,226 @@ List-Post: <mailto:iommu@lists.linux-foundation.org>
 List-Help: <mailto:iommu-request@lists.linux-foundation.org?subject=help>
 List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
  <mailto:iommu-request@lists.linux-foundation.org?subject=subscribe>
+Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
-Content-Type: text/plain; charset="us-ascii"; Format="flowed"
 Errors-To: iommu-bounces@lists.linux-foundation.org
 Sender: "iommu" <iommu-bounces@lists.linux-foundation.org>
 
-On 01/01/2020 05:26, Lu Baolu wrote:
-> An IOMMU group represents the smallest set of devices that are considered
-> to be isolated. All devices belonging to an IOMMU group share a default
-> domain for DMA APIs. There are two types of default domain: IOMMU_DOMAIN_DMA
-> and IOMMU_DOMAIN_IDENTITY. The former means IOMMU translation, while the
-> latter means IOMMU by-pass.
+On Fri, Jan 17, 2020 at 09:27:28AM -0700, Jon Derrick wrote:
+> Devices on the VMD domain use the VMD endpoint's requester ID and have
+> been relying on the VMD endpoint's DMA operations. The problem with this
+> was that VMD domain devices would use the VMD endpoint's attributes when
+> doing DMA and IOMMU mapping. We can be smarter about this by only using
+> the VMD endpoint when mapping and providing the correct child device's
+> attributes during DMA operations.
 > 
-> Currently, the default domain type for the IOMMU groups is determined
-> globally. All IOMMU groups use a single default domain type. The global
-> default domain type can be adjusted by kernel build configuration or
-> kernel parameters.
+> This patch removes the dma_map_ops redirect.
 > 
-> More and more users are looking forward to a fine grained default domain
-> type. For example, with the global default domain type set to translation,
-> the OEM verndors or end users might want some trusted and fast-speed devices
-> to bypass IOMMU for performance gains. On the other hand, with global
-> default domain type set to by-pass, some devices with limited system
-> memory addressing capability might want IOMMU translation to remove the
-> bounce buffer overhead.
+> Signed-off-by: Jon Derrick <jonathan.derrick@intel.com>
+> ---
+>  drivers/pci/controller/Kconfig |   1 -
+>  drivers/pci/controller/vmd.c   | 150 -----------------------------------------
+>  2 files changed, 151 deletions(-)
 
-Hi Lu Baolu,
+Acked-by: Lorenzo Pieralisi <lorenzo.pieralisi@arm.com>
 
-Do you think that it would be a more common usecase to want 
-kernel-managed devices to be passthrough for performance reasons and 
-some select devices to be in DMA domain, like those with limited address 
-cap or whose drivers request huge amounts of memory?
-
-I just think it would be more manageable to set kernel commandline 
-parameters for this, i.e. those select few which want DMA domain.
-
-Thanks,
-John
-
+> diff --git a/drivers/pci/controller/Kconfig b/drivers/pci/controller/Kconfig
+> index 918e283..20bf00f 100644
+> --- a/drivers/pci/controller/Kconfig
+> +++ b/drivers/pci/controller/Kconfig
+> @@ -239,7 +239,6 @@ config PCIE_TANGO_SMP8759
+>  
+>  config VMD
+>  	depends on PCI_MSI && X86_64 && SRCU
+> -	select X86_DEV_DMA_OPS
+>  	tristate "Intel Volume Management Device Driver"
+>  	---help---
+>  	  Adds support for the Intel Volume Management Device (VMD). VMD is a
+> diff --git a/drivers/pci/controller/vmd.c b/drivers/pci/controller/vmd.c
+> index d67ad56..fe1acb0 100644
+> --- a/drivers/pci/controller/vmd.c
+> +++ b/drivers/pci/controller/vmd.c
+> @@ -98,9 +98,6 @@ struct vmd_dev {
+>  	struct irq_domain	*irq_domain;
+>  	struct pci_bus		*bus;
+>  	u8			busn_start;
+> -
+> -	struct dma_map_ops	dma_ops;
+> -	struct dma_domain	dma_domain;
+>  };
+>  
+>  static inline struct vmd_dev *vmd_from_bus(struct pci_bus *bus)
+> @@ -295,151 +292,6 @@ static void vmd_set_desc(msi_alloc_info_t *arg, struct msi_desc *desc)
+>  	.chip		= &vmd_msi_controller,
+>  };
+>  
+> -/*
+> - * VMD replaces the requester ID with its own.  DMA mappings for devices in a
+> - * VMD domain need to be mapped for the VMD, not the device requiring
+> - * the mapping.
+> - */
+> -static struct device *to_vmd_dev(struct device *dev)
+> -{
+> -	struct pci_dev *pdev = to_pci_dev(dev);
+> -	struct vmd_dev *vmd = vmd_from_bus(pdev->bus);
+> -
+> -	return &vmd->dev->dev;
+> -}
+> -
+> -static void *vmd_alloc(struct device *dev, size_t size, dma_addr_t *addr,
+> -		       gfp_t flag, unsigned long attrs)
+> -{
+> -	return dma_alloc_attrs(to_vmd_dev(dev), size, addr, flag, attrs);
+> -}
+> -
+> -static void vmd_free(struct device *dev, size_t size, void *vaddr,
+> -		     dma_addr_t addr, unsigned long attrs)
+> -{
+> -	return dma_free_attrs(to_vmd_dev(dev), size, vaddr, addr, attrs);
+> -}
+> -
+> -static int vmd_mmap(struct device *dev, struct vm_area_struct *vma,
+> -		    void *cpu_addr, dma_addr_t addr, size_t size,
+> -		    unsigned long attrs)
+> -{
+> -	return dma_mmap_attrs(to_vmd_dev(dev), vma, cpu_addr, addr, size,
+> -			attrs);
+> -}
+> -
+> -static int vmd_get_sgtable(struct device *dev, struct sg_table *sgt,
+> -			   void *cpu_addr, dma_addr_t addr, size_t size,
+> -			   unsigned long attrs)
+> -{
+> -	return dma_get_sgtable_attrs(to_vmd_dev(dev), sgt, cpu_addr, addr, size,
+> -			attrs);
+> -}
+> -
+> -static dma_addr_t vmd_map_page(struct device *dev, struct page *page,
+> -			       unsigned long offset, size_t size,
+> -			       enum dma_data_direction dir,
+> -			       unsigned long attrs)
+> -{
+> -	return dma_map_page_attrs(to_vmd_dev(dev), page, offset, size, dir,
+> -			attrs);
+> -}
+> -
+> -static void vmd_unmap_page(struct device *dev, dma_addr_t addr, size_t size,
+> -			   enum dma_data_direction dir, unsigned long attrs)
+> -{
+> -	dma_unmap_page_attrs(to_vmd_dev(dev), addr, size, dir, attrs);
+> -}
+> -
+> -static int vmd_map_sg(struct device *dev, struct scatterlist *sg, int nents,
+> -		      enum dma_data_direction dir, unsigned long attrs)
+> -{
+> -	return dma_map_sg_attrs(to_vmd_dev(dev), sg, nents, dir, attrs);
+> -}
+> -
+> -static void vmd_unmap_sg(struct device *dev, struct scatterlist *sg, int nents,
+> -			 enum dma_data_direction dir, unsigned long attrs)
+> -{
+> -	dma_unmap_sg_attrs(to_vmd_dev(dev), sg, nents, dir, attrs);
+> -}
+> -
+> -static void vmd_sync_single_for_cpu(struct device *dev, dma_addr_t addr,
+> -				    size_t size, enum dma_data_direction dir)
+> -{
+> -	dma_sync_single_for_cpu(to_vmd_dev(dev), addr, size, dir);
+> -}
+> -
+> -static void vmd_sync_single_for_device(struct device *dev, dma_addr_t addr,
+> -				       size_t size, enum dma_data_direction dir)
+> -{
+> -	dma_sync_single_for_device(to_vmd_dev(dev), addr, size, dir);
+> -}
+> -
+> -static void vmd_sync_sg_for_cpu(struct device *dev, struct scatterlist *sg,
+> -				int nents, enum dma_data_direction dir)
+> -{
+> -	dma_sync_sg_for_cpu(to_vmd_dev(dev), sg, nents, dir);
+> -}
+> -
+> -static void vmd_sync_sg_for_device(struct device *dev, struct scatterlist *sg,
+> -				   int nents, enum dma_data_direction dir)
+> -{
+> -	dma_sync_sg_for_device(to_vmd_dev(dev), sg, nents, dir);
+> -}
+> -
+> -static int vmd_dma_supported(struct device *dev, u64 mask)
+> -{
+> -	return dma_supported(to_vmd_dev(dev), mask);
+> -}
+> -
+> -static u64 vmd_get_required_mask(struct device *dev)
+> -{
+> -	return dma_get_required_mask(to_vmd_dev(dev));
+> -}
+> -
+> -static void vmd_teardown_dma_ops(struct vmd_dev *vmd)
+> -{
+> -	struct dma_domain *domain = &vmd->dma_domain;
+> -
+> -	if (get_dma_ops(&vmd->dev->dev))
+> -		del_dma_domain(domain);
+> -}
+> -
+> -#define ASSIGN_VMD_DMA_OPS(source, dest, fn)	\
+> -	do {					\
+> -		if (source->fn)			\
+> -			dest->fn = vmd_##fn;	\
+> -	} while (0)
+> -
+> -static void vmd_setup_dma_ops(struct vmd_dev *vmd)
+> -{
+> -	const struct dma_map_ops *source = get_dma_ops(&vmd->dev->dev);
+> -	struct dma_map_ops *dest = &vmd->dma_ops;
+> -	struct dma_domain *domain = &vmd->dma_domain;
+> -
+> -	domain->domain_nr = vmd->sysdata.domain;
+> -	domain->dma_ops = dest;
+> -
+> -	if (!source)
+> -		return;
+> -	ASSIGN_VMD_DMA_OPS(source, dest, alloc);
+> -	ASSIGN_VMD_DMA_OPS(source, dest, free);
+> -	ASSIGN_VMD_DMA_OPS(source, dest, mmap);
+> -	ASSIGN_VMD_DMA_OPS(source, dest, get_sgtable);
+> -	ASSIGN_VMD_DMA_OPS(source, dest, map_page);
+> -	ASSIGN_VMD_DMA_OPS(source, dest, unmap_page);
+> -	ASSIGN_VMD_DMA_OPS(source, dest, map_sg);
+> -	ASSIGN_VMD_DMA_OPS(source, dest, unmap_sg);
+> -	ASSIGN_VMD_DMA_OPS(source, dest, sync_single_for_cpu);
+> -	ASSIGN_VMD_DMA_OPS(source, dest, sync_single_for_device);
+> -	ASSIGN_VMD_DMA_OPS(source, dest, sync_sg_for_cpu);
+> -	ASSIGN_VMD_DMA_OPS(source, dest, sync_sg_for_device);
+> -	ASSIGN_VMD_DMA_OPS(source, dest, dma_supported);
+> -	ASSIGN_VMD_DMA_OPS(source, dest, get_required_mask);
+> -	add_dma_domain(domain);
+> -}
+> -#undef ASSIGN_VMD_DMA_OPS
+> -
+>  static char __iomem *vmd_cfg_addr(struct vmd_dev *vmd, struct pci_bus *bus,
+>  				  unsigned int devfn, int reg, int len)
+>  {
+> @@ -709,7 +561,6 @@ static int vmd_enable_domain(struct vmd_dev *vmd, unsigned long features)
+>  	}
+>  
+>  	vmd_attach_resources(vmd);
+> -	vmd_setup_dma_ops(vmd);
+>  	dev_set_msi_domain(&vmd->bus->dev, vmd->irq_domain);
+>  
+>  	pci_scan_child_bus(vmd->bus);
+> @@ -824,7 +675,6 @@ static void vmd_remove(struct pci_dev *dev)
+>  	pci_stop_root_bus(vmd->bus);
+>  	pci_remove_root_bus(vmd->bus);
+>  	vmd_cleanup_srcu(vmd);
+> -	vmd_teardown_dma_ops(vmd);
+>  	vmd_detach_resources(vmd);
+>  	irq_domain_remove(vmd->irq_domain);
+>  }
+> -- 
+> 1.8.3.1
 > 
-> This series proposes per-group default domain type to meet these demands.
-> It adds a per-device iommu_passthrough attribute. By setting this
-> attribute, end users or device vendors are able to tell the IOMMU subsystem
-> that this device is willing to use a default domain of IOMMU_DOMAIN_IDENTITY.
-> The IOMMU device probe procedure is reformed to pre-allocate groups for
-> all devices on a specific bus before adding the devices into the groups.
-> This enables the IOMMU device probe precedure to determine a per-group
-> default domain type before allocating IOMMU domains and attaching them
-> to devices.
-> 
-> Please help to review it. Your comments and suggestions are appricated.
-> 
-> Best regards,
-> baolu
-> 
-> Lu Baolu (4):
->    driver core: Add iommu_passthrough to struct device
->    PCI: Add "pci=iommu_passthrough=" parameter for iommu passthrough
->    iommu: Preallocate iommu group when probing devices
->    iommu: Determine default domain type before allocating domain
-> 
->   .../admin-guide/kernel-parameters.txt         |   5 +
->   drivers/iommu/iommu.c                         | 127 ++++++++++++++----
->   drivers/pci/pci.c                             |  34 +++++
->   drivers/pci/pci.h                             |   1 +
->   drivers/pci/probe.c                           |   2 +
->   include/linux/device.h                        |   3 +
->   6 files changed, 143 insertions(+), 29 deletions(-)
-> 
-
 _______________________________________________
 iommu mailing list
 iommu@lists.linux-foundation.org
