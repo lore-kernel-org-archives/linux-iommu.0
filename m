@@ -1,83 +1,71 @@
-Return-Path: <SRS0=4b30=26=lists.linux-foundation.org=iommu-bounces@kernel.org>
+Return-Path: <SRS0=p6pp=3K=lists.linux-foundation.org=iommu-bounces@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-3.5 required=3.0 tests=DKIM_INVALID,DKIM_SIGNED,
-	HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_PATCH,MAILING_LIST_MULTI,SPF_HELO_NONE,
-	SPF_PASS autolearn=no autolearn_force=no version=3.4.0
+X-Spam-Status: No, score=-2.2 required=3.0 tests=HEADER_FROM_DIFFERENT_DOMAINS,
+	MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS,USER_AGENT_SANE_1 autolearn=no
+	autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id E892EC282DD
-	for <iommu@archiver.kernel.org>; Thu,  9 Jan 2020 18:21:43 +0000 (UTC)
-Received: from hemlock.osuosl.org (smtp2.osuosl.org [140.211.166.133])
+	by smtp.lore.kernel.org (Postfix) with ESMTP id D3F08C2D0CE
+	for <iommu@archiver.kernel.org>; Tue, 21 Jan 2020 18:55:18 +0000 (UTC)
+Received: from silver.osuosl.org (smtp3.osuosl.org [140.211.166.136])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by mail.kernel.org (Postfix) with ESMTPS id B254A2067D
-	for <iommu@archiver.kernel.org>; Thu,  9 Jan 2020 18:21:43 +0000 (UTC)
-Authentication-Results: mail.kernel.org;
-	dkim=fail reason="signature verification failed" (1024-bit key) header.d=kernel.org header.i=@kernel.org header.b="qFHa0o+F"
-DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org B254A2067D
-Authentication-Results: mail.kernel.org; dmarc=none (p=none dis=none) header.from=linuxfoundation.org
+	by mail.kernel.org (Postfix) with ESMTPS id 9C8F124655
+	for <iommu@archiver.kernel.org>; Tue, 21 Jan 2020 18:55:18 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 9C8F124655
+Authentication-Results: mail.kernel.org; dmarc=none (p=none dis=none) header.from=arm.com
 Authentication-Results: mail.kernel.org; spf=pass smtp.mailfrom=iommu-bounces@lists.linux-foundation.org
 Received: from localhost (localhost [127.0.0.1])
-	by hemlock.osuosl.org (Postfix) with ESMTP id 7B03F883CD;
-	Thu,  9 Jan 2020 18:21:43 +0000 (UTC)
-X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from hemlock.osuosl.org ([127.0.0.1])
-	by localhost (.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
-	with ESMTP id pByJjsP8DV6N; Thu,  9 Jan 2020 18:21:40 +0000 (UTC)
-Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [140.211.9.56])
-	by hemlock.osuosl.org (Postfix) with ESMTP id CBD32883CB;
-	Thu,  9 Jan 2020 18:21:40 +0000 (UTC)
-Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
-	by lists.linuxfoundation.org (Postfix) with ESMTP id 9C061C18DC;
-	Thu,  9 Jan 2020 18:21:40 +0000 (UTC)
-Received: from silver.osuosl.org (smtp3.osuosl.org [140.211.166.136])
- by lists.linuxfoundation.org (Postfix) with ESMTP id E219DC0881
- for <iommu@lists.linuxfoundation.org>; Thu,  9 Jan 2020 18:21:38 +0000 (UTC)
-Received: from localhost (localhost [127.0.0.1])
- by silver.osuosl.org (Postfix) with ESMTP id CDBC32156B
- for <iommu@lists.linuxfoundation.org>; Thu,  9 Jan 2020 18:21:38 +0000 (UTC)
+	by silver.osuosl.org (Postfix) with ESMTP id 62F5E20518;
+	Tue, 21 Jan 2020 18:55:18 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
 Received: from silver.osuosl.org ([127.0.0.1])
+	by localhost (.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
+	with ESMTP id tdegwqmx3SPy; Tue, 21 Jan 2020 18:55:13 +0000 (UTC)
+Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [140.211.9.56])
+	by silver.osuosl.org (Postfix) with ESMTP id 7EBD320512;
+	Tue, 21 Jan 2020 18:55:13 +0000 (UTC)
+Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
+	by lists.linuxfoundation.org (Postfix) with ESMTP id 4A903C0176;
+	Tue, 21 Jan 2020 18:55:13 +0000 (UTC)
+Received: from fraxinus.osuosl.org (smtp4.osuosl.org [140.211.166.137])
+ by lists.linuxfoundation.org (Postfix) with ESMTP id 43245C0174
+ for <iommu@lists.linux-foundation.org>; Tue, 21 Jan 2020 18:55:11 +0000 (UTC)
+Received: from localhost (localhost [127.0.0.1])
+ by fraxinus.osuosl.org (Postfix) with ESMTP id 3130385D6C
+ for <iommu@lists.linux-foundation.org>; Tue, 21 Jan 2020 18:55:11 +0000 (UTC)
+X-Virus-Scanned: amavisd-new at osuosl.org
+Received: from fraxinus.osuosl.org ([127.0.0.1])
  by localhost (.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
- with ESMTP id xmQ6tX2Kj+hf for <iommu@lists.linuxfoundation.org>;
- Thu,  9 Jan 2020 18:21:37 +0000 (UTC)
-X-Greylist: from auto-whitelisted by SQLgrey-1.7.6
-Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
- by silver.osuosl.org (Postfix) with ESMTPS id 7FEE221514
- for <iommu@lists.linuxfoundation.org>; Thu,  9 Jan 2020 18:21:37 +0000 (UTC)
-Received: from localhost (83-86-89-107.cable.dynamic.v4.ziggo.nl
- [83.86.89.107])
- (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
- (No client certificate requested)
- by mail.kernel.org (Postfix) with ESMTPSA id 655DE2072A;
- Thu,  9 Jan 2020 18:21:36 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
- s=default; t=1578594097;
- bh=+sBgitQL3mchSzP4Zk7erYJ9ZJ5ThhSnczn5fnQvSkY=;
- h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
- b=qFHa0o+FuNFrYUBweK+4sytw7pvbDe8ilh4PEgH8e0aoeuk84pqZuF/CKpz2edZfr
- mupIUv4nVDn+sooFYGrIG/xXBlmXBR/gSAwEfF3UM2dntd9XVzj1yYk+Rjei2nobkJ
- gkdIy7JMsz81pP7LvYZ/l5J6mi+KI3F5Jhv9VCpY=
-Date: Thu, 9 Jan 2020 19:17:58 +0100
-From: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-To: Will Deacon <will@kernel.org>
-Subject: Re: [PATCH v4 05/16] drivers/iommu: Take a ref to the IOMMU driver
- prior to ->add_device()
-Message-ID: <20200109181758.GD589933@kroah.com>
-References: <20191219120352.382-1-will@kernel.org>
- <20191219120352.382-6-will@kernel.org>
- <20191219144437.GA1959534@kroah.com>
- <20200109141602.GA12236@willie-the-truck>
+ with ESMTP id E3xKPBm8QhQB for <iommu@lists.linux-foundation.org>;
+ Tue, 21 Jan 2020 18:55:04 +0000 (UTC)
+X-Greylist: domain auto-whitelisted by SQLgrey-1.7.6
+Received: from foss.arm.com (foss.arm.com [217.140.110.172])
+ by fraxinus.osuosl.org (Postfix) with ESMTP id E2CB085815
+ for <iommu@lists.linux-foundation.org>; Tue, 21 Jan 2020 18:55:03 +0000 (UTC)
+Received: from usa-sjc-imap-foss1.foss.arm.com (unknown [10.121.207.14])
+ by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id 5481D1FB;
+ Tue, 21 Jan 2020 10:55:03 -0800 (PST)
+Received: from [10.1.196.37] (e121345-lin.cambridge.arm.com [10.1.196.37])
+ by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPSA id 5A2343F6C4;
+ Tue, 21 Jan 2020 10:55:02 -0800 (PST)
+Subject: Re: [PATCH v3 2/5] iommu/arm-smmu: Add support for split pagetables
+To: iommu@lists.linux-foundation.org, will@kernel.org,
+ linux-arm-kernel@lists.infradead.org, linux-arm-msm@vger.kernel.org,
+ linux-kernel@vger.kernel.org, Joerg Roedel <joro@8bytes.org>
+References: <1576514271-15687-1-git-send-email-jcrouse@codeaurora.org>
+ <1576514271-15687-3-git-send-email-jcrouse@codeaurora.org>
+ <a38fe02a-4f84-f032-8c9d-4ecf72a87a55@arm.com>
+ <20200121171127.GA5025@jcrouse1-lnx.qualcomm.com>
+From: Robin Murphy <robin.murphy@arm.com>
+Message-ID: <0bd9df86-887b-ce94-432e-0cc7fb7cc897@arm.com>
+Date: Tue, 21 Jan 2020 18:54:59 +0000
+User-Agent: Mozilla/5.0 (X11; Linux aarch64; rv:60.0) Gecko/20100101
+ Thunderbird/60.9.0
 MIME-Version: 1.0
-Content-Disposition: inline
-In-Reply-To: <20200109141602.GA12236@willie-the-truck>
-Cc: iommu@lists.linuxfoundation.org,
- Jean-Philippe Brucker <jean-philippe@linaro.org>,
- Saravana Kannan <saravanak@google.com>, Robin Murphy <robin.murphy@arm.com>,
- linux-kernel@vger.kernel.org, Ard Biesheuvel <ardb@kernel.org>,
- Bjorn Helgaas <bhelgaas@google.com>, kernel-team@android.com,
- "Isaac J. Manjarres" <isaacm@codeaurora.org>
+In-Reply-To: <20200121171127.GA5025@jcrouse1-lnx.qualcomm.com>
+Content-Language: en-GB
 X-BeenThere: iommu@lists.linux-foundation.org
 X-Mailman-Version: 2.1.15
 Precedence: list
@@ -90,120 +78,86 @@ List-Post: <mailto:iommu@lists.linux-foundation.org>
 List-Help: <mailto:iommu-request@lists.linux-foundation.org?subject=help>
 List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
  <mailto:iommu-request@lists.linux-foundation.org?subject=subscribe>
-Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset="us-ascii"; Format="flowed"
 Errors-To: iommu-bounces@lists.linux-foundation.org
 Sender: "iommu" <iommu-bounces@lists.linux-foundation.org>
 
-On Thu, Jan 09, 2020 at 02:16:03PM +0000, Will Deacon wrote:
-> Hi Greg,
+On 21/01/2020 5:11 pm, Jordan Crouse wrote:
+[...]
+>> I'm looking at iommu_aux_attach_device() and friends, and it appears pretty
+>> achievable to hook that up in a workable manner, even if it's just routed
+>> straight through to the impl to only work within qcom-specific parameters to
+>> begin with. I figure the first aux_attach_dev sanity-checks that the main
+>> domain is using TTBR1 with a compatible split, sets TTBR0 and updates the
+>> merged TCR value at that point. For subsequent calls it shouldn't need to do
+>> much more than sanity-check that a new aux domain has the same parameters as
+>> the existing one(s) (and again, such checks could potentially even start out
+>> as just "this is OK by construction" comments). I guess we'd probably want a
+>> count of the number of 'live' aux domains so we can simply disable TTBR0 on
+>> the final aux_detach_dev without having to keep detailed track of whatever
+>> the GPU has actually context switched in the hardware. Can you see any holes
+>> in that idea?
 > 
-> On Thu, Dec 19, 2019 at 03:44:37PM +0100, Greg Kroah-Hartman wrote:
-> > On Thu, Dec 19, 2019 at 12:03:41PM +0000, Will Deacon wrote:
-> > > diff --git a/include/linux/iommu.h b/include/linux/iommu.h
-> > > index f2223cbb5fd5..e9f94d3f7a04 100644
-> > > --- a/include/linux/iommu.h
-> > > +++ b/include/linux/iommu.h
-> > > @@ -246,9 +246,10 @@ struct iommu_iotlb_gather {
-> > >   * @sva_get_pasid: Get PASID associated to a SVA handle
-> > >   * @page_response: handle page request response
-> > >   * @cache_invalidate: invalidate translation caches
-> > > - * @pgsize_bitmap: bitmap of all possible supported page sizes
-> > >   * @sva_bind_gpasid: bind guest pasid and mm
-> > >   * @sva_unbind_gpasid: unbind guest pasid and mm
-> > > + * @pgsize_bitmap: bitmap of all possible supported page sizes
-> > > + * @owner: Driver module providing these ops
-> > >   */
-> > >  struct iommu_ops {
-> > >  	bool (*capable)(enum iommu_cap);
-> > > @@ -318,6 +319,7 @@ struct iommu_ops {
-> > >  	int (*sva_unbind_gpasid)(struct device *dev, int pasid);
-> > >  
-> > >  	unsigned long pgsize_bitmap;
-> > > +	struct module *owner;
-> > 
-> > Everyone is always going to forget to set this field.  I don't think you
-> > even set it for all of the different iommu_ops possible in this series,
-> > right?
+> Let me repeat this back just to be sure we're on the same page. When the quirk
+> is enabled on the primary domain, we'll set up TTBR1 and leave TTBR0 disabled.
+> Then, when the first aux domain is attached we will set up that io_ptgable
+> to enable TTBR0 and then let the GPU do what the GPU does until the last aux is
+> detached and we can switch off TTBR0 again.
 > 
-> I only initialised the field for those drivers which can actually be built
-> as a module, but I take your point about this being error-prone.
-> 
-> > The "trick" we did to keep people from having to remember this is to do
-> > what we did for the bus registering functions.
-> > 
-> > Look at pci_register_driver in pci.h:
-> > #define pci_register_driver(driver)             \
-> >         __pci_register_driver(driver, THIS_MODULE, KBUILD_MODNAME)
-> > 
-> > Then we set the .owner field in the "real" __pci_register_driver() call.
-> > 
-> > Same thing for USB and lots, if not all, other driver register
-> > functions.
-> > 
-> > You can do the same thing here, and I would recommend it.
-> 
-> Yes, that makes sense, cheers. Diff below. I'll send it to Joerg along
-> with some other SMMU patches that have come in since the holiday.
-> 
-> Will
-> 
-> --->8
-> 
-> diff --git a/drivers/iommu/arm-smmu-v3.c b/drivers/iommu/arm-smmu-v3.c
-> index 03dc97842875..e82997a705a8 100644
-> --- a/drivers/iommu/arm-smmu-v3.c
-> +++ b/drivers/iommu/arm-smmu-v3.c
-> @@ -2733,7 +2733,6 @@ static struct iommu_ops arm_smmu_ops = {
->  	.get_resv_regions	= arm_smmu_get_resv_regions,
->  	.put_resv_regions	= arm_smmu_put_resv_regions,
->  	.pgsize_bitmap		= -1UL, /* Restricted during device attach */
-> -	.owner			= THIS_MODULE,
->  };
->  
->  /* Probing and initialisation functions */
-> diff --git a/drivers/iommu/arm-smmu.c b/drivers/iommu/arm-smmu.c
-> index 5ef1f2e100d7..93d332423f6f 100644
-> --- a/drivers/iommu/arm-smmu.c
-> +++ b/drivers/iommu/arm-smmu.c
-> @@ -1623,7 +1623,6 @@ static struct iommu_ops arm_smmu_ops = {
->  	.get_resv_regions	= arm_smmu_get_resv_regions,
->  	.put_resv_regions	= arm_smmu_put_resv_regions,
->  	.pgsize_bitmap		= -1UL, /* Restricted during device attach */
-> -	.owner			= THIS_MODULE,
->  };
->  
->  static void arm_smmu_device_reset(struct arm_smmu_device *smmu)
-> diff --git a/include/linux/iommu.h b/include/linux/iommu.h
-> index e9f94d3f7a04..90007c92ad2d 100644
-> --- a/include/linux/iommu.h
-> +++ b/include/linux/iommu.h
-> @@ -388,12 +388,19 @@ void iommu_device_sysfs_remove(struct iommu_device *iommu);
->  int  iommu_device_link(struct iommu_device   *iommu, struct device *link);
->  void iommu_device_unlink(struct iommu_device *iommu, struct device *link);
->  
-> -static inline void iommu_device_set_ops(struct iommu_device *iommu,
-> -					const struct iommu_ops *ops)
-> +static inline void __iommu_device_set_ops(struct iommu_device *iommu,
-> +					  const struct iommu_ops *ops)
->  {
->  	iommu->ops = ops;
->  }
->  
-> +#define iommu_device_set_ops(iommu, ops)				\
-> +do {									\
-> +	struct iommu_ops *__ops = (struct iommu_ops *)(ops);		\
-> +	__ops->owner = THIS_MODULE;					\
-> +	__iommu_device_set_ops(iommu, __ops);				\
-> +} while (0)
-> +
->  static inline void iommu_device_set_fwnode(struct iommu_device *iommu,
->  					   struct fwnode_handle *fwnode)
->  {
+> I like this. I'll have to do a bit more exploration because the original aux
+> design assumed that we didn't need to touch the hardware and I'm not sure if
+> there are any resource contention issues between the primary domain and the aux
+> domain. Luckily, these should be solvable if they exist (and the original design
+> didn't take into account the TLB flush problem so this was likely something we
+> had to do anyway).
 
-Looks good:
+Yeah, sounds like you've got it (somehow I'd completely forgotten that 
+you'd already prototyped the aux domain part, and I only re-read the 
+cover letter after sending that review...). TBH it's not massively 
+different, just being a bit more honest about the intermediate hardware 
+state. As long as we can rely on all aux domains being equivalent and 
+the GPU never writing nonsense to TTBR0, then all arm-smmu really wants 
+to care about is whether there's *something* live or not at any given 
+time, so attach (with quirk) does:
 
-Reviewed-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+	TTBR1 = primary_domain->ttbr
+	TCR = primary_domain->tcr | EPD0
+
+then attach_aux comes along and adds:
+
+	TTBR0 = aux_domain->ttbr
+	TCR = primary_doman->tcr | aux_domain->tcr
+
+such that arm-smmu can be happy that TTBR0 is always pointing at *some* 
+valid pagetable from that point on regardless of what subsequently 
+happens underneath, and nobody need touch TCR until the party's 
+completely over.
+
+>> I haven't thought it through in detail, but it also feels like between
+>> aux_attach_dev and/or the TTBR1 quirk in attach_dev there ought to be enough
+>> information to influence the context bank allocation or shuffle any existing
+>> domains such that you can ensure that the right thing ends up in magic
+>> context 0 when it needs to be. That could be a pretty neat and robust way to
+>> finally put that to bed.
+> 
+> I'll try to wrap my brain around this as well. Seems like we could do a magic
+> swizzle of the SID mappings but I'm not sure how we could safely pull that off
+> on an existing domain. Maybe I'm overthinking it.
+
+What I'm imagining isn't all that far from how we do normal domain 
+attach, except instead of setting up the newly-allocated context for a 
+new domain you simply clone the existing context into it, and instead of 
+having a given device's set of Stream IDs to retarget you'd just scan 
+though the S2CRs checking cbndx and rewriting as appropriate. Then 
+finally rewrite domain->cfg.cbndx and the old context is all yours.
+
+> I'll spin up a new copy of the TTBR1 quirk patch and revive the aux domain stuff
+> and then we can go from there.
+
+Sounds good, thanks!
+
+Robin.
 _______________________________________________
 iommu mailing list
 iommu@lists.linux-foundation.org
