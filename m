@@ -2,100 +2,98 @@ Return-Path: <SRS0=p6pp=3K=lists.linux-foundation.org=iommu-bounces@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-5.0 required=3.0 tests=DKIM_INVALID,DKIM_SIGNED,
-	HEADER_FROM_DIFFERENT_DOMAINS,MAILING_LIST_MULTI,SIGNED_OFF_BY,SPF_HELO_NONE,
-	SPF_PASS,USER_AGENT_SANE_1 autolearn=ham autolearn_force=no version=3.4.0
+X-Spam-Status: No, score=-8.1 required=3.0 tests=DKIM_INVALID,DKIM_SIGNED,
+	HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_PATCH,MAILING_LIST_MULTI,SIGNED_OFF_BY,
+	SPF_HELO_NONE,SPF_PASS,USER_AGENT_SANE_1 autolearn=unavailable
+	autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 5F049C2D0DB
-	for <iommu@archiver.kernel.org>; Tue, 21 Jan 2020 15:32:29 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id D728CC2D0DB
+	for <iommu@archiver.kernel.org>; Tue, 21 Jan 2020 17:11:39 +0000 (UTC)
 Received: from hemlock.osuosl.org (smtp2.osuosl.org [140.211.166.133])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by mail.kernel.org (Postfix) with ESMTPS id 2937624125
-	for <iommu@archiver.kernel.org>; Tue, 21 Jan 2020 15:32:29 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTPS id 9E0052465A
+	for <iommu@archiver.kernel.org>; Tue, 21 Jan 2020 17:11:39 +0000 (UTC)
 Authentication-Results: mail.kernel.org;
-	dkim=fail reason="signature verification failed" (1024-bit key) header.d=linuxfoundation.org header.i=@linuxfoundation.org header.b="L+6DmM/k"
-DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 2937624125
-Authentication-Results: mail.kernel.org; dmarc=none (p=none dis=none) header.from=linuxfoundation.org
+	dkim=fail reason="key not found in DNS" (0-bit key) header.d=mg.codeaurora.org header.i=@mg.codeaurora.org header.b="twC6k8bu"
+DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 9E0052465A
+Authentication-Results: mail.kernel.org; dmarc=none (p=none dis=none) header.from=codeaurora.org
 Authentication-Results: mail.kernel.org; spf=pass smtp.mailfrom=iommu-bounces@lists.linux-foundation.org
 Received: from localhost (localhost [127.0.0.1])
-	by hemlock.osuosl.org (Postfix) with ESMTP id 025F88660A;
-	Tue, 21 Jan 2020 15:32:29 +0000 (UTC)
+	by hemlock.osuosl.org (Postfix) with ESMTP id 65B6B878E3;
+	Tue, 21 Jan 2020 17:11:39 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
 Received: from hemlock.osuosl.org ([127.0.0.1])
 	by localhost (.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
-	with ESMTP id 3w7Bzbk9Is+9; Tue, 21 Jan 2020 15:32:23 +0000 (UTC)
+	with ESMTP id wV+kGyMI2iXj; Tue, 21 Jan 2020 17:11:38 +0000 (UTC)
 Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [140.211.9.56])
-	by hemlock.osuosl.org (Postfix) with ESMTP id C69FF87327;
-	Tue, 21 Jan 2020 15:32:23 +0000 (UTC)
+	by hemlock.osuosl.org (Postfix) with ESMTP id EB20A87762;
+	Tue, 21 Jan 2020 17:11:37 +0000 (UTC)
 Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
-	by lists.linuxfoundation.org (Postfix) with ESMTP id 89404C1D80;
-	Tue, 21 Jan 2020 15:32:23 +0000 (UTC)
-Received: from hemlock.osuosl.org (smtp2.osuosl.org [140.211.166.133])
- by lists.linuxfoundation.org (Postfix) with ESMTP id A9093C0174
- for <iommu@lists.linux-foundation.org>; Tue, 21 Jan 2020 15:32:22 +0000 (UTC)
+	by lists.linuxfoundation.org (Postfix) with ESMTP id CE935C1D80;
+	Tue, 21 Jan 2020 17:11:37 +0000 (UTC)
+Received: from whitealder.osuosl.org (smtp1.osuosl.org [140.211.166.138])
+ by lists.linuxfoundation.org (Postfix) with ESMTP id B051EC0174
+ for <iommu@lists.linux-foundation.org>; Tue, 21 Jan 2020 17:11:35 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
- by hemlock.osuosl.org (Postfix) with ESMTP id 9155F87327
- for <iommu@lists.linux-foundation.org>; Tue, 21 Jan 2020 15:32:22 +0000 (UTC)
+ by whitealder.osuosl.org (Postfix) with ESMTP id 9E2358201C
+ for <iommu@lists.linux-foundation.org>; Tue, 21 Jan 2020 17:11:35 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from hemlock.osuosl.org ([127.0.0.1])
+Received: from whitealder.osuosl.org ([127.0.0.1])
  by localhost (.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
- with ESMTP id G7W2PRBiwDOi for <iommu@lists.linux-foundation.org>;
- Tue, 21 Jan 2020 15:32:16 +0000 (UTC)
-X-Greylist: domain auto-whitelisted by SQLgrey-1.7.6
-Received: from mail-il1-f196.google.com (mail-il1-f196.google.com
- [209.85.166.196])
- by hemlock.osuosl.org (Postfix) with ESMTPS id B36D18660A
- for <iommu@lists.linux-foundation.org>; Tue, 21 Jan 2020 15:32:16 +0000 (UTC)
-Received: by mail-il1-f196.google.com with SMTP id x5so2674434ila.6
- for <iommu@lists.linux-foundation.org>; Tue, 21 Jan 2020 07:32:16 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
- d=linuxfoundation.org; s=google;
- h=subject:to:cc:references:from:message-id:date:user-agent
- :mime-version:in-reply-to:content-language:content-transfer-encoding;
- bh=QuY0WDhZX4kxz2cZdcfoWX6pS1PqJixvjT3hklrb4bg=;
- b=L+6DmM/kq/25mWwwyfuJL5puz+XC8sQxXxmq4SEsjcjIrwPeY2MlaTK+KdFs0tUjpx
- e9TsO6QoiGoo8N8SYntD/DxXCbi1YZvH7iN2RdjPK7Wc4cGsN53XBYakvS9cUL9SAqI/
- RwQuKwy2Lk20eL6NfyGHqSaKkBLw3YLyu6U7w=
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
- d=1e100.net; s=20161025;
- h=x-gm-message-state:subject:to:cc:references:from:message-id:date
- :user-agent:mime-version:in-reply-to:content-language
- :content-transfer-encoding;
- bh=QuY0WDhZX4kxz2cZdcfoWX6pS1PqJixvjT3hklrb4bg=;
- b=aZpZiqG/URo7lLfXFJ+k+8UcC1qfBHH+9LjchuvIBZGI29TJaBwmhYcAXD78pyaN2B
- jN17PXREOSR0JfwmngADWhquEVkC29X42NcadyKq+a6hiDADpofilAhV8hf+igfEd2Ye
- PRzlQOx1LUcervo/u25X/I4kReJEVG7/xyN8oJYY7FF3OUGU/gf4jc9FqgF+NJQvboZL
- nyGhl7namYoGiaCxmKcuQDMVAJfj6QphQJYCHhqS94WoH2ThQZbL/oGhgmv703+OAc8q
- 0jDSwTq+6Pin7LsJXi3kBYvM87I9N7lk1l948LVxQamYOX2cdvs8uP9iYM0+gyuceDuV
- KnBg==
-X-Gm-Message-State: APjAAAUujBALytbmdNa/0PabgCZDdoXT1+9hAdtYjtpiFxkpZRwM5NGj
- avjhea/IcBHoFLgvvTLmJmyauLFO
-X-Google-Smtp-Source: APXvYqz1a7VeH+whoGCCHkXj0ItYcUpJAraf63WTQVy3Nt9rZk1Rr6eVt72xptU5ReCjjNvMp5HCSA==
-X-Received: by 2002:a05:6e02:c83:: with SMTP id
- b3mr4035768ile.29.1579620735950; 
- Tue, 21 Jan 2020 07:32:15 -0800 (PST)
-Received: from [192.168.1.112] (c-24-9-64-241.hsd1.co.comcast.net.
- [24.9.64.241])
- by smtp.gmail.com with ESMTPSA id r14sm13344854ilg.59.2020.01.21.07.32.15
- (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
- Tue, 21 Jan 2020 07:32:15 -0800 (PST)
-Subject: Re: [PATCH] iommu: amd: Fix IOMMU perf counter clobbering during init
-To: Suravee Suthikulpanit <suravee.suthikulpanit@amd.com>,
- Joerg Roedel <joro@8bytes.org>
-References: <20200114151220.29578-1-skhan@linuxfoundation.org>
- <20200117100829.GE15760@8bytes.org>
- <42c0a806-9947-1401-9754-8aa88bd7062f@amd.com>
-From: Shuah Khan <skhan@linuxfoundation.org>
-Message-ID: <24a46b0f-33d7-5f94-661a-80f035213892@linuxfoundation.org>
-Date: Tue, 21 Jan 2020 08:32:14 -0700
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101
- Thunderbird/68.4.1
+ with ESMTP id 2cwfRZ2Dnm-e for <iommu@lists.linux-foundation.org>;
+ Tue, 21 Jan 2020 17:11:34 +0000 (UTC)
+X-Greylist: from auto-whitelisted by SQLgrey-1.7.6
+Received: from mail25.static.mailgun.info (mail25.static.mailgun.info
+ [104.130.122.25])
+ by whitealder.osuosl.org (Postfix) with ESMTPS id 50E6481EE9
+ for <iommu@lists.linux-foundation.org>; Tue, 21 Jan 2020 17:11:34 +0000 (UTC)
+DKIM-Signature: a=rsa-sha256; v=1; c=relaxed/relaxed; d=mg.codeaurora.org;
+ q=dns/txt; 
+ s=smtp; t=1579626694; h=In-Reply-To: Content-Type: MIME-Version:
+ References: Message-ID: Subject: Cc: To: From: Date: Sender;
+ bh=EPBfq3Cn0Ur34cIyveswNHADy+SSoohXu9of9oDtLQY=;
+ b=twC6k8bupajDVKsg+qAyqaiC/TSIC0JmS6fUcP+S07wclB69+bFViJx9zcJvu+5kuBFkLOos
+ jnPWRZX2FtKhQddb71mFhpn/BuH/9PfJSG3IJRXL61T43HWSElPASqgl9p0S+Xoz66xNQnA3
+ LkyV968QlFJYJa0OuivC0/WggGQ=
+X-Mailgun-Sending-Ip: 104.130.122.25
+X-Mailgun-Sid: WyI3NDkwMCIsICJpb21tdUBsaXN0cy5saW51eC1mb3VuZGF0aW9uLm9yZyIsICJiZTllNGEiXQ==
+Received: from smtp.codeaurora.org
+ (ec2-35-166-182-171.us-west-2.compute.amazonaws.com [35.166.182.171])
+ by mxa.mailgun.org with ESMTP id 5e2730c4.7f60c4c415e0-smtp-out-n03;
+ Tue, 21 Jan 2020 17:11:32 -0000 (UTC)
+Received: by smtp.codeaurora.org (Postfix, from userid 1001)
+ id BBD44C4479C; Tue, 21 Jan 2020 17:11:32 +0000 (UTC)
+Received: from jcrouse1-lnx.qualcomm.com (i-global254.qualcomm.com
+ [199.106.103.254])
+ (using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+ (No client certificate requested) (Authenticated sender: jcrouse)
+ by smtp.codeaurora.org (Postfix) with ESMTPSA id 05A27C43383;
+ Tue, 21 Jan 2020 17:11:30 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.3.2 smtp.codeaurora.org 05A27C43383
+Authentication-Results: aws-us-west-2-caf-mail-1.web.codeaurora.org;
+ dmarc=none (p=none dis=none) header.from=codeaurora.org
+Authentication-Results: aws-us-west-2-caf-mail-1.web.codeaurora.org;
+ spf=none smtp.mailfrom=jcrouse@codeaurora.org
+Date: Tue, 21 Jan 2020 10:11:29 -0700
+From: Jordan Crouse <jcrouse@codeaurora.org>
+To: Robin Murphy <robin.murphy@arm.com>
+Subject: Re: [PATCH v3 2/5] iommu/arm-smmu: Add support for split pagetables
+Message-ID: <20200121171127.GA5025@jcrouse1-lnx.qualcomm.com>
+Mail-Followup-To: Robin Murphy <robin.murphy@arm.com>,
+ iommu@lists.linux-foundation.org, will@kernel.org,
+ linux-arm-kernel@lists.infradead.org, linux-arm-msm@vger.kernel.org,
+ linux-kernel@vger.kernel.org, Joerg Roedel <joro@8bytes.org>
+References: <1576514271-15687-1-git-send-email-jcrouse@codeaurora.org>
+ <1576514271-15687-3-git-send-email-jcrouse@codeaurora.org>
+ <a38fe02a-4f84-f032-8c9d-4ecf72a87a55@arm.com>
 MIME-Version: 1.0
-In-Reply-To: <42c0a806-9947-1401-9754-8aa88bd7062f@amd.com>
-Content-Language: en-US
-Cc: iommu@lists.linux-foundation.org, linux-kernel@vger.kernel.org,
- Shuah Khan <skhan@linuxfoundation.org>
+Content-Disposition: inline
+In-Reply-To: <a38fe02a-4f84-f032-8c9d-4ecf72a87a55@arm.com>
+User-Agent: Mutt/1.5.24 (2015-08-30)
+Cc: linux-arm-msm@vger.kernel.org, linux-kernel@vger.kernel.org,
+ iommu@lists.linux-foundation.org, will@kernel.org,
+ linux-arm-kernel@lists.infradead.org
 X-BeenThere: iommu@lists.linux-foundation.org
 X-Mailman-Version: 2.1.15
 Precedence: list
@@ -108,36 +106,251 @@ List-Post: <mailto:iommu@lists.linux-foundation.org>
 List-Help: <mailto:iommu-request@lists.linux-foundation.org?subject=help>
 List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
  <mailto:iommu-request@lists.linux-foundation.org?subject=subscribe>
-Content-Transfer-Encoding: base64
-Content-Type: text/plain; charset="utf-8"; Format="flowed"
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: 7bit
 Errors-To: iommu-bounces@lists.linux-foundation.org
 Sender: "iommu" <iommu-bounces@lists.linux-foundation.org>
 
-T24gMS8yMC8yMCA3OjEwIFBNLCBTdXJhdmVlIFN1dGhpa3VscGFuaXQgd3JvdGU6Cj4gT24gMS8x
-Ny8yMDIwIDU6MDggUE0sIEpvZXJnIFJvZWRlbCB3cm90ZToKPj4gQWRkaW5nIFN1cmF2ZWUsIHdo
-byB3cm90ZSB0aGUgSU9NTVUgUGVyZiBDb3VudGVyIGNvZGUuCj4+Cj4+IE9uIFR1ZSwgSmFuIDE0
-LCAyMDIwIGF0IDA4OjEyOjIwQU0gLTA3MDAsIFNodWFoIEtoYW4gd3JvdGU6Cj4+PiBpbml0X2lv
-bW11X3BlcmZfY3RyKCkgY2xvYmJlcnMgdGhlIHJlZ2lzdGVyIHdoZW4gaXQgY2hlY2tzIHdyaXRl
-IGFjY2Vzcwo+Pj4gdG8gSU9NTVUgcGVyZiBjb3VudGVycyBhbmQgZmFpbHMgdG8gcmVzdG9yZSB3
-aGVuIHRoZXkgYXJlIHdyaXRhYmxlLgo+Pj4KPj4+IEFkZCBzYXZlIGFuZCByZXN0b3JlIHRvIGZp
-eCBpdC4KPj4+Cj4+PiBTaWduZWQtb2ZmLWJ5OiBTaHVhaCBLaGFuPHNraGFuQGxpbnV4Zm91bmRh
-dGlvbi5vcmc+Cj4+PiAtLS0KPj4+IMKgIGRyaXZlcnMvaW9tbXUvYW1kX2lvbW11X2luaXQuYyB8
-IDIyICsrKysrKysrKysrKysrKystLS0tLS0KPj4+IMKgIDEgZmlsZSBjaGFuZ2VkLCAxNiBpbnNl
-cnRpb25zKCspLCA2IGRlbGV0aW9ucygtKQo+PiBTdXJhdmVlLCBjYW4geW91IHBsZWFzZSByZXZp
-ZXcgdGhpcyBwYXRjaD8KPj4KPiAKPiBUaGlzIGxvb2tzIG9rLiBEb2VzIHRoaXMgZml4IGNlcnRh
-aW4gaXNzdWVzPyBPciBpcyB0aGlzIGp1c3QgZm9yIHNhbml0eS4KCkkgZGlkbid0IG5vdGljZSBh
-bnkgcHJvYmxlbXMuIENvdW50ZXJzIGFyZW4ndCB3cml0YWJsZSBvbiBteSBzeXN0ZW0uCkhvd2V2
-ZXIsIGl0IGNlcnRhaW5seSBsb29rcyBsaWtlIGEgYm9nIHNpbmNlIHJlZ2lzdGVycyBhcmVuJ3Qg
-cmVzdG9yZWQKbGlrZSBpbiBvdGhlciBwbGFjZXMgaW4gdGhpcyBmaWxlIHdoZXJlIHN1Y2ggY2hl
-Y2tzIGFyZSBkb25lIG9uIG90aGVyCnJlZ2lzdGVycy4KCkkgc2VlIDIgYmFua3MgYW5kIDQgY291
-bnRlcnMgb24gbXkgc3lzdGVtLiBJcyBpdCBzdWZmaWNpZW50IHRvIGNoZWNrCnRoZSBmaXJzdCBi
-YW5rIGFuZCBmaXJzdCBjb3VudGVyPyBJbiBvdGhlciB3b3JkcywgaWYgdGhlIGZpcnN0IG9uZQpp
-c24ndCB3cml0YWJsZSwgYXJlIGFsbCBjb3VudGVycyBub24td3JpdGFibGU/CgpTaG91bGQgd2Ug
-cmVhZCB0aGUgY29uZmlnIGZpcnN0IGFuZCB0aGVuLCB0cnkgdG8gc2VlIGlmIGFueSBvZiB0aGUK
-Y291bnRlcnMgYXJlIHdyaXRhYmxlPyBJIGhhdmUgYSBwYXRjaCB0aGF0IGRvZXMgdGhhdCwgSSBj
-YW4gc2VuZCBpdApvdXQgZm9yIHJldmlldy4KCj4gCj4gUmV2aWV3ZWQtYnk6IFN1cmF2ZWUgU3V0
-aGlrdWxwYW5pdCA8c3VyYXZlZS5zdXRoaWt1bHBhbml0QGFtZC5jb20+ClRoYW5rcyBmb3IgdGhl
-IHJldmlldy4KCnRoYW5rcywKLS0gU2h1YWgKX19fX19fX19fX19fX19fX19fX19fX19fX19fX19f
-X19fX19fX19fX19fX19fX18KaW9tbXUgbWFpbGluZyBsaXN0CmlvbW11QGxpc3RzLmxpbnV4LWZv
-dW5kYXRpb24ub3JnCmh0dHBzOi8vbGlzdHMubGludXhmb3VuZGF0aW9uLm9yZy9tYWlsbWFuL2xp
-c3RpbmZvL2lvbW11
+On Tue, Jan 21, 2020 at 02:36:19PM +0000, Robin Murphy wrote:
+> On 16/12/2019 4:37 pm, Jordan Crouse wrote:
+> >Add support to enable split pagetables (TTBR1) if the supporting driver
+> >requests it via the DOMAIN_ATTR_SPLIT_TABLES flag. When enabled, the driver
+> >will set up the TTBR0 and TTBR1 regions and program the default domain
+> >pagetable on TTBR1.
+> >
+> >After attaching the device, the value of he domain attribute can
+> >be queried to see if the split pagetables were successfully programmed.
+> >Furthermore the domain geometry will be updated so that the caller can
+> >determine the active region for the pagetable that was programmed.
+> >
+> >Signed-off-by: Jordan Crouse <jcrouse@codeaurora.org>
+> >---
+> >
+> >  drivers/iommu/arm-smmu.c | 40 +++++++++++++++++++++++++++++++++++-----
+> >  drivers/iommu/arm-smmu.h | 45 +++++++++++++++++++++++++++++++++++++++------
+> >  2 files changed, 74 insertions(+), 11 deletions(-)
+> >
+> >diff --git a/drivers/iommu/arm-smmu.c b/drivers/iommu/arm-smmu.c
+> >index c106406..7b59116 100644
+> >--- a/drivers/iommu/arm-smmu.c
+> >+++ b/drivers/iommu/arm-smmu.c
+> >@@ -538,9 +538,17 @@ static void arm_smmu_init_context_bank(struct arm_smmu_domain *smmu_domain,
+> >  			cb->ttbr[0] = pgtbl_cfg->arm_v7s_cfg.ttbr;
+> >  			cb->ttbr[1] = 0;
+> >  		} else {
+> >-			cb->ttbr[0] = pgtbl_cfg->arm_lpae_s1_cfg.ttbr;
+> >-			cb->ttbr[0] |= FIELD_PREP(TTBRn_ASID, cfg->asid);
+> >-			cb->ttbr[1] = FIELD_PREP(TTBRn_ASID, cfg->asid);
+> >+			if (pgtbl_cfg->quirks & IO_PGTABLE_QUIRK_ARM_TTBR1) {
+> >+				cb->ttbr[0] = FIELD_PREP(TTBRn_ASID, cfg->asid);
+> >+				cb->ttbr[1] = pgtbl_cfg->arm_lpae_s1_cfg.ttbr;
+> >+				cb->ttbr[1] |=
+> >+					FIELD_PREP(TTBRn_ASID, cfg->asid);
+> >+			} else {
+> >+				cb->ttbr[0] = pgtbl_cfg->arm_lpae_s1_cfg.ttbr;
+> >+				cb->ttbr[0] |=
+> >+					FIELD_PREP(TTBRn_ASID, cfg->asid);
+> >+				cb->ttbr[1] = FIELD_PREP(TTBRn_ASID, cfg->asid);
+> >+			}
+> >  		}
+> >  	} else {
+> >  		cb->ttbr[0] = pgtbl_cfg->arm_lpae_s2_cfg.vttbr;
+> >@@ -651,6 +659,7 @@ static int arm_smmu_init_domain_context(struct iommu_domain *domain,
+> >  	enum io_pgtable_fmt fmt;
+> >  	struct arm_smmu_domain *smmu_domain = to_smmu_domain(domain);
+> >  	struct arm_smmu_cfg *cfg = &smmu_domain->cfg;
+> >+	u32 quirks = 0;
+> >  	mutex_lock(&smmu_domain->init_mutex);
+> >  	if (smmu_domain->smmu)
+> >@@ -719,6 +728,8 @@ static int arm_smmu_init_domain_context(struct iommu_domain *domain,
+> >  		oas = smmu->ipa_size;
+> >  		if (cfg->fmt == ARM_SMMU_CTX_FMT_AARCH64) {
+> >  			fmt = ARM_64_LPAE_S1;
+> >+			if (smmu_domain->split_pagetables)
+> >+				quirks |= IO_PGTABLE_QUIRK_ARM_TTBR1;
+> >  		} else if (cfg->fmt == ARM_SMMU_CTX_FMT_AARCH32_L) {
+> >  			fmt = ARM_32_LPAE_S1;
+> >  			ias = min(ias, 32UL);
+> >@@ -788,6 +799,7 @@ static int arm_smmu_init_domain_context(struct iommu_domain *domain,
+> >  		.coherent_walk	= smmu->features & ARM_SMMU_FEAT_COHERENT_WALK,
+> >  		.tlb		= smmu_domain->flush_ops,
+> >  		.iommu_dev	= smmu->dev,
+> >+		.quirks		= quirks,
+> >  	};
+> >  	if (smmu_domain->non_strict)
+> >@@ -801,8 +813,15 @@ static int arm_smmu_init_domain_context(struct iommu_domain *domain,
+> >  	/* Update the domain's page sizes to reflect the page table format */
+> >  	domain->pgsize_bitmap = pgtbl_cfg.pgsize_bitmap;
+> >-	domain->geometry.aperture_end = (1UL << ias) - 1;
+> >-	domain->geometry.force_aperture = true;
+> >+
+> >+	if (pgtbl_cfg.quirks & IO_PGTABLE_QUIRK_ARM_TTBR1) {
+> >+		domain->geometry.aperture_start = ~((1ULL << ias) - 1);
+> 
+> AKA "~0UL << ias", if I'm not mistaken ;)
+> 
+> >+		domain->geometry.aperture_end = ~0UL;
+> >+	} else {
+> >+		domain->geometry.aperture_end = (1UL << ias) - 1;
+> >+		domain->geometry.force_aperture = true;
+> >+		smmu_domain->split_pagetables = false;
+> >+	}
+> >  	/* Initialise the context bank with our page table cfg */
+> >  	arm_smmu_init_context_bank(smmu_domain, &pgtbl_cfg);
+> >@@ -1484,6 +1503,9 @@ static int arm_smmu_domain_get_attr(struct iommu_domain *domain,
+> >  		case DOMAIN_ATTR_NESTING:
+> >  			*(int *)data = (smmu_domain->stage == ARM_SMMU_DOMAIN_NESTED);
+> >  			return 0;
+> >+		case DOMAIN_ATTR_SPLIT_TABLES:
+> >+			*(int *)data = smmu_domain->split_pagetables;
+> >+			return 0;
+> >  		default:
+> >  			return -ENODEV;
+> >  		}
+> >@@ -1524,6 +1546,14 @@ static int arm_smmu_domain_set_attr(struct iommu_domain *domain,
+> >  			else
+> >  				smmu_domain->stage = ARM_SMMU_DOMAIN_S1;
+> >  			break;
+> >+		case DOMAIN_ATTR_SPLIT_TABLES:
+> >+			if (smmu_domain->smmu) {
+> >+				ret = -EPERM;
+> >+				goto out_unlock;
+> >+			}
+> >+			if (*(int *)data)
+> >+				smmu_domain->split_pagetables = true;
+> 
+> I still like the idea of passing the actual split point here, but as it is I
+> think this sets the scene perfectly for coming back and doing that later.
+> 
+> >+			break;
+> >  		default:
+> >  			ret = -ENODEV;
+> >  		}
+> >diff --git a/drivers/iommu/arm-smmu.h b/drivers/iommu/arm-smmu.h
+> >index afab9de..68526cc 100644
+> >--- a/drivers/iommu/arm-smmu.h
+> >+++ b/drivers/iommu/arm-smmu.h
+> >@@ -177,6 +177,16 @@ enum arm_smmu_cbar_type {
+> >  #define TCR_IRGN0			GENMASK(9, 8)
+> >  #define TCR_T0SZ			GENMASK(5, 0)
+> >+#define TCR_TG1				GENMASK(31, 30)
+> >+
+> >+#define TG0_4K				0
+> >+#define TG0_64K				1
+> >+#define TG0_16K				2
+> >+
+> >+#define TG1_16K				1
+> >+#define TG1_4K				2
+> >+#define TG1_64K				3
+> >+
+> >  #define ARM_SMMU_CB_CONTEXTIDR		0x34
+> >  #define ARM_SMMU_CB_S1_MAIR0		0x38
+> >  #define ARM_SMMU_CB_S1_MAIR1		0x3c
+> >@@ -329,16 +339,39 @@ struct arm_smmu_domain {
+> >  	struct mutex			init_mutex; /* Protects smmu pointer */
+> >  	spinlock_t			cb_lock; /* Serialises ATS1* ops and TLB syncs */
+> >  	struct iommu_domain		domain;
+> >+	bool				split_pagetables;
+> >  };
+> >+static inline u32 arm_smmu_lpae_tcr_tg(struct io_pgtable_cfg *cfg)
+> >+{
+> >+	u32 val;
+> >+
+> >+	if (!(cfg->quirks & IO_PGTABLE_QUIRK_ARM_TTBR1))
+> >+		return FIELD_PREP(TCR_TG0, cfg->arm_lpae_s1_cfg.tcr.tg);
+> >+
+> >+	val = FIELD_PREP(TCR_TG1, cfg->arm_lpae_s1_cfg.tcr.tg);
+> >+
+> >+	if (cfg->arm_lpae_s1_cfg.tcr.tg == TG1_4K)
+> >+		val |= FIELD_PREP(TCR_TG0, TG0_4K);
+> >+	else if (cfg->arm_lpae_s1_cfg.tcr.tg == TG1_16K)
+> >+		val |= FIELD_PREP(TCR_TG0, TG0_16K);
+> >+	else
+> >+		val |= FIELD_PREP(TCR_TG0, TG0_64K);
+> >+
+> >+	return val;
+> >+}
+> 
+> This is all a bit ugly - I'd really like to rely on the real values from
+> both io_pgtable instances if at all possible...
+> 
+> >+
+> >  static inline u32 arm_smmu_lpae_tcr(struct io_pgtable_cfg *cfg)
+> >  {
+> >-	return TCR_EPD1 |
+> >-	       FIELD_PREP(TCR_TG0, cfg->arm_lpae_s1_cfg.tcr.tg) |
+> >-	       FIELD_PREP(TCR_SH0, cfg->arm_lpae_s1_cfg.tcr.sh) |
+> >-	       FIELD_PREP(TCR_ORGN0, cfg->arm_lpae_s1_cfg.tcr.orgn) |
+> >-	       FIELD_PREP(TCR_IRGN0, cfg->arm_lpae_s1_cfg.tcr.irgn) |
+> >-	       FIELD_PREP(TCR_T0SZ, cfg->arm_lpae_s1_cfg.tcr.tsz);
+> >+	u32 tcr = FIELD_PREP(TCR_SH0, cfg->arm_lpae_s1_cfg.tcr.sh) |
+> >+		FIELD_PREP(TCR_ORGN0, cfg->arm_lpae_s1_cfg.tcr.orgn) |
+> >+		FIELD_PREP(TCR_IRGN0, cfg->arm_lpae_s1_cfg.tcr.irgn) |
+> >+		FIELD_PREP(TCR_T0SZ, cfg->arm_lpae_s1_cfg.tcr.tsz);
+> >+
+> >+	if (!(cfg->quirks & IO_PGTABLE_QUIRK_ARM_TTBR1))
+> >+		return tcr | TCR_EPD1 | arm_smmu_lpae_tcr_tg(cfg);
+> >+
+> >+	return tcr | (tcr << 16) | arm_smmu_lpae_tcr_tg(cfg);
+> 
+> ...especially here - leaving TTBR0 enabled but pointing to who-knows-what
+> until someone fills it in at some arbitrary point in the future seems rather
+> scary.
+> 
+> I'm looking at iommu_aux_attach_device() and friends, and it appears pretty
+> achievable to hook that up in a workable manner, even if it's just routed
+> straight through to the impl to only work within qcom-specific parameters to
+> begin with. I figure the first aux_attach_dev sanity-checks that the main
+> domain is using TTBR1 with a compatible split, sets TTBR0 and updates the
+> merged TCR value at that point. For subsequent calls it shouldn't need to do
+> much more than sanity-check that a new aux domain has the same parameters as
+> the existing one(s) (and again, such checks could potentially even start out
+> as just "this is OK by construction" comments). I guess we'd probably want a
+> count of the number of 'live' aux domains so we can simply disable TTBR0 on
+> the final aux_detach_dev without having to keep detailed track of whatever
+> the GPU has actually context switched in the hardware. Can you see any holes
+> in that idea?
+
+Let me repeat this back just to be sure we're on the same page. When the quirk
+is enabled on the primary domain, we'll set up TTBR1 and leave TTBR0 disabled.
+Then, when the first aux domain is attached we will set up that io_ptgable
+to enable TTBR0 and then let the GPU do what the GPU does until the last aux is
+detached and we can switch off TTBR0 again.
+
+I like this. I'll have to do a bit more exploration because the original aux
+design assumed that we didn't need to touch the hardware and I'm not sure if
+there are any resource contention issues between the primary domain and the aux
+domain. Luckily, these should be solvable if they exist (and the original design
+didn't take into account the TLB flush problem so this was likely something we
+had to do anyway).
+
+> I haven't thought it through in detail, but it also feels like between
+> aux_attach_dev and/or the TTBR1 quirk in attach_dev there ought to be enough
+> information to influence the context bank allocation or shuffle any existing
+> domains such that you can ensure that the right thing ends up in magic
+> context 0 when it needs to be. That could be a pretty neat and robust way to
+> finally put that to bed.
+
+I'll try to wrap my brain around this as well. Seems like we could do a magic
+swizzle of the SID mappings but I'm not sure how we could safely pull that off
+on an existing domain. Maybe I'm overthinking it.
+
+I'll spin up a new copy of the TTBR1 quirk patch and revive the aux domain stuff
+and then we can go from there.
+
+Thanks,
+Jordan
+
+> Robin.
+> 
+> >  }
+> >  static inline u32 arm_smmu_lpae_tcr2(struct io_pgtable_cfg *cfg)
+> >
+
+-- 
+The Qualcomm Innovation Center, Inc. is a member of Code Aurora Forum,
+a Linux Foundation Collaborative Project
+_______________________________________________
+iommu mailing list
+iommu@lists.linux-foundation.org
+https://lists.linuxfoundation.org/mailman/listinfo/iommu
