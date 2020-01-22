@@ -2,97 +2,104 @@ Return-Path: <SRS0=k9Qp=3L=lists.linux-foundation.org=iommu-bounces@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-9.6 required=3.0 tests=DKIM_INVALID,DKIM_SIGNED,
-	HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_PATCH,MAILING_LIST_MULTI,SIGNED_OFF_BY,
-	SPF_HELO_NONE,SPF_PASS,USER_AGENT_GIT autolearn=unavailable
-	autolearn_force=no version=3.4.0
+X-Spam-Status: No, score=-3.5 required=3.0 tests=DKIM_INVALID,DKIM_SIGNED,
+	HEADER_FROM_DIFFERENT_DOMAINS,MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS,
+	USER_AGENT_GIT autolearn=no autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 1CB78C33CB6
-	for <iommu@archiver.kernel.org>; Wed, 22 Jan 2020 11:48:36 +0000 (UTC)
-Received: from hemlock.osuosl.org (smtp2.osuosl.org [140.211.166.133])
+	by smtp.lore.kernel.org (Postfix) with ESMTP id C703DC2D0DB
+	for <iommu@archiver.kernel.org>; Wed, 22 Jan 2020 12:59:07 +0000 (UTC)
+Received: from silver.osuosl.org (smtp3.osuosl.org [140.211.166.136])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by mail.kernel.org (Postfix) with ESMTPS id E624B21734
-	for <iommu@archiver.kernel.org>; Wed, 22 Jan 2020 11:48:35 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTPS id 8713B2467F
+	for <iommu@archiver.kernel.org>; Wed, 22 Jan 2020 12:59:07 +0000 (UTC)
 Authentication-Results: mail.kernel.org;
-	dkim=fail reason="key not found in DNS" (0-bit key) header.d=mg.codeaurora.org header.i=@mg.codeaurora.org header.b="em9wha8l"
-DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org E624B21734
-Authentication-Results: mail.kernel.org; dmarc=none (p=none dis=none) header.from=codeaurora.org
+	dkim=fail reason="signature verification failed" (2048-bit key) header.d=cerno.tech header.i=@cerno.tech header.b="TK7Swu1g";
+	dkim=fail reason="signature verification failed" (2048-bit key) header.d=messagingengine.com header.i=@messagingengine.com header.b="hyJOoqRP"
+DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 8713B2467F
+Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=cerno.tech
 Authentication-Results: mail.kernel.org; spf=pass smtp.mailfrom=iommu-bounces@lists.linux-foundation.org
 Received: from localhost (localhost [127.0.0.1])
-	by hemlock.osuosl.org (Postfix) with ESMTP id AF8BD87B47;
-	Wed, 22 Jan 2020 11:48:35 +0000 (UTC)
-X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from hemlock.osuosl.org ([127.0.0.1])
-	by localhost (.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
-	with ESMTP id nA1AJnOyL8rH; Wed, 22 Jan 2020 11:48:35 +0000 (UTC)
-Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [140.211.9.56])
-	by hemlock.osuosl.org (Postfix) with ESMTP id 2D7E085964;
-	Wed, 22 Jan 2020 11:48:35 +0000 (UTC)
-Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
-	by lists.linuxfoundation.org (Postfix) with ESMTP id 174EBC0176;
-	Wed, 22 Jan 2020 11:48:35 +0000 (UTC)
-Received: from silver.osuosl.org (smtp3.osuosl.org [140.211.166.136])
- by lists.linuxfoundation.org (Postfix) with ESMTP id 104CDC0174
- for <iommu@lists.linux-foundation.org>; Wed, 22 Jan 2020 11:48:34 +0000 (UTC)
-Received: from localhost (localhost [127.0.0.1])
- by silver.osuosl.org (Postfix) with ESMTP id 083A02040B
- for <iommu@lists.linux-foundation.org>; Wed, 22 Jan 2020 11:48:34 +0000 (UTC)
+	by silver.osuosl.org (Postfix) with ESMTP id 574ED2039B;
+	Wed, 22 Jan 2020 12:59:07 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
 Received: from silver.osuosl.org ([127.0.0.1])
+	by localhost (.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
+	with ESMTP id jQiXtJOhBvzJ; Wed, 22 Jan 2020 12:59:06 +0000 (UTC)
+Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [140.211.9.56])
+	by silver.osuosl.org (Postfix) with ESMTP id F135120348;
+	Wed, 22 Jan 2020 12:59:05 +0000 (UTC)
+Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
+	by lists.linuxfoundation.org (Postfix) with ESMTP id D140FC1796;
+	Wed, 22 Jan 2020 12:59:05 +0000 (UTC)
+Received: from whitealder.osuosl.org (smtp1.osuosl.org [140.211.166.138])
+ by lists.linuxfoundation.org (Postfix) with ESMTP id 6EB4DC0174
+ for <iommu@lists.linux-foundation.org>; Wed, 22 Jan 2020 12:51:08 +0000 (UTC)
+Received: from localhost (localhost [127.0.0.1])
+ by whitealder.osuosl.org (Postfix) with ESMTP id 6257C84854
+ for <iommu@lists.linux-foundation.org>; Wed, 22 Jan 2020 12:51:08 +0000 (UTC)
+X-Virus-Scanned: amavisd-new at osuosl.org
+Received: from whitealder.osuosl.org ([127.0.0.1])
  by localhost (.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
- with ESMTP id w7ZDMEL8Etnv for <iommu@lists.linux-foundation.org>;
- Wed, 22 Jan 2020 11:48:33 +0000 (UTC)
+ with ESMTP id gq6DNtbZY+6C for <iommu@lists.linux-foundation.org>;
+ Wed, 22 Jan 2020 12:51:07 +0000 (UTC)
 X-Greylist: from auto-whitelisted by SQLgrey-1.7.6
-Received: from mail26.static.mailgun.info (mail26.static.mailgun.info
- [104.130.122.26])
- by silver.osuosl.org (Postfix) with ESMTPS id 2CC622039E
- for <iommu@lists.linux-foundation.org>; Wed, 22 Jan 2020 11:48:33 +0000 (UTC)
-DKIM-Signature: a=rsa-sha256; v=1; c=relaxed/relaxed; d=mg.codeaurora.org;
- q=dns/txt; 
- s=smtp; t=1579693713; h=Content-Transfer-Encoding: MIME-Version:
- References: In-Reply-To: Message-Id: Date: Subject: Cc: To: From:
- Sender; bh=FZ071Y+ZSAFUrH83cN0WG3lRWXwhXgDK4mXEYqKVUkE=;
- b=em9wha8lKvp3oIodbs6R/di5UBoO0sJjSOPwZ8Gpnhz6O3d2yYj1BolOIJTunWDPc8sib7LG
- smad6zGDroP6OHmRVhYPesp/KY4ocwm7XlfguMhRvOu98W/qlmuyiC01p1oHtuJR7KKOVzJP
- avYsHm+5Td0ImHZHEZygdooaQ6w=
-X-Mailgun-Sending-Ip: 104.130.122.26
-X-Mailgun-Sid: WyI3NDkwMCIsICJpb21tdUBsaXN0cy5saW51eC1mb3VuZGF0aW9uLm9yZyIsICJiZTllNGEiXQ==
-Received: from smtp.codeaurora.org
- (ec2-35-166-182-171.us-west-2.compute.amazonaws.com [35.166.182.171])
- by mxa.mailgun.org with ESMTP id 5e283690.7f521a0266c0-smtp-out-n01;
- Wed, 22 Jan 2020 11:48:32 -0000 (UTC)
-Received: by smtp.codeaurora.org (Postfix, from userid 1001)
- id E8397C447AA; Wed, 22 Jan 2020 11:48:31 +0000 (UTC)
-Received: from blr-ubuntu-253.qualcomm.com
- (blr-bdr-fw-01_GlobalNAT_AllZones-Outside.qualcomm.com [103.229.18.19])
- (using TLSv1.2 with cipher ECDHE-RSA-AES128-SHA256 (128/128 bits))
- (No client certificate requested)
- (Authenticated sender: saiprakash.ranjan)
- by smtp.codeaurora.org (Postfix) with ESMTPSA id 6B77FC4479C;
- Wed, 22 Jan 2020 11:48:25 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.3.2 smtp.codeaurora.org 6B77FC4479C
-Authentication-Results: aws-us-west-2-caf-mail-1.web.codeaurora.org;
- dmarc=none (p=none dis=none) header.from=codeaurora.org
-Authentication-Results: aws-us-west-2-caf-mail-1.web.codeaurora.org; spf=none
- smtp.mailfrom=saiprakash.ranjan@codeaurora.org
-From: Sai Prakash Ranjan <saiprakash.ranjan@codeaurora.org>
-To: Will Deacon <will@kernel.org>, Robin Murphy <robin.murphy@arm.com>,
- Joerg Roedel <joro@8bytes.org>, Jordan Crouse <jcrouse@codeaurora.org>,
- Rob Clark <robdclark@gmail.com>
-Subject: [PATCH 2/2] iommu/arm-smmu: Allow client devices to select direct
- mapping
-Date: Wed, 22 Jan 2020 17:18:02 +0530
-Message-Id: <813cc5b2da10c27db982254b274bf26008a9e6da.1579692800.git.saiprakash.ranjan@codeaurora.org>
-X-Mailer: git-send-email 2.24.0
-In-Reply-To: <cover.1579692800.git.saiprakash.ranjan@codeaurora.org>
-References: <cover.1579692800.git.saiprakash.ranjan@codeaurora.org>
+Received: from out4-smtp.messagingengine.com (out4-smtp.messagingengine.com
+ [66.111.4.28])
+ by whitealder.osuosl.org (Postfix) with ESMTPS id B4CD184189
+ for <iommu@lists.linux-foundation.org>; Wed, 22 Jan 2020 12:51:07 +0000 (UTC)
+Received: from compute3.internal (compute3.nyi.internal [10.202.2.43])
+ by mailout.nyi.internal (Postfix) with ESMTP id EAE79220A7;
+ Wed, 22 Jan 2020 07:44:18 -0500 (EST)
+Received: from mailfrontend1 ([10.202.2.162])
+ by compute3.internal (MEProxy); Wed, 22 Jan 2020 07:44:18 -0500
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=cerno.tech; h=
+ from:to:cc:subject:date:message-id:mime-version
+ :content-transfer-encoding; s=fm1; bh=fmwpTx6jswx4kvnYxowEmIfQd9
+ MqmpuQXCivarwrIOU=; b=TK7Swu1g57HGuOJ3XeY2yFLXpgnYBZSP8L53rhcVrg
+ v/Ui/A1cFNzNxnH+I3MF9KUzhHsbZc64n8xpEtcSatOOG1NK5S4SHs+5yVHiHTOa
+ F4SKyIcnYvauhdljL+4zTV4T3LiEH1seGKgfuHVYOys/kxNBkNepWV0KsXiMwn7G
+ ZX4w9+fm9A61wtz1sIkRXrqEpFwhQKj9Q/99Z+/49Ym2FOEGao03yqYtEUPfY4ZF
+ Wx9YBF+cY7d+iKWHwuQDXh4YhbH9HghS1tQbLq7D4fi6u8XRFJpCV7ye3qMW/7vw
+ 74BHLtBLNleYLbZPq6UC2+7e4exbXbEohCN6UabQeV2w==
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=
+ messagingengine.com; h=cc:content-transfer-encoding:date:from
+ :message-id:mime-version:subject:to:x-me-proxy:x-me-proxy
+ :x-me-sender:x-me-sender:x-sasl-enc; s=fm1; bh=fmwpTx6jswx4kvnYx
+ owEmIfQd9MqmpuQXCivarwrIOU=; b=hyJOoqRPpLaP2EQw/Wa6oCBAgXsBy6wNW
+ AfTGz+/LRs1wMaIaSJh9HdV8ELAomAvC9UNBAcbmOPLlNL3NFNNx8TVniwG8kuRs
+ zXmu+GUX0Y9p4xHty4l10Y0aJVeJXDvO+hW+aK52GMMMIm+h/l99O7VLk10ju3WY
+ 2DsuMpLG66BNW4dW7pyPS+X1UjfL3hE2t4yi/iPJTuuDzyVAtz5NTVgm7eXj3+JJ
+ MI6X1+ilDPSPaebNvE0wYd5hHq+uUnSYXr0CvhKQjLla8YWKEy/KnqOYMUY16n6C
+ 44OZVBKcH/He80XTbnIdnR139RfsJ340TLYKQ1e433QVbuNOcCZjg==
+X-ME-Sender: <xms:oUMoXnk0YthgklaU7_OPAPfenBFx7NYnr_Gn09AUViprpBD422JEPQ>
+X-ME-Proxy-Cause: gggruggvucftvghtrhhoucdtuddrgedugedrvddtgdegtdcutefuodetggdotefrodftvf
+ curfhrohhfihhlvgemucfhrghsthforghilhdpqfgfvfdpuffrtefokffrpgfnqfghnecu
+ uegrihhlohhuthemuceftddtnecusecvtfgvtghiphhivghnthhsucdlqddutddtmdenuc
+ fjughrpefhvffufffkofgggfestdekredtredttdenucfhrhhomhepofgrgihimhgvucft
+ ihhprghrugcuoehmrgigihhmvgestggvrhhnohdrthgvtghhqeenucfkphepledtrdekle
+ drieekrdejieenucevlhhushhtvghrufhiiigvpedtnecurfgrrhgrmhepmhgrihhlfhhr
+ ohhmpehmrgigihhmvgestggvrhhnohdrthgvtghh
+X-ME-Proxy: <xmx:oUMoXuqM0jifKtzLNqzFtQCXn3h-iOJJUk4cvaerv1d-AkTac0vDDQ>
+ <xmx:oUMoXr2LFRwO54xoDD0Hn3_kPK_kqGGWXhyLEzO0BVNzsr38Z7mLjQ>
+ <xmx:oUMoXpaqZonSrySMbDJCYc7duUBG_ypqIHu8ww_WE7W4Tx5PxEm7Mw>
+ <xmx:okMoXuN6-QcMNjtAVak5BFSV0pOCphbcsEtl2UDMmic5ClCXkx8Brg>
+Received: from localhost (lfbn-tou-1-1502-76.w90-89.abo.wanadoo.fr
+ [90.89.68.76])
+ by mail.messagingengine.com (Postfix) with ESMTPA id 54C0D3280062;
+ Wed, 22 Jan 2020 07:44:17 -0500 (EST)
+From: Maxime Ripard <maxime@cerno.tech>
+To: Joerg Roedel <joro@8bytes.org>, Chen-Yu Tsai <wens@csie.org>,
+ Maxime Ripard <mripard@kernel.org>, Mark Rutland <mark.rutland@arm.com>,
+ Rob Herring <robh+dt@kernel.org>, Frank Rowand <frowand.list@gmail.com>
+Subject: [PATCH 0/3] iommu: Add Allwinner H6 IOMMU driver
+Date: Wed, 22 Jan 2020 13:44:06 +0100
+Message-Id: <cover.b2a9e1507135d81e726fcbb65137665a7f0ab74f.1579696927.git-series.maxime@cerno.tech>
+X-Mailer: git-send-email 2.24.1
 MIME-Version: 1.0
-Cc: Rajendra Nayak <rnayak@codeaurora.org>, linux-arm-msm@vger.kernel.org,
- linux-kernel@vger.kernel.org, Stephen Boyd <swboyd@chromium.org>,
- iommu@lists.linux-foundation.org, Matthias Kaehlcke <mka@chromium.org>,
- Bjorn Andersson <bjorn.andersson@linaro.org>,
- linux-arm-kernel@lists.infradead.org
+X-Mailman-Approved-At: Wed, 22 Jan 2020 12:59:04 +0000
+Cc: devicetree@vger.kernel.org, iommu@lists.linux-foundation.org,
+ Maxime Ripard <maxime@cerno.tech>, linux-arm-kernel@lists.infradead.org
 X-BeenThere: iommu@lists.linux-foundation.org
 X-Mailman-Version: 2.1.15
 Precedence: list
@@ -110,125 +117,39 @@ Content-Transfer-Encoding: 7bit
 Errors-To: iommu-bounces@lists.linux-foundation.org
 Sender: "iommu" <iommu-bounces@lists.linux-foundation.org>
 
-From: Jordan Crouse <jcrouse@codeaurora.org>
+Hi,
 
-Some client devices want to directly map the IOMMU themselves instead
-of using the DMA domain. Allow those devices to opt in to direct
-mapping by way of a list of compatible strings.
+Here's a series adding support for the IOMMU introduced in the Allwinner
+H6. The driver from Allwinner hints at more SoCs using it in the future
+(with more masters), so we can bet on that IOMMU becoming pretty much
+standard in new SoCs from Allwinner.
 
-Signed-off-by: Jordan Crouse <jcrouse@codeaurora.org>
-Co-developed-by: Sai Prakash Ranjan <saiprakash.ranjan@codeaurora.org>
-Signed-off-by: Sai Prakash Ranjan <saiprakash.ranjan@codeaurora.org>
----
- drivers/iommu/arm-smmu-qcom.c | 39 +++++++++++++++++++++++++++++++++++
- drivers/iommu/arm-smmu.c      |  3 +++
- drivers/iommu/arm-smmu.h      |  5 +++++
- 3 files changed, 47 insertions(+)
+One thing I wasn't really sure about was how to expose the statistics
+reported by the IOMMU PMU (TLB hit rates, latencies, and so on). The
+Allwinner driver exposes them through custom sysfs files, while they would
+be best represented through perf I guess? Anyway, I'm planning to support
+them later on.
 
-diff --git a/drivers/iommu/arm-smmu-qcom.c b/drivers/iommu/arm-smmu-qcom.c
-index 64a4ab270ab7..ff746acd1c81 100644
---- a/drivers/iommu/arm-smmu-qcom.c
-+++ b/drivers/iommu/arm-smmu-qcom.c
-@@ -3,6 +3,7 @@
-  * Copyright (c) 2019, The Linux Foundation. All rights reserved.
-  */
- 
-+#include <linux/of_device.h>
- #include <linux/qcom_scm.h>
- 
- #include "arm-smmu.h"
-@@ -11,6 +12,43 @@ struct qcom_smmu {
- 	struct arm_smmu_device smmu;
- };
- 
-+static const struct arm_smmu_client_match_data qcom_adreno = {
-+	.direct_mapping = true,
-+};
-+
-+static const struct arm_smmu_client_match_data qcom_mdss = {
-+	.direct_mapping = true,
-+};
-+
-+static const struct of_device_id qcom_smmu_client_of_match[] = {
-+	{ .compatible = "qcom,adreno", .data = &qcom_adreno },
-+	{ .compatible = "qcom,mdp4", .data = &qcom_mdss },
-+	{ .compatible = "qcom,mdss", .data = &qcom_mdss },
-+	{ .compatible = "qcom,sc7180-mdss", .data = &qcom_mdss },
-+	{ .compatible = "qcom,sdm845-mdss", .data = &qcom_mdss },
-+	{},
-+};
-+
-+static const struct arm_smmu_client_match_data *
-+qcom_smmu_client_data(struct device *dev)
-+{
-+	const struct of_device_id *match =
-+		of_match_device(qcom_smmu_client_of_match, dev);
-+
-+	return match ? match->data : NULL;
-+}
-+
-+static int qcom_smmu_request_domain(struct device *dev)
-+{
-+	const struct arm_smmu_client_match_data *client;
-+
-+	client = qcom_smmu_client_data(dev);
-+	if (client)
-+		iommu_request_dm_for_dev(dev);
-+
-+	return 0;
-+}
-+
- static int qcom_sdm845_smmu500_reset(struct arm_smmu_device *smmu)
- {
- 	int ret;
-@@ -41,6 +79,7 @@ static int qcom_smmu500_reset(struct arm_smmu_device *smmu)
- }
- 
- static const struct arm_smmu_impl qcom_smmu_impl = {
-+	.req_domain = qcom_smmu_request_domain,
- 	.reset = qcom_smmu500_reset,
- };
- 
-diff --git a/drivers/iommu/arm-smmu.c b/drivers/iommu/arm-smmu.c
-index 16c4b87af42b..67dd9326247a 100644
---- a/drivers/iommu/arm-smmu.c
-+++ b/drivers/iommu/arm-smmu.c
-@@ -1448,6 +1448,9 @@ static int arm_smmu_add_device(struct device *dev)
- 	device_link_add(dev, smmu->dev,
- 			DL_FLAG_PM_RUNTIME | DL_FLAG_AUTOREMOVE_SUPPLIER);
- 
-+	if (smmu->impl && smmu->impl->req_domain)
-+		return smmu->impl->req_domain(dev);
-+
- 	return 0;
- 
- out_cfg_free:
-diff --git a/drivers/iommu/arm-smmu.h b/drivers/iommu/arm-smmu.h
-index 8d1cd54d82a6..059dc9c39f64 100644
---- a/drivers/iommu/arm-smmu.h
-+++ b/drivers/iommu/arm-smmu.h
-@@ -244,6 +244,10 @@ enum arm_smmu_arch_version {
- 	ARM_SMMU_V2,
- };
- 
-+struct arm_smmu_client_match_data {
-+	bool direct_mapping;
-+};
-+
- enum arm_smmu_implementation {
- 	GENERIC_SMMU,
- 	ARM_MMU500,
-@@ -386,6 +390,7 @@ struct arm_smmu_impl {
- 	int (*init_context)(struct arm_smmu_domain *smmu_domain);
- 	void (*tlb_sync)(struct arm_smmu_device *smmu, int page, int sync,
- 			 int status);
-+	int (*req_domain)(struct device *dev);
- };
- 
- static inline void __iomem *arm_smmu_page(struct arm_smmu_device *smmu, int n)
+Let me know what you think,
+Maxime
+
+Maxime Ripard (3):
+  dt-bindings: iommu: Add Allwinner H6 IOMMU bindings
+  iommu: Add Allwinner H6 IOMMU driver
+  arm64: dts: allwinner: h6: Add IOMMU
+
+ Documentation/devicetree/bindings/iommu/allwinner,sun50i-h6-iommu.yaml |   61 ++++-
+ arch/arm64/boot/dts/allwinner/sun50i-h6.dtsi                           |   11 +-
+ drivers/iommu/Kconfig                                                  |   10 +-
+ drivers/iommu/Makefile                                                 |    1 +-
+ drivers/iommu/sun50i-iommu.c                                           | 1126 ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++-
+ 5 files changed, 1209 insertions(+)
+ create mode 100644 Documentation/devicetree/bindings/iommu/allwinner,sun50i-h6-iommu.yaml
+ create mode 100644 drivers/iommu/sun50i-iommu.c
+
+base-commit: e42617b825f8073569da76dc4510bfa019b1c35a
 -- 
-QUALCOMM INDIA, on behalf of Qualcomm Innovation Center, Inc. is a member
-of Code Aurora Forum, hosted by The Linux Foundation
+git-series 0.9.1
 _______________________________________________
 iommu mailing list
 iommu@lists.linux-foundation.org
