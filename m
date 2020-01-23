@@ -2,98 +2,91 @@ Return-Path: <SRS0=99fx=3M=lists.linux-foundation.org=iommu-bounces@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-5.0 required=3.0 tests=DKIM_INVALID,DKIM_SIGNED,
-	HEADER_FROM_DIFFERENT_DOMAINS,MAILING_LIST_MULTI,SIGNED_OFF_BY,SPF_HELO_NONE,
-	SPF_PASS,USER_AGENT_SANE_1 autolearn=ham autolearn_force=no version=3.4.0
+X-Spam-Status: No, score=-9.6 required=3.0 tests=DKIM_INVALID,DKIM_SIGNED,
+	HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_PATCH,MAILING_LIST_MULTI,SIGNED_OFF_BY,
+	SPF_HELO_NONE,SPF_PASS,USER_AGENT_GIT autolearn=ham autolearn_force=no
+	version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id ED6D8C33CAA
-	for <iommu@archiver.kernel.org>; Thu, 23 Jan 2020 21:27:21 +0000 (UTC)
-Received: from whitealder.osuosl.org (smtp1.osuosl.org [140.211.166.138])
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 90D3DC33CAA
+	for <iommu@archiver.kernel.org>; Thu, 23 Jan 2020 22:32:21 +0000 (UTC)
+Received: from hemlock.osuosl.org (smtp2.osuosl.org [140.211.166.133])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by mail.kernel.org (Postfix) with ESMTPS id A95E121D7E
-	for <iommu@archiver.kernel.org>; Thu, 23 Jan 2020 21:27:21 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTPS id 4C64E21734
+	for <iommu@archiver.kernel.org>; Thu, 23 Jan 2020 22:32:21 +0000 (UTC)
 Authentication-Results: mail.kernel.org;
-	dkim=fail reason="signature verification failed" (1024-bit key) header.d=linuxfoundation.org header.i=@linuxfoundation.org header.b="PwBvHXWc"
-DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org A95E121D7E
+	dkim=fail reason="signature verification failed" (1024-bit key) header.d=linuxfoundation.org header.i=@linuxfoundation.org header.b="JPtl/BXY"
+DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 4C64E21734
 Authentication-Results: mail.kernel.org; dmarc=none (p=none dis=none) header.from=linuxfoundation.org
 Authentication-Results: mail.kernel.org; spf=pass smtp.mailfrom=iommu-bounces@lists.linux-foundation.org
 Received: from localhost (localhost [127.0.0.1])
-	by whitealder.osuosl.org (Postfix) with ESMTP id 6922D87647;
-	Thu, 23 Jan 2020 21:27:21 +0000 (UTC)
+	by hemlock.osuosl.org (Postfix) with ESMTP id 1212B883C1;
+	Thu, 23 Jan 2020 22:32:21 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from whitealder.osuosl.org ([127.0.0.1])
+Received: from hemlock.osuosl.org ([127.0.0.1])
 	by localhost (.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
-	with ESMTP id 93MjgCQ+Js9T; Thu, 23 Jan 2020 21:27:20 +0000 (UTC)
+	with ESMTP id Of6C+QiHHruQ; Thu, 23 Jan 2020 22:32:20 +0000 (UTC)
 Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [140.211.9.56])
-	by whitealder.osuosl.org (Postfix) with ESMTP id 929A08764A;
-	Thu, 23 Jan 2020 21:27:20 +0000 (UTC)
+	by hemlock.osuosl.org (Postfix) with ESMTP id 43725883E0;
+	Thu, 23 Jan 2020 22:32:20 +0000 (UTC)
 Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
-	by lists.linuxfoundation.org (Postfix) with ESMTP id 7A255C18DD;
-	Thu, 23 Jan 2020 21:27:20 +0000 (UTC)
+	by lists.linuxfoundation.org (Postfix) with ESMTP id 1F349C0176;
+	Thu, 23 Jan 2020 22:32:20 +0000 (UTC)
 Received: from silver.osuosl.org (smtp3.osuosl.org [140.211.166.136])
- by lists.linuxfoundation.org (Postfix) with ESMTP id 47AF1C0174
- for <iommu@lists.linux-foundation.org>; Thu, 23 Jan 2020 21:27:19 +0000 (UTC)
+ by lists.linuxfoundation.org (Postfix) with ESMTP id 90B23C0174
+ for <iommu@lists.linux-foundation.org>; Thu, 23 Jan 2020 22:32:18 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
- by silver.osuosl.org (Postfix) with ESMTP id 2D6D92035B
- for <iommu@lists.linux-foundation.org>; Thu, 23 Jan 2020 21:27:19 +0000 (UTC)
+ by silver.osuosl.org (Postfix) with ESMTP id 77DA822650
+ for <iommu@lists.linux-foundation.org>; Thu, 23 Jan 2020 22:32:18 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
 Received: from silver.osuosl.org ([127.0.0.1])
  by localhost (.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
- with ESMTP id 3+BS0SvLYqq1 for <iommu@lists.linux-foundation.org>;
- Thu, 23 Jan 2020 21:27:18 +0000 (UTC)
+ with ESMTP id 9+IurnS1xCnj for <iommu@lists.linux-foundation.org>;
+ Thu, 23 Jan 2020 22:32:17 +0000 (UTC)
 X-Greylist: domain auto-whitelisted by SQLgrey-1.7.6
-Received: from mail-il1-f194.google.com (mail-il1-f194.google.com
- [209.85.166.194])
- by silver.osuosl.org (Postfix) with ESMTPS id 487182034A
- for <iommu@lists.linux-foundation.org>; Thu, 23 Jan 2020 21:27:18 +0000 (UTC)
-Received: by mail-il1-f194.google.com with SMTP id g12so58900ild.2
- for <iommu@lists.linux-foundation.org>; Thu, 23 Jan 2020 13:27:18 -0800 (PST)
+Received: from mail-il1-f195.google.com (mail-il1-f195.google.com
+ [209.85.166.195])
+ by silver.osuosl.org (Postfix) with ESMTPS id 5195422613
+ for <iommu@lists.linux-foundation.org>; Thu, 23 Jan 2020 22:32:17 +0000 (UTC)
+Received: by mail-il1-f195.google.com with SMTP id t17so136015ilm.13
+ for <iommu@lists.linux-foundation.org>; Thu, 23 Jan 2020 14:32:17 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
  d=linuxfoundation.org; s=google;
- h=subject:to:cc:references:from:message-id:date:user-agent
- :mime-version:in-reply-to:content-language:content-transfer-encoding;
- bh=Rlz3hvUu+9u2oNJYG4g2Rw59Iz8hixxTpHD2vCOcLXo=;
- b=PwBvHXWcPbHsFtHuoq3AUL5vFUZnWEbflYLFA0fa+kpnrYlFYyZ0WNPhmm0JH5IX20
- wOJlpK/ta+WU/QC7YYY/nAK98YO4OkEzz+mMqfx2W1MeL5DIBZGjjs2GThFWLbmP4ZXO
- BWndEWvmKE617UUJcuQWCt1gg1wDNoy4ZugQk=
+ h=from:to:cc:subject:date:message-id:mime-version
+ :content-transfer-encoding;
+ bh=L7Z0MQLgFpVUqRMkpIW9BsJ/F7zZnMMX5vKIMOIOUGo=;
+ b=JPtl/BXYDpF1WbyX3AFyai/TuIIICFzkw2YEVeL9iEiDTCopZDplYRtiYVhVJRlCXP
+ sIv/mBcCxDR4iebP3GSRqf8FL/+ZJlFKIgafnRYwSDJdKS+J+xBxa1m9h/GdtOkYAidM
+ 2FelKQjhC9UjUH7sPHn2sd2t3b8ghc75wJivU=
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
  d=1e100.net; s=20161025;
- h=x-gm-message-state:subject:to:cc:references:from:message-id:date
- :user-agent:mime-version:in-reply-to:content-language
+ h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
  :content-transfer-encoding;
- bh=Rlz3hvUu+9u2oNJYG4g2Rw59Iz8hixxTpHD2vCOcLXo=;
- b=CX27izDek4Ys1yVIq0GkZuGN+pMCVc+hepNJIUQGVy0hdEUd5j1nBrThDhm2XFruub
- OxRRLqT+8ZBrw2Dn1lZpzJ6iPgyqgPqNEEhjGDhqAE6y0avzgj/apbGrCwHWCu9/FBBc
- JeZUQdCp5yEuurEy+8TsOktk76IFcjtgpUUoN2kSZ+z3mo0OaAK7JMVqLJyIKS4kXP3Q
- 9SdVbnYYlIKkCh/nR3efb7nfN+KrDiJgPY+7Y+AzJtAfmQR9DAmoPtUoXtCsuUJQIi5j
- PrUiSoIkJakO2/RORtE4JAVYJHvHkAto4bLaRio1EyymWE6lOj7gPbz6Rvx3nI8TpCKG
- Lvzw==
-X-Gm-Message-State: APjAAAUeXyGhA1vj1TbZXKny4x83wwhNr1DwWLyrB03Z6kbyFkjnMOEd
- exesvu8vfzp6qWewzy5RWuH3y71I
-X-Google-Smtp-Source: APXvYqzlBlohdIzyH1fQ7g2B5f1t9VHWWDYOQC2BgsHZYkufZHxwNvX/yEX1sbKHcfdWI3OzYGhGPQ==
-X-Received: by 2002:a05:6e02:cc5:: with SMTP id c5mr249989ilj.47.1579814837406; 
- Thu, 23 Jan 2020 13:27:17 -0800 (PST)
-Received: from [192.168.1.112] (c-24-9-64-241.hsd1.co.comcast.net.
+ bh=L7Z0MQLgFpVUqRMkpIW9BsJ/F7zZnMMX5vKIMOIOUGo=;
+ b=R58c+vfkfgHpOnXKl1nWA16GFWggRH1g85bfsVbzVFtDZ/yzH1VPNLW0x+HVu4Mfxp
+ N+vUZwoFmWbDWVwzam4Jiucqo3NbSt6C5l8XfPAASkx1gZ8NivJj7h6dUYU3QzCKNG7H
+ JWpewhpZ14HBYtMlW6FMeVM3SJE1arHURpxve212UPBp74eFhp7pLz0jPX/q2DbptY5V
+ dcJYcfp7ijtrmLoSQneYPnORpMABNUI5TNrJhD4OnCd8HfB7rtSvKoubn3ZnFCBBopH7
+ AcQ5n+p3Qvr/9LNCSNyDfAXPM4HQi7VwfgOnSFsSTo0MQO1Mcm3ZfPuPlCzyzFGmuv2d
+ /rIA==
+X-Gm-Message-State: APjAAAWZc+UhtRKGCey2mZ/SQmFbOSYKWepGWK8+jg2wrQBBAlA2ESYP
+ Rpib/nJG26jp+PUAl2ABtijyCzbA
+X-Google-Smtp-Source: APXvYqxIuGjlwsK0WON45gzxdSefs72kcw1Dv0XZbxXn2BlLfgH1D4+eYrs9Jh4lr0Mn1phz0S3vlg==
+X-Received: by 2002:a92:85c1:: with SMTP id f184mr434426ilh.221.1579818736563; 
+ Thu, 23 Jan 2020 14:32:16 -0800 (PST)
+Received: from shuah-t480s.internal (c-24-9-64-241.hsd1.co.comcast.net.
  [24.9.64.241])
- by smtp.gmail.com with ESMTPSA id i11sm701592ion.1.2020.01.23.13.27.16
- (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
- Thu, 23 Jan 2020 13:27:16 -0800 (PST)
-Subject: Re: [PATCH] iommu: amd: Fix IOMMU perf counter clobbering during init
-To: Suravee Suthikulpanit <suravee.suthikulpanit@amd.com>,
- Joerg Roedel <joro@8bytes.org>
-References: <20200114151220.29578-1-skhan@linuxfoundation.org>
- <20200117100829.GE15760@8bytes.org>
- <42c0a806-9947-1401-9754-8aa88bd7062f@amd.com>
- <24a46b0f-33d7-5f94-661a-80f035213892@linuxfoundation.org>
+ by smtp.gmail.com with ESMTPSA id f4sm716943ioh.45.2020.01.23.14.32.15
+ (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+ Thu, 23 Jan 2020 14:32:16 -0800 (PST)
 From: Shuah Khan <skhan@linuxfoundation.org>
-Message-ID: <d7b8aa31-ded5-082e-0324-91b6277507ba@linuxfoundation.org>
-Date: Thu, 23 Jan 2020 14:27:15 -0700
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101
- Thunderbird/68.4.1
+To: joro@8bytes.org,
+	suravee.suthikulpanit@amd.com
+Subject: [PATCH v2] iommu: amd: Fix IOMMU perf counter clobbering during init
+Date: Thu, 23 Jan 2020 15:32:14 -0700
+Message-Id: <20200123223214.2566-1-skhan@linuxfoundation.org>
+X-Mailer: git-send-email 2.20.1
 MIME-Version: 1.0
-In-Reply-To: <24a46b0f-33d7-5f94-661a-80f035213892@linuxfoundation.org>
-Content-Language: en-US
 Cc: iommu@lists.linux-foundation.org, linux-kernel@vger.kernel.org,
  Shuah Khan <skhan@linuxfoundation.org>
 X-BeenThere: iommu@lists.linux-foundation.org
@@ -108,40 +101,79 @@ List-Post: <mailto:iommu@lists.linux-foundation.org>
 List-Help: <mailto:iommu-request@lists.linux-foundation.org?subject=help>
 List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
  <mailto:iommu-request@lists.linux-foundation.org?subject=subscribe>
-Content-Transfer-Encoding: base64
-Content-Type: text/plain; charset="utf-8"; Format="flowed"
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: 7bit
 Errors-To: iommu-bounces@lists.linux-foundation.org
 Sender: "iommu" <iommu-bounces@lists.linux-foundation.org>
 
-T24gMS8yMS8yMCA4OjMyIEFNLCBTaHVhaCBLaGFuIHdyb3RlOgo+IE9uIDEvMjAvMjAgNzoxMCBQ
-TSwgU3VyYXZlZSBTdXRoaWt1bHBhbml0IHdyb3RlOgo+PiBPbiAxLzE3LzIwMjAgNTowOCBQTSwg
-Sm9lcmcgUm9lZGVsIHdyb3RlOgo+Pj4gQWRkaW5nIFN1cmF2ZWUsIHdobyB3cm90ZSB0aGUgSU9N
-TVUgUGVyZiBDb3VudGVyIGNvZGUuCj4+Pgo+Pj4gT24gVHVlLCBKYW4gMTQsIDIwMjAgYXQgMDg6
-MTI6MjBBTSAtMDcwMCwgU2h1YWggS2hhbiB3cm90ZToKPj4+PiBpbml0X2lvbW11X3BlcmZfY3Ry
-KCkgY2xvYmJlcnMgdGhlIHJlZ2lzdGVyIHdoZW4gaXQgY2hlY2tzIHdyaXRlIGFjY2Vzcwo+Pj4+
-IHRvIElPTU1VIHBlcmYgY291bnRlcnMgYW5kIGZhaWxzIHRvIHJlc3RvcmUgd2hlbiB0aGV5IGFy
-ZSB3cml0YWJsZS4KPj4+Pgo+Pj4+IEFkZCBzYXZlIGFuZCByZXN0b3JlIHRvIGZpeCBpdC4KPj4+
-Pgo+Pj4+IFNpZ25lZC1vZmYtYnk6IFNodWFoIEtoYW48c2toYW5AbGludXhmb3VuZGF0aW9uLm9y
-Zz4KPj4+PiAtLS0KPj4+PiDCoCBkcml2ZXJzL2lvbW11L2FtZF9pb21tdV9pbml0LmMgfCAyMiAr
-KysrKysrKysrKysrKysrLS0tLS0tCj4+Pj4gwqAgMSBmaWxlIGNoYW5nZWQsIDE2IGluc2VydGlv
-bnMoKyksIDYgZGVsZXRpb25zKC0pCj4+PiBTdXJhdmVlLCBjYW4geW91IHBsZWFzZSByZXZpZXcg
-dGhpcyBwYXRjaD8KPj4+Cj4+Cj4+IFRoaXMgbG9va3Mgb2suIERvZXMgdGhpcyBmaXggY2VydGFp
-biBpc3N1ZXM/IE9yIGlzIHRoaXMganVzdCBmb3Igc2FuaXR5Lgo+IAo+IEkgZGlkbid0IG5vdGlj
-ZSBhbnkgcHJvYmxlbXMuIENvdW50ZXJzIGFyZW4ndCB3cml0YWJsZSBvbiBteSBzeXN0ZW0uCj4g
-SG93ZXZlciwgaXQgY2VydGFpbmx5IGxvb2tzIGxpa2UgYSBib2cgc2luY2UgcmVnaXN0ZXJzIGFy
-ZW4ndCByZXN0b3JlZAo+IGxpa2UgaW4gb3RoZXIgcGxhY2VzIGluIHRoaXMgZmlsZSB3aGVyZSBz
-dWNoIGNoZWNrcyBhcmUgZG9uZSBvbiBvdGhlcgo+IHJlZ2lzdGVycy4KPiAKPiBJIHNlZSAyIGJh
-bmtzIGFuZCA0IGNvdW50ZXJzIG9uIG15IHN5c3RlbS4gSXMgaXQgc3VmZmljaWVudCB0byBjaGVj
-awo+IHRoZSBmaXJzdCBiYW5rIGFuZCBmaXJzdCBjb3VudGVyPyBJbiBvdGhlciB3b3JkcywgaWYg
-dGhlIGZpcnN0IG9uZQo+IGlzbid0IHdyaXRhYmxlLCBhcmUgYWxsIGNvdW50ZXJzIG5vbi13cml0
-YWJsZT8KPiAKPiBTaG91bGQgd2UgcmVhZCB0aGUgY29uZmlnIGZpcnN0IGFuZCB0aGVuLCB0cnkg
-dG8gc2VlIGlmIGFueSBvZiB0aGUKPiBjb3VudGVycyBhcmUgd3JpdGFibGU/IEkgaGF2ZSBhIHBh
-dGNoIHRoYXQgZG9lcyB0aGF0LCBJIGNhbiBzZW5kIGl0Cj4gb3V0IGZvciByZXZpZXcuCj4gCj4+
-Cj4+IFJldmlld2VkLWJ5OiBTdXJhdmVlIFN1dGhpa3VscGFuaXQgPHN1cmF2ZWUuc3V0aGlrdWxw
-YW5pdEBhbWQuY29tPgoKSm9lcmcsCgpQbGVhc2UgZG9uJ3QgcHVsbCB0aGlzIGluLiBJIGludHJv
-ZHVjZWQgYSBidWcgaW4gdGhpcyBwYXRjaC4gSXQgYWx3YXlzCnJldHVybnMgYW1kX2lvbW11X3Bj
-X3ByZXNlbnQgZmFsc2UgZXZlbiB3aGVuIGl0IGNhbiB3cml0ZSB0byB0aGUKY291bnRlcnMuIE15
-IGJhZC4KCkkgd2lsbCBzZW5kIHYyLgoKdGhhbmtzLAotLSBTaHVhaApfX19fX19fX19fX19fX19f
-X19fX19fX19fX19fX19fX19fX19fX19fX19fX19fXwppb21tdSBtYWlsaW5nIGxpc3QKaW9tbXVA
-bGlzdHMubGludXgtZm91bmRhdGlvbi5vcmcKaHR0cHM6Ly9saXN0cy5saW51eGZvdW5kYXRpb24u
-b3JnL21haWxtYW4vbGlzdGluZm8vaW9tbXU=
+init_iommu_perf_ctr() clobbers the register when it checks write access
+to IOMMU perf counters and fails to restore when they are writable.
+
+Add save and restore to fix it.
+
+Signed-off-by: Shuah Khan <skhan@linuxfoundation.org>
+---
+Changes since v1:
+-- Fix bug in sucessful return path. Add a return instead of
+   fall through to pc_false error case
+
+ drivers/iommu/amd_iommu_init.c | 24 ++++++++++++++++++------
+ 1 file changed, 18 insertions(+), 6 deletions(-)
+
+diff --git a/drivers/iommu/amd_iommu_init.c b/drivers/iommu/amd_iommu_init.c
+index 568c52317757..483f7bc379fa 100644
+--- a/drivers/iommu/amd_iommu_init.c
++++ b/drivers/iommu/amd_iommu_init.c
+@@ -1655,27 +1655,39 @@ static int iommu_pc_get_set_reg(struct amd_iommu *iommu, u8 bank, u8 cntr,
+ static void init_iommu_perf_ctr(struct amd_iommu *iommu)
+ {
+ 	struct pci_dev *pdev = iommu->dev;
+-	u64 val = 0xabcd, val2 = 0;
++	u64 val = 0xabcd, val2 = 0, save_reg = 0;
+ 
+ 	if (!iommu_feature(iommu, FEATURE_PC))
+ 		return;
+ 
+ 	amd_iommu_pc_present = true;
+ 
++	/* save the value to restore, if writable */
++	if (iommu_pc_get_set_reg(iommu, 0, 0, 0, &save_reg, false))
++		goto pc_false;
++
+ 	/* Check if the performance counters can be written to */
+ 	if ((iommu_pc_get_set_reg(iommu, 0, 0, 0, &val, true)) ||
+ 	    (iommu_pc_get_set_reg(iommu, 0, 0, 0, &val2, false)) ||
+-	    (val != val2)) {
+-		pci_err(pdev, "Unable to write to IOMMU perf counter.\n");
+-		amd_iommu_pc_present = false;
+-		return;
+-	}
++	    (val != val2))
++		goto pc_false;
++
++	/* restore */
++	if (iommu_pc_get_set_reg(iommu, 0, 0, 0, &save_reg, true))
++		goto pc_false;
+ 
+ 	pci_info(pdev, "IOMMU performance counters supported\n");
+ 
+ 	val = readl(iommu->mmio_base + MMIO_CNTR_CONF_OFFSET);
+ 	iommu->max_banks = (u8) ((val >> 12) & 0x3f);
+ 	iommu->max_counters = (u8) ((val >> 7) & 0xf);
++
++	return;
++
++pc_false:
++	pci_err(pdev, "Unable to read/write to IOMMU perf counter.\n");
++	amd_iommu_pc_present = false;
++	return;
+ }
+ 
+ static ssize_t amd_iommu_show_cap(struct device *dev,
+-- 
+2.20.1
+
+_______________________________________________
+iommu mailing list
+iommu@lists.linux-foundation.org
+https://lists.linuxfoundation.org/mailman/listinfo/iommu
