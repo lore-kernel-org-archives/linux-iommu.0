@@ -6,60 +6,57 @@ X-Spam-Status: No, score=-5.3 required=3.0 tests=HEADER_FROM_DIFFERENT_DOMAINS,
 	MAILING_LIST_MULTI,SIGNED_OFF_BY,SPF_HELO_NONE,SPF_PASS,USER_AGENT_SANE_1
 	autolearn=ham autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 4ADF9C2D0DB
-	for <iommu@archiver.kernel.org>; Fri, 24 Jan 2020 14:36:57 +0000 (UTC)
-Received: from silver.osuosl.org (smtp3.osuosl.org [140.211.166.136])
+	by smtp.lore.kernel.org (Postfix) with ESMTP id D92B4C32771
+	for <iommu@archiver.kernel.org>; Fri, 24 Jan 2020 14:39:11 +0000 (UTC)
+Received: from fraxinus.osuosl.org (smtp4.osuosl.org [140.211.166.137])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by mail.kernel.org (Postfix) with ESMTPS id 17434206F0
-	for <iommu@archiver.kernel.org>; Fri, 24 Jan 2020 14:36:56 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 17434206F0
+	by mail.kernel.org (Postfix) with ESMTPS id A7419206F0
+	for <iommu@archiver.kernel.org>; Fri, 24 Jan 2020 14:39:11 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org A7419206F0
 Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=8bytes.org
 Authentication-Results: mail.kernel.org; spf=pass smtp.mailfrom=iommu-bounces@lists.linux-foundation.org
 Received: from localhost (localhost [127.0.0.1])
-	by silver.osuosl.org (Postfix) with ESMTP id E0F0120494;
-	Fri, 24 Jan 2020 14:36:56 +0000 (UTC)
+	by fraxinus.osuosl.org (Postfix) with ESMTP id 8888C86D84;
+	Fri, 24 Jan 2020 14:39:11 +0000 (UTC)
+X-Virus-Scanned: amavisd-new at osuosl.org
+Received: from fraxinus.osuosl.org ([127.0.0.1])
+	by localhost (.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
+	with ESMTP id 255WgXkY-NUo; Fri, 24 Jan 2020 14:39:11 +0000 (UTC)
+Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [140.211.9.56])
+	by fraxinus.osuosl.org (Postfix) with ESMTP id 124AF86C2F;
+	Fri, 24 Jan 2020 14:39:11 +0000 (UTC)
+Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
+	by lists.linuxfoundation.org (Postfix) with ESMTP id D8419C18DD;
+	Fri, 24 Jan 2020 14:39:10 +0000 (UTC)
+Received: from silver.osuosl.org (smtp3.osuosl.org [140.211.166.136])
+ by lists.linuxfoundation.org (Postfix) with ESMTP id 33EB7C0174
+ for <iommu@lists.linux-foundation.org>; Fri, 24 Jan 2020 14:39:10 +0000 (UTC)
+Received: from localhost (localhost [127.0.0.1])
+ by silver.osuosl.org (Postfix) with ESMTP id 1BB3A20494
+ for <iommu@lists.linux-foundation.org>; Fri, 24 Jan 2020 14:39:10 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
 Received: from silver.osuosl.org ([127.0.0.1])
-	by localhost (.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
-	with ESMTP id DvYbTbyrZUEI; Fri, 24 Jan 2020 14:36:55 +0000 (UTC)
-Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [140.211.9.56])
-	by silver.osuosl.org (Postfix) with ESMTP id 9B34D203EE;
-	Fri, 24 Jan 2020 14:36:55 +0000 (UTC)
-Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
-	by lists.linuxfoundation.org (Postfix) with ESMTP id 7A609C18DD;
-	Fri, 24 Jan 2020 14:36:55 +0000 (UTC)
-Received: from hemlock.osuosl.org (smtp2.osuosl.org [140.211.166.133])
- by lists.linuxfoundation.org (Postfix) with ESMTP id 23680C0174
- for <iommu@lists.linux-foundation.org>; Fri, 24 Jan 2020 14:36:53 +0000 (UTC)
-Received: from localhost (localhost [127.0.0.1])
- by hemlock.osuosl.org (Postfix) with ESMTP id 0ED0E883B0
- for <iommu@lists.linux-foundation.org>; Fri, 24 Jan 2020 14:36:53 +0000 (UTC)
-X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from hemlock.osuosl.org ([127.0.0.1])
  by localhost (.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
- with ESMTP id KvK247MRjBKO for <iommu@lists.linux-foundation.org>;
- Fri, 24 Jan 2020 14:36:51 +0000 (UTC)
+ with ESMTP id 0qcZpcdplUX9 for <iommu@lists.linux-foundation.org>;
+ Fri, 24 Jan 2020 14:39:08 +0000 (UTC)
 X-Greylist: from auto-whitelisted by SQLgrey-1.7.6
 Received: from theia.8bytes.org (8bytes.org [81.169.241.247])
- by hemlock.osuosl.org (Postfix) with ESMTPS id 9B460883A6
- for <iommu@lists.linux-foundation.org>; Fri, 24 Jan 2020 14:36:51 +0000 (UTC)
+ by silver.osuosl.org (Postfix) with ESMTPS id B7F8D203EE
+ for <iommu@lists.linux-foundation.org>; Fri, 24 Jan 2020 14:39:08 +0000 (UTC)
 Received: by theia.8bytes.org (Postfix, from userid 1000)
- id 97D33A52; Fri, 24 Jan 2020 15:36:49 +0100 (CET)
-Date: Fri, 24 Jan 2020 15:36:48 +0100
+ id A807DA52; Fri, 24 Jan 2020 15:39:06 +0100 (CET)
+Date: Fri, 24 Jan 2020 15:39:05 +0100
 From: Joerg Roedel <joro@8bytes.org>
-To: Lu Baolu <baolu.lu@linux.intel.com>
-Subject: Re: [PATCH 1/1] iommu/vt-d: Remove unnecessary WARN_ON_ONCE()
-Message-ID: <20200124143648.GC27081@8bytes.org>
-References: <20200116015236.4458-1-baolu.lu@linux.intel.com>
- <20200117095953.GB15760@8bytes.org>
- <b56e8a8f-acd7-b318-5a1c-f32c5a07657f@linux.intel.com>
+To: Adrian Huang <adrianhuang0701@gmail.com>
+Subject: Re: [PATCH 1/1] iommu/amd: Remove the unnecessary assignment
+Message-ID: <20200124143905.GD27081@8bytes.org>
+References: <20200122143629.21161-1-ahuang12@lenovo.com>
 MIME-Version: 1.0
 Content-Disposition: inline
-In-Reply-To: <b56e8a8f-acd7-b318-5a1c-f32c5a07657f@linux.intel.com>
+In-Reply-To: <20200122143629.21161-1-ahuang12@lenovo.com>
 User-Agent: Mutt/1.10.1 (2018-07-13)
-Cc: linux-kernel@vger.kernel.org, kevin.tian@intel.com, ashok.raj@intel.com,
- iommu@lists.linux-foundation.org, jacob.jun.pan@intel.com
+Cc: iommu@lists.linux-foundation.org, Adrian Huang <ahuang12@lenovo.com>
 X-BeenThere: iommu@lists.linux-foundation.org
 X-Mailman-Version: 2.1.15
 Precedence: list
@@ -77,41 +74,19 @@ Content-Transfer-Encoding: 7bit
 Errors-To: iommu-bounces@lists.linux-foundation.org
 Sender: "iommu" <iommu-bounces@lists.linux-foundation.org>
 
-On Sat, Jan 18, 2020 at 10:14:11AM +0800, Lu Baolu wrote:
-> Hi Joerg,
+On Wed, Jan 22, 2020 at 10:36:29PM +0800, Adrian Huang wrote:
+> From: Adrian Huang <ahuang12@lenovo.com>
 > 
-> On 1/17/20 5:59 PM, Joerg Roedel wrote:
-> > On Thu, Jan 16, 2020 at 09:52:36AM +0800, Lu Baolu wrote:
-> > > Address field in device TLB invalidation descriptor is qualified
-> > > by the S field. If S field is zero, a single page at page address
-> > > specified by address [63:12] is requested to be invalidated. If S
-> > > field is set, the least significant bit in the address field with
-> > > value 0b (say bit N) indicates the invalidation address range. The
-> > > spec doesn't require the address [N - 1, 0] to be cleared, hence
-> > > remove the unnecessary WARN_ON_ONCE().
-> > > 
-> > > Otherwise, the caller might set "mask = MAX_AGAW_PFN_WIDTH" in order
-> > > to invalidating all the cached mappings on an endpoint, and below
-> > > overflow error will be triggered.
-> > > 
-> > > [...]
-> > > UBSAN: Undefined behaviour in drivers/iommu/dmar.c:1354:3
-> > > shift exponent 64 is too large for 64-bit type 'long long unsigned int'
-> > > [...]
-> > > 
-> > > Reported-and-tested-by: Frank <fgndev@posteo.de>
-> > > Signed-off-by: Lu Baolu <baolu.lu@linux.intel.com>
-> > 
-> > Does this need a Fixes and/or stable tag?
-> > 
+> The assignment of the global variable 'iommu_detected' has been
+> moved from amd_iommu_init_dma_ops() to amd_iommu_detect(), so
+> this patch removes the assignment in amd_iommu_init_dma_ops().
 > 
-> This doesn't cause any errors, just an unnecessary checking of
-> 
-> 	"0 & ((1UL << 64) - 1)"
-> 
-> in some cases.
+> Signed-off-by: Adrian Huang <ahuang12@lenovo.com>
+> ---
+>  drivers/iommu/amd_iommu.c | 1 -
+>  1 file changed, 1 deletion(-)
 
-Okay, applied for v5.6.
+Applied, thanks.
 _______________________________________________
 iommu mailing list
 iommu@lists.linux-foundation.org
