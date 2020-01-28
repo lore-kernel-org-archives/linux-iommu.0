@@ -7,84 +7,87 @@ X-Spam-Status: No, score=-9.6 required=3.0 tests=DKIM_INVALID,DKIM_SIGNED,
 	SPF_HELO_NONE,SPF_PASS,USER_AGENT_GIT autolearn=unavailable
 	autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 2B5AFC33CB2
-	for <iommu@archiver.kernel.org>; Tue, 28 Jan 2020 22:16:36 +0000 (UTC)
-Received: from silver.osuosl.org (smtp3.osuosl.org [140.211.166.136])
+	by smtp.lore.kernel.org (Postfix) with ESMTP id D333AC3F68F
+	for <iommu@archiver.kernel.org>; Tue, 28 Jan 2020 22:16:39 +0000 (UTC)
+Received: from whitealder.osuosl.org (smtp1.osuosl.org [140.211.166.138])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by mail.kernel.org (Postfix) with ESMTPS id F16322465B
-	for <iommu@archiver.kernel.org>; Tue, 28 Jan 2020 22:16:35 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTPS id A25DE24688
+	for <iommu@archiver.kernel.org>; Tue, 28 Jan 2020 22:16:39 +0000 (UTC)
 Authentication-Results: mail.kernel.org;
-	dkim=fail reason="key not found in DNS" (0-bit key) header.d=mg.codeaurora.org header.i=@mg.codeaurora.org header.b="Pu9UEIjn"
-DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org F16322465B
+	dkim=fail reason="key not found in DNS" (0-bit key) header.d=mg.codeaurora.org header.i=@mg.codeaurora.org header.b="GFtETAjX"
+DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org A25DE24688
 Authentication-Results: mail.kernel.org; dmarc=none (p=none dis=none) header.from=codeaurora.org
 Authentication-Results: mail.kernel.org; spf=pass smtp.mailfrom=iommu-bounces@lists.linux-foundation.org
 Received: from localhost (localhost [127.0.0.1])
-	by silver.osuosl.org (Postfix) with ESMTP id D4C3220554;
-	Tue, 28 Jan 2020 22:16:35 +0000 (UTC)
+	by whitealder.osuosl.org (Postfix) with ESMTP id 8215986D81;
+	Tue, 28 Jan 2020 22:16:39 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from silver.osuosl.org ([127.0.0.1])
+Received: from whitealder.osuosl.org ([127.0.0.1])
 	by localhost (.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
-	with ESMTP id LRWM+WvGjTae; Tue, 28 Jan 2020 22:16:34 +0000 (UTC)
+	with ESMTP id UO6Ms7jrT4FL; Tue, 28 Jan 2020 22:16:38 +0000 (UTC)
 Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [140.211.9.56])
-	by silver.osuosl.org (Postfix) with ESMTP id 6C41320774;
-	Tue, 28 Jan 2020 22:16:34 +0000 (UTC)
+	by whitealder.osuosl.org (Postfix) with ESMTP id 9522B86BB9;
+	Tue, 28 Jan 2020 22:16:38 +0000 (UTC)
 Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
-	by lists.linuxfoundation.org (Postfix) with ESMTP id 5A177C0175;
-	Tue, 28 Jan 2020 22:16:34 +0000 (UTC)
+	by lists.linuxfoundation.org (Postfix) with ESMTP id 83A1BC0175;
+	Tue, 28 Jan 2020 22:16:38 +0000 (UTC)
 Received: from whitealder.osuosl.org (smtp1.osuosl.org [140.211.166.138])
- by lists.linuxfoundation.org (Postfix) with ESMTP id DD546C0171
- for <iommu@lists.linux-foundation.org>; Tue, 28 Jan 2020 22:16:32 +0000 (UTC)
+ by lists.linuxfoundation.org (Postfix) with ESMTP id AF52BC0171
+ for <iommu@lists.linux-foundation.org>; Tue, 28 Jan 2020 22:16:37 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
- by whitealder.osuosl.org (Postfix) with ESMTP id CC0CE86D81
- for <iommu@lists.linux-foundation.org>; Tue, 28 Jan 2020 22:16:32 +0000 (UTC)
+ by whitealder.osuosl.org (Postfix) with ESMTP id 9E25186D81
+ for <iommu@lists.linux-foundation.org>; Tue, 28 Jan 2020 22:16:37 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
 Received: from whitealder.osuosl.org ([127.0.0.1])
  by localhost (.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
- with ESMTP id PSiHIwBk65Hy for <iommu@lists.linux-foundation.org>;
- Tue, 28 Jan 2020 22:16:30 +0000 (UTC)
+ with ESMTP id CXwXiRZ5u37e for <iommu@lists.linux-foundation.org>;
+ Tue, 28 Jan 2020 22:16:36 +0000 (UTC)
 X-Greylist: from auto-whitelisted by SQLgrey-1.7.6
 Received: from mail25.static.mailgun.info (mail25.static.mailgun.info
  [104.130.122.25])
- by whitealder.osuosl.org (Postfix) with ESMTPS id 4180C86BB9
- for <iommu@lists.linux-foundation.org>; Tue, 28 Jan 2020 22:16:29 +0000 (UTC)
+ by whitealder.osuosl.org (Postfix) with ESMTPS id B87E786BB9
+ for <iommu@lists.linux-foundation.org>; Tue, 28 Jan 2020 22:16:34 +0000 (UTC)
 DKIM-Signature: a=rsa-sha256; v=1; c=relaxed/relaxed; d=mg.codeaurora.org;
  q=dns/txt; 
- s=smtp; t=1580249789; h=References: In-Reply-To: Message-Id: Date:
+ s=smtp; t=1580249796; h=References: In-Reply-To: Message-Id: Date:
  Subject: Cc: To: From: Sender;
- bh=KdcQ65gqI50OxnhTRGaxYktgrCkhdMIxF4WU3OuTTNg=;
- b=Pu9UEIjnW5i0IwCvy+Q63YN6aR4Th/FzXOMBRhK27LOrBS1j92etqbVy2Mn6zdk1znJCPXz3
- 4MXQNIwRTx/72Fk3j2yMWgtVxto9E1WysIqmMMwZdY/Y+uTmV40eC9z7tKzt4E3BMbAe9uPm
- xKYa9lGO4LiBBUJwIqtHC3+k2gE=
+ bh=Llw2kTJ4XUeuT4T/F2T53za68YIhWHzkSvM16vklV7s=;
+ b=GFtETAjXGGahqRpWCbQs5ssvqX4+wQD7dNH7XMBWLT5MyO76j/lWgWOkO3lQySkm89pcQiMt
+ Nxptc5rLakFzrZQlPbJx8hJ3xTraPddM/wJ4i6gvwPZavAlcywoxcmlIZ7zWHJYUcQpRttXD
+ 5nWPPbxN54xmmq+nUygU1BVPlAU=
 X-Mailgun-Sending-Ip: 104.130.122.25
 X-Mailgun-Sid: WyI3NDkwMCIsICJpb21tdUBsaXN0cy5saW51eC1mb3VuZGF0aW9uLm9yZyIsICJiZTllNGEiXQ==
 Received: from smtp.codeaurora.org
  (ec2-35-166-182-171.us-west-2.compute.amazonaws.com [35.166.182.171])
- by mxa.mailgun.org with ESMTP id 5e30b2b4.7f767cdf9998-smtp-out-n02;
- Tue, 28 Jan 2020 22:16:20 -0000 (UTC)
+ by mxa.mailgun.org with ESMTP id 5e30b2bc.7f10ec1f5148-smtp-out-n02;
+ Tue, 28 Jan 2020 22:16:28 -0000 (UTC)
 Received: by smtp.codeaurora.org (Postfix, from userid 1001)
- id 8D326C447A1; Tue, 28 Jan 2020 22:16:20 +0000 (UTC)
+ id 519BBC447A2; Tue, 28 Jan 2020 22:16:27 +0000 (UTC)
 Received: from jcrouse1-lnx.qualcomm.com (i-global254.qualcomm.com
  [199.106.103.254])
  (using TLSv1.2 with cipher ECDHE-RSA-AES128-SHA256 (128/128 bits))
  (No client certificate requested) (Authenticated sender: jcrouse)
- by smtp.codeaurora.org (Postfix) with ESMTPSA id 28EFDC43383;
- Tue, 28 Jan 2020 22:16:19 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.3.2 smtp.codeaurora.org 28EFDC43383
+ by smtp.codeaurora.org (Postfix) with ESMTPSA id 143DFC433CB;
+ Tue, 28 Jan 2020 22:16:24 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.3.2 smtp.codeaurora.org 143DFC433CB
 Authentication-Results: aws-us-west-2-caf-mail-1.web.codeaurora.org;
  dmarc=none (p=none dis=none) header.from=codeaurora.org
 Authentication-Results: aws-us-west-2-caf-mail-1.web.codeaurora.org;
  spf=none smtp.mailfrom=jcrouse@codeaurora.org
 From: Jordan Crouse <jcrouse@codeaurora.org>
 To: iommu@lists.linux-foundation.org
-Subject: [PATCH v1 2/6] arm/smmu: Add auxiliary domain support for arm-smmuv2
-Date: Tue, 28 Jan 2020 15:16:06 -0700
-Message-Id: <1580249770-1088-3-git-send-email-jcrouse@codeaurora.org>
+Subject: [PATCH v1 6/6] drm/msm/a6xx: Support per-instance pagetables
+Date: Tue, 28 Jan 2020 15:16:10 -0700
+Message-Id: <1580249770-1088-7-git-send-email-jcrouse@codeaurora.org>
 X-Mailer: git-send-email 2.7.4
 In-Reply-To: <1580249770-1088-1-git-send-email-jcrouse@codeaurora.org>
 References: <1580249770-1088-1-git-send-email-jcrouse@codeaurora.org>
-Cc: robin.murphy@arm.com, linux-kernel@vger.kernel.org,
- linux-arm-msm@vger.kernel.org, will@kernel.org,
+Cc: freedreno@lists.freedesktop.org, David Airlie <airlied@linux.ie>,
+ will@kernel.org, Sharat Masetty <smasetty@codeaurora.org>,
+ robin.murphy@arm.com, dri-devel@lists.freedesktop.org,
+ linux-kernel@vger.kernel.org, Daniel Vetter <daniel@ffwll.ch>,
+ linux-arm-msm@vger.kernel.org, Sean Paul <sean@poorly.run>,
  linux-arm-kernel@lists.infradead.org
 X-BeenThere: iommu@lists.linux-foundation.org
 X-Mailman-Version: 2.1.15
@@ -104,357 +107,138 @@ Content-Transfer-Encoding: 7bit
 Errors-To: iommu-bounces@lists.linux-foundation.org
 Sender: "iommu" <iommu-bounces@lists.linux-foundation.org>
 
-Support auxiliary domains for arm-smmu-v2 to initialize and support
-multiple pagetables for a single SMMU context bank. Since the smmu-v2
-hardware doesn't have any built in support for switching the pagetable
-base it is left as an exercise to the caller to actually use the pagetable.
-
-Aux domains are supported if split pagetable (TTBR1) support has been
-enabled on the master domain.  Each auxiliary domain will reuse the
-configuration of the master domain. By default the a domain with TTBR1
-support will have the TTBR0 region disabled so the first attached aux
-domain will enable the TTBR0 region in the hardware and conversely the
-last domain to be detached will disable TTBR0 translations.  All subsequent
-auxiliary domains create a pagetable but not touch the hardware.
-
-The leaf driver will be able to query the physical address of the
-pagetable with the DOMAIN_ATTR_PTBASE attribute so that it can use the
-address with whatever means it has to switch the pagetable base.
-
-Following is a pseudo code example of how a domain can be created
-
- /* Check to see if aux domains are supported */
- if (iommu_dev_has_feature(dev, IOMMU_DEV_FEAT_AUX)) {
-	 iommu = iommu_domain_alloc(...);
-
-	 if (iommu_aux_attach_device(domain, dev))
-		 return FAIL;
-
-	/* Save the base address of the pagetable for use by the driver
-	iommu_domain_get_attr(domain, DOMAIN_ATTR_PTBASE, &ptbase);
- }
-
-Then 'domain' can be used like any other iommu domain to map and
-unmap iova addresses in the pagetable.
+Add support for per-instance pagetables for a6xx targets. Add support
+to handle split pagetables and create a new instance if the needed
+IOMMU support exists and insert the necessary PM4 commands to trigger
+a pagetable switch at the beginning of a user command.
 
 Signed-off-by: Jordan Crouse <jcrouse@codeaurora.org>
 ---
 
- drivers/iommu/arm-smmu.c | 230 +++++++++++++++++++++++++++++++++++++++++++----
- drivers/iommu/arm-smmu.h |   3 +
- 2 files changed, 217 insertions(+), 16 deletions(-)
+ drivers/gpu/drm/msm/adreno/a6xx_gpu.c | 89 +++++++++++++++++++++++++++++++++++
+ 1 file changed, 89 insertions(+)
 
-diff --git a/drivers/iommu/arm-smmu.c b/drivers/iommu/arm-smmu.c
-index 23b22fa..85a6773 100644
---- a/drivers/iommu/arm-smmu.c
-+++ b/drivers/iommu/arm-smmu.c
-@@ -91,6 +91,8 @@ struct arm_smmu_cb {
- 	u32				tcr[2];
- 	u32				mair[2];
- 	struct arm_smmu_cfg		*cfg;
-+	atomic_t			aux;
-+	atomic_t			refcount;
- };
+diff --git a/drivers/gpu/drm/msm/adreno/a6xx_gpu.c b/drivers/gpu/drm/msm/adreno/a6xx_gpu.c
+index 9bec603c..e1a257e 100644
+--- a/drivers/gpu/drm/msm/adreno/a6xx_gpu.c
++++ b/drivers/gpu/drm/msm/adreno/a6xx_gpu.c
+@@ -12,6 +12,62 @@
  
- struct arm_smmu_master_cfg {
-@@ -533,6 +535,7 @@ static void arm_smmu_init_context_bank(struct arm_smmu_domain *smmu_domain,
- 	struct arm_smmu_cb *cb = &smmu_domain->smmu->cbs[cfg->cbndx];
- 	bool stage1 = cfg->cbar != CBAR_TYPE_S2_TRANS;
+ #define GPU_PAS_ID 13
  
-+	atomic_inc(&cb->refcount);
- 	cb->cfg = cfg;
- 
- 	/* TCR */
-@@ -671,6 +674,91 @@ static void arm_smmu_write_context_bank(struct arm_smmu_device *smmu, int idx)
- 	arm_smmu_cb_write(smmu, idx, ARM_SMMU_CB_SCTLR, reg);
- }
- 
-+/*
-+ * Update the context context bank to enable TTBR0. Assumes AARCH64 S1
-+ * configuration.
-+ */
-+static void arm_smmu_context_set_ttbr0(struct arm_smmu_cb *cb,
-+		struct io_pgtable_cfg *pgtbl_cfg)
++static void a6xx_set_pagetable(struct msm_gpu *gpu, struct msm_ringbuffer *ring,
++		struct msm_file_private *ctx)
 +{
-+	u32 tcr = cb->tcr[0];
++	u64 ttbr;
++	u32 asid;
 +
-+	/* Add the TCR configuration from the new pagetable config */
-+	tcr |= arm_smmu_lpae_tcr(pgtbl_cfg);
++	if (!msm_iommu_get_ptinfo(ctx->aspace->mmu, &ttbr, &asid))
++		return;
 +
-+	/* Make sure that both TTBR0 and TTBR1 are enabled */
-+	tcr &= ~(ARM_SMMU_TCR_EPD0 | ARM_SMMU_TCR_EPD1);
++	ttbr = ttbr | ((u64) asid) << 48;
 +
-+	/* Udate the TCR register */
-+	cb->tcr[0] = tcr;
++	/* Turn off protected mode */
++	OUT_PKT7(ring, CP_SET_PROTECTED_MODE, 1);
++	OUT_RING(ring, 0);
 +
-+	/* Program the new TTBR0 */
-+	cb->ttbr[0] = pgtbl_cfg->arm_lpae_s1_cfg.ttbr;
-+	cb->ttbr[0] |= FIELD_PREP(ARM_SMMU_TTBRn_ASID, cb->cfg->asid);
-+}
++	/* Turn on APIV mode to access critical regions */
++	OUT_PKT4(ring, REG_A6XX_CP_MISC_CNTL, 1);
++	OUT_RING(ring, 1);
 +
-+/*
-+ * Thus function assumes that the current model only allows aux domains for
-+ * AARCH64 S1 configurations
-+ */
-+static int arm_smmu_aux_init_domain_context(struct iommu_domain *domain,
-+		struct arm_smmu_device *smmu, struct arm_smmu_cfg *master)
-+{
-+	struct arm_smmu_domain *smmu_domain = to_smmu_domain(domain);
-+	struct io_pgtable_ops *pgtbl_ops;
-+	struct io_pgtable_cfg pgtbl_cfg;
++	/* Make sure the ME is synchronized before staring the update */
++	OUT_PKT7(ring, CP_WAIT_FOR_ME, 0);
 +
-+	mutex_lock(&smmu_domain->init_mutex);
-+
-+	/* Copy the configuration from the master */
-+	memcpy(&smmu_domain->cfg, master, sizeof(smmu_domain->cfg));
-+
-+	smmu_domain->flush_ops = &arm_smmu_s1_tlb_ops;
-+	smmu_domain->smmu = smmu;
-+
-+	pgtbl_cfg = (struct io_pgtable_cfg) {
-+		.pgsize_bitmap = smmu->pgsize_bitmap,
-+		.ias = smmu->va_size,
-+		.oas = smmu->ipa_size,
-+		.coherent_walk = smmu->features & ARM_SMMU_FEAT_COHERENT_WALK,
-+		.tlb = smmu_domain->flush_ops,
-+		.iommu_dev = smmu->dev,
-+		.quirks = 0,
-+	};
-+
-+	if (smmu_domain->non_strict)
-+		pgtbl_cfg.quirks |= IO_PGTABLE_QUIRK_NON_STRICT;
-+
-+	pgtbl_ops = alloc_io_pgtable_ops(ARM_64_LPAE_S1, &pgtbl_cfg,
-+		smmu_domain);
-+	if (!pgtbl_ops) {
-+		mutex_unlock(&smmu_domain->init_mutex);
-+		return -ENOMEM;
-+	}
-+
-+	domain->pgsize_bitmap = pgtbl_cfg.pgsize_bitmap;
-+
-+	domain->geometry.aperture_end = (1UL << smmu->va_size) - 1;
-+	domain->geometry.force_aperture = true;
++	/* Execute the table update */
++	OUT_PKT7(ring, CP_SMMU_TABLE_UPDATE, 4);
++	OUT_RING(ring, lower_32_bits(ttbr));
++	OUT_RING(ring, upper_32_bits(ttbr));
++	/* CONTEXTIDR is currently unused */
++	OUT_RING(ring, 0);
++	/* CONTEXTBANK is currently unused */
++	OUT_RING(ring, 0);
 +
 +	/*
-+	 * Add a reference to the context bank to make sure it stays programmed
-+	 * wile we are attached
++	 * Write the new TTBR0 to the preemption records - this will be used to
++	 * reload the pagetable if the current ring gets preempted out.
 +	 */
-+	atomic_inc(&smmu->cbs[master->cbndx].refcount);
++	OUT_PKT7(ring, CP_MEM_WRITE, 4);
++	OUT_RING(ring, lower_32_bits(rbmemptr(ring, ttbr0)));
++	OUT_RING(ring, upper_32_bits(rbmemptr(ring, ttbr0)));
++	OUT_RING(ring, lower_32_bits(ttbr));
++	OUT_RING(ring, upper_32_bits(ttbr));
 +
-+	/* enable TTBR0 when the the first aux domain is attached */
-+	if (atomic_inc_return(&smmu->cbs[master->cbndx].aux) == 1) {
-+		arm_smmu_context_set_ttbr0(&smmu->cbs[master->cbndx],
-+			&pgtbl_cfg);
-+		arm_smmu_write_context_bank(smmu, master->cbndx);
-+	}
++	/* Invalidate the draw state so we start off fresh */
++	OUT_PKT7(ring, CP_SET_DRAW_STATE, 3);
++	OUT_RING(ring, 0x40000);
++	OUT_RING(ring, 1);
++	OUT_RING(ring, 0);
 +
-+	smmu_domain->ptbase = pgtbl_cfg.arm_lpae_s1_cfg.ttbr;
-+	smmu_domain->pgtbl_ops = pgtbl_ops;
-+	return 0;
++	/* Turn off APRIV */
++	OUT_PKT4(ring, REG_A6XX_CP_MISC_CNTL, 1);
++	OUT_RING(ring, 0);
++
++	/* Turn off protected mode */
++	OUT_PKT7(ring, CP_SET_PROTECTED_MODE, 1);
++	OUT_RING(ring, 1);
 +}
 +
- static int arm_smmu_init_domain_context(struct iommu_domain *domain,
- 					struct arm_smmu_device *smmu)
+ static inline bool _a6xx_check_idle(struct msm_gpu *gpu)
  {
-@@ -882,36 +970,70 @@ static int arm_smmu_init_domain_context(struct iommu_domain *domain,
- 	return ret;
+ 	struct adreno_gpu *adreno_gpu = to_adreno_gpu(gpu);
+@@ -89,6 +145,8 @@ static void a6xx_submit(struct msm_gpu *gpu, struct msm_gem_submit *submit,
+ 	struct msm_ringbuffer *ring = submit->ring;
+ 	unsigned int i;
+ 
++	a6xx_set_pagetable(gpu, ring, ctx);
++
+ 	get_stats_counter(ring, REG_A6XX_RBBM_PERFCTR_CP_0_LO,
+ 		rbmemptr_stats(ring, index, cpcycles_start));
+ 
+@@ -878,6 +936,36 @@ static unsigned long a6xx_gpu_busy(struct msm_gpu *gpu)
+ 	return (unsigned long)busy_time;
  }
  
-+static void
-+arm_smmu_destroy_aux_domain_context(struct arm_smmu_domain *smmu_domain)
++static struct msm_gem_address_space*
++a6xx_create_instance_space(struct msm_gpu *gpu)
 +{
-+	struct arm_smmu_device *smmu = smmu_domain->smmu;
-+	struct arm_smmu_cfg *cfg = &smmu_domain->cfg;
-+	int ret;
++	struct msm_gem_address_space *aspace;
++	struct iommu_domain *iommu;
++	struct msm_mmu *mmu;
 +
-+	/*
-+	 * If this is the last aux domain to be freed, disable TTBR0 by turning
-+	 * off translations and clearing TTBR0
-+	 */
-+	if (atomic_dec_return(&smmu->cbs[cfg->cbndx].aux) == 0) {
-+		/* Clear out the T0 region */
-+		smmu->cbs[cfg->cbndx].tcr[0] &= ~GENMASK(15, 0);
-+		/* Disable TTBR0 translations */
-+		smmu->cbs[cfg->cbndx].tcr[0] |= ARM_SMMU_TCR_EPD0;
-+		/* Clear the TTBR0 pagetable address */
-+		smmu->cbs[cfg->cbndx].ttbr[0] =
-+			FIELD_PREP(ARM_SMMU_TTBRn_ASID, cfg->asid);
++	if (!iommu_dev_has_feature(&gpu->pdev->dev, IOMMU_DEV_FEAT_AUX))
++		return gpu->aspace;
 +
-+		ret = arm_smmu_rpm_get(smmu);
-+		if (!ret) {
-+			arm_smmu_write_context_bank(smmu, cfg->cbndx);
-+			arm_smmu_rpm_put(smmu);
-+		}
++	iommu = iommu_domain_alloc(&platform_bus_type);
++	if (!iommu)
++		return gpu->aspace;
++
++	mmu = msm_iommu_new_instance(&gpu->pdev->dev, iommu);
++	if (IS_ERR(mmu)) {
++		iommu_domain_free(iommu);
++		return gpu->aspace;
 +	}
 +
-+}
-+
- static void arm_smmu_destroy_domain_context(struct iommu_domain *domain)
- {
- 	struct arm_smmu_domain *smmu_domain = to_smmu_domain(domain);
- 	struct arm_smmu_device *smmu = smmu_domain->smmu;
- 	struct arm_smmu_cfg *cfg = &smmu_domain->cfg;
--	int ret, irq;
- 
- 	if (!smmu || domain->type == IOMMU_DOMAIN_IDENTITY)
- 		return;
- 
--	ret = arm_smmu_rpm_get(smmu);
--	if (ret < 0)
--		return;
-+	if (smmu_domain->aux)
-+		arm_smmu_destroy_aux_domain_context(smmu_domain);
- 
--	/*
--	 * Disable the context bank and free the page tables before freeing
--	 * it.
--	 */
--	smmu->cbs[cfg->cbndx].cfg = NULL;
--	arm_smmu_write_context_bank(smmu, cfg->cbndx);
-+	/* Check if the last user is done with the context bank */
-+	if (atomic_dec_return(&smmu->cbs[cfg->cbndx].refcount) == 0) {
-+		int ret = arm_smmu_rpm_get(smmu);
-+		int irq;
- 
--	if (cfg->irptndx != ARM_SMMU_INVALID_IRPTNDX) {
--		irq = smmu->irqs[smmu->num_global_irqs + cfg->irptndx];
--		devm_free_irq(smmu->dev, irq, domain);
-+		if (ret < 0)
-+			return;
-+
-+		/* Disable the context bank */
-+		smmu->cbs[cfg->cbndx].cfg = NULL;
-+		arm_smmu_write_context_bank(smmu, cfg->cbndx);
-+
-+		if (cfg->irptndx != ARM_SMMU_INVALID_IRPTNDX) {
-+			irq = smmu->irqs[smmu->num_global_irqs + cfg->irptndx];
-+			devm_free_irq(smmu->dev, irq, domain);
-+		}
-+
-+		__arm_smmu_free_bitmap(smmu->context_map, cfg->cbndx);
-+		arm_smmu_rpm_put(smmu);
- 	}
- 
-+	/* Destroy the pagetable */
- 	free_io_pgtable_ops(smmu_domain->pgtbl_ops);
--	__arm_smmu_free_bitmap(smmu->context_map, cfg->cbndx);
--
--	arm_smmu_rpm_put(smmu);
- }
- 
- static struct iommu_domain *arm_smmu_domain_alloc(unsigned type)
-@@ -1181,6 +1303,73 @@ static int arm_smmu_domain_add_master(struct arm_smmu_domain *smmu_domain,
- 	return 0;
- }
- 
-+static bool arm_smmu_dev_has_feat(struct device *dev,
-+		enum iommu_dev_features feat)
-+{
-+	if (feat != IOMMU_DEV_FEAT_AUX)
-+		return false;
-+
-+	return true;
-+}
-+
-+static int arm_smmu_dev_enable_feat(struct device *dev,
-+		enum iommu_dev_features feat)
-+{
-+	/* aux domain support is always available */
-+	if (feat == IOMMU_DEV_FEAT_AUX)
-+		return 0;
-+
-+	return -ENODEV;
-+}
-+
-+static int arm_smmu_dev_disable_feat(struct device *dev,
-+		enum iommu_dev_features feat)
-+{
-+	return -EBUSY;
-+}
-+
-+static int arm_smmu_aux_attach_dev(struct iommu_domain *domain,
-+		struct device *dev)
-+{
-+	struct iommu_fwspec *fwspec = dev_iommu_fwspec_get(dev);
-+	struct arm_smmu_device *smmu = fwspec_smmu(fwspec);
-+	struct arm_smmu_domain *smmu_domain = to_smmu_domain(domain);
-+	struct arm_smmu_cb *cb;
-+	int idx, i, ret, cbndx = -1;
-+
-+	/* Try to find the context bank configured for this device */
-+	for_each_cfg_sme(fwspec, i, idx) {
-+		if (idx != INVALID_SMENDX) {
-+			cbndx = smmu->s2crs[idx].cbndx;
-+			break;
-+		}
++	aspace = msm_gem_address_space_create(mmu, "gpu",
++		0x100000000ULL, 0x1ffffffffULL);
++	if (IS_ERR(aspace)) {
++		mmu->funcs->destroy(mmu);
++		return gpu->aspace;
 +	}
 +
-+	if (cbndx == -1)
-+		return -ENODEV;
-+
-+	cb = &smmu->cbs[cbndx];
-+
-+	/* Aux domains are only supported for AARCH64 configurations */
-+	if (cb->cfg->fmt != ARM_SMMU_CTX_FMT_AARCH64)
-+		return -EINVAL;
-+
-+	/* Make sure that TTBR1 is enabled in the hardware */
-+	if ((cb->tcr[0] & ARM_SMMU_TCR_EPD1))
-+		return -EINVAL;
-+
-+	smmu_domain->aux = true;
-+
-+	ret = arm_smmu_rpm_get(smmu);
-+	if (ret < 0)
-+		return ret;
-+
-+	ret = arm_smmu_aux_init_domain_context(domain, smmu, cb->cfg);
-+
-+	arm_smmu_rpm_put(smmu);
-+	return ret;
++	return aspace;
 +}
 +
- static int arm_smmu_attach_dev(struct iommu_domain *domain, struct device *dev)
+ static struct msm_gem_address_space *
+ a6xx_create_address_space(struct msm_gpu *gpu, struct platform_device *pdev)
  {
- 	int ret;
-@@ -1549,6 +1738,11 @@ static int arm_smmu_domain_get_attr(struct iommu_domain *domain,
- 		case DOMAIN_ATTR_SPLIT_TABLES:
- 			*(int *)data = smmu_domain->split_pagetables;
- 			return 0;
-+		case DOMAIN_ATTR_PTBASE:
-+			if (!smmu_domain->aux)
-+				return -EINVAL;
-+			*(u64 *)data = smmu_domain->ptbase;
-+			return 0;
- 		default:
- 			return -ENODEV;
- 		}
-@@ -1667,6 +1861,10 @@ static struct iommu_ops arm_smmu_ops = {
- 	.of_xlate		= arm_smmu_of_xlate,
- 	.get_resv_regions	= arm_smmu_get_resv_regions,
- 	.put_resv_regions	= generic_iommu_put_resv_regions,
-+	.dev_has_feat		= arm_smmu_dev_has_feat,
-+	.dev_enable_feat	= arm_smmu_dev_enable_feat,
-+	.dev_disable_feat	= arm_smmu_dev_disable_feat,
-+	.aux_attach_dev		= arm_smmu_aux_attach_dev,
- 	.pgsize_bitmap		= -1UL, /* Restricted during device attach */
+@@ -951,6 +1039,7 @@ static const struct adreno_gpu_funcs funcs = {
+ 		.gpu_state_put = a6xx_gpu_state_put,
+ #endif
+ 		.create_address_space = a6xx_create_address_space,
++		.create_instance_space = a6xx_create_instance_space,
+ 	},
+ 	.get_timestamp = a6xx_get_timestamp,
  };
- 
-diff --git a/drivers/iommu/arm-smmu.h b/drivers/iommu/arm-smmu.h
-index 53053fd..8266b29 100644
---- a/drivers/iommu/arm-smmu.h
-+++ b/drivers/iommu/arm-smmu.h
-@@ -345,6 +345,9 @@ struct arm_smmu_domain {
- 	spinlock_t			cb_lock; /* Serialises ATS1* ops and TLB syncs */
- 	struct iommu_domain		domain;
- 	bool				split_pagetables;
-+	bool				aux;
-+	/* Shadow of the pagetable base for aux domains */
-+	u64				ptbase;
- };
- 
- static inline u32 arm_smmu_lpae_tcr(struct io_pgtable_cfg *cfg)
 -- 
 2.7.4
 _______________________________________________
