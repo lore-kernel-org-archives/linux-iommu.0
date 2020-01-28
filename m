@@ -7,86 +7,84 @@ X-Spam-Status: No, score=-9.6 required=3.0 tests=DKIM_INVALID,DKIM_SIGNED,
 	SPF_HELO_NONE,SPF_PASS,USER_AGENT_GIT autolearn=ham autolearn_force=no
 	version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id CCEF1C33CB2
-	for <iommu@archiver.kernel.org>; Tue, 28 Jan 2020 22:16:28 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 5FB11C33CB3
+	for <iommu@archiver.kernel.org>; Tue, 28 Jan 2020 22:16:30 +0000 (UTC)
 Received: from silver.osuosl.org (smtp3.osuosl.org [140.211.166.136])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by mail.kernel.org (Postfix) with ESMTPS id 9EFB22173E
-	for <iommu@archiver.kernel.org>; Tue, 28 Jan 2020 22:16:27 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTPS id 3345721739
+	for <iommu@archiver.kernel.org>; Tue, 28 Jan 2020 22:16:30 +0000 (UTC)
 Authentication-Results: mail.kernel.org;
-	dkim=fail reason="key not found in DNS" (0-bit key) header.d=mg.codeaurora.org header.i=@mg.codeaurora.org header.b="GHUa/mfI"
-DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 9EFB22173E
+	dkim=fail reason="key not found in DNS" (0-bit key) header.d=mg.codeaurora.org header.i=@mg.codeaurora.org header.b="ZVmHpKGE"
+DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 3345721739
 Authentication-Results: mail.kernel.org; dmarc=none (p=none dis=none) header.from=codeaurora.org
 Authentication-Results: mail.kernel.org; spf=pass smtp.mailfrom=iommu-bounces@lists.linux-foundation.org
 Received: from localhost (localhost [127.0.0.1])
-	by silver.osuosl.org (Postfix) with ESMTP id 85D7320763;
-	Tue, 28 Jan 2020 22:16:27 +0000 (UTC)
+	by silver.osuosl.org (Postfix) with ESMTP id 1117320554;
+	Tue, 28 Jan 2020 22:16:30 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
 Received: from silver.osuosl.org ([127.0.0.1])
 	by localhost (.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
-	with ESMTP id zBz+-troQVIw; Tue, 28 Jan 2020 22:16:26 +0000 (UTC)
+	with ESMTP id Rx2qH9hjC04M; Tue, 28 Jan 2020 22:16:28 +0000 (UTC)
 Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [140.211.9.56])
-	by silver.osuosl.org (Postfix) with ESMTP id 7130F20528;
-	Tue, 28 Jan 2020 22:16:26 +0000 (UTC)
+	by silver.osuosl.org (Postfix) with ESMTP id DD51D20764;
+	Tue, 28 Jan 2020 22:16:28 +0000 (UTC)
 Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
-	by lists.linuxfoundation.org (Postfix) with ESMTP id 55F1FC1D85;
-	Tue, 28 Jan 2020 22:16:26 +0000 (UTC)
-Received: from hemlock.osuosl.org (smtp2.osuosl.org [140.211.166.133])
- by lists.linuxfoundation.org (Postfix) with ESMTP id 341BBC0171
- for <iommu@lists.linux-foundation.org>; Tue, 28 Jan 2020 22:16:25 +0000 (UTC)
+	by lists.linuxfoundation.org (Postfix) with ESMTP id CC01AC1D85;
+	Tue, 28 Jan 2020 22:16:28 +0000 (UTC)
+Received: from whitealder.osuosl.org (smtp1.osuosl.org [140.211.166.138])
+ by lists.linuxfoundation.org (Postfix) with ESMTP id 30F4CC0175
+ for <iommu@lists.linux-foundation.org>; Tue, 28 Jan 2020 22:16:27 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
- by hemlock.osuosl.org (Postfix) with ESMTP id 3090E87FD8
- for <iommu@lists.linux-foundation.org>; Tue, 28 Jan 2020 22:16:25 +0000 (UTC)
+ by whitealder.osuosl.org (Postfix) with ESMTP id 1FF4286D81
+ for <iommu@lists.linux-foundation.org>; Tue, 28 Jan 2020 22:16:27 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from hemlock.osuosl.org ([127.0.0.1])
+Received: from whitealder.osuosl.org ([127.0.0.1])
  by localhost (.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
- with ESMTP id ug7v2XO+o04D for <iommu@lists.linux-foundation.org>;
- Tue, 28 Jan 2020 22:16:24 +0000 (UTC)
+ with ESMTP id Us5KIMC+hUDN for <iommu@lists.linux-foundation.org>;
+ Tue, 28 Jan 2020 22:16:26 +0000 (UTC)
 X-Greylist: from auto-whitelisted by SQLgrey-1.7.6
-Received: from mail26.static.mailgun.info (mail26.static.mailgun.info
- [104.130.122.26])
- by hemlock.osuosl.org (Postfix) with ESMTPS id AE81787FDE
- for <iommu@lists.linux-foundation.org>; Tue, 28 Jan 2020 22:16:24 +0000 (UTC)
+Received: from mail25.static.mailgun.info (mail25.static.mailgun.info
+ [104.130.122.25])
+ by whitealder.osuosl.org (Postfix) with ESMTPS id 28ABF81153
+ for <iommu@lists.linux-foundation.org>; Tue, 28 Jan 2020 22:16:25 +0000 (UTC)
 DKIM-Signature: a=rsa-sha256; v=1; c=relaxed/relaxed; d=mg.codeaurora.org;
  q=dns/txt; 
- s=smtp; t=1580249784; h=References: In-Reply-To: Message-Id: Date:
+ s=smtp; t=1580249786; h=References: In-Reply-To: Message-Id: Date:
  Subject: Cc: To: From: Sender;
- bh=hRAmtp8agzDIfoZcf0u0nxp0G1YHZjq1uYqYKLAl4IU=;
- b=GHUa/mfISIT9K3QFtmpfnXRxWf49s4/8X3EU6k8lxxhEabGwVyo3PRaRjdfbOWj4tewIslcr
- OUglD4HWvjXpV0iXRvolVAFV/Rwn/jN5CiT3MTL/qaVdpj4w0hxomYvKFONRG8BmuZBuiE2A
- yAGDX2udluKAZktpBQFJadqvFxY=
-X-Mailgun-Sending-Ip: 104.130.122.26
+ bh=FXsf/z/1DeoIKgsAIM/dfI6zvYtWCIvxuwhvpm/1k8o=;
+ b=ZVmHpKGELq4ZaxUdn6WwqeoylJfxXVdwq7+UvF9uRbQDJZ7MZF3zGXsBRpoVBJIJ18s/lnOc
+ IWfYdjdkisNfYRreAkbQX0G8GkdH2rRY0JXL1BqzZfq5fTPlnHuBIx9W/n+SDT3T2FDCdzSb
+ KftworpE4TJwstWZvSR6q1enV+A=
+X-Mailgun-Sending-Ip: 104.130.122.25
 X-Mailgun-Sid: WyI3NDkwMCIsICJpb21tdUBsaXN0cy5saW51eC1mb3VuZGF0aW9uLm9yZyIsICJiZTllNGEiXQ==
 Received: from smtp.codeaurora.org
  (ec2-35-166-182-171.us-west-2.compute.amazonaws.com [35.166.182.171])
- by mxa.mailgun.org with ESMTP id 5e30b2b8.7f7356c711f0-smtp-out-n03;
- Tue, 28 Jan 2020 22:16:24 -0000 (UTC)
+ by mxa.mailgun.org with ESMTP id 5e30b2b3.7f5599666dc0-smtp-out-n02;
+ Tue, 28 Jan 2020 22:16:19 -0000 (UTC)
 Received: by smtp.codeaurora.org (Postfix, from userid 1001)
- id 3B6D7C43383; Tue, 28 Jan 2020 22:16:24 +0000 (UTC)
+ id 4E8FAC447A2; Tue, 28 Jan 2020 22:16:19 +0000 (UTC)
 Received: from jcrouse1-lnx.qualcomm.com (i-global254.qualcomm.com
  [199.106.103.254])
  (using TLSv1.2 with cipher ECDHE-RSA-AES128-SHA256 (128/128 bits))
  (No client certificate requested) (Authenticated sender: jcrouse)
- by smtp.codeaurora.org (Postfix) with ESMTPSA id B95D4C4479C;
- Tue, 28 Jan 2020 22:16:22 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.3.2 smtp.codeaurora.org B95D4C4479C
+ by smtp.codeaurora.org (Postfix) with ESMTPSA id 29111C433A2;
+ Tue, 28 Jan 2020 22:16:18 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.3.2 smtp.codeaurora.org 29111C433A2
 Authentication-Results: aws-us-west-2-caf-mail-1.web.codeaurora.org;
  dmarc=none (p=none dis=none) header.from=codeaurora.org
 Authentication-Results: aws-us-west-2-caf-mail-1.web.codeaurora.org;
  spf=none smtp.mailfrom=jcrouse@codeaurora.org
 From: Jordan Crouse <jcrouse@codeaurora.org>
 To: iommu@lists.linux-foundation.org
-Subject: [PATCH v1 5/6] drm/msm/gpu: Add ttbr0 to the memptrs
-Date: Tue, 28 Jan 2020 15:16:09 -0700
-Message-Id: <1580249770-1088-6-git-send-email-jcrouse@codeaurora.org>
+Subject: [PATCH v1 1/6] iommu: Add DOMAIN_ATTR_PTBASE
+Date: Tue, 28 Jan 2020 15:16:05 -0700
+Message-Id: <1580249770-1088-2-git-send-email-jcrouse@codeaurora.org>
 X-Mailer: git-send-email 2.7.4
 In-Reply-To: <1580249770-1088-1-git-send-email-jcrouse@codeaurora.org>
 References: <1580249770-1088-1-git-send-email-jcrouse@codeaurora.org>
-Cc: freedreno@lists.freedesktop.org, David Airlie <airlied@linux.ie>,
- will@kernel.org, robin.murphy@arm.com, dri-devel@lists.freedesktop.org,
- linux-kernel@vger.kernel.org, Daniel Vetter <daniel@ffwll.ch>,
- linux-arm-msm@vger.kernel.org, Sean Paul <sean@poorly.run>,
+Cc: robin.murphy@arm.com, linux-kernel@vger.kernel.org,
+ linux-arm-msm@vger.kernel.org, will@kernel.org,
  linux-arm-kernel@lists.infradead.org
 X-BeenThere: iommu@lists.linux-foundation.org
 X-Mailman-Version: 2.1.15
@@ -106,28 +104,30 @@ Content-Transfer-Encoding: 7bit
 Errors-To: iommu-bounces@lists.linux-foundation.org
 Sender: "iommu" <iommu-bounces@lists.linux-foundation.org>
 
-Targets that support per-instance pagetable switching will have to keep
-track of which pagetable belongs to each instance to be able to recover
-for preemption.
+Add an attribute to return the base address of the pagetable. This is used
+by auxiliary domains from arm-smmu to return the address of the pagetable
+to the domain so that it can set the appropriate pagetable through it's
+own means.
 
 Signed-off-by: Jordan Crouse <jcrouse@codeaurora.org>
 ---
 
- drivers/gpu/drm/msm/msm_ringbuffer.h | 1 +
- 1 file changed, 1 insertion(+)
+ include/linux/iommu.h | 2 ++
+ 1 file changed, 2 insertions(+)
 
-diff --git a/drivers/gpu/drm/msm/msm_ringbuffer.h b/drivers/gpu/drm/msm/msm_ringbuffer.h
-index 7764373..c5822bd 100644
---- a/drivers/gpu/drm/msm/msm_ringbuffer.h
-+++ b/drivers/gpu/drm/msm/msm_ringbuffer.h
-@@ -29,6 +29,7 @@ struct msm_gpu_submit_stats {
- struct msm_rbmemptrs {
- 	volatile uint32_t rptr;
- 	volatile uint32_t fence;
-+	volatile uint64_t ttbr0;
- 
- 	volatile struct msm_gpu_submit_stats stats[MSM_GPU_SUBMIT_STATS_COUNT];
+diff --git a/include/linux/iommu.h b/include/linux/iommu.h
+index b14398b..0e9bcd9 100644
+--- a/include/linux/iommu.h
++++ b/include/linux/iommu.h
+@@ -128,6 +128,8 @@ enum iommu_attr {
+ 	DOMAIN_ATTR_DMA_USE_FLUSH_QUEUE,
+ 	/* Enable split pagetables (for example, TTBR1 on arm-smmu) */
+ 	DOMAIN_ATTR_SPLIT_TABLES,
++	/* Return the pagetable base address */
++	DOMAIN_ATTR_PTBASE,
+ 	DOMAIN_ATTR_MAX,
  };
+ 
 -- 
 2.7.4
 _______________________________________________
