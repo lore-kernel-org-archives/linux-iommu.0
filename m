@@ -4,109 +4,87 @@ X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 X-Spam-Level: 
 X-Spam-Status: No, score=-6.5 required=3.0 tests=DKIM_INVALID,DKIM_SIGNED,
 	HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_PATCH,MAILING_LIST_MULTI,SIGNED_OFF_BY,
-	SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED autolearn=ham autolearn_force=no
+	SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED autolearn=unavailable autolearn_force=no
 	version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id C164EC2D0DB
-	for <iommu@archiver.kernel.org>; Wed, 29 Jan 2020 17:27:46 +0000 (UTC)
-Received: from hemlock.osuosl.org (smtp2.osuosl.org [140.211.166.133])
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 357B1C2D0DB
+	for <iommu@archiver.kernel.org>; Wed, 29 Jan 2020 21:41:02 +0000 (UTC)
+Received: from fraxinus.osuosl.org (smtp4.osuosl.org [140.211.166.137])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by mail.kernel.org (Postfix) with ESMTPS id 912562082E
-	for <iommu@archiver.kernel.org>; Wed, 29 Jan 2020 17:27:46 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTPS id F2657206F0
+	for <iommu@archiver.kernel.org>; Wed, 29 Jan 2020 21:41:01 +0000 (UTC)
 Authentication-Results: mail.kernel.org;
-	dkim=fail reason="signature verification failed" (2048-bit key) header.d=cerno.tech header.i=@cerno.tech header.b="knH7SXZ2";
-	dkim=fail reason="signature verification failed" (2048-bit key) header.d=messagingengine.com header.i=@messagingengine.com header.b="vURkPiIP"
-DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 912562082E
-Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=cerno.tech
+	dkim=fail reason="signature verification failed" (1024-bit key) header.d=redhat.com header.i=@redhat.com header.b="FTm1H9fw"
+DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org F2657206F0
+Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=redhat.com
 Authentication-Results: mail.kernel.org; spf=pass smtp.mailfrom=iommu-bounces@lists.linux-foundation.org
 Received: from localhost (localhost [127.0.0.1])
-	by hemlock.osuosl.org (Postfix) with ESMTP id 6A14F87F8E;
-	Wed, 29 Jan 2020 17:27:46 +0000 (UTC)
-X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from hemlock.osuosl.org ([127.0.0.1])
-	by localhost (.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
-	with ESMTP id UWlnCml3nO-8; Wed, 29 Jan 2020 17:27:45 +0000 (UTC)
-Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [140.211.9.56])
-	by hemlock.osuosl.org (Postfix) with ESMTP id 5940D87F3F;
-	Wed, 29 Jan 2020 17:27:45 +0000 (UTC)
-Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
-	by lists.linuxfoundation.org (Postfix) with ESMTP id 3D645C0881;
-	Wed, 29 Jan 2020 17:27:45 +0000 (UTC)
-Received: from fraxinus.osuosl.org (smtp4.osuosl.org [140.211.166.137])
- by lists.linuxfoundation.org (Postfix) with ESMTP id 5A84CC0171
- for <iommu@lists.linux-foundation.org>; Wed, 29 Jan 2020 17:27:43 +0000 (UTC)
-Received: from localhost (localhost [127.0.0.1])
- by fraxinus.osuosl.org (Postfix) with ESMTP id 4327D85F49
- for <iommu@lists.linux-foundation.org>; Wed, 29 Jan 2020 17:27:43 +0000 (UTC)
+	by fraxinus.osuosl.org (Postfix) with ESMTP id C8435863A1;
+	Wed, 29 Jan 2020 21:41:01 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
 Received: from fraxinus.osuosl.org ([127.0.0.1])
+	by localhost (.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
+	with ESMTP id qlpWqkGorPRf; Wed, 29 Jan 2020 21:41:01 +0000 (UTC)
+Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [140.211.9.56])
+	by fraxinus.osuosl.org (Postfix) with ESMTP id 45F1486352;
+	Wed, 29 Jan 2020 21:41:01 +0000 (UTC)
+Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
+	by lists.linuxfoundation.org (Postfix) with ESMTP id 1DBBFC0881;
+	Wed, 29 Jan 2020 21:41:01 +0000 (UTC)
+Received: from silver.osuosl.org (smtp3.osuosl.org [140.211.166.136])
+ by lists.linuxfoundation.org (Postfix) with ESMTP id 0FE6EC0171
+ for <iommu@lists.linux-foundation.org>; Wed, 29 Jan 2020 21:41:00 +0000 (UTC)
+Received: from localhost (localhost [127.0.0.1])
+ by silver.osuosl.org (Postfix) with ESMTP id F176A22122
+ for <iommu@lists.linux-foundation.org>; Wed, 29 Jan 2020 21:40:59 +0000 (UTC)
+X-Virus-Scanned: amavisd-new at osuosl.org
+Received: from silver.osuosl.org ([127.0.0.1])
  by localhost (.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
- with ESMTP id 2Fp5qCmxwidh for <iommu@lists.linux-foundation.org>;
- Wed, 29 Jan 2020 17:27:42 +0000 (UTC)
-X-Greylist: from auto-whitelisted by SQLgrey-1.7.6
-Received: from out4-smtp.messagingengine.com (out4-smtp.messagingengine.com
- [66.111.4.28])
- by fraxinus.osuosl.org (Postfix) with ESMTPS id F009C85E40
- for <iommu@lists.linux-foundation.org>; Wed, 29 Jan 2020 17:27:41 +0000 (UTC)
-Received: from compute3.internal (compute3.nyi.internal [10.202.2.43])
- by mailout.nyi.internal (Postfix) with ESMTP id BD78F21FA9;
- Wed, 29 Jan 2020 12:27:40 -0500 (EST)
-Received: from mailfrontend1 ([10.202.2.162])
- by compute3.internal (MEProxy); Wed, 29 Jan 2020 12:27:40 -0500
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=cerno.tech; h=
- date:from:to:cc:subject:message-id:references:mime-version
- :content-type:content-transfer-encoding:in-reply-to; s=fm1; bh=A
- TygRAmR8d0jm0J6iRWxiOTnzUg+8li3NtuuF+gdI88=; b=knH7SXZ2Ky9/jgpjW
- qsSyPhtCAzEVMXmtvWjHXObc465bJai1kiB+E8W5Aq/QUk3uKBHAkUH3V4atBYND
- QjNnAHkFJwBPn/g4jMqMw+KP1wjJUM0JNowwrC9Mf7mhcJZAp8fuvEfoKKtUzTaO
- nLWlwPKeAXGmhnOXdZcg5WGG78+PuqlS+U/RNDJxBP7ziObaKUJSKUnafs2mOLyy
- RQIMgpqmWKzCiOn0fmxFNegTqBrJu1hspKKg1cqWu1E2KhDya79kZoxfxVyDPrHy
- gKEBuxVDhMRcrlkmkMTtTjCu3S0FRnfi5PUT4Qp16FMSUa3gIJpSaPDdgcAl6uz8
- mR6vw==
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=
- messagingengine.com; h=cc:content-transfer-encoding:content-type
- :date:from:in-reply-to:message-id:mime-version:references
- :subject:to:x-me-proxy:x-me-proxy:x-me-sender:x-me-sender
- :x-sasl-enc; s=fm1; bh=ATygRAmR8d0jm0J6iRWxiOTnzUg+8li3NtuuF+gdI
- 88=; b=vURkPiIP/F2udeKUc3p/VuDwL0RPeNtU5avUVS3mvad1nksQr/GMip53y
- AHwWpxG0tCRgwo3xTHdvEt9pedN5jcHVnki8lts9xU/INm5LeoLFdKYL2S/JrHgB
- KS53MvkfPe3K34+DfDbkEVIqW6qhUhzfxTZp6QmMyFPuMIWvkvzLWwkT5XnbHpUt
- Ngok+eOiIdSQJQyzF46DueYr0hk7hIjyUyF9o+IHHmsiJzWMU6Awiropclsaq9As
- LogLW3kVKjoMQvA2asNE4ui7xgd2u1hqSDSPvazBQbOAEc0WiSFwYCaXfS40+rOM
- nbCgCoU7hozntAaEXzgiW++vKY6lg==
-X-ME-Sender: <xms:i8AxXmt5TzlnOWXJ3tqS7NdviWXw0A-TKshPlsjHp-ZG5iy1YM66ig>
-X-ME-Proxy-Cause: gggruggvucftvghtrhhoucdtuddrgedugedrfeeigdellecutefuodetggdotefrodftvf
- curfhrohhfihhlvgemucfhrghsthforghilhdpqfgfvfdpuffrtefokffrpgfnqfghnecu
- uegrihhlohhuthemuceftddtnecusecvtfgvtghiphhivghnthhsucdlqddutddtmdenuc
- fjughrpeffhffvuffkfhggtggugfgjsehtqhertddttdejnecuhfhrohhmpeforgigihhm
- vgcutfhiphgrrhguuceomhgrgihimhgvsegtvghrnhhordhtvggthheqnecukfhppeeltd
- drkeelrdeikedrjeeinecuvehluhhsthgvrhfuihiivgeptdenucfrrghrrghmpehmrghi
- lhhfrhhomhepmhgrgihimhgvsegtvghrnhhordhtvggthh
-X-ME-Proxy: <xmx:i8AxXtSiXAirVtD8MDZwBJYybRy1nsoaSa52025S95lxc9aqZpyzVg>
- <xmx:i8AxXg7qMNQ4XXZcaqFpRtbLs-NmSYejulSIHRXCiNG_EqE0xmkDEg>
- <xmx:i8AxXkjF3QcRjtQR_z11Zzb8RbOIVYgf2QTpfgmiOaIUIrZJOqaZxw>
- <xmx:jMAxXrkr3wysvoBaE8BuFczY-AdOI0V2oEG5VbsBPv9ZRTdhuwNnIA>
-Received: from localhost (lfbn-tou-1-1502-76.w90-89.abo.wanadoo.fr
- [90.89.68.76])
- by mail.messagingengine.com (Postfix) with ESMTPA id 8346E3280059;
- Wed, 29 Jan 2020 12:27:39 -0500 (EST)
-Date: Wed, 29 Jan 2020 18:27:38 +0100
-From: Maxime Ripard <maxime@cerno.tech>
-To: Jernej =?utf-8?Q?=C5=A0krabec?= <jernej.skrabec@gmail.com>
-Subject: Re: [PATCH 3/3] arm64: dts: allwinner: h6: Add IOMMU
-Message-ID: <20200129172738.c53f5du2byreze2n@gilmour.lan>
-References: <cover.b2a9e1507135d81e726fcbb65137665a7f0ab74f.1579696927.git-series.maxime@cerno.tech>
- <5320339.DvuYhMxLoT@jernej-laptop>
- <20200127142339.crxsuunzec5drfe2@gilmour.lan>
- <2140600.ElGaqSPkdT@jernej-laptop>
+ with ESMTP id 4wtdaWjSfhUn for <iommu@lists.linux-foundation.org>;
+ Wed, 29 Jan 2020 21:40:58 +0000 (UTC)
+X-Greylist: domain auto-whitelisted by SQLgrey-1.7.6
+Received: from us-smtp-delivery-1.mimecast.com (us-smtp-2.mimecast.com
+ [205.139.110.61])
+ by silver.osuosl.org (Postfix) with ESMTPS id BB5D21FDAF
+ for <iommu@lists.linux-foundation.org>; Wed, 29 Jan 2020 21:40:58 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+ s=mimecast20190719; t=1580334057;
+ h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+ to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+ content-transfer-encoding:content-transfer-encoding:
+ in-reply-to:in-reply-to:references:references;
+ bh=8pjsr+8GgeZRx08ogbJ32q6tJdvfyOSXMDX5qngbmsc=;
+ b=FTm1H9fwZ/C9f9Ta7DbE9BrBwpNEqGsS8JJLJKzFaEahKNBaRnzPU+4pPcBB315GVWSuFG
+ ptL0xmN96iXlAoRJi6fhZhVYYMaMUt/Vv1grgdx+LQsf8WV9ZsYMP5Xghkz/l7GiIFimaV
+ qSn7ZkddUITbVQyQfUhAFOi5juxDfks=
+Received: from mimecast-mx01.redhat.com (mimecast-mx01.redhat.com
+ [209.132.183.4]) (Using TLS) by relay.mimecast.com with ESMTP id
+ us-mta-26-BKFe_yzwM1CxZrLAq07h-g-1; Wed, 29 Jan 2020 16:40:53 -0500
+X-MC-Unique: BKFe_yzwM1CxZrLAq07h-g-1
+Received: from smtp.corp.redhat.com (int-mx03.intmail.prod.int.phx2.redhat.com
+ [10.5.11.13])
+ (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
+ (No client certificate requested)
+ by mimecast-mx01.redhat.com (Postfix) with ESMTPS id 2ECCA18A6EC1;
+ Wed, 29 Jan 2020 21:40:51 +0000 (UTC)
+Received: from w520.home (ovpn-116-28.phx2.redhat.com [10.3.116.28])
+ by smtp.corp.redhat.com (Postfix) with ESMTP id BE8F687B07;
+ Wed, 29 Jan 2020 21:40:47 +0000 (UTC)
+Date: Wed, 29 Jan 2020 14:40:46 -0700
+From: Alex Williamson <alex.williamson@redhat.com>
+To: Jacob Pan <jacob.jun.pan@linux.intel.com>
+Subject: Re: [PATCH 3/3] iommu/uapi: Add helper function for size lookup
+Message-ID: <20200129144046.3f91e4c1@w520.home>
+In-Reply-To: <1580277724-66994-4-git-send-email-jacob.jun.pan@linux.intel.com>
+References: <1580277724-66994-1-git-send-email-jacob.jun.pan@linux.intel.com>
+ <1580277724-66994-4-git-send-email-jacob.jun.pan@linux.intel.com>
 MIME-Version: 1.0
-Content-Disposition: inline
-In-Reply-To: <2140600.ElGaqSPkdT@jernej-laptop>
-Cc: Mark Rutland <mark.rutland@arm.com>, devicetree@vger.kernel.org,
- iommu@lists.linux-foundation.org, Chen-Yu Tsai <wens@csie.org>,
- Rob Herring <robh+dt@kernel.org>, Frank Rowand <frowand.list@gmail.com>,
- linux-arm-kernel@lists.infradead.org
+X-Scanned-By: MIMEDefang 2.79 on 10.5.11.13
+Cc: "Tian, Kevin" <kevin.tian@intel.com>, Raj Ashok <ashok.raj@intel.com>,
+ Jean-Philippe Brucker <jean-philippe@linaro.com>,
+ LKML <linux-kernel@vger.kernel.org>, iommu@lists.linux-foundation.org,
+ David Woodhouse <dwmw2@infradead.org>, Jonathan Cameron <jic23@kernel.org>
 X-BeenThere: iommu@lists.linux-foundation.org
 X-Mailman-Version: 2.1.15
 Precedence: list
@@ -119,49 +97,100 @@ List-Post: <mailto:iommu@lists.linux-foundation.org>
 List-Help: <mailto:iommu-request@lists.linux-foundation.org?subject=help>
 List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
  <mailto:iommu-request@lists.linux-foundation.org?subject=subscribe>
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: base64
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: 7bit
 Errors-To: iommu-bounces@lists.linux-foundation.org
 Sender: "iommu" <iommu-bounces@lists.linux-foundation.org>
 
-SGksCgpPbiBNb24sIEphbiAyNywgMjAyMCBhdCAwODowNDowMlBNICswMTAwLCBKZXJuZWogxaBr
-cmFiZWMgd3JvdGU6Cj4gRG5lIHBvbmVkZWxqZWssIDI3LiBqYW51YXIgMjAyMCBvYiAxNToyMzoz
-OSBDRVQgamUgTWF4aW1lIFJpcGFyZCBuYXBpc2FsKGEpOgo+ID4gSGkgSmVybmVqLAo+ID4KPiA+
-IE9uIEZyaSwgSmFuIDI0LCAyMDIwIGF0IDA5OjU0OjIzUE0gKzAxMDAsIEplcm5laiDFoGtyYWJl
-YyB3cm90ZToKPiA+ID4gRG5lIHNyZWRhLCAyMi4gamFudWFyIDIwMjAgb2IgMTM6NDQ6MDkgQ0VU
-IGplIE1heGltZSBSaXBhcmQgbmFwaXNhbChhKToKPiA+ID4gPiBOb3cgdGhhdCB3ZSBoYXZlIGEg
-ZHJpdmVyIGZvciB0aGUgSU9NTVUsIGxldCdzIHN0YXJ0IHVzaW5nIGl0Lgo+ID4gPiA+Cj4gPiA+
-ID4gU2lnbmVkLW9mZi1ieTogTWF4aW1lIFJpcGFyZCA8bWF4aW1lQGNlcm5vLnRlY2g+Cj4gPiA+
-ID4gLS0tCj4gPiA+ID4KPiA+ID4gPiAgYXJjaC9hcm02NC9ib290L2R0cy9hbGx3aW5uZXIvc3Vu
-NTBpLWg2LmR0c2kgfCAxMSArKysrKysrKysrKwo+ID4gPiA+ICAxIGZpbGUgY2hhbmdlZCwgMTEg
-aW5zZXJ0aW9ucygrKQo+ID4gPiA+Cj4gPiA+ID4gZGlmZiAtLWdpdCBhL2FyY2gvYXJtNjQvYm9v
-dC9kdHMvYWxsd2lubmVyL3N1bjUwaS1oNi5kdHNpCj4gPiA+ID4gYi9hcmNoL2FybTY0L2Jvb3Qv
-ZHRzL2FsbHdpbm5lci9zdW41MGktaDYuZHRzaSBpbmRleAo+ID4gPiA+IDI5ODI0MDgxYjQzYi4u
-ODYwOGJjZjFjNTJjIDEwMDY0NAo+ID4gPiA+IC0tLSBhL2FyY2gvYXJtNjQvYm9vdC9kdHMvYWxs
-d2lubmVyL3N1bjUwaS1oNi5kdHNpCj4gPiA+ID4gKysrIGIvYXJjaC9hcm02NC9ib290L2R0cy9h
-bGx3aW5uZXIvc3VuNTBpLWg2LmR0c2kKPiA+ID4gPiBAQCAtNTMsNiArNTMsNyBAQAo+ID4gPiA+
-Cj4gPiA+ID4gIAlkZTogZGlzcGxheS1lbmdpbmUgewo+ID4gPiA+Cj4gPiA+ID4gIAkJY29tcGF0
-aWJsZSA9ICJhbGx3aW5uZXIsc3VuNTBpLWg2LWRpc3BsYXktZW5naW5lIjsKPiA+ID4gPiAgCQlh
-bGx3aW5uZXIscGlwZWxpbmVzID0gPCZtaXhlcjA+Owo+ID4gPiA+Cj4gPiA+ID4gKwkJaW9tbXVz
-ID0gPCZpb21tdSAwPjsKPiA+ID4gPgo+ID4gPiA+ICAJCXN0YXR1cyA9ICJkaXNhYmxlZCI7Cj4g
-PiA+ID4KPiA+ID4gPiAgCX07Cj4gPiA+Cj4gPiA+IElzbid0IGlvbW11IHByb3BlcnR5IG9mIHRo
-ZSBtaXhlciBub2RlPyBBZnRlciBhbGwsIG1peGVyIGlzIHRoZSBvbmUgd2hpY2gKPiA+ID4gcmVh
-ZHMgb25lIG9yIG1vcmUgZnJhbWVidWZmZXJzLiBPbmNlIHNlY29uZCBtaXhlciBpcyBkZWZpbmVk
-LCB3b3VsZCB5b3UKPiA+ID4gcHV0Cj4gPiA+IGFub3RoZXIgaW9tbXUgcGhhbmRsZSBoZXJlPwo+
-ID4KPiA+IFlvdSdyZSByaWdodC4gSSBhZGRlZCBpdCBkdXJpbmcgdGhlIGVhcmx5IGRldiwgYW5k
-IGZvcmdvdCB0byByZW1vdmUKPiA+IGl0LiBUaGFua3MhCj4KPiBSZW1vdmUgaXQgb3IgbW92ZSBp
-dD8gSSBndWVzcyBlbmFibGluZyBpb21tdSBzdXBwb3J0IGluIGVhY2ggZHJpdmVyIG5lZWRzIGEK
-PiBiaXQgbW9yZSB3b3JrIHRoYW4ganVzdCByZWZlcmVuY2luZyBpb21tdSBub2RlLCByaWdodD8g
-QXQgbGVhc3QgaW4gc3VjaCBjYXNlCj4gYnVmZmVycyBkb24ndCBuZWVkIHRvIGJlIGFsbG9jYXRl
-ZCBieSBDTUEsIHdoaWNoIHN1bjRpLWRybSBkcml2ZXIgY3VycmVudGx5Cj4gdXNlLgo+Cj4gSSBq
-dXN0IHRha2UgYW5vdGhlciBsb29rIGF0IEJTUCBrZXJuZWwgYW5kIGl0IHNlZW1zIHRoYXQgb25s
-eSBvbmUgY2hhbm5lbCBpcwo+IHVzZWQgZm9yIHdob2xlIGRpc3BsYXkgc3RhY2suIFRoYXQgd291
-bGQgbWVhbiB0aGF0IGJvdGggbWl4ZXJzIHdvdWxkIGhhdmUgc2FtZQo+IGlvbW11IHBoYW5kbGUs
-IHJpZ2h0PyBDb25mdXNpbmdseSBlbm91Z2gsIERFMiBpb21tdSBjaGFubmVsIHNlZW1zIHRvIGJl
-IGZvcgo+IGRlaW50ZXJsYWNlIGNvcmUuCgpUbyBhZGQgb24gUm9iaW4ncyBhbnN3ZXIsIHllYWgs
-IGl0IGxvb2tzIGxpa2UgdGhlIGRpc3BsYXkgZW5naW5lIGlzCmNhbGxlZCBERSAoYW5kIEkndmUg
-Y2hlY2tlZCB0aGF0IHRoaXMgaXMgaW5kZWVkIHRoZSBtYXN0ZXIgMCksIHdoaWxlCnRoZSBkZWlu
-dGVybGFjZSBpcyBjYWxsZWQgREUyIChhbmQgcHJvYmFibHkgaXMgdGhlIG1hc3RlciAyKS4KCk1h
-eGltZQpfX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fXwppb21t
-dSBtYWlsaW5nIGxpc3QKaW9tbXVAbGlzdHMubGludXgtZm91bmRhdGlvbi5vcmcKaHR0cHM6Ly9s
-aXN0cy5saW51eGZvdW5kYXRpb24ub3JnL21haWxtYW4vbGlzdGluZm8vaW9tbXU=
+On Tue, 28 Jan 2020 22:02:04 -0800
+Jacob Pan <jacob.jun.pan@linux.intel.com> wrote:
+
+> IOMMU UAPI can be extended in the future by adding new
+> fields at the end of each user data structure. Since we use
+> a unified UAPI version for compatibility checking, a lookup
+> function is needed to find the correct user data size to copy
+> from user.
+> 
+> This patch adds a helper function based on a 2D lookup with
+> version and type as input arguments.
+> 
+> Signed-off-by: Liu Yi L <yi.l.liu@intel.com>
+> Signed-off-by: Jacob Pan <jacob.jun.pan@linux.intel.com>
+> ---
+>  drivers/iommu/iommu.c | 22 ++++++++++++++++++++++
+>  include/linux/iommu.h |  6 ++++++
+>  2 files changed, 28 insertions(+)
+> 
+> diff --git a/drivers/iommu/iommu.c b/drivers/iommu/iommu.c
+> index 7dd51c5d2ba1..9e5de9abebdf 100644
+> --- a/drivers/iommu/iommu.c
+> +++ b/drivers/iommu/iommu.c
+> @@ -1696,6 +1696,28 @@ int iommu_sva_unbind_gpasid(struct iommu_domain *domain, struct device *dev,
+>  }
+>  EXPORT_SYMBOL_GPL(iommu_sva_unbind_gpasid);
+>  
+> +
+> +/**
+> + * Maintain a UAPI version to user data structure size lookup for each
+> + * API function types we support. e.g. bind guest pasid, cache invalidation.
+> + * As data structures being extended with new members, the offsetofend()
+> + * will identify the new sizes.
+> + */
+> +const static int iommu_uapi_data_size[NR_IOMMU_UAPI_TYPE][IOMMU_UAPI_VERSION] = {
+> +	/* IOMMU_UAPI_BIND_GPASID */
+> +	{offsetofend(struct iommu_gpasid_bind_data, vtd)},
+> +	/* IOMMU_UAPI_CACHE_INVAL */
+> +	{offsetofend(struct iommu_cache_invalidate_info, addr_info)},
+> +	/* IOMMU_UAPI_PAGE_RESP */
+> +	{offsetofend(struct iommu_page_response, code)},
+> +};
+> +
+> +int iommu_uapi_get_data_size(int type, int version)
+> +{
+
+Seems like this is asking for a bounds check,
+
+  if (type >= NR_IOMMU_UAPI_TYPE || version > IOMMU_UAPI_VERSION)
+  	return -EINVAL;
+
+If we add new types in future versions, I assume we'd back fill the
+table with -EINVAL as well (rather than zero).  Thanks,
+
+Alex
+
+> +	return iommu_uapi_data_size[type][version - 1];
+> +}
+> +EXPORT_SYMBOL_GPL(iommu_uapi_get_data_size);
+> +
+>  static void __iommu_detach_device(struct iommu_domain *domain,
+>  				  struct device *dev)
+>  {
+> diff --git a/include/linux/iommu.h b/include/linux/iommu.h
+> index 9718c109ea0a..416fe02160ba 100644
+> --- a/include/linux/iommu.h
+> +++ b/include/linux/iommu.h
+> @@ -500,6 +500,7 @@ extern int iommu_report_device_fault(struct device *dev,
+>  				     struct iommu_fault_event *evt);
+>  extern int iommu_page_response(struct device *dev,
+>  			       struct iommu_page_response *msg);
+> +extern int iommu_uapi_get_data_size(int type, int version);
+>  
+>  extern int iommu_group_id(struct iommu_group *group);
+>  extern struct iommu_group *iommu_group_get_for_dev(struct device *dev);
+> @@ -885,6 +886,11 @@ static inline int iommu_page_response(struct device *dev,
+>  	return -ENODEV;
+>  }
+>  
+> +static int iommu_uapi_get_data_size(int type, int version)
+> +{
+> +	return -ENODEV;
+> +}
+> +
+>  static inline int iommu_group_id(struct iommu_group *group)
+>  {
+>  	return -ENODEV;
+
+_______________________________________________
+iommu mailing list
+iommu@lists.linux-foundation.org
+https://lists.linuxfoundation.org/mailman/listinfo/iommu
