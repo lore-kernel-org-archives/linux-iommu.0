@@ -6,43 +6,43 @@ X-Spam-Status: No, score=-9.7 required=3.0 tests=HEADER_FROM_DIFFERENT_DOMAINS,
 	INCLUDES_PATCH,MAILING_LIST_MULTI,SIGNED_OFF_BY,SPF_HELO_NONE,SPF_PASS,
 	URIBL_BLOCKED,USER_AGENT_GIT autolearn=ham autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 9C451C35248
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 7F19EC35240
 	for <iommu@archiver.kernel.org>; Wed, 29 Jan 2020 05:56:48 +0000 (UTC)
-Received: from fraxinus.osuosl.org (smtp4.osuosl.org [140.211.166.137])
+Received: from hemlock.osuosl.org (smtp2.osuosl.org [140.211.166.133])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by mail.kernel.org (Postfix) with ESMTPS id 7B9AC2082E
+	by mail.kernel.org (Postfix) with ESMTPS id 5A6422067C
 	for <iommu@archiver.kernel.org>; Wed, 29 Jan 2020 05:56:48 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 7B9AC2082E
+DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 5A6422067C
 Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=linux.intel.com
 Authentication-Results: mail.kernel.org; spf=pass smtp.mailfrom=iommu-bounces@lists.linux-foundation.org
 Received: from localhost (localhost [127.0.0.1])
-	by fraxinus.osuosl.org (Postfix) with ESMTP id 62BB485E77;
+	by hemlock.osuosl.org (Postfix) with ESMTP id 1EBB686E5C;
 	Wed, 29 Jan 2020 05:56:48 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from fraxinus.osuosl.org ([127.0.0.1])
+Received: from hemlock.osuosl.org ([127.0.0.1])
 	by localhost (.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
-	with ESMTP id ZG-54pe-FTiT; Wed, 29 Jan 2020 05:56:47 +0000 (UTC)
+	with ESMTP id BaIyh+6IKY9G; Wed, 29 Jan 2020 05:56:47 +0000 (UTC)
 Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [140.211.9.56])
-	by fraxinus.osuosl.org (Postfix) with ESMTP id 7C7ED85E25;
+	by hemlock.osuosl.org (Postfix) with ESMTP id 2AA4485A03;
 	Wed, 29 Jan 2020 05:56:47 +0000 (UTC)
 Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
-	by lists.linuxfoundation.org (Postfix) with ESMTP id 6A489C1D85;
+	by lists.linuxfoundation.org (Postfix) with ESMTP id 171D0C0881;
 	Wed, 29 Jan 2020 05:56:47 +0000 (UTC)
 Received: from silver.osuosl.org (smtp3.osuosl.org [140.211.166.136])
- by lists.linuxfoundation.org (Postfix) with ESMTP id 91115C0881
+ by lists.linuxfoundation.org (Postfix) with ESMTP id 41D34C0881
  for <iommu@lists.linux-foundation.org>; Wed, 29 Jan 2020 05:56:44 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
- by silver.osuosl.org (Postfix) with ESMTP id 8156920791
+ by silver.osuosl.org (Postfix) with ESMTP id 2C1F520780
  for <iommu@lists.linux-foundation.org>; Wed, 29 Jan 2020 05:56:44 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
 Received: from silver.osuosl.org ([127.0.0.1])
  by localhost (.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
- with ESMTP id UYKSoAYBxssu for <iommu@lists.linux-foundation.org>;
+ with ESMTP id EVlUpUrUisx3 for <iommu@lists.linux-foundation.org>;
  Wed, 29 Jan 2020 05:56:43 +0000 (UTC)
 X-Greylist: domain auto-whitelisted by SQLgrey-1.7.6
 Received: from mga03.intel.com (mga03.intel.com [134.134.136.65])
- by silver.osuosl.org (Postfix) with ESMTPS id AA13920529
+ by silver.osuosl.org (Postfix) with ESMTPS id 6BF6720420
  for <iommu@lists.linux-foundation.org>; Wed, 29 Jan 2020 05:56:43 +0000 (UTC)
 X-Amp-Result: SKIPPED(no attachment in message)
 X-Amp-File-Uploaded: False
@@ -50,16 +50,16 @@ Received: from orsmga008.jf.intel.com ([10.7.209.65])
  by orsmga103.jf.intel.com with ESMTP/TLS/DHE-RSA-AES256-GCM-SHA384;
  28 Jan 2020 21:56:41 -0800
 X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.70,376,1574150400"; d="scan'208";a="222346547"
+X-IronPort-AV: E=Sophos;i="5.70,376,1574150400"; d="scan'208";a="222346514"
 Received: from jacob-builder.jf.intel.com ([10.7.199.155])
  by orsmga008.jf.intel.com with ESMTP; 28 Jan 2020 21:56:41 -0800
 From: Jacob Pan <jacob.jun.pan@linux.intel.com>
 To: iommu@lists.linux-foundation.org, LKML <linux-kernel@vger.kernel.org>,
  "Lu Baolu" <baolu.lu@linux.intel.com>, Joerg Roedel <joro@8bytes.org>,
  David Woodhouse <dwmw2@infradead.org>
-Subject: [PATCH V9 10/10] iommu/vt-d: Report PASID format as domain attribute
-Date: Tue, 28 Jan 2020 22:01:53 -0800
-Message-Id: <1580277713-66934-11-git-send-email-jacob.jun.pan@linux.intel.com>
+Subject: [PATCH V9 01/10] iommu/vt-d: Move domain helper to header
+Date: Tue, 28 Jan 2020 22:01:44 -0800
+Message-Id: <1580277713-66934-2-git-send-email-jacob.jun.pan@linux.intel.com>
 X-Mailer: git-send-email 2.7.4
 In-Reply-To: <1580277713-66934-1-git-send-email-jacob.jun.pan@linux.intel.com>
 References: <1580277713-66934-1-git-send-email-jacob.jun.pan@linux.intel.com>
@@ -85,70 +85,49 @@ Content-Transfer-Encoding: 7bit
 Errors-To: iommu-bounces@lists.linux-foundation.org
 Sender: "iommu" <iommu-bounces@lists.linux-foundation.org>
 
-Report the domain attribute of PASID table format. As multiple formats
-of PASID table entry are supported, it is important for the guest to
-know which format to use in virtual IOMMU. The result will be used for
-binding device with guest PASID.
+Move domain helper to header to be used by SVA code.
 
-Signed-off-by: Liu Yi L <yi.l.liu@intel.com>
 Signed-off-by: Jacob Pan <jacob.jun.pan@linux.intel.com>
+Reviewed-by: Eric Auger <eric.auger@redhat.com>
 ---
- drivers/iommu/intel-iommu.c | 22 ++++++++++++++++++++++
- include/linux/iommu.h       |  1 +
- 2 files changed, 23 insertions(+)
+ drivers/iommu/intel-iommu.c | 6 ------
+ include/linux/intel-iommu.h | 6 ++++++
+ 2 files changed, 6 insertions(+), 6 deletions(-)
 
 diff --git a/drivers/iommu/intel-iommu.c b/drivers/iommu/intel-iommu.c
-index 2f0bf7cc70ce..b3778e86dc32 100644
+index c0a983c4e84a..15fdd0915018 100644
 --- a/drivers/iommu/intel-iommu.c
 +++ b/drivers/iommu/intel-iommu.c
-@@ -6413,6 +6413,27 @@ intel_iommu_domain_set_attr(struct iommu_domain *domain,
- 	return ret;
+@@ -446,12 +446,6 @@ static void init_translation_status(struct intel_iommu *iommu)
+ 		iommu->flags |= VTD_FLAG_TRANS_PRE_ENABLED;
  }
  
-+static int intel_iommu_domain_get_attr(struct iommu_domain *domain,
-+				       enum iommu_attr attr, void *data)
+-/* Convert generic 'struct iommu_domain to private struct dmar_domain */
+-static struct dmar_domain *to_dmar_domain(struct iommu_domain *dom)
+-{
+-	return container_of(dom, struct dmar_domain, domain);
+-}
+-
+ static int __init intel_iommu_setup(char *str)
+ {
+ 	if (!str)
+diff --git a/include/linux/intel-iommu.h b/include/linux/intel-iommu.h
+index 4a16b39ae353..27c6bbb0a333 100644
+--- a/include/linux/intel-iommu.h
++++ b/include/linux/intel-iommu.h
+@@ -593,6 +593,12 @@ static inline void __iommu_flush_cache(
+ 		clflush_cache_range(addr, size);
+ }
+ 
++/* Convert generic struct iommu_domain to private struct dmar_domain */
++static inline struct dmar_domain *to_dmar_domain(struct iommu_domain *dom)
 +{
-+	/* Only used for guest */
-+	switch (domain->type) {
-+	case IOMMU_DOMAIN_DMA:
-+		return -ENODEV;
-+	case IOMMU_DOMAIN_UNMANAGED:
-+		switch (attr) {
-+		case DOMAIN_ATTR_PASID_FORMAT:
-+			*(int *)data = IOMMU_PASID_FORMAT_INTEL_VTD;
-+			return 0;
-+		default:
-+			return -ENODEV;
-+		}
-+		break;
-+	default:
-+		return -EINVAL;
-+	}
++	return container_of(dom, struct dmar_domain, domain);
 +}
 +
- const struct iommu_ops intel_iommu_ops = {
- 	.capable		= intel_iommu_capable,
- 	.domain_alloc		= intel_iommu_domain_alloc,
-@@ -6432,6 +6453,7 @@ const struct iommu_ops intel_iommu_ops = {
- 	.put_resv_regions	= intel_iommu_put_resv_regions,
- 	.apply_resv_region	= intel_iommu_apply_resv_region,
- 	.device_group		= pci_device_group,
-+	.domain_get_attr	= intel_iommu_domain_get_attr,
- 	.dev_has_feat		= intel_iommu_dev_has_feat,
- 	.dev_feat_enabled	= intel_iommu_dev_feat_enabled,
- 	.dev_enable_feat	= intel_iommu_dev_enable_feat,
-diff --git a/include/linux/iommu.h b/include/linux/iommu.h
-index f2223cbb5fd5..9718c109ea0a 100644
---- a/include/linux/iommu.h
-+++ b/include/linux/iommu.h
-@@ -126,6 +126,7 @@ enum iommu_attr {
- 	DOMAIN_ATTR_FSL_PAMUV1,
- 	DOMAIN_ATTR_NESTING,	/* two stages of translation */
- 	DOMAIN_ATTR_DMA_USE_FLUSH_QUEUE,
-+	DOMAIN_ATTR_PASID_FORMAT,
- 	DOMAIN_ATTR_MAX,
- };
- 
+ /*
+  * 0: readable
+  * 1: writable
 -- 
 2.7.4
 
