@@ -4,84 +4,83 @@ X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 X-Spam-Level: 
 X-Spam-Status: No, score=-9.6 required=3.0 tests=DKIM_INVALID,DKIM_SIGNED,
 	HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_PATCH,MAILING_LIST_MULTI,SIGNED_OFF_BY,
-	SPF_HELO_NONE,SPF_PASS,USER_AGENT_GIT autolearn=ham autolearn_force=no
-	version=3.4.0
+	SPF_HELO_NONE,SPF_PASS,USER_AGENT_GIT autolearn=unavailable
+	autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 3A655C2D0DB
-	for <iommu@archiver.kernel.org>; Thu, 30 Jan 2020 20:12:03 +0000 (UTC)
-Received: from silver.osuosl.org (smtp3.osuosl.org [140.211.166.136])
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 958F6C2D0DB
+	for <iommu@archiver.kernel.org>; Thu, 30 Jan 2020 20:22:06 +0000 (UTC)
+Received: from whitealder.osuosl.org (smtp1.osuosl.org [140.211.166.138])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by mail.kernel.org (Postfix) with ESMTPS id 02DF320CC7
-	for <iommu@archiver.kernel.org>; Thu, 30 Jan 2020 20:12:02 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTPS id 52EB320708
+	for <iommu@archiver.kernel.org>; Thu, 30 Jan 2020 20:22:06 +0000 (UTC)
 Authentication-Results: mail.kernel.org;
-	dkim=fail reason="signature verification failed" (2048-bit key) header.d=google.com header.i=@google.com header.b="TTBz3D2S"
-DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 02DF320CC7
+	dkim=fail reason="signature verification failed" (2048-bit key) header.d=google.com header.i=@google.com header.b="MuK6rw1V"
+DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 52EB320708
 Authentication-Results: mail.kernel.org; dmarc=none (p=none dis=none) header.from=lists.linux-foundation.org
 Authentication-Results: mail.kernel.org; spf=pass smtp.mailfrom=iommu-bounces@lists.linux-foundation.org
 Received: from localhost (localhost [127.0.0.1])
-	by silver.osuosl.org (Postfix) with ESMTP id D26B0227DB;
-	Thu, 30 Jan 2020 20:12:02 +0000 (UTC)
+	by whitealder.osuosl.org (Postfix) with ESMTP id 1871887895;
+	Thu, 30 Jan 2020 20:22:06 +0000 (UTC)
+X-Virus-Scanned: amavisd-new at osuosl.org
+Received: from whitealder.osuosl.org ([127.0.0.1])
+	by localhost (.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
+	with ESMTP id fWWhAl3CIp8F; Thu, 30 Jan 2020 20:22:05 +0000 (UTC)
+Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [140.211.9.56])
+	by whitealder.osuosl.org (Postfix) with ESMTP id 12AE287896;
+	Thu, 30 Jan 2020 20:22:05 +0000 (UTC)
+Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
+	by lists.linuxfoundation.org (Postfix) with ESMTP id F2535C1796;
+	Thu, 30 Jan 2020 20:22:04 +0000 (UTC)
+Received: from silver.osuosl.org (smtp3.osuosl.org [140.211.166.136])
+ by lists.linuxfoundation.org (Postfix) with ESMTP id C13B3C0171
+ for <iommu@lists.linux-foundation.org>; Thu, 30 Jan 2020 20:22:03 +0000 (UTC)
+Received: from localhost (localhost [127.0.0.1])
+ by silver.osuosl.org (Postfix) with ESMTP id A9D3D203B4
+ for <iommu@lists.linux-foundation.org>; Thu, 30 Jan 2020 20:22:03 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
 Received: from silver.osuosl.org ([127.0.0.1])
-	by localhost (.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
-	with ESMTP id wxI5f92Ijb1j; Thu, 30 Jan 2020 20:11:59 +0000 (UTC)
-Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [140.211.9.56])
-	by silver.osuosl.org (Postfix) with ESMTP id CC353203B4;
-	Thu, 30 Jan 2020 20:11:59 +0000 (UTC)
-Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
-	by lists.linuxfoundation.org (Postfix) with ESMTP id B21D8C1796;
-	Thu, 30 Jan 2020 20:11:59 +0000 (UTC)
-Received: from fraxinus.osuosl.org (smtp4.osuosl.org [140.211.166.137])
- by lists.linuxfoundation.org (Postfix) with ESMTP id 5285FC0171
- for <iommu@lists.linux-foundation.org>; Thu, 30 Jan 2020 20:11:58 +0000 (UTC)
-Received: from localhost (localhost [127.0.0.1])
- by fraxinus.osuosl.org (Postfix) with ESMTP id 38D648448F
- for <iommu@lists.linux-foundation.org>; Thu, 30 Jan 2020 20:11:58 +0000 (UTC)
-X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from fraxinus.osuosl.org ([127.0.0.1])
  by localhost (.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
- with ESMTP id vJIf8AqH_wZb for <iommu@lists.linux-foundation.org>;
- Thu, 30 Jan 2020 20:11:57 +0000 (UTC)
-X-Greylist: delayed 00:33:36 by SQLgrey-1.7.6
+ with ESMTP id 2fB0Cpi5ph2B for <iommu@lists.linux-foundation.org>;
+ Thu, 30 Jan 2020 20:22:02 +0000 (UTC)
+X-Greylist: delayed 00:07:06 by SQLgrey-1.7.6
 Received: from mail-pl1-f201.google.com (mail-pl1-f201.google.com
  [209.85.214.201])
- by fraxinus.osuosl.org (Postfix) with ESMTPS id 96ECB835C4
- for <iommu@lists.linux-foundation.org>; Thu, 30 Jan 2020 20:11:57 +0000 (UTC)
-Received: by mail-pl1-f201.google.com with SMTP id v24so2375377plo.2
- for <iommu@lists.linux-foundation.org>; Thu, 30 Jan 2020 12:11:57 -0800 (PST)
+ by silver.osuosl.org (Postfix) with ESMTPS id E714E20346
+ for <iommu@lists.linux-foundation.org>; Thu, 30 Jan 2020 20:22:02 +0000 (UTC)
+Received: by mail-pl1-f201.google.com with SMTP id n17so2388588plp.10
+ for <iommu@lists.linux-foundation.org>; Thu, 30 Jan 2020 12:22:02 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=google.com; s=20161025;
  h=date:message-id:mime-version:subject:from:to:cc;
- bh=8yPZBT02dhU6sVfnDKBlA+jOWpq/2cl2umK0tzNJVBE=;
- b=TTBz3D2SGElhO3Fat076p/PKpoM+esnw2RoZZW7IqnERaNC+LsOCoxl31VSMOECq/7
- NUO5iU/QQFsDkrtOpYjFklMq84NOoKkZwkX53/sV00n9evs5wUOQTCulXCSDe5d0eGRT
- OUIhteEFVGvAUjQlQ6EtFR9LXbt11CV99hkGAufgoUB2OGl2dIU+B6D+p5UNqbdbNqEY
- 6bhDCbQd9D/408RXf1hYN2xzKvx0RIkSSW85qYG3SQmN7NwhQZDkRTFQU24NQTjCXIl4
- igUwW6YLZ2zUdfPTDK/uLP4U5aUWukO83hKoGZECLTeMk6pDzuM6h5F2xwv9CumTO/Xf
- Lj6A==
+ bh=HlKKpg7ZjV76vxI7Xx+EGX2+XDB/ZbEOE3aGV0uGAJU=;
+ b=MuK6rw1VKmjDpcW2hCj5zPecHj6a5aFQBY42EcDk57gI1XAAXXRAeigAiwxbLP3cwz
+ LbG+wZY5IsfR3HtFLnrn+J4/rwn/EbyC+BAhYVSIoSSYy0pgSfz5jIHB7rAJBVqg5Jo9
+ +TByoBb3f67w1zmv8yTClg8y4aoR57s4olqCfJEFLQLhPud6H8/7PA68h9t1BMXIJNkY
+ 8tPInZ+oIakFYO5ELYhP7ciUcCT0laZ4bnjzRkFujaRHlCrP1NwXDx/44dvKHi3qrCc/
+ tFzzL2ICult0UdUNEHY3LpmUrTTGpkfx+ihcvskc/G96CyZHZZEjoQzBsAql36fMHxZG
+ uIMQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
  d=1e100.net; s=20161025;
  h=x-gm-message-state:date:message-id:mime-version:subject:from:to:cc;
- bh=8yPZBT02dhU6sVfnDKBlA+jOWpq/2cl2umK0tzNJVBE=;
- b=DMU1plg8iFi5wyzc2f5mjgw6aQljcnpv8XfjfnSCA+2pg4YCkFxkRYNA+iVOcbKPl1
- bDaOm9qQBXKYWLgsrCqNCFt2F4YufsC18QwV9OnV2lXDBefGgadbv7/YZdZ/EfH5SIcE
- KWyMRRsq8wXywX2MYHicSqRtUpIOVhjvJvTy/exOki8nqR0AFDXviuoLUbJ10PrtizVj
- 1vVyXMxxxJdVnS3Y3qeDVh+P60ZRJ4CzUKwBCmkp2/5mnxbhC6FiEjjXo8vXdEEgZKT9
- rjfMCIpE8eOM/f/0WeTq/GToYGKe7MOue+OWt3wdZUeYI3/I4edgQcFEUYGOPGvqqUya
- 3Gww==
-X-Gm-Message-State: APjAAAUs429IuSeZpjvoIyIUPi7nKTaG2nbWx9N2RxC0Mo8bm6H6XyOU
- Mj2ctcP85k2nFjIyX+U+kbc7lnNo5Tevgw==
-X-Google-Smtp-Source: APXvYqwShCG6mlMAlaWy7deIQZEwnVXA0kx4PMo46X5AynA4dIPnFzFn6FXwUhqm5k8wHgwEal0unptfi6FFow==
-X-Received: by 2002:a63:f5c:: with SMTP id 28mr6397451pgp.348.1580411453063;
- Thu, 30 Jan 2020 11:10:53 -0800 (PST)
-Date: Thu, 30 Jan 2020 11:10:49 -0800
-Message-Id: <20200130191049.190569-1-edumazet@google.com>
+ bh=HlKKpg7ZjV76vxI7Xx+EGX2+XDB/ZbEOE3aGV0uGAJU=;
+ b=PNsFksnhjrylo+EpBDV+NcR/fu+vuQtp3fa+i11QhCqRx0kYxDJjqFydIvDm3DCwjA
+ XQLdgo0v1KkZ5nnIGiRJE3FUsBkaVrgx+KuoWAzUvni8kma4VoNavJXmpoBVHgFjhfVb
+ Wnyeb3Vt9Bk/aMsvttgn6x0YVfxI6rALSqebW3vkM/KE9jvBDUVItet8Lli8GV/BCs9+
+ nQJ93JmJCv0zJ2reKbIAPrdJZjBcymHYjQnNnyZXHrdaCsTjuDEXi71rP7Jy67CwDJKq
+ pMIszZ8ohXILIIkl0qrOFrlH8Wh7y0zOilQURcxGRiQEqvRL1z5dWDJFYCkocyDEdITM
+ 1YRQ==
+X-Gm-Message-State: APjAAAUsn62tGIOiEUXxBDN/hWf6mS5OigJop1xNOQzC1L6GpvmHAJTA
+ KDMN36XlksgjK8CBUUOJq+2zGGzNMAek8g==
+X-Google-Smtp-Source: APXvYqzJwvvP+Ib7mJZPmx/9cOuT+l71pmKBvK0yw337IHvGg20CL49auvi6pJEF5Bu1ekXqm5rIlhelsNpWtg==
+X-Received: by 2002:a63:1f16:: with SMTP id f22mr6196940pgf.2.1580415295525;
+ Thu, 30 Jan 2020 12:14:55 -0800 (PST)
+Date: Thu, 30 Jan 2020 12:14:51 -0800
+Message-Id: <20200130201451.253115-1-edumazet@google.com>
 Mime-Version: 1.0
 X-Mailer: git-send-email 2.25.0.341.g760bfbb309-goog
-Subject: [PATCH] dma-debug: dynamic allocation of hash table
+Subject: [PATCH] dma-debug: add a per-cpu cache to avoid lock contention
 To: Christoph Hellwig <hch@lst.de>, Joerg Roedel <jroedel@suse.de>
 Cc: iommu@lists.linux-foundation.org, Eric Dumazet <eric.dumazet@gmail.com>,
- Geert Uytterhoeven <geert@linux-m68k.org>,
  linux-kernel <linux-kernel@vger.kernel.org>,
  Eric Dumazet <edumazet@google.com>
 X-BeenThere: iommu@lists.linux-foundation.org
@@ -103,64 +102,67 @@ Content-Transfer-Encoding: 7bit
 Errors-To: iommu-bounces@lists.linux-foundation.org
 Sender: "iommu" <iommu-bounces@lists.linux-foundation.org>
 
-Increasing the size of dma_entry_hash size by 327680 bytes
-has reached some bootloaders limitations.
+Networking drivers very often have to replace one page with
+another for their RX ring buffers.
 
-Simply use dynamic allocations instead, and take
-this opportunity to increase the hash table to 65536
-buckets. Finally my 40Gbit mlx4 NIC can sustain
-line rate with CONFIG_DMA_API_DEBUG=y.
+A multi-queue NIC will severly hit a contention point
+in dma-debug while grabbing free_entries_lock spinlock.
 
-Fixes: 5e76f564572b ("dma-debug: increase HASH_SIZE")
+Adding a one entry per-cpu cache removes the need
+to grab this spinlock twice per page replacement.
+
+Tested on a 40Gbit mlx4 NIC, with 16 RX queues and about
+1,000,000 replacements per second.
+
 Signed-off-by: Eric Dumazet <edumazet@google.com>
-Reported-by: Geert Uytterhoeven <geert@linux-m68k.org>
 Cc: Christoph Hellwig <hch@lst.de>
 ---
- kernel/dma/debug.c | 10 ++++++++--
- 1 file changed, 8 insertions(+), 2 deletions(-)
+ kernel/dma/debug.c | 11 ++++++++++-
+ 1 file changed, 10 insertions(+), 1 deletion(-)
 
 diff --git a/kernel/dma/debug.c b/kernel/dma/debug.c
-index 2031ed1ad7fa109bb8a8c290bbbc5f825362baba..a310dbb1515e92c081f8f3f9a7290dd5e53fc889 100644
+index a310dbb1515e92c081f8f3f9a7290dd5e53fc889..b7221426ef49cf640db5bcb261b0817d714a3033 100644
 --- a/kernel/dma/debug.c
 +++ b/kernel/dma/debug.c
-@@ -27,7 +27,7 @@
- 
- #include <asm/sections.h>
- 
--#define HASH_SIZE       16384ULL
-+#define HASH_SIZE       65536ULL
- #define HASH_FN_SHIFT   13
- #define HASH_FN_MASK    (HASH_SIZE - 1)
- 
-@@ -90,7 +90,8 @@ struct hash_bucket {
- };
- 
- /* Hash list to save the allocated dma addresses */
--static struct hash_bucket dma_entry_hash[HASH_SIZE];
-+static struct hash_bucket *dma_entry_hash __read_mostly;
-+
- /* List of pre-allocated dma_debug_entry's */
- static LIST_HEAD(free_entries);
+@@ -97,6 +97,8 @@ static LIST_HEAD(free_entries);
  /* Lock for the list above */
-@@ -934,6 +935,10 @@ static int dma_debug_init(void)
- 	if (global_disable)
- 		return 0;
+ static DEFINE_SPINLOCK(free_entries_lock);
  
-+	dma_entry_hash = vmalloc(HASH_SIZE * sizeof(*dma_entry_hash));
-+	if (!dma_entry_hash)
-+		goto err;
++static DEFINE_PER_CPU(struct dma_debug_entry *, dma_debug_entry_cache);
 +
- 	for (i = 0; i < HASH_SIZE; ++i) {
- 		INIT_LIST_HEAD(&dma_entry_hash[i].list);
- 		spin_lock_init(&dma_entry_hash[i].lock);
-@@ -950,6 +955,7 @@ static int dma_debug_init(void)
- 		pr_warn("%d debug entries requested but only %d allocated\n",
- 			nr_prealloc_entries, nr_total_entries);
- 	} else {
-+err:
- 		pr_err("debugging out of memory error - disabled\n");
- 		global_disable = true;
+ /* Global disable flag - will be set in case of an error */
+ static bool global_disable __read_mostly;
  
+@@ -676,6 +678,10 @@ static struct dma_debug_entry *dma_entry_alloc(void)
+ 	struct dma_debug_entry *entry;
+ 	unsigned long flags;
+ 
++	entry = this_cpu_xchg(dma_debug_entry_cache, NULL);
++	if (entry)
++		goto end;
++
+ 	spin_lock_irqsave(&free_entries_lock, flags);
+ 	if (num_free_entries == 0) {
+ 		if (dma_debug_create_entries(GFP_ATOMIC)) {
+@@ -690,7 +696,7 @@ static struct dma_debug_entry *dma_entry_alloc(void)
+ 	entry = __dma_entry_alloc();
+ 
+ 	spin_unlock_irqrestore(&free_entries_lock, flags);
+-
++end:
+ #ifdef CONFIG_STACKTRACE
+ 	entry->stack_len = stack_trace_save(entry->stack_entries,
+ 					    ARRAY_SIZE(entry->stack_entries),
+@@ -705,6 +711,9 @@ static void dma_entry_free(struct dma_debug_entry *entry)
+ 
+ 	active_cacheline_remove(entry);
+ 
++	if (!this_cpu_cmpxchg(dma_debug_entry_cache, NULL, entry))
++		return;
++
+ 	/*
+ 	 * add to beginning of the list - this way the entries are
+ 	 * more likely cache hot when they are reallocated.
 -- 
 2.25.0.341.g760bfbb309-goog
 
