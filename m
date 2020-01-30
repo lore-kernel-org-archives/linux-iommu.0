@@ -2,70 +2,88 @@ Return-Path: <SRS0=QAIZ=3T=lists.linux-foundation.org=iommu-bounces@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-8.2 required=3.0 tests=HEADER_FROM_DIFFERENT_DOMAINS,
-	INCLUDES_PATCH,MAILING_LIST_MULTI,SIGNED_OFF_BY,SPF_HELO_NONE,SPF_PASS,
-	USER_AGENT_SANE_1 autolearn=ham autolearn_force=no version=3.4.0
+X-Spam-Status: No, score=-9.6 required=3.0 tests=DKIM_INVALID,DKIM_SIGNED,
+	HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_PATCH,MAILING_LIST_MULTI,SIGNED_OFF_BY,
+	SPF_HELO_NONE,SPF_PASS,USER_AGENT_GIT autolearn=ham autolearn_force=no
+	version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 4ACF5C2D0DB
-	for <iommu@archiver.kernel.org>; Thu, 30 Jan 2020 17:34:19 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 3A655C2D0DB
+	for <iommu@archiver.kernel.org>; Thu, 30 Jan 2020 20:12:03 +0000 (UTC)
 Received: from silver.osuosl.org (smtp3.osuosl.org [140.211.166.136])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by mail.kernel.org (Postfix) with ESMTPS id 0F05520674
-	for <iommu@archiver.kernel.org>; Thu, 30 Jan 2020 17:34:18 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 0F05520674
-Authentication-Results: mail.kernel.org; dmarc=none (p=none dis=none) header.from=arm.com
+	by mail.kernel.org (Postfix) with ESMTPS id 02DF320CC7
+	for <iommu@archiver.kernel.org>; Thu, 30 Jan 2020 20:12:02 +0000 (UTC)
+Authentication-Results: mail.kernel.org;
+	dkim=fail reason="signature verification failed" (2048-bit key) header.d=google.com header.i=@google.com header.b="TTBz3D2S"
+DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 02DF320CC7
+Authentication-Results: mail.kernel.org; dmarc=none (p=none dis=none) header.from=lists.linux-foundation.org
 Authentication-Results: mail.kernel.org; spf=pass smtp.mailfrom=iommu-bounces@lists.linux-foundation.org
 Received: from localhost (localhost [127.0.0.1])
-	by silver.osuosl.org (Postfix) with ESMTP id D424F20370;
-	Thu, 30 Jan 2020 17:34:18 +0000 (UTC)
+	by silver.osuosl.org (Postfix) with ESMTP id D26B0227DB;
+	Thu, 30 Jan 2020 20:12:02 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
 Received: from silver.osuosl.org ([127.0.0.1])
 	by localhost (.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
-	with ESMTP id za3OCM4Xn0zh; Thu, 30 Jan 2020 17:34:17 +0000 (UTC)
+	with ESMTP id wxI5f92Ijb1j; Thu, 30 Jan 2020 20:11:59 +0000 (UTC)
 Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [140.211.9.56])
-	by silver.osuosl.org (Postfix) with ESMTP id 86C8620134;
-	Thu, 30 Jan 2020 17:34:17 +0000 (UTC)
+	by silver.osuosl.org (Postfix) with ESMTP id CC353203B4;
+	Thu, 30 Jan 2020 20:11:59 +0000 (UTC)
 Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
-	by lists.linuxfoundation.org (Postfix) with ESMTP id 6BC90C0178;
-	Thu, 30 Jan 2020 17:34:17 +0000 (UTC)
-Received: from hemlock.osuosl.org (smtp2.osuosl.org [140.211.166.133])
- by lists.linuxfoundation.org (Postfix) with ESMTP id 6DF09C0171
- for <iommu@lists.linux-foundation.org>; Thu, 30 Jan 2020 17:34:15 +0000 (UTC)
+	by lists.linuxfoundation.org (Postfix) with ESMTP id B21D8C1796;
+	Thu, 30 Jan 2020 20:11:59 +0000 (UTC)
+Received: from fraxinus.osuosl.org (smtp4.osuosl.org [140.211.166.137])
+ by lists.linuxfoundation.org (Postfix) with ESMTP id 5285FC0171
+ for <iommu@lists.linux-foundation.org>; Thu, 30 Jan 2020 20:11:58 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
- by hemlock.osuosl.org (Postfix) with ESMTP id 47E3C88326
- for <iommu@lists.linux-foundation.org>; Thu, 30 Jan 2020 17:34:15 +0000 (UTC)
+ by fraxinus.osuosl.org (Postfix) with ESMTP id 38D648448F
+ for <iommu@lists.linux-foundation.org>; Thu, 30 Jan 2020 20:11:58 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from hemlock.osuosl.org ([127.0.0.1])
+Received: from fraxinus.osuosl.org ([127.0.0.1])
  by localhost (.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
- with ESMTP id Mm3D4y5nAedp for <iommu@lists.linux-foundation.org>;
- Thu, 30 Jan 2020 17:34:13 +0000 (UTC)
-X-Greylist: domain auto-whitelisted by SQLgrey-1.7.6
-Received: from foss.arm.com (foss.arm.com [217.140.110.172])
- by hemlock.osuosl.org (Postfix) with ESMTP id F3CE98849C
- for <iommu@lists.linux-foundation.org>; Thu, 30 Jan 2020 17:34:12 +0000 (UTC)
-Received: from usa-sjc-imap-foss1.foss.arm.com (unknown [10.121.207.14])
- by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id D496531B;
- Thu, 30 Jan 2020 09:34:11 -0800 (PST)
-Received: from [10.1.196.37] (e121345-lin.cambridge.arm.com [10.1.196.37])
- by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPSA id CAAFB3F67D;
- Thu, 30 Jan 2020 09:34:10 -0800 (PST)
-Subject: Re: [PATCH v2] iommu/arm-smmu-v3: Add SMMUv3.2 range invalidation
- support
-To: Auger Eric <eric.auger@redhat.com>, Rob Herring <robh@kernel.org>,
- iommu@lists.linux-foundation.org
-References: <20200117211628.27888-1-robh@kernel.org>
- <2d04f201-3457-08ad-db8e-735f8315d74e@redhat.com>
-From: Robin Murphy <robin.murphy@arm.com>
-Message-ID: <7ac3f864-6c39-76e9-ee4a-21be03abc044@arm.com>
-Date: Thu, 30 Jan 2020 17:34:09 +0000
-User-Agent: Mozilla/5.0 (X11; Linux aarch64; rv:60.0) Gecko/20100101
- Thunderbird/60.9.0
-MIME-Version: 1.0
-In-Reply-To: <2d04f201-3457-08ad-db8e-735f8315d74e@redhat.com>
-Content-Language: en-GB
-Cc: Jean-Philippe Brucker <jean-philippe@linaro.org>,
- Will Deacon <will@kernel.org>, linux-arm-kernel@lists.infradead.org
+ with ESMTP id vJIf8AqH_wZb for <iommu@lists.linux-foundation.org>;
+ Thu, 30 Jan 2020 20:11:57 +0000 (UTC)
+X-Greylist: delayed 00:33:36 by SQLgrey-1.7.6
+Received: from mail-pl1-f201.google.com (mail-pl1-f201.google.com
+ [209.85.214.201])
+ by fraxinus.osuosl.org (Postfix) with ESMTPS id 96ECB835C4
+ for <iommu@lists.linux-foundation.org>; Thu, 30 Jan 2020 20:11:57 +0000 (UTC)
+Received: by mail-pl1-f201.google.com with SMTP id v24so2375377plo.2
+ for <iommu@lists.linux-foundation.org>; Thu, 30 Jan 2020 12:11:57 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=google.com; s=20161025;
+ h=date:message-id:mime-version:subject:from:to:cc;
+ bh=8yPZBT02dhU6sVfnDKBlA+jOWpq/2cl2umK0tzNJVBE=;
+ b=TTBz3D2SGElhO3Fat076p/PKpoM+esnw2RoZZW7IqnERaNC+LsOCoxl31VSMOECq/7
+ NUO5iU/QQFsDkrtOpYjFklMq84NOoKkZwkX53/sV00n9evs5wUOQTCulXCSDe5d0eGRT
+ OUIhteEFVGvAUjQlQ6EtFR9LXbt11CV99hkGAufgoUB2OGl2dIU+B6D+p5UNqbdbNqEY
+ 6bhDCbQd9D/408RXf1hYN2xzKvx0RIkSSW85qYG3SQmN7NwhQZDkRTFQU24NQTjCXIl4
+ igUwW6YLZ2zUdfPTDK/uLP4U5aUWukO83hKoGZECLTeMk6pDzuM6h5F2xwv9CumTO/Xf
+ Lj6A==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+ d=1e100.net; s=20161025;
+ h=x-gm-message-state:date:message-id:mime-version:subject:from:to:cc;
+ bh=8yPZBT02dhU6sVfnDKBlA+jOWpq/2cl2umK0tzNJVBE=;
+ b=DMU1plg8iFi5wyzc2f5mjgw6aQljcnpv8XfjfnSCA+2pg4YCkFxkRYNA+iVOcbKPl1
+ bDaOm9qQBXKYWLgsrCqNCFt2F4YufsC18QwV9OnV2lXDBefGgadbv7/YZdZ/EfH5SIcE
+ KWyMRRsq8wXywX2MYHicSqRtUpIOVhjvJvTy/exOki8nqR0AFDXviuoLUbJ10PrtizVj
+ 1vVyXMxxxJdVnS3Y3qeDVh+P60ZRJ4CzUKwBCmkp2/5mnxbhC6FiEjjXo8vXdEEgZKT9
+ rjfMCIpE8eOM/f/0WeTq/GToYGKe7MOue+OWt3wdZUeYI3/I4edgQcFEUYGOPGvqqUya
+ 3Gww==
+X-Gm-Message-State: APjAAAUs429IuSeZpjvoIyIUPi7nKTaG2nbWx9N2RxC0Mo8bm6H6XyOU
+ Mj2ctcP85k2nFjIyX+U+kbc7lnNo5Tevgw==
+X-Google-Smtp-Source: APXvYqwShCG6mlMAlaWy7deIQZEwnVXA0kx4PMo46X5AynA4dIPnFzFn6FXwUhqm5k8wHgwEal0unptfi6FFow==
+X-Received: by 2002:a63:f5c:: with SMTP id 28mr6397451pgp.348.1580411453063;
+ Thu, 30 Jan 2020 11:10:53 -0800 (PST)
+Date: Thu, 30 Jan 2020 11:10:49 -0800
+Message-Id: <20200130191049.190569-1-edumazet@google.com>
+Mime-Version: 1.0
+X-Mailer: git-send-email 2.25.0.341.g760bfbb309-goog
+Subject: [PATCH] dma-debug: dynamic allocation of hash table
+To: Christoph Hellwig <hch@lst.de>, Joerg Roedel <jroedel@suse.de>
+Cc: iommu@lists.linux-foundation.org, Eric Dumazet <eric.dumazet@gmail.com>,
+ Geert Uytterhoeven <geert@linux-m68k.org>,
+ linux-kernel <linux-kernel@vger.kernel.org>,
+ Eric Dumazet <edumazet@google.com>
 X-BeenThere: iommu@lists.linux-foundation.org
 X-Mailman-Version: 2.1.15
 Precedence: list
@@ -78,227 +96,74 @@ List-Post: <mailto:iommu@lists.linux-foundation.org>
 List-Help: <mailto:iommu-request@lists.linux-foundation.org?subject=help>
 List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
  <mailto:iommu-request@lists.linux-foundation.org?subject=subscribe>
+From: Eric Dumazet via iommu <iommu@lists.linux-foundation.org>
+Reply-To: Eric Dumazet <edumazet@google.com>
+Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
-Content-Type: text/plain; charset="us-ascii"; Format="flowed"
 Errors-To: iommu-bounces@lists.linux-foundation.org
 Sender: "iommu" <iommu-bounces@lists.linux-foundation.org>
 
-On 30/01/2020 3:06 pm, Auger Eric wrote:
-> Hi Rob,
-> On 1/17/20 10:16 PM, Rob Herring wrote:
->> Arm SMMUv3.2 adds support for TLB range invalidate operations.
->> Support for range invalidate is determined by the RIL bit in the IDR3
->> register.
->>
->> The range invalidate is in units of the leaf page size and operates on
->> 1-32 chunks of a power of 2 multiple pages. First, we determine from the
->> size what power of 2 multiple we can use. Then we calculate how many
->> chunks (1-31) of the power of 2 size for the range on the iteration. On
->> each iteration, we move up in size by at least 5 bits.
->>
->> Cc: Eric Auger <eric.auger@redhat.com>
->> Cc: Jean-Philippe Brucker <jean-philippe@linaro.org>
->> Cc: Will Deacon <will@kernel.org>
->> Cc: Robin Murphy <robin.murphy@arm.com>
->> Cc: Joerg Roedel <joro@8bytes.org>
->> Signed-off-by: Rob Herring <robh@kernel.org>
->> ---
->>   drivers/iommu/arm-smmu-v3.c | 66 ++++++++++++++++++++++++++++++++++++-
->>   1 file changed, 65 insertions(+), 1 deletion(-)
->>
->> diff --git a/drivers/iommu/arm-smmu-v3.c b/drivers/iommu/arm-smmu-v3.c
->> index e91b4a098215..0ee561db7149 100644
->> --- a/drivers/iommu/arm-smmu-v3.c
->> +++ b/drivers/iommu/arm-smmu-v3.c
->> @@ -70,6 +70,9 @@
->>   #define IDR1_SSIDSIZE			GENMASK(10, 6)
->>   #define IDR1_SIDSIZE			GENMASK(5, 0)
->>   
->> +#define ARM_SMMU_IDR3			0xc
->> +#define IDR3_RIL			(1 << 10)
->> +
->>   #define ARM_SMMU_IDR5			0x14
->>   #define IDR5_STALL_MAX			GENMASK(31, 16)
->>   #define IDR5_GRAN64K			(1 << 6)
->> @@ -327,9 +330,14 @@
->>   #define CMDQ_CFGI_1_LEAF		(1UL << 0)
->>   #define CMDQ_CFGI_1_RANGE		GENMASK_ULL(4, 0)
->>   
->> +#define CMDQ_TLBI_0_NUM			GENMASK_ULL(16, 12)
->> +#define CMDQ_TLBI_RANGE_NUM_MAX		31
->> +#define CMDQ_TLBI_0_SCALE		GENMASK_ULL(24, 20)
->>   #define CMDQ_TLBI_0_VMID		GENMASK_ULL(47, 32)
->>   #define CMDQ_TLBI_0_ASID		GENMASK_ULL(63, 48)
->>   #define CMDQ_TLBI_1_LEAF		(1UL << 0)
->> +#define CMDQ_TLBI_1_TTL			GENMASK_ULL(9, 8)
->> +#define CMDQ_TLBI_1_TG			GENMASK_ULL(11, 10)
->>   #define CMDQ_TLBI_1_VA_MASK		GENMASK_ULL(63, 12)
->>   #define CMDQ_TLBI_1_IPA_MASK		GENMASK_ULL(51, 12)
->>   
->> @@ -455,9 +463,13 @@ struct arm_smmu_cmdq_ent {
->>   		#define CMDQ_OP_TLBI_S2_IPA	0x2a
->>   		#define CMDQ_OP_TLBI_NSNH_ALL	0x30
->>   		struct {
->> +			u8			num;
->> +			u8			scale;
->>   			u16			asid;
->>   			u16			vmid;
->>   			bool			leaf;
->> +			u8			ttl;
->> +			u8			tg;
->>   			u64			addr;
->>   		} tlbi;
->>   
->> @@ -595,6 +607,7 @@ struct arm_smmu_device {
->>   #define ARM_SMMU_FEAT_HYP		(1 << 12)
->>   #define ARM_SMMU_FEAT_STALL_FORCE	(1 << 13)
->>   #define ARM_SMMU_FEAT_VAX		(1 << 14)
->> +#define ARM_SMMU_FEAT_RANGE_INV		(1 << 15)
->>   	u32				features;
->>   
->>   #define ARM_SMMU_OPT_SKIP_PREFETCH	(1 << 0)
->> @@ -856,13 +869,21 @@ static int arm_smmu_cmdq_build_cmd(u64 *cmd, struct arm_smmu_cmdq_ent *ent)
->>   		cmd[1] |= FIELD_PREP(CMDQ_CFGI_1_RANGE, 31);
->>   		break;
->>   	case CMDQ_OP_TLBI_NH_VA:
->> +		cmd[0] |= FIELD_PREP(CMDQ_TLBI_0_NUM, ent->tlbi.num);
->> +		cmd[0] |= FIELD_PREP(CMDQ_TLBI_0_SCALE, ent->tlbi.scale);
->>   		cmd[0] |= FIELD_PREP(CMDQ_TLBI_0_ASID, ent->tlbi.asid);
->>   		cmd[1] |= FIELD_PREP(CMDQ_TLBI_1_LEAF, ent->tlbi.leaf);
->> +		cmd[1] |= FIELD_PREP(CMDQ_TLBI_1_TTL, ent->tlbi.ttl);
->> +		cmd[1] |= FIELD_PREP(CMDQ_TLBI_1_TG, ent->tlbi.tg);
->>   		cmd[1] |= ent->tlbi.addr & CMDQ_TLBI_1_VA_MASK;
->>   		break;
->>   	case CMDQ_OP_TLBI_S2_IPA:
->> +		cmd[0] |= FIELD_PREP(CMDQ_TLBI_0_NUM, ent->tlbi.num);
->> +		cmd[0] |= FIELD_PREP(CMDQ_TLBI_0_SCALE, ent->tlbi.scale);
->>   		cmd[0] |= FIELD_PREP(CMDQ_TLBI_0_VMID, ent->tlbi.vmid);
->>   		cmd[1] |= FIELD_PREP(CMDQ_TLBI_1_LEAF, ent->tlbi.leaf);
->> +		cmd[1] |= FIELD_PREP(CMDQ_TLBI_1_TTL, ent->tlbi.ttl);
->> +		cmd[1] |= FIELD_PREP(CMDQ_TLBI_1_TG, ent->tlbi.tg);
->>   		cmd[1] |= ent->tlbi.addr & CMDQ_TLBI_1_IPA_MASK;
->>   		break;
->>   	case CMDQ_OP_TLBI_NH_ASID:
->> @@ -2003,7 +2024,7 @@ static void arm_smmu_tlb_inv_range(unsigned long iova, size_t size,
->>   {
->>   	u64 cmds[CMDQ_BATCH_ENTRIES * CMDQ_ENT_DWORDS];
->>   	struct arm_smmu_device *smmu = smmu_domain->smmu;
->> -	unsigned long start = iova, end = iova + size;
->> +	unsigned long start = iova, end = iova + size, num_pages = 0, tg = 0;
->>   	int i = 0;
->>   	struct arm_smmu_cmdq_ent cmd = {
->>   		.tlbi = {
->> @@ -2022,12 +2043,50 @@ static void arm_smmu_tlb_inv_range(unsigned long iova, size_t size,
->>   		cmd.tlbi.vmid	= smmu_domain->s2_cfg.vmid;
->>   	}
->>   
->> +	if (smmu->features & ARM_SMMU_FEAT_RANGE_INV) {
->> +		/* Get the leaf page size */
->> +		tg = __ffs(smmu_domain->domain.pgsize_bitmap);
->> +
->> +		/* Convert page size of 12,14,16 (log2) to 1,2,3 */
->> +		cmd.tlbi.tg = ((tg - ilog2(SZ_4K)) / 2) + 1;
+Increasing the size of dma_entry_hash size by 327680 bytes
+has reached some bootloaders limitations.
 
-Given the comment, I think "(tg - 10) / 2" would suffice ;)
+Simply use dynamic allocations instead, and take
+this opportunity to increase the hash table to 65536
+buckets. Finally my 40Gbit mlx4 NIC can sustain
+line rate with CONFIG_DMA_API_DEBUG=y.
 
->> +
->> +		/* Determine what level the granule is at */
->> +		cmd.tlbi.ttl = 4 - ((ilog2(granule) - 3) / (tg - 3));
+Fixes: 5e76f564572b ("dma-debug: increase HASH_SIZE")
+Signed-off-by: Eric Dumazet <edumazet@google.com>
+Reported-by: Geert Uytterhoeven <geert@linux-m68k.org>
+Cc: Christoph Hellwig <hch@lst.de>
+---
+ kernel/dma/debug.c | 10 ++++++++--
+ 1 file changed, 8 insertions(+), 2 deletions(-)
 
-Is it possible to rephrase that with logs and shifts to avoid the division?
+diff --git a/kernel/dma/debug.c b/kernel/dma/debug.c
+index 2031ed1ad7fa109bb8a8c290bbbc5f825362baba..a310dbb1515e92c081f8f3f9a7290dd5e53fc889 100644
+--- a/kernel/dma/debug.c
++++ b/kernel/dma/debug.c
+@@ -27,7 +27,7 @@
+ 
+ #include <asm/sections.h>
+ 
+-#define HASH_SIZE       16384ULL
++#define HASH_SIZE       65536ULL
+ #define HASH_FN_SHIFT   13
+ #define HASH_FN_MASK    (HASH_SIZE - 1)
+ 
+@@ -90,7 +90,8 @@ struct hash_bucket {
+ };
+ 
+ /* Hash list to save the allocated dma addresses */
+-static struct hash_bucket dma_entry_hash[HASH_SIZE];
++static struct hash_bucket *dma_entry_hash __read_mostly;
++
+ /* List of pre-allocated dma_debug_entry's */
+ static LIST_HEAD(free_entries);
+ /* Lock for the list above */
+@@ -934,6 +935,10 @@ static int dma_debug_init(void)
+ 	if (global_disable)
+ 		return 0;
+ 
++	dma_entry_hash = vmalloc(HASH_SIZE * sizeof(*dma_entry_hash));
++	if (!dma_entry_hash)
++		goto err;
++
+ 	for (i = 0; i < HASH_SIZE; ++i) {
+ 		INIT_LIST_HEAD(&dma_entry_hash[i].list);
+ 		spin_lock_init(&dma_entry_hash[i].lock);
+@@ -950,6 +955,7 @@ static int dma_debug_init(void)
+ 		pr_warn("%d debug entries requested but only %d allocated\n",
+ 			nr_prealloc_entries, nr_total_entries);
+ 	} else {
++err:
+ 		pr_err("debugging out of memory error - disabled\n");
+ 		global_disable = true;
+ 
+-- 
+2.25.0.341.g760bfbb309-goog
 
->> +
->> +		num_pages = size / (1UL << tg);
-
-Similarly, in my experience GCC has always seemed too cautious to elide 
-non-constant division even in a seemingly-obvious case like this, so 
-explicit "size >> tg" might be preferable.
-
->> +	}
->> +
->>   	while (iova < end) {
->>   		if (i == CMDQ_BATCH_ENTRIES) {
->>   			arm_smmu_cmdq_issue_cmdlist(smmu, cmds, i, false);
->>   			i = 0;
->>   		}
->>   
->> +		if (smmu->features & ARM_SMMU_FEAT_RANGE_INV) {
->> +			/*
->> +			 * On each iteration of the loop, the range is 5 bits
->> +			 * worth of the aligned size remaining.
->> +			 * The range in pages is:
->> +			 *
->> +			 * range = (num_pages & (0x1f << __ffs(num_pages)))
->> +			 */
->> +			unsigned long scale, num;
->> +
->> +			/* Determine the power of 2 multiple number of pages */
->> +			scale = __ffs(num_pages);
->> +			cmd.tlbi.scale = scale;
->> +
->> +			/* Determine how many chunks of 2^scale size we have */
->> +			num = (num_pages >> scale) & CMDQ_TLBI_RANGE_NUM_MAX;
->> +			cmd.tlbi.num = num - 1;
->> +
->> +			/* range is num * 2^scale * pgsize */
->> +			granule = num << (scale + tg);
->> +
->> +			/* Clear out the lower order bits for the next iteration */
->> +			num_pages -= num << scale;
-> Regarding the 2 options given in
-> https://lore.kernel.org/linux-arm-kernel/CAL_JsqKABoE+0crGwyZdNogNgEoG=MOOpf6deQgH6s73c0UNdA@mail.gmail.com/raw,
-> 
-> I understand you implemented 2) but I still do not understand why you
-> preferred that one against 1).
-> 
-> In your case of 1023*4k pages this will invalidate by 31 32*2^0*4K +
-> 31*2^0*4K pages
-> whereas you could achieve that with 10 invalidations with the 1st algo.
-> I did not get the case where it is more efficient. Please can you detail.
-
-I guess essentially we want to solve for two variables to get a range as 
-close to size as possible. There might be a more elegant numerical 
-method, but for the numbers involved brute force is probably good enough 
-for the real world. 5 minutes alone with the architecture spec and a 
-blank editor begat this pseudo-implementation:
-
-	size_t npages = size >> pgshift;
-	while (npages) {
-		unsigned long range;
-		unsigned int delta, best = UINT_MAX;
-		int num, scale = min(31, __ffs(npages));
-
-		while (scale) {
-			num = min(32, npages >> scale);
-			if (num == 32)
-				break;
-
-			delta = npages & ((1 << scale) - 1);
-			if (!delta || delta > best)
-				break;
-
-			best = delta;
-			scale--;
-		}
-
-		//invalidate
-
-		range = num << scale;
-		npages -= range;
-		iova += (range) << pgshift;
-	}
-
-Modulo any obvious thinkos, what do you reckon?
-
-> Also a question about TG. Reading the spec again & again, it is said
-> entries to be invalidated were inserted using this
-> Granule size. Here you pick the lowest granule supported by the domain.
-> Does it mean this was the one being used?
-
-Yes - in arm_smmu_domain_finalise(), the domain's pgsize_bitmap is 
-updated to reflect whichever granule alloc_io_pgtable_ops() actually picked.
-
-Robin.
 _______________________________________________
 iommu mailing list
 iommu@lists.linux-foundation.org
