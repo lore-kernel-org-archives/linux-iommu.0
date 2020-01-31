@@ -7,71 +7,71 @@ X-Spam-Status: No, score=-5.0 required=3.0 tests=DKIM_INVALID,DKIM_SIGNED,
 	SPF_PASS,URIBL_BLOCKED,USER_AGENT_SANE_1 autolearn=ham autolearn_force=no
 	version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 15DA8C2D0DB
-	for <iommu@archiver.kernel.org>; Fri, 31 Jan 2020 13:59:32 +0000 (UTC)
-Received: from whitealder.osuosl.org (smtp1.osuosl.org [140.211.166.138])
+	by smtp.lore.kernel.org (Postfix) with ESMTP id EEF58C35240
+	for <iommu@archiver.kernel.org>; Fri, 31 Jan 2020 13:59:35 +0000 (UTC)
+Received: from hemlock.osuosl.org (smtp2.osuosl.org [140.211.166.133])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by mail.kernel.org (Postfix) with ESMTPS id CB0402063A
-	for <iommu@archiver.kernel.org>; Fri, 31 Jan 2020 13:59:31 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTPS id C0FDA24682
+	for <iommu@archiver.kernel.org>; Fri, 31 Jan 2020 13:59:35 +0000 (UTC)
 Authentication-Results: mail.kernel.org;
-	dkim=fail reason="signature verification failed" (1024-bit key) header.d=ti.com header.i=@ti.com header.b="e50YOjuq"
-DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org CB0402063A
+	dkim=fail reason="signature verification failed" (1024-bit key) header.d=ti.com header.i=@ti.com header.b="nDv9VPoN"
+DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org C0FDA24682
 Authentication-Results: mail.kernel.org; dmarc=none (p=none dis=none) header.from=lists.linux-foundation.org
 Authentication-Results: mail.kernel.org; spf=pass smtp.mailfrom=iommu-bounces@lists.linux-foundation.org
 Received: from localhost (localhost [127.0.0.1])
-	by whitealder.osuosl.org (Postfix) with ESMTP id A0FFF8328C;
-	Fri, 31 Jan 2020 13:59:31 +0000 (UTC)
+	by hemlock.osuosl.org (Postfix) with ESMTP id 8E33D881A0;
+	Fri, 31 Jan 2020 13:59:35 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from whitealder.osuosl.org ([127.0.0.1])
+Received: from hemlock.osuosl.org ([127.0.0.1])
 	by localhost (.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
-	with ESMTP id qr6pyngNcPtk; Fri, 31 Jan 2020 13:59:30 +0000 (UTC)
+	with ESMTP id llyB5yiUgWyg; Fri, 31 Jan 2020 13:59:34 +0000 (UTC)
 Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [140.211.9.56])
-	by whitealder.osuosl.org (Postfix) with ESMTP id 8FED581D2A;
-	Fri, 31 Jan 2020 13:59:30 +0000 (UTC)
+	by hemlock.osuosl.org (Postfix) with ESMTP id DD2CD87D98;
+	Fri, 31 Jan 2020 13:59:34 +0000 (UTC)
 Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
-	by lists.linuxfoundation.org (Postfix) with ESMTP id 74C4BC0178;
-	Fri, 31 Jan 2020 13:59:30 +0000 (UTC)
-Received: from whitealder.osuosl.org (smtp1.osuosl.org [140.211.166.138])
- by lists.linuxfoundation.org (Postfix) with ESMTP id 4C32EC0171
- for <iommu@lists.linux-foundation.org>; Fri, 31 Jan 2020 13:59:29 +0000 (UTC)
+	by lists.linuxfoundation.org (Postfix) with ESMTP id C2734C0178;
+	Fri, 31 Jan 2020 13:59:34 +0000 (UTC)
+Received: from fraxinus.osuosl.org (smtp4.osuosl.org [140.211.166.137])
+ by lists.linuxfoundation.org (Postfix) with ESMTP id 461F0C0171
+ for <iommu@lists.linux-foundation.org>; Fri, 31 Jan 2020 13:59:31 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
- by whitealder.osuosl.org (Postfix) with ESMTP id 41EF08214C
- for <iommu@lists.linux-foundation.org>; Fri, 31 Jan 2020 13:59:29 +0000 (UTC)
+ by fraxinus.osuosl.org (Postfix) with ESMTP id 347C9860F8
+ for <iommu@lists.linux-foundation.org>; Fri, 31 Jan 2020 13:59:31 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from whitealder.osuosl.org ([127.0.0.1])
+Received: from fraxinus.osuosl.org ([127.0.0.1])
  by localhost (.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
- with ESMTP id wE22hiSLVW3Y for <iommu@lists.linux-foundation.org>;
- Fri, 31 Jan 2020 13:59:28 +0000 (UTC)
+ with ESMTP id Iz8VsibVUHc3 for <iommu@lists.linux-foundation.org>;
+ Fri, 31 Jan 2020 13:59:29 +0000 (UTC)
 X-Greylist: domain auto-whitelisted by SQLgrey-1.7.6
-Received: from lelv0142.ext.ti.com (lelv0142.ext.ti.com [198.47.23.249])
- by whitealder.osuosl.org (Postfix) with ESMTPS id 472C181D2A
- for <iommu@lists.linux-foundation.org>; Fri, 31 Jan 2020 13:59:28 +0000 (UTC)
+Received: from lelv0143.ext.ti.com (lelv0143.ext.ti.com [198.47.23.248])
+ by fraxinus.osuosl.org (Postfix) with ESMTPS id 1EA4084D81
+ for <iommu@lists.linux-foundation.org>; Fri, 31 Jan 2020 13:59:29 +0000 (UTC)
 Received: from lelv0266.itg.ti.com ([10.180.67.225])
- by lelv0142.ext.ti.com (8.15.2/8.15.2) with ESMTP id 00VDx8o1031096;
- Fri, 31 Jan 2020 07:59:08 -0600
+ by lelv0143.ext.ti.com (8.15.2/8.15.2) with ESMTP id 00VDxHZ3022821;
+ Fri, 31 Jan 2020 07:59:17 -0600
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ti.com;
- s=ti-com-17Q1; t=1580479148;
- bh=tAlhuEualNFoc+RRTeAtbYLAYLYM2y9/NLW0BARkMn0=;
+ s=ti-com-17Q1; t=1580479157;
+ bh=5lxWpBZ6G8w1tWs1wN9YxQXc/V6PgNi2wuwT6eWlKGQ=;
  h=Subject:To:CC:References:From:Date:In-Reply-To;
- b=e50YOjuqIZ/V6/M0xTH9BwiLlInhEsyEFydBGBO0CI3PPnP2lD2mRvX6ZFhf99AEF
- mleTF+a+f8SwfEquT9bJoE5G8hP8+JI5yKQw4ferDIShB9zMa6vnelBEkBpERqLSY4
- aGhoDd38OV5mzza9WWfFtp6UYHZzy91z6T6nRYAg=
-Received: from DLEE115.ent.ti.com (dlee115.ent.ti.com [157.170.170.26])
- by lelv0266.itg.ti.com (8.15.2/8.15.2) with ESMTPS id 00VDx8xT041735
+ b=nDv9VPoNMvUFQB/fhBlINJPFughuTy4qLXzRoy8NKPu5AHZmq9CW/ikGcRnKtAX6i
+ +G6WJny+pq7aAR2+pBFgSfN4kfGa5afgJETWWcAWgvIOyEow8EsOOJlBSTZTS1iaWy
+ J4cdoC0r1cuxU+OjptsIcZse+VjVOowd+if2GX04=
+Received: from DLEE109.ent.ti.com (dlee109.ent.ti.com [157.170.170.41])
+ by lelv0266.itg.ti.com (8.15.2/8.15.2) with ESMTPS id 00VDxHMY041900
  (version=TLSv1.2 cipher=AES256-GCM-SHA384 bits=256 verify=FAIL);
- Fri, 31 Jan 2020 07:59:08 -0600
-Received: from DLEE101.ent.ti.com (157.170.170.31) by DLEE115.ent.ti.com
- (157.170.170.26) with Microsoft SMTP Server (version=TLS1_2,
+ Fri, 31 Jan 2020 07:59:17 -0600
+Received: from DLEE109.ent.ti.com (157.170.170.41) by DLEE109.ent.ti.com
+ (157.170.170.41) with Microsoft SMTP Server (version=TLS1_2,
  cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256_P256) id 15.1.1847.3; Fri, 31
- Jan 2020 07:59:08 -0600
-Received: from lelv0326.itg.ti.com (10.180.67.84) by DLEE101.ent.ti.com
- (157.170.170.31) with Microsoft SMTP Server (version=TLS1_2,
+ Jan 2020 07:59:17 -0600
+Received: from lelv0327.itg.ti.com (10.180.67.183) by DLEE109.ent.ti.com
+ (157.170.170.41) with Microsoft SMTP Server (version=TLS1_2,
  cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256_P256) id 15.1.1847.3 via
- Frontend Transport; Fri, 31 Jan 2020 07:59:08 -0600
+ Frontend Transport; Fri, 31 Jan 2020 07:59:17 -0600
 Received: from [192.168.2.6] (ileax41-snat.itg.ti.com [10.172.224.153])
- by lelv0326.itg.ti.com (8.15.2/8.15.2) with ESMTP id 00VDx59W069331;
- Fri, 31 Jan 2020 07:59:06 -0600
+ by lelv0327.itg.ti.com (8.15.2/8.15.2) with ESMTP id 00VDxEIn021608;
+ Fri, 31 Jan 2020 07:59:15 -0600
 Subject: Re: [PoC] arm: dma-mapping: direct: Apply dma_pfn_offset only when it
  is valid
 To: Christoph Hellwig <hch@lst.de>
@@ -82,8 +82,8 @@ References: <8eb68140-97b2-62ce-3e06-3761984aa5b1@ti.com>
  <4f0e307f-29a9-44cd-eeaa-3b999e03871c@arm.com>
  <75843c71-1718-8d61-5e3d-edba6e1b10bd@ti.com> <20200130075332.GA30735@lst.de>
  <b2b1cb21-3aae-2181-fd79-f63701f283c0@ti.com> <20200130164010.GA6472@lst.de>
-Message-ID: <f0a84aa1-0f9c-8f4c-b159-f875ae2a37be@ti.com>
-Date: Fri, 31 Jan 2020 15:59:54 +0200
+Message-ID: <54af6531-705f-a31c-c5b8-479261a5454e@ti.com>
+Date: Fri, 31 Jan 2020 16:00:03 +0200
 User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:60.0) Gecko/20100101
  Thunderbird/60.9.0
 MIME-Version: 1.0
@@ -178,15 +178,15 @@ CgpJdCBkb2VzOiBhdWRpbyBhbmQgZG1hdGVzdCBtZW1jcHkgdGVzdHMgYXJlIGp1c3QgZmluZSB3
 aXRoIHRoaXMsIE1NQwphbHNvIHByb2JlZCB3aXRoIEFETUEgZW5hYmxlZC4KCkFzIGZhciBhcyBJ
 IGNhbiB0ZWxsIGl0IHdvcmtzIGFzIHdlbGwgYXMgZmFsbGluZyBiYWNrIHRvIHRoZSBvbGQgYXJt
 IG9wcwppbiBjYXNlIG9mIExQQUUgJiYgZG1hX3Bmbl9vZmZzZXQgIT0gMAoKRndpdzoKVGVzdGVk
-LWJ5OiBQZXRlciBVamZhbHVzaSA8cGV0ZXIudWpmYWx1c2lAdGkuY29tPgoKV291bGQgeW8gYmUg
-Y29tZm9ydGFibGUgdG8gc2VuZCBhcHBseSB0aGlzIHBhdGNoIHRvIG1haW5saW5lIHdpdGgKRml4
-ZXM6IGFkM2M3YjE4YzViMyAoImFybTogdXNlIHN3aW90bGIgZm9yIGJvdW5jZSBidWZmZXJpbmcg
-b24gTFBBRQpjb25maWdzIikKClNvIGl0IGdldHMgcGlja2VkIGZvciBzdGFibGUga2VybmVscyBh
-cyB3ZWxsPwoKPiAgCWlmIChJU19FTkFCTEVEKENPTkZJR19aT05FX0RNQSkpCj4gIAkJbWluX21h
-c2sgPSBETUFfQklUX01BU0soem9uZV9kbWFfYml0cyk7Cj4gIAllbHNlCj4gCgpUaGFuayB5b3Us
-Ci0gUMOpdGVyCgpUZXhhcyBJbnN0cnVtZW50cyBGaW5sYW5kIE95LCBQb3Jra2FsYW5rYXR1IDIy
-LCAwMDE4MCBIZWxzaW5raS4KWS10dW5udXMvQnVzaW5lc3MgSUQ6IDA2MTU1MjEtNC4gS290aXBh
-aWtrYS9Eb21pY2lsZTogSGVsc2lua2kKX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19f
-X19fX19fX19fX19fX18KaW9tbXUgbWFpbGluZyBsaXN0CmlvbW11QGxpc3RzLmxpbnV4LWZvdW5k
-YXRpb24ub3JnCmh0dHBzOi8vbGlzdHMubGludXhmb3VuZGF0aW9uLm9yZy9tYWlsbWFuL2xpc3Rp
-bmZvL2lvbW11
+LWJ5OiBQZXRlciBVamZhbHVzaSA8cGV0ZXIudWpmYWx1c2lAdGkuY29tPgoKV291bGQgeW91IGJl
+IGNvbWZvcnRhYmxlIHRvIHNlbmQgYXBwbHkgdGhpcyBwYXRjaCB0byBtYWlubGluZSB3aXRoCkZp
+eGVzOiBhZDNjN2IxOGM1YjMgKCJhcm06IHVzZSBzd2lvdGxiIGZvciBib3VuY2UgYnVmZmVyaW5n
+IG9uIExQQUUKY29uZmlncyIpCgpTbyBpdCBnZXRzIHBpY2tlZCBmb3Igc3RhYmxlIGtlcm5lbHMg
+YXMgd2VsbD8KCj4gIAlpZiAoSVNfRU5BQkxFRChDT05GSUdfWk9ORV9ETUEpKQo+ICAJCW1pbl9t
+YXNrID0gRE1BX0JJVF9NQVNLKHpvbmVfZG1hX2JpdHMpOwo+ICAJZWxzZQo+IAoKVGhhbmsgeW91
+LAotIFDDqXRlcgoKVGV4YXMgSW5zdHJ1bWVudHMgRmlubGFuZCBPeSwgUG9ya2thbGFua2F0dSAy
+MiwgMDAxODAgSGVsc2lua2kuClktdHVubnVzL0J1c2luZXNzIElEOiAwNjE1NTIxLTQuIEtvdGlw
+YWlra2EvRG9taWNpbGU6IEhlbHNpbmtpCl9fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19f
+X19fX19fX19fX19fX19fCmlvbW11IG1haWxpbmcgbGlzdAppb21tdUBsaXN0cy5saW51eC1mb3Vu
+ZGF0aW9uLm9yZwpodHRwczovL2xpc3RzLmxpbnV4Zm91bmRhdGlvbi5vcmcvbWFpbG1hbi9saXN0
+aW5mby9pb21tdQ==
