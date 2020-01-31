@@ -2,92 +2,70 @@ Return-Path: <SRS0=FJ9b=3U=lists.linux-foundation.org=iommu-bounces@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-6.7 required=3.0 tests=HEADER_FROM_DIFFERENT_DOMAINS,
+X-Spam-Status: No, score=-8.2 required=3.0 tests=HEADER_FROM_DIFFERENT_DOMAINS,
 	INCLUDES_PATCH,MAILING_LIST_MULTI,SIGNED_OFF_BY,SPF_HELO_NONE,SPF_PASS,
-	URIBL_BLOCKED autolearn=unavailable autolearn_force=no version=3.4.0
+	URIBL_BLOCKED,USER_AGENT_SANE_1 autolearn=unavailable autolearn_force=no
+	version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id EC266C33CB2
-	for <iommu@archiver.kernel.org>; Fri, 31 Jan 2020 13:04:51 +0000 (UTC)
-Received: from whitealder.osuosl.org (smtp1.osuosl.org [140.211.166.138])
+	by smtp.lore.kernel.org (Postfix) with ESMTP id DE6C0C33CB2
+	for <iommu@archiver.kernel.org>; Fri, 31 Jan 2020 13:14:40 +0000 (UTC)
+Received: from fraxinus.osuosl.org (smtp4.osuosl.org [140.211.166.137])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by mail.kernel.org (Postfix) with ESMTPS id C7D3620CC7
-	for <iommu@archiver.kernel.org>; Fri, 31 Jan 2020 13:04:51 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org C7D3620CC7
-Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=intel.com
+	by mail.kernel.org (Postfix) with ESMTPS id AD45E20658
+	for <iommu@archiver.kernel.org>; Fri, 31 Jan 2020 13:14:40 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org AD45E20658
+Authentication-Results: mail.kernel.org; dmarc=none (p=none dis=none) header.from=arm.com
 Authentication-Results: mail.kernel.org; spf=pass smtp.mailfrom=iommu-bounces@lists.linux-foundation.org
 Received: from localhost (localhost [127.0.0.1])
-	by whitealder.osuosl.org (Postfix) with ESMTP id 9F8BF876BB;
-	Fri, 31 Jan 2020 13:04:51 +0000 (UTC)
+	by fraxinus.osuosl.org (Postfix) with ESMTP id 7CD1A84542;
+	Fri, 31 Jan 2020 13:14:40 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from whitealder.osuosl.org ([127.0.0.1])
+Received: from fraxinus.osuosl.org ([127.0.0.1])
 	by localhost (.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
-	with ESMTP id Ajb+jeSlYNUf; Fri, 31 Jan 2020 13:04:47 +0000 (UTC)
+	with ESMTP id wnJh0bBBreWp; Fri, 31 Jan 2020 13:14:39 +0000 (UTC)
 Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [140.211.9.56])
-	by whitealder.osuosl.org (Postfix) with ESMTP id A737E8602E;
-	Fri, 31 Jan 2020 13:04:47 +0000 (UTC)
+	by fraxinus.osuosl.org (Postfix) with ESMTP id E8F48844FF;
+	Fri, 31 Jan 2020 13:14:39 +0000 (UTC)
 Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
-	by lists.linuxfoundation.org (Postfix) with ESMTP id 92115C0176;
-	Fri, 31 Jan 2020 13:04:47 +0000 (UTC)
-Received: from hemlock.osuosl.org (smtp2.osuosl.org [140.211.166.133])
- by lists.linuxfoundation.org (Postfix) with ESMTP id 9DF74C0171
- for <iommu@lists.linux-foundation.org>; Fri, 31 Jan 2020 13:04:46 +0000 (UTC)
+	by lists.linuxfoundation.org (Postfix) with ESMTP id DE84CC0178;
+	Fri, 31 Jan 2020 13:14:39 +0000 (UTC)
+Received: from fraxinus.osuosl.org (smtp4.osuosl.org [140.211.166.137])
+ by lists.linuxfoundation.org (Postfix) with ESMTP id 245FFC0171
+ for <iommu@lists.linux-foundation.org>; Fri, 31 Jan 2020 13:14:38 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
- by hemlock.osuosl.org (Postfix) with ESMTP id 7DDE7857BC
- for <iommu@lists.linux-foundation.org>; Fri, 31 Jan 2020 13:04:46 +0000 (UTC)
+ by fraxinus.osuosl.org (Postfix) with ESMTP id 12289844FF
+ for <iommu@lists.linux-foundation.org>; Fri, 31 Jan 2020 13:14:38 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from hemlock.osuosl.org ([127.0.0.1])
+Received: from fraxinus.osuosl.org ([127.0.0.1])
  by localhost (.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
- with ESMTP id BA2UfRp+t30j for <iommu@lists.linux-foundation.org>;
- Fri, 31 Jan 2020 13:04:45 +0000 (UTC)
+ with ESMTP id FRxOeQaDJB7M for <iommu@lists.linux-foundation.org>;
+ Fri, 31 Jan 2020 13:14:36 +0000 (UTC)
 X-Greylist: domain auto-whitelisted by SQLgrey-1.7.6
-Received: from mga01.intel.com (mga01.intel.com [192.55.52.88])
- by hemlock.osuosl.org (Postfix) with ESMTPS id D345585207
- for <iommu@lists.linux-foundation.org>; Fri, 31 Jan 2020 13:04:44 +0000 (UTC)
-X-Amp-Result: SKIPPED(no attachment in message)
-X-Amp-File-Uploaded: False
-Received: from orsmga005.jf.intel.com ([10.7.209.41])
- by fmsmga101.fm.intel.com with ESMTP/TLS/DHE-RSA-AES256-GCM-SHA384;
- 31 Jan 2020 05:04:36 -0800
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.70,385,1574150400"; d="scan'208";a="402650842"
-Received: from fmsmsx103.amr.corp.intel.com ([10.18.124.201])
- by orsmga005.jf.intel.com with ESMTP; 31 Jan 2020 05:04:35 -0800
-Received: from shsmsx153.ccr.corp.intel.com (10.239.6.53) by
- FMSMSX103.amr.corp.intel.com (10.18.124.201) with Microsoft SMTP Server (TLS)
- id 14.3.439.0; Fri, 31 Jan 2020 05:04:34 -0800
-Received: from shsmsx104.ccr.corp.intel.com ([169.254.5.197]) by
- SHSMSX153.ccr.corp.intel.com ([169.254.12.97]) with mapi id 14.03.0439.000;
- Fri, 31 Jan 2020 21:04:12 +0800
-From: "Liu, Yi L" <yi.l.liu@intel.com>
-To: Alex Williamson <alex.williamson@redhat.com>
-Subject: RE: [RFC v3 4/8] vfio/type1: Add VFIO_NESTING_GET_IOMMU_UAPI_VERSION
-Thread-Topic: [RFC v3 4/8] vfio/type1: Add VFIO_NESTING_GET_IOMMU_UAPI_VERSION
-Thread-Index: AQHV1pyVzTVYYyC090Ow388f+bA35qgBzDSAgALuTFA=
-Date: Fri, 31 Jan 2020 13:04:11 +0000
-Message-ID: <A2975661238FB949B60364EF0F2C25743A1994A2@SHSMSX104.ccr.corp.intel.com>
-References: <1580299912-86084-1-git-send-email-yi.l.liu@intel.com>
- <1580299912-86084-5-git-send-email-yi.l.liu@intel.com>
- <20200129165649.43008300@w520.home>
-In-Reply-To: <20200129165649.43008300@w520.home>
-Accept-Language: en-US
-Content-Language: en-US
-X-MS-Has-Attach: 
-X-MS-TNEF-Correlator: 
-dlp-product: dlpe-windows
-dlp-version: 11.2.0.6
-dlp-reaction: no-action
-x-ctpclassification: CTP_NT
-x-titus-metadata-40: eyJDYXRlZ29yeUxhYmVscyI6IiIsIk1ldGFkYXRhIjp7Im5zIjoiaHR0cDpcL1wvd3d3LnRpdHVzLmNvbVwvbnNcL0ludGVsMyIsImlkIjoiYTgxNzM5ZWQtYTU3Mi00MjE4LThlNjQtYzE3YmQ3NmRiZGU1IiwicHJvcHMiOlt7Im4iOiJDVFBDbGFzc2lmaWNhdGlvbiIsInZhbHMiOlt7InZhbHVlIjoiQ1RQX05UIn1dfV19LCJTdWJqZWN0TGFiZWxzIjpbXSwiVE1DVmVyc2lvbiI6IjE3LjEwLjE4MDQuNDkiLCJUcnVzdGVkTGFiZWxIYXNoIjoiaXE0Skp3bEs4ZGJhdmNWd0dYY3F2VWdpamZjN1FNcHpvZ2pMM2JYZzkxSzR3VVBkSjJpc1Z5TXNOcFBCZ1crSyJ9
-x-originating-ip: [10.239.127.40]
+Received: from foss.arm.com (foss.arm.com [217.140.110.172])
+ by fraxinus.osuosl.org (Postfix) with ESMTP id 0720D844DA
+ for <iommu@lists.linux-foundation.org>; Fri, 31 Jan 2020 13:14:35 +0000 (UTC)
+Received: from usa-sjc-imap-foss1.foss.arm.com (unknown [10.121.207.14])
+ by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id 6E18C106F;
+ Fri, 31 Jan 2020 05:14:35 -0800 (PST)
+Received: from [192.168.1.123] (unknown [172.31.20.19])
+ by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPSA id 7A4A63F67D;
+ Fri, 31 Jan 2020 05:14:34 -0800 (PST)
+Subject: Re: [PATCH] dma-debug: add a per-cpu cache to avoid lock contention
+To: Eric Dumazet <edumazet@google.com>, Christoph Hellwig <hch@lst.de>,
+ Joerg Roedel <jroedel@suse.de>
+References: <20200130201451.253115-1-edumazet@google.com>
+From: Robin Murphy <robin.murphy@arm.com>
+Message-ID: <87bde968-0103-c90d-380d-e0793cd39aa5@arm.com>
+Date: Fri, 31 Jan 2020 13:14:36 +0000
+User-Agent: Mozilla/5.0 (Windows NT 10.0; rv:68.0) Gecko/20100101
+ Thunderbird/68.4.2
 MIME-Version: 1.0
-Cc: "Tian, Kevin" <kevin.tian@intel.com>, "Raj,
- Ashok" <ashok.raj@intel.com>, "kvm@vger.kernel.org" <kvm@vger.kernel.org>,
- "jean-philippe.brucker@arm.com" <jean-philippe.brucker@arm.com>, "Tian,
- Jun J" <jun.j.tian@intel.com>,
- "iommu@lists.linux-foundation.org" <iommu@lists.linux-foundation.org>,
- "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>, "Sun, Yi
- Y" <yi.y.sun@intel.com>
+In-Reply-To: <20200130201451.253115-1-edumazet@google.com>
+Content-Language: en-GB
+Cc: iommu@lists.linux-foundation.org,
+ linux-kernel <linux-kernel@vger.kernel.org>,
+ Eric Dumazet <eric.dumazet@gmail.com>
 X-BeenThere: iommu@lists.linux-foundation.org
 X-Mailman-Version: 2.1.15
 Precedence: list
@@ -100,86 +78,84 @@ List-Post: <mailto:iommu@lists.linux-foundation.org>
 List-Help: <mailto:iommu-request@lists.linux-foundation.org?subject=help>
 List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
  <mailto:iommu-request@lists.linux-foundation.org?subject=subscribe>
-Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset="us-ascii"; Format="flowed"
 Errors-To: iommu-bounces@lists.linux-foundation.org
 Sender: "iommu" <iommu-bounces@lists.linux-foundation.org>
 
-Hi Alex,
-
-> From: Alex Williamson [mailto:alex.williamson@redhat.com]
-> Sent: Thursday, January 30, 2020 7:57 AM
-> To: Liu, Yi L <yi.l.liu@intel.com>
-> Subject: Re: [RFC v3 4/8] vfio/type1: Add
-> VFIO_NESTING_GET_IOMMU_UAPI_VERSION
+On 2020-01-30 8:14 pm, Eric Dumazet via iommu wrote:
+> Networking drivers very often have to replace one page with
+> another for their RX ring buffers.
 > 
-> On Wed, 29 Jan 2020 04:11:48 -0800
-> "Liu, Yi L" <yi.l.liu@intel.com> wrote:
+> A multi-queue NIC will severly hit a contention point
+> in dma-debug while grabbing free_entries_lock spinlock.
 > 
-> > From: Liu Yi L <yi.l.liu@intel.com>
-> >
-> > In Linux Kernel, the IOMMU nesting translation (a.k.a. IOMMU dual stage
-> > translation capability) is abstracted in uapi/iommu.h, in which the uAPIs
-> > like bind_gpasid/iommu_cache_invalidate/fault_report/pgreq_resp are defined.
-> >
-> > VFIO_TYPE1_NESTING_IOMMU stands for the vfio iommu type which is backed by
-> > IOMMU nesting translation capability. VFIO exposes the nesting capability
-> > to userspace and also exposes uAPIs (will be added in later patches) to user
-> > space for setting up nesting translation from userspace. Thus applications
-> > like QEMU could support vIOMMU for pass-through devices with IOMMU nesting
-> > translation capability.
-> >
-> > As VFIO expose the nesting IOMMU programming to userspace, it also needs to
-> > provide an API for the uapi/iommu.h version check to ensure compatibility.
-> > This patch reports the iommu uapi version to userspace. Applications could
-> > use this API to do version check before further using the nesting uAPIs.
-> >
-> > Cc: Kevin Tian <kevin.tian@intel.com>
-> > CC: Jacob Pan <jacob.jun.pan@linux.intel.com>
-> > Cc: Alex Williamson <alex.williamson@redhat.com>
-> > Cc: Eric Auger <eric.auger@redhat.com>
-> > Cc: Jean-Philippe Brucker <jean-philippe.brucker@arm.com>
-> > Signed-off-by: Liu Yi L <yi.l.liu@intel.com>
-> > ---
-> >  drivers/vfio/vfio.c       |  3 +++
-> >  include/uapi/linux/vfio.h | 10 ++++++++++
-> >  2 files changed, 13 insertions(+)
-> >
-> > diff --git a/drivers/vfio/vfio.c b/drivers/vfio/vfio.c
-> > index 425d60a..9087ad4 100644
-> > --- a/drivers/vfio/vfio.c
-> > +++ b/drivers/vfio/vfio.c
-> > @@ -1170,6 +1170,9 @@ static long vfio_fops_unl_ioctl(struct file *filep,
-> >  	case VFIO_GET_API_VERSION:
-> >  		ret = VFIO_API_VERSION;
-> >  		break;
-> > +	case VFIO_NESTING_GET_IOMMU_UAPI_VERSION:
-> > +		ret = iommu_get_uapi_version();
-> > +		break;
+> Adding a one entry per-cpu cache removes the need
+> to grab this spinlock twice per page replacement.
 > 
-> Shouldn't the type1 backend report this?  It doesn't make much sense
-> that the spapr backend reports a version for something it doesn't
-> support.  Better yet, provide this info gratuitously in the
-> VFIO_IOMMU_GET_INFO ioctl return like you do with nesting in the next
-> patch, then it can help the user figure out if this support is present.
+> Tested on a 40Gbit mlx4 NIC, with 16 RX queues and about
+> 1,000,000 replacements per second.
 
-yeah, it would be better to report it by type1 backed. However,
-it is kind of issue when QEMU using it.
+Looks like a decent benefit for minimal collateral impact - from what 
+I've seen, networking appears to be a particularly easy place to run 
+into awkward races, so mitigating even a little of the debug-induced 
+serialisation for the common case can only be good.
 
-My series "hooks" vSVA supports on VFIO_TYPE1_NESTING_IOMMU type.
-[RFC v3 09/25] vfio: check VFIO_TYPE1_NESTING_IOMMU support
-https://www.spinics.net/lists/kvm/msg205197.html
+Reviewed-by: Robin Murphy <robin.murphy@arm.com>
 
-In QEMU, it will determine the iommu type firstly and then invoke
-VFIO_SET_IOMMU. I think before selecting VFIO_TYPE1_NESTING_IOMMU,
-QEMU needs to check the IOMMU uAPI version. If IOMMU uAPI is incompatible,
-QEMU should not use VFIO_TYPE1_NESTING_IOMMU type. If
-VFIO_NESTING_GET_IOMMU_UAPI_VERSION is available after set iommu, then it
-may be an issue. That's why this series reports the version in vfio layer
-instead of type1 backend.
+Thanks,
+Robin.
 
-Regards,
-Yi Liu
+> Signed-off-by: Eric Dumazet <edumazet@google.com>
+> Cc: Christoph Hellwig <hch@lst.de>
+> ---
+>   kernel/dma/debug.c | 11 ++++++++++-
+>   1 file changed, 10 insertions(+), 1 deletion(-)
+> 
+> diff --git a/kernel/dma/debug.c b/kernel/dma/debug.c
+> index a310dbb1515e92c081f8f3f9a7290dd5e53fc889..b7221426ef49cf640db5bcb261b0817d714a3033 100644
+> --- a/kernel/dma/debug.c
+> +++ b/kernel/dma/debug.c
+> @@ -97,6 +97,8 @@ static LIST_HEAD(free_entries);
+>   /* Lock for the list above */
+>   static DEFINE_SPINLOCK(free_entries_lock);
+>   
+> +static DEFINE_PER_CPU(struct dma_debug_entry *, dma_debug_entry_cache);
+> +
+>   /* Global disable flag - will be set in case of an error */
+>   static bool global_disable __read_mostly;
+>   
+> @@ -676,6 +678,10 @@ static struct dma_debug_entry *dma_entry_alloc(void)
+>   	struct dma_debug_entry *entry;
+>   	unsigned long flags;
+>   
+> +	entry = this_cpu_xchg(dma_debug_entry_cache, NULL);
+> +	if (entry)
+> +		goto end;
+> +
+>   	spin_lock_irqsave(&free_entries_lock, flags);
+>   	if (num_free_entries == 0) {
+>   		if (dma_debug_create_entries(GFP_ATOMIC)) {
+> @@ -690,7 +696,7 @@ static struct dma_debug_entry *dma_entry_alloc(void)
+>   	entry = __dma_entry_alloc();
+>   
+>   	spin_unlock_irqrestore(&free_entries_lock, flags);
+> -
+> +end:
+>   #ifdef CONFIG_STACKTRACE
+>   	entry->stack_len = stack_trace_save(entry->stack_entries,
+>   					    ARRAY_SIZE(entry->stack_entries),
+> @@ -705,6 +711,9 @@ static void dma_entry_free(struct dma_debug_entry *entry)
+>   
+>   	active_cacheline_remove(entry);
+>   
+> +	if (!this_cpu_cmpxchg(dma_debug_entry_cache, NULL, entry))
+> +		return;
+> +
+>   	/*
+>   	 * add to beginning of the list - this way the entries are
+>   	 * more likely cache hot when they are reallocated.
+> 
 _______________________________________________
 iommu mailing list
 iommu@lists.linux-foundation.org
