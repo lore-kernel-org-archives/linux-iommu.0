@@ -2,71 +2,95 @@ Return-Path: <SRS0=FJ9b=3U=lists.linux-foundation.org=iommu-bounces@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-8.2 required=3.0 tests=HEADER_FROM_DIFFERENT_DOMAINS,
-	INCLUDES_PATCH,MAILING_LIST_MULTI,SIGNED_OFF_BY,SPF_HELO_NONE,SPF_PASS,
-	URIBL_BLOCKED,USER_AGENT_SANE_1 autolearn=unavailable autolearn_force=no
-	version=3.4.0
+X-Spam-Status: No, score=-3.7 required=3.0 tests=HEADER_FROM_DIFFERENT_DOMAINS,
+	INCLUDES_PATCH,MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED
+	autolearn=no autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 340E5C33CB2
-	for <iommu@archiver.kernel.org>; Fri, 31 Jan 2020 12:30:48 +0000 (UTC)
-Received: from whitealder.osuosl.org (smtp1.osuosl.org [140.211.166.138])
+	by smtp.lore.kernel.org (Postfix) with ESMTP id ADB86C33CB2
+	for <iommu@archiver.kernel.org>; Fri, 31 Jan 2020 12:41:21 +0000 (UTC)
+Received: from silver.osuosl.org (smtp3.osuosl.org [140.211.166.136])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by mail.kernel.org (Postfix) with ESMTPS id 03A6F206F0
-	for <iommu@archiver.kernel.org>; Fri, 31 Jan 2020 12:30:47 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 03A6F206F0
-Authentication-Results: mail.kernel.org; dmarc=none (p=none dis=none) header.from=arm.com
+	by mail.kernel.org (Postfix) with ESMTPS id 6B61920707
+	for <iommu@archiver.kernel.org>; Fri, 31 Jan 2020 12:41:21 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 6B61920707
+Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=intel.com
 Authentication-Results: mail.kernel.org; spf=pass smtp.mailfrom=iommu-bounces@lists.linux-foundation.org
 Received: from localhost (localhost [127.0.0.1])
-	by whitealder.osuosl.org (Postfix) with ESMTP id CBAD2869EA;
-	Fri, 31 Jan 2020 12:30:47 +0000 (UTC)
-X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from whitealder.osuosl.org ([127.0.0.1])
-	by localhost (.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
-	with ESMTP id yrwSFfwyMYHg; Fri, 31 Jan 2020 12:30:46 +0000 (UTC)
-Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [140.211.9.56])
-	by whitealder.osuosl.org (Postfix) with ESMTP id AB71B869BA;
-	Fri, 31 Jan 2020 12:30:46 +0000 (UTC)
-Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
-	by lists.linuxfoundation.org (Postfix) with ESMTP id 7D950C0176;
-	Fri, 31 Jan 2020 12:30:46 +0000 (UTC)
-Received: from silver.osuosl.org (smtp3.osuosl.org [140.211.166.136])
- by lists.linuxfoundation.org (Postfix) with ESMTP id EE734C0171
- for <iommu@lists.linux-foundation.org>; Fri, 31 Jan 2020 12:30:44 +0000 (UTC)
-Received: from localhost (localhost [127.0.0.1])
- by silver.osuosl.org (Postfix) with ESMTP id D7B7320367
- for <iommu@lists.linux-foundation.org>; Fri, 31 Jan 2020 12:30:44 +0000 (UTC)
+	by silver.osuosl.org (Postfix) with ESMTP id 2619D20407;
+	Fri, 31 Jan 2020 12:41:21 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
 Received: from silver.osuosl.org ([127.0.0.1])
+	by localhost (.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
+	with ESMTP id l8eBguVvRdl8; Fri, 31 Jan 2020 12:41:19 +0000 (UTC)
+Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [140.211.9.56])
+	by silver.osuosl.org (Postfix) with ESMTP id 3102C203D8;
+	Fri, 31 Jan 2020 12:41:19 +0000 (UTC)
+Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
+	by lists.linuxfoundation.org (Postfix) with ESMTP id 11B8AC0176;
+	Fri, 31 Jan 2020 12:41:19 +0000 (UTC)
+Received: from fraxinus.osuosl.org (smtp4.osuosl.org [140.211.166.137])
+ by lists.linuxfoundation.org (Postfix) with ESMTP id 0C700C0171
+ for <iommu@lists.linux-foundation.org>; Fri, 31 Jan 2020 12:41:18 +0000 (UTC)
+Received: from localhost (localhost [127.0.0.1])
+ by fraxinus.osuosl.org (Postfix) with ESMTP id E995386813
+ for <iommu@lists.linux-foundation.org>; Fri, 31 Jan 2020 12:41:17 +0000 (UTC)
+X-Virus-Scanned: amavisd-new at osuosl.org
+Received: from fraxinus.osuosl.org ([127.0.0.1])
  by localhost (.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
- with ESMTP id LsmKF2mg3SAj for <iommu@lists.linux-foundation.org>;
- Fri, 31 Jan 2020 12:30:43 +0000 (UTC)
+ with ESMTP id apP7Hzwh_k7G for <iommu@lists.linux-foundation.org>;
+ Fri, 31 Jan 2020 12:41:16 +0000 (UTC)
 X-Greylist: domain auto-whitelisted by SQLgrey-1.7.6
-Received: from foss.arm.com (foss.arm.com [217.140.110.172])
- by silver.osuosl.org (Postfix) with ESMTP id 8BDD420033
- for <iommu@lists.linux-foundation.org>; Fri, 31 Jan 2020 12:30:43 +0000 (UTC)
-Received: from usa-sjc-imap-foss1.foss.arm.com (unknown [10.121.207.14])
- by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id D42EF1063;
- Fri, 31 Jan 2020 04:30:42 -0800 (PST)
-Received: from [192.168.1.123] (unknown [172.31.20.19])
- by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPSA id B7D5B3F67D;
- Fri, 31 Jan 2020 04:30:41 -0800 (PST)
-Subject: Re: [PATCH] dma-debug: dynamic allocation of hash table
-To: Eric Dumazet <edumazet@google.com>
-References: <20200130191049.190569-1-edumazet@google.com>
- <e0a0ffa9-3721-4bac-1c8f-bcbd53d22ba1@arm.com>
- <CANn89i+fRqeSAz9eH8f2ujzBWSLUXw0eTT=tK=eNj8hL71MiFQ@mail.gmail.com>
-From: Robin Murphy <robin.murphy@arm.com>
-Message-ID: <f870ae85-995f-7866-ebbd-95b89ca28dc5@arm.com>
-Date: Fri, 31 Jan 2020 12:30:42 +0000
-User-Agent: Mozilla/5.0 (Windows NT 10.0; rv:68.0) Gecko/20100101
- Thunderbird/68.4.2
+Received: from mga05.intel.com (mga05.intel.com [192.55.52.43])
+ by fraxinus.osuosl.org (Postfix) with ESMTPS id B6F368679B
+ for <iommu@lists.linux-foundation.org>; Fri, 31 Jan 2020 12:41:15 +0000 (UTC)
+X-Amp-Result: SKIPPED(no attachment in message)
+X-Amp-File-Uploaded: False
+Received: from orsmga001.jf.intel.com ([10.7.209.18])
+ by fmsmga105.fm.intel.com with ESMTP/TLS/DHE-RSA-AES256-GCM-SHA384;
+ 31 Jan 2020 04:41:10 -0800
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="5.70,385,1574150400"; d="scan'208";a="309994884"
+Received: from fmsmsx107.amr.corp.intel.com ([10.18.124.205])
+ by orsmga001.jf.intel.com with ESMTP; 31 Jan 2020 04:41:09 -0800
+Received: from fmsmsx111.amr.corp.intel.com (10.18.116.5) by
+ fmsmsx107.amr.corp.intel.com (10.18.124.205) with Microsoft SMTP Server (TLS)
+ id 14.3.439.0; Fri, 31 Jan 2020 04:41:09 -0800
+Received: from shsmsx154.ccr.corp.intel.com (10.239.6.54) by
+ fmsmsx111.amr.corp.intel.com (10.18.116.5) with Microsoft SMTP Server (TLS)
+ id 14.3.439.0; Fri, 31 Jan 2020 04:41:08 -0800
+Received: from shsmsx104.ccr.corp.intel.com ([169.254.5.197]) by
+ SHSMSX154.ccr.corp.intel.com ([169.254.7.141]) with mapi id 14.03.0439.000;
+ Fri, 31 Jan 2020 20:41:06 +0800
+From: "Liu, Yi L" <yi.l.liu@intel.com>
+To: Alex Williamson <alex.williamson@redhat.com>
+Subject: RE: [RFC v3 1/8] vfio: Add VFIO_IOMMU_PASID_REQUEST(alloc/free)
+Thread-Topic: [RFC v3 1/8] vfio: Add VFIO_IOMMU_PASID_REQUEST(alloc/free)
+Thread-Index: AQHV1pyWdXmNxNYiSUCDLwZiDlOrAKgBy+IAgALeXlA=
+Date: Fri, 31 Jan 2020 12:41:06 +0000
+Message-ID: <A2975661238FB949B60364EF0F2C25743A1993E8@SHSMSX104.ccr.corp.intel.com>
+References: <1580299912-86084-1-git-send-email-yi.l.liu@intel.com>
+ <1580299912-86084-2-git-send-email-yi.l.liu@intel.com>
+ <20200129165540.335774d5@w520.home>
+In-Reply-To: <20200129165540.335774d5@w520.home>
+Accept-Language: en-US
+Content-Language: en-US
+X-MS-Has-Attach: 
+X-MS-TNEF-Correlator: 
+dlp-product: dlpe-windows
+dlp-version: 11.2.0.6
+dlp-reaction: no-action
+x-ctpclassification: CTP_NT
+x-titus-metadata-40: eyJDYXRlZ29yeUxhYmVscyI6IiIsIk1ldGFkYXRhIjp7Im5zIjoiaHR0cDpcL1wvd3d3LnRpdHVzLmNvbVwvbnNcL0ludGVsMyIsImlkIjoiODk5Y2JlYjEtZjRjMi00ZTI3LWJjNTYtY2NlZmMyZWZhYjBlIiwicHJvcHMiOlt7Im4iOiJDVFBDbGFzc2lmaWNhdGlvbiIsInZhbHMiOlt7InZhbHVlIjoiQ1RQX05UIn1dfV19LCJTdWJqZWN0TGFiZWxzIjpbXSwiVE1DVmVyc2lvbiI6IjE3LjEwLjE4MDQuNDkiLCJUcnVzdGVkTGFiZWxIYXNoIjoiaVZFb3VjY1ZoWEVKd3JcL1F1dEhIamZ3NDE2RzdISUZRdlZ2UzBlbzIzVmpqcDVxa3FSWDE5c3VDRFYxNkRrTVEifQ==
+x-originating-ip: [10.239.127.40]
 MIME-Version: 1.0
-In-Reply-To: <CANn89i+fRqeSAz9eH8f2ujzBWSLUXw0eTT=tK=eNj8hL71MiFQ@mail.gmail.com>
-Content-Language: en-GB
-Cc: Joerg Roedel <jroedel@suse.de>, Eric Dumazet <eric.dumazet@gmail.com>,
- linux-kernel <linux-kernel@vger.kernel.org>, iommu@lists.linux-foundation.org,
- Geert Uytterhoeven <geert@linux-m68k.org>, Christoph Hellwig <hch@lst.de>
+Cc: "Tian, Kevin" <kevin.tian@intel.com>, "Raj,
+ Ashok" <ashok.raj@intel.com>, "kvm@vger.kernel.org" <kvm@vger.kernel.org>,
+ "jean-philippe.brucker@arm.com" <jean-philippe.brucker@arm.com>, "Tian,
+ Jun J" <jun.j.tian@intel.com>,
+ "iommu@lists.linux-foundation.org" <iommu@lists.linux-foundation.org>,
+ "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>, "Sun, Yi
+ Y" <yi.y.sun@intel.com>
 X-BeenThere: iommu@lists.linux-foundation.org
 X-Mailman-Version: 2.1.15
 Precedence: list
@@ -79,148 +103,442 @@ List-Post: <mailto:iommu@lists.linux-foundation.org>
 List-Help: <mailto:iommu-request@lists.linux-foundation.org?subject=help>
 List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
  <mailto:iommu-request@lists.linux-foundation.org?subject=subscribe>
+Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
-Content-Type: text/plain; charset="us-ascii"; Format="flowed"
 Errors-To: iommu-bounces@lists.linux-foundation.org
 Sender: "iommu" <iommu-bounces@lists.linux-foundation.org>
 
-On 2020-01-31 12:17 am, Eric Dumazet wrote:
-> On Thu, Jan 30, 2020 at 3:46 PM Robin Murphy <robin.murphy@arm.com> wrote:
->>
->> Hi Eric,
->>
->> On 2020-01-30 7:10 pm, Eric Dumazet via iommu wrote:
->>> Increasing the size of dma_entry_hash size by 327680 bytes
->>> has reached some bootloaders limitations.
->>
->> [ That might warrant some further explanation - I don't quite follow how
->> this would relate to a bootloader specifically :/ ]
+Hi Alex,
+
+> From: Alex Williamson [mailto:alex.williamson@redhat.com]
+> Sent: Thursday, January 30, 2020 7:56 AM
+> To: Liu, Yi L <yi.l.liu@intel.com>
+> Subject: Re: [RFC v3 1/8] vfio: Add VFIO_IOMMU_PASID_REQUEST(alloc/free)
 > 
-> I had no details, please look at the prior thread where this has been discussed.
+> On Wed, 29 Jan 2020 04:11:45 -0800
+> "Liu, Yi L" <yi.l.liu@intel.com> wrote:
 > 
-> https://www.spinics.net/lists/linux-renesas-soc/msg46157.html
+> > From: Liu Yi L <yi.l.liu@intel.com>
+> >
+> > For a long time, devices have only one DMA address space from platform
+> > IOMMU's point of view. This is true for both bare metal and directed-
+> > access in virtualization environment. Reason is the source ID of DMA
+> > in PCIe are BDF (bus/dev/fnc ID), which results in only device
+> > granularity DMA isolation. However, this is changing with the latest
+> > advancement of I/O technology. More and more platform vendors are
+> > utilizing the PCIe PASID TLP prefix in DMA requests, thus to give
+> > devices with multiple DMA address spaces as identified by their
+> > individual PASIDs. For example, Shared Virtual Addressing (SVA, a.k.a
+> > Shared Virtual Memory) is able to let device access multiple process
+> > virtual address space by binding the virtual address space with a
+> > PASID. Wherein the PASID is allocated in software and programmed to
+> > device per device specific manner. Devices which support PASID
+> > capability are called PASID-capable devices. If such devices are
+> > passed through to VMs, guest software are also able to bind guest
+> > process virtual address space on such devices. Therefore, the guest
+> > software could reuse the bare metal software programming model, which
+> > means guest software will also allocate PASID and program it to device
+> > directly. This is a dangerous situation since it has potential PASID
+> > conflicts and unauthorized address space access. It would be safer to
+> > let host intercept in the guest software's PASID allocation. Thus PASID are
+> managed system-wide.
 
-Thanks for the pointer - that had passed me by as it doesn't seem to 
-have been CCed to the IOMMU list or me as a reviewer.
+[...]
 
->>> Simply use dynamic allocations instead, and take
->>> this opportunity to increase the hash table to 65536
->>> buckets. Finally my 40Gbit mlx4 NIC can sustain
->>> line rate with CONFIG_DMA_API_DEBUG=y.
->>
->> That's pretty cool, but I can't help but wonder if making the table
->> bigger caused a problem in the first place, whether making it bigger yet
->> again in the name of a fix is really the wisest move. How might this
->> impact DMA debugging on 32-bit embedded systems with limited vmalloc
->> space and even less RAM, for instance? More to the point, does vmalloc()
->> even work for !CONFIG_MMU builds? Obviously we don't want things to be
->> *needlessly* slow if avoidable, but is there a genuine justification for
->> needing to optimise what is fundamentally an invasive heavyweight
->> correctness check - e.g. has it helped expose race conditions that were
->> otherwise masked?
+> > +static void vfio_mm_unlock_and_free(struct vfio_mm *vmm) {
+> > +	mutex_unlock(&vfio.vfio_mm_lock);
+> > +	kfree(vmm);
+> > +}
+> > +
+> > +/* called with vfio.vfio_mm_lock held */ static void
+> > +vfio_mm_release(struct kref *kref) {
+> > +	struct vfio_mm *vmm = container_of(kref, struct vfio_mm, kref);
+> > +
+> > +	list_del(&vmm->vfio_next);
+> > +	vfio_mm_unlock_and_free(vmm);
+> > +}
+> > +
+> > +void vfio_mm_put(struct vfio_mm *vmm) {
+> > +	kref_put_mutex(&vmm->kref, vfio_mm_release, &vfio.vfio_mm_lock); }
+> > +EXPORT_SYMBOL_GPL(vfio_mm_put);
+> > +
+> > +/* Assume vfio_mm_lock or vfio_mm reference is held */ static void
+> > +vfio_mm_get(struct vfio_mm *vmm) {
+> > +	kref_get(&vmm->kref);
+> > +}
+> > +
+> > +struct vfio_mm *vfio_mm_get_from_task(struct task_struct *task) {
+> > +	struct mm_struct *mm = get_task_mm(task);
+> > +	struct vfio_mm *vmm;
+> > +
+> > +	mutex_lock(&vfio.vfio_mm_lock);
+> > +	list_for_each_entry(vmm, &vfio.vfio_mm_list, vfio_next) {
+> > +		if (vmm->mm == mm) {
+> > +			vfio_mm_get(vmm);
+> > +			goto out;
+> > +		}
+> > +	}
+> > +
+> > +	vmm = vfio_create_mm(mm);
+> > +	if (IS_ERR(vmm))
+> > +		vmm = NULL;
+> > +out:
+> > +	mutex_unlock(&vfio.vfio_mm_lock);
+> > +	mmput(mm);
+> > +	return vmm;
+> > +}
+> > +EXPORT_SYMBOL_GPL(vfio_mm_get_from_task);
+> > +
+> > +int vfio_mm_pasid_alloc(struct vfio_mm *vmm, int min, int max) {
+> > +	ioasid_t pasid;
+> > +	int ret = -ENOSPC;
+> > +
+> > +	mutex_lock(&vmm->pasid_lock);
+> > +	if (vmm->pasid_count >= vmm->pasid_quota) {
+> > +		ret = -ENOSPC;
+> > +		goto out_unlock;
+> > +	}
+> > +	/* Track ioasid allocation owner by mm */
+> > +	pasid = ioasid_alloc((struct ioasid_set *)vmm->mm, min,
+> > +				max, NULL);
 > 
-> Not sure what you are saying.
+> Is mm effectively only a token for this?  Maybe we should have a struct
+> vfio_mm_token since gets and puts are not creating a reference to an mm,
+> but to an "mm token".
+
+yes, it is supposed to be a kind of token. vfio_mm_token is better naming. :-)
+
+> > +	if (pasid == INVALID_IOASID) {
+> > +		ret = -ENOSPC;
+> > +		goto out_unlock;
+> > +	}
+> > +	vmm->pasid_count++;
+> > +
+> > +	ret = pasid;
+> > +out_unlock:
+> > +	mutex_unlock(&vmm->pasid_lock);
+> > +	return ret;
+> > +}
+> > +EXPORT_SYMBOL_GPL(vfio_mm_pasid_alloc);
+> > +
+> > +int vfio_mm_pasid_free(struct vfio_mm *vmm, ioasid_t pasid) {
+> > +	void *pdata;
+> > +	int ret = 0;
+> > +
+> > +	mutex_lock(&vmm->pasid_lock);
+> > +	pdata = ioasid_find((struct ioasid_set *)vmm->mm,
+> > +				pasid, NULL);
+> > +	if (IS_ERR(pdata)) {
+> > +		ret = PTR_ERR(pdata);
+> > +		goto out_unlock;
+> > +	}
+> > +	ioasid_free(pasid);
+> > +
+> > +	vmm->pasid_count--;
+> > +out_unlock:
+> > +	mutex_unlock(&vmm->pasid_lock);
+> > +	return ret;
+> > +}
+> > +EXPORT_SYMBOL_GPL(vfio_mm_pasid_free);
+> > +
+> > +/**
+> >   * Module/class support
+> >   */
+> >  static char *vfio_devnode(struct device *dev, umode_t *mode) @@
+> > -2151,8 +2274,10 @@ static int __init vfio_init(void)
+> >  	idr_init(&vfio.group_idr);
+> >  	mutex_init(&vfio.group_lock);
+> >  	mutex_init(&vfio.iommu_drivers_lock);
+> > +	mutex_init(&vfio.vfio_mm_lock);
+> >  	INIT_LIST_HEAD(&vfio.group_list);
+> >  	INIT_LIST_HEAD(&vfio.iommu_drivers_list);
+> > +	INIT_LIST_HEAD(&vfio.vfio_mm_list);
+> >  	init_waitqueue_head(&vfio.release_q);
+> >
+> >  	ret = misc_register(&vfio_dev);
+> > diff --git a/drivers/vfio/vfio_iommu_type1.c
+> > b/drivers/vfio/vfio_iommu_type1.c index 2ada8e6..e836d04 100644
+> > --- a/drivers/vfio/vfio_iommu_type1.c
+> > +++ b/drivers/vfio/vfio_iommu_type1.c
+> > @@ -70,6 +70,7 @@ struct vfio_iommu {
+> >  	unsigned int		dma_avail;
+> >  	bool			v2;
+> >  	bool			nesting;
+> > +	struct vfio_mm		*vmm;
+> >  };
+> >
+> >  struct vfio_domain {
+> > @@ -2039,6 +2040,7 @@ static void vfio_iommu_type1_detach_group(void
+> > *iommu_data,  static void *vfio_iommu_type1_open(unsigned long arg)  {
+> >  	struct vfio_iommu *iommu;
+> > +	struct vfio_mm *vmm = NULL;
+> >
+> >  	iommu = kzalloc(sizeof(*iommu), GFP_KERNEL);
+> >  	if (!iommu)
+> > @@ -2064,6 +2066,10 @@ static void *vfio_iommu_type1_open(unsigned long
+> arg)
+> >  	iommu->dma_avail = dma_entry_limit;
+> >  	mutex_init(&iommu->lock);
+> >  	BLOCKING_INIT_NOTIFIER_HEAD(&iommu->notifier);
+> > +	vmm = vfio_mm_get_from_task(current);
 > 
-> vmalloc() _is_ supported by all arches, even !CONFIG_MMU
+> So the token (if I'm right about the usage above) is the mm of the process
+> that calls VFIO_SET_IOMMU on the container.
 
-OK, that's good - I wasn't sure off-hand, and I was on the wrong machine 
-to go digging into the source.
+yes.
 
-> I can not test all platforms, and this is a debugging
-> feature no one uses in production.
-
-...which is exactly why I'd prefer to see a stronger justification for 
-making a change which only benefits performance on large systems, while 
-potentially impacting usability on small ones.
-
->> That said, by moving to dynamic allocation maybe there's room to be
->> cleverer and make HASH_SIZE scale with, say, system memory size? (I
->> assume from the context it's not something we can expand on-demand like
->> we did for the dma_debug_entry pool)
->>
 > 
-> How memory size can serve as a proxy of the number of entries ?
-> Current 10Gbit NIC need about 256,000 entries in the table.
-> Needless to say, the prior hash size was unusable.
-
-Because it's actually a reasonable proxy for "system size" in this 
-context - there aren't many good reasons for a driver to maintain 
-hundreds of mappings of the *same* buffer, so in general the maximum 
-number of live mappings is effectively going to scale with the total 
-amount of memory, particularly at the smaller end. Consider it a pretty 
-safe assumption that an embedded system with RAM measured in megabytes 
-won't ever be running anything like an MLX4, let alone in a debug 
-situation. If those 256,000 mappings each represent a typical network 
-packet, that implies well over 300MB of data alone, not to mention the 
-size of the queues themselves, the actual DMA debug entries, and the 
-whole rest of the kernel beyond that one driver - I doubt it's 
-physically possible to 'need' 64K hash buckets without at very least 1GB 
-of total RAM, quite likely much more.
-
-> As I suggested one month ago, HASH_SIZE can be tuned by a developper
-> eager to use this facility.
+> > +	if (!vmm)
+> > +		pr_err("Failed to get vfio_mm track\n");
+> > +	iommu->vmm = vmm;
+> >
+> >  	return iommu;
+> >  }
+> > @@ -2105,6 +2111,8 @@ static void vfio_iommu_type1_release(void
+> *iommu_data)
+> >  	}
+> >
+> >  	vfio_iommu_iova_free(&iommu->iova_list);
+> > +	if (iommu->vmm)
+> > +		vfio_mm_put(iommu->vmm);
+> >
+> >  	kfree(iommu);
+> >  }
+> > @@ -2193,6 +2201,48 @@ static int vfio_iommu_iova_build_caps(struct
+> vfio_iommu *iommu,
+> >  	return ret;
+> >  }
+> >
+> > +static int vfio_iommu_type1_pasid_alloc(struct vfio_iommu *iommu,
+> > +					 int min,
+> > +					 int max)
+> > +{
+> > +	struct vfio_mm *vmm = iommu->vmm;
+> > +	int ret = 0;
+> > +
+> > +	mutex_lock(&iommu->lock);
+> > +	if (!IS_IOMMU_CAP_DOMAIN_IN_CONTAINER(iommu)) {
+> > +		ret = -EINVAL;
+> > +		goto out_unlock;
+> > +	}
+> > +	if (vmm)
+> > +		ret = vfio_mm_pasid_alloc(vmm, min, max);
+> > +	else
+> > +		ret = -ENOSPC;
 > 
-> 65536 slots are 768 KB on 32bit platforms.
+> vfio_mm_pasid_alloc() can return -ENOSPC though, so it'd be nice to
+> differentiate the errors.  We could use EFAULT for the no IOMMU case
+> and EINVAL here?
 
-...and when that represents ~5% of the total system RAM it is a *lot* 
-less reasonable than even 12KB. As I said, it's great to make a debug 
-option more efficient such that what it observes is more representative 
-of the non-debug behaviour, but it mustn't come at the cost of making 
-the entire option unworkable for other users.
+yes, I can do it in new version.
 
-Robin.
+> > +out_unlock:
+> > +	mutex_unlock(&iommu->lock);
+> > +	return ret;
+> > +}
+> > +
+> > +static int vfio_iommu_type1_pasid_free(struct vfio_iommu *iommu,
+> > +				       unsigned int pasid)
+> > +{
+> > +	struct vfio_mm *vmm = iommu->vmm;
+> > +	int ret = 0;
+> > +
+> > +	mutex_lock(&iommu->lock);
+> > +	if (!IS_IOMMU_CAP_DOMAIN_IN_CONTAINER(iommu)) {
+> 
+> But we could have been IOMMU backed when the pasid was allocated, did we just
+> leak something?  In fact, I didn't spot anything in this series that handles
+> a container with pasids allocated losing iommu backing.
+> I'd think we want to release all pasids when that happens since permission for
+> the user to hold pasids goes along with having an iommu backed device.
 
->>> Fixes: 5e76f564572b ("dma-debug: increase HASH_SIZE")
->>> Signed-off-by: Eric Dumazet <edumazet@google.com>
->>> Reported-by: Geert Uytterhoeven <geert@linux-m68k.org>
->>> Cc: Christoph Hellwig <hch@lst.de>
->>> ---
->>>    kernel/dma/debug.c | 10 ++++++++--
->>>    1 file changed, 8 insertions(+), 2 deletions(-)
->>>
->>> diff --git a/kernel/dma/debug.c b/kernel/dma/debug.c
->>> index 2031ed1ad7fa109bb8a8c290bbbc5f825362baba..a310dbb1515e92c081f8f3f9a7290dd5e53fc889 100644
->>> --- a/kernel/dma/debug.c
->>> +++ b/kernel/dma/debug.c
->>> @@ -27,7 +27,7 @@
->>>
->>>    #include <asm/sections.h>
->>>
->>> -#define HASH_SIZE       16384ULL
->>> +#define HASH_SIZE       65536ULL
->>>    #define HASH_FN_SHIFT   13
->>>    #define HASH_FN_MASK    (HASH_SIZE - 1)
->>>
->>> @@ -90,7 +90,8 @@ struct hash_bucket {
->>>    };
->>>
->>>    /* Hash list to save the allocated dma addresses */
->>> -static struct hash_bucket dma_entry_hash[HASH_SIZE];
->>> +static struct hash_bucket *dma_entry_hash __read_mostly;
->>> +
->>>    /* List of pre-allocated dma_debug_entry's */
->>>    static LIST_HEAD(free_entries);
->>>    /* Lock for the list above */
->>> @@ -934,6 +935,10 @@ static int dma_debug_init(void)
->>>        if (global_disable)
->>>                return 0;
->>>
->>> +     dma_entry_hash = vmalloc(HASH_SIZE * sizeof(*dma_entry_hash));
->>> +     if (!dma_entry_hash)
->>> +             goto err;
->>> +
->>>        for (i = 0; i < HASH_SIZE; ++i) {
->>>                INIT_LIST_HEAD(&dma_entry_hash[i].list);
->>>                spin_lock_init(&dma_entry_hash[i].lock);
->>> @@ -950,6 +955,7 @@ static int dma_debug_init(void)
->>>                pr_warn("%d debug entries requested but only %d allocated\n",
->>>                        nr_prealloc_entries, nr_total_entries);
->>>        } else {
->>> +err:
->>>                pr_err("debugging out of memory error - disabled\n");
->>>                global_disable = true;
->>>
->>>
+oh, yes. If a container lose iommu backend, then needs to reclaim the allocated
+PASIDs. right? I'll add it. :-)
+
+> Also, do we want _free() paths that can fail?
+
+I remember we discussed if a _free() path can fail, I think we agreed to let
+_free() path always success. :-)
+
+> 
+> > +		ret = -EINVAL;
+> > +		goto out_unlock;
+> > +	}
+> > +
+> > +	if (vmm)
+> > +		ret = vfio_mm_pasid_free(vmm, pasid);
+> > +	else
+> > +		ret = -ENOSPC;
+> > +out_unlock:
+> > +	mutex_unlock(&iommu->lock);
+> > +	return ret;
+> > +}
+> > +
+> >  static long vfio_iommu_type1_ioctl(void *iommu_data,
+> >  				   unsigned int cmd, unsigned long arg)  { @@ -
+> 2297,6 +2347,48 @@
+> > static long vfio_iommu_type1_ioctl(void *iommu_data,
+> >
+> >  		return copy_to_user((void __user *)arg, &unmap, minsz) ?
+> >  			-EFAULT : 0;
+> > +
+> > +	} else if (cmd == VFIO_IOMMU_PASID_REQUEST) {
+> > +		struct vfio_iommu_type1_pasid_request req;
+> > +		u32 min, max, pasid;
+> > +		int ret, result;
+> > +		unsigned long offset;
+> > +
+> > +		offset = offsetof(struct vfio_iommu_type1_pasid_request,
+> > +				  alloc_pasid.result);
+> > +		minsz = offsetofend(struct vfio_iommu_type1_pasid_request,
+> > +				    flags);
+> > +
+> > +		if (copy_from_user(&req, (void __user *)arg, minsz))
+> > +			return -EFAULT;
+> > +
+> > +		if (req.argsz < minsz)
+> > +			return -EINVAL;
+> 
+> req.flags needs to be sanitized, if a user provides flags we don't understand or
+> combinations of flags that aren't supported, we should return an error (ex. ALLOC |
+> FREE should not do alloc w/o free or free w/o alloc, it should just error).
+
+Oops, yes. I'll add it.
+
+> 
+> > +
+> > +		switch (req.flags & VFIO_PASID_REQUEST_MASK) {
+> > +		case VFIO_IOMMU_PASID_ALLOC:
+> > +			if (copy_from_user(&min,
+> > +				(void __user *)arg + minsz, sizeof(min)))
+> > +				return -EFAULT;
+> > +			if (copy_from_user(&max,
+> > +				(void __user *)arg + minsz + sizeof(min),
+> > +				sizeof(max)))
+> > +				return -EFAULT;
+> 
+> Why not just copy the fields into req in one go?
+
+yeah. let me do it. :-)
+
+> 
+> > +			ret = 0;
+> > +			result = vfio_iommu_type1_pasid_alloc(iommu, min, max);
+> > +			if (result > 0)
+> > +				ret = copy_to_user(
+> > +					      (void __user *) (arg + offset),
+> > +					      &result, sizeof(result));
+> 
+> The result is an int, ioctl(2) returns an int... why do we need
+> to return the result in the structure?
+
+In former version, it was. :-) I changed it due to the consideration of
+potential extension of PCIe PASID bits. Currently, PASID is 20 bits width
+per spec. If returning "int" to userspace, I'm afraid it will be limitation
+in future when PASID is extended to be 32 bits. Maybe I should make all the
+fields be 64 bits.
+
+> 
+> > +			return ret;
+> > +		case VFIO_IOMMU_PASID_FREE:
+> > +			if (copy_from_user(&pasid,
+> > +				(void __user *)arg + minsz, sizeof(pasid)))
+> > +				return -EFAULT;
+> 
+> Same here, we don't need a separate pasid variable, use the one in req.
+
+got it. :-) Just copy the req and use the @free_pasid field in req is
+enough.
+
+> 
+> > +			return vfio_iommu_type1_pasid_free(iommu, pasid);
+> > +		default:
+> > +			return -EINVAL;
+> > +		}
+> >  	}
+> >
+> >  	return -ENOTTY;
+> > diff --git a/include/linux/vfio.h b/include/linux/vfio.h index
+> > e42a711..b6c9c8c 100644
+> > --- a/include/linux/vfio.h
+> > +++ b/include/linux/vfio.h
+> > @@ -89,6 +89,21 @@ extern int vfio_register_iommu_driver(const struct
+> > vfio_iommu_driver_ops *ops);  extern void vfio_unregister_iommu_driver(
+> >  				const struct vfio_iommu_driver_ops *ops);
+> >
+> > +#define VFIO_DEFAULT_PASID_QUOTA	1000
+> > +struct vfio_mm {
+> > +	struct kref			kref;
+> > +	struct mutex			pasid_lock;
+> > +	int				pasid_quota;
+> > +	int				pasid_count;
+> > +	struct mm_struct		*mm;
+> > +	struct list_head		vfio_next;
+> > +};
+> > +
+> > +extern struct vfio_mm *vfio_mm_get_from_task(struct task_struct
+> > +*task); extern void vfio_mm_put(struct vfio_mm *vmm); extern int
+> > +vfio_mm_pasid_alloc(struct vfio_mm *vmm, int min, int max); extern
+> > +int vfio_mm_pasid_free(struct vfio_mm *vmm, ioasid_t pasid);
+> > +
+> >  /*
+> >   * External user API
+> >   */
+> > diff --git a/include/uapi/linux/vfio.h b/include/uapi/linux/vfio.h
+> > index 9e843a1..298ac80 100644
+> > --- a/include/uapi/linux/vfio.h
+> > +++ b/include/uapi/linux/vfio.h
+> > @@ -794,6 +794,47 @@ struct vfio_iommu_type1_dma_unmap {
+> >  #define VFIO_IOMMU_ENABLE	_IO(VFIO_TYPE, VFIO_BASE + 15)
+> >  #define VFIO_IOMMU_DISABLE	_IO(VFIO_TYPE, VFIO_BASE + 16)
+> >
+> > +/*
+> > + * PASID (Process Address Space ID) is a PCIe concept which
+> > + * has been extended to support DMA isolation in fine-grain.
+> > + * With device assigned to user space (e.g. VMs), PASID alloc
+> > + * and free need to be system wide. This structure defines
+> > + * the info for pasid alloc/free between user space and kernel
+> > + * space.
+> > + *
+> > + * @flag=VFIO_IOMMU_PASID_ALLOC, refer to the @alloc_pasid
+> > + * @flag=VFIO_IOMMU_PASID_FREE, refer to @free_pasid  */ struct
+> > +vfio_iommu_type1_pasid_request {
+> > +	__u32	argsz;
+> > +#define VFIO_IOMMU_PASID_ALLOC	(1 << 0)
+> > +#define VFIO_IOMMU_PASID_FREE	(1 << 1)
+> > +	__u32	flags;
+> > +	union {
+> > +		struct {
+> > +			__u32 min;
+> > +			__u32 max;
+> > +			__u32 result;
+> > +		} alloc_pasid;
+> > +		__u32 free_pasid;
+> > +	};
+> > +};
+> > +
+> > +#define VFIO_PASID_REQUEST_MASK	(VFIO_IOMMU_PASID_ALLOC | \
+> > +					 VFIO_IOMMU_PASID_FREE)
+> > +
+> > +/**
+> > + * VFIO_IOMMU_PASID_REQUEST - _IOWR(VFIO_TYPE, VFIO_BASE + 22,
+> > + *				struct vfio_iommu_type1_pasid_request)
+> > + *
+> > + * Availability of this feature depends on PASID support in the
+> > +device,
+> > + * its bus, the underlying IOMMU and the CPU architecture. In VFIO,
+> > +it
+> > + * is available after VFIO_SET_IOMMU.
+> 
+> Assuming the IOMMU backend supports it.  How does a user determine that?
+> Allocating a PASID just to see if they can doesn't seem like a good
+> approach. We have a VFIO_IOMMU_GET_INFO ioctl.  Thanks,
+
+Do you mean checking PASID allocation availability via VFIO_IOMMU_GET_INFO?
+If yes, I can do it. :-)
+
+Regards,
+Yi Liu
 _______________________________________________
 iommu mailing list
 iommu@lists.linux-foundation.org
