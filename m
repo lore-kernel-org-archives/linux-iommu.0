@@ -4,92 +4,105 @@ X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 X-Spam-Level: 
 X-Spam-Status: No, score=-6.5 required=3.0 tests=DKIM_INVALID,DKIM_SIGNED,
 	HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_PATCH,MAILING_LIST_MULTI,SIGNED_OFF_BY,
-	SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED autolearn=ham autolearn_force=no
-	version=3.4.0
+	SPF_HELO_NONE,SPF_PASS,UNPARSEABLE_RELAY,URIBL_BLOCKED autolearn=ham
+	autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 35E92C2D0B1
-	for <iommu@archiver.kernel.org>; Tue,  4 Feb 2020 09:56:45 +0000 (UTC)
-Received: from whitealder.osuosl.org (smtp1.osuosl.org [140.211.166.138])
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 01A1BC2D0B1
+	for <iommu@archiver.kernel.org>; Tue,  4 Feb 2020 14:54:39 +0000 (UTC)
+Received: from hemlock.osuosl.org (smtp2.osuosl.org [140.211.166.133])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by mail.kernel.org (Postfix) with ESMTPS id EF5C421582
-	for <iommu@archiver.kernel.org>; Tue,  4 Feb 2020 09:56:44 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTPS id B802C20674
+	for <iommu@archiver.kernel.org>; Tue,  4 Feb 2020 14:54:38 +0000 (UTC)
 Authentication-Results: mail.kernel.org;
-	dkim=fail reason="signature verification failed" (2048-bit key) header.d=endlessm-com.20150623.gappssmtp.com header.i=@endlessm-com.20150623.gappssmtp.com header.b="P60K4t5g"
-DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org EF5C421582
-Authentication-Results: mail.kernel.org; dmarc=none (p=none dis=none) header.from=endlessm.com
+	dkim=fail reason="signature verification failed" (2048-bit key) header.d=oracle.com header.i=@oracle.com header.b="JhQK0V3A"
+DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org B802C20674
+Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=oracle.com
 Authentication-Results: mail.kernel.org; spf=pass smtp.mailfrom=iommu-bounces@lists.linux-foundation.org
 Received: from localhost (localhost [127.0.0.1])
-	by whitealder.osuosl.org (Postfix) with ESMTP id AA4458471C;
-	Tue,  4 Feb 2020 09:56:44 +0000 (UTC)
+	by hemlock.osuosl.org (Postfix) with ESMTP id 5B69D86B58;
+	Tue,  4 Feb 2020 14:54:38 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from whitealder.osuosl.org ([127.0.0.1])
+Received: from hemlock.osuosl.org ([127.0.0.1])
 	by localhost (.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
-	with ESMTP id 3TRchqZJRBW0; Tue,  4 Feb 2020 09:56:44 +0000 (UTC)
+	with ESMTP id RObAEnmWDf1h; Tue,  4 Feb 2020 14:54:37 +0000 (UTC)
 Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [140.211.9.56])
-	by whitealder.osuosl.org (Postfix) with ESMTP id 358F984718;
-	Tue,  4 Feb 2020 09:56:44 +0000 (UTC)
+	by hemlock.osuosl.org (Postfix) with ESMTP id F200386961;
+	Tue,  4 Feb 2020 14:54:36 +0000 (UTC)
 Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
-	by lists.linuxfoundation.org (Postfix) with ESMTP id 2936DC1D81;
-	Tue,  4 Feb 2020 09:56:44 +0000 (UTC)
+	by lists.linuxfoundation.org (Postfix) with ESMTP id D7B47C0177;
+	Tue,  4 Feb 2020 14:54:36 +0000 (UTC)
 Received: from whitealder.osuosl.org (smtp1.osuosl.org [140.211.166.138])
- by lists.linuxfoundation.org (Postfix) with ESMTP id BE4A8C0174
- for <iommu@lists.linux-foundation.org>; Tue,  4 Feb 2020 09:56:42 +0000 (UTC)
+ by lists.linuxfoundation.org (Postfix) with ESMTP id 8E61FC0174
+ for <iommu@lists.linux-foundation.org>; Tue,  4 Feb 2020 14:54:35 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
- by whitealder.osuosl.org (Postfix) with ESMTP id B046E8471C
- for <iommu@lists.linux-foundation.org>; Tue,  4 Feb 2020 09:56:42 +0000 (UTC)
+ by whitealder.osuosl.org (Postfix) with ESMTP id 7A97281AE7
+ for <iommu@lists.linux-foundation.org>; Tue,  4 Feb 2020 14:54:35 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
 Received: from whitealder.osuosl.org ([127.0.0.1])
  by localhost (.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
- with ESMTP id xwBZAX+RMCPi for <iommu@lists.linux-foundation.org>;
- Tue,  4 Feb 2020 09:56:40 +0000 (UTC)
-X-Greylist: delayed 00:23:10 by SQLgrey-1.7.6
-Received: from mail-yw1-f65.google.com (mail-yw1-f65.google.com
- [209.85.161.65])
- by whitealder.osuosl.org (Postfix) with ESMTPS id DAD0D84718
- for <iommu@lists.linux-foundation.org>; Tue,  4 Feb 2020 09:56:39 +0000 (UTC)
-Received: by mail-yw1-f65.google.com with SMTP id t141so17007450ywc.11
- for <iommu@lists.linux-foundation.org>; Tue, 04 Feb 2020 01:56:39 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
- d=endlessm-com.20150623.gappssmtp.com; s=20150623;
- h=mime-version:references:in-reply-to:from:date:message-id:subject:to
- :cc:content-transfer-encoding;
- bh=/LrB1QQcfXPxi0BB+lcewM64zrtrSOEYAcITFbKQ4wI=;
- b=P60K4t5ggLQr/vhZHiXRlNywK69iPHwx590eFL3PWBdM4grhTUdcJtIzcoDprLCWT5
- 7m0n41QNkC8//4JfksLTz3YdQUVxEAGSDuZ9j+W1a0nr+VT86k3WY6fHx1FvGidLTTLy
- +w3Et4GwWqW1Y/UOb4tyjt07vAISYdOcsP/ZwOg1V/KnnyOAF5auYXjo5JGMn7+72ZuG
- KOS57j5QABVOvSR/VaJ+0zijMitZCtAji/0qGDGkhMome9LKH3rlcKGXQN1d+0fDdjdr
- 11d7hpEYBvM/Pc5HMA4mbzRQuC7Z5V/iFUQep1upy5JLQZhZKX4GTwvjnL9DG9LiIf3K
- gI/Q==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
- d=1e100.net; s=20161025;
- h=x-gm-message-state:mime-version:references:in-reply-to:from:date
- :message-id:subject:to:cc:content-transfer-encoding;
- bh=/LrB1QQcfXPxi0BB+lcewM64zrtrSOEYAcITFbKQ4wI=;
- b=b8/xUuLMA0C2NCuq4a1jeMVxpjkQtXvEBrfBb/+B54RcbY9opbS+pmxEeCy57eLCQt
- S/YyaNt5XROFq6H0WkTBtJf0nQzFC2tFg9mmBqTi2lLh5YsnkRNS3uvEMma8pweC2++l
- Od+oGeOY6oJQZGEv88Ih0cywYk7F07AowYoYOFnjV4oSEIzaYg175FzqYKwrWkED5hg2
- li4Zufkpep/UjG1D7mf4jLin/Fj9JdvP2/SFHdSTVEB+vGphKdHOTGdb4nXAyz1DHzfy
- FkzYeg2N0XVnRTMiSrBQiDf2miFtpoBO92HCphegAGAXuphH5/ZzzYJRlos12PVpdDZi
- ewAg==
-X-Gm-Message-State: APjAAAXVSPIgv1T0ubKfYN8KfGaZWshPhEbm2pPkYvVL6Mr+vRY7H3IQ
- Pkm4xVz+FlVIV/0r5JVwEJYRxyS/LeSLPdn62U8BZFCr2qB8IQ==
-X-Google-Smtp-Source: APXvYqwgmuBZwg5kpKbNPQPbL9DX7UGf6nqnhW6qNJ300wkY5DIL2j8Eyl5WkLN8NrTTLujLR9GHxiRbWohjJDze1KI=
-X-Received: by 2002:ab0:2a0c:: with SMTP id o12mr16324286uar.72.1580808347038; 
- Tue, 04 Feb 2020 01:25:47 -0800 (PST)
+ with ESMTP id i1-ldKyPLs3N for <iommu@lists.linux-foundation.org>;
+ Tue,  4 Feb 2020 14:54:34 +0000 (UTC)
+X-Greylist: domain auto-whitelisted by SQLgrey-1.7.6
+Received: from userp2130.oracle.com (userp2130.oracle.com [156.151.31.86])
+ by whitealder.osuosl.org (Postfix) with ESMTPS id 4BFED816FA
+ for <iommu@lists.linux-foundation.org>; Tue,  4 Feb 2020 14:54:34 +0000 (UTC)
+Received: from pps.filterd (userp2130.oracle.com [127.0.0.1])
+ by userp2130.oracle.com (8.16.0.27/8.16.0.27) with SMTP id 014ErLF3020718;
+ Tue, 4 Feb 2020 14:54:33 GMT
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=oracle.com;
+ h=date : from : to : cc
+ : subject : message-id : references : mime-version : content-type :
+ in-reply-to; s=corp-2019-08-05;
+ bh=PnHO58KkdOmLOUFqyqRVGS49sqyf4ovWpRs+KKa4/o4=;
+ b=JhQK0V3A8oIpLxSYd8jsf6S9ATpcLlaOajW1tfiLP9eQ6tlSvhv6e3+D53EcXcmQ6Lxv
+ Pkx2RI2X6vsSkp3CBhTbdaDpv3+xiflCUEFc5YyMZggV854dZOVgXNJ/FY4Y3Xrhr7xD
+ oWhsxe4SB6gKMAK54nJ4U1s2b9+j5YErJq2hj8Kq6MVBMUdGF3l5Y8c1vjBAflb0K5ZC
+ na7r3qxKN8ZGOuNQuGlFdCCJdUt/RCiPAbENlOt+JBV8ph1gvxsUDlCDEJzO8bJ5tm67
+ SqEOt1xMa+y9ArmSu2Jy32cDUiXe4TwrWc5BB5yU7bhYFs7G/uRGGIHW1VID8cVdZ+37 Kw== 
+Received: from userp3030.oracle.com (userp3030.oracle.com [156.151.31.80])
+ by userp2130.oracle.com with ESMTP id 2xw0ru75sw-1
+ (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
+ Tue, 04 Feb 2020 14:54:32 +0000
+Received: from pps.filterd (userp3030.oracle.com [127.0.0.1])
+ by userp3030.oracle.com (8.16.0.27/8.16.0.27) with SMTP id 014ErtxY009369;
+ Tue, 4 Feb 2020 14:54:32 GMT
+Received: from aserv0121.oracle.com (aserv0121.oracle.com [141.146.126.235])
+ by userp3030.oracle.com with ESMTP id 2xxvurxdfn-1
+ (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
+ Tue, 04 Feb 2020 14:54:31 +0000
+Received: from abhmp0016.oracle.com (abhmp0016.oracle.com [141.146.116.22])
+ by aserv0121.oracle.com (8.14.4/8.13.8) with ESMTP id 014EsT7R020598;
+ Tue, 4 Feb 2020 14:54:29 GMT
+Received: from localhost.localdomain (/172.58.219.138)
+ by default (Oracle Beehive Gateway v4.0)
+ with ESMTP ; Tue, 04 Feb 2020 06:54:28 -0800
+Date: Tue, 4 Feb 2020 09:54:26 -0500
+From: Konrad Rzeszutek Wilk <konrad.wilk@oracle.com>
+To: Christoph Hellwig <hch@lst.de>
+Subject: Re: [PATCH 1/2] dma-direct: improve swiotlb error reporting
+Message-ID: <20200204145426.GB5400@localhost.localdomain>
+References: <20200204063205.652456-1-hch@lst.de>
+ <20200204063205.652456-2-hch@lst.de>
 MIME-Version: 1.0
-References: <20200203091009.196658-1-jian-hong@endlessm.com>
- <aab0948d-c6a3-baa1-7343-f18c936d662d@linux.intel.com>
-In-Reply-To: <aab0948d-c6a3-baa1-7343-f18c936d662d@linux.intel.com>
-From: Jian-Hong Pan <jian-hong@endlessm.com>
-Date: Tue, 4 Feb 2020 17:25:04 +0800
-Message-ID: <CAPpJ_edkkWm0DYHB3U8nQPv=z_o-aV4V7RDMuLTXL5N1H6ZYrA@mail.gmail.com>
-Subject: Re: [PATCH] iommu/intel-iommu: set as DUMMY_DEVICE_DOMAIN_INFO if no
- IOMMU
-To: Lu Baolu <baolu.lu@linux.intel.com>
-Cc: Linux Upstreaming Team <linux@endlessm.com>,
- David Woodhouse <dwmw2@infradead.org>, iommu@lists.linux-foundation.org,
- Linux Kernel <linux-kernel@vger.kernel.org>
+Content-Disposition: inline
+In-Reply-To: <20200204063205.652456-2-hch@lst.de>
+X-Proofpoint-Virus-Version: vendor=nai engine=6000 definitions=9520
+ signatures=668685
+X-Proofpoint-Spam-Details: rule=notspam policy=default score=0 suspectscore=1
+ malwarescore=0
+ phishscore=0 bulkscore=0 spamscore=0 mlxscore=0 mlxlogscore=999
+ adultscore=0 classifier=spam adjust=0 reason=mlx scancount=1
+ engine=8.0.1-1911140001 definitions=main-2002040104
+X-Proofpoint-Virus-Version: vendor=nai engine=6000 definitions=9520
+ signatures=668685
+X-Proofpoint-Spam-Details: rule=notspam policy=default score=0
+ priorityscore=1501 malwarescore=0
+ suspectscore=1 phishscore=0 bulkscore=0 spamscore=0 clxscore=1015
+ lowpriorityscore=0 mlxscore=0 impostorscore=0 mlxlogscore=999 adultscore=0
+ classifier=spam adjust=0 reason=mlx scancount=1 engine=8.0.1-1911140001
+ definitions=main-2002040104
+Cc: iommu@lists.linux-foundation.org
 X-BeenThere: iommu@lists.linux-foundation.org
 X-Mailman-Version: 2.1.15
 Precedence: list
@@ -102,39 +115,176 @@ List-Post: <mailto:iommu@lists.linux-foundation.org>
 List-Help: <mailto:iommu-request@lists.linux-foundation.org?subject=help>
 List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
  <mailto:iommu-request@lists.linux-foundation.org?subject=subscribe>
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: base64
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: 7bit
 Errors-To: iommu-bounces@lists.linux-foundation.org
 Sender: "iommu" <iommu-bounces@lists.linux-foundation.org>
 
-THUgQmFvbHUgPGJhb2x1Lmx1QGxpbnV4LmludGVsLmNvbT4g5pa8IDIwMjDlubQy5pyINOaXpSDp
-gLHkuowg5LiL5Y2IMjoxMeWvq+mBk++8mgo+Cj4gSGksCj4KPiBPbiAyMDIwLzIvMyAxNzoxMCwg
-Smlhbi1Ib25nIFBhbiB3cm90ZToKPiA+IElmIHRoZSBkZXZpY2UgaGFzIG5vIElPTU1VLCBpdCBz
-dGlsbCBpbnZva2VzIGlvbW11X25lZWRfbWFwcGluZyBkdXJpbmcKPiA+IGludGVsX2FsbG9jX2Nv
-aGVyZW50LiBIb3dldmVyLCBpb21tdV9uZWVkX21hcHBpbmcgY2FuIG9ubHkgY2hlY2sgdGhlCj4g
-PiBkZXZpY2UgaXMgRFVNTVlfREVWSUNFX0RPTUFJTl9JTkZPIG9yIG5vdC4gVGhpcyBwYXRjaCBt
-YXJrcyB0aGUgZGV2aWNlCj4gPiBpcyBhIERVTU1ZX0RFVklDRV9ET01BSU5fSU5GTyBpZiB0aGUg
-ZGV2aWNlIGhhcyBubyBJT01NVS4KPiA+Cj4gPiBTaWduZWQtb2ZmLWJ5OiBKaWFuLUhvbmcgUGFu
-IDxqaWFuLWhvbmdAZW5kbGVzc20uY29tPgo+ID4gLS0tCj4gPiAgIGRyaXZlcnMvaW9tbXUvaW50
-ZWwtaW9tbXUuYyB8IDQgKysrLQo+ID4gICAxIGZpbGUgY2hhbmdlZCwgMyBpbnNlcnRpb25zKCsp
-LCAxIGRlbGV0aW9uKC0pCj4gPgo+ID4gZGlmZiAtLWdpdCBhL2RyaXZlcnMvaW9tbXUvaW50ZWwt
-aW9tbXUuYyBiL2RyaXZlcnMvaW9tbXUvaW50ZWwtaW9tbXUuYwo+ID4gaW5kZXggMzVhNGEzYWJl
-ZGM2Li44NzhiYzk4NmEwMTUgMTAwNjQ0Cj4gPiAtLS0gYS9kcml2ZXJzL2lvbW11L2ludGVsLWlv
-bW11LmMKPiA+ICsrKyBiL2RyaXZlcnMvaW9tbXUvaW50ZWwtaW9tbXUuYwo+ID4gQEAgLTU2MTIs
-OCArNTYxMiwxMCBAQCBzdGF0aWMgaW50IGludGVsX2lvbW11X2FkZF9kZXZpY2Uoc3RydWN0IGRl
-dmljZSAqZGV2KQo+ID4gICAgICAgaW50IHJldDsKPiA+Cj4gPiAgICAgICBpb21tdSA9IGRldmlj
-ZV90b19pb21tdShkZXYsICZidXMsICZkZXZmbik7Cj4gPiAtICAgICBpZiAoIWlvbW11KQo+ID4g
-KyAgICAgaWYgKCFpb21tdSkgewo+ID4gKyAgICAgICAgICAgICBkZXYtPmFyY2hkYXRhLmlvbW11
-ID0gRFVNTVlfREVWSUNFX0RPTUFJTl9JTkZPOwo+Cj4gSXMgdGhpcyBhIERNQSBjYXBhYmxlIGRl
-dmljZT8KCkRvIHlvdSBtZWFuIGlzIHRoZSBkZXZpY2UgaW4gRE1BIFJlbWFwcGluZyB0YWJsZT8K
-RHVtcCBETUFSIGZyb20gQUNQSSB0YWJsZS4gIFRoZSBkZXZpY2UgaXMgbm90IGluIHRoZSB0YWJs
-ZS4KU28sIGl0IGRvZXMgbm90IHN1cHBvcnQgRE1BUiwgSW50ZWwgSU9NTVUuCgpPciwgc2hvdWxk
-IGRldmljZV90b19pb21tdSBiZSBpbnZva2VkIGluIGlvbW11X25lZWRfbWFwcGluZyB0byBjaGVj
-awpJT01NVSBmZWF0dXJlIGFnYWluPwoKQmVzdCByZWdhcmRzLApKaWFuLUhvbmcgUGFuCgo+IEkg
-YW0gYWZyYWlkIHNvbWUgcmVhbCBidWdzIG1pZ2h0IGJlCj4gY292ZXJlZCB1cCBpZiB3ZSBtYXJr
-aW5nIHRoZSBkZXZpY2UgYXMgSU9NTVUgZHVtbXkgaGVyZS4KPgo+IEJlc3QgcmVnYXJkcywKPiBi
-YW9sdQo+Cj4gPiAgICAgICAgICAgICAgIHJldHVybiAtRU5PREVWOwo+ID4gKyAgICAgfQo+ID4K
-PiA+ICAgICAgIGlvbW11X2RldmljZV9saW5rKCZpb21tdS0+aW9tbXUsIGRldik7Cj4gPgo+ID4K
-X19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX18KaW9tbXUgbWFp
-bGluZyBsaXN0CmlvbW11QGxpc3RzLmxpbnV4LWZvdW5kYXRpb24ub3JnCmh0dHBzOi8vbGlzdHMu
-bGludXhmb3VuZGF0aW9uLm9yZy9tYWlsbWFuL2xpc3RpbmZvL2lvbW11
+On Tue, Feb 04, 2020 at 07:32:04AM +0100, Christoph Hellwig wrote:
+> Untangle the way how dma_direct_map_page calls into swiotlb to be able
+> to properly report errors where the swiotlb DMA address overflows the
+> mask separately from overflows in the !swiotlb case.  This means that
+> siotlb_map now has to do a little more work that duplicates
+> dma_direct_map_page, but doing so greatly simplifies the calling
+> convention.
+> 
+> Signed-off-by: Christoph Hellwig <hch@lst.de>
+
+Reviewed-by: Konrad Rzeszutek Wilk <konrad.wilk@oracle.com>
+Acked-by: Konrad Rzeszutek Wilk <konrad@darnok.org>
+
+(Pick whichever tag you want :-))
+> ---
+>  include/linux/swiotlb.h | 11 +++--------
+>  kernel/dma/direct.c     | 16 +++++++--------
+>  kernel/dma/swiotlb.c    | 43 +++++++++++++++++++++++------------------
+>  3 files changed, 34 insertions(+), 36 deletions(-)
+> 
+> diff --git a/include/linux/swiotlb.h b/include/linux/swiotlb.h
+> index cde3dc18e21a..046bb94bd4d6 100644
+> --- a/include/linux/swiotlb.h
+> +++ b/include/linux/swiotlb.h
+> @@ -64,6 +64,9 @@ extern void swiotlb_tbl_sync_single(struct device *hwdev,
+>  				    size_t size, enum dma_data_direction dir,
+>  				    enum dma_sync_target target);
+>  
+> +dma_addr_t swiotlb_map(struct device *dev, phys_addr_t phys,
+> +		size_t size, enum dma_data_direction dir, unsigned long attrs);
+> +
+>  #ifdef CONFIG_SWIOTLB
+>  extern enum swiotlb_force swiotlb_force;
+>  extern phys_addr_t io_tlb_start, io_tlb_end;
+> @@ -73,8 +76,6 @@ static inline bool is_swiotlb_buffer(phys_addr_t paddr)
+>  	return paddr >= io_tlb_start && paddr < io_tlb_end;
+>  }
+>  
+> -bool swiotlb_map(struct device *dev, phys_addr_t *phys, dma_addr_t *dma_addr,
+> -		size_t size, enum dma_data_direction dir, unsigned long attrs);
+>  void __init swiotlb_exit(void);
+>  unsigned int swiotlb_max_segment(void);
+>  size_t swiotlb_max_mapping_size(struct device *dev);
+> @@ -85,12 +86,6 @@ static inline bool is_swiotlb_buffer(phys_addr_t paddr)
+>  {
+>  	return false;
+>  }
+> -static inline bool swiotlb_map(struct device *dev, phys_addr_t *phys,
+> -		dma_addr_t *dma_addr, size_t size, enum dma_data_direction dir,
+> -		unsigned long attrs)
+> -{
+> -	return false;
+> -}
+>  static inline void swiotlb_exit(void)
+>  {
+>  }
+> diff --git a/kernel/dma/direct.c b/kernel/dma/direct.c
+> index 6af7ae83c4ad..82ad50aaf42c 100644
+> --- a/kernel/dma/direct.c
+> +++ b/kernel/dma/direct.c
+> @@ -357,13 +357,6 @@ void dma_direct_unmap_sg(struct device *dev, struct scatterlist *sgl,
+>  EXPORT_SYMBOL(dma_direct_unmap_sg);
+>  #endif
+>  
+> -static inline bool dma_direct_possible(struct device *dev, dma_addr_t dma_addr,
+> -		size_t size)
+> -{
+> -	return swiotlb_force != SWIOTLB_FORCE &&
+> -		dma_capable(dev, dma_addr, size, true);
+> -}
+> -
+>  dma_addr_t dma_direct_map_page(struct device *dev, struct page *page,
+>  		unsigned long offset, size_t size, enum dma_data_direction dir,
+>  		unsigned long attrs)
+> @@ -371,8 +364,13 @@ dma_addr_t dma_direct_map_page(struct device *dev, struct page *page,
+>  	phys_addr_t phys = page_to_phys(page) + offset;
+>  	dma_addr_t dma_addr = phys_to_dma(dev, phys);
+>  
+> -	if (unlikely(!dma_direct_possible(dev, dma_addr, size)) &&
+> -	    !swiotlb_map(dev, &phys, &dma_addr, size, dir, attrs)) {
+> +	if (unlikely(swiotlb_force == SWIOTLB_FORCE))
+> +		return swiotlb_map(dev, phys, size, dir, attrs);
+> +
+> +	if (unlikely(!dma_capable(dev, dma_addr, size, true))) {
+> +		if (swiotlb_force != SWIOTLB_NO_FORCE)
+> +			return swiotlb_map(dev, phys, size, dir, attrs);
+> +
+>  		report_addr(dev, dma_addr, size);
+>  		return DMA_MAPPING_ERROR;
+>  	}
+> diff --git a/kernel/dma/swiotlb.c b/kernel/dma/swiotlb.c
+> index 9280d6f8271e..589bb9a40f21 100644
+> --- a/kernel/dma/swiotlb.c
+> +++ b/kernel/dma/swiotlb.c
+> @@ -22,6 +22,7 @@
+>  
+>  #include <linux/cache.h>
+>  #include <linux/dma-direct.h>
+> +#include <linux/dma-noncoherent.h>
+>  #include <linux/mm.h>
+>  #include <linux/export.h>
+>  #include <linux/spinlock.h>
+> @@ -656,35 +657,39 @@ void swiotlb_tbl_sync_single(struct device *hwdev, phys_addr_t tlb_addr,
+>  }
+>  
+>  /*
+> - * Create a swiotlb mapping for the buffer at @phys, and in case of DMAing
+> + * Create a swiotlb mapping for the buffer at @paddr, and in case of DMAing
+>   * to the device copy the data into it as well.
+>   */
+> -bool swiotlb_map(struct device *dev, phys_addr_t *phys, dma_addr_t *dma_addr,
+> -		size_t size, enum dma_data_direction dir, unsigned long attrs)
+> +dma_addr_t swiotlb_map(struct device *dev, phys_addr_t paddr, size_t size,
+> +		enum dma_data_direction dir, unsigned long attrs)
+>  {
+> -	trace_swiotlb_bounced(dev, *dma_addr, size, swiotlb_force);
+> +	phys_addr_t swiotlb_addr;
+> +	dma_addr_t dma_addr;
+>  
+> -	if (unlikely(swiotlb_force == SWIOTLB_NO_FORCE)) {
+> -		dev_warn_ratelimited(dev,
+> -			"Cannot do DMA to address %pa\n", phys);
+> -		return false;
+> -	}
+> +	trace_swiotlb_bounced(dev, phys_to_dma(dev, paddr), size,
+> +			      swiotlb_force);
+>  
+> -	/* Oh well, have to allocate and map a bounce buffer. */
+> -	*phys = swiotlb_tbl_map_single(dev, __phys_to_dma(dev, io_tlb_start),
+> -			*phys, size, size, dir, attrs);
+> -	if (*phys == (phys_addr_t)DMA_MAPPING_ERROR)
+> -		return false;
+> +	swiotlb_addr = swiotlb_tbl_map_single(dev,
+> +			__phys_to_dma(dev, io_tlb_start),
+> +			paddr, size, size, dir, attrs);
+> +	if (swiotlb_addr == (phys_addr_t)DMA_MAPPING_ERROR)
+> +		return DMA_MAPPING_ERROR;
+>  
+>  	/* Ensure that the address returned is DMA'ble */
+> -	*dma_addr = __phys_to_dma(dev, *phys);
+> -	if (unlikely(!dma_capable(dev, *dma_addr, size, true))) {
+> -		swiotlb_tbl_unmap_single(dev, *phys, size, size, dir,
+> +	dma_addr = __phys_to_dma(dev, swiotlb_addr);
+> +	if (unlikely(!dma_capable(dev, dma_addr, size, true))) {
+> +		swiotlb_tbl_unmap_single(dev, swiotlb_addr, size, size, dir,
+>  			attrs | DMA_ATTR_SKIP_CPU_SYNC);
+> -		return false;
+> +		dev_err_once(dev,
+> +			"swiotlb addr %pad+%zu overflow (mask %llx, bus limit %llx).\n",
+> +			&dma_addr, size, *dev->dma_mask, dev->bus_dma_limit);
+> +		WARN_ON_ONCE(1);
+> +		return DMA_MAPPING_ERROR;
+>  	}
+>  
+> -	return true;
+> +	if (!dev_is_dma_coherent(dev) && !(attrs & DMA_ATTR_SKIP_CPU_SYNC))
+> +		arch_sync_dma_for_device(swiotlb_addr, size, dir);
+> +	return dma_addr;
+>  }
+>  
+>  size_t swiotlb_max_mapping_size(struct device *dev)
+> -- 
+> 2.24.1
+> 
+_______________________________________________
+iommu mailing list
+iommu@lists.linux-foundation.org
+https://lists.linuxfoundation.org/mailman/listinfo/iommu
