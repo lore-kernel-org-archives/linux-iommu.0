@@ -2,75 +2,102 @@ Return-Path: <SRS0=q6a/=3Z=lists.linux-foundation.org=iommu-bounces@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-8.2 required=3.0 tests=HEADER_FROM_DIFFERENT_DOMAINS,
+X-Spam-Status: No, score=-6.8 required=3.0 tests=HEADER_FROM_DIFFERENT_DOMAINS,
 	INCLUDES_PATCH,MAILING_LIST_MULTI,SIGNED_OFF_BY,SPF_HELO_NONE,SPF_PASS,
-	URIBL_BLOCKED,USER_AGENT_SANE_1 autolearn=ham autolearn_force=no version=3.4.0
+	URIBL_BLOCKED autolearn=unavailable autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 6ABC5C3524D
-	for <iommu@archiver.kernel.org>; Wed,  5 Feb 2020 01:28:16 +0000 (UTC)
-Received: from whitealder.osuosl.org (smtp1.osuosl.org [140.211.166.138])
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 4CA0DC35249
+	for <iommu@archiver.kernel.org>; Wed,  5 Feb 2020 06:19:47 +0000 (UTC)
+Received: from silver.osuosl.org (smtp3.osuosl.org [140.211.166.136])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by mail.kernel.org (Postfix) with ESMTPS id 38CC0214AF
-	for <iommu@archiver.kernel.org>; Wed,  5 Feb 2020 01:28:16 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 38CC0214AF
-Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=linux.intel.com
+	by mail.kernel.org (Postfix) with ESMTPS id 16B96217BA
+	for <iommu@archiver.kernel.org>; Wed,  5 Feb 2020 06:19:46 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 16B96217BA
+Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=intel.com
 Authentication-Results: mail.kernel.org; spf=pass smtp.mailfrom=iommu-bounces@lists.linux-foundation.org
 Received: from localhost (localhost [127.0.0.1])
-	by whitealder.osuosl.org (Postfix) with ESMTP id 05C6A85BBD;
-	Wed,  5 Feb 2020 01:28:16 +0000 (UTC)
+	by silver.osuosl.org (Postfix) with ESMTP id C37C92077C;
+	Wed,  5 Feb 2020 06:19:46 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from whitealder.osuosl.org ([127.0.0.1])
+Received: from silver.osuosl.org ([127.0.0.1])
 	by localhost (.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
-	with ESMTP id Koj0CCs5rLaY; Wed,  5 Feb 2020 01:28:15 +0000 (UTC)
+	with ESMTP id AEk4w8N80xym; Wed,  5 Feb 2020 06:19:45 +0000 (UTC)
 Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [140.211.9.56])
-	by whitealder.osuosl.org (Postfix) with ESMTP id 587AA854C0;
-	Wed,  5 Feb 2020 01:28:15 +0000 (UTC)
+	by silver.osuosl.org (Postfix) with ESMTP id 3684D204B9;
+	Wed,  5 Feb 2020 06:19:45 +0000 (UTC)
 Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
-	by lists.linuxfoundation.org (Postfix) with ESMTP id 3CB82C0177;
-	Wed,  5 Feb 2020 01:28:15 +0000 (UTC)
+	by lists.linuxfoundation.org (Postfix) with ESMTP id 1C9A2C1D81;
+	Wed,  5 Feb 2020 06:19:45 +0000 (UTC)
 Received: from fraxinus.osuosl.org (smtp4.osuosl.org [140.211.166.137])
- by lists.linuxfoundation.org (Postfix) with ESMTP id BE7DFC0174
- for <iommu@lists.linux-foundation.org>; Wed,  5 Feb 2020 01:28:13 +0000 (UTC)
+ by lists.linuxfoundation.org (Postfix) with ESMTP id 47A54C0174
+ for <iommu@lists.linux-foundation.org>; Wed,  5 Feb 2020 06:19:43 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
- by fraxinus.osuosl.org (Postfix) with ESMTP id A775E859D1
- for <iommu@lists.linux-foundation.org>; Wed,  5 Feb 2020 01:28:13 +0000 (UTC)
+ by fraxinus.osuosl.org (Postfix) with ESMTP id 43696842A8
+ for <iommu@lists.linux-foundation.org>; Wed,  5 Feb 2020 06:19:43 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
 Received: from fraxinus.osuosl.org ([127.0.0.1])
  by localhost (.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
- with ESMTP id W7Wlj6f4zHWi for <iommu@lists.linux-foundation.org>;
- Wed,  5 Feb 2020 01:28:12 +0000 (UTC)
+ with ESMTP id RoqcBju-v-sZ for <iommu@lists.linux-foundation.org>;
+ Wed,  5 Feb 2020 06:19:42 +0000 (UTC)
 X-Greylist: domain auto-whitelisted by SQLgrey-1.7.6
-Received: from mga12.intel.com (mga12.intel.com [192.55.52.136])
- by fraxinus.osuosl.org (Postfix) with ESMTPS id 663D385955
- for <iommu@lists.linux-foundation.org>; Wed,  5 Feb 2020 01:28:12 +0000 (UTC)
+Received: from mga17.intel.com (mga17.intel.com [192.55.52.151])
+ by fraxinus.osuosl.org (Postfix) with ESMTPS id 1EAED841AC
+ for <iommu@lists.linux-foundation.org>; Wed,  5 Feb 2020 06:19:42 +0000 (UTC)
 X-Amp-Result: SKIPPED(no attachment in message)
 X-Amp-File-Uploaded: False
-Received: from fmsmga008.fm.intel.com ([10.253.24.58])
- by fmsmga106.fm.intel.com with ESMTP/TLS/DHE-RSA-AES256-GCM-SHA384;
- 04 Feb 2020 17:28:11 -0800
+Received: from fmsmga001.fm.intel.com ([10.253.24.23])
+ by fmsmga107.fm.intel.com with ESMTP/TLS/DHE-RSA-AES256-GCM-SHA384;
+ 04 Feb 2020 22:19:35 -0800
 X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.70,403,1574150400"; d="scan'208";a="225690656"
-Received: from jingyilu-mobl2.ccr.corp.intel.com (HELO [10.254.209.127])
- ([10.254.209.127])
- by fmsmga008.fm.intel.com with ESMTP; 04 Feb 2020 17:28:10 -0800
-Subject: Re: [PATCH] iommu/intel-iommu: set as DUMMY_DEVICE_DOMAIN_INFO if no
- IOMMU
-To: Jian-Hong Pan <jian-hong@endlessm.com>
-References: <20200203091009.196658-1-jian-hong@endlessm.com>
- <aab0948d-c6a3-baa1-7343-f18c936d662d@linux.intel.com>
- <CAPpJ_edkkWm0DYHB3U8nQPv=z_o-aV4V7RDMuLTXL5N1H6ZYrA@mail.gmail.com>
-From: Lu Baolu <baolu.lu@linux.intel.com>
-Message-ID: <948da337-128f-22ae-7b2e-730b4b8da446@linux.intel.com>
-Date: Wed, 5 Feb 2020 09:28:09 +0800
-User-Agent: Mozilla/5.0 (Windows NT 10.0; WOW64; rv:68.0) Gecko/20100101
- Thunderbird/68.4.2
-MIME-Version: 1.0
-In-Reply-To: <CAPpJ_edkkWm0DYHB3U8nQPv=z_o-aV4V7RDMuLTXL5N1H6ZYrA@mail.gmail.com>
+X-IronPort-AV: E=Sophos;i="5.70,404,1574150400"; d="scan'208";a="343167986"
+Received: from fmsmsx103.amr.corp.intel.com ([10.18.124.201])
+ by fmsmga001.fm.intel.com with ESMTP; 04 Feb 2020 22:19:34 -0800
+Received: from fmsmsx609.amr.corp.intel.com (10.18.126.89) by
+ FMSMSX103.amr.corp.intel.com (10.18.124.201) with Microsoft SMTP Server (TLS)
+ id 14.3.439.0; Tue, 4 Feb 2020 22:19:34 -0800
+Received: from fmsmsx609.amr.corp.intel.com (10.18.126.89) by
+ fmsmsx609.amr.corp.intel.com (10.18.126.89) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.1713.5; Tue, 4 Feb 2020 22:19:34 -0800
+Received: from shsmsx102.ccr.corp.intel.com (10.239.4.154) by
+ fmsmsx609.amr.corp.intel.com (10.18.126.89) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256) id 15.1.1713.5
+ via Frontend Transport; Tue, 4 Feb 2020 22:19:33 -0800
+Received: from shsmsx104.ccr.corp.intel.com ([169.254.5.5]) by
+ shsmsx102.ccr.corp.intel.com ([169.254.2.126]) with mapi id 14.03.0439.000;
+ Wed, 5 Feb 2020 14:19:32 +0800
+From: "Liu, Yi L" <yi.l.liu@intel.com>
+To: Alex Williamson <alex.williamson@redhat.com>
+Subject: RE: [RFC v3 4/8] vfio/type1: Add VFIO_NESTING_GET_IOMMU_UAPI_VERSION
+Thread-Topic: [RFC v3 4/8] vfio/type1: Add VFIO_NESTING_GET_IOMMU_UAPI_VERSION
+Thread-Index: AQHV1pyVzTVYYyC090Ow388f+bA35qgBzDSAgALuTFCABInhgIAC5JFQ
+Date: Wed, 5 Feb 2020 06:19:31 +0000
+Message-ID: <A2975661238FB949B60364EF0F2C25743A1AAE53@SHSMSX104.ccr.corp.intel.com>
+References: <1580299912-86084-1-git-send-email-yi.l.liu@intel.com>
+ <1580299912-86084-5-git-send-email-yi.l.liu@intel.com>
+ <20200129165649.43008300@w520.home>
+ <A2975661238FB949B60364EF0F2C25743A1994A2@SHSMSX104.ccr.corp.intel.com>
+ <20200203110045.1fb3ec8d@w520.home>
+In-Reply-To: <20200203110045.1fb3ec8d@w520.home>
+Accept-Language: en-US
 Content-Language: en-US
-Cc: Linux Upstreaming Team <linux@endlessm.com>,
- David Woodhouse <dwmw2@infradead.org>, iommu@lists.linux-foundation.org,
- Linux Kernel <linux-kernel@vger.kernel.org>
+X-MS-Has-Attach: 
+X-MS-TNEF-Correlator: 
+dlp-product: dlpe-windows
+dlp-version: 11.2.0.6
+dlp-reaction: no-action
+x-ctpclassification: CTP_NT
+x-titus-metadata-40: eyJDYXRlZ29yeUxhYmVscyI6IiIsIk1ldGFkYXRhIjp7Im5zIjoiaHR0cDpcL1wvd3d3LnRpdHVzLmNvbVwvbnNcL0ludGVsMyIsImlkIjoiMDljNmJkZDgtYjc0Yi00MGNhLTkyZWUtOTIwMmI0ZjY2OWIyIiwicHJvcHMiOlt7Im4iOiJDVFBDbGFzc2lmaWNhdGlvbiIsInZhbHMiOlt7InZhbHVlIjoiQ1RQX05UIn1dfV19LCJTdWJqZWN0TGFiZWxzIjpbXSwiVE1DVmVyc2lvbiI6IjE3LjEwLjE4MDQuNDkiLCJUcnVzdGVkTGFiZWxIYXNoIjoiakkxU2NRcEg3R3NIdEM1d1JhblhWZTc5UVZqSTZaU0ZCUFFHbHlrSnhaMlc4SlBGQWFhWmZHOVFIaUliQUc5ZCJ9
+x-originating-ip: [10.239.127.40]
+MIME-Version: 1.0
+Cc: "Tian, Kevin" <kevin.tian@intel.com>, "Raj,
+ Ashok" <ashok.raj@intel.com>, "kvm@vger.kernel.org" <kvm@vger.kernel.org>,
+ "jean-philippe.brucker@arm.com" <jean-philippe.brucker@arm.com>, "Tian,
+ Jun J" <jun.j.tian@intel.com>,
+ "iommu@lists.linux-foundation.org" <iommu@lists.linux-foundation.org>,
+ "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>, "Sun, Yi
+ Y" <yi.y.sun@intel.com>
 X-BeenThere: iommu@lists.linux-foundation.org
 X-Mailman-Version: 2.1.15
 Precedence: list
@@ -83,41 +110,104 @@ List-Post: <mailto:iommu@lists.linux-foundation.org>
 List-Help: <mailto:iommu-request@lists.linux-foundation.org?subject=help>
 List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
  <mailto:iommu-request@lists.linux-foundation.org?subject=subscribe>
-Content-Transfer-Encoding: base64
-Content-Type: text/plain; charset="utf-8"; Format="flowed"
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: 7bit
 Errors-To: iommu-bounces@lists.linux-foundation.org
 Sender: "iommu" <iommu-bounces@lists.linux-foundation.org>
 
-SGksCgpPbiAyMDIwLzIvNCAxNzoyNSwgSmlhbi1Ib25nIFBhbiB3cm90ZToKPiBMdSBCYW9sdSA8
-YmFvbHUubHVAbGludXguaW50ZWwuY29tPiDmlrwgMjAyMOW5tDLmnIg05pelIOmAseS6jCDkuIvl
-jYgyOjEx5a+r6YGT77yaCj4+Cj4+IEhpLAo+Pgo+PiBPbiAyMDIwLzIvMyAxNzoxMCwgSmlhbi1I
-b25nIFBhbiB3cm90ZToKPj4+IElmIHRoZSBkZXZpY2UgaGFzIG5vIElPTU1VLCBpdCBzdGlsbCBp
-bnZva2VzIGlvbW11X25lZWRfbWFwcGluZyBkdXJpbmcKPj4+IGludGVsX2FsbG9jX2NvaGVyZW50
-LiBIb3dldmVyLCBpb21tdV9uZWVkX21hcHBpbmcgY2FuIG9ubHkgY2hlY2sgdGhlCj4+PiBkZXZp
-Y2UgaXMgRFVNTVlfREVWSUNFX0RPTUFJTl9JTkZPIG9yIG5vdC4gVGhpcyBwYXRjaCBtYXJrcyB0
-aGUgZGV2aWNlCj4+PiBpcyBhIERVTU1ZX0RFVklDRV9ET01BSU5fSU5GTyBpZiB0aGUgZGV2aWNl
-IGhhcyBubyBJT01NVS4KPj4+Cj4+PiBTaWduZWQtb2ZmLWJ5OiBKaWFuLUhvbmcgUGFuIDxqaWFu
-LWhvbmdAZW5kbGVzc20uY29tPgo+Pj4gLS0tCj4+PiAgICBkcml2ZXJzL2lvbW11L2ludGVsLWlv
-bW11LmMgfCA0ICsrKy0KPj4+ICAgIDEgZmlsZSBjaGFuZ2VkLCAzIGluc2VydGlvbnMoKyksIDEg
-ZGVsZXRpb24oLSkKPj4+Cj4+PiBkaWZmIC0tZ2l0IGEvZHJpdmVycy9pb21tdS9pbnRlbC1pb21t
-dS5jIGIvZHJpdmVycy9pb21tdS9pbnRlbC1pb21tdS5jCj4+PiBpbmRleCAzNWE0YTNhYmVkYzYu
-Ljg3OGJjOTg2YTAxNSAxMDA2NDQKPj4+IC0tLSBhL2RyaXZlcnMvaW9tbXUvaW50ZWwtaW9tbXUu
-Ywo+Pj4gKysrIGIvZHJpdmVycy9pb21tdS9pbnRlbC1pb21tdS5jCj4+PiBAQCAtNTYxMiw4ICs1
-NjEyLDEwIEBAIHN0YXRpYyBpbnQgaW50ZWxfaW9tbXVfYWRkX2RldmljZShzdHJ1Y3QgZGV2aWNl
-ICpkZXYpCj4+PiAgICAgICAgaW50IHJldDsKPj4+Cj4+PiAgICAgICAgaW9tbXUgPSBkZXZpY2Vf
-dG9faW9tbXUoZGV2LCAmYnVzLCAmZGV2Zm4pOwo+Pj4gLSAgICAgaWYgKCFpb21tdSkKPj4+ICsg
-ICAgIGlmICghaW9tbXUpIHsKPj4+ICsgICAgICAgICAgICAgZGV2LT5hcmNoZGF0YS5pb21tdSA9
-IERVTU1ZX0RFVklDRV9ET01BSU5fSU5GTzsKPj4KPj4gSXMgdGhpcyBhIERNQSBjYXBhYmxlIGRl
-dmljZT8KPiAKPiBEbyB5b3UgbWVhbiBpcyB0aGUgZGV2aWNlIGluIERNQSBSZW1hcHBpbmcgdGFi
-bGU/Cj4gRHVtcCBETUFSIGZyb20gQUNQSSB0YWJsZS4gIFRoZSBkZXZpY2UgaXMgbm90IGluIHRo
-ZSB0YWJsZS4KPiBTbywgaXQgZG9lcyBub3Qgc3VwcG9ydCBETUFSLCBJbnRlbCBJT01NVS4KPiAK
-PiBPciwgc2hvdWxkIGRldmljZV90b19pb21tdSBiZSBpbnZva2VkIGluIGlvbW11X25lZWRfbWFw
-cGluZyB0byBjaGVjawo+IElPTU1VIGZlYXR1cmUgYWdhaW4/Cj4gCgpOb3JtYWxseSBpbnRlbF9p
-b21tdV9hZGRfZGV2aWNlKCkgc2hvdWxkIG9ubHkgYmUgY2FsbGVkIGZvciBQQ0kgZGV2aWNlcwph
-bmQgQVBDSSBuYW1lIHNwYWNlIGRldmljZXMgKHJlcG9ydGVkIGluIEFDUEkvRE1BUiB0YWJsZSku
-IEluIGJvdGgKY2FzZXMsIGRldmljZV90b19pb21tdSgpIHNob3VsZCBhbHdheXMgcmV0dXJuIGEg
-Y29ycmVzcG9uZGluZyBpb21tdS4gSQpqdXN0IHRyaWVkIHRvIHVuZGVyc3RhbmQgd2h5IGl0IGZh
-aWxlZCBmb3IgeW91ciBjYXNlLgoKQmVzdCByZWdhcmRzLApiYW9sdQpfX19fX19fX19fX19fX19f
-X19fX19fX19fX19fX19fX19fX19fX19fX19fX19fXwppb21tdSBtYWlsaW5nIGxpc3QKaW9tbXVA
-bGlzdHMubGludXgtZm91bmRhdGlvbi5vcmcKaHR0cHM6Ly9saXN0cy5saW51eGZvdW5kYXRpb24u
-b3JnL21haWxtYW4vbGlzdGluZm8vaW9tbXU=
+> From: Alex Williamson [mailto:alex.williamson@redhat.com]
+> Sent: Tuesday, February 4, 2020 2:01 AM
+> To: Liu, Yi L <yi.l.liu@intel.com>
+> Subject: Re: [RFC v3 4/8] vfio/type1: Add
+> VFIO_NESTING_GET_IOMMU_UAPI_VERSION
+> 
+> On Fri, 31 Jan 2020 13:04:11 +0000
+> "Liu, Yi L" <yi.l.liu@intel.com> wrote:
+> 
+> > Hi Alex,
+> >
+> > > From: Alex Williamson [mailto:alex.williamson@redhat.com]
+> > > Sent: Thursday, January 30, 2020 7:57 AM
+> > > To: Liu, Yi L <yi.l.liu@intel.com>
+> > > Subject: Re: [RFC v3 4/8] vfio/type1: Add
+> > > VFIO_NESTING_GET_IOMMU_UAPI_VERSION
+> > >
+> > > On Wed, 29 Jan 2020 04:11:48 -0800
+> > > "Liu, Yi L" <yi.l.liu@intel.com> wrote:
+> > >
+> > > > From: Liu Yi L <yi.l.liu@intel.com>
+> > > >
+> > > > In Linux Kernel, the IOMMU nesting translation (a.k.a. IOMMU dual stage
+> > > > translation capability) is abstracted in uapi/iommu.h, in which the uAPIs
+> > > > like bind_gpasid/iommu_cache_invalidate/fault_report/pgreq_resp are defined.
+> > > >
+> > > > VFIO_TYPE1_NESTING_IOMMU stands for the vfio iommu type which is backed
+> by
+> > > > IOMMU nesting translation capability. VFIO exposes the nesting capability
+> > > > to userspace and also exposes uAPIs (will be added in later patches) to user
+> > > > space for setting up nesting translation from userspace. Thus applications
+> > > > like QEMU could support vIOMMU for pass-through devices with IOMMU
+> nesting
+> > > > translation capability.
+> > > >
+> > > > As VFIO expose the nesting IOMMU programming to userspace, it also needs to
+> > > > provide an API for the uapi/iommu.h version check to ensure compatibility.
+> > > > This patch reports the iommu uapi version to userspace. Applications could
+> > > > use this API to do version check before further using the nesting uAPIs.
+> > > >
+> > > > Cc: Kevin Tian <kevin.tian@intel.com>
+> > > > CC: Jacob Pan <jacob.jun.pan@linux.intel.com>
+> > > > Cc: Alex Williamson <alex.williamson@redhat.com>
+> > > > Cc: Eric Auger <eric.auger@redhat.com>
+> > > > Cc: Jean-Philippe Brucker <jean-philippe.brucker@arm.com>
+> > > > Signed-off-by: Liu Yi L <yi.l.liu@intel.com>
+> > > > ---
+> > > >  drivers/vfio/vfio.c       |  3 +++
+> > > >  include/uapi/linux/vfio.h | 10 ++++++++++
+> > > >  2 files changed, 13 insertions(+)
+> > > >
+> > > > diff --git a/drivers/vfio/vfio.c b/drivers/vfio/vfio.c
+> > > > index 425d60a..9087ad4 100644
+> > > > --- a/drivers/vfio/vfio.c
+> > > > +++ b/drivers/vfio/vfio.c
+> > > > @@ -1170,6 +1170,9 @@ static long vfio_fops_unl_ioctl(struct file *filep,
+> > > >  	case VFIO_GET_API_VERSION:
+> > > >  		ret = VFIO_API_VERSION;
+> > > >  		break;
+> > > > +	case VFIO_NESTING_GET_IOMMU_UAPI_VERSION:
+> > > > +		ret = iommu_get_uapi_version();
+> > > > +		break;
+> > >
+> > > Shouldn't the type1 backend report this?  It doesn't make much sense
+> > > that the spapr backend reports a version for something it doesn't
+> > > support.  Better yet, provide this info gratuitously in the
+> > > VFIO_IOMMU_GET_INFO ioctl return like you do with nesting in the next
+> > > patch, then it can help the user figure out if this support is present.
+> >
+> > yeah, it would be better to report it by type1 backed. However,
+> > it is kind of issue when QEMU using it.
+> >
+> > My series "hooks" vSVA supports on VFIO_TYPE1_NESTING_IOMMU type.
+> > [RFC v3 09/25] vfio: check VFIO_TYPE1_NESTING_IOMMU support
+> > https://www.spinics.net/lists/kvm/msg205197.html
+> >
+> > In QEMU, it will determine the iommu type firstly and then invoke
+> > VFIO_SET_IOMMU. I think before selecting VFIO_TYPE1_NESTING_IOMMU,
+> > QEMU needs to check the IOMMU uAPI version. If IOMMU uAPI is incompatible,
+> > QEMU should not use VFIO_TYPE1_NESTING_IOMMU type. If
+> > VFIO_NESTING_GET_IOMMU_UAPI_VERSION is available after set iommu, then it
+> > may be an issue. That's why this series reports the version in vfio layer
+> > instead of type1 backend.
+> 
+> Why wouldn't you use CHECK_EXTENSION?  You could probe specifically for
+> a VFIO_TYP1_NESTING_IOMMU_UAPI_VERSION extension that returns the
+> version number.  Thanks,
+
+oh, yes. Thanks for this guiding. :-)
+
+Regards,
+Yi Liu
+_______________________________________________
+iommu mailing list
+iommu@lists.linux-foundation.org
+https://lists.linuxfoundation.org/mailman/listinfo/iommu
