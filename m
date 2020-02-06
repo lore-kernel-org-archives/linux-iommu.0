@@ -2,75 +2,101 @@ Return-Path: <SRS0=jQQH=32=lists.linux-foundation.org=iommu-bounces@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-8.2 required=3.0 tests=HEADER_FROM_DIFFERENT_DOMAINS,
-	INCLUDES_PATCH,MAILING_LIST_MULTI,SIGNED_OFF_BY,SPF_HELO_NONE,SPF_PASS,
-	URIBL_BLOCKED,USER_AGENT_SANE_2 autolearn=unavailable autolearn_force=no
-	version=3.4.0
+X-Spam-Status: No, score=-0.5 required=3.0 tests=DKIM_INVALID,DKIM_SIGNED,
+	HEADER_FROM_DIFFERENT_DOMAINS,MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS,
+	URIBL_BLOCKED autolearn=no autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id CDEFDC33CAC
-	for <iommu@archiver.kernel.org>; Thu,  6 Feb 2020 18:17:35 +0000 (UTC)
-Received: from fraxinus.osuosl.org (smtp4.osuosl.org [140.211.166.137])
+	by smtp.lore.kernel.org (Postfix) with ESMTP id DE415C33CAC
+	for <iommu@archiver.kernel.org>; Thu,  6 Feb 2020 18:47:17 +0000 (UTC)
+Received: from whitealder.osuosl.org (smtp1.osuosl.org [140.211.166.138])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by mail.kernel.org (Postfix) with ESMTPS id A9E7B214AF
-	for <iommu@archiver.kernel.org>; Thu,  6 Feb 2020 18:17:35 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org A9E7B214AF
-Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=linux.intel.com
+	by mail.kernel.org (Postfix) with ESMTPS id A3416214AF
+	for <iommu@archiver.kernel.org>; Thu,  6 Feb 2020 18:47:17 +0000 (UTC)
+Authentication-Results: mail.kernel.org;
+	dkim=fail reason="signature verification failed" (1024-bit key) header.d=redhat.com header.i=@redhat.com header.b="F9xgnjNE"
+DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org A3416214AF
+Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=redhat.com
 Authentication-Results: mail.kernel.org; spf=pass smtp.mailfrom=iommu-bounces@lists.linux-foundation.org
 Received: from localhost (localhost [127.0.0.1])
-	by fraxinus.osuosl.org (Postfix) with ESMTP id 82DB7860E6;
-	Thu,  6 Feb 2020 18:17:35 +0000 (UTC)
-X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from fraxinus.osuosl.org ([127.0.0.1])
-	by localhost (.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
-	with ESMTP id AqMAtuZKmMc1; Thu,  6 Feb 2020 18:17:34 +0000 (UTC)
-Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [140.211.9.56])
-	by fraxinus.osuosl.org (Postfix) with ESMTP id 5FEE6860C5;
-	Thu,  6 Feb 2020 18:17:34 +0000 (UTC)
-Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
-	by lists.linuxfoundation.org (Postfix) with ESMTP id 53A6DC0881;
-	Thu,  6 Feb 2020 18:17:34 +0000 (UTC)
-Received: from whitealder.osuosl.org (smtp1.osuosl.org [140.211.166.138])
- by lists.linuxfoundation.org (Postfix) with ESMTP id A3D64C013E
- for <iommu@lists.linux-foundation.org>; Thu,  6 Feb 2020 18:17:32 +0000 (UTC)
-Received: from localhost (localhost [127.0.0.1])
- by whitealder.osuosl.org (Postfix) with ESMTP id 91D1F869C7
- for <iommu@lists.linux-foundation.org>; Thu,  6 Feb 2020 18:17:32 +0000 (UTC)
+	by whitealder.osuosl.org (Postfix) with ESMTP id 47606869C4;
+	Thu,  6 Feb 2020 18:47:17 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
 Received: from whitealder.osuosl.org ([127.0.0.1])
+	by localhost (.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
+	with ESMTP id V3pUtHkTnCw4; Thu,  6 Feb 2020 18:47:16 +0000 (UTC)
+Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [140.211.9.56])
+	by whitealder.osuosl.org (Postfix) with ESMTP id 2C396867F0;
+	Thu,  6 Feb 2020 18:47:16 +0000 (UTC)
+Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
+	by lists.linuxfoundation.org (Postfix) with ESMTP id 146ABC0881;
+	Thu,  6 Feb 2020 18:47:16 +0000 (UTC)
+Received: from hemlock.osuosl.org (smtp2.osuosl.org [140.211.166.133])
+ by lists.linuxfoundation.org (Postfix) with ESMTP id 478F8C013E
+ for <iommu@lists.linux-foundation.org>; Thu,  6 Feb 2020 18:47:15 +0000 (UTC)
+Received: from localhost (localhost [127.0.0.1])
+ by hemlock.osuosl.org (Postfix) with ESMTP id 3D8E7856E4
+ for <iommu@lists.linux-foundation.org>; Thu,  6 Feb 2020 18:47:15 +0000 (UTC)
+X-Virus-Scanned: amavisd-new at osuosl.org
+Received: from hemlock.osuosl.org ([127.0.0.1])
  by localhost (.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
- with ESMTP id eWflQ3CZuZBw for <iommu@lists.linux-foundation.org>;
- Thu,  6 Feb 2020 18:17:31 +0000 (UTC)
+ with ESMTP id RQ2qnOc8EBQX for <iommu@lists.linux-foundation.org>;
+ Thu,  6 Feb 2020 18:47:14 +0000 (UTC)
 X-Greylist: domain auto-whitelisted by SQLgrey-1.7.6
-Received: from mga09.intel.com (mga09.intel.com [134.134.136.24])
- by whitealder.osuosl.org (Postfix) with ESMTPS id D232E869B4
- for <iommu@lists.linux-foundation.org>; Thu,  6 Feb 2020 18:17:31 +0000 (UTC)
-X-Amp-Result: SKIPPED(no attachment in message)
-X-Amp-File-Uploaded: False
-Received: from fmsmga008.fm.intel.com ([10.253.24.58])
- by orsmga102.jf.intel.com with ESMTP/TLS/DHE-RSA-AES256-GCM-SHA384;
- 06 Feb 2020 10:17:31 -0800
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.70,410,1574150400"; d="scan'208";a="226230816"
-Received: from jacob-builder.jf.intel.com (HELO jacob-builder) ([10.7.199.155])
- by fmsmga008.fm.intel.com with ESMTP; 06 Feb 2020 10:17:29 -0800
-Date: Thu, 6 Feb 2020 10:22:47 -0800
-From: Jacob Pan <jacob.jun.pan@linux.intel.com>
-To: Auger Eric <eric.auger@redhat.com>
-Subject: Re: [PATCH 1/3] iommu/uapi: Define uapi version and capabilities
-Message-ID: <20200206102247.4eeb5791@jacob-builder>
-In-Reply-To: <699faadb-e714-e36d-152a-5b650c0a403f@redhat.com>
-References: <1580277724-66994-1-git-send-email-jacob.jun.pan@linux.intel.com>
- <1580277724-66994-2-git-send-email-jacob.jun.pan@linux.intel.com>
- <699faadb-e714-e36d-152a-5b650c0a403f@redhat.com>
-Organization: OTC
-X-Mailer: Claws Mail 3.13.2 (GTK+ 2.24.30; x86_64-pc-linux-gnu)
+Received: from us-smtp-delivery-1.mimecast.com (us-smtp-2.mimecast.com
+ [207.211.31.81])
+ by hemlock.osuosl.org (Postfix) with ESMTPS id 8014084B6A
+ for <iommu@lists.linux-foundation.org>; Thu,  6 Feb 2020 18:47:14 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+ s=mimecast20190719; t=1581014833;
+ h=from:from:reply-to:reply-to:subject:subject:date:date:
+ message-id:message-id:to:to:cc:mime-version:mime-version:
+ content-type:content-type:in-reply-to:in-reply-to:  references:references;
+ bh=qSDxKWyCWvWtbJf46RmJJMTR7h2WL3fWMo9v12E7/Pc=;
+ b=F9xgnjNEdFMKvrYoHhPPx3DsUqYq6ISQVx5OFp0UTB5+6RELoL9dr9Bc4eivwb1H12Uz5x
+ JmHSQGYmBZAR7nPLT1s0YJOb7NSiO3MrmtZs1LnRVD22LVv7Z4OgABVL3MzYQ7X3S2v5ho
+ 0EC0MTlv2h/YpRATFk3SalqpO6BQkc4=
+Received: from mail-yw1-f69.google.com (mail-yw1-f69.google.com
+ [209.85.161.69]) (Using TLS) by relay.mimecast.com with ESMTP id
+ us-mta-165-KLNY2EYIOU2nDCk7VFjQpQ-1; Thu, 06 Feb 2020 13:47:10 -0500
+Received: by mail-yw1-f69.google.com with SMTP id i70so7997113ywe.23
+ for <iommu@lists.linux-foundation.org>; Thu, 06 Feb 2020 10:47:10 -0800 (PST)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+ d=1e100.net; s=20161025;
+ h=x-gm-message-state:date:from:to:subject:message-id:reply-to
+ :references:mime-version:content-disposition:in-reply-to;
+ bh=qSDxKWyCWvWtbJf46RmJJMTR7h2WL3fWMo9v12E7/Pc=;
+ b=jvxdH3sJGUH1sx4iBpQXbPEtfd5yUszFBZKdK891shCjC6Q1zNMJir2zeJavekq+ya
+ D2tzvpTXnAaHJ2GeEX0yAB/CMduji9Lborq4RqcP6aYMPoRCXcJJWB22Ad3nk1QKCNNo
+ h55dvr6/pR4pjMw+dTLInf9wYVZYruQSlsZ8O96wiYlOKJMt7SyxY4LPpPPfcsyAeMbZ
+ urapimyL7NywVBHakctaaII8tV8cNHwIDAeufi8nPCtmLMvB3p5nGVgeIQlw+1NRRVq2
+ /x1VpQ9Y3PKaCuAmGgeKFrsWH2KQkSlGbIxLD0VqLnfp/rVRuzIEFBAaa9l3AfM+DyVg
+ VzoA==
+X-Gm-Message-State: APjAAAXKM53uPAu7J6d1klnZ6m/GlOT9UEfaunHEmLed+p20jGjI5NVv
+ Bl8BANmUUTrUAJnAkvCRuTTwgXExNrm9j0sBm8OnbOUa1yS2H+8y/A+g1MBO5gK5+/u0+9OEqOJ
+ LG3qwyqT/sA92yEfxMmv49J8VdtGNBg==
+X-Received: by 2002:a81:8a03:: with SMTP id a3mr4640398ywg.80.1581014829706;
+ Thu, 06 Feb 2020 10:47:09 -0800 (PST)
+X-Google-Smtp-Source: APXvYqxXRJouNlp7XfIUCM5j7uzcld7zYZ7D4J8rHgNhL1hpNAleVTmAT1pYKL6q/VkT0eqjF2MKzA==
+X-Received: by 2002:a81:8a03:: with SMTP id a3mr4640373ywg.80.1581014829353;
+ Thu, 06 Feb 2020 10:47:09 -0800 (PST)
+Received: from localhost (ip70-163-223-149.ph.ph.cox.net. [70.163.223.149])
+ by smtp.gmail.com with ESMTPSA id p1sm133761ywh.74.2020.02.06.10.47.08
+ (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+ Thu, 06 Feb 2020 10:47:08 -0800 (PST)
+Date: Thu, 6 Feb 2020 11:47:07 -0700
+From: Jerry Snitselaar <jsnitsel@redhat.com>
+To: iommu@lists.linux-foundation.org, Lu Baolu <baolu.lu@linux.intel.com>
+Subject: Re: Seeing some another issue with mixed domains in the same
+ iommu_group
+Message-ID: <20200206184707.h3lfh2qaxaooe2vi@cantor>
+References: <20200206175432.4r5vaurm6codfa4a@cantor>
 MIME-Version: 1.0
-Cc: "Tian, Kevin" <kevin.tian@intel.com>,
- Alex Williamson <alex.williamson@redhat.com>, Raj Ashok <ashok.raj@intel.com>,
- Jean-Philippe Brucker <jean-philippe@linaro.com>,
- LKML <linux-kernel@vger.kernel.org>, iommu@lists.linux-foundation.org,
- David Woodhouse <dwmw2@infradead.org>, Jonathan Cameron <jic23@kernel.org>
+In-Reply-To: <20200206175432.4r5vaurm6codfa4a@cantor>
+X-MC-Unique: KLNY2EYIOU2nDCk7VFjQpQ-1
+X-Mimecast-Spam-Score: 0
+X-Mimecast-Originator: redhat.com
+Content-Disposition: inline
 X-BeenThere: iommu@lists.linux-foundation.org
 X-Mailman-Version: 2.1.15
 Precedence: list
@@ -83,112 +109,85 @@ List-Post: <mailto:iommu@lists.linux-foundation.org>
 List-Help: <mailto:iommu-request@lists.linux-foundation.org?subject=help>
 List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
  <mailto:iommu-request@lists.linux-foundation.org?subject=subscribe>
-Content-Type: text/plain; charset="us-ascii"
+Reply-To: Jerry Snitselaar <jsnitsel@redhat.com>
 Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset="us-ascii"; Format="flowed"
 Errors-To: iommu-bounces@lists.linux-foundation.org
 Sender: "iommu" <iommu-bounces@lists.linux-foundation.org>
 
-On Thu, 6 Feb 2020 11:14:27 +0100
-Auger Eric <eric.auger@redhat.com> wrote:
+On Thu Feb 06 20, Jerry Snitselaar wrote:
+>Hi Baolu,
+>
+>I'm seeing another issue with the devices in the HP ilo when the
+>system is booted with intel_iommu=on and iommu=pt (iommu=nopt does not
+>run into problems).
+>
+>first system:
+>
+>01:00.0 System peripheral: Hewlett-Packard Company Integrated Lights-Out Standard Slave Instrumentation & System Support (rev 05)
+>01:00.1 VGA compatible controller: Matrox Electronics Systems Ltd. MGA G200EH
+>01:00.2 System peripheral: Hewlett-Packard Company Integrated Lights-Out Standard Management Processor Support and Messaging (rev 05)
+>01:00.4 USB controller: Hewlett-Packard Company Integrated Lights-Out Standard Virtual USB Controller (rev 02)
+>
+>[   21.208103] pci 0000:01:00.0: Adding to iommu group 24
+>[   21.210911] pci 0000:01:00.0: Using iommu dma mapping
+>[   21.212635] pci 0000:01:00.1: Adding to iommu group 24
+>[   21.214326] pci 0000:01:00.1: Device uses a private identity domain.
+>[   21.216507] pci 0000:01:00.2: Adding to iommu group 24
+>[   21.618173] pci 0000:01:00.4: Adding to iommu group 24
+>[   21.619839] pci 0000:01:00.4: Device uses a private identity domain.
+>
+>[   26.206832] uhci_hcd: USB Universal Host Controller Interface driver
+>[   26.209044] uhci_hcd 0000:01:00.4: UHCI Host Controller
+>[   26.210897] uhci_hcd 0000:01:00.4: new USB bus registered, assigned bus number 3
+>[   26.213247] uhci_hcd 0000:01:00.4: detected 8 ports
+>[   26.214810] uhci_hcd 0000:01:00.4: port count misdetected? forcing to 2 ports
+>[   26.217153] uhci_hcd 0000:01:00.4: irq 16, io base 0x00003c00
+>[   26.219171] uhci_hcd 0000:01:00.4: 32bit DMA uses non-identity mapping
+>[   26.221261] uhci_hcd 0000:01:00.4: unable to allocate consistent memory for frame list
+>[   26.223787] uhci_hcd 0000:01:00.4: startup error -16
+>[   26.225381] uhci_hcd 0000:01:00.4: USB bus 3 deregistered
+>[   26.227378] uhci_hcd 0000:01:00.4: init 0000:01:00.4 fail, -16
+>[   26.229296] uhci_hcd: probe of 0000:01:00.4 failed with error -16
+>
+>
+>different system with similar issue:
+>
+>01:00.0 System peripheral [0880]: Hewlett-Packard Company Integrated Lights-Out Standard Slave Instrumentation & System Support [103c:3306] (rev 07)
+>01:00.1 VGA compatible controller [0300]: Matrox Electronics Systems Ltd. MGA G200eH3 [102b:0538] (rev 02) (prog-if 00 [VGA controller])
+>01:00.2 System peripheral [0880]: Hewlett-Packard Company Integrated Lights-Out Standard Management Processor Support and Messaging [103c:3307] (rev 07)
+>01:00.4 USB controller [0c03]: Hewlett-Packard Company iLO5 Virtual USB Controller [103c:22f6] (prog-if 20 [EHCI])
+>
+>[   13.695663] pci 0000:01:00.0: Adding to iommu group 10
+>[   13.703667] pci 0000:01:00.0: Using iommu dma mapping
+>[   13.708871] pci 0000:01:00.1: Adding to iommu group 10
+>[   13.714033] pci 0000:01:00.1: DMAR: Device uses a private identity domain.
+>[   13.721033] pci 0000:01:00.2: Adding to iommu group 10
+>[   13.726290] pci 0000:01:00.4: Adding to iommu group 10
+>[   13.731453] pci 0000:01:00.4: DMAR: Device uses a private identity domain.
+>
+>[   17.157796] ehci_hcd: USB 2.0 'Enhanced' Host Controller (EHCI) Driver
+>[   17.164348] ehci-pci: EHCI PCI platform driver
+>[   17.170061] ehci-pci 0000:01:00.4: EHCI Host Controller
+>[   17.175457] ehci-pci 0000:01:00.4: new USB bus registered, assigned bus number 1
+>[   17.182912] ehci-pci 0000:01:00.4: DMAR: 32bit DMA uses non-identity mapping
+>[   17.189988] ehci-pci 0000:01:00.4: can't setup: -12
+>[   17.194884] ehci-pci 0000:01:00.4: USB bus 1 deregistered
+>[   17.200567] ehci-pci 0000:01:00.4: init 0000:01:00.4 fail, -12
+>[   17.206508] ehci-pci: probe of 0000:01:00.4 failed with error -12
+>
+>
+>I'm looking through the code and trying to debug it, but any thoughts on this?
+>
+>Regards,
+>Jerry
 
-> Hi Jacob,
-> On 1/29/20 7:02 AM, Jacob Pan wrote:
-> > Define a unified UAPI version to be used for compatibility
-> > checks between user and kernel.
-> > 
-> > Signed-off-by: Liu Yi L <yi.l.liu@intel.com>
-> > Signed-off-by: Jacob Pan <jacob.jun.pan@linux.intel.com>
-> > ---
-> >  include/uapi/linux/iommu.h | 48
-> > ++++++++++++++++++++++++++++++++++++++++++++++ 1 file changed, 48
-> > insertions(+)
-> > 
-> > diff --git a/include/uapi/linux/iommu.h b/include/uapi/linux/iommu.h
-> > index fcafb6401430..65a26c2519ee 100644
-> > --- a/include/uapi/linux/iommu.h
-> > +++ b/include/uapi/linux/iommu.h
-> > @@ -8,6 +8,54 @@
-> >  
-> >  #include <linux/types.h>
-> >  
-> > +/**
-> > + * Current version of the IOMMU user API. This is intended for
-> > query
-> > + * between user and kernel to determine compatible data structures.
-> > + *
-> > + * Having a single UAPI version to govern the user-kernel data
-> > structures
-> > + * makes compatibility check straightforward. On the contrary,
-> > supporting
-> > + * combinations of multiple versions of the data can be a
-> > nightmare.  
-> I would rather put the above justification in the commit msg and not
-> here.
-make sense.
+In iommu_need_mapping, in a case like the above does something like dmar_insert_one_dev_info need to
+happen to associate the device back with the group default domain? In intel_iommu_add_device it is
+going to get removed and added to the identity domain, and then in iommu_need_mapping it gets removed
+from the identity domain, and iommu_request_dma_domain_for_dev should return 0 because the group
+default domain at this point is the correct type.
 
-> > + *
-> > + * UAPI version can be bumped up with the following rules:
-> > + * 1. All data structures passed between user and kernel space
-> > share
-> > + *    the same version number. i.e. any extension to to any
-> > structure  
-> s/to to/to
-will fix.
-
-> > + *    results in version bump up.  
-> in a version number increment?
-sounds good, more specific.
-
-> > + *
-> > + * 2. Data structures are open to extension but closed to
-> > modification.> + *    New fields must be added at the end of each
-> > data structure with
-> > + *    64bit alignment. Flag bits can be added without size change
-> > but
-> > + *    existing ones cannot be altered.
-> > + *
-> > + * 3. Versions are backward compatible.
-> > + *
-> > + * 4. Version to size lookup is supported by kernel internal API
-> > for each
-> > + *    API function type. @version is mandatory for new data
-> > structures
-> > + *    and must be at the beginning with type of __u32.
-> > + */
-> > +#define IOMMU_UAPI_VERSION	1
-> > +static inline int iommu_get_uapi_version(void)
-> > +{
-> > +	return IOMMU_UAPI_VERSION;
-> > +}
-> > +
-> > +/*
-> > + * Supported UAPI features that can be reported to user space.
-> > + * These types represent the capability available in the kernel.
-> > + *
-> > + * REVISIT: UAPI version also implies the capabilities. Should we
-> > + * report them explicitly?
-> > + */
-> > +enum IOMMU_UAPI_DATA_TYPES {
-> > +	IOMMU_UAPI_BIND_GPASID,
-> > +	IOMMU_UAPI_CACHE_INVAL,
-> > +	IOMMU_UAPI_PAGE_RESP,
-> > +	NR_IOMMU_UAPI_TYPE,
-> > +};
-> > +
-> > +#define IOMMU_UAPI_CAP_MASK ((1 << IOMMU_UAPI_BIND_GPASID)
-> > |	\
-> > +				(1 << IOMMU_UAPI_CACHE_INVAL)
-> > |	\
-> > +				(1 << IOMMU_UAPI_PAGE_RESP))
-> > +
-> >  #define IOMMU_FAULT_PERM_READ	(1 << 0) /* read */
-> >  #define IOMMU_FAULT_PERM_WRITE	(1 << 1) /* write */
-> >  #define IOMMU_FAULT_PERM_EXEC	(1 << 2) /* exec */
-> >   
-> Thanks
-> 
-> Eric
-> 
 _______________________________________________
 iommu mailing list
 iommu@lists.linux-foundation.org
