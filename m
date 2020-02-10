@@ -6,60 +6,55 @@ X-Spam-Status: No, score=-9.8 required=3.0 tests=HEADER_FROM_DIFFERENT_DOMAINS,
 	INCLUDES_PATCH,MAILING_LIST_MULTI,SIGNED_OFF_BY,SPF_HELO_NONE,SPF_PASS,
 	USER_AGENT_GIT autolearn=ham autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 49198C352A4
-	for <iommu@archiver.kernel.org>; Mon, 10 Feb 2020 07:51:33 +0000 (UTC)
-Received: from whitealder.osuosl.org (smtp1.osuosl.org [140.211.166.138])
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 2E738C352A4
+	for <iommu@archiver.kernel.org>; Mon, 10 Feb 2020 09:37:11 +0000 (UTC)
+Received: from fraxinus.osuosl.org (smtp4.osuosl.org [140.211.166.137])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by mail.kernel.org (Postfix) with ESMTPS id 12A1E20733
-	for <iommu@archiver.kernel.org>; Mon, 10 Feb 2020 07:51:32 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 12A1E20733
-Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=canonical.com
+	by mail.kernel.org (Postfix) with ESMTPS id D726B214DB
+	for <iommu@archiver.kernel.org>; Mon, 10 Feb 2020 09:37:10 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org D726B214DB
+Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=8bytes.org
 Authentication-Results: mail.kernel.org; spf=pass smtp.mailfrom=iommu-bounces@lists.linux-foundation.org
 Received: from localhost (localhost [127.0.0.1])
-	by whitealder.osuosl.org (Postfix) with ESMTP id D0DFE84543;
-	Mon, 10 Feb 2020 07:51:32 +0000 (UTC)
+	by fraxinus.osuosl.org (Postfix) with ESMTP id AE9B7850EA;
+	Mon, 10 Feb 2020 09:37:10 +0000 (UTC)
+X-Virus-Scanned: amavisd-new at osuosl.org
+Received: from fraxinus.osuosl.org ([127.0.0.1])
+	by localhost (.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
+	with ESMTP id T79DdmbdT18i; Mon, 10 Feb 2020 09:37:09 +0000 (UTC)
+Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [140.211.9.56])
+	by fraxinus.osuosl.org (Postfix) with ESMTP id 711758512E;
+	Mon, 10 Feb 2020 09:37:08 +0000 (UTC)
+Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
+	by lists.linuxfoundation.org (Postfix) with ESMTP id 58DFCC1796;
+	Mon, 10 Feb 2020 09:37:08 +0000 (UTC)
+Received: from whitealder.osuosl.org (smtp1.osuosl.org [140.211.166.138])
+ by lists.linuxfoundation.org (Postfix) with ESMTP id D0364C0171
+ for <iommu@lists.linux-foundation.org>; Mon, 10 Feb 2020 09:37:06 +0000 (UTC)
+Received: from localhost (localhost [127.0.0.1])
+ by whitealder.osuosl.org (Postfix) with ESMTP id BF3FF84798
+ for <iommu@lists.linux-foundation.org>; Mon, 10 Feb 2020 09:37:06 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
 Received: from whitealder.osuosl.org ([127.0.0.1])
-	by localhost (.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
-	with ESMTP id txfs8Ab4oS37; Mon, 10 Feb 2020 07:51:29 +0000 (UTC)
-Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [140.211.9.56])
-	by whitealder.osuosl.org (Postfix) with ESMTP id 3A326844C0;
-	Mon, 10 Feb 2020 07:51:29 +0000 (UTC)
-Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
-	by lists.linuxfoundation.org (Postfix) with ESMTP id 27209C1796;
-	Mon, 10 Feb 2020 07:51:29 +0000 (UTC)
-Received: from hemlock.osuosl.org (smtp2.osuosl.org [140.211.166.133])
- by lists.linuxfoundation.org (Postfix) with ESMTP id 1A1A8C0171
- for <iommu@lists.linux-foundation.org>; Mon, 10 Feb 2020 07:51:27 +0000 (UTC)
-Received: from localhost (localhost [127.0.0.1])
- by hemlock.osuosl.org (Postfix) with ESMTP id 033B785EA5
- for <iommu@lists.linux-foundation.org>; Mon, 10 Feb 2020 07:51:27 +0000 (UTC)
-X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from hemlock.osuosl.org ([127.0.0.1])
  by localhost (.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
- with ESMTP id C3lKFtV5syRr for <iommu@lists.linux-foundation.org>;
- Mon, 10 Feb 2020 07:51:25 +0000 (UTC)
-X-Greylist: domain auto-whitelisted by SQLgrey-1.7.6
-Received: from youngberry.canonical.com (youngberry.canonical.com
- [91.189.89.112])
- by hemlock.osuosl.org (Postfix) with ESMTPS id BB8BA85E0D
- for <iommu@lists.linux-foundation.org>; Mon, 10 Feb 2020 07:51:25 +0000 (UTC)
-Received: from 61-220-137-37.hinet-ip.hinet.net ([61.220.137.37]
- helo=localhost) by youngberry.canonical.com with esmtpsa
- (TLS1.2:ECDHE_RSA_AES_128_GCM_SHA256:128) (Exim 4.86_2)
- (envelope-from <kai.heng.feng@canonical.com>)
- id 1j13qk-0008DR-0d; Mon, 10 Feb 2020 07:51:22 +0000
-From: Kai-Heng Feng <kai.heng.feng@canonical.com>
-To: joro@8bytes.org
-Subject: [PATCH v3] iommu/amd: Disable IOMMU on Stoney Ridge systems
-Date: Mon, 10 Feb 2020 15:51:15 +0800
-Message-Id: <20200210075115.14838-1-kai.heng.feng@canonical.com>
+ with ESMTP id MwFB7ldzklXT for <iommu@lists.linux-foundation.org>;
+ Mon, 10 Feb 2020 09:37:04 +0000 (UTC)
+X-Greylist: from auto-whitelisted by SQLgrey-1.7.6
+Received: from theia.8bytes.org (8bytes.org [81.169.241.247])
+ by whitealder.osuosl.org (Postfix) with ESMTPS id D90BC8444E
+ for <iommu@lists.linux-foundation.org>; Mon, 10 Feb 2020 09:37:03 +0000 (UTC)
+Received: by theia.8bytes.org (Postfix, from userid 1000)
+ id 7BC0534A; Mon, 10 Feb 2020 10:36:59 +0100 (CET)
+From: Joerg Roedel <joro@8bytes.org>
+To: iommu@lists.linux-foundation.org
+Subject: [PATCH] iommu/vt-d: Fix compile warning from intel-svm.h
+Date: Mon, 10 Feb 2020 10:36:56 +0100
+Message-Id: <20200210093656.8961-1-joro@8bytes.org>
 X-Mailer: git-send-email 2.17.1
-Cc: Alex Deucher <alexander.deucher@amd.com>,
- "open list:AMD IOMMU AMD-VI" <iommu@lists.linux-foundation.org>,
- Kai-Heng Feng <kai.heng.feng@canonical.com>,
- open list <linux-kernel@vger.kernel.org>
+MIME-Version: 1.0
+Cc: Joerg Roedel <jroedel@suse.de>, Ashok Raj <ashok.raj@intel.com>,
+ linux-kernel@vger.kernel.org, David Woodhouse <dwmw2@infradead.org>
 X-BeenThere: iommu@lists.linux-foundation.org
 X-Mailman-Version: 2.1.15
 Precedence: list
@@ -72,74 +67,32 @@ List-Post: <mailto:iommu@lists.linux-foundation.org>
 List-Help: <mailto:iommu-request@lists.linux-foundation.org?subject=help>
 List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
  <mailto:iommu-request@lists.linux-foundation.org?subject=subscribe>
-MIME-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: base64
 Errors-To: iommu-bounces@lists.linux-foundation.org
 Sender: "iommu" <iommu-bounces@lists.linux-foundation.org>
 
-Serious screen flickering when Stoney Ridge outputs to a 4K monitor.
-
-Use identity-mapping and PCI ATS doesn't help this issue.
-
-According to Alex Deucher, IOMMU isn't enabled on Windows, so let's do
-the same here to avoid screen flickering on 4K monitor.
-
-Cc: Alex Deucher <alexander.deucher@amd.com>
-Bug: https://gitlab.freedesktop.org/drm/amd/issues/961
-Signed-off-by: Kai-Heng Feng <kai.heng.feng@canonical.com>
----
-v3:
- - Update commit message to mention identity-mapping and ATS don't help.
-
-v2:
- - Find Stoney graphics instead of host bridge.
-
- drivers/iommu/amd_iommu_init.c | 13 ++++++++++++-
- 1 file changed, 12 insertions(+), 1 deletion(-)
-
-diff --git a/drivers/iommu/amd_iommu_init.c b/drivers/iommu/amd_iommu_init.c
-index 2759a8d57b7f..6be3853a5d97 100644
---- a/drivers/iommu/amd_iommu_init.c
-+++ b/drivers/iommu/amd_iommu_init.c
-@@ -2523,6 +2523,7 @@ static int __init early_amd_iommu_init(void)
- 	struct acpi_table_header *ivrs_base;
- 	acpi_status status;
- 	int i, remap_cache_sz, ret = 0;
-+	u32 pci_id;
- 
- 	if (!amd_iommu_detected)
- 		return -ENODEV;
-@@ -2610,6 +2611,16 @@ static int __init early_amd_iommu_init(void)
- 	if (ret)
- 		goto out;
- 
-+	/* Disable IOMMU if there's Stoney Ridge graphics */
-+	for (i = 0; i < 32; i++) {
-+		pci_id = read_pci_config(0, i, 0, 0);
-+		if ((pci_id & 0xffff) == 0x1002 && (pci_id >> 16) == 0x98e4) {
-+			pr_info("Disable IOMMU on Stoney Ridge\n");
-+			amd_iommu_disabled = true;
-+			break;
-+		}
-+	}
-+
- 	/* Disable any previously enabled IOMMUs */
- 	if (!is_kdump_kernel() || amd_iommu_disabled)
- 		disable_iommus();
-@@ -2718,7 +2729,7 @@ static int __init state_next(void)
- 		ret = early_amd_iommu_init();
- 		init_state = ret ? IOMMU_INIT_ERROR : IOMMU_ACPI_FINISHED;
- 		if (init_state == IOMMU_ACPI_FINISHED && amd_iommu_disabled) {
--			pr_info("AMD IOMMU disabled on kernel command-line\n");
-+			pr_info("AMD IOMMU disabled\n");
- 			init_state = IOMMU_CMDLINE_DISABLED;
- 			ret = -EINVAL;
- 		}
--- 
-2.17.1
-
-_______________________________________________
-iommu mailing list
-iommu@lists.linux-foundation.org
-https://lists.linuxfoundation.org/mailman/listinfo/iommu
+RnJvbTogSm9lcmcgUm9lZGVsIDxqcm9lZGVsQHN1c2UuZGU+CgpUaGUgaW50ZWxfc3ZtX2lzX3Bh
+c2lkX3ZhbGlkKCkgbmVlZHMgdG8gYmUgbWFya2VkIGlubGluZSwgb3RoZXJ3aXNlIGl0CmNhdXNl
+cyB0aGUgY29tcGlsZSB3YXJuaW5nIGJlbG93OgoKICBDQyBbTV0gIGRyaXZlcnMvZG1hL2lkeGQv
+Y2Rldi5vCkluIGZpbGUgaW5jbHVkZWQgZnJvbSBkcml2ZXJzL2RtYS9pZHhkL2NkZXYuYzo5OjA6
+Ci4vaW5jbHVkZS9saW51eC9pbnRlbC1zdm0uaDoxMjU6MTI6IHdhcm5pbmc6IOKAmGludGVsX3N2
+bV9pc19wYXNpZF92YWxpZOKAmSBkZWZpbmVkIGJ1dCBub3QgdXNlZCBbLVd1bnVzZWQtZnVuY3Rp
+b25dCiBzdGF0aWMgaW50IGludGVsX3N2bV9pc19wYXNpZF92YWxpZChzdHJ1Y3QgZGV2aWNlICpk
+ZXYsIGludCBwYXNpZCkKICAgICAgICAgICAgXn5+fn5+fn5+fn5+fn5+fn5+fn5+fn5+CgpSZXBv
+cnRlZC1ieTogQm9yaXNsYXYgUGV0a292IDxicEBhbGllbjguZGU+CkZpeGVzOiAxNTA2MGFiYTcx
+NzExICgnaW9tbXUvdnQtZDogSGVscGVyIGZ1bmN0aW9uIHRvIHF1ZXJ5IGlmIGEgcGFzaWQgaGFz
+IGFueSBhY3RpdmUgdXNlcnMnKQpTaWduZWQtb2ZmLWJ5OiBKb2VyZyBSb2VkZWwgPGpyb2VkZWxA
+c3VzZS5kZT4KLS0tCiBpbmNsdWRlL2xpbnV4L2ludGVsLXN2bS5oIHwgMiArLQogMSBmaWxlIGNo
+YW5nZWQsIDEgaW5zZXJ0aW9uKCspLCAxIGRlbGV0aW9uKC0pCgpkaWZmIC0tZ2l0IGEvaW5jbHVk
+ZS9saW51eC9pbnRlbC1zdm0uaCBiL2luY2x1ZGUvbGludXgvaW50ZWwtc3ZtLmgKaW5kZXggOTRm
+MDQ3YThhODQ1Li5kN2M0MDNkMGRkMjcgMTAwNjQ0Ci0tLSBhL2luY2x1ZGUvbGludXgvaW50ZWwt
+c3ZtLmgKKysrIGIvaW5jbHVkZS9saW51eC9pbnRlbC1zdm0uaApAQCAtMTIyLDcgKzEyMiw3IEBA
+IHN0YXRpYyBpbmxpbmUgaW50IGludGVsX3N2bV91bmJpbmRfbW0oc3RydWN0IGRldmljZSAqZGV2
+LCBpbnQgcGFzaWQpCiAJQlVHKCk7CiB9CiAKLXN0YXRpYyBpbnQgaW50ZWxfc3ZtX2lzX3Bhc2lk
+X3ZhbGlkKHN0cnVjdCBkZXZpY2UgKmRldiwgaW50IHBhc2lkKQorc3RhdGljIGlubGluZSBpbnQg
+aW50ZWxfc3ZtX2lzX3Bhc2lkX3ZhbGlkKHN0cnVjdCBkZXZpY2UgKmRldiwgaW50IHBhc2lkKQog
+ewogCXJldHVybiAtRUlOVkFMOwogfQotLSAKMi4xNi40CgpfX19fX19fX19fX19fX19fX19fX19f
+X19fX19fX19fX19fX19fX19fX19fX19fXwppb21tdSBtYWlsaW5nIGxpc3QKaW9tbXVAbGlzdHMu
+bGludXgtZm91bmRhdGlvbi5vcmcKaHR0cHM6Ly9saXN0cy5saW51eGZvdW5kYXRpb24ub3JnL21h
+aWxtYW4vbGlzdGluZm8vaW9tbXU=
