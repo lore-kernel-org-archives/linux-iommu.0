@@ -2,109 +2,108 @@ Return-Path: <SRS0=3qjS=37=lists.linux-foundation.org=iommu-bounces@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-0.6 required=3.0 tests=DKIM_INVALID,DKIM_SIGNED,
-	HEADER_FROM_DIFFERENT_DOMAINS,MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS,
-	URIBL_BLOCKED autolearn=no autolearn_force=no version=3.4.0
+X-Spam-Status: No, score=-5.5 required=3.0 tests=DKIM_INVALID,DKIM_SIGNED,
+	HEADER_FROM_DIFFERENT_DOMAINS,MAILING_LIST_MULTI,MENTIONS_GIT_HOSTING,
+	SPF_HELO_NONE,SPF_PASS,UNPARSEABLE_RELAY,URIBL_BLOCKED autolearn=ham
+	autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 5F6A4C352A3
-	for <iommu@archiver.kernel.org>; Tue, 11 Feb 2020 12:39:12 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id EC6EBC352A3
+	for <iommu@archiver.kernel.org>; Tue, 11 Feb 2020 13:49:06 +0000 (UTC)
 Received: from hemlock.osuosl.org (smtp2.osuosl.org [140.211.166.133])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by mail.kernel.org (Postfix) with ESMTPS id 2597B206DB
-	for <iommu@archiver.kernel.org>; Tue, 11 Feb 2020 12:39:11 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTPS id B214B20714
+	for <iommu@archiver.kernel.org>; Tue, 11 Feb 2020 13:49:06 +0000 (UTC)
 Authentication-Results: mail.kernel.org;
-	dkim=fail reason="signature verification failed" (2048-bit key) header.d=cerno.tech header.i=@cerno.tech header.b="LpMBIVGb";
-	dkim=fail reason="signature verification failed" (2048-bit key) header.d=messagingengine.com header.i=@messagingengine.com header.b="YuewJ8ab"
-DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 2597B206DB
-Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=cerno.tech
+	dkim=fail reason="signature verification failed" (2048-bit key) header.d=oracle.com header.i=@oracle.com header.b="P4a8FzpP"
+DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org B214B20714
+Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=oracle.com
 Authentication-Results: mail.kernel.org; spf=pass smtp.mailfrom=iommu-bounces@lists.linux-foundation.org
 Received: from localhost (localhost [127.0.0.1])
-	by hemlock.osuosl.org (Postfix) with ESMTP id CC9708739E;
-	Tue, 11 Feb 2020 12:39:11 +0000 (UTC)
+	by hemlock.osuosl.org (Postfix) with ESMTP id 77FEB8778F;
+	Tue, 11 Feb 2020 13:49:06 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
 Received: from hemlock.osuosl.org ([127.0.0.1])
 	by localhost (.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
-	with ESMTP id XcxFFTCp+nXj; Tue, 11 Feb 2020 12:39:10 +0000 (UTC)
+	with ESMTP id Ji18xwfoyP9C; Tue, 11 Feb 2020 13:49:05 +0000 (UTC)
 Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [140.211.9.56])
-	by hemlock.osuosl.org (Postfix) with ESMTP id 3B36F86EA3;
-	Tue, 11 Feb 2020 12:39:10 +0000 (UTC)
+	by hemlock.osuosl.org (Postfix) with ESMTP id 4774A87111;
+	Tue, 11 Feb 2020 13:49:05 +0000 (UTC)
 Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
-	by lists.linuxfoundation.org (Postfix) with ESMTP id 2E659C1D88;
-	Tue, 11 Feb 2020 12:39:10 +0000 (UTC)
-Received: from whitealder.osuosl.org (smtp1.osuosl.org [140.211.166.138])
- by lists.linuxfoundation.org (Postfix) with ESMTP id 8BC6DC07FE
- for <iommu@lists.linux-foundation.org>; Tue, 11 Feb 2020 12:39:08 +0000 (UTC)
+	by lists.linuxfoundation.org (Postfix) with ESMTP id 39857C1D80;
+	Tue, 11 Feb 2020 13:49:05 +0000 (UTC)
+Received: from silver.osuosl.org (smtp3.osuosl.org [140.211.166.136])
+ by lists.linuxfoundation.org (Postfix) with ESMTP id AF8FAC07FE
+ for <iommu@lists.linux-foundation.org>; Tue, 11 Feb 2020 13:49:03 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
- by whitealder.osuosl.org (Postfix) with ESMTP id 82F8F84EA0
- for <iommu@lists.linux-foundation.org>; Tue, 11 Feb 2020 12:39:08 +0000 (UTC)
+ by silver.osuosl.org (Postfix) with ESMTP id 99EB5204C5
+ for <iommu@lists.linux-foundation.org>; Tue, 11 Feb 2020 13:49:03 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from whitealder.osuosl.org ([127.0.0.1])
+Received: from silver.osuosl.org ([127.0.0.1])
  by localhost (.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
- with ESMTP id 7GIkRnV4Ogsv for <iommu@lists.linux-foundation.org>;
- Tue, 11 Feb 2020 12:39:06 +0000 (UTC)
-X-Greylist: from auto-whitelisted by SQLgrey-1.7.6
-Received: from out4-smtp.messagingengine.com (out4-smtp.messagingengine.com
- [66.111.4.28])
- by whitealder.osuosl.org (Postfix) with ESMTPS id BBD3184DB8
- for <iommu@lists.linux-foundation.org>; Tue, 11 Feb 2020 12:39:06 +0000 (UTC)
-Received: from compute3.internal (compute3.nyi.internal [10.202.2.43])
- by mailout.nyi.internal (Postfix) with ESMTP id E5D8D21C1B;
- Tue, 11 Feb 2020 07:39:03 -0500 (EST)
-Received: from mailfrontend1 ([10.202.2.162])
- by compute3.internal (MEProxy); Tue, 11 Feb 2020 07:39:03 -0500
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=cerno.tech; h=
- date:from:to:cc:subject:message-id:references:mime-version
- :content-type:in-reply-to; s=fm2; bh=RC7CgfumKJMevq6aQ4QTK7DfJ2T
- lGNm2F1ftNSwmRp0=; b=LpMBIVGbxGnLlp5k949vbdd8LYYfqjEGtpq6f4e9Kjy
- K7sujZR0mofaNogXe0tNChjqqp0f49vR0hUBEScKWezfFJx2G34PVYseatKZNJdE
- UzAyEvFSWPC3PZTtItU+JAtrsun0vK1+FOhmU4hATTVvE2aG3w+zvBispPKRMG+f
- jZobJ9tTytWFgWq0GTImYfEBr8LQI1qbcaYI+kXL5MGKI9awcZ68Qh+OsBUG1TjT
- BQsrkFnoJxIP6BfJ2Ldmd1UeFkdR63kwx32HwunVVgXh0pDZE7R1uOzQ1Im+5qcj
- JHDx3m33+YylvFQ/Od7i05DILRkUI8FUpORktD8IJJg==
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=
- messagingengine.com; h=cc:content-type:date:from:in-reply-to
- :message-id:mime-version:references:subject:to:x-me-proxy
- :x-me-proxy:x-me-sender:x-me-sender:x-sasl-enc; s=fm2; bh=RC7Cgf
- umKJMevq6aQ4QTK7DfJ2TlGNm2F1ftNSwmRp0=; b=YuewJ8ab4Vm4u+DI9eSsAr
- GjpWumZZ3kVwX5wHUGIhGACGWivbDthTZ3PaLkbYg1o9Y2LSYQC6lZ8lrfBhd2WE
- l0jUS5qmnYLiuGu92UUqUkl7VAh/GF+CFfjMC0tjdPHy9ifLBbqB3ZWs4PMnt86U
- UfdL1fK2g0hpdS1Ju9GY8JUGn5vlCXa+QOFm3lXicVffYbBh0n+YVcqwG21p9Bkz
- M3W3JD10h7nmEYG8c8WlLjY3orLoeU6rC+P24ew3nZ3tQMj4+6etACnEBRlxQcuC
- 2WygKSsO3ngT5U6QYjjx540BnuOLevyQf6xjv4QaoYiKjN3b0P2zZN1xUGRmyrrA
- ==
-X-ME-Sender: <xms:Z6BCXpcDrmPQFAbW-JWfBdaRmEGHDrMsjEzPLmoOsBOMOPxMxeRjMQ>
-X-ME-Proxy-Cause: gggruggvucftvghtrhhoucdtuddrgedugedrieefgdegfecutefuodetggdotefrodftvf
- curfhrohhfihhlvgemucfhrghsthforghilhdpqfgfvfdpuffrtefokffrpgfnqfghnecu
- uegrihhlohhuthemuceftddtnecusecvtfgvtghiphhivghnthhsucdlqddutddtmdenuc
- fjughrpeffhffvuffkfhggtggujgesghdtreertddtvdenucfhrhhomhepofgrgihimhgv
- ucftihhprghrugcuoehmrgigihhmvgestggvrhhnohdrthgvtghhqeenucfkphepledtrd
- ekledrieekrdejieenucevlhhushhtvghrufhiiigvpedtnecurfgrrhgrmhepmhgrihhl
- fhhrohhmpehmrgigihhmvgestggvrhhnohdrthgvtghh
-X-ME-Proxy: <xmx:Z6BCXiWa-E39X1cFemkiey1IT8cV2_m55GLx_Kz67f79iIWYI3fYDA>
- <xmx:Z6BCXo6GIFBas5LEM8FjOb7_zxOb5x9c99x_ZZVXgynfn6HZvrcqXQ>
- <xmx:Z6BCXt7ON8hx05vTHjIHUL8fvISO9qq4K3tPEVq_3Sry9tMWV3kndw>
- <xmx:Z6BCXtO1V4NsOgzjY-WMJ4cYfwHovKV7EXewCsvPzCZKACvLgzioUA>
-Received: from localhost (lfbn-tou-1-1502-76.w90-89.abo.wanadoo.fr
- [90.89.68.76])
- by mail.messagingengine.com (Postfix) with ESMTPA id F04D63280064;
- Tue, 11 Feb 2020 07:39:02 -0500 (EST)
-Date: Tue, 11 Feb 2020 13:39:01 +0100
-From: Maxime Ripard <maxime@cerno.tech>
-To: Robin Murphy <robin.murphy@arm.com>
-Subject: Re: [PATCH 2/3] iommu: Add Allwinner H6 IOMMU driver
-Message-ID: <20200211123901.nm6ajh5sxqurim6w@gilmour.lan>
-References: <cover.b2a9e1507135d81e726fcbb65137665a7f0ab74f.1579696927.git-series.maxime@cerno.tech>
- <fe383c3f6fa0db772c87d9d9080add97efe9ba1a.1579696927.git-series.maxime@cerno.tech>
- <a0bec2de-e87a-ddac-450e-b0f467158796@arm.com>
- <20200127142256.us5zpcft5obd7zu6@gilmour.lan>
- <99e9cb73-761f-3b30-bd73-c50aa7c21692@arm.com>
-MIME-Version: 1.0
-In-Reply-To: <99e9cb73-761f-3b30-bd73-c50aa7c21692@arm.com>
-Cc: Mark Rutland <mark.rutland@arm.com>, devicetree@vger.kernel.org,
- iommu@lists.linux-foundation.org, Chen-Yu Tsai <wens@csie.org>,
- Rob Herring <robh+dt@kernel.org>, Frank Rowand <frowand.list@gmail.com>,
- linux-arm-kernel@lists.infradead.org
+ with ESMTP id X7z9Qmc9SgCE for <iommu@lists.linux-foundation.org>;
+ Tue, 11 Feb 2020 13:49:02 +0000 (UTC)
+X-Greylist: domain auto-whitelisted by SQLgrey-1.7.6
+Received: from aserp2120.oracle.com (aserp2120.oracle.com [141.146.126.78])
+ by silver.osuosl.org (Postfix) with ESMTPS id 98673203FB
+ for <iommu@lists.linux-foundation.org>; Tue, 11 Feb 2020 13:49:02 +0000 (UTC)
+Received: from pps.filterd (aserp2120.oracle.com [127.0.0.1])
+ by aserp2120.oracle.com (8.16.0.42/8.16.0.42) with SMTP id 01BDmPWI021196;
+ Tue, 11 Feb 2020 13:49:00 GMT
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=oracle.com;
+ h=content-type :
+ mime-version : subject : from : in-reply-to : date : cc :
+ content-transfer-encoding : message-id : references : to;
+ s=corp-2020-01-29; bh=IDSqzdH2/LznSsGFP6leJGSOIsZcDBvKHhH6r3lK0ws=;
+ b=P4a8FzpPoO7YKbgIC/vKz4g39sx/F07bZq51Y+dFjvd72bOHttMJAgxqgKwkOuLLB3Ph
+ xw9r71h9nDpN1wilJCr4Wr3xbyiZAata1jlkTUT/XMqMvJJClBkRfrUZg1+1MTqhyLYV
+ p/0OGd2SXkPBCmemNUg0t2ED6S5iNYTdj6dUF8VeaECB0/VcvmmWXZbgvhYQUTdw/rMc
+ mFbWQ/PyUoBASPTTUlvlI7iYXWFizxForr4BwKRojY4xxwbxyOp/7lE7SXDDKFbuUXv7
+ 43SsZJ29CDCPBOSq6QJeAxEF6p4EeOYAQQcfYF9wWV/UkRMmyW+VQYmLecdvR0oWCDed +g== 
+Received: from userp3030.oracle.com (userp3030.oracle.com [156.151.31.80])
+ by aserp2120.oracle.com with ESMTP id 2y2jx63kvs-1
+ (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=FAIL);
+ Tue, 11 Feb 2020 13:49:00 +0000
+Received: from pps.filterd (userp3030.oracle.com [127.0.0.1])
+ by userp3030.oracle.com (8.16.0.42/8.16.0.42) with SMTP id 01BDl0wd017885;
+ Tue, 11 Feb 2020 13:49:00 GMT
+Received: from aserv0122.oracle.com (aserv0122.oracle.com [141.146.126.236])
+ by userp3030.oracle.com with ESMTP id 2y26fh7cwj-1
+ (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
+ Tue, 11 Feb 2020 13:48:59 +0000
+Received: from abhmp0009.oracle.com (abhmp0009.oracle.com [141.146.116.15])
+ by aserv0122.oracle.com (8.14.4/8.14.4) with ESMTP id 01BDmwUo012920;
+ Tue, 11 Feb 2020 13:48:58 GMT
+Received: from anon-dhcp-152.1015granger.net (/68.61.232.219)
+ by default (Oracle Beehive Gateway v4.0)
+ with ESMTP ; Tue, 11 Feb 2020 05:48:58 -0800
+Mime-Version: 1.0 (Mac OS X Mail 12.4 \(3445.104.11\))
+Subject: Re: AMD IOMMU stops RDMA NFS from working since kernel 5.5 (bisected)
+From: Chuck Lever <chuck.lever@oracle.com>
+In-Reply-To: <20200211072537.GD23114@suse.de>
+Date: Tue, 11 Feb 2020 08:48:56 -0500
+Message-Id: <2CE039F4-3519-4481-B0E2-840D24EE4428@oracle.com>
+References: <7ee099af-e6bb-18fe-eb93-2a8abd401570@tomt.net>
+ <20200211072537.GD23114@suse.de>
+To: Andre Tomt <andre@tomt.net>, Tom Murphy <tmurphy@arista.com>
+X-Mailer: Apple Mail (2.3445.104.11)
+X-Proofpoint-Virus-Version: vendor=nai engine=6000 definitions=9527
+ signatures=668685
+X-Proofpoint-Spam-Details: rule=notspam policy=default score=0 malwarescore=0
+ suspectscore=0
+ adultscore=0 bulkscore=0 mlxscore=0 spamscore=0 phishscore=0
+ mlxlogscore=999 classifier=spam adjust=0 reason=mlx scancount=1
+ engine=8.12.0-2001150001 definitions=main-2002110104
+X-Proofpoint-Virus-Version: vendor=nai engine=6000 definitions=9527
+ signatures=668685
+X-Proofpoint-Spam-Details: rule=notspam policy=default score=0 mlxlogscore=999
+ malwarescore=0
+ priorityscore=1501 adultscore=0 phishscore=0 impostorscore=0 spamscore=0
+ bulkscore=0 lowpriorityscore=0 mlxscore=0 suspectscore=0 clxscore=1011
+ classifier=spam adjust=0 reason=mlx scancount=1 engine=8.12.0-2001150001
+ definitions=main-2002110104
+Cc: Linux NFS Mailing List <linux-nfs@vger.kernel.org>,
+ Joerg Roedel <jroedel@suse.de>, iommu@lists.linux-foundation.org
 X-BeenThere: iommu@lists.linux-foundation.org
 X-Mailman-Version: 2.1.15
 Precedence: list
@@ -117,229 +116,105 @@ List-Post: <mailto:iommu@lists.linux-foundation.org>
 List-Help: <mailto:iommu-request@lists.linux-foundation.org?subject=help>
 List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
  <mailto:iommu-request@lists.linux-foundation.org?subject=subscribe>
-Content-Type: multipart/mixed; boundary="===============2904808986036858484=="
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: 7bit
 Errors-To: iommu-bounces@lists.linux-foundation.org
 Sender: "iommu" <iommu-bounces@lists.linux-foundation.org>
 
+Andre-
 
---===============2904808986036858484==
-Content-Type: multipart/signed; micalg=pgp-sha256;
-	protocol="application/pgp-signature"; boundary="k7emksq7utbrovec"
-Content-Disposition: inline
+Thank you for the detailed report!
+
+Tom-
+
+There is a rich set of trace points available in the RPC/RDMA implementation in 5.4/5.5, fwiw.
+Please keep me in the loop, let me know if there is anything I can do to help.
 
 
---k7emksq7utbrovec
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
+> On Feb 11, 2020, at 2:25 AM, Joerg Roedel <jroedel@suse.de> wrote:
+> 
+> Adding Tom's new email address.
+> 
+> Tom, can you have a look, please? 
+> https://bugzilla.kernel.org/show_bug.cgi?id=206461 seems to be a similar
+> issue.
+> 
+> On Tue, Feb 11, 2020 at 06:06:54AM +0100, Andre Tomt wrote:
+>> Since upgrading my RDMA lab from kernel 5.4.x to 5.5.x, NFSv4 over RDMA
+>> stopped working. But only on my AMD Ryzen systems. And so far only NFS,
+>> curiously other RDMA diagnostic tools (like qperf <ip> -cm1 rc_bw) work
+>> fine.
+>> 
+>> A git bisect points to be62dbf554c5b50718a54a359372c148cd9975c7 iommu/amd:
+>> Convert AMD iommu driver to the dma-iommu api
+>> 
+>> 5.5.3-rc1, 5.6-rc1 are also not working.
+>> 
+>> I verified it by booting with amd_iommu=off on the kernel cmdline - it makes
+>> everything work again.
+>> 
+>> The NFS config is a pretty simple NFSv4.x only, sec=sys setup, running over
+>> RoCEv1 on Mellanox mlx4 hardware (ConnectX-3 Pro, fw 2.42.5000). Nothing
+>> fancy besides the RoCEv1 and related bits network bits like PFC and storage
+>> VLAN. Bare metal, no virtualization.
+>> 
+>> The impacted systems are:
+>> ASUS ROG STRIX X399-E GAMING, with a Threadripper 1950x, BIOS 1002
+>> ASUS Pro WS X570-ACE, with a Ryzen 7 3700x, BIOS 1201
+>> 
+>> pcaps off a mirror port can be provided. They show that on 5.5.x, CM
+>> succeeds, and then a couple of NFS NULL calls comes through (over RoCE),
+>> both acked, and then the rest just never goes out from the client until the
+>> mount times out and CM is torn down.
+>> 
+>> No messages shows up in the kernel log on either side. I was at least
+>> expecting some scary IOMMU warnings.
+>> 
+>> More serious hardware is not available for RDMA testing currently, so I dont
+>> know if a EPYC system or newer mlx5 cards would have similar issues. Intel
+>> I've only tested as server so far, that worked fine, as expected given the
+>> bisect result.
+>> 
+>> 
+>>> git bisect start
+>>> # bad: [d5226fa6dbae0569ee43ecfc08bdcd6770fc4755] Linux 5.5
+>>> git bisect bad d5226fa6dbae0569ee43ecfc08bdcd6770fc4755
+>>> # good: [219d54332a09e8d8741c1e1982f5eae56099de85] Linux 5.4
+>>> git bisect good 219d54332a09e8d8741c1e1982f5eae56099de85
+>>> # good: [8c39f71ee2019e77ee14f88b1321b2348db51820] Merge git://git.kernel.org/pub/scm/linux/kernel/git/netdev/net
+>>> git bisect good 8c39f71ee2019e77ee14f88b1321b2348db51820
+>>> # bad: [76bb8b05960c3d1668e6bee7624ed886cbd135ba] Merge tag 'kbuild-v5.5' of git://git.kernel.org/pub/scm/linux/kernel/git/masahiroy/linux-kbuild
+>>> git bisect bad 76bb8b05960c3d1668e6bee7624ed886cbd135ba
+>>> # good: [21b26d2679584c6a60e861aa3e5ca09a6bab0633] Merge tag '5.5-rc-smb3-fixes' of git://git.samba.org/sfrench/cifs-2.6
+>>> git bisect good 21b26d2679584c6a60e861aa3e5ca09a6bab0633
+>>> # good: [e5b3fc125d768eacd73bb4dc5019f0ce95635af4] Merge branch 'x86-urgent-for-linus' of git://git.kernel.org/pub/scm/linux/kernel/git/tip/tip
+>>> git bisect good e5b3fc125d768eacd73bb4dc5019f0ce95635af4
+>>> # bad: [937d6eefc716a9071f0e3bada19200de1bb9d048] Merge tag 'docs-5.5a' of git://git.lwn.net/linux
+>>> git bisect bad 937d6eefc716a9071f0e3bada19200de1bb9d048
+>>> # bad: [1daa56bcfd8b329447e0c1b1e91c3925d08489b7] Merge tag 'iommu-updates-v5.5' of git://git.kernel.org/pub/scm/linux/kernel/git/joro/iommu
+>>> git bisect bad 1daa56bcfd8b329447e0c1b1e91c3925d08489b7
+>>> # good: [937790699be9c8100e5358625e7dfa8b32bd33f2] mm/page_io.c: annotate refault stalls from swap_readpage
+>>> git bisect good 937790699be9c8100e5358625e7dfa8b32bd33f2
+>>> # good: [a5255bc31673c72e264d837cd13cd3085d72cb58] Merge tag 'dmaengine-5.5-rc1' of git://git.infradead.org/users/vkoul/slave-dma
+>>> git bisect good a5255bc31673c72e264d837cd13cd3085d72cb58
+>>> # good: [34d1b0895dbd10713c73615d8f532e78509e12d9] iommu/arm-smmu: Remove duplicate error message
+>>> git bisect good 34d1b0895dbd10713c73615d8f532e78509e12d9
+>>> # bad: [3c124435e8dd516df4b2fc983f4415386fd6edae] iommu/amd: Support multiple PCI DMA aliases in IRQ Remapping
+>>> git bisect bad 3c124435e8dd516df4b2fc983f4415386fd6edae
+>>> # bad: [be62dbf554c5b50718a54a359372c148cd9975c7] iommu/amd: Convert AMD iommu driver to the dma-iommu api
+>>> git bisect bad be62dbf554c5b50718a54a359372c148cd9975c7
+>>> # good: [781ca2de89bae1b1d2c96df9ef33e9a324415995] iommu: Add gfp parameter to iommu_ops::map
+>>> git bisect good 781ca2de89bae1b1d2c96df9ef33e9a324415995
+>>> # good: [6e2350207f40e24884da262976f7fd4fba387e8a] iommu/dma-iommu: Use the dev->coherent_dma_mask
+>>> git bisect good 6e2350207f40e24884da262976f7fd4fba387e8a
+>>> # first bad commit: [be62dbf554c5b50718a54a359372c148cd9975c7] iommu/amd: Convert AMD iommu driver to the dma-iommu api
 
-Hi Robin,
+--
+Chuck Lever
 
-On Mon, Jan 27, 2020 at 07:01:02PM +0000, Robin Murphy wrote:
-> > > > +static void sun50i_iommu_domain_free(struct iommu_domain *domain)
-> > > > +{
-> > > > +	struct sun50i_iommu_domain *sun50i_domain = to_sun50i_domain(domain);
-> > > > +	struct sun50i_iommu *iommu = sun50i_domain->iommu;
-> > > > +	unsigned long flags;
-> > > > +	int i;
-> > > > +
-> > > > +	spin_lock_irqsave(&sun50i_domain->dt_lock, flags);
-> > > > +
-> > > > +	for (i = 0; i < NUM_DT_ENTRIES; i++) {
-> > > > +		phys_addr_t pt_phys;
-> > > > +		u32 *page_table;
-> > > > +		u32 *dte_addr;
-> > > > +		u32 dte;
-> > > > +
-> > > > +		dte_addr = &sun50i_domain->dt[i];
-> > > > +		dte = *dte_addr;
-> > > > +		if (!sun50i_dte_is_pt_valid(dte))
-> > > > +			continue;
-> > > > +
-> > > > +		memset(dte_addr, 0, sizeof(*dte_addr));
-> > > > +		sun50i_table_flush(sun50i_domain, virt_to_phys(dte_addr), 1);
-> > >
-> > > This shouldn't be necessary - freeing a domain while it's still live is an
-> > > incredibly very wrong thing to do, so the hardware should have already been
-> > > programmed to no longer walk this table by this point.
-> >
-> > We never "garbage collect" and remove the dte for the page table we
-> > don't use anymore elsewhere though, so couldn't we end up in a
-> > situation where we don't have a page table (because it has been freed)
-> > at the other end of our dte, but the IOMMU doesn't know about it since
-> > we never flushed?
->
-> Let me reiterate: at the point of freeing, the assumption is that this
-> domain should be long dissociated from the hardware. Any actual invalidation
-> should have already happened at the point the TTB was disabled or pointed to
-> some other domain, therefore fiddling with pagetable pages just before you
-> free them back to the kernel is just pointless busywork.
->
-> If the TTB *was* still live here, then as soon as you call free_pages()
-> below the DT memory could get reallocated by someone else and filled with
-> data that happens to look like valid pagetables, so even if you invalidate
-> the TLBs the hardware could just immediately go walk that data and refill
-> them with nonsense, thus any pretence at invalidation is in vain anyway.
 
-Thanks, that makes a lot of sense.
-
-> The fly in the soup, however, is that default domains appear to be lacking
-> proper detach notifications (I hadn't consciously noticed that before), so
-> if you've been looking at the iommu_group_release() path it might have given
-> the wrong impression. So what might be justifiable here is to check if the
-> domain being freed is the one currently active in hardware, and if so
-> perform a detach (i.e. disable the TTB and invalidate everything) first,
-> then free everything as normal. Or just handwave that we essentially never
-> free a default domain anyway so it's OK to just assume that we're not
-> freeing anything live.
-
-I'm still a bit unsure as of what to do exactly here. I haven't found
-a hook that would be called when a given domain doesn't have any
-devices attached to it. Or did you mean that I should just create a
-separate function, not part of the IOMMU ops?
-
-> > > > +
-> > > > +	if (iommu->domain == domain)
-> > > > +		return 0;
-> > > > +
-> > > > +	if (iommu->domain)
-> > > > +		sun50i_iommu_detach_device(iommu->domain, dev);
-> > > > +
-> > > > +	iommu->domain = domain;
-> > > > +	sun50i_domain->iommu = iommu;
-> > > > +
-> > > > +	return pm_runtime_get_sync(iommu->dev);
-> > >
-> > > Deferring all the actual hardware pogramming to the suspend/resume hooks is
-> > > a fiendishly clever idea that took me more than a moment to make sense of,
-> > > but how well does it work when RPM is compiled out or runtime-inhibited?
-> >
-> > We have a bunch of other controllers that require runtime_pm already,
-> > so it's going to be enabled. But that should be expressed in Kconfig.
->
-> But it can still be inhibited from sysfs, right? We don't want driver
-> behaviour to be *unnecessarily* fragile to user actions, however silly they
-> may be.
-
-That's a good point :)
-
-> > > Furthermore, basing RPM on having a domain attached means that
-> > > you'll effectively never turn the IOMMU off, even when all the
-> > > clients are idle. It would make more sene to use device links like
-> > > most other drivers do to properly model the producer/consumer
-> > > relationship.
-> >
-> > I'm not familiar with device links for runtime_pm, I thought this was
-> > only useful for system-wide resume and suspend?
->
-> See DL_FLAG_PM_RUNTIME - we already have several IOMMU drivers taking full
-> advantage of this.
-
-I'll look into it, thanks!
-
-> > > > +static int __maybe_unused sun50i_iommu_resume(struct device *dev)
-> > > > +{
-> > > > +	struct sun50i_iommu_domain *sun50i_domain;
-> > > > +	struct sun50i_iommu *iommu;
-> > > > +	unsigned long flags;
-> > > > +	dma_addr_t dt_dma;
-> > > > +	int ret;
-> > > > +
-> > > > +	iommu = dev_get_drvdata(dev);
-> > > > +	if (!iommu->domain)
-> > > > +		return 0;
-> > > > +
-> > > > +	sun50i_domain = to_sun50i_domain(iommu->domain);
-> > > > +	dt_dma = dma_map_single(dev, sun50i_domain->dt, DT_SIZE, DMA_TO_DEVICE);
-> > >
-> > > As above. The power state of the IOMMU should be enitrely irrelevant to the
-> > > contents of RAM.
-> >
-> > Sorry, I should have put a comment here.
-> >
-> > I'm not quite sure what the difference between a group and domain in
-> > the IOMMU framework is, but since this IOMMU can only deal with a
-> > single address space, my understanding was that we'd need to allocate
-> > a single domain and group, and that the domain was the abstraction
-> > tied to an address space (since it's what is passed as an argument to
-> > map).
->
-> That's correct, a domain is effectvely an address space, while groups
-> represents sets of devices that the IOMMU can isolate from each other.
-> IOMMUs like this one (and the MediaTek M4U in mtk_iommu.c) are a little
-> hard-done-by in that they do actually have some finer-grained isolation on a
-> basic allow/deny level, but the API really assumes that isolation happens at
-> the address space level, so it's easier to ignore it and just use the
-> single-group model anyway.
->
-> The really neat advantage of having a guaranteed single group, though, is
-> that you then no longer need to care about address spaces: since the group
-> can only ever be attached to one domain at a time, you can have as many
-> domains as you like, and handle it by having the first attach_dev call on a
-> given domain context-switch that pagetable into the hardware. That's more or
-> less what you've done already, which is good, it would just benefit from
-> that context-switching being done in a more robust and obvious manner :)
-
-Got it, thanks :)
-
-> > So, given this, what made since was to allocate the directory table
-> > buffer at domain_alloc time and map it. But then, domain_alloc seems
-> > to not have any pointer back to the iommu we registered for some
-> > reason (I guess that a domain could be shared across multiple
-> > IOMMUs?), and so we don't have access to our IOMMU's struct device.
->
-> I'll spare you the unrpoductive "Robin complains bitterly about the
-> iommu_domain_alloc() interface being terrible, episode #27"...
->
-> You'll see two main ways that existing drivers work around that - if you're
-> happy to assume that you'll only ever have one IOMMU instance, or that all
-> instances will always be functionally equal, then you can simply keep track
-> of any old IOMMU device handle for DMA purposes (e.g. exynos_iommu);
-> otherwise if you might need to cope with multiple IOMMU instances having
-> different DMA capabilities then deferring instance-specific setup to the
-> first device attach is the de-facto standard (e.g. arm-smmu).
-
-I don't have any idea on how it's going to evolve, and the latter
-seems cleaner, I'll work on that.
-
-> > Also, a more general question. One of the cleanups I wanted to do was
-> > to remove the kmem_cache in favour of a dma_pool, which triggered that
-> > test. It looks like with a dma_pool, the physical address and dma
-> > address are not the same, even though the IOMMU is directly connected
-> > to the RAM so there should be no intermediate mapping. Do you know
-> > why?
->
-> DMA pools are backed by dma_alloc_coherent, so (at least on arm64) the
-> virtual address you get will be a non-cacheable remap (assuming a
-> non-coherent device), and thus calling virt_to_phys() on it is bogus and
-> will give you nonsense.
-
-Going further off-topic, why do we need a remap instead of a regular
-physical address?
-
-Thanks!
-Maxime
-
---k7emksq7utbrovec
-Content-Type: application/pgp-signature; name="signature.asc"
-
------BEGIN PGP SIGNATURE-----
-
-iHUEABYIAB0WIQRcEzekXsqa64kGDp7j7w1vZxhRxQUCXkKgZQAKCRDj7w1vZxhR
-xW5kAP9+HpYTW0hNs5Io4MhBpg2UaLLrAj9DZNnZ7TQ/pLVtDQEA4d94SrILvtxn
-zhXcYGvkc/AnGeqyyJ3y43DBxoIrvAo=
-=gP1F
------END PGP SIGNATURE-----
-
---k7emksq7utbrovec--
-
---===============2904808986036858484==
-Content-Type: text/plain; charset="us-ascii"
-MIME-Version: 1.0
-Content-Transfer-Encoding: 7bit
-Content-Disposition: inline
 
 _______________________________________________
 iommu mailing list
 iommu@lists.linux-foundation.org
 https://lists.linuxfoundation.org/mailman/listinfo/iommu
---===============2904808986036858484==--
