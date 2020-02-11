@@ -2,73 +2,83 @@ Return-Path: <SRS0=3qjS=37=lists.linux-foundation.org=iommu-bounces@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-7.3 required=3.0 tests=HEADER_FROM_DIFFERENT_DOMAINS,
-	MAILING_LIST_MULTI,MENTIONS_GIT_HOSTING,SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED,
-	USER_AGENT_SANE_1 autolearn=unavailable autolearn_force=no version=3.4.0
+X-Spam-Status: No, score=-6.8 required=3.0 tests=HEADER_FROM_DIFFERENT_DOMAINS,
+	INCLUDES_PATCH,MAILING_LIST_MULTI,SIGNED_OFF_BY,SPF_HELO_NONE,SPF_PASS,
+	URIBL_BLOCKED autolearn=ham autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 2B45BC352A3
-	for <iommu@archiver.kernel.org>; Tue, 11 Feb 2020 15:32:10 +0000 (UTC)
-Received: from silver.osuosl.org (smtp3.osuosl.org [140.211.166.136])
+	by smtp.lore.kernel.org (Postfix) with ESMTP id C8F2FC352A3
+	for <iommu@archiver.kernel.org>; Tue, 11 Feb 2020 16:03:20 +0000 (UTC)
+Received: from hemlock.osuosl.org (smtp2.osuosl.org [140.211.166.133])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by mail.kernel.org (Postfix) with ESMTPS id EE37D2082F
-	for <iommu@archiver.kernel.org>; Tue, 11 Feb 2020 15:32:09 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org EE37D2082F
-Authentication-Results: mail.kernel.org; dmarc=none (p=none dis=none) header.from=arm.com
+	by mail.kernel.org (Postfix) with ESMTPS id 951B120714
+	for <iommu@archiver.kernel.org>; Tue, 11 Feb 2020 16:03:20 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 951B120714
+Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=intel.com
 Authentication-Results: mail.kernel.org; spf=pass smtp.mailfrom=iommu-bounces@lists.linux-foundation.org
 Received: from localhost (localhost [127.0.0.1])
-	by silver.osuosl.org (Postfix) with ESMTP id AC120204E5;
-	Tue, 11 Feb 2020 15:32:09 +0000 (UTC)
+	by hemlock.osuosl.org (Postfix) with ESMTP id 5994F8776C;
+	Tue, 11 Feb 2020 16:03:20 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from silver.osuosl.org ([127.0.0.1])
+Received: from hemlock.osuosl.org ([127.0.0.1])
 	by localhost (.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
-	with ESMTP id 4CJnLvvSUNK2; Tue, 11 Feb 2020 15:32:08 +0000 (UTC)
+	with ESMTP id uovr+f4j6w3Z; Tue, 11 Feb 2020 16:03:19 +0000 (UTC)
 Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [140.211.9.56])
-	by silver.osuosl.org (Postfix) with ESMTP id 45C93204B4;
-	Tue, 11 Feb 2020 15:32:08 +0000 (UTC)
+	by hemlock.osuosl.org (Postfix) with ESMTP id 8C72F86E2C;
+	Tue, 11 Feb 2020 16:03:19 +0000 (UTC)
 Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
-	by lists.linuxfoundation.org (Postfix) with ESMTP id 1B5CFC1D80;
-	Tue, 11 Feb 2020 15:32:08 +0000 (UTC)
-Received: from silver.osuosl.org (smtp3.osuosl.org [140.211.166.136])
- by lists.linuxfoundation.org (Postfix) with ESMTP id F2B6DC07FE
- for <iommu@lists.linux-foundation.org>; Tue, 11 Feb 2020 15:32:06 +0000 (UTC)
+	by lists.linuxfoundation.org (Postfix) with ESMTP id 78088C1D80;
+	Tue, 11 Feb 2020 16:03:19 +0000 (UTC)
+Received: from hemlock.osuosl.org (smtp2.osuosl.org [140.211.166.133])
+ by lists.linuxfoundation.org (Postfix) with ESMTP id C6CBBC07FE
+ for <iommu@lists.linux-foundation.org>; Tue, 11 Feb 2020 16:03:17 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
- by silver.osuosl.org (Postfix) with ESMTP id DE84E204DC
- for <iommu@lists.linux-foundation.org>; Tue, 11 Feb 2020 15:32:06 +0000 (UTC)
+ by hemlock.osuosl.org (Postfix) with ESMTP id BC3EB87554
+ for <iommu@lists.linux-foundation.org>; Tue, 11 Feb 2020 16:03:17 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from silver.osuosl.org ([127.0.0.1])
+Received: from hemlock.osuosl.org ([127.0.0.1])
  by localhost (.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
- with ESMTP id d5PrBhDWPdy9 for <iommu@lists.linux-foundation.org>;
- Tue, 11 Feb 2020 15:32:05 +0000 (UTC)
+ with ESMTP id r5hlq3oqRLFV for <iommu@lists.linux-foundation.org>;
+ Tue, 11 Feb 2020 16:03:16 +0000 (UTC)
 X-Greylist: domain auto-whitelisted by SQLgrey-1.7.6
-Received: from foss.arm.com (foss.arm.com [217.140.110.172])
- by silver.osuosl.org (Postfix) with ESMTP id 27427204B4
- for <iommu@lists.linux-foundation.org>; Tue, 11 Feb 2020 15:32:05 +0000 (UTC)
-Received: from usa-sjc-imap-foss1.foss.arm.com (unknown [10.121.207.14])
- by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id 6F3FF30E;
- Tue, 11 Feb 2020 07:32:04 -0800 (PST)
-Received: from [10.1.196.37] (e121345-lin.cambridge.arm.com [10.1.196.37])
- by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPSA id 99F5F3F68E;
- Tue, 11 Feb 2020 07:32:03 -0800 (PST)
-Subject: Re: AMD IOMMU stops RDMA NFS from working since kernel 5.5 (bisected)
-To: Chuck Lever <chuck.lever@oracle.com>
-References: <7ee099af-e6bb-18fe-eb93-2a8abd401570@tomt.net>
- <20200211072537.GD23114@suse.de>
- <2CE039F4-3519-4481-B0E2-840D24EE4428@oracle.com>
- <ac758665-9127-9a52-4f03-49fecc5289a2@arm.com>
- <3507674A-F860-4B65-BD46-93431DD268AC@oracle.com>
-From: Robin Murphy <robin.murphy@arm.com>
-Message-ID: <21c801a6-9a8b-1ebb-7e41-76e8385116ea@arm.com>
-Date: Tue, 11 Feb 2020 15:32:02 +0000
-User-Agent: Mozilla/5.0 (X11; Linux aarch64; rv:60.0) Gecko/20100101
- Thunderbird/60.9.0
+Received: from mga05.intel.com (mga05.intel.com [192.55.52.43])
+ by hemlock.osuosl.org (Postfix) with ESMTPS id AA20486E2C
+ for <iommu@lists.linux-foundation.org>; Tue, 11 Feb 2020 16:03:16 +0000 (UTC)
+X-Amp-Result: SKIPPED(no attachment in message)
+X-Amp-File-Uploaded: False
+Received: from fmsmga005.fm.intel.com ([10.253.24.32])
+ by fmsmga105.fm.intel.com with ESMTP/TLS/DHE-RSA-AES256-GCM-SHA384;
+ 11 Feb 2020 08:03:16 -0800
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="5.70,428,1574150400"; d="scan'208";a="431997930"
+Received: from orsmsx107.amr.corp.intel.com ([10.22.240.5])
+ by fmsmga005.fm.intel.com with ESMTP; 11 Feb 2020 08:03:15 -0800
+Received: from orsmsx101.amr.corp.intel.com ([169.254.8.110]) by
+ ORSMSX107.amr.corp.intel.com ([169.254.1.106]) with mapi id 14.03.0439.000;
+ Tue, 11 Feb 2020 08:03:15 -0800
+From: "Derrick, Jonathan" <jonathan.derrick@intel.com>
+To: "baolu.lu@linux.intel.com" <baolu.lu@linux.intel.com>, "joro@8bytes.org"
+ <joro@8bytes.org>, "drake@endlessm.com" <drake@endlessm.com>,
+ "dwmw2@infradead.org" <dwmw2@infradead.org>
+Subject: Re: [PATCH] iommu/vt-d: consider real PCI device when checking if
+ mapping is needed
+Thread-Topic: [PATCH] iommu/vt-d: consider real PCI device when checking if
+ mapping is needed
+Thread-Index: AQHV4LuaPOrgufmY8EeIqTygVzTcT6gWriuA
+Date: Tue, 11 Feb 2020 16:03:14 +0000
+Message-ID: <bf9337f8c4336ee3bdb123ff381ec1330bdc8150.camel@intel.com>
+References: <20200211091352.12031-1-drake@endlessm.com>
+In-Reply-To: <20200211091352.12031-1-drake@endlessm.com>
+Accept-Language: en-US
+Content-Language: en-US
+X-MS-Has-Attach: 
+X-MS-TNEF-Correlator: 
+x-originating-ip: [10.255.0.201]
+Content-ID: <7329083AA3C05E4E86A3ED0FD9D56989@intel.com>
 MIME-Version: 1.0
-In-Reply-To: <3507674A-F860-4B65-BD46-93431DD268AC@oracle.com>
-Content-Language: en-GB
-Cc: Tom Murphy <tmurphy@arista.com>,
- Linux NFS Mailing List <linux-nfs@vger.kernel.org>,
- Joerg Roedel <jroedel@suse.de>, Andre Tomt <andre@tomt.net>,
- iommu@lists.linux-foundation.org
+Cc: "bhelgaas@google.com" <bhelgaas@google.com>,
+ "iommu@lists.linux-foundation.org" <iommu@lists.linux-foundation.org>,
+ "linux@endlessm.com" <linux@endlessm.com>
 X-BeenThere: iommu@lists.linux-foundation.org
 X-Mailman-Version: 2.1.15
 Precedence: list
@@ -81,131 +91,121 @@ List-Post: <mailto:iommu@lists.linux-foundation.org>
 List-Help: <mailto:iommu-request@lists.linux-foundation.org?subject=help>
 List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
  <mailto:iommu-request@lists.linux-foundation.org?subject=subscribe>
+Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
-Content-Type: text/plain; charset="us-ascii"; Format="flowed"
 Errors-To: iommu-bounces@lists.linux-foundation.org
 Sender: "iommu" <iommu-bounces@lists.linux-foundation.org>
 
-On 11/02/2020 3:24 pm, Chuck Lever wrote:
-> 
-> 
->> On Feb 11, 2020, at 10:12 AM, Robin Murphy <robin.murphy@arm.com> wrote:
->>
->> On 11/02/2020 1:48 pm, Chuck Lever wrote:
->>> Andre-
->>> Thank you for the detailed report!
->>> Tom-
->>> There is a rich set of trace points available in the RPC/RDMA implementation in 5.4/5.5, fwiw.
->>> Please keep me in the loop, let me know if there is anything I can do to help.
->>
->> One aspect that may be worth checking is whether there's anywhere that assumes a successful return value from dma_map_sg() is always the same as the number of entries passed in - that's the most obvious way the iommu-dma code differs (legitimately) from the previous amd-iommu implementation.
-> 
-> net/sunrpc/xprtrdma/frwr_ops.c: frwr_map()
-> 
-> 317         mr->mr_nents =
-> 318                 ib_dma_map_sg(ia->ri_id->device, mr->mr_sg, i, mr->mr_dir);
-> 319         if (!mr->mr_nents)
-> 320                 goto out_dmamap_err;
-> 
-> Should that rather be "if (mr->mr_nents != i)" ?
+Hi Daniel
 
-No, that much is OK - the point is that dma_map_sg() may pack the DMA 
-addresses such that sg_dma_len(sg) > sg->length - however, subsequently 
-passing that mr->nents to dma_unmap_sg() in frwr_mr_recycle() (rather 
-than the original value of i) looks at a glance like an example of how 
-things may start to get out-of-whack.
+On Tue, 2020-02-11 at 17:13 +0800, Daniel Drake wrote:
+> The PCI devices handled by intel-iommu may have a DMA requester on
+> another bus, such as VMD subdevices needing to use the VMD endpoint.
+> 
+> The real DMA device is now used for the DMA mapping, but one case was
+> missed earlier, when allocating memory through (e.g.) intel_map_page().
+> Confusion ensues if the iommu domain type for the subdevice does not match
+> the iommu domain type for the real DMA device.
+Is there a way to force this situation for my testing? 
 
-Robin.
+> 
+> For example, take the case of the subdevice handled by intel_map_page()
+> in a IOMMU_DOMAIN_DMA, with the real DMA device in a
+> IOMMU_DOMAIN_IDENTITY:
+> 
+> 1. intel_map_page() checks if an IOMMU mapping is needed by calling
+>    iommu_need_mapping() on the subdevice. Result: mapping is needed.
+> 2. __intel_map_single() is called to create the mapping:
+>   - __intel_map_single() calls find_domain(). This function now returns
+>     the IDENTITY domain corresponding to the real DMA device.
+>   - __intel_map_single() then calls domain_get_iommu() on this "real"
+>     domain. A failure is hit and the entire operation is aborted, because
+>     this codepath is not intended to handle IDENTITY mappings:
+>         if (WARN_ON(domain->domain.type != IOMMU_DOMAIN_DMA))
+> 	     return NULL;
+> 
+> Fix this by using the real DMA device when checking if a mapping is
+> needed. The above case will then directly fall back on
+> dma_direct_map_page().
+> 
+> Fixes: 2b0140c69637 ("iommu/vt-d: Use pci_real_dma_dev() for mapping")
+> Signed-off-by: Daniel Drake <drake@endlessm.com>
+> ---
+> 
+> Notes:
+>     This problem was detected with a non-upstream patch
+>     "PCI: Add Intel remapped NVMe device support"
+>     (https://marc.info/?l=linux-ide&m=156015271021615&w=2)
+>     
+>     This patch creates PCI devices in the same way as VMD, and hence
+>     I believe VMD would hit this class of problem for any cases where
+>     iommu domain type may mismatch between subdevice and real device,
+>     which we have run into here.
+>     
+>     However this hasn't actually been tested on VMD (don't have the hardware)
+>     so if I've missed anything and/or it's not a real issue then feel free to
+>     drop this patch.
+> 
+>  drivers/iommu/intel-iommu.c | 3 +++
+>  1 file changed, 3 insertions(+)
+> 
+> diff --git a/drivers/iommu/intel-iommu.c b/drivers/iommu/intel-iommu.c
+> index 9dc37672bf89..713810f8350c 100644
+> --- a/drivers/iommu/intel-iommu.c
+> +++ b/drivers/iommu/intel-iommu.c
+> @@ -3587,6 +3587,9 @@ static bool iommu_need_mapping(struct device *dev)
+>  	if (iommu_dummy(dev))
+>  		return false;
+>  
+> +	if (dev_is_pci(dev))
+> +		dev = &pci_real_dma_dev(to_pci_dev(dev))->dev;
+> +
+>  	ret = identity_mapping(dev);
+>  	if (ret) {
+>  		u64 dma_mask = *dev->dma_mask;
+This will be a problem. We really want to use the subdevice's dma mask
+in case there's a situation where the subdevice only supports 32-bit
+dma (with the real dma requester having a 64-bit dma mask)
 
->>>> On Feb 11, 2020, at 2:25 AM, Joerg Roedel <jroedel@suse.de> wrote:
->>>>
->>>> Adding Tom's new email address.
->>>>
->>>> Tom, can you have a look, please?
->>>> https://bugzilla.kernel.org/show_bug.cgi?id=206461 seems to be a similar
->>>> issue.
->>>>
->>>> On Tue, Feb 11, 2020 at 06:06:54AM +0100, Andre Tomt wrote:
->>>>> Since upgrading my RDMA lab from kernel 5.4.x to 5.5.x, NFSv4 over RDMA
->>>>> stopped working. But only on my AMD Ryzen systems. And so far only NFS,
->>>>> curiously other RDMA diagnostic tools (like qperf <ip> -cm1 rc_bw) work
->>>>> fine.
->>>>>
->>>>> A git bisect points to be62dbf554c5b50718a54a359372c148cd9975c7 iommu/amd:
->>>>> Convert AMD iommu driver to the dma-iommu api
->>>>>
->>>>> 5.5.3-rc1, 5.6-rc1 are also not working.
->>>>>
->>>>> I verified it by booting with amd_iommu=off on the kernel cmdline - it makes
->>>>> everything work again.
->>>>>
->>>>> The NFS config is a pretty simple NFSv4.x only, sec=sys setup, running over
->>>>> RoCEv1 on Mellanox mlx4 hardware (ConnectX-3 Pro, fw 2.42.5000). Nothing
->>>>> fancy besides the RoCEv1 and related bits network bits like PFC and storage
->>>>> VLAN. Bare metal, no virtualization.
->>>>>
->>>>> The impacted systems are:
->>>>> ASUS ROG STRIX X399-E GAMING, with a Threadripper 1950x, BIOS 1002
->>>>> ASUS Pro WS X570-ACE, with a Ryzen 7 3700x, BIOS 1201
->>>>>
->>>>> pcaps off a mirror port can be provided. They show that on 5.5.x, CM
->>>>> succeeds, and then a couple of NFS NULL calls comes through (over RoCE),
->>>>> both acked, and then the rest just never goes out from the client until the
->>>>> mount times out and CM is torn down.
->>>>>
->>>>> No messages shows up in the kernel log on either side. I was at least
->>>>> expecting some scary IOMMU warnings.
->>>>>
->>>>> More serious hardware is not available for RDMA testing currently, so I dont
->>>>> know if a EPYC system or newer mlx5 cards would have similar issues. Intel
->>>>> I've only tested as server so far, that worked fine, as expected given the
->>>>> bisect result.
->>>>>
->>>>>
->>>>>> git bisect start
->>>>>> # bad: [d5226fa6dbae0569ee43ecfc08bdcd6770fc4755] Linux 5.5
->>>>>> git bisect bad d5226fa6dbae0569ee43ecfc08bdcd6770fc4755
->>>>>> # good: [219d54332a09e8d8741c1e1982f5eae56099de85] Linux 5.4
->>>>>> git bisect good 219d54332a09e8d8741c1e1982f5eae56099de85
->>>>>> # good: [8c39f71ee2019e77ee14f88b1321b2348db51820] Merge git://git.kernel.org/pub/scm/linux/kernel/git/netdev/net
->>>>>> git bisect good 8c39f71ee2019e77ee14f88b1321b2348db51820
->>>>>> # bad: [76bb8b05960c3d1668e6bee7624ed886cbd135ba] Merge tag 'kbuild-v5.5' of git://git.kernel.org/pub/scm/linux/kernel/git/masahiroy/linux-kbuild
->>>>>> git bisect bad 76bb8b05960c3d1668e6bee7624ed886cbd135ba
->>>>>> # good: [21b26d2679584c6a60e861aa3e5ca09a6bab0633] Merge tag '5.5-rc-smb3-fixes' of git://git.samba.org/sfrench/cifs-2.6
->>>>>> git bisect good 21b26d2679584c6a60e861aa3e5ca09a6bab0633
->>>>>> # good: [e5b3fc125d768eacd73bb4dc5019f0ce95635af4] Merge branch 'x86-urgent-for-linus' of git://git.kernel.org/pub/scm/linux/kernel/git/tip/tip
->>>>>> git bisect good e5b3fc125d768eacd73bb4dc5019f0ce95635af4
->>>>>> # bad: [937d6eefc716a9071f0e3bada19200de1bb9d048] Merge tag 'docs-5.5a' of git://git.lwn.net/linux
->>>>>> git bisect bad 937d6eefc716a9071f0e3bada19200de1bb9d048
->>>>>> # bad: [1daa56bcfd8b329447e0c1b1e91c3925d08489b7] Merge tag 'iommu-updates-v5.5' of git://git.kernel.org/pub/scm/linux/kernel/git/joro/iommu
->>>>>> git bisect bad 1daa56bcfd8b329447e0c1b1e91c3925d08489b7
->>>>>> # good: [937790699be9c8100e5358625e7dfa8b32bd33f2] mm/page_io.c: annotate refault stalls from swap_readpage
->>>>>> git bisect good 937790699be9c8100e5358625e7dfa8b32bd33f2
->>>>>> # good: [a5255bc31673c72e264d837cd13cd3085d72cb58] Merge tag 'dmaengine-5.5-rc1' of git://git.infradead.org/users/vkoul/slave-dma
->>>>>> git bisect good a5255bc31673c72e264d837cd13cd3085d72cb58
->>>>>> # good: [34d1b0895dbd10713c73615d8f532e78509e12d9] iommu/arm-smmu: Remove duplicate error message
->>>>>> git bisect good 34d1b0895dbd10713c73615d8f532e78509e12d9
->>>>>> # bad: [3c124435e8dd516df4b2fc983f4415386fd6edae] iommu/amd: Support multiple PCI DMA aliases in IRQ Remapping
->>>>>> git bisect bad 3c124435e8dd516df4b2fc983f4415386fd6edae
->>>>>> # bad: [be62dbf554c5b50718a54a359372c148cd9975c7] iommu/amd: Convert AMD iommu driver to the dma-iommu api
->>>>>> git bisect bad be62dbf554c5b50718a54a359372c148cd9975c7
->>>>>> # good: [781ca2de89bae1b1d2c96df9ef33e9a324415995] iommu: Add gfp parameter to iommu_ops::map
->>>>>> git bisect good 781ca2de89bae1b1d2c96df9ef33e9a324415995
->>>>>> # good: [6e2350207f40e24884da262976f7fd4fba387e8a] iommu/dma-iommu: Use the dev->coherent_dma_mask
->>>>>> git bisect good 6e2350207f40e24884da262976f7fd4fba387e8a
->>>>>> # first bad commit: [be62dbf554c5b50718a54a359372c148cd9975c7] iommu/amd: Convert AMD iommu driver to the dma-iommu api
->>> --
->>> Chuck Lever
->>> _______________________________________________
->>> iommu mailing list
->>> iommu@lists.linux-foundation.org
->>> https://lists.linuxfoundation.org/mailman/listinfo/iommu
-> 
-> --
-> Chuck Lever
-> 
-> 
-> 
+
+
+Would this work?
+
+diff --git a/drivers/iommu/intel-iommu.c b/drivers/iommu/intel-iommu.c
+index 9dc3767..8f35e6b 100644
+--- a/drivers/iommu/intel-iommu.c
++++ b/drivers/iommu/intel-iommu.c
+@@ -3582,19 +3582,24 @@ static struct dmar_domain *get_private_domain_for_dev(struct device *dev)
+ /* Check if the dev needs to go through non-identity map and unmap process.*/
+ static bool iommu_need_mapping(struct device *dev)
+ {
++       u64 dma_mask, required_dma_mask;
+        int ret;
+ 
+        if (iommu_dummy(dev))
+                return false;
+ 
+-       ret = identity_mapping(dev);
+-       if (ret) {
+-               u64 dma_mask = *dev->dma_mask;
++       dma_mask = *dev->dma_mask;
++       if (dev->coherent_dma_mask && dev->coherent_dma_mask < dma_mask)
++               dma_mask = dev->coherent_dma_mask;
+ 
+-               if (dev->coherent_dma_mask && dev->coherent_dma_mask < dma_mask)
+-                       dma_mask = dev->coherent_dma_mask;
++       required_dma_mask = dma_direct_get_required_mask(dev);
+ 
+-               if (dma_mask >= dma_direct_get_required_mask(dev))
++       if (dev_is_pci(dev))
++               dev = &pci_real_dma_dev(to_pci_dev(dev))->dev;
++
++       ret = identity_mapping(dev);
++       if (ret) {
++               if (dma_mask >= required_dma_mask)
+                        return false;
+ 
+                /*
 _______________________________________________
 iommu mailing list
 iommu@lists.linux-foundation.org
