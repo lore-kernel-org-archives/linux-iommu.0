@@ -2,102 +2,106 @@ Return-Path: <SRS0=3qjS=37=lists.linux-foundation.org=iommu-bounces@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-9.6 required=3.0 tests=DKIM_INVALID,DKIM_SIGNED,
-	HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_PATCH,MAILING_LIST_MULTI,SIGNED_OFF_BY,
-	SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED,USER_AGENT_GIT autolearn=unavailable
-	autolearn_force=no version=3.4.0
+X-Spam-Status: No, score=-5.1 required=3.0 tests=DKIM_INVALID,DKIM_SIGNED,
+	HEADER_FROM_DIFFERENT_DOMAINS,MAILING_LIST_MULTI,SIGNED_OFF_BY,SPF_HELO_NONE,
+	SPF_PASS,URIBL_BLOCKED,USER_AGENT_SANE_1 autolearn=ham autolearn_force=no
+	version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 5E10AC3B187
-	for <iommu@archiver.kernel.org>; Tue, 11 Feb 2020 07:55:43 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id A9579C3B187
+	for <iommu@archiver.kernel.org>; Tue, 11 Feb 2020 07:59:29 +0000 (UTC)
 Received: from hemlock.osuosl.org (smtp2.osuosl.org [140.211.166.133])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by mail.kernel.org (Postfix) with ESMTPS id 32904206CC
-	for <iommu@archiver.kernel.org>; Tue, 11 Feb 2020 07:55:43 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTPS id 79213206CC
+	for <iommu@archiver.kernel.org>; Tue, 11 Feb 2020 07:59:29 +0000 (UTC)
 Authentication-Results: mail.kernel.org;
-	dkim=fail reason="signature verification failed" (2048-bit key) header.d=linaro.org header.i=@linaro.org header.b="ZsaTAO4W"
-DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 32904206CC
+	dkim=fail reason="signature verification failed" (2048-bit key) header.d=linaro.org header.i=@linaro.org header.b="ri9VQfWj"
+DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 79213206CC
 Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=linaro.org
 Authentication-Results: mail.kernel.org; spf=pass smtp.mailfrom=iommu-bounces@lists.linux-foundation.org
 Received: from localhost (localhost [127.0.0.1])
-	by hemlock.osuosl.org (Postfix) with ESMTP id 030DE875BC;
-	Tue, 11 Feb 2020 07:55:43 +0000 (UTC)
+	by hemlock.osuosl.org (Postfix) with ESMTP id 43D3C87634;
+	Tue, 11 Feb 2020 07:59:29 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
 Received: from hemlock.osuosl.org ([127.0.0.1])
 	by localhost (.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
-	with ESMTP id f+G2qh6PLwy0; Tue, 11 Feb 2020 07:55:42 +0000 (UTC)
+	with ESMTP id wqBlqwSXHyL9; Tue, 11 Feb 2020 07:59:28 +0000 (UTC)
 Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [140.211.9.56])
-	by hemlock.osuosl.org (Postfix) with ESMTP id 0CBCE8754B;
-	Tue, 11 Feb 2020 07:55:42 +0000 (UTC)
+	by hemlock.osuosl.org (Postfix) with ESMTP id AE0C1875BC;
+	Tue, 11 Feb 2020 07:59:28 +0000 (UTC)
 Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
-	by lists.linuxfoundation.org (Postfix) with ESMTP id ED10FC1D80;
-	Tue, 11 Feb 2020 07:55:41 +0000 (UTC)
-Received: from fraxinus.osuosl.org (smtp4.osuosl.org [140.211.166.137])
- by lists.linuxfoundation.org (Postfix) with ESMTP id DFE2FC07FE
- for <iommu@lists.linux-foundation.org>; Tue, 11 Feb 2020 07:55:40 +0000 (UTC)
+	by lists.linuxfoundation.org (Postfix) with ESMTP id 942BCC1D80;
+	Tue, 11 Feb 2020 07:59:28 +0000 (UTC)
+Received: from hemlock.osuosl.org (smtp2.osuosl.org [140.211.166.133])
+ by lists.linuxfoundation.org (Postfix) with ESMTP id 52232C07FE
+ for <iommu@lists.linux-foundation.org>; Tue, 11 Feb 2020 07:59:27 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
- by fraxinus.osuosl.org (Postfix) with ESMTP id DBB4984530
- for <iommu@lists.linux-foundation.org>; Tue, 11 Feb 2020 07:55:40 +0000 (UTC)
+ by hemlock.osuosl.org (Postfix) with ESMTP id 38DB4875CB
+ for <iommu@lists.linux-foundation.org>; Tue, 11 Feb 2020 07:59:27 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from fraxinus.osuosl.org ([127.0.0.1])
+Received: from hemlock.osuosl.org ([127.0.0.1])
  by localhost (.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
- with ESMTP id kU9afpnHSRHs for <iommu@lists.linux-foundation.org>;
- Tue, 11 Feb 2020 07:55:38 +0000 (UTC)
-X-Greylist: domain auto-whitelisted by SQLgrey-1.7.6
-Received: from mail-pl1-f194.google.com (mail-pl1-f194.google.com
- [209.85.214.194])
- by fraxinus.osuosl.org (Postfix) with ESMTPS id CCBF784155
- for <iommu@lists.linux-foundation.org>; Tue, 11 Feb 2020 07:55:38 +0000 (UTC)
-Received: by mail-pl1-f194.google.com with SMTP id d9so3923159plo.11
- for <iommu@lists.linux-foundation.org>; Mon, 10 Feb 2020 23:55:38 -0800 (PST)
+ with ESMTP id RMQzRs1cvpzZ for <iommu@lists.linux-foundation.org>;
+ Tue, 11 Feb 2020 07:59:26 +0000 (UTC)
+X-Greylist: from auto-whitelisted by SQLgrey-1.7.6
+Received: from mail-pf1-f194.google.com (mail-pf1-f194.google.com
+ [209.85.210.194])
+ by hemlock.osuosl.org (Postfix) with ESMTPS id 8A4F3875BC
+ for <iommu@lists.linux-foundation.org>; Tue, 11 Feb 2020 07:59:26 +0000 (UTC)
+Received: by mail-pf1-f194.google.com with SMTP id q8so5088977pfh.7
+ for <iommu@lists.linux-foundation.org>; Mon, 10 Feb 2020 23:59:26 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linaro.org; s=google;
- h=from:to:cc:subject:date:message-id:in-reply-to:references;
- bh=8vFs7BtTYVd1LSFhoQs24FthfV+ot+Z7tDrrL6PgPKM=;
- b=ZsaTAO4WFPsygN+qxGuNhP+6MFSqIVSuVw5mjDcmYdIHvuowNA0qwSbZWFUKav7C6b
- i1gNRhWUe2eAlGlCVWTd+KnIkO/XCcm3oqPovJwBDxd3bxNMLjR6wO72QXZBR5PLznmu
- E8KLCdPPg4qQYvE5DyERBmnHCBRuwfMKS1faMDeJF8+LKU/T1pHnaBtyYnQ7bKRfe28+
- DOuAJl6H5yXvb9SkukzzRPuF0gDEN1Izs3UebhcaWi7bT5zrOAYX2y2oRFf9ONDp89cL
- j9R3kaYpnEPSnfnXV/BZ3oxovcYJKeKDLsyJvdJlzDmsUrIMXKtaKq/yeoCrj/m1axOK
- U7OQ==
+ h=subject:to:cc:references:from:message-id:date:user-agent
+ :mime-version:in-reply-to:content-transfer-encoding:content-language;
+ bh=vgfeWj4AjQyurf0xeK1Z635NiCQf4E21yKLT1OZCOxI=;
+ b=ri9VQfWjEpKz6UthsEkXDqvnC/vLM4tNXqWeNUw5XE4gn0yaVJfZkwQx4Sur/04JIb
+ dRI4HjhUXnEFs97ZzjuEffQhpy0By2DTATHsRhkAXqVliZZ4fHIwvWPO5TnQeWDUnLZg
+ TRdgI1Ei0NaaMFLHz8RAGH1G/K0sLzpTYyeoHEtYXyoujCLG0HHwpVteQX1xyBgglG0+
+ mB94kh5J+PtLDyeXSmXcseUkKQaf9div3/bJktotIn/0JC76R+oUZmJMIuHKE35UF3fF
+ QxxODrdCPPoiz3b3F+66ptTJbFyHIjbsYgGQ9LW4NL086BNGPr2bgIO54+RBmMXNQJWz
+ 7MbQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
  d=1e100.net; s=20161025;
- h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
- :references;
- bh=8vFs7BtTYVd1LSFhoQs24FthfV+ot+Z7tDrrL6PgPKM=;
- b=eUCi5sjvhx+Qgy8aXYmEJvR5L9Y4kxtPZwwgkhWCEzaa3GDyHIbByccsJXElB0fXQ2
- 8SFDcE1znFsrVxyNzqulYWGRaopGaiqOrvvuCDNi1wuIf8WoxpDHwaxJ+RbPhi3kEpe8
- DflYCKc4TxzBwaKc2PQkJCKJ2HYiUmJJmBM1+rUXqQ9BWguovfAyout1v2kZ7xNWUwgD
- i8Qd5SzJTtFfuix0FokKy/1+3spIGh7cjhLkJucZvVB7X5MzFnWwnRPJ2rq3F2wbJnU0
- nIc2iHP32zzciiCeVeBfLERwvq+E7ouuPMv7iCruCmCn9kUBrYY2/iBbwZj7NZwy3LJW
- 9DEA==
-X-Gm-Message-State: APjAAAXg/rHxSwbn22OuNdjTXtm1y6YfRV8ySaVf5wsZSxFLUPM6cfYE
- L3kQe9aZTfkFN6dBnvr07GhFPA==
-X-Google-Smtp-Source: APXvYqz1uPZ7k3dz270TmnKh1yTCB+7vhihcnsvPtMsvjvNlP13kkFr2wI+NsX5OuvJI005GDFJzWg==
-X-Received: by 2002:a17:902:161:: with SMTP id
- 88mr2065149plb.129.1581407738213; 
- Mon, 10 Feb 2020 23:55:38 -0800 (PST)
-Received: from localhost.localdomain ([45.135.186.96])
- by smtp.gmail.com with ESMTPSA id d73sm3011627pfd.109.2020.02.10.23.55.27
- (version=TLS1_2 cipher=ECDHE-RSA-AES128-SHA bits=128/128);
- Mon, 10 Feb 2020 23:55:37 -0800 (PST)
-From: Zhangfei Gao <zhangfei.gao@linaro.org>
-To: Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
- Arnd Bergmann <arnd@arndb.de>, Herbert Xu <herbert@gondor.apana.org.au>,
- jonathan.cameron@huawei.com, dave.jiang@intel.com, grant.likely@arm.com,
- jean-philippe <jean-philippe@linaro.org>,
- Jerome Glisse <jglisse@redhat.com>, ilias.apalodimas@linaro.org,
- francois.ozog@linaro.org, kenneth-lee-2012@foxmail.com,
- Wangzhou <wangzhou1@hisilicon.com>,
- "haojian . zhuang" <haojian.zhuang@linaro.org>, guodong.xu@linaro.org
-Subject: [PATCH v13 4/4] crypto: hisilicon - register zip engine to uacce
-Date: Tue, 11 Feb 2020 15:54:25 +0800
-Message-Id: <1581407665-13504-5-git-send-email-zhangfei.gao@linaro.org>
-X-Mailer: git-send-email 2.7.4
-In-Reply-To: <1581407665-13504-1-git-send-email-zhangfei.gao@linaro.org>
-References: <1581407665-13504-1-git-send-email-zhangfei.gao@linaro.org>
-Cc: Zhangfei Gao <zhangfei.gao@linaro.org>, iommu@lists.linux-foundation.org,
- linux-kernel@vger.kernel.org, linux-accelerators@lists.ozlabs.org,
- linux-crypto@vger.kernel.org
+ h=x-gm-message-state:subject:to:cc:references:from:message-id:date
+ :user-agent:mime-version:in-reply-to:content-transfer-encoding
+ :content-language;
+ bh=vgfeWj4AjQyurf0xeK1Z635NiCQf4E21yKLT1OZCOxI=;
+ b=PaoDHVhcZw81WG2Ox6wTw62zr5QYaAE9KI+VOjKksUMkIyROySCAGJOxcLO2hAFTKS
+ Mys7kINw31sFCCi9ObSjoVzk6sZM2zmAGNqti1ISWj084ALfo+hSsfmL64uLKhRA401k
+ g8hljhYL/NfEQOjyZHBY8i26PsersgiK5Y+O2zEF4ms875JVCbYZ0j5dx/GGvI2vyGe+
+ 3g0rHs0OKmobZ9Vwky5YhRYXzsj2mMmKC+YFEoXXp645LCOP/+ha/LHUMkJZHyj+FF0l
+ VKe8ZTeIgUOjdoMNS/xjCloiFi3TdlYx4KAfkttkcnBPT9ZK7DoJ//wS0LXB7UYmeJT6
+ zDAw==
+X-Gm-Message-State: APjAAAUOnIg+HdeSqiRAKLI5x5WzdXlMZTd1/xgQIe/koZCMDrriBNGm
+ XJVBxL739MNg6W0HAnzNPYGzPw==
+X-Google-Smtp-Source: APXvYqxCnM2bUDEVK6wbp7oZd2Lj9/7Nk8QoUV2401OvplRSyHu/dvSNfD4xv8uaAlqj8fId4WKGtQ==
+X-Received: by 2002:a63:8743:: with SMTP id i64mr1818578pge.243.1581407966063; 
+ Mon, 10 Feb 2020 23:59:26 -0800 (PST)
+Received: from [10.96.0.154] ([45.135.186.96])
+ by smtp.gmail.com with ESMTPSA id s14sm2573821pgv.74.2020.02.10.23.59.17
+ (version=TLS1_2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128/128);
+ Mon, 10 Feb 2020 23:59:25 -0800 (PST)
+Subject: Re: [PATCH v12 2/4] uacce: add uacce driver
+To: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+References: <1579097568-17542-1-git-send-email-zhangfei.gao@linaro.org>
+ <1579097568-17542-3-git-send-email-zhangfei.gao@linaro.org>
+ <20200210233711.GA1787983@kroah.com>
+From: zhangfei <zhangfei.gao@linaro.org>
+Message-ID: <837da172-1ec7-d077-bf54-18d620b1d3bb@linaro.org>
+Date: Tue, 11 Feb 2020 15:59:08 +0800
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:60.0) Gecko/20100101
+ Thunderbird/60.9.0
+MIME-Version: 1.0
+In-Reply-To: <20200210233711.GA1787983@kroah.com>
+Content-Language: en-US
+Cc: jean-philippe <jean-philippe@linaro.org>, dave.jiang@intel.com,
+ Herbert Xu <herbert@gondor.apana.org.au>, Arnd Bergmann <arnd@arndb.de>,
+ francois.ozog@linaro.org, linux-accelerators@lists.ozlabs.org,
+ ilias.apalodimas@linaro.org, iommu@lists.linux-foundation.org,
+ linux-kernel@vger.kernel.org, Jerome Glisse <jglisse@redhat.com>,
+ grant.likely@arm.com, "haojian . zhuang" <haojian.zhuang@linaro.org>,
+ linux-crypto@vger.kernel.org, Kenneth Lee <liguozhu@hisilicon.com>,
+ guodong.xu@linaro.org, kenneth-lee-2012@foxmail.com
 X-BeenThere: iommu@lists.linux-foundation.org
 X-Mailman-Version: 2.1.15
 Precedence: list
@@ -110,461 +114,61 @@ List-Post: <mailto:iommu@lists.linux-foundation.org>
 List-Help: <mailto:iommu-request@lists.linux-foundation.org?subject=help>
 List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
  <mailto:iommu-request@lists.linux-foundation.org?subject=subscribe>
-MIME-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: 7bit
+Content-Transfer-Encoding: base64
+Content-Type: text/plain; charset="utf-8"; Format="flowed"
 Errors-To: iommu-bounces@lists.linux-foundation.org
 Sender: "iommu" <iommu-bounces@lists.linux-foundation.org>
 
-Register qm to uacce framework for user crypto driver
-
-Reviewed-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-Reviewed-by: Jonathan Cameron <Jonathan.Cameron@huawei.com>
-Signed-off-by: Zhangfei Gao <zhangfei.gao@linaro.org>
-Signed-off-by: Zhou Wang <wangzhou1@hisilicon.com>
----
- drivers/crypto/hisilicon/qm.c           | 239 +++++++++++++++++++++++-
- drivers/crypto/hisilicon/qm.h           |  11 ++
- drivers/crypto/hisilicon/zip/zip_main.c |  18 +-
- include/uapi/misc/uacce/hisi_qm.h       |  23 +++
- 4 files changed, 283 insertions(+), 8 deletions(-)
- create mode 100644 include/uapi/misc/uacce/hisi_qm.h
-
-diff --git a/drivers/crypto/hisilicon/qm.c b/drivers/crypto/hisilicon/qm.c
-index b57da5ef8b5b..61cf3f52ca6e 100644
---- a/drivers/crypto/hisilicon/qm.c
-+++ b/drivers/crypto/hisilicon/qm.c
-@@ -9,6 +9,9 @@
- #include <linux/log2.h>
- #include <linux/seq_file.h>
- #include <linux/slab.h>
-+#include <linux/uacce.h>
-+#include <linux/uaccess.h>
-+#include <uapi/misc/uacce/hisi_qm.h>
- #include "qm.h"
- 
- /* eq/aeq irq enable */
-@@ -465,9 +468,14 @@ static void qm_cq_head_update(struct hisi_qp *qp)
- 
- static void qm_poll_qp(struct hisi_qp *qp, struct hisi_qm *qm)
- {
--	struct qm_cqe *cqe = qp->cqe + qp->qp_status.cq_head;
-+	if (qp->event_cb) {
-+		qp->event_cb(qp);
-+		return;
-+	}
- 
- 	if (qp->req_cb) {
-+		struct qm_cqe *cqe = qp->cqe + qp->qp_status.cq_head;
-+
- 		while (QM_CQE_PHASE(cqe) == qp->qp_status.cqc_phase) {
- 			dma_rmb();
- 			qp->req_cb(qp, qp->sqe + qm->sqe_size *
-@@ -1269,7 +1277,7 @@ static int qm_qp_ctx_cfg(struct hisi_qp *qp, int qp_id, int pasid)
-  * @qp: The qp we want to start to run.
-  * @arg: Accelerator specific argument.
-  *
-- * After this function, qp can receive request from user. Return qp_id if
-+ * After this function, qp can receive request from user. Return 0 if
-  * successful, Return -EBUSY if failed.
-  */
- int hisi_qm_start_qp(struct hisi_qp *qp, unsigned long arg)
-@@ -1314,7 +1322,7 @@ int hisi_qm_start_qp(struct hisi_qp *qp, unsigned long arg)
- 
- 	dev_dbg(dev, "queue %d started\n", qp_id);
- 
--	return qp_id;
-+	return 0;
- }
- EXPORT_SYMBOL_GPL(hisi_qm_start_qp);
- 
-@@ -1395,6 +1403,214 @@ static void hisi_qm_cache_wb(struct hisi_qm *qm)
- 	}
- }
- 
-+static void qm_qp_event_notifier(struct hisi_qp *qp)
-+{
-+	wake_up_interruptible(&qp->uacce_q->wait);
-+}
-+
-+static int hisi_qm_get_available_instances(struct uacce_device *uacce)
-+{
-+	int i, ret;
-+	struct hisi_qm *qm = uacce->priv;
-+
-+	read_lock(&qm->qps_lock);
-+	for (i = 0, ret = 0; i < qm->qp_num; i++)
-+		if (!qm->qp_array[i])
-+			ret++;
-+	read_unlock(&qm->qps_lock);
-+
-+	return ret;
-+}
-+
-+static int hisi_qm_uacce_get_queue(struct uacce_device *uacce,
-+				   unsigned long arg,
-+				   struct uacce_queue *q)
-+{
-+	struct hisi_qm *qm = uacce->priv;
-+	struct hisi_qp *qp;
-+	u8 alg_type = 0;
-+
-+	qp = hisi_qm_create_qp(qm, alg_type);
-+	if (IS_ERR(qp))
-+		return PTR_ERR(qp);
-+
-+	q->priv = qp;
-+	q->uacce = uacce;
-+	qp->uacce_q = q;
-+	qp->event_cb = qm_qp_event_notifier;
-+	qp->pasid = arg;
-+
-+	return 0;
-+}
-+
-+static void hisi_qm_uacce_put_queue(struct uacce_queue *q)
-+{
-+	struct hisi_qp *qp = q->priv;
-+
-+	hisi_qm_cache_wb(qp->qm);
-+	hisi_qm_release_qp(qp);
-+}
-+
-+/* map sq/cq/doorbell to user space */
-+static int hisi_qm_uacce_mmap(struct uacce_queue *q,
-+			      struct vm_area_struct *vma,
-+			      struct uacce_qfile_region *qfr)
-+{
-+	struct hisi_qp *qp = q->priv;
-+	struct hisi_qm *qm = qp->qm;
-+	size_t sz = vma->vm_end - vma->vm_start;
-+	struct pci_dev *pdev = qm->pdev;
-+	struct device *dev = &pdev->dev;
-+	unsigned long vm_pgoff;
-+	int ret;
-+
-+	switch (qfr->type) {
-+	case UACCE_QFRT_MMIO:
-+		if (qm->ver == QM_HW_V2) {
-+			if (sz > PAGE_SIZE * (QM_DOORBELL_PAGE_NR +
-+			    QM_DOORBELL_SQ_CQ_BASE_V2 / PAGE_SIZE))
-+				return -EINVAL;
-+		} else {
-+			if (sz > PAGE_SIZE * QM_DOORBELL_PAGE_NR)
-+				return -EINVAL;
-+		}
-+
-+		vma->vm_flags |= VM_IO;
-+
-+		return remap_pfn_range(vma, vma->vm_start,
-+				       qm->phys_base >> PAGE_SHIFT,
-+				       sz, pgprot_noncached(vma->vm_page_prot));
-+	case UACCE_QFRT_DUS:
-+		if (sz != qp->qdma.size)
-+			return -EINVAL;
-+
-+		/*
-+		 * dma_mmap_coherent() requires vm_pgoff as 0
-+		 * restore vm_pfoff to initial value for mmap()
-+		 */
-+		vm_pgoff = vma->vm_pgoff;
-+		vma->vm_pgoff = 0;
-+		ret = dma_mmap_coherent(dev, vma, qp->qdma.va,
-+					qp->qdma.dma, sz);
-+		vma->vm_pgoff = vm_pgoff;
-+		return ret;
-+
-+	default:
-+		return -EINVAL;
-+	}
-+}
-+
-+static int hisi_qm_uacce_start_queue(struct uacce_queue *q)
-+{
-+	struct hisi_qp *qp = q->priv;
-+
-+	return hisi_qm_start_qp(qp, qp->pasid);
-+}
-+
-+static void hisi_qm_uacce_stop_queue(struct uacce_queue *q)
-+{
-+	hisi_qm_stop_qp(q->priv);
-+}
-+
-+static int qm_set_sqctype(struct uacce_queue *q, u16 type)
-+{
-+	struct hisi_qm *qm = q->uacce->priv;
-+	struct hisi_qp *qp = q->priv;
-+
-+	write_lock(&qm->qps_lock);
-+	qp->alg_type = type;
-+	write_unlock(&qm->qps_lock);
-+
-+	return 0;
-+}
-+
-+static long hisi_qm_uacce_ioctl(struct uacce_queue *q, unsigned int cmd,
-+				unsigned long arg)
-+{
-+	struct hisi_qp *qp = q->priv;
-+	struct hisi_qp_ctx qp_ctx;
-+
-+	if (cmd == UACCE_CMD_QM_SET_QP_CTX) {
-+		if (copy_from_user(&qp_ctx, (void __user *)arg,
-+				   sizeof(struct hisi_qp_ctx)))
-+			return -EFAULT;
-+
-+		if (qp_ctx.qc_type != 0 && qp_ctx.qc_type != 1)
-+			return -EINVAL;
-+
-+		qm_set_sqctype(q, qp_ctx.qc_type);
-+		qp_ctx.id = qp->qp_id;
-+
-+		if (copy_to_user((void __user *)arg, &qp_ctx,
-+				 sizeof(struct hisi_qp_ctx)))
-+			return -EFAULT;
-+	} else {
-+		return -EINVAL;
-+	}
-+
-+	return 0;
-+}
-+
-+static const struct uacce_ops uacce_qm_ops = {
-+	.get_available_instances = hisi_qm_get_available_instances,
-+	.get_queue = hisi_qm_uacce_get_queue,
-+	.put_queue = hisi_qm_uacce_put_queue,
-+	.start_queue = hisi_qm_uacce_start_queue,
-+	.stop_queue = hisi_qm_uacce_stop_queue,
-+	.mmap = hisi_qm_uacce_mmap,
-+	.ioctl = hisi_qm_uacce_ioctl,
-+};
-+
-+static int qm_alloc_uacce(struct hisi_qm *qm)
-+{
-+	struct pci_dev *pdev = qm->pdev;
-+	struct uacce_device *uacce;
-+	unsigned long mmio_page_nr;
-+	unsigned long dus_page_nr;
-+	struct uacce_interface interface = {
-+		.flags = UACCE_DEV_SVA,
-+		.ops = &uacce_qm_ops,
-+	};
-+
-+	strncpy(interface.name, pdev->driver->name, sizeof(interface.name));
-+
-+	uacce = uacce_alloc(&pdev->dev, &interface);
-+	if (IS_ERR(uacce))
-+		return PTR_ERR(uacce);
-+
-+	if (uacce->flags & UACCE_DEV_SVA) {
-+		qm->use_sva = true;
-+	} else {
-+		/* only consider sva case */
-+		uacce_remove(uacce);
-+		qm->uacce = NULL;
-+		return -EINVAL;
-+	}
-+
-+	uacce->is_vf = pdev->is_virtfn;
-+	uacce->priv = qm;
-+	uacce->algs = qm->algs;
-+
-+	if (qm->ver == QM_HW_V1) {
-+		mmio_page_nr = QM_DOORBELL_PAGE_NR;
-+		uacce->api_ver = HISI_QM_API_VER_BASE;
-+	} else {
-+		mmio_page_nr = QM_DOORBELL_PAGE_NR +
-+			QM_DOORBELL_SQ_CQ_BASE_V2 / PAGE_SIZE;
-+		uacce->api_ver = HISI_QM_API_VER2_BASE;
-+	}
-+
-+	dus_page_nr = (PAGE_SIZE - 1 + qm->sqe_size * QM_Q_DEPTH +
-+		       sizeof(struct qm_cqe) * QM_Q_DEPTH) >> PAGE_SHIFT;
-+
-+	uacce->qf_pg_num[UACCE_QFRT_MMIO] = mmio_page_nr;
-+	uacce->qf_pg_num[UACCE_QFRT_DUS]  = dus_page_nr;
-+
-+	qm->uacce = uacce;
-+
-+	return 0;
-+}
-+
- /**
-  * hisi_qm_get_free_qp_num() - Get free number of qp in qm.
-  * @qm: The qm which want to get free qp.
-@@ -1437,10 +1653,14 @@ int hisi_qm_init(struct hisi_qm *qm)
- 		return -EINVAL;
- 	}
- 
-+	ret = qm_alloc_uacce(qm);
-+	if (ret < 0)
-+		dev_warn(&pdev->dev, "fail to alloc uacce (%d)\n", ret);
-+
- 	ret = pci_enable_device_mem(pdev);
- 	if (ret < 0) {
- 		dev_err(&pdev->dev, "Failed to enable device mem!\n");
--		return ret;
-+		goto err_remove_uacce;
- 	}
- 
- 	ret = pci_request_mem_regions(pdev, qm->dev_name);
-@@ -1449,8 +1669,9 @@ int hisi_qm_init(struct hisi_qm *qm)
- 		goto err_disable_pcidev;
- 	}
- 
--	qm->io_base = ioremap(pci_resource_start(pdev, PCI_BAR_2),
--			      pci_resource_len(qm->pdev, PCI_BAR_2));
-+	qm->phys_base = pci_resource_start(pdev, PCI_BAR_2);
-+	qm->phys_size = pci_resource_len(qm->pdev, PCI_BAR_2);
-+	qm->io_base = ioremap(qm->phys_base, qm->phys_size);
- 	if (!qm->io_base) {
- 		ret = -EIO;
- 		goto err_release_mem_regions;
-@@ -1493,6 +1714,9 @@ int hisi_qm_init(struct hisi_qm *qm)
- 	pci_release_mem_regions(pdev);
- err_disable_pcidev:
- 	pci_disable_device(pdev);
-+err_remove_uacce:
-+	uacce_remove(qm->uacce);
-+	qm->uacce = NULL;
- 
- 	return ret;
- }
-@@ -1509,6 +1733,9 @@ void hisi_qm_uninit(struct hisi_qm *qm)
- 	struct pci_dev *pdev = qm->pdev;
- 	struct device *dev = &pdev->dev;
- 
-+	uacce_remove(qm->uacce);
-+	qm->uacce = NULL;
-+
- 	if (qm->use_dma_api && qm->qdma.va) {
- 		hisi_qm_cache_wb(qm);
- 		dma_free_coherent(dev, qm->qdma.size,
-diff --git a/drivers/crypto/hisilicon/qm.h b/drivers/crypto/hisilicon/qm.h
-index 078b8f1f1b77..c096f80a1333 100644
---- a/drivers/crypto/hisilicon/qm.h
-+++ b/drivers/crypto/hisilicon/qm.h
-@@ -77,6 +77,9 @@
- 
- #define HISI_ACC_SGL_SGE_NR_MAX		255
- 
-+/* page number for queue file region */
-+#define QM_DOORBELL_PAGE_NR		1
-+
- enum qp_state {
- 	QP_STOP,
- };
-@@ -162,7 +165,12 @@ struct hisi_qm {
- 	u32 error_mask;
- 	u32 msi_mask;
- 
-+	const char *algs;
- 	bool use_dma_api;
-+	bool use_sva;
-+	resource_size_t phys_base;
-+	resource_size_t phys_size;
-+	struct uacce_device *uacce;
- };
- 
- struct hisi_qp_status {
-@@ -192,10 +200,13 @@ struct hisi_qp {
- 	struct hisi_qp_ops *hw_ops;
- 	void *qp_ctx;
- 	void (*req_cb)(struct hisi_qp *qp, void *data);
-+	void (*event_cb)(struct hisi_qp *qp);
- 	struct work_struct work;
- 	struct workqueue_struct *wq;
- 
- 	struct hisi_qm *qm;
-+	u16 pasid;
-+	struct uacce_queue *uacce_q;
- };
- 
- int hisi_qm_init(struct hisi_qm *qm);
-diff --git a/drivers/crypto/hisilicon/zip/zip_main.c b/drivers/crypto/hisilicon/zip/zip_main.c
-index 93345f0d7415..013252824f88 100644
---- a/drivers/crypto/hisilicon/zip/zip_main.c
-+++ b/drivers/crypto/hisilicon/zip/zip_main.c
-@@ -11,6 +11,7 @@
- #include <linux/pci.h>
- #include <linux/seq_file.h>
- #include <linux/topology.h>
-+#include <linux/uacce.h>
- #include "zip.h"
- 
- #define PCI_DEVICE_ID_ZIP_PF		0xa250
-@@ -350,8 +351,14 @@ static void hisi_zip_set_user_domain_and_cache(struct hisi_zip *hisi_zip)
- 	writel(AXUSER_BASE, base + HZIP_BD_RUSER_32_63);
- 	writel(AXUSER_BASE, base + HZIP_SGL_RUSER_32_63);
- 	writel(AXUSER_BASE, base + HZIP_BD_WUSER_32_63);
--	writel(AXUSER_BASE, base + HZIP_DATA_RUSER_32_63);
--	writel(AXUSER_BASE, base + HZIP_DATA_WUSER_32_63);
-+
-+	if (hisi_zip->qm.use_sva) {
-+		writel(AXUSER_BASE | AXUSER_SSV, base + HZIP_DATA_RUSER_32_63);
-+		writel(AXUSER_BASE | AXUSER_SSV, base + HZIP_DATA_WUSER_32_63);
-+	} else {
-+		writel(AXUSER_BASE, base + HZIP_DATA_RUSER_32_63);
-+		writel(AXUSER_BASE, base + HZIP_DATA_WUSER_32_63);
-+	}
- 
- 	/* let's open all compression/decompression cores */
- 	writel(DECOMP_CHECK_ENABLE | ALL_COMP_DECOMP_EN,
-@@ -792,6 +799,7 @@ static int hisi_zip_probe(struct pci_dev *pdev, const struct pci_device_id *id)
- 	qm->pdev = pdev;
- 	qm->ver = rev_id;
- 
-+	qm->algs = "zlib\ngzip";
- 	qm->sqe_size = HZIP_SQE_SIZE;
- 	qm->dev_name = hisi_zip_name;
- 	qm->fun_type = (pdev->device == PCI_DEVICE_ID_ZIP_PF) ? QM_HW_PF :
-@@ -835,6 +843,12 @@ static int hisi_zip_probe(struct pci_dev *pdev, const struct pci_device_id *id)
- 
- 	hisi_zip_add_to_list(hisi_zip);
- 
-+	if (qm->uacce) {
-+		ret = uacce_register(qm->uacce);
-+		if (ret)
-+			goto err_qm_uninit;
-+	}
-+
- 	if (qm->fun_type == QM_HW_PF && vfs_num > 0) {
- 		ret = hisi_zip_sriov_enable(pdev, vfs_num);
- 		if (ret < 0)
-diff --git a/include/uapi/misc/uacce/hisi_qm.h b/include/uapi/misc/uacce/hisi_qm.h
-new file mode 100644
-index 000000000000..6435f0bcb556
---- /dev/null
-+++ b/include/uapi/misc/uacce/hisi_qm.h
-@@ -0,0 +1,23 @@
-+/* SPDX-License-Identifier: GPL-2.0+ WITH Linux-syscall-note */
-+#ifndef _UAPI_HISI_QM_H
-+#define _UAPI_HISI_QM_H
-+
-+#include <linux/types.h>
-+
-+/**
-+ * struct hisi_qp_ctx - User data for hisi qp.
-+ * @id: qp_index return to user space
-+ * @qc_type: Accelerator algorithm type
-+ */
-+struct hisi_qp_ctx {
-+	__u16 id;
-+	__u16 qc_type;
-+};
-+
-+#define HISI_QM_API_VER_BASE "hisi_qm_v1"
-+#define HISI_QM_API_VER2_BASE "hisi_qm_v2"
-+
-+/* UACCE_CMD_QM_SET_QP_CTX: Set qp algorithm type */
-+#define UACCE_CMD_QM_SET_QP_CTX	_IOWR('H', 10, struct hisi_qp_ctx)
-+
-+#endif
--- 
-2.23.0
-
-_______________________________________________
-iommu mailing list
-iommu@lists.linux-foundation.org
-https://lists.linuxfoundation.org/mailman/listinfo/iommu
+CgpPbiAyMDIwLzIvMTEg5LiK5Y2INzozNywgR3JlZyBLcm9haC1IYXJ0bWFuIHdyb3RlOgo+IE9u
+IFdlZCwgSmFuIDE1LCAyMDIwIGF0IDEwOjEyOjQ2UE0gKzA4MDAsIFpoYW5nZmVpIEdhbyB3cm90
+ZToKPj4gRnJvbTogS2VubmV0aCBMZWUgPGxpZ3Vvemh1QGhpc2lsaWNvbi5jb20+Cj4+Cj4+IFVh
+Y2NlIChVbmlmaWVkL1VzZXItc3BhY2UtYWNjZXNzLWludGVuZGVkIEFjY2VsZXJhdG9yIEZyYW1l
+d29yaykgdGFyZ2V0cyB0bwo+PiBwcm92aWRlIFNoYXJlZCBWaXJ0dWFsIEFkZHJlc3NpbmcgKFNW
+QSkgYmV0d2VlbiBhY2NlbGVyYXRvcnMgYW5kIHByb2Nlc3Nlcy4KPj4gU28gYWNjZWxlcmF0b3Ig
+Y2FuIGFjY2VzcyBhbnkgZGF0YSBzdHJ1Y3R1cmUgb2YgdGhlIG1haW4gY3B1Lgo+PiBUaGlzIGRp
+ZmZlcnMgZnJvbSB0aGUgZGF0YSBzaGFyaW5nIGJldHdlZW4gY3B1IGFuZCBpbyBkZXZpY2UsIHdo
+aWNoIHNoYXJlCj4+IG9ubHkgZGF0YSBjb250ZW50IHJhdGhlciB0aGFuIGFkZHJlc3MuCj4+IFNp
+bmNlIHVuaWZpZWQgYWRkcmVzcywgaGFyZHdhcmUgYW5kIHVzZXIgc3BhY2Ugb2YgcHJvY2VzcyBj
+YW4gc2hhcmUgdGhlCj4+IHNhbWUgdmlydHVhbCBhZGRyZXNzIGluIHRoZSBjb21tdW5pY2F0aW9u
+Lgo+Pgo+PiBVYWNjZSBjcmVhdGUgYSBjaHJkZXYgZm9yIGV2ZXJ5IHJlZ2lzdHJhdGlvbiwgdGhl
+IHF1ZXVlIGlzIGFsbG9jYXRlZCB0bwo+PiB0aGUgcHJvY2VzcyB3aGVuIHRoZSBjaHJkZXYgaXMg
+b3BlbmVkLiBUaGVuIHRoZSBwcm9jZXNzIGNhbiBhY2Nlc3MgdGhlCj4+IGhhcmR3YXJlIHJlc291
+cmNlIGJ5IGludGVyYWN0IHdpdGggdGhlIHF1ZXVlIGZpbGUuIEJ5IG1tYXAgdGhlIHF1ZXVlCj4+
+IGZpbGUgc3BhY2UgdG8gdXNlciBzcGFjZSwgdGhlIHByb2Nlc3MgY2FuIGRpcmVjdGx5IHB1dCBy
+ZXF1ZXN0cyB0byB0aGUKPj4gaGFyZHdhcmUgd2l0aG91dCBzeXNjYWxsIHRvIHRoZSBrZXJuZWwg
+c3BhY2UuCj4+Cj4+IFRoZSBJT01NVSBjb3JlIG9ubHkgdHJhY2tzIG1tPC0+ZGV2aWNlIGJvbmRz
+IGF0IHRoZSBtb21lbnQsIGJlY2F1c2UgaXQKPj4gb25seSBuZWVkcyB0byBoYW5kbGUgSU9UTEIg
+aW52YWxpZGF0aW9uIGFuZCBQQVNJRCB0YWJsZSBlbnRyaWVzLiBIb3dldmVyCj4+IHVhY2NlIG5l
+ZWRzIGEgZmluZXIgZ3JhbnVsYXJpdHkgc2luY2UgbXVsdGlwbGUgcXVldWVzIGZyb20gdGhlIHNh
+bWUKPj4gZGV2aWNlIGNhbiBiZSBib3VuZCB0byBhbiBtbS4gV2hlbiB0aGUgbW0gZXhpdHMsIGFs
+bCBib3VuZCBxdWV1ZXMgbXVzdAo+PiBiZSBzdG9wcGVkIHNvIHRoYXQgdGhlIElPTU1VIGNhbiBz
+YWZlbHkgY2xlYXIgdGhlIFBBU0lEIHRhYmxlIGVudHJ5IGFuZAo+PiByZWFsbG9jYXRlIHRoZSBQ
+QVNJRC4KPj4KPj4gQW4gaW50ZXJtZWRpYXRlIHN0cnVjdCB1YWNjZV9tbSBsaW5rcyB1YWNjZSBk
+ZXZpY2VzIGFuZCBxdWV1ZXMuCj4+IE5vdGUgdGhhdCBhbiBtbSBtYXkgYmUgYm91bmQgdG8gbXVs
+dGlwbGUgZGV2aWNlcyBidXQgYW4gdWFjY2VfbW0KPj4gc3RydWN0dXJlIG9ubHkgZXZlciBiZWxv
+bmdzIHRvIGEgc2luZ2xlIGRldmljZSwgYmVjYXVzZSB3ZSBkb24ndCBuZWVkCj4+IGFueXRoaW5n
+IG1vcmUgY29tcGxleCAoaWYgbXVsdGlwbGUgZGV2aWNlcyBhcmUgYm91bmQgdG8gb25lIG1tLCB0
+aGVuCj4+IHdlJ2xsIGNyZWF0ZSBvbmUgdWFjY2VfbW0gZm9yIGVhY2ggYm9uZCkuCj4+Cj4+ICAg
+ICAgICAgIHVhY2NlX2RldmljZSAtLSstLSB1YWNjZV9tbSAtLSstLSB1YWNjZV9xdWV1ZQo+PiAg
+ICAgICAgICAgICAgICAgICAgICAgICB8ICAgICAgICAgICAgICAnLS0gdWFjY2VfcXVldWUKPj4g
+ICAgICAgICAgICAgICAgICAgICAgICAgfAo+PiAgICAgICAgICAgICAgICAgICAgICAgICAnLS0g
+dWFjY2VfbW0gLS0rLS0gdWFjY2VfcXVldWUKPj4gICAgICAgICAgICAgICAgICAgICAgICAgICAg
+ICAgICAgICAgICAgKy0tIHVhY2NlX3F1ZXVlCj4+ICAgICAgICAgICAgICAgICAgICAgICAgICAg
+ICAgICAgICAgICAgICctLSB1YWNjZV9xdWV1ZQo+Pgo+PiBSZXZpZXdlZC1ieTogSm9uYXRoYW4g
+Q2FtZXJvbiA8Sm9uYXRoYW4uQ2FtZXJvbkBodWF3ZWkuY29tPgo+PiBTaWduZWQtb2ZmLWJ5OiBL
+ZW5uZXRoIExlZSA8bGlndW96aHVAaGlzaWxpY29uLmNvbT4KPj4gU2lnbmVkLW9mZi1ieTogWmFp
+Ym8gWHUgPHh1emFpYm9AaHVhd2VpLmNvbT4KPj4gU2lnbmVkLW9mZi1ieTogWmhvdSBXYW5nIDx3
+YW5nemhvdTFAaGlzaWxpY29uLmNvbT4KPj4gU2lnbmVkLW9mZi1ieTogSmVhbi1QaGlsaXBwZSBC
+cnVja2VyIDxqZWFuLXBoaWxpcHBlQGxpbmFyby5vcmc+Cj4+IFNpZ25lZC1vZmYtYnk6IFpoYW5n
+ZmVpIEdhbyA8emhhbmdmZWkuZ2FvQGxpbmFyby5vcmc+Cj4gTG9va3MgbXVjaCBzYW5lciBub3cs
+IHRoYW5rcyBmb3IgYWxsIG9mIHRoZSB3b3JrIG9uIHRoaXM6Cj4KPiBSZXZpZXdlZC1ieTogR3Jl
+ZyBLcm9haC1IYXJ0bWFuIDxncmVna2hAbGludXhmb3VuZGF0aW9uLm9yZz4KPgo+IE9yIGFtIEkg
+c3VwcG9zZWQgdG8gdGFrZSB0aGlzIGluIG15IHRyZWU/ICBJZiBzbywgSSBjYW4sIGJ1dCBJIG5l
+ZWQgYW4KPiBhY2sgZm9yIHRoZSBjcnlwdG8gcGFydHMuCj4KPgpUaGF0J3MgR3JlYXQsIHRoYW5r
+cyBHcmVnLgoKRm9yIHRoZSBjb252ZW5pZW5jZSwgSSByZWJhc2UgdGhlIHBhdGNoc2V0IG9uIDUu
+Ni1yYzEuCk5vdCBzdXJlIGlzIHRoZXJlIGFueSBjb25mbGljdCB0byBjcnlwdG8gdHJlZS4KSG93
+IGFib3V0IGp1c3QgcGljayB0aGUgdWFjY2UgcGFydCwgcGF0Y2ggMSAsIDIuCldlIGNhbiByZXNl
+bmQgdGhlIGNyeXB0byBwYXJ0IHRvIGNyeXB0byB0cmVlLgoKVGhhbmtzCgpfX19fX19fX19fX19f
+X19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fXwppb21tdSBtYWlsaW5nIGxpc3QKaW9t
+bXVAbGlzdHMubGludXgtZm91bmRhdGlvbi5vcmcKaHR0cHM6Ly9saXN0cy5saW51eGZvdW5kYXRp
+b24ub3JnL21haWxtYW4vbGlzdGluZm8vaW9tbXU=
