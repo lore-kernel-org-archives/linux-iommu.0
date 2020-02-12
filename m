@@ -2,76 +2,93 @@ Return-Path: <SRS0=qRzs=4A=lists.linux-foundation.org=iommu-bounces@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-8.3 required=3.0 tests=HEADER_FROM_DIFFERENT_DOMAINS,
-	INCLUDES_PATCH,MAILING_LIST_MULTI,SIGNED_OFF_BY,SPF_HELO_NONE,SPF_PASS,
-	URIBL_BLOCKED,USER_AGENT_SANE_1 autolearn=unavailable autolearn_force=no
-	version=3.4.0
+X-Spam-Status: No, score=-6.8 required=3.0 tests=HEADER_FROM_DIFFERENT_DOMAINS,
+	INCLUDES_PATCH,MAILING_LIST_MULTI,SIGNED_OFF_BY,SPF_HELO_NONE,SPF_PASS
+	autolearn=unavailable autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 3FB6CC35242
-	for <iommu@archiver.kernel.org>; Wed, 12 Feb 2020 00:16:43 +0000 (UTC)
-Received: from silver.osuosl.org (smtp3.osuosl.org [140.211.166.136])
+	by smtp.lore.kernel.org (Postfix) with ESMTP id F3732C35242
+	for <iommu@archiver.kernel.org>; Wed, 12 Feb 2020 00:39:54 +0000 (UTC)
+Received: from fraxinus.osuosl.org (smtp4.osuosl.org [140.211.166.137])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by mail.kernel.org (Postfix) with ESMTPS id 17152206D6
-	for <iommu@archiver.kernel.org>; Wed, 12 Feb 2020 00:16:42 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 17152206D6
-Authentication-Results: mail.kernel.org; dmarc=none (p=none dis=none) header.from=tomt.net
+	by mail.kernel.org (Postfix) with ESMTPS id C53DA20848
+	for <iommu@archiver.kernel.org>; Wed, 12 Feb 2020 00:39:54 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org C53DA20848
+Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=nxp.com
 Authentication-Results: mail.kernel.org; spf=pass smtp.mailfrom=iommu-bounces@lists.linux-foundation.org
 Received: from localhost (localhost [127.0.0.1])
-	by silver.osuosl.org (Postfix) with ESMTP id D70DC203A3;
-	Wed, 12 Feb 2020 00:16:42 +0000 (UTC)
-X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from silver.osuosl.org ([127.0.0.1])
-	by localhost (.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
-	with ESMTP id vBoKtrD7hp-u; Wed, 12 Feb 2020 00:16:41 +0000 (UTC)
-Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [140.211.9.56])
-	by silver.osuosl.org (Postfix) with ESMTP id D918420022;
-	Wed, 12 Feb 2020 00:16:41 +0000 (UTC)
-Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
-	by lists.linuxfoundation.org (Postfix) with ESMTP id B52E9C1D80;
-	Wed, 12 Feb 2020 00:16:41 +0000 (UTC)
-Received: from fraxinus.osuosl.org (smtp4.osuosl.org [140.211.166.137])
- by lists.linuxfoundation.org (Postfix) with ESMTP id 855CDC07FE
- for <iommu@lists.linux-foundation.org>; Wed, 12 Feb 2020 00:16:40 +0000 (UTC)
-Received: from localhost (localhost [127.0.0.1])
- by fraxinus.osuosl.org (Postfix) with ESMTP id 6FD6C84D09
- for <iommu@lists.linux-foundation.org>; Wed, 12 Feb 2020 00:16:40 +0000 (UTC)
+	by fraxinus.osuosl.org (Postfix) with ESMTP id 90DF2842E9;
+	Wed, 12 Feb 2020 00:39:54 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
 Received: from fraxinus.osuosl.org ([127.0.0.1])
- by localhost (.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
- with ESMTP id cK0qHc_FsGL9 for <iommu@lists.linux-foundation.org>;
- Wed, 12 Feb 2020 00:16:39 +0000 (UTC)
-X-Greylist: from auto-whitelisted by SQLgrey-1.7.6
-Received: from mail1.ugh.no (mail1.ugh.no [178.79.162.34])
- by fraxinus.osuosl.org (Postfix) with ESMTPS id E324984CA5
- for <iommu@lists.linux-foundation.org>; Wed, 12 Feb 2020 00:16:38 +0000 (UTC)
+	by localhost (.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
+	with ESMTP id cTTEcYSsCe4i; Wed, 12 Feb 2020 00:39:53 +0000 (UTC)
+Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [140.211.9.56])
+	by fraxinus.osuosl.org (Postfix) with ESMTP id D6D7B83659;
+	Wed, 12 Feb 2020 00:39:53 +0000 (UTC)
+Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
+	by lists.linuxfoundation.org (Postfix) with ESMTP id AE29BC1D80;
+	Wed, 12 Feb 2020 00:39:53 +0000 (UTC)
+Received: from whitealder.osuosl.org (smtp1.osuosl.org [140.211.166.138])
+ by lists.linuxfoundation.org (Postfix) with ESMTP id 91ED5C07FE
+ for <iommu@lists.linux-foundation.org>; Wed, 12 Feb 2020 00:39:52 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
- by mail1.ugh.no (Postfix) with ESMTP id 987DF24EA99;
- Wed, 12 Feb 2020 01:16:36 +0100 (CET)
-Received: from mail1.ugh.no ([127.0.0.1])
- by localhost (catastrophix.ugh.no [127.0.0.1]) (amavisd-new, port 10024)
- with ESMTP id 8BqjRa5j_czg; Wed, 12 Feb 2020 01:16:35 +0100 (CET)
-Received: from [10.255.64.11] (unknown [185.176.245.143])
- (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
- (No client certificate requested)
- (Authenticated sender: andre@tomt.net)
- by mail.ugh.no (Postfix) with ESMTPSA id 7E26F24EA64;
- Wed, 12 Feb 2020 01:16:35 +0100 (CET)
-Subject: Re: [PATCH v1] xprtrdma: Fix DMA scatter-gather list mapping imbalance
-To: Chuck Lever <chuck.lever@oracle.com>
-References: <158145102079.515252.3226617475691911684.stgit@morisot.1015granger.net>
- <8781b043-74a6-4ee0-d1c9-46f797b4aec2@tomt.net>
- <DC2EEB01-5C19-4FB5-B103-D9ADF09E07FA@oracle.com>
-From: Andre Tomt <andre@tomt.net>
-Message-ID: <a8789f8a-9574-b032-3f6c-8d2d2ee74b34@tomt.net>
-Date: Wed, 12 Feb 2020 01:16:35 +0100
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101
- Thunderbird/68.4.1
+ by whitealder.osuosl.org (Postfix) with ESMTP id 7B36785D57
+ for <iommu@lists.linux-foundation.org>; Wed, 12 Feb 2020 00:39:52 +0000 (UTC)
+X-Virus-Scanned: amavisd-new at osuosl.org
+Received: from whitealder.osuosl.org ([127.0.0.1])
+ by localhost (.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
+ with ESMTP id Mk5LKXYmX6oc for <iommu@lists.linux-foundation.org>;
+ Wed, 12 Feb 2020 00:39:51 +0000 (UTC)
+X-Greylist: domain auto-whitelisted by SQLgrey-1.7.6
+Received: from mail-oi1-f196.google.com (mail-oi1-f196.google.com
+ [209.85.167.196])
+ by whitealder.osuosl.org (Postfix) with ESMTPS id 0196385BA9
+ for <iommu@lists.linux-foundation.org>; Wed, 12 Feb 2020 00:39:50 +0000 (UTC)
+Received: by mail-oi1-f196.google.com with SMTP id q84so365701oic.4
+ for <iommu@lists.linux-foundation.org>; Tue, 11 Feb 2020 16:39:50 -0800 (PST)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+ d=1e100.net; s=20161025;
+ h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+ :message-id:subject:to:cc;
+ bh=noQt5nFC8uX1+KZFclIWhAR/XrOfOL5Ao8eiHvlk32o=;
+ b=KpZaJ5eiiiF3NNDWMtpl/g3GG4kaV4BsGUmCjSaY0EzE7E1Rh3cWcZPbF+16RrTcfP
+ hZJxcDyWWsjaAYDDsnT+CqpmrbpCHrlbiTRXTZa0DO5Vywc7yvesVnZVFTGr4M2BQM5M
+ crKo9InyImp/uMpWNBc0srt5H0D1hR7dXbPO85GCaNXfCErGIGR2w9UCh5PYfgZ+ocAR
+ JJgAPSnw3CCQpQj8199ogbWelrnUcaYyX16N5E9BOzUGDizzK+5XBckLZsDlSwR8hx37
+ emt0juZVs8+Q9v4qmJEBto+zSW8AA6fBbeBlj4Jc4b5dWDrmeBkYgf3o+aavVQeOgFWg
+ 2TJQ==
+X-Gm-Message-State: APjAAAX9ePYJUnFfjy1FsLpsBEf+BRR0nmjhyPbJVrhBKL3GLsK6XPuf
+ a4Gb47ELD8h+afNogJwuEC1guz6K
+X-Google-Smtp-Source: APXvYqxFCI6NhM0Ct+8TslycSAGdQKPYF97w1B7cprdavX9SwM0Mx/zMvitTinpih2BZySyPmZ2Eeg==
+X-Received: by 2002:aca:dc8b:: with SMTP id t133mr4671465oig.98.1581467989917; 
+ Tue, 11 Feb 2020 16:39:49 -0800 (PST)
+Received: from mail-ot1-f41.google.com (mail-ot1-f41.google.com.
+ [209.85.210.41])
+ by smtp.gmail.com with ESMTPSA id z10sm1636026oih.1.2020.02.11.16.39.48
+ for <iommu@lists.linux-foundation.org>
+ (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+ Tue, 11 Feb 2020 16:39:48 -0800 (PST)
+Received: by mail-ot1-f41.google.com with SMTP id r16so228566otd.2
+ for <iommu@lists.linux-foundation.org>; Tue, 11 Feb 2020 16:39:48 -0800 (PST)
+X-Received: by 2002:a9d:7f83:: with SMTP id t3mr3624739otp.63.1581467988518;
+ Tue, 11 Feb 2020 16:39:48 -0800 (PST)
 MIME-Version: 1.0
-In-Reply-To: <DC2EEB01-5C19-4FB5-B103-D9ADF09E07FA@oracle.com>
-Content-Language: en-US
-Cc: Linux NFS Mailing List <linux-nfs@vger.kernel.org>, robin.murphy@arm.com,
- iommu@lists.linux-foundation.org
+References: <1581464215-24777-1-git-send-email-leoyang.li@nxp.com>
+ <20200211234536.GK25745@shell.armlinux.org.uk>
+In-Reply-To: <20200211234536.GK25745@shell.armlinux.org.uk>
+From: Li Yang <leoyang.li@nxp.com>
+Date: Tue, 11 Feb 2020 18:39:37 -0600
+X-Gmail-Original-Message-ID: <CADRPPNSOYOe3vuUFEp3z-1RX6QHmRFJpxHTCLhniX-0hh2T01Q@mail.gmail.com>
+Message-ID: <CADRPPNSOYOe3vuUFEp3z-1RX6QHmRFJpxHTCLhniX-0hh2T01Q@mail.gmail.com>
+Subject: Re: [PATCH] iommu/arm-smmu: fix the module name for disable_bypass
+ parameter
+To: Russell King - ARM Linux admin <linux@armlinux.org.uk>
+Cc: Will Deacon <will.deacon@arm.com>, lkml <linux-kernel@vger.kernel.org>,
+ Linux IOMMU <iommu@lists.linux-foundation.org>,
+ Robin Murphy <robin.murphy@arm.com>,
+ "moderated list:ARM/FREESCALE IMX / MXC ARM ARCHITECTURE"
+ <linux-arm-kernel@lists.infradead.org>
 X-BeenThere: iommu@lists.linux-foundation.org
 X-Mailman-Version: 2.1.15
 Precedence: list
@@ -84,82 +101,78 @@ List-Post: <mailto:iommu@lists.linux-foundation.org>
 List-Help: <mailto:iommu-request@lists.linux-foundation.org?subject=help>
 List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
  <mailto:iommu-request@lists.linux-foundation.org?subject=subscribe>
+Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
-Content-Type: text/plain; charset="us-ascii"; Format="flowed"
 Errors-To: iommu-bounces@lists.linux-foundation.org
 Sender: "iommu" <iommu-bounces@lists.linux-foundation.org>
 
-On 11.02.2020 23:00, Chuck Lever wrote:
-> Hi Andre, thanks for trying this out.
-> 
->> On Feb 11, 2020, at 3:50 PM, Andre Tomt <andre@tomt.net> wrote:
->>
->> On 11.02.2020 20:58, Chuck Lever wrote:
->>> The @nents value that was passed to ib_dma_map_sg() has to be passed
->>> to the matching ib_dma_unmap_sg() call. If ib_dma_map_sg() choses to
->>> concatenate sg entries, it will return a different nents value than
->>> it was passed.
->>> The bug was exposed by recent changes to the AMD IOMMU driver.
->>
->> This seems to fail differently on my system; mount fails with:
->> mount.nfs: mount system call failed
->>
->> and the kernel log reports:
->> [   38.890344] NFS: Registering the id_resolver key type
->> [   38.890351] Key type id_resolver registered
->> [   38.890352] Key type id_legacy registered
->> [   38.901799] NFS: nfs4_discover_server_trunking unhandled error -5. Exiting with error EIO
->> [   38.901817] NFS4: Couldn't follow remote path
->>
->> amd_iommu=off still works
->>
->> One detail I accidentally left out of the original report is that the server (intel system) is running Ubuntu 20.04 ("beta") userspace, and AMD clients are Ubuntu 19.10 userspace. Although I dont believe this to matter at this point.
-> 
-> Next thing to try:
-> 
-> # trace-cmd record -e sunrpc -e rpcrdma
-> 
-> then issue the mount command. Once it completes, ^C the trace-cmd and send me trace.dat.
-> 
-> Try this with both the v5.4 kernel and the v5.5 kernel (and note that trace-cmd overwrites trace.dat, so copy it out between tests).
+On Tue, Feb 11, 2020 at 5:47 PM Russell King - ARM Linux admin
+<linux@armlinux.org.uk> wrote:
+>
+> On Tue, Feb 11, 2020 at 05:36:55PM -0600, Li Yang wrote:
+> > Since commit cd221bd24ff5 ("iommu/arm-smmu: Allow building as a module"),
+> > there is a side effect that the module name is changed from arm-smmu to
+> > arm-smmu-mod.  So the kernel parameter for disable_bypass need to be
+> > changed too.  Fix the Kconfig help and error message to the correct
+> > parameter name.
+>
+> Hmm, this seems to be a user-visible change - so those of us who have
+> been booting with "arm-smmu.disable_bypass=0" now need to change that
+> depending on which kernel is being booted - which is not nice, and
+> makes the support side on platforms that need this kernel parameter
+> harder.
 
-I've uploaded them to https://tomt.net/temp/rdmaiommubug/
-I'll probably do a 5.5.3 with the v1 fix as well, should show up 
-momentarily.
+I have sent a new patch replacing this patch.  That patch will keep
+the command line unchanged.
 
->>> Reported-by: Andre Tomt <andre@tomt.net>
->>> Suggested-by: Robin Murphy <robin.murphy@arm.com>
->>> Fixes: 1f541895dae9 ("xprtrdma: Don't defer MR recovery if ro_map fails")
->>> Signed-off-by: Chuck Lever <chuck.lever@oracle.com>
->>> ---
->>>   net/sunrpc/xprtrdma/frwr_ops.c |    5 ++---
->>>   1 file changed, 2 insertions(+), 3 deletions(-)
->>> Hey Andre, please try this out. It just reverts the bit of brokenness that
->>> Robin observed this morning. I've done basic testing here with Intel
->>> IOMMU systems, no change in behavior (ie, all good to go).
->>> diff --git a/net/sunrpc/xprtrdma/frwr_ops.c b/net/sunrpc/xprtrdma/frwr_ops.c
->>> index 095be887753e..449bb51e4fe8 100644
->>> --- a/net/sunrpc/xprtrdma/frwr_ops.c
->>> +++ b/net/sunrpc/xprtrdma/frwr_ops.c
->>> @@ -313,10 +313,9 @@ struct rpcrdma_mr_seg *frwr_map(struct rpcrdma_xprt *r_xprt,
->>>   			break;
->>>   	}
->>>   	mr->mr_dir = rpcrdma_data_dir(writing);
->>> +	mr->mr_nents = i;
->>>   -	mr->mr_nents =
->>> -		ib_dma_map_sg(ia->ri_id->device, mr->mr_sg, i, mr->mr_dir);
->>> -	if (!mr->mr_nents)
->>> +	if (!ib_dma_map_sg(ia->ri_id->device, mr->mr_sg, i, mr->mr_dir))
->>>   		goto out_dmamap_err;
->>>     	ibmr = mr->frwr.fr_mr;
->>
-> 
+>
+> >
+> > Signed-off-by: Li Yang <leoyang.li@nxp.com>
+> > ---
+> >  drivers/iommu/Kconfig    | 2 +-
+> >  drivers/iommu/arm-smmu.c | 2 +-
+> >  2 files changed, 2 insertions(+), 2 deletions(-)
+> >
+> > diff --git a/drivers/iommu/Kconfig b/drivers/iommu/Kconfig
+> > index d2fade984999..fb54be903c60 100644
+> > --- a/drivers/iommu/Kconfig
+> > +++ b/drivers/iommu/Kconfig
+> > @@ -415,7 +415,7 @@ config ARM_SMMU_DISABLE_BYPASS_BY_DEFAULT
+> >         hardcode the bypass disable in the code.
+> >
+> >         NOTE: the kernel command line parameter
+> > -       'arm-smmu.disable_bypass' will continue to override this
+> > +       'arm-smmu-mod.disable_bypass' will continue to override this
+> >         config.
+> >
+> >  config ARM_SMMU_V3
+> > diff --git a/drivers/iommu/arm-smmu.c b/drivers/iommu/arm-smmu.c
+> > index 16c4b87af42b..2ffe8ff04393 100644
+> > --- a/drivers/iommu/arm-smmu.c
+> > +++ b/drivers/iommu/arm-smmu.c
+> > @@ -512,7 +512,7 @@ static irqreturn_t arm_smmu_global_fault(int irq, void *dev)
+> >               if (IS_ENABLED(CONFIG_ARM_SMMU_DISABLE_BYPASS_BY_DEFAULT) &&
+> >                   (gfsr & ARM_SMMU_sGFSR_USF))
+> >                       dev_err(smmu->dev,
+> > -                             "Blocked unknown Stream ID 0x%hx; boot with \"arm-smmu.disable_bypass=0\" to allow, but this may have security implications\n",
+> > +                             "Blocked unknown Stream ID 0x%hx; boot with \"arm-smmu-mod.disable_bypass=0\" to allow, but this may have security implications\n",
+> >                               (u16)gfsynr1);
+> >               else
+> >                       dev_err(smmu->dev,
+> > --
+> > 2.17.1
+> >
+> >
+> > _______________________________________________
+> > linux-arm-kernel mailing list
+> > linux-arm-kernel@lists.infradead.org
+> > http://lists.infradead.org/mailman/listinfo/linux-arm-kernel
+> >
+>
 > --
-> Chuck Lever
-> 
-> 
-> 
-
+> RMK's Patch system: https://www.armlinux.org.uk/developer/patches/
+> FTTC broadband for 0.8mile line in suburbia: sync at 12.1Mbps down 622kbps up
+> According to speedtest.net: 11.9Mbps down 500kbps up
 _______________________________________________
 iommu mailing list
 iommu@lists.linux-foundation.org
