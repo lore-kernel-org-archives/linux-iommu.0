@@ -2,83 +2,95 @@ Return-Path: <SRS0=ZJ+1=4B=lists.linux-foundation.org=iommu-bounces@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-5.2 required=3.0 tests=HEADER_FROM_DIFFERENT_DOMAINS,
-	INCLUDES_PATCH,MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED,
-	USER_AGENT_SANE_1 autolearn=ham autolearn_force=no version=3.4.0
+X-Spam-Status: No, score=-3.3 required=3.0 tests=DKIM_ADSP_CUSTOM_MED,
+	DKIM_INVALID,DKIM_SIGNED,FREEMAIL_FORGED_FROMDOMAIN,FREEMAIL_FROM,
+	HEADER_FROM_DIFFERENT_DOMAINS,MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS,
+	URIBL_BLOCKED,USER_AGENT_GIT autolearn=no autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 317BCC3B18B
-	for <iommu@archiver.kernel.org>; Thu, 13 Feb 2020 15:50:03 +0000 (UTC)
-Received: from silver.osuosl.org (smtp3.osuosl.org [140.211.166.136])
+	by smtp.lore.kernel.org (Postfix) with ESMTP id F1BD6C2BA83
+	for <iommu@archiver.kernel.org>; Thu, 13 Feb 2020 16:40:12 +0000 (UTC)
+Received: from hemlock.osuosl.org (smtp2.osuosl.org [140.211.166.133])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by mail.kernel.org (Postfix) with ESMTPS id 0F54020661
-	for <iommu@archiver.kernel.org>; Thu, 13 Feb 2020 15:50:02 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 0F54020661
-Authentication-Results: mail.kernel.org; dmarc=none (p=none dis=none) header.from=huawei.com
+	by mail.kernel.org (Postfix) with ESMTPS id C739A24650
+	for <iommu@archiver.kernel.org>; Thu, 13 Feb 2020 16:40:12 +0000 (UTC)
+Authentication-Results: mail.kernel.org;
+	dkim=fail reason="signature verification failed" (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="GTU4/l0L"
+DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org C739A24650
+Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=gmail.com
 Authentication-Results: mail.kernel.org; spf=pass smtp.mailfrom=iommu-bounces@lists.linux-foundation.org
 Received: from localhost (localhost [127.0.0.1])
-	by silver.osuosl.org (Postfix) with ESMTP id B853D2048E;
-	Thu, 13 Feb 2020 15:50:02 +0000 (UTC)
-X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from silver.osuosl.org ([127.0.0.1])
-	by localhost (.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
-	with ESMTP id UsGvr3uOhiUp; Thu, 13 Feb 2020 15:50:01 +0000 (UTC)
-Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [140.211.9.56])
-	by silver.osuosl.org (Postfix) with ESMTP id AA91A2001C;
-	Thu, 13 Feb 2020 15:50:01 +0000 (UTC)
-Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
-	by lists.linuxfoundation.org (Postfix) with ESMTP id A0997C08A4;
-	Thu, 13 Feb 2020 15:50:01 +0000 (UTC)
-Received: from hemlock.osuosl.org (smtp2.osuosl.org [140.211.166.133])
- by lists.linuxfoundation.org (Postfix) with ESMTP id 26777C0177
- for <iommu@lists.linux-foundation.org>; Thu, 13 Feb 2020 15:50:00 +0000 (UTC)
-Received: from localhost (localhost [127.0.0.1])
- by hemlock.osuosl.org (Postfix) with ESMTP id 1532C87DAF
- for <iommu@lists.linux-foundation.org>; Thu, 13 Feb 2020 15:50:00 +0000 (UTC)
+	by hemlock.osuosl.org (Postfix) with ESMTP id 9C9E187FC3;
+	Thu, 13 Feb 2020 16:40:12 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
 Received: from hemlock.osuosl.org ([127.0.0.1])
+	by localhost (.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
+	with ESMTP id fW66EUV2fvld; Thu, 13 Feb 2020 16:40:11 +0000 (UTC)
+Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [140.211.9.56])
+	by hemlock.osuosl.org (Postfix) with ESMTP id 8824087F9C;
+	Thu, 13 Feb 2020 16:40:11 +0000 (UTC)
+Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
+	by lists.linuxfoundation.org (Postfix) with ESMTP id 6D777C07FE;
+	Thu, 13 Feb 2020 16:40:11 +0000 (UTC)
+Received: from fraxinus.osuosl.org (smtp4.osuosl.org [140.211.166.137])
+ by lists.linuxfoundation.org (Postfix) with ESMTP id 20572C0177
+ for <iommu@lists.linux-foundation.org>; Thu, 13 Feb 2020 16:40:10 +0000 (UTC)
+Received: from localhost (localhost [127.0.0.1])
+ by fraxinus.osuosl.org (Postfix) with ESMTP id 0F76E86102
+ for <iommu@lists.linux-foundation.org>; Thu, 13 Feb 2020 16:40:10 +0000 (UTC)
+X-Virus-Scanned: amavisd-new at osuosl.org
+Received: from fraxinus.osuosl.org ([127.0.0.1])
  by localhost (.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
- with ESMTP id Ar9lk8Pt4Mn9 for <iommu@lists.linux-foundation.org>;
- Thu, 13 Feb 2020 15:49:58 +0000 (UTC)
+ with ESMTP id dh9kuFLCGEeA for <iommu@lists.linux-foundation.org>;
+ Thu, 13 Feb 2020 16:40:09 +0000 (UTC)
 X-Greylist: domain auto-whitelisted by SQLgrey-1.7.6
-Received: from huawei.com (lhrrgout.huawei.com [185.176.76.210])
- by hemlock.osuosl.org (Postfix) with ESMTPS id BC12687D5E
- for <iommu@lists.linux-foundation.org>; Thu, 13 Feb 2020 15:49:58 +0000 (UTC)
-Received: from LHREML711-CAH.china.huawei.com (unknown [172.18.7.108])
- by Forcepoint Email with ESMTP id 030678FC6DCF329403B6;
- Thu, 13 Feb 2020 15:49:55 +0000 (GMT)
-Received: from lhreml724-chm.china.huawei.com (10.201.108.75) by
- LHREML711-CAH.china.huawei.com (10.201.108.34) with Microsoft SMTP Server
- (TLS) id 14.3.408.0; Thu, 13 Feb 2020 15:49:54 +0000
-Received: from [127.0.0.1] (10.202.226.45) by lhreml724-chm.china.huawei.com
- (10.201.108.75) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.1713.5; Thu, 13 Feb
- 2020 15:49:53 +0000
-Subject: Re: arm64 iommu groups issue
-From: John Garry <john.garry@huawei.com>
-To: Robin Murphy <robin.murphy@arm.com>, Marc Zyngier <maz@kernel.org>, "Will
- Deacon" <will@kernel.org>, Lorenzo Pieralisi <lorenzo.pieralisi@arm.com>, 
- Sudeep Holla <sudeep.holla@arm.com>, "Guohanjun (Hanjun Guo)"
- <guohanjun@huawei.com>
-References: <9625faf4-48ef-2dd3-d82f-931d9cf26976@huawei.com>
- <4768c541-ebf4-61d5-0c5e-77dee83f8f94@arm.com>
- <a18b7f26-9713-a5c7-507e-ed70e40bc007@huawei.com>
-Message-ID: <ddc7eaff-c3f9-4304-9b4e-75eff2c66cd5@huawei.com>
-Date: Thu, 13 Feb 2020 15:49:52 +0000
-User-Agent: Mozilla/5.0 (Windows NT 10.0; WOW64; rv:68.0) Gecko/20100101
- Thunderbird/68.1.2
+Received: from mail-wm1-f43.google.com (mail-wm1-f43.google.com
+ [209.85.128.43])
+ by fraxinus.osuosl.org (Postfix) with ESMTPS id 3217286101
+ for <iommu@lists.linux-foundation.org>; Thu, 13 Feb 2020 16:40:09 +0000 (UTC)
+Received: by mail-wm1-f43.google.com with SMTP id t14so7492834wmi.5
+ for <iommu@lists.linux-foundation.org>; Thu, 13 Feb 2020 08:40:09 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=gmail.com; s=20161025;
+ h=from:to:cc:subject:date:message-id:mime-version
+ :content-transfer-encoding;
+ bh=U9NzKrnsK6arcq1Stt3BEs5RjKuMGTXTF0ludE/ZUXY=;
+ b=GTU4/l0L1dLFrTu9OEv/PL4t7RvMbpp0XWwcP6zntmaWC5q3XEkJ5pOLF8yJ9XYRHd
+ xjOrhXV5nTSbp/z+C9yy0mbL/OgKwy3/HgTgFl9Ru67LCp9inGm6KhQGawl/xgHb80x7
+ Dl0L0fuRMkDOSg/CT9/3W4xnw4LycRzo/nIvHZ3KdAHmjuXde+gp6CfA60H54/TMSeqN
+ TZMDvdfuWTctyKOHza/dvWNF1VJ4lJhD5bzidgTXu176rg4iGhm6VMfiPKzb1F5K6n5T
+ nFLxjiGvNbIv7oLr+nZ3/6OKiq5zBkc81E6owMQYNbSwIAHoZi6S9OpjIot/CfnYbbVL
+ XNrw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+ d=1e100.net; s=20161025;
+ h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+ :content-transfer-encoding;
+ bh=U9NzKrnsK6arcq1Stt3BEs5RjKuMGTXTF0ludE/ZUXY=;
+ b=IIVEsucshfL4C8J9Y+CKDJor6D/uOSZesqjG3BqmHIopNdD5cKXH3MIDAnWnTzSAzM
+ Yy8Vnfjm1jOs7fEAUn1Qoi/8Upd1vGc/PGOSnZzH5Jhrl323By2XdgVqjgu9K3gh4JQc
+ c5WLGvlSpjF6CZCunjLpVZQ4QtFgqC66uoNY4qw1b+2Zz2bCRSrCt+nEiAw8w15IIDHV
+ ldLKX550xkRTELGzrn6y9OQDwXisqlnABCMYMN84dS32z34uY4sxWnMpjxYuuw64FxZh
+ tTbOA1mO0ROKa7vTmjCV6/aehq+QBC4pBYN4XKsm0ARdHb4pHrX4ijxJDVgIXqeb0Y57
+ EiZw==
+X-Gm-Message-State: APjAAAU8fe21vvS700ol8exgZsJjVh11Je3/5TsxFfcDsYRwQp1F8t87
+ m6Qz4yw72T4ktToJcrOMgmg=
+X-Google-Smtp-Source: APXvYqyw+7OwayCrFaSi1FHtOjrVg7Ijl4xMXki8QHzS05nbvc7DFuI+y8+pzrJHUJ0/jIgfdpXXPw==
+X-Received: by 2002:a05:600c:2c13:: with SMTP id
+ q19mr6875106wmg.144.1581612007455; 
+ Thu, 13 Feb 2020 08:40:07 -0800 (PST)
+Received: from localhost (p2E5BEF3F.dip0.t-ipconnect.de. [46.91.239.63])
+ by smtp.gmail.com with ESMTPSA id f11sm3567493wml.3.2020.02.13.08.40.05
+ (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+ Thu, 13 Feb 2020 08:40:06 -0800 (PST)
+From: Thierry Reding <thierry.reding@gmail.com>
+To: Arnd Bergmann <arnd@arndb.de>, Will Deacon <will@kernel.org>,
+ Robin Murphy <robin.murphy@arm.com>, Rob Herring <robh+dt@kernel.org>
+Subject: [PATCH v4 0/5] memory: Introduce memory controller mini-framework
+Date: Thu, 13 Feb 2020 17:39:54 +0100
+Message-Id: <20200213163959.819733-1-thierry.reding@gmail.com>
+X-Mailer: git-send-email 2.24.1
 MIME-Version: 1.0
-In-Reply-To: <a18b7f26-9713-a5c7-507e-ed70e40bc007@huawei.com>
-Content-Language: en-US
-X-Originating-IP: [10.202.226.45]
-X-ClientProxiedBy: lhreml720-chm.china.huawei.com (10.201.108.71) To
- lhreml724-chm.china.huawei.com (10.201.108.75)
-X-CFilter-Loop: Reflected
-Cc: Saravana Kannan <saravanak@google.com>,
- "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
- Alex Williamson <alex.williamson@redhat.com>, Linuxarm <linuxarm@huawei.com>,
- iommu <iommu@lists.linux-foundation.org>, Bjorn Helgaas <bhelgaas@google.com>,
- "linux-arm-kernel@lists.infradead.org" <linux-arm-kernel@lists.infradead.org>
+Cc: linux-kernel@vger.kernel.org, linux-tegra@vger.kernel.org,
+ iommu@lists.linux-foundation.org, linux-arm-kernel@lists.infradead.org
 X-BeenThere: iommu@lists.linux-foundation.org
 X-Mailman-Version: 2.1.15
 Precedence: list
@@ -91,77 +103,74 @@ List-Post: <mailto:iommu@lists.linux-foundation.org>
 List-Help: <mailto:iommu-request@lists.linux-foundation.org?subject=help>
 List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
  <mailto:iommu-request@lists.linux-foundation.org?subject=subscribe>
+Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
-Content-Type: text/plain; charset="us-ascii"; Format="flowed"
 Errors-To: iommu-bounces@lists.linux-foundation.org
 Sender: "iommu" <iommu-bounces@lists.linux-foundation.org>
 
->>
->> The underlying issue is that, for historical reasons, OF/IORT-based
->> IOMMU drivers have ended up with group allocation being tied to endpoint
->> driver probing via the dma_configure() mechanism (long story short,
->> driver probe is the only thing which can be delayed in order to wait for
->> a specific IOMMU instance to be ready).However, in the meantime, the
->> IOMMU API internals have evolved sufficiently that I think there's a way
->> to really put things right - I have the spark of an idea which I'll try
->> to sketch out ASAP...
->>
-> 
-> OK, great.
+From: Thierry Reding <treding@nvidia.com>
 
-Hi Robin,
+Hi,
 
-I was wondering if you have had a chance to consider this problem again?
+this set of patches adds a new binding that allows device tree nodes to
+explicitly define the DMA parent for a given device. This supplements
+the existing interconnect bindings and is useful to disambiguate in the
+case where a device has multiple paths to system memory. Beyond that it
+can also be useful when there aren't any actual interconnect paths that
+can be controlled, so in simple cases this can serve as a simpler
+variant of interconnect paths.
 
-One simple idea could be to introduce a device link between the endpoint 
-device and its parent bridge to ensure that they probe in order, as 
-expected in pci_device_group():
+One other case where this is useful is to describe the relationship
+between devices such as the memory controller and an IOMMU, for example.
+On Tegra186 and later, the memory controller is programmed with a set of
+stream IDs that are to be associated with each memory client. This
+programming needs to happen before translations through the IOMMU start,
+otherwise the used stream IDs may deviate from the expected values. The
+memory-controllers property is used in this case to ensure that the
+memory controller driver has been probed (and hence has programmed the
+stream ID mappings) before the IOMMU becomes available.
 
-Subject: [PATCH] PCI: Add device link to ensure endpoint device driver 
-probes after bridge
+Patch 1 introduces the memory controller bindings, both from the
+perspective of the provider and the consumer. Patch 2 makes use of a
+memory-controllers property to determine the DMA parent for the purpose
+of setting up DMA masks (based on the dma-ranges property of the DMA
+parent). Patch 3 introduces a minimalistic framework that is used to
+register memory controllers with along with a set of helpers to look up
+the memory controller from device tree.
 
-It is required to ensure that a device driver for an endpoint will probe
-after the parent port driver, so add a device link for this.
+An example of how to register a memory controller is shown in patch 4
+for Tegra186 (and later) and finally the ARM SMMU driver is extended to
+become a consumer of an (optional) memory controller. As described
+above, the goal is to defer probe as long as the memory controller has
+not yet programmed the stream ID mappings.
 
----
-diff --git a/drivers/pci/probe.c b/drivers/pci/probe.c
-index 512cb4312ddd..4b832ad25b20 100644
---- a/drivers/pci/probe.c
-+++ b/drivers/pci/probe.c
-@@ -2383,6 +2383,7 @@ static void pci_set_msi_domain(struct pci_dev *dev)
-  void pci_device_add(struct pci_dev *dev, struct pci_bus *bus)
-  {
-  	int ret;
-+	struct device *parent;
+Thierry
 
-  	pci_configure_device(dev);
+Thierry Reding (5):
+  dt-bindings: Add memory controller bindings
+  of: Use memory-controllers property for DMA parent
+  memory: Introduce memory controller mini-framework
+  memory: tegra186: Register as memory controller
+  iommu: arm-smmu: Get reference to memory controller
 
-@@ -2420,6 +2421,10 @@ void pci_device_add(struct pci_dev *dev, struct 
-pci_bus *bus)
-  	/* Set up MSI IRQ domain */
-  	pci_set_msi_domain(dev);
+ .../bindings/memory-controllers/consumer.yaml |  14 +
+ .../memory-controllers/memory-controller.yaml |  32 +++
+ drivers/iommu/arm-smmu.c                      |  11 +
+ drivers/iommu/arm-smmu.h                      |   2 +
+ drivers/memory/Makefile                       |   1 +
+ drivers/memory/core.c                         | 248 ++++++++++++++++++
+ drivers/memory/tegra/tegra186.c               |   9 +-
+ drivers/of/address.c                          |  25 +-
+ include/linux/memory-controller.h             |  34 +++
+ 9 files changed, 366 insertions(+), 10 deletions(-)
+ create mode 100644 Documentation/devicetree/bindings/memory-controllers/consumer.yaml
+ create mode 100644 Documentation/devicetree/bindings/memory-controllers/memory-controller.yaml
+ create mode 100644 drivers/memory/core.c
+ create mode 100644 include/linux/memory-controller.h
 
-+	parent = dev->dev.parent;
-+	if (parent && parent->bus == &pci_bus_type)
-+		device_link_add(&dev->dev, parent, DL_FLAG_AUTOPROBE_CONSUMER);
-+
-  	/* Notifier could use PCI capabilities */
-  	dev->match_driver = false;
-  	ret = device_add(&dev->dev);
 -- 
+2.24.1
 
-This would work, but the problem is that if the port driver fails in 
-probing - and not just for -EPROBE_DEFER - then the child device will 
-never probe. This very thing happens on my dev board. However we could 
-expand the device links API to cover this sort of scenario.
-
-As for alternatives, it looks pretty difficult to me to disassociate the 
-group allocation from the dma_configure path.
-
-Let me know.
-
-Thanks,
-John
 _______________________________________________
 iommu mailing list
 iommu@lists.linux-foundation.org
