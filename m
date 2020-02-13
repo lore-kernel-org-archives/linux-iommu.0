@@ -2,108 +2,93 @@ Return-Path: <SRS0=ZJ+1=4B=lists.linux-foundation.org=iommu-bounces@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-2.0 required=3.0 tests=DKIM_INVALID,DKIM_SIGNED,
+X-Spam-Status: No, score=-3.5 required=3.0 tests=DKIM_INVALID,DKIM_SIGNED,
 	HEADER_FROM_DIFFERENT_DOMAINS,MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS,
-	URIBL_BLOCKED,USER_AGENT_SANE_1 autolearn=no autolearn_force=no version=3.4.0
+	URIBL_BLOCKED,USER_AGENT_GIT autolearn=no autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 95DC0C2BA83
-	for <iommu@archiver.kernel.org>; Thu, 13 Feb 2020 09:43:07 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id B8535C3B188
+	for <iommu@archiver.kernel.org>; Thu, 13 Feb 2020 10:14:48 +0000 (UTC)
 Received: from hemlock.osuosl.org (smtp2.osuosl.org [140.211.166.133])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by mail.kernel.org (Postfix) with ESMTPS id 5EE052173E
-	for <iommu@archiver.kernel.org>; Thu, 13 Feb 2020 09:43:07 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTPS id 7E6CA217F4
+	for <iommu@archiver.kernel.org>; Thu, 13 Feb 2020 10:14:48 +0000 (UTC)
 Authentication-Results: mail.kernel.org;
-	dkim=fail reason="signature verification failed" (2048-bit key) header.d=linaro.org header.i=@linaro.org header.b="PZPAygbX"
-DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 5EE052173E
+	dkim=fail reason="signature verification failed" (2048-bit key) header.d=linaro.org header.i=@linaro.org header.b="MXBaowXs"
+DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 7E6CA217F4
 Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=linaro.org
 Authentication-Results: mail.kernel.org; spf=pass smtp.mailfrom=iommu-bounces@lists.linux-foundation.org
 Received: from localhost (localhost [127.0.0.1])
-	by hemlock.osuosl.org (Postfix) with ESMTP id 2EA4587E90;
-	Thu, 13 Feb 2020 09:43:07 +0000 (UTC)
+	by hemlock.osuosl.org (Postfix) with ESMTP id 4CB2F87ED9;
+	Thu, 13 Feb 2020 10:14:48 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
 Received: from hemlock.osuosl.org ([127.0.0.1])
 	by localhost (.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
-	with ESMTP id AKVzN-TuMtmU; Thu, 13 Feb 2020 09:43:06 +0000 (UTC)
+	with ESMTP id PVHw7gWslDVP; Thu, 13 Feb 2020 10:14:47 +0000 (UTC)
 Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [140.211.9.56])
-	by hemlock.osuosl.org (Postfix) with ESMTP id 0BF0587E72;
-	Thu, 13 Feb 2020 09:43:06 +0000 (UTC)
+	by hemlock.osuosl.org (Postfix) with ESMTP id AA72C87ED1;
+	Thu, 13 Feb 2020 10:14:47 +0000 (UTC)
 Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
-	by lists.linuxfoundation.org (Postfix) with ESMTP id E60C6C08A4;
-	Thu, 13 Feb 2020 09:43:05 +0000 (UTC)
-Received: from silver.osuosl.org (smtp3.osuosl.org [140.211.166.136])
- by lists.linuxfoundation.org (Postfix) with ESMTP id D10D3C0177
- for <iommu@lists.linux-foundation.org>; Thu, 13 Feb 2020 09:43:04 +0000 (UTC)
+	by lists.linuxfoundation.org (Postfix) with ESMTP id 8DE1BC07FE;
+	Thu, 13 Feb 2020 10:14:47 +0000 (UTC)
+Received: from fraxinus.osuosl.org (smtp4.osuosl.org [140.211.166.137])
+ by lists.linuxfoundation.org (Postfix) with ESMTP id C2039C0177
+ for <iommu@lists.linux-foundation.org>; Thu, 13 Feb 2020 10:14:46 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
- by silver.osuosl.org (Postfix) with ESMTP id BE824203E2
- for <iommu@lists.linux-foundation.org>; Thu, 13 Feb 2020 09:43:04 +0000 (UTC)
+ by fraxinus.osuosl.org (Postfix) with ESMTP id B02F483505
+ for <iommu@lists.linux-foundation.org>; Thu, 13 Feb 2020 10:14:46 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from silver.osuosl.org ([127.0.0.1])
+Received: from fraxinus.osuosl.org ([127.0.0.1])
  by localhost (.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
- with ESMTP id PCcU+93Fc5OO for <iommu@lists.linux-foundation.org>;
- Thu, 13 Feb 2020 09:43:03 +0000 (UTC)
+ with ESMTP id OqA8-pJsCSQX for <iommu@lists.linux-foundation.org>;
+ Thu, 13 Feb 2020 10:14:46 +0000 (UTC)
 X-Greylist: domain auto-whitelisted by SQLgrey-1.7.6
-Received: from mail-pg1-f193.google.com (mail-pg1-f193.google.com
- [209.85.215.193])
- by silver.osuosl.org (Postfix) with ESMTPS id E2D3C203D3
- for <iommu@lists.linux-foundation.org>; Thu, 13 Feb 2020 09:43:03 +0000 (UTC)
-Received: by mail-pg1-f193.google.com with SMTP id d9so2806323pgu.3
- for <iommu@lists.linux-foundation.org>; Thu, 13 Feb 2020 01:43:03 -0800 (PST)
+Received: from mail-wr1-f66.google.com (mail-wr1-f66.google.com
+ [209.85.221.66])
+ by fraxinus.osuosl.org (Postfix) with ESMTPS id D7F43834BE
+ for <iommu@lists.linux-foundation.org>; Thu, 13 Feb 2020 10:14:45 +0000 (UTC)
+Received: by mail-wr1-f66.google.com with SMTP id n10so3972464wrm.1
+ for <iommu@lists.linux-foundation.org>; Thu, 13 Feb 2020 02:14:45 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linaro.org; s=google;
- h=subject:to:cc:references:from:message-id:date:user-agent
- :mime-version:in-reply-to:content-transfer-encoding:content-language;
- bh=NoGUqRpq1F77wcdshkLX1E0mBsPP95pWUoHQOnOvrik=;
- b=PZPAygbXf35pGVvey68bGizPw7g3pQJ2BxVMk8RCqukzpbiRkFrrEVDHzhPxDT1v8O
- BmdBCCzhGg1mqmMXi233FUZVYwx7iFvzRSfs3KvjJkoS7U1SBzHT7vIBlPC3i5J5+ne+
- JiexY8XFovWpYjZ1D8yF82T6x6H31LpdWePek5DStlFYOG7dtaXmaDYn+oti8Z75dzVo
- tP/y8TNe4vsT1EN5KQFVqs27BVb2oz/8eX22GDnEDLKbVkNRZL6/iYRMKvPKK0afSH1O
- rZnTueO7A+YCp2knuxwjglDR342/ujy4FQgTDLNvyio/xY+hKV7giUM+IjTnEb9z+h0z
- ozXQ==
+ h=from:to:cc:subject:date:message-id:mime-version
+ :content-transfer-encoding;
+ bh=75Ftdk1VkfsWCfyfd11tlv6ByY0EWRz2RXyuqWcTsCk=;
+ b=MXBaowXsv5/KjGlJHGIVcJorZztVg4eKrM/0w4F0HaKMkhG7uZ2qpG0X5g06zIZ8KR
+ JnvtB5DqxM5AgwN7+3b7Wzy/vFzqAreJ/+vi5VJzrqZ7NhUOdm/sjLs0apfmXzQOdYkf
+ Os4dy5aCRHTv04//SmgM6n1wj/O42Jp8ACsQy+/eig82sByEXqlJhyFrDIIA/eGWwOXO
+ 1diY5LShRv4n2zK8u1QDFgf0OQ3NB/zGYXZyfr4uUbUEwvA7vOThvs8tguvgjdcGGU93
+ ajPMjEjhiF4BL/q+Faw5CpisW0B6BCxtZnVvi+Ecuv97amlyxGaybdu2D6eh5DGwV4Lc
+ GUSA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
  d=1e100.net; s=20161025;
- h=x-gm-message-state:subject:to:cc:references:from:message-id:date
- :user-agent:mime-version:in-reply-to:content-transfer-encoding
- :content-language;
- bh=NoGUqRpq1F77wcdshkLX1E0mBsPP95pWUoHQOnOvrik=;
- b=FhendW4Qr+AsceseJLmBicCE1ZYGumIiSgmNX0wI1otxikzZOFUo0q14mr+H5cKvG0
- G8HsX88iQf1eiuTJscbwGAxCZIlQUzH6rJZLEhqtR44ICddtNIEot5j9Ku94weIMmEGr
- kjNsqmOsthY4S2i/I/k1+4tfB2iZ3CNW5L6JwsrlZAKbM+l8TZ0OHIbRT28SCoba16Bs
- ZPky8fsB9MRlt+Z91C6KfSPWH+gk3955i1OgDmsGv0U/RJN/0A0kVuLG6Ly/MMEnL2tM
- 08tjO8rgvn1p4+fTZ2cxyyma1z5EoSC4nMnqC4XE2bn8XohGOe1cMyqgNB4mlohpRb9h
- 40Ow==
-X-Gm-Message-State: APjAAAWrtdffTClXq1gQiuXOByK5v4/rmdbgzb+V4yyE8d4vOLg5HyIL
- CaDgCGy8Ntn4WWFjtdCGIbxiFw==
-X-Google-Smtp-Source: APXvYqyb/1C2ZIIlDPuaXok56IVD4v4T9EnKvkkqKbl8eWGafz0TN3Sk1x1XXOZucUcEJGpMrGaO5A==
-X-Received: by 2002:a62:52d0:: with SMTP id
- g199mr12680304pfb.241.1581586983496; 
- Thu, 13 Feb 2020 01:43:03 -0800 (PST)
-Received: from [10.149.0.118] ([45.135.186.75])
- by smtp.gmail.com with ESMTPSA id w26sm2421887pfj.119.2020.02.13.01.42.52
- (version=TLS1_2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128/128);
- Thu, 13 Feb 2020 01:43:02 -0800 (PST)
-Subject: Re: [PATCH v12 2/4] uacce: add uacce driver
-To: Herbert Xu <herbert@gondor.apana.org.au>,
- Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-References: <1579097568-17542-1-git-send-email-zhangfei.gao@linaro.org>
- <1579097568-17542-3-git-send-email-zhangfei.gao@linaro.org>
- <20200210233711.GA1787983@kroah.com>
- <20200213091509.v7ebvtot6rvlpfjt@gondor.apana.org.au>
-From: zhangfei <zhangfei.gao@linaro.org>
-Message-ID: <19f2e7b7-d3fc-681e-270c-2e8650df1ac8@linaro.org>
-Date: Thu, 13 Feb 2020 17:42:43 +0800
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:60.0) Gecko/20100101
- Thunderbird/60.9.0
+ h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+ :content-transfer-encoding;
+ bh=75Ftdk1VkfsWCfyfd11tlv6ByY0EWRz2RXyuqWcTsCk=;
+ b=qCWkD8vDqWQLV8bO68WgIpE3ljXDTAfGriC7/x18Q7h0lriCJqDqVXyuwAOa9zHZ4b
+ 27V88siRfvTn09JJ7/dLUhf4JLuJu+7Cj+nmEhF5mshWdkJ78eA6l/BnvEMkAfF1eX4D
+ 5kmnDCmLmCPcgtubeDMquCUhtQxJ11tbPf7i75dIR+k0lH30wFW7WVrrbHz5GXn66CNM
+ I2e0gkVbmDQ+gboSs/wfqb1C489fHqsGUeSPliXkn7BORtOsjnwR/wktYxmvH7GyGxfw
+ SBrKWQBdeGQk7HEOs/PEHChmeXwZ/hnpi1QfWNh2ybqgj5LkkSzgha0U4OVGbDyjxMog
+ tsZw==
+X-Gm-Message-State: APjAAAVkacmGSrGrlhCM5/w5tENt9aJgzbywMJLBTn1XbAwe0Uu+QhY+
+ g0vW2RN51dcXbLALii0nkaJgiA==
+X-Google-Smtp-Source: APXvYqyaY1njF+rZBaq9zhF3XVnI+fBQ+a+gjM1pwH0+xif4vevn+377YjCqBR53sPA0jLv2qnJW8w==
+X-Received: by 2002:a05:6000:1:: with SMTP id
+ h1mr19408168wrx.380.1581588884202; 
+ Thu, 13 Feb 2020 02:14:44 -0800 (PST)
+Received: from localhost.localdomain ([2001:171b:2276:930:116c:c27a:3e7f:5eaf])
+ by smtp.gmail.com with ESMTPSA id y131sm2428059wmc.13.2020.02.13.02.14.43
+ (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+ Thu, 13 Feb 2020 02:14:43 -0800 (PST)
+From: Jean-Philippe Brucker <jean-philippe@linaro.org>
+To: linux-pci@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
+ iommu@lists.linux-foundation.org, will@kernel.org, bhelgaas@google.com
+Subject: [PATCH 0/4] iommu: Finish off PASID support for Arm SMMUv3
+Date: Thu, 13 Feb 2020 11:14:31 +0100
+Message-Id: <20200213101435.229932-1-jean-philippe@linaro.org>
+X-Mailer: git-send-email 2.25.0
 MIME-Version: 1.0
-In-Reply-To: <20200213091509.v7ebvtot6rvlpfjt@gondor.apana.org.au>
-Content-Language: en-US
-Cc: jean-philippe <jean-philippe@linaro.org>, dave.jiang@intel.com,
- kenneth-lee-2012@foxmail.com, Arnd Bergmann <arnd@arndb.de>,
- francois.ozog@linaro.org, linux-accelerators@lists.ozlabs.org,
- ilias.apalodimas@linaro.org, iommu@lists.linux-foundation.org,
- linux-kernel@vger.kernel.org, Jerome Glisse <jglisse@redhat.com>,
- grant.likely@arm.com, "haojian . zhuang" <haojian.zhuang@linaro.org>,
- Kenneth Lee <liguozhu@hisilicon.com>, guodong.xu@linaro.org,
- linux-crypto@vger.kernel.org
+Cc: zhangfei.gao@linaro.org, robin.murphy@arm.com
 X-BeenThere: iommu@lists.linux-foundation.org
 X-Mailman-Version: 2.1.15
 Precedence: list
@@ -116,22 +101,35 @@ List-Post: <mailto:iommu@lists.linux-foundation.org>
 List-Help: <mailto:iommu-request@lists.linux-foundation.org?subject=help>
 List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
  <mailto:iommu-request@lists.linux-foundation.org?subject=subscribe>
-Content-Transfer-Encoding: base64
-Content-Type: text/plain; charset="utf-8"; Format="flowed"
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: 7bit
 Errors-To: iommu-bounces@lists.linux-foundation.org
 Sender: "iommu" <iommu-bounces@lists.linux-foundation.org>
 
-CgpPbiAyMDIwLzIvMTMg5LiL5Y2INToxNSwgSGVyYmVydCBYdSB3cm90ZToKPiBPbiBNb24sIEZl
-YiAxMCwgMjAyMCBhdCAwMzozNzoxMVBNIC0wODAwLCBHcmVnIEtyb2FoLUhhcnRtYW4gd3JvdGU6
-Cj4+IExvb2tzIG11Y2ggc2FuZXIgbm93LCB0aGFua3MgZm9yIGFsbCBvZiB0aGUgd29yayBvbiB0
-aGlzOgo+Pgo+PiBSZXZpZXdlZC1ieTogR3JlZyBLcm9haC1IYXJ0bWFuIDxncmVna2hAbGludXhm
-b3VuZGF0aW9uLm9yZz4KPj4KPj4gT3IgYW0gSSBzdXBwb3NlZCB0byB0YWtlIHRoaXMgaW4gbXkg
-dHJlZT8gIElmIHNvLCBJIGNhbiwgYnV0IEkgbmVlZCBhbgo+PiBhY2sgZm9yIHRoZSBjcnlwdG8g
-cGFydHMuCj4gSSBjYW4gdGFrZSB0aGlzIHNlcmllcyB0aHJvdWdoIHRoZSBjcnlwdG8gdHJlZSBp
-ZiB0aGF0J3MgZmluZSB3aXRoCj4geW91LgoKVGhhbmtzIEhlcmJlcnQKVGhhdCdzIGEgZ29vZCBp
-ZGVhLCBvdGhlcndpc2UgdGhlcmUgbWF5IGJlIGJ1aWxkIGlzc3VlIGlmIHRha2VuIHNlcGFyYXRl
-bHkuCgpCeSB0aGUgd2F5LCB0aGUgbGF0ZXN0IHYxMyBpcyBvbiB2NS42LXJjMQpodHRwczovL2xr
-bWwub3JnL2xrbWwvMjAyMC8yLzExLzU0CgpUaGFua3MKX19fX19fX19fX19fX19fX19fX19fX19f
-X19fX19fX19fX19fX19fX19fX19fX18KaW9tbXUgbWFpbGluZyBsaXN0CmlvbW11QGxpc3RzLmxp
-bnV4LWZvdW5kYXRpb24ub3JnCmh0dHBzOi8vbGlzdHMubGludXhmb3VuZGF0aW9uLm9yZy9tYWls
-bWFuL2xpc3RpbmZvL2lvbW11
+Support for context descriptor tables was added to the SMMUv3 driver by
+commit 87f42391f6a5 ("iommu/arm-smmu-v3: Add support for Substream
+IDs"). The last patch enabling PASID in PCI devices couldn't be included
+right away since it would have prevented from building SMMUv3 as a
+module, another feature introduced in Linux v5.6. Export the relevant
+symbols in patch 1 before using them in patch 2. Patches 3 and 4 address
+the other remaining comments for the PASID series [1].
+
+[1] https://lore.kernel.org/linux-iommu/20200114154007.GC2579@willie-the-truck/
+
+Jean-Philippe Brucker (4):
+  PCI/ATS: Export symbols of PASID functions
+  iommu/arm-smmu-v3: Add support for PCI PASID
+  iommu/arm-smmu-v3: Batch context descriptor invalidation
+  iommu/arm-smmu-v3: Write level-1 descriptors atomically
+
+ drivers/iommu/arm-smmu-v3.c | 78 +++++++++++++++++++++++++++++++++++--
+ drivers/pci/ats.c           |  4 ++
+ 2 files changed, 78 insertions(+), 4 deletions(-)
+
+-- 
+2.25.0
+
+_______________________________________________
+iommu mailing list
+iommu@lists.linux-foundation.org
+https://lists.linuxfoundation.org/mailman/listinfo/iommu
