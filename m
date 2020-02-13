@@ -2,76 +2,87 @@ Return-Path: <SRS0=ZJ+1=4B=lists.linux-foundation.org=iommu-bounces@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-5.2 required=3.0 tests=HEADER_FROM_DIFFERENT_DOMAINS,
-	INCLUDES_PATCH,MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED,
-	USER_AGENT_SANE_1 autolearn=ham autolearn_force=no version=3.4.0
+X-Spam-Status: No, score=-3.8 required=3.0 tests=DKIM_INVALID,DKIM_SIGNED,
+	MAILING_LIST_MULTI,SIGNED_OFF_BY,SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED
+	autolearn=no autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 1FE47C3B189
-	for <iommu@archiver.kernel.org>; Thu, 13 Feb 2020 19:40:50 +0000 (UTC)
-Received: from hemlock.osuosl.org (smtp2.osuosl.org [140.211.166.133])
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 1DB71C352A3
+	for <iommu@archiver.kernel.org>; Thu, 13 Feb 2020 19:54:43 +0000 (UTC)
+Received: from silver.osuosl.org (smtp3.osuosl.org [140.211.166.136])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by mail.kernel.org (Postfix) with ESMTPS id 0228020659
-	for <iommu@archiver.kernel.org>; Thu, 13 Feb 2020 19:40:49 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 0228020659
-Authentication-Results: mail.kernel.org; dmarc=none (p=none dis=none) header.from=arm.com
+	by mail.kernel.org (Postfix) with ESMTPS id D73552168B
+	for <iommu@archiver.kernel.org>; Thu, 13 Feb 2020 19:54:42 +0000 (UTC)
+Authentication-Results: mail.kernel.org;
+	dkim=fail reason="signature verification failed" (1024-bit key) header.d=kernel.org header.i=@kernel.org header.b="Oopda02/"
+DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org D73552168B
+Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=kernel.org
 Authentication-Results: mail.kernel.org; spf=pass smtp.mailfrom=iommu-bounces@lists.linux-foundation.org
 Received: from localhost (localhost [127.0.0.1])
-	by hemlock.osuosl.org (Postfix) with ESMTP id C0373880C1;
-	Thu, 13 Feb 2020 19:40:49 +0000 (UTC)
+	by silver.osuosl.org (Postfix) with ESMTP id 6F09F21543;
+	Thu, 13 Feb 2020 19:54:42 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from hemlock.osuosl.org ([127.0.0.1])
+Received: from silver.osuosl.org ([127.0.0.1])
 	by localhost (.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
-	with ESMTP id GBfu8MlzdnH4; Thu, 13 Feb 2020 19:40:48 +0000 (UTC)
+	with ESMTP id ziDVcUEmc8cS; Thu, 13 Feb 2020 19:54:40 +0000 (UTC)
 Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [140.211.9.56])
-	by hemlock.osuosl.org (Postfix) with ESMTP id DEC128808D;
-	Thu, 13 Feb 2020 19:40:48 +0000 (UTC)
+	by silver.osuosl.org (Postfix) with ESMTP id D1D912152F;
+	Thu, 13 Feb 2020 19:54:40 +0000 (UTC)
 Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
-	by lists.linuxfoundation.org (Postfix) with ESMTP id D4B85C08A4;
-	Thu, 13 Feb 2020 19:40:48 +0000 (UTC)
-Received: from hemlock.osuosl.org (smtp2.osuosl.org [140.211.166.133])
- by lists.linuxfoundation.org (Postfix) with ESMTP id 803C2C0177
- for <iommu@lists.linux-foundation.org>; Thu, 13 Feb 2020 19:40:47 +0000 (UTC)
+	by lists.linuxfoundation.org (Postfix) with ESMTP id B7AAEC08A4;
+	Thu, 13 Feb 2020 19:54:40 +0000 (UTC)
+Received: from silver.osuosl.org (smtp3.osuosl.org [140.211.166.136])
+ by lists.linuxfoundation.org (Postfix) with ESMTP id A9197C0177
+ for <iommu@lists.linux-foundation.org>; Thu, 13 Feb 2020 19:54:39 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
- by hemlock.osuosl.org (Postfix) with ESMTP id 7BEE2880A1
- for <iommu@lists.linux-foundation.org>; Thu, 13 Feb 2020 19:40:47 +0000 (UTC)
+ by silver.osuosl.org (Postfix) with ESMTP id A04A121543
+ for <iommu@lists.linux-foundation.org>; Thu, 13 Feb 2020 19:54:39 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from hemlock.osuosl.org ([127.0.0.1])
+Received: from silver.osuosl.org ([127.0.0.1])
  by localhost (.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
- with ESMTP id 7lThpfxQdHBg for <iommu@lists.linux-foundation.org>;
- Thu, 13 Feb 2020 19:40:46 +0000 (UTC)
+ with ESMTP id 6HJV8oTIUWGW for <iommu@lists.linux-foundation.org>;
+ Thu, 13 Feb 2020 19:54:37 +0000 (UTC)
 X-Greylist: domain auto-whitelisted by SQLgrey-1.7.6
-Received: from foss.arm.com (foss.arm.com [217.140.110.172])
- by hemlock.osuosl.org (Postfix) with ESMTP id 491568808D
- for <iommu@lists.linux-foundation.org>; Thu, 13 Feb 2020 19:40:46 +0000 (UTC)
-Received: from usa-sjc-imap-foss1.foss.arm.com (unknown [10.121.207.14])
- by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id 91F37328;
- Thu, 13 Feb 2020 11:40:45 -0800 (PST)
-Received: from [10.1.196.37] (e121345-lin.cambridge.arm.com [10.1.196.37])
- by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPSA id A8E163F68E;
- Thu, 13 Feb 2020 11:40:43 -0800 (PST)
-Subject: Re: arm64 iommu groups issue
-To: John Garry <john.garry@huawei.com>, Marc Zyngier <maz@kernel.org>,
- Will Deacon <will@kernel.org>, Lorenzo Pieralisi
- <lorenzo.pieralisi@arm.com>, Sudeep Holla <sudeep.holla@arm.com>,
- "Guohanjun (Hanjun Guo)" <guohanjun@huawei.com>
-References: <9625faf4-48ef-2dd3-d82f-931d9cf26976@huawei.com>
- <4768c541-ebf4-61d5-0c5e-77dee83f8f94@arm.com>
- <a18b7f26-9713-a5c7-507e-ed70e40bc007@huawei.com>
- <ddc7eaff-c3f9-4304-9b4e-75eff2c66cd5@huawei.com>
-From: Robin Murphy <robin.murphy@arm.com>
-Message-ID: <be464e2a-03d5-0b2e-24ee-96d0d14fd739@arm.com>
-Date: Thu, 13 Feb 2020 19:40:42 +0000
-User-Agent: Mozilla/5.0 (X11; Linux aarch64; rv:60.0) Gecko/20100101
- Thunderbird/60.9.0
+Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
+ by silver.osuosl.org (Postfix) with ESMTPS id 6C2B02152F
+ for <iommu@lists.linux-foundation.org>; Thu, 13 Feb 2020 19:54:37 +0000 (UTC)
+Received: from mail-qk1-f178.google.com (mail-qk1-f178.google.com
+ [209.85.222.178])
+ (using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+ (No client certificate requested)
+ by mail.kernel.org (Postfix) with ESMTPSA id 1906F2168B
+ for <iommu@lists.linux-foundation.org>; Thu, 13 Feb 2020 19:54:37 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+ s=default; t=1581623677;
+ bh=ZjBK3ZOdaBBTAWvFDrSILiFRaEmIfeUA9Bda4Zoq/TY=;
+ h=References:In-Reply-To:From:Date:Subject:To:Cc:From;
+ b=Oopda02/3uKgx3wobFBaGSPTqHXmIw4xcVqxfnYIRaKI5eWAOWohATXyqTv8vMllW
+ enH8X6zYIQz0YXIFGZ+4ul+kWh1Ghh6GWVgGVtT6NCJ9fFgrLfjOgM2jnC26hZ8p21
+ YvgyB/t0UKKmyEFRFMvxrBYbEKw/F0soVXnBcBb4=
+Received: by mail-qk1-f178.google.com with SMTP id c188so6920280qkg.4
+ for <iommu@lists.linux-foundation.org>; Thu, 13 Feb 2020 11:54:37 -0800 (PST)
+X-Gm-Message-State: APjAAAXgIlt//cQBtESVhimqg7G3CY3JyDnY+2lqZ8lhYWec//85eeUa
+ hBsiVeU5v5tWRE4R1CXjQsW+ftuy+i8RzfpvLw==
+X-Google-Smtp-Source: APXvYqxJjJ6TQ/6a7fL7VW4f10t6FNQJlKeTU1QhyzrQwlRk3MOdpkPnDMq8r+Ctc/zOdmZHOvnLiq+Mx1z2Gqjy454=
+X-Received: by 2002:a37:85c4:: with SMTP id
+ h187mr17585169qkd.223.1581623676270; 
+ Thu, 13 Feb 2020 11:54:36 -0800 (PST)
 MIME-Version: 1.0
-In-Reply-To: <ddc7eaff-c3f9-4304-9b4e-75eff2c66cd5@huawei.com>
-Content-Language: en-GB
-Cc: Saravana Kannan <saravanak@google.com>,
- "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
- Alex Williamson <alex.williamson@redhat.com>, Linuxarm <linuxarm@huawei.com>,
- iommu <iommu@lists.linux-foundation.org>, Bjorn Helgaas <bhelgaas@google.com>,
- "linux-arm-kernel@lists.infradead.org" <linux-arm-kernel@lists.infradead.org>
+References: <20200117211628.27888-1-robh@kernel.org>
+ <2d04f201-3457-08ad-db8e-735f8315d74e@redhat.com>
+In-Reply-To: <2d04f201-3457-08ad-db8e-735f8315d74e@redhat.com>
+From: Rob Herring <robh@kernel.org>
+Date: Thu, 13 Feb 2020 13:54:24 -0600
+X-Gmail-Original-Message-ID: <CAL_Jsq+3=YbcUi=wte-Cmiq-BuD7hRXwSEnHN7E9_bSnHHxG1g@mail.gmail.com>
+Message-ID: <CAL_Jsq+3=YbcUi=wte-Cmiq-BuD7hRXwSEnHN7E9_bSnHHxG1g@mail.gmail.com>
+Subject: Re: [PATCH v2] iommu/arm-smmu-v3: Add SMMUv3.2 range invalidation
+ support
+To: Auger Eric <eric.auger@redhat.com>
+Cc: Jean-Philippe Brucker <jean-philippe@linaro.org>,
+ Robin Murphy <robin.murphy@arm.com>,
+ Linux IOMMU <iommu@lists.linux-foundation.org>, Will Deacon <will@kernel.org>,
+ "moderated list:ARM/FREESCALE IMX / MXC ARM ARCHITECTURE"
+ <linux-arm-kernel@lists.infradead.org>
 X-BeenThere: iommu@lists.linux-foundation.org
 X-Mailman-Version: 2.1.15
 Precedence: list
@@ -84,101 +95,117 @@ List-Post: <mailto:iommu@lists.linux-foundation.org>
 List-Help: <mailto:iommu-request@lists.linux-foundation.org?subject=help>
 List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
  <mailto:iommu-request@lists.linux-foundation.org?subject=subscribe>
-Content-Transfer-Encoding: base64
-Content-Type: text/plain; charset="utf-8"; Format="flowed"
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: 7bit
 Errors-To: iommu-bounces@lists.linux-foundation.org
 Sender: "iommu" <iommu-bounces@lists.linux-foundation.org>
 
-T24gMTMvMDIvMjAyMCAzOjQ5IHBtLCBKb2huIEdhcnJ5IHdyb3RlOgo+Pj4KPj4+IFRoZSB1bmRl
-cmx5aW5nIGlzc3VlIGlzIHRoYXQsIGZvciBoaXN0b3JpY2FsIHJlYXNvbnMsIE9GL0lPUlQtYmFz
-ZWQKPj4+IElPTU1VIGRyaXZlcnMgaGF2ZSBlbmRlZCB1cCB3aXRoIGdyb3VwIGFsbG9jYXRpb24g
-YmVpbmcgdGllZCB0byBlbmRwb2ludAo+Pj4gZHJpdmVyIHByb2JpbmcgdmlhIHRoZSBkbWFfY29u
-ZmlndXJlKCkgbWVjaGFuaXNtIChsb25nIHN0b3J5IHNob3J0LAo+Pj4gZHJpdmVyIHByb2JlIGlz
-IHRoZSBvbmx5IHRoaW5nIHdoaWNoIGNhbiBiZSBkZWxheWVkIGluIG9yZGVyIHRvIHdhaXQgZm9y
-Cj4+PiBhIHNwZWNpZmljIElPTU1VIGluc3RhbmNlIHRvIGJlIHJlYWR5KS5Ib3dldmVyLCBpbiB0
-aGUgbWVhbnRpbWUsIHRoZQo+Pj4gSU9NTVUgQVBJIGludGVybmFscyBoYXZlIGV2b2x2ZWQgc3Vm
-ZmljaWVudGx5IHRoYXQgSSB0aGluayB0aGVyZSdzIGEgd2F5Cj4+PiB0byByZWFsbHkgcHV0IHRo
-aW5ncyByaWdodCAtIEkgaGF2ZSB0aGUgc3Bhcmsgb2YgYW4gaWRlYSB3aGljaCBJJ2xsIHRyeQo+
-Pj4gdG8gc2tldGNoIG91dCBBU0FQLi4uCj4+Pgo+Pgo+PiBPSywgZ3JlYXQuCj4gCj4gSGkgUm9i
-aW4sCj4gCj4gSSB3YXMgd29uZGVyaW5nIGlmIHlvdSBoYXZlIGhhZCBhIGNoYW5jZSB0byBjb25z
-aWRlciB0aGlzIHByb2JsZW0gYWdhaW4/CgpZZWFoLCBzb3JyeSwgbW9yZSB0aGluZ3MgY2FtZSB1
-cCBzdWNoIHRoYXQgaXQgc3RpbGwgaGFzbid0IGJlZW4gUCB5ZXQgOykKCkxvcmVuem8gYW5kIEkg
-ZGlkIGdldCBhcyBmYXIgYXMgZGlzY3Vzc2luZyBpdCBhIGJpdCBtb3JlIGFuZCB3cml0aW5nIHVw
-IAphIHRpY2tldCwgc28gaXQncyBmb3JtYWxseSBvbiBvdXIgaW50ZXJuYWwgcmFkYXIgbm93LCBh
-dCBsZWFzdC4KCj4gT25lIHNpbXBsZSBpZGVhIGNvdWxkIGJlIHRvIGludHJvZHVjZSBhIGRldmlj
-ZSBsaW5rIGJldHdlZW4gdGhlIGVuZHBvaW50IAo+IGRldmljZSBhbmQgaXRzIHBhcmVudCBicmlk
-Z2UgdG8gZW5zdXJlIHRoYXQgdGhleSBwcm9iZSBpbiBvcmRlciwgYXMgCj4gZXhwZWN0ZWQgaW4g
-cGNpX2RldmljZV9ncm91cCgpOgo+IAo+IFN1YmplY3Q6IFtQQVRDSF0gUENJOiBBZGQgZGV2aWNl
-IGxpbmsgdG8gZW5zdXJlIGVuZHBvaW50IGRldmljZSBkcml2ZXIgCj4gcHJvYmVzIGFmdGVyIGJy
-aWRnZQo+IAo+IEl0IGlzIHJlcXVpcmVkIHRvIGVuc3VyZSB0aGF0IGEgZGV2aWNlIGRyaXZlciBm
-b3IgYW4gZW5kcG9pbnQgd2lsbCBwcm9iZQo+IGFmdGVyIHRoZSBwYXJlbnQgcG9ydCBkcml2ZXIs
-IHNvIGFkZCBhIGRldmljZSBsaW5rIGZvciB0aGlzLgo+IAo+IC0tLQo+IGRpZmYgLS1naXQgYS9k
-cml2ZXJzL3BjaS9wcm9iZS5jIGIvZHJpdmVycy9wY2kvcHJvYmUuYwo+IGluZGV4IDUxMmNiNDMx
-MmRkZC4uNGI4MzJhZDI1YjIwIDEwMDY0NAo+IC0tLSBhL2RyaXZlcnMvcGNpL3Byb2JlLmMKPiAr
-KysgYi9kcml2ZXJzL3BjaS9wcm9iZS5jCj4gQEAgLTIzODMsNiArMjM4Myw3IEBAIHN0YXRpYyB2
-b2lkIHBjaV9zZXRfbXNpX2RvbWFpbihzdHJ1Y3QgcGNpX2RldiAqZGV2KQo+ICDCoHZvaWQgcGNp
-X2RldmljZV9hZGQoc3RydWN0IHBjaV9kZXYgKmRldiwgc3RydWN0IHBjaV9idXMgKmJ1cykKPiAg
-wqB7Cj4gIMKgwqDCoMKgIGludCByZXQ7Cj4gK8KgwqDCoCBzdHJ1Y3QgZGV2aWNlICpwYXJlbnQ7
-Cj4gCj4gIMKgwqDCoMKgIHBjaV9jb25maWd1cmVfZGV2aWNlKGRldik7Cj4gCj4gQEAgLTI0MjAs
-NiArMjQyMSwxMCBAQCB2b2lkIHBjaV9kZXZpY2VfYWRkKHN0cnVjdCBwY2lfZGV2ICpkZXYsIHN0
-cnVjdCAKPiBwY2lfYnVzICpidXMpCj4gIMKgwqDCoMKgIC8qIFNldCB1cCBNU0kgSVJRIGRvbWFp
-biAqLwo+ICDCoMKgwqDCoCBwY2lfc2V0X21zaV9kb21haW4oZGV2KTsKPiAKPiArwqDCoMKgIHBh
-cmVudCA9IGRldi0+ZGV2LnBhcmVudDsKPiArwqDCoMKgIGlmIChwYXJlbnQgJiYgcGFyZW50LT5i
-dXMgPT0gJnBjaV9idXNfdHlwZSkKPiArwqDCoMKgwqDCoMKgwqAgZGV2aWNlX2xpbmtfYWRkKCZk
-ZXYtPmRldiwgcGFyZW50LCBETF9GTEFHX0FVVE9QUk9CRV9DT05TVU1FUik7Cj4gKwo+ICDCoMKg
-wqDCoCAvKiBOb3RpZmllciBjb3VsZCB1c2UgUENJIGNhcGFiaWxpdGllcyAqLwo+ICDCoMKgwqDC
-oCBkZXYtPm1hdGNoX2RyaXZlciA9IGZhbHNlOwo+ICDCoMKgwqDCoCByZXQgPSBkZXZpY2VfYWRk
-KCZkZXYtPmRldik7Cj4gLS0gCj4gCj4gVGhpcyB3b3VsZCB3b3JrLCBidXQgdGhlIHByb2JsZW0g
-aXMgdGhhdCBpZiB0aGUgcG9ydCBkcml2ZXIgZmFpbHMgaW4gCj4gcHJvYmluZyAtIGFuZCBub3Qg
-anVzdCBmb3IgLUVQUk9CRV9ERUZFUiAtIHRoZW4gdGhlIGNoaWxkIGRldmljZSB3aWxsIAo+IG5l
-dmVyIHByb2JlLiBUaGlzIHZlcnkgdGhpbmcgaGFwcGVucyBvbiBteSBkZXYgYm9hcmQuIEhvd2V2
-ZXIgd2UgY291bGQgCj4gZXhwYW5kIHRoZSBkZXZpY2UgbGlua3MgQVBJIHRvIGNvdmVyIHRoaXMg
-c29ydCBvZiBzY2VuYXJpby4KClllcywgdGhhdCdzIGFuIHVuZGVzaXJhYmxlIGlzc3VlLCBidXQg
-aW4gZmFjdCBJIHRoaW5rIGl0J3MgbW9zdGx5IAppbmRpY2F0aXZlIHRoYXQgaW52b2x2aW5nIGRy
-aXZlcnMgaW4gc29tZXRoaW5nIHdoaWNoIGlzIGRlc2lnbmVkIHRvIApoYXBwZW4gYXQgYSBsZXZl
-bCBiZWxvdyBkcml2ZXJzIGlzIHN0aWxsIGZ1bmRhbWVudGFsbHkgd3JvbmcgYW5kIGRvb21lZCAK
-dG8gYmUgZnJhZ2lsZSBhdCBiZXN0LgoKQW5vdGhlciB0aG91Z2h0IHRoYXQgY3Jvc3NlcyBteSBt
-aW5kIGlzIHRoYXQgd2hlbiBwY2lfZGV2aWNlX2dyb3VwKCkgCndhbGtzIHVwIHRvIHRoZSBwb2lu
-dCBvZiBBQ1MgaXNvbGF0aW9uIGFuZCBkb2Vzbid0IGZpbmQgYW4gZXhpc3RpbmcgCmdyb3VwLCBp
-dCBjYW4gc3RpbGwgaW5mZXIgdGhhdCBldmVyeXRoaW5nIGl0IHdhbGtlZCBwYXN0ICpzaG91bGQq
-IGJlIHB1dCAKaW4gdGhlIHNhbWUgZ3JvdXAgaXQncyB0aGVuIGV2ZW50dWFsbHkgZ29pbmcgdG8g
-cmV0dXJuLiBVbmZvcnR1bmF0ZWx5IEkgCmNhbid0IHNlZSBhbiBvYnZpb3VzIHdheSBmb3IgaXQg
-dG8gYWN0IG9uIHRoYXQga25vd2xlZGdlLCB0aG91Z2gsIHNpbmNlIApyZWN1cnNpdmUgaW9tbXVf
-cHJvYmVfZGV2aWNlKCkgaXMgdW5saWtlbHkgdG8gZW5kIHdlbGwuCgo+IEFzIGZvciBhbHRlcm5h
-dGl2ZXMsIGl0IGxvb2tzIHByZXR0eSBkaWZmaWN1bHQgdG8gbWUgdG8gZGlzYXNzb2NpYXRlIHRo
-ZSAKPiBncm91cCBhbGxvY2F0aW9uIGZyb20gdGhlIGRtYV9jb25maWd1cmUgcGF0aC4KCkluZGVl
-ZCBpdCdzIG5vbi10cml2aWFsLCBidXQgaXQgcmVhbGx5IGRvZXMgbmVlZCBjbGVhbmluZyB1cCBh
-dCBzb21lIHBvaW50LgoKSGF2aW5nIGp1c3QgaGFkIHlldCBhbm90aGVyIHNwYXJrLCBkb2VzIHNv
-bWV0aGluZyBsaWtlIHRoZSB1bnRlc3RlZCAKc3VwZXItaGFjayBiZWxvdyB3b3JrIGF0IGFsbD8g
-SSBkb3VidCBpdCdzIGEgdmlhYmxlIGRpcmVjdGlvbiB0byB0YWtlIGluIAppdHNlbGYsIGJ1dCBp
-dCBjb3VsZCBiZSBmb29kIGZvciB0aG91Z2h0IGlmIGl0IGF0IGxlYXN0IHByb3ZlcyB0aGUgY29u
-Y2VwdC4KClJvYmluLgoKLS0tLS0+OC0tLS0tCmRpZmYgLS1naXQgYS9kcml2ZXJzL2lvbW11L2Fy
-bS1zbW11LXYzLmMgYi9kcml2ZXJzL2lvbW11L2FybS1zbW11LXYzLmMKaW5kZXggYWEzYWMyYTAz
-ODA3Li41NTRjZGU3NmM3NjYgMTAwNjQ0Ci0tLSBhL2RyaXZlcnMvaW9tbXUvYXJtLXNtbXUtdjMu
-YworKysgYi9kcml2ZXJzL2lvbW11L2FybS1zbW11LXYzLmMKQEAgLTM4NDEsMjAgKzM4NDEsMjAg
-QEAgc3RhdGljIGludCBhcm1fc21tdV9zZXRfYnVzX29wcyhzdHJ1Y3QgaW9tbXVfb3BzIAoqb3Bz
-KQogIAlpbnQgZXJyOwoKICAjaWZkZWYgQ09ORklHX1BDSQotCWlmIChwY2lfYnVzX3R5cGUuaW9t
-bXVfb3BzICE9IG9wcykgeworCWlmICgxKSB7CiAgCQllcnIgPSBidXNfc2V0X2lvbW11KCZwY2lf
-YnVzX3R5cGUsIG9wcyk7CiAgCQlpZiAoZXJyKQogIAkJCXJldHVybiBlcnI7CiAgCX0KICAjZW5k
-aWYKICAjaWZkZWYgQ09ORklHX0FSTV9BTUJBCi0JaWYgKGFtYmFfYnVzdHlwZS5pb21tdV9vcHMg
-IT0gb3BzKSB7CisJaWYgKDEpIHsKICAJCWVyciA9IGJ1c19zZXRfaW9tbXUoJmFtYmFfYnVzdHlw
-ZSwgb3BzKTsKICAJCWlmIChlcnIpCiAgCQkJZ290byBlcnJfcmVzZXRfcGNpX29wczsKICAJfQog
-ICNlbmRpZgotCWlmIChwbGF0Zm9ybV9idXNfdHlwZS5pb21tdV9vcHMgIT0gb3BzKSB7CisJaWYg
-KDEpIHsKICAJCWVyciA9IGJ1c19zZXRfaW9tbXUoJnBsYXRmb3JtX2J1c190eXBlLCBvcHMpOwog
-IAkJaWYgKGVycikKICAJCQlnb3RvIGVycl9yZXNldF9hbWJhX29wczsKZGlmZiAtLWdpdCBhL2Ry
-aXZlcnMvaW9tbXUvaW9tbXUuYyBiL2RyaXZlcnMvaW9tbXUvaW9tbXUuYwppbmRleCA2NjBlZWE4
-ZDFkMmYuLmI4MWFlMmI0ZDRmYiAxMDA2NDQKLS0tIGEvZHJpdmVycy9pb21tdS9pb21tdS5jCisr
-KyBiL2RyaXZlcnMvaW9tbXUvaW9tbXUuYwpAQCAtMTU0Miw2ICsxNTQyLDE0IEBAIHN0YXRpYyBp
-bnQgaW9tbXVfYnVzX2luaXQoc3RydWN0IGJ1c190eXBlICpidXMsIApjb25zdCBzdHJ1Y3QgaW9t
-bXVfb3BzICpvcHMpCiAgCXJldHVybiBlcnI7CiAgfQoKK3N0YXRpYyBpbnQgaW9tbXVfYnVzX3Jl
-cGxheShzdHJ1Y3QgZGV2aWNlICpkZXYsIHZvaWQgKmRhdGEpCit7CisJaWYgKGRldi0+aW9tbXVf
-Z3JvdXApCisJCXJldHVybiAwOworCisJcmV0dXJuIGFkZF9pb21tdV9ncm91cChkZXYsIGRhdGEp
-OworfQorCiAgLyoqCiAgICogYnVzX3NldF9pb21tdSAtIHNldCBpb21tdS1jYWxsYmFja3MgZm9y
-IHRoZSBidXMKICAgKiBAYnVzOiBidXMuCkBAIC0xNTY0LDYgKzE1NzIsOSBAQCBpbnQgYnVzX3Nl
-dF9pb21tdShzdHJ1Y3QgYnVzX3R5cGUgKmJ1cywgY29uc3QgCnN0cnVjdCBpb21tdV9vcHMgKm9w
-cykKICAJCXJldHVybiAwOwogIAl9CgorCWlmIChidXMtPmlvbW11X29wcyA9PSBvcHMpCisJCXJl
-dHVybiBidXNfZm9yX2VhY2hfZGV2KGJ1cywgTlVMTCwgTlVMTCwgaW9tbXVfYnVzX3JlcGxheSk7
-CisKICAJaWYgKGJ1cy0+aW9tbXVfb3BzICE9IE5VTEwpCiAgCQlyZXR1cm4gLUVCVVNZOwoKX19f
-X19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX18KaW9tbXUgbWFpbGlu
-ZyBsaXN0CmlvbW11QGxpc3RzLmxpbnV4LWZvdW5kYXRpb24ub3JnCmh0dHBzOi8vbGlzdHMubGlu
-dXhmb3VuZGF0aW9uLm9yZy9tYWlsbWFuL2xpc3RpbmZvL2lvbW11
+On Thu, Jan 30, 2020 at 9:06 AM Auger Eric <eric.auger@redhat.com> wrote:
+>
+> Hi Rob,
+> On 1/17/20 10:16 PM, Rob Herring wrote:
+> > Arm SMMUv3.2 adds support for TLB range invalidate operations.
+> > Support for range invalidate is determined by the RIL bit in the IDR3
+> > register.
+> >
+> > The range invalidate is in units of the leaf page size and operates on
+> > 1-32 chunks of a power of 2 multiple pages. First, we determine from the
+> > size what power of 2 multiple we can use. Then we calculate how many
+> > chunks (1-31) of the power of 2 size for the range on the iteration. On
+> > each iteration, we move up in size by at least 5 bits.
+> >
+> > Cc: Eric Auger <eric.auger@redhat.com>
+> > Cc: Jean-Philippe Brucker <jean-philippe@linaro.org>
+> > Cc: Will Deacon <will@kernel.org>
+> > Cc: Robin Murphy <robin.murphy@arm.com>
+> > Cc: Joerg Roedel <joro@8bytes.org>
+> > Signed-off-by: Rob Herring <robh@kernel.org>
+> > ---
+> >  drivers/iommu/arm-smmu-v3.c | 66 ++++++++++++++++++++++++++++++++++++-
+> >  1 file changed, 65 insertions(+), 1 deletion(-)
+
+
+> > @@ -2003,7 +2024,7 @@ static void arm_smmu_tlb_inv_range(unsigned long iova, size_t size,
+> >  {
+> >       u64 cmds[CMDQ_BATCH_ENTRIES * CMDQ_ENT_DWORDS];
+> >       struct arm_smmu_device *smmu = smmu_domain->smmu;
+> > -     unsigned long start = iova, end = iova + size;
+> > +     unsigned long start = iova, end = iova + size, num_pages = 0, tg = 0;
+> >       int i = 0;
+> >       struct arm_smmu_cmdq_ent cmd = {
+> >               .tlbi = {
+> > @@ -2022,12 +2043,50 @@ static void arm_smmu_tlb_inv_range(unsigned long iova, size_t size,
+> >               cmd.tlbi.vmid   = smmu_domain->s2_cfg.vmid;
+> >       }
+> >
+> > +     if (smmu->features & ARM_SMMU_FEAT_RANGE_INV) {
+> > +             /* Get the leaf page size */
+> > +             tg = __ffs(smmu_domain->domain.pgsize_bitmap);
+> > +
+> > +             /* Convert page size of 12,14,16 (log2) to 1,2,3 */
+> > +             cmd.tlbi.tg = ((tg - ilog2(SZ_4K)) / 2) + 1;
+> > +
+> > +             /* Determine what level the granule is at */
+> > +             cmd.tlbi.ttl = 4 - ((ilog2(granule) - 3) / (tg - 3));
+> > +
+> > +             num_pages = size / (1UL << tg);
+> > +     }
+> > +
+> >       while (iova < end) {
+> >               if (i == CMDQ_BATCH_ENTRIES) {
+> >                       arm_smmu_cmdq_issue_cmdlist(smmu, cmds, i, false);
+> >                       i = 0;
+> >               }
+> >
+> > +             if (smmu->features & ARM_SMMU_FEAT_RANGE_INV) {
+> > +                     /*
+> > +                      * On each iteration of the loop, the range is 5 bits
+> > +                      * worth of the aligned size remaining.
+> > +                      * The range in pages is:
+> > +                      *
+> > +                      * range = (num_pages & (0x1f << __ffs(num_pages)))
+> > +                      */
+> > +                     unsigned long scale, num;
+> > +
+> > +                     /* Determine the power of 2 multiple number of pages */
+> > +                     scale = __ffs(num_pages);
+> > +                     cmd.tlbi.scale = scale;
+> > +
+> > +                     /* Determine how many chunks of 2^scale size we have */
+> > +                     num = (num_pages >> scale) & CMDQ_TLBI_RANGE_NUM_MAX;
+> > +                     cmd.tlbi.num = num - 1;
+> > +
+> > +                     /* range is num * 2^scale * pgsize */
+> > +                     granule = num << (scale + tg);
+> > +
+> > +                     /* Clear out the lower order bits for the next iteration */
+> > +                     num_pages -= num << scale;
+> Regarding the 2 options given in
+> https://lore.kernel.org/linux-arm-kernel/CAL_JsqKABoE+0crGwyZdNogNgEoG=MOOpf6deQgH6s73c0UNdA@mail.gmail.com/raw,
+>
+> I understand you implemented 2) but I still do not understand why you
+> preferred that one against 1).
+>
+> In your case of 1023*4k pages this will invalidate by 31 32*2^0*4K +
+> 31*2^0*4K pages
+> whereas you could achieve that with 10 invalidations with the 1st algo.
+> I did not get the case where it is more efficient. Please can you detail.
+
+No, it's only 2 commands. We do 31*4K and then 31*2^5*4K. Here's a the
+output of a test case:
+
+iova=10001000, num_pages=0x3e0, granule=1f000, num=31, scale=0, ttl=3
+iova=10020000, num_pages=0x0, granule=3e0000, num=31, scale=5, ttl=3
+
+(num_pages being what's left at end of the loop)
+
+As I mentioned on v1, worst case is 4 commands for up to 4GB. It's
+20-bits of size (32-12) and each loop processes a minimum of 5 bits.
+Each loop becomes a larger aligned size, so scale goes up each pass.
+This is what I tried to explain in the top comment.
+
+Rob
+_______________________________________________
+iommu mailing list
+iommu@lists.linux-foundation.org
+https://lists.linuxfoundation.org/mailman/listinfo/iommu
