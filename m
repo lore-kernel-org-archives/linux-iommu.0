@@ -2,65 +2,83 @@ Return-Path: <SRS0=ZJ+1=4B=lists.linux-foundation.org=iommu-bounces@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-9.7 required=3.0 tests=HEADER_FROM_DIFFERENT_DOMAINS,
-	INCLUDES_PATCH,MAILING_LIST_MULTI,SIGNED_OFF_BY,SPF_HELO_NONE,SPF_PASS,
-	URIBL_BLOCKED,USER_AGENT_GIT autolearn=unavailable autolearn_force=no
-	version=3.4.0
+X-Spam-Status: No, score=-5.2 required=3.0 tests=HEADER_FROM_DIFFERENT_DOMAINS,
+	INCLUDES_PATCH,MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED,
+	USER_AGENT_SANE_1 autolearn=ham autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 79E50C2BA83
-	for <iommu@archiver.kernel.org>; Thu, 13 Feb 2020 14:00:33 +0000 (UTC)
-Received: from whitealder.osuosl.org (smtp1.osuosl.org [140.211.166.138])
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 317BCC3B18B
+	for <iommu@archiver.kernel.org>; Thu, 13 Feb 2020 15:50:03 +0000 (UTC)
+Received: from silver.osuosl.org (smtp3.osuosl.org [140.211.166.136])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by mail.kernel.org (Postfix) with ESMTPS id 2F8B3218AC
-	for <iommu@archiver.kernel.org>; Thu, 13 Feb 2020 14:00:33 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 2F8B3218AC
-Authentication-Results: mail.kernel.org; dmarc=none (p=none dis=none) header.from=arm.com
+	by mail.kernel.org (Postfix) with ESMTPS id 0F54020661
+	for <iommu@archiver.kernel.org>; Thu, 13 Feb 2020 15:50:02 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 0F54020661
+Authentication-Results: mail.kernel.org; dmarc=none (p=none dis=none) header.from=huawei.com
 Authentication-Results: mail.kernel.org; spf=pass smtp.mailfrom=iommu-bounces@lists.linux-foundation.org
 Received: from localhost (localhost [127.0.0.1])
-	by whitealder.osuosl.org (Postfix) with ESMTP id EF95986912;
-	Thu, 13 Feb 2020 14:00:32 +0000 (UTC)
-X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from whitealder.osuosl.org ([127.0.0.1])
-	by localhost (.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
-	with ESMTP id x7+Y+8Fh1i47; Thu, 13 Feb 2020 14:00:30 +0000 (UTC)
-Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [140.211.9.56])
-	by whitealder.osuosl.org (Postfix) with ESMTP id 7888F866F6;
-	Thu, 13 Feb 2020 14:00:30 +0000 (UTC)
-Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
-	by lists.linuxfoundation.org (Postfix) with ESMTP id 60841C08A4;
-	Thu, 13 Feb 2020 14:00:30 +0000 (UTC)
-Received: from silver.osuosl.org (smtp3.osuosl.org [140.211.166.136])
- by lists.linuxfoundation.org (Postfix) with ESMTP id 726B9C0177
- for <iommu@lists.linux-foundation.org>; Thu, 13 Feb 2020 14:00:28 +0000 (UTC)
-Received: from localhost (localhost [127.0.0.1])
- by silver.osuosl.org (Postfix) with ESMTP id 6D66E2042C
- for <iommu@lists.linux-foundation.org>; Thu, 13 Feb 2020 14:00:28 +0000 (UTC)
+	by silver.osuosl.org (Postfix) with ESMTP id B853D2048E;
+	Thu, 13 Feb 2020 15:50:02 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
 Received: from silver.osuosl.org ([127.0.0.1])
+	by localhost (.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
+	with ESMTP id UsGvr3uOhiUp; Thu, 13 Feb 2020 15:50:01 +0000 (UTC)
+Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [140.211.9.56])
+	by silver.osuosl.org (Postfix) with ESMTP id AA91A2001C;
+	Thu, 13 Feb 2020 15:50:01 +0000 (UTC)
+Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
+	by lists.linuxfoundation.org (Postfix) with ESMTP id A0997C08A4;
+	Thu, 13 Feb 2020 15:50:01 +0000 (UTC)
+Received: from hemlock.osuosl.org (smtp2.osuosl.org [140.211.166.133])
+ by lists.linuxfoundation.org (Postfix) with ESMTP id 26777C0177
+ for <iommu@lists.linux-foundation.org>; Thu, 13 Feb 2020 15:50:00 +0000 (UTC)
+Received: from localhost (localhost [127.0.0.1])
+ by hemlock.osuosl.org (Postfix) with ESMTP id 1532C87DAF
+ for <iommu@lists.linux-foundation.org>; Thu, 13 Feb 2020 15:50:00 +0000 (UTC)
+X-Virus-Scanned: amavisd-new at osuosl.org
+Received: from hemlock.osuosl.org ([127.0.0.1])
  by localhost (.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
- with ESMTP id Z2MBYnrtsOZL for <iommu@lists.linux-foundation.org>;
- Thu, 13 Feb 2020 14:00:27 +0000 (UTC)
+ with ESMTP id Ar9lk8Pt4Mn9 for <iommu@lists.linux-foundation.org>;
+ Thu, 13 Feb 2020 15:49:58 +0000 (UTC)
 X-Greylist: domain auto-whitelisted by SQLgrey-1.7.6
-Received: from foss.arm.com (foss.arm.com [217.140.110.172])
- by silver.osuosl.org (Postfix) with ESMTP id 15E2420352
- for <iommu@lists.linux-foundation.org>; Thu, 13 Feb 2020 14:00:27 +0000 (UTC)
-Received: from usa-sjc-imap-foss1.foss.arm.com (unknown [10.121.207.14])
- by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id 69FF91045;
- Thu, 13 Feb 2020 06:00:26 -0800 (PST)
-Received: from e121345-lin.cambridge.arm.com (e121345-lin.cambridge.arm.com
- [10.1.196.37])
- by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPA id B800D3F68F;
- Thu, 13 Feb 2020 06:00:25 -0800 (PST)
-From: Robin Murphy <robin.murphy@arm.com>
-To: joro@8bytes.org
-Subject: [PATCH] iommu: Use C99 flexible array in fwspec
-Date: Thu, 13 Feb 2020 14:00:21 +0000
-Message-Id: <7364595699c37d2ef53636c8af6dcefa6602529b.1581601149.git.robin.murphy@arm.com>
-X-Mailer: git-send-email 2.23.0.dirty
+Received: from huawei.com (lhrrgout.huawei.com [185.176.76.210])
+ by hemlock.osuosl.org (Postfix) with ESMTPS id BC12687D5E
+ for <iommu@lists.linux-foundation.org>; Thu, 13 Feb 2020 15:49:58 +0000 (UTC)
+Received: from LHREML711-CAH.china.huawei.com (unknown [172.18.7.108])
+ by Forcepoint Email with ESMTP id 030678FC6DCF329403B6;
+ Thu, 13 Feb 2020 15:49:55 +0000 (GMT)
+Received: from lhreml724-chm.china.huawei.com (10.201.108.75) by
+ LHREML711-CAH.china.huawei.com (10.201.108.34) with Microsoft SMTP Server
+ (TLS) id 14.3.408.0; Thu, 13 Feb 2020 15:49:54 +0000
+Received: from [127.0.0.1] (10.202.226.45) by lhreml724-chm.china.huawei.com
+ (10.201.108.75) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.1713.5; Thu, 13 Feb
+ 2020 15:49:53 +0000
+Subject: Re: arm64 iommu groups issue
+From: John Garry <john.garry@huawei.com>
+To: Robin Murphy <robin.murphy@arm.com>, Marc Zyngier <maz@kernel.org>, "Will
+ Deacon" <will@kernel.org>, Lorenzo Pieralisi <lorenzo.pieralisi@arm.com>, 
+ Sudeep Holla <sudeep.holla@arm.com>, "Guohanjun (Hanjun Guo)"
+ <guohanjun@huawei.com>
+References: <9625faf4-48ef-2dd3-d82f-931d9cf26976@huawei.com>
+ <4768c541-ebf4-61d5-0c5e-77dee83f8f94@arm.com>
+ <a18b7f26-9713-a5c7-507e-ed70e40bc007@huawei.com>
+Message-ID: <ddc7eaff-c3f9-4304-9b4e-75eff2c66cd5@huawei.com>
+Date: Thu, 13 Feb 2020 15:49:52 +0000
+User-Agent: Mozilla/5.0 (Windows NT 10.0; WOW64; rv:68.0) Gecko/20100101
+ Thunderbird/68.1.2
 MIME-Version: 1.0
-Cc: iommu@lists.linux-foundation.org, linux-kernel@vger.kernel.org,
- gustavo@embeddedor.com
+In-Reply-To: <a18b7f26-9713-a5c7-507e-ed70e40bc007@huawei.com>
+Content-Language: en-US
+X-Originating-IP: [10.202.226.45]
+X-ClientProxiedBy: lhreml720-chm.china.huawei.com (10.201.108.71) To
+ lhreml724-chm.china.huawei.com (10.201.108.75)
+X-CFilter-Loop: Reflected
+Cc: Saravana Kannan <saravanak@google.com>,
+ "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
+ Alex Williamson <alex.williamson@redhat.com>, Linuxarm <linuxarm@huawei.com>,
+ iommu <iommu@lists.linux-foundation.org>, Bjorn Helgaas <bhelgaas@google.com>,
+ "linux-arm-kernel@lists.infradead.org" <linux-arm-kernel@lists.infradead.org>
 X-BeenThere: iommu@lists.linux-foundation.org
 X-Mailman-Version: 2.1.15
 Precedence: list
@@ -73,94 +91,77 @@ List-Post: <mailto:iommu@lists.linux-foundation.org>
 List-Help: <mailto:iommu-request@lists.linux-foundation.org?subject=help>
 List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
  <mailto:iommu-request@lists.linux-foundation.org?subject=subscribe>
-Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset="us-ascii"; Format="flowed"
 Errors-To: iommu-bounces@lists.linux-foundation.org
 Sender: "iommu" <iommu-bounces@lists.linux-foundation.org>
 
-Although the 1-element array was a typical pre-C99 way to implement
-variable-length structures, and indeed is a fundamental construct in the
-APIs of certain other popular platforms, there's no good reason for it
-here (and in particular the sizeof() trick is far too "clever" for its
-own good). We can just as easily implement iommu_fwspec's preallocation
-behaviour using a standard flexible array member, so let's make it look
-the way most readers would expect.
+>>
+>> The underlying issue is that, for historical reasons, OF/IORT-based
+>> IOMMU drivers have ended up with group allocation being tied to endpoint
+>> driver probing via the dma_configure() mechanism (long story short,
+>> driver probe is the only thing which can be delayed in order to wait for
+>> a specific IOMMU instance to be ready).However, in the meantime, the
+>> IOMMU API internals have evolved sufficiently that I think there's a way
+>> to really put things right - I have the spark of an idea which I'll try
+>> to sketch out ASAP...
+>>
+> 
+> OK, great.
 
-Signed-off-by: Robin Murphy <robin.murphy@arm.com>
+Hi Robin,
+
+I was wondering if you have had a chance to consider this problem again?
+
+One simple idea could be to introduce a device link between the endpoint 
+device and its parent bridge to ensure that they probe in order, as 
+expected in pci_device_group():
+
+Subject: [PATCH] PCI: Add device link to ensure endpoint device driver 
+probes after bridge
+
+It is required to ensure that a device driver for an endpoint will probe
+after the parent port driver, so add a device link for this.
+
 ---
+diff --git a/drivers/pci/probe.c b/drivers/pci/probe.c
+index 512cb4312ddd..4b832ad25b20 100644
+--- a/drivers/pci/probe.c
++++ b/drivers/pci/probe.c
+@@ -2383,6 +2383,7 @@ static void pci_set_msi_domain(struct pci_dev *dev)
+  void pci_device_add(struct pci_dev *dev, struct pci_bus *bus)
+  {
+  	int ret;
++	struct device *parent;
 
-Before the Coccinelle police catch up with me... :)
+  	pci_configure_device(dev);
 
-Deliberately no fixes tag, since the original code predates
-struct_size(), and it's really just a cosmetic cleanup that
-shouldn't be backported anyway.
+@@ -2420,6 +2421,10 @@ void pci_device_add(struct pci_dev *dev, struct 
+pci_bus *bus)
+  	/* Set up MSI IRQ domain */
+  	pci_set_msi_domain(dev);
 
-Robin.
-
- drivers/iommu/iommu.c | 15 ++++++++-------
- include/linux/iommu.h |  2 +-
- 2 files changed, 9 insertions(+), 8 deletions(-)
-
-diff --git a/drivers/iommu/iommu.c b/drivers/iommu/iommu.c
-index 3e3528436e0b..660eea8d1d2f 100644
---- a/drivers/iommu/iommu.c
-+++ b/drivers/iommu/iommu.c
-@@ -2405,7 +2405,8 @@ int iommu_fwspec_init(struct device *dev, struct fwnode_handle *iommu_fwnode,
- 	if (fwspec)
- 		return ops == fwspec->ops ? 0 : -EINVAL;
- 
--	fwspec = kzalloc(sizeof(*fwspec), GFP_KERNEL);
-+	/* Preallocate for the overwhelmingly common case of 1 ID */
-+	fwspec = kzalloc(struct_size(fwspec, ids, 1), GFP_KERNEL);
- 	if (!fwspec)
- 		return -ENOMEM;
- 
-@@ -2432,15 +2433,15 @@ EXPORT_SYMBOL_GPL(iommu_fwspec_free);
- int iommu_fwspec_add_ids(struct device *dev, u32 *ids, int num_ids)
- {
- 	struct iommu_fwspec *fwspec = dev_iommu_fwspec_get(dev);
--	size_t size;
--	int i;
-+	int i, new_num;
- 
- 	if (!fwspec)
- 		return -EINVAL;
- 
--	size = offsetof(struct iommu_fwspec, ids[fwspec->num_ids + num_ids]);
--	if (size > sizeof(*fwspec)) {
--		fwspec = krealloc(fwspec, size, GFP_KERNEL);
-+	new_num = fwspec->num_ids + num_ids;
-+	if (new_num > 1) {
-+		fwspec = krealloc(fwspec, struct_size(fwspec, ids, new_num),
-+				  GFP_KERNEL);
- 		if (!fwspec)
- 			return -ENOMEM;
- 
-@@ -2450,7 +2451,7 @@ int iommu_fwspec_add_ids(struct device *dev, u32 *ids, int num_ids)
- 	for (i = 0; i < num_ids; i++)
- 		fwspec->ids[fwspec->num_ids + i] = ids[i];
- 
--	fwspec->num_ids += num_ids;
-+	fwspec->num_ids = new_num;
- 	return 0;
- }
- EXPORT_SYMBOL_GPL(iommu_fwspec_add_ids);
-diff --git a/include/linux/iommu.h b/include/linux/iommu.h
-index d1b5f4d98569..4d1ba76c9a64 100644
---- a/include/linux/iommu.h
-+++ b/include/linux/iommu.h
-@@ -592,7 +592,7 @@ struct iommu_fwspec {
- 	u32			flags;
- 	u32			num_pasid_bits;
- 	unsigned int		num_ids;
--	u32			ids[1];
-+	u32			ids[];
- };
- 
- /* ATS is supported */
++	parent = dev->dev.parent;
++	if (parent && parent->bus == &pci_bus_type)
++		device_link_add(&dev->dev, parent, DL_FLAG_AUTOPROBE_CONSUMER);
++
+  	/* Notifier could use PCI capabilities */
+  	dev->match_driver = false;
+  	ret = device_add(&dev->dev);
 -- 
-2.23.0.dirty
 
+This would work, but the problem is that if the port driver fails in 
+probing - and not just for -EPROBE_DEFER - then the child device will 
+never probe. This very thing happens on my dev board. However we could 
+expand the device links API to cover this sort of scenario.
+
+As for alternatives, it looks pretty difficult to me to disassociate the 
+group allocation from the dma_configure path.
+
+Let me know.
+
+Thanks,
+John
 _______________________________________________
 iommu mailing list
 iommu@lists.linux-foundation.org
