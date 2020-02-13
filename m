@@ -7,88 +7,89 @@ X-Spam-Status: No, score=-9.5 required=3.0 tests=DKIM_INVALID,DKIM_SIGNED,
 	SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED,USER_AGENT_GIT autolearn=ham
 	autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 2B907C3B1A3
-	for <iommu@archiver.kernel.org>; Thu, 13 Feb 2020 16:52:18 +0000 (UTC)
-Received: from whitealder.osuosl.org (smtp1.osuosl.org [140.211.166.138])
+	by smtp.lore.kernel.org (Postfix) with ESMTP id AF98BC3B1A8
+	for <iommu@archiver.kernel.org>; Thu, 13 Feb 2020 16:52:20 +0000 (UTC)
+Received: from fraxinus.osuosl.org (smtp4.osuosl.org [140.211.166.137])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by mail.kernel.org (Postfix) with ESMTPS id F054224650
-	for <iommu@archiver.kernel.org>; Thu, 13 Feb 2020 16:52:17 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTPS id 800E724671
+	for <iommu@archiver.kernel.org>; Thu, 13 Feb 2020 16:52:20 +0000 (UTC)
 Authentication-Results: mail.kernel.org;
-	dkim=fail reason="signature verification failed" (2048-bit key) header.d=linaro.org header.i=@linaro.org header.b="rI28DsCS"
-DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org F054224650
+	dkim=fail reason="signature verification failed" (2048-bit key) header.d=linaro.org header.i=@linaro.org header.b="RU6hP0Ya"
+DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 800E724671
 Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=linaro.org
 Authentication-Results: mail.kernel.org; spf=pass smtp.mailfrom=iommu-bounces@lists.linux-foundation.org
 Received: from localhost (localhost [127.0.0.1])
-	by whitealder.osuosl.org (Postfix) with ESMTP id E2C7C86E89;
-	Thu, 13 Feb 2020 16:52:17 +0000 (UTC)
+	by fraxinus.osuosl.org (Postfix) with ESMTP id 65A4286153;
+	Thu, 13 Feb 2020 16:52:20 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from whitealder.osuosl.org ([127.0.0.1])
+Received: from fraxinus.osuosl.org ([127.0.0.1])
 	by localhost (.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
-	with ESMTP id BUKM0+H1pKQk; Thu, 13 Feb 2020 16:52:17 +0000 (UTC)
+	with ESMTP id f_qduWppoxZw; Thu, 13 Feb 2020 16:52:19 +0000 (UTC)
 Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [140.211.9.56])
-	by whitealder.osuosl.org (Postfix) with ESMTP id 77D1986F92;
-	Thu, 13 Feb 2020 16:52:17 +0000 (UTC)
+	by fraxinus.osuosl.org (Postfix) with ESMTP id DC4FD86142;
+	Thu, 13 Feb 2020 16:52:19 +0000 (UTC)
 Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
-	by lists.linuxfoundation.org (Postfix) with ESMTP id 6421DC07FE;
-	Thu, 13 Feb 2020 16:52:17 +0000 (UTC)
-Received: from silver.osuosl.org (smtp3.osuosl.org [140.211.166.136])
- by lists.linuxfoundation.org (Postfix) with ESMTP id 15A41C0177
- for <iommu@lists.linux-foundation.org>; Thu, 13 Feb 2020 16:52:16 +0000 (UTC)
+	by lists.linuxfoundation.org (Postfix) with ESMTP id C9D14C1D8E;
+	Thu, 13 Feb 2020 16:52:19 +0000 (UTC)
+Received: from hemlock.osuosl.org (smtp2.osuosl.org [140.211.166.133])
+ by lists.linuxfoundation.org (Postfix) with ESMTP id AEB4FC0177
+ for <iommu@lists.linux-foundation.org>; Thu, 13 Feb 2020 16:52:18 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
- by silver.osuosl.org (Postfix) with ESMTP id 02B4121546
- for <iommu@lists.linux-foundation.org>; Thu, 13 Feb 2020 16:52:16 +0000 (UTC)
+ by hemlock.osuosl.org (Postfix) with ESMTP id 9C51A8594B
+ for <iommu@lists.linux-foundation.org>; Thu, 13 Feb 2020 16:52:18 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from silver.osuosl.org ([127.0.0.1])
+Received: from hemlock.osuosl.org ([127.0.0.1])
  by localhost (.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
- with ESMTP id 0w5V95or2oSj for <iommu@lists.linux-foundation.org>;
- Thu, 13 Feb 2020 16:52:15 +0000 (UTC)
+ with ESMTP id 8RRvuujvCg+d for <iommu@lists.linux-foundation.org>;
+ Thu, 13 Feb 2020 16:52:17 +0000 (UTC)
 X-Greylist: domain auto-whitelisted by SQLgrey-1.7.6
-Received: from mail-wm1-f68.google.com (mail-wm1-f68.google.com
- [209.85.128.68])
- by silver.osuosl.org (Postfix) with ESMTPS id C4BD22153B
- for <iommu@lists.linux-foundation.org>; Thu, 13 Feb 2020 16:52:14 +0000 (UTC)
-Received: by mail-wm1-f68.google.com with SMTP id a9so7544922wmj.3
- for <iommu@lists.linux-foundation.org>; Thu, 13 Feb 2020 08:52:14 -0800 (PST)
+Received: from mail-wm1-f65.google.com (mail-wm1-f65.google.com
+ [209.85.128.65])
+ by hemlock.osuosl.org (Postfix) with ESMTPS id 2046884F76
+ for <iommu@lists.linux-foundation.org>; Thu, 13 Feb 2020 16:52:17 +0000 (UTC)
+Received: by mail-wm1-f65.google.com with SMTP id p17so7552453wma.1
+ for <iommu@lists.linux-foundation.org>; Thu, 13 Feb 2020 08:52:17 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linaro.org; s=google;
  h=from:to:cc:subject:date:message-id:in-reply-to:references
  :mime-version:content-transfer-encoding;
- bh=0vxAgnwgCi5tQ5T4tG4I38wvW8TUR4SKTYQ5b+iyeZ4=;
- b=rI28DsCSktD93OGWztli5kHgpw2K88deSfarovudDtCGLfZder9iNg0E10dhs9fZpk
- eFTsc3Fn6EAr9ouNGbiVBRkKPPK69q7RPGGtMBnyQCpqnyYvLAyAZqdIG/GIsLmqRzzi
- 12LIcEDQwvb3OQl7giRwQQNgiq+VK/5XXRBsF1abm2y1vArf+0wGRt0YpzwOshhxB9zM
- Ix4415qok1sXN1TmaKBbTV/JM8kQC5iCIQJ1JAAK2NX29bDiYAkyRr6OEhmiVI8n9MLc
- mqbryRMGESOmDUg+tOlIH5s27bZYFv0z5XJC5YvNUltOxU5Eij2jAeBJnEveZ7p4bVI3
- Dzyg==
+ bh=WDMFZWW+h59RhGdVycD2Uyjz5YXns4ww4oPwlirB1xs=;
+ b=RU6hP0YaDVyg76DpwMt8+kokjDNdYK4t+fP1NMy86wohTGSpgKGZzXz22INLcb/uTG
+ SulDKPmxKjSDX9mM1ObcytxPc9qSyfmoSueNx1WrVr+i2pcQ0/1MH6MfZipjLCRNhZ4R
+ QAAwV9AK52wzbuAFhJ4wwljXxMGU1D8fjkRr3xz5yGktVvdi91XDhvfsXom1xAiav9Ca
+ 9EsxU47a4H/ESMgWlgX459A9KaDdxI8GrFEiHciqdGPUqbJk6r0x0gm/NOt1/yOdfV8m
+ TYI4DrH7cKX39puiAtvbmBg0t24nmt6J4GV1r4c9AeQkOhtGKMzU9MsecC3L+ojmCMyI
+ c2Dg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
  d=1e100.net; s=20161025;
  h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
  :references:mime-version:content-transfer-encoding;
- bh=0vxAgnwgCi5tQ5T4tG4I38wvW8TUR4SKTYQ5b+iyeZ4=;
- b=AD93BLCQ1YPLDudq2/tNqPBXHZfWG+UJXLeT6OJOs6Xzn/lBFavGqIDf9hFbH1r6r4
- Wn1eyO2gdCV9p2b+3EBgxx8vIjEMeXMNNZFv2DXfVvx3FXCedJBMLnoVRPYGyJGCuBzg
- RjK4LiNkzWjJO1EhL5Qum4Kl+GQJFMsBRSAUjIA6gYg2DaDbleeYrDVYsM1y75UWhtwY
- 8WPH7JxCcq1ovj76XcarTo8RisPjjpLyfohmyiwuhXefJ9eCf+NPHB6LBmqp/gDO9+yi
- bSRoV1qFA6jiu3tw3GJfX7ftWfbFG0IA4zT52DHjgIWIPPlZlktsjpwqk+7UlNbbOxjH
- EIOg==
-X-Gm-Message-State: APjAAAXKLu4WksHO5iCG178i1cUE4ebfJ4FOhDix0IbM/qoOvotftdTX
- lglUnBxepAyKCb1rhEaUrh08DQ==
-X-Google-Smtp-Source: APXvYqya188D5MEbRkey+kBb9V0Qc0uxPc2c2lngtBX0mBG9/xBeCp7D0V/fZbJc3uSzBYe3p4UBoQ==
-X-Received: by 2002:a7b:c5d9:: with SMTP id n25mr7111336wmk.65.1581612733245; 
- Thu, 13 Feb 2020 08:52:13 -0800 (PST)
+ bh=WDMFZWW+h59RhGdVycD2Uyjz5YXns4ww4oPwlirB1xs=;
+ b=BW69BVcvCU8AMBhDGyXk2jNclk7/CDR9ClNJf80AqBKp0OOMUIn0lTQBxOhgEPMOQi
+ l+XAhWUoxJVNIpiPaZrF8Vc5/9pafvp7dHJmMgNZB/jABfqrnxmpYY8SoqKJCgwIZV3z
+ JSmV3c46NELUPgIn3MdIXZFxltLsqID+jiG8PAD6SrmVrV4jp2eS5psTXnSpzm0BAx3U
+ IysHx99/QHo//nLPN6HD/312MYLbYl6uZX2bePeRH3Po2aM132pSIPKAZXZH+6C75FHm
+ Rw4ZKXSrB6xxHnQgvDz0zN9Appnv+E7jta7A7SEfF40kbpSOwQdgnTQ/5ZMFW58GhtZM
+ 21FA==
+X-Gm-Message-State: APjAAAWhykHJZ43+KzPQBsFfOYHNsLK7aQH9uvfxTn073RvpvxgceTE9
+ Z8rSkwCWxvz6OSwQHCqPkXBblg==
+X-Google-Smtp-Source: APXvYqyTnYcfWPm44mmD/6D5Wm+c5cA7JDMBagRyfl9k+jEqNIeMmPTzO2182wwz9XUN7ktGp7/pbQ==
+X-Received: by 2002:a1c:7d8b:: with SMTP id y133mr6917432wmc.165.1581612735514; 
+ Thu, 13 Feb 2020 08:52:15 -0800 (PST)
 Received: from localhost.localdomain ([2001:171b:2276:930:116c:c27a:3e7f:5eaf])
- by smtp.gmail.com with ESMTPSA id y6sm3484807wrl.17.2020.02.13.08.52.12
+ by smtp.gmail.com with ESMTPSA id y6sm3484807wrl.17.2020.02.13.08.52.14
  (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
- Thu, 13 Feb 2020 08:52:12 -0800 (PST)
+ Thu, 13 Feb 2020 08:52:15 -0800 (PST)
 From: Jean-Philippe Brucker <jean-philippe@linaro.org>
 To: bhelgaas@google.com, will@kernel.org, robh+dt@kernel.org,
  lorenzo.pieralisi@arm.com, joro@8bytes.org, baolu.lu@linux.intel.com,
  linux-doc@vger.kernel.org, linux-pci@vger.kernel.org,
  linux-arm-kernel@lists.infradead.org, devicetree@vger.kernel.org,
  linux-acpi@vger.kernel.org, iommu@lists.linux-foundation.org
-Subject: [PATCH 08/11] iommu/vt-d: Use pci_ats_supported()
-Date: Thu, 13 Feb 2020 17:50:46 +0100
-Message-Id: <20200213165049.508908-9-jean-philippe@linaro.org>
+Subject: [PATCH 10/11] arm64: dts: fast models: Enable PCIe ATS for Base RevC
+ FVP
+Date: Thu, 13 Feb 2020 17:50:48 +0100
+Message-Id: <20200213165049.508908-11-jean-philippe@linaro.org>
 X-Mailer: git-send-email 2.25.0
 In-Reply-To: <20200213165049.508908-1-jean-philippe@linaro.org>
 References: <20200213165049.508908-1-jean-philippe@linaro.org>
@@ -114,41 +115,29 @@ Content-Transfer-Encoding: 7bit
 Errors-To: iommu-bounces@lists.linux-foundation.org
 Sender: "iommu" <iommu-bounces@lists.linux-foundation.org>
 
-The pci_ats_supported() function checks if a device supports ATS and is
-allowed to use it.
+Declare that the host controller supports ATS, so the OS can enable it
+for ATS-capable PCIe endpoints.
 
 Signed-off-by: Jean-Philippe Brucker <jean-philippe@linaro.org>
 ---
- drivers/iommu/intel-iommu.c | 9 +++------
- 1 file changed, 3 insertions(+), 6 deletions(-)
+All endpoints support ATS provided they have the ats_supported=1 model
+parameter. "lspci -vv" shows whether ATS is supported and enabled.
+---
+ arch/arm64/boot/dts/arm/fvp-base-revc.dts | 1 +
+ 1 file changed, 1 insertion(+)
 
-diff --git a/drivers/iommu/intel-iommu.c b/drivers/iommu/intel-iommu.c
-index 9dc37672bf89..668f1b99111b 100644
---- a/drivers/iommu/intel-iommu.c
-+++ b/drivers/iommu/intel-iommu.c
-@@ -1449,8 +1449,7 @@ static void iommu_enable_dev_iotlb(struct device_domain_info *info)
- 	    !pci_reset_pri(pdev) && !pci_enable_pri(pdev, 32))
- 		info->pri_enabled = 1;
- #endif
--	if (!pdev->untrusted && info->ats_supported &&
--	    pci_ats_page_aligned(pdev) &&
-+	if (info->ats_supported && pci_ats_page_aligned(pdev) &&
- 	    !pci_enable_ats(pdev, VTD_PAGE_SHIFT)) {
- 		info->ats_enabled = 1;
- 		domain_update_iotlb(info->domain);
-@@ -2611,10 +2610,8 @@ static struct dmar_domain *dmar_insert_one_dev_info(struct intel_iommu *iommu,
- 	if (dev && dev_is_pci(dev)) {
- 		struct pci_dev *pdev = to_pci_dev(info->dev);
+diff --git a/arch/arm64/boot/dts/arm/fvp-base-revc.dts b/arch/arm64/boot/dts/arm/fvp-base-revc.dts
+index 62ab0d54ff71..6e5bb7bcb4b3 100644
+--- a/arch/arm64/boot/dts/arm/fvp-base-revc.dts
++++ b/arch/arm64/boot/dts/arm/fvp-base-revc.dts
+@@ -170,6 +170,7 @@ pci: pci@40000000 {
+ 		iommu-map = <0x0 &smmu 0x0 0x10000>;
  
--		if (!pdev->untrusted &&
--		    !pci_ats_disabled() &&
--		    ecap_dev_iotlb_support(iommu->ecap) &&
--		    pci_find_ext_capability(pdev, PCI_EXT_CAP_ID_ATS) &&
-+		if (ecap_dev_iotlb_support(iommu->ecap) &&
-+		    pci_ats_supported(pdev) &&
- 		    dmar_find_matched_atsr_unit(pdev))
- 			info->ats_supported = 1;
+ 		dma-coherent;
++		ats-supported;
+ 	};
  
+ 	smmu: smmu@2b400000 {
 -- 
 2.25.0
 
