@@ -6,76 +6,74 @@ X-Spam-Status: No, score=-9.8 required=3.0 tests=DKIM_INVALID,DKIM_SIGNED,
 	INCLUDES_PATCH,MAILING_LIST_MULTI,SIGNED_OFF_BY,SPF_HELO_NONE,SPF_PASS,
 	USER_AGENT_GIT autolearn=ham autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id A1DA5C2BA83
-	for <iommu@archiver.kernel.org>; Fri, 14 Feb 2020 16:08:54 +0000 (UTC)
-Received: from whitealder.osuosl.org (smtp1.osuosl.org [140.211.166.138])
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 7AA3EC2BA83
+	for <iommu@archiver.kernel.org>; Fri, 14 Feb 2020 16:10:15 +0000 (UTC)
+Received: from silver.osuosl.org (smtp3.osuosl.org [140.211.166.136])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by mail.kernel.org (Postfix) with ESMTPS id 66DC724684
-	for <iommu@archiver.kernel.org>; Fri, 14 Feb 2020 16:08:54 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTPS id 4832724695
+	for <iommu@archiver.kernel.org>; Fri, 14 Feb 2020 16:10:15 +0000 (UTC)
 Authentication-Results: mail.kernel.org;
-	dkim=fail reason="signature verification failed" (1024-bit key) header.d=kernel.org header.i=@kernel.org header.b="Kc+vEUKl"
-DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 66DC724684
+	dkim=fail reason="signature verification failed" (1024-bit key) header.d=kernel.org header.i=@kernel.org header.b="ftdvZPPX"
+DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 4832724695
 Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=kernel.org
 Authentication-Results: mail.kernel.org; spf=pass smtp.mailfrom=iommu-bounces@lists.linux-foundation.org
 Received: from localhost (localhost [127.0.0.1])
-	by whitealder.osuosl.org (Postfix) with ESMTP id DFF1587662;
-	Fri, 14 Feb 2020 16:08:51 +0000 (UTC)
+	by silver.osuosl.org (Postfix) with ESMTP id 29E16221F5;
+	Fri, 14 Feb 2020 16:10:15 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from whitealder.osuosl.org ([127.0.0.1])
+Received: from silver.osuosl.org ([127.0.0.1])
 	by localhost (.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
-	with ESMTP id uarXUeFaM+Zy; Fri, 14 Feb 2020 16:08:51 +0000 (UTC)
+	with ESMTP id KjtR5hCnv6Iy; Fri, 14 Feb 2020 16:10:14 +0000 (UTC)
 Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [140.211.9.56])
-	by whitealder.osuosl.org (Postfix) with ESMTP id 0D09D86DCC;
-	Fri, 14 Feb 2020 16:08:51 +0000 (UTC)
+	by silver.osuosl.org (Postfix) with ESMTP id 6D96A22122;
+	Fri, 14 Feb 2020 16:10:14 +0000 (UTC)
 Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
-	by lists.linuxfoundation.org (Postfix) with ESMTP id ED0A6C08A4;
-	Fri, 14 Feb 2020 16:08:50 +0000 (UTC)
+	by lists.linuxfoundation.org (Postfix) with ESMTP id 56277C08A4;
+	Fri, 14 Feb 2020 16:10:14 +0000 (UTC)
 Received: from whitealder.osuosl.org (smtp1.osuosl.org [140.211.166.138])
- by lists.linuxfoundation.org (Postfix) with ESMTP id DB4E8C0177
- for <iommu@lists.linux-foundation.org>; Fri, 14 Feb 2020 16:08:49 +0000 (UTC)
+ by lists.linuxfoundation.org (Postfix) with ESMTP id D4D51C0177
+ for <iommu@lists.linux-foundation.org>; Fri, 14 Feb 2020 16:10:12 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
- by whitealder.osuosl.org (Postfix) with ESMTP id C32B387662
- for <iommu@lists.linux-foundation.org>; Fri, 14 Feb 2020 16:08:49 +0000 (UTC)
+ by whitealder.osuosl.org (Postfix) with ESMTP id CB85587647
+ for <iommu@lists.linux-foundation.org>; Fri, 14 Feb 2020 16:10:12 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
 Received: from whitealder.osuosl.org ([127.0.0.1])
  by localhost (.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
- with ESMTP id CIInoqJcjjPO for <iommu@lists.linux-foundation.org>;
- Fri, 14 Feb 2020 16:08:48 +0000 (UTC)
+ with ESMTP id 09NhsN6Rm6zC for <iommu@lists.linux-foundation.org>;
+ Fri, 14 Feb 2020 16:10:12 +0000 (UTC)
 X-Greylist: domain auto-whitelisted by SQLgrey-1.7.6
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
- by whitealder.osuosl.org (Postfix) with ESMTPS id 83EE686DCC
- for <iommu@lists.linux-foundation.org>; Fri, 14 Feb 2020 16:08:42 +0000 (UTC)
+ by whitealder.osuosl.org (Postfix) with ESMTPS id 55A9887605
+ for <iommu@lists.linux-foundation.org>; Fri, 14 Feb 2020 16:10:12 +0000 (UTC)
 Received: from sasha-vm.mshome.net (c-73-47-72-35.hsd1.nh.comcast.net
  [73.47.72.35])
  (using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
  (No client certificate requested)
- by mail.kernel.org (Postfix) with ESMTPSA id 8C32224680;
- Fri, 14 Feb 2020 16:08:41 +0000 (UTC)
+ by mail.kernel.org (Postfix) with ESMTPSA id 60B8A24693;
+ Fri, 14 Feb 2020 16:10:11 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
- s=default; t=1581696522;
- bh=LF0kKZuLa+zTPv5urFxUqbzEBwsa/nVldpj14g4r4Ks=;
+ s=default; t=1581696612;
+ bh=Izh1q7FxqCspuUufDA0SeKtC98zPn21rVDYFbOw+Fmk=;
  h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
- b=Kc+vEUKlR7pfo6oW9dH5TJxOxEASSG7+2oB4alB9A+/0ajmIvHW9ymwVRjh7LBmUQ
- TmpRHRuqhEX6fgGvYecFZsGeWIjsrDoJNjSqf4rpZG1/2uT/5OammhQfe96NT8lWj3
- j10o5WBwN1zvxNp/xikBjJof09aaMpLaI6bknRbY=
+ b=ftdvZPPX5Bzqcy1tfgaKTPmxSaPC0ujQG69P5MR3fQ4vA8ioaU3MXIDfWxLeXzJmV
+ q+dhDDRR9+X+MFOsa+ycg49Q2AmiCDpK6qfDet3tlfg4Iy42r6xHRebemJr8T+ZZ4P
+ 9iwt99V+cXRBI6N6Ks+0lUCGWrJDDLzyCG0agiAY=
 From: Sasha Levin <sashal@kernel.org>
 To: linux-kernel@vger.kernel.org,
 	stable@vger.kernel.org
-Subject: [PATCH AUTOSEL 5.4 322/459] iommu/arm-smmu-v3: Use WRITE_ONCE() when
- changing validity of an STE
-Date: Fri, 14 Feb 2020 10:59:32 -0500
-Message-Id: <20200214160149.11681-322-sashal@kernel.org>
+Subject: [PATCH AUTOSEL 5.4 395/459] iommu/vt-d: Remove unnecessary
+ WARN_ON_ONCE()
+Date: Fri, 14 Feb 2020 11:00:45 -0500
+Message-Id: <20200214160149.11681-395-sashal@kernel.org>
 X-Mailer: git-send-email 2.20.1
 In-Reply-To: <20200214160149.11681-1-sashal@kernel.org>
 References: <20200214160149.11681-1-sashal@kernel.org>
 MIME-Version: 1.0
 X-stable: review
 X-Patchwork-Hint: Ignore
-Cc: Sasha Levin <sashal@kernel.org>,
- Jean-Philippe Brucker <jean-philippe@linaro.org>,
- iommu@lists.linux-foundation.org, Will Deacon <will@kernel.org>,
- linux-arm-kernel@lists.infradead.org
+Cc: Sasha Levin <sashal@kernel.org>, iommu@lists.linux-foundation.org,
+ Frank <fgndev@posteo.de>, Joerg Roedel <jroedel@suse.de>
 X-BeenThere: iommu@lists.linux-foundation.org
 X-Mailman-Version: 2.1.15
 Precedence: list
@@ -93,38 +91,47 @@ Content-Transfer-Encoding: 7bit
 Errors-To: iommu-bounces@lists.linux-foundation.org
 Sender: "iommu" <iommu-bounces@lists.linux-foundation.org>
 
-From: Will Deacon <will@kernel.org>
+From: Lu Baolu <baolu.lu@linux.intel.com>
 
-[ Upstream commit d71e01716b3606a6648df7e5646ae12c75babde4 ]
+[ Upstream commit 857f081426e5aa38313426c13373730f1345fe95 ]
 
-If, for some bizarre reason, the compiler decided to split up the write
-of STE DWORD 0, we could end up making a partial structure valid.
+Address field in device TLB invalidation descriptor is qualified
+by the S field. If S field is zero, a single page at page address
+specified by address [63:12] is requested to be invalidated. If S
+field is set, the least significant bit in the address field with
+value 0b (say bit N) indicates the invalidation address range. The
+spec doesn't require the address [N - 1, 0] to be cleared, hence
+remove the unnecessary WARN_ON_ONCE().
 
-Although this probably won't happen, follow the example of the
-context-descriptor code and use WRITE_ONCE() to ensure atomicity of the
-write.
+Otherwise, the caller might set "mask = MAX_AGAW_PFN_WIDTH" in order
+to invalidating all the cached mappings on an endpoint, and below
+overflow error will be triggered.
 
-Reported-by: Jean-Philippe Brucker <jean-philippe@linaro.org>
-Signed-off-by: Will Deacon <will@kernel.org>
+[...]
+UBSAN: Undefined behaviour in drivers/iommu/dmar.c:1354:3
+shift exponent 64 is too large for 64-bit type 'long long unsigned int'
+[...]
+
+Reported-and-tested-by: Frank <fgndev@posteo.de>
+Signed-off-by: Lu Baolu <baolu.lu@linux.intel.com>
+Signed-off-by: Joerg Roedel <jroedel@suse.de>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/iommu/arm-smmu-v3.c | 3 ++-
- 1 file changed, 2 insertions(+), 1 deletion(-)
+ drivers/iommu/dmar.c | 1 -
+ 1 file changed, 1 deletion(-)
 
-diff --git a/drivers/iommu/arm-smmu-v3.c b/drivers/iommu/arm-smmu-v3.c
-index ee8d48d863e16..ef6af714a7e64 100644
---- a/drivers/iommu/arm-smmu-v3.c
-+++ b/drivers/iommu/arm-smmu-v3.c
-@@ -1643,7 +1643,8 @@ static void arm_smmu_write_strtab_ent(struct arm_smmu_master *master, u32 sid,
- 						 STRTAB_STE_1_EATS_TRANS));
+diff --git a/drivers/iommu/dmar.c b/drivers/iommu/dmar.c
+index eecd6a4216672..7196cabafb252 100644
+--- a/drivers/iommu/dmar.c
++++ b/drivers/iommu/dmar.c
+@@ -1351,7 +1351,6 @@ void qi_flush_dev_iotlb(struct intel_iommu *iommu, u16 sid, u16 pfsid,
+ 	struct qi_desc desc;
  
- 	arm_smmu_sync_ste_for_sid(smmu, sid);
--	dst[0] = cpu_to_le64(val);
-+	/* See comment in arm_smmu_write_ctx_desc() */
-+	WRITE_ONCE(dst[0], cpu_to_le64(val));
- 	arm_smmu_sync_ste_for_sid(smmu, sid);
- 
- 	/* It's likely that we'll want to use the new STE soon */
+ 	if (mask) {
+-		WARN_ON_ONCE(addr & ((1ULL << (VTD_PAGE_SHIFT + mask)) - 1));
+ 		addr |= (1ULL << (VTD_PAGE_SHIFT + mask - 1)) - 1;
+ 		desc.qw1 = QI_DEV_IOTLB_ADDR(addr) | QI_DEV_IOTLB_SIZE;
+ 	} else
 -- 
 2.20.1
 
