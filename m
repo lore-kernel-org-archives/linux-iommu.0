@@ -1,87 +1,100 @@
-Return-Path: <SRS0=ZJ+1=4B=lists.linux-foundation.org=iommu-bounces@kernel.org>
+Return-Path: <SRS0=UfLp=4C=lists.linux-foundation.org=iommu-bounces@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-3.8 required=3.0 tests=DKIM_INVALID,DKIM_SIGNED,
-	MAILING_LIST_MULTI,SIGNED_OFF_BY,SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED
-	autolearn=no autolearn_force=no version=3.4.0
+X-Spam-Status: No, score=-3.5 required=3.0 tests=DKIM_INVALID,DKIM_SIGNED,
+	HEADER_FROM_DIFFERENT_DOMAINS,MAILING_LIST_MULTI,SIGNED_OFF_BY,SPF_HELO_NONE,
+	SPF_PASS autolearn=no autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id DA1C6C352A3
-	for <iommu@archiver.kernel.org>; Thu, 13 Feb 2020 21:50:10 +0000 (UTC)
-Received: from hemlock.osuosl.org (smtp2.osuosl.org [140.211.166.133])
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 8AA7BC352A3
+	for <iommu@archiver.kernel.org>; Fri, 14 Feb 2020 02:44:17 +0000 (UTC)
+Received: from whitealder.osuosl.org (smtp1.osuosl.org [140.211.166.138])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by mail.kernel.org (Postfix) with ESMTPS id A57EB218AC
-	for <iommu@archiver.kernel.org>; Thu, 13 Feb 2020 21:50:10 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTPS id 52E7420848
+	for <iommu@archiver.kernel.org>; Fri, 14 Feb 2020 02:44:17 +0000 (UTC)
 Authentication-Results: mail.kernel.org;
-	dkim=fail reason="signature verification failed" (1024-bit key) header.d=kernel.org header.i=@kernel.org header.b="onDzsv+H"
-DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org A57EB218AC
-Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=kernel.org
+	dkim=fail reason="signature verification failed" (1024-bit key) header.d=chromium.org header.i=@chromium.org header.b="IPZYguxY"
+DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 52E7420848
+Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=chromium.org
 Authentication-Results: mail.kernel.org; spf=pass smtp.mailfrom=iommu-bounces@lists.linux-foundation.org
 Received: from localhost (localhost [127.0.0.1])
-	by hemlock.osuosl.org (Postfix) with ESMTP id 8E3BE8807A;
-	Thu, 13 Feb 2020 21:50:10 +0000 (UTC)
-X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from hemlock.osuosl.org ([127.0.0.1])
-	by localhost (.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
-	with ESMTP id GtGXGU+foXM8; Thu, 13 Feb 2020 21:50:07 +0000 (UTC)
-Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [140.211.9.56])
-	by hemlock.osuosl.org (Postfix) with ESMTP id C86DD88049;
-	Thu, 13 Feb 2020 21:50:07 +0000 (UTC)
-Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
-	by lists.linuxfoundation.org (Postfix) with ESMTP id B6DDDC08A4;
-	Thu, 13 Feb 2020 21:50:07 +0000 (UTC)
-Received: from whitealder.osuosl.org (smtp1.osuosl.org [140.211.166.138])
- by lists.linuxfoundation.org (Postfix) with ESMTP id D5845C0177
- for <iommu@lists.linux-foundation.org>; Thu, 13 Feb 2020 21:50:05 +0000 (UTC)
-Received: from localhost (localhost [127.0.0.1])
- by whitealder.osuosl.org (Postfix) with ESMTP id C413B8706B
- for <iommu@lists.linux-foundation.org>; Thu, 13 Feb 2020 21:50:05 +0000 (UTC)
+	by whitealder.osuosl.org (Postfix) with ESMTP id 8F1298746D;
+	Fri, 14 Feb 2020 02:44:16 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
 Received: from whitealder.osuosl.org ([127.0.0.1])
+	by localhost (.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
+	with ESMTP id 6BIGpQUf9gdK; Fri, 14 Feb 2020 02:44:14 +0000 (UTC)
+Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [140.211.9.56])
+	by whitealder.osuosl.org (Postfix) with ESMTP id DDD338746B;
+	Fri, 14 Feb 2020 02:44:14 +0000 (UTC)
+Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
+	by lists.linuxfoundation.org (Postfix) with ESMTP id C3EC7C07FE;
+	Fri, 14 Feb 2020 02:44:14 +0000 (UTC)
+Received: from silver.osuosl.org (smtp3.osuosl.org [140.211.166.136])
+ by lists.linuxfoundation.org (Postfix) with ESMTP id 00858C0177
+ for <iommu@lists.linux-foundation.org>; Fri, 14 Feb 2020 02:44:13 +0000 (UTC)
+Received: from localhost (localhost [127.0.0.1])
+ by silver.osuosl.org (Postfix) with ESMTP id D5C5D20395
+ for <iommu@lists.linux-foundation.org>; Fri, 14 Feb 2020 02:44:13 +0000 (UTC)
+X-Virus-Scanned: amavisd-new at osuosl.org
+Received: from silver.osuosl.org ([127.0.0.1])
  by localhost (.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
- with ESMTP id oOOev6eM1A3A for <iommu@lists.linux-foundation.org>;
- Thu, 13 Feb 2020 21:50:04 +0000 (UTC)
+ with ESMTP id fG-U+BMBlPLK for <iommu@lists.linux-foundation.org>;
+ Fri, 14 Feb 2020 02:44:13 +0000 (UTC)
 X-Greylist: domain auto-whitelisted by SQLgrey-1.7.6
-Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
- by whitealder.osuosl.org (Postfix) with ESMTPS id 0354486FBB
- for <iommu@lists.linux-foundation.org>; Thu, 13 Feb 2020 21:50:04 +0000 (UTC)
-Received: from mail-qv1-f50.google.com (mail-qv1-f50.google.com
- [209.85.219.50])
- (using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
- (No client certificate requested)
- by mail.kernel.org (Postfix) with ESMTPSA id AA5A4217F4
- for <iommu@lists.linux-foundation.org>; Thu, 13 Feb 2020 21:50:03 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
- s=default; t=1581630603;
- bh=84yk1pvYO6JnX0O5s4/D9lH5XUgJjHH9Jztb4zMA7W4=;
- h=References:In-Reply-To:From:Date:Subject:To:Cc:From;
- b=onDzsv+HqQuPF63pQdyFRx6xIOVVtxR7SQQMyt37h4Kb3SH1aX9dJSzDcb+cEe8DE
- sqmN4vsU1Yy15KXr4HUm6J3t2tV6v0IHVDrkWIHLlcwNCRslKgXO2YMR5FeUjXmKxy
- tJXwLq5z0weGcY7Z1u0Ib9iYI96pVNPw80OljRJ4=
-Received: by mail-qv1-f50.google.com with SMTP id dc14so3360376qvb.9
- for <iommu@lists.linux-foundation.org>; Thu, 13 Feb 2020 13:50:03 -0800 (PST)
-X-Gm-Message-State: APjAAAVSuY7jlXD5yWO8RPwhUKAFYXrBFKBRQCJiB7xsc4kl3xetb43l
- v4TMbqT/dRFnfwJbsbywpRmV0LuVsYUbFIUW2A==
-X-Google-Smtp-Source: APXvYqxm7mA40ANjHFkBEyDPsFFHgKRuAZvxYL3zQflVSS5U4tYdmv6XC8Ju2cdSy5DBQ45tg67qjr0m9+b+M9wmMmk=
-X-Received: by 2002:a0c:f68f:: with SMTP id p15mr13009761qvn.79.1581630602716; 
- Thu, 13 Feb 2020 13:50:02 -0800 (PST)
+Received: from mail-pg1-f193.google.com (mail-pg1-f193.google.com
+ [209.85.215.193])
+ by silver.osuosl.org (Postfix) with ESMTPS id 2B10220377
+ for <iommu@lists.linux-foundation.org>; Fri, 14 Feb 2020 02:44:13 +0000 (UTC)
+Received: by mail-pg1-f193.google.com with SMTP id z12so4186123pgl.4
+ for <iommu@lists.linux-foundation.org>; Thu, 13 Feb 2020 18:44:13 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=chromium.org; s=google;
+ h=mime-version:content-transfer-encoding:in-reply-to:references
+ :subject:from:cc:to:date:message-id:user-agent;
+ bh=niNApjCO06O7a+lFbqctq/E/HFCOZGM44slzM8VnlEo=;
+ b=IPZYguxYwiX88hRwH7QTLPVac3hJ/RngX14B4KoZqW6OiO/2xsVmTwj+HhOFyfg7nh
+ TT0vT38gm9VGUvEz2ocWIbn+qo8hKz8aOteojzMKPNJwdp3Ifg8ap0Hv7Ilq+x9zZLw8
+ 7xsWgM62nwwp1kelkqj+SxQtFQoO+K1f4zu1I=
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+ d=1e100.net; s=20161025;
+ h=x-gm-message-state:mime-version:content-transfer-encoding
+ :in-reply-to:references:subject:from:cc:to:date:message-id
+ :user-agent;
+ bh=niNApjCO06O7a+lFbqctq/E/HFCOZGM44slzM8VnlEo=;
+ b=HJDPDAaUiI/vItEFSg0t7Cz4uX0WiUwKXDsYzmlimDXpukNNtkg4BI7Xn6EZXT6Opa
+ 2LPl0o8EjewvHq4gHbdlMFYKZfVrorDyug7P6KIYLeUcHgPEvVo039rHJOrdv8FkPdGq
+ mgxVLJhKIKn72YYfbI1VZGwsmSpHLXE5Q+Udh+2BcfGde6uzdDMC2R1qQATHDFLX2NMV
+ ULq+Jij1LQEhs0tI2LY1YoYpZtOtTiXNod7yTYqtBVwUD4t5mA2XUL4GlhDXZfJjMxHb
+ /9uv0+47SpsPmwMlmF0TwTIpexL6W2KmJbvXVTNy+CXIcgZ6GAWuiarDr+58MO7JhFoh
+ BBew==
+X-Gm-Message-State: APjAAAWDU/7tCStej+qr0I9AYCC5OXnGZ7Op3qosY1Kl/poUNmR7sgrD
+ 06f7jVS5s/kolvXlvhMreM318/8XFyM=
+X-Google-Smtp-Source: APXvYqwzYj+wvXbHesIqdU5LMCnildAw4yCq+8revIbEfOsWKVii3zdqeKtfxcBEcLKIdQKk+eTHGA==
+X-Received: by 2002:a63:74b:: with SMTP id 72mr1052514pgh.162.1581648252362;
+ Thu, 13 Feb 2020 18:44:12 -0800 (PST)
+Received: from chromium.org ([2620:15c:202:1:fa53:7765:582b:82b9])
+ by smtp.gmail.com with ESMTPSA id c10sm4575360pgj.49.2020.02.13.18.44.11
+ (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+ Thu, 13 Feb 2020 18:44:11 -0800 (PST)
 MIME-Version: 1.0
-References: <20200117211628.27888-1-robh@kernel.org>
- <2d04f201-3457-08ad-db8e-735f8315d74e@redhat.com>
- <7ac3f864-6c39-76e9-ee4a-21be03abc044@arm.com>
-In-Reply-To: <7ac3f864-6c39-76e9-ee4a-21be03abc044@arm.com>
-From: Rob Herring <robh@kernel.org>
-Date: Thu, 13 Feb 2020 15:49:51 -0600
-X-Gmail-Original-Message-ID: <CAL_JsqJRSD-7U8UH1tevBdD2P6qPWzApQLpXU-SVBmZ8=Yiy0A@mail.gmail.com>
-Message-ID: <CAL_JsqJRSD-7U8UH1tevBdD2P6qPWzApQLpXU-SVBmZ8=Yiy0A@mail.gmail.com>
-Subject: Re: [PATCH v2] iommu/arm-smmu-v3: Add SMMUv3.2 range invalidation
- support
-To: Robin Murphy <robin.murphy@arm.com>
-Cc: Jean-Philippe Brucker <jean-philippe@linaro.org>,
- Linux IOMMU <iommu@lists.linux-foundation.org>, Will Deacon <will@kernel.org>,
- "moderated list:ARM/FREESCALE IMX / MXC ARM ARCHITECTURE"
- <linux-arm-kernel@lists.infradead.org>
+In-Reply-To: <e7ba4dbd8e9c8aedd6f5db1b3453d9782b7943cd.1579692800.git.saiprakash.ranjan@codeaurora.org>
+References: <cover.1579692800.git.saiprakash.ranjan@codeaurora.org>
+ <e7ba4dbd8e9c8aedd6f5db1b3453d9782b7943cd.1579692800.git.saiprakash.ranjan@codeaurora.org>
+Subject: Re: [PATCH 1/2] iommu: arm-smmu-impl: Convert to a generic reset
+ implementation
+From: Stephen Boyd <swboyd@chromium.org>
+To: Joerg Roedel <joro@8bytes.org>, Jordan Crouse <jcrouse@codeaurora.org>,
+ Rob Clark <robdclark@gmail.com>, Robin Murphy <robin.murphy@arm.com>,
+ Sai Prakash Ranjan <saiprakash.ranjan@codeaurora.org>,
+ Will Deacon <will@kernel.org>
+Date: Thu, 13 Feb 2020 18:44:10 -0800
+Message-ID: <158164825099.184098.18396989716299086067@swboyd.mtv.corp.google.com>
+User-Agent: alot/0.9
+Cc: Rajendra Nayak <rnayak@codeaurora.org>, linux-arm-msm@vger.kernel.org,
+ linux-kernel@vger.kernel.org, Bjorn Andersson <bjorn.andersson@linaro.org>,
+ iommu@lists.linux-foundation.org, Matthias Kaehlcke <mka@chromium.org>,
+ linux-arm-kernel@lists.infradead.org
 X-BeenThere: iommu@lists.linux-foundation.org
 X-Mailman-Version: 2.1.15
 Precedence: list
@@ -99,161 +112,17 @@ Content-Transfer-Encoding: 7bit
 Errors-To: iommu-bounces@lists.linux-foundation.org
 Sender: "iommu" <iommu-bounces@lists.linux-foundation.org>
 
-On Thu, Jan 30, 2020 at 11:34 AM Robin Murphy <robin.murphy@arm.com> wrote:
->
-> On 30/01/2020 3:06 pm, Auger Eric wrote:
-> > Hi Rob,
-> > On 1/17/20 10:16 PM, Rob Herring wrote:
-> >> Arm SMMUv3.2 adds support for TLB range invalidate operations.
-> >> Support for range invalidate is determined by the RIL bit in the IDR3
-> >> register.
-> >>
-> >> The range invalidate is in units of the leaf page size and operates on
-> >> 1-32 chunks of a power of 2 multiple pages. First, we determine from the
-> >> size what power of 2 multiple we can use. Then we calculate how many
-> >> chunks (1-31) of the power of 2 size for the range on the iteration. On
-> >> each iteration, we move up in size by at least 5 bits.
-> >>
-> >> Cc: Eric Auger <eric.auger@redhat.com>
-> >> Cc: Jean-Philippe Brucker <jean-philippe@linaro.org>
-> >> Cc: Will Deacon <will@kernel.org>
-> >> Cc: Robin Murphy <robin.murphy@arm.com>
-> >> Cc: Joerg Roedel <joro@8bytes.org>
-> >> Signed-off-by: Rob Herring <robh@kernel.org>
+Quoting Sai Prakash Ranjan (2020-01-22 03:48:01)
+> Currently the QCOM specific smmu reset implementation is very
+> specific to SDM845 SoC and has a wait-for-safe logic which
+> may not be required for other SoCs. So move the SDM845 specific
+> logic to its specific reset function. Also add SC7180 SMMU
+> compatible for calling into QCOM specific implementation.
+> 
+> Signed-off-by: Sai Prakash Ranjan <saiprakash.ranjan@codeaurora.org>
+> ---
 
-
-> >> @@ -2003,7 +2024,7 @@ static void arm_smmu_tlb_inv_range(unsigned long iova, size_t size,
-> >>   {
-> >>      u64 cmds[CMDQ_BATCH_ENTRIES * CMDQ_ENT_DWORDS];
-> >>      struct arm_smmu_device *smmu = smmu_domain->smmu;
-> >> -    unsigned long start = iova, end = iova + size;
-> >> +    unsigned long start = iova, end = iova + size, num_pages = 0, tg = 0;
-> >>      int i = 0;
-> >>      struct arm_smmu_cmdq_ent cmd = {
-> >>              .tlbi = {
-> >> @@ -2022,12 +2043,50 @@ static void arm_smmu_tlb_inv_range(unsigned long iova, size_t size,
-> >>              cmd.tlbi.vmid   = smmu_domain->s2_cfg.vmid;
-> >>      }
-> >>
-> >> +    if (smmu->features & ARM_SMMU_FEAT_RANGE_INV) {
-> >> +            /* Get the leaf page size */
-> >> +            tg = __ffs(smmu_domain->domain.pgsize_bitmap);
-> >> +
-> >> +            /* Convert page size of 12,14,16 (log2) to 1,2,3 */
-> >> +            cmd.tlbi.tg = ((tg - ilog2(SZ_4K)) / 2) + 1;
->
-> Given the comment, I think "(tg - 10) / 2" would suffice ;)
-
-Well, duh...
-
->
-> >> +
-> >> +            /* Determine what level the granule is at */
-> >> +            cmd.tlbi.ttl = 4 - ((ilog2(granule) - 3) / (tg - 3));
->
-> Is it possible to rephrase that with logs and shifts to avoid the division?
-
-Well, with a loop is the only other way I came up with:
-
-bpl = tg - 3;
-ttl = 3;
-mask = BIT(bpl) - 1;
-while ((granule & (mask << ((4 - ttl) * bpl + 3))) == 0)
-    ttl--;
-
-Doesn't seem like much improvement to me given we have h/w divide...
-
->
-> >> +
-> >> +            num_pages = size / (1UL << tg);
->
-> Similarly, in my experience GCC has always seemed too cautious to elide
-> non-constant division even in a seemingly-obvious case like this, so
-> explicit "size >> tg" might be preferable.
-
-My experience has been gcc is smart enough. I checked and there's only
-one divide and it is the prior one. But I'll change it anyways.
-
->
-> >> +    }
-> >> +
-> >>      while (iova < end) {
-> >>              if (i == CMDQ_BATCH_ENTRIES) {
-> >>                      arm_smmu_cmdq_issue_cmdlist(smmu, cmds, i, false);
-> >>                      i = 0;
-> >>              }
-> >>
-> >> +            if (smmu->features & ARM_SMMU_FEAT_RANGE_INV) {
-> >> +                    /*
-> >> +                     * On each iteration of the loop, the range is 5 bits
-> >> +                     * worth of the aligned size remaining.
-> >> +                     * The range in pages is:
-> >> +                     *
-> >> +                     * range = (num_pages & (0x1f << __ffs(num_pages)))
-> >> +                     */
-> >> +                    unsigned long scale, num;
-> >> +
-> >> +                    /* Determine the power of 2 multiple number of pages */
-> >> +                    scale = __ffs(num_pages);
-> >> +                    cmd.tlbi.scale = scale;
-> >> +
-> >> +                    /* Determine how many chunks of 2^scale size we have */
-> >> +                    num = (num_pages >> scale) & CMDQ_TLBI_RANGE_NUM_MAX;
-> >> +                    cmd.tlbi.num = num - 1;
-> >> +
-> >> +                    /* range is num * 2^scale * pgsize */
-> >> +                    granule = num << (scale + tg);
-> >> +
-> >> +                    /* Clear out the lower order bits for the next iteration */
-> >> +                    num_pages -= num << scale;
-> > Regarding the 2 options given in
-> > https://lore.kernel.org/linux-arm-kernel/CAL_JsqKABoE+0crGwyZdNogNgEoG=MOOpf6deQgH6s73c0UNdA@mail.gmail.com/raw,
-> >
-> > I understand you implemented 2) but I still do not understand why you
-> > preferred that one against 1).
-> >
-> > In your case of 1023*4k pages this will invalidate by 31 32*2^0*4K +
-> > 31*2^0*4K pages
-> > whereas you could achieve that with 10 invalidations with the 1st algo.
-> > I did not get the case where it is more efficient. Please can you detail.
->
-> I guess essentially we want to solve for two variables to get a range as
-> close to size as possible. There might be a more elegant numerical
-> method, but for the numbers involved brute force is probably good enough
-> for the real world. 5 minutes alone with the architecture spec and a
-> blank editor begat this pseudo-implementation:
->
->         size_t npages = size >> pgshift;
->         while (npages) {
->                 unsigned long range;
->                 unsigned int delta, best = UINT_MAX;
->                 int num, scale = min(31, __ffs(npages));
->
->                 while (scale) {
->                         num = min(32, npages >> scale);
->                         if (num == 32)
->                                 break;
->
->                         delta = npages & ((1 << scale) - 1);
->                         if (!delta || delta > best)
->                                 break;
->
->                         best = delta;
->                         scale--;
->                 }
->
->                 //invalidate
->
->                 range = num << scale;
->                 npages -= range;
->                 iova += (range) << pgshift;
->         }
->
-> Modulo any obvious thinkos, what do you reckon?
-
-I don't think this is an improvement. See my other reply.
-
-Rob
+Reviewed-by: Stephen Boyd <swboyd@chromium.org>
 _______________________________________________
 iommu mailing list
 iommu@lists.linux-foundation.org
