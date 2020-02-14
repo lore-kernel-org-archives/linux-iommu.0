@@ -2,99 +2,107 @@ Return-Path: <SRS0=UfLp=4C=lists.linux-foundation.org=iommu-bounces@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-3.5 required=3.0 tests=DKIM_INVALID,DKIM_SIGNED,
-	HEADER_FROM_DIFFERENT_DOMAINS,MAILING_LIST_MULTI,SIGNED_OFF_BY,SPF_HELO_NONE,
-	SPF_PASS autolearn=no autolearn_force=no version=3.4.0
+X-Spam-Status: No, score=-0.6 required=3.0 tests=DKIM_INVALID,DKIM_SIGNED,
+	HEADER_FROM_DIFFERENT_DOMAINS,MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS
+	autolearn=no autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 8AA7BC352A3
-	for <iommu@archiver.kernel.org>; Fri, 14 Feb 2020 02:44:17 +0000 (UTC)
-Received: from whitealder.osuosl.org (smtp1.osuosl.org [140.211.166.138])
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 5EF69C2BA83
+	for <iommu@archiver.kernel.org>; Fri, 14 Feb 2020 07:46:55 +0000 (UTC)
+Received: from fraxinus.osuosl.org (smtp4.osuosl.org [140.211.166.137])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by mail.kernel.org (Postfix) with ESMTPS id 52E7420848
-	for <iommu@archiver.kernel.org>; Fri, 14 Feb 2020 02:44:17 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTPS id 24FD820873
+	for <iommu@archiver.kernel.org>; Fri, 14 Feb 2020 07:46:54 +0000 (UTC)
 Authentication-Results: mail.kernel.org;
-	dkim=fail reason="signature verification failed" (1024-bit key) header.d=chromium.org header.i=@chromium.org header.b="IPZYguxY"
-DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 52E7420848
-Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=chromium.org
+	dkim=fail reason="signature verification failed" (2048-bit key) header.d=cerno.tech header.i=@cerno.tech header.b="JN5dYvug";
+	dkim=fail reason="signature verification failed" (2048-bit key) header.d=messagingengine.com header.i=@messagingengine.com header.b="zgs7mwVw"
+DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 24FD820873
+Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=cerno.tech
 Authentication-Results: mail.kernel.org; spf=pass smtp.mailfrom=iommu-bounces@lists.linux-foundation.org
 Received: from localhost (localhost [127.0.0.1])
-	by whitealder.osuosl.org (Postfix) with ESMTP id 8F1298746D;
-	Fri, 14 Feb 2020 02:44:16 +0000 (UTC)
+	by fraxinus.osuosl.org (Postfix) with ESMTP id D4B8F8643D;
+	Fri, 14 Feb 2020 07:46:54 +0000 (UTC)
+X-Virus-Scanned: amavisd-new at osuosl.org
+Received: from fraxinus.osuosl.org ([127.0.0.1])
+	by localhost (.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
+	with ESMTP id 0siaXHlt__4p; Fri, 14 Feb 2020 07:46:53 +0000 (UTC)
+Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [140.211.9.56])
+	by fraxinus.osuosl.org (Postfix) with ESMTP id B0C2C86053;
+	Fri, 14 Feb 2020 07:46:53 +0000 (UTC)
+Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
+	by lists.linuxfoundation.org (Postfix) with ESMTP id 960DCC08A4;
+	Fri, 14 Feb 2020 07:46:53 +0000 (UTC)
+Received: from whitealder.osuosl.org (smtp1.osuosl.org [140.211.166.138])
+ by lists.linuxfoundation.org (Postfix) with ESMTP id ECC04C0177
+ for <iommu@lists.linux-foundation.org>; Fri, 14 Feb 2020 07:46:51 +0000 (UTC)
+Received: from localhost (localhost [127.0.0.1])
+ by whitealder.osuosl.org (Postfix) with ESMTP id D67BB8708C
+ for <iommu@lists.linux-foundation.org>; Fri, 14 Feb 2020 07:46:51 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
 Received: from whitealder.osuosl.org ([127.0.0.1])
-	by localhost (.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
-	with ESMTP id 6BIGpQUf9gdK; Fri, 14 Feb 2020 02:44:14 +0000 (UTC)
-Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [140.211.9.56])
-	by whitealder.osuosl.org (Postfix) with ESMTP id DDD338746B;
-	Fri, 14 Feb 2020 02:44:14 +0000 (UTC)
-Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
-	by lists.linuxfoundation.org (Postfix) with ESMTP id C3EC7C07FE;
-	Fri, 14 Feb 2020 02:44:14 +0000 (UTC)
-Received: from silver.osuosl.org (smtp3.osuosl.org [140.211.166.136])
- by lists.linuxfoundation.org (Postfix) with ESMTP id 00858C0177
- for <iommu@lists.linux-foundation.org>; Fri, 14 Feb 2020 02:44:13 +0000 (UTC)
-Received: from localhost (localhost [127.0.0.1])
- by silver.osuosl.org (Postfix) with ESMTP id D5C5D20395
- for <iommu@lists.linux-foundation.org>; Fri, 14 Feb 2020 02:44:13 +0000 (UTC)
-X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from silver.osuosl.org ([127.0.0.1])
  by localhost (.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
- with ESMTP id fG-U+BMBlPLK for <iommu@lists.linux-foundation.org>;
- Fri, 14 Feb 2020 02:44:13 +0000 (UTC)
-X-Greylist: domain auto-whitelisted by SQLgrey-1.7.6
-Received: from mail-pg1-f193.google.com (mail-pg1-f193.google.com
- [209.85.215.193])
- by silver.osuosl.org (Postfix) with ESMTPS id 2B10220377
- for <iommu@lists.linux-foundation.org>; Fri, 14 Feb 2020 02:44:13 +0000 (UTC)
-Received: by mail-pg1-f193.google.com with SMTP id z12so4186123pgl.4
- for <iommu@lists.linux-foundation.org>; Thu, 13 Feb 2020 18:44:13 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=chromium.org; s=google;
- h=mime-version:content-transfer-encoding:in-reply-to:references
- :subject:from:cc:to:date:message-id:user-agent;
- bh=niNApjCO06O7a+lFbqctq/E/HFCOZGM44slzM8VnlEo=;
- b=IPZYguxYwiX88hRwH7QTLPVac3hJ/RngX14B4KoZqW6OiO/2xsVmTwj+HhOFyfg7nh
- TT0vT38gm9VGUvEz2ocWIbn+qo8hKz8aOteojzMKPNJwdp3Ifg8ap0Hv7Ilq+x9zZLw8
- 7xsWgM62nwwp1kelkqj+SxQtFQoO+K1f4zu1I=
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
- d=1e100.net; s=20161025;
- h=x-gm-message-state:mime-version:content-transfer-encoding
- :in-reply-to:references:subject:from:cc:to:date:message-id
- :user-agent;
- bh=niNApjCO06O7a+lFbqctq/E/HFCOZGM44slzM8VnlEo=;
- b=HJDPDAaUiI/vItEFSg0t7Cz4uX0WiUwKXDsYzmlimDXpukNNtkg4BI7Xn6EZXT6Opa
- 2LPl0o8EjewvHq4gHbdlMFYKZfVrorDyug7P6KIYLeUcHgPEvVo039rHJOrdv8FkPdGq
- mgxVLJhKIKn72YYfbI1VZGwsmSpHLXE5Q+Udh+2BcfGde6uzdDMC2R1qQATHDFLX2NMV
- ULq+Jij1LQEhs0tI2LY1YoYpZtOtTiXNod7yTYqtBVwUD4t5mA2XUL4GlhDXZfJjMxHb
- /9uv0+47SpsPmwMlmF0TwTIpexL6W2KmJbvXVTNy+CXIcgZ6GAWuiarDr+58MO7JhFoh
- BBew==
-X-Gm-Message-State: APjAAAWDU/7tCStej+qr0I9AYCC5OXnGZ7Op3qosY1Kl/poUNmR7sgrD
- 06f7jVS5s/kolvXlvhMreM318/8XFyM=
-X-Google-Smtp-Source: APXvYqwzYj+wvXbHesIqdU5LMCnildAw4yCq+8revIbEfOsWKVii3zdqeKtfxcBEcLKIdQKk+eTHGA==
-X-Received: by 2002:a63:74b:: with SMTP id 72mr1052514pgh.162.1581648252362;
- Thu, 13 Feb 2020 18:44:12 -0800 (PST)
-Received: from chromium.org ([2620:15c:202:1:fa53:7765:582b:82b9])
- by smtp.gmail.com with ESMTPSA id c10sm4575360pgj.49.2020.02.13.18.44.11
- (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
- Thu, 13 Feb 2020 18:44:11 -0800 (PST)
+ with ESMTP id 2BGrRteBhjct for <iommu@lists.linux-foundation.org>;
+ Fri, 14 Feb 2020 07:46:50 +0000 (UTC)
+X-Greylist: from auto-whitelisted by SQLgrey-1.7.6
+Received: from new3-smtp.messagingengine.com (new3-smtp.messagingengine.com
+ [66.111.4.229])
+ by whitealder.osuosl.org (Postfix) with ESMTPS id 81600869B6
+ for <iommu@lists.linux-foundation.org>; Fri, 14 Feb 2020 07:46:50 +0000 (UTC)
+Received: from compute3.internal (compute3.nyi.internal [10.202.2.43])
+ by mailnew.nyi.internal (Postfix) with ESMTP id 51A7A6D03;
+ Fri, 14 Feb 2020 02:46:49 -0500 (EST)
+Received: from mailfrontend1 ([10.202.2.162])
+ by compute3.internal (MEProxy); Fri, 14 Feb 2020 02:46:49 -0500
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=cerno.tech; h=
+ date:from:to:cc:subject:message-id:references:mime-version
+ :content-type:in-reply-to; s=fm2; bh=30N8lwJ76ANNJLmexRYW2YyfSL/
+ 98l30UQuoobG1iNg=; b=JN5dYvugDS5kqf2GGCp8ZMdFibo4E8KRIrL2o3DZvqQ
+ ovSewFqziZEtnb9W7JRbZMPoX1NBVr8C/+RfpLt2TImgnIR8cgA+N4TKfcoraaiW
+ eFsvMiRiRI66amQiDPXS4P+LWbnkqycyZ4tR63jWBpOE5cVfXJP0acsgtTnL1+FE
+ jX7S93QhMC7sT9qLCjoW9RYS+yzbfHohrIr+evAsRS+1scMHbA3rKZFRP0qZm2P7
+ kMO15SxB6fMyd9xgMI0d3hxFRXazLLjE43WWJuGhEsbZobP8Rm0CC2LavT3eEfcd
+ Jfe5mE6n4GD0SSmzKJnrzYqn2zUXb+JqWFABy2vlALA==
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=
+ messagingengine.com; h=cc:content-type:date:from:in-reply-to
+ :message-id:mime-version:references:subject:to:x-me-proxy
+ :x-me-proxy:x-me-sender:x-me-sender:x-sasl-enc; s=fm2; bh=30N8lw
+ J76ANNJLmexRYW2YyfSL/98l30UQuoobG1iNg=; b=zgs7mwVwewVfMn7yLs4xxT
+ 7IfmQxufvBbG0CCCt9K1DYdxOURULoeN2iDr/Oe6SLR6kxcCtOgsQ0xynql5jeWW
+ Jv2hYIN3Ck3Bk5IWYE2Q97OnNw1lH4c+tUd+WPCtZSrEl5QqpyGKjd6NJWivlpby
+ 2n755lBasVZx21RXFxv5S05RgA7VK6RhaojtPgr6uH8zhiMC8D1F1sBks5YNEMob
+ biSrSeeZsD33tO64ZzEp2khnLvecYrcafLQvxk7+n9p6/DAqyzvAjxPY90JELOfu
+ i1ZV+JFlYpl4pAhwxqe1liKGBER6R0z3tkT4fE4JTWnTw0kOZj7XOMZfXX4kSRmw
+ ==
+X-ME-Sender: <xms:aFBGXiuKYSuC0YTB4cRzClHTkRzayCcmXNYq9BD0mRBgnqqezcR-gg>
+X-ME-Proxy-Cause: gggruggvucftvghtrhhoucdtuddrgedugedrieelgdduudefucetufdoteggodetrfdotf
+ fvucfrrhhofhhilhgvmecuhfgrshhtofgrihhlpdfqfgfvpdfurfetoffkrfgpnffqhgen
+ uceurghilhhouhhtmecufedttdenucesvcftvggtihhpihgvnhhtshculddquddttddmne
+ cujfgurhepfffhvffukfhfgggtuggjsehgtderredttddvnecuhfhrohhmpeforgigihhm
+ vgcutfhiphgrrhguuceomhgrgihimhgvsegtvghrnhhordhtvggthheqnecukfhppeeltd
+ drkeelrdeikedrjeeinecuvehluhhsthgvrhfuihiivgeptdenucfrrghrrghmpehmrghi
+ lhhfrhhomhepmhgrgihimhgvsegtvghrnhhordhtvggthh
+X-ME-Proxy: <xmx:aFBGXpvB2roE6DcENcXQiMJo7po7-NCCd0XC5dYRpYRxwY5NwhCQrg>
+ <xmx:aFBGXtcCi6pPw98gKy3FPcc4kHkD2Awqlx1Viep3QzutLZE12Qv8qw>
+ <xmx:aFBGXp7FMuSbVxJfIt8t3YXb15cM-f78C72qwNPL0TIPmiTvnmvbvg>
+ <xmx:aVBGXp-nspaUV4PRqHIpdJQozZQ4qEOB1toDImRJhezbniykUY--Pw>
+Received: from localhost (lfbn-tou-1-1502-76.w90-89.abo.wanadoo.fr
+ [90.89.68.76])
+ by mail.messagingengine.com (Postfix) with ESMTPA id 5EAE43280066;
+ Fri, 14 Feb 2020 02:46:48 -0500 (EST)
+Date: Fri, 14 Feb 2020 08:46:46 +0100
+From: Maxime Ripard <maxime@cerno.tech>
+To: Thierry Reding <thierry.reding@gmail.com>
+Subject: Re: [PATCH v4 0/5] memory: Introduce memory controller mini-framework
+Message-ID: <20200214074646.j57uywq27xqrnjrd@gilmour.lan>
+References: <20200213163959.819733-1-thierry.reding@gmail.com>
+ <9841eb35-65e4-632a-ceff-bb2ba3b11bb0@arm.com>
+ <20200213181555.GB1006063@ulmo>
 MIME-Version: 1.0
-In-Reply-To: <e7ba4dbd8e9c8aedd6f5db1b3453d9782b7943cd.1579692800.git.saiprakash.ranjan@codeaurora.org>
-References: <cover.1579692800.git.saiprakash.ranjan@codeaurora.org>
- <e7ba4dbd8e9c8aedd6f5db1b3453d9782b7943cd.1579692800.git.saiprakash.ranjan@codeaurora.org>
-Subject: Re: [PATCH 1/2] iommu: arm-smmu-impl: Convert to a generic reset
- implementation
-From: Stephen Boyd <swboyd@chromium.org>
-To: Joerg Roedel <joro@8bytes.org>, Jordan Crouse <jcrouse@codeaurora.org>,
- Rob Clark <robdclark@gmail.com>, Robin Murphy <robin.murphy@arm.com>,
- Sai Prakash Ranjan <saiprakash.ranjan@codeaurora.org>,
- Will Deacon <will@kernel.org>
-Date: Thu, 13 Feb 2020 18:44:10 -0800
-Message-ID: <158164825099.184098.18396989716299086067@swboyd.mtv.corp.google.com>
-User-Agent: alot/0.9
-Cc: Rajendra Nayak <rnayak@codeaurora.org>, linux-arm-msm@vger.kernel.org,
- linux-kernel@vger.kernel.org, Bjorn Andersson <bjorn.andersson@linaro.org>,
- iommu@lists.linux-foundation.org, Matthias Kaehlcke <mka@chromium.org>,
- linux-arm-kernel@lists.infradead.org
+In-Reply-To: <20200213181555.GB1006063@ulmo>
+Cc: Arnd Bergmann <arnd@arndb.de>, Robin Murphy <robin.murphy@arm.com>,
+ linux-kernel@vger.kernel.org, linux-tegra@vger.kernel.org,
+ iommu@lists.linux-foundation.org, Rob Herring <robh+dt@kernel.org>,
+ Will Deacon <will@kernel.org>, linux-arm-kernel@lists.infradead.org
 X-BeenThere: iommu@lists.linux-foundation.org
 X-Mailman-Version: 2.1.15
 Precedence: list
@@ -107,23 +115,86 @@ List-Post: <mailto:iommu@lists.linux-foundation.org>
 List-Help: <mailto:iommu-request@lists.linux-foundation.org?subject=help>
 List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
  <mailto:iommu-request@lists.linux-foundation.org?subject=subscribe>
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: 7bit
+Content-Type: multipart/mixed; boundary="===============8906512210912761307=="
 Errors-To: iommu-bounces@lists.linux-foundation.org
 Sender: "iommu" <iommu-bounces@lists.linux-foundation.org>
 
-Quoting Sai Prakash Ranjan (2020-01-22 03:48:01)
-> Currently the QCOM specific smmu reset implementation is very
-> specific to SDM845 SoC and has a wait-for-safe logic which
-> may not be required for other SoCs. So move the SDM845 specific
-> logic to its specific reset function. Also add SC7180 SMMU
-> compatible for calling into QCOM specific implementation.
-> 
-> Signed-off-by: Sai Prakash Ranjan <saiprakash.ranjan@codeaurora.org>
-> ---
 
-Reviewed-by: Stephen Boyd <swboyd@chromium.org>
+--===============8906512210912761307==
+Content-Type: multipart/signed; micalg=pgp-sha256;
+	protocol="application/pgp-signature"; boundary="cgx7eqxuhae5r2xz"
+Content-Disposition: inline
+
+
+--cgx7eqxuhae5r2xz
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+
+On Thu, Feb 13, 2020 at 07:15:55PM +0100, Thierry Reding wrote:
+> On Thu, Feb 13, 2020 at 05:23:23PM +0000, Robin Murphy wrote:
+> > [+ Maxime]
+> >
+> > On 13/02/2020 4:39 pm, Thierry Reding wrote:
+> > > From: Thierry Reding <treding@nvidia.com>
+> > >
+> > > Hi,
+> > >
+> > > this set of patches adds a new binding that allows device tree nodes to
+> > > explicitly define the DMA parent for a given device. This supplements
+> > > the existing interconnect bindings and is useful to disambiguate in the
+> > > case where a device has multiple paths to system memory. Beyond that it
+> > > can also be useful when there aren't any actual interconnect paths that
+> > > can be controlled, so in simple cases this can serve as a simpler
+> > > variant of interconnect paths.
+> >
+> > Isn't that still squarely the intent of the "dma-mem" binding, though? i.e.
+> > it's not meant to be a 'real' interconnect provider, but a very simple way
+> > to encode DMA parentage piggybacked onto a more general binding (with the
+> > *option* of being a full-blown interconnect if it wants to, but certainly no
+> > expectation).
+>
+> The way that this works on Tegra is that we want to describe multiple
+> interconnect paths. A typical device will have a read and a write memory
+> client, which can be separately "tuned". Both of these paths will target
+> system memory, so they would both technically be "dma-mem" paths. But
+> that would make it impossible to treat them separately elsewhere.
+>
+> So we could choose any of them to be the "dma-mem" path, but then we
+> need to be very careful about defining which one that is, so that
+> drivers know how to look them up, which is also not really desirable.
+>
+> One other things we could do is to duplicate one of the entries, so that
+> we'd have "read", "write" and "dma-mem" interconnect paths, with
+> "dma-mem" referencing the same path as "read" or "write". That doesn't
+> sound *too* bad, but it's still a bit of a hack. Having an explicit
+> description for this sounds much clearer and less error prone to me.
+
+IIRC the dmaengine binding allows to do that, so it would make sense
+to me to have the same thing allowed for interconnects.
+
+Maxime
+
+--cgx7eqxuhae5r2xz
+Content-Type: application/pgp-signature; name="signature.asc"
+
+-----BEGIN PGP SIGNATURE-----
+
+iHUEABYIAB0WIQRcEzekXsqa64kGDp7j7w1vZxhRxQUCXkZQZgAKCRDj7w1vZxhR
+xZN1AP9xEZt3x9xN7nNg9v862AKEohAW68yHN8slrEdDkuDjLAEArPnr7wS/Ocya
+nXTLIBU8NqQbSLnqTc5obXprpB/YcgM=
+=twP1
+-----END PGP SIGNATURE-----
+
+--cgx7eqxuhae5r2xz--
+
+--===============8906512210912761307==
+Content-Type: text/plain; charset="us-ascii"
+MIME-Version: 1.0
+Content-Transfer-Encoding: 7bit
+Content-Disposition: inline
+
 _______________________________________________
 iommu mailing list
 iommu@lists.linux-foundation.org
 https://lists.linuxfoundation.org/mailman/listinfo/iommu
+--===============8906512210912761307==--
