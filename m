@@ -6,66 +6,66 @@ X-Spam-Status: No, score=-9.8 required=3.0 tests=DKIM_INVALID,DKIM_SIGNED,
 	INCLUDES_PATCH,MAILING_LIST_MULTI,SIGNED_OFF_BY,SPF_HELO_NONE,SPF_PASS,
 	USER_AGENT_GIT autolearn=ham autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id F3880C2BA83
-	for <iommu@archiver.kernel.org>; Fri, 14 Feb 2020 16:07:18 +0000 (UTC)
-Received: from whitealder.osuosl.org (smtp1.osuosl.org [140.211.166.138])
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 24FD5C3B19F
+	for <iommu@archiver.kernel.org>; Fri, 14 Feb 2020 16:07:21 +0000 (UTC)
+Received: from fraxinus.osuosl.org (smtp4.osuosl.org [140.211.166.137])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by mail.kernel.org (Postfix) with ESMTPS id CBB65222C2
-	for <iommu@archiver.kernel.org>; Fri, 14 Feb 2020 16:07:18 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTPS id EF95B2467D
+	for <iommu@archiver.kernel.org>; Fri, 14 Feb 2020 16:07:20 +0000 (UTC)
 Authentication-Results: mail.kernel.org;
-	dkim=fail reason="signature verification failed" (1024-bit key) header.d=kernel.org header.i=@kernel.org header.b="Na5ukhqT"
-DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org CBB65222C2
+	dkim=fail reason="signature verification failed" (1024-bit key) header.d=kernel.org header.i=@kernel.org header.b="FMnm+dc/"
+DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org EF95B2467D
 Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=kernel.org
 Authentication-Results: mail.kernel.org; spf=pass smtp.mailfrom=iommu-bounces@lists.linux-foundation.org
 Received: from localhost (localhost [127.0.0.1])
-	by whitealder.osuosl.org (Postfix) with ESMTP id C0D5A8766D;
-	Fri, 14 Feb 2020 16:07:18 +0000 (UTC)
+	by fraxinus.osuosl.org (Postfix) with ESMTP id E58E08685B;
+	Fri, 14 Feb 2020 16:07:20 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from whitealder.osuosl.org ([127.0.0.1])
+Received: from fraxinus.osuosl.org ([127.0.0.1])
 	by localhost (.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
-	with ESMTP id 1+SL7WZ+3JTx; Fri, 14 Feb 2020 16:07:18 +0000 (UTC)
+	with ESMTP id 2zrR_q4WpFby; Fri, 14 Feb 2020 16:07:20 +0000 (UTC)
 Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [140.211.9.56])
-	by whitealder.osuosl.org (Postfix) with ESMTP id 382C48765A;
-	Fri, 14 Feb 2020 16:07:18 +0000 (UTC)
+	by fraxinus.osuosl.org (Postfix) with ESMTP id 8661B8685A;
+	Fri, 14 Feb 2020 16:07:20 +0000 (UTC)
 Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
-	by lists.linuxfoundation.org (Postfix) with ESMTP id 32283C08A4;
-	Fri, 14 Feb 2020 16:07:18 +0000 (UTC)
+	by lists.linuxfoundation.org (Postfix) with ESMTP id 73208C08A4;
+	Fri, 14 Feb 2020 16:07:20 +0000 (UTC)
 Received: from fraxinus.osuosl.org (smtp4.osuosl.org [140.211.166.137])
- by lists.linuxfoundation.org (Postfix) with ESMTP id 00CF9C0177
- for <iommu@lists.linux-foundation.org>; Fri, 14 Feb 2020 16:07:17 +0000 (UTC)
+ by lists.linuxfoundation.org (Postfix) with ESMTP id 3EA22C0177
+ for <iommu@lists.linux-foundation.org>; Fri, 14 Feb 2020 16:07:19 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
- by fraxinus.osuosl.org (Postfix) with ESMTP id F18C48685A
- for <iommu@lists.linux-foundation.org>; Fri, 14 Feb 2020 16:07:16 +0000 (UTC)
+ by fraxinus.osuosl.org (Postfix) with ESMTP id 2B40D8685B
+ for <iommu@lists.linux-foundation.org>; Fri, 14 Feb 2020 16:07:19 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
 Received: from fraxinus.osuosl.org ([127.0.0.1])
  by localhost (.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
- with ESMTP id Qs61hdtButT5 for <iommu@lists.linux-foundation.org>;
- Fri, 14 Feb 2020 16:07:16 +0000 (UTC)
+ with ESMTP id YQ2yXo7M-SYR for <iommu@lists.linux-foundation.org>;
+ Fri, 14 Feb 2020 16:07:18 +0000 (UTC)
 X-Greylist: domain auto-whitelisted by SQLgrey-1.7.6
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
- by fraxinus.osuosl.org (Postfix) with ESMTPS id 9394A86813
- for <iommu@lists.linux-foundation.org>; Fri, 14 Feb 2020 16:07:16 +0000 (UTC)
+ by fraxinus.osuosl.org (Postfix) with ESMTPS id 1B075867F6
+ for <iommu@lists.linux-foundation.org>; Fri, 14 Feb 2020 16:07:18 +0000 (UTC)
 Received: from sasha-vm.mshome.net (c-73-47-72-35.hsd1.nh.comcast.net
  [73.47.72.35])
  (using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
  (No client certificate requested)
- by mail.kernel.org (Postfix) with ESMTPSA id 8819724654;
- Fri, 14 Feb 2020 16:07:15 +0000 (UTC)
+ by mail.kernel.org (Postfix) with ESMTPSA id CC03B206D7;
+ Fri, 14 Feb 2020 16:07:16 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
- s=default; t=1581696436;
- bh=dQlmWmfJYqyzHqxjP0GJKiHLOyZv9MPDy5qO2NfH+s8=;
+ s=default; t=1581696438;
+ bh=bxhyd2uGL6csS55UfWR1JBrMopyybW97a+Q4pm8a5Do=;
  h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
- b=Na5ukhqTulGRtoMt34WPPzPbaNXoQsOA5Z1MNa10lEjRki4AGy1bWtocweI0uATPh
- GOFcdLSj6BfdXu5uvV5t7/LMq27U6HbIU/EVzFAtNXOPXYaaDVkXyW5k+Q4Z1bdhWZ
- wqNWpAO6AoM3u72TZ5ak4TkVpaoPDNex1zQBGZ/c=
+ b=FMnm+dc/SYh1z3Wv94xj1DTx0S95QFm6OCy34IqtIMPhvYnC1Et4t5XujGOI4wfYT
+ URpp9hmPhgRh+TRReWZgJ8A3fZBj+30RTID9ZhIbnYpDDBlEh0gaOFVhZv4tq+4zGU
+ TvqI69hesm5188vJDGBPaDTx11gMFBv0hDUAYZNQ=
 From: Sasha Levin <sashal@kernel.org>
 To: linux-kernel@vger.kernel.org,
 	stable@vger.kernel.org
-Subject: [PATCH AUTOSEL 5.4 253/459] iommu/vt-d: Match CPU and IOMMU paging
- mode
-Date: Fri, 14 Feb 2020 10:58:23 -0500
-Message-Id: <20200214160149.11681-253-sashal@kernel.org>
+Subject: [PATCH AUTOSEL 5.4 254/459] iommu/vt-d: Avoid sending invalid page
+ response
+Date: Fri, 14 Feb 2020 10:58:24 -0500
+Message-Id: <20200214160149.11681-254-sashal@kernel.org>
 X-Mailer: git-send-email 2.20.1
 In-Reply-To: <20200214160149.11681-1-sashal@kernel.org>
 References: <20200214160149.11681-1-sashal@kernel.org>
@@ -93,53 +93,41 @@ Sender: "iommu" <iommu-bounces@lists.linux-foundation.org>
 
 From: Jacob Pan <jacob.jun.pan@linux.intel.com>
 
-[ Upstream commit 79db7e1b4cf2a006f556099c13de3b12970fc6e3 ]
+[ Upstream commit 5f75585e19cc7018bf2016aa771632081ee2f313 ]
 
-When setting up first level page tables for sharing with CPU, we need
-to ensure IOMMU can support no less than the levels supported by the
-CPU.
+Page responses should only be sent when last page in group (LPIG) or
+private data is present in the page request. This patch avoids sending
+invalid descriptors.
 
-It is not adequate, as in the current code, to set up 5-level paging
-in PASID entry First Level Paging Mode(FLPM) solely based on CPU.
-
-Currently, intel_pasid_setup_first_level() is only used by native SVM
-code which already checks paging mode matches. However, future use of
-this helper function may not be limited to native SVM.
-https://lkml.org/lkml/2019/11/18/1037
-
-Fixes: 437f35e1cd4c8 ("iommu/vt-d: Add first level page table interface")
+Fixes: 5d308fc1ecf53 ("iommu/vt-d: Add 256-bit invalidation descriptor support")
 Signed-off-by: Jacob Pan <jacob.jun.pan@linux.intel.com>
 Reviewed-by: Eric Auger <eric.auger@redhat.com>
 Signed-off-by: Lu Baolu <baolu.lu@linux.intel.com>
 Signed-off-by: Joerg Roedel <jroedel@suse.de>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/iommu/intel-pasid.c | 12 ++++++++++--
- 1 file changed, 10 insertions(+), 2 deletions(-)
+ drivers/iommu/intel-svm.c | 7 +++----
+ 1 file changed, 3 insertions(+), 4 deletions(-)
 
-diff --git a/drivers/iommu/intel-pasid.c b/drivers/iommu/intel-pasid.c
-index 040a445be3009..e7cb0b8a73327 100644
---- a/drivers/iommu/intel-pasid.c
-+++ b/drivers/iommu/intel-pasid.c
-@@ -499,8 +499,16 @@ int intel_pasid_setup_first_level(struct intel_iommu *iommu,
+diff --git a/drivers/iommu/intel-svm.c b/drivers/iommu/intel-svm.c
+index ff7a3f9add325..518d0b2d12afd 100644
+--- a/drivers/iommu/intel-svm.c
++++ b/drivers/iommu/intel-svm.c
+@@ -654,11 +654,10 @@ static irqreturn_t prq_event_thread(int irq, void *d)
+ 			if (req->priv_data_present)
+ 				memcpy(&resp.qw2, req->priv_data,
+ 				       sizeof(req->priv_data));
++			resp.qw2 = 0;
++			resp.qw3 = 0;
++			qi_submit_sync(&resp, iommu);
+ 		}
+-		resp.qw2 = 0;
+-		resp.qw3 = 0;
+-		qi_submit_sync(&resp, iommu);
+-
+ 		head = (head + sizeof(*req)) & PRQ_RING_MASK;
  	}
  
- #ifdef CONFIG_X86
--	if (cpu_feature_enabled(X86_FEATURE_LA57))
--		pasid_set_flpm(pte, 1);
-+	/* Both CPU and IOMMU paging mode need to match */
-+	if (cpu_feature_enabled(X86_FEATURE_LA57)) {
-+		if (cap_5lp_support(iommu->cap)) {
-+			pasid_set_flpm(pte, 1);
-+		} else {
-+			pr_err("VT-d has no 5-level paging support for CPU\n");
-+			pasid_clear_entry(pte);
-+			return -EINVAL;
-+		}
-+	}
- #endif /* CONFIG_X86 */
- 
- 	pasid_set_domain_id(pte, did);
 -- 
 2.20.1
 
