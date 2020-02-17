@@ -2,107 +2,101 @@ Return-Path: <SRS0=vxCL=4F=lists.linux-foundation.org=iommu-bounces@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-0.6 required=3.0 tests=DKIM_INVALID,DKIM_SIGNED,
-	HEADER_FROM_DIFFERENT_DOMAINS,MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS,
-	URIBL_BLOCKED autolearn=no autolearn_force=no version=3.4.0
+X-Spam-Status: No, score=-6.5 required=3.0 tests=DKIM_INVALID,DKIM_SIGNED,
+	HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_PATCH,MAILING_LIST_MULTI,SIGNED_OFF_BY,
+	SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED autolearn=unavailable autolearn_force=no
+	version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 776D7C34021
-	for <iommu@archiver.kernel.org>; Mon, 17 Feb 2020 14:58:25 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 17362C34026
+	for <iommu@archiver.kernel.org>; Mon, 17 Feb 2020 15:40:27 +0000 (UTC)
 Received: from fraxinus.osuosl.org (smtp4.osuosl.org [140.211.166.137])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by mail.kernel.org (Postfix) with ESMTPS id 3CFD120679
-	for <iommu@archiver.kernel.org>; Mon, 17 Feb 2020 14:58:25 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTPS id D248D208C4
+	for <iommu@archiver.kernel.org>; Mon, 17 Feb 2020 15:40:26 +0000 (UTC)
 Authentication-Results: mail.kernel.org;
-	dkim=fail reason="signature verification failed" (1024-bit key) header.d=redhat.com header.i=@redhat.com header.b="IInTlhnk"
-DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 3CFD120679
-Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=redhat.com
+	dkim=fail reason="signature verification failed" (2048-bit key) header.d=linaro.org header.i=@linaro.org header.b="QUNDlRjh"
+DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org D248D208C4
+Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=linaro.org
 Authentication-Results: mail.kernel.org; spf=pass smtp.mailfrom=iommu-bounces@lists.linux-foundation.org
 Received: from localhost (localhost [127.0.0.1])
-	by fraxinus.osuosl.org (Postfix) with ESMTP id EBF8584995;
-	Mon, 17 Feb 2020 14:58:24 +0000 (UTC)
+	by fraxinus.osuosl.org (Postfix) with ESMTP id 8368085070;
+	Mon, 17 Feb 2020 15:40:26 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
 Received: from fraxinus.osuosl.org ([127.0.0.1])
 	by localhost (.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
-	with ESMTP id rZRQHj_CddBp; Mon, 17 Feb 2020 14:58:24 +0000 (UTC)
+	with ESMTP id 2NNIP4SRBwpn; Mon, 17 Feb 2020 15:40:26 +0000 (UTC)
 Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [140.211.9.56])
-	by fraxinus.osuosl.org (Postfix) with ESMTP id 3CAA3845A3;
-	Mon, 17 Feb 2020 14:58:24 +0000 (UTC)
+	by fraxinus.osuosl.org (Postfix) with ESMTP id EC1FB8464B;
+	Mon, 17 Feb 2020 15:40:25 +0000 (UTC)
 Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
-	by lists.linuxfoundation.org (Postfix) with ESMTP id 24305C08A0;
-	Mon, 17 Feb 2020 14:58:24 +0000 (UTC)
-Received: from whitealder.osuosl.org (smtp1.osuosl.org [140.211.166.138])
- by lists.linuxfoundation.org (Postfix) with ESMTP id EA3D2C013E
- for <iommu@lists.linux-foundation.org>; Mon, 17 Feb 2020 14:58:22 +0000 (UTC)
+	by lists.linuxfoundation.org (Postfix) with ESMTP id CF2CEC089F;
+	Mon, 17 Feb 2020 15:40:25 +0000 (UTC)
+Received: from silver.osuosl.org (smtp3.osuosl.org [140.211.166.136])
+ by lists.linuxfoundation.org (Postfix) with ESMTP id E5FF0C013E
+ for <iommu@lists.linux-foundation.org>; Mon, 17 Feb 2020 15:40:24 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
- by whitealder.osuosl.org (Postfix) with ESMTP id D33A184525
- for <iommu@lists.linux-foundation.org>; Mon, 17 Feb 2020 14:58:22 +0000 (UTC)
+ by silver.osuosl.org (Postfix) with ESMTP id D40E120030
+ for <iommu@lists.linux-foundation.org>; Mon, 17 Feb 2020 15:40:24 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from whitealder.osuosl.org ([127.0.0.1])
+Received: from silver.osuosl.org ([127.0.0.1])
  by localhost (.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
- with ESMTP id AliIGxEyCJ8m for <iommu@lists.linux-foundation.org>;
- Mon, 17 Feb 2020 14:58:22 +0000 (UTC)
+ with ESMTP id yQOV6wo9YUKU for <iommu@lists.linux-foundation.org>;
+ Mon, 17 Feb 2020 15:40:23 +0000 (UTC)
 X-Greylist: domain auto-whitelisted by SQLgrey-1.7.6
-Received: from us-smtp-delivery-1.mimecast.com (us-smtp-2.mimecast.com
- [207.211.31.81])
- by whitealder.osuosl.org (Postfix) with ESMTPS id 261BE844F1
- for <iommu@lists.linux-foundation.org>; Mon, 17 Feb 2020 14:58:22 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
- s=mimecast20190719; t=1581951500;
- h=from:from:reply-to:reply-to:subject:subject:date:date:
- message-id:message-id:to:to:cc:cc:mime-version:mime-version:
- content-type:content-type:
- content-transfer-encoding:content-transfer-encoding:
- in-reply-to:in-reply-to:references:references;
- bh=q5XH3q1zVi4vo6tPwZ0LjNWFZagX0MCQTTViEYgCMBo=;
- b=IInTlhnk0vtI0jlAtXjTzJxXUaRoJJblwbcNlXyV+K0SUNj5EXQd52gTvrxJbmLgaiRvHp
- GzO9xZK/6+lJ1hkFo8AiEwO2dQ3TDbnejP0Oef4aGGlTIDvagDHDV0JwMtKINFY0F0HACw
- fnLSs6zzyTnKdj734i3ZH9QCyyq6UmQ=
-Received: from mail-qt1-f198.google.com (mail-qt1-f198.google.com
- [209.85.160.198]) (Using TLS) by relay.mimecast.com with ESMTP id
- us-mta-411-DQw2Z49WOXmRdfmy2B8h2A-1; Mon, 17 Feb 2020 09:58:15 -0500
-Received: by mail-qt1-f198.google.com with SMTP id l1so11040760qtp.21
- for <iommu@lists.linux-foundation.org>; Mon, 17 Feb 2020 06:58:15 -0800 (PST)
+Received: from mail-wr1-f65.google.com (mail-wr1-f65.google.com
+ [209.85.221.65])
+ by silver.osuosl.org (Postfix) with ESMTPS id 923581FFFF
+ for <iommu@lists.linux-foundation.org>; Mon, 17 Feb 2020 15:40:23 +0000 (UTC)
+Received: by mail-wr1-f65.google.com with SMTP id z3so20331258wru.3
+ for <iommu@lists.linux-foundation.org>; Mon, 17 Feb 2020 07:40:23 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linaro.org; s=google;
+ h=date:from:to:cc:subject:message-id:references:mime-version
+ :content-disposition:in-reply-to;
+ bh=uBL44HTwPsTzK1hTlXHwrWPFvRz4I8cxeuhUA7nfr3s=;
+ b=QUNDlRjh2O+ooQ41KWBChztMd4j9tV2M8HiE6TDGhh6KZcCXQYdQmMqHkRy/oPre/d
+ E+T64sT8TUAqvGZCkZWcpAPXMK/psI/SMbqtUXH8WD/97O+XqMwt7rE0VgfYpg4SGCTu
+ 72DvsxmGQ2FHB1KOF86wT5RUdwe9l5E14uXBkwlKILpzWF5nOlDot/mlGYQpzffkiZng
+ dV1PcmwTrlY7TdA4Y7kgPv5XUqhxhLqt6oG02ccYRx64/bgjYrAaemMkV8MHRgYP/RlA
+ RNsfj1wDY4F+M6s4FATLU+2N+UfYeGwZGxIXM15btV8V9U0AnPqJn9J60Be6mPZjxKkb
+ OLhw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
  d=1e100.net; s=20161025;
- h=x-gm-message-state:date:from:to:cc:subject:message-id:reply-to
- :references:mime-version:content-disposition
- :content-transfer-encoding:in-reply-to;
- bh=q5XH3q1zVi4vo6tPwZ0LjNWFZagX0MCQTTViEYgCMBo=;
- b=iQUfxUzgnRtCN6CJNfTAxb6VGn0aTJGAy36tBQsyhqajnARbWC+t7IcBW8rYR/YGoe
- 79BEgJPgANTZfEbC4AaAfkhyOYtkC1tpX9syUVXBW3VaYSYtSaH/Arl3IQUdgzraoH57
- dgjfIEf509bKDBxx1F8EpaOOOizUFCE0uOUhjea0TNFyF1XlAVz8UZ4aq92fZi6QxGOt
- WWOE02rBbzWBwzFtKJ5VF/xwIoOwrpTbX0L71Bw1kx4uhx9zmXvjUa4JNc8TajlIFTKH
- r2D3gxw5DaUguWyS82kklfHVq6Jyxie6ondxV9yXt4gP+EJ3Q28S1AlFiE15wsNuAzNE
- W9ww==
-X-Gm-Message-State: APjAAAWl8SAcFL0JAEbrwQIY2MOj+t1N4i6Dyppzch2IW5GSWkfFpysD
- fh5mtEC9CqUomJA/Sz/htL0ma8O2TfBH4qYg1yJca9IGgHUqv/h/NwjGIUOiIrmhRv2mdckN3fX
- Z89BLQ+LSJ279ss1KYgGHx0RQMgX4jw==
-X-Received: by 2002:ac8:1415:: with SMTP id k21mr13713271qtj.300.1581951494849; 
- Mon, 17 Feb 2020 06:58:14 -0800 (PST)
-X-Google-Smtp-Source: APXvYqzWDXIhH9avVqr5m+pMflTbY1gwvERaA1WmIZi+X5spg7/ghQ6hRwSGV7aMzaGZ5QszHqhwrQ==
-X-Received: by 2002:ac8:1415:: with SMTP id k21mr13713243qtj.300.1581951494510; 
- Mon, 17 Feb 2020 06:58:14 -0800 (PST)
-Received: from localhost (ip70-163-223-149.ph.ph.cox.net. [70.163.223.149])
- by smtp.gmail.com with ESMTPSA id q25sm335317qkc.60.2020.02.17.06.58.13
+ h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+ :mime-version:content-disposition:in-reply-to;
+ bh=uBL44HTwPsTzK1hTlXHwrWPFvRz4I8cxeuhUA7nfr3s=;
+ b=CfVE9QzTt4lA/EObR1JgTySWaWs7GTLM/WdDyppGJEZo22NgAZHLCZ5OvKVTXRV+jd
+ br5cCpaF0QY0em0km5pz2VTbs6IXn+WWp2DLYM1V80SSUYBl3CnG8ZkiLjlw7pCLBAyK
+ Y7v5mBGxV+4lsND121fX2iHNqNnTliZNKlohWZKW64lt2BVGhFbquGfxaujyy1HV16RW
+ hMAvIfmziw+APPv1iY5/7hOfxKFOokPijKe37zNRyYSPKu2pdja3OFesVOc7SXLoVRwY
+ R4aBSzvRO6vJF4VMoUQB/CCe+9YSKfSCt0SUWfhygvMctHGB0kxrpH5HVy12M60etUeH
+ scQg==
+X-Gm-Message-State: APjAAAWeOtUgwElTJC+7Qsc83AUzQaSDfa5WoWHvUofKl10Gbac5i0By
+ h4CepHbFIu/qB+N81De0XBlTOQ==
+X-Google-Smtp-Source: APXvYqyK3wvWFPYLO6Oneazyxhd5g+tje1jkIBunochJVdUjHRcEMjjKDjk9tOFHPoHKB9Cr5dnXww==
+X-Received: by 2002:adf:f109:: with SMTP id r9mr22236398wro.406.1581954021861; 
+ Mon, 17 Feb 2020 07:40:21 -0800 (PST)
+Received: from myrica ([2001:171b:2276:930:116c:c27a:3e7f:5eaf])
+ by smtp.gmail.com with ESMTPSA id v131sm1106010wme.23.2020.02.17.07.40.20
  (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
- Mon, 17 Feb 2020 06:58:13 -0800 (PST)
-Date: Mon, 17 Feb 2020 07:58:12 -0700
-From: Jerry Snitselaar <jsnitsel@redhat.com>
-To: Robin Murphy <robin.murphy@arm.com>
-Subject: Re: arm-smmu.1.auto: Unhandled context fault starting with 5.4-rc1
-Message-ID: <20200217145812.w77idhj3u6jgaeam@cantor>
-References: <20200214201353.qlbqcvpztcx55qud@cantor>
- <7c9a234e-78b1-2385-84b8-50744b9c4066@arm.com>
- <20200216221110.zie3o5opbvarir3h@cantor>
- <efb6da9c-51a3-c35c-1bbf-ae6808006beb@arm.com>
+ Mon, 17 Feb 2020 07:40:21 -0800 (PST)
+Date: Mon, 17 Feb 2020 16:40:12 +0100
+From: Jean-Philippe Brucker <jean-philippe@linaro.org>
+To: Bjorn Helgaas <helgaas@kernel.org>
+Subject: Re: [PATCH 02/11] PCI: Add ats_supported host bridge flag
+Message-ID: <20200217154012.GD1650092@myrica>
+References: <20200213165049.508908-3-jean-philippe@linaro.org>
+ <20200215211047.GA124796@google.com>
 MIME-Version: 1.0
-In-Reply-To: <efb6da9c-51a3-c35c-1bbf-ae6808006beb@arm.com>
-X-MC-Unique: DQw2Z49WOXmRdfmy2B8h2A-1
-X-Mimecast-Spam-Score: 0
-X-Mimecast-Originator: redhat.com
 Content-Disposition: inline
-Cc: iommu@lists.linux-foundation.org, Will Deacon <will@kernel.org>
+In-Reply-To: <20200215211047.GA124796@google.com>
+Cc: mark.rutland@arm.com, linux-doc@vger.kernel.org, linux-pci@vger.kernel.org,
+ liviu.dudau@arm.com, guohanjun@huawei.com, frowand.list@gmail.com,
+ corbet@lwn.net, will@kernel.org, linux-acpi@vger.kernel.org, lenb@kernel.org,
+ devicetree@vger.kernel.org, robh+dt@kernel.org,
+ linux-arm-kernel@lists.infradead.org, dwmw2@infradead.org, rjw@rjwysocki.net,
+ iommu@lists.linux-foundation.org, sudeep.holla@arm.com, robin.murphy@arm.com,
+ amurray@thegoodpenguin.co.uk
 X-BeenThere: iommu@lists.linux-foundation.org
 X-Mailman-Version: 2.1.15
 Precedence: list
@@ -115,83 +109,67 @@ List-Post: <mailto:iommu@lists.linux-foundation.org>
 List-Help: <mailto:iommu-request@lists.linux-foundation.org?subject=help>
 List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
  <mailto:iommu-request@lists.linux-foundation.org?subject=subscribe>
-Reply-To: Jerry Snitselaar <jsnitsel@redhat.com>
-Content-Transfer-Encoding: base64
-Content-Type: text/plain; charset="utf-8"; Format="flowed"
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: 7bit
 Errors-To: iommu-bounces@lists.linux-foundation.org
 Sender: "iommu" <iommu-bounces@lists.linux-foundation.org>
 
-T24gTW9uIEZlYiAxNyAyMCwgUm9iaW4gTXVycGh5IHdyb3RlOgo+T24gMTYvMDIvMjAyMCAxMDox
-MSBwbSwgSmVycnkgU25pdHNlbGFhciB3cm90ZToKPj5PbiBGcmkgRmViIDE0IDIwLCBSb2JpbiBN
-dXJwaHkgd3JvdGU6Cj4+PkhpIEplcnJ5LAo+Pj4KPj4+T24gMjAyMC0wMi0xNCA4OjEzIHBtLCBK
-ZXJyeSBTbml0c2VsYWFyIHdyb3RlOgo+Pj4+SGkgV2lsbCwKPj4+Pgo+Pj4+T24gYSBnaWdhYnl0
-ZSBzeXN0ZW0gd2l0aCBDYXZpdW0gQ044eHgsIHdoZW4gZG9pbmcgYSBmaW8gdGVzdCBhZ2FpbnN0
-Cj4+Pj5hbiBudm1lIGRyaXZlIHdlIGFyZSBzZWVpbmcgdGhlIGZvbGxvd2luZzoKPj4+Pgo+Pj4+
-W8KgIDYzNy4xNjExOTRdIGFybS1zbW11IGFybS1zbW11LjEuYXV0bzogVW5oYW5kbGVkIGNvbnRl
-eHQgCj4+Pj5mYXVsdDogZnNyPTB4ODAwMDA0MDIsIGlvdmE9MHg4MDEwMDAzZjYwMDAsIGZzeW5y
-PTB4NzAwOTEsIAo+Pj4+Y2JmcnN5bnJhPTB4OTAwMCwgY2I9Nwo+Pj4+W8KgIDYzNy4xNzQzMjld
-IGFybS1zbW11IGFybS1zbW11LjEuYXV0bzogVW5oYW5kbGVkIGNvbnRleHQgCj4+Pj5mYXVsdDog
-ZnNyPTB4ODAwMDA0MDIsIGlvdmE9MHg4MDEwMDAwMzYwMDAsIGZzeW5yPTB4NzAwOTEsIAo+Pj4+
-Y2JmcnN5bnJhPTB4OTAwMCwgY2I9Nwo+Pj4+W8KgIDYzNy4xODY4ODddIGFybS1zbW11IGFybS1z
-bW11LjEuYXV0bzogVW5oYW5kbGVkIGNvbnRleHQgCj4+Pj5mYXVsdDogZnNyPTB4ODAwMDA0MDIs
-IGlvdmE9MHg4MDEwMDAyZWUwMDAsIGZzeW5yPTB4NzAwOTEsIAo+Pj4+Y2JmcnN5bnJhPTB4OTAw
-MCwgY2I9Nwo+Pj4+W8KgIDYzNy4xOTkyNzVdIGFybS1zbW11IGFybS1zbW11LjEuYXV0bzogVW5o
-YW5kbGVkIGNvbnRleHQgCj4+Pj5mYXVsdDogZnNyPTB4ODAwMDA0MDIsIGlvdmE9MHg4MDEwMDAz
-YzcwMDAsIGZzeW5yPTB4NzAwOTEsIAo+Pj4+Y2JmcnN5bnJhPTB4OTAwMCwgY2I9Nwo+Pj4+W8Kg
-IDYzNy4yMTE4ODVdIGFybS1zbW11IGFybS1zbW11LjEuYXV0bzogVW5oYW5kbGVkIGNvbnRleHQg
-Cj4+Pj5mYXVsdDogZnNyPTB4ODAwMDA0MDIsIGlvdmE9MHg4MDEwMDAzOTIwMDAsIGZzeW5yPTB4
-NzAwOTEsIAo+Pj4+Y2JmcnN5bnJhPTB4OTAwMCwgY2I9Nwo+Pj4+W8KgIDYzNy4yMjQ1ODBdIGFy
-bS1zbW11IGFybS1zbW11LjEuYXV0bzogVW5oYW5kbGVkIGNvbnRleHQgCj4+Pj5mYXVsdDogZnNy
-PTB4ODAwMDA0MDIsIGlvdmE9MHg4MDEwMDAwMTgwMDAsIGZzeW5yPTB4NzAwOTEsIAo+Pj4+Y2Jm
-cnN5bnJhPTB4OTAwMCwgY2I9Nwo+Pj4+W8KgIDYzNy4yMzcyNDFdIGFybS1zbW11IGFybS1zbW11
-LjEuYXV0bzogVW5oYW5kbGVkIGNvbnRleHQgCj4+Pj5mYXVsdDogZnNyPTB4ODAwMDA0MDIsIGlv
-dmE9MHg4MDEwMDAzNjAwMDAsIGZzeW5yPTB4NzAwOTEsIAo+Pj4+Y2JmcnN5bnJhPTB4OTAwMCwg
-Y2I9Nwo+Pj4+W8KgIDYzNy4yNDk2NTddIGFybS1zbW11IGFybS1zbW11LjEuYXV0bzogVW5oYW5k
-bGVkIGNvbnRleHQgCj4+Pj5mYXVsdDogZnNyPTB4ODAwMDA0MDIsIGlvdmE9MHg4MDEwMDAwYmEw
-MDAsIGZzeW5yPTB4NzAwOTEsIAo+Pj4+Y2JmcnN5bnJhPTB4OTAwMCwgY2I9Nwo+Pj4+W8KgIDYz
-Ny4yNjIxMjBdIGFybS1zbW11IGFybS1zbW11LjEuYXV0bzogVW5oYW5kbGVkIGNvbnRleHQgCj4+
-Pj5mYXVsdDogZnNyPTB4ODAwMDA0MDIsIGlvdmE9MHg4MDEwMDAwM2UwMDAsIGZzeW5yPTB4NzAw
-OTEsIAo+Pj4+Y2JmcnN5bnJhPTB4OTAwMCwgY2I9Nwo+Pj4+W8KgIDYzNy4yNzQ0NjhdIGFybS1z
-bW11IGFybS1zbW11LjEuYXV0bzogVW5oYW5kbGVkIGNvbnRleHQgCj4+Pj5mYXVsdDogZnNyPTB4
-ODAwMDA0MDIsIGlvdmE9MHg4MDEwMDAzMDQwMDAsIGZzeW5yPTB4NzAwOTEsIAo+Pj4+Y2JmcnN5
-bnJhPTB4OTAwMCwgY2I9Nwo+Pj4KPj4+VGhvc2UgIklPVkFzIiBkb24ndCBsb29rIG11Y2ggbGlr
-ZSBJT1ZBcyBmcm9tIHRoZSBETUEgYWxsb2NhdG9yIC0gCj4+PmlmIHRoZXkgd2VyZSBwaHlzaWNh
-bCBhZGRyZXNzZXMsIHdvdWxkIHRoZXkgY29ycmVzcG9uZCB0byBhbiAKPj4+ZXhwZWN0ZWQgcmVn
-aW9uIG9mIHRoZSBwaHlzaWNhbCBtZW1vcnkgbWFwPwo+Pj4KPj4+SSB3b3VsZCBzdXNwZWN0IHRo
-YXQgdGhpcyBpcyBtb3N0IGxpa2VseSBtaXNiZWhhdmlvdXIgaW4gdGhlIE5WTWUgCj4+PmRyaXZl
-ciAoaXNzdWluZyBhIHdyaXRlIHRvIGEgbm9uLURNQS1tYXBwZWQgYWRkcmVzcyksIGFuZCB0aGUg
-U01NVSAKPj4+aXMganVzdCBkb2luZyBpdHMgam9iIGluIGJsb2NraW5nIGFuZCByZXBvcnRpbmcg
-aXQuCj4+Pgo+Pj4+SSBhbHNvIHJlcHJvZHVjZWQgd2l0aCA1LjUtcmM3LCBhbmQgd2lsbCBjaGVj
-ayA1LjYtcmMxIGxhdGVyIAo+Pj4+dG9kYXkuIEkgY291bGRuJ3QgbmFycm93IGl0IGRvd24gZnVy
-dGhlciBpbnRvIDUuNC1yYzEuCj4+Pj5JIGRvbid0IGtub3cgc21tdSBvciB0aGUgY29kZSB3ZWxs
-LCBhbnkgdGhvdWdodHMgb24gd2hlcmUgdG8gCj4+Pj5zdGFydCBkaWdnaW5nIGludG8gdGhpcz8K
-Pj4+Pgo+Pj4+ZmlvIHRlc3QgdGhhdCBpcyBiZWluZyBydW4gaXM6Cj4+Pj4KPj4+PiNmaW8gLWZp
-bGVuYW1lPS9kZXYvbnZtZTBuMSAtaW9kZXB0aD02NCAtdGhyZWFkIC1ydz1yYW5kd3JpdGUgCj4+
-Pj4taW9lbmdpbmU9bGliYWlvIC1icz00ayAtcnVudGltZT00MzIwMCAtc2l6ZT0tZ3JvdXBfcmVw
-b3J0aW5nIAo+Pj4+LW5hbWU9bXl0ZXN0IC1udW1qb2JzPTMyCj4+Pgo+Pj5KdXN0IHRvIGNsYXJp
-ZnksIGRvIG90aGVyIHRlc3RzIHdvcmsgT0sgb24gdGhlIHNhbWUgZGV2aWNlPwo+Pj4KPj4+VGhh
-bmtzLAo+Pj5Sb2Jpbi4KPj4+Cj4+Cj4+SSB3YXMgYWJsZSB0byBnZXQgYmFjayBvbiB0aGUgc3lz
-dGVtIHRvZGF5LiBJIHRoaW5rIEkga25vdyB3aGF0IHRoZSAKPj5wcm9ibGVtIGlzOgo+Pgo+PlvC
-oMKgwqAgMC4wMzYxODldIGlvbW11OiBHaWdhYnl0ZSBSMTIwLVQzNC0wMCBkZXRlY3RlZCwgZm9y
-Y2UgaW9tbXUgCj4+cGFzc3Rocm91Z2ggbW9kZQo+PlvCoMKgwqAgNi4zMjQyODJdIGlvbW11OiBE
-ZWZhdWx0IGRvbWFpbiB0eXBlOiBUcmFuc2xhdGVkCj4+Cj4+U28gdGhlIG5ldyBkZWZhdWx0IGRv
-bWFpbiBjb2RlIGluIDUuNCBvdmVycmlkZXMgdGhlIGlvbW11IHF1aXJrIGNvZGUgCj4+c2V0dGlu
-ZyBkZWZhdWx0Cj4+cGFzc3Rocm91Z2guIFRlc3RpbmcgYSBxdWljayBwYXRjaCB0aGF0IHRyYWNr
-cyB3aGV0aGVyIHRoZSBkZWZhdWx0IAo+PmRvbWFpbiB3YXMgc2V0Cj4+aW4gdGhlIHF1aXJrIGNv
-ZGUsIGFuZCBsZWF2ZXMgaXQgYWxvbmUgaWYgaXQgd2FzLiBTbyBmYXIgaXQgc2VlbXMgdG8gCj4+
-YmUgd29ya2luZy4KPgo+QWgsIE9LLiBDb3VsZCB5b3UgcG9pbnQgbWUgYXQgdGhhdCBxdWlyayBj
-b2RlPyBJIGNhbid0IHNlZW0gdG8gdHJhY2sgCj5pdCBkb3duIGluIG1haW5saW5lLCBhbmQgc2Vl
-aW5nIHRoaXMgbXVjaCBsZWF2ZXMgbWUgZHViaW91cyB0aGF0IGl0J3MgCj5ldmVuIGNvcnJlY3Qg
-LSBtYXRjaGluZyBhIHBhcnRpY3VsYXIgYm9hcmQgaW1wbGllcyB0aGF0IGl0J3MgYSAKPmZpcm13
-YXJlIGlzc3VlIChhcyBmYXIgYXMgSSdtIGF3YXJlIHRoZSBTTU1VcyBpbiBDTjg4eHggU29DcyBh
-cmUgCj51c2FibGUgaW4gZ2VuZXJhbCksIGJ1dCBpZiB0aGUgZmlybXdhcmUgZGVzY3JpcHRpb24g
-aXMgd3JvbmcgdG8gdGhlIAo+cG9pbnQgdGhhdCBETUEgb3BzIHRyYW5zbGF0aW9uIGRvZXNuJ3Qg
-d29yaywgdGhlbiBubyBvdGhlciB0cmFuc2xhdGlvbiAKPihlLmcuIFZGSU8pIGlzIGxpa2VseSB0
-byB3b3JrIGVpdGhlci4gSW4gdGhhdCBjYXNlIGl0J3Mgc2ltcGx5IG5vdCAKPnNhZmUgdG8gZW5h
-YmxlIHRoZSBTTU1VIGF0IGFsbCwgYW5kIGZ1ZGdpbmcgdGhlIGRlZmF1bHQgZG9tYWluIHR5cGUg
-Cj5tZXJlbHkgaGlkZXMgb25lIHN5bXB0b20gb2YgdGhlIHByb2JsZW0uCj4KPlJvYmluLgo+CgpV
-Z2guIEl0IGlzIGEgUkhFTCBvbmx5IHBhdGNoLCBidXQgZm9yIHNvbWUgcmVhc29uIGl0IGlzIGFw
-cGxpZWQgdG8gdGhlCmFyayBrZXJuZWwgYnVpbGRzIGFzIHdlbGwuIFNvcnJ5IGZvciB0aGUgbm9p
-c2UuCgpfX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fXwppb21t
-dSBtYWlsaW5nIGxpc3QKaW9tbXVAbGlzdHMubGludXgtZm91bmRhdGlvbi5vcmcKaHR0cHM6Ly9s
-aXN0cy5saW51eGZvdW5kYXRpb24ub3JnL21haWxtYW4vbGlzdGluZm8vaW9tbXU=
+On Sat, Feb 15, 2020 at 03:10:47PM -0600, Bjorn Helgaas wrote:
+> On Thu, Feb 13, 2020 at 05:50:40PM +0100, Jean-Philippe Brucker wrote:
+> > Each vendor has their own way of describing whether a host bridge
+> > supports ATS.  The Intel and AMD ACPI tables selectively enable or
+> > disable ATS per device or sub-tree, while Arm has a single bit for each
+> > host bridge.  For those that need it, add an ats_supported bit to the
+> > host bridge structure.
+> > 
+> > Signed-off-by: Jean-Philippe Brucker <jean-philippe@linaro.org>
+> > ---
+> >  drivers/pci/probe.c | 7 +++++++
+> >  include/linux/pci.h | 1 +
+> >  2 files changed, 8 insertions(+)
+> > 
+> > diff --git a/drivers/pci/probe.c b/drivers/pci/probe.c
+> > index 512cb4312ddd..75c0a25af44e 100644
+> > --- a/drivers/pci/probe.c
+> > +++ b/drivers/pci/probe.c
+> > @@ -598,6 +598,13 @@ static void pci_init_host_bridge(struct pci_host_bridge *bridge)
+> >  	bridge->native_shpc_hotplug = 1;
+> >  	bridge->native_pme = 1;
+> >  	bridge->native_ltr = 1;
+> > +
+> > +	/*
+> > +	 * Some systems may disable ATS at the host bridge (ACPI IORT,
+> > +	 * device-tree), other filter it with a smaller granularity (ACPI DMAR
+> > +	 * and IVRS).
+> > +	 */
+> > +	bridge->ats_supported = 1;
+> 
+> The cover letter says it's important to enable ATS only if the host
+> bridge supports it.  From the other patches, it looks like we learn if
+> the host bridge supports ATS from either a DT "ats-supported" property
+> or an ACPI IORT table.  If that's the case, shouldn't the default here
+> be "ATS is *not* supported"?
+
+The ACPI IVRS table (AMD) doesn't have a property for the host bridge, it
+can only deselect ATS for a sub-range of devices. Similarly the DMAR table
+(Intel) declares that ATS is supported either by the whole PCIe domain or
+for sub-ranges of devices. I selected ats_supported at the bridge by
+default since IVRS needs it and DMAR has its own fine-grained ATS support
+configuration.
+
+I'm still not sure this is the right approach, given that the
+ats_supported bridge property doesn't exactly correspond to a firmware
+property on all platforms. Maybe the device-tree implementation should
+follow the IORT one where each device carries a fwspec property stating
+"root-complex supports ATS". But it isn't nice either so I tried a cleaner
+implementation (as discussed with Robin back on the ATS-with-SMMUv3 series
+[1]).
+
+Thanks,
+Jean
+
+[1] https://lore.kernel.org/linux-iommu/c10c7adb-c7f6-f8c6-05cc-f4f143427a2d@arm.com/
+_______________________________________________
+iommu mailing list
+iommu@lists.linux-foundation.org
+https://lists.linuxfoundation.org/mailman/listinfo/iommu
