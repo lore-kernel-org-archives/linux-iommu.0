@@ -7,103 +7,105 @@ X-Spam-Status: No, score=-6.5 required=3.0 tests=DKIM_INVALID,DKIM_SIGNED,
 	SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED autolearn=ham autolearn_force=no
 	version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id A0D40C34021
-	for <iommu@archiver.kernel.org>; Mon, 17 Feb 2020 12:40:43 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 088D5C34020
+	for <iommu@archiver.kernel.org>; Mon, 17 Feb 2020 13:02:12 +0000 (UTC)
 Received: from silver.osuosl.org (smtp3.osuosl.org [140.211.166.136])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by mail.kernel.org (Postfix) with ESMTPS id 6837B20725
-	for <iommu@archiver.kernel.org>; Mon, 17 Feb 2020 12:40:43 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTPS id D2E6C207FD
+	for <iommu@archiver.kernel.org>; Mon, 17 Feb 2020 13:02:11 +0000 (UTC)
 Authentication-Results: mail.kernel.org;
-	dkim=fail reason="signature verification failed" (2048-bit key) header.d=linaro.org header.i=@linaro.org header.b="xB+yOUMH"
-DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 6837B20725
-Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=linaro.org
+	dkim=fail reason="signature verification failed" (1024-bit key) header.d=redhat.com header.i=@redhat.com header.b="dihml2eR"
+DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org D2E6C207FD
+Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=redhat.com
 Authentication-Results: mail.kernel.org; spf=pass smtp.mailfrom=iommu-bounces@lists.linux-foundation.org
 Received: from localhost (localhost [127.0.0.1])
-	by silver.osuosl.org (Postfix) with ESMTP id 2548B2043E;
-	Mon, 17 Feb 2020 12:40:43 +0000 (UTC)
+	by silver.osuosl.org (Postfix) with ESMTP id A7AF920394;
+	Mon, 17 Feb 2020 13:02:11 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
 Received: from silver.osuosl.org ([127.0.0.1])
 	by localhost (.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
-	with ESMTP id 34DODP4uOABj; Mon, 17 Feb 2020 12:40:42 +0000 (UTC)
+	with ESMTP id rovdu22ub3SZ; Mon, 17 Feb 2020 13:02:10 +0000 (UTC)
 Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [140.211.9.56])
-	by silver.osuosl.org (Postfix) with ESMTP id 0D00C20027;
-	Mon, 17 Feb 2020 12:40:42 +0000 (UTC)
+	by silver.osuosl.org (Postfix) with ESMTP id 540FE2002C;
+	Mon, 17 Feb 2020 13:02:10 +0000 (UTC)
 Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
-	by lists.linuxfoundation.org (Postfix) with ESMTP id EC3D1C08A0;
-	Mon, 17 Feb 2020 12:40:41 +0000 (UTC)
-Received: from fraxinus.osuosl.org (smtp4.osuosl.org [140.211.166.137])
- by lists.linuxfoundation.org (Postfix) with ESMTP id BA045C013E
- for <iommu@lists.linux-foundation.org>; Mon, 17 Feb 2020 12:40:39 +0000 (UTC)
+	by lists.linuxfoundation.org (Postfix) with ESMTP id 26AE6C08A0;
+	Mon, 17 Feb 2020 13:02:10 +0000 (UTC)
+Received: from whitealder.osuosl.org (smtp1.osuosl.org [140.211.166.138])
+ by lists.linuxfoundation.org (Postfix) with ESMTP id E5103C013E
+ for <iommu@lists.linux-foundation.org>; Mon, 17 Feb 2020 13:02:07 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
- by fraxinus.osuosl.org (Postfix) with ESMTP id B63B784755
- for <iommu@lists.linux-foundation.org>; Mon, 17 Feb 2020 12:40:39 +0000 (UTC)
+ by whitealder.osuosl.org (Postfix) with ESMTP id C8EF6861A0
+ for <iommu@lists.linux-foundation.org>; Mon, 17 Feb 2020 13:02:07 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from fraxinus.osuosl.org ([127.0.0.1])
+Received: from whitealder.osuosl.org ([127.0.0.1])
  by localhost (.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
- with ESMTP id MP1AASro2lCP for <iommu@lists.linux-foundation.org>;
- Mon, 17 Feb 2020 12:40:39 +0000 (UTC)
+ with ESMTP id oPu+hhpo1ZTo for <iommu@lists.linux-foundation.org>;
+ Mon, 17 Feb 2020 13:02:06 +0000 (UTC)
 X-Greylist: domain auto-whitelisted by SQLgrey-1.7.6
-Received: from mail-wm1-f65.google.com (mail-wm1-f65.google.com
- [209.85.128.65])
- by fraxinus.osuosl.org (Postfix) with ESMTPS id B1B0F8457E
- for <iommu@lists.linux-foundation.org>; Mon, 17 Feb 2020 12:40:38 +0000 (UTC)
-Received: by mail-wm1-f65.google.com with SMTP id t14so18294927wmi.5
- for <iommu@lists.linux-foundation.org>; Mon, 17 Feb 2020 04:40:38 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linaro.org; s=google;
- h=date:from:to:cc:subject:message-id:references:mime-version
- :content-disposition:in-reply-to;
- bh=VM4sr45eMsFNfm3I8AuewKPZ2mzCi8kc40UVw+7O2LQ=;
- b=xB+yOUMH1+HqPIVwYA3f+1KohCCBUZKzi2se4L7bK+0Hs0L2ST4OcrzccxNLIKZSZL
- meF2am7U3/daqiwqZ2iYjulCYMVLvp6cA+U2CEevmBa4//Ar02kR0gI8SOaoXc2FPtNM
- 4mii9R/d783fyE/dxumDzGZA8y7IOZs1u0FLd3Z4kzBmSygQEGxTGUYOe5fqlT9fjxx2
- FBivVrn9YMs6qKmDf7fYx4XhyXb2rq9Zz7yxrlKls/r0+mqTuKY6553nH6pjvXf0vhDz
- dxEhqGpoCEOSpWjK878ms0OPbBVieYrKP3NYoCNhXJO1KEiCzbAQp4gwPxSiLHMZGPv/
- 8yrA==
+Received: from us-smtp-delivery-1.mimecast.com (us-smtp-1.mimecast.com
+ [207.211.31.81])
+ by whitealder.osuosl.org (Postfix) with ESMTPS id 464B4861A4
+ for <iommu@lists.linux-foundation.org>; Mon, 17 Feb 2020 13:02:06 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+ s=mimecast20190719; t=1581944525;
+ h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+ to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+ in-reply-to:in-reply-to:references:references;
+ bh=TP4MnY7tGPhZNJTAZItTt9kiyklHpFFJJPLHhX1/LOE=;
+ b=dihml2eRU14kuo1HSAMzPjqB10uTldaJybjH7HLffx1P+gJbJlIPXsjLb0+GtAYsa3Mbpy
+ p/oxoMGbSVr6rY6qgPKZU434G4tIgvjO80AgZ2f4nXTrqn3B78029g/hWQ3NUNGh85RoZl
+ V71Rbmimgdup50vFMS+82hsG5eyYyuc=
+Received: from mail-qk1-f198.google.com (mail-qk1-f198.google.com
+ [209.85.222.198]) (Using TLS) by relay.mimecast.com with ESMTP id
+ us-mta-327-CBFACMqsMDm3QH5e7p-yQQ-1; Mon, 17 Feb 2020 08:01:56 -0500
+Received: by mail-qk1-f198.google.com with SMTP id z124so5138251qkd.20
+ for <iommu@lists.linux-foundation.org>; Mon, 17 Feb 2020 05:01:56 -0800 (PST)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
  d=1e100.net; s=20161025;
  h=x-gm-message-state:date:from:to:cc:subject:message-id:references
  :mime-version:content-disposition:in-reply-to;
- bh=VM4sr45eMsFNfm3I8AuewKPZ2mzCi8kc40UVw+7O2LQ=;
- b=W1BzKJ53O8LiBuTmtCi0JcL4BKdlWOJwCk3+XhEI2/qrMoaH+LdSE2pU+4/s5+/hId
- 8i0iG2pgtha5MHWnUDG/XADj/vbC01CFvAsCARDC1YvUlFGU2IxGcZoSZQkSxbS2Vs47
- K4r+XafmPx10aWtrwv959TnOrjoKrDfYtWi+bFXiwF/nm9pf8OS+3zCvE3Xy0Ibfn2dX
- DceT8oehGHy6+H+4zf2Q9TAukDit7bjqdZ1YsgpDLXd3pbR97ks+IDmWw9sOLQDYIjlY
- qE72nZnxgcEGF1M2TQpvKHFQIrP2OT5/2jF2ahQLRZlWZXGzpTNau1EL5kJMFSAMj2QJ
- /AAQ==
-X-Gm-Message-State: APjAAAVeeSQwUstWnrMyAEoYJCRwuF5HncQzwSnJ4yOZmj4z6Iy8UU53
- Gz3cE/sJ6wbu9CeZc3iOxWR/mg==
-X-Google-Smtp-Source: APXvYqw7OaMmOiCFpqSYiEkkioeWfbwcKs6q33Y3t8Kyrhd1NgY0z99Vh6YZxCeeeslYOpZSiSCuUQ==
-X-Received: by 2002:a7b:c0d9:: with SMTP id s25mr21509184wmh.98.1581943237117; 
- Mon, 17 Feb 2020 04:40:37 -0800 (PST)
-Received: from myrica ([2001:171b:2276:930:116c:c27a:3e7f:5eaf])
- by smtp.gmail.com with ESMTPSA id d16sm917782wrg.27.2020.02.17.04.40.35
+ bh=TP4MnY7tGPhZNJTAZItTt9kiyklHpFFJJPLHhX1/LOE=;
+ b=GwWfRHjQcBk3+PKobPkqXXx/ic2Fd1uTsS1qxK14jC0zqoA07RVQTXKqdre7vD+5OL
+ mqY0hv9GiKQsa448DKZ/CTxzi6w+0lrFWB+eJZD2uJ/l6eef6cWlSavXMlFDvCuFmPMC
+ 94w5nq1WaNYqHmiEd/bC0cxn0KYCXzV7ocSg4zjV25Quqzkk+ahfwQ/a0QKXFibd1lnq
+ xCtYVsvltT/WFmbVYALOEuzwq65oFimVJR9LAsrjDL5zXe9/CYNvy2T1Af/PAsEgoqst
+ PV+sckCE2ZnXCs6QWVnXQB+X7lJGGz45Vum757ZZNy6Z1TmxO3ecU1Rl2CplWEWsE+UZ
+ Bl4w==
+X-Gm-Message-State: APjAAAUCnn0iQtJ9bxWSrH1bKBZGteQpC6cJgiJBmYMpXk9DuFAZ9BAT
+ c6v9WKUXfs3jsg6yPcIpCosSFyu6b69HxMnzXMWI53RrUQ1Dgp0vDAUtGSxK43QL06QFAMkJN2L
+ l9m6mXbS9yqLLo7MTjMvMO3VcKVMsnA==
+X-Received: by 2002:a37:9d7:: with SMTP id 206mr11068861qkj.416.1581944516118; 
+ Mon, 17 Feb 2020 05:01:56 -0800 (PST)
+X-Google-Smtp-Source: APXvYqyQ8C5G4SdbUsD8P4MFfVMK/CjTlG/8dSUmGSJJgcnBeSViAiOdw0hxzTa6igiB5lQZky9sqA==
+X-Received: by 2002:a37:9d7:: with SMTP id 206mr11068844qkj.416.1581944515885; 
+ Mon, 17 Feb 2020 05:01:55 -0800 (PST)
+Received: from redhat.com (bzq-79-176-28-95.red.bezeqint.net. [79.176.28.95])
+ by smtp.gmail.com with ESMTPSA id
+ n4sm133284qti.55.2020.02.17.05.01.52
  (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
- Mon, 17 Feb 2020 04:40:36 -0800 (PST)
-Date: Mon, 17 Feb 2020 13:40:28 +0100
-From: Jean-Philippe Brucker <jean-philippe@linaro.org>
-To: Rob Herring <robh+dt@kernel.org>
-Subject: Re: [PATCH 03/11] PCI: OF: Check whether the host bridge supports ATS
-Message-ID: <20200217124028.GC1650092@myrica>
-References: <20200213165049.508908-1-jean-philippe@linaro.org>
- <20200213165049.508908-4-jean-philippe@linaro.org>
- <CAL_JsqKZP9u7bFsVT=5TzqmnHWm_bvH39ffkbN3q9-k32ynVig@mail.gmail.com>
+ Mon, 17 Feb 2020 05:01:55 -0800 (PST)
+Date: Mon, 17 Feb 2020 08:01:49 -0500
+From: "Michael S. Tsirkin" <mst@redhat.com>
+To: Jean-Philippe Brucker <jean-philippe@linaro.org>
+Subject: Re: [PATCH 3/3] iommu/virtio: Enable x86 support
+Message-ID: <20200217080129-mutt-send-email-mst@kernel.org>
+References: <20200214160413.1475396-1-jean-philippe@linaro.org>
+ <20200214160413.1475396-4-jean-philippe@linaro.org>
+ <311a1885-c619-3c8d-29dd-14fbfbf74898@arm.com>
+ <20200216045006-mutt-send-email-mst@kernel.org>
+ <20200217090107.GA1650092@myrica>
 MIME-Version: 1.0
+In-Reply-To: <20200217090107.GA1650092@myrica>
+X-MC-Unique: CBFACMqsMDm3QH5e7p-yQQ-1
+X-Mimecast-Spam-Score: 0
+X-Mimecast-Originator: redhat.com
 Content-Disposition: inline
-In-Reply-To: <CAL_JsqKZP9u7bFsVT=5TzqmnHWm_bvH39ffkbN3q9-k32ynVig@mail.gmail.com>
-Cc: Mark Rutland <mark.rutland@arm.com>,
- Linux Doc Mailing List <linux-doc@vger.kernel.org>,
- PCI <linux-pci@vger.kernel.org>, Liviu Dudau <liviu.dudau@arm.com>,
- Hanjun Guo <guohanjun@huawei.com>, Frank Rowand <frowand.list@gmail.com>,
- Jonathan Corbet <corbet@lwn.net>, Will Deacon <will@kernel.org>,
- linux-acpi@vger.kernel.org, Len Brown <lenb@kernel.org>,
- devicetree@vger.kernel.org, Bjorn Helgaas <bhelgaas@google.com>,
- "moderated list:ARM/FREESCALE IMX / MXC ARM ARCHITECTURE"
- <linux-arm-kernel@lists.infradead.org>, David Woodhouse <dwmw2@infradead.org>,
- "Rafael J. Wysocki" <rjw@rjwysocki.net>,
- Linux IOMMU <iommu@lists.linux-foundation.org>,
- Sudeep Holla <sudeep.holla@arm.com>, Robin Murphy <robin.murphy@arm.com>,
- Andrew Murray <amurray@thegoodpenguin.co.uk>
+Cc: kevin.tian@intel.com, linux-pci@vger.kernel.org, jasowang@redhat.com,
+ virtualization@lists.linux-foundation.org, iommu@lists.linux-foundation.org,
+ sebastien.boeuf@intel.com, jacob.jun.pan@intel.com, bhelgaas@google.com,
+ Robin Murphy <robin.murphy@arm.com>
 X-BeenThere: iommu@lists.linux-foundation.org
 X-Mailman-Version: 2.1.15
 Precedence: list
@@ -121,56 +123,57 @@ Content-Transfer-Encoding: 7bit
 Errors-To: iommu-bounces@lists.linux-foundation.org
 Sender: "iommu" <iommu-bounces@lists.linux-foundation.org>
 
-On Thu, Feb 13, 2020 at 12:26:46PM -0600, Rob Herring wrote:
-> On Thu, Feb 13, 2020 at 10:52 AM Jean-Philippe Brucker
-> <jean-philippe@linaro.org> wrote:
-> >
-> > Copy the ats-supported flag into the pci_host_bridge structure.
-> >
-> > Signed-off-by: Jean-Philippe Brucker <jean-philippe@linaro.org>
-> > ---
-> >  drivers/pci/controller/pci-host-common.c | 1 +
-> >  drivers/pci/of.c                         | 9 +++++++++
-> >  include/linux/of_pci.h                   | 3 +++
-> >  3 files changed, 13 insertions(+)
-> >
-> > diff --git a/drivers/pci/controller/pci-host-common.c b/drivers/pci/controller/pci-host-common.c
-> > index 250a3fc80ec6..a6ac927be291 100644
-> > --- a/drivers/pci/controller/pci-host-common.c
-> > +++ b/drivers/pci/controller/pci-host-common.c
-> > @@ -92,6 +92,7 @@ int pci_host_common_probe(struct platform_device *pdev,
-> >                 return ret;
-> >         }
-> >
-> > +       of_pci_host_check_ats(bridge);
-> >         platform_set_drvdata(pdev, bridge->bus);
-> >         return 0;
-> >  }
-> > diff --git a/drivers/pci/of.c b/drivers/pci/of.c
-> > index 81ceeaa6f1d5..4b8a877f1e9f 100644
-> > --- a/drivers/pci/of.c
-> > +++ b/drivers/pci/of.c
-> > @@ -576,6 +576,15 @@ int pci_parse_request_of_pci_ranges(struct device *dev,
-> >  }
-> >  EXPORT_SYMBOL_GPL(pci_parse_request_of_pci_ranges);
-> >
-> > +void of_pci_host_check_ats(struct pci_host_bridge *bridge)
-> > +{
-> > +       struct device_node *np = bridge->bus->dev.of_node;
-> > +
-> > +       if (!np)
-> > +               return;
-> > +
-> > +       bridge->ats_supported = of_property_read_bool(np, "ats-supported");
-> > +}
+On Mon, Feb 17, 2020 at 10:01:07AM +0100, Jean-Philippe Brucker wrote:
+> On Sun, Feb 16, 2020 at 04:50:33AM -0500, Michael S. Tsirkin wrote:
+> > On Fri, Feb 14, 2020 at 04:57:11PM +0000, Robin Murphy wrote:
+> > > On 14/02/2020 4:04 pm, Jean-Philippe Brucker wrote:
+> > > > With the built-in topology description in place, x86 platforms can now
+> > > > use the virtio-iommu.
+> > > > 
+> > > > Signed-off-by: Jean-Philippe Brucker <jean-philippe@linaro.org>
+> > > > ---
+> > > >   drivers/iommu/Kconfig | 3 ++-
+> > > >   1 file changed, 2 insertions(+), 1 deletion(-)
+> > > > 
+> > > > diff --git a/drivers/iommu/Kconfig b/drivers/iommu/Kconfig
+> > > > index 068d4e0e3541..adcbda44d473 100644
+> > > > --- a/drivers/iommu/Kconfig
+> > > > +++ b/drivers/iommu/Kconfig
+> > > > @@ -508,8 +508,9 @@ config HYPERV_IOMMU
+> > > >   config VIRTIO_IOMMU
+> > > >   	bool "Virtio IOMMU driver"
+> > > >   	depends on VIRTIO=y
+> > > > -	depends on ARM64
+> > > > +	depends on (ARM64 || X86)
+> > > >   	select IOMMU_API
+> > > > +	select IOMMU_DMA
+> > > 
+> > > Can that have an "if X86" for clarity? AIUI it's not necessary for
+> > > virtio-iommu itself (and really shouldn't be), but is merely to satisfy the
+> > > x86 arch code's expectation that IOMMU drivers bring their own DMA ops,
+> > > right?
+> > > 
+> > > Robin.
+> > 
+> > In fact does not this work on any platform now?
 > 
-> Not really any point in a common function if we expect this to be only
-> for ECAM hosts which it seems to be based on the binding.
+> There is ongoing work to use the generic IOMMU_DMA ops on X86. AMD IOMMU
+> has been converted recently [1] but VT-d still implements its own DMA ops
+> (conversion patches are on the list [2]). On Arm the arch Kconfig selects
+> IOMMU_DMA, and I assume we'll have the same on X86 once Tom's work is
+> complete. Until then I can add a "if X86" here for clarity.
+> 
+> Thanks,
+> Jean
+> 
+> [1] https://lore.kernel.org/linux-iommu/20190613223901.9523-1-murphyt7@tcd.ie/
+> [2] https://lore.kernel.org/linux-iommu/20191221150402.13868-1-murphyt7@tcd.ie/
 
-I'll move this to pci-host-common.c
+What about others? E.g. PPC?
 
-Thanks,
-Jean
+-- 
+MST
+
 _______________________________________________
 iommu mailing list
 iommu@lists.linux-foundation.org
