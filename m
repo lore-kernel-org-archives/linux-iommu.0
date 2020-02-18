@@ -2,100 +2,107 @@ Return-Path: <SRS0=Yw80=4G=lists.linux-foundation.org=iommu-bounces@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-0.8 required=3.0 tests=DKIM_INVALID,DKIM_SIGNED,
-	MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS autolearn=no autolearn_force=no
+X-Spam-Status: No, score=-8.1 required=3.0 tests=DKIM_INVALID,DKIM_SIGNED,
+	HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_PATCH,MAILING_LIST_MULTI,SIGNED_OFF_BY,
+	SPF_HELO_NONE,SPF_PASS,USER_AGENT_SANE_1 autolearn=ham autolearn_force=no
 	version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 346ADC34047
-	for <iommu@archiver.kernel.org>; Tue, 18 Feb 2020 18:40:26 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 6F059C34026
+	for <iommu@archiver.kernel.org>; Tue, 18 Feb 2020 18:41:15 +0000 (UTC)
 Received: from whitealder.osuosl.org (smtp1.osuosl.org [140.211.166.138])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by mail.kernel.org (Postfix) with ESMTPS id 00AF124655
-	for <iommu@archiver.kernel.org>; Tue, 18 Feb 2020 18:40:25 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTPS id 467372464E
+	for <iommu@archiver.kernel.org>; Tue, 18 Feb 2020 18:41:15 +0000 (UTC)
 Authentication-Results: mail.kernel.org;
-	dkim=fail reason="signature verification failed" (1024-bit key) header.d=kernel.org header.i=@kernel.org header.b="ZbapHghK"
-DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 00AF124655
-Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=kernel.org
+	dkim=fail reason="key not found in DNS" (0-bit key) header.d=mg.codeaurora.org header.i=@mg.codeaurora.org header.b="WLfHTRyw"
+DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 467372464E
+Authentication-Results: mail.kernel.org; dmarc=none (p=none dis=none) header.from=codeaurora.org
 Authentication-Results: mail.kernel.org; spf=pass smtp.mailfrom=iommu-bounces@lists.linux-foundation.org
 Received: from localhost (localhost [127.0.0.1])
-	by whitealder.osuosl.org (Postfix) with ESMTP id C79878550D;
-	Tue, 18 Feb 2020 18:40:25 +0000 (UTC)
+	by whitealder.osuosl.org (Postfix) with ESMTP id 3438F86096;
+	Tue, 18 Feb 2020 18:41:15 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
 Received: from whitealder.osuosl.org ([127.0.0.1])
 	by localhost (.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
-	with ESMTP id O9sjzNnpUD55; Tue, 18 Feb 2020 18:40:25 +0000 (UTC)
+	with ESMTP id q3v6x5Sm7ARp; Tue, 18 Feb 2020 18:41:14 +0000 (UTC)
 Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [140.211.9.56])
-	by whitealder.osuosl.org (Postfix) with ESMTP id 03AB4853E6;
-	Tue, 18 Feb 2020 18:40:25 +0000 (UTC)
+	by whitealder.osuosl.org (Postfix) with ESMTP id 5F657853E6;
+	Tue, 18 Feb 2020 18:41:14 +0000 (UTC)
 Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
-	by lists.linuxfoundation.org (Postfix) with ESMTP id E41EDC1D84;
-	Tue, 18 Feb 2020 18:40:24 +0000 (UTC)
+	by lists.linuxfoundation.org (Postfix) with ESMTP id 498DFC1D84;
+	Tue, 18 Feb 2020 18:41:14 +0000 (UTC)
 Received: from whitealder.osuosl.org (smtp1.osuosl.org [140.211.166.138])
- by lists.linuxfoundation.org (Postfix) with ESMTP id 211EBC013E
- for <iommu@lists.linux-foundation.org>; Tue, 18 Feb 2020 18:40:24 +0000 (UTC)
+ by lists.linuxfoundation.org (Postfix) with ESMTP id B1859C013E
+ for <iommu@lists.linux-foundation.org>; Tue, 18 Feb 2020 18:41:12 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
- by whitealder.osuosl.org (Postfix) with ESMTP id 0A810853E6
- for <iommu@lists.linux-foundation.org>; Tue, 18 Feb 2020 18:40:24 +0000 (UTC)
+ by whitealder.osuosl.org (Postfix) with ESMTP id 9DFD18557B
+ for <iommu@lists.linux-foundation.org>; Tue, 18 Feb 2020 18:41:12 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
 Received: from whitealder.osuosl.org ([127.0.0.1])
  by localhost (.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
- with ESMTP id 31RllzvWo2ko for <iommu@lists.linux-foundation.org>;
- Tue, 18 Feb 2020 18:40:23 +0000 (UTC)
-X-Greylist: domain auto-whitelisted by SQLgrey-1.7.6
-Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
- by whitealder.osuosl.org (Postfix) with ESMTPS id 57EF18202F
- for <iommu@lists.linux-foundation.org>; Tue, 18 Feb 2020 18:40:23 +0000 (UTC)
-Received: from mail-qk1-f173.google.com (mail-qk1-f173.google.com
- [209.85.222.173])
+ with ESMTP id Df2vskBes1wT for <iommu@lists.linux-foundation.org>;
+ Tue, 18 Feb 2020 18:41:11 +0000 (UTC)
+X-Greylist: from auto-whitelisted by SQLgrey-1.7.6
+Received: from mail27.static.mailgun.info (mail27.static.mailgun.info
+ [104.130.122.27])
+ by whitealder.osuosl.org (Postfix) with ESMTPS id 7A3DE8550D
+ for <iommu@lists.linux-foundation.org>; Tue, 18 Feb 2020 18:41:11 +0000 (UTC)
+DKIM-Signature: a=rsa-sha256; v=1; c=relaxed/relaxed; d=mg.codeaurora.org;
+ q=dns/txt; 
+ s=smtp; t=1582051271; h=In-Reply-To: Content-Type: MIME-Version:
+ References: Message-ID: Subject: Cc: To: From: Date: Sender;
+ bh=EvQfb4KB0Yt3g3r/UGv9gwTSbjpcLofIpVM7Lm1Z4Z4=;
+ b=WLfHTRywMjIPEGx8UiOCIw1VSx86kyn35ORP1gI5VO/f4Jo0JiChqHJwRSSs0QPgHhZ1ziFF
+ HRxEMbsDv2YpuPSmwW33/61Qaz7A8EZpkY1xzhiV3rfOnwOMxK4Y9NUOxZY9wvP9R8tFXr6z
+ UutPo6m2jiyxJADMdU+fmgw/GBo=
+X-Mailgun-Sending-Ip: 104.130.122.27
+X-Mailgun-Sid: WyI3NDkwMCIsICJpb21tdUBsaXN0cy5saW51eC1mb3VuZGF0aW9uLm9yZyIsICJiZTllNGEiXQ==
+Received: from smtp.codeaurora.org
+ (ec2-35-166-182-171.us-west-2.compute.amazonaws.com [35.166.182.171])
+ by mxa.mailgun.org with ESMTP id 5e4c2fc6.7f8a9af89b20-smtp-out-n02;
+ Tue, 18 Feb 2020 18:41:10 -0000 (UTC)
+Received: by smtp.codeaurora.org (Postfix, from userid 1001)
+ id 3262AC4479F; Tue, 18 Feb 2020 18:41:09 +0000 (UTC)
+Received: from jcrouse1-lnx.qualcomm.com (i-global254.qualcomm.com
+ [199.106.103.254])
  (using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
- (No client certificate requested)
- by mail.kernel.org (Postfix) with ESMTPSA id E2D2B24655
- for <iommu@lists.linux-foundation.org>; Tue, 18 Feb 2020 18:40:22 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
- s=default; t=1582051223;
- bh=e0prGkshvWw2XTwL3+iei7JE8F3vbsgEto2sLKzoNxY=;
- h=References:In-Reply-To:From:Date:Subject:To:Cc:From;
- b=ZbapHghKemvj/oI+zpPIruW3rQ0y+/IGCFK4hWmOUDx7Vi4fNxeSS/WMkU/tOfVw6
- 5U9tzmE0siFMLLMGiimacSWFAD6i3onMYAlpQEevIhoPtM05rP/W3Mn7mRRqz8OUEZ
- FvJ+rEAk2hZeuYncgmnHdz8KREoKXg7XPBgExTnc=
-Received: by mail-qk1-f173.google.com with SMTP id p7so20508320qkh.10
- for <iommu@lists.linux-foundation.org>; Tue, 18 Feb 2020 10:40:22 -0800 (PST)
-X-Gm-Message-State: APjAAAVEYVhPx6WO78X2KRhBM87XNELMSQr/XNHg2YMuNi1wq/PEJJHC
- Lh4IX7klNpH3OciWdLFZ3ok6HY2f0LlmdbfD1A==
-X-Google-Smtp-Source: APXvYqzzc5l2bT41Ulxw896RzAsZHa163jCmWCxKmNgy3aUdTfnzFWB1uBJXqNRZFmClh71pLAlutTDYlRFRVHXfwrQ=
-X-Received: by 2002:ae9:f205:: with SMTP id m5mr20551704qkg.152.1582051221993; 
- Tue, 18 Feb 2020 10:40:21 -0800 (PST)
-MIME-Version: 1.0
-References: <20200218171321.30990-1-robh@kernel.org>
- <20200218181356.09ae0779@donnerap.cambridge.arm.com>
-In-Reply-To: <20200218181356.09ae0779@donnerap.cambridge.arm.com>
-From: Rob Herring <robh@kernel.org>
-Date: Tue, 18 Feb 2020 12:40:10 -0600
-X-Gmail-Original-Message-ID: <CAL_JsqJpDLn5Zr2UHno1TeReqrwZ-HAAfd78AouigGi4sAQuOw@mail.gmail.com>
-Message-ID: <CAL_JsqJpDLn5Zr2UHno1TeReqrwZ-HAAfd78AouigGi4sAQuOw@mail.gmail.com>
-Subject: Re: [RFC PATCH 00/11] Removing Calxeda platform support
-To: Andre Przywara <andre.przywara@arm.com>
-Cc: Mark Langsdorf <mlangsdo@redhat.com>, kvm@vger.kernel.org,
- Viresh Kumar <viresh.kumar@linaro.org>,
- "open list:LIBATA SUBSYSTEM \(Serial and Parallel ATA drivers\)"
- <linux-ide@vger.kernel.org>, Will Deacon <will@kernel.org>,
- linux-clk <linux-clk@vger.kernel.org>, soc@kernel.org,
- Daniel Lezcano <daniel.lezcano@linaro.org>, devicetree@vger.kernel.org,
- Jon Loeliger <jdl@jdl.com>, "open list:THERMAL" <linux-pm@vger.kernel.org>,
- Alex Williamson <alex.williamson@redhat.com>, Tony Luck <tony.luck@intel.com>,
- Alexander Graf <graf@amazon.com>, Mauro Carvalho Chehab <mchehab@kernel.org>,
+ (No client certificate requested) (Authenticated sender: jcrouse)
+ by smtp.codeaurora.org (Postfix) with ESMTPSA id 898CBC43383;
+ Tue, 18 Feb 2020 18:41:07 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.3.2 smtp.codeaurora.org 898CBC43383
+Authentication-Results: aws-us-west-2-caf-mail-1.web.codeaurora.org;
+ dmarc=none (p=none dis=none) header.from=codeaurora.org
+Authentication-Results: aws-us-west-2-caf-mail-1.web.codeaurora.org;
+ spf=none smtp.mailfrom=jcrouse@codeaurora.org
+Date: Tue, 18 Feb 2020 11:41:05 -0700
+From: Jordan Crouse <jcrouse@codeaurora.org>
+To: Rob Clark <robdclark@gmail.com>
+Subject: Re: [RFC PATCH v1] iommu/arm-smmu: Allow domains to choose a context
+ bank
+Message-ID: <20200218184103.GA15947@jcrouse1-lnx.qualcomm.com>
+Mail-Followup-To: Rob Clark <robdclark@gmail.com>,
+ "list@263.net:IOMMU DRIVERS <iommu@lists.linux-foundation.org>,
+ Joerg Roedel <joro@8bytes.org>, " <iommu@lists.linux-foundation.org>, 
+ Robin Murphy <robin.murphy@arm.com>, Will Deacon <will@kernel.org>,
  "moderated list:ARM/FREESCALE IMX / MXC ARM ARCHITECTURE"
- <linux-arm-kernel@lists.infradead.org>,
- linux-edac <linux-edac@vger.kernel.org>, Jens Axboe <axboe@kernel.dk>,
- Matthias Brugger <mbrugger@suse.com>, Stephen Boyd <sboyd@kernel.org>,
- netdev <netdev@vger.kernel.org>, Cornelia Huck <cohuck@redhat.com>,
- "Rafael J. Wysocki" <rjw@rjwysocki.net>,
- "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
- Linux IOMMU <iommu@lists.linux-foundation.org>,
- Robert Richter <rrichter@marvell.com>, James Morse <james.morse@arm.com>,
- Borislav Petkov <bp@alien8.de>, Robin Murphy <robin.murphy@arm.com>,
- "David S. Miller" <davem@davemloft.net>
+ <linux-arm-kernel@lists.infradead.org>, 
+ linux-arm-msm <linux-arm-msm@vger.kernel.org>,
+ Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
+ Joerg Roedel <joro@8bytes.org>
+References: <1580250823-30739-1-git-send-email-jcrouse@codeaurora.org>
+ <CAF6AEGvQyaZL8iSKkzTZ-X4nqXWcyO6RBf-pUfOZFg0w52BGUA@mail.gmail.com>
+MIME-Version: 1.0
+Content-Disposition: inline
+In-Reply-To: <CAF6AEGvQyaZL8iSKkzTZ-X4nqXWcyO6RBf-pUfOZFg0w52BGUA@mail.gmail.com>
+User-Agent: Mutt/1.5.24 (2015-08-30)
+Cc: Robin Murphy <robin.murphy@arm.com>,
+ Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
+ "list@263.net:IOMMU DRIVERS <iommu@lists.linux-foundation.org>,
+ Joerg Roedel <joro@8bytes.org>, " <iommu@lists.linux-foundation.org>,
+ linux-arm-msm <linux-arm-msm@vger.kernel.org>, Will Deacon <will@kernel.org>,
+ "moderated list:ARM/FREESCALE IMX / MXC ARM ARCHITECTURE"
+ <linux-arm-kernel@lists.infradead.org>
 X-BeenThere: iommu@lists.linux-foundation.org
 X-Mailman-Version: 2.1.15
 Precedence: list
@@ -113,49 +120,151 @@ Content-Transfer-Encoding: 7bit
 Errors-To: iommu-bounces@lists.linux-foundation.org
 Sender: "iommu" <iommu-bounces@lists.linux-foundation.org>
 
-On Tue, Feb 18, 2020 at 12:14 PM Andre Przywara <andre.przywara@arm.com> wrote:
->
-> On Tue, 18 Feb 2020 11:13:10 -0600
-> Rob Herring <robh@kernel.org> wrote:
->
-> Hi,
->
-> > Calxeda has been defunct for 6 years now. Use of Calxeda servers carried
-> > on for some time afterwards primarily as distro builders for 32-bit ARM.
-> > AFAIK, those systems have been retired in favor of 32-bit VMs on 64-bit
-> > hosts.
+On Tue, Feb 18, 2020 at 10:19:53AM -0800, Rob Clark wrote:
+> On Tue, Jan 28, 2020 at 2:34 PM Jordan Crouse <jcrouse@codeaurora.org> wrote:
 > >
-> > The other use of Calxeda Midway I'm aware of was testing 32-bit ARM KVM
-> > support as there are few or no other systems with enough RAM and LPAE. Now
-> > 32-bit KVM host support is getting removed[1].
+> > Domains which are being set up for split pagetables usually want to be
+> > on a specific context bank for hardware reasons. Force the context
+> > bank for domains with the split-pagetable quirk to context bank 0.
+> > If context bank 0 is taken, move that context bank to another unused
+> > bank and rewrite the stream matching registers accordingly.
+> 
+> Is the only reason for dealing with the case that bank 0 is already in
+> use, due to the DMA domain that gets setup before driver probes?
+
+Right. On Adreno GPUs only one context bank at a time is accessible from the
+GPU through an aperture which defaults to context bank 0 and as you might
+expect, the aperture controls are protected by the secure world on AC enabled
+targets.
+
+Some of the newer targets have a SCM call to switch the aperture but for all the
+currently merged platforms we are forced to use context bank 0.
+
+> I'm kinda thinking that we need to invent a way to unwind/detatch the
+> DMA domain, and unhook the iommu-dmaops, since this seems to already
+> be already causing problems with dma-bufs imported from other drivers
+> (who expect that dma_map_*(), with the importing device's dev ptr,
+> will do something sane.
+
+That could work, assuming that we could guarantee that our new replacement
+domain got the context bank we wanted.
+
+Jordan
+
 > >
-> > While it's not much maintenance to support, I don't care to convert the
-> > Calxeda DT bindings to schema nor fix any resulting errors in the dts files
-> > (which already don't exactly match what's shipping in firmware).
->
-> While every kernel maintainer seems always happy to take patches with a negative diffstat, I wonder if this is really justification enough to remove a perfectly working platform. I don't really know about any active users, but experience tells that some platforms really are used for quite a long time, even if they are somewhat obscure. N900 or Netwinder, anyone?
->
-> So to not give the impression that actually *everyone* (from that small subset of people actively reading the kernel list) is happy with that, I think that having support for at least Midway would be useful. On the one hand it's a decent LPAE platform (with memory actually exceeding 4GB), and on the other hand it's something with capable I/O (SATA) and networking, so one can actually stress test the system. Which is the reason I was using that for KVM testing, but even with that probably going away now there remain still some use cases, and be it for general ARM(32) testing.
+> > This is be used by [1] and [2] to leave context bank 0 open so that
+> > the Adreno GPU can program it.
+> >
+> > [1] https://lists.linuxfoundation.org/pipermail/iommu/2020-January/041438.html
+> > [2] https://lists.linuxfoundation.org/pipermail/iommu/2020-January/041444.html
+> >
+> > Signed-off-by: Jordan Crouse <jcrouse@codeaurora.org>
+> > ---
+> >
+> >  drivers/iommu/arm-smmu.c | 63 +++++++++++++++++++++++++++++++++++++++++++++---
+> >  1 file changed, 59 insertions(+), 4 deletions(-)
+> >
+> > diff --git a/drivers/iommu/arm-smmu.c b/drivers/iommu/arm-smmu.c
+> > index 85a6773..799a254 100644
+> > --- a/drivers/iommu/arm-smmu.c
+> > +++ b/drivers/iommu/arm-smmu.c
+> > @@ -254,6 +254,43 @@ static int __arm_smmu_alloc_bitmap(unsigned long *map, int start, int end)
+> >         return idx;
+> >  }
+> >
+> > +static void arm_smmu_write_s2cr(struct arm_smmu_device *smmu, int idx);
+> > +
+> > +static int __arm_smmu_alloc_cb(struct arm_smmu_device *smmu, int start,
+> > +               int target)
+> > +{
+> > +       int new, i;
+> > +
+> > +       /* Allocate a new context bank id */
+> > +       new = __arm_smmu_alloc_bitmap(smmu->context_map, start,
+> > +               smmu->num_context_banks);
+> > +
+> > +       if (new < 0)
+> > +               return new;
+> > +
+> > +       /* If no target is set or we actually got the bank index we wanted */
+> > +       if (target == -1 || new == target)
+> > +               return new;
+> > +
+> > +       /* Copy the context configuration to the new index */
+> > +       memcpy(&smmu->cbs[new], &smmu->cbs[target], sizeof(*smmu->cbs));
+> > +       smmu->cbs[new].cfg->cbndx = new;
+> > +
+> > +       /* FIXME: Do we need locking here? */
+> > +       for (i = 0; i < smmu->num_mapping_groups; i++) {
+> > +               if (smmu->s2crs[i].cbndx == target) {
+> > +                       smmu->s2crs[i].cbndx = new;
+> > +                       arm_smmu_write_s2cr(smmu, i);
+> > +               }
+> > +       }
+> > +
+> > +       /*
+> > +        * FIXME: Does getting here imply that 'target' is already set in the
+> > +        * context_map?
+> > +        */
+> > +       return target;
+> > +}
+> > +
+> >  static void __arm_smmu_free_bitmap(unsigned long *map, int idx)
+> >  {
+> >         clear_bit(idx, map);
+> > @@ -770,6 +807,7 @@ static int arm_smmu_init_domain_context(struct iommu_domain *domain,
+> >         struct arm_smmu_domain *smmu_domain = to_smmu_domain(domain);
+> >         struct arm_smmu_cfg *cfg = &smmu_domain->cfg;
+> >         unsigned long quirks = 0;
+> > +       int forcecb = -1;
+> >
+> >         mutex_lock(&smmu_domain->init_mutex);
+> >         if (smmu_domain->smmu)
+> > @@ -844,8 +882,25 @@ static int arm_smmu_init_domain_context(struct iommu_domain *domain,
+> >                          * SEP_UPSTREAM so we don't need to reduce the size of
+> >                          * the ias to account for the sign extension bit
+> >                          */
+> > -                       if (smmu_domain->split_pagetables)
+> > -                               quirks |= IO_PGTABLE_QUIRK_ARM_TTBR1;
+> > +                       if (smmu_domain->split_pagetables) {
+> > +                               /*
+> > +                                * If split pagetables are enabled, assume that
+> > +                                * the user's intent is to use per-instance
+> > +                                * pagetables which, at least on a QCOM target,
+> > +                                * means that this domain should be on context
+> > +                                * bank 0.
+> > +                                */
+> > +
+> > +                               /*
+> > +                                * If we can't force to context bank 0 then
+> > +                                * don't bother enabling split pagetables which
+> > +                                * then would not allow aux domains
+> > +                                */
+> > +                               if (start == 0) {
+> > +                                       forcecb = 0;
+> > +                                       quirks |= IO_PGTABLE_QUIRK_ARM_TTBR1;
+> > +                               }
+> > +                       }
+> >                 } else if (cfg->fmt == ARM_SMMU_CTX_FMT_AARCH32_L) {
+> >                         fmt = ARM_32_LPAE_S1;
+> >                         ias = min(ias, 32UL);
+> > @@ -883,8 +938,8 @@ static int arm_smmu_init_domain_context(struct iommu_domain *domain,
+> >                 ret = -EINVAL;
+> >                 goto out_unlock;
+> >         }
+> > -       ret = __arm_smmu_alloc_bitmap(smmu->context_map, start,
+> > -                                     smmu->num_context_banks);
+> > +
+> > +       ret = __arm_smmu_alloc_cb(smmu, start, forcecb);
+> >         if (ret < 0)
+> >                 goto out_unlock;
+> >
+> > --
+> > 2.7.4
 
-Does LPAE with more than 4GB actually need to work if there's not
-another platform out there?
-
-> I don't particularly care about the more optional parts like EDAC, cpuidle, or cpufreq, but I wonder if keeping in at least the rather small SATA and XGMAC drivers and basic platform support is feasible.
-
-cpuidle isn't actually stable from what I remember. I think without
-cpufreq, we default to 1.1GHz instead of 1.4.
-
-> If YAML DT bindings are used as an excuse, I am more than happy to convert those over.
-
-Thanks!
-
->
-> And if anyone has any particular gripes with some code, maybe there is a way to fix that instead of removing it? I was always wondering if we could get rid of the mach-highbank directory, for instance. I think most of it is Highbank (Cortex-A9) related.
-
-All the reset/suspend/poweroff and coherency parts are shared. The SCU
-and L2 parts could be removed, but not really worth the surgery IMO.
-
-Rob
+-- 
+The Qualcomm Innovation Center, Inc. is a member of Code Aurora Forum,
+a Linux Foundation Collaborative Project
 _______________________________________________
 iommu mailing list
 iommu@lists.linux-foundation.org
