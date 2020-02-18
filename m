@@ -2,94 +2,98 @@ Return-Path: <SRS0=Yw80=4G=lists.linux-foundation.org=iommu-bounces@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-0.8 required=3.0 tests=HEADER_FROM_DIFFERENT_DOMAINS,
-	MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS autolearn=no autolearn_force=no
+X-Spam-Status: No, score=-9.6 required=3.0 tests=DKIM_INVALID,DKIM_SIGNED,
+	HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_PATCH,MAILING_LIST_MULTI,SIGNED_OFF_BY,
+	SPF_HELO_NONE,SPF_PASS,USER_AGENT_GIT autolearn=ham autolearn_force=no
 	version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id DBD36C34031
-	for <iommu@archiver.kernel.org>; Tue, 18 Feb 2020 05:07:57 +0000 (UTC)
-Received: from fraxinus.osuosl.org (smtp4.osuosl.org [140.211.166.137])
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 481F5C34031
+	for <iommu@archiver.kernel.org>; Tue, 18 Feb 2020 07:49:33 +0000 (UTC)
+Received: from hemlock.osuosl.org (smtp2.osuosl.org [140.211.166.133])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by mail.kernel.org (Postfix) with ESMTPS id 9591F21D56
-	for <iommu@archiver.kernel.org>; Tue, 18 Feb 2020 05:07:57 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 9591F21D56
-Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=intel.com
+	by mail.kernel.org (Postfix) with ESMTPS id 04E55206E2
+	for <iommu@archiver.kernel.org>; Tue, 18 Feb 2020 07:49:32 +0000 (UTC)
+Authentication-Results: mail.kernel.org;
+	dkim=fail reason="signature verification failed" (2048-bit key) header.d=endlessm-com.20150623.gappssmtp.com header.i=@endlessm-com.20150623.gappssmtp.com header.b="BSbqsaMF"
+DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 04E55206E2
+Authentication-Results: mail.kernel.org; dmarc=none (p=none dis=none) header.from=endlessm.com
 Authentication-Results: mail.kernel.org; spf=pass smtp.mailfrom=iommu-bounces@lists.linux-foundation.org
 Received: from localhost (localhost [127.0.0.1])
-	by fraxinus.osuosl.org (Postfix) with ESMTP id 4C39C85247;
-	Tue, 18 Feb 2020 05:07:57 +0000 (UTC)
+	by hemlock.osuosl.org (Postfix) with ESMTP id A15C3870DF;
+	Tue, 18 Feb 2020 07:49:32 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from fraxinus.osuosl.org ([127.0.0.1])
+Received: from hemlock.osuosl.org ([127.0.0.1])
 	by localhost (.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
-	with ESMTP id sav5lPDjeVu1; Tue, 18 Feb 2020 05:07:56 +0000 (UTC)
+	with ESMTP id sFsjDteHb7Pr; Tue, 18 Feb 2020 07:49:32 +0000 (UTC)
 Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [140.211.9.56])
-	by fraxinus.osuosl.org (Postfix) with ESMTP id B10058521D;
-	Tue, 18 Feb 2020 05:07:56 +0000 (UTC)
+	by hemlock.osuosl.org (Postfix) with ESMTP id F2718870A1;
+	Tue, 18 Feb 2020 07:49:31 +0000 (UTC)
 Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
-	by lists.linuxfoundation.org (Postfix) with ESMTP id A305AC08A0;
-	Tue, 18 Feb 2020 05:07:56 +0000 (UTC)
-Received: from silver.osuosl.org (smtp3.osuosl.org [140.211.166.136])
- by lists.linuxfoundation.org (Postfix) with ESMTP id C7D93C013E
- for <iommu@lists.linux-foundation.org>; Tue, 18 Feb 2020 05:07:55 +0000 (UTC)
+	by lists.linuxfoundation.org (Postfix) with ESMTP id DE8C6C089F;
+	Tue, 18 Feb 2020 07:49:31 +0000 (UTC)
+Received: from hemlock.osuosl.org (smtp2.osuosl.org [140.211.166.133])
+ by lists.linuxfoundation.org (Postfix) with ESMTP id B753AC013E
+ for <iommu@lists.linux-foundation.org>; Tue, 18 Feb 2020 07:49:30 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
- by silver.osuosl.org (Postfix) with ESMTP id C2A3F2041A
- for <iommu@lists.linux-foundation.org>; Tue, 18 Feb 2020 05:07:55 +0000 (UTC)
+ by hemlock.osuosl.org (Postfix) with ESMTP id A0DB6870A1
+ for <iommu@lists.linux-foundation.org>; Tue, 18 Feb 2020 07:49:30 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from silver.osuosl.org ([127.0.0.1])
+Received: from hemlock.osuosl.org ([127.0.0.1])
  by localhost (.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
- with ESMTP id BkqbJyDMCYm9 for <iommu@lists.linux-foundation.org>;
- Tue, 18 Feb 2020 05:07:55 +0000 (UTC)
-X-Greylist: domain auto-whitelisted by SQLgrey-1.7.6
-Received: from mga12.intel.com (mga12.intel.com [192.55.52.136])
- by silver.osuosl.org (Postfix) with ESMTPS id D1E94203F2
- for <iommu@lists.linux-foundation.org>; Tue, 18 Feb 2020 05:07:54 +0000 (UTC)
-X-Amp-Result: SKIPPED(no attachment in message)
-X-Amp-File-Uploaded: False
-Received: from fmsmga003.fm.intel.com ([10.253.24.29])
- by fmsmga106.fm.intel.com with ESMTP/TLS/DHE-RSA-AES256-GCM-SHA384;
- 17 Feb 2020 21:07:54 -0800
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.70,455,1574150400"; d="scan'208";a="282689196"
-Received: from fmsmsx106.amr.corp.intel.com ([10.18.124.204])
- by FMSMGA003.fm.intel.com with ESMTP; 17 Feb 2020 21:07:54 -0800
-Received: from shsmsx102.ccr.corp.intel.com (10.239.4.154) by
- FMSMSX106.amr.corp.intel.com (10.18.124.204) with Microsoft SMTP Server (TLS)
- id 14.3.439.0; Mon, 17 Feb 2020 21:07:53 -0800
-Received: from shsmsx104.ccr.corp.intel.com ([169.254.5.5]) by
- shsmsx102.ccr.corp.intel.com ([169.254.2.126]) with mapi id 14.03.0439.000;
- Tue, 18 Feb 2020 13:07:51 +0800
-From: "Liu, Yi L" <yi.l.liu@intel.com>
-To: "Liu, Yi L" <yi.l.liu@intel.com>, Alex Williamson
- <alex.williamson@redhat.com>
-Subject: RE: [RFC v3 1/8] vfio: Add VFIO_IOMMU_PASID_REQUEST(alloc/free)
-Thread-Topic: [RFC v3 1/8] vfio: Add VFIO_IOMMU_PASID_REQUEST(alloc/free)
-Thread-Index: AQHV1pyWdXmNxNYiSUCDLwZiDlOrAKgBy+IAgALeXlCAG9SJ8A==
-Date: Tue, 18 Feb 2020 05:07:50 +0000
-Message-ID: <A2975661238FB949B60364EF0F2C25743A1C0D93@SHSMSX104.ccr.corp.intel.com>
-References: <1580299912-86084-1-git-send-email-yi.l.liu@intel.com>
- <1580299912-86084-2-git-send-email-yi.l.liu@intel.com>
- <20200129165540.335774d5@w520.home>
- <A2975661238FB949B60364EF0F2C25743A1993E8@SHSMSX104.ccr.corp.intel.com>
-In-Reply-To: <A2975661238FB949B60364EF0F2C25743A1993E8@SHSMSX104.ccr.corp.intel.com>
-Accept-Language: en-US
-Content-Language: en-US
-X-MS-Has-Attach: 
-X-MS-TNEF-Correlator: 
-dlp-product: dlpe-windows
-dlp-version: 11.2.0.6
-dlp-reaction: no-action
-x-ctpclassification: CTP_NT
-x-titus-metadata-40: eyJDYXRlZ29yeUxhYmVscyI6IiIsIk1ldGFkYXRhIjp7Im5zIjoiaHR0cDpcL1wvd3d3LnRpdHVzLmNvbVwvbnNcL0ludGVsMyIsImlkIjoiODk5Y2JlYjEtZjRjMi00ZTI3LWJjNTYtY2NlZmMyZWZhYjBlIiwicHJvcHMiOlt7Im4iOiJDVFBDbGFzc2lmaWNhdGlvbiIsInZhbHMiOlt7InZhbHVlIjoiQ1RQX05UIn1dfV19LCJTdWJqZWN0TGFiZWxzIjpbXSwiVE1DVmVyc2lvbiI6IjE3LjEwLjE4MDQuNDkiLCJUcnVzdGVkTGFiZWxIYXNoIjoiaVZFb3VjY1ZoWEVKd3JcL1F1dEhIamZ3NDE2RzdISUZRdlZ2UzBlbzIzVmpqcDVxa3FSWDE5c3VDRFYxNkRrTVEifQ==
-x-originating-ip: [10.239.127.40]
+ with ESMTP id XZe-skid2-Wg for <iommu@lists.linux-foundation.org>;
+ Tue, 18 Feb 2020 07:49:29 +0000 (UTC)
+X-Greylist: from auto-whitelisted by SQLgrey-1.7.6
+Received: from mail-io1-f67.google.com (mail-io1-f67.google.com
+ [209.85.166.67])
+ by hemlock.osuosl.org (Postfix) with ESMTPS id 2CEAD8709D
+ for <iommu@lists.linux-foundation.org>; Tue, 18 Feb 2020 07:49:29 +0000 (UTC)
+Received: by mail-io1-f67.google.com with SMTP id i11so8250665ioi.12
+ for <iommu@lists.linux-foundation.org>; Mon, 17 Feb 2020 23:49:29 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+ d=endlessm-com.20150623.gappssmtp.com; s=20150623;
+ h=from:to:cc:subject:date:message-id:mime-version
+ :content-transfer-encoding;
+ bh=SD92u/06iJWImLJAAahZGC5z3meXuwnSzDr6DmysSO4=;
+ b=BSbqsaMFeoqDRwMvIxJ9HMYXhO36pty1a8xVZuuqQQe3WBtdQRGZJk63HBpDNcUMYd
+ g05oYpMN8LDs0SuPRkFhLStd6NbbogrHIVZSKBLLy2flE78Ca/nOmOmON5LuzwhBpM3b
+ 7jKlBljLGvLVRJOkV6L9qvpus+kIFjBZWrwPrOwqySzTF9DTjRWRtldV7Q0ZD/10GOw4
+ aDR09tUot5Z7AuLBkD+knDx7qOkWYzqvTW8LDXXplNsSmvh5bz3TG6RsDeErpb2mbtlS
+ YjRPmJn4B3jFGMuUPznpqb2eX9lcsstGckFd+bIcb65J2PFcR40rS9AgV+Nz4egrSAl8
+ KTgg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+ d=1e100.net; s=20161025;
+ h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+ :content-transfer-encoding;
+ bh=SD92u/06iJWImLJAAahZGC5z3meXuwnSzDr6DmysSO4=;
+ b=BmAe4vjVsF62xP1E6eA92P5hJtWQ79pkIeHEgiSD+RZev4igwMGzNhFvjqrqhMHkCD
+ I5DWJMGatqT6pcXaF8XKzebfWeR3VcEBZ2trsf4cPn8YFMer4c9X3W6Cs6kFO3MXVbhp
+ +tSG9TgF/FqqjxvvfIbHcBbkZvFnkUb4GTQhONdDf60fU56UiocX3lq19MWBA8v51DJA
+ DBhcRkx0fp/7Tvaw0Dxd1MX/1u5QsV97bvMnfpKSzIyQY9F1iW5dy8Nai9OfrMJzdsc6
+ jqUJIJ7QZFOZvzLMGJdzh2PufqaA+bY5GZsymbSiBsvbt8P+Mb21GVt/CHJExxbWSqB8
+ AYag==
+X-Gm-Message-State: APjAAAXnhLBmSYc/4bxA0Hvtjt4OzI9ghxS+mCGdNQusQK5xYk1Xo+9i
+ pEvQYD7VDh5pWI5UyEuRCB55YY+PX4Q=
+X-Google-Smtp-Source: APXvYqwQAsn5KsWJHTQbVEtMbm4xw8x3In44/gSKCVI6N8kZwDee/8R8WDIrGmSBtJXRJYguIKJUpQ==
+X-Received: by 2002:a63:7152:: with SMTP id b18mr21789394pgn.232.1582011773206; 
+ Mon, 17 Feb 2020 23:42:53 -0800 (PST)
+Received: from limbo.local (123-204-46-122.static.seed.net.tw.
+ [123.204.46.122])
+ by smtp.gmail.com with ESMTPSA id w21sm623446pgc.87.2020.02.17.23.42.50
+ (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+ Mon, 17 Feb 2020 23:42:52 -0800 (PST)
+From: Daniel Drake <drake@endlessm.com>
+To: dwmw2@infradead.org,
+	baolu.lu@linux.intel.com,
+	joro@8bytes.org
+Subject: [PATCH v3] iommu/vt-d: consider real PCI device when checking if
+ mapping is needed
+Date: Tue, 18 Feb 2020 15:42:48 +0800
+Message-Id: <20200218074248.27176-1-drake@endlessm.com>
+X-Mailer: git-send-email 2.20.1
 MIME-Version: 1.0
-Cc: "Tian, Kevin" <kevin.tian@intel.com>, "Raj,
- Ashok" <ashok.raj@intel.com>, "kvm@vger.kernel.org" <kvm@vger.kernel.org>,
- "jean-philippe.brucker@arm.com" <jean-philippe.brucker@arm.com>, "Tian,
- Jun J" <jun.j.tian@intel.com>,
- "iommu@lists.linux-foundation.org" <iommu@lists.linux-foundation.org>,
- "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>, "Sun, Yi
- Y" <yi.y.sun@intel.com>
+Cc: bhelgaas@google.com, iommu@lists.linux-foundation.org, linux@endlessm.com,
+ jonathan.derrick@intel.com
 X-BeenThere: iommu@lists.linux-foundation.org
 X-Mailman-Version: 2.1.15
 Precedence: list
@@ -107,54 +111,103 @@ Content-Transfer-Encoding: 7bit
 Errors-To: iommu-bounces@lists.linux-foundation.org
 Sender: "iommu" <iommu-bounces@lists.linux-foundation.org>
 
-> From: Liu, Yi L <yi.l.liu@intel.com>
-> Sent: Friday, January 31, 2020 8:41 PM
-> To: Alex Williamson <alex.williamson@redhat.com>
-> Subject: RE: [RFC v3 1/8] vfio: Add VFIO_IOMMU_PASID_REQUEST(alloc/free)
-> > > +static int vfio_iommu_type1_pasid_free(struct vfio_iommu *iommu,
-> > > +				       unsigned int pasid)
-> > > +{
-> > > +	struct vfio_mm *vmm = iommu->vmm;
-> > > +	int ret = 0;
-> > > +
-> > > +	mutex_lock(&iommu->lock);
-> > > +	if (!IS_IOMMU_CAP_DOMAIN_IN_CONTAINER(iommu)) {
-> >
-> > But we could have been IOMMU backed when the pasid was allocated, did we
-> just
-> > leak something?  In fact, I didn't spot anything in this series that handles
-> > a container with pasids allocated losing iommu backing.
-> > I'd think we want to release all pasids when that happens since permission for
-> > the user to hold pasids goes along with having an iommu backed device.
-> 
-> oh, yes. If a container lose iommu backend, then needs to reclaim the allocated
-> PASIDs. right? I'll add it. :-)
+From: Jon Derrick <jonathan.derrick@intel.com>
 
-Hi Alex,
+The PCI devices handled by intel-iommu may have a DMA requester on
+another bus, such as VMD subdevices needing to use the VMD endpoint.
 
-I went through the flow again. Maybe current series has already covered
-it. There is vfio_mm which is used to track allocated PASIDs. Its life
-cycle is type1 driver open and release. If I understand it correctly,
-type1 driver release happens when there is no more iommu backed groups
-in a container.
+The real DMA device is now used for the DMA mapping, but one case was
+missed earlier: if the VMD device (and hence subdevices too) are under
+IOMMU_DOMAIN_IDENTITY, mappings do not work.
 
-static void __vfio_group_unset_container(struct vfio_group *group)
-{
-[...]
+Codepaths like intel_map_page() handle the IOMMU_DOMAIN_DMA case by
+creating an iommu DMA mapping, and fall back on dma_direct_map_page()
+for the IOMMU_DOMAIN_IDENTITY case. However, handling of the IDENTITY
+case is broken when intel_page_page() handles a subdevice.
 
-	/* Detaching the last group deprivileges a container, remove iommu */
-	if (driver && list_empty(&container->group_list)) {
-		driver->ops->release(container->iommu_data);
-		module_put(driver->ops->owner);
-		container->iommu_driver = NULL;
-		container->iommu_data = NULL;
-	}
-[...]
-}
+We observe that at iommu attach time, dmar_insert_one_dev_info() for
+the subdevices will never set dev->archdata.iommu. This is because
+that function uses find_domain() to check if there is already an IOMMU
+for the device, and find_domain() then defers to the real DMA device
+which does have one. Thus dmar_insert_one_dev_info() returns without
+assigning dev->archdata.iommu.
 
-Regards,
-Yi Liu
+Then, later:
 
+1. intel_map_page() checks if an IOMMU mapping is needed by calling
+   iommu_need_mapping() on the subdevice. identity_mapping() returns
+   false because dev->archdata.iommu is NULL, so this function
+   returns false indicating that mapping is needed.
+2. __intel_map_single() is called to create the mapping.
+3. __intel_map_single() calls find_domain(). This function now returns
+   the IDENTITY domain corresponding to the real DMA device.
+4. __intel_map_single() calls domain_get_iommu() on this "real" domain.
+   A failure is hit and the entire operation is aborted, because this
+   codepath is not intended to handle IDENTITY mappings:
+       if (WARN_ON(domain->domain.type != IOMMU_DOMAIN_DMA))
+                   return NULL;
+
+Fix this by using the real DMA device when checking if a mapping is
+needed, while also considering the subdevice DMA mask.
+The IDENTITY case will then directly fall back on dma_direct_map_page().
+
+Reported-by: Daniel Drake <drake@endlessm.com>
+Fixes: b0140c69637e ("iommu/vt-d: Use pci_real_dma_dev() for mapping")
+Signed-off-by: Jon Derrick <jonathan.derrick@intel.com>
+Signed-off-by: Daniel Drake <drake@endlessm.com>
+---
+ drivers/iommu/intel-iommu.c | 16 ++++++++++------
+ 1 file changed, 10 insertions(+), 6 deletions(-)
+
+diff --git a/drivers/iommu/intel-iommu.c b/drivers/iommu/intel-iommu.c
+index 9dc37672bf89..7ffd252bf835 100644
+--- a/drivers/iommu/intel-iommu.c
++++ b/drivers/iommu/intel-iommu.c
+@@ -3582,12 +3582,16 @@ static struct dmar_domain *get_private_domain_for_dev(struct device *dev)
+ /* Check if the dev needs to go through non-identity map and unmap process.*/
+ static bool iommu_need_mapping(struct device *dev)
+ {
++	struct device *dma_dev = dev;
+ 	int ret;
+ 
+ 	if (iommu_dummy(dev))
+ 		return false;
+ 
+-	ret = identity_mapping(dev);
++	if (dev_is_pci(dev))
++		dma_dev = &pci_real_dma_dev(to_pci_dev(dev))->dev;
++
++	ret = identity_mapping(dma_dev);
+ 	if (ret) {
+ 		u64 dma_mask = *dev->dma_mask;
+ 
+@@ -3601,19 +3605,19 @@ static bool iommu_need_mapping(struct device *dev)
+ 		 * 32 bit DMA is removed from si_domain and fall back to
+ 		 * non-identity mapping.
+ 		 */
+-		dmar_remove_one_dev_info(dev);
+-		ret = iommu_request_dma_domain_for_dev(dev);
++		dmar_remove_one_dev_info(dma_dev);
++		ret = iommu_request_dma_domain_for_dev(dma_dev);
+ 		if (ret) {
+ 			struct iommu_domain *domain;
+ 			struct dmar_domain *dmar_domain;
+ 
+-			domain = iommu_get_domain_for_dev(dev);
++			domain = iommu_get_domain_for_dev(dma_dev);
+ 			if (domain) {
+ 				dmar_domain = to_dmar_domain(domain);
+ 				dmar_domain->flags |= DOMAIN_FLAG_LOSE_CHILDREN;
+ 			}
+-			dmar_remove_one_dev_info(dev);
+-			get_private_domain_for_dev(dev);
++			dmar_remove_one_dev_info(dma_dev);
++			get_private_domain_for_dev(dma_dev);
+ 		}
+ 
+ 		dev_info(dev, "32bit DMA uses non-identity mapping\n");
+-- 
+2.20.1
 
 _______________________________________________
 iommu mailing list
