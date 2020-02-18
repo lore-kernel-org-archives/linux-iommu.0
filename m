@@ -2,80 +2,96 @@ Return-Path: <SRS0=Yw80=4G=lists.linux-foundation.org=iommu-bounces@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-2.2 required=3.0 tests=HEADER_FROM_DIFFERENT_DOMAINS,
-	MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS,USER_AGENT_SANE_2 autolearn=no
-	autolearn_force=no version=3.4.0
+X-Spam-Status: No, score=-6.3 required=3.0 tests=DKIM_ADSP_CUSTOM_MED,
+	DKIM_INVALID,DKIM_SIGNED,FREEMAIL_FORGED_FROMDOMAIN,FREEMAIL_FROM,
+	HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_PATCH,MAILING_LIST_MULTI,SIGNED_OFF_BY,
+	SPF_HELO_NONE,SPF_PASS autolearn=unavailable autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id C3FFEC34026
-	for <iommu@archiver.kernel.org>; Tue, 18 Feb 2020 18:14:09 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id D2431C34047
+	for <iommu@archiver.kernel.org>; Tue, 18 Feb 2020 18:20:10 +0000 (UTC)
 Received: from hemlock.osuosl.org (smtp2.osuosl.org [140.211.166.133])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by mail.kernel.org (Postfix) with ESMTPS id 95A3024656
-	for <iommu@archiver.kernel.org>; Tue, 18 Feb 2020 18:14:09 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 95A3024656
-Authentication-Results: mail.kernel.org; dmarc=none (p=none dis=none) header.from=arm.com
+	by mail.kernel.org (Postfix) with ESMTPS id 9847224654
+	for <iommu@archiver.kernel.org>; Tue, 18 Feb 2020 18:20:10 +0000 (UTC)
+Authentication-Results: mail.kernel.org;
+	dkim=fail reason="signature verification failed" (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="FyQYrjqy"
+DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 9847224654
+Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=gmail.com
 Authentication-Results: mail.kernel.org; spf=pass smtp.mailfrom=iommu-bounces@lists.linux-foundation.org
 Received: from localhost (localhost [127.0.0.1])
-	by hemlock.osuosl.org (Postfix) with ESMTP id 6119787216;
-	Tue, 18 Feb 2020 18:14:09 +0000 (UTC)
+	by hemlock.osuosl.org (Postfix) with ESMTP id 6EF19875DA;
+	Tue, 18 Feb 2020 18:20:10 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
 Received: from hemlock.osuosl.org ([127.0.0.1])
 	by localhost (.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
-	with ESMTP id Qb2bRnYXcPX4; Tue, 18 Feb 2020 18:14:06 +0000 (UTC)
+	with ESMTP id TsZ1l6i+p1MW; Tue, 18 Feb 2020 18:20:09 +0000 (UTC)
 Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [140.211.9.56])
-	by hemlock.osuosl.org (Postfix) with ESMTP id ED5AE85BE4;
-	Tue, 18 Feb 2020 18:14:06 +0000 (UTC)
+	by hemlock.osuosl.org (Postfix) with ESMTP id 6B190875CB;
+	Tue, 18 Feb 2020 18:20:09 +0000 (UTC)
 Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
-	by lists.linuxfoundation.org (Postfix) with ESMTP id DF09DC1D84;
-	Tue, 18 Feb 2020 18:14:06 +0000 (UTC)
+	by lists.linuxfoundation.org (Postfix) with ESMTP id 4A913C1D84;
+	Tue, 18 Feb 2020 18:20:09 +0000 (UTC)
 Received: from fraxinus.osuosl.org (smtp4.osuosl.org [140.211.166.137])
- by lists.linuxfoundation.org (Postfix) with ESMTP id 85B18C013E
- for <iommu@lists.linux-foundation.org>; Tue, 18 Feb 2020 18:14:05 +0000 (UTC)
+ by lists.linuxfoundation.org (Postfix) with ESMTP id B6B27C013E
+ for <iommu@lists.linux-foundation.org>; Tue, 18 Feb 2020 18:20:07 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
- by fraxinus.osuosl.org (Postfix) with ESMTP id 73BE983F08
- for <iommu@lists.linux-foundation.org>; Tue, 18 Feb 2020 18:14:05 +0000 (UTC)
+ by fraxinus.osuosl.org (Postfix) with ESMTP id A05ED85495
+ for <iommu@lists.linux-foundation.org>; Tue, 18 Feb 2020 18:20:07 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
 Received: from fraxinus.osuosl.org ([127.0.0.1])
  by localhost (.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
- with ESMTP id qxbzvTdOt0bq for <iommu@lists.linux-foundation.org>;
- Tue, 18 Feb 2020 18:14:04 +0000 (UTC)
+ with ESMTP id 9T4P5LQx__lA for <iommu@lists.linux-foundation.org>;
+ Tue, 18 Feb 2020 18:20:07 +0000 (UTC)
 X-Greylist: domain auto-whitelisted by SQLgrey-1.7.6
-Received: from foss.arm.com (foss.arm.com [217.140.110.172])
- by fraxinus.osuosl.org (Postfix) with ESMTP id 3F69180ACD
- for <iommu@lists.linux-foundation.org>; Tue, 18 Feb 2020 18:14:04 +0000 (UTC)
-Received: from usa-sjc-imap-foss1.foss.arm.com (unknown [10.121.207.14])
- by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id 65A9331B;
- Tue, 18 Feb 2020 10:14:03 -0800 (PST)
-Received: from donnerap.cambridge.arm.com (usa-sjc-imap-foss1.foss.arm.com
- [10.121.207.14])
- by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPSA id 8412E3F68F;
- Tue, 18 Feb 2020 10:13:59 -0800 (PST)
-Date: Tue, 18 Feb 2020 18:13:56 +0000
-From: Andre Przywara <andre.przywara@arm.com>
-To: Rob Herring <robh@kernel.org>
-Subject: Re: [RFC PATCH 00/11] Removing Calxeda platform support
-Message-ID: <20200218181356.09ae0779@donnerap.cambridge.arm.com>
-In-Reply-To: <20200218171321.30990-1-robh@kernel.org>
-References: <20200218171321.30990-1-robh@kernel.org>
-Organization: ARM
-X-Mailer: Claws Mail 3.17.3 (GTK+ 2.24.32; aarch64-unknown-linux-gnu)
+Received: from mail-ed1-f66.google.com (mail-ed1-f66.google.com
+ [209.85.208.66])
+ by fraxinus.osuosl.org (Postfix) with ESMTPS id AAE5284DFD
+ for <iommu@lists.linux-foundation.org>; Tue, 18 Feb 2020 18:20:06 +0000 (UTC)
+Received: by mail-ed1-f66.google.com with SMTP id r21so25933641edq.0
+ for <iommu@lists.linux-foundation.org>; Tue, 18 Feb 2020 10:20:06 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=gmail.com; s=20161025;
+ h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+ :cc; bh=mFpfQMXDcTILM8p6YZkURH/PZ0c/a3Gt7zfwkgA7PZs=;
+ b=FyQYrjqyqb21kEEx3w3LXCyRBFAjASj6lCrAa3Ha+O7l5IiRL4jnoXo9NxDLjeI1Qs
+ /rixHYxVJqzcG6EaiGZlVDUT3PnahWrZo4/UNYcvlHOYuYVRSJW83E+s1TnxiZaKjhHn
+ GJkStXXOTWn58ayGW+UHNKwFf0spIqZ3hneJwUUV+KH1x2PvQtdiiZthkgyFko00OOLg
+ sKXcC3L9KNviP+tq9VthA5TzyV843P2Ns+W+aCXfgeuXIzMChZgeJxp6+piIEJ0usF7L
+ HcjePpSCEeRIyJ9IIC0lM2HUSsoqhVt4yrm1wUN17ZZLt5lPLG9REEOxNyuTE4HvXfpN
+ yIoQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+ d=1e100.net; s=20161025;
+ h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+ :message-id:subject:to:cc;
+ bh=mFpfQMXDcTILM8p6YZkURH/PZ0c/a3Gt7zfwkgA7PZs=;
+ b=Oji3/vHcxcIz4p+G/QKOWFOoOzSsF3pGGLzgLIMGjSTzAkdfZCQclfy0Iap/fAo9At
+ f60vMdOMRPS881jZoZgXgAmBS067LDWxwPTcubYeTjfiDFhO/qMgtVP45Y7reKpgKDac
+ G/MCWeLX4v0orFDPznQrwnzGcyamMelhZmDS4aPjsucEEUM5NxvLNcfDKOr5qfpejmVS
+ YRdvjCPo77MqKE+xTt2Gq/OKYHYf0Wcx3ia8SziBGsOA9G16zQMOFaLihkBR1gROeRwq
+ G2kbUEi0aQ/fDIE+OQomRW6OHwiQDTjsenY4VbDAvi3/G8LJt3mNDx1x+58Alb+2IUjZ
+ +jUw==
+X-Gm-Message-State: APjAAAXyji5DZ1yZmPx65duXSt9dCjwGlD9ggS7pjC/reALViljMvgdO
+ ZTVkl5SUTvLyrknXoxtHGTghGNIlcqHY8Hnw/PE=
+X-Google-Smtp-Source: APXvYqwqURRrVtjZm03lW6XQA7ZhZaAg148HuuceB26Lz99GzgTJCZLN/lZNTR1RHx1cjra7vjc/E+IlK3Q/BY845lE=
+X-Received: by 2002:a17:906:a44d:: with SMTP id
+ cb13mr21055283ejb.258.1582050004828; 
+ Tue, 18 Feb 2020 10:20:04 -0800 (PST)
 MIME-Version: 1.0
-Cc: Mark Langsdorf <mlangsdo@redhat.com>, kvm@vger.kernel.org,
- Viresh Kumar <viresh.kumar@linaro.org>, linux-ide@vger.kernel.org,
- Will Deacon <will@kernel.org>, linux-clk@vger.kernel.org, soc@kernel.org,
- Daniel Lezcano <daniel.lezcano@linaro.org>, devicetree@vger.kernel.org,
- Jon Loeliger <jdl@jdl.com>, linux-pm@vger.kernel.org,
- Alex Williamson <alex.williamson@redhat.com>, Tony Luck <tony.luck@intel.com>,
- Alexander Graf <graf@amazon.com>, Mauro Carvalho Chehab <mchehab@kernel.org>,
- linux-arm-kernel@lists.infradead.org, linux-edac@vger.kernel.org,
- Jens Axboe <axboe@kernel.dk>, Matthias Brugger <mbrugger@suse.com>,
- Stephen Boyd <sboyd@kernel.org>, netdev@vger.kernel.org,
- Cornelia Huck <cohuck@redhat.com>, "Rafael J. Wysocki" <rjw@rjwysocki.net>,
- linux-kernel@vger.kernel.org, iommu@lists.linux-foundation.org,
- Robert Richter <rrichter@marvell.com>, James Morse <james.morse@arm.com>,
- Borislav Petkov <bp@alien8.de>, Robin Murphy <robin.murphy@arm.com>, "David S.
- Miller" <davem@davemloft.net>
+References: <1580250823-30739-1-git-send-email-jcrouse@codeaurora.org>
+In-Reply-To: <1580250823-30739-1-git-send-email-jcrouse@codeaurora.org>
+From: Rob Clark <robdclark@gmail.com>
+Date: Tue, 18 Feb 2020 10:19:53 -0800
+Message-ID: <CAF6AEGvQyaZL8iSKkzTZ-X4nqXWcyO6RBf-pUfOZFg0w52BGUA@mail.gmail.com>
+Subject: Re: [RFC PATCH v1] iommu/arm-smmu: Allow domains to choose a context
+ bank
+To: Jordan Crouse <jcrouse@codeaurora.org>
+Cc: Robin Murphy <robin.murphy@arm.com>,
+ Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
+ "list@263.net:IOMMU DRIVERS <iommu@lists.linux-foundation.org>,
+ Joerg Roedel <joro@8bytes.org>, " <iommu@lists.linux-foundation.org>,
+ linux-arm-msm <linux-arm-msm@vger.kernel.org>, Will Deacon <will@kernel.org>,
+ "moderated list:ARM/FREESCALE IMX / MXC ARM ARCHITECTURE"
+ <linux-arm-kernel@lists.infradead.org>
 X-BeenThere: iommu@lists.linux-foundation.org
 X-Mailman-Version: 2.1.15
 Precedence: list
@@ -93,138 +109,136 @@ Content-Transfer-Encoding: 7bit
 Errors-To: iommu-bounces@lists.linux-foundation.org
 Sender: "iommu" <iommu-bounces@lists.linux-foundation.org>
 
-On Tue, 18 Feb 2020 11:13:10 -0600
-Rob Herring <robh@kernel.org> wrote:
+On Tue, Jan 28, 2020 at 2:34 PM Jordan Crouse <jcrouse@codeaurora.org> wrote:
+>
+> Domains which are being set up for split pagetables usually want to be
+> on a specific context bank for hardware reasons. Force the context
+> bank for domains with the split-pagetable quirk to context bank 0.
+> If context bank 0 is taken, move that context bank to another unused
+> bank and rewrite the stream matching registers accordingly.
 
-Hi,
+Is the only reason for dealing with the case that bank 0 is already in
+use, due to the DMA domain that gets setup before driver probes?
 
-> Calxeda has been defunct for 6 years now. Use of Calxeda servers carried
-> on for some time afterwards primarily as distro builders for 32-bit ARM.
-> AFAIK, those systems have been retired in favor of 32-bit VMs on 64-bit
-> hosts.
-> 
-> The other use of Calxeda Midway I'm aware of was testing 32-bit ARM KVM
-> support as there are few or no other systems with enough RAM and LPAE. Now
-> 32-bit KVM host support is getting removed[1].
-> 
-> While it's not much maintenance to support, I don't care to convert the
-> Calxeda DT bindings to schema nor fix any resulting errors in the dts files
-> (which already don't exactly match what's shipping in firmware).
+I'm kinda thinking that we need to invent a way to unwind/detatch the
+DMA domain, and unhook the iommu-dmaops, since this seems to already
+be already causing problems with dma-bufs imported from other drivers
+(who expect that dma_map_*(), with the importing device's dev ptr,
+will do something sane.
 
-While every kernel maintainer seems always happy to take patches with a negative diffstat, I wonder if this is really justification enough to remove a perfectly working platform. I don't really know about any active users, but experience tells that some platforms really are used for quite a long time, even if they are somewhat obscure. N900 or Netwinder, anyone?
+BR,
+-R
 
-So to not give the impression that actually *everyone* (from that small subset of people actively reading the kernel list) is happy with that, I think that having support for at least Midway would be useful. On the one hand it's a decent LPAE platform (with memory actually exceeding 4GB), and on the other hand it's something with capable I/O (SATA) and networking, so one can actually stress test the system. Which is the reason I was using that for KVM testing, but even with that probably going away now there remain still some use cases, and be it for general ARM(32) testing.
-
-I don't particularly care about the more optional parts like EDAC, cpuidle, or cpufreq, but I wonder if keeping in at least the rather small SATA and XGMAC drivers and basic platform support is feasible.
-If YAML DT bindings are used as an excuse, I am more than happy to convert those over.
-
-And if anyone has any particular gripes with some code, maybe there is a way to fix that instead of removing it? I was always wondering if we could get rid of the mach-highbank directory, for instance. I think most of it is Highbank (Cortex-A9) related.
-
-Cheers,
-Andre
-
-> 
-> Rob
-> 
-> [1] https://lore.kernel.org/linux-arm-kernel/20200210141324.21090-1-maz@kernel.org/
-> 
-> Rob Herring (11):
->   vfio: Remove Calxeda XGMAC reset driver
->   ata: Remove Calxeda AHCI driver
->   cpuidle: Remove Calxeda driver
->   cpufreq: Remove Calxeda driver
->   EDAC: Remove Calxeda drivers
->   iommu: arm-smmu: Remove Calxeda secure mode quirk
->   net: Remove Calxeda XGMAC driver
->   clk: Remove Calxeda driver
->   ARM: Remove Calxeda platform support
->   ARM: dts: Remove Calxeda platforms
->   dt-bindings: Remove Calxeda platforms bindings
-> 
->  .../devicetree/bindings/arm/calxeda.yaml      |   22 -
->  .../devicetree/bindings/arm/calxeda/l2ecc.txt |   15 -
->  .../devicetree/bindings/ata/sata_highbank.txt |   44 -
->  .../devicetree/bindings/clock/calxeda.txt     |   17 -
->  .../memory-controllers/calxeda-ddr-ctrlr.txt  |   16 -
->  .../devicetree/bindings/net/calxeda-xgmac.txt |   18 -
->  .../bindings/phy/calxeda-combophy.txt         |   17 -
->  MAINTAINERS                                   |   14 -
->  arch/arm/Kconfig                              |    2 -
->  arch/arm/Kconfig.debug                        |   12 +-
->  arch/arm/Makefile                             |    1 -
->  arch/arm/boot/dts/Makefile                    |    3 -
->  arch/arm/boot/dts/ecx-2000.dts                |  103 -
->  arch/arm/boot/dts/ecx-common.dtsi             |  230 --
->  arch/arm/boot/dts/highbank.dts                |  161 --
->  arch/arm/configs/multi_v7_defconfig           |    5 -
->  arch/arm/mach-highbank/Kconfig                |   19 -
->  arch/arm/mach-highbank/Makefile               |    4 -
->  arch/arm/mach-highbank/core.h                 |   18 -
->  arch/arm/mach-highbank/highbank.c             |  175 --
->  arch/arm/mach-highbank/pm.c                   |   49 -
->  arch/arm/mach-highbank/smc.S                  |   25 -
->  arch/arm/mach-highbank/sysregs.h              |   75 -
->  arch/arm/mach-highbank/system.c               |   22 -
->  drivers/ata/Kconfig                           |    9 -
->  drivers/ata/Makefile                          |    1 -
->  drivers/ata/sata_highbank.c                   |  635 ------
->  drivers/clk/Makefile                          |    1 -
->  drivers/clk/clk-highbank.c                    |  329 ---
->  drivers/cpufreq/Kconfig.arm                   |   10 -
->  drivers/cpufreq/Makefile                      |    3 +-
->  drivers/cpufreq/cpufreq-dt-platdev.c          |    3 -
->  drivers/cpufreq/highbank-cpufreq.c            |  106 -
->  drivers/cpuidle/Kconfig.arm                   |    7 -
->  drivers/cpuidle/Makefile                      |    1 -
->  drivers/cpuidle/cpuidle-calxeda.c             |   72 -
->  drivers/edac/Kconfig                          |   14 -
->  drivers/edac/Makefile                         |    3 -
->  drivers/edac/highbank_l2_edac.c               |  142 --
->  drivers/edac/highbank_mc_edac.c               |  272 ---
->  drivers/iommu/arm-smmu-impl.c                 |   43 -
->  drivers/net/ethernet/Kconfig                  |    1 -
->  drivers/net/ethernet/Makefile                 |    1 -
->  drivers/net/ethernet/calxeda/Kconfig          |    9 -
->  drivers/net/ethernet/calxeda/Makefile         |    2 -
->  drivers/net/ethernet/calxeda/xgmac.c          | 1927 -----------------
->  drivers/vfio/platform/reset/Kconfig           |    8 -
->  drivers/vfio/platform/reset/Makefile          |    2 -
->  .../reset/vfio_platform_calxedaxgmac.c        |   74 -
->  49 files changed, 2 insertions(+), 4740 deletions(-)
->  delete mode 100644 Documentation/devicetree/bindings/arm/calxeda.yaml
->  delete mode 100644 Documentation/devicetree/bindings/arm/calxeda/l2ecc.txt
->  delete mode 100644 Documentation/devicetree/bindings/ata/sata_highbank.txt
->  delete mode 100644 Documentation/devicetree/bindings/clock/calxeda.txt
->  delete mode 100644 Documentation/devicetree/bindings/memory-controllers/calxeda-ddr-ctrlr.txt
->  delete mode 100644 Documentation/devicetree/bindings/net/calxeda-xgmac.txt
->  delete mode 100644 Documentation/devicetree/bindings/phy/calxeda-combophy.txt
->  delete mode 100644 arch/arm/boot/dts/ecx-2000.dts
->  delete mode 100644 arch/arm/boot/dts/ecx-common.dtsi
->  delete mode 100644 arch/arm/boot/dts/highbank.dts
->  delete mode 100644 arch/arm/mach-highbank/Kconfig
->  delete mode 100644 arch/arm/mach-highbank/Makefile
->  delete mode 100644 arch/arm/mach-highbank/core.h
->  delete mode 100644 arch/arm/mach-highbank/highbank.c
->  delete mode 100644 arch/arm/mach-highbank/pm.c
->  delete mode 100644 arch/arm/mach-highbank/smc.S
->  delete mode 100644 arch/arm/mach-highbank/sysregs.h
->  delete mode 100644 arch/arm/mach-highbank/system.c
->  delete mode 100644 drivers/ata/sata_highbank.c
->  delete mode 100644 drivers/clk/clk-highbank.c
->  delete mode 100644 drivers/cpufreq/highbank-cpufreq.c
->  delete mode 100644 drivers/cpuidle/cpuidle-calxeda.c
->  delete mode 100644 drivers/edac/highbank_l2_edac.c
->  delete mode 100644 drivers/edac/highbank_mc_edac.c
->  delete mode 100644 drivers/net/ethernet/calxeda/Kconfig
->  delete mode 100644 drivers/net/ethernet/calxeda/Makefile
->  delete mode 100644 drivers/net/ethernet/calxeda/xgmac.c
->  delete mode 100644 drivers/vfio/platform/reset/vfio_platform_calxedaxgmac.c
-> 
-> 
-> base-commit: 11a48a5a18c63fd7621bb050228cebf13566e4d8
+>
+> This is be used by [1] and [2] to leave context bank 0 open so that
+> the Adreno GPU can program it.
+>
+> [1] https://lists.linuxfoundation.org/pipermail/iommu/2020-January/041438.html
+> [2] https://lists.linuxfoundation.org/pipermail/iommu/2020-January/041444.html
+>
+> Signed-off-by: Jordan Crouse <jcrouse@codeaurora.org>
+> ---
+>
+>  drivers/iommu/arm-smmu.c | 63 +++++++++++++++++++++++++++++++++++++++++++++---
+>  1 file changed, 59 insertions(+), 4 deletions(-)
+>
+> diff --git a/drivers/iommu/arm-smmu.c b/drivers/iommu/arm-smmu.c
+> index 85a6773..799a254 100644
+> --- a/drivers/iommu/arm-smmu.c
+> +++ b/drivers/iommu/arm-smmu.c
+> @@ -254,6 +254,43 @@ static int __arm_smmu_alloc_bitmap(unsigned long *map, int start, int end)
+>         return idx;
+>  }
+>
+> +static void arm_smmu_write_s2cr(struct arm_smmu_device *smmu, int idx);
+> +
+> +static int __arm_smmu_alloc_cb(struct arm_smmu_device *smmu, int start,
+> +               int target)
+> +{
+> +       int new, i;
+> +
+> +       /* Allocate a new context bank id */
+> +       new = __arm_smmu_alloc_bitmap(smmu->context_map, start,
+> +               smmu->num_context_banks);
+> +
+> +       if (new < 0)
+> +               return new;
+> +
+> +       /* If no target is set or we actually got the bank index we wanted */
+> +       if (target == -1 || new == target)
+> +               return new;
+> +
+> +       /* Copy the context configuration to the new index */
+> +       memcpy(&smmu->cbs[new], &smmu->cbs[target], sizeof(*smmu->cbs));
+> +       smmu->cbs[new].cfg->cbndx = new;
+> +
+> +       /* FIXME: Do we need locking here? */
+> +       for (i = 0; i < smmu->num_mapping_groups; i++) {
+> +               if (smmu->s2crs[i].cbndx == target) {
+> +                       smmu->s2crs[i].cbndx = new;
+> +                       arm_smmu_write_s2cr(smmu, i);
+> +               }
+> +       }
+> +
+> +       /*
+> +        * FIXME: Does getting here imply that 'target' is already set in the
+> +        * context_map?
+> +        */
+> +       return target;
+> +}
+> +
+>  static void __arm_smmu_free_bitmap(unsigned long *map, int idx)
+>  {
+>         clear_bit(idx, map);
+> @@ -770,6 +807,7 @@ static int arm_smmu_init_domain_context(struct iommu_domain *domain,
+>         struct arm_smmu_domain *smmu_domain = to_smmu_domain(domain);
+>         struct arm_smmu_cfg *cfg = &smmu_domain->cfg;
+>         unsigned long quirks = 0;
+> +       int forcecb = -1;
+>
+>         mutex_lock(&smmu_domain->init_mutex);
+>         if (smmu_domain->smmu)
+> @@ -844,8 +882,25 @@ static int arm_smmu_init_domain_context(struct iommu_domain *domain,
+>                          * SEP_UPSTREAM so we don't need to reduce the size of
+>                          * the ias to account for the sign extension bit
+>                          */
+> -                       if (smmu_domain->split_pagetables)
+> -                               quirks |= IO_PGTABLE_QUIRK_ARM_TTBR1;
+> +                       if (smmu_domain->split_pagetables) {
+> +                               /*
+> +                                * If split pagetables are enabled, assume that
+> +                                * the user's intent is to use per-instance
+> +                                * pagetables which, at least on a QCOM target,
+> +                                * means that this domain should be on context
+> +                                * bank 0.
+> +                                */
+> +
+> +                               /*
+> +                                * If we can't force to context bank 0 then
+> +                                * don't bother enabling split pagetables which
+> +                                * then would not allow aux domains
+> +                                */
+> +                               if (start == 0) {
+> +                                       forcecb = 0;
+> +                                       quirks |= IO_PGTABLE_QUIRK_ARM_TTBR1;
+> +                               }
+> +                       }
+>                 } else if (cfg->fmt == ARM_SMMU_CTX_FMT_AARCH32_L) {
+>                         fmt = ARM_32_LPAE_S1;
+>                         ias = min(ias, 32UL);
+> @@ -883,8 +938,8 @@ static int arm_smmu_init_domain_context(struct iommu_domain *domain,
+>                 ret = -EINVAL;
+>                 goto out_unlock;
+>         }
+> -       ret = __arm_smmu_alloc_bitmap(smmu->context_map, start,
+> -                                     smmu->num_context_banks);
+> +
+> +       ret = __arm_smmu_alloc_cb(smmu, start, forcecb);
+>         if (ret < 0)
+>                 goto out_unlock;
+>
 > --
-> 2.20.1
-
+> 2.7.4
 _______________________________________________
 iommu mailing list
 iommu@lists.linux-foundation.org
