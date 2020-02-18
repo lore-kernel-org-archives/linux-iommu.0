@@ -2,174 +2,81 @@ Return-Path: <SRS0=Yw80=4G=lists.linux-foundation.org=iommu-bounces@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-1.8 required=3.0 tests=DKIM_ADSP_CUSTOM_MED,
-	DKIM_INVALID,DKIM_SIGNED,FREEMAIL_FORGED_FROMDOMAIN,FREEMAIL_FROM,
-	HEADER_FROM_DIFFERENT_DOMAINS,MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS,
-	USER_AGENT_SANE_1 autolearn=no autolearn_force=no version=3.4.0
+X-Spam-Status: No, score=-6.5 required=3.0 tests=DKIM_INVALID,DKIM_SIGNED,
+	HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_PATCH,MAILING_LIST_MULTI,SIGNED_OFF_BY,
+	SPF_HELO_NONE,SPF_PASS autolearn=unavailable autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id E5C75C3404B
-	for <iommu@archiver.kernel.org>; Tue, 18 Feb 2020 18:51:32 +0000 (UTC)
-Received: from hemlock.osuosl.org (smtp2.osuosl.org [140.211.166.133])
+	by smtp.lore.kernel.org (Postfix) with ESMTP id D94DAC34026
+	for <iommu@archiver.kernel.org>; Tue, 18 Feb 2020 19:11:34 +0000 (UTC)
+Received: from silver.osuosl.org (smtp3.osuosl.org [140.211.166.136])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by mail.kernel.org (Postfix) with ESMTPS id B6BCB24125
-	for <iommu@archiver.kernel.org>; Tue, 18 Feb 2020 18:51:32 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTPS id 32D5E24125
+	for <iommu@archiver.kernel.org>; Tue, 18 Feb 2020 19:11:34 +0000 (UTC)
 Authentication-Results: mail.kernel.org;
-	dkim=fail reason="signature verification failed" (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="YyfD8RI2"
-DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org B6BCB24125
-Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=gmail.com
+	dkim=fail reason="signature verification failed" (2048-bit key) header.d=gerhold.net header.i=@gerhold.net header.b="FNaMcY/q"
+DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 32D5E24125
+Authentication-Results: mail.kernel.org; dmarc=none (p=none dis=none) header.from=gerhold.net
 Authentication-Results: mail.kernel.org; spf=pass smtp.mailfrom=iommu-bounces@lists.linux-foundation.org
 Received: from localhost (localhost [127.0.0.1])
-	by hemlock.osuosl.org (Postfix) with ESMTP id 92A0A86963;
-	Tue, 18 Feb 2020 18:51:32 +0000 (UTC)
+	by silver.osuosl.org (Postfix) with ESMTP id 0805020481;
+	Tue, 18 Feb 2020 19:11:34 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from hemlock.osuosl.org ([127.0.0.1])
+Received: from silver.osuosl.org ([127.0.0.1])
 	by localhost (.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
-	with ESMTP id AQiPCesUkgTd; Tue, 18 Feb 2020 18:51:32 +0000 (UTC)
+	with ESMTP id RwOqUVZauPl9; Tue, 18 Feb 2020 19:11:32 +0000 (UTC)
 Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [140.211.9.56])
-	by hemlock.osuosl.org (Postfix) with ESMTP id 059E086631;
-	Tue, 18 Feb 2020 18:51:32 +0000 (UTC)
+	by silver.osuosl.org (Postfix) with ESMTP id 059E320343;
+	Tue, 18 Feb 2020 19:11:32 +0000 (UTC)
 Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
-	by lists.linuxfoundation.org (Postfix) with ESMTP id E4089C1D84;
-	Tue, 18 Feb 2020 18:51:31 +0000 (UTC)
-Received: from whitealder.osuosl.org (smtp1.osuosl.org [140.211.166.138])
- by lists.linuxfoundation.org (Postfix) with ESMTP id F122AC013E
- for <iommu@lists.linux-foundation.org>; Tue, 18 Feb 2020 18:51:30 +0000 (UTC)
+	by lists.linuxfoundation.org (Postfix) with ESMTP id E02CAC08A0;
+	Tue, 18 Feb 2020 19:11:31 +0000 (UTC)
+Received: from fraxinus.osuosl.org (smtp4.osuosl.org [140.211.166.137])
+ by lists.linuxfoundation.org (Postfix) with ESMTP id EAD6AC013E
+ for <iommu@lists.linux-foundation.org>; Tue, 18 Feb 2020 19:11:29 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
- by whitealder.osuosl.org (Postfix) with ESMTP id DA66C86096
- for <iommu@lists.linux-foundation.org>; Tue, 18 Feb 2020 18:51:30 +0000 (UTC)
+ by fraxinus.osuosl.org (Postfix) with ESMTP id D985185A60
+ for <iommu@lists.linux-foundation.org>; Tue, 18 Feb 2020 19:11:29 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from whitealder.osuosl.org ([127.0.0.1])
+Received: from fraxinus.osuosl.org ([127.0.0.1])
  by localhost (.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
- with ESMTP id RguSxLsPCkgp for <iommu@lists.linux-foundation.org>;
- Tue, 18 Feb 2020 18:51:30 +0000 (UTC)
-X-Greylist: domain auto-whitelisted by SQLgrey-1.7.6
-Received: from mail-pj1-f67.google.com (mail-pj1-f67.google.com
- [209.85.216.67])
- by whitealder.osuosl.org (Postfix) with ESMTPS id 31A5C8557B
- for <iommu@lists.linux-foundation.org>; Tue, 18 Feb 2020 18:51:30 +0000 (UTC)
-Received: by mail-pj1-f67.google.com with SMTP id r67so1425515pjb.0
- for <iommu@lists.linux-foundation.org>; Tue, 18 Feb 2020 10:51:30 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=gmail.com; s=20161025;
- h=subject:to:cc:references:from:autocrypt:message-id:date:user-agent
- :mime-version:in-reply-to:content-language:content-transfer-encoding;
- bh=VVBvTCIz+yTpld7B2DsaTCEQHI9uyXmzgTeduGY+LYA=;
- b=YyfD8RI2sOZkvpQX+EPsxFwPE+8W6Mqhbgaev0cp3lZfa1zBdEkHJwnYok6Q84CGw5
- 4MotE/7eB6g0ZFFCcYW59THKajcBFuVQkh9BFG99NU4OcPCBKIJ5IhyZ5S4hXa/oScm2
- nJSmaVJsd7eIJneNj5ixjj6vNqkw18m3Z+AYZTXAPJwSTIctzoTUoqVaTLRt7mGsD+sH
- I1tHTvOVQyjydoojWGlPS7DCuqsXCz2zvXVXBjr/KPWLvxOvhKdQMPPN7a8FmN+0QRCP
- bOoSRgPbC+gfD5KTmFsJiwvSQTGqMFcHqg1hlbCyOdsHBv/KcWHzGF2qBRfQ2uM8e332
- BFAw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
- d=1e100.net; s=20161025;
- h=x-gm-message-state:subject:to:cc:references:from:autocrypt
- :message-id:date:user-agent:mime-version:in-reply-to
- :content-language:content-transfer-encoding;
- bh=VVBvTCIz+yTpld7B2DsaTCEQHI9uyXmzgTeduGY+LYA=;
- b=VQzxsgxtCQwHapzcKro+ilICwXZekwGKybadB8aRisfHixpUKIpd3MpHfKf+AXUWys
- GbNorpKIAueWcZKTiog8ZX/qc+YGzQVDDQuT34VBlgOsfTRsJH2jQ4qcr26v8BgTE8ke
- y1bbvnqgkFdHW3TU6/17byoZLICgXH36PHMorZS8lVaks0c7dxORasj3c6ZxuU6DaH/z
- CJlJT9LJrHsvmKMTFMUOWTBNNugQL6ojtUAL8FCoQ40Z5l6qNVsL/iPigTiZiaQCOIcJ
- I5ggCRO5n7U9IX0drwesZOmZmdawwdgU/aLiKXlIPXlUYbxMINZ/PCbMANtHfm07iuRD
- fC0A==
-X-Gm-Message-State: APjAAAWCTuEAgcLQisyi2cz1Q4gH8UExjxxFyUAJE95fSD/ucjZ20ZHP
- birtJkkr4moiDOaRd69wJwk=
-X-Google-Smtp-Source: APXvYqzvrBKSEU9iKuP0lRt9jwVl6eac+xJEeOlhpux5veVmUEO3+4YXawgvXtL/rE+XQnMB3A5eUQ==
-X-Received: by 2002:a17:902:7283:: with SMTP id
- d3mr21924336pll.118.1582051889702; 
- Tue, 18 Feb 2020 10:51:29 -0800 (PST)
-Received: from [10.67.49.41] ([192.19.223.252])
- by smtp.googlemail.com with ESMTPSA id gx2sm4000789pjb.18.2020.02.18.10.51.22
- (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
- Tue, 18 Feb 2020 10:51:29 -0800 (PST)
-Subject: Re: [RFC PATCH 00/11] Removing Calxeda platform support
-To: Rob Herring <robh@kernel.org>, Andre Przywara <andre.przywara@arm.com>
-References: <20200218171321.30990-1-robh@kernel.org>
- <20200218181356.09ae0779@donnerap.cambridge.arm.com>
- <CAL_JsqJpDLn5Zr2UHno1TeReqrwZ-HAAfd78AouigGi4sAQuOw@mail.gmail.com>
-From: Florian Fainelli <f.fainelli@gmail.com>
-Autocrypt: addr=f.fainelli@gmail.com; prefer-encrypt=mutual; keydata=
- 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
- G10n8gCguORqNGMsVRxrlLs7/himep7MrCc=
-Message-ID: <f2b15018-2b88-01b8-14f1-a6c326b10b58@gmail.com>
-Date: Tue, 18 Feb 2020 10:51:17 -0800
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101
- Thunderbird/68.4.1
+ with ESMTP id EJMpraHvog_P for <iommu@lists.linux-foundation.org>;
+ Tue, 18 Feb 2020 19:11:28 +0000 (UTC)
+X-Greylist: from auto-whitelisted by SQLgrey-1.7.6
+Received: from mo4-p01-ob.smtp.rzone.de (mo4-p01-ob.smtp.rzone.de
+ [85.215.255.51])
+ by fraxinus.osuosl.org (Postfix) with ESMTPS id AC3EC859BA
+ for <iommu@lists.linux-foundation.org>; Tue, 18 Feb 2020 19:11:27 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; t=1582053085;
+ s=strato-dkim-0002; d=gerhold.net;
+ h=In-Reply-To:References:Message-ID:Subject:Cc:To:From:Date:
+ X-RZG-CLASS-ID:X-RZG-AUTH:From:Subject:Sender;
+ bh=5D52tt6mIQclXNRsDvAzprjKbRWFDl8iC2bcJ4uR/M8=;
+ b=FNaMcY/qPwUuRcd32jJxYRIX/roCqdjUYmbEfAptYtoFWF/rZnZFv3XbaRceiuz7g9
+ KshwNOBpbbNaNJUQhv21kDQrbwah8QqFdnK5AcqA3tJHUWq7BCQMbp8EzFtITz5gtCoY
+ JJj3N6y2W6etdyxxWt32vSIVtKxf4gcaNww2C1CrWkYGJbmmuiHWZ4o7bieZVon54l1Q
+ 2Fsn4H4GyBwDDr4GVgBPYcvkqWC8zbNokXF+bdw53UmvikY7R4z0/ExqCRJ8EmtqPge8
+ JZ2aMftn7EEqqEBF7BSyisyLR4myXLuzzJVsi3OTqfd8lUXzHfyzd0VpTooMcxLr/MC8
+ NWoQ==
+X-RZG-AUTH: ":P3gBZUipdd93FF5ZZvYFPugejmSTVR2nRPhVOQ/OcYgojyw4j34+u26zEodhPgRDZ8b7Ic/NaIo="
+X-RZG-CLASS-ID: mo00
+Received: from gerhold.net by smtp.strato.de (RZmta 46.1.12 DYNA|AUTH)
+ with ESMTPSA id a01fe9w1IJ5Mm3U
+ (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256 bits))
+ (Client did not present a certificate);
+ Tue, 18 Feb 2020 20:05:22 +0100 (CET)
+Date: Tue, 18 Feb 2020 20:05:16 +0100
+From: Stephan Gerhold <stephan@gerhold.net>
+To: Robin Murphy <robin.murphy@arm.com>
+Subject: Re: [PATCH] iommu/qcom: Fix bogus detach logic
+Message-ID: <20200218190516.GA19773@gerhold.net>
+References: <be92829c6e5467634b109add002351e6cf9e18d2.1582049382.git.robin.murphy@arm.com>
 MIME-Version: 1.0
-In-Reply-To: <CAL_JsqJpDLn5Zr2UHno1TeReqrwZ-HAAfd78AouigGi4sAQuOw@mail.gmail.com>
-Content-Language: en-US
-Cc: Mark Langsdorf <mlangsdo@redhat.com>, kvm@vger.kernel.org,
- Viresh Kumar <viresh.kumar@linaro.org>,
- "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
- "open list:LIBATA SUBSYSTEM \(Serial and Parallel ATA drivers\)"
- <linux-ide@vger.kernel.org>, Will Deacon <will@kernel.org>,
- linux-clk <linux-clk@vger.kernel.org>,
- Daniel Lezcano <daniel.lezcano@linaro.org>, devicetree@vger.kernel.org,
- Jon Loeliger <jdl@jdl.com>, "open list:THERMAL" <linux-pm@vger.kernel.org>,
- Alex Williamson <alex.williamson@redhat.com>,
- Matthias Brugger <mbrugger@suse.com>, Alexander Graf <graf@amazon.com>,
- Mauro Carvalho Chehab <mchehab@kernel.org>,
- "moderated list:ARM/FREESCALE IMX / MXC ARM ARCHITECTURE"
- <linux-arm-kernel@lists.infradead.org>,
- linux-edac <linux-edac@vger.kernel.org>, Jens Axboe <axboe@kernel.dk>,
- Tony Luck <tony.luck@intel.com>, Stephen Boyd <sboyd@kernel.org>,
- netdev <netdev@vger.kernel.org>, Cornelia Huck <cohuck@redhat.com>,
- "Rafael J. Wysocki" <rjw@rjwysocki.net>, soc@kernel.org,
- Linux IOMMU <iommu@lists.linux-foundation.org>,
- Robert Richter <rrichter@marvell.com>, James Morse <james.morse@arm.com>,
- Borislav Petkov <bp@alien8.de>, Robin Murphy <robin.murphy@arm.com>,
- "David S. Miller" <davem@davemloft.net>
+Content-Disposition: inline
+In-Reply-To: <be92829c6e5467634b109add002351e6cf9e18d2.1582049382.git.robin.murphy@arm.com>
+Cc: linux-arm-msm@vger.kernel.org, iommu@lists.linux-foundation.org,
+ Naresh Kamboju <naresh.kamboju@linaro.org>,
+ linux-arm-kernel@lists.infradead.org, Brian Masney <masneyb@onstation.org>
 X-BeenThere: iommu@lists.linux-foundation.org
 X-Mailman-Version: 2.1.15
 Precedence: list
@@ -187,39 +94,88 @@ Content-Transfer-Encoding: 7bit
 Errors-To: iommu-bounces@lists.linux-foundation.org
 Sender: "iommu" <iommu-bounces@lists.linux-foundation.org>
 
-On 2/18/20 10:40 AM, Rob Herring wrote:
-> On Tue, Feb 18, 2020 at 12:14 PM Andre Przywara <andre.przywara@arm.com> wrote:
->>
->> On Tue, 18 Feb 2020 11:13:10 -0600
->> Rob Herring <robh@kernel.org> wrote:
->>
->> Hi,
->>
->>> Calxeda has been defunct for 6 years now. Use of Calxeda servers carried
->>> on for some time afterwards primarily as distro builders for 32-bit ARM.
->>> AFAIK, those systems have been retired in favor of 32-bit VMs on 64-bit
->>> hosts.
->>>
->>> The other use of Calxeda Midway I'm aware of was testing 32-bit ARM KVM
->>> support as there are few or no other systems with enough RAM and LPAE. Now
->>> 32-bit KVM host support is getting removed[1].
->>>
->>> While it's not much maintenance to support, I don't care to convert the
->>> Calxeda DT bindings to schema nor fix any resulting errors in the dts files
->>> (which already don't exactly match what's shipping in firmware).
->>
->> While every kernel maintainer seems always happy to take patches with a negative diffstat, I wonder if this is really justification enough to remove a perfectly working platform. I don't really know about any active users, but experience tells that some platforms really are used for quite a long time, even if they are somewhat obscure. N900 or Netwinder, anyone?
->>
->> So to not give the impression that actually *everyone* (from that small subset of people actively reading the kernel list) is happy with that, I think that having support for at least Midway would be useful. On the one hand it's a decent LPAE platform (with memory actually exceeding 4GB), and on the other hand it's something with capable I/O (SATA) and networking, so one can actually stress test the system. Which is the reason I was using that for KVM testing, but even with that probably going away now there remain still some use cases, and be it for general ARM(32) testing.
+On Tue, Feb 18, 2020 at 06:12:41PM +0000, Robin Murphy wrote:
+> Currently, the implementation of qcom_iommu_domain_free() is guaranteed
+> to do one of two things: WARN() and leak everything, or dereference NULL
+> and crash. That alone is terrible, but in fact the whole idea of trying
+> to track the liveness of a domain via the qcom_domain->iommu pointer as
+> a sanity check is full of fundamentally flawed assumptions. Make things
+> robust and actually functional by not trying to be quite so clever.
 > 
-> Does LPAE with more than 4GB actually need to work if there's not
-> another platform out there?
+> Reported-by: Brian Masney <masneyb@onstation.org>
+> Tested-by: Brian Masney <masneyb@onstation.org>
+> Reported-by: Naresh Kamboju <naresh.kamboju@linaro.org>
+> Fixes: 0ae349a0f33f ("iommu/qcom: Add qcom_iommu")
+> Signed-off-by: Robin Murphy <robin.murphy@arm.com>
 
-There are ARCH_BRCMSTB platforms that are 32-bit only and have 6GB of
-DRAM populated, and those continue to work just fine, though there is no
-known use for KVM AFAICT.
--- 
-Florian
+This fixes the warning reported by Naresh Kamboju [1] for me. Thank you!
+
+Tested-by: Stephan Gerhold <stephan@gerhold.net>
+
+[1]: https://lore.kernel.org/linux-arm-msm/CA+G9fYtScOpkLvx=__gP903uJ2v87RwZgkAuL6RpF9_DTDs9Zw@mail.gmail.com/
+
+> ---
+>  drivers/iommu/qcom_iommu.c | 28 ++++++++++++----------------
+>  1 file changed, 12 insertions(+), 16 deletions(-)
+> 
+> diff --git a/drivers/iommu/qcom_iommu.c b/drivers/iommu/qcom_iommu.c
+> index 39759db4f003..4328da0b0a9f 100644
+> --- a/drivers/iommu/qcom_iommu.c
+> +++ b/drivers/iommu/qcom_iommu.c
+> @@ -344,21 +344,19 @@ static void qcom_iommu_domain_free(struct iommu_domain *domain)
+>  {
+>  	struct qcom_iommu_domain *qcom_domain = to_qcom_iommu_domain(domain);
+>  
+> -	if (WARN_ON(qcom_domain->iommu))    /* forgot to detach? */
+> -		return;
+> -
+>  	iommu_put_dma_cookie(domain);
+>  
+> -	/* NOTE: unmap can be called after client device is powered off,
+> -	 * for example, with GPUs or anything involving dma-buf.  So we
+> -	 * cannot rely on the device_link.  Make sure the IOMMU is on to
+> -	 * avoid unclocked accesses in the TLB inv path:
+> -	 */
+> -	pm_runtime_get_sync(qcom_domain->iommu->dev);
+> -
+> -	free_io_pgtable_ops(qcom_domain->pgtbl_ops);
+> -
+> -	pm_runtime_put_sync(qcom_domain->iommu->dev);
+> +	if (qcom_domain->iommu) {
+> +		/*
+> +		 * NOTE: unmap can be called after client device is powered
+> +		 * off, for example, with GPUs or anything involving dma-buf.
+> +		 * So we cannot rely on the device_link.  Make sure the IOMMU
+> +		 * is on to avoid unclocked accesses in the TLB inv path:
+> +		 */
+> +		pm_runtime_get_sync(qcom_domain->iommu->dev);
+> +		free_io_pgtable_ops(qcom_domain->pgtbl_ops);
+> +		pm_runtime_put_sync(qcom_domain->iommu->dev);
+> +	}
+>  
+>  	kfree(qcom_domain);
+>  }
+> @@ -404,7 +402,7 @@ static void qcom_iommu_detach_dev(struct iommu_domain *domain, struct device *de
+>  	struct qcom_iommu_domain *qcom_domain = to_qcom_iommu_domain(domain);
+>  	unsigned i;
+>  
+> -	if (!qcom_domain->iommu)
+> +	if (WARN_ON(!qcom_domain->iommu))
+>  		return;
+>  
+>  	pm_runtime_get_sync(qcom_iommu->dev);
+> @@ -417,8 +415,6 @@ static void qcom_iommu_detach_dev(struct iommu_domain *domain, struct device *de
+>  		ctx->domain = NULL;
+>  	}
+>  	pm_runtime_put_sync(qcom_iommu->dev);
+> -
+> -	qcom_domain->iommu = NULL;
+>  }
+>  
+>  static int qcom_iommu_map(struct iommu_domain *domain, unsigned long iova,
+> -- 
+> 2.23.0.dirty
+> 
 _______________________________________________
 iommu mailing list
 iommu@lists.linux-foundation.org
