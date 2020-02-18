@@ -2,66 +2,80 @@ Return-Path: <SRS0=Yw80=4G=lists.linux-foundation.org=iommu-bounces@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-9.8 required=3.0 tests=HEADER_FROM_DIFFERENT_DOMAINS,
-	INCLUDES_PATCH,MAILING_LIST_MULTI,SIGNED_OFF_BY,SPF_HELO_NONE,SPF_PASS,
-	USER_AGENT_GIT autolearn=unavailable autolearn_force=no version=3.4.0
+X-Spam-Status: No, score=-2.2 required=3.0 tests=HEADER_FROM_DIFFERENT_DOMAINS,
+	MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS,USER_AGENT_SANE_2 autolearn=no
+	autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id A11E7C34049
-	for <iommu@archiver.kernel.org>; Tue, 18 Feb 2020 18:12:54 +0000 (UTC)
-Received: from fraxinus.osuosl.org (smtp4.osuosl.org [140.211.166.137])
+	by smtp.lore.kernel.org (Postfix) with ESMTP id C3FFEC34026
+	for <iommu@archiver.kernel.org>; Tue, 18 Feb 2020 18:14:09 +0000 (UTC)
+Received: from hemlock.osuosl.org (smtp2.osuosl.org [140.211.166.133])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by mail.kernel.org (Postfix) with ESMTPS id 7BFFA2465A
-	for <iommu@archiver.kernel.org>; Tue, 18 Feb 2020 18:12:54 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 7BFFA2465A
+	by mail.kernel.org (Postfix) with ESMTPS id 95A3024656
+	for <iommu@archiver.kernel.org>; Tue, 18 Feb 2020 18:14:09 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 95A3024656
 Authentication-Results: mail.kernel.org; dmarc=none (p=none dis=none) header.from=arm.com
 Authentication-Results: mail.kernel.org; spf=pass smtp.mailfrom=iommu-bounces@lists.linux-foundation.org
 Received: from localhost (localhost [127.0.0.1])
-	by fraxinus.osuosl.org (Postfix) with ESMTP id 668CE83F08;
-	Tue, 18 Feb 2020 18:12:54 +0000 (UTC)
-X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from fraxinus.osuosl.org ([127.0.0.1])
-	by localhost (.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
-	with ESMTP id gKtCO49urRnj; Tue, 18 Feb 2020 18:12:51 +0000 (UTC)
-Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [140.211.9.56])
-	by fraxinus.osuosl.org (Postfix) with ESMTP id B7A9C80ACD;
-	Tue, 18 Feb 2020 18:12:51 +0000 (UTC)
-Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
-	by lists.linuxfoundation.org (Postfix) with ESMTP id 989DFC08A0;
-	Tue, 18 Feb 2020 18:12:51 +0000 (UTC)
-Received: from hemlock.osuosl.org (smtp2.osuosl.org [140.211.166.133])
- by lists.linuxfoundation.org (Postfix) with ESMTP id 32A1FC013E
- for <iommu@lists.linux-foundation.org>; Tue, 18 Feb 2020 18:12:51 +0000 (UTC)
-Received: from localhost (localhost [127.0.0.1])
- by hemlock.osuosl.org (Postfix) with ESMTP id 2159E85BE4
- for <iommu@lists.linux-foundation.org>; Tue, 18 Feb 2020 18:12:51 +0000 (UTC)
+	by hemlock.osuosl.org (Postfix) with ESMTP id 6119787216;
+	Tue, 18 Feb 2020 18:14:09 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
 Received: from hemlock.osuosl.org ([127.0.0.1])
+	by localhost (.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
+	with ESMTP id Qb2bRnYXcPX4; Tue, 18 Feb 2020 18:14:06 +0000 (UTC)
+Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [140.211.9.56])
+	by hemlock.osuosl.org (Postfix) with ESMTP id ED5AE85BE4;
+	Tue, 18 Feb 2020 18:14:06 +0000 (UTC)
+Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
+	by lists.linuxfoundation.org (Postfix) with ESMTP id DF09DC1D84;
+	Tue, 18 Feb 2020 18:14:06 +0000 (UTC)
+Received: from fraxinus.osuosl.org (smtp4.osuosl.org [140.211.166.137])
+ by lists.linuxfoundation.org (Postfix) with ESMTP id 85B18C013E
+ for <iommu@lists.linux-foundation.org>; Tue, 18 Feb 2020 18:14:05 +0000 (UTC)
+Received: from localhost (localhost [127.0.0.1])
+ by fraxinus.osuosl.org (Postfix) with ESMTP id 73BE983F08
+ for <iommu@lists.linux-foundation.org>; Tue, 18 Feb 2020 18:14:05 +0000 (UTC)
+X-Virus-Scanned: amavisd-new at osuosl.org
+Received: from fraxinus.osuosl.org ([127.0.0.1])
  by localhost (.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
- with ESMTP id zFZUWxsLijea for <iommu@lists.linux-foundation.org>;
- Tue, 18 Feb 2020 18:12:50 +0000 (UTC)
+ with ESMTP id qxbzvTdOt0bq for <iommu@lists.linux-foundation.org>;
+ Tue, 18 Feb 2020 18:14:04 +0000 (UTC)
 X-Greylist: domain auto-whitelisted by SQLgrey-1.7.6
 Received: from foss.arm.com (foss.arm.com [217.140.110.172])
- by hemlock.osuosl.org (Postfix) with ESMTP id 37C5B85BD8
- for <iommu@lists.linux-foundation.org>; Tue, 18 Feb 2020 18:12:50 +0000 (UTC)
+ by fraxinus.osuosl.org (Postfix) with ESMTP id 3F69180ACD
+ for <iommu@lists.linux-foundation.org>; Tue, 18 Feb 2020 18:14:04 +0000 (UTC)
 Received: from usa-sjc-imap-foss1.foss.arm.com (unknown [10.121.207.14])
- by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id 9FE9D101E;
- Tue, 18 Feb 2020 10:12:49 -0800 (PST)
-Received: from e121345-lin.cambridge.arm.com (e121345-lin.cambridge.arm.com
- [10.1.196.37])
- by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPA id 82C723F73B;
- Tue, 18 Feb 2020 10:12:48 -0800 (PST)
-From: Robin Murphy <robin.murphy@arm.com>
-To: joro@8bytes.org,
-	robdclark@gmail.com
-Subject: [PATCH] iommu/qcom: Fix bogus detach logic
-Date: Tue, 18 Feb 2020 18:12:41 +0000
-Message-Id: <be92829c6e5467634b109add002351e6cf9e18d2.1582049382.git.robin.murphy@arm.com>
-X-Mailer: git-send-email 2.23.0.dirty
+ by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id 65A9331B;
+ Tue, 18 Feb 2020 10:14:03 -0800 (PST)
+Received: from donnerap.cambridge.arm.com (usa-sjc-imap-foss1.foss.arm.com
+ [10.121.207.14])
+ by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPSA id 8412E3F68F;
+ Tue, 18 Feb 2020 10:13:59 -0800 (PST)
+Date: Tue, 18 Feb 2020 18:13:56 +0000
+From: Andre Przywara <andre.przywara@arm.com>
+To: Rob Herring <robh@kernel.org>
+Subject: Re: [RFC PATCH 00/11] Removing Calxeda platform support
+Message-ID: <20200218181356.09ae0779@donnerap.cambridge.arm.com>
+In-Reply-To: <20200218171321.30990-1-robh@kernel.org>
+References: <20200218171321.30990-1-robh@kernel.org>
+Organization: ARM
+X-Mailer: Claws Mail 3.17.3 (GTK+ 2.24.32; aarch64-unknown-linux-gnu)
 MIME-Version: 1.0
-Cc: stephan@gerhold.net, linux-arm-msm@vger.kernel.org,
- Naresh Kamboju <naresh.kamboju@linaro.org>, iommu@lists.linux-foundation.org,
- linux-arm-kernel@lists.infradead.org, Brian Masney <masneyb@onstation.org>
+Cc: Mark Langsdorf <mlangsdo@redhat.com>, kvm@vger.kernel.org,
+ Viresh Kumar <viresh.kumar@linaro.org>, linux-ide@vger.kernel.org,
+ Will Deacon <will@kernel.org>, linux-clk@vger.kernel.org, soc@kernel.org,
+ Daniel Lezcano <daniel.lezcano@linaro.org>, devicetree@vger.kernel.org,
+ Jon Loeliger <jdl@jdl.com>, linux-pm@vger.kernel.org,
+ Alex Williamson <alex.williamson@redhat.com>, Tony Luck <tony.luck@intel.com>,
+ Alexander Graf <graf@amazon.com>, Mauro Carvalho Chehab <mchehab@kernel.org>,
+ linux-arm-kernel@lists.infradead.org, linux-edac@vger.kernel.org,
+ Jens Axboe <axboe@kernel.dk>, Matthias Brugger <mbrugger@suse.com>,
+ Stephen Boyd <sboyd@kernel.org>, netdev@vger.kernel.org,
+ Cornelia Huck <cohuck@redhat.com>, "Rafael J. Wysocki" <rjw@rjwysocki.net>,
+ linux-kernel@vger.kernel.org, iommu@lists.linux-foundation.org,
+ Robert Richter <rrichter@marvell.com>, James Morse <james.morse@arm.com>,
+ Borislav Petkov <bp@alien8.de>, Robin Murphy <robin.murphy@arm.com>, "David S.
+ Miller" <davem@davemloft.net>
 X-BeenThere: iommu@lists.linux-foundation.org
 X-Mailman-Version: 2.1.15
 Precedence: list
@@ -79,79 +93,137 @@ Content-Transfer-Encoding: 7bit
 Errors-To: iommu-bounces@lists.linux-foundation.org
 Sender: "iommu" <iommu-bounces@lists.linux-foundation.org>
 
-Currently, the implementation of qcom_iommu_domain_free() is guaranteed
-to do one of two things: WARN() and leak everything, or dereference NULL
-and crash. That alone is terrible, but in fact the whole idea of trying
-to track the liveness of a domain via the qcom_domain->iommu pointer as
-a sanity check is full of fundamentally flawed assumptions. Make things
-robust and actually functional by not trying to be quite so clever.
+On Tue, 18 Feb 2020 11:13:10 -0600
+Rob Herring <robh@kernel.org> wrote:
 
-Reported-by: Brian Masney <masneyb@onstation.org>
-Tested-by: Brian Masney <masneyb@onstation.org>
-Reported-by: Naresh Kamboju <naresh.kamboju@linaro.org>
-Fixes: 0ae349a0f33f ("iommu/qcom: Add qcom_iommu")
-Signed-off-by: Robin Murphy <robin.murphy@arm.com>
----
- drivers/iommu/qcom_iommu.c | 28 ++++++++++++----------------
- 1 file changed, 12 insertions(+), 16 deletions(-)
+Hi,
 
-diff --git a/drivers/iommu/qcom_iommu.c b/drivers/iommu/qcom_iommu.c
-index 39759db4f003..4328da0b0a9f 100644
---- a/drivers/iommu/qcom_iommu.c
-+++ b/drivers/iommu/qcom_iommu.c
-@@ -344,21 +344,19 @@ static void qcom_iommu_domain_free(struct iommu_domain *domain)
- {
- 	struct qcom_iommu_domain *qcom_domain = to_qcom_iommu_domain(domain);
- 
--	if (WARN_ON(qcom_domain->iommu))    /* forgot to detach? */
--		return;
--
- 	iommu_put_dma_cookie(domain);
- 
--	/* NOTE: unmap can be called after client device is powered off,
--	 * for example, with GPUs or anything involving dma-buf.  So we
--	 * cannot rely on the device_link.  Make sure the IOMMU is on to
--	 * avoid unclocked accesses in the TLB inv path:
--	 */
--	pm_runtime_get_sync(qcom_domain->iommu->dev);
--
--	free_io_pgtable_ops(qcom_domain->pgtbl_ops);
--
--	pm_runtime_put_sync(qcom_domain->iommu->dev);
-+	if (qcom_domain->iommu) {
-+		/*
-+		 * NOTE: unmap can be called after client device is powered
-+		 * off, for example, with GPUs or anything involving dma-buf.
-+		 * So we cannot rely on the device_link.  Make sure the IOMMU
-+		 * is on to avoid unclocked accesses in the TLB inv path:
-+		 */
-+		pm_runtime_get_sync(qcom_domain->iommu->dev);
-+		free_io_pgtable_ops(qcom_domain->pgtbl_ops);
-+		pm_runtime_put_sync(qcom_domain->iommu->dev);
-+	}
- 
- 	kfree(qcom_domain);
- }
-@@ -404,7 +402,7 @@ static void qcom_iommu_detach_dev(struct iommu_domain *domain, struct device *de
- 	struct qcom_iommu_domain *qcom_domain = to_qcom_iommu_domain(domain);
- 	unsigned i;
- 
--	if (!qcom_domain->iommu)
-+	if (WARN_ON(!qcom_domain->iommu))
- 		return;
- 
- 	pm_runtime_get_sync(qcom_iommu->dev);
-@@ -417,8 +415,6 @@ static void qcom_iommu_detach_dev(struct iommu_domain *domain, struct device *de
- 		ctx->domain = NULL;
- 	}
- 	pm_runtime_put_sync(qcom_iommu->dev);
--
--	qcom_domain->iommu = NULL;
- }
- 
- static int qcom_iommu_map(struct iommu_domain *domain, unsigned long iova,
--- 
-2.23.0.dirty
+> Calxeda has been defunct for 6 years now. Use of Calxeda servers carried
+> on for some time afterwards primarily as distro builders for 32-bit ARM.
+> AFAIK, those systems have been retired in favor of 32-bit VMs on 64-bit
+> hosts.
+> 
+> The other use of Calxeda Midway I'm aware of was testing 32-bit ARM KVM
+> support as there are few or no other systems with enough RAM and LPAE. Now
+> 32-bit KVM host support is getting removed[1].
+> 
+> While it's not much maintenance to support, I don't care to convert the
+> Calxeda DT bindings to schema nor fix any resulting errors in the dts files
+> (which already don't exactly match what's shipping in firmware).
+
+While every kernel maintainer seems always happy to take patches with a negative diffstat, I wonder if this is really justification enough to remove a perfectly working platform. I don't really know about any active users, but experience tells that some platforms really are used for quite a long time, even if they are somewhat obscure. N900 or Netwinder, anyone?
+
+So to not give the impression that actually *everyone* (from that small subset of people actively reading the kernel list) is happy with that, I think that having support for at least Midway would be useful. On the one hand it's a decent LPAE platform (with memory actually exceeding 4GB), and on the other hand it's something with capable I/O (SATA) and networking, so one can actually stress test the system. Which is the reason I was using that for KVM testing, but even with that probably going away now there remain still some use cases, and be it for general ARM(32) testing.
+
+I don't particularly care about the more optional parts like EDAC, cpuidle, or cpufreq, but I wonder if keeping in at least the rather small SATA and XGMAC drivers and basic platform support is feasible.
+If YAML DT bindings are used as an excuse, I am more than happy to convert those over.
+
+And if anyone has any particular gripes with some code, maybe there is a way to fix that instead of removing it? I was always wondering if we could get rid of the mach-highbank directory, for instance. I think most of it is Highbank (Cortex-A9) related.
+
+Cheers,
+Andre
+
+> 
+> Rob
+> 
+> [1] https://lore.kernel.org/linux-arm-kernel/20200210141324.21090-1-maz@kernel.org/
+> 
+> Rob Herring (11):
+>   vfio: Remove Calxeda XGMAC reset driver
+>   ata: Remove Calxeda AHCI driver
+>   cpuidle: Remove Calxeda driver
+>   cpufreq: Remove Calxeda driver
+>   EDAC: Remove Calxeda drivers
+>   iommu: arm-smmu: Remove Calxeda secure mode quirk
+>   net: Remove Calxeda XGMAC driver
+>   clk: Remove Calxeda driver
+>   ARM: Remove Calxeda platform support
+>   ARM: dts: Remove Calxeda platforms
+>   dt-bindings: Remove Calxeda platforms bindings
+> 
+>  .../devicetree/bindings/arm/calxeda.yaml      |   22 -
+>  .../devicetree/bindings/arm/calxeda/l2ecc.txt |   15 -
+>  .../devicetree/bindings/ata/sata_highbank.txt |   44 -
+>  .../devicetree/bindings/clock/calxeda.txt     |   17 -
+>  .../memory-controllers/calxeda-ddr-ctrlr.txt  |   16 -
+>  .../devicetree/bindings/net/calxeda-xgmac.txt |   18 -
+>  .../bindings/phy/calxeda-combophy.txt         |   17 -
+>  MAINTAINERS                                   |   14 -
+>  arch/arm/Kconfig                              |    2 -
+>  arch/arm/Kconfig.debug                        |   12 +-
+>  arch/arm/Makefile                             |    1 -
+>  arch/arm/boot/dts/Makefile                    |    3 -
+>  arch/arm/boot/dts/ecx-2000.dts                |  103 -
+>  arch/arm/boot/dts/ecx-common.dtsi             |  230 --
+>  arch/arm/boot/dts/highbank.dts                |  161 --
+>  arch/arm/configs/multi_v7_defconfig           |    5 -
+>  arch/arm/mach-highbank/Kconfig                |   19 -
+>  arch/arm/mach-highbank/Makefile               |    4 -
+>  arch/arm/mach-highbank/core.h                 |   18 -
+>  arch/arm/mach-highbank/highbank.c             |  175 --
+>  arch/arm/mach-highbank/pm.c                   |   49 -
+>  arch/arm/mach-highbank/smc.S                  |   25 -
+>  arch/arm/mach-highbank/sysregs.h              |   75 -
+>  arch/arm/mach-highbank/system.c               |   22 -
+>  drivers/ata/Kconfig                           |    9 -
+>  drivers/ata/Makefile                          |    1 -
+>  drivers/ata/sata_highbank.c                   |  635 ------
+>  drivers/clk/Makefile                          |    1 -
+>  drivers/clk/clk-highbank.c                    |  329 ---
+>  drivers/cpufreq/Kconfig.arm                   |   10 -
+>  drivers/cpufreq/Makefile                      |    3 +-
+>  drivers/cpufreq/cpufreq-dt-platdev.c          |    3 -
+>  drivers/cpufreq/highbank-cpufreq.c            |  106 -
+>  drivers/cpuidle/Kconfig.arm                   |    7 -
+>  drivers/cpuidle/Makefile                      |    1 -
+>  drivers/cpuidle/cpuidle-calxeda.c             |   72 -
+>  drivers/edac/Kconfig                          |   14 -
+>  drivers/edac/Makefile                         |    3 -
+>  drivers/edac/highbank_l2_edac.c               |  142 --
+>  drivers/edac/highbank_mc_edac.c               |  272 ---
+>  drivers/iommu/arm-smmu-impl.c                 |   43 -
+>  drivers/net/ethernet/Kconfig                  |    1 -
+>  drivers/net/ethernet/Makefile                 |    1 -
+>  drivers/net/ethernet/calxeda/Kconfig          |    9 -
+>  drivers/net/ethernet/calxeda/Makefile         |    2 -
+>  drivers/net/ethernet/calxeda/xgmac.c          | 1927 -----------------
+>  drivers/vfio/platform/reset/Kconfig           |    8 -
+>  drivers/vfio/platform/reset/Makefile          |    2 -
+>  .../reset/vfio_platform_calxedaxgmac.c        |   74 -
+>  49 files changed, 2 insertions(+), 4740 deletions(-)
+>  delete mode 100644 Documentation/devicetree/bindings/arm/calxeda.yaml
+>  delete mode 100644 Documentation/devicetree/bindings/arm/calxeda/l2ecc.txt
+>  delete mode 100644 Documentation/devicetree/bindings/ata/sata_highbank.txt
+>  delete mode 100644 Documentation/devicetree/bindings/clock/calxeda.txt
+>  delete mode 100644 Documentation/devicetree/bindings/memory-controllers/calxeda-ddr-ctrlr.txt
+>  delete mode 100644 Documentation/devicetree/bindings/net/calxeda-xgmac.txt
+>  delete mode 100644 Documentation/devicetree/bindings/phy/calxeda-combophy.txt
+>  delete mode 100644 arch/arm/boot/dts/ecx-2000.dts
+>  delete mode 100644 arch/arm/boot/dts/ecx-common.dtsi
+>  delete mode 100644 arch/arm/boot/dts/highbank.dts
+>  delete mode 100644 arch/arm/mach-highbank/Kconfig
+>  delete mode 100644 arch/arm/mach-highbank/Makefile
+>  delete mode 100644 arch/arm/mach-highbank/core.h
+>  delete mode 100644 arch/arm/mach-highbank/highbank.c
+>  delete mode 100644 arch/arm/mach-highbank/pm.c
+>  delete mode 100644 arch/arm/mach-highbank/smc.S
+>  delete mode 100644 arch/arm/mach-highbank/sysregs.h
+>  delete mode 100644 arch/arm/mach-highbank/system.c
+>  delete mode 100644 drivers/ata/sata_highbank.c
+>  delete mode 100644 drivers/clk/clk-highbank.c
+>  delete mode 100644 drivers/cpufreq/highbank-cpufreq.c
+>  delete mode 100644 drivers/cpuidle/cpuidle-calxeda.c
+>  delete mode 100644 drivers/edac/highbank_l2_edac.c
+>  delete mode 100644 drivers/edac/highbank_mc_edac.c
+>  delete mode 100644 drivers/net/ethernet/calxeda/Kconfig
+>  delete mode 100644 drivers/net/ethernet/calxeda/Makefile
+>  delete mode 100644 drivers/net/ethernet/calxeda/xgmac.c
+>  delete mode 100644 drivers/vfio/platform/reset/vfio_platform_calxedaxgmac.c
+> 
+> 
+> base-commit: 11a48a5a18c63fd7621bb050228cebf13566e4d8
+> --
+> 2.20.1
 
 _______________________________________________
 iommu mailing list
