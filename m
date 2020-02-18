@@ -4,80 +4,80 @@ X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 X-Spam-Level: 
 X-Spam-Status: No, score=-10.0 required=3.0 tests=INCLUDES_PATCH,
 	MAILING_LIST_MULTI,SIGNED_OFF_BY,SPF_HELO_NONE,SPF_PASS,USER_AGENT_GIT
-	autolearn=unavailable autolearn_force=no version=3.4.0
+	autolearn=ham autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 952EAC34026
-	for <iommu@archiver.kernel.org>; Tue, 18 Feb 2020 17:13:37 +0000 (UTC)
-Received: from silver.osuosl.org (smtp3.osuosl.org [140.211.166.136])
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 104F0C34051
+	for <iommu@archiver.kernel.org>; Tue, 18 Feb 2020 17:13:39 +0000 (UTC)
+Received: from hemlock.osuosl.org (smtp2.osuosl.org [140.211.166.133])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by mail.kernel.org (Postfix) with ESMTPS id 742612467D
-	for <iommu@archiver.kernel.org>; Tue, 18 Feb 2020 17:13:37 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 742612467D
+	by mail.kernel.org (Postfix) with ESMTPS id DDF6A2465D
+	for <iommu@archiver.kernel.org>; Tue, 18 Feb 2020 17:13:38 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org DDF6A2465D
 Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=kernel.org
 Authentication-Results: mail.kernel.org; spf=pass smtp.mailfrom=iommu-bounces@lists.linux-foundation.org
 Received: from localhost (localhost [127.0.0.1])
-	by silver.osuosl.org (Postfix) with ESMTP id 4EDC7204A5;
-	Tue, 18 Feb 2020 17:13:37 +0000 (UTC)
-X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from silver.osuosl.org ([127.0.0.1])
-	by localhost (.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
-	with ESMTP id lmQNxp-O1qsh; Tue, 18 Feb 2020 17:13:34 +0000 (UTC)
-Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [140.211.9.56])
-	by silver.osuosl.org (Postfix) with ESMTP id CD78620489;
-	Tue, 18 Feb 2020 17:13:34 +0000 (UTC)
-Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
-	by lists.linuxfoundation.org (Postfix) with ESMTP id BC996C08A0;
-	Tue, 18 Feb 2020 17:13:34 +0000 (UTC)
-Received: from hemlock.osuosl.org (smtp2.osuosl.org [140.211.166.133])
- by lists.linuxfoundation.org (Postfix) with ESMTP id 18AD0C013E
- for <iommu@lists.linux-foundation.org>; Tue, 18 Feb 2020 17:13:32 +0000 (UTC)
-Received: from localhost (localhost [127.0.0.1])
- by hemlock.osuosl.org (Postfix) with ESMTP id 11E2686C3A
- for <iommu@lists.linux-foundation.org>; Tue, 18 Feb 2020 17:13:32 +0000 (UTC)
+	by hemlock.osuosl.org (Postfix) with ESMTP id A0E858721E;
+	Tue, 18 Feb 2020 17:13:38 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
 Received: from hemlock.osuosl.org ([127.0.0.1])
+	by localhost (.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
+	with ESMTP id e32ULR1rya2d; Tue, 18 Feb 2020 17:13:38 +0000 (UTC)
+Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [140.211.9.56])
+	by hemlock.osuosl.org (Postfix) with ESMTP id 025A386C3A;
+	Tue, 18 Feb 2020 17:13:38 +0000 (UTC)
+Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
+	by lists.linuxfoundation.org (Postfix) with ESMTP id F1133C08A0;
+	Tue, 18 Feb 2020 17:13:37 +0000 (UTC)
+Received: from fraxinus.osuosl.org (smtp4.osuosl.org [140.211.166.137])
+ by lists.linuxfoundation.org (Postfix) with ESMTP id F1A6FC013E
+ for <iommu@lists.linux-foundation.org>; Tue, 18 Feb 2020 17:13:34 +0000 (UTC)
+Received: from localhost (localhost [127.0.0.1])
+ by fraxinus.osuosl.org (Postfix) with ESMTP id DFE5E85B4A
+ for <iommu@lists.linux-foundation.org>; Tue, 18 Feb 2020 17:13:34 +0000 (UTC)
+X-Virus-Scanned: amavisd-new at osuosl.org
+Received: from fraxinus.osuosl.org ([127.0.0.1])
  by localhost (.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
- with ESMTP id MuYC9tBLS+b8 for <iommu@lists.linux-foundation.org>;
- Tue, 18 Feb 2020 17:13:31 +0000 (UTC)
+ with ESMTP id EiMeesErXuxh for <iommu@lists.linux-foundation.org>;
+ Tue, 18 Feb 2020 17:13:34 +0000 (UTC)
 X-Greylist: domain auto-whitelisted by SQLgrey-1.7.6
-Received: from mail-ot1-f66.google.com (mail-ot1-f66.google.com
- [209.85.210.66])
- by hemlock.osuosl.org (Postfix) with ESMTPS id 3A15686727
- for <iommu@lists.linux-foundation.org>; Tue, 18 Feb 2020 17:13:31 +0000 (UTC)
-Received: by mail-ot1-f66.google.com with SMTP id r27so20205892otc.8
- for <iommu@lists.linux-foundation.org>; Tue, 18 Feb 2020 09:13:31 -0800 (PST)
+Received: from mail-oi1-f194.google.com (mail-oi1-f194.google.com
+ [209.85.167.194])
+ by fraxinus.osuosl.org (Postfix) with ESMTPS id 526ED85BC4
+ for <iommu@lists.linux-foundation.org>; Tue, 18 Feb 2020 17:13:34 +0000 (UTC)
+Received: by mail-oi1-f194.google.com with SMTP id c16so20858887oic.3
+ for <iommu@lists.linux-foundation.org>; Tue, 18 Feb 2020 09:13:34 -0800 (PST)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
  d=1e100.net; s=20161025;
  h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
  :references:mime-version:content-transfer-encoding;
- bh=JusgAl5N6MihYqm5uluXtGjWepTJgZcRc57DbXhWS1c=;
- b=uI49IAsGN57KAVWI9cFyNZyFMrsOvm0Fr1CwklgzLU+X8Ea9l2BCxHokI2IgAvY8md
- m+tv4pLc6VFn9PZyps0a7dSJFnYINxdBvsPyDOzQwK9tirLRT7ueVJr20FVMDEswHefS
- LBIrbwG6ZT8w5GMokojotN2fyVx95tfdc3cg82e6nJV7qMhkT2aqoEx4WaTPjZsvC3wg
- wUqO5seov6DRAEcH3TzYxq0zxeiO5ePFpEdwI3hukXKIkOnszOADymAu4vBrcGZpMGgc
- Jr4KjXmCCwedP5xKd2DxCimS7tefm9O1tAvtCLSsetelcd0mfyI8hWR3aZ+0l6m0Cfaj
- v0bw==
-X-Gm-Message-State: APjAAAX8eoSZDi/l+V2RhyDOErwd2SzBgUwS8CyNkz32cEY4P4Hr1BAa
- vMWUYQz4SN/M6l/zRAU2Zw==
-X-Google-Smtp-Source: APXvYqxtfwdO5ZrwB57qMGPOEsnz4rhk/PhIK9UqQ1I24Sd3few+yqThLV3He9kZDSP4GnJqg66xxQ==
-X-Received: by 2002:a05:6830:1042:: with SMTP id
- b2mr16287928otp.306.1582046010353; 
- Tue, 18 Feb 2020 09:13:30 -0800 (PST)
+ bh=kW31qHj/OGRN2L4TXUUKIQPN57zbu2axU6XP0HsWl20=;
+ b=NNCzJPzMQZrtZldeke7febrT7eyAVeyXRcjODZNR9aA37fWtDjc6hwVDvemuVYe6aA
+ lFR/rx/uEXYl515tiY35OxBgjwyUmdf1QC2iWntTbplWr8Xp+5AZOH8EAsOena3qazsX
+ pDnRSoN4mLi+S2nCDJ5EJRJPOd5hNNdHZ4Fk+ac72iznUbL9teERI8h6ahVdFsOfU6v1
+ JQnv0NTrm5cQkGaixkE0PgaYDJhJOQpEKszQmCmz3YlUOHbcmN86XLZg9bTxLpCdoCBD
+ mx+91gN3tcMjZIOZ9ILu5ze5FEnbWaeorG4M11L4YY/fnfTWOoqfDIXsmRj0slAvXIaE
+ UAGw==
+X-Gm-Message-State: APjAAAXkOfJhdxXRnxcB3qYlVbdJzrLCWw4tz0GizO3nn5q31MFSZwHb
+ qzUC9KAxVP27mhKIQFPk3Q==
+X-Google-Smtp-Source: APXvYqzM1O5/oeWQHJ8gT8Z9L53EKPDEEuwksZtS3dmhCEXg8KSK+0rIqhxLhSP9RCgQyZtde069lg==
+X-Received: by 2002:a05:6808:9ba:: with SMTP id
+ e26mr1936616oig.81.1582046013542; 
+ Tue, 18 Feb 2020 09:13:33 -0800 (PST)
 Received: from xps15.herring.priv (24-155-109-49.dyn.grandenetworks.net.
  [24.155.109.49])
- by smtp.googlemail.com with ESMTPSA id y25sm1545755oto.27.2020.02.18.09.13.28
+ by smtp.googlemail.com with ESMTPSA id y25sm1545755oto.27.2020.02.18.09.13.32
  (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
- Tue, 18 Feb 2020 09:13:29 -0800 (PST)
+ Tue, 18 Feb 2020 09:13:33 -0800 (PST)
 From: Rob Herring <robh@kernel.org>
 To: linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org,
  soc@kernel.org, Andre Przywara <andre.przywara@arm.com>,
  Robert Richter <rrichter@marvell.com>, Jon Loeliger <jdl@jdl.com>,
  Alexander Graf <graf@amazon.com>, Matthias Brugger <mbrugger@suse.com>,
  Mark Langsdorf <mlangsdo@redhat.com>
-Subject: [RFC PATCH 04/11] cpufreq: Remove Calxeda driver
-Date: Tue, 18 Feb 2020 11:13:14 -0600
-Message-Id: <20200218171321.30990-5-robh@kernel.org>
+Subject: [RFC PATCH 06/11] iommu: arm-smmu: Remove Calxeda secure mode quirk
+Date: Tue, 18 Feb 2020 11:13:16 -0600
+Message-Id: <20200218171321.30990-7-robh@kernel.org>
 X-Mailer: git-send-email 2.20.1
 In-Reply-To: <20200218171321.30990-1-robh@kernel.org>
 References: <20200218171321.30990-1-robh@kernel.org>
@@ -110,188 +110,78 @@ Content-Transfer-Encoding: 7bit
 Errors-To: iommu-bounces@lists.linux-foundation.org
 Sender: "iommu" <iommu-bounces@lists.linux-foundation.org>
 
-Cc: "Rafael J. Wysocki" <rjw@rjwysocki.net>
-Cc: Viresh Kumar <viresh.kumar@linaro.org>
-Cc: linux-pm@vger.kernel.org
+Cc: Will Deacon <will@kernel.org>
+Cc: Robin Murphy <robin.murphy@arm.com>
+Cc: Joerg Roedel <joro@8bytes.org>
+Cc: iommu@lists.linux-foundation.org
 Signed-off-by: Rob Herring <robh@kernel.org>
 ---
 Do not apply yet.
 
- drivers/cpufreq/Kconfig.arm          |  10 ---
- drivers/cpufreq/Makefile             |   3 +-
- drivers/cpufreq/cpufreq-dt-platdev.c |   3 -
- drivers/cpufreq/highbank-cpufreq.c   | 106 ---------------------------
- 4 files changed, 1 insertion(+), 121 deletions(-)
- delete mode 100644 drivers/cpufreq/highbank-cpufreq.c
+ drivers/iommu/arm-smmu-impl.c | 43 -----------------------------------
+ 1 file changed, 43 deletions(-)
 
-diff --git a/drivers/cpufreq/Kconfig.arm b/drivers/cpufreq/Kconfig.arm
-index 3858d86cf409..27fdd5ac21da 100644
---- a/drivers/cpufreq/Kconfig.arm
-+++ b/drivers/cpufreq/Kconfig.arm
-@@ -79,16 +79,6 @@ config ARM_BRCMSTB_AVS_CPUFREQ
+diff --git a/drivers/iommu/arm-smmu-impl.c b/drivers/iommu/arm-smmu-impl.c
+index 74d97a886e93..a3be8712d27f 100644
+--- a/drivers/iommu/arm-smmu-impl.c
++++ b/drivers/iommu/arm-smmu-impl.c
+@@ -9,45 +9,6 @@
 
- 	  Say Y, if you have a Broadcom SoC with AVS support for DFS or DVFS.
+ #include "arm-smmu.h"
 
--config ARM_HIGHBANK_CPUFREQ
--	tristate "Calxeda Highbank-based"
--	depends on ARCH_HIGHBANK && CPUFREQ_DT && REGULATOR
--	default m
--	help
--	  This adds the CPUFreq driver for Calxeda Highbank SoC
--	  based boards.
 -
--	  If in doubt, say N.
--
- config ARM_IMX6Q_CPUFREQ
- 	tristate "Freescale i.MX6 cpufreq support"
- 	depends on ARCH_MXC
-diff --git a/drivers/cpufreq/Makefile b/drivers/cpufreq/Makefile
-index f6670c4abbb0..47d773b9312a 100644
---- a/drivers/cpufreq/Makefile
-+++ b/drivers/cpufreq/Makefile
-@@ -5,7 +5,7 @@ obj-$(CONFIG_CPU_FREQ)			+= cpufreq.o freq_table.o
- # CPUfreq stats
- obj-$(CONFIG_CPU_FREQ_STAT)             += cpufreq_stats.o
-
--# CPUfreq governors
-+# CPUfreq governors
- obj-$(CONFIG_CPU_FREQ_GOV_PERFORMANCE)	+= cpufreq_performance.o
- obj-$(CONFIG_CPU_FREQ_GOV_POWERSAVE)	+= cpufreq_powersave.o
- obj-$(CONFIG_CPU_FREQ_GOV_USERSPACE)	+= cpufreq_userspace.o
-@@ -52,7 +52,6 @@ obj-$(CONFIG_ARM_ARMADA_8K_CPUFREQ)	+= armada-8k-cpufreq.o
- obj-$(CONFIG_ARM_BRCMSTB_AVS_CPUFREQ)	+= brcmstb-avs-cpufreq.o
- obj-$(CONFIG_ACPI_CPPC_CPUFREQ)		+= cppc_cpufreq.o
- obj-$(CONFIG_ARCH_DAVINCI)		+= davinci-cpufreq.o
--obj-$(CONFIG_ARM_HIGHBANK_CPUFREQ)	+= highbank-cpufreq.o
- obj-$(CONFIG_ARM_IMX6Q_CPUFREQ)		+= imx6q-cpufreq.o
- obj-$(CONFIG_ARM_IMX_CPUFREQ_DT)	+= imx-cpufreq-dt.o
- obj-$(CONFIG_ARM_KIRKWOOD_CPUFREQ)	+= kirkwood-cpufreq.o
-diff --git a/drivers/cpufreq/cpufreq-dt-platdev.c b/drivers/cpufreq/cpufreq-dt-platdev.c
-index f2ae9cd455c1..274294f83e7c 100644
---- a/drivers/cpufreq/cpufreq-dt-platdev.c
-+++ b/drivers/cpufreq/cpufreq-dt-platdev.c
-@@ -102,9 +102,6 @@ static const struct of_device_id whitelist[] __initconst = {
- static const struct of_device_id blacklist[] __initconst = {
- 	{ .compatible = "allwinner,sun50i-h6", },
-
--	{ .compatible = "calxeda,highbank", },
--	{ .compatible = "calxeda,ecx-2000", },
--
- 	{ .compatible = "fsl,imx7d", },
- 	{ .compatible = "fsl,imx8mq", },
- 	{ .compatible = "fsl,imx8mm", },
-diff --git a/drivers/cpufreq/highbank-cpufreq.c b/drivers/cpufreq/highbank-cpufreq.c
-deleted file mode 100644
-index 5a7f6dafcddb..000000000000
---- a/drivers/cpufreq/highbank-cpufreq.c
-+++ /dev/null
-@@ -1,106 +0,0 @@
--// SPDX-License-Identifier: GPL-2.0-only
--/*
-- * Copyright (C) 2012 Calxeda, Inc.
-- *
-- * This driver provides the clk notifier callbacks that are used when
-- * the cpufreq-dt driver changes to frequency to alert the highbank
-- * EnergyCore Management Engine (ECME) about the need to change
-- * voltage. The ECME interfaces with the actual voltage regulators.
-- */
--
--#define pr_fmt(fmt)	KBUILD_MODNAME ": " fmt
--
--#include <linux/kernel.h>
--#include <linux/module.h>
--#include <linux/clk.h>
--#include <linux/cpu.h>
--#include <linux/err.h>
--#include <linux/of.h>
--#include <linux/pl320-ipc.h>
--#include <linux/platform_device.h>
--
--#define HB_CPUFREQ_CHANGE_NOTE	0x80000001
--#define HB_CPUFREQ_IPC_LEN	7
--#define HB_CPUFREQ_VOLT_RETRIES	15
--
--static int hb_voltage_change(unsigned int freq)
+-static int arm_smmu_gr0_ns(int offset)
 -{
--	u32 msg[HB_CPUFREQ_IPC_LEN] = {HB_CPUFREQ_CHANGE_NOTE, freq / 1000000};
--
--	return pl320_ipc_transmit(msg);
--}
--
--static int hb_cpufreq_clk_notify(struct notifier_block *nb,
--				unsigned long action, void *hclk)
--{
--	struct clk_notifier_data *clk_data = hclk;
--	int i = 0;
--
--	if (action == PRE_RATE_CHANGE) {
--		if (clk_data->new_rate > clk_data->old_rate)
--			while (hb_voltage_change(clk_data->new_rate))
--				if (i++ > HB_CPUFREQ_VOLT_RETRIES)
--					return NOTIFY_BAD;
--	} else if (action == POST_RATE_CHANGE) {
--		if (clk_data->new_rate < clk_data->old_rate)
--			while (hb_voltage_change(clk_data->new_rate))
--				if (i++ > HB_CPUFREQ_VOLT_RETRIES)
--					return NOTIFY_BAD;
+-	switch(offset) {
+-	case ARM_SMMU_GR0_sCR0:
+-	case ARM_SMMU_GR0_sACR:
+-	case ARM_SMMU_GR0_sGFSR:
+-	case ARM_SMMU_GR0_sGFSYNR0:
+-	case ARM_SMMU_GR0_sGFSYNR1:
+-	case ARM_SMMU_GR0_sGFSYNR2:
+-		return offset + 0x400;
+-	default:
+-		return offset;
 -	}
--
--	return NOTIFY_DONE;
 -}
 -
--static struct notifier_block hb_cpufreq_clk_nb = {
--	.notifier_call = hb_cpufreq_clk_notify,
+-static u32 arm_smmu_read_ns(struct arm_smmu_device *smmu, int page,
+-			    int offset)
+-{
+-	if (page == ARM_SMMU_GR0)
+-		offset = arm_smmu_gr0_ns(offset);
+-	return readl_relaxed(arm_smmu_page(smmu, page) + offset);
+-}
+-
+-static void arm_smmu_write_ns(struct arm_smmu_device *smmu, int page,
+-			      int offset, u32 val)
+-{
+-	if (page == ARM_SMMU_GR0)
+-		offset = arm_smmu_gr0_ns(offset);
+-	writel_relaxed(val, arm_smmu_page(smmu, page) + offset);
+-}
+-
+-/* Since we don't care for sGFAR, we can do without 64-bit accessors */
+-static const struct arm_smmu_impl calxeda_impl = {
+-	.read_reg = arm_smmu_read_ns,
+-	.write_reg = arm_smmu_write_ns,
 -};
 -
--static int hb_cpufreq_driver_init(void)
--{
--	struct platform_device_info devinfo = { .name = "cpufreq-dt", };
--	struct device *cpu_dev;
--	struct clk *cpu_clk;
--	struct device_node *np;
--	int ret;
 -
--	if ((!of_machine_is_compatible("calxeda,highbank")) &&
--		(!of_machine_is_compatible("calxeda,ecx-2000")))
--		return -ENODEV;
+ struct cavium_smmu {
+ 	struct arm_smmu_device smmu;
+ 	u32 id_base;
+@@ -166,10 +127,6 @@ struct arm_smmu_device *arm_smmu_impl_init(struct arm_smmu_device *smmu)
+ 		break;
+ 	}
+
+-	if (of_property_read_bool(smmu->dev->of_node,
+-				  "calxeda,smmu-secure-config-access"))
+-		smmu->impl = &calxeda_impl;
 -
--	cpu_dev = get_cpu_device(0);
--	if (!cpu_dev) {
--		pr_err("failed to get highbank cpufreq device\n");
--		return -ENODEV;
--	}
--
--	np = of_node_get(cpu_dev->of_node);
--	if (!np) {
--		pr_err("failed to find highbank cpufreq node\n");
--		return -ENOENT;
--	}
--
--	cpu_clk = clk_get(cpu_dev, NULL);
--	if (IS_ERR(cpu_clk)) {
--		ret = PTR_ERR(cpu_clk);
--		pr_err("failed to get cpu0 clock: %d\n", ret);
--		goto out_put_node;
--	}
--
--	ret = clk_notifier_register(cpu_clk, &hb_cpufreq_clk_nb);
--	if (ret) {
--		pr_err("failed to register clk notifier: %d\n", ret);
--		goto out_put_node;
--	}
--
--	/* Instantiate cpufreq-dt */
--	platform_device_register_full(&devinfo);
--
--out_put_node:
--	of_node_put(np);
--	return ret;
--}
--module_init(hb_cpufreq_driver_init);
--
--MODULE_AUTHOR("Mark Langsdorf <mark.langsdorf@calxeda.com>");
--MODULE_DESCRIPTION("Calxeda Highbank cpufreq driver");
--MODULE_LICENSE("GPL");
+ 	if (of_device_is_compatible(smmu->dev->of_node, "qcom,sdm845-smmu-500"))
+ 		return qcom_smmu_impl_init(smmu);
+
 --
 2.20.1
 _______________________________________________
