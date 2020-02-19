@@ -2,111 +2,75 @@ Return-Path: <SRS0=JfOd=4H=lists.linux-foundation.org=iommu-bounces@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-5.0 required=3.0 tests=DKIM_INVALID,DKIM_SIGNED,
-	HEADER_FROM_DIFFERENT_DOMAINS,MAILING_LIST_MULTI,SIGNED_OFF_BY,SPF_HELO_NONE,
-	SPF_PASS,URIBL_BLOCKED,USER_AGENT_SANE_1 autolearn=ham autolearn_force=no
+X-Spam-Status: No, score=-8.2 required=3.0 tests=HEADER_FROM_DIFFERENT_DOMAINS,
+	INCLUDES_PATCH,MAILING_LIST_MULTI,SIGNED_OFF_BY,SPF_HELO_NONE,SPF_PASS,
+	URIBL_BLOCKED,USER_AGENT_SANE_1 autolearn=unavailable autolearn_force=no
 	version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id A0D72C34031
-	for <iommu@archiver.kernel.org>; Wed, 19 Feb 2020 02:18:30 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 316C5C3402F
+	for <iommu@archiver.kernel.org>; Wed, 19 Feb 2020 03:15:45 +0000 (UTC)
 Received: from fraxinus.osuosl.org (smtp4.osuosl.org [140.211.166.137])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by mail.kernel.org (Postfix) with ESMTPS id 5F52B207FD
-	for <iommu@archiver.kernel.org>; Wed, 19 Feb 2020 02:18:30 +0000 (UTC)
-Authentication-Results: mail.kernel.org;
-	dkim=fail reason="signature verification failed" (2048-bit key) header.d=linaro.org header.i=@linaro.org header.b="ts8VDPPB"
-DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 5F52B207FD
-Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=linaro.org
+	by mail.kernel.org (Postfix) with ESMTPS id F1E192176D
+	for <iommu@archiver.kernel.org>; Wed, 19 Feb 2020 03:15:44 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org F1E192176D
+Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=linux.intel.com
 Authentication-Results: mail.kernel.org; spf=pass smtp.mailfrom=iommu-bounces@lists.linux-foundation.org
 Received: from localhost (localhost [127.0.0.1])
-	by fraxinus.osuosl.org (Postfix) with ESMTP id 2349A842A5;
-	Wed, 19 Feb 2020 02:18:30 +0000 (UTC)
+	by fraxinus.osuosl.org (Postfix) with ESMTP id DE9D885413;
+	Wed, 19 Feb 2020 03:15:44 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
 Received: from fraxinus.osuosl.org ([127.0.0.1])
 	by localhost (.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
-	with ESMTP id b5kFrHcfmmrU; Wed, 19 Feb 2020 02:18:29 +0000 (UTC)
+	with ESMTP id scvPw4ZdbwVW; Wed, 19 Feb 2020 03:15:44 +0000 (UTC)
 Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [140.211.9.56])
-	by fraxinus.osuosl.org (Postfix) with ESMTP id 8FF2485190;
-	Wed, 19 Feb 2020 02:18:29 +0000 (UTC)
+	by fraxinus.osuosl.org (Postfix) with ESMTP id 49966847C5;
+	Wed, 19 Feb 2020 03:15:44 +0000 (UTC)
 Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
-	by lists.linuxfoundation.org (Postfix) with ESMTP id 78DC3C1D84;
-	Wed, 19 Feb 2020 02:18:29 +0000 (UTC)
+	by lists.linuxfoundation.org (Postfix) with ESMTP id 3D0C7C08A0;
+	Wed, 19 Feb 2020 03:15:44 +0000 (UTC)
 Received: from hemlock.osuosl.org (smtp2.osuosl.org [140.211.166.133])
- by lists.linuxfoundation.org (Postfix) with ESMTP id 9A447C013E
- for <iommu@lists.linux-foundation.org>; Wed, 19 Feb 2020 02:18:28 +0000 (UTC)
+ by lists.linuxfoundation.org (Postfix) with ESMTP id 72A8AC013E
+ for <iommu@lists.linux-foundation.org>; Wed, 19 Feb 2020 03:15:42 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
- by hemlock.osuosl.org (Postfix) with ESMTP id 848438783F
- for <iommu@lists.linux-foundation.org>; Wed, 19 Feb 2020 02:18:28 +0000 (UTC)
+ by hemlock.osuosl.org (Postfix) with ESMTP id 5CC4C878A8
+ for <iommu@lists.linux-foundation.org>; Wed, 19 Feb 2020 03:15:42 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
 Received: from hemlock.osuosl.org ([127.0.0.1])
  by localhost (.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
- with ESMTP id ZqjsrvTrF2tl for <iommu@lists.linux-foundation.org>;
- Wed, 19 Feb 2020 02:18:27 +0000 (UTC)
-X-Greylist: delayed 00:22:34 by SQLgrey-1.7.6
-Received: from mail-il1-f193.google.com (mail-il1-f193.google.com
- [209.85.166.193])
- by hemlock.osuosl.org (Postfix) with ESMTPS id 18A398782E
- for <iommu@lists.linux-foundation.org>; Wed, 19 Feb 2020 02:18:27 +0000 (UTC)
-Received: by mail-il1-f193.google.com with SMTP id t17so19129586ilm.13
- for <iommu@lists.linux-foundation.org>; Tue, 18 Feb 2020 18:18:27 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linaro.org; s=google;
- h=date:from:to:cc:subject:message-id:references:mime-version
- :content-disposition:in-reply-to:user-agent;
- bh=mCpHqL2j5BnpvPO+BvKBhD4kS+poF12ECCa7tnpH+YM=;
- b=ts8VDPPBuLBZSekAbBB4AA9teS6dDAo1HBlFrWgCyrq8tuMc3thxftGa4AHpAl9HfC
- u7yxDltYVpeECwcY8RzDqO6Oc+ujMt1LKMzE60hyRUp4CRmsuXIAURjdU5sPKFRoFEwm
- 6FN7vQ7hbitggAiOqBJscQwLzxfsXk6P3kE/ijGHV8xJt/0agF6tzs7iGM9/TJ0Fvy9F
- ArDT1pSLD7/sstOaJU2GCdk92lHOemZWj0EQ3zQfulnRwfJ76bPc+DDLQ9ZRE1nVboYb
- jR7FRhkDaPhSRUnmUrrhkxZbwc53oVyaoPQDanlDY6cxtAjJ8vR46+8/3WdA4kMg6eXF
- I4yA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
- d=1e100.net; s=20161025;
- h=x-gm-message-state:date:from:to:cc:subject:message-id:references
- :mime-version:content-disposition:in-reply-to:user-agent;
- bh=mCpHqL2j5BnpvPO+BvKBhD4kS+poF12ECCa7tnpH+YM=;
- b=Fmi+YCk7bNW4a8wYbwcLpeIvmTdyfn+IfOuKZX4mJo2N2vL3F373HjKRfByQV5kpIf
- qXUlvYcQrMJE5u+YR+AbPkmw9FF3LtxZdg93UtaqeDb63b+wMWdzSFtMxrBGw4RjIWMR
- Q5+7V3Hc/LyH4ViPwGNGhCJx4V764fzzNfts+SmRFSwv6MJSghaSyIx2nuBc81zvFY6b
- ePD04/KDAbtJ2tRXQ4+LZYjdo6vHruXYr/o02xF4CBdMq123bWGeifnHZj0X0/dpnsGy
- OtDKqIF1IUeZ9OT0wDqZzPecGMgFjHVVqzrcLMsQhfmlAR0ASp9tQ0jBjGMggGLgEhtF
- /eNg==
-X-Gm-Message-State: APjAAAWK+JHHZWywfcC+029NfCZaP1i0RLcEi56E3OePfwVJ9Te+KTZP
- mmm3Gg/6yPj53d0IdlWqPpLtJ6q1l/4=
-X-Google-Smtp-Source: APXvYqywbiuEpD1gaeQyiKrj/G0fRGBegWe1kQhCb3QNT2ZiaM+5B/V4zEAel8kBFDrwr4m3Dknbgg==
-X-Received: by 2002:a63:2266:: with SMTP id t38mr26477980pgm.145.1582076994532; 
- Tue, 18 Feb 2020 17:49:54 -0800 (PST)
-Received: from localhost ([223.226.55.170])
- by smtp.gmail.com with ESMTPSA id q25sm288920pfg.41.2020.02.18.17.49.53
- (version=TLS1_2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128/128);
- Tue, 18 Feb 2020 17:49:53 -0800 (PST)
-Date: Wed, 19 Feb 2020 07:19:51 +0530
-From: Viresh Kumar <viresh.kumar@linaro.org>
-To: Rob Herring <robh@kernel.org>
-Subject: Re: [RFC PATCH 04/11] cpufreq: Remove Calxeda driver
-Message-ID: <20200219014951.2o2diuw5dzooafji@vireshk-i7>
-References: <20200218171321.30990-1-robh@kernel.org>
- <20200218171321.30990-5-robh@kernel.org>
+ with ESMTP id sOGyOwQFhrIn for <iommu@lists.linux-foundation.org>;
+ Wed, 19 Feb 2020 03:15:41 +0000 (UTC)
+X-Greylist: domain auto-whitelisted by SQLgrey-1.7.6
+Received: from mga06.intel.com (mga06.intel.com [134.134.136.31])
+ by hemlock.osuosl.org (Postfix) with ESMTPS id 987278757E
+ for <iommu@lists.linux-foundation.org>; Wed, 19 Feb 2020 03:15:41 +0000 (UTC)
+X-Amp-Result: SKIPPED(no attachment in message)
+X-Amp-File-Uploaded: False
+Received: from orsmga002.jf.intel.com ([10.7.209.21])
+ by orsmga104.jf.intel.com with ESMTP/TLS/DHE-RSA-AES256-GCM-SHA384;
+ 18 Feb 2020 19:15:40 -0800
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="5.70,459,1574150400"; d="scan'208";a="253956967"
+Received: from blu2-mobl3.ccr.corp.intel.com (HELO [10.254.213.252])
+ ([10.254.213.252])
+ by orsmga002.jf.intel.com with ESMTP; 18 Feb 2020 19:15:38 -0800
+Subject: Re: [PATCH] iommu/vt-d: Fix a bug in intel_iommu_iova_to_phys() for
+ huge page
+To: Yonghyun Hwang <yonghyun@google.com>,
+ David Woodhouse <dwmw2@infradead.org>, Joerg Roedel <joro@8bytes.org>
+References: <20200218222324.231915-1-yonghyun@google.com>
+From: Lu Baolu <baolu.lu@linux.intel.com>
+Message-ID: <8efc6ea2-d51e-624c-5cc2-4049bb224122@linux.intel.com>
+Date: Wed, 19 Feb 2020 11:15:36 +0800
+User-Agent: Mozilla/5.0 (Windows NT 10.0; WOW64; rv:68.0) Gecko/20100101
+ Thunderbird/68.5.0
 MIME-Version: 1.0
-Content-Disposition: inline
-In-Reply-To: <20200218171321.30990-5-robh@kernel.org>
-User-Agent: NeoMutt/20180716-391-311a52
-Cc: Mark Langsdorf <mlangsdo@redhat.com>, kvm@vger.kernel.org,
- linux-ide@vger.kernel.org, Will Deacon <will@kernel.org>,
- linux-clk@vger.kernel.org, soc@kernel.org,
- Daniel Lezcano <daniel.lezcano@linaro.org>, devicetree@vger.kernel.org,
- Jon Loeliger <jdl@jdl.com>, linux-pm@vger.kernel.org,
- Andre Przywara <andre.przywara@arm.com>,
- Alex Williamson <alex.williamson@redhat.com>, Tony Luck <tony.luck@intel.com>,
- Alexander Graf <graf@amazon.com>, Mauro Carvalho Chehab <mchehab@kernel.org>,
- linux-arm-kernel@lists.infradead.org, linux-edac@vger.kernel.org,
- Jens Axboe <axboe@kernel.dk>, Matthias Brugger <mbrugger@suse.com>,
- Stephen Boyd <sboyd@kernel.org>, netdev@vger.kernel.org,
- Cornelia Huck <cohuck@redhat.com>, "Rafael J. Wysocki" <rjw@rjwysocki.net>,
- linux-kernel@vger.kernel.org, iommu@lists.linux-foundation.org,
- Robert Richter <rrichter@marvell.com>, James Morse <james.morse@arm.com>,
- Borislav Petkov <bp@alien8.de>, Robin Murphy <robin.murphy@arm.com>,
- "David S. Miller" <davem@davemloft.net>
+In-Reply-To: <20200218222324.231915-1-yonghyun@google.com>
+Content-Language: en-US
+Cc: iommu@lists.linux-foundation.org, Moritz Fischer <moritzf@google.com>,
+ Deepa Dinamani <deepadinamani@google.com>, linux-kernel@vger.kernel.org,
+ Havard Skinnemoen <hskinnemoen@google.com>
 X-BeenThere: iommu@lists.linux-foundation.org
 X-Mailman-Version: 2.1.15
 Precedence: list
@@ -119,30 +83,78 @@ List-Post: <mailto:iommu@lists.linux-foundation.org>
 List-Help: <mailto:iommu-request@lists.linux-foundation.org?subject=help>
 List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
  <mailto:iommu-request@lists.linux-foundation.org?subject=subscribe>
-Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset="us-ascii"; Format="flowed"
 Errors-To: iommu-bounces@lists.linux-foundation.org
 Sender: "iommu" <iommu-bounces@lists.linux-foundation.org>
 
-On 18-02-20, 11:13, Rob Herring wrote:
-> Cc: "Rafael J. Wysocki" <rjw@rjwysocki.net>
-> Cc: Viresh Kumar <viresh.kumar@linaro.org>
-> Cc: linux-pm@vger.kernel.org
-> Signed-off-by: Rob Herring <robh@kernel.org>
+Hi Yonghyun,
+
+Thanks for the patch.
+
+On 2020/2/19 6:23, Yonghyun Hwang wrote:
+> intel_iommu_iova_to_phys() has a bug when it translates an IOVA for a huge
+> page onto its corresponding physical address. This commit fixes the bug by
+> accomodating the level of page entry for the IOVA and adds IOVA's lower
+> address to the physical address. >
+> Signed-off-by: Yonghyun Hwang <yonghyun@google.com>
 > ---
-> Do not apply yet.
+>   drivers/iommu/intel-iommu.c | 11 +++++++++--
+>   1 file changed, 9 insertions(+), 2 deletions(-)
 > 
->  drivers/cpufreq/Kconfig.arm          |  10 ---
->  drivers/cpufreq/Makefile             |   3 +-
->  drivers/cpufreq/cpufreq-dt-platdev.c |   3 -
->  drivers/cpufreq/highbank-cpufreq.c   | 106 ---------------------------
->  4 files changed, 1 insertion(+), 121 deletions(-)
->  delete mode 100644 drivers/cpufreq/highbank-cpufreq.c
+> diff --git a/drivers/iommu/intel-iommu.c b/drivers/iommu/intel-iommu.c
+> index 0c8d81f56a30..ed6e69adb578 100644
+> --- a/drivers/iommu/intel-iommu.c
+> +++ b/drivers/iommu/intel-iommu.c
+> @@ -5555,13 +5555,20 @@ static phys_addr_t intel_iommu_iova_to_phys(struct iommu_domain *domain,
+>   	struct dma_pte *pte;
+>   	int level = 0;
+>   	u64 phys = 0;
+> +	const unsigned long pfn = iova >> VTD_PAGE_SHIFT;
 
-Acked-by: Viresh Kumar <viresh.kumar@linaro.org>
+Why do you need a "const unsigned long" here?
 
--- 
-viresh
+>   
+>   	if (dmar_domain->flags & DOMAIN_FLAG_LOSE_CHILDREN)
+>   		return 0;
+>   
+> -	pte = pfn_to_dma_pte(dmar_domain, iova >> VTD_PAGE_SHIFT, &level);
+> -	if (pte)
+> +	pte = pfn_to_dma_pte(dmar_domain, pfn, &level);
+> +	if (pte) {
+>   		phys = dma_pte_addr(pte);
+> +		if (level > 1)
+> +			phys += (pfn &
+> +				((1UL << level_to_offset_bits(level)) - 1))
+> +				<< VTD_PAGE_SHIFT;
+> +		phys += iova & (VTD_PAGE_SIZE - 1);
+
+How about
+
+diff --git a/drivers/iommu/intel-iommu.c b/drivers/iommu/intel-iommu.c
+index 9dc37672bf89..bd17c2510bb2 100644
+--- a/drivers/iommu/intel-iommu.c
++++ b/drivers/iommu/intel-iommu.c
+@@ -5693,8 +5693,14 @@ static phys_addr_t 
+intel_iommu_iova_to_phys(struct iommu_domain *domain,
+         u64 phys = 0;
+
+         pte = pfn_to_dma_pte(dmar_domain, iova >> VTD_PAGE_SHIFT, &level);
+-       if (pte)
++       if (pte) {
++               unsigned long offset_mask;
++
++               offset_mask = BIT_MASK(level_to_offset_bits(level) +
++                                      VTD_PAGE_SHIFT) - 1;
+                 phys = dma_pte_addr(pte);
++               phys += iova & (bitmask - 1);
++       }
+
+         return phys;
+  }
+
+Best regards,
+baolu
 _______________________________________________
 iommu mailing list
 iommu@lists.linux-foundation.org
