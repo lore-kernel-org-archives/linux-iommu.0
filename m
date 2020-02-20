@@ -2,93 +2,86 @@ Return-Path: <SRS0=unsG=4I=lists.linux-foundation.org=iommu-bounces@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-0.6 required=3.0 tests=DKIM_INVALID,DKIM_SIGNED,
-	HEADER_FROM_DIFFERENT_DOMAINS,MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS
-	autolearn=no autolearn_force=no version=3.4.0
+X-Spam-Status: No, score=-6.6 required=3.0 tests=DKIM_INVALID,DKIM_SIGNED,
+	HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_PATCH,MAILING_LIST_MULTI,SIGNED_OFF_BY,
+	SPF_HELO_NONE,SPF_PASS autolearn=unavailable autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 9BCACC5ACC4
-	for <iommu@archiver.kernel.org>; Thu, 20 Feb 2020 03:37:01 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 19EE3C34031
+	for <iommu@archiver.kernel.org>; Thu, 20 Feb 2020 06:38:32 +0000 (UTC)
 Received: from silver.osuosl.org (smtp3.osuosl.org [140.211.166.136])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by mail.kernel.org (Postfix) with ESMTPS id 60D5F24658
-	for <iommu@archiver.kernel.org>; Thu, 20 Feb 2020 03:37:01 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTPS id D56302465D
+	for <iommu@archiver.kernel.org>; Thu, 20 Feb 2020 06:38:31 +0000 (UTC)
 Authentication-Results: mail.kernel.org;
-	dkim=fail reason="signature verification failed" (2048-bit key) header.d=endlessm-com.20150623.gappssmtp.com header.i=@endlessm-com.20150623.gappssmtp.com header.b="F00Tq2Le"
-DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 60D5F24658
-Authentication-Results: mail.kernel.org; dmarc=none (p=none dis=none) header.from=endlessm.com
+	dkim=fail reason="signature verification failed" (1024-bit key) header.d=mg.codeaurora.org header.i=@mg.codeaurora.org header.b="SHRO8rv7"
+DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org D56302465D
+Authentication-Results: mail.kernel.org; dmarc=none (p=none dis=none) header.from=codeaurora.org
 Authentication-Results: mail.kernel.org; spf=pass smtp.mailfrom=iommu-bounces@lists.linux-foundation.org
 Received: from localhost (localhost [127.0.0.1])
-	by silver.osuosl.org (Postfix) with ESMTP id 368C520513;
-	Thu, 20 Feb 2020 03:37:01 +0000 (UTC)
+	by silver.osuosl.org (Postfix) with ESMTP id 98F792094D;
+	Thu, 20 Feb 2020 06:38:31 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
 Received: from silver.osuosl.org ([127.0.0.1])
 	by localhost (.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
-	with ESMTP id 5TfwJWSr124M; Thu, 20 Feb 2020 03:37:00 +0000 (UTC)
+	with ESMTP id OFV7ygrcY+67; Thu, 20 Feb 2020 06:38:30 +0000 (UTC)
 Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [140.211.9.56])
-	by silver.osuosl.org (Postfix) with ESMTP id 9A73C203EE;
-	Thu, 20 Feb 2020 03:37:00 +0000 (UTC)
+	by silver.osuosl.org (Postfix) with ESMTP id 393EF207EF;
+	Thu, 20 Feb 2020 06:38:30 +0000 (UTC)
 Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
-	by lists.linuxfoundation.org (Postfix) with ESMTP id 7F669C1D81;
-	Thu, 20 Feb 2020 03:37:00 +0000 (UTC)
-Received: from hemlock.osuosl.org (smtp2.osuosl.org [140.211.166.133])
- by lists.linuxfoundation.org (Postfix) with ESMTP id E6E13C013E
- for <iommu@lists.linux-foundation.org>; Thu, 20 Feb 2020 03:36:59 +0000 (UTC)
+	by lists.linuxfoundation.org (Postfix) with ESMTP id 1C577C1D80;
+	Thu, 20 Feb 2020 06:38:30 +0000 (UTC)
+Received: from fraxinus.osuosl.org (smtp4.osuosl.org [140.211.166.137])
+ by lists.linuxfoundation.org (Postfix) with ESMTP id DF130C013E
+ for <iommu@lists.linux-foundation.org>; Thu, 20 Feb 2020 06:38:28 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
- by hemlock.osuosl.org (Postfix) with ESMTP id D06E085948
- for <iommu@lists.linux-foundation.org>; Thu, 20 Feb 2020 03:36:59 +0000 (UTC)
+ by fraxinus.osuosl.org (Postfix) with ESMTP id C0FB485EAF
+ for <iommu@lists.linux-foundation.org>; Thu, 20 Feb 2020 06:38:28 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from hemlock.osuosl.org ([127.0.0.1])
+Received: from fraxinus.osuosl.org ([127.0.0.1])
  by localhost (.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
- with ESMTP id EacgohVUMYli for <iommu@lists.linux-foundation.org>;
- Thu, 20 Feb 2020 03:36:59 +0000 (UTC)
+ with ESMTP id MPbCLfW5YjgW for <iommu@lists.linux-foundation.org>;
+ Thu, 20 Feb 2020 06:38:27 +0000 (UTC)
 X-Greylist: from auto-whitelisted by SQLgrey-1.7.6
-Received: from mail-qk1-f193.google.com (mail-qk1-f193.google.com
- [209.85.222.193])
- by hemlock.osuosl.org (Postfix) with ESMTPS id E2F0A85803
- for <iommu@lists.linux-foundation.org>; Thu, 20 Feb 2020 03:36:58 +0000 (UTC)
-Received: by mail-qk1-f193.google.com with SMTP id b7so2312990qkl.7
- for <iommu@lists.linux-foundation.org>; Wed, 19 Feb 2020 19:36:58 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
- d=endlessm-com.20150623.gappssmtp.com; s=20150623;
- h=mime-version:references:in-reply-to:from:date:message-id:subject:to
- :cc; bh=dkadaknjPr939YsFtbvxvMQUXBujmRjgvIb+Q86NNzM=;
- b=F00Tq2LeK/hphQmCVUmumG7Z7rpvX9/8PQ8WtI22TsMG1bGlBciujm26gP5iCtmcmy
- JolP9CvKAwe7C7rZ2rs1eyssuz61tK7UMtGPro3kMGPypObHPPUkXTCsJY2yRTm7bNX1
- En9nBMEWo75ZVhodDg0Bbp0q5A+Mq3EqwEYFRtP+0IE0+MFjgCgBtQVKCVS1KzJb9Fkd
- g3JWQfbJKfZWkgySNknM6DGF3GYlnQkdU8wzuco6PoySEokD3AwgOOME9B3G7CPr8eu3
- gZ5VpWKEJ2+1xWFnG9ILTynizgI+B1dBkLy8l9v0r5m5uAPHGuVstWHvU/Lm5GLivSD9
- E2Jw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
- d=1e100.net; s=20161025;
- h=x-gm-message-state:mime-version:references:in-reply-to:from:date
- :message-id:subject:to:cc;
- bh=dkadaknjPr939YsFtbvxvMQUXBujmRjgvIb+Q86NNzM=;
- b=YKmjHlPECCqMgqMlsAvRBnWLlda9fmNp23hBP/8kKsYoyfof28OQQuZzdL5xeSZeK9
- ngNNL4bOCMEhSfvOvAjl7k9DKceVEL+BRqnRQqalLqDzRniZl2Pw3YYeh/2RIyea7Q34
- psMBpKhIizhk6rL8Jul0qCYHAormkHBM+diN8+yKZaXo5ceb5KSwIoMYKjVPNWtnGNyP
- tKLxqbCE2vYDY+HFw2ZbX8SNmwQ1GD5DZ87cMyimGWeDsG5GbKrkRApuuXqptzj6RQZ1
- 6rGJiocE4Ksq6I1cxi1TwUQg/J5Sdx09YIzql9DPG+DABr/wTtaYgfUNif7a0bd147zn
- Xaeg==
-X-Gm-Message-State: APjAAAXq0uDW6n4j2I5BHTTx+835+3ZErLoQiJbKKTV/U9WFnbssCHIR
- X5Of/unFYk6OFjNhL97WB5jCCo5Z7DXBl9llMrDrNQ==
-X-Google-Smtp-Source: APXvYqxGQyMUQZS2O6T9QH3W4M7KOXNxHTEB85ieOaAQ6y7VmcHFCF92Gvzkj1LZ+BYxYf6+36/JysxiftpYvvQ+TFo=
-X-Received: by 2002:a37:4a51:: with SMTP id x78mr24792506qka.445.1582169817823; 
- Wed, 19 Feb 2020 19:36:57 -0800 (PST)
+Received: from mail27.static.mailgun.info (mail27.static.mailgun.info
+ [104.130.122.27])
+ by fraxinus.osuosl.org (Postfix) with ESMTPS id 5BED08452E
+ for <iommu@lists.linux-foundation.org>; Thu, 20 Feb 2020 06:38:27 +0000 (UTC)
+DKIM-Signature: a=rsa-sha256; v=1; c=relaxed/relaxed; d=mg.codeaurora.org;
+ q=dns/txt; 
+ s=smtp; t=1582180707; h=Message-ID: References: In-Reply-To: Subject:
+ Cc: To: From: Date: Content-Transfer-Encoding: Content-Type:
+ MIME-Version: Sender; bh=Izr/vsm9x+ObsGmkOF8JwUW+2DRyGOYwxwFKyWQAf60=;
+ b=SHRO8rv7Hm9ILOllZE+TDSSaA5gwL+1QSmrgs85vgEuo5XRDLgnLr7XbA6ue2xWg1kRClrky
+ tW7VzCvzdxFodOPgdLnOKBAG3Rrjs/q7CN/Z+J/2MIWdtXEKTynO5wiL5H7aOFlXh+aCXsmF
+ V4uStNsnPcIuOaT898r5xCfBkfY=
+X-Mailgun-Sending-Ip: 104.130.122.27
+X-Mailgun-Sid: WyI3NDkwMCIsICJpb21tdUBsaXN0cy5saW51eC1mb3VuZGF0aW9uLm9yZyIsICJiZTllNGEiXQ==
+Received: from smtp.codeaurora.org
+ (ec2-35-166-182-171.us-west-2.compute.amazonaws.com [35.166.182.171])
+ by mxa.mailgun.org with ESMTP id 5e4e2961.7f1eea94a148-smtp-out-n03;
+ Thu, 20 Feb 2020 06:38:25 -0000 (UTC)
+Received: by smtp.codeaurora.org (Postfix, from userid 1001)
+ id BF557C4479D; Thu, 20 Feb 2020 06:38:25 +0000 (UTC)
+Received: from mail.codeaurora.org (localhost.localdomain [127.0.0.1])
+ (using TLSv1 with cipher ECDHE-RSA-AES256-SHA (256/256 bits))
+ (No client certificate requested) (Authenticated sender: isaacm)
+ by smtp.codeaurora.org (Postfix) with ESMTPSA id AA7DAC43383;
+ Thu, 20 Feb 2020 06:38:24 +0000 (UTC)
 MIME-Version: 1.0
-References: <20200219032128.27907-1-drake@endlessm.com>
- <f1df8a90-c5b8-b6e0-9d7c-e8eb697b0f13@linux.intel.com>
-In-Reply-To: <f1df8a90-c5b8-b6e0-9d7c-e8eb697b0f13@linux.intel.com>
-From: Daniel Drake <drake@endlessm.com>
-Date: Thu, 20 Feb 2020 11:36:46 +0800
-Message-ID: <CAD8Lp47Bhv_58-Z+a+JFS9rTZW58_rWvE8N+XVtX7mmB-Tj55A@mail.gmail.com>
-Subject: Re: [PATCH v4] iommu/vt-d: consider real PCI device when checking if
- mapping is needed
-To: Lu Baolu <baolu.lu@linux.intel.com>
-Cc: David Woodhouse <dwmw2@infradead.org>, iommu@lists.linux-foundation.org,
- Bjorn Helgaas <bhelgaas@google.com>,
- Linux Upstreaming Team <linux@endlessm.com>,
- Jon Derrick <jonathan.derrick@intel.com>
+Date: Wed, 19 Feb 2020 22:38:24 -0800
+From: isaacm@codeaurora.org
+To: Robin Murphy <robin.murphy@arm.com>
+Subject: Re: [RFC PATCH] iommu/iova: Add a best-fit algorithm
+In-Reply-To: <b9d31aa9-fb57-ad31-52e4-1a5c21e5e0de@arm.com>
+References: <1581721602-17010-1-git-send-email-isaacm@codeaurora.org>
+ <b9d31aa9-fb57-ad31-52e4-1a5c21e5e0de@arm.com>
+Message-ID: <7239ddd532e94a4371289f3be23c66a3@codeaurora.org>
+X-Sender: isaacm@codeaurora.org
+User-Agent: Roundcube Webmail/1.3.9
+Cc: pratikp@codeaurora.org, iommu@lists.linux-foundation.org,
+ kernel-team@android.com, linux-kernel@vger.kernel.org,
+ Liam Mark <lmark@codeaurora.org>
 X-BeenThere: iommu@lists.linux-foundation.org
 X-Mailman-Version: 2.1.15
 Precedence: list
@@ -101,34 +94,254 @@ List-Post: <mailto:iommu@lists.linux-foundation.org>
 List-Help: <mailto:iommu-request@lists.linux-foundation.org?subject=help>
 List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
  <mailto:iommu-request@lists.linux-foundation.org?subject=subscribe>
-Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset="us-ascii"; Format="flowed"
 Errors-To: iommu-bounces@lists.linux-foundation.org
 Sender: "iommu" <iommu-bounces@lists.linux-foundation.org>
 
-On Wed, Feb 19, 2020 at 11:40 AM Lu Baolu <baolu.lu@linux.intel.com> wrote:
-> With respect, this is problematical. The parent and all subdevices share
-> a single translation entry. The DMA mask should be consistent.
->
-> Otherwise, for example, subdevice A has 64-bit DMA capability and uses
-> an identity domain for DMA translation. While subdevice B has 32-bit DMA
-> capability and is forced to switch to DMA domain. Subdevice A will be
-> impacted without any notification.
+On 2020-02-17 08:03, Robin Murphy wrote:
+> On 14/02/2020 11:06 pm, Isaac J. Manjarres wrote:
+>> From: Liam Mark <lmark@codeaurora.org>
+>> 
+>> Using the best-fit algorithm, instead of the first-fit
+>> algorithm, may reduce fragmentation when allocating
+>> IOVAs.
+> 
+> What kind of pathological allocation patterns make that a serious
+> problem? Is there any scope for simply changing the order of things in
+> the callers? Do these drivers also run under other DMA API backends
+> (e.g. 32-bit Arm)?
+> 
+The usecases where the IOVA space has been fragmented have 
+non-deterministic allocation
+patterns, and thus, it's not feasible to change the allocation order to 
+avoid fragmenting
+the IOVA space.
 
-I see what you mean.
+ From what we've observed, the usecases involve allocations of two types 
+of
+buffers: one type of buffer between 1 KB to 4 MB in size, and another 
+type of
+buffer between 1 KB to 400 MB in size.
 
-Perhaps we should just ensure that setups involving such real DMA
-devices and subdevices should always use the DMA domain, avoiding this
-type of complication. That's apparently even the default for VMD. This
-is probably something that should be forced/ensured when the real DMA
-device gets registered, because similarly to the noted case, we can't
-risk any identity mappings having been created on the real device if
-we later decide to move it into the DMA domain based on the appearance
-of subdevices.
+The pathological scenarios seem to arise when there are
+many (100+) randomly distributed non-power of two allocations, which in 
+some cases leaves
+behind holes of up to 100+ MB in the IOVA space.
 
-Jon, any thoughts?
+Here are some examples that show the state of the IOVA space under which 
+failure to
+allocate an IOVA was observed:
 
-Daniel
+Instance 1:
+	Currently mapped total size : ~1.3GB
+	Free space available : ~2GB
+	Map for ~162MB fails.
+         Max contiguous space available : < 162MB
+
+Instance 2:
+	Currently mapped total size : ~950MB
+	Free space available : ~2.3GB
+	Map for ~320MB fails.
+	Max contiguous space available : ~189MB
+
+Instance 3:
+	Currently mapped total size : ~1.2GB
+	Free space available : ~2.7GB
+	Map for ~162MB fails.
+	Max contiguous space available : <162MB
+
+We are still in the process of collecting data with the best-fit 
+algorithm enabled
+to provide some numbers to show that it results in less IOVA space
+fragmentation.
+
+To answer your question about whether if this driver run under other DMA 
+API backends:
+yes, such as 32 bit ARM.
+> More generally, if a driver knows enough to want to second-guess a
+> generic DMA API allocator, that's a reasonable argument that it should
+> perhaps be properly IOMMU-aware and managing its own address space
+> anyway. Perhaps this effort might be better spent finishing off the
+> DMA ops bypass stuff to make that approach more robust and welcoming.
+> 
+> Robin.
+> 
+>> Signed-off-by: Isaac J. Manjarres <isaacm@codeaurora.org>
+>> ---
+>>   drivers/iommu/dma-iommu.c | 17 +++++++++++
+>>   drivers/iommu/iova.c      | 73 
+>> +++++++++++++++++++++++++++++++++++++++++++++--
+>>   include/linux/dma-iommu.h |  7 +++++
+>>   include/linux/iova.h      |  1 +
+>>   4 files changed, 96 insertions(+), 2 deletions(-)
+>> 
+>> diff --git a/drivers/iommu/dma-iommu.c b/drivers/iommu/dma-iommu.c
+>> index a2e96a5..af08770 100644
+>> --- a/drivers/iommu/dma-iommu.c
+>> +++ b/drivers/iommu/dma-iommu.c
+>> @@ -364,9 +364,26 @@ static int iommu_dma_deferred_attach(struct 
+>> device *dev,
+>>   	if (unlikely(ops->is_attach_deferred &&
+>>   			ops->is_attach_deferred(domain, dev)))
+>>   		return iommu_attach_device(domain, dev);
+>> +	return 0;
+>> +}
+>> +
+>> +/*
+>> + * Should be called prior to using dma-apis.
+>> + */
+>> +int iommu_dma_enable_best_fit_algo(struct device *dev)
+>> +{
+>> +	struct iommu_domain *domain;
+>> +	struct iova_domain *iovad;
+>> +
+>> +	domain = iommu_get_domain_for_dev(dev);
+>> +	if (!domain || !domain->iova_cookie)
+>> +		return -EINVAL;
+>>   +	iovad = &((struct iommu_dma_cookie *)domain->iova_cookie)->iovad;
+>> +	iovad->best_fit = true;
+>>   	return 0;
+>>   }
+>> +EXPORT_SYMBOL(iommu_dma_enable_best_fit_algo);
+>>     /**
+>>    * dma_info_to_prot - Translate DMA API directions and attributes to 
+>> IOMMU API
+>> diff --git a/drivers/iommu/iova.c b/drivers/iommu/iova.c
+>> index 0e6a953..716b05f 100644
+>> --- a/drivers/iommu/iova.c
+>> +++ b/drivers/iommu/iova.c
+>> @@ -50,6 +50,7 @@ static unsigned long iova_rcache_get(struct 
+>> iova_domain *iovad,
+>>   	iovad->anchor.pfn_lo = iovad->anchor.pfn_hi = IOVA_ANCHOR;
+>>   	rb_link_node(&iovad->anchor.node, NULL, &iovad->rbroot.rb_node);
+>>   	rb_insert_color(&iovad->anchor.node, &iovad->rbroot);
+>> +	iovad->best_fit = false;
+>>   	init_iova_rcaches(iovad);
+>>   }
+>>   EXPORT_SYMBOL_GPL(init_iova_domain);
+>> @@ -227,6 +228,69 @@ static int __alloc_and_insert_iova_range(struct 
+>> iova_domain *iovad,
+>>   	return -ENOMEM;
+>>   }
+>>   +static int __alloc_and_insert_iova_best_fit(struct iova_domain 
+>> *iovad,
+>> +		unsigned long size, unsigned long limit_pfn,
+>> +			struct iova *new, bool size_aligned)
+>> +{
+>> +	struct rb_node *curr, *prev;
+>> +	struct iova *curr_iova, *prev_iova;
+>> +	unsigned long flags;
+>> +	unsigned long align_mask = ~0UL;
+>> +	struct rb_node *candidate_rb_parent;
+>> +	unsigned long new_pfn, candidate_pfn = ~0UL;
+>> +	unsigned long gap, candidate_gap = ~0UL;
+>> +
+>> +	if (size_aligned)
+>> +		align_mask <<= limit_align(iovad, fls_long(size - 1));
+>> +
+>> +	/* Walk the tree backwards */
+>> +	spin_lock_irqsave(&iovad->iova_rbtree_lock, flags);
+>> +	curr = &iovad->anchor.node;
+>> +	prev = rb_prev(curr);
+>> +	for (; prev; curr = prev, prev = rb_prev(curr)) {
+>> +		curr_iova = rb_entry(curr, struct iova, node);
+>> +		prev_iova = rb_entry(prev, struct iova, node);
+>> +
+>> +		limit_pfn = min(limit_pfn, curr_iova->pfn_lo);
+>> +		new_pfn = (limit_pfn - size) & align_mask;
+>> +		gap = curr_iova->pfn_lo - prev_iova->pfn_hi - 1;
+>> +		if ((limit_pfn >= size) && (new_pfn > prev_iova->pfn_hi)
+>> +				&& (gap < candidate_gap)) {
+>> +			candidate_gap = gap;
+>> +			candidate_pfn = new_pfn;
+>> +			candidate_rb_parent = curr;
+>> +			if (gap == size)
+>> +				goto insert;
+>> +		}
+>> +	}
+>> +
+>> +	curr_iova = rb_entry(curr, struct iova, node);
+>> +	limit_pfn = min(limit_pfn, curr_iova->pfn_lo);
+>> +	new_pfn = (limit_pfn - size) & align_mask;
+>> +	gap = curr_iova->pfn_lo - iovad->start_pfn;
+>> +	if (limit_pfn >= size && new_pfn >= iovad->start_pfn &&
+>> +			gap < candidate_gap) {
+>> +		candidate_gap = gap;
+>> +		candidate_pfn = new_pfn;
+>> +		candidate_rb_parent = curr;
+>> +	}
+>> +
+>> +insert:
+>> +	if (candidate_pfn == ~0UL) {
+>> +		spin_unlock_irqrestore(&iovad->iova_rbtree_lock, flags);
+>> +		return -ENOMEM;
+>> +	}
+>> +
+>> +	/* pfn_lo will point to size aligned address if size_aligned is set 
+>> */
+>> +	new->pfn_lo = candidate_pfn;
+>> +	new->pfn_hi = new->pfn_lo + size - 1;
+>> +
+>> +	/* If we have 'prev', it's a valid place to start the insertion. */
+>> +	iova_insert_rbtree(&iovad->rbroot, new, candidate_rb_parent);
+>> +	spin_unlock_irqrestore(&iovad->iova_rbtree_lock, flags);
+>> +	return 0;
+>> +}
+>> +
+>>   static struct kmem_cache *iova_cache;
+>>   static unsigned int iova_cache_users;
+>>   static DEFINE_MUTEX(iova_cache_mutex);
+>> @@ -302,8 +366,13 @@ struct iova *
+>>   	if (!new_iova)
+>>   		return NULL;
+>>   -	ret = __alloc_and_insert_iova_range(iovad, size, limit_pfn + 1,
+>> -			new_iova, size_aligned);
+>> +	if (iovad->best_fit) {
+>> +		ret = __alloc_and_insert_iova_best_fit(iovad, size,
+>> +				limit_pfn + 1, new_iova, size_aligned);
+>> +	} else {
+>> +		ret = __alloc_and_insert_iova_range(iovad, size, limit_pfn + 1,
+>> +				new_iova, size_aligned);
+>> +	}
+>>     	if (ret) {
+>>   		free_iova_mem(new_iova);
+>> diff --git a/include/linux/dma-iommu.h b/include/linux/dma-iommu.h
+>> index 2112f21..b01a31a 100644
+>> --- a/include/linux/dma-iommu.h
+>> +++ b/include/linux/dma-iommu.h
+>> @@ -37,6 +37,8 @@ void iommu_dma_compose_msi_msg(struct msi_desc 
+>> *desc,
+>>     void iommu_dma_get_resv_regions(struct device *dev, struct 
+>> list_head *list);
+>>   +int iommu_dma_enable_best_fit_algo(struct device *dev);
+>> +
+>>   #else /* CONFIG_IOMMU_DMA */
+>>     struct iommu_domain;
+>> @@ -78,5 +80,10 @@ static inline void 
+>> iommu_dma_get_resv_regions(struct device *dev, struct list_he
+>>   {
+>>   }
+>>   +static inline int iommu_dma_enable_best_fit_algo(struct device 
+>> *dev)
+>> +{
+>> +	return -ENODEV;
+>> +}
+>> +
+>>   #endif	/* CONFIG_IOMMU_DMA */
+>>   #endif	/* __DMA_IOMMU_H */
+>> diff --git a/include/linux/iova.h b/include/linux/iova.h
+>> index a0637ab..58713bb 100644
+>> --- a/include/linux/iova.h
+>> +++ b/include/linux/iova.h
+>> @@ -95,6 +95,7 @@ struct iova_domain {
+>>   						   flush-queues */
+>>   	atomic_t fq_timer_on;			/* 1 when timer is active, 0
+>>   						   when not */
+>> +	bool best_fit;
+>>   };
+>>     static inline unsigned long iova_size(struct iova *iova)
+>> 
 _______________________________________________
 iommu mailing list
 iommu@lists.linux-foundation.org
