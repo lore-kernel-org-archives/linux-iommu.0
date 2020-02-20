@@ -6,94 +6,94 @@ X-Spam-Status: No, score=-0.6 required=3.0 tests=DKIM_INVALID,DKIM_SIGNED,
 	HEADER_FROM_DIFFERENT_DOMAINS,MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS
 	autolearn=no autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id E0B9DC11D24
-	for <iommu@archiver.kernel.org>; Thu, 20 Feb 2020 21:30:07 +0000 (UTC)
-Received: from fraxinus.osuosl.org (smtp4.osuosl.org [140.211.166.137])
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 595C4C11D20
+	for <iommu@archiver.kernel.org>; Thu, 20 Feb 2020 21:33:50 +0000 (UTC)
+Received: from whitealder.osuosl.org (smtp1.osuosl.org [140.211.166.138])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by mail.kernel.org (Postfix) with ESMTPS id A95AB208E4
-	for <iommu@archiver.kernel.org>; Thu, 20 Feb 2020 21:30:07 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTPS id 20A81208CD
+	for <iommu@archiver.kernel.org>; Thu, 20 Feb 2020 21:33:50 +0000 (UTC)
 Authentication-Results: mail.kernel.org;
-	dkim=fail reason="signature verification failed" (1024-bit key) header.d=redhat.com header.i=@redhat.com header.b="fjnlaq6A"
-DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org A95AB208E4
+	dkim=fail reason="signature verification failed" (1024-bit key) header.d=redhat.com header.i=@redhat.com header.b="i7KIDtT2"
+DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 20A81208CD
 Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=redhat.com
 Authentication-Results: mail.kernel.org; spf=pass smtp.mailfrom=iommu-bounces@lists.linux-foundation.org
 Received: from localhost (localhost [127.0.0.1])
-	by fraxinus.osuosl.org (Postfix) with ESMTP id 82C93860E6;
-	Thu, 20 Feb 2020 21:30:07 +0000 (UTC)
+	by whitealder.osuosl.org (Postfix) with ESMTP id DF74287609;
+	Thu, 20 Feb 2020 21:33:49 +0000 (UTC)
+X-Virus-Scanned: amavisd-new at osuosl.org
+Received: from whitealder.osuosl.org ([127.0.0.1])
+	by localhost (.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
+	with ESMTP id YflkTSMj2JB1; Thu, 20 Feb 2020 21:33:48 +0000 (UTC)
+Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [140.211.9.56])
+	by whitealder.osuosl.org (Postfix) with ESMTP id DDC52875B4;
+	Thu, 20 Feb 2020 21:33:48 +0000 (UTC)
+Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
+	by lists.linuxfoundation.org (Postfix) with ESMTP id C1FC7C1D8E;
+	Thu, 20 Feb 2020 21:33:48 +0000 (UTC)
+Received: from fraxinus.osuosl.org (smtp4.osuosl.org [140.211.166.137])
+ by lists.linuxfoundation.org (Postfix) with ESMTP id 5DD49C1D84
+ for <iommu@lists.linux-foundation.org>; Thu, 20 Feb 2020 21:33:47 +0000 (UTC)
+Received: from localhost (localhost [127.0.0.1])
+ by fraxinus.osuosl.org (Postfix) with ESMTP id 4B385860E6
+ for <iommu@lists.linux-foundation.org>; Thu, 20 Feb 2020 21:33:47 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
 Received: from fraxinus.osuosl.org ([127.0.0.1])
-	by localhost (.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
-	with ESMTP id NrBeEhbRzaiY; Thu, 20 Feb 2020 21:30:06 +0000 (UTC)
-Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [140.211.9.56])
-	by fraxinus.osuosl.org (Postfix) with ESMTP id 93386860DE;
-	Thu, 20 Feb 2020 21:30:06 +0000 (UTC)
-Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
-	by lists.linuxfoundation.org (Postfix) with ESMTP id 6F0E3C1D84;
-	Thu, 20 Feb 2020 21:30:06 +0000 (UTC)
-Received: from silver.osuosl.org (smtp3.osuosl.org [140.211.166.136])
- by lists.linuxfoundation.org (Postfix) with ESMTP id 6583FC013E
- for <iommu@lists.linux-foundation.org>; Thu, 20 Feb 2020 21:30:04 +0000 (UTC)
-Received: from localhost (localhost [127.0.0.1])
- by silver.osuosl.org (Postfix) with ESMTP id 49B2F20341
- for <iommu@lists.linux-foundation.org>; Thu, 20 Feb 2020 21:30:04 +0000 (UTC)
-X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from silver.osuosl.org ([127.0.0.1])
  by localhost (.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
- with ESMTP id c0rGMKAdhZIi for <iommu@lists.linux-foundation.org>;
- Thu, 20 Feb 2020 21:30:03 +0000 (UTC)
+ with ESMTP id F916gnxF9nt3 for <iommu@lists.linux-foundation.org>;
+ Thu, 20 Feb 2020 21:33:46 +0000 (UTC)
 X-Greylist: domain auto-whitelisted by SQLgrey-1.7.6
-Received: from us-smtp-1.mimecast.com (us-smtp-delivery-1.mimecast.com
- [207.211.31.120])
- by silver.osuosl.org (Postfix) with ESMTPS id 5173B20242
- for <iommu@lists.linux-foundation.org>; Thu, 20 Feb 2020 21:30:03 +0000 (UTC)
+Received: from us-smtp-delivery-1.mimecast.com (us-smtp-2.mimecast.com
+ [207.211.31.81])
+ by fraxinus.osuosl.org (Postfix) with ESMTPS id 8A635860E0
+ for <iommu@lists.linux-foundation.org>; Thu, 20 Feb 2020 21:33:46 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
- s=mimecast20190719; t=1582234201;
+ s=mimecast20190719; t=1582234425;
  h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
  to:to:cc:cc:mime-version:mime-version:content-type:content-type:
  in-reply-to:in-reply-to:references:references;
- bh=Lf3au2MSHJPbioLz91pJ+pe3QhvFI4k4CcE4NuKgsdw=;
- b=fjnlaq6AffDnj7+dY3+2CVPoWv1XnbTVbky16NoeAELj5TZJlK9jD35zK72RcH8SXRA34x
- j9+siZwuTwpEcSzD4a8sble22kvlueV5/8+lhzD/a2Uy75Ep7XTlbS8kDcf1VICIY+0HIT
- U04LgQ+UjrY7azT6J7n7b+nzkYOP9ag=
-Received: from mail-qk1-f200.google.com (mail-qk1-f200.google.com
- [209.85.222.200]) (Using TLS) by relay.mimecast.com with ESMTP id
- us-mta-423-gurn0o9BOUuBZB0dPVNYHQ-1; Thu, 20 Feb 2020 16:29:59 -0500
-Received: by mail-qk1-f200.google.com with SMTP id i11so28472qki.12
- for <iommu@lists.linux-foundation.org>; Thu, 20 Feb 2020 13:29:59 -0800 (PST)
+ bh=4krYsiGh4Qek2SxgzuI/KbmEgksVX0a4JTAhD8CZkok=;
+ b=i7KIDtT2qzdeIwMS+kdn6IK52lTALdEjC6u6zrd+LdWkpf3nqi5gn3luBkzwAhm9gtJDzu
+ NscLpGEswyyFnrtTbuAorD8wtz3Ig0n1jgs27oJG4RJB4k4cGkPcQz35Ex3I9zzLKSGy0H
+ hIXgpbJBSWKHSpBLWyfBPgBSVFH84nE=
+Received: from mail-qt1-f200.google.com (mail-qt1-f200.google.com
+ [209.85.160.200]) (Using TLS) by relay.mimecast.com with ESMTP id
+ us-mta-191-W4z4cfx3OWaXceCpMVnm0g-1; Thu, 20 Feb 2020 16:33:43 -0500
+Received: by mail-qt1-f200.google.com with SMTP id c22so75230qtn.23
+ for <iommu@lists.linux-foundation.org>; Thu, 20 Feb 2020 13:33:43 -0800 (PST)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
  d=1e100.net; s=20161025;
  h=x-gm-message-state:date:from:to:cc:subject:message-id:references
  :mime-version:content-disposition:in-reply-to;
- bh=Lf3au2MSHJPbioLz91pJ+pe3QhvFI4k4CcE4NuKgsdw=;
- b=KzRs8ujRZbwErgMN0DpnAvbmiqvaS7HEIMhrdsvhBtQMBcTaBF8O6jviDCA2FWePns
- +YGz8VMEEzxpqyhHW9NEYXSlOBK0Iqpy+OG96cD6mVGc4QSpW/95m8nL1/BHrfrBqcPB
- sbdz4d+Y78fhLHLjrqrIbb5sgK3KiCafCBxOo373KAyfzDw+Do8q7oT3Q7gwuePJdafW
- kDB09v+xhRrn/sX2NtuAb8KoUmO50hIu+BZ48bcZlliMbmdV1DfZnTFmZcQPx9iCpv65
- KoIGPuzW/LQrRwOjmGCGGD23iGPCq00BQHZ7HsxWtdC4EPC3ujSiLyYJCOg5SD/td+ZK
- TbOQ==
-X-Gm-Message-State: APjAAAV/l9i8qQudLUXdZvvRzY152+MqLVOCpTMky3gmAPGTa2uW7qSR
- kmDdlYBK0p5HGzTKWPo/b+OdNlqE6vaDC4IpQ7oj5qa7J8Y/I55C+qsurU+53Fb7SUH675J755m
- CbY4j4ZVlbyByeX3Uqctm5pMQhW04iw==
-X-Received: by 2002:ac8:4616:: with SMTP id p22mr29036892qtn.368.1582234199339; 
- Thu, 20 Feb 2020 13:29:59 -0800 (PST)
-X-Google-Smtp-Source: APXvYqwCyE/IGRqPbb728yukodcrAAG8HoUGpZIWGc8w9a3plX9TiklcItDV0lrQNkao9NxMwpK5TQ==
-X-Received: by 2002:ac8:4616:: with SMTP id p22mr29036863qtn.368.1582234199118; 
- Thu, 20 Feb 2020 13:29:59 -0800 (PST)
+ bh=4krYsiGh4Qek2SxgzuI/KbmEgksVX0a4JTAhD8CZkok=;
+ b=YlvWwRuVsV5WRq9VZeLuVyw7Yayi5HgmnfGjDqFEDa2SoWwApA/CHQMn366QjIuAvN
+ fW4SIzSDHGnQ5obZSlDEUcDl4Y9qhuciV6nv4W9c8QscjemSXOaBCrz80ZeEhWTbaaRS
+ 5hkF1JzgE7auu8j5fuensFRQYStVr4/YQv9/FLzGkBS509sN/t+LsOXyaCZk5PAForbz
+ khm/oU3KLRnwHx9WookDy5Wd4ui6e0z57AqjIVmw/eLHNM5i2t4RONX0BJxYh5WFe+Na
+ P2vKeN+yZqZb3sMDcb3oWFTmCkhTzOkbH07zTtqclPVhbsSDadK37sXe1yB0JFXFykZ4
+ 5CeA==
+X-Gm-Message-State: APjAAAVjyjXXbsmLxNxJtmW1QrSF3GRB+M8tPFKoA56xcBJBTSRz9YbX
+ ybTUShcInhzb5R+betp1B96K49ajKlK6jnaGI10nJ1EN/vAT9PkcY59LT/BQbPrzJD7x+6ZOMvW
+ Jy7sgGwqbGmedMVI7JmFA4/66SSP2Bg==
+X-Received: by 2002:ac8:4886:: with SMTP id i6mr27992241qtq.160.1582234423178; 
+ Thu, 20 Feb 2020 13:33:43 -0800 (PST)
+X-Google-Smtp-Source: APXvYqykw+sIvY+6jifxdk4U8bBDoR068zA6NinyMfSe1te1gvQyzZNHuu8TE0YuobirJ95QLhxL3g==
+X-Received: by 2002:ac8:4886:: with SMTP id i6mr27992229qtq.160.1582234422979; 
+ Thu, 20 Feb 2020 13:33:42 -0800 (PST)
 Received: from redhat.com (bzq-109-67-14-209.red.bezeqint.net. [109.67.14.209])
- by smtp.gmail.com with ESMTPSA id c45sm453698qtd.43.2020.02.20.13.29.53
+ by smtp.gmail.com with ESMTPSA id z27sm440818qtv.11.2020.02.20.13.33.38
  (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
- Thu, 20 Feb 2020 13:29:57 -0800 (PST)
-Date: Thu, 20 Feb 2020 16:29:50 -0500
+ Thu, 20 Feb 2020 13:33:42 -0800 (PST)
+Date: Thu, 20 Feb 2020 16:33:35 -0500
 From: "Michael S. Tsirkin" <mst@redhat.com>
 To: Halil Pasic <pasic@linux.ibm.com>
 Subject: Re: [PATCH 0/2] virtio: decouple protected guest RAM form
  VIRTIO_F_IOMMU_PLATFORM
-Message-ID: <20200220162747-mutt-send-email-mst@kernel.org>
+Message-ID: <20200220163055-mutt-send-email-mst@kernel.org>
 References: <20200220160606.53156-1-pasic@linux.ibm.com>
 MIME-Version: 1.0
 In-Reply-To: <20200220160606.53156-1-pasic@linux.ibm.com>
-X-MC-Unique: gurn0o9BOUuBZB0dPVNYHQ-1
+X-MC-Unique: W4z4cfx3OWaXceCpMVnm0g-1
 X-Mimecast-Spam-Score: 0
 X-Mimecast-Originator: redhat.com
 Content-Disposition: inline
@@ -124,38 +124,32 @@ Errors-To: iommu-bounces@lists.linux-foundation.org
 Sender: "iommu" <iommu-bounces@lists.linux-foundation.org>
 
 On Thu, Feb 20, 2020 at 05:06:04PM +0100, Halil Pasic wrote:
-> * This usage is not congruent with  standardised semantics of
-> VIRTIO_F_IOMMU_PLATFORM. Guest memory protected is an orthogonal reason
-> for using DMA API in virtio (orthogonal with respect to what is
-> expressed by VIRTIO_F_IOMMU_PLATFORM). 
+> For vhost-net the feature VIRTIO_F_IOMMU_PLATFORM has the following side
+> effect The vhost code assumes it the addresses on the virtio descriptor
+> ring are not guest physical addresses but iova's, and insists on doing a
+> translation of these regardless of what transport is used (e.g. whether
+> we emulate a PCI or a CCW device). (For details see commit 6b1e6cc7855b
+> "vhost: new device IOTLB API".) On s390 this results in severe
+> performance degradation (c.a. factor 10). BTW with ccw I/O there is
+> (architecturally) no IOMMU, so the whole address translation makes no
+> sense in the context of virtio-ccw.
 
-Quoting the spec:
+So it sounds like a host issue: the emulation of s390 unnecessarily complicated.
+Working around it by the guest looks wrong ...
 
-  \item[VIRTIO_F_ACCESS_PLATFORM(33)] This feature indicates that
-  the device can be used on a platform where device access to data
-  in memory is limited and/or translated. E.g. this is the case if the device can be located
-  behind an IOMMU that translates bus addresses from the device into physical
-  addresses in memory, if the device can be limited to only access
-  certain memory addresses or if special commands such as
-  a cache flush can be needed to synchronise data in memory with
-  the device. Whether accesses are actually limited or translated
-  is described by platform-specific means.
-  If this feature bit is set to 0, then the device
-  has same access to memory addresses supplied to it as the
-  driver has.
-  In particular, the device will always use physical addresses
-  matching addresses used by the driver (typically meaning
-  physical addresses used by the CPU)
-  and not translated further, and can access any address supplied to it by
-  the driver. When clear, this overrides any platform-specific description of
-  whether device access is limited or translated in any way, e.g.
-  whether an IOMMU may be present.
-
-since device can't access encrypted memory,
-this seems to match your case reasonably well.
-
--- 
-MST
+> Halil Pasic (2):
+>   mm: move force_dma_unencrypted() to mem_encrypt.h
+>   virtio: let virtio use DMA API when guest RAM is protected
+> 
+>  drivers/virtio/virtio_ring.c |  3 +++
+>  include/linux/dma-direct.h   |  9 ---------
+>  include/linux/mem_encrypt.h  | 10 ++++++++++
+>  3 files changed, 13 insertions(+), 9 deletions(-)
+> 
+> 
+> base-commit: ca7e1fd1026c5af6a533b4b5447e1d2f153e28f2
+> -- 
+> 2.17.1
 
 _______________________________________________
 iommu mailing list
