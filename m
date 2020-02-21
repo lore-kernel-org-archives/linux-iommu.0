@@ -2,94 +2,119 @@ Return-Path: <SRS0=5edT=4J=lists.linux-foundation.org=iommu-bounces@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-6.8 required=3.0 tests=HEADER_FROM_DIFFERENT_DOMAINS,
-	INCLUDES_PATCH,MAILING_LIST_MULTI,SIGNED_OFF_BY,SPF_HELO_NONE,SPF_PASS
-	autolearn=unavailable autolearn_force=no version=3.4.0
+X-Spam-Status: No, score=-2.3 required=3.0 tests=HEADER_FROM_DIFFERENT_DOMAINS,
+	MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED,USER_AGENT_SANE_2
+	autolearn=no autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 8CEA6C35642
-	for <iommu@archiver.kernel.org>; Fri, 21 Feb 2020 06:34:46 +0000 (UTC)
-Received: from whitealder.osuosl.org (smtp1.osuosl.org [140.211.166.138])
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 2FCCBC35646
+	for <iommu@archiver.kernel.org>; Fri, 21 Feb 2020 13:07:24 +0000 (UTC)
+Received: from fraxinus.osuosl.org (smtp4.osuosl.org [140.211.166.137])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by mail.kernel.org (Postfix) with ESMTPS id 580D3208E4
-	for <iommu@archiver.kernel.org>; Fri, 21 Feb 2020 06:34:46 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 580D3208E4
-Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=intel.com
+	by mail.kernel.org (Postfix) with ESMTPS id D69BA24650
+	for <iommu@archiver.kernel.org>; Fri, 21 Feb 2020 13:07:23 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org D69BA24650
+Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=linux.ibm.com
 Authentication-Results: mail.kernel.org; spf=pass smtp.mailfrom=iommu-bounces@lists.linux-foundation.org
 Received: from localhost (localhost [127.0.0.1])
-	by whitealder.osuosl.org (Postfix) with ESMTP id 25A35826AC;
-	Fri, 21 Feb 2020 06:34:46 +0000 (UTC)
+	by fraxinus.osuosl.org (Postfix) with ESMTP id C5AF686381;
+	Fri, 21 Feb 2020 13:07:23 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from whitealder.osuosl.org ([127.0.0.1])
+Received: from fraxinus.osuosl.org ([127.0.0.1])
 	by localhost (.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
-	with ESMTP id vToXXYH3JRo3; Fri, 21 Feb 2020 06:34:45 +0000 (UTC)
+	with ESMTP id NnfbdrOqFVTH; Fri, 21 Feb 2020 13:07:22 +0000 (UTC)
 Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [140.211.9.56])
-	by whitealder.osuosl.org (Postfix) with ESMTP id 2854A81FEE;
-	Fri, 21 Feb 2020 06:34:45 +0000 (UTC)
+	by fraxinus.osuosl.org (Postfix) with ESMTP id 5CF7986374;
+	Fri, 21 Feb 2020 13:07:22 +0000 (UTC)
 Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
-	by lists.linuxfoundation.org (Postfix) with ESMTP id E29A8C07FE;
-	Fri, 21 Feb 2020 06:34:44 +0000 (UTC)
+	by lists.linuxfoundation.org (Postfix) with ESMTP id 49052C1D8E;
+	Fri, 21 Feb 2020 13:07:22 +0000 (UTC)
 Received: from fraxinus.osuosl.org (smtp4.osuosl.org [140.211.166.137])
- by lists.linuxfoundation.org (Postfix) with ESMTP id AE389C013E
- for <iommu@lists.linux-foundation.org>; Fri, 21 Feb 2020 06:34:42 +0000 (UTC)
+ by lists.linuxfoundation.org (Postfix) with ESMTP id D175AC013E
+ for <iommu@lists.linux-foundation.org>; Fri, 21 Feb 2020 13:07:20 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
- by fraxinus.osuosl.org (Postfix) with ESMTP id 9726183337
- for <iommu@lists.linux-foundation.org>; Fri, 21 Feb 2020 06:34:42 +0000 (UTC)
+ by fraxinus.osuosl.org (Postfix) with ESMTP id BEF228636D
+ for <iommu@lists.linux-foundation.org>; Fri, 21 Feb 2020 13:07:20 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
 Received: from fraxinus.osuosl.org ([127.0.0.1])
  by localhost (.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
- with ESMTP id xss8NwHkG-A9 for <iommu@lists.linux-foundation.org>;
- Fri, 21 Feb 2020 06:34:39 +0000 (UTC)
+ with ESMTP id i1ZMxYhJQYxD for <iommu@lists.linux-foundation.org>;
+ Fri, 21 Feb 2020 13:07:19 +0000 (UTC)
 X-Greylist: domain auto-whitelisted by SQLgrey-1.7.6
-Received: from mga01.intel.com (mga01.intel.com [192.55.52.88])
- by fraxinus.osuosl.org (Postfix) with ESMTPS id 92CE583335
- for <iommu@lists.linux-foundation.org>; Fri, 21 Feb 2020 06:34:39 +0000 (UTC)
-X-Amp-Result: SKIPPED(no attachment in message)
-X-Amp-File-Uploaded: False
-Received: from fmsmga006.fm.intel.com ([10.253.24.20])
- by fmsmga101.fm.intel.com with ESMTP/TLS/DHE-RSA-AES256-GCM-SHA384;
- 20 Feb 2020 22:34:39 -0800
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.70,467,1574150400"; d="scan'208";a="436855988"
-Received: from fmsmsx103.amr.corp.intel.com ([10.18.124.201])
- by fmsmga006.fm.intel.com with ESMTP; 20 Feb 2020 22:34:39 -0800
-Received: from fmsmsx125.amr.corp.intel.com (10.18.125.40) by
- FMSMSX103.amr.corp.intel.com (10.18.124.201) with Microsoft SMTP Server (TLS)
- id 14.3.439.0; Thu, 20 Feb 2020 22:34:38 -0800
-Received: from shsmsx154.ccr.corp.intel.com (10.239.6.54) by
- FMSMSX125.amr.corp.intel.com (10.18.125.40) with Microsoft SMTP Server (TLS)
- id 14.3.439.0; Thu, 20 Feb 2020 22:34:38 -0800
-Received: from shsmsx104.ccr.corp.intel.com ([169.254.5.5]) by
- SHSMSX154.ccr.corp.intel.com ([169.254.7.141]) with mapi id 14.03.0439.000;
- Fri, 21 Feb 2020 14:34:36 +0800
-From: "Liu, Yi L" <yi.l.liu@intel.com>
-To: Jacob Pan <jacob.jun.pan@linux.intel.com>,
- "iommu@lists.linux-foundation.org" <iommu@lists.linux-foundation.org>, LKML
- <linux-kernel@vger.kernel.org>, Lu Baolu <baolu.lu@linux.intel.com>, "Joerg
- Roedel" <joro@8bytes.org>, David Woodhouse <dwmw2@infradead.org>
-Subject: RE: [PATCH V9 06/10] iommu/vt-d: Add svm/sva invalidate function
-Thread-Topic: [PATCH V9 06/10] iommu/vt-d: Add svm/sva invalidate function
-Thread-Index: AQHV1mjmAtkW5dty2kmHzBeiSamP8KglU8Fg
-Date: Fri, 21 Feb 2020 06:34:35 +0000
-Message-ID: <A2975661238FB949B60364EF0F2C25743A1C629C@SHSMSX104.ccr.corp.intel.com>
-References: <1580277713-66934-1-git-send-email-jacob.jun.pan@linux.intel.com>
- <1580277713-66934-7-git-send-email-jacob.jun.pan@linux.intel.com>
-In-Reply-To: <1580277713-66934-7-git-send-email-jacob.jun.pan@linux.intel.com>
-Accept-Language: en-US
-Content-Language: en-US
-X-MS-Has-Attach: 
-X-MS-TNEF-Correlator: 
-dlp-product: dlpe-windows
-dlp-version: 11.2.0.6
-dlp-reaction: no-action
-x-ctpclassification: CTP_NT
-x-titus-metadata-40: eyJDYXRlZ29yeUxhYmVscyI6IiIsIk1ldGFkYXRhIjp7Im5zIjoiaHR0cDpcL1wvd3d3LnRpdHVzLmNvbVwvbnNcL0ludGVsMyIsImlkIjoiMzg2YzdmOGItOTRhZi00MGUwLTg1Y2UtMmI1ODgzZWNjMTI5IiwicHJvcHMiOlt7Im4iOiJDVFBDbGFzc2lmaWNhdGlvbiIsInZhbHMiOlt7InZhbHVlIjoiQ1RQX05UIn1dfV19LCJTdWJqZWN0TGFiZWxzIjpbXSwiVE1DVmVyc2lvbiI6IjE3LjEwLjE4MDQuNDkiLCJUcnVzdGVkTGFiZWxIYXNoIjoicXVyZkoyeGMzVjRtclBsQVdsdU8zOWN1dm9xeG9qV0NYY2hsSlNiNkNoTXlUYWFMS0QxU2dLaTdqaGNXU0hkWSJ9
-x-originating-ip: [10.239.127.40]
+Received: from mx0a-001b2d01.pphosted.com (mx0a-001b2d01.pphosted.com
+ [148.163.156.1])
+ by fraxinus.osuosl.org (Postfix) with ESMTPS id 5532F86365
+ for <iommu@lists.linux-foundation.org>; Fri, 21 Feb 2020 13:07:19 +0000 (UTC)
+Received: from pps.filterd (m0098404.ppops.net [127.0.0.1])
+ by mx0a-001b2d01.pphosted.com (8.16.0.42/8.16.0.42) with SMTP id
+ 01LD4bP8009968
+ for <iommu@lists.linux-foundation.org>; Fri, 21 Feb 2020 08:07:18 -0500
+Received: from e06smtp02.uk.ibm.com (e06smtp02.uk.ibm.com [195.75.94.98])
+ by mx0a-001b2d01.pphosted.com with ESMTP id 2y9sbvfwvb-1
+ (version=TLSv1.2 cipher=AES256-GCM-SHA384 bits=256 verify=NOT)
+ for <iommu@lists.linux-foundation.org>; Fri, 21 Feb 2020 08:07:17 -0500
+Received: from localhost
+ by e06smtp02.uk.ibm.com with IBM ESMTP SMTP Gateway: Authorized Use Only!
+ Violators will be prosecuted
+ for <iommu@lists.linux-foundation.org> from <pasic@linux.ibm.com>;
+ Fri, 21 Feb 2020 13:07:15 -0000
+Received: from b06avi18626390.portsmouth.uk.ibm.com (9.149.26.192)
+ by e06smtp02.uk.ibm.com (192.168.101.132) with IBM ESMTP SMTP Gateway:
+ Authorized Use Only! Violators will be prosecuted; 
+ (version=TLSv1/SSLv3 cipher=AES256-GCM-SHA384 bits=256/256)
+ Fri, 21 Feb 2020 13:07:11 -0000
+Received: from d06av23.portsmouth.uk.ibm.com (d06av23.portsmouth.uk.ibm.com
+ [9.149.105.59])
+ by b06avi18626390.portsmouth.uk.ibm.com (8.14.9/8.14.9/NCO v10.0) with ESMTP
+ id 01LD6DcU43778356
+ (version=TLSv1/SSLv3 cipher=DHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
+ Fri, 21 Feb 2020 13:06:13 GMT
+Received: from d06av23.portsmouth.uk.ibm.com (unknown [127.0.0.1])
+ by IMSVA (Postfix) with ESMTP id 36FD9A4040;
+ Fri, 21 Feb 2020 13:07:09 +0000 (GMT)
+Received: from d06av23.portsmouth.uk.ibm.com (unknown [127.0.0.1])
+ by IMSVA (Postfix) with ESMTP id 5AB02A404D;
+ Fri, 21 Feb 2020 13:07:07 +0000 (GMT)
+Received: from oc2783563651 (unknown [9.152.224.149])
+ by d06av23.portsmouth.uk.ibm.com (Postfix) with ESMTP;
+ Fri, 21 Feb 2020 13:07:07 +0000 (GMT)
+Date: Fri, 21 Feb 2020 14:06:39 +0100
+From: Halil Pasic <pasic@linux.ibm.com>
+To: David Gibson <david@gibson.dropbear.id.au>
+Subject: Re: [PATCH 1/2] mm: move force_dma_unencrypted() to mem_encrypt.h
+In-Reply-To: <20200221032727.GC2298@umbus.fritz.box>
+References: <20200220160606.53156-1-pasic@linux.ibm.com>
+ <20200220160606.53156-2-pasic@linux.ibm.com>
+ <20200220161146.GA12709@lst.de>
+ <4369f099-e4e4-4a58-b38b-642cf53ccca6@de.ibm.com>
+ <20200220163135.GA13192@lst.de>
+ <20200221032727.GC2298@umbus.fritz.box>
+Organization: IBM
+X-Mailer: Claws Mail 3.11.1 (GTK+ 2.24.31; x86_64-redhat-linux-gnu)
 MIME-Version: 1.0
-Cc: "Tian, Kevin" <kevin.tian@intel.com>, "Raj, Ashok" <ashok.raj@intel.com>,
- Alex Williamson <alex.williamson@redhat.com>,
- Jean-Philippe Brucker <jean-philippe@linaro.com>,
- Jonathan Cameron <jic23@kernel.org>
+X-TM-AS-GCONF: 00
+x-cbid: 20022113-0008-0000-0000-000003551FF7
+X-IBM-AV-DETECTION: SAVI=unused REMOTE=unused XFE=unused
+x-cbparentid: 20022113-0009-0000-0000-00004A7632D4
+Message-Id: <20200221140639.54928efe.pasic@linux.ibm.com>
+X-Proofpoint-Virus-Version: vendor=fsecure engine=2.50.10434:6.0.138, 18.0.572
+ definitions=2020-02-21_03:2020-02-19,
+ 2020-02-21 signatures=0
+X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0
+ spamscore=0 phishscore=0
+ mlxscore=0 malwarescore=0 bulkscore=0 mlxlogscore=999 impostorscore=0
+ priorityscore=1501 lowpriorityscore=0 adultscore=0 suspectscore=0
+ clxscore=1015 classifier=spam adjust=0 reason=mlx scancount=1
+ engine=8.12.0-2001150001 definitions=main-2002210100
+Cc: linux-s390@vger.kernel.org, Janosch Frank <frankja@linux.ibm.com>,
+ "Michael S. Tsirkin" <mst@redhat.com>, Jason Wang <jasowang@redhat.com>,
+ Cornelia Huck <cohuck@redhat.com>, Ram Pai <linuxram@us.ibm.com>,
+ linux-kernel@vger.kernel.org, virtualization@lists.linux-foundation.org,
+ Christian Borntraeger <borntraeger@de.ibm.com>,
+ iommu@lists.linux-foundation.org, Michael Mueller <mimu@linux.ibm.com>,
+ "Lendacky, Thomas" <Thomas.Lendacky@amd.com>,
+ Viktor Mihajlovski <mihajlov@linux.ibm.com>,
+ Robin Murphy <robin.murphy@arm.com>, Christoph Hellwig <hch@lst.de>
 X-BeenThere: iommu@lists.linux-foundation.org
 X-Mailman-Version: 2.1.15
 Precedence: list
@@ -102,199 +127,117 @@ List-Post: <mailto:iommu@lists.linux-foundation.org>
 List-Help: <mailto:iommu-request@lists.linux-foundation.org?subject=help>
 List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
  <mailto:iommu-request@lists.linux-foundation.org?subject=subscribe>
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: 7bit
+Content-Type: multipart/mixed; boundary="===============3389482048955147338=="
 Errors-To: iommu-bounces@lists.linux-foundation.org
 Sender: "iommu" <iommu-bounces@lists.linux-foundation.org>
 
-> From: Jacob Pan <jacob.jun.pan@linux.intel.com>
-> Sent: Wednesday, January 29, 2020 2:02 PM
-> Subject: [PATCH V9 06/10] iommu/vt-d: Add svm/sva invalidate function
-> 
-> When Shared Virtual Address (SVA) is enabled for a guest OS via vIOMMU, we
-> need to provide invalidation support at IOMMU API and driver level. This patch
-> adds Intel VT-d specific function to implement iommu passdown invalidate API
-> for shared virtual address.
-> 
-> The use case is for supporting caching structure invalidation of assigned SVM
-> capable devices. Emulated IOMMU exposes queue invalidation capability and
-> passes down all descriptors from the guest to the physical IOMMU.
-> 
-> The assumption is that guest to host device ID mapping should be resolved prior
-> to calling IOMMU driver. Based on the device handle, host IOMMU driver can
-> replace certain fields before submit to the invalidation queue.
-> 
-> Signed-off-by: Jacob Pan <jacob.jun.pan@linux.intel.com>
-> Signed-off-by: Ashok Raj <ashok.raj@intel.com>
-> Signed-off-by: Liu, Yi L <yi.l.liu@linux.intel.com>
+--===============3389482048955147338==
+Content-Type: multipart/signed; micalg=pgp-sha1;
+ boundary="Sig_/0Kh./iiZFoeVIQkl275YsuF"; protocol="application/pgp-signature"
 
-May be update my  email to Liu Yi L <yi.l.liu@intel.com> :-) @linux.intel.com
-account no more work for me.  :-(
+--Sig_/0Kh./iiZFoeVIQkl275YsuF
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: quoted-printable
 
-> ---
->  drivers/iommu/intel-iommu.c | 173
-> ++++++++++++++++++++++++++++++++++++++++++++
->  1 file changed, 173 insertions(+)
-> 
-> diff --git a/drivers/iommu/intel-iommu.c b/drivers/iommu/intel-iommu.c index
-> 8a4136e805ac..b8aa6479b87f 100644
-> --- a/drivers/iommu/intel-iommu.c
-> +++ b/drivers/iommu/intel-iommu.c
-> @@ -5605,6 +5605,178 @@ static void intel_iommu_aux_detach_device(struct
-> iommu_domain *domain,
->  	aux_domain_remove_dev(to_dmar_domain(domain), dev);  }
-> 
-> +/*
-> + * 2D array for converting and sanitizing IOMMU generic TLB granularity
-> +to
-> + * VT-d granularity. Invalidation is typically included in the unmap
-> +operation
-> + * as a result of DMA or VFIO unmap. However, for assigned device where
-> +guest
-> + * could own the first level page tables without being shadowed by
-> +QEMU. In
-> + * this case there is no pass down unmap to the host IOMMU as a result
-> +of unmap
-> + * in the guest. Only invalidations are trapped and passed down.
-> + * In all cases, only first level TLB invalidation (request with PASID)
-> +can be
-> + * passed down, therefore we do not include IOTLB granularity for
-> +request
-> + * without PASID (second level).
-> + *
-> + * For an example, to find the VT-d granularity encoding for IOTLB
-> + * type and page selective granularity within PASID:
-> + * X: indexed by iommu cache type
-> + * Y: indexed by enum iommu_inv_granularity
-> + * [IOMMU_CACHE_INV_TYPE_IOTLB][IOMMU_INV_GRANU_ADDR]
-> + *
-> + * Granu_map array indicates validity of the table. 1: valid, 0:
-> +invalid
-> + *
-> + */
-> +const static int
-> inv_type_granu_map[IOMMU_CACHE_INV_TYPE_NR][IOMMU_INV_GRANU_N
-> R] = {
-> +	/* PASID based IOTLB, support PASID selective and page selective */
-> +	{0, 1, 1},
-> +	/* PASID based dev TLBs, only support all PASIDs or single PASID */
-> +	{1, 1, 0},
-> +	/* PASID cache */
-> +	{1, 1, 0}
-> +};
-> +
-> +const static u64
-> inv_type_granu_table[IOMMU_CACHE_INV_TYPE_NR][IOMMU_INV_GRANU_
-> NR] = {
-> +	/* PASID based IOTLB */
-> +	{0, QI_GRAN_NONG_PASID, QI_GRAN_PSI_PASID},
-> +	/* PASID based dev TLBs */
-> +	{QI_DEV_IOTLB_GRAN_ALL, QI_DEV_IOTLB_GRAN_PASID_SEL, 0},
-> +	/* PASID cache */
-> +	{QI_PC_ALL_PASIDS, QI_PC_PASID_SEL, 0}, };
-> +
-> +static inline int to_vtd_granularity(int type, int granu, u64
-> +*vtd_granu) {
-> +	if (type >= IOMMU_CACHE_INV_TYPE_NR || granu >=
-> IOMMU_INV_GRANU_NR ||
-> +		!inv_type_granu_map[type][granu])
-> +		return -EINVAL;
-> +
-> +	*vtd_granu = inv_type_granu_table[type][granu];
-> +
-> +	return 0;
-> +}
-> +
-> +static inline u64 to_vtd_size(u64 granu_size, u64 nr_granules) {
-> +	u64 nr_pages = (granu_size * nr_granules) >> VTD_PAGE_SHIFT;
-> +
-> +	/* VT-d size is encoded as 2^size of 4K pages, 0 for 4k, 9 for 2MB, etc.
-> +	 * IOMMU cache invalidate API passes granu_size in bytes, and number
-> of
-> +	 * granu size in contiguous memory.
-> +	 */
-> +	return order_base_2(nr_pages);
-> +}
-> +
-> +#ifdef CONFIG_INTEL_IOMMU_SVM
-> +static int intel_iommu_sva_invalidate(struct iommu_domain *domain,
-> +		struct device *dev, struct iommu_cache_invalidate_info
-> *inv_info) {
-> +	struct dmar_domain *dmar_domain = to_dmar_domain(domain);
-> +	struct device_domain_info *info;
-> +	struct intel_iommu *iommu;
-> +	unsigned long flags;
-> +	int cache_type;
-> +	u8 bus, devfn;
-> +	u16 did, sid;
-> +	int ret = 0;
-> +	u64 size;
-> +
-> +	if (!inv_info || !dmar_domain ||
-> +		inv_info->version !=
-> IOMMU_CACHE_INVALIDATE_INFO_VERSION_1)
-> +		return -EINVAL;
-> +
-> +	if (!dev || !dev_is_pci(dev))
-> +		return -ENODEV;
-> +
-> +	iommu = device_to_iommu(dev, &bus, &devfn);
-> +	if (!iommu)
-> +		return -ENODEV;
-> +
-> +	spin_lock_irqsave(&device_domain_lock, flags);
-> +	spin_lock(&iommu->lock);
-> +	info = iommu_support_dev_iotlb(dmar_domain, iommu, bus, devfn);
-> +	if (!info) {
-> +		ret = -EINVAL;
-> +		goto out_unlock;
-> +	}
-> +	did = dmar_domain->iommu_did[iommu->seq_id];
-> +	sid = PCI_DEVID(bus, devfn);
-> +	size = to_vtd_size(inv_info->addr_info.granule_size,
-> +inv_info->addr_info.nb_granules);
+On Fri, 21 Feb 2020 14:27:27 +1100
+David Gibson <david@gibson.dropbear.id.au> wrote:
 
-Here I have a concern that we always try to get size via to_vtd_size(). But
-the inv_info->addr_info.granule_size and inv_info->addr_info.nb_granules
-may be meaningless if the invalidation is not a page selective one. May we
-add a check here on the invalidation granularity. :-)
+> On Thu, Feb 20, 2020 at 05:31:35PM +0100, Christoph Hellwig wrote:
+> > On Thu, Feb 20, 2020 at 05:23:20PM +0100, Christian Borntraeger wrote:
+> > > >From a users perspective it makes absolutely perfect sense to use the
+> > > bounce buffers when they are NEEDED.=20
+> > > Forcing the user to specify iommu_platform just because you need boun=
+ce buffers
+> > > really feels wrong. And obviously we have a severe performance issue
+> > > because of the indirections.
+> >=20
+> > The point is that the user should not have to specify iommu_platform.
+> > We need to make sure any new hypervisor (especially one that might requ=
+ire
+> > bounce buffering) always sets it,
+>=20
+> So, I have draft qemu patches which enable iommu_platform by default.
+> But that's really because of other problems with !iommu_platform, not
+> anything to do with bounce buffering or secure VMs.
+>=20
+> The thing is that the hypervisor *doesn't* require bounce buffering.
+> In the POWER (and maybe s390 as well) models for Secure VMs, it's the
+> *guest*'s choice to enter secure mode, so the hypervisor has no reason
+> to know whether the guest needs bounce buffering.  As far as the
+> hypervisor and qemu are concerned that's a guest internal detail, it
+> just expects to get addresses it can access whether those are GPAs
+> (iommu_platform=3Doff) or IOVAs (iommu_platform=3Don).
 
-> +	for_each_set_bit(cache_type, (unsigned long *)&inv_info->cache,
-> IOMMU_CACHE_INV_TYPE_NR) {
-> +		u64 granu = 0;
-> +		u64 pasid = 0;
-> +
-> +		ret = to_vtd_granularity(cache_type, inv_info->granularity,
-> &granu);
-> +		if (ret) {
-> +			pr_err("Invalid cache type and granu
-> combination %d/%d\n", cache_type,
-> +				inv_info->granularity);
-> +			break;
-> +		}
-> +
-> +		/* PASID is stored in different locations based on granularity */
-> +		if (inv_info->granularity == IOMMU_INV_GRANU_PASID)
-> +			pasid = inv_info->pasid_info.pasid;
-> +		else if (inv_info->granularity == IOMMU_INV_GRANU_ADDR)
-> +			pasid = inv_info->addr_info.pasid;
-> +		else {
-> +			pr_err("Cannot find PASID for given cache type and
-> granularity\n");
-> +			break;
-> +		}
-> +
-> +		switch (BIT(cache_type)) {
-> +		case IOMMU_CACHE_INV_TYPE_IOTLB:
-> +			if (size && (inv_info->addr_info.addr &
-> ((BIT(VTD_PAGE_SHIFT + size)) - 1))) {
+I very much agree!
 
-May  need to update acoordingly if the above comment was accepted.  :-)
+>=20
+> > as was a rather bogus legacy hack
+>=20
+> It was certainly a bad idea, but it was a bad idea that went into a
+> public spec and has been widely deployed for many years.  We can't
+> just pretend it didn't happen and move on.
+>=20
+> Turning iommu_platform=3Don by default breaks old guests, some of which
+> we still care about.  We can't (automatically) do it only for guests
+> that need bounce buffering, because the hypervisor doesn't know that
+> ahead of time.
+
+Turning iommu_platform=3Don for virtio-ccw makes no sense whatsover,
+because for CCW I/O there is no such thing as IOMMU and the addresses
+are always physical addresses.
+
+>=20
+> > that isn't extensibe for cases that for example require bounce bufferin=
+g.
+>=20
+> In fact bounce buffering isn't really the issue from the hypervisor
+> (or spec's) point of view.  It's the fact that not all of guest memory
+> is accessible to the hypervisor.  Bounce buffering is just one way the
+> guest might deal with that.
+>=20
+
+Agreed.
 
 Regards,
-Yi Liu
+Halil
+
+
+
+
+--Sig_/0Kh./iiZFoeVIQkl275YsuF
+Content-Type: application/pgp-signature
+Content-Description: OpenPGP digital signature
+
+-----BEGIN PGP SIGNATURE-----
+Version: GnuPG v2.0.22 (GNU/Linux)
+
+iQIcBAEBAgAGBQJeT9X4AAoJEA0vhuyXGx0ARxMQANpU75HMoKggL5saR9hlPY+f
+8kd9nsbmTauewzRRSYganieZMbhq5H4sv5H2VARK0ySgBNe1c+odv/sbtfFcGGcp
+2eYet2eXXYLylxx0nExFUWlXigdd1ZdF6OLCzriuNQO20M3bhoA619DLYAZ9LcG9
+w0FNjbUyDaucworTmNFr/fbQ6Sx5UMr5KJ/ms/dK9gG4pzlIx58yfOYkyPNXfmof
+/BCm3hYysWjzCprWJiWoe439z1f12ZTmtNu+nsYYhFL4JSY+HOZaY/LR3IgmKsSx
+1wNvMwr5GTc+Wap23hJPd0SWEH03Szl2rbTEkhMGGzCbv44E7OFJVMt8DBKwunUD
+ojlaoDt4PtkEvDI6iQxT+C0aL7rHLSmmT1aaGjCi+GhN0pVmSqBa9v71VzcdWhQb
+jS22EkPJnMt+mdmEObiDo38AA/L8wyKt8Emvvza+Xm43+LGsAU7Dlq452PauXABA
+jlyOp7VvKBy15KUPQsLgLY9G29wQeVfRhqXI/b1fZvPZFYjbo5eTZCsHOdoXc+w9
+wrW+SYSHotrl9FCTFKXB5n4DGC+hrwaUXlX5/cEMGPhSijtYTbemx0KopMuhV4rD
+ri6Am9MOOwS/UxHve/SQw17N1RfUdGat2pQNTPiSSKw8XvpWLlK2iNw+/pz4SENC
+9TtNOE3IvOXOuA6UMeXy
+=Cagi
+-----END PGP SIGNATURE-----
+
+--Sig_/0Kh./iiZFoeVIQkl275YsuF--
+
+
+--===============3389482048955147338==
+Content-Type: text/plain; charset="us-ascii"
+MIME-Version: 1.0
+Content-Transfer-Encoding: 7bit
+Content-Disposition: inline
 
 _______________________________________________
 iommu mailing list
 iommu@lists.linux-foundation.org
 https://lists.linuxfoundation.org/mailman/listinfo/iommu
+--===============3389482048955147338==--
+
