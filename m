@@ -2,71 +2,70 @@ Return-Path: <SRS0=5edT=4J=lists.linux-foundation.org=iommu-bounces@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-0.6 required=3.0 tests=DKIM_INVALID,DKIM_SIGNED,
-	HEADER_FROM_DIFFERENT_DOMAINS,MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS,
-	URIBL_BLOCKED autolearn=no autolearn_force=no version=3.4.0
+X-Spam-Status: No, score=-3.6 required=3.0 tests=DKIM_INVALID,DKIM_SIGNED,
+	HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_PATCH,MAILING_LIST_MULTI,SPF_HELO_NONE,
+	SPF_PASS,URIBL_BLOCKED autolearn=no autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 587D9C11D24
-	for <iommu@archiver.kernel.org>; Fri, 21 Feb 2020 03:27:58 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 2B031C11D00
+	for <iommu@archiver.kernel.org>; Fri, 21 Feb 2020 03:28:00 +0000 (UTC)
 Received: from whitealder.osuosl.org (smtp1.osuosl.org [140.211.166.138])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by mail.kernel.org (Postfix) with ESMTPS id 1E9BF20716
-	for <iommu@archiver.kernel.org>; Fri, 21 Feb 2020 03:27:58 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTPS id 026A9208E4
+	for <iommu@archiver.kernel.org>; Fri, 21 Feb 2020 03:27:59 +0000 (UTC)
 Authentication-Results: mail.kernel.org;
-	dkim=fail reason="signature verification failed" (1024-bit key) header.d=gibson.dropbear.id.au header.i=@gibson.dropbear.id.au header.b="AzVjCTlM"
-DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 1E9BF20716
+	dkim=fail reason="signature verification failed" (1024-bit key) header.d=gibson.dropbear.id.au header.i=@gibson.dropbear.id.au header.b="SvbdaUav"
+DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 026A9208E4
 Authentication-Results: mail.kernel.org; dmarc=none (p=none dis=none) header.from=gibson.dropbear.id.au
 Authentication-Results: mail.kernel.org; spf=pass smtp.mailfrom=iommu-bounces@lists.linux-foundation.org
 Received: from localhost (localhost [127.0.0.1])
-	by whitealder.osuosl.org (Postfix) with ESMTP id DD9F786E1F;
-	Fri, 21 Feb 2020 03:27:57 +0000 (UTC)
+	by whitealder.osuosl.org (Postfix) with ESMTP id D759886E3F;
+	Fri, 21 Feb 2020 03:27:59 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
 Received: from whitealder.osuosl.org ([127.0.0.1])
 	by localhost (.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
-	with ESMTP id 7hy-G1zLg8az; Fri, 21 Feb 2020 03:27:55 +0000 (UTC)
+	with ESMTP id LeLKJ2MEBRMG; Fri, 21 Feb 2020 03:27:58 +0000 (UTC)
 Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [140.211.9.56])
-	by whitealder.osuosl.org (Postfix) with ESMTP id 0506286E33;
-	Fri, 21 Feb 2020 03:27:54 +0000 (UTC)
+	by whitealder.osuosl.org (Postfix) with ESMTP id 7989386E59;
+	Fri, 21 Feb 2020 03:27:55 +0000 (UTC)
 Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
-	by lists.linuxfoundation.org (Postfix) with ESMTP id EF305C1D84;
-	Fri, 21 Feb 2020 03:27:53 +0000 (UTC)
-Received: from fraxinus.osuosl.org (smtp4.osuosl.org [140.211.166.137])
- by lists.linuxfoundation.org (Postfix) with ESMTP id 75EE0C013E;
+	by lists.linuxfoundation.org (Postfix) with ESMTP id 5E24DC1D8E;
+	Fri, 21 Feb 2020 03:27:55 +0000 (UTC)
+Received: from whitealder.osuosl.org (smtp1.osuosl.org [140.211.166.138])
+ by lists.linuxfoundation.org (Postfix) with ESMTP id C39FBC013E;
  Fri, 21 Feb 2020 03:27:51 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
- by fraxinus.osuosl.org (Postfix) with ESMTP id 6034B86205;
+ by whitealder.osuosl.org (Postfix) with ESMTP id BFDD786E1A;
  Fri, 21 Feb 2020 03:27:51 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from fraxinus.osuosl.org ([127.0.0.1])
+Received: from whitealder.osuosl.org ([127.0.0.1])
  by localhost (.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
- with ESMTP id A4TRY7vXd-rh; Fri, 21 Feb 2020 03:27:50 +0000 (UTC)
+ with ESMTP id EOcV84yG-mJV; Fri, 21 Feb 2020 03:27:50 +0000 (UTC)
 X-Greylist: domain auto-whitelisted by SQLgrey-1.7.6
 X-Greylist: domain auto-whitelisted by SQLgrey-1.7.6
 Received: from ozlabs.org (bilbo.ozlabs.org [203.11.71.1])
- by fraxinus.osuosl.org (Postfix) with ESMTPS id 398F986160;
+ by whitealder.osuosl.org (Postfix) with ESMTPS id 68AED86E18;
  Fri, 21 Feb 2020 03:27:50 +0000 (UTC)
 Received: by ozlabs.org (Postfix, from userid 1007)
- id 48Nxjc3QBLz9sRk; Fri, 21 Feb 2020 14:27:48 +1100 (AEDT)
+ id 48Nxjc3tDHz9sS3; Fri, 21 Feb 2020 14:27:48 +1100 (AEDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
  d=gibson.dropbear.id.au; s=201602; t=1582255668;
- bh=y3lVtMpiI83RZRQFRmOykg/5zxHYT5D2zzjV2uwjV3s=;
+ bh=iKptlhtjkgkIsdcJEVAHVMwjI89lNKjQ7HEHAkGj37o=;
  h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
- b=AzVjCTlMyorNgEHOIaIpCqwmc5f/HP95xbBaFBc3b6BE149F7e/ZfSyTrQYJcAhWg
- UsHiPoIQtmjVabo+7H9zIstBLyAgo3Pda472sqcCTQUopX4set3xYqJ7sSrBgq2kM6
- TnKBFOgI5IOo+NmbVrJgt4SEJKsed3roEsQY9FCo=
-Date: Fri, 21 Feb 2020 14:27:27 +1100
+ b=SvbdaUavxTvf/pdBCZS/hwo/cFcJDx3AXHEPeo4dmS4LjE0QO1ICTIBLbdDUDwlSD
+ TluHdPFcvWasZDuu181i/bcrOfbjrL2e+mMAYoEn8M3ITyswpVSktDPN5OrymYv2SV
+ Pj6SH8iB+ZxgjkUtDEduBd1iw2b04kGhl6O37f+s=
+Date: Fri, 21 Feb 2020 13:59:15 +1100
 From: David Gibson <david@gibson.dropbear.id.au>
 To: Christoph Hellwig <hch@lst.de>
-Subject: Re: [PATCH 1/2] mm: move force_dma_unencrypted() to mem_encrypt.h
-Message-ID: <20200221032727.GC2298@umbus.fritz.box>
+Subject: Re: [PATCH 2/2] virtio: let virtio use DMA API when guest RAM is
+ protected
+Message-ID: <20200221025915.GB2298@umbus.fritz.box>
 References: <20200220160606.53156-1-pasic@linux.ibm.com>
- <20200220160606.53156-2-pasic@linux.ibm.com>
- <20200220161146.GA12709@lst.de>
- <4369f099-e4e4-4a58-b38b-642cf53ccca6@de.ibm.com>
- <20200220163135.GA13192@lst.de>
+ <20200220160606.53156-3-pasic@linux.ibm.com>
+ <20200220161309.GB12709@lst.de>
 MIME-Version: 1.0
-In-Reply-To: <20200220163135.GA13192@lst.de>
+In-Reply-To: <20200220161309.GB12709@lst.de>
 Cc: linux-s390@vger.kernel.org, Janosch Frank <frankja@linux.ibm.com>,
  "Michael S. Tsirkin" <mst@redhat.com>, Jason Wang <jasowang@redhat.com>,
  Cornelia Huck <cohuck@redhat.com>, Ram Pai <linuxram@us.ibm.com>,
@@ -89,64 +88,63 @@ List-Post: <mailto:iommu@lists.linux-foundation.org>
 List-Help: <mailto:iommu-request@lists.linux-foundation.org?subject=help>
 List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
  <mailto:iommu-request@lists.linux-foundation.org?subject=subscribe>
-Content-Type: multipart/mixed; boundary="===============6136605632716803571=="
+Content-Type: multipart/mixed; boundary="===============8348491285155831264=="
 Errors-To: iommu-bounces@lists.linux-foundation.org
 Sender: "iommu" <iommu-bounces@lists.linux-foundation.org>
 
 
---===============6136605632716803571==
+--===============8348491285155831264==
 Content-Type: multipart/signed; micalg=pgp-sha256;
-	protocol="application/pgp-signature"; boundary="xesSdrSSBC0PokLI"
+	protocol="application/pgp-signature"; boundary="5/uDoXvLw7AC5HRs"
 Content-Disposition: inline
 
 
---xesSdrSSBC0PokLI
+--5/uDoXvLw7AC5HRs
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
 Content-Transfer-Encoding: quoted-printable
 
-On Thu, Feb 20, 2020 at 05:31:35PM +0100, Christoph Hellwig wrote:
-> On Thu, Feb 20, 2020 at 05:23:20PM +0100, Christian Borntraeger wrote:
-> > >From a users perspective it makes absolutely perfect sense to use the
-> > bounce buffers when they are NEEDED.=20
-> > Forcing the user to specify iommu_platform just because you need bounce=
- buffers
-> > really feels wrong. And obviously we have a severe performance issue
-> > because of the indirections.
+On Thu, Feb 20, 2020 at 05:13:09PM +0100, Christoph Hellwig wrote:
+> On Thu, Feb 20, 2020 at 05:06:06PM +0100, Halil Pasic wrote:
+> > diff --git a/drivers/virtio/virtio_ring.c b/drivers/virtio/virtio_ring.c
+> > index 867c7ebd3f10..fafc8f924955 100644
+> > --- a/drivers/virtio/virtio_ring.c
+> > +++ b/drivers/virtio/virtio_ring.c
+> > @@ -243,6 +243,9 @@ static bool vring_use_dma_api(struct virtio_device =
+*vdev)
+> >  	if (!virtio_has_iommu_quirk(vdev))
+> >  		return true;
+> > =20
+> > +	if (force_dma_unencrypted(&vdev->dev))
+> > +		return true;
 >=20
-> The point is that the user should not have to specify iommu_platform.
-> We need to make sure any new hypervisor (especially one that might require
-> bounce buffering) always sets it,
+> Hell no.  This is a detail of the platform DMA direct implementation.
+> Drivers have no business looking at this flag, and virtio finally needs
+> to be fixed to use the DMA API properly for everything but legacy devices.
 
-So, I have draft qemu patches which enable iommu_platform by default.
-But that's really because of other problems with !iommu_platform, not
-anything to do with bounce buffering or secure VMs.
+So, this patch definitely isn't right as it stands, but I'm struggling
+to understand what it is you're saying is the right way.
 
-The thing is that the hypervisor *doesn't* require bounce buffering.
-In the POWER (and maybe s390 as well) models for Secure VMs, it's the
-*guest*'s choice to enter secure mode, so the hypervisor has no reason
-to know whether the guest needs bounce buffering.  As far as the
-hypervisor and qemu are concerned that's a guest internal detail, it
-just expects to get addresses it can access whether those are GPAs
-(iommu_platform=3Doff) or IOVAs (iommu_platform=3Don).
+By "legacy devices" I assume you mean pre-virtio-1.0 devices, that
+lack the F_VERSION_1 feature flag.  Is that right?  Because I don't
+see how being a legacy device or not relates to use of the DMA API.
 
-> as was a rather bogus legacy hack
+I *think* what you are suggesting here is that virtio devices that
+have !F_IOMMU_PLATFORM should have their dma_ops set up so that the
+DMA API treats IOVA=3D=3DPA, which will satisfy what the device expects.
+Then the virtio driver can use the DMA API the same way for both
+F_IOMMU_PLATFORM and !F_IOMMU_PLATFORM devices.
 
-It was certainly a bad idea, but it was a bad idea that went into a
-public spec and has been widely deployed for many years.  We can't
-just pretend it didn't happen and move on.
+But if that works for !F_IOMMU_PLATFORM_DEVICES+F_VERSION_1 devices,
+then AFAICT it will work equally well for legacy devices.
 
-Turning iommu_platform=3Don by default breaks old guests, some of which
-we still care about.  We can't (automatically) do it only for guests
-that need bounce buffering, because the hypervisor doesn't know that
-ahead of time.
-
-> that isn't extensibe for cases that for example require bounce buffering.
-
-In fact bounce buffering isn't really the issue from the hypervisor
-(or spec's) point of view.  It's the fact that not all of guest memory
-is accessible to the hypervisor.  Bounce buffering is just one way the
-guest might deal with that.
+Using the DMA API for *everything* in virtio, legacy or not, seems
+like a reasonable approach to me.  But, AFAICT, that does require the
+DMA layer to have some kind of explicit call to turn on this
+behaviour, which the virtio driver would call during initializsation.
+I don't think we can do it 100% within the DMA layer, because only the
+driver can reasonably know when a device has this weird non-standard
+DMA behaviour.
 
 --=20
 David Gibson			| I'll have my music baroque, and my code
@@ -154,29 +152,29 @@ david AT gibson.dropbear.id.au	| minimalist, thank you.  NOT _the_ _other_
 				| _way_ _around_!
 http://www.ozlabs.org/~dgibson
 
---xesSdrSSBC0PokLI
+--5/uDoXvLw7AC5HRs
 Content-Type: application/pgp-signature; name="signature.asc"
 
 -----BEGIN PGP SIGNATURE-----
 
-iQIzBAEBCAAdFiEEdfRlhq5hpmzETofcbDjKyiDZs5IFAl5PTh0ACgkQbDjKyiDZ
-s5KxuA/8Dp0u3ClHJcvgYS9sPsWYf3cIiL0ssD718l7m06uHYCC8BZhGbCeMhbfK
-jDV3bIOPMI6f+L4KTSrPkH71KAYKLKbt52Si354kI/7xkDmCu3B8SmL/u+ptC0Y/
-UYD0ZFkgyOLQaOS/jN5zMae3337n6qPRZuOP12epFWZ9QpP4v55Dba2ICuJXkbU1
-5QaQIcCLwSBcEYxZOuLqc7s7tWfOt/NeNmvgMnCGJie035XlK0c8q2v7XqRnH8ec
-5tej0mQvwOyKgZkYhr35Q/4t2V0LxPDvD+8W636WdH0O9h6wjeMeKlVoq8IpgMyz
-NkYNX7yaPfnkh3fvqWa7NMmmi32Rt9/85Kk/3I4YD1KCMSzv7AGJ1TBnUMumisYJ
-F2rB+Q07oGi/r/UNg2VSUE2S4rGgq1k9hD2Xb0yE+3+l1TvowJ+2ly30W1TSo5Hu
-LZZ/XX0uzsCnrlw4aqzyh4+u4++QcgnlwvDgdfadNXVd3gQdPEoxAP+vV6FhTinx
-29Dus3s83/aCpkNeU63NfDWXSIOPTUspWC8Ny1qGE1Vt0Dfie5K+6j7iZdYX0HZT
-duIb419GYkR2DBTS0vS6jFh9QFN+jThVs4qc4uRqR6ibwocNlXSdxt+jT7QNkaqO
-8HtGwkfqQZCCm4Z0uNnoFv4NY9kLB21wa/z0xOVmDJZtVD8Jgto=
-=NO4r
+iQIzBAEBCAAdFiEEdfRlhq5hpmzETofcbDjKyiDZs5IFAl5PR4EACgkQbDjKyiDZ
+s5LraA/+KQYlg3wZ+0krCgI0rnOA1c4Rh7dkchkUxj0XPpjfegrcik9vB4AEk1uV
+NViHfw9TklofjnE59FOo9Rexy90uk2aepCPMiba2Aidm0X+E9OMWIZ75l+9IyNod
+fnTLSUCP45wGHQUcjIE1iL3TNJrTZ+F0bQkuu1rwZhtBHx+mKYmS005cUmOuiYQi
++gZAl8VlR/Ar3QktvDq1ChJai/rB22k+AWL9eL6fgpFGZv/E13hM25tKU61acUZh
+WbtOBNEDoDs792CWCbIs9gqoeq1Whd555JS3nbAlDqNykTUMrfqDbbX/FdJlciPu
+b1TlYEWQLmJDCv8xdPNj8Iep747a3Pc8pDhe7cALeEGvR8dEgbXE7+cx6l5rX6FW
+glvHUQbw8/iD2tRbMLEfk1z/uyL7Gzugk7P6Xfeg+fNcGoL6ADR3DFCBUn1eD0Bf
+EHyBM/WOmi1kn9p52fC3waAPg5BqftyrxFdGd2dI7mUjLvGeT/gxPnqfdaEDbdku
+nlBw4/tcIdlesiIAiI+bCe4bX111KgcJvqVSjaRiS1YqFumJ1aySBzXpAfjqWW/p
+2MU+m6v1xqCEDc7UY+aFtHrRw+CsByowyIFYfNcfSgDMvB9uFkvme4opmrdyAe+g
+G/3fLNvewrGHvqTITJtkyQGQnyJEmHbcQMnWbSdQyqbQU+qO8tg=
+=dMlk
 -----END PGP SIGNATURE-----
 
---xesSdrSSBC0PokLI--
+--5/uDoXvLw7AC5HRs--
 
---===============6136605632716803571==
+--===============8348491285155831264==
 Content-Type: text/plain; charset="us-ascii"
 MIME-Version: 1.0
 Content-Transfer-Encoding: 7bit
@@ -186,4 +184,4 @@ _______________________________________________
 iommu mailing list
 iommu@lists.linux-foundation.org
 https://lists.linuxfoundation.org/mailman/listinfo/iommu
---===============6136605632716803571==--
+--===============8348491285155831264==--
