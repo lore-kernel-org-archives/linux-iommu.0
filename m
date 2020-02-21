@@ -2,77 +2,118 @@ Return-Path: <SRS0=5edT=4J=lists.linux-foundation.org=iommu-bounces@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-5.3 required=3.0 tests=HEADER_FROM_DIFFERENT_DOMAINS,
-	MAILING_LIST_MULTI,SIGNED_OFF_BY,SPF_HELO_NONE,SPF_PASS,USER_AGENT_SANE_1
-	autolearn=ham autolearn_force=no version=3.4.0
+X-Spam-Status: No, score=-2.3 required=3.0 tests=HEADER_FROM_DIFFERENT_DOMAINS,
+	MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED,USER_AGENT_SANE_2
+	autolearn=no autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id B7884C35657
-	for <iommu@archiver.kernel.org>; Fri, 21 Feb 2020 17:19:38 +0000 (UTC)
-Received: from fraxinus.osuosl.org (smtp4.osuosl.org [140.211.166.137])
+	by smtp.lore.kernel.org (Postfix) with ESMTP id F0380C3565A
+	for <iommu@archiver.kernel.org>; Fri, 21 Feb 2020 18:03:50 +0000 (UTC)
+Received: from whitealder.osuosl.org (smtp1.osuosl.org [140.211.166.138])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by mail.kernel.org (Postfix) with ESMTPS id 80AB224650
-	for <iommu@archiver.kernel.org>; Fri, 21 Feb 2020 17:19:38 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 80AB224650
-Authentication-Results: mail.kernel.org; dmarc=none (p=none dis=none) header.from=arm.com
+	by mail.kernel.org (Postfix) with ESMTPS id C5C8220722
+	for <iommu@archiver.kernel.org>; Fri, 21 Feb 2020 18:03:50 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org C5C8220722
+Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=linux.ibm.com
 Authentication-Results: mail.kernel.org; spf=pass smtp.mailfrom=iommu-bounces@lists.linux-foundation.org
 Received: from localhost (localhost [127.0.0.1])
-	by fraxinus.osuosl.org (Postfix) with ESMTP id 4872C8440A;
-	Fri, 21 Feb 2020 17:19:38 +0000 (UTC)
+	by whitealder.osuosl.org (Postfix) with ESMTP id 7B68587647;
+	Fri, 21 Feb 2020 18:03:50 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from fraxinus.osuosl.org ([127.0.0.1])
+Received: from whitealder.osuosl.org ([127.0.0.1])
 	by localhost (.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
-	with ESMTP id 2V6OSrmL85MW; Fri, 21 Feb 2020 17:19:37 +0000 (UTC)
+	with ESMTP id iD8FSVOtvo5z; Fri, 21 Feb 2020 18:03:49 +0000 (UTC)
 Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [140.211.9.56])
-	by fraxinus.osuosl.org (Postfix) with ESMTP id 96CFA834A3;
-	Fri, 21 Feb 2020 17:19:37 +0000 (UTC)
+	by whitealder.osuosl.org (Postfix) with ESMTP id EDE3D87605;
+	Fri, 21 Feb 2020 18:03:48 +0000 (UTC)
 Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
-	by lists.linuxfoundation.org (Postfix) with ESMTP id 7F4C8C1D81;
-	Fri, 21 Feb 2020 17:19:37 +0000 (UTC)
-Received: from fraxinus.osuosl.org (smtp4.osuosl.org [140.211.166.137])
- by lists.linuxfoundation.org (Postfix) with ESMTP id 6351BC013E
- for <iommu@lists.linux-foundation.org>; Fri, 21 Feb 2020 17:19:36 +0000 (UTC)
+	by lists.linuxfoundation.org (Postfix) with ESMTP id C219CC1D81;
+	Fri, 21 Feb 2020 18:03:48 +0000 (UTC)
+Received: from whitealder.osuosl.org (smtp1.osuosl.org [140.211.166.138])
+ by lists.linuxfoundation.org (Postfix) with ESMTP id BAA9BC013E
+ for <iommu@lists.linux-foundation.org>; Fri, 21 Feb 2020 18:03:46 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
- by fraxinus.osuosl.org (Postfix) with ESMTP id 529958440A
- for <iommu@lists.linux-foundation.org>; Fri, 21 Feb 2020 17:19:36 +0000 (UTC)
+ by whitealder.osuosl.org (Postfix) with ESMTP id A85FC87645
+ for <iommu@lists.linux-foundation.org>; Fri, 21 Feb 2020 18:03:46 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from fraxinus.osuosl.org ([127.0.0.1])
+Received: from whitealder.osuosl.org ([127.0.0.1])
  by localhost (.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
- with ESMTP id zDZAfgcTlf-r for <iommu@lists.linux-foundation.org>;
- Fri, 21 Feb 2020 17:19:35 +0000 (UTC)
-X-Greylist: domain auto-whitelisted by SQLgrey-1.7.6
-Received: from foss.arm.com (foss.arm.com [217.140.110.172])
- by fraxinus.osuosl.org (Postfix) with ESMTP id 3F324834A3
- for <iommu@lists.linux-foundation.org>; Fri, 21 Feb 2020 17:19:35 +0000 (UTC)
-Received: from usa-sjc-imap-foss1.foss.arm.com (unknown [10.121.207.14])
- by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id 6756B30E;
- Fri, 21 Feb 2020 09:19:34 -0800 (PST)
-Received: from [10.1.196.37] (e121345-lin.cambridge.arm.com [10.1.196.37])
- by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPSA id 4E1253F68F;
- Fri, 21 Feb 2020 09:19:33 -0800 (PST)
-Subject: Re: [PATCH v2] iommu/arm-smmu-v3: Add SMMUv3.2 range invalidation
- support
-To: Rob Herring <robh@kernel.org>
-References: <20200117211628.27888-1-robh@kernel.org>
- <2d04f201-3457-08ad-db8e-735f8315d74e@redhat.com>
- <7ac3f864-6c39-76e9-ee4a-21be03abc044@arm.com>
- <CAL_JsqJRSD-7U8UH1tevBdD2P6qPWzApQLpXU-SVBmZ8=Yiy0A@mail.gmail.com>
- <d49b62f2-74f4-c3e0-ad97-a4fedd169b27@arm.com>
- <CAL_JsqKY1_WmwLOKySwBasyZ5Kb=Rx-Y6m8bDppRKVxzoY58xg@mail.gmail.com>
- <49847ca9-3ee8-4c08-a772-a93f10aa817f@arm.com>
- <CAL_JsqJam8qO-XAfQTXNZ0y_gLdOx0LAX28XnKjXd2yh7y3_Uw@mail.gmail.com>
-From: Robin Murphy <robin.murphy@arm.com>
-Message-ID: <67635b64-5db4-8425-e513-62d96a359906@arm.com>
-Date: Fri, 21 Feb 2020 17:19:31 +0000
-User-Agent: Mozilla/5.0 (X11; Linux aarch64; rv:60.0) Gecko/20100101
- Thunderbird/60.9.0
+ with ESMTP id eJUD4mWbGwjr for <iommu@lists.linux-foundation.org>;
+ Fri, 21 Feb 2020 18:03:45 +0000 (UTC)
+X-Greylist: from auto-whitelisted by SQLgrey-1.7.6
+Received: from mx0a-001b2d01.pphosted.com (mx0b-001b2d01.pphosted.com
+ [148.163.158.5])
+ by whitealder.osuosl.org (Postfix) with ESMTPS id BD248875AE
+ for <iommu@lists.linux-foundation.org>; Fri, 21 Feb 2020 18:03:45 +0000 (UTC)
+Received: from pps.filterd (m0098416.ppops.net [127.0.0.1])
+ by mx0b-001b2d01.pphosted.com (8.16.0.42/8.16.0.42) with SMTP id
+ 01LHxAYB143042
+ for <iommu@lists.linux-foundation.org>; Fri, 21 Feb 2020 13:03:44 -0500
+Received: from e06smtp04.uk.ibm.com (e06smtp04.uk.ibm.com [195.75.94.100])
+ by mx0b-001b2d01.pphosted.com with ESMTP id 2y8ubybse0-1
+ (version=TLSv1.2 cipher=AES256-GCM-SHA384 bits=256 verify=NOT)
+ for <iommu@lists.linux-foundation.org>; Fri, 21 Feb 2020 13:03:44 -0500
+Received: from localhost
+ by e06smtp04.uk.ibm.com with IBM ESMTP SMTP Gateway: Authorized Use Only!
+ Violators will be prosecuted
+ for <iommu@lists.linux-foundation.org> from <pasic@linux.ibm.com>;
+ Fri, 21 Feb 2020 18:03:42 -0000
+Received: from b06avi18626390.portsmouth.uk.ibm.com (9.149.26.192)
+ by e06smtp04.uk.ibm.com (192.168.101.134) with IBM ESMTP SMTP Gateway:
+ Authorized Use Only! Violators will be prosecuted; 
+ (version=TLSv1/SSLv3 cipher=AES256-GCM-SHA384 bits=256/256)
+ Fri, 21 Feb 2020 18:03:38 -0000
+Received: from d06av24.portsmouth.uk.ibm.com (mk.ibm.com [9.149.105.60])
+ by b06avi18626390.portsmouth.uk.ibm.com (8.14.9/8.14.9/NCO v10.0) with ESMTP
+ id 01LI2ePe18219486
+ (version=TLSv1/SSLv3 cipher=DHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
+ Fri, 21 Feb 2020 18:02:40 GMT
+Received: from d06av24.portsmouth.uk.ibm.com (unknown [127.0.0.1])
+ by IMSVA (Postfix) with ESMTP id A619F42042;
+ Fri, 21 Feb 2020 18:03:36 +0000 (GMT)
+Received: from d06av24.portsmouth.uk.ibm.com (unknown [127.0.0.1])
+ by IMSVA (Postfix) with ESMTP id 2DC004203F;
+ Fri, 21 Feb 2020 18:03:36 +0000 (GMT)
+Received: from oc2783563651 (unknown [9.152.224.149])
+ by d06av24.portsmouth.uk.ibm.com (Postfix) with ESMTP;
+ Fri, 21 Feb 2020 18:03:36 +0000 (GMT)
+Date: Fri, 21 Feb 2020 19:03:34 +0100
+From: Halil Pasic <pasic@linux.ibm.com>
+To: "Michael S. Tsirkin" <mst@redhat.com>
+Subject: Re: [PATCH 2/2] virtio: let virtio use DMA API when guest RAM is
+ protected
+In-Reply-To: <20200221104901-mutt-send-email-mst@kernel.org>
+References: <20200220160606.53156-1-pasic@linux.ibm.com>
+ <20200220160606.53156-3-pasic@linux.ibm.com>
+ <20200220154904-mutt-send-email-mst@kernel.org>
+ <20200221141230.13eebc35.pasic@linux.ibm.com>
+ <20200221104901-mutt-send-email-mst@kernel.org>
+Organization: IBM
+X-Mailer: Claws Mail 3.11.1 (GTK+ 2.24.31; x86_64-redhat-linux-gnu)
 MIME-Version: 1.0
-In-Reply-To: <CAL_JsqJam8qO-XAfQTXNZ0y_gLdOx0LAX28XnKjXd2yh7y3_Uw@mail.gmail.com>
-Content-Language: en-GB
-Cc: Jean-Philippe Brucker <jean-philippe@linaro.org>,
- Linux IOMMU <iommu@lists.linux-foundation.org>, Will Deacon <will@kernel.org>,
- "moderated list:ARM/FREESCALE IMX / MXC ARM ARCHITECTURE"
- <linux-arm-kernel@lists.infradead.org>
+X-TM-AS-GCONF: 00
+x-cbid: 20022118-0016-0000-0000-000002E91112
+X-IBM-AV-DETECTION: SAVI=unused REMOTE=unused XFE=unused
+x-cbparentid: 20022118-0017-0000-0000-0000334C3285
+Message-Id: <20200221190334.3b03d296.pasic@linux.ibm.com>
+X-Proofpoint-Virus-Version: vendor=fsecure engine=2.50.10434:6.0.138, 18.0.572
+ definitions=2020-02-21_06:2020-02-21,
+ 2020-02-21 signatures=0
+X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0
+ mlxscore=0 bulkscore=0
+ lowpriorityscore=0 spamscore=0 suspectscore=0 mlxlogscore=999
+ clxscore=1015 malwarescore=0 adultscore=0 impostorscore=0 phishscore=0
+ priorityscore=1501 classifier=spam adjust=0 reason=mlx scancount=1
+ engine=8.12.0-2001150001 definitions=main-2002210137
+Cc: linux-s390@vger.kernel.org, Janosch Frank <frankja@linux.ibm.com>,
+ "Lendacky, Thomas" <Thomas.Lendacky@amd.com>, Jason Wang <jasowang@redhat.com>,
+ Cornelia Huck <cohuck@redhat.com>, Ram Pai <linuxram@us.ibm.com>,
+ linux-kernel@vger.kernel.org, virtualization@lists.linux-foundation.org,
+ Christian Borntraeger <borntraeger@de.ibm.com>,
+ iommu@lists.linux-foundation.org, David Gibson <david@gibson.dropbear.id.au>,
+ Michael Mueller <mimu@linux.ibm.com>,
+ Viktor Mihajlovski <mihajlov@linux.ibm.com>,
+ Robin Murphy <robin.murphy@arm.com>, Christoph Hellwig <hch@lst.de>
 X-BeenThere: iommu@lists.linux-foundation.org
 X-Mailman-Version: 2.1.15
 Precedence: list
@@ -85,114 +126,122 @@ List-Post: <mailto:iommu@lists.linux-foundation.org>
 List-Help: <mailto:iommu-request@lists.linux-foundation.org?subject=help>
 List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
  <mailto:iommu-request@lists.linux-foundation.org?subject=subscribe>
+Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
-Content-Type: text/plain; charset="us-ascii"; Format="flowed"
 Errors-To: iommu-bounces@lists.linux-foundation.org
 Sender: "iommu" <iommu-bounces@lists.linux-foundation.org>
 
-On 21/02/2020 4:47 pm, Rob Herring wrote:
-> On Fri, Feb 21, 2020 at 10:19 AM Robin Murphy <robin.murphy@arm.com> wrote:
->>
->> On 20/02/2020 5:54 pm, Rob Herring wrote:
->>> On Mon, Feb 17, 2020 at 1:17 PM Robin Murphy <robin.murphy@arm.com> wrote:
->>>>
->>>> On 13/02/2020 9:49 pm, Rob Herring wrote:
->>>>> On Thu, Jan 30, 2020 at 11:34 AM Robin Murphy <robin.murphy@arm.com> wrote:
->>>>>>
->>>>>> On 30/01/2020 3:06 pm, Auger Eric wrote:
->>>>>>> Hi Rob,
->>>>>>> On 1/17/20 10:16 PM, Rob Herring wrote:
->>>>>>>> Arm SMMUv3.2 adds support for TLB range invalidate operations.
->>>>>>>> Support for range invalidate is determined by the RIL bit in the IDR3
->>>>>>>> register.
->>>>>>>>
->>>>>>>> The range invalidate is in units of the leaf page size and operates on
->>>>>>>> 1-32 chunks of a power of 2 multiple pages. First, we determine from the
->>>>>>>> size what power of 2 multiple we can use. Then we calculate how many
->>>>>>>> chunks (1-31) of the power of 2 size for the range on the iteration. On
->>>>>>>> each iteration, we move up in size by at least 5 bits.
->>>>>>>>
->>>>>>>> Cc: Eric Auger <eric.auger@redhat.com>
->>>>>>>> Cc: Jean-Philippe Brucker <jean-philippe@linaro.org>
->>>>>>>> Cc: Will Deacon <will@kernel.org>
->>>>>>>> Cc: Robin Murphy <robin.murphy@arm.com>
->>>>>>>> Cc: Joerg Roedel <joro@8bytes.org>
->>>>>>>> Signed-off-by: Rob Herring <robh@kernel.org>
->>>>>
->>>>>
->>>>>>>> @@ -2003,7 +2024,7 @@ static void arm_smmu_tlb_inv_range(unsigned long iova, size_t size,
->>>>>>>>      {
->>>>>>>>         u64 cmds[CMDQ_BATCH_ENTRIES * CMDQ_ENT_DWORDS];
->>>>>>>>         struct arm_smmu_device *smmu = smmu_domain->smmu;
->>>>>>>> -    unsigned long start = iova, end = iova + size;
->>>>>>>> +    unsigned long start = iova, end = iova + size, num_pages = 0, tg = 0;
->>>>>>>>         int i = 0;
->>>>>>>>         struct arm_smmu_cmdq_ent cmd = {
->>>>>>>>                 .tlbi = {
->>>>>>>> @@ -2022,12 +2043,50 @@ static void arm_smmu_tlb_inv_range(unsigned long iova, size_t size,
->>>>>>>>                 cmd.tlbi.vmid   = smmu_domain->s2_cfg.vmid;
->>>>>>>>         }
->>>>>>>>
->>>>>>>> +    if (smmu->features & ARM_SMMU_FEAT_RANGE_INV) {
->>>>>>>> +            /* Get the leaf page size */
->>>>>>>> +            tg = __ffs(smmu_domain->domain.pgsize_bitmap);
->>>>>>>> +
->>>>>>>> +            /* Convert page size of 12,14,16 (log2) to 1,2,3 */
->>>>>>>> +            cmd.tlbi.tg = ((tg - ilog2(SZ_4K)) / 2) + 1;
->>>>>>
->>>>>> Given the comment, I think "(tg - 10) / 2" would suffice ;)
->>>>>
->>>>> Well, duh...
->>>>>
->>>>>>
->>>>>>>> +
->>>>>>>> +            /* Determine what level the granule is at */
->>>>>>>> +            cmd.tlbi.ttl = 4 - ((ilog2(granule) - 3) / (tg - 3));
->>>>>>
->>>>>> Is it possible to rephrase that with logs and shifts to avoid the division?
->>>>>
->>>>> Well, with a loop is the only other way I came up with:
->>>>>
->>>>> bpl = tg - 3;
->>>>> ttl = 3;
->>>>> mask = BIT(bpl) - 1;
->>>>> while ((granule & (mask << ((4 - ttl) * bpl + 3))) == 0)
->>>>>        ttl--;
->>>>>
->>>>> Doesn't seem like much improvement to me given we have h/w divide...
->>>>
->>>> Sure, it doesn't take too many extra instructions to start matching
->>>> typical IDIV latency, so there's no point being silly if there really
->>>> isn't a clean alternative.
->>>>
->>>> Some quick scribbling suggests "4 - ilog2(granule) / 10" might actually
->>>> be close enough, but perhaps that's a bit too cheeky.
->>>
->>> How does divide by 10 save a divide?
->>
->> Well, by that point I was more just thinking about the smallest
->> expression, since *some* division seems unavoidable. Although GCC does
->> apparently still think that transforming constant division is a win ;)
+On Fri, 21 Feb 2020 10:56:45 -0500
+"Michael S. Tsirkin" <mst@redhat.com> wrote:
+
+> On Fri, Feb 21, 2020 at 02:12:30PM +0100, Halil Pasic wrote:
+> > On Thu, 20 Feb 2020 15:55:14 -0500
+> > "Michael S. Tsirkin" <mst@redhat.com> wrote:
+[..]
+> > > To summarize, the necessary conditions for a hack along these lines
+> > > (using DMA API without VIRTIO_F_ACCESS_PLATFORM) are that we detect that:
+> > > 
+> > >   - secure guest mode is enabled - so we know that since we don't share
+> > >     most memory regular virtio code won't
+> > >     work, even though the buggy hypervisor didn't set VIRTIO_F_ACCESS_PLATFORM
+> > 
+> > force_dma_unencrypted(&vdev->dev) is IMHO exactly about this.
+> > 
+> > >   - DMA API is giving us addresses that are actually also physical
+> > >     addresses
+> > 
+> > In case of s390 this is given.
+> > I talked with the power people before
+> > posting this, and they ensured me they can are willing to deal with
+> > this. I was hoping to talk abut this with the AMD SEV people here (hence
+> > the cc).
 > 
-> Okay. Still, divide by 10 happens to work, but it is very much not
-> obvious. It also doesn't work for level 1 and 16 or 64KB pages (though
-
-(FWIW the more subtle part of the trick is that 16K doesn't allow level 
-1 blocks, and even in the vanishingly unlikely 64K level 1 case TTL=0 
-isn't "wrong")
-
-> we'll never see that granule). Subtracting 3 is not that obvious
-> either, but is at least in the spec for calculating the bits per
-> level.
+> We'd need a part of DMA API that promises this though. Platform
+> maintainers aren't going to go out of their way to do the
+> right thing just for virtio, and I can't track all arches
+> to make sure they don't violate virtio requirements.
 > 
-> I think we've spent enough time micro-optimizing this and have better
-> things to worry about.
 
-Agreed! Invalidation performance has just been the bogeyman for so long 
-that it's an area to which I've become overly sensitive.
+One would have to track only the arches that have
+force_dma_unecrypted(), and generally speaking the arches shall make
+sure the DMA ops are suitable, whatever that means in the given context.
 
-Cheers,
-Robin.
+> > 
+> > >   - Hypervisor is buggy and didn't enable VIRTIO_F_ACCESS_PLATFORM
+> > > 
+> > 
+> > I don't get this point. The argument where the hypervisor is buggy is a
+> > bit hard to follow for me. If hypervisor is buggy we have already lost
+> > anyway most of the time, or?
+> 
+> If VIRTIO_F_ACCESS_PLATFORM is set then things just work.  If
+> VIRTIO_F_ACCESS_PLATFORM is clear device is supposed to have access to
+> all of memory.  You can argue in various ways but it's easier to just
+> declare a behaviour that violates this a bug. Which might still be worth
+> working around, for various reasons.
+> 
+
+
+I don't agree. The spec explicitly states "If this feature bit is set
+to 0, then the device has same access to memory addresses supplied to it
+as the driver has." That ain't any guest memory, but the addresses
+supplied to it. BTW this is how channel I/O works as well: the channel
+program authorizes the device to use the memory locations specified by
+the channel program, for as long as the channel program is executed.
+That's how channel I/O does isolation without an architected IOMMU.
+
+Can you please show me the words in the specification that say, the
+device has to have access to the entire guest memory all the time?
+
+Maybe I have to understand all the intentions behind
+VIRTIO_F_ACCESS_PLATFORM better. I've read the spec several times, but I
+still have the feeling, when we discuss, that I didn't get it right.
+IOMMUs and PCI style DMA are unfortunately not my bread and butter.
+
+I only know that the devices do not need any new device capability (I
+assume VIRTIO_F_ACCESS_PLATFORM does express a device capability), to
+work with protected virtualization. Unless one defines
+VIRTIO_F_ACCESS_PLATFORM is the capability that the device won't poke
+*arbitrary* guest memory.  From that perspective mandating the flag
+feels wrong. (CCW devices are never allowed to poke arbitrary
+memory.)
+
+Yet, if VIRTIO_F_ACCESS_PLATFORM is a flag that every nice and modern
+virtio device should have (i.e. a lack of it means kida broken), then I
+have the feeling virtio-ccw should probably evolve in the direction, that
+having VIRTIO_F_ACCESS_PLATFORM set does not hurt.
+
+I have to think some more.
+
+> 
+> > > I don't see how this patch does this.
+> > 
+> > I do get your point. I don't know of a good way to check that DMA API
+> > is giving us addresses that are actually physical addresses, and the
+> > situation you describe definitely has some risk to it.
+> 
+> One way would be to extend the DMA API with such an API.
+
+Seems Christoph does not like that idea.
+
+> 
+> Another would be to make virtio always use DMA API
+> and hide the logic in there.
+
+I thought Christoph wants that, but I was wrong.
+
+> This second approach is not easy, in particular since DMA API adds
+> a bunch of overhead which we need to find ways to
+> measure and mitigate.
+> 
+
+Agreed. From s390 perspective, I think it ain't to bad if we get GFP_DMA.
+
+Many thanks for your patience!
+Halil
+
+[..]
+
 _______________________________________________
 iommu mailing list
 iommu@lists.linux-foundation.org
