@@ -2,113 +2,73 @@ Return-Path: <SRS0=f0z+=4K=lists.linux-foundation.org=iommu-bounces@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-0.6 required=3.0 tests=DKIM_INVALID,DKIM_SIGNED,
-	HEADER_FROM_DIFFERENT_DOMAINS,MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS
-	autolearn=no autolearn_force=no version=3.4.0
+X-Spam-Status: No, score=-8.3 required=3.0 tests=HEADER_FROM_DIFFERENT_DOMAINS,
+	INCLUDES_PATCH,MAILING_LIST_MULTI,SIGNED_OFF_BY,SPF_HELO_NONE,SPF_PASS,
+	USER_AGENT_SANE_1 autolearn=ham autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 39BA2C35671
-	for <iommu@archiver.kernel.org>; Sat, 22 Feb 2020 19:08:13 +0000 (UTC)
-Received: from fraxinus.osuosl.org (smtp4.osuosl.org [140.211.166.137])
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 1EC12C35669
+	for <iommu@archiver.kernel.org>; Sat, 22 Feb 2020 23:37:17 +0000 (UTC)
+Received: from hemlock.osuosl.org (smtp2.osuosl.org [140.211.166.133])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by mail.kernel.org (Postfix) with ESMTPS id 082E6206E2
-	for <iommu@archiver.kernel.org>; Sat, 22 Feb 2020 19:08:12 +0000 (UTC)
-Authentication-Results: mail.kernel.org;
-	dkim=fail reason="signature verification failed" (1024-bit key) header.d=redhat.com header.i=@redhat.com header.b="NWNXQdKf"
-DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 082E6206E2
-Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=redhat.com
+	by mail.kernel.org (Postfix) with ESMTPS id D3914206EF
+	for <iommu@archiver.kernel.org>; Sat, 22 Feb 2020 23:37:16 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org D3914206EF
+Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=linux.intel.com
 Authentication-Results: mail.kernel.org; spf=pass smtp.mailfrom=iommu-bounces@lists.linux-foundation.org
 Received: from localhost (localhost [127.0.0.1])
-	by fraxinus.osuosl.org (Postfix) with ESMTP id 47180855B5;
-	Sat, 22 Feb 2020 19:08:12 +0000 (UTC)
-X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from fraxinus.osuosl.org ([127.0.0.1])
-	by localhost (.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
-	with ESMTP id va9JkoOOfH1m; Sat, 22 Feb 2020 19:08:10 +0000 (UTC)
-Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [140.211.9.56])
-	by fraxinus.osuosl.org (Postfix) with ESMTP id 63EF9855D1;
-	Sat, 22 Feb 2020 19:08:10 +0000 (UTC)
-Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
-	by lists.linuxfoundation.org (Postfix) with ESMTP id 39A02C1D81;
-	Sat, 22 Feb 2020 19:08:10 +0000 (UTC)
-Received: from hemlock.osuosl.org (smtp2.osuosl.org [140.211.166.133])
- by lists.linuxfoundation.org (Postfix) with ESMTP id 8CEA1C013E
- for <iommu@lists.linux-foundation.org>; Sat, 22 Feb 2020 19:08:08 +0000 (UTC)
-Received: from localhost (localhost [127.0.0.1])
- by hemlock.osuosl.org (Postfix) with ESMTP id 68DA987A04
- for <iommu@lists.linux-foundation.org>; Sat, 22 Feb 2020 19:08:08 +0000 (UTC)
+	by hemlock.osuosl.org (Postfix) with ESMTP id BFB9887143;
+	Sat, 22 Feb 2020 23:37:16 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
 Received: from hemlock.osuosl.org ([127.0.0.1])
+	by localhost (.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
+	with ESMTP id ukfcCSQvuE3m; Sat, 22 Feb 2020 23:37:15 +0000 (UTC)
+Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [140.211.9.56])
+	by hemlock.osuosl.org (Postfix) with ESMTP id 4756B87111;
+	Sat, 22 Feb 2020 23:37:15 +0000 (UTC)
+Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
+	by lists.linuxfoundation.org (Postfix) with ESMTP id 2B735C1AE2;
+	Sat, 22 Feb 2020 23:37:15 +0000 (UTC)
+Received: from silver.osuosl.org (smtp3.osuosl.org [140.211.166.136])
+ by lists.linuxfoundation.org (Postfix) with ESMTP id E78C1C013E
+ for <iommu@lists.linux-foundation.org>; Sat, 22 Feb 2020 23:37:12 +0000 (UTC)
+Received: from localhost (localhost [127.0.0.1])
+ by silver.osuosl.org (Postfix) with ESMTP id D046720439
+ for <iommu@lists.linux-foundation.org>; Sat, 22 Feb 2020 23:37:12 +0000 (UTC)
+X-Virus-Scanned: amavisd-new at osuosl.org
+Received: from silver.osuosl.org ([127.0.0.1])
  by localhost (.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
- with ESMTP id XxHvFHJ5b7dA for <iommu@lists.linux-foundation.org>;
- Sat, 22 Feb 2020 19:08:07 +0000 (UTC)
+ with ESMTP id O+Gi040BmPlt for <iommu@lists.linux-foundation.org>;
+ Sat, 22 Feb 2020 23:37:11 +0000 (UTC)
 X-Greylist: domain auto-whitelisted by SQLgrey-1.7.6
-Received: from us-smtp-delivery-1.mimecast.com (us-smtp-1.mimecast.com
- [207.211.31.81])
- by hemlock.osuosl.org (Postfix) with ESMTPS id A1589879F0
- for <iommu@lists.linux-foundation.org>; Sat, 22 Feb 2020 19:08:07 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
- s=mimecast20190719; t=1582398486;
- h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
- to:to:cc:cc:mime-version:mime-version:content-type:content-type:
- in-reply-to:in-reply-to:references:references;
- bh=l8Co0LvRp3ramNpVW3gFF8vKkokm29L15IzKuQ8ukBs=;
- b=NWNXQdKf1K6da2Ths6s9CB6Gl17KaDXkUmxkV2O267owuNKaZUsJJkzrO/lZ55mM2l3Vk6
- 1xj1df9UwhaME0hohDSIstB0M51dPph7KLFoeomGJ63roJQ8GN4slBRitfWzbfyyCGxwEX
- bL7ZxxDUOYjecDlj/Rnl9GoR3MDZl3E=
-Received: from mail-wm1-f72.google.com (mail-wm1-f72.google.com
- [209.85.128.72]) (Using TLS) by relay.mimecast.com with ESMTP id
- us-mta-475-M-zIRpuQM7SEwSIK2Der1w-1; Sat, 22 Feb 2020 14:08:04 -0500
-X-MC-Unique: M-zIRpuQM7SEwSIK2Der1w-1
-Received: by mail-wm1-f72.google.com with SMTP id 7so1593222wmf.9
- for <iommu@lists.linux-foundation.org>; Sat, 22 Feb 2020 11:08:04 -0800 (PST)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
- d=1e100.net; s=20161025;
- h=x-gm-message-state:date:from:to:cc:subject:message-id:references
- :mime-version:content-disposition:in-reply-to;
- bh=l8Co0LvRp3ramNpVW3gFF8vKkokm29L15IzKuQ8ukBs=;
- b=MgFjtTh5O9mcMPXduOMKjcMcpzN0AYfxA4MPhGZPMsqBypSGK0Bodcld2/QsxHPXjK
- R9N2zDEk+f/PTKb8/ZwZhwykh2P4mRRvRRwpXj9XiEFLHoaHGs6cq+83YlK8O6u2kU1z
- a0x72PbzaaPFVrRQANP5uvMTT0kFp02kZKR3yz+LGrVfqDFNQmjR//whMnKPPLZ8nlVf
- Dlf5Ik+QtzhhhdQfm619/sVJ9/F6qopycixqfUtENkphrCybBlNPVN65jpQ6eq/wvn1n
- VZBZJys32S8KgGXRsZ6DQtodoVMMQJdw1vrJWGGhDyGckEVLdsi9Y0xDsL7LwIHiW1IO
- Qk7A==
-X-Gm-Message-State: APjAAAXoaN7ToR+s2EepRy+l/E9SDUzZjGq855M/m3AMh2NyTLasbQ3z
- BYgmzPCq/mv47v1n58ilZseHAqqaWlr2wT33xwnmQz3eakumho3W1a1UvLSMwMXCi1TrKT1DYYj
- F776FloYlgHumA6bhxf8HH2J7ghI+2Q==
-X-Received: by 2002:a1c:f21a:: with SMTP id s26mr11484223wmc.39.1582398483435; 
- Sat, 22 Feb 2020 11:08:03 -0800 (PST)
-X-Google-Smtp-Source: APXvYqwkw9wErSHWGp2TCjgAZ9qrXX7+D7Wndcr6dYdr8omT/WT5gNCQFRWrzivLVlKcFtBEcNGXcA==
-X-Received: by 2002:a1c:f21a:: with SMTP id s26mr11484193wmc.39.1582398483111; 
- Sat, 22 Feb 2020 11:08:03 -0800 (PST)
-Received: from redhat.com (bzq-79-178-2-214.red.bezeqint.net. [79.178.2.214])
- by smtp.gmail.com with ESMTPSA id
- m68sm9604715wme.48.2020.02.22.11.08.00
- (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
- Sat, 22 Feb 2020 11:08:02 -0800 (PST)
-Date: Sat, 22 Feb 2020 14:07:58 -0500
-From: "Michael S. Tsirkin" <mst@redhat.com>
-To: Halil Pasic <pasic@linux.ibm.com>
-Subject: Re: [PATCH 2/2] virtio: let virtio use DMA API when guest RAM is
- protected
-Message-ID: <20200222140408-mutt-send-email-mst@kernel.org>
-References: <20200220160606.53156-1-pasic@linux.ibm.com>
- <20200220160606.53156-3-pasic@linux.ibm.com>
- <20200220161309.GB12709@lst.de>
- <20200221153340.4cdcde81.pasic@linux.ibm.com>
+Received: from mga14.intel.com (mga14.intel.com [192.55.52.115])
+ by silver.osuosl.org (Postfix) with ESMTPS id CF3C720369
+ for <iommu@lists.linux-foundation.org>; Sat, 22 Feb 2020 23:37:11 +0000 (UTC)
+X-Amp-Result: SKIPPED(no attachment in message)
+X-Amp-File-Uploaded: False
+Received: from fmsmga008.fm.intel.com ([10.253.24.58])
+ by fmsmga103.fm.intel.com with ESMTP/TLS/DHE-RSA-AES256-GCM-SHA384;
+ 22 Feb 2020 15:37:11 -0800
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="5.70,473,1574150400"; d="scan'208";a="230774816"
+Received: from blu2-mobl3.ccr.corp.intel.com (HELO [10.254.212.230])
+ ([10.254.212.230])
+ by fmsmga008.fm.intel.com with ESMTP; 22 Feb 2020 15:37:08 -0800
+Subject: Re: [PATCH V2 1/5] iommu: Add dev_def_domain_type() call back
+ function to iommu_ops
+To: Sai Praneeth Prakhya <sai.praneeth.prakhya@intel.com>,
+ iommu@lists.linux-foundation.org
+References: <cover.1581619464.git.sai.praneeth.prakhya@intel.com>
+ <297e01568e24d1537e0d7d6c088e363552b8ea49.1581619464.git.sai.praneeth.prakhya@intel.com>
+From: Lu Baolu <baolu.lu@linux.intel.com>
+Message-ID: <7c34585c-0ec4-09d9-dd4a-604f196a2ca8@linux.intel.com>
+Date: Sun, 23 Feb 2020 07:37:07 +0800
+User-Agent: Mozilla/5.0 (Windows NT 10.0; WOW64; rv:68.0) Gecko/20100101
+ Thunderbird/68.5.0
 MIME-Version: 1.0
-In-Reply-To: <20200221153340.4cdcde81.pasic@linux.ibm.com>
-X-Mimecast-Spam-Score: 0
-X-Mimecast-Originator: redhat.com
-Content-Disposition: inline
-Cc: linux-s390@vger.kernel.org, Janosch Frank <frankja@linux.ibm.com>,
- "Lendacky, Thomas" <Thomas.Lendacky@amd.com>, Jason Wang <jasowang@redhat.com>,
- Cornelia Huck <cohuck@redhat.com>, Ram Pai <linuxram@us.ibm.com>,
- linux-kernel@vger.kernel.org, virtualization@lists.linux-foundation.org,
- Christian Borntraeger <borntraeger@de.ibm.com>,
- iommu@lists.linux-foundation.org, David Gibson <david@gibson.dropbear.id.au>,
- Michael Mueller <mimu@linux.ibm.com>,
- Viktor Mihajlovski <mihajlov@linux.ibm.com>,
+In-Reply-To: <297e01568e24d1537e0d7d6c088e363552b8ea49.1581619464.git.sai.praneeth.prakhya@intel.com>
+Content-Language: en-US
+Cc: Ashok Raj <ashok.raj@intel.com>, Will Deacon <will.deacon@arm.com>,
  Robin Murphy <robin.murphy@arm.com>, Christoph Hellwig <hch@lst.de>
 X-BeenThere: iommu@lists.linux-foundation.org
 X-Mailman-Version: 2.1.15
@@ -122,40 +82,62 @@ List-Post: <mailto:iommu@lists.linux-foundation.org>
 List-Help: <mailto:iommu-request@lists.linux-foundation.org?subject=help>
 List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
  <mailto:iommu-request@lists.linux-foundation.org?subject=subscribe>
-Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset="us-ascii"; Format="flowed"
 Errors-To: iommu-bounces@lists.linux-foundation.org
 Sender: "iommu" <iommu-bounces@lists.linux-foundation.org>
 
-On Fri, Feb 21, 2020 at 03:33:40PM +0100, Halil Pasic wrote:
-> AFAIU you have a positive attitude towards the idea, that 
-> !F_VIRTIO_PLATFORM implies 'no DMA API is used by virtio' 
-> should be scrapped. 
+Hi Sai,
+
+On 2020/2/17 5:57, Sai Praneeth Prakhya wrote:
+> When user requests kernel to change the default domain type of a group
+> through sysfs, kernel has to make sure that it's ok to change the domain
+> type of every device in the group to the requested domain (every device may
+> not support both the domain types i.e. DMA and identity). Hence, add a call
+> back function that could be implemented per architecture that performs the
+> above check.
 > 
-> I would like to accomplish that without adverse effects to virtio-ccw
-> (because caring for virtio-ccw is a part of job description).
+> Cc: Christoph Hellwig <hch@lst.de>
+> Cc: Joerg Roedel <joro@8bytes.org>
+> Cc: Ashok Raj <ashok.raj@intel.com>
+> Cc: Will Deacon <will.deacon@arm.com>
+> Cc: Lu Baolu <baolu.lu@linux.intel.com>
+> Cc: Sohil Mehta <sohil.mehta@intel.com>
+> Cc: Robin Murphy <robin.murphy@arm.com>
+> Cc: Jacob Pan <jacob.jun.pan@linux.intel.com>
+> Signed-off-by: Sai Praneeth Prakhya <sai.praneeth.prakhya@intel.com>
+> ---
+>   include/linux/iommu.h | 3 +++
+>   1 file changed, 3 insertions(+)
 > 
-> Regards,
-> Halil
+> diff --git a/include/linux/iommu.h b/include/linux/iommu.h
+> index d1b5f4d98569..3f4aaad0aeb7 100644
+> --- a/include/linux/iommu.h
+> +++ b/include/linux/iommu.h
+> @@ -248,6 +248,7 @@ struct iommu_iotlb_gather {
+>    * @cache_invalidate: invalidate translation caches
+>    * @sva_bind_gpasid: bind guest pasid and mm
+>    * @sva_unbind_gpasid: unbind guest pasid and mm
+> + * @dev_def_domain_type: Return the required default domain type for a device
 
-It is possible, in theory. IIRC the main challenge is that DMA API
-has overhead of indirect function calls even when all it
-does it return back the PA without changes. So that will lead to
-a measureable performance degradation. That might be fixable,
-possibly using some kind of logic along the lines of
-	if (iova is pa)
-		return pa
-	else
-		indirect call
+Can you please define the return value of this callback?
 
-and for unmapping, we might need an API that says "unmap
-is a nop, safe to skip" so we don't maintain the
-dma address until unmap.
+Best regards,
+baolu
 
-
--- 
-MST
-
+>    * @pgsize_bitmap: bitmap of all possible supported page sizes
+>    * @owner: Driver module providing these ops
+>    */
+> @@ -318,6 +319,8 @@ struct iommu_ops {
+>   
+>   	int (*sva_unbind_gpasid)(struct device *dev, int pasid);
+>   
+> +	int (*dev_def_domain_type)(struct device *dev);
+> +
+>   	unsigned long pgsize_bitmap;
+>   	struct module *owner;
+>   };
+> 
 _______________________________________________
 iommu mailing list
 iommu@lists.linux-foundation.org
