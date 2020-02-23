@@ -2,73 +2,75 @@ Return-Path: <SRS0=uxOK=4L=lists.linux-foundation.org=iommu-bounces@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-8.2 required=3.0 tests=HEADER_FROM_DIFFERENT_DOMAINS,
-	INCLUDES_PATCH,MAILING_LIST_MULTI,SIGNED_OFF_BY,SPF_HELO_NONE,SPF_PASS,
-	URIBL_BLOCKED,USER_AGENT_SANE_1 autolearn=ham autolearn_force=no version=3.4.0
+X-Spam-Status: No, score=-2.2 required=3.0 tests=HEADER_FROM_DIFFERENT_DOMAINS,
+	MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED,USER_AGENT_SANE_1
+	autolearn=no autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id AE22EC35671
-	for <iommu@archiver.kernel.org>; Sun, 23 Feb 2020 01:38:57 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 06A58C35669
+	for <iommu@archiver.kernel.org>; Sun, 23 Feb 2020 01:50:47 +0000 (UTC)
 Received: from fraxinus.osuosl.org (smtp4.osuosl.org [140.211.166.137])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by mail.kernel.org (Postfix) with ESMTPS id 55A5D2067D
-	for <iommu@archiver.kernel.org>; Sun, 23 Feb 2020 01:38:56 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 55A5D2067D
+	by mail.kernel.org (Postfix) with ESMTPS id C4E6E20702
+	for <iommu@archiver.kernel.org>; Sun, 23 Feb 2020 01:50:46 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org C4E6E20702
 Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=linux.intel.com
 Authentication-Results: mail.kernel.org; spf=pass smtp.mailfrom=iommu-bounces@lists.linux-foundation.org
 Received: from localhost (localhost [127.0.0.1])
-	by fraxinus.osuosl.org (Postfix) with ESMTP id 573A0860F0;
-	Sun, 23 Feb 2020 01:38:56 +0000 (UTC)
+	by fraxinus.osuosl.org (Postfix) with ESMTP id A8520860F8;
+	Sun, 23 Feb 2020 01:50:46 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
 Received: from fraxinus.osuosl.org ([127.0.0.1])
 	by localhost (.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
-	with ESMTP id BpQVTKn1RSJD; Sun, 23 Feb 2020 01:38:54 +0000 (UTC)
+	with ESMTP id xrfZNggE1_nZ; Sun, 23 Feb 2020 01:50:45 +0000 (UTC)
 Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [140.211.9.56])
-	by fraxinus.osuosl.org (Postfix) with ESMTP id E9B9185868;
-	Sun, 23 Feb 2020 01:38:53 +0000 (UTC)
+	by fraxinus.osuosl.org (Postfix) with ESMTP id 5690B85FA0;
+	Sun, 23 Feb 2020 01:50:45 +0000 (UTC)
 Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
-	by lists.linuxfoundation.org (Postfix) with ESMTP id D2BEBC1AE2;
-	Sun, 23 Feb 2020 01:38:53 +0000 (UTC)
+	by lists.linuxfoundation.org (Postfix) with ESMTP id 38F1AC1AE2;
+	Sun, 23 Feb 2020 01:50:45 +0000 (UTC)
 Received: from silver.osuosl.org (smtp3.osuosl.org [140.211.166.136])
- by lists.linuxfoundation.org (Postfix) with ESMTP id 731DCC013E
- for <iommu@lists.linux-foundation.org>; Sun, 23 Feb 2020 01:38:52 +0000 (UTC)
+ by lists.linuxfoundation.org (Postfix) with ESMTP id 583D3C013E
+ for <iommu@lists.linux-foundation.org>; Sun, 23 Feb 2020 01:50:43 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
- by silver.osuosl.org (Postfix) with ESMTP id 679C02274B
- for <iommu@lists.linux-foundation.org>; Sun, 23 Feb 2020 01:38:52 +0000 (UTC)
+ by silver.osuosl.org (Postfix) with ESMTP id 3DEC122708
+ for <iommu@lists.linux-foundation.org>; Sun, 23 Feb 2020 01:50:43 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
 Received: from silver.osuosl.org ([127.0.0.1])
  by localhost (.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
- with ESMTP id dz7068S-xcdm for <iommu@lists.linux-foundation.org>;
- Sun, 23 Feb 2020 01:38:50 +0000 (UTC)
+ with ESMTP id d3oF4uPxi8Kv for <iommu@lists.linux-foundation.org>;
+ Sun, 23 Feb 2020 01:50:42 +0000 (UTC)
 X-Greylist: domain auto-whitelisted by SQLgrey-1.7.6
 Received: from mga06.intel.com (mga06.intel.com [134.134.136.31])
- by silver.osuosl.org (Postfix) with ESMTPS id 5AE3820470
- for <iommu@lists.linux-foundation.org>; Sun, 23 Feb 2020 01:38:50 +0000 (UTC)
+ by silver.osuosl.org (Postfix) with ESMTPS id 926B120346
+ for <iommu@lists.linux-foundation.org>; Sun, 23 Feb 2020 01:50:42 +0000 (UTC)
 X-Amp-Result: SKIPPED(no attachment in message)
 X-Amp-File-Uploaded: False
 Received: from orsmga002.jf.intel.com ([10.7.209.21])
  by orsmga104.jf.intel.com with ESMTP/TLS/DHE-RSA-AES256-GCM-SHA384;
- 22 Feb 2020 17:38:49 -0800
+ 22 Feb 2020 17:50:42 -0800
 X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.70,474,1574150400"; d="scan'208";a="255216079"
+X-IronPort-AV: E=Sophos;i="5.70,474,1574150400"; d="scan'208";a="255217994"
 Received: from blu2-mobl3.ccr.corp.intel.com (HELO [10.254.212.230])
  ([10.254.212.230])
- by orsmga002.jf.intel.com with ESMTP; 22 Feb 2020 17:38:46 -0800
-Subject: Re: [PATCH V2 5/5] iommu: Document usage of
- "/sys/kernel/iommu_groups/<grp_id>/type" file
-To: Sai Praneeth Prakhya <sai.praneeth.prakhya@intel.com>,
- iommu@lists.linux-foundation.org
+ by orsmga002.jf.intel.com with ESMTP; 22 Feb 2020 17:50:39 -0800
+Subject: Re: [PATCH V2 2/5] iommu/vt-d: Rename device_def_domain_type() to
+ intel_iommu_dev_def_domain_type()
+To: "Prakhya, Sai Praneeth" <sai.praneeth.prakhya@intel.com>,
+ "iommu@lists.linux-foundation.org" <iommu@lists.linux-foundation.org>
 References: <cover.1581619464.git.sai.praneeth.prakhya@intel.com>
- <91f1770f9c65f14c88e02ee6f310f9fdcca85f66.1581619464.git.sai.praneeth.prakhya@intel.com>
+ <cd79477f93816a4b0940a8f6770327772b9786af.1581619464.git.sai.praneeth.prakhya@intel.com>
+ <5cbc8651-3a7f-95fa-3db0-704cb15978f5@linux.intel.com>
+ <FFF73D592F13FD46B8700F0A279B802F572054FD@ORSMSX114.amr.corp.intel.com>
 From: Lu Baolu <baolu.lu@linux.intel.com>
-Message-ID: <f8b07b5e-9a11-1dbe-9fb6-47b851a1b661@linux.intel.com>
-Date: Sun, 23 Feb 2020 09:38:45 +0800
+Message-ID: <682f468c-3c16-0a21-c67b-0305545d85fe@linux.intel.com>
+Date: Sun, 23 Feb 2020 09:50:37 +0800
 User-Agent: Mozilla/5.0 (Windows NT 10.0; WOW64; rv:68.0) Gecko/20100101
  Thunderbird/68.5.0
 MIME-Version: 1.0
-In-Reply-To: <91f1770f9c65f14c88e02ee6f310f9fdcca85f66.1581619464.git.sai.praneeth.prakhya@intel.com>
+In-Reply-To: <FFF73D592F13FD46B8700F0A279B802F572054FD@ORSMSX114.amr.corp.intel.com>
 Content-Language: en-US
-Cc: Ashok Raj <ashok.raj@intel.com>, Will Deacon <will.deacon@arm.com>,
+Cc: "Raj, Ashok" <ashok.raj@intel.com>, Will Deacon <will.deacon@arm.com>,
  Robin Murphy <robin.murphy@arm.com>, Christoph Hellwig <hch@lst.de>
 X-BeenThere: iommu@lists.linux-foundation.org
 X-Mailman-Version: 2.1.15
@@ -89,76 +91,27 @@ Sender: "iommu" <iommu-bounces@lists.linux-foundation.org>
 
 Hi,
 
-On 2020/2/17 5:57, Sai Praneeth Prakhya wrote:
-> The default domain type of an iommu group can be changed using file
-> "/sys/kernel/iommu_groups/<grp_id>/type". Hence, document it's usage and
-> more importantly spell out it's limitations.
+On 2020/2/23 7:59, Prakhya, Sai Praneeth wrote:
+>>
+>> On 2020/2/17 5:57, Sai Praneeth Prakhya wrote:
+>>> The functionality needed for iommu_ops->dev_def_domain_type() is
+>>> already provided by device_def_domain_type() in intel_iommu.c. But,
+>>> every call back function in intel_iommu_ops starts with intel_iommu
+>>> prefix, hence rename
+>>> device_def_domain_type() to intel_iommu_dev_def_domain_type() so that
+>>> it follows the same semantics.
+>>
+>> How about keep device_def_domain_type() and call it in the new
+>> intel_iommu_dev_def_domain_type()?
 > 
-> Cc: Christoph Hellwig <hch@lst.de>
-> Cc: Joerg Roedel <joro@8bytes.org>
-> Cc: Ashok Raj <ashok.raj@intel.com>
-> Cc: Will Deacon <will.deacon@arm.com>
-> Cc: Lu Baolu <baolu.lu@linux.intel.com>
-> Cc: Sohil Mehta <sohil.mehta@intel.com>
-> Cc: Robin Murphy <robin.murphy@arm.com>
-> Cc: Jacob Pan <jacob.jun.pan@linux.intel.com>
-> Signed-off-by: Sai Praneeth Prakhya <sai.praneeth.prakhya@intel.com>
-> ---
->   .../ABI/testing/sysfs-kernel-iommu_groups          | 29 ++++++++++++++++++++++
->   1 file changed, 29 insertions(+)
+> Sure! I could but could you please explain the advantages we might get by doing so?
+> Less number of changes is what I could think of.. any other reasons?
 > 
-> diff --git a/Documentation/ABI/testing/sysfs-kernel-iommu_groups b/Documentation/ABI/testing/sysfs-kernel-iommu_groups
-> index 017f5bc3920c..808a9507b281 100644
-> --- a/Documentation/ABI/testing/sysfs-kernel-iommu_groups
-> +++ b/Documentation/ABI/testing/sysfs-kernel-iommu_groups
-> @@ -33,3 +33,32 @@ Description:    In case an RMRR is used only by graphics or USB devices
->   		it is now exposed as "direct-relaxable" instead of "direct".
->   		In device assignment use case, for instance, those RMRR
->   		are considered to be relaxable and safe.
-> +
-> +What:		/sys/kernel/iommu_groups/<grp_id>/type
-> +Date:		February 2020
-> +KernelVersion:	v5.6
-> +Contact:	Sai Praneeth Prakhya <sai.praneeth.prakhya@intel.com>
-> +Description:	Lets the user know the type of default domain in use by iommu
-> +		for this group. A privileged user could request kernel to change
 
-Let the users know the default domain type of the IOMMU group by
-reading this file. A privileged user could request to change it by
-writing to this file.
-
-> +		the group type by writing to this file. Presently, only three
-> +		types are supported
-> +		1. DMA: All the DMA transactions from the devices in this group
-> +			are translated by the iommu.
-> +		2. identity: All the DMA transactions from the devices in this
-> +			     group are *not* translated by the iommu.
-> +		3. auto: Kernel decides one among DMA/identity mode and hence
-> +			 when the user reads the file he would never see "auto".
-
-Just out of curiosity, when could a user reads "auto" from this file?
-
-> +			 This is just a write only value.
-> +		Note:
-> +		-----
-> +		A group type could be modified only when *all* the devices in
-
-group's default domain type (not group type).
-
-> +		the group are not binded to any device driver. So, the user has
-
-bound
-
-> +		to first unbind the appropriate drivers and then change the
-> +		default domain type.
-> +		Caution:
-> +		--------
-> +		Unbinding a device driver will take away the drivers control
-> +		over the device and if done on devices that host root file
-> +		system could lead to catastrophic effects (the user might
-> +		need to reboot the machine to get it to normal state). So, it's
-> +		expected that the user understands what he is doing.
-> 
+device_def_domain_type() is a quirk list for devices that must use a
+specified domain type. intel_iommu_dev_def_domain_type() tells the upper
+layer whether the device could switch to another type of domain. Put
+them in separated functions will make it easier for maintenance.
 
 Best regards,
 baolu
