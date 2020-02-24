@@ -6,66 +6,71 @@ X-Spam-Status: No, score=0.5 required=3.0 tests=DATE_IN_PAST_03_06,
 	DKIM_INVALID,DKIM_SIGNED,HEADER_FROM_DIFFERENT_DOMAINS,MAILING_LIST_MULTI,
 	SPF_HELO_NONE,SPF_PASS autolearn=no autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 6425DC11D25
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 616CCC11D24
 	for <iommu@archiver.kernel.org>; Mon, 24 Feb 2020 06:44:05 +0000 (UTC)
-Received: from hemlock.osuosl.org (smtp2.osuosl.org [140.211.166.133])
+Received: from whitealder.osuosl.org (smtp1.osuosl.org [140.211.166.138])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by mail.kernel.org (Postfix) with ESMTPS id 049F72082E
+	by mail.kernel.org (Postfix) with ESMTPS id C5F5620714
 	for <iommu@archiver.kernel.org>; Mon, 24 Feb 2020 06:44:04 +0000 (UTC)
 Authentication-Results: mail.kernel.org;
-	dkim=fail reason="signature verification failed" (1024-bit key) header.d=gibson.dropbear.id.au header.i=@gibson.dropbear.id.au header.b="A2k8RAOJ"
-DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 049F72082E
+	dkim=fail reason="signature verification failed" (1024-bit key) header.d=gibson.dropbear.id.au header.i=@gibson.dropbear.id.au header.b="Zc4b1jGX"
+DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org C5F5620714
 Authentication-Results: mail.kernel.org; dmarc=none (p=none dis=none) header.from=gibson.dropbear.id.au
 Authentication-Results: mail.kernel.org; spf=pass smtp.mailfrom=iommu-bounces@lists.linux-foundation.org
 Received: from localhost (localhost [127.0.0.1])
-	by hemlock.osuosl.org (Postfix) with ESMTP id 2578A8700D;
-	Mon, 24 Feb 2020 06:44:04 +0000 (UTC)
+	by whitealder.osuosl.org (Postfix) with ESMTP id D13DA8628A;
+	Mon, 24 Feb 2020 06:44:03 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from hemlock.osuosl.org ([127.0.0.1])
+Received: from whitealder.osuosl.org ([127.0.0.1])
 	by localhost (.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
-	with ESMTP id xa1qk86r9uCl; Mon, 24 Feb 2020 06:44:02 +0000 (UTC)
+	with ESMTP id 8EcDj8Bs3AVI; Mon, 24 Feb 2020 06:44:01 +0000 (UTC)
 Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [140.211.9.56])
-	by hemlock.osuosl.org (Postfix) with ESMTP id 8F50C86F8D;
-	Mon, 24 Feb 2020 06:44:02 +0000 (UTC)
+	by whitealder.osuosl.org (Postfix) with ESMTP id 0B1EA861A0;
+	Mon, 24 Feb 2020 06:44:01 +0000 (UTC)
 Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
-	by lists.linuxfoundation.org (Postfix) with ESMTP id 82B43C1D89;
-	Mon, 24 Feb 2020 06:44:02 +0000 (UTC)
+	by lists.linuxfoundation.org (Postfix) with ESMTP id F0D38C18DA;
+	Mon, 24 Feb 2020 06:44:00 +0000 (UTC)
 Received: from fraxinus.osuosl.org (smtp4.osuosl.org [140.211.166.137])
- by lists.linuxfoundation.org (Postfix) with ESMTP id 06AB7C18DA;
+ by lists.linuxfoundation.org (Postfix) with ESMTP id 03650C0177;
  Mon, 24 Feb 2020 06:43:59 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
- by fraxinus.osuosl.org (Postfix) with ESMTP id E81A585C11;
+ by fraxinus.osuosl.org (Postfix) with ESMTP id E82EB85C19;
  Mon, 24 Feb 2020 06:43:58 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
 Received: from fraxinus.osuosl.org ([127.0.0.1])
  by localhost (.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
- with ESMTP id x4yG9Ix6KH_R; Mon, 24 Feb 2020 06:43:56 +0000 (UTC)
+ with ESMTP id YzsJW8dvrfsG; Mon, 24 Feb 2020 06:43:56 +0000 (UTC)
 X-Greylist: domain auto-whitelisted by SQLgrey-1.7.6
 X-Greylist: domain auto-whitelisted by SQLgrey-1.7.6
 Received: from ozlabs.org (ozlabs.org [203.11.71.1])
- by fraxinus.osuosl.org (Postfix) with ESMTPS id 2A96385B4D;
+ by fraxinus.osuosl.org (Postfix) with ESMTPS id 2B5BA85B94;
  Mon, 24 Feb 2020 06:43:56 +0000 (UTC)
 Received: by ozlabs.org (Postfix, from userid 1007)
- id 48QswR4QQ9z9sRf; Mon, 24 Feb 2020 17:43:51 +1100 (AEDT)
+ id 48QswR352Lz9sRR; Mon, 24 Feb 2020 17:43:51 +1100 (AEDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
  d=gibson.dropbear.id.au; s=201602; t=1582526631;
- bh=htknb17Uk8fVFhFIa11PeQWaB1RywfjrKYh7McPzKaQ=;
+ bh=HE+dMIiDFpTtJfitS88px2QE5uurDOINjlLTLx6xBso=;
  h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
- b=A2k8RAOJ4XV3K5TDcE3+viHL40zy7GJhyNz9D6/cqtYvsoczT12lJi12rSZGLEKqH
- eAt0viVC1lU8zZ+tWxuhqG/z5G/bgs1RHNNRzk7/UZxNDkG0TcszcGlmDtcS8e2MV7
- I42zDmdaoGyb9mEQXOol+pq8p2580cV78ael2xg0=
-Date: Mon, 24 Feb 2020 14:38:53 +1100
+ b=Zc4b1jGX8kDXRZ1/cxrzaVVzmmi3Jbx5z+q4guCIZLM1Y9iri/Msd8YT7mp3duvPv
+ lZjUNHzQT4RarBAuU51b2dq+ass/738MniN+F2rqaZcXondrlOoj5IxTkyHcwg8+nK
+ 1J6cZyaSBlb6Qhiu+Uk9hyWjjsOcm4EaK0zEMN1Y=
+Date: Mon, 24 Feb 2020 14:33:14 +1100
 From: David Gibson <david@gibson.dropbear.id.au>
 To: Halil Pasic <pasic@linux.ibm.com>
-Subject: Re: [PATCH 0/2] virtio: decouple protected guest RAM form
- VIRTIO_F_IOMMU_PLATFORM
-Message-ID: <20200224033853.GE1751@umbus.fritz.box>
+Subject: Re: [PATCH 1/2] mm: move force_dma_unencrypted() to mem_encrypt.h
+Message-ID: <20200224033314.GC1751@umbus.fritz.box>
 References: <20200220160606.53156-1-pasic@linux.ibm.com>
- <426e6972-0565-c931-e171-da0f58fbf856@redhat.com>
- <20200221155602.4de41fa7.pasic@linux.ibm.com>
+ <20200220160606.53156-2-pasic@linux.ibm.com>
+ <20200220161146.GA12709@lst.de>
+ <4369f099-e4e4-4a58-b38b-642cf53ccca6@de.ibm.com>
+ <20200220163135.GA13192@lst.de>
+ <20200221032727.GC2298@umbus.fritz.box>
+ <20200221140639.54928efe.pasic@linux.ibm.com>
+ <20200221104724-mutt-send-email-mst@kernel.org>
+ <20200221190702.68fd57fc.pasic@linux.ibm.com>
 MIME-Version: 1.0
-In-Reply-To: <20200221155602.4de41fa7.pasic@linux.ibm.com>
+In-Reply-To: <20200221190702.68fd57fc.pasic@linux.ibm.com>
 Cc: linux-s390@vger.kernel.org, Janosch Frank <frankja@linux.ibm.com>,
  "Michael S. Tsirkin" <mst@redhat.com>, Jason Wang <jasowang@redhat.com>,
  Cornelia Huck <cohuck@redhat.com>, Ram Pai <linuxram@us.ibm.com>,
@@ -87,122 +92,121 @@ List-Post: <mailto:iommu@lists.linux-foundation.org>
 List-Help: <mailto:iommu-request@lists.linux-foundation.org?subject=help>
 List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
  <mailto:iommu-request@lists.linux-foundation.org?subject=subscribe>
-Content-Type: multipart/mixed; boundary="===============7408810731771317058=="
+Content-Type: multipart/mixed; boundary="===============5966967518369619198=="
 Errors-To: iommu-bounces@lists.linux-foundation.org
 Sender: "iommu" <iommu-bounces@lists.linux-foundation.org>
 
 
---===============7408810731771317058==
+--===============5966967518369619198==
 Content-Type: multipart/signed; micalg=pgp-sha256;
-	protocol="application/pgp-signature"; boundary="48TaNjbzBVislYPb"
+	protocol="application/pgp-signature"; boundary="gatW/ieO32f1wygP"
 Content-Disposition: inline
 
 
---48TaNjbzBVislYPb
-Content-Type: text/plain; charset=utf-8
+--gatW/ieO32f1wygP
+Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
 Content-Transfer-Encoding: quoted-printable
 
-On Fri, Feb 21, 2020 at 03:56:02PM +0100, Halil Pasic wrote:
-> On Fri, 21 Feb 2020 14:22:26 +0800
-> Jason Wang <jasowang@redhat.com> wrote:
+On Fri, Feb 21, 2020 at 07:07:02PM +0100, Halil Pasic wrote:
+> On Fri, 21 Feb 2020 10:48:15 -0500
+> "Michael S. Tsirkin" <mst@redhat.com> wrote:
 >=20
+> > On Fri, Feb 21, 2020 at 02:06:39PM +0100, Halil Pasic wrote:
+> > > On Fri, 21 Feb 2020 14:27:27 +1100
+> > > David Gibson <david@gibson.dropbear.id.au> wrote:
+> > >=20
+> > > > On Thu, Feb 20, 2020 at 05:31:35PM +0100, Christoph Hellwig wrote:
+> > > > > On Thu, Feb 20, 2020 at 05:23:20PM +0100, Christian Borntraeger w=
+rote:
+> > > > > > >From a users perspective it makes absolutely perfect sense to =
+use the
+> > > > > > bounce buffers when they are NEEDED.=20
+> > > > > > Forcing the user to specify iommu_platform just because you nee=
+d bounce buffers
+> > > > > > really feels wrong. And obviously we have a severe performance =
+issue
+> > > > > > because of the indirections.
+> > > > >=20
+> > > > > The point is that the user should not have to specify iommu_platf=
+orm.
+> > > > > We need to make sure any new hypervisor (especially one that migh=
+t require
+> > > > > bounce buffering) always sets it,
+> > > >=20
+> > > > So, I have draft qemu patches which enable iommu_platform by defaul=
+t.
+> > > > But that's really because of other problems with !iommu_platform, n=
+ot
+> > > > anything to do with bounce buffering or secure VMs.
+> > > >=20
+> > > > The thing is that the hypervisor *doesn't* require bounce buffering.
+> > > > In the POWER (and maybe s390 as well) models for Secure VMs, it's t=
+he
+> > > > *guest*'s choice to enter secure mode, so the hypervisor has no rea=
+son
+> > > > to know whether the guest needs bounce buffering.  As far as the
+> > > > hypervisor and qemu are concerned that's a guest internal detail, it
+> > > > just expects to get addresses it can access whether those are GPAs
+> > > > (iommu_platform=3Doff) or IOVAs (iommu_platform=3Don).
+> > >=20
+> > > I very much agree!
+> > >=20
+> > > >=20
+> > > > > as was a rather bogus legacy hack
+> > > >=20
+> > > > It was certainly a bad idea, but it was a bad idea that went into a
+> > > > public spec and has been widely deployed for many years.  We can't
+> > > > just pretend it didn't happen and move on.
+> > > >=20
+> > > > Turning iommu_platform=3Don by default breaks old guests, some of w=
+hich
+> > > > we still care about.  We can't (automatically) do it only for guests
+> > > > that need bounce buffering, because the hypervisor doesn't know that
+> > > > ahead of time.
+> > >=20
+> > > Turning iommu_platform=3Don for virtio-ccw makes no sense whatsover,
+> > > because for CCW I/O there is no such thing as IOMMU and the addresses
+> > > are always physical addresses.
 > >=20
-> > On 2020/2/21 =E4=B8=8A=E5=8D=8812:06, Halil Pasic wrote:
-> > > Currently if one intends to run a memory protection enabled VM with
-> > > virtio devices and linux as the guest OS, one needs to specify the
-> > > VIRTIO_F_IOMMU_PLATFORM flag for each virtio device to make the guest
-> > > linux use the DMA API, which in turn handles the memory
-> > > encryption/protection stuff if the guest decides to turn itself into
-> > > a protected one. This however makes no sense due to multiple reasons:
-> > > * The device is not changed by the fact that the guest RAM is
-> > > protected. The so called IOMMU bypass quirk is not affected.
-> > > * This usage is not congruent with  standardised semantics of
-> > > VIRTIO_F_IOMMU_PLATFORM. Guest memory protected is an orthogonal reas=
-on
-> > > for using DMA API in virtio (orthogonal with respect to what is
-> > > expressed by VIRTIO_F_IOMMU_PLATFORM).
-> > >
-> > > This series aims to decouple 'have to use DMA API because my (guest) =
-RAM
-> > > is protected' and 'have to use DMA API because the device told me
-> > > VIRTIO_F_IOMMU_PLATFORM'.
-> > >
-> > > Please find more detailed explanations about the conceptual aspects in
-> > > the individual patches. There is however also a very practical problem
-> > > that is addressed by this series.
-> > >
-> > > For vhost-net the feature VIRTIO_F_IOMMU_PLATFORM has the following s=
-ide
-> > > effect The vhost code assumes it the addresses on the virtio descript=
-or
-> > > ring are not guest physical addresses but iova's, and insists on doin=
-g a
-> > > translation of these regardless of what transport is used (e.g. wheth=
-er
-> > > we emulate a PCI or a CCW device). (For details see commit 6b1e6cc785=
-5b
-> > > "vhost: new device IOTLB API".) On s390 this results in severe
-> > > performance degradation (c.a. factor 10).
-> >=20
-> >=20
-> > Do you see a consistent degradation on the performance, or it only=20
-> > happen when for during the beginning of the test?
-> >=20
+> > Fix the name then. The spec calls is ACCESS_PLATFORM now, which
+> > makes much more sense.
 >=20
-> AFAIK the degradation is consistent.
->=20
-> >=20
-> > > BTW with ccw I/O there is
-> > > (architecturally) no IOMMU, so the whole address translation makes no
-> > > sense in the context of virtio-ccw.
-> >=20
-> >=20
-> > I suspect we can do optimization in qemu side.
-> >=20
-> > E.g send memtable entry via IOTLB API when vIOMMU is not enabled.
-> >=20
-> > If this makes sense, I can draft patch to see if there's any difference.
->=20
-> Frankly I would prefer to avoid IOVAs on the descriptor ring (and the
-> then necessary translation) for virtio-ccw altogether. But Michael
-> voiced his opinion that we should mandate F_IOMMU_PLATFORM for devices
-> that could be used with guests running in protected mode. I don't share
-> his opinion, but that's an ongoing discussion.
+> I don't quite get it. Sorry. Maybe I will revisit this later.
 
-I'm a bit confused by this.  For the ccw specific case,
-F_ACCESS_PLATFORM shouldn't have any impact: for you, IOVA =3D=3D GPA so
-everything is easy.
+Halil, I think I can clarify this.
 
-> Should we end up having to do translation from IOVA in vhost, we are
-> very interested in that translation being fast and efficient.
->=20
-> In that sense we would be very happy to test any optimization that aim
-> into that direction.
->=20
-> Thank you very much for your input!
->=20
-> Regards,
-> Halil
->=20
-> >=20
-> > Thanks
-> >=20
-> >=20
-> > >
-> > > Halil Pasic (2):
-> > >    mm: move force_dma_unencrypted() to mem_encrypt.h
-> > >    virtio: let virtio use DMA API when guest RAM is protected
-> > >
-> > >   drivers/virtio/virtio_ring.c |  3 +++
-> > >   include/linux/dma-direct.h   |  9 ---------
-> > >   include/linux/mem_encrypt.h  | 10 ++++++++++
-> > >   3 files changed, 13 insertions(+), 9 deletions(-)
-> > >
-> > >
-> > > base-commit: ca7e1fd1026c5af6a533b4b5447e1d2f153e28f2
-> >=20
->=20
+The "iommu_platform" flag doesn't necessarily have anything to do with
+an iommu, although it often will.  Basically it means "access guest
+memory via the bus's normal DMA mechanism" rather than "access guest
+memory using GPA, because you're the hypervisor and you can do that".
+
+For the case of ccw, both mechanisms end up being the same thing,
+since CCW's normal DMA *is* untranslated GPA access.
+
+For this reason, the flag in the spec was renamed to ACCESS_PLATFORM,
+but the flag in qemu still has the old name.
+
+AIUI, Michael is saying you could trivially change the name in qemu
+(obviously you'd need to alias the old name to the new one for
+compatibility).
+
+
+Actually, the fact that ccw has no translation makes things easier for
+you: you don't really have any impediment to turning ACCESS_PLATFORM
+on by default, since it doesn't make any real change to how things
+work.
+
+The remaining difficulty is that the virtio driver - since it can sit
+on multiple buses - won't know this, and will reject the
+ACCESS_PLATFORM flag, even though it could just do what it normally
+does on ccw and it would work.
+
+For that case, we could consider a hack in qemu where for virtio-ccw
+devices *only* we allow the guest to nack the ACCESS_PLATFORM flag and
+carry on anyway.  Normally we insist that the guest accept the
+ACCESS_PLATFORM flag if offered, because on most platforms they
+*don't* amount to the same thing.
 
 --=20
 David Gibson			| I'll have my music baroque, and my code
@@ -210,29 +214,29 @@ david AT gibson.dropbear.id.au	| minimalist, thank you.  NOT _the_ _other_
 				| _way_ _around_!
 http://www.ozlabs.org/~dgibson
 
---48TaNjbzBVislYPb
+--gatW/ieO32f1wygP
 Content-Type: application/pgp-signature; name="signature.asc"
 
 -----BEGIN PGP SIGNATURE-----
 
-iQIzBAEBCAAdFiEEdfRlhq5hpmzETofcbDjKyiDZs5IFAl5TRUwACgkQbDjKyiDZ
-s5KHhRAAzvCq4VbEVWbiYmB1ioNQU2Zls3KoMhs0PgZRddR+1P85yLT3xnHrw/LQ
-g2UfyDDlqIqQgVjwHuHBTwoRWvNFm7Q72IUkh/Crwex4MlbvdSA0MIovpx9J3SSq
-tjQ/No5y2xz2zsksr3T7KRh+w7EM62KyxJU1vnZj1NvlZQmHGG4tMtEpsv+rwa9R
-13j0VvV9SqLMCPS7zMFge/kvOg59UqwGpFXIaILBx9TGPHAjjLNt2GZCAPAsOxmO
-TIqzQwP2pooqNrLVnTvaXP3R4HUi/3V86Cys7oKnStuG95psLjB+2S8wxpfOTXS2
-3pPHCTweu2xyQNReRbrjQq0aovnDdioNVFn6auGF0ilCd3xFrd0fYWG0vvW0d8f/
-hlyZfoJCTCvKs60OcC7x45FKfpcU4+R8oHxdVJG/DPI6Uxbk9C5T0G/maOMxKLDO
-40hJGP2SVIFtdmb8lNhlA4saVYjsR0OqH+Y+fLYi6dsl1S7FFNAhMEOOJrvhfE1O
-cSSWeq2NsyY0mtTFeAtXv25yZ4t8Ed9oNnVvTXyNKkp8VKmVGz2qmH+sx1wHi4m8
-UANxHkrr0V1IzMdE4Bz7TKeOVNdTQQN+0AQlwL6R+XZTpwgPAUXQbV5bLvwX+CEp
-SqpVVhl9CnKeqyppaXy08CiYwdQIaze77BSX0VHTyIJq4WzI8YY=
-=FeJg
+iQIzBAEBCAAdFiEEdfRlhq5hpmzETofcbDjKyiDZs5IFAl5TQ/gACgkQbDjKyiDZ
+s5KScw/6A2bpuaDoeyju/89gg/50j1boGL5GLhZekxNikY9NGo8Q75SrCFgLeofE
+WKee9dbP9N7t/rufx/3GTmHZdcG1Ag+7CJmiDZbkROVckdBwRex/g8Og8iQa97gK
+aPUZKxNShLlV6p3FAUYYrv9F7t3nsJXLijRv/2t07uSKVsxY19DXGzgXFDrWj2R8
+C/Xond2gjve7erMO8Ld/yFxAU20E3zj0LgFWiqwUnAWMgPFxPlx1L6ssv0kTOcD3
+6tWGB5efKZz3UAbHHQyC3ziru+kPIRRKrk2tQ7rzQpoW8uPquTPZWl6+nJ6rKj4m
+/QU++2cDASm+dTHnTRXiTUsZt26+VBgcDh+CZmGu9vvf2OJgmCJzeGwpuf1mWYCY
+VXyT8dpChUq3q3YMxzoIuRVeyLJuBdZ8a8zofP6BCrXY4aMTji5eclg327DFonZB
+0u3oKQxUR+vcPjWjsASjSnePzE/qxMABZboqSErqXNzeNq6AZen/s9ctO6E6wuHk
+mXty/bXyjOeL/PI3kOUljvF7qtrGssMH+lxBxAaFdRD3DTdDxMwRd9bdYRBr7SJh
+lwt0VMzt9PaXGATp73GTB+Mp5hlzcgIuaZS4/+ksp98iOPQ9nmbpXfqr4NZG/YZs
+Uy5FiOjXXQASBIn+E2e83zoLgNsGMgTWDLh4NYs5vvzNxwD0YcM=
+=jat8
 -----END PGP SIGNATURE-----
 
---48TaNjbzBVislYPb--
+--gatW/ieO32f1wygP--
 
---===============7408810731771317058==
+--===============5966967518369619198==
 Content-Type: text/plain; charset="us-ascii"
 MIME-Version: 1.0
 Content-Transfer-Encoding: 7bit
@@ -242,4 +246,4 @@ _______________________________________________
 iommu mailing list
 iommu@lists.linux-foundation.org
 https://lists.linuxfoundation.org/mailman/listinfo/iommu
---===============7408810731771317058==--
+--===============5966967518369619198==--
