@@ -4,70 +4,70 @@ X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 X-Spam-Level: 
 X-Spam-Status: No, score=-9.6 required=3.0 tests=DKIM_INVALID,DKIM_SIGNED,
 	HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_PATCH,MAILING_LIST_MULTI,SIGNED_OFF_BY,
-	SPF_HELO_NONE,SPF_PASS,USER_AGENT_GIT autolearn=unavailable
-	autolearn_force=no version=3.4.0
+	SPF_HELO_NONE,SPF_PASS,USER_AGENT_GIT autolearn=ham autolearn_force=no
+	version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id E95BAC38BE9
-	for <iommu@archiver.kernel.org>; Mon, 24 Feb 2020 19:45:14 +0000 (UTC)
-Received: from silver.osuosl.org (smtp3.osuosl.org [140.211.166.136])
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 17CADC38BE0
+	for <iommu@archiver.kernel.org>; Mon, 24 Feb 2020 19:45:16 +0000 (UTC)
+Received: from fraxinus.osuosl.org (smtp4.osuosl.org [140.211.166.137])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by mail.kernel.org (Postfix) with ESMTPS id BBF0320880
-	for <iommu@archiver.kernel.org>; Mon, 24 Feb 2020 19:45:14 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTPS id DCFB52080D
+	for <iommu@archiver.kernel.org>; Mon, 24 Feb 2020 19:45:15 +0000 (UTC)
 Authentication-Results: mail.kernel.org;
-	dkim=fail reason="signature verification failed" (2048-bit key) header.d=infradead.org header.i=@infradead.org header.b="Knjcgehs"
-DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org BBF0320880
+	dkim=fail reason="signature verification failed" (2048-bit key) header.d=infradead.org header.i=@infradead.org header.b="EhnoAKGW"
+DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org DCFB52080D
 Authentication-Results: mail.kernel.org; dmarc=none (p=none dis=none) header.from=lst.de
 Authentication-Results: mail.kernel.org; spf=pass smtp.mailfrom=iommu-bounces@lists.linux-foundation.org
 Received: from localhost (localhost [127.0.0.1])
-	by silver.osuosl.org (Postfix) with ESMTP id A15E020520;
-	Mon, 24 Feb 2020 19:45:14 +0000 (UTC)
+	by fraxinus.osuosl.org (Postfix) with ESMTP id A0EDF85F50;
+	Mon, 24 Feb 2020 19:45:15 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from silver.osuosl.org ([127.0.0.1])
+Received: from fraxinus.osuosl.org ([127.0.0.1])
 	by localhost (.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
-	with ESMTP id xNBPvshQCwPj; Mon, 24 Feb 2020 19:45:13 +0000 (UTC)
+	with ESMTP id 7l37m4rYKrcO; Mon, 24 Feb 2020 19:45:15 +0000 (UTC)
 Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [140.211.9.56])
-	by silver.osuosl.org (Postfix) with ESMTP id BD47220523;
-	Mon, 24 Feb 2020 19:45:13 +0000 (UTC)
+	by fraxinus.osuosl.org (Postfix) with ESMTP id 336F485F98;
+	Mon, 24 Feb 2020 19:45:15 +0000 (UTC)
 Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
-	by lists.linuxfoundation.org (Postfix) with ESMTP id A7E84C07FF;
-	Mon, 24 Feb 2020 19:45:13 +0000 (UTC)
-Received: from hemlock.osuosl.org (smtp2.osuosl.org [140.211.166.133])
- by lists.linuxfoundation.org (Postfix) with ESMTP id B065FC0177
- for <iommu@lists.linux-foundation.org>; Mon, 24 Feb 2020 19:45:11 +0000 (UTC)
+	by lists.linuxfoundation.org (Postfix) with ESMTP id 21180C07FF;
+	Mon, 24 Feb 2020 19:45:15 +0000 (UTC)
+Received: from fraxinus.osuosl.org (smtp4.osuosl.org [140.211.166.137])
+ by lists.linuxfoundation.org (Postfix) with ESMTP id C8C59C07FF
+ for <iommu@lists.linux-foundation.org>; Mon, 24 Feb 2020 19:45:13 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
- by hemlock.osuosl.org (Postfix) with ESMTP id 652AC870AD
- for <iommu@lists.linux-foundation.org>; Mon, 24 Feb 2020 19:45:11 +0000 (UTC)
+ by fraxinus.osuosl.org (Postfix) with ESMTP id C5749853D3
+ for <iommu@lists.linux-foundation.org>; Mon, 24 Feb 2020 19:45:13 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from hemlock.osuosl.org ([127.0.0.1])
+Received: from fraxinus.osuosl.org ([127.0.0.1])
  by localhost (.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
- with ESMTP id dPXa0lYedOgu for <iommu@lists.linux-foundation.org>;
- Mon, 24 Feb 2020 19:45:09 +0000 (UTC)
+ with ESMTP id FAGQApB1uuAp for <iommu@lists.linux-foundation.org>;
+ Mon, 24 Feb 2020 19:45:13 +0000 (UTC)
 X-Greylist: from auto-whitelisted by SQLgrey-1.7.6
 Received: from bombadil.infradead.org (bombadil.infradead.org
  [198.137.202.133])
- by hemlock.osuosl.org (Postfix) with ESMTPS id 18313870A9
- for <iommu@lists.linux-foundation.org>; Mon, 24 Feb 2020 19:45:09 +0000 (UTC)
+ by fraxinus.osuosl.org (Postfix) with ESMTPS id 53DE5852DB
+ for <iommu@lists.linux-foundation.org>; Mon, 24 Feb 2020 19:45:13 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
  d=infradead.org; s=bombadil.20170209; h=Content-Transfer-Encoding:
  MIME-Version:References:In-Reply-To:Message-Id:Date:Subject:Cc:To:From:Sender
  :Reply-To:Content-Type:Content-ID:Content-Description;
- bh=T4NlHNWXOxVx4p2Hs6Uq065vETBDPy8nykWMiA4AwsQ=; b=KnjcgehsQRicbdqF/Db0iiY9Mp
- /ylXGBtadWExGcr4qr5poM8BqDhHhpcdYUMaYmuFt4tg91ObQ2E7hk/oP04uOAtbYSDybqlyCJP1o
- lsPJDk0pKpoccQfFEU7pcsJqhV7/Ws7No5JqxSd0T4EhzEUwdy+hAhivwRMhH4eFcpm7TSKvyBx3q
- L/cwgggpHWYfRF57E+jdkAtnko55LbBrOXnU4bSoqUI6jgChgPOq65oZ48CuEJXHs+fd55r886Hn8
- /gM7umV8gi492xPB4oqtgVzEpFJMPZcvVfSP89ylh4KozAiQEIyXHKpuGn9HqctgdIc08cvkSeEVj
- pDuirBgg==;
+ bh=6vbrJb1PTxUBmfNUmWMaC9IunHM3NVjcATW2sN+r4hs=; b=EhnoAKGWRXjYku+s4TutBL35qf
+ IZBFdQBmO4pyH8ycFxMo5+hdCjNO89mxYaEAQhUI604JD4UleyJ1mkSWFd2A8rK9y42cjZFeP7fqI
+ LQ9Rab084Uzyknp8Xt0a7BzHFC/JLuz/0nTh6gNxmUAtRsXExrD6vF4vqsD4yx4BYGRfpGd9mNmQv
+ cdmtSuusulJ9P1FC3atUHajNpzqMaMEUOdH7OdbHf0+b2BrTmh9IvCuy7zlKv/nLFyOHNRAF1eqTi
+ LW358irqbh5baSuYh1Ux9WAhn/i+bVxlJKjPLhCWmXSsXptImnCCo18YRLakBthTOd0C7XcfxRxxj
+ lkvAdDyA==;
 Received: from [4.28.11.157] (helo=localhost)
  by bombadil.infradead.org with esmtpsa (Exim 4.92.3 #3 (Red Hat Linux))
- id 1j6Jeq-0006X9-3L; Mon, 24 Feb 2020 19:44:48 +0000
+ id 1j6Jev-0006Xj-34; Mon, 24 Feb 2020 19:44:53 +0000
 From: Christoph Hellwig <hch@lst.de>
 To: Jonas Bonn <jonas@southpole.se>,
  Stefan Kristiansson <stefan.kristiansson@saunalahti.fi>,
  Stafford Horne <shorne@gmail.com>
-Subject: [PATCH 1/5] dma-direct: remove the cached_kernel_address hook
-Date: Mon, 24 Feb 2020 11:44:41 -0800
-Message-Id: <20200224194446.690816-2-hch@lst.de>
+Subject: [PATCH 4/5] dma-direct: provide a arch_dma_clear_uncached hook
+Date: Mon, 24 Feb 2020 11:44:44 -0800
+Message-Id: <20200224194446.690816-5-hch@lst.de>
 X-Mailer: git-send-email 2.24.1
 In-Reply-To: <20200224194446.690816-1-hch@lst.de>
 References: <20200224194446.690816-1-hch@lst.de>
@@ -95,119 +95,59 @@ Content-Transfer-Encoding: 7bit
 Errors-To: iommu-bounces@lists.linux-foundation.org
 Sender: "iommu" <iommu-bounces@lists.linux-foundation.org>
 
-dma-direct now finds the kernel address for coherent allocations based
-on the dma address, so the cached_kernel_address hooks is unused and
-can be removed entirely.
+This allows the arch code to reset the page tables to cached access when
+freeing a dma coherent allocation that was set to uncached using
+arch_dma_set_uncached.
 
 Signed-off-by: Christoph Hellwig <hch@lst.de>
 ---
- arch/Kconfig                    |  2 +-
- arch/microblaze/mm/consistent.c |  7 -------
- arch/mips/mm/dma-noncoherent.c  |  5 -----
- arch/nios2/mm/dma-mapping.c     | 10 ----------
- arch/xtensa/kernel/pci-dma.c    | 10 ++--------
- include/linux/dma-noncoherent.h |  1 -
- 6 files changed, 3 insertions(+), 32 deletions(-)
+ arch/Kconfig                    | 7 +++++++
+ include/linux/dma-noncoherent.h | 1 +
+ kernel/dma/direct.c             | 2 ++
+ 3 files changed, 10 insertions(+)
 
 diff --git a/arch/Kconfig b/arch/Kconfig
-index 98de654b79b3..7994b239f155 100644
+index 090cfe0c82a7..c26302f90c96 100644
 --- a/arch/Kconfig
 +++ b/arch/Kconfig
-@@ -249,7 +249,7 @@ config ARCH_HAS_SET_DIRECT_MAP
+@@ -255,6 +255,13 @@ config ARCH_HAS_SET_DIRECT_MAP
+ config ARCH_HAS_DMA_SET_UNCACHED
+ 	bool
  
- #
- # Select if arch has an uncached kernel segment and provides the
--# uncached_kernel_address / cached_kernel_address symbols to use it
-+# uncached_kernel_address symbol to use it
- #
- config ARCH_HAS_UNCACHED_SEGMENT
- 	select ARCH_HAS_DMA_PREP_COHERENT
-diff --git a/arch/microblaze/mm/consistent.c b/arch/microblaze/mm/consistent.c
-index 8c5f0c332d8b..cede7c5e8135 100644
---- a/arch/microblaze/mm/consistent.c
-+++ b/arch/microblaze/mm/consistent.c
-@@ -49,11 +49,4 @@ void *uncached_kernel_address(void *ptr)
- 		pr_warn("ERROR: Your cache coherent area is CACHED!!!\n");
- 	return (void *)addr;
- }
--
--void *cached_kernel_address(void *ptr)
--{
--	unsigned long addr = (unsigned long)ptr;
--
--	return (void *)(addr & ~UNCACHED_SHADOW_MASK);
--}
- #endif /* CONFIG_MMU */
-diff --git a/arch/mips/mm/dma-noncoherent.c b/arch/mips/mm/dma-noncoherent.c
-index dc42ffc83825..77dce28ad0a0 100644
---- a/arch/mips/mm/dma-noncoherent.c
-+++ b/arch/mips/mm/dma-noncoherent.c
-@@ -54,11 +54,6 @@ void *uncached_kernel_address(void *addr)
- 	return (void *)(__pa(addr) + UNCAC_BASE);
- }
- 
--void *cached_kernel_address(void *addr)
--{
--	return __va(addr) - UNCAC_BASE;
--}
--
- static inline void dma_sync_virt(void *addr, size_t size,
- 		enum dma_data_direction dir)
- {
-diff --git a/arch/nios2/mm/dma-mapping.c b/arch/nios2/mm/dma-mapping.c
-index 0ed711e37902..f30f2749257c 100644
---- a/arch/nios2/mm/dma-mapping.c
-+++ b/arch/nios2/mm/dma-mapping.c
-@@ -75,13 +75,3 @@ void *uncached_kernel_address(void *ptr)
- 
- 	return (void *)ptr;
- }
--
--void *cached_kernel_address(void *ptr)
--{
--	unsigned long addr = (unsigned long)ptr;
--
--	addr &= ~CONFIG_NIOS2_IO_REGION_BASE;
--	addr |= CONFIG_NIOS2_KERNEL_REGION_BASE;
--
--	return (void *)ptr;
--}
-diff --git a/arch/xtensa/kernel/pci-dma.c b/arch/xtensa/kernel/pci-dma.c
-index 72b6222daa0b..6a685545d5c9 100644
---- a/arch/xtensa/kernel/pci-dma.c
-+++ b/arch/xtensa/kernel/pci-dma.c
-@@ -88,18 +88,12 @@ void arch_dma_prep_coherent(struct page *page, size_t size)
- 
- /*
-  * Memory caching is platform-dependent in noMMU xtensa configurations.
-- * The following two functions should be implemented in platform code
-- * in order to enable coherent DMA memory operations when CONFIG_MMU is not
-- * enabled.
-+ * This function should be implemented in platform code in order to enable
-+ * coherent DMA memory operations when CONFIG_MMU is not enabled.
-  */
- #ifdef CONFIG_MMU
- void *uncached_kernel_address(void *p)
- {
- 	return p + XCHAL_KSEG_BYPASS_VADDR - XCHAL_KSEG_CACHED_VADDR;
- }
--
--void *cached_kernel_address(void *p)
--{
--	return p + XCHAL_KSEG_CACHED_VADDR - XCHAL_KSEG_BYPASS_VADDR;
--}
- #endif /* CONFIG_MMU */
++#
++# Select if the architectures provides the arch_dma_clear_uncached symbol
++# to undo an in-place page table remap for uncached access.
++#
++config ARCH_HAS_DMA_CLEAR_UNCACHED
++	bool
++
+ # Select if arch init_task must go in the __init_task_data section
+ config ARCH_TASK_STRUCT_ON_STACK
+ 	bool
 diff --git a/include/linux/dma-noncoherent.h b/include/linux/dma-noncoherent.h
-index ca9b5770caee..b6b72e19b0cd 100644
+index 1a4039506673..b59f1b6be3e9 100644
 --- a/include/linux/dma-noncoherent.h
 +++ b/include/linux/dma-noncoherent.h
-@@ -109,6 +109,5 @@ static inline void arch_dma_prep_coherent(struct page *page, size_t size)
+@@ -109,5 +109,6 @@ static inline void arch_dma_prep_coherent(struct page *page, size_t size)
  #endif /* CONFIG_ARCH_HAS_DMA_PREP_COHERENT */
  
- void *uncached_kernel_address(void *addr);
--void *cached_kernel_address(void *addr);
+ void *arch_dma_set_uncached(void *addr, size_t size);
++void arch_dma_clear_uncached(void *addr, size_t size);
  
  #endif /* _LINUX_DMA_NONCOHERENT_H */
+diff --git a/kernel/dma/direct.c b/kernel/dma/direct.c
+index f01a8191fd59..a8560052a915 100644
+--- a/kernel/dma/direct.c
++++ b/kernel/dma/direct.c
+@@ -219,6 +219,8 @@ void dma_direct_free_pages(struct device *dev, size_t size, void *cpu_addr,
+ 
+ 	if (IS_ENABLED(CONFIG_DMA_REMAP) && is_vmalloc_addr(cpu_addr))
+ 		vunmap(cpu_addr);
++	else if (IS_ENABLED(CONFIG_ARCH_HAS_DMA_CLEAR_UNCACHED))
++		arch_dma_clear_uncached(cpu_addr, size);
+ 
+ 	dma_free_contiguous(dev, dma_direct_to_page(dev, dma_addr), size);
+ }
 -- 
 2.24.1
 
