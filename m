@@ -2,108 +2,82 @@ Return-Path: <SRS0=ms/0=4M=lists.linux-foundation.org=iommu-bounces@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-2.1 required=3.0 tests=DKIM_INVALID,DKIM_SIGNED,
-	HEADER_FROM_DIFFERENT_DOMAINS,MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS,
-	USER_AGENT_SANE_1 autolearn=no autolearn_force=no version=3.4.0
+X-Spam-Status: No, score=-9.6 required=3.0 tests=DKIM_INVALID,DKIM_SIGNED,
+	HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_PATCH,MAILING_LIST_MULTI,SIGNED_OFF_BY,
+	SPF_HELO_NONE,SPF_PASS,USER_AGENT_GIT autolearn=unavailable
+	autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id A38F8C38BE1
-	for <iommu@archiver.kernel.org>; Mon, 24 Feb 2020 19:01:02 +0000 (UTC)
-Received: from fraxinus.osuosl.org (smtp4.osuosl.org [140.211.166.137])
+	by smtp.lore.kernel.org (Postfix) with ESMTP id B3BA2C38BE0
+	for <iommu@archiver.kernel.org>; Mon, 24 Feb 2020 19:45:11 +0000 (UTC)
+Received: from hemlock.osuosl.org (smtp2.osuosl.org [140.211.166.133])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by mail.kernel.org (Postfix) with ESMTPS id 7899A20838
-	for <iommu@archiver.kernel.org>; Mon, 24 Feb 2020 19:01:02 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTPS id 69F5C21556
+	for <iommu@archiver.kernel.org>; Mon, 24 Feb 2020 19:45:11 +0000 (UTC)
 Authentication-Results: mail.kernel.org;
-	dkim=fail reason="signature verification failed" (2048-bit key) header.d=ziepe.ca header.i=@ziepe.ca header.b="FnR6SEUS"
-DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 7899A20838
-Authentication-Results: mail.kernel.org; dmarc=none (p=none dis=none) header.from=ziepe.ca
+	dkim=fail reason="signature verification failed" (2048-bit key) header.d=infradead.org header.i=@infradead.org header.b="ku0MraN/"
+DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 69F5C21556
+Authentication-Results: mail.kernel.org; dmarc=none (p=none dis=none) header.from=lst.de
 Authentication-Results: mail.kernel.org; spf=pass smtp.mailfrom=iommu-bounces@lists.linux-foundation.org
 Received: from localhost (localhost [127.0.0.1])
-	by fraxinus.osuosl.org (Postfix) with ESMTP id 48C5085C4C;
-	Mon, 24 Feb 2020 19:01:02 +0000 (UTC)
-X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from fraxinus.osuosl.org ([127.0.0.1])
-	by localhost (.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
-	with ESMTP id uLoF6yOVD53x; Mon, 24 Feb 2020 19:01:01 +0000 (UTC)
-Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [140.211.9.56])
-	by fraxinus.osuosl.org (Postfix) with ESMTP id CA99B85C19;
-	Mon, 24 Feb 2020 19:01:01 +0000 (UTC)
-Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
-	by lists.linuxfoundation.org (Postfix) with ESMTP id B2B91C18DA;
-	Mon, 24 Feb 2020 19:01:01 +0000 (UTC)
-Received: from hemlock.osuosl.org (smtp2.osuosl.org [140.211.166.133])
- by lists.linuxfoundation.org (Postfix) with ESMTP id 6F864C0177
- for <iommu@lists.linux-foundation.org>; Mon, 24 Feb 2020 19:01:00 +0000 (UTC)
-Received: from localhost (localhost [127.0.0.1])
- by hemlock.osuosl.org (Postfix) with ESMTP id 6B61486E1A
- for <iommu@lists.linux-foundation.org>; Mon, 24 Feb 2020 19:01:00 +0000 (UTC)
+	by hemlock.osuosl.org (Postfix) with ESMTP id 3A8B387216;
+	Mon, 24 Feb 2020 19:45:11 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
 Received: from hemlock.osuosl.org ([127.0.0.1])
+	by localhost (.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
+	with ESMTP id ZOyi5vnzUanr; Mon, 24 Feb 2020 19:45:10 +0000 (UTC)
+Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [140.211.9.56])
+	by hemlock.osuosl.org (Postfix) with ESMTP id 5895B8700D;
+	Mon, 24 Feb 2020 19:45:10 +0000 (UTC)
+Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
+	by lists.linuxfoundation.org (Postfix) with ESMTP id 375B6C1D85;
+	Mon, 24 Feb 2020 19:45:10 +0000 (UTC)
+Received: from whitealder.osuosl.org (smtp1.osuosl.org [140.211.166.138])
+ by lists.linuxfoundation.org (Postfix) with ESMTP id 12893C0177
+ for <iommu@lists.linux-foundation.org>; Mon, 24 Feb 2020 19:45:08 +0000 (UTC)
+Received: from localhost (localhost [127.0.0.1])
+ by whitealder.osuosl.org (Postfix) with ESMTP id EEB57856B7
+ for <iommu@lists.linux-foundation.org>; Mon, 24 Feb 2020 19:45:07 +0000 (UTC)
+X-Virus-Scanned: amavisd-new at osuosl.org
+Received: from whitealder.osuosl.org ([127.0.0.1])
  by localhost (.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
- with ESMTP id 0mm5jwvnb5qF for <iommu@lists.linux-foundation.org>;
- Mon, 24 Feb 2020 19:00:59 +0000 (UTC)
+ with ESMTP id cBjOqCoX1G7v for <iommu@lists.linux-foundation.org>;
+ Mon, 24 Feb 2020 19:45:07 +0000 (UTC)
 X-Greylist: from auto-whitelisted by SQLgrey-1.7.6
-Received: from mail-qv1-f66.google.com (mail-qv1-f66.google.com
- [209.85.219.66])
- by hemlock.osuosl.org (Postfix) with ESMTPS id B51F085EE8
- for <iommu@lists.linux-foundation.org>; Mon, 24 Feb 2020 19:00:59 +0000 (UTC)
-Received: by mail-qv1-f66.google.com with SMTP id y8so4599388qvk.6
- for <iommu@lists.linux-foundation.org>; Mon, 24 Feb 2020 11:00:59 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ziepe.ca; s=google;
- h=date:from:to:cc:subject:message-id:references:mime-version
- :content-disposition:in-reply-to:user-agent;
- bh=nS4y9b6My/7+JIxHts6eLm8z0C4thsb5l3wuyiXD29Q=;
- b=FnR6SEUSqjm6pva9hmjZjjMQWlNtH8BimVmLzNHoyK5KObnwJJd4v62FvcucQXR613
- Vs8HRCZGupCTQ5IZ0JUUxDfBksnOmCrAaBY+t9FVQ6WaO9/f1nfENMH64EtLf6mQOl3A
- ULGnEHBvxwQ+J67AeNEUPMlBMuj+D9qb1H5X2oBhmsBZnIHcb4yro7ts8Lp+wdj45jEW
- v76e8KPBbvQd89kU+MetflzO8JQksrPwRwleGV8a9HuL+52ruaZpjBkc9Ny6pYP+Y1YO
- IlJp1zbAGL4jPjja65grNuAP/DFEdsR9iZ2aPGrstIS0jUFiDV/TkZWtZDP/2nIWRKh9
- 659A==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
- d=1e100.net; s=20161025;
- h=x-gm-message-state:date:from:to:cc:subject:message-id:references
- :mime-version:content-disposition:in-reply-to:user-agent;
- bh=nS4y9b6My/7+JIxHts6eLm8z0C4thsb5l3wuyiXD29Q=;
- b=FPE9a7jtrg/y9XgfEgU52fZoz45tf5uWZqOE7JpFMa4BfCYbJ6P1eNaLJS7sdSatZs
- 64HbcCPiRLPRHzICoD1may8Z68zqlpbJ3xqAbcKAnwEyy0iFYBiR0GZhS1leZUE6CZMS
- 45KMpnNfQKkrOOOFke4tsVVs9X/3KQdjLtzwMGEfWCehXbYZ2glqKO8WHyitcEYXB0+F
- QOba1bKeDWQsHt6wvcjtHyedHUefB+dFTuCQl4CZ9nSiEjPtbRFk7iNKJC6+x++CJ4Mo
- PBbIO93G/g0m4tCT1/rhqycReAmmQiQ2O6PltdxkUqj1XkZpUcu/0++n9I1Jz4+rEi2i
- CFWA==
-X-Gm-Message-State: APjAAAUk6xtb4E+Ovowhe9bQGaznaujbY/svPk02n60IYj/nHWasTAIu
- 1bE2Jm8XV9WTGyvIC0u77xr7yw==
-X-Google-Smtp-Source: APXvYqyNbYKidHbzZ1XJJ2LbIhIEjWa9RFdUt4bTzm6wm+o3ErpK3Y9OIJTvmpvQbXJ0sVD9TGvEfA==
-X-Received: by 2002:ad4:4b21:: with SMTP id s1mr47274639qvw.81.1582570858491; 
- Mon, 24 Feb 2020 11:00:58 -0800 (PST)
-Received: from ziepe.ca
- (hlfxns017vw-142-68-57-212.dhcp-dynamic.fibreop.ns.bellaliant.net.
- [142.68.57.212])
- by smtp.gmail.com with ESMTPSA id m17sm6086872qki.128.2020.02.24.11.00.57
- (version=TLS1_2 cipher=ECDHE-RSA-CHACHA20-POLY1305 bits=256/256);
- Mon, 24 Feb 2020 11:00:57 -0800 (PST)
-Received: from jgg by mlx.ziepe.ca with local (Exim 4.90_1)
- (envelope-from <jgg@ziepe.ca>)
- id 1j6IyO-0005Dy-Tk; Mon, 24 Feb 2020 15:00:56 -0400
-Date: Mon, 24 Feb 2020 15:00:56 -0400
-From: Jason Gunthorpe <jgg@ziepe.ca>
-To: Jean-Philippe Brucker <jean-philippe@linaro.org>
-Subject: Re: [PATCH v4 01/26] mm/mmu_notifiers: pass private data down to
- alloc_notifier()
-Message-ID: <20200224190056.GT31668@ziepe.ca>
-References: <20200224182401.353359-1-jean-philippe@linaro.org>
- <20200224182401.353359-2-jean-philippe@linaro.org>
+Received: from bombadil.infradead.org (bombadil.infradead.org
+ [198.137.202.133])
+ by whitealder.osuosl.org (Postfix) with ESMTPS id 9AE438560F
+ for <iommu@lists.linux-foundation.org>; Mon, 24 Feb 2020 19:45:06 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
+ d=infradead.org; s=bombadil.20170209; h=Content-Transfer-Encoding:
+ MIME-Version:References:In-Reply-To:Message-Id:Date:Subject:Cc:To:From:Sender
+ :Reply-To:Content-Type:Content-ID:Content-Description;
+ bh=ehuEnMa40tVXLpF/glmGVXLJpTa9E2IWiFFmlUlfLg0=; b=ku0MraN/rswEKoLi7Z3VUhdezm
+ dWszo1vN0N4b9PlU97AKsjSLgmEuF5S5NptUZEKWkFbuEULgisaEg31ThaW8p09mVitqfxCQeALtz
+ 7+cjqwpHhKtKAIH5pJrcO0WHHlWx9xGpUqKIWieckkVAbEVA2svWffALvHr4klOIiso1ys4NvdWnz
+ nZj1AGw3knw5t6SI+iMaAIAPtm8oF/q1RSZEezIjenxTs8NtKIx/6pYt3hTWQjqqlAK2fxOwIwUDi
+ 6AuR0KYQAEs/xsBFRiWg0hXLDVtAHQ1k4+6ZDtOUH5Ln8+50l6sYoc3sXrmQX23lJnFiSVhqzx5so
+ hu6jSdpw==;
+Received: from [4.28.11.157] (helo=localhost)
+ by bombadil.infradead.org with esmtpsa (Exim 4.92.3 #3 (Red Hat Linux))
+ id 1j6Jes-0006XH-JW; Mon, 24 Feb 2020 19:44:50 +0000
+From: Christoph Hellwig <hch@lst.de>
+To: Jonas Bonn <jonas@southpole.se>,
+ Stefan Kristiansson <stefan.kristiansson@saunalahti.fi>,
+ Stafford Horne <shorne@gmail.com>
+Subject: [PATCH 3/5] dma-direct: make uncached_kernel_address more general
+Date: Mon, 24 Feb 2020 11:44:43 -0800
+Message-Id: <20200224194446.690816-4-hch@lst.de>
+X-Mailer: git-send-email 2.24.1
+In-Reply-To: <20200224194446.690816-1-hch@lst.de>
+References: <20200224194446.690816-1-hch@lst.de>
 MIME-Version: 1.0
-Content-Disposition: inline
-In-Reply-To: <20200224182401.353359-2-jean-philippe@linaro.org>
-User-Agent: Mutt/1.9.4 (2018-02-28)
-Cc: mark.rutland@arm.com, linux-pci@vger.kernel.org, linux-mm@kvack.org,
- will@kernel.org, Dimitri Sivanich <sivanich@sgi.com>, catalin.marinas@arm.com,
- zhangfei.gao@linaro.org, devicetree@vger.kernel.org, kevin.tian@intel.com,
- Arnd Bergmann <arnd@arndb.de>, robh+dt@kernel.org,
- linux-arm-kernel@lists.infradead.org,
- Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
- iommu@lists.linux-foundation.org, Andrew Morton <akpm@linux-foundation.org>,
- robin.murphy@arm.com, christian.koenig@amd.com
+X-SRS-Rewrite: SMTP reverse-path rewritten from <hch@infradead.org> by
+ bombadil.infradead.org. See http://www.infradead.org/rpr.html
+Cc: Mark Rutland <mark.rutland@arm.com>, linux-arch@vger.kernel.org,
+ Robin Murphy <robin.murphy@arm.com>, linux-kernel@vger.kernel.org,
+ iommu@lists.linux-foundation.org, openrisc@lists.librecores.org,
+ Will Deacon <will@kernel.org>, linux-arm-kernel@lists.infradead.org
 X-BeenThere: iommu@lists.linux-foundation.org
 X-Mailman-Version: 2.1.15
 Precedence: list
@@ -121,42 +95,209 @@ Content-Transfer-Encoding: 7bit
 Errors-To: iommu-bounces@lists.linux-foundation.org
 Sender: "iommu" <iommu-bounces@lists.linux-foundation.org>
 
-On Mon, Feb 24, 2020 at 07:23:36PM +0100, Jean-Philippe Brucker wrote:
-> The new allocation scheme introduced by 2c7933f53f6b ("mm/mmu_notifiers:
-> add a get/put scheme for the registration") provides a convenient way
-> for users to attach notifier data to an mm. However, it would be even
-> better to create this notifier data atomically.
-> 
-> Since the alloc_notifier() callback only takes an mm argument at the
-> moment, some users have to perform the allocation in two times.
-> alloc_notifier() initially creates an incomplete structure, which is
-> then finalized using more context once mmu_notifier_get() returns. This
-> second step requires carrying an initialization lock in the notifier
-> data and playing dirty tricks to order memory accesses against live
-> invalidation.
+Rename the symbol to arch_dma_set_uncached, and pass a size to it as
+well as allow an error return.  That will allow reusing this hook for
+in-place pagetable remapping.
 
-This was the intended pattern. Tthere shouldn't be an real issue as
-there shouldn't be any data on which to invalidate, ie the later patch
-does:
+As the in-place remap doesn't always require an explicit cache flush,
+also detangle ARCH_HAS_DMA_PREP_COHERENT from ARCH_HAS_DMA_SET_UNCACHED.
 
-+       list_for_each_entry_rcu(bond, &io_mm->devices, mm_head)
+Signed-off-by: Christoph Hellwig <hch@lst.de>
+---
+ arch/Kconfig                    |  8 ++++----
+ arch/microblaze/Kconfig         |  2 +-
+ arch/microblaze/mm/consistent.c |  2 +-
+ arch/mips/Kconfig               |  3 ++-
+ arch/mips/mm/dma-noncoherent.c  |  2 +-
+ arch/nios2/Kconfig              |  3 ++-
+ arch/nios2/mm/dma-mapping.c     |  2 +-
+ arch/xtensa/Kconfig             |  2 +-
+ arch/xtensa/kernel/pci-dma.c    |  2 +-
+ include/linux/dma-noncoherent.h |  2 +-
+ kernel/dma/direct.c             | 10 ++++++----
+ 11 files changed, 21 insertions(+), 17 deletions(-)
 
-And that list is empty post-allocation, so no 'dirty tricks' required.
+diff --git a/arch/Kconfig b/arch/Kconfig
+index 7994b239f155..090cfe0c82a7 100644
+--- a/arch/Kconfig
++++ b/arch/Kconfig
+@@ -248,11 +248,11 @@ config ARCH_HAS_SET_DIRECT_MAP
+ 	bool
+ 
+ #
+-# Select if arch has an uncached kernel segment and provides the
+-# uncached_kernel_address symbol to use it
++# Select if the architecture provides the arch_dma_set_uncached symbol to
++# either provide an uncached segement alias for a DMA allocation, or
++# to remap the page tables in place.
+ #
+-config ARCH_HAS_UNCACHED_SEGMENT
+-	select ARCH_HAS_DMA_PREP_COHERENT
++config ARCH_HAS_DMA_SET_UNCACHED
+ 	bool
+ 
+ # Select if arch init_task must go in the __init_task_data section
+diff --git a/arch/microblaze/Kconfig b/arch/microblaze/Kconfig
+index 6a331bd57ea8..9606c244b5b8 100644
+--- a/arch/microblaze/Kconfig
++++ b/arch/microblaze/Kconfig
+@@ -8,7 +8,7 @@ config MICROBLAZE
+ 	select ARCH_HAS_GCOV_PROFILE_ALL
+ 	select ARCH_HAS_SYNC_DMA_FOR_CPU
+ 	select ARCH_HAS_SYNC_DMA_FOR_DEVICE
+-	select ARCH_HAS_UNCACHED_SEGMENT if !MMU
++	select ARCH_HAS_DMA_SET_UNCACHED if !MMU
+ 	select ARCH_MIGHT_HAVE_PC_PARPORT
+ 	select ARCH_WANT_IPC_PARSE_VERSION
+ 	select BUILDTIME_TABLE_SORT
+diff --git a/arch/microblaze/mm/consistent.c b/arch/microblaze/mm/consistent.c
+index cede7c5e8135..e09b66e43cb6 100644
+--- a/arch/microblaze/mm/consistent.c
++++ b/arch/microblaze/mm/consistent.c
+@@ -40,7 +40,7 @@ void arch_dma_prep_coherent(struct page *page, size_t size)
+ #define UNCACHED_SHADOW_MASK 0
+ #endif /* CONFIG_XILINX_UNCACHED_SHADOW */
+ 
+-void *uncached_kernel_address(void *ptr)
++void *arch_dma_set_uncached(void *ptr, size_t size)
+ {
+ 	unsigned long addr = (unsigned long)ptr;
+ 
+diff --git a/arch/mips/Kconfig b/arch/mips/Kconfig
+index 797d7f1ad5fe..489185db501e 100644
+--- a/arch/mips/Kconfig
++++ b/arch/mips/Kconfig
+@@ -1187,8 +1187,9 @@ config DMA_NONCOHERENT
+ 	# significant advantages.
+ 	#
+ 	select ARCH_HAS_DMA_WRITE_COMBINE
++	select ARCH_HAS_DMA_PREP_COHERENT
+ 	select ARCH_HAS_SYNC_DMA_FOR_DEVICE
+-	select ARCH_HAS_UNCACHED_SEGMENT
++	select ARCH_HAS_DMA_SET_UNCACHED
+ 	select DMA_NONCOHERENT_MMAP
+ 	select DMA_NONCOHERENT_CACHE_SYNC
+ 	select NEED_DMA_MAP_STATE
+diff --git a/arch/mips/mm/dma-noncoherent.c b/arch/mips/mm/dma-noncoherent.c
+index 77dce28ad0a0..fcea92d95d86 100644
+--- a/arch/mips/mm/dma-noncoherent.c
++++ b/arch/mips/mm/dma-noncoherent.c
+@@ -49,7 +49,7 @@ void arch_dma_prep_coherent(struct page *page, size_t size)
+ 	dma_cache_wback_inv((unsigned long)page_address(page), size);
+ }
+ 
+-void *uncached_kernel_address(void *addr)
++void *arch_dma_set_uncached(void *addr, size_t size)
+ {
+ 	return (void *)(__pa(addr) + UNCAC_BASE);
+ }
+diff --git a/arch/nios2/Kconfig b/arch/nios2/Kconfig
+index 44b5da37e8bd..2fc4ed210b5f 100644
+--- a/arch/nios2/Kconfig
++++ b/arch/nios2/Kconfig
+@@ -2,9 +2,10 @@
+ config NIOS2
+ 	def_bool y
+ 	select ARCH_32BIT_OFF_T
++	select ARCH_HAS_DMA_PREP_COHERENT
+ 	select ARCH_HAS_SYNC_DMA_FOR_CPU
+ 	select ARCH_HAS_SYNC_DMA_FOR_DEVICE
+-	select ARCH_HAS_UNCACHED_SEGMENT
++	select ARCH_HAS_DMA_SET_UNCACHED
+ 	select ARCH_NO_SWAP
+ 	select TIMER_OF
+ 	select GENERIC_ATOMIC64
+diff --git a/arch/nios2/mm/dma-mapping.c b/arch/nios2/mm/dma-mapping.c
+index f30f2749257c..fd887d5f3f9a 100644
+--- a/arch/nios2/mm/dma-mapping.c
++++ b/arch/nios2/mm/dma-mapping.c
+@@ -67,7 +67,7 @@ void arch_dma_prep_coherent(struct page *page, size_t size)
+ 	flush_dcache_range(start, start + size);
+ }
+ 
+-void *uncached_kernel_address(void *ptr)
++void *arch_dma_set_uncached(void *ptr, size_t size)
+ {
+ 	unsigned long addr = (unsigned long)ptr;
+ 
+diff --git a/arch/xtensa/Kconfig b/arch/xtensa/Kconfig
+index 32ee759a3fda..de229424b659 100644
+--- a/arch/xtensa/Kconfig
++++ b/arch/xtensa/Kconfig
+@@ -6,7 +6,7 @@ config XTENSA
+ 	select ARCH_HAS_DMA_PREP_COHERENT if MMU
+ 	select ARCH_HAS_SYNC_DMA_FOR_CPU if MMU
+ 	select ARCH_HAS_SYNC_DMA_FOR_DEVICE if MMU
+-	select ARCH_HAS_UNCACHED_SEGMENT if MMU
++	select ARCH_HAS_DMA_SET_UNCACHED if MMU
+ 	select ARCH_USE_QUEUED_RWLOCKS
+ 	select ARCH_USE_QUEUED_SPINLOCKS
+ 	select ARCH_WANT_FRAME_POINTERS
+diff --git a/arch/xtensa/kernel/pci-dma.c b/arch/xtensa/kernel/pci-dma.c
+index 6a685545d5c9..17c4384f8495 100644
+--- a/arch/xtensa/kernel/pci-dma.c
++++ b/arch/xtensa/kernel/pci-dma.c
+@@ -92,7 +92,7 @@ void arch_dma_prep_coherent(struct page *page, size_t size)
+  * coherent DMA memory operations when CONFIG_MMU is not enabled.
+  */
+ #ifdef CONFIG_MMU
+-void *uncached_kernel_address(void *p)
++void *arch_dma_set_uncached(void *p, size_t size)
+ {
+ 	return p + XCHAL_KSEG_BYPASS_VADDR - XCHAL_KSEG_CACHED_VADDR;
+ }
+diff --git a/include/linux/dma-noncoherent.h b/include/linux/dma-noncoherent.h
+index b6b72e19b0cd..1a4039506673 100644
+--- a/include/linux/dma-noncoherent.h
++++ b/include/linux/dma-noncoherent.h
+@@ -108,6 +108,6 @@ static inline void arch_dma_prep_coherent(struct page *page, size_t size)
+ }
+ #endif /* CONFIG_ARCH_HAS_DMA_PREP_COHERENT */
+ 
+-void *uncached_kernel_address(void *addr);
++void *arch_dma_set_uncached(void *addr, size_t size);
+ 
+ #endif /* _LINUX_DMA_NONCOHERENT_H */
+diff --git a/kernel/dma/direct.c b/kernel/dma/direct.c
+index 9dfcc7be4903..f01a8191fd59 100644
+--- a/kernel/dma/direct.c
++++ b/kernel/dma/direct.c
+@@ -180,10 +180,12 @@ void *dma_direct_alloc_pages(struct device *dev, size_t size,
+ 
+ 	memset(ret, 0, size);
+ 
+-	if (IS_ENABLED(CONFIG_ARCH_HAS_UNCACHED_SEGMENT) &&
++	if (IS_ENABLED(CONFIG_ARCH_HAS_DMA_SET_UNCACHED) &&
+ 	    dma_alloc_need_uncached(dev, attrs)) {
+ 		arch_dma_prep_coherent(page, size);
+-		ret = uncached_kernel_address(ret);
++		ret = arch_dma_set_uncached(ret, size);
++		if (IS_ERR(ret))
++			goto out_free_pages;
+ 	}
+ done:
+ 	if (force_dma_unencrypted(dev))
+@@ -224,7 +226,7 @@ void dma_direct_free_pages(struct device *dev, size_t size, void *cpu_addr,
+ void *dma_direct_alloc(struct device *dev, size_t size,
+ 		dma_addr_t *dma_handle, gfp_t gfp, unsigned long attrs)
+ {
+-	if (!IS_ENABLED(CONFIG_ARCH_HAS_UNCACHED_SEGMENT) &&
++	if (!IS_ENABLED(CONFIG_ARCH_HAS_DMA_SET_UNCACHED) &&
+ 	    !IS_ENABLED(CONFIG_DMA_DIRECT_REMAP) &&
+ 	    dma_alloc_need_uncached(dev, attrs))
+ 		return arch_dma_alloc(dev, size, dma_handle, gfp, attrs);
+@@ -234,7 +236,7 @@ void *dma_direct_alloc(struct device *dev, size_t size,
+ void dma_direct_free(struct device *dev, size_t size,
+ 		void *cpu_addr, dma_addr_t dma_addr, unsigned long attrs)
+ {
+-	if (!IS_ENABLED(CONFIG_ARCH_HAS_UNCACHED_SEGMENT) &&
++	if (!IS_ENABLED(CONFIG_ARCH_HAS_DMA_SET_UNCACHED) &&
+ 	    !IS_ENABLED(CONFIG_DMA_DIRECT_REMAP) &&
+ 	    dma_alloc_need_uncached(dev, attrs))
+ 		arch_dma_free(dev, size, cpu_addr, dma_addr, attrs);
+-- 
+2.24.1
 
-The other op callback is release, which also cannot be called as the
-caller must hold a mmget to establish the notifier.
-
-So just use the locking that already exists. There is one function
-that calls io_mm_get() which immediately calls io_mm_attach, which
-immediately grabs the global iommu_sva_lock.
-
-Thus init the pasid for the first time under that lock and everything
-is fine.
-
-There is nothing inherently wrong with the approach in this patch, but
-it seems unneeded in this case..
-
-Jason
 _______________________________________________
 iommu mailing list
 iommu@lists.linux-foundation.org
