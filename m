@@ -4,96 +4,96 @@ X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 X-Spam-Level: 
 X-Spam-Status: No, score=-9.6 required=3.0 tests=DKIM_INVALID,DKIM_SIGNED,
 	HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_PATCH,MAILING_LIST_MULTI,SIGNED_OFF_BY,
-	SPF_HELO_NONE,SPF_PASS,USER_AGENT_GIT autolearn=ham autolearn_force=no
-	version=3.4.0
+	SPF_HELO_NONE,SPF_PASS,USER_AGENT_GIT autolearn=unavailable
+	autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 2711DC38BF8
-	for <iommu@archiver.kernel.org>; Mon, 24 Feb 2020 18:24:53 +0000 (UTC)
-Received: from silver.osuosl.org (smtp3.osuosl.org [140.211.166.136])
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 0F695C38BFC
+	for <iommu@archiver.kernel.org>; Mon, 24 Feb 2020 18:24:55 +0000 (UTC)
+Received: from fraxinus.osuosl.org (smtp4.osuosl.org [140.211.166.137])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by mail.kernel.org (Postfix) with ESMTPS id EFC8520880
-	for <iommu@archiver.kernel.org>; Mon, 24 Feb 2020 18:24:52 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTPS id D91F420CC7
+	for <iommu@archiver.kernel.org>; Mon, 24 Feb 2020 18:24:54 +0000 (UTC)
 Authentication-Results: mail.kernel.org;
-	dkim=fail reason="signature verification failed" (2048-bit key) header.d=linaro.org header.i=@linaro.org header.b="zxiRGOVQ"
-DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org EFC8520880
+	dkim=fail reason="signature verification failed" (2048-bit key) header.d=linaro.org header.i=@linaro.org header.b="fv4SMCnv"
+DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org D91F420CC7
 Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=linaro.org
 Authentication-Results: mail.kernel.org; spf=pass smtp.mailfrom=iommu-bounces@lists.linux-foundation.org
 Received: from localhost (localhost [127.0.0.1])
-	by silver.osuosl.org (Postfix) with ESMTP id D4BD72050F;
-	Mon, 24 Feb 2020 18:24:52 +0000 (UTC)
+	by fraxinus.osuosl.org (Postfix) with ESMTP id BDA6D835D8;
+	Mon, 24 Feb 2020 18:24:54 +0000 (UTC)
+X-Virus-Scanned: amavisd-new at osuosl.org
+Received: from fraxinus.osuosl.org ([127.0.0.1])
+	by localhost (.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
+	with ESMTP id eCFTTxGa1pON; Mon, 24 Feb 2020 18:24:54 +0000 (UTC)
+Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [140.211.9.56])
+	by fraxinus.osuosl.org (Postfix) with ESMTP id B650085E98;
+	Mon, 24 Feb 2020 18:24:53 +0000 (UTC)
+Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
+	by lists.linuxfoundation.org (Postfix) with ESMTP id 918BDC18DA;
+	Mon, 24 Feb 2020 18:24:53 +0000 (UTC)
+Received: from silver.osuosl.org (smtp3.osuosl.org [140.211.166.136])
+ by lists.linuxfoundation.org (Postfix) with ESMTP id 305B1C18DA
+ for <iommu@lists.linux-foundation.org>; Mon, 24 Feb 2020 18:24:51 +0000 (UTC)
+Received: from localhost (localhost [127.0.0.1])
+ by silver.osuosl.org (Postfix) with ESMTP id 1B3102050F
+ for <iommu@lists.linux-foundation.org>; Mon, 24 Feb 2020 18:24:51 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
 Received: from silver.osuosl.org ([127.0.0.1])
-	by localhost (.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
-	with ESMTP id q9-q0HMy8VxZ; Mon, 24 Feb 2020 18:24:52 +0000 (UTC)
-Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [140.211.9.56])
-	by silver.osuosl.org (Postfix) with ESMTP id 367CA20501;
-	Mon, 24 Feb 2020 18:24:52 +0000 (UTC)
-Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
-	by lists.linuxfoundation.org (Postfix) with ESMTP id 23CCAC18DA;
-	Mon, 24 Feb 2020 18:24:52 +0000 (UTC)
-Received: from whitealder.osuosl.org (smtp1.osuosl.org [140.211.166.138])
- by lists.linuxfoundation.org (Postfix) with ESMTP id C4931C1D88
- for <iommu@lists.linux-foundation.org>; Mon, 24 Feb 2020 18:24:49 +0000 (UTC)
-Received: from localhost (localhost [127.0.0.1])
- by whitealder.osuosl.org (Postfix) with ESMTP id 9BF1985CE2
- for <iommu@lists.linux-foundation.org>; Mon, 24 Feb 2020 18:24:49 +0000 (UTC)
-X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from whitealder.osuosl.org ([127.0.0.1])
  by localhost (.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
- with ESMTP id YETAPMC0qa-V for <iommu@lists.linux-foundation.org>;
- Mon, 24 Feb 2020 18:24:49 +0000 (UTC)
+ with ESMTP id 2m2fW493Wv+t for <iommu@lists.linux-foundation.org>;
+ Mon, 24 Feb 2020 18:24:48 +0000 (UTC)
 X-Greylist: domain auto-whitelisted by SQLgrey-1.7.6
-Received: from mail-wm1-f68.google.com (mail-wm1-f68.google.com
- [209.85.128.68])
- by whitealder.osuosl.org (Postfix) with ESMTPS id C747A85582
- for <iommu@lists.linux-foundation.org>; Mon, 24 Feb 2020 18:24:48 +0000 (UTC)
-Received: by mail-wm1-f68.google.com with SMTP id c84so336706wme.4
- for <iommu@lists.linux-foundation.org>; Mon, 24 Feb 2020 10:24:48 -0800 (PST)
+Received: from mail-wr1-f66.google.com (mail-wr1-f66.google.com
+ [209.85.221.66])
+ by silver.osuosl.org (Postfix) with ESMTPS id C095120501
+ for <iommu@lists.linux-foundation.org>; Mon, 24 Feb 2020 18:24:47 +0000 (UTC)
+Received: by mail-wr1-f66.google.com with SMTP id l5so7322782wrx.4
+ for <iommu@lists.linux-foundation.org>; Mon, 24 Feb 2020 10:24:47 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linaro.org; s=google;
  h=from:to:cc:subject:date:message-id:in-reply-to:references
  :mime-version:content-transfer-encoding;
- bh=1/v4/yX+Rb+z7FmgKRxusFg6LNtZiO3DMXvnBgeOuHA=;
- b=zxiRGOVQbUYycQsFrjTLJX2IpngMLUiFnM9zOzjXR47e2SetqBWdJnpHlovEcuPFBv
- FexG3YDDT1ALrD/D+FKHkP2MIXaGBqx7A0sQaHVDRDNDQVr6jS2GdDb8Dv4EB4Ft15Rc
- X+Oex0fYMVCjcbrMtfUHVdIYJ1+hcTCMOOiPeqQ4R0z6xH0F4B7muTW0XjymSxneLuIP
- UjsAEBRJN0lKsKcUb0AF5d72SsOmuIZT45CPqq1FHWour+tr4KPFS8ATERhupHhS/6vO
- NnLNTmMYIpRJABwOkWxXIjD1Zqj0p9uyUCjjFEDFuUat5g+KAY0cf2+EDDRSjS2adgZy
- cP3g==
+ bh=NRHBKJykpG/l2CLRpIAYf7MF7s3vRHP9YUPKSLfMvLg=;
+ b=fv4SMCnvr/ltph2l+C3yE2rK9K4wI8QLF5VnYwdocUe8//ucsgYRR0KK4iM6jBB6zB
+ AzMs5Nr0Y9GzZhI8kPpCu6Z6IadvFKIuzmtHmzPpJ09JPCmVdjINhxdGb5rqj35RCjse
+ xYohylfBvtq67rXze9BVQXkKxwnp56h/6D6t1S7IO5zLEiT8eS+g5M9gFNoAeE43veUr
+ BOh2fCenr+RsobHOcYs7QpSHNIOHukYHR38/0QxKIDen0V/gPdnJz8euUqtTn/QieTo7
+ QIjaRtodjoY8zQI/CSRapSnvw4JboLhdQzXsp77NGR7dnk8AbFyZ01aC5whAEWdgbeVT
+ h+Zw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
  d=1e100.net; s=20161025;
  h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
  :references:mime-version:content-transfer-encoding;
- bh=1/v4/yX+Rb+z7FmgKRxusFg6LNtZiO3DMXvnBgeOuHA=;
- b=TfZt6Dw+Da/Vnmel3xM8Aw6goxGMCdQR68caPB1DAxGTO0ayX2iz/cJme5WLkbpEtx
- PuCdqw798YijZbJRlzCc35z0rU5UjR7l9mWVyefJc9FR9SBGEvTMZHkD2wPJXmZy719V
- gz++13uo/rwf6g2chce9vcB4jzu1A4rqmLJxKo8jT54Faa+oUvIYCrkB8hGEE/eEoiXM
- AGbwQqDPpk0wP587Er1xADv7Fk5sQO0Rjp2gkrocyW6qgYvGJdIzOf4QpgHnQaAFdZst
- IuvKcQ9BrOQqt1/Vh9fF0qrqGDCHu1YXRGQUAbPuhLyR332z6TkI5pAq06yl9Bsh4Dm8
- TqHw==
-X-Gm-Message-State: APjAAAX2Tr8752no8LkIDbk+n+eO0SJbbh0t0WwPhZkkL+dENx2eumJP
- oU9F4lVkrx+VutQZF+b8OGAn5Cqz+h0=
-X-Google-Smtp-Source: APXvYqxqoFKehhPoecAVUtglmpmoNhk6pIi6LUZIxLg0IgobfRPy8bO8YntSNF9Wq6iiPuinGYBuMA==
-X-Received: by 2002:a05:600c:2255:: with SMTP id
- a21mr309717wmm.79.1582568687070; 
- Mon, 24 Feb 2020 10:24:47 -0800 (PST)
+ bh=NRHBKJykpG/l2CLRpIAYf7MF7s3vRHP9YUPKSLfMvLg=;
+ b=SLvzRfBO01Fxpgp/MutN5U1NocH1QzIejVcEGLQ4HV/yqPJyB/ot9Oabatt3/iLm+r
+ lij5eueFmwSxkROYhtRrQQJH1NGZURmsYeVhDO+bAD0KFjv40Ybr/Mldz76xePis/DJJ
+ nOok48yV+P90HOdaQj0uOpZRcVxasONAKKGCcSLqV87s8PLIqHU2fLSTs6aVe6PWSX1L
+ xuqXLkHrZMfRJQ8Udurd4b42O9yMget1caHUQGLh2fyP1P7kaBwRRuxfuVKraann0Vbr
+ GVzUhW+Vgz3PJVgBwfno59PblWM0BptMI8d7CiyIwIK+Qg8ME01imXBluq0/0ngDkYsS
+ zTvA==
+X-Gm-Message-State: APjAAAXxrwj4r4D6XwB+YNaHNtjxC18AhqPDu7LF8gUrk9b9Vt/7W/Na
+ w4BmqBJwv0nHHaX6Ayn3JevFAYREM9M=
+X-Google-Smtp-Source: APXvYqxd3PKQLrWTH+xuDThNjeJqmjg7tyD5z1KfZrZ7d0GQka2DjspbetTkYKxFAd0IwbQ2IMfIhQ==
+X-Received: by 2002:a5d:4a8c:: with SMTP id o12mr65975078wrq.43.1582568685910; 
+ Mon, 24 Feb 2020 10:24:45 -0800 (PST)
 Received: from localhost.localdomain
  ([2001:171b:c9a8:fbc0:116c:c27a:3e7f:5eaf])
- by smtp.gmail.com with ESMTPSA id n3sm304255wmc.27.2020.02.24.10.24.46
+ by smtp.gmail.com with ESMTPSA id n3sm304255wmc.27.2020.02.24.10.24.44
  (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
- Mon, 24 Feb 2020 10:24:46 -0800 (PST)
+ Mon, 24 Feb 2020 10:24:45 -0800 (PST)
 From: Jean-Philippe Brucker <jean-philippe@linaro.org>
 To: iommu@lists.linux-foundation.org, devicetree@vger.kernel.org,
  linux-arm-kernel@lists.infradead.org, linux-pci@vger.kernel.org,
  linux-mm@kvack.org
-Subject: [PATCH v4 16/26] iommu/arm-smmu-v3: Add dev_to_master() helper
-Date: Mon, 24 Feb 2020 19:23:51 +0100
-Message-Id: <20200224182401.353359-17-jean-philippe@linaro.org>
+Subject: [PATCH v4 15/26] iommu/arm-smmu-v3: Add SVA feature checking
+Date: Mon, 24 Feb 2020 19:23:50 +0100
+Message-Id: <20200224182401.353359-16-jean-philippe@linaro.org>
 X-Mailer: git-send-email 2.25.0
 In-Reply-To: <20200224182401.353359-1-jean-philippe@linaro.org>
 References: <20200224182401.353359-1-jean-philippe@linaro.org>
 MIME-Version: 1.0
-Cc: mark.rutland@arm.com, kevin.tian@intel.com, catalin.marinas@arm.com,
+Cc: mark.rutland@arm.com, kevin.tian@intel.com,
+ Jean-Philippe Brucker <jean-philippe.brucker@arm.com>, catalin.marinas@arm.com,
  robin.murphy@arm.com, robh+dt@kernel.org, zhangfei.gao@linaro.org,
  will@kernel.org, christian.koenig@amd.com
 X-BeenThere: iommu@lists.linux-foundation.org
@@ -113,52 +113,115 @@ Content-Transfer-Encoding: 7bit
 Errors-To: iommu-bounces@lists.linux-foundation.org
 Sender: "iommu" <iommu-bounces@lists.linux-foundation.org>
 
-We'll need to frequently find the SMMU master associated to a device
-when implementing SVA. Move it to a separate function.
+From: Jean-Philippe Brucker <jean-philippe.brucker@arm.com>
+
+Aggregate all sanity-checks for sharing CPU page tables with the SMMU
+under a single ARM_SMMU_FEAT_SVA bit. For PCIe SVA, users also need to
+check FEAT_ATS and FEAT_PRI. For platform SVA, they will most likely have
+to check FEAT_STALLS.
 
 Signed-off-by: Jean-Philippe Brucker <jean-philippe@linaro.org>
 ---
- drivers/iommu/arm-smmu-v3.c | 15 +++++++++++----
- 1 file changed, 11 insertions(+), 4 deletions(-)
+ drivers/iommu/arm-smmu-v3.c | 72 +++++++++++++++++++++++++++++++++++++
+ 1 file changed, 72 insertions(+)
 
 diff --git a/drivers/iommu/arm-smmu-v3.c b/drivers/iommu/arm-smmu-v3.c
-index 77a846440ba6..54bd6913d648 100644
+index b72b2fdcd21f..77a846440ba6 100644
 --- a/drivers/iommu/arm-smmu-v3.c
 +++ b/drivers/iommu/arm-smmu-v3.c
-@@ -747,6 +747,15 @@ static struct arm_smmu_domain *to_smmu_domain(struct iommu_domain *dom)
- 	return container_of(dom, struct arm_smmu_domain, domain);
+@@ -644,6 +644,7 @@ struct arm_smmu_device {
+ #define ARM_SMMU_FEAT_VAX		(1 << 14)
+ #define ARM_SMMU_FEAT_E2H		(1 << 15)
+ #define ARM_SMMU_FEAT_BTM		(1 << 16)
++#define ARM_SMMU_FEAT_SVA		(1 << 17)
+ 	u32				features;
+ 
+ #define ARM_SMMU_OPT_SKIP_PREFETCH	(1 << 0)
+@@ -3873,6 +3874,74 @@ static int arm_smmu_device_reset(struct arm_smmu_device *smmu, bool bypass)
+ 	return 0;
  }
  
-+static struct arm_smmu_master *dev_to_master(struct device *dev)
++static bool arm_smmu_supports_sva(struct arm_smmu_device *smmu)
 +{
-+	struct iommu_fwspec *fwspec = dev_iommu_fwspec_get(dev);
++	unsigned long reg, fld;
++	unsigned long oas;
++	unsigned long asid_bits;
 +
-+	if (!fwspec)
-+		return NULL;
-+	return fwspec->iommu_priv;
++	u32 feat_mask = ARM_SMMU_FEAT_BTM | ARM_SMMU_FEAT_COHERENCY;
++
++	if ((smmu->features & feat_mask) != feat_mask)
++		return false;
++
++	if (!(smmu->pgsize_bitmap & PAGE_SIZE))
++		return false;
++
++	/*
++	 * Get the smallest PA size of all CPUs (sanitized by cpufeature). We're
++	 * not even pretending to support AArch32 here.
++	 */
++	reg = read_sanitised_ftr_reg(SYS_ID_AA64MMFR0_EL1);
++	fld = cpuid_feature_extract_unsigned_field(reg, ID_AA64MMFR0_PARANGE_SHIFT);
++	switch (fld) {
++	case 0x0:
++		oas = 32;
++		break;
++	case 0x1:
++		oas = 36;
++		break;
++	case 0x2:
++		oas = 40;
++		break;
++	case 0x3:
++		oas = 42;
++		break;
++	case 0x4:
++		oas = 44;
++		break;
++	case 0x5:
++		oas = 48;
++		break;
++	case 0x6:
++		oas = 52;
++		break;
++	default:
++		return false;
++	}
++
++	/* abort if MMU outputs addresses greater than what we support. */
++	if (smmu->oas < oas)
++		return false;
++
++	/* We can support bigger ASIDs than the CPU, but not smaller */
++	fld = cpuid_feature_extract_unsigned_field(reg, ID_AA64MMFR0_ASID_SHIFT);
++	asid_bits = fld ? 16 : 8;
++	if (smmu->asid_bits < asid_bits)
++		return false;
++
++	/*
++	 * See max_pinned_asids in arch/arm64/mm/context.c. The following is
++	 * generally the maximum number of bindable processes.
++	 */
++	if (IS_ENABLED(CONFIG_UNMAP_KERNEL_AT_EL0))
++		asid_bits--;
++	dev_dbg(smmu->dev, "%d shared contexts\n", (1 << asid_bits) -
++		num_possible_cpus() - 2);
++
++	return true;
 +}
 +
- static void parse_driver_options(struct arm_smmu_device *smmu)
+ static int arm_smmu_device_hw_probe(struct arm_smmu_device *smmu)
  {
- 	int i = 0;
-@@ -2940,15 +2949,13 @@ static int arm_smmu_attach_dev(struct iommu_domain *domain, struct device *dev)
- {
- 	int ret = 0;
- 	unsigned long flags;
--	struct iommu_fwspec *fwspec = dev_iommu_fwspec_get(dev);
- 	struct arm_smmu_device *smmu;
-+	struct arm_smmu_master *master = dev_to_master(dev);
- 	struct arm_smmu_domain *smmu_domain = to_smmu_domain(domain);
--	struct arm_smmu_master *master;
+ 	u32 reg;
+@@ -4080,6 +4149,9 @@ static int arm_smmu_device_hw_probe(struct arm_smmu_device *smmu)
  
--	if (!fwspec)
-+	if (!master)
- 		return -ENOENT;
+ 	smmu->ias = max(smmu->ias, smmu->oas);
  
--	master = fwspec->iommu_priv;
- 	smmu = master->smmu;
- 
- 	arm_smmu_detach_dev(master);
++	if (arm_smmu_supports_sva(smmu))
++		smmu->features |= ARM_SMMU_FEAT_SVA;
++
+ 	dev_info(smmu->dev, "ias %lu-bit, oas %lu-bit (features 0x%08x)\n",
+ 		 smmu->ias, smmu->oas, smmu->features);
+ 	return 0;
 -- 
 2.25.0
 
