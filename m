@@ -2,104 +2,96 @@ Return-Path: <SRS0=ms/0=4M=lists.linux-foundation.org=iommu-bounces@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-8.1 required=3.0 tests=DKIM_INVALID,DKIM_SIGNED,
-	HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_PATCH,MAILING_LIST_MULTI,SIGNED_OFF_BY,
-	SPF_HELO_NONE,SPF_PASS,USER_AGENT_SANE_1 autolearn=unavailable
-	autolearn_force=no version=3.4.0
+X-Spam-Status: No, score=-5.1 required=3.0 tests=DKIM_INVALID,DKIM_SIGNED,
+	HEADER_FROM_DIFFERENT_DOMAINS,MAILING_LIST_MULTI,SIGNED_OFF_BY,SPF_HELO_NONE,
+	SPF_PASS,USER_AGENT_SANE_1 autolearn=ham autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 7B2A2C11D2B
-	for <iommu@archiver.kernel.org>; Mon, 24 Feb 2020 09:26:53 +0000 (UTC)
-Received: from hemlock.osuosl.org (smtp2.osuosl.org [140.211.166.133])
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 9E068C11D30
+	for <iommu@archiver.kernel.org>; Mon, 24 Feb 2020 11:41:28 +0000 (UTC)
+Received: from whitealder.osuosl.org (smtp1.osuosl.org [140.211.166.138])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by mail.kernel.org (Postfix) with ESMTPS id 42E6520714
-	for <iommu@archiver.kernel.org>; Mon, 24 Feb 2020 09:26:53 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTPS id 67F222082F
+	for <iommu@archiver.kernel.org>; Mon, 24 Feb 2020 11:41:28 +0000 (UTC)
 Authentication-Results: mail.kernel.org;
-	dkim=fail reason="signature verification failed" (1024-bit key) header.d=redhat.com header.i=@redhat.com header.b="QtaeuJs1"
-DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 42E6520714
+	dkim=fail reason="signature verification failed" (1024-bit key) header.d=redhat.com header.i=@redhat.com header.b="ciNY1dL6"
+DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 67F222082F
 Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=redhat.com
 Authentication-Results: mail.kernel.org; spf=pass smtp.mailfrom=iommu-bounces@lists.linux-foundation.org
 Received: from localhost (localhost [127.0.0.1])
-	by hemlock.osuosl.org (Postfix) with ESMTP id 1F51F8545D;
-	Mon, 24 Feb 2020 09:26:53 +0000 (UTC)
-X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from hemlock.osuosl.org ([127.0.0.1])
-	by localhost (.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
-	with ESMTP id 6Bu0hVgAbmF3; Mon, 24 Feb 2020 09:26:49 +0000 (UTC)
-Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [140.211.9.56])
-	by hemlock.osuosl.org (Postfix) with ESMTP id 95C1085740;
-	Mon, 24 Feb 2020 09:26:45 +0000 (UTC)
-Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
-	by lists.linuxfoundation.org (Postfix) with ESMTP id 835A0C07FF;
-	Mon, 24 Feb 2020 09:26:45 +0000 (UTC)
-Received: from whitealder.osuosl.org (smtp1.osuosl.org [140.211.166.138])
- by lists.linuxfoundation.org (Postfix) with ESMTP id C37CDC0177
- for <iommu@lists.linux-foundation.org>; Mon, 24 Feb 2020 09:26:44 +0000 (UTC)
-Received: from localhost (localhost [127.0.0.1])
- by whitealder.osuosl.org (Postfix) with ESMTP id BF93486373
- for <iommu@lists.linux-foundation.org>; Mon, 24 Feb 2020 09:26:44 +0000 (UTC)
+	by whitealder.osuosl.org (Postfix) with ESMTP id 3E30485C57;
+	Mon, 24 Feb 2020 11:41:28 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
 Received: from whitealder.osuosl.org ([127.0.0.1])
+	by localhost (.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
+	with ESMTP id SicYkH4jl46V; Mon, 24 Feb 2020 11:41:27 +0000 (UTC)
+Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [140.211.9.56])
+	by whitealder.osuosl.org (Postfix) with ESMTP id 0A98B8539F;
+	Mon, 24 Feb 2020 11:41:27 +0000 (UTC)
+Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
+	by lists.linuxfoundation.org (Postfix) with ESMTP id E5182C07FF;
+	Mon, 24 Feb 2020 11:41:26 +0000 (UTC)
+Received: from silver.osuosl.org (smtp3.osuosl.org [140.211.166.136])
+ by lists.linuxfoundation.org (Postfix) with ESMTP id 0A62CC0177
+ for <iommu@lists.linux-foundation.org>; Mon, 24 Feb 2020 11:41:26 +0000 (UTC)
+Received: from localhost (localhost [127.0.0.1])
+ by silver.osuosl.org (Postfix) with ESMTP id D9030204A6
+ for <iommu@lists.linux-foundation.org>; Mon, 24 Feb 2020 11:41:25 +0000 (UTC)
+X-Virus-Scanned: amavisd-new at osuosl.org
+Received: from silver.osuosl.org ([127.0.0.1])
  by localhost (.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
- with ESMTP id Lr-g4UG6Canl for <iommu@lists.linux-foundation.org>;
- Mon, 24 Feb 2020 09:26:43 +0000 (UTC)
+ with ESMTP id 6qLexUh0U8q1 for <iommu@lists.linux-foundation.org>;
+ Mon, 24 Feb 2020 11:41:21 +0000 (UTC)
 X-Greylist: domain auto-whitelisted by SQLgrey-1.7.6
-Received: from us-smtp-delivery-1.mimecast.com (us-smtp-1.mimecast.com
- [207.211.31.81])
- by whitealder.osuosl.org (Postfix) with ESMTPS id 9143286064
- for <iommu@lists.linux-foundation.org>; Mon, 24 Feb 2020 09:26:43 +0000 (UTC)
+Received: from us-smtp-1.mimecast.com (us-smtp-delivery-1.mimecast.com
+ [207.211.31.120])
+ by silver.osuosl.org (Postfix) with ESMTPS id E6C30203CE
+ for <iommu@lists.linux-foundation.org>; Mon, 24 Feb 2020 11:41:20 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
- s=mimecast20190719; t=1582536402;
+ s=mimecast20190719; t=1582544479;
  h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
  to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+ content-transfer-encoding:content-transfer-encoding:
  in-reply-to:in-reply-to:references:references;
- bh=A7OI57zr2blLgJ/hwa1LGfLsiQ0/JgcnoRnFk2JvkkQ=;
- b=QtaeuJs1IVONC4AySs0fKwhwlSaTKm2as0Mfs0RYbRUrh9Uhu5p6ciNmiEEY/3pxY5t9VR
- 5SGPNAACPWdfk2dYaTjYRQ+gA4yrepGB/XWscVy9s7M0jRJu2LoCtKMBwnmKAWoNarnlme
- AM+NRSI4j1IftBrCRdgINqlXODM/twA=
+ bh=o9F+8/0eY6bBfYeKnS0y1j6KEbiMQczJ7qFt1eUs+fE=;
+ b=ciNY1dL6SDjdk1kkIYEFyJIrwmLz0W4Gh55ZXTNei8wQHCuTY+jr4gYUVVV/HxVmrqFg3w
+ aWYQ6u00Qqozqgi+PzE/Djj+Craiz5CQlyt+EfurVTcy8L6f7JHG6OI91jiYRSg/LHw2At
+ TTwWmYGvlpBGWOaxT1hWMrufXMHWdyM=
 Received: from mimecast-mx01.redhat.com (mimecast-mx01.redhat.com
  [209.132.183.4]) (Using TLS) by relay.mimecast.com with ESMTP id
- us-mta-133-u3eLj2MsMI6Rh52UwPOX6g-1; Mon, 24 Feb 2020 04:26:35 -0500
-X-MC-Unique: u3eLj2MsMI6Rh52UwPOX6g-1
-Received: from smtp.corp.redhat.com (int-mx02.intmail.prod.int.phx2.redhat.com
- [10.5.11.12])
+ us-mta-119-MHQupH5TOuejso0T4JRw9w-1; Mon, 24 Feb 2020 06:41:06 -0500
+X-MC-Unique: MHQupH5TOuejso0T4JRw9w-1
+Received: from smtp.corp.redhat.com (int-mx04.intmail.prod.int.phx2.redhat.com
+ [10.5.11.14])
  (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
  (No client certificate requested)
- by mimecast-mx01.redhat.com (Postfix) with ESMTPS id C6EC5DB20;
- Mon, 24 Feb 2020 09:26:31 +0000 (UTC)
-Received: from [10.72.13.147] (ovpn-13-147.pek2.redhat.com [10.72.13.147])
- by smtp.corp.redhat.com (Postfix) with ESMTP id 87B9560BF7;
- Mon, 24 Feb 2020 09:26:22 +0000 (UTC)
-Subject: Re: [PATCH 0/2] virtio: decouple protected guest RAM form
- VIRTIO_F_IOMMU_PLATFORM
-To: "Michael S. Tsirkin" <mst@redhat.com>
-References: <20200220160606.53156-1-pasic@linux.ibm.com>
- <426e6972-0565-c931-e171-da0f58fbf856@redhat.com>
- <20200221155602.4de41fa7.pasic@linux.ibm.com>
- <0181712c-e533-fcfd-2638-8a0649d713dd@redhat.com>
- <20200224010607-mutt-send-email-mst@kernel.org>
- <b3c52c67-c740-a50e-2595-fe04d179c881@redhat.com>
- <20200224024641-mutt-send-email-mst@kernel.org>
-From: Jason Wang <jasowang@redhat.com>
-Message-ID: <08d6bdfb-9b49-c278-3c0b-2e02376cf0cf@redhat.com>
-Date: Mon, 24 Feb 2020 17:26:20 +0800
+ by mimecast-mx01.redhat.com (Postfix) with ESMTPS id 96C938017CC;
+ Mon, 24 Feb 2020 11:41:04 +0000 (UTC)
+Received: from [10.36.116.59] (ovpn-116-59.ams2.redhat.com [10.36.116.59])
+ by smtp.corp.redhat.com (Postfix) with ESMTPS id 77A5B5D9CD;
+ Mon, 24 Feb 2020 11:41:02 +0000 (UTC)
+Subject: Re: [PATCH v2] iommu/arm-smmu-v3: Add SMMUv3.2 range invalidation
+ support
+To: Rob Herring <robh@kernel.org>
+References: <20200117211628.27888-1-robh@kernel.org>
+ <2d04f201-3457-08ad-db8e-735f8315d74e@redhat.com>
+ <CAL_Jsq+3=YbcUi=wte-Cmiq-BuD7hRXwSEnHN7E9_bSnHHxG1g@mail.gmail.com>
+From: Auger Eric <eric.auger@redhat.com>
+Message-ID: <118a2dde-7b2b-9250-d70c-5bb2ea614de0@redhat.com>
+Date: Mon, 24 Feb 2020 12:41:00 +0100
 User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:60.0) Gecko/20100101
- Thunderbird/60.8.0
+ Thunderbird/60.4.0
 MIME-Version: 1.0
-In-Reply-To: <20200224024641-mutt-send-email-mst@kernel.org>
-Content-Type: multipart/mixed; boundary="------------BDFD2BED5C3364D3CE35012F"
+In-Reply-To: <CAL_Jsq+3=YbcUi=wte-Cmiq-BuD7hRXwSEnHN7E9_bSnHHxG1g@mail.gmail.com>
 Content-Language: en-US
-X-Scanned-By: MIMEDefang 2.79 on 10.5.11.12
-Cc: linux-s390@vger.kernel.org, Janosch Frank <frankja@linux.ibm.com>,
- "Lendacky, Thomas" <Thomas.Lendacky@amd.com>,
- Cornelia Huck <cohuck@redhat.com>, Ram Pai <linuxram@us.ibm.com>,
- linux-kernel@vger.kernel.org, virtualization@lists.linux-foundation.org,
- Halil Pasic <pasic@linux.ibm.com>,
- Christian Borntraeger <borntraeger@de.ibm.com>,
- iommu@lists.linux-foundation.org, David Gibson <david@gibson.dropbear.id.au>,
- Michael Mueller <mimu@linux.ibm.com>,
- Viktor Mihajlovski <mihajlov@linux.ibm.com>,
- Robin Murphy <robin.murphy@arm.com>, Christoph Hellwig <hch@lst.de>
+X-Scanned-By: MIMEDefang 2.79 on 10.5.11.14
+X-Mimecast-Spam-Score: 0
+X-Mimecast-Originator: redhat.com
+Cc: Jean-Philippe Brucker <jean-philippe@linaro.org>,
+ Robin Murphy <robin.murphy@arm.com>,
+ Linux IOMMU <iommu@lists.linux-foundation.org>, Will Deacon <will@kernel.org>,
+ "moderated list:ARM/FREESCALE IMX / MXC ARM ARCHITECTURE"
+ <linux-arm-kernel@lists.infradead.org>
 X-BeenThere: iommu@lists.linux-foundation.org
 X-Mailman-Version: 2.1.15
 Precedence: list
@@ -112,322 +104,140 @@ List-Post: <mailto:iommu@lists.linux-foundation.org>
 List-Help: <mailto:iommu-request@lists.linux-foundation.org?subject=help>
 List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
  <mailto:iommu-request@lists.linux-foundation.org?subject=subscribe>
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: 7bit
 Errors-To: iommu-bounces@lists.linux-foundation.org
 Sender: "iommu" <iommu-bounces@lists.linux-foundation.org>
 
-This is a multi-part message in MIME format.
---------------BDFD2BED5C3364D3CE35012F
-Content-Type: text/plain; charset=utf-8; format=flowed
-Content-Transfer-Encoding: quoted-printable
+Hi Rob,
 
-
-On 2020/2/24 =E4=B8=8B=E5=8D=883:48, Michael S. Tsirkin wrote:
-> On Mon, Feb 24, 2020 at 02:45:03PM +0800, Jason Wang wrote:
->> On 2020/2/24 =E4=B8=8B=E5=8D=882:06, Michael S. Tsirkin wrote:
->>> On Mon, Feb 24, 2020 at 12:01:57PM +0800, Jason Wang wrote:
->>>> On 2020/2/21 =E4=B8=8B=E5=8D=8810:56, Halil Pasic wrote:
->>>>> On Fri, 21 Feb 2020 14:22:26 +0800
->>>>> Jason Wang <jasowang@redhat.com> wrote:
->>>>>
->>>>>> On 2020/2/21 =E4=B8=8A=E5=8D=8812:06, Halil Pasic wrote:
->>>>>>> Currently if one intends to run a memory protection enabled VM wi=
-th
->>>>>>> virtio devices and linux as the guest OS, one needs to specify th=
-e
->>>>>>> VIRTIO_F_IOMMU_PLATFORM flag for each virtio device to make the g=
-uest
->>>>>>> linux use the DMA API, which in turn handles the memory
->>>>>>> encryption/protection stuff if the guest decides to turn itself i=
-nto
->>>>>>> a protected one. This however makes no sense due to multiple reas=
-ons:
->>>>>>> * The device is not changed by the fact that the guest RAM is
->>>>>>> protected. The so called IOMMU bypass quirk is not affected.
->>>>>>> * This usage is not congruent with  standardised semantics of
->>>>>>> VIRTIO_F_IOMMU_PLATFORM. Guest memory protected is an orthogonal =
-reason
->>>>>>> for using DMA API in virtio (orthogonal with respect to what is
->>>>>>> expressed by VIRTIO_F_IOMMU_PLATFORM).
->>>>>>>
->>>>>>> This series aims to decouple 'have to use DMA API because my (gue=
-st) RAM
->>>>>>> is protected' and 'have to use DMA API because the device told me
->>>>>>> VIRTIO_F_IOMMU_PLATFORM'.
->>>>>>>
->>>>>>> Please find more detailed explanations about the conceptual aspec=
-ts in
->>>>>>> the individual patches. There is however also a very practical pr=
-oblem
->>>>>>> that is addressed by this series.
->>>>>>>
->>>>>>> For vhost-net the feature VIRTIO_F_IOMMU_PLATFORM has the followi=
-ng side
->>>>>>> effect The vhost code assumes it the addresses on the virtio desc=
-riptor
->>>>>>> ring are not guest physical addresses but iova's, and insists on =
-doing a
->>>>>>> translation of these regardless of what transport is used (e.g. w=
-hether
->>>>>>> we emulate a PCI or a CCW device). (For details see commit 6b1e6c=
-c7855b
->>>>>>> "vhost: new device IOTLB API".) On s390 this results in severe
->>>>>>> performance degradation (c.a. factor 10).
->>>>>> Do you see a consistent degradation on the performance, or it only
->>>>>> happen when for during the beginning of the test?
->>>>>>
->>>>> AFAIK the degradation is consistent.
->>>>>
->>>>>>> BTW with ccw I/O there is
->>>>>>> (architecturally) no IOMMU, so the whole address translation make=
-s no
->>>>>>> sense in the context of virtio-ccw.
->>>>>> I suspect we can do optimization in qemu side.
->>>>>>
->>>>>> E.g send memtable entry via IOTLB API when vIOMMU is not enabled.
->>>>>>
->>>>>> If this makes sense, I can draft patch to see if there's any diffe=
-rence.
->>>>> Frankly I would prefer to avoid IOVAs on the descriptor ring (and t=
-he
->>>>> then necessary translation) for virtio-ccw altogether. But Michael
->>>>> voiced his opinion that we should mandate F_IOMMU_PLATFORM for devi=
-ces
->>>>> that could be used with guests running in protected mode. I don't s=
-hare
->>>>> his opinion, but that's an ongoing discussion.
->>>>>
->>>>> Should we end up having to do translation from IOVA in vhost, we ar=
-e
->>>>> very interested in that translation being fast and efficient.
->>>>>
->>>>> In that sense we would be very happy to test any optimization that =
-aim
->>>>> into that direction.
->>>>>
->>>>> Thank you very much for your input!
->>>> Using IOTLB API on platform without IOMMU support is not intended. P=
-lease
->>>> try the attached patch to see if it helps.
->>>>
->>>> Thanks
->>>>
->>>>
->>>>> Regards,
->>>>> Halil
->>>>>
->>>>>> Thanks
->>>>>>
->>>>>>
->>>>>>> Halil Pasic (2):
->>>>>>>       mm: move force_dma_unencrypted() to mem_encrypt.h
->>>>>>>       virtio: let virtio use DMA API when guest RAM is protected
->>>>>>>
->>>>>>>      drivers/virtio/virtio_ring.c |  3 +++
->>>>>>>      include/linux/dma-direct.h   |  9 ---------
->>>>>>>      include/linux/mem_encrypt.h  | 10 ++++++++++
->>>>>>>      3 files changed, 13 insertions(+), 9 deletions(-)
->>>>>>>
->>>>>>>
->>>>>>> base-commit: ca7e1fd1026c5af6a533b4b5447e1d2f153e28f2
->>>> >From 66fa730460875ac99e81d7db2334cd16bb1d2b27 Mon Sep 17 00:00:00 2=
-001
->>>> From: Jason Wang <jasowang@redhat.com>
->>>> Date: Mon, 24 Feb 2020 12:00:10 +0800
->>>> Subject: [PATCH] virtio: turn on IOMMU_PLATFORM properly
->>>>
->>>> When transport does not support IOMMU, we should clear IOMMU_PLATFOR=
-M
->>>> even if the device and vhost claims to support that. This help to
->>>> avoid the performance overhead caused by unnecessary IOTLB miss/upda=
-te
->>>> transactions on such platform.
->>>>
->>>> Signed-off-by: Jason Wang <jasowang@redhat.com>
->>>> ---
->>>>    hw/virtio/virtio-bus.c | 6 +++---
->>>>    1 file changed, 3 insertions(+), 3 deletions(-)
->>>>
->>>> diff --git a/hw/virtio/virtio-bus.c b/hw/virtio/virtio-bus.c
->>>> index d6332d45c3..2741b9fdd2 100644
->>>> --- a/hw/virtio/virtio-bus.c
->>>> +++ b/hw/virtio/virtio-bus.c
->>>> @@ -47,7 +47,6 @@ void virtio_bus_device_plugged(VirtIODevice *vdev,=
- Error **errp)
->>>>        VirtioBusState *bus =3D VIRTIO_BUS(qbus);
->>>>        VirtioBusClass *klass =3D VIRTIO_BUS_GET_CLASS(bus);
->>>>        VirtioDeviceClass *vdc =3D VIRTIO_DEVICE_GET_CLASS(vdev);
->>>> -    bool has_iommu =3D virtio_host_has_feature(vdev, VIRTIO_F_IOMMU=
-_PLATFORM);
->>>>        Error *local_err =3D NULL;
->>>>        DPRINTF("%s: plug device.\n", qbus->name);
->>>> @@ -77,10 +76,11 @@ void virtio_bus_device_plugged(VirtIODevice *vde=
-v, Error **errp)
->>>>            return;
->>>>        }
->>>> -    if (klass->get_dma_as !=3D NULL && has_iommu) {
->>>> -        virtio_add_feature(&vdev->host_features, VIRTIO_F_IOMMU_PLA=
-TFORM);
->>>> +    if (false && klass->get_dma_as !=3D NULL &&
->>>> +        virtio_host_has_feature(vdev, VIRTIO_F_IOMMU_PLATFORM)) {
->>>>            vdev->dma_as =3D klass->get_dma_as(qbus->parent);
->>>>        } else {
->>>> +        virtio_clear_feature(&vdev->host_features, VIRTIO_F_IOMMU_P=
-LATFORM);
->>>>            vdev->dma_as =3D &address_space_memory;
->>>>        }
->>>>    }
->>> This seems to clear it unconditionally. I guess it's just a debugging
->>> patch, the real one will come later?
+On 2/13/20 8:54 PM, Rob Herring wrote:
+> On Thu, Jan 30, 2020 at 9:06 AM Auger Eric <eric.auger@redhat.com> wrote:
 >>
->> My bad, here's the correct one.
+>> Hi Rob,
+>> On 1/17/20 10:16 PM, Rob Herring wrote:
+>>> Arm SMMUv3.2 adds support for TLB range invalidate operations.
+>>> Support for range invalidate is determined by the RIL bit in the IDR3
+>>> register.
+>>>
+>>> The range invalidate is in units of the leaf page size and operates on
+>>> 1-32 chunks of a power of 2 multiple pages. First, we determine from the
+>>> size what power of 2 multiple we can use. Then we calculate how many
+>>> chunks (1-31) of the power of 2 size for the range on the iteration. On
+>>> each iteration, we move up in size by at least 5 bits.
+>>>
+>>> Cc: Eric Auger <eric.auger@redhat.com>
+>>> Cc: Jean-Philippe Brucker <jean-philippe@linaro.org>
+>>> Cc: Will Deacon <will@kernel.org>
+>>> Cc: Robin Murphy <robin.murphy@arm.com>
+>>> Cc: Joerg Roedel <joro@8bytes.org>
+>>> Signed-off-by: Rob Herring <robh@kernel.org>
+>>> ---
+>>>  drivers/iommu/arm-smmu-v3.c | 66 ++++++++++++++++++++++++++++++++++++-
+>>>  1 file changed, 65 insertions(+), 1 deletion(-)
+> 
+> 
+>>> @@ -2003,7 +2024,7 @@ static void arm_smmu_tlb_inv_range(unsigned long iova, size_t size,
+>>>  {
+>>>       u64 cmds[CMDQ_BATCH_ENTRIES * CMDQ_ENT_DWORDS];
+>>>       struct arm_smmu_device *smmu = smmu_domain->smmu;
+>>> -     unsigned long start = iova, end = iova + size;
+>>> +     unsigned long start = iova, end = iova + size, num_pages = 0, tg = 0;
+>>>       int i = 0;
+>>>       struct arm_smmu_cmdq_ent cmd = {
+>>>               .tlbi = {
+>>> @@ -2022,12 +2043,50 @@ static void arm_smmu_tlb_inv_range(unsigned long iova, size_t size,
+>>>               cmd.tlbi.vmid   = smmu_domain->s2_cfg.vmid;
+>>>       }
+>>>
+>>> +     if (smmu->features & ARM_SMMU_FEAT_RANGE_INV) {
+>>> +             /* Get the leaf page size */
+>>> +             tg = __ffs(smmu_domain->domain.pgsize_bitmap);
+>>> +
+>>> +             /* Convert page size of 12,14,16 (log2) to 1,2,3 */
+>>> +             cmd.tlbi.tg = ((tg - ilog2(SZ_4K)) / 2) + 1;
+>>> +
+>>> +             /* Determine what level the granule is at */
+>>> +             cmd.tlbi.ttl = 4 - ((ilog2(granule) - 3) / (tg - 3));
+>>> +
+>>> +             num_pages = size / (1UL << tg);
+>>> +     }
+>>> +
+>>>       while (iova < end) {
+>>>               if (i == CMDQ_BATCH_ENTRIES) {
+>>>                       arm_smmu_cmdq_issue_cmdlist(smmu, cmds, i, false);
+>>>                       i = 0;
+>>>               }
+>>>
+>>> +             if (smmu->features & ARM_SMMU_FEAT_RANGE_INV) {
+>>> +                     /*
+>>> +                      * On each iteration of the loop, the range is 5 bits
+>>> +                      * worth of the aligned size remaining.
+>>> +                      * The range in pages is:
+>>> +                      *
+>>> +                      * range = (num_pages & (0x1f << __ffs(num_pages)))
+>>> +                      */
+>>> +                     unsigned long scale, num;
+>>> +
+>>> +                     /* Determine the power of 2 multiple number of pages */
+>>> +                     scale = __ffs(num_pages);
+>>> +                     cmd.tlbi.scale = scale;
+>>> +
+>>> +                     /* Determine how many chunks of 2^scale size we have */
+>>> +                     num = (num_pages >> scale) & CMDQ_TLBI_RANGE_NUM_MAX;
+>>> +                     cmd.tlbi.num = num - 1;
+>>> +
+>>> +                     /* range is num * 2^scale * pgsize */
+>>> +                     granule = num << (scale + tg);
+>>> +
+>>> +                     /* Clear out the lower order bits for the next iteration */
+>>> +                     num_pages -= num << scale;
+>> Regarding the 2 options given in
+>> https://lore.kernel.org/linux-arm-kernel/CAL_JsqKABoE+0crGwyZdNogNgEoG=MOOpf6deQgH6s73c0UNdA@mail.gmail.com/raw,
 >>
->> Thanks
+>> I understand you implemented 2) but I still do not understand why you
+>> preferred that one against 1).
 >>
->>
->>>> --=20
->>>> 2.19.1
->>>>
->> >From b8a8b582f46bb86c7a745b272db7b744779e5cc7 Mon Sep 17 00:00:00 200=
-1
->> From: Jason Wang <jasowang@redhat.com>
->> Date: Mon, 24 Feb 2020 12:00:10 +0800
->> Subject: [PATCH] virtio: turn on IOMMU_PLATFORM properly
->>
->> When transport does not support IOMMU, we should clear IOMMU_PLATFORM
->> even if the device and vhost claims to support that. This help to
->> avoid the performance overhead caused by unnecessary IOTLB miss/update
->> transactions on such platform.
->>
->> Signed-off-by: Jason Wang <jasowang@redhat.com>
->> ---
->>   hw/virtio/virtio-bus.c | 6 +++---
->>   1 file changed, 3 insertions(+), 3 deletions(-)
->>
->> diff --git a/hw/virtio/virtio-bus.c b/hw/virtio/virtio-bus.c
->> index d6332d45c3..4be64e193e 100644
->> --- a/hw/virtio/virtio-bus.c
->> +++ b/hw/virtio/virtio-bus.c
->> @@ -47,7 +47,6 @@ void virtio_bus_device_plugged(VirtIODevice *vdev, E=
-rror **errp)
->>       VirtioBusState *bus =3D VIRTIO_BUS(qbus);
->>       VirtioBusClass *klass =3D VIRTIO_BUS_GET_CLASS(bus);
->>       VirtioDeviceClass *vdc =3D VIRTIO_DEVICE_GET_CLASS(vdev);
->> -    bool has_iommu =3D virtio_host_has_feature(vdev, VIRTIO_F_IOMMU_P=
-LATFORM);
->>       Error *local_err =3D NULL;
->>  =20
->>       DPRINTF("%s: plug device.\n", qbus->name);
->> @@ -77,10 +76,11 @@ void virtio_bus_device_plugged(VirtIODevice *vdev,=
- Error **errp)
->>           return;
->>       }
->>  =20
->> -    if (klass->get_dma_as !=3D NULL && has_iommu) {
->> -        virtio_add_feature(&vdev->host_features, VIRTIO_F_IOMMU_PLATF=
-ORM);
-> So it looks like this line is unnecessary, but it's an unrelated
-> cleanup, right?
+>> In your case of 1023*4k pages this will invalidate by 31 32*2^0*4K +
+>> 31*2^0*4K pages
+>> whereas you could achieve that with 10 invalidations with the 1st algo.
+>> I did not get the case where it is more efficient. Please can you detail.
+> 
+> No, it's only 2 commands. We do 31*4K and then 31*2^5*4K. Here's a the
+> output of a test case:
+> 
+> iova=10001000, num_pages=0x3e0, granule=1f000, num=31, scale=0, ttl=3
+> iova=10020000, num_pages=0x0, granule=3e0000, num=31, scale=5, ttl=3
+> 
+> (num_pages being what's left at end of the loop)
 
+> 
+> As I mentioned on v1, worst case is 4 commands for up to 4GB. It's
+> 20-bits of size (32-12) and each loop processes a minimum of 5 bits.
+> Each loop becomes a larger aligned size, so scale goes up each pass.
+> This is what I tried to explain in the top comment.
 
-Yes.
+Sorry for the delay, I was out of the office. Yes indeed I misunderstood
+the code and the algo looks good to me now.
 
+just a minor comment, I would use a dedicated "inv_range" loop block
+local variable instead of "granule".
 
->
->> +    if (klass->get_dma_as !=3D NULL &&
->> +        virtio_host_has_feature(vdev, VIRTIO_F_IOMMU_PLATFORM)) {
->>           vdev->dma_as =3D klass->get_dma_as(qbus->parent);
->>       } else {
->> +        virtio_clear_feature(&vdev->host_features, VIRTIO_F_IOMMU_PLA=
-TFORM);
->
-> Of course any change like that will have to affect migration compat, et=
-c.
-> Can't we clear the bit when we are sending the features to vhost
-> instead?
-
-
-That's better.
-
-How about attached?
+Besides
+Reviewed-by: Eric Auger <eric.auger@redhat.com>
 
 Thanks
 
-
->
->
->>           vdev->dma_as =3D &address_space_memory;
->>       }
->>   }
->> --=20
->> 2.19.1
->>
-
---------------BDFD2BED5C3364D3CE35012F
-Content-Type: text/x-patch;
- name="0001-vhost-do-not-set-VIRTIO_F_IOMMU_PLATFORM-when-IOMMU-.patch"
-Content-Transfer-Encoding: 7bit
-Content-Disposition: attachment;
- filename*0="0001-vhost-do-not-set-VIRTIO_F_IOMMU_PLATFORM-when-IOMMU-.pa";
- filename*1="tch"
-
-From 3177c5194c729f3056b84c67664c59b9b949bb76 Mon Sep 17 00:00:00 2001
-From: Jason Wang <jasowang@redhat.com>
-Date: Mon, 24 Feb 2020 17:24:14 +0800
-Subject: [PATCH] vhost: do not set VIRTIO_F_IOMMU_PLATFORM when IOMMU is not
- used
-
-We enable device IOTLB unconditionally when VIRTIO_F_IOMMU_PLATFORM is
-negotiated. This lead unnecessary IOTLB miss/update transactions when
-IOMMU is used. This patch fixes this.
-
-Signed-off-by: Jason Wang <jasowang@redhat.com>
----
- hw/net/virtio-net.c | 3 +++
- hw/virtio/vhost.c   | 4 +---
- 2 files changed, 4 insertions(+), 3 deletions(-)
-
-diff --git a/hw/net/virtio-net.c b/hw/net/virtio-net.c
-index 3627bb1717..0d50e8bd34 100644
---- a/hw/net/virtio-net.c
-+++ b/hw/net/virtio-net.c
-@@ -879,6 +879,9 @@ static void virtio_net_set_features(VirtIODevice *vdev, uint64_t features)
-         virtio_net_apply_guest_offloads(n);
-     }
- 
-+    if (vdev->dma_as == &address_space_memory)
-+        features &= ~(1ULL << VIRTIO_F_IOMMU_PLATFORM);
-+
-     for (i = 0;  i < n->max_queues; i++) {
-         NetClientState *nc = qemu_get_subqueue(n->nic, i);
- 
-diff --git a/hw/virtio/vhost.c b/hw/virtio/vhost.c
-index 9edfadc81d..711b1136f6 100644
---- a/hw/virtio/vhost.c
-+++ b/hw/virtio/vhost.c
-@@ -288,9 +288,7 @@ static inline void vhost_dev_log_resize(struct vhost_dev *dev, uint64_t size)
- 
- static int vhost_dev_has_iommu(struct vhost_dev *dev)
- {
--    VirtIODevice *vdev = dev->vdev;
--
--    return virtio_host_has_feature(vdev, VIRTIO_F_IOMMU_PLATFORM);
-+    return virtio_has_feature(dev->acked_features, VIRTIO_F_IOMMU_PLATFORM);
- }
- 
- static void *vhost_memory_map(struct vhost_dev *dev, hwaddr addr,
--- 
-2.19.1
+Eric
 
 
---------------BDFD2BED5C3364D3CE35012F
-Content-Type: text/plain; charset="us-ascii"
-MIME-Version: 1.0
-Content-Transfer-Encoding: 7bit
-Content-Disposition: inline
+
+
+> 
+> Rob
+> 
 
 _______________________________________________
 iommu mailing list
 iommu@lists.linux-foundation.org
 https://lists.linuxfoundation.org/mailman/listinfo/iommu
---------------BDFD2BED5C3364D3CE35012F--
-
