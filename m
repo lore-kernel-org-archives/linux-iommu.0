@@ -7,87 +7,89 @@ X-Spam-Status: No, score=-9.6 required=3.0 tests=DKIM_INVALID,DKIM_SIGNED,
 	SPF_HELO_NONE,SPF_PASS,USER_AGENT_GIT autolearn=unavailable
 	autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 21ED3C38C00
-	for <iommu@archiver.kernel.org>; Mon, 24 Feb 2020 18:24:56 +0000 (UTC)
-Received: from fraxinus.osuosl.org (smtp4.osuosl.org [140.211.166.137])
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 388B0C38C03
+	for <iommu@archiver.kernel.org>; Mon, 24 Feb 2020 18:24:57 +0000 (UTC)
+Received: from silver.osuosl.org (smtp3.osuosl.org [140.211.166.136])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by mail.kernel.org (Postfix) with ESMTPS id EBE1521775
-	for <iommu@archiver.kernel.org>; Mon, 24 Feb 2020 18:24:55 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTPS id 120BE2084E
+	for <iommu@archiver.kernel.org>; Mon, 24 Feb 2020 18:24:57 +0000 (UTC)
 Authentication-Results: mail.kernel.org;
-	dkim=fail reason="signature verification failed" (2048-bit key) header.d=linaro.org header.i=@linaro.org header.b="fxvvkF/Z"
-DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org EBE1521775
+	dkim=fail reason="signature verification failed" (2048-bit key) header.d=linaro.org header.i=@linaro.org header.b="YllwiJrZ"
+DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 120BE2084E
 Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=linaro.org
 Authentication-Results: mail.kernel.org; spf=pass smtp.mailfrom=iommu-bounces@lists.linux-foundation.org
 Received: from localhost (localhost [127.0.0.1])
-	by fraxinus.osuosl.org (Postfix) with ESMTP id C141C85F7E;
-	Mon, 24 Feb 2020 18:24:55 +0000 (UTC)
-X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from fraxinus.osuosl.org ([127.0.0.1])
-	by localhost (.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
-	with ESMTP id 24gh6Foi1jSt; Mon, 24 Feb 2020 18:24:54 +0000 (UTC)
-Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [140.211.9.56])
-	by fraxinus.osuosl.org (Postfix) with ESMTP id DA5C486027;
-	Mon, 24 Feb 2020 18:24:53 +0000 (UTC)
-Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
-	by lists.linuxfoundation.org (Postfix) with ESMTP id C6F95C1D88;
-	Mon, 24 Feb 2020 18:24:53 +0000 (UTC)
-Received: from silver.osuosl.org (smtp3.osuosl.org [140.211.166.136])
- by lists.linuxfoundation.org (Postfix) with ESMTP id 52664C18DA
- for <iommu@lists.linux-foundation.org>; Mon, 24 Feb 2020 18:24:52 +0000 (UTC)
-Received: from localhost (localhost [127.0.0.1])
- by silver.osuosl.org (Postfix) with ESMTP id 3B8A42050F
- for <iommu@lists.linux-foundation.org>; Mon, 24 Feb 2020 18:24:52 +0000 (UTC)
+	by silver.osuosl.org (Postfix) with ESMTP id F045D20500;
+	Mon, 24 Feb 2020 18:24:56 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
 Received: from silver.osuosl.org ([127.0.0.1])
+	by localhost (.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
+	with ESMTP id 5o7yRxzRo38T; Mon, 24 Feb 2020 18:24:56 +0000 (UTC)
+Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [140.211.9.56])
+	by silver.osuosl.org (Postfix) with ESMTP id 2837620414;
+	Mon, 24 Feb 2020 18:24:56 +0000 (UTC)
+Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
+	by lists.linuxfoundation.org (Postfix) with ESMTP id 15E53C18DA;
+	Mon, 24 Feb 2020 18:24:56 +0000 (UTC)
+Received: from hemlock.osuosl.org (smtp2.osuosl.org [140.211.166.133])
+ by lists.linuxfoundation.org (Postfix) with ESMTP id 09E29C0177
+ for <iommu@lists.linux-foundation.org>; Mon, 24 Feb 2020 18:24:53 +0000 (UTC)
+Received: from localhost (localhost [127.0.0.1])
+ by hemlock.osuosl.org (Postfix) with ESMTP id 065C38735E
+ for <iommu@lists.linux-foundation.org>; Mon, 24 Feb 2020 18:24:53 +0000 (UTC)
+X-Virus-Scanned: amavisd-new at osuosl.org
+Received: from hemlock.osuosl.org ([127.0.0.1])
  by localhost (.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
- with ESMTP id eQ9XoV-SkzHP for <iommu@lists.linux-foundation.org>;
- Mon, 24 Feb 2020 18:24:51 +0000 (UTC)
+ with ESMTP id os0HNjhqmtKu for <iommu@lists.linux-foundation.org>;
+ Mon, 24 Feb 2020 18:24:52 +0000 (UTC)
 X-Greylist: domain auto-whitelisted by SQLgrey-1.7.6
-Received: from mail-wr1-f67.google.com (mail-wr1-f67.google.com
- [209.85.221.67])
- by silver.osuosl.org (Postfix) with ESMTPS id 1E72320519
- for <iommu@lists.linux-foundation.org>; Mon, 24 Feb 2020 18:24:51 +0000 (UTC)
-Received: by mail-wr1-f67.google.com with SMTP id g3so11537223wrs.12
- for <iommu@lists.linux-foundation.org>; Mon, 24 Feb 2020 10:24:51 -0800 (PST)
+Received: from mail-wr1-f65.google.com (mail-wr1-f65.google.com
+ [209.85.221.65])
+ by hemlock.osuosl.org (Postfix) with ESMTPS id 34F8E8738A
+ for <iommu@lists.linux-foundation.org>; Mon, 24 Feb 2020 18:24:52 +0000 (UTC)
+Received: by mail-wr1-f65.google.com with SMTP id z3so11585505wru.3
+ for <iommu@lists.linux-foundation.org>; Mon, 24 Feb 2020 10:24:52 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linaro.org; s=google;
  h=from:to:cc:subject:date:message-id:in-reply-to:references
  :mime-version:content-transfer-encoding;
- bh=ZmUwfBE2Jvvg1hKUoqTW1Tzu3Hjef3qChRCYp/V+4z4=;
- b=fxvvkF/Z32DjH84285DNlIPhJoi0kRLNJoxVIH7KOt2EDK83vWJJdX2p0ctjcP0+gm
- qisx9YvSxt+OhX+CZ8obez7cElrie6GQHcCW1oQ4UQb93k576+N2gpVIEqJVr9bohALT
- 6riHGDBI9q5MffRpe8+xohDweiZ/qUWIrGYHsajhyVDmsdv3l8uSOo5T9POpRTIIiapz
- FvwthMPXu+xQ8cHZx0EbY0+ZszexexopCdlk5+7lw+f4/+AQcZADd2kews00jYTIZqws
- RHpE2hpFC9DfAMDCdZxJmKNinpQ8YtMpz5/fZkrtYGwf+p++YWkknqDYg95TBwEvcHpE
- JJWg==
+ bh=OqyBSLsjWoTwUeyl/94+2rCzV9+vYMPMP4GIUnRD0qA=;
+ b=YllwiJrZdJ1NjO07lPuBqd6vBWp/2/geoV9/Zzog5cPbDrIrLFnmIwe3ONCoKCVSiG
+ ZAYw10/1nei1dfdmPsqeVoOWU9YTNhg6z5DCfIauUNueL2OSnQ7hdxBfDVjpfBwG5pr5
+ WlzCkO9JAW+/l+cBIHevykIdN1AVsIJ+/ItvELyk4F9HPziiDWRCPa6TCA+HVyDENaUx
+ YQ0aZDPJUpiBlN2ZSrd27WwxwNsN5H2lEPJj8yn1/e8hAZ12hdJY3fHnzNfUrlBxT7bQ
+ NxIifg85M9zkTlKSWlFIWhJbk1CamOGpKA+2XMby8Q9upRPoweAV5jj9BHvMdYmg3o2Q
+ u7pQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
  d=1e100.net; s=20161025;
  h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
  :references:mime-version:content-transfer-encoding;
- bh=ZmUwfBE2Jvvg1hKUoqTW1Tzu3Hjef3qChRCYp/V+4z4=;
- b=dd3LcJN+t9w5crPRdz3usfo9oAi2QV3Zk5I3J5z/mnplMQ8Bh1D9yeFfD65N28e9q/
- rMg3zt10jddCUdeozuHm2Gn/LYd/WIaWdRVU+OCPqUylSQV2hCjpxHeQP27zJwTEuCU8
- lDKEvVYK+SWAZwvjLBkcB0DI+yn41aRiD6GJTp84I8Dgg2oEDHOfZkQ59sMlIYa0h5h0
- 5KSx17/pjpfdgyT1W7vvDn50favL+nLhwMdrYJEeRr1xKH+bwEDVeARfwJ2gqMEZpfmi
- RW2g7gsk25HRxH2kDQCKJxbvHS4vRVsl6CoctVmbfN6jsKcJmmiOCVs4LOqenuedHw9c
- yLng==
-X-Gm-Message-State: APjAAAV3LFPTtyTvefMGMt50fvvKQwVx4a71nxY/FC0eZtGqlG5Zm2gY
- B4tzrp2CivNGhXefONpieaB+2UMK8Xw=
-X-Google-Smtp-Source: APXvYqybBiQ3Y5uECJkf6wnUNdgrSmLMTNXn6Wwg6bg+H52TrB4b+jy0fSf/fGsZzyfFNyePzPdLuA==
-X-Received: by 2002:adf:df90:: with SMTP id z16mr66588301wrl.273.1582568689235; 
- Mon, 24 Feb 2020 10:24:49 -0800 (PST)
+ bh=OqyBSLsjWoTwUeyl/94+2rCzV9+vYMPMP4GIUnRD0qA=;
+ b=q3EjrbV1TID6q9n6AYZAF77X1o7gBZh2rLbUsQtGo9RGZ4lOhp7QQ0o1icPfq0yLEO
+ qn5RzhKNpi7/Nbi1WNh3ZopgpBqfMcXsJwx9RY+OtH5T/oVCSJ33y1rartPvSfuOTmvT
+ JAPQeqqFdjnJRzJOY5Nn3jM9fIaiqNzLAPLCxP4XM4b6mRhm5VmOk2cwGXTxqe/HNIjU
+ rNWVB0R93F0GpqiE3IUz9hCVgE9IAY5Q9pr7JPphunbLELEXS9XwvyL2HeslyVWnArEI
+ v46PnMQlau6RZuqDmKb8rh9wK8aCnEy2Y2LONCjwb2OkBt1ItAnWLAa+oEXmaywTHwtv
+ A9lg==
+X-Gm-Message-State: APjAAAVE3MKd6XTotj2P3PtuXedpl2mwL0NEiN8+j8xuzi1id6SwHRti
+ vyDzVruEBklvbEfIO00tJE+AzGL46CU=
+X-Google-Smtp-Source: APXvYqweLQT3Woeir8eRQoWOxeTHyd8FqFAJUftioLhxJBGnZqgw7j5oKrWyOIQLiBydPtpty1UXkw==
+X-Received: by 2002:a05:6000:188:: with SMTP id
+ p8mr66983633wrx.336.1582568690310; 
+ Mon, 24 Feb 2020 10:24:50 -0800 (PST)
 Received: from localhost.localdomain
  ([2001:171b:c9a8:fbc0:116c:c27a:3e7f:5eaf])
- by smtp.gmail.com with ESMTPSA id n3sm304255wmc.27.2020.02.24.10.24.48
+ by smtp.gmail.com with ESMTPSA id n3sm304255wmc.27.2020.02.24.10.24.49
  (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
- Mon, 24 Feb 2020 10:24:48 -0800 (PST)
+ Mon, 24 Feb 2020 10:24:49 -0800 (PST)
 From: Jean-Philippe Brucker <jean-philippe@linaro.org>
 To: iommu@lists.linux-foundation.org, devicetree@vger.kernel.org,
  linux-arm-kernel@lists.infradead.org, linux-pci@vger.kernel.org,
  linux-mm@kvack.org
-Subject: [PATCH v4 18/26] iommu/arm-smmu-v3: Hook up ATC invalidation to mm ops
-Date: Mon, 24 Feb 2020 19:23:53 +0100
-Message-Id: <20200224182401.353359-19-jean-philippe@linaro.org>
+Subject: [PATCH v4 19/26] iommu/arm-smmu-v3: Add support for Hardware
+ Translation Table Update
+Date: Mon, 24 Feb 2020 19:23:54 +0100
+Message-Id: <20200224182401.353359-20-jean-philippe@linaro.org>
 X-Mailer: git-send-email 2.25.0
 In-Reply-To: <20200224182401.353359-1-jean-philippe@linaro.org>
 References: <20200224182401.353359-1-jean-philippe@linaro.org>
@@ -115,109 +117,103 @@ Sender: "iommu" <iommu-bounces@lists.linux-foundation.org>
 
 From: Jean-Philippe Brucker <jean-philippe.brucker@arm.com>
 
-The core calls us when an mm is modified. Perform the required ATC
-invalidations.
+If the SMMU supports it and the kernel was built with HTTU support, enable
+hardware update of access and dirty flags. This is essential for shared
+page tables, to reduce the number of access faults on the fault queue.
+
+We can enable HTTU even if CPUs don't support it, because the kernel
+always checks for HW dirty bit and updates the PTE flags atomically.
 
 Signed-off-by: Jean-Philippe Brucker <jean-philippe@linaro.org>
 ---
- drivers/iommu/arm-smmu-v3.c | 44 ++++++++++++++++++++++++++++++++-----
- 1 file changed, 38 insertions(+), 6 deletions(-)
+ drivers/iommu/arm-smmu-v3.c | 24 +++++++++++++++++++++++-
+ 1 file changed, 23 insertions(+), 1 deletion(-)
 
 diff --git a/drivers/iommu/arm-smmu-v3.c b/drivers/iommu/arm-smmu-v3.c
-index 3973f7222864..95b4caceae1a 100644
+index 95b4caceae1a..015e8e59e0ef 100644
 --- a/drivers/iommu/arm-smmu-v3.c
 +++ b/drivers/iommu/arm-smmu-v3.c
-@@ -2354,6 +2354,20 @@ arm_smmu_atc_inv_to_cmd(int ssid, unsigned long iova, size_t size,
- 	size_t inval_grain_shift = 12;
- 	unsigned long page_start, page_end;
+@@ -57,6 +57,8 @@
+ #define IDR0_ASID16			(1 << 12)
+ #define IDR0_ATS			(1 << 10)
+ #define IDR0_HYP			(1 << 9)
++#define IDR0_HD				(1 << 7)
++#define IDR0_HA				(1 << 6)
+ #define IDR0_BTM			(1 << 5)
+ #define IDR0_COHACC			(1 << 4)
+ #define IDR0_TTF			GENMASK(3, 2)
+@@ -305,6 +307,9 @@
+ #define CTXDESC_CD_0_TCR_IPS		GENMASK_ULL(34, 32)
+ #define CTXDESC_CD_0_TCR_TBI0		(1ULL << 38)
  
-+	/*
-+	 * ATS and PASID:
-+	 *
-+	 * If substream_valid is clear, the PCIe TLP is sent without a PASID
-+	 * prefix. In that case all ATC entries within the address range are
-+	 * invalidated, including those that were requested with a PASID! There
-+	 * is no way to invalidate only entries without PASID.
-+	 *
-+	 * When using STRTAB_STE_1_S1DSS_SSID0 (reserving CD 0 for non-PASID
-+	 * traffic), translation requests without PASID create ATC entries
-+	 * without PASID, which must be invalidated with substream_valid clear.
-+	 * This has the unpleasant side-effect of invalidating all PASID-tagged
-+	 * ATC entries within the address range.
-+	 */
- 	*cmd = (struct arm_smmu_cmdq_ent) {
- 		.opcode			= CMDQ_OP_ATC_INV,
- 		.substream_valid	= !!ssid,
-@@ -2397,12 +2411,12 @@ arm_smmu_atc_inv_to_cmd(int ssid, unsigned long iova, size_t size,
- 	cmd->atc.size	= log2_span;
- }
- 
--static int arm_smmu_atc_inv_master(struct arm_smmu_master *master)
-+static int arm_smmu_atc_inv_master(struct arm_smmu_master *master, int ssid)
- {
- 	int i;
- 	struct arm_smmu_cmdq_ent cmd;
- 
--	arm_smmu_atc_inv_to_cmd(0, 0, 0, &cmd);
-+	arm_smmu_atc_inv_to_cmd(ssid, 0, 0, &cmd);
- 
- 	for (i = 0; i < master->num_sids; i++) {
- 		cmd.atc.sid = master->sids[i];
-@@ -2874,7 +2888,7 @@ static void arm_smmu_disable_ats(struct arm_smmu_master *master)
- 	 * ATC invalidation via the SMMU.
- 	 */
- 	wmb();
--	arm_smmu_atc_inv_master(master);
-+	arm_smmu_atc_inv_master(master, 0);
- 	atomic_dec(&smmu_domain->nr_ats_masters);
- }
- 
-@@ -3065,7 +3079,22 @@ arm_smmu_iova_to_phys(struct iommu_domain *domain, dma_addr_t iova)
- static void arm_smmu_mm_invalidate(struct device *dev, int pasid, void *entry,
- 				   unsigned long iova, size_t size)
- {
--	/* TODO: Invalidate ATC */
-+	int i;
-+	struct arm_smmu_cmdq_ent cmd;
-+	struct arm_smmu_cmdq_batch cmds = {};
-+	struct arm_smmu_master *master = dev_to_master(dev);
++#define CTXDESC_CD_0_TCR_HA		(1UL << 43)
++#define CTXDESC_CD_0_TCR_HD		(1UL << 42)
 +
-+	if (!master->ats_enabled)
-+		return;
-+
-+	arm_smmu_atc_inv_to_cmd(pasid, iova, size, &cmd);
-+
-+	for (i = 0; i < master->num_sids; i++) {
-+		cmd.atc.sid = master->sids[i];
-+		arm_smmu_cmdq_batch_add(master->smmu, &cmds, &cmd);
-+	}
-+
-+	arm_smmu_cmdq_batch_submit(master->smmu, &cmds);
- }
+ #define CTXDESC_CD_0_AA64		(1UL << 41)
+ #define CTXDESC_CD_0_S			(1UL << 44)
+ #define CTXDESC_CD_0_R			(1UL << 45)
+@@ -646,6 +651,8 @@ struct arm_smmu_device {
+ #define ARM_SMMU_FEAT_E2H		(1 << 15)
+ #define ARM_SMMU_FEAT_BTM		(1 << 16)
+ #define ARM_SMMU_FEAT_SVA		(1 << 17)
++#define ARM_SMMU_FEAT_HA		(1 << 18)
++#define ARM_SMMU_FEAT_HD		(1 << 19)
+ 	u32				features;
  
- static int arm_smmu_mm_attach(struct device *dev, int pasid, void *entry,
-@@ -3089,6 +3118,7 @@ static void arm_smmu_mm_detach(struct device *dev, int pasid, void *entry,
- 			       bool detach_domain)
- {
- 	struct arm_smmu_ctx_desc *cd = entry;
-+	struct arm_smmu_master *master = dev_to_master(dev);
- 	struct iommu_domain *domain = iommu_get_domain_for_dev(dev);
- 	struct arm_smmu_domain *smmu_domain = to_smmu_domain(domain);
- 
-@@ -3102,9 +3132,11 @@ static void arm_smmu_mm_detach(struct device *dev, int pasid, void *entry,
- 		 * invalidation.
+ #define ARM_SMMU_OPT_SKIP_PREFETCH	(1 << 0)
+@@ -1665,10 +1672,17 @@ static int __arm_smmu_write_ctx_desc(struct arm_smmu_domain *smmu_domain,
+ 		 * this substream's traffic
  		 */
- 		arm_smmu_tlb_inv_asid(smmu_domain->smmu, cd->asid);
--	}
-+		arm_smmu_atc_inv_domain(smmu_domain, pasid, 0, 0);
+ 	} else { /* (1) and (2) */
++		u64 tcr = cd->tcr;
++
+ 		cdptr[1] = cpu_to_le64(cd->ttbr & CTXDESC_CD_1_TTB0_MASK);
+ 		cdptr[2] = 0;
+ 		cdptr[3] = cpu_to_le64(cd->mair);
  
--	/* TODO: invalidate ATC */
-+	} else if (master->ats_enabled) {
-+		arm_smmu_atc_inv_master(master, pasid);
++		if (!(smmu->features & ARM_SMMU_FEAT_HD))
++			tcr &= ~CTXDESC_CD_0_TCR_HD;
++		if (!(smmu->features & ARM_SMMU_FEAT_HA))
++			tcr &= ~CTXDESC_CD_0_TCR_HA;
++
+ 		/*
+ 		 * STE is live, and the SMMU might read dwords of this CD in any
+ 		 * order. Ensure that it observes valid values before reading
+@@ -1676,7 +1690,7 @@ static int __arm_smmu_write_ctx_desc(struct arm_smmu_domain *smmu_domain,
+ 		 */
+ 		arm_smmu_sync_cd(smmu_domain, ssid, true);
+ 
+-		val = cd->tcr |
++		val = tcr |
+ #ifdef __BIG_ENDIAN
+ 			CTXDESC_CD_0_ENDI |
+ #endif
+@@ -1919,10 +1933,12 @@ static struct arm_smmu_ctx_desc *arm_smmu_alloc_shared_cd(struct mm_struct *mm)
+ 		return old_cd;
+ 	}
+ 
++	/* HA and HD will be filtered out later if not supported by the SMMU */
+ 	tcr = FIELD_PREP(CTXDESC_CD_0_TCR_T0SZ, 64ULL - VA_BITS) |
+ 	      FIELD_PREP(CTXDESC_CD_0_TCR_IRGN0, ARM_LPAE_TCR_RGN_WBWA) |
+ 	      FIELD_PREP(CTXDESC_CD_0_TCR_ORGN0, ARM_LPAE_TCR_RGN_WBWA) |
+ 	      FIELD_PREP(CTXDESC_CD_0_TCR_SH0, ARM_LPAE_TCR_SH_IS) |
++	      CTXDESC_CD_0_TCR_HA | CTXDESC_CD_0_TCR_HD |
+ 	      CTXDESC_CD_0_TCR_EPD1 | CTXDESC_CD_0_AA64;
+ 
+ 	switch (PAGE_SIZE) {
+@@ -4211,6 +4227,12 @@ static int arm_smmu_device_hw_probe(struct arm_smmu_device *smmu)
+ 			smmu->features |= ARM_SMMU_FEAT_E2H;
+ 	}
+ 
++	if (reg & (IDR0_HA | IDR0_HD)) {
++		smmu->features |= ARM_SMMU_FEAT_HA;
++		if (reg & IDR0_HD)
++			smmu->features |= ARM_SMMU_FEAT_HD;
 +	}
- }
- 
- static void *arm_smmu_mm_alloc(struct mm_struct *mm)
++
+ 	/*
+ 	 * If the CPU is using VHE, but the SMMU doesn't support it, the SMMU
+ 	 * will create TLB entries for NH-EL1 world and will miss the
 -- 
 2.25.0
 
