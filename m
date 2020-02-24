@@ -7,89 +7,87 @@ X-Spam-Status: No, score=-9.6 required=3.0 tests=DKIM_INVALID,DKIM_SIGNED,
 	SPF_HELO_NONE,SPF_PASS,USER_AGENT_GIT autolearn=unavailable
 	autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 388B0C38C03
-	for <iommu@archiver.kernel.org>; Mon, 24 Feb 2020 18:24:57 +0000 (UTC)
-Received: from silver.osuosl.org (smtp3.osuosl.org [140.211.166.136])
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 0B43DC38C05
+	for <iommu@archiver.kernel.org>; Mon, 24 Feb 2020 18:25:00 +0000 (UTC)
+Received: from whitealder.osuosl.org (smtp1.osuosl.org [140.211.166.138])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by mail.kernel.org (Postfix) with ESMTPS id 120BE2084E
-	for <iommu@archiver.kernel.org>; Mon, 24 Feb 2020 18:24:57 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTPS id D67062084E
+	for <iommu@archiver.kernel.org>; Mon, 24 Feb 2020 18:24:59 +0000 (UTC)
 Authentication-Results: mail.kernel.org;
-	dkim=fail reason="signature verification failed" (2048-bit key) header.d=linaro.org header.i=@linaro.org header.b="YllwiJrZ"
-DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 120BE2084E
+	dkim=fail reason="signature verification failed" (2048-bit key) header.d=linaro.org header.i=@linaro.org header.b="zuB/c0OA"
+DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org D67062084E
 Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=linaro.org
 Authentication-Results: mail.kernel.org; spf=pass smtp.mailfrom=iommu-bounces@lists.linux-foundation.org
 Received: from localhost (localhost [127.0.0.1])
-	by silver.osuosl.org (Postfix) with ESMTP id F045D20500;
-	Mon, 24 Feb 2020 18:24:56 +0000 (UTC)
+	by whitealder.osuosl.org (Postfix) with ESMTP id AE862854A0;
+	Mon, 24 Feb 2020 18:24:59 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from silver.osuosl.org ([127.0.0.1])
+Received: from whitealder.osuosl.org ([127.0.0.1])
 	by localhost (.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
-	with ESMTP id 5o7yRxzRo38T; Mon, 24 Feb 2020 18:24:56 +0000 (UTC)
+	with ESMTP id rKR6+iugkkWY; Mon, 24 Feb 2020 18:24:58 +0000 (UTC)
 Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [140.211.9.56])
-	by silver.osuosl.org (Postfix) with ESMTP id 2837620414;
-	Mon, 24 Feb 2020 18:24:56 +0000 (UTC)
+	by whitealder.osuosl.org (Postfix) with ESMTP id 7B29385477;
+	Mon, 24 Feb 2020 18:24:58 +0000 (UTC)
 Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
-	by lists.linuxfoundation.org (Postfix) with ESMTP id 15E53C18DA;
-	Mon, 24 Feb 2020 18:24:56 +0000 (UTC)
-Received: from hemlock.osuosl.org (smtp2.osuosl.org [140.211.166.133])
- by lists.linuxfoundation.org (Postfix) with ESMTP id 09E29C0177
- for <iommu@lists.linux-foundation.org>; Mon, 24 Feb 2020 18:24:53 +0000 (UTC)
+	by lists.linuxfoundation.org (Postfix) with ESMTP id 58F4CC18DA;
+	Mon, 24 Feb 2020 18:24:58 +0000 (UTC)
+Received: from whitealder.osuosl.org (smtp1.osuosl.org [140.211.166.138])
+ by lists.linuxfoundation.org (Postfix) with ESMTP id 7C195C0177
+ for <iommu@lists.linux-foundation.org>; Mon, 24 Feb 2020 18:24:55 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
- by hemlock.osuosl.org (Postfix) with ESMTP id 065C38735E
- for <iommu@lists.linux-foundation.org>; Mon, 24 Feb 2020 18:24:53 +0000 (UTC)
+ by whitealder.osuosl.org (Postfix) with ESMTP id 6B39485582
+ for <iommu@lists.linux-foundation.org>; Mon, 24 Feb 2020 18:24:55 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from hemlock.osuosl.org ([127.0.0.1])
+Received: from whitealder.osuosl.org ([127.0.0.1])
  by localhost (.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
- with ESMTP id os0HNjhqmtKu for <iommu@lists.linux-foundation.org>;
- Mon, 24 Feb 2020 18:24:52 +0000 (UTC)
+ with ESMTP id eoIle-3OrkJe for <iommu@lists.linux-foundation.org>;
+ Mon, 24 Feb 2020 18:24:53 +0000 (UTC)
 X-Greylist: domain auto-whitelisted by SQLgrey-1.7.6
-Received: from mail-wr1-f65.google.com (mail-wr1-f65.google.com
- [209.85.221.65])
- by hemlock.osuosl.org (Postfix) with ESMTPS id 34F8E8738A
- for <iommu@lists.linux-foundation.org>; Mon, 24 Feb 2020 18:24:52 +0000 (UTC)
-Received: by mail-wr1-f65.google.com with SMTP id z3so11585505wru.3
- for <iommu@lists.linux-foundation.org>; Mon, 24 Feb 2020 10:24:52 -0800 (PST)
+Received: from mail-wm1-f65.google.com (mail-wm1-f65.google.com
+ [209.85.128.65])
+ by whitealder.osuosl.org (Postfix) with ESMTPS id 45C3085477
+ for <iommu@lists.linux-foundation.org>; Mon, 24 Feb 2020 18:24:53 +0000 (UTC)
+Received: by mail-wm1-f65.google.com with SMTP id a9so345628wmj.3
+ for <iommu@lists.linux-foundation.org>; Mon, 24 Feb 2020 10:24:53 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linaro.org; s=google;
  h=from:to:cc:subject:date:message-id:in-reply-to:references
  :mime-version:content-transfer-encoding;
- bh=OqyBSLsjWoTwUeyl/94+2rCzV9+vYMPMP4GIUnRD0qA=;
- b=YllwiJrZdJ1NjO07lPuBqd6vBWp/2/geoV9/Zzog5cPbDrIrLFnmIwe3ONCoKCVSiG
- ZAYw10/1nei1dfdmPsqeVoOWU9YTNhg6z5DCfIauUNueL2OSnQ7hdxBfDVjpfBwG5pr5
- WlzCkO9JAW+/l+cBIHevykIdN1AVsIJ+/ItvELyk4F9HPziiDWRCPa6TCA+HVyDENaUx
- YQ0aZDPJUpiBlN2ZSrd27WwxwNsN5H2lEPJj8yn1/e8hAZ12hdJY3fHnzNfUrlBxT7bQ
- NxIifg85M9zkTlKSWlFIWhJbk1CamOGpKA+2XMby8Q9upRPoweAV5jj9BHvMdYmg3o2Q
- u7pQ==
+ bh=5LozG5AByqC+Y2QsZ96qniz5z6ofm6RdMRwjrLXS+sI=;
+ b=zuB/c0OAZTGH2gXaCP3au67WP342eVaV0fpGipW5OGGN73wuEBs/1ROZf/qKpO3VQt
+ woFLTxZNGIJ4967+Me5izVNTthCeacqxnSzqP00CSdVZMYLxj/tNulidjUqG/0VzmRjZ
+ QBZKhGAJqmIBtlFc+1BYL0isbmHkquFthlxS1h9jLjYAR2EePZIEbd27msJirvOsnTsx
+ RtziIkQVAZ7U2qRYVUnPq6uOoH+JWffn9cp0foAx+2pOdmEGO8+xrnjYEsG5ZmahMt01
+ evtZlwEGkxH6SJ4mAKSe6obj4rsKWhmZnxT9Y8StwOwgIqQtl1cZzvX0yP51JfpyAWBn
+ X2ZQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
  d=1e100.net; s=20161025;
  h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
  :references:mime-version:content-transfer-encoding;
- bh=OqyBSLsjWoTwUeyl/94+2rCzV9+vYMPMP4GIUnRD0qA=;
- b=q3EjrbV1TID6q9n6AYZAF77X1o7gBZh2rLbUsQtGo9RGZ4lOhp7QQ0o1icPfq0yLEO
- qn5RzhKNpi7/Nbi1WNh3ZopgpBqfMcXsJwx9RY+OtH5T/oVCSJ33y1rartPvSfuOTmvT
- JAPQeqqFdjnJRzJOY5Nn3jM9fIaiqNzLAPLCxP4XM4b6mRhm5VmOk2cwGXTxqe/HNIjU
- rNWVB0R93F0GpqiE3IUz9hCVgE9IAY5Q9pr7JPphunbLELEXS9XwvyL2HeslyVWnArEI
- v46PnMQlau6RZuqDmKb8rh9wK8aCnEy2Y2LONCjwb2OkBt1ItAnWLAa+oEXmaywTHwtv
- A9lg==
-X-Gm-Message-State: APjAAAVE3MKd6XTotj2P3PtuXedpl2mwL0NEiN8+j8xuzi1id6SwHRti
- vyDzVruEBklvbEfIO00tJE+AzGL46CU=
-X-Google-Smtp-Source: APXvYqweLQT3Woeir8eRQoWOxeTHyd8FqFAJUftioLhxJBGnZqgw7j5oKrWyOIQLiBydPtpty1UXkw==
-X-Received: by 2002:a05:6000:188:: with SMTP id
- p8mr66983633wrx.336.1582568690310; 
- Mon, 24 Feb 2020 10:24:50 -0800 (PST)
+ bh=5LozG5AByqC+Y2QsZ96qniz5z6ofm6RdMRwjrLXS+sI=;
+ b=RVZypdXiDu+7F6qTE8t9KJJH1bhTnHaaDGO2WSpM3tj3mXHUFgyiyAyOnXo9IqFHUZ
+ kmpMvWIivFrOs832/yD3TSzFMQHcWR82UIpLz1dwRuovcrQdy2Hg6JDCqPfERdUredY7
+ sFoyxEQ1IGPLrMizjFjjhsg66eZmhVARiJGgk0BLtfiFtvrwcXm0FKo4w7nIcMH2pB41
+ 3QBHRDq4GXK4/Lc0U+VKWmfVE4o70nCg2TD9EXm7/PwpY/7uhKHkcJE1rIadMizU7FA4
+ dI0CsSgc74TsYoz9CzsgralWNOAx/nS4cYCZj9FW4asaj3dOayc8CEhWbcjtPPAOyvpU
+ f6Vg==
+X-Gm-Message-State: APjAAAXiqL84aMlZiU6JLpMkwEBcgxthB/OnphwFNol9jha/GAklExgg
+ fpRpWnRsSXIXBe2d/mx3AkJ9nx20qwk=
+X-Google-Smtp-Source: APXvYqzYYT4fN7IA/sD4kQOlIG2hDqJ3nfsH3tflLkE3KADa5Uj7qCLqWe6yrMSFQh0UM4q/4UEzKA==
+X-Received: by 2002:a1c:f001:: with SMTP id a1mr323565wmb.76.1582568691412;
+ Mon, 24 Feb 2020 10:24:51 -0800 (PST)
 Received: from localhost.localdomain
  ([2001:171b:c9a8:fbc0:116c:c27a:3e7f:5eaf])
- by smtp.gmail.com with ESMTPSA id n3sm304255wmc.27.2020.02.24.10.24.49
+ by smtp.gmail.com with ESMTPSA id n3sm304255wmc.27.2020.02.24.10.24.50
  (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
- Mon, 24 Feb 2020 10:24:49 -0800 (PST)
+ Mon, 24 Feb 2020 10:24:51 -0800 (PST)
 From: Jean-Philippe Brucker <jean-philippe@linaro.org>
 To: iommu@lists.linux-foundation.org, devicetree@vger.kernel.org,
  linux-arm-kernel@lists.infradead.org, linux-pci@vger.kernel.org,
  linux-mm@kvack.org
-Subject: [PATCH v4 19/26] iommu/arm-smmu-v3: Add support for Hardware
- Translation Table Update
-Date: Mon, 24 Feb 2020 19:23:54 +0100
-Message-Id: <20200224182401.353359-20-jean-philippe@linaro.org>
+Subject: [PATCH v4 20/26] iommu/arm-smmu-v3: Maintain a SID->device structure
+Date: Mon, 24 Feb 2020 19:23:55 +0100
+Message-Id: <20200224182401.353359-21-jean-philippe@linaro.org>
 X-Mailer: git-send-email 2.25.0
 In-Reply-To: <20200224182401.353359-1-jean-philippe@linaro.org>
 References: <20200224182401.353359-1-jean-philippe@linaro.org>
@@ -117,103 +115,296 @@ Sender: "iommu" <iommu-bounces@lists.linux-foundation.org>
 
 From: Jean-Philippe Brucker <jean-philippe.brucker@arm.com>
 
-If the SMMU supports it and the kernel was built with HTTU support, enable
-hardware update of access and dirty flags. This is essential for shared
-page tables, to reduce the number of access faults on the fault queue.
-
-We can enable HTTU even if CPUs don't support it, because the kernel
-always checks for HW dirty bit and updates the PTE flags atomically.
+When handling faults from the event or PRI queue, we need to find the
+struct device associated to a SID. Add a rb_tree to keep track of SIDs.
 
 Signed-off-by: Jean-Philippe Brucker <jean-philippe@linaro.org>
 ---
- drivers/iommu/arm-smmu-v3.c | 24 +++++++++++++++++++++++-
- 1 file changed, 23 insertions(+), 1 deletion(-)
+ drivers/iommu/arm-smmu-v3.c | 177 +++++++++++++++++++++++++++++-------
+ 1 file changed, 145 insertions(+), 32 deletions(-)
 
 diff --git a/drivers/iommu/arm-smmu-v3.c b/drivers/iommu/arm-smmu-v3.c
-index 95b4caceae1a..015e8e59e0ef 100644
+index 015e8e59e0ef..28f8583cd47b 100644
 --- a/drivers/iommu/arm-smmu-v3.c
 +++ b/drivers/iommu/arm-smmu-v3.c
-@@ -57,6 +57,8 @@
- #define IDR0_ASID16			(1 << 12)
- #define IDR0_ATS			(1 << 10)
- #define IDR0_HYP			(1 << 9)
-+#define IDR0_HD				(1 << 7)
-+#define IDR0_HA				(1 << 6)
- #define IDR0_BTM			(1 << 5)
- #define IDR0_COHACC			(1 << 4)
- #define IDR0_TTF			GENMASK(3, 2)
-@@ -305,6 +307,9 @@
- #define CTXDESC_CD_0_TCR_IPS		GENMASK_ULL(34, 32)
- #define CTXDESC_CD_0_TCR_TBI0		(1ULL << 38)
+@@ -684,6 +684,15 @@ struct arm_smmu_device {
  
-+#define CTXDESC_CD_0_TCR_HA		(1UL << 43)
-+#define CTXDESC_CD_0_TCR_HD		(1UL << 42)
+ 	/* IOMMU core code handle */
+ 	struct iommu_device		iommu;
 +
- #define CTXDESC_CD_0_AA64		(1UL << 41)
- #define CTXDESC_CD_0_S			(1UL << 44)
- #define CTXDESC_CD_0_R			(1UL << 45)
-@@ -646,6 +651,8 @@ struct arm_smmu_device {
- #define ARM_SMMU_FEAT_E2H		(1 << 15)
- #define ARM_SMMU_FEAT_BTM		(1 << 16)
- #define ARM_SMMU_FEAT_SVA		(1 << 17)
-+#define ARM_SMMU_FEAT_HA		(1 << 18)
-+#define ARM_SMMU_FEAT_HD		(1 << 19)
- 	u32				features;
- 
- #define ARM_SMMU_OPT_SKIP_PREFETCH	(1 << 0)
-@@ -1665,10 +1672,17 @@ static int __arm_smmu_write_ctx_desc(struct arm_smmu_domain *smmu_domain,
- 		 * this substream's traffic
- 		 */
- 	} else { /* (1) and (2) */
-+		u64 tcr = cd->tcr;
++	struct rb_root			streams;
++	struct mutex			streams_mutex;
++};
 +
- 		cdptr[1] = cpu_to_le64(cd->ttbr & CTXDESC_CD_1_TTB0_MASK);
- 		cdptr[2] = 0;
- 		cdptr[3] = cpu_to_le64(cd->mair);
++struct arm_smmu_stream {
++	u32				id;
++	struct arm_smmu_master		*master;
++	struct rb_node			node;
+ };
  
-+		if (!(smmu->features & ARM_SMMU_FEAT_HD))
-+			tcr &= ~CTXDESC_CD_0_TCR_HD;
-+		if (!(smmu->features & ARM_SMMU_FEAT_HA))
-+			tcr &= ~CTXDESC_CD_0_TCR_HA;
+ /* SMMU private data for each master */
+@@ -692,8 +701,8 @@ struct arm_smmu_master {
+ 	struct device			*dev;
+ 	struct arm_smmu_domain		*domain;
+ 	struct list_head		domain_head;
+-	u32				*sids;
+-	unsigned int			num_sids;
++	struct arm_smmu_stream		*streams;
++	unsigned int			num_streams;
+ 	bool				ats_enabled;
+ 	unsigned int			ssid_bits;
+ };
+@@ -1573,8 +1582,8 @@ static void arm_smmu_sync_cd(struct arm_smmu_domain *smmu_domain,
+ 
+ 	spin_lock_irqsave(&smmu_domain->devices_lock, flags);
+ 	list_for_each_entry(master, &smmu_domain->devices, domain_head) {
+-		for (i = 0; i < master->num_sids; i++) {
+-			cmd.cfgi.sid = master->sids[i];
++		for (i = 0; i < master->num_streams; i++) {
++			cmd.cfgi.sid = master->streams[i].id;
+ 			arm_smmu_cmdq_batch_add(smmu, &cmds, &cmd);
+ 		}
+ 	}
+@@ -2201,6 +2210,32 @@ static int arm_smmu_init_l2_strtab(struct arm_smmu_device *smmu, u32 sid)
+ 	return 0;
+ }
+ 
++__maybe_unused
++static struct arm_smmu_master *
++arm_smmu_find_master(struct arm_smmu_device *smmu, u32 sid)
++{
++	struct rb_node *node;
++	struct arm_smmu_stream *stream;
++	struct arm_smmu_master *master = NULL;
 +
- 		/*
- 		 * STE is live, and the SMMU might read dwords of this CD in any
- 		 * order. Ensure that it observes valid values before reading
-@@ -1676,7 +1690,7 @@ static int __arm_smmu_write_ctx_desc(struct arm_smmu_domain *smmu_domain,
- 		 */
- 		arm_smmu_sync_cd(smmu_domain, ssid, true);
++	mutex_lock(&smmu->streams_mutex);
++	node = smmu->streams.rb_node;
++	while (node) {
++		stream = rb_entry(node, struct arm_smmu_stream, node);
++		if (stream->id < sid) {
++			node = node->rb_right;
++		} else if (stream->id > sid) {
++			node = node->rb_left;
++		} else {
++			master = stream->master;
++			break;
++		}
++	}
++	mutex_unlock(&smmu->streams_mutex);
++
++	return master;
++}
++
+ /* IRQ and event handlers */
+ static irqreturn_t arm_smmu_evtq_thread(int irq, void *dev)
+ {
+@@ -2434,8 +2469,8 @@ static int arm_smmu_atc_inv_master(struct arm_smmu_master *master, int ssid)
  
--		val = cd->tcr |
-+		val = tcr |
- #ifdef __BIG_ENDIAN
- 			CTXDESC_CD_0_ENDI |
- #endif
-@@ -1919,10 +1933,12 @@ static struct arm_smmu_ctx_desc *arm_smmu_alloc_shared_cd(struct mm_struct *mm)
- 		return old_cd;
+ 	arm_smmu_atc_inv_to_cmd(ssid, 0, 0, &cmd);
+ 
+-	for (i = 0; i < master->num_sids; i++) {
+-		cmd.atc.sid = master->sids[i];
++	for (i = 0; i < master->num_streams; i++) {
++		cmd.atc.sid = master->streams[i].id;
+ 		arm_smmu_cmdq_issue_cmd(master->smmu, &cmd);
  	}
  
-+	/* HA and HD will be filtered out later if not supported by the SMMU */
- 	tcr = FIELD_PREP(CTXDESC_CD_0_TCR_T0SZ, 64ULL - VA_BITS) |
- 	      FIELD_PREP(CTXDESC_CD_0_TCR_IRGN0, ARM_LPAE_TCR_RGN_WBWA) |
- 	      FIELD_PREP(CTXDESC_CD_0_TCR_ORGN0, ARM_LPAE_TCR_RGN_WBWA) |
- 	      FIELD_PREP(CTXDESC_CD_0_TCR_SH0, ARM_LPAE_TCR_SH_IS) |
-+	      CTXDESC_CD_0_TCR_HA | CTXDESC_CD_0_TCR_HD |
- 	      CTXDESC_CD_0_TCR_EPD1 | CTXDESC_CD_0_AA64;
+@@ -2478,8 +2513,8 @@ static int arm_smmu_atc_inv_domain(struct arm_smmu_domain *smmu_domain,
+ 		if (!master->ats_enabled)
+ 			continue;
  
- 	switch (PAGE_SIZE) {
-@@ -4211,6 +4227,12 @@ static int arm_smmu_device_hw_probe(struct arm_smmu_device *smmu)
- 			smmu->features |= ARM_SMMU_FEAT_E2H;
+-		for (i = 0; i < master->num_sids; i++) {
+-			cmd.atc.sid = master->sids[i];
++		for (i = 0; i < master->num_streams; i++) {
++			cmd.atc.sid = master->streams[i].id;
+ 			arm_smmu_cmdq_batch_add(smmu_domain->smmu, &cmds, &cmd);
+ 		}
+ 	}
+@@ -2846,13 +2881,13 @@ static void arm_smmu_install_ste_for_dev(struct arm_smmu_master *master)
+ 	int i, j;
+ 	struct arm_smmu_device *smmu = master->smmu;
+ 
+-	for (i = 0; i < master->num_sids; ++i) {
+-		u32 sid = master->sids[i];
++	for (i = 0; i < master->num_streams; ++i) {
++		u32 sid = master->streams[i].id;
+ 		__le64 *step = arm_smmu_get_step_for_sid(smmu, sid);
+ 
+ 		/* Bridged PCI devices may end up with duplicated IDs */
+ 		for (j = 0; j < i; j++)
+-			if (master->sids[j] == sid)
++			if (master->streams[j].id == sid)
+ 				break;
+ 		if (j < i)
+ 			continue;
+@@ -3105,8 +3140,8 @@ static void arm_smmu_mm_invalidate(struct device *dev, int pasid, void *entry,
+ 
+ 	arm_smmu_atc_inv_to_cmd(pasid, iova, size, &cmd);
+ 
+-	for (i = 0; i < master->num_sids; i++) {
+-		cmd.atc.sid = master->sids[i];
++	for (i = 0; i < master->num_streams; i++) {
++		cmd.atc.sid = master->streams[i].id;
+ 		arm_smmu_cmdq_batch_add(master->smmu, &cmds, &cmd);
  	}
  
-+	if (reg & (IDR0_HA | IDR0_HD)) {
-+		smmu->features |= ARM_SMMU_FEAT_HA;
-+		if (reg & IDR0_HD)
-+			smmu->features |= ARM_SMMU_FEAT_HD;
+@@ -3206,11 +3241,99 @@ static bool arm_smmu_sid_in_range(struct arm_smmu_device *smmu, u32 sid)
+ 	return sid < limit;
+ }
+ 
++static int arm_smmu_insert_master(struct arm_smmu_device *smmu,
++				  struct arm_smmu_master *master)
++{
++	int i;
++	int ret = 0;
++	struct arm_smmu_stream *new_stream, *cur_stream;
++	struct rb_node **new_node, *parent_node = NULL;
++	struct iommu_fwspec *fwspec = dev_iommu_fwspec_get(master->dev);
++
++	master->streams = kcalloc(fwspec->num_ids,
++				  sizeof(struct arm_smmu_stream), GFP_KERNEL);
++	if (!master->streams)
++		return -ENOMEM;
++	master->num_streams = fwspec->num_ids;
++
++	mutex_lock(&smmu->streams_mutex);
++	for (i = 0; i < fwspec->num_ids && !ret; i++) {
++		u32 sid = fwspec->ids[i];
++
++		new_stream = &master->streams[i];
++		new_stream->id = sid;
++		new_stream->master = master;
++
++		/* Check the SIDs are in range of the SMMU and our stream table */
++		if (!arm_smmu_sid_in_range(smmu, sid)) {
++			ret = -ERANGE;
++			break;
++		}
++
++		/* Ensure l2 strtab is initialised */
++		if (smmu->features & ARM_SMMU_FEAT_2_LVL_STRTAB) {
++			ret = arm_smmu_init_l2_strtab(smmu, sid);
++			if (ret)
++				break;
++		}
++
++		/* Insert into SID tree */
++		new_node = &(smmu->streams.rb_node);
++		while (*new_node) {
++			cur_stream = rb_entry(*new_node, struct arm_smmu_stream,
++					      node);
++			parent_node = *new_node;
++			if (cur_stream->id > new_stream->id) {
++				new_node = &((*new_node)->rb_left);
++			} else if (cur_stream->id < new_stream->id) {
++				new_node = &((*new_node)->rb_right);
++			} else {
++				dev_warn(master->dev,
++					 "stream %u already in tree\n",
++					 cur_stream->id);
++				ret = -EINVAL;
++				break;
++			}
++		}
++
++		if (!ret) {
++			rb_link_node(&new_stream->node, parent_node, new_node);
++			rb_insert_color(&new_stream->node, &smmu->streams);
++		}
 +	}
 +
- 	/*
- 	 * If the CPU is using VHE, but the SMMU doesn't support it, the SMMU
- 	 * will create TLB entries for NH-EL1 world and will miss the
++	if (ret) {
++		for (; i > 0; i--)
++			rb_erase(&master->streams[i].node, &smmu->streams);
++		kfree(master->streams);
++	}
++	mutex_unlock(&smmu->streams_mutex);
++
++	return ret;
++}
++
++static void arm_smmu_remove_master(struct arm_smmu_device *smmu,
++				   struct arm_smmu_master *master)
++{
++	int i;
++	struct iommu_fwspec *fwspec = dev_iommu_fwspec_get(master->dev);
++
++	if (!master->streams)
++		return;
++
++	mutex_lock(&smmu->streams_mutex);
++	for (i = 0; i < fwspec->num_ids; i++)
++		rb_erase(&master->streams[i].node, &smmu->streams);
++	mutex_unlock(&smmu->streams_mutex);
++
++	kfree(master->streams);
++}
++
+ static struct iommu_ops arm_smmu_ops;
+ 
+ static int arm_smmu_add_device(struct device *dev)
+ {
+-	int i, ret;
++	int ret;
+ 	struct arm_smmu_device *smmu;
+ 	struct arm_smmu_master *master;
+ 	struct iommu_fwspec *fwspec = dev_iommu_fwspec_get(dev);
+@@ -3232,26 +3355,11 @@ static int arm_smmu_add_device(struct device *dev)
+ 
+ 	master->dev = dev;
+ 	master->smmu = smmu;
+-	master->sids = fwspec->ids;
+-	master->num_sids = fwspec->num_ids;
+ 	fwspec->iommu_priv = master;
+ 
+-	/* Check the SIDs are in range of the SMMU and our stream table */
+-	for (i = 0; i < master->num_sids; i++) {
+-		u32 sid = master->sids[i];
+-
+-		if (!arm_smmu_sid_in_range(smmu, sid)) {
+-			ret = -ERANGE;
+-			goto err_free_master;
+-		}
+-
+-		/* Ensure l2 strtab is initialised */
+-		if (smmu->features & ARM_SMMU_FEAT_2_LVL_STRTAB) {
+-			ret = arm_smmu_init_l2_strtab(smmu, sid);
+-			if (ret)
+-				goto err_free_master;
+-		}
+-	}
++	ret = arm_smmu_insert_master(smmu, master);
++	if (ret)
++		goto err_free_master;
+ 
+ 	master->ssid_bits = min(smmu->ssid_bits, fwspec->num_pasid_bits);
+ 
+@@ -3286,6 +3394,7 @@ static int arm_smmu_add_device(struct device *dev)
+ 	iommu_device_unlink(&smmu->iommu, dev);
+ err_disable_pasid:
+ 	arm_smmu_disable_pasid(master);
++	arm_smmu_remove_master(smmu, master);
+ err_free_master:
+ 	kfree(master);
+ 	fwspec->iommu_priv = NULL;
+@@ -3308,6 +3417,7 @@ static void arm_smmu_remove_device(struct device *dev)
+ 	iommu_group_remove_device(dev);
+ 	iommu_device_unlink(&smmu->iommu, dev);
+ 	arm_smmu_disable_pasid(master);
++	arm_smmu_remove_master(smmu, master);
+ 	kfree(master);
+ 	iommu_fwspec_free(dev);
+ }
+@@ -3751,6 +3861,9 @@ static int arm_smmu_init_structures(struct arm_smmu_device *smmu)
+ {
+ 	int ret;
+ 
++	mutex_init(&smmu->streams_mutex);
++	smmu->streams = RB_ROOT;
++
+ 	ret = arm_smmu_init_queues(smmu);
+ 	if (ret)
+ 		return ret;
 -- 
 2.25.0
 
