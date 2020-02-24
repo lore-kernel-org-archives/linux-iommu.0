@@ -2,96 +2,104 @@ Return-Path: <SRS0=ms/0=4M=lists.linux-foundation.org=iommu-bounces@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-5.1 required=3.0 tests=DKIM_INVALID,DKIM_SIGNED,
-	HEADER_FROM_DIFFERENT_DOMAINS,MAILING_LIST_MULTI,SIGNED_OFF_BY,SPF_HELO_NONE,
-	SPF_PASS,USER_AGENT_SANE_1 autolearn=ham autolearn_force=no version=3.4.0
+X-Spam-Status: No, score=-8.1 required=3.0 tests=DKIM_INVALID,DKIM_SIGNED,
+	HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_PATCH,MAILING_LIST_MULTI,SIGNED_OFF_BY,
+	SPF_HELO_NONE,SPF_PASS,USER_AGENT_SANE_1 autolearn=unavailable
+	autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 9E068C11D30
-	for <iommu@archiver.kernel.org>; Mon, 24 Feb 2020 11:41:28 +0000 (UTC)
-Received: from whitealder.osuosl.org (smtp1.osuosl.org [140.211.166.138])
+	by smtp.lore.kernel.org (Postfix) with ESMTP id C43E6C11D34
+	for <iommu@archiver.kernel.org>; Mon, 24 Feb 2020 13:08:11 +0000 (UTC)
+Received: from fraxinus.osuosl.org (smtp4.osuosl.org [140.211.166.137])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by mail.kernel.org (Postfix) with ESMTPS id 67F222082F
-	for <iommu@archiver.kernel.org>; Mon, 24 Feb 2020 11:41:28 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTPS id 88F2320828
+	for <iommu@archiver.kernel.org>; Mon, 24 Feb 2020 13:08:11 +0000 (UTC)
 Authentication-Results: mail.kernel.org;
-	dkim=fail reason="signature verification failed" (1024-bit key) header.d=redhat.com header.i=@redhat.com header.b="ciNY1dL6"
-DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 67F222082F
+	dkim=fail reason="signature verification failed" (1024-bit key) header.d=redhat.com header.i=@redhat.com header.b="ggAX4k2X"
+DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 88F2320828
 Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=redhat.com
 Authentication-Results: mail.kernel.org; spf=pass smtp.mailfrom=iommu-bounces@lists.linux-foundation.org
 Received: from localhost (localhost [127.0.0.1])
-	by whitealder.osuosl.org (Postfix) with ESMTP id 3E30485C57;
-	Mon, 24 Feb 2020 11:41:28 +0000 (UTC)
+	by fraxinus.osuosl.org (Postfix) with ESMTP id 4BE5985E24;
+	Mon, 24 Feb 2020 13:08:11 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from whitealder.osuosl.org ([127.0.0.1])
+Received: from fraxinus.osuosl.org ([127.0.0.1])
 	by localhost (.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
-	with ESMTP id SicYkH4jl46V; Mon, 24 Feb 2020 11:41:27 +0000 (UTC)
+	with ESMTP id qAeBhpgzA70X; Mon, 24 Feb 2020 13:08:10 +0000 (UTC)
 Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [140.211.9.56])
-	by whitealder.osuosl.org (Postfix) with ESMTP id 0A98B8539F;
-	Mon, 24 Feb 2020 11:41:27 +0000 (UTC)
+	by fraxinus.osuosl.org (Postfix) with ESMTP id A894685DF2;
+	Mon, 24 Feb 2020 13:08:10 +0000 (UTC)
 Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
-	by lists.linuxfoundation.org (Postfix) with ESMTP id E5182C07FF;
-	Mon, 24 Feb 2020 11:41:26 +0000 (UTC)
-Received: from silver.osuosl.org (smtp3.osuosl.org [140.211.166.136])
- by lists.linuxfoundation.org (Postfix) with ESMTP id 0A62CC0177
- for <iommu@lists.linux-foundation.org>; Mon, 24 Feb 2020 11:41:26 +0000 (UTC)
+	by lists.linuxfoundation.org (Postfix) with ESMTP id A39F0C07FF;
+	Mon, 24 Feb 2020 13:08:10 +0000 (UTC)
+Received: from fraxinus.osuosl.org (smtp4.osuosl.org [140.211.166.137])
+ by lists.linuxfoundation.org (Postfix) with ESMTP id 694AEC0177
+ for <iommu@lists.linux-foundation.org>; Mon, 24 Feb 2020 13:08:09 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
- by silver.osuosl.org (Postfix) with ESMTP id D9030204A6
- for <iommu@lists.linux-foundation.org>; Mon, 24 Feb 2020 11:41:25 +0000 (UTC)
+ by fraxinus.osuosl.org (Postfix) with ESMTP id 54CC385DF5
+ for <iommu@lists.linux-foundation.org>; Mon, 24 Feb 2020 13:08:09 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from silver.osuosl.org ([127.0.0.1])
+Received: from fraxinus.osuosl.org ([127.0.0.1])
  by localhost (.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
- with ESMTP id 6qLexUh0U8q1 for <iommu@lists.linux-foundation.org>;
- Mon, 24 Feb 2020 11:41:21 +0000 (UTC)
+ with ESMTP id xZ1Z64jkPL5J for <iommu@lists.linux-foundation.org>;
+ Mon, 24 Feb 2020 13:08:08 +0000 (UTC)
 X-Greylist: domain auto-whitelisted by SQLgrey-1.7.6
-Received: from us-smtp-1.mimecast.com (us-smtp-delivery-1.mimecast.com
- [207.211.31.120])
- by silver.osuosl.org (Postfix) with ESMTPS id E6C30203CE
- for <iommu@lists.linux-foundation.org>; Mon, 24 Feb 2020 11:41:20 +0000 (UTC)
+Received: from us-smtp-delivery-1.mimecast.com (us-smtp-1.mimecast.com
+ [207.211.31.81])
+ by fraxinus.osuosl.org (Postfix) with ESMTPS id 6BFA785DF2
+ for <iommu@lists.linux-foundation.org>; Mon, 24 Feb 2020 13:08:08 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
- s=mimecast20190719; t=1582544479;
+ s=mimecast20190719; t=1582549687;
  h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
  to:to:cc:cc:mime-version:mime-version:content-type:content-type:
  content-transfer-encoding:content-transfer-encoding:
  in-reply-to:in-reply-to:references:references;
- bh=o9F+8/0eY6bBfYeKnS0y1j6KEbiMQczJ7qFt1eUs+fE=;
- b=ciNY1dL6SDjdk1kkIYEFyJIrwmLz0W4Gh55ZXTNei8wQHCuTY+jr4gYUVVV/HxVmrqFg3w
- aWYQ6u00Qqozqgi+PzE/Djj+Craiz5CQlyt+EfurVTcy8L6f7JHG6OI91jiYRSg/LHw2At
- TTwWmYGvlpBGWOaxT1hWMrufXMHWdyM=
+ bh=8hYIHZTnTP03p6Yp4LlShbTvxf4UyOXsFmmyMPgeaYI=;
+ b=ggAX4k2X/nrSgbEhTp+FSzWVvJrMksYG+aQw/fFewmeopr8t5GVMxVo8Ko0zK+ubk8SGlF
+ slcxuKjlsB4HV3HQwEEAPxAoRubW2aGHP3ny957SSRsMQ4nXgMxVuNFfuWmPsz8ZWuE8fb
+ Xrsh5GL39M8Fa5iDWYLTVJ0mm+w/AAE=
 Received: from mimecast-mx01.redhat.com (mimecast-mx01.redhat.com
  [209.132.183.4]) (Using TLS) by relay.mimecast.com with ESMTP id
- us-mta-119-MHQupH5TOuejso0T4JRw9w-1; Mon, 24 Feb 2020 06:41:06 -0500
-X-MC-Unique: MHQupH5TOuejso0T4JRw9w-1
-Received: from smtp.corp.redhat.com (int-mx04.intmail.prod.int.phx2.redhat.com
- [10.5.11.14])
+ us-mta-463-1KFA4pPFOt-nSzxZ1v6H2w-1; Mon, 24 Feb 2020 08:08:01 -0500
+X-MC-Unique: 1KFA4pPFOt-nSzxZ1v6H2w-1
+Received: from smtp.corp.redhat.com (int-mx03.intmail.prod.int.phx2.redhat.com
+ [10.5.11.13])
  (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
  (No client certificate requested)
- by mimecast-mx01.redhat.com (Postfix) with ESMTPS id 96C938017CC;
- Mon, 24 Feb 2020 11:41:04 +0000 (UTC)
+ by mimecast-mx01.redhat.com (Postfix) with ESMTPS id A47AB107ACCA;
+ Mon, 24 Feb 2020 13:07:55 +0000 (UTC)
 Received: from [10.36.116.59] (ovpn-116-59.ams2.redhat.com [10.36.116.59])
- by smtp.corp.redhat.com (Postfix) with ESMTPS id 77A5B5D9CD;
- Mon, 24 Feb 2020 11:41:02 +0000 (UTC)
-Subject: Re: [PATCH v2] iommu/arm-smmu-v3: Add SMMUv3.2 range invalidation
- support
-To: Rob Herring <robh@kernel.org>
-References: <20200117211628.27888-1-robh@kernel.org>
- <2d04f201-3457-08ad-db8e-735f8315d74e@redhat.com>
- <CAL_Jsq+3=YbcUi=wte-Cmiq-BuD7hRXwSEnHN7E9_bSnHHxG1g@mail.gmail.com>
+ by smtp.corp.redhat.com (Postfix) with ESMTPS id BF3FB909E9;
+ Mon, 24 Feb 2020 13:07:44 +0000 (UTC)
+Subject: Re: [RFC PATCH 01/11] vfio: Remove Calxeda XGMAC reset driver
+To: Rob Herring <robh@kernel.org>, linux-arm-kernel@lists.infradead.org,
+ linux-kernel@vger.kernel.org, soc@kernel.org,
+ Andre Przywara <andre.przywara@arm.com>,
+ Robert Richter <rrichter@marvell.com>, Jon Loeliger <jdl@jdl.com>,
+ Alexander Graf <graf@amazon.com>, Matthias Brugger <mbrugger@suse.com>,
+ Mark Langsdorf <mlangsdo@redhat.com>
+References: <20200218171321.30990-1-robh@kernel.org>
+ <20200218171321.30990-2-robh@kernel.org>
 From: Auger Eric <eric.auger@redhat.com>
-Message-ID: <118a2dde-7b2b-9250-d70c-5bb2ea614de0@redhat.com>
-Date: Mon, 24 Feb 2020 12:41:00 +0100
+Message-ID: <23fda074-149e-9c77-5eee-4d6b591a6ebf@redhat.com>
+Date: Mon, 24 Feb 2020 14:07:42 +0100
 User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:60.0) Gecko/20100101
  Thunderbird/60.4.0
 MIME-Version: 1.0
-In-Reply-To: <CAL_Jsq+3=YbcUi=wte-Cmiq-BuD7hRXwSEnHN7E9_bSnHHxG1g@mail.gmail.com>
+In-Reply-To: <20200218171321.30990-2-robh@kernel.org>
 Content-Language: en-US
-X-Scanned-By: MIMEDefang 2.79 on 10.5.11.14
-X-Mimecast-Spam-Score: 0
-X-Mimecast-Originator: redhat.com
-Cc: Jean-Philippe Brucker <jean-philippe@linaro.org>,
- Robin Murphy <robin.murphy@arm.com>,
- Linux IOMMU <iommu@lists.linux-foundation.org>, Will Deacon <will@kernel.org>,
- "moderated list:ARM/FREESCALE IMX / MXC ARM ARCHITECTURE"
- <linux-arm-kernel@lists.infradead.org>
+X-Scanned-By: MIMEDefang 2.79 on 10.5.11.13
+Cc: kvm@vger.kernel.org, Viresh Kumar <viresh.kumar@linaro.org>,
+ linux-ide@vger.kernel.org, Will Deacon <will@kernel.org>,
+ linux-clk@vger.kernel.org, Daniel Lezcano <daniel.lezcano@linaro.org>,
+ devicetree@vger.kernel.org, linux-pm@vger.kernel.org,
+ Alex Williamson <alex.williamson@redhat.com>, Borislav Petkov <bp@alien8.de>,
+ Mauro Carvalho Chehab <mchehab@kernel.org>, linux-edac@vger.kernel.org,
+ Jens Axboe <axboe@kernel.dk>, Tony Luck <tony.luck@intel.com>,
+ Stephen Boyd <sboyd@kernel.org>, netdev@vger.kernel.org,
+ Cornelia Huck <cohuck@redhat.com>, "Rafael J. Wysocki" <rjw@rjwysocki.net>,
+ iommu@lists.linux-foundation.org, James Morse <james.morse@arm.com>,
+ Robin Murphy <robin.murphy@arm.com>, "David S. Miller" <davem@davemloft.net>
 X-BeenThere: iommu@lists.linux-foundation.org
 X-Mailman-Version: 2.1.15
 Precedence: list
@@ -109,133 +117,143 @@ Content-Transfer-Encoding: 7bit
 Errors-To: iommu-bounces@lists.linux-foundation.org
 Sender: "iommu" <iommu-bounces@lists.linux-foundation.org>
 
-Hi Rob,
+Hi Rob, Alex,
 
-On 2/13/20 8:54 PM, Rob Herring wrote:
-> On Thu, Jan 30, 2020 at 9:06 AM Auger Eric <eric.auger@redhat.com> wrote:
->>
->> Hi Rob,
->> On 1/17/20 10:16 PM, Rob Herring wrote:
->>> Arm SMMUv3.2 adds support for TLB range invalidate operations.
->>> Support for range invalidate is determined by the RIL bit in the IDR3
->>> register.
->>>
->>> The range invalidate is in units of the leaf page size and operates on
->>> 1-32 chunks of a power of 2 multiple pages. First, we determine from the
->>> size what power of 2 multiple we can use. Then we calculate how many
->>> chunks (1-31) of the power of 2 size for the range on the iteration. On
->>> each iteration, we move up in size by at least 5 bits.
->>>
->>> Cc: Eric Auger <eric.auger@redhat.com>
->>> Cc: Jean-Philippe Brucker <jean-philippe@linaro.org>
->>> Cc: Will Deacon <will@kernel.org>
->>> Cc: Robin Murphy <robin.murphy@arm.com>
->>> Cc: Joerg Roedel <joro@8bytes.org>
->>> Signed-off-by: Rob Herring <robh@kernel.org>
->>> ---
->>>  drivers/iommu/arm-smmu-v3.c | 66 ++++++++++++++++++++++++++++++++++++-
->>>  1 file changed, 65 insertions(+), 1 deletion(-)
+On 2/18/20 6:13 PM, Rob Herring wrote:
+> Cc: Eric Auger <eric.auger@redhat.com>
+> Cc: Alex Williamson <alex.williamson@redhat.com>
+> Cc: Cornelia Huck <cohuck@redhat.com>
+> Cc: kvm@vger.kernel.org
+> Signed-off-by: Rob Herring <robh@kernel.org>
+> ---
+> Do not apply yet.
 > 
+>  drivers/vfio/platform/reset/Kconfig           |  8 --
+>  drivers/vfio/platform/reset/Makefile          |  2 -
+>  .../reset/vfio_platform_calxedaxgmac.c        | 74 -------------------
+>  3 files changed, 84 deletions(-)
+>  delete mode 100644 drivers/vfio/platform/reset/vfio_platform_calxedaxgmac.c
 > 
->>> @@ -2003,7 +2024,7 @@ static void arm_smmu_tlb_inv_range(unsigned long iova, size_t size,
->>>  {
->>>       u64 cmds[CMDQ_BATCH_ENTRIES * CMDQ_ENT_DWORDS];
->>>       struct arm_smmu_device *smmu = smmu_domain->smmu;
->>> -     unsigned long start = iova, end = iova + size;
->>> +     unsigned long start = iova, end = iova + size, num_pages = 0, tg = 0;
->>>       int i = 0;
->>>       struct arm_smmu_cmdq_ent cmd = {
->>>               .tlbi = {
->>> @@ -2022,12 +2043,50 @@ static void arm_smmu_tlb_inv_range(unsigned long iova, size_t size,
->>>               cmd.tlbi.vmid   = smmu_domain->s2_cfg.vmid;
->>>       }
->>>
->>> +     if (smmu->features & ARM_SMMU_FEAT_RANGE_INV) {
->>> +             /* Get the leaf page size */
->>> +             tg = __ffs(smmu_domain->domain.pgsize_bitmap);
->>> +
->>> +             /* Convert page size of 12,14,16 (log2) to 1,2,3 */
->>> +             cmd.tlbi.tg = ((tg - ilog2(SZ_4K)) / 2) + 1;
->>> +
->>> +             /* Determine what level the granule is at */
->>> +             cmd.tlbi.ttl = 4 - ((ilog2(granule) - 3) / (tg - 3));
->>> +
->>> +             num_pages = size / (1UL << tg);
->>> +     }
->>> +
->>>       while (iova < end) {
->>>               if (i == CMDQ_BATCH_ENTRIES) {
->>>                       arm_smmu_cmdq_issue_cmdlist(smmu, cmds, i, false);
->>>                       i = 0;
->>>               }
->>>
->>> +             if (smmu->features & ARM_SMMU_FEAT_RANGE_INV) {
->>> +                     /*
->>> +                      * On each iteration of the loop, the range is 5 bits
->>> +                      * worth of the aligned size remaining.
->>> +                      * The range in pages is:
->>> +                      *
->>> +                      * range = (num_pages & (0x1f << __ffs(num_pages)))
->>> +                      */
->>> +                     unsigned long scale, num;
->>> +
->>> +                     /* Determine the power of 2 multiple number of pages */
->>> +                     scale = __ffs(num_pages);
->>> +                     cmd.tlbi.scale = scale;
->>> +
->>> +                     /* Determine how many chunks of 2^scale size we have */
->>> +                     num = (num_pages >> scale) & CMDQ_TLBI_RANGE_NUM_MAX;
->>> +                     cmd.tlbi.num = num - 1;
->>> +
->>> +                     /* range is num * 2^scale * pgsize */
->>> +                     granule = num << (scale + tg);
->>> +
->>> +                     /* Clear out the lower order bits for the next iteration */
->>> +                     num_pages -= num << scale;
->> Regarding the 2 options given in
->> https://lore.kernel.org/linux-arm-kernel/CAL_JsqKABoE+0crGwyZdNogNgEoG=MOOpf6deQgH6s73c0UNdA@mail.gmail.com/raw,
->>
->> I understand you implemented 2) but I still do not understand why you
->> preferred that one against 1).
->>
->> In your case of 1023*4k pages this will invalidate by 31 32*2^0*4K +
->> 31*2^0*4K pages
->> whereas you could achieve that with 10 invalidations with the 1st algo.
->> I did not get the case where it is more efficient. Please can you detail.
+> diff --git a/drivers/vfio/platform/reset/Kconfig b/drivers/vfio/platform/reset/Kconfig
+> index 1edbe9ee7356..3668d1d92909 100644
+> --- a/drivers/vfio/platform/reset/Kconfig
+> +++ b/drivers/vfio/platform/reset/Kconfig
+> @@ -1,12 +1,4 @@
+>  # SPDX-License-Identifier: GPL-2.0-only
+> -config VFIO_PLATFORM_CALXEDAXGMAC_RESET
+> -	tristate "VFIO support for calxeda xgmac reset"
+> -	depends on VFIO_PLATFORM
+> -	help
+> -	  Enables the VFIO platform driver to handle reset for Calxeda xgmac
+> -
+> -	  If you don't know what to do here, say N.
+> -
+>  config VFIO_PLATFORM_AMDXGBE_RESET
+>  	tristate "VFIO support for AMD XGBE reset"
+>  	depends on VFIO_PLATFORM
+> diff --git a/drivers/vfio/platform/reset/Makefile b/drivers/vfio/platform/reset/Makefile
+> index 7294c5ea122e..be7960ce5dbc 100644
+> --- a/drivers/vfio/platform/reset/Makefile
+> +++ b/drivers/vfio/platform/reset/Makefile
+> @@ -1,7 +1,5 @@
+>  # SPDX-License-Identifier: GPL-2.0
+> -vfio-platform-calxedaxgmac-y := vfio_platform_calxedaxgmac.o
+>  vfio-platform-amdxgbe-y := vfio_platform_amdxgbe.o
 > 
-> No, it's only 2 commands. We do 31*4K and then 31*2^5*4K. Here's a the
-> output of a test case:
+> -obj-$(CONFIG_VFIO_PLATFORM_CALXEDAXGMAC_RESET) += vfio-platform-calxedaxgmac.o
+>  obj-$(CONFIG_VFIO_PLATFORM_AMDXGBE_RESET) += vfio-platform-amdxgbe.o
+>  obj-$(CONFIG_VFIO_PLATFORM_BCMFLEXRM_RESET) += vfio_platform_bcmflexrm.o
+> diff --git a/drivers/vfio/platform/reset/vfio_platform_calxedaxgmac.c b/drivers/vfio/platform/reset/vfio_platform_calxedaxgmac.c
+> deleted file mode 100644
+> index 09a9453b75c5..000000000000
+> --- a/drivers/vfio/platform/reset/vfio_platform_calxedaxgmac.c
+> +++ /dev/null
+> @@ -1,74 +0,0 @@
+> -// SPDX-License-Identifier: GPL-2.0-only
+> -/*
+> - * VFIO platform driver specialized for Calxeda xgmac reset
+> - * reset code is inherited from calxeda xgmac native driver
+> - *
+> - * Copyright 2010-2011 Calxeda, Inc.
+> - * Copyright (c) 2015 Linaro Ltd.
+> - *              www.linaro.org
+> - */
+> -
+> -#include <linux/module.h>
+> -#include <linux/kernel.h>
+> -#include <linux/init.h>
+> -#include <linux/io.h>
+> -
+> -#include "../vfio_platform_private.h"
+> -
+> -#define DRIVER_VERSION  "0.1"
+> -#define DRIVER_AUTHOR   "Eric Auger <eric.auger@linaro.org>"
+> -#define DRIVER_DESC     "Reset support for Calxeda xgmac vfio platform device"
+> -
+> -/* XGMAC Register definitions */
+> -#define XGMAC_CONTROL           0x00000000      /* MAC Configuration */
+> -
+> -/* DMA Control and Status Registers */
+> -#define XGMAC_DMA_CONTROL       0x00000f18      /* Ctrl (Operational Mode) */
+> -#define XGMAC_DMA_INTR_ENA      0x00000f1c      /* Interrupt Enable */
+> -
+> -/* DMA Control registe defines */
+> -#define DMA_CONTROL_ST          0x00002000      /* Start/Stop Transmission */
+> -#define DMA_CONTROL_SR          0x00000002      /* Start/Stop Receive */
+> -
+> -/* Common MAC defines */
+> -#define MAC_ENABLE_TX           0x00000008      /* Transmitter Enable */
+> -#define MAC_ENABLE_RX           0x00000004      /* Receiver Enable */
+> -
+> -static inline void xgmac_mac_disable(void __iomem *ioaddr)
+> -{
+> -	u32 value = readl(ioaddr + XGMAC_DMA_CONTROL);
+> -
+> -	value &= ~(DMA_CONTROL_ST | DMA_CONTROL_SR);
+> -	writel(value, ioaddr + XGMAC_DMA_CONTROL);
+> -
+> -	value = readl(ioaddr + XGMAC_CONTROL);
+> -	value &= ~(MAC_ENABLE_TX | MAC_ENABLE_RX);
+> -	writel(value, ioaddr + XGMAC_CONTROL);
+> -}
+> -
+> -static int vfio_platform_calxedaxgmac_reset(struct vfio_platform_device *vdev)
+> -{
+> -	struct vfio_platform_region *reg = &vdev->regions[0];
+> -
+> -	if (!reg->ioaddr) {
+> -		reg->ioaddr =
+> -			ioremap(reg->addr, reg->size);
+> -		if (!reg->ioaddr)
+> -			return -ENOMEM;
+> -	}
+> -
+> -	/* disable IRQ */
+> -	writel(0, reg->ioaddr + XGMAC_DMA_INTR_ENA);
+> -
+> -	/* Disable the MAC core */
+> -	xgmac_mac_disable(reg->ioaddr);
+> -
+> -	return 0;
+> -}
+> -
+> -module_vfio_reset_handler("calxeda,hb-xgmac", vfio_platform_calxedaxgmac_reset);
+> -
+> -MODULE_VERSION(DRIVER_VERSION);
+> -MODULE_LICENSE("GPL v2");
+> -MODULE_AUTHOR(DRIVER_AUTHOR);
+> -MODULE_DESCRIPTION(DRIVER_DESC);
+> --
+> 2.20.1
 > 
-> iova=10001000, num_pages=0x3e0, granule=1f000, num=31, scale=0, ttl=3
-> iova=10020000, num_pages=0x0, granule=3e0000, num=31, scale=5, ttl=3
-> 
-> (num_pages being what's left at end of the loop)
+I do not have access to this HW anymore and I use Seattle to test
+vfio-platform. So
 
-> 
-> As I mentioned on v1, worst case is 4 commands for up to 4GB. It's
-> 20-bits of size (32-12) and each loop processes a minimum of 5 bits.
-> Each loop becomes a larger aligned size, so scale goes up each pass.
-> This is what I tried to explain in the top comment.
-
-Sorry for the delay, I was out of the office. Yes indeed I misunderstood
-the code and the algo looks good to me now.
-
-just a minor comment, I would use a dedicated "inv_range" loop block
-local variable instead of "granule".
-
-Besides
-Reviewed-by: Eric Auger <eric.auger@redhat.com>
+Acked-by: Eric Auger <eric.auger@redhat.com>
 
 Thanks
 
 Eric
-
-
-
-
-> 
-> Rob
-> 
 
 _______________________________________________
 iommu mailing list
