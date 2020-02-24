@@ -2,119 +2,75 @@ Return-Path: <SRS0=ms/0=4M=lists.linux-foundation.org=iommu-bounces@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-2.3 required=3.0 tests=HEADER_FROM_DIFFERENT_DOMAINS,
-	MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS,USER_AGENT_SANE_2 autolearn=no
-	autolearn_force=no version=3.4.0
+X-Spam-Status: No, score=-8.3 required=3.0 tests=HEADER_FROM_DIFFERENT_DOMAINS,
+	INCLUDES_PATCH,MAILING_LIST_MULTI,SIGNED_OFF_BY,SPF_HELO_NONE,SPF_PASS,
+	USER_AGENT_SANE_1 autolearn=ham autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 8DE18C35671
-	for <iommu@archiver.kernel.org>; Mon, 24 Feb 2020 13:56:26 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id A4C4CC35671
+	for <iommu@archiver.kernel.org>; Mon, 24 Feb 2020 14:05:23 +0000 (UTC)
 Received: from hemlock.osuosl.org (smtp2.osuosl.org [140.211.166.133])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by mail.kernel.org (Postfix) with ESMTPS id 5DC0220866
-	for <iommu@archiver.kernel.org>; Mon, 24 Feb 2020 13:56:26 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 5DC0220866
-Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=linux.ibm.com
+	by mail.kernel.org (Postfix) with ESMTPS id 748CB205C9
+	for <iommu@archiver.kernel.org>; Mon, 24 Feb 2020 14:05:23 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 748CB205C9
+Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=linux.intel.com
 Authentication-Results: mail.kernel.org; spf=pass smtp.mailfrom=iommu-bounces@lists.linux-foundation.org
 Received: from localhost (localhost [127.0.0.1])
-	by hemlock.osuosl.org (Postfix) with ESMTP id 2746581CAD;
-	Mon, 24 Feb 2020 13:56:26 +0000 (UTC)
+	by hemlock.osuosl.org (Postfix) with ESMTP id 4D4DF86CD7;
+	Mon, 24 Feb 2020 14:05:23 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
 Received: from hemlock.osuosl.org ([127.0.0.1])
 	by localhost (.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
-	with ESMTP id G8xO2Y65136i; Mon, 24 Feb 2020 13:56:21 +0000 (UTC)
+	with ESMTP id 7drRdOCY7Y1A; Mon, 24 Feb 2020 14:05:18 +0000 (UTC)
 Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [140.211.9.56])
-	by hemlock.osuosl.org (Postfix) with ESMTP id 1F39E81AEC;
-	Mon, 24 Feb 2020 13:56:21 +0000 (UTC)
+	by hemlock.osuosl.org (Postfix) with ESMTP id CF60C86E6E;
+	Mon, 24 Feb 2020 14:05:18 +0000 (UTC)
 Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
-	by lists.linuxfoundation.org (Postfix) with ESMTP id E88FCC07FF;
-	Mon, 24 Feb 2020 13:56:20 +0000 (UTC)
-Received: from fraxinus.osuosl.org (smtp4.osuosl.org [140.211.166.137])
- by lists.linuxfoundation.org (Postfix) with ESMTP id 9B665C0177
- for <iommu@lists.linux-foundation.org>; Mon, 24 Feb 2020 13:56:19 +0000 (UTC)
+	by lists.linuxfoundation.org (Postfix) with ESMTP id BFFBAC07FF;
+	Mon, 24 Feb 2020 14:05:18 +0000 (UTC)
+Received: from hemlock.osuosl.org (smtp2.osuosl.org [140.211.166.133])
+ by lists.linuxfoundation.org (Postfix) with ESMTP id 40493C0177
+ for <iommu@lists.linux-foundation.org>; Mon, 24 Feb 2020 14:05:16 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
- by fraxinus.osuosl.org (Postfix) with ESMTP id 89D4E85E47
- for <iommu@lists.linux-foundation.org>; Mon, 24 Feb 2020 13:56:19 +0000 (UTC)
+ by hemlock.osuosl.org (Postfix) with ESMTP id 2980A86E6E
+ for <iommu@lists.linux-foundation.org>; Mon, 24 Feb 2020 14:05:16 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from fraxinus.osuosl.org ([127.0.0.1])
+Received: from hemlock.osuosl.org ([127.0.0.1])
  by localhost (.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
- with ESMTP id O_tVeoAZKDKe for <iommu@lists.linux-foundation.org>;
- Mon, 24 Feb 2020 13:56:18 +0000 (UTC)
-X-Greylist: from auto-whitelisted by SQLgrey-1.7.6
-Received: from mx0a-001b2d01.pphosted.com (mx0b-001b2d01.pphosted.com
- [148.163.158.5])
- by fraxinus.osuosl.org (Postfix) with ESMTPS id 36A4F83527
- for <iommu@lists.linux-foundation.org>; Mon, 24 Feb 2020 13:56:18 +0000 (UTC)
-Received: from pps.filterd (m0098419.ppops.net [127.0.0.1])
- by mx0b-001b2d01.pphosted.com (8.16.0.42/8.16.0.42) with SMTP id
- 01ODo1uN012740
- for <iommu@lists.linux-foundation.org>; Mon, 24 Feb 2020 08:56:17 -0500
-Received: from e06smtp02.uk.ibm.com (e06smtp02.uk.ibm.com [195.75.94.98])
- by mx0b-001b2d01.pphosted.com with ESMTP id 2yax44f520-1
- (version=TLSv1.2 cipher=AES256-GCM-SHA384 bits=256 verify=NOT)
- for <iommu@lists.linux-foundation.org>; Mon, 24 Feb 2020 08:56:17 -0500
-Received: from localhost
- by e06smtp02.uk.ibm.com with IBM ESMTP SMTP Gateway: Authorized Use Only!
- Violators will be prosecuted
- for <iommu@lists.linux-foundation.org> from <pasic@linux.ibm.com>;
- Mon, 24 Feb 2020 13:56:15 -0000
-Received: from b06avi18878370.portsmouth.uk.ibm.com (9.149.26.194)
- by e06smtp02.uk.ibm.com (192.168.101.132) with IBM ESMTP SMTP Gateway:
- Authorized Use Only! Violators will be prosecuted; 
- (version=TLSv1/SSLv3 cipher=AES256-GCM-SHA384 bits=256/256)
- Mon, 24 Feb 2020 13:56:10 -0000
-Received: from d06av21.portsmouth.uk.ibm.com (d06av21.portsmouth.uk.ibm.com
- [9.149.105.232])
- by b06avi18878370.portsmouth.uk.ibm.com (8.14.9/8.14.9/NCO v10.0) with ESMTP
- id 01ODu9Cv32571682
- (version=TLSv1/SSLv3 cipher=DHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
- Mon, 24 Feb 2020 13:56:09 GMT
-Received: from d06av21.portsmouth.uk.ibm.com (unknown [127.0.0.1])
- by IMSVA (Postfix) with ESMTP id 1746B52057;
- Mon, 24 Feb 2020 13:56:09 +0000 (GMT)
-Received: from oc2783563651 (unknown [9.152.224.149])
- by d06av21.portsmouth.uk.ibm.com (Postfix) with ESMTP id 9201452054;
- Mon, 24 Feb 2020 13:56:08 +0000 (GMT)
-Date: Mon, 24 Feb 2020 14:56:07 +0100
-From: Halil Pasic <pasic@linux.ibm.com>
-To: Jason Wang <jasowang@redhat.com>
-Subject: Re: [PATCH 0/2] virtio: decouple protected guest RAM form
- VIRTIO_F_IOMMU_PLATFORM
-In-Reply-To: <08d6bdfb-9b49-c278-3c0b-2e02376cf0cf@redhat.com>
-References: <20200220160606.53156-1-pasic@linux.ibm.com>
- <426e6972-0565-c931-e171-da0f58fbf856@redhat.com>
- <20200221155602.4de41fa7.pasic@linux.ibm.com>
- <0181712c-e533-fcfd-2638-8a0649d713dd@redhat.com>
- <20200224010607-mutt-send-email-mst@kernel.org>
- <b3c52c67-c740-a50e-2595-fe04d179c881@redhat.com>
- <20200224024641-mutt-send-email-mst@kernel.org>
- <08d6bdfb-9b49-c278-3c0b-2e02376cf0cf@redhat.com>
-Organization: IBM
-X-Mailer: Claws Mail 3.11.1 (GTK+ 2.24.31; x86_64-redhat-linux-gnu)
+ with ESMTP id Aw+QV0iN5oVa for <iommu@lists.linux-foundation.org>;
+ Mon, 24 Feb 2020 14:05:11 +0000 (UTC)
+X-Greylist: domain auto-whitelisted by SQLgrey-1.7.6
+Received: from mga01.intel.com (mga01.intel.com [192.55.52.88])
+ by hemlock.osuosl.org (Postfix) with ESMTPS id B0D8E86CD7
+ for <iommu@lists.linux-foundation.org>; Mon, 24 Feb 2020 14:05:11 +0000 (UTC)
+X-Amp-Result: SKIPPED(no attachment in message)
+X-Amp-File-Uploaded: False
+Received: from fmsmga005.fm.intel.com ([10.253.24.32])
+ by fmsmga101.fm.intel.com with ESMTP/TLS/DHE-RSA-AES256-GCM-SHA384;
+ 24 Feb 2020 06:05:10 -0800
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="5.70,480,1574150400"; d="scan'208";a="435914695"
+Received: from blu2-mobl3.ccr.corp.intel.com (HELO [10.254.212.230])
+ ([10.254.212.230])
+ by fmsmga005.fm.intel.com with ESMTP; 24 Feb 2020 06:05:08 -0800
+Subject: Re: [PATCH v2] iommu/vt-d: Fix a bug in intel_iommu_iova_to_phys()
+ for huge page
+To: Yonghyun Hwang <yonghyun@google.com>,
+ David Woodhouse <dwmw2@infradead.org>, Joerg Roedel <joro@8bytes.org>
+References: <20200220194431.169629-1-yonghyun@google.com>
+ <795521c0-af5b-36a1-e05c-324377d04d8a@linux.intel.com>
+From: Lu Baolu <baolu.lu@linux.intel.com>
+Message-ID: <ab64969a-5a52-5a22-061b-de57a5ac5627@linux.intel.com>
+Date: Mon, 24 Feb 2020 22:05:04 +0800
+User-Agent: Mozilla/5.0 (Windows NT 10.0; WOW64; rv:68.0) Gecko/20100101
+ Thunderbird/68.5.0
 MIME-Version: 1.0
-X-TM-AS-GCONF: 00
-x-cbid: 20022413-0008-0000-0000-00000355F424
-X-IBM-AV-DETECTION: SAVI=unused REMOTE=unused XFE=unused
-x-cbparentid: 20022413-0009-0000-0000-00004A770CC7
-Message-Id: <20200224145607.2729f47b.pasic@linux.ibm.com>
-X-Proofpoint-Virus-Version: vendor=fsecure engine=2.50.10434:6.0.138, 18.0.572
- definitions=2020-02-24_04:2020-02-21,
- 2020-02-24 signatures=0
-X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0
- lowpriorityscore=0
- adultscore=0 mlxlogscore=999 suspectscore=0 spamscore=0 priorityscore=1501
- impostorscore=0 mlxscore=0 malwarescore=0 phishscore=0 bulkscore=0
- clxscore=1015 classifier=spam adjust=0 reason=mlx scancount=1
- engine=8.12.0-2001150001 definitions=main-2002240114
-Cc: linux-s390@vger.kernel.org, Janosch Frank <frankja@linux.ibm.com>,
- "Michael S. Tsirkin" <mst@redhat.com>, Cornelia Huck <cohuck@redhat.com>,
- Ram Pai <linuxram@us.ibm.com>, linux-kernel@vger.kernel.org,
- virtualization@lists.linux-foundation.org,
- Christian Borntraeger <borntraeger@de.ibm.com>,
- iommu@lists.linux-foundation.org, David Gibson <david@gibson.dropbear.id.au>,
- Michael Mueller <mimu@linux.ibm.com>, "Lendacky,
- Thomas" <Thomas.Lendacky@amd.com>, Viktor Mihajlovski <mihajlov@linux.ibm.com>,
- Robin Murphy <robin.murphy@arm.com>, Christoph Hellwig <hch@lst.de>
+In-Reply-To: <795521c0-af5b-36a1-e05c-324377d04d8a@linux.intel.com>
+Content-Language: en-US
+Cc: Havard Skinnemoen <hskinnemoen@google.com>, linux-kernel@vger.kernel.org,
+ iommu@lists.linux-foundation.org, Moritz Fischer <mdf@kernel.org>,
+ Deepa Dinamani <deepadinamani@google.com>
 X-BeenThere: iommu@lists.linux-foundation.org
 X-Mailman-Version: 2.1.15
 Precedence: list
@@ -127,66 +83,41 @@ List-Post: <mailto:iommu@lists.linux-foundation.org>
 List-Help: <mailto:iommu-request@lists.linux-foundation.org?subject=help>
 List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
  <mailto:iommu-request@lists.linux-foundation.org?subject=subscribe>
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: 7bit
+Content-Transfer-Encoding: base64
+Content-Type: text/plain; charset="utf-8"; Format="flowed"
 Errors-To: iommu-bounces@lists.linux-foundation.org
 Sender: "iommu" <iommu-bounces@lists.linux-foundation.org>
 
-On Mon, 24 Feb 2020 17:26:20 +0800
-Jason Wang <jasowang@redhat.com> wrote:
-
-> That's better.
-> 
-> How about attached?
-> 
-> Thanks
-
-Thanks Jason! It does avoid the translation overhead in vhost.
-
-Tested-by: Halil Pasic <pasic@linux.ibm.com>
-
-Regarding the code, you fence it in virtio-net.c, but AFAIU this feature
-has relevance for other vhost devices as well. E.g. what about vhost
-user? Would it be the responsibility of each virtio device to fence this
-on its own?
-
-I'm also a bit confused about the semantics of the vhost feature bit
-F_ACCESS_PLATFORM. What we have specified on virtio level is:
-"""
-This feature indicates that the device can be used on a platform where
-device access to data in memory is limited and/or translated. E.g. this
-is the case if the device can be located behind an IOMMU that translates
-bus addresses from the device into physical addresses in memory, if the
-device can be limited to only access certain memory addresses or if
-special commands such as a cache flush can be needed to synchronise data
-in memory with the device. Whether accesses are actually limited or
-translated is described by platform-specific means. If this feature bit
-is set to 0, then the device has same access to memory addresses
-supplied to it as the driver has. In particular, the device will always
-use physical addresses matching addresses used by the driver (typically
-meaning physical addresses used by the CPU) and not translated further,
-and can access any address supplied to it by the driver. When clear,
-this overrides any platform-specific description of whether device
-access is limited or translated in any way, e.g. whether an IOMMU may be
-present.
-"""
-
-I read this like the addresses may be IOVAs which require
-IMMU translation or GPAs which don't.
-
-On the vhost level however, it seems that F_IOMMU_PLATFORM means that
-vhost has to do the translation (via IOTLB API).
-
-Do I understand this correctly? If yes, I believe we should document
-this properly.
-
-BTW I'm still not 100% on the purpose and semantics of the
-F_ACCESS_PLATFORM feature bit. But that is a different problem.
-
-Regards,
-Halil
-
-_______________________________________________
-iommu mailing list
-iommu@lists.linux-foundation.org
-https://lists.linuxfoundation.org/mailman/listinfo/iommu
+SGkgSm9lcmcgYW5kIFlvbmdoeXVuLAoKSSBmb3VuZCBhIHByb2JsZW0gaW4gdGhlIHRlc3QuIEkg
+YW0gc3RpbGwgd29ya2luZyBvbiB0aGlzLiBQbGVhc2UgaG9sZApvbiBmb3IgYSB3aGlsZS4KCkJl
+c3QgcmVnYXJkcywKYmFvbHUKCk9uIDIwMjAvMi8yMiAyMTowNSwgTHUgQmFvbHUgd3JvdGU6Cj4g
+SGksCj4gCj4gT24gMjAyMC8yLzIxIDM6NDQsIFlvbmdoeXVuIEh3YW5nIHdyb3RlOgo+PiBpbnRl
+bF9pb21tdV9pb3ZhX3RvX3BoeXMoKSBoYXMgYSBidWcgd2hlbiBpdCB0cmFuc2xhdGVzIGFuIElP
+VkEgZm9yIGEgCj4+IGh1Z2UKPj4gcGFnZSBvbnRvIGl0cyBjb3JyZXNwb25kaW5nIHBoeXNpY2Fs
+IGFkZHJlc3MuIFRoaXMgY29tbWl0IGZpeGVzIHRoZSAKPj4gYnVnIGJ5Cj4+IGFjY29tb2RhdGlu
+ZyB0aGUgbGV2ZWwgb2YgcGFnZSBlbnRyeSBmb3IgdGhlIElPVkEgYW5kIGFkZHMgSU9WQSdzIGxv
+d2VyCj4+IGFkZHJlc3MgdG8gdGhlIHBoeXNpY2FsIGFkZHJlc3MuCj4+Cj4+IFNpZ25lZC1vZmYt
+Ynk6IFlvbmdoeXVuIEh3YW5nIDx5b25naHl1bkBnb29nbGUuY29tPgo+IAo+IFRoaXMgZml4IGxv
+b2tzIGdvb2QgdG8gbWUuCj4gCj4gQ2M6IDxzdGFibGVAa2VybmVsLm9yZz4gIyBBcyBmYXIgYmFj
+ayBhcyBwb3NzaWJsZQo+IEFja2VkLWJ5OiBMdSBCYW9sdSA8YmFvbHUubHVAbGludXguaW50ZWwu
+Y29tPgo+IAo+IEJlc3QgcmVnYXJkcywKPiBiYW9sdQo+IAo+PiAtLS0KPj4KPj4gQ2hhbmdlcyBm
+cm9tIHYxOgo+PiAtIGxldmVsIGNhbm5vdCBiZSAwLiBTbywgdGhlIGNvbmRpdGlvbiwgImlmIChs
+ZXZlbCA+IDEpIiwgaXMgcmVtb3ZlZCwgCj4+IHdoaWNoIHJlc3VsdHMgaW4gYSBzaW1wbGUgY29k
+ZS4KPj4gLSBhIG1hY3JvLCBCSVRfTUFTSywgaXMgdXNlZCB0byBoYXZlIGEgYml0IG1hc2sKPj4K
+Pj4gLS0tCj4+IMKgIGRyaXZlcnMvaW9tbXUvaW50ZWwtaW9tbXUuYyB8IDQgKysrLQo+PiDCoCAx
+IGZpbGUgY2hhbmdlZCwgMyBpbnNlcnRpb25zKCspLCAxIGRlbGV0aW9uKC0pCj4+Cj4+IGRpZmYg
+LS1naXQgYS9kcml2ZXJzL2lvbW11L2ludGVsLWlvbW11LmMgYi9kcml2ZXJzL2lvbW11L2ludGVs
+LWlvbW11LmMKPj4gaW5kZXggOTMyMjY3ZjQ5ZjlhLi40ZmQ1YzYyODdiNmQgMTAwNjQ0Cj4+IC0t
+LSBhL2RyaXZlcnMvaW9tbXUvaW50ZWwtaW9tbXUuYwo+PiArKysgYi9kcml2ZXJzL2lvbW11L2lu
+dGVsLWlvbW11LmMKPj4gQEAgLTU1NTQsNyArNTU1NCw5IEBAIHN0YXRpYyBwaHlzX2FkZHJfdCAK
+Pj4gaW50ZWxfaW9tbXVfaW92YV90b19waHlzKHN0cnVjdCBpb21tdV9kb21haW4gKmRvbWFpbiwK
+Pj4gwqDCoMKgwqDCoCBwdGUgPSBwZm5fdG9fZG1hX3B0ZShkbWFyX2RvbWFpbiwgaW92YSA+PiBW
+VERfUEFHRV9TSElGVCwgJmxldmVsKTsKPj4gwqDCoMKgwqDCoCBpZiAocHRlKQo+PiAtwqDCoMKg
+wqDCoMKgwqAgcGh5cyA9IGRtYV9wdGVfYWRkcihwdGUpOwo+PiArwqDCoMKgwqDCoMKgwqAgcGh5
+cyA9IGRtYV9wdGVfYWRkcihwdGUpICsKPj4gK8KgwqDCoMKgwqDCoMKgwqDCoMKgwqAgKGlvdmEg
+JiAoQklUX01BU0sobGV2ZWxfdG9fb2Zmc2V0X2JpdHMobGV2ZWwpICsKPj4gK8KgwqDCoMKgwqDC
+oMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqAgVlREX1BBR0VfU0hJRlQpIC0gMSkp
+Owo+PiDCoMKgwqDCoMKgIHJldHVybiBwaHlzOwo+PiDCoCB9Cj4+Cl9fX19fX19fX19fX19fX19f
+X19fX19fX19fX19fX19fX19fX19fX19fX19fX19fCmlvbW11IG1haWxpbmcgbGlzdAppb21tdUBs
+aXN0cy5saW51eC1mb3VuZGF0aW9uLm9yZwpodHRwczovL2xpc3RzLmxpbnV4Zm91bmRhdGlvbi5v
+cmcvbWFpbG1hbi9saXN0aW5mby9pb21tdQ==
