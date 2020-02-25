@@ -2,100 +2,97 @@ Return-Path: <SRS0=zhz4=4N=lists.linux-foundation.org=iommu-bounces@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-0.6 required=3.0 tests=DKIM_INVALID,DKIM_SIGNED,
-	HEADER_FROM_DIFFERENT_DOMAINS,MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS,
-	URIBL_BLOCKED autolearn=no autolearn_force=no version=3.4.0
+X-Spam-Status: No, score=-8.1 required=3.0 tests=DKIM_INVALID,DKIM_SIGNED,
+	HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_PATCH,MAILING_LIST_MULTI,SIGNED_OFF_BY,
+	SPF_HELO_NONE,SPF_PASS,UNPARSEABLE_RELAY,URIBL_BLOCKED,USER_AGENT_SANE_2
+	autolearn=ham autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 6B8F5C35DF5
-	for <iommu@archiver.kernel.org>; Tue, 25 Feb 2020 07:14:23 +0000 (UTC)
-Received: from whitealder.osuosl.org (smtp1.osuosl.org [140.211.166.138])
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 493EAC35DF5
+	for <iommu@archiver.kernel.org>; Tue, 25 Feb 2020 07:27:08 +0000 (UTC)
+Received: from fraxinus.osuosl.org (smtp4.osuosl.org [140.211.166.137])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by mail.kernel.org (Postfix) with ESMTPS id 225FA2082F
-	for <iommu@archiver.kernel.org>; Tue, 25 Feb 2020 07:14:23 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTPS id 117EC218AC
+	for <iommu@archiver.kernel.org>; Tue, 25 Feb 2020 07:27:07 +0000 (UTC)
 Authentication-Results: mail.kernel.org;
-	dkim=fail reason="signature verification failed" (1024-bit key) header.d=broadcom.com header.i=@broadcom.com header.b="QSWYzPYT"
-DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 225FA2082F
-Authentication-Results: mail.kernel.org; dmarc=none (p=none dis=none) header.from=lists.linux-foundation.org
+	dkim=fail reason="signature verification failed" (1024-bit key) header.d=mediatek.com header.i=@mediatek.com header.b="ll+QGmgJ"
+DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 117EC218AC
+Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=mediatek.com
 Authentication-Results: mail.kernel.org; spf=pass smtp.mailfrom=iommu-bounces@lists.linux-foundation.org
 Received: from localhost (localhost [127.0.0.1])
-	by whitealder.osuosl.org (Postfix) with ESMTP id E6867863FD;
-	Tue, 25 Feb 2020 07:14:22 +0000 (UTC)
+	by fraxinus.osuosl.org (Postfix) with ESMTP id DC52885EB4;
+	Tue, 25 Feb 2020 07:27:07 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from whitealder.osuosl.org ([127.0.0.1])
+Received: from fraxinus.osuosl.org ([127.0.0.1])
 	by localhost (.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
-	with ESMTP id svaD8Nwx0lTU; Tue, 25 Feb 2020 07:14:22 +0000 (UTC)
+	with ESMTP id Y8BZAYCx3QeR; Tue, 25 Feb 2020 07:27:06 +0000 (UTC)
 Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [140.211.9.56])
-	by whitealder.osuosl.org (Postfix) with ESMTP id 2DD4D861A7;
-	Tue, 25 Feb 2020 07:14:22 +0000 (UTC)
+	by fraxinus.osuosl.org (Postfix) with ESMTP id B94EB85E09;
+	Tue, 25 Feb 2020 07:27:06 +0000 (UTC)
 Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
-	by lists.linuxfoundation.org (Postfix) with ESMTP id 200B9C18DA;
-	Tue, 25 Feb 2020 07:14:22 +0000 (UTC)
+	by lists.linuxfoundation.org (Postfix) with ESMTP id ABB13C18DA;
+	Tue, 25 Feb 2020 07:27:06 +0000 (UTC)
 Received: from whitealder.osuosl.org (smtp1.osuosl.org [140.211.166.138])
- by lists.linuxfoundation.org (Postfix) with ESMTP id E9BA4C0177
- for <iommu@lists.linux-foundation.org>; Tue, 25 Feb 2020 06:59:15 +0000 (UTC)
+ by lists.linuxfoundation.org (Postfix) with ESMTP id 6DEB0C0177
+ for <iommu@lists.linux-foundation.org>; Tue, 25 Feb 2020 07:27:05 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
- by whitealder.osuosl.org (Postfix) with ESMTP id D26CC83883
- for <iommu@lists.linux-foundation.org>; Tue, 25 Feb 2020 06:59:15 +0000 (UTC)
+ by whitealder.osuosl.org (Postfix) with ESMTP id 56543855B4
+ for <iommu@lists.linux-foundation.org>; Tue, 25 Feb 2020 07:27:05 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
 Received: from whitealder.osuosl.org ([127.0.0.1])
  by localhost (.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
- with ESMTP id gt9FFbYcl-Y4 for <iommu@lists.linux-foundation.org>;
- Tue, 25 Feb 2020 06:59:15 +0000 (UTC)
-X-Greylist: delayed 00:05:49 by SQLgrey-1.7.6
-Received: from mail-oi1-f196.google.com (mail-oi1-f196.google.com
- [209.85.167.196])
- by whitealder.osuosl.org (Postfix) with ESMTPS id 07A98826E6
- for <iommu@lists.linux-foundation.org>; Tue, 25 Feb 2020 06:59:15 +0000 (UTC)
-Received: by mail-oi1-f196.google.com with SMTP id q81so11614733oig.0
- for <iommu@lists.linux-foundation.org>; Mon, 24 Feb 2020 22:59:14 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=broadcom.com; s=google;
- h=mime-version:references:in-reply-to:from:date:message-id:subject:to
- :cc; bh=fSxteq8BvR6bLu5LA6jd2BwkLJks1DyRranxnHnzEYU=;
- b=QSWYzPYTbGtdSQcLlCKj5AEGOQ+3AMV+xZg0/U1875q3JKfM5DYKKf5p6HAK6CwjIP
- AOzaHHJjmake0476dUff+71jZhuvNc745oA0rLIGZ2I2H4J5IKOXbhyQXmahB1wqF2Iv
- U7eNIah3q24sEOYyMKrA6vRUfjNnXNBHWLXsY=
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
- d=1e100.net; s=20161025;
- h=x-gm-message-state:mime-version:references:in-reply-to:from:date
- :message-id:subject:to:cc;
- bh=fSxteq8BvR6bLu5LA6jd2BwkLJks1DyRranxnHnzEYU=;
- b=uJdZG/248o66gwMZqdj2lbhGqiIdeJjPD5tFFWKdxZcyfKvqSL2ooB1rFrxVAJNxAn
- /zm6xsVU6hFTTDSqkhyh6/pItARBihLbIMhFtG1M9zHbb8hwEKgq8hqnLDdkUyS7IxPY
- bGrYZ/H4tovsnc+DZdRCDmcHyVuBcddclli/PhGSxyXQ0i7ZjXPOWTpeWk69KkTFehnY
- bH1RAb0vz58/ZfZGV1pR429FIAsCGVPTdaKOVOdV+gbOyuf93Q6q18H19kibP739N69M
- 12sOoy2KuTOKPyjGGy1KLJh7AjsCa0prCU1yc+lb/zXFjES9sVDeBsIuPUx2sML4tfHA
- liKw==
-X-Gm-Message-State: APjAAAWkct/Q1ae3d/DUtl3HPJxeAjQBCxSW+xhNe2AKmwxZwr2H+MWB
- XzLQMcnHFjoht5acIJjgewnK9uFTx/oU12JqnJ6LO1yDcxwP1+sv
-X-Google-Smtp-Source: APXvYqzA/xFMqccjb+BVRQhIHMzDqHfwlaweZ5oYatBKG1/zxpMzG0KS3wxN/jHbU7SS9W3Ga5Oz56oRA9wsAEb0Dk0=
-X-Received: by 2002:aca:f587:: with SMTP id t129mr2226747oih.143.1582613605142; 
- Mon, 24 Feb 2020 22:53:25 -0800 (PST)
+ with ESMTP id 1vndzylA+OPa for <iommu@lists.linux-foundation.org>;
+ Tue, 25 Feb 2020 07:27:03 +0000 (UTC)
+X-Greylist: domain auto-whitelisted by SQLgrey-1.7.6
+Received: from mailgw01.mediatek.com (unknown [210.61.82.183])
+ by whitealder.osuosl.org (Postfix) with ESMTP id A78D984C99
+ for <iommu@lists.linux-foundation.org>; Tue, 25 Feb 2020 07:27:02 +0000 (UTC)
+X-UUID: f8e1e20328ee411c9abcf9805541c58c-20200225
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=mediatek.com;
+ s=dk; 
+ h=Content-Transfer-Encoding:MIME-Version:Content-Type:References:In-Reply-To:Date:CC:To:From:Subject:Message-ID;
+ bh=fE4NqegaPIl2E5K0BSQdRpTvTQnMKgleeKsxdQnFM+Y=; 
+ b=ll+QGmgJ4oHIoXAhhXiIBQzbDrmPO6skhHheYfDr78X6sPxXvS5d9jp5JYfESkaCAXk7/fxXGWUgz+c3NASP/O53MLf+G8nHhjEyXAcnymeLvP8ve+3bHL+W1Ttj3i4xvZQoxMaQFZm4YOVc/bee7pbWOmXs3bx/Uoeb1Jhcnp0=;
+X-UUID: f8e1e20328ee411c9abcf9805541c58c-20200225
+Received: from mtkcas08.mediatek.inc [(172.21.101.126)] by
+ mailgw01.mediatek.com (envelope-from <chao.hao@mediatek.com>)
+ (Cellopoint E-mail Firewall v4.1.10 Build 0809 with TLS)
+ with ESMTP id 119154821; Tue, 25 Feb 2020 15:26:58 +0800
+Received: from mtkcas08.mediatek.inc (172.21.101.126) by
+ mtkmbs07n1.mediatek.inc (172.21.101.16) with Microsoft SMTP Server (TLS) id
+ 15.0.1395.4; Tue, 25 Feb 2020 15:26:04 +0800
+Received: from [10.15.20.246] (10.15.20.246) by mtkcas08.mediatek.inc
+ (172.21.101.73) with Microsoft SMTP Server id 15.0.1395.4 via Frontend
+ Transport; Tue, 25 Feb 2020 15:27:08 +0800
+Message-ID: <1582615551.28426.5.camel@mbjsdccf07>
+Subject: Re: [RESEND,PATCH 03/13] iommu/mediatek: Add mtk_iommu_pgtable
+ structure
+From: chao hao <Chao.Hao@mediatek.com>
+To: Yong Wu <yong.wu@mediatek.com>
+Date: Tue, 25 Feb 2020 15:25:51 +0800
+In-Reply-To: <1581769046.32039.27.camel@mhfsdcap03>
+References: <20191104115238.2394-1-chao.hao@mediatek.com>
+ <20191104115238.2394-4-chao.hao@mediatek.com>
+ <1576498396.28043.78.camel@mhfsdcap03>
+ <1577785148.30177.5.camel@mbjsdccf07>
+ <1581769046.32039.27.camel@mhfsdcap03>
+X-Mailer: Evolution 3.10.4-0ubuntu2 
 MIME-Version: 1.0
-References: <1578489498.29952.11.camel@abdul>
- <1578560245.30409.0.camel@abdul.in.ibm.com>
- <20200109142218.GA16477@infradead.org>
- <1578980874.11996.3.camel@abdul.in.ibm.com>
- <20200116174443.GA30158@infradead.org> <1579265473.17382.5.camel@abdul>
- <1582611644.19645.6.camel@abdul.in.ibm.com>
-In-Reply-To: <1582611644.19645.6.camel@abdul.in.ibm.com>
-Date: Tue, 25 Feb 2020 12:23:13 +0530
-Message-ID: <CAK=zhgpWCz0+xpSGymbQEAbysH_rQf=s8iQ1gn4KwysP3c1Gcw@mail.gmail.com>
-Subject: Re: [linux-next/mainline][bisected 3acac06][ppc] Oops when unloading
- mpt3sas driver
-To: Abdul Haleem <abdhalee@linux.vnet.ibm.com>
-X-Mailman-Approved-At: Tue, 25 Feb 2020 07:14:21 +0000
-Cc: sachinp <sachinp@linux.vnet.ibm.com>,
- Chaitra P B <chaitra.basappa@broadcom.com>,
- linux-scsi <linux-scsi@vger.kernel.org>,
- PDL-MPT-FUSIONLINUX <MPT-FusionLinux.pdl@broadcom.com>,
- manvanth <manvanth@linux.vnet.ibm.com>,
- Sathya Prakash <sathya.prakash@broadcom.com>, jcmvbkbc@gmail.com,
- iommu@lists.linux-foundation.org, linux-next <linux-next@vger.kernel.org>,
- Oliver <oohall@gmail.com>, "aneesh.kumar" <aneesh.kumar@linux.vnet.ibm.com>,
- Suganath Prabu Subramani <suganath-prabu.subramani@broadcom.com>,
- Brian King <brking@linux.vnet.ibm.com>,
- linuxppc-dev <linuxppc-dev@lists.ozlabs.org>
+X-MTK: N
+Cc: Anan Sun =?UTF-8?Q?=28=E5=AD=99=E5=AE=89=E5=AE=89=29?=
+ <Anan.Sun@mediatek.com>,
+ "devicetree@vger.kernel.org" <devicetree@vger.kernel.org>,
+ Cui Zhang =?UTF-8?Q?=28=E5=BC=A0=E7=BF=A0=29?= <Cui.Zhang@mediatek.com>,
+ Jun Yan =?UTF-8?Q?=28=E9=A2=9C=E5=86=9B=29?= <Jun.Yan@mediatek.com>,
+ wsd_upstream <wsd_upstream@mediatek.com>, youlin.pei@mediatek.com,
+ "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
+ "iommu@lists.linux-foundation.org" <iommu@lists.linux-foundation.org>,
+ Rob Herring <robh+dt@kernel.org>,
+ "linux-mediatek@lists.infradead.org" <linux-mediatek@lists.infradead.org>,
+ Miles Chen =?UTF-8?Q?=28=E9=99=B3=E6=B0=91=E6=A8=BA=29?=
+ <Miles.Chen@mediatek.com>, Matthias Brugger <matthias.bgg@gmail.com>,
+ "linux-arm-kernel@lists.infradead.org" <linux-arm-kernel@lists.infradead.org>,
+ fy.yang@mediatek.com
 X-BeenThere: iommu@lists.linux-foundation.org
 X-Mailman-Version: 2.1.15
 Precedence: list
@@ -108,67 +105,300 @@ List-Post: <mailto:iommu@lists.linux-foundation.org>
 List-Help: <mailto:iommu-request@lists.linux-foundation.org?subject=help>
 List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
  <mailto:iommu-request@lists.linux-foundation.org?subject=subscribe>
-From: Sreekanth Reddy via iommu <iommu@lists.linux-foundation.org>
-Reply-To: Sreekanth Reddy <sreekanth.reddy@broadcom.com>
 Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
 Errors-To: iommu-bounces@lists.linux-foundation.org
 Sender: "iommu" <iommu-bounces@lists.linux-foundation.org>
 
-On Tue, Feb 25, 2020 at 11:51 AM Abdul Haleem
-<abdhalee@linux.vnet.ibm.com> wrote:
->
-> On Fri, 2020-01-17 at 18:21 +0530, Abdul Haleem wrote:
-> > On Thu, 2020-01-16 at 09:44 -0800, Christoph Hellwig wrote:
-> > > Hi Abdul,
-> > >
-> > > I think the problem is that mpt3sas has some convoluted logic to do
-> > > some DMA allocations with a 32-bit coherent mask, and then switches
-> > > to a 63 or 64 bit mask, which is not supported by the DMA API.
-> > >
-> > > Can you try the patch below?
-> >
-> > Thank you Christoph, with the given patch applied the bug is not seen.
-> >
-> > rmmod of mpt3sas driver is successful, no kernel Oops
-> >
-> > Reported-and-tested-by: Abdul Haleem <abdhalee@linux.vnet.ibm.com>
->
-> Hi Christoph,
->
-> I see the patch is under discussion, will this be merged upstream any
-> time soon ? as boot is broken on our machines with out your patch.
->
+On Sat, 2020-02-15 at 20:17 +0800, Yong Wu wrote:
+> On Tue, 2019-12-31 at 17:39 +0800, chao hao wrote:
+> > On Mon, 2019-12-16 at 20:13 +0800, Yong Wu wrote:
+> > > On Mon, 2019-11-04 at 19:52 +0800, Chao Hao wrote:
+> > > > Start with this patch, we will change the SW architecture
+> > > > to support multiple domains. SW architecture will has a big change,
+> > > > so we need to modify a little bit by more than one patch.
+> > > > The new SW overall architecture is as below:
+> > > > 
+> > > > 				iommu0   iommu1
+> > > > 				  |	    |
+> > > > 				  -----------
+> > > > 					|
+> > > > 				mtk_iommu_pgtable
+> > > > 					|
+> > > > 			------------------------------------------
+> > > > 			|		     |			 |
+> > > > 		mtk_iommu_domain1   mtk_iommu_domain2  mtk_iommu_domain3
+> > > > 			|                    |                   |
+> > > > 		iommu_group1         iommu_group2           iommu_group3
+> > > > 			|                    |                   |
+> > > > 		iommu_domain1       iommu_domain2	    iommu_domain3
+> > > > 			|                    |                   |
+> > > > 		iova region1(normal)  iova region2(CCU)    iova region3(VPU)
+> > > > 
+> > > > For current structure, no matter how many iommus there are,
+> > > > they use the same page table to simplify the usage of module.
+> > > > In order to make the software architecture more explicit, this
+> > > > patch will create a global mtk_iommu_pgtable structure to describe
+> > > > page table and all the iommus use it.
+> > > 
+> > > Thanks for the hard work of this file. Actually this patch and the later
+> > > ones confuse me. Why do you make this flow change? 
+> > > for making the code "more explicit" or for adding multi-domain support
+> > > in 13/13.
+> > > 
+> > > IMHO, the change is unnecessary.
+> > > a) For me, this change has no improvement. currently we use a global
+> > > mtk_iommu_get_m4u_data to get the M4U data. I will be very glad if you
+> > > could get rid of it. But in this patchset, You use a another global
+> > > mtk_iommu_pgtable to instead. For me. It has no improvement.
+> > 
+> > Thanks for you advice!
+> > 
+> > For current SW arch, all the IOMMU HW use the same page table, we can
+> > use a global mtk_iommu_pgtable to discribe the information of page table
+> 
+> What's your plan if the 4GB iova range is not enough for us in future?
+> Do you plan to add a new global mtk_iommu_pgtable again?
+> 
+if the 4GB iova range is not enough, we only need to modify
+mtk_domain_data structure: min_iova and max_iova, Compare with current
+SW arch:
+ dom->domain.geometry.aperture_start = 0;
+ dom->domain.geometry.aperture_end = DMA_BIT_MASK(32);
+ ==>
+ dom->domain.geometry.aperture_start = pgtable->dom_region->min_iova;
+ dom->domain.geometry.aperture_end = pgtable->dom_region->max_iova;
+ 
+ struct mtk_domain_data {
+          dma_addr_t      min_iova;
+          dma_addr_t      max_iova;
+  };
 
-Hi Abdul,
+> > and all the IOMMU attach it, I think that it is more clear and
+> > unambiguous. For beginners, it maybe more easily explicable? 
+> 
+> I still don't get the necessity of this change. it is only for making
+> code clear from your point for view, right?
+> 
+> This code has been reviewed for many years, I don't know why you think
+> it is ambiguous. it is clear for me at lease. and I will complain that
+> you add a new global variable in this change.
+> 
+> > > 
+> > > b) This patchset break the original flow. device_group give you a
+> > > software chance for initializing, then you move pagetable allocating
+> > > code into it. But it isn't device_group job.
+> > > 
+> > 
+> > As is shown above diagram, mtk_iommu_pgtable includes iommu_group and
+> > iommu_domain,so we need to allocate mtk_iommu_pgtable and initialize it
+> > in device_group firstly,and then execute the original flow, it only
+> > changes place for creating mtk_iommu_pgtable and don't break original
+> > device_group flow.
+> 
+> I understand you have to do this change after you adjust the structure.
+> I mean that it may be not proper since allocating pagetable should not
+> be done in device_group logically. From here, Could we get this change
+> looks not good?.
+> 
+ gentle ping ...
 
-We have posted a new set of patches to fix this issue. This patch set
-won't change the DMA Mask on the fly and also won't hardcode the DMA
-mask to 32 bit.
+> > > I can not decide if your flow is right. But if you only want to add
+> > > support multi-domain, I guess you could extend the current "m4u_group"
+> > > to a array "m4u_group[N]". It may be more simple. To make mt6779
+> > > progress easily, I suggest you can use this way to support multi-domain
+> > > firstly. Then you could send this new mtk_iommu_pgtable patchset for the
+> > > code "more explicit" if you insist.
+> 
+> Could you help try this way if it could meet your requirement? Then
+> let's compare which one is better.
+> 
+> 
+> BTW, your patches(including v2) cause hangup as below since
+> "data->m4u_dom" was uninitialized.
+> 
+> 
+> Unable to handle kernel NULL pointer dereference at virtual address
+> 0000000000000010
+> ...
+> pc : mtk_iommu_tlb_flush_page_nosync+0x38/0xb8
+> lr : __arm_v7s_unmap+0x174/0x598
+> ...
+> Call trace:
+>  mtk_iommu_tlb_flush_page_nosync+0x38/0xb8
+>  __arm_v7s_unmap+0x174/0x598
+>  arm_v7s_unmap+0x30/0x48
+>  mtk_iommu_unmap+0x20/0x28
+>  __iommu_unmap+0xa4/0xf8
+>  iommu_unmap+0x44/0x90
+> 
+yes, you are right. I will modify it in next version, thanks
 
-[PATCH 0/5] mpt3sas: Fix changing coherent mask after allocation.
 
-This patchset will have below patches, Please review and try with this
-patch set.
+> > > 
+> > > > The diagram is as below:
+> > > > 
+> > > > 	mtk_iommu_data1(MM)       mtk_iommu_data2(APU)
+> > > > 		|			   |
+> > > > 		|			   |
+> > > > 		------mtk_iommu_pgtable-----
+> > > > 
+> > > > We need to create global mtk_iommu_pgtable to include all the iova
+> > > > regions firstly and special iova regions by divided based on it,
+> > > > so the information of pgtable needs to be created in device_group.
+> > > > 
+> > > > Signed-off-by: Chao Hao <chao.hao@mediatek.com>
+> > > > ---
+> > > >  drivers/iommu/mtk_iommu.c | 84 +++++++++++++++++++++++++++++++++++++++
+> > > >  drivers/iommu/mtk_iommu.h |  1 +
+> > > >  2 files changed, 85 insertions(+)
+> > > > 
+> > > > diff --git a/drivers/iommu/mtk_iommu.c b/drivers/iommu/mtk_iommu.c
+> > > > index f2847e661137..fcbde6b0f58d 100644
+> > > > --- a/drivers/iommu/mtk_iommu.c
+> > > > +++ b/drivers/iommu/mtk_iommu.c
+> > > > @@ -123,6 +123,12 @@ struct mtk_iommu_domain {
+> > > >  	struct iommu_domain		domain;
+> > > >  };
+> > > >  
+> > > > +struct mtk_iommu_pgtable {
+> > > > +	struct io_pgtable_cfg	cfg;
+> > > > +	struct io_pgtable_ops	*iop;
+> > > > +};
+> > > > +
+> > > > +static struct mtk_iommu_pgtable *share_pgtable;
+> > > >  static const struct iommu_ops mtk_iommu_ops;
+> > > >  
+> > > >  /*
+> > > > @@ -170,6 +176,11 @@ static struct mtk_iommu_data *mtk_iommu_get_m4u_data(void)
+> > > >  	return NULL;
+> > > >  }
+> > > >  
+> > > > +static struct mtk_iommu_pgtable *mtk_iommu_get_pgtable(void)
+> > > > +{
+> > > > +	return share_pgtable;
+> > > > +}
+> > > > +
+> > > >  static struct mtk_iommu_domain *to_mtk_domain(struct iommu_domain *dom)
+> > > >  {
+> > > >  	return container_of(dom, struct mtk_iommu_domain, domain);
+> > > > @@ -322,6 +333,13 @@ static int mtk_iommu_domain_finalise(struct mtk_iommu_domain *dom)
+> > > >  {
+> > > >  	struct mtk_iommu_data *data = mtk_iommu_get_m4u_data();
+> > > >  
+> > > > +	if (data->pgtable) {
+> > > > +		dom->cfg = data->pgtable->cfg;
+> > > > +		dom->iop = data->pgtable->iop;
+> > > > +		dom->domain.pgsize_bitmap = data->pgtable->cfg.pgsize_bitmap;
+> > > > +		return 0;
+> > > > +	}
+> > > > +
+> > > >  	dom->cfg = (struct io_pgtable_cfg) {
+> > > >  		.quirks = IO_PGTABLE_QUIRK_ARM_NS |
+> > > >  			IO_PGTABLE_QUIRK_NO_PERMS |
+> > > > @@ -345,6 +363,61 @@ static int mtk_iommu_domain_finalise(struct mtk_iommu_domain *dom)
+> > > >  	return 0;
+> > > >  }
+> > > >  
+> > > > +static struct mtk_iommu_pgtable *create_pgtable(struct mtk_iommu_data *data)
+> > > > +{
+> > > > +	struct mtk_iommu_pgtable *pgtable;
+> > > > +
+> > > > +	pgtable = kzalloc(sizeof(*pgtable), GFP_KERNEL);
+> > > > +	if (!pgtable)
+> > > > +		return ERR_PTR(-ENOMEM);
+> > > > +
+> > > > +	pgtable->cfg = (struct io_pgtable_cfg) {
+> > > > +		.quirks = IO_PGTABLE_QUIRK_ARM_NS |
+> > > > +			IO_PGTABLE_QUIRK_NO_PERMS |
+> > > > +			IO_PGTABLE_QUIRK_TLBI_ON_MAP |
+> > > > +			IO_PGTABLE_QUIRK_ARM_MTK_EXT,
+> > > > +		.pgsize_bitmap = mtk_iommu_ops.pgsize_bitmap,
+> > > > +		.ias = 32,
+> > > > +		.oas = 34,
+> > > > +		.tlb = &mtk_iommu_flush_ops,
+> > > > +		.iommu_dev = data->dev,
+> > > > +	};
+> > > > +
+> > > > +	pgtable->iop = alloc_io_pgtable_ops(ARM_V7S, &pgtable->cfg, data);
+> > > > +	if (!pgtable->iop) {
+> > > > +		dev_err(data->dev, "Failed to alloc io pgtable\n");
+> > > > +		return ERR_PTR(-EINVAL);
+> > > > +	}
+> > > > +
+> > > > +	dev_info(data->dev, "%s create pgtable done\n", __func__);
+> > > > +
+> > > > +	return pgtable;
+> > > > +}
+> > > > +
+> > > > +static int mtk_iommu_attach_pgtable(struct mtk_iommu_data *data,
+> > > > +				    struct device *dev)
+> > > > +{
+> > > > +	struct mtk_iommu_pgtable *pgtable = mtk_iommu_get_pgtable();
+> > > > +
+> > > > +	/* create share pgtable */
+> > > > +	if (!pgtable) {
+> > > > +		pgtable = create_pgtable(data);
+> > > > +		if (IS_ERR(pgtable)) {
+> > > > +			dev_err(data->dev, "Failed to create pgtable\n");
+> > > > +			return -ENOMEM;
+> > > > +		}
+> > > > +
+> > > > +		share_pgtable = pgtable;
+> > > > +	}
+> > > > +
+> > > > +	/* binding to pgtable */
+> > > > +	data->pgtable = pgtable;
+> > > > +
+> > > > +	dev_info(data->dev, "m4u%d attach_pgtable done!\n", data->m4u_id);
+> > > > +
+> > > > +	return 0;
+> > > > +}
+> > > > +
+> > > >  static struct iommu_domain *mtk_iommu_domain_alloc(unsigned type)
+> > > >  {
+> > > >  	struct mtk_iommu_domain *dom;
+> > > > @@ -508,10 +581,21 @@ static void mtk_iommu_remove_device(struct device *dev)
+> > > >  static struct iommu_group *mtk_iommu_device_group(struct device *dev)
+> > > >  {
+> > > >  	struct mtk_iommu_data *data = mtk_iommu_get_m4u_data();
+> > > > +	struct mtk_iommu_pgtable *pgtable;
+> > > > +	int ret = 0;
+> > > >  
+> > > >  	if (!data)
+> > > >  		return ERR_PTR(-ENODEV);
+> > > >  
+> > > > +	pgtable = data->pgtable;
+> > > > +	if (!pgtable) {
+> > > > +		ret = mtk_iommu_attach_pgtable(data, dev);
+> > > > +		if (ret) {
+> > > > +			dev_err(data->dev, "Failed to device_group\n");
+> > > > +			return NULL;
+> > > > +		}
+> > > > +	}
+> > > > +
+> > > >  	/* All the client devices are in the same m4u iommu-group */
+> > > >  	if (!data->m4u_group) {
+> > > >  		data->m4u_group = iommu_group_alloc();
+> > > > diff --git a/drivers/iommu/mtk_iommu.h b/drivers/iommu/mtk_iommu.h
+> > > > index 132dc765a40b..dd5f19f78b62 100644
+> > > > --- a/drivers/iommu/mtk_iommu.h
+> > > > +++ b/drivers/iommu/mtk_iommu.h
+> > > > @@ -61,6 +61,7 @@ struct mtk_iommu_data {
+> > > >  	struct clk			*bclk;
+> > > >  	phys_addr_t			protect_base; /* protect memory base */
+> > > >  	struct mtk_iommu_suspend_reg	reg;
+> > > > +	struct mtk_iommu_pgtable	*pgtable;
+> > > >  	struct mtk_iommu_domain		*m4u_dom;
+> > > >  	struct iommu_group		*m4u_group;
+> > > >  	bool                            enable_4GB;
+> > > 
+> > > 
+> > 
+> > 
+> 
+> 
 
-Suganath Prabu S (5):
-  mpt3sas: Don't change the dma coherent mask after      allocations
-  mpt3sas: Rename function name is_MSB_are_same
-  mpt3sas: Code Refactoring.
-  mpt3sas: Handle RDPQ DMA allocation in same 4g region
-  mpt3sas: Update version to 33.101.00.00
-
-Regards,
-Sreekanth
-
-> --
-> Regard's
->
-> Abdul Haleem
-> IBM Linux Technology Centre
->
->
->
 _______________________________________________
 iommu mailing list
 iommu@lists.linux-foundation.org
