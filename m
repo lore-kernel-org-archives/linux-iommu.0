@@ -4,95 +4,94 @@ X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 X-Spam-Level: 
 X-Spam-Status: No, score=-8.1 required=3.0 tests=DKIM_INVALID,DKIM_SIGNED,
 	HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_PATCH,MAILING_LIST_MULTI,SIGNED_OFF_BY,
-	SPF_HELO_NONE,SPF_PASS,UNPARSEABLE_RELAY,URIBL_BLOCKED,USER_AGENT_SANE_2
-	autolearn=ham autolearn_force=no version=3.4.0
+	SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED,USER_AGENT_SANE_1 autolearn=unavailable
+	autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 493EAC35DF5
-	for <iommu@archiver.kernel.org>; Tue, 25 Feb 2020 07:27:08 +0000 (UTC)
-Received: from fraxinus.osuosl.org (smtp4.osuosl.org [140.211.166.137])
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 500C0C35DF5
+	for <iommu@archiver.kernel.org>; Tue, 25 Feb 2020 08:32:43 +0000 (UTC)
+Received: from hemlock.osuosl.org (smtp2.osuosl.org [140.211.166.133])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by mail.kernel.org (Postfix) with ESMTPS id 117EC218AC
-	for <iommu@archiver.kernel.org>; Tue, 25 Feb 2020 07:27:07 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTPS id 1991321744
+	for <iommu@archiver.kernel.org>; Tue, 25 Feb 2020 08:32:43 +0000 (UTC)
 Authentication-Results: mail.kernel.org;
-	dkim=fail reason="signature verification failed" (1024-bit key) header.d=mediatek.com header.i=@mediatek.com header.b="ll+QGmgJ"
-DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 117EC218AC
-Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=mediatek.com
+	dkim=fail reason="signature verification failed" (1024-bit key) header.d=redhat.com header.i=@redhat.com header.b="EWIIwc1r"
+DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 1991321744
+Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=redhat.com
 Authentication-Results: mail.kernel.org; spf=pass smtp.mailfrom=iommu-bounces@lists.linux-foundation.org
 Received: from localhost (localhost [127.0.0.1])
-	by fraxinus.osuosl.org (Postfix) with ESMTP id DC52885EB4;
-	Tue, 25 Feb 2020 07:27:07 +0000 (UTC)
+	by hemlock.osuosl.org (Postfix) with ESMTP id E4E0D8766C;
+	Tue, 25 Feb 2020 08:32:42 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from fraxinus.osuosl.org ([127.0.0.1])
+Received: from hemlock.osuosl.org ([127.0.0.1])
 	by localhost (.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
-	with ESMTP id Y8BZAYCx3QeR; Tue, 25 Feb 2020 07:27:06 +0000 (UTC)
+	with ESMTP id JFH1Kvj6V0ae; Tue, 25 Feb 2020 08:32:38 +0000 (UTC)
 Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [140.211.9.56])
-	by fraxinus.osuosl.org (Postfix) with ESMTP id B94EB85E09;
-	Tue, 25 Feb 2020 07:27:06 +0000 (UTC)
+	by hemlock.osuosl.org (Postfix) with ESMTP id D204E854D1;
+	Tue, 25 Feb 2020 08:32:38 +0000 (UTC)
 Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
-	by lists.linuxfoundation.org (Postfix) with ESMTP id ABB13C18DA;
-	Tue, 25 Feb 2020 07:27:06 +0000 (UTC)
-Received: from whitealder.osuosl.org (smtp1.osuosl.org [140.211.166.138])
- by lists.linuxfoundation.org (Postfix) with ESMTP id 6DEB0C0177
- for <iommu@lists.linux-foundation.org>; Tue, 25 Feb 2020 07:27:05 +0000 (UTC)
+	by lists.linuxfoundation.org (Postfix) with ESMTP id BFFBFC089F;
+	Tue, 25 Feb 2020 08:32:38 +0000 (UTC)
+Received: from silver.osuosl.org (smtp3.osuosl.org [140.211.166.136])
+ by lists.linuxfoundation.org (Postfix) with ESMTP id 4B212C0177
+ for <iommu@lists.linux-foundation.org>; Tue, 25 Feb 2020 08:32:38 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
- by whitealder.osuosl.org (Postfix) with ESMTP id 56543855B4
- for <iommu@lists.linux-foundation.org>; Tue, 25 Feb 2020 07:27:05 +0000 (UTC)
+ by silver.osuosl.org (Postfix) with ESMTP id 3951B203A0
+ for <iommu@lists.linux-foundation.org>; Tue, 25 Feb 2020 08:32:38 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from whitealder.osuosl.org ([127.0.0.1])
+Received: from silver.osuosl.org ([127.0.0.1])
  by localhost (.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
- with ESMTP id 1vndzylA+OPa for <iommu@lists.linux-foundation.org>;
- Tue, 25 Feb 2020 07:27:03 +0000 (UTC)
+ with ESMTP id p8c50y8vbJ+7 for <iommu@lists.linux-foundation.org>;
+ Tue, 25 Feb 2020 08:32:33 +0000 (UTC)
 X-Greylist: domain auto-whitelisted by SQLgrey-1.7.6
-Received: from mailgw01.mediatek.com (unknown [210.61.82.183])
- by whitealder.osuosl.org (Postfix) with ESMTP id A78D984C99
- for <iommu@lists.linux-foundation.org>; Tue, 25 Feb 2020 07:27:02 +0000 (UTC)
-X-UUID: f8e1e20328ee411c9abcf9805541c58c-20200225
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=mediatek.com;
- s=dk; 
- h=Content-Transfer-Encoding:MIME-Version:Content-Type:References:In-Reply-To:Date:CC:To:From:Subject:Message-ID;
- bh=fE4NqegaPIl2E5K0BSQdRpTvTQnMKgleeKsxdQnFM+Y=; 
- b=ll+QGmgJ4oHIoXAhhXiIBQzbDrmPO6skhHheYfDr78X6sPxXvS5d9jp5JYfESkaCAXk7/fxXGWUgz+c3NASP/O53MLf+G8nHhjEyXAcnymeLvP8ve+3bHL+W1Ttj3i4xvZQoxMaQFZm4YOVc/bee7pbWOmXs3bx/Uoeb1Jhcnp0=;
-X-UUID: f8e1e20328ee411c9abcf9805541c58c-20200225
-Received: from mtkcas08.mediatek.inc [(172.21.101.126)] by
- mailgw01.mediatek.com (envelope-from <chao.hao@mediatek.com>)
- (Cellopoint E-mail Firewall v4.1.10 Build 0809 with TLS)
- with ESMTP id 119154821; Tue, 25 Feb 2020 15:26:58 +0800
-Received: from mtkcas08.mediatek.inc (172.21.101.126) by
- mtkmbs07n1.mediatek.inc (172.21.101.16) with Microsoft SMTP Server (TLS) id
- 15.0.1395.4; Tue, 25 Feb 2020 15:26:04 +0800
-Received: from [10.15.20.246] (10.15.20.246) by mtkcas08.mediatek.inc
- (172.21.101.73) with Microsoft SMTP Server id 15.0.1395.4 via Frontend
- Transport; Tue, 25 Feb 2020 15:27:08 +0800
-Message-ID: <1582615551.28426.5.camel@mbjsdccf07>
-Subject: Re: [RESEND,PATCH 03/13] iommu/mediatek: Add mtk_iommu_pgtable
- structure
-From: chao hao <Chao.Hao@mediatek.com>
-To: Yong Wu <yong.wu@mediatek.com>
-Date: Tue, 25 Feb 2020 15:25:51 +0800
-In-Reply-To: <1581769046.32039.27.camel@mhfsdcap03>
-References: <20191104115238.2394-1-chao.hao@mediatek.com>
- <20191104115238.2394-4-chao.hao@mediatek.com>
- <1576498396.28043.78.camel@mhfsdcap03>
- <1577785148.30177.5.camel@mbjsdccf07>
- <1581769046.32039.27.camel@mhfsdcap03>
-X-Mailer: Evolution 3.10.4-0ubuntu2 
+Received: from us-smtp-delivery-1.mimecast.com (us-smtp-2.mimecast.com
+ [205.139.110.61])
+ by silver.osuosl.org (Postfix) with ESMTPS id 4DF5C2036D
+ for <iommu@lists.linux-foundation.org>; Tue, 25 Feb 2020 08:32:33 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+ s=mimecast20190719; t=1582619551;
+ h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+ to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+ content-transfer-encoding:content-transfer-encoding:
+ in-reply-to:in-reply-to:references:references;
+ bh=zgKQtRV01Bi8I2OWDhHoJzlNxr2o35DwN7ZNxHQ2pcE=;
+ b=EWIIwc1rwxjLMWLXVRxtPQGUg5qm4mQrvv26p0iJwfgqcUr5oNgpcYpmpbclA0TvKAcvyk
+ qPj5blpuFmU13LvcUqkox9jLKRI+cdpjl3z3+ekm/aFl1ai1HdowsYe1wAsuT9oka4cZgo
+ Kv/MQSboxwACkgDgnWQS2gORv9orVXg=
+Received: from mimecast-mx01.redhat.com (mimecast-mx01.redhat.com
+ [209.132.183.4]) (Using TLS) by relay.mimecast.com with ESMTP id
+ us-mta-404-aLC00U-3MtC6YXxGwaGXZA-1; Tue, 25 Feb 2020 03:32:23 -0500
+X-MC-Unique: aLC00U-3MtC6YXxGwaGXZA-1
+Received: from smtp.corp.redhat.com (int-mx02.intmail.prod.int.phx2.redhat.com
+ [10.5.11.12])
+ (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
+ (No client certificate requested)
+ by mimecast-mx01.redhat.com (Postfix) with ESMTPS id D08BB107ACC7;
+ Tue, 25 Feb 2020 08:32:21 +0000 (UTC)
+Received: from [10.36.116.59] (ovpn-116-59.ams2.redhat.com [10.36.116.59])
+ by smtp.corp.redhat.com (Postfix) with ESMTPS id 448B660BF7;
+ Tue, 25 Feb 2020 08:32:16 +0000 (UTC)
+Subject: Re: [PATCH V9 05/10] iommu/vt-d: Support flushing more translation
+ cache types
+To: Jacob Pan <jacob.jun.pan@linux.intel.com>
+References: <1580277713-66934-1-git-send-email-jacob.jun.pan@linux.intel.com>
+ <1580277713-66934-6-git-send-email-jacob.jun.pan@linux.intel.com>
+ <11add211-dec0-1932-c29c-22cbbf145bd4@redhat.com>
+ <20200214152701.18f76ce1@jacob-builder>
+From: Auger Eric <eric.auger@redhat.com>
+Message-ID: <5e7841c4-28df-7a4a-e801-f42b62de1e3d@redhat.com>
+Date: Tue, 25 Feb 2020 09:32:14 +0100
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:60.0) Gecko/20100101
+ Thunderbird/60.4.0
 MIME-Version: 1.0
-X-MTK: N
-Cc: Anan Sun =?UTF-8?Q?=28=E5=AD=99=E5=AE=89=E5=AE=89=29?=
- <Anan.Sun@mediatek.com>,
- "devicetree@vger.kernel.org" <devicetree@vger.kernel.org>,
- Cui Zhang =?UTF-8?Q?=28=E5=BC=A0=E7=BF=A0=29?= <Cui.Zhang@mediatek.com>,
- Jun Yan =?UTF-8?Q?=28=E9=A2=9C=E5=86=9B=29?= <Jun.Yan@mediatek.com>,
- wsd_upstream <wsd_upstream@mediatek.com>, youlin.pei@mediatek.com,
- "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
- "iommu@lists.linux-foundation.org" <iommu@lists.linux-foundation.org>,
- Rob Herring <robh+dt@kernel.org>,
- "linux-mediatek@lists.infradead.org" <linux-mediatek@lists.infradead.org>,
- Miles Chen =?UTF-8?Q?=28=E9=99=B3=E6=B0=91=E6=A8=BA=29?=
- <Miles.Chen@mediatek.com>, Matthias Brugger <matthias.bgg@gmail.com>,
- "linux-arm-kernel@lists.infradead.org" <linux-arm-kernel@lists.infradead.org>,
- fy.yang@mediatek.com
+In-Reply-To: <20200214152701.18f76ce1@jacob-builder>
+Content-Language: en-US
+X-Scanned-By: MIMEDefang 2.79 on 10.5.11.12
+Cc: "Tian, Kevin" <kevin.tian@intel.com>,
+ Alex Williamson <alex.williamson@redhat.com>, Raj Ashok <ashok.raj@intel.com>,
+ Jean-Philippe Brucker <jean-philippe@linaro.com>,
+ LKML <linux-kernel@vger.kernel.org>, iommu@lists.linux-foundation.org,
+ David Woodhouse <dwmw2@infradead.org>, Jonathan Cameron <jic23@kernel.org>
 X-BeenThere: iommu@lists.linux-foundation.org
 X-Mailman-Version: 2.1.15
 Precedence: list
@@ -110,293 +109,185 @@ Content-Transfer-Encoding: 7bit
 Errors-To: iommu-bounces@lists.linux-foundation.org
 Sender: "iommu" <iommu-bounces@lists.linux-foundation.org>
 
-On Sat, 2020-02-15 at 20:17 +0800, Yong Wu wrote:
-> On Tue, 2019-12-31 at 17:39 +0800, chao hao wrote:
-> > On Mon, 2019-12-16 at 20:13 +0800, Yong Wu wrote:
-> > > On Mon, 2019-11-04 at 19:52 +0800, Chao Hao wrote:
-> > > > Start with this patch, we will change the SW architecture
-> > > > to support multiple domains. SW architecture will has a big change,
-> > > > so we need to modify a little bit by more than one patch.
-> > > > The new SW overall architecture is as below:
-> > > > 
-> > > > 				iommu0   iommu1
-> > > > 				  |	    |
-> > > > 				  -----------
-> > > > 					|
-> > > > 				mtk_iommu_pgtable
-> > > > 					|
-> > > > 			------------------------------------------
-> > > > 			|		     |			 |
-> > > > 		mtk_iommu_domain1   mtk_iommu_domain2  mtk_iommu_domain3
-> > > > 			|                    |                   |
-> > > > 		iommu_group1         iommu_group2           iommu_group3
-> > > > 			|                    |                   |
-> > > > 		iommu_domain1       iommu_domain2	    iommu_domain3
-> > > > 			|                    |                   |
-> > > > 		iova region1(normal)  iova region2(CCU)    iova region3(VPU)
-> > > > 
-> > > > For current structure, no matter how many iommus there are,
-> > > > they use the same page table to simplify the usage of module.
-> > > > In order to make the software architecture more explicit, this
-> > > > patch will create a global mtk_iommu_pgtable structure to describe
-> > > > page table and all the iommus use it.
-> > > 
-> > > Thanks for the hard work of this file. Actually this patch and the later
-> > > ones confuse me. Why do you make this flow change? 
-> > > for making the code "more explicit" or for adding multi-domain support
-> > > in 13/13.
-> > > 
-> > > IMHO, the change is unnecessary.
-> > > a) For me, this change has no improvement. currently we use a global
-> > > mtk_iommu_get_m4u_data to get the M4U data. I will be very glad if you
-> > > could get rid of it. But in this patchset, You use a another global
-> > > mtk_iommu_pgtable to instead. For me. It has no improvement.
-> > 
-> > Thanks for you advice!
-> > 
-> > For current SW arch, all the IOMMU HW use the same page table, we can
-> > use a global mtk_iommu_pgtable to discribe the information of page table
-> 
-> What's your plan if the 4GB iova range is not enough for us in future?
-> Do you plan to add a new global mtk_iommu_pgtable again?
-> 
-if the 4GB iova range is not enough, we only need to modify
-mtk_domain_data structure: min_iova and max_iova, Compare with current
-SW arch:
- dom->domain.geometry.aperture_start = 0;
- dom->domain.geometry.aperture_end = DMA_BIT_MASK(32);
- ==>
- dom->domain.geometry.aperture_start = pgtable->dom_region->min_iova;
- dom->domain.geometry.aperture_end = pgtable->dom_region->max_iova;
- 
- struct mtk_domain_data {
-          dma_addr_t      min_iova;
-          dma_addr_t      max_iova;
-  };
+Hi Jacob,
 
-> > and all the IOMMU attach it, I think that it is more clear and
-> > unambiguous. For beginners, it maybe more easily explicable? 
+On 2/15/20 12:27 AM, Jacob Pan wrote:
+> Hi Eric,
 > 
-> I still don't get the necessity of this change. it is only for making
-> code clear from your point for view, right?
+> On Wed, 12 Feb 2020 13:55:25 +0100
+> Auger Eric <eric.auger@redhat.com> wrote:
 > 
-> This code has been reviewed for many years, I don't know why you think
-> it is ambiguous. it is clear for me at lease. and I will complain that
-> you add a new global variable in this change.
+>> Hi Jacob,
+>>
+>> On 1/29/20 7:01 AM, Jacob Pan wrote:
+>>> When Shared Virtual Memory is exposed to a guest via vIOMMU,
+>>> scalable IOTLB invalidation may be passed down from outside IOMMU
+>>> subsystems. This patch adds invalidation functions that can be used
+>>> for additional translation cache types.
+>>>
+>>> Signed-off-by: Jacob Pan <jacob.jun.pan@linux.intel.com>
+>>> ---
+>>>  drivers/iommu/dmar.c        | 33 +++++++++++++++++++++++++++++++++
+>>>  drivers/iommu/intel-pasid.c |  3 ++-
+>>>  include/linux/intel-iommu.h | 20 ++++++++++++++++----
+>>>  3 files changed, 51 insertions(+), 5 deletions(-)
+>>>
+>>> diff --git a/drivers/iommu/dmar.c b/drivers/iommu/dmar.c
+>>> index 071bb42bbbc5..206733ec8140 100644
+>>> --- a/drivers/iommu/dmar.c
+>>> +++ b/drivers/iommu/dmar.c
+>>> @@ -1411,6 +1411,39 @@ void qi_flush_piotlb(struct intel_iommu
+>>> *iommu, u16 did, u32 pasid, u64 addr, qi_submit_sync(&desc, iommu);
+>>>  }
+>>>  
+>>> +/* PASID-based device IOTLB Invalidate */
+>>> +void qi_flush_dev_iotlb_pasid(struct intel_iommu *iommu, u16 sid,
+>>> u16 pfsid,
+>>> +		u32 pasid,  u16 qdep, u64 addr, unsigned
+>>> size_order, u64 granu) +{
+>>> +	struct qi_desc desc = {.qw2 = 0, .qw3 = 0};
+>>> +
+>>> +	desc.qw0 = QI_DEV_EIOTLB_PASID(pasid) |
+>>> QI_DEV_EIOTLB_SID(sid) |
+>>> +		QI_DEV_EIOTLB_QDEP(qdep) | QI_DEIOTLB_TYPE |
+>>> +		QI_DEV_IOTLB_PFSID(pfsid);
+>>> +	desc.qw1 = QI_DEV_EIOTLB_GLOB(granu);
+>>> +
+>>> +	/* If S bit is 0, we only flush a single page. If S bit is
+>>> set,
+>>> +	 * The least significant zero bit indicates the
+>>> invalidation address
+>>> +	 * range. VT-d spec 6.5.2.6.
+>>> +	 * e.g. address bit 12[0] indicates 8KB, 13[0] indicates
+>>> 16KB.
+>>> +	 */
+>>> +	if (!size_order) {
+>>> +		desc.qw0 |= QI_DEV_EIOTLB_ADDR(addr) &
+>>> ~QI_DEV_EIOTLB_SIZE;
+>>> +	} else {
+>>> +		unsigned long mask = 1UL << (VTD_PAGE_SHIFT +
+>>> size_order);
+>>> +		desc.qw1 |= QI_DEV_EIOTLB_ADDR(addr & ~mask) |
+>>> QI_DEV_EIOTLB_SIZE;
+>>> +	}
+>>> +	qi_submit_sync(&desc, iommu);  
+>> I made some comments in
+>> https://lkml.org/lkml/2019/8/14/1311
+>> that do not seem to have been taken into account. Or do I miss
+>> something?
+>>
+> I missed adding these changes. At the time Baolu was doing cache flush
+> consolidation so I wasn't sure if I could use his code completely. This
+> patch is on top of his consolidated flush code with what is still
+> needed for vSVA. Then I forgot to address your comments. Sorry about
+> that.
+no problem
 > 
-> > > 
-> > > b) This patchset break the original flow. device_group give you a
-> > > software chance for initializing, then you move pagetable allocating
-> > > code into it. But it isn't device_group job.
-> > > 
-> > 
-> > As is shown above diagram, mtk_iommu_pgtable includes iommu_group and
-> > iommu_domain,so we need to allocate mtk_iommu_pgtable and initialize it
-> > in device_group firstly,and then execute the original flow, it only
-> > changes place for creating mtk_iommu_pgtable and don't break original
-> > device_group flow.
-> 
-> I understand you have to do this change after you adjust the structure.
-> I mean that it may be not proper since allocating pagetable should not
-> be done in device_group logically. From here, Could we get this change
-> looks not good?.
-> 
- gentle ping ...
+>> More generally having an individual history log would be useful and
+>> speed up the review.
+>>
+> Will add history to each patch, e.g. like this?
+> ---
+> v8 -> v9
+yes thanks. You're not obliged to list every little thing but to me, it
+helps to see at first sight if you took into account major comments and
+in case you did not - on purpose -, you can also indicate it.
 
-> > > I can not decide if your flow is right. But if you only want to add
-> > > support multi-domain, I guess you could extend the current "m4u_group"
-> > > to a array "m4u_group[N]". It may be more simple. To make mt6779
-> > > progress easily, I suggest you can use this way to support multi-domain
-> > > firstly. Then you could send this new mtk_iommu_pgtable patchset for the
-> > > code "more explicit" if you insist.
-> 
-> Could you help try this way if it could meet your requirement? Then
-> let's compare which one is better.
-> 
-> 
-> BTW, your patches(including v2) cause hangup as below since
-> "data->m4u_dom" was uninitialized.
-> 
-> 
-> Unable to handle kernel NULL pointer dereference at virtual address
-> 0000000000000010
-> ...
-> pc : mtk_iommu_tlb_flush_page_nosync+0x38/0xb8
-> lr : __arm_v7s_unmap+0x174/0x598
-> ...
-> Call trace:
->  mtk_iommu_tlb_flush_page_nosync+0x38/0xb8
->  __arm_v7s_unmap+0x174/0x598
->  arm_v7s_unmap+0x30/0x48
->  mtk_iommu_unmap+0x20/0x28
->  __iommu_unmap+0xa4/0xf8
->  iommu_unmap+0x44/0x90
-> 
-yes, you are right. I will modify it in next version, thanks
+Thanks
 
-
-> > > 
-> > > > The diagram is as below:
-> > > > 
-> > > > 	mtk_iommu_data1(MM)       mtk_iommu_data2(APU)
-> > > > 		|			   |
-> > > > 		|			   |
-> > > > 		------mtk_iommu_pgtable-----
-> > > > 
-> > > > We need to create global mtk_iommu_pgtable to include all the iova
-> > > > regions firstly and special iova regions by divided based on it,
-> > > > so the information of pgtable needs to be created in device_group.
-> > > > 
-> > > > Signed-off-by: Chao Hao <chao.hao@mediatek.com>
-> > > > ---
-> > > >  drivers/iommu/mtk_iommu.c | 84 +++++++++++++++++++++++++++++++++++++++
-> > > >  drivers/iommu/mtk_iommu.h |  1 +
-> > > >  2 files changed, 85 insertions(+)
-> > > > 
-> > > > diff --git a/drivers/iommu/mtk_iommu.c b/drivers/iommu/mtk_iommu.c
-> > > > index f2847e661137..fcbde6b0f58d 100644
-> > > > --- a/drivers/iommu/mtk_iommu.c
-> > > > +++ b/drivers/iommu/mtk_iommu.c
-> > > > @@ -123,6 +123,12 @@ struct mtk_iommu_domain {
-> > > >  	struct iommu_domain		domain;
-> > > >  };
-> > > >  
-> > > > +struct mtk_iommu_pgtable {
-> > > > +	struct io_pgtable_cfg	cfg;
-> > > > +	struct io_pgtable_ops	*iop;
-> > > > +};
-> > > > +
-> > > > +static struct mtk_iommu_pgtable *share_pgtable;
-> > > >  static const struct iommu_ops mtk_iommu_ops;
-> > > >  
-> > > >  /*
-> > > > @@ -170,6 +176,11 @@ static struct mtk_iommu_data *mtk_iommu_get_m4u_data(void)
-> > > >  	return NULL;
-> > > >  }
-> > > >  
-> > > > +static struct mtk_iommu_pgtable *mtk_iommu_get_pgtable(void)
-> > > > +{
-> > > > +	return share_pgtable;
-> > > > +}
-> > > > +
-> > > >  static struct mtk_iommu_domain *to_mtk_domain(struct iommu_domain *dom)
-> > > >  {
-> > > >  	return container_of(dom, struct mtk_iommu_domain, domain);
-> > > > @@ -322,6 +333,13 @@ static int mtk_iommu_domain_finalise(struct mtk_iommu_domain *dom)
-> > > >  {
-> > > >  	struct mtk_iommu_data *data = mtk_iommu_get_m4u_data();
-> > > >  
-> > > > +	if (data->pgtable) {
-> > > > +		dom->cfg = data->pgtable->cfg;
-> > > > +		dom->iop = data->pgtable->iop;
-> > > > +		dom->domain.pgsize_bitmap = data->pgtable->cfg.pgsize_bitmap;
-> > > > +		return 0;
-> > > > +	}
-> > > > +
-> > > >  	dom->cfg = (struct io_pgtable_cfg) {
-> > > >  		.quirks = IO_PGTABLE_QUIRK_ARM_NS |
-> > > >  			IO_PGTABLE_QUIRK_NO_PERMS |
-> > > > @@ -345,6 +363,61 @@ static int mtk_iommu_domain_finalise(struct mtk_iommu_domain *dom)
-> > > >  	return 0;
-> > > >  }
-> > > >  
-> > > > +static struct mtk_iommu_pgtable *create_pgtable(struct mtk_iommu_data *data)
-> > > > +{
-> > > > +	struct mtk_iommu_pgtable *pgtable;
-> > > > +
-> > > > +	pgtable = kzalloc(sizeof(*pgtable), GFP_KERNEL);
-> > > > +	if (!pgtable)
-> > > > +		return ERR_PTR(-ENOMEM);
-> > > > +
-> > > > +	pgtable->cfg = (struct io_pgtable_cfg) {
-> > > > +		.quirks = IO_PGTABLE_QUIRK_ARM_NS |
-> > > > +			IO_PGTABLE_QUIRK_NO_PERMS |
-> > > > +			IO_PGTABLE_QUIRK_TLBI_ON_MAP |
-> > > > +			IO_PGTABLE_QUIRK_ARM_MTK_EXT,
-> > > > +		.pgsize_bitmap = mtk_iommu_ops.pgsize_bitmap,
-> > > > +		.ias = 32,
-> > > > +		.oas = 34,
-> > > > +		.tlb = &mtk_iommu_flush_ops,
-> > > > +		.iommu_dev = data->dev,
-> > > > +	};
-> > > > +
-> > > > +	pgtable->iop = alloc_io_pgtable_ops(ARM_V7S, &pgtable->cfg, data);
-> > > > +	if (!pgtable->iop) {
-> > > > +		dev_err(data->dev, "Failed to alloc io pgtable\n");
-> > > > +		return ERR_PTR(-EINVAL);
-> > > > +	}
-> > > > +
-> > > > +	dev_info(data->dev, "%s create pgtable done\n", __func__);
-> > > > +
-> > > > +	return pgtable;
-> > > > +}
-> > > > +
-> > > > +static int mtk_iommu_attach_pgtable(struct mtk_iommu_data *data,
-> > > > +				    struct device *dev)
-> > > > +{
-> > > > +	struct mtk_iommu_pgtable *pgtable = mtk_iommu_get_pgtable();
-> > > > +
-> > > > +	/* create share pgtable */
-> > > > +	if (!pgtable) {
-> > > > +		pgtable = create_pgtable(data);
-> > > > +		if (IS_ERR(pgtable)) {
-> > > > +			dev_err(data->dev, "Failed to create pgtable\n");
-> > > > +			return -ENOMEM;
-> > > > +		}
-> > > > +
-> > > > +		share_pgtable = pgtable;
-> > > > +	}
-> > > > +
-> > > > +	/* binding to pgtable */
-> > > > +	data->pgtable = pgtable;
-> > > > +
-> > > > +	dev_info(data->dev, "m4u%d attach_pgtable done!\n", data->m4u_id);
-> > > > +
-> > > > +	return 0;
-> > > > +}
-> > > > +
-> > > >  static struct iommu_domain *mtk_iommu_domain_alloc(unsigned type)
-> > > >  {
-> > > >  	struct mtk_iommu_domain *dom;
-> > > > @@ -508,10 +581,21 @@ static void mtk_iommu_remove_device(struct device *dev)
-> > > >  static struct iommu_group *mtk_iommu_device_group(struct device *dev)
-> > > >  {
-> > > >  	struct mtk_iommu_data *data = mtk_iommu_get_m4u_data();
-> > > > +	struct mtk_iommu_pgtable *pgtable;
-> > > > +	int ret = 0;
-> > > >  
-> > > >  	if (!data)
-> > > >  		return ERR_PTR(-ENODEV);
-> > > >  
-> > > > +	pgtable = data->pgtable;
-> > > > +	if (!pgtable) {
-> > > > +		ret = mtk_iommu_attach_pgtable(data, dev);
-> > > > +		if (ret) {
-> > > > +			dev_err(data->dev, "Failed to device_group\n");
-> > > > +			return NULL;
-> > > > +		}
-> > > > +	}
-> > > > +
-> > > >  	/* All the client devices are in the same m4u iommu-group */
-> > > >  	if (!data->m4u_group) {
-> > > >  		data->m4u_group = iommu_group_alloc();
-> > > > diff --git a/drivers/iommu/mtk_iommu.h b/drivers/iommu/mtk_iommu.h
-> > > > index 132dc765a40b..dd5f19f78b62 100644
-> > > > --- a/drivers/iommu/mtk_iommu.h
-> > > > +++ b/drivers/iommu/mtk_iommu.h
-> > > > @@ -61,6 +61,7 @@ struct mtk_iommu_data {
-> > > >  	struct clk			*bclk;
-> > > >  	phys_addr_t			protect_base; /* protect memory base */
-> > > >  	struct mtk_iommu_suspend_reg	reg;
-> > > > +	struct mtk_iommu_pgtable	*pgtable;
-> > > >  	struct mtk_iommu_domain		*m4u_dom;
-> > > >  	struct iommu_group		*m4u_group;
-> > > >  	bool                            enable_4GB;
-> > > 
-> > > 
-> > 
-> > 
+Eric
+> ---
+>> Thanks
+>>
+>> Eric
+>>> +}
+>>> +
+>>> +void qi_flush_pasid_cache(struct intel_iommu *iommu, u16 did, u64
+>>> granu, int pasid) +{
+>>> +	struct qi_desc desc = {.qw1 = 0, .qw2 = 0, .qw3 = 0};
+>>> +
+>>> +	desc.qw0 = QI_PC_PASID(pasid) | QI_PC_DID(did) |
+>>> QI_PC_GRAN(granu) | QI_PC_TYPE;
+>>> +	qi_submit_sync(&desc, iommu);
+>>> +}
+>>> +
+>>>  /*
+>>>   * Disable Queued Invalidation interface.
+>>>   */
+>>> diff --git a/drivers/iommu/intel-pasid.c
+>>> b/drivers/iommu/intel-pasid.c index bd067af4d20b..b100f51407f9
+>>> 100644 --- a/drivers/iommu/intel-pasid.c
+>>> +++ b/drivers/iommu/intel-pasid.c
+>>> @@ -435,7 +435,8 @@ pasid_cache_invalidation_with_pasid(struct
+>>> intel_iommu *iommu, {
+>>>  	struct qi_desc desc;
+>>>  
+>>> -	desc.qw0 = QI_PC_DID(did) | QI_PC_PASID_SEL |
+>>> QI_PC_PASID(pasid);
+>>> +	desc.qw0 = QI_PC_DID(did) | QI_PC_GRAN(QI_PC_PASID_SEL) |
+>>> +		QI_PC_PASID(pasid) | QI_PC_TYPE;
+>>>  	desc.qw1 = 0;
+>>>  	desc.qw2 = 0;
+>>>  	desc.qw3 = 0;
+>>> diff --git a/include/linux/intel-iommu.h
+>>> b/include/linux/intel-iommu.h index b0ffecbc0dfc..dd9fa61689bc
+>>> 100644 --- a/include/linux/intel-iommu.h
+>>> +++ b/include/linux/intel-iommu.h
+>>> @@ -332,7 +332,7 @@ enum {
+>>>  #define QI_IOTLB_GRAN(gran) 	(((u64)gran) >>
+>>> (DMA_TLB_FLUSH_GRANU_OFFSET-4)) #define QI_IOTLB_ADDR(addr)
+>>> (((u64)addr) & VTD_PAGE_MASK) #define
+>>> QI_IOTLB_IH(ih)		(((u64)ih) << 6) -#define
+>>> QI_IOTLB_AM(am)		(((u8)am)) +#define
+>>> QI_IOTLB_AM(am)		(((u8)am) & 0x3f) 
+>>>  #define QI_CC_FM(fm)		(((u64)fm) << 48)
+>>>  #define QI_CC_SID(sid)		(((u64)sid) << 32)
+>>> @@ -351,16 +351,21 @@ enum {
+>>>  #define QI_PC_DID(did)		(((u64)did) << 16)
+>>>  #define QI_PC_GRAN(gran)	(((u64)gran) << 4)
+>>>  
+>>> -#define QI_PC_ALL_PASIDS	(QI_PC_TYPE | QI_PC_GRAN(0))
+>>> -#define QI_PC_PASID_SEL		(QI_PC_TYPE | QI_PC_GRAN(1))
+>>> +/* PASID cache invalidation granu */
+>>> +#define QI_PC_ALL_PASIDS	0
+>>> +#define QI_PC_PASID_SEL		1
+>>>  
+>>>  #define QI_EIOTLB_ADDR(addr)	((u64)(addr) & VTD_PAGE_MASK)
+>>>  #define QI_EIOTLB_IH(ih)	(((u64)ih) << 6)
+>>> -#define QI_EIOTLB_AM(am)	(((u64)am))
+>>> +#define QI_EIOTLB_AM(am)	(((u64)am) & 0x3f)
+>>>  #define QI_EIOTLB_PASID(pasid) 	(((u64)pasid) << 32)
+>>>  #define QI_EIOTLB_DID(did)	(((u64)did) << 16)
+>>>  #define QI_EIOTLB_GRAN(gran) 	(((u64)gran) << 4)
+>>>  
+>>> +/* QI Dev-IOTLB inv granu */
+>>> +#define QI_DEV_IOTLB_GRAN_ALL		1
+>>> +#define QI_DEV_IOTLB_GRAN_PASID_SEL	0
+>>> +
+>>>  #define QI_DEV_EIOTLB_ADDR(a)	((u64)(a) & VTD_PAGE_MASK)
+>>>  #define QI_DEV_EIOTLB_SIZE	(((u64)1) << 11)
+>>>  #define QI_DEV_EIOTLB_GLOB(g)	((u64)g)
+>>> @@ -660,8 +665,15 @@ extern void qi_flush_iotlb(struct intel_iommu
+>>> *iommu, u16 did, u64 addr, unsigned int size_order, u64 type);
+>>>  extern void qi_flush_dev_iotlb(struct intel_iommu *iommu, u16 sid,
+>>> u16 pfsid, u16 qdep, u64 addr, unsigned mask);
+>>> +
+>>>  void qi_flush_piotlb(struct intel_iommu *iommu, u16 did, u32
+>>> pasid, u64 addr, unsigned long npages, bool ih);
+>>> +
+>>> +extern void qi_flush_dev_iotlb_pasid(struct intel_iommu *iommu,
+>>> u16 sid, u16 pfsid,
+>>> +			u32 pasid, u16 qdep, u64 addr, unsigned
+>>> size_order, u64 granu); +
+>>> +extern void qi_flush_pasid_cache(struct intel_iommu *iommu, u16
+>>> did, u64 granu, int pasid); +
+>>>  extern int qi_submit_sync(struct qi_desc *desc, struct intel_iommu
+>>> *iommu); 
+>>>  extern int dmar_ir_support(void);
+>>>   
+>>
 > 
+> [Jacob Pan]
 > 
 
 _______________________________________________
