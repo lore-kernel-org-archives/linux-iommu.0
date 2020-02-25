@@ -2,74 +2,99 @@ Return-Path: <SRS0=zhz4=4N=lists.linux-foundation.org=iommu-bounces@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-8.3 required=3.0 tests=HEADER_FROM_DIFFERENT_DOMAINS,
-	INCLUDES_PATCH,MAILING_LIST_MULTI,SIGNED_OFF_BY,SPF_HELO_NONE,SPF_PASS,
-	USER_AGENT_SANE_1 autolearn=ham autolearn_force=no version=3.4.0
+X-Spam-Status: No, score=-9.6 required=3.0 tests=DKIM_INVALID,DKIM_SIGNED,
+	HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_PATCH,MAILING_LIST_MULTI,SIGNED_OFF_BY,
+	SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED,USER_AGENT_GIT autolearn=ham
+	autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id AE899C35DF5
-	for <iommu@archiver.kernel.org>; Tue, 25 Feb 2020 05:53:20 +0000 (UTC)
-Received: from silver.osuosl.org (smtp3.osuosl.org [140.211.166.136])
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 2D82BC35DF7
+	for <iommu@archiver.kernel.org>; Tue, 25 Feb 2020 06:18:39 +0000 (UTC)
+Received: from whitealder.osuosl.org (smtp1.osuosl.org [140.211.166.138])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by mail.kernel.org (Postfix) with ESMTPS id 6DD4021556
-	for <iommu@archiver.kernel.org>; Tue, 25 Feb 2020 05:53:20 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 6DD4021556
-Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=linux.intel.com
+	by mail.kernel.org (Postfix) with ESMTPS id E9FEE21744
+	for <iommu@archiver.kernel.org>; Tue, 25 Feb 2020 06:18:38 +0000 (UTC)
+Authentication-Results: mail.kernel.org;
+	dkim=fail reason="signature verification failed" (2048-bit key) header.d=linaro.org header.i=@linaro.org header.b="LD38JGPy"
+DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org E9FEE21744
+Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=linaro.org
 Authentication-Results: mail.kernel.org; spf=pass smtp.mailfrom=iommu-bounces@lists.linux-foundation.org
 Received: from localhost (localhost [127.0.0.1])
-	by silver.osuosl.org (Postfix) with ESMTP id 370462051B;
-	Tue, 25 Feb 2020 05:53:20 +0000 (UTC)
+	by whitealder.osuosl.org (Postfix) with ESMTP id A478885D26;
+	Tue, 25 Feb 2020 06:18:38 +0000 (UTC)
+X-Virus-Scanned: amavisd-new at osuosl.org
+Received: from whitealder.osuosl.org ([127.0.0.1])
+	by localhost (.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
+	with ESMTP id 3UzNfbbcRcNm; Tue, 25 Feb 2020 06:18:37 +0000 (UTC)
+Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [140.211.9.56])
+	by whitealder.osuosl.org (Postfix) with ESMTP id A15D28589A;
+	Tue, 25 Feb 2020 06:18:37 +0000 (UTC)
+Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
+	by lists.linuxfoundation.org (Postfix) with ESMTP id 8788BC18DA;
+	Tue, 25 Feb 2020 06:18:37 +0000 (UTC)
+Received: from silver.osuosl.org (smtp3.osuosl.org [140.211.166.136])
+ by lists.linuxfoundation.org (Postfix) with ESMTP id 1CE43C0177
+ for <iommu@lists.linux-foundation.org>; Tue, 25 Feb 2020 06:18:36 +0000 (UTC)
+Received: from localhost (localhost [127.0.0.1])
+ by silver.osuosl.org (Postfix) with ESMTP id F166920381
+ for <iommu@lists.linux-foundation.org>; Tue, 25 Feb 2020 06:18:35 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
 Received: from silver.osuosl.org ([127.0.0.1])
-	by localhost (.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
-	with ESMTP id tRQ1Mo1MD-aY; Tue, 25 Feb 2020 05:53:18 +0000 (UTC)
-Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [140.211.9.56])
-	by silver.osuosl.org (Postfix) with ESMTP id 0F529204FE;
-	Tue, 25 Feb 2020 05:53:18 +0000 (UTC)
-Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
-	by lists.linuxfoundation.org (Postfix) with ESMTP id EE619C07FF;
-	Tue, 25 Feb 2020 05:53:17 +0000 (UTC)
-Received: from hemlock.osuosl.org (smtp2.osuosl.org [140.211.166.133])
- by lists.linuxfoundation.org (Postfix) with ESMTP id C72E3C0177
- for <iommu@lists.linux-foundation.org>; Tue, 25 Feb 2020 05:53:15 +0000 (UTC)
-Received: from localhost (localhost [127.0.0.1])
- by hemlock.osuosl.org (Postfix) with ESMTP id AB721875D8
- for <iommu@lists.linux-foundation.org>; Tue, 25 Feb 2020 05:53:15 +0000 (UTC)
-X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from hemlock.osuosl.org ([127.0.0.1])
  by localhost (.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
- with ESMTP id wRFUEfCpZIRm for <iommu@lists.linux-foundation.org>;
- Tue, 25 Feb 2020 05:53:14 +0000 (UTC)
+ with ESMTP id a529Ti+Ocjoe for <iommu@lists.linux-foundation.org>;
+ Tue, 25 Feb 2020 06:18:35 +0000 (UTC)
 X-Greylist: domain auto-whitelisted by SQLgrey-1.7.6
-Received: from mga07.intel.com (mga07.intel.com [134.134.136.100])
- by hemlock.osuosl.org (Postfix) with ESMTPS id 7511B875CB
- for <iommu@lists.linux-foundation.org>; Tue, 25 Feb 2020 05:53:14 +0000 (UTC)
-X-Amp-Result: SKIPPED(no attachment in message)
-X-Amp-File-Uploaded: False
-Received: from orsmga002.jf.intel.com ([10.7.209.21])
- by orsmga105.jf.intel.com with ESMTP/TLS/DHE-RSA-AES256-GCM-SHA384;
- 24 Feb 2020 21:53:13 -0800
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.70,482,1574150400"; d="scan'208";a="255837986"
-Received: from blu2-mobl3.ccr.corp.intel.com (HELO [10.254.212.230])
- ([10.254.212.230])
- by orsmga002.jf.intel.com with ESMTP; 24 Feb 2020 21:53:09 -0800
-Subject: Re: [PATCH v2] iommu/vt-d: Fix a bug in intel_iommu_iova_to_phys()
- for huge page
-To: Yonghyun Hwang <yonghyun@google.com>,
- David Woodhouse <dwmw2@infradead.org>, Joerg Roedel <joro@8bytes.org>
-References: <20200220194431.169629-1-yonghyun@google.com>
-From: Lu Baolu <baolu.lu@linux.intel.com>
-Message-ID: <0f38ea21-2129-22ec-3d35-03723054127e@linux.intel.com>
-Date: Tue, 25 Feb 2020 13:53:07 +0800
-User-Agent: Mozilla/5.0 (Windows NT 10.0; WOW64; rv:68.0) Gecko/20100101
- Thunderbird/68.5.0
-MIME-Version: 1.0
-In-Reply-To: <20200220194431.169629-1-yonghyun@google.com>
-Content-Language: en-US
-Cc: Havard Skinnemoen <hskinnemoen@google.com>, linux-kernel@vger.kernel.org,
- iommu@lists.linux-foundation.org, Moritz Fischer <mdf@kernel.org>,
- Deepa Dinamani <deepadinamani@google.com>
+Received: from mail-pg1-f195.google.com (mail-pg1-f195.google.com
+ [209.85.215.195])
+ by silver.osuosl.org (Postfix) with ESMTPS id 14F0A2036D
+ for <iommu@lists.linux-foundation.org>; Tue, 25 Feb 2020 06:18:35 +0000 (UTC)
+Received: by mail-pg1-f195.google.com with SMTP id a14so5968235pgb.11
+ for <iommu@lists.linux-foundation.org>; Mon, 24 Feb 2020 22:18:35 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linaro.org; s=google;
+ h=from:to:cc:subject:date:message-id;
+ bh=e+7bx8lUSmVrpWTazNQW1i3Mowvkih4cewfdKjPmTy4=;
+ b=LD38JGPy04uN1yjFhWdfFm1TtlN5JgFs3svtOJ1YyG0FCVGaxcb5+GNmYLZ51tZSyo
+ oAFCOPJ1OYAZHQJwG7Za4U0bB6QEtc5CYqQMpI640/Le3MUj84E7pAFPupiEhd4GHTUa
+ PJRNaM+SkDUbk8YDrrJo7PECOudld1MQA6fnnKufEfkQ76Kn+sSN/ZT9n56DiWAVMh4g
+ NR1ZvHsHxp0isifDUS+lnFU3+yJMOxtP7iM+Kri8CXZwOe01S448gTpYYtW561G2pDlo
+ SJDOKuPlUN42+hZpH2ux8o20rUcLHP7fOvXOO/T3c/yMRxwETFsrsX/31tRRWw1Tl6OR
+ /sfg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+ d=1e100.net; s=20161025;
+ h=x-gm-message-state:from:to:cc:subject:date:message-id;
+ bh=e+7bx8lUSmVrpWTazNQW1i3Mowvkih4cewfdKjPmTy4=;
+ b=oc6lSgHMBDNGQUYQFPCqer42PsyXLtg/tnxc7FqRJlcbPbmMBK4iiy5f7cyyPXBU3a
+ +jHamuSmS0io3u+TNcljlbQqhuUffKRfrPACfDCT4h5OmyVeMRh3DjBO84kd27HlkczD
+ 9pv+0EqneqociTFavEP0kwn6fKqPP9tSD91mP9bNvX4deliQokQCzO2mBQHvKZK9m2fK
+ XwP8guXvv7PfbOw42VbPyP7TDXIXfLioHG7Z+OeB6vvaCBk14OYFK1SfvXMsiG/CExhq
+ x5H2v6kHQWjcBMkaxoQ86EUgEwEX9Oah6JhsKbLl+UfIISAXhWwUE6Z0ql9rqwnYXtVA
+ 2Uaw==
+X-Gm-Message-State: APjAAAXzfyGXcXjhHabWhMbjpfWEVIXXBZmr16uyTnLOUa2CxbbdKVFw
+ /YNtXkbck7YEV87KvTxKRktCZw==
+X-Google-Smtp-Source: APXvYqxEzw4tKr8TWATiCEQ2SB4wrPgMGenyQG6KArzN8Y17gzlGpHwMZyTpBuJ3nI6rVsIaKjJepA==
+X-Received: by 2002:a65:4b83:: with SMTP id t3mr55484000pgq.195.1582611514690; 
+ Mon, 24 Feb 2020 22:18:34 -0800 (PST)
+Received: from localhost.localdomain ([240e:362:421:7f00:524:e1bd:8061:a346])
+ by smtp.gmail.com with ESMTPSA id
+ q17sm15038327pfg.123.2020.02.24.22.18.13
+ (version=TLS1_2 cipher=ECDHE-RSA-AES128-SHA bits=128/128);
+ Mon, 24 Feb 2020 22:18:34 -0800 (PST)
+From: Zhangfei Gao <zhangfei.gao@linaro.org>
+To: Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+ Arnd Bergmann <arnd@arndb.de>, Herbert Xu <herbert@gondor.apana.org.au>,
+ jonathan.cameron@huawei.com, dave.jiang@intel.com, grant.likely@arm.com,
+ jean-philippe <jean-philippe@linaro.org>,
+ Jerome Glisse <jglisse@redhat.com>, ilias.apalodimas@linaro.org,
+ francois.ozog@linaro.org, kenneth-lee-2012@foxmail.com,
+ Wangzhou <wangzhou1@hisilicon.com>,
+ "haojian . zhuang" <haojian.zhuang@linaro.org>, guodong.xu@linaro.org
+Subject: [PATCH] MAINTAINERS: add maintainers for uacce
+Date: Tue, 25 Feb 2020 14:17:55 +0800
+Message-Id: <1582611475-32691-1-git-send-email-zhangfei.gao@linaro.org>
+X-Mailer: git-send-email 2.7.4
+Cc: Zhangfei Gao <zhangfei.gao@linaro.org>, iommu@lists.linux-foundation.org,
+ linux-kernel@vger.kernel.org, linux-accelerators@lists.ozlabs.org,
+ linux-crypto@vger.kernel.org
 X-BeenThere: iommu@lists.linux-foundation.org
 X-Mailman-Version: 2.1.15
 Precedence: list
@@ -82,70 +107,44 @@ List-Post: <mailto:iommu@lists.linux-foundation.org>
 List-Help: <mailto:iommu-request@lists.linux-foundation.org?subject=help>
 List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
  <mailto:iommu-request@lists.linux-foundation.org?subject=subscribe>
+MIME-Version: 1.0
+Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
-Content-Type: text/plain; charset="us-ascii"; Format="flowed"
 Errors-To: iommu-bounces@lists.linux-foundation.org
 Sender: "iommu" <iommu-bounces@lists.linux-foundation.org>
 
-Hi,
+Add Zhangfei Gao and Zhou Wang as maintainers for uacce
 
-On 2020/2/21 3:44, Yonghyun Hwang wrote:
-> intel_iommu_iova_to_phys() has a bug when it translates an IOVA for a huge
-> page onto its corresponding physical address. This commit fixes the bug by
-> accomodating the level of page entry for the IOVA and adds IOVA's lower
-> address to the physical address.
-> 
-> Signed-off-by: Yonghyun Hwang <yonghyun@google.com>
-> ---
-> 
-> Changes from v1:
-> - level cannot be 0. So, the condition, "if (level > 1)", is removed, which results in a simple code.
-> - a macro, BIT_MASK, is used to have a bit mask
-> 
-> ---
->   drivers/iommu/intel-iommu.c | 4 +++-
->   1 file changed, 3 insertions(+), 1 deletion(-)
-> 
-> diff --git a/drivers/iommu/intel-iommu.c b/drivers/iommu/intel-iommu.c
-> index 932267f49f9a..4fd5c6287b6d 100644
-> --- a/drivers/iommu/intel-iommu.c
-> +++ b/drivers/iommu/intel-iommu.c
-> @@ -5554,7 +5554,9 @@ static phys_addr_t intel_iommu_iova_to_phys(struct iommu_domain *domain,
->   
->   	pte = pfn_to_dma_pte(dmar_domain, iova >> VTD_PAGE_SHIFT, &level);
->   	if (pte)
+Signed-off-by: Zhangfei Gao <zhangfei.gao@linaro.org>
+Signed-off-by: Zhou Wang <wangzhou1@hisilicon.com>
+---
+ MAINTAINERS | 10 ++++++++++
+ 1 file changed, 10 insertions(+)
 
-Need to check whether the pte is present here. Otherwise, the returned
-level makes no sense.
+diff --git a/MAINTAINERS b/MAINTAINERS
+index 38fe2f3..22e647f 100644
+--- a/MAINTAINERS
++++ b/MAINTAINERS
+@@ -17039,6 +17039,16 @@ W:	http://linuxtv.org
+ S:	Maintained
+ F:	drivers/media/pci/tw686x/
+ 
++UACCE ACCELERATOR FRAMEWORK
++M:	Zhangfei Gao <zhangfei.gao@linaro.org>
++M:	Zhou Wang <wangzhou1@hisilicon.com>
++S:	Maintained
++F:	Documentation/ABI/testing/sysfs-driver-uacce
++F:	Documentation/misc-devices/uacce.rst
++F:	drivers/misc/uacce/
++F:	include/linux/uacce.h
++F:	include/uapi/misc/uacce/
++
+ UBI FILE SYSTEM (UBIFS)
+ M:	Richard Weinberger <richard@nod.at>
+ L:	linux-mtd@lists.infradead.org
+-- 
+2.7.4
 
-Increased change looks like:
-
-diff --git a/drivers/iommu/intel-iommu.c b/drivers/iommu/intel-iommu.c
-index 61c7ef2f33b4..33593fea0250 100644
---- a/drivers/iommu/intel-iommu.c
-+++ b/drivers/iommu/intel-iommu.c
-@@ -5700,7 +5700,7 @@ static phys_addr_t intel_iommu_iova_to_phys(struct 
-iommu_domain *domain,
-         u64 phys = 0;
-
-         pte = pfn_to_dma_pte(dmar_domain, iova >> VTD_PAGE_SHIFT, &level);
--       if (pte)
-+       if (pte && dma_pte_present(pte))
-                 phys = dma_pte_addr(pte) +
-                         (iova & (BIT_MASK(level_to_offset_bits(level) +
-                                                 VTD_PAGE_SHIFT) - 1));
-
-> -		phys = dma_pte_addr(pte);
-> +		phys = dma_pte_addr(pte) +
-> +			(iova & (BIT_MASK(level_to_offset_bits(level) +
-> +						VTD_PAGE_SHIFT) - 1));
->   
->   	return phys;
->   }
-> 
-
-Best regards,
-baolu
 _______________________________________________
 iommu mailing list
 iommu@lists.linux-foundation.org
