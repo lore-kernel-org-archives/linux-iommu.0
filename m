@@ -2,100 +2,75 @@ Return-Path: <SRS0=g0Sk=4O=lists.linux-foundation.org=iommu-bounces@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-0.6 required=3.0 tests=DKIM_INVALID,DKIM_SIGNED,
-	HEADER_FROM_DIFFERENT_DOMAINS,MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS
-	autolearn=no autolearn_force=no version=3.4.0
+X-Spam-Status: No, score=-8.3 required=3.0 tests=HEADER_FROM_DIFFERENT_DOMAINS,
+	INCLUDES_PATCH,MAILING_LIST_MULTI,SIGNED_OFF_BY,SPF_HELO_NONE,SPF_PASS,
+	USER_AGENT_SANE_1 autolearn=unavailable autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 34DA0C4BA0A
-	for <iommu@archiver.kernel.org>; Wed, 26 Feb 2020 07:31:39 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 16D7CC4BA0B
+	for <iommu@archiver.kernel.org>; Wed, 26 Feb 2020 08:45:12 +0000 (UTC)
 Received: from silver.osuosl.org (smtp3.osuosl.org [140.211.166.136])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by mail.kernel.org (Postfix) with ESMTPS id F0C5F2084E
-	for <iommu@archiver.kernel.org>; Wed, 26 Feb 2020 07:31:38 +0000 (UTC)
-Authentication-Results: mail.kernel.org;
-	dkim=fail reason="signature verification failed" (2048-bit key) header.d=linaro.org header.i=@linaro.org header.b="Z+L1wubO"
-DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org F0C5F2084E
-Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=linaro.org
+	by mail.kernel.org (Postfix) with ESMTPS id DB076206E6
+	for <iommu@archiver.kernel.org>; Wed, 26 Feb 2020 08:45:11 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org DB076206E6
+Authentication-Results: mail.kernel.org; dmarc=none (p=none dis=none) header.from=huawei.com
 Authentication-Results: mail.kernel.org; spf=pass smtp.mailfrom=iommu-bounces@lists.linux-foundation.org
 Received: from localhost (localhost [127.0.0.1])
-	by silver.osuosl.org (Postfix) with ESMTP id C234D20418;
-	Wed, 26 Feb 2020 07:31:38 +0000 (UTC)
+	by silver.osuosl.org (Postfix) with ESMTP id AF5652041D;
+	Wed, 26 Feb 2020 08:45:11 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
 Received: from silver.osuosl.org ([127.0.0.1])
 	by localhost (.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
-	with ESMTP id fTraEKQhU8i9; Wed, 26 Feb 2020 07:31:38 +0000 (UTC)
+	with ESMTP id GBnkd9eX8h+x; Wed, 26 Feb 2020 08:45:07 +0000 (UTC)
 Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [140.211.9.56])
-	by silver.osuosl.org (Postfix) with ESMTP id 610E520417;
-	Wed, 26 Feb 2020 07:31:38 +0000 (UTC)
+	by silver.osuosl.org (Postfix) with ESMTP id CCA36203B1;
+	Wed, 26 Feb 2020 08:45:07 +0000 (UTC)
 Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
-	by lists.linuxfoundation.org (Postfix) with ESMTP id 32B21C08A0;
-	Wed, 26 Feb 2020 07:31:38 +0000 (UTC)
-Received: from silver.osuosl.org (smtp3.osuosl.org [140.211.166.136])
- by lists.linuxfoundation.org (Postfix) with ESMTP id 7AC40C0177
- for <iommu@lists.linux-foundation.org>; Wed, 26 Feb 2020 07:31:36 +0000 (UTC)
+	by lists.linuxfoundation.org (Postfix) with ESMTP id AE660C18DA;
+	Wed, 26 Feb 2020 08:45:07 +0000 (UTC)
+Received: from fraxinus.osuosl.org (smtp4.osuosl.org [140.211.166.137])
+ by lists.linuxfoundation.org (Postfix) with ESMTP id 53858C0177
+ for <iommu@lists.linux-foundation.org>; Wed, 26 Feb 2020 08:45:05 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
- by silver.osuosl.org (Postfix) with ESMTP id 6C91220418
- for <iommu@lists.linux-foundation.org>; Wed, 26 Feb 2020 07:31:36 +0000 (UTC)
+ by fraxinus.osuosl.org (Postfix) with ESMTP id 50522861AF
+ for <iommu@lists.linux-foundation.org>; Wed, 26 Feb 2020 08:45:05 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from silver.osuosl.org ([127.0.0.1])
+Received: from fraxinus.osuosl.org ([127.0.0.1])
  by localhost (.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
- with ESMTP id LcR7hoY5H+1p for <iommu@lists.linux-foundation.org>;
- Wed, 26 Feb 2020 07:31:35 +0000 (UTC)
+ with ESMTP id GIva3cAdJ374 for <iommu@lists.linux-foundation.org>;
+ Wed, 26 Feb 2020 08:45:00 +0000 (UTC)
 X-Greylist: domain auto-whitelisted by SQLgrey-1.7.6
-Received: from mail-wr1-f67.google.com (mail-wr1-f67.google.com
- [209.85.221.67])
- by silver.osuosl.org (Postfix) with ESMTPS id 8F39B20417
- for <iommu@lists.linux-foundation.org>; Wed, 26 Feb 2020 07:31:35 +0000 (UTC)
-Received: by mail-wr1-f67.google.com with SMTP id j7so1589981wrp.13
- for <iommu@lists.linux-foundation.org>; Tue, 25 Feb 2020 23:31:35 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linaro.org; s=google;
- h=date:from:to:cc:subject:message-id:references:mime-version
- :content-disposition:in-reply-to;
- bh=hxZUYP0cQ4s+D1GPGSIg13NXENyBceeLiQgMnelW0Co=;
- b=Z+L1wubOJ3gGRnqhuT1ZwDooxjKXaCTM3VWsZWLORPJqa9xxtrRYrmREYRwCw2YgO8
- HKl4+knUWCmhZWZozBrcMIJxyqPx5GGSKZnevRzh1xx0OnU/NP6lHxYJfz5lWO3sNl50
- iCRv3J5KH6YTeU5Jc1PD1pzvs4WdjkRnoRVGoOXrX1eH4VtS+U69d210rHLWlJB9C4wQ
- B522/8AkfM69ES4+RnCqMnsj+cefCm9/rN54vriduVWNm+Iro0L+qHn63iB2Y2WutZyr
- PCzo0LYEIiYvMJ4ZOsuGTEbSHq3w9FkXCz6rM11iGmi05xhHj526rEq3R+XF8Vw35qkN
- XvWw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
- d=1e100.net; s=20161025;
- h=x-gm-message-state:date:from:to:cc:subject:message-id:references
- :mime-version:content-disposition:in-reply-to;
- bh=hxZUYP0cQ4s+D1GPGSIg13NXENyBceeLiQgMnelW0Co=;
- b=uVllJ4gmI2Q1XFivBqLAHIDxVuMefYnnEPH+UMAM8ncoNVvM0Es09Ph/f2fa4B4BGw
- +zBTZNHLDJRAkHT2trxsh3TYxPMDDKlUUipb+Afiuxij8yHpHp4N4d1wCBHIO0PMDeGi
- r2Hr+tg8QcodFsuFftMP9pjpq39BpVUqXY1mLt7nZhEASpel46BmRmghuklwJxjQDLAC
- FhHLFnMWKjvI+4NhqLiNVGo0wM0GFUICbeLFNsKtFKnb1G8HfePAXvPUpk0GHwxk5Q+n
- R3Kbhm9zpsmniQylLVzSVumKeovyaOQafHljJ4aIf7LAaATCR77WfmBk9QpwG5c88fst
- +JzQ==
-X-Gm-Message-State: APjAAAWNyEvGDle6SLH9lwMspwUwY0sG2oW+MoKKY5PeI/fZPiGNPRAU
- Np1gmfUoJ+ZrSfcCzyS9kP4eJw==
-X-Google-Smtp-Source: APXvYqymA4NRK8kSBnwzL1y5IBNFVoBdWsFFIcv2KQ0MszGN1eA/UpfEau7j9Zkxfu5RLu4gn4+TSw==
-X-Received: by 2002:adf:e884:: with SMTP id d4mr3961692wrm.12.1582702293931;
- Tue, 25 Feb 2020 23:31:33 -0800 (PST)
-Received: from myrica ([2001:171b:c9a8:fbc0:116c:c27a:3e7f:5eaf])
- by smtp.gmail.com with ESMTPSA id t187sm1820680wmt.25.2020.02.25.23.31.32
- (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
- Tue, 25 Feb 2020 23:31:33 -0800 (PST)
-Date: Wed, 26 Feb 2020 08:31:27 +0100
-From: Jean-Philippe Brucker <jean-philippe@linaro.org>
-To: Christoph Hellwig <hch@infradead.org>
-Subject: Re: [PATCH 2/2] iommu/vt-d: Replace intel SVM APIs with generic SVA
- APIs
-Message-ID: <20200226073127.GA438595@myrica>
-References: <1582586797-61697-1-git-send-email-jacob.jun.pan@linux.intel.com>
- <1582586797-61697-4-git-send-email-jacob.jun.pan@linux.intel.com>
- <20200225191034.GA29045@infradead.org>
+Received: from huawei.com (szxga07-in.huawei.com [45.249.212.35])
+ by fraxinus.osuosl.org (Postfix) with ESMTPS id 6CAB1860EA
+ for <iommu@lists.linux-foundation.org>; Wed, 26 Feb 2020 08:45:00 +0000 (UTC)
+Received: from DGGEMS406-HUB.china.huawei.com (unknown [172.30.72.58])
+ by Forcepoint Email with ESMTP id 730B97C1AE6C45ED5204;
+ Wed, 26 Feb 2020 16:44:54 +0800 (CST)
+Received: from [127.0.0.1] (10.67.101.242) by DGGEMS406-HUB.china.huawei.com
+ (10.3.19.206) with Microsoft SMTP Server id 14.3.439.0; Wed, 26 Feb 2020
+ 16:44:53 +0800
+Subject: Re: [PATCH v4 23/26] iommu/arm-smmu-v3: Add stall support for
+ platform devices
+To: Jean-Philippe Brucker <jean-philippe@linaro.org>,
+ <iommu@lists.linux-foundation.org>, <devicetree@vger.kernel.org>,
+ <linux-arm-kernel@lists.infradead.org>, <linux-pci@vger.kernel.org>,
+ <linux-mm@kvack.org>
+References: <20200224182401.353359-1-jean-philippe@linaro.org>
+ <20200224182401.353359-24-jean-philippe@linaro.org>
+From: Xu Zaibo <xuzaibo@huawei.com>
+Message-ID: <db6fc8c2-2ff3-631f-2294-c1b49acd27aa@huawei.com>
+Date: Wed, 26 Feb 2020 16:44:53 +0800
+User-Agent: Mozilla/5.0 (Windows NT 10.0; WOW64; rv:45.0) Gecko/20100101
+ Thunderbird/45.7.1
 MIME-Version: 1.0
-Content-Disposition: inline
-In-Reply-To: <20200225191034.GA29045@infradead.org>
-Cc: "Tian, Kevin" <kevin.tian@intel.com>, Dave Jiang <dave.jiang@intel.com>,
- Raj Ashok <ashok.raj@intel.com>,
- Jean-Philippe Brucker <jean-philippe@linaro.com>,
- LKML <linux-kernel@vger.kernel.org>, iommu@lists.linux-foundation.org,
- David Woodhouse <dwmw2@infradead.org>
+In-Reply-To: <20200224182401.353359-24-jean-philippe@linaro.org>
+X-Originating-IP: [10.67.101.242]
+X-CFilter-Loop: Reflected
+Cc: mark.rutland@arm.com, kevin.tian@intel.com, will@kernel.org,
+ Jean-Philippe Brucker <jean-philippe.brucker@arm.com>, catalin.marinas@arm.com,
+ robh+dt@kernel.org, zhangfei.gao@linaro.org, robin.murphy@arm.com,
+ christian.koenig@amd.com
 X-BeenThere: iommu@lists.linux-foundation.org
 X-Mailman-Version: 2.1.15
 Precedence: list
@@ -108,30 +83,90 @@ List-Post: <mailto:iommu@lists.linux-foundation.org>
 List-Help: <mailto:iommu-request@lists.linux-foundation.org?subject=help>
 List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
  <mailto:iommu-request@lists.linux-foundation.org?subject=subscribe>
-Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset="us-ascii"; Format="flowed"
 Errors-To: iommu-bounces@lists.linux-foundation.org
 Sender: "iommu" <iommu-bounces@lists.linux-foundation.org>
 
-On Tue, Feb 25, 2020 at 11:10:34AM -0800, Christoph Hellwig wrote:
-> On Mon, Feb 24, 2020 at 03:26:37PM -0800, Jacob Pan wrote:
-> > This patch is an initial step to replace Intel SVM code with the
-> > following IOMMU SVA ops:
-> > intel_svm_bind_mm() => iommu_sva_bind_device()
-> > intel_svm_unbind_mm() => iommu_sva_unbind_device()
-> > intel_svm_is_pasid_valid() => iommu_sva_get_pasid()
-> 
-> How did either set APIs end up being added to the kernel without users
-> to start with?
-> 
-> Please remove both the old intel and the iommu ones given that neither
-> has any users.
+Hi,
 
-The hisilicon crypto accelerator will be using the new API in v5.7
-https://lore.kernel.org/linux-iommu/1581407665-13504-1-git-send-email-zhangfei.gao@linaro.org/
 
-Thanks,
-Jean
+On 2020/2/25 2:23, Jean-Philippe Brucker wrote:
+> From: Jean-Philippe Brucker <jean-philippe.brucker@arm.com>
+>
+> The SMMU provides a Stall model for handling page faults in platform
+> devices. It is similar to PCI PRI, but doesn't require devices to have
+> their own translation cache. Instead, faulting transactions are parked and
+> the OS is given a chance to fix the page tables and retry the transaction.
+>
+> Enable stall for devices that support it (opt-in by firmware). When an
+> event corresponds to a translation error, call the IOMMU fault handler. If
+> the fault is recoverable, it will call us back to terminate or continue
+> the stall.
+>
+> Signed-off-by: Jean-Philippe Brucker <jean-philippe@linaro.org>
+> ---
+>   drivers/iommu/arm-smmu-v3.c | 271 ++++++++++++++++++++++++++++++++++--
+>   drivers/iommu/of_iommu.c    |   5 +-
+>   include/linux/iommu.h       |   2 +
+>   3 files changed, 269 insertions(+), 9 deletions(-)
+>
+> diff --git a/drivers/iommu/arm-smmu-v3.c b/drivers/iommu/arm-smmu-v3.c
+> index 6a5987cce03f..da5dda5ba26a 100644
+> --- a/drivers/iommu/arm-smmu-v3.c
+> +++ b/drivers/iommu/arm-smmu-v3.c
+> @@ -374,6 +374,13 @@
+>   #define CMDQ_PRI_1_GRPID		GENMASK_ULL(8, 0)
+>   #define CMDQ_PRI_1_RESP			GENMASK_ULL(13, 12)
+>   
+[...]
+> +static int arm_smmu_page_response(struct device *dev,
+> +				  struct iommu_fault_event *unused,
+> +				  struct iommu_page_response *resp)
+> +{
+> +	struct arm_smmu_cmdq_ent cmd = {0};
+> +	struct arm_smmu_master *master = dev_iommu_fwspec_get(dev)->iommu_priv;
+Here can use 'dev_to_master' ?
+
+Cheers,
+Zaibo
+
+.
+> +	int sid = master->streams[0].id;
+> +
+> +	if (master->stall_enabled) {
+> +		cmd.opcode		= CMDQ_OP_RESUME;
+> +		cmd.resume.sid		= sid;
+> +		cmd.resume.stag		= resp->grpid;
+> +		switch (resp->code) {
+> +		case IOMMU_PAGE_RESP_INVALID:
+> +		case IOMMU_PAGE_RESP_FAILURE:
+> +			cmd.resume.resp = CMDQ_RESUME_0_RESP_ABORT;
+> +			break;
+> +		case IOMMU_PAGE_RESP_SUCCESS:
+> +			cmd.resume.resp = CMDQ_RESUME_0_RESP_RETRY;
+> +			break;
+> +		default:
+> +			return -EINVAL;
+> +		}
+> +	} else {
+> +		/* TODO: insert PRI response here */
+> +		return -ENODEV;
+> +	}
+> +
+> +	arm_smmu_cmdq_issue_cmd(master->smmu, &cmd);
+> +	/*
+> +	 * Don't send a SYNC, it doesn't do anything for RESUME or PRI_RESP.
+> +	 * RESUME consumption guarantees that the stalled transaction will be
+> +	 * terminated... at some point in the future. PRI_RESP is fire and
+> +	 * forget.
+> +	 */
+> +
+> +	return 0;
+> +}
+> +
+[...]
+
 _______________________________________________
 iommu mailing list
 iommu@lists.linux-foundation.org
