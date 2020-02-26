@@ -2,75 +2,101 @@ Return-Path: <SRS0=g0Sk=4O=lists.linux-foundation.org=iommu-bounces@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-2.3 required=3.0 tests=HEADER_FROM_DIFFERENT_DOMAINS,
-	MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS,USER_AGENT_SANE_1 autolearn=no
+X-Spam-Status: No, score=-8.1 required=3.0 tests=DKIM_INVALID,DKIM_SIGNED,
+	HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_PATCH,MAILING_LIST_MULTI,SIGNED_OFF_BY,
+	SPF_HELO_NONE,SPF_PASS,UNPARSEABLE_RELAY,USER_AGENT_SANE_2 autolearn=ham
 	autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id B74F6C4BA0A
-	for <iommu@archiver.kernel.org>; Wed, 26 Feb 2020 03:05:30 +0000 (UTC)
-Received: from hemlock.osuosl.org (smtp2.osuosl.org [140.211.166.133])
+	by smtp.lore.kernel.org (Postfix) with ESMTP id D9673C4BA0B
+	for <iommu@archiver.kernel.org>; Wed, 26 Feb 2020 06:37:37 +0000 (UTC)
+Received: from fraxinus.osuosl.org (smtp4.osuosl.org [140.211.166.137])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by mail.kernel.org (Postfix) with ESMTPS id 8BA6621744
-	for <iommu@archiver.kernel.org>; Wed, 26 Feb 2020 03:05:30 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 8BA6621744
-Authentication-Results: mail.kernel.org; dmarc=none (p=none dis=none) header.from=huawei.com
+	by mail.kernel.org (Postfix) with ESMTPS id A0778206E2
+	for <iommu@archiver.kernel.org>; Wed, 26 Feb 2020 06:37:37 +0000 (UTC)
+Authentication-Results: mail.kernel.org;
+	dkim=fail reason="signature verification failed" (1024-bit key) header.d=mediatek.com header.i=@mediatek.com header.b="W0MYxIP0"
+DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org A0778206E2
+Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=mediatek.com
 Authentication-Results: mail.kernel.org; spf=pass smtp.mailfrom=iommu-bounces@lists.linux-foundation.org
 Received: from localhost (localhost [127.0.0.1])
-	by hemlock.osuosl.org (Postfix) with ESMTP id 543FA87635;
-	Wed, 26 Feb 2020 03:05:30 +0000 (UTC)
+	by fraxinus.osuosl.org (Postfix) with ESMTP id 340BA86AB1;
+	Wed, 26 Feb 2020 06:37:37 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from hemlock.osuosl.org ([127.0.0.1])
+Received: from fraxinus.osuosl.org ([127.0.0.1])
 	by localhost (.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
-	with ESMTP id IVnn5MRgX5bP; Wed, 26 Feb 2020 03:05:29 +0000 (UTC)
+	with ESMTP id MkA5StpzDp7U; Wed, 26 Feb 2020 06:37:35 +0000 (UTC)
 Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [140.211.9.56])
-	by hemlock.osuosl.org (Postfix) with ESMTP id 3B665861B3;
-	Wed, 26 Feb 2020 03:05:29 +0000 (UTC)
+	by fraxinus.osuosl.org (Postfix) with ESMTP id 3391D86108;
+	Wed, 26 Feb 2020 06:37:35 +0000 (UTC)
 Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
-	by lists.linuxfoundation.org (Postfix) with ESMTP id 246D5C089F;
-	Wed, 26 Feb 2020 03:05:29 +0000 (UTC)
-Received: from silver.osuosl.org (smtp3.osuosl.org [140.211.166.136])
- by lists.linuxfoundation.org (Postfix) with ESMTP id D37C3C0177
- for <iommu@lists.linux-foundation.org>; Wed, 26 Feb 2020 03:05:27 +0000 (UTC)
+	by lists.linuxfoundation.org (Postfix) with ESMTP id 03255C18DA;
+	Wed, 26 Feb 2020 06:37:35 +0000 (UTC)
+Received: from whitealder.osuosl.org (smtp1.osuosl.org [140.211.166.138])
+ by lists.linuxfoundation.org (Postfix) with ESMTP id 34348C0177
+ for <iommu@lists.linux-foundation.org>; Wed, 26 Feb 2020 06:37:33 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
- by silver.osuosl.org (Postfix) with ESMTP id B970420418
- for <iommu@lists.linux-foundation.org>; Wed, 26 Feb 2020 03:05:27 +0000 (UTC)
+ by whitealder.osuosl.org (Postfix) with ESMTP id 1C3968550D
+ for <iommu@lists.linux-foundation.org>; Wed, 26 Feb 2020 06:37:33 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from silver.osuosl.org ([127.0.0.1])
+Received: from whitealder.osuosl.org ([127.0.0.1])
  by localhost (.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
- with ESMTP id psKhFm+RUCEj for <iommu@lists.linux-foundation.org>;
- Wed, 26 Feb 2020 03:05:26 +0000 (UTC)
-X-Greylist: domain auto-whitelisted by SQLgrey-1.7.6
-Received: from huawei.com (szxga06-in.huawei.com [45.249.212.32])
- by silver.osuosl.org (Postfix) with ESMTPS id 80B8820131
- for <iommu@lists.linux-foundation.org>; Wed, 26 Feb 2020 03:05:26 +0000 (UTC)
-Received: from DGGEMS412-HUB.china.huawei.com (unknown [172.30.72.60])
- by Forcepoint Email with ESMTP id 782DE46488E95C5DEB79;
- Wed, 26 Feb 2020 11:05:22 +0800 (CST)
-Received: from [127.0.0.1] (10.67.101.242) by DGGEMS412-HUB.china.huawei.com
- (10.3.19.212) with Microsoft SMTP Server id 14.3.439.0; Wed, 26 Feb 2020
- 11:05:19 +0800
-Subject: Re: [PATCH v4 03/26] iommu: Add a page fault handler
-To: Jean-Philippe Brucker <jean-philippe@linaro.org>
-References: <20200224182401.353359-1-jean-philippe@linaro.org>
- <20200224182401.353359-4-jean-philippe@linaro.org>
- <cb8b5a85-7f1a-8eb7-85bd-db2f553f066d@huawei.com>
- <20200225092519.GC375953@myrica>
-From: Xu Zaibo <xuzaibo@huawei.com>
-Message-ID: <0c2b29ad-d09a-89db-8540-5909751b1972@huawei.com>
-Date: Wed, 26 Feb 2020 11:05:19 +0800
-User-Agent: Mozilla/5.0 (Windows NT 10.0; WOW64; rv:45.0) Gecko/20100101
- Thunderbird/45.7.1
+ with ESMTP id 2lQahvQss4C6 for <iommu@lists.linux-foundation.org>;
+ Wed, 26 Feb 2020 06:37:31 +0000 (UTC)
+X-Greylist: from auto-whitelisted by SQLgrey-1.7.6
+Received: from mailgw02.mediatek.com (unknown [210.61.82.184])
+ by whitealder.osuosl.org (Postfix) with ESMTP id EDE9F810F5
+ for <iommu@lists.linux-foundation.org>; Wed, 26 Feb 2020 06:37:30 +0000 (UTC)
+X-UUID: 1b097331b3a745f1a9e4250c5c2a374c-20200226
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=mediatek.com;
+ s=dk; 
+ h=Content-Transfer-Encoding:MIME-Version:Content-Type:References:In-Reply-To:Date:CC:To:From:Subject:Message-ID;
+ bh=sNVknrlIb9UubW2Xtv3IENlncX0Wt6DkRbVInod5eos=; 
+ b=W0MYxIP0ipAW6V+u8HfRqk82USGGiHzavuRoGjY+/dmwCGiq0SNtjhHCavFsH1ueTASym9q4iEC6suGMiurWzqMRAk9Ujmzz/MhlJYFEZ5dtWTAWSgQpa70xZLBBI3su1An5TIwte/Sye8xN8d+TXIdOS1jRz+ewLzph7ZMQNVc=;
+X-UUID: 1b097331b3a745f1a9e4250c5c2a374c-20200226
+Received: from mtkexhb01.mediatek.inc [(172.21.101.102)] by
+ mailgw02.mediatek.com (envelope-from <chao.hao@mediatek.com>)
+ (Cellopoint E-mail Firewall v4.1.10 Build 0809 with TLS)
+ with ESMTP id 1468911021; Wed, 26 Feb 2020 14:37:27 +0800
+Received: from mtkcas08.mediatek.inc (172.21.101.126) by
+ mtkmbs07n1.mediatek.inc (172.21.101.16) with Microsoft SMTP Server (TLS) id
+ 15.0.1395.4; Wed, 26 Feb 2020 14:36:33 +0800
+Received: from [10.15.20.246] (10.15.20.246) by mtkcas08.mediatek.inc
+ (172.21.101.73) with Microsoft SMTP Server id 15.0.1395.4 via Frontend
+ Transport; Wed, 26 Feb 2020 14:37:33 +0800
+Message-ID: <1582698979.27773.17.camel@mbjsdccf07>
+Subject: Re: [RESEND,PATCH 03/13] iommu/mediatek: Add mtk_iommu_pgtable
+ structure
+From: chao hao <Chao.Hao@mediatek.com>
+To: Matthias Brugger <matthias.bgg@gmail.com>, Joerg Roedel <joro@8bytes.org>, 
+ Yong Wu <yong.wu@mediatek.com>
+Date: Wed, 26 Feb 2020 14:36:19 +0800
+In-Reply-To: <1581769046.32039.27.camel@mhfsdcap03>
+References: <20191104115238.2394-1-chao.hao@mediatek.com>
+ <20191104115238.2394-4-chao.hao@mediatek.com>
+ <1576498396.28043.78.camel@mhfsdcap03>
+ <1577785148.30177.5.camel@mbjsdccf07>
+ <1581769046.32039.27.camel@mhfsdcap03>
+X-Mailer: Evolution 3.10.4-0ubuntu2 
 MIME-Version: 1.0
-In-Reply-To: <20200225092519.GC375953@myrica>
-X-Originating-IP: [10.67.101.242]
-X-CFilter-Loop: Reflected
-Cc: mark.rutland@arm.com, devicetree@vger.kernel.org, kevin.tian@intel.com,
- will@kernel.org, Jean-Philippe Brucker <jean-philippe.brucker@arm.com>,
- linux-pci@vger.kernel.org, linux-mm@kvack.org,
- iommu@lists.linux-foundation.org, robh+dt@kernel.org, catalin.marinas@arm.com,
- tj@kernel.org, zhangfei.gao@linaro.org, robin.murphy@arm.com,
- christian.koenig@amd.com, linux-arm-kernel@lists.infradead.org
+X-MTK: N
+Cc: Anan Sun =?UTF-8?Q?=28=E5=AD=99=E5=AE=89=E5=AE=89=29?=
+ <Anan.Sun@mediatek.com>,
+ "devicetree@vger.kernel.org" <devicetree@vger.kernel.org>,
+ Cui Zhang =?UTF-8?Q?=28=E5=BC=A0=E7=BF=A0=29?= <Cui.Zhang@mediatek.com>,
+ Jun Yan =?UTF-8?Q?=28=E9=A2=9C=E5=86=9B=29?= <Jun.Yan@mediatek.com>,
+ wsd_upstream <wsd_upstream@mediatek.com>, youlin.pei@mediatek.com,
+ "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
+ chao.hao@mediatek.com,
+ "iommu@lists.linux-foundation.org" <iommu@lists.linux-foundation.org>,
+ Rob Herring <robh+dt@kernel.org>,
+ "linux-mediatek@lists.infradead.org" <linux-mediatek@lists.infradead.org>,
+ Miles Chen =?UTF-8?Q?=28=E9=99=B3=E6=B0=91=E6=A8=BA=29?=
+ <Miles.Chen@mediatek.com>, Matthias Brugger <matthias.bgg@gmail.com>,
+ fy.yang@mediatek.com,
+ "linux-arm-kernel@lists.infradead.org" <linux-arm-kernel@lists.infradead.org>,
+ Guangming Cao
+ =?UTF-8?Q?=28=E6=9B=B9=E5=85=89=E6=98=8E=29?= <Guangming.Cao@mediatek.com>
 X-BeenThere: iommu@lists.linux-foundation.org
 X-Mailman-Version: 2.1.15
 Precedence: list
@@ -83,52 +109,345 @@ List-Post: <mailto:iommu@lists.linux-foundation.org>
 List-Help: <mailto:iommu-request@lists.linux-foundation.org?subject=help>
 List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
  <mailto:iommu-request@lists.linux-foundation.org?subject=subscribe>
+Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
-Content-Type: text/plain; charset="us-ascii"; Format="flowed"
 Errors-To: iommu-bounces@lists.linux-foundation.org
 Sender: "iommu" <iommu-bounces@lists.linux-foundation.org>
 
-Hi,
-On 2020/2/25 17:25, Jean-Philippe Brucker wrote:
-> Hi Zaibo,
->
-> On Tue, Feb 25, 2020 at 11:30:05AM +0800, Xu Zaibo wrote:
->>> +struct iopf_queue *
->>> +iopf_queue_alloc(const char *name, iopf_queue_flush_t flush, void *cookie)
->>> +{
->>> +	struct iopf_queue *queue;
->>> +
->>> +	queue = kzalloc(sizeof(*queue), GFP_KERNEL);
->>> +	if (!queue)
->>> +		return NULL;
->>> +
->>> +	/*
->>> +	 * The WQ is unordered because the low-level handler enqueues faults by
->>> +	 * group. PRI requests within a group have to be ordered, but once
->>> +	 * that's dealt with, the high-level function can handle groups out of
->>> +	 * order.
->>> +	 */
->>> +	queue->wq = alloc_workqueue("iopf_queue/%s", WQ_UNBOUND, 0, name);
->> Should this workqueue use 'WQ_HIGHPRI | WQ_UNBOUND' or some flags like this
->> to decrease the unexpected
->> latency of I/O PageFault here? Or maybe, workqueue will show an uncontrolled
->> latency, even in a busy system.
-> I'll investigate the effect of these flags. So far I've only run on
-> completely idle systems but it would be interesting to add some
-> workqueue-heavy load in my tests.
->
-I'm not sure, just my concern. Hopefully, Tejun Heo can give us some 
-hints. :)
+On Sat, 2020-02-15 at 20:17 +0800, Yong Wu wrote:
+> On Tue, 2019-12-31 at 17:39 +0800, chao hao wrote:
+> > On Mon, 2019-12-16 at 20:13 +0800, Yong Wu wrote:
+> > > On Mon, 2019-11-04 at 19:52 +0800, Chao Hao wrote:
+> > > > Start with this patch, we will change the SW architecture
+> > > > to support multiple domains. SW architecture will has a big change,
+> > > > so we need to modify a little bit by more than one patch.
+> > > > The new SW overall architecture is as below:
+> > > > 
+> > > > 				iommu0   iommu1
+> > > > 				  |	    |
+> > > > 				  -----------
+> > > > 					|
+> > > > 				mtk_iommu_pgtable
+> > > > 					|
+> > > > 			------------------------------------------
+> > > > 			|		     |			 |
+> > > > 		mtk_iommu_domain1   mtk_iommu_domain2  mtk_iommu_domain3
+> > > > 			|                    |                   |
+> > > > 		iommu_group1         iommu_group2           iommu_group3
+> > > > 			|                    |                   |
+> > > > 		iommu_domain1       iommu_domain2	    iommu_domain3
+> > > > 			|                    |                   |
+> > > > 		iova region1(normal)  iova region2(CCU)    iova region3(VPU)
+> > > > 
+> > > > For current structure, no matter how many iommus there are,
+> > > > they use the same page table to simplify the usage of module.
+> > > > In order to make the software architecture more explicit, this
+> > > > patch will create a global mtk_iommu_pgtable structure to describe
+> > > > page table and all the iommus use it.
+> > > 
+> > > Thanks for the hard work of this file. Actually this patch and the later
+> > > ones confuse me. Why do you make this flow change? 
+> > > for making the code "more explicit" or for adding multi-domain support
+> > > in 13/13.
+> > > 
+> > > IMHO, the change is unnecessary.
+> > > a) For me, this change has no improvement. currently we use a global
+> > > mtk_iommu_get_m4u_data to get the M4U data. I will be very glad if you
+> > > could get rid of it. But in this patchset, You use a another global
+> > > mtk_iommu_pgtable to instead. For me. It has no improvement.
+> > 
+> > Thanks for you advice!
+> > 
+> > For current SW arch, all the IOMMU HW use the same page table, we can
+> > use a global mtk_iommu_pgtable to discribe the information of page table
+> 
+> What's your plan if the 4GB iova range is not enough for us in future?
+> Do you plan to add a new global mtk_iommu_pgtable again?
+> 
+> > and all the IOMMU attach it, I think that it is more clear and
+> > unambiguous. For beginners, it maybe more easily explicable? 
+> 
+> I still don't get the necessity of this change. it is only for making
+> code clear from your point for view, right?
+> 
+> This code has been reviewed for many years, I don't know why you think
+> it is ambiguous. it is clear for me at lease. and I will complain that
+> you add a new global variable in this change.
+> 
+> > > 
+> > > b) This patchset break the original flow. device_group give you a
+> > > software chance for initializing, then you move pagetable allocating
+> > > code into it. But it isn't device_group job.
+> > > 
+> > 
+> > As is shown above diagram, mtk_iommu_pgtable includes iommu_group and
+> > iommu_domain,so we need to allocate mtk_iommu_pgtable and initialize it
+> > in device_group firstly,and then execute the original flow, it only
+> > changes place for creating mtk_iommu_pgtable and don't break original
+> > device_group flow.
+> 
+> I understand you have to do this change after you adjust the structure.
+> I mean that it may be not proper since allocating pagetable should not
+> be done in device_group logically. From here, Could we get this change
+> looks not good?.
+> 
+gentle ping ...
 
-+cc  Tejun Heo <tj@kernel.org>
+Dear Matthias and Joerg,
+From mt6779 platform, mtk_iommu.c needs to support multiple domains for
+different iova regions.About the change, there are some disagreements
+among our internal. We hope to get your helps and advices:
 
-Cheers,
-Zaibo
+Based on current SW architecture to support multiple domain, diagram is
+as below:
+                           iommu0   iommu1
+                              |        |
+                              ----------
+                                   |
+              ------------------------------------------
+              |                    |                   |
+         iommu_group1         iommu_group2        iommu_group3
+              |                    |                   |
+       mtk_iommu_domain1     mtk_iommu_domain2   mtk_iommu_domain3
+              |                    |                   |
+       iova region1(normal)  iova region2(CCU)   iova region3(VPU)
+ 
+  PS: the information of page table is included struct mtk_iommu_domain
 
-.
-> .
->
+In my opinion, if all the iommus share the same page table(include all
+iova regions) and different iova regions are created based on the page
+table, we can put the information of page table to a global
+structure(mtk_iommu_pgtable) and all the iommus attach it. It maybe make
+the SW architecture look clearly.
+New SW architecture diagram is as below(This patchset is based on it):
 
+                           iommu0   iommu1
+                              |        |
+                              ----------
+                                   |
+                          mtk_iommu_pgtable
+                                   |
+              ------------------------------------------
+              |                    |                   |
+        mtk_iommu_domain1   mtk_iommu_domain2   mtk_iommu_domain3
+              |                    |                   |
+         iommu_group1         iommu_group2        iommu_group3
+              |                    |                   |
+         iommu_domain1       iommu_domain2        iommu_domain3
+              |                    |                   |
+       iova region1(normal)  iova region2(CCU)   iova region3(VPU)
+
+From above new SW architecture, we will create a global page table
+firstly(mtk_iommu_pgtable), and all the iommus can use it. The page
+table can include 4GB iova space, different iova regions are created
+based on it, so the information of pgtable needs to be created in
+device_group.
+
+I have two problems to consult you, can you provide some advices? Thanks
+for Matthias and Joerg so much!
+(1) I don't understand if the pgtable can be created in device_group ?
+(2) In addition, can you help to review which SW architecture are more
+reasonable or whether it is necessary to change current SW architecture
+to support multiple domain ?
+
+
+Dear Yong,
+If I described ambiguously, please help to add extra explanation.
+Thanks a lot.
+
+
+> > > I can not decide if your flow is right. But if you only want to add
+> > > support multi-domain, I guess you could extend the current "m4u_group"
+> > > to a array "m4u_group[N]". It may be more simple. To make mt6779
+> > > progress easily, I suggest you can use this way to support multi-domain
+> > > firstly. Then you could send this new mtk_iommu_pgtable patchset for the
+> > > code "more explicit" if you insist.
+> 
+> Could you help try this way if it could meet your requirement? Then
+> let's compare which one is better.
+> 
+> 
+> BTW, your patches(including v2) cause hangup as below since
+> "data->m4u_dom" was uninitialized.
+> 
+> 
+> Unable to handle kernel NULL pointer dereference at virtual address
+> 0000000000000010
+> ...
+> pc : mtk_iommu_tlb_flush_page_nosync+0x38/0xb8
+> lr : __arm_v7s_unmap+0x174/0x598
+> ...
+> Call trace:
+>  mtk_iommu_tlb_flush_page_nosync+0x38/0xb8
+>  __arm_v7s_unmap+0x174/0x598
+>  arm_v7s_unmap+0x30/0x48
+>  mtk_iommu_unmap+0x20/0x28
+>  __iommu_unmap+0xa4/0xf8
+>  iommu_unmap+0x44/0x90
+> 
+> > > 
+> > > > The diagram is as below:
+> > > > 
+> > > > 	mtk_iommu_data1(MM)       mtk_iommu_data2(APU)
+> > > > 		|			   |
+> > > > 		|			   |
+> > > > 		------mtk_iommu_pgtable-----
+> > > > 
+> > > > We need to create global mtk_iommu_pgtable to include all the iova
+> > > > regions firstly and special iova regions by divided based on it,
+> > > > so the information of pgtable needs to be created in device_group.
+> > > > 
+> > > > Signed-off-by: Chao Hao <chao.hao@mediatek.com>
+> > > > ---
+> > > >  drivers/iommu/mtk_iommu.c | 84 +++++++++++++++++++++++++++++++++++++++
+> > > >  drivers/iommu/mtk_iommu.h |  1 +
+> > > >  2 files changed, 85 insertions(+)
+> > > > 
+> > > > diff --git a/drivers/iommu/mtk_iommu.c b/drivers/iommu/mtk_iommu.c
+> > > > index f2847e661137..fcbde6b0f58d 100644
+> > > > --- a/drivers/iommu/mtk_iommu.c
+> > > > +++ b/drivers/iommu/mtk_iommu.c
+> > > > @@ -123,6 +123,12 @@ struct mtk_iommu_domain {
+> > > >  	struct iommu_domain		domain;
+> > > >  };
+> > > >  
+> > > > +struct mtk_iommu_pgtable {
+> > > > +	struct io_pgtable_cfg	cfg;
+> > > > +	struct io_pgtable_ops	*iop;
+> > > > +};
+> > > > +
+> > > > +static struct mtk_iommu_pgtable *share_pgtable;
+> > > >  static const struct iommu_ops mtk_iommu_ops;
+> > > >  
+> > > >  /*
+> > > > @@ -170,6 +176,11 @@ static struct mtk_iommu_data *mtk_iommu_get_m4u_data(void)
+> > > >  	return NULL;
+> > > >  }
+> > > >  
+> > > > +static struct mtk_iommu_pgtable *mtk_iommu_get_pgtable(void)
+> > > > +{
+> > > > +	return share_pgtable;
+> > > > +}
+> > > > +
+> > > >  static struct mtk_iommu_domain *to_mtk_domain(struct iommu_domain *dom)
+> > > >  {
+> > > >  	return container_of(dom, struct mtk_iommu_domain, domain);
+> > > > @@ -322,6 +333,13 @@ static int mtk_iommu_domain_finalise(struct mtk_iommu_domain *dom)
+> > > >  {
+> > > >  	struct mtk_iommu_data *data = mtk_iommu_get_m4u_data();
+> > > >  
+> > > > +	if (data->pgtable) {
+> > > > +		dom->cfg = data->pgtable->cfg;
+> > > > +		dom->iop = data->pgtable->iop;
+> > > > +		dom->domain.pgsize_bitmap = data->pgtable->cfg.pgsize_bitmap;
+> > > > +		return 0;
+> > > > +	}
+> > > > +
+> > > >  	dom->cfg = (struct io_pgtable_cfg) {
+> > > >  		.quirks = IO_PGTABLE_QUIRK_ARM_NS |
+> > > >  			IO_PGTABLE_QUIRK_NO_PERMS |
+> > > > @@ -345,6 +363,61 @@ static int mtk_iommu_domain_finalise(struct mtk_iommu_domain *dom)
+> > > >  	return 0;
+> > > >  }
+> > > >  
+> > > > +static struct mtk_iommu_pgtable *create_pgtable(struct mtk_iommu_data *data)
+> > > > +{
+> > > > +	struct mtk_iommu_pgtable *pgtable;
+> > > > +
+> > > > +	pgtable = kzalloc(sizeof(*pgtable), GFP_KERNEL);
+> > > > +	if (!pgtable)
+> > > > +		return ERR_PTR(-ENOMEM);
+> > > > +
+> > > > +	pgtable->cfg = (struct io_pgtable_cfg) {
+> > > > +		.quirks = IO_PGTABLE_QUIRK_ARM_NS |
+> > > > +			IO_PGTABLE_QUIRK_NO_PERMS |
+> > > > +			IO_PGTABLE_QUIRK_TLBI_ON_MAP |
+> > > > +			IO_PGTABLE_QUIRK_ARM_MTK_EXT,
+> > > > +		.pgsize_bitmap = mtk_iommu_ops.pgsize_bitmap,
+> > > > +		.ias = 32,
+> > > > +		.oas = 34,
+> > > > +		.tlb = &mtk_iommu_flush_ops,
+> > > > +		.iommu_dev = data->dev,
+> > > > +	};
+> > > > +
+> > > > +	pgtable->iop = alloc_io_pgtable_ops(ARM_V7S, &pgtable->cfg, data);
+> > > > +	if (!pgtable->iop) {
+> > > > +		dev_err(data->dev, "Failed to alloc io pgtable\n");
+> > > > +		return ERR_PTR(-EINVAL);
+> > > > +	}
+> > > > +
+> > > > +	dev_info(data->dev, "%s create pgtable done\n", __func__);
+> > > > +
+> > > > +	return pgtable;
+> > > > +}
+> > > > +
+> > > > +static int mtk_iommu_attach_pgtable(struct mtk_iommu_data *data,
+> > > > +				    struct device *dev)
+> > > > +{
+> > > > +	struct mtk_iommu_pgtable *pgtable = mtk_iommu_get_pgtable();
+> > > > +
+> > > > +	/* create share pgtable */
+> > > > +	if (!pgtable) {
+> > > > +		pgtable = create_pgtable(data);
+> > > > +		if (IS_ERR(pgtable)) {
+> > > > +			dev_err(data->dev, "Failed to create pgtable\n");
+> > > > +			return -ENOMEM;
+> > > > +		}
+> > > > +
+> > > > +		share_pgtable = pgtable;
+> > > > +	}
+> > > > +
+> > > > +	/* binding to pgtable */
+> > > > +	data->pgtable = pgtable;
+> > > > +
+> > > > +	dev_info(data->dev, "m4u%d attach_pgtable done!\n", data->m4u_id);
+> > > > +
+> > > > +	return 0;
+> > > > +}
+> > > > +
+> > > >  static struct iommu_domain *mtk_iommu_domain_alloc(unsigned type)
+> > > >  {
+> > > >  	struct mtk_iommu_domain *dom;
+> > > > @@ -508,10 +581,21 @@ static void mtk_iommu_remove_device(struct device *dev)
+> > > >  static struct iommu_group *mtk_iommu_device_group(struct device *dev)
+> > > >  {
+> > > >  	struct mtk_iommu_data *data = mtk_iommu_get_m4u_data();
+> > > > +	struct mtk_iommu_pgtable *pgtable;
+> > > > +	int ret = 0;
+> > > >  
+> > > >  	if (!data)
+> > > >  		return ERR_PTR(-ENODEV);
+> > > >  
+> > > > +	pgtable = data->pgtable;
+> > > > +	if (!pgtable) {
+> > > > +		ret = mtk_iommu_attach_pgtable(data, dev);
+> > > > +		if (ret) {
+> > > > +			dev_err(data->dev, "Failed to device_group\n");
+> > > > +			return NULL;
+> > > > +		}
+> > > > +	}
+> > > > +
+> > > >  	/* All the client devices are in the same m4u iommu-group */
+> > > >  	if (!data->m4u_group) {
+> > > >  		data->m4u_group = iommu_group_alloc();
+> > > > diff --git a/drivers/iommu/mtk_iommu.h b/drivers/iommu/mtk_iommu.h
+> > > > index 132dc765a40b..dd5f19f78b62 100644
+> > > > --- a/drivers/iommu/mtk_iommu.h
+> > > > +++ b/drivers/iommu/mtk_iommu.h
+> > > > @@ -61,6 +61,7 @@ struct mtk_iommu_data {
+> > > >  	struct clk			*bclk;
+> > > >  	phys_addr_t			protect_base; /* protect memory base */
+> > > >  	struct mtk_iommu_suspend_reg	reg;
+> > > > +	struct mtk_iommu_pgtable	*pgtable;
+> > > >  	struct mtk_iommu_domain		*m4u_dom;
+> > > >  	struct iommu_group		*m4u_group;
+> > > >  	bool                            enable_4GB;
+> > > 
+> > > 
+> > 
+> > 
+> 
+> 
 
 _______________________________________________
 iommu mailing list
