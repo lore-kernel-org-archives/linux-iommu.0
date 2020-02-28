@@ -6,52 +6,51 @@ X-Spam-Status: No, score=-9.8 required=3.0 tests=HEADER_FROM_DIFFERENT_DOMAINS,
 	INCLUDES_PATCH,MAILING_LIST_MULTI,SIGNED_OFF_BY,SPF_HELO_NONE,SPF_PASS,
 	URIBL_BLOCKED,USER_AGENT_GIT autolearn=ham autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 164ACC3F2D4
-	for <iommu@archiver.kernel.org>; Fri, 28 Feb 2020 15:08:52 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 66001C3F2D2
+	for <iommu@archiver.kernel.org>; Fri, 28 Feb 2020 15:08:53 +0000 (UTC)
 Received: from whitealder.osuosl.org (smtp1.osuosl.org [140.211.166.138])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by mail.kernel.org (Postfix) with ESMTPS id E48032469F
-	for <iommu@archiver.kernel.org>; Fri, 28 Feb 2020 15:08:51 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org E48032469F
+	by mail.kernel.org (Postfix) with ESMTPS id 462C72469F
+	for <iommu@archiver.kernel.org>; Fri, 28 Feb 2020 15:08:53 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 462C72469F
 Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=8bytes.org
 Authentication-Results: mail.kernel.org; spf=pass smtp.mailfrom=iommu-bounces@lists.linux-foundation.org
 Received: from localhost (localhost [127.0.0.1])
-	by whitealder.osuosl.org (Postfix) with ESMTP id A49E886E68;
-	Fri, 28 Feb 2020 15:08:51 +0000 (UTC)
+	by whitealder.osuosl.org (Postfix) with ESMTP id 057F286B21;
+	Fri, 28 Feb 2020 15:08:53 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
 Received: from whitealder.osuosl.org ([127.0.0.1])
 	by localhost (.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
-	with ESMTP id P6MJEYk9nQVM; Fri, 28 Feb 2020 15:08:47 +0000 (UTC)
+	with ESMTP id YN1fJPcEBZUj; Fri, 28 Feb 2020 15:08:47 +0000 (UTC)
 Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [140.211.9.56])
-	by whitealder.osuosl.org (Postfix) with ESMTP id EB08E870B3;
-	Fri, 28 Feb 2020 15:08:45 +0000 (UTC)
+	by whitealder.osuosl.org (Postfix) with ESMTP id 51D72871E0;
+	Fri, 28 Feb 2020 15:08:46 +0000 (UTC)
 Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
-	by lists.linuxfoundation.org (Postfix) with ESMTP id D8413C1D84;
-	Fri, 28 Feb 2020 15:08:45 +0000 (UTC)
-Received: from fraxinus.osuosl.org (smtp4.osuosl.org [140.211.166.137])
- by lists.linuxfoundation.org (Postfix) with ESMTP id 0E573C0177;
- Fri, 28 Feb 2020 15:08:37 +0000 (UTC)
+	by lists.linuxfoundation.org (Postfix) with ESMTP id 4C6E8C1D85;
+	Fri, 28 Feb 2020 15:08:46 +0000 (UTC)
+Received: from hemlock.osuosl.org (smtp2.osuosl.org [140.211.166.133])
+ by lists.linuxfoundation.org (Postfix) with ESMTP id 1E7FEC1D8A;
+ Fri, 28 Feb 2020 15:08:38 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
- by fraxinus.osuosl.org (Postfix) with ESMTP id CE3CF86CDB;
- Fri, 28 Feb 2020 15:08:36 +0000 (UTC)
+ by hemlock.osuosl.org (Postfix) with ESMTP id 122AB88185;
+ Fri, 28 Feb 2020 15:08:38 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from fraxinus.osuosl.org ([127.0.0.1])
+Received: from hemlock.osuosl.org ([127.0.0.1])
  by localhost (.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
- with ESMTP id 9vpGeQAmxCyl; Fri, 28 Feb 2020 15:08:35 +0000 (UTC)
+ with ESMTP id hyWWk98SIT12; Fri, 28 Feb 2020 15:08:32 +0000 (UTC)
 X-Greylist: from auto-whitelisted by SQLgrey-1.7.6
 X-Greylist: from auto-whitelisted by SQLgrey-1.7.6
 Received: from theia.8bytes.org (8bytes.org [81.169.241.247])
- by fraxinus.osuosl.org (Postfix) with ESMTPS id 210E686CD0;
- Fri, 28 Feb 2020 15:08:35 +0000 (UTC)
+ by hemlock.osuosl.org (Postfix) with ESMTPS id BA93586C94;
+ Fri, 28 Feb 2020 15:08:32 +0000 (UTC)
 Received: by theia.8bytes.org (Postfix, from userid 1000)
- id F2B905BB; Fri, 28 Feb 2020 16:08:29 +0100 (CET)
+ id 98A183C3; Fri, 28 Feb 2020 16:08:28 +0100 (CET)
 From: Joerg Roedel <joro@8bytes.org>
 To: iommu@lists.linux-foundation.org
-Subject: [PATCH 08/14] iommu/arm-smmu-v3: Use accessor functions for iommu
- private data
-Date: Fri, 28 Feb 2020 16:08:14 +0100
-Message-Id: <20200228150820.15340-9-joro@8bytes.org>
+Subject: [PATCH 01/14] ACPI/IORT: Remove direct access of dev->iommu_fwspec
+Date: Fri, 28 Feb 2020 16:08:07 +0100
+Message-Id: <20200228150820.15340-2-joro@8bytes.org>
 X-Mailer: git-send-email 2.17.1
 In-Reply-To: <20200228150820.15340-1-joro@8bytes.org>
 References: <20200228150820.15340-1-joro@8bytes.org>
@@ -84,62 +83,35 @@ Sender: "iommu" <iommu-bounces@lists.linux-foundation.org>
 
 From: Joerg Roedel <jroedel@suse.de>
 
-Make use of dev_iommu_priv_set/get() functions in the code.
+Use the accessor functions instead of directly dereferencing
+dev->iommu_fwspec.
 
 Signed-off-by: Joerg Roedel <jroedel@suse.de>
 ---
- drivers/iommu/arm-smmu-v3.c | 10 +++++-----
- 1 file changed, 5 insertions(+), 5 deletions(-)
+ drivers/acpi/arm64/iort.c | 3 ++-
+ 1 file changed, 2 insertions(+), 1 deletion(-)
 
-diff --git a/drivers/iommu/arm-smmu-v3.c b/drivers/iommu/arm-smmu-v3.c
-index aa3ac2a03807..2b68498dfb66 100644
---- a/drivers/iommu/arm-smmu-v3.c
-+++ b/drivers/iommu/arm-smmu-v3.c
-@@ -2659,7 +2659,7 @@ static int arm_smmu_attach_dev(struct iommu_domain *domain, struct device *dev)
- 	if (!fwspec)
- 		return -ENOENT;
+diff --git a/drivers/acpi/arm64/iort.c b/drivers/acpi/arm64/iort.c
+index ed3d2d1a7ae9..0e981d7f3c7d 100644
+--- a/drivers/acpi/arm64/iort.c
++++ b/drivers/acpi/arm64/iort.c
+@@ -1015,6 +1015,7 @@ const struct iommu_ops *iort_iommu_configure(struct device *dev)
+ 		return ops;
  
--	master = fwspec->iommu_priv;
-+	master = dev_iommu_priv_get(dev);
- 	smmu = master->smmu;
+ 	if (dev_is_pci(dev)) {
++		struct iommu_fwspec *fwspec = dev_iommu_fwspec_get(dev);
+ 		struct pci_bus *bus = to_pci_dev(dev)->bus;
+ 		struct iort_pci_alias_info info = { .dev = dev };
  
- 	arm_smmu_detach_dev(master);
-@@ -2795,7 +2795,7 @@ static int arm_smmu_add_device(struct device *dev)
- 	if (!fwspec || fwspec->ops != &arm_smmu_ops)
- 		return -ENODEV;
+@@ -1028,7 +1029,7 @@ const struct iommu_ops *iort_iommu_configure(struct device *dev)
+ 					     iort_pci_iommu_init, &info);
  
--	if (WARN_ON_ONCE(fwspec->iommu_priv))
-+	if (WARN_ON_ONCE(dev_iommu_priv_get(dev)))
- 		return -EBUSY;
+ 		if (!err && iort_pci_rc_supports_ats(node))
+-			dev->iommu_fwspec->flags |= IOMMU_FWSPEC_PCI_RC_ATS;
++			fwspec->flags |= IOMMU_FWSPEC_PCI_RC_ATS;
+ 	} else {
+ 		int i = 0;
  
- 	smmu = arm_smmu_get_by_fwnode(fwspec->iommu_fwnode);
-@@ -2810,7 +2810,7 @@ static int arm_smmu_add_device(struct device *dev)
- 	master->smmu = smmu;
- 	master->sids = fwspec->ids;
- 	master->num_sids = fwspec->num_ids;
--	fwspec->iommu_priv = master;
-+	dev_iommu_priv_set(dev, master);
- 
- 	/* Check the SIDs are in range of the SMMU and our stream table */
- 	for (i = 0; i < master->num_sids; i++) {
-@@ -2852,7 +2852,7 @@ static int arm_smmu_add_device(struct device *dev)
- 	iommu_device_unlink(&smmu->iommu, dev);
- err_free_master:
- 	kfree(master);
--	fwspec->iommu_priv = NULL;
-+	dev_iommu_priv_set(dev, NULL);
- 	return ret;
- }
- 
-@@ -2865,7 +2865,7 @@ static void arm_smmu_remove_device(struct device *dev)
- 	if (!fwspec || fwspec->ops != &arm_smmu_ops)
- 		return;
- 
--	master = fwspec->iommu_priv;
-+	master = dev_iommu_priv_get(dev);
- 	smmu = master->smmu;
- 	arm_smmu_detach_dev(master);
- 	iommu_group_remove_device(dev);
 -- 
 2.17.1
 
