@@ -2,76 +2,98 @@ Return-Path: <SRS0=BxgK=4Q=lists.linux-foundation.org=iommu-bounces@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-8.2 required=3.0 tests=HEADER_FROM_DIFFERENT_DOMAINS,
-	INCLUDES_PATCH,MAILING_LIST_MULTI,SIGNED_OFF_BY,SPF_HELO_NONE,SPF_PASS,
-	URIBL_BLOCKED,USER_AGENT_SANE_1 autolearn=ham autolearn_force=no version=3.4.0
+X-Spam-Status: No, score=-5.3 required=3.0 tests=DKIM_INVALID,DKIM_SIGNED,
+	MAILING_LIST_MULTI,SIGNED_OFF_BY,SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED,
+	USER_AGENT_SANE_1 autolearn=ham autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id CC07FC3F2CF
-	for <iommu@archiver.kernel.org>; Fri, 28 Feb 2020 09:33:50 +0000 (UTC)
-Received: from silver.osuosl.org (smtp3.osuosl.org [140.211.166.136])
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 360ABC3F2D2
+	for <iommu@archiver.kernel.org>; Fri, 28 Feb 2020 10:04:59 +0000 (UTC)
+Received: from whitealder.osuosl.org (smtp1.osuosl.org [140.211.166.138])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by mail.kernel.org (Postfix) with ESMTPS id 8343D246A8
-	for <iommu@archiver.kernel.org>; Fri, 28 Feb 2020 09:33:50 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 8343D246A8
-Authentication-Results: mail.kernel.org; dmarc=none (p=none dis=none) header.from=huawei.com
+	by mail.kernel.org (Postfix) with ESMTPS id EF92B246A8
+	for <iommu@archiver.kernel.org>; Fri, 28 Feb 2020 10:04:58 +0000 (UTC)
+Authentication-Results: mail.kernel.org;
+	dkim=fail reason="signature verification failed" (1024-bit key) header.d=kernel.org header.i=@kernel.org header.b="uXqmqFsA"
+DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org EF92B246A8
+Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=kernel.org
 Authentication-Results: mail.kernel.org; spf=pass smtp.mailfrom=iommu-bounces@lists.linux-foundation.org
 Received: from localhost (localhost [127.0.0.1])
-	by silver.osuosl.org (Postfix) with ESMTP id 6F7B3203ED;
-	Fri, 28 Feb 2020 09:33:50 +0000 (UTC)
+	by whitealder.osuosl.org (Postfix) with ESMTP id BE36C86BC6;
+	Fri, 28 Feb 2020 10:04:58 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from silver.osuosl.org ([127.0.0.1])
+Received: from whitealder.osuosl.org ([127.0.0.1])
 	by localhost (.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
-	with ESMTP id DS33WetAzXGM; Fri, 28 Feb 2020 09:33:49 +0000 (UTC)
+	with ESMTP id mFkhQQ-f3+f5; Fri, 28 Feb 2020 10:04:57 +0000 (UTC)
 Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [140.211.9.56])
-	by silver.osuosl.org (Postfix) with ESMTP id 812A820394;
-	Fri, 28 Feb 2020 09:33:49 +0000 (UTC)
+	by whitealder.osuosl.org (Postfix) with ESMTP id B5C7086B9E;
+	Fri, 28 Feb 2020 10:04:57 +0000 (UTC)
 Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
-	by lists.linuxfoundation.org (Postfix) with ESMTP id 6C5B0C1D84;
-	Fri, 28 Feb 2020 09:33:49 +0000 (UTC)
+	by lists.linuxfoundation.org (Postfix) with ESMTP id 896CFC1D84;
+	Fri, 28 Feb 2020 10:04:57 +0000 (UTC)
 Received: from whitealder.osuosl.org (smtp1.osuosl.org [140.211.166.138])
- by lists.linuxfoundation.org (Postfix) with ESMTP id 01430C0177
- for <iommu@lists.linux-foundation.org>; Fri, 28 Feb 2020 09:33:47 +0000 (UTC)
+ by lists.linuxfoundation.org (Postfix) with ESMTP id 24242C0177
+ for <iommu@lists.linux-foundation.org>; Fri, 28 Feb 2020 10:04:56 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
- by whitealder.osuosl.org (Postfix) with ESMTP id E7D5586AD9
- for <iommu@lists.linux-foundation.org>; Fri, 28 Feb 2020 09:33:47 +0000 (UTC)
+ by whitealder.osuosl.org (Postfix) with ESMTP id 1D14686274
+ for <iommu@lists.linux-foundation.org>; Fri, 28 Feb 2020 10:04:56 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
 Received: from whitealder.osuosl.org ([127.0.0.1])
  by localhost (.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
- with ESMTP id 6eZZ8oE7KYN3 for <iommu@lists.linux-foundation.org>;
- Fri, 28 Feb 2020 09:33:46 +0000 (UTC)
+ with ESMTP id KfwsapkIAxP6 for <iommu@lists.linux-foundation.org>;
+ Fri, 28 Feb 2020 10:04:55 +0000 (UTC)
 X-Greylist: domain auto-whitelisted by SQLgrey-1.7.6
-Received: from huawei.com (lhrrgout.huawei.com [185.176.76.210])
- by whitealder.osuosl.org (Postfix) with ESMTPS id 9D51886B67
- for <iommu@lists.linux-foundation.org>; Fri, 28 Feb 2020 09:33:46 +0000 (UTC)
-Received: from lhreml702-cah.china.huawei.com (unknown [172.18.7.107])
- by Forcepoint Email with ESMTP id B9CAD6B13B3A521ED142;
- Fri, 28 Feb 2020 09:33:42 +0000 (GMT)
-Received: from lhreml724-chm.china.huawei.com (10.201.108.75) by
- lhreml702-cah.china.huawei.com (10.201.108.43) with Microsoft SMTP Server
- (TLS) id 14.3.408.0; Fri, 28 Feb 2020 09:33:42 +0000
-Received: from [127.0.0.1] (10.202.226.45) by lhreml724-chm.china.huawei.com
- (10.201.108.75) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256) id 15.1.1713.5; Fri, 28 Feb
- 2020 09:33:41 +0000
-Subject: Re: [PATCH] iommu: silence iommu group prints
-To: Lu Baolu <baolu.lu@linux.intel.com>, Russell King
- <rmk+kernel@armlinux.org.uk>, Joerg Roedel <joro@8bytes.org>
-References: <E1j7Hnc-0004Bm-Kn@rmk-PC.armlinux.org.uk>
- <f0fc4c8c-4475-e77f-da6d-e068e7993568@linux.intel.com>
-From: John Garry <john.garry@huawei.com>
-Message-ID: <b4029a97-ac80-484f-9d01-d7f4eb174cdd@huawei.com>
-Date: Fri, 28 Feb 2020 09:33:40 +0000
-User-Agent: Mozilla/5.0 (Windows NT 10.0; WOW64; rv:68.0) Gecko/20100101
- Thunderbird/68.1.2
+Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
+ by whitealder.osuosl.org (Postfix) with ESMTPS id 7CB4D86B9E
+ for <iommu@lists.linux-foundation.org>; Fri, 28 Feb 2020 10:04:55 +0000 (UTC)
+Received: from willie-the-truck (236.31.169.217.in-addr.arpa [217.169.31.236])
+ (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256
+ bits)) (No client certificate requested)
+ by mail.kernel.org (Postfix) with ESMTPSA id 473F4246A2;
+ Fri, 28 Feb 2020 10:04:50 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+ s=default; t=1582884295;
+ bh=FR/5YvGpv2kZqVuH1PciPnULt+xY8b1+rFsfo6eaD5Y=;
+ h=Date:From:To:List-Id:Cc:Subject:References:In-Reply-To:From;
+ b=uXqmqFsAQItySKFzMVH9WkTJUEmWrpbS01RFcbL1SFD9OrLGqZky2r/m9oDttDm8u
+ Zs/MrW89JgMekU7yOiAf5J372niK1hVr4DZMitZOEk5fTMdtyeD3C9drUy+56C47Ef
+ SPMlzdpss6CAS+xaStd/2QzBJRDaXUZktywgIgi0=
+Date: Fri, 28 Feb 2020 10:04:47 +0000
+From: Will Deacon <will@kernel.org>
+To: Rob Herring <robh@kernel.org>
+Subject: Re: [RFC PATCH 06/11] iommu: arm-smmu: Remove Calxeda secure mode
+ quirk
+Message-ID: <20200228100446.GA2395@willie-the-truck>
+References: <20200218171321.30990-1-robh@kernel.org>
+ <20200218171321.30990-7-robh@kernel.org>
+ <20200218172000.GF1133@willie-the-truck>
+ <CAL_JsqJn1kG6gah+4318NQfJ4PaS3x3woWEUh08+OTfOcD+1MQ@mail.gmail.com>
 MIME-Version: 1.0
-In-Reply-To: <f0fc4c8c-4475-e77f-da6d-e068e7993568@linux.intel.com>
-Content-Language: en-US
-X-Originating-IP: [10.202.226.45]
-X-ClientProxiedBy: lhreml708-chm.china.huawei.com (10.201.108.57) To
- lhreml724-chm.china.huawei.com (10.201.108.75)
-X-CFilter-Loop: Reflected
-Cc: iommu@lists.linux-foundation.org
+Content-Disposition: inline
+In-Reply-To: <CAL_JsqJn1kG6gah+4318NQfJ4PaS3x3woWEUh08+OTfOcD+1MQ@mail.gmail.com>
+User-Agent: Mutt/1.10.1 (2018-07-13)
+List-Id: <soc.lore.kernel.org>
+Cc: Mark Langsdorf <mlangsdo@redhat.com>, kvm@vger.kernel.org,
+ Viresh Kumar <viresh.kumar@linaro.org>,
+ "open list:LIBATA SUBSYSTEM \(Serial and Parallel ATA drivers\)"
+ <linux-ide@vger.kernel.org>, linux-clk <linux-clk@vger.kernel.org>,
+ soc@kernel.org, Daniel Lezcano <daniel.lezcano@linaro.org>,
+ devicetree@vger.kernel.org, Jon Loeliger <jdl@jdl.com>,
+ "open list:THERMAL" <linux-pm@vger.kernel.org>,
+ Andre Przywara <andre.przywara@arm.com>,
+ Alex Williamson <alex.williamson@redhat.com>, Tony Luck <tony.luck@intel.com>,
+ Alexander Graf <graf@amazon.com>, Mauro Carvalho Chehab <mchehab@kernel.org>,
+ "moderated list:ARM/FREESCALE IMX / MXC ARM ARCHITECTURE"
+ <linux-arm-kernel@lists.infradead.org>,
+ linux-edac <linux-edac@vger.kernel.org>, Jens Axboe <axboe@kernel.dk>,
+ Matthias Brugger <mbrugger@suse.com>, Stephen Boyd <sboyd@kernel.org>,
+ netdev <netdev@vger.kernel.org>, Cornelia Huck <cohuck@redhat.com>,
+ "Rafael J. Wysocki" <rjw@rjwysocki.net>,
+ "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
+ Linux IOMMU <iommu@lists.linux-foundation.org>,
+ Robert Richter <rrichter@marvell.com>, James Morse <james.morse@arm.com>,
+ Borislav Petkov <bp@alien8.de>, Robin Murphy <robin.murphy@arm.com>,
+ "David S. Miller" <davem@davemloft.net>
 X-BeenThere: iommu@lists.linux-foundation.org
 X-Mailman-Version: 2.1.15
 Precedence: list
@@ -84,35 +106,44 @@ List-Post: <mailto:iommu@lists.linux-foundation.org>
 List-Help: <mailto:iommu-request@lists.linux-foundation.org?subject=help>
 List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
  <mailto:iommu-request@lists.linux-foundation.org?subject=subscribe>
-Content-Transfer-Encoding: base64
-Content-Type: text/plain; charset="utf-8"; Format="flowed"
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: 7bit
 Errors-To: iommu-bounces@lists.linux-foundation.org
 Sender: "iommu" <iommu-bounces@lists.linux-foundation.org>
 
-T24gMjgvMDIvMjAyMCAwMjoxNiwgTHUgQmFvbHUgd3JvdGU6Cj4gSGksCj4gCj4gT24gMjAyMC8y
-LzI3IDE5OjU3LCBSdXNzZWxsIEtpbmcgd3JvdGU6Cj4+IE9uIHRoZSBMWDIxNjBBLCB0aGVyZSBh
-cmUgbG90cyAoYWJvdXQgMTYwKSBvZiBJT01NVSBtZXNzYWdlcyBwcm9kdWNlZAo+PiBkdXJpbmcg
-Ym9vdDsgdGhpcyBpcyBleGNlc3NpdmUuwqAgUmVkdWNlIHRoZSBzZXZlcml0eSBvZiB0aGVzZSBt
-ZXNzYWdlcwo+PiB0byBkZWJ1ZyBsZXZlbC4KPj4KPj4gU2lnbmVkLW9mZi1ieTogUnVzc2VsbCBL
-aW5nIDxybWsra2VybmVsQGFybWxpbnV4Lm9yZy51az4KPj4gLS0tCj4+IMKgIGRyaXZlcnMvaW9t
-bXUvaW9tbXUuYyB8IDQgKystLQo+PiDCoCAxIGZpbGUgY2hhbmdlZCwgMiBpbnNlcnRpb25zKCsp
-LCAyIGRlbGV0aW9ucygtKQo+Pgo+PiBkaWZmIC0tZ2l0IGEvZHJpdmVycy9pb21tdS9pb21tdS5j
-IGIvZHJpdmVycy9pb21tdS9pb21tdS5jCj4+IGluZGV4IDNlYWQ1OTdlMWM1Ny4uMzA0MjgxZWM2
-MjNiIDEwMDY0NAo+PiAtLS0gYS9kcml2ZXJzL2lvbW11L2lvbW11LmMKPj4gKysrIGIvZHJpdmVy
-cy9pb21tdS9pb21tdS5jCj4+IEBAIC03NDEsNyArNzQxLDcgQEAgaW50IGlvbW11X2dyb3VwX2Fk
-ZF9kZXZpY2Uoc3RydWN0IGlvbW11X2dyb3VwIAo+PiAqZ3JvdXAsIHN0cnVjdCBkZXZpY2UgKmRl
-dikKPj4gwqDCoMKgwqDCoCB0cmFjZV9hZGRfZGV2aWNlX3RvX2dyb3VwKGdyb3VwLT5pZCwgZGV2
-KTsKPj4gLcKgwqDCoCBkZXZfaW5mbyhkZXYsICJBZGRpbmcgdG8gaW9tbXUgZ3JvdXAgJWRcbiIs
-IGdyb3VwLT5pZCk7Cj4+ICvCoMKgwqAgZGV2X2RiZyhkZXYsICJBZGRpbmcgdG8gaW9tbXUgZ3Jv
-dXAgJWRcbiIsIGdyb3VwLT5pZCk7Cj4gCj4gSSdtIG5vdCBzdHJvbmdseSBhZ2FpbnN0IHRoaXMu
-IEJ1dCB0byBtZSB0aGlzIG1lc3NhZ2Ugc2VlbXMgdG8gYmUgYSBnb29kCj4gaW5kaWNhdG9yIHRo
-YXQgYSBkZXZpY2Ugd2FzIHByb2JlZCBzdWNjZXNzZnVsbHkgYnkgdGhlIGlvbW11IHN1YnN5c3Rl
-bS4KPiBLZWVwaW5nIGl0IGluIHRoZSBkZWZhdWx0IGtlcm5lbCBtZXNzYWdlIGFsd2F5cyBoZWxw
-cyB0byB0aGUga2VybmVsCj4gZGVidWdnaW5nLgo+IAoKSSB3b3VsZCB0ZW5kIHRvIGFncmVlLgoK
-PiBCZXN0IHJlZ2FyZHMsCj4gYmFvbHUKPiBfX19fX19fX19fX19fX19fX19fX19fX19fX19fX19f
-X19fX19fX19fX19fX19fXwo+IGlvbW11IG1haWxpbmcgbGlzdAo+IGlvbW11QGxpc3RzLmxpbnV4
-LWZvdW5kYXRpb24ub3JnCj4gaHR0cHM6Ly9saXN0cy5saW51eGZvdW5kYXRpb24ub3JnL21haWxt
-YW4vbGlzdGluZm8vaW9tbXUKPiAuCgpfX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19f
-X19fX19fX19fX19fXwppb21tdSBtYWlsaW5nIGxpc3QKaW9tbXVAbGlzdHMubGludXgtZm91bmRh
-dGlvbi5vcmcKaHR0cHM6Ly9saXN0cy5saW51eGZvdW5kYXRpb24ub3JnL21haWxtYW4vbGlzdGlu
-Zm8vaW9tbXU=
+On Tue, Feb 25, 2020 at 04:01:54PM -0600, Rob Herring wrote:
+> On Tue, Feb 18, 2020 at 11:20 AM Will Deacon <will@kernel.org> wrote:
+> >
+> > On Tue, Feb 18, 2020 at 11:13:16AM -0600, Rob Herring wrote:
+> > > Cc: Will Deacon <will@kernel.org>
+> > > Cc: Robin Murphy <robin.murphy@arm.com>
+> > > Cc: Joerg Roedel <joro@8bytes.org>
+> > > Cc: iommu@lists.linux-foundation.org
+> > > Signed-off-by: Rob Herring <robh@kernel.org>
+> > > ---
+> > > Do not apply yet.
+> >
+> > Pleeeeease? ;)
+> >
+> > >  drivers/iommu/arm-smmu-impl.c | 43 -----------------------------------
+> > >  1 file changed, 43 deletions(-)
+> >
+> > Yes, I'm happy to get rid of this. Sadly, I don't think we can remove
+> > anything from 'struct arm_smmu_impl' because most implementations fall
+> > just short of perfect.
+> >
+> > Anyway, let me know when I can push the button and I'll queue this in
+> > the arm-smmu tree.
+> 
+> Seems we're leaving the platform support for now, but I think we never
+> actually enabled SMMU support. It's not in the dts either in mainline
+> nor the version I have which should be close to what shipped in
+> firmware. So as long as Andre agrees, this one is good to apply.
+
+Andre? Can I queue this one for 5.7, please?
+
+Will
+_______________________________________________
+iommu mailing list
+iommu@lists.linux-foundation.org
+https://lists.linuxfoundation.org/mailman/listinfo/iommu
