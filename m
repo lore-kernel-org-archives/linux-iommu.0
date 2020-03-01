@@ -1,74 +1,107 @@
-Return-Path: <SRS0=orEQ=4R=lists.linux-foundation.org=iommu-bounces@kernel.org>
+Return-Path: <SRS0=CqGo=4S=lists.linux-foundation.org=iommu-bounces@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-7.3 required=3.0 tests=HEADER_FROM_DIFFERENT_DOMAINS,
-	MAILING_LIST_MULTI,MENTIONS_GIT_HOSTING,SPF_HELO_NONE,SPF_PASS,
-	USER_AGENT_SANE_1 autolearn=unavailable autolearn_force=no version=3.4.0
+X-Spam-Status: No, score=-6.6 required=3.0 tests=DKIM_INVALID,DKIM_SIGNED,
+	HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_PATCH,MAILING_LIST_MULTI,SIGNED_OFF_BY,
+	SPF_HELO_NONE,SPF_PASS autolearn=unavailable autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 4C01AC3F2C6
-	for <iommu@archiver.kernel.org>; Sat, 29 Feb 2020 14:24:17 +0000 (UTC)
-Received: from hemlock.osuosl.org (smtp2.osuosl.org [140.211.166.133])
+	by smtp.lore.kernel.org (Postfix) with ESMTP id B61C5C3F2CE
+	for <iommu@archiver.kernel.org>; Sun,  1 Mar 2020 11:17:30 +0000 (UTC)
+Received: from silver.osuosl.org (smtp3.osuosl.org [140.211.166.136])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by mail.kernel.org (Postfix) with ESMTPS id 1E27924650
-	for <iommu@archiver.kernel.org>; Sat, 29 Feb 2020 14:24:17 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 1E27924650
-Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=intel.com
+	by mail.kernel.org (Postfix) with ESMTPS id 70B5520828
+	for <iommu@archiver.kernel.org>; Sun,  1 Mar 2020 11:17:30 +0000 (UTC)
+Authentication-Results: mail.kernel.org;
+	dkim=fail reason="signature verification failed" (1024-bit key) header.d=redhat.com header.i=@redhat.com header.b="WHL+YCfY"
+DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 70B5520828
+Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=redhat.com
 Authentication-Results: mail.kernel.org; spf=pass smtp.mailfrom=iommu-bounces@lists.linux-foundation.org
 Received: from localhost (localhost [127.0.0.1])
-	by hemlock.osuosl.org (Postfix) with ESMTP id EC8E2881D9;
-	Sat, 29 Feb 2020 14:24:16 +0000 (UTC)
+	by silver.osuosl.org (Postfix) with ESMTP id 3C57B204E3;
+	Sun,  1 Mar 2020 11:17:30 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from hemlock.osuosl.org ([127.0.0.1])
+Received: from silver.osuosl.org ([127.0.0.1])
 	by localhost (.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
-	with ESMTP id PmcF-yYdgPoN; Sat, 29 Feb 2020 14:24:15 +0000 (UTC)
+	with ESMTP id L6tcahLCv2nV; Sun,  1 Mar 2020 11:17:26 +0000 (UTC)
 Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [140.211.9.56])
-	by hemlock.osuosl.org (Postfix) with ESMTP id 832518818B;
-	Sat, 29 Feb 2020 14:24:15 +0000 (UTC)
+	by silver.osuosl.org (Postfix) with ESMTP id E70661FEB7;
+	Sun,  1 Mar 2020 11:17:26 +0000 (UTC)
 Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
-	by lists.linuxfoundation.org (Postfix) with ESMTP id 74618C1D84;
-	Sat, 29 Feb 2020 14:24:15 +0000 (UTC)
-Received: from hemlock.osuosl.org (smtp2.osuosl.org [140.211.166.133])
- by lists.linuxfoundation.org (Postfix) with ESMTP id 47DBDC0177;
- Sat, 29 Feb 2020 14:24:14 +0000 (UTC)
+	by lists.linuxfoundation.org (Postfix) with ESMTP id D215AC1D74;
+	Sun,  1 Mar 2020 11:17:26 +0000 (UTC)
+Received: from whitealder.osuosl.org (smtp1.osuosl.org [140.211.166.138])
+ by lists.linuxfoundation.org (Postfix) with ESMTP id F06B3C013E
+ for <iommu@lists.linux-foundation.org>; Sun,  1 Mar 2020 11:17:24 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
- by hemlock.osuosl.org (Postfix) with ESMTP id 3F5008818E;
- Sat, 29 Feb 2020 14:24:14 +0000 (UTC)
+ by whitealder.osuosl.org (Postfix) with ESMTP id DE453815E3
+ for <iommu@lists.linux-foundation.org>; Sun,  1 Mar 2020 11:17:24 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from hemlock.osuosl.org ([127.0.0.1])
+Received: from whitealder.osuosl.org ([127.0.0.1])
  by localhost (.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
- with ESMTP id at6KAmS3zq7K; Sat, 29 Feb 2020 14:24:13 +0000 (UTC)
+ with ESMTP id zjKWM7-dKT8A for <iommu@lists.linux-foundation.org>;
+ Sun,  1 Mar 2020 11:17:23 +0000 (UTC)
 X-Greylist: domain auto-whitelisted by SQLgrey-1.7.6
-X-Greylist: domain auto-whitelisted by SQLgrey-1.7.6
-Received: from mga17.intel.com (mga17.intel.com [192.55.52.151])
- by hemlock.osuosl.org (Postfix) with ESMTPS id 049948818B;
- Sat, 29 Feb 2020 14:24:12 +0000 (UTC)
-X-Amp-Result: UNKNOWN
-X-Amp-Original-Verdict: FILE UNKNOWN
-X-Amp-File-Uploaded: False
-Received: from fmsmga008.fm.intel.com ([10.253.24.58])
- by fmsmga107.fm.intel.com with ESMTP/TLS/DHE-RSA-AES256-GCM-SHA384;
- 29 Feb 2020 06:24:11 -0800
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.70,500,1574150400"; d="scan'208";a="232825654"
-Received: from lkp-server01.sh.intel.com (HELO lkp-server01) ([10.239.97.150])
- by fmsmga008.fm.intel.com with ESMTP; 29 Feb 2020 06:24:10 -0800
-Received: from kbuild by lkp-server01 with local (Exim 4.89)
- (envelope-from <lkp@intel.com>)
- id 1j832H-0003a4-Nc; Sat, 29 Feb 2020 22:24:09 +0800
-Date: Sat, 29 Feb 2020 22:23:27 +0800
-From: kbuild test robot <lkp@intel.com>
+Received: from us-smtp-delivery-1.mimecast.com (us-smtp-2.mimecast.com
+ [205.139.110.61])
+ by whitealder.osuosl.org (Postfix) with ESMTPS id 0F8C881499
+ for <iommu@lists.linux-foundation.org>; Sun,  1 Mar 2020 11:17:22 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+ s=mimecast20190719; t=1583061441;
+ h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+ to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+ in-reply-to:in-reply-to:references:references;
+ bh=BwlWwM84Sb4MXbL0AavDL7m8Sr3MXSXGXwvI2H7gMlU=;
+ b=WHL+YCfYVa569KZT96BIzVp4wERLoigiBClspHkSBbvCuskSAjnrnsk//PVzxbcceNJ8HF
+ UYwTOZfnSxanBwrsxar/LoGsFLmMcUkjMULod6h/8p8fDr5mpcmcPncn9Yc4p4UKTjqFg2
+ qNkaQwpHwH1eZgk716YuyIAaL8ki1qs=
+Received: from mail-qv1-f69.google.com (mail-qv1-f69.google.com
+ [209.85.219.69]) (Using TLS) by relay.mimecast.com with ESMTP id
+ us-mta-426-6lLk7JcLMy2u2cDOTsF0oQ-1; Sun, 01 Mar 2020 06:17:15 -0500
+X-MC-Unique: 6lLk7JcLMy2u2cDOTsF0oQ-1
+Received: by mail-qv1-f69.google.com with SMTP id m6so5583812qvo.11
+ for <iommu@lists.linux-foundation.org>; Sun, 01 Mar 2020 03:17:15 -0800 (PST)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+ d=1e100.net; s=20161025;
+ h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+ :mime-version:content-disposition:in-reply-to;
+ bh=BwlWwM84Sb4MXbL0AavDL7m8Sr3MXSXGXwvI2H7gMlU=;
+ b=E9BeF8cV4a5bsGDU31xf0rtRKTlrTrHt69Cnc1NqcGRxBvfG1IGrtrA4NHfNFyBAvE
+ JUj76xUbKBskDn9WI3dHEP7wJoIImmUbsx3rmZKliTYGWYlRAgsqzmknC2ADWErJJWfn
+ pzo2SEQqh0Jf8Rgo6b8kLdBehlgPD5/dF+eyxd4yoQDEGciwQ1c6/WAivCwVZlhyVRqP
+ 1WZVKbJnePUprto+IoK4C0gxmGfLyMCIv5ONStzSA0X4JMIn/eqD3Nkge2b1SCLqKffi
+ xCY2UC5/6AHorx/Ew0BCTmtPsCZ3DQIFfPn+PPunS9grtb+E9olh8RWYVw3wvNAZpnaI
+ 4lhw==
+X-Gm-Message-State: APjAAAVoBrpXcq75beobiwnq42AJKFVmz2iVTHATRYxNqjgNjIElGyj7
+ b4PAd9anuun9zMfyRctC5ZkvW68tMCAVnNIz/sQSD8ONxIbGQXki+bNbiU3jsNJBMRrkJ4uqg/Y
+ 3eCfuKCo3f6SqvYP7ncoIiqL7TFNPaA==
+X-Received: by 2002:ac8:4883:: with SMTP id i3mr11649768qtq.106.1583061434372; 
+ Sun, 01 Mar 2020 03:17:14 -0800 (PST)
+X-Google-Smtp-Source: APXvYqxd8qFY2nOjEBVS+p5Gwwg6XMstqsMnKWCLVDuHl/8Pb2POQ2hjJQsiRBngG7IRNEpViwMAMg==
+X-Received: by 2002:ac8:4883:: with SMTP id i3mr11649737qtq.106.1583061433894; 
+ Sun, 01 Mar 2020 03:17:13 -0800 (PST)
+Received: from redhat.com (bzq-79-180-48-224.red.bezeqint.net. [79.180.48.224])
+ by smtp.gmail.com with ESMTPSA id d137sm2091386qkc.99.2020.03.01.03.17.09
+ (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+ Sun, 01 Mar 2020 03:17:13 -0800 (PST)
+Date: Sun, 1 Mar 2020 06:17:06 -0500
+From: "Michael S. Tsirkin" <mst@redhat.com>
 To: Jean-Philippe Brucker <jean-philippe@linaro.org>
-Subject: Re: [PATCH v2 3/3] iommu/virtio: Enable x86 support
-Message-ID: <202002292217.iPza6SpM%lkp@intel.com>
-References: <20200228172537.377327-4-jean-philippe@linaro.org>
+Subject: Re: [PATCH v2 1/3] iommu/virtio: Add topology description to
+ virtio-iommu config space
+Message-ID: <20200301060311-mutt-send-email-mst@kernel.org>
+References: <20200228172537.377327-1-jean-philippe@linaro.org>
+ <20200228172537.377327-2-jean-philippe@linaro.org>
 MIME-Version: 1.0
+In-Reply-To: <20200228172537.377327-2-jean-philippe@linaro.org>
+X-Mimecast-Spam-Score: 0
+X-Mimecast-Originator: redhat.com
 Content-Disposition: inline
-In-Reply-To: <20200228172537.377327-4-jean-philippe@linaro.org>
-User-Agent: Mutt/1.10.1 (2018-07-13)
-Cc: linux-pci@vger.kernel.org, iommu@lists.linux-foundation.org,
- kbuild-all@lists.01.org, virtualization@lists.linux-foundation.org
+Cc: kevin.tian@intel.com, linux-pci@vger.kernel.org, jasowang@redhat.com,
+ virtualization@lists.linux-foundation.org, iommu@lists.linux-foundation.org,
+ sebastien.boeuf@intel.com, jacob.jun.pan@intel.com, bhelgaas@google.com,
+ robin.murphy@arm.com
 X-BeenThere: iommu@lists.linux-foundation.org
 X-Mailman-Version: 2.1.15
 Precedence: list
@@ -86,150 +119,566 @@ Content-Transfer-Encoding: 7bit
 Errors-To: iommu-bounces@lists.linux-foundation.org
 Sender: "iommu" <iommu-bounces@lists.linux-foundation.org>
 
-Hi Jean-Philippe,
+On Fri, Feb 28, 2020 at 06:25:36PM +0100, Jean-Philippe Brucker wrote:
+> Platforms without device-tree do not currently have a method for
+> describing the vIOMMU topology. Provide a topology description embedded
+> into the virtio device.
+> 
+> Use PCI FIXUP to probe the config space early, because we need to
+> discover the topology before any DMA configuration takes place, and the
+> virtio driver may be loaded much later. Since we discover the topology
+> description when probing the PCI hierarchy, the virtual IOMMU cannot
+> manage other platform devices discovered earlier.
+> 
+> This solution isn't elegant nor foolproof, but is the best we can do at
+> the moment and works with existing virtio-iommu implementations. It also
+> enables an IOMMU for lightweight hypervisors that do not rely on
+> firmware methods for booting.
+> 
+> Signed-off-by: Eric Auger <eric.auger@redhat.com>
+> Signed-off-by: Jean-Philippe Brucker <jean-philippe@linaro.org>
+> ---
+>  MAINTAINERS                           |   2 +
+>  drivers/iommu/Kconfig                 |  10 +
+>  drivers/iommu/Makefile                |   1 +
+>  drivers/iommu/virtio-iommu-topology.c | 343 ++++++++++++++++++++++++++
+>  drivers/iommu/virtio-iommu.c          |   3 +
+>  include/linux/virt_iommu.h            |  19 ++
+>  include/uapi/linux/virtio_iommu.h     |  26 ++
+>  7 files changed, 404 insertions(+)
+>  create mode 100644 drivers/iommu/virtio-iommu-topology.c
+>  create mode 100644 include/linux/virt_iommu.h
+> 
+> diff --git a/MAINTAINERS b/MAINTAINERS
+> index fcd79fc38928..65a03ce53096 100644
+> --- a/MAINTAINERS
+> +++ b/MAINTAINERS
+> @@ -17781,6 +17781,8 @@ M:	Jean-Philippe Brucker <jean-philippe@linaro.org>
+>  L:	virtualization@lists.linux-foundation.org
+>  S:	Maintained
+>  F:	drivers/iommu/virtio-iommu.c
+> +F:	drivers/iommu/virtio-iommu-topology.c
+> +F:	include/linux/virt_iommu.h
+>  F:	include/uapi/linux/virtio_iommu.h
+>  
+>  VIRTUAL BOX GUEST DEVICE DRIVER
+> diff --git a/drivers/iommu/Kconfig b/drivers/iommu/Kconfig
+> index c5df570ef84a..f8cb45d84bb0 100644
+> --- a/drivers/iommu/Kconfig
+> +++ b/drivers/iommu/Kconfig
+> @@ -516,4 +516,14 @@ config VIRTIO_IOMMU
+>  
+>  	  Say Y here if you intend to run this kernel as a guest.
+>  
+> +config VIRTIO_IOMMU_TOPOLOGY
+> +	bool "Topology properties for the virtio-iommu"
+> +	depends on VIRTIO_IOMMU
+> +	default y
+> +	help
+> +	  Enable early probing of the virtio-iommu device, to detect the
+> +	  built-in topology description.
+> +
+> +	  Say Y here if you intend to run this kernel as a guest.
+> +
+>  endif # IOMMU_SUPPORT
+> diff --git a/drivers/iommu/Makefile b/drivers/iommu/Makefile
+> index 9f33fdb3bb05..5da24280d08c 100644
+> --- a/drivers/iommu/Makefile
+> +++ b/drivers/iommu/Makefile
+> @@ -37,3 +37,4 @@ obj-$(CONFIG_S390_IOMMU) += s390-iommu.o
+>  obj-$(CONFIG_QCOM_IOMMU) += qcom_iommu.o
+>  obj-$(CONFIG_HYPERV_IOMMU) += hyperv-iommu.o
+>  obj-$(CONFIG_VIRTIO_IOMMU) += virtio-iommu.o
+> +obj-$(CONFIG_VIRTIO_IOMMU_TOPOLOGY) += virtio-iommu-topology.o
+> diff --git a/drivers/iommu/virtio-iommu-topology.c b/drivers/iommu/virtio-iommu-topology.c
+> new file mode 100644
+> index 000000000000..2188624ef216
+> --- /dev/null
+> +++ b/drivers/iommu/virtio-iommu-topology.c
+> @@ -0,0 +1,343 @@
+> +// SPDX-License-Identifier: GPL-2.0
+> +#define pr_fmt(fmt) KBUILD_MODNAME ": " fmt
+> +
+> +#include <linux/dma-iommu.h>
+> +#include <linux/list.h>
+> +#include <linux/pci.h>
+> +#include <linux/virt_iommu.h>
+> +#include <linux/virtio_ids.h>
+> +#include <linux/virtio_pci.h>
+> +#include <uapi/linux/virtio_iommu.h>
+> +
+> +struct viommu_cap_config {
+> +	u8 bar;
+> +	u32 length; /* structure size */
+> +	u32 offset; /* structure offset within the bar */
+> +};
+> +
+> +union viommu_topo_cfg {
+> +	__le16					type;
+> +	struct virtio_iommu_topo_pci_range	pci;
+> +	struct virtio_iommu_topo_endpoint	ep;
+> +};
+> +
+> +struct viommu_spec {
+> +	struct device				*dev; /* transport device */
+> +	struct fwnode_handle			*fwnode;
+> +	struct iommu_ops			*ops;
+> +	struct list_head			list;
+> +	size_t					num_items;
+> +	/* The config array of length num_items follows */
+> +	union viommu_topo_cfg			cfg[];
+> +};
+> +
+> +static LIST_HEAD(viommus);
+> +static DEFINE_MUTEX(viommus_lock);
+> +
+> +#define VPCI_FIELD(field) offsetof(struct virtio_pci_cap, field)
+> +
+> +static inline int viommu_pci_find_capability(struct pci_dev *dev, u8 cfg_type,
+> +					     struct viommu_cap_config *cap)
+> +{
+> +	int pos;
+> +	u8 bar;
+> +
+> +	for (pos = pci_find_capability(dev, PCI_CAP_ID_VNDR);
+> +	     pos > 0;
+> +	     pos = pci_find_next_capability(dev, pos, PCI_CAP_ID_VNDR)) {
+> +		u8 type;
+> +
+> +		pci_read_config_byte(dev, pos + VPCI_FIELD(cfg_type), &type);
+> +		if (type != cfg_type)
+> +			continue;
+> +
+> +		pci_read_config_byte(dev, pos + VPCI_FIELD(bar), &bar);
+> +
+> +		/* Ignore structures with reserved BAR values */
+> +		if (type != VIRTIO_PCI_CAP_PCI_CFG && bar > 0x5)
+> +			continue;
+> +
+> +		cap->bar = bar;
+> +		pci_read_config_dword(dev, pos + VPCI_FIELD(length),
+> +				      &cap->length);
+> +		pci_read_config_dword(dev, pos + VPCI_FIELD(offset),
+> +				      &cap->offset);
+> +
+> +		return pos;
+> +	}
+> +	return 0;
+> +}
+> +
+> +static void viommu_ccopy(__le32 *dst, u32 __iomem *src, size_t length)
+> +{
+> +	size_t i;
+> +
+> +	/* For the moment all our config structures align on 32b */
+> +	if (WARN_ON(length % 4))
+> +		return;
+> +
+> +	for (i = 0; i < length / 4; i++)
+> +		/* Keep little-endian data */
+> +		dst[i] = cpu_to_le32(ioread32(src + i));
+> +}
+> +
+> +static int viommu_parse_topology(struct device *dev,
+> +				 struct virtio_iommu_config __iomem *cfg)
 
-I love your patch! Perhaps something to improve:
 
-[auto build test WARNING on iommu/next]
-[cannot apply to pci/next linus/master v5.6-rc3 next-20200228]
-[if your patch is applied to the wrong git tree, please drop us a note to help
-improve the system. BTW, we also suggest to use '--base' option to specify the
-base tree in git format-patch, please see https://stackoverflow.com/a/37406982]
-
-url:    https://github.com/0day-ci/linux/commits/Jean-Philippe-Brucker/virtio-iommu-on-x86-and-non-devicetree-platforms/20200229-085019
-base:   https://git.kernel.org/pub/scm/linux/kernel/git/joro/iommu.git next
-reproduce:
-        # apt-get install sparse
-        # sparse version: v0.6.1-173-ge0787745-dirty
-        make ARCH=x86_64 allmodconfig
-        make C=1 CF='-fdiagnostic-prefix -D__CHECK_ENDIAN__'
-
-If you fix the issue, kindly add following tag
-Reported-by: kbuild test robot <lkp@intel.com>
+why is this int? always succeeds and callers don't use the return code
+...
 
 
-sparse warnings: (new ones prefixed by >>)
+> +{
+> +	size_t i;
+> +	size_t spec_length;
+> +	struct viommu_spec *viommu_spec;
+> +	u32 offset, item_length, num_items;
+> +
+> +	offset = ioread32(&cfg->topo_config.offset);
+> +	item_length = ioread32(&cfg->topo_config.item_length);
+> +	num_items = ioread32(&cfg->topo_config.num_items);
+> +	if (!offset || !num_items || !item_length)
+> +		return 0;
+> +
+> +	spec_length = sizeof(*viommu_spec) + num_items *
+> +					     sizeof(union viommu_topo_cfg);
 
->> drivers/iommu/virtio-iommu.c:1024:9: sparse: sparse: incompatible types in comparison expression (different base types):
->> drivers/iommu/virtio-iommu.c:1024:9: sparse:    restricted __le64 *
->> drivers/iommu/virtio-iommu.c:1024:9: sparse:    unsigned long long *
-   drivers/iommu/virtio-iommu.c:1036:9: sparse: sparse: incompatible types in comparison expression (different base types):
-   drivers/iommu/virtio-iommu.c:1036:9: sparse:    restricted __le64 *
-   drivers/iommu/virtio-iommu.c:1036:9: sparse:    unsigned long long *
-   drivers/iommu/virtio-iommu.c:1040:9: sparse: sparse: incompatible types in comparison expression (different base types):
-   drivers/iommu/virtio-iommu.c:1040:9: sparse:    restricted __le64 *
-   drivers/iommu/virtio-iommu.c:1040:9: sparse:    unsigned long long *
-   drivers/iommu/virtio-iommu.c:1044:9: sparse: sparse: incompatible types in comparison expression (different base types):
->> drivers/iommu/virtio-iommu.c:1044:9: sparse:    restricted __le32 *
->> drivers/iommu/virtio-iommu.c:1044:9: sparse:    unsigned int *
-   drivers/iommu/virtio-iommu.c:1048:9: sparse: sparse: incompatible types in comparison expression (different base types):
-   drivers/iommu/virtio-iommu.c:1048:9: sparse:    restricted __le32 *
-   drivers/iommu/virtio-iommu.c:1048:9: sparse:    unsigned int *
-   drivers/iommu/virtio-iommu.c:1052:9: sparse: sparse: incompatible types in comparison expression (different base types):
-   drivers/iommu/virtio-iommu.c:1052:9: sparse:    restricted __le32 *
-   drivers/iommu/virtio-iommu.c:1052:9: sparse:    unsigned int *
 
-vim +1024 drivers/iommu/virtio-iommu.c
+This can overflow. Worth detecting and failing init if it does?
 
-edcd69ab9a323b Jean-Philippe Brucker 2019-01-15   996  
-edcd69ab9a323b Jean-Philippe Brucker 2019-01-15   997  static int viommu_probe(struct virtio_device *vdev)
-edcd69ab9a323b Jean-Philippe Brucker 2019-01-15   998  {
-edcd69ab9a323b Jean-Philippe Brucker 2019-01-15   999  	struct device *parent_dev = vdev->dev.parent;
-edcd69ab9a323b Jean-Philippe Brucker 2019-01-15  1000  	struct viommu_dev *viommu = NULL;
-edcd69ab9a323b Jean-Philippe Brucker 2019-01-15  1001  	struct device *dev = &vdev->dev;
-edcd69ab9a323b Jean-Philippe Brucker 2019-01-15  1002  	u64 input_start = 0;
-edcd69ab9a323b Jean-Philippe Brucker 2019-01-15  1003  	u64 input_end = -1UL;
-edcd69ab9a323b Jean-Philippe Brucker 2019-01-15  1004  	int ret;
-edcd69ab9a323b Jean-Philippe Brucker 2019-01-15  1005  
-edcd69ab9a323b Jean-Philippe Brucker 2019-01-15  1006  	if (!virtio_has_feature(vdev, VIRTIO_F_VERSION_1) ||
-edcd69ab9a323b Jean-Philippe Brucker 2019-01-15  1007  	    !virtio_has_feature(vdev, VIRTIO_IOMMU_F_MAP_UNMAP))
-edcd69ab9a323b Jean-Philippe Brucker 2019-01-15  1008  		return -ENODEV;
-edcd69ab9a323b Jean-Philippe Brucker 2019-01-15  1009  
-edcd69ab9a323b Jean-Philippe Brucker 2019-01-15  1010  	viommu = devm_kzalloc(dev, sizeof(*viommu), GFP_KERNEL);
-edcd69ab9a323b Jean-Philippe Brucker 2019-01-15  1011  	if (!viommu)
-edcd69ab9a323b Jean-Philippe Brucker 2019-01-15  1012  		return -ENOMEM;
-edcd69ab9a323b Jean-Philippe Brucker 2019-01-15  1013  
-edcd69ab9a323b Jean-Philippe Brucker 2019-01-15  1014  	spin_lock_init(&viommu->request_lock);
-edcd69ab9a323b Jean-Philippe Brucker 2019-01-15  1015  	ida_init(&viommu->domain_ids);
-edcd69ab9a323b Jean-Philippe Brucker 2019-01-15  1016  	viommu->dev = dev;
-edcd69ab9a323b Jean-Philippe Brucker 2019-01-15  1017  	viommu->vdev = vdev;
-edcd69ab9a323b Jean-Philippe Brucker 2019-01-15  1018  	INIT_LIST_HEAD(&viommu->requests);
-edcd69ab9a323b Jean-Philippe Brucker 2019-01-15  1019  
-edcd69ab9a323b Jean-Philippe Brucker 2019-01-15  1020  	ret = viommu_init_vqs(viommu);
-edcd69ab9a323b Jean-Philippe Brucker 2019-01-15  1021  	if (ret)
-edcd69ab9a323b Jean-Philippe Brucker 2019-01-15  1022  		return ret;
-edcd69ab9a323b Jean-Philippe Brucker 2019-01-15  1023  
-edcd69ab9a323b Jean-Philippe Brucker 2019-01-15 @1024  	virtio_cread(vdev, struct virtio_iommu_config, page_size_mask,
-edcd69ab9a323b Jean-Philippe Brucker 2019-01-15  1025  		     &viommu->pgsize_bitmap);
-edcd69ab9a323b Jean-Philippe Brucker 2019-01-15  1026  
-edcd69ab9a323b Jean-Philippe Brucker 2019-01-15  1027  	if (!viommu->pgsize_bitmap) {
-edcd69ab9a323b Jean-Philippe Brucker 2019-01-15  1028  		ret = -EINVAL;
-edcd69ab9a323b Jean-Philippe Brucker 2019-01-15  1029  		goto err_free_vqs;
-edcd69ab9a323b Jean-Philippe Brucker 2019-01-15  1030  	}
-edcd69ab9a323b Jean-Philippe Brucker 2019-01-15  1031  
-ae24fb49d01103 Jean-Philippe Brucker 2019-07-22  1032  	viommu->map_flags = VIRTIO_IOMMU_MAP_F_READ | VIRTIO_IOMMU_MAP_F_WRITE;
-ae24fb49d01103 Jean-Philippe Brucker 2019-07-22  1033  	viommu->last_domain = ~0U;
-edcd69ab9a323b Jean-Philippe Brucker 2019-01-15  1034  
-edcd69ab9a323b Jean-Philippe Brucker 2019-01-15  1035  	/* Optional features */
-edcd69ab9a323b Jean-Philippe Brucker 2019-01-15  1036  	virtio_cread_feature(vdev, VIRTIO_IOMMU_F_INPUT_RANGE,
-edcd69ab9a323b Jean-Philippe Brucker 2019-01-15  1037  			     struct virtio_iommu_config, input_range.start,
-edcd69ab9a323b Jean-Philippe Brucker 2019-01-15  1038  			     &input_start);
-edcd69ab9a323b Jean-Philippe Brucker 2019-01-15  1039  
-edcd69ab9a323b Jean-Philippe Brucker 2019-01-15  1040  	virtio_cread_feature(vdev, VIRTIO_IOMMU_F_INPUT_RANGE,
-edcd69ab9a323b Jean-Philippe Brucker 2019-01-15  1041  			     struct virtio_iommu_config, input_range.end,
-edcd69ab9a323b Jean-Philippe Brucker 2019-01-15  1042  			     &input_end);
-edcd69ab9a323b Jean-Philippe Brucker 2019-01-15  1043  
-ae24fb49d01103 Jean-Philippe Brucker 2019-07-22 @1044  	virtio_cread_feature(vdev, VIRTIO_IOMMU_F_DOMAIN_RANGE,
-ae24fb49d01103 Jean-Philippe Brucker 2019-07-22  1045  			     struct virtio_iommu_config, domain_range.start,
-ae24fb49d01103 Jean-Philippe Brucker 2019-07-22  1046  			     &viommu->first_domain);
-ae24fb49d01103 Jean-Philippe Brucker 2019-07-22  1047  
-ae24fb49d01103 Jean-Philippe Brucker 2019-07-22  1048  	virtio_cread_feature(vdev, VIRTIO_IOMMU_F_DOMAIN_RANGE,
-ae24fb49d01103 Jean-Philippe Brucker 2019-07-22  1049  			     struct virtio_iommu_config, domain_range.end,
-ae24fb49d01103 Jean-Philippe Brucker 2019-07-22  1050  			     &viommu->last_domain);
-edcd69ab9a323b Jean-Philippe Brucker 2019-01-15  1051  
-2a5a314874450d Jean-Philippe Brucker 2019-01-15  1052  	virtio_cread_feature(vdev, VIRTIO_IOMMU_F_PROBE,
-2a5a314874450d Jean-Philippe Brucker 2019-01-15  1053  			     struct virtio_iommu_config, probe_size,
-2a5a314874450d Jean-Philippe Brucker 2019-01-15  1054  			     &viommu->probe_size);
-2a5a314874450d Jean-Philippe Brucker 2019-01-15  1055  
-edcd69ab9a323b Jean-Philippe Brucker 2019-01-15  1056  	viommu->geometry = (struct iommu_domain_geometry) {
-edcd69ab9a323b Jean-Philippe Brucker 2019-01-15  1057  		.aperture_start	= input_start,
-edcd69ab9a323b Jean-Philippe Brucker 2019-01-15  1058  		.aperture_end	= input_end,
-edcd69ab9a323b Jean-Philippe Brucker 2019-01-15  1059  		.force_aperture	= true,
-edcd69ab9a323b Jean-Philippe Brucker 2019-01-15  1060  	};
-edcd69ab9a323b Jean-Philippe Brucker 2019-01-15  1061  
-ae24fb49d01103 Jean-Philippe Brucker 2019-07-22  1062  	if (virtio_has_feature(vdev, VIRTIO_IOMMU_F_MMIO))
-ae24fb49d01103 Jean-Philippe Brucker 2019-07-22  1063  		viommu->map_flags |= VIRTIO_IOMMU_MAP_F_MMIO;
-ae24fb49d01103 Jean-Philippe Brucker 2019-07-22  1064  
-edcd69ab9a323b Jean-Philippe Brucker 2019-01-15  1065  	viommu_ops.pgsize_bitmap = viommu->pgsize_bitmap;
-edcd69ab9a323b Jean-Philippe Brucker 2019-01-15  1066  
-edcd69ab9a323b Jean-Philippe Brucker 2019-01-15  1067  	virtio_device_ready(vdev);
-edcd69ab9a323b Jean-Philippe Brucker 2019-01-15  1068  
-169a126c6e88a9 Jean-Philippe Brucker 2019-01-15  1069  	/* Populate the event queue with buffers */
-169a126c6e88a9 Jean-Philippe Brucker 2019-01-15  1070  	ret = viommu_fill_evtq(viommu);
-169a126c6e88a9 Jean-Philippe Brucker 2019-01-15  1071  	if (ret)
-169a126c6e88a9 Jean-Philippe Brucker 2019-01-15  1072  		goto err_free_vqs;
-169a126c6e88a9 Jean-Philippe Brucker 2019-01-15  1073  
-edcd69ab9a323b Jean-Philippe Brucker 2019-01-15  1074  	ret = iommu_device_sysfs_add(&viommu->iommu, dev, NULL, "%s",
-edcd69ab9a323b Jean-Philippe Brucker 2019-01-15  1075  				     virtio_bus_name(vdev));
-edcd69ab9a323b Jean-Philippe Brucker 2019-01-15  1076  	if (ret)
-edcd69ab9a323b Jean-Philippe Brucker 2019-01-15  1077  		goto err_free_vqs;
-edcd69ab9a323b Jean-Philippe Brucker 2019-01-15  1078  
-136495ceb43b56 Jean-Philippe Brucker 2020-02-28  1079  	virt_set_iommu_ops(dev->parent, &viommu_ops);
-edcd69ab9a323b Jean-Philippe Brucker 2019-01-15  1080  	iommu_device_set_ops(&viommu->iommu, &viommu_ops);
-edcd69ab9a323b Jean-Philippe Brucker 2019-01-15  1081  	iommu_device_set_fwnode(&viommu->iommu, parent_dev->fwnode);
-edcd69ab9a323b Jean-Philippe Brucker 2019-01-15  1082  
-edcd69ab9a323b Jean-Philippe Brucker 2019-01-15  1083  	iommu_device_register(&viommu->iommu);
-edcd69ab9a323b Jean-Philippe Brucker 2019-01-15  1084  
 
-:::::: The code at line 1024 was first introduced by commit
-:::::: edcd69ab9a323b7ac7a86e1c44b6c9c46598391f iommu: Add virtio-iommu driver
+> +	viommu_spec = kzalloc(spec_length, GFP_KERNEL);
+> +	if (!viommu_spec)
+> +		return -ENOMEM;
+> +
+> +	viommu_spec->dev = dev;
+> +
+> +	/* Copy in the whole array, sort it out later */
+> +	for (i = 0; i < num_items; i++) {
+> +		size_t read_length = min_t(size_t, item_length,
+> +					   sizeof(union viommu_topo_cfg));
+> +
+> +		viommu_ccopy((__le32 *)&viommu_spec->cfg[i],
 
-:::::: TO: Jean-Philippe Brucker <jean-philippe.brucker@arm.com>
-:::::: CC: Michael S. Tsirkin <mst@redhat.com>
+Doesn't this need __force?
 
----
-0-DAY CI Kernel Test Service, Intel Corporation
-https://lists.01.org/hyperkitty/list/kbuild-all@lists.01.org
+> +			     (void __iomem *)cfg + offset,
+> +			     read_length);
+
+> +
+> +		offset += item_length;
+> +	}
+> +	viommu_spec->num_items = num_items;
+> +
+> +	mutex_lock(&viommus_lock);
+> +	list_add(&viommu_spec->list, &viommus);
+> +	mutex_unlock(&viommus_lock);
+> +
+> +	return 0;
+> +}
+> +
+> +static void viommu_pci_parse_topology(struct pci_dev *dev)
+> +{
+> +	int pos;
+> +	u32 features;
+> +	void __iomem *regs;
+> +	struct viommu_cap_config cap = {0};
+> +	struct virtio_pci_common_cfg __iomem *common_cfg;
+> +
+> +	/*
+> +	 * The virtio infrastructure might not be loaded at this point. we need
+> +	 * to access the BARs ourselves.
+> +	 */
+> +	pos = viommu_pci_find_capability(dev, VIRTIO_PCI_CAP_COMMON_CFG, &cap);
+> +	if (!pos) {
+> +		pci_warn(dev, "common capability not found\n");
+> +		return;
+> +	}
+> +
+> +	if (pci_enable_device_mem(dev))
+> +		return;
+> +
+> +	regs = pci_iomap(dev, cap.bar, 0);
+> +	if (!regs)
+> +		return;
+> +
+> +	common_cfg = regs + cap.offset;
+> +
+
+So the virtio spec says this:
+
+The driver MUST follow this sequence to initialize a device:
+
+\begin{enumerate}
+
+
+\item Reset the device.
+
+\item Set the ACKNOWLEDGE status bit: the guest OS has noticed the device.
+
+\item Set the DRIVER status bit: the guest OS knows how to drive the device.
+
+Let's follow this unless there's a good reason not to.
+And I guess let's reset at the end?
+
+
+> +	/* Find out if the device supports topology description */
+> +	writel(0, &common_cfg->device_feature_select);
+> +	features = ioread32(&common_cfg->device_feature);
+> +
+> +	pci_iounmap(dev, regs);
+> +
+> +	if (!(features & BIT(VIRTIO_IOMMU_F_TOPOLOGY))) {
+> +		pci_dbg(dev, "device doesn't have topology description");
+> +		return;
+> +	}
+> +
+> +	pos = viommu_pci_find_capability(dev, VIRTIO_PCI_CAP_DEVICE_CFG, &cap);
+> +	if (!pos) {
+> +		pci_warn(dev, "device config capability not found\n");
+> +		return;
+> +	}
+> +
+> +	regs = pci_iomap(dev, cap.bar, 0);
+> +	if (!regs)
+> +		return;
+> +
+> +	pci_info(dev, "parsing virtio-iommu topology\n");
+> +	viommu_parse_topology(&dev->dev, regs + cap.offset);
+> +	pci_iounmap(dev, regs);
+> +}
+> +
+> +/*
+> + * Catch a PCI virtio-iommu implementation early to get the topology description
+> + * before we start probing other endpoints.
+> + */
+> +DECLARE_PCI_FIXUP_FINAL(PCI_VENDOR_ID_REDHAT_QUMRANET, 0x1040 + VIRTIO_ID_IOMMU,
+> +			viommu_pci_parse_topology);
+> +
+> +/*
+> + * Return true if the device matches this topology structure. Write the endpoint
+> + * ID into epid if it's the case.
+> + */
+> +static bool viommu_parse_pci(struct pci_dev *pdev, union viommu_topo_cfg *cfg,
+> +			     u32 *epid)
+> +{
+> +	u32 endpoint_start;
+> +	u16 start, end, domain;
+> +	u16 devid = pci_dev_id(pdev);
+> +	u16 type = le16_to_cpu(cfg->type);
+> +
+> +	if (type != VIRTIO_IOMMU_TOPO_PCI_RANGE)
+> +		return false;
+> +
+> +	start		= le16_to_cpu(cfg->pci.requester_start);
+> +	end		= le16_to_cpu(cfg->pci.requester_end);
+> +	domain		= le16_to_cpu(cfg->pci.hierarchy);
+> +	endpoint_start	= le32_to_cpu(cfg->pci.endpoint_start);
+> +
+> +	if (pci_domain_nr(pdev->bus) == domain &&
+> +	    devid >= start && devid <= end) {
+> +		*epid = devid - start + endpoint_start;
+> +		return true;
+> +	}
+> +	return false;
+> +}
+> +
+> +static const struct iommu_ops *virt_iommu_setup(struct device *dev)
+> +{
+> +	struct iommu_fwspec *fwspec = dev_iommu_fwspec_get(dev);
+> +	const struct iommu_ops *viommu_ops = NULL;
+> +	struct fwnode_handle *viommu_fwnode;
+> +	struct viommu_spec *viommu_spec;
+> +	struct pci_dev *pci_dev = NULL;
+> +	struct device *viommu_dev;
+> +	bool found = false;
+> +	size_t i;
+> +	u32 epid;
+> +	int ret;
+> +
+> +	/* Already translated? */
+> +	if (fwspec && fwspec->ops)
+> +		return NULL;
+> +
+> +	if (dev_is_pci(dev)) {
+> +		pci_dev = to_pci_dev(dev);
+> +	} else {
+> +		/* At the moment we don't support platform devices */
+> +		return NULL;
+> +	}
+> +
+> +	mutex_lock(&viommus_lock);
+> +	list_for_each_entry(viommu_spec, &viommus, list) {
+> +		for (i = 0; i < viommu_spec->num_items; i++) {
+> +			union viommu_topo_cfg *cfg = &viommu_spec->cfg[i];
+> +
+> +			found = viommu_parse_pci(pci_dev, cfg, &epid);
+> +			if (found)
+> +				break;
+> +		}
+> +		if (found) {
+> +			viommu_ops = viommu_spec->ops;
+> +			viommu_fwnode = viommu_spec->fwnode;
+> +			viommu_dev = viommu_spec->dev;
+> +			break;
+> +		}
+> +	}
+> +	mutex_unlock(&viommus_lock);
+> +	if (!found)
+> +		return NULL;
+> +
+> +	/* We're not translating ourselves. */
+> +	if (viommu_dev == dev)
+> +		return NULL;
+> +
+> +	/*
+> +	 * If we found a PCI range managed by the viommu, we're the ones that
+> +	 * have to request ACS.
+> +	 */
+> +	if (pci_dev)
+> +		pci_request_acs();
+> +
+> +	if (!viommu_ops)
+> +		return ERR_PTR(-EPROBE_DEFER);
+> +
+> +	ret = iommu_fwspec_init(dev, viommu_fwnode, viommu_ops);
+> +	if (ret)
+> +		return ERR_PTR(ret);
+> +
+> +	iommu_fwspec_add_ids(dev, &epid, 1);
+> +
+> +	return viommu_ops;
+> +}
+> +
+> +/**
+> + * virt_dma_configure - Configure DMA of virtualized devices
+> + * @dev: the endpoint
+> + *
+> + * Setup the DMA and IOMMU ops of a virtual device, for platforms without DT or
+> + * ACPI.
+> + *
+> + * Return: -EPROBE_DEFER if the device is managed by an IOMMU that hasn't been
+> + *   probed yet, 0 otherwise
+> + */
+> +int virt_dma_configure(struct device *dev)
+> +{
+> +	const struct iommu_ops *iommu_ops;
+> +
+> +	iommu_ops = virt_iommu_setup(dev);
+> +	if (IS_ERR_OR_NULL(iommu_ops)) {
+> +		int ret = PTR_ERR(iommu_ops);
+> +
+> +		if (ret == -EPROBE_DEFER || ret == 0)
+> +			return ret;
+> +		dev_err(dev, "error %d while setting up virt IOMMU\n", ret);
+> +		return 0;
+> +	}
+> +
+> +	/*
+> +	 * If we have reason to believe the IOMMU driver missed the initial
+> +	 * add_device callback for dev, replay it to get things in order.
+> +	 */
+> +	if (dev->bus && !device_iommu_mapped(dev))
+> +		iommu_probe_device(dev);
+> +
+> +	/* Assume coherent, as well as full 64-bit addresses. */
+> +#ifdef CONFIG_ARCH_HAS_SETUP_DMA_OPS
+> +	arch_setup_dma_ops(dev, 0, ~0ULL, iommu_ops, true);
+> +#else
+> +	iommu_setup_dma_ops(dev, 0, ~0ULL);
+> +#endif
+> +	return 0;
+> +}
+> +
+> +/**
+> + * virt_set_iommu_ops - Set the IOMMU ops of a virtual IOMMU device
+> + * @dev: the IOMMU device (transport)
+> + * @ops: the new IOMMU ops or NULL
+> + *
+> + * Setup the iommu_ops associated to a viommu_spec, once the driver is loaded
+> + * and the device probed.
+> + */
+> +void virt_set_iommu_ops(struct device *dev, struct iommu_ops *ops)
+> +{
+> +	struct viommu_spec *viommu_spec;
+> +
+> +	mutex_lock(&viommus_lock);
+> +	list_for_each_entry(viommu_spec, &viommus, list) {
+> +		if (viommu_spec->dev == dev) {
+> +			viommu_spec->ops = ops;
+> +			viommu_spec->fwnode = ops ? dev->fwnode : NULL;
+> +			break;
+> +		}
+> +	}
+> +	mutex_unlock(&viommus_lock);
+> +}
+> +EXPORT_SYMBOL_GPL(virt_set_iommu_ops);
+> diff --git a/drivers/iommu/virtio-iommu.c b/drivers/iommu/virtio-iommu.c
+> index 93ff58632452..5429c12c879b 100644
+> --- a/drivers/iommu/virtio-iommu.c
+> +++ b/drivers/iommu/virtio-iommu.c
+> @@ -21,6 +21,7 @@
+>  #include <linux/virtio.h>
+>  #include <linux/virtio_config.h>
+>  #include <linux/virtio_ids.h>
+> +#include <linux/virt_iommu.h>
+>  #include <linux/wait.h>
+>  
+>  #include <uapi/linux/virtio_iommu.h>
+> @@ -1075,6 +1076,7 @@ static int viommu_probe(struct virtio_device *vdev)
+>  	if (ret)
+>  		goto err_free_vqs;
+>  
+> +	virt_set_iommu_ops(dev->parent, &viommu_ops);
+>  	iommu_device_set_ops(&viommu->iommu, &viommu_ops);
+>  	iommu_device_set_fwnode(&viommu->iommu, parent_dev->fwnode);
+>  
+> @@ -1121,6 +1123,7 @@ static void viommu_remove(struct virtio_device *vdev)
+>  {
+>  	struct viommu_dev *viommu = vdev->priv;
+>  
+> +	virt_set_iommu_ops(vdev->dev.parent, NULL);
+>  	iommu_device_sysfs_remove(&viommu->iommu);
+>  	iommu_device_unregister(&viommu->iommu);
+>  
+> diff --git a/include/linux/virt_iommu.h b/include/linux/virt_iommu.h
+> new file mode 100644
+> index 000000000000..c68b03ec75ba
+> --- /dev/null
+> +++ b/include/linux/virt_iommu.h
+> @@ -0,0 +1,19 @@
+> +/* SPDX-License-Identifier: GPL-2.0 */
+> +#ifndef VIRTIO_IOMMU_H_
+> +#define VIRTIO_IOMMU_H_
+> +
+> +#if IS_ENABLED(CONFIG_VIRTIO_IOMMU_TOPOLOGY)
+> +int virt_dma_configure(struct device *dev);
+> +void virt_set_iommu_ops(struct device *dev, struct iommu_ops *ops);
+> +#else /* !CONFIG_VIRTIO_IOMMU_TOPOLOGY */
+> +static inline int virt_dma_configure(struct device *dev)
+> +{
+> +	/* Don't disturb the normal DMA configuration methods */
+> +	return 0;
+> +}
+> +
+> +static inline void virt_set_iommu_ops(struct device *dev, struct iommu_ops *ops)
+> +{ }
+> +#endif /* !CONFIG_VIRTIO_IOMMU_TOPOLOGY */
+> +
+> +#endif /* VIRTIO_IOMMU_H_ */
+> diff --git a/include/uapi/linux/virtio_iommu.h b/include/uapi/linux/virtio_iommu.h
+> index 237e36a280cb..ec57d215086a 100644
+> --- a/include/uapi/linux/virtio_iommu.h
+> +++ b/include/uapi/linux/virtio_iommu.h
+> @@ -16,6 +16,7 @@
+>  #define VIRTIO_IOMMU_F_BYPASS			3
+>  #define VIRTIO_IOMMU_F_PROBE			4
+>  #define VIRTIO_IOMMU_F_MMIO			5
+> +#define VIRTIO_IOMMU_F_TOPOLOGY			6
+>  
+>  struct virtio_iommu_range_64 {
+>  	__le64					start;
+> @@ -27,6 +28,12 @@ struct virtio_iommu_range_32 {
+>  	__le32					end;
+>  };
+>  
+> +struct virtio_iommu_topo_config {
+> +	__le32					offset;
+> +	__le32					num_items;
+> +	__le32					item_length;
+> +};
+> +
+>  struct virtio_iommu_config {
+>  	/* Supported page sizes */
+>  	__le64					page_size_mask;
+> @@ -36,6 +43,25 @@ struct virtio_iommu_config {
+>  	struct virtio_iommu_range_32		domain_range;
+>  	/* Probe buffer size */
+>  	__le32					probe_size;
+> +	struct virtio_iommu_topo_config		topo_config;
+> +};
+> +
+> +#define VIRTIO_IOMMU_TOPO_PCI_RANGE		0x1
+> +#define VIRTIO_IOMMU_TOPO_ENDPOINT		0x2
+> +
+> +struct virtio_iommu_topo_pci_range {
+> +	__le16					type;
+> +	__le16					hierarchy;
+> +	__le16					requester_start;
+> +	__le16					requester_end;
+> +	__le32					endpoint_start;
+> +};
+> +
+> +struct virtio_iommu_topo_endpoint {
+> +	__le16					type;
+> +	__le16					reserved;
+> +	__le32					endpoint;
+> +	__le64					address;
+>  };
+>  
+>  /* Request types */
+> -- 
+> 2.25.0
+
 _______________________________________________
 iommu mailing list
 iommu@lists.linux-foundation.org
