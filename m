@@ -6,61 +6,59 @@ X-Spam-Status: No, score=-5.2 required=3.0 tests=HEADER_FROM_DIFFERENT_DOMAINS,
 	MAILING_LIST_MULTI,SIGNED_OFF_BY,SPF_HELO_NONE,SPF_PASS,USER_AGENT_SANE_1
 	autolearn=ham autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id EFC42C3F2CD
-	for <iommu@archiver.kernel.org>; Mon,  2 Mar 2020 16:08:21 +0000 (UTC)
-Received: from silver.osuosl.org (smtp3.osuosl.org [140.211.166.136])
+	by smtp.lore.kernel.org (Postfix) with ESMTP id AC2B5C3F2D7
+	for <iommu@archiver.kernel.org>; Mon,  2 Mar 2020 16:11:32 +0000 (UTC)
+Received: from hemlock.osuosl.org (smtp2.osuosl.org [140.211.166.133])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by mail.kernel.org (Postfix) with ESMTPS id C7ED0222C4
-	for <iommu@archiver.kernel.org>; Mon,  2 Mar 2020 16:08:21 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org C7ED0222C4
+	by mail.kernel.org (Postfix) with ESMTPS id 7D1FC2146E
+	for <iommu@archiver.kernel.org>; Mon,  2 Mar 2020 16:11:32 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 7D1FC2146E
 Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=8bytes.org
 Authentication-Results: mail.kernel.org; spf=pass smtp.mailfrom=iommu-bounces@lists.linux-foundation.org
 Received: from localhost (localhost [127.0.0.1])
-	by silver.osuosl.org (Postfix) with ESMTP id 8A4DD204A4;
-	Mon,  2 Mar 2020 16:08:21 +0000 (UTC)
+	by hemlock.osuosl.org (Postfix) with ESMTP id 4E5F68778E;
+	Mon,  2 Mar 2020 16:11:32 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from silver.osuosl.org ([127.0.0.1])
+Received: from hemlock.osuosl.org ([127.0.0.1])
 	by localhost (.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
-	with ESMTP id BuVJyeQmi4dA; Mon,  2 Mar 2020 16:08:21 +0000 (UTC)
+	with ESMTP id dvJ+XurbQT0v; Mon,  2 Mar 2020 16:11:31 +0000 (UTC)
 Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [140.211.9.56])
-	by silver.osuosl.org (Postfix) with ESMTP id F04EA2049F;
-	Mon,  2 Mar 2020 16:08:20 +0000 (UTC)
+	by hemlock.osuosl.org (Postfix) with ESMTP id 6D9EF87695;
+	Mon,  2 Mar 2020 16:11:31 +0000 (UTC)
 Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
-	by lists.linuxfoundation.org (Postfix) with ESMTP id D6D88C1AE2;
-	Mon,  2 Mar 2020 16:08:20 +0000 (UTC)
+	by lists.linuxfoundation.org (Postfix) with ESMTP id 54308C1AE2;
+	Mon,  2 Mar 2020 16:11:31 +0000 (UTC)
 Received: from whitealder.osuosl.org (smtp1.osuosl.org [140.211.166.138])
- by lists.linuxfoundation.org (Postfix) with ESMTP id AA40AC013E
- for <iommu@lists.linux-foundation.org>; Mon,  2 Mar 2020 16:08:19 +0000 (UTC)
+ by lists.linuxfoundation.org (Postfix) with ESMTP id 9D642C013E
+ for <iommu@lists.linux-foundation.org>; Mon,  2 Mar 2020 16:11:29 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
- by whitealder.osuosl.org (Postfix) with ESMTP id A7242855BD
- for <iommu@lists.linux-foundation.org>; Mon,  2 Mar 2020 16:08:19 +0000 (UTC)
+ by whitealder.osuosl.org (Postfix) with ESMTP id 9A0C986061
+ for <iommu@lists.linux-foundation.org>; Mon,  2 Mar 2020 16:11:29 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
 Received: from whitealder.osuosl.org ([127.0.0.1])
  by localhost (.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
- with ESMTP id s0FACkUYKN8C for <iommu@lists.linux-foundation.org>;
- Mon,  2 Mar 2020 16:08:19 +0000 (UTC)
+ with ESMTP id KfDhRaWmDY5G for <iommu@lists.linux-foundation.org>;
+ Mon,  2 Mar 2020 16:11:28 +0000 (UTC)
 X-Greylist: from auto-whitelisted by SQLgrey-1.7.6
 Received: from theia.8bytes.org (8bytes.org [81.169.241.247])
- by whitealder.osuosl.org (Postfix) with ESMTPS id D71DC85693
- for <iommu@lists.linux-foundation.org>; Mon,  2 Mar 2020 16:08:18 +0000 (UTC)
+ by whitealder.osuosl.org (Postfix) with ESMTPS id B521F8573E
+ for <iommu@lists.linux-foundation.org>; Mon,  2 Mar 2020 16:11:28 +0000 (UTC)
 Received: by theia.8bytes.org (Postfix, from userid 1000)
- id 013665BC; Mon,  2 Mar 2020 17:08:16 +0100 (CET)
-Date: Mon, 2 Mar 2020 17:08:14 +0100
+ id C928D5BC; Mon,  2 Mar 2020 17:11:26 +0100 (CET)
+Date: Mon, 2 Mar 2020 17:11:23 +0100
 From: Joerg Roedel <joro@8bytes.org>
-To: Yonghyun Hwang <yonghyun@google.com>
-Subject: Re: [PATCH v3] iommu/vt-d: Fix a bug in intel_iommu_iova_to_phys()
- for huge page
-Message-ID: <20200302160813.GB7829@8bytes.org>
-References: <20200226203006.51567-1-yonghyun@google.com>
+To: Will Deacon <will@kernel.org>
+Subject: Re: [PATCH] iommu/io-pgtable-arm: Fix IOVA validation for 32-bit
+Message-ID: <20200302161123.GC7829@8bytes.org>
+References: <dd330453ed31099b5b3b76db02fe79d55aa9bce3.1582899080.git.robin.murphy@arm.com>
+ <20200302115300.GA9233@willie-the-truck>
 MIME-Version: 1.0
 Content-Disposition: inline
-In-Reply-To: <20200226203006.51567-1-yonghyun@google.com>
+In-Reply-To: <20200302115300.GA9233@willie-the-truck>
 User-Agent: Mutt/1.10.1 (2018-07-13)
-Cc: Havard Skinnemoen <hskinnemoen@google.com>, stable@vger.kernel.org,
- linux-kernel@vger.kernel.org, iommu@lists.linux-foundation.org,
- Deepa Dinamani <deepadinamani@google.com>, Moritz Fischer <mdf@kernel.org>,
- David Woodhouse <dwmw2@infradead.org>
+Cc: iommu@lists.linux-foundation.org, Robin Murphy <robin.murphy@arm.com>,
+ Stephan Gerhold <stephan@gerhold.net>, linux-arm-kernel@lists.infradead.org
 X-BeenThere: iommu@lists.linux-foundation.org
 X-Mailman-Version: 2.1.15
 Precedence: list
@@ -78,20 +76,37 @@ Content-Transfer-Encoding: 7bit
 Errors-To: iommu-bounces@lists.linux-foundation.org
 Sender: "iommu" <iommu-bounces@lists.linux-foundation.org>
 
-On Wed, Feb 26, 2020 at 12:30:06PM -0800, Yonghyun Hwang wrote:
-> intel_iommu_iova_to_phys() has a bug when it translates an IOVA for a huge
-> page onto its corresponding physical address. This commit fixes the bug by
-> accomodating the level of page entry for the IOVA and adds IOVA's lower
-> address to the physical address.
+On Mon, Mar 02, 2020 at 11:53:01AM +0000, Will Deacon wrote:
+> On Fri, Feb 28, 2020 at 02:18:55PM +0000, Robin Murphy wrote:
+> > Since we ony support the TTB1 quirk for AArch64 contexts, and
+> > consequently only for 64-bit builds, the sign-extension aspect of the
+> > "are all bits above IAS consistent?" check should implicitly only apply
+> > to 64-bit IOVAs. Change the type of the cast to ensure that 32-bit longs
+> > don't inadvertently get sign-extended, and thus considered invalid, if
+> > they happen to be above 2GB in the TTB0 region.
+> > 
+> > Reported-by: Stephan Gerhold <stephan@gerhold.net>
+> > Signed-off-by: Robin Murphy <robin.murphy@arm.com>
+> > 
+> > ---
+> > 
+> > Logically there may also have been a UBSAN "shift greater than size of
+> > type" warning too, but arch/arm doesn't support UBSAN_SANITIZE_ALL,
+> > and that's now my only easy "spin up a 32-bit VM" option to hand :)
+> > 
+> >  drivers/iommu/io-pgtable-arm.c | 4 ++--
+> >  1 file changed, 2 insertions(+), 2 deletions(-)
 > 
-> Cc: <stable@vger.kernel.org>
-> Acked-by: Lu Baolu <baolu.lu@linux.intel.com>
-> Reviewed-by: Moritz Fischer <mdf@kernel.org>
-> Signed-off-by: Yonghyun Hwang <yonghyun@google.com>
+> Acked-by: Will Deacon <will@kernel.org>
+> 
+> Joerg -- pleae can you take this as a fix for 5.6?
 
-Applied with Fixes tag:
+Done, do you also have a fixes-tag for me?
 
-Fixes: 3871794642579 ("VT-d: Changes to support KVM")
+Regards,
+
+	Joerg
+
 _______________________________________________
 iommu mailing list
 iommu@lists.linux-foundation.org
