@@ -2,79 +2,76 @@ Return-Path: <SRS0=fiLh=4U=lists.linux-foundation.org=iommu-bounces@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-9.8 required=3.0 tests=DKIM_INVALID,DKIM_SIGNED,
-	INCLUDES_PATCH,MAILING_LIST_MULTI,SIGNED_OFF_BY,SPF_HELO_NONE,SPF_PASS,
-	USER_AGENT_GIT autolearn=ham autolearn_force=no version=3.4.0
+X-Spam-Status: No, score=-2.3 required=3.0 tests=HEADER_FROM_DIFFERENT_DOMAINS,
+	MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS,USER_AGENT_SANE_1 autolearn=no
+	autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id B8B1EC3F2CD
-	for <iommu@archiver.kernel.org>; Tue,  3 Mar 2020 02:48:30 +0000 (UTC)
-Received: from silver.osuosl.org (smtp3.osuosl.org [140.211.166.136])
+	by smtp.lore.kernel.org (Postfix) with ESMTP id E0CDCC3F2CD
+	for <iommu@archiver.kernel.org>; Tue,  3 Mar 2020 06:47:10 +0000 (UTC)
+Received: from hemlock.osuosl.org (smtp2.osuosl.org [140.211.166.133])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by mail.kernel.org (Postfix) with ESMTPS id 875DA246A1
-	for <iommu@archiver.kernel.org>; Tue,  3 Mar 2020 02:48:30 +0000 (UTC)
-Authentication-Results: mail.kernel.org;
-	dkim=fail reason="signature verification failed" (1024-bit key) header.d=kernel.org header.i=@kernel.org header.b="BlBeneV3"
-DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 875DA246A1
-Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=kernel.org
+	by mail.kernel.org (Postfix) with ESMTPS id AC14B20726
+	for <iommu@archiver.kernel.org>; Tue,  3 Mar 2020 06:47:10 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org AC14B20726
+Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=linux.intel.com
 Authentication-Results: mail.kernel.org; spf=pass smtp.mailfrom=iommu-bounces@lists.linux-foundation.org
 Received: from localhost (localhost [127.0.0.1])
-	by silver.osuosl.org (Postfix) with ESMTP id 63CBE204ED;
-	Tue,  3 Mar 2020 02:48:30 +0000 (UTC)
+	by hemlock.osuosl.org (Postfix) with ESMTP id 7652D81F85;
+	Tue,  3 Mar 2020 06:47:10 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from silver.osuosl.org ([127.0.0.1])
+Received: from hemlock.osuosl.org ([127.0.0.1])
 	by localhost (.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
-	with ESMTP id eJIDBr6toJ7g; Tue,  3 Mar 2020 02:48:30 +0000 (UTC)
+	with ESMTP id qkS+DZW2A4O1; Tue,  3 Mar 2020 06:47:09 +0000 (UTC)
 Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [140.211.9.56])
-	by silver.osuosl.org (Postfix) with ESMTP id 39BD320449;
-	Tue,  3 Mar 2020 02:48:30 +0000 (UTC)
+	by hemlock.osuosl.org (Postfix) with ESMTP id A48A481EBC;
+	Tue,  3 Mar 2020 06:47:09 +0000 (UTC)
 Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
-	by lists.linuxfoundation.org (Postfix) with ESMTP id 1F74FC07FE;
-	Tue,  3 Mar 2020 02:48:30 +0000 (UTC)
+	by lists.linuxfoundation.org (Postfix) with ESMTP id 97B44C1AE2;
+	Tue,  3 Mar 2020 06:47:09 +0000 (UTC)
 Received: from silver.osuosl.org (smtp3.osuosl.org [140.211.166.136])
- by lists.linuxfoundation.org (Postfix) with ESMTP id 9BF64C013E
- for <iommu@lists.linux-foundation.org>; Tue,  3 Mar 2020 02:48:28 +0000 (UTC)
+ by lists.linuxfoundation.org (Postfix) with ESMTP id 45517C013E
+ for <iommu@lists.linux-foundation.org>; Tue,  3 Mar 2020 06:47:08 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
- by silver.osuosl.org (Postfix) with ESMTP id 8A12F204EB
- for <iommu@lists.linux-foundation.org>; Tue,  3 Mar 2020 02:48:28 +0000 (UTC)
+ by silver.osuosl.org (Postfix) with ESMTP id 3291920026
+ for <iommu@lists.linux-foundation.org>; Tue,  3 Mar 2020 06:47:08 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
 Received: from silver.osuosl.org ([127.0.0.1])
  by localhost (.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
- with ESMTP id KSsEYUwIMQ7Q for <iommu@lists.linux-foundation.org>;
- Tue,  3 Mar 2020 02:48:28 +0000 (UTC)
+ with ESMTP id c9T-jwWCDs7m for <iommu@lists.linux-foundation.org>;
+ Tue,  3 Mar 2020 06:47:07 +0000 (UTC)
 X-Greylist: domain auto-whitelisted by SQLgrey-1.7.6
-Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
- by silver.osuosl.org (Postfix) with ESMTPS id 7185520449
- for <iommu@lists.linux-foundation.org>; Tue,  3 Mar 2020 02:48:28 +0000 (UTC)
-Received: from sasha-vm.mshome.net (c-73-47-72-35.hsd1.nh.comcast.net
- [73.47.72.35])
- (using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
- (No client certificate requested)
- by mail.kernel.org (Postfix) with ESMTPSA id 7CC4624680;
- Tue,  3 Mar 2020 02:48:27 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
- s=default; t=1583203708;
- bh=h8EAJl19Wp0HALYjFidwI9cUFJDeGchtkcXLkJUuArs=;
- h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
- b=BlBeneV3vp6Xjgc+i1hsUdP+h1505g1QE2Ek2sInORlFdpuEb7+aBOt2XPh4bYsAl
- G6pYz9lEQvQSYKh4ZNhbFkEJhw1rBskifToC73x6qHvR+4ZNEKHAp4yLOMRK3liY8S
- i2M94Oo8pKfDOqJjfrQvxq1AMqeuok04RusO7YlM=
-From: Sasha Levin <sashal@kernel.org>
-To: linux-kernel@vger.kernel.org,
-	stable@vger.kernel.org
-Subject: [PATCH AUTOSEL 5.4 39/58] iommu/amd: Disable IOMMU on Stoney Ridge
- systems
-Date: Mon,  2 Mar 2020 21:47:21 -0500
-Message-Id: <20200303024740.9511-39-sashal@kernel.org>
-X-Mailer: git-send-email 2.20.1
-In-Reply-To: <20200303024740.9511-1-sashal@kernel.org>
-References: <20200303024740.9511-1-sashal@kernel.org>
+Received: from mga06.intel.com (mga06.intel.com [134.134.136.31])
+ by silver.osuosl.org (Postfix) with ESMTPS id 1F72220008
+ for <iommu@lists.linux-foundation.org>; Tue,  3 Mar 2020 06:47:07 +0000 (UTC)
+X-Amp-Result: SKIPPED(no attachment in message)
+X-Amp-File-Uploaded: False
+Received: from fmsmga008.fm.intel.com ([10.253.24.58])
+ by orsmga104.jf.intel.com with ESMTP/TLS/DHE-RSA-AES256-GCM-SHA384;
+ 02 Mar 2020 22:47:06 -0800
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="5.70,510,1574150400"; d="scan'208";a="233659825"
+Received: from blu2-mobl3.ccr.corp.intel.com (HELO [10.254.215.73])
+ ([10.254.215.73])
+ by fmsmga008.fm.intel.com with ESMTP; 02 Mar 2020 22:47:03 -0800
+Subject: Re: [PATCH V2 3/5] iommu: Add support to change default domain of an
+ iommu_group
+To: Joerg Roedel <joro@8bytes.org>,
+ Sai Praneeth Prakhya <sai.praneeth.prakhya@intel.com>
+References: <cover.1581619464.git.sai.praneeth.prakhya@intel.com>
+ <5aa5ef20ff81f706aafa9a6af68cef98fe60ad0f.1581619464.git.sai.praneeth.prakhya@intel.com>
+ <20200302150833.GA6540@8bytes.org>
+From: Lu Baolu <baolu.lu@linux.intel.com>
+Message-ID: <7fcadd2a-76cd-2114-bb5f-c916fd14e1cb@linux.intel.com>
+Date: Tue, 3 Mar 2020 14:47:02 +0800
+User-Agent: Mozilla/5.0 (Windows NT 10.0; WOW64; rv:68.0) Gecko/20100101
+ Thunderbird/68.5.0
 MIME-Version: 1.0
-X-stable: review
-X-Patchwork-Hint: Ignore
-Cc: Alex Deucher <alexander.deucher@amd.com>, Sasha Levin <sashal@kernel.org>,
- iommu@lists.linux-foundation.org, Kai-Heng Feng <kai.heng.feng@canonical.com>,
- Joerg Roedel <jroedel@suse.de>
+In-Reply-To: <20200302150833.GA6540@8bytes.org>
+Content-Language: en-US
+Cc: Ashok Raj <ashok.raj@intel.com>, Will Deacon <will.deacon@arm.com>,
+ iommu@lists.linux-foundation.org, Robin Murphy <robin.murphy@arm.com>,
+ Christoph Hellwig <hch@lst.de>
 X-BeenThere: iommu@lists.linux-foundation.org
 X-Mailman-Version: 2.1.15
 Precedence: list
@@ -87,73 +84,101 @@ List-Post: <mailto:iommu@lists.linux-foundation.org>
 List-Help: <mailto:iommu-request@lists.linux-foundation.org?subject=help>
 List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
  <mailto:iommu-request@lists.linux-foundation.org?subject=subscribe>
-Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset="us-ascii"; Format="flowed"
 Errors-To: iommu-bounces@lists.linux-foundation.org
 Sender: "iommu" <iommu-bounces@lists.linux-foundation.org>
 
-From: Kai-Heng Feng <kai.heng.feng@canonical.com>
+Hi Joerg,
 
-[ Upstream commit 3dfee47b215e49788cfc80e474820ea2e948c031 ]
+On 2020/3/2 23:08, Joerg Roedel wrote:
+> Hello Sai, Baolu,
+> 
+> On Sun, Feb 16, 2020 at 01:57:26PM -0800, Sai Praneeth Prakhya wrote:
+>> Hence it will be helpful if there is some way to change the default
+>> domain of a B:D.F dynamically. Since, linux iommu subsystem prefers to
+>> deal at iommu_group level instead of B:D.F level, it might be helpful
+>> if there is some way to change the default domain of a *iommu_group*
+>> dynamically. Hence, add such support.
+> 
+> The question is how this plays together with the per-device private
+> domains in the Intel VT-d driver. I recently debugged an issue there and
+> I think there are more. The overall code for this seems to be pretty
+> fragile, so I had the idea to make the private default domains more
+> general.
+> 
+> IOMMU default domains don't necessarily need to stick to the iommu-group
+> granularity, because the default domain is used by in-kernel drivers
+> only, and the kernel trusts itself.
+> 
+> So my idea was to make the private-domain concept of the VT-d driver
+> more generic and move it to the iommu core code. With that we can
+> configure real per-device default domain types and don't have the race
+> condition with driver probing when changing the default domain of
+> multiple devices. We have to limit the ability to change default domain
+> types to devices with no PCI aliases, but that should not be a problem
+> for the intended use-case.
+> 
+> What do you think?
+>
 
-Serious screen flickering when Stoney Ridge outputs to a 4K monitor.
+Theoretically speaking, per-device default domain is impractical. PCI
+aliased devices (PCI bridge and all devices beneath it, VMD devices and
+various devices quirked with pci_add_dma_alias()) must use the same
+domain. It's likely that we have to introduce something like a sub-group
+with all PCI aliased devices staying in it. Current private-domain
+implementation in the vt-d driver was introduced for compatible purpose
+and I wanted to abandon it from the first day. :-)
 
-Use identity-mapping and PCI ATS doesn't help this issue.
+On Intel platforms, there are only rare devices which require a specific
+default domain: some graphic devices (identity), a specific model of
+AZALIA (identity) and external devices connected through thunderbolt
+(dma). They are not supposed to belong to a same group. Hence, if we
+are able to configure per-group default domain type, we don't need to
+keep private domain anymore.
 
-According to Alex Deucher, IOMMU isn't enabled on Windows, so let's do
-the same here to avoid screen flickering on 4K monitor.
+Probably, we are able to configure per-group default domain type with
+below two interfaces.
 
-Cc: Alex Deucher <alexander.deucher@amd.com>
-Bug: https://gitlab.freedesktop.org/drm/amd/issues/961
-Signed-off-by: Kai-Heng Feng <kai.heng.feng@canonical.com>
-Acked-by: Alex Deucher <alexander.deucher@amd.com>
-Signed-off-by: Joerg Roedel <jroedel@suse.de>
-Signed-off-by: Sasha Levin <sashal@kernel.org>
----
- drivers/iommu/amd_iommu_init.c | 13 ++++++++++++-
- 1 file changed, 12 insertions(+), 1 deletion(-)
+- (ops->)dev_def_domain_type: Return the required default domain type
+   for a device. It returns
+   - IOMMU_DOMAIN_DMA (device must use a DMA domain), unlikely
+   - IOMMU_DOMAIN_IDENTITY (device must use an Identity domain), unlikely
+   - 0 (both are okay), likely
 
-diff --git a/drivers/iommu/amd_iommu_init.c b/drivers/iommu/amd_iommu_init.c
-index d7cbca8bf2cd4..b5ae9f7c0510b 100644
---- a/drivers/iommu/amd_iommu_init.c
-+++ b/drivers/iommu/amd_iommu_init.c
-@@ -2533,6 +2533,7 @@ static int __init early_amd_iommu_init(void)
- 	struct acpi_table_header *ivrs_base;
- 	acpi_status status;
- 	int i, remap_cache_sz, ret = 0;
-+	u32 pci_id;
- 
- 	if (!amd_iommu_detected)
- 		return -ENODEV;
-@@ -2620,6 +2621,16 @@ static int __init early_amd_iommu_init(void)
- 	if (ret)
- 		goto out;
- 
-+	/* Disable IOMMU if there's Stoney Ridge graphics */
-+	for (i = 0; i < 32; i++) {
-+		pci_id = read_pci_config(0, i, 0, 0);
-+		if ((pci_id & 0xffff) == 0x1002 && (pci_id >> 16) == 0x98e4) {
-+			pr_info("Disable IOMMU on Stoney Ridge\n");
-+			amd_iommu_disabled = true;
-+			break;
-+		}
-+	}
-+
- 	/* Disable any previously enabled IOMMUs */
- 	if (!is_kdump_kernel() || amd_iommu_disabled)
- 		disable_iommus();
-@@ -2728,7 +2739,7 @@ static int __init state_next(void)
- 		ret = early_amd_iommu_init();
- 		init_state = ret ? IOMMU_INIT_ERROR : IOMMU_ACPI_FINISHED;
- 		if (init_state == IOMMU_ACPI_FINISHED && amd_iommu_disabled) {
--			pr_info("AMD IOMMU disabled on kernel command-line\n");
-+			pr_info("AMD IOMMU disabled\n");
- 			init_state = IOMMU_CMDLINE_DISABLED;
- 			ret = -EINVAL;
- 		}
--- 
-2.20.1
+- iommu_group_change_def_domain: Change the default domain of a group
+   Works only when all devices have no driver bond.
 
+[Sai's patch set has already included these two interfaces.]
+
+In iommu_probe_device(),
+
+dev_def_type = ops->dev_def_domain_type(dev)
+if (dev_def_type && dev_def_type != group->default_domain->type) {
+	ret = iommu_group_change_def_domain(...)
+	if (ret)
+		return -EINVAL;
+}
+
+This should work during boot since iommu_probe_device() always happens
+before device driver binding. We need to further consider the hot-plug
+cases.
+
+- Hardware initiated device hotplug
+We should always use DMA domain for devices connected through an
+external port to avoid DMA attacking from malicious devices. And
+such devices shouldn't share a group with internal (trusted) devices.
+Hence, I can't see any problems here.
+
+- Software initiated device hotplug
+The default domain type won't change before and after device hotplug
+so there's no problem as well.
+
+This is what I have for the private domain in vt-d driver. Just for
+discussion.
+
+Best regards,
+baolu
 _______________________________________________
 iommu mailing list
 iommu@lists.linux-foundation.org
