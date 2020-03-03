@@ -4,90 +4,100 @@ X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 X-Spam-Level: 
 X-Spam-Status: No, score=-8.1 required=3.0 tests=DKIM_INVALID,DKIM_SIGNED,
 	HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_PATCH,MAILING_LIST_MULTI,SIGNED_OFF_BY,
-	SPF_HELO_NONE,SPF_PASS,USER_AGENT_SANE_1 autolearn=ham autolearn_force=no
-	version=3.4.0
+	SPF_HELO_NONE,SPF_PASS,USER_AGENT_SANE_1 autolearn=unavailable
+	autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id D93FFC3F2C6
-	for <iommu@archiver.kernel.org>; Tue,  3 Mar 2020 22:18:10 +0000 (UTC)
-Received: from silver.osuosl.org (smtp3.osuosl.org [140.211.166.136])
+	by smtp.lore.kernel.org (Postfix) with ESMTP id BE6A3C3F2D7
+	for <iommu@archiver.kernel.org>; Tue,  3 Mar 2020 22:29:40 +0000 (UTC)
+Received: from fraxinus.osuosl.org (smtp4.osuosl.org [140.211.166.137])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by mail.kernel.org (Postfix) with ESMTPS id 5BEF720870
-	for <iommu@archiver.kernel.org>; Tue,  3 Mar 2020 22:18:10 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTPS id 79F4B20848
+	for <iommu@archiver.kernel.org>; Tue,  3 Mar 2020 22:29:40 +0000 (UTC)
 Authentication-Results: mail.kernel.org;
-	dkim=fail reason="signature verification failed" (2048-bit key) header.d=armlinux.org.uk header.i=@armlinux.org.uk header.b="uTllFNEk"
-DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 5BEF720870
-Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=armlinux.org.uk
+	dkim=fail reason="signature verification failed" (2048-bit key) header.d=google.com header.i=@google.com header.b="bnSswgv1"
+DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 79F4B20848
+Authentication-Results: mail.kernel.org; dmarc=none (p=none dis=none) header.from=lists.linux-foundation.org
 Authentication-Results: mail.kernel.org; spf=pass smtp.mailfrom=iommu-bounces@lists.linux-foundation.org
 Received: from localhost (localhost [127.0.0.1])
-	by silver.osuosl.org (Postfix) with ESMTP id 1B2152050F;
-	Tue,  3 Mar 2020 22:18:10 +0000 (UTC)
+	by fraxinus.osuosl.org (Postfix) with ESMTP id 1DCCE85D6C;
+	Tue,  3 Mar 2020 22:29:40 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from silver.osuosl.org ([127.0.0.1])
+Received: from fraxinus.osuosl.org ([127.0.0.1])
 	by localhost (.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
-	with ESMTP id F0byb+ljprZQ; Tue,  3 Mar 2020 22:18:08 +0000 (UTC)
+	with ESMTP id RsDcF1BFo2b7; Tue,  3 Mar 2020 22:29:38 +0000 (UTC)
 Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [140.211.9.56])
-	by silver.osuosl.org (Postfix) with ESMTP id D675E204FF;
-	Tue,  3 Mar 2020 22:18:08 +0000 (UTC)
+	by fraxinus.osuosl.org (Postfix) with ESMTP id 3D79B85650;
+	Tue,  3 Mar 2020 22:29:38 +0000 (UTC)
 Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
-	by lists.linuxfoundation.org (Postfix) with ESMTP id B82C4C1AE2;
-	Tue,  3 Mar 2020 22:18:08 +0000 (UTC)
-Received: from silver.osuosl.org (smtp3.osuosl.org [140.211.166.136])
- by lists.linuxfoundation.org (Postfix) with ESMTP id EC2B6C013E
- for <iommu@lists.linux-foundation.org>; Tue,  3 Mar 2020 22:18:05 +0000 (UTC)
+	by lists.linuxfoundation.org (Postfix) with ESMTP id 2A12EC1AE2;
+	Tue,  3 Mar 2020 22:29:38 +0000 (UTC)
+Received: from hemlock.osuosl.org (smtp2.osuosl.org [140.211.166.133])
+ by lists.linuxfoundation.org (Postfix) with ESMTP id 1D0A7C013E
+ for <iommu@lists.linux-foundation.org>; Tue,  3 Mar 2020 22:29:37 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
- by silver.osuosl.org (Postfix) with ESMTP id D2FA420516
- for <iommu@lists.linux-foundation.org>; Tue,  3 Mar 2020 22:18:05 +0000 (UTC)
+ by hemlock.osuosl.org (Postfix) with ESMTP id 062DD87861
+ for <iommu@lists.linux-foundation.org>; Tue,  3 Mar 2020 22:29:37 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from silver.osuosl.org ([127.0.0.1])
+Received: from hemlock.osuosl.org ([127.0.0.1])
  by localhost (.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
- with ESMTP id X++G5KLRyHA2 for <iommu@lists.linux-foundation.org>;
- Tue,  3 Mar 2020 22:18:03 +0000 (UTC)
+ with ESMTP id mg-YNd3X1Ary for <iommu@lists.linux-foundation.org>;
+ Tue,  3 Mar 2020 22:29:36 +0000 (UTC)
 X-Greylist: domain auto-whitelisted by SQLgrey-1.7.6
-Received: from pandora.armlinux.org.uk (pandora.armlinux.org.uk [78.32.30.218])
- by silver.osuosl.org (Postfix) with ESMTPS id 55F51204FF
- for <iommu@lists.linux-foundation.org>; Tue,  3 Mar 2020 22:18:02 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
- d=armlinux.org.uk; s=pandora-2019; h=Sender:In-Reply-To:Content-Type:
- MIME-Version:References:Message-ID:Subject:Cc:To:From:Date:Reply-To:
- Content-Transfer-Encoding:Content-ID:Content-Description:Resent-Date:
- Resent-From:Resent-Sender:Resent-To:Resent-Cc:Resent-Message-ID:List-Id:
- List-Help:List-Unsubscribe:List-Subscribe:List-Post:List-Owner:List-Archive;
- bh=vUdS4FZhC6hPgxAjdVTLkMMEUI8Uey7J+vqKnDed7dA=; b=uTllFNEkcC5PpbhQZKI/1RC9u
- n6JvngCRzC8UQ8TyNoXQcSlllqWv4ejiqRtnvE7r3Q/2OfcAXWsgzxZsbsNogZrD+8McoI5wSFOVG
- vM/hWBsdssqq3asxsqPWpwdfpI9iSHer+EYqLMCtBhsEpxcNjL8v2W1KnuMSKfjAn0oTYhF8+2UXc
- uz78mIStKrJTqJm8UoyF56XBeTmXz0MGnm8aIrdYI7/IBrRoVMxxGXMKJEbJo09YkZbxo9YwvUcrp
- 0twubE4Tbvcu8om0lo7CSpr5gNloEvJfvqg+z5chmVGcvsCPQYhMYQzAWFQdk2STgZ2PSRr8WLIcm
- pmNMEl+QA==;
-Received: from shell.armlinux.org.uk
- ([2001:4d48:ad52:3201:5054:ff:fe00:4ec]:48344)
- by pandora.armlinux.org.uk with esmtpsa
- (TLSv1.2:ECDHE-RSA-AES256-GCM-SHA384:256) (Exim 4.90_1)
- (envelope-from <linux@armlinux.org.uk>)
- id 1j9FrL-0002Y2-9M; Tue, 03 Mar 2020 22:17:51 +0000
-Received: from linux by shell.armlinux.org.uk with local (Exim 4.92)
- (envelope-from <linux@shell.armlinux.org.uk>)
- id 1j9FrF-0006HO-Ru; Tue, 03 Mar 2020 22:17:45 +0000
-Date: Tue, 3 Mar 2020 22:17:45 +0000
-From: Russell King - ARM Linux admin <linux@armlinux.org.uk>
-To: Laurentiu Tudor <laurentiu.tudor@nxp.com>
-Subject: Re: [PATCH] iommu: silence iommu group prints
-Message-ID: <20200303221745.GV25745@shell.armlinux.org.uk>
-References: <E1j7Hnc-0004Bm-Kn@rmk-PC.armlinux.org.uk>
- <f0fc4c8c-4475-e77f-da6d-e068e7993568@linux.intel.com>
- <b4029a97-ac80-484f-9d01-d7f4eb174cdd@huawei.com>
- <20200228100644.GT25745@shell.armlinux.org.uk>
- <95af8fc3-d7b1-3b58-afc1-d203d7538b95@arm.com>
- <bcb9fbab-2943-3207-b69d-e7ce9e3e3a8e@nxp.com>
- <20200303154959.GR25745@shell.armlinux.org.uk>
- <ac9dc4b1-e3a4-2b69-7c61-d94e082cef30@nxp.com>
+Received: from mail-pf1-f193.google.com (mail-pf1-f193.google.com
+ [209.85.210.193])
+ by hemlock.osuosl.org (Postfix) with ESMTPS id 3751F86DAD
+ for <iommu@lists.linux-foundation.org>; Tue,  3 Mar 2020 22:29:36 +0000 (UTC)
+Received: by mail-pf1-f193.google.com with SMTP id 2so2206807pfg.12
+ for <iommu@lists.linux-foundation.org>; Tue, 03 Mar 2020 14:29:36 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=google.com; s=20161025;
+ h=date:from:to:cc:subject:in-reply-to:message-id:references
+ :user-agent:mime-version;
+ bh=qsYG18HX6uZbiPK20EisyP81AacMb1c2Icyzz8nclsQ=;
+ b=bnSswgv1wQFHCnn2gUBYrBM6J8xRuL8TpkX3sFiMTk4PrTI/zDDPpicC5ZXcMnJDM/
+ 0Ry1HAMWFWQNXmkHdB7fFqsXsckAp87MBVtGcXD9f2e75GCgZbuNApH7lJCb93O1VBcf
+ eZAhsO/26YflgSqRe7KMkFSPiHe2E3+sgW/9wFTytSoZ0cHMP5HrBowLc+Bkg1oToYoY
+ 1Tdm3PmBgZAtoBgYkPh4swcaX6JDf5+v6Kl//LM1ArypSYa2P3tIDUqFUj+ggonrV3um
+ F0r0YZAnpFQDAGqXCrS40dDQWYBigUnN074NBmPnOI2lZ1v5BZKascdgNBolGiNcr/Cp
+ q/ZA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+ d=1e100.net; s=20161025;
+ h=x-gm-message-state:date:from:to:cc:subject:in-reply-to:message-id
+ :references:user-agent:mime-version;
+ bh=qsYG18HX6uZbiPK20EisyP81AacMb1c2Icyzz8nclsQ=;
+ b=qHVi8tMipO6KNNRtEkYrMAVPpH79XUOx4vOupO38JPJ9nntyIkRNpf+Vr3YUZM3OB4
+ lXDTMnqGMsBITyaJ99bq+x5Ui50MhVYWWxKRL80gP+2wu+ARc7l00U46evGTiaVOE3gS
+ Xss1OdaF4c3yQSsg7Nevw82/NAfh92/SmWo96iVkTNNw4qjWwOJmbux3baqEMyOiiRLZ
+ t4h+AXdjYEtQvly62h/vRM/aduYMT6cVJmZAP/kvH1r+at1c845EJt8TQ+b36Hk0d92D
+ SdUfZ7CLGisn0c7VVKgf6XGIBKp3a0GGw7vyqrBGsGLRjyhndPXYAm/Ov39kDt6z4+mw
+ 9hGw==
+X-Gm-Message-State: ANhLgQ0FXjennhSuy4sSt9DbI/fyB4zy9LuuTytFPEP2kwBCg4bu2i0x
+ kHQaDehRhRKBAYpXSCV7Um+6cg==
+X-Google-Smtp-Source: ADFU+vtzyIShP+G54of6bxET8G8ijzqUGU1m5d1X3O4aCk+cSDULuBvvUSQPIM3mSn/0xoX3ha8aAA==
+X-Received: by 2002:aa7:9a5e:: with SMTP id x30mr497971pfj.33.1583274575478;
+ Tue, 03 Mar 2020 14:29:35 -0800 (PST)
+Received: from [2620:15c:17:3:3a5:23a7:5e32:4598]
+ ([2620:15c:17:3:3a5:23a7:5e32:4598])
+ by smtp.gmail.com with ESMTPSA id d24sm26951030pfq.75.2020.03.03.14.29.34
+ (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+ Tue, 03 Mar 2020 14:29:34 -0800 (PST)
+Date: Tue, 3 Mar 2020 14:29:34 -0800 (PST)
+X-X-Sender: rientjes@chino.kir.corp.google.com
+To: Christoph Hellwig <hch@lst.de>, Tom Lendacky <thomas.lendacky@amd.com>
+Subject: Re: [rfc 4/6] dma-remap: dynamically expanding atomic pools
+In-Reply-To: <alpine.DEB.2.21.2003011537440.213582@chino.kir.corp.google.com>
+Message-ID: <alpine.DEB.2.21.2003031424400.41997@chino.kir.corp.google.com>
+References: <alpine.DEB.2.21.1912311738130.68206@chino.kir.corp.google.com>
+ <b22416ec-cc28-3fd2-3a10-89840be173fa@amd.com>
+ <alpine.DEB.2.21.2002280118461.165532@chino.kir.corp.google.com>
+ <alpine.DEB.2.21.2003011535510.213582@chino.kir.corp.google.com>
+ <alpine.DEB.2.21.2003011537440.213582@chino.kir.corp.google.com>
+User-Agent: Alpine 2.21 (DEB 202 2017-01-01)
 MIME-Version: 1.0
-Content-Disposition: inline
-In-Reply-To: <ac9dc4b1-e3a4-2b69-7c61-d94e082cef30@nxp.com>
-User-Agent: Mutt/1.10.1 (2018-07-13)
-Cc: Diana Madalina Craciun <diana.craciun@nxp.com>,
- iommu@lists.linux-foundation.org, Robin Murphy <robin.murphy@arm.com>,
- Ioana Ciornei <ioana.ciornei@nxp.com>
+Cc: "Singh, Brijesh" <brijesh.singh@amd.com>, "Grimm, Jon" <jon.grimm@amd.com>,
+ baekhw@google.com,
+ "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
+ "iommu@lists.linux-foundation.org" <iommu@lists.linux-foundation.org>
 X-BeenThere: iommu@lists.linux-foundation.org
 X-Mailman-Version: 2.1.15
 Precedence: list
@@ -100,110 +110,192 @@ List-Post: <mailto:iommu@lists.linux-foundation.org>
 List-Help: <mailto:iommu-request@lists.linux-foundation.org?subject=help>
 List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
  <mailto:iommu-request@lists.linux-foundation.org?subject=subscribe>
+From: David Rientjes via iommu <iommu@lists.linux-foundation.org>
+Reply-To: David Rientjes <rientjes@google.com>
 Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
 Errors-To: iommu-bounces@lists.linux-foundation.org
 Sender: "iommu" <iommu-bounces@lists.linux-foundation.org>
 
-On Tue, Mar 03, 2020 at 05:55:05PM +0200, Laurentiu Tudor wrote:
-> From c98dc05cdd45ae923654f2427985bd28bcde4bb2 Mon Sep 17 00:00:00 2001
-> From: Laurentiu Tudor <laurentiu.tudor@nxp.com>
-> Date: Thu, 13 Feb 2020 11:59:12 +0200
-> Subject: [PATCH 1/4] bus: fsl-mc: add custom .dma_configure implementation
-> Content-Type: text/plain; charset="us-ascii"
+On Sun, 1 Mar 2020, David Rientjes wrote:
+
+> When an atomic pool becomes fully depleted because it is now relied upon
+> for all non-blocking allocations through the DMA API, allow background
+> expansion of each pool by a kworker.
 > 
-> The devices on this bus are not discovered by way of device tree
-> but by queries to the firmware. It makes little sense to trick the
-> generic of layer into thinking that these devices are of related so
-> that we can get our dma configuration. Instead of doing that, add
-> our custom dma configuration implementation.
-
-Firstly, applying this to v5.5 results in a build failure, due to a
-missing linux/iommu.h include.
-
-Secondly, this on its own appears to make the DPAA2 network interfaces
-completely disappear.  Looking in /sys/bus/fsl-mc/drivers/*, none of
-the DPAA2 drivers are bound to anything, and looking in
-/sys/bus/fsl-mc/devices/, there is:
-
-lrwxrwxrwx 1 root root 0 Mar  3 22:06 dprc.1 -> ../../../devices/platform/soc/80c000000.fsl-mc/dprc.1
-
-This is booting with u-boot, so using DT rather than ACPI.
-
-> Signed-off-by: Laurentiu Tudor <laurentiu.tudor@nxp.com>
+> When an atomic pool has less than the default size of memory left, kick
+> off a kworker to dynamically expand the pool in the background.  The pool
+> is doubled in size.
+> 
+> This allows the default size to be kept quite low when one or more of the
+> atomic pools is not used.
+> 
+> Also switch over some node ids to the more appropriate NUMA_NO_NODE.
+> 
+> Signed-off-by: David Rientjes <rientjes@google.com>
 > ---
->  drivers/bus/fsl-mc/fsl-mc-bus.c | 42 ++++++++++++++++++++++++++++++++-
->  1 file changed, 41 insertions(+), 1 deletion(-)
+>  kernel/dma/remap.c | 79 ++++++++++++++++++++++++++++++++++------------
+>  1 file changed, 58 insertions(+), 21 deletions(-)
 > 
-> diff --git a/drivers/bus/fsl-mc/fsl-mc-bus.c b/drivers/bus/fsl-mc/fsl-mc-bus.c
-> index 36eb25f82c8e..3df015eedae4 100644
-> --- a/drivers/bus/fsl-mc/fsl-mc-bus.c
-> +++ b/drivers/bus/fsl-mc/fsl-mc-bus.c
-> @@ -132,11 +132,51 @@ static int fsl_mc_bus_uevent(struct device *dev, struct kobj_uevent_env *env)
->  static int fsl_mc_dma_configure(struct device *dev)
+> diff --git a/kernel/dma/remap.c b/kernel/dma/remap.c
+> --- a/kernel/dma/remap.c
+> +++ b/kernel/dma/remap.c
+> @@ -10,6 +10,7 @@
+>  #include <linux/genalloc.h>
+>  #include <linux/slab.h>
+>  #include <linux/vmalloc.h>
+> +#include <linux/workqueue.h>
+>  
+>  struct page **dma_common_find_pages(void *cpu_addr)
 >  {
->  	struct device *dma_dev = dev;
-> +	struct iommu_fwspec *fwspec;
-> +	const struct iommu_ops *iommu_ops;
-> +	struct fsl_mc_device *mc_dev = to_fsl_mc_device(dev);
+> @@ -104,7 +105,10 @@ static struct gen_pool *atomic_pool_dma32 __ro_after_init;
+>  static struct gen_pool *atomic_pool_normal __ro_after_init;
+>  
+>  #define DEFAULT_DMA_COHERENT_POOL_SIZE  SZ_256K
+> -static size_t atomic_pool_size __initdata = DEFAULT_DMA_COHERENT_POOL_SIZE;
+> +static size_t atomic_pool_size = DEFAULT_DMA_COHERENT_POOL_SIZE;
+> +
+> +/* Dynamic background expansion when the atomic pool is near capacity */
+> +struct work_struct atomic_pool_work;
+>  
+>  static int __init early_coherent_pool(char *p)
+>  {
+> @@ -113,14 +117,14 @@ static int __init early_coherent_pool(char *p)
+>  }
+>  early_param("coherent_pool", early_coherent_pool);
+>  
+> -static int __init __dma_atomic_pool_init(struct gen_pool **pool,
+> -					 size_t pool_size, gfp_t gfp)
+> +static int atomic_pool_expand(struct gen_pool *pool, size_t pool_size,
+> +			      gfp_t gfp)
+>  {
+> -	const unsigned int order = get_order(pool_size);
+>  	const unsigned long nr_pages = pool_size >> PAGE_SHIFT;
+> +	const unsigned int order = get_order(pool_size);
+>  	struct page *page;
+>  	void *addr;
+> -	int ret;
+> +	int ret = -ENOMEM;
+>  
+>  	if (dev_get_cma_area(NULL))
+>  		page = dma_alloc_from_contiguous(NULL, nr_pages, order, false);
+
+There's an issue here if the pool grows too large which would result in
+order > MAX_ORDER-1.  We can fix that by limiting order to MAX_ORDER-1 and 
+doing nr_pages = 1 << order.
+
+I should also add support for trying smaller page allocations if our 
+preferred expansion size results in an allocation failure.
+
+Other than that, I'll remove the RFC tag and send a refreshed series by 
+the end of the week unless there are other comments or suggestions to 
+factor in.
+
+Thanks!
+
+> @@ -131,38 +135,67 @@ static int __init __dma_atomic_pool_init(struct gen_pool **pool,
+>  
+>  	arch_dma_prep_coherent(page, pool_size);
+>  
+> -	*pool = gen_pool_create(PAGE_SHIFT, -1);
+> -	if (!*pool)
+> -		goto free_page;
+> -
+>  	addr = dma_common_contiguous_remap(page, pool_size,
+>  					   pgprot_dmacoherent(PAGE_KERNEL),
+>  					   __builtin_return_address(0));
+>  	if (!addr)
+> -		goto destroy_genpool;
+> +		goto free_page;
+>  
+> -	ret = gen_pool_add_virt(*pool, (unsigned long)addr, page_to_phys(page),
+> -				pool_size, -1);
+> +	ret = gen_pool_add_virt(pool, (unsigned long)addr, page_to_phys(page),
+> +				pool_size, NUMA_NO_NODE);
+>  	if (ret)
+>  		goto remove_mapping;
+> -	gen_pool_set_algo(*pool, gen_pool_first_fit_order_align, NULL);
+>  
+> -	pr_info("DMA: preallocated %zu KiB %pGg pool for atomic allocations\n",
+> -		pool_size >> 10, &gfp);
+>  	return 0;
+>  
+>  remove_mapping:
+>  	dma_common_free_remap(addr, pool_size);
+> -destroy_genpool:
+> -	gen_pool_destroy(*pool);
+> -	*pool = NULL;
+>  free_page:
+>  	if (!dma_release_from_contiguous(NULL, page, nr_pages))
+>  		__free_pages(page, order);
+>  out:
+> -	pr_err("DMA: failed to allocate %zu KiB %pGg pool for atomic allocation\n",
+> -		atomic_pool_size >> 10, &gfp);
+> -	return -ENOMEM;
+> +	return ret;
+> +}
+> +
+> +static void atomic_pool_resize(struct gen_pool *pool, gfp_t gfp)
+> +{
+> +	if (pool && gen_pool_avail(pool) < atomic_pool_size)
+> +		atomic_pool_expand(pool, gen_pool_size(pool), gfp);
+> +}
+> +
+> +static void atomic_pool_work_fn(struct work_struct *work)
+> +{
+> +	if (IS_ENABLED(CONFIG_ZONE_DMA))
+> +		atomic_pool_resize(atomic_pool, GFP_DMA);
+> +	if (IS_ENABLED(CONFIG_ZONE_DMA32))
+> +		atomic_pool_resize(atomic_pool_dma32, GFP_DMA32);
+> +	atomic_pool_resize(atomic_pool_normal, GFP_KERNEL);
+> +}
+> +
+> +static int __init __dma_atomic_pool_init(struct gen_pool **pool,
+> +					 size_t pool_size, gfp_t gfp)
+> +{
 > +	int ret;
-> +	u32 icid;
 > +
-> +	/* Skip DMA setup for devices that are not DMA masters */
-> +	if (dev->type == &fsl_mc_bus_dpmcp_type ||
-> +	    dev->type == &fsl_mc_bus_dpbp_type ||
-> +	    dev->type == &fsl_mc_bus_dpcon_type ||
-> +	    dev->type == &fsl_mc_bus_dpio_type)
-> +		return 0;
->  
->  	while (dev_is_fsl_mc(dma_dev))
->  		dma_dev = dma_dev->parent;
->  
-> -	return of_dma_configure(dev, dma_dev->of_node, 0);
-> +	fwspec = dev_iommu_fwspec_get(dma_dev);
-> +	if (!fwspec)
-> +		return -ENODEV;
-
-The problem appears to be here - fwspec is NULL for dprc.1.
-
-> +	iommu_ops = iommu_ops_from_fwnode(fwspec->iommu_fwnode);
-> +	if (!iommu_ops)
-> +		return -ENODEV;
+> +	*pool = gen_pool_create(PAGE_SHIFT, NUMA_NO_NODE);
+> +	if (!*pool)
+> +		return -ENOMEM;
 > +
-> +	ret = iommu_fwspec_init(dev, fwspec->iommu_fwnode, iommu_ops);
-> +	if (ret)
-> +		return ret;
+> +	gen_pool_set_algo(*pool, gen_pool_first_fit_order_align, NULL);
 > +
-> +	icid = mc_dev->icid;
-> +	ret = iommu_fwspec_add_ids(dev, &icid, 1);
+> +	ret = atomic_pool_expand(*pool, pool_size, gfp);
 > +	if (ret) {
-> +		iommu_fwspec_free(dev);
+> +		gen_pool_destroy(*pool);
+> +		*pool = NULL;
+> +		pr_err("DMA: failed to allocate %zu KiB %pGg pool for atomic allocation\n",
+> +		       atomic_pool_size >> 10, &gfp);
 > +		return ret;
 > +	}
 > +
-> +	if (!device_iommu_mapped(dev)) {
-> +		ret = iommu_probe_device(dev);
-> +		if (ret) {
-> +			iommu_fwspec_free(dev);
-> +			return ret;
-> +		}
-> +	}
 > +
-> +	arch_setup_dma_ops(dev, 0, *dma_dev->dma_mask + 1, iommu_ops, true);
-> +
+> +	pr_info("DMA: preallocated %zu KiB %pGg pool for atomic allocations\n",
+> +		pool_size >> 10, &gfp);
 > +	return 0;
 >  }
 >  
->  static ssize_t modalias_show(struct device *dev, struct device_attribute *attr,
-> -- 
-> 2.17.1
+>  static int __init dma_atomic_pool_init(void)
+> @@ -170,6 +203,8 @@ static int __init dma_atomic_pool_init(void)
+>  	int ret = 0;
+>  	int err;
+>  
+> +	INIT_WORK(&atomic_pool_work, atomic_pool_work_fn);
+> +
+>  	ret = __dma_atomic_pool_init(&atomic_pool_normal, atomic_pool_size,
+>  				     GFP_KERNEL);
+>  	if (IS_ENABLED(CONFIG_ZONE_DMA)) {
+> @@ -231,6 +266,8 @@ void *dma_alloc_from_pool(struct device *dev, size_t size,
+>  		ptr = (void *)val;
+>  		memset(ptr, 0, size);
+>  	}
+> +	if (gen_pool_avail(pool) < atomic_pool_size)
+> +		schedule_work(&atomic_pool_work);
+>  
+>  	return ptr;
+>  }
 > 
-
-
--- 
-RMK's Patch system: https://www.armlinux.org.uk/developer/patches/
-FTTC broadband for 0.8mile line in suburbia: sync at 12.1Mbps down 622kbps up
-According to speedtest.net: 11.9Mbps down 500kbps up
 _______________________________________________
 iommu mailing list
 iommu@lists.linux-foundation.org
