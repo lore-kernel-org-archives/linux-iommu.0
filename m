@@ -4,85 +4,85 @@ X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 X-Spam-Level: 
 X-Spam-Status: No, score=-9.6 required=3.0 tests=DKIM_INVALID,DKIM_SIGNED,
 	HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_PATCH,MAILING_LIST_MULTI,SIGNED_OFF_BY,
-	SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED,USER_AGENT_GIT autolearn=ham
+	SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED,USER_AGENT_GIT autolearn=unavailable
 	autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 9840DC3F2D2
-	for <iommu@archiver.kernel.org>; Thu,  5 Mar 2020 20:15:14 +0000 (UTC)
-Received: from fraxinus.osuosl.org (smtp4.osuosl.org [140.211.166.137])
+	by smtp.lore.kernel.org (Postfix) with ESMTP id CFB09C3F2D1
+	for <iommu@archiver.kernel.org>; Thu,  5 Mar 2020 20:25:03 +0000 (UTC)
+Received: from silver.osuosl.org (smtp3.osuosl.org [140.211.166.136])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by mail.kernel.org (Postfix) with ESMTPS id 60B70207FD
-	for <iommu@archiver.kernel.org>; Thu,  5 Mar 2020 20:15:14 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTPS id 9D777207FD
+	for <iommu@archiver.kernel.org>; Thu,  5 Mar 2020 20:25:03 +0000 (UTC)
 Authentication-Results: mail.kernel.org;
-	dkim=fail reason="signature verification failed" (2048-bit key) header.d=lca.pw header.i=@lca.pw header.b="EozR9uSi"
-DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 60B70207FD
+	dkim=fail reason="signature verification failed" (2048-bit key) header.d=lca.pw header.i=@lca.pw header.b="Q5g8rYEb"
+DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 9D777207FD
 Authentication-Results: mail.kernel.org; dmarc=none (p=none dis=none) header.from=lca.pw
 Authentication-Results: mail.kernel.org; spf=pass smtp.mailfrom=iommu-bounces@lists.linux-foundation.org
 Received: from localhost (localhost [127.0.0.1])
-	by fraxinus.osuosl.org (Postfix) with ESMTP id 310A384E7C;
-	Thu,  5 Mar 2020 20:15:14 +0000 (UTC)
+	by silver.osuosl.org (Postfix) with ESMTP id 7287C20134;
+	Thu,  5 Mar 2020 20:25:03 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from fraxinus.osuosl.org ([127.0.0.1])
+Received: from silver.osuosl.org ([127.0.0.1])
 	by localhost (.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
-	with ESMTP id yRhhfjfGDMCT; Thu,  5 Mar 2020 20:15:13 +0000 (UTC)
+	with ESMTP id ptkEHvJjKf-l; Thu,  5 Mar 2020 20:25:02 +0000 (UTC)
 Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [140.211.9.56])
-	by fraxinus.osuosl.org (Postfix) with ESMTP id AD62684B60;
-	Thu,  5 Mar 2020 20:15:13 +0000 (UTC)
+	by silver.osuosl.org (Postfix) with ESMTP id 427862151F;
+	Thu,  5 Mar 2020 20:25:02 +0000 (UTC)
 Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
-	by lists.linuxfoundation.org (Postfix) with ESMTP id 96289C1AE2;
-	Thu,  5 Mar 2020 20:15:13 +0000 (UTC)
-Received: from fraxinus.osuosl.org (smtp4.osuosl.org [140.211.166.137])
- by lists.linuxfoundation.org (Postfix) with ESMTP id 611C2C013E
- for <iommu@lists.linux-foundation.org>; Thu,  5 Mar 2020 20:15:12 +0000 (UTC)
+	by lists.linuxfoundation.org (Postfix) with ESMTP id 2DCE4C1AE2;
+	Thu,  5 Mar 2020 20:25:02 +0000 (UTC)
+Received: from silver.osuosl.org (smtp3.osuosl.org [140.211.166.136])
+ by lists.linuxfoundation.org (Postfix) with ESMTP id 38766C013E
+ for <iommu@lists.linux-foundation.org>; Thu,  5 Mar 2020 20:25:01 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
- by fraxinus.osuosl.org (Postfix) with ESMTP id 4E7F884D41
- for <iommu@lists.linux-foundation.org>; Thu,  5 Mar 2020 20:15:12 +0000 (UTC)
+ by silver.osuosl.org (Postfix) with ESMTP id 346882151F
+ for <iommu@lists.linux-foundation.org>; Thu,  5 Mar 2020 20:25:01 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from fraxinus.osuosl.org ([127.0.0.1])
+Received: from silver.osuosl.org ([127.0.0.1])
  by localhost (.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
- with ESMTP id R7D8ll0ZuTvg for <iommu@lists.linux-foundation.org>;
- Thu,  5 Mar 2020 20:15:11 +0000 (UTC)
-X-Greylist: delayed 00:13:54 by SQLgrey-1.7.6
-Received: from mail-qt1-f195.google.com (mail-qt1-f195.google.com
- [209.85.160.195])
- by fraxinus.osuosl.org (Postfix) with ESMTPS id 7598384B60
- for <iommu@lists.linux-foundation.org>; Thu,  5 Mar 2020 20:15:11 +0000 (UTC)
-Received: by mail-qt1-f195.google.com with SMTP id d22so77140qtn.0
- for <iommu@lists.linux-foundation.org>; Thu, 05 Mar 2020 12:15:11 -0800 (PST)
+ with ESMTP id 8m0KQ0aXn+IF for <iommu@lists.linux-foundation.org>;
+ Thu,  5 Mar 2020 20:25:00 +0000 (UTC)
+X-Greylist: from auto-whitelisted by SQLgrey-1.7.6
+Received: from mail-qt1-f194.google.com (mail-qt1-f194.google.com
+ [209.85.160.194])
+ by silver.osuosl.org (Postfix) with ESMTPS id 5B53220134
+ for <iommu@lists.linux-foundation.org>; Thu,  5 Mar 2020 20:25:00 +0000 (UTC)
+Received: by mail-qt1-f194.google.com with SMTP id h16so46454qtr.11
+ for <iommu@lists.linux-foundation.org>; Thu, 05 Mar 2020 12:25:00 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=lca.pw; s=google;
  h=from:to:cc:subject:date:message-id;
- bh=lsTlhJGBqft/K5JqQFXCrVXt13xPv+FZ9nKG6t7UOmg=;
- b=EozR9uSiJiM39xnIz4HVrzXuclwRJ8+ZZWJqMpNzGsvACotrZKpiUdmxNGGOd4Zf4c
- uZMnz5PgJrNe2sDXh/C/iKo7dev0UQl+t1n4s4xFFJDtQ9JGSgFlt9LPlemc8RR/QGjQ
- xQ9EYr5qy3G64IR3Z75yZYReixPS3W6+7w2oo5wU11XvorZQsbQZmXVEUU3UqP6rdjvz
- GHFOoyklE45X30nXTExNtPA1sVRNHLl+N0L5iw2pjJL3H/AuxdKGcQ/mRpXZwHOxq3l4
- nqdrWH4IAvurhiRjxe2SJWT1DzbFHWyHqfdlfY+b1YE/srNb8V9NxWxarem2B5G2V0Xu
- mEuQ==
+ bh=EtvUYpx/Z6jkOZvIKTGZ1YcNxmsRMa5tAVsSg5EuMhY=;
+ b=Q5g8rYEbooZCweqZN9vq52DV5MrDA80j55ts6X0pDZ5lQA7onJ4ZLCWhc1Ih5wtCZn
+ bDB9MUgEAa4hLg2LgEvy3EN3aBTsbXRTYXG5+b6DxpzxbCoZEtqESFI6uPAxr0h7Ok5Z
+ ZDi2D8FmgdAPKe4MJHMGZP2fBtt9d9ZQoeFUes3aj/+EIscyYpBwFB+sZmx5Tjun42eb
+ hUPY7LkUcH0cAIiAcSvecVxXJerpkQY26TU2F3Ck4RyJg50ydFcNnAG5Xkeye628LHDQ
+ eACQJjlGaMUXaL2fOMqECgtEKRq9fI4SdQbtsf7neiVrjGBah0jSzkSoVgPgYSGyXuzz
+ 3lPA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
  d=1e100.net; s=20161025;
  h=x-gm-message-state:from:to:cc:subject:date:message-id;
- bh=lsTlhJGBqft/K5JqQFXCrVXt13xPv+FZ9nKG6t7UOmg=;
- b=t+FI+yb6Lxd7gu1W5gAKGw91J/NmemzbLHiKt6K6JNvQYVYftTPIj2MIk01FvEp3ny
- fLFY2fhvvOGWPyK43uEcGPBN5LT7hHkxkqBB9tK/MyVRp6OAQ6DjYFEF4eGgXyGg5upg
- l516NO5drScplZ8dcpaPWCzTAmQtca26CP+UwevmNnj/ECEMxN7WJdq1yuFR4dJR1rgP
- DDi1njET9aN5NWYxCh2QH93jJFbVOCf4UYnSEz0eW1TEbopfvz2LPjIyFRoddZiTu1Il
- V/WePFouFkLgrXly33lMmiHyo2zMNLYvM9F9gxaYnX6wvFV8WcJGAJud0EH9FsXtavNY
- YiwQ==
-X-Gm-Message-State: ANhLgQ0dYhZIkJjugDHDKE5WXvWEbF9nl472A/HVnj5wJ7KEHh2UfO2E
- lQHjX4D9J2Tzgdzhl6juIgPOqg==
-X-Google-Smtp-Source: ADFU+vsb7AANSdnCAfTh/bngRu53s2/B2h3q2rb2sPLMZz471ReHsGfGqA8mIvynejrExfdyPbRMnQ==
-X-Received: by 2002:aed:218f:: with SMTP id l15mr399544qtc.247.1583439310499; 
- Thu, 05 Mar 2020 12:15:10 -0800 (PST)
+ bh=EtvUYpx/Z6jkOZvIKTGZ1YcNxmsRMa5tAVsSg5EuMhY=;
+ b=ojgxzzX2rinUpU98KVfWMTVIq0NtwzT4JMe0t4M5s3BbeVIZEfAtLu2cQbCLtXiXM5
+ puZmyi0pnGqDwRHCLwtdegw35L8lLGMm9F5yNKOkgA3Z2ibm20NhGIRo4o5suC8WceaW
+ AuTc/tHrMmhAIvAMsM81yZTdmg+X4k1FA8OHN/Sb1093P5+9QSdBAPOLtQS80ZC/4og5
+ /9+dmk2lYMllFiKa8VGT74UugCDA6uO82lz+29He6UIHRuCcWeT1nRtcyYFCLCwO8tpM
+ QCHnzSQzFq5NKffFEj8TXet+WsAnebdMWd8mQD3OHD21RrtQLADVdGX42RzPKkeEx4Fd
+ 2i8w==
+X-Gm-Message-State: ANhLgQ3fypU0eBy9AC8OkNipKVAUXmpvUGyx0wdPGY5AI3UwSLcHWGIE
+ 93GD8ANELhXgf7ORFLbzPQ8imKfNbj4=
+X-Google-Smtp-Source: ADFU+vs2fX0fSX8HT8ldaRkDqTnvkbe+A+L8CQ9JvxGCaw+F/gPTk0fICGkAht0UcmGT1kh4f+zKTA==
+X-Received: by 2002:ac8:4cd1:: with SMTP id l17mr362984qtv.165.1583438476608; 
+ Thu, 05 Mar 2020 12:01:16 -0800 (PST)
 Received: from qcai.nay.com (nat-pool-bos-t.redhat.com. [66.187.233.206])
- by smtp.gmail.com with ESMTPSA id z6sm16254300qka.34.2020.03.05.12.15.09
+ by smtp.gmail.com with ESMTPSA id w21sm17576346qth.17.2020.03.05.12.01.14
  (version=TLS1_2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128/128);
- Thu, 05 Mar 2020 12:15:09 -0800 (PST)
+ Thu, 05 Mar 2020 12:01:15 -0800 (PST)
 From: Qian Cai <cai@lca.pw>
 To: jroedel@suse.de
-Subject: [PATCH -next] iommu/dmar: silence RCU-list debugging warnings
-Date: Thu,  5 Mar 2020 15:15:02 -0500
-Message-Id: <1583439302-11393-1-git-send-email-cai@lca.pw>
+Subject: [PATCH] iommu/vt-d: fix RCU-list bugs in intel_iommu_init
+Date: Thu,  5 Mar 2020 15:00:46 -0500
+Message-Id: <1583438446-9959-1-git-send-email-cai@lca.pw>
 X-Mailer: git-send-email 1.8.3.1
 Cc: iommu@lists.linux-foundation.org, linux-kernel@vger.kernel.org
 X-BeenThere: iommu@lists.linux-foundation.org
@@ -103,63 +103,72 @@ Content-Transfer-Encoding: 7bit
 Errors-To: iommu-bounces@lists.linux-foundation.org
 Sender: "iommu" <iommu-bounces@lists.linux-foundation.org>
 
-Similar to the commit 02d715b4a818 ("iommu/vt-d: Fix RCU list debugging
-warnings"), there are several other places that call
-list_for_each_entry_rcu() outside of an RCU read side critical section
-but with dmar_global_lock held. Silence those false positives as well.
+There are several places traverse RCU-list without holding any lock in
+intel_iommu_init(). Fix them by acquiring dmar_global_lock.
 
- drivers/iommu/intel-iommu.c:4288 RCU-list traversed in non-reader section!!
- 1 lock held by swapper/0/1:
-  #0: ffffffff935892c8 (dmar_global_lock){+.+.}, at: intel_iommu_init+0x1ad/0xb97
+ WARNING: suspicious RCU usage
+ -----------------------------
+ drivers/iommu/intel-iommu.c:5216 RCU-list traversed in non-reader section!!
 
- drivers/iommu/dmar.c:366 RCU-list traversed in non-reader section!!
- 1 lock held by swapper/0/1:
-  #0: ffffffff935892c8 (dmar_global_lock){+.+.}, at: intel_iommu_init+0x125/0xb97
+ other info that might help us debug this:
 
- drivers/iommu/intel-iommu.c:5057 RCU-list traversed in non-reader section!!
- 1 lock held by swapper/0/1:
-  #0: ffffffffa71892c8 (dmar_global_lock){++++}, at: intel_iommu_init+0x61a/0xb13
+ rcu_scheduler_active = 2, debug_locks = 1
+ no locks held by swapper/0/1.
 
+ Call Trace:
+  dump_stack+0xa0/0xea
+  lockdep_rcu_suspicious+0x102/0x10b
+  intel_iommu_init+0x947/0xb13
+  pci_iommu_init+0x26/0x62
+  do_one_initcall+0xfe/0x500
+  kernel_init_freeable+0x45a/0x4f8
+  kernel_init+0x11/0x139
+  ret_from_fork+0x3a/0x50
+ DMAR: Intel(R) Virtualization Technology for Directed I/O
+
+Fixes: d8190dc63886 ("iommu/vt-d: Enable DMA remapping after rmrr mapped")
 Signed-off-by: Qian Cai <cai@lca.pw>
 ---
- drivers/iommu/dmar.c | 3 ++-
- include/linux/dmar.h | 6 ++++--
- 2 files changed, 6 insertions(+), 3 deletions(-)
+ drivers/iommu/intel-iommu.c | 5 ++++-
+ 1 file changed, 4 insertions(+), 1 deletion(-)
 
-diff --git a/drivers/iommu/dmar.c b/drivers/iommu/dmar.c
-index 071bb42bbbc5..7b16c4db40b4 100644
---- a/drivers/iommu/dmar.c
-+++ b/drivers/iommu/dmar.c
-@@ -363,7 +363,8 @@ static int dmar_pci_bus_notifier(struct notifier_block *nb,
- {
- 	struct dmar_drhd_unit *dmaru;
+diff --git a/drivers/iommu/intel-iommu.c b/drivers/iommu/intel-iommu.c
+index 6fa6de2b6ad5..bc138ceb07bc 100644
+--- a/drivers/iommu/intel-iommu.c
++++ b/drivers/iommu/intel-iommu.c
+@@ -5193,6 +5193,7 @@ int __init intel_iommu_init(void)
  
--	list_for_each_entry_rcu(dmaru, &dmar_drhd_units, list)
-+	list_for_each_entry_rcu(dmaru, &dmar_drhd_units, list,
-+				dmar_rcu_check())
- 		if (dmaru->segment == drhd->segment &&
- 		    dmaru->reg_base_addr == drhd->address)
- 			return dmaru;
-diff --git a/include/linux/dmar.h b/include/linux/dmar.h
-index 712be8bc6a7c..d7bf029df737 100644
---- a/include/linux/dmar.h
-+++ b/include/linux/dmar.h
-@@ -74,11 +74,13 @@ struct dmar_pci_notify_info {
- 				dmar_rcu_check())
+ 	init_iommu_pm_ops();
  
- #define for_each_active_drhd_unit(drhd)					\
--	list_for_each_entry_rcu(drhd, &dmar_drhd_units, list)		\
-+	list_for_each_entry_rcu(drhd, &dmar_drhd_units, list,		\
-+				dmar_rcu_check())			\
- 		if (drhd->ignored) {} else
++	down_read(&dmar_global_lock);
+ 	for_each_active_iommu(iommu, drhd) {
+ 		iommu_device_sysfs_add(&iommu->iommu, NULL,
+ 				       intel_iommu_groups,
+@@ -5200,6 +5201,7 @@ int __init intel_iommu_init(void)
+ 		iommu_device_set_ops(&iommu->iommu, &intel_iommu_ops);
+ 		iommu_device_register(&iommu->iommu);
+ 	}
++	up_read(&dmar_global_lock);
  
- #define for_each_active_iommu(i, drhd)					\
--	list_for_each_entry_rcu(drhd, &dmar_drhd_units, list)		\
-+	list_for_each_entry_rcu(drhd, &dmar_drhd_units, list,		\
-+				dmar_rcu_check())			\
- 		if (i=drhd->iommu, drhd->ignored) {} else
+ 	bus_set_iommu(&pci_bus_type, &intel_iommu_ops);
+ 	if (si_domain && !hw_pass_through)
+@@ -5210,7 +5212,6 @@ int __init intel_iommu_init(void)
+ 	down_read(&dmar_global_lock);
+ 	if (probe_acpi_namespace_devices())
+ 		pr_warn("ACPI name space devices didn't probe correctly\n");
+-	up_read(&dmar_global_lock);
  
- #define for_each_iommu(i, drhd)						\
+ 	/* Finally, we enable the DMA remapping hardware. */
+ 	for_each_iommu(iommu, drhd) {
+@@ -5219,6 +5220,8 @@ int __init intel_iommu_init(void)
+ 
+ 		iommu_disable_protect_mem_regions(iommu);
+ 	}
++	up_read(&dmar_global_lock);
++
+ 	pr_info("Intel(R) Virtualization Technology for Directed I/O\n");
+ 
+ 	intel_iommu_enabled = 1;
 -- 
 1.8.3.1
 
