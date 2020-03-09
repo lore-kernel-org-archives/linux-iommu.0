@@ -2,85 +2,95 @@ Return-Path: <SRS0=J+1i=42=lists.linux-foundation.org=iommu-bounces@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-6.6 required=3.0 tests=DKIM_INVALID,DKIM_SIGNED,
+X-Spam-Status: No, score=-9.6 required=3.0 tests=DKIM_INVALID,DKIM_SIGNED,
 	HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_PATCH,MAILING_LIST_MULTI,SIGNED_OFF_BY,
-	SPF_HELO_NONE,SPF_PASS autolearn=ham autolearn_force=no version=3.4.0
+	SPF_HELO_NONE,SPF_PASS,USER_AGENT_GIT autolearn=ham autolearn_force=no
+	version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 1A63DC10F27
-	for <iommu@archiver.kernel.org>; Mon,  9 Mar 2020 18:25:23 +0000 (UTC)
-Received: from silver.osuosl.org (smtp3.osuosl.org [140.211.166.136])
+	by smtp.lore.kernel.org (Postfix) with ESMTP id CC08FC18E5A
+	for <iommu@archiver.kernel.org>; Mon,  9 Mar 2020 18:47:58 +0000 (UTC)
+Received: from fraxinus.osuosl.org (smtp4.osuosl.org [140.211.166.137])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by mail.kernel.org (Postfix) with ESMTPS id D876E20828
-	for <iommu@archiver.kernel.org>; Mon,  9 Mar 2020 18:25:22 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTPS id A64FB215A4
+	for <iommu@archiver.kernel.org>; Mon,  9 Mar 2020 18:47:58 +0000 (UTC)
 Authentication-Results: mail.kernel.org;
-	dkim=fail reason="signature verification failed" (1024-bit key) header.d=redhat.com header.i=@redhat.com header.b="CFQxaLKX"
-DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org D876E20828
-Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=redhat.com
+	dkim=fail reason="signature verification failed" (1024-bit key) header.d=mg.codeaurora.org header.i=@mg.codeaurora.org header.b="TsyklB8B"
+DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org A64FB215A4
+Authentication-Results: mail.kernel.org; dmarc=none (p=none dis=none) header.from=codeaurora.org
 Authentication-Results: mail.kernel.org; spf=pass smtp.mailfrom=iommu-bounces@lists.linux-foundation.org
 Received: from localhost (localhost [127.0.0.1])
-	by silver.osuosl.org (Postfix) with ESMTP id A265820551;
-	Mon,  9 Mar 2020 18:25:22 +0000 (UTC)
-X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from silver.osuosl.org ([127.0.0.1])
-	by localhost (.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
-	with ESMTP id JJImQaqEmKha; Mon,  9 Mar 2020 18:25:20 +0000 (UTC)
-Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [140.211.9.56])
-	by silver.osuosl.org (Postfix) with ESMTP id B79132049B;
-	Mon,  9 Mar 2020 18:25:20 +0000 (UTC)
-Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
-	by lists.linuxfoundation.org (Postfix) with ESMTP id 93EDAC18D3;
-	Mon,  9 Mar 2020 18:25:20 +0000 (UTC)
-Received: from fraxinus.osuosl.org (smtp4.osuosl.org [140.211.166.137])
- by lists.linuxfoundation.org (Postfix) with ESMTP id B925EC0177
- for <iommu@lists.linux-foundation.org>; Mon,  9 Mar 2020 18:25:19 +0000 (UTC)
-Received: from localhost (localhost [127.0.0.1])
- by fraxinus.osuosl.org (Postfix) with ESMTP id A7F298625D
- for <iommu@lists.linux-foundation.org>; Mon,  9 Mar 2020 18:25:19 +0000 (UTC)
+	by fraxinus.osuosl.org (Postfix) with ESMTP id 5C1C3872B9;
+	Mon,  9 Mar 2020 18:47:58 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
 Received: from fraxinus.osuosl.org ([127.0.0.1])
+	by localhost (.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
+	with ESMTP id CkbiLdBiDpYe; Mon,  9 Mar 2020 18:47:57 +0000 (UTC)
+Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [140.211.9.56])
+	by fraxinus.osuosl.org (Postfix) with ESMTP id 99FBD87281;
+	Mon,  9 Mar 2020 18:47:57 +0000 (UTC)
+Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
+	by lists.linuxfoundation.org (Postfix) with ESMTP id 85B2AC1D89;
+	Mon,  9 Mar 2020 18:47:57 +0000 (UTC)
+Received: from hemlock.osuosl.org (smtp2.osuosl.org [140.211.166.133])
+ by lists.linuxfoundation.org (Postfix) with ESMTP id 2F418C0177
+ for <iommu@lists.linux-foundation.org>; Mon,  9 Mar 2020 18:23:42 +0000 (UTC)
+Received: from localhost (localhost [127.0.0.1])
+ by hemlock.osuosl.org (Postfix) with ESMTP id 186A587B4D
+ for <iommu@lists.linux-foundation.org>; Mon,  9 Mar 2020 18:23:42 +0000 (UTC)
+X-Virus-Scanned: amavisd-new at osuosl.org
+Received: from hemlock.osuosl.org ([127.0.0.1])
  by localhost (.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
- with ESMTP id pK3j0uT1EH7g for <iommu@lists.linux-foundation.org>;
- Mon,  9 Mar 2020 18:25:18 +0000 (UTC)
-X-Greylist: domain auto-whitelisted by SQLgrey-1.7.6
-Received: from us-smtp-1.mimecast.com (us-smtp-delivery-1.mimecast.com
- [207.211.31.120])
- by fraxinus.osuosl.org (Postfix) with ESMTPS id AA08D8623B
- for <iommu@lists.linux-foundation.org>; Mon,  9 Mar 2020 18:25:18 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
- s=mimecast20190719; t=1583778317;
- h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
- to:to:cc:cc:mime-version:mime-version:content-type:content-type:
- content-transfer-encoding:content-transfer-encoding;
- bh=dhFOQVCQcR91oAbDqSH9uwvZ0fZzC+kPZ+PJ6IwN6UI=;
- b=CFQxaLKXkes8Zx9loSrVeBavGk2ksp/aC+ZLrwR414imA/ukKpaHokUGzwuTK0GxLoyJ69
- yr1ju8fny7Sq+R91ZH0Qpw9+pycOnh4rRh2hxHQ/91l7aRhFa5gI0UVtJYUmX72Hj+u257
- EyMEZt3+wzZAp8oJhm4AAy6bIFpvDI0=
-Received: from mimecast-mx01.redhat.com (mimecast-mx01.redhat.com
- [209.132.183.4]) (Using TLS) by relay.mimecast.com with ESMTP id
- us-mta-87-y862OjSJNK-zBjMu75-zpA-1; Mon, 09 Mar 2020 14:25:15 -0400
-X-MC-Unique: y862OjSJNK-zBjMu75-zpA-1
-Received: from smtp.corp.redhat.com (int-mx07.intmail.prod.int.phx2.redhat.com
- [10.5.11.22])
- (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
- (No client certificate requested)
- by mimecast-mx01.redhat.com (Postfix) with ESMTPS id B260B800D48;
- Mon,  9 Mar 2020 18:25:13 +0000 (UTC)
-Received: from x1.localdomain.com (unknown [10.36.118.63])
- by smtp.corp.redhat.com (Postfix) with ESMTP id 82F1A1001DF2;
- Mon,  9 Mar 2020 18:25:12 +0000 (UTC)
-From: Hans de Goede <hdegoede@redhat.com>
-To: David Woodhouse <dwmw2@infradead.org>, Lu Baolu <baolu.lu@linux.intel.com>,
- Joerg Roedel <joro@8bytes.org>
-Subject: [PATCH] iommu/vt-d: quirk_ioat_snb_local_iommu: replace WARN_TAINT
- with pr_warn + add_taint
-Date: Mon,  9 Mar 2020 19:25:10 +0100
-Message-Id: <20200309182510.373875-1-hdegoede@redhat.com>
+ with ESMTP id nNbt-rSsUr3R for <iommu@lists.linux-foundation.org>;
+ Mon,  9 Mar 2020 18:23:41 +0000 (UTC)
+X-Greylist: from auto-whitelisted by SQLgrey-1.7.6
+Received: from mail26.static.mailgun.info (mail26.static.mailgun.info
+ [104.130.122.26])
+ by hemlock.osuosl.org (Postfix) with ESMTPS id 329D387B36
+ for <iommu@lists.linux-foundation.org>; Mon,  9 Mar 2020 18:23:39 +0000 (UTC)
+DKIM-Signature: a=rsa-sha256; v=1; c=relaxed/relaxed; d=mg.codeaurora.org;
+ q=dns/txt; 
+ s=smtp; t=1583778221; h=Content-Transfer-Encoding: MIME-Version:
+ References: In-Reply-To: Message-Id: Date: Subject: Cc: To: From:
+ Sender; bh=5pJKzeW4cHTF7+UFcjOH7U5y2zK8JxKCVKx6r3Uqg0I=;
+ b=TsyklB8BllIlTKjZbsjOee56tm/AYgv3oQK6bCrrHR6YkHH87zTAW4hX2JGmvMySe4jT/0rL
+ hWoXZvs/1yx0qnyGmJwPenVuwCST78K5Cd5NTEDGQwOGGf/aYnqxvpb5b96OSWy+Lam3546B
+ OYCRJ5/xBRH/vJ0il8eJWN1DCik=
+X-Mailgun-Sending-Ip: 104.130.122.26
+X-Mailgun-Sid: WyI3NDkwMCIsICJpb21tdUBsaXN0cy5saW51eC1mb3VuZGF0aW9uLm9yZyIsICJiZTllNGEiXQ==
+Received: from smtp.codeaurora.org
+ (ec2-35-166-182-171.us-west-2.compute.amazonaws.com [35.166.182.171])
+ by mxa.mailgun.org with ESMTP id 5e66899e.7f98a374e768-smtp-out-n03;
+ Mon, 09 Mar 2020 18:23:26 -0000 (UTC)
+Received: by smtp.codeaurora.org (Postfix, from userid 1001)
+ id 012F0C44788; Mon,  9 Mar 2020 18:23:26 +0000 (UTC)
+Received: from blr-ubuntu-87.qualcomm.com
+ (blr-bdr-fw-01_GlobalNAT_AllZones-Outside.qualcomm.com [103.229.18.19])
+ (using TLSv1.2 with cipher ECDHE-RSA-AES128-SHA256 (128/128 bits))
+ (No client certificate requested) (Authenticated sender: sibis)
+ by smtp.codeaurora.org (Postfix) with ESMTPSA id 85160C43636;
+ Mon,  9 Mar 2020 18:23:21 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.3.2 smtp.codeaurora.org 85160C43636
+Authentication-Results: aws-us-west-2-caf-mail-1.web.codeaurora.org;
+ dmarc=none (p=none dis=none) header.from=codeaurora.org
+Authentication-Results: aws-us-west-2-caf-mail-1.web.codeaurora.org;
+ spf=none smtp.mailfrom=sibis@codeaurora.org
+From: Sibi Sankar <sibis@codeaurora.org>
+To: bjorn.andersson@linaro.org,
+	robh+dt@kernel.org,
+	joro@8bytes.org
+Subject: [PATCH 1/3] iommu: Export "iommu_request_dm_for_dev"
+Date: Mon,  9 Mar 2020 23:52:53 +0530
+Message-Id: <20200309182255.20142-2-sibis@codeaurora.org>
+X-Mailer: git-send-email 2.25.0
+In-Reply-To: <20200309182255.20142-1-sibis@codeaurora.org>
+References: <20200309182255.20142-1-sibis@codeaurora.org>
 MIME-Version: 1.0
-X-Scanned-By: MIMEDefang 2.84 on 10.5.11.22
-X-Mimecast-Spam-Score: 0
-X-Mimecast-Originator: redhat.com
-Cc: Hans de Goede <hdegoede@redhat.com>, iommu@lists.linux-foundation.org
+X-Mailman-Approved-At: Mon, 09 Mar 2020 18:47:56 +0000
+Cc: ohad@wizery.com, devicetree@vger.kernel.org, linux-arm-msm@vger.kernel.org,
+ linux-remoteproc@vger.kernel.org, linux-kernel@vger.kernel.org,
+ iommu@lists.linux-foundation.org, agross@kernel.org,
+ Sibi Sankar <sibis@codeaurora.org>
 X-BeenThere: iommu@lists.linux-foundation.org
 X-Mailman-Version: 2.1.15
 Precedence: list
@@ -98,50 +108,29 @@ Content-Transfer-Encoding: 7bit
 Errors-To: iommu-bounces@lists.linux-foundation.org
 Sender: "iommu" <iommu-bounces@lists.linux-foundation.org>
 
-Quoting from the comment describing the WARN functions in
-include/asm-generic/bug.h:
+Export "iommu_request_dm_for_dev" to allow for modular builds of
+drivers requesting for direct mapping.
 
- * WARN(), WARN_ON(), WARN_ON_ONCE, and so on can be used to report
- * significant kernel issues that need prompt attention if they should ever
- * appear at runtime.
- *
- * Do not use these macros when checking for invalid external inputs
-
-The (buggy) firmware tables which the dmar code was calling WARN_TAINT
-for really are invalid external inputs. They are not under the kernel's
-control and the issues in them cannot be fixed by a kernel update.
-So logging a backtrace, which invites bug reports to be filed about this,
-is not helpful.
-
-BugLink: https://bugzilla.redhat.com/show_bug.cgi?id=701847
-Fixes: 556ab45f9a77 ("ioat2: catch and recover from broken vtd configurations v6")
-Signed-off-by: Hans de Goede <hdegoede@redhat.com>
+Signed-off-by: Sibi Sankar <sibis@codeaurora.org>
 ---
- drivers/iommu/intel-iommu.c | 7 ++++---
- 1 file changed, 4 insertions(+), 3 deletions(-)
+ drivers/iommu/iommu.c | 1 +
+ 1 file changed, 1 insertion(+)
 
-diff --git a/drivers/iommu/intel-iommu.c b/drivers/iommu/intel-iommu.c
-index 3857a5cd1a75..8fd132f8e885 100644
---- a/drivers/iommu/intel-iommu.c
-+++ b/drivers/iommu/intel-iommu.c
-@@ -4261,10 +4261,11 @@ static void quirk_ioat_snb_local_iommu(struct pci_dev *pdev)
- 
- 	/* we know that the this iommu should be at offset 0xa000 from vtbar */
- 	drhd = dmar_find_matched_drhd_unit(pdev);
--	if (WARN_TAINT_ONCE(!drhd || drhd->reg_base_addr - vtbar != 0xa000,
--			    TAINT_FIRMWARE_WORKAROUND,
--			    "BIOS assigned incorrect VT-d unit for Intel(R) QuickData Technology device\n"))
-+	if (!drhd || drhd->reg_base_addr - vtbar != 0xa000) {
-+		pr_warn_once(FW_BUG "BIOS assigned incorrect VT-d unit for Intel(R) QuickData Technology device\n");
-+		add_taint(TAINT_FIRMWARE_WORKAROUND, LOCKDEP_STILL_OK);
- 		pdev->dev.archdata.iommu = DUMMY_DEVICE_DOMAIN_INFO;
-+	}
+diff --git a/drivers/iommu/iommu.c b/drivers/iommu/iommu.c
+index 3e3528436e0b2..06a36230fe22d 100644
+--- a/drivers/iommu/iommu.c
++++ b/drivers/iommu/iommu.c
+@@ -2353,6 +2353,7 @@ int iommu_request_dm_for_dev(struct device *dev)
+ {
+ 	return request_default_domain_for_dev(dev, IOMMU_DOMAIN_IDENTITY);
  }
- DECLARE_PCI_FIXUP_ENABLE(PCI_VENDOR_ID_INTEL, PCI_DEVICE_ID_INTEL_IOAT_SNB, quirk_ioat_snb_local_iommu);
++EXPORT_SYMBOL_GPL(iommu_request_dm_for_dev);
  
+ /* Request that a device can't be direct mapped by the IOMMU */
+ int iommu_request_dma_domain_for_dev(struct device *dev)
 -- 
-2.25.1
-
+The Qualcomm Innovation Center, Inc. is a member of the Code Aurora Forum,
+a Linux Foundation Collaborative Project
 _______________________________________________
 iommu mailing list
 iommu@lists.linux-foundation.org
