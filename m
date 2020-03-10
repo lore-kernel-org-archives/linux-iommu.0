@@ -4,54 +4,54 @@ X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 X-Spam-Level: 
 X-Spam-Status: No, score=-7.0 required=3.0 tests=HEADER_FROM_DIFFERENT_DOMAINS,
 	INCLUDES_PATCH,MAILING_LIST_MULTI,SIGNED_OFF_BY,SPF_HELO_NONE,SPF_PASS,
-	UNWANTED_LANGUAGE_BODY,URIBL_BLOCKED,USER_AGENT_GIT autolearn=unavailable
+	UNWANTED_LANGUAGE_BODY,URIBL_BLOCKED,USER_AGENT_GIT autolearn=ham
 	autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id AA629C3F2D0
-	for <iommu@archiver.kernel.org>; Tue, 10 Mar 2020 09:12:50 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 5F010C3F2D1
+	for <iommu@archiver.kernel.org>; Tue, 10 Mar 2020 09:12:52 +0000 (UTC)
 Received: from fraxinus.osuosl.org (smtp4.osuosl.org [140.211.166.137])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by mail.kernel.org (Postfix) with ESMTPS id 8C86320674
-	for <iommu@archiver.kernel.org>; Tue, 10 Mar 2020 09:12:50 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 8C86320674
+	by mail.kernel.org (Postfix) with ESMTPS id 37A9024683
+	for <iommu@archiver.kernel.org>; Tue, 10 Mar 2020 09:12:52 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 37A9024683
 Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=8bytes.org
 Authentication-Results: mail.kernel.org; spf=pass smtp.mailfrom=iommu-bounces@lists.linux-foundation.org
 Received: from localhost (localhost [127.0.0.1])
-	by fraxinus.osuosl.org (Postfix) with ESMTP id 72FEA87290;
-	Tue, 10 Mar 2020 09:12:50 +0000 (UTC)
+	by fraxinus.osuosl.org (Postfix) with ESMTP id 1BE6A86B7A;
+	Tue, 10 Mar 2020 09:12:52 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
 Received: from fraxinus.osuosl.org ([127.0.0.1])
 	by localhost (.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
-	with ESMTP id H59LCHEOI1P1; Tue, 10 Mar 2020 09:12:47 +0000 (UTC)
+	with ESMTP id QaJAYeXcyf3O; Tue, 10 Mar 2020 09:12:51 +0000 (UTC)
 Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [140.211.9.56])
-	by fraxinus.osuosl.org (Postfix) with ESMTP id C122F86739;
-	Tue, 10 Mar 2020 09:12:45 +0000 (UTC)
+	by fraxinus.osuosl.org (Postfix) with ESMTP id 398F486652;
+	Tue, 10 Mar 2020 09:12:47 +0000 (UTC)
 Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
-	by lists.linuxfoundation.org (Postfix) with ESMTP id AF901C18D3;
-	Tue, 10 Mar 2020 09:12:45 +0000 (UTC)
+	by lists.linuxfoundation.org (Postfix) with ESMTP id 3347AC0177;
+	Tue, 10 Mar 2020 09:12:47 +0000 (UTC)
 Received: from silver.osuosl.org (smtp3.osuosl.org [140.211.166.136])
- by lists.linuxfoundation.org (Postfix) with ESMTP id BED22C18D3;
- Tue, 10 Mar 2020 09:12:43 +0000 (UTC)
+ by lists.linuxfoundation.org (Postfix) with ESMTP id EB23DC1D8F;
+ Tue, 10 Mar 2020 09:12:44 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
- by silver.osuosl.org (Postfix) with ESMTP id A8F7820427;
- Tue, 10 Mar 2020 09:12:43 +0000 (UTC)
+ by silver.osuosl.org (Postfix) with ESMTP id DB1F420429;
+ Tue, 10 Mar 2020 09:12:44 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
 Received: from silver.osuosl.org ([127.0.0.1])
  by localhost (.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
- with ESMTP id CB4jab3Uou50; Tue, 10 Mar 2020 09:12:42 +0000 (UTC)
+ with ESMTP id hfX09jQnwUu9; Tue, 10 Mar 2020 09:12:44 +0000 (UTC)
 X-Greylist: from auto-whitelisted by SQLgrey-1.7.6
 X-Greylist: from auto-whitelisted by SQLgrey-1.7.6
 Received: from theia.8bytes.org (8bytes.org [81.169.241.247])
- by silver.osuosl.org (Postfix) with ESMTPS id D5C422043D;
- Tue, 10 Mar 2020 09:12:41 +0000 (UTC)
+ by silver.osuosl.org (Postfix) with ESMTPS id DDBB220427;
+ Tue, 10 Mar 2020 09:12:43 +0000 (UTC)
 Received: by theia.8bytes.org (Postfix, from userid 1000)
- id 92FC870B; Tue, 10 Mar 2020 10:12:32 +0100 (CET)
+ id 80837E0F; Tue, 10 Mar 2020 10:12:34 +0100 (CET)
 From: Joerg Roedel <joro@8bytes.org>
 To: iommu@lists.linux-foundation.org
-Subject: [PATCH 05/15] iommu: Rename struct iommu_param to dev_iommu
-Date: Tue, 10 Mar 2020 10:12:19 +0100
-Message-Id: <20200310091229.29830-6-joro@8bytes.org>
+Subject: [PATCH 15/15] iommu: Move fwspec->iommu_priv to struct dev_iommu
+Date: Tue, 10 Mar 2020 10:12:29 +0100
+Message-Id: <20200310091229.29830-16-joro@8bytes.org>
 X-Mailer: git-send-email 2.17.1
 In-Reply-To: <20200310091229.29830-1-joro@8bytes.org>
 References: <20200310091229.29830-1-joro@8bytes.org>
@@ -84,171 +84,58 @@ Sender: "iommu" <iommu-bounces@lists.linux-foundation.org>
 
 From: Joerg Roedel <jroedel@suse.de>
 
-The term dev_iommu aligns better with other existing structures and
-their accessor functions.
+Move the pointer for iommu private data from struct iommu_fwspec to
+struct dev_iommu.
 
 Tested-by: Will Deacon <will@kernel.org> # arm-smmu
 Signed-off-by: Joerg Roedel <jroedel@suse.de>
 ---
- drivers/iommu/iommu.c  | 28 ++++++++++++++--------------
- include/linux/device.h |  6 +++---
- include/linux/iommu.h  |  4 ++--
- 3 files changed, 19 insertions(+), 19 deletions(-)
+ include/linux/iommu.h | 7 ++++---
+ 1 file changed, 4 insertions(+), 3 deletions(-)
 
-diff --git a/drivers/iommu/iommu.c b/drivers/iommu/iommu.c
-index 3e3528436e0b..beac2ef063dd 100644
---- a/drivers/iommu/iommu.c
-+++ b/drivers/iommu/iommu.c
-@@ -152,9 +152,9 @@ void iommu_device_unregister(struct iommu_device *iommu)
- }
- EXPORT_SYMBOL_GPL(iommu_device_unregister);
- 
--static struct iommu_param *iommu_get_dev_param(struct device *dev)
-+static struct dev_iommu *dev_iommu_get(struct device *dev)
- {
--	struct iommu_param *param = dev->iommu_param;
-+	struct dev_iommu *param = dev->iommu;
- 
- 	if (param)
- 		return param;
-@@ -164,14 +164,14 @@ static struct iommu_param *iommu_get_dev_param(struct device *dev)
- 		return NULL;
- 
- 	mutex_init(&param->lock);
--	dev->iommu_param = param;
-+	dev->iommu = param;
- 	return param;
- }
- 
--static void iommu_free_dev_param(struct device *dev)
-+static void dev_iommu_free(struct device *dev)
- {
--	kfree(dev->iommu_param);
--	dev->iommu_param = NULL;
-+	kfree(dev->iommu);
-+	dev->iommu = NULL;
- }
- 
- int iommu_probe_device(struct device *dev)
-@@ -183,7 +183,7 @@ int iommu_probe_device(struct device *dev)
- 	if (!ops)
- 		return -EINVAL;
- 
--	if (!iommu_get_dev_param(dev))
-+	if (!dev_iommu_get(dev))
- 		return -ENOMEM;
- 
- 	if (!try_module_get(ops->owner)) {
-@@ -200,7 +200,7 @@ int iommu_probe_device(struct device *dev)
- err_module_put:
- 	module_put(ops->owner);
- err_free_dev_param:
--	iommu_free_dev_param(dev);
-+	dev_iommu_free(dev);
- 	return ret;
- }
- 
-@@ -211,9 +211,9 @@ void iommu_release_device(struct device *dev)
- 	if (dev->iommu_group)
- 		ops->remove_device(dev);
- 
--	if (dev->iommu_param) {
-+	if (dev->iommu) {
- 		module_put(ops->owner);
--		iommu_free_dev_param(dev);
-+		dev_iommu_free(dev);
- 	}
- }
- 
-@@ -972,7 +972,7 @@ int iommu_register_device_fault_handler(struct device *dev,
- 					iommu_dev_fault_handler_t handler,
- 					void *data)
- {
--	struct iommu_param *param = dev->iommu_param;
-+	struct dev_iommu *param = dev->iommu;
- 	int ret = 0;
- 
- 	if (!param)
-@@ -1015,7 +1015,7 @@ EXPORT_SYMBOL_GPL(iommu_register_device_fault_handler);
-  */
- int iommu_unregister_device_fault_handler(struct device *dev)
- {
--	struct iommu_param *param = dev->iommu_param;
-+	struct dev_iommu *param = dev->iommu;
- 	int ret = 0;
- 
- 	if (!param)
-@@ -1055,7 +1055,7 @@ EXPORT_SYMBOL_GPL(iommu_unregister_device_fault_handler);
-  */
- int iommu_report_device_fault(struct device *dev, struct iommu_fault_event *evt)
- {
--	struct iommu_param *param = dev->iommu_param;
-+	struct dev_iommu *param = dev->iommu;
- 	struct iommu_fault_event *evt_pending = NULL;
- 	struct iommu_fault_param *fparam;
- 	int ret = 0;
-@@ -1104,7 +1104,7 @@ int iommu_page_response(struct device *dev,
- 	int ret = -EINVAL;
- 	struct iommu_fault_event *evt;
- 	struct iommu_fault_page_request *prm;
--	struct iommu_param *param = dev->iommu_param;
-+	struct dev_iommu *param = dev->iommu;
- 	struct iommu_domain *domain = iommu_get_domain_for_dev(dev);
- 
- 	if (!domain || !domain->ops->page_response)
-diff --git a/include/linux/device.h b/include/linux/device.h
-index fa04dfd22bbc..405a8f11bec1 100644
---- a/include/linux/device.h
-+++ b/include/linux/device.h
-@@ -44,7 +44,7 @@ struct iommu_ops;
- struct iommu_group;
- struct iommu_fwspec;
- struct dev_pin_info;
--struct iommu_param;
-+struct dev_iommu;
- 
- /**
-  * struct subsys_interface - interfaces to device functions
-@@ -514,7 +514,7 @@ struct dev_links_info {
-  * 		device (i.e. the bus driver that discovered the device).
-  * @iommu_group: IOMMU group the device belongs to.
-  * @iommu_fwspec: IOMMU-specific properties supplied by firmware.
-- * @iommu_param: Per device generic IOMMU runtime data
-+ * @iommu:	Per device generic IOMMU runtime data
-  *
-  * @offline_disabled: If set, the device is permanently online.
-  * @offline:	Set after successful invocation of bus type's .offline().
-@@ -614,7 +614,7 @@ struct device {
- 	void	(*release)(struct device *dev);
- 	struct iommu_group	*iommu_group;
- 	struct iommu_fwspec	*iommu_fwspec;
--	struct iommu_param	*iommu_param;
-+	struct dev_iommu	*iommu;
- 
- 	bool			offline_disabled:1;
- 	bool			offline:1;
 diff --git a/include/linux/iommu.h b/include/linux/iommu.h
-index 3c4ca041d7a2..1c9fa5c1174b 100644
+index 056900e75758..8c4d45fce042 100644
 --- a/include/linux/iommu.h
 +++ b/include/linux/iommu.h
-@@ -365,7 +365,7 @@ struct iommu_fault_param {
- };
- 
- /**
-- * struct iommu_param - collection of per-device IOMMU data
-+ * struct dev_iommu - Collection of per-device IOMMU data
+@@ -369,6 +369,7 @@ struct iommu_fault_param {
   *
   * @fault_param: IOMMU detected device fault reporting data
+  * @fwspec:	 IOMMU fwspec data
++ * @priv:	 IOMMU Driver private data
   *
-@@ -373,7 +373,7 @@ struct iommu_fault_param {
+  * TODO: migrate other per device data pointers under iommu_dev_data, e.g.
   *	struct iommu_group	*iommu_group;
-  *	struct iommu_fwspec	*iommu_fwspec;
-  */
--struct iommu_param {
-+struct dev_iommu {
+@@ -377,6 +378,7 @@ struct dev_iommu {
  	struct mutex lock;
- 	struct iommu_fault_param *fault_param;
+ 	struct iommu_fault_param	*fault_param;
+ 	struct iommu_fwspec		*fwspec;
++	void				*priv;
  };
+ 
+ int  iommu_device_register(struct iommu_device *iommu);
+@@ -589,7 +591,6 @@ struct iommu_group *fsl_mc_device_group(struct device *dev);
+ struct iommu_fwspec {
+ 	const struct iommu_ops	*ops;
+ 	struct fwnode_handle	*iommu_fwnode;
+-	void			*iommu_priv;
+ 	u32			flags;
+ 	u32			num_pasid_bits;
+ 	unsigned int		num_ids;
+@@ -629,12 +630,12 @@ static inline void dev_iommu_fwspec_set(struct device *dev,
+ 
+ static inline void *dev_iommu_priv_get(struct device *dev)
+ {
+-	return dev->iommu->fwspec->iommu_priv;
++	return dev->iommu->priv;
+ }
+ 
+ static inline void dev_iommu_priv_set(struct device *dev, void *priv)
+ {
+-	dev->iommu->fwspec->iommu_priv = priv;
++	dev->iommu->priv = priv;
+ }
+ 
+ int iommu_probe_device(struct device *dev);
 -- 
 2.17.1
 
