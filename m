@@ -6,52 +6,52 @@ X-Spam-Status: No, score=-9.8 required=3.0 tests=HEADER_FROM_DIFFERENT_DOMAINS,
 	INCLUDES_PATCH,MAILING_LIST_MULTI,SIGNED_OFF_BY,SPF_HELO_NONE,SPF_PASS,
 	URIBL_BLOCKED,USER_AGENT_GIT autolearn=ham autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id AD3C5C18E5C
-	for <iommu@archiver.kernel.org>; Tue, 10 Mar 2020 09:12:49 +0000 (UTC)
-Received: from whitealder.osuosl.org (smtp1.osuosl.org [140.211.166.138])
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 99CB9C18E5B
+	for <iommu@archiver.kernel.org>; Tue, 10 Mar 2020 09:12:50 +0000 (UTC)
+Received: from fraxinus.osuosl.org (smtp4.osuosl.org [140.211.166.137])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by mail.kernel.org (Postfix) with ESMTPS id 8A5C620674
-	for <iommu@archiver.kernel.org>; Tue, 10 Mar 2020 09:12:49 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 8A5C620674
+	by mail.kernel.org (Postfix) with ESMTPS id 77EC524681
+	for <iommu@archiver.kernel.org>; Tue, 10 Mar 2020 09:12:50 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 77EC524681
 Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=8bytes.org
 Authentication-Results: mail.kernel.org; spf=pass smtp.mailfrom=iommu-bounces@lists.linux-foundation.org
 Received: from localhost (localhost [127.0.0.1])
-	by whitealder.osuosl.org (Postfix) with ESMTP id 4FA8E884E0;
-	Tue, 10 Mar 2020 09:12:49 +0000 (UTC)
+	by fraxinus.osuosl.org (Postfix) with ESMTP id 4172386194;
+	Tue, 10 Mar 2020 09:12:50 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from whitealder.osuosl.org ([127.0.0.1])
+Received: from fraxinus.osuosl.org ([127.0.0.1])
 	by localhost (.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
-	with ESMTP id nKGqyVJTDbzT; Tue, 10 Mar 2020 09:12:46 +0000 (UTC)
+	with ESMTP id CC6V_YLCP4uJ; Tue, 10 Mar 2020 09:12:49 +0000 (UTC)
 Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [140.211.9.56])
-	by whitealder.osuosl.org (Postfix) with ESMTP id 0344D883BF;
-	Tue, 10 Mar 2020 09:12:43 +0000 (UTC)
+	by fraxinus.osuosl.org (Postfix) with ESMTP id 4C5CD87152;
+	Tue, 10 Mar 2020 09:12:46 +0000 (UTC)
 Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
-	by lists.linuxfoundation.org (Postfix) with ESMTP id CF1C3C0177;
-	Tue, 10 Mar 2020 09:12:42 +0000 (UTC)
-Received: from whitealder.osuosl.org (smtp1.osuosl.org [140.211.166.138])
- by lists.linuxfoundation.org (Postfix) with ESMTP id 358ACC0177;
- Tue, 10 Mar 2020 09:12:39 +0000 (UTC)
+	by lists.linuxfoundation.org (Postfix) with ESMTP id 37437C18D3;
+	Tue, 10 Mar 2020 09:12:46 +0000 (UTC)
+Received: from fraxinus.osuosl.org (smtp4.osuosl.org [140.211.166.137])
+ by lists.linuxfoundation.org (Postfix) with ESMTP id 797FCC1D87;
+ Tue, 10 Mar 2020 09:12:44 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
- by whitealder.osuosl.org (Postfix) with ESMTP id 23526883BF;
- Tue, 10 Mar 2020 09:12:39 +0000 (UTC)
+ by fraxinus.osuosl.org (Postfix) with ESMTP id 7073486CC9;
+ Tue, 10 Mar 2020 09:12:44 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from whitealder.osuosl.org ([127.0.0.1])
+Received: from fraxinus.osuosl.org ([127.0.0.1])
  by localhost (.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
- with ESMTP id vXjt-mPPcRwV; Tue, 10 Mar 2020 09:12:37 +0000 (UTC)
+ with ESMTP id 7L_iiHWTKEiS; Tue, 10 Mar 2020 09:12:43 +0000 (UTC)
 X-Greylist: from auto-whitelisted by SQLgrey-1.7.6
 X-Greylist: from auto-whitelisted by SQLgrey-1.7.6
 Received: from theia.8bytes.org (8bytes.org [81.169.241.247])
- by whitealder.osuosl.org (Postfix) with ESMTPS id 16FD1883D2;
- Tue, 10 Mar 2020 09:12:37 +0000 (UTC)
+ by fraxinus.osuosl.org (Postfix) with ESMTPS id D9B7A86457;
+ Tue, 10 Mar 2020 09:12:41 +0000 (UTC)
 Received: by theia.8bytes.org (Postfix, from userid 1000)
- id 6C468608; Tue, 10 Mar 2020 10:12:32 +0100 (CET)
+ id C678FD42; Tue, 10 Mar 2020 10:12:33 +0100 (CET)
 From: Joerg Roedel <joro@8bytes.org>
 To: iommu@lists.linux-foundation.org
-Subject: [PATCH 04/15] iommu/tegra-gart: Remove direct access of
- dev->iommu_fwspec
-Date: Tue, 10 Mar 2020 10:12:18 +0100
-Message-Id: <20200310091229.29830-5-joro@8bytes.org>
+Subject: [PATCH 11/15] iommu/renesas: Use accessor functions for iommu private
+ data
+Date: Tue, 10 Mar 2020 10:12:25 +0100
+Message-Id: <20200310091229.29830-12-joro@8bytes.org>
 X-Mailer: git-send-email 2.17.1
 In-Reply-To: <20200310091229.29830-1-joro@8bytes.org>
 References: <20200310091229.29830-1-joro@8bytes.org>
@@ -84,27 +84,44 @@ Sender: "iommu" <iommu-bounces@lists.linux-foundation.org>
 
 From: Joerg Roedel <jroedel@suse.de>
 
-Use the accessor functions instead of directly dereferencing
-dev->iommu_fwspec.
+Make use of dev_iommu_priv_set/get() functions.
 
 Signed-off-by: Joerg Roedel <jroedel@suse.de>
 ---
- drivers/iommu/tegra-gart.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+ drivers/iommu/ipmmu-vmsa.c | 7 ++-----
+ 1 file changed, 2 insertions(+), 5 deletions(-)
 
-diff --git a/drivers/iommu/tegra-gart.c b/drivers/iommu/tegra-gart.c
-index 3fb7ba72507d..db6559e8336f 100644
---- a/drivers/iommu/tegra-gart.c
-+++ b/drivers/iommu/tegra-gart.c
-@@ -247,7 +247,7 @@ static int gart_iommu_add_device(struct device *dev)
- {
- 	struct iommu_group *group;
+diff --git a/drivers/iommu/ipmmu-vmsa.c b/drivers/iommu/ipmmu-vmsa.c
+index ecb3f9464dd5..310cf09feea3 100644
+--- a/drivers/iommu/ipmmu-vmsa.c
++++ b/drivers/iommu/ipmmu-vmsa.c
+@@ -89,9 +89,7 @@ static struct ipmmu_vmsa_domain *to_vmsa_domain(struct iommu_domain *dom)
  
--	if (!dev->iommu_fwspec)
-+	if (!dev_iommu_fwspec_get(dev))
+ static struct ipmmu_vmsa_device *to_ipmmu(struct device *dev)
+ {
+-	struct iommu_fwspec *fwspec = dev_iommu_fwspec_get(dev);
+-
+-	return fwspec ? fwspec->iommu_priv : NULL;
++	return dev_iommu_priv_get(dev);
+ }
+ 
+ #define TLB_LOOP_TIMEOUT		100	/* 100us */
+@@ -727,14 +725,13 @@ static phys_addr_t ipmmu_iova_to_phys(struct iommu_domain *io_domain,
+ static int ipmmu_init_platform_device(struct device *dev,
+ 				      struct of_phandle_args *args)
+ {
+-	struct iommu_fwspec *fwspec = dev_iommu_fwspec_get(dev);
+ 	struct platform_device *ipmmu_pdev;
+ 
+ 	ipmmu_pdev = of_find_device_by_node(args->np);
+ 	if (!ipmmu_pdev)
  		return -ENODEV;
  
- 	group = iommu_group_get_for_dev(dev);
+-	fwspec->iommu_priv = platform_get_drvdata(ipmmu_pdev);
++	dev_iommu_priv_set(dev, platform_get_drvdata(ipmmu_pdev));
+ 
+ 	return 0;
+ }
 -- 
 2.17.1
 
