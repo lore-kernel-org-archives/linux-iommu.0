@@ -7,89 +7,89 @@ X-Spam-Status: No, score=-9.6 required=3.0 tests=DKIM_INVALID,DKIM_SIGNED,
 	SPF_HELO_NONE,SPF_PASS,USER_AGENT_GIT autolearn=unavailable
 	autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 9C668C3F2D9
-	for <iommu@archiver.kernel.org>; Wed, 11 Mar 2020 12:47:07 +0000 (UTC)
-Received: from silver.osuosl.org (smtp3.osuosl.org [140.211.166.136])
+	by smtp.lore.kernel.org (Postfix) with ESMTP id B1BBCC3F2D8
+	for <iommu@archiver.kernel.org>; Wed, 11 Mar 2020 12:47:04 +0000 (UTC)
+Received: from hemlock.osuosl.org (smtp2.osuosl.org [140.211.166.133])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by mail.kernel.org (Postfix) with ESMTPS id 6A42621D56
-	for <iommu@archiver.kernel.org>; Wed, 11 Mar 2020 12:47:07 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTPS id 849CF22464
+	for <iommu@archiver.kernel.org>; Wed, 11 Mar 2020 12:47:04 +0000 (UTC)
 Authentication-Results: mail.kernel.org;
-	dkim=fail reason="signature verification failed" (2048-bit key) header.d=linaro.org header.i=@linaro.org header.b="MjFUpxHp"
-DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 6A42621D56
+	dkim=fail reason="signature verification failed" (2048-bit key) header.d=linaro.org header.i=@linaro.org header.b="PaFI7USc"
+DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 849CF22464
 Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=linaro.org
 Authentication-Results: mail.kernel.org; spf=pass smtp.mailfrom=iommu-bounces@lists.linux-foundation.org
 Received: from localhost (localhost [127.0.0.1])
-	by silver.osuosl.org (Postfix) with ESMTP id 5E91D22268;
-	Wed, 11 Mar 2020 12:47:07 +0000 (UTC)
+	by hemlock.osuosl.org (Postfix) with ESMTP id 4D04787EA8;
+	Wed, 11 Mar 2020 12:47:04 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from silver.osuosl.org ([127.0.0.1])
+Received: from hemlock.osuosl.org ([127.0.0.1])
 	by localhost (.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
-	with ESMTP id ZWHtqLxXCjgB; Wed, 11 Mar 2020 12:47:06 +0000 (UTC)
+	with ESMTP id ZwDpubyPfuMe; Wed, 11 Mar 2020 12:47:03 +0000 (UTC)
 Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [140.211.9.56])
-	by silver.osuosl.org (Postfix) with ESMTP id 02C1C22264;
-	Wed, 11 Mar 2020 12:47:06 +0000 (UTC)
+	by hemlock.osuosl.org (Postfix) with ESMTP id BE9A387E4A;
+	Wed, 11 Mar 2020 12:47:03 +0000 (UTC)
 Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
-	by lists.linuxfoundation.org (Postfix) with ESMTP id DF725C18D3;
-	Wed, 11 Mar 2020 12:47:05 +0000 (UTC)
+	by lists.linuxfoundation.org (Postfix) with ESMTP id B90EDC18D3;
+	Wed, 11 Mar 2020 12:47:03 +0000 (UTC)
 Received: from fraxinus.osuosl.org (smtp4.osuosl.org [140.211.166.137])
- by lists.linuxfoundation.org (Postfix) with ESMTP id E79F1C18D3
- for <iommu@lists.linux-foundation.org>; Wed, 11 Mar 2020 12:47:03 +0000 (UTC)
+ by lists.linuxfoundation.org (Postfix) with ESMTP id AD1B7C0177
+ for <iommu@lists.linux-foundation.org>; Wed, 11 Mar 2020 12:47:02 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
- by fraxinus.osuosl.org (Postfix) with ESMTP id D6F5B85F71
- for <iommu@lists.linux-foundation.org>; Wed, 11 Mar 2020 12:47:03 +0000 (UTC)
+ by fraxinus.osuosl.org (Postfix) with ESMTP id 55EFC85F7D
+ for <iommu@lists.linux-foundation.org>; Wed, 11 Mar 2020 12:47:02 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
 Received: from fraxinus.osuosl.org ([127.0.0.1])
  by localhost (.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
- with ESMTP id D7PIL4OotIMq for <iommu@lists.linux-foundation.org>;
- Wed, 11 Mar 2020 12:47:02 +0000 (UTC)
+ with ESMTP id NNnkUWJa-P5x for <iommu@lists.linux-foundation.org>;
+ Wed, 11 Mar 2020 12:47:01 +0000 (UTC)
 X-Greylist: domain auto-whitelisted by SQLgrey-1.7.6
-Received: from mail-wm1-f65.google.com (mail-wm1-f65.google.com
- [209.85.128.65])
- by fraxinus.osuosl.org (Postfix) with ESMTPS id 8060285F67
- for <iommu@lists.linux-foundation.org>; Wed, 11 Mar 2020 12:47:02 +0000 (UTC)
-Received: by mail-wm1-f65.google.com with SMTP id n8so1931599wmc.4
- for <iommu@lists.linux-foundation.org>; Wed, 11 Mar 2020 05:47:02 -0700 (PDT)
+Received: from mail-wm1-f67.google.com (mail-wm1-f67.google.com
+ [209.85.128.67])
+ by fraxinus.osuosl.org (Postfix) with ESMTPS id 2B89D85F67
+ for <iommu@lists.linux-foundation.org>; Wed, 11 Mar 2020 12:47:01 +0000 (UTC)
+Received: by mail-wm1-f67.google.com with SMTP id g62so1978114wme.1
+ for <iommu@lists.linux-foundation.org>; Wed, 11 Mar 2020 05:47:01 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linaro.org; s=google;
  h=from:to:cc:subject:date:message-id:in-reply-to:references
  :mime-version:content-transfer-encoding;
- bh=b6OCZpMX/zgjbiuYOZTv/yFn5g+Ml1pLP7pmNaB6uOk=;
- b=MjFUpxHpBskH8AZCa8gyvEeUFGWD8nE+I7Ccpw5x/EXEZNlkDfyhMtLIM9pIzDpMVv
- yv0WXrEyAyadtJ8laExtvI33SAK/Yj/XjyQUF33QkNa3LaJWSWjjXypqpRKmE99YyjLb
- Kzy38i8AKYH4slxDJSkaJhQqvJ0EyrgpZHy986v4LgMtDJY23CAifDPwM90WBTpJll1C
- aCNKlrXt1hD1ylm12EIODmL0J+kS46opQN5Wu90Eqk0d9OEv7vwJtW1G2hoWdmN9jEBN
- PsbTfgKubpyqXHQuVx5zuV7EXMF/qnMdkHydeM2T9wWjSBiZg5D3b6eUELp4nBntbfqe
- BObw==
+ bh=U47FGde+FbNcdQs+RPhyYEqijb3kd9q1HrNDc4ml5OM=;
+ b=PaFI7UScmuJq/vQMffhQojPOeVfgLOAOjM4tY3da2DCq6MkkfzqrKf7V1Pxw17ncw8
+ I7lQsl4LNyrad1s2jqB7jxtjderJz1RfVJLzyzLHT+oAi/Nou6U8jheMoW1RCz5MFSmt
+ 8TqQOYGDNPNoEyjr7Wiqwd81sNgrr8blWpNAwkKUf1YvpBlEq53rad+vRE26mSuLionw
+ wAz0sy3xHgGF1Xt7nkvW0dLEL7P3CqIctcFCnPvoWBwkwSJ3aEqgNcQBJaSFzZUK4ZuH
+ LE/gRrJ60DA+fHf+OG44ZIz5IHRMbefyq84xQfidyBcnHlOEgny1G6Qa9QaCs7OF3Ab7
+ 7uwQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
  d=1e100.net; s=20161025;
  h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
  :references:mime-version:content-transfer-encoding;
- bh=b6OCZpMX/zgjbiuYOZTv/yFn5g+Ml1pLP7pmNaB6uOk=;
- b=VSLNogsyNO3UlrKnp2oBlbuboU2Z4KULDIAysyqbSy8Mb6gn2qWfDckWC0nG9DIEAE
- +kGbMCma4GbGuNPYzcEH+gEOyAe1YRbaF0i/umIv1gsZ3QQmQGhxSnpf5vMPQxZwFO+F
- A+FVFddEiLJxIwAlp+dyy/AJYcKU+JWmhO3pWEQkaTAmTBi3QPk2BIPuRjU07ud+ota9
- oKaGRevTd9yRT1KYEc620B0utbJVm7VmDq7OSRnq6otBsmHI0NT2LaDRgOOzhA+uYxT0
- sjSN5b0Lq7k5v2Phu0Cu3F4QEk8uBQJJ3N5Lu7T5/og5JclM1i5fww08/ExecEOqhqcQ
- B/Hw==
-X-Gm-Message-State: ANhLgQ1LsI6+HqEtwgjn47ZwgGWROQ/s1WisTowhKypAQbUCOjkYSuQL
- xLQU65uM0Bt3A8h8J/0Jv4vjeg==
-X-Google-Smtp-Source: ADFU+vtkHVanNQvPFzQ2zU8Odytq9w4wgEuuvipDqHybssyuXsKZkeB4j+7vEMafMywcklgaRLR7SA==
-X-Received: by 2002:a7b:c414:: with SMTP id k20mr3677774wmi.119.1583930820944; 
- Wed, 11 Mar 2020 05:47:00 -0700 (PDT)
+ bh=U47FGde+FbNcdQs+RPhyYEqijb3kd9q1HrNDc4ml5OM=;
+ b=CaLsTfxcyUnX7CPADUP0Q+mdr9eep+hS+8/tByZNA9c3GMbbCjTdo+wZk1GBNaWzDG
+ kCmbmAlq29gryI71nSRaysIMNkuwpxJ7kV5zj/UVDNCzXXd8OBc9pFJCPUZTQmRJXVS5
+ kp0tw8bEMJ8YZUjJnliZB0zfcnyq7Jdf6qJ5wVxApmycxxr7rezSFHQXJ0NFh+7gQAZR
+ h0AzbDKxaayqMAD6HFyqzAzmn+fCBKZGBce/5TK/35uIyI2eI51N5oeVqVL4uDeaNUan
+ 5WSYARHCEat1JInIw+aiKtqcO3qs7JzPr0WtHkIRekgjRJ1zKDKNv34ZoTBQI2KOnJvc
+ nPWA==
+X-Gm-Message-State: ANhLgQ1OUEMSlciZb0hV/IKJl0+iqoLZhmXv9G0iGLg3uTloQUxt96iU
+ f2ubL+9Rsiy39Tkyi5oMD9+GAg==
+X-Google-Smtp-Source: ADFU+vssp6pgSA4SHhUAKAeskjqrgFN5K6L5kBvQztm1aXqSMSSOxW9M674hcGUdXj2nfa3aXBAr9Q==
+X-Received: by 2002:a1c:5fc5:: with SMTP id t188mr1007198wmb.110.1583930819703; 
+ Wed, 11 Mar 2020 05:46:59 -0700 (PDT)
 Received: from localhost.localdomain
  ([2001:171b:c9a8:fbc0:116c:c27a:3e7f:5eaf])
- by smtp.gmail.com with ESMTPSA id c2sm8380020wma.39.2020.03.11.05.46.59
+ by smtp.gmail.com with ESMTPSA id c2sm8380020wma.39.2020.03.11.05.46.58
  (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
- Wed, 11 Mar 2020 05:47:00 -0700 (PDT)
+ Wed, 11 Mar 2020 05:46:59 -0700 (PDT)
 From: Jean-Philippe Brucker <jean-philippe@linaro.org>
 To: bhelgaas@google.com, will@kernel.org, robh+dt@kernel.org, joro@8bytes.org,
  baolu.lu@linux.intel.com, sudeep.holla@arm.com, linux-doc@vger.kernel.org,
  linux-pci@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
  devicetree@vger.kernel.org, linux-acpi@vger.kernel.org,
  iommu@lists.linux-foundation.org
-Subject: [PATCH v2 05/11] PCI/ATS: Gather checks into pci_ats_supported()
-Date: Wed, 11 Mar 2020 13:45:00 +0100
-Message-Id: <20200311124506.208376-6-jean-philippe@linaro.org>
+Subject: [PATCH v2 04/11] ACPI/IORT: Check ATS capability in root complex node
+Date: Wed, 11 Mar 2020 13:44:59 +0100
+Message-Id: <20200311124506.208376-5-jean-philippe@linaro.org>
 X-Mailer: git-send-email 2.25.1
 In-Reply-To: <20200311124506.208376-1-jean-philippe@linaro.org>
 References: <20200311124506.208376-1-jean-philippe@linaro.org>
@@ -115,91 +115,100 @@ Content-Transfer-Encoding: 7bit
 Errors-To: iommu-bounces@lists.linux-foundation.org
 Sender: "iommu" <iommu-bounces@lists.linux-foundation.org>
 
-IOMMU drivers need to perform several tests when checking if a device
-supports ATS.  Move them all into a new function that returns true when
-a device and its host bridge support ATS.
+When initializing a PCI root bridge, copy its "ATS supported" attribute
+into the root bridge.
 
-Since pci_enable_ats() now calls pci_ats_supported(), the following
-new checks are now common:
-* whether a device is trusted.  Devices plugged into external-facing
-  ports such as thunderbolt are untrusted.
-* whether the host bridge supports ATS, which defaults to true unless
-  the firmware description states that ATS isn't supported by the host
-  bridge.
-
+Acked-by: Hanjun Guo <guohanjun@huawei.com>
 Signed-off-by: Jean-Philippe Brucker <jean-philippe@linaro.org>
 ---
- drivers/pci/ats.c       | 30 +++++++++++++++++++++++++++++-
- include/linux/pci-ats.h |  3 +++
- 2 files changed, 32 insertions(+), 1 deletion(-)
+ drivers/acpi/arm64/iort.c | 27 +++++++++++++++++++++++++++
+ drivers/acpi/pci_root.c   |  3 +++
+ include/linux/acpi_iort.h |  8 ++++++++
+ 3 files changed, 38 insertions(+)
 
-diff --git a/drivers/pci/ats.c b/drivers/pci/ats.c
-index 390e92f2d8d1..bbfd0d42b8b9 100644
---- a/drivers/pci/ats.c
-+++ b/drivers/pci/ats.c
-@@ -30,6 +30,34 @@ void pci_ats_init(struct pci_dev *dev)
- 	dev->ats_cap = pos;
+diff --git a/drivers/acpi/arm64/iort.c b/drivers/acpi/arm64/iort.c
+index ed3d2d1a7ae9..d99d7f5b51e1 100644
+--- a/drivers/acpi/arm64/iort.c
++++ b/drivers/acpi/arm64/iort.c
+@@ -1633,6 +1633,33 @@ static void __init iort_enable_acs(struct acpi_iort_node *iort_node)
+ 		}
+ 	}
  }
- 
-+/**
-+ * pci_ats_supported - check if the device can use ATS
-+ * @dev: the PCI device
-+ *
-+ * Returns true if the device supports ATS and is allowed to use it, false
-+ * otherwise.
-+ */
-+bool pci_ats_supported(struct pci_dev *dev)
++
++static acpi_status iort_match_host_bridge_callback(struct acpi_iort_node *node,
++						   void *context)
 +{
-+	struct pci_host_bridge *bridge;
++	struct acpi_iort_root_complex *pci_rc;
++	struct pci_host_bridge *host_bridge = context;
 +
-+	if (!dev->ats_cap)
-+		return false;
++	pci_rc = (struct acpi_iort_root_complex *)node->node_data;
 +
-+	if (dev->untrusted)
-+		return false;
-+
-+	bridge = pci_find_host_bridge(dev->bus);
-+	if (!bridge)
-+		return false;
-+
-+	if (!bridge->ats_supported)
-+		return false;
-+
-+	return true;
++	return pci_domain_nr(host_bridge->bus) == pci_rc->pci_segment_number ?
++		AE_OK : AE_NOT_FOUND;
 +}
-+EXPORT_SYMBOL_GPL(pci_ats_supported);
 +
- /**
-  * pci_enable_ats - enable the ATS capability
-  * @dev: the PCI device
-@@ -42,7 +70,7 @@ int pci_enable_ats(struct pci_dev *dev, int ps)
- 	u16 ctrl;
- 	struct pci_dev *pdev;
++void iort_pci_host_bridge_setup(struct pci_host_bridge *host_bridge)
++{
++	struct acpi_iort_node *node;
++	struct acpi_iort_root_complex *pci_rc;
++
++	node = iort_scan_node(ACPI_IORT_NODE_PCI_ROOT_COMPLEX,
++			      iort_match_host_bridge_callback, host_bridge);
++	if (!node)
++		return;
++
++	pci_rc = (struct acpi_iort_root_complex *)node->node_data;
++	host_bridge->ats_supported = !!(pci_rc->ats_attribute &
++					ACPI_IORT_ATS_SUPPORTED);
++}
+ #else
+ static inline void iort_enable_acs(struct acpi_iort_node *iort_node) { }
+ #endif
+diff --git a/drivers/acpi/pci_root.c b/drivers/acpi/pci_root.c
+index d1e666ef3fcc..eb2fb8f17c0b 100644
+--- a/drivers/acpi/pci_root.c
++++ b/drivers/acpi/pci_root.c
+@@ -6,6 +6,7 @@
+  *  Copyright (C) 2001, 2002 Paul Diefenbaugh <paul.s.diefenbaugh@intel.com>
+  */
  
--	if (!dev->ats_cap)
-+	if (!pci_ats_supported(dev))
- 		return -EINVAL;
++#include <linux/acpi_iort.h>
+ #include <linux/kernel.h>
+ #include <linux/module.h>
+ #include <linux/init.h>
+@@ -917,6 +918,8 @@ struct pci_bus *acpi_pci_root_create(struct acpi_pci_root *root,
+ 	if (!(root->osc_control_set & OSC_PCI_EXPRESS_LTR_CONTROL))
+ 		host_bridge->native_ltr = 0;
  
- 	if (WARN_ON(dev->ats_enabled))
-diff --git a/include/linux/pci-ats.h b/include/linux/pci-ats.h
-index d08f0869f121..f75c307f346d 100644
---- a/include/linux/pci-ats.h
-+++ b/include/linux/pci-ats.h
-@@ -6,11 +6,14 @@
++	iort_pci_host_bridge_setup(host_bridge);
++
+ 	/*
+ 	 * Evaluate the "PCI Boot Configuration" _DSM Function.  If it
+ 	 * exists and returns 0, we must preserve any PCI resource
+diff --git a/include/linux/acpi_iort.h b/include/linux/acpi_iort.h
+index 8e7e2ec37f1b..7b06871cc3aa 100644
+--- a/include/linux/acpi_iort.h
++++ b/include/linux/acpi_iort.h
+@@ -10,6 +10,7 @@
+ #include <linux/acpi.h>
+ #include <linux/fwnode.h>
+ #include <linux/irqdomain.h>
++#include <linux/pci.h>
  
- #ifdef CONFIG_PCI_ATS
- /* Address Translation Service */
-+bool pci_ats_supported(struct pci_dev *dev);
- int pci_enable_ats(struct pci_dev *dev, int ps);
- void pci_disable_ats(struct pci_dev *dev);
- int pci_ats_queue_depth(struct pci_dev *dev);
- int pci_ats_page_aligned(struct pci_dev *dev);
- #else /* CONFIG_PCI_ATS */
-+static inline bool pci_ats_supported(struct pci_dev *d)
-+{ return false; }
- static inline int pci_enable_ats(struct pci_dev *d, int ps)
- { return -ENODEV; }
- static inline void pci_disable_ats(struct pci_dev *d) { }
+ #define IORT_IRQ_MASK(irq)		(irq & 0xffffffffULL)
+ #define IORT_IRQ_TRIGGER_MASK(irq)	((irq >> 32) & 0xffffffffULL)
+@@ -55,4 +56,11 @@ int iort_iommu_msi_get_resv_regions(struct device *dev, struct list_head *head)
+ { return 0; }
+ #endif
+ 
++#if defined(CONFIG_ACPI_IORT) && defined(CONFIG_PCI)
++void iort_pci_host_bridge_setup(struct pci_host_bridge *host_bridge);
++#else
++static inline
++void iort_pci_host_bridge_setup(struct pci_host_bridge *host_bridge) { }
++#endif
++
+ #endif /* __ACPI_IORT_H__ */
 -- 
 2.25.1
 
