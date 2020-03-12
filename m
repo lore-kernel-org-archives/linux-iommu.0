@@ -1,115 +1,79 @@
-Return-Path: <SRS0=4Gp4=44=lists.linux-foundation.org=iommu-bounces@kernel.org>
+Return-Path: <SRS0=xT8t=45=lists.linux-foundation.org=iommu-bounces@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-0.6 required=3.0 tests=DKIM_INVALID,DKIM_SIGNED,
-	HEADER_FROM_DIFFERENT_DOMAINS,MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS,
-	URIBL_BLOCKED autolearn=no autolearn_force=no version=3.4.0
+X-Spam-Status: No, score=-8.3 required=3.0 tests=HEADER_FROM_DIFFERENT_DOMAINS,
+	INCLUDES_PATCH,MAILING_LIST_MULTI,SIGNED_OFF_BY,SPF_HELO_NONE,SPF_PASS,
+	USER_AGENT_SANE_1 autolearn=ham autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 3BCDDC0044D
-	for <iommu@archiver.kernel.org>; Wed, 11 Mar 2020 21:48:37 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 7B689C0044D
+	for <iommu@archiver.kernel.org>; Thu, 12 Mar 2020 01:44:30 +0000 (UTC)
 Received: from whitealder.osuosl.org (smtp1.osuosl.org [140.211.166.138])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by mail.kernel.org (Postfix) with ESMTPS id 8785E206B1
-	for <iommu@archiver.kernel.org>; Wed, 11 Mar 2020 21:48:36 +0000 (UTC)
-Authentication-Results: mail.kernel.org;
-	dkim=fail reason="signature verification failed" (1024-bit key) header.d=redhat.com header.i=@redhat.com header.b="BSqLuFdR"
-DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 8785E206B1
-Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=redhat.com
+	by mail.kernel.org (Postfix) with ESMTPS id 8F90320739
+	for <iommu@archiver.kernel.org>; Thu, 12 Mar 2020 01:44:30 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 8F90320739
+Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=linux.intel.com
 Authentication-Results: mail.kernel.org; spf=pass smtp.mailfrom=iommu-bounces@lists.linux-foundation.org
 Received: from localhost (localhost [127.0.0.1])
-	by whitealder.osuosl.org (Postfix) with ESMTP id F127386CF9;
-	Wed, 11 Mar 2020 21:48:35 +0000 (UTC)
+	by whitealder.osuosl.org (Postfix) with ESMTP id 0B42888747;
+	Thu, 12 Mar 2020 01:44:30 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
 Received: from whitealder.osuosl.org ([127.0.0.1])
 	by localhost (.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
-	with ESMTP id X0DN2y71aNvJ; Wed, 11 Mar 2020 21:48:35 +0000 (UTC)
+	with ESMTP id nv0aQg393gt5; Thu, 12 Mar 2020 01:44:28 +0000 (UTC)
 Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [140.211.9.56])
-	by whitealder.osuosl.org (Postfix) with ESMTP id 52EF586D39;
-	Wed, 11 Mar 2020 21:48:35 +0000 (UTC)
+	by whitealder.osuosl.org (Postfix) with ESMTP id 725D387BFF;
+	Thu, 12 Mar 2020 01:44:28 +0000 (UTC)
 Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
-	by lists.linuxfoundation.org (Postfix) with ESMTP id 4D5E0C07FF;
-	Wed, 11 Mar 2020 21:48:35 +0000 (UTC)
+	by lists.linuxfoundation.org (Postfix) with ESMTP id 593BFC07FF;
+	Thu, 12 Mar 2020 01:44:28 +0000 (UTC)
 Received: from hemlock.osuosl.org (smtp2.osuosl.org [140.211.166.133])
- by lists.linuxfoundation.org (Postfix) with ESMTP id 545F0C0177
- for <iommu@lists.linux-foundation.org>; Wed, 11 Mar 2020 21:48:33 +0000 (UTC)
+ by lists.linuxfoundation.org (Postfix) with ESMTP id 46579C0177
+ for <iommu@lists.linux-foundation.org>; Thu, 12 Mar 2020 01:44:26 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
- by hemlock.osuosl.org (Postfix) with ESMTP id 507F8883FF
- for <iommu@lists.linux-foundation.org>; Wed, 11 Mar 2020 21:48:33 +0000 (UTC)
+ by hemlock.osuosl.org (Postfix) with ESMTP id 307D188E60
+ for <iommu@lists.linux-foundation.org>; Thu, 12 Mar 2020 01:44:26 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
 Received: from hemlock.osuosl.org ([127.0.0.1])
  by localhost (.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
- with ESMTP id H1TCjKslfJuX for <iommu@lists.linux-foundation.org>;
- Wed, 11 Mar 2020 21:48:32 +0000 (UTC)
+ with ESMTP id 7Lt1vW7cW7IS for <iommu@lists.linux-foundation.org>;
+ Thu, 12 Mar 2020 01:44:25 +0000 (UTC)
 X-Greylist: domain auto-whitelisted by SQLgrey-1.7.6
-Received: from us-smtp-1.mimecast.com (us-smtp-delivery-1.mimecast.com
- [205.139.110.120])
- by hemlock.osuosl.org (Postfix) with ESMTPS id 08A86883F0
- for <iommu@lists.linux-foundation.org>; Wed, 11 Mar 2020 21:48:31 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
- s=mimecast20190719; t=1583963310;
- h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
- to:to:cc:cc:mime-version:mime-version:content-type:content-type:
- in-reply-to:in-reply-to:references:references;
- bh=trXAOUXf8R0jK9KyR9z+fLazglkIkKVNTDuFFKwZMaA=;
- b=BSqLuFdRBCWqKYgQFMFCc+hvccUyqrKfC93WDQDwqhgq5GTmtD0rrAFhwaaTgKW3C428yv
- 7YqVhKMf3+vkm+Pz/+A498SSVnCrWIZZ+5zywmx+l0hSI5EQlYYdQMFbckJRQ69yUEF3ka
- dkPoYkcVQN5gr4zbGVg/ib+ic2WwfS8=
-Received: from mail-qt1-f200.google.com (mail-qt1-f200.google.com
- [209.85.160.200]) (Using TLS) by relay.mimecast.com with ESMTP id
- us-mta-356-IN7KOGWzPambGCoqRLkFZg-1; Wed, 11 Mar 2020 17:48:29 -0400
-X-MC-Unique: IN7KOGWzPambGCoqRLkFZg-1
-Received: by mail-qt1-f200.google.com with SMTP id d6so2190957qtn.2
- for <iommu@lists.linux-foundation.org>; Wed, 11 Mar 2020 14:48:29 -0700 (PDT)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
- d=1e100.net; s=20161025;
- h=x-gm-message-state:date:from:to:cc:subject:message-id:references
- :mime-version:content-disposition:in-reply-to;
- bh=trXAOUXf8R0jK9KyR9z+fLazglkIkKVNTDuFFKwZMaA=;
- b=MqWpy0LeAHIrtgiNM7M8PjSwTfXjq8ZKcFwtFhgM6KdlxD/XtzS7SeVFQntASqURri
- Tmq4uufevjbx8ImaXZjAqAFHwPQ244t4BrLGtTIBji1rZaI2MwrYKbgEWRfpWIDGAAiT
- gqski2oVFqT4gpIbUcUFoDUnUVyC9XMRGvopKJN8Gll7bRRdy9eZ1jwVAzVyacbLZDE3
- zgs7GCIB4usDviJqPduP507EGHzakku7kEqka7DnQdbcL/P89aFFUqVHvn1A3L7zMPgu
- 6SZCGMvGFTDjGTtW4YD7ropWIZ+wbmmm0+6/f0w12V5NZRtCtn9z+7ZjfnSIQydiBtfN
- SZ+w==
-X-Gm-Message-State: ANhLgQ0mMNIm4eEJY2Q/tUpQw7TwyneNxwOExWPBgioeZnDMTTRkoSiC
- cRgB4/SCc8VhJPl9rd9IstiwECp2tjqf07RLgWWhbwf2CWL1x+yj+b/GAoWaY4Y7sdHKG9qZuo7
- x84tx9zSGM+Otzpdqac4olEbHM3keEg==
-X-Received: by 2002:ac8:4d83:: with SMTP id a3mr4594411qtw.259.1583963308860; 
- Wed, 11 Mar 2020 14:48:28 -0700 (PDT)
-X-Google-Smtp-Source: ADFU+vtsEzdKfH7m2m28mgkpshSZzeyzQQNiRjBtaqGOgSv+gSun0NAQfBN9Lban03PlKiUdtVlsFw==
-X-Received: by 2002:ac8:4d83:: with SMTP id a3mr4594391qtw.259.1583963308679; 
- Wed, 11 Mar 2020 14:48:28 -0700 (PDT)
-Received: from redhat.com (bzq-79-178-2-19.red.bezeqint.net. [79.178.2.19])
- by smtp.gmail.com with ESMTPSA id g7sm251268qki.64.2020.03.11.14.48.24
- (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
- Wed, 11 Mar 2020 14:48:27 -0700 (PDT)
-Date: Wed, 11 Mar 2020 17:48:22 -0400
-From: "Michael S. Tsirkin" <mst@redhat.com>
-To: Jean-Philippe Brucker <jean-philippe@linaro.org>
-Subject: Re: [PATCH v2 1/3] iommu/virtio: Add topology description to
- virtio-iommu config space
-Message-ID: <20200311174348-mutt-send-email-mst@kernel.org>
-References: <20200228172537.377327-1-jean-philippe@linaro.org>
- <20200228172537.377327-2-jean-philippe@linaro.org>
- <AADFC41AFE54684AB9EE6CBC0274A5D19D7BE404@SHSMSX104.ccr.corp.intel.com>
- <20200311174822.GA96893@myrica>
+Received: from mga07.intel.com (mga07.intel.com [134.134.136.100])
+ by hemlock.osuosl.org (Postfix) with ESMTPS id 5E38088E52
+ for <iommu@lists.linux-foundation.org>; Thu, 12 Mar 2020 01:44:25 +0000 (UTC)
+X-Amp-Result: SKIPPED(no attachment in message)
+X-Amp-File-Uploaded: False
+Received: from fmsmga006.fm.intel.com ([10.253.24.20])
+ by orsmga105.jf.intel.com with ESMTP/TLS/DHE-RSA-AES256-GCM-SHA384;
+ 11 Mar 2020 18:44:24 -0700
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="5.70,543,1574150400"; d="scan'208";a="443763768"
+Received: from blu2-mobl3.ccr.corp.intel.com (HELO [10.254.208.137])
+ ([10.254.208.137])
+ by fmsmga006.fm.intel.com with ESMTP; 11 Mar 2020 18:44:18 -0700
+Subject: Re: [PATCH v2 08/11] iommu/vt-d: Use pci_ats_supported()
+To: Jean-Philippe Brucker <jean-philippe@linaro.org>, bhelgaas@google.com,
+ will@kernel.org, robh+dt@kernel.org, joro@8bytes.org, sudeep.holla@arm.com,
+ linux-doc@vger.kernel.org, linux-pci@vger.kernel.org,
+ linux-arm-kernel@lists.infradead.org, devicetree@vger.kernel.org,
+ linux-acpi@vger.kernel.org, iommu@lists.linux-foundation.org
+References: <20200311124506.208376-1-jean-philippe@linaro.org>
+ <20200311124506.208376-9-jean-philippe@linaro.org>
+From: Lu Baolu <baolu.lu@linux.intel.com>
+Message-ID: <7019230c-3c56-e6db-6704-d73f23fa39b5@linux.intel.com>
+Date: Thu, 12 Mar 2020 09:44:16 +0800
+User-Agent: Mozilla/5.0 (Windows NT 10.0; WOW64; rv:68.0) Gecko/20100101
+ Thunderbird/68.5.0
 MIME-Version: 1.0
-In-Reply-To: <20200311174822.GA96893@myrica>
-X-Mimecast-Spam-Score: 0
-X-Mimecast-Originator: redhat.com
-Content-Disposition: inline
-Cc: "Tian, Kevin" <kevin.tian@intel.com>,
- "linux-pci@vger.kernel.org" <linux-pci@vger.kernel.org>,
- "jasowang@redhat.com" <jasowang@redhat.com>,
- "virtualization@lists.linux-foundation.org"
- <virtualization@lists.linux-foundation.org>,
- "iommu@lists.linux-foundation.org" <iommu@lists.linux-foundation.org>, "Boeuf,
- Sebastien" <sebastien.boeuf@intel.com>, "Pan,
- Jacob jun" <jacob.jun.pan@intel.com>,
- "bhelgaas@google.com" <bhelgaas@google.com>,
- "robin.murphy@arm.com" <robin.murphy@arm.com>
+In-Reply-To: <20200311124506.208376-9-jean-philippe@linaro.org>
+Content-Language: en-US
+Cc: mark.rutland@arm.com, frowand.list@gmail.com, corbet@lwn.net,
+ rjw@rjwysocki.net, amurray@thegoodpenguin.co.uk, liviu.dudau@arm.com,
+ guohanjun@huawei.com, lenb@kernel.org, robin.murphy@arm.com,
+ dwmw2@infradead.org
 X-BeenThere: iommu@lists.linux-foundation.org
 X-Mailman-Version: 2.1.15
 Precedence: list
@@ -122,21 +86,56 @@ List-Post: <mailto:iommu@lists.linux-foundation.org>
 List-Help: <mailto:iommu-request@lists.linux-foundation.org?subject=help>
 List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
  <mailto:iommu-request@lists.linux-foundation.org?subject=subscribe>
-Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset="us-ascii"; Format="flowed"
 Errors-To: iommu-bounces@lists.linux-foundation.org
 Sender: "iommu" <iommu-bounces@lists.linux-foundation.org>
 
-On Wed, Mar 11, 2020 at 06:48:22PM +0100, Jean-Philippe Brucker wrote:
-> Yes "not elegant" in part because of the PCI fixup. Fixups are used to
-> work around bugs
+Hi Jean,
 
-Not really - they are for anything unusual that common PCI code can not
-handle on its own.
+On 2020/3/11 20:45, Jean-Philippe Brucker wrote:
+> The pci_ats_supported() function checks if a device supports ATS and is
+> allowed to use it.
+> 
+> Signed-off-by: Jean-Philippe Brucker <jean-philippe@linaro.org>
+> ---
+>   drivers/iommu/intel-iommu.c | 9 +++------
+>   1 file changed, 3 insertions(+), 6 deletions(-)
+> 
+> diff --git a/drivers/iommu/intel-iommu.c b/drivers/iommu/intel-iommu.c
+> index 6fa6de2b6ad5..17208280ef5c 100644
+> --- a/drivers/iommu/intel-iommu.c
+> +++ b/drivers/iommu/intel-iommu.c
+> @@ -1454,8 +1454,7 @@ static void iommu_enable_dev_iotlb(struct device_domain_info *info)
+>   	    !pci_reset_pri(pdev) && !pci_enable_pri(pdev, 32))
+>   		info->pri_enabled = 1;
+>   #endif
+> -	if (!pdev->untrusted && info->ats_supported &&
+> -	    pci_ats_page_aligned(pdev) &&
+> +	if (info->ats_supported && pci_ats_page_aligned(pdev) &&
+>   	    !pci_enable_ats(pdev, VTD_PAGE_SHIFT)) {
+>   		info->ats_enabled = 1;
+>   		domain_update_iotlb(info->domain);
+> @@ -2611,10 +2610,8 @@ static struct dmar_domain *dmar_insert_one_dev_info(struct intel_iommu *iommu,
+>   	if (dev && dev_is_pci(dev)) {
+>   		struct pci_dev *pdev = to_pci_dev(info->dev);
+>   
+> -		if (!pdev->untrusted &&
+> -		    !pci_ats_disabled() &&
 
--- 
-MST
+The pci_ats_disabled() couldn't be replaced by pci_ats_supported(). Even
+pci_ats_supported() returns true, user still can disable it. Or move
+ats_disabled into pci_ats_supported()?
 
+Best regards,
+baolu
+
+> -		    ecap_dev_iotlb_support(iommu->ecap) &&
+> -		    pci_find_ext_capability(pdev, PCI_EXT_CAP_ID_ATS) &&
+> +		if (ecap_dev_iotlb_support(iommu->ecap) &&
+> +		    pci_ats_supported(pdev) &&
+>   		    dmar_find_matched_atsr_unit(pdev))
+>   			info->ats_supported = 1;
 _______________________________________________
 iommu mailing list
 iommu@lists.linux-foundation.org
