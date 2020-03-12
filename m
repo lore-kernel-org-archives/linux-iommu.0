@@ -2,92 +2,101 @@ Return-Path: <SRS0=xT8t=45=lists.linux-foundation.org=iommu-bounces@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-0.6 required=3.0 tests=DKIM_INVALID,DKIM_SIGNED,
-	HEADER_FROM_DIFFERENT_DOMAINS,MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS
-	autolearn=no autolearn_force=no version=3.4.0
+X-Spam-Status: No, score=-6.6 required=3.0 tests=DKIM_INVALID,DKIM_SIGNED,
+	HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_PATCH,MAILING_LIST_MULTI,SIGNED_OFF_BY,
+	SPF_HELO_NONE,SPF_PASS autolearn=unavailable autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 227D7C10DCE
-	for <iommu@archiver.kernel.org>; Thu, 12 Mar 2020 06:29:01 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id E00A9C5ACBF
+	for <iommu@archiver.kernel.org>; Thu, 12 Mar 2020 07:54:50 +0000 (UTC)
 Received: from hemlock.osuosl.org (smtp2.osuosl.org [140.211.166.133])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by mail.kernel.org (Postfix) with ESMTPS id 035C620650
-	for <iommu@archiver.kernel.org>; Thu, 12 Mar 2020 06:29:00 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTPS id B4D36206B7
+	for <iommu@archiver.kernel.org>; Thu, 12 Mar 2020 07:54:50 +0000 (UTC)
 Authentication-Results: mail.kernel.org;
-	dkim=fail reason="signature verification failed" (1024-bit key) header.d=mg.codeaurora.org header.i=@mg.codeaurora.org header.b="JP241TvO"
-DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 035C620650
-Authentication-Results: mail.kernel.org; dmarc=none (p=none dis=none) header.from=codeaurora.org
+	dkim=fail reason="signature verification failed" (2048-bit key) header.d=linaro.org header.i=@linaro.org header.b="EpWXmU25"
+DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org B4D36206B7
+Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=linaro.org
 Authentication-Results: mail.kernel.org; spf=pass smtp.mailfrom=iommu-bounces@lists.linux-foundation.org
 Received: from localhost (localhost [127.0.0.1])
-	by hemlock.osuosl.org (Postfix) with ESMTP id 072968927F;
-	Thu, 12 Mar 2020 06:29:00 +0000 (UTC)
+	by hemlock.osuosl.org (Postfix) with ESMTP id 7290989168;
+	Thu, 12 Mar 2020 07:54:50 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
 Received: from hemlock.osuosl.org ([127.0.0.1])
 	by localhost (.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
-	with ESMTP id qh67IhQh4aKw; Thu, 12 Mar 2020 06:28:59 +0000 (UTC)
+	with ESMTP id Cj87vYFr+wrf; Thu, 12 Mar 2020 07:54:49 +0000 (UTC)
 Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [140.211.9.56])
-	by hemlock.osuosl.org (Postfix) with ESMTP id 4D9A189005;
-	Thu, 12 Mar 2020 06:28:59 +0000 (UTC)
+	by hemlock.osuosl.org (Postfix) with ESMTP id C9A6E8852E;
+	Thu, 12 Mar 2020 07:54:49 +0000 (UTC)
 Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
-	by lists.linuxfoundation.org (Postfix) with ESMTP id 2C6E7C18D3;
-	Thu, 12 Mar 2020 06:28:59 +0000 (UTC)
-Received: from fraxinus.osuosl.org (smtp4.osuosl.org [140.211.166.137])
- by lists.linuxfoundation.org (Postfix) with ESMTP id 94C94C0177
- for <iommu@lists.linux-foundation.org>; Thu, 12 Mar 2020 06:28:57 +0000 (UTC)
+	by lists.linuxfoundation.org (Postfix) with ESMTP id BC752C07FF;
+	Thu, 12 Mar 2020 07:54:49 +0000 (UTC)
+Received: from hemlock.osuosl.org (smtp2.osuosl.org [140.211.166.133])
+ by lists.linuxfoundation.org (Postfix) with ESMTP id 06AFDC0177
+ for <iommu@lists.linux-foundation.org>; Thu, 12 Mar 2020 07:54:48 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
- by fraxinus.osuosl.org (Postfix) with ESMTP id 7EBA885F0B
- for <iommu@lists.linux-foundation.org>; Thu, 12 Mar 2020 06:28:57 +0000 (UTC)
+ by hemlock.osuosl.org (Postfix) with ESMTP id E36E8889B7
+ for <iommu@lists.linux-foundation.org>; Thu, 12 Mar 2020 07:54:47 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from fraxinus.osuosl.org ([127.0.0.1])
+Received: from hemlock.osuosl.org ([127.0.0.1])
  by localhost (.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
- with ESMTP id lcNTYL8cQ-6A for <iommu@lists.linux-foundation.org>;
- Thu, 12 Mar 2020 06:28:56 +0000 (UTC)
-X-Greylist: from auto-whitelisted by SQLgrey-1.7.6
-Received: from mail26.static.mailgun.info (mail26.static.mailgun.info
- [104.130.122.26])
- by fraxinus.osuosl.org (Postfix) with ESMTPS id ADC5C85E13
- for <iommu@lists.linux-foundation.org>; Thu, 12 Mar 2020 06:28:53 +0000 (UTC)
-DKIM-Signature: a=rsa-sha256; v=1; c=relaxed/relaxed; d=mg.codeaurora.org;
- q=dns/txt; 
- s=smtp; t=1583994536; h=Message-ID: References: In-Reply-To: Subject:
- Cc: To: From: Date: Content-Transfer-Encoding: Content-Type:
- MIME-Version: Sender; bh=1U9Dhk5Hq6bAWxKppOxTuYI7ucms9N1Z1Z8GWTVbRSk=;
- b=JP241TvOKHdyXXedu2s96jIY4NlI7uzhtuBuYIS9KuqOTGiD68HgTF90X9EehJwaMHh/p82C
- Moj9zYAKmJtto0Uq28HM6Ljoh86E1cZ+IdcrAvprb/TciKwsPcOBBFntdOYeC3B66g3BsLjE
- colsP6nfS/azyWboPWvg53WjwOs=
-X-Mailgun-Sending-Ip: 104.130.122.26
-X-Mailgun-Sid: WyI3NDkwMCIsICJpb21tdUBsaXN0cy5saW51eC1mb3VuZGF0aW9uLm9yZyIsICJiZTllNGEiXQ==
-Received: from smtp.codeaurora.org
- (ec2-35-166-182-171.us-west-2.compute.amazonaws.com [35.166.182.171])
- by mxa.mailgun.org with ESMTP id 5e69d68f.7fa82e80fa08-smtp-out-n02;
- Thu, 12 Mar 2020 06:28:31 -0000 (UTC)
-Received: by smtp.codeaurora.org (Postfix, from userid 1001)
- id 14474C4478C; Thu, 12 Mar 2020 06:28:31 +0000 (UTC)
-Received: from mail.codeaurora.org (localhost.localdomain [127.0.0.1])
- (using TLSv1 with cipher ECDHE-RSA-AES256-SHA (256/256 bits))
- (No client certificate requested)
- (Authenticated sender: saiprakash.ranjan)
- by smtp.codeaurora.org (Postfix) with ESMTPSA id 5FDDEC433CB;
- Thu, 12 Mar 2020 06:28:30 +0000 (UTC)
+ with ESMTP id Ltu-kwhQBc+e for <iommu@lists.linux-foundation.org>;
+ Thu, 12 Mar 2020 07:54:46 +0000 (UTC)
+X-Greylist: domain auto-whitelisted by SQLgrey-1.7.6
+Received: from mail-wr1-f65.google.com (mail-wr1-f65.google.com
+ [209.85.221.65])
+ by hemlock.osuosl.org (Postfix) with ESMTPS id 141208852E
+ for <iommu@lists.linux-foundation.org>; Thu, 12 Mar 2020 07:54:46 +0000 (UTC)
+Received: by mail-wr1-f65.google.com with SMTP id s14so6102145wrt.8
+ for <iommu@lists.linux-foundation.org>; Thu, 12 Mar 2020 00:54:45 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linaro.org; s=google;
+ h=date:from:to:cc:subject:message-id:references:mime-version
+ :content-disposition:in-reply-to;
+ bh=pr04BKgViz7j88JBgxuUWEhe3OvdyJ6JSxyYo6mbxRM=;
+ b=EpWXmU25L0YGiiRM8vJA3DFaYTd2tQHV/7f1WBTrWn3S4r9BSEwymIHqNVZSw4dMvj
+ iyFMVzICUPU+kCGh2X+TFBzft2lxPcpMbo2NwY076sG0P7S8cnI2qb5nx+YdVFbTNEKI
+ Z7BthyeuRMPKwkqWfD4mJzybiJp3XzMU1lUrJoyP65Uc00FpC6n2iQcNwChNa9vNvld+
+ k7pTldNv6wbqW9jcOZyltSbxgDfSmSCexv+/zHWUc0V2kqkQvsQi0AAyblBeXyXYdrQm
+ tiByVIzqJB4Lcq46F6IOlGlYJts4l+kW8g962H+cWT1VTDfEKGKKH9N9Zr/wVINNVYVX
+ QiYw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+ d=1e100.net; s=20161025;
+ h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+ :mime-version:content-disposition:in-reply-to;
+ bh=pr04BKgViz7j88JBgxuUWEhe3OvdyJ6JSxyYo6mbxRM=;
+ b=FsHlrI4HAtq+WqdwAPBzhy9P98xqZcB/4iyo0V9KKtmxEFgoyjT9FZUHtSSo9dnQCP
+ 70uRAS68wcA69kSAZYmNY8NdkmVPJ4qN+DOmACmDIWqHnmiONsevAl84veGKyEcdqV2v
+ iwlXdEZEw2B69UPCRi5woj63jByOdh1XAWc/Hm0uagQfB+jIoyiFGVmkT1XnaagzDLnQ
+ AblrXwAfdcyHH0XxKrC/q1d1iq0AWrLZ5ILrLlxJmVE9bnUjeRsjo2cAgdQxylXFZ+PZ
+ qP95PNJ7PbM8XJUE/1kOSVCnriXnGLWquEx4ClAgHtqhjaY9+F/lXj3fxGqLUtOSv/Cw
+ ROOw==
+X-Gm-Message-State: ANhLgQ22hYz12CG8+CGR9gm5eXuDN57TkftsbjRG76oMV8vKi/oJzyun
+ Dgvetb1+X4lyk+EctPLtpAbD9w==
+X-Google-Smtp-Source: ADFU+vtT5PIgJyJgbHd5navhTh3TzppWQ7now/ZfW46dAJfhZnjJPv9XMBdkmY0dc+S4uOHKFCAEpQ==
+X-Received: by 2002:a5d:474d:: with SMTP id o13mr9266723wrs.162.1583999684449; 
+ Thu, 12 Mar 2020 00:54:44 -0700 (PDT)
+Received: from myrica ([2001:171b:c9a8:fbc0:116c:c27a:3e7f:5eaf])
+ by smtp.gmail.com with ESMTPSA id f207sm12446498wme.9.2020.03.12.00.54.43
+ (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+ Thu, 12 Mar 2020 00:54:43 -0700 (PDT)
+Date: Thu, 12 Mar 2020 08:54:36 +0100
+From: Jean-Philippe Brucker <jean-philippe@linaro.org>
+To: Lu Baolu <baolu.lu@linux.intel.com>
+Subject: Re: [PATCH v2 08/11] iommu/vt-d: Use pci_ats_supported()
+Message-ID: <20200312075436.GA568802@myrica>
+References: <20200311124506.208376-1-jean-philippe@linaro.org>
+ <20200311124506.208376-9-jean-philippe@linaro.org>
+ <7019230c-3c56-e6db-6704-d73f23fa39b5@linux.intel.com>
 MIME-Version: 1.0
-Date: Thu, 12 Mar 2020 11:58:30 +0530
-From: Sai Prakash Ranjan <saiprakash.ranjan@codeaurora.org>
-To: Robin Murphy <robin.murphy@arm.com>
-Subject: Re: [PATCH 0/3] Request direct mapping for modem firmware subdevice
-In-Reply-To: <a50040a9-54fe-f682-dd7e-b2991b48d633@arm.com>
-References: <20200309182255.20142-1-sibis@codeaurora.org>
- <20200310112332.GG3794@8bytes.org>
- <4ed6ddd667a3e6f670084a443d141474@codeaurora.org>
- <20200310162320.GL3794@8bytes.org>
- <a50040a9-54fe-f682-dd7e-b2991b48d633@arm.com>
-Message-ID: <ff805c5c647326c5edaddf2efec5cb87@codeaurora.org>
-X-Sender: saiprakash.ranjan@codeaurora.org
-User-Agent: Roundcube Webmail/1.3.9
-Cc: ohad@wizery.com, devicetree@vger.kernel.org,
- linux-kernel-owner@vger.kernel.org, linux-arm-msm@vger.kernel.org,
- linux-remoteproc@vger.kernel.org, linux-kernel@vger.kernel.org,
- bjorn.andersson@linaro.org, iommu@lists.linux-foundation.org,
- robh+dt@kernel.org, Sibi Sankar <sibis@codeaurora.org>, agross@kernel.org
+Content-Disposition: inline
+In-Reply-To: <7019230c-3c56-e6db-6704-d73f23fa39b5@linux.intel.com>
+Cc: mark.rutland@arm.com, linux-doc@vger.kernel.org, linux-pci@vger.kernel.org,
+ liviu.dudau@arm.com, guohanjun@huawei.com, frowand.list@gmail.com,
+ corbet@lwn.net, will@kernel.org, linux-acpi@vger.kernel.org, lenb@kernel.org,
+ devicetree@vger.kernel.org, robh+dt@kernel.org, bhelgaas@google.com,
+ linux-arm-kernel@lists.infradead.org, dwmw2@infradead.org, rjw@rjwysocki.net,
+ iommu@lists.linux-foundation.org, sudeep.holla@arm.com, robin.murphy@arm.com,
+ amurray@thegoodpenguin.co.uk
 X-BeenThere: iommu@lists.linux-foundation.org
 X-Mailman-Version: 2.1.15
 Precedence: list
@@ -100,58 +109,66 @@ List-Post: <mailto:iommu@lists.linux-foundation.org>
 List-Help: <mailto:iommu-request@lists.linux-foundation.org?subject=help>
 List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
  <mailto:iommu-request@lists.linux-foundation.org?subject=subscribe>
+Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
-Content-Type: text/plain; charset="us-ascii"; Format="flowed"
 Errors-To: iommu-bounces@lists.linux-foundation.org
 Sender: "iommu" <iommu-bounces@lists.linux-foundation.org>
 
-Hi Robin,
+Hi Baolu,
 
-On 2020-03-10 22:14, Robin Murphy wrote:
-> On 10/03/2020 4:23 pm, Joerg Roedel wrote:
->> On Tue, Mar 10, 2020 at 07:30:50PM +0530, Sibi Sankar wrote:
->>> The accesses are initiated by the firmware
->>> and they access modem reserved regions.
->>> However as explained in ^^ any accesses
->>> outside the region will result in a violation
->>> and is controlled through XPUs (protection units).
->> 
->> Okay, this sounds like a case for arm_smmu_get_resv_region(). It 
->> should
->> return an entry for the reserved memory region the firmware needs to
->> access, so that generic iommu can setup this mapping.
->> 
->> Note that it should return that entry only for your device, not for 
->> all
->> devices. Maybe there is a property in DT or IORT you can set to
->> transport this information into the arm-smmu driver.
->> 
->> This is pretty similar to RMRR mapping on the Intel VT-d IOMMU or
->> Unity-mapped ranges in the AMD-Vi IOMMU.
+On Thu, Mar 12, 2020 at 09:44:16AM +0800, Lu Baolu wrote:
+> Hi Jean,
 > 
-> Yup, a way to describe boot-time memory regions in IORT is in the
-> process of being specced out; the first attempt at an equivalent for
-> DT is here:
+> On 2020/3/11 20:45, Jean-Philippe Brucker wrote:
+> > The pci_ats_supported() function checks if a device supports ATS and is
+> > allowed to use it.
+> > 
+> > Signed-off-by: Jean-Philippe Brucker <jean-philippe@linaro.org>
+> > ---
+> >   drivers/iommu/intel-iommu.c | 9 +++------
+> >   1 file changed, 3 insertions(+), 6 deletions(-)
+> > 
+> > diff --git a/drivers/iommu/intel-iommu.c b/drivers/iommu/intel-iommu.c
+> > index 6fa6de2b6ad5..17208280ef5c 100644
+> > --- a/drivers/iommu/intel-iommu.c
+> > +++ b/drivers/iommu/intel-iommu.c
+> > @@ -1454,8 +1454,7 @@ static void iommu_enable_dev_iotlb(struct device_domain_info *info)
+> >   	    !pci_reset_pri(pdev) && !pci_enable_pri(pdev, 32))
+> >   		info->pri_enabled = 1;
+> >   #endif
+> > -	if (!pdev->untrusted && info->ats_supported &&
+> > -	    pci_ats_page_aligned(pdev) &&
+> > +	if (info->ats_supported && pci_ats_page_aligned(pdev) &&
+> >   	    !pci_enable_ats(pdev, VTD_PAGE_SHIFT)) {
+> >   		info->ats_enabled = 1;
+> >   		domain_update_iotlb(info->domain);
+> > @@ -2611,10 +2610,8 @@ static struct dmar_domain *dmar_insert_one_dev_info(struct intel_iommu *iommu,
+> >   	if (dev && dev_is_pci(dev)) {
+> >   		struct pci_dev *pdev = to_pci_dev(info->dev);
+> > -		if (!pdev->untrusted &&
+> > -		    !pci_ats_disabled() &&
 > 
-> https://lore.kernel.org/linux-iommu/20191209150748.2471814-1-thierry.reding@gmail.com/
-> 
-> If that's not enough and the SMMU still needs to treat certain Stream
-> IDs specially because they may be untranslatable (due to having direct
-> access to memory as a side-channel), then that should be handled in
-> the SoC-specific corner of the SMMU driver, not delegated to
-> individual endpoint drivers.
-> 
+> The pci_ats_disabled() couldn't be replaced by pci_ats_supported(). Even
+> pci_ats_supported() returns true, user still can disable it. Or move
+> ats_disabled into pci_ats_supported()?
 
-Are you talking about this one for SoC specific change - 
-https://lore.kernel.org/patchwork/patch/1183530/
+It is already there, but hidden behind the "if (!dev->ats_cap)":
+pci_ats_init() only sets dev->ats_cap after checking that
+pci_ats_disabled() returns false.
 
 Thanks,
-Sai
+Jean
 
--- 
-QUALCOMM INDIA, on behalf of Qualcomm Innovation Center, Inc. is a 
-member
-of Code Aurora Forum, hosted by The Linux Foundation
+> 
+> Best regards,
+> baolu
+> 
+> > -		    ecap_dev_iotlb_support(iommu->ecap) &&
+> > -		    pci_find_ext_capability(pdev, PCI_EXT_CAP_ID_ATS) &&
+> > +		if (ecap_dev_iotlb_support(iommu->ecap) &&
+> > +		    pci_ats_supported(pdev) &&
+> >   		    dmar_find_matched_atsr_unit(pdev))
+> >   			info->ats_supported = 1;
 _______________________________________________
 iommu mailing list
 iommu@lists.linux-foundation.org
