@@ -2,108 +2,132 @@ Return-Path: <SRS0=xT8t=45=lists.linux-foundation.org=iommu-bounces@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-8.1 required=3.0 tests=DKIM_INVALID,DKIM_SIGNED,
+X-Spam-Status: No, score=-9.6 required=3.0 tests=DKIM_INVALID,DKIM_SIGNED,
 	HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_PATCH,MAILING_LIST_MULTI,SIGNED_OFF_BY,
-	SPF_HELO_NONE,SPF_PASS,UNPARSEABLE_RELAY,USER_AGENT_SANE_1 autolearn=ham
-	autolearn_force=no version=3.4.0
+	SPF_HELO_NONE,SPF_PASS,USER_AGENT_GIT autolearn=ham autolearn_force=no
+	version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 67AEDC10DCE
-	for <iommu@archiver.kernel.org>; Thu, 12 Mar 2020 12:56:02 +0000 (UTC)
-Received: from fraxinus.osuosl.org (smtp4.osuosl.org [140.211.166.137])
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 25C3DC1975A
+	for <iommu@archiver.kernel.org>; Thu, 12 Mar 2020 15:41:58 +0000 (UTC)
+Received: from whitealder.osuosl.org (smtp1.osuosl.org [140.211.166.138])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by mail.kernel.org (Postfix) with ESMTPS id 16033206E7
-	for <iommu@archiver.kernel.org>; Thu, 12 Mar 2020 12:56:01 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTPS id 044E0206BE
+	for <iommu@archiver.kernel.org>; Thu, 12 Mar 2020 15:41:56 +0000 (UTC)
 Authentication-Results: mail.kernel.org;
-	dkim=fail reason="signature verification failed" (2048-bit key) header.d=oracle.com header.i=@oracle.com header.b="i8e0TI74"
-DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 16033206E7
-Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=oracle.com
+	dkim=fail reason="signature verification failed" (2048-bit key) header.d=allegrodvt.com header.i=@allegrodvt.com header.b="YHk1LXqP"
+DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 044E0206BE
+Authentication-Results: mail.kernel.org; dmarc=none (p=none dis=none) header.from=allegrodvt.com
 Authentication-Results: mail.kernel.org; spf=pass smtp.mailfrom=iommu-bounces@lists.linux-foundation.org
 Received: from localhost (localhost [127.0.0.1])
-	by fraxinus.osuosl.org (Postfix) with ESMTP id C6C9086D62;
-	Thu, 12 Mar 2020 12:56:01 +0000 (UTC)
+	by whitealder.osuosl.org (Postfix) with ESMTP id AD4E888440;
+	Thu, 12 Mar 2020 15:41:56 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from fraxinus.osuosl.org ([127.0.0.1])
+Received: from whitealder.osuosl.org ([127.0.0.1])
 	by localhost (.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
-	with ESMTP id fTrX9bO7OHMF; Thu, 12 Mar 2020 12:56:01 +0000 (UTC)
+	with ESMTP id YWlkpOfqcbn2; Thu, 12 Mar 2020 15:41:53 +0000 (UTC)
 Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [140.211.9.56])
-	by fraxinus.osuosl.org (Postfix) with ESMTP id 2E0D486C39;
-	Thu, 12 Mar 2020 12:56:01 +0000 (UTC)
+	by whitealder.osuosl.org (Postfix) with ESMTP id CA0DB8808F;
+	Thu, 12 Mar 2020 15:41:53 +0000 (UTC)
 Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
-	by lists.linuxfoundation.org (Postfix) with ESMTP id 1F942C089F;
-	Thu, 12 Mar 2020 12:56:01 +0000 (UTC)
-Received: from silver.osuosl.org (smtp3.osuosl.org [140.211.166.136])
- by lists.linuxfoundation.org (Postfix) with ESMTP id 9C01EC0177
- for <iommu@lists.linux-foundation.org>; Thu, 12 Mar 2020 12:55:59 +0000 (UTC)
+	by lists.linuxfoundation.org (Postfix) with ESMTP id A792CC18D3;
+	Thu, 12 Mar 2020 15:41:53 +0000 (UTC)
+Received: from hemlock.osuosl.org (smtp2.osuosl.org [140.211.166.133])
+ by lists.linuxfoundation.org (Postfix) with ESMTP id 51509C0177
+ for <iommu@lists.linux-foundation.org>; Thu, 12 Mar 2020 15:41:51 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
- by silver.osuosl.org (Postfix) with ESMTP id 895AB26977
- for <iommu@lists.linux-foundation.org>; Thu, 12 Mar 2020 12:55:59 +0000 (UTC)
+ by hemlock.osuosl.org (Postfix) with ESMTP id 4DC8687A39
+ for <iommu@lists.linux-foundation.org>; Thu, 12 Mar 2020 15:41:51 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from silver.osuosl.org ([127.0.0.1])
+Received: from hemlock.osuosl.org ([127.0.0.1])
  by localhost (.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
- with ESMTP id aAs9z+cgsbzC for <iommu@lists.linux-foundation.org>;
- Thu, 12 Mar 2020 12:55:58 +0000 (UTC)
-X-Greylist: domain auto-whitelisted by SQLgrey-1.7.6
-Received: from userp2130.oracle.com (userp2130.oracle.com [156.151.31.86])
- by silver.osuosl.org (Postfix) with ESMTPS id CE96826904
- for <iommu@lists.linux-foundation.org>; Thu, 12 Mar 2020 12:55:58 +0000 (UTC)
-Received: from pps.filterd (userp2130.oracle.com [127.0.0.1])
- by userp2130.oracle.com (8.16.0.42/8.16.0.42) with SMTP id 02CCt0ch169005;
- Thu, 12 Mar 2020 12:55:48 GMT
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=oracle.com;
- h=date : from : to : cc
- : subject : message-id : references : mime-version : content-type :
- in-reply-to; s=corp-2020-01-29;
- bh=3IjLRGnSKTeS7BpHqOkLjutlfOlpel0LUZcJRVn7ZeE=;
- b=i8e0TI74kE05+c3jiSSg+MONAyxbNXf9Zzk0Dt3z0i9oZQhoz68GlK6iO+EAYj8srjst
- E002iailVehaK/xFUQDh6+ajFcS+FHcDyXNSXZu84jWiBQzUxLDu2NJ6Ms9Y+j46B+jK
- sjBw4OJXMoTfrHjzrJpjTnZAGXHror3hkWZZjIal+bhvZfBjMEK2zL8L2LHOqrV6JUu5
- mzlNvcEZOHUvkU+/Dn/ovWp/d1OH8XNazvjRSPA/Sw5wpXPEzkEOL8boneyvggTj35Ap
- iLR4boF1GxwCIJmemEqZmfOx4+ZXqnC7Sadj6P4AZ2AlzYW5mQvhxgGMekHp1YIdw0R8 pA== 
-Received: from aserp3020.oracle.com (aserp3020.oracle.com [141.146.126.70])
- by userp2130.oracle.com with ESMTP id 2ym31usduj-1
- (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
- Thu, 12 Mar 2020 12:55:47 +0000
-Received: from pps.filterd (aserp3020.oracle.com [127.0.0.1])
- by aserp3020.oracle.com (8.16.0.42/8.16.0.42) with SMTP id 02CCrMY3119204;
- Thu, 12 Mar 2020 12:55:47 GMT
-Received: from userv0121.oracle.com (userv0121.oracle.com [156.151.31.72])
- by aserp3020.oracle.com with ESMTP id 2yp8p79dvr-1
- (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
- Thu, 12 Mar 2020 12:55:47 +0000
-Received: from abhmp0010.oracle.com (abhmp0010.oracle.com [141.146.116.16])
- by userv0121.oracle.com (8.14.4/8.13.8) with ESMTP id 02CCtjWP002515;
- Thu, 12 Mar 2020 12:55:45 GMT
-Received: from kadam (/41.57.98.10) by default (Oracle Beehive Gateway v4.0)
- with ESMTP ; Thu, 12 Mar 2020 05:55:44 -0700
-Date: Thu, 12 Mar 2020 15:55:39 +0300
-From: Dan Carpenter <dan.carpenter@oracle.com>
-To: Lu Baolu <baolu.lu@linux.intel.com>
-Subject: Re: [PATCH] iommu/vt-d: Unlock on error paths
-Message-ID: <20200312125539.GG11561@kadam>
-References: <20200312113730.GF20562@mwanda>
- <0f0dcaca-5c33-c78c-6d38-2bbae26cbff2@linux.intel.com>
+ with ESMTP id 9ufN-CAtfbMT for <iommu@lists.linux-foundation.org>;
+ Thu, 12 Mar 2020 15:41:49 +0000 (UTC)
+X-Greylist: from auto-whitelisted by SQLgrey-1.7.6
+Received: from FRA01-MR2-obe.outbound.protection.outlook.com
+ (mail-eopbgr90129.outbound.protection.outlook.com [40.107.9.129])
+ by hemlock.osuosl.org (Postfix) with ESMTPS id 611E487A2F
+ for <iommu@lists.linux-foundation.org>; Thu, 12 Mar 2020 15:41:49 +0000 (UTC)
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=Hdfo/UEcJKVt7t3dxRxG0FBcC2LJTVG+0y/MQCllf4zPZ0/vJpip8vn4wSWR3REFy3XiEs3l0UmNnsq7jGuu6mf2m7GYPXbbMUpgk/DvUckkoyR4uiIgOy86OXjFDJ+NcQIeBCejU26W/MAlS7CDGpc42nN2YdpZN68qp3o+dyziQzyWYKXA9seNMtCsftslZRCiKM+121DSnkZWOdAJ3wYko5hhXnPiw/96lXC7DanAMlhthnm4REhJt9OiGMdoMMwDPU9jZbaaVfdCp18eH4YVT18P6FwRn2MtOyWy27nZEnjG+Yeeo689OYJbNEzxLP0pwrxO9b6mhlwISquCTA==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com; 
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=kdYGAMGleSSh7fJ++ZIcrH4OxxESn/TESQjyu1lCF2U=;
+ b=AdaGEo8WgI/5IvRZ5+8VRAqlCLc2cfy5yUSzRGmYzzWtTCnfnfbdXuWKwOMj+jqgEIAGwl74ohMR6afW0XR1aFMRoIfkxoz+5YxIr+trZnJaCvv21B7ieNTEeJ5YwFTs1td9uZUDv7NXEWlut1aP7fI9riP0yaTZWfFthYXbYenQv82IOZ/chfPt79kd9lX0rem8J0p1nzwtCnmid1IYORq87sxRVxImq0EQBxLxbz5j1YydXARn3bFgXWC6QRv0ljE/KHfxihjABqCLLEGIBwpY5x4an3nTMOXeVUcbG8BQ+tTviyvxdXhl3s+KbAfPSPRUkBPTGiX6nptxFOm10A==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=allegrodvt.com; dmarc=pass action=none
+ header.from=allegrodvt.com; dkim=pass header.d=allegrodvt.com; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=allegrodvt.com;
+ s=selector1;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=kdYGAMGleSSh7fJ++ZIcrH4OxxESn/TESQjyu1lCF2U=;
+ b=YHk1LXqPfgnUugfc7qVLpFB5/SkFcd4pflreMqHnkc1BbCfAd1QVkCGByu5R7wm0UoyHSJHFqkSwfL3EbA0Jfxfx3PFgzFyn/L/fBbPrqnwi78EAga34x98wofv08r+gRESHPTq91YjTEG0q/KjqfFR2ITa8pkxJCq167o5ib2zeiZS/52ECBAu25vz4NmzuaXAxWNBOQYwRUfZIRMp20pqfhwJ5JKiXb/kvqL0MdQm8EWJME1RN13ekT0OO8chqjD05ujPET6x9Ce1JhPOq3IwbYIidHa9NOrCokJvMqxvLbyirUXJnuh7cpbvX1lWntEHUPA2rnt/svz/9kbb2BA==
+Received: from MRXP264MB0584.FRAP264.PROD.OUTLOOK.COM (52.134.49.145) by
+ MRXP264MB0823.FRAP264.PROD.OUTLOOK.COM (52.134.43.17) with Microsoft SMTP
+ Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.20.2793.16; Thu, 12 Mar 2020 15:41:45 +0000
+Received: from MRXP264MB0584.FRAP264.PROD.OUTLOOK.COM
+ ([fe80::84af:fd44:26b8:7b02]) by MRXP264MB0584.FRAP264.PROD.OUTLOOK.COM
+ ([fe80::84af:fd44:26b8:7b02%5]) with mapi id 15.20.2814.007; Thu, 12 Mar 2020
+ 15:41:45 +0000
+Received: from localhost.localdomain (185.223.150.134) by
+ PR0P264CA0021.FRAP264.PROD.OUTLOOK.COM (2603:10a6:100::33) with Microsoft
+ SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.20.2793.15 via Frontend Transport; Thu, 12 Mar 2020 15:41:45 +0000
+From: Kevin Grandemange <kevin.grandemange@allegrodvt.com>
+To: Christoph Hellwig <hch@lst.de>
+Subject: [PATCH v3] [dma-coherent] Fix integer overflow in the reserved-memory
+ dma allocation
+Thread-Topic: [PATCH v3] [dma-coherent] Fix integer overflow in the
+ reserved-memory dma allocation
+Thread-Index: AQHV+IS8MM7sTj8apEi9KYk+hfYnxg==
+Date: Thu, 12 Mar 2020 15:41:45 +0000
+Message-ID: <20200312154040.17040-1-kevin.grandemange@allegrodvt.com>
+References: <6b2b656c-33ee-4e02-e687-c71ff43de584@arm.com>
+In-Reply-To: <6b2b656c-33ee-4e02-e687-c71ff43de584@arm.com>
+Accept-Language: en-US
+Content-Language: en-US
+X-MS-Has-Attach: 
+X-MS-TNEF-Correlator: 
+x-clientproxiedby: PR0P264CA0021.FRAP264.PROD.OUTLOOK.COM (2603:10a6:100::33)
+ To MRXP264MB0584.FRAP264.PROD.OUTLOOK.COM
+ (2603:10a6:500:23::17)
+authentication-results: spf=none (sender IP is )
+ smtp.mailfrom=kevin.grandemange@allegrodvt.com; 
+x-ms-exchange-messagesentrepresentingtype: 1
+x-mailer: git-send-email 2.20.1
+x-originating-ip: [185.223.150.134]
+x-ms-publictraffictype: Email
+x-ms-office365-filtering-correlation-id: cd4ec84d-977f-48de-832b-08d7c69bde9d
+x-ms-traffictypediagnostic: MRXP264MB0823:
+x-ms-exchange-transport-forked: True
+x-microsoft-antispam-prvs: <MRXP264MB08231FAB6CC924CA88E2B29C87FD0@MRXP264MB0823.FRAP264.PROD.OUTLOOK.COM>
+x-ms-oob-tlc-oobclassifiers: OLM:6430;
+x-forefront-prvs: 0340850FCD
+x-forefront-antispam-report: SFV:NSPM;
+ SFS:(10019020)(346002)(376002)(39830400003)(366004)(396003)(136003)(199004)(508600001)(71200400001)(54906003)(86362001)(956004)(186003)(2906002)(81156014)(81166006)(6916009)(6512007)(16526019)(44832011)(26005)(1076003)(64756008)(66446008)(8676002)(36756003)(66556008)(52116002)(66946007)(69590400007)(8936002)(6486002)(2616005)(66476007)(107886003)(5660300002)(316002)(6506007)(4326008);
+ DIR:OUT; SFP:1102; SCL:1; SRVR:MRXP264MB0823;
+ H:MRXP264MB0584.FRAP264.PROD.OUTLOOK.COM; FPR:; SPF:None; LANG:en;
+ PTR:InfoNoRecords; A:1; 
+received-spf: None (protection.outlook.com: allegrodvt.com does not designate
+ permitted sender hosts)
+x-ms-exchange-senderadcheck: 1
+x-microsoft-antispam: BCL:0;
+x-microsoft-antispam-message-info: SD4p90OHCCgPUc7f57QDXfbcM9DijcbQ3EjQYQV8nxi6rao7BjwBYd2KSBL0bAEgCe6D/fmLRYvVTj0gaSvY3h67qGk2lTMOxhrbVMX9rI+NfvwLuWsB6CkLVfKthX4VfojNokKTJIszgV2Lun0QIUpOp5ce0jjYNiksv6/cxld0fs2PcSHgwhqK/Hn6EBTknNMZ/5zO33fENm0GtHbwPBEbLfljDzYUB2VT7gKJ17JobzfTtKLIeE4D4piYgLyVw39UimcivJ9CQpYbolVVm7Gc9k22q53YYKhjthM4d68F3ja3CmEGkew5045na9twUe1NBjYZbPlah9uUAau4pZ3jizeZMglKlACoilsy5rP9w8KVNMzplV+XpSqUmwghpkbVP6VIU8F/BvwWzY1sVOTO85Lsp4iJFrEsjH3PFzzOAptiphgVovF1JW8l9T8OkiqXb5ZG5gf2etDgy09jmF594O+UdRMNeQwIUmjGPqggUJDnd+NUrkHjIz7kik80
+x-ms-exchange-antispam-messagedata: Yrh++T9yOgE5arMVLDx6Q1LfzPaH0s15CV9a3llUYe1fbm3toboqlHW+DtpNhKZg7UcfZSqsAIPLY17F+KFJmBfB9Gf8vP2FSjKcW/tBJrOlbDapcYPPVR3mT60yneBMLMz60ksvMhVgWI7xxXitog==
 MIME-Version: 1.0
-Content-Disposition: inline
-In-Reply-To: <0f0dcaca-5c33-c78c-6d38-2bbae26cbff2@linux.intel.com>
-User-Agent: Mutt/1.9.4 (2018-02-28)
-X-Proofpoint-Virus-Version: vendor=nai engine=6000 definitions=9557
- signatures=668685
-X-Proofpoint-Spam-Details: rule=notspam policy=default score=0 bulkscore=0
- mlxscore=0 phishscore=0
- spamscore=0 malwarescore=0 adultscore=0 suspectscore=0 mlxlogscore=999
- classifier=spam adjust=0 reason=mlx scancount=1 engine=8.12.0-2001150001
- definitions=main-2003120070
-X-Proofpoint-Virus-Version: vendor=nai engine=6000 definitions=9557
- signatures=668685
-X-Proofpoint-Spam-Details: rule=notspam policy=default score=0 adultscore=0
- lowpriorityscore=0
- spamscore=0 priorityscore=1501 impostorscore=0 bulkscore=0 suspectscore=0
- phishscore=0 mlxlogscore=999 mlxscore=0 malwarescore=0 clxscore=1015
- classifier=spam adjust=0 reason=mlx scancount=1 engine=8.12.0-2001150001
- definitions=main-2003120070
-Cc: kernel-janitors@vger.kernel.org, Megha Dey <megha.dey@linux.intel.com>,
- David Woodhouse <dwmw2@infradead.org>, iommu@lists.linux-foundation.org
+X-OriginatorOrg: allegrodvt.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: cd4ec84d-977f-48de-832b-08d7c69bde9d
+X-MS-Exchange-CrossTenant-originalarrivaltime: 12 Mar 2020 15:41:45.5108 (UTC)
+X-MS-Exchange-CrossTenant-fromentityheader: Hosted
+X-MS-Exchange-CrossTenant-id: 6c7a5ec0-2d92-465a-a3e1-9e3f1e9fd917
+X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
+X-MS-Exchange-CrossTenant-userprincipalname: PYyutCl564HjfPbflc8LVaOCkYGezG5OW387f+tOjdr/X05vPNd2hFhDXbjg1vcceGpUfJPaakNclyTYXkarkMsDeg5w+C8VhcB470NyyeCpO3aIGpZX37Jt7I6+A/DT
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: MRXP264MB0823
+Cc: "iommu@lists.linux-foundation.org" <iommu@lists.linux-foundation.org>,
+ Kevin Grandemange <kevin.grandemange@allegrodvt.com>,
+ Robin Murphy <robin.murphy@arm.com>
 X-BeenThere: iommu@lists.linux-foundation.org
 X-Mailman-Version: 2.1.15
 Precedence: list
@@ -121,59 +145,90 @@ Content-Transfer-Encoding: 7bit
 Errors-To: iommu-bounces@lists.linux-foundation.org
 Sender: "iommu" <iommu-bounces@lists.linux-foundation.org>
 
-On Thu, Mar 12, 2020 at 08:02:41PM +0800, Lu Baolu wrote:
-> On 2020/3/12 19:37, Dan Carpenter wrote:
-> > There were a couple places where we need to unlock before returning.
-> > 
-> > Fixes: 91391b919e19 ("iommu/vt-d: Populate debugfs if IOMMUs are detected")
-> > Signed-off-by: Dan Carpenter <dan.carpenter@oracle.com>
-> > ---
-> >   drivers/iommu/intel-iommu-debugfs.c | 6 ++++--
-> >   1 file changed, 4 insertions(+), 2 deletions(-)
-> > 
-> > diff --git a/drivers/iommu/intel-iommu-debugfs.c b/drivers/iommu/intel-iommu-debugfs.c
-> > index 8d24c4d85cc2..6a495b103972 100644
-> > --- a/drivers/iommu/intel-iommu-debugfs.c
-> > +++ b/drivers/iommu/intel-iommu-debugfs.c
-> > @@ -289,11 +289,12 @@ static int dmar_translation_struct_show(struct seq_file *m, void *unused)
-> >   		sts = dmar_readl(iommu->reg + DMAR_GSTS_REG);
-> >   		if (!(sts & DMA_GSTS_TES)) {
-> >   			seq_puts(m, "DMA Remapping is not enabled\n");
-> > -			return 0;
-> > +			goto unlock;
-> >   		}
-> >   		root_tbl_walk(m, iommu);
-> >   		seq_putc(m, '\n');
-> >   	}
-> > +unlock:
-> >   	rcu_read_unlock();
-> >   	return 0;
-> > @@ -444,7 +445,7 @@ static int ir_translation_struct_show(struct seq_file *m, void *unused)
-> >   		sts = dmar_readl(iommu->reg + DMAR_GSTS_REG);
-> >   		if (!(sts & DMA_GSTS_IRES)) {
-> >   			seq_puts(m, "Interrupt Remapping is not enabled\n");
-> > -			return 0;
-> > +			goto unlock;
-> >   		}
-> >   		if (iommu->ir_table) {
-> > @@ -475,6 +476,7 @@ static int ir_translation_struct_show(struct seq_file *m, void *unused)
-> >   		}
-> >   		seq_putc(m, '\n');
-> >   	}
-> > +unlock:
-> >   	rcu_read_unlock();
-> >   	return 0;
-> > 
-> 
-> Thanks a lot for the catch. I think it could be further cleanup. How
-> about below changes?
+pageno is an int and the PAGE_SHIFT shift is done on an int,
+overflowing if the memory is bigger than 2G
 
-Obviously that solves the issues with forgetting to drop the lock but
-I'm not qualified to comment on the rest.  (And I can't really review
-it anyway because the patch was damaged in sending the email).
+This can be reproduced using for example a reserved-memory of 4G
 
-regards,
-dan carepnter
+reserved-memory {
+		    #address-cells = <2>;
+		    #size-cells = <2>;
+		    ranges;
+
+		    reserved_dma: buffer@0 {
+		        compatible = "shared-dma-pool";
+		        no-map;
+		        reg = <0x5 0x00000000 0x1 0x0>;
+        };
+};
+
+Signed-off-by: Kevin Grandemange <kevin.grandemange@allegrodvt.com>
+---
+
+Changes v1 -> v2:
+  - removed mem_offset tmp variable
+  - use dma_addr_t instead of ssize_t
+  - Fix reserved-memory size in the dts example
+
+Changes v2 -> v3:
+  - Fix several other site where PAGE_SHIFT shifts are done on ints.
+
+ kernel/dma/coherent.c | 12 ++++++------
+ 1 file changed, 6 insertions(+), 6 deletions(-)
+
+diff --git a/kernel/dma/coherent.c b/kernel/dma/coherent.c
+index 551b0eb7028a..d322cb786e7e 100644
+--- a/kernel/dma/coherent.c
++++ b/kernel/dma/coherent.c
+@@ -134,7 +134,7 @@ static void *__dma_alloc_from_coherent(struct device *dev,
+ 
+ 	spin_lock_irqsave(&mem->spinlock, flags);
+ 
+-	if (unlikely(size > (mem->size << PAGE_SHIFT)))
++	if (unlikely(size > ((dma_addr_t)mem->size << PAGE_SHIFT)))
+ 		goto err;
+ 
+ 	pageno = bitmap_find_free_region(mem->bitmap, mem->size, order);
+@@ -144,8 +144,8 @@ static void *__dma_alloc_from_coherent(struct device *dev,
+ 	/*
+ 	 * Memory was found in the coherent area.
+ 	 */
+-	*dma_handle = dma_get_device_base(dev, mem) + (pageno << PAGE_SHIFT);
+-	ret = mem->virt_base + (pageno << PAGE_SHIFT);
++	*dma_handle = dma_get_device_base(dev, mem) + ((dma_addr_t)pageno << PAGE_SHIFT);
++	ret = mem->virt_base + ((dma_addr_t)pageno << PAGE_SHIFT);
+ 	spin_unlock_irqrestore(&mem->spinlock, flags);
+ 	memset(ret, 0, size);
+ 	return ret;
+@@ -194,7 +194,7 @@ static int __dma_release_from_coherent(struct dma_coherent_mem *mem,
+ 				       int order, void *vaddr)
+ {
+ 	if (mem && vaddr >= mem->virt_base && vaddr <
+-		   (mem->virt_base + (mem->size << PAGE_SHIFT))) {
++		   (mem->virt_base + ((dma_addr_t)mem->size << PAGE_SHIFT))) {
+ 		int page = (vaddr - mem->virt_base) >> PAGE_SHIFT;
+ 		unsigned long flags;
+ 
+@@ -238,7 +238,7 @@ static int __dma_mmap_from_coherent(struct dma_coherent_mem *mem,
+ 		struct vm_area_struct *vma, void *vaddr, size_t size, int *ret)
+ {
+ 	if (mem && vaddr >= mem->virt_base && vaddr + size <=
+-		   (mem->virt_base + (mem->size << PAGE_SHIFT))) {
++		   (mem->virt_base + ((dma_addr_t)mem->size << PAGE_SHIFT))) {
+ 		unsigned long off = vma->vm_pgoff;
+ 		int start = (vaddr - mem->virt_base) >> PAGE_SHIFT;
+ 		int user_count = vma_pages(vma);
+@@ -248,7 +248,7 @@ static int __dma_mmap_from_coherent(struct dma_coherent_mem *mem,
+ 		if (off < count && user_count <= count - off) {
+ 			unsigned long pfn = mem->pfn_base + start + off;
+ 			*ret = remap_pfn_range(vma, vma->vm_start, pfn,
+-					       user_count << PAGE_SHIFT,
++					       (unsigned long)user_count << PAGE_SHIFT,
+ 					       vma->vm_page_prot);
+ 		}
+ 		return 1;
+-- 
+2.20.1
 
 _______________________________________________
 iommu mailing list
