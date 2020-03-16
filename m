@@ -2,102 +2,87 @@ Return-Path: <SRS0=N4Nm=5B=lists.linux-foundation.org=iommu-bounces@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-3.8 required=3.0 tests=DKIM_INVALID,DKIM_SIGNED,
-	HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_PATCH,MAILING_LIST_MULTI,SIGNED_OFF_BY,
-	SPF_HELO_NONE,SPF_PASS,UNWANTED_LANGUAGE_BODY autolearn=ham
-	autolearn_force=no version=3.4.0
+X-Spam-Status: No, score=-0.6 required=3.0 tests=DKIM_INVALID,DKIM_SIGNED,
+	HEADER_FROM_DIFFERENT_DOMAINS,MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS
+	autolearn=no autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 16153C18E5B
-	for <iommu@archiver.kernel.org>; Mon, 16 Mar 2020 15:58:10 +0000 (UTC)
-Received: from silver.osuosl.org (smtp3.osuosl.org [140.211.166.136])
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 60C54C18E5B
+	for <iommu@archiver.kernel.org>; Mon, 16 Mar 2020 16:37:14 +0000 (UTC)
+Received: from whitealder.osuosl.org (smtp1.osuosl.org [140.211.166.138])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by mail.kernel.org (Postfix) with ESMTPS id D42352071C
-	for <iommu@archiver.kernel.org>; Mon, 16 Mar 2020 15:58:09 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTPS id 2534720719
+	for <iommu@archiver.kernel.org>; Mon, 16 Mar 2020 16:37:14 +0000 (UTC)
 Authentication-Results: mail.kernel.org;
-	dkim=fail reason="signature verification failed" (2048-bit key) header.d=linaro.org header.i=@linaro.org header.b="XGOY+0zN"
-DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org D42352071C
-Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=linaro.org
+	dkim=fail reason="signature verification failed" (1024-bit key) header.d=mg.codeaurora.org header.i=@mg.codeaurora.org header.b="VOa+yZQf"
+DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 2534720719
+Authentication-Results: mail.kernel.org; dmarc=none (p=none dis=none) header.from=codeaurora.org
 Authentication-Results: mail.kernel.org; spf=pass smtp.mailfrom=iommu-bounces@lists.linux-foundation.org
 Received: from localhost (localhost [127.0.0.1])
-	by silver.osuosl.org (Postfix) with ESMTP id C0D0020529;
-	Mon, 16 Mar 2020 15:58:09 +0000 (UTC)
+	by whitealder.osuosl.org (Postfix) with ESMTP id EAE0888423;
+	Mon, 16 Mar 2020 16:37:13 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from silver.osuosl.org ([127.0.0.1])
+Received: from whitealder.osuosl.org ([127.0.0.1])
 	by localhost (.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
-	with ESMTP id lu2DDpuQ3vMV; Mon, 16 Mar 2020 15:58:08 +0000 (UTC)
+	with ESMTP id v-WTVjx3v-TB; Mon, 16 Mar 2020 16:37:13 +0000 (UTC)
 Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [140.211.9.56])
-	by silver.osuosl.org (Postfix) with ESMTP id 7FDD7204EF;
-	Mon, 16 Mar 2020 15:58:08 +0000 (UTC)
+	by whitealder.osuosl.org (Postfix) with ESMTP id 4D2C687E90;
+	Mon, 16 Mar 2020 16:37:13 +0000 (UTC)
 Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
-	by lists.linuxfoundation.org (Postfix) with ESMTP id 695B7C1D7C;
-	Mon, 16 Mar 2020 15:58:08 +0000 (UTC)
-Received: from silver.osuosl.org (smtp3.osuosl.org [140.211.166.136])
- by lists.linuxfoundation.org (Postfix) with ESMTP id 38179C013E
- for <iommu@lists.linux-foundation.org>; Mon, 16 Mar 2020 15:58:07 +0000 (UTC)
+	by lists.linuxfoundation.org (Postfix) with ESMTP id 2A4A5C18DA;
+	Mon, 16 Mar 2020 16:37:13 +0000 (UTC)
+Received: from hemlock.osuosl.org (smtp2.osuosl.org [140.211.166.133])
+ by lists.linuxfoundation.org (Postfix) with ESMTP id BCBFDC013E
+ for <iommu@lists.linux-foundation.org>; Mon, 16 Mar 2020 16:37:11 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
- by silver.osuosl.org (Postfix) with ESMTP id 259D120529
- for <iommu@lists.linux-foundation.org>; Mon, 16 Mar 2020 15:58:07 +0000 (UTC)
+ by hemlock.osuosl.org (Postfix) with ESMTP id A5B5C88046
+ for <iommu@lists.linux-foundation.org>; Mon, 16 Mar 2020 16:37:11 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from silver.osuosl.org ([127.0.0.1])
+Received: from hemlock.osuosl.org ([127.0.0.1])
  by localhost (.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
- with ESMTP id ZewSpI-u7P+v for <iommu@lists.linux-foundation.org>;
- Mon, 16 Mar 2020 15:58:06 +0000 (UTC)
-X-Greylist: domain auto-whitelisted by SQLgrey-1.7.6
-Received: from mail-wr1-f67.google.com (mail-wr1-f67.google.com
- [209.85.221.67])
- by silver.osuosl.org (Postfix) with ESMTPS id 143A0207A8
- for <iommu@lists.linux-foundation.org>; Mon, 16 Mar 2020 15:58:06 +0000 (UTC)
-Received: by mail-wr1-f67.google.com with SMTP id s1so166733wrv.5
- for <iommu@lists.linux-foundation.org>; Mon, 16 Mar 2020 08:58:06 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linaro.org; s=google;
- h=date:from:to:cc:subject:message-id:references:mime-version
- :content-disposition:in-reply-to;
- bh=H8gu7DkqIY6Hs0O9tBbPEC3uwEKTTAu/TiMJwJ6IfWo=;
- b=XGOY+0zNdZhJAwbt7nG45/bQQxernSkoWJlhxo09FLN2GjiT7TZsLFWAicn5ItdGvm
- M2f0bxD904jzYwBR3rGju26xdAss05Tnrad5a3+eTITy4PaGbbo8kVJpU/QkMvi8bKHx
- M4gGOaDYgSyiZ3mJ9iPwBTsfWTTTSNUYdtcHHTf5c45HYQCEw05zhk2zHiiIlgXrLl50
- dxZ2vtj0a93wasRTiOYVhgOTGADvh9/WAPglVYHNBNVBcnbgiZ5GUkbXkDqOwRRwnZoI
- /icjBVyzPGEJHv+lmMhuIcgeVZ3ifW3bA1YXra3qBcD2x7XmMiVgn/6LpHTLIoSPUCDG
- QnJw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
- d=1e100.net; s=20161025;
- h=x-gm-message-state:date:from:to:cc:subject:message-id:references
- :mime-version:content-disposition:in-reply-to;
- bh=H8gu7DkqIY6Hs0O9tBbPEC3uwEKTTAu/TiMJwJ6IfWo=;
- b=SxvFRrK0nLvDXy2OyeC8X+tT8mSyKqOGrT7NeF7VmyrUiGrxd+BA5w36pbmDNVUhoi
- XP7PKpbNAYyIOiJDXOpIZMZ3/HxC0/Ba720g23a3bN54wmH7zxHshpD2bIGrA3XAw4gY
- XEYUr+6cY1Ukkh7tAOYVMreD4nMb5t5g4+f7M8fZec8HbHCXNJTPgA9GmnotD7GIomH2
- g7kUJY6PM1IP+VB2jA2VI3Vs+i1gQMicIE4em7uYJ+4mmDiD6fuuDp4W+Suph62eW3bC
- jhpPmN/Okqh73gRHLvecfOx4znUNiE7hRHCIBlnNhxtYW38OFiuPie7cbYghasd8PSSa
- iRHQ==
-X-Gm-Message-State: ANhLgQ3uAR3lyKcySEGr30oZM7EWPFu3HjFflxYBrnNVYUafNFn4Kprc
- xD8WnLwzpUSlYck+0/m5aS0D6Q==
-X-Google-Smtp-Source: ADFU+vsSrPRyJcA3YQxERetVdYcC8+kKaCnqT9yz2q1GFbJB+t1gIFoFuZk5ByOWaxPUf9x/6kt4+g==
-X-Received: by 2002:a5d:66c4:: with SMTP id k4mr23072wrw.133.1584374284591;
- Mon, 16 Mar 2020 08:58:04 -0700 (PDT)
-Received: from myrica ([2001:171b:226b:54a0:116c:c27a:3e7f:5eaf])
- by smtp.gmail.com with ESMTPSA id y189sm180467wmb.26.2020.03.16.08.58.03
- (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
- Mon, 16 Mar 2020 08:58:04 -0700 (PDT)
-Date: Mon, 16 Mar 2020 16:57:56 +0100
-From: Jean-Philippe Brucker <jean-philippe@linaro.org>
-To: Joerg Roedel <joro@8bytes.org>
-Subject: Re: [PATCH 15/15] iommu: Move fwspec->iommu_priv to struct dev_iommu
-Message-ID: <20200316155756.GO304669@myrica>
-References: <20200310091229.29830-1-joro@8bytes.org>
- <20200310091229.29830-16-joro@8bytes.org>
+ with ESMTP id AfB7-ZKD-W-y for <iommu@lists.linux-foundation.org>;
+ Mon, 16 Mar 2020 16:37:08 +0000 (UTC)
+X-Greylist: from auto-whitelisted by SQLgrey-1.7.6
+Received: from mail26.static.mailgun.info (mail26.static.mailgun.info
+ [104.130.122.26])
+ by hemlock.osuosl.org (Postfix) with ESMTPS id BE6FE87697
+ for <iommu@lists.linux-foundation.org>; Mon, 16 Mar 2020 16:37:08 +0000 (UTC)
+DKIM-Signature: a=rsa-sha256; v=1; c=relaxed/relaxed; d=mg.codeaurora.org;
+ q=dns/txt; 
+ s=smtp; t=1584376628; h=Message-ID: References: In-Reply-To: Subject:
+ Cc: To: From: Date: Content-Transfer-Encoding: Content-Type:
+ MIME-Version: Sender; bh=Z4SetJr+WVQFYQOeb4040xyBonyw20d7MV9fV+K7/JQ=;
+ b=VOa+yZQfJn/HFn4skspufLuR0w7C9FtwT+wvxCyeW9w6HpI2Ae5py8ejuJ1Vih0CoQQT6xmi
+ 4ygbtmBnOHnnE0Bw9FI19HYX0qNH3fVZRKY6ycu0CTfzGHUVvRF/svGDPVMwIE/kya9e/aco
+ BMXHVfz5oUR4+jel3v0wsWOfZwo=
+X-Mailgun-Sending-Ip: 104.130.122.26
+X-Mailgun-Sid: WyI3NDkwMCIsICJpb21tdUBsaXN0cy5saW51eC1mb3VuZGF0aW9uLm9yZyIsICJiZTllNGEiXQ==
+Received: from smtp.codeaurora.org
+ (ec2-35-166-182-171.us-west-2.compute.amazonaws.com [35.166.182.171])
+ by mxa.mailgun.org with ESMTP id 5e6fab33.7f78a9679458-smtp-out-n05;
+ Mon, 16 Mar 2020 16:37:07 -0000 (UTC)
+Received: by smtp.codeaurora.org (Postfix, from userid 1001)
+ id 994A5C44788; Mon, 16 Mar 2020 16:37:06 +0000 (UTC)
+Received: from mail.codeaurora.org (localhost.localdomain [127.0.0.1])
+ (using TLSv1 with cipher ECDHE-RSA-AES256-SHA (256/256 bits))
+ (No client certificate requested) (Authenticated sender: sibis)
+ by smtp.codeaurora.org (Postfix) with ESMTPSA id F3B31C432C2;
+ Mon, 16 Mar 2020 16:37:04 +0000 (UTC)
 MIME-Version: 1.0
-Content-Disposition: inline
-In-Reply-To: <20200310091229.29830-16-joro@8bytes.org>
-Cc: Will Deacon <will@kernel.org>, linux-arm-msm@vger.kernel.org,
- Sudeep Holla <sudeep.holla@arm.com>, linux-kernel@vger.kernel.org,
- virtualization@lists.linux-foundation.org, iommu@lists.linux-foundation.org,
- Thierry Reding <thierry.reding@gmail.com>, linux-mediatek@lists.infradead.org,
- Andy Gross <agross@kernel.org>, Joerg Roedel <jroedel@suse.de>,
- Hanjun Guo <guohanjun@huawei.com>, Matthias Brugger <matthias.bgg@gmail.com>,
- Bjorn Andersson <bjorn.andersson@linaro.org>, Sean Paul <sean@poorly.run>,
- Robin Murphy <robin.murphy@arm.com>
+Date: Mon, 16 Mar 2020 22:07:04 +0530
+From: Sibi Sankar <sibis@codeaurora.org>
+To: Christoph Hellwig <hch@infradead.org>
+Subject: Re: [PATCH 0/3] Request direct mapping for modem firmware subdevice
+In-Reply-To: <20200316155028.GB18704@infradead.org>
+References: <20200309182255.20142-1-sibis@codeaurora.org>
+ <20200316155028.GB18704@infradead.org>
+Message-ID: <8cfddb6cbc424b131c9ab823c0c0f3f1@codeaurora.org>
+X-Sender: sibis@codeaurora.org
+User-Agent: Roundcube Webmail/1.3.9
+Cc: ohad@wizery.com, devicetree@vger.kernel.org, linux-arm-msm@vger.kernel.org,
+ linux-remoteproc@vger.kernel.org, linux-kernel@vger.kernel.org,
+ bjorn.andersson@linaro.org, iommu@lists.linux-foundation.org,
+ robh+dt@kernel.org, agross@kernel.org, linux-arm-msm-owner@vger.kernel.org
 X-BeenThere: iommu@lists.linux-foundation.org
 X-Mailman-Version: 2.1.15
 Precedence: list
@@ -110,72 +95,62 @@ List-Post: <mailto:iommu@lists.linux-foundation.org>
 List-Help: <mailto:iommu-request@lists.linux-foundation.org?subject=help>
 List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
  <mailto:iommu-request@lists.linux-foundation.org?subject=subscribe>
-Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset="us-ascii"; Format="flowed"
 Errors-To: iommu-bounces@lists.linux-foundation.org
 Sender: "iommu" <iommu-bounces@lists.linux-foundation.org>
 
-On Tue, Mar 10, 2020 at 10:12:29AM +0100, Joerg Roedel wrote:
-> From: Joerg Roedel <jroedel@suse.de>
-> 
-> Move the pointer for iommu private data from struct iommu_fwspec to
-> struct dev_iommu.
-> 
-> Tested-by: Will Deacon <will@kernel.org> # arm-smmu
-> Signed-off-by: Joerg Roedel <jroedel@suse.de>
+Hey Christoph,
+Thanks for taking time to review
+the series.
 
-Reviewed-by: Jean-Philippe Brucker <jean-philippe@linaro.org>
+On 2020-03-16 21:20, Christoph Hellwig wrote:
+> On Mon, Mar 09, 2020 at 11:52:52PM +0530, Sibi Sankar wrote:
+>> The Q6 modem sub-system has direct access to DDR through memnoc and
+>> an indirect access routed through a SMMU which MSS CE (crypto engine
+>> sub-component of MSS) uses during out of reset sequence. Request 
+>> direct
+>> mapping for the modem-firmware subdevice since smmu is not expected
+>> to provide access control/translation for these SIDs (sandboxing of 
+>> the
+>> modem is achieved through XPUs engaged using SMC calls).
+> 
+> Please fix your device tree so that the device isn't bound to an
+> IOMMU.
 
-> ---
->  include/linux/iommu.h | 7 ++++---
->  1 file changed, 4 insertions(+), 3 deletions(-)
-> 
-> diff --git a/include/linux/iommu.h b/include/linux/iommu.h
-> index 056900e75758..8c4d45fce042 100644
-> --- a/include/linux/iommu.h
-> +++ b/include/linux/iommu.h
-> @@ -369,6 +369,7 @@ struct iommu_fault_param {
->   *
->   * @fault_param: IOMMU detected device fault reporting data
->   * @fwspec:	 IOMMU fwspec data
-> + * @priv:	 IOMMU Driver private data
->   *
->   * TODO: migrate other per device data pointers under iommu_dev_data, e.g.
->   *	struct iommu_group	*iommu_group;
-> @@ -377,6 +378,7 @@ struct dev_iommu {
->  	struct mutex lock;
->  	struct iommu_fault_param	*fault_param;
->  	struct iommu_fwspec		*fwspec;
-> +	void				*priv;
->  };
->  
->  int  iommu_device_register(struct iommu_device *iommu);
-> @@ -589,7 +591,6 @@ struct iommu_group *fsl_mc_device_group(struct device *dev);
->  struct iommu_fwspec {
->  	const struct iommu_ops	*ops;
->  	struct fwnode_handle	*iommu_fwnode;
-> -	void			*iommu_priv;
->  	u32			flags;
->  	u32			num_pasid_bits;
->  	unsigned int		num_ids;
-> @@ -629,12 +630,12 @@ static inline void dev_iommu_fwspec_set(struct device *dev,
->  
->  static inline void *dev_iommu_priv_get(struct device *dev)
->  {
-> -	return dev->iommu->fwspec->iommu_priv;
-> +	return dev->iommu->priv;
->  }
->  
->  static inline void dev_iommu_priv_set(struct device *dev, void *priv)
->  {
-> -	dev->iommu->fwspec->iommu_priv = priv;
-> +	dev->iommu->priv = priv;
->  }
->  
->  int iommu_probe_device(struct device *dev);
-> -- 
-> 2.17.1
-> 
+the bindings proposed in the series
+would add a sub-device with an iommu
+property.
+
+modem_pil: remoteproc@xxxxx {
+...
+    modem-firmware {
+         iommus = <&apps_smmu 0x460 0x1>;
+    };
+...
+};
+
+Remoteproc device will not have a iommu
+property but modem-firmware sub-device
+will.
+
+With ARM_SMMU_DISABLE_BYPASS_BY_DEFAULT y,
+we would want to configure the SID either
+in direct mapping or bypass (either will
+do since protection is achieved through
+other means)
+
+https://lore.kernel.org/lkml/497e40b8-300f-1b83-4312-93a58c459d1d@arm.com/
+
+Currently the restructuring is trending
+towards whats discussed in the ^^ thread.
+i.e either direct mapping/bypass will be
+done in the SoC specific corner of the
+SMMU driver.
+
+-- 
+Qualcomm Innovation Center, Inc. is a member of Code Aurora Forum,
+a Linux Foundation Collaborative Project.
 _______________________________________________
 iommu mailing list
 iommu@lists.linux-foundation.org
