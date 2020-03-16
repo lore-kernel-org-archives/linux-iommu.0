@@ -6,59 +6,66 @@ X-Spam-Status: No, score=-2.3 required=3.0 tests=HEADER_FROM_DIFFERENT_DOMAINS,
 	MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS,USER_AGENT_SANE_1 autolearn=no
 	autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 19961C0044D
-	for <iommu@archiver.kernel.org>; Mon, 16 Mar 2020 12:48:58 +0000 (UTC)
-Received: from silver.osuosl.org (smtp3.osuosl.org [140.211.166.136])
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 5FF7FC0044D
+	for <iommu@archiver.kernel.org>; Mon, 16 Mar 2020 13:16:31 +0000 (UTC)
+Received: from fraxinus.osuosl.org (smtp4.osuosl.org [140.211.166.137])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by mail.kernel.org (Postfix) with ESMTPS id E7CE0205ED
-	for <iommu@archiver.kernel.org>; Mon, 16 Mar 2020 12:48:56 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org E7CE0205ED
-Authentication-Results: mail.kernel.org; dmarc=none (p=none dis=none) header.from=lst.de
+	by mail.kernel.org (Postfix) with ESMTPS id E363320663
+	for <iommu@archiver.kernel.org>; Mon, 16 Mar 2020 13:16:30 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org E363320663
+Authentication-Results: mail.kernel.org; dmarc=none (p=none dis=none) header.from=arm.com
 Authentication-Results: mail.kernel.org; spf=pass smtp.mailfrom=iommu-bounces@lists.linux-foundation.org
 Received: from localhost (localhost [127.0.0.1])
-	by silver.osuosl.org (Postfix) with ESMTP id CE0FC20390;
-	Mon, 16 Mar 2020 12:48:56 +0000 (UTC)
+	by fraxinus.osuosl.org (Postfix) with ESMTP id B0F26881E6;
+	Mon, 16 Mar 2020 13:16:30 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from silver.osuosl.org ([127.0.0.1])
+Received: from fraxinus.osuosl.org ([127.0.0.1])
 	by localhost (.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
-	with ESMTP id gH1TnyFF0j1W; Mon, 16 Mar 2020 12:48:56 +0000 (UTC)
+	with ESMTP id rfmesraxvXaL; Mon, 16 Mar 2020 13:16:29 +0000 (UTC)
 Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [140.211.9.56])
-	by silver.osuosl.org (Postfix) with ESMTP id 724022026D;
-	Mon, 16 Mar 2020 12:48:56 +0000 (UTC)
+	by fraxinus.osuosl.org (Postfix) with ESMTP id 191B2881F0;
+	Mon, 16 Mar 2020 13:16:29 +0000 (UTC)
 Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
-	by lists.linuxfoundation.org (Postfix) with ESMTP id 59320C18DA;
-	Mon, 16 Mar 2020 12:48:56 +0000 (UTC)
-Received: from whitealder.osuosl.org (smtp1.osuosl.org [140.211.166.138])
- by lists.linuxfoundation.org (Postfix) with ESMTP id 8B252C013E
- for <iommu@lists.linux-foundation.org>; Mon, 16 Mar 2020 12:48:54 +0000 (UTC)
+	by lists.linuxfoundation.org (Postfix) with ESMTP id 01891C1D7C;
+	Mon, 16 Mar 2020 13:16:29 +0000 (UTC)
+Received: from fraxinus.osuosl.org (smtp4.osuosl.org [140.211.166.137])
+ by lists.linuxfoundation.org (Postfix) with ESMTP id 6FC14C013E
+ for <iommu@lists.linux-foundation.org>; Mon, 16 Mar 2020 13:16:28 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
- by whitealder.osuosl.org (Postfix) with ESMTP id 72C70878C1
- for <iommu@lists.linux-foundation.org>; Mon, 16 Mar 2020 12:48:54 +0000 (UTC)
+ by fraxinus.osuosl.org (Postfix) with ESMTP id 589FF881F0
+ for <iommu@lists.linux-foundation.org>; Mon, 16 Mar 2020 13:16:28 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from whitealder.osuosl.org ([127.0.0.1])
+Received: from fraxinus.osuosl.org ([127.0.0.1])
  by localhost (.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
- with ESMTP id b0dxdBGaF2oz for <iommu@lists.linux-foundation.org>;
- Mon, 16 Mar 2020 12:48:54 +0000 (UTC)
-X-Greylist: from auto-whitelisted by SQLgrey-1.7.6
-Received: from verein.lst.de (verein.lst.de [213.95.11.211])
- by whitealder.osuosl.org (Postfix) with ESMTPS id DE3998789E
- for <iommu@lists.linux-foundation.org>; Mon, 16 Mar 2020 12:48:53 +0000 (UTC)
-Received: by verein.lst.de (Postfix, from userid 2407)
- id 1452368CEC; Mon, 16 Mar 2020 13:48:50 +0100 (CET)
-Date: Mon, 16 Mar 2020 13:48:50 +0100
-From: Christoph Hellwig <hch@lst.de>
-To: Nicolin Chen <nicoleotsuka@gmail.com>
+ with ESMTP id 38ArMq-9myQF for <iommu@lists.linux-foundation.org>;
+ Mon, 16 Mar 2020 13:16:27 +0000 (UTC)
+X-Greylist: domain auto-whitelisted by SQLgrey-1.7.6
+Received: from foss.arm.com (foss.arm.com [217.140.110.172])
+ by fraxinus.osuosl.org (Postfix) with ESMTP id 68D47881E6
+ for <iommu@lists.linux-foundation.org>; Mon, 16 Mar 2020 13:16:27 +0000 (UTC)
+Received: from usa-sjc-imap-foss1.foss.arm.com (unknown [10.121.207.14])
+ by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id AF55B30E;
+ Mon, 16 Mar 2020 06:16:26 -0700 (PDT)
+Received: from [192.168.1.123] (unknown [172.31.20.19])
+ by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPSA id D2C6C3F52E;
+ Mon, 16 Mar 2020 06:16:25 -0700 (PDT)
 Subject: Re: [RFC][PATCH] dma-mapping: align default segment_boundary_mask
  with dma_mask
-Message-ID: <20200316124850.GB17386@lst.de>
+To: Christoph Hellwig <hch@lst.de>
 References: <20200314000007.13778-1-nicoleotsuka@gmail.com>
+ <f36ac67e-0eca-46df-78ec-c8b1c4fbe951@arm.com>
+ <20200316124652.GA17386@lst.de>
+From: Robin Murphy <robin.murphy@arm.com>
+Message-ID: <09b61b1d-800a-ff18-71f6-57a5f569ea3c@arm.com>
+Date: Mon, 16 Mar 2020 13:16:16 +0000
+User-Agent: Mozilla/5.0 (Windows NT 10.0; rv:68.0) Gecko/20100101
+ Thunderbird/68.5.0
 MIME-Version: 1.0
-Content-Disposition: inline
-In-Reply-To: <20200314000007.13778-1-nicoleotsuka@gmail.com>
-User-Agent: Mutt/1.5.17 (2007-11-01)
-Cc: linux-kernel@vger.kernel.org, iommu@lists.linux-foundation.org,
- robin.murphy@arm.com, hch@lst.de
+In-Reply-To: <20200316124652.GA17386@lst.de>
+Content-Language: en-GB
+Cc: Nicolin Chen <nicoleotsuka@gmail.com>, iommu@lists.linux-foundation.org,
+ linux-kernel@vger.kernel.org
 X-BeenThere: iommu@lists.linux-foundation.org
 X-Mailman-Version: 2.1.15
 Precedence: list
@@ -71,21 +78,40 @@ List-Post: <mailto:iommu@lists.linux-foundation.org>
 List-Help: <mailto:iommu-request@lists.linux-foundation.org?subject=help>
 List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
  <mailto:iommu-request@lists.linux-foundation.org?subject=subscribe>
-Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset="us-ascii"; Format="flowed"
 Errors-To: iommu-bounces@lists.linux-foundation.org
 Sender: "iommu" <iommu-bounces@lists.linux-foundation.org>
 
-On Fri, Mar 13, 2020 at 05:00:07PM -0700, Nicolin Chen wrote:
-> @@ -736,7 +736,7 @@ static inline unsigned long dma_get_seg_boundary(struct device *dev)
->  {
->  	if (dev->dma_parms && dev->dma_parms->segment_boundary_mask)
->  		return dev->dma_parms->segment_boundary_mask;
-> -	return DMA_BIT_MASK(32);
-> +	return (unsigned long)dma_get_mask(dev);
+On 2020-03-16 12:46 pm, Christoph Hellwig wrote:
+> On Mon, Mar 16, 2020 at 12:12:08PM +0000, Robin Murphy wrote:
+>> On 2020-03-14 12:00 am, Nicolin Chen wrote:
+>>> More and more drivers set dma_masks above DMA_BIT_MAKS(32) while
+>>> only a handful of drivers call dma_set_seg_boundary(). This means
+>>> that most drivers have a 4GB segmention boundary because DMA API
+>>> returns DMA_BIT_MAKS(32) as a default value, though they might be
+>>> able to handle things above 32-bit.
+>>
+>> Don't assume the boundary mask and the DMA mask are related. There do exist
+>> devices which can DMA to a 64-bit address space in general, but due to
+>> descriptor formats/hardware design/whatever still require any single
+>> transfer not to cross some smaller boundary. XHCI is 64-bit yet requires
+>> most things not to cross a 64KB boundary. EHCI's 64-bit mode is an example
+>> of the 4GB boundary (not the best example, admittedly, but it undeniably
+>> exists).
+> 
+> Yes, which is what the boundary is for.  But why would we default to
+> something restrictive by default even if the driver didn't ask for it?
 
-Just thinking out loud after my reply - shouldn't we just return ULONG_MAX
-by default here to mark this as no limit?
+I've always assumed it was for the same reason as the 64KB segment 
+length, i.e. it was sufficiently common as an actual restriction, but 
+still "good enough" for everyone else. I remember digging up all the 
+history to understand what these were about back when I implemented the 
+map_sg stuff, and from that I'd imagine the actual values are somewhat 
+biased towards SCSI HBAs, since they originated in the block and SCSI 
+layers.
+
+Robin.
 _______________________________________________
 iommu mailing list
 iommu@lists.linux-foundation.org
