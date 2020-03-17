@@ -7,89 +7,88 @@ X-Spam-Status: No, score=-9.6 required=3.0 tests=DKIM_INVALID,DKIM_SIGNED,
 	SPF_HELO_NONE,SPF_PASS,USER_AGENT_GIT autolearn=ham autolearn_force=no
 	version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 2F1E4C5ACBF
-	for <iommu@archiver.kernel.org>; Tue, 17 Mar 2020 15:09:42 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 54A57C18E5B
+	for <iommu@archiver.kernel.org>; Tue, 17 Mar 2020 15:27:55 +0000 (UTC)
 Received: from silver.osuosl.org (smtp3.osuosl.org [140.211.166.136])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by mail.kernel.org (Postfix) with ESMTPS id 0606220752
-	for <iommu@archiver.kernel.org>; Tue, 17 Mar 2020 15:09:41 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTPS id F3B6020714
+	for <iommu@archiver.kernel.org>; Tue, 17 Mar 2020 15:27:54 +0000 (UTC)
 Authentication-Results: mail.kernel.org;
-	dkim=fail reason="signature verification failed" (1024-bit key) header.d=mg.codeaurora.org header.i=@mg.codeaurora.org header.b="KAHDfKAr"
-DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 0606220752
-Authentication-Results: mail.kernel.org; dmarc=none (p=none dis=none) header.from=codeaurora.org
+	dkim=fail reason="signature verification failed" (2048-bit key) header.d=lca.pw header.i=@lca.pw header.b="l254W5RQ"
+DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org F3B6020714
+Authentication-Results: mail.kernel.org; dmarc=none (p=none dis=none) header.from=lca.pw
 Authentication-Results: mail.kernel.org; spf=pass smtp.mailfrom=iommu-bounces@lists.linux-foundation.org
 Received: from localhost (localhost [127.0.0.1])
-	by silver.osuosl.org (Postfix) with ESMTP id D1C8126AEE;
-	Tue, 17 Mar 2020 15:09:41 +0000 (UTC)
+	by silver.osuosl.org (Postfix) with ESMTP id 7EC8F23235;
+	Tue, 17 Mar 2020 15:27:54 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
 Received: from silver.osuosl.org ([127.0.0.1])
 	by localhost (.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
-	with ESMTP id sPZah8ue7ZBD; Tue, 17 Mar 2020 15:09:41 +0000 (UTC)
+	with ESMTP id cFXHwDgadXqb; Tue, 17 Mar 2020 15:27:53 +0000 (UTC)
 Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [140.211.9.56])
-	by silver.osuosl.org (Postfix) with ESMTP id 028C12C85C;
-	Tue, 17 Mar 2020 15:09:41 +0000 (UTC)
+	by silver.osuosl.org (Postfix) with ESMTP id 590C52314A;
+	Tue, 17 Mar 2020 15:27:53 +0000 (UTC)
 Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
-	by lists.linuxfoundation.org (Postfix) with ESMTP id DD1B9C18DA;
-	Tue, 17 Mar 2020 15:09:40 +0000 (UTC)
+	by lists.linuxfoundation.org (Postfix) with ESMTP id 3E944C18DA;
+	Tue, 17 Mar 2020 15:27:53 +0000 (UTC)
 Received: from fraxinus.osuosl.org (smtp4.osuosl.org [140.211.166.137])
- by lists.linuxfoundation.org (Postfix) with ESMTP id 0B7B1C013E
- for <iommu@lists.linux-foundation.org>; Tue, 17 Mar 2020 15:09:39 +0000 (UTC)
+ by lists.linuxfoundation.org (Postfix) with ESMTP id 82A2FC013E
+ for <iommu@lists.linux-foundation.org>; Tue, 17 Mar 2020 15:27:52 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
- by fraxinus.osuosl.org (Postfix) with ESMTP id EE029850E6
- for <iommu@lists.linux-foundation.org>; Tue, 17 Mar 2020 15:09:38 +0000 (UTC)
+ by fraxinus.osuosl.org (Postfix) with ESMTP id 71E2E866A9
+ for <iommu@lists.linux-foundation.org>; Tue, 17 Mar 2020 15:27:52 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
 Received: from fraxinus.osuosl.org ([127.0.0.1])
  by localhost (.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
- with ESMTP id CelF2J5tv2-s for <iommu@lists.linux-foundation.org>;
- Tue, 17 Mar 2020 15:09:38 +0000 (UTC)
+ with ESMTP id Z8vUKmUZqzmh for <iommu@lists.linux-foundation.org>;
+ Tue, 17 Mar 2020 15:27:51 +0000 (UTC)
 X-Greylist: from auto-whitelisted by SQLgrey-1.7.6
-Received: from mail26.static.mailgun.info (mail26.static.mailgun.info
- [104.130.122.26])
- by fraxinus.osuosl.org (Postfix) with ESMTPS id A0E428651A
- for <iommu@lists.linux-foundation.org>; Tue, 17 Mar 2020 15:09:36 +0000 (UTC)
-DKIM-Signature: a=rsa-sha256; v=1; c=relaxed/relaxed; d=mg.codeaurora.org;
- q=dns/txt; 
- s=smtp; t=1584457778; h=Content-Transfer-Encoding: MIME-Version:
- References: In-Reply-To: Message-Id: Date: Subject: Cc: To: From:
- Sender; bh=Dpl+B/scWbZmo2gF6XnUI5Rycg75wr3H9pADUU/sGQI=;
- b=KAHDfKArTX88f1JS+YJWpWGR8lY83ChksxoaqOHEqzGBnB6lQNuZnkp3ExXZfzWn/RG07yWJ
- ycP14q96gXGKzzBYfbUMCSfDzeEFi+zHOvnwahcXhpNXYcB1tjOlx+pZn417Z75O5CisoTPH
- O/G4p4GKal52CWX6FKAymW8L544=
-X-Mailgun-Sending-Ip: 104.130.122.26
-X-Mailgun-Sid: WyI3NDkwMCIsICJpb21tdUBsaXN0cy5saW51eC1mb3VuZGF0aW9uLm9yZyIsICJiZTllNGEiXQ==
-Received: from smtp.codeaurora.org
- (ec2-35-166-182-171.us-west-2.compute.amazonaws.com [35.166.182.171])
- by mxa.mailgun.org with ESMTP id 5e70e82d.7fba7afdd340-smtp-out-n01;
- Tue, 17 Mar 2020 15:09:33 -0000 (UTC)
-Received: by smtp.codeaurora.org (Postfix, from userid 1001)
- id A9950C43636; Tue, 17 Mar 2020 15:09:33 +0000 (UTC)
-Received: from blr-ubuntu-87.qualcomm.com
- (blr-bdr-fw-01_GlobalNAT_AllZones-Outside.qualcomm.com [103.229.18.19])
- (using TLSv1.2 with cipher ECDHE-RSA-AES128-SHA256 (128/128 bits))
- (No client certificate requested) (Authenticated sender: sibis)
- by smtp.codeaurora.org (Postfix) with ESMTPSA id 79D80C4478F;
- Tue, 17 Mar 2020 15:09:28 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.3.2 smtp.codeaurora.org 79D80C4478F
-Authentication-Results: aws-us-west-2-caf-mail-1.web.codeaurora.org;
- dmarc=none (p=none dis=none) header.from=codeaurora.org
-Authentication-Results: aws-us-west-2-caf-mail-1.web.codeaurora.org;
- spf=none smtp.mailfrom=sibis@codeaurora.org
-From: Sibi Sankar <sibis@codeaurora.org>
-To: bjorn.andersson@linaro.org, robh+dt@kernel.org, joro@8bytes.org,
- robin.murphy@arm.com
-Subject: [PATCH v2 2/3] remoteproc: qcom_q6v5_mss: Request direct mapping for
- modem device
-Date: Tue, 17 Mar 2020 20:39:09 +0530
-Message-Id: <20200317150910.26053-3-sibis@codeaurora.org>
-X-Mailer: git-send-email 2.25.0
-In-Reply-To: <20200317150910.26053-1-sibis@codeaurora.org>
-References: <20200317150910.26053-1-sibis@codeaurora.org>
+Received: from mail-qt1-f196.google.com (mail-qt1-f196.google.com
+ [209.85.160.196])
+ by fraxinus.osuosl.org (Postfix) with ESMTPS id 16B308651A
+ for <iommu@lists.linux-foundation.org>; Tue, 17 Mar 2020 15:27:51 +0000 (UTC)
+Received: by mail-qt1-f196.google.com with SMTP id t13so17701875qtn.13
+ for <iommu@lists.linux-foundation.org>; Tue, 17 Mar 2020 08:27:51 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=lca.pw; s=google;
+ h=from:to:cc:subject:date:message-id:mime-version
+ :content-transfer-encoding;
+ bh=HqOBm7bQCludye1SGv0KdSFELKwpbPDMXnv2Sugq1V4=;
+ b=l254W5RQNfFLpxh3XTCQBj64u0gip2PXizITExpY6lAOsWn1MUvIebu1an3ADb11ac
+ liTXMm06RwsmMDI7Qxiw9AwtmT5Pq9dzz7YOo1yY/xONZZxMl1/9GUt/YT/Do+pTSGdB
+ LbzJPXVYWH5ymK7O98yRz+R6EsdJ99oOZtKTikglOEznI557wq65BJDifgceaq5MjBtM
+ MD2ztt6vDgt+RFxsqrUaKeQAXdaibVSfiqFDy2rYCj+/W/jcbmIRuSoa7Bwg0O0V5Q0Q
+ gUkz99+eQIieLq631DL+LXAbdAOqEbiyoIYUQDsB+lgYPHYbAecWPCKStQ6zNYLvYJeX
+ UiDQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+ d=1e100.net; s=20161025;
+ h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+ :content-transfer-encoding;
+ bh=HqOBm7bQCludye1SGv0KdSFELKwpbPDMXnv2Sugq1V4=;
+ b=ata1MABPXQNo7bTZQcqx25qDNGozMJtVHWPfodfiJixy41djZBIIH0q1+ckyAvEUmP
+ gTpoyBwYSr0wJVlMjxnHXPRJTbyL3PSD+Py/kfCX8edRhWtgcjyrks9ppDoDDQ9ows/w
+ V7F7oQEHJh2Er9wi7kA4VNc/ixqH2G9HCej9uNpHCAiAyGVQ+swZFezWJg3KBuFU8Vz9
+ er8rBkeHYrVzgqEd7/iy3eSSSVRhD9N8f98UrIw8ZySExa3UP2EldiurNLdJUoJxHAAL
+ X+tnSFSWHN7ugOg7bibwSCppwe4In0pbvmz7vKcfI0urbVGD9ZZRH7B7QoPha/0c7eL5
+ Csrg==
+X-Gm-Message-State: ANhLgQ1cVjki0e9xxjBGtVYY2NbN+6KOlKjOIDk+IvIb4z31AqfAJ4vz
+ pwhetLps9QHW68RXK1KwoA0CCLDXBt89JQ==
+X-Google-Smtp-Source: ADFU+vt5wqdAcnNu9Z6Fsgi+m9R2A9sC6GlSijeQ7cGL3zxioALaVGP0oa2V6N9J1JQpQHnNsM1vEQ==
+X-Received: by 2002:a37:5b82:: with SMTP id p124mr5447016qkb.130.1584457415620; 
+ Tue, 17 Mar 2020 08:03:35 -0700 (PDT)
+Received: from ovpn-66-200.rdu2.redhat.com
+ (pool-71-184-117-43.bstnma.fios.verizon.net. [71.184.117.43])
+ by smtp.gmail.com with ESMTPSA id n74sm2037090qke.125.2020.03.17.08.03.33
+ (version=TLS1_2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128/128);
+ Tue, 17 Mar 2020 08:03:34 -0700 (PDT)
+From: Qian Cai <cai@lca.pw>
+To: jroedel@suse.de
+Subject: [PATCH] iommu/vt-d: silence a RCU-list debugging warning
+Date: Tue, 17 Mar 2020 11:03:26 -0400
+Message-Id: <20200317150326.1659-1-cai@lca.pw>
+X-Mailer: git-send-email 2.21.0 (Apple Git-122.2)
 MIME-Version: 1.0
-Cc: ohad@wizery.com, devicetree@vger.kernel.org, linux-arm-msm@vger.kernel.org,
- linux-remoteproc@vger.kernel.org, linux-kernel@vger.kernel.org,
- dianders@chromium.org, iommu@lists.linux-foundation.org, agross@kernel.org,
- Sibi Sankar <sibis@codeaurora.org>
+Cc: iommu@lists.linux-foundation.org, linux-kernel@vger.kernel.org
 X-BeenThere: iommu@lists.linux-foundation.org
 X-Mailman-Version: 2.1.15
 Precedence: list
@@ -107,49 +106,49 @@ Content-Transfer-Encoding: 7bit
 Errors-To: iommu-bounces@lists.linux-foundation.org
 Sender: "iommu" <iommu-bounces@lists.linux-foundation.org>
 
-Request direct mapping for modem on platforms which don't have TrustZone
-(which programs the modem SIDs) to prevent the following global faults seen
-on Cheza/Trogdor:
+dmar_find_atsr() calls list_for_each_entry_rcu() outside of an RCU read
+side critical section but with dmar_global_lock held. Silence this
+false positive.
 
-arm-smmu 15000000.iommu: Unexpected global fault, this could be serious
-arm-smmu 15000000.iommu: GFSR 0x80000002, GFSYNR0 0x00000000,
-			 GFSYNR1 0x00000781, GFSYNR2 0x00000000
+ drivers/iommu/intel-iommu.c:4504 RCU-list traversed in non-reader section!!
+ 1 lock held by swapper/0/1:
+ #0: ffffffff9755bee8 (dmar_global_lock){+.+.}, at: intel_iommu_init+0x1a6/0xe19
 
-arm-smmu 15000000.iommu: Unexpected global fault, this could be serious
-arm-smmu 15000000.iommu: GFSR 0x80000002, GFSYNR0 0x00000000,
-			 GFSYNR1 0x00000461, GFSYNR2 0x00000000
+ Call Trace:
+  dump_stack+0xa4/0xfe
+  lockdep_rcu_suspicious+0xeb/0xf5
+  dmar_find_atsr+0x1ab/0x1c0
+  dmar_parse_one_atsr+0x64/0x220
+  dmar_walk_remapping_entries+0x130/0x380
+  dmar_table_init+0x166/0x243
+  intel_iommu_init+0x1ab/0xe19
+  pci_iommu_init+0x1a/0x44
+  do_one_initcall+0xae/0x4d0
+  kernel_init_freeable+0x412/0x4c5
+  kernel_init+0x19/0x193
 
-Signed-off-by: Sibi Sankar <sibis@codeaurora.org>
+Signed-off-by: Qian Cai <cai@lca.pw>
 ---
- drivers/iommu/arm-smmu-qcom.c | 6 ++++++
- 1 file changed, 6 insertions(+)
+ drivers/iommu/intel-iommu.c | 3 ++-
+ 1 file changed, 2 insertions(+), 1 deletion(-)
 
-diff --git a/drivers/iommu/arm-smmu-qcom.c b/drivers/iommu/arm-smmu-qcom.c
-index ff746acd1c816..5dd7a788f59e1 100644
---- a/drivers/iommu/arm-smmu-qcom.c
-+++ b/drivers/iommu/arm-smmu-qcom.c
-@@ -20,12 +20,18 @@ static const struct arm_smmu_client_match_data qcom_mdss = {
- 	.direct_mapping = true,
- };
+diff --git a/drivers/iommu/intel-iommu.c b/drivers/iommu/intel-iommu.c
+index 4be549478691..ef0a5246700e 100644
+--- a/drivers/iommu/intel-iommu.c
++++ b/drivers/iommu/intel-iommu.c
+@@ -4501,7 +4501,8 @@ static struct dmar_atsr_unit *dmar_find_atsr(struct acpi_dmar_atsr *atsr)
+ 	struct dmar_atsr_unit *atsru;
+ 	struct acpi_dmar_atsr *tmp;
  
-+static const struct arm_smmu_client_match_data qcom_mss = {
-+	.direct_mapping = true,
-+};
-+
- static const struct of_device_id qcom_smmu_client_of_match[] = {
- 	{ .compatible = "qcom,adreno", .data = &qcom_adreno },
- 	{ .compatible = "qcom,mdp4", .data = &qcom_mdss },
- 	{ .compatible = "qcom,mdss", .data = &qcom_mdss },
- 	{ .compatible = "qcom,sc7180-mdss", .data = &qcom_mdss },
-+	{ .compatible = "qcom,sc7180-mss-pil", .data = &qcom_mss },
- 	{ .compatible = "qcom,sdm845-mdss", .data = &qcom_mdss },
-+	{ .compatible = "qcom,sdm845-mss-pil", .data = &qcom_mss },
- 	{},
- };
- 
+-	list_for_each_entry_rcu(atsru, &dmar_atsr_units, list) {
++	list_for_each_entry_rcu(atsru, &dmar_atsr_units, list,
++				dmar_rcu_check()) {
+ 		tmp = (struct acpi_dmar_atsr *)atsru->hdr;
+ 		if (atsr->segment != tmp->segment)
+ 			continue;
 -- 
-The Qualcomm Innovation Center, Inc. is a member of the Code Aurora Forum,
-a Linux Foundation Collaborative Project
+2.21.0 (Apple Git-122.2)
+
 _______________________________________________
 iommu mailing list
 iommu@lists.linux-foundation.org
