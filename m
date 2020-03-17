@@ -6,72 +6,65 @@ X-Spam-Status: No, score=-0.8 required=3.0 tests=HEADER_FROM_DIFFERENT_DOMAINS,
 	MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS autolearn=no autolearn_force=no
 	version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 646ABC1975A
-	for <iommu@archiver.kernel.org>; Tue, 17 Mar 2020 21:55:48 +0000 (UTC)
-Received: from fraxinus.osuosl.org (smtp4.osuosl.org [140.211.166.137])
+	by smtp.lore.kernel.org (Postfix) with ESMTP id B543BC2BB1D
+	for <iommu@archiver.kernel.org>; Tue, 17 Mar 2020 22:01:46 +0000 (UTC)
+Received: from whitealder.osuosl.org (smtp1.osuosl.org [140.211.166.138])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by mail.kernel.org (Postfix) with ESMTPS id 2566320738
-	for <iommu@archiver.kernel.org>; Tue, 17 Mar 2020 21:55:47 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 2566320738
-Authentication-Results: mail.kernel.org; dmarc=none (p=none dis=none) header.from=perches.com
+	by mail.kernel.org (Postfix) with ESMTPS id 86D0320714
+	for <iommu@archiver.kernel.org>; Tue, 17 Mar 2020 22:01:46 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 86D0320714
+Authentication-Results: mail.kernel.org; dmarc=none (p=none dis=none) header.from=linutronix.de
 Authentication-Results: mail.kernel.org; spf=pass smtp.mailfrom=iommu-bounces@lists.linux-foundation.org
 Received: from localhost (localhost [127.0.0.1])
-	by fraxinus.osuosl.org (Postfix) with ESMTP id E784587470;
-	Tue, 17 Mar 2020 21:55:47 +0000 (UTC)
+	by whitealder.osuosl.org (Postfix) with ESMTP id 5258F8831B;
+	Tue, 17 Mar 2020 22:01:46 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from fraxinus.osuosl.org ([127.0.0.1])
+Received: from whitealder.osuosl.org ([127.0.0.1])
 	by localhost (.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
-	with ESMTP id BoY5-QuI58SB; Tue, 17 Mar 2020 21:55:47 +0000 (UTC)
+	with ESMTP id cBf19fJcJE9Y; Tue, 17 Mar 2020 22:01:44 +0000 (UTC)
 Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [140.211.9.56])
-	by fraxinus.osuosl.org (Postfix) with ESMTP id 5EE5D87061;
-	Tue, 17 Mar 2020 21:55:47 +0000 (UTC)
+	by whitealder.osuosl.org (Postfix) with ESMTP id 2552288318;
+	Tue, 17 Mar 2020 22:01:44 +0000 (UTC)
 Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
-	by lists.linuxfoundation.org (Postfix) with ESMTP id 38B1CC1D74;
-	Tue, 17 Mar 2020 21:55:47 +0000 (UTC)
+	by lists.linuxfoundation.org (Postfix) with ESMTP id 0B573C1D74;
+	Tue, 17 Mar 2020 22:01:44 +0000 (UTC)
 Received: from fraxinus.osuosl.org (smtp4.osuosl.org [140.211.166.137])
- by lists.linuxfoundation.org (Postfix) with ESMTP id 1240FC013E
- for <iommu@lists.linux-foundation.org>; Tue, 17 Mar 2020 21:55:46 +0000 (UTC)
+ by lists.linuxfoundation.org (Postfix) with ESMTP id 651D9C013E
+ for <iommu@lists.linux-foundation.org>; Tue, 17 Mar 2020 22:01:41 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
- by fraxinus.osuosl.org (Postfix) with ESMTP id F303B87434
- for <iommu@lists.linux-foundation.org>; Tue, 17 Mar 2020 21:55:45 +0000 (UTC)
+ by fraxinus.osuosl.org (Postfix) with ESMTP id 5AC6887591
+ for <iommu@lists.linux-foundation.org>; Tue, 17 Mar 2020 22:01:41 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
 Received: from fraxinus.osuosl.org ([127.0.0.1])
  by localhost (.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
- with ESMTP id JOCpJMK-eEpX for <iommu@lists.linux-foundation.org>;
- Tue, 17 Mar 2020 21:55:45 +0000 (UTC)
+ with ESMTP id UeWP8VxNZ4PJ for <iommu@lists.linux-foundation.org>;
+ Tue, 17 Mar 2020 22:01:40 +0000 (UTC)
 X-Greylist: from auto-whitelisted by SQLgrey-1.7.6
-Received: from smtprelay.hostedemail.com (smtprelay0192.hostedemail.com
- [216.40.44.192])
- by fraxinus.osuosl.org (Postfix) with ESMTPS id 2CD6387061
- for <iommu@lists.linux-foundation.org>; Tue, 17 Mar 2020 21:55:45 +0000 (UTC)
-Received: from smtprelay.hostedemail.com (10.5.19.251.rfc1918.com
- [10.5.19.251])
- by smtpgrave03.hostedemail.com (Postfix) with ESMTP id 4D0AB180300D3
- for <iommu@lists.linux-foundation.org>; Tue, 17 Mar 2020 21:36:24 +0000 (UTC)
-Received: from filter.hostedemail.com (clb03-v110.bra.tucows.net
- [216.40.38.60])
- by smtprelay02.hostedemail.com (Postfix) with ESMTP id 0B53645A8;
- Tue, 17 Mar 2020 21:36:22 +0000 (UTC)
-X-Session-Marker: 6A6F6540706572636865732E636F6D
-X-HE-Tag: tax31_8e64a60b0ff18
-X-Filterd-Recvd-Size: 3175
-Received: from XPS-9350.home (unknown [47.151.143.254])
- (Authenticated sender: joe@perches.com)
- by omf13.hostedemail.com (Postfix) with ESMTPA;
- Tue, 17 Mar 2020 21:36:18 +0000 (UTC)
-Message-ID: <1e52a8441a319e55b913376ad47c6b18843742cd.camel@perches.com>
+Received: from Galois.linutronix.de (Galois.linutronix.de [193.142.43.55])
+ by fraxinus.osuosl.org (Postfix) with ESMTPS id C31278758A
+ for <iommu@lists.linux-foundation.org>; Tue, 17 Mar 2020 22:01:40 +0000 (UTC)
+Received: from p5de0bf0b.dip0.t-ipconnect.de ([93.224.191.11]
+ helo=nanos.tec.linutronix.de)
+ by Galois.linutronix.de with esmtpsa (TLS1.2:DHE_RSA_AES_256_CBC_SHA256:256)
+ (Exim 4.80) (envelope-from <tglx@linutronix.de>)
+ id 1jEKGu-0000tj-1m; Tue, 17 Mar 2020 23:01:12 +0100
+Received: by nanos.tec.linutronix.de (Postfix, from userid 1000)
+ id 71BBA101161; Tue, 17 Mar 2020 23:01:11 +0100 (CET)
+From: Thomas Gleixner <tglx@linutronix.de>
+To: Borislav Petkov <bp@alien8.de>, Dave Hansen <dave.hansen@intel.com>
 Subject: Re: [PATCH] treewide: Rename "unencrypted" to "decrypted"
-From: Joe Perches <joe@perches.com>
-To: Dave Hansen <dave.hansen@intel.com>, Borislav Petkov <bp@alien8.de>
-Date: Tue, 17 Mar 2020 14:34:30 -0700
-In-Reply-To: <f3e520c6-f455-9c82-abfc-d014ca63eeb5@intel.com>
+In-Reply-To: <20200317210602.GG15609@zn.tnic>
 References: <20200317111822.GA15609@zn.tnic>
  <2cb4a8ae-3b13-67bd-c021-aee47fdf58c5@intel.com>
  <20200317210602.GG15609@zn.tnic>
- <f3e520c6-f455-9c82-abfc-d014ca63eeb5@intel.com>
-User-Agent: Evolution 3.34.1-2 
+Date: Tue, 17 Mar 2020 23:01:11 +0100
+Message-ID: <87fte6bpzs.fsf@nanos.tec.linutronix.de>
 MIME-Version: 1.0
+X-Linutronix-Spam-Score: -1.0
+X-Linutronix-Spam-Level: -
+X-Linutronix-Spam-Status: No , -1.0 points, 5.0 required, ALL_TRUSTED=-1,
+ SHORTCIRCUIT=-0.0001
 Cc: "Schofield, Alison" <alison.schofield@intel.com>,
  Peter Zijlstra <peterz@infradead.org>,
  Benjamin Herrenschmidt <benh@kernel.crashing.org>,
@@ -83,9 +76,8 @@ Cc: "Schofield, Alison" <alison.schofield@intel.com>,
  Borislav Petkov <bp@suse.de>, Tom Lendacky <thomas.lendacky@amd.com>,
  Vasily Gorbik <gor@linux.ibm.com>, "Shutemov,
  Kirill" <kirill.shutemov@intel.com>, Andy Lutomirski <luto@kernel.org>,
- Thomas Gleixner <tglx@linutronix.de>, Robin Murphy <robin.murphy@arm.com>,
- lkml <linux-kernel@vger.kernel.org>, iommu@lists.linux-foundation.org,
- linuxppc-dev@lists.ozlabs.org
+ Robin Murphy <robin.murphy@arm.com>, lkml <linux-kernel@vger.kernel.org>,
+ iommu@lists.linux-foundation.org, linuxppc-dev@lists.ozlabs.org
 X-BeenThere: iommu@lists.linux-foundation.org
 X-Mailman-Version: 2.1.15
 Precedence: list
@@ -103,37 +95,47 @@ Content-Transfer-Encoding: 7bit
 Errors-To: iommu-bounces@lists.linux-foundation.org
 Sender: "iommu" <iommu-bounces@lists.linux-foundation.org>
 
-On Tue, 2020-03-17 at 14:24 -0700, Dave Hansen wrote:
-> On 3/17/20 2:06 PM, Borislav Petkov wrote:
-> > On Tue, Mar 17, 2020 at 01:35:12PM -0700, Dave Hansen wrote:
-> > > On 3/17/20 4:18 AM, Borislav Petkov wrote:
-> > > > Back then when the whole SME machinery started getting mainlined, it
-> > > > was agreed that for simplicity, clarity and sanity's sake, the terms
-> > > > denoting encrypted and not-encrypted memory should be "encrypted" and
-> > > > "decrypted". And the majority of the code sticks to that convention
-> > > > except those two. So rename them.
-> > > Don't "unencrypted" and "decrypted" mean different things?
-> > > 
-> > > Unencrypted to me means "encryption was never used for this data".
-> > > 
-> > > Decrypted means "this was/is encrypted but here is a plaintext copy".
-> > Maybe but linguistical semantics is not the point here.
-> > 
-> > The idea is to represent a "binary" concept of memory being encrypted
-> > or memory being not encrypted. And at the time we decided to use
-> > "encrypted" and "decrypted" for those two things.
-> 
-> Yeah, agreed.  We're basically trying to name "!encrypted".
-> 
-> > Do you see the need to differentiate a third "state", so to speak, of
-> > memory which was never encrypted?
-> 
-> No, there are just two states.  I just think the "!encrypted" case
-> should not be called "decrypted".
+Borislav Petkov <bp@alien8.de> writes:
 
-Nor do I, it's completely misleading.
+> On Tue, Mar 17, 2020 at 01:35:12PM -0700, Dave Hansen wrote:
+>> On 3/17/20 4:18 AM, Borislav Petkov wrote:
+>> > Back then when the whole SME machinery started getting mainlined, it
+>> > was agreed that for simplicity, clarity and sanity's sake, the terms
+>> > denoting encrypted and not-encrypted memory should be "encrypted" and
+>> > "decrypted". And the majority of the code sticks to that convention
+>> > except those two. So rename them.
+>> 
+>> Don't "unencrypted" and "decrypted" mean different things?
+>> 
+>> Unencrypted to me means "encryption was never used for this data".
+>> 
+>> Decrypted means "this was/is encrypted but here is a plaintext copy".
+>
+> Maybe but linguistical semantics is not the point here.
+>
+> The idea is to represent a "binary" concept of memory being encrypted
+> or memory being not encrypted. And at the time we decided to use
+> "encrypted" and "decrypted" for those two things.
+>
+> Do you see the need to differentiate a third "state", so to speak, of
+> memory which was never encrypted?
 
+I think so.
 
+encrypted data is something you can't use without having the key
+
+decrypted data is the plaintext copy of something encrypted, so
+it might be of sensible nature.
+
+unencrypted data can still be sensible, but nothing ever bothered to
+encrypt it in the first place.
+
+So having this distinction is useful in terms of setting the context
+straight.
+
+Thanks,
+
+        tglx
 _______________________________________________
 iommu mailing list
 iommu@lists.linux-foundation.org
