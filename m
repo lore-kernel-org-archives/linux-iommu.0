@@ -6,66 +6,65 @@ X-Spam-Status: No, score=-9.8 required=3.0 tests=DKIM_INVALID,DKIM_SIGNED,
 	INCLUDES_PATCH,MAILING_LIST_MULTI,SIGNED_OFF_BY,SPF_HELO_NONE,SPF_PASS,
 	USER_AGENT_GIT autolearn=unavailable autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 6F79AC4332B
-	for <iommu@archiver.kernel.org>; Wed, 18 Mar 2020 20:54:45 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 03C32C4332D
+	for <iommu@archiver.kernel.org>; Wed, 18 Mar 2020 20:55:05 +0000 (UTC)
 Received: from whitealder.osuosl.org (smtp1.osuosl.org [140.211.166.138])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by mail.kernel.org (Postfix) with ESMTPS id 4214A208FE
-	for <iommu@archiver.kernel.org>; Wed, 18 Mar 2020 20:54:45 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTPS id C9E9E216FD
+	for <iommu@archiver.kernel.org>; Wed, 18 Mar 2020 20:55:04 +0000 (UTC)
 Authentication-Results: mail.kernel.org;
-	dkim=fail reason="signature verification failed" (1024-bit key) header.d=kernel.org header.i=@kernel.org header.b="gJGy7/R7"
-DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 4214A208FE
+	dkim=fail reason="signature verification failed" (1024-bit key) header.d=kernel.org header.i=@kernel.org header.b="M8ZE5K3S"
+DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org C9E9E216FD
 Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=kernel.org
 Authentication-Results: mail.kernel.org; spf=pass smtp.mailfrom=iommu-bounces@lists.linux-foundation.org
 Received: from localhost (localhost [127.0.0.1])
-	by whitealder.osuosl.org (Postfix) with ESMTP id 0E9B286B9E;
-	Wed, 18 Mar 2020 20:54:45 +0000 (UTC)
+	by whitealder.osuosl.org (Postfix) with ESMTP id BC18886B9E;
+	Wed, 18 Mar 2020 20:55:04 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
 Received: from whitealder.osuosl.org ([127.0.0.1])
 	by localhost (.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
-	with ESMTP id isY-jfPsONXt; Wed, 18 Mar 2020 20:54:44 +0000 (UTC)
+	with ESMTP id 9o1qsNq2Q9YC; Wed, 18 Mar 2020 20:55:03 +0000 (UTC)
 Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [140.211.9.56])
-	by whitealder.osuosl.org (Postfix) with ESMTP id 7DB9686ACB;
-	Wed, 18 Mar 2020 20:54:44 +0000 (UTC)
+	by whitealder.osuosl.org (Postfix) with ESMTP id D973A86ACB;
+	Wed, 18 Mar 2020 20:55:03 +0000 (UTC)
 Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
-	by lists.linuxfoundation.org (Postfix) with ESMTP id 6BC94C18DA;
-	Wed, 18 Mar 2020 20:54:44 +0000 (UTC)
-Received: from silver.osuosl.org (smtp3.osuosl.org [140.211.166.136])
- by lists.linuxfoundation.org (Postfix) with ESMTP id 74691C013E
- for <iommu@lists.linux-foundation.org>; Wed, 18 Mar 2020 20:54:43 +0000 (UTC)
+	by lists.linuxfoundation.org (Postfix) with ESMTP id D3906C1D7E;
+	Wed, 18 Mar 2020 20:55:03 +0000 (UTC)
+Received: from fraxinus.osuosl.org (smtp4.osuosl.org [140.211.166.137])
+ by lists.linuxfoundation.org (Postfix) with ESMTP id 0B5B6C013E
+ for <iommu@lists.linux-foundation.org>; Wed, 18 Mar 2020 20:55:02 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
- by silver.osuosl.org (Postfix) with ESMTP id 5F5AA266D9
- for <iommu@lists.linux-foundation.org>; Wed, 18 Mar 2020 20:54:43 +0000 (UTC)
+ by fraxinus.osuosl.org (Postfix) with ESMTP id EE62785C54
+ for <iommu@lists.linux-foundation.org>; Wed, 18 Mar 2020 20:55:01 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from silver.osuosl.org ([127.0.0.1])
+Received: from fraxinus.osuosl.org ([127.0.0.1])
  by localhost (.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
- with ESMTP id ENLmMVH6AR0F for <iommu@lists.linux-foundation.org>;
- Wed, 18 Mar 2020 20:54:41 +0000 (UTC)
+ with ESMTP id YRGE6q7LAOxV for <iommu@lists.linux-foundation.org>;
+ Wed, 18 Mar 2020 20:55:01 +0000 (UTC)
 X-Greylist: domain auto-whitelisted by SQLgrey-1.7.6
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
- by silver.osuosl.org (Postfix) with ESMTPS id F028323115
- for <iommu@lists.linux-foundation.org>; Wed, 18 Mar 2020 20:54:41 +0000 (UTC)
+ by fraxinus.osuosl.org (Postfix) with ESMTPS id 6C00B85BE4
+ for <iommu@lists.linux-foundation.org>; Wed, 18 Mar 2020 20:55:01 +0000 (UTC)
 Received: from sasha-vm.mshome.net (c-73-47-72-35.hsd1.nh.comcast.net
  [73.47.72.35])
  (using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
  (No client certificate requested)
- by mail.kernel.org (Postfix) with ESMTPSA id 199C8208E0;
- Wed, 18 Mar 2020 20:54:41 +0000 (UTC)
+ by mail.kernel.org (Postfix) with ESMTPSA id 8BBD421473;
+ Wed, 18 Mar 2020 20:55:00 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
- s=default; t=1584564881;
- bh=fCNfBvEj8FxR11jKzYU+guYTmGDCT7dasMbitXaR4R0=;
+ s=default; t=1584564901;
+ bh=l6DvBGw4cKYvjyvNNBYmUeY/T80hQ8zM0ealCYAMkT8=;
  h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
- b=gJGy7/R7qHbCazNYWG2tii+/UlomRi6MvG7Wnkn8EYRF6JJbojlVZFIa20mcogQo5
- oL9T0v0MhZyyi91kRln5yuoE8l+DoyVuWhG9kgwlt2TDEiURTOw2xUeO+TOxiYG393
- zpkUEG3jadliCv/8cV16s03qWuI4lBzb2cGUaBFY=
+ b=M8ZE5K3STC6CVBPyYnFuVkm6SEXhfdOd336O3NH8d7GgJ4Djdf7Z+9jP57STzL6hh
+ PMIKin2HntF+6Gtar8VdfgeBKxhsRmy6kMbhClE2LQymO3fpzyKgws6uo5CSmHGf5U
+ r3QtMUB9SuXd64pjZ19HBl/poCbESXiOt2f0yfRQ=
 From: Sasha Levin <sashal@kernel.org>
 To: linux-kernel@vger.kernel.org,
 	stable@vger.kernel.org
-Subject: [PATCH AUTOSEL 5.4 51/73] iommu/vt-d: Silence RCU-list debugging
- warnings
-Date: Wed, 18 Mar 2020 16:53:15 -0400
-Message-Id: <20200318205337.16279-51-sashal@kernel.org>
+Subject: [PATCH AUTOSEL 5.4 68/73] iommu/vt-d: Fix debugfs register reads
+Date: Wed, 18 Mar 2020 16:53:32 -0400
+Message-Id: <20200318205337.16279-68-sashal@kernel.org>
 X-Mailer: git-send-email 2.20.1
 In-Reply-To: <20200318205337.16279-1-sashal@kernel.org>
 References: <20200318205337.16279-1-sashal@kernel.org>
@@ -73,7 +72,7 @@ MIME-Version: 1.0
 X-stable: review
 X-Patchwork-Hint: Ignore
 Cc: Sasha Levin <sashal@kernel.org>, iommu@lists.linux-foundation.org,
- Joerg Roedel <jroedel@suse.de>
+ Joerg Roedel <jroedel@suse.de>, Megha Dey <megha.dey@linux.intel.com>
 X-BeenThere: iommu@lists.linux-foundation.org
 X-Mailman-Version: 2.1.15
 Precedence: list
@@ -91,70 +90,121 @@ Content-Transfer-Encoding: 7bit
 Errors-To: iommu-bounces@lists.linux-foundation.org
 Sender: "iommu" <iommu-bounces@lists.linux-foundation.org>
 
-From: Qian Cai <cai@lca.pw>
+From: Megha Dey <megha.dey@linux.intel.com>
 
-[ Upstream commit f5152416528c2295f35dd9c9bd4fb27c4032413d ]
+[ Upstream commit ba3b01d7a6f4ab9f8a0557044c9a7678f64ae070 ]
 
-Similar to the commit 02d715b4a818 ("iommu/vt-d: Fix RCU list debugging
-warnings"), there are several other places that call
-list_for_each_entry_rcu() outside of an RCU read side critical section
-but with dmar_global_lock held. Silence those false positives as well.
+Commit 6825d3ea6cde ("iommu/vt-d: Add debugfs support to show register
+contents") dumps the register contents for all IOMMU devices.
 
- drivers/iommu/intel-iommu.c:4288 RCU-list traversed in non-reader section!!
- 1 lock held by swapper/0/1:
-  #0: ffffffff935892c8 (dmar_global_lock){+.+.}, at: intel_iommu_init+0x1ad/0xb97
+Currently, a 64 bit read(dmar_readq) is done for all the IOMMU registers,
+even though some of the registers are 32 bits, which is incorrect.
 
- drivers/iommu/dmar.c:366 RCU-list traversed in non-reader section!!
- 1 lock held by swapper/0/1:
-  #0: ffffffff935892c8 (dmar_global_lock){+.+.}, at: intel_iommu_init+0x125/0xb97
+Use the correct read function variant (dmar_readl/dmar_readq) while
+reading the contents of 32/64 bit registers respectively.
 
- drivers/iommu/intel-iommu.c:5057 RCU-list traversed in non-reader section!!
- 1 lock held by swapper/0/1:
-  #0: ffffffffa71892c8 (dmar_global_lock){++++}, at: intel_iommu_init+0x61a/0xb13
-
-Signed-off-by: Qian Cai <cai@lca.pw>
+Signed-off-by: Megha Dey <megha.dey@linux.intel.com>
+Link: https://lore.kernel.org/r/1583784587-26126-2-git-send-email-megha.dey@linux.intel.com
 Acked-by: Lu Baolu <baolu.lu@linux.intel.com>
 Signed-off-by: Joerg Roedel <jroedel@suse.de>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/iommu/dmar.c | 3 ++-
- include/linux/dmar.h | 6 ++++--
- 2 files changed, 6 insertions(+), 3 deletions(-)
+ drivers/iommu/intel-iommu-debugfs.c | 40 ++++++++++++++++++-----------
+ include/linux/intel-iommu.h         |  2 ++
+ 2 files changed, 27 insertions(+), 15 deletions(-)
 
-diff --git a/drivers/iommu/dmar.c b/drivers/iommu/dmar.c
-index 7196cabafb252..6ec5da4d028f9 100644
---- a/drivers/iommu/dmar.c
-+++ b/drivers/iommu/dmar.c
-@@ -363,7 +363,8 @@ dmar_find_dmaru(struct acpi_dmar_hardware_unit *drhd)
- {
- 	struct dmar_drhd_unit *dmaru;
+diff --git a/drivers/iommu/intel-iommu-debugfs.c b/drivers/iommu/intel-iommu-debugfs.c
+index 471f05d452e01..80378c10dd77a 100644
+--- a/drivers/iommu/intel-iommu-debugfs.c
++++ b/drivers/iommu/intel-iommu-debugfs.c
+@@ -32,38 +32,42 @@ struct iommu_regset {
  
--	list_for_each_entry_rcu(dmaru, &dmar_drhd_units, list)
-+	list_for_each_entry_rcu(dmaru, &dmar_drhd_units, list,
-+				dmar_rcu_check())
- 		if (dmaru->segment == drhd->segment &&
- 		    dmaru->reg_base_addr == drhd->address)
- 			return dmaru;
-diff --git a/include/linux/dmar.h b/include/linux/dmar.h
-index a7cf3599d9a1c..e0d52e9358c9c 100644
---- a/include/linux/dmar.h
-+++ b/include/linux/dmar.h
-@@ -73,11 +73,13 @@ extern struct list_head dmar_drhd_units;
- 	list_for_each_entry_rcu(drhd, &dmar_drhd_units, list)
+ #define IOMMU_REGSET_ENTRY(_reg_)					\
+ 	{ DMAR_##_reg_##_REG, __stringify(_reg_) }
+-static const struct iommu_regset iommu_regs[] = {
++
++static const struct iommu_regset iommu_regs_32[] = {
+ 	IOMMU_REGSET_ENTRY(VER),
+-	IOMMU_REGSET_ENTRY(CAP),
+-	IOMMU_REGSET_ENTRY(ECAP),
+ 	IOMMU_REGSET_ENTRY(GCMD),
+ 	IOMMU_REGSET_ENTRY(GSTS),
+-	IOMMU_REGSET_ENTRY(RTADDR),
+-	IOMMU_REGSET_ENTRY(CCMD),
+ 	IOMMU_REGSET_ENTRY(FSTS),
+ 	IOMMU_REGSET_ENTRY(FECTL),
+ 	IOMMU_REGSET_ENTRY(FEDATA),
+ 	IOMMU_REGSET_ENTRY(FEADDR),
+ 	IOMMU_REGSET_ENTRY(FEUADDR),
+-	IOMMU_REGSET_ENTRY(AFLOG),
+ 	IOMMU_REGSET_ENTRY(PMEN),
+ 	IOMMU_REGSET_ENTRY(PLMBASE),
+ 	IOMMU_REGSET_ENTRY(PLMLIMIT),
++	IOMMU_REGSET_ENTRY(ICS),
++	IOMMU_REGSET_ENTRY(PRS),
++	IOMMU_REGSET_ENTRY(PECTL),
++	IOMMU_REGSET_ENTRY(PEDATA),
++	IOMMU_REGSET_ENTRY(PEADDR),
++	IOMMU_REGSET_ENTRY(PEUADDR),
++};
++
++static const struct iommu_regset iommu_regs_64[] = {
++	IOMMU_REGSET_ENTRY(CAP),
++	IOMMU_REGSET_ENTRY(ECAP),
++	IOMMU_REGSET_ENTRY(RTADDR),
++	IOMMU_REGSET_ENTRY(CCMD),
++	IOMMU_REGSET_ENTRY(AFLOG),
+ 	IOMMU_REGSET_ENTRY(PHMBASE),
+ 	IOMMU_REGSET_ENTRY(PHMLIMIT),
+ 	IOMMU_REGSET_ENTRY(IQH),
+ 	IOMMU_REGSET_ENTRY(IQT),
+ 	IOMMU_REGSET_ENTRY(IQA),
+-	IOMMU_REGSET_ENTRY(ICS),
+ 	IOMMU_REGSET_ENTRY(IRTA),
+ 	IOMMU_REGSET_ENTRY(PQH),
+ 	IOMMU_REGSET_ENTRY(PQT),
+ 	IOMMU_REGSET_ENTRY(PQA),
+-	IOMMU_REGSET_ENTRY(PRS),
+-	IOMMU_REGSET_ENTRY(PECTL),
+-	IOMMU_REGSET_ENTRY(PEDATA),
+-	IOMMU_REGSET_ENTRY(PEADDR),
+-	IOMMU_REGSET_ENTRY(PEUADDR),
+ 	IOMMU_REGSET_ENTRY(MTRRCAP),
+ 	IOMMU_REGSET_ENTRY(MTRRDEF),
+ 	IOMMU_REGSET_ENTRY(MTRR_FIX64K_00000),
+@@ -126,10 +130,16 @@ static int iommu_regset_show(struct seq_file *m, void *unused)
+ 		 * by adding the offset to the pointer (virtual address).
+ 		 */
+ 		raw_spin_lock_irqsave(&iommu->register_lock, flag);
+-		for (i = 0 ; i < ARRAY_SIZE(iommu_regs); i++) {
+-			value = dmar_readq(iommu->reg + iommu_regs[i].offset);
++		for (i = 0 ; i < ARRAY_SIZE(iommu_regs_32); i++) {
++			value = dmar_readl(iommu->reg + iommu_regs_32[i].offset);
++			seq_printf(m, "%-16s\t0x%02x\t\t0x%016llx\n",
++				   iommu_regs_32[i].regs, iommu_regs_32[i].offset,
++				   value);
++		}
++		for (i = 0 ; i < ARRAY_SIZE(iommu_regs_64); i++) {
++			value = dmar_readq(iommu->reg + iommu_regs_64[i].offset);
+ 			seq_printf(m, "%-16s\t0x%02x\t\t0x%016llx\n",
+-				   iommu_regs[i].regs, iommu_regs[i].offset,
++				   iommu_regs_64[i].regs, iommu_regs_64[i].offset,
+ 				   value);
+ 		}
+ 		raw_spin_unlock_irqrestore(&iommu->register_lock, flag);
+diff --git a/include/linux/intel-iommu.h b/include/linux/intel-iommu.h
+index 6d8bf4bdf240d..1e5dad8b8e59b 100644
+--- a/include/linux/intel-iommu.h
++++ b/include/linux/intel-iommu.h
+@@ -120,6 +120,8 @@
  
- #define for_each_active_drhd_unit(drhd)					\
--	list_for_each_entry_rcu(drhd, &dmar_drhd_units, list)		\
-+	list_for_each_entry_rcu(drhd, &dmar_drhd_units, list,		\
-+				dmar_rcu_check())			\
- 		if (drhd->ignored) {} else
+ #define dmar_readq(a) readq(a)
+ #define dmar_writeq(a,v) writeq(v,a)
++#define dmar_readl(a) readl(a)
++#define dmar_writel(a, v) writel(v, a)
  
- #define for_each_active_iommu(i, drhd)					\
--	list_for_each_entry_rcu(drhd, &dmar_drhd_units, list)		\
-+	list_for_each_entry_rcu(drhd, &dmar_drhd_units, list,		\
-+				dmar_rcu_check())			\
- 		if (i=drhd->iommu, drhd->ignored) {} else
- 
- #define for_each_iommu(i, drhd)						\
+ #define DMAR_VER_MAJOR(v)		(((v) & 0xf0) >> 4)
+ #define DMAR_VER_MINOR(v)		((v) & 0x0f)
 -- 
 2.20.1
 
