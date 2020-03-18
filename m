@@ -6,74 +6,74 @@ X-Spam-Status: No, score=-9.8 required=3.0 tests=DKIM_INVALID,DKIM_SIGNED,
 	INCLUDES_PATCH,MAILING_LIST_MULTI,SIGNED_OFF_BY,SPF_HELO_NONE,SPF_PASS,
 	USER_AGENT_GIT autolearn=ham autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 4CD1CC4332B
-	for <iommu@archiver.kernel.org>; Wed, 18 Mar 2020 20:55:55 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id D4EB1C43332
+	for <iommu@archiver.kernel.org>; Wed, 18 Mar 2020 20:55:57 +0000 (UTC)
 Received: from fraxinus.osuosl.org (smtp4.osuosl.org [140.211.166.137])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by mail.kernel.org (Postfix) with ESMTPS id CEF8B2098B
-	for <iommu@archiver.kernel.org>; Wed, 18 Mar 2020 20:55:54 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTPS id AB6E42098B
+	for <iommu@archiver.kernel.org>; Wed, 18 Mar 2020 20:55:56 +0000 (UTC)
 Authentication-Results: mail.kernel.org;
-	dkim=fail reason="signature verification failed" (1024-bit key) header.d=kernel.org header.i=@kernel.org header.b="OiBowjcr"
-DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org CEF8B2098B
+	dkim=fail reason="signature verification failed" (1024-bit key) header.d=kernel.org header.i=@kernel.org header.b="GJO9GJQn"
+DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org AB6E42098B
 Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=kernel.org
 Authentication-Results: mail.kernel.org; spf=pass smtp.mailfrom=iommu-bounces@lists.linux-foundation.org
 Received: from localhost (localhost [127.0.0.1])
-	by fraxinus.osuosl.org (Postfix) with ESMTP id B512485C63;
-	Wed, 18 Mar 2020 20:55:54 +0000 (UTC)
+	by fraxinus.osuosl.org (Postfix) with ESMTP id EDAC486248;
+	Wed, 18 Mar 2020 20:55:55 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
 Received: from fraxinus.osuosl.org ([127.0.0.1])
 	by localhost (.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
-	with ESMTP id 66cNoISltJIa; Wed, 18 Mar 2020 20:55:54 +0000 (UTC)
+	with ESMTP id ROMOsDXdGbgt; Wed, 18 Mar 2020 20:55:55 +0000 (UTC)
 Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [140.211.9.56])
-	by fraxinus.osuosl.org (Postfix) with ESMTP id 4C19285C4A;
-	Wed, 18 Mar 2020 20:55:54 +0000 (UTC)
+	by fraxinus.osuosl.org (Postfix) with ESMTP id 8F43485C4A;
+	Wed, 18 Mar 2020 20:55:55 +0000 (UTC)
 Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
-	by lists.linuxfoundation.org (Postfix) with ESMTP id 47122C18DA;
-	Wed, 18 Mar 2020 20:55:54 +0000 (UTC)
-Received: from whitealder.osuosl.org (smtp1.osuosl.org [140.211.166.138])
- by lists.linuxfoundation.org (Postfix) with ESMTP id 2043CC013E
- for <iommu@lists.linux-foundation.org>; Wed, 18 Mar 2020 20:55:53 +0000 (UTC)
+	by lists.linuxfoundation.org (Postfix) with ESMTP id 73F56C18DA;
+	Wed, 18 Mar 2020 20:55:55 +0000 (UTC)
+Received: from fraxinus.osuosl.org (smtp4.osuosl.org [140.211.166.137])
+ by lists.linuxfoundation.org (Postfix) with ESMTP id 245EFC013E
+ for <iommu@lists.linux-foundation.org>; Wed, 18 Mar 2020 20:55:54 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
- by whitealder.osuosl.org (Postfix) with ESMTP id 1A6F2875AD
- for <iommu@lists.linux-foundation.org>; Wed, 18 Mar 2020 20:55:53 +0000 (UTC)
+ by fraxinus.osuosl.org (Postfix) with ESMTP id 1295785C63
+ for <iommu@lists.linux-foundation.org>; Wed, 18 Mar 2020 20:55:54 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from whitealder.osuosl.org ([127.0.0.1])
+Received: from fraxinus.osuosl.org ([127.0.0.1])
  by localhost (.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
- with ESMTP id 5FEYepIPP-qe for <iommu@lists.linux-foundation.org>;
- Wed, 18 Mar 2020 20:55:52 +0000 (UTC)
+ with ESMTP id ryNKEVuDu0_2 for <iommu@lists.linux-foundation.org>;
+ Wed, 18 Mar 2020 20:55:53 +0000 (UTC)
 X-Greylist: domain auto-whitelisted by SQLgrey-1.7.6
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
- by whitealder.osuosl.org (Postfix) with ESMTPS id 8C720874DA
- for <iommu@lists.linux-foundation.org>; Wed, 18 Mar 2020 20:55:52 +0000 (UTC)
+ by fraxinus.osuosl.org (Postfix) with ESMTPS id AB6EA85C4A
+ for <iommu@lists.linux-foundation.org>; Wed, 18 Mar 2020 20:55:53 +0000 (UTC)
 Received: from sasha-vm.mshome.net (c-73-47-72-35.hsd1.nh.comcast.net
  [73.47.72.35])
  (using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
  (No client certificate requested)
- by mail.kernel.org (Postfix) with ESMTPSA id A8ECD208FE;
- Wed, 18 Mar 2020 20:55:51 +0000 (UTC)
+ by mail.kernel.org (Postfix) with ESMTPSA id C9FD321775;
+ Wed, 18 Mar 2020 20:55:52 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
- s=default; t=1584564952;
- bh=GG3mLFuo7d8QOBSYuS8V6y3kvQiuJVUQBlQlJUVHvZo=;
+ s=default; t=1584564953;
+ bh=DlQSvKcrvx1iZK+hM1Ku2CdTowpynbTIE9M/QpsqnXs=;
  h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
- b=OiBowjcr8ChCWyl5p0J+B3DvUyOR8bFKruMVgV1SzQPgOA6LpB6aFuQCo/yRTNmn5
- o2wE5xgakoctCHWzqNI6YcldHiZzUU50PMmGs76l0iAT8XfFmQkfOsMValLvdfzdKm
- 7swMhrdfiPySz9f2oNtQQpJ/BbxZ9TafH0VuyO7Y=
+ b=GJO9GJQnfm7Zh3vTx7nDMMjE6o4Q3ztlHjGrenvr9F1HxB0nhYPcsuODP85ot0/vb
+ Ymf2M39mxEJymelKuS3r7SUdJJETIKidQe0AxaIc0AqCtravCBy6c8dVAio7uEWeft
+ 9HnW3q8aBfhS7UX6ByhqLe4eLXVl5GGkbDjyWt4Q=
 From: Sasha Levin <sashal@kernel.org>
 To: linux-kernel@vger.kernel.org,
 	stable@vger.kernel.org
-Subject: [PATCH AUTOSEL 4.19 36/37] iommu/vt-d: quirk_ioat_snb_local_iommu:
- replace WARN_TAINT with pr_warn + add_taint
-Date: Wed, 18 Mar 2020 16:55:08 -0400
-Message-Id: <20200318205509.17053-36-sashal@kernel.org>
+Subject: [PATCH AUTOSEL 4.19 37/37] iommu/vt-d: Fix the wrong printing in RHSA
+ parsing
+Date: Wed, 18 Mar 2020 16:55:09 -0400
+Message-Id: <20200318205509.17053-37-sashal@kernel.org>
 X-Mailer: git-send-email 2.20.1
 In-Reply-To: <20200318205509.17053-1-sashal@kernel.org>
 References: <20200318205509.17053-1-sashal@kernel.org>
 MIME-Version: 1.0
 X-stable: review
 X-Patchwork-Hint: Ignore
-Cc: Sasha Levin <sashal@kernel.org>, Hans de Goede <hdegoede@redhat.com>,
- iommu@lists.linux-foundation.org, Joerg Roedel <jroedel@suse.de>
+Cc: Sasha Levin <sashal@kernel.org>, Zhenzhong Duan <zhenzhong.duan@gmail.com>,
+ Joerg Roedel <jroedel@suse.de>, iommu@lists.linux-foundation.org
 X-BeenThere: iommu@lists.linux-foundation.org
 X-Mailman-Version: 2.1.15
 Precedence: list
@@ -91,55 +91,38 @@ Content-Transfer-Encoding: 7bit
 Errors-To: iommu-bounces@lists.linux-foundation.org
 Sender: "iommu" <iommu-bounces@lists.linux-foundation.org>
 
-From: Hans de Goede <hdegoede@redhat.com>
+From: Zhenzhong Duan <zhenzhong.duan@gmail.com>
 
-[ Upstream commit 81ee85d0462410de8eeeec1b9761941fd6ed8c7b ]
+[ Upstream commit b0bb0c22c4db623f2e7b1a471596fbf1c22c6dc5 ]
 
-Quoting from the comment describing the WARN functions in
-include/asm-generic/bug.h:
+When base address in RHSA structure doesn't match base address in
+each DRHD structure, the base address in last DRHD is printed out.
 
- * WARN(), WARN_ON(), WARN_ON_ONCE, and so on can be used to report
- * significant kernel issues that need prompt attention if they should ever
- * appear at runtime.
- *
- * Do not use these macros when checking for invalid external inputs
+This doesn't make sense when there are multiple DRHD units, fix it
+by printing the buggy RHSA's base address.
 
-The (buggy) firmware tables which the dmar code was calling WARN_TAINT
-for really are invalid external inputs. They are not under the kernel's
-control and the issues in them cannot be fixed by a kernel update.
-So logging a backtrace, which invites bug reports to be filed about this,
-is not helpful.
-
-Fixes: 556ab45f9a77 ("ioat2: catch and recover from broken vtd configurations v6")
-Signed-off-by: Hans de Goede <hdegoede@redhat.com>
-Acked-by: Lu Baolu <baolu.lu@linux.intel.com>
-Link: https://lore.kernel.org/r/20200309182510.373875-1-hdegoede@redhat.com
-BugLink: https://bugzilla.redhat.com/show_bug.cgi?id=701847
+Signed-off-by: Lu Baolu <baolu.lu@linux.intel.com>
+Signed-off-by: Zhenzhong Duan <zhenzhong.duan@gmail.com>
+Fixes: fd0c8894893cb ("intel-iommu: Set a more specific taint flag for invalid BIOS DMAR tables")
 Signed-off-by: Joerg Roedel <jroedel@suse.de>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/iommu/intel-iommu.c | 7 ++++---
- 1 file changed, 4 insertions(+), 3 deletions(-)
+ drivers/iommu/dmar.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-diff --git a/drivers/iommu/intel-iommu.c b/drivers/iommu/intel-iommu.c
-index 9df3b84412274..5e6c961c800d8 100644
---- a/drivers/iommu/intel-iommu.c
-+++ b/drivers/iommu/intel-iommu.c
-@@ -3998,10 +3998,11 @@ static void quirk_ioat_snb_local_iommu(struct pci_dev *pdev)
- 
- 	/* we know that the this iommu should be at offset 0xa000 from vtbar */
- 	drhd = dmar_find_matched_drhd_unit(pdev);
--	if (WARN_TAINT_ONCE(!drhd || drhd->reg_base_addr - vtbar != 0xa000,
--			    TAINT_FIRMWARE_WORKAROUND,
--			    "BIOS assigned incorrect VT-d unit for Intel(R) QuickData Technology device\n"))
-+	if (!drhd || drhd->reg_base_addr - vtbar != 0xa000) {
-+		pr_warn_once(FW_BUG "BIOS assigned incorrect VT-d unit for Intel(R) QuickData Technology device\n");
-+		add_taint(TAINT_FIRMWARE_WORKAROUND, LOCKDEP_STILL_OK);
- 		pdev->dev.archdata.iommu = DUMMY_DEVICE_DOMAIN_INFO;
-+	}
- }
- DECLARE_PCI_FIXUP_ENABLE(PCI_VENDOR_ID_INTEL, PCI_DEVICE_ID_INTEL_IOAT_SNB, quirk_ioat_snb_local_iommu);
- 
+diff --git a/drivers/iommu/dmar.c b/drivers/iommu/dmar.c
+index 72994d67bc5b9..5a0238806cae0 100644
+--- a/drivers/iommu/dmar.c
++++ b/drivers/iommu/dmar.c
+@@ -486,7 +486,7 @@ static int dmar_parse_one_rhsa(struct acpi_dmar_header *header, void *arg)
+ 		1, TAINT_FIRMWARE_WORKAROUND,
+ 		"Your BIOS is broken; RHSA refers to non-existent DMAR unit at %llx\n"
+ 		"BIOS vendor: %s; Ver: %s; Product Version: %s\n",
+-		drhd->reg_base_addr,
++		rhsa->base_address,
+ 		dmi_get_system_info(DMI_BIOS_VENDOR),
+ 		dmi_get_system_info(DMI_BIOS_VERSION),
+ 		dmi_get_system_info(DMI_PRODUCT_VERSION));
 -- 
 2.20.1
 
