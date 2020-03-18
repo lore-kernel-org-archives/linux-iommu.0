@@ -2,72 +2,99 @@ Return-Path: <SRS0=LxCT=5D=lists.linux-foundation.org=iommu-bounces@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-8.2 required=3.0 tests=HEADER_FROM_DIFFERENT_DOMAINS,
-	INCLUDES_PATCH,MAILING_LIST_MULTI,SIGNED_OFF_BY,SPF_HELO_NONE,SPF_PASS,
-	USER_AGENT_SANE_1 autolearn=ham autolearn_force=no version=3.4.0
+X-Spam-Status: No, score=-0.6 required=3.0 tests=DKIM_INVALID,DKIM_SIGNED,
+	HEADER_FROM_DIFFERENT_DOMAINS,MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS
+	autolearn=no autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 0822BC10F29
-	for <iommu@archiver.kernel.org>; Wed, 18 Mar 2020 17:14:10 +0000 (UTC)
-Received: from whitealder.osuosl.org (smtp1.osuosl.org [140.211.166.138])
+	by smtp.lore.kernel.org (Postfix) with ESMTP id D8A0FC10DCE
+	for <iommu@archiver.kernel.org>; Wed, 18 Mar 2020 17:47:54 +0000 (UTC)
+Received: from hemlock.osuosl.org (smtp2.osuosl.org [140.211.166.133])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by mail.kernel.org (Postfix) with ESMTPS id B3E6D2071C
-	for <iommu@archiver.kernel.org>; Wed, 18 Mar 2020 17:14:09 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org B3E6D2071C
-Authentication-Results: mail.kernel.org; dmarc=none (p=none dis=none) header.from=arm.com
+	by mail.kernel.org (Postfix) with ESMTPS id A0FCE20752
+	for <iommu@archiver.kernel.org>; Wed, 18 Mar 2020 17:47:54 +0000 (UTC)
+Authentication-Results: mail.kernel.org;
+	dkim=fail reason="signature verification failed" (2048-bit key) header.d=linaro.org header.i=@linaro.org header.b="J3g9TKfq"
+DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org A0FCE20752
+Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=linaro.org
 Authentication-Results: mail.kernel.org; spf=pass smtp.mailfrom=iommu-bounces@lists.linux-foundation.org
 Received: from localhost (localhost [127.0.0.1])
-	by whitealder.osuosl.org (Postfix) with ESMTP id 0F60D8819F;
-	Wed, 18 Mar 2020 17:14:09 +0000 (UTC)
+	by hemlock.osuosl.org (Postfix) with ESMTP id 7F7E8886F0;
+	Wed, 18 Mar 2020 17:47:54 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from whitealder.osuosl.org ([127.0.0.1])
+Received: from hemlock.osuosl.org ([127.0.0.1])
 	by localhost (.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
-	with ESMTP id gBM0U3QHCCBw; Wed, 18 Mar 2020 17:14:05 +0000 (UTC)
+	with ESMTP id Gj3puPQVGVsi; Wed, 18 Mar 2020 17:47:53 +0000 (UTC)
 Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [140.211.9.56])
-	by whitealder.osuosl.org (Postfix) with ESMTP id C7905883C0;
-	Wed, 18 Mar 2020 17:14:05 +0000 (UTC)
+	by hemlock.osuosl.org (Postfix) with ESMTP id DCF458851D;
+	Wed, 18 Mar 2020 17:47:53 +0000 (UTC)
 Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
-	by lists.linuxfoundation.org (Postfix) with ESMTP id ABBF2C18DA;
-	Wed, 18 Mar 2020 17:14:05 +0000 (UTC)
+	by lists.linuxfoundation.org (Postfix) with ESMTP id C5919C07FE;
+	Wed, 18 Mar 2020 17:47:53 +0000 (UTC)
 Received: from hemlock.osuosl.org (smtp2.osuosl.org [140.211.166.133])
- by lists.linuxfoundation.org (Postfix) with ESMTP id 9F46EC013E;
- Wed, 18 Mar 2020 17:14:04 +0000 (UTC)
+ by lists.linuxfoundation.org (Postfix) with ESMTP id 1A1CBC013E
+ for <iommu@lists.linux-foundation.org>; Wed, 18 Mar 2020 17:47:52 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
- by hemlock.osuosl.org (Postfix) with ESMTP id 879B7886D0;
- Wed, 18 Mar 2020 17:14:04 +0000 (UTC)
+ by hemlock.osuosl.org (Postfix) with ESMTP id F1D6F883BF
+ for <iommu@lists.linux-foundation.org>; Wed, 18 Mar 2020 17:47:51 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
 Received: from hemlock.osuosl.org ([127.0.0.1])
  by localhost (.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
- with ESMTP id dcrPrBvWusRg; Wed, 18 Mar 2020 17:14:03 +0000 (UTC)
+ with ESMTP id 6adR-pvCfSNX for <iommu@lists.linux-foundation.org>;
+ Wed, 18 Mar 2020 17:47:49 +0000 (UTC)
 X-Greylist: domain auto-whitelisted by SQLgrey-1.7.6
-X-Greylist: domain auto-whitelisted by SQLgrey-1.7.6
-Received: from foss.arm.com (foss.arm.com [217.140.110.172])
- by hemlock.osuosl.org (Postfix) with ESMTP id 4C2F4886A5;
- Wed, 18 Mar 2020 17:14:03 +0000 (UTC)
-Received: from usa-sjc-imap-foss1.foss.arm.com (unknown [10.121.207.14])
- by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id AAECF31B;
- Wed, 18 Mar 2020 10:14:02 -0700 (PDT)
-Received: from [10.57.55.121] (unknown [10.57.55.121])
- by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPSA id 777723F52E;
- Wed, 18 Mar 2020 10:14:01 -0700 (PDT)
+Received: from mail-wr1-f65.google.com (mail-wr1-f65.google.com
+ [209.85.221.65])
+ by hemlock.osuosl.org (Postfix) with ESMTPS id 47E2D88393
+ for <iommu@lists.linux-foundation.org>; Wed, 18 Mar 2020 17:47:49 +0000 (UTC)
+Received: by mail-wr1-f65.google.com with SMTP id z15so31505706wrl.1
+ for <iommu@lists.linux-foundation.org>; Wed, 18 Mar 2020 10:47:49 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linaro.org; s=google;
+ h=date:from:to:cc:subject:message-id:references:mime-version
+ :content-disposition:in-reply-to;
+ bh=kseN3s5pbnG7/vsBLsHjoINNOTDUkiMy3yEQnmpP6Fs=;
+ b=J3g9TKfqJKopWqYJ4Y0m5U/Ogv9LpWEhsfO1HmoDswbPX8L/ha+lgBFkJKyTI7r88m
+ Cjm5kc047GLWkh6q2iDWmt8qg15ES2KxTFUFoyR/bQsAFtXrkHp3okpgMwIyz4ghn9os
+ F6Vf6dLyJCOv/1TuEXrNklLp+sNs3lqvLMxX8aHVzgsKV2rHHNwoNBA91smn0+HwPZdQ
+ 9vkNHmbroNM+cKAFXQxr8mOYotWu1b2TuX8wXNIhLzhx7YsdYUqgOJq2TFh+WNkGXjky
+ Oqfz7T7889zYG1D7d+U0/MBJQLyNBALavAeriNAMcxdbd0WJIrzDDfWy72PSENn3SJIY
+ O7yA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+ d=1e100.net; s=20161025;
+ h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+ :mime-version:content-disposition:in-reply-to;
+ bh=kseN3s5pbnG7/vsBLsHjoINNOTDUkiMy3yEQnmpP6Fs=;
+ b=g5Sm62JodVa1J3RKQhjyKlY9RRozobqyHe3oyfZil5DCy9mCu+thzU1G1EVitxjgAM
+ Cz/InNt4H/o16ghE9/sOwRTTgzxjPwNwjge67emStpL0FlC56jQ1GtxIGQH8LX9+UtlE
+ Ir2olMFhLJrVJZT6kI0uSHjKX4eL27enKwmKfatHD9Ro3v9Pny1tGRE3hUFss5F0IUec
+ +7KdpvGY+w0nJDDuTE8h2+qKTWhmkU2LMqPDMcinXwGs1FXw8xODTo5BkGqJU7E9Opz4
+ ALR0FlZ7MZxEGu8e4o6cogVHYAPHGOCxel4awZTgtQoSKH+D4+9pDgN62qpi8mveKG40
+ BWhw==
+X-Gm-Message-State: ANhLgQ2Iepl883XanyPryhohzXgOBKCF1Ql90reKjjGHEXzxcksyO4Aq
+ dyRzfFPr4AWdlIk23RUablcGmA==
+X-Google-Smtp-Source: ADFU+vvgCw3uOdQSIo2muV1GpLBLz0ExzhMew/9lEbFzDkfje06dVkFXLY5lNdG1Ejb+YtFgNPprng==
+X-Received: by 2002:a5d:6388:: with SMTP id p8mr6553786wru.51.1584553667583;
+ Wed, 18 Mar 2020 10:47:47 -0700 (PDT)
+Received: from myrica ([2001:171b:226b:54a0:116c:c27a:3e7f:5eaf])
+ by smtp.gmail.com with ESMTPSA id b203sm4887638wmc.45.2020.03.18.10.47.46
+ (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+ Wed, 18 Mar 2020 10:47:47 -0700 (PDT)
+Date: Wed, 18 Mar 2020 18:47:39 +0100
+From: Jean-Philippe Brucker <jean-philippe@linaro.org>
+To: Robin Murphy <robin.murphy@arm.com>
 Subject: Re: [PATCH] iommu/virtio: Reject IOMMU page granule larger than
  PAGE_SIZE
-To: Auger Eric <eric.auger@redhat.com>,
- Jean-Philippe Brucker <jean-philippe@linaro.org>,
- iommu@lists.linux-foundation.org, virtualization@lists.linux-foundation.org
+Message-ID: <20200318174739.GC1501414@myrica>
 References: <20200318114047.1518048-1-jean-philippe@linaro.org>
  <f1f3d844-8080-d26d-200e-a38480895480@arm.com>
  <09a32736-ea01-21f9-6bd5-9344b368f90a@redhat.com>
-From: Robin Murphy <robin.murphy@arm.com>
-Message-ID: <5b637bf5-dc49-b6eb-852a-a4317602d43e@arm.com>
-Date: Wed, 18 Mar 2020 17:13:59 +0000
-User-Agent: Mozilla/5.0 (Windows NT 10.0; rv:68.0) Gecko/20100101
- Thunderbird/68.5.0
+ <5b637bf5-dc49-b6eb-852a-a4317602d43e@arm.com>
 MIME-Version: 1.0
-In-Reply-To: <09a32736-ea01-21f9-6bd5-9344b368f90a@redhat.com>
-Content-Language: en-GB
-Cc: Alex Williamson <alex.williamson@redhat.com>,
- Bharat Bhushan <bbhushan2@marvell.com>
+Content-Disposition: inline
+In-Reply-To: <5b637bf5-dc49-b6eb-852a-a4317602d43e@arm.com>
+Cc: iommu@lists.linux-foundation.org, Bharat Bhushan <bbhushan2@marvell.com>,
+ Alex Williamson <alex.williamson@redhat.com>,
+ virtualization@lists.linux-foundation.org
 X-BeenThere: iommu@lists.linux-foundation.org
 X-Mailman-Version: 2.1.15
 Precedence: list
@@ -80,78 +107,71 @@ List-Post: <mailto:iommu@lists.linux-foundation.org>
 List-Help: <mailto:iommu-request@lists.linux-foundation.org?subject=help>
 List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
  <mailto:iommu-request@lists.linux-foundation.org?subject=subscribe>
-Content-Transfer-Encoding: base64
-Content-Type: text/plain; charset="utf-8"; Format="flowed"
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: 7bit
 Errors-To: iommu-bounces@lists.linux-foundation.org
 Sender: "iommu" <iommu-bounces@lists.linux-foundation.org>
 
-T24gMjAyMC0wMy0xOCA0OjE0IHBtLCBBdWdlciBFcmljIHdyb3RlOgo+IEhpLAo+IAo+IE9uIDMv
-MTgvMjAgMTowMCBQTSwgUm9iaW4gTXVycGh5IHdyb3RlOgo+PiBPbiAyMDIwLTAzLTE4IDExOjQw
-IGFtLCBKZWFuLVBoaWxpcHBlIEJydWNrZXIgd3JvdGU6Cj4+PiBXZSBkb24ndCBjdXJyZW50bHkg
-c3VwcG9ydCBJT01NVXMgd2l0aCBhIHBhZ2UgZ3JhbnVsZSBsYXJnZXIgdGhhbiB0aGUKPj4+IHN5
-c3RlbSBwYWdlIHNpemUuIFRoZSBJT1ZBIGFsbG9jYXRvciBoYXMgYSBCVUdfT04oKSBpbiB0aGlz
-IGNhc2UsIGFuZAo+Pj4gVkZJTyBoYXMgYSBXQVJOX09OKCkuCj4gCj4gQWRkaW5nIEFsZXggaW4g
-Q0MgaW4gY2FzZSBoZSBoYXMgdGltZSB0byBqdW1wIGluLiBBdCB0aGUgbW9tZW50IEkgZG9uJ3QK
-PiBnZXQgd2h5IHRoaXMgV0FSTl9PTigpIGlzIGhlcmUuCj4gCj4gVGhpcyB3YXMgaW50cm9kdWNl
-ZCBpbgo+IGM4ZGJjYTE2NWJiMDkwZjkyNjk5NmE1NzJlYTJiNWI1NzdiMzRiNzAgdmZpby9pb21t
-dV90eXBlMTogQXZvaWQgb3ZlcmZsb3cKPiAKPj4+Cj4+PiBJdCBtaWdodCBiZSBwb3NzaWJsZSB0
-byByZW1vdmUgdGhlc2Ugb2JzdGFjbGVzIGlmIG5lY2Vzc2FyeS4gSWYgdGhlIGhvc3QKPj4+IHVz
-ZXMgNjRrQiBwYWdlcyBhbmQgdGhlIGd1ZXN0IHVzZXMgNGtCLCB0aGVuIGEgZGV2aWNlIGRyaXZl
-ciBjYWxsaW5nCj4+PiBhbGxvY19wYWdlKCkgZm9sbG93ZWQgYnkgZG1hX21hcF9wYWdlKCkgd2ls
-bCBjcmVhdGUgYSA2NGtCIG1hcHBpbmcgZm9yIGEKPj4+IDRrQiBwaHlzaWNhbCBwYWdlLCBhbGxv
-d2luZyB0aGUgZW5kcG9pbnQgdG8gYWNjZXNzIHRoZSBuZWlnaGJvdXJpbmcgNjBrQgo+Pj4gb2Yg
-bWVtb3J5LiBUaGlzIHByb2JsZW0gY291bGQgYmUgd29ya2VkIGFyb3VuZCB3aXRoIGJvdW5jZSBi
-dWZmZXJzLgo+Pgo+PiBGV0lXIHRoZSBmdW5kYW1lbnRhbCBpc3N1ZSBpcyB0aGF0IGNhbGxlcnMg
-b2YgaW9tbXVfbWFwKCkgbWF5IGV4cGVjdCB0bwo+PiBiZSBhYmxlIHRvIG1hcCB0d28gb3IgbW9y
-ZSBwYWdlLWFsaWduZWQgcmVnaW9ucyBkaXJlY3RseSBhZGphY2VudCB0bwo+PiBlYWNoIG90aGVy
-IGZvciBzY2F0dGVyLWdhdGhlciBwdXJwb3NlcyAob3IgcmluZyBidWZmZXIgdHJpY2tzKSwgYW5k
-Cj4+IHRoYXQncyBqdXN0IG5vdCBwb3NzaWJsZSBpZiB0aGUgSU9NTVUgZ3JhbnVsZSBpcyB0b28g
-YmlnLiBCb3VuY2UKPj4gYnVmZmVyaW5nIHdvdWxkIGJlIGEgdmlhYmxlIHdvcmthcm91bmQgZm9y
-IHRoZSBzdHJlYW1pbmcgRE1BIEFQSSBhbmQKPj4gY2VydGFpbiBzaW1pbGFyIHVzZS1jYXNlcywg
-YnV0IG5vdCBpbiBnZW5lcmFsIChlLmcuIGNvaGVyZW50IERNQSwgVkZJTywKPj4gR1BVcywgZXRj
-LikKPj4KPj4gUm9iaW4uCj4+Cj4+PiBGb3IgdGhlIG1vbWVudCwgcmF0aGVyIHRoYW4gdHJpZ2dl
-cmluZyB0aGUgSU9WQSBCVUdfT04oKSBvbiBtaXNtYXRjaGVkCj4+PiBwYWdlIHNpemVzLCBhYm9y
-dCB0aGUgdmlydGlvLWlvbW11IHByb2JlIHdpdGggYW4gZXJyb3IgbWVzc2FnZS4KPiAKPiBJIHVu
-ZGVyc3RhbmQgdGhpcyBpcyBhIGludHJvZHVjZWQgYXMgYSB0ZW1wb3Jhcnkgc29sdXRpb24gYnV0
-IHRoaXMKPiBzb3VuZHMgYXMgYW4gaW1wb3J0YW50IGxpbWl0YXRpb24gdG8gbWUuIEZvciBpbnN0
-YW5jZSB0aGlzIHdpbGwgcHJldmVudAo+IGZyb20gcnVubmluZyBhIGZlZG9yYSBndWVzdCBleHBv
-c2VkIHdpdGggYSB2aXJ0aW8taW9tbXUgd2l0aCBhIFJIRUwgaG9zdC4KCkFzIGFib3ZlLCBldmVu
-IGlmIHlvdSBieXBhc3NlZCBhbGwgdGhlIHdhcm5pbmdzIGl0IHdvdWxkbid0IHJlYWxseSB3b3Jr
-IApwcm9wZXJseSBhbnl3YXkuIEluIGFsbCBjYXNlcyB0aGF0IHdvdWxkbid0IGJlIGNvbnNpZGVy
-ZWQgYnJva2VuLCB0aGUgCnVuZGVybHlpbmcgaGFyZHdhcmUgSU9NTVVzIHNob3VsZCBzdXBwb3J0
-IHRoZSBzYW1lIHNldCBvZiBncmFudWxlcyBhcyAKdGhlIENQVXMgKG9yIGF0IGxlYXN0IHRoZSBz
-bWFsbGVzdCBvbmUpLCBzbyBpcyBpdCBhY3R1YWxseSBhcHByb3ByaWF0ZSAKZm9yIFJIRUwgdG8g
-KHByZXN1bWFibHkpIGV4cG9zZSBhIDY0SyBncmFudWxlIGluIHRoZSBmaXJzdCBwbGFjZSwgcmF0
-aGVyIAp0aGFuICJ3b3JrcyB3aXRoIGFueXRoaW5nIiA0Sz8gQW5kL29yIG1vcmUgZ2VuZXJhbGx5
-IGlzIHRoZXJlIHBlcmhhcHMgYSAKaG9sZSBpbiB0aGUgdmlydGlvLWlvbW11IHNwZWMgV1JUIGJl
-aW5nIGFibGUgdG8gbmVnb3RpYXRlIHBhZ2Vfc2l6ZV9tYXNrIApmb3IgYSBwYXJ0aWN1bGFyIGdy
-YW51bGUgaWYgbXVsdGlwbGUgb3B0aW9ucyBhcmUgYXZhaWxhYmxlPwoKUm9iaW4uCgo+IAo+IFRo
-YW5rcwo+IAo+IEVyaWMKPj4+Cj4+PiBSZXBvcnRlZC1ieTogQmhhcmF0IEJodXNoYW4gPGJiaHVz
-aGFuMkBtYXJ2ZWxsLmNvbT4KPj4+IFNpZ25lZC1vZmYtYnk6IEplYW4tUGhpbGlwcGUgQnJ1Y2tl
-ciA8amVhbi1waGlsaXBwZUBsaW5hcm8ub3JnPgo+Pj4gLS0tCj4+PiAgwqAgZHJpdmVycy9pb21t
-dS92aXJ0aW8taW9tbXUuYyB8IDkgKysrKysrKysrCj4+PiAgwqAgMSBmaWxlIGNoYW5nZWQsIDkg
-aW5zZXJ0aW9ucygrKQo+Pj4KPj4+IGRpZmYgLS1naXQgYS9kcml2ZXJzL2lvbW11L3ZpcnRpby1p
-b21tdS5jIGIvZHJpdmVycy9pb21tdS92aXJ0aW8taW9tbXUuYwo+Pj4gaW5kZXggNmQ0ZTNjMmEy
-ZGRiLi44MGQ1ZDhmNjIxYWIgMTAwNjQ0Cj4+PiAtLS0gYS9kcml2ZXJzL2lvbW11L3ZpcnRpby1p
-b21tdS5jCj4+PiArKysgYi9kcml2ZXJzL2lvbW11L3ZpcnRpby1pb21tdS5jCj4+PiBAQCAtOTk4
-LDYgKzk5OCw3IEBAIHN0YXRpYyBpbnQgdmlvbW11X3Byb2JlKHN0cnVjdCB2aXJ0aW9fZGV2aWNl
-ICp2ZGV2KQo+Pj4gIMKgwqDCoMKgwqAgc3RydWN0IGRldmljZSAqcGFyZW50X2RldiA9IHZkZXYt
-PmRldi5wYXJlbnQ7Cj4+PiAgwqDCoMKgwqDCoCBzdHJ1Y3QgdmlvbW11X2RldiAqdmlvbW11ID0g
-TlVMTDsKPj4+ICDCoMKgwqDCoMKgIHN0cnVjdCBkZXZpY2UgKmRldiA9ICZ2ZGV2LT5kZXY7Cj4+
-PiArwqDCoMKgIHVuc2lnbmVkIGxvbmcgdmlvbW11X3BhZ2Vfc2l6ZTsKPj4+ICDCoMKgwqDCoMKg
-IHU2NCBpbnB1dF9zdGFydCA9IDA7Cj4+PiAgwqDCoMKgwqDCoCB1NjQgaW5wdXRfZW5kID0gLTFV
-TDsKPj4+ICDCoMKgwqDCoMKgIGludCByZXQ7Cj4+PiBAQCAtMTAyOCw2ICsxMDI5LDE0IEBAIHN0
-YXRpYyBpbnQgdmlvbW11X3Byb2JlKHN0cnVjdCB2aXJ0aW9fZGV2aWNlCj4+PiAqdmRldikKPj4+
-ICDCoMKgwqDCoMKgwqDCoMKgwqAgZ290byBlcnJfZnJlZV92cXM7Cj4+PiAgwqDCoMKgwqDCoCB9
-Cj4+PiAgwqAgK8KgwqDCoCB2aW9tbXVfcGFnZV9zaXplID0gMVVMIDw8IF9fZmZzKHZpb21tdS0+
-cGdzaXplX2JpdG1hcCk7Cj4+PiArwqDCoMKgIGlmICh2aW9tbXVfcGFnZV9zaXplID4gUEFHRV9T
-SVpFKSB7Cj4+PiArwqDCoMKgwqDCoMKgwqAgZGV2X2VycihkZXYsICJncmFudWxlIDB4JWx4IGxh
-cmdlciB0aGFuIHN5c3RlbSBwYWdlIHNpemUKPj4+IDB4JWx4XG4iLAo+Pj4gK8KgwqDCoMKgwqDC
-oMKgwqDCoMKgwqAgdmlvbW11X3BhZ2Vfc2l6ZSwgUEFHRV9TSVpFKTsKPj4+ICvCoMKgwqDCoMKg
-wqDCoCByZXQgPSAtRUlOVkFMOwo+Pj4gK8KgwqDCoMKgwqDCoMKgIGdvdG8gZXJyX2ZyZWVfdnFz
-Owo+Pj4gK8KgwqDCoCB9Cj4+PiArCj4+PiAgwqDCoMKgwqDCoCB2aW9tbXUtPm1hcF9mbGFncyA9
-IFZJUlRJT19JT01NVV9NQVBfRl9SRUFEIHwKPj4+IFZJUlRJT19JT01NVV9NQVBfRl9XUklURTsK
-Pj4+ICDCoMKgwqDCoMKgIHZpb21tdS0+bGFzdF9kb21haW4gPSB+MFU7Cj4+PiAgIAo+Pgo+IApf
-X19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fXwppb21tdSBtYWls
-aW5nIGxpc3QKaW9tbXVAbGlzdHMubGludXgtZm91bmRhdGlvbi5vcmcKaHR0cHM6Ly9saXN0cy5s
-aW51eGZvdW5kYXRpb24ub3JnL21haWxtYW4vbGlzdGluZm8vaW9tbXU=
+On Wed, Mar 18, 2020 at 05:13:59PM +0000, Robin Murphy wrote:
+> On 2020-03-18 4:14 pm, Auger Eric wrote:
+> > Hi,
+> > 
+> > On 3/18/20 1:00 PM, Robin Murphy wrote:
+> > > On 2020-03-18 11:40 am, Jean-Philippe Brucker wrote:
+> > > > We don't currently support IOMMUs with a page granule larger than the
+> > > > system page size. The IOVA allocator has a BUG_ON() in this case, and
+> > > > VFIO has a WARN_ON().
+> > 
+> > Adding Alex in CC in case he has time to jump in. At the moment I don't
+> > get why this WARN_ON() is here.
+> > 
+> > This was introduced in
+> > c8dbca165bb090f926996a572ea2b5b577b34b70 vfio/iommu_type1: Avoid overflow
+> > 
+> > > > 
+> > > > It might be possible to remove these obstacles if necessary. If the host
+> > > > uses 64kB pages and the guest uses 4kB, then a device driver calling
+> > > > alloc_page() followed by dma_map_page() will create a 64kB mapping for a
+> > > > 4kB physical page, allowing the endpoint to access the neighbouring 60kB
+> > > > of memory. This problem could be worked around with bounce buffers.
+> > > 
+> > > FWIW the fundamental issue is that callers of iommu_map() may expect to
+> > > be able to map two or more page-aligned regions directly adjacent to
+> > > each other for scatter-gather purposes (or ring buffer tricks), and
+> > > that's just not possible if the IOMMU granule is too big. Bounce
+> > > buffering would be a viable workaround for the streaming DMA API and
+> > > certain similar use-cases, but not in general (e.g. coherent DMA, VFIO,
+> > > GPUs, etc.)
+> > > 
+> > > Robin.
+> > > 
+> > > > For the moment, rather than triggering the IOVA BUG_ON() on mismatched
+> > > > page sizes, abort the virtio-iommu probe with an error message.
+> > 
+> > I understand this is a introduced as a temporary solution but this
+> > sounds as an important limitation to me. For instance this will prevent
+> > from running a fedora guest exposed with a virtio-iommu with a RHEL host.
+> 
+> As above, even if you bypassed all the warnings it wouldn't really work
+> properly anyway. In all cases that wouldn't be considered broken, the
+> underlying hardware IOMMUs should support the same set of granules as the
+> CPUs (or at least the smallest one), so is it actually appropriate for RHEL
+> to (presumably) expose a 64K granule in the first place, rather than "works
+> with anything" 4K? And/or more generally is there perhaps a hole in the
+> virtio-iommu spec WRT being able to negotiate page_size_mask for a
+> particular granule if multiple options are available?
+
+That could be added (by allowing config write). The larger problems are:
+1) Supporting granularity smaller than the host's PAGE_SIZE in host VFIO.
+   At the moment it restricts the exposed page mask and rejects DMA_MAP
+   requests not aligned on that granularity.
+2) Propagating this negotiation all the way to io-pgtable and the SMMU
+   driver in the host.
+
+Thanks,
+Jean
+
+_______________________________________________
+iommu mailing list
+iommu@lists.linux-foundation.org
+https://lists.linuxfoundation.org/mailman/listinfo/iommu
