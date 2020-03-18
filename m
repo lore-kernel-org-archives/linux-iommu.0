@@ -6,69 +6,69 @@ X-Spam-Status: No, score=-9.8 required=3.0 tests=DKIM_INVALID,DKIM_SIGNED,
 	INCLUDES_PATCH,MAILING_LIST_MULTI,SIGNED_OFF_BY,SPF_HELO_NONE,SPF_PASS,
 	USER_AGENT_GIT autolearn=ham autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 974D2C4332E
-	for <iommu@archiver.kernel.org>; Wed, 18 Mar 2020 20:56:50 +0000 (UTC)
-Received: from silver.osuosl.org (smtp3.osuosl.org [140.211.166.136])
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 63E27C4332E
+	for <iommu@archiver.kernel.org>; Wed, 18 Mar 2020 20:57:04 +0000 (UTC)
+Received: from fraxinus.osuosl.org (smtp4.osuosl.org [140.211.166.137])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by mail.kernel.org (Postfix) with ESMTPS id 6B6912166E
-	for <iommu@archiver.kernel.org>; Wed, 18 Mar 2020 20:56:50 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTPS id 34EBC208E0
+	for <iommu@archiver.kernel.org>; Wed, 18 Mar 2020 20:57:04 +0000 (UTC)
 Authentication-Results: mail.kernel.org;
-	dkim=fail reason="signature verification failed" (1024-bit key) header.d=kernel.org header.i=@kernel.org header.b="dIwEXNBF"
-DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 6B6912166E
+	dkim=fail reason="signature verification failed" (1024-bit key) header.d=kernel.org header.i=@kernel.org header.b="cLc1X39W"
+DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 34EBC208E0
 Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=kernel.org
 Authentication-Results: mail.kernel.org; spf=pass smtp.mailfrom=iommu-bounces@lists.linux-foundation.org
 Received: from localhost (localhost [127.0.0.1])
-	by silver.osuosl.org (Postfix) with ESMTP id 3E08D268B1;
-	Wed, 18 Mar 2020 20:56:50 +0000 (UTC)
+	by fraxinus.osuosl.org (Postfix) with ESMTP id 2A89585C4A;
+	Wed, 18 Mar 2020 20:57:04 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from silver.osuosl.org ([127.0.0.1])
+Received: from fraxinus.osuosl.org ([127.0.0.1])
 	by localhost (.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
-	with ESMTP id ZrNyBakNOm5J; Wed, 18 Mar 2020 20:56:48 +0000 (UTC)
+	with ESMTP id 4B8_a1E4smp2; Wed, 18 Mar 2020 20:57:03 +0000 (UTC)
 Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [140.211.9.56])
-	by silver.osuosl.org (Postfix) with ESMTP id DE99C233B0;
-	Wed, 18 Mar 2020 20:56:48 +0000 (UTC)
+	by fraxinus.osuosl.org (Postfix) with ESMTP id B11E386248;
+	Wed, 18 Mar 2020 20:57:03 +0000 (UTC)
 Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
-	by lists.linuxfoundation.org (Postfix) with ESMTP id DA46BC18DA;
-	Wed, 18 Mar 2020 20:56:48 +0000 (UTC)
+	by lists.linuxfoundation.org (Postfix) with ESMTP id 88120C18DA;
+	Wed, 18 Mar 2020 20:57:03 +0000 (UTC)
 Received: from whitealder.osuosl.org (smtp1.osuosl.org [140.211.166.138])
- by lists.linuxfoundation.org (Postfix) with ESMTP id 0AF04C013E
- for <iommu@lists.linux-foundation.org>; Wed, 18 Mar 2020 20:56:47 +0000 (UTC)
+ by lists.linuxfoundation.org (Postfix) with ESMTP id 8C6C6C013E
+ for <iommu@lists.linux-foundation.org>; Wed, 18 Mar 2020 20:57:02 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
- by whitealder.osuosl.org (Postfix) with ESMTP id EE2DC87487
- for <iommu@lists.linux-foundation.org>; Wed, 18 Mar 2020 20:56:46 +0000 (UTC)
+ by whitealder.osuosl.org (Postfix) with ESMTP id 838F0869C7
+ for <iommu@lists.linux-foundation.org>; Wed, 18 Mar 2020 20:57:02 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
 Received: from whitealder.osuosl.org ([127.0.0.1])
  by localhost (.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
- with ESMTP id u7mQkdCmbugE for <iommu@lists.linux-foundation.org>;
- Wed, 18 Mar 2020 20:56:46 +0000 (UTC)
+ with ESMTP id mp1DxiTCrUhO for <iommu@lists.linux-foundation.org>;
+ Wed, 18 Mar 2020 20:57:01 +0000 (UTC)
 X-Greylist: domain auto-whitelisted by SQLgrey-1.7.6
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
- by whitealder.osuosl.org (Postfix) with ESMTPS id 71942874DA
- for <iommu@lists.linux-foundation.org>; Wed, 18 Mar 2020 20:56:46 +0000 (UTC)
+ by whitealder.osuosl.org (Postfix) with ESMTPS id E7233874DA
+ for <iommu@lists.linux-foundation.org>; Wed, 18 Mar 2020 20:57:01 +0000 (UTC)
 Received: from sasha-vm.mshome.net (c-73-47-72-35.hsd1.nh.comcast.net
  [73.47.72.35])
  (using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
  (No client certificate requested)
- by mail.kernel.org (Postfix) with ESMTPSA id 9015F21973;
- Wed, 18 Mar 2020 20:56:45 +0000 (UTC)
+ by mail.kernel.org (Postfix) with ESMTPSA id 12E6020BED;
+ Wed, 18 Mar 2020 20:57:00 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
- s=default; t=1584565006;
- bh=JoWsthg4+dHaWeJW5+Ydz80NHjnHCFYlfmqtQlhVkqQ=;
+ s=default; t=1584565021;
+ bh=Hv4hSMvpfN+LKV5X3UisRwpdnw220sQeTZY7RQMEfz4=;
  h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
- b=dIwEXNBFd1/6ifSNinzVmWHvYB+QEJb+OyDi5MqFTfSqp3HcWhK1pQd+zb3Xssc/v
- u8TFlujkAcV3KN3KhAT9CIZJZJvaguwgCi+SAmkCP6t5iIwP9KEO++zv0hfJSXZt2s
- pAJuXLfvyMbTpz750xFE2iiYk2uX7wwe9FhRLzcM=
+ b=cLc1X39Wt705wwp/cUSLcTcbR4DkUybNJsfI1YjJK1RoXSvwmw1zoJMfsnOwPmfMy
+ +MrEJshfQA4ooa3xkh3LCwPiQprra5doOdMSKdH5MBb2Ma6JMPdYwFZE+gIXhe91ph
+ qr6hnZzGF7ze5DN6LvfxFdlFDKR2W5PqRRo+kIzI=
 From: Sasha Levin <sashal@kernel.org>
 To: linux-kernel@vger.kernel.org,
 	stable@vger.kernel.org
-Subject: [PATCH AUTOSEL 4.9 14/15] iommu/vt-d: quirk_ioat_snb_local_iommu:
+Subject: [PATCH AUTOSEL 4.4 11/12] iommu/vt-d: quirk_ioat_snb_local_iommu:
  replace WARN_TAINT with pr_warn + add_taint
-Date: Wed, 18 Mar 2020 16:56:28 -0400
-Message-Id: <20200318205629.17750-14-sashal@kernel.org>
+Date: Wed, 18 Mar 2020 16:56:47 -0400
+Message-Id: <20200318205648.17937-11-sashal@kernel.org>
 X-Mailer: git-send-email 2.20.1
-In-Reply-To: <20200318205629.17750-1-sashal@kernel.org>
-References: <20200318205629.17750-1-sashal@kernel.org>
+In-Reply-To: <20200318205648.17937-1-sashal@kernel.org>
+References: <20200318205648.17937-1-sashal@kernel.org>
 MIME-Version: 1.0
 X-stable: review
 X-Patchwork-Hint: Ignore
@@ -122,10 +122,10 @@ Signed-off-by: Sasha Levin <sashal@kernel.org>
  1 file changed, 4 insertions(+), 3 deletions(-)
 
 diff --git a/drivers/iommu/intel-iommu.c b/drivers/iommu/intel-iommu.c
-index 5c6e0a9fd2f36..0a125f1b9efe1 100644
+index a2005b82ec8ff..3a97225d0b182 100644
 --- a/drivers/iommu/intel-iommu.c
 +++ b/drivers/iommu/intel-iommu.c
-@@ -4085,10 +4085,11 @@ static void quirk_ioat_snb_local_iommu(struct pci_dev *pdev)
+@@ -3949,10 +3949,11 @@ static void quirk_ioat_snb_local_iommu(struct pci_dev *pdev)
  
  	/* we know that the this iommu should be at offset 0xa000 from vtbar */
  	drhd = dmar_find_matched_drhd_unit(pdev);
