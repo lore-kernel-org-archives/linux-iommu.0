@@ -1,99 +1,89 @@
-Return-Path: <SRS0=LxCT=5D=lists.linux-foundation.org=iommu-bounces@kernel.org>
+Return-Path: <SRS0=hyWy=5E=lists.linux-foundation.org=iommu-bounces@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-0.5 required=3.0 tests=DKIM_ADSP_CUSTOM_MED,
-	DKIM_INVALID,DKIM_SIGNED,FREEMAIL_FORGED_FROMDOMAIN,FREEMAIL_FROM,
-	HEADER_FROM_DIFFERENT_DOMAINS,MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS
-	autolearn=no autolearn_force=no version=3.4.0
+X-Spam-Status: No, score=-8.1 required=3.0 tests=DKIM_INVALID,DKIM_SIGNED,
+	HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_PATCH,MAILING_LIST_MULTI,SIGNED_OFF_BY,
+	SPF_HELO_NONE,SPF_PASS,USER_AGENT_SANE_1 autolearn=unavailable
+	autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 23665C4332D
-	for <iommu@archiver.kernel.org>; Wed, 18 Mar 2020 23:43:25 +0000 (UTC)
-Received: from whitealder.osuosl.org (smtp1.osuosl.org [140.211.166.138])
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 492BBC4332B
+	for <iommu@archiver.kernel.org>; Thu, 19 Mar 2020 10:17:04 +0000 (UTC)
+Received: from silver.osuosl.org (smtp3.osuosl.org [140.211.166.136])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by mail.kernel.org (Postfix) with ESMTPS id D889520768
-	for <iommu@archiver.kernel.org>; Wed, 18 Mar 2020 23:43:24 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTPS id 115EC206D7
+	for <iommu@archiver.kernel.org>; Thu, 19 Mar 2020 10:17:03 +0000 (UTC)
 Authentication-Results: mail.kernel.org;
-	dkim=fail reason="signature verification failed" (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="i3FPub1D"
-DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org D889520768
-Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=gmail.com
+	dkim=fail reason="signature verification failed" (1024-bit key) header.d=alien8.de header.i=@alien8.de header.b="OdJZDRE3"
+DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 115EC206D7
+Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=alien8.de
 Authentication-Results: mail.kernel.org; spf=pass smtp.mailfrom=iommu-bounces@lists.linux-foundation.org
 Received: from localhost (localhost [127.0.0.1])
-	by whitealder.osuosl.org (Postfix) with ESMTP id A958187767;
-	Wed, 18 Mar 2020 23:43:24 +0000 (UTC)
+	by silver.osuosl.org (Postfix) with ESMTP id 9058621563;
+	Thu, 19 Mar 2020 10:17:03 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from whitealder.osuosl.org ([127.0.0.1])
+Received: from silver.osuosl.org ([127.0.0.1])
 	by localhost (.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
-	with ESMTP id y8JxqGm+Qvf7; Wed, 18 Mar 2020 23:43:24 +0000 (UTC)
+	with ESMTP id tSPpa6xiAxLS; Thu, 19 Mar 2020 10:17:01 +0000 (UTC)
 Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [140.211.9.56])
-	by whitealder.osuosl.org (Postfix) with ESMTP id 8276187750;
-	Wed, 18 Mar 2020 23:43:24 +0000 (UTC)
+	by silver.osuosl.org (Postfix) with ESMTP id AE8862050C;
+	Thu, 19 Mar 2020 10:17:01 +0000 (UTC)
 Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
-	by lists.linuxfoundation.org (Postfix) with ESMTP id 7D193C1799;
-	Wed, 18 Mar 2020 23:43:22 +0000 (UTC)
-Received: from hemlock.osuosl.org (smtp2.osuosl.org [140.211.166.133])
- by lists.linuxfoundation.org (Postfix) with ESMTP id E1F01C087F
- for <iommu@lists.linux-foundation.org>; Wed, 18 Mar 2020 23:43:20 +0000 (UTC)
+	by lists.linuxfoundation.org (Postfix) with ESMTP id A8322C1830;
+	Thu, 19 Mar 2020 10:17:01 +0000 (UTC)
+Received: from silver.osuosl.org (smtp3.osuosl.org [140.211.166.136])
+ by lists.linuxfoundation.org (Postfix) with ESMTP id 9EA3AC07FF
+ for <iommu@lists.linux-foundation.org>; Thu, 19 Mar 2020 10:16:59 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
- by hemlock.osuosl.org (Postfix) with ESMTP id CF3C7882F6
- for <iommu@lists.linux-foundation.org>; Wed, 18 Mar 2020 23:43:20 +0000 (UTC)
+ by silver.osuosl.org (Postfix) with ESMTP id 86D922050D
+ for <iommu@lists.linux-foundation.org>; Thu, 19 Mar 2020 10:16:59 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from hemlock.osuosl.org ([127.0.0.1])
+Received: from silver.osuosl.org ([127.0.0.1])
  by localhost (.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
- with ESMTP id tunGIjiSE6fD for <iommu@lists.linux-foundation.org>;
- Wed, 18 Mar 2020 23:43:20 +0000 (UTC)
-X-Greylist: domain auto-whitelisted by SQLgrey-1.7.6
-Received: from mail-ed1-f67.google.com (mail-ed1-f67.google.com
- [209.85.208.67])
- by hemlock.osuosl.org (Postfix) with ESMTPS id AB44087CC9
- for <iommu@lists.linux-foundation.org>; Wed, 18 Mar 2020 23:43:19 +0000 (UTC)
-Received: by mail-ed1-f67.google.com with SMTP id b21so326982edy.9
- for <iommu@lists.linux-foundation.org>; Wed, 18 Mar 2020 16:43:19 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=gmail.com; s=20161025;
- h=mime-version:references:in-reply-to:from:date:message-id:subject:to
- :cc; bh=T6rxV8z4faDRzhqK467Xv2a7dOy/TE520C3YV3WjV8c=;
- b=i3FPub1DIHkvCD+yi/2Y0pX69MrTIvO1RmbzVf6wk00DV0ApmY13YfnnFpks/NVTLs
- G1QplMy/+0w+GsFrwD1fV1STvoKneEr8NQlSW0vIhii6MAK+xDn8ddbmfxyIfh+bWkPE
- NEeRdRZ2QE6MO1YpPwSPzXvQKexEK5sr8Dox9C9jyfSyvqP6X6trr48Ms86RoFLn9dAG
- 92zK1vRSIdLYDibQabEa5foOn7Ajn4QGZfbFS6XCk1yr6R/d+WaM4jqJ31uE4ljyQmMb
- YiomgNSyyErYriEW6Abwe6sruyYqTy62RHKzpwUnN7Vinym7R/FBnsL8LzowJAa3l8q2
- 3Z7w==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
- d=1e100.net; s=20161025;
- h=x-gm-message-state:mime-version:references:in-reply-to:from:date
- :message-id:subject:to:cc;
- bh=T6rxV8z4faDRzhqK467Xv2a7dOy/TE520C3YV3WjV8c=;
- b=t7JOCVxir1YDvWpuzePISXRJKtrpuPs0iN3FO2pmdgGMTPk2e/Xvq95elyL9SJLLOc
- rRzQ0fYETw7HeHNtjsfdj2tAK3PmzzVewsysbB/kesyK68wKRp5mzk/XMYEpB0rzel+o
- Bini/Jirc2N97SmE3fsXkmES09OxrcjaGTwSNJslcWrSGOKg/KEEfLYMTU5uzb4WLI3g
- CGZ66JzSP1a46wgE8IstgfVl9db1IyF2EfEtJtDUu1nbAejjiW4U4PJ6LBf/dhVFXXmX
- Y0n6ivqBysmxoTCTlUr7g2tyG6dp5S7Xvy30BLDBhmU2yoMLtUFAHQI1HA51i611PcKC
- pUOA==
-X-Gm-Message-State: ANhLgQ1oa02/zcO+1ZhJUA33Cl3Hah6yUQZfY3AWrlk9m/FhmK2okj0+
- n32ByNJXwNB8UxcHLnJ/x+8oaDGHncV7dp/B+no=
-X-Google-Smtp-Source: ADFU+vunbg/mabJAoT4ECckSo9VlWXEI7Tk7MCM2NEIzGX//dTyumqWFksHG62C18XwPsVHwF/wqELk+aHHpZR6UYqI=
-X-Received: by 2002:a17:906:b888:: with SMTP id
- hb8mr686525ejb.166.1584574997823; 
- Wed, 18 Mar 2020 16:43:17 -0700 (PDT)
+ with ESMTP id L2RLHZrQmfC9 for <iommu@lists.linux-foundation.org>;
+ Thu, 19 Mar 2020 10:16:56 +0000 (UTC)
+X-Greylist: from auto-whitelisted by SQLgrey-1.7.6
+Received: from mail.skyhub.de (mail.skyhub.de [5.9.137.197])
+ by silver.osuosl.org (Postfix) with ESMTPS id 808F62050C
+ for <iommu@lists.linux-foundation.org>; Thu, 19 Mar 2020 10:16:56 +0000 (UTC)
+Received: from zn.tnic (p200300EC2F0A850035180F69CBC86220.dip0.t-ipconnect.de
+ [IPv6:2003:ec:2f0a:8500:3518:f69:cbc8:6220])
+ (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+ (No client certificate requested)
+ by mail.skyhub.de (SuperMail on ZX Spectrum 128k) with ESMTPSA id 57D8D1EC0CF9;
+ Thu, 19 Mar 2020 11:16:52 +0100 (CET)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=alien8.de; s=dkim;
+ t=1584613012;
+ h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+ to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+ content-transfer-encoding:in-reply-to:in-reply-to:  references:references;
+ bh=kyXB3LhXMlYk05dewzUxEywSSYigUP22lYt3Q49KHmI=;
+ b=OdJZDRE3k65QjZ/LHJJwYG2FZVA1/4CS3YUasQdlMaNOaQxumloXOafvMddSta9Lmp9mYT
+ vOHhz35eEaodYgWkBSGWw9zSLIay3NIjKQV0Ktorq9kwlDXEOdBM9dV+vFpCkOr++q0LUJ
+ TjuwZ8g+LaouH+iQR0GtJkZ76x8bYfA=
+Date: Thu, 19 Mar 2020 11:16:57 +0100
+From: Borislav Petkov <bp@alien8.de>
+To: Borislav Petkov <bp@suse.de>
+Subject: [PATCH -v2] treewide: Rename "unencrypted" to "decrypted"
+Message-ID: <20200319101657.GB13073@zn.tnic>
+References: <20200317111822.GA15609@zn.tnic>
 MIME-Version: 1.0
-References: <1580249770-1088-1-git-send-email-jcrouse@codeaurora.org>
- <1580249770-1088-3-git-send-email-jcrouse@codeaurora.org>
- <20200318224840.GA10796@willie-the-truck>
-In-Reply-To: <20200318224840.GA10796@willie-the-truck>
-From: Rob Clark <robdclark@gmail.com>
-Date: Wed, 18 Mar 2020 16:43:07 -0700
-Message-ID: <CAF6AEGu-hj6=3rsCe5XeBq_ffoq9VFmL+ycrQ8N=iv89DZf=8Q@mail.gmail.com>
-Subject: Re: [PATCH v1 2/6] arm/smmu: Add auxiliary domain support for
- arm-smmuv2
-To: Will Deacon <will@kernel.org>
-Cc: linux-arm-msm <linux-arm-msm@vger.kernel.org>,
- Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
- "list@263.net:IOMMU DRIVERS <iommu@lists.linux-foundation.org>,
- Joerg Roedel <joro@8bytes.org>, " <iommu@lists.linux-foundation.org>,
- Robin Murphy <robin.murphy@arm.com>,
- "moderated list:ARM/FREESCALE IMX / MXC ARM ARCHITECTURE"
- <linux-arm-kernel@lists.infradead.org>
+Content-Disposition: inline
+In-Reply-To: <20200317111822.GA15609@zn.tnic>
+User-Agent: Mutt/1.10.1 (2018-07-13)
+Cc: linux-s390@vger.kernel.org, Dave Hansen <dave.hansen@linux.intel.com>,
+ Vasily Gorbik <gor@linux.ibm.com>, linuxppc-dev@lists.ozlabs.org,
+ Peter Zijlstra <peterz@infradead.org>,
+ Benjamin Herrenschmidt <benh@kernel.crashing.org>, x86@kernel.org,
+ Heiko Carstens <heiko.carstens@de.ibm.com>,
+ lkml <linux-kernel@vger.kernel.org>,
+ Christian Borntraeger <borntraeger@de.ibm.com>,
+ iommu@lists.linux-foundation.org, Ingo Molnar <mingo@redhat.com>,
+ Paul Mackerras <paulus@samba.org>, Tom Lendacky <thomas.lendacky@amd.com>,
+ Andy Lutomirski <luto@kernel.org>, Michael Ellerman <mpe@ellerman.id.au>,
+ Thomas Gleixner <tglx@linutronix.de>, Robin Murphy <robin.murphy@arm.com>,
+ Christoph Hellwig <hch@lst.de>
 X-BeenThere: iommu@lists.linux-foundation.org
 X-Mailman-Version: 2.1.15
 Precedence: list
@@ -111,68 +101,253 @@ Content-Transfer-Encoding: 7bit
 Errors-To: iommu-bounces@lists.linux-foundation.org
 Sender: "iommu" <iommu-bounces@lists.linux-foundation.org>
 
-On Wed, Mar 18, 2020 at 3:48 PM Will Deacon <will@kernel.org> wrote:
->
-> On Tue, Jan 28, 2020 at 03:16:06PM -0700, Jordan Crouse wrote:
-> > Support auxiliary domains for arm-smmu-v2 to initialize and support
-> > multiple pagetables for a single SMMU context bank. Since the smmu-v2
-> > hardware doesn't have any built in support for switching the pagetable
-> > base it is left as an exercise to the caller to actually use the pagetable.
-> >
-> > Aux domains are supported if split pagetable (TTBR1) support has been
-> > enabled on the master domain.  Each auxiliary domain will reuse the
-> > configuration of the master domain. By default the a domain with TTBR1
-> > support will have the TTBR0 region disabled so the first attached aux
-> > domain will enable the TTBR0 region in the hardware and conversely the
-> > last domain to be detached will disable TTBR0 translations.  All subsequent
-> > auxiliary domains create a pagetable but not touch the hardware.
-> >
-> > The leaf driver will be able to query the physical address of the
-> > pagetable with the DOMAIN_ATTR_PTBASE attribute so that it can use the
-> > address with whatever means it has to switch the pagetable base.
-> >
-> > Following is a pseudo code example of how a domain can be created
-> >
-> >  /* Check to see if aux domains are supported */
-> >  if (iommu_dev_has_feature(dev, IOMMU_DEV_FEAT_AUX)) {
-> >        iommu = iommu_domain_alloc(...);
-> >
-> >        if (iommu_aux_attach_device(domain, dev))
-> >                return FAIL;
-> >
-> >       /* Save the base address of the pagetable for use by the driver
-> >       iommu_domain_get_attr(domain, DOMAIN_ATTR_PTBASE, &ptbase);
-> >  }
->
-> I'm not really understanding what the pagetable base gets used for here and,
-> to be honest with you, the whole thing feels like a huge layering violation
-> with the way things are structured today. Why doesn't the caller just
-> interface with io-pgtable directly?
->
-> Finally, if we need to support context-switching TTBR0 for a live domain
-> then that code really needs to live inside the SMMU driver because the
-> ASID and TLB management necessary to do that safely doesn't belong anywhere
-> else.
+Hi,
 
-Hi Will,
+here's v2 with build breakage fixed on ppc and s390 (obviously I can't
+grep :-\) and commit message extended to explain more why.
 
-We do in fact need live domain switching, that is really the whole
-point.  The GPU CP (command processor/parser) is directly updating
-TTBR0 and triggering TLB flush, asynchronously from the CPU.
+Thx.
 
-And I think the answer about ASID is easy (on current hw).. it must be zero[*].
+---
+From: Borislav Petkov <bp@suse.de>
+Date: Tue, 17 Mar 2020 12:03:05 +0100
 
-BR,
--R
+Back then when the whole SME machinery started getting mainlined, it
+was agreed that for simplicity, clarity and sanity's sake, the terms
+denoting encrypted and not-encrypted memory should be "encrypted" and
+"decrypted". And the majority of the code sticks to that convention
+except those two. So rename them.
 
-[*] my rough theory/plan there, and to solve the issue with drm/msm
-getting dma-iommu ops when it really would rather not (since
-blacklisting idea wasn't popular and I couldn't figure out a way to
-deal with case where device gets attached before driver shows up) is
-to invent some API that drm/msm can call to unhook the dma-iommu ops
-and detatch the DMA domain.  Hopefully that at least gets us closer to
-the point where, when drm/msm attaches it's UNMANAGED domain, we get
-cbidx/asid zero.
+The intent of "encrypted" and "decrypted" is to represent the binary
+concept of memory which is encrypted and of memory which is not.
+
+The further differentiation between decrypted and unencrypted memory is
+not needed in the code (for now) and therefore keep things simple by
+using solely the two terms.
+
+No functional changes.
+
+[ Convert forgotten s390 and ppc function variants. ]
+Reported-by: kbuild test robot <lkp@intel.com>
+Signed-off-by: Borislav Petkov <bp@suse.de>
+---
+ arch/powerpc/include/asm/mem_encrypt.h |  2 +-
+ arch/powerpc/platforms/pseries/Kconfig |  2 +-
+ arch/s390/Kconfig                      |  2 +-
+ arch/s390/mm/init.c                    |  2 +-
+ arch/x86/Kconfig                       |  2 +-
+ arch/x86/mm/mem_encrypt.c              |  4 ++--
+ include/linux/dma-direct.h             |  8 ++++----
+ kernel/dma/Kconfig                     |  2 +-
+ kernel/dma/direct.c                    | 14 +++++++-------
+ kernel/dma/mapping.c                   |  2 +-
+ 10 files changed, 20 insertions(+), 20 deletions(-)
+
+diff --git a/arch/powerpc/include/asm/mem_encrypt.h b/arch/powerpc/include/asm/mem_encrypt.h
+index ba9dab07c1be..f0705cd3b079 100644
+--- a/arch/powerpc/include/asm/mem_encrypt.h
++++ b/arch/powerpc/include/asm/mem_encrypt.h
+@@ -15,7 +15,7 @@ static inline bool mem_encrypt_active(void)
+ 	return is_secure_guest();
+ }
+ 
+-static inline bool force_dma_unencrypted(struct device *dev)
++static inline bool force_dma_decrypted(struct device *dev)
+ {
+ 	return is_secure_guest();
+ }
+diff --git a/arch/powerpc/platforms/pseries/Kconfig b/arch/powerpc/platforms/pseries/Kconfig
+index 24c18362e5ea..a78e2c3e1d92 100644
+--- a/arch/powerpc/platforms/pseries/Kconfig
++++ b/arch/powerpc/platforms/pseries/Kconfig
+@@ -151,7 +151,7 @@ config PPC_SVM
+ 	depends on PPC_PSERIES
+ 	select SWIOTLB
+ 	select ARCH_HAS_MEM_ENCRYPT
+-	select ARCH_HAS_FORCE_DMA_UNENCRYPTED
++	select ARCH_HAS_FORCE_DMA_DECRYPTED
+ 	help
+ 	 There are certain POWER platforms which support secure guests using
+ 	 the Protected Execution Facility, with the help of an Ultravisor
+diff --git a/arch/s390/Kconfig b/arch/s390/Kconfig
+index 8abe77536d9d..ab1dbb7415b4 100644
+--- a/arch/s390/Kconfig
++++ b/arch/s390/Kconfig
+@@ -192,7 +192,7 @@ config S390
+ 	select VIRT_CPU_ACCOUNTING
+ 	select ARCH_HAS_SCALED_CPUTIME
+ 	select HAVE_NMI
+-	select ARCH_HAS_FORCE_DMA_UNENCRYPTED
++	select ARCH_HAS_FORCE_DMA_DECRYPTED
+ 	select SWIOTLB
+ 	select GENERIC_ALLOCATOR
+ 
+diff --git a/arch/s390/mm/init.c b/arch/s390/mm/init.c
+index ac44bd76db4b..5fed85f9fea6 100644
+--- a/arch/s390/mm/init.c
++++ b/arch/s390/mm/init.c
+@@ -157,7 +157,7 @@ int set_memory_decrypted(unsigned long addr, int numpages)
+ }
+ 
+ /* are we a protected virtualization guest? */
+-bool force_dma_unencrypted(struct device *dev)
++bool force_dma_decrypted(struct device *dev)
+ {
+ 	return is_prot_virt_guest();
+ }
+diff --git a/arch/x86/Kconfig b/arch/x86/Kconfig
+index beea77046f9b..2ae904f505e1 100644
+--- a/arch/x86/Kconfig
++++ b/arch/x86/Kconfig
+@@ -1525,7 +1525,7 @@ config AMD_MEM_ENCRYPT
+ 	depends on X86_64 && CPU_SUP_AMD
+ 	select DYNAMIC_PHYSICAL_MASK
+ 	select ARCH_USE_MEMREMAP_PROT
+-	select ARCH_HAS_FORCE_DMA_UNENCRYPTED
++	select ARCH_HAS_FORCE_DMA_DECRYPTED
+ 	---help---
+ 	  Say yes to enable support for the encryption of system memory.
+ 	  This requires an AMD processor that supports Secure Memory
+diff --git a/arch/x86/mm/mem_encrypt.c b/arch/x86/mm/mem_encrypt.c
+index a03614bd3e1a..66d09f269e6d 100644
+--- a/arch/x86/mm/mem_encrypt.c
++++ b/arch/x86/mm/mem_encrypt.c
+@@ -350,8 +350,8 @@ bool sev_active(void)
+ 	return sme_me_mask && sev_enabled;
+ }
+ 
+-/* Override for DMA direct allocation check - ARCH_HAS_FORCE_DMA_UNENCRYPTED */
+-bool force_dma_unencrypted(struct device *dev)
++/* Override for DMA direct allocation check - ARCH_HAS_FORCE_DMA_DECRYPTED */
++bool force_dma_decrypted(struct device *dev)
+ {
+ 	/*
+ 	 * For SEV, all DMA must be to unencrypted addresses.
+diff --git a/include/linux/dma-direct.h b/include/linux/dma-direct.h
+index 24b8684aa21d..9f955844e9c7 100644
+--- a/include/linux/dma-direct.h
++++ b/include/linux/dma-direct.h
+@@ -26,14 +26,14 @@ static inline phys_addr_t __dma_to_phys(struct device *dev, dma_addr_t dev_addr)
+ }
+ #endif /* !CONFIG_ARCH_HAS_PHYS_TO_DMA */
+ 
+-#ifdef CONFIG_ARCH_HAS_FORCE_DMA_UNENCRYPTED
+-bool force_dma_unencrypted(struct device *dev);
++#ifdef CONFIG_ARCH_HAS_FORCE_DMA_DECRYPTED
++bool force_dma_decrypted(struct device *dev);
+ #else
+-static inline bool force_dma_unencrypted(struct device *dev)
++static inline bool force_dma_decrypted(struct device *dev)
+ {
+ 	return false;
+ }
+-#endif /* CONFIG_ARCH_HAS_FORCE_DMA_UNENCRYPTED */
++#endif /* CONFIG_ARCH_HAS_FORCE_DMA_DECRYPTED */
+ 
+ /*
+  * If memory encryption is supported, phys_to_dma will set the memory encryption
+diff --git a/kernel/dma/Kconfig b/kernel/dma/Kconfig
+index 4c103a24e380..55c4147bb2b1 100644
+--- a/kernel/dma/Kconfig
++++ b/kernel/dma/Kconfig
+@@ -51,7 +51,7 @@ config ARCH_HAS_SYNC_DMA_FOR_CPU_ALL
+ config ARCH_HAS_DMA_PREP_COHERENT
+ 	bool
+ 
+-config ARCH_HAS_FORCE_DMA_UNENCRYPTED
++config ARCH_HAS_FORCE_DMA_DECRYPTED
+ 	bool
+ 
+ config DMA_NONCOHERENT_CACHE_SYNC
+diff --git a/kernel/dma/direct.c b/kernel/dma/direct.c
+index ac7956c38f69..a0576c0ccacd 100644
+--- a/kernel/dma/direct.c
++++ b/kernel/dma/direct.c
+@@ -26,7 +26,7 @@ unsigned int zone_dma_bits __ro_after_init = 24;
+ static inline dma_addr_t phys_to_dma_direct(struct device *dev,
+ 		phys_addr_t phys)
+ {
+-	if (force_dma_unencrypted(dev))
++	if (force_dma_decrypted(dev))
+ 		return __phys_to_dma(dev, phys);
+ 	return phys_to_dma(dev, phys);
+ }
+@@ -49,7 +49,7 @@ static gfp_t __dma_direct_optimal_gfp_mask(struct device *dev, u64 dma_mask,
+ {
+ 	u64 dma_limit = min_not_zero(dma_mask, dev->bus_dma_limit);
+ 
+-	if (force_dma_unencrypted(dev))
++	if (force_dma_decrypted(dev))
+ 		*phys_limit = __dma_to_phys(dev, dma_limit);
+ 	else
+ 		*phys_limit = dma_to_phys(dev, dma_limit);
+@@ -138,7 +138,7 @@ void *dma_direct_alloc_pages(struct device *dev, size_t size,
+ 		return NULL;
+ 
+ 	if ((attrs & DMA_ATTR_NO_KERNEL_MAPPING) &&
+-	    !force_dma_unencrypted(dev)) {
++	    !force_dma_decrypted(dev)) {
+ 		/* remove any dirty cache lines on the kernel alias */
+ 		if (!PageHighMem(page))
+ 			arch_dma_prep_coherent(page, size);
+@@ -179,7 +179,7 @@ void *dma_direct_alloc_pages(struct device *dev, size_t size,
+ 	}
+ 
+ 	ret = page_address(page);
+-	if (force_dma_unencrypted(dev))
++	if (force_dma_decrypted(dev))
+ 		set_memory_decrypted((unsigned long)ret, 1 << get_order(size));
+ 
+ 	memset(ret, 0, size);
+@@ -190,7 +190,7 @@ void *dma_direct_alloc_pages(struct device *dev, size_t size,
+ 		ret = uncached_kernel_address(ret);
+ 	}
+ done:
+-	if (force_dma_unencrypted(dev))
++	if (force_dma_decrypted(dev))
+ 		*dma_handle = __phys_to_dma(dev, page_to_phys(page));
+ 	else
+ 		*dma_handle = phys_to_dma(dev, page_to_phys(page));
+@@ -203,7 +203,7 @@ void dma_direct_free_pages(struct device *dev, size_t size, void *cpu_addr,
+ 	unsigned int page_order = get_order(size);
+ 
+ 	if ((attrs & DMA_ATTR_NO_KERNEL_MAPPING) &&
+-	    !force_dma_unencrypted(dev)) {
++	    !force_dma_decrypted(dev)) {
+ 		/* cpu_addr is a struct page cookie, not a kernel address */
+ 		dma_free_contiguous(dev, cpu_addr, size);
+ 		return;
+@@ -213,7 +213,7 @@ void dma_direct_free_pages(struct device *dev, size_t size, void *cpu_addr,
+ 	    dma_free_from_pool(cpu_addr, PAGE_ALIGN(size)))
+ 		return;
+ 
+-	if (force_dma_unencrypted(dev))
++	if (force_dma_decrypted(dev))
+ 		set_memory_encrypted((unsigned long)cpu_addr, 1 << page_order);
+ 
+ 	if (IS_ENABLED(CONFIG_DMA_REMAP) && is_vmalloc_addr(cpu_addr))
+diff --git a/kernel/dma/mapping.c b/kernel/dma/mapping.c
+index 98e3d873792e..dbd0605a39c5 100644
+--- a/kernel/dma/mapping.c
++++ b/kernel/dma/mapping.c
+@@ -154,7 +154,7 @@ EXPORT_SYMBOL(dma_get_sgtable_attrs);
+  */
+ pgprot_t dma_pgprot(struct device *dev, pgprot_t prot, unsigned long attrs)
+ {
+-	if (force_dma_unencrypted(dev))
++	if (force_dma_decrypted(dev))
+ 		prot = pgprot_decrypted(prot);
+ 	if (dev_is_dma_coherent(dev) ||
+ 	    (IS_ENABLED(CONFIG_DMA_NONCOHERENT_CACHE_SYNC) &&
+-- 
+2.21.0
+
+
+-- 
+Regards/Gruss,
+    Boris.
+
+https://people.kernel.org/tglx/notes-about-netiquette
 _______________________________________________
 iommu mailing list
 iommu@lists.linux-foundation.org
