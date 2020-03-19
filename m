@@ -2,98 +2,91 @@ Return-Path: <SRS0=hyWy=5E=lists.linux-foundation.org=iommu-bounces@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-0.6 required=3.0 tests=DKIM_INVALID,DKIM_SIGNED,
-	HEADER_FROM_DIFFERENT_DOMAINS,MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS
-	autolearn=no autolearn_force=no version=3.4.0
+X-Spam-Status: No, score=-6.6 required=3.0 tests=DKIM_INVALID,DKIM_SIGNED,
+	HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_PATCH,MAILING_LIST_MULTI,SIGNED_OFF_BY,
+	SPF_HELO_NONE,SPF_PASS autolearn=ham autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id C0580C4332D
-	for <iommu@archiver.kernel.org>; Thu, 19 Mar 2020 18:44:02 +0000 (UTC)
-Received: from whitealder.osuosl.org (smtp1.osuosl.org [140.211.166.138])
+	by smtp.lore.kernel.org (Postfix) with ESMTP id BE6DDC4332E
+	for <iommu@archiver.kernel.org>; Thu, 19 Mar 2020 18:54:30 +0000 (UTC)
+Received: from fraxinus.osuosl.org (smtp4.osuosl.org [140.211.166.137])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by mail.kernel.org (Postfix) with ESMTPS id 84F6F20789
-	for <iommu@archiver.kernel.org>; Thu, 19 Mar 2020 18:44:02 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTPS id 7F2C52070A
+	for <iommu@archiver.kernel.org>; Thu, 19 Mar 2020 18:54:30 +0000 (UTC)
 Authentication-Results: mail.kernel.org;
-	dkim=fail reason="signature verification failed" (2048-bit key) header.d=linaro.org header.i=@linaro.org header.b="dNzAMLhw"
-DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 84F6F20789
-Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=linaro.org
+	dkim=fail reason="signature verification failed" (1024-bit key) header.d=redhat.com header.i=@redhat.com header.b="U3jQJjjX"
+DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 7F2C52070A
+Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=redhat.com
 Authentication-Results: mail.kernel.org; spf=pass smtp.mailfrom=iommu-bounces@lists.linux-foundation.org
 Received: from localhost (localhost [127.0.0.1])
-	by whitealder.osuosl.org (Postfix) with ESMTP id 5FEC287EEC;
-	Thu, 19 Mar 2020 18:44:02 +0000 (UTC)
-X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from whitealder.osuosl.org ([127.0.0.1])
-	by localhost (.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
-	with ESMTP id YIjDZavxjoX7; Thu, 19 Mar 2020 18:44:01 +0000 (UTC)
-Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [140.211.9.56])
-	by whitealder.osuosl.org (Postfix) with ESMTP id 7406487BF6;
-	Thu, 19 Mar 2020 18:44:01 +0000 (UTC)
-Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
-	by lists.linuxfoundation.org (Postfix) with ESMTP id 611F5C1830;
-	Thu, 19 Mar 2020 18:44:01 +0000 (UTC)
-Received: from fraxinus.osuosl.org (smtp4.osuosl.org [140.211.166.137])
- by lists.linuxfoundation.org (Postfix) with ESMTP id F068DC07FF
- for <iommu@lists.linux-foundation.org>; Thu, 19 Mar 2020 18:43:59 +0000 (UTC)
-Received: from localhost (localhost [127.0.0.1])
- by fraxinus.osuosl.org (Postfix) with ESMTP id DE9E085F8F
- for <iommu@lists.linux-foundation.org>; Thu, 19 Mar 2020 18:43:59 +0000 (UTC)
+	by fraxinus.osuosl.org (Postfix) with ESMTP id 4E642854DB;
+	Thu, 19 Mar 2020 18:54:30 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
 Received: from fraxinus.osuosl.org ([127.0.0.1])
+	by localhost (.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
+	with ESMTP id vd1jvKrt_fm8; Thu, 19 Mar 2020 18:54:29 +0000 (UTC)
+Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [140.211.9.56])
+	by fraxinus.osuosl.org (Postfix) with ESMTP id 49B8D854A7;
+	Thu, 19 Mar 2020 18:54:29 +0000 (UTC)
+Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
+	by lists.linuxfoundation.org (Postfix) with ESMTP id 43CCDC1830;
+	Thu, 19 Mar 2020 18:54:29 +0000 (UTC)
+Received: from hemlock.osuosl.org (smtp2.osuosl.org [140.211.166.133])
+ by lists.linuxfoundation.org (Postfix) with ESMTP id 0CA9EC07FF
+ for <iommu@lists.linux-foundation.org>; Thu, 19 Mar 2020 18:54:28 +0000 (UTC)
+Received: from localhost (localhost [127.0.0.1])
+ by hemlock.osuosl.org (Postfix) with ESMTP id 092DF88437
+ for <iommu@lists.linux-foundation.org>; Thu, 19 Mar 2020 18:54:28 +0000 (UTC)
+X-Virus-Scanned: amavisd-new at osuosl.org
+Received: from hemlock.osuosl.org ([127.0.0.1])
  by localhost (.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
- with ESMTP id nI4IRIQ0-BnD for <iommu@lists.linux-foundation.org>;
- Thu, 19 Mar 2020 18:43:59 +0000 (UTC)
+ with ESMTP id 0OEmCfS473cq for <iommu@lists.linux-foundation.org>;
+ Thu, 19 Mar 2020 18:54:26 +0000 (UTC)
 X-Greylist: domain auto-whitelisted by SQLgrey-1.7.6
-Received: from mail-wm1-f65.google.com (mail-wm1-f65.google.com
- [209.85.128.65])
- by fraxinus.osuosl.org (Postfix) with ESMTPS id E924E85F11
- for <iommu@lists.linux-foundation.org>; Thu, 19 Mar 2020 18:43:58 +0000 (UTC)
-Received: by mail-wm1-f65.google.com with SMTP id c187so3782872wme.1
- for <iommu@lists.linux-foundation.org>; Thu, 19 Mar 2020 11:43:58 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linaro.org; s=google;
- h=date:from:to:cc:subject:message-id:references:mime-version
- :content-disposition:in-reply-to;
- bh=f1kms1Cp/S2DCNW4uMZAVbQmKNgPwaRHV12JI4NkA+k=;
- b=dNzAMLhw75WU5RcG4cJ+2HatI0E22qaBvjlv3rCvndXOyGtc/64t5TMsMf4tV8IfAQ
- wYF5O9N+dgIwOi1qU5hWj5bX8pmQBWcFypnTUqAGPsaG3estI7OtLCx9x00gDI4K5wYu
- z2lGutpQhjrYpZ/WkQr75sJXd2j8zooRdLPBYqlO5ifndp+NiFwVFszcbgmdAVnMjoXm
- /85KdbaX+lP7G5fNJODNceuAbjLPBx5ce6wImXqV7mOah0l2KmXHN/p9oQSiM1o30KZx
- v3yV9wQlZePdo14/vvjTwKVQf1OvMCS6hfXUKar0V4QMjLAx39tayU/yt3EMtEi8LHQf
- kOAw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
- d=1e100.net; s=20161025;
- h=x-gm-message-state:date:from:to:cc:subject:message-id:references
- :mime-version:content-disposition:in-reply-to;
- bh=f1kms1Cp/S2DCNW4uMZAVbQmKNgPwaRHV12JI4NkA+k=;
- b=QJzRItRwOT2eTA7Dn9HwcFrnIrb3iZVm/y89+ApEdO3miYU3GPfIog+O8CVFGfPGHU
- fDRjchR+4XVwyoKfgST6mp7iO5DwMRT6Sco/hN4HaFxnyMntWGKy1CEjPl7F4bC6RD4u
- QFEl00QUjI84lHYoSiXR7/u/XuRkvPZoKkyr8qizagTyG/szP7rds3KCstrtHgHce/wy
- mtjWaVMBsaz3DanCTbmMIAd5BkuE9GyBYcitUNoGnhFKIF/8T5eBt2tKJDg8qNOJPaKP
- XPiyBoMQ+elFp1zv0CwsU5O4zQ6RDr7dObzokjr76jN1Rr8AiPVPdhBYtYss0cL2AWd6
- ZEfQ==
-X-Gm-Message-State: ANhLgQ0nV5wMt41/L6Jw27OhhOHY0gxmgYGbv0EwmPN0xTQlwGen91Vj
- WirW0Pw+SqTI5EPXuQe5jAA1EA==
-X-Google-Smtp-Source: ADFU+vtbENZvabZKtdw/DPbM6HU5AkeGexLxr2JVlNZfunhx7YefxB85Pmura26rapoHfeAtJTCh0A==
-X-Received: by 2002:a05:600c:286:: with SMTP id 6mr5461989wmk.56.1584643437270; 
- Thu, 19 Mar 2020 11:43:57 -0700 (PDT)
-Received: from myrica ([2001:171b:226b:54a0:116c:c27a:3e7f:5eaf])
- by smtp.gmail.com with ESMTPSA id x3sm3241463wmx.44.2020.03.19.11.43.56
- (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
- Thu, 19 Mar 2020 11:43:56 -0700 (PDT)
-Date: Thu, 19 Mar 2020 19:43:49 +0100
-From: Jean-Philippe Brucker <jean-philippe@linaro.org>
-To: John Garry <john.garry@huawei.com>
-Subject: Re: arm-smmu-v3 high cpu usage for NVMe
-Message-ID: <20200319184349.GA1697676@myrica>
-References: <20190821151749.23743-1-will@kernel.org>
- <b2a6e26d-6d0d-7f0d-f222-589812f701d2@huawei.com>
- <20200318205313.GB8094@willie-the-truck>
- <c6ab8020-dc06-0c7d-7a41-e792d90f97ba@huawei.com>
+Received: from us-smtp-delivery-74.mimecast.com
+ (us-smtp-delivery-74.mimecast.com [63.128.21.74])
+ by hemlock.osuosl.org (Postfix) with ESMTPS id BCE6488424
+ for <iommu@lists.linux-foundation.org>; Thu, 19 Mar 2020 18:54:26 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+ s=mimecast20190719; t=1584644065;
+ h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+ to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+ content-transfer-encoding:content-transfer-encoding:
+ in-reply-to:in-reply-to:references:references;
+ bh=u8yPH8S5e7rEQ8/Thc/acOyhNaA5t/AbNh/h71rxvoE=;
+ b=U3jQJjjXJv9GKUv7S5ZaftsIcOhZTcWy+RtzloVIN3JSRDMnVm8sTVLCexm7+4+jjzCEOe
+ UKPs1EMnWDyXmQJW/g4wABKCp3oyhOuBLP/gyGSfszBWoT8fkytiC6kONktW+ltih2aHxB
+ zjLjHMmZuOiXJIA7FOS7OMHpL0A09TE=
+Received: from mimecast-mx01.redhat.com (mimecast-mx01.redhat.com
+ [209.132.183.4]) (Using TLS) by relay.mimecast.com with ESMTP id
+ us-mta-296-yUqIcJwTMyuQHdy6K07cYw-1; Thu, 19 Mar 2020 14:54:21 -0400
+X-MC-Unique: yUqIcJwTMyuQHdy6K07cYw-1
+Received: from smtp.corp.redhat.com (int-mx03.intmail.prod.int.phx2.redhat.com
+ [10.5.11.13])
+ (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
+ (No client certificate requested)
+ by mimecast-mx01.redhat.com (Postfix) with ESMTPS id 17CD48017CC;
+ Thu, 19 Mar 2020 18:54:20 +0000 (UTC)
+Received: from w520.home (ovpn-112-162.phx2.redhat.com [10.3.112.162])
+ by smtp.corp.redhat.com (Postfix) with ESMTP id 5C97EBBBCB;
+ Thu, 19 Mar 2020 18:54:16 +0000 (UTC)
+Date: Thu, 19 Mar 2020 12:54:16 -0600
+From: Alex Williamson <alex.williamson@redhat.com>
+To: Auger Eric <eric.auger@redhat.com>
+Subject: Re: [PATCH] iommu/virtio: Reject IOMMU page granule larger than
+ PAGE_SIZE
+Message-ID: <20200319125416.4ff08ca2@w520.home>
+In-Reply-To: <09a32736-ea01-21f9-6bd5-9344b368f90a@redhat.com>
+References: <20200318114047.1518048-1-jean-philippe@linaro.org>
+ <f1f3d844-8080-d26d-200e-a38480895480@arm.com>
+ <09a32736-ea01-21f9-6bd5-9344b368f90a@redhat.com>
 MIME-Version: 1.0
-Content-Disposition: inline
-In-Reply-To: <c6ab8020-dc06-0c7d-7a41-e792d90f97ba@huawei.com>
-Cc: Will Deacon <will@kernel.org>, Ming Lei <ming.lei@redhat.com>,
- iommu@lists.linux-foundation.org, Marc Zyngier <maz@kernel.org>,
- Robin Murphy <robin.murphy@arm.com>
+X-Scanned-By: MIMEDefang 2.79 on 10.5.11.13
+X-Mimecast-Spam-Score: 0
+X-Mimecast-Originator: redhat.com
+Cc: Jean-Philippe Brucker <jean-philippe@linaro.org>,
+ virtualization@lists.linux-foundation.org, iommu@lists.linux-foundation.org,
+ Bharat Bhushan <bbhushan2@marvell.com>, Robin Murphy <robin.murphy@arm.com>
 X-BeenThere: iommu@lists.linux-foundation.org
 X-Mailman-Version: 2.1.15
 Precedence: list
@@ -106,96 +99,78 @@ List-Post: <mailto:iommu@lists.linux-foundation.org>
 List-Help: <mailto:iommu-request@lists.linux-foundation.org?subject=help>
 List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
  <mailto:iommu-request@lists.linux-foundation.org?subject=subscribe>
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: base64
 Errors-To: iommu-bounces@lists.linux-foundation.org
 Sender: "iommu" <iommu-bounces@lists.linux-foundation.org>
 
-On Thu, Mar 19, 2020 at 12:54:59PM +0000, John Garry wrote:
-> Hi Will,
-> 
-> > 
-> > On Thu, Jan 02, 2020 at 05:44:39PM +0000, John Garry wrote:
-> > > And for the overall system, we have:
-> > > 
-> > >    PerfTop:   85864 irqs/sec  kernel:89.6%  exact:  0.0% lost: 0/34434 drop:
-> > > 0/40116 [4000Hz cycles],  (all, 96 CPUs)
-> > > --------------------------------------------------------------------------------------------------------------------------
-> > > 
-> > >      27.43%  [kernel]          [k] arm_smmu_cmdq_issue_cmdlist
-> > >      11.71%  [kernel]          [k] _raw_spin_unlock_irqrestore
-> > >       6.35%  [kernel]          [k] _raw_spin_unlock_irq
-> > >       2.65%  [kernel]          [k] get_user_pages_fast
-> > >       2.03%  [kernel]          [k] __slab_free
-> > >       1.55%  [kernel]          [k] tick_nohz_idle_exit
-> > >       1.47%  [kernel]          [k] arm_lpae_map
-> > >       1.39%  [kernel]          [k] __fget
-> > >       1.14%  [kernel]          [k] __lock_text_start
-> > >       1.09%  [kernel]          [k] _raw_spin_lock
-> > >       1.08%  [kernel]          [k] bio_release_pages.part.42
-> > >       1.03%  [kernel]          [k] __sbitmap_get_word
-> > >       0.97%  [kernel]          [k] arm_smmu_atc_inv_domain.constprop.42
-> > >       0.91%  [kernel]          [k] fput_many
-> > >       0.88%  [kernel]          [k] __arm_lpae_map
-> > > 
-> > > One thing to note is that we still spend an appreciable amount of time in
-> > > arm_smmu_atc_inv_domain(), which is disappointing when considering it should
-> > > effectively be a noop.
-> > > 
-> > > As for arm_smmu_cmdq_issue_cmdlist(), I do note that during the testing our
-> > > batch size is 1, so we're not seeing the real benefit of the batching. I
-> > > can't help but think that we could improve this code to try to combine CMD
-> > > SYNCs for small batches.
-> > > 
-> > > Anyway, let me know your thoughts or any questions. I'll have a look if a
-> > > get a chance for other possible bottlenecks.
-> > 
-> > Did you ever get any more information on this? I don't have any SMMUv3
-> > hardware any more, so I can't really dig into this myself.
-> 
-> I'm only getting back to look at this now, as SMMU performance is a bit of a
-> hot topic again for us.
-> 
-> So one thing we are doing which looks to help performance is this series
-> from Marc:
-> 
-> https://lore.kernel.org/lkml/9171c554-50d2-142b-96ae-1357952fce52@huawei.com/T/#mee5562d1efd6aaeb8d2682bdb6807fe7b5d7f56d
-> 
-> So that is just spreading the per-CPU load for NVMe interrupt handling
-> (where the DMA unmapping is happening), so I'd say just side-stepping any
-> SMMU issue really.
-> 
-> Going back to the SMMU, I wanted to run epbf and perf annotate to help
-> profile this, but was having no luck getting them to work properly. I'll
-> look at this again now.
-
-Could you also try with the upcoming ATS change currently in Will's tree?
-They won't improve your numbers but it'd be good to check that they don't
-make things worse.
-
-I've run a bunch of netperf instances on multiple cores and collecting
-SMMU usage (on TaiShan 2280). I'm getting the following ratio pretty
-consistently.
-
-- 6.07% arm_smmu_iotlb_sync
-   - 5.74% arm_smmu_tlb_inv_range
-        5.09% arm_smmu_cmdq_issue_cmdlist
-        0.28% __pi_memset
-        0.08% __pi_memcpy
-        0.08% arm_smmu_atc_inv_domain.constprop.37
-        0.07% arm_smmu_cmdq_build_cmd
-        0.01% arm_smmu_cmdq_batch_add
-     0.31% __pi_memset
-
-So arm_smmu_atc_inv_domain() takes about 1.4% of arm_smmu_iotlb_sync(),
-when ATS is not used. According to the annotations, the load from the
-atomic_read(), that checks whether the domain uses ATS, is 77% of the
-samples in arm_smmu_atc_inv_domain() (265 of 345 samples), so I'm not sure
-there is much room for optimization there.
-
-Thanks,
-Jean
-_______________________________________________
-iommu mailing list
-iommu@lists.linux-foundation.org
-https://lists.linuxfoundation.org/mailman/listinfo/iommu
+T24gV2VkLCAxOCBNYXIgMjAyMCAxNzoxNDowNSArMDEwMApBdWdlciBFcmljIDxlcmljLmF1Z2Vy
+QHJlZGhhdC5jb20+IHdyb3RlOgoKPiBIaSwKPiAKPiBPbiAzLzE4LzIwIDE6MDAgUE0sIFJvYmlu
+IE11cnBoeSB3cm90ZToKPiA+IE9uIDIwMjAtMDMtMTggMTE6NDAgYW0sIEplYW4tUGhpbGlwcGUg
+QnJ1Y2tlciB3cm90ZTogIAo+ID4+IFdlIGRvbid0IGN1cnJlbnRseSBzdXBwb3J0IElPTU1VcyB3
+aXRoIGEgcGFnZSBncmFudWxlIGxhcmdlciB0aGFuIHRoZQo+ID4+IHN5c3RlbSBwYWdlIHNpemUu
+IFRoZSBJT1ZBIGFsbG9jYXRvciBoYXMgYSBCVUdfT04oKSBpbiB0aGlzIGNhc2UsIGFuZAo+ID4+
+IFZGSU8gaGFzIGEgV0FSTl9PTigpLiAgCj4gCj4gQWRkaW5nIEFsZXggaW4gQ0MgaW4gY2FzZSBo
+ZSBoYXMgdGltZSB0byBqdW1wIGluLiBBdCB0aGUgbW9tZW50IEkgZG9uJ3QKPiBnZXQgd2h5IHRo
+aXMgV0FSTl9PTigpIGlzIGhlcmUuCj4gCj4gVGhpcyB3YXMgaW50cm9kdWNlZCBpbgo+IGM4ZGJj
+YTE2NWJiMDkwZjkyNjk5NmE1NzJlYTJiNWI1NzdiMzRiNzAgdmZpby9pb21tdV90eXBlMTogQXZv
+aWQgb3ZlcmZsb3cKCkkgZG9uJ3QgcmVjYWxsIGlmIEkgaGFkIHNvbWV0aGluZyBzcGVjaWZpYyBp
+biBtaW5kIHdoZW4gYWRkaW5nIHRoaXMKd2FybmluZywgYnV0IGlmIFBBR0VfU0laRSBpcyBzbWFs
+bGVyIHRoYW4gdGhlIG1pbmltdW0gSU9NTVUgcGFnZSBzaXplLAp0aGVuIHdlIG5lZWQgbXVsdGlw
+bGUgUEFHRV9TSVpFIHBhZ2VzIHBlciBJT01NVSBUTEIgZW50cnkuICBUaGVyZWZvcmUKdGhvc2Ug
+cGFnZXMgbXVzdCBiZSBjb250aWd1b3VzLiAgQXNpZGUgZnJvbSByZXF1aXJpbmcgb25seSBodWdl
+cGFnZQpiYWNraW5nLCBob3cgY291bGQgYSB1c2VyIG1ha2Ugc3VyZSB0aGF0IHRoZWlyIHZpcnR1
+YWwgYWRkcmVzcyBidWZmZXIKaXMgcGh5c2ljYWxseSBjb250aWd1b3VzPyAgSSBkb24ndCB0aGlu
+ayB3ZSBoYXZlIGFueSBzYW5pdHkgY2hlY2tpbmcKY29kZSB0aGF0IGRvZXMgdGhpcywgdGh1cyB0
+aGUgd2FybmluZy4gIFRoYW5rcywKCkFsZXgKCj4gPj4gSXQgbWlnaHQgYmUgcG9zc2libGUgdG8g
+cmVtb3ZlIHRoZXNlIG9ic3RhY2xlcyBpZiBuZWNlc3NhcnkuIElmIHRoZSBob3N0Cj4gPj4gdXNl
+cyA2NGtCIHBhZ2VzIGFuZCB0aGUgZ3Vlc3QgdXNlcyA0a0IsIHRoZW4gYSBkZXZpY2UgZHJpdmVy
+IGNhbGxpbmcKPiA+PiBhbGxvY19wYWdlKCkgZm9sbG93ZWQgYnkgZG1hX21hcF9wYWdlKCkgd2ls
+bCBjcmVhdGUgYSA2NGtCIG1hcHBpbmcgZm9yIGEKPiA+PiA0a0IgcGh5c2ljYWwgcGFnZSwgYWxs
+b3dpbmcgdGhlIGVuZHBvaW50IHRvIGFjY2VzcyB0aGUgbmVpZ2hib3VyaW5nIDYwa0IKPiA+PiBv
+ZiBtZW1vcnkuIFRoaXMgcHJvYmxlbSBjb3VsZCBiZSB3b3JrZWQgYXJvdW5kIHdpdGggYm91bmNl
+IGJ1ZmZlcnMuICAKPiA+IAo+ID4gRldJVyB0aGUgZnVuZGFtZW50YWwgaXNzdWUgaXMgdGhhdCBj
+YWxsZXJzIG9mIGlvbW11X21hcCgpIG1heSBleHBlY3QgdG8KPiA+IGJlIGFibGUgdG8gbWFwIHR3
+byBvciBtb3JlIHBhZ2UtYWxpZ25lZCByZWdpb25zIGRpcmVjdGx5IGFkamFjZW50IHRvCj4gPiBl
+YWNoIG90aGVyIGZvciBzY2F0dGVyLWdhdGhlciBwdXJwb3NlcyAob3IgcmluZyBidWZmZXIgdHJp
+Y2tzKSwgYW5kCj4gPiB0aGF0J3MganVzdCBub3QgcG9zc2libGUgaWYgdGhlIElPTU1VIGdyYW51
+bGUgaXMgdG9vIGJpZy4gQm91bmNlCj4gPiBidWZmZXJpbmcgd291bGQgYmUgYSB2aWFibGUgd29y
+a2Fyb3VuZCBmb3IgdGhlIHN0cmVhbWluZyBETUEgQVBJIGFuZAo+ID4gY2VydGFpbiBzaW1pbGFy
+IHVzZS1jYXNlcywgYnV0IG5vdCBpbiBnZW5lcmFsIChlLmcuIGNvaGVyZW50IERNQSwgVkZJTywK
+PiA+IEdQVXMsIGV0Yy4pCj4gPiAKPiA+IFJvYmluLgo+ID4gICAKPiA+PiBGb3IgdGhlIG1vbWVu
+dCwgcmF0aGVyIHRoYW4gdHJpZ2dlcmluZyB0aGUgSU9WQSBCVUdfT04oKSBvbiBtaXNtYXRjaGVk
+Cj4gPj4gcGFnZSBzaXplcywgYWJvcnQgdGhlIHZpcnRpby1pb21tdSBwcm9iZSB3aXRoIGFuIGVy
+cm9yIG1lc3NhZ2UuICAKPiAKPiBJIHVuZGVyc3RhbmQgdGhpcyBpcyBhIGludHJvZHVjZWQgYXMg
+YSB0ZW1wb3Jhcnkgc29sdXRpb24gYnV0IHRoaXMKPiBzb3VuZHMgYXMgYW4gaW1wb3J0YW50IGxp
+bWl0YXRpb24gdG8gbWUuIEZvciBpbnN0YW5jZSB0aGlzIHdpbGwgcHJldmVudAo+IGZyb20gcnVu
+bmluZyBhIGZlZG9yYSBndWVzdCBleHBvc2VkIHdpdGggYSB2aXJ0aW8taW9tbXUgd2l0aCBhIFJI
+RUwgaG9zdC4KPiAKPiBUaGFua3MKPiAKPiBFcmljCj4gPj4KPiA+PiBSZXBvcnRlZC1ieTogQmhh
+cmF0IEJodXNoYW4gPGJiaHVzaGFuMkBtYXJ2ZWxsLmNvbT4KPiA+PiBTaWduZWQtb2ZmLWJ5OiBK
+ZWFuLVBoaWxpcHBlIEJydWNrZXIgPGplYW4tcGhpbGlwcGVAbGluYXJvLm9yZz4KPiA+PiAtLS0K
+PiA+PiDCoCBkcml2ZXJzL2lvbW11L3ZpcnRpby1pb21tdS5jIHwgOSArKysrKysrKysKPiA+PiDC
+oCAxIGZpbGUgY2hhbmdlZCwgOSBpbnNlcnRpb25zKCspCj4gPj4KPiA+PiBkaWZmIC0tZ2l0IGEv
+ZHJpdmVycy9pb21tdS92aXJ0aW8taW9tbXUuYyBiL2RyaXZlcnMvaW9tbXUvdmlydGlvLWlvbW11
+LmMKPiA+PiBpbmRleCA2ZDRlM2MyYTJkZGIuLjgwZDVkOGY2MjFhYiAxMDA2NDQKPiA+PiAtLS0g
+YS9kcml2ZXJzL2lvbW11L3ZpcnRpby1pb21tdS5jCj4gPj4gKysrIGIvZHJpdmVycy9pb21tdS92
+aXJ0aW8taW9tbXUuYwo+ID4+IEBAIC05OTgsNiArOTk4LDcgQEAgc3RhdGljIGludCB2aW9tbXVf
+cHJvYmUoc3RydWN0IHZpcnRpb19kZXZpY2UgKnZkZXYpCj4gPj4gwqDCoMKgwqDCoCBzdHJ1Y3Qg
+ZGV2aWNlICpwYXJlbnRfZGV2ID0gdmRldi0+ZGV2LnBhcmVudDsKPiA+PiDCoMKgwqDCoMKgIHN0
+cnVjdCB2aW9tbXVfZGV2ICp2aW9tbXUgPSBOVUxMOwo+ID4+IMKgwqDCoMKgwqAgc3RydWN0IGRl
+dmljZSAqZGV2ID0gJnZkZXYtPmRldjsKPiA+PiArwqDCoMKgIHVuc2lnbmVkIGxvbmcgdmlvbW11
+X3BhZ2Vfc2l6ZTsKPiA+PiDCoMKgwqDCoMKgIHU2NCBpbnB1dF9zdGFydCA9IDA7Cj4gPj4gwqDC
+oMKgwqDCoCB1NjQgaW5wdXRfZW5kID0gLTFVTDsKPiA+PiDCoMKgwqDCoMKgIGludCByZXQ7Cj4g
+Pj4gQEAgLTEwMjgsNiArMTAyOSwxNCBAQCBzdGF0aWMgaW50IHZpb21tdV9wcm9iZShzdHJ1Y3Qg
+dmlydGlvX2RldmljZQo+ID4+ICp2ZGV2KQo+ID4+IMKgwqDCoMKgwqDCoMKgwqDCoCBnb3RvIGVy
+cl9mcmVlX3ZxczsKPiA+PiDCoMKgwqDCoMKgIH0KPiA+PiDCoCArwqDCoMKgIHZpb21tdV9wYWdl
+X3NpemUgPSAxVUwgPDwgX19mZnModmlvbW11LT5wZ3NpemVfYml0bWFwKTsKPiA+PiArwqDCoMKg
+IGlmICh2aW9tbXVfcGFnZV9zaXplID4gUEFHRV9TSVpFKSB7Cj4gPj4gK8KgwqDCoMKgwqDCoMKg
+IGRldl9lcnIoZGV2LCAiZ3JhbnVsZSAweCVseCBsYXJnZXIgdGhhbiBzeXN0ZW0gcGFnZSBzaXpl
+Cj4gPj4gMHglbHhcbiIsCj4gPj4gK8KgwqDCoMKgwqDCoMKgwqDCoMKgwqAgdmlvbW11X3BhZ2Vf
+c2l6ZSwgUEFHRV9TSVpFKTsKPiA+PiArwqDCoMKgwqDCoMKgwqAgcmV0ID0gLUVJTlZBTDsKPiA+
+PiArwqDCoMKgwqDCoMKgwqAgZ290byBlcnJfZnJlZV92cXM7Cj4gPj4gK8KgwqDCoCB9Cj4gPj4g
+Kwo+ID4+IMKgwqDCoMKgwqAgdmlvbW11LT5tYXBfZmxhZ3MgPSBWSVJUSU9fSU9NTVVfTUFQX0Zf
+UkVBRCB8Cj4gPj4gVklSVElPX0lPTU1VX01BUF9GX1dSSVRFOwo+ID4+IMKgwqDCoMKgwqAgdmlv
+bW11LT5sYXN0X2RvbWFpbiA9IH4wVTsKPiA+PiDCoCAgCj4gPiAgIAoKX19fX19fX19fX19fX19f
+X19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX18KaW9tbXUgbWFpbGluZyBsaXN0CmlvbW11
+QGxpc3RzLmxpbnV4LWZvdW5kYXRpb24ub3JnCmh0dHBzOi8vbGlzdHMubGludXhmb3VuZGF0aW9u
+Lm9yZy9tYWlsbWFuL2xpc3RpbmZvL2lvbW11
