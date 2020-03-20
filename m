@@ -6,70 +6,70 @@ X-Spam-Status: No, score=-6.5 required=3.0 tests=DKIM_INVALID,DKIM_SIGNED,
 	HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_PATCH,MAILING_LIST_MULTI,SIGNED_OFF_BY,
 	SPF_HELO_NONE,SPF_PASS autolearn=unavailable autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id EE2E9C4332D
-	for <iommu@archiver.kernel.org>; Fri, 20 Mar 2020 16:10:33 +0000 (UTC)
-Received: from whitealder.osuosl.org (smtp1.osuosl.org [140.211.166.138])
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 5F170C4332D
+	for <iommu@archiver.kernel.org>; Fri, 20 Mar 2020 16:11:03 +0000 (UTC)
+Received: from silver.osuosl.org (smtp3.osuosl.org [140.211.166.136])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by mail.kernel.org (Postfix) with ESMTPS id C052320753
-	for <iommu@archiver.kernel.org>; Fri, 20 Mar 2020 16:10:33 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTPS id 2781F20739
+	for <iommu@archiver.kernel.org>; Fri, 20 Mar 2020 16:11:03 +0000 (UTC)
 Authentication-Results: mail.kernel.org;
-	dkim=fail reason="signature verification failed" (1024-bit key) header.d=redhat.com header.i=@redhat.com header.b="g+p8hTHD"
-DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org C052320753
+	dkim=fail reason="signature verification failed" (1024-bit key) header.d=redhat.com header.i=@redhat.com header.b="RfoU5VwK"
+DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 2781F20739
 Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=redhat.com
 Authentication-Results: mail.kernel.org; spf=pass smtp.mailfrom=iommu-bounces@lists.linux-foundation.org
 Received: from localhost (localhost [127.0.0.1])
-	by whitealder.osuosl.org (Postfix) with ESMTP id AFF9688259;
-	Fri, 20 Mar 2020 16:10:33 +0000 (UTC)
+	by silver.osuosl.org (Postfix) with ESMTP id EAC6B253F8;
+	Fri, 20 Mar 2020 16:11:02 +0000 (UTC)
+X-Virus-Scanned: amavisd-new at osuosl.org
+Received: from silver.osuosl.org ([127.0.0.1])
+	by localhost (.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
+	with ESMTP id Z8cxS4uvIGye; Fri, 20 Mar 2020 16:11:01 +0000 (UTC)
+Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [140.211.9.56])
+	by silver.osuosl.org (Postfix) with ESMTP id 9A5B920474;
+	Fri, 20 Mar 2020 16:11:01 +0000 (UTC)
+Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
+	by lists.linuxfoundation.org (Postfix) with ESMTP id 83208C1830;
+	Fri, 20 Mar 2020 16:11:01 +0000 (UTC)
+Received: from whitealder.osuosl.org (smtp1.osuosl.org [140.211.166.138])
+ by lists.linuxfoundation.org (Postfix) with ESMTP id D2957C07FF
+ for <iommu@lists.linux-foundation.org>; Fri, 20 Mar 2020 16:10:59 +0000 (UTC)
+Received: from localhost (localhost [127.0.0.1])
+ by whitealder.osuosl.org (Postfix) with ESMTP id B8DF286940
+ for <iommu@lists.linux-foundation.org>; Fri, 20 Mar 2020 16:10:59 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
 Received: from whitealder.osuosl.org ([127.0.0.1])
-	by localhost (.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
-	with ESMTP id 1UYjOFVlCZnK; Fri, 20 Mar 2020 16:10:32 +0000 (UTC)
-Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [140.211.9.56])
-	by whitealder.osuosl.org (Postfix) with ESMTP id 6CAB988293;
-	Fri, 20 Mar 2020 16:10:32 +0000 (UTC)
-Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
-	by lists.linuxfoundation.org (Postfix) with ESMTP id 3ECBAC1830;
-	Fri, 20 Mar 2020 16:10:32 +0000 (UTC)
-Received: from fraxinus.osuosl.org (smtp4.osuosl.org [140.211.166.137])
- by lists.linuxfoundation.org (Postfix) with ESMTP id E1C7BC07FF
- for <iommu@lists.linux-foundation.org>; Fri, 20 Mar 2020 16:10:30 +0000 (UTC)
-Received: from localhost (localhost [127.0.0.1])
- by fraxinus.osuosl.org (Postfix) with ESMTP id DE5C2872CE
- for <iommu@lists.linux-foundation.org>; Fri, 20 Mar 2020 16:10:30 +0000 (UTC)
-X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from fraxinus.osuosl.org ([127.0.0.1])
  by localhost (.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
- with ESMTP id yUraTdQ_C30e for <iommu@lists.linux-foundation.org>;
- Fri, 20 Mar 2020 16:10:27 +0000 (UTC)
+ with ESMTP id EoJhcAz4cexe for <iommu@lists.linux-foundation.org>;
+ Fri, 20 Mar 2020 16:10:59 +0000 (UTC)
 X-Greylist: domain auto-whitelisted by SQLgrey-1.7.6
 Received: from us-smtp-delivery-74.mimecast.com
- (us-smtp-delivery-74.mimecast.com [63.128.21.74])
- by fraxinus.osuosl.org (Postfix) with ESMTPS id E1D69872D3
- for <iommu@lists.linux-foundation.org>; Fri, 20 Mar 2020 16:10:00 +0000 (UTC)
+ (us-smtp-delivery-74.mimecast.com [216.205.24.74])
+ by whitealder.osuosl.org (Postfix) with ESMTPS id E850686937
+ for <iommu@lists.linux-foundation.org>; Fri, 20 Mar 2020 16:10:58 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
- s=mimecast20190719; t=1584720599;
+ s=mimecast20190719; t=1584720657;
  h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
  to:to:cc:cc:mime-version:mime-version:
  content-transfer-encoding:content-transfer-encoding:
  in-reply-to:in-reply-to:references:references;
- bh=JAARb2bDHN2gV5fR00RfsJLGfx43dK1dtt9u5n9rt+0=;
- b=g+p8hTHDiT7U3/msmTpKa7Du8dYAJIpqBJkzwSZ3JNxxPntBt2029+fc+Zng6IUkegJWuM
- I7vrNn9IbrWpvWa2ky/8kC7c6WPeF7aClHw3OEIQzQ29vNceSeMAFn889wuB3Ce1sEKhlw
- JX22V7esW14qvS5PvFYiNb37a6qfMrE=
+ bh=qNA5aYoFFTWk4slxWzSfvQ1Qh90A3U7K6OR2so8J14k=;
+ b=RfoU5VwKx8rj2u0+33V+C7Ebz+WJlHwWrUTZS7liQPXLjg++CUtFX4SS3jhUGjDT4s4+p6
+ 7fK6i3KsP292XC3wEfMdAlUEmGwgo2gfwtfabMDjpVpiZbZBT9tmn+0u6+jQQxAJ/DIvk9
+ vwd6UP9ajZilgU+oMkRqDICzdw4OL2E=
 Received: from mimecast-mx01.redhat.com (mimecast-mx01.redhat.com
  [209.132.183.4]) (Using TLS) by relay.mimecast.com with ESMTP id
- us-mta-340-WLd3y5XyNlO4oGuT5jdzkQ-1; Fri, 20 Mar 2020 12:09:53 -0400
-X-MC-Unique: WLd3y5XyNlO4oGuT5jdzkQ-1
+ us-mta-311-ngq5oKnmNhGtGl3qU7nq9Q-1; Fri, 20 Mar 2020 12:10:54 -0400
+X-MC-Unique: ngq5oKnmNhGtGl3qU7nq9Q-1
 Received: from smtp.corp.redhat.com (int-mx06.intmail.prod.int.phx2.redhat.com
  [10.5.11.16])
  (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
  (No client certificate requested)
- by mimecast-mx01.redhat.com (Postfix) with ESMTPS id 62F831137846;
- Fri, 20 Mar 2020 16:09:50 +0000 (UTC)
+ by mimecast-mx01.redhat.com (Postfix) with ESMTPS id 164C81083E91;
+ Fri, 20 Mar 2020 16:10:45 +0000 (UTC)
 Received: from laptop.redhat.com (ovpn-113-142.ams2.redhat.com [10.36.113.142])
- by smtp.corp.redhat.com (Postfix) with ESMTP id D50735C1D8;
- Fri, 20 Mar 2020 16:09:46 +0000 (UTC)
+ by smtp.corp.redhat.com (Postfix) with ESMTP id 2C3165F700;
+ Fri, 20 Mar 2020 16:10:21 +0000 (UTC)
 From: Eric Auger <eric.auger@redhat.com>
 To: eric.auger.pro@gmail.com, eric.auger@redhat.com,
  iommu@lists.linux-foundation.org, linux-kernel@vger.kernel.org,
@@ -77,9 +77,9 @@ To: eric.auger.pro@gmail.com, eric.auger@redhat.com,
  alex.williamson@redhat.com, jacob.jun.pan@linux.intel.com,
  yi.l.liu@intel.com, jean-philippe.brucker@arm.com, will.deacon@arm.com,
  robin.murphy@arm.com
-Subject: [PATCH v10 01/13] iommu: Introduce attach/detach_pasid_table API
-Date: Fri, 20 Mar 2020 17:09:20 +0100
-Message-Id: <20200320160932.27222-2-eric.auger@redhat.com>
+Subject: [PATCH v10 06/13] iommu/smmuv3: Implement attach/detach_pasid_table
+Date: Fri, 20 Mar 2020 17:09:25 +0100
+Message-Id: <20200320160932.27222-7-eric.auger@redhat.com>
 In-Reply-To: <20200320160932.27222-1-eric.auger@redhat.com>
 References: <20200320160932.27222-1-eric.auger@redhat.com>
 MIME-Version: 1.0
@@ -102,178 +102,152 @@ Content-Transfer-Encoding: 7bit
 Errors-To: iommu-bounces@lists.linux-foundation.org
 Sender: "iommu" <iommu-bounces@lists.linux-foundation.org>
 
-From: Jacob Pan <jacob.jun.pan@linux.intel.com>
+On attach_pasid_table() we program STE S1 related info set
+by the guest into the actual physical STEs. At minimum
+we need to program the context descriptor GPA and compute
+whether the stage1 is translated/bypassed or aborted.
 
-In virtualization use case, when a guest is assigned
-a PCI host device, protected by a virtual IOMMU on the guest,
-the physical IOMMU must be programmed to be consistent with
-the guest mappings. If the physical IOMMU supports two
-translation stages it makes sense to program guest mappings
-onto the first stage/level (ARM/Intel terminology) while the host
-owns the stage/level 2.
-
-In that case, it is mandated to trap on guest configuration
-settings and pass those to the physical iommu driver.
-
-This patch adds a new API to the iommu subsystem that allows
-to set/unset the pasid table information.
-
-A generic iommu_pasid_table_config struct is introduced in
-a new iommu.h uapi header. This is going to be used by the VFIO
-user API.
-
-Signed-off-by: Jean-Philippe Brucker <jean-philippe.brucker@arm.com>
-Signed-off-by: Liu, Yi L <yi.l.liu@linux.intel.com>
-Signed-off-by: Ashok Raj <ashok.raj@intel.com>
-Signed-off-by: Jacob Pan <jacob.jun.pan@linux.intel.com>
 Signed-off-by: Eric Auger <eric.auger@redhat.com>
-Reviewed-by: Jean-Philippe Brucker <jean-philippe.brucker@arm.com>
----
- drivers/iommu/iommu.c      | 19 ++++++++++++++
- include/linux/iommu.h      | 18 ++++++++++++++
- include/uapi/linux/iommu.h | 51 ++++++++++++++++++++++++++++++++++++++
- 3 files changed, 88 insertions(+)
 
-diff --git a/drivers/iommu/iommu.c b/drivers/iommu/iommu.c
-index 3e3528436e0b..7cfc285bac17 100644
---- a/drivers/iommu/iommu.c
-+++ b/drivers/iommu/iommu.c
-@@ -1723,6 +1723,25 @@ int iommu_sva_unbind_gpasid(struct iommu_domain *domain, struct device *dev,
- }
- EXPORT_SYMBOL_GPL(iommu_sva_unbind_gpasid);
- 
-+int iommu_attach_pasid_table(struct iommu_domain *domain,
-+			     struct iommu_pasid_table_config *cfg)
-+{
-+	if (unlikely(!domain->ops->attach_pasid_table))
-+		return -ENODEV;
-+
-+	return domain->ops->attach_pasid_table(domain, cfg);
-+}
-+EXPORT_SYMBOL_GPL(iommu_attach_pasid_table);
-+
-+void iommu_detach_pasid_table(struct iommu_domain *domain)
-+{
-+	if (unlikely(!domain->ops->detach_pasid_table))
-+		return;
-+
-+	domain->ops->detach_pasid_table(domain);
-+}
-+EXPORT_SYMBOL_GPL(iommu_detach_pasid_table);
-+
- static void __iommu_detach_device(struct iommu_domain *domain,
- 				  struct device *dev)
- {
-diff --git a/include/linux/iommu.h b/include/linux/iommu.h
-index d1b5f4d98569..d91c7912ec3d 100644
---- a/include/linux/iommu.h
-+++ b/include/linux/iommu.h
-@@ -248,6 +248,8 @@ struct iommu_iotlb_gather {
-  * @cache_invalidate: invalidate translation caches
-  * @sva_bind_gpasid: bind guest pasid and mm
-  * @sva_unbind_gpasid: unbind guest pasid and mm
-+ * @attach_pasid_table: attach a pasid table
-+ * @detach_pasid_table: detach the pasid table
-  * @pgsize_bitmap: bitmap of all possible supported page sizes
-  * @owner: Driver module providing these ops
-  */
-@@ -307,6 +309,9 @@ struct iommu_ops {
- 				      void *drvdata);
- 	void (*sva_unbind)(struct iommu_sva *handle);
- 	int (*sva_get_pasid)(struct iommu_sva *handle);
-+	int (*attach_pasid_table)(struct iommu_domain *domain,
-+				  struct iommu_pasid_table_config *cfg);
-+	void (*detach_pasid_table)(struct iommu_domain *domain);
- 
- 	int (*page_response)(struct device *dev,
- 			     struct iommu_fault_event *evt,
-@@ -443,6 +448,9 @@ extern int iommu_sva_bind_gpasid(struct iommu_domain *domain,
- 		struct device *dev, struct iommu_gpasid_bind_data *data);
- extern int iommu_sva_unbind_gpasid(struct iommu_domain *domain,
- 				struct device *dev, ioasid_t pasid);
-+extern int iommu_attach_pasid_table(struct iommu_domain *domain,
-+				    struct iommu_pasid_table_config *cfg);
-+extern void iommu_detach_pasid_table(struct iommu_domain *domain);
- extern struct iommu_domain *iommu_get_domain_for_dev(struct device *dev);
- extern struct iommu_domain *iommu_get_dma_domain(struct device *dev);
- extern int iommu_map(struct iommu_domain *domain, unsigned long iova,
-@@ -1033,6 +1041,16 @@ iommu_aux_get_pasid(struct iommu_domain *domain, struct device *dev)
- 	return -ENODEV;
+---
+v7 -> v8:
+- remove smmu->features check, now done on domain finalize
+
+v6 -> v7:
+- check versions and comment the fact we don't need to take
+  into account s1dss and s1fmt
+v3 -> v4:
+- adapt to changes in iommu_pasid_table_config
+- different programming convention at s1_cfg/s2_cfg/ste.abort
+
+v2 -> v3:
+- callback now is named set_pasid_table and struct fields
+  are laid out differently.
+
+v1 -> v2:
+- invalidate the STE before changing them
+- hold init_mutex
+- handle new fields
+---
+ drivers/iommu/arm-smmu-v3.c | 98 +++++++++++++++++++++++++++++++++++++
+ 1 file changed, 98 insertions(+)
+
+diff --git a/drivers/iommu/arm-smmu-v3.c b/drivers/iommu/arm-smmu-v3.c
+index 7d00244fe725..92a1a5ac5b50 100644
+--- a/drivers/iommu/arm-smmu-v3.c
++++ b/drivers/iommu/arm-smmu-v3.c
+@@ -3287,6 +3287,102 @@ static void arm_smmu_get_resv_regions(struct device *dev,
+ 	iommu_dma_get_resv_regions(dev, head);
  }
  
-+static inline
-+int iommu_attach_pasid_table(struct iommu_domain *domain,
-+			     struct iommu_pasid_table_config *cfg)
++static int arm_smmu_attach_pasid_table(struct iommu_domain *domain,
++				       struct iommu_pasid_table_config *cfg)
 +{
-+	return -ENODEV;
++	struct arm_smmu_domain *smmu_domain = to_smmu_domain(domain);
++	struct arm_smmu_master *master;
++	struct arm_smmu_device *smmu;
++	unsigned long flags;
++	int ret = -EINVAL;
++
++	if (cfg->format != IOMMU_PASID_FORMAT_SMMUV3)
++		return -EINVAL;
++
++	if (cfg->version != PASID_TABLE_CFG_VERSION_1 ||
++	    cfg->smmuv3.version != PASID_TABLE_SMMUV3_CFG_VERSION_1)
++		return -EINVAL;
++
++	mutex_lock(&smmu_domain->init_mutex);
++
++	smmu = smmu_domain->smmu;
++
++	if (!smmu)
++		goto out;
++
++	if (smmu_domain->stage != ARM_SMMU_DOMAIN_NESTED)
++		goto out;
++
++	switch (cfg->config) {
++	case IOMMU_PASID_CONFIG_ABORT:
++		kfree(smmu_domain->s1_cfg);
++		smmu_domain->s1_cfg = NULL;
++		smmu_domain->abort = true;
++		break;
++	case IOMMU_PASID_CONFIG_BYPASS:
++		kfree(smmu_domain->s1_cfg);
++		smmu_domain->s1_cfg = NULL;
++		smmu_domain->abort = false;
++		break;
++	case IOMMU_PASID_CONFIG_TRANSLATE:
++		/* we do not support S1 <-> S1 transitions */
++		if (smmu_domain->s1_cfg)
++			goto out;
++
++		/*
++		 * we currently support a single CD so s1fmt and s1dss
++		 * fields are also ignored
++		 */
++		if (cfg->pasid_bits)
++			goto out;
++
++		smmu_domain->s1_cfg = kzalloc(sizeof(*smmu_domain->s1_cfg),
++					      GFP_KERNEL);
++		if (!smmu_domain->s1_cfg) {
++			ret = -ENOMEM;
++			goto out;
++		}
++
++		smmu_domain->s1_cfg->cdcfg.cdtab_dma = cfg->base_ptr;
++		smmu_domain->abort = false;
++		break;
++	default:
++		goto out;
++	}
++	spin_lock_irqsave(&smmu_domain->devices_lock, flags);
++	list_for_each_entry(master, &smmu_domain->devices, domain_head)
++		arm_smmu_install_ste_for_dev(master);
++	spin_unlock_irqrestore(&smmu_domain->devices_lock, flags);
++	ret = 0;
++out:
++	mutex_unlock(&smmu_domain->init_mutex);
++	return ret;
 +}
 +
-+static inline
-+void iommu_detach_pasid_table(struct iommu_domain *domain) {}
++static void arm_smmu_detach_pasid_table(struct iommu_domain *domain)
++{
++	struct arm_smmu_domain *smmu_domain = to_smmu_domain(domain);
++	struct arm_smmu_master *master;
++	unsigned long flags;
 +
- static inline struct iommu_sva *
- iommu_sva_bind_device(struct device *dev, struct mm_struct *mm, void *drvdata)
- {
-diff --git a/include/uapi/linux/iommu.h b/include/uapi/linux/iommu.h
-index 4ad3496e5c43..8d00be10dc6d 100644
---- a/include/uapi/linux/iommu.h
-+++ b/include/uapi/linux/iommu.h
-@@ -321,4 +321,55 @@ struct iommu_gpasid_bind_data {
- 	};
++	mutex_lock(&smmu_domain->init_mutex);
++
++	if (smmu_domain->stage != ARM_SMMU_DOMAIN_NESTED)
++		goto unlock;
++
++	kfree(smmu_domain->s1_cfg);
++	smmu_domain->s1_cfg = NULL;
++	smmu_domain->abort = true;
++
++	spin_lock_irqsave(&smmu_domain->devices_lock, flags);
++	list_for_each_entry(master, &smmu_domain->devices, domain_head)
++		arm_smmu_install_ste_for_dev(master);
++	spin_unlock_irqrestore(&smmu_domain->devices_lock, flags);
++
++unlock:
++	mutex_unlock(&smmu_domain->init_mutex);
++}
++
+ static struct iommu_ops arm_smmu_ops = {
+ 	.capable		= arm_smmu_capable,
+ 	.domain_alloc		= arm_smmu_domain_alloc,
+@@ -3305,6 +3401,8 @@ static struct iommu_ops arm_smmu_ops = {
+ 	.of_xlate		= arm_smmu_of_xlate,
+ 	.get_resv_regions	= arm_smmu_get_resv_regions,
+ 	.put_resv_regions	= generic_iommu_put_resv_regions,
++	.attach_pasid_table	= arm_smmu_attach_pasid_table,
++	.detach_pasid_table	= arm_smmu_detach_pasid_table,
+ 	.pgsize_bitmap		= -1UL, /* Restricted during device attach */
  };
  
-+/**
-+ * struct iommu_pasid_smmuv3 - ARM SMMUv3 Stream Table Entry stage 1 related
-+ *     information
-+ * @version: API version of this structure
-+ * @s1fmt: STE s1fmt (format of the CD table: single CD, linear table
-+ *         or 2-level table)
-+ * @s1dss: STE s1dss (specifies the behavior when @pasid_bits != 0
-+ *         and no PASID is passed along with the incoming transaction)
-+ * @padding: reserved for future use (should be zero)
-+ *
-+ * The PASID table is referred to as the Context Descriptor (CD) table on ARM
-+ * SMMUv3. Please refer to the ARM SMMU 3.x spec (ARM IHI 0070A) for full
-+ * details.
-+ */
-+struct iommu_pasid_smmuv3 {
-+#define PASID_TABLE_SMMUV3_CFG_VERSION_1 1
-+	__u32	version;
-+	__u8	s1fmt;
-+	__u8	s1dss;
-+	__u8	padding[2];
-+};
-+
-+/**
-+ * struct iommu_pasid_table_config - PASID table data used to bind guest PASID
-+ *     table to the host IOMMU
-+ * @version: API version to prepare for future extensions
-+ * @format: format of the PASID table
-+ * @base_ptr: guest physical address of the PASID table
-+ * @pasid_bits: number of PASID bits used in the PASID table
-+ * @config: indicates whether the guest translation stage must
-+ *          be translated, bypassed or aborted.
-+ * @padding: reserved for future use (should be zero)
-+ * @smmuv3: table information when @format is %IOMMU_PASID_FORMAT_SMMUV3
-+ */
-+struct iommu_pasid_table_config {
-+#define PASID_TABLE_CFG_VERSION_1 1
-+	__u32	version;
-+#define IOMMU_PASID_FORMAT_SMMUV3	1
-+	__u32	format;
-+	__u64	base_ptr;
-+	__u8	pasid_bits;
-+#define IOMMU_PASID_CONFIG_TRANSLATE	1
-+#define IOMMU_PASID_CONFIG_BYPASS	2
-+#define IOMMU_PASID_CONFIG_ABORT	3
-+	__u8	config;
-+	__u8    padding[6];
-+	union {
-+		struct iommu_pasid_smmuv3 smmuv3;
-+	};
-+};
-+
- #endif /* _UAPI_IOMMU_H */
 -- 
 2.20.1
 
