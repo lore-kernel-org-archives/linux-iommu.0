@@ -2,80 +2,64 @@ Return-Path: <SRS0=tLNU=5F=lists.linux-foundation.org=iommu-bounces@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-2.2 required=3.0 tests=HEADER_FROM_DIFFERENT_DOMAINS,
-	MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS,USER_AGENT_SANE_1 autolearn=no
+X-Spam-Status: No, score=-3.8 required=3.0 tests=HEADER_FROM_DIFFERENT_DOMAINS,
+	MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS,USER_AGENT_GIT autolearn=no
 	autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 74927C4332D
-	for <iommu@archiver.kernel.org>; Fri, 20 Mar 2020 09:07:51 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 8F9B2C4332D
+	for <iommu@archiver.kernel.org>; Fri, 20 Mar 2020 09:14:26 +0000 (UTC)
 Received: from hemlock.osuosl.org (smtp2.osuosl.org [140.211.166.133])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by mail.kernel.org (Postfix) with ESMTPS id 503A820752
-	for <iommu@archiver.kernel.org>; Fri, 20 Mar 2020 09:07:51 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 503A820752
-Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=linux.intel.com
+	by mail.kernel.org (Postfix) with ESMTPS id 6227E20775
+	for <iommu@archiver.kernel.org>; Fri, 20 Mar 2020 09:14:26 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 6227E20775
+Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=8bytes.org
 Authentication-Results: mail.kernel.org; spf=pass smtp.mailfrom=iommu-bounces@lists.linux-foundation.org
 Received: from localhost (localhost [127.0.0.1])
-	by hemlock.osuosl.org (Postfix) with ESMTP id 39507889C0;
-	Fri, 20 Mar 2020 09:07:51 +0000 (UTC)
+	by hemlock.osuosl.org (Postfix) with ESMTP id 324B1888DF;
+	Fri, 20 Mar 2020 09:14:26 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
 Received: from hemlock.osuosl.org ([127.0.0.1])
 	by localhost (.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
-	with ESMTP id EqnmosyMIFjS; Fri, 20 Mar 2020 09:07:50 +0000 (UTC)
+	with ESMTP id owpGHcE4K69h; Fri, 20 Mar 2020 09:14:25 +0000 (UTC)
 Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [140.211.9.56])
-	by hemlock.osuosl.org (Postfix) with ESMTP id C5867889E8;
-	Fri, 20 Mar 2020 09:07:50 +0000 (UTC)
+	by hemlock.osuosl.org (Postfix) with ESMTP id BDCD7886F5;
+	Fri, 20 Mar 2020 09:14:25 +0000 (UTC)
 Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
-	by lists.linuxfoundation.org (Postfix) with ESMTP id A4DBEC07FF;
-	Fri, 20 Mar 2020 09:07:50 +0000 (UTC)
+	by lists.linuxfoundation.org (Postfix) with ESMTP id B755DC089E;
+	Fri, 20 Mar 2020 09:14:25 +0000 (UTC)
 Received: from hemlock.osuosl.org (smtp2.osuosl.org [140.211.166.133])
- by lists.linuxfoundation.org (Postfix) with ESMTP id 7479BC1D89
- for <iommu@lists.linux-foundation.org>; Fri, 20 Mar 2020 09:06:39 +0000 (UTC)
+ by lists.linuxfoundation.org (Postfix) with ESMTP id BB3BEC07FF
+ for <iommu@lists.linux-foundation.org>; Fri, 20 Mar 2020 09:14:24 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
- by hemlock.osuosl.org (Postfix) with ESMTP id 529B081CB7
- for <iommu@lists.linux-foundation.org>; Fri, 20 Mar 2020 09:06:39 +0000 (UTC)
+ by hemlock.osuosl.org (Postfix) with ESMTP id A91068871F
+ for <iommu@lists.linux-foundation.org>; Fri, 20 Mar 2020 09:14:24 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
 Received: from hemlock.osuosl.org ([127.0.0.1])
  by localhost (.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
- with ESMTP id tKP2RA4ncic9 for <iommu@lists.linux-foundation.org>;
- Fri, 20 Mar 2020 09:06:38 +0000 (UTC)
-X-Greylist: domain auto-whitelisted by SQLgrey-1.7.6
-Received: from mga18.intel.com (mga18.intel.com [134.134.136.126])
- by hemlock.osuosl.org (Postfix) with ESMTPS id BCA99885FC
- for <iommu@lists.linux-foundation.org>; Fri, 20 Mar 2020 09:06:38 +0000 (UTC)
-IronPort-SDR: bh4ly17Mfe5usieQ+kKwhICjr02B4slwBLLdTsUUZl9JzLJteW7Qg4VArIbmSpmf1jPaTxhx+u
- tK9HZfOpSKBw==
-X-Amp-Result: SKIPPED(no attachment in message)
-X-Amp-File-Uploaded: False
-Received: from fmsmga001.fm.intel.com ([10.253.24.23])
- by orsmga106.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384;
- 20 Mar 2020 02:06:38 -0700
-IronPort-SDR: VJr/NqfJMjzoPVDYl8u2FKpHQk4dwgxi5zGyEvuGtewNYa2JidH3t/JuF8Q6f2198qBZPFuK1I
- GB9URtnpP+1g==
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.72,284,1580803200"; d="scan'208";a="356354058"
-Received: from sxu27-mobl2.ccr.corp.intel.com (HELO [10.254.214.109])
- ([10.254.214.109])
- by fmsmga001.fm.intel.com with ESMTP; 20 Mar 2020 02:06:34 -0700
-Subject: Re: [PATCH v2 2/6] iommu: Configure default domain with
- def_domain_type
-To: Joerg Roedel <joro@8bytes.org>
-References: <20200314010705.30711-1-baolu.lu@linux.intel.com>
- <20200314010705.30711-3-baolu.lu@linux.intel.com>
- <20200319140321.GA5122@8bytes.org>
-From: Lu Baolu <baolu.lu@linux.intel.com>
-Message-ID: <e8f0980c-8431-593c-f9ef-f8f6104e60ec@linux.intel.com>
-Date: Fri, 20 Mar 2020 17:06:33 +0800
-User-Agent: Mozilla/5.0 (Windows NT 10.0; WOW64; rv:68.0) Gecko/20100101
- Thunderbird/68.6.0
-MIME-Version: 1.0
-In-Reply-To: <20200319140321.GA5122@8bytes.org>
-Content-Language: en-US
-Cc: kevin.tian@intel.com, ashok.raj@intel.com, linux-kernel@vger.kernel.org,
- Daniel Drake <drake@endlessm.com>, iommu@lists.linux-foundation.org,
- Robin Murphy <robin.murphy@arm.com>, Christoph Hellwig <hch@lst.de>,
- Derrick Jonathan <jonathan.derrick@intel.com>
+ with ESMTP id UR52Cid3hBkD for <iommu@lists.linux-foundation.org>;
+ Fri, 20 Mar 2020 09:14:23 +0000 (UTC)
+X-Greylist: from auto-whitelisted by SQLgrey-1.7.6
+Received: from theia.8bytes.org (8bytes.org [81.169.241.247])
+ by hemlock.osuosl.org (Postfix) with ESMTPS id 373A0886F5
+ for <iommu@lists.linux-foundation.org>; Fri, 20 Mar 2020 09:14:23 +0000 (UTC)
+Received: by theia.8bytes.org (Postfix, from userid 1000)
+ id 6E822B0; Fri, 20 Mar 2020 10:14:19 +0100 (CET)
+From: Joerg Roedel <joro@8bytes.org>
+To: iommu@lists.linux-foundation.org
+Subject: [PATCH v3 00/15] iommu: Move iommu_fwspec out of 'struct device'
+Date: Fri, 20 Mar 2020 10:13:59 +0100
+Message-Id: <20200320091414.3941-1-joro@8bytes.org>
+X-Mailer: git-send-email 2.17.1
+Cc: Jean-Philippe Brucker <jean-philippe@linaro.org>,
+ Will Deacon <will@kernel.org>, linux-arm-msm@vger.kernel.org,
+ guohanjun@huawei.com, linux-kernel@vger.kernel.org,
+ Bjorn Andersson <bjorn.andersson@linaro.org>,
+ Thierry Reding <thierry.reding@gmail.com>, linux-mediatek@lists.infradead.org,
+ Andy Gross <agross@kernel.org>, Sudeep Holla <sudeep.holla@arm.com>,
+ Matthias Brugger <matthias.bgg@gmail.com>, Sean Paul <sean@poorly.run>,
+ Robin Murphy <robin.murphy@arm.com>
 X-BeenThere: iommu@lists.linux-foundation.org
 X-Mailman-Version: 2.1.15
 Precedence: list
@@ -88,72 +72,68 @@ List-Post: <mailto:iommu@lists.linux-foundation.org>
 List-Help: <mailto:iommu-request@lists.linux-foundation.org?subject=help>
 List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
  <mailto:iommu-request@lists.linux-foundation.org?subject=subscribe>
+MIME-Version: 1.0
+Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
-Content-Type: text/plain; charset="us-ascii"; Format="flowed"
 Errors-To: iommu-bounces@lists.linux-foundation.org
 Sender: "iommu" <iommu-bounces@lists.linux-foundation.org>
 
-Hi Joerg,
+Hi,
 
-On 2020/3/19 22:03, Joerg Roedel wrote:
-> Hi Baolu,
-> 
-> On Sat, Mar 14, 2020 at 09:07:01AM +0800, Lu Baolu wrote:
->> +static int iommu_group_change_def_domain(struct iommu_group *group, int type)
->> +{
->> +	struct group_device *grp_dev, *temp;
->> +	struct iommu_domain *new, *old;
->> +	const struct iommu_ops *ops;
->> +	int ret = 0;
->> +
->> +	if ((type != IOMMU_DOMAIN_IDENTITY && type != IOMMU_DOMAIN_DMA) ||
->> +	    !group->default_domain || type == group->default_domain->type ||
->> +	    !group->default_domain->ops)
->> +		return -EINVAL;
->> +
->> +	if (group->domain != group->default_domain)
->> +		return -EBUSY;
->> +
->> +	iommu_group_ref_get(group);
->> +	old = group->default_domain;
->> +	ops = group->default_domain->ops;
->> +
->> +	/* Allocate a new domain of requested type. */
->> +	new = ops->domain_alloc(type);
->> +	if (!new) {
->> +		ret = -ENOMEM;
->> +		goto domain_out;
->> +	}
->> +	new->type = type;
->> +	new->ops = ops;
->> +	new->pgsize_bitmap = group->default_domain->pgsize_bitmap;
->> +
->> +	group->default_domain = new;
->> +	group->domain = new;
->> +	list_for_each_entry_safe(grp_dev, temp, &group->devices, list) {
->> +		struct device *dev;
->> +
->> +		dev = grp_dev->dev;
->> +		if (device_is_bound(dev)) {
->> +			ret = -EINVAL;
->> +			goto device_out;
->> +		}
->> +
->> +		iommu_group_create_direct_mappings(group, dev);
->> +		ret = __iommu_attach_device(group->domain, dev);
->> +		if (ret)
->> +			goto device_out;
-> 
-> In case of a failure here with a group containing multiple devices, the
-> other devices temporarily lose their mappings. Please only do the
-> device_is_bound() check in the loop and the actual re-attachment of the
-> group with a call to __iommu_attach_group().
+here is the third version of the changes to move iommu_fwspec out of
+'struct device'. Previous versions of this patch-set can be found here:
 
-Sure. I've post a v3 of this patch according to your comments here.
-Please help to review.
+	v2: https://lore.kernel.org/lkml/20200310091229.29830-1-joro@8bytes.org/
 
-Best regards,
-baolu
+	v1: https://lore.kernel.org/lkml/20200228150820.15340-1-joro@8bytes.org/
+
+Changes to v2:
+
+	- Fix the issues found by Jean-Philippe
+
+	- Fix a compile issue in the Mediatek driver
+
+Please review.
+
+Thanks,
+
+	Joerg
+
+Joerg Roedel (15):
+  iommu: Define dev_iommu_fwspec_get() for !CONFIG_IOMMU_API
+  ACPI/IORT: Remove direct access of dev->iommu_fwspec
+  drm/msm/mdp5: Remove direct access of dev->iommu_fwspec
+  iommu/tegra-gart: Remove direct access of dev->iommu_fwspec
+  iommu: Rename struct iommu_param to dev_iommu
+  iommu: Move iommu_fwspec to struct dev_iommu
+  iommu/arm-smmu: Fix uninitilized variable warning
+  iommu: Introduce accessors for iommu private data
+  iommu/arm-smmu-v3: Use accessor functions for iommu private data
+  iommu/arm-smmu: Use accessor functions for iommu private data
+  iommu/renesas: Use accessor functions for iommu private data
+  iommu/mediatek: Use accessor functions for iommu private data
+  iommu/qcom: Use accessor functions for iommu private data
+  iommu/virtio: Use accessor functions for iommu private data
+  iommu: Move fwspec->iommu_priv to struct dev_iommu
+
+ drivers/acpi/arm64/iort.c                |  6 ++-
+ drivers/gpu/drm/msm/disp/mdp5/mdp5_kms.c |  2 +-
+ drivers/iommu/arm-smmu-v3.c              | 10 ++--
+ drivers/iommu/arm-smmu.c                 | 59 ++++++++++++-----------
+ drivers/iommu/iommu.c                    | 31 ++++++------
+ drivers/iommu/ipmmu-vmsa.c               |  7 +--
+ drivers/iommu/mtk_iommu.c                | 13 +++--
+ drivers/iommu/mtk_iommu_v1.c             | 14 +++---
+ drivers/iommu/qcom_iommu.c               | 61 ++++++++++++++----------
+ drivers/iommu/tegra-gart.c               |  2 +-
+ drivers/iommu/virtio-iommu.c             | 11 ++---
+ include/linux/device.h                   |  9 ++--
+ include/linux/iommu.h                    | 33 ++++++++++---
+ 13 files changed, 144 insertions(+), 114 deletions(-)
+
+-- 
+2.17.1
+
 _______________________________________________
 iommu mailing list
 iommu@lists.linux-foundation.org
