@@ -6,52 +6,51 @@ X-Spam-Status: No, score=-9.8 required=3.0 tests=HEADER_FROM_DIFFERENT_DOMAINS,
 	INCLUDES_PATCH,MAILING_LIST_MULTI,SIGNED_OFF_BY,SPF_HELO_NONE,SPF_PASS,
 	USER_AGENT_GIT autolearn=ham autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 75F90C4332B
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 7DBA6C41620
 	for <iommu@archiver.kernel.org>; Fri, 20 Mar 2020 09:14:30 +0000 (UTC)
-Received: from hemlock.osuosl.org (smtp2.osuosl.org [140.211.166.133])
+Received: from fraxinus.osuosl.org (smtp4.osuosl.org [140.211.166.137])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by mail.kernel.org (Postfix) with ESMTPS id 51EF620739
+	by mail.kernel.org (Postfix) with ESMTPS id 582542080C
 	for <iommu@archiver.kernel.org>; Fri, 20 Mar 2020 09:14:30 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 51EF620739
+DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 582542080C
 Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=8bytes.org
 Authentication-Results: mail.kernel.org; spf=pass smtp.mailfrom=iommu-bounces@lists.linux-foundation.org
 Received: from localhost (localhost [127.0.0.1])
-	by hemlock.osuosl.org (Postfix) with ESMTP id 3232788A1F;
+	by fraxinus.osuosl.org (Postfix) with ESMTP id 335FE874C5;
 	Fri, 20 Mar 2020 09:14:30 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from hemlock.osuosl.org ([127.0.0.1])
+Received: from fraxinus.osuosl.org ([127.0.0.1])
 	by localhost (.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
-	with ESMTP id AnZcxjFl40n8; Fri, 20 Mar 2020 09:14:29 +0000 (UTC)
+	with ESMTP id SFdJO_J4bx8k; Fri, 20 Mar 2020 09:14:29 +0000 (UTC)
 Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [140.211.9.56])
-	by hemlock.osuosl.org (Postfix) with ESMTP id CC3AA888C5;
+	by fraxinus.osuosl.org (Postfix) with ESMTP id 985508746E;
 	Fri, 20 Mar 2020 09:14:29 +0000 (UTC)
 Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
-	by lists.linuxfoundation.org (Postfix) with ESMTP id A9088C1D85;
+	by lists.linuxfoundation.org (Postfix) with ESMTP id 843E5C07FF;
 	Fri, 20 Mar 2020 09:14:29 +0000 (UTC)
 Received: from silver.osuosl.org (smtp3.osuosl.org [140.211.166.136])
- by lists.linuxfoundation.org (Postfix) with ESMTP id 73FC0C07FF
+ by lists.linuxfoundation.org (Postfix) with ESMTP id 218E3C07FF
  for <iommu@lists.linux-foundation.org>; Fri, 20 Mar 2020 09:14:28 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
- by silver.osuosl.org (Postfix) with ESMTP id 636192353A
+ by silver.osuosl.org (Postfix) with ESMTP id 1D5752734A
  for <iommu@lists.linux-foundation.org>; Fri, 20 Mar 2020 09:14:28 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
 Received: from silver.osuosl.org ([127.0.0.1])
  by localhost (.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
- with ESMTP id Y21br4wjoVG9 for <iommu@lists.linux-foundation.org>;
+ with ESMTP id Mxlo7GnBBBKO for <iommu@lists.linux-foundation.org>;
  Fri, 20 Mar 2020 09:14:27 +0000 (UTC)
 X-Greylist: from auto-whitelisted by SQLgrey-1.7.6
 Received: from theia.8bytes.org (8bytes.org [81.169.241.247])
- by silver.osuosl.org (Postfix) with ESMTPS id 794D126D87
+ by silver.osuosl.org (Postfix) with ESMTPS id 2260B2353A
  for <iommu@lists.linux-foundation.org>; Fri, 20 Mar 2020 09:14:27 +0000 (UTC)
 Received: by theia.8bytes.org (Postfix, from userid 1000)
- id DF2D0342; Fri, 20 Mar 2020 10:14:19 +0100 (CET)
+ id C199D3D3; Fri, 20 Mar 2020 10:14:20 +0100 (CET)
 From: Joerg Roedel <joro@8bytes.org>
 To: iommu@lists.linux-foundation.org
-Subject: [PATCH v3 03/15] drm/msm/mdp5: Remove direct access of
- dev->iommu_fwspec
-Date: Fri, 20 Mar 2020 10:14:02 +0100
-Message-Id: <20200320091414.3941-4-joro@8bytes.org>
+Subject: [PATCH v3 08/15] iommu: Introduce accessors for iommu private data
+Date: Fri, 20 Mar 2020 10:14:07 +0100
+Message-Id: <20200320091414.3941-9-joro@8bytes.org>
 X-Mailer: git-send-email 2.17.1
 In-Reply-To: <20200320091414.3941-1-joro@8bytes.org>
 References: <20200320091414.3941-1-joro@8bytes.org>
@@ -83,28 +82,38 @@ Sender: "iommu" <iommu-bounces@lists.linux-foundation.org>
 
 From: Joerg Roedel <jroedel@suse.de>
 
-Use the accessor functions instead of directly dereferencing
-dev->iommu_fwspec.
+Add dev_iommu_priv_get/set() functions to access per-device iommu
+private data. This makes it easier to move the pointer to a different
+location.
 
+Tested-by: Will Deacon <will@kernel.org> # arm-smmu
 Reviewed-by: Jean-Philippe Brucker <jean-philippe@linaro.org>
 Signed-off-by: Joerg Roedel <jroedel@suse.de>
 ---
- drivers/gpu/drm/msm/disp/mdp5/mdp5_kms.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+ include/linux/iommu.h | 10 ++++++++++
+ 1 file changed, 10 insertions(+)
 
-diff --git a/drivers/gpu/drm/msm/disp/mdp5/mdp5_kms.c b/drivers/gpu/drm/msm/disp/mdp5/mdp5_kms.c
-index e43ecd4be10a..1252e1d76340 100644
---- a/drivers/gpu/drm/msm/disp/mdp5/mdp5_kms.c
-+++ b/drivers/gpu/drm/msm/disp/mdp5/mdp5_kms.c
-@@ -725,7 +725,7 @@ struct msm_kms *mdp5_kms_init(struct drm_device *dev)
+diff --git a/include/linux/iommu.h b/include/linux/iommu.h
+index f5edc21a644d..056900e75758 100644
+--- a/include/linux/iommu.h
++++ b/include/linux/iommu.h
+@@ -627,6 +627,16 @@ static inline void dev_iommu_fwspec_set(struct device *dev,
+ 	dev->iommu->fwspec = fwspec;
+ }
  
- 	if (config->platform.iommu) {
- 		iommu_dev = &pdev->dev;
--		if (!iommu_dev->iommu_fwspec)
-+		if (!dev_iommu_fwspec_get(iommu_dev))
- 			iommu_dev = iommu_dev->parent;
++static inline void *dev_iommu_priv_get(struct device *dev)
++{
++	return dev->iommu->fwspec->iommu_priv;
++}
++
++static inline void dev_iommu_priv_set(struct device *dev, void *priv)
++{
++	dev->iommu->fwspec->iommu_priv = priv;
++}
++
+ int iommu_probe_device(struct device *dev);
+ void iommu_release_device(struct device *dev);
  
- 		aspace = msm_gem_address_space_create(iommu_dev,
 -- 
 2.17.1
 
