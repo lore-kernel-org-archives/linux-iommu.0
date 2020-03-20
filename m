@@ -6,52 +6,52 @@ X-Spam-Status: No, score=-9.8 required=3.0 tests=HEADER_FROM_DIFFERENT_DOMAINS,
 	INCLUDES_PATCH,MAILING_LIST_MULTI,SIGNED_OFF_BY,SPF_HELO_NONE,SPF_PASS,
 	USER_AGENT_GIT autolearn=ham autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id A9AE5C4332B
-	for <iommu@archiver.kernel.org>; Fri, 20 Mar 2020 09:14:32 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id E2AB4C4332D
+	for <iommu@archiver.kernel.org>; Fri, 20 Mar 2020 09:14:33 +0000 (UTC)
 Received: from hemlock.osuosl.org (smtp2.osuosl.org [140.211.166.133])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by mail.kernel.org (Postfix) with ESMTPS id 8798E20774
+	by mail.kernel.org (Postfix) with ESMTPS id C35AB20739
 	for <iommu@archiver.kernel.org>; Fri, 20 Mar 2020 09:14:32 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 8798E20774
+DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org C35AB20739
 Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=8bytes.org
 Authentication-Results: mail.kernel.org; spf=pass smtp.mailfrom=iommu-bounces@lists.linux-foundation.org
 Received: from localhost (localhost [127.0.0.1])
-	by hemlock.osuosl.org (Postfix) with ESMTP id F27D088A2D;
-	Fri, 20 Mar 2020 09:14:31 +0000 (UTC)
+	by hemlock.osuosl.org (Postfix) with ESMTP id CFC96888C5;
+	Fri, 20 Mar 2020 09:14:32 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
 Received: from hemlock.osuosl.org ([127.0.0.1])
 	by localhost (.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
-	with ESMTP id WRivyr5HqhsD; Fri, 20 Mar 2020 09:14:30 +0000 (UTC)
+	with ESMTP id TmPOJ31lJZnt; Fri, 20 Mar 2020 09:14:30 +0000 (UTC)
 Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [140.211.9.56])
-	by hemlock.osuosl.org (Postfix) with ESMTP id 421F08871F;
+	by hemlock.osuosl.org (Postfix) with ESMTP id 164258890B;
 	Fri, 20 Mar 2020 09:14:30 +0000 (UTC)
 Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
-	by lists.linuxfoundation.org (Postfix) with ESMTP id 2F4BCC1D85;
+	by lists.linuxfoundation.org (Postfix) with ESMTP id 04E83C089E;
 	Fri, 20 Mar 2020 09:14:30 +0000 (UTC)
-Received: from fraxinus.osuosl.org (smtp4.osuosl.org [140.211.166.137])
- by lists.linuxfoundation.org (Postfix) with ESMTP id 2B07AC07FF
- for <iommu@lists.linux-foundation.org>; Fri, 20 Mar 2020 09:14:29 +0000 (UTC)
+Received: from silver.osuosl.org (smtp3.osuosl.org [140.211.166.136])
+ by lists.linuxfoundation.org (Postfix) with ESMTP id 93C52C089E
+ for <iommu@lists.linux-foundation.org>; Fri, 20 Mar 2020 09:14:28 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
- by fraxinus.osuosl.org (Postfix) with ESMTP id 202AA87460
- for <iommu@lists.linux-foundation.org>; Fri, 20 Mar 2020 09:14:29 +0000 (UTC)
+ by silver.osuosl.org (Postfix) with ESMTP id 809372353A
+ for <iommu@lists.linux-foundation.org>; Fri, 20 Mar 2020 09:14:28 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from fraxinus.osuosl.org ([127.0.0.1])
+Received: from silver.osuosl.org ([127.0.0.1])
  by localhost (.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
- with ESMTP id kjsrFmvBkgwr for <iommu@lists.linux-foundation.org>;
- Fri, 20 Mar 2020 09:14:28 +0000 (UTC)
+ with ESMTP id a3V15pJXfYvd for <iommu@lists.linux-foundation.org>;
+ Fri, 20 Mar 2020 09:14:27 +0000 (UTC)
 X-Greylist: from auto-whitelisted by SQLgrey-1.7.6
 Received: from theia.8bytes.org (8bytes.org [81.169.241.247])
- by fraxinus.osuosl.org (Postfix) with ESMTPS id E494D8746E
+ by silver.osuosl.org (Postfix) with ESMTPS id 80A5C27344
  for <iommu@lists.linux-foundation.org>; Fri, 20 Mar 2020 09:14:27 +0000 (UTC)
 Received: by theia.8bytes.org (Postfix, from userid 1000)
- id 13723352; Fri, 20 Mar 2020 10:14:20 +0100 (CET)
+ id F0F8D41A; Fri, 20 Mar 2020 10:14:20 +0100 (CET)
 From: Joerg Roedel <joro@8bytes.org>
 To: iommu@lists.linux-foundation.org
-Subject: [PATCH v3 04/15] iommu/tegra-gart: Remove direct access of
- dev->iommu_fwspec
-Date: Fri, 20 Mar 2020 10:14:03 +0100
-Message-Id: <20200320091414.3941-5-joro@8bytes.org>
+Subject: [PATCH v3 09/15] iommu/arm-smmu-v3: Use accessor functions for iommu
+ private data
+Date: Fri, 20 Mar 2020 10:14:08 +0100
+Message-Id: <20200320091414.3941-10-joro@8bytes.org>
 X-Mailer: git-send-email 2.17.1
 In-Reply-To: <20200320091414.3941-1-joro@8bytes.org>
 References: <20200320091414.3941-1-joro@8bytes.org>
@@ -83,28 +83,64 @@ Sender: "iommu" <iommu-bounces@lists.linux-foundation.org>
 
 From: Joerg Roedel <jroedel@suse.de>
 
-Use the accessor functions instead of directly dereferencing
-dev->iommu_fwspec.
+Make use of dev_iommu_priv_set/get() functions in the code.
 
+Tested-by: Hanjun Guo <guohanjun@huawei.com>
 Reviewed-by: Jean-Philippe Brucker <jean-philippe@linaro.org>
 Signed-off-by: Joerg Roedel <jroedel@suse.de>
 ---
- drivers/iommu/tegra-gart.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+ drivers/iommu/arm-smmu-v3.c | 10 +++++-----
+ 1 file changed, 5 insertions(+), 5 deletions(-)
 
-diff --git a/drivers/iommu/tegra-gart.c b/drivers/iommu/tegra-gart.c
-index 3fb7ba72507d..db6559e8336f 100644
---- a/drivers/iommu/tegra-gart.c
-+++ b/drivers/iommu/tegra-gart.c
-@@ -247,7 +247,7 @@ static int gart_iommu_add_device(struct device *dev)
- {
- 	struct iommu_group *group;
+diff --git a/drivers/iommu/arm-smmu-v3.c b/drivers/iommu/arm-smmu-v3.c
+index aa3ac2a03807..2b68498dfb66 100644
+--- a/drivers/iommu/arm-smmu-v3.c
++++ b/drivers/iommu/arm-smmu-v3.c
+@@ -2659,7 +2659,7 @@ static int arm_smmu_attach_dev(struct iommu_domain *domain, struct device *dev)
+ 	if (!fwspec)
+ 		return -ENOENT;
  
--	if (!dev->iommu_fwspec)
-+	if (!dev_iommu_fwspec_get(dev))
+-	master = fwspec->iommu_priv;
++	master = dev_iommu_priv_get(dev);
+ 	smmu = master->smmu;
+ 
+ 	arm_smmu_detach_dev(master);
+@@ -2795,7 +2795,7 @@ static int arm_smmu_add_device(struct device *dev)
+ 	if (!fwspec || fwspec->ops != &arm_smmu_ops)
  		return -ENODEV;
  
- 	group = iommu_group_get_for_dev(dev);
+-	if (WARN_ON_ONCE(fwspec->iommu_priv))
++	if (WARN_ON_ONCE(dev_iommu_priv_get(dev)))
+ 		return -EBUSY;
+ 
+ 	smmu = arm_smmu_get_by_fwnode(fwspec->iommu_fwnode);
+@@ -2810,7 +2810,7 @@ static int arm_smmu_add_device(struct device *dev)
+ 	master->smmu = smmu;
+ 	master->sids = fwspec->ids;
+ 	master->num_sids = fwspec->num_ids;
+-	fwspec->iommu_priv = master;
++	dev_iommu_priv_set(dev, master);
+ 
+ 	/* Check the SIDs are in range of the SMMU and our stream table */
+ 	for (i = 0; i < master->num_sids; i++) {
+@@ -2852,7 +2852,7 @@ static int arm_smmu_add_device(struct device *dev)
+ 	iommu_device_unlink(&smmu->iommu, dev);
+ err_free_master:
+ 	kfree(master);
+-	fwspec->iommu_priv = NULL;
++	dev_iommu_priv_set(dev, NULL);
+ 	return ret;
+ }
+ 
+@@ -2865,7 +2865,7 @@ static void arm_smmu_remove_device(struct device *dev)
+ 	if (!fwspec || fwspec->ops != &arm_smmu_ops)
+ 		return;
+ 
+-	master = fwspec->iommu_priv;
++	master = dev_iommu_priv_get(dev);
+ 	smmu = master->smmu;
+ 	arm_smmu_detach_dev(master);
+ 	iommu_group_remove_device(dev);
 -- 
 2.17.1
 
