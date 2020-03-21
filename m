@@ -1,76 +1,79 @@
-Return-Path: <SRS0=tLNU=5F=lists.linux-foundation.org=iommu-bounces@kernel.org>
+Return-Path: <SRS0=fnBl=5G=lists.linux-foundation.org=iommu-bounces@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-9.8 required=3.0 tests=HEADER_FROM_DIFFERENT_DOMAINS,
+X-Spam-Status: No, score=-8.2 required=3.0 tests=HEADER_FROM_DIFFERENT_DOMAINS,
 	INCLUDES_PATCH,MAILING_LIST_MULTI,SIGNED_OFF_BY,SPF_HELO_NONE,SPF_PASS,
-	USER_AGENT_GIT autolearn=ham autolearn_force=no version=3.4.0
+	USER_AGENT_SANE_1 autolearn=unavailable autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 695E6C43333
-	for <iommu@archiver.kernel.org>; Fri, 20 Mar 2020 23:22:13 +0000 (UTC)
-Received: from fraxinus.osuosl.org (smtp4.osuosl.org [140.211.166.137])
+	by smtp.lore.kernel.org (Postfix) with ESMTP id C577AC4332B
+	for <iommu@archiver.kernel.org>; Sat, 21 Mar 2020 01:32:54 +0000 (UTC)
+Received: from silver.osuosl.org (smtp3.osuosl.org [140.211.166.136])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by mail.kernel.org (Postfix) with ESMTPS id 456332072D
-	for <iommu@archiver.kernel.org>; Fri, 20 Mar 2020 23:22:13 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 456332072D
+	by mail.kernel.org (Postfix) with ESMTPS id 87B4520752
+	for <iommu@archiver.kernel.org>; Sat, 21 Mar 2020 01:32:54 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 87B4520752
 Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=linux.intel.com
 Authentication-Results: mail.kernel.org; spf=pass smtp.mailfrom=iommu-bounces@lists.linux-foundation.org
 Received: from localhost (localhost [127.0.0.1])
-	by fraxinus.osuosl.org (Postfix) with ESMTP id 378CA8767F;
-	Fri, 20 Mar 2020 23:22:13 +0000 (UTC)
-X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from fraxinus.osuosl.org ([127.0.0.1])
-	by localhost (.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
-	with ESMTP id yqAGIotebqXO; Fri, 20 Mar 2020 23:22:10 +0000 (UTC)
-Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [140.211.9.56])
-	by fraxinus.osuosl.org (Postfix) with ESMTP id 0A896876A2;
-	Fri, 20 Mar 2020 23:22:07 +0000 (UTC)
-Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
-	by lists.linuxfoundation.org (Postfix) with ESMTP id E1840C1D89;
-	Fri, 20 Mar 2020 23:22:06 +0000 (UTC)
-Received: from silver.osuosl.org (smtp3.osuosl.org [140.211.166.136])
- by lists.linuxfoundation.org (Postfix) with ESMTP id 38F73C1D8A
- for <iommu@lists.linux-foundation.org>; Fri, 20 Mar 2020 23:22:05 +0000 (UTC)
-Received: from localhost (localhost [127.0.0.1])
- by silver.osuosl.org (Postfix) with ESMTP id 2DDB625E5B
- for <iommu@lists.linux-foundation.org>; Fri, 20 Mar 2020 23:22:05 +0000 (UTC)
+	by silver.osuosl.org (Postfix) with ESMTP id 534D521579;
+	Sat, 21 Mar 2020 01:32:54 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
 Received: from silver.osuosl.org ([127.0.0.1])
+	by localhost (.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
+	with ESMTP id YmSbD6XyYIqi; Sat, 21 Mar 2020 01:32:52 +0000 (UTC)
+Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [140.211.9.56])
+	by silver.osuosl.org (Postfix) with ESMTP id 2A5012076F;
+	Sat, 21 Mar 2020 01:32:52 +0000 (UTC)
+Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
+	by lists.linuxfoundation.org (Postfix) with ESMTP id EAB66C089E;
+	Sat, 21 Mar 2020 01:32:51 +0000 (UTC)
+Received: from fraxinus.osuosl.org (smtp4.osuosl.org [140.211.166.137])
+ by lists.linuxfoundation.org (Postfix) with ESMTP id E2440C07FF
+ for <iommu@lists.linux-foundation.org>; Sat, 21 Mar 2020 01:32:50 +0000 (UTC)
+Received: from localhost (localhost [127.0.0.1])
+ by fraxinus.osuosl.org (Postfix) with ESMTP id DE1A38733E
+ for <iommu@lists.linux-foundation.org>; Sat, 21 Mar 2020 01:32:50 +0000 (UTC)
+X-Virus-Scanned: amavisd-new at osuosl.org
+Received: from fraxinus.osuosl.org ([127.0.0.1])
  by localhost (.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
- with ESMTP id 4XBPO5gbn5Mj for <iommu@lists.linux-foundation.org>;
- Fri, 20 Mar 2020 23:22:01 +0000 (UTC)
+ with ESMTP id Lj0GnvqWWkkN for <iommu@lists.linux-foundation.org>;
+ Sat, 21 Mar 2020 01:32:50 +0000 (UTC)
 X-Greylist: domain auto-whitelisted by SQLgrey-1.7.6
-Received: from mga04.intel.com (mga04.intel.com [192.55.52.120])
- by silver.osuosl.org (Postfix) with ESMTPS id A89FD25075
- for <iommu@lists.linux-foundation.org>; Fri, 20 Mar 2020 23:22:01 +0000 (UTC)
-IronPort-SDR: OI95E8eWBt7tPYnOJsUF7u3L6smiWQWK9Wr97agbMKdSmh9ZVuOGdn6cbC3YxO5RRUedSNRn8t
- Axk5VgBX/Nlw==
+Received: from mga07.intel.com (mga07.intel.com [134.134.136.100])
+ by fraxinus.osuosl.org (Postfix) with ESMTPS id BF6E2872D3
+ for <iommu@lists.linux-foundation.org>; Sat, 21 Mar 2020 01:32:49 +0000 (UTC)
+IronPort-SDR: JM3L/MptMC0tZzBPqdO2bBa+hkPJERsZfTzygw3dcjCgamx1cSm/tFjQ2eXv4oD4pgymH+XSZz
+ vtvT+CA8fcJw==
 X-Amp-Result: SKIPPED(no attachment in message)
 X-Amp-File-Uploaded: False
-Received: from orsmga005.jf.intel.com ([10.7.209.41])
- by fmsmga104.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384;
- 20 Mar 2020 16:22:01 -0700
-IronPort-SDR: LJVKwcIzOJtDGHsu3m254oy/H0+/ET8oAlcgG7tLcT3pDag45CTzCeppYGKkbKyCO3cjBcDI2z
- l+aWsE3ugZig==
+Received: from orsmga006.jf.intel.com ([10.7.209.51])
+ by orsmga105.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384;
+ 20 Mar 2020 18:32:48 -0700
+IronPort-SDR: bXMDXjJLJZodiuHPyhNhLQnhRC3EAGO3pLsdO9Vn0wH5EGRPtbOjHaj5g71r+Uft+ETIZad4+i
+ hYzFwvRA5JCg==
 X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.72,286,1580803200"; d="scan'208";a="418877220"
-Received: from jacob-builder.jf.intel.com ([10.7.199.155])
- by orsmga005.jf.intel.com with ESMTP; 20 Mar 2020 16:22:01 -0700
-From: Jacob Pan <jacob.jun.pan@linux.intel.com>
-To: "Lu Baolu" <baolu.lu@linux.intel.com>, iommu@lists.linux-foundation.org,
- LKML <linux-kernel@vger.kernel.org>, Joerg Roedel <joro@8bytes.org>,
- David Woodhouse <dwmw2@infradead.org>,
- Alex Williamson <alex.williamson@redhat.com>,
- Jean-Philippe Brucker <jean-philippe@linaro.com>
-Subject: [PATCH V10 01/11] iommu/vt-d: Move domain helper to header
-Date: Fri, 20 Mar 2020 16:27:31 -0700
-Message-Id: <1584746861-76386-2-git-send-email-jacob.jun.pan@linux.intel.com>
-X-Mailer: git-send-email 2.7.4
-In-Reply-To: <1584746861-76386-1-git-send-email-jacob.jun.pan@linux.intel.com>
-References: <1584746861-76386-1-git-send-email-jacob.jun.pan@linux.intel.com>
-Cc: "Tian, Kevin" <kevin.tian@intel.com>, Raj Ashok <ashok.raj@intel.com>,
- Jonathan Cameron <jic23@kernel.org>
+X-IronPort-AV: E=Sophos;i="5.72,286,1580803200"; d="scan'208";a="249051243"
+Received: from blu2-mobl3.ccr.corp.intel.com (HELO [10.254.211.188])
+ ([10.254.211.188])
+ by orsmga006.jf.intel.com with ESMTP; 20 Mar 2020 18:32:45 -0700
+Subject: Re: [PATCH 1/3] iommu/vt-d: Remove redundant IOTLB flush
+To: Jacob Pan <jacob.jun.pan@linux.intel.com>
+References: <1584678751-43169-1-git-send-email-jacob.jun.pan@linux.intel.com>
+ <1584678751-43169-2-git-send-email-jacob.jun.pan@linux.intel.com>
+ <26ab1917-f087-aafa-e861-6a2478000a6f@linux.intel.com>
+ <20200320092047.4a4cf551@jacob-builder>
+From: Lu Baolu <baolu.lu@linux.intel.com>
+Message-ID: <06c9751a-417d-3c32-65af-0788593f811a@linux.intel.com>
+Date: Sat, 21 Mar 2020 09:32:45 +0800
+User-Agent: Mozilla/5.0 (Windows NT 10.0; WOW64; rv:68.0) Gecko/20100101
+ Thunderbird/68.6.0
+MIME-Version: 1.0
+In-Reply-To: <20200320092047.4a4cf551@jacob-builder>
+Content-Language: en-US
+Cc: Raj Ashok <ashok.raj@intel.com>, LKML <linux-kernel@vger.kernel.org>,
+ iommu@lists.linux-foundation.org, David Woodhouse <dwmw2@infradead.org>
 X-BeenThere: iommu@lists.linux-foundation.org
 X-Mailman-Version: 2.1.15
 Precedence: list
@@ -83,58 +86,102 @@ List-Post: <mailto:iommu@lists.linux-foundation.org>
 List-Help: <mailto:iommu-request@lists.linux-foundation.org?subject=help>
 List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
  <mailto:iommu-request@lists.linux-foundation.org?subject=subscribe>
-MIME-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset="us-ascii"; Format="flowed"
 Errors-To: iommu-bounces@lists.linux-foundation.org
 Sender: "iommu" <iommu-bounces@lists.linux-foundation.org>
 
-Move domain helper to header to be used by SVA code.
+On 2020/3/21 0:20, Jacob Pan wrote:
+> On Fri, 20 Mar 2020 21:45:26 +0800
+> Lu Baolu <baolu.lu@linux.intel.com> wrote:
+> 
+>> On 2020/3/20 12:32, Jacob Pan wrote:
+>>> IOTLB flush already included in the PASID tear down process. There
+>>> is no need to flush again.
+>>
+>> It seems that intel_pasid_tear_down_entry() doesn't flush the pasid
+>> based device TLB?
+>>
+> I saw this code in intel_pasid_tear_down_entry(). Isn't the last line
+> flush the devtlb? Not in guest of course since the passdown tlb flush
+> is inclusive.
+> 
+> 	pasid_cache_invalidation_with_pasid(iommu, did, pasid);
+> 	iotlb_invalidation_with_pasid(iommu, did, pasid);
+> 
+> 	/* Device IOTLB doesn't need to be flushed in caching mode. */
+> 	if (!cap_caching_mode(iommu->cap))
+> 		devtlb_invalidation_with_pasid(iommu, dev, pasid);
+> 
 
-Signed-off-by: Jacob Pan <jacob.jun.pan@linux.intel.com>
-Reviewed-by: Eric Auger <eric.auger@redhat.com>
----
- drivers/iommu/intel-iommu.c | 6 ------
- include/linux/intel-iommu.h | 6 ++++++
- 2 files changed, 6 insertions(+), 6 deletions(-)
+But devtlb_invalidation_with_pasid() doesn't do the right thing, it
+flushes the device tlb, instead of pasid-based device tlb.
 
-diff --git a/drivers/iommu/intel-iommu.c b/drivers/iommu/intel-iommu.c
-index 4be549478691..e599b2537b1c 100644
---- a/drivers/iommu/intel-iommu.c
-+++ b/drivers/iommu/intel-iommu.c
-@@ -446,12 +446,6 @@ static void init_translation_status(struct intel_iommu *iommu)
- 		iommu->flags |= VTD_FLAG_TRANS_PRE_ENABLED;
- }
- 
--/* Convert generic 'struct iommu_domain to private struct dmar_domain */
--static struct dmar_domain *to_dmar_domain(struct iommu_domain *dom)
--{
--	return container_of(dom, struct dmar_domain, domain);
--}
--
- static int __init intel_iommu_setup(char *str)
- {
- 	if (!str)
-diff --git a/include/linux/intel-iommu.h b/include/linux/intel-iommu.h
-index 980234ae0312..ed7171d2ae1f 100644
---- a/include/linux/intel-iommu.h
-+++ b/include/linux/intel-iommu.h
-@@ -595,6 +595,12 @@ static inline void __iommu_flush_cache(
- 		clflush_cache_range(addr, size);
- }
- 
-+/* Convert generic struct iommu_domain to private struct dmar_domain */
-+static inline struct dmar_domain *to_dmar_domain(struct iommu_domain *dom)
-+{
-+	return container_of(dom, struct dmar_domain, domain);
-+}
-+
- /*
-  * 0: readable
-  * 1: writable
--- 
-2.7.4
+static void
+devtlb_invalidation_with_pasid(struct intel_iommu *iommu,
+                                struct device *dev, int pasid)
+{
+         struct device_domain_info *info;
+         u16 sid, qdep, pfsid;
 
+         info = dev->archdata.iommu;
+         if (!info || !info->ats_enabled)
+                 return;
+
+         sid = info->bus << 8 | info->devfn;
+         qdep = info->ats_qdep;
+         pfsid = info->pfsid;
+
+         qi_flush_dev_iotlb(iommu, sid, pfsid, qdep, 0, 64 - 
+VTD_PAGE_SHIFT);
+}
+
+Best regards,
+baolu
+
+>> Best regards,
+>> baolu
+>>
+>>>
+>>> Cc: Lu Baolu <baolu.lu@linux.intel.com>
+>>> Signed-off-by: Jacob Pan <jacob.jun.pan@linux.intel.com>
+>>> ---
+>>>    drivers/iommu/intel-svm.c | 6 ++----
+>>>    1 file changed, 2 insertions(+), 4 deletions(-)
+>>>
+>>> diff --git a/drivers/iommu/intel-svm.c b/drivers/iommu/intel-svm.c
+>>> index 8f42d717d8d7..1483f1845762 100644
+>>> --- a/drivers/iommu/intel-svm.c
+>>> +++ b/drivers/iommu/intel-svm.c
+>>> @@ -268,10 +268,9 @@ static void intel_mm_release(struct
+>>> mmu_notifier *mn, struct mm_struct *mm)
+>>>    	 * *has* to handle gracefully without affecting other
+>>> processes. */
+>>>    	rcu_read_lock();
+>>> -	list_for_each_entry_rcu(sdev, &svm->devs, list) {
+>>> +	list_for_each_entry_rcu(sdev, &svm->devs, list)
+>>>    		intel_pasid_tear_down_entry(svm->iommu,
+>>> sdev->dev, svm->pasid);
+>>> -		intel_flush_svm_range_dev(svm, sdev, 0, -1, 0);
+>>> -	}
+>>> +
+>>>    	rcu_read_unlock();
+>>>    
+>>>    }
+>>> @@ -731,7 +730,6 @@ int intel_svm_unbind_mm(struct device *dev, int
+>>> pasid)
+>>>    			 * large and has to be physically
+>>> contiguous. So it's
+>>>    			 * hard to be as defensive as we might
+>>> like. */ intel_pasid_tear_down_entry(iommu, dev, svm->pasid);
+>>> -			intel_flush_svm_range_dev(svm, sdev, 0,
+>>> -1, 0); kfree_rcu(sdev, rcu);
+>>>    
+>>>    			if (list_empty(&svm->devs)) {
+>>>    
+> 
+> [Jacob Pan]
+> 
 _______________________________________________
 iommu mailing list
 iommu@lists.linux-foundation.org
