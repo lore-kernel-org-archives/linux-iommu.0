@@ -4,74 +4,75 @@ X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 X-Spam-Level: 
 X-Spam-Status: No, score=-7.2 required=3.0 tests=HEADER_FROM_DIFFERENT_DOMAINS,
 	MAILING_LIST_MULTI,MENTIONS_GIT_HOSTING,SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED,
-	USER_AGENT_SANE_1 autolearn=unavailable autolearn_force=no version=3.4.0
+	USER_AGENT_SANE_1 autolearn=ham autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id AAEF6C4332E
-	for <iommu@archiver.kernel.org>; Sun, 22 Mar 2020 16:22:11 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id E886CC4332B
+	for <iommu@archiver.kernel.org>; Sun, 22 Mar 2020 16:45:13 +0000 (UTC)
 Received: from whitealder.osuosl.org (smtp1.osuosl.org [140.211.166.138])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by mail.kernel.org (Postfix) with ESMTPS id 7BDDF20724
-	for <iommu@archiver.kernel.org>; Sun, 22 Mar 2020 16:22:11 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 7BDDF20724
+	by mail.kernel.org (Postfix) with ESMTPS id B578C20719
+	for <iommu@archiver.kernel.org>; Sun, 22 Mar 2020 16:45:13 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org B578C20719
 Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=intel.com
 Authentication-Results: mail.kernel.org; spf=pass smtp.mailfrom=iommu-bounces@lists.linux-foundation.org
 Received: from localhost (localhost [127.0.0.1])
-	by whitealder.osuosl.org (Postfix) with ESMTP id 2A82F86C18;
-	Sun, 22 Mar 2020 16:22:11 +0000 (UTC)
+	by whitealder.osuosl.org (Postfix) with ESMTP id 6078886BE1;
+	Sun, 22 Mar 2020 16:45:13 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
 Received: from whitealder.osuosl.org ([127.0.0.1])
 	by localhost (.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
-	with ESMTP id LYiZFZZtDrbm; Sun, 22 Mar 2020 16:22:10 +0000 (UTC)
+	with ESMTP id q5QVim2FRAmN; Sun, 22 Mar 2020 16:45:12 +0000 (UTC)
 Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [140.211.9.56])
-	by whitealder.osuosl.org (Postfix) with ESMTP id 3868886B33;
-	Sun, 22 Mar 2020 16:22:10 +0000 (UTC)
+	by whitealder.osuosl.org (Postfix) with ESMTP id EBA0F86BB7;
+	Sun, 22 Mar 2020 16:45:11 +0000 (UTC)
 Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
-	by lists.linuxfoundation.org (Postfix) with ESMTP id 1ED35C1D7E;
-	Sun, 22 Mar 2020 16:22:10 +0000 (UTC)
-Received: from silver.osuosl.org (smtp3.osuosl.org [140.211.166.136])
- by lists.linuxfoundation.org (Postfix) with ESMTP id EB7E1C0177
- for <iommu@lists.linux-foundation.org>; Sun, 22 Mar 2020 16:22:08 +0000 (UTC)
+	by lists.linuxfoundation.org (Postfix) with ESMTP id D1520C1D7E;
+	Sun, 22 Mar 2020 16:45:11 +0000 (UTC)
+Received: from fraxinus.osuosl.org (smtp4.osuosl.org [140.211.166.137])
+ by lists.linuxfoundation.org (Postfix) with ESMTP id 4CEC6C0177
+ for <iommu@lists.linux-foundation.org>; Sun, 22 Mar 2020 16:45:10 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
- by silver.osuosl.org (Postfix) with ESMTP id D59D2204C5
- for <iommu@lists.linux-foundation.org>; Sun, 22 Mar 2020 16:22:08 +0000 (UTC)
+ by fraxinus.osuosl.org (Postfix) with ESMTP id 399F2863DD
+ for <iommu@lists.linux-foundation.org>; Sun, 22 Mar 2020 16:45:10 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from silver.osuosl.org ([127.0.0.1])
+Received: from fraxinus.osuosl.org ([127.0.0.1])
  by localhost (.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
- with ESMTP id 41pZJFkjtReU for <iommu@lists.linux-foundation.org>;
- Sun, 22 Mar 2020 16:22:07 +0000 (UTC)
+ with ESMTP id LZJucsbbphSz for <iommu@lists.linux-foundation.org>;
+ Sun, 22 Mar 2020 16:45:08 +0000 (UTC)
 X-Greylist: domain auto-whitelisted by SQLgrey-1.7.6
-Received: from mga05.intel.com (mga05.intel.com [192.55.52.43])
- by silver.osuosl.org (Postfix) with ESMTPS id 47B2E20104
- for <iommu@lists.linux-foundation.org>; Sun, 22 Mar 2020 16:22:07 +0000 (UTC)
-IronPort-SDR: 0c8xozPRgkauH8wfKmham1n8O+WRwj45Hn7wK726s4FHoayowLoXQIXdzJ1hA2NtuOaowkITXy
- uwhLjALgHerA==
+Received: from mga01.intel.com (mga01.intel.com [192.55.52.88])
+ by fraxinus.osuosl.org (Postfix) with ESMTPS id EB8EC863DC
+ for <iommu@lists.linux-foundation.org>; Sun, 22 Mar 2020 16:45:07 +0000 (UTC)
+IronPort-SDR: wtlnPkjsT/kWFUM/kq4DX8A52Dle7gHpUIe66iIKLDXKOAptVWY2VGiaq4dU5JoUY+LWW4f0mZ
+ vJR/ZrowcS5g==
 X-Amp-Result: UNKNOWN
 X-Amp-Original-Verdict: FILE UNKNOWN
 X-Amp-File-Uploaded: False
-Received: from orsmga008.jf.intel.com ([10.7.209.65])
- by fmsmga105.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384;
- 22 Mar 2020 09:22:05 -0700
-IronPort-SDR: 6jPtz6TmqcKTCmFDbbbKyY/d0CFo5XKVSwE9aS4zjm9GGemJgrRDIKmLUrm5sAXHq/txof6UBp
- H/DD4ZEQLV8A==
+Received: from fmsmga006.fm.intel.com ([10.253.24.20])
+ by fmsmga101.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384;
+ 22 Mar 2020 09:45:06 -0700
+IronPort-SDR: 3OWjIMTnjASZnSYppHRG1mYrsclbN/C4j63OGrPyoT/TACrbKpW+KmNotkhTMetbfX8OlF+5MO
+ WQeIxd6YocfA==
 X-ExtLoop1: 1
 X-IronPort-AV: E=Sophos;i="5.72,293,1580803200"; 
- d="gz'50?scan'50,208,50";a="239697694"
+ d="gz'50?scan'50,208,50";a="447169957"
 Received: from lkp-server01.sh.intel.com (HELO lkp-server01) ([10.239.97.150])
- by orsmga008.jf.intel.com with ESMTP; 22 Mar 2020 09:22:00 -0700
+ by fmsmga006.fm.intel.com with ESMTP; 22 Mar 2020 09:45:02 -0700
 Received: from kbuild by lkp-server01 with local (Exim 4.89)
  (envelope-from <lkp@intel.com>)
- id 1jG3MN-000Ek5-MA; Mon, 23 Mar 2020 00:21:59 +0800
-Date: Mon, 23 Mar 2020 00:21:40 +0800
+ id 1jG3if-000Arv-K0; Mon, 23 Mar 2020 00:45:01 +0800
+Date: Mon, 23 Mar 2020 00:44:38 +0800
 From: kbuild test robot <lkp@intel.com>
 To: "Liu, Yi L" <yi.l.liu@intel.com>
-Subject: Re: [PATCH v1 1/8] vfio: Add VFIO_IOMMU_PASID_REQUEST(alloc/free)
-Message-ID: <202003230023.VDYHIyQZ%lkp@intel.com>
-References: <1584880325-10561-2-git-send-email-yi.l.liu@intel.com>
+Subject: Re: [PATCH v1 5/8] vfio/type1: Report 1st-level/stage-1 format to
+ userspace
+Message-ID: <202003230052.c48Tr8B0%lkp@intel.com>
+References: <1584880325-10561-6-git-send-email-yi.l.liu@intel.com>
 MIME-Version: 1.0
-Content-Type: multipart/mixed; boundary="wac7ysb48OaltWcw"
+Content-Type: multipart/mixed; boundary="sm4nu43k4a2Rpi4c"
 Content-Disposition: inline
-In-Reply-To: <1584880325-10561-2-git-send-email-yi.l.liu@intel.com>
+In-Reply-To: <1584880325-10561-6-git-send-email-yi.l.liu@intel.com>
 User-Agent: Mutt/1.10.1 (2018-07-13)
 Cc: jean-philippe@linaro.org, kevin.tian@intel.com, kbuild-all@lists.01.org,
  ashok.raj@intel.com, kvm@vger.kernel.org, iommu@lists.linux-foundation.org,
@@ -93,16 +94,16 @@ Errors-To: iommu-bounces@lists.linux-foundation.org
 Sender: "iommu" <iommu-bounces@lists.linux-foundation.org>
 
 
---wac7ysb48OaltWcw
+--sm4nu43k4a2Rpi4c
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
 
 Hi Yi,
 
-Thank you for the patch! Perhaps something to improve:
+Thank you for the patch! Yet something to improve:
 
-[auto build test WARNING on vfio/next]
-[also build test WARNING on v5.6-rc6 next-20200320]
+[auto build test ERROR on vfio/next]
+[also build test ERROR on v5.6-rc6 next-20200320]
 [if your patch is applied to the wrong git tree, please drop us a note to help
 improve the system. BTW, we also suggest to use '--base' option to specify the
 base tree in git format-patch, please see https://stackoverflow.com/a/37406982]
@@ -120,92 +121,80 @@ reproduce:
 If you fix the issue, kindly add following tag
 Reported-by: kbuild test robot <lkp@intel.com>
 
-All warnings (new ones prefixed by >>):
+All errors (new ones prefixed by >>):
 
-   drivers/vfio/vfio.c: In function 'vfio_create_mm':
-   drivers/vfio/vfio.c:2149:8: error: implicit declaration of function 'ioasid_alloc_set'; did you mean 'ioasid_alloc'? [-Werror=implicit-function-declaration]
-    2149 |  ret = ioasid_alloc_set((struct ioasid_set *) mm,
-         |        ^~~~~~~~~~~~~~~~
-         |        ioasid_alloc
->> drivers/vfio/vfio.c:2158:13: warning: assignment to 'long long unsigned int' from 'struct mm_struct *' makes integer from pointer without a cast [-Wint-conversion]
-    2158 |  token->val = mm;
-         |             ^
-   drivers/vfio/vfio.c: In function 'vfio_mm_unlock_and_free':
-   drivers/vfio/vfio.c:2170:2: error: implicit declaration of function 'ioasid_free_set'; did you mean 'ioasid_free'? [-Werror=implicit-function-declaration]
-    2170 |  ioasid_free_set(vmm->ioasid_sid, true);
-         |  ^~~~~~~~~~~~~~~
-         |  ioasid_free
-   drivers/vfio/vfio.c: In function 'vfio_mm_pasid_alloc':
-   drivers/vfio/vfio.c:2227:26: warning: passing argument 1 of 'ioasid_alloc' makes pointer from integer without a cast [-Wint-conversion]
-    2227 |  pasid = ioasid_alloc(vmm->ioasid_sid, min, max, NULL);
-         |                       ~~~^~~~~~~~~~~~
-         |                          |
-         |                          int
-   In file included from include/linux/iommu.h:16,
-                    from drivers/vfio/vfio.c:20:
-   include/linux/ioasid.h:45:56: note: expected 'struct ioasid_set *' but argument is of type 'int'
-      45 | static inline ioasid_t ioasid_alloc(struct ioasid_set *set, ioasid_t min,
-         |                                     ~~~~~~~~~~~~~~~~~~~^~~
-   drivers/vfio/vfio.c: In function 'vfio_mm_pasid_free':
-   drivers/vfio/vfio.c:2246:25: warning: passing argument 1 of 'ioasid_find' makes pointer from integer without a cast [-Wint-conversion]
-    2246 |  pdata = ioasid_find(vmm->ioasid_sid, pasid, NULL);
-         |                      ~~~^~~~~~~~~~~~
-         |                         |
-         |                         int
-   In file included from include/linux/iommu.h:16,
-                    from drivers/vfio/vfio.c:20:
-   include/linux/ioasid.h:55:52: note: expected 'struct ioasid_set *' but argument is of type 'int'
-      55 | static inline void *ioasid_find(struct ioasid_set *set, ioasid_t ioasid,
-         |                                 ~~~~~~~~~~~~~~~~~~~^~~
+   drivers/vfio/vfio_iommu_type1.c: In function 'vfio_iommu_get_stage1_format':
+>> drivers/vfio/vfio_iommu_type1.c:2273:4: error: 'DOMAIN_ATTR_PASID_FORMAT' undeclared (first use in this function)
+    2273 |    DOMAIN_ATTR_PASID_FORMAT, &format)) {
+         |    ^~~~~~~~~~~~~~~~~~~~~~~~
+   drivers/vfio/vfio_iommu_type1.c:2273:4: note: each undeclared identifier is reported only once for each function it appears in
+   drivers/vfio/vfio_iommu_type1.c: In function 'vfio_iommu_type1_ioctl':
+   drivers/vfio/vfio_iommu_type1.c:2355:11: error: implicit declaration of function 'iommu_get_uapi_version' [-Werror=implicit-function-declaration]
+    2355 |    return iommu_get_uapi_version();
+         |           ^~~~~~~~~~~~~~~~~~~~~~
    cc1: some warnings being treated as errors
 
-vim +2158 drivers/vfio/vfio.c
+vim +/DOMAIN_ATTR_PASID_FORMAT +2273 drivers/vfio/vfio_iommu_type1.c
 
-  2133	
-  2134	/**
-  2135	 * VFIO_MM objects - create, release, get, put, search
-  2136	 * Caller of the function should have held vfio.vfio_mm_lock.
-  2137	 */
-  2138	static struct vfio_mm *vfio_create_mm(struct mm_struct *mm)
-  2139	{
-  2140		struct vfio_mm *vmm;
-  2141		struct vfio_mm_token *token;
-  2142		int ret = 0;
-  2143	
-  2144		vmm = kzalloc(sizeof(*vmm), GFP_KERNEL);
-  2145		if (!vmm)
-  2146			return ERR_PTR(-ENOMEM);
-  2147	
-  2148		/* Per mm IOASID set used for quota control and group operations */
-  2149		ret = ioasid_alloc_set((struct ioasid_set *) mm,
-  2150				       VFIO_DEFAULT_PASID_QUOTA, &vmm->ioasid_sid);
-  2151		if (ret) {
-  2152			kfree(vmm);
-  2153			return ERR_PTR(ret);
-  2154		}
-  2155	
-  2156		kref_init(&vmm->kref);
-  2157		token = &vmm->token;
-> 2158		token->val = mm;
-  2159		vmm->pasid_quota = VFIO_DEFAULT_PASID_QUOTA;
-  2160		mutex_init(&vmm->pasid_lock);
-  2161	
-  2162		list_add(&vmm->vfio_next, &vfio.vfio_mm_list);
-  2163	
-  2164		return vmm;
-  2165	}
-  2166	
+  2257	
+  2258	static int vfio_iommu_get_stage1_format(struct vfio_iommu *iommu,
+  2259						 u32 *stage1_format)
+  2260	{
+  2261		struct vfio_domain *domain;
+  2262		u32 format = 0, tmp_format = 0;
+  2263		int ret;
+  2264	
+  2265		mutex_lock(&iommu->lock);
+  2266		if (list_empty(&iommu->domain_list)) {
+  2267			mutex_unlock(&iommu->lock);
+  2268			return -EINVAL;
+  2269		}
+  2270	
+  2271		list_for_each_entry(domain, &iommu->domain_list, next) {
+  2272			if (iommu_domain_get_attr(domain->domain,
+> 2273				DOMAIN_ATTR_PASID_FORMAT, &format)) {
+  2274				ret = -EINVAL;
+  2275				format = 0;
+  2276				goto out_unlock;
+  2277			}
+  2278			/*
+  2279			 * format is always non-zero (the first format is
+  2280			 * IOMMU_PASID_FORMAT_INTEL_VTD which is 1). For
+  2281			 * the reason of potential different backed IOMMU
+  2282			 * formats, here we expect to have identical formats
+  2283			 * in the domain list, no mixed formats support.
+  2284			 * return -EINVAL to fail the attempt of setup
+  2285			 * VFIO_TYPE1_NESTING_IOMMU if non-identical formats
+  2286			 * are detected.
+  2287			 */
+  2288			if (tmp_format && tmp_format != format) {
+  2289				ret = -EINVAL;
+  2290				format = 0;
+  2291				goto out_unlock;
+  2292			}
+  2293	
+  2294			tmp_format = format;
+  2295		}
+  2296		ret = 0;
+  2297	
+  2298	out_unlock:
+  2299		if (format)
+  2300			*stage1_format = format;
+  2301		mutex_unlock(&iommu->lock);
+  2302		return ret;
+  2303	}
+  2304	
 
 ---
 0-DAY CI Kernel Test Service, Intel Corporation
 https://lists.01.org/hyperkitty/list/kbuild-all@lists.01.org
 
---wac7ysb48OaltWcw
+--sm4nu43k4a2Rpi4c
 Content-Type: application/gzip
 Content-Disposition: attachment; filename=".config.gz"
 Content-Transfer-Encoding: base64
 
-H4sICK6Dd14AAy5jb25maWcAnDzZcty2su/5iqnkJalT8ZlNsnJv6QEEQQ4y3AyAMyO/sCby
+H4sICFKLd14AAy5jb25maWcAnDzZcty2su/5iqnkJalT8ZlNsnJv6QEEQQ4y3AyAMyO/sCby
 2FHFknxGUhL//ekGuAAgqPjelJN4uht7o3fwh+9+mJGX58f74/Pd7fHz56+zT6eH0/n4fPow
 +3j3+fS/s7icFaWasZirN0Cc3T28/P3v4/n+cj27eHPxZv7z+fZitj2dH06fZ/Tx4ePdpxdo
 fvf48N0P38GfHwB4/wV6Ov/P7Hg83/5+uf75M/bx86fb29mPKaU/zX55s3wzB1paFglPG0ob
@@ -1067,7 +1056,7 @@ R2E4Si0uiNOFMWpcmzZw78wseCgak6FZ4uccmo7XM0R+XYT1Wz15RGQG83X1ClZzy48oixU8
 u8S7/YwhKxPswhAMEe5tkdUFqZ8zC6VrDc7MJ+wYNgTJ6cXhpG8mykLOUARJqFgQYc5+BNZA
 gK32nYwRDJggwLA9arOcfJKmqV3+/we9bmBCjyQDAA==
 
---wac7ysb48OaltWcw
+--sm4nu43k4a2Rpi4c
 Content-Type: text/plain; charset="us-ascii"
 MIME-Version: 1.0
 Content-Transfer-Encoding: 7bit
@@ -1077,4 +1066,4 @@ _______________________________________________
 iommu mailing list
 iommu@lists.linux-foundation.org
 https://lists.linuxfoundation.org/mailman/listinfo/iommu
---wac7ysb48OaltWcw--
+--sm4nu43k4a2Rpi4c--
