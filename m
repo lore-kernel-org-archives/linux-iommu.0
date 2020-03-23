@@ -2,107 +2,78 @@ Return-Path: <SRS0=qkVD=5I=lists.linux-foundation.org=iommu-bounces@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-3.8 required=3.0 tests=HEADER_FROM_DIFFERENT_DOMAINS,
-	INCLUDES_PATCH,MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS autolearn=no
-	autolearn_force=no version=3.4.0
+X-Spam-Status: No, score=-8.3 required=3.0 tests=HEADER_FROM_DIFFERENT_DOMAINS,
+	INCLUDES_PATCH,MAILING_LIST_MULTI,SIGNED_OFF_BY,SPF_HELO_NONE,SPF_PASS,
+	USER_AGENT_SANE_1 autolearn=unavailable autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id DFF03C54EEB
-	for <iommu@archiver.kernel.org>; Mon, 23 Mar 2020 15:42:47 +0000 (UTC)
-Received: from fraxinus.osuosl.org (smtp4.osuosl.org [140.211.166.137])
+	by smtp.lore.kernel.org (Postfix) with ESMTP id EBB54C54EEB
+	for <iommu@archiver.kernel.org>; Mon, 23 Mar 2020 16:02:42 +0000 (UTC)
+Received: from hemlock.osuosl.org (smtp2.osuosl.org [140.211.166.133])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by mail.kernel.org (Postfix) with ESMTPS id B331420409
-	for <iommu@archiver.kernel.org>; Mon, 23 Mar 2020 15:42:47 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org B331420409
-Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=linux.ibm.com
+	by mail.kernel.org (Postfix) with ESMTPS id A13E620637
+	for <iommu@archiver.kernel.org>; Mon, 23 Mar 2020 16:02:42 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org A13E620637
+Authentication-Results: mail.kernel.org; dmarc=none (p=none dis=none) header.from=arm.com
 Authentication-Results: mail.kernel.org; spf=pass smtp.mailfrom=iommu-bounces@lists.linux-foundation.org
 Received: from localhost (localhost [127.0.0.1])
-	by fraxinus.osuosl.org (Postfix) with ESMTP id 9068486C1B;
-	Mon, 23 Mar 2020 15:42:47 +0000 (UTC)
+	by hemlock.osuosl.org (Postfix) with ESMTP id 5D7F08816B;
+	Mon, 23 Mar 2020 16:02:42 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from fraxinus.osuosl.org ([127.0.0.1])
+Received: from hemlock.osuosl.org ([127.0.0.1])
 	by localhost (.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
-	with ESMTP id 2V6e3s0QjAqM; Mon, 23 Mar 2020 15:42:45 +0000 (UTC)
+	with ESMTP id E57-AHU0NXHj; Mon, 23 Mar 2020 16:02:41 +0000 (UTC)
 Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [140.211.9.56])
-	by fraxinus.osuosl.org (Postfix) with ESMTP id BAD2385CFF;
-	Mon, 23 Mar 2020 15:42:45 +0000 (UTC)
+	by hemlock.osuosl.org (Postfix) with ESMTP id 3810088159;
+	Mon, 23 Mar 2020 16:02:41 +0000 (UTC)
 Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
-	by lists.linuxfoundation.org (Postfix) with ESMTP id AF1CBC1AE2;
-	Mon, 23 Mar 2020 15:42:45 +0000 (UTC)
+	by lists.linuxfoundation.org (Postfix) with ESMTP id 1B001C1AE2;
+	Mon, 23 Mar 2020 16:02:41 +0000 (UTC)
 Received: from silver.osuosl.org (smtp3.osuosl.org [140.211.166.136])
- by lists.linuxfoundation.org (Postfix) with ESMTP id DDB55C1AE2
- for <iommu@lists.linux-foundation.org>; Mon, 23 Mar 2020 15:37:54 +0000 (UTC)
+ by lists.linuxfoundation.org (Postfix) with ESMTP id D6DAEC0177
+ for <iommu@lists.linux-foundation.org>; Mon, 23 Mar 2020 16:02:39 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
- by silver.osuosl.org (Postfix) with ESMTP id D736E22F22
- for <iommu@lists.linux-foundation.org>; Mon, 23 Mar 2020 15:37:54 +0000 (UTC)
+ by silver.osuosl.org (Postfix) with ESMTP id C70D6204A7
+ for <iommu@lists.linux-foundation.org>; Mon, 23 Mar 2020 16:02:39 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
 Received: from silver.osuosl.org ([127.0.0.1])
  by localhost (.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
- with ESMTP id aSw5wOzvPdqK for <iommu@lists.linux-foundation.org>;
- Mon, 23 Mar 2020 15:37:52 +0000 (UTC)
+ with ESMTP id fEG4Tf9FKHZu for <iommu@lists.linux-foundation.org>;
+ Mon, 23 Mar 2020 16:02:38 +0000 (UTC)
 X-Greylist: domain auto-whitelisted by SQLgrey-1.7.6
-Received: from mx0a-001b2d01.pphosted.com (mx0a-001b2d01.pphosted.com
- [148.163.156.1])
- by silver.osuosl.org (Postfix) with ESMTPS id BFE9C22E8C
- for <iommu@lists.linux-foundation.org>; Mon, 23 Mar 2020 15:37:52 +0000 (UTC)
-Received: from pps.filterd (m0098393.ppops.net [127.0.0.1])
- by mx0a-001b2d01.pphosted.com (8.16.0.42/8.16.0.42) with SMTP id
- 02NFYWI0079016; Mon, 23 Mar 2020 11:37:45 -0400
-Received: from ppma03dal.us.ibm.com (b.bd.3ea9.ip4.static.sl-reverse.com
- [169.62.189.11])
- by mx0a-001b2d01.pphosted.com with ESMTP id 2ywbtfmy26-1
- (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
- Mon, 23 Mar 2020 11:37:45 -0400
-Received: from pps.filterd (ppma03dal.us.ibm.com [127.0.0.1])
- by ppma03dal.us.ibm.com (8.16.0.27/8.16.0.27) with SMTP id 02NFZICG013506;
- Mon, 23 Mar 2020 15:37:44 GMT
-Received: from b01cxnp22034.gho.pok.ibm.com (b01cxnp22034.gho.pok.ibm.com
- [9.57.198.24]) by ppma03dal.us.ibm.com with ESMTP id 2ywaw95t6y-1
- (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
- Mon, 23 Mar 2020 15:37:44 +0000
-Received: from b01ledav004.gho.pok.ibm.com (b01ledav004.gho.pok.ibm.com
- [9.57.199.109])
- by b01cxnp22034.gho.pok.ibm.com (8.14.9/8.14.9/NCO v10.0) with ESMTP id
- 02NFbhPO50725358
- (version=TLSv1/SSLv3 cipher=DHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
- Mon, 23 Mar 2020 15:37:43 GMT
-Received: from b01ledav004.gho.pok.ibm.com (unknown [127.0.0.1])
- by IMSVA (Postfix) with ESMTP id A33AB112063;
- Mon, 23 Mar 2020 15:37:43 +0000 (GMT)
-Received: from b01ledav004.gho.pok.ibm.com (unknown [127.0.0.1])
- by IMSVA (Postfix) with ESMTP id 0AEEE112065;
- Mon, 23 Mar 2020 15:37:41 +0000 (GMT)
-Received: from skywalker.linux.ibm.com (unknown [9.85.116.134])
- by b01ledav004.gho.pok.ibm.com (Postfix) with ESMTP;
- Mon, 23 Mar 2020 15:37:40 +0000 (GMT)
-X-Mailer: emacs 27.0.90 (via feedmail 11-beta-1 I)
-From: "Aneesh Kumar K.V" <aneesh.kumar@linux.ibm.com>
-To: Christoph Hellwig <hch@lst.de>, Alexey Kardashevskiy <aik@ozlabs.ru>
-Subject: Re: [PATCH 1/2] dma-mapping: add a dma_ops_bypass flag to struct
- device
-In-Reply-To: <20200323085059.GA32528@lst.de>
-References: <20200320141640.366360-1-hch@lst.de>
- <20200320141640.366360-2-hch@lst.de>
- <2f31d0dd-aa7e-8b76-c8a1-5759fda5afc9@ozlabs.ru>
- <20200323083705.GA31245@lst.de> <20200323085059.GA32528@lst.de>
-Date: Mon, 23 Mar 2020 21:07:38 +0530
-Message-ID: <87sghz2ibh.fsf@linux.ibm.com>
+Received: from foss.arm.com (foss.arm.com [217.140.110.172])
+ by silver.osuosl.org (Postfix) with ESMTP id E087220482
+ for <iommu@lists.linux-foundation.org>; Mon, 23 Mar 2020 16:02:37 +0000 (UTC)
+Received: from usa-sjc-imap-foss1.foss.arm.com (unknown [10.121.207.14])
+ by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id 393571FB;
+ Mon, 23 Mar 2020 09:02:37 -0700 (PDT)
+Received: from [192.168.1.123] (unknown [172.31.20.19])
+ by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPSA id C95033F7C3;
+ Mon, 23 Mar 2020 09:02:34 -0700 (PDT)
+Subject: Re: [PATCH v3 10/15] iommu/arm-smmu: Use accessor functions for iommu
+ private data
+To: Joerg Roedel <joro@8bytes.org>,
+ "iommu@lists.linux-foundation.org" <iommu@lists.linux-foundation.org>
+References: <20200320091414.3941-1-joro@8bytes.org>
+ <20200320091414.3941-11-joro@8bytes.org>
+From: Robin Murphy <robin.murphy@arm.com>
+Message-ID: <09ed4676-449e-c6eb-8c51-c15b326c206c@arm.com>
+Date: Mon, 23 Mar 2020 16:02:33 +0000
+User-Agent: Mozilla/5.0 (Windows NT 10.0; rv:68.0) Gecko/20100101
+ Thunderbird/68.6.0
 MIME-Version: 1.0
-X-TM-AS-GCONF: 00
-X-Proofpoint-Virus-Version: vendor=fsecure engine=2.50.10434:6.0.138, 18.0.645
- definitions=2020-03-23_05:2020-03-21,
- 2020-03-23 signatures=0
-X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0
- mlxscore=0 malwarescore=0
- phishscore=0 impostorscore=0 priorityscore=1501 spamscore=0 bulkscore=0
- mlxlogscore=999 lowpriorityscore=0 clxscore=1011 adultscore=0
- suspectscore=48 classifier=spam adjust=0 reason=mlx scancount=1
- engine=8.12.0-2003020000 definitions=main-2003230086
-X-Mailman-Approved-At: Mon, 23 Mar 2020 15:42:44 +0000
-Cc: Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
- Robin Murphy <robin.murphy@arm.com>, linux-kernel@vger.kernel.org,
- iommu@lists.linux-foundation.org, linuxppc-dev@lists.ozlabs.org,
- Christoph Hellwig <hch@lst.de>
+In-Reply-To: <20200320091414.3941-11-joro@8bytes.org>
+Content-Language: en-GB
+Cc: Jean-Philippe Brucker <jean-philippe@linaro.org>,
+ Joerg Roedel <jroedel@suse.de>, Will Deacon <will@kernel.org>,
+ "linux-arm-msm@vger.kernel.org" <linux-arm-msm@vger.kernel.org>,
+ "guohanjun@huawei.com" <guohanjun@huawei.com>,
+ "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
+ Bjorn Andersson <bjorn.andersson@linaro.org>,
+ Thierry Reding <thierry.reding@gmail.com>,
+ "linux-mediatek@lists.infradead.org" <linux-mediatek@lists.infradead.org>,
+ Andy Gross <agross@kernel.org>, Sudeep Holla <Sudeep.Holla@arm.com>,
+ Matthias Brugger <matthias.bgg@gmail.com>, Sean Paul <sean@poorly.run>
 X-BeenThere: iommu@lists.linux-foundation.org
 X-Mailman-Version: 2.1.15
 Precedence: list
@@ -115,179 +86,219 @@ List-Post: <mailto:iommu@lists.linux-foundation.org>
 List-Help: <mailto:iommu-request@lists.linux-foundation.org?subject=help>
 List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
  <mailto:iommu-request@lists.linux-foundation.org?subject=subscribe>
-Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset="us-ascii"; Format="flowed"
 Errors-To: iommu-bounces@lists.linux-foundation.org
 Sender: "iommu" <iommu-bounces@lists.linux-foundation.org>
 
-Christoph Hellwig <hch@lst.de> writes:
+Hi Joerg,
 
-> On Mon, Mar 23, 2020 at 09:37:05AM +0100, Christoph Hellwig wrote:
->> > > +	/*
->> > > +	 * Allows IOMMU drivers to bypass dynamic translations if the DMA mask
->> > > +	 * is large enough.
->> > > +	 */
->> > > +	if (dev->dma_ops_bypass) {
->> > > +		if (min_not_zero(dev->coherent_dma_mask, dev->bus_dma_limit) >=
->> > > +				dma_direct_get_required_mask(dev))
->> > > +			return true;
->> > > +	}
->> > 
->> > 
->> > Why not do this in dma_map_direct() as well?
->> 
->> Mostly beacuse it is a relatively expensive operation, including a
->> fls64.
->
-> Which I guess isn't too bad compared to a dynamic IOMMU mapping.  Can
-> you just send a draft patch for what you'd like to see for ppc?
+Thanks for tackling this!
 
-This is what I was trying, but considering I am new to DMA subsystem, I
-am not sure I got all the details correct. The idea is to look at the
-cpu addr and see if that can be used in direct map fashion(is
-bus_dma_limit the right restriction here?) if not fallback to dynamic
-IOMMU mapping.
+On 2020-03-20 9:14 am, Joerg Roedel wrote:
+> From: Joerg Roedel <jroedel@suse.de>
+> 
+> Make use of dev_iommu_priv_set/get() functions and simplify the code
+> where possible with this change.
+> 
+> Tested-by: Will Deacon <will@kernel.org> # arm-smmu
+> Signed-off-by: Joerg Roedel <jroedel@suse.de>
+> ---
+>   drivers/iommu/arm-smmu.c | 57 +++++++++++++++++++++-------------------
+>   1 file changed, 30 insertions(+), 27 deletions(-)
+> 
+> diff --git a/drivers/iommu/arm-smmu.c b/drivers/iommu/arm-smmu.c
+> index 980aae73b45b..7aa36e6c19c0 100644
+> --- a/drivers/iommu/arm-smmu.c
+> +++ b/drivers/iommu/arm-smmu.c
+> @@ -98,12 +98,15 @@ struct arm_smmu_master_cfg {
+>   	s16				smendx[];
+>   };
+>   #define INVALID_SMENDX			-1
+> -#define __fwspec_cfg(fw) ((struct arm_smmu_master_cfg *)fw->iommu_priv)
+> -#define fwspec_smmu(fw)  (__fwspec_cfg(fw)->smmu)
+> -#define fwspec_smendx(fw, i) \
+> -	(i >= fw->num_ids ? INVALID_SMENDX : __fwspec_cfg(fw)->smendx[i])
+> -#define for_each_cfg_sme(fw, i, idx) \
+> -	for (i = 0; idx = fwspec_smendx(fw, i), i < fw->num_ids; ++i)
+> +#define __fwspec_cfg(dev) ((struct arm_smmu_master_cfg *)dev_iommu_priv_get(dev))
+> +#define fwspec_smmu(dev)  (__fwspec_cfg(dev)->smmu)
+> +#define fwspec_smendx(dev, i)				\
+> +	(i >= dev_iommu_fwspec_get(dev)->num_ids ?	\
+> +		INVALID_SMENDX :			\
+> +		__fwspec_cfg(dev)->smendx[i])
+> +#define for_each_cfg_sme(dev, i, idx) \
+> +	for (i = 0; idx = fwspec_smendx(dev, i), \
+> +	     i < dev_iommu_fwspec_get(dev)->num_ids; ++i)
 
-diff --git a/arch/powerpc/kernel/dma-iommu.c b/arch/powerpc/kernel/dma-iommu.c
-index e486d1d78de2..bc7e6a8b2caa 100644
---- a/arch/powerpc/kernel/dma-iommu.c
-+++ b/arch/powerpc/kernel/dma-iommu.c
-@@ -31,6 +31,87 @@ static inline bool dma_iommu_map_bypass(struct device *dev,
- 		(!iommu_fixed_is_weak || (attrs & DMA_ATTR_WEAK_ORDERING));
- }
- 
-+static inline bool __dma_direct_map_capable(struct device *dev, struct page *page,
-+					    unsigned long offset, size_t size)
-+{
-+	phys_addr_t phys = page_to_phys(page) + offset;
-+	dma_addr_t dma_addr = phys_to_dma(dev, phys);
-+	dma_addr_t end = dma_addr + size - 1;
-+
-+	return end <= min_not_zero(*dev->dma_mask, dev->bus_dma_limit);
-+}
-+
-+static inline bool dma_direct_map_capable(struct device *dev, struct page *page,
-+					  unsigned long offset, size_t size,
-+					  unsigned long attrs)
-+{
-+	if (!dma_iommu_map_bypass(dev, attrs))
-+		return false;
-+
-+	if (!dev->dma_mask)
-+		return false;
-+
-+	return __dma_direct_map_capable(dev, page, offset, size);
-+}
-+
-+
-+static inline bool dma_direct_unmap_capable(struct device *dev, dma_addr_t addr, size_t size,
-+					    unsigned long attrs)
-+{
-+	dma_addr_t end = addr + size - 1;
-+
-+	if (!dma_iommu_map_bypass(dev, attrs))
-+		return false;
-+
-+	if (!dev->dma_mask)
-+		return false;
-+
-+	return end <= min_not_zero(*dev->dma_mask, dev->bus_dma_limit);
-+}
-+
-+static inline bool dma_direct_sg_map_capable(struct device *dev, struct scatterlist *sglist,
-+					     int nelems, unsigned long attrs)
-+{
-+	int i;
-+	struct scatterlist *sg;
-+
-+	if (!dma_iommu_map_bypass(dev, attrs))
-+		return false;
-+
-+	if (!dev->dma_mask)
-+		return false;
-+
-+	for_each_sg(sglist, sg, nelems, i) {
-+		if (!__dma_direct_map_capable(dev, sg_page(sg),
-+					      sg->offset, sg->length))
-+			return false;
-+	}
-+	return true;
-+}
-+
-+static inline bool dma_direct_sg_unmap_capable(struct device *dev, struct scatterlist *sglist,
-+					       int nelems, unsigned long attrs)
-+{
-+	int i;
-+	dma_addr_t end;
-+	struct scatterlist *sg;
-+
-+	if (!dma_iommu_map_bypass(dev, attrs))
-+		return false;
-+
-+	if (!dev->dma_mask)
-+		return false;
-+
-+	for_each_sg(sglist, sg, nelems, i) {
-+		end = sg->dma_address + sg_dma_len(sg);
-+
-+		if (end > min_not_zero(*dev->dma_mask, dev->bus_dma_limit))
-+			return false;
-+	}
-+	return true;
-+}
-+
-+
- /* Allocates a contiguous real buffer and creates mappings over it.
-  * Returns the virtual address of the buffer and sets dma_handle
-  * to the dma address (mapping) of the first page.
-@@ -67,7 +148,7 @@ static dma_addr_t dma_iommu_map_page(struct device *dev, struct page *page,
- 				     enum dma_data_direction direction,
- 				     unsigned long attrs)
- {
--	if (dma_iommu_map_bypass(dev, attrs))
-+	if (dma_direct_map_capable(dev, page, offset, size, attrs))
- 		return dma_direct_map_page(dev, page, offset, size, direction,
- 				attrs);
- 	return iommu_map_page(dev, get_iommu_table_base(dev), page, offset,
-@@ -79,7 +160,7 @@ static void dma_iommu_unmap_page(struct device *dev, dma_addr_t dma_handle,
- 				 size_t size, enum dma_data_direction direction,
- 				 unsigned long attrs)
- {
--	if (!dma_iommu_map_bypass(dev, attrs))
-+	if (!dma_direct_unmap_capable(dev, dma_handle, size, attrs))
- 		iommu_unmap_page(get_iommu_table_base(dev), dma_handle, size,
- 				direction,  attrs);
- 	else
-@@ -91,7 +172,7 @@ static int dma_iommu_map_sg(struct device *dev, struct scatterlist *sglist,
- 			    int nelems, enum dma_data_direction direction,
- 			    unsigned long attrs)
- {
--	if (dma_iommu_map_bypass(dev, attrs))
-+	if (dma_direct_sg_map_capable(dev, sglist, nelems, attrs))
- 		return dma_direct_map_sg(dev, sglist, nelems, direction, attrs);
- 	return ppc_iommu_map_sg(dev, get_iommu_table_base(dev), sglist, nelems,
- 				dma_get_mask(dev), direction, attrs);
-@@ -101,7 +182,7 @@ static void dma_iommu_unmap_sg(struct device *dev, struct scatterlist *sglist,
- 		int nelems, enum dma_data_direction direction,
- 		unsigned long attrs)
- {
--	if (!dma_iommu_map_bypass(dev, attrs))
-+	if (!dma_direct_sg_unmap_capable(dev, sglist, nelems, attrs))
- 		ppc_iommu_unmap_sg(get_iommu_table_base(dev), sglist, nelems,
- 			   direction, attrs);
- 	else
-diff --git a/arch/powerpc/platforms/pseries/iommu.c b/arch/powerpc/platforms/pseries/iommu.c
-index 99f72162dd85..702a680f5766 100644
---- a/arch/powerpc/platforms/pseries/iommu.c
-+++ b/arch/powerpc/platforms/pseries/iommu.c
-@@ -1119,6 +1119,7 @@ static u64 enable_ddw(struct pci_dev *dev, struct device_node *pdn)
- 	spin_unlock(&direct_window_list_lock);
- 
- 	dma_addr = be64_to_cpu(ddwprop->dma_base);
-+	dev->dev.bus_dma_limit = dma_addr + query.largest_available_block;
- 	goto out_unlock;
- 
- out_free_window:
+Yikes, this ends up pretty ugly, and I'd prefer not have this much 
+complexity hidden in macros that were intended just to be convenient 
+shorthand. Would you mind pulling in the patch below as a precursor?
+
+Other than that, the rest of the series looks OK at a glance. We should 
+also move fwspec->ops to dev_iommu, as those are "IOMMU API" data rather 
+than "firmware" data, but let's consider that separately as this series 
+is already long enough.
+
+Thanks,
+Robin.
+
+----->8-----
+Subject: [PATCH] iommu/arm-smmu: Refactor master_cfg/fwspec usage
+
+In preparation for restructuring iommu_fwspec, refactor the way we
+access the arm_smmu_master_cfg private data to be less dependent on
+the current layout.
+
+Signed-off-by: Robin Murphy <robin.murphy@arm.com>
+---
+  drivers/iommu/arm-smmu.c | 42 +++++++++++++++++++++-------------------
+  1 file changed, 22 insertions(+), 20 deletions(-)
+
+diff --git a/drivers/iommu/arm-smmu.c b/drivers/iommu/arm-smmu.c
+index 16c4b87af42b..b4978f45a7f2 100644
+--- a/drivers/iommu/arm-smmu.c
++++ b/drivers/iommu/arm-smmu.c
+@@ -98,12 +98,10 @@ struct arm_smmu_master_cfg {
+  	s16				smendx[];
+  };
+  #define INVALID_SMENDX			-1
+-#define __fwspec_cfg(fw) ((struct arm_smmu_master_cfg *)fw->iommu_priv)
+-#define fwspec_smmu(fw)  (__fwspec_cfg(fw)->smmu)
+-#define fwspec_smendx(fw, i) \
+-	(i >= fw->num_ids ? INVALID_SMENDX : __fwspec_cfg(fw)->smendx[i])
+-#define for_each_cfg_sme(fw, i, idx) \
+-	for (i = 0; idx = fwspec_smendx(fw, i), i < fw->num_ids; ++i)
++#define cfg_smendx(cfg, fw, i) \
++	(i >= fw->num_ids ? INVALID_SMENDX : cfg->smendx[i])
++#define for_each_cfg_sme(cfg, fw, i, idx) \
++	for (i = 0; idx = cfg_smendx(cfg, fw, i), i < fw->num_ids; ++i)
+
+  static bool using_legacy_binding, using_generic_binding;
+
+@@ -1069,7 +1067,7 @@ static int arm_smmu_master_alloc_smes(struct 
+device *dev)
+
+  	mutex_lock(&smmu->stream_map_mutex);
+  	/* Figure out a viable stream map entry allocation */
+-	for_each_cfg_sme(fwspec, i, idx) {
++	for_each_cfg_sme(cfg, fwspec, i, idx) {
+  		u16 sid = FIELD_GET(ARM_SMMU_SMR_ID, fwspec->ids[i]);
+  		u16 mask = FIELD_GET(ARM_SMMU_SMR_MASK, fwspec->ids[i]);
+
+@@ -1100,7 +1098,7 @@ static int arm_smmu_master_alloc_smes(struct 
+device *dev)
+  	iommu_group_put(group);
+
+  	/* It worked! Now, poke the actual hardware */
+-	for_each_cfg_sme(fwspec, i, idx) {
++	for_each_cfg_sme(cfg, fwspec, i, idx) {
+  		arm_smmu_write_sme(smmu, idx);
+  		smmu->s2crs[idx].group = group;
+  	}
+@@ -1117,14 +1115,14 @@ static int arm_smmu_master_alloc_smes(struct 
+device *dev)
+  	return ret;
+  }
+
+-static void arm_smmu_master_free_smes(struct iommu_fwspec *fwspec)
++static void arm_smmu_master_free_smes(struct arm_smmu_master_cfg *cfg,
++				      struct iommu_fwspec *fwspec)
+  {
+-	struct arm_smmu_device *smmu = fwspec_smmu(fwspec);
+-	struct arm_smmu_master_cfg *cfg = fwspec->iommu_priv;
++	struct arm_smmu_device *smmu = cfg->smmu;
+  	int i, idx;
+
+  	mutex_lock(&smmu->stream_map_mutex);
+-	for_each_cfg_sme(fwspec, i, idx) {
++	for_each_cfg_sme(cfg, fwspec, i, idx) {
+  		if (arm_smmu_free_sme(smmu, idx))
+  			arm_smmu_write_sme(smmu, idx);
+  		cfg->smendx[i] = INVALID_SMENDX;
+@@ -1133,6 +1131,7 @@ static void arm_smmu_master_free_smes(struct 
+iommu_fwspec *fwspec)
+  }
+
+  static int arm_smmu_domain_add_master(struct arm_smmu_domain *smmu_domain,
++				      struct arm_smmu_master_cfg *cfg,
+  				      struct iommu_fwspec *fwspec)
+  {
+  	struct arm_smmu_device *smmu = smmu_domain->smmu;
+@@ -1146,7 +1145,7 @@ static int arm_smmu_domain_add_master(struct 
+arm_smmu_domain *smmu_domain,
+  	else
+  		type = S2CR_TYPE_TRANS;
+
+-	for_each_cfg_sme(fwspec, i, idx) {
++	for_each_cfg_sme(cfg, fwspec, i, idx) {
+  		if (type == s2cr[idx].type && cbndx == s2cr[idx].cbndx)
+  			continue;
+
+@@ -1162,8 +1161,9 @@ static int arm_smmu_attach_dev(struct iommu_domain 
+*domain, struct device *dev)
+  {
+  	int ret;
+  	struct iommu_fwspec *fwspec = dev_iommu_fwspec_get(dev);
+-	struct arm_smmu_device *smmu;
+  	struct arm_smmu_domain *smmu_domain = to_smmu_domain(domain);
++	struct arm_smmu_master_cfg *cfg;
++	struct arm_smmu_device *smmu;
+
+  	if (!fwspec || fwspec->ops != &arm_smmu_ops) {
+  		dev_err(dev, "cannot attach to SMMU, is it on the same bus?\n");
+@@ -1177,10 +1177,11 @@ static int arm_smmu_attach_dev(struct 
+iommu_domain *domain, struct device *dev)
+  	 * domains, just say no (but more politely than by dereferencing NULL).
+  	 * This should be at least a WARN_ON once that's sorted.
+  	 */
+-	if (!fwspec->iommu_priv)
++	cfg = fwspec->iommu_priv;
++	if (!cfg)
+  		return -ENODEV;
+
+-	smmu = fwspec_smmu(fwspec);
++	smmu = cfg->smmu;
+
+  	ret = arm_smmu_rpm_get(smmu);
+  	if (ret < 0)
+@@ -1204,7 +1205,7 @@ static int arm_smmu_attach_dev(struct iommu_domain 
+*domain, struct device *dev)
+  	}
+
+  	/* Looks ok, so add the device to the domain */
+-	ret = arm_smmu_domain_add_master(smmu_domain, fwspec);
++	ret = arm_smmu_domain_add_master(smmu_domain, cfg, fwspec);
+
+  	/*
+  	 * Setup an autosuspend delay to avoid bouncing runpm state.
+@@ -1475,7 +1476,7 @@ static void arm_smmu_remove_device(struct device *dev)
+  		return;
+
+  	iommu_device_unlink(&smmu->iommu, dev);
+-	arm_smmu_master_free_smes(fwspec);
++	arm_smmu_master_free_smes(cfg, fwspec);
+
+  	arm_smmu_rpm_put(smmu);
+
+@@ -1487,11 +1488,12 @@ static void arm_smmu_remove_device(struct device 
+*dev)
+  static struct iommu_group *arm_smmu_device_group(struct device *dev)
+  {
+  	struct iommu_fwspec *fwspec = dev_iommu_fwspec_get(dev);
+-	struct arm_smmu_device *smmu = fwspec_smmu(fwspec);
++	struct arm_smmu_master_cfg *cfg = fwspec->iommu_priv;
++	struct arm_smmu_device *smmu = cfg->smmu;
+  	struct iommu_group *group = NULL;
+  	int i, idx;
+
+-	for_each_cfg_sme(fwspec, i, idx) {
++	for_each_cfg_sme(cfg, fwspec, i, idx) {
+  		if (group && smmu->s2crs[idx].group &&
+  		    group != smmu->s2crs[idx].group)
+  			return ERR_PTR(-EINVAL);
+-- 
+2.17.1
 _______________________________________________
 iommu mailing list
 iommu@lists.linux-foundation.org
