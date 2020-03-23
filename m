@@ -2,96 +2,73 @@ Return-Path: <SRS0=qkVD=5I=lists.linux-foundation.org=iommu-bounces@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-6.5 required=3.0 tests=DKIM_INVALID,DKIM_SIGNED,
-	HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_PATCH,MAILING_LIST_MULTI,SIGNED_OFF_BY,
-	SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED autolearn=ham autolearn_force=no
+X-Spam-Status: No, score=-8.2 required=3.0 tests=HEADER_FROM_DIFFERENT_DOMAINS,
+	INCLUDES_PATCH,MAILING_LIST_MULTI,SIGNED_OFF_BY,SPF_HELO_NONE,SPF_PASS,
+	URIBL_BLOCKED,USER_AGENT_SANE_1 autolearn=unavailable autolearn_force=no
 	version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 27520C4332B
-	for <iommu@archiver.kernel.org>; Mon, 23 Mar 2020 09:59:59 +0000 (UTC)
-Received: from whitealder.osuosl.org (smtp1.osuosl.org [140.211.166.138])
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 665BCC4332B
+	for <iommu@archiver.kernel.org>; Mon, 23 Mar 2020 12:16:02 +0000 (UTC)
+Received: from fraxinus.osuosl.org (smtp4.osuosl.org [140.211.166.137])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by mail.kernel.org (Postfix) with ESMTPS id DD92420769
-	for <iommu@archiver.kernel.org>; Mon, 23 Mar 2020 09:59:58 +0000 (UTC)
-Authentication-Results: mail.kernel.org;
-	dkim=fail reason="signature verification failed" (2048-bit key) header.d=linaro.org header.i=@linaro.org header.b="Ac8xEEQD"
-DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org DD92420769
-Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=linaro.org
+	by mail.kernel.org (Postfix) with ESMTPS id 2B98F2078A
+	for <iommu@archiver.kernel.org>; Mon, 23 Mar 2020 12:16:02 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 2B98F2078A
+Authentication-Results: mail.kernel.org; dmarc=none (p=none dis=none) header.from=arm.com
 Authentication-Results: mail.kernel.org; spf=pass smtp.mailfrom=iommu-bounces@lists.linux-foundation.org
 Received: from localhost (localhost [127.0.0.1])
-	by whitealder.osuosl.org (Postfix) with ESMTP id AA5B287D61;
-	Mon, 23 Mar 2020 09:59:58 +0000 (UTC)
+	by fraxinus.osuosl.org (Postfix) with ESMTP id 0042186958;
+	Mon, 23 Mar 2020 12:16:02 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from whitealder.osuosl.org ([127.0.0.1])
+Received: from fraxinus.osuosl.org ([127.0.0.1])
 	by localhost (.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
-	with ESMTP id gfoe-wF3-DQ8; Mon, 23 Mar 2020 09:59:57 +0000 (UTC)
+	with ESMTP id 7Xho2CvUqNgI; Mon, 23 Mar 2020 12:16:01 +0000 (UTC)
 Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [140.211.9.56])
-	by whitealder.osuosl.org (Postfix) with ESMTP id D07D687D57;
-	Mon, 23 Mar 2020 09:59:57 +0000 (UTC)
+	by fraxinus.osuosl.org (Postfix) with ESMTP id EF7E5860FE;
+	Mon, 23 Mar 2020 12:16:00 +0000 (UTC)
 Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
-	by lists.linuxfoundation.org (Postfix) with ESMTP id CB1E7C1AE2;
-	Mon, 23 Mar 2020 09:59:57 +0000 (UTC)
+	by lists.linuxfoundation.org (Postfix) with ESMTP id E5995C089F;
+	Mon, 23 Mar 2020 12:16:00 +0000 (UTC)
 Received: from fraxinus.osuosl.org (smtp4.osuosl.org [140.211.166.137])
- by lists.linuxfoundation.org (Postfix) with ESMTP id C13EBC0177
- for <iommu@lists.linux-foundation.org>; Mon, 23 Mar 2020 09:59:55 +0000 (UTC)
+ by lists.linuxfoundation.org (Postfix) with ESMTP id 6029DC0177
+ for <iommu@lists.linux-foundation.org>; Mon, 23 Mar 2020 12:15:59 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
- by fraxinus.osuosl.org (Postfix) with ESMTP id ADF2D861F1
- for <iommu@lists.linux-foundation.org>; Mon, 23 Mar 2020 09:59:55 +0000 (UTC)
+ by fraxinus.osuosl.org (Postfix) with ESMTP id 5C533868D3
+ for <iommu@lists.linux-foundation.org>; Mon, 23 Mar 2020 12:15:59 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
 Received: from fraxinus.osuosl.org ([127.0.0.1])
  by localhost (.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
- with ESMTP id sdE7vZ9sZI5p for <iommu@lists.linux-foundation.org>;
- Mon, 23 Mar 2020 09:59:53 +0000 (UTC)
+ with ESMTP id jVRps_xnqXKE for <iommu@lists.linux-foundation.org>;
+ Mon, 23 Mar 2020 12:15:57 +0000 (UTC)
 X-Greylist: domain auto-whitelisted by SQLgrey-1.7.6
-Received: from mail-wr1-f65.google.com (mail-wr1-f65.google.com
- [209.85.221.65])
- by fraxinus.osuosl.org (Postfix) with ESMTPS id 6D04A80662
- for <iommu@lists.linux-foundation.org>; Mon, 23 Mar 2020 09:59:53 +0000 (UTC)
-Received: by mail-wr1-f65.google.com with SMTP id 31so10154017wrs.3
- for <iommu@lists.linux-foundation.org>; Mon, 23 Mar 2020 02:59:53 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linaro.org; s=google;
- h=date:from:to:cc:subject:message-id:references:mime-version
- :content-disposition:in-reply-to;
- bh=SKwP6PuSmpPxD5KIQt+eRPXDv7gAdJWy99DhxndHi8Q=;
- b=Ac8xEEQD2/vnLVFS79WqIoarVPeLu0ry3vDW5+1c1fKc0szvKZVzENJvatKh+bdREL
- 5PanFo7ygKEHHlN4Q6DeE3BmD3TXbVt5RjdrOfEsoBRhlmn8C6nqqI4RwgSgqAOz8eVa
- 4kZDTlc6TyJIyKI389XnOOjmGCaSEkg7ZW7c8ZYNnw06IRYmhwtiVSqNQvw/v6jCt5VH
- 51fRN61BQTGBuZc5p+/RPmRhVHluoRSd7noUSUVajFk+iyhPN6wrEv76zDDXlHV46/Ny
- yVia9MNh1KMi4ArJJuB941R/AwZruzfCZQMIkQMSXSa39SW/ykH32rdcIBRKhYzHY6Qg
- Ok0w==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
- d=1e100.net; s=20161025;
- h=x-gm-message-state:date:from:to:cc:subject:message-id:references
- :mime-version:content-disposition:in-reply-to;
- bh=SKwP6PuSmpPxD5KIQt+eRPXDv7gAdJWy99DhxndHi8Q=;
- b=sIb3AjptH9nfcvCP/+/H7QWH4EeUR+Wdeip59e+R3qPuH293E7RzNSix4ggCXAVTsX
- fxu9gubTcU6rmNlpdgrygnu+3qIyMY8oPeADD+BPTlXFuOw+NGNt9bixYepFk2piIKoE
- Iqpdc2IFBBFN9KV7iu1nU2IVEZlEMbv1jGXtKfTNb6HoKY+e8TccVGoyA5CuqFbO3xHe
- b26/He6kSHj0uNMjSGc5cF5SmwCcnZdwO9ixp4nfmRi04ReZcOs8IWQgwa1oTxneTWU2
- yW3DXFlIZnokp7u8o6I/326GxOq4FhTS/3waUQFEvrIt2NBSdU3sXDxzk0DAS/DP7Qdk
- cBvw==
-X-Gm-Message-State: ANhLgQ0Lu4SmDSOpe0R7ylswmaSmIiuftlu9OWFc+kPUb9jOl95Ph5iY
- UL/K3VPo+DK/7mtsOpRrl4nyvg==
-X-Google-Smtp-Source: ADFU+vtxV3GmAHk3qYBesY4u/jqaZVOvYlPww74IdS6zCly9cNlITWeL8IQJ2yfwWY2gDBlY07rn6A==
-X-Received: by 2002:adf:ea8e:: with SMTP id s14mr29093421wrm.206.1584957591642; 
- Mon, 23 Mar 2020 02:59:51 -0700 (PDT)
-Received: from myrica ([2001:171b:226b:54a0:116c:c27a:3e7f:5eaf])
- by smtp.gmail.com with ESMTPSA id n1sm22800602wrj.77.2020.03.23.02.59.50
- (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
- Mon, 23 Mar 2020 02:59:50 -0700 (PDT)
-Date: Mon, 23 Mar 2020 10:59:43 +0100
-From: Jean-Philippe Brucker <jean-philippe@linaro.org>
-To: Bharat Bhushan <bbhushan2@marvell.com>
-Subject: Re: [PATCH RFC] iommu/virtio: Use page size bitmap supported by
- endpoint
-Message-ID: <20200323095943.GA2038940@myrica>
-References: <20200323084108.1721-1-bbhushan2@marvell.com>
+Received: from foss.arm.com (foss.arm.com [217.140.110.172])
+ by fraxinus.osuosl.org (Postfix) with ESMTP id D2F9C860FE
+ for <iommu@lists.linux-foundation.org>; Mon, 23 Mar 2020 12:15:57 +0000 (UTC)
+Received: from usa-sjc-imap-foss1.foss.arm.com (unknown [10.121.207.14])
+ by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id 08FFB1FB;
+ Mon, 23 Mar 2020 05:15:57 -0700 (PDT)
+Received: from [192.168.1.123] (unknown [172.31.20.19])
+ by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPSA id BC7BC3F52E;
+ Mon, 23 Mar 2020 05:15:45 -0700 (PDT)
+Subject: Re: [PATCH 1/2] dma-mapping: add a dma_ops_bypass flag to struct
+ device
+To: Christoph Hellwig <hch@lst.de>,
+ "iommu@lists.linux-foundation.org" <iommu@lists.linux-foundation.org>,
+ Alexey Kardashevskiy <aik@ozlabs.ru>
+References: <20200320141640.366360-1-hch@lst.de>
+ <20200320141640.366360-2-hch@lst.de>
+From: Robin Murphy <robin.murphy@arm.com>
+Message-ID: <0a6003e5-8003-4509-4014-4b286d5e8fe0@arm.com>
+Date: Mon, 23 Mar 2020 12:14:08 +0000
+User-Agent: Mozilla/5.0 (Windows NT 10.0; rv:68.0) Gecko/20100101
+ Thunderbird/68.6.0
 MIME-Version: 1.0
-Content-Disposition: inline
-In-Reply-To: <20200323084108.1721-1-bbhushan2@marvell.com>
-Cc: mst@redhat.com, virtualization@lists.linux-foundation.org,
- iommu@lists.linux-foundation.org, jasowang@redhat.com
+In-Reply-To: <20200320141640.366360-2-hch@lst.de>
+Content-Language: en-GB
+Cc: Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+ "linuxppc-dev@lists.ozlabs.org" <linuxppc-dev@lists.ozlabs.org>,
+ "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>
 X-BeenThere: iommu@lists.linux-foundation.org
 X-Mailman-Version: 2.1.15
 Precedence: list
@@ -104,150 +81,288 @@ List-Post: <mailto:iommu@lists.linux-foundation.org>
 List-Help: <mailto:iommu-request@lists.linux-foundation.org?subject=help>
 List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
  <mailto:iommu-request@lists.linux-foundation.org?subject=subscribe>
-Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset="us-ascii"; Format="flowed"
 Errors-To: iommu-bounces@lists.linux-foundation.org
 Sender: "iommu" <iommu-bounces@lists.linux-foundation.org>
 
-Hi Bharat,
+On 2020-03-20 2:16 pm, Christoph Hellwig wrote:
+> Several IOMMU drivers have a bypass mode where they can use a direct
+> mapping if the devices DMA mask is large enough.  Add generic support
+> to the core dma-mapping code to do that to switch those drivers to
+> a common solution.
 
-Please add the IOMMU list on your next posting
+Hmm, this is _almost_, but not quite the same as the case where drivers 
+are managing their own IOMMU mappings, but still need to use streaming 
+DMA for cache maintenance on the underlying pages. For that we need the 
+ops bypass to be a "true" bypass and also avoid SWIOTLB regardless of 
+the device's DMA mask. That behaviour should in fact be fine for the 
+opportunistic bypass case here as well, since the mask being "big 
+enough" implies by definition that this should never need to bounce either.
 
-On Mon, Mar 23, 2020 at 02:11:08PM +0530, Bharat Bhushan wrote:
-> Different endpoint can support different page size, probe
-> endpoint if it supports specific page size otherwise use
-> global page sizes.
-> 
-> Signed-off-by: Bharat Bhushan <bbhushan2@marvell.com>
+For the (hopefully less common) third case where, due to groups or user 
+overrides, we end up giving an identity DMA domain to a device with 
+limited DMA masks which _does_ need SWIOTLB, I'd like to think we can 
+solve that by not giving the device IOMMU DMA ops in the first place, 
+such that it never needs to engage the bypass mechanism at all.
+
+Thoughts?
+
+Robin.
+
+> Signed-off-by: Christoph Hellwig <hch@lst.de>
 > ---
->  drivers/iommu/virtio-iommu.c      | 24 ++++++++++++++++++++----
->  include/uapi/linux/virtio_iommu.h |  6 ++++++
->  2 files changed, 26 insertions(+), 4 deletions(-)
+>   include/linux/device.h      |  6 ++++++
+>   include/linux/dma-mapping.h | 30 ++++++++++++++++++------------
+>   kernel/dma/mapping.c        | 36 +++++++++++++++++++++++++++---------
+>   3 files changed, 51 insertions(+), 21 deletions(-)
 > 
-> diff --git a/drivers/iommu/virtio-iommu.c b/drivers/iommu/virtio-iommu.c
-> index cce329d71fba..e69347ca4ee6 100644
-> --- a/drivers/iommu/virtio-iommu.c
-> +++ b/drivers/iommu/virtio-iommu.c
-> @@ -78,6 +78,7 @@ struct viommu_endpoint {
->  	struct viommu_dev		*viommu;
->  	struct viommu_domain		*vdomain;
->  	struct list_head		resv_regions;
-> +	u64				pgsize_bitmap;
->  };
->  
->  struct viommu_request {
-> @@ -415,6 +416,14 @@ static int viommu_replay_mappings(struct viommu_domain *vdomain)
->  	return ret;
->  }
->  
-> +static int viommu_set_pgsize_bitmap(struct viommu_endpoint *vdev,
-> +				    struct virtio_iommu_probe_pgsize_mask *mask)
-> +
+> diff --git a/include/linux/device.h b/include/linux/device.h
+> index 0cd7c647c16c..09be8bb2c4a6 100644
+> --- a/include/linux/device.h
+> +++ b/include/linux/device.h
+> @@ -525,6 +525,11 @@ struct dev_links_info {
+>    *		  sync_state() callback.
+>    * @dma_coherent: this particular device is dma coherent, even if the
+>    *		architecture supports non-coherent devices.
+> + * @dma_ops_bypass: If set to %true then the dma_ops are bypassed for the
+> + *		streaming DMA operations (->map_* / ->unmap_* / ->sync_*),
+> + *		and optionall (if the coherent mask is large enough) also
+> + *		for dma allocations.  This flag is managed by the dma ops
+> + *		instance from ->dma_supported.
+>    *
+>    * At the lowest level, every device in a Linux system is represented by an
+>    * instance of struct device. The device structure contains the information
+> @@ -625,6 +630,7 @@ struct device {
+>       defined(CONFIG_ARCH_HAS_SYNC_DMA_FOR_CPU_ALL)
+>   	bool			dma_coherent:1;
+>   #endif
+> +	bool			dma_ops_bypass : 1;
+>   };
+>   
+>   static inline struct device *kobj_to_dev(struct kobject *kobj)
+> diff --git a/include/linux/dma-mapping.h b/include/linux/dma-mapping.h
+> index 330ad58fbf4d..c3af0cf5e435 100644
+> --- a/include/linux/dma-mapping.h
+> +++ b/include/linux/dma-mapping.h
+> @@ -188,9 +188,15 @@ static inline int dma_mmap_from_global_coherent(struct vm_area_struct *vma,
+>   }
+>   #endif /* CONFIG_DMA_DECLARE_COHERENT */
+>   
+> -static inline bool dma_is_direct(const struct dma_map_ops *ops)
+> +/*
+> + * Check if the devices uses a direct mapping for streaming DMA operations.
+> + * This allows IOMMU drivers to set a bypass mode if the DMA mask is large
+> + * enough.
+> + */
+> +static inline bool dma_map_direct(struct device *dev,
+> +		const struct dma_map_ops *ops)
+>   {
+> -	return likely(!ops);
+> +	return likely(!ops) || dev->dma_ops_bypass;
+>   }
+>   
+>   /*
+> @@ -279,7 +285,7 @@ static inline dma_addr_t dma_map_page_attrs(struct device *dev,
+>   	dma_addr_t addr;
+>   
+>   	BUG_ON(!valid_dma_direction(dir));
+> -	if (dma_is_direct(ops))
+> +	if (dma_map_direct(dev, ops))
+>   		addr = dma_direct_map_page(dev, page, offset, size, dir, attrs);
+>   	else
+>   		addr = ops->map_page(dev, page, offset, size, dir, attrs);
+> @@ -294,7 +300,7 @@ static inline void dma_unmap_page_attrs(struct device *dev, dma_addr_t addr,
+>   	const struct dma_map_ops *ops = get_dma_ops(dev);
+>   
+>   	BUG_ON(!valid_dma_direction(dir));
+> -	if (dma_is_direct(ops))
+> +	if (dma_map_direct(dev, ops))
+>   		dma_direct_unmap_page(dev, addr, size, dir, attrs);
+>   	else if (ops->unmap_page)
+>   		ops->unmap_page(dev, addr, size, dir, attrs);
+> @@ -313,7 +319,7 @@ static inline int dma_map_sg_attrs(struct device *dev, struct scatterlist *sg,
+>   	int ents;
+>   
+>   	BUG_ON(!valid_dma_direction(dir));
+> -	if (dma_is_direct(ops))
+> +	if (dma_map_direct(dev, ops))
+>   		ents = dma_direct_map_sg(dev, sg, nents, dir, attrs);
+>   	else
+>   		ents = ops->map_sg(dev, sg, nents, dir, attrs);
+> @@ -331,7 +337,7 @@ static inline void dma_unmap_sg_attrs(struct device *dev, struct scatterlist *sg
+>   
+>   	BUG_ON(!valid_dma_direction(dir));
+>   	debug_dma_unmap_sg(dev, sg, nents, dir);
+> -	if (dma_is_direct(ops))
+> +	if (dma_map_direct(dev, ops))
+>   		dma_direct_unmap_sg(dev, sg, nents, dir, attrs);
+>   	else if (ops->unmap_sg)
+>   		ops->unmap_sg(dev, sg, nents, dir, attrs);
+> @@ -352,7 +358,7 @@ static inline dma_addr_t dma_map_resource(struct device *dev,
+>   	if (WARN_ON_ONCE(pfn_valid(PHYS_PFN(phys_addr))))
+>   		return DMA_MAPPING_ERROR;
+>   
+> -	if (dma_is_direct(ops))
+> +	if (dma_map_direct(dev, ops))
+>   		addr = dma_direct_map_resource(dev, phys_addr, size, dir, attrs);
+>   	else if (ops->map_resource)
+>   		addr = ops->map_resource(dev, phys_addr, size, dir, attrs);
+> @@ -368,7 +374,7 @@ static inline void dma_unmap_resource(struct device *dev, dma_addr_t addr,
+>   	const struct dma_map_ops *ops = get_dma_ops(dev);
+>   
+>   	BUG_ON(!valid_dma_direction(dir));
+> -	if (!dma_is_direct(ops) && ops->unmap_resource)
+> +	if (!dma_map_direct(dev, ops) && ops->unmap_resource)
+>   		ops->unmap_resource(dev, addr, size, dir, attrs);
+>   	debug_dma_unmap_resource(dev, addr, size, dir);
+>   }
+> @@ -380,7 +386,7 @@ static inline void dma_sync_single_for_cpu(struct device *dev, dma_addr_t addr,
+>   	const struct dma_map_ops *ops = get_dma_ops(dev);
+>   
+>   	BUG_ON(!valid_dma_direction(dir));
+> -	if (dma_is_direct(ops))
+> +	if (dma_map_direct(dev, ops))
+>   		dma_direct_sync_single_for_cpu(dev, addr, size, dir);
+>   	else if (ops->sync_single_for_cpu)
+>   		ops->sync_single_for_cpu(dev, addr, size, dir);
+> @@ -394,7 +400,7 @@ static inline void dma_sync_single_for_device(struct device *dev,
+>   	const struct dma_map_ops *ops = get_dma_ops(dev);
+>   
+>   	BUG_ON(!valid_dma_direction(dir));
+> -	if (dma_is_direct(ops))
+> +	if (dma_map_direct(dev, ops))
+>   		dma_direct_sync_single_for_device(dev, addr, size, dir);
+>   	else if (ops->sync_single_for_device)
+>   		ops->sync_single_for_device(dev, addr, size, dir);
+> @@ -408,7 +414,7 @@ dma_sync_sg_for_cpu(struct device *dev, struct scatterlist *sg,
+>   	const struct dma_map_ops *ops = get_dma_ops(dev);
+>   
+>   	BUG_ON(!valid_dma_direction(dir));
+> -	if (dma_is_direct(ops))
+> +	if (dma_map_direct(dev, ops))
+>   		dma_direct_sync_sg_for_cpu(dev, sg, nelems, dir);
+>   	else if (ops->sync_sg_for_cpu)
+>   		ops->sync_sg_for_cpu(dev, sg, nelems, dir);
+> @@ -422,7 +428,7 @@ dma_sync_sg_for_device(struct device *dev, struct scatterlist *sg,
+>   	const struct dma_map_ops *ops = get_dma_ops(dev);
+>   
+>   	BUG_ON(!valid_dma_direction(dir));
+> -	if (dma_is_direct(ops))
+> +	if (dma_map_direct(dev, ops))
+>   		dma_direct_sync_sg_for_device(dev, sg, nelems, dir);
+>   	else if (ops->sync_sg_for_device)
+>   		ops->sync_sg_for_device(dev, sg, nelems, dir);
+> diff --git a/kernel/dma/mapping.c b/kernel/dma/mapping.c
+> index 12ff766ec1fa..fdea45574345 100644
+> --- a/kernel/dma/mapping.c
+> +++ b/kernel/dma/mapping.c
+> @@ -105,6 +105,24 @@ void *dmam_alloc_attrs(struct device *dev, size_t size, dma_addr_t *dma_handle,
+>   }
+>   EXPORT_SYMBOL(dmam_alloc_attrs);
+>   
+> +static bool dma_alloc_direct(struct device *dev, const struct dma_map_ops *ops)
 > +{
-> +	vdev->pgsize_bitmap = mask->pgsize_bitmap;
-
-We need to read this through le64_to_cpu(). Also check that the length of
-the field provided by the device is >= sizeof(mask) (like
-viommu_add_resv_mem() does)
-
-> +	return 0;
+> +	if (!ops)
+> +		return true;
+> +
+> +	/*
+> +	 * Allows IOMMU drivers to bypass dynamic translations if the DMA mask
+> +	 * is large enough.
+> +	 */
+> +	if (dev->dma_ops_bypass) {
+> +		if (min_not_zero(dev->coherent_dma_mask, dev->bus_dma_limit) >=
+> +				dma_direct_get_required_mask(dev))
+> +			return true;
+> +	}
+> +
+> +	return false;
 > +}
 > +
->  static int viommu_add_resv_mem(struct viommu_endpoint *vdev,
->  			       struct virtio_iommu_probe_resv_mem *mem,
->  			       size_t len)
-> @@ -494,11 +503,13 @@ static int viommu_probe_endpoint(struct viommu_dev *viommu, struct device *dev)
->  	while (type != VIRTIO_IOMMU_PROBE_T_NONE &&
->  	       cur < viommu->probe_size) {
->  		len = le16_to_cpu(prop->length) + sizeof(*prop);
-> -
->  		switch (type) {
->  		case VIRTIO_IOMMU_PROBE_T_RESV_MEM:
->  			ret = viommu_add_resv_mem(vdev, (void *)prop, len);
->  			break;
-> +		case VIRTIO_IOMMU_PROBE_T_PAGE_SIZE_MASK:
-> +			ret = viommu_set_pgsize_bitmap(vdev, (void *)prop);
-> +			break;
->  		default:
->  			dev_err(dev, "unknown viommu prop 0x%x\n", type);
->  		}
-> @@ -607,16 +618,21 @@ static struct iommu_domain *viommu_domain_alloc(unsigned type)
->  	return &vdomain->domain;
->  }
->  
-> -static int viommu_domain_finalise(struct viommu_dev *viommu,
-> +static int viommu_domain_finalise(struct viommu_endpoint *vdev,
->  				  struct iommu_domain *domain)
->  {
->  	int ret;
->  	struct viommu_domain *vdomain = to_viommu_domain(domain);
-> +	struct viommu_dev *viommu = vdev->viommu;
->  
->  	vdomain->viommu		= viommu;
->  	vdomain->map_flags	= viommu->map_flags;
->  
-> -	domain->pgsize_bitmap	= viommu->pgsize_bitmap;
-> +	if (vdev->pgsize_bitmap)
-> +		domain->pgsize_bitmap = vdev->pgsize_bitmap;
-> +	else
-> +		domain->pgsize_bitmap	= viommu->pgsize_bitmap;
-> +
-
-nit: it could be nicer to initialize vdev->pgsize_bitmap in add_device(),
-override it in probe_endpoint(), and just copy it here.
-
->  	domain->geometry	= viommu->geometry;
->  
->  	ret = ida_alloc_range(&viommu->domain_ids, viommu->first_domain,
-> @@ -657,7 +673,7 @@ static int viommu_attach_dev(struct iommu_domain *domain, struct device *dev)
->  		 * Properly initialize the domain now that we know which viommu
->  		 * owns it.
->  		 */
-> -		ret = viommu_domain_finalise(vdev->viommu, domain);
-> +		ret = viommu_domain_finalise(vdev, domain);
-
-Attaching additional endpoints with different masks to the domain should
-return an error
-
->  	} else if (vdomain->viommu != vdev->viommu) {
->  		dev_err(dev, "cannot attach to foreign vIOMMU\n");
->  		ret = -EXDEV;
-> diff --git a/include/uapi/linux/virtio_iommu.h b/include/uapi/linux/virtio_iommu.h
-> index 237e36a280cb..aff3db0ef54b 100644
-> --- a/include/uapi/linux/virtio_iommu.h
-> +++ b/include/uapi/linux/virtio_iommu.h
-> @@ -111,6 +111,7 @@ struct virtio_iommu_req_unmap {
->  
->  #define VIRTIO_IOMMU_PROBE_T_NONE		0
->  #define VIRTIO_IOMMU_PROBE_T_RESV_MEM		1
-> +#define VIRTIO_IOMMU_PROBE_T_PAGE_SIZE_MASK	2
->  
->  #define VIRTIO_IOMMU_PROBE_T_MASK		0xfff
->  
-> @@ -119,6 +120,11 @@ struct virtio_iommu_probe_property {
->  	__le16					length;
->  };
->  
-> +struct virtio_iommu_probe_pgsize_mask {
-> +	struct virtio_iommu_probe_property	head;
-
-Compilers will introduce 4 bytes of padding here, to align the next field.
-We need to make them explicit by adding a 4-bytes 'reserved' field.
-
-> +	uint64_t				pgsize_bitmap;
-
-__le64
-
-Thanks,
-Jean
-
-> +};
-> +
->  #define VIRTIO_IOMMU_RESV_MEM_T_RESERVED	0
->  #define VIRTIO_IOMMU_RESV_MEM_T_MSI		1
->  
-> -- 
-> 2.17.1
+>   /*
+>    * Create scatter-list for the already allocated DMA buffer.
+>    */
+> @@ -138,7 +156,7 @@ int dma_get_sgtable_attrs(struct device *dev, struct sg_table *sgt,
+>   {
+>   	const struct dma_map_ops *ops = get_dma_ops(dev);
+>   
+> -	if (dma_is_direct(ops))
+> +	if (dma_alloc_direct(dev, ops))
+>   		return dma_direct_get_sgtable(dev, sgt, cpu_addr, dma_addr,
+>   				size, attrs);
+>   	if (!ops->get_sgtable)
+> @@ -206,7 +224,7 @@ bool dma_can_mmap(struct device *dev)
+>   {
+>   	const struct dma_map_ops *ops = get_dma_ops(dev);
+>   
+> -	if (dma_is_direct(ops))
+> +	if (dma_alloc_direct(dev, ops))
+>   		return dma_direct_can_mmap(dev);
+>   	return ops->mmap != NULL;
+>   }
+> @@ -231,7 +249,7 @@ int dma_mmap_attrs(struct device *dev, struct vm_area_struct *vma,
+>   {
+>   	const struct dma_map_ops *ops = get_dma_ops(dev);
+>   
+> -	if (dma_is_direct(ops))
+> +	if (dma_alloc_direct(dev, ops))
+>   		return dma_direct_mmap(dev, vma, cpu_addr, dma_addr, size,
+>   				attrs);
+>   	if (!ops->mmap)
+> @@ -244,7 +262,7 @@ u64 dma_get_required_mask(struct device *dev)
+>   {
+>   	const struct dma_map_ops *ops = get_dma_ops(dev);
+>   
+> -	if (dma_is_direct(ops))
+> +	if (dma_map_direct(dev, ops))
+>   		return dma_direct_get_required_mask(dev);
+>   	if (ops->get_required_mask)
+>   		return ops->get_required_mask(dev);
+> @@ -275,7 +293,7 @@ void *dma_alloc_attrs(struct device *dev, size_t size, dma_addr_t *dma_handle,
+>   	/* let the implementation decide on the zone to allocate from: */
+>   	flag &= ~(__GFP_DMA | __GFP_DMA32 | __GFP_HIGHMEM);
+>   
+> -	if (dma_is_direct(ops))
+> +	if (dma_alloc_direct(dev, ops))
+>   		cpu_addr = dma_direct_alloc(dev, size, dma_handle, flag, attrs);
+>   	else if (ops->alloc)
+>   		cpu_addr = ops->alloc(dev, size, dma_handle, flag, attrs);
+> @@ -307,7 +325,7 @@ void dma_free_attrs(struct device *dev, size_t size, void *cpu_addr,
+>   		return;
+>   
+>   	debug_dma_free_coherent(dev, size, cpu_addr, dma_handle);
+> -	if (dma_is_direct(ops))
+> +	if (dma_alloc_direct(dev, ops))
+>   		dma_direct_free(dev, size, cpu_addr, dma_handle, attrs);
+>   	else if (ops->free)
+>   		ops->free(dev, size, cpu_addr, dma_handle, attrs);
+> @@ -318,7 +336,7 @@ int dma_supported(struct device *dev, u64 mask)
+>   {
+>   	const struct dma_map_ops *ops = get_dma_ops(dev);
+>   
+> -	if (dma_is_direct(ops))
+> +	if (!ops)
+>   		return dma_direct_supported(dev, mask);
+>   	if (!ops->dma_supported)
+>   		return 1;
+> @@ -374,7 +392,7 @@ void dma_cache_sync(struct device *dev, void *vaddr, size_t size,
+>   
+>   	BUG_ON(!valid_dma_direction(dir));
+>   
+> -	if (dma_is_direct(ops))
+> +	if (dma_alloc_direct(dev, ops))
+>   		arch_dma_cache_sync(dev, vaddr, size, dir);
+>   	else if (ops->cache_sync)
+>   		ops->cache_sync(dev, vaddr, size, dir);
+> @@ -386,7 +404,7 @@ size_t dma_max_mapping_size(struct device *dev)
+>   	const struct dma_map_ops *ops = get_dma_ops(dev);
+>   	size_t size = SIZE_MAX;
+>   
+> -	if (dma_is_direct(ops))
+> +	if (dma_map_direct(dev, ops))
+>   		size = dma_direct_max_mapping_size(dev);
+>   	else if (ops && ops->max_mapping_size)
+>   		size = ops->max_mapping_size(dev);
 > 
 _______________________________________________
 iommu mailing list
