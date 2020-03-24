@@ -2,88 +2,73 @@ Return-Path: <SRS0=P7ka=5J=lists.linux-foundation.org=iommu-bounces@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-7.3 required=3.0 tests=HEADER_FROM_DIFFERENT_DOMAINS,
-	MAILING_LIST_MULTI,MENTIONS_GIT_HOSTING,SPF_HELO_NONE,SPF_PASS,
-	USER_AGENT_SANE_1 autolearn=ham autolearn_force=no version=3.4.0
+X-Spam-Status: No, score=-0.8 required=3.0 tests=HEADER_FROM_DIFFERENT_DOMAINS,
+	MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS autolearn=no autolearn_force=no
+	version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id B055EC4332B
-	for <iommu@archiver.kernel.org>; Tue, 24 Mar 2020 09:18:30 +0000 (UTC)
-Received: from fraxinus.osuosl.org (smtp4.osuosl.org [140.211.166.137])
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 89ABBC43331
+	for <iommu@archiver.kernel.org>; Tue, 24 Mar 2020 10:08:29 +0000 (UTC)
+Received: from whitealder.osuosl.org (smtp1.osuosl.org [140.211.166.138])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by mail.kernel.org (Postfix) with ESMTPS id 7C5F720A8B
-	for <iommu@archiver.kernel.org>; Tue, 24 Mar 2020 09:18:30 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 7C5F720A8B
-Authentication-Results: mail.kernel.org; dmarc=none (p=none dis=none) header.from=huawei.com
+	by mail.kernel.org (Postfix) with ESMTPS id 58ACD20775
+	for <iommu@archiver.kernel.org>; Tue, 24 Mar 2020 10:08:29 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 58ACD20775
+Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=8bytes.org
 Authentication-Results: mail.kernel.org; spf=pass smtp.mailfrom=iommu-bounces@lists.linux-foundation.org
 Received: from localhost (localhost [127.0.0.1])
-	by fraxinus.osuosl.org (Postfix) with ESMTP id 4BAF8861C9;
-	Tue, 24 Mar 2020 09:18:30 +0000 (UTC)
+	by whitealder.osuosl.org (Postfix) with ESMTP id 2B80D86E88;
+	Tue, 24 Mar 2020 10:08:29 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from fraxinus.osuosl.org ([127.0.0.1])
+Received: from whitealder.osuosl.org ([127.0.0.1])
 	by localhost (.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
-	with ESMTP id tdo1LXbTeErd; Tue, 24 Mar 2020 09:18:28 +0000 (UTC)
+	with ESMTP id YZXaZuVFfnM5; Tue, 24 Mar 2020 10:08:27 +0000 (UTC)
 Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [140.211.9.56])
-	by fraxinus.osuosl.org (Postfix) with ESMTP id B7D5086155;
-	Tue, 24 Mar 2020 09:18:28 +0000 (UTC)
+	by whitealder.osuosl.org (Postfix) with ESMTP id 4CE4E86DAD;
+	Tue, 24 Mar 2020 10:08:27 +0000 (UTC)
 Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
-	by lists.linuxfoundation.org (Postfix) with ESMTP id AC229C089F;
-	Tue, 24 Mar 2020 09:18:28 +0000 (UTC)
-Received: from hemlock.osuosl.org (smtp2.osuosl.org [140.211.166.133])
- by lists.linuxfoundation.org (Postfix) with ESMTP id 03A97C0177
- for <iommu@lists.linux-foundation.org>; Tue, 24 Mar 2020 09:18:26 +0000 (UTC)
+	by lists.linuxfoundation.org (Postfix) with ESMTP id 3229CC1D7C;
+	Tue, 24 Mar 2020 10:08:27 +0000 (UTC)
+Received: from silver.osuosl.org (smtp3.osuosl.org [140.211.166.136])
+ by lists.linuxfoundation.org (Postfix) with ESMTP id 07644C0177
+ for <iommu@lists.linux-foundation.org>; Tue, 24 Mar 2020 10:08:26 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
- by hemlock.osuosl.org (Postfix) with ESMTP id E030C88928
- for <iommu@lists.linux-foundation.org>; Tue, 24 Mar 2020 09:18:26 +0000 (UTC)
+ by silver.osuosl.org (Postfix) with ESMTP id D8965204B6
+ for <iommu@lists.linux-foundation.org>; Tue, 24 Mar 2020 10:08:25 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from hemlock.osuosl.org ([127.0.0.1])
+Received: from silver.osuosl.org ([127.0.0.1])
  by localhost (.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
- with ESMTP id xbLL7vsGWi6B for <iommu@lists.linux-foundation.org>;
- Tue, 24 Mar 2020 09:18:25 +0000 (UTC)
-X-Greylist: domain auto-whitelisted by SQLgrey-1.7.6
-Received: from huawei.com (lhrrgout.huawei.com [185.176.76.210])
- by hemlock.osuosl.org (Postfix) with ESMTPS id C174E88927
- for <iommu@lists.linux-foundation.org>; Tue, 24 Mar 2020 09:18:25 +0000 (UTC)
-Received: from lhreml702-cah.china.huawei.com (unknown [172.18.7.108])
- by Forcepoint Email with ESMTP id DA4C5305CE469B927D24;
- Tue, 24 Mar 2020 09:18:22 +0000 (GMT)
-Received: from lhreml724-chm.china.huawei.com (10.201.108.75) by
- lhreml702-cah.china.huawei.com (10.201.108.43) with Microsoft SMTP Server
- (TLS) id 14.3.408.0; Tue, 24 Mar 2020 09:18:22 +0000
-Received: from [127.0.0.1] (10.210.165.24) by lhreml724-chm.china.huawei.com
- (10.201.108.75) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.1713.5; Tue, 24 Mar
- 2020 09:18:21 +0000
-Subject: Re: arm-smmu-v3 high cpu usage for NVMe
-To: Marc Zyngier <maz@kernel.org>
-References: <20190821151749.23743-1-will@kernel.org>
- <b2a6e26d-6d0d-7f0d-f222-589812f701d2@huawei.com>
- <20200318205313.GB8094@willie-the-truck>
- <c6ab8020-dc06-0c7d-7a41-e792d90f97ba@huawei.com>
- <20200319184349.GA1697676@myrica>
- <c9ebe17d-66b8-1b8c-cc2c-5be0bd1501a7@huawei.com>
- <20200320111842.GD1702630@myrica>
- <b412fc9c-6266-e320-0769-f214d7752675@huawei.com>
- <5198fcffc8ad6233e0274ebff9e9aa5f@kernel.org>
- <cca67355-672d-81c5-3d37-72004eb8f14f@huawei.com>
- <dd375cf6bffacd82174c84a4c7d46283@kernel.org>
-From: John Garry <john.garry@huawei.com>
-Message-ID: <0e00de15-596a-d342-f3cb-e19c389294e6@huawei.com>
-Date: Tue, 24 Mar 2020 09:18:10 +0000
-User-Agent: Mozilla/5.0 (Windows NT 10.0; WOW64; rv:68.0) Gecko/20100101
- Thunderbird/68.1.2
+ with ESMTP id 6Ln76OwXSLTc for <iommu@lists.linux-foundation.org>;
+ Tue, 24 Mar 2020 10:08:24 +0000 (UTC)
+X-Greylist: from auto-whitelisted by SQLgrey-1.7.6
+Received: from theia.8bytes.org (8bytes.org [81.169.241.247])
+ by silver.osuosl.org (Postfix) with ESMTPS id 2F34C203DB
+ for <iommu@lists.linux-foundation.org>; Tue, 24 Mar 2020 10:08:24 +0000 (UTC)
+Received: by theia.8bytes.org (Postfix, from userid 1000)
+ id 998162E2; Tue, 24 Mar 2020 11:08:20 +0100 (CET)
+Date: Tue, 24 Mar 2020 11:08:19 +0100
+From: Joerg Roedel <joro@8bytes.org>
+To: Robin Murphy <robin.murphy@arm.com>
+Subject: Re: [PATCH v3 10/15] iommu/arm-smmu: Use accessor functions for
+ iommu private data
+Message-ID: <20200324100819.GA4038@8bytes.org>
+References: <20200320091414.3941-1-joro@8bytes.org>
+ <20200320091414.3941-11-joro@8bytes.org>
+ <09ed4676-449e-c6eb-8c51-c15b326c206c@arm.com>
 MIME-Version: 1.0
-In-Reply-To: <dd375cf6bffacd82174c84a4c7d46283@kernel.org>
-Content-Language: en-US
-X-Originating-IP: [10.210.165.24]
-X-ClientProxiedBy: lhreml732-chm.china.huawei.com (10.201.108.83) To
- lhreml724-chm.china.huawei.com (10.201.108.75)
-X-CFilter-Loop: Reflected
-Cc: Mark Rutland <mark.rutland@arm.com>,
+Content-Disposition: inline
+In-Reply-To: <09ed4676-449e-c6eb-8c51-c15b326c206c@arm.com>
+Cc: Joerg Roedel <jroedel@suse.de>, Will Deacon <will@kernel.org>,
  Jean-Philippe Brucker <jean-philippe@linaro.org>,
- Robin Murphy <robin.murphy@arm.com>, Ming Lei <ming.lei@redhat.com>,
- iommu@lists.linux-foundation.org, Will Deacon <will@kernel.org>,
- Julien Thierry <julien.thierry.kdev@gmail.com>
+ "linux-arm-msm@vger.kernel.org" <linux-arm-msm@vger.kernel.org>,
+ "guohanjun@huawei.com" <guohanjun@huawei.com>,
+ "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
+ Bjorn Andersson <bjorn.andersson@linaro.org>,
+ "iommu@lists.linux-foundation.org" <iommu@lists.linux-foundation.org>,
+ Thierry Reding <thierry.reding@gmail.com>,
+ "linux-mediatek@lists.infradead.org" <linux-mediatek@lists.infradead.org>,
+ Andy Gross <agross@kernel.org>, Sudeep Holla <Sudeep.Holla@arm.com>,
+ Matthias Brugger <matthias.bgg@gmail.com>, Sean Paul <sean@poorly.run>
 X-BeenThere: iommu@lists.linux-foundation.org
 X-Mailman-Version: 2.1.15
 Precedence: list
@@ -96,53 +81,35 @@ List-Post: <mailto:iommu@lists.linux-foundation.org>
 List-Help: <mailto:iommu-request@lists.linux-foundation.org?subject=help>
 List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
  <mailto:iommu-request@lists.linux-foundation.org?subject=subscribe>
+Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
-Content-Type: text/plain; charset="us-ascii"; Format="flowed"
 Errors-To: iommu-bounces@lists.linux-foundation.org
 Sender: "iommu" <iommu-bounces@lists.linux-foundation.org>
 
-On 23/03/2020 09:16, Marc Zyngier wrote:
+Hey Robin,
 
-+ Julien, Mark
+On Mon, Mar 23, 2020 at 04:02:33PM +0000, Robin Murphy wrote:
+> Yikes, this ends up pretty ugly, and I'd prefer not have this much
+> complexity hidden in macros that were intended just to be convenient
+> shorthand. Would you mind pulling in the patch below as a precursor?
 
-Hi Marc,
+Sure thing, but your mail-client seemed to have fiddled with the patch
+so that is is unusable to me. I tried to fix it up, but it still doesn't
+apply. Can you please re-send it to me either via git-send-email or just
+as a mime-attachement?
 
->>> Time to enable pseudo-NMIs in the PMUv3 driver...
->>>
->>
->> Do you know if there is any plan for this?
-> 
-> There was. Julien Thierry has a bunch of patches for that [1], but they 
-> needs
-> reviving.
-> 
+> Other than that, the rest of the series looks OK at a glance. We should also
+> move fwspec->ops to dev_iommu, as those are "IOMMU API" data rather than
+> "firmware" data, but let's consider that separately as this series is
+> already long enough.
 
-So those patches still apply cleanly (apart from the kvm patch, which I 
-can skip, I suppose) and build, so I can try this I figure. Is there 
-anything else which I should ensure or know about? Apart from enable 
-CONFIG_ARM64_PSUEDO_NMI.
+Yes, moving ops out of fwspec is next on the list, and moving the
+iommu_group pointer into dev_iommu.
 
-A quickly taken perf annotate and report is at the tip here: 
-https://github.com/hisilicon/kernel-dev/commits/private-topic-nvme-5.6-profiling 
+Regards,
 
+	Joerg
 
->>
->> In the meantime, maybe I can do some trickery by putting the
->> local_irq_restore() in a separate function, outside
->> arm_smmu_cmdq_issue_cmdlist(), to get a fair profile for that same
->> function.
-> 
-
-Scratch that :)
-
-> I don't see how you can improve the profiling without compromising
-> the locking in this case...
-> 
-
-Cheers,
-John
-
-[1] https://patchwork.kernel.org/cover/11047407/
 _______________________________________________
 iommu mailing list
 iommu@lists.linux-foundation.org
