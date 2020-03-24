@@ -2,102 +2,130 @@ Return-Path: <SRS0=P7ka=5J=lists.linux-foundation.org=iommu-bounces@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-2.3 required=3.0 tests=DKIM_INVALID,DKIM_SIGNED,
-	MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS,USER_AGENT_SANE_2 autolearn=no
-	autolearn_force=no version=3.4.0
+X-Spam-Status: No, score=-9.6 required=3.0 tests=DKIM_INVALID,DKIM_SIGNED,
+	HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_PATCH,MAILING_LIST_MULTI,
+	MSGID_FROM_MTA_HEADER,SIGNED_OFF_BY,SPF_HELO_NONE,SPF_PASS,USER_AGENT_GIT
+	autolearn=unavailable autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id DB635C4332B
-	for <iommu@archiver.kernel.org>; Tue, 24 Mar 2020 10:43:16 +0000 (UTC)
-Received: from whitealder.osuosl.org (smtp1.osuosl.org [140.211.166.138])
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 18D71C54FCE
+	for <iommu@archiver.kernel.org>; Tue, 24 Mar 2020 11:30:43 +0000 (UTC)
+Received: from fraxinus.osuosl.org (smtp4.osuosl.org [140.211.166.137])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by mail.kernel.org (Postfix) with ESMTPS id 9E77D208C3
-	for <iommu@archiver.kernel.org>; Tue, 24 Mar 2020 10:43:16 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTPS id D3442208D5
+	for <iommu@archiver.kernel.org>; Tue, 24 Mar 2020 11:30:42 +0000 (UTC)
 Authentication-Results: mail.kernel.org;
-	dkim=fail reason="signature verification failed" (1024-bit key) header.d=kernel.org header.i=@kernel.org header.b="K+qKqSE3"
-DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 9E77D208C3
-Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=kernel.org
+	dkim=fail reason="signature verification failed" (1024-bit key) header.d=nxp.com header.i=@nxp.com header.b="cvRSU7PW"
+DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org D3442208D5
+Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=nxp.com
 Authentication-Results: mail.kernel.org; spf=pass smtp.mailfrom=iommu-bounces@lists.linux-foundation.org
 Received: from localhost (localhost [127.0.0.1])
-	by whitealder.osuosl.org (Postfix) with ESMTP id 6AFBB87F30;
-	Tue, 24 Mar 2020 10:43:16 +0000 (UTC)
+	by fraxinus.osuosl.org (Postfix) with ESMTP id A8ECD85D4C;
+	Tue, 24 Mar 2020 11:30:42 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from whitealder.osuosl.org ([127.0.0.1])
+Received: from fraxinus.osuosl.org ([127.0.0.1])
 	by localhost (.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
-	with ESMTP id hsL7GR+yspnQ; Tue, 24 Mar 2020 10:43:15 +0000 (UTC)
+	with ESMTP id 1Ev3zSiSKWbt; Tue, 24 Mar 2020 11:30:40 +0000 (UTC)
 Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [140.211.9.56])
-	by whitealder.osuosl.org (Postfix) with ESMTP id 9A82687EBD;
-	Tue, 24 Mar 2020 10:43:15 +0000 (UTC)
+	by fraxinus.osuosl.org (Postfix) with ESMTP id D717284526;
+	Tue, 24 Mar 2020 11:30:40 +0000 (UTC)
 Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
-	by lists.linuxfoundation.org (Postfix) with ESMTP id 7C1D2C1D7C;
-	Tue, 24 Mar 2020 10:43:15 +0000 (UTC)
-Received: from silver.osuosl.org (smtp3.osuosl.org [140.211.166.136])
- by lists.linuxfoundation.org (Postfix) with ESMTP id 79FF5C0177
- for <iommu@lists.linux-foundation.org>; Tue, 24 Mar 2020 10:43:14 +0000 (UTC)
+	by lists.linuxfoundation.org (Postfix) with ESMTP id B7714C089F;
+	Tue, 24 Mar 2020 11:30:40 +0000 (UTC)
+Received: from fraxinus.osuosl.org (smtp4.osuosl.org [140.211.166.137])
+ by lists.linuxfoundation.org (Postfix) with ESMTP id E0637C0177
+ for <iommu@lists.linux-foundation.org>; Tue, 24 Mar 2020 11:30:38 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
- by silver.osuosl.org (Postfix) with ESMTP id 72F702040F
- for <iommu@lists.linux-foundation.org>; Tue, 24 Mar 2020 10:43:14 +0000 (UTC)
+ by fraxinus.osuosl.org (Postfix) with ESMTP id CB0EC85C5E
+ for <iommu@lists.linux-foundation.org>; Tue, 24 Mar 2020 11:30:38 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from silver.osuosl.org ([127.0.0.1])
+Received: from fraxinus.osuosl.org ([127.0.0.1])
  by localhost (.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
- with ESMTP id oUQ9elFP8jwb for <iommu@lists.linux-foundation.org>;
- Tue, 24 Mar 2020 10:43:10 +0000 (UTC)
-X-Greylist: domain auto-whitelisted by SQLgrey-1.7.6
-Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
- by silver.osuosl.org (Postfix) with ESMTPS id 65ABF2034F
- for <iommu@lists.linux-foundation.org>; Tue, 24 Mar 2020 10:43:10 +0000 (UTC)
-Received: from disco-boy.misterjones.org (disco-boy.misterjones.org
- [51.254.78.96])
- (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
- (No client certificate requested)
- by mail.kernel.org (Postfix) with ESMTPSA id 049EE208C3;
- Tue, 24 Mar 2020 10:43:10 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
- s=default; t=1585046590;
- bh=e+fMIwGNwq2beGOSfZj3r5yBkIPwIcRKL0eYkApPFb0=;
- h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
- b=K+qKqSE3qcGqcbMQcCYeT1g3fyXhB8jPkSB7dvCTZgow8dVsJReoNWoQakJ63GReE
- XLFw3gjfkK3WaQOcJXlyf192cAg3YZRUVBKXtghqiR01SN/LFwJT3SK3pECDnzjUKa
- qJmzDt+u7bmYNluiKrvC7K77DUMjyM7bFM0ECT3g=
-Received: from 78.163-31-62.static.virginmediabusiness.co.uk ([62.31.163.78]
- helo=why) by disco-boy.misterjones.org with esmtpsa
- (TLS1.3:ECDHE_RSA_AES_256_GCM_SHA384:256) (Exim 4.92)
- (envelope-from <maz@kernel.org>)
- id 1jGh1Y-00FEMD-9P; Tue, 24 Mar 2020 10:43:08 +0000
-Date: Tue, 24 Mar 2020 10:43:07 +0000
-From: Marc Zyngier <maz@kernel.org>
-To: John Garry <john.garry@huawei.com>
-Subject: Re: arm-smmu-v3 high cpu usage for NVMe
-Message-ID: <20200324104307.57d2cde0@why>
-In-Reply-To: <0e00de15-596a-d342-f3cb-e19c389294e6@huawei.com>
-References: <20190821151749.23743-1-will@kernel.org>
- <b2a6e26d-6d0d-7f0d-f222-589812f701d2@huawei.com>
- <20200318205313.GB8094@willie-the-truck>
- <c6ab8020-dc06-0c7d-7a41-e792d90f97ba@huawei.com>
- <20200319184349.GA1697676@myrica>
- <c9ebe17d-66b8-1b8c-cc2c-5be0bd1501a7@huawei.com>
- <20200320111842.GD1702630@myrica>
- <b412fc9c-6266-e320-0769-f214d7752675@huawei.com>
- <5198fcffc8ad6233e0274ebff9e9aa5f@kernel.org>
- <cca67355-672d-81c5-3d37-72004eb8f14f@huawei.com>
- <dd375cf6bffacd82174c84a4c7d46283@kernel.org>
- <0e00de15-596a-d342-f3cb-e19c389294e6@huawei.com>
-Organization: Approximate
-X-Mailer: Claws Mail 3.17.5 (GTK+ 2.24.32; x86_64-pc-linux-gnu)
+ with ESMTP id pvj4Esu9UxLd for <iommu@lists.linux-foundation.org>;
+ Tue, 24 Mar 2020 11:30:37 +0000 (UTC)
+X-Greylist: from auto-whitelisted by SQLgrey-1.7.6
+Received: from EUR01-DB5-obe.outbound.protection.outlook.com
+ (mail-eopbgr150083.outbound.protection.outlook.com [40.107.15.83])
+ by fraxinus.osuosl.org (Postfix) with ESMTPS id B40D484526
+ for <iommu@lists.linux-foundation.org>; Tue, 24 Mar 2020 11:30:36 +0000 (UTC)
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=IE7mAxVlBdUGb8hfPnFbq4m+A+RedqiOgaiIGMhDPjlxxgeSJgx8081EgxJVx2aF+DIpoWhlMSQHkGGMvLbIqp90seOvlv2hbwcep759niOyI/OKFGylGQuRyvmteOqXPHu0k7eNDbF2B2MBea+204SlhWTndYvCvv61tkAJVLGEImJNkb9HkuUmMVuFAp9DRs8Fl9QYvJVK3AaYfTNsI9KbNIEXQzDYSngjGqs0yzJYVCHxELauBTFoIKl1DNf+Iy2LXc+HpGi5FAftFZOlZbBQA8vqJ5pX1+pwQULUJbNAup2ip5rYrRQVbPtFjCWcJfkQjUzUHxMa6UJeBNjF3A==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com; 
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=+UMe0Y7q2irq0c9yix5N5BFbGRWfXjPgXaDnCYKX2CU=;
+ b=cDHjijyJTW20i15m6tfrgv+zzJ2ROIiPlU+B+ZktyrZ/dsf5Uy/WQRJK/kQ9qeE3GGdqohhppb/eQFTWz6X6EzwODMbYoeM1GjWX8hhA7v3K6YYo1mH0DO5QHrS+SGS12xa7678WUVYwYFMfVdy64Xz4FiwLoc/nth3HMxwSOa/RCHnf13g6zVTQZivN0ZdvHdqqhDhaUMQA3AxT1gj4szrJ4d5H5Jo68QNg2TBthW5OsW6+/4ibRAUZq/u4rwG8Afbsj97TWpQYSfmYM1rAeIdggdv5N6B0fTQzLQwJK8Y53EkoDV9ed97aKBgubuz/LnVupLSmbhjkD8AN0TD0nw==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=nxp.com; dmarc=pass action=none header.from=nxp.com; dkim=pass
+ header.d=nxp.com; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=nxp.com; s=selector2; 
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=+UMe0Y7q2irq0c9yix5N5BFbGRWfXjPgXaDnCYKX2CU=;
+ b=cvRSU7PWX5/olLd0BRK9yYCNgw6/nBmfxS2tfq09/85l1eXVAmLOq4hcpDLTuOAue1dRr1oOfdnXWT1itbDeMqalviQXiFVuxjyEHqzmgEYzAlfFBAFUh91ZpeUeD5k1387ZVMheKugIAEo/IabmhV9uMekl8esxcZCPktIPa0k=
+Authentication-Results: spf=none (sender IP is )
+ smtp.mailfrom=laurentiu.tudor@nxp.com; 
+Received: from AM6PR04MB5925.eurprd04.prod.outlook.com (20.179.2.147) by
+ AM6PR04MB6504.eurprd04.prod.outlook.com (20.179.246.21) with Microsoft SMTP
+ Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.20.2835.22; Tue, 24 Mar 2020 11:30:34 +0000
+Received: from AM6PR04MB5925.eurprd04.prod.outlook.com
+ ([fe80::dd71:5f33:1b21:cd9e]) by AM6PR04MB5925.eurprd04.prod.outlook.com
+ ([fe80::dd71:5f33:1b21:cd9e%5]) with mapi id 15.20.2835.023; Tue, 24 Mar 2020
+ 11:30:34 +0000
+From: laurentiu.tudor@nxp.com
+To: robin.murphy@arm.com, lorenzo.pieralisi@arm.com,
+ linux-kernel@vger.kernel.org, iommu@lists.linux-foundation.org,
+ linux-arm-kernel@lists.infradead.org, linux-acpi@vger.kernel.org
+Subject: [RFC PATCH v2 1/4] bus: fsl-mc: add custom .dma_configure
+ implementation
+Date: Tue, 24 Mar 2020 13:30:20 +0200
+Message-Id: <20200324113023.322-2-laurentiu.tudor@nxp.com>
+X-Mailer: git-send-email 2.17.1
+In-Reply-To: <20200324113023.322-1-laurentiu.tudor@nxp.com>
+References: <20200324113023.322-1-laurentiu.tudor@nxp.com>
+X-ClientProxiedBy: AM0PR06CA0036.eurprd06.prod.outlook.com
+ (2603:10a6:208:ab::49) To AM6PR04MB5925.eurprd04.prod.outlook.com
+ (2603:10a6:20b:ab::19)
 MIME-Version: 1.0
-X-SA-Exim-Connect-IP: 62.31.163.78
-X-SA-Exim-Rcpt-To: john.garry@huawei.com, jean-philippe@linaro.org,
- will@kernel.org, iommu@lists.linux-foundation.org, robin.murphy@arm.com,
- thunder.leizhen@huawei.com, ming.lei@redhat.com, julien.thierry.kdev@gmail.com,
- mark.rutland@arm.com
-X-SA-Exim-Mail-From: maz@kernel.org
-X-SA-Exim-Scanned: No (on disco-boy.misterjones.org);
- SAEximRunCond expanded to false
-Cc: Mark Rutland <mark.rutland@arm.com>,
- Jean-Philippe Brucker <jean-philippe@linaro.org>,
- Robin Murphy <robin.murphy@arm.com>, Ming Lei <ming.lei@redhat.com>,
- iommu@lists.linux-foundation.org, Will Deacon <will@kernel.org>,
- Julien Thierry <julien.thierry.kdev@gmail.com>
+X-MS-Exchange-MessageSentRepresentingType: 1
+Received: from fsr-ub1864-101.ea.freescale.net (89.37.124.34) by
+ AM0PR06CA0036.eurprd06.prod.outlook.com (2603:10a6:208:ab::49) with Microsoft
+ SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.20.2835.18 via Frontend Transport; Tue, 24 Mar 2020 11:30:33 +0000
+X-Mailer: git-send-email 2.17.1
+X-Originating-IP: [89.37.124.34]
+X-MS-PublicTrafficType: Email
+X-MS-Office365-Filtering-HT: Tenant
+X-MS-Office365-Filtering-Correlation-Id: 113c6542-ca49-4ff0-3693-08d7cfe6c47d
+X-MS-TrafficTypeDiagnostic: AM6PR04MB6504:|AM6PR04MB6504:
+X-MS-Exchange-Transport-Forked: True
+X-Microsoft-Antispam-PRVS: <AM6PR04MB65040EA85AEFA6EE41D63B44ECF10@AM6PR04MB6504.eurprd04.prod.outlook.com>
+X-MS-Oob-TLC-OOBClassifiers: OLM:8882;
+X-Forefront-PRVS: 03524FBD26
+X-Forefront-Antispam-Report: SFV:NSPM;
+ SFS:(10009020)(4636009)(39860400002)(396003)(376002)(346002)(366004)(136003)(1076003)(86362001)(6666004)(6512007)(9686003)(6486002)(52116002)(5660300002)(66946007)(66476007)(478600001)(7416002)(66556008)(6506007)(8936002)(8676002)(81156014)(316002)(4326008)(26005)(36756003)(81166006)(956004)(2616005)(2906002)(16526019)(186003)(142923001);
+ DIR:OUT; SFP:1101; SCL:1; SRVR:AM6PR04MB6504;
+ H:AM6PR04MB5925.eurprd04.prod.outlook.com; FPR:; SPF:None; LANG:en;
+ PTR:InfoNoRecords; 
+Received-SPF: None (protection.outlook.com: nxp.com does not designate
+ permitted sender hosts)
+X-MS-Exchange-SenderADCheck: 1
+X-Microsoft-Antispam: BCL:0;
+X-Microsoft-Antispam-Message-Info: zuO7TC1tbRyfgPzk2Lz4b7MJAjg308r5MDAHrEnezRH/NMRAWREUn71daz5CTN88JZmkB+C2r3uH4MQuleZo5pV+iCnyCvrRP2QNPh9D8QxNwp3Ds/x6+XUZYZycwM4lsrbPQ9mXITHpN1Z4LXEUP/LXRkw4iYKqy3F1EWVQEQlxsoiysNudRPFIyvU0DcsvyaXXIyux7R8gQwfizXSKIiB+1uZPVBiMTsBgqKhUkDF1gUTdSIiUFIJQb80Ew8U4C9+tiBkr1BNaBu1b/U4sO7TtRy8CybNCNcWW4U8KT5ptk0eWVmXliKMTq5GOkmwvCh5lHicE83vW1kdjoEB7cJjN80P61As/y+cOpKflQLwxfsvG/qT7pCzaEMqjYCONzPsA0uQNERBw406m/ep8oIdrd3apisHOJEbY027RK2eQp54zd1SufVWWmqYZpHpN/UEBPVv+RzM69/lkmn0FuJ1V+ANDQnjupyonl+faQ9E=
+X-MS-Exchange-AntiSpam-MessageData: ZYAUvX0tGYgY8Ye6QjBMglNR4IKPyV8H0o4kU8kdSz5IzswdpmHvPi11kFmcJDG8m9iTY2Uc9q3oM3D1Rqn0+qOefY8ygzmFfza/gwIwaTQpx6QyCBBSGtwgjgScXBo7iCq3HmvzHKUI0uujRqjsPw==
+X-OriginatorOrg: nxp.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: 113c6542-ca49-4ff0-3693-08d7cfe6c47d
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 24 Mar 2020 11:30:34.4011 (UTC)
+X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
+X-MS-Exchange-CrossTenant-Id: 686ea1d3-bc2b-4c6f-a92c-d99c5c301635
+X-MS-Exchange-CrossTenant-MailboxType: HOSTED
+X-MS-Exchange-CrossTenant-UserPrincipalName: QVuxQYJF+VQrGme9eKX5AhkfJh1o2Niqv1jcCefaH5sIb713gJjmf0JJ/SNTsKlHZ6m6lxXIP7lTaRQaxcEHUA==
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: AM6PR04MB6504
+Cc: calvin.johnson@nxp.com, ard.biesheuvel@linaro.org, maz@kernel.org,
+ pankaj.bansal@nxp.com, diana.craciun@oss.nxp.com, jon@solid-run.com,
+ jeremy.linton@arm.com, makarand.pawagi@nxp.com, cristian.sovaiala@nxp.com,
+ V.Sethi@nxp.com, ioana.ciornei@nxp.com, tglx@linutronix.de,
+ jason@lakedaemon.net, Stuart.Yoder@arm.com
 X-BeenThere: iommu@lists.linux-foundation.org
 X-Mailman-Version: 2.1.15
 Precedence: list
@@ -115,36 +143,94 @@ Content-Transfer-Encoding: 7bit
 Errors-To: iommu-bounces@lists.linux-foundation.org
 Sender: "iommu" <iommu-bounces@lists.linux-foundation.org>
 
-On Tue, 24 Mar 2020 09:18:10 +0000
-John Garry <john.garry@huawei.com> wrote:
+From: Laurentiu Tudor <laurentiu.tudor@nxp.com>
 
-> On 23/03/2020 09:16, Marc Zyngier wrote:
-> 
-> + Julien, Mark
-> 
-> Hi Marc,
-> 
-> >>> Time to enable pseudo-NMIs in the PMUv3 driver...
-> >>>
-> >>
-> >> Do you know if there is any plan for this?
-> > 
-> > There was. Julien Thierry has a bunch of patches for that [1], but they > needs
-> > reviving.
-> > 
-> 
-> So those patches still apply cleanly (apart from the kvm patch, which
-> I can skip, I suppose) and build, so I can try this I figure. Is
-> there anything else which I should ensure or know about? Apart from
-> enable CONFIG_ARM64_PSUEDO_NMI.
+The devices on this bus are not discovered by way of device tree
+but by queries to the firmware. It makes little sense to trick the
+generic of layer into thinking that these devices are of related so
+that we can get our dma configuration. Instead of doing that, add
+our custom dma configuration implementation.
 
-You need to make sure that your firmware sets SCR_EL3.FIQ to 1. My D05
-has it set to 0, preventing me from being able to use the feature
-(hint, nudge... ;-).
+Signed-off-by: Laurentiu Tudor <laurentiu.tudor@nxp.com>
+---
+ drivers/bus/fsl-mc/fsl-mc-bus.c | 50 ++++++++++++++++++++++++++++++++-
+ 1 file changed, 49 insertions(+), 1 deletion(-)
 
-	M.
+diff --git a/drivers/bus/fsl-mc/fsl-mc-bus.c b/drivers/bus/fsl-mc/fsl-mc-bus.c
+index a0f8854acb3a..a3d25c1d4ff8 100644
+--- a/drivers/bus/fsl-mc/fsl-mc-bus.c
++++ b/drivers/bus/fsl-mc/fsl-mc-bus.c
+@@ -18,6 +18,7 @@
+ #include <linux/bitops.h>
+ #include <linux/msi.h>
+ #include <linux/dma-mapping.h>
++#include <linux/iommu.h>
+ 
+ #include "fsl-mc-private.h"
+ 
+@@ -130,11 +131,58 @@ static int fsl_mc_bus_uevent(struct device *dev, struct kobj_uevent_env *env)
+ static int fsl_mc_dma_configure(struct device *dev)
+ {
+ 	struct device *dma_dev = dev;
++	struct iommu_fwspec *fwspec;
++	const struct iommu_ops *iommu_ops;
++	struct fsl_mc_device *mc_dev = to_fsl_mc_device(dev);
++	int ret;
++	u32 icid;
++
++	/* Skip DMA setup for devices that are not DMA masters */
++	if (dev->type == &fsl_mc_bus_dpmcp_type ||
++	    dev->type == &fsl_mc_bus_dpbp_type ||
++	    dev->type == &fsl_mc_bus_dpcon_type ||
++	    dev->type == &fsl_mc_bus_dpio_type)
++		return 0;
+ 
+ 	while (dev_is_fsl_mc(dma_dev))
+ 		dma_dev = dma_dev->parent;
+ 
+-	return of_dma_configure(dev, dma_dev->of_node, 0);
++	fwspec = dev_iommu_fwspec_get(dma_dev);
++	if (!fwspec)
++		return -ENODEV;
++	iommu_ops = iommu_ops_from_fwnode(fwspec->iommu_fwnode);
++	if (!iommu_ops)
++		return -ENODEV;
++
++	ret = iommu_fwspec_init(dev, fwspec->iommu_fwnode, iommu_ops);
++	if (ret)
++		return ret;
++
++	if (iommu_ops->of_xlate) {
++		struct of_phandle_args iommu_spec = {
++			.np = fwspec->iommu_fwnode->dev->of_node,
++			.args[0] = mc_dev->icid,
++			.args_count = 1
++		};
++
++		ret = iommu_ops->of_xlate(dev, &iommu_spec);
++		if (ret) {
++			iommu_fwspec_free(dev);
++			return ret;
++		}
++	}
++
++	if (!device_iommu_mapped(dev)) {
++		ret = iommu_probe_device(dev);
++		if (ret) {
++			iommu_fwspec_free(dev);
++			return ret;
++		}
++	}
++
++	arch_setup_dma_ops(dev, 0, *dma_dev->dma_mask + 1, iommu_ops, true);
++
++	return 0;
+ }
+ 
+ static ssize_t modalias_show(struct device *dev, struct device_attribute *attr,
 -- 
-Jazz is not dead. It just smells funny...
+2.17.1
+
 _______________________________________________
 iommu mailing list
 iommu@lists.linux-foundation.org
