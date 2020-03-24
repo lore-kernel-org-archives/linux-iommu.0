@@ -2,95 +2,96 @@ Return-Path: <SRS0=P7ka=5J=lists.linux-foundation.org=iommu-bounces@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-2.1 required=3.0 tests=DKIM_INVALID,DKIM_SIGNED,
-	HEADER_FROM_DIFFERENT_DOMAINS,MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS,
-	USER_AGENT_SANE_1 autolearn=no autolearn_force=no version=3.4.0
+X-Spam-Status: No, score=-7.1 required=3.0 tests=DKIM_INVALID,DKIM_SIGNED,
+	HEADER_FROM_DIFFERENT_DOMAINS,MAILING_LIST_MULTI,MENTIONS_GIT_HOSTING,
+	SPF_HELO_NONE,SPF_PASS,USER_AGENT_SANE_1 autolearn=ham autolearn_force=no
+	version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id EE310C10DCE
-	for <iommu@archiver.kernel.org>; Tue, 24 Mar 2020 03:31:40 +0000 (UTC)
-Received: from silver.osuosl.org (smtp3.osuosl.org [140.211.166.136])
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 9E45BC10DCE
+	for <iommu@archiver.kernel.org>; Tue, 24 Mar 2020 03:45:41 +0000 (UTC)
+Received: from fraxinus.osuosl.org (smtp4.osuosl.org [140.211.166.137])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by mail.kernel.org (Postfix) with ESMTPS id AF13E205ED
-	for <iommu@archiver.kernel.org>; Tue, 24 Mar 2020 03:31:40 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTPS id 601D7206F8
+	for <iommu@archiver.kernel.org>; Tue, 24 Mar 2020 03:45:41 +0000 (UTC)
 Authentication-Results: mail.kernel.org;
-	dkim=fail reason="signature verification failed" (2048-bit key) header.d=ozlabs-ru.20150623.gappssmtp.com header.i=@ozlabs-ru.20150623.gappssmtp.com header.b="eyGsIHIy"
-DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org AF13E205ED
+	dkim=fail reason="signature verification failed" (2048-bit key) header.d=ozlabs-ru.20150623.gappssmtp.com header.i=@ozlabs-ru.20150623.gappssmtp.com header.b="Hwmk7YeW"
+DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 601D7206F8
 Authentication-Results: mail.kernel.org; dmarc=none (p=none dis=none) header.from=ozlabs.ru
 Authentication-Results: mail.kernel.org; spf=pass smtp.mailfrom=iommu-bounces@lists.linux-foundation.org
 Received: from localhost (localhost [127.0.0.1])
-	by silver.osuosl.org (Postfix) with ESMTP id 754F1203D3;
-	Tue, 24 Mar 2020 03:31:40 +0000 (UTC)
+	by fraxinus.osuosl.org (Postfix) with ESMTP id 3806586398;
+	Tue, 24 Mar 2020 03:45:41 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from silver.osuosl.org ([127.0.0.1])
+Received: from fraxinus.osuosl.org ([127.0.0.1])
 	by localhost (.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
-	with ESMTP id VSbUpfqFrko2; Tue, 24 Mar 2020 03:31:37 +0000 (UTC)
+	with ESMTP id B8rGjkGQ7Tof; Tue, 24 Mar 2020 03:45:40 +0000 (UTC)
 Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [140.211.9.56])
-	by silver.osuosl.org (Postfix) with ESMTP id A70B1203A7;
-	Tue, 24 Mar 2020 03:31:37 +0000 (UTC)
+	by fraxinus.osuosl.org (Postfix) with ESMTP id 37C7F85F60;
+	Tue, 24 Mar 2020 03:45:40 +0000 (UTC)
 Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
-	by lists.linuxfoundation.org (Postfix) with ESMTP id 87F5FC1AE2;
-	Tue, 24 Mar 2020 03:31:37 +0000 (UTC)
-Received: from silver.osuosl.org (smtp3.osuosl.org [140.211.166.136])
- by lists.linuxfoundation.org (Postfix) with ESMTP id 3F255C0177
- for <iommu@lists.linux-foundation.org>; Tue, 24 Mar 2020 03:31:35 +0000 (UTC)
+	by lists.linuxfoundation.org (Postfix) with ESMTP id 2E217C1AE2;
+	Tue, 24 Mar 2020 03:45:40 +0000 (UTC)
+Received: from fraxinus.osuosl.org (smtp4.osuosl.org [140.211.166.137])
+ by lists.linuxfoundation.org (Postfix) with ESMTP id EA41EC0177
+ for <iommu@lists.linux-foundation.org>; Tue, 24 Mar 2020 03:45:37 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
- by silver.osuosl.org (Postfix) with ESMTP id 1AD4E203D3
- for <iommu@lists.linux-foundation.org>; Tue, 24 Mar 2020 03:31:35 +0000 (UTC)
+ by fraxinus.osuosl.org (Postfix) with ESMTP id E0E1085F60
+ for <iommu@lists.linux-foundation.org>; Tue, 24 Mar 2020 03:45:37 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from silver.osuosl.org ([127.0.0.1])
+Received: from fraxinus.osuosl.org ([127.0.0.1])
  by localhost (.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
- with ESMTP id 5yhMf+IGhYoc for <iommu@lists.linux-foundation.org>;
- Tue, 24 Mar 2020 03:31:33 +0000 (UTC)
-X-Greylist: delayed 00:18:43 by SQLgrey-1.7.6
-Received: from mail-il1-f193.google.com (mail-il1-f193.google.com
- [209.85.166.193])
- by silver.osuosl.org (Postfix) with ESMTPS id 768A1203A7
- for <iommu@lists.linux-foundation.org>; Tue, 24 Mar 2020 03:31:33 +0000 (UTC)
-Received: by mail-il1-f193.google.com with SMTP id a6so3070598ilr.4
- for <iommu@lists.linux-foundation.org>; Mon, 23 Mar 2020 20:31:33 -0700 (PDT)
+ with ESMTP id bUCxss7TmtHG for <iommu@lists.linux-foundation.org>;
+ Tue, 24 Mar 2020 03:45:36 +0000 (UTC)
+X-Greylist: delayed 00:07:30 by SQLgrey-1.7.6
+Received: from mail-pg1-f193.google.com (mail-pg1-f193.google.com
+ [209.85.215.193])
+ by fraxinus.osuosl.org (Postfix) with ESMTPS id BE01B85F4C
+ for <iommu@lists.linux-foundation.org>; Tue, 24 Mar 2020 03:45:36 +0000 (UTC)
+Received: by mail-pg1-f193.google.com with SMTP id t24so8337820pgj.7
+ for <iommu@lists.linux-foundation.org>; Mon, 23 Mar 2020 20:45:36 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
  d=ozlabs-ru.20150623.gappssmtp.com; s=20150623;
  h=subject:to:cc:references:from:autocrypt:message-id:date:user-agent
  :mime-version:in-reply-to:content-language:content-transfer-encoding;
- bh=7xRsbk0Ns3jbOJJnb3PI9ra/dkVlbVxHKw00bKYDb10=;
- b=eyGsIHIy4GGp5KwJgKYeah8GIyssvtv4M7Y7lqmJ5G1in9eRdF7tHEELPe3oprax8i
- VnrHyEAVF9rRsayc9VtIg4OIcsURYWxKOfuR+zmBtsdhKrarPiEtORNG1LY4oI3wgp30
- GgQxepyN1YR9oQ/UvtZ6MQTBb9E0M/ZTqGAVCMiUpKI8m67Nk2fu6m4cwz2dimyZkSdO
- 8PvEEh2HetRrgV/uaGIvBiYSJWI0vshxP0+qdg5STZcR+2TTePcckk419op/F7D/8hIT
- 1ac6P3+KoLCjU5KQI7pSVSEzPrtdtaCHgTM/7R7jOBZDBx+3PeF4dOfc7ij4kx3Gr8/l
- 0rUA==
+ bh=EoHFVfVTHKDj3wA1Pgr7GAuawqBtohTxYrc3sgAwjww=;
+ b=Hwmk7YeWhBR+bPT1gb5RzoUAqlgbKKsPNpeRYQ/mz2LUvzbQr9qBK4j2pJF2V9FcnQ
+ hj9w27FSzgAg2S1NXDkkdYugd4QIdIg5Z2lTtwYpGfz+PGFujG7mexZ7uokW+4X0hVzf
+ aL37xaDDprybYy5jKwSsalWxISoQzvlJMFYU0giGF0q8lsdhLJ5W+Hd+H5uwImLXA7Xi
+ lp5qJN8sc5pwwihOM7AAj+At18+jJA+M9BruQFDT2JrY/HYEIvhIg1XPlIPmHn5KvlhZ
+ LRYvAfITHWJ6eSm0kNT5HMfSisKBPNNORQREtLzc2ZvHXAbsTMz0CohVZbcdgo3p13cq
+ IuZw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
  d=1e100.net; s=20161025;
  h=x-gm-message-state:subject:to:cc:references:from:autocrypt
  :message-id:date:user-agent:mime-version:in-reply-to
  :content-language:content-transfer-encoding;
- bh=7xRsbk0Ns3jbOJJnb3PI9ra/dkVlbVxHKw00bKYDb10=;
- b=sQ5r0oheyczomhK+eEXKBzu7HIKmrcFYzjbxEC4aSqigdIn+9aZG0DNzld3WrOYW/E
- 7ztgtuLSv1M03GWrPBuALqDM0CT/6iW2rrpy3e6IJ+OejmwVyZr2r3lBUV8GzZgdqniZ
- wv+BjhjHXoneHaNJ3CBe2EWbpwUzRcKT+Vh4xx7L3tdGZQ49Rn8Zokz3EcFr57iCeAV/
- aYxAU1lq7C4jf2iD3QlPwdTcTf3/cSkgP7/I2Z8SQ4fpTBb9fy+H+PqEmx3LLiot2r4V
- Pq0BwJm/1CeK7f0TB7N2gqSk1VXxrJtotbqNVE8J/xZtb1+syiKXIosIrHRIN22Pmem8
- NsOA==
-X-Gm-Message-State: ANhLgQ0C35jCGUP+RTUFDfLv1Af7iwsWhhaIZEleGQZVfo/sWqqfBfkG
- VqIuA8R6rQxQzd+TksGr2iMcqbTi/Dk=
-X-Google-Smtp-Source: ADFU+vufHd9Y24F7GYgDaDFgdHOFFSo2RiLlvNF+lw/HyiOqlUpTdCXE39t/Q5SshDDpSBD57EGXvA==
-X-Received: by 2002:a63:1952:: with SMTP id 18mr9617199pgz.394.1585019160587; 
- Mon, 23 Mar 2020 20:06:00 -0700 (PDT)
+ bh=EoHFVfVTHKDj3wA1Pgr7GAuawqBtohTxYrc3sgAwjww=;
+ b=lA60RyRfAQAyIjyyO4gpcgTpuM2ifta9jVda3+icXxl3+wZGpNx7mlAbL4L/yU5nly
+ jF3pqS+HY8TSCUH9flRNYr4Ss6lp/LVoP2NIWjLUvNKwKY0rDCLr5+UE+P/+9oIsyyUK
+ X0AxrUpb8PVaeKqpj0bwEnHmpSHmfngyhUiFXuOInSOQbaq0zwjWIk4K3PaybAMT2o4M
+ TBdGpPuZUeJjKsKhILrx7V6t3gZ2NGhLPGEJvXeb+P8wSigyu5kHQ+O+paqsZ9m0YDGg
+ V3jk5GJjbI531/GHxfPE9s1CTTq/22QmFecd5WFOYfTBZ1CWMLmpnGVQgriay4AwIwAK
+ FnHg==
+X-Gm-Message-State: ANhLgQ0KL7FTmo5E9lJzfN0SlV6iM58ChUew2A25KUasfSJRcv9LpZKr
+ jKLcmbpNrzQuuK2NdHeumeY1R6Mhg8I=
+X-Google-Smtp-Source: ADFU+vtUqBrBYpWGQT0F6qG4VH8WBvkLR2SPKKB9qgPmtRoXxqJJFq2PsqIAfuhTww49jsdZsgx7TQ==
+X-Received: by 2002:a63:1c4d:: with SMTP id c13mr24608158pgm.4.1585021085960; 
+ Mon, 23 Mar 2020 20:38:05 -0700 (PDT)
 Received: from [192.168.10.21] (ppp121-45-221-81.bras1.cbr2.internode.on.net.
  [121.45.221.81])
- by smtp.gmail.com with ESMTPSA id mq6sm906908pjb.38.2020.03.23.20.05.56
+ by smtp.gmail.com with ESMTPSA id a185sm15138421pfa.27.2020.03.23.20.38.01
  (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
- Mon, 23 Mar 2020 20:05:59 -0700 (PDT)
+ Mon, 23 Mar 2020 20:38:05 -0700 (PDT)
 Subject: Re: [PATCH 1/2] dma-mapping: add a dma_ops_bypass flag to struct
  device
-To: Christoph Hellwig <hch@lst.de>,
- "Aneesh Kumar K.V" <aneesh.kumar@linux.ibm.com>
+To: Christoph Hellwig <hch@lst.de>
 References: <20200320141640.366360-1-hch@lst.de>
  <20200320141640.366360-2-hch@lst.de>
  <2f31d0dd-aa7e-8b76-c8a1-5759fda5afc9@ozlabs.ru>
- <20200323083705.GA31245@lst.de> <20200323085059.GA32528@lst.de>
- <87sghz2ibh.fsf@linux.ibm.com> <20200323172256.GB31269@lst.de>
+ <20200323083705.GA31245@lst.de>
+ <37ce1b7e-264d-292d-32b1-093b24b3525c@ozlabs.ru>
+ <20200323172014.GA31269@lst.de>
 From: Alexey Kardashevskiy <aik@ozlabs.ru>
 Autocrypt: addr=aik@ozlabs.ru; keydata=
  mQINBE+rT0sBEADFEI2UtPRsLLvnRf+tI9nA8T91+jDK3NLkqV+2DKHkTGPP5qzDZpRSH6mD
@@ -165,16 +166,18 @@ Autocrypt: addr=aik@ozlabs.ru; keydata=
  c7E5M+/NpslPCmYnDjs5qg0/3ihh6XuOGggZQOqrYPC3PnsNs3NxirwOkVPQgO6mXxpuifvJ
  DG9EMkK8IBXnLulqVk54kf7fE0jT/d8RTtJIA92GzsgdK2rpT1MBKKVffjRFGwN7nQVOzi4T
  XrB5p+6ML7Bd84xOEGsj/vdaXmz1esuH7BOZAGEZfLRCHJ0GVCSssg==
-Message-ID: <ffce1af6-a215-dee8-7b5c-2111f43accfd@ozlabs.ru>
-Date: Tue, 24 Mar 2020 14:05:54 +1100
+Message-ID: <d4bf6058-aa77-d0bc-8196-f4c27fb21b74@ozlabs.ru>
+Date: Tue, 24 Mar 2020 14:37:59 +1100
 User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101
  Thunderbird/68.5.0
 MIME-Version: 1.0
-In-Reply-To: <20200323172256.GB31269@lst.de>
+In-Reply-To: <20200323172014.GA31269@lst.de>
 Content-Language: en-US
 Cc: Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
  linuxppc-dev@lists.ozlabs.org, linux-kernel@vger.kernel.org,
- iommu@lists.linux-foundation.org, Robin Murphy <robin.murphy@arm.com>
+ iommu@lists.linux-foundation.org,
+ "Aneesh Kumar K.V" <aneesh.kumar@linux.ibm.com>,
+ Robin Murphy <robin.murphy@arm.com>
 X-BeenThere: iommu@lists.linux-foundation.org
 X-Mailman-Version: 2.1.15
 Precedence: list
@@ -194,24 +197,37 @@ Sender: "iommu" <iommu-bounces@lists.linux-foundation.org>
 
 
 
-On 24/03/2020 04:22, Christoph Hellwig wrote:
-> On Mon, Mar 23, 2020 at 09:07:38PM +0530, Aneesh Kumar K.V wrote:
+On 24/03/2020 04:20, Christoph Hellwig wrote:
+> On Mon, Mar 23, 2020 at 07:58:01PM +1100, Alexey Kardashevskiy wrote:
+>>>> 0x100.0000.0000 .. 0x101.0000.0000
+>>>>
+>>>> 2x4G, each is 1TB aligned. And we can map directly only the first 4GB
+>>>> (because of the maximum IOMMU table size) but not the other. And 1:1 on
+>>>> that "pseries" is done with offset=0x0800.0000.0000.0000.
+>>>>
+>>>> So we want to check every bus address against dev->bus_dma_limit, not
+>>>> dev->coherent_dma_mask. In the example above I'd set bus_dma_limit to
+>>>> 0x0800.0001.0000.0000 and 1:1 mapping for the second 4GB would not be
+>>>> tried. Does this sound reasonable? Thanks,
+>>>
+>>> bus_dma_limit is just another limiting factor applied on top of
+>>> coherent_dma_mask or dma_mask respectively.
 >>
->> This is what I was trying, but considering I am new to DMA subsystem, I
->> am not sure I got all the details correct. The idea is to look at the
->> cpu addr and see if that can be used in direct map fashion(is
->> bus_dma_limit the right restriction here?) if not fallback to dynamic
->> IOMMU mapping.
+>> This is not enough for the task: in my example, I'd set bus limit to
+>> 0x0800.0001.0000.0000 but this would disable bypass for all RAM
+>> addresses - the first and the second 4GB blocks.
 > 
-> I don't think we can throw all these complications into the dma
-> mapping code.  At some point I also wonder what the point is,
-> especially for scatterlist mappings, where the iommu can coalesce.
+> So what about something like the version here:
+> 
+> http://git.infradead.org/users/hch/misc.git/shortlog/refs/heads/dma-bypass.3
 
-This is for persistent memory which you can DMA to/from but yet it does
-not appear in the system as a normal memory and therefore requires
-special handling anyway (O_DIRECT or DAX, I do not know the exact
-mechanics). All other devices in the system should just run as usual,
-i.e. use 1:1 mapping if possible.
+
+dma_alloc_direct() and dma_map_direct() do the same thing now which is
+good, did I miss anything else?
+
+This lets us disable bypass automatically if this weird memory appears
+in the system but does not let us have 1:1 after that even for normal
+RAM. Thanks,
 
 
 -- 
