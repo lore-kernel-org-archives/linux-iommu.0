@@ -2,61 +2,93 @@ Return-Path: <SRS0=fUNI=5K=lists.linux-foundation.org=iommu-bounces@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-9.8 required=3.0 tests=HEADER_FROM_DIFFERENT_DOMAINS,
-	INCLUDES_PATCH,MAILING_LIST_MULTI,SIGNED_OFF_BY,SPF_HELO_NONE,SPF_PASS,
-	URIBL_BLOCKED,USER_AGENT_GIT autolearn=ham autolearn_force=no version=3.4.0
+X-Spam-Status: No, score=-2.2 required=3.0 tests=HEADER_FROM_DIFFERENT_DOMAINS,
+	MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED,USER_AGENT_SANE_1
+	autolearn=no autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 43F8EC43331
-	for <iommu@archiver.kernel.org>; Wed, 25 Mar 2020 13:19:06 +0000 (UTC)
-Received: from silver.osuosl.org (smtp3.osuosl.org [140.211.166.136])
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 36B63C1975A
+	for <iommu@archiver.kernel.org>; Wed, 25 Mar 2020 15:31:59 +0000 (UTC)
+Received: from whitealder.osuosl.org (smtp1.osuosl.org [140.211.166.138])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by mail.kernel.org (Postfix) with ESMTPS id 0E40A2077D
-	for <iommu@archiver.kernel.org>; Wed, 25 Mar 2020 13:19:05 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 0E40A2077D
-Authentication-Results: mail.kernel.org; dmarc=none (p=none dis=none) header.from=arm.com
+	by mail.kernel.org (Postfix) with ESMTPS id F2FBA206F8
+	for <iommu@archiver.kernel.org>; Wed, 25 Mar 2020 15:31:58 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org F2FBA206F8
+Authentication-Results: mail.kernel.org; dmarc=none (p=none dis=none) header.from=huawei.com
 Authentication-Results: mail.kernel.org; spf=pass smtp.mailfrom=iommu-bounces@lists.linux-foundation.org
 Received: from localhost (localhost [127.0.0.1])
-	by silver.osuosl.org (Postfix) with ESMTP id CB0B620365;
-	Wed, 25 Mar 2020 13:19:05 +0000 (UTC)
+	by whitealder.osuosl.org (Postfix) with ESMTP id CA6D887EB8;
+	Wed, 25 Mar 2020 15:31:58 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from silver.osuosl.org ([127.0.0.1])
+Received: from whitealder.osuosl.org ([127.0.0.1])
 	by localhost (.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
-	with ESMTP id Uz6Bf0Q5CrCS; Wed, 25 Mar 2020 13:19:04 +0000 (UTC)
+	with ESMTP id ydH0is4C+tai; Wed, 25 Mar 2020 15:31:57 +0000 (UTC)
 Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [140.211.9.56])
-	by silver.osuosl.org (Postfix) with ESMTP id 1BE492001E;
-	Wed, 25 Mar 2020 13:19:04 +0000 (UTC)
+	by whitealder.osuosl.org (Postfix) with ESMTP id 90CA987EB0;
+	Wed, 25 Mar 2020 15:31:57 +0000 (UTC)
 Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
-	by lists.linuxfoundation.org (Postfix) with ESMTP id F3D49C1D7C;
-	Wed, 25 Mar 2020 13:19:03 +0000 (UTC)
-Received: from silver.osuosl.org (smtp3.osuosl.org [140.211.166.136])
- by lists.linuxfoundation.org (Postfix) with ESMTP id 29921C0177
- for <iommu@lists.linux-foundation.org>; Wed, 25 Mar 2020 13:19:03 +0000 (UTC)
+	by lists.linuxfoundation.org (Postfix) with ESMTP id 74350C1D7C;
+	Wed, 25 Mar 2020 15:31:57 +0000 (UTC)
+Received: from hemlock.osuosl.org (smtp2.osuosl.org [140.211.166.133])
+ by lists.linuxfoundation.org (Postfix) with ESMTP id 94909C0177
+ for <iommu@lists.linux-foundation.org>; Wed, 25 Mar 2020 15:31:55 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
- by silver.osuosl.org (Postfix) with ESMTP id F23F120364
- for <iommu@lists.linux-foundation.org>; Wed, 25 Mar 2020 13:19:02 +0000 (UTC)
+ by hemlock.osuosl.org (Postfix) with ESMTP id 8F9A587D63
+ for <iommu@lists.linux-foundation.org>; Wed, 25 Mar 2020 15:31:55 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from silver.osuosl.org ([127.0.0.1])
+Received: from hemlock.osuosl.org ([127.0.0.1])
  by localhost (.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
- with ESMTP id PyPJXDyK8bnM for <iommu@lists.linux-foundation.org>;
- Wed, 25 Mar 2020 13:19:00 +0000 (UTC)
+ with ESMTP id at07bOC+zemf for <iommu@lists.linux-foundation.org>;
+ Wed, 25 Mar 2020 15:31:54 +0000 (UTC)
 X-Greylist: domain auto-whitelisted by SQLgrey-1.7.6
-Received: from foss.arm.com (foss.arm.com [217.140.110.172])
- by silver.osuosl.org (Postfix) with ESMTP id 0B8BD2001E
- for <iommu@lists.linux-foundation.org>; Wed, 25 Mar 2020 13:18:59 +0000 (UTC)
-Received: from usa-sjc-imap-foss1.foss.arm.com (unknown [10.121.207.14])
- by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id 1A14131B;
- Wed, 25 Mar 2020 06:18:59 -0700 (PDT)
-Received: from DESKTOP-VLO843J.arm.com (unknown [10.57.59.20])
- by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPA id 61D5F3F71F;
- Wed, 25 Mar 2020 06:18:58 -0700 (PDT)
-From: Robin Murphy <robin.murphy@arm.com>
-To: joro@8bytes.org
-Subject: [PATCH RESEND] iommu/arm-smmu: Refactor master_cfg/fwspec usage
-Date: Wed, 25 Mar 2020 13:18:55 +0000
-Message-Id: <23978b25728ae103daa09b9b415b22aa175b79f4.1585142121.git.robin.murphy@arm.com>
-X-Mailer: git-send-email 2.17.1
-Cc: iommu@lists.linux-foundation.org, will@kernel.org
+Received: from huawei.com (lhrrgout.huawei.com [185.176.76.210])
+ by hemlock.osuosl.org (Postfix) with ESMTPS id 27D6F87D5D
+ for <iommu@lists.linux-foundation.org>; Wed, 25 Mar 2020 15:31:53 +0000 (UTC)
+Received: from lhreml704-cah.china.huawei.com (unknown [172.18.7.107])
+ by Forcepoint Email with ESMTP id 68AECC11BE6B087C9C06;
+ Wed, 25 Mar 2020 15:31:51 +0000 (GMT)
+Received: from lhreml724-chm.china.huawei.com (10.201.108.75) by
+ lhreml704-cah.china.huawei.com (10.201.108.45) with Microsoft SMTP Server
+ (TLS) id 14.3.408.0; Wed, 25 Mar 2020 15:31:50 +0000
+Received: from [127.0.0.1] (10.210.165.24) by lhreml724-chm.china.huawei.com
+ (10.201.108.75) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.1713.5; Wed, 25 Mar
+ 2020 15:31:50 +0000
+Subject: Re: arm-smmu-v3 high cpu usage for NVMe
+From: John Garry <john.garry@huawei.com>
+To: Robin Murphy <robin.murphy@arm.com>, Marc Zyngier <maz@kernel.org>
+References: <20190821151749.23743-1-will@kernel.org>
+ <b2a6e26d-6d0d-7f0d-f222-589812f701d2@huawei.com>
+ <20200318205313.GB8094@willie-the-truck>
+ <c6ab8020-dc06-0c7d-7a41-e792d90f97ba@huawei.com>
+ <20200319184349.GA1697676@myrica>
+ <c9ebe17d-66b8-1b8c-cc2c-5be0bd1501a7@huawei.com>
+ <20200320111842.GD1702630@myrica>
+ <b412fc9c-6266-e320-0769-f214d7752675@huawei.com>
+ <5198fcffc8ad6233e0274ebff9e9aa5f@kernel.org>
+ <cca67355-672d-81c5-3d37-72004eb8f14f@huawei.com>
+ <dd375cf6bffacd82174c84a4c7d46283@kernel.org>
+ <0e00de15-596a-d342-f3cb-e19c389294e6@huawei.com>
+ <20200324104307.57d2cde0@why>
+ <4c5e2482-1493-6bb7-d592-58cd027d39f9@huawei.com>
+ <10d5bcb3-e7c4-18f0-ede6-9fd8f0385254@arm.com>
+ <9f1c719f-b876-66a1-2d3e-7787e1f1ed9f@huawei.com>
+Message-ID: <2ae1221a-aec1-b9fd-7aa6-204b9e5e04e1@huawei.com>
+Date: Wed, 25 Mar 2020 15:31:35 +0000
+User-Agent: Mozilla/5.0 (Windows NT 10.0; WOW64; rv:68.0) Gecko/20100101
+ Thunderbird/68.1.2
+MIME-Version: 1.0
+In-Reply-To: <9f1c719f-b876-66a1-2d3e-7787e1f1ed9f@huawei.com>
+Content-Language: en-US
+X-Originating-IP: [10.210.165.24]
+X-ClientProxiedBy: lhreml732-chm.china.huawei.com (10.201.108.83) To
+ lhreml724-chm.china.huawei.com (10.201.108.75)
+X-CFilter-Loop: Reflected
+Cc: Mark Rutland <mark.rutland@arm.com>,
+ Jean-Philippe Brucker <jean-philippe@linaro.org>,
+ Ming Lei <ming.lei@redhat.com>, iommu@lists.linux-foundation.org,
+ Will Deacon <will@kernel.org>, Julien
+ Thierry <julien.thierry.kdev@gmail.com>
 X-BeenThere: iommu@lists.linux-foundation.org
 X-Mailman-Version: 2.1.15
 Precedence: list
@@ -69,157 +101,65 @@ List-Post: <mailto:iommu@lists.linux-foundation.org>
 List-Help: <mailto:iommu-request@lists.linux-foundation.org?subject=help>
 List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
  <mailto:iommu-request@lists.linux-foundation.org?subject=subscribe>
-MIME-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset="us-ascii"; Format="flowed"
 Errors-To: iommu-bounces@lists.linux-foundation.org
 Sender: "iommu" <iommu-bounces@lists.linux-foundation.org>
 
-In preparation for restructuring iommu_fwspec, refactor the way we
-access the arm_smmu_master_cfg private data to be less dependent on
-the current layout.
+> 
+>>
+>> FWIW I believe is is still on the plan for someone here to dust off 
+>> the PMU pNMI patches at some point.
+> 
+> Cool. Well I can try to experiment with what Julien had at v4 for now.
+> 
 
-Signed-off-by: Robin Murphy <robin.murphy@arm.com>
----
- drivers/iommu/arm-smmu.c | 42 +++++++++++++++++++++-------------------
- 1 file changed, 22 insertions(+), 20 deletions(-)
+JFYI, I have done some more perf record capturing, and updated the 
+"annotate" and "report" output here 
+https://raw.githubusercontent.com/hisilicon/kernel-dev/679eca1008b1d11b42e1b5fa8a205266c240d1e1/ann.txt 
+and .../report
 
-diff --git a/drivers/iommu/arm-smmu.c b/drivers/iommu/arm-smmu.c
-index 16c4b87af42b..b4978f45a7f2 100644
---- a/drivers/iommu/arm-smmu.c
-+++ b/drivers/iommu/arm-smmu.c
-@@ -98,12 +98,10 @@ struct arm_smmu_master_cfg {
- 	s16				smendx[];
- };
- #define INVALID_SMENDX			-1
--#define __fwspec_cfg(fw) ((struct arm_smmu_master_cfg *)fw->iommu_priv)
--#define fwspec_smmu(fw)  (__fwspec_cfg(fw)->smmu)
--#define fwspec_smendx(fw, i) \
--	(i >= fw->num_ids ? INVALID_SMENDX : __fwspec_cfg(fw)->smendx[i])
--#define for_each_cfg_sme(fw, i, idx) \
--	for (i = 0; idx = fwspec_smendx(fw, i), i < fw->num_ids; ++i)
-+#define cfg_smendx(cfg, fw, i) \
-+	(i >= fw->num_ids ? INVALID_SMENDX : cfg->smendx[i])
-+#define for_each_cfg_sme(cfg, fw, i, idx) \
-+	for (i = 0; idx = cfg_smendx(cfg, fw, i), i < fw->num_ids; ++i)
- 
- static bool using_legacy_binding, using_generic_binding;
- 
-@@ -1069,7 +1067,7 @@ static int arm_smmu_master_alloc_smes(struct device *dev)
- 
- 	mutex_lock(&smmu->stream_map_mutex);
- 	/* Figure out a viable stream map entry allocation */
--	for_each_cfg_sme(fwspec, i, idx) {
-+	for_each_cfg_sme(cfg, fwspec, i, idx) {
- 		u16 sid = FIELD_GET(ARM_SMMU_SMR_ID, fwspec->ids[i]);
- 		u16 mask = FIELD_GET(ARM_SMMU_SMR_MASK, fwspec->ids[i]);
- 
-@@ -1100,7 +1098,7 @@ static int arm_smmu_master_alloc_smes(struct device *dev)
- 	iommu_group_put(group);
- 
- 	/* It worked! Now, poke the actual hardware */
--	for_each_cfg_sme(fwspec, i, idx) {
-+	for_each_cfg_sme(cfg, fwspec, i, idx) {
- 		arm_smmu_write_sme(smmu, idx);
- 		smmu->s2crs[idx].group = group;
- 	}
-@@ -1117,14 +1115,14 @@ static int arm_smmu_master_alloc_smes(struct device *dev)
- 	return ret;
- }
- 
--static void arm_smmu_master_free_smes(struct iommu_fwspec *fwspec)
-+static void arm_smmu_master_free_smes(struct arm_smmu_master_cfg *cfg,
-+				      struct iommu_fwspec *fwspec)
- {
--	struct arm_smmu_device *smmu = fwspec_smmu(fwspec);
--	struct arm_smmu_master_cfg *cfg = fwspec->iommu_priv;
-+	struct arm_smmu_device *smmu = cfg->smmu;
- 	int i, idx;
- 
- 	mutex_lock(&smmu->stream_map_mutex);
--	for_each_cfg_sme(fwspec, i, idx) {
-+	for_each_cfg_sme(cfg, fwspec, i, idx) {
- 		if (arm_smmu_free_sme(smmu, idx))
- 			arm_smmu_write_sme(smmu, idx);
- 		cfg->smendx[i] = INVALID_SMENDX;
-@@ -1133,6 +1131,7 @@ static void arm_smmu_master_free_smes(struct iommu_fwspec *fwspec)
- }
- 
- static int arm_smmu_domain_add_master(struct arm_smmu_domain *smmu_domain,
-+				      struct arm_smmu_master_cfg *cfg,
- 				      struct iommu_fwspec *fwspec)
- {
- 	struct arm_smmu_device *smmu = smmu_domain->smmu;
-@@ -1146,7 +1145,7 @@ static int arm_smmu_domain_add_master(struct arm_smmu_domain *smmu_domain,
- 	else
- 		type = S2CR_TYPE_TRANS;
- 
--	for_each_cfg_sme(fwspec, i, idx) {
-+	for_each_cfg_sme(cfg, fwspec, i, idx) {
- 		if (type == s2cr[idx].type && cbndx == s2cr[idx].cbndx)
- 			continue;
- 
-@@ -1162,8 +1161,9 @@ static int arm_smmu_attach_dev(struct iommu_domain *domain, struct device *dev)
- {
- 	int ret;
- 	struct iommu_fwspec *fwspec = dev_iommu_fwspec_get(dev);
--	struct arm_smmu_device *smmu;
- 	struct arm_smmu_domain *smmu_domain = to_smmu_domain(domain);
-+	struct arm_smmu_master_cfg *cfg;
-+	struct arm_smmu_device *smmu;
- 
- 	if (!fwspec || fwspec->ops != &arm_smmu_ops) {
- 		dev_err(dev, "cannot attach to SMMU, is it on the same bus?\n");
-@@ -1177,10 +1177,11 @@ static int arm_smmu_attach_dev(struct iommu_domain *domain, struct device *dev)
- 	 * domains, just say no (but more politely than by dereferencing NULL).
- 	 * This should be at least a WARN_ON once that's sorted.
- 	 */
--	if (!fwspec->iommu_priv)
-+	cfg = fwspec->iommu_priv;
-+	if (!cfg)
- 		return -ENODEV;
- 
--	smmu = fwspec_smmu(fwspec);
-+	smmu = cfg->smmu;
- 
- 	ret = arm_smmu_rpm_get(smmu);
- 	if (ret < 0)
-@@ -1204,7 +1205,7 @@ static int arm_smmu_attach_dev(struct iommu_domain *domain, struct device *dev)
- 	}
- 
- 	/* Looks ok, so add the device to the domain */
--	ret = arm_smmu_domain_add_master(smmu_domain, fwspec);
-+	ret = arm_smmu_domain_add_master(smmu_domain, cfg, fwspec);
- 
- 	/*
- 	 * Setup an autosuspend delay to avoid bouncing runpm state.
-@@ -1475,7 +1476,7 @@ static void arm_smmu_remove_device(struct device *dev)
- 		return;
- 
- 	iommu_device_unlink(&smmu->iommu, dev);
--	arm_smmu_master_free_smes(fwspec);
-+	arm_smmu_master_free_smes(cfg, fwspec);
- 
- 	arm_smmu_rpm_put(smmu);
- 
-@@ -1487,11 +1488,12 @@ static void arm_smmu_remove_device(struct device *dev)
- static struct iommu_group *arm_smmu_device_group(struct device *dev)
- {
- 	struct iommu_fwspec *fwspec = dev_iommu_fwspec_get(dev);
--	struct arm_smmu_device *smmu = fwspec_smmu(fwspec);
-+	struct arm_smmu_master_cfg *cfg = fwspec->iommu_priv;
-+	struct arm_smmu_device *smmu = cfg->smmu;
- 	struct iommu_group *group = NULL;
- 	int i, idx;
- 
--	for_each_cfg_sme(fwspec, i, idx) {
-+	for_each_cfg_sme(cfg, fwspec, i, idx) {
- 		if (group && smmu->s2crs[idx].group &&
- 		    group != smmu->s2crs[idx].group)
- 			return ERR_PTR(-EINVAL);
--- 
-2.17.1
+This capture is just for cpu0, since NVMe irq handling+dma unmapping 
+will occur on specific CPUs, cpu0 being one of them.
 
+The reports look somewhat sane. So we no longer have ~99% of time 
+attributed to re-enabling interrupts, now that's like:
+
+
+     3.14 :   ffff80001071eae0:       ldr     w0, [x29, #108]
+          :                      int ret = 0;
+     0.00 :   ffff80001071eae4:       mov     w24, #0x0 
+      // #0
+          :                      if (sync) {
+     0.00 :   ffff80001071eae8:       cbnz    w0, ffff80001071eb44 
+<arm_smmu_cmdq_issue_cmdlist+0x44c>
+          :                      arch_local_irq_restore():
+          :                      asm volatile(ALTERNATIVE(
+     0.00 :   ffff80001071eaec:       msr     daif, x21
+          :                      arch_static_branch():
+     0.25 :   ffff80001071eaf0:       nop
+          :                      arm_smmu_cmdq_issue_cmdlist():
+          :                      }
+          :                      }
+          :
+          :                      local_irq_restore(flags);
+          :                      return ret;
+          :                      }
+One observation (if these reports are to be believed) is that we may 
+spend a lot of time in the CAS loop, trying to get a place in the queue 
+initially:
+
+          :                      __CMPXCHG_CASE(w,  ,     , 32,   )
+          :                      __CMPXCHG_CASE(x,  ,     , 64,   )
+     0.00 :   ffff80001071e828:       mov     x0, x27
+     0.00 :   ffff80001071e82c:       mov     x4, x1
+     0.00 :   ffff80001071e830:       cas     x4, x2, [x27]
+    28.61 :   ffff80001071e834:       mov     x0, x4
+          :                      arm_smmu_cmdq_issue_cmdlist():
+          :                      if (old == llq.val)
+     0.00 :   ffff80001071e838:       ldr     x1, [x23]
+
+John
 _______________________________________________
 iommu mailing list
 iommu@lists.linux-foundation.org
