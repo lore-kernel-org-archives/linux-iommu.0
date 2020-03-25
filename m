@@ -2,72 +2,61 @@ Return-Path: <SRS0=fUNI=5K=lists.linux-foundation.org=iommu-bounces@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-8.3 required=3.0 tests=HEADER_FROM_DIFFERENT_DOMAINS,
+X-Spam-Status: No, score=-9.8 required=3.0 tests=HEADER_FROM_DIFFERENT_DOMAINS,
 	INCLUDES_PATCH,MAILING_LIST_MULTI,SIGNED_OFF_BY,SPF_HELO_NONE,SPF_PASS,
-	USER_AGENT_SANE_1 autolearn=unavailable autolearn_force=no version=3.4.0
+	URIBL_BLOCKED,USER_AGENT_GIT autolearn=ham autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 27013C1975A
-	for <iommu@archiver.kernel.org>; Wed, 25 Mar 2020 12:51:42 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 43F8EC43331
+	for <iommu@archiver.kernel.org>; Wed, 25 Mar 2020 13:19:06 +0000 (UTC)
 Received: from silver.osuosl.org (smtp3.osuosl.org [140.211.166.136])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by mail.kernel.org (Postfix) with ESMTPS id E65A92076A
-	for <iommu@archiver.kernel.org>; Wed, 25 Mar 2020 12:51:41 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org E65A92076A
+	by mail.kernel.org (Postfix) with ESMTPS id 0E40A2077D
+	for <iommu@archiver.kernel.org>; Wed, 25 Mar 2020 13:19:05 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 0E40A2077D
 Authentication-Results: mail.kernel.org; dmarc=none (p=none dis=none) header.from=arm.com
 Authentication-Results: mail.kernel.org; spf=pass smtp.mailfrom=iommu-bounces@lists.linux-foundation.org
 Received: from localhost (localhost [127.0.0.1])
-	by silver.osuosl.org (Postfix) with ESMTP id EE9CD204A8;
-	Wed, 25 Mar 2020 12:51:40 +0000 (UTC)
+	by silver.osuosl.org (Postfix) with ESMTP id CB0B620365;
+	Wed, 25 Mar 2020 13:19:05 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
 Received: from silver.osuosl.org ([127.0.0.1])
 	by localhost (.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
-	with ESMTP id UNDXFJ56Fo-B; Wed, 25 Mar 2020 12:51:38 +0000 (UTC)
+	with ESMTP id Uz6Bf0Q5CrCS; Wed, 25 Mar 2020 13:19:04 +0000 (UTC)
 Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [140.211.9.56])
-	by silver.osuosl.org (Postfix) with ESMTP id E3816203CE;
-	Wed, 25 Mar 2020 12:51:38 +0000 (UTC)
+	by silver.osuosl.org (Postfix) with ESMTP id 1BE492001E;
+	Wed, 25 Mar 2020 13:19:04 +0000 (UTC)
 Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
-	by lists.linuxfoundation.org (Postfix) with ESMTP id D6A83C1D74;
-	Wed, 25 Mar 2020 12:51:38 +0000 (UTC)
-Received: from hemlock.osuosl.org (smtp2.osuosl.org [140.211.166.133])
- by lists.linuxfoundation.org (Postfix) with ESMTP id E6D69C0177
- for <iommu@lists.linux-foundation.org>; Wed, 25 Mar 2020 12:51:36 +0000 (UTC)
+	by lists.linuxfoundation.org (Postfix) with ESMTP id F3D49C1D7C;
+	Wed, 25 Mar 2020 13:19:03 +0000 (UTC)
+Received: from silver.osuosl.org (smtp3.osuosl.org [140.211.166.136])
+ by lists.linuxfoundation.org (Postfix) with ESMTP id 29921C0177
+ for <iommu@lists.linux-foundation.org>; Wed, 25 Mar 2020 13:19:03 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
- by hemlock.osuosl.org (Postfix) with ESMTP id CF298883AE
- for <iommu@lists.linux-foundation.org>; Wed, 25 Mar 2020 12:51:36 +0000 (UTC)
+ by silver.osuosl.org (Postfix) with ESMTP id F23F120364
+ for <iommu@lists.linux-foundation.org>; Wed, 25 Mar 2020 13:19:02 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from hemlock.osuosl.org ([127.0.0.1])
+Received: from silver.osuosl.org ([127.0.0.1])
  by localhost (.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
- with ESMTP id NBiLGTjvx37E for <iommu@lists.linux-foundation.org>;
- Wed, 25 Mar 2020 12:51:35 +0000 (UTC)
+ with ESMTP id PyPJXDyK8bnM for <iommu@lists.linux-foundation.org>;
+ Wed, 25 Mar 2020 13:19:00 +0000 (UTC)
 X-Greylist: domain auto-whitelisted by SQLgrey-1.7.6
 Received: from foss.arm.com (foss.arm.com [217.140.110.172])
- by hemlock.osuosl.org (Postfix) with ESMTP id DE8D8882E7
- for <iommu@lists.linux-foundation.org>; Wed, 25 Mar 2020 12:51:35 +0000 (UTC)
+ by silver.osuosl.org (Postfix) with ESMTP id 0B8BD2001E
+ for <iommu@lists.linux-foundation.org>; Wed, 25 Mar 2020 13:18:59 +0000 (UTC)
 Received: from usa-sjc-imap-foss1.foss.arm.com (unknown [10.121.207.14])
- by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id 495FC31B;
- Wed, 25 Mar 2020 05:51:35 -0700 (PDT)
-Received: from red-moon.cambridge.arm.com (unknown [10.57.20.165])
- by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPSA id 3F43B3F71F;
- Wed, 25 Mar 2020 05:51:30 -0700 (PDT)
-Date: Wed, 25 Mar 2020 12:51:18 +0000
-From: Lorenzo Pieralisi <lorenzo.pieralisi@arm.com>
-To: laurentiu.tudor@nxp.com
-Subject: Re: [RFC PATCH 1/4] bus: fsl-mc: add custom .dma_configure
- implementation
-Message-ID: <20200325125109.GA5430@red-moon.cambridge.arm.com>
-References: <20200227100542.13819-1-laurentiu.tudor@nxp.com>
-MIME-Version: 1.0
-Content-Disposition: inline
-In-Reply-To: <20200227100542.13819-1-laurentiu.tudor@nxp.com>
-User-Agent: Mutt/1.9.4 (2018-02-28)
-Cc: jason@lakedaemon.net, calvin.johnson@nxp.com, ard.biesheuvel@linaro.org,
- maz@kernel.org, pankaj.bansal@nxp.com, diana.craciun@oss.nxp.com,
- jon@solid-run.com, linux-kernel@vger.kernel.org, jeremy.linton@arm.com,
- linux-acpi@vger.kernel.org, iommu@lists.linux-foundation.org,
- cristian.sovaiala@nxp.com, tglx@linutronix.de, makarand.pawagi@nxp.com,
- ioana.ciornei@nxp.com, Stuart.Yoder@arm.com, robin.murphy@arm.com,
- linux-arm-kernel@lists.infradead.org, V.Sethi@nxp.com
+ by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id 1A14131B;
+ Wed, 25 Mar 2020 06:18:59 -0700 (PDT)
+Received: from DESKTOP-VLO843J.arm.com (unknown [10.57.59.20])
+ by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPA id 61D5F3F71F;
+ Wed, 25 Mar 2020 06:18:58 -0700 (PDT)
+From: Robin Murphy <robin.murphy@arm.com>
+To: joro@8bytes.org
+Subject: [PATCH RESEND] iommu/arm-smmu: Refactor master_cfg/fwspec usage
+Date: Wed, 25 Mar 2020 13:18:55 +0000
+Message-Id: <23978b25728ae103daa09b9b415b22aa175b79f4.1585142121.git.robin.murphy@arm.com>
+X-Mailer: git-send-email 2.17.1
+Cc: iommu@lists.linux-foundation.org, will@kernel.org
 X-BeenThere: iommu@lists.linux-foundation.org
 X-Mailman-Version: 2.1.15
 Precedence: list
@@ -80,83 +69,157 @@ List-Post: <mailto:iommu@lists.linux-foundation.org>
 List-Help: <mailto:iommu-request@lists.linux-foundation.org?subject=help>
 List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
  <mailto:iommu-request@lists.linux-foundation.org?subject=subscribe>
+MIME-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
 Errors-To: iommu-bounces@lists.linux-foundation.org
 Sender: "iommu" <iommu-bounces@lists.linux-foundation.org>
 
-On Thu, Feb 27, 2020 at 12:05:39PM +0200, laurentiu.tudor@nxp.com wrote:
-> From: Laurentiu Tudor <laurentiu.tudor@nxp.com>
-> 
-> The devices on this bus are not discovered by way of device tree
-> but by queries to the firmware. It makes little sense to trick the
-> generic of layer into thinking that these devices are of related so
-> that we can get our dma configuration. Instead of doing that, add
-> our custom dma configuration implementation.
-> 
-> Signed-off-by: Laurentiu Tudor <laurentiu.tudor@nxp.com>
-> ---
->  drivers/bus/fsl-mc/fsl-mc-bus.c | 31 ++++++++++++++++++++++++++++++-
->  1 file changed, 30 insertions(+), 1 deletion(-)
-> 
-> diff --git a/drivers/bus/fsl-mc/fsl-mc-bus.c b/drivers/bus/fsl-mc/fsl-mc-bus.c
-> index 36eb25f82c8e..eafaa0e0b906 100644
-> --- a/drivers/bus/fsl-mc/fsl-mc-bus.c
-> +++ b/drivers/bus/fsl-mc/fsl-mc-bus.c
-> @@ -132,11 +132,40 @@ static int fsl_mc_bus_uevent(struct device *dev, struct kobj_uevent_env *env)
->  static int fsl_mc_dma_configure(struct device *dev)
->  {
->  	struct device *dma_dev = dev;
-> +	struct iommu_fwspec *fwspec;
-> +	const struct iommu_ops *iommu_ops;
-> +	struct fsl_mc_device *mc_dev = to_fsl_mc_device(dev);
-> +	int ret;
-> +	u32 icid;
->  
->  	while (dev_is_fsl_mc(dma_dev))
->  		dma_dev = dma_dev->parent;
->  
-> -	return of_dma_configure(dev, dma_dev->of_node, 0);
-> +	fwspec = dev_iommu_fwspec_get(dma_dev);
-> +	if (!fwspec)
-> +		return -ENODEV;
-> +	iommu_ops = iommu_ops_from_fwnode(fwspec->iommu_fwnode);
-> +	if (!iommu_ops)
-> +		return -ENODEV;
-> +
-> +	ret = iommu_fwspec_init(dev, fwspec->iommu_fwnode, iommu_ops);
-> +	if (ret)
-> +		return ret;
-> +
-> +	icid = mc_dev->icid;
-> +	ret = iommu_fwspec_add_ids(dev, &icid, 1);
+In preparation for restructuring iommu_fwspec, refactor the way we
+access the arm_smmu_master_cfg private data to be less dependent on
+the current layout.
 
-I see. So with this patch we would use the MC named component only to
-retrieve the iommu_ops - the streamid are injected directly here
-bypassing OF/IORT bindings translations altogether. Am I reading this
-code correctly ?
+Signed-off-by: Robin Murphy <robin.murphy@arm.com>
+---
+ drivers/iommu/arm-smmu.c | 42 +++++++++++++++++++++-------------------
+ 1 file changed, 22 insertions(+), 20 deletions(-)
 
-Thanks,
-Lorenzo
+diff --git a/drivers/iommu/arm-smmu.c b/drivers/iommu/arm-smmu.c
+index 16c4b87af42b..b4978f45a7f2 100644
+--- a/drivers/iommu/arm-smmu.c
++++ b/drivers/iommu/arm-smmu.c
+@@ -98,12 +98,10 @@ struct arm_smmu_master_cfg {
+ 	s16				smendx[];
+ };
+ #define INVALID_SMENDX			-1
+-#define __fwspec_cfg(fw) ((struct arm_smmu_master_cfg *)fw->iommu_priv)
+-#define fwspec_smmu(fw)  (__fwspec_cfg(fw)->smmu)
+-#define fwspec_smendx(fw, i) \
+-	(i >= fw->num_ids ? INVALID_SMENDX : __fwspec_cfg(fw)->smendx[i])
+-#define for_each_cfg_sme(fw, i, idx) \
+-	for (i = 0; idx = fwspec_smendx(fw, i), i < fw->num_ids; ++i)
++#define cfg_smendx(cfg, fw, i) \
++	(i >= fw->num_ids ? INVALID_SMENDX : cfg->smendx[i])
++#define for_each_cfg_sme(cfg, fw, i, idx) \
++	for (i = 0; idx = cfg_smendx(cfg, fw, i), i < fw->num_ids; ++i)
+ 
+ static bool using_legacy_binding, using_generic_binding;
+ 
+@@ -1069,7 +1067,7 @@ static int arm_smmu_master_alloc_smes(struct device *dev)
+ 
+ 	mutex_lock(&smmu->stream_map_mutex);
+ 	/* Figure out a viable stream map entry allocation */
+-	for_each_cfg_sme(fwspec, i, idx) {
++	for_each_cfg_sme(cfg, fwspec, i, idx) {
+ 		u16 sid = FIELD_GET(ARM_SMMU_SMR_ID, fwspec->ids[i]);
+ 		u16 mask = FIELD_GET(ARM_SMMU_SMR_MASK, fwspec->ids[i]);
+ 
+@@ -1100,7 +1098,7 @@ static int arm_smmu_master_alloc_smes(struct device *dev)
+ 	iommu_group_put(group);
+ 
+ 	/* It worked! Now, poke the actual hardware */
+-	for_each_cfg_sme(fwspec, i, idx) {
++	for_each_cfg_sme(cfg, fwspec, i, idx) {
+ 		arm_smmu_write_sme(smmu, idx);
+ 		smmu->s2crs[idx].group = group;
+ 	}
+@@ -1117,14 +1115,14 @@ static int arm_smmu_master_alloc_smes(struct device *dev)
+ 	return ret;
+ }
+ 
+-static void arm_smmu_master_free_smes(struct iommu_fwspec *fwspec)
++static void arm_smmu_master_free_smes(struct arm_smmu_master_cfg *cfg,
++				      struct iommu_fwspec *fwspec)
+ {
+-	struct arm_smmu_device *smmu = fwspec_smmu(fwspec);
+-	struct arm_smmu_master_cfg *cfg = fwspec->iommu_priv;
++	struct arm_smmu_device *smmu = cfg->smmu;
+ 	int i, idx;
+ 
+ 	mutex_lock(&smmu->stream_map_mutex);
+-	for_each_cfg_sme(fwspec, i, idx) {
++	for_each_cfg_sme(cfg, fwspec, i, idx) {
+ 		if (arm_smmu_free_sme(smmu, idx))
+ 			arm_smmu_write_sme(smmu, idx);
+ 		cfg->smendx[i] = INVALID_SMENDX;
+@@ -1133,6 +1131,7 @@ static void arm_smmu_master_free_smes(struct iommu_fwspec *fwspec)
+ }
+ 
+ static int arm_smmu_domain_add_master(struct arm_smmu_domain *smmu_domain,
++				      struct arm_smmu_master_cfg *cfg,
+ 				      struct iommu_fwspec *fwspec)
+ {
+ 	struct arm_smmu_device *smmu = smmu_domain->smmu;
+@@ -1146,7 +1145,7 @@ static int arm_smmu_domain_add_master(struct arm_smmu_domain *smmu_domain,
+ 	else
+ 		type = S2CR_TYPE_TRANS;
+ 
+-	for_each_cfg_sme(fwspec, i, idx) {
++	for_each_cfg_sme(cfg, fwspec, i, idx) {
+ 		if (type == s2cr[idx].type && cbndx == s2cr[idx].cbndx)
+ 			continue;
+ 
+@@ -1162,8 +1161,9 @@ static int arm_smmu_attach_dev(struct iommu_domain *domain, struct device *dev)
+ {
+ 	int ret;
+ 	struct iommu_fwspec *fwspec = dev_iommu_fwspec_get(dev);
+-	struct arm_smmu_device *smmu;
+ 	struct arm_smmu_domain *smmu_domain = to_smmu_domain(domain);
++	struct arm_smmu_master_cfg *cfg;
++	struct arm_smmu_device *smmu;
+ 
+ 	if (!fwspec || fwspec->ops != &arm_smmu_ops) {
+ 		dev_err(dev, "cannot attach to SMMU, is it on the same bus?\n");
+@@ -1177,10 +1177,11 @@ static int arm_smmu_attach_dev(struct iommu_domain *domain, struct device *dev)
+ 	 * domains, just say no (but more politely than by dereferencing NULL).
+ 	 * This should be at least a WARN_ON once that's sorted.
+ 	 */
+-	if (!fwspec->iommu_priv)
++	cfg = fwspec->iommu_priv;
++	if (!cfg)
+ 		return -ENODEV;
+ 
+-	smmu = fwspec_smmu(fwspec);
++	smmu = cfg->smmu;
+ 
+ 	ret = arm_smmu_rpm_get(smmu);
+ 	if (ret < 0)
+@@ -1204,7 +1205,7 @@ static int arm_smmu_attach_dev(struct iommu_domain *domain, struct device *dev)
+ 	}
+ 
+ 	/* Looks ok, so add the device to the domain */
+-	ret = arm_smmu_domain_add_master(smmu_domain, fwspec);
++	ret = arm_smmu_domain_add_master(smmu_domain, cfg, fwspec);
+ 
+ 	/*
+ 	 * Setup an autosuspend delay to avoid bouncing runpm state.
+@@ -1475,7 +1476,7 @@ static void arm_smmu_remove_device(struct device *dev)
+ 		return;
+ 
+ 	iommu_device_unlink(&smmu->iommu, dev);
+-	arm_smmu_master_free_smes(fwspec);
++	arm_smmu_master_free_smes(cfg, fwspec);
+ 
+ 	arm_smmu_rpm_put(smmu);
+ 
+@@ -1487,11 +1488,12 @@ static void arm_smmu_remove_device(struct device *dev)
+ static struct iommu_group *arm_smmu_device_group(struct device *dev)
+ {
+ 	struct iommu_fwspec *fwspec = dev_iommu_fwspec_get(dev);
+-	struct arm_smmu_device *smmu = fwspec_smmu(fwspec);
++	struct arm_smmu_master_cfg *cfg = fwspec->iommu_priv;
++	struct arm_smmu_device *smmu = cfg->smmu;
+ 	struct iommu_group *group = NULL;
+ 	int i, idx;
+ 
+-	for_each_cfg_sme(fwspec, i, idx) {
++	for_each_cfg_sme(cfg, fwspec, i, idx) {
+ 		if (group && smmu->s2crs[idx].group &&
+ 		    group != smmu->s2crs[idx].group)
+ 			return ERR_PTR(-EINVAL);
+-- 
+2.17.1
 
-> +	if (ret)
-> +		return ret;
-> +
-> +	if (!device_iommu_mapped(dev)) {
-> +		ret = iommu_probe_device(dev);
-> +		if (ret)
-> +			return ret;
-> +	}
-> +
-> +	arch_setup_dma_ops(dev, 0, *dma_dev->dma_mask + 1, iommu_ops, true);
-> +
-> +	return 0;
->  }
->  
->  static ssize_t modalias_show(struct device *dev, struct device_attribute *attr,
-> -- 
-> 2.17.1
-> 
 _______________________________________________
 iommu mailing list
 iommu@lists.linux-foundation.org
