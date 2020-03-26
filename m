@@ -2,68 +2,81 @@ Return-Path: <SRS0=Ybkk=5L=lists.linux-foundation.org=iommu-bounces@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-9.7 required=3.0 tests=HEADER_FROM_DIFFERENT_DOMAINS,
-	INCLUDES_PATCH,MAILING_LIST_MULTI,SIGNED_OFF_BY,SPF_HELO_NONE,SPF_PASS,
-	URIBL_BLOCKED,USER_AGENT_GIT autolearn=ham autolearn_force=no version=3.4.0
+X-Spam-Status: No, score=-3.5 required=3.0 tests=DKIM_INVALID,DKIM_SIGNED,
+	HEADER_FROM_DIFFERENT_DOMAINS,MAILING_LIST_MULTI,SIGNED_OFF_BY,SPF_HELO_NONE,
+	SPF_PASS,URIBL_BLOCKED autolearn=no autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 5C6F5C2D0EE
-	for <iommu@archiver.kernel.org>; Thu, 26 Mar 2020 15:09:15 +0000 (UTC)
-Received: from whitealder.osuosl.org (smtp1.osuosl.org [140.211.166.138])
+	by smtp.lore.kernel.org (Postfix) with ESMTP id A86E8C2D0EC
+	for <iommu@archiver.kernel.org>; Thu, 26 Mar 2020 15:12:27 +0000 (UTC)
+Received: from hemlock.osuosl.org (smtp2.osuosl.org [140.211.166.133])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by mail.kernel.org (Postfix) with ESMTPS id 3D2D320663
-	for <iommu@archiver.kernel.org>; Thu, 26 Mar 2020 15:09:15 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 3D2D320663
-Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=8bytes.org
+	by mail.kernel.org (Postfix) with ESMTPS id 7176F20737
+	for <iommu@archiver.kernel.org>; Thu, 26 Mar 2020 15:12:27 +0000 (UTC)
+Authentication-Results: mail.kernel.org;
+	dkim=fail reason="signature verification failed" (1024-bit key) header.d=kernel.org header.i=@kernel.org header.b="Kpk77p+M"
+DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 7176F20737
+Authentication-Results: mail.kernel.org; dmarc=none (p=none dis=none) header.from=linuxfoundation.org
 Authentication-Results: mail.kernel.org; spf=pass smtp.mailfrom=iommu-bounces@lists.linux-foundation.org
 Received: from localhost (localhost [127.0.0.1])
-	by whitealder.osuosl.org (Postfix) with ESMTP id 225E4886B3;
-	Thu, 26 Mar 2020 15:09:15 +0000 (UTC)
-X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from whitealder.osuosl.org ([127.0.0.1])
-	by localhost (.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
-	with ESMTP id 9KRFkazSjauv; Thu, 26 Mar 2020 15:09:11 +0000 (UTC)
-Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [140.211.9.56])
-	by whitealder.osuosl.org (Postfix) with ESMTP id E26AC886EF;
-	Thu, 26 Mar 2020 15:09:01 +0000 (UTC)
-Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
-	by lists.linuxfoundation.org (Postfix) with ESMTP id CD4FFC1D87;
-	Thu, 26 Mar 2020 15:09:01 +0000 (UTC)
-Received: from hemlock.osuosl.org (smtp2.osuosl.org [140.211.166.133])
- by lists.linuxfoundation.org (Postfix) with ESMTP id 9AEF2C1D7C
- for <iommu@lists.linux-foundation.org>; Thu, 26 Mar 2020 15:08:57 +0000 (UTC)
-Received: from localhost (localhost [127.0.0.1])
- by hemlock.osuosl.org (Postfix) with ESMTP id 8B06D891D5
- for <iommu@lists.linux-foundation.org>; Thu, 26 Mar 2020 15:08:57 +0000 (UTC)
+	by hemlock.osuosl.org (Postfix) with ESMTP id 595518927F;
+	Thu, 26 Mar 2020 15:12:27 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
 Received: from hemlock.osuosl.org ([127.0.0.1])
+	by localhost (.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
+	with ESMTP id pbIqgT4GheGM; Thu, 26 Mar 2020 15:12:26 +0000 (UTC)
+Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [140.211.9.56])
+	by hemlock.osuosl.org (Postfix) with ESMTP id AA37F8922D;
+	Thu, 26 Mar 2020 15:12:26 +0000 (UTC)
+Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
+	by lists.linuxfoundation.org (Postfix) with ESMTP id 922C5C1D7C;
+	Thu, 26 Mar 2020 15:12:26 +0000 (UTC)
+Received: from fraxinus.osuosl.org (smtp4.osuosl.org [140.211.166.137])
+ by lists.linuxfoundation.org (Postfix) with ESMTP id B97EEC0177
+ for <iommu@lists.linux-foundation.org>; Thu, 26 Mar 2020 15:12:25 +0000 (UTC)
+Received: from localhost (localhost [127.0.0.1])
+ by fraxinus.osuosl.org (Postfix) with ESMTP id B353C8706F
+ for <iommu@lists.linux-foundation.org>; Thu, 26 Mar 2020 15:12:25 +0000 (UTC)
+X-Virus-Scanned: amavisd-new at osuosl.org
+Received: from fraxinus.osuosl.org ([127.0.0.1])
  by localhost (.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
- with ESMTP id kSmm+FHMA1Ck for <iommu@lists.linux-foundation.org>;
- Thu, 26 Mar 2020 15:08:55 +0000 (UTC)
+ with ESMTP id tMMBVWcHMeUG for <iommu@lists.linux-foundation.org>;
+ Thu, 26 Mar 2020 15:12:25 +0000 (UTC)
 X-Greylist: from auto-whitelisted by SQLgrey-1.7.6
-Received: from theia.8bytes.org (8bytes.org [81.169.241.247])
- by hemlock.osuosl.org (Postfix) with ESMTPS id 50DFB88253
- for <iommu@lists.linux-foundation.org>; Thu, 26 Mar 2020 15:08:55 +0000 (UTC)
-Received: by theia.8bytes.org (Postfix, from userid 1000)
- id DCF2BAF3; Thu, 26 Mar 2020 16:08:48 +0100 (CET)
-From: Joerg Roedel <joro@8bytes.org>
-To: iommu@lists.linux-foundation.org
-Subject: [PATCH v4 15/16] iommu/virtio: Use accessor functions for iommu
- private data
-Date: Thu, 26 Mar 2020 16:08:40 +0100
-Message-Id: <20200326150841.10083-16-joro@8bytes.org>
-X-Mailer: git-send-email 2.17.1
-In-Reply-To: <20200326150841.10083-1-joro@8bytes.org>
+Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
+ by fraxinus.osuosl.org (Postfix) with ESMTPS id 4CBC286FB7
+ for <iommu@lists.linux-foundation.org>; Thu, 26 Mar 2020 15:12:25 +0000 (UTC)
+Received: from localhost (83-86-89-107.cable.dynamic.v4.ziggo.nl
+ [83.86.89.107])
+ (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+ (No client certificate requested)
+ by mail.kernel.org (Postfix) with ESMTPSA id A1AEB206F8;
+ Thu, 26 Mar 2020 15:12:24 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+ s=default; t=1585235545;
+ bh=39YFqBA/iJuWa5ADd6XMv4viTdNuFwmWvDAdaPeea1Q=;
+ h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+ b=Kpk77p+Mx9sZ5lG2ymWwMZ8mWBk6Tse0ZNm35PUK0F3k06EVy5eT0XlSAtZwWA/MW
+ n+twRkj9cUHWYQZtlPowlvfpsrocDxxWpw2C1ItmlmS2nteGefzKowWPcmrAkHCsu2
+ a0k3Io5zp+eVogZ8aJd7eYWCEuIiDlWIjrmpi+u0=
+Date: Thu, 26 Mar 2020 16:12:22 +0100
+From: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+To: Joerg Roedel <joro@8bytes.org>
+Subject: Re: [PATCH v4 06/16] iommu: Move iommu_fwspec to struct dev_iommu
+Message-ID: <20200326151222.GA1530064@kroah.com>
 References: <20200326150841.10083-1-joro@8bytes.org>
-Cc: Jean-Philippe Brucker <jean-philippe@linaro.org>,
- Joerg Roedel <jroedel@suse.de>, Will Deacon <will@kernel.org>,
- Greg Kroah-Hartman <gregkh@linuxfoundation.org>, linux-arm-msm@vger.kernel.org,
- guohanjun@huawei.com, linux-kernel@vger.kernel.org,
- Bjorn Andersson <bjorn.andersson@linaro.org>,
- Thierry Reding <thierry.reding@gmail.com>, linux-mediatek@lists.infradead.org,
- Andy Gross <agross@kernel.org>, Sudeep Holla <sudeep.holla@arm.com>,
- Matthias Brugger <matthias.bgg@gmail.com>, Sean Paul <sean@poorly.run>,
- Robin Murphy <robin.murphy@arm.com>
+ <20200326150841.10083-7-joro@8bytes.org>
+MIME-Version: 1.0
+Content-Disposition: inline
+In-Reply-To: <20200326150841.10083-7-joro@8bytes.org>
+Cc: Joerg Roedel <jroedel@suse.de>, Will Deacon <will@kernel.org>,
+ Jean-Philippe Brucker <jean-philippe@linaro.org>,
+ linux-arm-msm@vger.kernel.org, guohanjun@huawei.com,
+ linux-kernel@vger.kernel.org, Bjorn Andersson <bjorn.andersson@linaro.org>,
+ iommu@lists.linux-foundation.org, Thierry Reding <thierry.reding@gmail.com>,
+ linux-mediatek@lists.infradead.org, Andy Gross <agross@kernel.org>,
+ Sudeep Holla <sudeep.holla@arm.com>, Matthias Brugger <matthias.bgg@gmail.com>,
+ Sean Paul <sean@poorly.run>, Robin Murphy <robin.murphy@arm.com>
 X-BeenThere: iommu@lists.linux-foundation.org
 X-Mailman-Version: 2.1.15
 Precedence: list
@@ -76,74 +89,29 @@ List-Post: <mailto:iommu@lists.linux-foundation.org>
 List-Help: <mailto:iommu-request@lists.linux-foundation.org?subject=help>
 List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
  <mailto:iommu-request@lists.linux-foundation.org?subject=subscribe>
-MIME-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
 Errors-To: iommu-bounces@lists.linux-foundation.org
 Sender: "iommu" <iommu-bounces@lists.linux-foundation.org>
 
-From: Joerg Roedel <jroedel@suse.de>
+On Thu, Mar 26, 2020 at 04:08:31PM +0100, Joerg Roedel wrote:
+> From: Joerg Roedel <jroedel@suse.de>
+> 
+> Move the iommu_fwspec pointer in struct device into struct dev_iommu.
+> This is a step in the effort to reduce the iommu related pointers in
+> struct device to one.
+> 
+> Cc: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+> Tested-by: Will Deacon <will@kernel.org> # arm-smmu
+> Reviewed-by: Jean-Philippe Brucker <jean-philippe@linaro.org>
+> Signed-off-by: Joerg Roedel <jroedel@suse.de>
+> ---
+>  drivers/iommu/iommu.c  |  3 +++
+>  include/linux/device.h |  3 ---
+>  include/linux/iommu.h  | 12 ++++++++----
+>  3 files changed, 11 insertions(+), 7 deletions(-)
 
-Make use of dev_iommu_priv_set/get() functions.
-
-Reviewed-by: Jean-Philippe Brucker <jean-philippe@linaro.org>
-Signed-off-by: Joerg Roedel <jroedel@suse.de>
----
- drivers/iommu/virtio-iommu.c | 11 +++++------
- 1 file changed, 5 insertions(+), 6 deletions(-)
-
-diff --git a/drivers/iommu/virtio-iommu.c b/drivers/iommu/virtio-iommu.c
-index cce329d71fba..8ead57f031f5 100644
---- a/drivers/iommu/virtio-iommu.c
-+++ b/drivers/iommu/virtio-iommu.c
-@@ -466,7 +466,7 @@ static int viommu_probe_endpoint(struct viommu_dev *viommu, struct device *dev)
- 	struct virtio_iommu_req_probe *probe;
- 	struct virtio_iommu_probe_property *prop;
- 	struct iommu_fwspec *fwspec = dev_iommu_fwspec_get(dev);
--	struct viommu_endpoint *vdev = fwspec->iommu_priv;
-+	struct viommu_endpoint *vdev = dev_iommu_priv_get(dev);
- 
- 	if (!fwspec->num_ids)
- 		return -EINVAL;
-@@ -648,7 +648,7 @@ static int viommu_attach_dev(struct iommu_domain *domain, struct device *dev)
- 	int ret = 0;
- 	struct virtio_iommu_req_attach req;
- 	struct iommu_fwspec *fwspec = dev_iommu_fwspec_get(dev);
--	struct viommu_endpoint *vdev = fwspec->iommu_priv;
-+	struct viommu_endpoint *vdev = dev_iommu_priv_get(dev);
- 	struct viommu_domain *vdomain = to_viommu_domain(domain);
- 
- 	mutex_lock(&vdomain->mutex);
-@@ -807,8 +807,7 @@ static void viommu_iotlb_sync(struct iommu_domain *domain,
- static void viommu_get_resv_regions(struct device *dev, struct list_head *head)
- {
- 	struct iommu_resv_region *entry, *new_entry, *msi = NULL;
--	struct iommu_fwspec *fwspec = dev_iommu_fwspec_get(dev);
--	struct viommu_endpoint *vdev = fwspec->iommu_priv;
-+	struct viommu_endpoint *vdev = dev_iommu_priv_get(dev);
- 	int prot = IOMMU_WRITE | IOMMU_NOEXEC | IOMMU_MMIO;
- 
- 	list_for_each_entry(entry, &vdev->resv_regions, list) {
-@@ -876,7 +875,7 @@ static int viommu_add_device(struct device *dev)
- 	vdev->dev = dev;
- 	vdev->viommu = viommu;
- 	INIT_LIST_HEAD(&vdev->resv_regions);
--	fwspec->iommu_priv = vdev;
-+	dev_iommu_priv_set(dev, vdev);
- 
- 	if (viommu->probe_size) {
- 		/* Get additional information for this endpoint */
-@@ -920,7 +919,7 @@ static void viommu_remove_device(struct device *dev)
- 	if (!fwspec || fwspec->ops != &viommu_ops)
- 		return;
- 
--	vdev = fwspec->iommu_priv;
-+	vdev = dev_iommu_priv_get(dev);
- 
- 	iommu_group_remove_device(dev);
- 	iommu_device_unlink(&vdev->viommu->iommu, dev);
--- 
-2.17.1
+Reviewed-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 
 _______________________________________________
 iommu mailing list
