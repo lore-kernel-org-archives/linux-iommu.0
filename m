@@ -2,101 +2,92 @@ Return-Path: <SRS0=HkIk=5M=lists.linux-foundation.org=iommu-bounces@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-8.0 required=3.0 tests=DKIM_INVALID,DKIM_SIGNED,
-	FREEMAIL_FORGED_FROMDOMAIN,FREEMAIL_FROM,HEADER_FROM_DIFFERENT_DOMAINS,
+X-Spam-Status: No, score=-6.7 required=3.0 tests=HEADER_FROM_DIFFERENT_DOMAINS,
 	INCLUDES_PATCH,MAILING_LIST_MULTI,SIGNED_OFF_BY,SPF_HELO_NONE,SPF_PASS,
-	URIBL_BLOCKED,USER_AGENT_SANE_1 autolearn=ham autolearn_force=no version=3.4.0
+	URIBL_BLOCKED autolearn=unavailable autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id E90A2C43331
-	for <iommu@archiver.kernel.org>; Fri, 27 Mar 2020 09:59:12 +0000 (UTC)
-Received: from silver.osuosl.org (smtp3.osuosl.org [140.211.166.136])
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 7093AC2D0E8
+	for <iommu@archiver.kernel.org>; Fri, 27 Mar 2020 10:03:33 +0000 (UTC)
+Received: from whitealder.osuosl.org (smtp1.osuosl.org [140.211.166.138])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by mail.kernel.org (Postfix) with ESMTPS id B360A20578
-	for <iommu@archiver.kernel.org>; Fri, 27 Mar 2020 09:59:12 +0000 (UTC)
-Authentication-Results: mail.kernel.org;
-	dkim=fail reason="signature verification failed" (1024-bit key) header.d=web.de header.i=@web.de header.b="FOMeTWdR"
-DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org B360A20578
-Authentication-Results: mail.kernel.org; dmarc=none (p=none dis=none) header.from=web.de
+	by mail.kernel.org (Postfix) with ESMTPS id 446DB20717
+	for <iommu@archiver.kernel.org>; Fri, 27 Mar 2020 10:03:33 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 446DB20717
+Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=intel.com
 Authentication-Results: mail.kernel.org; spf=pass smtp.mailfrom=iommu-bounces@lists.linux-foundation.org
 Received: from localhost (localhost [127.0.0.1])
-	by silver.osuosl.org (Postfix) with ESMTP id 8976C2634F;
-	Fri, 27 Mar 2020 09:59:12 +0000 (UTC)
+	by whitealder.osuosl.org (Postfix) with ESMTP id 19A0F88623;
+	Fri, 27 Mar 2020 10:03:33 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from silver.osuosl.org ([127.0.0.1])
+Received: from whitealder.osuosl.org ([127.0.0.1])
 	by localhost (.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
-	with ESMTP id yJ1vyT12tYkQ; Fri, 27 Mar 2020 09:59:10 +0000 (UTC)
+	with ESMTP id mEuR9QkCbSN1; Fri, 27 Mar 2020 10:03:32 +0000 (UTC)
 Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [140.211.9.56])
-	by silver.osuosl.org (Postfix) with ESMTP id 9D6652014A;
-	Fri, 27 Mar 2020 09:59:10 +0000 (UTC)
+	by whitealder.osuosl.org (Postfix) with ESMTP id 4534B88117;
+	Fri, 27 Mar 2020 10:03:32 +0000 (UTC)
 Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
-	by lists.linuxfoundation.org (Postfix) with ESMTP id 83438C1D7F;
-	Fri, 27 Mar 2020 09:59:10 +0000 (UTC)
-Received: from silver.osuosl.org (smtp3.osuosl.org [140.211.166.136])
- by lists.linuxfoundation.org (Postfix) with ESMTP id 51FC6C0177
- for <iommu@lists.linux-foundation.org>; Fri, 27 Mar 2020 09:59:09 +0000 (UTC)
+	by lists.linuxfoundation.org (Postfix) with ESMTP id 2A76DC1D7C;
+	Fri, 27 Mar 2020 10:03:32 +0000 (UTC)
+Received: from whitealder.osuosl.org (smtp1.osuosl.org [140.211.166.138])
+ by lists.linuxfoundation.org (Postfix) with ESMTP id 3B7C6C0177
+ for <iommu@lists.linux-foundation.org>; Fri, 27 Mar 2020 10:03:31 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
- by silver.osuosl.org (Postfix) with ESMTP id 420472039E
- for <iommu@lists.linux-foundation.org>; Fri, 27 Mar 2020 09:59:09 +0000 (UTC)
+ by whitealder.osuosl.org (Postfix) with ESMTP id 1A6818055D
+ for <iommu@lists.linux-foundation.org>; Fri, 27 Mar 2020 10:03:31 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from silver.osuosl.org ([127.0.0.1])
+Received: from whitealder.osuosl.org ([127.0.0.1])
  by localhost (.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
- with ESMTP id airFHvd9iqzR for <iommu@lists.linux-foundation.org>;
- Fri, 27 Mar 2020 09:59:07 +0000 (UTC)
+ with ESMTP id gxE3k3VQ67JF for <iommu@lists.linux-foundation.org>;
+ Fri, 27 Mar 2020 10:03:30 +0000 (UTC)
 X-Greylist: domain auto-whitelisted by SQLgrey-1.7.6
-Received: from mout.web.de (mout.web.de [212.227.17.11])
- by silver.osuosl.org (Postfix) with ESMTPS id 65F942014A
- for <iommu@lists.linux-foundation.org>; Fri, 27 Mar 2020 09:59:07 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=web.de;
- s=dbaedf251592; t=1585303125;
- bh=3sJu9fUArkbibaP7WFaKAEzBqN+q83Qrxfjqw40JE6M=;
- h=X-UI-Sender-Class:Subject:To:Cc:References:From:Date:In-Reply-To;
- b=FOMeTWdRP5Eq/kmssOzWMXzpWckepwiZa8XLZnpzSmVHwM/Wpzli/svaTVQCA8KRs
- FdBtlRpT/mnjCrt1aLSZfG9jMCto/q+8HKIStBsiVgtM/nHTWoewJw1Xheq/REYPOl
- 9sFNduTJJIsIMdb4sZh76/GwWiKv7Yxj+OxI7Is8=
-X-UI-Sender-Class: c548c8c5-30a9-4db5-a2e7-cb6cb037b8f9
-Received: from [192.168.1.10] ([95.157.55.156]) by smtp.web.de (mrweb101
- [213.165.67.124]) with ESMTPSA (Nemesis) id 0Le4Lg-1jaMzw3m0K-00psvk; Fri, 27
- Mar 2020 10:58:45 +0100
-Subject: Re: [PATCH] swiotlb: Allow swiotlb to live at pre-defined address
-To: Alexander Graf <graf@amazon.com>, iommu@lists.linux-foundation.org
-References: <20200326162922.27085-1-graf@amazon.com>
-From: Jan Kiszka <jan.kiszka@web.de>
-Message-ID: <9ff68753-20d1-62b1-6250-91ed4beb1bde@web.de>
-Date: Fri, 27 Mar 2020 10:58:43 +0100
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101
- Thunderbird/68.6.0
-MIME-Version: 1.0
-In-Reply-To: <20200326162922.27085-1-graf@amazon.com>
+Received: from mga07.intel.com (mga07.intel.com [134.134.136.100])
+ by whitealder.osuosl.org (Postfix) with ESMTPS id 2862C88606
+ for <iommu@lists.linux-foundation.org>; Fri, 27 Mar 2020 10:03:30 +0000 (UTC)
+IronPort-SDR: 9G3kSGRTLI18gihn+/KViXSVeaOUeop67Hyuu7nsQXZHwRmVh/IyG3tIVKJNyiUpj+iIBPJZCW
+ z35jky38n3aQ==
+X-Amp-Result: SKIPPED(no attachment in message)
+X-Amp-File-Uploaded: False
+Received: from fmsmga005.fm.intel.com ([10.253.24.32])
+ by orsmga105.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384;
+ 27 Mar 2020 03:03:29 -0700
+IronPort-SDR: eT54+LcsYTLwuhiTQmob94KCBJXl5mV2J6XbS61sLN5HHe+KT4weIKn8IXpyJs45o/5Z+XnLGI
+ p20ICh9mJFIg==
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="5.72,311,1580803200"; d="scan'208";a="447359734"
+Received: from fmsmsx108.amr.corp.intel.com ([10.18.124.206])
+ by fmsmga005.fm.intel.com with ESMTP; 27 Mar 2020 03:03:29 -0700
+Received: from shsmsx103.ccr.corp.intel.com (10.239.4.69) by
+ FMSMSX108.amr.corp.intel.com (10.18.124.206) with Microsoft SMTP Server (TLS)
+ id 14.3.439.0; Fri, 27 Mar 2020 03:03:29 -0700
+Received: from shsmsx104.ccr.corp.intel.com ([169.254.5.206]) by
+ SHSMSX103.ccr.corp.intel.com ([169.254.4.137]) with mapi id 14.03.0439.000;
+ Fri, 27 Mar 2020 18:03:26 +0800
+From: "Tian, Kevin" <kevin.tian@intel.com>
+To: Jacob Pan <jacob.jun.pan@linux.intel.com>, Joerg Roedel <joro@8bytes.org>, 
+ Alex Williamson <alex.williamson@redhat.com>, Lu Baolu
+ <baolu.lu@linux.intel.com>, "iommu@lists.linux-foundation.org"
+ <iommu@lists.linux-foundation.org>, LKML <linux-kernel@vger.kernel.org>,
+ David Woodhouse <dwmw2@infradead.org>, Jean-Philippe Brucker
+ <jean-philippe@linaro.com>
+Subject: RE: [PATCH 08/10] iommu/ioasid: Introduce notifier APIs
+Thread-Topic: [PATCH 08/10] iommu/ioasid: Introduce notifier APIs
+Thread-Index: AQHWAs3LObgJz6FgC0iTqd7+QDVAGahcNi2w
+Date: Fri, 27 Mar 2020 10:03:26 +0000
+Message-ID: <AADFC41AFE54684AB9EE6CBC0274A5D19D7ED5D6@SHSMSX104.ccr.corp.intel.com>
+References: <1585158931-1825-1-git-send-email-jacob.jun.pan@linux.intel.com>
+ <1585158931-1825-9-git-send-email-jacob.jun.pan@linux.intel.com>
+In-Reply-To: <1585158931-1825-9-git-send-email-jacob.jun.pan@linux.intel.com>
+Accept-Language: en-US
 Content-Language: en-US
-X-Provags-ID: V03:K1:PdNtUhVPObC1NxI5ax+8GQe3v47vjTq4mEi/59bmOUWMu8JZqRT
- TNsTyDMgV8WUeg5bRVyv6+8YkM5TSW3rx1+/2MwfU3JfQDCCwUpNZyLngpOBHLtQ4yZEokN
- 9Srm+Yp8CXFi0oImvFpp+VZZAGxD/8rob6pQYSNrIwWC6pwbq78YBDWjj7y5Wvtw/FICW73
- 39eDdNmuXDeVlwXfDcYww==
-X-UI-Out-Filterresults: notjunk:1;V03:K0:yc+0mO+tq5w=:bs26ghpzYfEHeSNgiR/cxk
- qn5cFDWow2uB1Q8hzYS++4jk6MRQO1NS24MjTgkFukmI7h8blEstF1DgaQ+pvkrAMMipH97HK
- fRYwtiLvE0wE7Qdmxd+63EodXC9wP0zjEVTnxQq7P63BazGxO7S0GLEJByvuh/6HS62tv9ew+
- P0CZ5P/rkald9bPj7rXArwRwxZDUbsK5qIVMpJpBWqYVgUkjkGiFHv5GxWqJPYjxvL4f9nyxV
- bcuWFVS6I6UlGhM/1IvUZLAsV876+nRRUAiQ7V8GNEsjFy7SEj/A2okKv9Mi+bEs3iYBSeD5R
- DDar4nrE65D+blKX6CAz+cEiZMYaVhkK8ddqp4i0/3t68qD1G0NuIGOpleI34oq4qIRuzAfab
- CErKH/UXBkqk8XEJMeLimQEMTepz5+7fbVCONVwx5NI68RPm+LApdueKgIyUiGzWn5ve5mGya
- oUP1T50PaRofQ1vUilOpVC8muIum2t/wcK/e5Y7t9148BXSZr4rKdgMBff58N7nmGIQBXJyTK
- 8DmcLFDLKHF1xAS/ItRytGalJ0+h0kXhdYF2t9Z/4boqcJ3dbaWSoz3DuKzUY2oYfI1hwMOoz
- nvcNGmt1DMbG4JQ3tt8mA/KT/Q5jVec2cuKOGvTzQOKM0Q6CUeZ/QMaRutpFiel+o6k98yAb7
- KlzYXFnSCuHVAvzVwvSUhizU2nF/1xmEPFXNQxhRgAt1tLJzLekBZ5qe3eNtxg6NHyP6N7v0I
- lQFIX9Tm4Eg1eCXl2TfY9KoQKq53vF/V2ThhYoLEL7DOohCVWQ17Fo3YRilwON7SnR/5W+SCk
- S4Tg2OWiJ7n5MU97jWlSKewChMlCGJW2qqCODzZ82EKVsBjGuZacJk8HAdE6xmQAtUnuTv5xH
- uq1fm92lH90rv2WMJM0u9N4EnWy/Ez/yF+wi9Yu42IAqJxHKaLoqjZqRShcIich0MZJKq40K0
- lgfE3qrxeGvNE9dTl9TaFGmYkeWgZeFMhUXeWdmpORU26MdBA7exRoJuBRLQPCjoYEa5d+fLR
- aYtTLh7cMroAFgn/pVi0EjLIkYH1XHR7qj46p0yB4Fjwo794q3JWWfrp7mNMmByyNH7UdZWjz
- VYfQwQA/1KrBbFzNjYelnSyHT6cNRTgF+MIo2kGzSVFkrA3tfUnNzeEl1tHFqSpVM9wKXayd1
- 6MEqAK50K4x2Y+yYcNGJmwb5SzULGS2h6LW6i8meC6OBSI69+U3sc5M+NxkDCMmrFlkNRzzfK
- diZRZZ8kpd4amq0dq
-Cc: Mark Rutland <mark.rutland@arm.com>, benh@amazon.com,
- Konrad Rzeszutek Wilk <konrad.wilk@oracle.com>, linux-doc@vger.kernel.org,
- x86@kernel.org, linux-kernel@vger.kernel.org, aggh@amazon.com,
- alcioa@amazon.com, aagch@amazon.com, dhr@amazon.com, dwmw@amazon.com,
- Robin Murphy <robin.murphy@arm.com>, Christoph Hellwig <hch@lst.de>
+X-MS-Has-Attach: 
+X-MS-TNEF-Correlator: 
+dlp-product: dlpe-windows
+dlp-version: 11.2.0.6
+dlp-reaction: no-action
+x-originating-ip: [10.239.127.40]
+MIME-Version: 1.0
+Cc: "Raj, Ashok" <ashok.raj@intel.com>, Jonathan Cameron <jic23@kernel.org>
 X-BeenThere: iommu@lists.linux-foundation.org
 X-Mailman-Version: 2.1.15
 Precedence: list
@@ -109,178 +100,144 @@ List-Post: <mailto:iommu@lists.linux-foundation.org>
 List-Help: <mailto:iommu-request@lists.linux-foundation.org?subject=help>
 List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
  <mailto:iommu-request@lists.linux-foundation.org?subject=subscribe>
-Content-Transfer-Encoding: 7bit
-Content-Type: text/plain; charset="us-ascii"; Format="flowed"
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: base64
 Errors-To: iommu-bounces@lists.linux-foundation.org
 Sender: "iommu" <iommu-bounces@lists.linux-foundation.org>
 
-On 26.03.20 17:29, Alexander Graf wrote:
-> The swiotlb is a very convenient fallback mechanism for bounce buffering of
-> DMAable data. It is usually used for the compatibility case where devices
-> can only DMA to a "low region".
->
-> However, in some scenarios this "low region" may be bound even more
-> heavily. For example, there are embedded system where only an SRAM region
-> is shared between device and CPU. There are also heterogeneous computing
-> scenarios where only a subset of RAM is cache coherent between the
-> components of the system. There are partitioning hypervisors, where
-> a "control VM" that implements device emulation has limited view into a
-> partition's memory for DMA capabilities due to safety concerns.
->
-> This patch adds a command line driven mechanism to move all DMA memory into
-> a predefined shared memory region which may or may not be part of the
-> physical address layout of the Operating System.
->
-> Ideally, the typical path to set this configuration would be through Device
-> Tree or ACPI, but neither of the two mechanisms is standardized yet. Also,
-> in the x86 MicroVM use case, we have neither ACPI nor Device Tree, but
-> instead configure the system purely through kernel command line options.
->
-> I'm sure other people will find the functionality useful going forward
-> though and extend it to be triggered by DT/ACPI in the future.
->
-> Signed-off-by: Alexander Graf <graf@amazon.com>
-> ---
->   Documentation/admin-guide/kernel-parameters.txt |  3 +-
->   Documentation/x86/x86_64/boot-options.rst       |  4 ++-
->   kernel/dma/swiotlb.c                            | 46 +++++++++++++++++++++++--
->   3 files changed, 49 insertions(+), 4 deletions(-)
->
-> diff --git a/Documentation/admin-guide/kernel-parameters.txt b/Documentation/admin-guide/kernel-parameters.txt
-> index c07815d230bc..d085d55c3cbe 100644
-> --- a/Documentation/admin-guide/kernel-parameters.txt
-> +++ b/Documentation/admin-guide/kernel-parameters.txt
-> @@ -4785,11 +4785,12 @@
->   			it if 0 is given (See Documentation/admin-guide/cgroup-v1/memory.rst)
->
->   	swiotlb=	[ARM,IA-64,PPC,MIPS,X86]
-> -			Format: { <int> | force | noforce }
-> +			Format: { <int> | force | noforce | addr=<phys addr> }
->   			<int> -- Number of I/O TLB slabs
->   			force -- force using of bounce buffers even if they
->   			         wouldn't be automatically used by the kernel
->   			noforce -- Never use bounce buffers (for debugging)
-> +			addr=<phys addr> -- Try to allocate SWIOTLB at defined address
->
->   	switches=	[HW,M68k]
->
-> diff --git a/Documentation/x86/x86_64/boot-options.rst b/Documentation/x86/x86_64/boot-options.rst
-> index 2b98efb5ba7f..ca46c57b68c9 100644
-> --- a/Documentation/x86/x86_64/boot-options.rst
-> +++ b/Documentation/x86/x86_64/boot-options.rst
-> @@ -297,11 +297,13 @@ iommu options only relevant to the AMD GART hardware IOMMU:
->   iommu options only relevant to the software bounce buffering (SWIOTLB) IOMMU
->   implementation:
->
-> -    swiotlb=<pages>[,force]
-> +    swiotlb=<pages>[,force][,addr=<phys addr>]
->         <pages>
->           Prereserve that many 128K pages for the software IO bounce buffering.
->         force
->           Force all IO through the software TLB.
-> +      addr=<phys addr>
-> +        Try to allocate SWIOTLB at defined address
->
->   Settings for the IBM Calgary hardware IOMMU currently found in IBM
->   pSeries and xSeries machines
-> diff --git a/kernel/dma/swiotlb.c b/kernel/dma/swiotlb.c
-> index c19379fabd20..83da0caa2f93 100644
-> --- a/kernel/dma/swiotlb.c
-> +++ b/kernel/dma/swiotlb.c
-> @@ -46,6 +46,7 @@
->   #include <linux/init.h>
->   #include <linux/memblock.h>
->   #include <linux/iommu-helper.h>
-> +#include <linux/io.h>
->
->   #define CREATE_TRACE_POINTS
->   #include <trace/events/swiotlb.h>
-> @@ -102,6 +103,12 @@ unsigned int max_segment;
->   #define INVALID_PHYS_ADDR (~(phys_addr_t)0)
->   static phys_addr_t *io_tlb_orig_addr;
->
-> +/*
-> + * The TLB phys addr may be defined on the command line. Store it here if it is.
-> + */
-> +static phys_addr_t io_tlb_addr = INVALID_PHYS_ADDR;
-> +
-> +
->   /*
->    * Protect the above data structures in the map and unmap calls
->    */
-> @@ -119,11 +126,23 @@ setup_io_tlb_npages(char *str)
->   	}
->   	if (*str == ',')
->   		++str;
-> -	if (!strcmp(str, "force")) {
-> +	if (!strncmp(str, "force", 5)) {
->   		swiotlb_force = SWIOTLB_FORCE;
-> -	} else if (!strcmp(str, "noforce")) {
-> +		str += 5;
-> +	} else if (!strncmp(str, "noforce", 7)) {
->   		swiotlb_force = SWIOTLB_NO_FORCE;
->   		io_tlb_nslabs = 1;
-> +		str += 7;
-> +	}
-> +
-> +	if (*str == ',')
-> +		++str;
-> +	if (!strncmp(str, "addr=", 5)) {
-> +		char *addrstr = str + 5;
-> +
-> +		io_tlb_addr = kstrtoul(addrstr, 0, &str);
-> +		if (addrstr == str)
-> +			io_tlb_addr = INVALID_PHYS_ADDR;
->   	}
->
->   	return 0;
-> @@ -239,6 +258,25 @@ int __init swiotlb_init_with_tbl(char *tlb, unsigned long nslabs, int verbose)
->   	return 0;
->   }
->
-> +static int __init swiotlb_init_io(int verbose, unsigned long bytes)
-> +{
-> +	unsigned __iomem char *vstart;
-> +
-> +	if (io_tlb_addr == INVALID_PHYS_ADDR)
-> +		return -EINVAL;
-> +
-> +	vstart = memremap(io_tlb_addr, bytes, MEMREMAP_WB);
-> +	if (!vstart)
-> +		return -EINVAL;
-> +
-> +	if (swiotlb_init_with_tbl(vstart, io_tlb_nslabs, verbose)) {
-> +		memunmap(vstart);
-> +		return -EINVAL;
-> +	}
-> +
-> +	return 0;
-> +}
-> +
->   /*
->    * Statically reserve bounce buffer space and initialize bounce buffer data
->    * structures for the software IO TLB used to implement the DMA API.
-> @@ -257,6 +295,10 @@ swiotlb_init(int verbose)
->
->   	bytes = io_tlb_nslabs << IO_TLB_SHIFT;
->
-> +	/* Map IO TLB from device memory */
-> +	if (!swiotlb_init_io(verbose, bytes))
-> +		return;
-> +
->   	/* Get IO TLB memory from the low pages */
->   	vstart = memblock_alloc_low(PAGE_ALIGN(bytes), PAGE_SIZE);
->   	if (vstart && !swiotlb_init_with_tbl(vstart, io_tlb_nslabs, verbose))
->
-
-To make this useful also for shared-memory based devices, it should not
-only have a command-line independent interface. Multi-instance support
-would be needed so that you can attach swiotlb with individual address
-ranges to devices that need it and leave it alone for other that do not
-(e.g. passed-through guest devices).
-
-Jan
-_______________________________________________
-iommu mailing list
-iommu@lists.linux-foundation.org
-https://lists.linuxfoundation.org/mailman/listinfo/iommu
+PiBGcm9tOiBKYWNvYiBQYW4gPGphY29iLmp1bi5wYW5AbGludXguaW50ZWwuY29tPg0KPiBTZW50
+OiBUaHVyc2RheSwgTWFyY2ggMjYsIDIwMjAgMTo1NSBBTQ0KPiANCj4gSU9BU0lEIHVzZXJzIGZp
+dCBpbnRvIHRoZSBwdWJsaXNoZXItc3Vic2NyaWJlciBwYXR0ZXJuLCBhIHN5c3RlbSB3aWRlDQo+
+IGJsb2NraW5nIG5vdGlmaWVyIGNoYWluIGNhbiBiZSB1c2VkIHRvIGluZm9ybSBzdWJzY3JpYmVy
+cyBvZiBzdGF0ZQ0KPiBjaGFuZ2VzLiBOb3RpZmllciBtZWNoYW5pc20gYWxzbyBhYnN0cmFjdHMg
+cHVibGlzaGVyIGZyb20ga25vd2luZyB0aGUNCj4gcHJpdmF0ZSBjb250ZXh0IGVhY2ggc3ViY3Jp
+YmVyIG1heSBoYXZlLg0KPiANCj4gVGhpcyBwYXRjaCBhZGRzIEFQSXMgYW5kIGEgZ2xvYmFsIG5v
+dGlmaWVyIGNoYWluLCBhIGZ1cnRoZXIgb3B0aW1pemF0aW9uDQo+IG1pZ2h0IGJlIHBlciBzZXQg
+bm90aWZpZXIgZm9yIGlvYXNpZF9zZXQgYXdhcmUgdXNlcnMuDQo+IA0KPiBVc2FnZSBleGFtcGxl
+Og0KPiBLVk0gcmVnaXN0ZXIgbm90aWZpZXIgYmxvY2sgc3VjaCB0aGF0IGl0IGNhbiBrZWVwIGl0
+cyBndWVzdC1ob3N0IFBBU0lEDQo+IHRyYW5zbGF0aW9uIHRhYmxlIGluIHN5bmMgd2l0aCBhbnkg
+SU9BU0lEIHVwZGF0ZXMuDQo+IA0KPiBWRklPIHB1Ymxpc2ggSU9BU0lEIGNoYW5nZSBieSBwZXJm
+b3JtaW5nIGFsbG9jL2ZyZWUsIGJpbmQvdW5iaW5kDQo+IG9wZXJhdGlvbnMuDQo+IA0KPiBJT01N
+VSBkcml2ZXIgZ2V0cyBub3RpZmllZCB3aGVuIElPQVNJRCBpcyBmcmVlZCBieSBWRklPIG9yIGNv
+cmUgbW0gY29kZQ0KPiBzdWNoIHRoYXQgUEFTSUQgY29udGV4dCBjYW4gYmUgY2xlYW5lZCB1cC4N
+Cg0KYWJvdmUgZXhhbXBsZSBsb29rcyBtaXhlZC4gWW91IGhhdmUgS1ZNIHJlZ2lzdGVycyB0aGUg
+bm90aWZpZXIgYnV0DQpmaW5hbGx5IGhhdmluZyBJT01NVSBkcml2ZXIgdG8gZ2V0IG5vdGlmaWVk
+Li4uIPCfmIoNCg0KPiANCj4gU2lnbmVkLW9mZi1ieTogTGl1IFlpIEwgPHlpLmwubGl1QGludGVs
+LmNvbT4NCj4gU2lnbmVkLW9mZi1ieTogSmFjb2IgUGFuIDxqYWNvYi5qdW4ucGFuQGxpbnV4Lmlu
+dGVsLmNvbT4NCj4gLS0tDQo+ICBkcml2ZXJzL2lvbW11L2lvYXNpZC5jIHwgNjENCj4gKysrKysr
+KysrKysrKysrKysrKysrKysrKysrKysrKysrKysrKysrKysrKysrKysrKysNCj4gIGluY2x1ZGUv
+bGludXgvaW9hc2lkLmggfCA0MCArKysrKysrKysrKysrKysrKysrKysrKysrKysrKysrKysNCj4g
+IDIgZmlsZXMgY2hhbmdlZCwgMTAxIGluc2VydGlvbnMoKykNCj4gDQo+IGRpZmYgLS1naXQgYS9k
+cml2ZXJzL2lvbW11L2lvYXNpZC5jIGIvZHJpdmVycy9pb21tdS9pb2FzaWQuYw0KPiBpbmRleCA4
+NjEyZmU2NDc3ZGMuLjI3ZGNlMmNiNWFmMiAxMDA2NDQNCj4gLS0tIGEvZHJpdmVycy9pb21tdS9p
+b2FzaWQuYw0KPiArKysgYi9kcml2ZXJzL2lvbW11L2lvYXNpZC5jDQo+IEBAIC0xMSw2ICsxMSwy
+MiBAQA0KPiAgI2luY2x1ZGUgPGxpbnV4L3hhcnJheS5oPg0KPiANCj4gIHN0YXRpYyBERUZJTkVf
+WEFSUkFZX0FMTE9DKGlvYXNpZF9zZXRzKTsNCj4gKy8qDQo+ICsgKiBBbiBJT0FTSUQgY291bGQg
+aGF2ZSBtdWx0aXBsZSBjb25zdW1lcnMuIFdoZW4gYSBzdGF0dXMgY2hhbmdlIG9jY3VycywNCj4g
+KyAqIHRoaXMgbm90aWZpZXIgY2hhaW4gaXMgdXNlZCB0byBrZWVwIHRoZW0gaW4gc3luYy4gRWFj
+aCBjb25zdW1lciBvZiB0aGUNCj4gKyAqIElPQVNJRCBzZXJ2aWNlIG11c3QgcmVnaXN0ZXIgbm90
+aWZpZXIgYmxvY2sgZWFybHkgdG8gZW5zdXJlIG5vIGV2ZW50cw0KPiArICogYXJlIG1pc3NlZC4N
+Cj4gKyAqDQo+ICsgKiBUaGlzIGlzIGEgcHVibGlzaGVyLXN1YnNjcmliZXIgcGF0dGVybiB3aGVy
+ZSBwdWJsaXNoZXIgY2FuIGNoYW5nZSB0aGUNCj4gKyAqIHN0YXRlIG9mIGVhY2ggSU9BU0lELCBl
+LmcuIGFsbG9jL2ZyZWUsIGJpbmQgSU9BU0lEIHRvIGEgZGV2aWNlIGFuZCBtbS4NCj4gKyAqIE9u
+IHRoZSBvdGhlciBoYW5kLCBzdWJzY3JpYmVycyBnZXRzIG5vdGlmaWVkIGZvciB0aGUgc3RhdGUg
+Y2hhbmdlIGFuZA0KPiArICoga2VlcCBsb2NhbCBzdGF0ZXMgaW4gc3luYy4NCj4gKyAqDQo+ICsg
+KiBDdXJyZW50bHksIHRoZSBub3RpZmllciBpcyBnbG9iYWwuIEEgZnVydGhlciBvcHRpbWl6YXRp
+b24gY291bGQgYmUgcGVyDQo+ICsgKiBJT0FTSUQgc2V0IG5vdGlmaWVyIGNoYWluLg0KPiArICov
+DQo+ICtzdGF0aWMgQkxPQ0tJTkdfTk9USUZJRVJfSEVBRChpb2FzaWRfY2hhaW4pOw0KPiArDQo+
+ICAvKioNCj4gICAqIHN0cnVjdCBpb2FzaWRfc2V0X2RhdGEgLSBNZXRhIGRhdGEgYWJvdXQgaW9h
+c2lkX3NldA0KPiAgICoNCj4gQEAgLTQwOCw2ICs0MjQsNyBAQCBzdGF0aWMgdm9pZCBpb2FzaWRf
+ZnJlZV9sb2NrZWQoaW9hc2lkX3QgaW9hc2lkKQ0KPiAgew0KPiAgCXN0cnVjdCBpb2FzaWRfZGF0
+YSAqaW9hc2lkX2RhdGE7DQo+ICAJc3RydWN0IGlvYXNpZF9zZXRfZGF0YSAqc2RhdGE7DQo+ICsJ
+c3RydWN0IGlvYXNpZF9uYl9hcmdzIGFyZ3M7DQo+IA0KPiAgCWlvYXNpZF9kYXRhID0geGFfbG9h
+ZCgmYWN0aXZlX2FsbG9jYXRvci0+eGEsIGlvYXNpZCk7DQo+ICAJaWYgKCFpb2FzaWRfZGF0YSkg
+ew0KPiBAQCAtNDE1LDYgKzQzMiwxMyBAQCBzdGF0aWMgdm9pZCBpb2FzaWRfZnJlZV9sb2NrZWQo
+aW9hc2lkX3QgaW9hc2lkKQ0KPiAgCQlyZXR1cm47DQo+ICAJfQ0KPiANCj4gKwlhcmdzLmlkID0g
+aW9hc2lkOw0KPiArCWFyZ3Muc2lkID0gaW9hc2lkX2RhdGEtPnNkYXRhLT5zaWQ7DQo+ICsJYXJn
+cy5wZGF0YSA9IGlvYXNpZF9kYXRhLT5wcml2YXRlOw0KPiArCWFyZ3Muc2V0X3Rva2VuID0gaW9h
+c2lkX2RhdGEtPnNkYXRhLT50b2tlbjsNCj4gKw0KPiArCS8qIE5vdGlmeSBhbGwgdXNlcnMgdGhh
+dCB0aGlzIElPQVNJRCBpcyBiZWluZyBmcmVlZCAqLw0KPiArCWJsb2NraW5nX25vdGlmaWVyX2Nh
+bGxfY2hhaW4oJmlvYXNpZF9jaGFpbiwgSU9BU0lEX0ZSRUUsICZhcmdzKTsNCj4gIAlhY3RpdmVf
+YWxsb2NhdG9yLT5vcHMtPmZyZWUoaW9hc2lkLCBhY3RpdmVfYWxsb2NhdG9yLT5vcHMtPnBkYXRh
+KTsNCj4gIAkvKiBDdXN0b20gYWxsb2NhdG9yIG5lZWRzIGFkZGl0aW9uYWwgc3RlcHMgdG8gZnJl
+ZSB0aGUgeGEgZWxlbWVudCAqLw0KPiAgCWlmIChhY3RpdmVfYWxsb2NhdG9yLT5mbGFncyAmIElP
+QVNJRF9BTExPQ0FUT1JfQ1VTVE9NKSB7DQo+IEBAIC02MjQsNiArNjQ4LDQzIEBAIGludCBpb2Fz
+aWRfZmluZF9zaWQoaW9hc2lkX3QgaW9hc2lkKQ0KPiAgfQ0KPiAgRVhQT1JUX1NZTUJPTF9HUEwo
+aW9hc2lkX2ZpbmRfc2lkKTsNCj4gDQo+ICtpbnQgaW9hc2lkX2FkZF9ub3RpZmllcihzdHJ1Y3Qg
+bm90aWZpZXJfYmxvY2sgKm5iKQ0KPiArew0KPiArCXJldHVybiBibG9ja2luZ19ub3RpZmllcl9j
+aGFpbl9yZWdpc3RlcigmaW9hc2lkX2NoYWluLCBuYik7DQo+ICt9DQo+ICtFWFBPUlRfU1lNQk9M
+X0dQTChpb2FzaWRfYWRkX25vdGlmaWVyKTsNCj4gKw0KPiArdm9pZCBpb2FzaWRfcmVtb3ZlX25v
+dGlmaWVyKHN0cnVjdCBub3RpZmllcl9ibG9jayAqbmIpDQo+ICt7DQo+ICsJYmxvY2tpbmdfbm90
+aWZpZXJfY2hhaW5fdW5yZWdpc3RlcigmaW9hc2lkX2NoYWluLCBuYik7DQo+ICt9DQo+ICtFWFBP
+UlRfU1lNQk9MX0dQTChpb2FzaWRfcmVtb3ZlX25vdGlmaWVyKTsNCg0KcmVnaXN0ZXIvdW5yZWdp
+c3Rlcg0KDQo+ICsNCj4gK2ludCBpb2FzaWRfbm90aWZ5KGlvYXNpZF90IGlvYXNpZCwgZW51bSBp
+b2FzaWRfbm90aWZ5X3ZhbCBjbWQpDQoNCmFkZCBhIGNvbW1lbnQgb24gd2hlbiB0aGlzIGZ1bmN0
+aW9uIHNob3VsZCBiZSB1c2VkPw0KDQo+ICt7DQo+ICsJc3RydWN0IGlvYXNpZF9kYXRhICppb2Fz
+aWRfZGF0YTsNCj4gKwlzdHJ1Y3QgaW9hc2lkX25iX2FyZ3MgYXJnczsNCj4gKwlpbnQgcmV0ID0g
+MDsNCj4gKw0KPiArCW11dGV4X2xvY2soJmlvYXNpZF9hbGxvY2F0b3JfbG9jayk7DQo+ICsJaW9h
+c2lkX2RhdGEgPSB4YV9sb2FkKCZhY3RpdmVfYWxsb2NhdG9yLT54YSwgaW9hc2lkKTsNCj4gKwlp
+ZiAoIWlvYXNpZF9kYXRhKSB7DQo+ICsJCXByX2VycigiVHJ5aW5nIHRvIGZyZWUgdW5rbm93biBJ
+T0FTSUQgJXVcbiIsIGlvYXNpZCk7DQoNCndoeSBpcyBpdCBmaXhlZCB0byAnZnJlZSc/DQoNCj4g
+KwkJbXV0ZXhfdW5sb2NrKCZpb2FzaWRfYWxsb2NhdG9yX2xvY2spOw0KPiArCQlyZXR1cm4gLUVJ
+TlZBTDsNCj4gKwl9DQo+ICsNCj4gKwlhcmdzLmlkID0gaW9hc2lkOw0KPiArCWFyZ3Muc2lkID0g
+aW9hc2lkX2RhdGEtPnNkYXRhLT5zaWQ7DQo+ICsJYXJncy5wZGF0YSA9IGlvYXNpZF9kYXRhLT5w
+cml2YXRlOw0KDQp3aHkgbm8gdG9rZW4gaW5mbyBhcyBkaWQgaW4gaW9hc2lkX2ZyZWU/DQoNCj4g
+Kw0KPiArCXJldCA9IGJsb2NraW5nX25vdGlmaWVyX2NhbGxfY2hhaW4oJmlvYXNpZF9jaGFpbiwg
+Y21kLCAmYXJncyk7DQo+ICsJbXV0ZXhfdW5sb2NrKCZpb2FzaWRfYWxsb2NhdG9yX2xvY2spOw0K
+PiArDQo+ICsJcmV0dXJuIHJldDsNCj4gK30NCj4gK0VYUE9SVF9TWU1CT0xfR1BMKGlvYXNpZF9u
+b3RpZnkpOw0KPiArDQo+ICBNT0RVTEVfQVVUSE9SKCJKZWFuLVBoaWxpcHBlIEJydWNrZXIgPGpl
+YW4tDQo+IHBoaWxpcHBlLmJydWNrZXJAYXJtLmNvbT4iKTsNCj4gIE1PRFVMRV9BVVRIT1IoIkph
+Y29iIFBhbiA8amFjb2IuanVuLnBhbkBsaW51eC5pbnRlbC5jb20+Iik7DQo+ICBNT0RVTEVfREVT
+Q1JJUFRJT04oIklPIEFkZHJlc3MgU3BhY2UgSUQgKElPQVNJRCkgYWxsb2NhdG9yIik7DQo+IGRp
+ZmYgLS1naXQgYS9pbmNsdWRlL2xpbnV4L2lvYXNpZC5oIGIvaW5jbHVkZS9saW51eC9pb2FzaWQu
+aA0KPiBpbmRleCBlMTljMGFkOTNiZDcuLjMyZDAzMjkxMzgyOCAxMDA2NDQNCj4gLS0tIGEvaW5j
+bHVkZS9saW51eC9pb2FzaWQuaA0KPiArKysgYi9pbmNsdWRlL2xpbnV4L2lvYXNpZC5oDQo+IEBA
+IC00LDYgKzQsNyBAQA0KPiANCj4gICNpbmNsdWRlIDxsaW51eC90eXBlcy5oPg0KPiAgI2luY2x1
+ZGUgPGxpbnV4L2Vycm5vLmg+DQo+ICsjaW5jbHVkZSA8bGludXgvbm90aWZpZXIuaD4NCj4gDQo+
+ICAjZGVmaW5lIElOVkFMSURfSU9BU0lEICgoaW9hc2lkX3QpLTEpDQo+ICAjZGVmaW5lIElOVkFM
+SURfSU9BU0lEX1NFVCAoLTEpDQo+IEBAIC0zMCw2ICszMSwyNyBAQCBzdHJ1Y3QgaW9hc2lkX2Fs
+bG9jYXRvcl9vcHMgew0KPiAgCXZvaWQgKnBkYXRhOw0KPiAgfTsNCj4gDQo+ICsvKiBOb3RpZmlj
+YXRpb24gZGF0YSB3aGVuIElPQVNJRCBzdGF0dXMgY2hhbmdlZCAqLw0KPiArZW51bSBpb2FzaWRf
+bm90aWZ5X3ZhbCB7DQo+ICsJSU9BU0lEX0FMTE9DID0gMSwNCj4gKwlJT0FTSURfRlJFRSwNCj4g
+KwlJT0FTSURfQklORCwNCj4gKwlJT0FTSURfVU5CSU5ELA0KPiArfTsNCg0KQ3VyaW91cyB3aHkg
+SU9BU0lEX0FMTE9DIGlzIG5vdCBub3RpZmllZCBhdW1hdGljYWxseSB3aXRoaW4gaW9hc2lkX2Fs
+bG9jDQpzaW1pbGFyIHRvIGlvYXNpZF9mcmVlLCB3aGlsZSBsZWF2aW5nIHRvIHRoZSBwdWJsaXNo
+ZXI/IEJJTkQvVU5CSU5EIGlzDQphIHB1Ymxpc2hlciB0aGluZyBidXQgYSBiaXQgc3RyYW5nZSB0
+byBzZWUgQUxMT0MvRlJFRSB3aXRoIGRpZmZlcmVudCBwb2xpY3kgaGVyZS4NCg0KPiArDQo+ICsv
+KioNCj4gKyAqIHN0cnVjdCBpb2FzaWRfbmJfYXJncyAtIEFyZ3VtZW50IHByb3ZpZGVkIGJ5IElP
+QVNJRCBjb3JlIHdoZW4gbm90aWZpZXINCj4gKyAqIGlzIGNhbGxlZC4NCj4gKyAqIEBpZDoJCXRo
+ZSBJT0FTSUQgYmVpbmcgbm90aWZpZWQNCj4gKyAqIEBzaWQ6CXRoZSBJT0FTSUQgc2V0IEBpZCBi
+ZWxvbmdzIHRvDQo+ICsgKiBAcGRhdGE6CXRoZSBwcml2YXRlIGRhdGEgYXR0YWNoZWQgdG8gdGhl
+IElPQVNJRA0KPiArICovDQo+ICtzdHJ1Y3QgaW9hc2lkX25iX2FyZ3Mgew0KPiArCWlvYXNpZF90
+IGlkOw0KPiArCWludCBzaWQ7DQo+ICsJc3RydWN0IGlvYXNpZF9zZXQgKnNldF90b2tlbjsNCj4g
+Kwl2b2lkICpwZGF0YTsNCj4gK307DQo+ICAvKiBTaGFyZWQgSU9BU0lEIHNldCBmb3IgcmVzZXJ2
+ZWQgZm9yIGhvc3Qgc3lzdGVtIHVzZSAqLw0KPiAgZXh0ZXJuIGludCBzeXN0ZW1faW9hc2lkX3Np
+ZDsNCj4gDQo+IEBAIC00MywxMSArNjUsMTUgQEAgdm9pZCAqaW9hc2lkX2ZpbmQoaW50IHNpZCwg
+aW9hc2lkX3QgaW9hc2lkLCBib29sDQo+ICgqZ2V0dGVyKSh2b2lkICopKTsNCj4gIGludCBpb2Fz
+aWRfcmVnaXN0ZXJfYWxsb2NhdG9yKHN0cnVjdCBpb2FzaWRfYWxsb2NhdG9yX29wcyAqYWxsb2Nh
+dG9yKTsNCj4gIHZvaWQgaW9hc2lkX3VucmVnaXN0ZXJfYWxsb2NhdG9yKHN0cnVjdCBpb2FzaWRf
+YWxsb2NhdG9yX29wcyAqYWxsb2NhdG9yKTsNCj4gIGludCBpb2FzaWRfYXR0YWNoX2RhdGEoaW9h
+c2lkX3QgaW9hc2lkLCB2b2lkICpkYXRhKTsNCj4gK2ludCBpb2FzaWRfYWRkX25vdGlmaWVyKHN0
+cnVjdCBub3RpZmllcl9ibG9jayAqbmIpOw0KPiArdm9pZCBpb2FzaWRfcmVtb3ZlX25vdGlmaWVy
+KHN0cnVjdCBub3RpZmllcl9ibG9jayAqbmIpOw0KPiAgdm9pZCBpb2FzaWRfaW5zdGFsbF9jYXBh
+Y2l0eShpb2FzaWRfdCB0b3RhbCk7DQo+ICBpbnQgaW9hc2lkX2FsbG9jX3N5c3RlbV9zZXQoaW50
+IHF1b3RhKTsNCj4gIGludCBpb2FzaWRfYWxsb2Nfc2V0KHN0cnVjdCBpb2FzaWRfc2V0ICp0b2tl
+biwgaW9hc2lkX3QgcXVvdGEsIGludCAqc2lkKTsNCj4gIHZvaWQgaW9hc2lkX2ZyZWVfc2V0KGlu
+dCBzaWQsIGJvb2wgZGVzdHJveV9zZXQpOw0KPiAgaW50IGlvYXNpZF9maW5kX3NpZChpb2FzaWRf
+dCBpb2FzaWQpOw0KPiAraW50IGlvYXNpZF9ub3RpZnkoaW9hc2lkX3QgaWQsIGVudW0gaW9hc2lk
+X25vdGlmeV92YWwgY21kKTsNCj4gKw0KPiAgI2Vsc2UgLyogIUNPTkZJR19JT0FTSUQgKi8NCj4g
+IHN0YXRpYyBpbmxpbmUgaW9hc2lkX3QgaW9hc2lkX2FsbG9jKGludCBzaWQsIGlvYXNpZF90IG1p
+biwNCj4gIAkJCQkgICAgaW9hc2lkX3QgbWF4LCB2b2lkICpwcml2YXRlKQ0KPiBAQCAtNzMsNiAr
+OTksMjAgQEAgc3RhdGljIGlubGluZSB2b2lkICppb2FzaWRfZmluZChpbnQgc2lkLCBpb2FzaWRf
+dCBpb2FzaWQsDQo+IGJvb2wgKCpnZXR0ZXIpKHZvaWQgKikNCj4gIAlyZXR1cm4gTlVMTDsNCj4g
+IH0NCj4gDQo+ICtzdGF0aWMgaW5saW5lIGludCBpb2FzaWRfYWRkX25vdGlmaWVyKHN0cnVjdCBu
+b3RpZmllcl9ibG9jayAqbmIpDQo+ICt7DQo+ICsJcmV0dXJuIC1FTk9UU1VQUDsNCj4gK30NCj4g
+Kw0KPiArc3RhdGljIGlubGluZSB2b2lkIGlvYXNpZF9yZW1vdmVfbm90aWZpZXIoc3RydWN0IG5v
+dGlmaWVyX2Jsb2NrICpuYikNCj4gK3sNCj4gK30NCj4gKw0KPiAraW50IGlvYXNpZF9ub3RpZnko
+aW9hc2lkX3QgaW9hc2lkLCBlbnVtIGlvYXNpZF9ub3RpZnlfdmFsIGNtZCkNCj4gK3sNCj4gKwly
+ZXR1cm4gLUVOT1RTVVBQOw0KPiArfQ0KPiArDQo+ICBzdGF0aWMgaW5saW5lIGludCBpb2FzaWRf
+cmVnaXN0ZXJfYWxsb2NhdG9yKHN0cnVjdCBpb2FzaWRfYWxsb2NhdG9yX29wcw0KPiAqYWxsb2Nh
+dG9yKQ0KPiAgew0KPiAgCXJldHVybiAtRU5PVFNVUFA7DQo+IC0tDQo+IDIuNy40DQoNCl9fX19f
+X19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fCmlvbW11IG1haWxpbmcg
+bGlzdAppb21tdUBsaXN0cy5saW51eC1mb3VuZGF0aW9uLm9yZwpodHRwczovL2xpc3RzLmxpbnV4
+Zm91bmRhdGlvbi5vcmcvbWFpbG1hbi9saXN0aW5mby9pb21tdQ==
