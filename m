@@ -2,95 +2,101 @@ Return-Path: <SRS0=HkIk=5M=lists.linux-foundation.org=iommu-bounces@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-6.7 required=3.0 tests=HEADER_FROM_DIFFERENT_DOMAINS,
+X-Spam-Status: No, score=-8.0 required=3.0 tests=DKIM_INVALID,DKIM_SIGNED,
+	FREEMAIL_FORGED_FROMDOMAIN,FREEMAIL_FROM,HEADER_FROM_DIFFERENT_DOMAINS,
 	INCLUDES_PATCH,MAILING_LIST_MULTI,SIGNED_OFF_BY,SPF_HELO_NONE,SPF_PASS,
-	URIBL_BLOCKED autolearn=unavailable autolearn_force=no version=3.4.0
+	URIBL_BLOCKED,USER_AGENT_SANE_1 autolearn=ham autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id BB2C9C43331
-	for <iommu@archiver.kernel.org>; Fri, 27 Mar 2020 09:55:52 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id E90A2C43331
+	for <iommu@archiver.kernel.org>; Fri, 27 Mar 2020 09:59:12 +0000 (UTC)
 Received: from silver.osuosl.org (smtp3.osuosl.org [140.211.166.136])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by mail.kernel.org (Postfix) with ESMTPS id 8997320578
-	for <iommu@archiver.kernel.org>; Fri, 27 Mar 2020 09:55:52 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 8997320578
-Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=intel.com
+	by mail.kernel.org (Postfix) with ESMTPS id B360A20578
+	for <iommu@archiver.kernel.org>; Fri, 27 Mar 2020 09:59:12 +0000 (UTC)
+Authentication-Results: mail.kernel.org;
+	dkim=fail reason="signature verification failed" (1024-bit key) header.d=web.de header.i=@web.de header.b="FOMeTWdR"
+DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org B360A20578
+Authentication-Results: mail.kernel.org; dmarc=none (p=none dis=none) header.from=web.de
 Authentication-Results: mail.kernel.org; spf=pass smtp.mailfrom=iommu-bounces@lists.linux-foundation.org
 Received: from localhost (localhost [127.0.0.1])
-	by silver.osuosl.org (Postfix) with ESMTP id 534E5263CE;
-	Fri, 27 Mar 2020 09:55:52 +0000 (UTC)
+	by silver.osuosl.org (Postfix) with ESMTP id 8976C2634F;
+	Fri, 27 Mar 2020 09:59:12 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
 Received: from silver.osuosl.org ([127.0.0.1])
 	by localhost (.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
-	with ESMTP id zVwKaEdBlRBI; Fri, 27 Mar 2020 09:55:51 +0000 (UTC)
+	with ESMTP id yJ1vyT12tYkQ; Fri, 27 Mar 2020 09:59:10 +0000 (UTC)
 Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [140.211.9.56])
-	by silver.osuosl.org (Postfix) with ESMTP id D70982635F;
-	Fri, 27 Mar 2020 09:55:50 +0000 (UTC)
+	by silver.osuosl.org (Postfix) with ESMTP id 9D6652014A;
+	Fri, 27 Mar 2020 09:59:10 +0000 (UTC)
 Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
-	by lists.linuxfoundation.org (Postfix) with ESMTP id C23EBC1D7C;
-	Fri, 27 Mar 2020 09:55:50 +0000 (UTC)
-Received: from hemlock.osuosl.org (smtp2.osuosl.org [140.211.166.133])
- by lists.linuxfoundation.org (Postfix) with ESMTP id 47EC7C0177
- for <iommu@lists.linux-foundation.org>; Fri, 27 Mar 2020 09:55:49 +0000 (UTC)
+	by lists.linuxfoundation.org (Postfix) with ESMTP id 83438C1D7F;
+	Fri, 27 Mar 2020 09:59:10 +0000 (UTC)
+Received: from silver.osuosl.org (smtp3.osuosl.org [140.211.166.136])
+ by lists.linuxfoundation.org (Postfix) with ESMTP id 51FC6C0177
+ for <iommu@lists.linux-foundation.org>; Fri, 27 Mar 2020 09:59:09 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
- by hemlock.osuosl.org (Postfix) with ESMTP id 36A8A894DC
- for <iommu@lists.linux-foundation.org>; Fri, 27 Mar 2020 09:55:49 +0000 (UTC)
+ by silver.osuosl.org (Postfix) with ESMTP id 420472039E
+ for <iommu@lists.linux-foundation.org>; Fri, 27 Mar 2020 09:59:09 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from hemlock.osuosl.org ([127.0.0.1])
+Received: from silver.osuosl.org ([127.0.0.1])
  by localhost (.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
- with ESMTP id YgSaGTukKT6G for <iommu@lists.linux-foundation.org>;
- Fri, 27 Mar 2020 09:55:48 +0000 (UTC)
+ with ESMTP id airFHvd9iqzR for <iommu@lists.linux-foundation.org>;
+ Fri, 27 Mar 2020 09:59:07 +0000 (UTC)
 X-Greylist: domain auto-whitelisted by SQLgrey-1.7.6
-Received: from mga11.intel.com (mga11.intel.com [192.55.52.93])
- by hemlock.osuosl.org (Postfix) with ESMTPS id 2B3EC894B7
- for <iommu@lists.linux-foundation.org>; Fri, 27 Mar 2020 09:55:48 +0000 (UTC)
-IronPort-SDR: BNOlndYKq5hi8IKmAlB1GTr7lSOITzEGHnNLuw/Bm+48qRGljcokZk3myRDkbfu7pUzuMZVkBQ
- TIQSRnXpD0Cg==
-X-Amp-Result: SKIPPED(no attachment in message)
-X-Amp-File-Uploaded: False
-Received: from orsmga005.jf.intel.com ([10.7.209.41])
- by fmsmga102.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384;
- 27 Mar 2020 02:55:47 -0700
-IronPort-SDR: bT3ryrd0tT1jr94GKKr+iX/NuqdMwo9CVGcWdKbynZAEHht25qR7IknmMqEZ2YwZv63D8Eitcm
- YwCNAnvYBWyw==
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.72,311,1580803200"; d="scan'208";a="421047659"
-Received: from fmsmsx106.amr.corp.intel.com ([10.18.124.204])
- by orsmga005.jf.intel.com with ESMTP; 27 Mar 2020 02:55:47 -0700
-Received: from fmsmsx157.amr.corp.intel.com (10.18.116.73) by
- FMSMSX106.amr.corp.intel.com (10.18.124.204) with Microsoft SMTP Server (TLS)
- id 14.3.439.0; Fri, 27 Mar 2020 02:55:46 -0700
-Received: from shsmsx102.ccr.corp.intel.com (10.239.4.154) by
- FMSMSX157.amr.corp.intel.com (10.18.116.73) with Microsoft SMTP Server (TLS)
- id 14.3.439.0; Fri, 27 Mar 2020 02:55:46 -0700
-Received: from shsmsx104.ccr.corp.intel.com ([169.254.5.206]) by
- shsmsx102.ccr.corp.intel.com ([169.254.2.50]) with mapi id 14.03.0439.000;
- Fri, 27 Mar 2020 17:55:44 +0800
-From: "Tian, Kevin" <kevin.tian@intel.com>
-To: Jacob Pan <jacob.jun.pan@linux.intel.com>, Joerg Roedel <joro@8bytes.org>, 
- Alex Williamson <alex.williamson@redhat.com>, Lu Baolu
- <baolu.lu@linux.intel.com>, "iommu@lists.linux-foundation.org"
- <iommu@lists.linux-foundation.org>, LKML <linux-kernel@vger.kernel.org>,
- David Woodhouse <dwmw2@infradead.org>, Jean-Philippe Brucker
- <jean-philippe@linaro.com>
-Subject: RE: [PATCH 07/10] iommu/ioasid: Use mutex instead of spinlock
-Thread-Topic: [PATCH 07/10] iommu/ioasid: Use mutex instead of spinlock
-Thread-Index: AQHWAs3Lc4yP/KZICUWluZLwsVHvnqhcNb4w
-Date: Fri, 27 Mar 2020 09:55:43 +0000
-Message-ID: <AADFC41AFE54684AB9EE6CBC0274A5D19D7ED597@SHSMSX104.ccr.corp.intel.com>
-References: <1585158931-1825-1-git-send-email-jacob.jun.pan@linux.intel.com>
- <1585158931-1825-8-git-send-email-jacob.jun.pan@linux.intel.com>
-In-Reply-To: <1585158931-1825-8-git-send-email-jacob.jun.pan@linux.intel.com>
-Accept-Language: en-US
-Content-Language: en-US
-X-MS-Has-Attach: 
-X-MS-TNEF-Correlator: 
-dlp-product: dlpe-windows
-dlp-version: 11.2.0.6
-dlp-reaction: no-action
-x-originating-ip: [10.239.127.40]
+Received: from mout.web.de (mout.web.de [212.227.17.11])
+ by silver.osuosl.org (Postfix) with ESMTPS id 65F942014A
+ for <iommu@lists.linux-foundation.org>; Fri, 27 Mar 2020 09:59:07 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=web.de;
+ s=dbaedf251592; t=1585303125;
+ bh=3sJu9fUArkbibaP7WFaKAEzBqN+q83Qrxfjqw40JE6M=;
+ h=X-UI-Sender-Class:Subject:To:Cc:References:From:Date:In-Reply-To;
+ b=FOMeTWdRP5Eq/kmssOzWMXzpWckepwiZa8XLZnpzSmVHwM/Wpzli/svaTVQCA8KRs
+ FdBtlRpT/mnjCrt1aLSZfG9jMCto/q+8HKIStBsiVgtM/nHTWoewJw1Xheq/REYPOl
+ 9sFNduTJJIsIMdb4sZh76/GwWiKv7Yxj+OxI7Is8=
+X-UI-Sender-Class: c548c8c5-30a9-4db5-a2e7-cb6cb037b8f9
+Received: from [192.168.1.10] ([95.157.55.156]) by smtp.web.de (mrweb101
+ [213.165.67.124]) with ESMTPSA (Nemesis) id 0Le4Lg-1jaMzw3m0K-00psvk; Fri, 27
+ Mar 2020 10:58:45 +0100
+Subject: Re: [PATCH] swiotlb: Allow swiotlb to live at pre-defined address
+To: Alexander Graf <graf@amazon.com>, iommu@lists.linux-foundation.org
+References: <20200326162922.27085-1-graf@amazon.com>
+From: Jan Kiszka <jan.kiszka@web.de>
+Message-ID: <9ff68753-20d1-62b1-6250-91ed4beb1bde@web.de>
+Date: Fri, 27 Mar 2020 10:58:43 +0100
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101
+ Thunderbird/68.6.0
 MIME-Version: 1.0
-Cc: "Raj, Ashok" <ashok.raj@intel.com>, Jonathan Cameron <jic23@kernel.org>
+In-Reply-To: <20200326162922.27085-1-graf@amazon.com>
+Content-Language: en-US
+X-Provags-ID: V03:K1:PdNtUhVPObC1NxI5ax+8GQe3v47vjTq4mEi/59bmOUWMu8JZqRT
+ TNsTyDMgV8WUeg5bRVyv6+8YkM5TSW3rx1+/2MwfU3JfQDCCwUpNZyLngpOBHLtQ4yZEokN
+ 9Srm+Yp8CXFi0oImvFpp+VZZAGxD/8rob6pQYSNrIwWC6pwbq78YBDWjj7y5Wvtw/FICW73
+ 39eDdNmuXDeVlwXfDcYww==
+X-UI-Out-Filterresults: notjunk:1;V03:K0:yc+0mO+tq5w=:bs26ghpzYfEHeSNgiR/cxk
+ qn5cFDWow2uB1Q8hzYS++4jk6MRQO1NS24MjTgkFukmI7h8blEstF1DgaQ+pvkrAMMipH97HK
+ fRYwtiLvE0wE7Qdmxd+63EodXC9wP0zjEVTnxQq7P63BazGxO7S0GLEJByvuh/6HS62tv9ew+
+ P0CZ5P/rkald9bPj7rXArwRwxZDUbsK5qIVMpJpBWqYVgUkjkGiFHv5GxWqJPYjxvL4f9nyxV
+ bcuWFVS6I6UlGhM/1IvUZLAsV876+nRRUAiQ7V8GNEsjFy7SEj/A2okKv9Mi+bEs3iYBSeD5R
+ DDar4nrE65D+blKX6CAz+cEiZMYaVhkK8ddqp4i0/3t68qD1G0NuIGOpleI34oq4qIRuzAfab
+ CErKH/UXBkqk8XEJMeLimQEMTepz5+7fbVCONVwx5NI68RPm+LApdueKgIyUiGzWn5ve5mGya
+ oUP1T50PaRofQ1vUilOpVC8muIum2t/wcK/e5Y7t9148BXSZr4rKdgMBff58N7nmGIQBXJyTK
+ 8DmcLFDLKHF1xAS/ItRytGalJ0+h0kXhdYF2t9Z/4boqcJ3dbaWSoz3DuKzUY2oYfI1hwMOoz
+ nvcNGmt1DMbG4JQ3tt8mA/KT/Q5jVec2cuKOGvTzQOKM0Q6CUeZ/QMaRutpFiel+o6k98yAb7
+ KlzYXFnSCuHVAvzVwvSUhizU2nF/1xmEPFXNQxhRgAt1tLJzLekBZ5qe3eNtxg6NHyP6N7v0I
+ lQFIX9Tm4Eg1eCXl2TfY9KoQKq53vF/V2ThhYoLEL7DOohCVWQ17Fo3YRilwON7SnR/5W+SCk
+ S4Tg2OWiJ7n5MU97jWlSKewChMlCGJW2qqCODzZ82EKVsBjGuZacJk8HAdE6xmQAtUnuTv5xH
+ uq1fm92lH90rv2WMJM0u9N4EnWy/Ez/yF+wi9Yu42IAqJxHKaLoqjZqRShcIich0MZJKq40K0
+ lgfE3qrxeGvNE9dTl9TaFGmYkeWgZeFMhUXeWdmpORU26MdBA7exRoJuBRLQPCjoYEa5d+fLR
+ aYtTLh7cMroAFgn/pVi0EjLIkYH1XHR7qj46p0yB4Fjwo794q3JWWfrp7mNMmByyNH7UdZWjz
+ VYfQwQA/1KrBbFzNjYelnSyHT6cNRTgF+MIo2kGzSVFkrA3tfUnNzeEl1tHFqSpVM9wKXayd1
+ 6MEqAK50K4x2Y+yYcNGJmwb5SzULGS2h6LW6i8meC6OBSI69+U3sc5M+NxkDCMmrFlkNRzzfK
+ diZRZZ8kpd4amq0dq
+Cc: Mark Rutland <mark.rutland@arm.com>, benh@amazon.com,
+ Konrad Rzeszutek Wilk <konrad.wilk@oracle.com>, linux-doc@vger.kernel.org,
+ x86@kernel.org, linux-kernel@vger.kernel.org, aggh@amazon.com,
+ alcioa@amazon.com, aagch@amazon.com, dhr@amazon.com, dwmw@amazon.com,
+ Robin Murphy <robin.murphy@arm.com>, Christoph Hellwig <hch@lst.de>
 X-BeenThere: iommu@lists.linux-foundation.org
 X-Mailman-Version: 2.1.15
 Precedence: list
@@ -103,232 +109,177 @@ List-Post: <mailto:iommu@lists.linux-foundation.org>
 List-Help: <mailto:iommu-request@lists.linux-foundation.org?subject=help>
 List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
  <mailto:iommu-request@lists.linux-foundation.org?subject=subscribe>
-Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset="us-ascii"; Format="flowed"
 Errors-To: iommu-bounces@lists.linux-foundation.org
 Sender: "iommu" <iommu-bounces@lists.linux-foundation.org>
 
-> From: Jacob Pan <jacob.jun.pan@linux.intel.com>
-> Sent: Thursday, March 26, 2020 1:55 AM
-> 
-> Each IOASID or set could have multiple users with its own HW context
-> to maintain. Often times access to the HW context requires thread context.
-> For example, consumers of IOASIDs can register notification blocks to
-> sync up its states. Having an atomic notifier is not feasible for these
-> update operations.
-> 
-> This patch converts allocator lock from spinlock to mutex in preparation
-> for IOASID notifier.
-> 
-> Signed-off-by: Jacob Pan <jacob.jun.pan@linux.intel.com>
+On 26.03.20 17:29, Alexander Graf wrote:
+> The swiotlb is a very convenient fallback mechanism for bounce buffering of
+> DMAable data. It is usually used for the compatibility case where devices
+> can only DMA to a "low region".
+>
+> However, in some scenarios this "low region" may be bound even more
+> heavily. For example, there are embedded system where only an SRAM region
+> is shared between device and CPU. There are also heterogeneous computing
+> scenarios where only a subset of RAM is cache coherent between the
+> components of the system. There are partitioning hypervisors, where
+> a "control VM" that implements device emulation has limited view into a
+> partition's memory for DMA capabilities due to safety concerns.
+>
+> This patch adds a command line driven mechanism to move all DMA memory into
+> a predefined shared memory region which may or may not be part of the
+> physical address layout of the Operating System.
+>
+> Ideally, the typical path to set this configuration would be through Device
+> Tree or ACPI, but neither of the two mechanisms is standardized yet. Also,
+> in the x86 MicroVM use case, we have neither ACPI nor Device Tree, but
+> instead configure the system purely through kernel command line options.
+>
+> I'm sure other people will find the functionality useful going forward
+> though and extend it to be triggered by DT/ACPI in the future.
+>
+> Signed-off-by: Alexander Graf <graf@amazon.com>
 > ---
->  drivers/iommu/ioasid.c | 45 +++++++++++++++++++++++----------------------
->  1 file changed, 23 insertions(+), 22 deletions(-)
-> 
-> diff --git a/drivers/iommu/ioasid.c b/drivers/iommu/ioasid.c
-> index f89a595f6978..8612fe6477dc 100644
-> --- a/drivers/iommu/ioasid.c
-> +++ b/drivers/iommu/ioasid.c
-> @@ -98,7 +98,7 @@ struct ioasid_allocator_data {
->  	struct rcu_head rcu;
->  };
-> 
-> -static DEFINE_SPINLOCK(ioasid_allocator_lock);
-> +static DEFINE_MUTEX(ioasid_allocator_lock);
->  static LIST_HEAD(allocators_list);
-> 
->  static ioasid_t default_alloc(ioasid_t min, ioasid_t max, void *opaque);
-> @@ -121,7 +121,7 @@ static ioasid_t default_alloc(ioasid_t min, ioasid_t
-> max, void *opaque)
->  {
->  	ioasid_t id;
-> 
-> -	if (xa_alloc(&default_allocator.xa, &id, opaque, XA_LIMIT(min, max),
-> GFP_ATOMIC)) {
-> +	if (xa_alloc(&default_allocator.xa, &id, opaque, XA_LIMIT(min, max),
-> GFP_KERNEL)) {
->  		pr_err("Failed to alloc ioasid from %d to %d\n", min, max);
->  		return INVALID_IOASID;
->  	}
-> @@ -142,7 +142,7 @@ static struct ioasid_allocator_data
-> *ioasid_alloc_allocator(struct ioasid_alloca
->  {
->  	struct ioasid_allocator_data *ia_data;
-> 
-> -	ia_data = kzalloc(sizeof(*ia_data), GFP_ATOMIC);
-> +	ia_data = kzalloc(sizeof(*ia_data), GFP_KERNEL);
->  	if (!ia_data)
->  		return NULL;
-> 
-> @@ -184,7 +184,7 @@ int ioasid_register_allocator(struct
-> ioasid_allocator_ops *ops)
->  	struct ioasid_allocator_data *pallocator;
->  	int ret = 0;
-> 
-> -	spin_lock(&ioasid_allocator_lock);
-> +	mutex_lock(&ioasid_allocator_lock);
-> 
->  	ia_data = ioasid_alloc_allocator(ops);
->  	if (!ia_data) {
-> @@ -228,12 +228,12 @@ int ioasid_register_allocator(struct
-> ioasid_allocator_ops *ops)
->  	}
->  	list_add_tail(&ia_data->list, &allocators_list);
-> 
-> -	spin_unlock(&ioasid_allocator_lock);
-> +	mutex_unlock(&ioasid_allocator_lock);
->  	return 0;
->  out_free:
->  	kfree(ia_data);
->  out_unlock:
-> -	spin_unlock(&ioasid_allocator_lock);
-> +	mutex_unlock(&ioasid_allocator_lock);
->  	return ret;
->  }
->  EXPORT_SYMBOL_GPL(ioasid_register_allocator);
-> @@ -251,7 +251,7 @@ void ioasid_unregister_allocator(struct
-> ioasid_allocator_ops *ops)
->  	struct ioasid_allocator_data *pallocator;
->  	struct ioasid_allocator_ops *sops;
-> 
-> -	spin_lock(&ioasid_allocator_lock);
-> +	mutex_lock(&ioasid_allocator_lock);
->  	if (list_empty(&allocators_list)) {
->  		pr_warn("No custom IOASID allocators active!\n");
->  		goto exit_unlock;
-> @@ -296,7 +296,7 @@ void ioasid_unregister_allocator(struct
-> ioasid_allocator_ops *ops)
->  	}
-> 
->  exit_unlock:
-> -	spin_unlock(&ioasid_allocator_lock);
-> +	mutex_unlock(&ioasid_allocator_lock);
->  }
->  EXPORT_SYMBOL_GPL(ioasid_unregister_allocator);
-> 
-> @@ -313,13 +313,13 @@ int ioasid_attach_data(ioasid_t ioasid, void *data)
->  	struct ioasid_data *ioasid_data;
->  	int ret = 0;
-> 
-> -	spin_lock(&ioasid_allocator_lock);
-> +	mutex_lock(&ioasid_allocator_lock);
->  	ioasid_data = xa_load(&active_allocator->xa, ioasid);
->  	if (ioasid_data)
->  		rcu_assign_pointer(ioasid_data->private, data);
->  	else
->  		ret = -ENOENT;
-> -	spin_unlock(&ioasid_allocator_lock);
-> +	mutex_unlock(&ioasid_allocator_lock);
-> 
->  	/*
->  	 * Wait for readers to stop accessing the old private data, so the
-> @@ -374,7 +374,7 @@ ioasid_t ioasid_alloc(int sid, ioasid_t min, ioasid_t
-> max, void *private)
->  	 * Custom allocator needs allocator data to perform platform specific
->  	 * operations.
->  	 */
-> -	spin_lock(&ioasid_allocator_lock);
-> +	mutex_lock(&ioasid_allocator_lock);
->  	adata = active_allocator->flags & IOASID_ALLOCATOR_CUSTOM ?
-> active_allocator->ops->pdata : data;
->  	id = active_allocator->ops->alloc(min, max, adata);
->  	if (id == INVALID_IOASID) {
-> @@ -383,7 +383,7 @@ ioasid_t ioasid_alloc(int sid, ioasid_t min, ioasid_t
-> max, void *private)
->  	}
-> 
->  	if ((active_allocator->flags & IOASID_ALLOCATOR_CUSTOM) &&
-> -	     xa_alloc(&active_allocator->xa, &id, data, XA_LIMIT(id, id),
-> GFP_ATOMIC)) {
-> +	     xa_alloc(&active_allocator->xa, &id, data, XA_LIMIT(id, id),
-> GFP_KERNEL)) {
->  		/* Custom allocator needs framework to store and track
-> allocation results */
->  		pr_err("Failed to alloc ioasid from %d\n", id);
->  		active_allocator->ops->free(id, active_allocator->ops->pdata);
-> @@ -394,10 +394,11 @@ ioasid_t ioasid_alloc(int sid, ioasid_t min, ioasid_t
-> max, void *private)
->  	/* Store IOASID in the per set data */
->  	xa_store(&sdata->xa, id, data, GFP_KERNEL);
->  	sdata->nr_ioasids++;
-> -	spin_unlock(&ioasid_allocator_lock);
-> +	mutex_unlock(&ioasid_allocator_lock);
+>   Documentation/admin-guide/kernel-parameters.txt |  3 +-
+>   Documentation/x86/x86_64/boot-options.rst       |  4 ++-
+>   kernel/dma/swiotlb.c                            | 46 +++++++++++++++++++++++--
+>   3 files changed, 49 insertions(+), 4 deletions(-)
+>
+> diff --git a/Documentation/admin-guide/kernel-parameters.txt b/Documentation/admin-guide/kernel-parameters.txt
+> index c07815d230bc..d085d55c3cbe 100644
+> --- a/Documentation/admin-guide/kernel-parameters.txt
+> +++ b/Documentation/admin-guide/kernel-parameters.txt
+> @@ -4785,11 +4785,12 @@
+>   			it if 0 is given (See Documentation/admin-guide/cgroup-v1/memory.rst)
+>
+>   	swiotlb=	[ARM,IA-64,PPC,MIPS,X86]
+> -			Format: { <int> | force | noforce }
+> +			Format: { <int> | force | noforce | addr=<phys addr> }
+>   			<int> -- Number of I/O TLB slabs
+>   			force -- force using of bounce buffers even if they
+>   			         wouldn't be automatically used by the kernel
+>   			noforce -- Never use bounce buffers (for debugging)
+> +			addr=<phys addr> -- Try to allocate SWIOTLB at defined address
+>
+>   	switches=	[HW,M68k]
+>
+> diff --git a/Documentation/x86/x86_64/boot-options.rst b/Documentation/x86/x86_64/boot-options.rst
+> index 2b98efb5ba7f..ca46c57b68c9 100644
+> --- a/Documentation/x86/x86_64/boot-options.rst
+> +++ b/Documentation/x86/x86_64/boot-options.rst
+> @@ -297,11 +297,13 @@ iommu options only relevant to the AMD GART hardware IOMMU:
+>   iommu options only relevant to the software bounce buffering (SWIOTLB) IOMMU
+>   implementation:
+>
+> -    swiotlb=<pages>[,force]
+> +    swiotlb=<pages>[,force][,addr=<phys addr>]
+>         <pages>
+>           Prereserve that many 128K pages for the software IO bounce buffering.
+>         force
+>           Force all IO through the software TLB.
+> +      addr=<phys addr>
+> +        Try to allocate SWIOTLB at defined address
+>
+>   Settings for the IBM Calgary hardware IOMMU currently found in IBM
+>   pSeries and xSeries machines
+> diff --git a/kernel/dma/swiotlb.c b/kernel/dma/swiotlb.c
+> index c19379fabd20..83da0caa2f93 100644
+> --- a/kernel/dma/swiotlb.c
+> +++ b/kernel/dma/swiotlb.c
+> @@ -46,6 +46,7 @@
+>   #include <linux/init.h>
+>   #include <linux/memblock.h>
+>   #include <linux/iommu-helper.h>
+> +#include <linux/io.h>
+>
+>   #define CREATE_TRACE_POINTS
+>   #include <trace/events/swiotlb.h>
+> @@ -102,6 +103,12 @@ unsigned int max_segment;
+>   #define INVALID_PHYS_ADDR (~(phys_addr_t)0)
+>   static phys_addr_t *io_tlb_orig_addr;
+>
+> +/*
+> + * The TLB phys addr may be defined on the command line. Store it here if it is.
+> + */
+> +static phys_addr_t io_tlb_addr = INVALID_PHYS_ADDR;
 > +
->  	return id;
->  exit_free:
-> -	spin_unlock(&ioasid_allocator_lock);
-> +	mutex_unlock(&ioasid_allocator_lock);
->  	kfree(data);
->  	return INVALID_IOASID;
->  }
-> @@ -440,9 +441,9 @@ static void ioasid_free_locked(ioasid_t ioasid)
->   */
->  void ioasid_free(ioasid_t ioasid)
->  {
-> -	spin_lock(&ioasid_allocator_lock);
-> +	mutex_lock(&ioasid_allocator_lock);
->  	ioasid_free_locked(ioasid);
-> -	spin_unlock(&ioasid_allocator_lock);
-> +	mutex_unlock(&ioasid_allocator_lock);
->  }
->  EXPORT_SYMBOL_GPL(ioasid_free);
-> 
-> @@ -473,7 +474,7 @@ int ioasid_alloc_set(struct ioasid_set *token, ioasid_t
-> quota, int *sid)
->  	if (!sdata)
->  		return -ENOMEM;
-> 
-> -	spin_lock(&ioasid_allocator_lock);
-> +	mutex_lock(&ioasid_allocator_lock);
-> 
->  	ret = xa_alloc(&ioasid_sets, &id, sdata,
->  		       XA_LIMIT(0, ioasid_capacity_avail - quota),
-> @@ -497,7 +498,7 @@ int ioasid_alloc_set(struct ioasid_set *token, ioasid_t
-> quota, int *sid)
->  	*sid = id;
-> 
->  error:
-> -	spin_unlock(&ioasid_allocator_lock);
-> +	mutex_unlock(&ioasid_allocator_lock);
-> 
->  	return ret;
->  }
-> @@ -518,7 +519,7 @@ void ioasid_free_set(int sid, bool destroy_set)
->  	struct ioasid_data *entry;
->  	unsigned long index;
-> 
-> -	spin_lock(&ioasid_allocator_lock);
-> +	mutex_lock(&ioasid_allocator_lock);
->  	sdata = xa_load(&ioasid_sets, sid);
->  	if (!sdata) {
->  		pr_err("No IOASID set found to free %d\n", sid);
-> @@ -549,7 +550,7 @@ void ioasid_free_set(int sid, bool destroy_set)
->  	}
-> 
->  done_unlock:
-> -	spin_unlock(&ioasid_allocator_lock);
-> +	mutex_unlock(&ioasid_allocator_lock);
->  }
->  EXPORT_SYMBOL_GPL(ioasid_free_set);
-> 
-> @@ -613,11 +614,11 @@ int ioasid_find_sid(ioasid_t ioasid)
->  	struct ioasid_data *ioasid_data;
->  	int ret = 0;
-> 
-> -	spin_lock(&ioasid_allocator_lock);
-> +	mutex_lock(&ioasid_allocator_lock);
->  	ioasid_data = xa_load(&active_allocator->xa, ioasid);
->  	ret = (ioasid_data) ? ioasid_data->sdata->sid : -ENOENT;
-> 
-> -	spin_unlock(&ioasid_allocator_lock);
-> +	mutex_unlock(&ioasid_allocator_lock);
-> 
->  	return ret;
->  }
-> --
-> 2.7.4
+> +
+>   /*
+>    * Protect the above data structures in the map and unmap calls
+>    */
+> @@ -119,11 +126,23 @@ setup_io_tlb_npages(char *str)
+>   	}
+>   	if (*str == ',')
+>   		++str;
+> -	if (!strcmp(str, "force")) {
+> +	if (!strncmp(str, "force", 5)) {
+>   		swiotlb_force = SWIOTLB_FORCE;
+> -	} else if (!strcmp(str, "noforce")) {
+> +		str += 5;
+> +	} else if (!strncmp(str, "noforce", 7)) {
+>   		swiotlb_force = SWIOTLB_NO_FORCE;
+>   		io_tlb_nslabs = 1;
+> +		str += 7;
+> +	}
+> +
+> +	if (*str == ',')
+> +		++str;
+> +	if (!strncmp(str, "addr=", 5)) {
+> +		char *addrstr = str + 5;
+> +
+> +		io_tlb_addr = kstrtoul(addrstr, 0, &str);
+> +		if (addrstr == str)
+> +			io_tlb_addr = INVALID_PHYS_ADDR;
+>   	}
+>
+>   	return 0;
+> @@ -239,6 +258,25 @@ int __init swiotlb_init_with_tbl(char *tlb, unsigned long nslabs, int verbose)
+>   	return 0;
+>   }
+>
+> +static int __init swiotlb_init_io(int verbose, unsigned long bytes)
+> +{
+> +	unsigned __iomem char *vstart;
+> +
+> +	if (io_tlb_addr == INVALID_PHYS_ADDR)
+> +		return -EINVAL;
+> +
+> +	vstart = memremap(io_tlb_addr, bytes, MEMREMAP_WB);
+> +	if (!vstart)
+> +		return -EINVAL;
+> +
+> +	if (swiotlb_init_with_tbl(vstart, io_tlb_nslabs, verbose)) {
+> +		memunmap(vstart);
+> +		return -EINVAL;
+> +	}
+> +
+> +	return 0;
+> +}
+> +
+>   /*
+>    * Statically reserve bounce buffer space and initialize bounce buffer data
+>    * structures for the software IO TLB used to implement the DMA API.
+> @@ -257,6 +295,10 @@ swiotlb_init(int verbose)
+>
+>   	bytes = io_tlb_nslabs << IO_TLB_SHIFT;
+>
+> +	/* Map IO TLB from device memory */
+> +	if (!swiotlb_init_io(verbose, bytes))
+> +		return;
+> +
+>   	/* Get IO TLB memory from the low pages */
+>   	vstart = memblock_alloc_low(PAGE_ALIGN(bytes), PAGE_SIZE);
+>   	if (vstart && !swiotlb_init_with_tbl(vstart, io_tlb_nslabs, verbose))
+>
 
-Reviewed-by: Kevin Tian <kevin.tian@intel.com>
+To make this useful also for shared-memory based devices, it should not
+only have a command-line independent interface. Multi-instance support
+would be needed so that you can attach swiotlb with individual address
+ranges to devices that need it and leave it alone for other that do not
+(e.g. passed-through guest devices).
+
+Jan
 _______________________________________________
 iommu mailing list
 iommu@lists.linux-foundation.org
