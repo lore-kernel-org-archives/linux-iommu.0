@@ -2,96 +2,88 @@ Return-Path: <SRS0=HkIk=5M=lists.linux-foundation.org=iommu-bounces@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-8.0 required=3.0 tests=DKIM_INVALID,DKIM_SIGNED,
-	HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_PATCH,MAILING_LIST_MULTI,SIGNED_OFF_BY,
-	SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED,USER_AGENT_SANE_1 autolearn=ham
-	autolearn_force=no version=3.4.0
+X-Spam-Status: No, score=-0.5 required=3.0 tests=DKIM_INVALID,DKIM_SIGNED,
+	HEADER_FROM_DIFFERENT_DOMAINS,MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS,
+	URIBL_BLOCKED autolearn=no autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id CE40BC43331
-	for <iommu@archiver.kernel.org>; Fri, 27 Mar 2020 14:46:42 +0000 (UTC)
-Received: from whitealder.osuosl.org (smtp1.osuosl.org [140.211.166.138])
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 44822C43331
+	for <iommu@archiver.kernel.org>; Fri, 27 Mar 2020 15:10:11 +0000 (UTC)
+Received: from silver.osuosl.org (smtp3.osuosl.org [140.211.166.136])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by mail.kernel.org (Postfix) with ESMTPS id 88349206F1
-	for <iommu@archiver.kernel.org>; Fri, 27 Mar 2020 14:46:42 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTPS id 04C192072F
+	for <iommu@archiver.kernel.org>; Fri, 27 Mar 2020 15:10:10 +0000 (UTC)
 Authentication-Results: mail.kernel.org;
-	dkim=fail reason="signature verification failed" (1024-bit key) header.d=redhat.com header.i=@redhat.com header.b="CZZSLPfb"
-DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 88349206F1
-Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=redhat.com
+	dkim=fail reason="signature verification failed" (1024-bit key) header.d=mg.codeaurora.org header.i=@mg.codeaurora.org header.b="ChNdvKcT"
+DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 04C192072F
+Authentication-Results: mail.kernel.org; dmarc=none (p=none dis=none) header.from=codeaurora.org
 Authentication-Results: mail.kernel.org; spf=pass smtp.mailfrom=iommu-bounces@lists.linux-foundation.org
 Received: from localhost (localhost [127.0.0.1])
-	by whitealder.osuosl.org (Postfix) with ESMTP id 3311B88B17;
-	Fri, 27 Mar 2020 14:46:42 +0000 (UTC)
+	by silver.osuosl.org (Postfix) with ESMTP id C907B2152C;
+	Fri, 27 Mar 2020 15:10:10 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from whitealder.osuosl.org ([127.0.0.1])
+Received: from silver.osuosl.org ([127.0.0.1])
 	by localhost (.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
-	with ESMTP id QBBDDk3YCw1P; Fri, 27 Mar 2020 14:46:41 +0000 (UTC)
+	with ESMTP id mv2t+dlu3JF6; Fri, 27 Mar 2020 15:10:10 +0000 (UTC)
 Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [140.211.9.56])
-	by whitealder.osuosl.org (Postfix) with ESMTP id 66D8C88B04;
-	Fri, 27 Mar 2020 14:46:41 +0000 (UTC)
+	by silver.osuosl.org (Postfix) with ESMTP id 0E91B20780;
+	Fri, 27 Mar 2020 15:10:10 +0000 (UTC)
 Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
-	by lists.linuxfoundation.org (Postfix) with ESMTP id 439C6C18DA;
-	Fri, 27 Mar 2020 14:46:41 +0000 (UTC)
+	by lists.linuxfoundation.org (Postfix) with ESMTP id EAD50C1D7C;
+	Fri, 27 Mar 2020 15:10:09 +0000 (UTC)
 Received: from silver.osuosl.org (smtp3.osuosl.org [140.211.166.136])
- by lists.linuxfoundation.org (Postfix) with ESMTP id B550FC0177
- for <iommu@lists.linux-foundation.org>; Fri, 27 Mar 2020 14:46:40 +0000 (UTC)
+ by lists.linuxfoundation.org (Postfix) with ESMTP id 1DF5AC0177
+ for <iommu@lists.linux-foundation.org>; Fri, 27 Mar 2020 15:10:08 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
- by silver.osuosl.org (Postfix) with ESMTP id A0106203BF
- for <iommu@lists.linux-foundation.org>; Fri, 27 Mar 2020 14:46:40 +0000 (UTC)
+ by silver.osuosl.org (Postfix) with ESMTP id DE3972152C
+ for <iommu@lists.linux-foundation.org>; Fri, 27 Mar 2020 15:10:07 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
 Received: from silver.osuosl.org ([127.0.0.1])
  by localhost (.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
- with ESMTP id Kwf1B02AslAg for <iommu@lists.linux-foundation.org>;
- Fri, 27 Mar 2020 14:46:39 +0000 (UTC)
-X-Greylist: domain auto-whitelisted by SQLgrey-1.7.6
-Received: from us-smtp-delivery-74.mimecast.com
- (us-smtp-delivery-74.mimecast.com [216.205.24.74])
- by silver.osuosl.org (Postfix) with ESMTPS id 3E77520390
- for <iommu@lists.linux-foundation.org>; Fri, 27 Mar 2020 14:46:39 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
- s=mimecast20190719; t=1585320398;
- h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
- to:to:cc:cc:mime-version:mime-version:content-type:content-type:
- content-transfer-encoding:content-transfer-encoding:
- in-reply-to:in-reply-to:references:references;
- bh=++IH3yLQqdE1ojW5vZ/I3vnz4xjMcuRmVM/LFDUY3Og=;
- b=CZZSLPfbFsAz6uRw6ynxX7T17xWC/NvbWy+VSUVbzBSimu91B8N+diiQje2NxtRFSqtaTW
- xaosEtlJ6PeVpIeGa2t/gar/pJ+oYgXt1WlXjTgdV/FjLpKwIdSTD8rqUAjVCn5N0shP/Q
- HlgQk3cmEX7a1aI+2OTJIT+llGSWFYo=
-Received: from mimecast-mx01.redhat.com (mimecast-mx01.redhat.com
- [209.132.183.4]) (Using TLS) by relay.mimecast.com with ESMTP id
- us-mta-3-r_EHhsNGMaepxRmK5Ke6SQ-1; Fri, 27 Mar 2020 10:46:36 -0400
-X-MC-Unique: r_EHhsNGMaepxRmK5Ke6SQ-1
-Received: from smtp.corp.redhat.com (int-mx04.intmail.prod.int.phx2.redhat.com
- [10.5.11.14])
- (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
+ with ESMTP id FAIPLeRSeW-u for <iommu@lists.linux-foundation.org>;
+ Fri, 27 Mar 2020 15:10:06 +0000 (UTC)
+X-Greylist: from auto-whitelisted by SQLgrey-1.7.6
+Received: from mail26.static.mailgun.info (mail26.static.mailgun.info
+ [104.130.122.26])
+ by silver.osuosl.org (Postfix) with ESMTPS id 4F6EB20780
+ for <iommu@lists.linux-foundation.org>; Fri, 27 Mar 2020 15:10:04 +0000 (UTC)
+DKIM-Signature: a=rsa-sha256; v=1; c=relaxed/relaxed; d=mg.codeaurora.org;
+ q=dns/txt; 
+ s=smtp; t=1585321806; h=Message-ID: References: In-Reply-To: Subject:
+ Cc: To: From: Date: Content-Transfer-Encoding: Content-Type:
+ MIME-Version: Sender; bh=8L+aqMqfHrTgXBDzMaiX/dTs4tE5Ws3f3P4pNDyIQpM=;
+ b=ChNdvKcThrC5b49rb/DafiekUINLvt7HjhPTBt8dGVARhOx3VskYU/0/Qqt0eBYTj8AnQ/ua
+ JfO5QLFQxyXgcxUHmC0O94+wq1ByIgQ1XzM6hCILnuC84wlymmc6VWK/lnnP81YiBI8mgR4C
+ P8kAXP8TsvFjvd95mNgnvnGvHww=
+X-Mailgun-Sending-Ip: 104.130.122.26
+X-Mailgun-Sid: WyI3NDkwMCIsICJpb21tdUBsaXN0cy5saW51eC1mb3VuZGF0aW9uLm9yZyIsICJiZTllNGEiXQ==
+Received: from smtp.codeaurora.org
+ (ec2-35-166-182-171.us-west-2.compute.amazonaws.com [35.166.182.171])
+ by mxa.mailgun.org with ESMTP id 5e7e173c.7f69053bf5e0-smtp-out-n05;
+ Fri, 27 Mar 2020 15:09:48 -0000 (UTC)
+Received: by smtp.codeaurora.org (Postfix, from userid 1001)
+ id DA6AAC4478C; Fri, 27 Mar 2020 15:09:47 +0000 (UTC)
+Received: from mail.codeaurora.org (localhost.localdomain [127.0.0.1])
+ (using TLSv1 with cipher ECDHE-RSA-AES256-SHA (256/256 bits))
  (No client certificate requested)
- by mimecast-mx01.redhat.com (Postfix) with ESMTPS id C177B800D4E;
- Fri, 27 Mar 2020 14:46:33 +0000 (UTC)
-Received: from [10.36.113.142] (ovpn-113-142.ams2.redhat.com [10.36.113.142])
- by smtp.corp.redhat.com (Postfix) with ESMTPS id 8011F5DA75;
- Fri, 27 Mar 2020 14:46:25 +0000 (UTC)
-Subject: Re: [PATCH V10 07/11] iommu/vt-d: Support flushing more translation
- cache types
-To: Jacob Pan <jacob.jun.pan@linux.intel.com>,
- Lu Baolu <baolu.lu@linux.intel.com>, iommu@lists.linux-foundation.org,
- LKML <linux-kernel@vger.kernel.org>, Joerg Roedel <joro@8bytes.org>,
- David Woodhouse <dwmw2@infradead.org>,
- Alex Williamson <alex.williamson@redhat.com>,
- Jean-Philippe Brucker <jean-philippe@linaro.com>
-References: <1584746861-76386-1-git-send-email-jacob.jun.pan@linux.intel.com>
- <1584746861-76386-8-git-send-email-jacob.jun.pan@linux.intel.com>
-From: Auger Eric <eric.auger@redhat.com>
-Message-ID: <c90fafad-253a-b2f5-2a6c-87bc319edd02@redhat.com>
-Date: Fri, 27 Mar 2020 15:46:23 +0100
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:60.0) Gecko/20100101
- Thunderbird/60.4.0
+ (Authenticated sender: saiprakash.ranjan)
+ by smtp.codeaurora.org (Postfix) with ESMTPSA id A3E0BC433D2;
+ Fri, 27 Mar 2020 15:09:46 +0000 (UTC)
 MIME-Version: 1.0
-In-Reply-To: <1584746861-76386-8-git-send-email-jacob.jun.pan@linux.intel.com>
-Content-Language: en-US
-X-Scanned-By: MIMEDefang 2.79 on 10.5.11.14
-Cc: "Tian, Kevin" <kevin.tian@intel.com>, Raj Ashok <ashok.raj@intel.com>,
- Jonathan Cameron <jic23@kernel.org>
+Date: Fri, 27 Mar 2020 20:39:46 +0530
+From: Sai Prakash Ranjan <saiprakash.ranjan@codeaurora.org>
+To: Robin Murphy <robin.murphy@arm.com>
+Subject: Re: [PATCH] iommu/arm-smmu: Demote error messages to debug in
+ shutdown callback
+In-Reply-To: <0023bc68-45fb-4e80-00c8-01fd0369243f@arm.com>
+References: <20200327132852.10352-1-saiprakash.ranjan@codeaurora.org>
+ <0023bc68-45fb-4e80-00c8-01fd0369243f@arm.com>
+Message-ID: <37db9a4d524aa4d7529ae47a8065c9e0@codeaurora.org>
+X-Sender: saiprakash.ranjan@codeaurora.org
+User-Agent: Roundcube Webmail/1.3.9
+Cc: linux-arm-msm@vger.kernel.org, linux-kernel@vger.kernel.org,
+ Douglas Anderson <dianders@chromium.org>, iommu@lists.linux-foundation.org,
+ Will Deacon <will@kernel.org>
 X-BeenThere: iommu@lists.linux-foundation.org
 X-Mailman-Version: 2.1.15
 Precedence: list
@@ -104,159 +96,59 @@ List-Post: <mailto:iommu@lists.linux-foundation.org>
 List-Help: <mailto:iommu-request@lists.linux-foundation.org?subject=help>
 List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
  <mailto:iommu-request@lists.linux-foundation.org?subject=subscribe>
-Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset="us-ascii"; Format="flowed"
 Errors-To: iommu-bounces@lists.linux-foundation.org
 Sender: "iommu" <iommu-bounces@lists.linux-foundation.org>
 
-Hi Jacob,
+Hi Robin,
 
-On 3/21/20 12:27 AM, Jacob Pan wrote:
-> When Shared Virtual Memory is exposed to a guest via vIOMMU, scalable
-> IOTLB invalidation may be passed down from outside IOMMU subsystems.
-> This patch adds invalidation functions that can be used for additional
-> translation cache types.
-> 
-> Signed-off-by: Jacob Pan <jacob.jun.pan@linux.intel.com>
-> 
-> ---
-> v9 -> v10:
-> Fix off by 1 in pasid device iotlb flush
-> 
-> Address v7 missed review from Eric
-> 
-> ---
-> ---
->  drivers/iommu/dmar.c        | 36 ++++++++++++++++++++++++++++++++++++
->  drivers/iommu/intel-pasid.c |  3 ++-
->  include/linux/intel-iommu.h | 20 ++++++++++++++++----
->  3 files changed, 54 insertions(+), 5 deletions(-)
-> 
-> diff --git a/drivers/iommu/dmar.c b/drivers/iommu/dmar.c
-> index f77dae7ba7d4..4d6b7b5b37ee 100644
-> --- a/drivers/iommu/dmar.c
-> +++ b/drivers/iommu/dmar.c
-> @@ -1421,6 +1421,42 @@ void qi_flush_piotlb(struct intel_iommu *iommu, u16 did, u32 pasid, u64 addr,
->  	qi_submit_sync(&desc, iommu);
->  }
->  
-> +/* PASID-based device IOTLB Invalidate */
-> +void qi_flush_dev_iotlb_pasid(struct intel_iommu *iommu, u16 sid, u16 pfsid,
-> +		u32 pasid,  u16 qdep, u64 addr, unsigned size_order, u64 granu)
-> +{
-> +	unsigned long mask = 1UL << (VTD_PAGE_SHIFT + size_order - 1);
-> +	struct qi_desc desc = {.qw2 = 0, .qw3 = 0};
-> +
-> +	desc.qw0 = QI_DEV_EIOTLB_PASID(pasid) | QI_DEV_EIOTLB_SID(sid) |
-> +		QI_DEV_EIOTLB_QDEP(qdep) | QI_DEIOTLB_TYPE |
-> +		QI_DEV_IOTLB_PFSID(pfsid);
-> +	desc.qw1 = QI_DEV_EIOTLB_GLOB(granu);
-> +
-> +	/*
-> +	 * If S bit is 0, we only flush a single page. If S bit is set,
-> +	 * The least significant zero bit indicates the invalidation address
-> +	 * range. VT-d spec 6.5.2.6.
-> +	 * e.g. address bit 12[0] indicates 8KB, 13[0] indicates 16KB.
-> +	 * size order = 0 is PAGE_SIZE 4KB
-> +	 * Max Invs Pending (MIP) is set to 0 for now until we have DIT in
-> +	 * ECAP.
-> +	 */
-> +	desc.qw1 |= addr & ~mask;
-> +	if (size_order)
-> +		desc.qw1 |= QI_DEV_EIOTLB_SIZE;
-> +
-> +	qi_submit_sync(&desc, iommu);
-> +}
-> +
-> +void qi_flush_pasid_cache(struct intel_iommu *iommu, u16 did, u64 granu, int pasid)
-> +{
-> +	struct qi_desc desc = {.qw1 = 0, .qw2 = 0, .qw3 = 0};
-> +
-> +	desc.qw0 = QI_PC_PASID(pasid) | QI_PC_DID(did) | QI_PC_GRAN(granu) | QI_PC_TYPE;
-> +	qi_submit_sync(&desc, iommu);
-> +}
-> +
->  /*
->   * Disable Queued Invalidation interface.
->   */
-> diff --git a/drivers/iommu/intel-pasid.c b/drivers/iommu/intel-pasid.c
-> index 10c7856afc6b..9f6d07410722 100644
-> --- a/drivers/iommu/intel-pasid.c
-> +++ b/drivers/iommu/intel-pasid.c
-> @@ -435,7 +435,8 @@ pasid_cache_invalidation_with_pasid(struct intel_iommu *iommu,
->  {
->  	struct qi_desc desc;
->  
-> -	desc.qw0 = QI_PC_DID(did) | QI_PC_PASID_SEL | QI_PC_PASID(pasid);
-> +	desc.qw0 = QI_PC_DID(did) | QI_PC_GRAN(QI_PC_PASID_SEL) |
-> +		QI_PC_PASID(pasid) | QI_PC_TYPE;
-Just a nit, this fix is not documented in the commit message.
+Thanks for taking a look at this.
 
-Besides
-Reviewed-by: Eric Auger <eric.auger@redhat.com>
-
-Thanks
-
-Eric
-
->  	desc.qw1 = 0;
->  	desc.qw2 = 0;
->  	desc.qw3 = 0;
-> diff --git a/include/linux/intel-iommu.h b/include/linux/intel-iommu.h
-> index 85b05120940e..43539713b3b3 100644
-> --- a/include/linux/intel-iommu.h
-> +++ b/include/linux/intel-iommu.h
-> @@ -334,7 +334,7 @@ enum {
->  #define QI_IOTLB_GRAN(gran) 	(((u64)gran) >> (DMA_TLB_FLUSH_GRANU_OFFSET-4))
->  #define QI_IOTLB_ADDR(addr)	(((u64)addr) & VTD_PAGE_MASK)
->  #define QI_IOTLB_IH(ih)		(((u64)ih) << 6)
-> -#define QI_IOTLB_AM(am)		(((u8)am))
-> +#define QI_IOTLB_AM(am)		(((u8)am) & 0x3f)
->  
->  #define QI_CC_FM(fm)		(((u64)fm) << 48)
->  #define QI_CC_SID(sid)		(((u64)sid) << 32)
-> @@ -353,16 +353,21 @@ enum {
->  #define QI_PC_DID(did)		(((u64)did) << 16)
->  #define QI_PC_GRAN(gran)	(((u64)gran) << 4)
->  
-> -#define QI_PC_ALL_PASIDS	(QI_PC_TYPE | QI_PC_GRAN(0))
-> -#define QI_PC_PASID_SEL		(QI_PC_TYPE | QI_PC_GRAN(1))
-> +/* PASID cache invalidation granu */
-> +#define QI_PC_ALL_PASIDS	0
-> +#define QI_PC_PASID_SEL		1
->  
->  #define QI_EIOTLB_ADDR(addr)	((u64)(addr) & VTD_PAGE_MASK)
->  #define QI_EIOTLB_IH(ih)	(((u64)ih) << 6)
-> -#define QI_EIOTLB_AM(am)	(((u64)am))
-> +#define QI_EIOTLB_AM(am)	(((u64)am) & 0x3f)
->  #define QI_EIOTLB_PASID(pasid) 	(((u64)pasid) << 32)
->  #define QI_EIOTLB_DID(did)	(((u64)did) << 16)
->  #define QI_EIOTLB_GRAN(gran) 	(((u64)gran) << 4)
->  
-> +/* QI Dev-IOTLB inv granu */
-> +#define QI_DEV_IOTLB_GRAN_ALL		1
-> +#define QI_DEV_IOTLB_GRAN_PASID_SEL	0> +
->  #define QI_DEV_EIOTLB_ADDR(a)	((u64)(a) & VTD_PAGE_MASK)
->  #define QI_DEV_EIOTLB_SIZE	(((u64)1) << 11)
->  #define QI_DEV_EIOTLB_GLOB(g)	((u64)g)
-> @@ -662,8 +667,15 @@ extern void qi_flush_iotlb(struct intel_iommu *iommu, u16 did, u64 addr,
->  			  unsigned int size_order, u64 type);
->  extern void qi_flush_dev_iotlb(struct intel_iommu *iommu, u16 sid, u16 pfsid,
->  			u16 qdep, u64 addr, unsigned mask);
-> +
->  void qi_flush_piotlb(struct intel_iommu *iommu, u16 did, u32 pasid, u64 addr,
->  		     unsigned long npages, bool ih);
-> +
-> +extern void qi_flush_dev_iotlb_pasid(struct intel_iommu *iommu, u16 sid, u16 pfsid,
-> +			u32 pasid, u16 qdep, u64 addr, unsigned size_order, u64 granu);
-> +
-> +extern void qi_flush_pasid_cache(struct intel_iommu *iommu, u16 did, u64 granu, int pasid);
-> +
->  extern int qi_submit_sync(struct qi_desc *desc, struct intel_iommu *iommu);
->  
->  extern int dmar_ir_support(void);
+On 2020-03-27 19:42, Robin Murphy wrote:
+> On 2020-03-27 1:28 pm, Sai Prakash Ranjan wrote:
+>> Currently on reboot/shutdown, the following messages are
+>> displayed on the console as error messages before the
+>> system reboots/shutdown.
+>> 
+>> On SC7180:
+>> 
+>>    arm-smmu 15000000.iommu: removing device with active domains!
+>>    arm-smmu 5040000.iommu: removing device with active domains!
+>> 
+>> Demote the log level to debug since it does not offer much
+>> help in identifying/fixing any issue as the system is anyways
+>> going down and reduce spamming the kernel log.
+> 
+> I've gone back and forth on this pretty much ever since we added the
+> shutdown hook - on the other hand, if any devices *are* still running
+> in those domains at this point, then once we turn off the SMMU and let
+> those IOVAs go out on the bus as physical addresses, all manner of
+> weirdness may ensue. Thus there is an argument for *some* indication
+> that this may happen, although IMO it could be downgraded to at least
+> dev_warn().
 > 
 
+Any pointers to the weirdness here after SMMU is turned off?
+Because if we look at the call sites, device_shutdown is called
+from kernel_restart_prepare or kernel_shutdown_prepare which would
+mean system is going down anyways, so do we really care about these
+error messages or warnings from SMMU?
+
+  arm_smmu_device_shutdown
+   platform_drv_shutdown
+    device_shutdown
+     kernel_restart_prepare
+      kernel_restart
+
+
+Thanks,
+Sai
+
+-- 
+QUALCOMM INDIA, on behalf of Qualcomm Innovation Center, Inc. is a 
+member
+of Code Aurora Forum, hosted by The Linux Foundation
 _______________________________________________
 iommu mailing list
 iommu@lists.linux-foundation.org
