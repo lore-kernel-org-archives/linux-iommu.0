@@ -2,97 +2,90 @@ Return-Path: <SRS0=r/qF=5N=lists.linux-foundation.org=iommu-bounces@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-6.8 required=3.0 tests=HEADER_FROM_DIFFERENT_DOMAINS,
-	INCLUDES_PATCH,MAILING_LIST_MULTI,SIGNED_OFF_BY,SPF_HELO_NONE,SPF_PASS
-	autolearn=unavailable autolearn_force=no version=3.4.0
+X-Spam-Status: No, score=-0.6 required=3.0 tests=DKIM_INVALID,DKIM_SIGNED,
+	HEADER_FROM_DIFFERENT_DOMAINS,MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS
+	autolearn=no autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 8BF6EC2D0E8
-	for <iommu@archiver.kernel.org>; Sat, 28 Mar 2020 06:44:25 +0000 (UTC)
-Received: from silver.osuosl.org (smtp3.osuosl.org [140.211.166.136])
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 69C16C43331
+	for <iommu@archiver.kernel.org>; Sat, 28 Mar 2020 07:35:24 +0000 (UTC)
+Received: from hemlock.osuosl.org (smtp2.osuosl.org [140.211.166.133])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by mail.kernel.org (Postfix) with ESMTPS id 61F822072F
-	for <iommu@archiver.kernel.org>; Sat, 28 Mar 2020 06:44:25 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 61F822072F
-Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=intel.com
+	by mail.kernel.org (Postfix) with ESMTPS id 3021420714
+	for <iommu@archiver.kernel.org>; Sat, 28 Mar 2020 07:35:24 +0000 (UTC)
+Authentication-Results: mail.kernel.org;
+	dkim=fail reason="signature verification failed" (1024-bit key) header.d=mg.codeaurora.org header.i=@mg.codeaurora.org header.b="XzItlLL5"
+DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 3021420714
+Authentication-Results: mail.kernel.org; dmarc=none (p=none dis=none) header.from=codeaurora.org
 Authentication-Results: mail.kernel.org; spf=pass smtp.mailfrom=iommu-bounces@lists.linux-foundation.org
 Received: from localhost (localhost [127.0.0.1])
-	by silver.osuosl.org (Postfix) with ESMTP id 4087B207A4;
-	Sat, 28 Mar 2020 06:44:25 +0000 (UTC)
-X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from silver.osuosl.org ([127.0.0.1])
-	by localhost (.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
-	with ESMTP id Fj0qh5rsAbpZ; Sat, 28 Mar 2020 06:44:24 +0000 (UTC)
-Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [140.211.9.56])
-	by silver.osuosl.org (Postfix) with ESMTP id 3D59C203A9;
-	Sat, 28 Mar 2020 06:44:24 +0000 (UTC)
-Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
-	by lists.linuxfoundation.org (Postfix) with ESMTP id 378ABC18DA;
-	Sat, 28 Mar 2020 06:44:24 +0000 (UTC)
-Received: from hemlock.osuosl.org (smtp2.osuosl.org [140.211.166.133])
- by lists.linuxfoundation.org (Postfix) with ESMTP id 9F9D3C0177
- for <iommu@lists.linux-foundation.org>; Sat, 28 Mar 2020 06:44:22 +0000 (UTC)
-Received: from localhost (localhost [127.0.0.1])
- by hemlock.osuosl.org (Postfix) with ESMTP id 9B147886F5
- for <iommu@lists.linux-foundation.org>; Sat, 28 Mar 2020 06:44:22 +0000 (UTC)
+	by hemlock.osuosl.org (Postfix) with ESMTP id E7DDD8922D;
+	Sat, 28 Mar 2020 07:35:23 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
 Received: from hemlock.osuosl.org ([127.0.0.1])
+	by localhost (.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
+	with ESMTP id UvvR1wp3TMDD; Sat, 28 Mar 2020 07:35:22 +0000 (UTC)
+Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [140.211.9.56])
+	by hemlock.osuosl.org (Postfix) with ESMTP id B9927891B8;
+	Sat, 28 Mar 2020 07:35:22 +0000 (UTC)
+Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
+	by lists.linuxfoundation.org (Postfix) with ESMTP id A00EBC1D7C;
+	Sat, 28 Mar 2020 07:35:22 +0000 (UTC)
+Received: from fraxinus.osuosl.org (smtp4.osuosl.org [140.211.166.137])
+ by lists.linuxfoundation.org (Postfix) with ESMTP id 145D0C0177
+ for <iommu@lists.linux-foundation.org>; Sat, 28 Mar 2020 07:35:21 +0000 (UTC)
+Received: from localhost (localhost [127.0.0.1])
+ by fraxinus.osuosl.org (Postfix) with ESMTP id 0BB0F87561
+ for <iommu@lists.linux-foundation.org>; Sat, 28 Mar 2020 07:35:21 +0000 (UTC)
+X-Virus-Scanned: amavisd-new at osuosl.org
+Received: from fraxinus.osuosl.org ([127.0.0.1])
  by localhost (.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
- with ESMTP id NaOGd7zDHB1f for <iommu@lists.linux-foundation.org>;
- Sat, 28 Mar 2020 06:44:21 +0000 (UTC)
-X-Greylist: domain auto-whitelisted by SQLgrey-1.7.6
-Received: from mga01.intel.com (mga01.intel.com [192.55.52.88])
- by hemlock.osuosl.org (Postfix) with ESMTPS id CA59D886EE
- for <iommu@lists.linux-foundation.org>; Sat, 28 Mar 2020 06:44:21 +0000 (UTC)
-IronPort-SDR: vQEqlQFoeSM35gZrZ0L/xfsoJBPeLAt1Yp/vbAwzcVDKvMgJKLsQfhPeAbj66llxJcRpRHII68
- wbDeD1L6AW9w==
-X-Amp-Result: SKIPPED(no attachment in message)
-X-Amp-File-Uploaded: False
-Received: from orsmga007.jf.intel.com ([10.7.209.58])
- by fmsmga101.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384;
- 27 Mar 2020 23:44:21 -0700
-IronPort-SDR: Luifc5ZLeKo9Za6t6vSeXRzzwDQeGumRNs/ozrB0q0wUnxydn/xYHDUtIQx1pM9/TXm70s0CDl
- NhrjHPnJEXiA==
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.72,315,1580803200"; d="scan'208";a="236850536"
-Received: from fmsmsx105.amr.corp.intel.com ([10.18.124.203])
- by orsmga007.jf.intel.com with ESMTP; 27 Mar 2020 23:44:20 -0700
-Received: from FMSMSX110.amr.corp.intel.com (10.18.116.10) by
- FMSMSX105.amr.corp.intel.com (10.18.124.203) with Microsoft SMTP Server (TLS)
- id 14.3.439.0; Fri, 27 Mar 2020 23:44:20 -0700
-Received: from shsmsx105.ccr.corp.intel.com (10.239.4.158) by
- fmsmsx110.amr.corp.intel.com (10.18.116.10) with Microsoft SMTP Server (TLS)
- id 14.3.439.0; Fri, 27 Mar 2020 23:44:19 -0700
-Received: from shsmsx104.ccr.corp.intel.com ([169.254.5.225]) by
- SHSMSX105.ccr.corp.intel.com ([169.254.11.213]) with mapi id 14.03.0439.000;
- Sat, 28 Mar 2020 14:44:16 +0800
-From: "Tian, Kevin" <kevin.tian@intel.com>
-To: Jacob Pan <jacob.jun.pan@linux.intel.com>
-Subject: RE: [PATCH 09/10] iommu/ioasid: Support ioasid_set quota adjustment
-Thread-Topic: [PATCH 09/10] iommu/ioasid: Support ioasid_set quota adjustment
-Thread-Index: AQHWAs3NK42wQfu7/kyYiimhS040MqhcOJaQgABbOoCAAP8EAA==
-Date: Sat, 28 Mar 2020 06:44:15 +0000
-Message-ID: <AADFC41AFE54684AB9EE6CBC0274A5D19D7F76CE@SHSMSX104.ccr.corp.intel.com>
-References: <1585158931-1825-1-git-send-email-jacob.jun.pan@linux.intel.com>
- <1585158931-1825-10-git-send-email-jacob.jun.pan@linux.intel.com>
- <AADFC41AFE54684AB9EE6CBC0274A5D19D7ED605@SHSMSX104.ccr.corp.intel.com>
- <20200327163057.75a0e154@jacob-builder>
-In-Reply-To: <20200327163057.75a0e154@jacob-builder>
-Accept-Language: en-US
-Content-Language: en-US
-X-MS-Has-Attach: 
-X-MS-TNEF-Correlator: 
-dlp-product: dlpe-windows
-dlp-version: 11.2.0.6
-dlp-reaction: no-action
-x-originating-ip: [10.239.127.40]
+ with ESMTP id C7GBr60K7XY8 for <iommu@lists.linux-foundation.org>;
+ Sat, 28 Mar 2020 07:35:20 +0000 (UTC)
+X-Greylist: from auto-whitelisted by SQLgrey-1.7.6
+Received: from mail26.static.mailgun.info (mail26.static.mailgun.info
+ [104.130.122.26])
+ by fraxinus.osuosl.org (Postfix) with ESMTPS id 126C78755D
+ for <iommu@lists.linux-foundation.org>; Sat, 28 Mar 2020 07:35:19 +0000 (UTC)
+DKIM-Signature: a=rsa-sha256; v=1; c=relaxed/relaxed; d=mg.codeaurora.org;
+ q=dns/txt; 
+ s=smtp; t=1585380920; h=Message-ID: References: In-Reply-To: Subject:
+ Cc: To: From: Date: Content-Transfer-Encoding: Content-Type:
+ MIME-Version: Sender; bh=dK8y/HKe+m96WTHnDDWEvdDioyHshCf4t/zZiVGk6X0=;
+ b=XzItlLL5sHRkY3dAz2tJeHJhtSBt22K8BNb96LYMZuyRl1VOwtzGZcVcqPfmcWKw4UCacdM/
+ h1nPBp4xP/nkLpsoCuXA/kDepIqYXWfYPiTBGXIauNw0iBanxaNQKDwzj2aQrHBdEUTkxuVW
+ ZiSbvuZTZmqVR/1esz/s2ATCAeE=
+X-Mailgun-Sending-Ip: 104.130.122.26
+X-Mailgun-Sid: WyI3NDkwMCIsICJpb21tdUBsaXN0cy5saW51eC1mb3VuZGF0aW9uLm9yZyIsICJiZTllNGEiXQ==
+Received: from smtp.codeaurora.org
+ (ec2-35-166-182-171.us-west-2.compute.amazonaws.com [35.166.182.171])
+ by mxa.mailgun.org with ESMTP id 5e7efe36.7f0097b6df48-smtp-out-n03;
+ Sat, 28 Mar 2020 07:35:18 -0000 (UTC)
+Received: by smtp.codeaurora.org (Postfix, from userid 1001)
+ id A6369C433F2; Sat, 28 Mar 2020 07:35:18 +0000 (UTC)
+Received: from mail.codeaurora.org (localhost.localdomain [127.0.0.1])
+ (using TLSv1 with cipher ECDHE-RSA-AES256-SHA (256/256 bits))
+ (No client certificate requested)
+ (Authenticated sender: saiprakash.ranjan)
+ by smtp.codeaurora.org (Postfix) with ESMTPSA id E5E48C433D2;
+ Sat, 28 Mar 2020 07:35:17 +0000 (UTC)
 MIME-Version: 1.0
-Cc: "Raj, Ashok" <ashok.raj@intel.com>,
- Jean-Philippe Brucker <jean-philippe@linaro.com>,
- LKML <linux-kernel@vger.kernel.org>,
- "iommu@lists.linux-foundation.org" <iommu@lists.linux-foundation.org>,
- Alex Williamson <alex.williamson@redhat.com>,
- David Woodhouse <dwmw2@infradead.org>, Jonathan Cameron <jic23@kernel.org>
+Date: Sat, 28 Mar 2020 13:05:17 +0530
+From: Sai Prakash Ranjan <saiprakash.ranjan@codeaurora.org>
+To: Robin Murphy <robin.murphy@arm.com>
+Subject: Re: [PATCH] iommu/arm-smmu: Demote error messages to debug in
+ shutdown callback
+In-Reply-To: <5858bdac-b7f9-ac26-0c0d-c9653cef841d@arm.com>
+References: <20200327132852.10352-1-saiprakash.ranjan@codeaurora.org>
+ <0023bc68-45fb-4e80-00c8-01fd0369243f@arm.com>
+ <37db9a4d524aa4d7529ae47a8065c9e0@codeaurora.org>
+ <5858bdac-b7f9-ac26-0c0d-c9653cef841d@arm.com>
+Message-ID: <d60196b548e1241b8334fadd0e8c2fb5@codeaurora.org>
+X-Sender: saiprakash.ranjan@codeaurora.org
+User-Agent: Roundcube Webmail/1.3.9
+Cc: linux-arm-msm@vger.kernel.org, linux-kernel@vger.kernel.org,
+ Douglas Anderson <dianders@chromium.org>, iommu@lists.linux-foundation.org,
+ Will Deacon <will@kernel.org>
 X-BeenThere: iommu@lists.linux-foundation.org
 X-Mailman-Version: 2.1.15
 Precedence: list
@@ -105,137 +98,76 @@ List-Post: <mailto:iommu@lists.linux-foundation.org>
 List-Help: <mailto:iommu-request@lists.linux-foundation.org?subject=help>
 List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
  <mailto:iommu-request@lists.linux-foundation.org?subject=subscribe>
-Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset="us-ascii"; Format="flowed"
 Errors-To: iommu-bounces@lists.linux-foundation.org
 Sender: "iommu" <iommu-bounces@lists.linux-foundation.org>
 
-> From: Jacob Pan <jacob.jun.pan@linux.intel.com>
-> Sent: Saturday, March 28, 2020 7:31 AM
-> 
-> On Fri, 27 Mar 2020 10:09:04 +0000
-> "Tian, Kevin" <kevin.tian@intel.com> wrote:
-> 
-> > > From: Jacob Pan <jacob.jun.pan@linux.intel.com>
-> > > Sent: Thursday, March 26, 2020 1:56 AM
-> > >
-> > > IOASID set is allocated with an initial quota, at runtime there may
-> > > be needs to balance IOASID resources among different VMs/sets.
-> > >
-> >
-> > I may overlook previous patches but I didn't see any place setting the
-> > initial quota...
-> >
-> Initial quota is in place when the ioasid_set is allocated.
-> 
-> > > This patch adds a new API to adjust per set quota.
-> >
-> > since this is purely an internal kernel API, implies that the
-> > publisher (e.g. VFIO) is responsible for exposing its own uAPI to set
-> > the quota?
-> >
-> yes, VFIO will do the adjustment. I think Alex suggested module
-> parameters.
+Hi Robin,
 
-ok, I remember that.
+On 2020-03-28 00:32, Robin Murphy wrote:
+> On 2020-03-27 3:09 pm, Sai Prakash Ranjan wrote:
+> 
+> Imagine your network driver doesn't implement a .shutdown method (so
+> the hardware is still active regardless of device links), happens to
+> have an Rx buffer or descriptor ring DMA-mapped at an IOVA that looks
+> like the physical address of the memory containing some part of the
+> kernel text lower down that call stack, and the MAC receives a
+> broadcast IP packet at about the point arm_smmu_device_shutdown() is
+> returning. Enjoy debugging that ;)
+> 
+> And if coincidental memory corruption seems too far-fetched for your
+> liking, other fun alternatives might include "display tries to scan
+> out from powered-off device, deadlocks interconnect and prevents
+> anything else making progress", or "access to TZC-protected physical
+> address triggers interrupt and over-eager Secure firmware resets
+> system before orderly poweroff has a chance to finish".
+> 
+> Of course the fact that in practice we'll *always* see the warning
+> because there's no way to tear down the default DMA domains, and even
+> if all devices *have* been nicely quiesced there's no way to tell, is
+> certainly less than ideal. Like I say, it's not entirely clear-cut
+> either way...
+> 
 
-> 
-> > >
-> > > Signed-off-by: Jacob Pan <jacob.jun.pan@linux.intel.com>
-> > > ---
-> > >  drivers/iommu/ioasid.c | 44
-> > > ++++++++++++++++++++++++++++++++++++++++++++
-> > >  include/linux/ioasid.h |  6 ++++++
-> > >  2 files changed, 50 insertions(+)
-> > >
-> > > diff --git a/drivers/iommu/ioasid.c b/drivers/iommu/ioasid.c
-> > > index 27dce2cb5af2..5ac28862a1db 100644
-> > > --- a/drivers/iommu/ioasid.c
-> > > +++ b/drivers/iommu/ioasid.c
-> > > @@ -578,6 +578,50 @@ void ioasid_free_set(int sid, bool destroy_set)
-> > >  }
-> > >  EXPORT_SYMBOL_GPL(ioasid_free_set);
-> > >
-> > > +/**
-> > > + * ioasid_adjust_set - Adjust the quota of an IOASID set
-> > > + * @quota:	Quota allowed in this set
-> > > + * @sid:	IOASID set ID to be assigned
-> > > + *
-> > > + * Return 0 on success. If the new quota is smaller than the
-> > > number of
-> > > + * IOASIDs already allocated, -EINVAL will be returned. No change
-> > > will be
-> > > + * made to the existing quota.
-> > > + */
-> > > +int ioasid_adjust_set(int sid, int quota)
-> > > +{
-> > > +	struct ioasid_set_data *sdata;
-> > > +	int ret = 0;
-> > > +
-> > > +	mutex_lock(&ioasid_allocator_lock);
-> > > +	sdata = xa_load(&ioasid_sets, sid);
-> > > +	if (!sdata || sdata->nr_ioasids > quota) {
-> > > +		pr_err("Failed to adjust IOASID set %d quota %d\n",
-> > > +			sid, quota);
-> > > +		ret = -EINVAL;
-> > > +		goto done_unlock;
-> > > +	}
-> > > +
-> > > +	if (quota >= ioasid_capacity_avail) {
-> > > +		ret = -ENOSPC;
-> > > +		goto done_unlock;
-> > > +	}
-> > > +
-> > > +	/* Return the delta back to system pool */
-> > > +	ioasid_capacity_avail += sdata->size - quota;
-> > > +
-> > > +	/*
-> > > +	 * May have a policy to prevent giving all available
-> > > IOASIDs
-> > > +	 * to one set. But we don't enforce here, it should be in
-> > > the
-> > > +	 * upper layers.
-> > > +	 */
-> > > +	sdata->size = quota;
-> > > +
-> > > +done_unlock:
-> > > +	mutex_unlock(&ioasid_allocator_lock);
-> > > +
-> > > +	return ret;
-> > > +}
-> > > +EXPORT_SYMBOL_GPL(ioasid_adjust_set);
-> > >
-> > >  /**
-> > >   * ioasid_find - Find IOASID data
-> > > diff --git a/include/linux/ioasid.h b/include/linux/ioasid.h
-> > > index 32d032913828..6e7de6fb91bf 100644
-> > > --- a/include/linux/ioasid.h
-> > > +++ b/include/linux/ioasid.h
-> > > @@ -73,6 +73,7 @@ int ioasid_alloc_set(struct ioasid_set *token,
-> > > ioasid_t quota, int *sid);
-> > >  void ioasid_free_set(int sid, bool destroy_set);
-> > >  int ioasid_find_sid(ioasid_t ioasid);
-> > >  int ioasid_notify(ioasid_t id, enum ioasid_notify_val cmd);
-> > > +int ioasid_adjust_set(int sid, int quota);
-> > >
-> > >  #else /* !CONFIG_IOASID */
-> > >  static inline ioasid_t ioasid_alloc(int sid, ioasid_t min,
-> > > @@ -136,5 +137,10 @@ static inline int ioasid_alloc_system_set(int
-> > > quota) return -ENOTSUPP;
-> > >  }
-> > >
-> > > +static inline int ioasid_adjust_set(int sid, int quota)
-> > > +{
-> > > +	return -ENOTSUPP;
-> > > +}
-> > > +
-> > >  #endif /* CONFIG_IOASID */
-> > >  #endif /* __LINUX_IOASID_H */
-> > > --
-> > > 2.7.4
-> >
-> 
-> [Jacob Pan]
+Thanks for these examples, good to know these scenarios in case we come 
+across these.
+However, if we see these error/warning messages appear everytime then 
+what will be
+the credibility of these messages? We will just ignore these messages 
+when
+these issues you mention actually appears because we see them everytime 
+on
+reboot or shutdown. So doesn't it make sense to enable these only when
+we are debugging? We could argue that how will we know the issue could 
+be related
+to SMMU, but that's the case even now.
+
+The reason why this came up was that, we had a NOC(interconnect) error 
+which does
+have a logging atleast in QCOM platforms from the secure side(it prints 
+these on the console)
+after the SMMU err messages and there was a confusion if it was related 
+to these messages.
+However, NOC error messages did identify the issue with the USB and it 
+was solved later.
+So these SMMU err/warning messages could be misleading like the above 
+case almost everytime.
+
+The probability of the issues you mentioned occuring is very less than 
+the actual reboot,
+shutdown scenarios, for ex: we run reboot stress test for thousands of 
+times and these messages
+don't add anything special in those cases when any issue occurs because 
+they are seen
+everytime.
+
+Thanks,
+Sai
+-- 
+QUALCOMM INDIA, on behalf of Qualcomm Innovation Center, Inc. is a 
+member
+of Code Aurora Forum, hosted by The Linux Foundation
 _______________________________________________
 iommu mailing list
 iommu@lists.linux-foundation.org
