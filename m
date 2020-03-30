@@ -2,94 +2,73 @@ Return-Path: <SRS0=/IpK=5P=lists.linux-foundation.org=iommu-bounces@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-3.3 required=3.0 tests=HEADER_FROM_DIFFERENT_DOMAINS,
-	INCLUDES_PATCH,MAILING_LIST_MULTI,SIGNED_OFF_BY,SPF_HELO_NONE,SPF_PASS,
-	URI_WP_DIRINDEX autolearn=no autolearn_force=no version=3.4.0
+X-Spam-Status: No, score=-2.2 required=3.0 tests=HEADER_FROM_DIFFERENT_DOMAINS,
+	MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS,USER_AGENT_SANE_1 autolearn=no
+	autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id A1AB9C2D0EC
-	for <iommu@archiver.kernel.org>; Mon, 30 Mar 2020 13:19:01 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 98DB6C43331
+	for <iommu@archiver.kernel.org>; Mon, 30 Mar 2020 13:24:30 +0000 (UTC)
 Received: from whitealder.osuosl.org (smtp1.osuosl.org [140.211.166.138])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by mail.kernel.org (Postfix) with ESMTPS id 736922073B
-	for <iommu@archiver.kernel.org>; Mon, 30 Mar 2020 13:19:01 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 736922073B
-Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=intel.com
+	by mail.kernel.org (Postfix) with ESMTPS id 76E1920757
+	for <iommu@archiver.kernel.org>; Mon, 30 Mar 2020 13:24:30 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 76E1920757
+Authentication-Results: mail.kernel.org; dmarc=none (p=none dis=none) header.from=arm.com
 Authentication-Results: mail.kernel.org; spf=pass smtp.mailfrom=iommu-bounces@lists.linux-foundation.org
 Received: from localhost (localhost [127.0.0.1])
-	by whitealder.osuosl.org (Postfix) with ESMTP id 147288761A;
-	Mon, 30 Mar 2020 13:19:01 +0000 (UTC)
+	by whitealder.osuosl.org (Postfix) with ESMTP id 449B98794A;
+	Mon, 30 Mar 2020 13:24:30 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
 Received: from whitealder.osuosl.org ([127.0.0.1])
 	by localhost (.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
-	with ESMTP id 5udLo5LpQRwP; Mon, 30 Mar 2020 13:19:00 +0000 (UTC)
+	with ESMTP id iGtGBwtfi+kN; Mon, 30 Mar 2020 13:24:27 +0000 (UTC)
 Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [140.211.9.56])
-	by whitealder.osuosl.org (Postfix) with ESMTP id EEEE686E42;
-	Mon, 30 Mar 2020 13:18:59 +0000 (UTC)
+	by whitealder.osuosl.org (Postfix) with ESMTP id 7483D865D0;
+	Mon, 30 Mar 2020 13:24:27 +0000 (UTC)
 Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
-	by lists.linuxfoundation.org (Postfix) with ESMTP id E5FEEC1AE8;
-	Mon, 30 Mar 2020 13:18:59 +0000 (UTC)
-Received: from hemlock.osuosl.org (smtp2.osuosl.org [140.211.166.133])
- by lists.linuxfoundation.org (Postfix) with ESMTP id AF012C07FF
- for <iommu@lists.linux-foundation.org>; Mon, 30 Mar 2020 13:18:58 +0000 (UTC)
+	by lists.linuxfoundation.org (Postfix) with ESMTP id 670A2C1AE8;
+	Mon, 30 Mar 2020 13:24:27 +0000 (UTC)
+Received: from whitealder.osuosl.org (smtp1.osuosl.org [140.211.166.138])
+ by lists.linuxfoundation.org (Postfix) with ESMTP id 8223FC07FF
+ for <iommu@lists.linux-foundation.org>; Mon, 30 Mar 2020 13:24:25 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
- by hemlock.osuosl.org (Postfix) with ESMTP id 9D07C884A7
- for <iommu@lists.linux-foundation.org>; Mon, 30 Mar 2020 13:18:58 +0000 (UTC)
+ by whitealder.osuosl.org (Postfix) with ESMTP id 79F6686614
+ for <iommu@lists.linux-foundation.org>; Mon, 30 Mar 2020 13:24:25 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from hemlock.osuosl.org ([127.0.0.1])
+Received: from whitealder.osuosl.org ([127.0.0.1])
  by localhost (.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
- with ESMTP id hVanNTj7FpSc for <iommu@lists.linux-foundation.org>;
- Mon, 30 Mar 2020 13:18:57 +0000 (UTC)
+ with ESMTP id Q3va7TG8V1kv for <iommu@lists.linux-foundation.org>;
+ Mon, 30 Mar 2020 13:24:24 +0000 (UTC)
 X-Greylist: domain auto-whitelisted by SQLgrey-1.7.6
-Received: from mga06.intel.com (mga06.intel.com [134.134.136.31])
- by hemlock.osuosl.org (Postfix) with ESMTPS id C4A58884A2
- for <iommu@lists.linux-foundation.org>; Mon, 30 Mar 2020 13:18:57 +0000 (UTC)
-IronPort-SDR: RiTHOMNyBr/tmRsClX6JJwGEgNBVvBE2fn0SQcHJOI4wagT6J/STYTmX/HkSPTjRQ9vTxAZs8j
- Op0/s53RT9uQ==
-X-Amp-Result: SKIPPED(no attachment in message)
-X-Amp-File-Uploaded: False
-Received: from orsmga006.jf.intel.com ([10.7.209.51])
- by orsmga104.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384;
- 30 Mar 2020 06:18:57 -0700
-IronPort-SDR: 8zvPcR0zGQgPmpOR6KG1knCLH24SObnbiA0e3+IOHMEH6j5tnEn9kgbTVzRejVSDev6Z4LwT9+
- 1QMwRvbh40wA==
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.72,324,1580803200"; d="scan'208";a="251881097"
-Received: from fmsmsx108.amr.corp.intel.com ([10.18.124.206])
- by orsmga006.jf.intel.com with ESMTP; 30 Mar 2020 06:18:56 -0700
-Received: from shsmsx152.ccr.corp.intel.com (10.239.6.52) by
- FMSMSX108.amr.corp.intel.com (10.18.124.206) with Microsoft SMTP Server (TLS)
- id 14.3.439.0; Mon, 30 Mar 2020 06:18:56 -0700
-Received: from shsmsx104.ccr.corp.intel.com ([169.254.5.225]) by
- SHSMSX152.ccr.corp.intel.com ([169.254.6.209]) with mapi id 14.03.0439.000;
- Mon, 30 Mar 2020 21:18:53 +0800
-From: "Tian, Kevin" <kevin.tian@intel.com>
-To: "Liu, Yi L" <yi.l.liu@intel.com>, "alex.williamson@redhat.com"
- <alex.williamson@redhat.com>, "eric.auger@redhat.com" <eric.auger@redhat.com>
-Subject: RE: [PATCH v1 8/8] vfio/type1: Add vSVA support for IOMMU-backed mdevs
-Thread-Topic: [PATCH v1 8/8] vfio/type1: Add vSVA support for IOMMU-backed
- mdevs
-Thread-Index: AQHWAEUdPG4ZbiseEk+Utih92ryiRqhhJVeg
-Date: Mon, 30 Mar 2020 13:18:52 +0000
-Message-ID: <AADFC41AFE54684AB9EE6CBC0274A5D19D7FFA90@SHSMSX104.ccr.corp.intel.com>
-References: <1584880325-10561-1-git-send-email-yi.l.liu@intel.com>
- <1584880325-10561-9-git-send-email-yi.l.liu@intel.com>
-In-Reply-To: <1584880325-10561-9-git-send-email-yi.l.liu@intel.com>
-Accept-Language: en-US
-Content-Language: en-US
-X-MS-Has-Attach: 
-X-MS-TNEF-Correlator: 
-dlp-product: dlpe-windows
-dlp-version: 11.2.0.6
-dlp-reaction: no-action
-x-originating-ip: [10.239.127.40]
+Received: from foss.arm.com (foss.arm.com [217.140.110.172])
+ by whitealder.osuosl.org (Postfix) with ESMTP id 686E6865D0
+ for <iommu@lists.linux-foundation.org>; Mon, 30 Mar 2020 13:24:24 +0000 (UTC)
+Received: from usa-sjc-imap-foss1.foss.arm.com (unknown [10.121.207.14])
+ by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id C089D30E;
+ Mon, 30 Mar 2020 06:24:23 -0700 (PDT)
+Received: from lakrids.cambridge.arm.com (usa-sjc-imap-foss1.foss.arm.com
+ [10.121.207.14])
+ by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPSA id C30CF3F71E;
+ Mon, 30 Mar 2020 06:24:21 -0700 (PDT)
+Date: Mon, 30 Mar 2020 14:24:16 +0100
+From: Mark Rutland <mark.rutland@arm.com>
+To: Alexander Graf <graf@amazon.com>
+Subject: Re: [PATCH] swiotlb: Allow swiotlb to live at pre-defined address
+Message-ID: <20200330132416.GA20969@lakrids.cambridge.arm.com>
+References: <20200326162922.27085-1-graf@amazon.com>
+ <20200326170516.GB6387@lst.de>
+ <cef4f2f5-3530-82f8-c0f5-ee0c2701ce6a@amazon.com>
 MIME-Version: 1.0
-Cc: "jean-philippe@linaro.org" <jean-philippe@linaro.org>, "Raj,
- Ashok" <ashok.raj@intel.com>, "kvm@vger.kernel.org" <kvm@vger.kernel.org>,
- "Tian, Jun J" <jun.j.tian@intel.com>,
- "iommu@lists.linux-foundation.org" <iommu@lists.linux-foundation.org>,
- "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>, "Sun,
- Yi Y" <yi.y.sun@intel.com>, "Wu, Hao" <hao.wu@intel.com>
+Content-Disposition: inline
+In-Reply-To: <cef4f2f5-3530-82f8-c0f5-ee0c2701ce6a@amazon.com>
+User-Agent: Mutt/1.11.1+11 (2f07cb52) (2018-12-01)
+Cc: benh@amazon.com, Konrad Rzeszutek Wilk <konrad.wilk@oracle.com>,
+ Jan Kiszka <jan.kiszka@siemens.com>, x86@kernel.org, linux-doc@vger.kernel.org,
+ linux-kernel@vger.kernel.org, aggh@amazon.com, alcioa@amazon.com,
+ iommu@lists.linux-foundation.org, aagch@amazon.com, dhr@amazon.com,
+ dwmw@amazon.com, Robin Murphy <robin.murphy@arm.com>,
+ Christoph Hellwig <hch@lst.de>
 X-BeenThere: iommu@lists.linux-foundation.org
 X-Mailman-Version: 2.1.15
 Precedence: list
@@ -107,142 +86,56 @@ Content-Transfer-Encoding: 7bit
 Errors-To: iommu-bounces@lists.linux-foundation.org
 Sender: "iommu" <iommu-bounces@lists.linux-foundation.org>
 
-> From: Liu, Yi L <yi.l.liu@intel.com>
-> Sent: Sunday, March 22, 2020 8:32 PM
+On Thu, Mar 26, 2020 at 06:11:31PM +0100, Alexander Graf wrote:
+> On 26.03.20 18:05, Christoph Hellwig wrote:
+> > 
+> > On Thu, Mar 26, 2020 at 05:29:22PM +0100, Alexander Graf wrote:
+> > > The swiotlb is a very convenient fallback mechanism for bounce buffering of
+> > > DMAable data. It is usually used for the compatibility case where devices
+> > > can only DMA to a "low region".
+> > > 
+> > > However, in some scenarios this "low region" may be bound even more
+> > > heavily. For example, there are embedded system where only an SRAM region
+> > > is shared between device and CPU. There are also heterogeneous computing
+> > > scenarios where only a subset of RAM is cache coherent between the
+> > > components of the system. There are partitioning hypervisors, where
+> > > a "control VM" that implements device emulation has limited view into a
+> > > partition's memory for DMA capabilities due to safety concerns.
+> > > 
+> > > This patch adds a command line driven mechanism to move all DMA memory into
+> > > a predefined shared memory region which may or may not be part of the
+> > > physical address layout of the Operating System.
+> > > 
+> > > Ideally, the typical path to set this configuration would be through Device
+> > > Tree or ACPI, but neither of the two mechanisms is standardized yet. Also,
+> > > in the x86 MicroVM use case, we have neither ACPI nor Device Tree, but
+> > > instead configure the system purely through kernel command line options.
+> > > 
+> > > I'm sure other people will find the functionality useful going forward
+> > > though and extend it to be triggered by DT/ACPI in the future.
+> > 
+> > I'm totally against hacking in a kernel parameter for this.  We'll need
+> > a proper documented DT or ACPI way.
 > 
-> From: Liu Yi L <yi.l.liu@intel.com>
-> 
-> Recent years, mediated device pass-through framework (e.g. vfio-mdev)
-> are used to achieve flexible device sharing across domains (e.g. VMs).
+> I'm with you on that sentiment, but in the environment I'm currently looking
+> at, we have neither DT nor ACPI: The kernel gets purely configured via
+> kernel command line. For other unenumerable artifacts on the system, such as
+> virtio-mmio platform devices, that works well enough and also basically
+> "hacks a kernel parameter" to specify the system layout.
 
-are->is
+On the arm64 front, you'd *have* to pass a DT to the kernel (as that's
+where we get the command line from), and we *only* discover memory
+from the DT or EFI memory map, so the arguments above aren't generally
+applicable. You can enumerate virtio-mmio devices from DT, also.
 
-> Also there are hardware assisted mediated pass-through solutions from
-> platform vendors. e.g. Intel VT-d scalable mode which supports Intel
-> Scalable I/O Virtualization technology. Such mdevs are called IOMMU-
-> backed mdevs as there are IOMMU enforced DMA isolation for such mdevs.
-> In kernel, IOMMU-backed mdevs are exposed to IOMMU layer by aux-
-> domain
-> concept, which means mdevs are protected by an iommu domain which is
-> aux-domain of its physical device. Details can be found in the KVM
+Device-specific constraints on memory should really be described in a
+per-device fashion in the FW tables so that the OS can decide how to
+handle them. Just becuase one device can only access memory in a
+specific 1MiB window doesn't mean all other should be forced to share
+the same constraint. I think that's what Christoph was alluding to.
 
-"by an iommu domain which is auxiliary to the domain that the kernel
-driver primarily uses for DMA API"
-
-> presentation from Kevin Tian. IOMMU-backed equals to IOMMU-capable.
-> 
-> https://events19.linuxfoundation.org/wp-content/uploads/2017/12/\
-> Hardware-Assisted-Mediated-Pass-Through-with-VFIO-Kevin-Tian-Intel.pdf
-> 
-> This patch supports NESTING IOMMU for IOMMU-backed mdevs by figuring
-> out the physical device of an IOMMU-backed mdev and then invoking
-> IOMMU
-> requests to IOMMU layer with the physical device and the mdev's aux
-> domain info.
-
-"and then calling into the IOMMU layer to complete the vSVA operations
-on the aux domain associated with that mdev"
-
-> 
-> With this patch, vSVA (Virtual Shared Virtual Addressing) can be used
-> on IOMMU-backed mdevs.
-> 
-> Cc: Kevin Tian <kevin.tian@intel.com>
-> CC: Jacob Pan <jacob.jun.pan@linux.intel.com>
-> CC: Jun Tian <jun.j.tian@intel.com>
-> Cc: Alex Williamson <alex.williamson@redhat.com>
-> Cc: Eric Auger <eric.auger@redhat.com>
-> Cc: Jean-Philippe Brucker <jean-philippe@linaro.org>
-> Signed-off-by: Liu Yi L <yi.l.liu@intel.com>
-> ---
->  drivers/vfio/vfio_iommu_type1.c | 23 ++++++++++++++++++++---
->  1 file changed, 20 insertions(+), 3 deletions(-)
-> 
-> diff --git a/drivers/vfio/vfio_iommu_type1.c
-> b/drivers/vfio/vfio_iommu_type1.c
-> index 937ec3f..d473665 100644
-> --- a/drivers/vfio/vfio_iommu_type1.c
-> +++ b/drivers/vfio/vfio_iommu_type1.c
-> @@ -132,6 +132,7 @@ struct vfio_regions {
-> 
->  struct domain_capsule {
->  	struct iommu_domain *domain;
-> +	struct vfio_group *group;
->  	void *data;
->  };
-> 
-> @@ -148,6 +149,7 @@ static int vfio_iommu_for_each_dev(struct
-> vfio_iommu *iommu,
->  	list_for_each_entry(d, &iommu->domain_list, next) {
->  		dc.domain = d->domain;
->  		list_for_each_entry(g, &d->group_list, next) {
-> +			dc.group = g;
->  			ret = iommu_group_for_each_dev(g->iommu_group,
->  						       &dc, fn);
->  			if (ret)
-> @@ -2347,7 +2349,12 @@ static int vfio_bind_gpasid_fn(struct device *dev,
-> void *data)
->  	struct iommu_gpasid_bind_data *gbind_data =
->  		(struct iommu_gpasid_bind_data *) dc->data;
-> 
-> -	return iommu_sva_bind_gpasid(dc->domain, dev, gbind_data);
-> +	if (dc->group->mdev_group)
-> +		return iommu_sva_bind_gpasid(dc->domain,
-> +			vfio_mdev_get_iommu_device(dev), gbind_data);
-> +	else
-> +		return iommu_sva_bind_gpasid(dc->domain,
-> +						dev, gbind_data);
->  }
-> 
->  static int vfio_unbind_gpasid_fn(struct device *dev, void *data)
-> @@ -2356,8 +2363,13 @@ static int vfio_unbind_gpasid_fn(struct device
-> *dev, void *data)
->  	struct iommu_gpasid_bind_data *gbind_data =
->  		(struct iommu_gpasid_bind_data *) dc->data;
-> 
-> -	return iommu_sva_unbind_gpasid(dc->domain, dev,
-> +	if (dc->group->mdev_group)
-> +		return iommu_sva_unbind_gpasid(dc->domain,
-> +					vfio_mdev_get_iommu_device(dev),
->  					gbind_data->hpasid);
-> +	else
-> +		return iommu_sva_unbind_gpasid(dc->domain, dev,
-> +						gbind_data->hpasid);
->  }
-> 
->  /**
-> @@ -2429,7 +2441,12 @@ static int vfio_cache_inv_fn(struct device *dev,
-> void *data)
->  	struct iommu_cache_invalidate_info *cache_inv_info =
->  		(struct iommu_cache_invalidate_info *) dc->data;
-> 
-> -	return iommu_cache_invalidate(dc->domain, dev, cache_inv_info);
-> +	if (dc->group->mdev_group)
-> +		return iommu_cache_invalidate(dc->domain,
-> +			vfio_mdev_get_iommu_device(dev), cache_inv_info);
-> +	else
-> +		return iommu_cache_invalidate(dc->domain,
-> +						dev, cache_inv_info);
->  }
-
-possibly above could be simplified, e.g. 
-
-static struct device *vfio_get_iommu_device(struct vfio_group *group, 
-	struct device *dev)
-{
-	if  (group->mdev_group)
-		return vfio_mdev_get_iommu_device(dev);
-	else
-		return dev;
-}
-
-Then use it to replace plain 'dev' in all three places.
-
-> 
->  static long vfio_iommu_type1_ioctl(void *iommu_data,
-> --
-> 2.7.4
-
+Thanks,
+Mark.
 _______________________________________________
 iommu mailing list
 iommu@lists.linux-foundation.org
