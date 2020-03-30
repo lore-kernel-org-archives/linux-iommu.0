@@ -6,57 +6,57 @@ X-Spam-Status: No, score=-9.8 required=3.0 tests=HEADER_FROM_DIFFERENT_DOMAINS,
 	INCLUDES_PATCH,MAILING_LIST_MULTI,SIGNED_OFF_BY,SPF_HELO_NONE,SPF_PASS,
 	USER_AGENT_GIT autolearn=ham autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id EE1D0C2BA14
-	for <iommu@archiver.kernel.org>; Mon, 30 Mar 2020 20:38:07 +0000 (UTC)
-Received: from fraxinus.osuosl.org (smtp4.osuosl.org [140.211.166.137])
+	by smtp.lore.kernel.org (Postfix) with ESMTP id C514BC2D0F3
+	for <iommu@archiver.kernel.org>; Mon, 30 Mar 2020 20:38:10 +0000 (UTC)
+Received: from whitealder.osuosl.org (smtp1.osuosl.org [140.211.166.138])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by mail.kernel.org (Postfix) with ESMTPS id D019B207FF
-	for <iommu@archiver.kernel.org>; Mon, 30 Mar 2020 20:38:07 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org D019B207FF
+	by mail.kernel.org (Postfix) with ESMTPS id A5D46216FD
+	for <iommu@archiver.kernel.org>; Mon, 30 Mar 2020 20:38:10 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org A5D46216FD
 Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=intel.com
 Authentication-Results: mail.kernel.org; spf=pass smtp.mailfrom=iommu-bounces@lists.linux-foundation.org
 Received: from localhost (localhost [127.0.0.1])
-	by fraxinus.osuosl.org (Postfix) with ESMTP id B0A6A86A3C;
-	Mon, 30 Mar 2020 20:38:07 +0000 (UTC)
+	by whitealder.osuosl.org (Postfix) with ESMTP id 7AE1087C8A;
+	Mon, 30 Mar 2020 20:38:10 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from fraxinus.osuosl.org ([127.0.0.1])
+Received: from whitealder.osuosl.org ([127.0.0.1])
 	by localhost (.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
-	with ESMTP id aahxfMwoeREU; Mon, 30 Mar 2020 20:38:06 +0000 (UTC)
+	with ESMTP id xMm29hbp1DJ8; Mon, 30 Mar 2020 20:38:09 +0000 (UTC)
 Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [140.211.9.56])
-	by fraxinus.osuosl.org (Postfix) with ESMTP id 5B54D86A79;
-	Mon, 30 Mar 2020 20:38:05 +0000 (UTC)
+	by whitealder.osuosl.org (Postfix) with ESMTP id CD90F87CB4;
+	Mon, 30 Mar 2020 20:38:09 +0000 (UTC)
 Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
-	by lists.linuxfoundation.org (Postfix) with ESMTP id 479BBC07FF;
-	Mon, 30 Mar 2020 20:38:05 +0000 (UTC)
+	by lists.linuxfoundation.org (Postfix) with ESMTP id BC6E7C1D7E;
+	Mon, 30 Mar 2020 20:38:09 +0000 (UTC)
 Received: from silver.osuosl.org (smtp3.osuosl.org [140.211.166.136])
- by lists.linuxfoundation.org (Postfix) with ESMTP id 21661C07FF
+ by lists.linuxfoundation.org (Postfix) with ESMTP id F25F0C1D7E
  for <iommu@lists.linux-foundation.org>; Mon, 30 Mar 2020 20:38:04 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
- by silver.osuosl.org (Postfix) with ESMTP id 119ED22B7A
+ by silver.osuosl.org (Postfix) with ESMTP id DC13722E96
  for <iommu@lists.linux-foundation.org>; Mon, 30 Mar 2020 20:38:04 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
 Received: from silver.osuosl.org ([127.0.0.1])
  by localhost (.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
- with ESMTP id Jc+DZPVlCIKw for <iommu@lists.linux-foundation.org>;
- Mon, 30 Mar 2020 20:38:02 +0000 (UTC)
+ with ESMTP id HL9VbTY9vAUC for <iommu@lists.linux-foundation.org>;
+ Mon, 30 Mar 2020 20:38:04 +0000 (UTC)
 X-Greylist: domain auto-whitelisted by SQLgrey-1.7.6
 Received: from mga05.intel.com (mga05.intel.com [192.55.52.43])
- by silver.osuosl.org (Postfix) with ESMTPS id 8316520416
- for <iommu@lists.linux-foundation.org>; Mon, 30 Mar 2020 20:38:02 +0000 (UTC)
-IronPort-SDR: NFaLLvEqRpJLy4YjfdJOXH4uRMGcJPxc8pKZqsqivQvaQNPtOoHpAI2UmAvgZZAgVCXW54t4fg
- VFpoX9FTv78g==
+ by silver.osuosl.org (Postfix) with ESMTPS id 3F9F622851
+ for <iommu@lists.linux-foundation.org>; Mon, 30 Mar 2020 20:38:04 +0000 (UTC)
+IronPort-SDR: 70rI+twmkz4wT0hZJg0auIouZPakGog63jd+HwsJvDQsQkFJb8sRm1Wv+R8WjFweGH+neSKPec
+ VKmnckCq6niQ==
 X-Amp-Result: SKIPPED(no attachment in message)
 X-Amp-File-Uploaded: False
 Received: from orsmga008.jf.intel.com ([10.7.209.65])
  by fmsmga105.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384;
- 30 Mar 2020 13:38:02 -0700
-IronPort-SDR: lOeLI3VDsd31E+phTpBFTRG7fAoB5GKJIqAAfyFLNnyhxWlVvej5OTnHeQOzJ1f2DW51fhegCz
- Eo61jjwUaRig==
+ 30 Mar 2020 13:38:04 -0700
+IronPort-SDR: CSSoTcScmVyPfUPOOfY3YTLN4JfQ2LiwNlB2QAn9UO0ffbWgKcWZRt0i4Q2gqsAMKLfRElPSQA
+ soFSCKE/xZRQ==
 X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.72,325,1580803200"; d="scan'208";a="242143884"
+X-IronPort-AV: E=Sophos;i="5.72,325,1580803200"; d="scan'208";a="242143905"
 Received: from romley-ivt3.sc.intel.com ([172.25.110.60])
- by orsmga008.jf.intel.com with ESMTP; 30 Mar 2020 13:38:01 -0700
+ by orsmga008.jf.intel.com with ESMTP; 30 Mar 2020 13:38:03 -0700
 From: Fenghua Yu <fenghua.yu@intel.com>
 To: "Thomas Gleixner" <tglx@linutronix.de>, "Ingo Molnar" <mingo@redhat.com>,
  "Borislav Petkov" <bp@alien8.de>, "H Peter Anvin" <hpa@zytor.com>,
@@ -67,9 +67,10 @@ To: "Thomas Gleixner" <tglx@linutronix.de>, "Ingo Molnar" <mingo@redhat.com>,
  "Jacob Jun Pan" <jacob.jun.pan@intel.com>,
  "Dave Jiang" <dave.jiang@intel.com>, "Sohil Mehta" <sohil.mehta@intel.com>,
  "Ravi V Shankar" <ravi.v.shankar@intel.com>
-Subject: [PATCH 5/7] x86/mmu: Allocate/free PASID
-Date: Mon, 30 Mar 2020 12:33:06 -0700
-Message-Id: <1585596788-193989-6-git-send-email-fenghua.yu@intel.com>
+Subject: [PATCH 7/7] x86/process: Clear PASID state for a newly forked/cloned
+ thread
+Date: Mon, 30 Mar 2020 12:33:08 -0700
+Message-Id: <1585596788-193989-8-git-send-email-fenghua.yu@intel.com>
 X-Mailer: git-send-email 2.5.0
 In-Reply-To: <1585596788-193989-1-git-send-email-fenghua.yu@intel.com>
 References: <1585596788-193989-1-git-send-email-fenghua.yu@intel.com>
@@ -93,228 +94,55 @@ Content-Transfer-Encoding: 7bit
 Errors-To: iommu-bounces@lists.linux-foundation.org
 Sender: "iommu" <iommu-bounces@lists.linux-foundation.org>
 
-PASID is shared by all threads in a process. So the logical place to keep
-track of it is in the "mm". Add the field to the architecture specific
-mm_context_t structure.
+The PASID state has to be cleared on forks, since the child has a
+different address space. The PASID is also cleared for thread clone. While
+it would be correct to inherit the PASID in this case, it is unknown
+whether the new task will use ENQCMD. Giving it the PASID "just in case"
+would have the downside of increased context switch overhead to setting
+the PASID MSR.
 
-A PASID is allocated for an "mm" the first time any thread attaches
-to an SVM capable device. Later device atatches (whether to the same
-device or another SVM device) will re-use the same PASID.
+Since #GP faults have to be handled on any threads that were created before
+the PASID was assigned to the mm of the process, newly created threads
+might as well be treated in a consistent way.
 
-The PASID is freed when the process exits (so no need to keep
-reference counts on how many SVM devices are sharing the PASID).
-
+Suggested-by: Thomas Gleixner <tglx@linutronix.de>
 Signed-off-by: Fenghua Yu <fenghua.yu@intel.com>
 Reviewed-by: Tony Luck <tony.luck@intel.com>
 ---
- arch/x86/include/asm/iommu.h       |  2 +
- arch/x86/include/asm/mmu.h         |  4 ++
- arch/x86/include/asm/mmu_context.h | 14 +++++
- drivers/iommu/intel-svm.c          | 82 +++++++++++++++++++++++++++---
- 4 files changed, 94 insertions(+), 8 deletions(-)
+ arch/x86/kernel/process.c | 13 +++++++++++++
+ 1 file changed, 13 insertions(+)
 
-diff --git a/arch/x86/include/asm/iommu.h b/arch/x86/include/asm/iommu.h
-index bf1ed2ddc74b..ed41259fe7ac 100644
---- a/arch/x86/include/asm/iommu.h
-+++ b/arch/x86/include/asm/iommu.h
-@@ -26,4 +26,6 @@ arch_rmrr_sanity_check(struct acpi_dmar_reserved_memory *rmrr)
- 	return -EINVAL;
+diff --git a/arch/x86/kernel/process.c b/arch/x86/kernel/process.c
+index 87de18c64cf5..cefdc8f7fc13 100644
+--- a/arch/x86/kernel/process.c
++++ b/arch/x86/kernel/process.c
+@@ -122,6 +122,16 @@ static int set_new_tls(struct task_struct *p, unsigned long tls)
+ 		return do_set_thread_area_64(p, ARCH_SET_FS, tls);
  }
  
-+void __free_pasid(struct mm_struct *mm);
++/* Clear PASID MSR/state for the forked/cloned thread. */
++static void clear_task_pasid(struct task_struct *task)
++{
++	/*
++	 * Clear the xfeatures bit in the PASID state so that the MSR will be
++	 * initialized to its init state (0) by XRSTORS.
++	 */
++	task->thread.fpu.state.xsave.header.xfeatures &= ~XFEATURE_MASK_PASID;
++}
 +
- #endif /* _ASM_X86_IOMMU_H */
-diff --git a/arch/x86/include/asm/mmu.h b/arch/x86/include/asm/mmu.h
-index bdeae9291e5c..137bf51f19e6 100644
---- a/arch/x86/include/asm/mmu.h
-+++ b/arch/x86/include/asm/mmu.h
-@@ -50,6 +50,10 @@ typedef struct {
- 	u16 pkey_allocation_map;
- 	s16 execute_only_pkey;
+ int copy_thread_tls(unsigned long clone_flags, unsigned long sp,
+ 		    unsigned long arg, struct task_struct *p, unsigned long tls)
+ {
+@@ -175,6 +185,9 @@ int copy_thread_tls(unsigned long clone_flags, unsigned long sp,
+ 	task_user_gs(p) = get_user_gs(current_pt_regs());
  #endif
-+
-+#ifdef CONFIG_INTEL_IOMMU_SVM
-+	int pasid;
-+#endif
- } mm_context_t;
  
- #define INIT_MM_CONTEXT(mm)						\
-diff --git a/arch/x86/include/asm/mmu_context.h b/arch/x86/include/asm/mmu_context.h
-index b538d9ddee9c..1c020c7955e6 100644
---- a/arch/x86/include/asm/mmu_context.h
-+++ b/arch/x86/include/asm/mmu_context.h
-@@ -13,6 +13,7 @@
- #include <asm/tlbflush.h>
- #include <asm/paravirt.h>
- #include <asm/debugreg.h>
-+#include <asm/iommu.h>
- 
- extern atomic64_t last_mm_ctx_id;
- 
-@@ -129,9 +130,22 @@ static inline int init_new_context(struct task_struct *tsk,
- 	init_new_context_ldt(mm);
- 	return 0;
- }
++	if (static_cpu_has(X86_FEATURE_ENQCMD))
++		clear_task_pasid(p);
 +
-+static inline void free_pasid(struct mm_struct *mm)
-+{
-+	if (!IS_ENABLED(CONFIG_INTEL_IOMMU_SVM))
-+		return;
-+
-+	if (!cpu_feature_enabled(X86_FEATURE_ENQCMD))
-+		return;
-+
-+	__free_pasid(mm);
-+}
-+
- static inline void destroy_context(struct mm_struct *mm)
- {
- 	destroy_context_ldt(mm);
-+	free_pasid(mm);
- }
- 
- extern void switch_mm(struct mm_struct *prev, struct mm_struct *next,
-diff --git a/drivers/iommu/intel-svm.c b/drivers/iommu/intel-svm.c
-index d7f2a5358900..da718a49e91e 100644
---- a/drivers/iommu/intel-svm.c
-+++ b/drivers/iommu/intel-svm.c
-@@ -226,6 +226,45 @@ static LIST_HEAD(global_svm_list);
- 	list_for_each_entry((sdev), &(svm)->devs, list)	\
- 		if ((d) != (sdev)->dev) {} else
- 
-+/*
-+ * If this mm already has a PASID we can use it. Otherwise allocate a new one.
-+ * Let the caller know if we did an allocation via 'new_pasid'.
-+ */
-+static int alloc_pasid(struct intel_svm *svm, struct mm_struct *mm,
-+		       int pasid_max,  bool *new_pasid, int flags)
-+{
-+	int pasid;
-+
-+	/*
-+	 * Reuse the PASID if the mm already has a PASID and not a private
-+	 * PASID is requested.
-+	 */
-+	if (mm && mm->context.pasid && !(flags & SVM_FLAG_PRIVATE_PASID)) {
-+		/*
-+		 * Once a PASID is allocated for this mm, the PASID
-+		 * stays with the mm until the mm is dropped. Reuse
-+		 * the PASID which has been already allocated for the
-+		 * mm instead of allocating a new one.
-+		 */
-+		ioasid_set_data(mm->context.pasid, svm);
-+		*new_pasid = false;
-+
-+		return mm->context.pasid;
-+	}
-+
-+	/*
-+	 * Allocate a new pasid. Do not use PASID 0, reserved for RID to
-+	 * PASID.
-+	 */
-+	pasid = ioasid_alloc(NULL, PASID_MIN, pasid_max - 1, svm);
-+	if (pasid == INVALID_IOASID)
-+		return -ENOSPC;
-+
-+	*new_pasid = true;
-+
-+	return pasid;
-+}
-+
- int intel_svm_bind_mm(struct device *dev, int *pasid, int flags, struct svm_dev_ops *ops)
- {
- 	struct intel_iommu *iommu = intel_svm_device_to_iommu(dev);
-@@ -324,6 +363,8 @@ int intel_svm_bind_mm(struct device *dev, int *pasid, int flags, struct svm_dev_
- 	init_rcu_head(&sdev->rcu);
- 
- 	if (!svm) {
-+		bool new_pasid;
-+
- 		svm = kzalloc(sizeof(*svm), GFP_KERNEL);
- 		if (!svm) {
- 			ret = -ENOMEM;
-@@ -335,15 +376,13 @@ int intel_svm_bind_mm(struct device *dev, int *pasid, int flags, struct svm_dev_
- 		if (pasid_max > intel_pasid_max_id)
- 			pasid_max = intel_pasid_max_id;
- 
--		/* Do not use PASID 0, reserved for RID to PASID */
--		svm->pasid = ioasid_alloc(NULL, PASID_MIN,
--					  pasid_max - 1, svm);
--		if (svm->pasid == INVALID_IOASID) {
-+		svm->pasid = alloc_pasid(svm, mm, pasid_max, &new_pasid, flags);
-+		if (svm->pasid < 0) {
- 			kfree(svm);
- 			kfree(sdev);
--			ret = -ENOSPC;
- 			goto out;
- 		}
-+
- 		svm->notifier.ops = &intel_mmuops;
- 		svm->mm = mm;
- 		svm->flags = flags;
-@@ -353,7 +392,8 @@ int intel_svm_bind_mm(struct device *dev, int *pasid, int flags, struct svm_dev_
- 		if (mm) {
- 			ret = mmu_notifier_register(&svm->notifier, mm);
- 			if (ret) {
--				ioasid_free(svm->pasid);
-+				if (new_pasid)
-+					ioasid_free(svm->pasid);
- 				kfree(svm);
- 				kfree(sdev);
- 				goto out;
-@@ -371,12 +411,21 @@ int intel_svm_bind_mm(struct device *dev, int *pasid, int flags, struct svm_dev_
- 		if (ret) {
- 			if (mm)
- 				mmu_notifier_unregister(&svm->notifier, mm);
--			ioasid_free(svm->pasid);
-+			if (new_pasid)
-+				ioasid_free(svm->pasid);
- 			kfree(svm);
- 			kfree(sdev);
- 			goto out;
- 		}
- 
-+		if (mm && new_pasid && !(flags & SVM_FLAG_PRIVATE_PASID)) {
-+			/*
-+			 * Track the new pasid in the mm. The pasid will be
-+			 * freed at process exit. Don't track requested
-+			 * private PASID in the mm.
-+			 */
-+			mm->context.pasid = svm->pasid;
-+		}
- 		list_add_tail(&svm->list, &global_svm_list);
- 	} else {
- 		/*
-@@ -447,7 +496,8 @@ int intel_svm_unbind_mm(struct device *dev, int pasid)
- 			kfree_rcu(sdev, rcu);
- 
- 			if (list_empty(&svm->devs)) {
--				ioasid_free(svm->pasid);
-+				/* Clear data in the pasid. */
-+				ioasid_set_data(pasid, NULL);
- 				if (svm->mm)
- 					mmu_notifier_unregister(&svm->notifier, svm->mm);
- 				list_del(&svm->list);
-@@ -693,3 +743,19 @@ static irqreturn_t prq_event_thread(int irq, void *d)
- 
- 	return IRQ_RETVAL(handled);
- }
-+
-+/* On process exit free the PASID (if one was allocated). */
-+void __free_pasid(struct mm_struct *mm)
-+{
-+	int pasid = mm->context.pasid;
-+
-+	if (!pasid)
-+		return;
-+
-+	/*
-+	 * Since the pasid is not bound to any svm by now, there is no race
-+	 * here with binding/unbinding and no need to protect the free
-+	 * operation by pasid_mutex.
-+	 */
-+	ioasid_free(pasid);
-+}
+ 	/* Set a new TLS for the child thread? */
+ 	if (clone_flags & CLONE_SETTLS)
+ 		ret = set_new_tls(p, tls);
 -- 
 2.19.1
 
