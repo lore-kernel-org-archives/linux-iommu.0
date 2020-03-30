@@ -2,97 +2,84 @@ Return-Path: <SRS0=/IpK=5P=lists.linux-foundation.org=iommu-bounces@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-6.8 required=3.0 tests=HEADER_FROM_DIFFERENT_DOMAINS,
-	INCLUDES_PATCH,MAILING_LIST_MULTI,SIGNED_OFF_BY,SPF_HELO_NONE,SPF_PASS
-	autolearn=unavailable autolearn_force=no version=3.4.0
+X-Spam-Status: No, score=-2.2 required=3.0 tests=HEADER_FROM_DIFFERENT_DOMAINS,
+	MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS,USER_AGENT_SANE_2 autolearn=no
+	autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id ADAE0C2D0EE
-	for <iommu@archiver.kernel.org>; Mon, 30 Mar 2020 14:37:01 +0000 (UTC)
-Received: from whitealder.osuosl.org (smtp1.osuosl.org [140.211.166.138])
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 37102C43331
+	for <iommu@archiver.kernel.org>; Mon, 30 Mar 2020 16:02:07 +0000 (UTC)
+Received: from fraxinus.osuosl.org (smtp4.osuosl.org [140.211.166.137])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by mail.kernel.org (Postfix) with ESMTPS id 7B74E206DB
-	for <iommu@archiver.kernel.org>; Mon, 30 Mar 2020 14:37:01 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 7B74E206DB
-Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=intel.com
+	by mail.kernel.org (Postfix) with ESMTPS id F228B2072E
+	for <iommu@archiver.kernel.org>; Mon, 30 Mar 2020 16:02:06 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org F228B2072E
+Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=linux.intel.com
 Authentication-Results: mail.kernel.org; spf=pass smtp.mailfrom=iommu-bounces@lists.linux-foundation.org
 Received: from localhost (localhost [127.0.0.1])
-	by whitealder.osuosl.org (Postfix) with ESMTP id 4E840878EA;
-	Mon, 30 Mar 2020 14:37:01 +0000 (UTC)
+	by fraxinus.osuosl.org (Postfix) with ESMTP id BB143865A5;
+	Mon, 30 Mar 2020 16:02:06 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from whitealder.osuosl.org ([127.0.0.1])
+Received: from fraxinus.osuosl.org ([127.0.0.1])
 	by localhost (.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
-	with ESMTP id EvXzsLlIJx+p; Mon, 30 Mar 2020 14:36:59 +0000 (UTC)
+	with ESMTP id v0EdQp5qbIMn; Mon, 30 Mar 2020 16:02:06 +0000 (UTC)
 Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [140.211.9.56])
-	by whitealder.osuosl.org (Postfix) with ESMTP id B7FEF878E6;
-	Mon, 30 Mar 2020 14:36:59 +0000 (UTC)
+	by fraxinus.osuosl.org (Postfix) with ESMTP id 13C9586881;
+	Mon, 30 Mar 2020 16:02:06 +0000 (UTC)
 Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
-	by lists.linuxfoundation.org (Postfix) with ESMTP id 9E842C1D7E;
-	Mon, 30 Mar 2020 14:36:59 +0000 (UTC)
-Received: from whitealder.osuosl.org (smtp1.osuosl.org [140.211.166.138])
- by lists.linuxfoundation.org (Postfix) with ESMTP id 43983C07FF
- for <iommu@lists.linux-foundation.org>; Mon, 30 Mar 2020 14:36:58 +0000 (UTC)
+	by lists.linuxfoundation.org (Postfix) with ESMTP id EFAE7C1AE8;
+	Mon, 30 Mar 2020 16:02:05 +0000 (UTC)
+Received: from silver.osuosl.org (smtp3.osuosl.org [140.211.166.136])
+ by lists.linuxfoundation.org (Postfix) with ESMTP id C2592C07FF
+ for <iommu@lists.linux-foundation.org>; Mon, 30 Mar 2020 16:02:04 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
- by whitealder.osuosl.org (Postfix) with ESMTP id 2DBAA878EA
- for <iommu@lists.linux-foundation.org>; Mon, 30 Mar 2020 14:36:58 +0000 (UTC)
+ by silver.osuosl.org (Postfix) with ESMTP id A931A2049A
+ for <iommu@lists.linux-foundation.org>; Mon, 30 Mar 2020 16:02:04 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from whitealder.osuosl.org ([127.0.0.1])
+Received: from silver.osuosl.org ([127.0.0.1])
  by localhost (.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
- with ESMTP id jR6Up1UNhDwO for <iommu@lists.linux-foundation.org>;
- Mon, 30 Mar 2020 14:36:56 +0000 (UTC)
+ with ESMTP id RfhC181PDaya for <iommu@lists.linux-foundation.org>;
+ Mon, 30 Mar 2020 16:02:03 +0000 (UTC)
 X-Greylist: domain auto-whitelisted by SQLgrey-1.7.6
-Received: from mga14.intel.com (mga14.intel.com [192.55.52.115])
- by whitealder.osuosl.org (Postfix) with ESMTPS id 64300878E6
- for <iommu@lists.linux-foundation.org>; Mon, 30 Mar 2020 14:36:56 +0000 (UTC)
-IronPort-SDR: WIUfQDaitU9mQTH65aW53QQ6imlp4yTdgmI53Gj9fN2fL610cP24GT+NPm3eQzTAqgPUQQOrSZ
- q9YbKQUBv8+Q==
+Received: from mga07.intel.com (mga07.intel.com [134.134.136.100])
+ by silver.osuosl.org (Postfix) with ESMTPS id 6C71C20027
+ for <iommu@lists.linux-foundation.org>; Mon, 30 Mar 2020 16:02:03 +0000 (UTC)
+IronPort-SDR: PlrAV6CgIQuKmElTOq5/rYA/q4M8YXqEqtUFU6HhxBCM8d081g6KlNzakYvHP5y/PuDdHyJYkY
+ bp0jE7DBTQ8A==
 X-Amp-Result: SKIPPED(no attachment in message)
 X-Amp-File-Uploaded: False
-Received: from fmsmga001.fm.intel.com ([10.253.24.23])
- by fmsmga103.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384;
- 30 Mar 2020 07:36:55 -0700
-IronPort-SDR: u2qIVe+nPs8TMM3scG15QLF/AIiMDwVvgksfCEVGQqFZvA1MSI9ZpxF2KdovitvXGRLSgf5O//
- F74GCzlyI9IA==
+Received: from orsmga005.jf.intel.com ([10.7.209.41])
+ by orsmga105.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384;
+ 30 Mar 2020 09:01:59 -0700
+IronPort-SDR: Iau7ZpXWb62eiptV3lla/8YfmL6EwRsjJ7yHpysCOjjkyrTCUc9IOrfo9HZTMmp3d1y2TuDMx6
+ d3a3GBNT+pUA==
 X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.72,324,1580803200"; d="scan'208";a="359191320"
-Received: from fmsmsx105.amr.corp.intel.com ([10.18.124.203])
- by fmsmga001.fm.intel.com with ESMTP; 30 Mar 2020 07:36:55 -0700
-Received: from fmsmsx155.amr.corp.intel.com (10.18.116.71) by
- FMSMSX105.amr.corp.intel.com (10.18.124.203) with Microsoft SMTP Server (TLS)
- id 14.3.439.0; Mon, 30 Mar 2020 07:36:55 -0700
-Received: from shsmsx105.ccr.corp.intel.com (10.239.4.158) by
- FMSMSX155.amr.corp.intel.com (10.18.116.71) with Microsoft SMTP Server (TLS)
- id 14.3.439.0; Mon, 30 Mar 2020 07:36:55 -0700
-Received: from shsmsx104.ccr.corp.intel.com ([169.254.5.225]) by
- SHSMSX105.ccr.corp.intel.com ([169.254.11.213]) with mapi id 14.03.0439.000;
- Mon, 30 Mar 2020 22:36:51 +0800
-From: "Liu, Yi L" <yi.l.liu@intel.com>
-To: "Tian, Kevin" <kevin.tian@intel.com>, "alex.williamson@redhat.com"
- <alex.williamson@redhat.com>, "eric.auger@redhat.com" <eric.auger@redhat.com>
-Subject: RE: [PATCH v1 1/8] vfio: Add VFIO_IOMMU_PASID_REQUEST(alloc/free)
-Thread-Topic: [PATCH v1 1/8] vfio: Add VFIO_IOMMU_PASID_REQUEST(alloc/free)
-Thread-Index: AQHWAEUbC4GB74LMekup8jIcF6WIFqhgVMYAgACL5QA=
-Date: Mon, 30 Mar 2020 14:36:51 +0000
-Message-ID: <A2975661238FB949B60364EF0F2C25743A2184AE@SHSMSX104.ccr.corp.intel.com>
-References: <1584880325-10561-1-git-send-email-yi.l.liu@intel.com>
- <1584880325-10561-2-git-send-email-yi.l.liu@intel.com>
- <AADFC41AFE54684AB9EE6CBC0274A5D19D7FF378@SHSMSX104.ccr.corp.intel.com>
-In-Reply-To: <AADFC41AFE54684AB9EE6CBC0274A5D19D7FF378@SHSMSX104.ccr.corp.intel.com>
-Accept-Language: en-US
-Content-Language: en-US
-X-MS-Has-Attach: 
-X-MS-TNEF-Correlator: 
-dlp-product: dlpe-windows
-dlp-version: 11.2.0.6
-dlp-reaction: no-action
-x-originating-ip: [10.239.127.40]
+X-IronPort-AV: E=Sophos;i="5.72,324,1580803200"; d="scan'208";a="421972149"
+Received: from jacob-builder.jf.intel.com (HELO jacob-builder) ([10.7.199.155])
+ by orsmga005.jf.intel.com with ESMTP; 30 Mar 2020 09:01:59 -0700
+Date: Mon, 30 Mar 2020 09:07:46 -0700
+From: Jacob Pan <jacob.jun.pan@linux.intel.com>
+To: "Tian, Kevin" <kevin.tian@intel.com>
+Subject: Re: [PATCH v2 1/3] iommu/uapi: Define uapi version and capabilities
+Message-ID: <20200330090746.23c5599c@jacob-builder>
+In-Reply-To: <AADFC41AFE54684AB9EE6CBC0274A5D19D7FE150@SHSMSX104.ccr.corp.intel.com>
+References: <1585178227-17061-1-git-send-email-jacob.jun.pan@linux.intel.com>
+ <1585178227-17061-2-git-send-email-jacob.jun.pan@linux.intel.com>
+ <20200326092316.GA31648@infradead.org>
+ <20200326094442.5be042ce@jacob-builder>
+ <AADFC41AFE54684AB9EE6CBC0274A5D19D7ECB45@SHSMSX104.ccr.corp.intel.com>
+ <20200327074702.GA27959@infradead.org>
+ <20200327165335.397f24a3@jacob-builder>
+ <AADFC41AFE54684AB9EE6CBC0274A5D19D7FE150@SHSMSX104.ccr.corp.intel.com>
+Organization: OTC
+X-Mailer: Claws Mail 3.13.2 (GTK+ 2.24.30; x86_64-pc-linux-gnu)
 MIME-Version: 1.0
-Cc: "jean-philippe@linaro.org" <jean-philippe@linaro.org>, "Raj,
- Ashok" <ashok.raj@intel.com>, "kvm@vger.kernel.org" <kvm@vger.kernel.org>,
- "Tian, Jun J" <jun.j.tian@intel.com>,
+Cc: "Raj, Ashok" <ashok.raj@intel.com>,
+ Jean-Philippe Brucker <jean-philippe@linaro.com>,
+ LKML <linux-kernel@vger.kernel.org>,
  "iommu@lists.linux-foundation.org" <iommu@lists.linux-foundation.org>,
- "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>, "Sun,
- Yi Y" <yi.y.sun@intel.com>, "Wu, Hao" <hao.wu@intel.com>
+ Alex Williamson <alex.williamson@redhat.com>,
+ David Woodhouse <dwmw2@infradead.org>
 X-BeenThere: iommu@lists.linux-foundation.org
 X-Mailman-Version: 2.1.15
 Precedence: list
@@ -110,605 +97,99 @@ Content-Transfer-Encoding: 7bit
 Errors-To: iommu-bounces@lists.linux-foundation.org
 Sender: "iommu" <iommu-bounces@lists.linux-foundation.org>
 
-> From: Tian, Kevin <kevin.tian@intel.com>
-> Sent: Monday, March 30, 2020 4:32 PM
-> To: Liu, Yi L <yi.l.liu@intel.com>; alex.williamson@redhat.com;
-> Subject: RE: [PATCH v1 1/8] vfio: Add VFIO_IOMMU_PASID_REQUEST(alloc/free)
+On Mon, 30 Mar 2020 05:40:40 +0000
+"Tian, Kevin" <kevin.tian@intel.com> wrote:
+
+> > From: Jacob Pan <jacob.jun.pan@linux.intel.com>
+> > Sent: Saturday, March 28, 2020 7:54 AM
+> > 
+> > On Fri, 27 Mar 2020 00:47:02 -0700
+> > Christoph Hellwig <hch@infradead.org> wrote:
+> >   
+> > > On Fri, Mar 27, 2020 at 02:49:55AM +0000, Tian, Kevin wrote:  
+> > > > If those API calls are inter-dependent for composing a feature
+> > > > (e.g. SVA), shouldn't we need a way to check them together
+> > > > before exposing the feature to the guest, e.g. through a
+> > > > iommu_get_uapi_capabilities interface?  
+> > >
+> > > Yes, that makes sense.  The important bit is to have a capability
+> > > flags and not version numbers.  
+> > 
+> > The challenge is that there are two consumers in the kernel for
+> > this. 1. VFIO only look for compatibility, and size of each data
+> > struct such that it can copy_from_user.
+> > 
+> > 2. IOMMU driver, the "real consumer" of the content.
+> > 
+> > For 2, I agree and we do plan to use the capability flags to check
+> > content and maintain backward compatibility etc.
+> > 
+> > For VFIO, it is difficult to do size look up based on capability
+> > flags. 
 > 
-> > From: Liu, Yi L <yi.l.liu@intel.com>
-> > Sent: Sunday, March 22, 2020 8:32 PM
-> >
-> > From: Liu Yi L <yi.l.liu@intel.com>
-> >
-> > For a long time, devices have only one DMA address space from platform
-> > IOMMU's point of view. This is true for both bare metal and directed-
-> > access in virtualization environment. Reason is the source ID of DMA in
-> > PCIe are BDF (bus/dev/fnc ID), which results in only device granularity
+> Can you elaborate the difficulty in VFIO? if, as Christoph Hellwig
+> pointed out, version number is already avoided everywhere, it is 
+> interesting to know whether this work becomes a real exception
+> or just requires a different mindset.
 > 
-> are->is
+From VFIO p.o.v. the IOMMU UAPI data is opaque, it only needs to do two
+things:
+1. is the UAPI compatible?
+2. what is the size to copy?
 
-thanks.
+If you look at the version number, this is really a "version as size"
+lookup, as provided by the helper function in this patch. An example
+can be the newly introduced clone3 syscall.
+https://lwn.net/Articles/792628/
+In clone3, new version must have new size. The slight difference here
+is that, unlike clone3, we have multiple data structures instead of a
+single struct clone_args {}. And each struct has flags to enumerate its
+contents besides size.
 
-> > DMA isolation. However, this is changing with the latest advancement in
-> > I/O technology area. More and more platform vendors are utilizing the PCIe
-> > PASID TLP prefix in DMA requests, thus to give devices with multiple DMA
-> > address spaces as identified by their individual PASIDs. For example,
-> > Shared Virtual Addressing (SVA, a.k.a Shared Virtual Memory) is able to
-> > let device access multiple process virtual address space by binding the
+Besides breaching data abstraction, if VFIO has to check IOMMU flags to
+determine the sizes, it has many combinations.
+
+We also separate the responsibilities into two parts
+1. compatibility - version, size by VFIO
+2. sanity check - capability flags - by IOMMU
+
+I think the latter matches what Christoph's comments. So we are in
+agreement at the IOMMU level :)
+
+For example:
+During guest PASID bind, IOMMU driver operates on the data passed from
+VFIO and check format & flags to take different code path.
+
+#define IOMMU_PASID_FORMAT_INTEL_VTD	1
+	__u32 format;
+#define IOMMU_SVA_GPASID_VAL	(1 << 0) /* guest PASID valid */
+	__u64 flags;
+
+Jacob
+
+> btw the most relevant discussion which I can find out now is here:
+> 	https://lkml.org/lkml/2020/2/3/1126
 > 
-> "address space" -> "address spaces"
+> It mentioned 3 options for handling extension:
+> --
+> 1. Disallow adding new members to each structure other than reuse
+> padding bits or adding union members at the end.
+> 2. Allow extension of the structures beyond union, but union size has
+> to be fixed with reserved spaces
+> 3. Adopt VFIO argsz scheme, I don't think we need version for each
+> struct anymore. argsz implies the version that user is using assuming
+> UAPI data is extension only.
+> --
 > 
-> "binding the" -> "binding each"
-
-will correct both.
-
-> > virtual address space with a PASID. Wherein the PASID is allocated in
-> > software and programmed to device per device specific manner. Devices
-> > which support PASID capability are called PASID-capable devices. If such
-> > devices are passed through to VMs, guest software are also able to bind
-> > guest process virtual address space on such devices. Therefore, the guest
-> > software could reuse the bare metal software programming model, which
-> > means guest software will also allocate PASID and program it to device
-> > directly. This is a dangerous situation since it has potential PASID
-> > conflicts and unauthorized address space access. It would be safer to
-> > let host intercept in the guest software's PASID allocation. Thus PASID
-> > are managed system-wide.
-> >
-> > This patch adds VFIO_IOMMU_PASID_REQUEST ioctl which aims to
-> > passdown
-> > PASID allocation/free request from the virtual IOMMU. Additionally, such
+> the first two are both version-based. Looks most guys agreed with 
+> option-1 (in this v2), but Alex didn't give his opinion at the
+> moment. The last response from him was the raise of option-3 using
+> argsz to avoid version. So, we also need hear from him. Alex?
 > 
-> "Additionally, because such"
-> 
-> > requests are intended to be invoked by QEMU or other applications which
-> 
-> simplify to "intended to be invoked from userspace"
+> Thanks
+> Kevin
 
-got it.
-
-> > are running in userspace, it is necessary to have a mechanism to prevent
-> > single application from abusing available PASIDs in system. With such
-> > consideration, this patch tracks the VFIO PASID allocation per-VM. There
-> > was a discussion to make quota to be per assigned devices. e.g. if a VM
-> > has many assigned devices, then it should have more quota. However, it
-> > is not sure how many PASIDs an assigned devices will use. e.g. it is
-> 
-> devices -> device
-
-got it.
-
-> > possible that a VM with multiples assigned devices but requests less
-> > PASIDs. Therefore per-VM quota would be better.
-> >
-> > This patch uses struct mm pointer as a per-VM token. We also considered
-> > using task structure pointer and vfio_iommu structure pointer. However,
-> > task structure is per-thread, which means it cannot achieve per-VM PASID
-> > alloc tracking purpose. While for vfio_iommu structure, it is visible
-> > only within vfio. Therefore, structure mm pointer is selected. This patch
-> > adds a structure vfio_mm. A vfio_mm is created when the first vfio
-> > container is opened by a VM. On the reverse order, vfio_mm is free when
-> > the last vfio container is released. Each VM is assigned with a PASID
-> > quota, so that it is not able to request PASID beyond its quota. This
-> > patch adds a default quota of 1000. This quota could be tuned by
-> > administrator. Making PASID quota tunable will be added in another patch
-> > in this series.
-> >
-> > Previous discussions:
-> > https://patchwork.kernel.org/patch/11209429/
-> >
-> > Cc: Kevin Tian <kevin.tian@intel.com>
-> > CC: Jacob Pan <jacob.jun.pan@linux.intel.com>
-> > Cc: Alex Williamson <alex.williamson@redhat.com>
-> > Cc: Eric Auger <eric.auger@redhat.com>
-> > Cc: Jean-Philippe Brucker <jean-philippe@linaro.org>
-> > Signed-off-by: Liu Yi L <yi.l.liu@intel.com>
-> > Signed-off-by: Yi Sun <yi.y.sun@linux.intel.com>
-> > Signed-off-by: Jacob Pan <jacob.jun.pan@linux.intel.com>
-> > ---
-> >  drivers/vfio/vfio.c             | 130
-> > ++++++++++++++++++++++++++++++++++++++++
-> >  drivers/vfio/vfio_iommu_type1.c | 104
-> > ++++++++++++++++++++++++++++++++
-> >  include/linux/vfio.h            |  20 +++++++
-> >  include/uapi/linux/vfio.h       |  41 +++++++++++++
-> >  4 files changed, 295 insertions(+)
-> >
-> > diff --git a/drivers/vfio/vfio.c b/drivers/vfio/vfio.c
-> > index c848262..d13b483 100644
-> > --- a/drivers/vfio/vfio.c
-> > +++ b/drivers/vfio/vfio.c
-> > @@ -32,6 +32,7 @@
-> >  #include <linux/vfio.h>
-> >  #include <linux/wait.h>
-> >  #include <linux/sched/signal.h>
-> > +#include <linux/sched/mm.h>
-> >
-> >  #define DRIVER_VERSION	"0.3"
-> >  #define DRIVER_AUTHOR	"Alex Williamson
-> > <alex.williamson@redhat.com>"
-> > @@ -46,6 +47,8 @@ static struct vfio {
-> >  	struct mutex			group_lock;
-> >  	struct cdev			group_cdev;
-> >  	dev_t				group_devt;
-> > +	struct list_head		vfio_mm_list;
-> > +	struct mutex			vfio_mm_lock;
-> >  	wait_queue_head_t		release_q;
-> >  } vfio;
-> >
-> > @@ -2129,6 +2132,131 @@ int vfio_unregister_notifier(struct device *dev,
-> > enum vfio_notify_type type,
-> >  EXPORT_SYMBOL(vfio_unregister_notifier);
-> >
-> >  /**
-> > + * VFIO_MM objects - create, release, get, put, search
-> 
-> why capitalizing vfio_mm?
-
-oops, it's not intended, will fix it.
-
-> > + * Caller of the function should have held vfio.vfio_mm_lock.
-> > + */
-> > +static struct vfio_mm *vfio_create_mm(struct mm_struct *mm)
-> > +{
-> > +	struct vfio_mm *vmm;
-> > +	struct vfio_mm_token *token;
-> > +	int ret = 0;
-> > +
-> > +	vmm = kzalloc(sizeof(*vmm), GFP_KERNEL);
-> > +	if (!vmm)
-> > +		return ERR_PTR(-ENOMEM);
-> > +
-> > +	/* Per mm IOASID set used for quota control and group operations
-> > */
-> > +	ret = ioasid_alloc_set((struct ioasid_set *) mm,
-> > +			       VFIO_DEFAULT_PASID_QUOTA, &vmm-
-> > >ioasid_sid);
-> > +	if (ret) {
-> > +		kfree(vmm);
-> > +		return ERR_PTR(ret);
-> > +	}
-> > +
-> > +	kref_init(&vmm->kref);
-> > +	token = &vmm->token;
-> > +	token->val = mm;
-> > +	vmm->pasid_quota = VFIO_DEFAULT_PASID_QUOTA;
-> > +	mutex_init(&vmm->pasid_lock);
-> > +
-> > +	list_add(&vmm->vfio_next, &vfio.vfio_mm_list);
-> > +
-> > +	return vmm;
-> > +}
-> > +
-> > +static void vfio_mm_unlock_and_free(struct vfio_mm *vmm)
-> > +{
-> > +	/* destroy the ioasid set */
-> > +	ioasid_free_set(vmm->ioasid_sid, true);
-> 
-> do we need hold pasid lock here, since it attempts to destroy a
-> set which might be referenced by vfio_mm_pasid_free? or is
-> there guarantee that such race won't happen?
-
-Emmm, if considering the race between ioasid_free_set and
-vfio_mm_pasid_free, I guess ioasid core should sequence the
-two operations with its internal lock. right?
-
-> > +	mutex_unlock(&vfio.vfio_mm_lock);
-> > +	kfree(vmm);
-> > +}
-> > +
-> > +/* called with vfio.vfio_mm_lock held */
-> > +static void vfio_mm_release(struct kref *kref)
-> > +{
-> > +	struct vfio_mm *vmm = container_of(kref, struct vfio_mm, kref);
-> > +
-> > +	list_del(&vmm->vfio_next);
-> > +	vfio_mm_unlock_and_free(vmm);
-> > +}
-> > +
-> > +void vfio_mm_put(struct vfio_mm *vmm)
-> > +{
-> > +	kref_put_mutex(&vmm->kref, vfio_mm_release,
-> > &vfio.vfio_mm_lock);
-> > +}
-> > +EXPORT_SYMBOL_GPL(vfio_mm_put);
-> > +
-> > +/* Assume vfio_mm_lock or vfio_mm reference is held */
-> > +static void vfio_mm_get(struct vfio_mm *vmm)
-> > +{
-> > +	kref_get(&vmm->kref);
-> > +}
-> > +
-> > +struct vfio_mm *vfio_mm_get_from_task(struct task_struct *task)
-> > +{
-> > +	struct mm_struct *mm = get_task_mm(task);
-> > +	struct vfio_mm *vmm;
-> > +	unsigned long long val = (unsigned long long) mm;
-> > +
-> > +	mutex_lock(&vfio.vfio_mm_lock);
-> > +	list_for_each_entry(vmm, &vfio.vfio_mm_list, vfio_next) {
-> > +		if (vmm->token.val == val) {
-> > +			vfio_mm_get(vmm);
-> > +			goto out;
-> > +		}
-> > +	}
-> > +
-> > +	vmm = vfio_create_mm(mm);
-> > +	if (IS_ERR(vmm))
-> > +		vmm = NULL;
-> > +out:
-> > +	mutex_unlock(&vfio.vfio_mm_lock);
-> > +	mmput(mm);
-> 
-> I assume this has been discussed before, but from readability p.o.v
-> it might be good to add a comment for this function to explain
-> how the recording of mm in vfio_mm can be correctly removed
-> when the mm is being destroyed, since we don't hold a reference
-> of mm here.
-
-yeah, I'll add it.
-
-> > +	return vmm;
-> > +}
-> > +EXPORT_SYMBOL_GPL(vfio_mm_get_from_task);
-> > +
-> > +int vfio_mm_pasid_alloc(struct vfio_mm *vmm, int min, int max)
-> > +{
-> > +	ioasid_t pasid;
-> > +	int ret = -ENOSPC;
-> > +
-> > +	mutex_lock(&vmm->pasid_lock);
-> > +
-> > +	pasid = ioasid_alloc(vmm->ioasid_sid, min, max, NULL);
-> > +	if (pasid == INVALID_IOASID) {
-> > +		ret = -ENOSPC;
-> > +		goto out_unlock;
-> > +	}
-> > +
-> > +	ret = pasid;
-> > +out_unlock:
-> > +	mutex_unlock(&vmm->pasid_lock);
-> > +	return ret;
-> > +}
-> > +EXPORT_SYMBOL_GPL(vfio_mm_pasid_alloc);
-> > +
-> > +int vfio_mm_pasid_free(struct vfio_mm *vmm, ioasid_t pasid)
-> > +{
-> > +	void *pdata;
-> > +	int ret = 0;
-> > +
-> > +	mutex_lock(&vmm->pasid_lock);
-> > +	pdata = ioasid_find(vmm->ioasid_sid, pasid, NULL);
-> > +	if (IS_ERR(pdata)) {
-> > +		ret = PTR_ERR(pdata);
-> > +		goto out_unlock;
-> > +	}
-> > +	ioasid_free(pasid);
-> > +
-> > +out_unlock:
-> > +	mutex_unlock(&vmm->pasid_lock);
-> > +	return ret;
-> > +}
-> > +EXPORT_SYMBOL_GPL(vfio_mm_pasid_free);
-> > +
-> > +/**
-> >   * Module/class support
-> >   */
-> >  static char *vfio_devnode(struct device *dev, umode_t *mode)
-> > @@ -2151,8 +2279,10 @@ static int __init vfio_init(void)
-> >  	idr_init(&vfio.group_idr);
-> >  	mutex_init(&vfio.group_lock);
-> >  	mutex_init(&vfio.iommu_drivers_lock);
-> > +	mutex_init(&vfio.vfio_mm_lock);
-> >  	INIT_LIST_HEAD(&vfio.group_list);
-> >  	INIT_LIST_HEAD(&vfio.iommu_drivers_list);
-> > +	INIT_LIST_HEAD(&vfio.vfio_mm_list);
-> >  	init_waitqueue_head(&vfio.release_q);
-> >
-> >  	ret = misc_register(&vfio_dev);
-> > diff --git a/drivers/vfio/vfio_iommu_type1.c
-> > b/drivers/vfio/vfio_iommu_type1.c
-> > index a177bf2..331ceee 100644
-> > --- a/drivers/vfio/vfio_iommu_type1.c
-> > +++ b/drivers/vfio/vfio_iommu_type1.c
-> > @@ -70,6 +70,7 @@ struct vfio_iommu {
-> >  	unsigned int		dma_avail;
-> >  	bool			v2;
-> >  	bool			nesting;
-> > +	struct vfio_mm		*vmm;
-> >  };
-> >
-> >  struct vfio_domain {
-> > @@ -2018,6 +2019,7 @@ static void vfio_iommu_type1_detach_group(void
-> > *iommu_data,
-> >  static void *vfio_iommu_type1_open(unsigned long arg)
-> >  {
-> >  	struct vfio_iommu *iommu;
-> > +	struct vfio_mm *vmm = NULL;
-> >
-> >  	iommu = kzalloc(sizeof(*iommu), GFP_KERNEL);
-> >  	if (!iommu)
-> > @@ -2043,6 +2045,10 @@ static void *vfio_iommu_type1_open(unsigned
-> > long arg)
-> >  	iommu->dma_avail = dma_entry_limit;
-> >  	mutex_init(&iommu->lock);
-> >  	BLOCKING_INIT_NOTIFIER_HEAD(&iommu->notifier);
-> > +	vmm = vfio_mm_get_from_task(current);
-> > +	if (!vmm)
-> > +		pr_err("Failed to get vfio_mm track\n");
-> 
-> I assume error should be returned when pr_err is used...
-
-got it. I didn't do it as I don't think vfio_mm is necessary for
-every iommu open. It is necessary for the nesting type iommu. I'll
-make it fetch vmm when it is opening nesting type and return error
-if failed.
-
-> > +	iommu->vmm = vmm;
-> >
-> >  	return iommu;
-> >  }
-> > @@ -2084,6 +2090,8 @@ static void vfio_iommu_type1_release(void
-> > *iommu_data)
-> >  	}
-> >
-> >  	vfio_iommu_iova_free(&iommu->iova_list);
-> > +	if (iommu->vmm)
-> > +		vfio_mm_put(iommu->vmm);
-> >
-> >  	kfree(iommu);
-> >  }
-> > @@ -2172,6 +2180,55 @@ static int vfio_iommu_iova_build_caps(struct
-> > vfio_iommu *iommu,
-> >  	return ret;
-> >  }
-> >
-> > +static bool vfio_iommu_type1_pasid_req_valid(u32 flags)
-> 
-> I don't think you need prefix "vfio_iommu_type1" for every new
-> function here, especially for leaf internal function as this one.
-
-got it. thanks.
-
-> > +{
-> > +	return !((flags & ~VFIO_PASID_REQUEST_MASK) ||
-> > +		 (flags & VFIO_IOMMU_PASID_ALLOC &&
-> > +		  flags & VFIO_IOMMU_PASID_FREE));
-> > +}
-> > +
-> > +static int vfio_iommu_type1_pasid_alloc(struct vfio_iommu *iommu,
-> > +					 int min,
-> > +					 int max)
-> > +{
-> > +	struct vfio_mm *vmm = iommu->vmm;
-> > +	int ret = 0;
-> > +
-> > +	mutex_lock(&iommu->lock);
-> > +	if (!IS_IOMMU_CAP_DOMAIN_IN_CONTAINER(iommu)) {
-> > +		ret = -EFAULT;
-> 
-> why -EFAULT?
-
-well, it's from a prior comment as below:
-  vfio_mm_pasid_alloc() can return -ENOSPC though, so it'd be nice to
-  differentiate the errors. We could use EFAULT for the no IOMMU case
-  and EINVAL here?
-http://lkml.iu.edu/hypermail/linux/kernel/2001.3/05964.html
-
-> 
-> > +		goto out_unlock;
-> > +	}
-> > +	if (vmm)
-> > +		ret = vfio_mm_pasid_alloc(vmm, min, max);
-> > +	else
-> > +		ret = -EINVAL;
-> > +out_unlock:
-> > +	mutex_unlock(&iommu->lock);
-> > +	return ret;
-> > +}
-> > +
-> > +static int vfio_iommu_type1_pasid_free(struct vfio_iommu *iommu,
-> > +				       unsigned int pasid)
-> > +{
-> > +	struct vfio_mm *vmm = iommu->vmm;
-> > +	int ret = 0;
-> > +
-> > +	mutex_lock(&iommu->lock);
-> > +	if (!IS_IOMMU_CAP_DOMAIN_IN_CONTAINER(iommu)) {
-> > +		ret = -EFAULT;
-> 
-> ditto
-> 
-> > +		goto out_unlock;
-> > +	}
-> > +
-> > +	if (vmm)
-> > +		ret = vfio_mm_pasid_free(vmm, pasid);
-> > +	else
-> > +		ret = -EINVAL;
-> > +out_unlock:
-> > +	mutex_unlock(&iommu->lock);
-> > +	return ret;
-> > +}
-> > +
-> >  static long vfio_iommu_type1_ioctl(void *iommu_data,
-> >  				   unsigned int cmd, unsigned long arg)
-> >  {
-> > @@ -2276,6 +2333,53 @@ static long vfio_iommu_type1_ioctl(void
-> > *iommu_data,
-> >
-> >  		return copy_to_user((void __user *)arg, &unmap, minsz) ?
-> >  			-EFAULT : 0;
-> > +
-> > +	} else if (cmd == VFIO_IOMMU_PASID_REQUEST) {
-> > +		struct vfio_iommu_type1_pasid_request req;
-> > +		unsigned long offset;
-> > +
-> > +		minsz = offsetofend(struct vfio_iommu_type1_pasid_request,
-> > +				    flags);
-> > +
-> > +		if (copy_from_user(&req, (void __user *)arg, minsz))
-> > +			return -EFAULT;
-> > +
-> > +		if (req.argsz < minsz ||
-> > +		    !vfio_iommu_type1_pasid_req_valid(req.flags))
-> > +			return -EINVAL;
-> > +
-> > +		if (copy_from_user((void *)&req + minsz,
-> > +				   (void __user *)arg + minsz,
-> > +				   sizeof(req) - minsz))
-> > +			return -EFAULT;
-> 
-> why copying in two steps instead of copying them together?
-
-just want to do sanity check before copying all the data. I
-can move it as one copy if it's better. :-)
-
-> > +
-> > +		switch (req.flags & VFIO_PASID_REQUEST_MASK) {
-> > +		case VFIO_IOMMU_PASID_ALLOC:
-> > +		{
-> > +			int ret = 0, result;
-> > +
-> > +			result = vfio_iommu_type1_pasid_alloc(iommu,
-> > +							req.alloc_pasid.min,
-> > +							req.alloc_pasid.max);
-> > +			if (result > 0) {
-> > +				offset = offsetof(
-> > +					struct
-> > vfio_iommu_type1_pasid_request,
-> > +					alloc_pasid.result);
-> > +				ret = copy_to_user(
-> > +					      (void __user *) (arg + offset),
-> > +					      &result, sizeof(result));
-> > +			} else {
-> > +				pr_debug("%s: PASID alloc failed\n",
-> > __func__);
-> > +				ret = -EFAULT;
-> 
-> no, this branch is not for copy_to_user error. it is about pasid alloc
-> failure. you should handle both.
-
-Emmm, I just want to fail the IOCTL in such case, so the @result field
-is meaningless in the user side. How about using another return value
-(e.g. ENOSPC) to indicate the IOCTL failure?
-
-> > +			}
-> > +			return ret;
-> > +		}
-> > +		case VFIO_IOMMU_PASID_FREE:
-> > +			return vfio_iommu_type1_pasid_free(iommu,
-> > +							   req.free_pasid);
-> > +		default:
-> > +			return -EINVAL;
-> > +		}
-> >  	}
-> >
-> >  	return -ENOTTY;
-> > diff --git a/include/linux/vfio.h b/include/linux/vfio.h
-> > index e42a711..75f9f7f1 100644
-> > --- a/include/linux/vfio.h
-> > +++ b/include/linux/vfio.h
-> > @@ -89,6 +89,26 @@ extern int vfio_register_iommu_driver(const struct
-> > vfio_iommu_driver_ops *ops);
-> >  extern void vfio_unregister_iommu_driver(
-> >  				const struct vfio_iommu_driver_ops *ops);
-> >
-> > +#define VFIO_DEFAULT_PASID_QUOTA	1000
-> > +struct vfio_mm_token {
-> > +	unsigned long long val;
-> > +};
-> > +
-> > +struct vfio_mm {
-> > +	struct kref			kref;
-> > +	struct vfio_mm_token		token;
-> > +	int				ioasid_sid;
-> > +	/* protect @pasid_quota field and pasid allocation/free */
-> > +	struct mutex			pasid_lock;
-> > +	int				pasid_quota;
-> > +	struct list_head		vfio_next;
-> > +};
-> > +
-> > +extern struct vfio_mm *vfio_mm_get_from_task(struct task_struct *task);
-> > +extern void vfio_mm_put(struct vfio_mm *vmm);
-> > +extern int vfio_mm_pasid_alloc(struct vfio_mm *vmm, int min, int max);
-> > +extern int vfio_mm_pasid_free(struct vfio_mm *vmm, ioasid_t pasid);
-> > +
-> >  /*
-> >   * External user API
-> >   */
-> > diff --git a/include/uapi/linux/vfio.h b/include/uapi/linux/vfio.h
-> > index 9e843a1..298ac80 100644
-> > --- a/include/uapi/linux/vfio.h
-> > +++ b/include/uapi/linux/vfio.h
-> > @@ -794,6 +794,47 @@ struct vfio_iommu_type1_dma_unmap {
-> >  #define VFIO_IOMMU_ENABLE	_IO(VFIO_TYPE, VFIO_BASE + 15)
-> >  #define VFIO_IOMMU_DISABLE	_IO(VFIO_TYPE, VFIO_BASE + 16)
-> >
-> > +/*
-> > + * PASID (Process Address Space ID) is a PCIe concept which
-> > + * has been extended to support DMA isolation in fine-grain.
-> > + * With device assigned to user space (e.g. VMs), PASID alloc
-> > + * and free need to be system wide. This structure defines
-> > + * the info for pasid alloc/free between user space and kernel
-> > + * space.
-> > + *
-> > + * @flag=VFIO_IOMMU_PASID_ALLOC, refer to the @alloc_pasid
-> > + * @flag=VFIO_IOMMU_PASID_FREE, refer to @free_pasid
-> > + */
-> > +struct vfio_iommu_type1_pasid_request {
-> > +	__u32	argsz;
-> > +#define VFIO_IOMMU_PASID_ALLOC	(1 << 0)
-> > +#define VFIO_IOMMU_PASID_FREE	(1 << 1)
-> > +	__u32	flags;
-> > +	union {
-> > +		struct {
-> > +			__u32 min;
-> > +			__u32 max;
-> > +			__u32 result;
-> 
-> result->pasid?
-
-yes, the pasid allocated.
-
-> 
-> > +		} alloc_pasid;
-> > +		__u32 free_pasid;
-> 
-> what about putting a common pasid field after flags?
-
-looks good to me. But it would make the union part only meaningful
-to alloc pasid. if so, maybe make the union part as a data field and
-only alloc pasid will have it. For free pasid, it is not necessary
-to read it from userspace. does it look good?
-
-Regards,
-Yi Liu
-
-> > +	};
-> > +};
-> > +
-> > +#define VFIO_PASID_REQUEST_MASK	(VFIO_IOMMU_PASID_ALLOC | \
-> > +					 VFIO_IOMMU_PASID_FREE)
-> > +
-> > +/**
-> > + * VFIO_IOMMU_PASID_REQUEST - _IOWR(VFIO_TYPE, VFIO_BASE + 22,
-> > + *				struct vfio_iommu_type1_pasid_request)
-> > + *
-> > + * Availability of this feature depends on PASID support in the device,
-> > + * its bus, the underlying IOMMU and the CPU architecture. In VFIO, it
-> > + * is available after VFIO_SET_IOMMU.
-> > + *
-> > + * returns: 0 on success, -errno on failure.
-> > + */
-> > +#define VFIO_IOMMU_PASID_REQUEST	_IO(VFIO_TYPE, VFIO_BASE +
-> > 22)
-> > +
-> >  /* -------- Additional API for SPAPR TCE (Server POWERPC) IOMMU -------- */
-> >
-> >  /*
-> > --
-> > 2.7.4
-
+[Jacob Pan]
 _______________________________________________
 iommu mailing list
 iommu@lists.linux-foundation.org
