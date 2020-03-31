@@ -2,95 +2,82 @@ Return-Path: <SRS0=6vqp=5Q=lists.linux-foundation.org=iommu-bounces@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-0.8 required=3.0 tests=HEADER_FROM_DIFFERENT_DOMAINS,
-	MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED autolearn=no
-	autolearn_force=no version=3.4.0
+X-Spam-Status: No, score=-0.6 required=3.0 tests=DKIM_INVALID,DKIM_SIGNED,
+	HEADER_FROM_DIFFERENT_DOMAINS,MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS
+	autolearn=no autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 193EBC43331
-	for <iommu@archiver.kernel.org>; Tue, 31 Mar 2020 08:36:45 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 46C4AC43331
+	for <iommu@archiver.kernel.org>; Tue, 31 Mar 2020 09:15:24 +0000 (UTC)
 Received: from hemlock.osuosl.org (smtp2.osuosl.org [140.211.166.133])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by mail.kernel.org (Postfix) with ESMTPS id E130520787
-	for <iommu@archiver.kernel.org>; Tue, 31 Mar 2020 08:36:44 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org E130520787
-Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=intel.com
+	by mail.kernel.org (Postfix) with ESMTPS id 0508E20772
+	for <iommu@archiver.kernel.org>; Tue, 31 Mar 2020 09:15:23 +0000 (UTC)
+Authentication-Results: mail.kernel.org;
+	dkim=fail reason="signature verification failed" (2048-bit key) header.d=infradead.org header.i=@infradead.org header.b="jpt/K2zA"
+DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 0508E20772
+Authentication-Results: mail.kernel.org; dmarc=none (p=none dis=none) header.from=infradead.org
 Authentication-Results: mail.kernel.org; spf=pass smtp.mailfrom=iommu-bounces@lists.linux-foundation.org
 Received: from localhost (localhost [127.0.0.1])
-	by hemlock.osuosl.org (Postfix) with ESMTP id AAA7688305;
-	Tue, 31 Mar 2020 08:36:44 +0000 (UTC)
+	by hemlock.osuosl.org (Postfix) with ESMTP id BCF28883C0;
+	Tue, 31 Mar 2020 09:15:23 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
 Received: from hemlock.osuosl.org ([127.0.0.1])
 	by localhost (.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
-	with ESMTP id 7JTh2qKaqKMQ; Tue, 31 Mar 2020 08:36:43 +0000 (UTC)
+	with ESMTP id 4AZhVe92gL4U; Tue, 31 Mar 2020 09:15:23 +0000 (UTC)
 Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [140.211.9.56])
-	by hemlock.osuosl.org (Postfix) with ESMTP id 6C5B2884D3;
-	Tue, 31 Mar 2020 08:36:43 +0000 (UTC)
+	by hemlock.osuosl.org (Postfix) with ESMTP id 54284883B8;
+	Tue, 31 Mar 2020 09:15:23 +0000 (UTC)
 Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
-	by lists.linuxfoundation.org (Postfix) with ESMTP id 50A6BC1D8A;
-	Tue, 31 Mar 2020 08:36:43 +0000 (UTC)
+	by lists.linuxfoundation.org (Postfix) with ESMTP id 416BBC1AE8;
+	Tue, 31 Mar 2020 09:15:23 +0000 (UTC)
 Received: from whitealder.osuosl.org (smtp1.osuosl.org [140.211.166.138])
- by lists.linuxfoundation.org (Postfix) with ESMTP id 9DCA0C07FF
- for <iommu@lists.linux-foundation.org>; Tue, 31 Mar 2020 08:36:39 +0000 (UTC)
+ by lists.linuxfoundation.org (Postfix) with ESMTP id 222C7C07FF
+ for <iommu@lists.linux-foundation.org>; Tue, 31 Mar 2020 09:15:16 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
- by whitealder.osuosl.org (Postfix) with ESMTP id 9A926867C8
- for <iommu@lists.linux-foundation.org>; Tue, 31 Mar 2020 08:36:39 +0000 (UTC)
+ by whitealder.osuosl.org (Postfix) with ESMTP id 0F07E876C2
+ for <iommu@lists.linux-foundation.org>; Tue, 31 Mar 2020 09:15:16 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
 Received: from whitealder.osuosl.org ([127.0.0.1])
  by localhost (.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
- with ESMTP id LTsg0VmYvPFp for <iommu@lists.linux-foundation.org>;
- Tue, 31 Mar 2020 08:36:36 +0000 (UTC)
-X-Greylist: domain auto-whitelisted by SQLgrey-1.7.6
-Received: from mga18.intel.com (mga18.intel.com [134.134.136.126])
- by whitealder.osuosl.org (Postfix) with ESMTPS id BDBBE863A6
- for <iommu@lists.linux-foundation.org>; Tue, 31 Mar 2020 08:36:36 +0000 (UTC)
-IronPort-SDR: MR6ErALqEVfmRehU+p6TThKGNp1VQciXHlBr+cy8yodnIJLhy3PFdfhz9KgZhhQRsu/UAd2Uih
- M2+BAqbzEp7w==
-X-Amp-Result: SKIPPED(no attachment in message)
-X-Amp-File-Uploaded: False
-Received: from fmsmga001.fm.intel.com ([10.253.24.23])
- by orsmga106.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384;
- 31 Mar 2020 01:36:36 -0700
-IronPort-SDR: BCHlBz3w0XARy3CBwHjzOnmOqnDLE+mwxJfDmTj2gLrnQ8UhXMtSFpz9HZdK1Kf8uksteX++wd
- 2ZgbQX/AXyGQ==
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.72,327,1580803200"; d="scan'208";a="359435393"
-Received: from fmsmsx105.amr.corp.intel.com ([10.18.124.203])
- by fmsmga001.fm.intel.com with ESMTP; 31 Mar 2020 01:36:35 -0700
-Received: from fmsmsx122.amr.corp.intel.com (10.18.125.37) by
- FMSMSX105.amr.corp.intel.com (10.18.124.203) with Microsoft SMTP Server (TLS)
- id 14.3.439.0; Tue, 31 Mar 2020 01:36:35 -0700
-Received: from shsmsx101.ccr.corp.intel.com (10.239.4.153) by
- fmsmsx122.amr.corp.intel.com (10.18.125.37) with Microsoft SMTP Server (TLS)
- id 14.3.439.0; Tue, 31 Mar 2020 01:36:35 -0700
-Received: from shsmsx104.ccr.corp.intel.com ([169.254.5.225]) by
- SHSMSX101.ccr.corp.intel.com ([169.254.1.129]) with mapi id 14.03.0439.000;
- Tue, 31 Mar 2020 16:36:31 +0800
-From: "Liu, Yi L" <yi.l.liu@intel.com>
-To: Christoph Hellwig <hch@infradead.org>
-Subject: RE: [PATCH v1 1/8] vfio: Add VFIO_IOMMU_PASID_REQUEST(alloc/free)
-Thread-Topic: [PATCH v1 1/8] vfio: Add VFIO_IOMMU_PASID_REQUEST(alloc/free)
-Thread-Index: AQHWAEUbC4GB74LMekup8jIcF6WIFqhh3EqAgACPuLCAAAINQA==
-Date: Tue, 31 Mar 2020 08:36:32 +0000
-Message-ID: <A2975661238FB949B60364EF0F2C25743A21A9ED@SHSMSX104.ccr.corp.intel.com>
+ with ESMTP id abfq478hT1pc for <iommu@lists.linux-foundation.org>;
+ Tue, 31 Mar 2020 09:15:15 +0000 (UTC)
+X-Greylist: from auto-whitelisted by SQLgrey-1.7.6
+Received: from bombadil.infradead.org (bombadil.infradead.org
+ [198.137.202.133])
+ by whitealder.osuosl.org (Postfix) with ESMTPS id 8771B876B8
+ for <iommu@lists.linux-foundation.org>; Tue, 31 Mar 2020 09:15:14 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
+ d=infradead.org; s=bombadil.20170209; h=In-Reply-To:Content-Type:MIME-Version
+ :References:Message-ID:Subject:Cc:To:From:Date:Sender:Reply-To:
+ Content-Transfer-Encoding:Content-ID:Content-Description;
+ bh=6OrjNgWSgjsVgH6reFO8z2ixicWhI/e5FNsva6w55pc=; b=jpt/K2zABPB39L9L1UfINWG0kU
+ a0UjPT+0UTlvycvxpmjj3Mq1U8yayR5ZBsKUzFqvVDicdd32QYL8er5THUVvNLjGiyRPX6Z0kFicC
+ 0RtlvWV12hqst+lQ525f5GfHeel9HHwSoCjB3llxC5VE7FRMnUyWYu3qe7XgP9eI0W9hp8Eu2kUpr
+ uIGgzewZCfwXyV/L98BrMA9AFZVx/7HoQZSCb1RBkCthBzxi4l54KdNjQIi9AwIge4lH74tkMMEBb
+ 6yoBbH1EnjdQJDw9b98IH3iFRCgGvJZo/BoFJ3FRlm4BIngrmV638qrHeyqKdgUce/pjZXG2YKzTj
+ 7sCTm1RA==;
+Received: from hch by bombadil.infradead.org with local (Exim 4.92.3 #3 (Red
+ Hat Linux)) id 1jJCzF-0004Sr-Ij; Tue, 31 Mar 2020 09:15:09 +0000
+Date: Tue, 31 Mar 2020 02:15:09 -0700
+From: Christoph Hellwig <hch@infradead.org>
+To: "Liu, Yi L" <yi.l.liu@intel.com>
+Subject: Re: [PATCH v1 1/8] vfio: Add VFIO_IOMMU_PASID_REQUEST(alloc/free)
+Message-ID: <20200331091509.GA12040@infradead.org>
 References: <1584880325-10561-1-git-send-email-yi.l.liu@intel.com>
  <1584880325-10561-2-git-send-email-yi.l.liu@intel.com>
  <20200331075331.GA26583@infradead.org>
  <A2975661238FB949B60364EF0F2C25743A21A9BB@SHSMSX104.ccr.corp.intel.com>
-In-Reply-To: <A2975661238FB949B60364EF0F2C25743A21A9BB@SHSMSX104.ccr.corp.intel.com>
-Accept-Language: en-US
-Content-Language: en-US
-X-MS-Has-Attach: 
-X-MS-TNEF-Correlator: 
-dlp-product: dlpe-windows
-dlp-version: 11.2.0.6
-dlp-reaction: no-action
-x-originating-ip: [10.239.127.40]
+ <A2975661238FB949B60364EF0F2C25743A21A9ED@SHSMSX104.ccr.corp.intel.com>
 MIME-Version: 1.0
+Content-Disposition: inline
+In-Reply-To: <A2975661238FB949B60364EF0F2C25743A21A9ED@SHSMSX104.ccr.corp.intel.com>
+X-SRS-Rewrite: SMTP reverse-path rewritten from <hch@infradead.org> by
+ bombadil.infradead.org. See http://www.infradead.org/rpr.html
 Cc: "jean-philippe@linaro.org" <jean-philippe@linaro.org>, "Tian,
- Kevin" <kevin.tian@intel.com>, "Raj, 
- Ashok" <ashok.raj@intel.com>, "kvm@vger.kernel.org" <kvm@vger.kernel.org>,
- "Tian, Jun J" <jun.j.tian@intel.com>,
+ Kevin" <kevin.tian@intel.com>, "Raj, Ashok" <ashok.raj@intel.com>,
+ "kvm@vger.kernel.org" <kvm@vger.kernel.org>, "Tian,
+ Jun J" <jun.j.tian@intel.com>,
  "iommu@lists.linux-foundation.org" <iommu@lists.linux-foundation.org>,
  "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
  "alex.williamson@redhat.com" <alex.williamson@redhat.com>, "Sun,
@@ -112,23 +99,23 @@ Content-Transfer-Encoding: 7bit
 Errors-To: iommu-bounces@lists.linux-foundation.org
 Sender: "iommu" <iommu-bounces@lists.linux-foundation.org>
 
-> From: Liu, Yi L
-> Sent: Tuesday, March 31, 2020 4:33 PM
-> To: 'Christoph Hellwig' <hch@infradead.org>
-> Subject: RE: [PATCH v1 1/8] vfio: Add VFIO_IOMMU_PASID_REQUEST(alloc/free)
-> 
-> > From: Christoph Hellwig <hch@infradead.org>
-> > Sent: Tuesday, March 31, 2020 3:54 PM
-> > To: Liu, Yi L <yi.l.liu@intel.com>
-> > Subject: Re: [PATCH v1 1/8] vfio: Add
-> > VFIO_IOMMU_PASID_REQUEST(alloc/free)
-> >
-> > Who is going to use thse exports?  Please submit them together with a
-> > driver actually using them.
-the user of the symbols are already in this patch. sorry for the split answer..
+On Tue, Mar 31, 2020 at 08:36:32AM +0000, Liu, Yi L wrote:
+> > From: Liu, Yi L
+> > Sent: Tuesday, March 31, 2020 4:33 PM
+> > To: 'Christoph Hellwig' <hch@infradead.org>
+> > Subject: RE: [PATCH v1 1/8] vfio: Add VFIO_IOMMU_PASID_REQUEST(alloc/free)
+> > 
+> > > From: Christoph Hellwig <hch@infradead.org>
+> > > Sent: Tuesday, March 31, 2020 3:54 PM
+> > > To: Liu, Yi L <yi.l.liu@intel.com>
+> > > Subject: Re: [PATCH v1 1/8] vfio: Add
+> > > VFIO_IOMMU_PASID_REQUEST(alloc/free)
+> > >
+> > > Who is going to use thse exports?  Please submit them together with a
+> > > driver actually using them.
+> the user of the symbols are already in this patch. sorry for the split answer..
 
-Regards,
-Yi Liu
+Thanks, sorry for the noise!
 _______________________________________________
 iommu mailing list
 iommu@lists.linux-foundation.org
