@@ -2,80 +2,80 @@ Return-Path: <SRS0=6vqp=5Q=lists.linux-foundation.org=iommu-bounces@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-8.2 required=3.0 tests=HEADER_FROM_DIFFERENT_DOMAINS,
-	INCLUDES_PATCH,MAILING_LIST_MULTI,SIGNED_OFF_BY,SPF_HELO_NONE,SPF_PASS,
-	URIBL_BLOCKED,USER_AGENT_SANE_2 autolearn=unavailable autolearn_force=no
-	version=3.4.0
+X-Spam-Status: No, score=-2.3 required=3.0 tests=HEADER_FROM_DIFFERENT_DOMAINS,
+	MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS,USER_AGENT_SANE_2 autolearn=no
+	autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 04EA1C2D0EE
-	for <iommu@archiver.kernel.org>; Tue, 31 Mar 2020 18:07:52 +0000 (UTC)
-Received: from whitealder.osuosl.org (smtp1.osuosl.org [140.211.166.138])
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 69904C2D0EE
+	for <iommu@archiver.kernel.org>; Tue, 31 Mar 2020 20:52:28 +0000 (UTC)
+Received: from hemlock.osuosl.org (smtp2.osuosl.org [140.211.166.133])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by mail.kernel.org (Postfix) with ESMTPS id CD8A82054F
-	for <iommu@archiver.kernel.org>; Tue, 31 Mar 2020 18:07:50 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org CD8A82054F
+	by mail.kernel.org (Postfix) with ESMTPS id 3A20620787
+	for <iommu@archiver.kernel.org>; Tue, 31 Mar 2020 20:52:28 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 3A20620787
 Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=linux.intel.com
 Authentication-Results: mail.kernel.org; spf=pass smtp.mailfrom=iommu-bounces@lists.linux-foundation.org
 Received: from localhost (localhost [127.0.0.1])
-	by whitealder.osuosl.org (Postfix) with ESMTP id 8C7BF87DB2;
-	Tue, 31 Mar 2020 18:07:50 +0000 (UTC)
-X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from whitealder.osuosl.org ([127.0.0.1])
-	by localhost (.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
-	with ESMTP id R5+oDUQ0rIkH; Tue, 31 Mar 2020 18:07:48 +0000 (UTC)
-Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [140.211.9.56])
-	by whitealder.osuosl.org (Postfix) with ESMTP id DC3288682F;
-	Tue, 31 Mar 2020 18:07:48 +0000 (UTC)
-Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
-	by lists.linuxfoundation.org (Postfix) with ESMTP id B3AF0C1AE8;
-	Tue, 31 Mar 2020 18:07:48 +0000 (UTC)
-Received: from hemlock.osuosl.org (smtp2.osuosl.org [140.211.166.133])
- by lists.linuxfoundation.org (Postfix) with ESMTP id 7FBCDC07FF
- for <iommu@lists.linux-foundation.org>; Tue, 31 Mar 2020 18:07:47 +0000 (UTC)
-Received: from localhost (localhost [127.0.0.1])
- by hemlock.osuosl.org (Postfix) with ESMTP id 6E76388699
- for <iommu@lists.linux-foundation.org>; Tue, 31 Mar 2020 18:07:47 +0000 (UTC)
+	by hemlock.osuosl.org (Postfix) with ESMTP id 15A5D87D80;
+	Tue, 31 Mar 2020 20:52:28 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
 Received: from hemlock.osuosl.org ([127.0.0.1])
+	by localhost (.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
+	with ESMTP id zAsTUNdNGIb3; Tue, 31 Mar 2020 20:52:24 +0000 (UTC)
+Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [140.211.9.56])
+	by hemlock.osuosl.org (Postfix) with ESMTP id E438487CC9;
+	Tue, 31 Mar 2020 20:52:24 +0000 (UTC)
+Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
+	by lists.linuxfoundation.org (Postfix) with ESMTP id B2618C1AE2;
+	Tue, 31 Mar 2020 20:52:24 +0000 (UTC)
+Received: from fraxinus.osuosl.org (smtp4.osuosl.org [140.211.166.137])
+ by lists.linuxfoundation.org (Postfix) with ESMTP id 2E5E2C07FF
+ for <iommu@lists.linux-foundation.org>; Tue, 31 Mar 2020 20:52:23 +0000 (UTC)
+Received: from localhost (localhost [127.0.0.1])
+ by fraxinus.osuosl.org (Postfix) with ESMTP id 2567A86E07
+ for <iommu@lists.linux-foundation.org>; Tue, 31 Mar 2020 20:52:23 +0000 (UTC)
+X-Virus-Scanned: amavisd-new at osuosl.org
+Received: from fraxinus.osuosl.org ([127.0.0.1])
  by localhost (.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
- with ESMTP id uLLUm9VUJdrE for <iommu@lists.linux-foundation.org>;
- Tue, 31 Mar 2020 18:07:46 +0000 (UTC)
+ with ESMTP id fiM0TfHXxPI9 for <iommu@lists.linux-foundation.org>;
+ Tue, 31 Mar 2020 20:52:22 +0000 (UTC)
 X-Greylist: domain auto-whitelisted by SQLgrey-1.7.6
-Received: from mga17.intel.com (mga17.intel.com [192.55.52.151])
- by hemlock.osuosl.org (Postfix) with ESMTPS id 1C6D6875B9
- for <iommu@lists.linux-foundation.org>; Tue, 31 Mar 2020 18:07:46 +0000 (UTC)
-IronPort-SDR: yyEnxl/PZYNfwsyJpeoF0icV/pwnDZyMCTgYhvTVsCnDGgJ5g4R5GZK11FhY0cYvCQmD1YpKL9
- Z7J1gNG2p6aw==
+Received: from mga03.intel.com (mga03.intel.com [134.134.136.65])
+ by fraxinus.osuosl.org (Postfix) with ESMTPS id 4A59286DF8
+ for <iommu@lists.linux-foundation.org>; Tue, 31 Mar 2020 20:52:21 +0000 (UTC)
+IronPort-SDR: GOncENrczHRuhnjyXM7B6UOjqZS1m3ZFYtT1EsK5AINdO8kWPHQkEs1Wc5wrkxBz6LvxYKjf9S
+ QRdPFKWDFEyw==
 X-Amp-Result: SKIPPED(no attachment in message)
 X-Amp-File-Uploaded: False
-Received: from orsmga006.jf.intel.com ([10.7.209.51])
- by fmsmga107.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384;
- 31 Mar 2020 11:07:45 -0700
-IronPort-SDR: ozOR1wTx35jy3xePHpo2X4YB7CrAIhtAh1QTgWOqa6Y0rCeaKkXTXay4rRTx9Hg9601LpVFg0x
- mT0fE66ihrXQ==
+Received: from orsmga001.jf.intel.com ([10.7.209.18])
+ by orsmga103.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384;
+ 31 Mar 2020 13:52:20 -0700
+IronPort-SDR: 9t856pZgKTfWBnjHJFtoepGRlVzP9m2xf7nkagQHk9zegQsKXZAXpn2HoV+pDnKfBkXrh+6lmR
+ UB9OEnTXfnrA==
 X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.72,328,1580803200"; d="scan'208";a="252329911"
+X-IronPort-AV: E=Sophos;i="5.72,329,1580803200"; d="scan'208";a="328202815"
 Received: from jacob-builder.jf.intel.com (HELO jacob-builder) ([10.7.199.155])
- by orsmga006.jf.intel.com with ESMTP; 31 Mar 2020 11:07:45 -0700
-Date: Tue, 31 Mar 2020 11:13:32 -0700
+ by orsmga001.jf.intel.com with ESMTP; 31 Mar 2020 13:52:20 -0700
+Date: Tue, 31 Mar 2020 13:58:07 -0700
 From: Jacob Pan <jacob.jun.pan@linux.intel.com>
 To: "Tian, Kevin" <kevin.tian@intel.com>
 Subject: Re: [PATCH V10 08/11] iommu/vt-d: Add svm/sva invalidate function
-Message-ID: <20200331111332.0718ffd2@jacob-builder>
-In-Reply-To: <AADFC41AFE54684AB9EE6CBC0274A5D19D7FA0AB@SHSMSX104.ccr.corp.intel.com>
+Message-ID: <20200331135807.4e9976ab@jacob-builder>
+In-Reply-To: <AADFC41AFE54684AB9EE6CBC0274A5D19D800D67@SHSMSX104.ccr.corp.intel.com>
 References: <1584746861-76386-1-git-send-email-jacob.jun.pan@linux.intel.com>
  <1584746861-76386-9-git-send-email-jacob.jun.pan@linux.intel.com>
  <AADFC41AFE54684AB9EE6CBC0274A5D19D7FA0AB@SHSMSX104.ccr.corp.intel.com>
+ <3215b83c-81f7-a30f-fe82-a51f29d7b874@redhat.com>
+ <AADFC41AFE54684AB9EE6CBC0274A5D19D800D67@SHSMSX104.ccr.corp.intel.com>
 Organization: OTC
 X-Mailer: Claws Mail 3.13.2 (GTK+ 2.24.30; x86_64-pc-linux-gnu)
 MIME-Version: 1.0
-Cc: "Raj, Ashok" <ashok.raj@intel.com>,
- Jean-Philippe Brucker <jean-philippe@linaro.com>,
- "iommu@lists.linux-foundation.org" <iommu@lists.linux-foundation.org>,
+Cc: Alex Williamson <alex.williamson@redhat.com>, "Raj,
+ Ashok" <ashok.raj@intel.com>, Jean-Philippe Brucker <jean-philippe@linaro.com>,
  LKML <linux-kernel@vger.kernel.org>,
- Alex Williamson <alex.williamson@redhat.com>,
- David Woodhouse <dwmw2@infradead.org>, Jonathan Cameron <jic23@kernel.org>
+ "iommu@lists.linux-foundation.org" <iommu@lists.linux-foundation.org>, David
+ Woodhouse <dwmw2@infradead.org>, Jonathan Cameron <jic23@kernel.org>
 X-BeenThere: iommu@lists.linux-foundation.org
 X-Mailman-Version: 2.1.15
 Precedence: list
@@ -93,382 +93,165 @@ Content-Transfer-Encoding: 7bit
 Errors-To: iommu-bounces@lists.linux-foundation.org
 Sender: "iommu" <iommu-bounces@lists.linux-foundation.org>
 
-On Sat, 28 Mar 2020 10:01:42 +0000
+On Tue, 31 Mar 2020 02:49:21 +0000
 "Tian, Kevin" <kevin.tian@intel.com> wrote:
 
-> > From: Jacob Pan <jacob.jun.pan@linux.intel.com>
-> > Sent: Saturday, March 21, 2020 7:28 AM
+> > From: Auger Eric <eric.auger@redhat.com>
+> > Sent: Sunday, March 29, 2020 11:34 PM
 > > 
-> > When Shared Virtual Address (SVA) is enabled for a guest OS via
-> > vIOMMU, we need to provide invalidation support at IOMMU API and
-> > driver level. This patch adds Intel VT-d specific function to
-> > implement iommu passdown invalidate API for shared virtual address.
+> > Hi,
 > > 
-> > The use case is for supporting caching structure invalidation
-> > of assigned SVM capable devices. Emulated IOMMU exposes queue  
+> > On 3/28/20 11:01 AM, Tian, Kevin wrote:  
+> > >> From: Jacob Pan <jacob.jun.pan@linux.intel.com>
+> > >> Sent: Saturday, March 21, 2020 7:28 AM
+> > >>
+> > >> When Shared Virtual Address (SVA) is enabled for a guest OS via
+> > >> vIOMMU, we need to provide invalidation support at IOMMU API
+> > >> and  
+> > driver  
+> > >> level. This patch adds Intel VT-d specific function to implement
+> > >> iommu passdown invalidate API for shared virtual address.
+> > >>
+> > >> The use case is for supporting caching structure invalidation
+> > >> of assigned SVM capable devices. Emulated IOMMU exposes queue  
+>  [...]  
+>  [...]  
+> > to  
+> > >> + * VT-d granularity. Invalidation is typically included in the
+> > >> unmap  
+> > operation  
+> > >> + * as a result of DMA or VFIO unmap. However, for assigned
+> > >> devices  
+> > guest  
+> > >> + * owns the first level page tables. Invalidations of
+> > >> translation caches in  
+> > the  
+>  [...]  
+>  [...]  
+>  [...]  
+> > inv_type_granu_map[IOMMU_CACHE_INV_TYPE_NR][IOMMU_INV_GRANU_  
+> > >> NR] = {
+> > >> +	/*
+> > >> +	 * PASID based IOTLB invalidation: PASID selective (per
+> > >> PASID),
+> > >> +	 * page selective (address granularity)
+> > >> +	 */
+> > >> +	{0, 1, 1},
+> > >> +	/* PASID based dev TLBs, only support all PASIDs or
+> > >> single PASID */
+> > >> +	{1, 1, 0},  
+> > >
+> > > Is this combination correct? when single PASID is being
+> > > specified, it is essentially a page-selective invalidation since
+> > > you need provide Address and Size.  
+> > Isn't it the same when G=1? Still the addr/size is used. Doesn't
+> > it  
 > 
-> emulated IOMMU -> vIOMMU, since virito-iommu could use the
-> interface as well.
+> I thought addr/size is not used when G=1, but it might be wrong. I'm
+> checking with our vt-d spec owner.
 > 
-True, but it does not invalidate this statement about emulated IOMMU. I
-will add another statement saying "the same interface can be used for
-virtio-IOMMU as well". OK?
 
-> > invalidation capability and passes down all descriptors from the
-> > guest to the physical IOMMU.
+> > correspond to IOMMU_INV_GRANU_ADDR with
+> > IOMMU_INV_ADDR_FLAGS_PASID flag
+> > unset?
 > > 
-> > The assumption is that guest to host device ID mapping should be
-> > resolved prior to calling IOMMU driver. Based on the device handle,
-> > host IOMMU driver can replace certain fields before submit to the
-> > invalidation queue.
+> > so {0, 0, 1}?  
+> 
+I am not sure I got your logic. The three fields correspond to 
+	IOMMU_INV_GRANU_DOMAIN,	/* domain-selective invalidation */
+	IOMMU_INV_GRANU_PASID,	/* PASID-selective invalidation */
+	IOMMU_INV_GRANU_ADDR,	/* page-selective invalidation *
+
+For devTLB, we use domain as global since there is no domain. Then I
+came up with {1, 1, 0}, which means we could have global and pasid
+granu invalidation for PASID based devTLB.
+
+If the caller also provide addr and S bit, the flush routine will put
+that into QI descriptor. I know this is a little odd, but from the
+granu translation p.o.v. VT-d spec has no G bit for page selective
+invalidation.
+
+> I have one more open:
+> 
+> How does userspace know which invalidation type/gran is supported?
+> I didn't see such capability reporting in Yi's VFIO vSVA patch set.
+> Do we want the user/kernel assume the same capability set if they are 
+> architectural? However the kernel could also do some optimization
+> e.g. hide devtlb invalidation capability given that the kernel
+> already invalidate devtlb automatically when serving iotlb
+> invalidation...
+> 
+In general, we are trending to use VFIO capability chain to expose iommu
+capabilities.
+
+But for architectural features such as type/granu, we have to assume
+the same capability between host & guest. Granu and types are not
+enumerated on the host IOMMU either.
+
+For devTLB optimization, I agree we need to expose a capability to
+the guest stating that implicit devtlb invalidation is supported.
+Otherwise, if Linux guest runs on other OSes may not support implicit
+devtlb invalidation.
+
+Right Yi?
+
+> Thanks
+> Kevin
+> 
 > > 
-> > ---
-> > v7 review fixed in v10
-> > ---
+> > Thanks
 > > 
-> > Signed-off-by: Jacob Pan <jacob.jun.pan@linux.intel.com>
-> > Signed-off-by: Ashok Raj <ashok.raj@intel.com>
-> > Signed-off-by: Liu, Yi L <yi.l.liu@intel.com>
-> > ---
-> >  drivers/iommu/intel-iommu.c | 182
-> > ++++++++++++++++++++++++++++++++++++++++++++
-> >  1 file changed, 182 insertions(+)
-> > 
-> > diff --git a/drivers/iommu/intel-iommu.c
-> > b/drivers/iommu/intel-iommu.c index b1477cd423dd..a76afb0fd51a
-> > 100644 --- a/drivers/iommu/intel-iommu.c
-> > +++ b/drivers/iommu/intel-iommu.c
-> > @@ -5619,6 +5619,187 @@ static void
-> > intel_iommu_aux_detach_device(struct iommu_domain *domain,
-> >  	aux_domain_remove_dev(to_dmar_domain(domain), dev);
-> >  }
-> > 
-> > +/*
-> > + * 2D array for converting and sanitizing IOMMU generic TLB
-> > granularity to
-> > + * VT-d granularity. Invalidation is typically included in the
-> > unmap operation
-> > + * as a result of DMA or VFIO unmap. However, for assigned devices
-> > guest
-> > + * owns the first level page tables. Invalidations of translation
-> > caches in the
-> > + * guest are trapped and passed down to the host.
-> > + *
-> > + * vIOMMU in the guest will only expose first level page tables,
-> > therefore
-> > + * we do not include IOTLB granularity for request without PASID
-> > (second level).  
-> 
-> I would revise above as "We do not support IOTLB granularity for
-> request without PASID (second level), therefore any vIOMMU
-> implementation that exposes the SVA capability to the guest should
-> only expose the first level page tables, implying all invalidation
-> requests from the guest will include a valid PASID"
-> 
-Sounds good.
-
-> > + *
-> > + * For example, to find the VT-d granularity encoding for IOTLB
-> > + * type and page selective granularity within PASID:
-> > + * X: indexed by iommu cache type
-> > + * Y: indexed by enum iommu_inv_granularity
-> > + * [IOMMU_CACHE_INV_TYPE_IOTLB][IOMMU_INV_GRANU_ADDR]
-> > + *
-> > + * Granu_map array indicates validity of the table. 1: valid, 0:
-> > invalid
-> > + *
-> > + */
-> > +const static int
-> > inv_type_granu_map[IOMMU_CACHE_INV_TYPE_NR][IOMMU_INV_GRANU_
-> > NR] = {
-> > +	/*
-> > +	 * PASID based IOTLB invalidation: PASID selective (per
-> > PASID),
-> > +	 * page selective (address granularity)
-> > +	 */
-> > +	{0, 1, 1},
-> > +	/* PASID based dev TLBs, only support all PASIDs or single
-> > PASID */
-> > +	{1, 1, 0},  
-> 
-> Is this combination correct? when single PASID is being specified, it
-> is essentially a page-selective invalidation since you need provide
-> Address and Size. 
-> 
-This is for translation between generic UAPI granu to VT-d granu, it
-has nothing to do with address and size.
-e.g.
-If user passes IOMMU_INV_GRANU_PASID for the single PASID case as you
-mentioned, this map table shows it is valid.
-
-Then the lookup result will get VT-d granu:
-QI_DEV_IOTLB_GRAN_PASID_SEL, which means G=0.
-
-
-> > +	/* PASID cache */  
-> 
-> PASID cache is fully managed by the host. Guest PASID cache
-> invalidation is interpreted by vIOMMU for bind and unbind operations.
-> I don't think we should accept any PASID cache invalidation from
-> userspace or guest.
-> 
-
-True for vIOMMU, this is here for completeness. Can be used by virtio
-IOMMU, since PC flush is inclusive (IOTLB, devTLB), it is more
-efficient.
-
-> > +	{1, 1, 0}
-> > +};
-> > +
-> > +const static int
-> > inv_type_granu_table[IOMMU_CACHE_INV_TYPE_NR][IOMMU_INV_GRANU
-> > _NR] = {
-> > +	/* PASID based IOTLB */
-> > +	{0, QI_GRAN_NONG_PASID, QI_GRAN_PSI_PASID},
-> > +	/* PASID based dev TLBs */
-> > +	{QI_DEV_IOTLB_GRAN_ALL, QI_DEV_IOTLB_GRAN_PASID_SEL, 0},
-> > +	/* PASID cache */
-> > +	{QI_PC_ALL_PASIDS, QI_PC_PASID_SEL, 0},
-> > +};
-> > +
-> > +static inline int to_vtd_granularity(int type, int granu, int
-> > *vtd_granu) +{
-> > +	if (type >= IOMMU_CACHE_INV_TYPE_NR || granu >=
-> > IOMMU_INV_GRANU_NR ||
-> > +		!inv_type_granu_map[type][granu])
-> > +		return -EINVAL;
-> > +
-> > +	*vtd_granu = inv_type_granu_table[type][granu];
-> > +  
-> 
-> btw do we really need both map and table here? Can't we just
-> use one table with unsupported granularity marked as a special
-> value?
-> 
-Yes, for value = 1. e.g. G=0 but still valid.
-
-> > +	return 0;
-> > +}
-> > +
-> > +static inline u64 to_vtd_size(u64 granu_size, u64 nr_granules)
-> > +{
-> > +	u64 nr_pages = (granu_size * nr_granules) >>
-> > VTD_PAGE_SHIFT; +
-> > +	/* VT-d size is encoded as 2^size of 4K pages, 0 for 4k, 9
-> > for 2MB, etc.
-> > +	 * IOMMU cache invalidate API passes granu_size in bytes,
-> > and number of
-> > +	 * granu size in contiguous memory.
-> > +	 */
-> > +	return order_base_2(nr_pages);
-> > +}
-> > +
-> > +#ifdef CONFIG_INTEL_IOMMU_SVM
-> > +static int intel_iommu_sva_invalidate(struct iommu_domain *domain,
-> > +		struct device *dev, struct
-> > iommu_cache_invalidate_info *inv_info)
-> > +{
-> > +	struct dmar_domain *dmar_domain = to_dmar_domain(domain);
-> > +	struct device_domain_info *info;
-> > +	struct intel_iommu *iommu;
-> > +	unsigned long flags;
-> > +	int cache_type;
-> > +	u8 bus, devfn;
-> > +	u16 did, sid;
-> > +	int ret = 0;
-> > +	u64 size = 0;
-> > +
-> > +	if (!inv_info || !dmar_domain ||
-> > +		inv_info->version !=
-> > IOMMU_CACHE_INVALIDATE_INFO_VERSION_1)
-> > +		return -EINVAL;
-> > +
-> > +	if (!dev || !dev_is_pci(dev))
-> > +		return -ENODEV;
-> > +
-> > +	iommu = device_to_iommu(dev, &bus, &devfn);
-> > +	if (!iommu)
-> > +		return -ENODEV;
-> > +
-> > +	spin_lock_irqsave(&device_domain_lock, flags);
-> > +	spin_lock(&iommu->lock);
-> > +	info = iommu_support_dev_iotlb(dmar_domain, iommu, bus,
-> > devfn);
-> > +	if (!info) {
-> > +		ret = -EINVAL;
-> > +		goto out_unlock;  
-> 
-> -ENOTSUPP?
-> 
-I guess it can go either way in that the error is based on invalid
-inputs.
-
-> > +	}
-> > +	did = dmar_domain->iommu_did[iommu->seq_id];
-> > +	sid = PCI_DEVID(bus, devfn);
-> > +
-> > +	/* Size is only valid in non-PASID selective invalidation
-> > */
-> > +	if (inv_info->granularity != IOMMU_INV_GRANU_PASID)
-> > +		size =
-> > to_vtd_size(inv_info->addr_info.granule_size,
-> > +
-> > inv_info->addr_info.nb_granules); +
-> > +	for_each_set_bit(cache_type, (unsigned long
-> > *)&inv_info->cache, IOMMU_CACHE_INV_TYPE_NR) {
-> > +		int granu = 0;
-> > +		u64 pasid = 0;
-> > +
-> > +		ret = to_vtd_granularity(cache_type,
-> > inv_info->granularity, &granu);
-> > +		if (ret) {
-> > +			pr_err("Invalid cache type and granu
-> > combination %d/%d\n", cache_type,
-> > +				inv_info->granularity);
-> > +			break;
-> > +		}
-> > +
-> > +		/* PASID is stored in different locations based on
-> > granularity */
-> > +		if (inv_info->granularity == IOMMU_INV_GRANU_PASID
-> > &&
-> > +			inv_info->pasid_info.flags &
-> > IOMMU_INV_PASID_FLAGS_PASID)
-> > +			pasid = inv_info->pasid_info.pasid;
-> > +		else if (inv_info->granularity ==
-> > IOMMU_INV_GRANU_ADDR &&
-> > +			inv_info->addr_info.flags &
-> > IOMMU_INV_ADDR_FLAGS_PASID)
-> > +			pasid = inv_info->addr_info.pasid;
-> > +		else {
-> > +			pr_err("Cannot find PASID for given cache
-> > type and granularity\n");
-> > +			break;
-> > +		}
-> > +
-> > +		switch (BIT(cache_type)) {
-> > +		case IOMMU_CACHE_INV_TYPE_IOTLB:
-> > +			if ((inv_info->granularity !=
-> > IOMMU_INV_GRANU_PASID) &&  
-> 
-> granularity == IOMMU_INV_GRANU_ADDR? otherwise it's unclear
-> why IOMMU_INV_GRANU_DOMAIN also needs size check.
-> 
-Good point! will fix.
-
-> > +				size && (inv_info->addr_info.addr &
-> > ((BIT(VTD_PAGE_SHIFT + size)) - 1))) {
-> > +				pr_err("Address out of range,
-> > 0x%llx, size order %llu\n",
-> > +					inv_info->addr_info.addr,
-> > size);
-> > +				ret = -ERANGE;
-> > +				goto out_unlock;
-> > +			}
-> > +
-> > +			qi_flush_piotlb(iommu, did,
-> > +					pasid,
-> > +					mm_to_dma_pfn(inv_info-  
-> > >addr_info.addr),  
-> > +					(granu ==
-> > QI_GRAN_NONG_PASID) ? - 1 : 1 << size,
-> > +					inv_info->addr_info.flags &
-> > IOMMU_INV_ADDR_FLAGS_LEAF);
-> > +
-> > +			/*
-> > +			 * Always flush device IOTLB if ATS is
-> > enabled since guest
-> > +			 * vIOMMU exposes CM = 1, no device IOTLB
-> > flush will be passed
-> > +			 * down.
-> > +			 */  
-> 
-> Does VT-d spec mention that no device IOTLB flush is required when
-> CM=1?
-> 
-Not explicitly. Just following the guideline in CH6.1 for efficient
-virtualization. Early on, we also had discussion on supporting virtio
-where IOTLB flush is inclusive.
-Let me rephrase the comment:
-/*
- * Always flush device IOTLB if ATS is enabled. vIOMMU
- * in the guest may assume IOTLB flush is inclusive,
- * which is more efficient.
- */
-
-
-> > +			if (info->ats_enabled) {
-> > +				qi_flush_dev_iotlb_pasid(iommu,
-> > sid, info-  
-> > >pfsid,  
-> > +						pasid,
-> > info->ats_qdep,
-> > +
-> > inv_info->addr_info.addr, size,
-> > +						granu);
-> > +			}
-> > +			break;
-> > +		case IOMMU_CACHE_INV_TYPE_DEV_IOTLB:
-> > +			if (info->ats_enabled) {
-> > +				qi_flush_dev_iotlb_pasid(iommu,
-> > sid, info-  
-> > >pfsid,  
-> > +
-> > inv_info->addr_info.pasid, info->ats_qdep,
-> > +
-> > inv_info->addr_info.addr, size,
-> > +						granu);  
-> 
-> I'm confused here. There are two granularities allowed for devtlb,
-> but here you only handle one of them?
-> 
-granu is passed into the flush function, which can be 1 or 0.
-
-> > +			} else
-> > +				pr_warn("Passdown device IOTLB
-> > flush w/o ATS!\n");
-> > +
-> > +			break;
-> > +		case IOMMU_CACHE_INV_TYPE_PASID:
-> > +			qi_flush_pasid_cache(iommu, did, granu,
-> > inv_info-  
-> > >pasid_info.pasid);  
-> > +  
-> 
-> as earlier comment, we shouldn't allow userspace or guest to
-> invalidate PASID cache
-> 
-same explanation :)
-
-> > +			break;
-> > +		default:
-> > +			dev_err(dev, "Unsupported IOMMU
-> > invalidation type %d\n",
-> > +				cache_type);
-> > +			ret = -EINVAL;
-> > +		}
-> > +	}
-> > +out_unlock:
-> > +	spin_unlock(&iommu->lock);
-> > +	spin_unlock_irqrestore(&device_domain_lock, flags);
-> > +
-> > +	return ret;
-> > +}
-> > +#endif
-> > +
-> >  static int intel_iommu_map(struct iommu_domain *domain,
-> >  			   unsigned long iova, phys_addr_t hpa,
-> >  			   size_t size, int iommu_prot, gfp_t gfp)
-> > @@ -6204,6 +6385,7 @@ const struct iommu_ops intel_iommu_ops = {
-> >  	.is_attach_deferred	=
-> > intel_iommu_is_attach_deferred, .pgsize_bitmap		=
-> > INTEL_IOMMU_PGSIZES, #ifdef CONFIG_INTEL_IOMMU_SVM
-> > +	.cache_invalidate	= intel_iommu_sva_invalidate,
-> >  	.sva_bind_gpasid	= intel_svm_bind_gpasid,
-> >  	.sva_unbind_gpasid	= intel_svm_unbind_gpasid,
-> >  #endif
-> > --
-> > 2.7.4  
+> > Eric
+> >   
+> > >  
+> > >> +	/* PASID cache */  
+> > >
+> > > PASID cache is fully managed by the host. Guest PASID cache
+> > > invalidation is interpreted by vIOMMU for bind and unbind
+> > > operations. I don't think we should accept any PASID cache
+> > > invalidation from userspace or guest. 
+>  [...]  
+> > inv_type_granu_table[IOMMU_CACHE_INV_TYPE_NR][IOMMU_INV_GRANU  
+>  [...]  
+> > >
+> > > btw do we really need both map and table here? Can't we just
+> > > use one table with unsupported granularity marked as a special
+> > > value?
+> > >  
+>  [...]  
+> > >
+> > > -ENOTSUPP?
+> > >  
+>  [...]  
+> > >
+> > > granularity == IOMMU_INV_GRANU_ADDR? otherwise it's unclear
+> > > why IOMMU_INV_GRANU_DOMAIN also needs size check.
+> > >  
+>  [...]  
+> > >>> addr_info.addr),  
+>  [...]  
+>  [...]  
+> > >> +			if (info->ats_enabled) {
+> > >> +				qi_flush_dev_iotlb_pasid(iommu,
+> > >> sid, info-  
+> > >>> pfsid,  
+>  [...]  
+> > >>> pfsid,  
+> > >> +
+> > >> inv_info->addr_info.pasid, info->ats_qdep,
+> > >> +
+> > >> inv_info->addr_info.addr, size,
+> > >> +						granu);  
+>  [...]  
+>  [...]  
+> > >>> pasid_info.pasid);  
+> > >> +  
+> > >
+> > > as earlier comment, we shouldn't allow userspace or guest to
+> > > invalidate PASID cache
+> > >  
+>  [...]  
+> > >  
 > 
 
 [Jacob Pan]
