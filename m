@@ -6,71 +6,71 @@ X-Spam-Status: No, score=-6.8 required=3.0 tests=HEADER_FROM_DIFFERENT_DOMAINS,
 	INCLUDES_PATCH,MAILING_LIST_MULTI,SIGNED_OFF_BY,SPF_HELO_NONE,SPF_PASS
 	autolearn=unavailable autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id AA582C2D0E9
-	for <iommu@archiver.kernel.org>; Tue, 31 Mar 2020 02:49:32 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 83CFCC43331
+	for <iommu@archiver.kernel.org>; Tue, 31 Mar 2020 03:34:35 +0000 (UTC)
 Received: from hemlock.osuosl.org (smtp2.osuosl.org [140.211.166.133])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by mail.kernel.org (Postfix) with ESMTPS id 744C92071A
-	for <iommu@archiver.kernel.org>; Tue, 31 Mar 2020 02:49:32 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 744C92071A
+	by mail.kernel.org (Postfix) with ESMTPS id 4DD9620658
+	for <iommu@archiver.kernel.org>; Tue, 31 Mar 2020 03:34:35 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 4DD9620658
 Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=intel.com
 Authentication-Results: mail.kernel.org; spf=pass smtp.mailfrom=iommu-bounces@lists.linux-foundation.org
 Received: from localhost (localhost [127.0.0.1])
-	by hemlock.osuosl.org (Postfix) with ESMTP id 32EC688364;
-	Tue, 31 Mar 2020 02:49:32 +0000 (UTC)
+	by hemlock.osuosl.org (Postfix) with ESMTP id 23C588833F;
+	Tue, 31 Mar 2020 03:34:35 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
 Received: from hemlock.osuosl.org ([127.0.0.1])
 	by localhost (.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
-	with ESMTP id AAi5nDp+Wqcd; Tue, 31 Mar 2020 02:49:30 +0000 (UTC)
+	with ESMTP id azvSiGUuVFGk; Tue, 31 Mar 2020 03:34:31 +0000 (UTC)
 Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [140.211.9.56])
-	by hemlock.osuosl.org (Postfix) with ESMTP id 2646F87F34;
-	Tue, 31 Mar 2020 02:49:30 +0000 (UTC)
+	by hemlock.osuosl.org (Postfix) with ESMTP id 6CB1D8833D;
+	Tue, 31 Mar 2020 03:34:31 +0000 (UTC)
 Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
-	by lists.linuxfoundation.org (Postfix) with ESMTP id EFA61C1D7E;
-	Tue, 31 Mar 2020 02:49:29 +0000 (UTC)
-Received: from hemlock.osuosl.org (smtp2.osuosl.org [140.211.166.133])
- by lists.linuxfoundation.org (Postfix) with ESMTP id 66742C07FF
- for <iommu@lists.linux-foundation.org>; Tue, 31 Mar 2020 02:49:28 +0000 (UTC)
+	by lists.linuxfoundation.org (Postfix) with ESMTP id 47698C1AE8;
+	Tue, 31 Mar 2020 03:34:31 +0000 (UTC)
+Received: from silver.osuosl.org (smtp3.osuosl.org [140.211.166.136])
+ by lists.linuxfoundation.org (Postfix) with ESMTP id 8CE92C07FF
+ for <iommu@lists.linux-foundation.org>; Tue, 31 Mar 2020 03:34:30 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
- by hemlock.osuosl.org (Postfix) with ESMTP id 50DCF87F38
- for <iommu@lists.linux-foundation.org>; Tue, 31 Mar 2020 02:49:28 +0000 (UTC)
+ by silver.osuosl.org (Postfix) with ESMTP id 738DE24B3A
+ for <iommu@lists.linux-foundation.org>; Tue, 31 Mar 2020 03:34:30 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from hemlock.osuosl.org ([127.0.0.1])
+Received: from silver.osuosl.org ([127.0.0.1])
  by localhost (.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
- with ESMTP id o50KsPC8Q+zg for <iommu@lists.linux-foundation.org>;
- Tue, 31 Mar 2020 02:49:27 +0000 (UTC)
+ with ESMTP id YB8ENPqUVvrT for <iommu@lists.linux-foundation.org>;
+ Tue, 31 Mar 2020 03:34:27 +0000 (UTC)
 X-Greylist: domain auto-whitelisted by SQLgrey-1.7.6
-Received: from mga02.intel.com (mga02.intel.com [134.134.136.20])
- by hemlock.osuosl.org (Postfix) with ESMTPS id EC03F87F34
- for <iommu@lists.linux-foundation.org>; Tue, 31 Mar 2020 02:49:26 +0000 (UTC)
-IronPort-SDR: jAz6tMatHioOJ6x/9VhN1fgbLyxmifvrPuEyQnEDubH1eROXj8Mrx+UpaG2iAlzLqjsMIgV4oR
- a5afi/0FW2hw==
+Received: from mga06.intel.com (mga06.intel.com [134.134.136.31])
+ by silver.osuosl.org (Postfix) with ESMTPS id 6182B23724
+ for <iommu@lists.linux-foundation.org>; Tue, 31 Mar 2020 03:34:27 +0000 (UTC)
+IronPort-SDR: wrMmd4vtIyUeUr1Pkd7WA3BWUTrw85925d4CWU+KTjUa2Jp7oDFhD4aHTfyWykXPO/SYeFNHpq
+ PvtROSLq7Bcw==
 X-Amp-Result: SKIPPED(no attachment in message)
 X-Amp-File-Uploaded: False
-Received: from fmsmga004.fm.intel.com ([10.253.24.48])
- by orsmga101.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384;
- 30 Mar 2020 19:49:25 -0700
-IronPort-SDR: KfYs90Q2gie6yYtzl8uZASkCYnXFlYLDv3NSq27MtyqD0DeF0v5BviSYbGYOMgKJ/OUL+duE0+
- dVV/oiVta9yA==
+Received: from orsmga005.jf.intel.com ([10.7.209.41])
+ by orsmga104.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384;
+ 30 Mar 2020 20:34:26 -0700
+IronPort-SDR: xqsPVbAPKs3kmyNk/LRezlXyWaSp+NrYpn+GOtwHeulK6TQZoxPINP1VXeGeUwemI18Heow3uZ
+ 6OzXf15IQQCw==
 X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.72,326,1580803200"; d="scan'208";a="272590048"
-Received: from fmsmsx107.amr.corp.intel.com ([10.18.124.205])
- by fmsmga004.fm.intel.com with ESMTP; 30 Mar 2020 19:49:25 -0700
-Received: from fmsmsx605.amr.corp.intel.com (10.18.126.85) by
- fmsmsx107.amr.corp.intel.com (10.18.124.205) with Microsoft SMTP Server (TLS)
- id 14.3.439.0; Mon, 30 Mar 2020 19:49:25 -0700
-Received: from fmsmsx605.amr.corp.intel.com (10.18.126.85) by
- fmsmsx605.amr.corp.intel.com (10.18.126.85) with Microsoft SMTP Server
+X-IronPort-AV: E=Sophos;i="5.72,326,1580803200"; d="scan'208";a="422156194"
+Received: from fmsmsx103.amr.corp.intel.com ([10.18.124.201])
+ by orsmga005.jf.intel.com with ESMTP; 30 Mar 2020 20:34:26 -0700
+Received: from fmsmsx602.amr.corp.intel.com (10.18.126.82) by
+ FMSMSX103.amr.corp.intel.com (10.18.124.201) with Microsoft SMTP Server (TLS)
+ id 14.3.439.0; Mon, 30 Mar 2020 20:34:25 -0700
+Received: from fmsmsx603.amr.corp.intel.com (10.18.126.83) by
+ fmsmsx602.amr.corp.intel.com (10.18.126.82) with Microsoft SMTP Server
  (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.1713.5; Mon, 30 Mar 2020 19:49:24 -0700
-Received: from shsmsx105.ccr.corp.intel.com (10.239.4.158) by
- fmsmsx605.amr.corp.intel.com (10.18.126.85) with Microsoft SMTP Server
+ 15.1.1713.5; Mon, 30 Mar 2020 20:34:25 -0700
+Received: from shsmsx102.ccr.corp.intel.com (10.239.4.154) by
+ fmsmsx603.amr.corp.intel.com (10.18.126.83) with Microsoft SMTP Server
  (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256) id 15.1.1713.5
- via Frontend Transport; Mon, 30 Mar 2020 19:49:24 -0700
+ via Frontend Transport; Mon, 30 Mar 2020 20:34:24 -0700
 Received: from shsmsx104.ccr.corp.intel.com ([169.254.5.225]) by
- SHSMSX105.ccr.corp.intel.com ([169.254.11.213]) with mapi id 14.03.0439.000;
- Tue, 31 Mar 2020 10:49:22 +0800
+ shsmsx102.ccr.corp.intel.com ([169.254.2.138]) with mapi id 14.03.0439.000;
+ Tue, 31 Mar 2020 11:34:22 +0800
 From: "Tian, Kevin" <kevin.tian@intel.com>
 To: Auger Eric <eric.auger@redhat.com>, Jacob Pan
  <jacob.jun.pan@linux.intel.com>, Lu Baolu <baolu.lu@linux.intel.com>,
@@ -81,14 +81,14 @@ To: Auger Eric <eric.auger@redhat.com>, Jacob Pan
  <jean-philippe@linaro.com>
 Subject: RE: [PATCH V10 08/11] iommu/vt-d: Add svm/sva invalidate function
 Thread-Topic: [PATCH V10 08/11] iommu/vt-d: Add svm/sva invalidate function
-Thread-Index: AQHV/w5hchZ4XNV890+XBMGi6MGw3ahdsRPAgAGJtYCAAsrMAA==
-Date: Tue, 31 Mar 2020 02:49:21 +0000
-Message-ID: <AADFC41AFE54684AB9EE6CBC0274A5D19D800D67@SHSMSX104.ccr.corp.intel.com>
+Thread-Index: AQHV/w5hchZ4XNV890+XBMGi6MGw3ahdsRPAgAGSVgCAAs5UcA==
+Date: Tue, 31 Mar 2020 03:34:22 +0000
+Message-ID: <AADFC41AFE54684AB9EE6CBC0274A5D19D800E75@SHSMSX104.ccr.corp.intel.com>
 References: <1584746861-76386-1-git-send-email-jacob.jun.pan@linux.intel.com>
  <1584746861-76386-9-git-send-email-jacob.jun.pan@linux.intel.com>
  <AADFC41AFE54684AB9EE6CBC0274A5D19D7FA0AB@SHSMSX104.ccr.corp.intel.com>
- <3215b83c-81f7-a30f-fe82-a51f29d7b874@redhat.com>
-In-Reply-To: <3215b83c-81f7-a30f-fe82-a51f29d7b874@redhat.com>
+ <5c76ab2a-7984-5454-4885-2c80f9048f6f@redhat.com>
+In-Reply-To: <5c76ab2a-7984-5454-4885-2c80f9048f6f@redhat.com>
 Accept-Language: en-US
 Content-Language: en-US
 X-MS-Has-Attach: 
@@ -117,9 +117,7 @@ Errors-To: iommu-bounces@lists.linux-foundation.org
 Sender: "iommu" <iommu-bounces@lists.linux-foundation.org>
 
 > From: Auger Eric <eric.auger@redhat.com>
-> Sent: Sunday, March 29, 2020 11:34 PM
-> 
-> Hi,
+> Sent: Monday, March 30, 2020 12:05 AM
 > 
 > On 3/28/20 11:01 AM, Tian, Kevin wrote:
 > >> From: Jacob Pan <jacob.jun.pan@linux.intel.com>
@@ -212,40 +210,13 @@ Sender: "iommu" <iommu-bounces@lists.linux-foundation.org>
 > > Is this combination correct? when single PASID is being specified, it is
 > > essentially a page-selective invalidation since you need provide Address
 > > and Size.
-> Isn't it the same when G=1? Still the addr/size is used. Doesn't it
-
-I thought addr/size is not used when G=1, but it might be wrong. I'm
-checking with our vt-d spec owner.
-
-> correspond to IOMMU_INV_GRANU_ADDR with
-> IOMMU_INV_ADDR_FLAGS_PASID flag
-> unset?
-> 
-> so {0, 0, 1}?
-
-I have one more open:
-
-How does userspace know which invalidation type/gran is supported?
-I didn't see such capability reporting in Yi's VFIO vSVA patch set. Do we
-want the user/kernel assume the same capability set if they are 
-architectural? However the kernel could also do some optimization
-e.g. hide devtlb invalidation capability given that the kernel already 
-invalidate devtlb automatically when serving iotlb invalidation...
-
-Thanks
-Kevin
-
-> 
-> Thanks
-> 
-> Eric
-> 
 > >
 > >> +	/* PASID cache */
 > >
 > > PASID cache is fully managed by the host. Guest PASID cache invalidation
 > > is interpreted by vIOMMU for bind and unbind operations. I don't think
 > > we should accept any PASID cache invalidation from userspace or guest.
+> I tend to agree here.
 > >
 > >> +	{1, 1, 0}
 > >> +};
@@ -275,6 +246,20 @@ Kevin
 > > btw do we really need both map and table here? Can't we just
 > > use one table with unsupported granularity marked as a special
 > > value?
+> I asked the same question some time ago. If I remember correctly the
+> issue is while a granu can be supported in inv_type_granu_map, the
+> associated value in inv_type_granu_table can be 0. This typically
+> matches both values of G field (0 or 1) in the invalidation cmd. See
+> other comment below.
+
+I didn't fully understand it. Also what does a value '0' imply? also
+it's interesting to see below in [PATCH 07/11]:
+
++/* QI Dev-IOTLB inv granu */
++#define QI_DEV_IOTLB_GRAN_ALL		1
++#define QI_DEV_IOTLB_GRAN_PASID_SEL	0
++
+
 > >
 > >> +	return 0;
 > >> +}
@@ -424,6 +409,15 @@ Kevin
 > >
 > > I'm confused here. There are two granularities allowed for devtlb, but here
 > > you only handle one of them?
+> granu is the result of to_vtd_granularity() so it can take either of the
+> 2 values.
+
+yes, you're right. 
+
+> 
+> Thanks
+> 
+> Eric
 > >
 > >> +			} else
 > >> +				pr_warn("Passdown device IOTLB flush w/o
