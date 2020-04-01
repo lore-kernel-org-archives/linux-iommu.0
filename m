@@ -2,80 +2,98 @@ Return-Path: <SRS0=PWDw=5R=lists.linux-foundation.org=iommu-bounces@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-8.2 required=3.0 tests=HEADER_FROM_DIFFERENT_DOMAINS,
-	INCLUDES_PATCH,MAILING_LIST_MULTI,SIGNED_OFF_BY,SPF_HELO_NONE,SPF_PASS,
-	URIBL_BLOCKED,USER_AGENT_SANE_2 autolearn=unavailable autolearn_force=no
+X-Spam-Status: No, score=-6.5 required=3.0 tests=DKIM_INVALID,DKIM_SIGNED,
+	HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_PATCH,MAILING_LIST_MULTI,SIGNED_OFF_BY,
+	SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED autolearn=unavailable autolearn_force=no
 	version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 5F7BBC2D0F3
-	for <iommu@archiver.kernel.org>; Wed,  1 Apr 2020 15:42:16 +0000 (UTC)
-Received: from hemlock.osuosl.org (smtp2.osuosl.org [140.211.166.133])
+	by smtp.lore.kernel.org (Postfix) with ESMTP id E48A1C2D0F0
+	for <iommu@archiver.kernel.org>; Wed,  1 Apr 2020 15:49:46 +0000 (UTC)
+Received: from whitealder.osuosl.org (smtp1.osuosl.org [140.211.166.138])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by mail.kernel.org (Postfix) with ESMTPS id 328A1212CC
-	for <iommu@archiver.kernel.org>; Wed,  1 Apr 2020 15:42:16 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 328A1212CC
-Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=linux.intel.com
+	by mail.kernel.org (Postfix) with ESMTPS id B2506214DB
+	for <iommu@archiver.kernel.org>; Wed,  1 Apr 2020 15:49:46 +0000 (UTC)
+Authentication-Results: mail.kernel.org;
+	dkim=fail reason="signature verification failed" (2048-bit key) header.d=linaro.org header.i=@linaro.org header.b="V1X71f5r"
+DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org B2506214DB
+Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=linaro.org
 Authentication-Results: mail.kernel.org; spf=pass smtp.mailfrom=iommu-bounces@lists.linux-foundation.org
 Received: from localhost (localhost [127.0.0.1])
-	by hemlock.osuosl.org (Postfix) with ESMTP id 074F0882A9;
-	Wed,  1 Apr 2020 15:42:16 +0000 (UTC)
+	by whitealder.osuosl.org (Postfix) with ESMTP id 81E2686DD6;
+	Wed,  1 Apr 2020 15:49:46 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from hemlock.osuosl.org ([127.0.0.1])
+Received: from whitealder.osuosl.org ([127.0.0.1])
 	by localhost (.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
-	with ESMTP id clVoLBvl1yIb; Wed,  1 Apr 2020 15:42:14 +0000 (UTC)
+	with ESMTP id VAthNKR9KSk3; Wed,  1 Apr 2020 15:49:45 +0000 (UTC)
 Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [140.211.9.56])
-	by hemlock.osuosl.org (Postfix) with ESMTP id 48EA1882A3;
-	Wed,  1 Apr 2020 15:42:14 +0000 (UTC)
+	by whitealder.osuosl.org (Postfix) with ESMTP id B22F686DAD;
+	Wed,  1 Apr 2020 15:49:45 +0000 (UTC)
 Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
-	by lists.linuxfoundation.org (Postfix) with ESMTP id 3B2E4C1D7F;
-	Wed,  1 Apr 2020 15:42:14 +0000 (UTC)
+	by lists.linuxfoundation.org (Postfix) with ESMTP id 9CF51C1D7F;
+	Wed,  1 Apr 2020 15:49:45 +0000 (UTC)
 Received: from fraxinus.osuosl.org (smtp4.osuosl.org [140.211.166.137])
- by lists.linuxfoundation.org (Postfix) with ESMTP id 74338C089F
- for <iommu@lists.linux-foundation.org>; Wed,  1 Apr 2020 15:42:13 +0000 (UTC)
+ by lists.linuxfoundation.org (Postfix) with ESMTP id 84171C089F
+ for <iommu@lists.linux-foundation.org>; Wed,  1 Apr 2020 15:49:44 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
- by fraxinus.osuosl.org (Postfix) with ESMTP id 5E6EC86D8D
- for <iommu@lists.linux-foundation.org>; Wed,  1 Apr 2020 15:42:13 +0000 (UTC)
+ by fraxinus.osuosl.org (Postfix) with ESMTP id 7B38186C6A
+ for <iommu@lists.linux-foundation.org>; Wed,  1 Apr 2020 15:49:44 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
 Received: from fraxinus.osuosl.org ([127.0.0.1])
  by localhost (.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
- with ESMTP id l9FL66ESEG_h for <iommu@lists.linux-foundation.org>;
- Wed,  1 Apr 2020 15:42:12 +0000 (UTC)
+ with ESMTP id 2Nk4pZi_9QyK for <iommu@lists.linux-foundation.org>;
+ Wed,  1 Apr 2020 15:49:43 +0000 (UTC)
 X-Greylist: domain auto-whitelisted by SQLgrey-1.7.6
-Received: from mga02.intel.com (mga02.intel.com [134.134.136.20])
- by fraxinus.osuosl.org (Postfix) with ESMTPS id 6D5F386D8B
- for <iommu@lists.linux-foundation.org>; Wed,  1 Apr 2020 15:42:12 +0000 (UTC)
-IronPort-SDR: /P36AvDWVdgfsti/+L3tsBQ0+4ElqHLfDCIoVEKmnDZkLFjishqccOWs8h4+wZuzZJh4kSEeMi
- hXhL/WMlrs4g==
-X-Amp-Result: SKIPPED(no attachment in message)
-X-Amp-File-Uploaded: False
-Received: from orsmga001.jf.intel.com ([10.7.209.18])
- by orsmga101.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384;
- 01 Apr 2020 08:42:11 -0700
-IronPort-SDR: rgCl/iz8Ek08zmzuVmldpgZqfvojhQHg1defdVYSXAfYoo4olQfaqbZ1R5j8j90i2P1BvHtIXv
- XhCaL5zD5Xlg==
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.72,332,1580803200"; d="scan'208";a="328495700"
-Received: from jacob-builder.jf.intel.com (HELO jacob-builder) ([10.7.199.155])
- by orsmga001.jf.intel.com with ESMTP; 01 Apr 2020 08:42:11 -0700
-Date: Wed, 1 Apr 2020 08:47:59 -0700
-From: Jacob Pan <jacob.jun.pan@linux.intel.com>
-To: "Tian, Kevin" <kevin.tian@intel.com>
-Subject: Re: [PATCH V10 11/11] iommu/vt-d: Add custom allocator for IOASID
-Message-ID: <20200401084759.575b38c4@jacob-builder>
-In-Reply-To: <AADFC41AFE54684AB9EE6CBC0274A5D19D7FA146@SHSMSX104.ccr.corp.intel.com>
-References: <1584746861-76386-1-git-send-email-jacob.jun.pan@linux.intel.com>
- <1584746861-76386-12-git-send-email-jacob.jun.pan@linux.intel.com>
- <AADFC41AFE54684AB9EE6CBC0274A5D19D7FA146@SHSMSX104.ccr.corp.intel.com>
-Organization: OTC
-X-Mailer: Claws Mail 3.13.2 (GTK+ 2.24.30; x86_64-pc-linux-gnu)
+Received: from mail-wr1-f68.google.com (mail-wr1-f68.google.com
+ [209.85.221.68])
+ by fraxinus.osuosl.org (Postfix) with ESMTPS id 3D52985F19
+ for <iommu@lists.linux-foundation.org>; Wed,  1 Apr 2020 15:49:43 +0000 (UTC)
+Received: by mail-wr1-f68.google.com with SMTP id m11so599228wrx.10
+ for <iommu@lists.linux-foundation.org>; Wed, 01 Apr 2020 08:49:43 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linaro.org; s=google;
+ h=date:from:to:cc:subject:message-id:references:mime-version
+ :content-disposition:in-reply-to;
+ bh=C/6o2vAlNYHnEoJMtN8wwi/oRzeStDRZUTB/Nd2Hv7M=;
+ b=V1X71f5rZiDGmnBfh3sBWCp7T9Jp+5xgMJtds1xfZSu8D+O/hvzseXEbwd0hbE/ic5
+ x2TkT+43IaifgxbqN3WD5qF0jkxiEJn/vxu7PJRb8DLrWPo6nyc2sc0xJTT/Dgr5U/Ks
+ I+dljP0laNt/dwhmWSN9NgnGnsQ5TIJIRWzDiczColatMsLZ4AxN0FV2nGqCjw0hr5vA
+ Zoy0T/CjYuH6DlYK8xB91i5btiy69jf9MTCkULGVja5Tvk+K0iLwEzJSa0OqQVJ5Ulf2
+ xfg3KFSYDoo0qFQSaOx3myBfeqcG6DhAd2eTiiX5P4BHoNaXawbCHD7VO9oOVywNrhMn
+ kYog==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+ d=1e100.net; s=20161025;
+ h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+ :mime-version:content-disposition:in-reply-to;
+ bh=C/6o2vAlNYHnEoJMtN8wwi/oRzeStDRZUTB/Nd2Hv7M=;
+ b=dDnQAt3a3Hwu9E39sfw96Tht4BJR6Z+GW2mLO2XxZt5EmDMhUQ5nOiFkfw3SKa1ngb
+ 5L4f5nY4yZh5xBNkhYOxyAppVVxBvloYjENJaHGfDKDY32d7YfFPnaaFcyXJlr4a7M1H
+ d6rsxl590iIAH+8sXOwH16jTGTgH0nWhmbFpiM92ZKtISXq5uVZN5uyRr5zFpnIQ+O/X
+ 32raNPFNBxtURMjoQdC+xUEcn9B3xF5TyzheQF9WAHiTWxDptAnWtUfAyDKV/qrvkK/O
+ a41PlfS1m4eWpj7pvGKoe6QS8bLyodaSn2IjZNexU6fVyNql0WMMgzP80NZfS3dlJnB6
+ kkHg==
+X-Gm-Message-State: ANhLgQ0Hf6heoUYkjuxrOdg1roH3rjdT8pfrli/1DPwfTlDljm1GVb7Y
+ PCdC2Vben5qTF3umS8RTjYZI6A==
+X-Google-Smtp-Source: ADFU+vsj+IPnTlTnW8cEeiZkmxOp3zrZSNdsM6O5dJ55cTv7aer2xndG3sAVVLsjPUulI2AMAH/7/g==
+X-Received: by 2002:adf:84a3:: with SMTP id 32mr25563249wrg.378.1585756181494; 
+ Wed, 01 Apr 2020 08:49:41 -0700 (PDT)
+Received: from myrica ([2001:171b:226b:54a0:6097:1406:6470:33b5])
+ by smtp.gmail.com with ESMTPSA id s131sm3258684wmf.35.2020.04.01.08.49.40
+ (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+ Wed, 01 Apr 2020 08:49:40 -0700 (PDT)
+Date: Wed, 1 Apr 2020 17:49:32 +0200
+From: Jean-Philippe Brucker <jean-philippe@linaro.org>
+To: Robin Murphy <robin.murphy@arm.com>
+Subject: Re: [RFC PATCH v2] iommu/virtio: Use page size bitmap supported by
+ endpoint
+Message-ID: <20200401154932.GA1124215@myrica>
+References: <20200401113804.21616-1-bbhushan2@marvell.com>
+ <b75beb74-89ce-fd6a-6207-3c0d7f479215@arm.com>
 MIME-Version: 1.0
-Cc: "Raj, Ashok" <ashok.raj@intel.com>,
- Jean-Philippe Brucker <jean-philippe@linaro.com>,
- "iommu@lists.linux-foundation.org" <iommu@lists.linux-foundation.org>,
- LKML <linux-kernel@vger.kernel.org>,
- Alex Williamson <alex.williamson@redhat.com>,
- David Woodhouse <dwmw2@infradead.org>, Jonathan Cameron <jic23@kernel.org>
+Content-Disposition: inline
+In-Reply-To: <b75beb74-89ce-fd6a-6207-3c0d7f479215@arm.com>
+Cc: mst@redhat.com, jasowang@redhat.com, linux-kernel@vger.kernel.org,
+ virtualization@lists.linux-foundation.org, iommu@lists.linux-foundation.org,
+ Bharat Bhushan <bbhushan2@marvell.com>, eric.auger.pro@gmail.com
 X-BeenThere: iommu@lists.linux-foundation.org
 X-Mailman-Version: 2.1.15
 Precedence: list
@@ -93,228 +111,190 @@ Content-Transfer-Encoding: 7bit
 Errors-To: iommu-bounces@lists.linux-foundation.org
 Sender: "iommu" <iommu-bounces@lists.linux-foundation.org>
 
-On Sat, 28 Mar 2020 10:22:41 +0000
-"Tian, Kevin" <kevin.tian@intel.com> wrote:
-
-> > From: Jacob Pan <jacob.jun.pan@linux.intel.com>
-> > Sent: Saturday, March 21, 2020 7:28 AM
+On Wed, Apr 01, 2020 at 02:00:13PM +0100, Robin Murphy wrote:
+> On 2020-04-01 12:38 pm, Bharat Bhushan wrote:
+> > Different endpoint can support different page size, probe
+> > endpoint if it supports specific page size otherwise use
+> > global page sizes.
 > > 
-> > When VT-d driver runs in the guest, PASID allocation must be
-> > performed via virtual command interface. This patch registers a
-> > custom IOASID allocator which takes precedence over the default
-> > XArray based allocator. The resulting IOASID allocation will always
-> > come from the host. This ensures that PASID namespace is system-
-> > wide.
-> > 
-> > Signed-off-by: Lu Baolu <baolu.lu@linux.intel.com>
-> > Signed-off-by: Liu, Yi L <yi.l.liu@intel.com>
-> > Signed-off-by: Jacob Pan <jacob.jun.pan@linux.intel.com>
+> > Signed-off-by: Bharat Bhushan <bbhushan2@marvell.com>
 > > ---
-> >  drivers/iommu/intel-iommu.c | 84
-> > +++++++++++++++++++++++++++++++++++++++++++++
-> >  include/linux/intel-iommu.h |  2 ++
-> >  2 files changed, 86 insertions(+)
+> >   drivers/iommu/virtio-iommu.c      | 33 +++++++++++++++++++++++++++----
+> >   include/uapi/linux/virtio_iommu.h |  7 +++++++
+> >   2 files changed, 36 insertions(+), 4 deletions(-)
 > > 
-> > diff --git a/drivers/iommu/intel-iommu.c
-> > b/drivers/iommu/intel-iommu.c index a76afb0fd51a..c1c0b0fb93c3
-> > 100644 --- a/drivers/iommu/intel-iommu.c
-> > +++ b/drivers/iommu/intel-iommu.c
-> > @@ -1757,6 +1757,9 @@ static void free_dmar_iommu(struct intel_iommu
-> > *iommu)
-> >  		if (ecap_prs(iommu->ecap))
-> >  			intel_svm_finish_prq(iommu);
-> >  	}
-> > +	if (ecap_vcs(iommu->ecap) && vccap_pasid(iommu->vccap))
+> > diff --git a/drivers/iommu/virtio-iommu.c b/drivers/iommu/virtio-iommu.c
+> > index cce329d71fba..c794cb5b7b3e 100644
+> > --- a/drivers/iommu/virtio-iommu.c
+> > +++ b/drivers/iommu/virtio-iommu.c
+> > @@ -78,6 +78,7 @@ struct viommu_endpoint {
+> >   	struct viommu_dev		*viommu;
+> >   	struct viommu_domain		*vdomain;
+> >   	struct list_head		resv_regions;
+> > +	u64				pgsize_bitmap;
+> >   };
+> >   struct viommu_request {
+> > @@ -415,6 +416,20 @@ static int viommu_replay_mappings(struct viommu_domain *vdomain)
+> >   	return ret;
+> >   }
+> > +static int viommu_set_pgsize_bitmap(struct viommu_endpoint *vdev,
+> > +				    struct virtio_iommu_probe_pgsize_mask *mask,
+> > +				    size_t len)
 > > +
-> > ioasid_unregister_allocator(&iommu->pasid_allocator); +
-> >  #endif
-> >  }
-> > 
-> > @@ -3291,6 +3294,84 @@ static int copy_translation_tables(struct
-> > intel_iommu *iommu)
-> >  	return ret;
-> >  }
-> > 
-> > +#ifdef CONFIG_INTEL_IOMMU_SVM
-> > +static ioasid_t intel_ioasid_alloc(ioasid_t min, ioasid_t max,
-> > void *data)  
-> 
-> the name is too generic... can we add vcmd in the name to clarify
-> its purpose, e.g. intel_vcmd_ioasid_alloc?
-> 
-I feel the intel_ prefix is a natural extension of a generic API, we do
-that for other IOMMU APIs, right?
-
 > > +{
-> > +	struct intel_iommu *iommu = data;
-> > +	ioasid_t ioasid;
+> > +	u64 pgsize_bitmap = le64_to_cpu(mask->pgsize_bitmap);
 > > +
-> > +	if (!iommu)
-> > +		return INVALID_IOASID;
-> > +	/*
-> > +	 * VT-d virtual command interface always uses the full 20
-> > bit
-> > +	 * PASID range. Host can partition guest PASID range based
-> > on
-> > +	 * policies but it is out of guest's control.
-> > +	 */
-> > +	if (min < PASID_MIN || max > intel_pasid_max_id)
-> > +		return INVALID_IOASID;
+> > +	if (len < sizeof(*mask))
+> > +		return -EINVAL;
 > > +
-> > +	if (vcmd_alloc_pasid(iommu, &ioasid))
-> > +		return INVALID_IOASID;
-> > +
-> > +	return ioasid;
+> > +	vdev->pgsize_bitmap = pgsize_bitmap;
+> > +	return 0;
 > > +}
 > > +
-> > +static void intel_ioasid_free(ioasid_t ioasid, void *data)
-> > +{
-> > +	struct intel_iommu *iommu = data;
+> >   static int viommu_add_resv_mem(struct viommu_endpoint *vdev,
+> >   			       struct virtio_iommu_probe_resv_mem *mem,
+> >   			       size_t len)
+> > @@ -494,11 +509,13 @@ static int viommu_probe_endpoint(struct viommu_dev *viommu, struct device *dev)
+> >   	while (type != VIRTIO_IOMMU_PROBE_T_NONE &&
+> >   	       cur < viommu->probe_size) {
+> >   		len = le16_to_cpu(prop->length) + sizeof(*prop);
+> > -
+
+Whitespace change
+
+> >   		switch (type) {
+> >   		case VIRTIO_IOMMU_PROBE_T_RESV_MEM:
+> >   			ret = viommu_add_resv_mem(vdev, (void *)prop, len);
+> >   			break;
+> > +		case VIRTIO_IOMMU_PROBE_T_PAGE_SIZE_MASK:
+> > +			ret = viommu_set_pgsize_bitmap(vdev, (void *)prop, len);
+> > +			break;
+> >   		default:
+> >   			dev_err(dev, "unknown viommu prop 0x%x\n", type);
+> >   		}
+> > @@ -607,16 +624,23 @@ static struct iommu_domain *viommu_domain_alloc(unsigned type)
+> >   	return &vdomain->domain;
+> >   }
+> > -static int viommu_domain_finalise(struct viommu_dev *viommu,
+> > +static int viommu_domain_finalise(struct viommu_endpoint *vdev,
+> >   				  struct iommu_domain *domain)
+> >   {
+> >   	int ret;
+> >   	struct viommu_domain *vdomain = to_viommu_domain(domain);
+> > +	struct viommu_dev *viommu = vdev->viommu;
+> >   	vdomain->viommu		= viommu;
+> >   	vdomain->map_flags	= viommu->map_flags;
+> > -	domain->pgsize_bitmap	= viommu->pgsize_bitmap;
+> > +	/* Devices in same domain must support same size pages */
+> 
+> AFAICS what the code appears to do is enforce that the first endpoint
+> attached to any domain has the same pgsize_bitmap as the most recently
+> probed viommu_dev instance, then ignore any subsequent endpoints attached to
+> the same domain. Thus I'm not sure that comment is accurate.
+> 
+
+Yes viommu_domain_finalise() is only called once. What I had in mind is
+something like:
+
+---- 8< ----
+diff --git a/drivers/iommu/virtio-iommu.c b/drivers/iommu/virtio-iommu.c
+index 750f69c49b95..8303b7b513ff 100644
+--- a/drivers/iommu/virtio-iommu.c
++++ b/drivers/iommu/virtio-iommu.c
+@@ -639,6 +639,29 @@ static int viommu_domain_finalise(struct viommu_endpoint *vdev,
+ 	return 0;
+ }
+ 
++/*
++ * Check whether the endpoint's capabilities are compatible with other endpoints
++ * in the domain. Report any inconsistency.
++ */
++static bool viommu_endpoint_is_compatible(struct viommu_endpoint *vdev,
++					  struct viommu_domain *vdomain)
++{
++	struct device *dev = vdev->dev;
++
++	if (vdomain->viommu != vdev->viommu) {
++		dev_err(dev, "cannot attach to foreign vIOMMU\n");
++		return false;
++	}
++
++	if (vdomain->domain.pgsize_bitmap != vdev->pgsize_bitmap) {
++		dev_err(dev, "incompatible domain bitmap 0x%lx != 0x%lx\n",
++			vdomain->domain.pgsize_bitmap, vdev->pgsize_bitmap);
++		return false;
++	}
++
++	return true;
++}
++
+ static void viommu_domain_free(struct iommu_domain *domain)
+ {
+ 	struct viommu_domain *vdomain = to_viommu_domain(domain);
+@@ -670,9 +693,8 @@ static int viommu_attach_dev(struct iommu_domain *domain, struct device *dev)
+ 		 * owns it.
+ 		 */
+ 		ret = viommu_domain_finalise(vdev, domain);
+-	} else if (vdomain->viommu != vdev->viommu) {
+-		dev_err(dev, "cannot attach to foreign vIOMMU\n");
+-		ret = -EXDEV;
++	} else if (!viommu_endpoint_is_compatible(vdev, vdomain)) {
++		ret = -EINVAL;
+ 	}
+ 	mutex_unlock(&vdomain->mutex);
+---- >8 ----
+
+> 
+> > +	if ((domain->pgsize_bitmap != viommu->pgsize_bitmap) &&
+> > +	    (domain->pgsize_bitmap != vdev->pgsize_bitmap))
+> > +		return -EINVAL;
 > > +
-> > +	if (!iommu)
-> > +		return;
-> > +	/*
-> > +	 * Sanity check the ioasid owner is done at upper layer,
-> > e.g. VFIO
-> > +	 * We can only free the PASID when all the devices are
-> > unbound.
-> > +	 */
-> > +	if (ioasid_find(NULL, ioasid, NULL)) {
-> > +		pr_alert("Cannot free active IOASID %d\n", ioasid);
-> > +		return;
-> > +	}  
-> 
-> However the sanity check is not done in default_free. Is there a
-> reason why using vcmd adds such  new requirement?
-> 
-Since we don't support nested guest. This vcmd allocator is only used
-by the guest IOMMU driver not VFIO. We expect IOMMU driver to have
-control of the free()/unbind() ordering.
-
-For default_free, it can come from user space and host VFIO which can
-be out of order. But we will solve that issue with the blocking
-notifier.
-
-> > +	vcmd_free_pasid(iommu, ioasid);
-> > +}
+> > +	domain->pgsize_bitmap = vdev->pgsize_bitmap;
 > > +
-> > +static void register_pasid_allocator(struct intel_iommu *iommu)
-> > +{
-> > +	/*
-> > +	 * If we are running in the host, no need for custom
-> > allocator
-> > +	 * in that PASIDs are allocated from the host system-wide.
-> > +	 */
-> > +	if (!cap_caching_mode(iommu->cap))
-> > +		return;  
-> 
-> is it more accurate to check against vcmd capability?
-> 
-I think this is sufficient. The spec says if vcmd is present, we must
-use it but not the other way.
+> >   	domain->geometry	= viommu->geometry;
+> >   	ret = ida_alloc_range(&viommu->domain_ids, viommu->first_domain,
+> > @@ -657,7 +681,7 @@ static int viommu_attach_dev(struct iommu_domain *domain, struct device *dev)
+> >   		 * Properly initialize the domain now that we know which viommu
+> >   		 * owns it.
+> >   		 */
+> > -		ret = viommu_domain_finalise(vdev->viommu, domain);
+> > +		ret = viommu_domain_finalise(vdev, domain);
+> >   	} else if (vdomain->viommu != vdev->viommu) {
+> >   		dev_err(dev, "cannot attach to foreign vIOMMU\n");
+> >   		ret = -EXDEV;
+> > @@ -875,6 +899,7 @@ static int viommu_add_device(struct device *dev)
+> >   	vdev->dev = dev;
+> >   	vdev->viommu = viommu;
+> > +	vdev->pgsize_bitmap = viommu->pgsize_bitmap;
+> >   	INIT_LIST_HEAD(&vdev->resv_regions);
+> >   	fwspec->iommu_priv = vdev;
+> > diff --git a/include/uapi/linux/virtio_iommu.h b/include/uapi/linux/virtio_iommu.h
+> > index 237e36a280cb..dc9d3f40bcd8 100644
+> > --- a/include/uapi/linux/virtio_iommu.h
+> > +++ b/include/uapi/linux/virtio_iommu.h
+> > @@ -111,6 +111,7 @@ struct virtio_iommu_req_unmap {
+> >   #define VIRTIO_IOMMU_PROBE_T_NONE		0
+> >   #define VIRTIO_IOMMU_PROBE_T_RESV_MEM		1
+> > +#define VIRTIO_IOMMU_PROBE_T_PAGE_SIZE_MASK	2
+> >   #define VIRTIO_IOMMU_PROBE_T_MASK		0xfff
+> > @@ -119,6 +120,12 @@ struct virtio_iommu_probe_property {
+> >   	__le16					length;
+> >   };
+> > +struct virtio_iommu_probe_pgsize_mask {
+> > +	struct virtio_iommu_probe_property	head;
+> > +	__u8					reserved[4];
+> > +	__u64					pgsize_bitmap;
 
+Should be __le64
+
+Thanks,
+Jean
+
+> > +};
 > > +
-> > +	if (!sm_supported(iommu)) {
-> > +		pr_warn("VT-d Scalable Mode not enabled, no PASID
-> > allocation\n");
-> > +		return;
-> > +	}
-> > +
-> > +	/*
-> > +	 * Register a custom PASID allocator if we are running in
-> > a guest,
-> > +	 * guest PASID must be obtained via virtual command
-> > interface.
-> > +	 * There can be multiple vIOMMUs in each guest but only one
-> > allocator
-> > +	 * is active. All vIOMMU allocators will eventually be
-> > calling the same  
-> 
-> which one? the first or last?
-> 
-All allocators share the same ops, so first=last. IOASID code will
-inspect the ops function and see if they are shared with others then
-use the same ops.
-
-> > +	 * host allocator.
-> > +	 */
-> > +	if (ecap_vcs(iommu->ecap) && vccap_pasid(iommu->vccap)) {
-> > +		pr_info("Register custom PASID allocator\n");
-> > +		iommu->pasid_allocator.alloc = intel_ioasid_alloc;
-> > +		iommu->pasid_allocator.free = intel_ioasid_free;
-> > +		iommu->pasid_allocator.pdata = (void *)iommu;
-> > +		if
-> > (ioasid_register_allocator(&iommu->pasid_allocator)) {
-> > +			pr_warn("Custom PASID allocator failed,
-> > scalable mode disabled\n");
-> > +			/*
-> > +			 * Disable scalable mode on this IOMMU if
-> > there
-> > +			 * is no custom allocator. Mixing SM
-> > capable vIOMMU
-> > +			 * and non-SM vIOMMU are not supported.
-> > +			 */
-> > +			intel_iommu_sm = 0;  
-> 
-> since you register an allocator for every vIOMMU, means previously
-> registered allocators should also be unregistered here?
-> 
-True, but it is not necessary for two reasons:
-1. This should not happen unless something went seriously wrong.
-All vIOMMU shares the same alloc/free function, so they are put under
-the same bucket by IOASID. So the case for the first vIOMMU to succeed
-then fail in later vIOMMU registration should not happen. Unless kernel
-run out of memory etc.
-
-2. Once SM is disabled, there is no user of ioasid allocator.
-
-> > +		}
-> > +	}
-> > +}
-> > +#endif
-> > +
-> >  static int __init init_dmars(void)
-> >  {
-> >  	struct dmar_drhd_unit *drhd;
-> > @@ -3408,6 +3489,9 @@ static int __init init_dmars(void)
-> >  	 */
-> >  	for_each_active_iommu(iommu, drhd) {
-> >  		iommu_flush_write_buffer(iommu);
-> > +#ifdef CONFIG_INTEL_IOMMU_SVM
-> > +		register_pasid_allocator(iommu);
-> > +#endif
-> >  		iommu_set_root_entry(iommu);
-> >  		iommu->flush.flush_context(iommu, 0, 0, 0,
-> > DMA_CCMD_GLOBAL_INVL);
-> >  		iommu->flush.flush_iotlb(iommu, 0, 0, 0,
-> > DMA_TLB_GLOBAL_FLUSH);
-> > diff --git a/include/linux/intel-iommu.h
-> > b/include/linux/intel-iommu.h index 9cbf5357138b..9c357a325c72
-> > 100644 --- a/include/linux/intel-iommu.h
-> > +++ b/include/linux/intel-iommu.h
-> > @@ -19,6 +19,7 @@
-> >  #include <linux/iommu.h>
-> >  #include <linux/io-64-nonatomic-lo-hi.h>
-> >  #include <linux/dmar.h>
-> > +#include <linux/ioasid.h>
+> >   #define VIRTIO_IOMMU_RESV_MEM_T_RESERVED	0
+> >   #define VIRTIO_IOMMU_RESV_MEM_T_MSI		1
 > > 
-> >  #include <asm/cacheflush.h>
-> >  #include <asm/iommu.h>
-> > @@ -563,6 +564,7 @@ struct intel_iommu {
-> >  #ifdef CONFIG_INTEL_IOMMU_SVM
-> >  	struct page_req_dsc *prq;
-> >  	unsigned char prq_name[16];    /* Name for PRQ interrupt */
-> > +	struct ioasid_allocator_ops pasid_allocator; /* Custom
-> > allocator for PASIDs */
-> >  #endif
-> >  	struct q_inval  *qi;            /* Queued invalidation
-> > info */ u32 *iommu_state; /* Store iommu states between suspend and
-> > resume.*/
-> > --
-> > 2.7.4  
-> 
-
-[Jacob Pan]
 _______________________________________________
 iommu mailing list
 iommu@lists.linux-foundation.org
