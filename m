@@ -2,95 +2,78 @@ Return-Path: <SRS0=PWDw=5R=lists.linux-foundation.org=iommu-bounces@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-0.6 required=3.0 tests=DKIM_INVALID,DKIM_SIGNED,
-	HEADER_FROM_DIFFERENT_DOMAINS,MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS,
-	URIBL_BLOCKED autolearn=no autolearn_force=no version=3.4.0
+X-Spam-Status: No, score=-8.2 required=3.0 tests=HEADER_FROM_DIFFERENT_DOMAINS,
+	INCLUDES_PATCH,MAILING_LIST_MULTI,SIGNED_OFF_BY,SPF_HELO_NONE,SPF_PASS,
+	URIBL_BLOCKED,USER_AGENT_SANE_2 autolearn=unavailable autolearn_force=no
+	version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 3580EC2D0F0
-	for <iommu@archiver.kernel.org>; Wed,  1 Apr 2020 14:03:17 +0000 (UTC)
-Received: from whitealder.osuosl.org (smtp1.osuosl.org [140.211.166.138])
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 5F7BBC2D0F3
+	for <iommu@archiver.kernel.org>; Wed,  1 Apr 2020 15:42:16 +0000 (UTC)
+Received: from hemlock.osuosl.org (smtp2.osuosl.org [140.211.166.133])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by mail.kernel.org (Postfix) with ESMTPS id 045FD2078B
-	for <iommu@archiver.kernel.org>; Wed,  1 Apr 2020 14:03:16 +0000 (UTC)
-Authentication-Results: mail.kernel.org;
-	dkim=fail reason="signature verification failed" (2048-bit key) header.d=linaro.org header.i=@linaro.org header.b="iJVoxwSI"
-DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 045FD2078B
-Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=linaro.org
+	by mail.kernel.org (Postfix) with ESMTPS id 328A1212CC
+	for <iommu@archiver.kernel.org>; Wed,  1 Apr 2020 15:42:16 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 328A1212CC
+Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=linux.intel.com
 Authentication-Results: mail.kernel.org; spf=pass smtp.mailfrom=iommu-bounces@lists.linux-foundation.org
 Received: from localhost (localhost [127.0.0.1])
-	by whitealder.osuosl.org (Postfix) with ESMTP id CAB2E86E55;
-	Wed,  1 Apr 2020 14:03:16 +0000 (UTC)
+	by hemlock.osuosl.org (Postfix) with ESMTP id 074F0882A9;
+	Wed,  1 Apr 2020 15:42:16 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from whitealder.osuosl.org ([127.0.0.1])
+Received: from hemlock.osuosl.org ([127.0.0.1])
 	by localhost (.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
-	with ESMTP id eeuCwhmJ4zvK; Wed,  1 Apr 2020 14:03:15 +0000 (UTC)
+	with ESMTP id clVoLBvl1yIb; Wed,  1 Apr 2020 15:42:14 +0000 (UTC)
 Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [140.211.9.56])
-	by whitealder.osuosl.org (Postfix) with ESMTP id 9693986E4E;
-	Wed,  1 Apr 2020 14:03:15 +0000 (UTC)
+	by hemlock.osuosl.org (Postfix) with ESMTP id 48EA1882A3;
+	Wed,  1 Apr 2020 15:42:14 +0000 (UTC)
 Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
-	by lists.linuxfoundation.org (Postfix) with ESMTP id 84C04C1D7F;
-	Wed,  1 Apr 2020 14:03:15 +0000 (UTC)
-Received: from whitealder.osuosl.org (smtp1.osuosl.org [140.211.166.138])
- by lists.linuxfoundation.org (Postfix) with ESMTP id 04445C089F
- for <iommu@lists.linux-foundation.org>; Wed,  1 Apr 2020 14:03:14 +0000 (UTC)
+	by lists.linuxfoundation.org (Postfix) with ESMTP id 3B2E4C1D7F;
+	Wed,  1 Apr 2020 15:42:14 +0000 (UTC)
+Received: from fraxinus.osuosl.org (smtp4.osuosl.org [140.211.166.137])
+ by lists.linuxfoundation.org (Postfix) with ESMTP id 74338C089F
+ for <iommu@lists.linux-foundation.org>; Wed,  1 Apr 2020 15:42:13 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
- by whitealder.osuosl.org (Postfix) with ESMTP id E807486E4E
- for <iommu@lists.linux-foundation.org>; Wed,  1 Apr 2020 14:03:13 +0000 (UTC)
+ by fraxinus.osuosl.org (Postfix) with ESMTP id 5E6EC86D8D
+ for <iommu@lists.linux-foundation.org>; Wed,  1 Apr 2020 15:42:13 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from whitealder.osuosl.org ([127.0.0.1])
+Received: from fraxinus.osuosl.org ([127.0.0.1])
  by localhost (.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
- with ESMTP id 9Q-d7HpbhsUf for <iommu@lists.linux-foundation.org>;
- Wed,  1 Apr 2020 14:03:12 +0000 (UTC)
+ with ESMTP id l9FL66ESEG_h for <iommu@lists.linux-foundation.org>;
+ Wed,  1 Apr 2020 15:42:12 +0000 (UTC)
 X-Greylist: domain auto-whitelisted by SQLgrey-1.7.6
-Received: from mail-wm1-f66.google.com (mail-wm1-f66.google.com
- [209.85.128.66])
- by whitealder.osuosl.org (Postfix) with ESMTPS id 9C8E286DFF
- for <iommu@lists.linux-foundation.org>; Wed,  1 Apr 2020 14:03:11 +0000 (UTC)
-Received: by mail-wm1-f66.google.com with SMTP id t8so3348586wmi.2
- for <iommu@lists.linux-foundation.org>; Wed, 01 Apr 2020 07:03:11 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linaro.org; s=google;
- h=date:from:to:cc:subject:message-id:references:mime-version
- :content-disposition:in-reply-to;
- bh=BZh/ep1PwflYg/TcVbQWbI9WFDXF6Zf/SxB/stv9Mls=;
- b=iJVoxwSIw2BIZ9rBNHiu4pE8g1NRc7+PSPp8la7NhJdpFxjHDKyGinpPbVA1bDBaLy
- JWfME5yxhkc0t37BG7HoUNLT70weCKWmItcDq5pcwKANEh1mfSNCHu+WNxUOuM90Evj3
- ZLzyrwwdewYiP+Z/VKq5UJvhZ29tuA1NFNz/n2e8pAk+s3dnA12Ql+oP4EJ71n2k5wJZ
- TO18IJqyFdcr9oOGeS/goHgQt2Bn0WgayCd4kyqLcx1v+uoPQpObXXJ5HS1ugxgEcox4
- 7LWh57pxFDBkrYWVopK6w27ruQetrT4T7a1RAyR6Ast04V8tGXwqOp0ISbts6Riw+0hy
- zgeA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
- d=1e100.net; s=20161025;
- h=x-gm-message-state:date:from:to:cc:subject:message-id:references
- :mime-version:content-disposition:in-reply-to;
- bh=BZh/ep1PwflYg/TcVbQWbI9WFDXF6Zf/SxB/stv9Mls=;
- b=L0lQqo/lPyrTQxGQaFqrkeEZaRU1H8xFIrY7YFLCS0Whr8ijDGzctGk3f4vtP6BSNL
- fgz8EssWyuzlMZNq84BxVL4aMkXUW84HJHKGib6MeGlcimACGn1Q24Lxi8V61fqhNA4v
- HWop1KxfS9k+rzt4PG1jrEapPeGXHiB1GfRcYTvfChxVRwp9u1oxoudXSvqWmtRoJeq9
- MhsnVjvT/MSibn0qrPwxQdvpKwv1S7z5mh3FB3liMekY0swq4WWRolADx//X/GmXkOBP
- DvEQJ91K4AWrf9+6j60YnkrLt6Lhq0FAiHyauMbdjcuL2CvWttj+yW60nzjWwb429q+l
- 8ENg==
-X-Gm-Message-State: AGi0Pua9+7MjTJhYg7Viuo6x71Ef6PirrHu9glzgkX7PscwHV1FRkCNP
- gK2hP/sWSfQAWa8bQtGRYx0uHA==
-X-Google-Smtp-Source: APiQypK9DSjnsSakIQglnIUiMrqd7eWrNRxGsgEAIFwatDbnZWJ4FFPhmKQLr32+hb+lvqulo78TJg==
-X-Received: by 2002:a1c:7216:: with SMTP id n22mr4371537wmc.41.1585749789988; 
- Wed, 01 Apr 2020 07:03:09 -0700 (PDT)
-Received: from myrica ([2001:171b:226b:54a0:6097:1406:6470:33b5])
- by smtp.gmail.com with ESMTPSA id 71sm3267508wrc.53.2020.04.01.07.03.08
- (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
- Wed, 01 Apr 2020 07:03:09 -0700 (PDT)
-Date: Wed, 1 Apr 2020 16:03:01 +0200
-From: Jean-Philippe Brucker <jean-philippe@linaro.org>
-To: Jacob Pan <jacob.jun.pan@linux.intel.com>
-Subject: Re: [PATCH 00/10] IOASID extensions for guest SVA
-Message-ID: <20200401140301.GJ882512@myrica>
-References: <1585158931-1825-1-git-send-email-jacob.jun.pan@linux.intel.com>
+Received: from mga02.intel.com (mga02.intel.com [134.134.136.20])
+ by fraxinus.osuosl.org (Postfix) with ESMTPS id 6D5F386D8B
+ for <iommu@lists.linux-foundation.org>; Wed,  1 Apr 2020 15:42:12 +0000 (UTC)
+IronPort-SDR: /P36AvDWVdgfsti/+L3tsBQ0+4ElqHLfDCIoVEKmnDZkLFjishqccOWs8h4+wZuzZJh4kSEeMi
+ hXhL/WMlrs4g==
+X-Amp-Result: SKIPPED(no attachment in message)
+X-Amp-File-Uploaded: False
+Received: from orsmga001.jf.intel.com ([10.7.209.18])
+ by orsmga101.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384;
+ 01 Apr 2020 08:42:11 -0700
+IronPort-SDR: rgCl/iz8Ek08zmzuVmldpgZqfvojhQHg1defdVYSXAfYoo4olQfaqbZ1R5j8j90i2P1BvHtIXv
+ XhCaL5zD5Xlg==
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="5.72,332,1580803200"; d="scan'208";a="328495700"
+Received: from jacob-builder.jf.intel.com (HELO jacob-builder) ([10.7.199.155])
+ by orsmga001.jf.intel.com with ESMTP; 01 Apr 2020 08:42:11 -0700
+Date: Wed, 1 Apr 2020 08:47:59 -0700
+From: Jacob Pan <jacob.jun.pan@linux.intel.com>
+To: "Tian, Kevin" <kevin.tian@intel.com>
+Subject: Re: [PATCH V10 11/11] iommu/vt-d: Add custom allocator for IOASID
+Message-ID: <20200401084759.575b38c4@jacob-builder>
+In-Reply-To: <AADFC41AFE54684AB9EE6CBC0274A5D19D7FA146@SHSMSX104.ccr.corp.intel.com>
+References: <1584746861-76386-1-git-send-email-jacob.jun.pan@linux.intel.com>
+ <1584746861-76386-12-git-send-email-jacob.jun.pan@linux.intel.com>
+ <AADFC41AFE54684AB9EE6CBC0274A5D19D7FA146@SHSMSX104.ccr.corp.intel.com>
+Organization: OTC
+X-Mailer: Claws Mail 3.13.2 (GTK+ 2.24.30; x86_64-pc-linux-gnu)
 MIME-Version: 1.0
-Content-Disposition: inline
-In-Reply-To: <1585158931-1825-1-git-send-email-jacob.jun.pan@linux.intel.com>
-Cc: "Tian, Kevin" <kevin.tian@intel.com>, Raj Ashok <ashok.raj@intel.com>,
+Cc: "Raj, Ashok" <ashok.raj@intel.com>,
  Jean-Philippe Brucker <jean-philippe@linaro.com>,
- LKML <linux-kernel@vger.kernel.org>, iommu@lists.linux-foundation.org,
+ "iommu@lists.linux-foundation.org" <iommu@lists.linux-foundation.org>,
+ LKML <linux-kernel@vger.kernel.org>,
  Alex Williamson <alex.williamson@redhat.com>,
  David Woodhouse <dwmw2@infradead.org>, Jonathan Cameron <jic23@kernel.org>
 X-BeenThere: iommu@lists.linux-foundation.org
@@ -110,143 +93,228 @@ Content-Transfer-Encoding: 7bit
 Errors-To: iommu-bounces@lists.linux-foundation.org
 Sender: "iommu" <iommu-bounces@lists.linux-foundation.org>
 
-Hi Jacob,
+On Sat, 28 Mar 2020 10:22:41 +0000
+"Tian, Kevin" <kevin.tian@intel.com> wrote:
 
-On Wed, Mar 25, 2020 at 10:55:21AM -0700, Jacob Pan wrote:
-> IOASID was introduced in v5.5 as a generic kernel allocator service for
-> both PCIe Process Address Space ID (PASID) and ARM SMMU's Sub Stream
-> ID. In addition to basic ID allocation, ioasid_set was introduced as a
-> token that is shared by a group of IOASIDs. This set token can be used
-> for permission checking but lack of some features needed by guest Shared
-> Virtual Address (SVA). In addition, IOASID support for life cycle
-> management is needed among multiple users.
+> > From: Jacob Pan <jacob.jun.pan@linux.intel.com>
+> > Sent: Saturday, March 21, 2020 7:28 AM
+> > 
+> > When VT-d driver runs in the guest, PASID allocation must be
+> > performed via virtual command interface. This patch registers a
+> > custom IOASID allocator which takes precedence over the default
+> > XArray based allocator. The resulting IOASID allocation will always
+> > come from the host. This ensures that PASID namespace is system-
+> > wide.
+> > 
+> > Signed-off-by: Lu Baolu <baolu.lu@linux.intel.com>
+> > Signed-off-by: Liu, Yi L <yi.l.liu@intel.com>
+> > Signed-off-by: Jacob Pan <jacob.jun.pan@linux.intel.com>
+> > ---
+> >  drivers/iommu/intel-iommu.c | 84
+> > +++++++++++++++++++++++++++++++++++++++++++++
+> >  include/linux/intel-iommu.h |  2 ++
+> >  2 files changed, 86 insertions(+)
+> > 
+> > diff --git a/drivers/iommu/intel-iommu.c
+> > b/drivers/iommu/intel-iommu.c index a76afb0fd51a..c1c0b0fb93c3
+> > 100644 --- a/drivers/iommu/intel-iommu.c
+> > +++ b/drivers/iommu/intel-iommu.c
+> > @@ -1757,6 +1757,9 @@ static void free_dmar_iommu(struct intel_iommu
+> > *iommu)
+> >  		if (ecap_prs(iommu->ecap))
+> >  			intel_svm_finish_prq(iommu);
+> >  	}
+> > +	if (ecap_vcs(iommu->ecap) && vccap_pasid(iommu->vccap))
+> > +
+> > ioasid_unregister_allocator(&iommu->pasid_allocator); +
+> >  #endif
+> >  }
+> > 
+> > @@ -3291,6 +3294,84 @@ static int copy_translation_tables(struct
+> > intel_iommu *iommu)
+> >  	return ret;
+> >  }
+> > 
+> > +#ifdef CONFIG_INTEL_IOMMU_SVM
+> > +static ioasid_t intel_ioasid_alloc(ioasid_t min, ioasid_t max,
+> > void *data)  
 > 
-> This patchset introduces two extensions to the IOASID code,
-> 1. IOASID set operations
-> 2. Notifications for IOASID state synchronization
+> the name is too generic... can we add vcmd in the name to clarify
+> its purpose, e.g. intel_vcmd_ioasid_alloc?
+> 
+I feel the intel_ prefix is a natural extension of a generic API, we do
+that for other IOMMU APIs, right?
 
-My main concern with this series is patch 7 changing the spinlock to a
-mutex, which prevents SVA from calling ioasid_free() from the RCU callback
-of MMU notifiers. Could we use atomic notifiers, or do the FREE
-notification another way?
+> > +{
+> > +	struct intel_iommu *iommu = data;
+> > +	ioasid_t ioasid;
+> > +
+> > +	if (!iommu)
+> > +		return INVALID_IOASID;
+> > +	/*
+> > +	 * VT-d virtual command interface always uses the full 20
+> > bit
+> > +	 * PASID range. Host can partition guest PASID range based
+> > on
+> > +	 * policies but it is out of guest's control.
+> > +	 */
+> > +	if (min < PASID_MIN || max > intel_pasid_max_id)
+> > +		return INVALID_IOASID;
+> > +
+> > +	if (vcmd_alloc_pasid(iommu, &ioasid))
+> > +		return INVALID_IOASID;
+> > +
+> > +	return ioasid;
+> > +}
+> > +
+> > +static void intel_ioasid_free(ioasid_t ioasid, void *data)
+> > +{
+> > +	struct intel_iommu *iommu = data;
+> > +
+> > +	if (!iommu)
+> > +		return;
+> > +	/*
+> > +	 * Sanity check the ioasid owner is done at upper layer,
+> > e.g. VFIO
+> > +	 * We can only free the PASID when all the devices are
+> > unbound.
+> > +	 */
+> > +	if (ioasid_find(NULL, ioasid, NULL)) {
+> > +		pr_alert("Cannot free active IOASID %d\n", ioasid);
+> > +		return;
+> > +	}  
+> 
+> However the sanity check is not done in default_free. Is there a
+> reason why using vcmd adds such  new requirement?
+> 
+Since we don't support nested guest. This vcmd allocator is only used
+by the guest IOMMU driver not VFIO. We expect IOMMU driver to have
+control of the free()/unbind() ordering.
 
-Most of my other comments are just confusion on my part, I think, as I
-haven't yet properly looked through the VFIO and VT-d changes. I'd rather
-avoid the change to ioasid_find() if possible, because it adds a seemingly
-unnecessary indirection to the fast path, but it's probably insignificant.
+For default_free, it can come from user space and host VFIO which can
+be out of order. But we will solve that issue with the blocking
+notifier.
 
-Thanks,
-Jean
+> > +	vcmd_free_pasid(iommu, ioasid);
+> > +}
+> > +
+> > +static void register_pasid_allocator(struct intel_iommu *iommu)
+> > +{
+> > +	/*
+> > +	 * If we are running in the host, no need for custom
+> > allocator
+> > +	 * in that PASIDs are allocated from the host system-wide.
+> > +	 */
+> > +	if (!cap_caching_mode(iommu->cap))
+> > +		return;  
+> 
+> is it more accurate to check against vcmd capability?
+> 
+I think this is sufficient. The spec says if vcmd is present, we must
+use it but not the other way.
 
+> > +
+> > +	if (!sm_supported(iommu)) {
+> > +		pr_warn("VT-d Scalable Mode not enabled, no PASID
+> > allocation\n");
+> > +		return;
+> > +	}
+> > +
+> > +	/*
+> > +	 * Register a custom PASID allocator if we are running in
+> > a guest,
+> > +	 * guest PASID must be obtained via virtual command
+> > interface.
+> > +	 * There can be multiple vIOMMUs in each guest but only one
+> > allocator
+> > +	 * is active. All vIOMMU allocators will eventually be
+> > calling the same  
 > 
-> Part #1:
-> IOASIDs used by each VM fits naturally into an ioasid_set. The usage
-> for per set management requires the following features:
+> which one? the first or last?
 > 
-> - Quota enforcement - This is to prevent one VM from abusing the
->   allocator to take all the system IOASIDs. Though VFIO layer can also
->   enforce the quota, but it cannot cover the usage with both guest and
->   host SVA on the same system.
+All allocators share the same ops, so first=last. IOASID code will
+inspect the ops function and see if they are shared with others then
+use the same ops.
+
+> > +	 * host allocator.
+> > +	 */
+> > +	if (ecap_vcs(iommu->ecap) && vccap_pasid(iommu->vccap)) {
+> > +		pr_info("Register custom PASID allocator\n");
+> > +		iommu->pasid_allocator.alloc = intel_ioasid_alloc;
+> > +		iommu->pasid_allocator.free = intel_ioasid_free;
+> > +		iommu->pasid_allocator.pdata = (void *)iommu;
+> > +		if
+> > (ioasid_register_allocator(&iommu->pasid_allocator)) {
+> > +			pr_warn("Custom PASID allocator failed,
+> > scalable mode disabled\n");
+> > +			/*
+> > +			 * Disable scalable mode on this IOMMU if
+> > there
+> > +			 * is no custom allocator. Mixing SM
+> > capable vIOMMU
+> > +			 * and non-SM vIOMMU are not supported.
+> > +			 */
+> > +			intel_iommu_sm = 0;  
 > 
-> - Stores guest IOASID-Host IOASID mapping within the set. To
->   support live migration, IOASID namespace should be owned by the
->   guest. This requires per IOASID set look up between guest and host
->   IOASIDs. This patchset does not introduce non-identity guest-host
->   IOASID lookup, we merely introduce the infrastructure in per set data.
+> since you register an allocator for every vIOMMU, means previously
+> registered allocators should also be unregistered here?
 > 
-> - Set level operations, e.g. when a guest terminates, it is likely to
-> free the entire set. Having a single place to manage the set where the
-> IOASIDs are stored makes iteration much easier.
+True, but it is not necessary for two reasons:
+1. This should not happen unless something went seriously wrong.
+All vIOMMU shares the same alloc/free function, so they are put under
+the same bucket by IOASID. So the case for the first vIOMMU to succeed
+then fail in later vIOMMU registration should not happen. Unless kernel
+run out of memory etc.
+
+2. Once SM is disabled, there is no user of ioasid allocator.
+
+> > +		}
+> > +	}
+> > +}
+> > +#endif
+> > +
+> >  static int __init init_dmars(void)
+> >  {
+> >  	struct dmar_drhd_unit *drhd;
+> > @@ -3408,6 +3489,9 @@ static int __init init_dmars(void)
+> >  	 */
+> >  	for_each_active_iommu(iommu, drhd) {
+> >  		iommu_flush_write_buffer(iommu);
+> > +#ifdef CONFIG_INTEL_IOMMU_SVM
+> > +		register_pasid_allocator(iommu);
+> > +#endif
+> >  		iommu_set_root_entry(iommu);
+> >  		iommu->flush.flush_context(iommu, 0, 0, 0,
+> > DMA_CCMD_GLOBAL_INVL);
+> >  		iommu->flush.flush_iotlb(iommu, 0, 0, 0,
+> > DMA_TLB_GLOBAL_FLUSH);
+> > diff --git a/include/linux/intel-iommu.h
+> > b/include/linux/intel-iommu.h index 9cbf5357138b..9c357a325c72
+> > 100644 --- a/include/linux/intel-iommu.h
+> > +++ b/include/linux/intel-iommu.h
+> > @@ -19,6 +19,7 @@
+> >  #include <linux/iommu.h>
+> >  #include <linux/io-64-nonatomic-lo-hi.h>
+> >  #include <linux/dmar.h>
+> > +#include <linux/ioasid.h>
+> > 
+> >  #include <asm/cacheflush.h>
+> >  #include <asm/iommu.h>
+> > @@ -563,6 +564,7 @@ struct intel_iommu {
+> >  #ifdef CONFIG_INTEL_IOMMU_SVM
+> >  	struct page_req_dsc *prq;
+> >  	unsigned char prq_name[16];    /* Name for PRQ interrupt */
+> > +	struct ioasid_allocator_ops pasid_allocator; /* Custom
+> > allocator for PASIDs */
+> >  #endif
+> >  	struct q_inval  *qi;            /* Queued invalidation
+> > info */ u32 *iommu_state; /* Store iommu states between suspend and
+> > resume.*/
+> > --
+> > 2.7.4  
 > 
-> 
-> New APIs are:
-> - void ioasid_install_capacity(ioasid_t total);
->   Set the system capacity prior to any allocations. On x86, VT-d driver
->   calls this function to set max number of PASIDs, typically 1 million
->   (20 bits).
-> 
-> - int ioasid_alloc_system_set(int quota);
->   Host system has a default ioasid_set, during boot it is expected that
->   this default set is allocated with a reasonable quota, e.g. PID_MAX.
->   This default/system set is used for baremetal SVA.
-> 
-> - int ioasid_alloc_set(struct ioasid_set *token, ioasid_t quota, int
-> *sid);
->   Allocate a new set with a token, returned sid (set ID) will be used
->   to allocate IOASIDs within the set. Allocation of IOASIDs cannot
->   exceed the quota.
-> 
-> - void ioasid_free_set(int sid, bool destroy_set);
->   Free the entire set and notify all users with an option to destroy
->   the set. Set ID can be used for allocation again if not destroyed.
-> 
-> - int ioasid_find_sid(ioasid_t ioasid);
->   Look up the set ID from an ioasid. There is no reference held,
->   assuming set has a single owner.
-> 
-> - int ioasid_adjust_set(int sid, int quota);
->   Change the quota of the set, new quota cannot be less than the number
->   of IOASIDs already allocated within the set. This is useful when
->   IOASID resource needs to be balanced among VMs.
-> 
-> Part #2
-> Notification service. Since IOASIDs are used by many consumers that
-> follow publisher-subscriber pattern, notification is a natural choice
-> to keep states synchronized. For example, on x86 system, guest PASID
-> allocation and bind call results in VFIO IOCTL that can add and change
-> guest-host PASID states. At the same time, IOMMU driver and KVM need to
-> maintain its own PASID contexts. In this case, VFIO is the publisher
-> within the kernel, IOMMU driver and KVM are the subscribers.
-> 
-> This patchset introduces a global blocking notifier chain and APIs to
-> operate on. Not all events nor all IOASIDs are of interests to all
-> subscribers. e.g. KVM is only interested in the IOASIDs within its set.
-> IOMMU driver is not ioasid_set aware. A further optimization could be
-> having both global and per set notifier. But consider the infrequent
-> nature of bind/unbind and relatively long process life cycle, this
-> optimization may not be needed at this time.
-> 
-> To register/unregister notification blocks, use these two APIs:
-> - int ioasid_add_notifier(struct notifier_block *nb);
-> - void ioasid_remove_notifier(struct notifier_block *nb)
-> 
-> To send notification on an IOASID with one of the commands (FREE,
-> BIND/UNBIND, etc.), use:
-> - int ioasid_notify(ioasid_t id, enum ioasid_notify_val cmd);
-> 
-> This work is a result of collaboration with many people:
-> Liu, Yi L <yi.l.liu@intel.com>
-> Wu Hao <hao.wu@intel.com>
-> Ashok Raj <ashok.raj@intel.com>
-> Kevin Tian <kevin.tian@intel.com>
-> 
-> Thanks,
-> 
-> Jacob
-> 
-> Jacob Pan (10):
->   iommu/ioasid: Introduce system-wide capacity
->   iommu/vt-d: Set IOASID capacity when SVM is enabled
->   iommu/ioasid: Introduce per set allocation APIs
->   iommu/ioasid: Rename ioasid_set_data to avoid confusion with
->     ioasid_set
->   iommu/ioasid: Create an IOASID set for host SVA use
->   iommu/ioasid: Convert to set aware allocations
->   iommu/ioasid: Use mutex instead of spinlock
->   iommu/ioasid: Introduce notifier APIs
->   iommu/ioasid: Support ioasid_set quota adjustment
->   iommu/vt-d: Register PASID notifier for status change
-> 
->  drivers/iommu/intel-iommu.c |  20 ++-
->  drivers/iommu/intel-svm.c   |  89 ++++++++--
->  drivers/iommu/ioasid.c      | 387 +++++++++++++++++++++++++++++++++++++++-----
->  include/linux/intel-iommu.h |   1 +
->  include/linux/ioasid.h      |  86 +++++++++-
->  5 files changed, 522 insertions(+), 61 deletions(-)
-> 
-> -- 
-> 2.7.4
-> 
+
+[Jacob Pan]
 _______________________________________________
 iommu mailing list
 iommu@lists.linux-foundation.org
