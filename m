@@ -2,81 +2,88 @@ Return-Path: <SRS0=urD1=5S=lists.linux-foundation.org=iommu-bounces@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-8.3 required=3.0 tests=HEADER_FROM_DIFFERENT_DOMAINS,
-	INCLUDES_PATCH,MAILING_LIST_MULTI,SIGNED_OFF_BY,SPF_HELO_NONE,SPF_PASS,
-	USER_AGENT_SANE_2 autolearn=unavailable autolearn_force=no version=3.4.0
+X-Spam-Status: No, score=-6.5 required=3.0 tests=DKIM_INVALID,DKIM_SIGNED,
+	HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_PATCH,MAILING_LIST_MULTI,SIGNED_OFF_BY,
+	SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED autolearn=unavailable autolearn_force=no
+	version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id B7B80C2BA12
-	for <iommu@archiver.kernel.org>; Thu,  2 Apr 2020 20:22:24 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 6C5F6C2BA12
+	for <iommu@archiver.kernel.org>; Thu,  2 Apr 2020 20:24:43 +0000 (UTC)
 Received: from fraxinus.osuosl.org (smtp4.osuosl.org [140.211.166.137])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by mail.kernel.org (Postfix) with ESMTPS id 865E020678
-	for <iommu@archiver.kernel.org>; Thu,  2 Apr 2020 20:22:24 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 865E020678
-Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=linux.intel.com
+	by mail.kernel.org (Postfix) with ESMTPS id 428EC2078B
+	for <iommu@archiver.kernel.org>; Thu,  2 Apr 2020 20:24:43 +0000 (UTC)
+Authentication-Results: mail.kernel.org;
+	dkim=fail reason="signature verification failed" (1024-bit key) header.d=redhat.com header.i=@redhat.com header.b="botOPEzo"
+DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 428EC2078B
+Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=redhat.com
 Authentication-Results: mail.kernel.org; spf=pass smtp.mailfrom=iommu-bounces@lists.linux-foundation.org
 Received: from localhost (localhost [127.0.0.1])
-	by fraxinus.osuosl.org (Postfix) with ESMTP id 5F30787581;
-	Thu,  2 Apr 2020 20:22:24 +0000 (UTC)
+	by fraxinus.osuosl.org (Postfix) with ESMTP id 1BE9E874F7;
+	Thu,  2 Apr 2020 20:24:43 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
 Received: from fraxinus.osuosl.org ([127.0.0.1])
 	by localhost (.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
-	with ESMTP id l4k_tJAKHA-w; Thu,  2 Apr 2020 20:22:21 +0000 (UTC)
+	with ESMTP id pPvzB9tz-vhV; Thu,  2 Apr 2020 20:24:42 +0000 (UTC)
 Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [140.211.9.56])
-	by fraxinus.osuosl.org (Postfix) with ESMTP id D01C887561;
-	Thu,  2 Apr 2020 20:22:21 +0000 (UTC)
+	by fraxinus.osuosl.org (Postfix) with ESMTP id 56BD68749C;
+	Thu,  2 Apr 2020 20:24:42 +0000 (UTC)
 Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
-	by lists.linuxfoundation.org (Postfix) with ESMTP id B40D6C1D74;
-	Thu,  2 Apr 2020 20:22:21 +0000 (UTC)
-Received: from whitealder.osuosl.org (smtp1.osuosl.org [140.211.166.138])
- by lists.linuxfoundation.org (Postfix) with ESMTP id 8B05AC07FF
- for <iommu@lists.linux-foundation.org>; Thu,  2 Apr 2020 20:22:20 +0000 (UTC)
+	by lists.linuxfoundation.org (Postfix) with ESMTP id 4CFC4C1D74;
+	Thu,  2 Apr 2020 20:24:42 +0000 (UTC)
+Received: from hemlock.osuosl.org (smtp2.osuosl.org [140.211.166.133])
+ by lists.linuxfoundation.org (Postfix) with ESMTP id E4143C07FF
+ for <iommu@lists.linux-foundation.org>; Thu,  2 Apr 2020 20:24:40 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
- by whitealder.osuosl.org (Postfix) with ESMTP id 733368831F
- for <iommu@lists.linux-foundation.org>; Thu,  2 Apr 2020 20:22:20 +0000 (UTC)
+ by hemlock.osuosl.org (Postfix) with ESMTP id D2B5B88D55
+ for <iommu@lists.linux-foundation.org>; Thu,  2 Apr 2020 20:24:40 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from whitealder.osuosl.org ([127.0.0.1])
+Received: from hemlock.osuosl.org ([127.0.0.1])
  by localhost (.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
- with ESMTP id C3CtM8iDgW3j for <iommu@lists.linux-foundation.org>;
- Thu,  2 Apr 2020 20:22:19 +0000 (UTC)
+ with ESMTP id HcHv1WdGIi+Z for <iommu@lists.linux-foundation.org>;
+ Thu,  2 Apr 2020 20:24:40 +0000 (UTC)
 X-Greylist: domain auto-whitelisted by SQLgrey-1.7.6
-Received: from mga05.intel.com (mga05.intel.com [192.55.52.43])
- by whitealder.osuosl.org (Postfix) with ESMTPS id 84C708819F
- for <iommu@lists.linux-foundation.org>; Thu,  2 Apr 2020 20:22:19 +0000 (UTC)
-IronPort-SDR: fFawodTqpBb/Ifmq219KmxppYhgrP7tujPl8FGYovlPnPg6LBtcLKVqApFf88STz2ZlekYjymk
- 3CqW4NSagHOg==
-X-Amp-Result: SKIPPED(no attachment in message)
-X-Amp-File-Uploaded: False
-Received: from orsmga002.jf.intel.com ([10.7.209.21])
- by fmsmga105.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384;
- 02 Apr 2020 13:22:18 -0700
-IronPort-SDR: 1UaY7sL5a+H2oJS3MZJ+4iwnYVSq9S14rLCavgetdbkLYNjRD1pFQQzmCgVWYWPYCBlRty+SBP
- sCWVHutzgVOg==
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.72,336,1580803200"; d="scan'208";a="268138483"
-Received: from jacob-builder.jf.intel.com (HELO jacob-builder) ([10.7.199.155])
- by orsmga002.jf.intel.com with ESMTP; 02 Apr 2020 13:22:18 -0700
-Date: Thu, 2 Apr 2020 13:28:06 -0700
-From: Jacob Pan <jacob.jun.pan@linux.intel.com>
-To: "Tian, Kevin" <kevin.tian@intel.com>
-Subject: Re: [PATCH V10 11/11] iommu/vt-d: Add custom allocator for IOASID
-Message-ID: <20200402132806.49421237@jacob-builder>
-In-Reply-To: <AADFC41AFE54684AB9EE6CBC0274A5D19D805FAF@SHSMSX104.ccr.corp.intel.com>
-References: <1584746861-76386-1-git-send-email-jacob.jun.pan@linux.intel.com>
- <1584746861-76386-12-git-send-email-jacob.jun.pan@linux.intel.com>
- <AADFC41AFE54684AB9EE6CBC0274A5D19D7FA146@SHSMSX104.ccr.corp.intel.com>
- <20200401084759.575b38c4@jacob-builder>
- <AADFC41AFE54684AB9EE6CBC0274A5D19D805FAF@SHSMSX104.ccr.corp.intel.com>
-Organization: OTC
-X-Mailer: Claws Mail 3.13.2 (GTK+ 2.24.30; x86_64-pc-linux-gnu)
+Received: from us-smtp-delivery-1.mimecast.com (us-smtp-1.mimecast.com
+ [205.139.110.61])
+ by hemlock.osuosl.org (Postfix) with ESMTPS id 07C8F88CC9
+ for <iommu@lists.linux-foundation.org>; Thu,  2 Apr 2020 20:24:39 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+ s=mimecast20190719; t=1585859078;
+ h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+ to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+ content-transfer-encoding:content-transfer-encoding:
+ in-reply-to:in-reply-to:references:references;
+ bh=INka0vkxaweJDZ2c3Aa3hlqHFo9UCqLbH2gd4kVK5zY=;
+ b=botOPEzopVWrGIZQ16k7FDRD4Uk1rV+mXBR/purkipVzLbGZaGo9wCC9kVNz2whDo13eXo
+ Wb2m7tiPdHxWX5Y98/6klwi1whEFngjYc7yAxdODpYKwCP9uWxWHt3fXcxJBFB78ll0k3N
+ 70wkyBAhWVVziyYckEHhhCYg4ph0ydo=
+Received: from mimecast-mx01.redhat.com (mimecast-mx01.redhat.com
+ [209.132.183.4]) (Using TLS) by relay.mimecast.com with ESMTP id
+ us-mta-434-Bx5KEEKZNgCjKxiXu1j8Eg-1; Thu, 02 Apr 2020 16:24:37 -0400
+X-MC-Unique: Bx5KEEKZNgCjKxiXu1j8Eg-1
+Received: from smtp.corp.redhat.com (int-mx01.intmail.prod.int.phx2.redhat.com
+ [10.5.11.11])
+ (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
+ (No client certificate requested)
+ by mimecast-mx01.redhat.com (Postfix) with ESMTPS id 43DE51005509;
+ Thu,  2 Apr 2020 20:24:35 +0000 (UTC)
+Received: from w520.home (ovpn-112-162.phx2.redhat.com [10.3.112.162])
+ by smtp.corp.redhat.com (Postfix) with ESMTP id 898A5DA0F2;
+ Thu,  2 Apr 2020 20:24:28 +0000 (UTC)
+Date: Thu, 2 Apr 2020 14:24:28 -0600
+From: Alex Williamson <alex.williamson@redhat.com>
+To: "Liu, Yi L" <yi.l.liu@intel.com>
+Subject: Re: [PATCH v1 7/8] vfio/type1: Add VFIO_IOMMU_CACHE_INVALIDATE
+Message-ID: <20200402142428.2901432e@w520.home>
+In-Reply-To: <1584880325-10561-8-git-send-email-yi.l.liu@intel.com>
+References: <1584880325-10561-1-git-send-email-yi.l.liu@intel.com>
+ <1584880325-10561-8-git-send-email-yi.l.liu@intel.com>
 MIME-Version: 1.0
-Cc: "Raj, Ashok" <ashok.raj@intel.com>,
- Jean-Philippe Brucker <jean-philippe@linaro.com>,
- "iommu@lists.linux-foundation.org" <iommu@lists.linux-foundation.org>,
- LKML <linux-kernel@vger.kernel.org>,
- Alex Williamson <alex.williamson@redhat.com>,
- David Woodhouse <dwmw2@infradead.org>, Jonathan Cameron <jic23@kernel.org>
+X-Scanned-By: MIMEDefang 2.79 on 10.5.11.11
+Cc: jean-philippe@linaro.org, kevin.tian@intel.com, ashok.raj@intel.com,
+ kvm@vger.kernel.org, jun.j.tian@intel.com, iommu@lists.linux-foundation.org,
+ linux-kernel@vger.kernel.org, yi.y.sun@intel.com, hao.wu@intel.com
 X-BeenThere: iommu@lists.linux-foundation.org
 X-Mailman-Version: 2.1.15
 Precedence: list
@@ -94,219 +101,167 @@ Content-Transfer-Encoding: 7bit
 Errors-To: iommu-bounces@lists.linux-foundation.org
 Sender: "iommu" <iommu-bounces@lists.linux-foundation.org>
 
-On Thu, 2 Apr 2020 02:18:45 +0000
-"Tian, Kevin" <kevin.tian@intel.com> wrote:
+On Sun, 22 Mar 2020 05:32:04 -0700
+"Liu, Yi L" <yi.l.liu@intel.com> wrote:
 
-> > From: Jacob Pan <jacob.jun.pan@linux.intel.com>
-> > Sent: Wednesday, April 1, 2020 11:48 PM
-> > 
-> > On Sat, 28 Mar 2020 10:22:41 +0000
-> > "Tian, Kevin" <kevin.tian@intel.com> wrote:
-> >   
-> > > > From: Jacob Pan <jacob.jun.pan@linux.intel.com>
-> > > > Sent: Saturday, March 21, 2020 7:28 AM
-> > > >
-> > > > When VT-d driver runs in the guest, PASID allocation must be
-> > > > performed via virtual command interface. This patch registers a
-> > > > custom IOASID allocator which takes precedence over the default
-> > > > XArray based allocator. The resulting IOASID allocation will
-> > > > always come from the host. This ensures that PASID namespace is
-> > > > system- wide.
-> > > >
-> > > > Signed-off-by: Lu Baolu <baolu.lu@linux.intel.com>
-> > > > Signed-off-by: Liu, Yi L <yi.l.liu@intel.com>
-> > > > Signed-off-by: Jacob Pan <jacob.jun.pan@linux.intel.com>
-> > > > ---
-> > > >  drivers/iommu/intel-iommu.c | 84
-> > > > +++++++++++++++++++++++++++++++++++++++++++++
-> > > >  include/linux/intel-iommu.h |  2 ++
-> > > >  2 files changed, 86 insertions(+)
-> > > >
-> > > > diff --git a/drivers/iommu/intel-iommu.c
-> > > > b/drivers/iommu/intel-iommu.c index a76afb0fd51a..c1c0b0fb93c3
-> > > > 100644 --- a/drivers/iommu/intel-iommu.c
-> > > > +++ b/drivers/iommu/intel-iommu.c
-> > > > @@ -1757,6 +1757,9 @@ static void free_dmar_iommu(struct  
-> > intel_iommu  
-> > > > *iommu)
-> > > >  		if (ecap_prs(iommu->ecap))
-> > > >  			intel_svm_finish_prq(iommu);
-> > > >  	}
-> > > > +	if (ecap_vcs(iommu->ecap) && vccap_pasid(iommu->vccap))
-> > > > +
-> > > > ioasid_unregister_allocator(&iommu->pasid_allocator); +
-> > > >  #endif
-> > > >  }
-> > > >
-> > > > @@ -3291,6 +3294,84 @@ static int copy_translation_tables(struct
-> > > > intel_iommu *iommu)
-> > > >  	return ret;
-> > > >  }
-> > > >
-> > > > +#ifdef CONFIG_INTEL_IOMMU_SVM
-> > > > +static ioasid_t intel_ioasid_alloc(ioasid_t min, ioasid_t max,
-> > > > void *data)  
-> > >
-> > > the name is too generic... can we add vcmd in the name to clarify
-> > > its purpose, e.g. intel_vcmd_ioasid_alloc?
-> > >  
-> > I feel the intel_ prefix is a natural extension of a generic API,
-> > we do that for other IOMMU APIs, right?  
+> From: Liu Yi L <yi.l.liu@linux.intel.com>
 > 
-> other IOMMU APIs have no difference between host and guest, but
-> this one only applies to guest with vcmd interface. 
+> For VFIO IOMMUs with the type VFIO_TYPE1_NESTING_IOMMU, guest "owns" the
+> first-level/stage-1 translation structures, the host IOMMU driver has no
+> knowledge of first-level/stage-1 structure cache updates unless the guest
+> invalidation requests are trapped and propagated to the host.
 > 
-OK, sounds good. It is more explicit, improves readability.
+> This patch adds a new IOCTL VFIO_IOMMU_CACHE_INVALIDATE to propagate guest
+> first-level/stage-1 IOMMU cache invalidations to host to ensure IOMMU cache
+> correctness.
+> 
+> With this patch, vSVA (Virtual Shared Virtual Addressing) can be used safely
+> as the host IOMMU iotlb correctness are ensured.
+> 
+> Cc: Kevin Tian <kevin.tian@intel.com>
+> CC: Jacob Pan <jacob.jun.pan@linux.intel.com>
+> Cc: Alex Williamson <alex.williamson@redhat.com>
+> Cc: Eric Auger <eric.auger@redhat.com>
+> Cc: Jean-Philippe Brucker <jean-philippe@linaro.org>
+> Signed-off-by: Liu Yi L <yi.l.liu@linux.intel.com>
+> Signed-off-by: Eric Auger <eric.auger@redhat.com>
+> Signed-off-by: Jacob Pan <jacob.jun.pan@linux.intel.com>
+> ---
+>  drivers/vfio/vfio_iommu_type1.c | 49 +++++++++++++++++++++++++++++++++++++++++
+>  include/uapi/linux/vfio.h       | 22 ++++++++++++++++++
+>  2 files changed, 71 insertions(+)
+> 
+> diff --git a/drivers/vfio/vfio_iommu_type1.c b/drivers/vfio/vfio_iommu_type1.c
+> index a877747..937ec3f 100644
+> --- a/drivers/vfio/vfio_iommu_type1.c
+> +++ b/drivers/vfio/vfio_iommu_type1.c
+> @@ -2423,6 +2423,15 @@ static long vfio_iommu_type1_unbind_gpasid(struct vfio_iommu *iommu,
+>  	return ret;
+>  }
+>  
+> +static int vfio_cache_inv_fn(struct device *dev, void *data)
+> +{
+> +	struct domain_capsule *dc = (struct domain_capsule *)data;
+> +	struct iommu_cache_invalidate_info *cache_inv_info =
+> +		(struct iommu_cache_invalidate_info *) dc->data;
+> +
+> +	return iommu_cache_invalidate(dc->domain, dev, cache_inv_info);
+> +}
+> +
+>  static long vfio_iommu_type1_ioctl(void *iommu_data,
+>  				   unsigned int cmd, unsigned long arg)
+>  {
+> @@ -2629,6 +2638,46 @@ static long vfio_iommu_type1_ioctl(void *iommu_data,
+>  		}
+>  		kfree(gbind_data);
+>  		return ret;
+> +	} else if (cmd == VFIO_IOMMU_CACHE_INVALIDATE) {
+> +		struct vfio_iommu_type1_cache_invalidate cache_inv;
+> +		u32 version;
+> +		int info_size;
+> +		void *cache_info;
+> +		int ret;
+> +
+> +		minsz = offsetofend(struct vfio_iommu_type1_cache_invalidate,
+> +				    flags);
 
-> >   
-> > > > +{
-> > > > +	struct intel_iommu *iommu = data;
-> > > > +	ioasid_t ioasid;
-> > > > +
-> > > > +	if (!iommu)
-> > > > +		return INVALID_IOASID;
-> > > > +	/*
-> > > > +	 * VT-d virtual command interface always uses the full
-> > > > 20 bit
-> > > > +	 * PASID range. Host can partition guest PASID range
-> > > > based on
-> > > > +	 * policies but it is out of guest's control.
-> > > > +	 */
-> > > > +	if (min < PASID_MIN || max > intel_pasid_max_id)
-> > > > +		return INVALID_IOASID;
-> > > > +
-> > > > +	if (vcmd_alloc_pasid(iommu, &ioasid))
-> > > > +		return INVALID_IOASID;
-> > > > +
-> > > > +	return ioasid;
-> > > > +}
-> > > > +
-> > > > +static void intel_ioasid_free(ioasid_t ioasid, void *data)
-> > > > +{
-> > > > +	struct intel_iommu *iommu = data;
-> > > > +
-> > > > +	if (!iommu)
-> > > > +		return;
-> > > > +	/*
-> > > > +	 * Sanity check the ioasid owner is done at upper
-> > > > layer, e.g. VFIO
-> > > > +	 * We can only free the PASID when all the devices are
-> > > > unbound.
-> > > > +	 */
-> > > > +	if (ioasid_find(NULL, ioasid, NULL)) {
-> > > > +		pr_alert("Cannot free active IOASID %d\n",
-> > > > ioasid);
-> > > > +		return;
-> > > > +	}  
-> > >
-> > > However the sanity check is not done in default_free. Is there a
-> > > reason why using vcmd adds such  new requirement?
-> > >  
-> > Since we don't support nested guest. This vcmd allocator is only
-> > used by the guest IOMMU driver not VFIO. We expect IOMMU driver to
-> > have control of the free()/unbind() ordering.
-> > 
-> > For default_free, it can come from user space and host VFIO which
-> > can be out of order. But we will solve that issue with the blocking
-> > notifier.
-> >   
-> > > > +	vcmd_free_pasid(iommu, ioasid);
-> > > > +}
-> > > > +
-> > > > +static void register_pasid_allocator(struct intel_iommu *iommu)
-> > > > +{
-> > > > +	/*
-> > > > +	 * If we are running in the host, no need for custom
-> > > > allocator
-> > > > +	 * in that PASIDs are allocated from the host
-> > > > system-wide.
-> > > > +	 */
-> > > > +	if (!cap_caching_mode(iommu->cap))
-> > > > +		return;  
-> > >
-> > > is it more accurate to check against vcmd capability?
-> > >  
-> > I think this is sufficient. The spec says if vcmd is present, we
-> > must use it but not the other way.  
-> 
-> No, what about an vIOMMU implementation reports CM but not
-> VCMD?
-> I didn't get the rationale why we check an indirect capability
-> when there is already one well defined for the purpose.
-> 
-We _do_ check ecap_vcs() later on. Just an ordering thing, my thinking
-was a quick check if we are running in a host.
-...
-	if (ecap_vcs(iommu->ecap) && vccap_pasid(iommu->vccap)) {
+This breaks backward compatibility as soon as struct
+iommu_cache_invalidate_info changes size by its defined versioning
+scheme.  ie. a field gets added, the version is bumped, all existing
+userspace breaks.  Our minsz is offsetofend to the version field,
+interpret the version to size, then reevaluate argsz.
 
-> >   
->  [...]  
-> > >
-> > > which one? the first or last?
-> > >  
-> > All allocators share the same ops, so first=last. IOASID code will
-> > inspect the ops function and see if they are shared with others then
-> > use the same ops.  
-> 
-> ok, got you.
-> 
-> >   
->  [...]  
-> > >
-> > > since you register an allocator for every vIOMMU, means previously
-> > > registered allocators should also be unregistered here?
-> > >  
->  [...]  
-> > > > +		}
-> > > > +	}
-> > > > +}
-> > > > +#endif
-> > > > +
-> > > >  static int __init init_dmars(void)
-> > > >  {
-> > > >  	struct dmar_drhd_unit *drhd;
-> > > > @@ -3408,6 +3489,9 @@ static int __init init_dmars(void)
-> > > >  	 */
-> > > >  	for_each_active_iommu(iommu, drhd) {
-> > > >  		iommu_flush_write_buffer(iommu);
-> > > > +#ifdef CONFIG_INTEL_IOMMU_SVM
-> > > > +		register_pasid_allocator(iommu);
-> > > > +#endif
-> > > >  		iommu_set_root_entry(iommu);
-> > > >  		iommu->flush.flush_context(iommu, 0, 0, 0,
-> > > > DMA_CCMD_GLOBAL_INVL);
-> > > >  		iommu->flush.flush_iotlb(iommu, 0, 0, 0,
-> > > > DMA_TLB_GLOBAL_FLUSH);
-> > > > diff --git a/include/linux/intel-iommu.h
-> > > > b/include/linux/intel-iommu.h index 9cbf5357138b..9c357a325c72
-> > > > 100644 --- a/include/linux/intel-iommu.h
-> > > > +++ b/include/linux/intel-iommu.h
-> > > > @@ -19,6 +19,7 @@
-> > > >  #include <linux/iommu.h>
-> > > >  #include <linux/io-64-nonatomic-lo-hi.h>
-> > > >  #include <linux/dmar.h>
-> > > > +#include <linux/ioasid.h>
-> > > >
-> > > >  #include <asm/cacheflush.h>
-> > > >  #include <asm/iommu.h>
-> > > > @@ -563,6 +564,7 @@ struct intel_iommu {
-> > > >  #ifdef CONFIG_INTEL_IOMMU_SVM
-> > > >  	struct page_req_dsc *prq;
-> > > >  	unsigned char prq_name[16];    /* Name for PRQ
-> > > > interrupt */
-> > > > +	struct ioasid_allocator_ops pasid_allocator; /* Custom
-> > > > allocator for PASIDs */
-> > > >  #endif
-> > > >  	struct q_inval  *qi;            /* Queued invalidation
-> > > > info */ u32 *iommu_state; /* Store iommu states between suspend
-> > > > and resume.*/
-> > > > --
-> > > > 2.7.4  
-> > >  
-> > 
-> > [Jacob Pan]  
+> +
+> +		if (copy_from_user(&cache_inv, (void __user *)arg, minsz))
+> +			return -EFAULT;
+> +
+> +		if (cache_inv.argsz < minsz || cache_inv.flags)
+> +			return -EINVAL;
+> +
+> +		/* Get the version of struct iommu_cache_invalidate_info */
+> +		if (copy_from_user(&version,
+> +			(void __user *) (arg + minsz), sizeof(version)))
+> +			return -EFAULT;
+> +
+> +		info_size = iommu_uapi_get_data_size(
+> +					IOMMU_UAPI_CACHE_INVAL, version);
+> +
+> +		cache_info = kzalloc(info_size, GFP_KERNEL);
+> +		if (!cache_info)
+> +			return -ENOMEM;
+> +
+> +		if (copy_from_user(cache_info,
+> +			(void __user *) (arg + minsz), info_size)) {
+> +			kfree(cache_info);
+> +			return -EFAULT;
+> +		}
+> +
+> +		mutex_lock(&iommu->lock);
+> +		ret = vfio_iommu_for_each_dev(iommu, vfio_cache_inv_fn,
+> +					    cache_info);
 
-[Jacob Pan]
+How does a user respond when their cache invalidate fails?  Isn't this
+also another case where our for_each_dev can fail at an arbitrary point
+leaving us with no idea whether each device even had the opportunity to
+perform the invalidation request.  I don't see how we have any chance
+to maintain coherency after this faults.
+
+> +		mutex_unlock(&iommu->lock);
+> +		kfree(cache_info);
+> +		return ret;
+>  	}
+>  
+>  	return -ENOTTY;
+> diff --git a/include/uapi/linux/vfio.h b/include/uapi/linux/vfio.h
+> index 2235bc6..62ca791 100644
+> --- a/include/uapi/linux/vfio.h
+> +++ b/include/uapi/linux/vfio.h
+> @@ -899,6 +899,28 @@ struct vfio_iommu_type1_bind {
+>   */
+>  #define VFIO_IOMMU_BIND		_IO(VFIO_TYPE, VFIO_BASE + 23)
+>  
+> +/**
+> + * VFIO_IOMMU_CACHE_INVALIDATE - _IOW(VFIO_TYPE, VFIO_BASE + 24,
+> + *			struct vfio_iommu_type1_cache_invalidate)
+> + *
+> + * Propagate guest IOMMU cache invalidation to the host. The cache
+> + * invalidation information is conveyed by @cache_info, the content
+> + * format would be structures defined in uapi/linux/iommu.h. User
+> + * should be aware of that the struct  iommu_cache_invalidate_info
+> + * has a @version field, vfio needs to parse this field before getting
+> + * data from userspace.
+> + *
+> + * Availability of this IOCTL is after VFIO_SET_IOMMU.
+
+Is this a necessary qualifier?  A user can try to call this ioctl at
+any point, it only makes sense in certain configurations, but it should
+always "do the right thing" relative to the container iommu config.
+
+Also, I don't see anything in these last few patches testing the
+operating IOMMU model, what happens when a user calls them when not
+using the nesting IOMMU?
+
+Is this ioctl and the previous BIND ioctl only valid when configured
+for the nesting IOMMU type?
+
+> + *
+> + * returns: 0 on success, -errno on failure.
+> + */
+> +struct vfio_iommu_type1_cache_invalidate {
+> +	__u32   argsz;
+> +	__u32   flags;
+> +	struct	iommu_cache_invalidate_info cache_info;
+> +};
+> +#define VFIO_IOMMU_CACHE_INVALIDATE      _IO(VFIO_TYPE, VFIO_BASE + 24)
+
+The future extension capabilities of this ioctl worry me, I wonder if
+we should do another data[] with flag defining that data as CACHE_INFO.
+
+> +
+>  /* -------- Additional API for SPAPR TCE (Server POWERPC) IOMMU -------- */
+>  
+>  /*
+
 _______________________________________________
 iommu mailing list
 iommu@lists.linux-foundation.org
