@@ -2,96 +2,95 @@ Return-Path: <SRS0=urD1=5S=lists.linux-foundation.org=iommu-bounces@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-9.6 required=3.0 tests=DKIM_INVALID,DKIM_SIGNED,
+X-Spam-Status: No, score=-6.6 required=3.0 tests=DKIM_INVALID,DKIM_SIGNED,
 	HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_PATCH,MAILING_LIST_MULTI,SIGNED_OFF_BY,
-	SPF_HELO_NONE,SPF_PASS,USER_AGENT_GIT autolearn=unavailable
-	autolearn_force=no version=3.4.0
+	SPF_HELO_NONE,SPF_PASS autolearn=ham autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 19BB7C43331
-	for <iommu@archiver.kernel.org>; Thu,  2 Apr 2020 04:36:53 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id A7759C43331
+	for <iommu@archiver.kernel.org>; Thu,  2 Apr 2020 06:52:09 +0000 (UTC)
 Received: from silver.osuosl.org (smtp3.osuosl.org [140.211.166.136])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by mail.kernel.org (Postfix) with ESMTPS id 9232320757
-	for <iommu@archiver.kernel.org>; Thu,  2 Apr 2020 04:36:52 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTPS id 6706820784
+	for <iommu@archiver.kernel.org>; Thu,  2 Apr 2020 06:52:09 +0000 (UTC)
 Authentication-Results: mail.kernel.org;
-	dkim=fail reason="signature verification failed" (2048-bit key) header.d=tcd-ie.20150623.gappssmtp.com header.i=@tcd-ie.20150623.gappssmtp.com header.b="qrjpLexf"
-DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 9232320757
-Authentication-Results: mail.kernel.org; dmarc=none (p=none dis=none) header.from=tcd.ie
+	dkim=fail reason="signature verification failed" (2048-bit key) header.d=linaro.org header.i=@linaro.org header.b="KNE5T8qn"
+DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 6706820784
+Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=linaro.org
 Authentication-Results: mail.kernel.org; spf=pass smtp.mailfrom=iommu-bounces@lists.linux-foundation.org
 Received: from localhost (localhost [127.0.0.1])
-	by silver.osuosl.org (Postfix) with ESMTP id 4CEAB20400;
-	Thu,  2 Apr 2020 04:36:52 +0000 (UTC)
+	by silver.osuosl.org (Postfix) with ESMTP id 2635020423;
+	Thu,  2 Apr 2020 06:52:09 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
 Received: from silver.osuosl.org ([127.0.0.1])
 	by localhost (.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
-	with ESMTP id Lett8lMBN+mW; Thu,  2 Apr 2020 04:36:50 +0000 (UTC)
+	with ESMTP id koX3LaXLMYJn; Thu,  2 Apr 2020 06:52:08 +0000 (UTC)
 Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [140.211.9.56])
-	by silver.osuosl.org (Postfix) with ESMTP id E2F2D20360;
-	Thu,  2 Apr 2020 04:36:50 +0000 (UTC)
+	by silver.osuosl.org (Postfix) with ESMTP id 3DC9C2041F;
+	Thu,  2 Apr 2020 06:52:08 +0000 (UTC)
 Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
-	by lists.linuxfoundation.org (Postfix) with ESMTP id B89E3C089F;
-	Thu,  2 Apr 2020 04:36:50 +0000 (UTC)
-Received: from whitealder.osuosl.org (smtp1.osuosl.org [140.211.166.138])
- by lists.linuxfoundation.org (Postfix) with ESMTP id 5E29CC07FF
- for <iommu@lists.linux-foundation.org>; Thu,  2 Apr 2020 04:36:49 +0000 (UTC)
+	by lists.linuxfoundation.org (Postfix) with ESMTP id 14FADC089F;
+	Thu,  2 Apr 2020 06:52:08 +0000 (UTC)
+Received: from silver.osuosl.org (smtp3.osuosl.org [140.211.166.136])
+ by lists.linuxfoundation.org (Postfix) with ESMTP id 437BFC07FF
+ for <iommu@lists.linux-foundation.org>; Thu,  2 Apr 2020 06:52:06 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
- by whitealder.osuosl.org (Postfix) with ESMTP id 48998867F2
- for <iommu@lists.linux-foundation.org>; Thu,  2 Apr 2020 04:36:49 +0000 (UTC)
+ by silver.osuosl.org (Postfix) with ESMTP id 2B02420423
+ for <iommu@lists.linux-foundation.org>; Thu,  2 Apr 2020 06:52:06 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from whitealder.osuosl.org ([127.0.0.1])
+Received: from silver.osuosl.org ([127.0.0.1])
  by localhost (.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
- with ESMTP id uxlw3FL9L0hr for <iommu@lists.linux-foundation.org>;
- Thu,  2 Apr 2020 04:36:48 +0000 (UTC)
-X-Greylist: delayed 00:17:09 by SQLgrey-1.7.6
-Received: from mail-oi1-f196.google.com (mail-oi1-f196.google.com
- [209.85.167.196])
- by whitealder.osuosl.org (Postfix) with ESMTPS id 02C198671E
- for <iommu@lists.linux-foundation.org>; Thu,  2 Apr 2020 04:36:47 +0000 (UTC)
-Received: by mail-oi1-f196.google.com with SMTP id v134so1665042oie.11
- for <iommu@lists.linux-foundation.org>; Wed, 01 Apr 2020 21:36:47 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
- d=tcd-ie.20150623.gappssmtp.com; s=20150623;
- h=from:to:cc:subject:date:message-id:mime-version
- :content-transfer-encoding;
- bh=u11SA1v5lDHbwzwkFSCh6NiqhqGABE/1UnVjTe1jwnc=;
- b=qrjpLexf3pkfUEIq4xKX44iq9xgKCxV8CV/E+vQuLEgHXzQklceVUvwLDaPeXiJYr5
- AZ4wB23rxcAcy/JTV7WkHnv01kW8PiWMyISOkQl/Vx0qiGps0OrrMOmTxKprGqOb5gqd
- UM+uOwV41+2YX3d52XKvnaF8a/uPGu8ag4XEbTZ3xD1um5MSnqsRkR4uA8roMF5HcfWm
- fWPSxqS0fZxK/bf78WhJbuWlt1oq9YF660CS2CdYEff7+AQv4p9W+TkLMR01i/jgtyzE
- +h+qZ7FSwJgqT5Nh7bTzKtXb4ArIgIwyBxJj7AcEi2FL+CuBLZ/59bN2ClUDbULn86zy
- NT7g==
+ with ESMTP id UrDtI4hA2XyB for <iommu@lists.linux-foundation.org>;
+ Thu,  2 Apr 2020 06:52:04 +0000 (UTC)
+X-Greylist: domain auto-whitelisted by SQLgrey-1.7.6
+Received: from mail-pl1-f196.google.com (mail-pl1-f196.google.com
+ [209.85.214.196])
+ by silver.osuosl.org (Postfix) with ESMTPS id 1FF952041F
+ for <iommu@lists.linux-foundation.org>; Thu,  2 Apr 2020 06:52:04 +0000 (UTC)
+Received: by mail-pl1-f196.google.com with SMTP id s23so967354plq.13
+ for <iommu@lists.linux-foundation.org>; Wed, 01 Apr 2020 23:52:04 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linaro.org; s=google;
+ h=date:from:to:cc:subject:message-id:references:mime-version
+ :content-disposition:in-reply-to;
+ bh=QnW1FRwTH4xbg6LjM8uAuRTxGm5LQR9zZzf7WroNXlk=;
+ b=KNE5T8qnOrg8DU2Uf0oSMAWQslv7RAp37B4JyeQ3UXi+xSSIhp/xde1qIF/pvqxL9J
+ uxZGuNG4rugzfgwvQE8KO6Q9zN4Gn2dem01V61dEZ4+yTTmhAUzhQuxb4qetrbd2QzQ9
+ VZ/5M5Ai8cumWOzOutq4YrufW5MGwo0BkntamiaU4X7bIamT+y67fMt8yADlN9TylaUH
+ K8F9HomtVYyoxklKUgsWeuDhjNcxaJbb5dhX4UFj73+0sZW+WkOrdQTHhP3RSnke6AVV
+ 0GUCdQa0Egz+xressXuZyWEB+f5tjVbuymp2GuRRrw4Q0lliCdINuQjSevox+BOjLR+G
+ QQCg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
  d=1e100.net; s=20161025;
- h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
- :content-transfer-encoding;
- bh=u11SA1v5lDHbwzwkFSCh6NiqhqGABE/1UnVjTe1jwnc=;
- b=l/fq6OTHefcIjYJuydAQPJ4OfqqXrS1Pa9wk6eTN1C+SVaov6HkGBCWl40jYV2Z4Cm
- qis7WX5ON4ft7YMVEE7HfLvflxmboysSv+BGRxLcf/WwV/gXR2NKSVqWm36s+l1HA3/J
- raLN3zOFmEGyiDu0xAz4z5Mb9W54c7cQ4qFdRERJQ6sc0HJIpOgxc7c0Blv3ByM8ED5e
- Kw9yLYmdUq5+N1J+C14MN5yXvcPZ9h9Y/oHyjG8wDsCVmni8jjkgJZ3RNOl8KMK6Qw5w
- pT64dW9eeLzbVw6qRUvoOL6yUqC9RaqEM8f4EP4zFXMIRoo60xsmrMrChUHc1lQrbYRN
- uxVQ==
-X-Gm-Message-State: AGi0Puao+RAzHKU9KqDaOf2v0UwsXEk12PXwUA5xFvB/zwuKZTuGvGIb
- Vn0NxBk4lZlW9unJYNHjFIqDsq/i5sU=
-X-Google-Smtp-Source: APiQypKXLU201No2vEQ1RTPqbyVKExlpd1AX4SDLxnX5JUncA3ab8mryjs22/JjGJ6Cbtwx/tZsDqA==
-X-Received: by 2002:a17:90b:230d:: with SMTP id
- mt13mr1585074pjb.164.1585800733481; 
- Wed, 01 Apr 2020 21:12:13 -0700 (PDT)
-Received: from tom-ThinkPad-X1-Carbon-5th.teksavvy.com ([69.172.145.184])
- by smtp.googlemail.com with ESMTPSA id v25sm2571818pgl.55.2020.04.01.21.12.12
+ h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+ :mime-version:content-disposition:in-reply-to;
+ bh=QnW1FRwTH4xbg6LjM8uAuRTxGm5LQR9zZzf7WroNXlk=;
+ b=GgYfQrMCXroT7UjJVkI+wc4HubxG2M4f3gWn2Kaz14vOyXVbrW0/H7X3FOl94kEzBU
+ SYNIRQScnfMGBdCYClHXdCVNrOBCiMBO9gXH/2cL/ny+i5bH6yC7XqBGInYlF5KZpJzH
+ 9JTAo3iM9F8MZDTuM468l3RLYfpcDCF2b9L4AzbfhGBkPdtftX45216UBZ3Mp+O7RqMj
+ 364OtdQsbwnLmatNM5hKG5rtEYSIpa4jROCnF7+rG9fHnjtG6gEZB+1cnNS5nteIl2cE
+ OYa1Oiid0jtQ6jffOp8EkvKN1J6TgxSbia1TcjenTT2+MLvnT+0Lcle8k+SsffImUjsD
+ 8CaA==
+X-Gm-Message-State: AGi0Pub8bxXVdZNqkUdGWrmecMm7QADPT13d53px/lkgM8ep2Bp566ip
+ UE7RWQdrMEdJmTioiVHfgi9E0tU/W0o=
+X-Google-Smtp-Source: APiQypLGCELqQ+CVBf3q8b/1bk+rBZgF5Fqa4XWZ5iwiVgkfN8O0vF2RVSrCHg3HEEPGfX83+uu63Q==
+X-Received: by 2002:a62:cdcc:: with SMTP id o195mr1696130pfg.323.1585809955390; 
+ Wed, 01 Apr 2020 23:45:55 -0700 (PDT)
+Received: from yoga (104-188-17-28.lightspeed.sndgca.sbcglobal.net.
+ [104.188.17.28])
+ by smtp.gmail.com with ESMTPSA id ck3sm3006406pjb.44.2020.04.01.23.45.54
  (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
- Wed, 01 Apr 2020 21:12:12 -0700 (PDT)
-From: Tom Murphy <murphyt7@tcd.ie>
-To: iommu@lists.linux-foundation.org
-Subject: [PATCH] intel-iommu: Remove all IOVA handling code from the
- non-dma_ops path in the intel
-Date: Thu,  2 Apr 2020 05:12:00 +0100
-Message-Id: <20200402041200.12458-1-murphyt7@tcd.ie>
-X-Mailer: git-send-email 2.20.1
+ Wed, 01 Apr 2020 23:45:54 -0700 (PDT)
+Date: Wed, 1 Apr 2020 23:45:52 -0700
+From: Bjorn Andersson <bjorn.andersson@linaro.org>
+To: Tang Bin <tangbin@cmss.chinamobile.com>
+Subject: Re: [PATCH] iommu/qcom:fix local_base status check
+Message-ID: <20200402064552.GG663905@yoga>
+References: <20200402063302.20640-1-tangbin@cmss.chinamobile.com>
 MIME-Version: 1.0
-Cc: David Woodhouse <dwmw2@infradead.org>, linux-kernel@vger.kernel.org,
- Tom Murphy <murphyt7@tcd.ie>
+Content-Disposition: inline
+In-Reply-To: <20200402063302.20640-1-tangbin@cmss.chinamobile.com>
+Cc: linux-arm-msm@vger.kernel.org, iommu@lists.linux-foundation.org,
+ linux-kernel@vger.kernel.org, agross@kernel.org
 X-BeenThere: iommu@lists.linux-foundation.org
 X-Mailman-Version: 2.1.15
 Precedence: list
@@ -109,216 +108,43 @@ Content-Transfer-Encoding: 7bit
 Errors-To: iommu-bounces@lists.linux-foundation.org
 Sender: "iommu" <iommu-bounces@lists.linux-foundation.org>
 
-There's no need for the non-dma_ops path to keep track of IOVAs. The
-whole point of the non-dma_ops path is that it allows the IOVAs to be
-handled separately. The IOVA handling code removed in this patch is
-pointless.
+On Wed 01 Apr 23:33 PDT 2020, Tang Bin wrote:
 
-Signed-off-by: Tom Murphy <murphyt7@tcd.ie>
----
- drivers/iommu/intel-iommu.c | 97 +++++++++++++------------------------
- 1 file changed, 33 insertions(+), 64 deletions(-)
+> Release resources when exiting on error.
+> 
 
-diff --git a/drivers/iommu/intel-iommu.c b/drivers/iommu/intel-iommu.c
-index 4be549478691..b92606979914 100644
---- a/drivers/iommu/intel-iommu.c
-+++ b/drivers/iommu/intel-iommu.c
-@@ -1911,11 +1911,6 @@ static int dmar_init_reserved_ranges(void)
- 	return 0;
- }
- 
--static void domain_reserve_special_ranges(struct dmar_domain *domain)
--{
--	copy_reserved_iova(&reserved_iova_list, &domain->iovad);
--}
--
- static inline int guestwidth_to_adjustwidth(int gaw)
- {
- 	int agaw;
-@@ -1946,7 +1941,7 @@ static int domain_init(struct dmar_domain *domain, struct intel_iommu *iommu,
- 			pr_info("iova flush queue initialization failed\n");
- 	}
- 
--	domain_reserve_special_ranges(domain);
-+	copy_reserved_iova(&reserved_iova_list, &domain->iovad);
- 
- 	/* calculate AGAW */
- 	if (guest_width > cap_mgaw(iommu->cap))
-@@ -1996,7 +1991,8 @@ static void domain_exit(struct dmar_domain *domain)
- 	domain_remove_dev_info(domain);
- 
- 	/* destroy iovas */
--	put_iova_domain(&domain->iovad);
-+	if (domain->domain.type == IOMMU_DOMAIN_DMA)
-+		put_iova_domain(&domain->iovad);
- 
- 	if (domain->pgd) {
- 		struct page *freelist;
-@@ -2793,19 +2789,9 @@ static struct dmar_domain *set_domain_for_dev(struct device *dev,
- }
- 
- static int iommu_domain_identity_map(struct dmar_domain *domain,
--				     unsigned long long start,
--				     unsigned long long end)
-+				     unsigned long first_vpfn,
-+				     unsigned long last_vpfn)
- {
--	unsigned long first_vpfn = start >> VTD_PAGE_SHIFT;
--	unsigned long last_vpfn = end >> VTD_PAGE_SHIFT;
--
--	if (!reserve_iova(&domain->iovad, dma_to_mm_pfn(first_vpfn),
--			  dma_to_mm_pfn(last_vpfn))) {
--		pr_err("Reserving iova failed\n");
--		return -ENOMEM;
--	}
--
--	pr_debug("Mapping reserved region %llx-%llx\n", start, end);
- 	/*
- 	 * RMRR range might have overlap with physical memory range,
- 	 * clear it first
-@@ -2882,7 +2868,8 @@ static int __init si_domain_init(int hw)
- 
- 		for_each_mem_pfn_range(i, nid, &start_pfn, &end_pfn, NULL) {
- 			ret = iommu_domain_identity_map(si_domain,
--					PFN_PHYS(start_pfn), PFN_PHYS(end_pfn));
-+					mm_to_dma_pfn(start_pfn),
-+					mm_to_dma_pfn(end_pfn));
- 			if (ret)
- 				return ret;
- 		}
-@@ -4812,58 +4799,37 @@ static int intel_iommu_memory_notifier(struct notifier_block *nb,
- 				       unsigned long val, void *v)
- {
- 	struct memory_notify *mhp = v;
--	unsigned long long start, end;
--	unsigned long start_vpfn, last_vpfn;
-+	unsigned long start_vpfn = mm_to_dma_pfn(mhp->start_pfn);
-+	unsigned long last_vpfn = mm_to_dma_pfn(mhp->start_pfn +
-+			mhp->nr_pages - 1);
- 
- 	switch (val) {
- 	case MEM_GOING_ONLINE:
--		start = mhp->start_pfn << PAGE_SHIFT;
--		end = ((mhp->start_pfn + mhp->nr_pages) << PAGE_SHIFT) - 1;
--		if (iommu_domain_identity_map(si_domain, start, end)) {
--			pr_warn("Failed to build identity map for [%llx-%llx]\n",
--				start, end);
-+		if (iommu_domain_identity_map(si_domain, start_vpfn,
-+					last_vpfn)) {
-+			pr_warn("Failed to build identity map for [%lx-%lx]\n",
-+				start_vpfn, last_vpfn);
- 			return NOTIFY_BAD;
- 		}
- 		break;
- 
- 	case MEM_OFFLINE:
- 	case MEM_CANCEL_ONLINE:
--		start_vpfn = mm_to_dma_pfn(mhp->start_pfn);
--		last_vpfn = mm_to_dma_pfn(mhp->start_pfn + mhp->nr_pages - 1);
--		while (start_vpfn <= last_vpfn) {
--			struct iova *iova;
-+		{
- 			struct dmar_drhd_unit *drhd;
- 			struct intel_iommu *iommu;
- 			struct page *freelist;
- 
--			iova = find_iova(&si_domain->iovad, start_vpfn);
--			if (iova == NULL) {
--				pr_debug("Failed get IOVA for PFN %lx\n",
--					 start_vpfn);
--				break;
--			}
--
--			iova = split_and_remove_iova(&si_domain->iovad, iova,
--						     start_vpfn, last_vpfn);
--			if (iova == NULL) {
--				pr_warn("Failed to split IOVA PFN [%lx-%lx]\n",
--					start_vpfn, last_vpfn);
--				return NOTIFY_BAD;
--			}
--
--			freelist = domain_unmap(si_domain, iova->pfn_lo,
--					       iova->pfn_hi);
-+			freelist = domain_unmap(si_domain, start_vpfn,
-+					last_vpfn);
- 
- 			rcu_read_lock();
- 			for_each_active_iommu(iommu, drhd)
- 				iommu_flush_iotlb_psi(iommu, si_domain,
--					iova->pfn_lo, iova_size(iova),
-+					start_vpfn, mhp->nr_pages,
- 					!freelist, 0);
- 			rcu_read_unlock();
- 			dma_free_pagelist(freelist);
--
--			start_vpfn = iova->pfn_hi + 1;
--			free_iova_mem(iova);
- 		}
- 		break;
- 	}
-@@ -4891,8 +4857,9 @@ static void free_all_cpu_cached_iovas(unsigned int cpu)
- 		for (did = 0; did < cap_ndoms(iommu->cap); did++) {
- 			domain = get_iommu_domain(iommu, (u16)did);
- 
--			if (!domain)
-+			if (!domain || domain->domain.type != IOMMU_DOMAIN_DMA)
- 				continue;
-+
- 			free_cpu_cached_iovas(cpu, &domain->iovad);
- 		}
- 	}
-@@ -5321,9 +5288,6 @@ static int md_domain_init(struct dmar_domain *domain, int guest_width)
- {
- 	int adjust_width;
- 
--	init_iova_domain(&domain->iovad, VTD_PAGE_SIZE, IOVA_START_PFN);
--	domain_reserve_special_ranges(domain);
--
- 	/* calculate AGAW */
- 	domain->gaw = guest_width;
- 	adjust_width = guestwidth_to_adjustwidth(guest_width);
-@@ -5342,11 +5306,21 @@ static int md_domain_init(struct dmar_domain *domain, int guest_width)
- 	return 0;
- }
- 
-+static void intel_init_iova_domain(struct dmar_domain *dmar_domain)
-+{
-+	init_iova_domain(&dmar_domain->iovad, VTD_PAGE_SIZE, IOVA_START_PFN);
-+	copy_reserved_iova(&reserved_iova_list, &dmar_domain->iovad);
-+
-+	if (!intel_iommu_strict && init_iova_flush_queue(&dmar_domain->iovad,
-+				iommu_flush_iova, iova_entry_free)) {
-+		pr_info("iova flush queue initialization failed\n");
-+	}
-+}
-+
- static struct iommu_domain *intel_iommu_domain_alloc(unsigned type)
- {
- 	struct dmar_domain *dmar_domain;
- 	struct iommu_domain *domain;
--	int ret;
- 
- 	switch (type) {
- 	case IOMMU_DOMAIN_DMA:
-@@ -5363,13 +5337,8 @@ static struct iommu_domain *intel_iommu_domain_alloc(unsigned type)
- 			return NULL;
- 		}
- 
--		if (!intel_iommu_strict && type == IOMMU_DOMAIN_DMA) {
--			ret = init_iova_flush_queue(&dmar_domain->iovad,
--						    iommu_flush_iova,
--						    iova_entry_free);
--			if (ret)
--				pr_info("iova flush queue initialization failed\n");
--		}
-+		if (type == IOMMU_DOMAIN_DMA)
-+			intel_init_iova_domain(dmar_domain);
- 
- 		domain_update_iommu_cap(dmar_domain);
- 
--- 
-2.20.1
+Reviewed-by: Bjorn Andersson <bjorn.andersson@linaro.org>
 
+Regards,
+Bjorn
+
+> Signed-off-by: Tang Bin <tangbin@cmss.chinamobile.com>
+> ---
+>  drivers/iommu/qcom_iommu.c | 5 ++++-
+>  1 file changed, 4 insertions(+), 1 deletion(-)
+> 
+> diff --git a/drivers/iommu/qcom_iommu.c b/drivers/iommu/qcom_iommu.c
+> index 4328da0b0..c08aa9651 100644
+> --- a/drivers/iommu/qcom_iommu.c
+> +++ b/drivers/iommu/qcom_iommu.c
+> @@ -813,8 +813,11 @@ static int qcom_iommu_device_probe(struct platform_device *pdev)
+>  	qcom_iommu->dev = dev;
+>  
+>  	res = platform_get_resource(pdev, IORESOURCE_MEM, 0);
+> -	if (res)
+> +	if (res) {
+>  		qcom_iommu->local_base = devm_ioremap_resource(dev, res);
+> +		if (IS_ERR(qcom_iommu->local_base))
+> +			return PTR_ERR(qcom_iommu->local_base);
+> +	}
+>  
+>  	qcom_iommu->iface_clk = devm_clk_get(dev, "iface");
+>  	if (IS_ERR(qcom_iommu->iface_clk)) {
+> -- 
+> 2.20.1.windows.1
+> 
+> 
+> 
 _______________________________________________
 iommu mailing list
 iommu@lists.linux-foundation.org
