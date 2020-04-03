@@ -2,185 +2,97 @@ Return-Path: <SRS0=dWuT=5T=lists.linux-foundation.org=iommu-bounces@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-7.0 required=3.0 tests=DKIM_INVALID,DKIM_SIGNED,
-	HEADER_FROM_DIFFERENT_DOMAINS,MAILING_LIST_MULTI,MENTIONS_GIT_HOSTING,
-	SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED,USER_AGENT_SANE_1 autolearn=ham
-	autolearn_force=no version=3.4.0
+X-Spam-Status: No, score=-6.8 required=3.0 tests=HEADER_FROM_DIFFERENT_DOMAINS,
+	INCLUDES_PATCH,MAILING_LIST_MULTI,SIGNED_OFF_BY,SPF_HELO_NONE,SPF_PASS,
+	URIBL_BLOCKED autolearn=unavailable autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 1AB21C2D0E8
-	for <iommu@archiver.kernel.org>; Fri,  3 Apr 2020 08:38:24 +0000 (UTC)
-Received: from silver.osuosl.org (smtp3.osuosl.org [140.211.166.136])
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 4D0E6C43331
+	for <iommu@archiver.kernel.org>; Fri,  3 Apr 2020 11:42:29 +0000 (UTC)
+Received: from fraxinus.osuosl.org (smtp4.osuosl.org [140.211.166.137])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by mail.kernel.org (Postfix) with ESMTPS id DC5552073B
-	for <iommu@archiver.kernel.org>; Fri,  3 Apr 2020 08:38:23 +0000 (UTC)
-Authentication-Results: mail.kernel.org;
-	dkim=fail reason="signature verification failed" (2048-bit key) header.d=ozlabs-ru.20150623.gappssmtp.com header.i=@ozlabs-ru.20150623.gappssmtp.com header.b="VngHtP3D"
-DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org DC5552073B
-Authentication-Results: mail.kernel.org; dmarc=none (p=none dis=none) header.from=ozlabs.ru
+	by mail.kernel.org (Postfix) with ESMTPS id 1942E2073B
+	for <iommu@archiver.kernel.org>; Fri,  3 Apr 2020 11:42:28 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 1942E2073B
+Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=intel.com
 Authentication-Results: mail.kernel.org; spf=pass smtp.mailfrom=iommu-bounces@lists.linux-foundation.org
 Received: from localhost (localhost [127.0.0.1])
-	by silver.osuosl.org (Postfix) with ESMTP id A9C4122193;
-	Fri,  3 Apr 2020 08:38:23 +0000 (UTC)
+	by fraxinus.osuosl.org (Postfix) with ESMTP id 008BA863A1;
+	Fri,  3 Apr 2020 11:42:28 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from silver.osuosl.org ([127.0.0.1])
+Received: from fraxinus.osuosl.org ([127.0.0.1])
 	by localhost (.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
-	with ESMTP id JrDf0GAIzlSm; Fri,  3 Apr 2020 08:38:22 +0000 (UTC)
+	with ESMTP id YCNjAw97SiBg; Fri,  3 Apr 2020 11:42:26 +0000 (UTC)
 Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [140.211.9.56])
-	by silver.osuosl.org (Postfix) with ESMTP id DA25F2039A;
-	Fri,  3 Apr 2020 08:38:22 +0000 (UTC)
+	by fraxinus.osuosl.org (Postfix) with ESMTP id C56BB86490;
+	Fri,  3 Apr 2020 11:42:26 +0000 (UTC)
 Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
-	by lists.linuxfoundation.org (Postfix) with ESMTP id D0A6AC1AE2;
-	Fri,  3 Apr 2020 08:38:22 +0000 (UTC)
-Received: from silver.osuosl.org (smtp3.osuosl.org [140.211.166.136])
- by lists.linuxfoundation.org (Postfix) with ESMTP id E2577C07FF
- for <iommu@lists.linux-foundation.org>; Fri,  3 Apr 2020 08:38:20 +0000 (UTC)
+	by lists.linuxfoundation.org (Postfix) with ESMTP id AD32AC1831;
+	Fri,  3 Apr 2020 11:42:26 +0000 (UTC)
+Received: from hemlock.osuosl.org (smtp2.osuosl.org [140.211.166.133])
+ by lists.linuxfoundation.org (Postfix) with ESMTP id 5D1FBC07FF
+ for <iommu@lists.linux-foundation.org>; Fri,  3 Apr 2020 11:42:24 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
- by silver.osuosl.org (Postfix) with ESMTP id C5760204E7
- for <iommu@lists.linux-foundation.org>; Fri,  3 Apr 2020 08:38:20 +0000 (UTC)
+ by hemlock.osuosl.org (Postfix) with ESMTP id 58E3588E0B
+ for <iommu@lists.linux-foundation.org>; Fri,  3 Apr 2020 11:42:24 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from silver.osuosl.org ([127.0.0.1])
+Received: from hemlock.osuosl.org ([127.0.0.1])
  by localhost (.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
- with ESMTP id YH3QlbZGrLmZ for <iommu@lists.linux-foundation.org>;
- Fri,  3 Apr 2020 08:38:18 +0000 (UTC)
-X-Greylist: from auto-whitelisted by SQLgrey-1.7.6
-Received: from mail-pg1-f196.google.com (mail-pg1-f196.google.com
- [209.85.215.196])
- by silver.osuosl.org (Postfix) with ESMTPS id 8B6B32039A
- for <iommu@lists.linux-foundation.org>; Fri,  3 Apr 2020 08:38:18 +0000 (UTC)
-Received: by mail-pg1-f196.google.com with SMTP id c23so3195780pgj.3
- for <iommu@lists.linux-foundation.org>; Fri, 03 Apr 2020 01:38:18 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
- d=ozlabs-ru.20150623.gappssmtp.com; s=20150623;
- h=subject:from:to:cc:references:autocrypt:message-id:date:user-agent
- :mime-version:in-reply-to:content-language:content-transfer-encoding;
- bh=4RbXM/dGYfjRYaN6K+o47qQ37StO0vdTgvlr+/msVR4=;
- b=VngHtP3Dw0a7CTfyVS0zUwacgIPhRHGnYv1oxl2ldJHnQbrq6/XeodTErjKvaKQ7ux
- +hZlL7sbIDXAHJGYwuWQYU29Ubnb1zue2cj1JggtJ28St3tQDWclhPngir+OW4wzB81X
- rC7NoMB+F9heWqZM6aPt8SVL/OKiquRyUwUaPQIhSsNYLMIkEUw2RZy/xLR3zLx50gOo
- 7jAEDGVNw4r0Dr8BagnsoEH+Bu7j1XninWk1lP54DCemKNDNvllbgJaN7GriP/G6COw+
- VCxeF7bSt/dPXSpnF6avpbpMqRca7OTtv0EHSso7kNDkBrVs6BDPo4aY7NrLHYw+YpyC
- 1qWA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
- d=1e100.net; s=20161025;
- h=x-gm-message-state:subject:from:to:cc:references:autocrypt
- :message-id:date:user-agent:mime-version:in-reply-to
- :content-language:content-transfer-encoding;
- bh=4RbXM/dGYfjRYaN6K+o47qQ37StO0vdTgvlr+/msVR4=;
- b=LB3fZ5zu52gfoeVcd/37YlxCYRMyKtNG8EbAUS2cux241MYI7CfUqvZ0gX0UEzBbcX
- oZc1aQO+8s4xT+Ouqij21qTZ1VdKbv93mb8UbGGwwTYBPcZFLZfD8QpYVrIf4RfhTqoh
- ZNo6So6Di81AE0QeyNXHJD0pv+1zBXwzjyxn0YEaUH5Lh0KEUe+kGOn52AC97yqjthWp
- 34o1wwvGXm6GQiL2ZhrXxOWYgbVg8r1WMS8/e5q+Spu6rTl8hJhXzYtGYxMjsP2CuAuB
- ftzVKQrF/ohIPs4ipJuWkTKIB2LnKOpdaPmzm3q3xCFtBlLJHr6IddNGDAvnUDjpmwFq
- u52Q==
-X-Gm-Message-State: AGi0PuZe2+68TBFzI+ME1je2bifoab+PoQKMGMO4Zdw7pPG8acRF2/5z
- HckbHcZRlZj2VvJurs+eFeuP+w==
-X-Google-Smtp-Source: APiQypJBH2vwfkizH8xIqTNZXFpSWHlVXAcUhcZ/TRDiHJaw5/qJusuP4H8oo2YqQCx7vZDX+HD5Ig==
-X-Received: by 2002:a63:cf:: with SMTP id 198mr7399597pga.447.1585903098144;
- Fri, 03 Apr 2020 01:38:18 -0700 (PDT)
-Received: from [192.168.10.94] (124-171-87-207.dyn.iinet.net.au.
- [124.171.87.207])
- by smtp.gmail.com with ESMTPSA id a19sm5345564pfk.110.2020.04.03.01.38.13
- (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
- Fri, 03 Apr 2020 01:38:17 -0700 (PDT)
-Subject: Re: [PATCH 1/2] dma-mapping: add a dma_ops_bypass flag to struct
- device
-From: Alexey Kardashevskiy <aik@ozlabs.ru>
-To: Christoph Hellwig <hch@lst.de>
-References: <20200320141640.366360-1-hch@lst.de>
- <20200320141640.366360-2-hch@lst.de>
- <2f31d0dd-aa7e-8b76-c8a1-5759fda5afc9@ozlabs.ru>
- <20200323083705.GA31245@lst.de> <20200323085059.GA32528@lst.de>
- <87sghz2ibh.fsf@linux.ibm.com> <20200323172256.GB31269@lst.de>
- <ffce1af6-a215-dee8-7b5c-2111f43accfd@ozlabs.ru>
- <20200324075402.GJ23447@lst.de>
- <41975da3-3a4a-fc3c-2b90-8d607cf220e6@ozlabs.ru>
- <20200325083740.GC21605@lst.de>
- <a705afc5-779d-baf4-e5d2-e2da04c82743@ozlabs.ru>
-Autocrypt: addr=aik@ozlabs.ru; keydata=
- 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
-Message-ID: <213b0c7d-f908-b4f4-466d-6240c3622cd6@ozlabs.ru>
-Date: Fri, 3 Apr 2020 19:38:11 +1100
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101
- Thunderbird/68.5.0
-MIME-Version: 1.0
-In-Reply-To: <a705afc5-779d-baf4-e5d2-e2da04c82743@ozlabs.ru>
+ with ESMTP id uNaG57VJ2gus for <iommu@lists.linux-foundation.org>;
+ Fri,  3 Apr 2020 11:42:23 +0000 (UTC)
+X-Greylist: domain auto-whitelisted by SQLgrey-1.7.6
+Received: from mga06.intel.com (mga06.intel.com [134.134.136.31])
+ by hemlock.osuosl.org (Postfix) with ESMTPS id 7FC0188C8E
+ for <iommu@lists.linux-foundation.org>; Fri,  3 Apr 2020 11:42:23 +0000 (UTC)
+IronPort-SDR: H+bgOSxwpWEWhcK8ZcxNr1XR5u4ujRSmnPlX1J5/HddxfVXLT+GGlz9vblFHfjaXp1cRPXAaF0
+ Wvd/8GVMXIrw==
+X-Amp-Result: SKIPPED(no attachment in message)
+X-Amp-File-Uploaded: False
+Received: from fmsmga008.fm.intel.com ([10.253.24.58])
+ by orsmga104.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384;
+ 03 Apr 2020 04:42:22 -0700
+IronPort-SDR: 5iVGo26cmCIRFwKXXhqP8A2IymaOmPdiicCUqS/9qwaAtYkT4XqcFUOPP/Sw0EvfuMNejj/VNk
+ unDdqrxXK2pA==
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="5.72,339,1580803200"; d="scan'208";a="242792637"
+Received: from fmsmsx103.amr.corp.intel.com ([10.18.124.201])
+ by fmsmga008.fm.intel.com with ESMTP; 03 Apr 2020 04:42:22 -0700
+Received: from fmsmsx115.amr.corp.intel.com (10.18.116.19) by
+ FMSMSX103.amr.corp.intel.com (10.18.124.201) with Microsoft SMTP Server (TLS)
+ id 14.3.439.0; Fri, 3 Apr 2020 04:42:22 -0700
+Received: from shsmsx106.ccr.corp.intel.com (10.239.4.159) by
+ fmsmsx115.amr.corp.intel.com (10.18.116.19) with Microsoft SMTP Server (TLS)
+ id 14.3.439.0; Fri, 3 Apr 2020 04:42:21 -0700
+Received: from shsmsx104.ccr.corp.intel.com ([169.254.5.225]) by
+ SHSMSX106.ccr.corp.intel.com ([169.254.10.89]) with mapi id 14.03.0439.000;
+ Fri, 3 Apr 2020 19:42:18 +0800
+From: "Liu, Yi L" <yi.l.liu@intel.com>
+To: Alex Williamson <alex.williamson@redhat.com>
+Subject: RE: [PATCH v1 2/2] vfio/pci: Emulate PASID/PRI capability for VFs
+Thread-Topic: [PATCH v1 2/2] vfio/pci: Emulate PASID/PRI capability for VFs
+Thread-Index: AQHWAEVGuXHNl3uJkkGgSITNIYV006hl/jEAgAFHqvA=
+Date: Fri, 3 Apr 2020 11:42:17 +0000
+Message-ID: <A2975661238FB949B60364EF0F2C25743A220988@SHSMSX104.ccr.corp.intel.com>
+References: <1584880394-11184-1-git-send-email-yi.l.liu@intel.com>
+ <1584880394-11184-3-git-send-email-yi.l.liu@intel.com>
+ <20200402165954.48d941ee@w520.home>
+In-Reply-To: <20200402165954.48d941ee@w520.home>
+Accept-Language: en-US
 Content-Language: en-US
-Cc: "Aneesh Kumar K.V" <aneesh.kumar@linux.ibm.com>,
- Robin Murphy <robin.murphy@arm.com>, linux-kernel@vger.kernel.org,
- iommu@lists.linux-foundation.org, Michael Ellerman <mpe@ellerman.id.au>,
- Greg Kroah-Hartman <gregkh@linuxfoundation.org>, linuxppc-dev@lists.ozlabs.org
+X-MS-Has-Attach: 
+X-MS-TNEF-Correlator: 
+dlp-product: dlpe-windows
+dlp-version: 11.2.0.6
+dlp-reaction: no-action
+x-originating-ip: [10.239.127.40]
+MIME-Version: 1.0
+Cc: "jean-philippe@linaro.org" <jean-philippe@linaro.org>, "Tian,
+ Kevin" <kevin.tian@intel.com>, "Raj, 
+ Ashok" <ashok.raj@intel.com>, "kvm@vger.kernel.org" <kvm@vger.kernel.org>,
+ "Tian, Jun J" <jun.j.tian@intel.com>,
+ "iommu@lists.linux-foundation.org" <iommu@lists.linux-foundation.org>,
+ "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>, "Sun, Yi
+ Y" <yi.y.sun@intel.com>, "Wu, Hao" <hao.wu@intel.com>
 X-BeenThere: iommu@lists.linux-foundation.org
 X-Mailman-Version: 2.1.15
 Precedence: list
@@ -198,50 +110,129 @@ Content-Transfer-Encoding: 7bit
 Errors-To: iommu-bounces@lists.linux-foundation.org
 Sender: "iommu" <iommu-bounces@lists.linux-foundation.org>
 
+Hi Alex,
 
-
-On 26/03/2020 12:26, Alexey Kardashevskiy wrote:
+> From: Alex Williamson <alex.williamson@redhat.com>
+> Sent: Friday, April 3, 2020 7:00 AM
+> To: Liu, Yi L <yi.l.liu@intel.com>
+> Subject: Re: [PATCH v1 2/2] vfio/pci: Emulate PASID/PRI capability for VFs
 > 
+> On Sun, 22 Mar 2020 05:33:14 -0700
+> "Liu, Yi L" <yi.l.liu@intel.com> wrote:
 > 
-> On 25/03/2020 19:37, Christoph Hellwig wrote:
->> On Wed, Mar 25, 2020 at 03:51:36PM +1100, Alexey Kardashevskiy wrote:
->>>>> This is for persistent memory which you can DMA to/from but yet it does
->>>>> not appear in the system as a normal memory and therefore requires
->>>>> special handling anyway (O_DIRECT or DAX, I do not know the exact
->>>>> mechanics). All other devices in the system should just run as usual,
->>>>> i.e. use 1:1 mapping if possible.
->>>>
->>>> On other systems (x86 and arm) pmem as long as it is page backed does
->>>> not require any special handling.  This must be some weird way powerpc
->>>> fucked up again, and I suspect you'll have to suffer from it.
->>>
->>>
->>> It does not matter if it is backed by pages or not, the problem may also
->>> appear if we wanted for example p2p PCI via IOMMU (between PHBs) and
->>> MMIO might be mapped way too high in the system address space and make
->>> 1:1 impossible.
->>
->> How can it be mapped too high for a direct mapping with a 64-bit DMA
->> mask?
+> > From: Liu Yi L <yi.l.liu@intel.com>
+> >
+> > Per PCIe r5.0, sec 9.3.7.14, if a PF implements the PASID Capability, the
+> > PF PASID configuration is shared by its VFs.  VFs must not implement their
+> > own PASID Capability.
+> >
+> > Per PCIe r5.0, sec 9.3.7.11, VFs must not implement the PRI Capability. If
+> > the PF implements PRI, it is shared by the VFs.
+> >
+> > On bare metal, it has been fixed by below efforts.
+> > to PASID/PRI are
+> > https://lkml.org/lkml/2019/9/5/996
+> > https://lkml.org/lkml/2019/9/5/995
+> >
+> > This patch adds emulated PASID/PRI capabilities for VFs when assigned to
+> > VMs via vfio-pci driver. This is required for enabling vSVA on pass-through
+> > VFs as VFs have no PASID/PRI capability structure in its configure space.
+> >
+> > Cc: Kevin Tian <kevin.tian@intel.com>
+> > CC: Jacob Pan <jacob.jun.pan@linux.intel.com>
+> > Cc: Alex Williamson <alex.williamson@redhat.com>
+> > Cc: Eric Auger <eric.auger@redhat.com>
+> > Cc: Jean-Philippe Brucker <jean-philippe@linaro.org>
+> > Signed-off-by: Liu Yi L <yi.l.liu@intel.com>
+> > ---
+> >  drivers/vfio/pci/vfio_pci_config.c | 325
+> ++++++++++++++++++++++++++++++++++++-
+> >  1 file changed, 323 insertions(+), 2 deletions(-)
+> >
+> > diff --git a/drivers/vfio/pci/vfio_pci_config.c b/drivers/vfio/pci/vfio_pci_config.c
+> > index 4b9af99..84b4ea0 100644
+> > --- a/drivers/vfio/pci/vfio_pci_config.c
+> > +++ b/drivers/vfio/pci/vfio_pci_config.c
+> > @@ -1509,11 +1509,304 @@ static int vfio_cap_init(struct vfio_pci_device *vdev)
+> >  	return 0;
+> >  }
+> >
+> > +static int vfio_fill_custom_vconfig_bytes(struct vfio_pci_device *vdev,
+> > +					int offset, uint8_t *data, int size)
+> > +{
+> > +	int ret = 0, data_offset = 0;
+> > +
+> > +	while (size) {
+> > +		int filled;
+> > +
+> > +		if (size >= 4 && !(offset % 4)) {
+> > +			__le32 *dwordp = (__le32 *)&vdev->vconfig[offset];
+> > +			u32 dword;
+> > +
+> > +			memcpy(&dword, data + data_offset, 4);
+> > +			*dwordp = cpu_to_le32(dword);
 > 
-> The window size is limited and often it is not even sparse. It requires
-> an 8 byte entry per an IOMMU page (which is most commonly is 64k max) so
-> 1TB limit (a guest RAM size) is a quite real thing. MMIO is mapped to
-> guest physical address space outside of this 1TB (on PPC).
+> Why wouldn't we do:
 > 
+> *dwordp = cpu_to_le32(*(u32 *)(data + data_offset));
 > 
+> or better yet, increment data on each iteration for:
+> 
+> *dwordp = cpu_to_le32(*(u32 *)data);
+> 
+> vfio_fill_vconfig_bytes() does almost this same thing, getting the data
+> from config space rather than a buffer, so please figure out how to
+> avoid duplicating the logic.
 
-I am trying now this approach on top of yours "dma-bypass.3" (it is
-"wip", needs an upper boundary check):
+Got another alternative. I may use the vfio_fill_vconfig_bytes()
+to fill the cap data from PF's config space into VF's vconfig.
+And after that, I can further modify the data in vconfig. e.g.
+zero the control reg of pasid cap. would it make more sense?
 
-https://github.com/aik/linux/commit/49d73c7771e3f6054804f6cfa80b4e320111662d
+> > +			filled = 4;
+> > +		} else if (size >= 2 && !(offset % 2)) {
+> > +			__le16 *wordp = (__le16 *)&vdev->vconfig[offset];
+> > +			u16 word;
+> > +
+> > +			memcpy(&word, data + data_offset, 2);
+> > +			*wordp = cpu_to_le16(word);
+> > +			filled = 2;
+> > +		} else {
+> > +			u8 *byte = &vdev->vconfig[offset];
+> > +
+> > +			memcpy(byte, data + data_offset, 1);
+[...]
+> 
+> > +
+> > +	memset(map + epos, vpasid_cap.id, len);
+> 
+> See below.
+> 
+> > +	ret = vfio_fill_custom_vconfig_bytes(vdev, epos,
+> > +					(u8 *)&vpasid_cap, len);
+> > +	if (!ret) {
+> > +		/*
+> > +		 * Successfully filled in PASID cap, update
+> > +		 * the next offset in previous cap header,
+> > +		 * and also update caller about the offset
+> > +		 * of next cap if any.
+> > +		 */
+> > +		u32 val = epos;
+> > +		**prevp &= cpu_to_le32(~(0xffcU << 20));
+> > +		**prevp |= cpu_to_le32(val << 20);
+> > +		*prevp = (__le32 *)&vdev->vconfig[epos];
+> > +		*next = epos + len;
+> 
+> Could we make this any more complicated?
 
-Do you see any serious problem with this approach? Thanks!
+I'm not sure if adding comments addressed this comment. After adding
+new cap in vconfig, it needs to update the cap.next field of prior cap.
+And in case of further add other cap, this function needs to update the
+prevp pointer to the address of the newly added cap.
 
+Regards,
+Yi Liu
 
-
--- 
-Alexey
 _______________________________________________
 iommu mailing list
 iommu@lists.linux-foundation.org
