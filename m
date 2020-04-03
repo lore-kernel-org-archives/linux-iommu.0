@@ -2,97 +2,82 @@ Return-Path: <SRS0=dWuT=5T=lists.linux-foundation.org=iommu-bounces@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-6.8 required=3.0 tests=HEADER_FROM_DIFFERENT_DOMAINS,
-	INCLUDES_PATCH,MAILING_LIST_MULTI,SIGNED_OFF_BY,SPF_HELO_NONE,SPF_PASS,
-	URIBL_BLOCKED autolearn=unavailable autolearn_force=no version=3.4.0
+X-Spam-Status: No, score=-0.8 required=3.0 tests=HEADER_FROM_DIFFERENT_DOMAINS,
+	MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED autolearn=no
+	autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 4D0E6C43331
-	for <iommu@archiver.kernel.org>; Fri,  3 Apr 2020 11:42:29 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 24E76C43331
+	for <iommu@archiver.kernel.org>; Fri,  3 Apr 2020 11:48:04 +0000 (UTC)
 Received: from fraxinus.osuosl.org (smtp4.osuosl.org [140.211.166.137])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by mail.kernel.org (Postfix) with ESMTPS id 1942E2073B
-	for <iommu@archiver.kernel.org>; Fri,  3 Apr 2020 11:42:28 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 1942E2073B
-Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=intel.com
+	by mail.kernel.org (Postfix) with ESMTPS id E7AFC2078C
+	for <iommu@archiver.kernel.org>; Fri,  3 Apr 2020 11:48:03 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org E7AFC2078C
+Authentication-Results: mail.kernel.org; dmarc=none (p=none dis=none) header.from=linux-m68k.org
 Authentication-Results: mail.kernel.org; spf=pass smtp.mailfrom=iommu-bounces@lists.linux-foundation.org
 Received: from localhost (localhost [127.0.0.1])
-	by fraxinus.osuosl.org (Postfix) with ESMTP id 008BA863A1;
-	Fri,  3 Apr 2020 11:42:28 +0000 (UTC)
+	by fraxinus.osuosl.org (Postfix) with ESMTP id C161F86B60;
+	Fri,  3 Apr 2020 11:48:03 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
 Received: from fraxinus.osuosl.org ([127.0.0.1])
 	by localhost (.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
-	with ESMTP id YCNjAw97SiBg; Fri,  3 Apr 2020 11:42:26 +0000 (UTC)
+	with ESMTP id j4VNFg5D33I6; Fri,  3 Apr 2020 11:48:01 +0000 (UTC)
 Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [140.211.9.56])
-	by fraxinus.osuosl.org (Postfix) with ESMTP id C56BB86490;
-	Fri,  3 Apr 2020 11:42:26 +0000 (UTC)
+	by fraxinus.osuosl.org (Postfix) with ESMTP id 69DE584EEB;
+	Fri,  3 Apr 2020 11:48:01 +0000 (UTC)
 Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
-	by lists.linuxfoundation.org (Postfix) with ESMTP id AD32AC1831;
-	Fri,  3 Apr 2020 11:42:26 +0000 (UTC)
-Received: from hemlock.osuosl.org (smtp2.osuosl.org [140.211.166.133])
- by lists.linuxfoundation.org (Postfix) with ESMTP id 5D1FBC07FF
- for <iommu@lists.linux-foundation.org>; Fri,  3 Apr 2020 11:42:24 +0000 (UTC)
+	by lists.linuxfoundation.org (Postfix) with ESMTP id 61E4FC1831;
+	Fri,  3 Apr 2020 11:48:01 +0000 (UTC)
+Received: from silver.osuosl.org (smtp3.osuosl.org [140.211.166.136])
+ by lists.linuxfoundation.org (Postfix) with ESMTP id 919CFC07FF
+ for <iommu@lists.linux-foundation.org>; Fri,  3 Apr 2020 11:48:00 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
- by hemlock.osuosl.org (Postfix) with ESMTP id 58E3588E0B
- for <iommu@lists.linux-foundation.org>; Fri,  3 Apr 2020 11:42:24 +0000 (UTC)
+ by silver.osuosl.org (Postfix) with ESMTP id 761A2204E0
+ for <iommu@lists.linux-foundation.org>; Fri,  3 Apr 2020 11:48:00 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from hemlock.osuosl.org ([127.0.0.1])
+Received: from silver.osuosl.org ([127.0.0.1])
  by localhost (.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
- with ESMTP id uNaG57VJ2gus for <iommu@lists.linux-foundation.org>;
- Fri,  3 Apr 2020 11:42:23 +0000 (UTC)
+ with ESMTP id OMLdH00116-0 for <iommu@lists.linux-foundation.org>;
+ Fri,  3 Apr 2020 11:47:59 +0000 (UTC)
 X-Greylist: domain auto-whitelisted by SQLgrey-1.7.6
-Received: from mga06.intel.com (mga06.intel.com [134.134.136.31])
- by hemlock.osuosl.org (Postfix) with ESMTPS id 7FC0188C8E
- for <iommu@lists.linux-foundation.org>; Fri,  3 Apr 2020 11:42:23 +0000 (UTC)
-IronPort-SDR: H+bgOSxwpWEWhcK8ZcxNr1XR5u4ujRSmnPlX1J5/HddxfVXLT+GGlz9vblFHfjaXp1cRPXAaF0
- Wvd/8GVMXIrw==
-X-Amp-Result: SKIPPED(no attachment in message)
-X-Amp-File-Uploaded: False
-Received: from fmsmga008.fm.intel.com ([10.253.24.58])
- by orsmga104.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384;
- 03 Apr 2020 04:42:22 -0700
-IronPort-SDR: 5iVGo26cmCIRFwKXXhqP8A2IymaOmPdiicCUqS/9qwaAtYkT4XqcFUOPP/Sw0EvfuMNejj/VNk
- unDdqrxXK2pA==
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.72,339,1580803200"; d="scan'208";a="242792637"
-Received: from fmsmsx103.amr.corp.intel.com ([10.18.124.201])
- by fmsmga008.fm.intel.com with ESMTP; 03 Apr 2020 04:42:22 -0700
-Received: from fmsmsx115.amr.corp.intel.com (10.18.116.19) by
- FMSMSX103.amr.corp.intel.com (10.18.124.201) with Microsoft SMTP Server (TLS)
- id 14.3.439.0; Fri, 3 Apr 2020 04:42:22 -0700
-Received: from shsmsx106.ccr.corp.intel.com (10.239.4.159) by
- fmsmsx115.amr.corp.intel.com (10.18.116.19) with Microsoft SMTP Server (TLS)
- id 14.3.439.0; Fri, 3 Apr 2020 04:42:21 -0700
-Received: from shsmsx104.ccr.corp.intel.com ([169.254.5.225]) by
- SHSMSX106.ccr.corp.intel.com ([169.254.10.89]) with mapi id 14.03.0439.000;
- Fri, 3 Apr 2020 19:42:18 +0800
-From: "Liu, Yi L" <yi.l.liu@intel.com>
-To: Alex Williamson <alex.williamson@redhat.com>
-Subject: RE: [PATCH v1 2/2] vfio/pci: Emulate PASID/PRI capability for VFs
-Thread-Topic: [PATCH v1 2/2] vfio/pci: Emulate PASID/PRI capability for VFs
-Thread-Index: AQHWAEVGuXHNl3uJkkGgSITNIYV006hl/jEAgAFHqvA=
-Date: Fri, 3 Apr 2020 11:42:17 +0000
-Message-ID: <A2975661238FB949B60364EF0F2C25743A220988@SHSMSX104.ccr.corp.intel.com>
-References: <1584880394-11184-1-git-send-email-yi.l.liu@intel.com>
- <1584880394-11184-3-git-send-email-yi.l.liu@intel.com>
- <20200402165954.48d941ee@w520.home>
-In-Reply-To: <20200402165954.48d941ee@w520.home>
-Accept-Language: en-US
-Content-Language: en-US
-X-MS-Has-Attach: 
-X-MS-TNEF-Correlator: 
-dlp-product: dlpe-windows
-dlp-version: 11.2.0.6
-dlp-reaction: no-action
-x-originating-ip: [10.239.127.40]
+Received: from mail-ot1-f65.google.com (mail-ot1-f65.google.com
+ [209.85.210.65])
+ by silver.osuosl.org (Postfix) with ESMTPS id 06F031FFFE
+ for <iommu@lists.linux-foundation.org>; Fri,  3 Apr 2020 11:47:59 +0000 (UTC)
+Received: by mail-ot1-f65.google.com with SMTP id l23so6945118otf.3
+ for <iommu@lists.linux-foundation.org>; Fri, 03 Apr 2020 04:47:58 -0700 (PDT)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+ d=1e100.net; s=20161025;
+ h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+ :message-id:subject:to:cc;
+ bh=WLQ125LqNkhbday+yt6StLeA1O5IE8GF+ApE3jgSAcg=;
+ b=SPCeBnRBJFhBTMimS0yed8FvN6Ixm5SQq7wAzZI5Yy68ABlBmWdl6iV3gHtHEMEzRV
+ Yo0exiV61rOcwFL9daJoX+VjvTgL71RyE8fRhHmFXjxjv/tDbgfaYwev0qmELYLC4+It
+ ++A4OQdiqn3J9a5G/TwK7sjUPFN502Z0xMw1jNr8yU4acKGAG/cAqQGkrNMopj06vMv/
+ AtYdeZI3Ttnl7Vfn1TyxADmwJA5dkXlFoAi4brRdACxbTXM6UcG+ByhIQ9bXgkjBuNx/
+ n1YE/hL6CEqZdR6feLLB+elEZTHsbGDqPnIJcGgJcZ537p2S+40rUi+9OUQGBWn9CEL6
+ WJ8Q==
+X-Gm-Message-State: AGi0Pua57TvI2cZDkDOVqIRj4kV0y+/gQLMsGBTkw/7u5nTKiu7A8gMn
+ ei9qjRnWyIAPu/Mqj2cMYw1IWcDPgxIYR/bM0Bc=
+X-Google-Smtp-Source: APiQypIQnT36feP1REJN0BpBj//TWYHjNINlgwaxwuafaHrbCiASiBVronQFLnu7NrC4WBQhkb3N9W8X9h1DOwvWbJ4=
+X-Received: by 2002:a4a:a442:: with SMTP id w2mr6218727ool.90.1585914478184;
+ Fri, 03 Apr 2020 04:47:58 -0700 (PDT)
 MIME-Version: 1.0
-Cc: "jean-philippe@linaro.org" <jean-philippe@linaro.org>, "Tian,
- Kevin" <kevin.tian@intel.com>, "Raj, 
- Ashok" <ashok.raj@intel.com>, "kvm@vger.kernel.org" <kvm@vger.kernel.org>,
- "Tian, Jun J" <jun.j.tian@intel.com>,
+References: <TYAPR01MB45443DF63B9EF29054F7C41FD8C60@TYAPR01MB4544.jpnprd01.prod.outlook.com>
+ <CALAqxLWopjCkiM=NR868DTcX-apPc1MPnONJMppm1jzCboAheg@mail.gmail.com>
+In-Reply-To: <CALAqxLWopjCkiM=NR868DTcX-apPc1MPnONJMppm1jzCboAheg@mail.gmail.com>
+From: Geert Uytterhoeven <geert@linux-m68k.org>
+Date: Fri, 3 Apr 2020 13:47:46 +0200
+Message-ID: <CAMuHMdVtHhq9Nef1pBtBUKfRU2L-KgDffiOv28VqhrewR_j1Dw@mail.gmail.com>
+Subject: Re: How to fix WARN from drivers/base/dd.c in next-20200401 if
+ CONFIG_MODULES=y?
+To: John Stultz <john.stultz@linaro.org>
+Cc: "rafael@kernel.org" <rafael@kernel.org>,
+ "gregkh@linuxfoundation.org" <gregkh@linuxfoundation.org>,
+ LKML <linux-kernel@vger.kernel.org>,
  "iommu@lists.linux-foundation.org" <iommu@lists.linux-foundation.org>,
- "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>, "Sun, Yi
- Y" <yi.y.sun@intel.com>, "Wu, Hao" <hao.wu@intel.com>
+ netdev <netdev@vger.kernel.org>
 X-BeenThere: iommu@lists.linux-foundation.org
 X-Mailman-Version: 2.1.15
 Precedence: list
@@ -110,129 +95,96 @@ Content-Transfer-Encoding: 7bit
 Errors-To: iommu-bounces@lists.linux-foundation.org
 Sender: "iommu" <iommu-bounces@lists.linux-foundation.org>
 
-Hi Alex,
+Hi John,
 
-> From: Alex Williamson <alex.williamson@redhat.com>
-> Sent: Friday, April 3, 2020 7:00 AM
-> To: Liu, Yi L <yi.l.liu@intel.com>
-> Subject: Re: [PATCH v1 2/2] vfio/pci: Emulate PASID/PRI capability for VFs
-> 
-> On Sun, 22 Mar 2020 05:33:14 -0700
-> "Liu, Yi L" <yi.l.liu@intel.com> wrote:
-> 
-> > From: Liu Yi L <yi.l.liu@intel.com>
+On Thu, Apr 2, 2020 at 7:27 PM John Stultz <john.stultz@linaro.org> wrote:
+> On Thu, Apr 2, 2020 at 3:17 AM Yoshihiro Shimoda
+> <yoshihiro.shimoda.uh@renesas.com> wrote:
 > >
-> > Per PCIe r5.0, sec 9.3.7.14, if a PF implements the PASID Capability, the
-> > PF PASID configuration is shared by its VFs.  VFs must not implement their
-> > own PASID Capability.
-> >
-> > Per PCIe r5.0, sec 9.3.7.11, VFs must not implement the PRI Capability. If
-> > the PF implements PRI, it is shared by the VFs.
-> >
-> > On bare metal, it has been fixed by below efforts.
-> > to PASID/PRI are
-> > https://lkml.org/lkml/2019/9/5/996
-> > https://lkml.org/lkml/2019/9/5/995
-> >
-> > This patch adds emulated PASID/PRI capabilities for VFs when assigned to
-> > VMs via vfio-pci driver. This is required for enabling vSVA on pass-through
-> > VFs as VFs have no PASID/PRI capability structure in its configure space.
-> >
-> > Cc: Kevin Tian <kevin.tian@intel.com>
-> > CC: Jacob Pan <jacob.jun.pan@linux.intel.com>
-> > Cc: Alex Williamson <alex.williamson@redhat.com>
-> > Cc: Eric Auger <eric.auger@redhat.com>
-> > Cc: Jean-Philippe Brucker <jean-philippe@linaro.org>
-> > Signed-off-by: Liu Yi L <yi.l.liu@intel.com>
+> > I found an issue after applied the following patches:
 > > ---
-> >  drivers/vfio/pci/vfio_pci_config.c | 325
-> ++++++++++++++++++++++++++++++++++++-
-> >  1 file changed, 323 insertions(+), 2 deletions(-)
+> > 64c775f driver core: Rename deferred_probe_timeout and make it global
+> > 0e9f8d0 driver core: Remove driver_deferred_probe_check_state_continue()
+> > bec6c0e pinctrl: Remove use of driver_deferred_probe_check_state_continue()
+> > e2cec7d driver core: Set deferred_probe_timeout to a longer default if CONFIG_MODULES is set
+
+Note that just setting deferred_probe_timeout = -1 like for the
+CONFIG_MODULES=n case doesn't help.
+
+> > c8c43ce driver core: Fix driver_deferred_probe_check_state() logic
+> > ---
 > >
-> > diff --git a/drivers/vfio/pci/vfio_pci_config.c b/drivers/vfio/pci/vfio_pci_config.c
-> > index 4b9af99..84b4ea0 100644
-> > --- a/drivers/vfio/pci/vfio_pci_config.c
-> > +++ b/drivers/vfio/pci/vfio_pci_config.c
-> > @@ -1509,11 +1509,304 @@ static int vfio_cap_init(struct vfio_pci_device *vdev)
-> >  	return 0;
-> >  }
+> > Before these patches, on my environment [1], some device drivers
+> > which has iommus property output the following message when probing:
 > >
-> > +static int vfio_fill_custom_vconfig_bytes(struct vfio_pci_device *vdev,
-> > +					int offset, uint8_t *data, int size)
-> > +{
-> > +	int ret = 0, data_offset = 0;
-> > +
-> > +	while (size) {
-> > +		int filled;
-> > +
-> > +		if (size >= 4 && !(offset % 4)) {
-> > +			__le32 *dwordp = (__le32 *)&vdev->vconfig[offset];
-> > +			u32 dword;
-> > +
-> > +			memcpy(&dword, data + data_offset, 4);
-> > +			*dwordp = cpu_to_le32(dword);
-> 
-> Why wouldn't we do:
-> 
-> *dwordp = cpu_to_le32(*(u32 *)(data + data_offset));
-> 
-> or better yet, increment data on each iteration for:
-> 
-> *dwordp = cpu_to_le32(*(u32 *)data);
-> 
-> vfio_fill_vconfig_bytes() does almost this same thing, getting the data
-> from config space rather than a buffer, so please figure out how to
-> avoid duplicating the logic.
+> > [    3.222205] ravb e6800000.ethernet: ignoring dependency for device, assuming no driver
+> > [    3.257174] ravb e6800000.ethernet eth0: Base address at 0xe6800000, 2e:09:0a:02:eb:2d, IRQ 117.
+> >
+> > So, since ravb driver is probed within 4 seconds, we can use NFS rootfs correctly.
+> >
+> > However, after these patches are applied, since the patches are always waiting for 30 seconds
+> > for of_iommu_configure() when IOMMU hardware is disabled, drivers/base/dd.c output WARN.
+> > Also, since ravb cannot be probed for 30 seconds, we cannot use NFS rootfs anymore.
+> > JFYI, I copied the kernel log to the end of this email.
+>
+> Hey,
+>   Terribly sorry for the trouble. So as Robin mentioned I have a patch
+> to remove the WARN messages, but I'm a bit more concerned about why
+> after the 30 second delay, the ethernet driver loads:
+>   [   36.218666] ravb e6800000.ethernet eth0: Base address at
+> 0xe6800000, 2e:09:0a:02:eb:2d, IRQ 117.
+> but NFS fails.
+>
+> Is it just that the 30 second delay is too long and NFS gives up?
 
-Got another alternative. I may use the vfio_fill_vconfig_bytes()
-to fill the cap data from PF's config space into VF's vconfig.
-And after that, I can further modify the data in vconfig. e.g.
-zero the control reg of pasid cap. would it make more sense?
+I added some debug code to mount_nfs_root(), which shows that the first
+3 tries happen before ravb is instantiated, and the last 3 tries happen
+after.  So NFS root should work, if the network works.
 
-> > +			filled = 4;
-> > +		} else if (size >= 2 && !(offset % 2)) {
-> > +			__le16 *wordp = (__le16 *)&vdev->vconfig[offset];
-> > +			u16 word;
-> > +
-> > +			memcpy(&word, data + data_offset, 2);
-> > +			*wordp = cpu_to_le16(word);
-> > +			filled = 2;
-> > +		} else {
-> > +			u8 *byte = &vdev->vconfig[offset];
-> > +
-> > +			memcpy(byte, data + data_offset, 1);
-[...]
-> 
-> > +
-> > +	memset(map + epos, vpasid_cap.id, len);
-> 
-> See below.
-> 
-> > +	ret = vfio_fill_custom_vconfig_bytes(vdev, epos,
-> > +					(u8 *)&vpasid_cap, len);
-> > +	if (!ret) {
-> > +		/*
-> > +		 * Successfully filled in PASID cap, update
-> > +		 * the next offset in previous cap header,
-> > +		 * and also update caller about the offset
-> > +		 * of next cap if any.
-> > +		 */
-> > +		u32 val = epos;
-> > +		**prevp &= cpu_to_le32(~(0xffcU << 20));
-> > +		**prevp |= cpu_to_le32(val << 20);
-> > +		*prevp = (__le32 *)&vdev->vconfig[epos];
-> > +		*next = epos + len;
-> 
-> Could we make this any more complicated?
+However, it seems the Ethernet PHY is never initialized, hence the link
+never becomes ready.  Dmesg before/after:
 
-I'm not sure if adding comments addressed this comment. After adding
-new cap in vconfig, it needs to update the cap.next field of prior cap.
-And in case of further add other cap, this function needs to update the
-prevp pointer to the address of the newly added cap.
+     ravb e6800000.ethernet eth0: Base address at 0xe6800000,
+2e:09:0a:02:ea:ff, IRQ 108.
 
-Regards,
-Yi Liu
+Good.
 
+     ...
+    -gpio_rcar e6052000.gpio: sense irq = 11, type = 8
+
+This is the GPIO the PHY IRQ is connected to.
+Note that that GPIO controller has been instantiated before.
+
+     ...
+    -Micrel KSZ9031 Gigabit PHY e6800000.ethernet-ffffffff:00:
+attached PHY driver [Micrel KSZ9031 Gigabit PHY]
+(mii_bus:phy_addr=e6800000.ethernet-ffffffff:00, irq=197)
+     ...
+    -ravb e6800000.ethernet eth0: Link is Up - 1Gbps/Full - flow control off
+
+Oops.
+
+    -Sending DHCP requests .., OK
+    -IP-Config: Got DHCP answer from ...
+     ...
+    +VFS: Unable to mount root fs via NFS, trying floppy.
+    +VFS: Cannot open root device "nfs" or unknown-block(2,0): error -6
+
+> Does booting with deferred_probe_timeout=0 work?
+
+It does, as now everything using optional links (DMA and IOMMU) is now
+instantiated on first try.
+
+Gr{oetje,eeting}s,
+
+                        Geert
+
+-- 
+Geert Uytterhoeven -- There's lots of Linux beyond ia32 -- geert@linux-m68k.org
+
+In personal conversations with technical people, I call myself a hacker. But
+when I'm talking to journalists I just say "programmer" or something like that.
+                                -- Linus Torvalds
 _______________________________________________
 iommu mailing list
 iommu@lists.linux-foundation.org
