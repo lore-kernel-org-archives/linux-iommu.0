@@ -2,82 +2,102 @@ Return-Path: <SRS0=dWuT=5T=lists.linux-foundation.org=iommu-bounces@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-0.8 required=3.0 tests=HEADER_FROM_DIFFERENT_DOMAINS,
-	MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED autolearn=no
-	autolearn_force=no version=3.4.0
+X-Spam-Status: No, score=-6.8 required=3.0 tests=HEADER_FROM_DIFFERENT_DOMAINS,
+	INCLUDES_PATCH,MAILING_LIST_MULTI,SIGNED_OFF_BY,SPF_HELO_NONE,SPF_PASS,
+	URIBL_BLOCKED autolearn=unavailable autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 24E76C43331
-	for <iommu@archiver.kernel.org>; Fri,  3 Apr 2020 11:48:04 +0000 (UTC)
-Received: from fraxinus.osuosl.org (smtp4.osuosl.org [140.211.166.137])
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 86D61C2D0E8
+	for <iommu@archiver.kernel.org>; Fri,  3 Apr 2020 11:56:19 +0000 (UTC)
+Received: from hemlock.osuosl.org (smtp2.osuosl.org [140.211.166.133])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by mail.kernel.org (Postfix) with ESMTPS id E7AFC2078C
-	for <iommu@archiver.kernel.org>; Fri,  3 Apr 2020 11:48:03 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org E7AFC2078C
-Authentication-Results: mail.kernel.org; dmarc=none (p=none dis=none) header.from=linux-m68k.org
+	by mail.kernel.org (Postfix) with ESMTPS id 5CD902078C
+	for <iommu@archiver.kernel.org>; Fri,  3 Apr 2020 11:56:19 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 5CD902078C
+Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=intel.com
 Authentication-Results: mail.kernel.org; spf=pass smtp.mailfrom=iommu-bounces@lists.linux-foundation.org
 Received: from localhost (localhost [127.0.0.1])
-	by fraxinus.osuosl.org (Postfix) with ESMTP id C161F86B60;
-	Fri,  3 Apr 2020 11:48:03 +0000 (UTC)
+	by hemlock.osuosl.org (Postfix) with ESMTP id 31E8288E9B;
+	Fri,  3 Apr 2020 11:56:19 +0000 (UTC)
+X-Virus-Scanned: amavisd-new at osuosl.org
+Received: from hemlock.osuosl.org ([127.0.0.1])
+	by localhost (.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
+	with ESMTP id 8XBXYsD7sxZs; Fri,  3 Apr 2020 11:56:17 +0000 (UTC)
+Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [140.211.9.56])
+	by hemlock.osuosl.org (Postfix) with ESMTP id 8346488E9F;
+	Fri,  3 Apr 2020 11:56:17 +0000 (UTC)
+Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
+	by lists.linuxfoundation.org (Postfix) with ESMTP id 7A7EEC1831;
+	Fri,  3 Apr 2020 11:56:17 +0000 (UTC)
+Received: from fraxinus.osuosl.org (smtp4.osuosl.org [140.211.166.137])
+ by lists.linuxfoundation.org (Postfix) with ESMTP id 736BCC07FF
+ for <iommu@lists.linux-foundation.org>; Fri,  3 Apr 2020 11:56:16 +0000 (UTC)
+Received: from localhost (localhost [127.0.0.1])
+ by fraxinus.osuosl.org (Postfix) with ESMTP id 69EE486B4F
+ for <iommu@lists.linux-foundation.org>; Fri,  3 Apr 2020 11:56:16 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
 Received: from fraxinus.osuosl.org ([127.0.0.1])
-	by localhost (.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
-	with ESMTP id j4VNFg5D33I6; Fri,  3 Apr 2020 11:48:01 +0000 (UTC)
-Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [140.211.9.56])
-	by fraxinus.osuosl.org (Postfix) with ESMTP id 69DE584EEB;
-	Fri,  3 Apr 2020 11:48:01 +0000 (UTC)
-Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
-	by lists.linuxfoundation.org (Postfix) with ESMTP id 61E4FC1831;
-	Fri,  3 Apr 2020 11:48:01 +0000 (UTC)
-Received: from silver.osuosl.org (smtp3.osuosl.org [140.211.166.136])
- by lists.linuxfoundation.org (Postfix) with ESMTP id 919CFC07FF
- for <iommu@lists.linux-foundation.org>; Fri,  3 Apr 2020 11:48:00 +0000 (UTC)
-Received: from localhost (localhost [127.0.0.1])
- by silver.osuosl.org (Postfix) with ESMTP id 761A2204E0
- for <iommu@lists.linux-foundation.org>; Fri,  3 Apr 2020 11:48:00 +0000 (UTC)
-X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from silver.osuosl.org ([127.0.0.1])
  by localhost (.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
- with ESMTP id OMLdH00116-0 for <iommu@lists.linux-foundation.org>;
- Fri,  3 Apr 2020 11:47:59 +0000 (UTC)
+ with ESMTP id Czb5zJn6md6z for <iommu@lists.linux-foundation.org>;
+ Fri,  3 Apr 2020 11:56:15 +0000 (UTC)
 X-Greylist: domain auto-whitelisted by SQLgrey-1.7.6
-Received: from mail-ot1-f65.google.com (mail-ot1-f65.google.com
- [209.85.210.65])
- by silver.osuosl.org (Postfix) with ESMTPS id 06F031FFFE
- for <iommu@lists.linux-foundation.org>; Fri,  3 Apr 2020 11:47:59 +0000 (UTC)
-Received: by mail-ot1-f65.google.com with SMTP id l23so6945118otf.3
- for <iommu@lists.linux-foundation.org>; Fri, 03 Apr 2020 04:47:58 -0700 (PDT)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
- d=1e100.net; s=20161025;
- h=x-gm-message-state:mime-version:references:in-reply-to:from:date
- :message-id:subject:to:cc;
- bh=WLQ125LqNkhbday+yt6StLeA1O5IE8GF+ApE3jgSAcg=;
- b=SPCeBnRBJFhBTMimS0yed8FvN6Ixm5SQq7wAzZI5Yy68ABlBmWdl6iV3gHtHEMEzRV
- Yo0exiV61rOcwFL9daJoX+VjvTgL71RyE8fRhHmFXjxjv/tDbgfaYwev0qmELYLC4+It
- ++A4OQdiqn3J9a5G/TwK7sjUPFN502Z0xMw1jNr8yU4acKGAG/cAqQGkrNMopj06vMv/
- AtYdeZI3Ttnl7Vfn1TyxADmwJA5dkXlFoAi4brRdACxbTXM6UcG+ByhIQ9bXgkjBuNx/
- n1YE/hL6CEqZdR6feLLB+elEZTHsbGDqPnIJcGgJcZ537p2S+40rUi+9OUQGBWn9CEL6
- WJ8Q==
-X-Gm-Message-State: AGi0Pua57TvI2cZDkDOVqIRj4kV0y+/gQLMsGBTkw/7u5nTKiu7A8gMn
- ei9qjRnWyIAPu/Mqj2cMYw1IWcDPgxIYR/bM0Bc=
-X-Google-Smtp-Source: APiQypIQnT36feP1REJN0BpBj//TWYHjNINlgwaxwuafaHrbCiASiBVronQFLnu7NrC4WBQhkb3N9W8X9h1DOwvWbJ4=
-X-Received: by 2002:a4a:a442:: with SMTP id w2mr6218727ool.90.1585914478184;
- Fri, 03 Apr 2020 04:47:58 -0700 (PDT)
+Received: from mga17.intel.com (mga17.intel.com [192.55.52.151])
+ by fraxinus.osuosl.org (Postfix) with ESMTPS id 6DFF286B43
+ for <iommu@lists.linux-foundation.org>; Fri,  3 Apr 2020 11:56:15 +0000 (UTC)
+IronPort-SDR: A92Ryg8CiLLwpgKb8TvAEivVcLCMElHye2+EyDeGyIJVTgIab6kvt3U0Qa+LbnC5zaa4Hcwbck
+ 15Tz7f0a/ElA==
+X-Amp-Result: SKIPPED(no attachment in message)
+X-Amp-File-Uploaded: False
+Received: from orsmga002.jf.intel.com ([10.7.209.21])
+ by fmsmga107.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384;
+ 03 Apr 2020 04:56:15 -0700
+IronPort-SDR: Pp6CaFev95o78liw4lTnYEJR0DHLihUaGmowtgmyYMORQqe2+n8CaEBN6qxKVI1C2PISbMWp+G
+ Ap82RDJi296g==
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="5.72,339,1580803200"; d="scan'208";a="268338356"
+Received: from fmsmsx105.amr.corp.intel.com ([10.18.124.203])
+ by orsmga002.jf.intel.com with ESMTP; 03 Apr 2020 04:56:14 -0700
+Received: from fmsmsx603.amr.corp.intel.com (10.18.126.83) by
+ FMSMSX105.amr.corp.intel.com (10.18.124.203) with Microsoft SMTP Server (TLS)
+ id 14.3.439.0; Fri, 3 Apr 2020 04:56:13 -0700
+Received: from fmsmsx603.amr.corp.intel.com (10.18.126.83) by
+ fmsmsx603.amr.corp.intel.com (10.18.126.83) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.1713.5; Fri, 3 Apr 2020 04:56:13 -0700
+Received: from shsmsx152.ccr.corp.intel.com (10.239.6.52) by
+ fmsmsx603.amr.corp.intel.com (10.18.126.83) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256) id 15.1.1713.5
+ via Frontend Transport; Fri, 3 Apr 2020 04:56:13 -0700
+Received: from shsmsx104.ccr.corp.intel.com ([169.254.5.225]) by
+ SHSMSX152.ccr.corp.intel.com ([169.254.6.209]) with mapi id 14.03.0439.000;
+ Fri, 3 Apr 2020 19:56:09 +0800
+From: "Liu, Yi L" <yi.l.liu@intel.com>
+To: Jean-Philippe Brucker <jean-philippe@linaro.org>
+Subject: RE: [PATCH v1 1/8] vfio: Add VFIO_IOMMU_PASID_REQUEST(alloc/free)
+Thread-Topic: [PATCH v1 1/8] vfio: Add VFIO_IOMMU_PASID_REQUEST(alloc/free)
+Thread-Index: AQHWAEUbC4GB74LMekup8jIcF6WIFqhlZUwAgAH1tzA=
+Date: Fri, 3 Apr 2020 11:56:09 +0000
+Message-ID: <A2975661238FB949B60364EF0F2C25743A2209E3@SHSMSX104.ccr.corp.intel.com>
+References: <1584880325-10561-1-git-send-email-yi.l.liu@intel.com>
+ <1584880325-10561-2-git-send-email-yi.l.liu@intel.com>
+ <20200402135240.GE1176452@myrica>
+In-Reply-To: <20200402135240.GE1176452@myrica>
+Accept-Language: en-US
+Content-Language: en-US
+X-MS-Has-Attach: 
+X-MS-TNEF-Correlator: 
+dlp-product: dlpe-windows
+dlp-version: 11.2.0.6
+dlp-reaction: no-action
+x-originating-ip: [10.239.127.40]
 MIME-Version: 1.0
-References: <TYAPR01MB45443DF63B9EF29054F7C41FD8C60@TYAPR01MB4544.jpnprd01.prod.outlook.com>
- <CALAqxLWopjCkiM=NR868DTcX-apPc1MPnONJMppm1jzCboAheg@mail.gmail.com>
-In-Reply-To: <CALAqxLWopjCkiM=NR868DTcX-apPc1MPnONJMppm1jzCboAheg@mail.gmail.com>
-From: Geert Uytterhoeven <geert@linux-m68k.org>
-Date: Fri, 3 Apr 2020 13:47:46 +0200
-Message-ID: <CAMuHMdVtHhq9Nef1pBtBUKfRU2L-KgDffiOv28VqhrewR_j1Dw@mail.gmail.com>
-Subject: Re: How to fix WARN from drivers/base/dd.c in next-20200401 if
- CONFIG_MODULES=y?
-To: John Stultz <john.stultz@linaro.org>
-Cc: "rafael@kernel.org" <rafael@kernel.org>,
- "gregkh@linuxfoundation.org" <gregkh@linuxfoundation.org>,
- LKML <linux-kernel@vger.kernel.org>,
- "iommu@lists.linux-foundation.org" <iommu@lists.linux-foundation.org>,
- netdev <netdev@vger.kernel.org>
+Cc: "Tian, Kevin" <kevin.tian@intel.com>, "Raj,
+ Ashok" <ashok.raj@intel.com>, "kvm@vger.kernel.org" <kvm@vger.kernel.org>, "Sun,
+ Yi Y" <yi.y.sun@intel.com>,
+ "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
+ "alex.williamson@redhat.com" <alex.williamson@redhat.com>,
+ "iommu@lists.linux-foundation.org" <iommu@lists.linux-foundation.org>, "Tian,
+ Jun J" <jun.j.tian@intel.com>, "Wu, Hao" <hao.wu@intel.com>
 X-BeenThere: iommu@lists.linux-foundation.org
 X-Mailman-Version: 2.1.15
 Precedence: list
@@ -95,96 +115,163 @@ Content-Transfer-Encoding: 7bit
 Errors-To: iommu-bounces@lists.linux-foundation.org
 Sender: "iommu" <iommu-bounces@lists.linux-foundation.org>
 
-Hi John,
+Hi Jean,
 
-On Thu, Apr 2, 2020 at 7:27 PM John Stultz <john.stultz@linaro.org> wrote:
-> On Thu, Apr 2, 2020 at 3:17 AM Yoshihiro Shimoda
-> <yoshihiro.shimoda.uh@renesas.com> wrote:
+> From: Jean-Philippe Brucker <jean-philippe@linaro.org>
+> Sent: Thursday, April 2, 2020 9:53 PM
+> To: Liu, Yi L <yi.l.liu@intel.com>
+> Subject: Re: [PATCH v1 1/8] vfio: Add VFIO_IOMMU_PASID_REQUEST(alloc/free)
+> 
+> Hi Yi,
+> 
+> On Sun, Mar 22, 2020 at 05:31:58AM -0700, Liu, Yi L wrote:
+> > From: Liu Yi L <yi.l.liu@intel.com>
 > >
-> > I found an issue after applied the following patches:
+> > For a long time, devices have only one DMA address space from platform
+> > IOMMU's point of view. This is true for both bare metal and directed-
+> > access in virtualization environment. Reason is the source ID of DMA in
+> > PCIe are BDF (bus/dev/fnc ID), which results in only device granularity
+> > DMA isolation. However, this is changing with the latest advancement in
+> > I/O technology area. More and more platform vendors are utilizing the PCIe
+> > PASID TLP prefix in DMA requests, thus to give devices with multiple DMA
+> > address spaces as identified by their individual PASIDs. For example,
+> > Shared Virtual Addressing (SVA, a.k.a Shared Virtual Memory) is able to
+> > let device access multiple process virtual address space by binding the
+> > virtual address space with a PASID. Wherein the PASID is allocated in
+> > software and programmed to device per device specific manner. Devices
+> > which support PASID capability are called PASID-capable devices. If such
+> > devices are passed through to VMs, guest software are also able to bind
+> > guest process virtual address space on such devices. Therefore, the guest
+> > software could reuse the bare metal software programming model, which
+> > means guest software will also allocate PASID and program it to device
+> > directly. This is a dangerous situation since it has potential PASID
+> > conflicts and unauthorized address space access.
+> 
+> It's worth noting that this applies to Intel VT-d with scalable mode, not
+> IOMMUs that use one PASID space per VM
+
+Oh yes. will add it.
+
+> 
+> > It would be safer to
+> > let host intercept in the guest software's PASID allocation. Thus PASID
+> > are managed system-wide.
+> >
+> > This patch adds VFIO_IOMMU_PASID_REQUEST ioctl which aims to passdown
+> > PASID allocation/free request from the virtual IOMMU. Additionally, such
+> > requests are intended to be invoked by QEMU or other applications which
+> > are running in userspace, it is necessary to have a mechanism to prevent
+> > single application from abusing available PASIDs in system. With such
+> > consideration, this patch tracks the VFIO PASID allocation per-VM. There
+> > was a discussion to make quota to be per assigned devices. e.g. if a VM
+> > has many assigned devices, then it should have more quota. However, it
+> > is not sure how many PASIDs an assigned devices will use. e.g. it is
+> > possible that a VM with multiples assigned devices but requests less
+> > PASIDs. Therefore per-VM quota would be better.
+> >
+> > This patch uses struct mm pointer as a per-VM token. We also considered
+> > using task structure pointer and vfio_iommu structure pointer. However,
+> > task structure is per-thread, which means it cannot achieve per-VM PASID
+> > alloc tracking purpose. While for vfio_iommu structure, it is visible
+> > only within vfio. Therefore, structure mm pointer is selected. This patch
+> > adds a structure vfio_mm. A vfio_mm is created when the first vfio
+> > container is opened by a VM. On the reverse order, vfio_mm is free when
+> > the last vfio container is released. Each VM is assigned with a PASID
+> > quota, so that it is not able to request PASID beyond its quota. This
+> > patch adds a default quota of 1000. This quota could be tuned by
+> > administrator. Making PASID quota tunable will be added in another patch
+> > in this series.
+> >
+> > Previous discussions:
+> > https://patchwork.kernel.org/patch/11209429/
+> >
+> > Cc: Kevin Tian <kevin.tian@intel.com>
+> > CC: Jacob Pan <jacob.jun.pan@linux.intel.com>
+> > Cc: Alex Williamson <alex.williamson@redhat.com>
+> > Cc: Eric Auger <eric.auger@redhat.com>
+> > Cc: Jean-Philippe Brucker <jean-philippe@linaro.org>
+> > Signed-off-by: Liu Yi L <yi.l.liu@intel.com>
+> > Signed-off-by: Yi Sun <yi.y.sun@linux.intel.com>
+> > Signed-off-by: Jacob Pan <jacob.jun.pan@linux.intel.com>
 > > ---
-> > 64c775f driver core: Rename deferred_probe_timeout and make it global
-> > 0e9f8d0 driver core: Remove driver_deferred_probe_check_state_continue()
-> > bec6c0e pinctrl: Remove use of driver_deferred_probe_check_state_continue()
-> > e2cec7d driver core: Set deferred_probe_timeout to a longer default if CONFIG_MODULES is set
-
-Note that just setting deferred_probe_timeout = -1 like for the
-CONFIG_MODULES=n case doesn't help.
-
-> > c8c43ce driver core: Fix driver_deferred_probe_check_state() logic
-> > ---
+> >  drivers/vfio/vfio.c             | 130 ++++++++++++++++++++++++++++++++++++++++
+> >  drivers/vfio/vfio_iommu_type1.c | 104 ++++++++++++++++++++++++++++++++
+> >  include/linux/vfio.h            |  20 +++++++
+> >  include/uapi/linux/vfio.h       |  41 +++++++++++++
+> >  4 files changed, 295 insertions(+)
 > >
-> > Before these patches, on my environment [1], some device drivers
-> > which has iommus property output the following message when probing:
+> > diff --git a/drivers/vfio/vfio.c b/drivers/vfio/vfio.c
+> > index c848262..d13b483 100644
+> > --- a/drivers/vfio/vfio.c
+> > +++ b/drivers/vfio/vfio.c
+> > @@ -32,6 +32,7 @@
+> >  #include <linux/vfio.h>
+> >  #include <linux/wait.h>
+> >  #include <linux/sched/signal.h>
+> > +#include <linux/sched/mm.h>
 > >
-> > [    3.222205] ravb e6800000.ethernet: ignoring dependency for device, assuming no driver
-> > [    3.257174] ravb e6800000.ethernet eth0: Base address at 0xe6800000, 2e:09:0a:02:eb:2d, IRQ 117.
+> >  #define DRIVER_VERSION	"0.3"
+> >  #define DRIVER_AUTHOR	"Alex Williamson <alex.williamson@redhat.com>"
+> > @@ -46,6 +47,8 @@ static struct vfio {
+> >  	struct mutex			group_lock;
+> >  	struct cdev			group_cdev;
+> >  	dev_t				group_devt;
+> > +	struct list_head		vfio_mm_list;
+> > +	struct mutex			vfio_mm_lock;
+> >  	wait_queue_head_t		release_q;
+> >  } vfio;
 > >
-> > So, since ravb driver is probed within 4 seconds, we can use NFS rootfs correctly.
+> > @@ -2129,6 +2132,131 @@ int vfio_unregister_notifier(struct device *dev, enum
+> vfio_notify_type type,
+> >  EXPORT_SYMBOL(vfio_unregister_notifier);
 > >
-> > However, after these patches are applied, since the patches are always waiting for 30 seconds
-> > for of_iommu_configure() when IOMMU hardware is disabled, drivers/base/dd.c output WARN.
-> > Also, since ravb cannot be probed for 30 seconds, we cannot use NFS rootfs anymore.
-> > JFYI, I copied the kernel log to the end of this email.
+> >  /**
+> > + * VFIO_MM objects - create, release, get, put, search
+> > + * Caller of the function should have held vfio.vfio_mm_lock.
+> > + */
+> > +static struct vfio_mm *vfio_create_mm(struct mm_struct *mm)
+> > +{
+> > +	struct vfio_mm *vmm;
+> > +	struct vfio_mm_token *token;
+> > +	int ret = 0;
+> > +
+> > +	vmm = kzalloc(sizeof(*vmm), GFP_KERNEL);
+> > +	if (!vmm)
+> > +		return ERR_PTR(-ENOMEM);
+> > +
+> > +	/* Per mm IOASID set used for quota control and group operations */
+> > +	ret = ioasid_alloc_set((struct ioasid_set *) mm,
+> 
+> Hmm, either we need to change the token of ioasid_alloc_set() to "void *",
+> or pass an actual ioasid_set struct, but this cast doesn't look good :)
 >
-> Hey,
->   Terribly sorry for the trouble. So as Robin mentioned I have a patch
-> to remove the WARN messages, but I'm a bit more concerned about why
-> after the 30 second delay, the ethernet driver loads:
->   [   36.218666] ravb e6800000.ethernet eth0: Base address at
-> 0xe6800000, 2e:09:0a:02:eb:2d, IRQ 117.
-> but NFS fails.
->
-> Is it just that the 30 second delay is too long and NFS gives up?
+> As I commented on the IOASID series, I think we could embed a struct
+> ioasid_set into vfio_mm, pass that struct to all other ioasid_* functions,
+> and get rid of ioasid_sid.
 
-I added some debug code to mount_nfs_root(), which shows that the first
-3 tries happen before ravb is instantiated, and the last 3 tries happen
-after.  So NFS root should work, if the network works.
+I think change to "void *" is better as we needs the token to ensure all
+threads within a single VM share the same ioasid_set.
 
-However, it seems the Ethernet PHY is never initialized, hence the link
-never becomes ready.  Dmesg before/after:
+> > +			       VFIO_DEFAULT_PASID_QUOTA, &vmm->ioasid_sid);
+> > +	if (ret) {
+> > +		kfree(vmm);
+> > +		return ERR_PTR(ret);
+> > +	}
+> > +
+> > +	kref_init(&vmm->kref);
+> > +	token = &vmm->token;
+> > +	token->val = mm;
+> 
+> Why the intermediate token struct?  Could we just store the mm_struct
+> pointer within vfio_mm?
 
-     ravb e6800000.ethernet eth0: Base address at 0xe6800000,
-2e:09:0a:02:ea:ff, IRQ 108.
+Hmm, here we only want to use the pointer as a token, instead of using
+the structure behind the pointer. If store the mm_struct directly, may
+leave a space to further use its content, this is not good.
 
-Good.
+Regards,
+Yi Liu
 
-     ...
-    -gpio_rcar e6052000.gpio: sense irq = 11, type = 8
-
-This is the GPIO the PHY IRQ is connected to.
-Note that that GPIO controller has been instantiated before.
-
-     ...
-    -Micrel KSZ9031 Gigabit PHY e6800000.ethernet-ffffffff:00:
-attached PHY driver [Micrel KSZ9031 Gigabit PHY]
-(mii_bus:phy_addr=e6800000.ethernet-ffffffff:00, irq=197)
-     ...
-    -ravb e6800000.ethernet eth0: Link is Up - 1Gbps/Full - flow control off
-
-Oops.
-
-    -Sending DHCP requests .., OK
-    -IP-Config: Got DHCP answer from ...
-     ...
-    +VFS: Unable to mount root fs via NFS, trying floppy.
-    +VFS: Cannot open root device "nfs" or unknown-block(2,0): error -6
-
-> Does booting with deferred_probe_timeout=0 work?
-
-It does, as now everything using optional links (DMA and IOMMU) is now
-instantiated on first try.
-
-Gr{oetje,eeting}s,
-
-                        Geert
-
--- 
-Geert Uytterhoeven -- There's lots of Linux beyond ia32 -- geert@linux-m68k.org
-
-In personal conversations with technical people, I call myself a hacker. But
-when I'm talking to journalists I just say "programmer" or something like that.
-                                -- Linus Torvalds
 _______________________________________________
 iommu mailing list
 iommu@lists.linux-foundation.org
