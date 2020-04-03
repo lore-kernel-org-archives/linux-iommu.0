@@ -6,83 +6,82 @@ X-Spam-Status: No, score=-6.8 required=3.0 tests=HEADER_FROM_DIFFERENT_DOMAINS,
 	INCLUDES_PATCH,MAILING_LIST_MULTI,SIGNED_OFF_BY,SPF_HELO_NONE,SPF_PASS,
 	URIBL_BLOCKED autolearn=unavailable autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 82E15C43331
-	for <iommu@archiver.kernel.org>; Fri,  3 Apr 2020 06:39:34 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 66557C43331
+	for <iommu@archiver.kernel.org>; Fri,  3 Apr 2020 07:55:49 +0000 (UTC)
 Received: from whitealder.osuosl.org (smtp1.osuosl.org [140.211.166.138])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by mail.kernel.org (Postfix) with ESMTPS id 505942073B
-	for <iommu@archiver.kernel.org>; Fri,  3 Apr 2020 06:39:34 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 505942073B
+	by mail.kernel.org (Postfix) with ESMTPS id 2E2DC2073B
+	for <iommu@archiver.kernel.org>; Fri,  3 Apr 2020 07:55:49 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 2E2DC2073B
 Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=intel.com
 Authentication-Results: mail.kernel.org; spf=pass smtp.mailfrom=iommu-bounces@lists.linux-foundation.org
 Received: from localhost (localhost [127.0.0.1])
-	by whitealder.osuosl.org (Postfix) with ESMTP id 246D787FC4;
-	Fri,  3 Apr 2020 06:39:34 +0000 (UTC)
+	by whitealder.osuosl.org (Postfix) with ESMTP id D101988214;
+	Fri,  3 Apr 2020 07:55:48 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
 Received: from whitealder.osuosl.org ([127.0.0.1])
 	by localhost (.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
-	with ESMTP id r6u-cJE7Fi62; Fri,  3 Apr 2020 06:39:31 +0000 (UTC)
+	with ESMTP id RF2ITCEoT8q9; Fri,  3 Apr 2020 07:55:46 +0000 (UTC)
 Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [140.211.9.56])
-	by whitealder.osuosl.org (Postfix) with ESMTP id 3AA6F87C03;
-	Fri,  3 Apr 2020 06:39:31 +0000 (UTC)
+	by whitealder.osuosl.org (Postfix) with ESMTP id 71BCD881E8;
+	Fri,  3 Apr 2020 07:55:46 +0000 (UTC)
 Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
-	by lists.linuxfoundation.org (Postfix) with ESMTP id 256A6C1D74;
-	Fri,  3 Apr 2020 06:39:31 +0000 (UTC)
+	by lists.linuxfoundation.org (Postfix) with ESMTP id 4DEE1C1831;
+	Fri,  3 Apr 2020 07:55:46 +0000 (UTC)
 Received: from hemlock.osuosl.org (smtp2.osuosl.org [140.211.166.133])
- by lists.linuxfoundation.org (Postfix) with ESMTP id C534FC07FF
- for <iommu@lists.linux-foundation.org>; Fri,  3 Apr 2020 06:39:29 +0000 (UTC)
+ by lists.linuxfoundation.org (Postfix) with ESMTP id 33833C07FF
+ for <iommu@lists.linux-foundation.org>; Fri,  3 Apr 2020 07:55:44 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
- by hemlock.osuosl.org (Postfix) with ESMTP id B387188E5F
- for <iommu@lists.linux-foundation.org>; Fri,  3 Apr 2020 06:39:29 +0000 (UTC)
+ by hemlock.osuosl.org (Postfix) with ESMTP id 21504890D5
+ for <iommu@lists.linux-foundation.org>; Fri,  3 Apr 2020 07:55:44 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
 Received: from hemlock.osuosl.org ([127.0.0.1])
  by localhost (.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
- with ESMTP id KYbfR3aqIMIL for <iommu@lists.linux-foundation.org>;
- Fri,  3 Apr 2020 06:39:27 +0000 (UTC)
+ with ESMTP id s0gMHMUD-LJJ for <iommu@lists.linux-foundation.org>;
+ Fri,  3 Apr 2020 07:55:42 +0000 (UTC)
 X-Greylist: domain auto-whitelisted by SQLgrey-1.7.6
 Received: from mga09.intel.com (mga09.intel.com [134.134.136.24])
- by hemlock.osuosl.org (Postfix) with ESMTPS id 8965588E49
- for <iommu@lists.linux-foundation.org>; Fri,  3 Apr 2020 06:39:27 +0000 (UTC)
-IronPort-SDR: ccRK4ljTc4jyDhvGlZqtR30MIRkVIZ/QZBI2uQBIMk3BmxNbmuaY9T8Jvfj4wiyfxjda1A0NPF
- IvaRBiZnRnog==
+ by hemlock.osuosl.org (Postfix) with ESMTPS id 801E788BA0
+ for <iommu@lists.linux-foundation.org>; Fri,  3 Apr 2020 07:55:42 +0000 (UTC)
+IronPort-SDR: Hl/KqobiTfL5tValkQXora7Oiqp1rk6LPi8cQ/QYz74e1lqie15FRzJWKKS7tvlIDMh4yHEdcB
+ Jc2D0Evfsylg==
 X-Amp-Result: SKIPPED(no attachment in message)
 X-Amp-File-Uploaded: False
-Received: from orsmga008.jf.intel.com ([10.7.209.65])
+Received: from orsmga005.jf.intel.com ([10.7.209.41])
  by orsmga102.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384;
- 02 Apr 2020 23:39:27 -0700
-IronPort-SDR: 5iJVXddH3lIvhNSOFpH5j5+FVVo7ULZsXV/1r9WoGmk/jPiwzGKCuNLTnZmwP3WOYSGHBK+4Tp
- NBWBdm1amtvA==
+ 03 Apr 2020 00:55:41 -0700
+IronPort-SDR: MisSjOST/oqhL3Quer8w97wSnpcslY0TplFpFKp6I6hdldok53J2DcLmnaEDGTSE9Tot7gc6o9
+ /+KMOJ6chiOQ==
 X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.72,338,1580803200"; d="scan'208";a="243358799"
-Received: from fmsmsx106.amr.corp.intel.com ([10.18.124.204])
- by orsmga008.jf.intel.com with ESMTP; 02 Apr 2020 23:39:26 -0700
-Received: from fmsmsx602.amr.corp.intel.com (10.18.126.82) by
- FMSMSX106.amr.corp.intel.com (10.18.124.204) with Microsoft SMTP Server (TLS)
- id 14.3.439.0; Thu, 2 Apr 2020 23:39:26 -0700
-Received: from fmsmsx602.amr.corp.intel.com (10.18.126.82) by
- fmsmsx602.amr.corp.intel.com (10.18.126.82) with Microsoft SMTP Server
+X-IronPort-AV: E=Sophos;i="5.72,339,1580803200"; d="scan'208";a="423443152"
+Received: from fmsmsx105.amr.corp.intel.com ([10.18.124.203])
+ by orsmga005.jf.intel.com with ESMTP; 03 Apr 2020 00:55:40 -0700
+Received: from fmsmsx605.amr.corp.intel.com (10.18.126.85) by
+ FMSMSX105.amr.corp.intel.com (10.18.124.203) with Microsoft SMTP Server (TLS)
+ id 14.3.439.0; Fri, 3 Apr 2020 00:55:39 -0700
+Received: from fmsmsx605.amr.corp.intel.com (10.18.126.85) by
+ fmsmsx605.amr.corp.intel.com (10.18.126.85) with Microsoft SMTP Server
  (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.1713.5; Thu, 2 Apr 2020 23:39:25 -0700
-Received: from shsmsx154.ccr.corp.intel.com (10.239.6.54) by
- fmsmsx602.amr.corp.intel.com (10.18.126.82) with Microsoft SMTP Server
+ 15.1.1713.5; Fri, 3 Apr 2020 00:55:39 -0700
+Received: from shsmsx151.ccr.corp.intel.com (10.239.6.50) by
+ fmsmsx605.amr.corp.intel.com (10.18.126.85) with Microsoft SMTP Server
  (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256) id 15.1.1713.5
- via Frontend Transport; Thu, 2 Apr 2020 23:39:25 -0700
+ via Frontend Transport; Fri, 3 Apr 2020 00:55:39 -0700
 Received: from shsmsx104.ccr.corp.intel.com ([169.254.5.225]) by
- SHSMSX154.ccr.corp.intel.com ([169.254.7.214]) with mapi id 14.03.0439.000;
- Fri, 3 Apr 2020 14:39:22 +0800
-From: "Tian, Kevin" <kevin.tian@intel.com>
-To: Alex Williamson <alex.williamson@redhat.com>, "Liu, Yi L"
- <yi.l.liu@intel.com>
-Subject: RE: [PATCH v1 7/8] vfio/type1: Add VFIO_IOMMU_CACHE_INVALIDATE
-Thread-Topic: [PATCH v1 7/8] vfio/type1: Add VFIO_IOMMU_CACHE_INVALIDATE
-Thread-Index: AQHWAEUdbUtKvEWiiEiZu1SnRvWegKhl0sQAgAEuFaA=
-Date: Fri, 3 Apr 2020 06:39:22 +0000
-Message-ID: <AADFC41AFE54684AB9EE6CBC0274A5D19D807C4A@SHSMSX104.ccr.corp.intel.com>
-References: <1584880325-10561-1-git-send-email-yi.l.liu@intel.com>
- <1584880325-10561-8-git-send-email-yi.l.liu@intel.com>
- <20200402142428.2901432e@w520.home>
-In-Reply-To: <20200402142428.2901432e@w520.home>
+ SHSMSX151.ccr.corp.intel.com ([169.254.3.22]) with mapi id 14.03.0439.000;
+ Fri, 3 Apr 2020 15:53:55 +0800
+From: "Liu, Yi L" <yi.l.liu@intel.com>
+To: Alex Williamson <alex.williamson@redhat.com>
+Subject: RE: [PATCH v1 2/2] vfio/pci: Emulate PASID/PRI capability for VFs
+Thread-Topic: [PATCH v1 2/2] vfio/pci: Emulate PASID/PRI capability for VFs
+Thread-Index: AQHWAEVGuXHNl3uJkkGgSITNIYV006hl/jEAgADDqXA=
+Date: Fri, 3 Apr 2020 07:53:55 +0000
+Message-ID: <A2975661238FB949B60364EF0F2C25743A2204FE@SHSMSX104.ccr.corp.intel.com>
+References: <1584880394-11184-1-git-send-email-yi.l.liu@intel.com>
+ <1584880394-11184-3-git-send-email-yi.l.liu@intel.com>
+ <20200402165954.48d941ee@w520.home>
+In-Reply-To: <20200402165954.48d941ee@w520.home>
 Accept-Language: en-US
 Content-Language: en-US
 X-MS-Has-Attach: 
@@ -92,12 +91,13 @@ dlp-version: 11.2.0.6
 dlp-reaction: no-action
 x-originating-ip: [10.239.127.40]
 MIME-Version: 1.0
-Cc: "jean-philippe@linaro.org" <jean-philippe@linaro.org>, "Raj,
+Cc: "jean-philippe@linaro.org" <jean-philippe@linaro.org>, "Tian,
+ Kevin" <kevin.tian@intel.com>, "Raj, 
  Ashok" <ashok.raj@intel.com>, "kvm@vger.kernel.org" <kvm@vger.kernel.org>,
+ "Tian, Jun J" <jun.j.tian@intel.com>,
  "iommu@lists.linux-foundation.org" <iommu@lists.linux-foundation.org>,
- "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>, "Sun,
- Yi Y" <yi.y.sun@intel.com>, "Tian, Jun J" <jun.j.tian@intel.com>, "Wu,
- Hao" <hao.wu@intel.com>
+ "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>, "Sun, Yi
+ Y" <yi.y.sun@intel.com>, "Wu, Hao" <hao.wu@intel.com>
 X-BeenThere: iommu@lists.linux-foundation.org
 X-Mailman-Version: 2.1.15
 Precedence: list
@@ -115,200 +115,551 @@ Content-Transfer-Encoding: 7bit
 Errors-To: iommu-bounces@lists.linux-foundation.org
 Sender: "iommu" <iommu-bounces@lists.linux-foundation.org>
 
+Hi Alex,
+
 > From: Alex Williamson <alex.williamson@redhat.com>
-> Sent: Friday, April 3, 2020 4:24 AM
+> Sent: Friday, April 3, 2020 7:00 AM
+> To: Liu, Yi L <yi.l.liu@intel.com>
+> Subject: Re: [PATCH v1 2/2] vfio/pci: Emulate PASID/PRI capability for VFs
 > 
-> On Sun, 22 Mar 2020 05:32:04 -0700
+> On Sun, 22 Mar 2020 05:33:14 -0700
 > "Liu, Yi L" <yi.l.liu@intel.com> wrote:
 > 
-> > From: Liu Yi L <yi.l.liu@linux.intel.com>
+> > From: Liu Yi L <yi.l.liu@intel.com>
 > >
-> > For VFIO IOMMUs with the type VFIO_TYPE1_NESTING_IOMMU, guest
-> "owns" the
-> > first-level/stage-1 translation structures, the host IOMMU driver has no
-> > knowledge of first-level/stage-1 structure cache updates unless the guest
-> > invalidation requests are trapped and propagated to the host.
+> > Per PCIe r5.0, sec 9.3.7.14, if a PF implements the PASID Capability, the
+> > PF PASID configuration is shared by its VFs.  VFs must not implement their
+> > own PASID Capability.
 > >
-> > This patch adds a new IOCTL VFIO_IOMMU_CACHE_INVALIDATE to
-> propagate guest
-> > first-level/stage-1 IOMMU cache invalidations to host to ensure IOMMU
-> cache
-> > correctness.
+> > Per PCIe r5.0, sec 9.3.7.11, VFs must not implement the PRI Capability. If
+> > the PF implements PRI, it is shared by the VFs.
 > >
-> > With this patch, vSVA (Virtual Shared Virtual Addressing) can be used safely
-> > as the host IOMMU iotlb correctness are ensured.
+> > On bare metal, it has been fixed by below efforts.
+> > to PASID/PRI are
+> > https://lkml.org/lkml/2019/9/5/996
+> > https://lkml.org/lkml/2019/9/5/995
+> >
+> > This patch adds emulated PASID/PRI capabilities for VFs when assigned to
+> > VMs via vfio-pci driver. This is required for enabling vSVA on pass-through
+> > VFs as VFs have no PASID/PRI capability structure in its configure space.
 > >
 > > Cc: Kevin Tian <kevin.tian@intel.com>
 > > CC: Jacob Pan <jacob.jun.pan@linux.intel.com>
 > > Cc: Alex Williamson <alex.williamson@redhat.com>
 > > Cc: Eric Auger <eric.auger@redhat.com>
 > > Cc: Jean-Philippe Brucker <jean-philippe@linaro.org>
-> > Signed-off-by: Liu Yi L <yi.l.liu@linux.intel.com>
-> > Signed-off-by: Eric Auger <eric.auger@redhat.com>
-> > Signed-off-by: Jacob Pan <jacob.jun.pan@linux.intel.com>
+> > Signed-off-by: Liu Yi L <yi.l.liu@intel.com>
 > > ---
-> >  drivers/vfio/vfio_iommu_type1.c | 49
-> +++++++++++++++++++++++++++++++++++++++++
-> >  include/uapi/linux/vfio.h       | 22 ++++++++++++++++++
-> >  2 files changed, 71 insertions(+)
+> >  drivers/vfio/pci/vfio_pci_config.c | 325
+> ++++++++++++++++++++++++++++++++++++-
+> >  1 file changed, 323 insertions(+), 2 deletions(-)
 > >
-> > diff --git a/drivers/vfio/vfio_iommu_type1.c
-> b/drivers/vfio/vfio_iommu_type1.c
-> > index a877747..937ec3f 100644
-> > --- a/drivers/vfio/vfio_iommu_type1.c
-> > +++ b/drivers/vfio/vfio_iommu_type1.c
-> > @@ -2423,6 +2423,15 @@ static long
-> vfio_iommu_type1_unbind_gpasid(struct vfio_iommu *iommu,
-> >  	return ret;
+> > diff --git a/drivers/vfio/pci/vfio_pci_config.c b/drivers/vfio/pci/vfio_pci_config.c
+> > index 4b9af99..84b4ea0 100644
+> > --- a/drivers/vfio/pci/vfio_pci_config.c
+> > +++ b/drivers/vfio/pci/vfio_pci_config.c
+> > @@ -1509,11 +1509,304 @@ static int vfio_cap_init(struct vfio_pci_device *vdev)
+> >  	return 0;
 > >  }
 > >
-> > +static int vfio_cache_inv_fn(struct device *dev, void *data)
+> > +static int vfio_fill_custom_vconfig_bytes(struct vfio_pci_device *vdev,
+> > +					int offset, uint8_t *data, int size)
 > > +{
-> > +	struct domain_capsule *dc = (struct domain_capsule *)data;
-> > +	struct iommu_cache_invalidate_info *cache_inv_info =
-> > +		(struct iommu_cache_invalidate_info *) dc->data;
+> > +	int ret = 0, data_offset = 0;
 > > +
-> > +	return iommu_cache_invalidate(dc->domain, dev, cache_inv_info);
-> > +}
+> > +	while (size) {
+> > +		int filled;
 > > +
-> >  static long vfio_iommu_type1_ioctl(void *iommu_data,
-> >  				   unsigned int cmd, unsigned long arg)
-> >  {
-> > @@ -2629,6 +2638,46 @@ static long vfio_iommu_type1_ioctl(void
-> *iommu_data,
-> >  		}
-> >  		kfree(gbind_data);
-> >  		return ret;
-> > +	} else if (cmd == VFIO_IOMMU_CACHE_INVALIDATE) {
-> > +		struct vfio_iommu_type1_cache_invalidate cache_inv;
-> > +		u32 version;
-> > +		int info_size;
-> > +		void *cache_info;
-> > +		int ret;
+> > +		if (size >= 4 && !(offset % 4)) {
+> > +			__le32 *dwordp = (__le32 *)&vdev->vconfig[offset];
+> > +			u32 dword;
 > > +
-> > +		minsz = offsetofend(struct
-> vfio_iommu_type1_cache_invalidate,
-> > +				    flags);
+> > +			memcpy(&dword, data + data_offset, 4);
+> > +			*dwordp = cpu_to_le32(dword);
 > 
-> This breaks backward compatibility as soon as struct
-> iommu_cache_invalidate_info changes size by its defined versioning
-> scheme.  ie. a field gets added, the version is bumped, all existing
-> userspace breaks.  Our minsz is offsetofend to the version field,
-> interpret the version to size, then reevaluate argsz.
-
-btw the version scheme is challenged by Christoph Hellwig. After
-some discussions, we need your guidance how to move forward.
-Jacob summarized available options below:
-	https://lkml.org/lkml/2020/4/2/876
-
+> Why wouldn't we do:
 > 
+> *dwordp = cpu_to_le32(*(u32 *)(data + data_offset));
+> 
+> or better yet, increment data on each iteration for:
+> 
+> *dwordp = cpu_to_le32(*(u32 *)data);
+
+I'll refine it.
+
+> vfio_fill_vconfig_bytes() does almost this same thing, getting
+> the data
+> from config space rather than a buffer, so please figure out how to
+> avoid duplicating the logic.
+
+This patch is to emulate the PASID/PRI capability for VF. And per
+my understanding, the cap data from PF's config space cannot be
+filled to VF's vconfig directly. Take the control register in PASID
+capability structure as an example. If PASID cap is enabled in PF,
+the PASID enable bit in the control register will be set. If the cap
+data is filled to VF's vconfig directly, then guest will see a default
+enabled PASID capability in the VF. I guess it is not good. But, I may
+be wrong. If no such requirement, I can use vfio_fill_vconfig_bytes()
+directly, no need to do copy and modify and then copy.
+
+Also, if still needs to do the copy and modification, I may modify
+the vfio_fill_vconfig_bytes() to pass in the buffer and an indicator
+to tell vfio_fill_vconfig_bytes() whether fetch data from buffer or
+from config space.
+
+> > +			filled = 4;
+> > +		} else if (size >= 2 && !(offset % 2)) {
+> > +			__le16 *wordp = (__le16 *)&vdev->vconfig[offset];
+> > +			u16 word;
 > > +
-> > +		if (copy_from_user(&cache_inv, (void __user *)arg, minsz))
-> > +			return -EFAULT;
+> > +			memcpy(&word, data + data_offset, 2);
+> > +			*wordp = cpu_to_le16(word);
+> > +			filled = 2;
+> > +		} else {
+> > +			u8 *byte = &vdev->vconfig[offset];
 > > +
-> > +		if (cache_inv.argsz < minsz || cache_inv.flags)
-> > +			return -EINVAL;
-> > +
-> > +		/* Get the version of struct iommu_cache_invalidate_info */
-> > +		if (copy_from_user(&version,
-> > +			(void __user *) (arg + minsz), sizeof(version)))
-> > +			return -EFAULT;
-> > +
-> > +		info_size = iommu_uapi_get_data_size(
-> > +					IOMMU_UAPI_CACHE_INVAL,
-> version);
-> > +
-> > +		cache_info = kzalloc(info_size, GFP_KERNEL);
-> > +		if (!cache_info)
-> > +			return -ENOMEM;
-> > +
-> > +		if (copy_from_user(cache_info,
-> > +			(void __user *) (arg + minsz), info_size)) {
-> > +			kfree(cache_info);
-> > +			return -EFAULT;
+> > +			memcpy(byte, data + data_offset, 1);
+> 
+> This one is really silly.
+> 
+> vdev->vconfig[offset] = *data;
+
+got it.
+
+> > +			filled = 1;
 > > +		}
 > > +
-> > +		mutex_lock(&iommu->lock);
-> > +		ret = vfio_iommu_for_each_dev(iommu, vfio_cache_inv_fn,
-> > +					    cache_info);
-> 
-> How does a user respond when their cache invalidate fails?  Isn't this
-> also another case where our for_each_dev can fail at an arbitrary point
-> leaving us with no idea whether each device even had the opportunity to
-> perform the invalidation request.  I don't see how we have any chance
-> to maintain coherency after this faults.
-
-Then can we make it simple to support singleton group only? 
-
-> 
-> > +		mutex_unlock(&iommu->lock);
-> > +		kfree(cache_info);
-> > +		return ret;
-> >  	}
-> >
-> >  	return -ENOTTY;
-> > diff --git a/include/uapi/linux/vfio.h b/include/uapi/linux/vfio.h
-> > index 2235bc6..62ca791 100644
-> > --- a/include/uapi/linux/vfio.h
-> > +++ b/include/uapi/linux/vfio.h
-> > @@ -899,6 +899,28 @@ struct vfio_iommu_type1_bind {
-> >   */
-> >  #define VFIO_IOMMU_BIND		_IO(VFIO_TYPE, VFIO_BASE + 23)
-> >
-> > +/**
-> > + * VFIO_IOMMU_CACHE_INVALIDATE - _IOW(VFIO_TYPE, VFIO_BASE + 24,
-> > + *			struct vfio_iommu_type1_cache_invalidate)
-> > + *
-> > + * Propagate guest IOMMU cache invalidation to the host. The cache
-> > + * invalidation information is conveyed by @cache_info, the content
-> > + * format would be structures defined in uapi/linux/iommu.h. User
-> > + * should be aware of that the struct  iommu_cache_invalidate_info
-> > + * has a @version field, vfio needs to parse this field before getting
-> > + * data from userspace.
-> > + *
-> > + * Availability of this IOCTL is after VFIO_SET_IOMMU.
-> 
-> Is this a necessary qualifier?  A user can try to call this ioctl at
-> any point, it only makes sense in certain configurations, but it should
-> always "do the right thing" relative to the container iommu config.
-> 
-> Also, I don't see anything in these last few patches testing the
-> operating IOMMU model, what happens when a user calls them when not
-> using the nesting IOMMU?
-> 
-> Is this ioctl and the previous BIND ioctl only valid when configured
-> for the nesting IOMMU type?
-
-I think so. We should add the nesting check in those new ioctls.
-
-> 
-> > + *
-> > + * returns: 0 on success, -errno on failure.
-> > + */
-> > +struct vfio_iommu_type1_cache_invalidate {
-> > +	__u32   argsz;
-> > +	__u32   flags;
-> > +	struct	iommu_cache_invalidate_info cache_info;
-> > +};
-> > +#define VFIO_IOMMU_CACHE_INVALIDATE      _IO(VFIO_TYPE, VFIO_BASE
-> + 24)
-> 
-> The future extension capabilities of this ioctl worry me, I wonder if
-> we should do another data[] with flag defining that data as CACHE_INFO.
-
-Can you elaborate? Does it mean with this way we don't rely on iommu
-driver to provide version_to_size conversion and instead we just pass
-data[] to iommu driver for further audit?
-
-> 
+> > +		offset += filled;
+> > +		data_offset += filled;
+> > +		size -= filled;
+> > +	}
 > > +
-> >  /* -------- Additional API for SPAPR TCE (Server POWERPC) IOMMU --------
-> */
-> >
-> >  /*
+> > +	return ret;
+> > +}
+> > +
+> > +static int vfio_pci_get_ecap_content(struct pci_dev *pdev,
+> > +					int cap, int cap_len, u8 *content)
+> > +{
+> > +	int pos, offset, len = cap_len, ret = 0;
+> > +
+> > +	pos = pci_find_ext_capability(pdev, cap);
+> > +	if (!pos)
+> > +		return -EINVAL;
+> > +
+> > +	offset = 0;
+> > +	while (len) {
+> > +		int fetched;
+> > +
+> > +		if (len >= 4 && !(pos % 4)) {
+> > +			u32 *dwordp = (u32 *) (content + offset);
+> > +			u32 dword;
+> > +			__le32 *dwptr = (__le32 *) &dword;
+> > +
+> > +			ret = pci_read_config_dword(pdev, pos, &dword);
+> > +			if (ret)
+> > +				return ret;
+> > +			*dwordp = le32_to_cpu(*dwptr);
+> 
+> WHAT???  pci_read_config_dword() returns cpu endian data!
 
-Thanks
-Kevin
+my bad. will remove the silly le32_to_cpu() convert.
+
+> > +			fetched = 4;
+> > +		} else if (len >= 2 && !(pos % 2)) {
+> > +			u16 *wordp = (u16 *) (content + offset);
+> > +			u16 word;
+> > +			__le16 *wptr = (__le16 *) &word;
+> > +
+> > +			ret = pci_read_config_word(pdev, pos, &word);
+> > +			if (ret)
+> > +				return ret;
+> > +			*wordp = le16_to_cpu(*wptr);
+> > +			fetched = 2;
+> > +		} else {
+> > +			u8 *byte = (u8 *) (content + offset);
+> > +
+> > +			ret = pci_read_config_byte(pdev, pos, byte);
+> > +			if (ret)
+> > +				return ret;
+> > +			fetched = 1;
+> > +		}
+> > +
+> > +		pos += fetched;
+> > +		offset += fetched;
+> > +		len -= fetched;
+> > +	}
+> > +
+> > +	return ret;
+> > +}
+> > +
+> > +struct vfio_pci_pasid_cap_data {
+> > +	u32 id:16;
+> > +	u32 version:4;
+> > +	u32 next:12;
+> > +	union {
+> > +		u16 cap_reg_val;
+> > +		struct {
+> > +			u16 rsv1:1;
+> > +			u16 execs:1;
+> > +			u16 prvs:1;
+> > +			u16 rsv2:5;
+> > +			u16 pasid_bits:5;
+> > +			u16 rsv3:3;
+> > +		};
+> > +	} cap_reg;
+> > +	union {
+> > +		u16 control_reg_val;
+> > +		struct {
+> > +			u16 paside:1;
+> > +			u16 exece:1;
+> > +			u16 prve:1;
+> > +			u16 rsv4:13;
+> > +		};
+> > +	} control_reg;
+> > +};
+> > +
+> > +static int vfio_pci_add_pasid_cap(struct vfio_pci_device *vdev,
+> > +				    struct pci_dev *pdev,
+> > +				    u16 epos, u16 *next, __le32 **prevp)
+> > +{
+> > +	u8 *map = vdev->pci_config_map;
+> > +	int ecap = PCI_EXT_CAP_ID_PASID;
+> > +	int len = pci_ext_cap_length[ecap];
+> > +	struct vfio_pci_pasid_cap_data pasid_cap;
+> > +	struct vfio_pci_pasid_cap_data vpasid_cap;
+> > +	int ret;
+> > +
+> > +	/*
+> > +	 * If no cap filled in this function, should make sure the next
+> > +	 * pointer points to current epos.
+> > +	 */
+> > +	*next = epos;
+> > +
+> > +	if (!len) {
+> > +		pr_info("%s: VF %s hiding PASID capability\n",
+> > +				__func__, dev_name(&vdev->pdev->dev));
+> > +		ret = 0;
+> > +		goto out;
+> > +	}
+> 
+> No!  Why?  This is dead code.
+
+will remove it. thanks.
+
+> > +
+> > +	/* Add PASID capability*/
+> > +	ret = vfio_pci_get_ecap_content(pdev, ecap,
+> > +					len, (u8 *)&pasid_cap);
+> 
+> 
+> Why wouldn't we just use vfio_fill_config_bytes() rather than this
+> ridiculous approach of coping it to a buffer, modifying it and copying
+> it out?
+
+As the above reply, if copying PF's config space data to VF's vconfig
+directly is fine, then I can drop them.
+
+> > +	if (ret)
+> > +		goto out;
+> > +
+> > +	if (!pasid_cap.control_reg.paside) {
+> > +		pr_debug("%s: its PF's PASID capability is not enabled\n",
+> > +			dev_name(&vdev->pdev->dev));
+> > +		ret = 0;
+> > +		goto out;
+> > +	}
+> 
+> What happens if the PF's PASID gets disabled while we're using it??
+
+This is actually the open I highlighted in cover letter. Per the reply
+from Baolu, this seems to be an open for bare-metal all the same.
+https://lkml.org/lkml/2020/3/31/95
+
+> > +
+> > +	memcpy(&vpasid_cap, &pasid_cap, len);
+> > +
+> > +	vpasid_cap.id = 0x18;
+> 
+> What is going on here?
+> 
+> #define PCI_EXT_CAP_ID_LTR      0x18    /* Latency Tolerance Reporting */
+
+my bad... This one was used in development phase. not needed in formal
+patch. really sorry for the mislead.. will remove it.
+
+> > +	vpasid_cap.next = 0;
+> > +	/* clear the control reg for guest */
+> > +	memset(&vpasid_cap.control_reg, 0x0,
+> > +			sizeof(vpasid_cap.control_reg));
+> 
+> So we zero a couple registers and that's why we need a structure to
+> define the entire capability and this crazy copy to a cpu endian
+> buffer.  No.
+
+there are two reasons for define a structure for the capability. For
+one, to check if PASID capability is enabled in PF. For two, to zero
+the control registers to ensure the guest see a clean control register.
+But if it is not necessary to do the two operations, it can be dropped.
+
+> > +
+> > +	memset(map + epos, vpasid_cap.id, len);
+> 
+> See below.
+> 
+> > +	ret = vfio_fill_custom_vconfig_bytes(vdev, epos,
+> > +					(u8 *)&vpasid_cap, len);
+> > +	if (!ret) {
+> > +		/*
+> > +		 * Successfully filled in PASID cap, update
+> > +		 * the next offset in previous cap header,
+> > +		 * and also update caller about the offset
+> > +		 * of next cap if any.
+> > +		 */
+> > +		u32 val = epos;
+> > +		**prevp &= cpu_to_le32(~(0xffcU << 20));
+> > +		**prevp |= cpu_to_le32(val << 20);
+> > +		*prevp = (__le32 *)&vdev->vconfig[epos];
+> > +		*next = epos + len;
+> 
+> Could we make this any more complicated?
+
+yeah, I should have added some comments.
+
+	/* update the next field of prior cap structure */
+	**prevp &= cpu_to_le32(~(0xffcU << 20));
+	**prevp |= cpu_to_le32(val << 20);
+	/* update the prevp pointer to point to the current cap */
+	*prevp = (__le32 *)&vdev->vconfig[epos];
+	*next = epos + len;
+
+> > +	}
+> > +
+> > +out:
+> > +	return ret;
+> > +}
+> > +
+> > +struct vfio_pci_pri_cap_data {
+> > +	u32 id:16;
+> > +	u32 version:4;
+> > +	u32 next:12;
+> > +	union {
+> > +		u16 control_reg_val;
+> > +		struct {
+> > +			u16 enable:1;
+> > +			u16 reset:1;
+> > +			u16 rsv1:14;
+> > +		};
+> > +	} control_reg;
+> > +	union {
+> > +		u16 status_reg_val;
+> > +		struct {
+> > +			u16 rf:1;
+> > +			u16 uprgi:1;
+> > +			u16 rsv2:6;
+> > +			u16 stop:1;
+> > +			u16 rsv3:6;
+> > +			u16 pasid_required:1;
+> > +		};
+> > +	} status_reg;
+> > +	u32 prq_capacity;
+> > +	u32 prq_quota;
+> > +};
+> > +
+> > +static int vfio_pci_add_pri_cap(struct vfio_pci_device *vdev,
+> > +				    struct pci_dev *pdev,
+> > +				    u16 epos, u16 *next, __le32 **prevp)
+> > +{
+> > +	u8 *map = vdev->pci_config_map;
+> > +	int ecap = PCI_EXT_CAP_ID_PRI;
+> > +	int len = pci_ext_cap_length[ecap];
+> > +	struct vfio_pci_pri_cap_data pri_cap;
+> > +	struct vfio_pci_pri_cap_data vpri_cap;
+> > +	int ret;
+> > +
+> > +	/*
+> > +	 * If no cap filled in this function, should make sure the next
+> > +	 * pointer points to current epos.
+> > +	 */
+> > +	*next = epos;
+> > +
+> > +	if (!len) {
+> > +		pr_info("%s: VF %s hiding PRI capability\n",
+> > +				__func__, dev_name(&vdev->pdev->dev));
+> > +		ret = 0;
+> > +		goto out;
+> > +	}
+> > +
+> > +	/* Add PASID capability*/
+> > +	ret = vfio_pci_get_ecap_content(pdev, ecap,
+> > +					len, (u8 *)&pri_cap);
+> > +	if (ret)
+> > +		goto out;
+> > +
+> > +	if (!pri_cap.control_reg.enable) {
+> > +		pr_debug("%s: its PF's PRI capability is not enabled\n",
+> > +			dev_name(&vdev->pdev->dev));
+> > +		ret = 0;
+> > +		goto out;
+> > +	}
+> > +
+> > +	memcpy(&vpri_cap, &pri_cap, len);
+> > +
+> > +	vpri_cap.id = 0x19;
+> 
+> #define PCI_EXT_CAP_ID_SECPCI   0x19    /* Secondary PCIe Capability */
+> 
+> ???
+
+my bad... This line was used in development phase. not needed in formal
+patch. really sorry for the mislead.. will remove it.
+
+> > +	vpri_cap.next = 0;
+> > +	/* clear the control reg for guest */
+> > +	memset(&vpri_cap.control_reg, 0x0,
+> > +			sizeof(vpri_cap.control_reg));
+> > +
+> > +	memset(map + epos, vpri_cap.id, len);
+> > +	ret = vfio_fill_custom_vconfig_bytes(vdev, epos,
+> > +					(u8 *)&vpri_cap, len);
+> > +	if (!ret) {
+> > +		/*
+> > +		 * Successfully filled in PASID cap, update
+> > +		 * the next offset in previous cap header,
+> > +		 * and also update caller about the offset
+> > +		 * of next cap if any.
+> > +		 */
+> > +		u32 val = epos;
+> > +		**prevp &= cpu_to_le32(~(0xffcU << 20));
+> > +		**prevp |= cpu_to_le32(val << 20);
+> > +		*prevp = (__le32 *)&vdev->vconfig[epos];
+> > +		*next = epos + len;
+> > +	}
+> > +
+> > +out:
+> > +	return ret;
+> > +}
+> > +
+> > +static int vfio_pci_add_emulated_cap_for_vf(struct vfio_pci_device *vdev,
+> > +			struct pci_dev *pdev, u16 start_epos, __le32 *prev)
+> > +{
+> > +	__le32 *__prev = prev;
+> > +	u16 epos = start_epos, epos_next = start_epos;
+> > +	int ret = 0;
+> > +
+> > +	/* Add PASID capability*/
+> > +	ret = vfio_pci_add_pasid_cap(vdev, pdev, epos,
+> > +					&epos_next, &__prev);
+> > +	if (ret)
+> > +		return ret;
+> > +
+> > +	/* Add PRI capability */
+> > +	epos = epos_next;
+> > +	ret = vfio_pci_add_pri_cap(vdev, pdev, epos,
+> > +				   &epos_next, &__prev);
+> > +
+> > +	return ret;
+> > +}
+> > +
+> >  static int vfio_ecap_init(struct vfio_pci_device *vdev)
+> >  {
+> >  	struct pci_dev *pdev = vdev->pdev;
+> >  	u8 *map = vdev->pci_config_map;
+> > -	u16 epos;
+> > +	u16 epos, epos_max;
+> >  	__le32 *prev = NULL;
+> >  	int loops, ret, ecaps = 0;
+> >
+> > @@ -1521,6 +1814,7 @@ static int vfio_ecap_init(struct vfio_pci_device *vdev)
+> >  		return 0;
+> >
+> >  	epos = PCI_CFG_SPACE_SIZE;
+> > +	epos_max = PCI_CFG_SPACE_SIZE;
+> >
+> >  	loops = (pdev->cfg_size - PCI_CFG_SPACE_SIZE) / PCI_CAP_SIZEOF;
+> >
+> > @@ -1545,6 +1839,9 @@ static int vfio_ecap_init(struct vfio_pci_device *vdev)
+> >  			}
+> >  		}
+> >
+> > +		if (epos_max <= (epos + len))
+> > +			epos_max = epos + len;
+> > +
+> >  		if (!len) {
+> >  			pci_info(pdev, "%s: hiding ecap %#x@%#x\n",
+> >  				 __func__, ecap, epos);
+> > @@ -1604,6 +1901,18 @@ static int vfio_ecap_init(struct vfio_pci_device *vdev)
+> >  	if (!ecaps)
+> >  		*(u32 *)&vdev->vconfig[PCI_CFG_SPACE_SIZE] = 0;
+> >
+> > +#ifdef CONFIG_PCI_ATS
+> > +	if (pdev->is_virtfn) {
+> > +		struct pci_dev *physfn = pdev->physfn;
+> > +
+> > +		ret = vfio_pci_add_emulated_cap_for_vf(vdev,
+> > +					physfn, epos_max, prev);
+> > +		if (ret)
+> > +			pr_info("%s, failed to add special caps for VF %s\n",
+> > +				__func__, dev_name(&vdev->pdev->dev));
+> > +	}
+> > +#endif
+> 
+> I can only imagine that we should place the caps at the same location
+> they exist on the PF, we don't know what hidden registers might be
+> hiding in config space.
+
+but we are not sure whether the same location is available on VF. In
+this patch, it actually places the emulated cap physically behind the
+cap which lays farthest (its offset is largest) within VF's config space
+as the PCIe caps are linked in a chain.
+
+> > +
+> >  	return 0;
+> >  }
+> >
+> > @@ -1748,6 +2057,17 @@ static size_t vfio_pci_cap_remaining_dword(struct
+> vfio_pci_device *vdev,
+> >  	return i;
+> >  }
+> >
+> > +static bool vfio_pci_need_virt_perm(struct pci_dev *pdev, u8 cap_id)
+> > +{
+> > +#ifdef CONFIG_PCI_ATS
+> > +	return (pdev->is_virtfn &&
+> > +		(cap_id == PCI_EXT_CAP_ID_PASID ||
+> > +		 cap_id == PCI_EXT_CAP_ID_PRI));
+> > +#else
+> > +	return false;
+> > +#endif
+> > +}
+> > +
+> >  static ssize_t vfio_config_do_rw(struct vfio_pci_device *vdev, char __user *buf,
+> >  				 size_t count, loff_t *ppos, bool iswrite)
+> >  {
+> > @@ -1781,7 +2101,8 @@ static ssize_t vfio_config_do_rw(struct vfio_pci_device
+> *vdev, char __user *buf,
+> >  	if (cap_id == PCI_CAP_ID_INVALID) {
+> >  		perm = &unassigned_perms;
+> >  		cap_start = *ppos;
+> > -	} else if (cap_id == PCI_CAP_ID_INVALID_VIRT) {
+> > +	} else if (cap_id == PCI_CAP_ID_INVALID_VIRT ||
+> > +		   vfio_pci_need_virt_perm(pdev, cap_id)) {
+> 
+> Why not simply fill the map with PCI_CAP_ID_INVALID_VIRT?
+
+good idea. thanks.
+
+> >  		perm = &virt_perms;
+> >  		cap_start = *ppos;
+> >  	} else {
+> 
+> This is really not close to acceptable as is.  Sorry.  Thanks,
+
+really sorry for the silly mistakes, I can try to make a new version
+after we got a decision on whether needs to do data copy and medication
+before filling into vconfig.
+
+Thanks,
+Yi Liu
 _______________________________________________
 iommu mailing list
 iommu@lists.linux-foundation.org
