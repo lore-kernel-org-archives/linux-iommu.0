@@ -2,142 +2,94 @@ Return-Path: <SRS0=dWuT=5T=lists.linux-foundation.org=iommu-bounces@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-1.8 required=3.0 tests=DKIM_INVALID,DKIM_SIGNED,
-	FREEMAIL_FORGED_FROMDOMAIN,FREEMAIL_FROM,HEADER_FROM_DIFFERENT_DOMAINS,
-	MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED,USER_AGENT_SANE_1
-	autolearn=no autolearn_force=no version=3.4.0
+X-Spam-Status: No, score=-6.5 required=3.0 tests=DKIM_INVALID,DKIM_SIGNED,
+	HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_PATCH,MAILING_LIST_MULTI,SIGNED_OFF_BY,
+	SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED autolearn=unavailable autolearn_force=no
+	version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 9FCCEC43331
-	for <iommu@archiver.kernel.org>; Fri,  3 Apr 2020 17:21:12 +0000 (UTC)
-Received: from fraxinus.osuosl.org (smtp4.osuosl.org [140.211.166.137])
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 9018CC2BA12
+	for <iommu@archiver.kernel.org>; Fri,  3 Apr 2020 17:26:06 +0000 (UTC)
+Received: from whitealder.osuosl.org (smtp1.osuosl.org [140.211.166.138])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by mail.kernel.org (Postfix) with ESMTPS id 5F3B0206F5
-	for <iommu@archiver.kernel.org>; Fri,  3 Apr 2020 17:21:12 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTPS id D1D12207FF
+	for <iommu@archiver.kernel.org>; Fri,  3 Apr 2020 17:26:05 +0000 (UTC)
 Authentication-Results: mail.kernel.org;
-	dkim=fail reason="signature verification failed" (1024-bit key) header.d=web.de header.i=@web.de header.b="VOphlUdX"
-DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 5F3B0206F5
-Authentication-Results: mail.kernel.org; dmarc=none (p=none dis=none) header.from=web.de
+	dkim=fail reason="signature verification failed" (1024-bit key) header.d=redhat.com header.i=@redhat.com header.b="JsjlfvWF"
+DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org D1D12207FF
+Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=redhat.com
 Authentication-Results: mail.kernel.org; spf=pass smtp.mailfrom=iommu-bounces@lists.linux-foundation.org
 Received: from localhost (localhost [127.0.0.1])
-	by fraxinus.osuosl.org (Postfix) with ESMTP id 1BADC87004;
-	Fri,  3 Apr 2020 17:21:12 +0000 (UTC)
-X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from fraxinus.osuosl.org ([127.0.0.1])
-	by localhost (.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
-	with ESMTP id 9J3JnCqckBnP; Fri,  3 Apr 2020 17:21:11 +0000 (UTC)
-Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [140.211.9.56])
-	by fraxinus.osuosl.org (Postfix) with ESMTP id 7294786F66;
-	Fri,  3 Apr 2020 17:21:11 +0000 (UTC)
-Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
-	by lists.linuxfoundation.org (Postfix) with ESMTP id 6075BC1831;
-	Fri,  3 Apr 2020 17:21:11 +0000 (UTC)
-Received: from whitealder.osuosl.org (smtp1.osuosl.org [140.211.166.138])
- by lists.linuxfoundation.org (Postfix) with ESMTP id 7253AC07FF
- for <iommu@lists.linux-foundation.org>; Fri,  3 Apr 2020 17:21:09 +0000 (UTC)
-Received: from localhost (localhost [127.0.0.1])
- by whitealder.osuosl.org (Postfix) with ESMTP id 5FE5088329
- for <iommu@lists.linux-foundation.org>; Fri,  3 Apr 2020 17:21:09 +0000 (UTC)
+	by whitealder.osuosl.org (Postfix) with ESMTP id A67728832F;
+	Fri,  3 Apr 2020 17:26:05 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
 Received: from whitealder.osuosl.org ([127.0.0.1])
+	by localhost (.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
+	with ESMTP id 8a8wAT+pjKhd; Fri,  3 Apr 2020 17:26:03 +0000 (UTC)
+Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [140.211.9.56])
+	by whitealder.osuosl.org (Postfix) with ESMTP id 2FD89882B5;
+	Fri,  3 Apr 2020 17:26:03 +0000 (UTC)
+Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
+	by lists.linuxfoundation.org (Postfix) with ESMTP id 168E5C1831;
+	Fri,  3 Apr 2020 17:26:03 +0000 (UTC)
+Received: from hemlock.osuosl.org (smtp2.osuosl.org [140.211.166.133])
+ by lists.linuxfoundation.org (Postfix) with ESMTP id E3C30C07FF
+ for <iommu@lists.linux-foundation.org>; Fri,  3 Apr 2020 17:26:01 +0000 (UTC)
+Received: from localhost (localhost [127.0.0.1])
+ by hemlock.osuosl.org (Postfix) with ESMTP id C7A7C88D02
+ for <iommu@lists.linux-foundation.org>; Fri,  3 Apr 2020 17:26:01 +0000 (UTC)
+X-Virus-Scanned: amavisd-new at osuosl.org
+Received: from hemlock.osuosl.org ([127.0.0.1])
  by localhost (.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
- with ESMTP id r2nyJ4i9zEpp for <iommu@lists.linux-foundation.org>;
- Fri,  3 Apr 2020 17:21:08 +0000 (UTC)
+ with ESMTP id RG1-hhXyyxyi for <iommu@lists.linux-foundation.org>;
+ Fri,  3 Apr 2020 17:26:00 +0000 (UTC)
 X-Greylist: domain auto-whitelisted by SQLgrey-1.7.6
-Received: from mout.web.de (mout.web.de [212.227.15.4])
- by whitealder.osuosl.org (Postfix) with ESMTPS id 2B8BB8831F
- for <iommu@lists.linux-foundation.org>; Fri,  3 Apr 2020 17:21:07 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=web.de;
- s=dbaedf251592; t=1585934437;
- bh=F9+0iNVN/a+RVMnBnJdNBU74AYqMy21kwnfqkkiNbBE=;
- h=X-UI-Sender-Class:To:Cc:Subject:From:Date;
- b=VOphlUdXZfNgudGMpAMjysIP8EgolgN1sg8RY2Yt4FE1d7YfWPhIQJRIDoXRxorkw
- QUrjRJGLSdxT0dbOJXIvHY077oMlas9lpIS/15JxDqgamHaBg2K4K0xeXOuSi0vRup
- siaXuqXNWGZC5DRA2YVsB8eQVa7wh19HU1XSGSjQ=
-X-UI-Sender-Class: c548c8c5-30a9-4db5-a2e7-cb6cb037b8f9
-Received: from [192.168.1.3] ([93.135.25.116]) by smtp.web.de (mrweb004
- [213.165.67.108]) with ESMTPSA (Nemesis) id 0MOlTq-1jN9ox2PNm-0068Li; Fri, 03
- Apr 2020 19:20:37 +0200
-To: Tang Bin <tangbin@cmss.chinamobile.com>,
- iommu@lists.linux-foundation.org, linux-arm-msm@vger.kernel.org,
- Andy Gross <agross@kernel.org>, Bjorn Andersson
- <bjorn.andersson@linaro.org>, =?UTF-8?B?SsO2cmcgUsO2ZGVs?=
- <joro@8bytes.org>, Rob Clark <robdclark@gmail.com>
-Subject: Re: [PATCH v2] iommu/qcom: Fix local_base status check
-From: Markus Elfring <Markus.Elfring@web.de>
-Autocrypt: addr=Markus.Elfring@web.de; prefer-encrypt=mutual; keydata=
- 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 FEE=
-Message-ID: <084eb9b2-3f5f-4e87-08aa-fe57ed3f5d35@web.de>
-Date: Fri, 3 Apr 2020 19:20:35 +0200
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101
- Thunderbird/68.6.0
+Received: from us-smtp-1.mimecast.com (us-smtp-delivery-1.mimecast.com
+ [205.139.110.120])
+ by hemlock.osuosl.org (Postfix) with ESMTPS id DD14E88B93
+ for <iommu@lists.linux-foundation.org>; Fri,  3 Apr 2020 17:25:59 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+ s=mimecast20190719; t=1585934758;
+ h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+ to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+ content-transfer-encoding:content-transfer-encoding:
+ in-reply-to:in-reply-to:references:references;
+ bh=fxlus5C28S6z3p137AWR5E1nqEkIO+TaN2d1By/neww=;
+ b=JsjlfvWF4dfEkFGMBaUx9SLKhZhy/fb1m2pmz8K74Aqn38fo8FStCh6hNOXhL9ER6uQo8F
+ QW2obrXZjKmtHqeuKDVW8Nz4tNTItUJYPydzyMDsgGzoZ88RHamzJz1Dxb0+xda130cAZa
+ igNJ0r9P2xIQ9hd6W1OT49e6/Fev3VM=
+Received: from mimecast-mx01.redhat.com (mimecast-mx01.redhat.com
+ [209.132.183.4]) (Using TLS) by relay.mimecast.com with ESMTP id
+ us-mta-188-x_QF543ePCCH1KBbIQ0ceQ-1; Fri, 03 Apr 2020 13:25:54 -0400
+X-MC-Unique: x_QF543ePCCH1KBbIQ0ceQ-1
+Received: from smtp.corp.redhat.com (int-mx05.intmail.prod.int.phx2.redhat.com
+ [10.5.11.15])
+ (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
+ (No client certificate requested)
+ by mimecast-mx01.redhat.com (Postfix) with ESMTPS id 85AA6107ACC7;
+ Fri,  3 Apr 2020 17:25:52 +0000 (UTC)
+Received: from w520.home (ovpn-112-162.phx2.redhat.com [10.3.112.162])
+ by smtp.corp.redhat.com (Postfix) with ESMTP id 20618953D1;
+ Fri,  3 Apr 2020 17:25:45 +0000 (UTC)
+Date: Fri, 3 Apr 2020 11:25:45 -0600
+From: Alex Williamson <alex.williamson@redhat.com>
+To: "Liu, Yi L" <yi.l.liu@intel.com>
+Subject: Re: [PATCH v1 2/2] vfio/pci: Emulate PASID/PRI capability for VFs
+Message-ID: <20200403112545.6c115ba3@w520.home>
+In-Reply-To: <A2975661238FB949B60364EF0F2C25743A2204FE@SHSMSX104.ccr.corp.intel.com>
+References: <1584880394-11184-1-git-send-email-yi.l.liu@intel.com>
+ <1584880394-11184-3-git-send-email-yi.l.liu@intel.com>
+ <20200402165954.48d941ee@w520.home>
+ <A2975661238FB949B60364EF0F2C25743A2204FE@SHSMSX104.ccr.corp.intel.com>
 MIME-Version: 1.0
-Content-Language: en-US
-X-Provags-ID: V03:K1:hpy7tG+6LUJMeU5uQuElQKaca1QpFU1e+UTi5sL2zkkRxn6H59o
- vs1+rlUxOwVshOR1yyH7Ko1uo+NzsIMD0Srv1fshtmBzLDzFAalzDuzrtzWrR7vd/BzEeWd
- lqPu6oQ0ba8zhHtHocaWc/7MsnkuNp/Iddr5lf1wyO+6+E96x9oVWxCDcdPjV0A0bxxkJ93
- TH3nbYk7kl9UaB/ZSS1VQ==
-X-UI-Out-Filterresults: notjunk:1;V03:K0:snu08ePOQ4Y=:RERL+WTQn6HpQ6VfYEVlHO
- UXU85GqBFMvttK96XRK6n8M1VBFCKIF016QJ8DKvfQLNy5uEBxcRnXQ3O7AhYHxXS5aBwyymi
- WGqDg5cVVolvhYPG7Of1lEhHvrxozWagv6ElJGNMqb0Q63k2aByZCBBuuS3f4grF2aChqCXSr
- CvunvGRzG8kKN6jFafdW4cP1RrwmSwc70z8QjgmcQa0jRUJ4DbsjEgTS+pcp9I4HeP3dUYy53
- ZVx/gNeVPntplWct/B+SZUWHlpshNGSJrZo1YW9bMLKez/SNd6q0YOTa0Wy+4PPr1RCkLere8
- cqMcMJ9EU8lsUJOGLDWgvlVd4TPG9HKLT86bJtR87Ygl0cLr80R6ck7wsb8Qr+Nmd1uGuBf44
- YLPpNmRPUQsTb2itsRjGtBc/oAtexHl2CI8Oelvj/hT2xVxAdqZjEl7Gpx+L/3LZlywb2/6ar
- j+YHP+YMoZoZGuX95M+FTVJVd+NFljOPUffS6qzTdtqZH9vK0TaBlXQHoYzr4LNE2pKuftF6e
- txYuTXQTwUEqM0Ai6mZu4LiMrDXIjdCIdSNXoZtfiKI0xGzVfeeqIeIYn6Ij+u5lv3Yieipdm
- 259NgBXXMtpEsz0SDT2e/aQs2S2PMJ6kkI9RFCiPUTeyiYK43FT4QmtaTVOHeXXjm9ICB8Jjq
- decirzYn+Fk4bj+ePMTP9iVEvPAfqmhBglHPM3gX+9U5trOLVxsqq8Fa++1rzOG7mj8eYN5iV
- 85m1M1dm1vY5zx2e8fCcmoUtrsPJUc3PH+mfSWksHjjH+vuMyqc47tQFlydyR6j61MTMKbIE5
- HVqmEkGvgnP+zoiNMDp5OEf2c+JQXdft55QDi2hAI4/yNDlcwub2q7gG3d8oa5zo2VfWNQSNr
- 5crK6iUAPmTx3oxUA0EVmVoh4gfDjnWER9hOj99efi5FPBvSoU77IdqL68xvrDcSV7ICo20Gl
- OaXO9q+/Jqg5DRAxhgdxhBGpWrqkqPElcc+b/RAjfRvZVebtsnZGbCtN+TJuMtm7e2B3dAkqO
- sm27odlHxgwxpVg0GHtKgcLs+MMZyohkP8fIEWWpvyif+QFlbqyb35hpvdTFuzHmlfIwOPKJN
- fQo9CEiMI36fdhUFlc/qDZUYBcwD6mO55QhUfLW0aitRUjiehkiTafBoZSeAWUY4J5eXFqBMc
- tcNwHy8M3jdCZTnrq5DwSmytiWNRQ62M4Lvn1wRTvPBIcGQB00q3R+AMSQLCwefWQNxt+vjXk
- vgx5hjJkW3mCFeQOM
-Cc: kernel-janitors@vger.kernel.org, linux-kernel@vger.kernel.org
+X-Scanned-By: MIMEDefang 2.79 on 10.5.11.15
+Cc: "jean-philippe@linaro.org" <jean-philippe@linaro.org>, "Tian,
+ Kevin" <kevin.tian@intel.com>, "Raj, 
+ Ashok" <ashok.raj@intel.com>, "kvm@vger.kernel.org" <kvm@vger.kernel.org>,
+ "Tian, Jun J" <jun.j.tian@intel.com>,
+ "iommu@lists.linux-foundation.org" <iommu@lists.linux-foundation.org>,
+ "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>, "Sun, 
+ Yi Y" <yi.y.sun@intel.com>, "Wu, Hao" <hao.wu@intel.com>
 X-BeenThere: iommu@lists.linux-foundation.org
 X-Mailman-Version: 2.1.15
 Precedence: list
@@ -150,24 +102,596 @@ List-Post: <mailto:iommu@lists.linux-foundation.org>
 List-Help: <mailto:iommu-request@lists.linux-foundation.org?subject=help>
 List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
  <mailto:iommu-request@lists.linux-foundation.org?subject=subscribe>
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: base64
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: 7bit
 Errors-To: iommu-bounces@lists.linux-foundation.org
 Sender: "iommu" <iommu-bounces@lists.linux-foundation.org>
 
-PiBSZWxlYXNlIHJlc291cmNlcyB3aGVuIGV4aXRpbmcgb24gZXJyb3IuCgpJIGhhdmUgZ290IGRv
-dWJ0cyB0aGF0IHN1Y2ggYSBjaGFuZ2UgZGVzY3JpcHRpb24gZml0cyB0bwp0aGUgcHJvcG9zZWQg
-c291cmNlIGNvZGUgYWRqdXN0bWVudC4KCgrigKYKPiArKysgYi9kcml2ZXJzL2lvbW11L3Fjb21f
-aW9tbXUuYwo+IEBAIC04MTMsOCArODEzLDExIEBAIHN0YXRpYyBpbnQgcWNvbV9pb21tdV9kZXZp
-Y2VfcHJvYmUoc3RydWN0IHBsYXRmb3JtX2RldmljZSAqcGRldikKPiAgCXFjb21faW9tbXUtPmRl
-diA9IGRldjsKPgo+ICAJcmVzID0gcGxhdGZvcm1fZ2V0X3Jlc291cmNlKHBkZXYsIElPUkVTT1VS
-Q0VfTUVNLCAwKTsKPiAtCWlmIChyZXMpCj4gKwlpZiAocmVzKSB7Cj4gIAkJcWNvbV9pb21tdS0+
-bG9jYWxfYmFzZSA9IGRldm1faW9yZW1hcF9yZXNvdXJjZShkZXYsIHJlcyk7Cj4gKwkJaWYgKElT
-X0VSUihxY29tX2lvbW11LT5sb2NhbF9iYXNlKSkKPiArCQkJcmV0dXJuIFBUUl9FUlIocWNvbV9p
-b21tdS0+bG9jYWxfYmFzZSk7Cj4gKwl9Cj4KPiAgCXFjb21faW9tbXUtPmlmYWNlX2NsayA9IGRl
-dm1fY2xrX2dldChkZXYsICJpZmFjZSIpOwrigKYKCldpbGwgdGhlIGNvbW1pdCBtZXNzYWdlIGJl
-IGltcHJvdmVkIGFueSBmdXJ0aGVyPwoKV291bGQgeW91IGxpa2UgdG8gYWRkIHRoZSB0YWcg4oCc
-Rml4ZXPigJ0/CgpSZWdhcmRzLApNYXJrdXMKX19fX19fX19fX19fX19fX19fX19fX19fX19fX19f
-X19fX19fX19fX19fX19fX18KaW9tbXUgbWFpbGluZyBsaXN0CmlvbW11QGxpc3RzLmxpbnV4LWZv
-dW5kYXRpb24ub3JnCmh0dHBzOi8vbGlzdHMubGludXhmb3VuZGF0aW9uLm9yZy9tYWlsbWFuL2xp
-c3RpbmZvL2lvbW11
+On Fri, 3 Apr 2020 07:53:55 +0000
+"Liu, Yi L" <yi.l.liu@intel.com> wrote:
+
+> Hi Alex,
+> 
+> > From: Alex Williamson <alex.williamson@redhat.com>
+> > Sent: Friday, April 3, 2020 7:00 AM
+> > To: Liu, Yi L <yi.l.liu@intel.com>
+> > Subject: Re: [PATCH v1 2/2] vfio/pci: Emulate PASID/PRI capability for VFs
+> > 
+> > On Sun, 22 Mar 2020 05:33:14 -0700
+> > "Liu, Yi L" <yi.l.liu@intel.com> wrote:
+> >   
+> > > From: Liu Yi L <yi.l.liu@intel.com>
+> > >
+> > > Per PCIe r5.0, sec 9.3.7.14, if a PF implements the PASID Capability, the
+> > > PF PASID configuration is shared by its VFs.  VFs must not implement their
+> > > own PASID Capability.
+> > >
+> > > Per PCIe r5.0, sec 9.3.7.11, VFs must not implement the PRI Capability. If
+> > > the PF implements PRI, it is shared by the VFs.
+> > >
+> > > On bare metal, it has been fixed by below efforts.
+> > > to PASID/PRI are
+> > > https://lkml.org/lkml/2019/9/5/996
+> > > https://lkml.org/lkml/2019/9/5/995
+> > >
+> > > This patch adds emulated PASID/PRI capabilities for VFs when assigned to
+> > > VMs via vfio-pci driver. This is required for enabling vSVA on pass-through
+> > > VFs as VFs have no PASID/PRI capability structure in its configure space.
+> > >
+> > > Cc: Kevin Tian <kevin.tian@intel.com>
+> > > CC: Jacob Pan <jacob.jun.pan@linux.intel.com>
+> > > Cc: Alex Williamson <alex.williamson@redhat.com>
+> > > Cc: Eric Auger <eric.auger@redhat.com>
+> > > Cc: Jean-Philippe Brucker <jean-philippe@linaro.org>
+> > > Signed-off-by: Liu Yi L <yi.l.liu@intel.com>
+> > > ---
+> > >  drivers/vfio/pci/vfio_pci_config.c | 325  
+> > ++++++++++++++++++++++++++++++++++++-  
+> > >  1 file changed, 323 insertions(+), 2 deletions(-)
+> > >
+> > > diff --git a/drivers/vfio/pci/vfio_pci_config.c b/drivers/vfio/pci/vfio_pci_config.c
+> > > index 4b9af99..84b4ea0 100644
+> > > --- a/drivers/vfio/pci/vfio_pci_config.c
+> > > +++ b/drivers/vfio/pci/vfio_pci_config.c
+> > > @@ -1509,11 +1509,304 @@ static int vfio_cap_init(struct vfio_pci_device *vdev)
+> > >  	return 0;
+> > >  }
+> > >
+> > > +static int vfio_fill_custom_vconfig_bytes(struct vfio_pci_device *vdev,
+> > > +					int offset, uint8_t *data, int size)
+> > > +{
+> > > +	int ret = 0, data_offset = 0;
+> > > +
+> > > +	while (size) {
+> > > +		int filled;
+> > > +
+> > > +		if (size >= 4 && !(offset % 4)) {
+> > > +			__le32 *dwordp = (__le32 *)&vdev->vconfig[offset];
+> > > +			u32 dword;
+> > > +
+> > > +			memcpy(&dword, data + data_offset, 4);
+> > > +			*dwordp = cpu_to_le32(dword);  
+> > 
+> > Why wouldn't we do:
+> > 
+> > *dwordp = cpu_to_le32(*(u32 *)(data + data_offset));
+> > 
+> > or better yet, increment data on each iteration for:
+> > 
+> > *dwordp = cpu_to_le32(*(u32 *)data);  
+> 
+> I'll refine it.
+> 
+> > vfio_fill_vconfig_bytes() does almost this same thing, getting
+> > the data
+> > from config space rather than a buffer, so please figure out how to
+> > avoid duplicating the logic.  
+> 
+> This patch is to emulate the PASID/PRI capability for VF. And per
+> my understanding, the cap data from PF's config space cannot be
+> filled to VF's vconfig directly. Take the control register in PASID
+> capability structure as an example. If PASID cap is enabled in PF,
+> the PASID enable bit in the control register will be set. If the cap
+> data is filled to VF's vconfig directly, then guest will see a default
+> enabled PASID capability in the VF. I guess it is not good. But, I may
+> be wrong. If no such requirement, I can use vfio_fill_vconfig_bytes()
+> directly, no need to do copy and modify and then copy.
+> 
+> Also, if still needs to do the copy and modification, I may modify
+> the vfio_fill_vconfig_bytes() to pass in the buffer and an indicator
+> to tell vfio_fill_vconfig_bytes() whether fetch data from buffer or
+> from config space.
+
+Why is vconfig not your buffer?  We're building config space emulation
+before the user has access to the device, so it's really not an issue
+to copy the PF config into the VF vconfig, then modify the enable bit
+in the vconfig space.
+
+> > > +			filled = 4;
+> > > +		} else if (size >= 2 && !(offset % 2)) {
+> > > +			__le16 *wordp = (__le16 *)&vdev->vconfig[offset];
+> > > +			u16 word;
+> > > +
+> > > +			memcpy(&word, data + data_offset, 2);
+> > > +			*wordp = cpu_to_le16(word);
+> > > +			filled = 2;
+> > > +		} else {
+> > > +			u8 *byte = &vdev->vconfig[offset];
+> > > +
+> > > +			memcpy(byte, data + data_offset, 1);  
+> > 
+> > This one is really silly.
+> > 
+> > vdev->vconfig[offset] = *data;  
+> 
+> got it.
+> 
+> > > +			filled = 1;
+> > > +		}
+> > > +
+> > > +		offset += filled;
+> > > +		data_offset += filled;
+> > > +		size -= filled;
+> > > +	}
+> > > +
+> > > +	return ret;
+> > > +}
+> > > +
+> > > +static int vfio_pci_get_ecap_content(struct pci_dev *pdev,
+> > > +					int cap, int cap_len, u8 *content)
+> > > +{
+> > > +	int pos, offset, len = cap_len, ret = 0;
+> > > +
+> > > +	pos = pci_find_ext_capability(pdev, cap);
+> > > +	if (!pos)
+> > > +		return -EINVAL;
+> > > +
+> > > +	offset = 0;
+> > > +	while (len) {
+> > > +		int fetched;
+> > > +
+> > > +		if (len >= 4 && !(pos % 4)) {
+> > > +			u32 *dwordp = (u32 *) (content + offset);
+> > > +			u32 dword;
+> > > +			__le32 *dwptr = (__le32 *) &dword;
+> > > +
+> > > +			ret = pci_read_config_dword(pdev, pos, &dword);
+> > > +			if (ret)
+> > > +				return ret;
+> > > +			*dwordp = le32_to_cpu(*dwptr);  
+> > 
+> > WHAT???  pci_read_config_dword() returns cpu endian data!  
+> 
+> my bad. will remove the silly le32_to_cpu() convert.
+> 
+> > > +			fetched = 4;
+> > > +		} else if (len >= 2 && !(pos % 2)) {
+> > > +			u16 *wordp = (u16 *) (content + offset);
+> > > +			u16 word;
+> > > +			__le16 *wptr = (__le16 *) &word;
+> > > +
+> > > +			ret = pci_read_config_word(pdev, pos, &word);
+> > > +			if (ret)
+> > > +				return ret;
+> > > +			*wordp = le16_to_cpu(*wptr);
+> > > +			fetched = 2;
+> > > +		} else {
+> > > +			u8 *byte = (u8 *) (content + offset);
+> > > +
+> > > +			ret = pci_read_config_byte(pdev, pos, byte);
+> > > +			if (ret)
+> > > +				return ret;
+> > > +			fetched = 1;
+> > > +		}
+> > > +
+> > > +		pos += fetched;
+> > > +		offset += fetched;
+> > > +		len -= fetched;
+> > > +	}
+> > > +
+> > > +	return ret;
+> > > +}
+> > > +
+> > > +struct vfio_pci_pasid_cap_data {
+> > > +	u32 id:16;
+> > > +	u32 version:4;
+> > > +	u32 next:12;
+> > > +	union {
+> > > +		u16 cap_reg_val;
+> > > +		struct {
+> > > +			u16 rsv1:1;
+> > > +			u16 execs:1;
+> > > +			u16 prvs:1;
+> > > +			u16 rsv2:5;
+> > > +			u16 pasid_bits:5;
+> > > +			u16 rsv3:3;
+> > > +		};
+> > > +	} cap_reg;
+> > > +	union {
+> > > +		u16 control_reg_val;
+> > > +		struct {
+> > > +			u16 paside:1;
+> > > +			u16 exece:1;
+> > > +			u16 prve:1;
+> > > +			u16 rsv4:13;
+> > > +		};
+> > > +	} control_reg;
+> > > +};
+> > > +
+> > > +static int vfio_pci_add_pasid_cap(struct vfio_pci_device *vdev,
+> > > +				    struct pci_dev *pdev,
+> > > +				    u16 epos, u16 *next, __le32 **prevp)
+> > > +{
+> > > +	u8 *map = vdev->pci_config_map;
+> > > +	int ecap = PCI_EXT_CAP_ID_PASID;
+> > > +	int len = pci_ext_cap_length[ecap];
+> > > +	struct vfio_pci_pasid_cap_data pasid_cap;
+> > > +	struct vfio_pci_pasid_cap_data vpasid_cap;
+> > > +	int ret;
+> > > +
+> > > +	/*
+> > > +	 * If no cap filled in this function, should make sure the next
+> > > +	 * pointer points to current epos.
+> > > +	 */
+> > > +	*next = epos;
+> > > +
+> > > +	if (!len) {
+> > > +		pr_info("%s: VF %s hiding PASID capability\n",
+> > > +				__func__, dev_name(&vdev->pdev->dev));
+> > > +		ret = 0;
+> > > +		goto out;
+> > > +	}  
+> > 
+> > No!  Why?  This is dead code.  
+> 
+> will remove it. thanks.
+> 
+> > > +
+> > > +	/* Add PASID capability*/
+> > > +	ret = vfio_pci_get_ecap_content(pdev, ecap,
+> > > +					len, (u8 *)&pasid_cap);  
+> > 
+> > 
+> > Why wouldn't we just use vfio_fill_config_bytes() rather than this
+> > ridiculous approach of coping it to a buffer, modifying it and copying
+> > it out?  
+> 
+> As the above reply, if copying PF's config space data to VF's vconfig
+> directly is fine, then I can drop them.
+> 
+> > > +	if (ret)
+> > > +		goto out;
+> > > +
+> > > +	if (!pasid_cap.control_reg.paside) {
+> > > +		pr_debug("%s: its PF's PASID capability is not enabled\n",
+> > > +			dev_name(&vdev->pdev->dev));
+> > > +		ret = 0;
+> > > +		goto out;
+> > > +	}  
+> > 
+> > What happens if the PF's PASID gets disabled while we're using it??  
+> 
+> This is actually the open I highlighted in cover letter. Per the reply
+> from Baolu, this seems to be an open for bare-metal all the same.
+> https://lkml.org/lkml/2020/3/31/95
+
+Seems that needs to get sorted out before we can expose this.  Maybe
+some sort of registration with the PF driver that PASID is being used
+by a VF so it cannot be disabled?
+
+> > > +
+> > > +	memcpy(&vpasid_cap, &pasid_cap, len);
+> > > +
+> > > +	vpasid_cap.id = 0x18;  
+> > 
+> > What is going on here?
+> > 
+> > #define PCI_EXT_CAP_ID_LTR      0x18    /* Latency Tolerance Reporting */  
+> 
+> my bad... This one was used in development phase. not needed in formal
+> patch. really sorry for the mislead.. will remove it.
+> 
+> > > +	vpasid_cap.next = 0;
+> > > +	/* clear the control reg for guest */
+> > > +	memset(&vpasid_cap.control_reg, 0x0,
+> > > +			sizeof(vpasid_cap.control_reg));  
+> > 
+> > So we zero a couple registers and that's why we need a structure to
+> > define the entire capability and this crazy copy to a cpu endian
+> > buffer.  No.  
+> 
+> there are two reasons for define a structure for the capability. For
+> one, to check if PASID capability is enabled in PF. For two, to zero
+> the control registers to ensure the guest see a clean control register.
+> But if it is not necessary to do the two operations, it can be dropped.
+
+Neither of these require the structures you've defined and I haven't
+convinced myself that the bit fields don't have their own issues with
+endianness.  Please drop them.
+
+> > > +
+> > > +	memset(map + epos, vpasid_cap.id, len);  
+> > 
+> > See below.
+> >   
+> > > +	ret = vfio_fill_custom_vconfig_bytes(vdev, epos,
+> > > +					(u8 *)&vpasid_cap, len);
+> > > +	if (!ret) {
+> > > +		/*
+> > > +		 * Successfully filled in PASID cap, update
+> > > +		 * the next offset in previous cap header,
+> > > +		 * and also update caller about the offset
+> > > +		 * of next cap if any.
+> > > +		 */
+> > > +		u32 val = epos;
+> > > +		**prevp &= cpu_to_le32(~(0xffcU << 20));
+> > > +		**prevp |= cpu_to_le32(val << 20);
+> > > +		*prevp = (__le32 *)&vdev->vconfig[epos];
+> > > +		*next = epos + len;  
+> > 
+> > Could we make this any more complicated?  
+> 
+> yeah, I should have added some comments.
+> 
+> 	/* update the next field of prior cap structure */
+> 	**prevp &= cpu_to_le32(~(0xffcU << 20));
+> 	**prevp |= cpu_to_le32(val << 20);
+> 	/* update the prevp pointer to point to the current cap */
+> 	*prevp = (__le32 *)&vdev->vconfig[epos];
+> 	*next = epos + len;
+
+The main loop when processing capabilities already has this sort of
+logic.  Please figure out a way to not duplicate it.
+
+> > > +	}
+> > > +
+> > > +out:
+> > > +	return ret;
+> > > +}
+> > > +
+> > > +struct vfio_pci_pri_cap_data {
+> > > +	u32 id:16;
+> > > +	u32 version:4;
+> > > +	u32 next:12;
+> > > +	union {
+> > > +		u16 control_reg_val;
+> > > +		struct {
+> > > +			u16 enable:1;
+> > > +			u16 reset:1;
+> > > +			u16 rsv1:14;
+> > > +		};
+> > > +	} control_reg;
+> > > +	union {
+> > > +		u16 status_reg_val;
+> > > +		struct {
+> > > +			u16 rf:1;
+> > > +			u16 uprgi:1;
+> > > +			u16 rsv2:6;
+> > > +			u16 stop:1;
+> > > +			u16 rsv3:6;
+> > > +			u16 pasid_required:1;
+> > > +		};
+> > > +	} status_reg;
+> > > +	u32 prq_capacity;
+> > > +	u32 prq_quota;
+> > > +};
+> > > +
+> > > +static int vfio_pci_add_pri_cap(struct vfio_pci_device *vdev,
+> > > +				    struct pci_dev *pdev,
+> > > +				    u16 epos, u16 *next, __le32 **prevp)
+> > > +{
+> > > +	u8 *map = vdev->pci_config_map;
+> > > +	int ecap = PCI_EXT_CAP_ID_PRI;
+> > > +	int len = pci_ext_cap_length[ecap];
+> > > +	struct vfio_pci_pri_cap_data pri_cap;
+> > > +	struct vfio_pci_pri_cap_data vpri_cap;
+> > > +	int ret;
+> > > +
+> > > +	/*
+> > > +	 * If no cap filled in this function, should make sure the next
+> > > +	 * pointer points to current epos.
+> > > +	 */
+> > > +	*next = epos;
+> > > +
+> > > +	if (!len) {
+> > > +		pr_info("%s: VF %s hiding PRI capability\n",
+> > > +				__func__, dev_name(&vdev->pdev->dev));
+> > > +		ret = 0;
+> > > +		goto out;
+> > > +	}
+> > > +
+> > > +	/* Add PASID capability*/
+> > > +	ret = vfio_pci_get_ecap_content(pdev, ecap,
+> > > +					len, (u8 *)&pri_cap);
+> > > +	if (ret)
+> > > +		goto out;
+> > > +
+> > > +	if (!pri_cap.control_reg.enable) {
+> > > +		pr_debug("%s: its PF's PRI capability is not enabled\n",
+> > > +			dev_name(&vdev->pdev->dev));
+> > > +		ret = 0;
+> > > +		goto out;
+> > > +	}
+> > > +
+> > > +	memcpy(&vpri_cap, &pri_cap, len);
+> > > +
+> > > +	vpri_cap.id = 0x19;  
+> > 
+> > #define PCI_EXT_CAP_ID_SECPCI   0x19    /* Secondary PCIe Capability */
+> > 
+> > ???  
+> 
+> my bad... This line was used in development phase. not needed in formal
+> patch. really sorry for the mislead.. will remove it.
+> 
+> > > +	vpri_cap.next = 0;
+> > > +	/* clear the control reg for guest */
+> > > +	memset(&vpri_cap.control_reg, 0x0,
+> > > +			sizeof(vpri_cap.control_reg));
+> > > +
+> > > +	memset(map + epos, vpri_cap.id, len);
+> > > +	ret = vfio_fill_custom_vconfig_bytes(vdev, epos,
+> > > +					(u8 *)&vpri_cap, len);
+> > > +	if (!ret) {
+> > > +		/*
+> > > +		 * Successfully filled in PASID cap, update
+> > > +		 * the next offset in previous cap header,
+> > > +		 * and also update caller about the offset
+> > > +		 * of next cap if any.
+> > > +		 */
+> > > +		u32 val = epos;
+> > > +		**prevp &= cpu_to_le32(~(0xffcU << 20));
+> > > +		**prevp |= cpu_to_le32(val << 20);
+> > > +		*prevp = (__le32 *)&vdev->vconfig[epos];
+> > > +		*next = epos + len;
+> > > +	}
+> > > +
+> > > +out:
+> > > +	return ret;
+> > > +}
+> > > +
+> > > +static int vfio_pci_add_emulated_cap_for_vf(struct vfio_pci_device *vdev,
+> > > +			struct pci_dev *pdev, u16 start_epos, __le32 *prev)
+> > > +{
+> > > +	__le32 *__prev = prev;
+> > > +	u16 epos = start_epos, epos_next = start_epos;
+> > > +	int ret = 0;
+> > > +
+> > > +	/* Add PASID capability*/
+> > > +	ret = vfio_pci_add_pasid_cap(vdev, pdev, epos,
+> > > +					&epos_next, &__prev);
+> > > +	if (ret)
+> > > +		return ret;
+> > > +
+> > > +	/* Add PRI capability */
+> > > +	epos = epos_next;
+> > > +	ret = vfio_pci_add_pri_cap(vdev, pdev, epos,
+> > > +				   &epos_next, &__prev);
+> > > +
+> > > +	return ret;
+> > > +}
+> > > +
+> > >  static int vfio_ecap_init(struct vfio_pci_device *vdev)
+> > >  {
+> > >  	struct pci_dev *pdev = vdev->pdev;
+> > >  	u8 *map = vdev->pci_config_map;
+> > > -	u16 epos;
+> > > +	u16 epos, epos_max;
+> > >  	__le32 *prev = NULL;
+> > >  	int loops, ret, ecaps = 0;
+> > >
+> > > @@ -1521,6 +1814,7 @@ static int vfio_ecap_init(struct vfio_pci_device *vdev)
+> > >  		return 0;
+> > >
+> > >  	epos = PCI_CFG_SPACE_SIZE;
+> > > +	epos_max = PCI_CFG_SPACE_SIZE;
+> > >
+> > >  	loops = (pdev->cfg_size - PCI_CFG_SPACE_SIZE) / PCI_CAP_SIZEOF;
+> > >
+> > > @@ -1545,6 +1839,9 @@ static int vfio_ecap_init(struct vfio_pci_device *vdev)
+> > >  			}
+> > >  		}
+> > >
+> > > +		if (epos_max <= (epos + len))
+> > > +			epos_max = epos + len;
+> > > +
+> > >  		if (!len) {
+> > >  			pci_info(pdev, "%s: hiding ecap %#x@%#x\n",
+> > >  				 __func__, ecap, epos);
+> > > @@ -1604,6 +1901,18 @@ static int vfio_ecap_init(struct vfio_pci_device *vdev)
+> > >  	if (!ecaps)
+> > >  		*(u32 *)&vdev->vconfig[PCI_CFG_SPACE_SIZE] = 0;
+> > >
+> > > +#ifdef CONFIG_PCI_ATS
+> > > +	if (pdev->is_virtfn) {
+> > > +		struct pci_dev *physfn = pdev->physfn;
+> > > +
+> > > +		ret = vfio_pci_add_emulated_cap_for_vf(vdev,
+> > > +					physfn, epos_max, prev);
+> > > +		if (ret)
+> > > +			pr_info("%s, failed to add special caps for VF %s\n",
+> > > +				__func__, dev_name(&vdev->pdev->dev));
+> > > +	}
+> > > +#endif  
+> > 
+> > I can only imagine that we should place the caps at the same location
+> > they exist on the PF, we don't know what hidden registers might be
+> > hiding in config space.  
+> 
+> but we are not sure whether the same location is available on VF. In
+> this patch, it actually places the emulated cap physically behind the
+> cap which lays farthest (its offset is largest) within VF's config space
+> as the PCIe caps are linked in a chain.
+
+But, as we've found on Broadcom NICs (iirc), hardware developers have a
+nasty habit of hiding random registers in PCI config space, outside of
+defined capabilities.  I feel like IGD might even do this too, is that
+true?  So I don't think we can guarantee that just because a section of
+config space isn't part of a defined capability that its unused.  It
+only means that it's unused by common code, but it might have device
+specific purposes.  So of the PCIe spec indicates that VFs cannot
+include these capabilities and virtialization software needs to
+emulate them, we need somewhere safe to place them in config space, and
+simply placing them off the end of known capabilities doesn't give me
+any confidence.  Also, hardware has no requirement to make compact use
+of extended config space.  The first capability must be at 0x100, the
+very next capability could consume all the way to the last byte of the
+4K extended range, and the next link in the chain could be somewhere in
+the middle.  Thanks,
+
+Alex
+ 
+> > > +
+> > >  	return 0;
+> > >  }
+> > >
+> > > @@ -1748,6 +2057,17 @@ static size_t vfio_pci_cap_remaining_dword(struct  
+> > vfio_pci_device *vdev,  
+> > >  	return i;
+> > >  }
+> > >
+> > > +static bool vfio_pci_need_virt_perm(struct pci_dev *pdev, u8 cap_id)
+> > > +{
+> > > +#ifdef CONFIG_PCI_ATS
+> > > +	return (pdev->is_virtfn &&
+> > > +		(cap_id == PCI_EXT_CAP_ID_PASID ||
+> > > +		 cap_id == PCI_EXT_CAP_ID_PRI));
+> > > +#else
+> > > +	return false;
+> > > +#endif
+> > > +}
+> > > +
+> > >  static ssize_t vfio_config_do_rw(struct vfio_pci_device *vdev, char __user *buf,
+> > >  				 size_t count, loff_t *ppos, bool iswrite)
+> > >  {
+> > > @@ -1781,7 +2101,8 @@ static ssize_t vfio_config_do_rw(struct vfio_pci_device  
+> > *vdev, char __user *buf,  
+> > >  	if (cap_id == PCI_CAP_ID_INVALID) {
+> > >  		perm = &unassigned_perms;
+> > >  		cap_start = *ppos;
+> > > -	} else if (cap_id == PCI_CAP_ID_INVALID_VIRT) {
+> > > +	} else if (cap_id == PCI_CAP_ID_INVALID_VIRT ||
+> > > +		   vfio_pci_need_virt_perm(pdev, cap_id)) {  
+> > 
+> > Why not simply fill the map with PCI_CAP_ID_INVALID_VIRT?  
+> 
+> good idea. thanks.
+> 
+> > >  		perm = &virt_perms;
+> > >  		cap_start = *ppos;
+> > >  	} else {  
+> > 
+> > This is really not close to acceptable as is.  Sorry.  Thanks,  
+> 
+> really sorry for the silly mistakes, I can try to make a new version
+> after we got a decision on whether needs to do data copy and medication
+> before filling into vconfig.
+> 
+> Thanks,
+> Yi Liu
+> 
+
+_______________________________________________
+iommu mailing list
+iommu@lists.linux-foundation.org
+https://lists.linuxfoundation.org/mailman/listinfo/iommu
