@@ -2,95 +2,76 @@ Return-Path: <SRS0=lnwu=5U=lists.linux-foundation.org=iommu-bounces@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-0.6 required=3.0 tests=DKIM_INVALID,DKIM_SIGNED,
-	HEADER_FROM_DIFFERENT_DOMAINS,MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS,
-	URIBL_BLOCKED autolearn=no autolearn_force=no version=3.4.0
+X-Spam-Status: No, score=-10.6 required=3.0 tests=DKIM_INVALID,DKIM_SIGNED,
+	HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_PULL_REQUEST,MAILING_LIST_MULTI,
+	MENTIONS_GIT_HOSTING,SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED
+	autolearn=unavailable autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 8042CC43331
-	for <iommu@archiver.kernel.org>; Sat,  4 Apr 2020 04:26:14 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 7586EC2BA1A
+	for <iommu@archiver.kernel.org>; Sat,  4 Apr 2020 06:59:02 +0000 (UTC)
 Received: from hemlock.osuosl.org (smtp2.osuosl.org [140.211.166.133])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by mail.kernel.org (Postfix) with ESMTPS id 110BB2051A
-	for <iommu@archiver.kernel.org>; Sat,  4 Apr 2020 04:26:13 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTPS id 3C8E920709
+	for <iommu@archiver.kernel.org>; Sat,  4 Apr 2020 06:59:02 +0000 (UTC)
 Authentication-Results: mail.kernel.org;
-	dkim=fail reason="signature verification failed" (2048-bit key) header.d=linaro.org header.i=@linaro.org header.b="Bk8YVcnE"
-DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 110BB2051A
-Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=linaro.org
+	dkim=fail reason="signature verification failed" (2048-bit key) header.d=infradead.org header.i=@infradead.org header.b="RCtDQvXi"
+DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 3C8E920709
+Authentication-Results: mail.kernel.org; dmarc=none (p=none dis=none) header.from=infradead.org
 Authentication-Results: mail.kernel.org; spf=pass smtp.mailfrom=iommu-bounces@lists.linux-foundation.org
 Received: from localhost (localhost [127.0.0.1])
-	by hemlock.osuosl.org (Postfix) with ESMTP id B4ABD8808D;
-	Sat,  4 Apr 2020 04:26:13 +0000 (UTC)
+	by hemlock.osuosl.org (Postfix) with ESMTP id 02DD588AEE;
+	Sat,  4 Apr 2020 06:59:02 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
 Received: from hemlock.osuosl.org ([127.0.0.1])
 	by localhost (.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
-	with ESMTP id DHCBaTmdvOkr; Sat,  4 Apr 2020 04:26:12 +0000 (UTC)
+	with ESMTP id Amuc0rNVOqgW; Sat,  4 Apr 2020 06:59:00 +0000 (UTC)
 Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [140.211.9.56])
-	by hemlock.osuosl.org (Postfix) with ESMTP id E8AEC88031;
-	Sat,  4 Apr 2020 04:26:12 +0000 (UTC)
+	by hemlock.osuosl.org (Postfix) with ESMTP id 86EA388AD3;
+	Sat,  4 Apr 2020 06:59:00 +0000 (UTC)
 Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
-	by lists.linuxfoundation.org (Postfix) with ESMTP id D7D96C1AE2;
-	Sat,  4 Apr 2020 04:26:12 +0000 (UTC)
-Received: from hemlock.osuosl.org (smtp2.osuosl.org [140.211.166.133])
- by lists.linuxfoundation.org (Postfix) with ESMTP id B58C6C07FF
- for <iommu@lists.linux-foundation.org>; Sat,  4 Apr 2020 04:26:11 +0000 (UTC)
+	by lists.linuxfoundation.org (Postfix) with ESMTP id 6B585C1D7C;
+	Sat,  4 Apr 2020 06:59:00 +0000 (UTC)
+Received: from whitealder.osuosl.org (smtp1.osuosl.org [140.211.166.138])
+ by lists.linuxfoundation.org (Postfix) with ESMTP id 2C935C07FF
+ for <iommu@lists.linux-foundation.org>; Sat,  4 Apr 2020 06:58:59 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
- by hemlock.osuosl.org (Postfix) with ESMTP id ACAB58808D
- for <iommu@lists.linux-foundation.org>; Sat,  4 Apr 2020 04:26:11 +0000 (UTC)
+ by whitealder.osuosl.org (Postfix) with ESMTP id 154E486742
+ for <iommu@lists.linux-foundation.org>; Sat,  4 Apr 2020 06:58:59 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from hemlock.osuosl.org ([127.0.0.1])
+Received: from whitealder.osuosl.org ([127.0.0.1])
  by localhost (.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
- with ESMTP id HfFJ4D4Eytc3 for <iommu@lists.linux-foundation.org>;
- Sat,  4 Apr 2020 04:26:10 +0000 (UTC)
-X-Greylist: delayed 00:07:07 by SQLgrey-1.7.6
-Received: from mail-oi1-f194.google.com (mail-oi1-f194.google.com
- [209.85.167.194])
- by hemlock.osuosl.org (Postfix) with ESMTPS id 878EA88031
- for <iommu@lists.linux-foundation.org>; Sat,  4 Apr 2020 04:26:10 +0000 (UTC)
-Received: by mail-oi1-f194.google.com with SMTP id t25so8149415oij.2
- for <iommu@lists.linux-foundation.org>; Fri, 03 Apr 2020 21:26:10 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linaro.org; s=google;
- h=mime-version:references:in-reply-to:from:date:message-id:subject:to
- :cc; bh=je7nuNsfXk26lRmkb6ciZHwSXJTBCDyjnYltMGy9GKw=;
- b=Bk8YVcnE/cBJl2ujaD7DGjNm//e+RUaeMJE3R4oTnEdfER1QAwCHybt2WimOnaczqF
- 1UQOyXoQ5Ng6kLHJ49G+EIv+Hp/OFZPCGcmy+f4NwDYWKCk+BOUadj6lUbHedg82lHBR
- aAx/e06OeA3U0eb5Hx5UBQ1gvFdpxplndrMBMnx5B85/dam1NdoOJBBTMzFG784StGTe
- 5AyOdVM3AakZGc1Z0N11r2ZZwEg+1tpABlQzQ9+PZSXdXahsklsQqJZURGFY0Zy4FH3y
- 2IVsQg9Z9Y0CW14QOuODdQpbGCdj6CcArqPWQe1KA+rV8YGGieKYlryjTjtfk8bxgvVK
- kctQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
- d=1e100.net; s=20161025;
- h=x-gm-message-state:mime-version:references:in-reply-to:from:date
- :message-id:subject:to:cc;
- bh=je7nuNsfXk26lRmkb6ciZHwSXJTBCDyjnYltMGy9GKw=;
- b=ICqii7jhUzcrQMd4xBTM6bshbntdCbuARO7Fnlgw9o4w6IB1a28twZjWDbWUxNlKw+
- Z+aYf7hHwLM67UZmNQAfHFDjahostD1peZku/EjzN94e0pJfFF8N5lMYDy6BLRIqv79u
- H1YUbag4ZxkFv9okb8kicMF0wNPGxnbs3mXwxM6a7jvhESl2hFVhsg6O4mQneN7/Hjl2
- 9mHgkm/VMu1SX5ipg3ZCB8+ECgsNAR9COEPIRE9iHLyFoFAVuINYQlxUrVlUR2ITsQH8
- qgJ4QE269GAEgkBjOjTymNYQx07EynEaZZQwbjOs0+eHTolrIKn8Kf0U9GJOlNuGbpd0
- 1GVQ==
-X-Gm-Message-State: AGi0PuZl4nGBEyHHH16Obps4Z2qU8hbcOdhMhYBZyvjxocuaWSWovg/0
- qiNpZPD6QjbXJlQ6QUwi7+I22dJytSXG1V5vRfYtv+Oue44=
-X-Google-Smtp-Source: APiQypLmrSfzfYdNvicoaCyhCetap9MoAIFDaZdmEHGJohfwM7HjZ6WmIj82QvstEFNnMH986goMroldCiSCq9icpyk=
-X-Received: by 2002:a05:6808:a0a:: with SMTP id
- n10mr5721046oij.10.1585973942770; 
- Fri, 03 Apr 2020 21:19:02 -0700 (PDT)
+ with ESMTP id uHS8j7RokKpS for <iommu@lists.linux-foundation.org>;
+ Sat,  4 Apr 2020 06:58:58 +0000 (UTC)
+X-Greylist: from auto-whitelisted by SQLgrey-1.7.6
+Received: from bombadil.infradead.org (bombadil.infradead.org
+ [198.137.202.133])
+ by whitealder.osuosl.org (Postfix) with ESMTPS id 6AD0686739
+ for <iommu@lists.linux-foundation.org>; Sat,  4 Apr 2020 06:58:58 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
+ d=infradead.org; s=bombadil.20170209; h=Content-Type:MIME-Version:Message-ID:
+ Subject:Cc:To:From:Date:Sender:Reply-To:Content-Transfer-Encoding:Content-ID:
+ Content-Description:In-Reply-To:References;
+ bh=voGzMYCK0K8jfDayfIjKm5/csDG3aXXIjPWCZbs5YWs=; b=RCtDQvXi9hRS4RWqTM+DKzulYV
+ DND9DzIW019ujjihMOutp26GgiewAis1IyZ2zxPRJay+I53hlVpxv2yvPkSv/ZpSQ4pi1nIxuYRFV
+ SU4U/RKCDj0HZktj9u0AXC8qxWCAqn/jOWRX7RbRPnrxV/a8i8hA7/EAmRDDVwdLJjjV29rhLFXbf
+ TuA+3G3WQ2MUSaAyRTx+Ow6LL/ugb15Y749wX3ekRywPmrHF/Kw3Aqm3LxXax56Xw2NSnb9nmmziH
+ 0dwHXnHcVh6fnhh5gYE+pg3GJWCPniRHS/buwLeBVEzFlopADFuD5bUR/P/ATt+1vVDDyB+C86gTa
+ ohZohUcA==;
+Received: from [2001:4bb8:180:7914:2ca6:9476:bbfa:a4d0] (helo=localhost)
+ by bombadil.infradead.org with esmtpsa (Exim 4.92.3 #3 (Red Hat Linux))
+ id 1jKclc-0001Yy-Tu; Sat, 04 Apr 2020 06:58:57 +0000
+Date: Sat, 4 Apr 2020 08:58:55 +0200
+From: Christoph Hellwig <hch@infradead.org>
+To: Linus Torvalds <torvalds@linux-foundation.org>
+Subject: [GIT PULL] dma-mapping updates for 5.7
+Message-ID: <20200404065855.GA656254@infradead.org>
 MIME-Version: 1.0
-References: <TYAPR01MB45443DF63B9EF29054F7C41FD8C60@TYAPR01MB4544.jpnprd01.prod.outlook.com>
- <CALAqxLWopjCkiM=NR868DTcX-apPc1MPnONJMppm1jzCboAheg@mail.gmail.com>
- <CAMuHMdVtHhq9Nef1pBtBUKfRU2L-KgDffiOv28VqhrewR_j1Dw@mail.gmail.com>
-In-Reply-To: <CAMuHMdVtHhq9Nef1pBtBUKfRU2L-KgDffiOv28VqhrewR_j1Dw@mail.gmail.com>
-From: John Stultz <john.stultz@linaro.org>
-Date: Fri, 3 Apr 2020 21:18:50 -0700
-Message-ID: <CALAqxLX2AEFJxqXXXKPs8SU7Su2FqNjwbSt5BxwmQJqYQuST9A@mail.gmail.com>
-Subject: Re: How to fix WARN from drivers/base/dd.c in next-20200401 if
- CONFIG_MODULES=y?
-To: Geert Uytterhoeven <geert@linux-m68k.org>
-Cc: "rafael@kernel.org" <rafael@kernel.org>,
- "gregkh@linuxfoundation.org" <gregkh@linuxfoundation.org>,
- LKML <linux-kernel@vger.kernel.org>,
- "iommu@lists.linux-foundation.org" <iommu@lists.linux-foundation.org>,
- netdev <netdev@vger.kernel.org>
+Content-Disposition: inline
+X-SRS-Rewrite: SMTP reverse-path rewritten from <hch@infradead.org> by
+ bombadil.infradead.org. See http://www.infradead.org/rpr.html
+Cc: iommu@lists.linux-foundation.org, linux-kernel@vger.kernel.org,
+ linux-arm-kernel@lists.infradead.org
 X-BeenThere: iommu@lists.linux-foundation.org
 X-Mailman-Version: 2.1.15
 Precedence: list
@@ -108,107 +89,57 @@ Content-Transfer-Encoding: 7bit
 Errors-To: iommu-bounces@lists.linux-foundation.org
 Sender: "iommu" <iommu-bounces@lists.linux-foundation.org>
 
-On Fri, Apr 3, 2020 at 4:47 AM Geert Uytterhoeven <geert@linux-m68k.org> wrote:
-> On Thu, Apr 2, 2020 at 7:27 PM John Stultz <john.stultz@linaro.org> wrote:
-> > On Thu, Apr 2, 2020 at 3:17 AM Yoshihiro Shimoda
-> > <yoshihiro.shimoda.uh@renesas.com> wrote:
-> > >
-> > > I found an issue after applied the following patches:
-> > > ---
-> > > 64c775f driver core: Rename deferred_probe_timeout and make it global
-> > > 0e9f8d0 driver core: Remove driver_deferred_probe_check_state_continue()
-> > > bec6c0e pinctrl: Remove use of driver_deferred_probe_check_state_continue()
-> > > e2cec7d driver core: Set deferred_probe_timeout to a longer default if CONFIG_MODULES is set
->
-> Note that just setting deferred_probe_timeout = -1 like for the
-> CONFIG_MODULES=n case doesn't help.
+The following changes since commit 11a48a5a18c63fd7621bb050228cebf13566e4d8:
 
-Yea. I can see why in that case, as we're checking
-!IS_ENABLED(CONFIG_MODULES) directly in
-driver_deferred_probe_check_state.
+  Linux 5.6-rc2 (2020-02-16 13:16:59 -0800)
 
-I guess we could switch that to checking
-(driver_deferred_probe_timeout == -1) which would have the same logic
-and at least make it consistent if someone specifies -1 on the command
-line (since now it will effectively have it EPROBE_DEFER forever in
-that case). But also having a timeout=infinity could be useful if
-folks don't want the deferring to time out.  Maybe in the !modules
-case setting it to =0 would be the most clear.
+are available in the Git repository at:
 
-But that's sort of a further cleanup. I'm still more worried about the
-NFS failure below.
+  git://git.infradead.org/users/hch/dma-mapping.git tags/dma-mapping-5.7
 
+for you to fetch changes up to fd27a526bb381f43dded6db30b3b016468ab0e6c:
 
-> > Hey,
-> >   Terribly sorry for the trouble. So as Robin mentioned I have a patch
-> > to remove the WARN messages, but I'm a bit more concerned about why
-> > after the 30 second delay, the ethernet driver loads:
-> >   [   36.218666] ravb e6800000.ethernet eth0: Base address at
-> > 0xe6800000, 2e:09:0a:02:eb:2d, IRQ 117.
-> > but NFS fails.
-> >
-> > Is it just that the 30 second delay is too long and NFS gives up?
->
-> I added some debug code to mount_nfs_root(), which shows that the first
-> 3 tries happen before ravb is instantiated, and the last 3 tries happen
-> after.  So NFS root should work, if the network works.
->
-> However, it seems the Ethernet PHY is never initialized, hence the link
-> never becomes ready.  Dmesg before/after:
->
->      ravb e6800000.ethernet eth0: Base address at 0xe6800000,
-> 2e:09:0a:02:ea:ff, IRQ 108.
->
-> Good.
->
->      ...
->     -gpio_rcar e6052000.gpio: sense irq = 11, type = 8
->
-> This is the GPIO the PHY IRQ is connected to.
-> Note that that GPIO controller has been instantiated before.
->
->      ...
->     -Micrel KSZ9031 Gigabit PHY e6800000.ethernet-ffffffff:00:
-> attached PHY driver [Micrel KSZ9031 Gigabit PHY]
-> (mii_bus:phy_addr=e6800000.ethernet-ffffffff:00, irq=197)
->      ...
->     -ravb e6800000.ethernet eth0: Link is Up - 1Gbps/Full - flow control off
->
-> Oops.
->
->     -Sending DHCP requests .., OK
->     -IP-Config: Got DHCP answer from ...
->      ...
->     +VFS: Unable to mount root fs via NFS, trying floppy.
->     +VFS: Cannot open root device "nfs" or unknown-block(2,0): error -6
->
-> > Does booting with deferred_probe_timeout=0 work?
->
-> It does, as now everything using optional links (DMA and IOMMU) is now
-> instantiated on first try.
+  ARM/dma-mapping: merge __dma_supported into arm_dma_supported (2020-03-20 11:43:21 +0100)
 
-Thanks so much for helping clarify this!
+----------------------------------------------------------------
+dma-mapping updates for 5.7
 
-So it's at least good to hear that booting with
-deferred_probe_timeout=0 is working!  But I'm bummed the NFS (or as
-you pointed out in your later mail,  ip_auto_config) falls over
-because the network isn't immediately there.
+ - fix an integer overflow in the coherent pool (Kevin Grandemange)
+ - provide support for in-place uncached remapping and use that
+   for openrisc
+ - fix the arm coherent allocator to take the bus limit into account
 
-Looking a little closer at the ip_auto_config() code, I think the
-issue may be that wait_for_device_probe() is effectively returning too
-early, since the probe_defer_timeout is still active? I need to dig a
-bit more on that code, on Monday, as I don't fully understand it yet.
+----------------------------------------------------------------
+Christoph Hellwig (8):
+      dma-direct: remove the cached_kernel_address hook
+      dma-direct: consolidate the error handling in dma_direct_alloc_pages
+      dma-direct: make uncached_kernel_address more general
+      dma-direct: provide a arch_dma_clear_uncached hook
+      openrisc: use the generic in-place uncached DMA allocator
+      ARM/dma-mapping: remove get_coherent_dma_mask
+      ARM/dma-mapping: take the bus limit into account in __dma_alloc
+      ARM/dma-mapping: merge __dma_supported into arm_dma_supported
 
-If I can't find a way to address that, I think the best course will be
-to set the driver_deferred_probe_timeout value to default to 0
-regardless of the value of CONFIG_MODULES, so we don't cause any
-apparent regression from previous behavior. That will also sort out
-the less intuitive = -1 initialization in the non-modules case.
+Kevin Grandemange (1):
+      dma-coherent: fix integer overflow in the reserved-memory dma allocation
 
-In any case, I'll try to have a patch to send out on Monday.
-
-thanks
--john
+ arch/Kconfig                     | 15 +++++---
+ arch/arm/include/asm/dma-iommu.h |  2 --
+ arch/arm/mm/dma-mapping.c        | 76 ++++++++++------------------------------
+ arch/microblaze/Kconfig          |  2 +-
+ arch/microblaze/mm/consistent.c  |  9 +----
+ arch/mips/Kconfig                |  3 +-
+ arch/mips/mm/dma-noncoherent.c   |  7 +---
+ arch/nios2/Kconfig               |  3 +-
+ arch/nios2/mm/dma-mapping.c      | 12 +------
+ arch/openrisc/Kconfig            |  2 ++
+ arch/openrisc/kernel/dma.c       | 55 ++++++-----------------------
+ arch/xtensa/Kconfig              |  2 +-
+ arch/xtensa/kernel/pci-dma.c     | 12 ++-----
+ include/linux/dma-noncoherent.h  |  4 +--
+ kernel/dma/coherent.c            | 13 +++----
+ kernel/dma/direct.c              | 25 +++++++------
+ 16 files changed, 76 insertions(+), 166 deletions(-)
 _______________________________________________
 iommu mailing list
 iommu@lists.linux-foundation.org
