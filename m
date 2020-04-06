@@ -6,70 +6,70 @@ X-Spam-Status: No, score=-0.6 required=3.0 tests=DKIM_INVALID,DKIM_SIGNED,
 	HEADER_FROM_DIFFERENT_DOMAINS,MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS,
 	URIBL_BLOCKED autolearn=no autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 6D210C2BA2B
-	for <iommu@archiver.kernel.org>; Mon,  6 Apr 2020 08:43:19 +0000 (UTC)
-Received: from silver.osuosl.org (smtp3.osuosl.org [140.211.166.136])
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 9185FC2BA80
+	for <iommu@archiver.kernel.org>; Mon,  6 Apr 2020 10:02:01 +0000 (UTC)
+Received: from whitealder.osuosl.org (smtp1.osuosl.org [140.211.166.138])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by mail.kernel.org (Postfix) with ESMTPS id 325C6206F8
-	for <iommu@archiver.kernel.org>; Mon,  6 Apr 2020 08:43:19 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTPS id 58A972072A
+	for <iommu@archiver.kernel.org>; Mon,  6 Apr 2020 10:02:01 +0000 (UTC)
 Authentication-Results: mail.kernel.org;
-	dkim=fail reason="signature verification failed" (1024-bit key) header.d=renesasgroup.onmicrosoft.com header.i=@renesasgroup.onmicrosoft.com header.b="mIcplxa4"
-DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 325C6206F8
+	dkim=fail reason="signature verification failed" (1024-bit key) header.d=renesasgroup.onmicrosoft.com header.i=@renesasgroup.onmicrosoft.com header.b="KxaaQIbt"
+DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 58A972072A
 Authentication-Results: mail.kernel.org; dmarc=none (p=none dis=none) header.from=renesas.com
 Authentication-Results: mail.kernel.org; spf=pass smtp.mailfrom=iommu-bounces@lists.linux-foundation.org
 Received: from localhost (localhost [127.0.0.1])
-	by silver.osuosl.org (Postfix) with ESMTP id 02E072313D;
-	Mon,  6 Apr 2020 08:43:19 +0000 (UTC)
-X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from silver.osuosl.org ([127.0.0.1])
-	by localhost (.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
-	with ESMTP id EweCU0CUzo9p; Mon,  6 Apr 2020 08:43:17 +0000 (UTC)
-Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [140.211.9.56])
-	by silver.osuosl.org (Postfix) with ESMTP id 2AB60230FE;
-	Mon,  6 Apr 2020 08:43:17 +0000 (UTC)
-Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
-	by lists.linuxfoundation.org (Postfix) with ESMTP id 1194AC089E;
-	Mon,  6 Apr 2020 08:43:17 +0000 (UTC)
-Received: from whitealder.osuosl.org (smtp1.osuosl.org [140.211.166.138])
- by lists.linuxfoundation.org (Postfix) with ESMTP id 06C1EC0177
- for <iommu@lists.linux-foundation.org>; Mon,  6 Apr 2020 08:43:16 +0000 (UTC)
-Received: from localhost (localhost [127.0.0.1])
- by whitealder.osuosl.org (Postfix) with ESMTP id E5D0A87C57
- for <iommu@lists.linux-foundation.org>; Mon,  6 Apr 2020 08:43:15 +0000 (UTC)
+	by whitealder.osuosl.org (Postfix) with ESMTP id 295E087D77;
+	Mon,  6 Apr 2020 10:02:01 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
 Received: from whitealder.osuosl.org ([127.0.0.1])
+	by localhost (.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
+	with ESMTP id etYgthaP09O5; Mon,  6 Apr 2020 10:02:00 +0000 (UTC)
+Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [140.211.9.56])
+	by whitealder.osuosl.org (Postfix) with ESMTP id 3F25586061;
+	Mon,  6 Apr 2020 10:02:00 +0000 (UTC)
+Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
+	by lists.linuxfoundation.org (Postfix) with ESMTP id 2AF05C1AE2;
+	Mon,  6 Apr 2020 10:02:00 +0000 (UTC)
+Received: from silver.osuosl.org (smtp3.osuosl.org [140.211.166.136])
+ by lists.linuxfoundation.org (Postfix) with ESMTP id 253E7C0177
+ for <iommu@lists.linux-foundation.org>; Mon,  6 Apr 2020 10:01:59 +0000 (UTC)
+Received: from localhost (localhost [127.0.0.1])
+ by silver.osuosl.org (Postfix) with ESMTP id 0A2912306F
+ for <iommu@lists.linux-foundation.org>; Mon,  6 Apr 2020 10:01:59 +0000 (UTC)
+X-Virus-Scanned: amavisd-new at osuosl.org
+Received: from silver.osuosl.org ([127.0.0.1])
  by localhost (.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
- with ESMTP id 9+Fmffm1O9wP for <iommu@lists.linux-foundation.org>;
- Mon,  6 Apr 2020 08:43:14 +0000 (UTC)
+ with ESMTP id RjF+lTqA6ziF for <iommu@lists.linux-foundation.org>;
+ Mon,  6 Apr 2020 10:01:57 +0000 (UTC)
 X-Greylist: domain auto-whitelisted by SQLgrey-1.7.6
-Received: from JPN01-OS2-obe.outbound.protection.outlook.com
- (mail-eopbgr1410114.outbound.protection.outlook.com [40.107.141.114])
- by whitealder.osuosl.org (Postfix) with ESMTPS id 37ADD87C74
- for <iommu@lists.linux-foundation.org>; Mon,  6 Apr 2020 08:43:14 +0000 (UTC)
+Received: from JPN01-TY1-obe.outbound.protection.outlook.com
+ (mail-eopbgr1400108.outbound.protection.outlook.com [40.107.140.108])
+ by silver.osuosl.org (Postfix) with ESMTPS id 951EE207A2
+ for <iommu@lists.linux-foundation.org>; Mon,  6 Apr 2020 10:01:57 +0000 (UTC)
 ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=Unx4numgOYZv1osve5CLM+GbhagrNxXokhysBJR04sfa1VIKk0V4KE7gTXSzyQqtrm9I9hUAl/ceODOKasLgj9Ah6GL46129qDF7FdaxK68YKHmI1aeQSgrSF8k3N6fhKTD9URoxBMMcoRPmRUr7DF3FaUe2HOl0yyFvTAVHMHSgJGz5dlNAGsvn/fQPxcFCwOvEGxUjdzznt4qdqmsPYgBMPKXOqpMCxMFylHiNuO/7FAwTrFJTm9vaual+a4Zd0H10NR4WYSZhvFdf9aCgO0b5XymfE7/ywrlvyrqmNM1xDUguz8Py0ujFJsBE+r9ijYS2vTr/t5b/fwnVILTyow==
+ b=WKclT8SSW6xUw9or9LUyOec48tuwvzOnzubgTBKeiREX2o3rO+vzh3rvK4uVnDmXfzadUQYsW+KeV1zE1kYjwYKWRhxxUoTDJAfhu88LtKF1nhUUFGPweUpjEjGr+LfU5LieDwL6Vjbu27xpej9FHBTf3iWrv+Yki85gmv23pWkjAItt2nU/wRZbEhcWUcE3t9AU2o552sRYIcIawrjcu/Bm5vdeZrki2YLycNobM4jmh2eO+dMKGR89Sm99BMEMQE7Vvk9NRS9t6dxnHRG/mpjei/wpyiLnocV/xiV3J02tDFlbhqA0D8V+BX+cMrsZJUDlzwpbwMVPLAE2sqpXsg==
 ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com; 
  s=arcselector9901;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=jKXSIZj/5CBpL6pTeCYJd/JqqXl5u7S+OfE+24v4ZgM=;
- b=elhOjUCVcV1sOAr+vwRmFBrz4mdp12gvQKE1aM0dSApXN8pD38MDGumREKdSuQm5P8HM8OW+dOROYnzgFo1QBCOlX3kuR95OkfILtAFwo2Fr+pkSyExV4yKgs7NYGzEC5W8eVmo1wJdCL9c+SrLo3wzFkkcmPrfArjCYnp7/afegff3drr5XpIrxJw5GHJFP0zoNA3jroSCYUuZuSfwFgnOuChdV9jVVLQq0rhu8oQ0Ltno3qi4YVWiVBe/QyeC9XSFkJfrF5mvAPyXeIHl2PewXZEex7/f0LRxfXAtVDYg+g0bygFIVhhEbaeblStaKIGI/Vfcpbd6rzE4EtokByw==
+ bh=RuxuSojrTZ5mrYPsKKNEW1NuQt6W3hfYbPkPqQ6lCdM=;
+ b=FMWlQn3fc1/5yiM9KM4PJ5h6lPSLGV2A0qSNtw0389Gdd/appHnB+W1nECv1zBptFWioYBuLsf/sK6XRXKCen9yQbizsp4qF5vVNCPXHzwQUSiDPSsEfhGAbpfvQmJA+xwwvfXlkSLzPbNJ6NJkLJDNeY8V/shJKqpk9S0sLcXykR80HFsxxvW1gQOs4dqqknlzB9iNyrUS8ti56qPZHQHNoLhrW1gECmYrB3Uyi35kMUTmYXFoTxSazavVAHrfPqfo8RcZ6id+tIMzXSEo9p+8sJQJo6FKoK4Z5n6m20al3jq/G10siFsLFFdcFFquIS29lHXvr/+52AeIM+biqJQ==
 ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
  smtp.mailfrom=renesas.com; dmarc=pass action=none header.from=renesas.com;
  dkim=pass header.d=renesas.com; arc=none
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
  d=renesasgroup.onmicrosoft.com; s=selector2-renesasgroup-onmicrosoft-com;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=jKXSIZj/5CBpL6pTeCYJd/JqqXl5u7S+OfE+24v4ZgM=;
- b=mIcplxa4B5ECBrtKbxCG80UvzZbo7VRTJJ2QF8x2P+Flt7HdxIRDVkuhDjQZB6+41zcEeheb6sLYCKk6j1KQSj7Le2uvTPsHtXk4ErkFpUQ+kvqmhX5U8z5pivmeN7pbuu2Zg4MXnuBuTWTMhMkPooUz6XPKV5hUH6w1dJ/Vryc=
+ bh=RuxuSojrTZ5mrYPsKKNEW1NuQt6W3hfYbPkPqQ6lCdM=;
+ b=KxaaQIbtQw9284Sw/VARVf/MUo4Irfa0/n3HzO6qYBgy7WMbY/ZSAY92ob7ew7ZjSPCHh+U9Rk4CClFpSz4PsZw4vzxHyxbPFNDpx27vnvQX4NWllM2iT0WQfCX6e5sGWYPTEzZkPv8YqCadHrHdVuhmuQeAVXkq/AS4bODcnRs=
 Received: from TYAPR01MB4544.jpnprd01.prod.outlook.com (20.179.175.203) by
- TYAPR01MB2192.jpnprd01.prod.outlook.com (52.133.177.141) with Microsoft SMTP
+ TYAPR01MB3856.jpnprd01.prod.outlook.com (20.178.140.19) with Microsoft SMTP
  Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.20.2878.17; Mon, 6 Apr 2020 08:43:10 +0000
+ 15.20.2878.17; Mon, 6 Apr 2020 10:01:54 +0000
 Received: from TYAPR01MB4544.jpnprd01.prod.outlook.com
  ([fe80::ed7f:1268:55a9:fc06]) by TYAPR01MB4544.jpnprd01.prod.outlook.com
  ([fe80::ed7f:1268:55a9:fc06%4]) with mapi id 15.20.2878.017; Mon, 6 Apr 2020
- 08:43:10 +0000
+ 10:01:54 +0000
 From: Yoshihiro Shimoda <yoshihiro.shimoda.uh@renesas.com>
 To: John Stultz <john.stultz@linaro.org>, Geert Uytterhoeven
  <geert@linux-m68k.org>
@@ -77,14 +77,15 @@ Subject: RE: How to fix WARN from drivers/base/dd.c in next-20200401 if
  CONFIG_MODULES=y?
 Thread-Topic: How to fix WARN from drivers/base/dd.c in next-20200401 if
  CONFIG_MODULES=y?
-Thread-Index: AdYI1eHeE+d8Du49RZSXfyqelir+RgAPcQ+AACaCwgAAIpzUAABtUcqg
-Date: Mon, 6 Apr 2020 08:43:10 +0000
-Message-ID: <TYAPR01MB45447DFE9E81D77CA867DEC8D8C20@TYAPR01MB4544.jpnprd01.prod.outlook.com>
+Thread-Index: AdYI1eHeE+d8Du49RZSXfyqelir+RgAPcQ+AACaCwgAAIpzUAABtUcqgAAMnEZA=
+Date: Mon, 6 Apr 2020 10:01:54 +0000
+Message-ID: <TYAPR01MB45443FA43152C0091D6EBF9AD8C20@TYAPR01MB4544.jpnprd01.prod.outlook.com>
 References: <TYAPR01MB45443DF63B9EF29054F7C41FD8C60@TYAPR01MB4544.jpnprd01.prod.outlook.com>
  <CALAqxLWopjCkiM=NR868DTcX-apPc1MPnONJMppm1jzCboAheg@mail.gmail.com>
  <CAMuHMdVtHhq9Nef1pBtBUKfRU2L-KgDffiOv28VqhrewR_j1Dw@mail.gmail.com>
  <CALAqxLX2AEFJxqXXXKPs8SU7Su2FqNjwbSt5BxwmQJqYQuST9A@mail.gmail.com>
-In-Reply-To: <CALAqxLX2AEFJxqXXXKPs8SU7Su2FqNjwbSt5BxwmQJqYQuST9A@mail.gmail.com>
+ <TYAPR01MB45447DFE9E81D77CA867DEC8D8C20@TYAPR01MB4544.jpnprd01.prod.outlook.com>
+In-Reply-To: <TYAPR01MB45447DFE9E81D77CA867DEC8D8C20@TYAPR01MB4544.jpnprd01.prod.outlook.com>
 Accept-Language: ja-JP, en-US
 Content-Language: ja-JP
 X-MS-Has-Attach: 
@@ -94,32 +95,32 @@ authentication-results: spf=none (sender IP is )
 x-originating-ip: [124.210.22.195]
 x-ms-publictraffictype: Email
 x-ms-office365-filtering-ht: Tenant
-x-ms-office365-filtering-correlation-id: cbc7ca76-420c-4016-0ba7-08d7da068944
-x-ms-traffictypediagnostic: TYAPR01MB2192:
-x-microsoft-antispam-prvs: <TYAPR01MB2192B1D9CEB99CDA8574C814D8C20@TYAPR01MB2192.jpnprd01.prod.outlook.com>
-x-ms-oob-tlc-oobclassifiers: OLM:10000;
+x-ms-office365-filtering-correlation-id: 04893ba5-4c5b-4ce4-c177-08d7da1188e1
+x-ms-traffictypediagnostic: TYAPR01MB3856:
+x-microsoft-antispam-prvs: <TYAPR01MB38563D264B942DA6C6B27FC0D8C20@TYAPR01MB3856.jpnprd01.prod.outlook.com>
+x-ms-oob-tlc-oobclassifiers: OLM:7219;
 x-forefront-prvs: 0365C0E14B
 x-forefront-antispam-report: CIP:255.255.255.255; CTRY:; LANG:en; SCL:1; SRV:;
  IPV:NLI; SFV:NSPM; H:TYAPR01MB4544.jpnprd01.prod.outlook.com; PTR:; CAT:NONE;
  SFTY:;
- SFS:(10019020)(4636009)(346002)(39860400002)(366004)(396003)(136003)(376002)(2906002)(110136005)(316002)(54906003)(4326008)(76116006)(6506007)(186003)(33656002)(66556008)(66476007)(66946007)(53546011)(55236004)(7696005)(478600001)(52536014)(66446008)(64756008)(26005)(5660300002)(55016002)(9686003)(86362001)(81166006)(8676002)(8936002)(81156014)(71200400001);
+ SFS:(10019020)(4636009)(376002)(346002)(366004)(39860400002)(396003)(136003)(2940100002)(54906003)(2906002)(8936002)(7696005)(5660300002)(55016002)(66556008)(66476007)(64756008)(110136005)(66446008)(9686003)(52536014)(86362001)(33656002)(76116006)(4744005)(478600001)(66946007)(71200400001)(8676002)(81166006)(81156014)(6506007)(4326008)(316002)(186003)(55236004)(26005);
  DIR:OUT; SFP:1102; 
 received-spf: None (protection.outlook.com: renesas.com does not designate
  permitted sender hosts)
 x-ms-exchange-senderadcheck: 1
 x-microsoft-antispam: BCL:0;
-x-microsoft-antispam-message-info: UZOtgRaYOCWHFkNoS5wD7DBZrMZnPI9hn9AxXekqvqtBJsLyv/MTuTw8iybELh8y2vtJruTThXJDcYt4mNBu+kSaQpe7u3CSvPTGBjZqLh0BnxaRsIwI2a6KDoGJSgBjTqdynUXNg4cscQff/udifreRTENzeBU6ev6eYaUiWJPujt8hV0bdDVXkErT+er8e/d1aRau2Yh9/xg7VB06zF1ju1FBtSPqsphrKy3gr+SBPkZMtT2EHbJBjSGSDGhXhnh+2nuSVdtX3RVNR3Q5IdzL5w+gAspciPTFlsPlTeLNn9iZI6sS8BohG1T8lEt3IgJcwS2aqiAuOjjjdlLLhV7wxygm488XA35iyPyb04CrH8q9Nk/mHc6wZcis3rCPA8XPrjWQoZaZy37Hswl6E7csKqIlSGe2BNPyA0EV8toszR8KdKXpumIe8vEw4FX6N
-x-ms-exchange-antispam-messagedata: YEWqd1JAMDXqUtOi2viaWq4Jf49lCTcq4GmS/z0GKN/KLuebJ4phbC+RhlKCcgdcWcrXf2pVmdZvHbXwxirfqEtBVW5fSQYGZiU3m8UG3R2pBx+cAaLSE+j55/EY6lyQjVppGcMMhRl/yZUpUwvVZA==
+x-microsoft-antispam-message-info: Mlai7qN/Z0vAZR072P+hQbZnvEBxwrx/SNyOPurdKT6AR0CJuzhY4USEYzNITl0FEECdWNmNdz28Q46QCh17JSOqSKW5yzvXN9rOpMk1aWdgCGoavRvwKDDLAT/QhAFyoFhvfxhL/6rOvD3zhDKQs5dJ/LF81lB92WqxJL/MSh2gxoleBxyoyjXq0u+42+eWmhA3PWNzaumYTsr+hitC71evIiZMtZIU4ZSBWOXWrUbwGJAlF2bwfSad8k0DEQfFqco4o4WYXakk+AVJT5ZBK71mtHWnBjup50oZuEZPw6R8x3Utb9Cs4Wgggvcf/JCLdVFQ6/pwrRllhv5Naoq7nfZ1ENb1XG6z00jH6dEJADSDLSFoEpyNzUc3b0XzF3UzZUQDg7pfKRKgHKlvVfIquQJQkkFwMAbxhiCGvOs5rk9XCLupR+tJQmvSwfEkE1w1
+x-ms-exchange-antispam-messagedata: syDBZF21Si1AS472cmz891iQdvDcJivLnEl0JTJvDbErvxiTkSLbApAYq6fG2e3nCDRb9lSOGfwXgmBh+8YeGodtaeiudl3LTxjMq8IaECOriiI5gxd3KnUDemeqNZmxeQUcePY+bvVAKdHw/vSfZA==
 x-ms-exchange-transport-forked: True
 MIME-Version: 1.0
 X-OriginatorOrg: renesas.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: cbc7ca76-420c-4016-0ba7-08d7da068944
-X-MS-Exchange-CrossTenant-originalarrivaltime: 06 Apr 2020 08:43:10.2942 (UTC)
+X-MS-Exchange-CrossTenant-Network-Message-Id: 04893ba5-4c5b-4ce4-c177-08d7da1188e1
+X-MS-Exchange-CrossTenant-originalarrivaltime: 06 Apr 2020 10:01:54.0820 (UTC)
 X-MS-Exchange-CrossTenant-fromentityheader: Hosted
 X-MS-Exchange-CrossTenant-id: 53d82571-da19-47e4-9cb4-625a166a4a2a
 X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
-X-MS-Exchange-CrossTenant-userprincipalname: NQOHnE2kPwXxqalAoHc1u0wiMl5Ku6svnDiG7iSejdv/BNflIePm3oRYC7o2xNTLKXnnSIah4S0cRgQQzBjEMP1s+Cq9jM+0YET9fKf0P6Vn7On+vt6diXk8zD1aimJW
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: TYAPR01MB2192
+X-MS-Exchange-CrossTenant-userprincipalname: lSTa1cBryjOlJMrAhIT/X8bCGujjGH6hKb50T5ntCI5h8A62/PM93miU9XlonwhaCcr9tp4cZ+AXM/fXQO04IADZvHolxsOrec9e5b6UWvFLLPvaBkYHJQDEvB8StXXt
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: TYAPR01MB3856
 Cc: "gregkh@linuxfoundation.org" <gregkh@linuxfoundation.org>,
  "iommu@lists.linux-foundation.org" <iommu@lists.linux-foundation.org>,
  netdev <netdev@vger.kernel.org>, LKML <linux-kernel@vger.kernel.org>,
@@ -141,133 +142,23 @@ Content-Transfer-Encoding: 7bit
 Errors-To: iommu-bounces@lists.linux-foundation.org
 Sender: "iommu" <iommu-bounces@lists.linux-foundation.org>
 
-Hi John, Geert,
+Hi again,
 
-> From: John Stultz, Sent: Saturday, April 4, 2020 1:19 PM
+<snip>
+> I'm guessing we should add the following flush_work for deferred_probe_timeout_work().
+> # Sorry, I didn't test this for some reasons yet though...
 > 
-> On Fri, Apr 3, 2020 at 4:47 AM Geert Uytterhoeven <geert@linux-m68k.org> wrote:
-> > On Thu, Apr 2, 2020 at 7:27 PM John Stultz <john.stultz@linaro.org> wrote:
-> > > On Thu, Apr 2, 2020 at 3:17 AM Yoshihiro Shimoda
-> > > <yoshihiro.shimoda.uh@renesas.com> wrote:
-> > > >
-> > > > I found an issue after applied the following patches:
-> > > > ---
-> > > > 64c775f driver core: Rename deferred_probe_timeout and make it global
-> > > > 0e9f8d0 driver core: Remove driver_deferred_probe_check_state_continue()
-> > > > bec6c0e pinctrl: Remove use of driver_deferred_probe_check_state_continue()
-> > > > e2cec7d driver core: Set deferred_probe_timeout to a longer default if CONFIG_MODULES is set
-> >
-> > Note that just setting deferred_probe_timeout = -1 like for the
-> > CONFIG_MODULES=n case doesn't help.
-> 
-> Yea. I can see why in that case, as we're checking
-> !IS_ENABLED(CONFIG_MODULES) directly in
-> driver_deferred_probe_check_state.
-> 
-> I guess we could switch that to checking
-> (driver_deferred_probe_timeout == -1) which would have the same logic
-> and at least make it consistent if someone specifies -1 on the command
-> line (since now it will effectively have it EPROBE_DEFER forever in
-> that case). But also having a timeout=infinity could be useful if
-> folks don't want the deferring to time out.  Maybe in the !modules
-> case setting it to =0 would be the most clear.
-> 
-> But that's sort of a further cleanup. I'm still more worried about the
-> NFS failure below.
-> 
-> 
-> > > Hey,
-> > >   Terribly sorry for the trouble. So as Robin mentioned I have a patch
-> > > to remove the WARN messages, but I'm a bit more concerned about why
-> > > after the 30 second delay, the ethernet driver loads:
-> > >   [   36.218666] ravb e6800000.ethernet eth0: Base address at
-> > > 0xe6800000, 2e:09:0a:02:eb:2d, IRQ 117.
-> > > but NFS fails.
-> > >
-> > > Is it just that the 30 second delay is too long and NFS gives up?
-> >
-> > I added some debug code to mount_nfs_root(), which shows that the first
-> > 3 tries happen before ravb is instantiated, and the last 3 tries happen
-> > after.  So NFS root should work, if the network works.
-> >
-> > However, it seems the Ethernet PHY is never initialized, hence the link
-> > never becomes ready.  Dmesg before/after:
-> >
-> >      ravb e6800000.ethernet eth0: Base address at 0xe6800000,
-> > 2e:09:0a:02:ea:ff, IRQ 108.
-> >
-> > Good.
-> >
-> >      ...
-> >     -gpio_rcar e6052000.gpio: sense irq = 11, type = 8
-> >
-> > This is the GPIO the PHY IRQ is connected to.
-> > Note that that GPIO controller has been instantiated before.
-> >
-> >      ...
-> >     -Micrel KSZ9031 Gigabit PHY e6800000.ethernet-ffffffff:00:
-> > attached PHY driver [Micrel KSZ9031 Gigabit PHY]
-> > (mii_bus:phy_addr=e6800000.ethernet-ffffffff:00, irq=197)
-> >      ...
-> >     -ravb e6800000.ethernet eth0: Link is Up - 1Gbps/Full - flow control off
-> >
-> > Oops.
-> >
-> >     -Sending DHCP requests .., OK
-> >     -IP-Config: Got DHCP answer from ...
-> >      ...
-> >     +VFS: Unable to mount root fs via NFS, trying floppy.
-> >     +VFS: Cannot open root device "nfs" or unknown-block(2,0): error -6
-> >
-> > > Does booting with deferred_probe_timeout=0 work?
-> >
-> > It does, as now everything using optional links (DMA and IOMMU) is now
-> > instantiated on first try.
-> 
-> Thanks so much for helping clarify this!
-> 
-> So it's at least good to hear that booting with
-> deferred_probe_timeout=0 is working!  But I'm bummed the NFS (or as
-> you pointed out in your later mail,  ip_auto_config) falls over
-> because the network isn't immediately there.
-> 
-> Looking a little closer at the ip_auto_config() code, I think the
-> issue may be that wait_for_device_probe() is effectively returning too
-> early, since the probe_defer_timeout is still active? I need to dig a
-> bit more on that code, on Monday, as I don't fully understand it yet.
+> +       /* wait for the deferred probe timeout workqueue to finish */
+> +       if (driver_deferred_probe_timeout > 0)
+> +               flush_work(&deferred_probe_timeout_work);
 
-I think so. I also investigated this issue more and then the following
-patch seems to be related because return value is changed a bit.
-
-c8c43ce driver core: Fix driver_deferred_probe_check_state() logic
-
-# By the way, this is other topic though, IIUC we should revise
-# the deferred_probe_timeout= in Documentation/admin-guide/kernel-parameters.txt
-# for the commit c8c43ce. Especially " A timeout of 0 will timeout at the end of initcalls."
-# doesn't match after we applied the commit.
-
-I'm guessing we should add the following flush_work for deferred_probe_timeout_work().
-# Sorry, I didn't test this for some reasons yet though...
-
-+       /* wait for the deferred probe timeout workqueue to finish */
-+       if (driver_deferred_probe_timeout > 0)
-+               flush_work(&deferred_probe_timeout_work);
-
-> If I can't find a way to address that, I think the best course will be
-> to set the driver_deferred_probe_timeout value to default to 0
-> regardless of the value of CONFIG_MODULES, so we don't cause any
-> apparent regression from previous behavior. That will also sort out
-> the less intuitive = -1 initialization in the non-modules case.
-> 
-> In any case, I'll try to have a patch to send out on Monday.
-
-Thanks!
+I'm sorry. This code caused build error because the deferred_probe_timeout_work
+is struct delayed_work. Also, I don't think using flush_delayed_work() is
+my expectation (wait until the timeout of deferred)...
 
 Best regards,
 Yoshihiro Shimoda
 
-> thanks
-> -john
 _______________________________________________
 iommu mailing list
 iommu@lists.linux-foundation.org
