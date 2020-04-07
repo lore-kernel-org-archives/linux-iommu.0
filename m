@@ -4,48 +4,48 @@ X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 X-Spam-Level: 
 X-Spam-Status: No, score=-9.8 required=3.0 tests=HEADER_FROM_DIFFERENT_DOMAINS,
 	INCLUDES_PATCH,MAILING_LIST_MULTI,SIGNED_OFF_BY,SPF_HELO_NONE,SPF_PASS,
-	USER_AGENT_GIT autolearn=ham autolearn_force=no version=3.4.0
+	USER_AGENT_GIT autolearn=unavailable autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 0F0E5C2BB86
-	for <iommu@archiver.kernel.org>; Tue,  7 Apr 2020 18:38:46 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 4754CC352B6
+	for <iommu@archiver.kernel.org>; Tue,  7 Apr 2020 18:38:47 +0000 (UTC)
 Received: from whitealder.osuosl.org (smtp1.osuosl.org [140.211.166.138])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by mail.kernel.org (Postfix) with ESMTPS id D35BD20857
-	for <iommu@archiver.kernel.org>; Tue,  7 Apr 2020 18:38:45 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org D35BD20857
+	by mail.kernel.org (Postfix) with ESMTPS id 1CF0F20857
+	for <iommu@archiver.kernel.org>; Tue,  7 Apr 2020 18:38:47 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 1CF0F20857
 Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=8bytes.org
 Authentication-Results: mail.kernel.org; spf=pass smtp.mailfrom=iommu-bounces@lists.linux-foundation.org
 Received: from localhost (localhost [127.0.0.1])
-	by whitealder.osuosl.org (Postfix) with ESMTP id B2D2B87857;
-	Tue,  7 Apr 2020 18:38:45 +0000 (UTC)
+	by whitealder.osuosl.org (Postfix) with ESMTP id F0E96862C7;
+	Tue,  7 Apr 2020 18:38:46 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
 Received: from whitealder.osuosl.org ([127.0.0.1])
 	by localhost (.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
-	with ESMTP id 4v4qKPiFnqsY; Tue,  7 Apr 2020 18:38:43 +0000 (UTC)
+	with ESMTP id YQQhEAB8C-Ms; Tue,  7 Apr 2020 18:38:44 +0000 (UTC)
 Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [140.211.9.56])
-	by whitealder.osuosl.org (Postfix) with ESMTP id 676188803D;
+	by whitealder.osuosl.org (Postfix) with ESMTP id 9278288011;
 	Tue,  7 Apr 2020 18:38:21 +0000 (UTC)
 Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
-	by lists.linuxfoundation.org (Postfix) with ESMTP id 560B8C1D85;
+	by lists.linuxfoundation.org (Postfix) with ESMTP id 80FBBC1D8D;
 	Tue,  7 Apr 2020 18:38:21 +0000 (UTC)
-Received: from whitealder.osuosl.org (smtp1.osuosl.org [140.211.166.138])
- by lists.linuxfoundation.org (Postfix) with ESMTP id 1AE56C1AE2;
+Received: from fraxinus.osuosl.org (smtp4.osuosl.org [140.211.166.137])
+ by lists.linuxfoundation.org (Postfix) with ESMTP id 2FAD9C1D85;
  Tue,  7 Apr 2020 18:38:07 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
- by whitealder.osuosl.org (Postfix) with ESMTP id 078A08796B;
+ by fraxinus.osuosl.org (Postfix) with ESMTP id 1CC4F855CF;
  Tue,  7 Apr 2020 18:38:07 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from whitealder.osuosl.org ([127.0.0.1])
+Received: from fraxinus.osuosl.org ([127.0.0.1])
  by localhost (.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
- with ESMTP id 52lsG9pLY6Yq; Tue,  7 Apr 2020 18:38:04 +0000 (UTC)
+ with ESMTP id M0y1ML6ncry6; Tue,  7 Apr 2020 18:38:04 +0000 (UTC)
 X-Greylist: from auto-whitelisted by SQLgrey-1.7.6
 X-Greylist: from auto-whitelisted by SQLgrey-1.7.6
 Received: from theia.8bytes.org (8bytes.org [81.169.241.247])
- by whitealder.osuosl.org (Postfix) with ESMTPS id A41B287BE0;
- Tue,  7 Apr 2020 18:37:58 +0000 (UTC)
+ by fraxinus.osuosl.org (Postfix) with ESMTPS id 0C59D85F33;
+ Tue,  7 Apr 2020 18:38:04 +0000 (UTC)
 Received: by theia.8bytes.org (Postfix, from userid 1000)
- id DA73D455; Tue,  7 Apr 2020 20:37:50 +0200 (CEST)
+ id 51AD96A1; Tue,  7 Apr 2020 20:37:54 +0200 (CEST)
 From: Joerg Roedel <joro@8bytes.org>
 To: Joerg Roedel <joro@8bytes.org>, Will Deacon <will@kernel.org>,
  Robin Murphy <robin.murphy@arm.com>,
@@ -60,10 +60,10 @@ To: Joerg Roedel <joro@8bytes.org>, Will Deacon <will@kernel.org>,
  Thierry Reding <thierry.reding@gmail.com>,
  Jonathan Hunter <jonathanh@nvidia.com>,
  Jean-Philippe Brucker <jean-philippe@linaro.org>
-Subject: [RFC PATCH 13/34] iommu: Export bus_iommu_probe() and make is safe
- for re-probing
-Date: Tue,  7 Apr 2020 20:37:21 +0200
-Message-Id: <20200407183742.4344-14-joro@8bytes.org>
+Subject: [RFC PATCH 30/34] iommu/omap: Convert to probe/release_device()
+ call-backs
+Date: Tue,  7 Apr 2020 20:37:38 +0200
+Message-Id: <20200407183742.4344-31-joro@8bytes.org>
 X-Mailer: git-send-email 2.17.1
 In-Reply-To: <20200407183742.4344-1-joro@8bytes.org>
 References: <20200407183742.4344-1-joro@8bytes.org>
@@ -92,52 +92,140 @@ Sender: "iommu" <iommu-bounces@lists.linux-foundation.org>
 
 From: Joerg Roedel <jroedel@suse.de>
 
-Add a check to the bus_iommu_probe() call-path to make sure it ignores
-devices which have already been successfully probed. Then export the
-bus_iommu_probe() function so it can be used by IOMMU drivers.
+Convert the OMAP IOMMU driver to use the probe_device() and
+release_device() call-backs of iommu_ops, so that the iommu core code
+does the group and sysfs setup.
 
 Signed-off-by: Joerg Roedel <jroedel@suse.de>
 ---
- drivers/iommu/iommu.c | 6 +++++-
- include/linux/iommu.h | 1 +
- 2 files changed, 6 insertions(+), 1 deletion(-)
+ drivers/iommu/omap-iommu.c | 49 ++++++++++----------------------------
+ 1 file changed, 13 insertions(+), 36 deletions(-)
 
-diff --git a/drivers/iommu/iommu.c b/drivers/iommu/iommu.c
-index 844613850595..cf25c1e48830 100644
---- a/drivers/iommu/iommu.c
-+++ b/drivers/iommu/iommu.c
-@@ -1615,6 +1615,10 @@ static int probe_iommu_group(struct device *dev, void *data)
- 	if (!dev_iommu_get(dev))
- 		return -ENOMEM;
- 
-+	/* Device is probed already if in a group */
-+	if (iommu_group_get(dev) != NULL)
-+		return 0;
-+
- 	if (!try_module_get(ops->owner)) {
- 		ret = -EINVAL;
- 		goto err_free_dev_iommu;
-@@ -1783,7 +1787,7 @@ static int iommu_group_create_direct_mappings(struct iommu_group *group)
- 					  iommu_do_create_direct_mappings);
+diff --git a/drivers/iommu/omap-iommu.c b/drivers/iommu/omap-iommu.c
+index ecc9d0829a91..6699fe6d9e06 100644
+--- a/drivers/iommu/omap-iommu.c
++++ b/drivers/iommu/omap-iommu.c
+@@ -1640,15 +1640,13 @@ static phys_addr_t omap_iommu_iova_to_phys(struct iommu_domain *domain,
+ 	return ret;
  }
  
--static int bus_iommu_probe(struct bus_type *bus)
-+int bus_iommu_probe(struct bus_type *bus)
+-static int omap_iommu_add_device(struct device *dev)
++static struct iommu_device *omap_iommu_probe_device(struct device *dev)
  {
- 	const struct iommu_ops *ops = bus->iommu_ops;
- 	int ret;
-diff --git a/include/linux/iommu.h b/include/linux/iommu.h
-index 30170d191e5e..fea1622408ad 100644
---- a/include/linux/iommu.h
-+++ b/include/linux/iommu.h
-@@ -445,6 +445,7 @@ static inline void iommu_iotlb_gather_init(struct iommu_iotlb_gather *gather)
- #define IOMMU_GROUP_NOTIFY_UNBOUND_DRIVER	6 /* Post Driver unbind */
+ 	struct omap_iommu_arch_data *arch_data, *tmp;
++	struct platform_device *pdev;
+ 	struct omap_iommu *oiommu;
+-	struct iommu_group *group;
+ 	struct device_node *np;
+-	struct platform_device *pdev;
+ 	int num_iommus, i;
+-	int ret;
  
- extern int bus_set_iommu(struct bus_type *bus, const struct iommu_ops *ops);
-+extern int bus_iommu_probe(struct bus_type *bus);
- extern bool iommu_present(struct bus_type *bus);
- extern bool iommu_capable(struct bus_type *bus, enum iommu_cap cap);
- extern struct iommu_domain *iommu_domain_alloc(struct bus_type *bus);
+ 	/*
+ 	 * Allocate the archdata iommu structure for DT-based devices.
+@@ -1657,7 +1655,7 @@ static int omap_iommu_add_device(struct device *dev)
+ 	 * IOMMU users.
+ 	 */
+ 	if (!dev->of_node)
+-		return 0;
++		return ERR_PTR(-ENODEV);
+ 
+ 	/*
+ 	 * retrieve the count of IOMMU nodes using phandle size as element size
+@@ -1670,27 +1668,27 @@ static int omap_iommu_add_device(struct device *dev)
+ 
+ 	arch_data = kcalloc(num_iommus + 1, sizeof(*arch_data), GFP_KERNEL);
+ 	if (!arch_data)
+-		return -ENOMEM;
++		return ERR_PTR(-ENOMEM);
+ 
+ 	for (i = 0, tmp = arch_data; i < num_iommus; i++, tmp++) {
+ 		np = of_parse_phandle(dev->of_node, "iommus", i);
+ 		if (!np) {
+ 			kfree(arch_data);
+-			return -EINVAL;
++			return ERR_PTR(-EINVAL);
+ 		}
+ 
+ 		pdev = of_find_device_by_node(np);
+ 		if (!pdev) {
+ 			of_node_put(np);
+ 			kfree(arch_data);
+-			return -ENODEV;
++			return ERR_PTR(-ENODEV);
+ 		}
+ 
+ 		oiommu = platform_get_drvdata(pdev);
+ 		if (!oiommu) {
+ 			of_node_put(np);
+ 			kfree(arch_data);
+-			return -EINVAL;
++			return ERR_PTR(-EINVAL);
+ 		}
+ 
+ 		tmp->iommu_dev = oiommu;
+@@ -1699,46 +1697,25 @@ static int omap_iommu_add_device(struct device *dev)
+ 		of_node_put(np);
+ 	}
+ 
++	dev->archdata.iommu = arch_data;
++
+ 	/*
+ 	 * use the first IOMMU alone for the sysfs device linking.
+ 	 * TODO: Evaluate if a single iommu_group needs to be
+ 	 * maintained for both IOMMUs
+ 	 */
+ 	oiommu = arch_data->iommu_dev;
+-	ret = iommu_device_link(&oiommu->iommu, dev);
+-	if (ret) {
+-		kfree(arch_data);
+-		return ret;
+-	}
+-
+-	dev->archdata.iommu = arch_data;
+-
+-	/*
+-	 * IOMMU group initialization calls into omap_iommu_device_group, which
+-	 * needs a valid dev->archdata.iommu pointer
+-	 */
+-	group = iommu_group_get_for_dev(dev);
+-	if (IS_ERR(group)) {
+-		iommu_device_unlink(&oiommu->iommu, dev);
+-		dev->archdata.iommu = NULL;
+-		kfree(arch_data);
+-		return PTR_ERR(group);
+-	}
+-	iommu_group_put(group);
+ 
+-	return 0;
++	return &oiommu->iommu;
+ }
+ 
+-static void omap_iommu_remove_device(struct device *dev)
++static void omap_iommu_release_device(struct device *dev)
+ {
+ 	struct omap_iommu_arch_data *arch_data = dev->archdata.iommu;
+ 
+ 	if (!dev->of_node || !arch_data)
+ 		return;
+ 
+-	iommu_device_unlink(&arch_data->iommu_dev->iommu, dev);
+-	iommu_group_remove_device(dev);
+-
+ 	dev->archdata.iommu = NULL;
+ 	kfree(arch_data);
+ 
+@@ -1763,8 +1740,8 @@ static const struct iommu_ops omap_iommu_ops = {
+ 	.map		= omap_iommu_map,
+ 	.unmap		= omap_iommu_unmap,
+ 	.iova_to_phys	= omap_iommu_iova_to_phys,
+-	.add_device	= omap_iommu_add_device,
+-	.remove_device	= omap_iommu_remove_device,
++	.probe_device	= omap_iommu_probe_device,
++	.release_device	= omap_iommu_release_device,
+ 	.device_group	= omap_iommu_device_group,
+ 	.pgsize_bitmap	= OMAP_IOMMU_PGSIZES,
+ };
 -- 
 2.17.1
 
