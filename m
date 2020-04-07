@@ -2,93 +2,99 @@ Return-Path: <SRS0=p9ZB=5X=lists.linux-foundation.org=iommu-bounces@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-9.6 required=3.0 tests=DKIM_INVALID,DKIM_SIGNED,
-	HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_PATCH,MAILING_LIST_MULTI,SIGNED_OFF_BY,
-	SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED,USER_AGENT_GIT autolearn=unavailable
+X-Spam-Status: No, score=-0.7 required=3.0 tests=HEADER_FROM_DIFFERENT_DOMAINS,
+	MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED autolearn=no
 	autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 78DE5C2BA1A
-	for <iommu@archiver.kernel.org>; Tue,  7 Apr 2020 02:35:08 +0000 (UTC)
-Received: from hemlock.osuosl.org (smtp2.osuosl.org [140.211.166.133])
+	by smtp.lore.kernel.org (Postfix) with ESMTP id AB30CC2BABC
+	for <iommu@archiver.kernel.org>; Tue,  7 Apr 2020 04:26:33 +0000 (UTC)
+Received: from fraxinus.osuosl.org (smtp4.osuosl.org [140.211.166.137])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by mail.kernel.org (Postfix) with ESMTPS id 3B368206B8
-	for <iommu@archiver.kernel.org>; Tue,  7 Apr 2020 02:35:08 +0000 (UTC)
-Authentication-Results: mail.kernel.org;
-	dkim=fail reason="signature verification failed" (2048-bit key) header.d=lca.pw header.i=@lca.pw header.b="gewsdy0l"
-DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 3B368206B8
-Authentication-Results: mail.kernel.org; dmarc=none (p=none dis=none) header.from=lca.pw
+	by mail.kernel.org (Postfix) with ESMTPS id 5C2B520801
+	for <iommu@archiver.kernel.org>; Tue,  7 Apr 2020 04:26:33 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 5C2B520801
+Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=intel.com
 Authentication-Results: mail.kernel.org; spf=pass smtp.mailfrom=iommu-bounces@lists.linux-foundation.org
 Received: from localhost (localhost [127.0.0.1])
-	by hemlock.osuosl.org (Postfix) with ESMTP id 1822787EBF;
-	Tue,  7 Apr 2020 02:35:08 +0000 (UTC)
+	by fraxinus.osuosl.org (Postfix) with ESMTP id 30A8A85F84;
+	Tue,  7 Apr 2020 04:26:33 +0000 (UTC)
+X-Virus-Scanned: amavisd-new at osuosl.org
+Received: from fraxinus.osuosl.org ([127.0.0.1])
+	by localhost (.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
+	with ESMTP id Cx-APtyrecu7; Tue,  7 Apr 2020 04:26:31 +0000 (UTC)
+Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [140.211.9.56])
+	by fraxinus.osuosl.org (Postfix) with ESMTP id 87E7185F4E;
+	Tue,  7 Apr 2020 04:26:31 +0000 (UTC)
+Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
+	by lists.linuxfoundation.org (Postfix) with ESMTP id 79904C1AE2;
+	Tue,  7 Apr 2020 04:26:31 +0000 (UTC)
+Received: from hemlock.osuosl.org (smtp2.osuosl.org [140.211.166.133])
+ by lists.linuxfoundation.org (Postfix) with ESMTP id 255FAC0177
+ for <iommu@lists.linux-foundation.org>; Tue,  7 Apr 2020 04:26:30 +0000 (UTC)
+Received: from localhost (localhost [127.0.0.1])
+ by hemlock.osuosl.org (Postfix) with ESMTP id 0D2C087CB1
+ for <iommu@lists.linux-foundation.org>; Tue,  7 Apr 2020 04:26:30 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
 Received: from hemlock.osuosl.org ([127.0.0.1])
-	by localhost (.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
-	with ESMTP id xgNZEJmXYk0B; Tue,  7 Apr 2020 02:35:06 +0000 (UTC)
-Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [140.211.9.56])
-	by hemlock.osuosl.org (Postfix) with ESMTP id 89AEB87EB0;
-	Tue,  7 Apr 2020 02:35:06 +0000 (UTC)
-Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
-	by lists.linuxfoundation.org (Postfix) with ESMTP id 6AE89C089E;
-	Tue,  7 Apr 2020 02:35:06 +0000 (UTC)
-Received: from silver.osuosl.org (smtp3.osuosl.org [140.211.166.136])
- by lists.linuxfoundation.org (Postfix) with ESMTP id 05CF2C0177
- for <iommu@lists.linux-foundation.org>; Tue,  7 Apr 2020 02:35:05 +0000 (UTC)
-Received: from localhost (localhost [127.0.0.1])
- by silver.osuosl.org (Postfix) with ESMTP id E18A72202E
- for <iommu@lists.linux-foundation.org>; Tue,  7 Apr 2020 02:35:04 +0000 (UTC)
-X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from silver.osuosl.org ([127.0.0.1])
  by localhost (.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
- with ESMTP id w2UcusItlbCA for <iommu@lists.linux-foundation.org>;
- Tue,  7 Apr 2020 02:35:04 +0000 (UTC)
-X-Greylist: delayed 00:21:55 by SQLgrey-1.7.6
-Received: from mail-qv1-f67.google.com (mail-qv1-f67.google.com
- [209.85.219.67])
- by silver.osuosl.org (Postfix) with ESMTPS id 0489E2201C
- for <iommu@lists.linux-foundation.org>; Tue,  7 Apr 2020 02:35:03 +0000 (UTC)
-Received: by mail-qv1-f67.google.com with SMTP id q73so1167567qvq.2
- for <iommu@lists.linux-foundation.org>; Mon, 06 Apr 2020 19:35:03 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=lca.pw; s=google;
- h=from:to:cc:subject:date:message-id:mime-version
- :content-transfer-encoding;
- bh=BfSGNCe4oEdtp7HObDoUBxiccfhReNwsRhUVxZRTBNI=;
- b=gewsdy0lwajFLCQWWu6WiPH8/MUhlBoR9q+iW9sg17xdjiLFUdivK0Wx6EsixHvSX3
- zQwX32w/VKiJHmS0WDQevjVGo8+gfgZi7y7DCOhRzKwmY33py4q+jaMI/YD6QapRyGB7
- YbvFsoEbARPUmTaMh0OsJ4hN3wc4UMzH3wf44LZPIUg9X3RkNhnGmhPqB3e4pTBgmVAX
- Ap0KvmbhVNLE3aN/pIyYdtZUPMIWoWig1fp5mfR3gvXwYRD0zjSjOTsu8gUtTijF9KbD
- +IoL4EAP58QvN6dW5LppI3EHYc32ZWcZtjxJH3hX7utI7ZcDL02rl5Zpl7eH0XAl+U/x
- AcbA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
- d=1e100.net; s=20161025;
- h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
- :content-transfer-encoding;
- bh=BfSGNCe4oEdtp7HObDoUBxiccfhReNwsRhUVxZRTBNI=;
- b=bA1pQe5jZ+iDfytxik85Yb31dNjb49bOIS3w80MD46NN+G1pEC6b1GY2JaYT+4TVsh
- p9msIVv9DeM0JR6L+7afgFhyXwRypuobSd0yYqGiiIZipMlIEgd9S+6o4GcXPsMNOQYS
- o82idd9pLh4cYcNgBMvzMGwemxcVMaNwgYtB/dtQwyFTj7lbmRMrlvugzYhccq2SZ2q5
- +EHJsgJLfAkyXKZqZNhtKzRsDnesvLkE+VBnoyc99zxWZhhGxHUzOTvRN7uSHIlezZP+
- FUp65/J3cBrst6t+PEefX2NKTNTH0SN0FPY5MkXeNQAXYxSBxuZbk4lN3sL6WOpuxh/D
- XMnw==
-X-Gm-Message-State: AGi0PuYDEGDI1wQhR2T12GrnEDtIzAni99txL6vmxg7pvFKhwv6hQsls
- cWhkstkAKzhElp2oeuGe3nHDISawYjwTNA==
-X-Google-Smtp-Source: APiQypLfdxRR9tnKWUX/fwH+m3mfpC90iHPIxMu/88gfIawO6KT91exQ+B/xGelP+JNMFRVA6Ub71w==
-X-Received: by 2002:a0c:b896:: with SMTP id y22mr84351qvf.182.1586225587511;
- Mon, 06 Apr 2020 19:13:07 -0700 (PDT)
-Received: from ovpn-66-196.rdu2.redhat.com
- (pool-71-184-117-43.bstnma.fios.verizon.net. [71.184.117.43])
- by smtp.gmail.com with ESMTPSA id d5sm103120qke.14.2020.04.06.19.13.06
- (version=TLS1_2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128/128);
- Mon, 06 Apr 2020 19:13:07 -0700 (PDT)
-From: Qian Cai <cai@lca.pw>
-To: joro@8bytes.org
-Subject: [RFC PATCH] iommu/amd: fix a race in fetch_pte()
-Date: Mon,  6 Apr 2020 22:12:46 -0400
-Message-Id: <20200407021246.10941-1-cai@lca.pw>
-X-Mailer: git-send-email 2.21.0 (Apple Git-122.2)
+ with ESMTP id 7o0bNAiVVsyo for <iommu@lists.linux-foundation.org>;
+ Tue,  7 Apr 2020 04:26:29 +0000 (UTC)
+X-Greylist: domain auto-whitelisted by SQLgrey-1.7.6
+Received: from mga12.intel.com (mga12.intel.com [192.55.52.136])
+ by hemlock.osuosl.org (Postfix) with ESMTPS id 2D84E87C9C
+ for <iommu@lists.linux-foundation.org>; Tue,  7 Apr 2020 04:26:29 +0000 (UTC)
+IronPort-SDR: ujiOrnage+wlc4YbhuzZSo5VN5ZypuaEtycXraUqYREU4lPS63fVAuKwRceqWSc9Xf0V6g5Tcs
+ M2C9VMfTrIeA==
+X-Amp-Result: SKIPPED(no attachment in message)
+X-Amp-File-Uploaded: False
+Received: from orsmga004.jf.intel.com ([10.7.209.38])
+ by fmsmga106.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384;
+ 06 Apr 2020 21:26:28 -0700
+IronPort-SDR: orBWKegM95GnrcWNMzdwaxgcZJMkE9E5n9mkOkZhUWI8iUhpBE9Et9ICkjV2361sOwWz0Vf5rj
+ DvvMyMFlclPQ==
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="5.72,353,1580803200"; d="scan'208";a="397729232"
+Received: from fmsmsx107.amr.corp.intel.com ([10.18.124.205])
+ by orsmga004.jf.intel.com with ESMTP; 06 Apr 2020 21:26:28 -0700
+Received: from fmsmsx120.amr.corp.intel.com (10.18.124.208) by
+ fmsmsx107.amr.corp.intel.com (10.18.124.205) with Microsoft SMTP Server (TLS)
+ id 14.3.439.0; Mon, 6 Apr 2020 21:26:28 -0700
+Received: from shsmsx106.ccr.corp.intel.com (10.239.4.159) by
+ fmsmsx120.amr.corp.intel.com (10.18.124.208) with Microsoft SMTP Server (TLS)
+ id 14.3.439.0; Mon, 6 Apr 2020 21:26:27 -0700
+Received: from shsmsx104.ccr.corp.intel.com ([169.254.5.225]) by
+ SHSMSX106.ccr.corp.intel.com ([169.254.10.89]) with mapi id 14.03.0439.000;
+ Tue, 7 Apr 2020 12:26:24 +0800
+From: "Tian, Kevin" <kevin.tian@intel.com>
+To: Alex Williamson <alex.williamson@redhat.com>, "Liu, Yi L"
+ <yi.l.liu@intel.com>
+Subject: RE: [PATCH v1 2/2] vfio/pci: Emulate PASID/PRI capability for VFs
+Thread-Topic: [PATCH v1 2/2] vfio/pci: Emulate PASID/PRI capability for VFs
+Thread-Index: AQHWAEVGCz5QQWvL/U+nYnlD7MiZ7Khl/jEAgACVNICAAJ/EgIAF8c6g
+Date: Tue, 7 Apr 2020 04:26:23 +0000
+Message-ID: <AADFC41AFE54684AB9EE6CBC0274A5D19D80E13D@SHSMSX104.ccr.corp.intel.com>
+References: <1584880394-11184-1-git-send-email-yi.l.liu@intel.com>
+ <1584880394-11184-3-git-send-email-yi.l.liu@intel.com>
+ <20200402165954.48d941ee@w520.home>
+ <A2975661238FB949B60364EF0F2C25743A2204FE@SHSMSX104.ccr.corp.intel.com>
+ <20200403112545.6c115ba3@w520.home>
+In-Reply-To: <20200403112545.6c115ba3@w520.home>
+Accept-Language: en-US
+Content-Language: en-US
+X-MS-Has-Attach: 
+X-MS-TNEF-Correlator: 
+dlp-product: dlpe-windows
+dlp-version: 11.2.0.6
+dlp-reaction: no-action
+x-originating-ip: [10.239.127.40]
 MIME-Version: 1.0
-Cc: iommu@lists.linux-foundation.org, linux-kernel@vger.kernel.org
+Cc: "jean-philippe@linaro.org" <jean-philippe@linaro.org>, "Raj,
+ Ashok" <ashok.raj@intel.com>, "kvm@vger.kernel.org" <kvm@vger.kernel.org>,
+ "iommu@lists.linux-foundation.org" <iommu@lists.linux-foundation.org>,
+ "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>, "Sun,
+ Yi Y" <yi.y.sun@intel.com>, "Tian, Jun J" <jun.j.tian@intel.com>, "Wu,
+ Hao" <hao.wu@intel.com>
 X-BeenThere: iommu@lists.linux-foundation.org
 X-Mailman-Version: 2.1.15
 Precedence: list
@@ -106,76 +112,89 @@ Content-Transfer-Encoding: 7bit
 Errors-To: iommu-bounces@lists.linux-foundation.org
 Sender: "iommu" <iommu-bounces@lists.linux-foundation.org>
 
-fetch_pte() could race with increase_address_space() because it held no
-lock from iommu_unmap_page(). On the CPU that runs fetch_pte() it could
-see a stale domain->pt_root and a new increased domain->mode from
-increase_address_space(). As the result, it could trigger invalid
-accesses later on. Fix it by using a pair of smp_[w|r]mb in those
-places.
+> From: Alex Williamson <alex.williamson@redhat.com>
+> Sent: Saturday, April 4, 2020 1:26 AM
+[...]
+> > > > +	if (!pasid_cap.control_reg.paside) {
+> > > > +		pr_debug("%s: its PF's PASID capability is not enabled\n",
+> > > > +			dev_name(&vdev->pdev->dev));
+> > > > +		ret = 0;
+> > > > +		goto out;
+> > > > +	}
+> > >
+> > > What happens if the PF's PASID gets disabled while we're using it??
+> >
+> > This is actually the open I highlighted in cover letter. Per the reply
+> > from Baolu, this seems to be an open for bare-metal all the same.
+> > https://lkml.org/lkml/2020/3/31/95
+> 
+> Seems that needs to get sorted out before we can expose this.  Maybe
+> some sort of registration with the PF driver that PASID is being used
+> by a VF so it cannot be disabled?
 
- kernel BUG at drivers/iommu/amd_iommu.c:1704!
- BUG_ON(unmapped && !is_power_of_2(unmapped));
- Hardware name: HPE ProLiant DL385 Gen10/ProLiant DL385 Gen10, BIOS A40 07/10/2019
- RIP: 0010:amd_iommu_unmap+0x1b2/0x1d0
- Call Trace:
-  <IRQ>
-  __iommu_unmap+0x106/0x320
-  iommu_unmap_fast+0xe/0x10
-  __iommu_dma_unmap+0xdc/0x1a0
-  iommu_dma_unmap_sg+0xae/0xd0
-  scsi_dma_unmap+0xe7/0x150
-  pqi_raid_io_complete+0x37/0x60 [smartpqi]
-  pqi_irq_handler+0x1fc/0x13f0 [smartpqi]
-  __handle_irq_event_percpu+0x78/0x4f0
-  handle_irq_event_percpu+0x70/0x100
-  handle_irq_event+0x5a/0x8b
-  handle_edge_irq+0x10c/0x370
-  do_IRQ+0x9e/0x1e0
-  common_interrupt+0xf/0xf
-  </IRQ>
+I guess we may do vSVA for PF first, and then adding VF vSVA later
+given above additional need. It's not necessarily to enable both
+in one step.
 
-Signed-off-by: Qian Cai <cai@lca.pw>
----
- drivers/iommu/amd_iommu.c | 9 +++++++++
- 1 file changed, 9 insertions(+)
+[...]
+> > > > @@ -1604,6 +1901,18 @@ static int vfio_ecap_init(struct
+> vfio_pci_device *vdev)
+> > > >  	if (!ecaps)
+> > > >  		*(u32 *)&vdev->vconfig[PCI_CFG_SPACE_SIZE] = 0;
+> > > >
+> > > > +#ifdef CONFIG_PCI_ATS
+> > > > +	if (pdev->is_virtfn) {
+> > > > +		struct pci_dev *physfn = pdev->physfn;
+> > > > +
+> > > > +		ret = vfio_pci_add_emulated_cap_for_vf(vdev,
+> > > > +					physfn, epos_max, prev);
+> > > > +		if (ret)
+> > > > +			pr_info("%s, failed to add special caps for VF %s\n",
+> > > > +				__func__, dev_name(&vdev->pdev->dev));
+> > > > +	}
+> > > > +#endif
+> > >
+> > > I can only imagine that we should place the caps at the same location
+> > > they exist on the PF, we don't know what hidden registers might be
+> > > hiding in config space.
 
-diff --git a/drivers/iommu/amd_iommu.c b/drivers/iommu/amd_iommu.c
-index 20cce366e951..22328a23335f 100644
---- a/drivers/iommu/amd_iommu.c
-+++ b/drivers/iommu/amd_iommu.c
-@@ -1434,6 +1434,11 @@ static bool increase_address_space(struct protection_domain *domain,
- 	*pte             = PM_LEVEL_PDE(domain->mode,
- 					iommu_virt_to_phys(domain->pt_root));
- 	domain->pt_root  = pte;
-+	/*
-+	 * Make sure fetch_pte() will see the new domain->pt_root before it
-+	 * snapshots domain->mode.
-+	 */
-+	smp_wmb();
- 	domain->mode    += 1;
- 
- 	ret = true;
-@@ -1460,6 +1465,8 @@ static u64 *alloc_pte(struct protection_domain *domain,
- 		*updated = increase_address_space(domain, address, gfp) || *updated;
- 
- 	level   = domain->mode - 1;
-+	/* To pair with smp_wmb() in increase_address_space(). */
-+	smp_rmb();
- 	pte     = &domain->pt_root[PM_LEVEL_INDEX(level, address)];
- 	address = PAGE_SIZE_ALIGN(address, page_size);
- 	end_lvl = PAGE_SIZE_LEVEL(page_size);
-@@ -1545,6 +1552,8 @@ static u64 *fetch_pte(struct protection_domain *domain,
- 		return NULL;
- 
- 	level	   =  domain->mode - 1;
-+	/* To pair with smp_wmb() in increase_address_space(). */
-+	smp_rmb();
- 	pte	   = &domain->pt_root[PM_LEVEL_INDEX(level, address)];
- 	*page_size =  PTE_LEVEL_PAGE_SIZE(level);
- 
--- 
-2.21.0 (Apple Git-122.2)
+Is there vendor guarantee that hidden registers will locate at the
+same offset between PF and VF config space? 
 
+> >
+> > but we are not sure whether the same location is available on VF. In
+> > this patch, it actually places the emulated cap physically behind the
+> > cap which lays farthest (its offset is largest) within VF's config space
+> > as the PCIe caps are linked in a chain.
+> 
+> But, as we've found on Broadcom NICs (iirc), hardware developers have a
+> nasty habit of hiding random registers in PCI config space, outside of
+> defined capabilities.  I feel like IGD might even do this too, is that
+> true?  So I don't think we can guarantee that just because a section of
+> config space isn't part of a defined capability that its unused.  It
+> only means that it's unused by common code, but it might have device
+> specific purposes.  So of the PCIe spec indicates that VFs cannot
+> include these capabilities and virtialization software needs to
+> emulate them, we need somewhere safe to place them in config space, and
+> simply placing them off the end of known capabilities doesn't give me
+> any confidence.  Also, hardware has no requirement to make compact use
+> of extended config space.  The first capability must be at 0x100, the
+> very next capability could consume all the way to the last byte of the
+> 4K extended range, and the next link in the chain could be somewhere in
+> the middle.  Thanks,
+> 
+
+Then what would be a viable option? Vendor nasty habit implies
+no standard, thus I don't see how VFIO can find a safe location
+by itself. Also curious how those hidden registers are identified
+by VFIO and employed with proper r/w policy today. If sort of quirks
+are used, then could such quirk way be extended to also carry
+the information about vendor specific safe location? When no
+such quirk info is provided (the majority case), VFIO then finds
+out a free location to carry the new cap.
+
+Thanks
+Kevin
 _______________________________________________
 iommu mailing list
 iommu@lists.linux-foundation.org
