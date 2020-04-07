@@ -2,94 +2,59 @@ Return-Path: <SRS0=p9ZB=5X=lists.linux-foundation.org=iommu-bounces@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-0.5 required=3.0 tests=DKIM_INVALID,DKIM_SIGNED,
-	HEADER_FROM_DIFFERENT_DOMAINS,MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS,
-	URIBL_BLOCKED autolearn=no autolearn_force=no version=3.4.0
+X-Spam-Status: No, score=-12.2 required=3.0
+	tests=HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_PULL_REQUEST,MAILING_LIST_MULTI,
+	MENTIONS_GIT_HOSTING,SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED,USER_AGENT_SANE_1
+	autolearn=ham autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id C1FD0C2BB86
-	for <iommu@archiver.kernel.org>; Tue,  7 Apr 2020 15:14:54 +0000 (UTC)
-Received: from hemlock.osuosl.org (smtp2.osuosl.org [140.211.166.133])
+	by smtp.lore.kernel.org (Postfix) with ESMTP id C7A38C2BA80
+	for <iommu@archiver.kernel.org>; Tue,  7 Apr 2020 15:26:52 +0000 (UTC)
+Received: from silver.osuosl.org (smtp3.osuosl.org [140.211.166.136])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by mail.kernel.org (Postfix) with ESMTPS id 8BFDA2074F
-	for <iommu@archiver.kernel.org>; Tue,  7 Apr 2020 15:14:54 +0000 (UTC)
-Authentication-Results: mail.kernel.org;
-	dkim=fail reason="signature verification failed" (1024-bit key) header.d=redhat.com header.i=@redhat.com header.b="EHXEUI9U"
-DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 8BFDA2074F
-Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=redhat.com
+	by mail.kernel.org (Postfix) with ESMTPS id 7BB282074F
+	for <iommu@archiver.kernel.org>; Tue,  7 Apr 2020 15:26:52 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 7BB282074F
+Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=8bytes.org
 Authentication-Results: mail.kernel.org; spf=pass smtp.mailfrom=iommu-bounces@lists.linux-foundation.org
 Received: from localhost (localhost [127.0.0.1])
-	by hemlock.osuosl.org (Postfix) with ESMTP id 50BAF87E9D;
-	Tue,  7 Apr 2020 15:14:54 +0000 (UTC)
+	by silver.osuosl.org (Postfix) with ESMTP id 3C3DC20035;
+	Tue,  7 Apr 2020 15:26:52 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from hemlock.osuosl.org ([127.0.0.1])
+Received: from silver.osuosl.org ([127.0.0.1])
 	by localhost (.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
-	with ESMTP id ZPY-CuR9ygla; Tue,  7 Apr 2020 15:14:53 +0000 (UTC)
+	with ESMTP id sgrXVyoik0mK; Tue,  7 Apr 2020 15:26:50 +0000 (UTC)
 Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [140.211.9.56])
-	by hemlock.osuosl.org (Postfix) with ESMTP id A12C287EA7;
-	Tue,  7 Apr 2020 15:14:53 +0000 (UTC)
+	by silver.osuosl.org (Postfix) with ESMTP id A6A49204B3;
+	Tue,  7 Apr 2020 15:26:49 +0000 (UTC)
 Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
-	by lists.linuxfoundation.org (Postfix) with ESMTP id 93E60C1D7E;
-	Tue,  7 Apr 2020 15:14:53 +0000 (UTC)
-Received: from hemlock.osuosl.org (smtp2.osuosl.org [140.211.166.133])
- by lists.linuxfoundation.org (Postfix) with ESMTP id EE02FC0177
- for <iommu@lists.linux-foundation.org>; Tue,  7 Apr 2020 15:14:51 +0000 (UTC)
+	by lists.linuxfoundation.org (Postfix) with ESMTP id 82492C1D7E;
+	Tue,  7 Apr 2020 15:26:49 +0000 (UTC)
+Received: from whitealder.osuosl.org (smtp1.osuosl.org [140.211.166.138])
+ by lists.linuxfoundation.org (Postfix) with ESMTP id 955D9C0177
+ for <iommu@lists.linux-foundation.org>; Tue,  7 Apr 2020 15:26:48 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
- by hemlock.osuosl.org (Postfix) with ESMTP id DCA0087E9D
- for <iommu@lists.linux-foundation.org>; Tue,  7 Apr 2020 15:14:51 +0000 (UTC)
+ by whitealder.osuosl.org (Postfix) with ESMTP id 769DE8771B
+ for <iommu@lists.linux-foundation.org>; Tue,  7 Apr 2020 15:26:48 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from hemlock.osuosl.org ([127.0.0.1])
+Received: from whitealder.osuosl.org ([127.0.0.1])
  by localhost (.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
- with ESMTP id pS0VOhtcHBJP for <iommu@lists.linux-foundation.org>;
- Tue,  7 Apr 2020 15:14:50 +0000 (UTC)
-X-Greylist: domain auto-whitelisted by SQLgrey-1.7.6
-Received: from us-smtp-delivery-1.mimecast.com (us-smtp-2.mimecast.com
- [207.211.31.81])
- by hemlock.osuosl.org (Postfix) with ESMTPS id BEDAF87E9C
- for <iommu@lists.linux-foundation.org>; Tue,  7 Apr 2020 15:14:50 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
- s=mimecast20190719; t=1586272489;
- h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
- to:to:cc:cc:mime-version:mime-version:content-type:content-type:
- content-transfer-encoding:content-transfer-encoding:
- in-reply-to:in-reply-to:references:references;
- bh=I3HE0reSfCDr1VSx9qdVWqxSYEu9yuUyo1SXBoLYuvY=;
- b=EHXEUI9U2Dj5SfHFPSoQVqpoZcpfHLCe/SOJnaq9cb9bVJt+jfWWhCX9+xVKvKAcFvUMbw
- Av/wRrfdpkhX2aQLWnPqqw3fftip/3D6uqV+WyyHbQbhpub0/eZvbLi3CG1CIBCDWjunYn
- zjXjlxPcMvsIDz6gYWL/TX+wwDVN/7g=
-Received: from mimecast-mx01.redhat.com (mimecast-mx01.redhat.com
- [209.132.183.4]) (Using TLS) by relay.mimecast.com with ESMTP id
- us-mta-409-aQ0w5x38MQqrakDLAtHK7g-1; Tue, 07 Apr 2020 11:14:45 -0400
-X-MC-Unique: aQ0w5x38MQqrakDLAtHK7g-1
-Received: from smtp.corp.redhat.com (int-mx01.intmail.prod.int.phx2.redhat.com
- [10.5.11.11])
- (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
- (No client certificate requested)
- by mimecast-mx01.redhat.com (Postfix) with ESMTPS id 97653107ACCA;
- Tue,  7 Apr 2020 15:14:43 +0000 (UTC)
-Received: from w520.home (ovpn-112-162.phx2.redhat.com [10.3.112.162])
- by smtp.corp.redhat.com (Postfix) with ESMTP id EFDFA114819;
- Tue,  7 Apr 2020 15:14:36 +0000 (UTC)
-Date: Tue, 7 Apr 2020 09:14:36 -0600
-From: Alex Williamson <alex.williamson@redhat.com>
-To: "Tian, Kevin" <kevin.tian@intel.com>
-Subject: Re: [PATCH v1 1/8] vfio: Add VFIO_IOMMU_PASID_REQUEST(alloc/free)
-Message-ID: <20200407091436.76e980f8@w520.home>
-In-Reply-To: <AADFC41AFE54684AB9EE6CBC0274A5D19D80E1AD@SHSMSX104.ccr.corp.intel.com>
-References: <1584880325-10561-1-git-send-email-yi.l.liu@intel.com>
- <1584880325-10561-2-git-send-email-yi.l.liu@intel.com>
- <20200402115017.0a0f55e2@w520.home>
- <AADFC41AFE54684AB9EE6CBC0274A5D19D807BB9@SHSMSX104.ccr.corp.intel.com>
- <20200403091424.39383958@w520.home>
- <AADFC41AFE54684AB9EE6CBC0274A5D19D80E1AD@SHSMSX104.ccr.corp.intel.com>
+ with ESMTP id 6FyyS+9kix19 for <iommu@lists.linux-foundation.org>;
+ Tue,  7 Apr 2020 15:26:46 +0000 (UTC)
+X-Greylist: from auto-whitelisted by SQLgrey-1.7.6
+Received: from theia.8bytes.org (8bytes.org [81.169.241.247])
+ by whitealder.osuosl.org (Postfix) with ESMTPS id 9BFBA87595
+ for <iommu@lists.linux-foundation.org>; Tue,  7 Apr 2020 15:26:46 +0000 (UTC)
+Received: by theia.8bytes.org (Postfix, from userid 1000)
+ id ACAB15D8; Tue,  7 Apr 2020 17:26:41 +0200 (CEST)
+Date: Tue, 7 Apr 2020 17:26:40 +0200
+From: Joerg Roedel <joro@8bytes.org>
+To: Linus Torvalds <torvalds@linux-foundation.org>
+Subject: [git pull] IOMMU Updates for Linux v5.7
+Message-ID: <20200407152635.GA10588@8bytes.org>
 MIME-Version: 1.0
-X-Scanned-By: MIMEDefang 2.79 on 10.5.11.11
-Cc: "jean-philippe@linaro.org" <jean-philippe@linaro.org>, "Raj,
- Ashok" <ashok.raj@intel.com>, "kvm@vger.kernel.org" <kvm@vger.kernel.org>,
- "Tian, Jun J" <jun.j.tian@intel.com>,
- "iommu@lists.linux-foundation.org" <iommu@lists.linux-foundation.org>,
- "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>, "Sun, 
- Yi Y" <yi.y.sun@intel.com>, "Wu, Hao" <hao.wu@intel.com>
+User-Agent: Mutt/1.10.1 (2018-07-13)
+Cc: iommu@lists.linux-foundation.org, linux-kernel@vger.kernel.org
 X-BeenThere: iommu@lists.linux-foundation.org
 X-Mailman-Version: 2.1.15
 Precedence: list
@@ -102,101 +67,181 @@ List-Post: <mailto:iommu@lists.linux-foundation.org>
 List-Help: <mailto:iommu-request@lists.linux-foundation.org?subject=help>
 List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
  <mailto:iommu-request@lists.linux-foundation.org?subject=subscribe>
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: 7bit
+Content-Type: multipart/mixed; boundary="===============2887158022787646631=="
 Errors-To: iommu-bounces@lists.linux-foundation.org
 Sender: "iommu" <iommu-bounces@lists.linux-foundation.org>
 
-On Tue, 7 Apr 2020 04:42:02 +0000
-"Tian, Kevin" <kevin.tian@intel.com> wrote:
 
-> > From: Alex Williamson
-> > Sent: Friday, April 3, 2020 11:14 PM
-> > 
-> > On Fri, 3 Apr 2020 05:58:55 +0000
-> > "Tian, Kevin" <kevin.tian@intel.com> wrote:
-> >   
-> > > > From: Alex Williamson <alex.williamson@redhat.com>
-> > > > Sent: Friday, April 3, 2020 1:50 AM
-> > > >
-> > > > On Sun, 22 Mar 2020 05:31:58 -0700
-> > > > "Liu, Yi L" <yi.l.liu@intel.com> wrote:
-> > > >  
-> > > > > From: Liu Yi L <yi.l.liu@intel.com>
-> > > > >
-> > > > > For a long time, devices have only one DMA address space from  
-> > platform  
-> > > > > IOMMU's point of view. This is true for both bare metal and directed-
-> > > > > access in virtualization environment. Reason is the source ID of DMA in
-> > > > > PCIe are BDF (bus/dev/fnc ID), which results in only device granularity
-> > > > > DMA isolation. However, this is changing with the latest advancement in
-> > > > > I/O technology area. More and more platform vendors are utilizing the  
-> > > > PCIe  
-> > > > > PASID TLP prefix in DMA requests, thus to give devices with multiple  
-> > DMA  
-> > > > > address spaces as identified by their individual PASIDs. For example,
-> > > > > Shared Virtual Addressing (SVA, a.k.a Shared Virtual Memory) is able to
-> > > > > let device access multiple process virtual address space by binding the
-> > > > > virtual address space with a PASID. Wherein the PASID is allocated in
-> > > > > software and programmed to device per device specific manner.  
-> > Devices  
-> > > > > which support PASID capability are called PASID-capable devices. If such
-> > > > > devices are passed through to VMs, guest software are also able to bind
-> > > > > guest process virtual address space on such devices. Therefore, the  
-> > guest  
-> > > > > software could reuse the bare metal software programming model,  
-> > which  
-> > > > > means guest software will also allocate PASID and program it to device
-> > > > > directly. This is a dangerous situation since it has potential PASID
-> > > > > conflicts and unauthorized address space access. It would be safer to
-> > > > > let host intercept in the guest software's PASID allocation. Thus PASID
-> > > > > are managed system-wide.  
-> > > >
-> > > > Providing an allocation interface only allows for collaborative usage
-> > > > of PASIDs though.  Do we have any ability to enforce PASID usage or can
-> > > > a user spoof other PASIDs on the same BDF?  
-> > >
-> > > An user can access only PASIDs allocated to itself, i.e. the specific IOASID
-> > > set tied to its mm_struct.  
-> > 
-> > A user is only _supposed_ to access PASIDs allocated to itself.  AIUI
-> > the mm_struct is used for managing the pool of IOASIDs from which the
-> > user may allocate that PASID.  We also state that programming the PASID
-> > into the device is device specific.  Therefore, are we simply trusting
-> > the user to use a PASID that's been allocated to them when they program
-> > the device?  If a user can program an arbitrary PASID into the device,
-> > then what prevents them from attempting to access data from another
-> > user via the device?   I think I've asked this question before, so if
-> > there's a previous explanation or spec section I need to review, please
-> > point me to it.  Thanks,
-> >   
-> 
-> There are two scenarios:
-> 
-> (1) for PF/VF, the iommu driver maintains an individual PASID table per
-> PDF. Although the PASID namespace is global, the per-BDF PASID table
-> contains only valid entries for those PASIDs which are allocated to the
-> mm_struct. The user is free to program arbitrary PASID into the assigned
-> device, but using invalid PASIDs simply hit iommu fault.
-> 
-> (2) for mdev, multiple mdev instances share the same PASID table of
-> the parent BDF. However, PASID programming is a privileged operation
-> in multiplexing usage, thus must be mediated by mdev device driver. 
-> The mediation logic will guarantee that only allocated PASIDs are 
-> forwarded to the device. 
+--===============2887158022787646631==
+Content-Type: multipart/signed; micalg=pgp-sha256;
+	protocol="application/pgp-signature"; boundary="HlL+5n6rz5pIUxbD"
+Content-Disposition: inline
 
-Thanks, I was confused about multiple tenants sharing a BDF when PASID
-programming to the device is device specific, and therefore not
-something we can virtualize.  However, the solution is device specific
-virtualization via mdev.  Thus, any time we're sharing a BDF between
-tenants, we must virtualize the PASID programming and therefore it must
-be an mdev device currently.  If a tenant is the exclusive user of the
-BDF, then no virtualization of the PASID programming is required.  I
-think it's clear now (again).  Thanks,
 
-Alex
+--HlL+5n6rz5pIUxbD
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+
+Hi Linus,
+
+The following changes since commit 16fbf79b0f83bc752cee8589279f1ebfe57b3b6e:
+
+  Linux 5.6-rc7 (2020-03-22 18:31:56 -0700)
+
+are available in the Git repository at:
+
+  git://git.kernel.org/pub/scm/linux/kernel/git/joro/iommu.git tags/iommu-updates-v5.7
+
+for you to fetch changes up to ff68eb23308e6538ec7864c83d39540f423bbe90:
+
+  Merge branches 'iommu/fixes', 'arm/qcom', 'arm/omap', 'arm/smmu', 'x86/amd', 'x86/vt-d', 'virtio' and 'core' into next (2020-03-27 11:33:27 +0100)
+
+----------------------------------------------------------------
+IOMMU Updates for Linux v5.7
+
+Including:
+
+	- ARM-SMMU support for the TLB range invalidation command in
+	  SMMUv3.2.
+
+	- ARM-SMMU introduction of command batching helpers to batch up
+	  CD and ATC invalidation.
+
+	- ARM-SMMU support for PCI PASID, along with necessary PCI
+	  symbol exports.
+
+	- Introduce a generic (actually rename an existing) IOMMU
+	  related pointer in struct device and reduce the IOMMU related
+	  pointers.
+
+	- Some fixes for the OMAP IOMMU driver to make it build on 64bit
+	  architectures.
+
+	- Various smaller fixes and improvements.
+
+----------------------------------------------------------------
+Adrian Huang (1):
+      iommu/amd: Fix the configuration of GCR3 table root pointer
+
+Gustavo A. R. Silva (1):
+      iommu/qcom: Replace zero-length array with flexible-array member
+
+Jacob Pan (3):
+      iommu/vt-d: Fix page request descriptor size
+      iommu/vt-d: Fix mm reference leak
+      iommu/vt-d: Add build dependency on IOASID
+
+Jean-Philippe Brucker (9):
+      iommu/virtio: Build virtio-iommu as module
+      PCI/ATS: Export symbols of PASID functions
+      iommu/arm-smmu-v3: Add support for PCI PASID
+      iommu/arm-smmu-v3: Write level-1 descriptors atomically
+      iommu/arm-smmu-v3: Add command queue batching helpers
+      iommu/arm-smmu-v3: Batch context descriptor invalidation
+      iommu/virtio: Fix sparse warning
+      iommu/virtio: Fix freeing of incomplete domains
+      iommu/virtio: Reject IOMMU page granule larger than PAGE_SIZE
+
+Joerg Roedel (17):
+      Merge tag 'arm-smmu-updates' of git://git.kernel.org/.../will/linux into arm/smmu
+      iommu: Define dev_iommu_fwspec_get() for !CONFIG_IOMMU_API
+      ACPI/IORT: Remove direct access of dev->iommu_fwspec
+      drm/msm/mdp5: Remove direct access of dev->iommu_fwspec
+      iommu/tegra-gart: Remove direct access of dev->iommu_fwspec
+      iommu: Rename struct iommu_param to dev_iommu
+      iommu: Move iommu_fwspec to struct dev_iommu
+      iommu/arm-smmu: Fix uninitilized variable warning
+      iommu: Introduce accessors for iommu private data
+      iommu/arm-smmu-v3: Use accessor functions for iommu private data
+      iommu/arm-smmu: Use accessor functions for iommu private data
+      iommu/renesas: Use accessor functions for iommu private data
+      iommu/mediatek: Use accessor functions for iommu private data
+      iommu/qcom: Use accessor functions for iommu private data
+      iommu/virtio: Use accessor functions for iommu private data
+      iommu: Move fwspec->iommu_priv to struct dev_iommu
+      Merge branches 'iommu/fixes', 'arm/qcom', 'arm/omap', 'arm/smmu', 'x86/amd', 'x86/vt-d', 'virtio' and 'core' into next
+
+Krzysztof Kozlowski (4):
+      iommu/omap: Fix pointer cast -Wpointer-to-int-cast warnings on 64 bit
+      iommu/omap: Fix printing format for size_t on 64-bit
+      iommu/omap: Fix -Woverflow warnings when compiling on 64-bit architectures
+      iommu: Enable compile testing for some of drivers
+
+Qian Cai (1):
+      iommu/vt-d: Silence RCU-list debugging warning in dmar_find_atsr()
+
+Rob Herring (2):
+      iommu/arm-smmu-v3: Batch ATC invalidation commands
+      iommu/arm-smmu-v3: Add SMMUv3.2 range invalidation support
+
+Robin Murphy (3):
+      iommu: Use C99 flexible array in fwspec
+      MAINTAINERS: Cover Arm SMMU DT bindings
+      iommu/arm-smmu: Refactor master_cfg/fwspec usage
+
+ MAINTAINERS                              |   1 +
+ drivers/acpi/arm64/iort.c                |   6 +-
+ drivers/gpu/drm/msm/disp/mdp5/mdp5_kms.c |   2 +-
+ drivers/iommu/Kconfig                    |  21 +--
+ drivers/iommu/amd_iommu_types.h          |   2 +-
+ drivers/iommu/arm-smmu-v3.c              | 214 ++++++++++++++++++++++++++-----
+ drivers/iommu/arm-smmu.c                 |  55 ++++----
+ drivers/iommu/intel-iommu.c              |   3 +-
+ drivers/iommu/intel-svm.c                |   9 +-
+ drivers/iommu/iommu.c                    |  46 ++++---
+ drivers/iommu/ipmmu-vmsa.c               |   7 +-
+ drivers/iommu/mtk_iommu.c                |  13 +-
+ drivers/iommu/mtk_iommu_v1.c             |  14 +-
+ drivers/iommu/omap-iommu.c               |  10 +-
+ drivers/iommu/omap-iopgtable.h           |   3 +-
+ drivers/iommu/qcom_iommu.c               |  63 +++++----
+ drivers/iommu/tegra-gart.c               |   2 +-
+ drivers/iommu/virtio-iommu.c             |  42 +++---
+ drivers/pci/ats.c                        |   4 +
+ include/linux/device.h                   |   9 +-
+ include/linux/iommu.h                    |  35 +++--
+ include/uapi/linux/virtio_iommu.h        |  12 +-
+ 22 files changed, 386 insertions(+), 187 deletions(-)
+
+The changes to 'include/linux/device.h' have been reviewed by Greg.
+
+Please pull.
+
+Thanks,
+
+	Joerg
+
+--HlL+5n6rz5pIUxbD
+Content-Type: application/pgp-signature; name="signature.asc"
+Content-Description: Digital signature
+
+-----BEGIN PGP SIGNATURE-----
+
+iQIzBAEBCAAdFiEEr9jSbILcajRFYWYyK/BELZcBGuMFAl6Mm6oACgkQK/BELZcB
+GuO6sg//dZtRWRQKKDiPuRQHlvPJyIorDO2OPvCk1eJWFAOwGyYQLnb1y38JUvZ/
+pCMo8p3iRvmJs+qpTHsZY7I9EvGEdTr/2j00XTrtNoZ51N3YR337648FnSIndSL2
+aLtTt9bMCbV3MF2beg9hxq8T34+94DdEoN/L22XjMnM1H8EDDxijGTDy8bvzhojX
+2Tvq+haDzlR3F6f9o+3lyv0Xv5tqRlzfPcbTmXeIG+9Ccanh4g3bn5+SN8CZhTKu
+GVsIb17HN/5vaTkMD5a5xt7BljfKXxhE8tt5lLkXIWWDQgbhWtJSY6paOnyEQn0U
+uTlHAGEEX8TvYeTofqQrk1zM7WU/FaRNhL8r1vFQFaqWAeb5FI2+nBIJzDBtT+Cw
+A3t4IAvkKoiXwDRFm04aKbvzy5by8hYC/p5XtV7Umw9OjJ6dvdH9hBZ99FKIv0pa
+lzMq+EGgUK1MTlLImffcSQFA3QI88m693pxlvC6GnrnpQ3317SNyBSveOe6rzKc+
+/n8W7BEpid1QcDJKQGfhfD5MOa3BQkSZSYv3t2mXn4Qk89eNINErlJELOGyVuqor
+paQkOkjNWwrKA9FrewUVv8Px5lz2yMjReLYrSTiutipQUhvTcE1z2DJ+1q2MJ78x
+pWyifx5BrVi5/0Iq5a1PCFEq6OenxgDqIgelhTLm4Wgw9frhRkA=
+=uNur
+-----END PGP SIGNATURE-----
+
+--HlL+5n6rz5pIUxbD--
+
+--===============2887158022787646631==
+Content-Type: text/plain; charset="us-ascii"
+MIME-Version: 1.0
+Content-Transfer-Encoding: 7bit
+Content-Disposition: inline
 
 _______________________________________________
 iommu mailing list
 iommu@lists.linux-foundation.org
 https://lists.linuxfoundation.org/mailman/listinfo/iommu
+--===============2887158022787646631==--
