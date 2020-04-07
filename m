@@ -4,48 +4,48 @@ X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 X-Spam-Level: 
 X-Spam-Status: No, score=-9.8 required=3.0 tests=HEADER_FROM_DIFFERENT_DOMAINS,
 	INCLUDES_PATCH,MAILING_LIST_MULTI,SIGNED_OFF_BY,SPF_HELO_NONE,SPF_PASS,
-	USER_AGENT_GIT autolearn=unavailable autolearn_force=no version=3.4.0
+	USER_AGENT_GIT autolearn=ham autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 11515C352B6
-	for <iommu@archiver.kernel.org>; Tue,  7 Apr 2020 18:38:44 +0000 (UTC)
-Received: from silver.osuosl.org (smtp3.osuosl.org [140.211.166.136])
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 0F0E5C2BB86
+	for <iommu@archiver.kernel.org>; Tue,  7 Apr 2020 18:38:46 +0000 (UTC)
+Received: from whitealder.osuosl.org (smtp1.osuosl.org [140.211.166.138])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by mail.kernel.org (Postfix) with ESMTPS id D86EE20857
-	for <iommu@archiver.kernel.org>; Tue,  7 Apr 2020 18:38:43 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org D86EE20857
+	by mail.kernel.org (Postfix) with ESMTPS id D35BD20857
+	for <iommu@archiver.kernel.org>; Tue,  7 Apr 2020 18:38:45 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org D35BD20857
 Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=8bytes.org
 Authentication-Results: mail.kernel.org; spf=pass smtp.mailfrom=iommu-bounces@lists.linux-foundation.org
 Received: from localhost (localhost [127.0.0.1])
-	by silver.osuosl.org (Postfix) with ESMTP id CA629221C6;
-	Tue,  7 Apr 2020 18:38:43 +0000 (UTC)
+	by whitealder.osuosl.org (Postfix) with ESMTP id B2D2B87857;
+	Tue,  7 Apr 2020 18:38:45 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from silver.osuosl.org ([127.0.0.1])
+Received: from whitealder.osuosl.org ([127.0.0.1])
 	by localhost (.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
-	with ESMTP id PRB3kCiHXNs3; Tue,  7 Apr 2020 18:38:39 +0000 (UTC)
+	with ESMTP id 4v4qKPiFnqsY; Tue,  7 Apr 2020 18:38:43 +0000 (UTC)
 Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [140.211.9.56])
-	by silver.osuosl.org (Postfix) with ESMTP id ABA23221D9;
-	Tue,  7 Apr 2020 18:38:20 +0000 (UTC)
+	by whitealder.osuosl.org (Postfix) with ESMTP id 676188803D;
+	Tue,  7 Apr 2020 18:38:21 +0000 (UTC)
 Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
-	by lists.linuxfoundation.org (Postfix) with ESMTP id 8AC7BC1D85;
-	Tue,  7 Apr 2020 18:38:20 +0000 (UTC)
-Received: from hemlock.osuosl.org (smtp2.osuosl.org [140.211.166.133])
- by lists.linuxfoundation.org (Postfix) with ESMTP id 15E2CC0177;
+	by lists.linuxfoundation.org (Postfix) with ESMTP id 560B8C1D85;
+	Tue,  7 Apr 2020 18:38:21 +0000 (UTC)
+Received: from whitealder.osuosl.org (smtp1.osuosl.org [140.211.166.138])
+ by lists.linuxfoundation.org (Postfix) with ESMTP id 1AE56C1AE2;
  Tue,  7 Apr 2020 18:38:07 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
- by hemlock.osuosl.org (Postfix) with ESMTP id DDC0787D8E;
- Tue,  7 Apr 2020 18:38:06 +0000 (UTC)
+ by whitealder.osuosl.org (Postfix) with ESMTP id 078A08796B;
+ Tue,  7 Apr 2020 18:38:07 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from hemlock.osuosl.org ([127.0.0.1])
+Received: from whitealder.osuosl.org ([127.0.0.1])
  by localhost (.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
- with ESMTP id cLt0iZgn+7pH; Tue,  7 Apr 2020 18:38:04 +0000 (UTC)
+ with ESMTP id 52lsG9pLY6Yq; Tue,  7 Apr 2020 18:38:04 +0000 (UTC)
 X-Greylist: from auto-whitelisted by SQLgrey-1.7.6
 X-Greylist: from auto-whitelisted by SQLgrey-1.7.6
 Received: from theia.8bytes.org (8bytes.org [81.169.241.247])
- by hemlock.osuosl.org (Postfix) with ESMTPS id 8C8D887E6C;
- Tue,  7 Apr 2020 18:38:01 +0000 (UTC)
+ by whitealder.osuosl.org (Postfix) with ESMTPS id A41B287BE0;
+ Tue,  7 Apr 2020 18:37:58 +0000 (UTC)
 Received: by theia.8bytes.org (Postfix, from userid 1000)
- id 9C8DB5BB; Tue,  7 Apr 2020 20:37:52 +0200 (CEST)
+ id DA73D455; Tue,  7 Apr 2020 20:37:50 +0200 (CEST)
 From: Joerg Roedel <joro@8bytes.org>
 To: Joerg Roedel <joro@8bytes.org>, Will Deacon <will@kernel.org>,
  Robin Murphy <robin.murphy@arm.com>,
@@ -60,10 +60,10 @@ To: Joerg Roedel <joro@8bytes.org>, Will Deacon <will@kernel.org>,
  Thierry Reding <thierry.reding@gmail.com>,
  Jonathan Hunter <jonathanh@nvidia.com>,
  Jean-Philippe Brucker <jean-philippe@linaro.org>
-Subject: [RFC PATCH 23/34] iommu/mediatek: Convert to probe/release_device()
- call-backs
-Date: Tue,  7 Apr 2020 20:37:31 +0200
-Message-Id: <20200407183742.4344-24-joro@8bytes.org>
+Subject: [RFC PATCH 13/34] iommu: Export bus_iommu_probe() and make is safe
+ for re-probing
+Date: Tue,  7 Apr 2020 20:37:21 +0200
+Message-Id: <20200407183742.4344-14-joro@8bytes.org>
 X-Mailer: git-send-email 2.17.1
 In-Reply-To: <20200407183742.4344-1-joro@8bytes.org>
 References: <20200407183742.4344-1-joro@8bytes.org>
@@ -92,73 +92,52 @@ Sender: "iommu" <iommu-bounces@lists.linux-foundation.org>
 
 From: Joerg Roedel <jroedel@suse.de>
 
-Convert the Mediatek IOMMU driver to use the probe_device() and
-release_device() call-backs of iommu_ops, so that the iommu core code
-does the group and sysfs setup.
+Add a check to the bus_iommu_probe() call-path to make sure it ignores
+devices which have already been successfully probed. Then export the
+bus_iommu_probe() function so it can be used by IOMMU drivers.
 
 Signed-off-by: Joerg Roedel <jroedel@suse.de>
 ---
- drivers/iommu/mtk_iommu.c | 24 ++++++------------------
- 1 file changed, 6 insertions(+), 18 deletions(-)
+ drivers/iommu/iommu.c | 6 +++++-
+ include/linux/iommu.h | 1 +
+ 2 files changed, 6 insertions(+), 1 deletion(-)
 
-diff --git a/drivers/iommu/mtk_iommu.c b/drivers/iommu/mtk_iommu.c
-index 5f4d6df59cf6..2be96f1cdbd2 100644
---- a/drivers/iommu/mtk_iommu.c
-+++ b/drivers/iommu/mtk_iommu.c
-@@ -441,38 +441,26 @@ static phys_addr_t mtk_iommu_iova_to_phys(struct iommu_domain *domain,
- 	return pa;
+diff --git a/drivers/iommu/iommu.c b/drivers/iommu/iommu.c
+index 844613850595..cf25c1e48830 100644
+--- a/drivers/iommu/iommu.c
++++ b/drivers/iommu/iommu.c
+@@ -1615,6 +1615,10 @@ static int probe_iommu_group(struct device *dev, void *data)
+ 	if (!dev_iommu_get(dev))
+ 		return -ENOMEM;
+ 
++	/* Device is probed already if in a group */
++	if (iommu_group_get(dev) != NULL)
++		return 0;
++
+ 	if (!try_module_get(ops->owner)) {
+ 		ret = -EINVAL;
+ 		goto err_free_dev_iommu;
+@@ -1783,7 +1787,7 @@ static int iommu_group_create_direct_mappings(struct iommu_group *group)
+ 					  iommu_do_create_direct_mappings);
  }
  
--static int mtk_iommu_add_device(struct device *dev)
-+static struct iommu_device *mtk_iommu_probe_device(struct device *dev)
+-static int bus_iommu_probe(struct bus_type *bus)
++int bus_iommu_probe(struct bus_type *bus)
  {
- 	struct iommu_fwspec *fwspec = dev_iommu_fwspec_get(dev);
- 	struct mtk_iommu_data *data;
--	struct iommu_group *group;
+ 	const struct iommu_ops *ops = bus->iommu_ops;
+ 	int ret;
+diff --git a/include/linux/iommu.h b/include/linux/iommu.h
+index 30170d191e5e..fea1622408ad 100644
+--- a/include/linux/iommu.h
++++ b/include/linux/iommu.h
+@@ -445,6 +445,7 @@ static inline void iommu_iotlb_gather_init(struct iommu_iotlb_gather *gather)
+ #define IOMMU_GROUP_NOTIFY_UNBOUND_DRIVER	6 /* Post Driver unbind */
  
- 	if (!fwspec || fwspec->ops != &mtk_iommu_ops)
--		return -ENODEV; /* Not a iommu client device */
-+		return ERR_PTR(-ENODEV); /* Not a iommu client device */
- 
- 	data = dev_iommu_priv_get(dev);
--	iommu_device_link(&data->iommu, dev);
- 
--	group = iommu_group_get_for_dev(dev);
--	if (IS_ERR(group))
--		return PTR_ERR(group);
--
--	iommu_group_put(group);
--	return 0;
-+	return &data->iommu;
- }
- 
--static void mtk_iommu_remove_device(struct device *dev)
-+static void mtk_iommu_release_device(struct device *dev)
- {
- 	struct iommu_fwspec *fwspec = dev_iommu_fwspec_get(dev);
--	struct mtk_iommu_data *data;
- 
- 	if (!fwspec || fwspec->ops != &mtk_iommu_ops)
- 		return;
- 
--	data = dev_iommu_priv_get(dev);
--	iommu_device_unlink(&data->iommu, dev);
--
--	iommu_group_remove_device(dev);
- 	iommu_fwspec_free(dev);
- }
- 
-@@ -526,8 +514,8 @@ static const struct iommu_ops mtk_iommu_ops = {
- 	.flush_iotlb_all = mtk_iommu_flush_iotlb_all,
- 	.iotlb_sync	= mtk_iommu_iotlb_sync,
- 	.iova_to_phys	= mtk_iommu_iova_to_phys,
--	.add_device	= mtk_iommu_add_device,
--	.remove_device	= mtk_iommu_remove_device,
-+	.probe_device	= mtk_iommu_probe_device,
-+	.release_device	= mtk_iommu_release_device,
- 	.device_group	= mtk_iommu_device_group,
- 	.of_xlate	= mtk_iommu_of_xlate,
- 	.pgsize_bitmap	= SZ_4K | SZ_64K | SZ_1M | SZ_16M,
+ extern int bus_set_iommu(struct bus_type *bus, const struct iommu_ops *ops);
++extern int bus_iommu_probe(struct bus_type *bus);
+ extern bool iommu_present(struct bus_type *bus);
+ extern bool iommu_capable(struct bus_type *bus, enum iommu_cap cap);
+ extern struct iommu_domain *iommu_domain_alloc(struct bus_type *bus);
 -- 
 2.17.1
 
