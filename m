@@ -4,48 +4,48 @@ X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 X-Spam-Level: 
 X-Spam-Status: No, score=-9.8 required=3.0 tests=HEADER_FROM_DIFFERENT_DOMAINS,
 	INCLUDES_PATCH,MAILING_LIST_MULTI,SIGNED_OFF_BY,SPF_HELO_NONE,SPF_PASS,
-	USER_AGENT_GIT autolearn=unavailable autolearn_force=no version=3.4.0
+	USER_AGENT_GIT autolearn=ham autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 4754CC352B6
-	for <iommu@archiver.kernel.org>; Tue,  7 Apr 2020 18:38:47 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id DF7FBC2BBC7
+	for <iommu@archiver.kernel.org>; Tue,  7 Apr 2020 18:38:51 +0000 (UTC)
 Received: from whitealder.osuosl.org (smtp1.osuosl.org [140.211.166.138])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by mail.kernel.org (Postfix) with ESMTPS id 1CF0F20857
-	for <iommu@archiver.kernel.org>; Tue,  7 Apr 2020 18:38:47 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 1CF0F20857
+	by mail.kernel.org (Postfix) with ESMTPS id B5F6720B1F
+	for <iommu@archiver.kernel.org>; Tue,  7 Apr 2020 18:38:51 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org B5F6720B1F
 Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=8bytes.org
 Authentication-Results: mail.kernel.org; spf=pass smtp.mailfrom=iommu-bounces@lists.linux-foundation.org
 Received: from localhost (localhost [127.0.0.1])
-	by whitealder.osuosl.org (Postfix) with ESMTP id F0E96862C7;
-	Tue,  7 Apr 2020 18:38:46 +0000 (UTC)
+	by whitealder.osuosl.org (Postfix) with ESMTP id A2362878BE;
+	Tue,  7 Apr 2020 18:38:51 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
 Received: from whitealder.osuosl.org ([127.0.0.1])
 	by localhost (.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
-	with ESMTP id YQQhEAB8C-Ms; Tue,  7 Apr 2020 18:38:44 +0000 (UTC)
+	with ESMTP id Hw7-etPFOO82; Tue,  7 Apr 2020 18:38:46 +0000 (UTC)
 Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [140.211.9.56])
-	by whitealder.osuosl.org (Postfix) with ESMTP id 9278288011;
-	Tue,  7 Apr 2020 18:38:21 +0000 (UTC)
+	by whitealder.osuosl.org (Postfix) with ESMTP id 30DB988072;
+	Tue,  7 Apr 2020 18:38:22 +0000 (UTC)
 Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
-	by lists.linuxfoundation.org (Postfix) with ESMTP id 80FBBC1D8D;
-	Tue,  7 Apr 2020 18:38:21 +0000 (UTC)
-Received: from fraxinus.osuosl.org (smtp4.osuosl.org [140.211.166.137])
- by lists.linuxfoundation.org (Postfix) with ESMTP id 2FAD9C1D85;
- Tue,  7 Apr 2020 18:38:07 +0000 (UTC)
+	by lists.linuxfoundation.org (Postfix) with ESMTP id 1CD6FC1D85;
+	Tue,  7 Apr 2020 18:38:22 +0000 (UTC)
+Received: from whitealder.osuosl.org (smtp1.osuosl.org [140.211.166.138])
+ by lists.linuxfoundation.org (Postfix) with ESMTP id DA108C0177;
+ Tue,  7 Apr 2020 18:38:08 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
- by fraxinus.osuosl.org (Postfix) with ESMTP id 1CC4F855CF;
- Tue,  7 Apr 2020 18:38:07 +0000 (UTC)
+ by whitealder.osuosl.org (Postfix) with ESMTP id C0F9487F31;
+ Tue,  7 Apr 2020 18:38:08 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from fraxinus.osuosl.org ([127.0.0.1])
+Received: from whitealder.osuosl.org ([127.0.0.1])
  by localhost (.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
- with ESMTP id M0y1ML6ncry6; Tue,  7 Apr 2020 18:38:04 +0000 (UTC)
+ with ESMTP id i1S2gXQ55DWb; Tue,  7 Apr 2020 18:38:02 +0000 (UTC)
 X-Greylist: from auto-whitelisted by SQLgrey-1.7.6
 X-Greylist: from auto-whitelisted by SQLgrey-1.7.6
 Received: from theia.8bytes.org (8bytes.org [81.169.241.247])
- by fraxinus.osuosl.org (Postfix) with ESMTPS id 0C59D85F33;
- Tue,  7 Apr 2020 18:38:04 +0000 (UTC)
+ by whitealder.osuosl.org (Postfix) with ESMTPS id 38C9187967;
+ Tue,  7 Apr 2020 18:37:58 +0000 (UTC)
 Received: by theia.8bytes.org (Postfix, from userid 1000)
- id 51AD96A1; Tue,  7 Apr 2020 20:37:54 +0200 (CEST)
+ id B761F2E7; Tue,  7 Apr 2020 20:37:49 +0200 (CEST)
 From: Joerg Roedel <joro@8bytes.org>
 To: Joerg Roedel <joro@8bytes.org>, Will Deacon <will@kernel.org>,
  Robin Murphy <robin.murphy@arm.com>,
@@ -60,10 +60,10 @@ To: Joerg Roedel <joro@8bytes.org>, Will Deacon <will@kernel.org>,
  Thierry Reding <thierry.reding@gmail.com>,
  Jonathan Hunter <jonathanh@nvidia.com>,
  Jean-Philippe Brucker <jean-philippe@linaro.org>
-Subject: [RFC PATCH 30/34] iommu/omap: Convert to probe/release_device()
- call-backs
-Date: Tue,  7 Apr 2020 20:37:38 +0200
-Message-Id: <20200407183742.4344-31-joro@8bytes.org>
+Subject: [RFC PATCH 08/34] iommu: Move default domain allocation to
+ iommu_probe_device()
+Date: Tue,  7 Apr 2020 20:37:16 +0200
+Message-Id: <20200407183742.4344-9-joro@8bytes.org>
 X-Mailer: git-send-email 2.17.1
 In-Reply-To: <20200407183742.4344-1-joro@8bytes.org>
 References: <20200407183742.4344-1-joro@8bytes.org>
@@ -92,140 +92,182 @@ Sender: "iommu" <iommu-bounces@lists.linux-foundation.org>
 
 From: Joerg Roedel <jroedel@suse.de>
 
-Convert the OMAP IOMMU driver to use the probe_device() and
-release_device() call-backs of iommu_ops, so that the iommu core code
-does the group and sysfs setup.
+Well, not really. The call to iommu_alloc_default_domain() in
+iommu_group_get_for_dev() has to stay around as long as there are
+IOMMU drivers using the add/remove_device() call-backs instead of
+probe/release_device().
+
+Those drivers expect that iommu_group_get_for_dev() returns the device
+attached to a group and the group set up with a default domain (and
+the device attached to the groups current domain).
+
+But when all drivers are converted this compatability mess can be
+removed.
 
 Signed-off-by: Joerg Roedel <jroedel@suse.de>
 ---
- drivers/iommu/omap-iommu.c | 49 ++++++++++----------------------------
- 1 file changed, 13 insertions(+), 36 deletions(-)
+ drivers/iommu/iommu.c | 102 +++++++++++++++++++++++++++++-------------
+ 1 file changed, 71 insertions(+), 31 deletions(-)
 
-diff --git a/drivers/iommu/omap-iommu.c b/drivers/iommu/omap-iommu.c
-index ecc9d0829a91..6699fe6d9e06 100644
---- a/drivers/iommu/omap-iommu.c
-+++ b/drivers/iommu/omap-iommu.c
-@@ -1640,15 +1640,13 @@ static phys_addr_t omap_iommu_iova_to_phys(struct iommu_domain *domain,
- 	return ret;
+diff --git a/drivers/iommu/iommu.c b/drivers/iommu/iommu.c
+index 6cfe7799dc8c..7a385c18e1a5 100644
+--- a/drivers/iommu/iommu.c
++++ b/drivers/iommu/iommu.c
+@@ -79,6 +79,16 @@ static bool iommu_cmd_line_dma_api(void)
+ 	return !!(iommu_cmd_line & IOMMU_CMD_LINE_DMA_API);
  }
  
--static int omap_iommu_add_device(struct device *dev)
-+static struct iommu_device *omap_iommu_probe_device(struct device *dev)
- {
- 	struct omap_iommu_arch_data *arch_data, *tmp;
-+	struct platform_device *pdev;
- 	struct omap_iommu *oiommu;
--	struct iommu_group *group;
- 	struct device_node *np;
--	struct platform_device *pdev;
- 	int num_iommus, i;
--	int ret;
- 
- 	/*
- 	 * Allocate the archdata iommu structure for DT-based devices.
-@@ -1657,7 +1655,7 @@ static int omap_iommu_add_device(struct device *dev)
- 	 * IOMMU users.
- 	 */
- 	if (!dev->of_node)
--		return 0;
-+		return ERR_PTR(-ENODEV);
- 
- 	/*
- 	 * retrieve the count of IOMMU nodes using phandle size as element size
-@@ -1670,27 +1668,27 @@ static int omap_iommu_add_device(struct device *dev)
- 
- 	arch_data = kcalloc(num_iommus + 1, sizeof(*arch_data), GFP_KERNEL);
- 	if (!arch_data)
--		return -ENOMEM;
-+		return ERR_PTR(-ENOMEM);
- 
- 	for (i = 0, tmp = arch_data; i < num_iommus; i++, tmp++) {
- 		np = of_parse_phandle(dev->of_node, "iommus", i);
- 		if (!np) {
- 			kfree(arch_data);
--			return -EINVAL;
-+			return ERR_PTR(-EINVAL);
- 		}
- 
- 		pdev = of_find_device_by_node(np);
- 		if (!pdev) {
- 			of_node_put(np);
- 			kfree(arch_data);
--			return -ENODEV;
-+			return ERR_PTR(-ENODEV);
- 		}
- 
- 		oiommu = platform_get_drvdata(pdev);
- 		if (!oiommu) {
- 			of_node_put(np);
- 			kfree(arch_data);
--			return -EINVAL;
-+			return ERR_PTR(-EINVAL);
- 		}
- 
- 		tmp->iommu_dev = oiommu;
-@@ -1699,46 +1697,25 @@ static int omap_iommu_add_device(struct device *dev)
- 		of_node_put(np);
++static int iommu_alloc_default_domain(struct device *dev);
++static struct iommu_domain *__iommu_domain_alloc(struct bus_type *bus,
++						 unsigned type);
++static int __iommu_attach_device(struct iommu_domain *domain,
++				 struct device *dev);
++static int __iommu_attach_group(struct iommu_domain *domain,
++				struct iommu_group *group);
++static void __iommu_detach_group(struct iommu_domain *domain,
++				 struct iommu_group *group);
++
+ #define IOMMU_GROUP_ATTR(_name, _mode, _show, _store)		\
+ struct iommu_group_attribute iommu_group_attr_##_name =		\
+ 	__ATTR(_name, _mode, _show, _store)
+@@ -221,10 +231,29 @@ int iommu_probe_device(struct device *dev)
+ 		goto err_free_dev_param;
  	}
  
-+	dev->archdata.iommu = arch_data;
+-	if (ops->probe_device)
++	if (ops->probe_device) {
++		struct iommu_group *group;
 +
- 	/*
- 	 * use the first IOMMU alone for the sysfs device linking.
- 	 * TODO: Evaluate if a single iommu_group needs to be
- 	 * maintained for both IOMMUs
- 	 */
- 	oiommu = arch_data->iommu_dev;
--	ret = iommu_device_link(&oiommu->iommu, dev);
--	if (ret) {
--		kfree(arch_data);
--		return ret;
--	}
--
--	dev->archdata.iommu = arch_data;
--
--	/*
--	 * IOMMU group initialization calls into omap_iommu_device_group, which
--	 * needs a valid dev->archdata.iommu pointer
--	 */
--	group = iommu_group_get_for_dev(dev);
--	if (IS_ERR(group)) {
--		iommu_device_unlink(&oiommu->iommu, dev);
--		dev->archdata.iommu = NULL;
--		kfree(arch_data);
--		return PTR_ERR(group);
--	}
--	iommu_group_put(group);
+ 		ret = __iommu_probe_device(dev);
+-	else
++
++		/*
++		 * Try to allocate a default domain - needs support from the
++		 * IOMMU driver. There are still some drivers which don't
++		 * support default domains, so the return value is not yet
++		 * checked.
++		 */
++		if (!ret)
++			iommu_alloc_default_domain(dev);
++
++		group = iommu_group_get(dev);
++		if (group && group->default_domain) {
++			ret = __iommu_attach_device(group->default_domain, dev);
++			iommu_group_put(group);
++		}
++
++	} else {
+ 		ret = ops->add_device(dev);
++	}
  
--	return 0;
-+	return &oiommu->iommu;
+ 	if (ret)
+ 		goto err_module_put;
+@@ -268,15 +297,6 @@ void iommu_release_device(struct device *dev)
+ 	dev_iommu_free(dev);
  }
  
--static void omap_iommu_remove_device(struct device *dev)
-+static void omap_iommu_release_device(struct device *dev)
- {
- 	struct omap_iommu_arch_data *arch_data = dev->archdata.iommu;
- 
- 	if (!dev->of_node || !arch_data)
- 		return;
- 
--	iommu_device_unlink(&arch_data->iommu_dev->iommu, dev);
--	iommu_group_remove_device(dev);
+-static struct iommu_domain *__iommu_domain_alloc(struct bus_type *bus,
+-						 unsigned type);
+-static int __iommu_attach_device(struct iommu_domain *domain,
+-				 struct device *dev);
+-static int __iommu_attach_group(struct iommu_domain *domain,
+-				struct iommu_group *group);
+-static void __iommu_detach_group(struct iommu_domain *domain,
+-				 struct iommu_group *group);
 -
- 	dev->archdata.iommu = NULL;
- 	kfree(arch_data);
+ static int __init iommu_set_def_domain_type(char *str)
+ {
+ 	bool pt;
+@@ -1423,25 +1443,18 @@ static int iommu_get_def_domain_type(struct device *dev)
+ 	return (type == 0) ? iommu_def_domain_type : type;
+ }
  
-@@ -1763,8 +1740,8 @@ static const struct iommu_ops omap_iommu_ops = {
- 	.map		= omap_iommu_map,
- 	.unmap		= omap_iommu_unmap,
- 	.iova_to_phys	= omap_iommu_iova_to_phys,
--	.add_device	= omap_iommu_add_device,
--	.remove_device	= omap_iommu_remove_device,
-+	.probe_device	= omap_iommu_probe_device,
-+	.release_device	= omap_iommu_release_device,
- 	.device_group	= omap_iommu_device_group,
- 	.pgsize_bitmap	= OMAP_IOMMU_PGSIZES,
- };
+-static int iommu_alloc_default_domain(struct device *dev,
+-				      struct iommu_group *group)
++static int iommu_group_alloc_default_domain(struct bus_type *bus,
++					    struct iommu_group *group,
++					    unsigned int type)
+ {
+ 	struct iommu_domain *dom;
+-	unsigned int type;
+-
+-	if (group->default_domain)
+-		return 0;
+ 
+-	type = iommu_get_def_domain_type(dev);
+-
+-	dom = __iommu_domain_alloc(dev->bus, type);
++	dom = __iommu_domain_alloc(bus, type);
+ 	if (!dom && type != IOMMU_DOMAIN_DMA) {
+-		dom = __iommu_domain_alloc(dev->bus, IOMMU_DOMAIN_DMA);
+-		if (dom) {
+-			dev_warn(dev,
+-				 "failed to allocate default IOMMU domain of type %u; falling back to IOMMU_DOMAIN_DMA",
+-				 type);
+-		}
++		dom = __iommu_domain_alloc(bus, IOMMU_DOMAIN_DMA);
++		if (dom)
++			pr_warn("Failed to allocate default IOMMU domain of type %u for group %s - Falling back to IOMMU_DOMAIN_DMA",
++				type, group->name);
+ 	}
+ 
+ 	if (!dom)
+@@ -1461,6 +1474,23 @@ static int iommu_alloc_default_domain(struct device *dev,
+ 	return 0;
+ }
+ 
++static int iommu_alloc_default_domain(struct device *dev)
++{
++	struct iommu_group *group;
++	unsigned int type;
++
++	group = iommu_group_get(dev);
++	if (!group)
++		return -ENODEV;
++
++	if (group->default_domain)
++		return 0;
++
++	type = iommu_get_def_domain_type(dev);
++
++	return iommu_group_alloc_default_domain(dev->bus, group, type);
++}
++
+ /**
+  * iommu_group_get_for_dev - Find or create the IOMMU group for a device
+  * @dev: target device
+@@ -1491,16 +1521,26 @@ struct iommu_group *iommu_group_get_for_dev(struct device *dev)
+ 	if (IS_ERR(group))
+ 		return group;
+ 
++	ret = iommu_group_add_device(group, dev);
++	if (ret)
++		goto out_put_group;
++
+ 	/*
+ 	 * Try to allocate a default domain - needs support from the
+ 	 * IOMMU driver. There are still some drivers which don't support
+-	 * default domains, so the return value is not yet checked.
++	 * default domains, so the return value is not yet checked. Only
++	 * allocate the domain here when the driver still has the
++	 * add_device/remove_device call-backs implemented.
+ 	 */
+-	iommu_alloc_default_domain(dev, group);
++	if (!ops->probe_device) {
++		iommu_alloc_default_domain(dev);
+ 
+-	ret = iommu_group_add_device(group, dev);
+-	if (ret)
+-		goto out_put_group;
++		if (group->default_domain)
++			ret = __iommu_attach_device(group->default_domain, dev);
++
++		if (ret)
++			goto out_put_group;
++	}
+ 
+ 	return group;
+ 
 -- 
 2.17.1
 
