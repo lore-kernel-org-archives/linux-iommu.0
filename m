@@ -6,46 +6,46 @@ X-Spam-Status: No, score=-9.8 required=3.0 tests=HEADER_FROM_DIFFERENT_DOMAINS,
 	INCLUDES_PATCH,MAILING_LIST_MULTI,SIGNED_OFF_BY,SPF_HELO_NONE,SPF_PASS,
 	USER_AGENT_GIT autolearn=ham autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 065A1C2BA1A
-	for <iommu@archiver.kernel.org>; Tue,  7 Apr 2020 18:38:07 +0000 (UTC)
-Received: from hemlock.osuosl.org (smtp2.osuosl.org [140.211.166.133])
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 08D69C2BB86
+	for <iommu@archiver.kernel.org>; Tue,  7 Apr 2020 18:38:09 +0000 (UTC)
+Received: from whitealder.osuosl.org (smtp1.osuosl.org [140.211.166.138])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by mail.kernel.org (Postfix) with ESMTPS id C803A20768
-	for <iommu@archiver.kernel.org>; Tue,  7 Apr 2020 18:38:06 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org C803A20768
+	by mail.kernel.org (Postfix) with ESMTPS id D230C20768
+	for <iommu@archiver.kernel.org>; Tue,  7 Apr 2020 18:38:07 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org D230C20768
 Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=8bytes.org
 Authentication-Results: mail.kernel.org; spf=pass smtp.mailfrom=iommu-bounces@lists.linux-foundation.org
 Received: from localhost (localhost [127.0.0.1])
-	by hemlock.osuosl.org (Postfix) with ESMTP id ABA2287D86;
-	Tue,  7 Apr 2020 18:38:06 +0000 (UTC)
+	by whitealder.osuosl.org (Postfix) with ESMTP id 1F62487BE0;
+	Tue,  7 Apr 2020 18:38:07 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from hemlock.osuosl.org ([127.0.0.1])
+Received: from whitealder.osuosl.org ([127.0.0.1])
 	by localhost (.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
-	with ESMTP id WwQfULl+PofL; Tue,  7 Apr 2020 18:38:01 +0000 (UTC)
+	with ESMTP id VTkbjziNNFKD; Tue,  7 Apr 2020 18:38:01 +0000 (UTC)
 Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [140.211.9.56])
-	by hemlock.osuosl.org (Postfix) with ESMTP id C63B287E0B;
-	Tue,  7 Apr 2020 18:37:59 +0000 (UTC)
+	by whitealder.osuosl.org (Postfix) with ESMTP id 51AC6879AE;
+	Tue,  7 Apr 2020 18:37:58 +0000 (UTC)
 Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
-	by lists.linuxfoundation.org (Postfix) with ESMTP id ADD7DC1D8E;
-	Tue,  7 Apr 2020 18:37:59 +0000 (UTC)
-Received: from fraxinus.osuosl.org (smtp4.osuosl.org [140.211.166.137])
- by lists.linuxfoundation.org (Postfix) with ESMTP id 7CE41C0177;
- Tue,  7 Apr 2020 18:37:57 +0000 (UTC)
+	by lists.linuxfoundation.org (Postfix) with ESMTP id 35247C1AE2;
+	Tue,  7 Apr 2020 18:37:58 +0000 (UTC)
+Received: from silver.osuosl.org (smtp3.osuosl.org [140.211.166.136])
+ by lists.linuxfoundation.org (Postfix) with ESMTP id A786CC0177;
+ Tue,  7 Apr 2020 18:37:55 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
- by fraxinus.osuosl.org (Postfix) with ESMTP id 6CB0785C86;
- Tue,  7 Apr 2020 18:37:57 +0000 (UTC)
+ by silver.osuosl.org (Postfix) with ESMTP id 879522047E;
+ Tue,  7 Apr 2020 18:37:55 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from fraxinus.osuosl.org ([127.0.0.1])
+Received: from silver.osuosl.org ([127.0.0.1])
  by localhost (.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
- with ESMTP id D0-CACEr6ke5; Tue,  7 Apr 2020 18:37:56 +0000 (UTC)
+ with ESMTP id ALHOBJ-4txdb; Tue,  7 Apr 2020 18:37:53 +0000 (UTC)
 X-Greylist: from auto-whitelisted by SQLgrey-1.7.6
 X-Greylist: from auto-whitelisted by SQLgrey-1.7.6
 Received: from theia.8bytes.org (8bytes.org [81.169.241.247])
- by fraxinus.osuosl.org (Postfix) with ESMTPS id 3802285C52;
- Tue,  7 Apr 2020 18:37:56 +0000 (UTC)
+ by silver.osuosl.org (Postfix) with ESMTPS id 8750B20385;
+ Tue,  7 Apr 2020 18:37:53 +0000 (UTC)
 Received: by theia.8bytes.org (Postfix, from userid 1000)
- id 359A91D4; Tue,  7 Apr 2020 20:37:49 +0200 (CEST)
+ id A093293; Tue,  7 Apr 2020 20:37:48 +0200 (CEST)
 From: Joerg Roedel <joro@8bytes.org>
 To: Joerg Roedel <joro@8bytes.org>, Will Deacon <will@kernel.org>,
  Robin Murphy <robin.murphy@arm.com>,
@@ -60,9 +60,9 @@ To: Joerg Roedel <joro@8bytes.org>, Will Deacon <will@kernel.org>,
  Thierry Reding <thierry.reding@gmail.com>,
  Jonathan Hunter <jonathanh@nvidia.com>,
  Jean-Philippe Brucker <jean-philippe@linaro.org>
-Subject: [RFC PATCH 05/34] iommu/amd: Remove dma_mask check from check_device()
-Date: Tue,  7 Apr 2020 20:37:13 +0200
-Message-Id: <20200407183742.4344-6-joro@8bytes.org>
+Subject: [RFC PATCH 02/34] iommu: Add def_domain_type() callback in iommu_ops
+Date: Tue,  7 Apr 2020 20:37:10 +0200
+Message-Id: <20200407183742.4344-3-joro@8bytes.org>
 X-Mailer: git-send-email 2.17.1
 In-Reply-To: <20200407183742.4344-1-joro@8bytes.org>
 References: <20200407183742.4344-1-joro@8bytes.org>
@@ -89,29 +89,100 @@ Content-Transfer-Encoding: 7bit
 Errors-To: iommu-bounces@lists.linux-foundation.org
 Sender: "iommu" <iommu-bounces@lists.linux-foundation.org>
 
-From: Joerg Roedel <jroedel@suse.de>
+From: Sai Praneeth Prakhya <sai.praneeth.prakhya@intel.com>
 
-The check was only needed for the DMA-API implementation in the AMD
-IOMMU driver, which no longer exists.
+Some devices are reqired to use a specific type (identity or dma)
+of default domain when they are used with a vendor iommu. When the
+system level default domain type is different from it, the vendor
+iommu driver has to request a new default domain with
+iommu_request_dma_domain_for_dev() and iommu_request_dm_for_dev()
+in the add_dev() callback. Unfortunately, these two helpers only
+work when the group hasn't been assigned to any other devices,
+hence, some vendor iommu driver has to use a private domain if
+it fails to request a new default one.
 
+This adds def_domain_type() callback in the iommu_ops, so that
+any special requirement of default domain for a device could be
+aware by the iommu generic layer.
+
+Signed-off-by: Sai Praneeth Prakhya <sai.praneeth.prakhya@intel.com>
+Signed-off-by: Lu Baolu <baolu.lu@linux.intel.com>
+[ jroedel@suse.de: Added iommu_get_def_domain_type() function and use
+                   it to allocate the default domain ]
+Co-developed-by: Joerg Roedel <jroedel@suse.de>
 Signed-off-by: Joerg Roedel <jroedel@suse.de>
 ---
- drivers/iommu/amd_iommu.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+ drivers/iommu/iommu.c | 20 +++++++++++++++++---
+ include/linux/iommu.h |  6 ++++++
+ 2 files changed, 23 insertions(+), 3 deletions(-)
 
-diff --git a/drivers/iommu/amd_iommu.c b/drivers/iommu/amd_iommu.c
-index 73b4f84cf449..504f2db75eda 100644
---- a/drivers/iommu/amd_iommu.c
-+++ b/drivers/iommu/amd_iommu.c
-@@ -326,7 +326,7 @@ static bool check_device(struct device *dev)
+diff --git a/drivers/iommu/iommu.c b/drivers/iommu/iommu.c
+index bfe011760ed1..5877abd9b693 100644
+--- a/drivers/iommu/iommu.c
++++ b/drivers/iommu/iommu.c
+@@ -1361,21 +1361,35 @@ struct iommu_group *fsl_mc_device_group(struct device *dev)
+ }
+ EXPORT_SYMBOL_GPL(fsl_mc_device_group);
+ 
++static int iommu_get_def_domain_type(struct device *dev)
++{
++	const struct iommu_ops *ops = dev->bus->iommu_ops;
++	unsigned int type = 0;
++
++	if (ops->def_domain_type)
++		type = ops->def_domain_type(dev);
++
++	return (type == 0) ? iommu_def_domain_type : type;
++}
++
+ static int iommu_alloc_default_domain(struct device *dev,
+ 				      struct iommu_group *group)
  {
- 	int devid;
+ 	struct iommu_domain *dom;
++	unsigned int type;
  
--	if (!dev || !dev->dma_mask)
-+	if (!dev)
- 		return false;
+ 	if (group->default_domain)
+ 		return 0;
  
- 	devid = get_device_id(dev);
+-	dom = __iommu_domain_alloc(dev->bus, iommu_def_domain_type);
+-	if (!dom && iommu_def_domain_type != IOMMU_DOMAIN_DMA) {
++	type = iommu_get_def_domain_type(dev);
++
++	dom = __iommu_domain_alloc(dev->bus, type);
++	if (!dom && type != IOMMU_DOMAIN_DMA) {
+ 		dom = __iommu_domain_alloc(dev->bus, IOMMU_DOMAIN_DMA);
+ 		if (dom) {
+ 			dev_warn(dev,
+ 				 "failed to allocate default IOMMU domain of type %u; falling back to IOMMU_DOMAIN_DMA",
+-				 iommu_def_domain_type);
++				 type);
+ 		}
+ 	}
+ 
+diff --git a/include/linux/iommu.h b/include/linux/iommu.h
+index 7ef8b0bda695..1f027b07e499 100644
+--- a/include/linux/iommu.h
++++ b/include/linux/iommu.h
+@@ -248,6 +248,10 @@ struct iommu_iotlb_gather {
+  * @cache_invalidate: invalidate translation caches
+  * @sva_bind_gpasid: bind guest pasid and mm
+  * @sva_unbind_gpasid: unbind guest pasid and mm
++ * @def_domain_type: device default domain type, return value:
++ *		- IOMMU_DOMAIN_IDENTITY: must use an identity domain
++ *		- IOMMU_DOMAIN_DMA: must use a dma domain
++ *		- 0: use the default setting
+  * @pgsize_bitmap: bitmap of all possible supported page sizes
+  * @owner: Driver module providing these ops
+  */
+@@ -318,6 +322,8 @@ struct iommu_ops {
+ 
+ 	int (*sva_unbind_gpasid)(struct device *dev, int pasid);
+ 
++	int (*def_domain_type)(struct device *dev);
++
+ 	unsigned long pgsize_bitmap;
+ 	struct module *owner;
+ };
 -- 
 2.17.1
 
