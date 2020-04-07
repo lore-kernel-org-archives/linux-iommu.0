@@ -4,48 +4,48 @@ X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 X-Spam-Level: 
 X-Spam-Status: No, score=-9.8 required=3.0 tests=HEADER_FROM_DIFFERENT_DOMAINS,
 	INCLUDES_PATCH,MAILING_LIST_MULTI,SIGNED_OFF_BY,SPF_HELO_NONE,SPF_PASS,
-	USER_AGENT_GIT autolearn=unavailable autolearn_force=no version=3.4.0
+	USER_AGENT_GIT autolearn=ham autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id D5D13C2BBC7
-	for <iommu@archiver.kernel.org>; Tue,  7 Apr 2020 18:38:09 +0000 (UTC)
-Received: from fraxinus.osuosl.org (smtp4.osuosl.org [140.211.166.137])
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 548EDC2BB55
+	for <iommu@archiver.kernel.org>; Tue,  7 Apr 2020 18:38:12 +0000 (UTC)
+Received: from whitealder.osuosl.org (smtp1.osuosl.org [140.211.166.138])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by mail.kernel.org (Postfix) with ESMTPS id AA0612076E
-	for <iommu@archiver.kernel.org>; Tue,  7 Apr 2020 18:38:09 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org AA0612076E
+	by mail.kernel.org (Postfix) with ESMTPS id 25AB12082F
+	for <iommu@archiver.kernel.org>; Tue,  7 Apr 2020 18:38:12 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 25AB12082F
 Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=8bytes.org
 Authentication-Results: mail.kernel.org; spf=pass smtp.mailfrom=iommu-bounces@lists.linux-foundation.org
 Received: from localhost (localhost [127.0.0.1])
-	by fraxinus.osuosl.org (Postfix) with ESMTP id 7BF1285F2D;
-	Tue,  7 Apr 2020 18:38:09 +0000 (UTC)
+	by whitealder.osuosl.org (Postfix) with ESMTP id E84EB8796B;
+	Tue,  7 Apr 2020 18:38:11 +0000 (UTC)
+X-Virus-Scanned: amavisd-new at osuosl.org
+Received: from whitealder.osuosl.org ([127.0.0.1])
+	by localhost (.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
+	with ESMTP id oDbH-FJM2Twp; Tue,  7 Apr 2020 18:38:09 +0000 (UTC)
+Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [140.211.9.56])
+	by whitealder.osuosl.org (Postfix) with ESMTP id 0014887DC4;
+	Tue,  7 Apr 2020 18:38:00 +0000 (UTC)
+Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
+	by lists.linuxfoundation.org (Postfix) with ESMTP id E5A5AC1AE2;
+	Tue,  7 Apr 2020 18:38:00 +0000 (UTC)
+Received: from fraxinus.osuosl.org (smtp4.osuosl.org [140.211.166.137])
+ by lists.linuxfoundation.org (Postfix) with ESMTP id 444D0C1AE2;
+ Tue,  7 Apr 2020 18:37:59 +0000 (UTC)
+Received: from localhost (localhost [127.0.0.1])
+ by fraxinus.osuosl.org (Postfix) with ESMTP id 339C5855CF;
+ Tue,  7 Apr 2020 18:37:59 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
 Received: from fraxinus.osuosl.org ([127.0.0.1])
-	by localhost (.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
-	with ESMTP id 1qMZ1Sd_BP4y; Tue,  7 Apr 2020 18:38:08 +0000 (UTC)
-Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [140.211.9.56])
-	by fraxinus.osuosl.org (Postfix) with ESMTP id 4A10485E98;
-	Tue,  7 Apr 2020 18:38:08 +0000 (UTC)
-Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
-	by lists.linuxfoundation.org (Postfix) with ESMTP id 2ADDBC1AE2;
-	Tue,  7 Apr 2020 18:38:08 +0000 (UTC)
-Received: from silver.osuosl.org (smtp3.osuosl.org [140.211.166.136])
- by lists.linuxfoundation.org (Postfix) with ESMTP id 99570C0177;
- Tue,  7 Apr 2020 18:38:04 +0000 (UTC)
-Received: from localhost (localhost [127.0.0.1])
- by silver.osuosl.org (Postfix) with ESMTP id 94AD22210F;
- Tue,  7 Apr 2020 18:38:04 +0000 (UTC)
-X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from silver.osuosl.org ([127.0.0.1])
  by localhost (.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
- with ESMTP id jJN05W31Iw3G; Tue,  7 Apr 2020 18:38:01 +0000 (UTC)
+ with ESMTP id k0IX3b4BgxJI; Tue,  7 Apr 2020 18:37:58 +0000 (UTC)
 X-Greylist: from auto-whitelisted by SQLgrey-1.7.6
 X-Greylist: from auto-whitelisted by SQLgrey-1.7.6
 Received: from theia.8bytes.org (8bytes.org [81.169.241.247])
- by silver.osuosl.org (Postfix) with ESMTPS id 21BDB21507;
- Tue,  7 Apr 2020 18:38:01 +0000 (UTC)
+ by fraxinus.osuosl.org (Postfix) with ESMTPS id 3AB8A85D44;
+ Tue,  7 Apr 2020 18:37:58 +0000 (UTC)
 Received: by theia.8bytes.org (Postfix, from userid 1000)
- id 773C3596; Tue,  7 Apr 2020 20:37:52 +0200 (CEST)
+ id E3062312; Tue,  7 Apr 2020 20:37:49 +0200 (CEST)
 From: Joerg Roedel <joro@8bytes.org>
 To: Joerg Roedel <joro@8bytes.org>, Will Deacon <will@kernel.org>,
  Robin Murphy <robin.murphy@arm.com>,
@@ -60,10 +60,10 @@ To: Joerg Roedel <joro@8bytes.org>, Will Deacon <will@kernel.org>,
  Thierry Reding <thierry.reding@gmail.com>,
  Jonathan Hunter <jonathanh@nvidia.com>,
  Jean-Philippe Brucker <jean-philippe@linaro.org>
-Subject: [RFC PATCH 22/34] iommu/msm: Convert to probe/release_device()
- call-backs
-Date: Tue,  7 Apr 2020 20:37:30 +0200
-Message-Id: <20200407183742.4344-23-joro@8bytes.org>
+Subject: [RFC PATCH 09/34] iommu: Keep a list of allocated groups in
+ __iommu_probe_device()
+Date: Tue,  7 Apr 2020 20:37:17 +0200
+Message-Id: <20200407183742.4344-10-joro@8bytes.org>
 X-Mailer: git-send-email 2.17.1
 In-Reply-To: <20200407183742.4344-1-joro@8bytes.org>
 References: <20200407183742.4344-1-joro@8bytes.org>
@@ -92,79 +92,62 @@ Sender: "iommu" <iommu-bounces@lists.linux-foundation.org>
 
 From: Joerg Roedel <jroedel@suse.de>
 
-Convert the MSM IOMMU driver to use the probe_device() and
-release_device() call-backs of iommu_ops, so that the iommu core code
-does the group and sysfs setup.
+This is needed to defer default_domain allocation for new IOMMU groups
+until all devices have been added to the group.
 
 Signed-off-by: Joerg Roedel <jroedel@suse.de>
 ---
- drivers/iommu/msm_iommu.c | 34 +++++++---------------------------
- 1 file changed, 7 insertions(+), 27 deletions(-)
+ drivers/iommu/iommu.c | 9 +++++++--
+ 1 file changed, 7 insertions(+), 2 deletions(-)
 
-diff --git a/drivers/iommu/msm_iommu.c b/drivers/iommu/msm_iommu.c
-index 94a6df1bddd6..10cd4db0710a 100644
---- a/drivers/iommu/msm_iommu.c
-+++ b/drivers/iommu/msm_iommu.c
-@@ -388,43 +388,23 @@ static struct msm_iommu_dev *find_iommu_for_dev(struct device *dev)
- 	return ret;
+diff --git a/drivers/iommu/iommu.c b/drivers/iommu/iommu.c
+index 7a385c18e1a5..18eb3623bd00 100644
+--- a/drivers/iommu/iommu.c
++++ b/drivers/iommu/iommu.c
+@@ -44,6 +44,7 @@ struct iommu_group {
+ 	int id;
+ 	struct iommu_domain *default_domain;
+ 	struct iommu_domain *domain;
++	struct list_head entry;
+ };
+ 
+ struct group_device {
+@@ -184,7 +185,7 @@ static void dev_iommu_free(struct device *dev)
+ 	dev->iommu = NULL;
  }
  
--static int msm_iommu_add_device(struct device *dev)
-+static struct iommu_device *msm_iommu_probe_device(struct device *dev)
+-static int __iommu_probe_device(struct device *dev)
++static int __iommu_probe_device(struct device *dev, struct list_head *group_list)
  {
- 	struct msm_iommu_dev *iommu;
--	struct iommu_group *group;
- 	unsigned long flags;
+ 	const struct iommu_ops *ops = dev->bus->iommu_ops;
+ 	struct iommu_device *iommu_dev;
+@@ -204,6 +205,9 @@ static int __iommu_probe_device(struct device *dev)
+ 	}
+ 	iommu_group_put(group);
  
- 	spin_lock_irqsave(&msm_iommu_lock, flags);
- 	iommu = find_iommu_for_dev(dev);
- 	spin_unlock_irqrestore(&msm_iommu_lock, flags);
++	if (group_list && !group->default_domain && list_empty(&group->entry))
++		list_add_tail(&group->entry, group_list);
++
+ 	iommu_device_link(iommu_dev, dev);
  
--	if (iommu)
--		iommu_device_link(&iommu->iommu, dev);
--	else
--		return -ENODEV;
--
--	group = iommu_group_get_for_dev(dev);
--	if (IS_ERR(group))
--		return PTR_ERR(group);
--
--	iommu_group_put(group);
-+	if (!iommu)
-+		return ERR_PTR(-ENODEV);
+ 	return 0;
+@@ -234,7 +238,7 @@ int iommu_probe_device(struct device *dev)
+ 	if (ops->probe_device) {
+ 		struct iommu_group *group;
  
--	return 0;
-+	return &iommu->iommu;
- }
+-		ret = __iommu_probe_device(dev);
++		ret = __iommu_probe_device(dev, NULL);
  
--static void msm_iommu_remove_device(struct device *dev)
-+static void msm_iommu_release_device(struct device *dev)
- {
--	struct msm_iommu_dev *iommu;
--	unsigned long flags;
--
--	spin_lock_irqsave(&msm_iommu_lock, flags);
--	iommu = find_iommu_for_dev(dev);
--	spin_unlock_irqrestore(&msm_iommu_lock, flags);
--
--	if (iommu)
--		iommu_device_unlink(&iommu->iommu, dev);
--
--	iommu_group_remove_device(dev);
- }
+ 		/*
+ 		 * Try to allocate a default domain - needs support from the
+@@ -567,6 +571,7 @@ struct iommu_group *iommu_group_alloc(void)
+ 	group->kobj.kset = iommu_group_kset;
+ 	mutex_init(&group->mutex);
+ 	INIT_LIST_HEAD(&group->devices);
++	INIT_LIST_HEAD(&group->entry);
+ 	BLOCKING_INIT_NOTIFIER_HEAD(&group->notifier);
  
- static int msm_iommu_attach_dev(struct iommu_domain *domain, struct device *dev)
-@@ -708,8 +688,8 @@ static struct iommu_ops msm_iommu_ops = {
- 	 */
- 	.iotlb_sync = NULL,
- 	.iova_to_phys = msm_iommu_iova_to_phys,
--	.add_device = msm_iommu_add_device,
--	.remove_device = msm_iommu_remove_device,
-+	.probe_device = msm_iommu_probe_device,
-+	.release_device = msm_iommu_release_device,
- 	.device_group = generic_device_group,
- 	.pgsize_bitmap = MSM_IOMMU_PGSIZES,
- 	.of_xlate = qcom_iommu_of_xlate,
+ 	ret = ida_simple_get(&iommu_group_ida, 0, 0, GFP_KERNEL);
 -- 
 2.17.1
 
