@@ -2,77 +2,89 @@ Return-Path: <SRS0=CWSE=5Y=lists.linux-foundation.org=iommu-bounces@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-6.8 required=3.0 tests=HEADER_FROM_DIFFERENT_DOMAINS,
-	INCLUDES_PATCH,MAILING_LIST_MULTI,SIGNED_OFF_BY,SPF_HELO_NONE,SPF_PASS
-	autolearn=unavailable autolearn_force=no version=3.4.0
+X-Spam-Status: No, score=-8.1 required=3.0 tests=DKIM_INVALID,DKIM_SIGNED,
+	HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_PATCH,MAILING_LIST_MULTI,SIGNED_OFF_BY,
+	SPF_HELO_NONE,SPF_PASS,USER_AGENT_SANE_1 autolearn=ham autolearn_force=no
+	version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 2AC1EC2D0F4
-	for <iommu@archiver.kernel.org>; Wed,  8 Apr 2020 19:11:24 +0000 (UTC)
-Received: from fraxinus.osuosl.org (smtp4.osuosl.org [140.211.166.137])
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 88B29C2D0F4
+	for <iommu@archiver.kernel.org>; Wed,  8 Apr 2020 19:14:08 +0000 (UTC)
+Received: from hemlock.osuosl.org (smtp2.osuosl.org [140.211.166.133])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by mail.kernel.org (Postfix) with ESMTPS id EAAA82075E
-	for <iommu@archiver.kernel.org>; Wed,  8 Apr 2020 19:11:23 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org EAAA82075E
-Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=8bytes.org
+	by mail.kernel.org (Postfix) with ESMTPS id 4F5F220768
+	for <iommu@archiver.kernel.org>; Wed,  8 Apr 2020 19:14:08 +0000 (UTC)
+Authentication-Results: mail.kernel.org;
+	dkim=fail reason="signature verification failed" (1024-bit key) header.d=ti.com header.i=@ti.com header.b="B5GQRG24"
+DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 4F5F220768
+Authentication-Results: mail.kernel.org; dmarc=none (p=none dis=none) header.from=lists.linux-foundation.org
 Authentication-Results: mail.kernel.org; spf=pass smtp.mailfrom=iommu-bounces@lists.linux-foundation.org
 Received: from localhost (localhost [127.0.0.1])
-	by fraxinus.osuosl.org (Postfix) with ESMTP id A723186B96;
-	Wed,  8 Apr 2020 19:11:23 +0000 (UTC)
+	by hemlock.osuosl.org (Postfix) with ESMTP id 2B95B88373;
+	Wed,  8 Apr 2020 19:14:08 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from fraxinus.osuosl.org ([127.0.0.1])
+Received: from hemlock.osuosl.org ([127.0.0.1])
 	by localhost (.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
-	with ESMTP id EiaUbieKnuQx; Wed,  8 Apr 2020 19:11:20 +0000 (UTC)
+	with ESMTP id 6AuIMdkeKMHs; Wed,  8 Apr 2020 19:14:07 +0000 (UTC)
 Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [140.211.9.56])
-	by fraxinus.osuosl.org (Postfix) with ESMTP id 072A286BA8;
-	Wed,  8 Apr 2020 19:11:20 +0000 (UTC)
+	by hemlock.osuosl.org (Postfix) with ESMTP id 7D81388362;
+	Wed,  8 Apr 2020 19:14:07 +0000 (UTC)
 Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
-	by lists.linuxfoundation.org (Postfix) with ESMTP id E7444C1D89;
-	Wed,  8 Apr 2020 19:11:19 +0000 (UTC)
-Received: from whitealder.osuosl.org (smtp1.osuosl.org [140.211.166.138])
- by lists.linuxfoundation.org (Postfix) with ESMTP id 1ED23C0177;
- Wed,  8 Apr 2020 19:11:18 +0000 (UTC)
+	by lists.linuxfoundation.org (Postfix) with ESMTP id 688F3C1AE8;
+	Wed,  8 Apr 2020 19:14:07 +0000 (UTC)
+Received: from hemlock.osuosl.org (smtp2.osuosl.org [140.211.166.133])
+ by lists.linuxfoundation.org (Postfix) with ESMTP id 2D51BC0177
+ for <iommu@lists.linux-foundation.org>; Wed,  8 Apr 2020 19:14:06 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
- by whitealder.osuosl.org (Postfix) with ESMTP id 0D5FF855D9;
- Wed,  8 Apr 2020 19:11:18 +0000 (UTC)
+ by hemlock.osuosl.org (Postfix) with ESMTP id 2658888373
+ for <iommu@lists.linux-foundation.org>; Wed,  8 Apr 2020 19:14:06 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from whitealder.osuosl.org ([127.0.0.1])
+Received: from hemlock.osuosl.org ([127.0.0.1])
  by localhost (.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
- with ESMTP id 3VChdUcC7xB6; Wed,  8 Apr 2020 19:11:16 +0000 (UTC)
-X-Greylist: from auto-whitelisted by SQLgrey-1.7.6
-X-Greylist: from auto-whitelisted by SQLgrey-1.7.6
-Received: from theia.8bytes.org (8bytes.org [81.169.241.247])
- by whitealder.osuosl.org (Postfix) with ESMTPS id D872085540;
- Wed,  8 Apr 2020 19:11:15 +0000 (UTC)
-Received: by theia.8bytes.org (Postfix, from userid 1000)
- id 2738E2B6; Wed,  8 Apr 2020 21:11:13 +0200 (CEST)
-Date: Wed, 8 Apr 2020 21:11:11 +0200
-From: Joerg Roedel <joro@8bytes.org>
-To: Robin Murphy <robin.murphy@arm.com>
-Subject: Re: [RFC PATCH 17/34] iommu/arm-smmu: Store device instead of group
- in arm_smmu_s2cr
-Message-ID: <20200408191111.GA6342@8bytes.org>
-References: <20200407183742.4344-1-joro@8bytes.org>
- <20200407183742.4344-18-joro@8bytes.org>
- <98c10a41-d223-e375-9742-b6471c3dc33c@arm.com>
- <20200408143707.GK3103@8bytes.org>
- <f8b541c2-9271-fc48-dde6-166a2ed6679f@arm.com>
+ with ESMTP id WXhgivayMN+n for <iommu@lists.linux-foundation.org>;
+ Wed,  8 Apr 2020 19:14:03 +0000 (UTC)
+X-Greylist: domain auto-whitelisted by SQLgrey-1.7.6
+Received: from lelv0143.ext.ti.com (lelv0143.ext.ti.com [198.47.23.248])
+ by hemlock.osuosl.org (Postfix) with ESMTPS id C213388362
+ for <iommu@lists.linux-foundation.org>; Wed,  8 Apr 2020 19:14:03 +0000 (UTC)
+Received: from fllv0035.itg.ti.com ([10.64.41.0])
+ by lelv0143.ext.ti.com (8.15.2/8.15.2) with ESMTP id 038JE0A6026197;
+ Wed, 8 Apr 2020 14:14:00 -0500
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ti.com;
+ s=ti-com-17Q1; t=1586373240;
+ bh=Jan9WiQvt2G9+ylIarIQMuliXA1cCWyxA1RFqWRPzVY=;
+ h=Subject:To:CC:References:From:Date:In-Reply-To;
+ b=B5GQRG24mhTkEdDH5w5DKJ6caXNu+qydPzTDAaJ9msmDCnX/cnjW9tDszzik4JtQH
+ Bl8d0uz4DXD+4PuDOM4izIbQtMv2qz/E0kXnWCkd2ItLCQMnb1paNQaEkb1lncA3dx
+ Ugu/CEWmfV7AigBK3/loMN3zpRaPbvWEgTuyHU2o=
+Received: from DFLE115.ent.ti.com (dfle115.ent.ti.com [10.64.6.36])
+ by fllv0035.itg.ti.com (8.15.2/8.15.2) with ESMTP id 038JE0bB110973;
+ Wed, 8 Apr 2020 14:14:00 -0500
+Received: from DFLE108.ent.ti.com (10.64.6.29) by DFLE115.ent.ti.com
+ (10.64.6.36) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256_P256) id 15.1.1847.3; Wed, 8 Apr
+ 2020 14:14:00 -0500
+Received: from lelv0327.itg.ti.com (10.180.67.183) by DFLE108.ent.ti.com
+ (10.64.6.29) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256_P256) id 15.1.1847.3 via
+ Frontend Transport; Wed, 8 Apr 2020 14:14:00 -0500
+Received: from [10.250.100.73] (ileax41-snat.itg.ti.com [10.172.224.153])
+ by lelv0327.itg.ti.com (8.15.2/8.15.2) with ESMTP id 038JDurk103291;
+ Wed, 8 Apr 2020 14:13:57 -0500
+Subject: Re: [PATCH] dma-debug: fix displaying of dma allocation type
+To: Christoph Hellwig <hch@lst.de>
+References: <20200408184804.30522-1-grygorii.strashko@ti.com>
+ <20200408184958.GA9945@lst.de>
+Message-ID: <ccd0cca4-ca89-3ecd-90d5-66e5e4090f41@ti.com>
+Date: Wed, 8 Apr 2020 22:13:55 +0300
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101
+ Thunderbird/68.2.2
 MIME-Version: 1.0
-Content-Disposition: inline
-In-Reply-To: <f8b541c2-9271-fc48-dde6-166a2ed6679f@arm.com>
-Cc: Heiko Stuebner <heiko@sntech.de>,
- Bjorn Andersson <bjorn.andersson@linaro.org>, linux-tegra@vger.kernel.org,
- Thierry Reding <thierry.reding@gmail.com>, Will Deacon <will@kernel.org>,
- Jean-Philippe Brucker <jean-philippe@linaro.org>,
- linux-samsung-soc@vger.kernel.org, Krzysztof Kozlowski <krzk@kernel.org>,
- Jonathan Hunter <jonathanh@nvidia.com>, linux-rockchip@lists.infradead.org,
- Andy Gross <agross@kernel.org>, Joerg Roedel <jroedel@suse.de>,
- linux-s390@vger.kernel.org, linux-arm-msm@vger.kernel.org,
- linux-mediatek@lists.infradead.org, Matthias Brugger <matthias.bgg@gmail.com>,
- virtualization@lists.linux-foundation.org,
- Gerald Schaefer <gerald.schaefer@de.ibm.com>, linux-kernel@vger.kernel.org,
- iommu@lists.linux-foundation.org, Kukjin Kim <kgene@kernel.org>,
- David Woodhouse <dwmw2@infradead.org>
+In-Reply-To: <20200408184958.GA9945@lst.de>
+Content-Language: en-US
+X-EXCLAIMER-MD-CONFIG: e1e8a2fd-e40a-4ac6-ac9b-f7e9cc9ee180
+Cc: Sekhar Nori <nsekhar@ti.com>, iommu@lists.linux-foundation.org,
+ Robin Murphy <robin.murphy@arm.com>, linux-kernel@vger.kernel.org
 X-BeenThere: iommu@lists.linux-foundation.org
 X-Mailman-Version: 2.1.15
 Precedence: list
@@ -85,265 +97,62 @@ List-Post: <mailto:iommu@lists.linux-foundation.org>
 List-Help: <mailto:iommu-request@lists.linux-foundation.org?subject=help>
 List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
  <mailto:iommu-request@lists.linux-foundation.org?subject=subscribe>
-Content-Type: text/plain; charset="us-ascii"
+From: Grygorii Strashko via iommu <iommu@lists.linux-foundation.org>
+Reply-To: Grygorii Strashko <grygorii.strashko@ti.com>
 Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset="us-ascii"; Format="flowed"
 Errors-To: iommu-bounces@lists.linux-foundation.org
 Sender: "iommu" <iommu-bounces@lists.linux-foundation.org>
 
-On Wed, Apr 08, 2020 at 04:07:33PM +0100, Robin Murphy wrote:
-> On 2020-04-08 3:37 pm, Joerg Roedel wrote:
-> Isn't that exactly what I suggested? :)
 
-Okay, I dropped this patch and updated the next one.
 
-> I don't recall for sure, but knowing me, that bit of group bookkeeping is
-> only where it currently is because it cheekily saves iterating the IDs a
-> second time. I don't think there's any technical reason.
+On 08/04/2020 21:49, Christoph Hellwig wrote:
+> On Wed, Apr 08, 2020 at 09:48:04PM +0300, Grygorii Strashko wrote:
+>> The commit 2e05ea5cdc1a ("dma-mapping: implement dma_map_single_attrs using
+>> dma_map_page_attrs") removed "dma_debug_page" enum, but missed to update
+>> type2name string table. This causes incorrect displaying of dma allocation
+>> type. Fix it by removing "page" string from type2name string table.
+>>
+>> Before (dma_alloc_coherent()):
+>> k3-ringacc 4b800000.ringacc: scather-gather idx 2208 P=d1140000 N=d114 D=d1140000 L=40 DMA_BIDIRECTIONAL dma map error check not applicable
+>> k3-ringacc 4b800000.ringacc: scather-gather idx 2216 P=d1150000 N=d115 D=d1150000 L=40 DMA_BIDIRECTIONAL dma map error check not applicable
+>>
+>> After:
+>> k3-ringacc 4b800000.ringacc: coherent idx 2208 P=d1140000 N=d114 D=d1140000 L=40 DMA_BIDIRECTIONAL dma map error check not applicable
+>> k3-ringacc 4b800000.ringacc: coherent idx 2216 P=d1150000 N=d115 D=d1150000 L=40 DMA_BIDIRECTIONAL dma map error check not applicable
+>>
+>> Fixes: 2e05ea5cdc1a ("dma-mapping: implement dma_map_single_attrs using dma_map_page_attrs")
+>> Signed-off-by: Grygorii Strashko <grygorii.strashko@ti.com>
+>> ---
+>>   kernel/dma/debug.c | 2 +-
+>>   1 file changed, 1 insertion(+), 1 deletion(-)
+>>
+>> diff --git a/kernel/dma/debug.c b/kernel/dma/debug.c
+>> index 2031ed1ad7fa..09b85ba0c137 100644
+>> --- a/kernel/dma/debug.c
+>> +++ b/kernel/dma/debug.c
+>> @@ -137,7 +137,7 @@ static const char *const maperr2str[] = {
+>>   	[MAP_ERR_CHECKED] = "dma map error checked",
+>>   };
+>>   
+>> -static const char *type2name[5] = { "single", "page",
+>> +static const char *type2name[5] = { "single",
+>>   				    "scather-gather", "coherent",
+>>   				    "resource" };
+> 
+> To make sure this doesn't happen anymore, can you switch to
+> named initializers?
+> 
 
-I leave it up to you to make any changes on that :)
+Just to clarify.
+Do you mean
+[dma_debug_coherent] = "coherent",
+?
 
-Updated patch below. I also noticed that I deleted too much from
-arm-smmu-v3 in the previous version, fixed that too.
 
-From a1d2821235a6c26b668b47ec0e84ad0316524406 Mon Sep 17 00:00:00 2001
-From: Joerg Roedel <jroedel@suse.de>
-Date: Mon, 30 Mar 2020 17:39:04 +0200
-Subject: [PATCH] iommu/arm-smmu: Convert to probe/release_device() call-backs
-
-Convert the arm-smmu and arm-smmu-v3 drivers to use the probe_device() and
-release_device() call-backs of iommu_ops, so that the iommu core code does the
-group and sysfs setup.
-
-Signed-off-by: Joerg Roedel <jroedel@suse.de>
----
- drivers/iommu/arm-smmu-v3.c | 38 ++++++++++--------------------------
- drivers/iommu/arm-smmu.c    | 39 ++++++++++++++-----------------------
- 2 files changed, 25 insertions(+), 52 deletions(-)
-
-diff --git a/drivers/iommu/arm-smmu-v3.c b/drivers/iommu/arm-smmu-v3.c
-index 82508730feb7..42e1ee7e5197 100644
---- a/drivers/iommu/arm-smmu-v3.c
-+++ b/drivers/iommu/arm-smmu-v3.c
-@@ -2914,27 +2914,26 @@ static bool arm_smmu_sid_in_range(struct arm_smmu_device *smmu, u32 sid)
- 
- static struct iommu_ops arm_smmu_ops;
- 
--static int arm_smmu_add_device(struct device *dev)
-+static struct iommu_device *arm_smmu_probe_device(struct device *dev)
- {
- 	int i, ret;
- 	struct arm_smmu_device *smmu;
- 	struct arm_smmu_master *master;
- 	struct iommu_fwspec *fwspec = dev_iommu_fwspec_get(dev);
--	struct iommu_group *group;
- 
- 	if (!fwspec || fwspec->ops != &arm_smmu_ops)
--		return -ENODEV;
-+		return ERR_PTR(-ENODEV);
- 
- 	if (WARN_ON_ONCE(dev_iommu_priv_get(dev)))
--		return -EBUSY;
-+		return ERR_PTR(-EBUSY);
- 
- 	smmu = arm_smmu_get_by_fwnode(fwspec->iommu_fwnode);
- 	if (!smmu)
--		return -ENODEV;
-+		return ERR_PTR(-ENODEV);
- 
- 	master = kzalloc(sizeof(*master), GFP_KERNEL);
- 	if (!master)
--		return -ENOMEM;
-+		return ERR_PTR(-ENOMEM);
- 
- 	master->dev = dev;
- 	master->smmu = smmu;
-@@ -2975,30 +2974,15 @@ static int arm_smmu_add_device(struct device *dev)
- 		master->ssid_bits = min_t(u8, master->ssid_bits,
- 					  CTXDESC_LINEAR_CDMAX);
- 
--	ret = iommu_device_link(&smmu->iommu, dev);
--	if (ret)
--		goto err_disable_pasid;
-+	return &smmu->iommu;
- 
--	group = iommu_group_get_for_dev(dev);
--	if (IS_ERR(group)) {
--		ret = PTR_ERR(group);
--		goto err_unlink;
--	}
--
--	iommu_group_put(group);
--	return 0;
--
--err_unlink:
--	iommu_device_unlink(&smmu->iommu, dev);
--err_disable_pasid:
--	arm_smmu_disable_pasid(master);
- err_free_master:
- 	kfree(master);
- 	dev_iommu_priv_set(dev, NULL);
--	return ret;
-+	return ERR_PTR(ret);
- }
- 
--static void arm_smmu_remove_device(struct device *dev)
-+static void arm_smmu_release_device(struct device *dev)
- {
- 	struct iommu_fwspec *fwspec = dev_iommu_fwspec_get(dev);
- 	struct arm_smmu_master *master;
-@@ -3010,8 +2994,6 @@ static void arm_smmu_remove_device(struct device *dev)
- 	master = dev_iommu_priv_get(dev);
- 	smmu = master->smmu;
- 	arm_smmu_detach_dev(master);
--	iommu_group_remove_device(dev);
--	iommu_device_unlink(&smmu->iommu, dev);
- 	arm_smmu_disable_pasid(master);
- 	kfree(master);
- 	iommu_fwspec_free(dev);
-@@ -3138,8 +3120,8 @@ static struct iommu_ops arm_smmu_ops = {
- 	.flush_iotlb_all	= arm_smmu_flush_iotlb_all,
- 	.iotlb_sync		= arm_smmu_iotlb_sync,
- 	.iova_to_phys		= arm_smmu_iova_to_phys,
--	.add_device		= arm_smmu_add_device,
--	.remove_device		= arm_smmu_remove_device,
-+	.probe_device		= arm_smmu_probe_device,
-+	.release_device		= arm_smmu_release_device,
- 	.device_group		= arm_smmu_device_group,
- 	.domain_get_attr	= arm_smmu_domain_get_attr,
- 	.domain_set_attr	= arm_smmu_domain_set_attr,
-diff --git a/drivers/iommu/arm-smmu.c b/drivers/iommu/arm-smmu.c
-index a6a5796e9c41..e622f4e33379 100644
---- a/drivers/iommu/arm-smmu.c
-+++ b/drivers/iommu/arm-smmu.c
-@@ -220,7 +220,7 @@ static int arm_smmu_register_legacy_master(struct device *dev,
-  * With the legacy DT binding in play, we have no guarantees about
-  * probe order, but then we're also not doing default domains, so we can
-  * delay setting bus ops until we're sure every possible SMMU is ready,
-- * and that way ensure that no add_device() calls get missed.
-+ * and that way ensure that no probe_device() calls get missed.
-  */
- static int arm_smmu_legacy_bus_init(void)
- {
-@@ -1062,7 +1062,6 @@ static int arm_smmu_master_alloc_smes(struct device *dev)
- 	struct arm_smmu_master_cfg *cfg = dev_iommu_priv_get(dev);
- 	struct arm_smmu_device *smmu = cfg->smmu;
- 	struct arm_smmu_smr *smrs = smmu->smrs;
--	struct iommu_group *group;
- 	int i, idx, ret;
- 
- 	mutex_lock(&smmu->stream_map_mutex);
-@@ -1090,18 +1089,9 @@ static int arm_smmu_master_alloc_smes(struct device *dev)
- 		cfg->smendx[i] = (s16)idx;
- 	}
- 
--	group = iommu_group_get_for_dev(dev);
--	if (IS_ERR(group)) {
--		ret = PTR_ERR(group);
--		goto out_err;
--	}
--	iommu_group_put(group);
--
- 	/* It worked! Now, poke the actual hardware */
--	for_each_cfg_sme(cfg, fwspec, i, idx) {
-+	for_each_cfg_sme(cfg, fwspec, i, idx)
- 		arm_smmu_write_sme(smmu, idx);
--		smmu->s2crs[idx].group = group;
--	}
- 
- 	mutex_unlock(&smmu->stream_map_mutex);
- 	return 0;
-@@ -1172,7 +1162,7 @@ static int arm_smmu_attach_dev(struct iommu_domain *domain, struct device *dev)
- 
- 	/*
- 	 * FIXME: The arch/arm DMA API code tries to attach devices to its own
--	 * domains between of_xlate() and add_device() - we have no way to cope
-+	 * domains between of_xlate() and probe_device() - we have no way to cope
- 	 * with that, so until ARM gets converted to rely on groups and default
- 	 * domains, just say no (but more politely than by dereferencing NULL).
- 	 * This should be at least a WARN_ON once that's sorted.
-@@ -1382,7 +1372,7 @@ struct arm_smmu_device *arm_smmu_get_by_fwnode(struct fwnode_handle *fwnode)
- 	return dev ? dev_get_drvdata(dev) : NULL;
- }
- 
--static int arm_smmu_add_device(struct device *dev)
-+static struct iommu_device *arm_smmu_probe_device(struct device *dev)
- {
- 	struct arm_smmu_device *smmu = NULL;
- 	struct arm_smmu_master_cfg *cfg;
-@@ -1403,7 +1393,7 @@ static int arm_smmu_add_device(struct device *dev)
- 	} else if (fwspec && fwspec->ops == &arm_smmu_ops) {
- 		smmu = arm_smmu_get_by_fwnode(fwspec->iommu_fwnode);
- 	} else {
--		return -ENODEV;
-+		return ERR_PTR(-ENODEV);
- 	}
- 
- 	ret = -EINVAL;
-@@ -1444,21 +1434,19 @@ static int arm_smmu_add_device(struct device *dev)
- 	if (ret)
- 		goto out_cfg_free;
- 
--	iommu_device_link(&smmu->iommu, dev);
--
- 	device_link_add(dev, smmu->dev,
- 			DL_FLAG_PM_RUNTIME | DL_FLAG_AUTOREMOVE_SUPPLIER);
- 
--	return 0;
-+	return &smmu->iommu;
- 
- out_cfg_free:
- 	kfree(cfg);
- out_free:
- 	iommu_fwspec_free(dev);
--	return ret;
-+	return ERR_PTR(ret);
- }
- 
--static void arm_smmu_remove_device(struct device *dev)
-+static void arm_smmu_release_device(struct device *dev)
- {
- 	struct iommu_fwspec *fwspec = dev_iommu_fwspec_get(dev);
- 	struct arm_smmu_master_cfg *cfg;
-@@ -1475,13 +1463,11 @@ static void arm_smmu_remove_device(struct device *dev)
- 	if (ret < 0)
- 		return;
- 
--	iommu_device_unlink(&smmu->iommu, dev);
- 	arm_smmu_master_free_smes(cfg, fwspec);
- 
- 	arm_smmu_rpm_put(smmu);
- 
- 	dev_iommu_priv_set(dev, NULL);
--	iommu_group_remove_device(dev);
- 	kfree(cfg);
- 	iommu_fwspec_free(dev);
- }
-@@ -1512,6 +1498,11 @@ static struct iommu_group *arm_smmu_device_group(struct device *dev)
- 	else
- 		group = generic_device_group(dev);
- 
-+	/* Remember group for faster lookups */
-+	if (!IS_ERR(group))
-+		for_each_cfg_sme(cfg, fwspec, i, idx)
-+			smmu->s2crs[idx].group = group;
-+
- 	return group;
- }
- 
-@@ -1628,8 +1619,8 @@ static struct iommu_ops arm_smmu_ops = {
- 	.flush_iotlb_all	= arm_smmu_flush_iotlb_all,
- 	.iotlb_sync		= arm_smmu_iotlb_sync,
- 	.iova_to_phys		= arm_smmu_iova_to_phys,
--	.add_device		= arm_smmu_add_device,
--	.remove_device		= arm_smmu_remove_device,
-+	.probe_device		= arm_smmu_probe_device,
-+	.release_device		= arm_smmu_release_device,
- 	.device_group		= arm_smmu_device_group,
- 	.domain_get_attr	= arm_smmu_domain_get_attr,
- 	.domain_set_attr	= arm_smmu_domain_set_attr,
 -- 
-2.25.1
-
+Best regards,
+grygorii
 _______________________________________________
 iommu mailing list
 iommu@lists.linux-foundation.org
