@@ -7,60 +7,60 @@ X-Spam-Status: No, score=-9.6 required=3.0 tests=DKIM_INVALID,DKIM_SIGNED,
 	SPF_HELO_NONE,SPF_PASS,USER_AGENT_GIT autolearn=ham autolearn_force=no
 	version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 2ED79C2BB55
-	for <iommu@archiver.kernel.org>; Wed,  8 Apr 2020 12:00:45 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id E6306C2BA2B
+	for <iommu@archiver.kernel.org>; Wed,  8 Apr 2020 12:00:47 +0000 (UTC)
 Received: from whitealder.osuosl.org (smtp1.osuosl.org [140.211.166.138])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by mail.kernel.org (Postfix) with ESMTPS id 0194D20936
-	for <iommu@archiver.kernel.org>; Wed,  8 Apr 2020 12:00:44 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTPS id B80AF2083E
+	for <iommu@archiver.kernel.org>; Wed,  8 Apr 2020 12:00:47 +0000 (UTC)
 Authentication-Results: mail.kernel.org;
-	dkim=fail reason="signature verification failed" (2048-bit key) header.d=infradead.org header.i=@infradead.org header.b="qBbgX++1"
-DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 0194D20936
+	dkim=fail reason="signature verification failed" (2048-bit key) header.d=infradead.org header.i=@infradead.org header.b="OK8x5jof"
+DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org B80AF2083E
 Authentication-Results: mail.kernel.org; dmarc=none (p=none dis=none) header.from=lst.de
 Authentication-Results: mail.kernel.org; spf=pass smtp.mailfrom=iommu-bounces@lists.linux-foundation.org
 Received: from localhost (localhost [127.0.0.1])
-	by whitealder.osuosl.org (Postfix) with ESMTP id C3A6687909;
-	Wed,  8 Apr 2020 12:00:44 +0000 (UTC)
+	by whitealder.osuosl.org (Postfix) with ESMTP id 8DDF987909;
+	Wed,  8 Apr 2020 12:00:47 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
 Received: from whitealder.osuosl.org ([127.0.0.1])
 	by localhost (.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
-	with ESMTP id ZbtE7uCGvIAQ; Wed,  8 Apr 2020 12:00:41 +0000 (UTC)
+	with ESMTP id yi3D+mlJCOt3; Wed,  8 Apr 2020 12:00:45 +0000 (UTC)
 Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [140.211.9.56])
-	by whitealder.osuosl.org (Postfix) with ESMTP id C1F0587D55;
-	Wed,  8 Apr 2020 12:00:41 +0000 (UTC)
+	by whitealder.osuosl.org (Postfix) with ESMTP id 0946287CA3;
+	Wed,  8 Apr 2020 12:00:45 +0000 (UTC)
 Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
-	by lists.linuxfoundation.org (Postfix) with ESMTP id BC7A7C1AE8;
-	Wed,  8 Apr 2020 12:00:41 +0000 (UTC)
-Received: from whitealder.osuosl.org (smtp1.osuosl.org [140.211.166.138])
- by lists.linuxfoundation.org (Postfix) with ESMTP id 1D8EBC0177
- for <iommu@lists.linux-foundation.org>; Wed,  8 Apr 2020 12:00:41 +0000 (UTC)
+	by lists.linuxfoundation.org (Postfix) with ESMTP id EB5F2C1AE8;
+	Wed,  8 Apr 2020 12:00:44 +0000 (UTC)
+Received: from fraxinus.osuosl.org (smtp4.osuosl.org [140.211.166.137])
+ by lists.linuxfoundation.org (Postfix) with ESMTP id 97A50C0177
+ for <iommu@lists.linux-foundation.org>; Wed,  8 Apr 2020 12:00:43 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
- by whitealder.osuosl.org (Postfix) with ESMTP id 0C42C8773E
- for <iommu@lists.linux-foundation.org>; Wed,  8 Apr 2020 12:00:41 +0000 (UTC)
+ by fraxinus.osuosl.org (Postfix) with ESMTP id 86C9F86A73
+ for <iommu@lists.linux-foundation.org>; Wed,  8 Apr 2020 12:00:43 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from whitealder.osuosl.org ([127.0.0.1])
+Received: from fraxinus.osuosl.org ([127.0.0.1])
  by localhost (.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
- with ESMTP id UPRjLRndlyIA for <iommu@lists.linux-foundation.org>;
- Wed,  8 Apr 2020 12:00:39 +0000 (UTC)
+ with ESMTP id XTWdPRG5jUkr for <iommu@lists.linux-foundation.org>;
+ Wed,  8 Apr 2020 12:00:43 +0000 (UTC)
 X-Greylist: from auto-whitelisted by SQLgrey-1.7.6
 Received: from bombadil.infradead.org (bombadil.infradead.org
  [198.137.202.133])
- by whitealder.osuosl.org (Postfix) with ESMTPS id E18D287DC7
- for <iommu@lists.linux-foundation.org>; Wed,  8 Apr 2020 12:00:38 +0000 (UTC)
+ by fraxinus.osuosl.org (Postfix) with ESMTPS id 22ACD86A44
+ for <iommu@lists.linux-foundation.org>; Wed,  8 Apr 2020 12:00:43 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
  d=infradead.org; s=bombadil.20170209; h=Content-Transfer-Encoding:
  MIME-Version:References:In-Reply-To:Message-Id:Date:Subject:Cc:To:From:Sender
  :Reply-To:Content-Type:Content-ID:Content-Description;
- bh=PTLovE2hoWoaJSeKjEPYtv2zFcEJY2sjZbxxW8f2wTw=; b=qBbgX++1L6mbdTJxAcMrWN4t2V
- u9WDZZC7mdQwUsrShnSL1UCdGBL3YYnIasKmmUdle7ux+K9NWAgFSn/8Z5Or/h5l2CXPBlEhJaH+s
- 7ypYs8p8BFOakK1MBY+tZJqmU5FM7x+7mgGUTK0kaWjDdtB/i2g1gUOXjrGk3zunKwTyBeQcr7KsM
- jNBqMl/FSUWjf6f2hjNz2Fvg/spu5FxPMzkL8oana1Lk1b57TUxB8aSrns98Hs9ZP2LUsOwg/TcD1
- rV7BNeoVKk0JT391TnMyrKkrAgnqchbkGEaxqIGZfbm809OuI2n9SWJ28rGJFmfQY4V67OQKZ9BkQ
- 2Rxzsv0Q==;
+ bh=F8FiHBCrG9trCoDrLT1wvc+8HEEyslQ5M3nlqbAOi4Y=; b=OK8x5jofz7Eq/Xji6qnn9UGlM2
+ TK7yIE7ID6JsM28vlnHqYgIaHdHgzlOuQ4TuXiLbTmA6Q2ZfI6PvPBN5pBXyc5Auc5dz3qF+T+9E6
+ 0fpZoHk7kEzc1hBMz1Ec7FEOEA4EKRMDJ24m5gnidsGdLXbDq9pJisggellU6ich7aN2xKVAUQ4sq
+ BaqxsyzSZSL7NbfmIXfHlEXX3rUqlQYguPTztiusz2CKeZOlZwsyMFGgWgAwhD7Rcu2AhOKjV+tGp
+ m885HKFsmwwNcIkjhdQGgEsJlbnGE0L2z/sy4m55mkoDauXiGLQj/Sofo/PT8Y5uY3xBoA7RmgOMg
+ wAu3tP5Q==;
 Received: from [2001:4bb8:180:5765:65b6:f11e:f109:b151] (helo=localhost)
  by bombadil.infradead.org with esmtpsa (Exim 4.92.3 #3 (Red Hat Linux))
- id 1jM9NF-0002CS-3L; Wed, 08 Apr 2020 12:00:06 +0000
+ id 1jM9NR-00049e-7q; Wed, 08 Apr 2020 12:00:18 +0000
 From: Christoph Hellwig <hch@lst.de>
 To: Andrew Morton <akpm@linux-foundation.org>,
  "K. Y. Srinivasan" <kys@microsoft.com>,
@@ -71,9 +71,9 @@ To: Andrew Morton <akpm@linux-foundation.org>,
  Sumit Semwal <sumit.semwal@linaro.org>,
  Sakari Ailus <sakari.ailus@linux.intel.com>,
  Minchan Kim <minchan@kernel.org>, Nitin Gupta <ngupta@vflare.org>
-Subject: [PATCH 10/28] mm: only allow page table mappings for built-in zsmalloc
-Date: Wed,  8 Apr 2020 13:59:08 +0200
-Message-Id: <20200408115926.1467567-11-hch@lst.de>
+Subject: [PATCH 13/28] mm: rename vmap_page_range to map_kernel_range
+Date: Wed,  8 Apr 2020 13:59:11 +0200
+Message-Id: <20200408115926.1467567-14-hch@lst.de>
 X-Mailer: git-send-email 2.25.1
 In-Reply-To: <20200408115926.1467567-1-hch@lst.de>
 References: <20200408115926.1467567-1-hch@lst.de>
@@ -104,48 +104,56 @@ Content-Transfer-Encoding: 7bit
 Errors-To: iommu-bounces@lists.linux-foundation.org
 Sender: "iommu" <iommu-bounces@lists.linux-foundation.org>
 
-This allows to unexport map_vm_area and unmap_kernel_range, which are
-rather deep internal and should not be available to modules.
+This matches the map_kernel_range_noflush API.  Also change to pass
+a size instead of the end, similar to the noflush version.
 
 Signed-off-by: Christoph Hellwig <hch@lst.de>
 ---
- mm/Kconfig   | 2 +-
- mm/vmalloc.c | 2 --
- 2 files changed, 1 insertion(+), 3 deletions(-)
+ mm/vmalloc.c | 11 +++++------
+ 1 file changed, 5 insertions(+), 6 deletions(-)
 
-diff --git a/mm/Kconfig b/mm/Kconfig
-index 36949a9425b8..614cc786b519 100644
---- a/mm/Kconfig
-+++ b/mm/Kconfig
-@@ -702,7 +702,7 @@ config ZSMALLOC
- 
- config ZSMALLOC_PGTABLE_MAPPING
- 	bool "Use page table mapping to access object in zsmalloc"
--	depends on ZSMALLOC
-+	depends on ZSMALLOC=y
- 	help
- 	  By default, zsmalloc uses a copy-based object mapping method to
- 	  access allocations that span two pages. However, if a particular
 diff --git a/mm/vmalloc.c b/mm/vmalloc.c
-index 3375f9508ef6..9183fc0d365a 100644
+index 55df5dc6a9fc..a3d810def567 100644
 --- a/mm/vmalloc.c
 +++ b/mm/vmalloc.c
-@@ -2046,7 +2046,6 @@ void unmap_kernel_range(unsigned long addr, unsigned long size)
- 	vunmap_page_range(addr, end);
- 	flush_tlb_kernel_range(addr, end);
+@@ -272,13 +272,13 @@ int map_kernel_range_noflush(unsigned long addr, unsigned long size,
+ 	return nr;
  }
--EXPORT_SYMBOL_GPL(unmap_kernel_range);
  
+-static int vmap_page_range(unsigned long start, unsigned long end,
++static int map_kernel_range(unsigned long start, unsigned long size,
+ 			   pgprot_t prot, struct page **pages)
+ {
+ 	int ret;
+ 
+-	ret = map_kernel_range_noflush(start, end - start, prot, pages);
+-	flush_cache_vmap(start, end);
++	ret = map_kernel_range_noflush(start, size, prot, pages);
++	flush_cache_vmap(start, start + size);
+ 	return ret;
+ }
+ 
+@@ -1866,7 +1866,7 @@ void *vm_map_ram(struct page **pages, unsigned int count, int node, pgprot_t pro
+ 
+ 	kasan_unpoison_vmalloc(mem, size);
+ 
+-	if (vmap_page_range(addr, addr + size, prot, pages) < 0) {
++	if (map_kernel_range(addr, size, prot, pages) < 0) {
+ 		vm_unmap_ram(mem, count);
+ 		return NULL;
+ 	}
+@@ -2030,10 +2030,9 @@ void unmap_kernel_range(unsigned long addr, unsigned long size)
  int map_vm_area(struct vm_struct *area, pgprot_t prot, struct page **pages)
  {
-@@ -2058,7 +2057,6 @@ int map_vm_area(struct vm_struct *area, pgprot_t prot, struct page **pages)
+ 	unsigned long addr = (unsigned long)area->addr;
+-	unsigned long end = addr + get_vm_area_size(area);
+ 	int err;
+ 
+-	err = vmap_page_range(addr, end, prot, pages);
++	err = map_kernel_range(addr, get_vm_area_size(area), prot, pages);
  
  	return err > 0 ? 0 : err;
  }
--EXPORT_SYMBOL_GPL(map_vm_area);
- 
- static inline void setup_vmalloc_vm_locked(struct vm_struct *vm,
- 	struct vmap_area *va, unsigned long flags, const void *caller)
 -- 
 2.25.1
 
