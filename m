@@ -7,88 +7,88 @@ X-Spam-Status: No, score=-8.1 required=3.0 tests=DKIM_INVALID,DKIM_SIGNED,
 	SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED,USER_AGENT_SANE_1 autolearn=ham
 	autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 3E7E7C2D0F4
-	for <iommu@archiver.kernel.org>; Wed,  8 Apr 2020 21:21:15 +0000 (UTC)
-Received: from fraxinus.osuosl.org (smtp4.osuosl.org [140.211.166.137])
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 095B6C2BA80
+	for <iommu@archiver.kernel.org>; Wed,  8 Apr 2020 21:21:17 +0000 (UTC)
+Received: from silver.osuosl.org (smtp3.osuosl.org [140.211.166.136])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by mail.kernel.org (Postfix) with ESMTPS id 10B3A20771
-	for <iommu@archiver.kernel.org>; Wed,  8 Apr 2020 21:21:15 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTPS id CEC8D20771
+	for <iommu@archiver.kernel.org>; Wed,  8 Apr 2020 21:21:16 +0000 (UTC)
 Authentication-Results: mail.kernel.org;
-	dkim=fail reason="signature verification failed" (2048-bit key) header.d=google.com header.i=@google.com header.b="g/SAbEu4"
-DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 10B3A20771
+	dkim=fail reason="signature verification failed" (2048-bit key) header.d=google.com header.i=@google.com header.b="S7dku9eU"
+DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org CEC8D20771
 Authentication-Results: mail.kernel.org; dmarc=none (p=none dis=none) header.from=lists.linux-foundation.org
 Authentication-Results: mail.kernel.org; spf=pass smtp.mailfrom=iommu-bounces@lists.linux-foundation.org
 Received: from localhost (localhost [127.0.0.1])
-	by fraxinus.osuosl.org (Postfix) with ESMTP id 0590286C29;
-	Wed,  8 Apr 2020 21:21:15 +0000 (UTC)
+	by silver.osuosl.org (Postfix) with ESMTP id 6642A221DC;
+	Wed,  8 Apr 2020 21:21:16 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from fraxinus.osuosl.org ([127.0.0.1])
+Received: from silver.osuosl.org ([127.0.0.1])
 	by localhost (.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
-	with ESMTP id 02o43cyFEf-C; Wed,  8 Apr 2020 21:21:14 +0000 (UTC)
+	with ESMTP id 084Pj6ZAE4PI; Wed,  8 Apr 2020 21:21:14 +0000 (UTC)
 Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [140.211.9.56])
-	by fraxinus.osuosl.org (Postfix) with ESMTP id 892E485549;
+	by silver.osuosl.org (Postfix) with ESMTP id C25C82408D;
 	Wed,  8 Apr 2020 21:21:14 +0000 (UTC)
 Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
-	by lists.linuxfoundation.org (Postfix) with ESMTP id 77EA7C1AE8;
+	by lists.linuxfoundation.org (Postfix) with ESMTP id B067BC1D85;
 	Wed,  8 Apr 2020 21:21:14 +0000 (UTC)
-Received: from fraxinus.osuosl.org (smtp4.osuosl.org [140.211.166.137])
- by lists.linuxfoundation.org (Postfix) with ESMTP id 6199EC0177
- for <iommu@lists.linux-foundation.org>; Wed,  8 Apr 2020 21:21:11 +0000 (UTC)
+Received: from whitealder.osuosl.org (smtp1.osuosl.org [140.211.166.138])
+ by lists.linuxfoundation.org (Postfix) with ESMTP id 5DDBAC0177
+ for <iommu@lists.linux-foundation.org>; Wed,  8 Apr 2020 21:21:13 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
- by fraxinus.osuosl.org (Postfix) with ESMTP id 516FD85549
- for <iommu@lists.linux-foundation.org>; Wed,  8 Apr 2020 21:21:11 +0000 (UTC)
+ by whitealder.osuosl.org (Postfix) with ESMTP id 4DDD4880C2
+ for <iommu@lists.linux-foundation.org>; Wed,  8 Apr 2020 21:21:13 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from fraxinus.osuosl.org ([127.0.0.1])
+Received: from whitealder.osuosl.org ([127.0.0.1])
  by localhost (.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
- with ESMTP id sT8DD-S16zUy for <iommu@lists.linux-foundation.org>;
- Wed,  8 Apr 2020 21:21:10 +0000 (UTC)
+ with ESMTP id rmlWdrXpJf-D for <iommu@lists.linux-foundation.org>;
+ Wed,  8 Apr 2020 21:21:12 +0000 (UTC)
 X-Greylist: from auto-whitelisted by SQLgrey-1.7.6
 Received: from mail-pj1-f67.google.com (mail-pj1-f67.google.com
  [209.85.216.67])
- by fraxinus.osuosl.org (Postfix) with ESMTPS id B5DC986C28
- for <iommu@lists.linux-foundation.org>; Wed,  8 Apr 2020 21:21:10 +0000 (UTC)
-Received: by mail-pj1-f67.google.com with SMTP id ng8so367535pjb.2
- for <iommu@lists.linux-foundation.org>; Wed, 08 Apr 2020 14:21:10 -0700 (PDT)
+ by whitealder.osuosl.org (Postfix) with ESMTPS id 5BB66880D5
+ for <iommu@lists.linux-foundation.org>; Wed,  8 Apr 2020 21:21:12 +0000 (UTC)
+Received: by mail-pj1-f67.google.com with SMTP id np9so360742pjb.4
+ for <iommu@lists.linux-foundation.org>; Wed, 08 Apr 2020 14:21:12 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=google.com; s=20161025;
  h=date:from:to:cc:subject:in-reply-to:message-id:references
  :user-agent:mime-version;
- bh=/pdcHqDKwcC+6FzwpdnIam6pQiTAqrxIDHc9n85aJ8s=;
- b=g/SAbEu4LZtwZhA6te1rLZ4jop59d9Ytf77kYvQO1GX/6MLiTqnkAnj32sKw4mXZaV
- G/AO3x0eIncLWIYPgQ9pL6flT2CIICVynuF93qY3dUnfqy0BqS3SQDsbSCBajdELN3L5
- xahWlz0MqDoGAEkhRX7PtUAGwGdbruPzkL4FRQrDeSYbmSIIJprUZmfmkEZQOw+iUpa3
- v/EJuuUaxNvP1I+J310OfJym5nGZWHD2J37cVMNRQV0Yw6dvKH4lTP3u9JAiaMM32IJ0
- YpuZVz3IE7MW2Uq9iwRLdlDCuhVS1OZ2CvQDBbrV7Sj6VhefYAWFS8Nwb8TAfJe3E6ZX
- ACbA==
+ bh=tzxcVfYqDaPeZReasS8qD6qKEgdprHW9+s9O1hZTsQc=;
+ b=S7dku9eUTelk+NIxd5md2NkDK5b3imi2QHWeyDBBDDcrvmjt27DpHCsqUREtsSeeU4
+ LWtIXun2WRrvnU5+Mi+QDZ44E/PUo8yGraQxVZo+cw/gxAdVMVwxRGnzOrMTqqJjwG0q
+ VmVYnfi+iIbuIo40rVQ2ZNnDI8pS3GVoxmWJEPMYkLvQe6jkBzm8XBD+lcpu1LxJU96P
+ LKKbcKRTVIKRLRoN3CUUqXj0kj7QZFow/wHeGm4TMuTQLz5xwerblJaOAdMaSwPayqSW
+ pwitgq51n5deonLMg1acLi5p4zxUKVEFyHZqIrb6PosYqToOkl/NrAAnKhXQUgMrTa27
+ CfbQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
  d=1e100.net; s=20161025;
  h=x-gm-message-state:date:from:to:cc:subject:in-reply-to:message-id
  :references:user-agent:mime-version;
- bh=/pdcHqDKwcC+6FzwpdnIam6pQiTAqrxIDHc9n85aJ8s=;
- b=PYiuJmZizzPWAjxKgt/ADzwXIBviCWRphGVjqEM0/i5j8eSMFc1kz/zGJU1jl7kLuc
- hG8dyxie0CxSkerSZzO4y2q22HQqRl9eQVM+lj4MU8UCexj/NYMIpiPmh5ICC0uC3bPQ
- FGPIArivUAByW4c4IbFBlB10maPH6DJMFZoaVjwt+Sk53T3Er1qcwH/9QRFM/IkJO0iQ
- XdAvhcXiEVR/0rYVT9BIiXn0bNM5uH5y/ZEiyPdX/1ExYOh+kebJeNoOHTzYr0SEFJ6d
- Kj2hLTeYWeWIkL9SGG5FAFFIwumgcN2ANkjd/JpsodrlMj1UMFLt8mg+Le34JQzl3YZi
- H3vg==
-X-Gm-Message-State: AGi0Pub8yK7ELxmmO1kJGdi+vK9wdlFu4lFwR60teB0UyQpyXp6Z6UvL
- ml+9mgUbe3UG5ziIjU0CIPwvwg==
-X-Google-Smtp-Source: APiQypI+w1rktSfBvlD9BuopTNa2b2v57j69h+rytLULylCC5sjSdzkWMc0y8l4w1v5antA+YMnviw==
-X-Received: by 2002:a17:90b:4c0e:: with SMTP id
- na14mr7784901pjb.73.1586380870091; 
- Wed, 08 Apr 2020 14:21:10 -0700 (PDT)
+ bh=tzxcVfYqDaPeZReasS8qD6qKEgdprHW9+s9O1hZTsQc=;
+ b=jRzB4lvQ8Y79h5Pfrur0O/CAAlfmaRezUEYOwOortoC4FHecVRQOPfUjgK3JOIhDrq
+ NHmtLmMbyWEogFw/7HmTxVT00bOdE9wO6aFyznyecgiXZLz4AqVVweL/84VJOCPkaCUd
+ 1JG5HUudDD/xXqCdqBhCBj46ZL5e8jr/it/HG4pKIW3fmhJ04Zf2fAQPJGef5Lgs4ymV
+ NF4JAYbmo2DTPQ1sjuJnkGRJOK4Zi4t3DrEvBc+F+2gaYCa/rJlCR1vGtOKbwYu+l2N5
+ wzpvV+ME9E/f8TxxCReVRJApdKWgwG7f8+4DkBApG6jQvhNK9rarBDmL2aPfUbLItkRL
+ k8Ag==
+X-Gm-Message-State: AGi0PuY5Wlq3mfWA82HORspppQUWDayx8GvWSxtHOeZvkXKwzJGUDQq6
+ diTeyNq88azRFtMuR7qQyRq5gw==
+X-Google-Smtp-Source: APiQypLzuioXyKB2rsVHdIo/cg8MndRznC5d3+Fj5BV7jR+NxJO7bpFagBpEzVoX2RqVkHvT6AeBnQ==
+X-Received: by 2002:a17:90a:a4c9:: with SMTP id
+ l9mr1907410pjw.44.1586380871617; 
+ Wed, 08 Apr 2020 14:21:11 -0700 (PDT)
 Received: from [2620:15c:17:3:3a5:23a7:5e32:4598]
  ([2620:15c:17:3:3a5:23a7:5e32:4598])
- by smtp.gmail.com with ESMTPSA id a75sm411002pje.31.2020.04.08.14.21.08
+ by smtp.gmail.com with ESMTPSA id d23sm17523800pfq.210.2020.04.08.14.21.10
  (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
- Wed, 08 Apr 2020 14:21:09 -0700 (PDT)
-Date: Wed, 8 Apr 2020 14:21:08 -0700 (PDT)
+ Wed, 08 Apr 2020 14:21:11 -0700 (PDT)
+Date: Wed, 8 Apr 2020 14:21:10 -0700 (PDT)
 X-X-Sender: rientjes@chino.kir.corp.google.com
 To: Christoph Hellwig <hch@lst.de>, Tom Lendacky <thomas.lendacky@amd.com>
-Subject: [rfc v2 4/6] dma-direct: atomic allocations must come from atomic
+Subject: [rfc v2 5/6] x86/mm: unencrypted non-blocking DMA allocations use
  coherent pools
 In-Reply-To: <alpine.DEB.2.21.2004081418490.19661@chino.kir.corp.google.com>
-Message-ID: <alpine.DEB.2.21.2004081420060.19661@chino.kir.corp.google.com>
+Message-ID: <alpine.DEB.2.21.2004081420220.19661@chino.kir.corp.google.com>
 References: <alpine.DEB.2.21.1912311738130.68206@chino.kir.corp.google.com>
  <b22416ec-cc28-3fd2-3a10-89840be173fa@amd.com>
  <alpine.DEB.2.21.2002280118461.165532@chino.kir.corp.google.com>
@@ -118,101 +118,29 @@ Content-Transfer-Encoding: 7bit
 Errors-To: iommu-bounces@lists.linux-foundation.org
 Sender: "iommu" <iommu-bounces@lists.linux-foundation.org>
 
-When a device required unencrypted memory and the context does not allow
-blocking, memory must be returned from the atomic coherent pools.
+When CONFIG_AMD_MEM_ENCRYPT is enabled and a device requires unencrypted
+DMA, all non-blocking allocations must originate from the atomic DMA
+coherent pools.
 
-This avoids the remap when CONFIG_DMA_DIRECT_REMAP is not enabled and the
-config only requires CONFIG_DMA_COHERENT_POOL.  This will be used for
-CONFIG_AMD_MEM_ENCRYPT in a subsequent patch.
-
-Keep all memory in these pools unencrypted.
+Select CONFIG_DMA_COHERENT_POOL for CONFIG_AMD_MEM_ENCRYPT.
 
 Signed-off-by: David Rientjes <rientjes@google.com>
 ---
- kernel/dma/direct.c | 16 ++++++++++++++++
- kernel/dma/pool.c   | 15 +++++++++++++--
- 2 files changed, 29 insertions(+), 2 deletions(-)
+ arch/x86/Kconfig | 1 +
+ 1 file changed, 1 insertion(+)
 
-diff --git a/kernel/dma/direct.c b/kernel/dma/direct.c
-index 70800ca64f13..44165263c185 100644
---- a/kernel/dma/direct.c
-+++ b/kernel/dma/direct.c
-@@ -124,6 +124,18 @@ void *dma_direct_alloc_pages(struct device *dev, size_t size,
- 	struct page *page;
- 	void *ret;
- 
-+	/*
-+	 * Unencrypted memory must come directly from DMA atomic pools if
-+	 * blocking is not allowed.
-+	 */
-+	if (IS_ENABLED(CONFIG_DMA_COHERENT_POOL) &&
-+	    force_dma_unencrypted(dev) && !gfpflags_allow_blocking(gfp)) {
-+		ret = dma_alloc_from_pool(dev, PAGE_ALIGN(size), &page, gfp);
-+		if (!ret)
-+			return NULL;
-+		goto done;
-+	}
-+
- 	if (IS_ENABLED(CONFIG_DMA_DIRECT_REMAP) &&
- 	    dma_alloc_need_uncached(dev, attrs) &&
- 	    !gfpflags_allow_blocking(gfp)) {
-@@ -203,6 +215,10 @@ void dma_direct_free_pages(struct device *dev, size_t size, void *cpu_addr,
- {
- 	unsigned int page_order = get_order(size);
- 
-+	if (IS_ENABLED(CONFIG_DMA_COHERENT_POOL) &&
-+	    dma_free_from_pool(dev, cpu_addr, PAGE_ALIGN(size)))
-+		return;
-+
- 	if ((attrs & DMA_ATTR_NO_KERNEL_MAPPING) &&
- 	    !force_dma_unencrypted(dev)) {
- 		/* cpu_addr is a struct page cookie, not a kernel address */
-diff --git a/kernel/dma/pool.c b/kernel/dma/pool.c
-index e14c5a2da734..6685ab89cfa7 100644
---- a/kernel/dma/pool.c
-+++ b/kernel/dma/pool.c
-@@ -9,6 +9,7 @@
- #include <linux/dma-contiguous.h>
- #include <linux/init.h>
- #include <linux/genalloc.h>
-+#include <linux/set_memory.h>
- #include <linux/slab.h>
- #include <linux/vmalloc.h>
- #include <linux/workqueue.h>
-@@ -55,12 +56,20 @@ static int atomic_pool_expand(struct gen_pool *pool, size_t pool_size,
- 
- 	arch_dma_prep_coherent(page, pool_size);
- 
-+#ifdef CONFIG_DMA_DIRECT_REMAP
- 	addr = dma_common_contiguous_remap(page, pool_size,
- 					   pgprot_dmacoherent(PAGE_KERNEL),
- 					   __builtin_return_address(0));
- 	if (!addr)
- 		goto free_page;
--
-+#else
-+	addr = page_to_virt(page);
-+#endif
-+	/*
-+	 * Memory in the atomic DMA pools must be unencrypted, the pools do not
-+	 * shrink so no re-encryption occurs in dma_direct_free_pages().
-+	 */
-+	set_memory_decrypted((unsigned long)page_to_virt(page), 1 << order);
- 	ret = gen_pool_add_virt(pool, (unsigned long)addr, page_to_phys(page),
- 				pool_size, NUMA_NO_NODE);
- 	if (ret)
-@@ -69,8 +78,10 @@ static int atomic_pool_expand(struct gen_pool *pool, size_t pool_size,
- 	return 0;
- 
- remove_mapping:
-+#ifdef CONFIG_DMA_DIRECT_REMAP
- 	dma_common_free_remap(addr, pool_size);
--free_page:
-+#endif
-+free_page: __maybe_unused
- 	if (!dma_release_from_contiguous(NULL, page, 1 << order))
- 		__free_pages(page, order);
- out:
+diff --git a/arch/x86/Kconfig b/arch/x86/Kconfig
+index 8d078642b4be..b7c9e78a5374 100644
+--- a/arch/x86/Kconfig
++++ b/arch/x86/Kconfig
+@@ -1520,6 +1520,7 @@ config X86_CPA_STATISTICS
+ config AMD_MEM_ENCRYPT
+ 	bool "AMD Secure Memory Encryption (SME) support"
+ 	depends on X86_64 && CPU_SUP_AMD
++	select DMA_COHERENT_POOL
+ 	select DYNAMIC_PHYSICAL_MASK
+ 	select ARCH_USE_MEMREMAP_PROT
+ 	select ARCH_HAS_FORCE_DMA_UNENCRYPTED
 _______________________________________________
 iommu mailing list
 iommu@lists.linux-foundation.org
