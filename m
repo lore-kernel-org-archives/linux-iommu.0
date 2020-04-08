@@ -2,96 +2,165 @@ Return-Path: <SRS0=CWSE=5Y=lists.linux-foundation.org=iommu-bounces@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-8.1 required=3.0 tests=DKIM_INVALID,DKIM_SIGNED,
-	HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_PATCH,MAILING_LIST_MULTI,SIGNED_OFF_BY,
-	SPF_HELO_NONE,SPF_PASS,USER_AGENT_SANE_1 autolearn=unavailable
-	autolearn_force=no version=3.4.0
+X-Spam-Status: No, score=-8.3 required=3.0 tests=HEADER_FROM_DIFFERENT_DOMAINS,
+	INCLUDES_PATCH,MAILING_LIST_MULTI,SIGNED_OFF_BY,SPF_HELO_NONE,SPF_PASS,
+	USER_AGENT_SANE_1 autolearn=ham autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 9D12DC2BA1A
-	for <iommu@archiver.kernel.org>; Wed,  8 Apr 2020 13:33:58 +0000 (UTC)
-Received: from hemlock.osuosl.org (smtp2.osuosl.org [140.211.166.133])
+	by smtp.lore.kernel.org (Postfix) with ESMTP id A14E1C2BA2B
+	for <iommu@archiver.kernel.org>; Wed,  8 Apr 2020 13:44:46 +0000 (UTC)
+Received: from fraxinus.osuosl.org (smtp4.osuosl.org [140.211.166.137])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by mail.kernel.org (Postfix) with ESMTPS id 700CA208E4
-	for <iommu@archiver.kernel.org>; Wed,  8 Apr 2020 13:33:58 +0000 (UTC)
-Authentication-Results: mail.kernel.org;
-	dkim=fail reason="signature verification failed" (1024-bit key) header.d=redhat.com header.i=@redhat.com header.b="QioIU+ZX"
-DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 700CA208E4
-Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=redhat.com
+	by mail.kernel.org (Postfix) with ESMTPS id 6EAE62082F
+	for <iommu@archiver.kernel.org>; Wed,  8 Apr 2020 13:44:46 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 6EAE62082F
+Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=de.ibm.com
 Authentication-Results: mail.kernel.org; spf=pass smtp.mailfrom=iommu-bounces@lists.linux-foundation.org
 Received: from localhost (localhost [127.0.0.1])
-	by hemlock.osuosl.org (Postfix) with ESMTP id 3FC2C8800F;
-	Wed,  8 Apr 2020 13:33:58 +0000 (UTC)
+	by fraxinus.osuosl.org (Postfix) with ESMTP id 462DB86AC4;
+	Wed,  8 Apr 2020 13:44:46 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from hemlock.osuosl.org ([127.0.0.1])
+Received: from fraxinus.osuosl.org ([127.0.0.1])
 	by localhost (.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
-	with ESMTP id ym1a1qvvU5NK; Wed,  8 Apr 2020 13:33:57 +0000 (UTC)
+	with ESMTP id KNZLMQRHSXUj; Wed,  8 Apr 2020 13:44:44 +0000 (UTC)
 Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [140.211.9.56])
-	by hemlock.osuosl.org (Postfix) with ESMTP id 062E187EA4;
-	Wed,  8 Apr 2020 13:33:57 +0000 (UTC)
+	by fraxinus.osuosl.org (Postfix) with ESMTP id CD04F86AC1;
+	Wed,  8 Apr 2020 13:44:44 +0000 (UTC)
 Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
-	by lists.linuxfoundation.org (Postfix) with ESMTP id 002E8C1AE8;
-	Wed,  8 Apr 2020 13:33:56 +0000 (UTC)
-Received: from silver.osuosl.org (smtp3.osuosl.org [140.211.166.136])
- by lists.linuxfoundation.org (Postfix) with ESMTP id 9A338C0177
- for <iommu@lists.linux-foundation.org>; Wed,  8 Apr 2020 13:33:55 +0000 (UTC)
+	by lists.linuxfoundation.org (Postfix) with ESMTP id B4E87C1AE8;
+	Wed,  8 Apr 2020 13:44:44 +0000 (UTC)
+Received: from fraxinus.osuosl.org (smtp4.osuosl.org [140.211.166.137])
+ by lists.linuxfoundation.org (Postfix) with ESMTP id 7DF21C0177
+ for <iommu@lists.linux-foundation.org>; Wed,  8 Apr 2020 13:44:42 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
- by silver.osuosl.org (Postfix) with ESMTP id 81C5F204CB
- for <iommu@lists.linux-foundation.org>; Wed,  8 Apr 2020 13:33:55 +0000 (UTC)
+ by fraxinus.osuosl.org (Postfix) with ESMTP id 6CAE686AC1
+ for <iommu@lists.linux-foundation.org>; Wed,  8 Apr 2020 13:44:42 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from silver.osuosl.org ([127.0.0.1])
+Received: from fraxinus.osuosl.org ([127.0.0.1])
  by localhost (.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
- with ESMTP id IoCzfnVaA023 for <iommu@lists.linux-foundation.org>;
- Wed,  8 Apr 2020 13:33:52 +0000 (UTC)
-X-Greylist: domain auto-whitelisted by SQLgrey-1.7.6
-Received: from us-smtp-delivery-1.mimecast.com (us-smtp-1.mimecast.com
- [207.211.31.81])
- by silver.osuosl.org (Postfix) with ESMTPS id 799A8203A6
- for <iommu@lists.linux-foundation.org>; Wed,  8 Apr 2020 13:33:52 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
- s=mimecast20190719; t=1586352831;
- h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
- to:to:cc:cc:mime-version:mime-version:content-type:content-type:
- content-transfer-encoding:content-transfer-encoding:
- in-reply-to:in-reply-to:references:references;
- bh=FBUBsai0FevLQ5QCd9aW3TwZ/LdtiIWkdfmtH9taVV4=;
- b=QioIU+ZXQHryBcqNeXCNYLKl1cs34lQOH2xCLl2gcuEg4+OBcN7xbzyf1jHmghc3ij1uUd
- CjiK0TJ4/MoSPMDnE5QSEzYu1AkFrrkNly93V5MjBZUIzE3JtGoB7fuP1gYqLlyKsQttUt
- GwaM1m4Hoy/it9VNzeJjcZ+4c+KTAK4=
-Received: from mimecast-mx01.redhat.com (mimecast-mx01.redhat.com
- [209.132.183.4]) (Using TLS) by relay.mimecast.com with ESMTP id
- us-mta-157-n7cUcDnUNd2IH_OQ8yqUhQ-1; Wed, 08 Apr 2020 09:33:41 -0400
-X-MC-Unique: n7cUcDnUNd2IH_OQ8yqUhQ-1
-Received: from smtp.corp.redhat.com (int-mx06.intmail.prod.int.phx2.redhat.com
- [10.5.11.16])
- (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
- (No client certificate requested)
- by mimecast-mx01.redhat.com (Postfix) with ESMTPS id 710ED1005516;
- Wed,  8 Apr 2020 13:33:39 +0000 (UTC)
-Received: from [10.36.115.53] (ovpn-115-53.ams2.redhat.com [10.36.115.53])
- by smtp.corp.redhat.com (Postfix) with ESMTPS id 0E2385C1C5;
- Wed,  8 Apr 2020 13:33:32 +0000 (UTC)
-From: Auger Eric <eric.auger@redhat.com>
-Subject: Re: [PATCH v11 04/10] iommu/vt-d: Add nested translation helper
- function
-To: Jacob Pan <jacob.jun.pan@linux.intel.com>,
- Lu Baolu <baolu.lu@linux.intel.com>, iommu@lists.linux-foundation.org,
- LKML <linux-kernel@vger.kernel.org>, Joerg Roedel <joro@8bytes.org>,
- David Woodhouse <dwmw2@infradead.org>,
- Jean-Philippe Brucker <jean-philippe@linaro.com>
-References: <1585939334-21396-1-git-send-email-jacob.jun.pan@linux.intel.com>
- <1585939334-21396-5-git-send-email-jacob.jun.pan@linux.intel.com>
-Message-ID: <84d4bda4-46fd-28ee-58ee-5d7d3274ba21@redhat.com>
-Date: Wed, 8 Apr 2020 15:33:31 +0200
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:60.0) Gecko/20100101
- Thunderbird/60.4.0
+ with ESMTP id 5QAUAbxbUX8t for <iommu@lists.linux-foundation.org>;
+ Wed,  8 Apr 2020 13:44:41 +0000 (UTC)
+X-Greylist: from auto-whitelisted by SQLgrey-1.7.6
+Received: from mx0a-001b2d01.pphosted.com (mx0b-001b2d01.pphosted.com
+ [148.163.158.5])
+ by fraxinus.osuosl.org (Postfix) with ESMTPS id BFC1686938
+ for <iommu@lists.linux-foundation.org>; Wed,  8 Apr 2020 13:44:41 +0000 (UTC)
+Received: from pps.filterd (m0098420.ppops.net [127.0.0.1])
+ by mx0b-001b2d01.pphosted.com (8.16.0.42/8.16.0.42) with SMTP id
+ 038Dakl4006047
+ for <iommu@lists.linux-foundation.org>; Wed, 8 Apr 2020 09:44:40 -0400
+Received: from e06smtp03.uk.ibm.com (e06smtp03.uk.ibm.com [195.75.94.99])
+ by mx0b-001b2d01.pphosted.com with ESMTP id 309dbbv53v-1
+ (version=TLSv1.2 cipher=AES256-GCM-SHA384 bits=256 verify=NOT)
+ for <iommu@lists.linux-foundation.org>; Wed, 08 Apr 2020 09:44:40 -0400
+Received: from localhost
+ by e06smtp03.uk.ibm.com with IBM ESMTP SMTP Gateway: Authorized Use Only!
+ Violators will be prosecuted
+ for <iommu@lists.linux-foundation.org> from <borntraeger@de.ibm.com>;
+ Wed, 8 Apr 2020 14:44:25 +0100
+Received: from b06cxnps3075.portsmouth.uk.ibm.com (9.149.109.195)
+ by e06smtp03.uk.ibm.com (192.168.101.133) with IBM ESMTP SMTP Gateway:
+ Authorized Use Only! Violators will be prosecuted; 
+ (version=TLSv1/SSLv3 cipher=AES256-GCM-SHA384 bits=256/256)
+ Wed, 8 Apr 2020 14:44:18 +0100
+Received: from d06av25.portsmouth.uk.ibm.com (d06av25.portsmouth.uk.ibm.com
+ [9.149.105.61])
+ by b06cxnps3075.portsmouth.uk.ibm.com (8.14.9/8.14.9/NCO v10.0) with ESMTP id
+ 038DiUwG37421114
+ (version=TLSv1/SSLv3 cipher=DHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
+ Wed, 8 Apr 2020 13:44:30 GMT
+Received: from d06av25.portsmouth.uk.ibm.com (unknown [127.0.0.1])
+ by IMSVA (Postfix) with ESMTP id EC36711C04A;
+ Wed,  8 Apr 2020 13:44:29 +0000 (GMT)
+Received: from d06av25.portsmouth.uk.ibm.com (unknown [127.0.0.1])
+ by IMSVA (Postfix) with ESMTP id A219611C04C;
+ Wed,  8 Apr 2020 13:44:28 +0000 (GMT)
+Received: from oc7455500831.ibm.com (unknown [9.145.153.96])
+ by d06av25.portsmouth.uk.ibm.com (Postfix) with ESMTP;
+ Wed,  8 Apr 2020 13:44:28 +0000 (GMT)
+Subject: Re: [PATCH 28/28] s390: use __vmalloc_node in stack_alloc
+To: Christoph Hellwig <hch@lst.de>, Andrew Morton <akpm@linux-foundation.org>,
+ "K. Y. Srinivasan" <kys@microsoft.com>,
+ Haiyang Zhang <haiyangz@microsoft.com>,
+ Stephen Hemminger <sthemmin@microsoft.com>,
+ Wei Liu <wei.liu@kernel.org>, x86@kernel.org,
+ David Airlie <airlied@linux.ie>, Daniel Vetter <daniel@ffwll.ch>,
+ Laura Abbott <labbott@redhat.com>, Sumit Semwal <sumit.semwal@linaro.org>,
+ Sakari Ailus <sakari.ailus@linux.intel.com>, Minchan Kim
+ <minchan@kernel.org>, Nitin Gupta <ngupta@vflare.org>
+References: <20200408115926.1467567-1-hch@lst.de>
+ <20200408115926.1467567-29-hch@lst.de>
+From: Christian Borntraeger <borntraeger@de.ibm.com>
+Autocrypt: addr=borntraeger@de.ibm.com; prefer-encrypt=mutual; keydata=
+ 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
+ nS4h0HDFPrrp1C2EMVYIQrMokWvlFZbCpsdYbBI=
+Date: Wed, 8 Apr 2020 15:44:28 +0200
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101
+ Thunderbird/68.6.0
 MIME-Version: 1.0
-In-Reply-To: <1585939334-21396-5-git-send-email-jacob.jun.pan@linux.intel.com>
+In-Reply-To: <20200408115926.1467567-29-hch@lst.de>
 Content-Language: en-US
-X-Scanned-By: MIMEDefang 2.79 on 10.5.11.16
-Cc: "Tian, Kevin" <kevin.tian@intel.com>, Raj Ashok <ashok.raj@intel.com>,
- Alex Williamson <alex.williamson@redhat.com>,
- Jonathan Cameron <jic23@kernel.org>
+X-TM-AS-GCONF: 00
+x-cbid: 20040813-0012-0000-0000-000003A0B568
+X-IBM-AV-DETECTION: SAVI=unused REMOTE=unused XFE=unused
+x-cbparentid: 20040813-0013-0000-0000-000021DDDAB0
+Message-Id: <6689b12a-4473-af2e-0fa0-69097eb2bb52@de.ibm.com>
+X-Proofpoint-Virus-Version: vendor=fsecure engine=2.50.10434:6.0.138, 18.0.676
+ definitions=2020-04-07_10:2020-04-07,
+ 2020-04-07 signatures=0
+X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0
+ phishscore=0 adultscore=0
+ malwarescore=0 bulkscore=0 lowpriorityscore=0 impostorscore=0
+ clxscore=1015 suspectscore=2 spamscore=0 priorityscore=1501 mlxscore=0
+ mlxlogscore=999 classifier=spam adjust=0 reason=mlx scancount=1
+ engine=8.12.0-2003020000 definitions=main-2004080113
+Cc: Christophe Leroy <christophe.leroy@c-s.fr>, linux-arch@vger.kernel.org,
+ linux-hyperv@vger.kernel.org, linux-s390@vger.kernel.org,
+ Peter Zijlstra <peterz@infradead.org>, linuxppc-dev@lists.ozlabs.org,
+ linux-kernel@vger.kernel.org, dri-devel@lists.freedesktop.org,
+ linaro-mm-sig@lists.linaro.org, linux-mm@kvack.org,
+ iommu@lists.linux-foundation.org, bpf@vger.kernel.org,
+ Robin Murphy <robin.murphy@arm.com>, linux-arm-kernel@lists.infradead.org
 X-BeenThere: iommu@lists.linux-foundation.org
 X-Mailman-Version: 2.1.15
 Precedence: list
@@ -109,443 +178,42 @@ Content-Transfer-Encoding: 7bit
 Errors-To: iommu-bounces@lists.linux-foundation.org
 Sender: "iommu" <iommu-bounces@lists.linux-foundation.org>
 
-Hi Jacob,
 
-On 4/3/20 8:42 PM, Jacob Pan wrote:
-> Nested translation mode is supported in VT-d 3.0 Spec.CH 3.8.
-> With PASID granular translation type set to 0x11b, translation
-> result from the first level(FL) also subject to a second level(SL)
-> page table translation. This mode is used for SVA virtualization,
-> where FL performs guest virtual to guest physical translation and
-> SL performs guest physical to host physical translation.
+
+On 08.04.20 13:59, Christoph Hellwig wrote:
+> stack_alloc can use a slightly higher level vmalloc function.
 > 
-> This patch adds a helper function for setting up nested translation
-> where second level comes from a domain and first level comes from
-> a guest PGD.
-> 
+> Signed-off-by: Christoph Hellwig <hch@lst.de>
 > ---
-> v11 Added check for nesting domain attr. Moved flags to header file.
->     Improved flow in MTS handling suggested by Eric.
-> ---
+>  arch/s390/kernel/setup.c | 9 +++------
+>  1 file changed, 3 insertions(+), 6 deletions(-)
 > 
-> Signed-off-by: Jacob Pan <jacob.jun.pan@linux.intel.com>
-> Signed-off-by: Liu, Yi L <yi.l.liu@intel.com>
-> ---
->  drivers/iommu/intel-iommu.c |  25 -----
->  drivers/iommu/intel-pasid.c | 246 +++++++++++++++++++++++++++++++++++++++++++-
->  drivers/iommu/intel-pasid.h |  12 +++
->  include/linux/intel-iommu.h |  28 +++++
->  4 files changed, 283 insertions(+), 28 deletions(-)
-> 
-> diff --git a/drivers/iommu/intel-iommu.c b/drivers/iommu/intel-iommu.c
-> index e599b2537b1c..c0dadec5a6b3 100644
-> --- a/drivers/iommu/intel-iommu.c
-> +++ b/drivers/iommu/intel-iommu.c
-> @@ -296,31 +296,6 @@ static inline void context_clear_entry(struct context_entry *context)
->  static struct dmar_domain *si_domain;
->  static int hw_pass_through = 1;
->  
-> -/* si_domain contains mulitple devices */
-> -#define DOMAIN_FLAG_STATIC_IDENTITY		BIT(0)
-> -
-> -/*
-> - * This is a DMA domain allocated through the iommu domain allocation
-> - * interface. But one or more devices belonging to this domain have
-> - * been chosen to use a private domain. We should avoid to use the
-> - * map/unmap/iova_to_phys APIs on it.
-> - */
-> -#define DOMAIN_FLAG_LOSE_CHILDREN		BIT(1)
-> -
-> -/*
-> - * When VT-d works in the scalable mode, it allows DMA translation to
-> - * happen through either first level or second level page table. This
-> - * bit marks that the DMA translation for the domain goes through the
-> - * first level page table, otherwise, it goes through the second level.
-> - */
-> -#define DOMAIN_FLAG_USE_FIRST_LEVEL		BIT(2)
-> -
-> -/*
-> - * Domain represents a virtual machine which demands iommu nested
-> - * translation mode support.
-> - */
-> -#define DOMAIN_FLAG_NESTING_MODE		BIT(3)
-> -
->  #define for_each_domain_iommu(idx, domain)			\
->  	for (idx = 0; idx < g_num_of_iommus; idx++)		\
->  		if (domain->iommu_refcnt[idx])
-> diff --git a/drivers/iommu/intel-pasid.c b/drivers/iommu/intel-pasid.c
-> index 66c364719ad1..fcd015644c4f 100644
-> --- a/drivers/iommu/intel-pasid.c
-> +++ b/drivers/iommu/intel-pasid.c
-> @@ -359,6 +359,76 @@ pasid_set_flpm(struct pasid_entry *pe, u64 value)
->  	pasid_set_bits(&pe->val[2], GENMASK_ULL(3, 2), value << 2);
->  }
->  
-> +/*
-> + * Setup the Extended Memory Type(EMT) field (Bits 91-93)
-> + * of a scalable mode PASID entry.
-> + */
-> +static inline void
-> +pasid_set_emt(struct pasid_entry *pe, u64 value)
-> +{
-> +	pasid_set_bits(&pe->val[1], GENMASK_ULL(29, 27), value << 27);
-> +}
-> +
-> +/*
-> + * Setup the Page Attribute Table (PAT) field (Bits 96-127)
-> + * of a scalable mode PASID entry.
-> + */
-> +static inline void
-> +pasid_set_pat(struct pasid_entry *pe, u64 value)
-> +{
-> +	pasid_set_bits(&pe->val[1], GENMASK_ULL(63, 32), value << 32);
-> +}
-> +
-> +/*
-> + * Setup the Cache Disable (CD) field (Bit 89)
-> + * of a scalable mode PASID entry.
-> + */
-> +static inline void
-> +pasid_set_cd(struct pasid_entry *pe)
-> +{
-> +	pasid_set_bits(&pe->val[1], 1 << 25, 1 << 25);
-> +}
-> +
-> +/*
-> + * Setup the Extended Memory Type Enable (EMTE) field (Bit 90)
-> + * of a scalable mode PASID entry.
-> + */
-> +static inline void
-> +pasid_set_emte(struct pasid_entry *pe)
-> +{
-> +	pasid_set_bits(&pe->val[1], 1 << 26, 1 << 26);
-> +}
-> +
-> +/*
-> + * Setup the Extended Access Flag Enable (EAFE) field (Bit 135)
-> + * of a scalable mode PASID entry.
-> + */
-> +static inline void
-> +pasid_set_eafe(struct pasid_entry *pe)
-> +{
-> +	pasid_set_bits(&pe->val[2], 1 << 7, 1 << 7);
-> +}
-> +
-> +/*
-> + * Setup the Page-level Cache Disable (PCD) field (Bit 95)
-> + * of a scalable mode PASID entry.
-> + */
-> +static inline void
-> +pasid_set_pcd(struct pasid_entry *pe)
-> +{
-> +	pasid_set_bits(&pe->val[1], 1 << 31, 1 << 31);
-> +}
-> +
-> +/*
-> + * Setup the Page-level Write-Through (PWT)) field (Bit 94)
-> + * of a scalable mode PASID entry.
-> + */
-> +static inline void
-> +pasid_set_pwt(struct pasid_entry *pe)
-> +{
-> +	pasid_set_bits(&pe->val[1], 1 << 30, 1 << 30);
-> +}
-> +
->  static void
->  pasid_cache_invalidation_with_pasid(struct intel_iommu *iommu,
->  				    u16 did, int pasid)
-> @@ -492,7 +562,7 @@ int intel_pasid_setup_first_level(struct intel_iommu *iommu,
->  	pasid_set_page_snoop(pte, !!ecap_smpwc(iommu->ecap));
->  
->  	/* Setup Present and PASID Granular Transfer Type: */
-> -	pasid_set_translation_type(pte, 1);
-> +	pasid_set_translation_type(pte, PASID_ENTRY_PGTT_FL_ONLY);
->  	pasid_set_present(pte);
->  	pasid_flush_caches(iommu, pte, pasid, did);
->  
-> @@ -562,7 +632,7 @@ int intel_pasid_setup_second_level(struct intel_iommu *iommu,
->  	pasid_set_domain_id(pte, did);
->  	pasid_set_slptr(pte, pgd_val);
->  	pasid_set_address_width(pte, agaw);
-> -	pasid_set_translation_type(pte, 2);
-> +	pasid_set_translation_type(pte, PASID_ENTRY_PGTT_SL_ONLY);
->  	pasid_set_fault_enable(pte);
->  	pasid_set_page_snoop(pte, !!ecap_smpwc(iommu->ecap));
->  
-> @@ -596,7 +666,7 @@ int intel_pasid_setup_pass_through(struct intel_iommu *iommu,
->  	pasid_clear_entry(pte);
->  	pasid_set_domain_id(pte, did);
->  	pasid_set_address_width(pte, iommu->agaw);
-> -	pasid_set_translation_type(pte, 4);
-> +	pasid_set_translation_type(pte, PASID_ENTRY_PGTT_PT);
->  	pasid_set_fault_enable(pte);
->  	pasid_set_page_snoop(pte, !!ecap_smpwc(iommu->ecap));
->  
-> @@ -610,3 +680,173 @@ int intel_pasid_setup_pass_through(struct intel_iommu *iommu,
->  
->  	return 0;
->  }
-> +
-> +static int intel_pasid_setup_bind_data(struct intel_iommu *iommu,
-> +				struct pasid_entry *pte,
-> +				struct iommu_gpasid_bind_data_vtd *pasid_data)
-> +{
-> +	/*
-> +	 * Not all guest PASID table entry fields are passed down during bind,
-> +	 * here we only set up the ones that are dependent on guest settings.
-> +	 * Execution related bits such as NXE, SMEP are not meaningful to IOMMU,
-> +	 * therefore not set. Other fields, such as snoop related, are set based
-> +	 * on host needs regardless of guest settings.
-> +	 */
-> +	if (pasid_data->flags & IOMMU_SVA_VTD_GPASID_SRE) {
-> +		if (!ecap_srs(iommu->ecap)) {
-> +			pr_err("No supervisor request support on %s\n",
-> +			       iommu->name);
-You still have a bunch of rate unlimited traces that can be initiated by
-userspace. with that fixed.
+> diff --git a/arch/s390/kernel/setup.c b/arch/s390/kernel/setup.c
+> index 36445dd40fdb..0f0b140b5558 100644
+> --- a/arch/s390/kernel/setup.c
+> +++ b/arch/s390/kernel/setup.c
+> @@ -305,12 +305,9 @@ void *restart_stack __section(.data);
+>  unsigned long stack_alloc(void)
+>  {
+>  #ifdef CONFIG_VMAP_STACK
+> -	return (unsigned long)
+> -		__vmalloc_node_range(THREAD_SIZE, THREAD_SIZE,
+> -				     VMALLOC_START, VMALLOC_END,
+> -				     THREADINFO_GFP,
+> -				     PAGE_KERNEL, 0, NUMA_NO_NODE,
+> -				     __builtin_return_address(0));
+> +	return (unsigned long)__vmalloc_node(THREAD_SIZE, THREAD_SIZE,
+> +			THREADINFO_GFP, NUMA_NO_NODE,
+> +			__builtin_return_address(0));
 
-Reviewed-by: Eric Auger <eric.auger@redhat.com>
+Looks sane.
 
-Thanks
+Acked-by: Christian Borntraeger <borntraeger@de.ibm.com>
 
-Eric
-> +			return -EINVAL;
-> +		}
-> +		pasid_set_sre(pte);
-> +	}
-> +
-> +	if (pasid_data->flags & IOMMU_SVA_VTD_GPASID_EAFE) {
-> +		if (!ecap_eafs(iommu->ecap)) {
-> +			pr_err("No extended access flag support on %s\n",
-> +				iommu->name);
-> +			return -EINVAL;
-> +		}
-> +		pasid_set_eafe(pte);
-> +	}
-> +
-> +	/*
-> +	 * Memory type is only applicable to devices inside processor coherent
-> +	 * domain. PCIe devices are not included. We can skip the rest of the
-> +	 * flags if IOMMU does not support MTS.
-> +	 */
-> +	if (!(pasid_data->flags & IOMMU_SVA_VTD_GPASID_MTS_MASK))
-> +		return 0;
-> +
-> +	if (!ecap_mts(iommu->ecap)) {
-> +		pr_err("No memory type support for bind guest PASID on %s\n", iommu->name);
-> +		return -EINVAL;
-> +	}
-> +
-> +	if (pasid_data->flags & IOMMU_SVA_VTD_GPASID_EMTE) {
-> +		pasid_set_emte(pte);
-> +		pasid_set_emt(pte, pasid_data->emt);
-> +	}
-> +	if (pasid_data->flags & IOMMU_SVA_VTD_GPASID_PCD)
-> +		pasid_set_pcd(pte);
-> +	if (pasid_data->flags & IOMMU_SVA_VTD_GPASID_PWT)
-> +		pasid_set_pwt(pte);
-> +	if (pasid_data->flags & IOMMU_SVA_VTD_GPASID_CD)
-> +		pasid_set_cd(pte);
-> +	pasid_set_pat(pte, pasid_data->pat);
-> +
-> +	return 0;
-> +}
-> +
-> +/**
-> + * intel_pasid_setup_nested() - Set up PASID entry for nested translation.
-> + * This could be used for guest shared virtual address. In this case, the
-> + * first level page tables are used for GVA-GPA translation in the guest,
-> + * second level page tables are used for GPA-HPA translation.
-> + *
-> + * @iommu:      IOMMU which the device belong to
-> + * @dev:        Device to be set up for translation
-> + * @gpgd:       FLPTPTR: First Level Page translation pointer in GPA
-> + * @pasid:      PASID to be programmed in the device PASID table
-> + * @pasid_data: Additional PASID info from the guest bind request
-> + * @domain:     Domain info for setting up second level page tables
-> + * @addr_width: Address width of the first level (guest)
-> + */
-> +int intel_pasid_setup_nested(struct intel_iommu *iommu,
-> +			struct device *dev, pgd_t *gpgd,
-> +			int pasid, struct iommu_gpasid_bind_data_vtd *pasid_data,
-> +			struct dmar_domain *domain,
-> +			int addr_width)
-> +{
-> +	struct pasid_entry *pte;
-> +	struct dma_pte *pgd;
-> +	int ret = 0;
-> +	u64 pgd_val;
-> +	int agaw;
-> +	u16 did;
-> +
-> +	if (!ecap_nest(iommu->ecap)) {
-> +		pr_err_ratelimited("IOMMU: %s: No nested translation support\n",
-> +		       iommu->name);
-> +		return -EINVAL;
-> +	}
-> +
-> +	if (!(domain->flags & DOMAIN_FLAG_NESTING_MODE)) {
-> +		pr_err_ratelimited("Domain is not in nesting mode, %x\n", domain->flags);
-> +		return -EINVAL;
-> +	}
-> +
-> +	pte = intel_pasid_get_entry(dev, pasid);
-> +	if (WARN_ON(!pte))
-> +		return -EINVAL;
-> +
-> +	/*
-> +	 * Caller must ensure PASID entry is not in use, i.e. not bind the
-> +	 * same PASID to the same device twice.
-> +	 */
-> +	if (pasid_pte_is_present(pte))
-> +		return -EBUSY;
-> +
-> +	pasid_clear_entry(pte);
-> +
-> +	/* Sanity checking performed by caller to make sure address
-> +	 * width matching in two dimensions:
-> +	 * 1. CPU vs. IOMMU
-> +	 * 2. Guest vs. Host.
-> +	 */
-> +	switch (addr_width) {
-> +	case ADDR_WIDTH_5LEVEL:
-> +		if (cpu_feature_enabled(X86_FEATURE_LA57) &&
-> +			cap_5lp_support(iommu->cap)) {
-> +			pasid_set_flpm(pte, 1);
-> +		} else {
-> +			dev_err_ratelimited(dev, "5-level paging not supported\n");
-> +			return -EINVAL;
-> +		}
-> +		break;
-> +	case ADDR_WIDTH_4LEVEL:
-> +		pasid_set_flpm(pte, 0);
-> +		break;
-> +	default:
-> +		dev_err_ratelimited(dev, "Invalid guest address width %d\n", addr_width);
-> +		return -EINVAL;
-> +	}
-> +
-> +	/* First level PGD is in GPA, must be supported by the second level */
-> +	if ((u64)gpgd > domain->max_addr) {
-> +		dev_err_ratelimited(dev, "Guest PGD %llx not supported, max %llx\n",
-> +			(u64)gpgd, domain->max_addr);
-> +		return -EINVAL;
-> +	}
-> +	pasid_set_flptr(pte, (u64)gpgd);
-> +
-> +	ret = intel_pasid_setup_bind_data(iommu, pte, pasid_data);
-> +	if (ret) {
-> +		dev_err_ratelimited(dev, "Guest PASID bind data not supported\n");
-> +		return ret;
-> +	}
-> +
-> +	/* Setup the second level based on the given domain */
-> +	pgd = domain->pgd;
-> +
-> +	agaw = iommu_skip_agaw(domain, iommu, &pgd);
-> +	if (agaw < 0) {
-> +		dev_err_ratelimited(dev, "Invalid domain page table\n");
-> +		return -EINVAL;
-> +	}
-> +	pgd_val = virt_to_phys(pgd);
-> +	pasid_set_slptr(pte, pgd_val);
-> +	pasid_set_fault_enable(pte);
-> +
-> +	did = domain->iommu_did[iommu->seq_id];
-> +	pasid_set_domain_id(pte, did);
-> +
-> +	pasid_set_address_width(pte, agaw);
-> +	pasid_set_page_snoop(pte, !!ecap_smpwc(iommu->ecap));
-> +
-> +	pasid_set_translation_type(pte, PASID_ENTRY_PGTT_NESTED);
-> +	pasid_set_present(pte);
-> +	pasid_flush_caches(iommu, pte, pasid, did);
-> +
-> +	return ret;
-> +}
-> diff --git a/drivers/iommu/intel-pasid.h b/drivers/iommu/intel-pasid.h
-> index 92de6df24ccb..698015ee3f04 100644
-> --- a/drivers/iommu/intel-pasid.h
-> +++ b/drivers/iommu/intel-pasid.h
-> @@ -36,6 +36,7 @@
->   * to vmalloc or even module mappings.
->   */
->  #define PASID_FLAG_SUPERVISOR_MODE	BIT(0)
-> +#define PASID_FLAG_NESTED		BIT(1)
->  
->  /*
->   * The PASID_FLAG_FL5LP flag Indicates using 5-level paging for first-
-> @@ -51,6 +52,11 @@ struct pasid_entry {
->  	u64 val[8];
->  };
->  
-> +#define PASID_ENTRY_PGTT_FL_ONLY	(1)
-> +#define PASID_ENTRY_PGTT_SL_ONLY	(2)
-> +#define PASID_ENTRY_PGTT_NESTED		(3)
-> +#define PASID_ENTRY_PGTT_PT		(4)
-> +
->  /* The representative of a PASID table */
->  struct pasid_table {
->  	void			*table;		/* pasid table pointer */
-> @@ -99,6 +105,12 @@ int intel_pasid_setup_second_level(struct intel_iommu *iommu,
->  int intel_pasid_setup_pass_through(struct intel_iommu *iommu,
->  				   struct dmar_domain *domain,
->  				   struct device *dev, int pasid);
-> +int intel_pasid_setup_nested(struct intel_iommu *iommu,
-> +			struct device *dev, pgd_t *pgd,
-> +			int pasid,
-> +			struct iommu_gpasid_bind_data_vtd *pasid_data,
-> +			struct dmar_domain *domain,
-> +			int addr_width);
->  void intel_pasid_tear_down_entry(struct intel_iommu *iommu,
->  				 struct device *dev, int pasid);
->  
-> diff --git a/include/linux/intel-iommu.h b/include/linux/intel-iommu.h
-> index ed7171d2ae1f..6da03f627ba3 100644
-> --- a/include/linux/intel-iommu.h
-> +++ b/include/linux/intel-iommu.h
-> @@ -42,6 +42,9 @@
->  #define DMA_FL_PTE_PRESENT	BIT_ULL(0)
->  #define DMA_FL_PTE_XD		BIT_ULL(63)
->  
-> +#define ADDR_WIDTH_5LEVEL	(57)
-> +#define ADDR_WIDTH_4LEVEL	(48)
-> +
->  #define CONTEXT_TT_MULTI_LEVEL	0
->  #define CONTEXT_TT_DEV_IOTLB	1
->  #define CONTEXT_TT_PASS_THROUGH 2
-> @@ -480,6 +483,31 @@ struct context_entry {
->  	u64 hi;
->  };
->  
-> +/* si_domain contains mulitple devices */
-> +#define DOMAIN_FLAG_STATIC_IDENTITY		BIT(0)
-> +
-> +/*
-> + * This is a DMA domain allocated through the iommu domain allocation
-> + * interface. But one or more devices belonging to this domain have
-> + * been chosen to use a private domain. We should avoid to use the
-> + * map/unmap/iova_to_phys APIs on it.
-> + */
-> +#define DOMAIN_FLAG_LOSE_CHILDREN		BIT(1)
-> +
-> +/*
-> + * When VT-d works in the scalable mode, it allows DMA translation to
-> + * happen through either first level or second level page table. This
-> + * bit marks that the DMA translation for the domain goes through the
-> + * first level page table, otherwise, it goes through the second level.
-> + */
-> +#define DOMAIN_FLAG_USE_FIRST_LEVEL		BIT(2)
-> +
-> +/*
-> + * Domain represents a virtual machine which demands iommu nested
-> + * translation mode support.
-> + */
-> +#define DOMAIN_FLAG_NESTING_MODE		BIT(3)
-> +
->  struct dmar_domain {
->  	int	nid;			/* node id */
->  
+
+>  #else
+>  	return __get_free_pages(GFP_KERNEL, THREAD_SIZE_ORDER);
+>  #endif
 > 
 
 _______________________________________________
