@@ -6,79 +6,84 @@ X-Spam-Status: No, score=-0.7 required=3.0 tests=HEADER_FROM_DIFFERENT_DOMAINS,
 	MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED autolearn=no
 	autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 7E6B4C2BB1D
-	for <iommu@archiver.kernel.org>; Wed,  8 Apr 2020 00:52:55 +0000 (UTC)
-Received: from silver.osuosl.org (smtp3.osuosl.org [140.211.166.136])
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 57E97C2D0EC
+	for <iommu@archiver.kernel.org>; Wed,  8 Apr 2020 01:03:02 +0000 (UTC)
+Received: from hemlock.osuosl.org (smtp2.osuosl.org [140.211.166.133])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by mail.kernel.org (Postfix) with ESMTPS id 51C3D20753
-	for <iommu@archiver.kernel.org>; Wed,  8 Apr 2020 00:52:55 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 51C3D20753
+	by mail.kernel.org (Postfix) with ESMTPS id 2B80F206F7
+	for <iommu@archiver.kernel.org>; Wed,  8 Apr 2020 01:03:00 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 2B80F206F7
 Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=intel.com
 Authentication-Results: mail.kernel.org; spf=pass smtp.mailfrom=iommu-bounces@lists.linux-foundation.org
 Received: from localhost (localhost [127.0.0.1])
-	by silver.osuosl.org (Postfix) with ESMTP id 18E57204A4;
-	Wed,  8 Apr 2020 00:52:55 +0000 (UTC)
+	by hemlock.osuosl.org (Postfix) with ESMTP id 6878B87D33;
+	Wed,  8 Apr 2020 01:03:00 +0000 (UTC)
+X-Virus-Scanned: amavisd-new at osuosl.org
+Received: from hemlock.osuosl.org ([127.0.0.1])
+	by localhost (.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
+	with ESMTP id gVPfXoPbhEMC; Wed,  8 Apr 2020 01:02:59 +0000 (UTC)
+Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [140.211.9.56])
+	by hemlock.osuosl.org (Postfix) with ESMTP id 325F187D28;
+	Wed,  8 Apr 2020 01:02:59 +0000 (UTC)
+Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
+	by lists.linuxfoundation.org (Postfix) with ESMTP id 1003CC1AE2;
+	Wed,  8 Apr 2020 01:02:59 +0000 (UTC)
+Received: from silver.osuosl.org (smtp3.osuosl.org [140.211.166.136])
+ by lists.linuxfoundation.org (Postfix) with ESMTP id 76792C0177
+ for <iommu@lists.linux-foundation.org>; Wed,  8 Apr 2020 01:02:57 +0000 (UTC)
+Received: from localhost (localhost [127.0.0.1])
+ by silver.osuosl.org (Postfix) with ESMTP id 5D36F20448
+ for <iommu@lists.linux-foundation.org>; Wed,  8 Apr 2020 01:02:57 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
 Received: from silver.osuosl.org ([127.0.0.1])
-	by localhost (.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
-	with ESMTP id nsCPE53EU8p6; Wed,  8 Apr 2020 00:52:53 +0000 (UTC)
-Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [140.211.9.56])
-	by silver.osuosl.org (Postfix) with ESMTP id CB7BE2035C;
-	Wed,  8 Apr 2020 00:52:53 +0000 (UTC)
-Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
-	by lists.linuxfoundation.org (Postfix) with ESMTP id BE1EBC1AE2;
-	Wed,  8 Apr 2020 00:52:53 +0000 (UTC)
-Received: from fraxinus.osuosl.org (smtp4.osuosl.org [140.211.166.137])
- by lists.linuxfoundation.org (Postfix) with ESMTP id 7469FC0177
- for <iommu@lists.linux-foundation.org>; Wed,  8 Apr 2020 00:52:52 +0000 (UTC)
-Received: from localhost (localhost [127.0.0.1])
- by fraxinus.osuosl.org (Postfix) with ESMTP id 5E3D086807
- for <iommu@lists.linux-foundation.org>; Wed,  8 Apr 2020 00:52:52 +0000 (UTC)
-X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from fraxinus.osuosl.org ([127.0.0.1])
  by localhost (.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
- with ESMTP id X0oMvLeZT7GS for <iommu@lists.linux-foundation.org>;
- Wed,  8 Apr 2020 00:52:51 +0000 (UTC)
+ with ESMTP id hSs0cucVxJi4 for <iommu@lists.linux-foundation.org>;
+ Wed,  8 Apr 2020 01:02:56 +0000 (UTC)
 X-Greylist: domain auto-whitelisted by SQLgrey-1.7.6
-Received: from mga02.intel.com (mga02.intel.com [134.134.136.20])
- by fraxinus.osuosl.org (Postfix) with ESMTPS id A0D75867A5
- for <iommu@lists.linux-foundation.org>; Wed,  8 Apr 2020 00:52:51 +0000 (UTC)
-IronPort-SDR: +HVrxBU2WTjhTNmtHd62+0CTGw/13SV/B+V441InHBtRWRdro4SolHCj29Aq2+q9tqCN75YnjI
- JjLP8FxUc+qw==
+Received: from mga17.intel.com (mga17.intel.com [192.55.52.151])
+ by silver.osuosl.org (Postfix) with ESMTPS id 78C3020430
+ for <iommu@lists.linux-foundation.org>; Wed,  8 Apr 2020 01:02:56 +0000 (UTC)
+IronPort-SDR: bPD/76gzJP28iCI8SNBMLYGk03upKNrjSqJWjrNS5JrLY/2oJfjD+jq4iXh7INpA10SqTNbJjU
+ zA6j4kDZRLnA==
 X-Amp-Result: SKIPPED(no attachment in message)
 X-Amp-File-Uploaded: False
-Received: from fmsmga003.fm.intel.com ([10.253.24.29])
- by orsmga101.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384;
- 07 Apr 2020 17:52:50 -0700
-IronPort-SDR: G67qDOZKuI/83JH0ScQGkQc6hUuOr7cuVFOpZqC7524k9bmWiG6T5E7YXwnpgnIxrhfspIM2Fz
- rBHzVQ8kzxrg==
+Received: from orsmga005.jf.intel.com ([10.7.209.41])
+ by fmsmga107.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384;
+ 07 Apr 2020 18:02:55 -0700
+IronPort-SDR: aoIgWarb9rwY1gMIByAFYJfIksZEwy6R2tUCK1nWiJ/zDgSSL5U3c++igIgFK/DpicWLudRxgt
+ tMxJ4x9k/FfQ==
 X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.72,357,1580803200"; d="scan'208";a="297096372"
-Received: from fmsmsx105.amr.corp.intel.com ([10.18.124.203])
- by FMSMGA003.fm.intel.com with ESMTP; 07 Apr 2020 17:52:50 -0700
-Received: from fmsmsx154.amr.corp.intel.com (10.18.116.70) by
- FMSMSX105.amr.corp.intel.com (10.18.124.203) with Microsoft SMTP Server (TLS)
- id 14.3.439.0; Tue, 7 Apr 2020 17:52:49 -0700
-Received: from shsmsx106.ccr.corp.intel.com (10.239.4.159) by
- FMSMSX154.amr.corp.intel.com (10.18.116.70) with Microsoft SMTP Server (TLS)
- id 14.3.439.0; Tue, 7 Apr 2020 17:52:49 -0700
+X-IronPort-AV: E=Sophos;i="5.72,357,1580803200"; d="scan'208";a="424955822"
+Received: from fmsmsx107.amr.corp.intel.com ([10.18.124.205])
+ by orsmga005.jf.intel.com with ESMTP; 07 Apr 2020 18:02:55 -0700
+Received: from fmsmsx153.amr.corp.intel.com (10.18.125.6) by
+ fmsmsx107.amr.corp.intel.com (10.18.124.205) with Microsoft SMTP Server (TLS)
+ id 14.3.439.0; Tue, 7 Apr 2020 18:02:55 -0700
+Received: from shsmsx108.ccr.corp.intel.com (10.239.4.97) by
+ FMSMSX153.amr.corp.intel.com (10.18.125.6) with Microsoft SMTP Server (TLS)
+ id 14.3.439.0; Tue, 7 Apr 2020 18:02:54 -0700
 Received: from shsmsx104.ccr.corp.intel.com ([169.254.5.225]) by
- SHSMSX106.ccr.corp.intel.com ([169.254.10.89]) with mapi id 14.03.0439.000;
- Wed, 8 Apr 2020 08:52:46 +0800
+ SHSMSX108.ccr.corp.intel.com ([169.254.8.7]) with mapi id 14.03.0439.000;
+ Wed, 8 Apr 2020 09:02:52 +0800
 From: "Liu, Yi L" <yi.l.liu@intel.com>
-To: Alex Williamson <alex.williamson@redhat.com>
-Subject: RE: [PATCH v1 1/8] vfio: Add VFIO_IOMMU_PASID_REQUEST(alloc/free)
-Thread-Topic: [PATCH v1 1/8] vfio: Add VFIO_IOMMU_PASID_REQUEST(alloc/free)
-Thread-Index: AQHWAEUbC4GB74LMekup8jIcF6WIFqhlp7CAgAGFhmCAAAzHgIAFwXRA
-Date: Wed, 8 Apr 2020 00:52:46 +0000
-Message-ID: <A2975661238FB949B60364EF0F2C25743A225A3C@SHSMSX104.ccr.corp.intel.com>
+To: Jean-Philippe Brucker <jean-philippe@linaro.org>, Auger Eric
+ <eric.auger@redhat.com>
+Subject: RE: [PATCH v1 5/8] vfio/type1: Report 1st-level/stage-1 format to
+ userspace
+Thread-Topic: [PATCH v1 5/8] vfio/type1: Report 1st-level/stage-1 format to
+ userspace
+Thread-Index: AQHWAEUcqZEEdiOKbEGofjWp2Yic+6hjfq+AgAC/vLD//4YrAIAC1vWAgAbjh1CAAQJ/8A==
+Date: Wed, 8 Apr 2020 01:02:51 +0000
+Message-ID: <A2975661238FB949B60364EF0F2C25743A225A72@SHSMSX104.ccr.corp.intel.com>
 References: <1584880325-10561-1-git-send-email-yi.l.liu@intel.com>
- <1584880325-10561-2-git-send-email-yi.l.liu@intel.com>
- <20200402115017.0a0f55e2@w520.home>
- <A2975661238FB949B60364EF0F2C25743A220B62@SHSMSX104.ccr.corp.intel.com>
- <20200403115011.4aba8ff3@w520.home>
-In-Reply-To: <20200403115011.4aba8ff3@w520.home>
+ <1584880325-10561-6-git-send-email-yi.l.liu@intel.com>
+ <cb68e9ab-77b0-7e97-a661-4836962041d9@redhat.com>
+ <A2975661238FB949B60364EF0F2C25743A21DB4E@SHSMSX104.ccr.corp.intel.com>
+ <b47891b1-ece6-c263-9c07-07c09c7d3752@redhat.com>
+ <20200403082305.GA1269501@myrica>
+ <A2975661238FB949B60364EF0F2C25743A2249DF@SHSMSX104.ccr.corp.intel.com>
+In-Reply-To: <A2975661238FB949B60364EF0F2C25743A2249DF@SHSMSX104.ccr.corp.intel.com>
 Accept-Language: en-US
 Content-Language: en-US
 X-MS-Has-Attach: 
@@ -88,13 +93,13 @@ dlp-version: 11.2.0.6
 dlp-reaction: no-action
 x-originating-ip: [10.239.127.40]
 MIME-Version: 1.0
-Cc: "jean-philippe@linaro.org" <jean-philippe@linaro.org>, "Tian,
- Kevin" <kevin.tian@intel.com>, "Raj, 
+Cc: "Tian, Kevin" <kevin.tian@intel.com>, "Raj,
  Ashok" <ashok.raj@intel.com>, "kvm@vger.kernel.org" <kvm@vger.kernel.org>,
- "Tian, Jun J" <jun.j.tian@intel.com>,
- "iommu@lists.linux-foundation.org" <iommu@lists.linux-foundation.org>,
- "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>, "Sun, Yi
- Y" <yi.y.sun@intel.com>, "Wu, Hao" <hao.wu@intel.com>
+ "Tian, Jun J" <jun.j.tian@intel.com>, "Sun, Yi Y" <yi.y.sun@intel.com>,
+ "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
+ "alex.williamson@redhat.com" <alex.williamson@redhat.com>,
+ "iommu@lists.linux-foundation.org" <iommu@lists.linux-foundation.org>, "Wu,
+ Hao" <hao.wu@intel.com>
 X-BeenThere: iommu@lists.linux-foundation.org
 X-Mailman-Version: 2.1.15
 Precedence: list
@@ -112,104 +117,36 @@ Content-Transfer-Encoding: 7bit
 Errors-To: iommu-bounces@lists.linux-foundation.org
 Sender: "iommu" <iommu-bounces@lists.linux-foundation.org>
 
-Hi Alex,
-> From: Alex Williamson <alex.williamson@redhat.com>
-> Sent: Saturday, April 4, 2020 1:50 AM
-> Subject: Re: [PATCH v1 1/8] vfio: Add VFIO_IOMMU_PASID_REQUEST(alloc/free)
+> From: Liu, Yi L
+> Sent: Tuesday, April 7, 2020 5:43 PM
+>
+> > We don't, the PASID spaces are per-VM on Arm, so this function should
+> > consult the IOMMU driver before setting flags. As you said on patch 3,
+> > nested doesn't necessarily imply PASID support. The SMMUv2 does not
+> > support PASID but does support nesting stages 1 and 2 for the IOVA space.
+> > SMMUv3 support of PASID depends on HW capabilities. So I think this
+> > needs to be finer grained:
+> >
+> > Does the container support:
+> > * VFIO_IOMMU_PASID_REQUEST?
+> >   -> Yes for VT-d 3
+> >   -> No for Arm SMMU
+> > * VFIO_IOMMU_{,UN}BIND_GUEST_PGTBL?
+> >   -> Yes for VT-d 3
+> >   -> Sometimes for SMMUv2
+> >   -> No for SMMUv3 (if we go with BIND_PASID_TABLE, which is simpler due to
+> >      PASID tables being in GPA space.)
+> > * VFIO_IOMMU_BIND_PASID_TABLE?
+> >   -> No for VT-d
+> >   -> Sometimes for SMMUv3
+> >
+> > Any bind support implies VFIO_IOMMU_CACHE_INVALIDATE support.
 > 
-> On Fri, 3 Apr 2020 13:12:50 +0000
-> "Liu, Yi L" <yi.l.liu@intel.com> wrote:
-> 
-> > Hi Alex,
-> >
-> > > From: Alex Williamson <alex.williamson@redhat.com>
-> > > Sent: Friday, April 3, 2020 1:50 AM
-> > > Subject: Re: [PATCH v1 1/8] vfio: Add VFIO_IOMMU_PASID_REQUEST(alloc/free)
-> > >
-> > > On Sun, 22 Mar 2020 05:31:58 -0700
-> > > "Liu, Yi L" <yi.l.liu@intel.com> wrote:
-> > >
-> > > > From: Liu Yi L <yi.l.liu@intel.com>
-> > > >
-[...]
-> > > >  static long vfio_iommu_type1_ioctl(void *iommu_data,
-> > > >  				   unsigned int cmd, unsigned long arg)
-> > > >  {
-> > > > @@ -2276,6 +2333,53 @@ static long vfio_iommu_type1_ioctl(void
-> > > *iommu_data,
-> > > >
-> > > >  		return copy_to_user((void __user *)arg, &unmap, minsz) ?
-> > > >  			-EFAULT : 0;
-> > > > +
-> > > > +	} else if (cmd == VFIO_IOMMU_PASID_REQUEST) {
-> > > > +		struct vfio_iommu_type1_pasid_request req;
-> > > > +		unsigned long offset;
-> > > > +
-> > > > +		minsz = offsetofend(struct vfio_iommu_type1_pasid_request,
-> > > > +				    flags);
-> > > > +
-> > > > +		if (copy_from_user(&req, (void __user *)arg, minsz))
-> > > > +			return -EFAULT;
-> > > > +
-> > > > +		if (req.argsz < minsz ||
-> > > > +		    !vfio_iommu_type1_pasid_req_valid(req.flags))
-> > > > +			return -EINVAL;
-> > > > +
-> > > > +		if (copy_from_user((void *)&req + minsz,
-> > > > +				   (void __user *)arg + minsz,
-> > > > +				   sizeof(req) - minsz))
-> > > > +			return -EFAULT;
-> > >
-> > > Huh?  Why do we have argsz if we're going to assume this is here?
-> >
-> > do you mean replacing sizeof(req) with argsz? if yes, I can do that.
-> 
-> No, I mean the user tells us how much data they've provided via argsz.
-> We create minsz the the end of flags and verify argsz includes flags.
-> Then we proceed to ignore argsz to see if the user has provided the
-> remainder of the structure.
-
-I think I should avoid using sizeof(req) as it may be variable
-new flag is added. I think better to make a data[] field in struct
-vfio_iommu_type1_pasid_request and copy data[] per flag. I'll
-make this change in new version.
-
-> > > > +
-> > > > +		switch (req.flags & VFIO_PASID_REQUEST_MASK) {
-> > > > +		case VFIO_IOMMU_PASID_ALLOC:
-> > > > +		{
-> > > > +			int ret = 0, result;
-> > > > +
-> > > > +			result = vfio_iommu_type1_pasid_alloc(iommu,
-> > > > +							req.alloc_pasid.min,
-> > > > +							req.alloc_pasid.max);
-> > > > +			if (result > 0) {
-> > > > +				offset = offsetof(
-> > > > +					struct vfio_iommu_type1_pasid_request,
-> > > > +					alloc_pasid.result);
-> > > > +				ret = copy_to_user(
-> > > > +					      (void __user *) (arg + offset),
-> > > > +					      &result, sizeof(result));
-> > >
-> > > Again assuming argsz supports this.
-> >
-> > same as above.
-> >
-> > >
-> > > > +			} else {
-> > > > +				pr_debug("%s: PASID alloc failed\n", __func__);
-> > >
-> > > rate limit?
-> >
-> > not quite get. could you give more hints?
-> 
-> A user can spam the host logs simply by allocating their quota of
-> PASIDs and then trying to allocate more, or by specifying min/max such
-> that they cannot allocate the requested PASID.  If this logging is
-> necessary for debugging, it should be ratelimited to avoid a DoS on the
-> host.
-
-got it. thanks for the coaching. will use pr_debug_ratelimited().
+> good summary. do you expect to see any
+please ignore this message. I planned to ask if possible to report
+VFIO_IOMMU_CACHE_INVALIDATE  only (no bind support). But I stopped
+typing it when I came to believe it's unnecessary to report it if
+there is no bind support.
 
 Regards,
 Yi Liu
