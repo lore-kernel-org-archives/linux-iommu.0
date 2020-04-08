@@ -2,73 +2,66 @@ Return-Path: <SRS0=CWSE=5Y=lists.linux-foundation.org=iommu-bounces@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-6.5 required=3.0 tests=FREEMAIL_FORGED_FROMDOMAIN,
-	FREEMAIL_FROM,HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_PATCH,MAILING_LIST_MULTI,
-	SIGNED_OFF_BY,SPF_HELO_NONE,SPF_PASS autolearn=ham autolearn_force=no
-	version=3.4.0
+X-Spam-Status: No, score=-6.8 required=3.0 tests=HEADER_FROM_DIFFERENT_DOMAINS,
+	INCLUDES_PATCH,MAILING_LIST_MULTI,SIGNED_OFF_BY,SPF_HELO_NONE,SPF_PASS
+	autolearn=ham autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 72349C2D0EA
-	for <iommu@archiver.kernel.org>; Wed,  8 Apr 2020 12:49:00 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 75662C2BA1A
+	for <iommu@archiver.kernel.org>; Wed,  8 Apr 2020 13:07:31 +0000 (UTC)
 Received: from hemlock.osuosl.org (smtp2.osuosl.org [140.211.166.133])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by mail.kernel.org (Postfix) with ESMTPS id 3D38C2051A
-	for <iommu@archiver.kernel.org>; Wed,  8 Apr 2020 12:49:00 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 3D38C2051A
-Authentication-Results: mail.kernel.org; dmarc=none (p=none dis=none) header.from=sina.com
+	by mail.kernel.org (Postfix) with ESMTPS id 44ACB206F7
+	for <iommu@archiver.kernel.org>; Wed,  8 Apr 2020 13:07:31 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 44ACB206F7
+Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=8bytes.org
 Authentication-Results: mail.kernel.org; spf=pass smtp.mailfrom=iommu-bounces@lists.linux-foundation.org
 Received: from localhost (localhost [127.0.0.1])
-	by hemlock.osuosl.org (Postfix) with ESMTP id 71FD087397;
-	Wed,  8 Apr 2020 12:48:59 +0000 (UTC)
+	by hemlock.osuosl.org (Postfix) with ESMTP id 1BF84873E3;
+	Wed,  8 Apr 2020 13:07:31 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
 Received: from hemlock.osuosl.org ([127.0.0.1])
 	by localhost (.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
-	with ESMTP id TAQ-M1C3Ei2a; Wed,  8 Apr 2020 12:48:55 +0000 (UTC)
+	with ESMTP id vEWXiZiHhQlu; Wed,  8 Apr 2020 13:07:29 +0000 (UTC)
 Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [140.211.9.56])
-	by hemlock.osuosl.org (Postfix) with ESMTP id 650B28738B;
-	Wed,  8 Apr 2020 12:48:55 +0000 (UTC)
+	by hemlock.osuosl.org (Postfix) with ESMTP id 8E5908739A;
+	Wed,  8 Apr 2020 13:07:29 +0000 (UTC)
 Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
-	by lists.linuxfoundation.org (Postfix) with ESMTP id 3711CC1D7E;
-	Wed,  8 Apr 2020 12:48:55 +0000 (UTC)
-Received: from whitealder.osuosl.org (smtp1.osuosl.org [140.211.166.138])
- by lists.linuxfoundation.org (Postfix) with ESMTP id DA27BC0177
- for <iommu@lists.linux-foundation.org>; Wed,  8 Apr 2020 12:48:53 +0000 (UTC)
+	by lists.linuxfoundation.org (Postfix) with ESMTP id 78330C1D7E;
+	Wed,  8 Apr 2020 13:07:29 +0000 (UTC)
+Received: from hemlock.osuosl.org (smtp2.osuosl.org [140.211.166.133])
+ by lists.linuxfoundation.org (Postfix) with ESMTP id 784B4C0177
+ for <iommu@lists.linux-foundation.org>; Wed,  8 Apr 2020 13:07:28 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
- by whitealder.osuosl.org (Postfix) with ESMTP id BF656826E6
- for <iommu@lists.linux-foundation.org>; Wed,  8 Apr 2020 12:48:53 +0000 (UTC)
+ by hemlock.osuosl.org (Postfix) with ESMTP id 6F468873E3
+ for <iommu@lists.linux-foundation.org>; Wed,  8 Apr 2020 13:07:28 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from whitealder.osuosl.org ([127.0.0.1])
+Received: from hemlock.osuosl.org ([127.0.0.1])
  by localhost (.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
- with ESMTP id eRPLhiFx4bRw for <iommu@lists.linux-foundation.org>;
- Wed,  8 Apr 2020 12:48:50 +0000 (UTC)
-X-Greylist: domain auto-whitelisted by SQLgrey-1.7.6
-Received: from mail3-164.sinamail.sina.com.cn (mail3-164.sinamail.sina.com.cn
- [202.108.3.164])
- by whitealder.osuosl.org (Postfix) with SMTP id BCD4D826B7
- for <iommu@lists.linux-foundation.org>; Wed,  8 Apr 2020 12:48:49 +0000 (UTC)
-Received: from unknown (HELO localhost.localdomain)([114.246.227.120])
- by sina.com with ESMTP
- id 5E8DC8290002A7AA; Wed, 8 Apr 2020 20:48:45 +0800 (CST)
-X-Sender: hdanton@sina.com
-X-Auth-ID: hdanton@sina.com
-X-SMAIL-MID: 82000715073508
-From: Hillf Danton <hdanton@sina.com>
-To: Christoph Hellwig <hch@lst.de>
-Subject: Re: [PATCH 02/28] staging: android: ion: use vmap instead of
- vm_map_ram
-Date: Wed,  8 Apr 2020 20:48:33 +0800
-Message-Id: <20200408124833.13032-1-hdanton@sina.com>
-In-Reply-To: <20200408115926.1467567-1-hch@lst.de>
-References: <20200408115926.1467567-1-hch@lst.de>
+ with ESMTP id XqfHQ43Wvrjs for <iommu@lists.linux-foundation.org>;
+ Wed,  8 Apr 2020 13:07:27 +0000 (UTC)
+X-Greylist: from auto-whitelisted by SQLgrey-1.7.6
+Received: from theia.8bytes.org (8bytes.org [81.169.241.247])
+ by hemlock.osuosl.org (Postfix) with ESMTPS id 593758739A
+ for <iommu@lists.linux-foundation.org>; Wed,  8 Apr 2020 13:07:27 +0000 (UTC)
+Received: by theia.8bytes.org (Postfix, from userid 1000)
+ id CE5312CC; Wed,  8 Apr 2020 15:07:24 +0200 (CEST)
+Date: Wed, 8 Apr 2020 15:07:22 +0200
+From: Joerg Roedel <joro@8bytes.org>
+To: Jacob Pan <jacob.jun.pan@linux.intel.com>
+Subject: Re: [PATCH v11 02/10] iommu/uapi: Define a mask for bind data
+Message-ID: <20200408130722.GA27140@8bytes.org>
+References: <1585939334-21396-1-git-send-email-jacob.jun.pan@linux.intel.com>
+ <1585939334-21396-3-git-send-email-jacob.jun.pan@linux.intel.com>
 MIME-Version: 1.0
-Cc: Christophe Leroy <christophe.leroy@c-s.fr>, linux-arch@vger.kernel.org,
- linux-hyperv@vger.kernel.org, linux-s390@vger.kernel.org,
- Peter Zijlstra <peterz@infradead.org>, syzkaller-bugs@googlegroups.com,
- linux-kernel@vger.kernel.org, dri-devel@lists.freedesktop.org,
- linaro-mm-sig@lists.linaro.org, linux-mm@kvack.org,
- iommu@lists.linux-foundation.org, Andrew Morton <akpm@linux-foundation.org>,
- linuxppc-dev@lists.ozlabs.org, bpf@vger.kernel.org,
- linux-arm-kernel@lists.infradead.org
+Content-Disposition: inline
+In-Reply-To: <1585939334-21396-3-git-send-email-jacob.jun.pan@linux.intel.com>
+Cc: "Tian, Kevin" <kevin.tian@intel.com>,
+ Alex Williamson <alex.williamson@redhat.com>, Raj Ashok <ashok.raj@intel.com>,
+ David Woodhouse <dwmw2@infradead.org>, LKML <linux-kernel@vger.kernel.org>,
+ iommu@lists.linux-foundation.org,
+ Jean-Philippe Brucker <jean-philippe@linaro.com>,
+ Jonathan Cameron <jic23@kernel.org>
 X-BeenThere: iommu@lists.linux-foundation.org
 X-Mailman-Version: 2.1.15
 Precedence: list
@@ -86,44 +79,42 @@ Content-Transfer-Encoding: 7bit
 Errors-To: iommu-bounces@lists.linux-foundation.org
 Sender: "iommu" <iommu-bounces@lists.linux-foundation.org>
 
-
-On Wed,  8 Apr 2020 13:59:00 +0200
+On Fri, Apr 03, 2020 at 11:42:06AM -0700, Jacob Pan wrote:
+> Memory type related flags can be grouped together for one simple check.
 > 
-> vm_map_ram can keep mappings around after the vm_unmap_ram.  Using that
-> with non-PAGE_KERNEL mappings can lead to all kinds of aliasing issues.
-> 
-> Signed-off-by: Christoph Hellwig <hch@lst.de>
 > ---
->  drivers/staging/android/ion/ion_heap.c | 4 ++--
->  1 file changed, 2 insertions(+), 2 deletions(-)
+> v9 renamed from EMT to MTS since these are memory type support flags.
+> ---
 > 
-> diff --git a/drivers/staging/android/ion/ion_heap.c b/drivers/staging/android/ion/ion_heap.c
-> index 473b465724f1..a2d5c6df4b96 100644
-> --- a/drivers/staging/android/ion/ion_heap.c
-> +++ b/drivers/staging/android/ion/ion_heap.c
-> @@ -99,12 +99,12 @@ int ion_heap_map_user(struct ion_heap *heap, struct ion_buffer *buffer,
->  
->  static int ion_heap_clear_pages(struct page **pages, int num, pgprot_t pgprot)
->  {
-> -	void *addr = vm_map_ram(pages, num, -1, pgprot);
-> +	void *addr = vmap(pages, num, VM_MAP);
+> Reviewed-by: Eric Auger <eric.auger@redhat.com>
+> Signed-off-by: Jacob Pan <jacob.jun.pan@linux.intel.com>
+> ---
+>  include/uapi/linux/iommu.h | 5 ++++-
+>  1 file changed, 4 insertions(+), 1 deletion(-)
+> 
+> diff --git a/include/uapi/linux/iommu.h b/include/uapi/linux/iommu.h
+> index 4ad3496e5c43..d7bcbc5f79b0 100644
+> --- a/include/uapi/linux/iommu.h
+> +++ b/include/uapi/linux/iommu.h
+> @@ -284,7 +284,10 @@ struct iommu_gpasid_bind_data_vtd {
+>  	__u32 pat;
+>  	__u32 emt;
+>  };
+> -
+> +#define IOMMU_SVA_VTD_GPASID_MTS_MASK	(IOMMU_SVA_VTD_GPASID_CD | \
+> +					 IOMMU_SVA_VTD_GPASID_EMTE | \
+> +					 IOMMU_SVA_VTD_GPASID_PCD |  \
+> +					 IOMMU_SVA_VTD_GPASID_PWT)
 
-A merge glitch?
+Where and how will this be used? Can you add this in the patch that
+actually makes use of it?
 
-void *vmap(struct page **pages, unsigned int count,
-	   unsigned long flags, pgprot_t prot)
->  
->  	if (!addr)
->  		return -ENOMEM;
->  	memset(addr, 0, PAGE_SIZE * num);
-> -	vm_unmap_ram(addr, num);
-> +	vunmap(addr);
->  
->  	return 0;
->  }
-> -- 
-> 2.25.1
+Also please add newlines before and after that define.
 
+
+Regards,
+
+	Joerg
 _______________________________________________
 iommu mailing list
 iommu@lists.linux-foundation.org
