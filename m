@@ -2,101 +2,75 @@ Return-Path: <SRS0=CWSE=5Y=lists.linux-foundation.org=iommu-bounces@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-2.1 required=3.0 tests=DKIM_INVALID,DKIM_SIGNED,
-	HEADER_FROM_DIFFERENT_DOMAINS,MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS,
-	USER_AGENT_SANE_1 autolearn=no autolearn_force=no version=3.4.0
+X-Spam-Status: No, score=-3.7 required=3.0 tests=HEADER_FROM_DIFFERENT_DOMAINS,
+	HTML_FONT_FACE_BAD,HTML_MESSAGE,INCLUDES_PATCH,MAILING_LIST_MULTI,
+	SIGNED_OFF_BY,SPF_HELO_NONE,SPF_PASS,T_KAM_HTML_FONT_INVALID autolearn=no
+	autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 209A8C2BA2B
-	for <iommu@archiver.kernel.org>; Wed,  8 Apr 2020 10:28:23 +0000 (UTC)
-Received: from whitealder.osuosl.org (smtp1.osuosl.org [140.211.166.138])
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 32ACCC2D0EA
+	for <iommu@archiver.kernel.org>; Wed,  8 Apr 2020 11:26:52 +0000 (UTC)
+Received: from hemlock.osuosl.org (smtp2.osuosl.org [140.211.166.133])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by mail.kernel.org (Postfix) with ESMTPS id D870020768
-	for <iommu@archiver.kernel.org>; Wed,  8 Apr 2020 10:28:22 +0000 (UTC)
-Authentication-Results: mail.kernel.org;
-	dkim=fail reason="signature verification failed" (1024-bit key) header.d=redhat.com header.i=@redhat.com header.b="N687JuVy"
-DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org D870020768
-Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=redhat.com
+	by mail.kernel.org (Postfix) with ESMTPS id E4BC520753
+	for <iommu@archiver.kernel.org>; Wed,  8 Apr 2020 11:26:51 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org E4BC520753
+Authentication-Results: mail.kernel.org; dmarc=none (p=none dis=none) header.from=cmss.chinamobile.com
 Authentication-Results: mail.kernel.org; spf=pass smtp.mailfrom=iommu-bounces@lists.linux-foundation.org
 Received: from localhost (localhost [127.0.0.1])
-	by whitealder.osuosl.org (Postfix) with ESMTP id AEA978773E;
-	Wed,  8 Apr 2020 10:28:22 +0000 (UTC)
+	by hemlock.osuosl.org (Postfix) with ESMTP id B645585CDB;
+	Wed,  8 Apr 2020 11:26:51 +0000 (UTC)
+X-Virus-Scanned: amavisd-new at osuosl.org
+Received: from hemlock.osuosl.org ([127.0.0.1])
+	by localhost (.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
+	with ESMTP id QEMKJDYVHcMB; Wed,  8 Apr 2020 11:26:49 +0000 (UTC)
+Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [140.211.9.56])
+	by hemlock.osuosl.org (Postfix) with ESMTP id 7B09485A32;
+	Wed,  8 Apr 2020 11:26:49 +0000 (UTC)
+Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
+	by lists.linuxfoundation.org (Postfix) with ESMTP id 6609AC1AE8;
+	Wed,  8 Apr 2020 11:26:49 +0000 (UTC)
+Received: from whitealder.osuosl.org (smtp1.osuosl.org [140.211.166.138])
+ by lists.linuxfoundation.org (Postfix) with ESMTP id 2FDD8C0177
+ for <iommu@lists.linux-foundation.org>; Wed,  8 Apr 2020 11:26:46 +0000 (UTC)
+Received: from localhost (localhost [127.0.0.1])
+ by whitealder.osuosl.org (Postfix) with ESMTP id 13F028426E
+ for <iommu@lists.linux-foundation.org>; Wed,  8 Apr 2020 11:26:46 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
 Received: from whitealder.osuosl.org ([127.0.0.1])
-	by localhost (.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
-	with ESMTP id WQbGF1FgJpwk; Wed,  8 Apr 2020 10:28:22 +0000 (UTC)
-Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [140.211.9.56])
-	by whitealder.osuosl.org (Postfix) with ESMTP id 0ED8187733;
-	Wed,  8 Apr 2020 10:28:22 +0000 (UTC)
-Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
-	by lists.linuxfoundation.org (Postfix) with ESMTP id DE10AC1D7E;
-	Wed,  8 Apr 2020 10:28:21 +0000 (UTC)
-Received: from fraxinus.osuosl.org (smtp4.osuosl.org [140.211.166.137])
- by lists.linuxfoundation.org (Postfix) with ESMTP id 90EEEC0177
- for <iommu@lists.linux-foundation.org>; Wed,  8 Apr 2020 10:28:20 +0000 (UTC)
-Received: from localhost (localhost [127.0.0.1])
- by fraxinus.osuosl.org (Postfix) with ESMTP id 7A727862AB
- for <iommu@lists.linux-foundation.org>; Wed,  8 Apr 2020 10:28:20 +0000 (UTC)
-X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from fraxinus.osuosl.org ([127.0.0.1])
  by localhost (.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
- with ESMTP id HtLgVFL12Lmw for <iommu@lists.linux-foundation.org>;
- Wed,  8 Apr 2020 10:28:19 +0000 (UTC)
+ with ESMTP id ahVMiBMxTdvB for <iommu@lists.linux-foundation.org>;
+ Wed,  8 Apr 2020 11:26:43 +0000 (UTC)
 X-Greylist: domain auto-whitelisted by SQLgrey-1.7.6
-Received: from us-smtp-delivery-1.mimecast.com (us-smtp-2.mimecast.com
- [207.211.31.81])
- by fraxinus.osuosl.org (Postfix) with ESMTPS id 2214A85F3D
- for <iommu@lists.linux-foundation.org>; Wed,  8 Apr 2020 10:28:19 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
- s=mimecast20190719; t=1586341697;
- h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
- to:to:cc:cc:mime-version:mime-version:content-type:content-type:
- content-transfer-encoding:content-transfer-encoding:
- in-reply-to:in-reply-to:references:references;
- bh=EC/D1f86N5vzsKE44T+7aeogRJCUDLjHigmziVHut9I=;
- b=N687JuVyZYgt77olmeAqjwBEDIJBWpc5B5yBCC3KvJ7lCAgNAKYc46D9uWSCTJEdCvtc9T
- XCVUr3x4Ol1W9zk7oDewDfE0+4qwFEf5EHKk9wuyh1s7dS/AFF6A/waMtkGe13WTBgSlBw
- 3pOdW8Of0CUIpdISws8xtfOx+F8ZzXo=
-Received: from mimecast-mx01.redhat.com (mimecast-mx01.redhat.com
- [209.132.183.4]) (Using TLS) by relay.mimecast.com with ESMTP id
- us-mta-381-KVkFh0gbOm2Hxe1TEk_Ytw-1; Wed, 08 Apr 2020 06:28:13 -0400
-X-MC-Unique: KVkFh0gbOm2Hxe1TEk_Ytw-1
-Received: from smtp.corp.redhat.com (int-mx04.intmail.prod.int.phx2.redhat.com
- [10.5.11.14])
- (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
- (No client certificate requested)
- by mimecast-mx01.redhat.com (Postfix) with ESMTPS id 1ECA7801E5E;
- Wed,  8 Apr 2020 10:28:11 +0000 (UTC)
-Received: from [10.36.115.53] (ovpn-115-53.ams2.redhat.com [10.36.115.53])
- by smtp.corp.redhat.com (Postfix) with ESMTPS id 7591C5D9CD;
- Wed,  8 Apr 2020 10:28:00 +0000 (UTC)
-Subject: Re: [PATCH v1 5/8] vfio/type1: Report 1st-level/stage-1 format to
- userspace
-To: "Liu, Yi L" <yi.l.liu@intel.com>,
- Jean-Philippe Brucker <jean-philippe@linaro.org>
-References: <1584880325-10561-1-git-send-email-yi.l.liu@intel.com>
- <1584880325-10561-6-git-send-email-yi.l.liu@intel.com>
- <cb68e9ab-77b0-7e97-a661-4836962041d9@redhat.com>
- <A2975661238FB949B60364EF0F2C25743A21DB4E@SHSMSX104.ccr.corp.intel.com>
- <b47891b1-ece6-c263-9c07-07c09c7d3752@redhat.com>
- <20200403082305.GA1269501@myrica>
- <A2975661238FB949B60364EF0F2C25743A2249DF@SHSMSX104.ccr.corp.intel.com>
-From: Auger Eric <eric.auger@redhat.com>
-Message-ID: <acf8c809-8d29-92d6-2445-3a94fc8b82fd@redhat.com>
-Date: Wed, 8 Apr 2020 12:27:58 +0200
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:60.0) Gecko/20100101
- Thunderbird/60.4.0
-MIME-Version: 1.0
-In-Reply-To: <A2975661238FB949B60364EF0F2C25743A2249DF@SHSMSX104.ccr.corp.intel.com>
-Content-Language: en-US
-X-Scanned-By: MIMEDefang 2.79 on 10.5.11.14
-Cc: "Tian, Kevin" <kevin.tian@intel.com>, "Raj, Ashok" <ashok.raj@intel.com>,
- "kvm@vger.kernel.org" <kvm@vger.kernel.org>, "Tian,
- Jun J" <jun.j.tian@intel.com>, "Sun, Yi Y" <yi.y.sun@intel.com>,
- "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
- "alex.williamson@redhat.com" <alex.williamson@redhat.com>,
- "iommu@lists.linux-foundation.org" <iommu@lists.linux-foundation.org>, "Wu,
- Hao" <hao.wu@intel.com>
+Received: from cmccmta3.chinamobile.com (cmccmta3.chinamobile.com
+ [221.176.66.81])
+ by whitealder.osuosl.org (Postfix) with ESMTP id 4238E84189
+ for <iommu@lists.linux-foundation.org>; Wed,  8 Apr 2020 11:26:38 +0000 (UTC)
+Received: from spf.mail.chinamobile.com (unknown[172.16.121.5]) by
+ rmmx-syy-dmz-app10-12010 (RichMail) with SMTP id 2eea5e8db4cec97-d1e28;
+ Wed, 08 Apr 2020 19:26:07 +0800 (CST)
+X-RM-TRANSID: 2eea5e8db4cec97-d1e28
+X-RM-TagInfo: emlType=0                                       
+X-RM-SPAM-FLAG: 00000000
+Received: from DESKTOP-6DMC7FM (unknown[112.25.154.146])
+ by rmsmtp-syy-appsvr03-12003 (RichMail) with SMTP id 2ee35e8db4cddc5-984aa;
+ Wed, 08 Apr 2020 19:26:06 +0800 (CST)
+X-RM-TRANSID: 2ee35e8db4cddc5-984aa
+Date: Wed, 8 Apr 2020 19:27:53 +0800
+From: "Tang Bin" <tangbin@cmss.chinamobile.com>
+To: "Bjorn Andersson" <bjorn.andersson@linaro.org>
+Subject: Re: Re: [PATCH] iommu/qcom:fix local_base status check
+References: <20200402063302.20640-1-tangbin@cmss.chinamobile.com>, 
+ <20200402064552.GG663905@yoga>
+X-Priority: 3
+X-GUID: 647BF68E-BD6A-4513-8DCE-AA7A046A9BFB
+X-Has-Attach: no
+X-Mailer: Foxmail 7.2.15.80[cn]
+Mime-Version: 1.0
+Message-ID: <2020040819275303590511@cmss.chinamobile.com>
+Cc: linux-arm-msm <linux-arm-msm@vger.kernel.org>,
+ iommu <iommu@lists.linux-foundation.org>,
+ linux-kernel <linux-kernel@vger.kernel.org>, agross <agross@kernel.org>
 X-BeenThere: iommu@lists.linux-foundation.org
 X-Mailman-Version: 2.1.15
 Precedence: list
@@ -109,101 +83,131 @@ List-Post: <mailto:iommu@lists.linux-foundation.org>
 List-Help: <mailto:iommu-request@lists.linux-foundation.org?subject=help>
 List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
  <mailto:iommu-request@lists.linux-foundation.org?subject=subscribe>
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: 7bit
+Content-Type: multipart/mixed; boundary="===============7011506084576707218=="
 Errors-To: iommu-bounces@lists.linux-foundation.org
 Sender: "iommu" <iommu-bounces@lists.linux-foundation.org>
 
-Hi Yi,
+This is a multi-part message in MIME format.
 
-On 4/7/20 11:43 AM, Liu, Yi L wrote:
-> Hi Jean,
-> 
->> From: Jean-Philippe Brucker <jean-philippe@linaro.org>
->> Sent: Friday, April 3, 2020 4:23 PM
->> To: Auger Eric <eric.auger@redhat.com>
->> userspace
->>
->> On Wed, Apr 01, 2020 at 03:01:12PM +0200, Auger Eric wrote:
->>>>>>  	header = vfio_info_cap_add(caps, sizeof(*nesting_cap),
->>>>>>  				   VFIO_IOMMU_TYPE1_INFO_CAP_NESTING, 1);
->> @@ -2254,6 +2309,7
->>>>>> @@ static int vfio_iommu_info_add_nesting_cap(struct
->>>>> vfio_iommu *iommu,
->>>>>>  		/* nesting iommu type supports PASID requests (alloc/free) */
->>>>>>  		nesting_cap->nesting_capabilities |= VFIO_IOMMU_PASID_REQS;
->>>>> What is the meaning for ARM?
->>>>
->>>> I think it's just a software capability exposed to userspace, on
->>>> userspace side, it has a choice to use it or not. :-) The reason
->>>> define it and report it in cap nesting is that I'd like to make the
->>>> pasid alloc/free be available just for IOMMU with type
->>>> VFIO_IOMMU_TYPE1_NESTING. Please feel free tell me if it is not good
->>>> for ARM. We can find a proper way to report the availability.
->>>
->>> Well it is more a question for jean-Philippe. Do we have a system wide
->>> PASID allocation on ARM?
->>
->> We don't, the PASID spaces are per-VM on Arm, so this function should consult the
->> IOMMU driver before setting flags. As you said on patch 3, nested doesn't
->> necessarily imply PASID support. The SMMUv2 does not support PASID but does
->> support nesting stages 1 and 2 for the IOVA space.
->> SMMUv3 support of PASID depends on HW capabilities. So I think this needs to be
->> finer grained:
->>
->> Does the container support:
->> * VFIO_IOMMU_PASID_REQUEST?
->>   -> Yes for VT-d 3
->>   -> No for Arm SMMU
->> * VFIO_IOMMU_{,UN}BIND_GUEST_PGTBL?
->>   -> Yes for VT-d 3
->>   -> Sometimes for SMMUv2
->>   -> No for SMMUv3 (if we go with BIND_PASID_TABLE, which is simpler due to
->>      PASID tables being in GPA space.)
->> * VFIO_IOMMU_BIND_PASID_TABLE?
->>   -> No for VT-d
->>   -> Sometimes for SMMUv3
->>
->> Any bind support implies VFIO_IOMMU_CACHE_INVALIDATE support.
-> 
-> good summary. do you expect to see any 
-> 
->>
->>>>>> +	nesting_cap->stage1_formats = formats;
->>>>> as spotted by Kevin, since a single format is supported, rename
->>>>
->>>> ok, I was believing it may be possible on ARM or so. :-) will rename
->>>> it.
->>
->> Yes I don't think an u32 is going to cut it for Arm :( We need to describe all sorts of
->> capabilities for page and PASID tables (granules, GPA size, ASID/PASID size, HW
->> access/dirty, etc etc.) Just saying "Arm stage-1 format" wouldn't mean much. I
->> guess we could have a secondary vendor capability for these?
-> 
-> Actually, I'm wondering if we can define some formats to stands for a set of
-> capabilities. e.g. VTD_STAGE1_FORMAT_V1 which may indicates the 1st level
-> page table related caps (aw, a/d, SRE, EA and etc.). And vIOMMU can parse
-> the capabilities.
+--===============7011506084576707218==
+Content-Type: multipart/alternative;
+	boundary="----=_001_NextPart535205562787_=----"
 
-But eventually do we really need all those capability getters? I mean
-can't we simply rely on the actual call to VFIO_IOMMU_BIND_GUEST_PGTBL()
-to detect any mismatch? Definitively the error handling may be heavier
-on userspace but can't we manage. My fear is we end up with an overly
-complex series. This capability getter may be interesting if we can
-switch to a fallback implementation but here I guess we don't have any
-fallback. With smmuv3 nested stage we don't have any fallback solution
-either. For the versions, it is different because the userspace shall be
-able to adapt (or not) to the max version supported by the kernel.
+This is a multi-part message in MIME format.
 
-Thanks
+------=_001_NextPart535205562787_=----
+Content-Type: text/plain;
+	charset="utf-8"
+Content-Transfer-Encoding: base64
 
-Eric
-> 
-> Regards,
-> Yi Liu
-> 
+PiBSZXZpZXdlZC1ieTpCam9ybiBBbmRlcnNzb24gPGJqb3JuLmFuZGVyc3NvbkBsaW5hcm8ub3Jn
+Pg0KDQpUaGFua3MgZm9yIHlvdXIgcG9zaXRpdmUgZmVlZGJhY2suDQoNCldpbGwgdGhlIHBhdGNo
+IG5lZWQgYW55IG1vcmUgY2xhcmlmaWNhdGlvbu+8n0xvb2tpbmcgZm9yd2FyZCB0byB5b3VyIHJl
+c3VsdCwgdGhhbmsgeW91IQ0KDQoNCg0KUmVnYXJkcywNClRhbmcgQmluDQogDQpGcm9tOiBCam9y
+biBBbmRlcnNzb24NCkRhdGU6IDIwMjAtMDQtMDIgMTQ6NDUNClRvOiBUYW5nIEJpbg0KQ0M6IGFn
+cm9zczsgcm9iZGNsYXJrOyBqb3JvOyBsaW51eC1hcm0tbXNtOyBpb21tdTsgbGludXgta2VybmVs
+DQpTdWJqZWN0OiBSZTogW1BBVENIXSBpb21tdS9xY29tOmZpeCBsb2NhbF9iYXNlIHN0YXR1cyBj
+aGVjaw0KT24gV2VkIDAxIEFwciAyMzozMyBQRFQgMjAyMCwgVGFuZyBCaW4gd3JvdGU6DQogDQo+
+IFJlbGVhc2UgcmVzb3VyY2VzIHdoZW4gZXhpdGluZyBvbiBlcnJvci4NCj4gDQogDQpSZXZpZXdl
+ZC1ieTogQmpvcm4gQW5kZXJzc29uIDxiam9ybi5hbmRlcnNzb25AbGluYXJvLm9yZz4NCiANClJl
+Z2FyZHMsDQpCam9ybg0KIA0KPiBTaWduZWQtb2ZmLWJ5OiBUYW5nIEJpbiA8dGFuZ2JpbkBjbXNz
+LmNoaW5hbW9iaWxlLmNvbT4NCj4gLS0tDQo+ICBkcml2ZXJzL2lvbW11L3Fjb21faW9tbXUuYyB8
+IDUgKysrKy0NCj4gIDEgZmlsZSBjaGFuZ2VkLCA0IGluc2VydGlvbnMoKyksIDEgZGVsZXRpb24o
+LSkNCj4gDQo+IGRpZmYgLS1naXQgYS9kcml2ZXJzL2lvbW11L3Fjb21faW9tbXUuYyBiL2RyaXZl
+cnMvaW9tbXUvcWNvbV9pb21tdS5jDQo+IGluZGV4IDQzMjhkYTBiMC4uYzA4YWE5NjUxIDEwMDY0
+NA0KPiAtLS0gYS9kcml2ZXJzL2lvbW11L3Fjb21faW9tbXUuYw0KPiArKysgYi9kcml2ZXJzL2lv
+bW11L3Fjb21faW9tbXUuYw0KPiBAQCAtODEzLDggKzgxMywxMSBAQCBzdGF0aWMgaW50IHFjb21f
+aW9tbXVfZGV2aWNlX3Byb2JlKHN0cnVjdCBwbGF0Zm9ybV9kZXZpY2UgKnBkZXYpDQo+ICBxY29t
+X2lvbW11LT5kZXYgPSBkZXY7DQo+ICANCj4gIHJlcyA9IHBsYXRmb3JtX2dldF9yZXNvdXJjZShw
+ZGV2LCBJT1JFU09VUkNFX01FTSwgMCk7DQo+IC0gaWYgKHJlcykNCj4gKyBpZiAocmVzKSB7DQo+
+ICBxY29tX2lvbW11LT5sb2NhbF9iYXNlID0gZGV2bV9pb3JlbWFwX3Jlc291cmNlKGRldiwgcmVz
+KTsNCj4gKyBpZiAoSVNfRVJSKHFjb21faW9tbXUtPmxvY2FsX2Jhc2UpKQ0KPiArIHJldHVybiBQ
+VFJfRVJSKHFjb21faW9tbXUtPmxvY2FsX2Jhc2UpOw0KPiArIH0NCj4gIA0KPiAgcWNvbV9pb21t
+dS0+aWZhY2VfY2xrID0gZGV2bV9jbGtfZ2V0KGRldiwgImlmYWNlIik7DQo+ICBpZiAoSVNfRVJS
+KHFjb21faW9tbXUtPmlmYWNlX2NsaykpIHsNCj4gLS0gDQo+IDIuMjAuMS53aW5kb3dzLjENCj4g
+DQo+IA0KPiANCg==
+
+------=_001_NextPart535205562787_=----
+Content-Type: text/html;
+	charset="utf-8"
+Content-Transfer-Encoding: quoted-printable
+
+<html><head><meta http-equiv=3D"content-type" content=3D"text/html; charse=
+t=3Dutf-8"><style>body { line-height: 1.5; }blockquote { margin-top: 0px; =
+margin-bottom: 0px; margin-left: 0.5em; }body { font-size: 10.5pt; font-fa=
+mily: 'Microsoft YaHei UI'; color: rgb(0, 0, 0); line-height: 1.5; }</styl=
+e></head><body>=0A<div><span></span></div><div><div><span style=3D"color: =
+rgb(128, 128, 128); font-family: =E5=BE=AE=E8=BD=AF=E9=9B=85=E9=BB=91; lin=
+e-height: normal; font-size: 10.5pt; background-color: transparent;">&gt; =
+Reviewed-by</span><font color=3D"#808080" face=3D"=E5=BE=AE=E8=BD=AF=E9=9B=
+=85=E9=BB=91"><span style=3D"line-height: normal;">:</span>Bjorn Andersson=
+ &lt;bjorn.andersson@linaro.org&gt;</font></div></div>=0A<div><br></div><d=
+iv><div style=3D"font-family: 'Microsoft YaHei UI', Tahoma; line-height: n=
+ormal;">Thanks for your positive feedback.</div></div><div><br></div><div>=
+Will the patch need any more clarification=EF=BC=9FLooking forward to your=
+ result, thank you!</div><div><br></div><hr style=3D"width: 210px; height:=
+ 1px;" color=3D"#b5c4df" size=3D"1" align=3D"left">=0A<div><span><div styl=
+e=3D"MARGIN: 10px; FONT-FAMILY: verdana; FONT-SIZE: 10pt"><div style=3D"fo=
+nt-family: 'Microsoft YaHei UI'; font-size: 14px; color: rgb(0, 0, 255); l=
+ine-height: normal;"><div style=3D"color: rgb(0, 0, 0); line-height: 21px;=
+"><span style=3D"font-family: 'Microsoft YaHei UI', Tahoma; line-height: n=
+ormal;">Regards,</span></div><div style=3D"color: rgb(0, 0, 0); line-heigh=
+t: 21px;"><span style=3D"font-family: 'Microsoft YaHei UI', Tahoma; line-h=
+eight: normal;">Tang Bin</span></div></div></div></span></div>=0A<blockquo=
+te style=3D"margin-Top: 0px; margin-Bottom: 0px; margin-Left: 0.5em"><div>=
+&nbsp;</div><div style=3D"border:none;border-top:solid #B5C4DF 1.0pt;paddi=
+ng:3.0pt 0cm 0cm 0cm"><div style=3D"PADDING-RIGHT: 8px; PADDING-LEFT: 8px;=
+ FONT-SIZE: 12px;FONT-FAMILY:tahoma;COLOR:#000000; BACKGROUND: #efefef; PA=
+DDING-BOTTOM: 8px; PADDING-TOP: 8px"><div><b>From:</b>&nbsp;<a href=3D"mai=
+lto:bjorn.andersson@linaro.org">Bjorn Andersson</a></div><div><b>Date:</b>=
+&nbsp;2020-04-02&nbsp;14:45</div><div><b>To:</b>&nbsp;<a href=3D"mailto:ta=
+ngbin@cmss.chinamobile.com">Tang Bin</a></div><div><b>CC:</b>&nbsp;<a href=
+=3D"mailto:agross@kernel.org">agross</a>; <a href=3D"mailto:robdclark@gmai=
+l.com">robdclark</a>; <a href=3D"mailto:joro@8bytes.org">joro</a>; <a href=
+=3D"mailto:linux-arm-msm@vger.kernel.org">linux-arm-msm</a>; <a href=3D"ma=
+ilto:iommu@lists.linux-foundation.org">iommu</a>; <a href=3D"mailto:linux-=
+kernel@vger.kernel.org">linux-kernel</a></div><div><b>Subject:</b>&nbsp;Re=
+: [PATCH] iommu/qcom:fix local_base status check</div></div></div><div><di=
+v>On Wed 01 Apr 23:33 PDT 2020, Tang Bin wrote:</div>=0A<div>&nbsp;</div>=
+=0A<div>&gt; Release resources when exiting on error.</div>=0A<div>&gt; </=
+div>=0A<div>&nbsp;</div>=0A<div>Reviewed-by: Bjorn Andersson &lt;bjorn.and=
+ersson@linaro.org&gt;</div>=0A<div>&nbsp;</div>=0A<div>Regards,</div>=0A<d=
+iv>Bjorn</div>=0A<div>&nbsp;</div>=0A<div>&gt; Signed-off-by: Tang Bin &lt=
+;tangbin@cmss.chinamobile.com&gt;</div>=0A<div>&gt; ---</div>=0A<div>&gt;&=
+nbsp; drivers/iommu/qcom_iommu.c | 5 ++++-</div>=0A<div>&gt;&nbsp; 1 file =
+changed, 4 insertions(+), 1 deletion(-)</div>=0A<div>&gt; </div>=0A<div>&g=
+t; diff --git a/drivers/iommu/qcom_iommu.c b/drivers/iommu/qcom_iommu.c</d=
+iv>=0A<div>&gt; index 4328da0b0..c08aa9651 100644</div>=0A<div>&gt; --- a/=
+drivers/iommu/qcom_iommu.c</div>=0A<div>&gt; +++ b/drivers/iommu/qcom_iomm=
+u.c</div>=0A<div>&gt; @@ -813,8 +813,11 @@ static int qcom_iommu_device_pr=
+obe(struct platform_device *pdev)</div>=0A<div>&gt;&nbsp; 	qcom_iommu-&gt;=
+dev =3D dev;</div>=0A<div>&gt;&nbsp; </div>=0A<div>&gt;&nbsp; 	res =3D pla=
+tform_get_resource(pdev, IORESOURCE_MEM, 0);</div>=0A<div>&gt; -	if (res)<=
+/div>=0A<div>&gt; +	if (res) {</div>=0A<div>&gt;&nbsp; 		qcom_iommu-&gt;lo=
+cal_base =3D devm_ioremap_resource(dev, res);</div>=0A<div>&gt; +		if (IS_=
+ERR(qcom_iommu-&gt;local_base))</div>=0A<div>&gt; +			return PTR_ERR(qcom_=
+iommu-&gt;local_base);</div>=0A<div>&gt; +	}</div>=0A<div>&gt;&nbsp; </div=
+>=0A<div>&gt;&nbsp; 	qcom_iommu-&gt;iface_clk =3D devm_clk_get(dev, "iface=
+");</div>=0A<div>&gt;&nbsp; 	if (IS_ERR(qcom_iommu-&gt;iface_clk)) {</div>=
+=0A<div>&gt; -- </div>=0A<div>&gt; 2.20.1.windows.1</div>=0A<div>&gt; </di=
+v>=0A<div>&gt; </div>=0A<div>&gt; </div>=0A</div></blockquote>=0A</body></=
+html>
+------=_001_NextPart535205562787_=------
+
+
+
+
+--===============7011506084576707218==
+Content-Type: text/plain; charset="us-ascii"
+MIME-Version: 1.0
+Content-Transfer-Encoding: 7bit
+Content-Disposition: inline
 
 _______________________________________________
 iommu mailing list
 iommu@lists.linux-foundation.org
 https://lists.linuxfoundation.org/mailman/listinfo/iommu
+--===============7011506084576707218==--
+
+
+
