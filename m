@@ -2,81 +2,103 @@ Return-Path: <SRS0=CVo8=5Z=lists.linux-foundation.org=iommu-bounces@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-2.2 required=3.0 tests=HEADER_FROM_DIFFERENT_DOMAINS,
-	MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED,USER_AGENT_SANE_1
-	autolearn=no autolearn_force=no version=3.4.0
+X-Spam-Status: No, score=-0.5 required=3.0 tests=DKIM_INVALID,DKIM_SIGNED,
+	HEADER_FROM_DIFFERENT_DOMAINS,MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS,
+	URIBL_BLOCKED autolearn=no autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 33F90C2BA2B
-	for <iommu@archiver.kernel.org>; Thu,  9 Apr 2020 14:31:10 +0000 (UTC)
-Received: from whitealder.osuosl.org (smtp1.osuosl.org [140.211.166.138])
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 98778C2BA2B
+	for <iommu@archiver.kernel.org>; Thu,  9 Apr 2020 14:51:28 +0000 (UTC)
+Received: from fraxinus.osuosl.org (smtp4.osuosl.org [140.211.166.137])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by mail.kernel.org (Postfix) with ESMTPS id EEC582078E
-	for <iommu@archiver.kernel.org>; Thu,  9 Apr 2020 14:31:09 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org EEC582078E
-Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=8bytes.org
+	by mail.kernel.org (Postfix) with ESMTPS id 3C347206E9
+	for <iommu@archiver.kernel.org>; Thu,  9 Apr 2020 14:51:28 +0000 (UTC)
+Authentication-Results: mail.kernel.org;
+	dkim=fail reason="signature verification failed" (2048-bit key) header.d=linaro.org header.i=@linaro.org header.b="F9Ii1BYp"
+DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 3C347206E9
+Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=linaro.org
 Authentication-Results: mail.kernel.org; spf=pass smtp.mailfrom=iommu-bounces@lists.linux-foundation.org
 Received: from localhost (localhost [127.0.0.1])
-	by whitealder.osuosl.org (Postfix) with ESMTP id B03CF87929;
-	Thu,  9 Apr 2020 14:31:09 +0000 (UTC)
-X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from whitealder.osuosl.org ([127.0.0.1])
-	by localhost (.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
-	with ESMTP id mu4ql2DRYlM7; Thu,  9 Apr 2020 14:31:08 +0000 (UTC)
-Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [140.211.9.56])
-	by whitealder.osuosl.org (Postfix) with ESMTP id 81C5F877FC;
-	Thu,  9 Apr 2020 14:31:08 +0000 (UTC)
-Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
-	by lists.linuxfoundation.org (Postfix) with ESMTP id 5F7C1C089F;
-	Thu,  9 Apr 2020 14:31:08 +0000 (UTC)
-Received: from fraxinus.osuosl.org (smtp4.osuosl.org [140.211.166.137])
- by lists.linuxfoundation.org (Postfix) with ESMTP id ADB12C0177;
- Thu,  9 Apr 2020 14:31:06 +0000 (UTC)
-Received: from localhost (localhost [127.0.0.1])
- by fraxinus.osuosl.org (Postfix) with ESMTP id A907186B91;
- Thu,  9 Apr 2020 14:31:06 +0000 (UTC)
+	by fraxinus.osuosl.org (Postfix) with ESMTP id 16F2986356;
+	Thu,  9 Apr 2020 14:51:28 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
 Received: from fraxinus.osuosl.org ([127.0.0.1])
+	by localhost (.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
+	with ESMTP id pFoTqll5F913; Thu,  9 Apr 2020 14:51:26 +0000 (UTC)
+Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [140.211.9.56])
+	by fraxinus.osuosl.org (Postfix) with ESMTP id E05A0848BE;
+	Thu,  9 Apr 2020 14:51:26 +0000 (UTC)
+Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
+	by lists.linuxfoundation.org (Postfix) with ESMTP id D444DC089F;
+	Thu,  9 Apr 2020 14:51:26 +0000 (UTC)
+Received: from hemlock.osuosl.org (smtp2.osuosl.org [140.211.166.133])
+ by lists.linuxfoundation.org (Postfix) with ESMTP id E1FF7C0177
+ for <iommu@lists.linux-foundation.org>; Thu,  9 Apr 2020 14:51:24 +0000 (UTC)
+Received: from localhost (localhost [127.0.0.1])
+ by hemlock.osuosl.org (Postfix) with ESMTP id CB5AC877B5
+ for <iommu@lists.linux-foundation.org>; Thu,  9 Apr 2020 14:51:24 +0000 (UTC)
+X-Virus-Scanned: amavisd-new at osuosl.org
+Received: from hemlock.osuosl.org ([127.0.0.1])
  by localhost (.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
- with ESMTP id fgtzqhhf66mO; Thu,  9 Apr 2020 14:31:05 +0000 (UTC)
-X-Greylist: from auto-whitelisted by SQLgrey-1.7.6
-X-Greylist: from auto-whitelisted by SQLgrey-1.7.6
-Received: from theia.8bytes.org (8bytes.org [81.169.241.247])
- by fraxinus.osuosl.org (Postfix) with ESMTPS id 7205B86B67;
- Thu,  9 Apr 2020 14:31:05 +0000 (UTC)
-Received: by theia.8bytes.org (Postfix, from userid 1000)
- id 40578391; Thu,  9 Apr 2020 16:31:01 +0200 (CEST)
-Date: Thu, 9 Apr 2020 16:30:59 +0200
-From: Joerg Roedel <joro@8bytes.org>
-To: Marek Szyprowski <m.szyprowski@samsung.com>
-Subject: Re: [PATCH] iommu/exynos: Get rid of 'struct exynos_iommu_owner'
- exynos_iommu_owner
-Message-ID: <20200409143059.GP3103@8bytes.org>
-References: <20200407183742.4344-1-joro@8bytes.org>
- <CGME20200407184501eucas1p25407bc96e4345df406cf6ba061ae6a82@eucas1p2.samsung.com>
- <20200407183742.4344-32-joro@8bytes.org>
- <449e7f16-e719-9617-ec92-63b82c0bc33f@samsung.com>
- <f59b0bb3-8c08-9cc9-bb1a-e69b7b226f60@samsung.com>
- <20200409114620.GA16298@8bytes.org>
- <40af831b-d00c-0cf9-0a06-e60c048a9ab8@samsung.com>
+ with ESMTP id jes4f2fyvvWO for <iommu@lists.linux-foundation.org>;
+ Thu,  9 Apr 2020 14:51:23 +0000 (UTC)
+X-Greylist: domain auto-whitelisted by SQLgrey-1.7.6
+Received: from mail-wr1-f68.google.com (mail-wr1-f68.google.com
+ [209.85.221.68])
+ by hemlock.osuosl.org (Postfix) with ESMTPS id 3AD9787B60
+ for <iommu@lists.linux-foundation.org>; Thu,  9 Apr 2020 14:51:08 +0000 (UTC)
+Received: by mail-wr1-f68.google.com with SMTP id k1so12297982wrm.3
+ for <iommu@lists.linux-foundation.org>; Thu, 09 Apr 2020 07:51:08 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linaro.org; s=google;
+ h=date:from:to:cc:subject:message-id:references:mime-version
+ :content-disposition:in-reply-to;
+ bh=BLYVQ769D/rwpa7XgqRfm7JukqQmBk02SZuIy1Wf5Ig=;
+ b=F9Ii1BYp7GY4yBcVOUxA4xDwHEj6VxQDC/LMVy0dJYnNKlAUFFjkngQgsNH1NrIUgj
+ YD6q9Sj9uybvdDZF00ICVn/1gwy9QcoG1Qx0N167fTaUwQgHvOASOZKHMCXL1hiPdduk
+ 5XAIevMvxSVbd03/G53TbOCcczD40dgqPrOwv+jZmJW595mwa7K+4O+2meGp4aA0eu93
+ d4yj8LP56q4AElNfRXfeky9IXYmdERg5IF0nAL2BxYXF8V06pROzTSE7tOeEVKrpkd8C
+ KYMAcrmSwqZW2WuOlXu4btgk0iyQfon2cbLiTDOBCWPj/tqDP1cjnOI5FmZtdgqbOfM4
+ ZInQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+ d=1e100.net; s=20161025;
+ h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+ :mime-version:content-disposition:in-reply-to;
+ bh=BLYVQ769D/rwpa7XgqRfm7JukqQmBk02SZuIy1Wf5Ig=;
+ b=WDC50Zo9LJ/ZRp7rV/ZLP4VvbGcIe6TnsRgD4q4mHOuLjpQawHwH4vjZT5UJXpTKrH
+ TukppeMBMlCpCyn9U9M+EOzwI4TWX4kYmhOzHZckAhIj9pHeqbNYMAQw/5+jhofCIwLo
+ 54DPVJFvEED34ZcclAwLMVqv/WYNcM+vO1aBYP9GOF/Hl7Q0qFHx2rbrcmTspqy1OHId
+ UCZzgd2xEawcLP552p08nuJ+KRldK0CboVdDt/dbkrqMkcP745kPFep9VmrNE+N2DeiS
+ eNS4Z3XgSFrqaVAlzGbxIBwrqDHSlTbk7WEN0q+ZIPHmUgGvDOIBS06m5a1g7jytO6eE
+ 0BvQ==
+X-Gm-Message-State: AGi0PubRZKS8IJe19hYrn+wcoG3aWRYjsZPoRPOhOhROT8NGx6gWWoA0
+ yUUFgZT1nJve64cEppjGbUX4+w==
+X-Google-Smtp-Source: APiQypJRRh+2/hveDtFeqggGA3Frkt6iCp2iCBDaXO+c3GI1ePTjhDUVfuPct9xyjsfdsb4gQ9I2uQ==
+X-Received: by 2002:a5d:53d1:: with SMTP id a17mr15477443wrw.41.1586443866486; 
+ Thu, 09 Apr 2020 07:51:06 -0700 (PDT)
+Received: from myrica ([2001:171b:226b:54a0:116c:c27a:3e7f:5eaf])
+ by smtp.gmail.com with ESMTPSA id b191sm4162924wmd.39.2020.04.09.07.51.05
+ (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+ Thu, 09 Apr 2020 07:51:05 -0700 (PDT)
+Date: Thu, 9 Apr 2020 16:50:58 +0200
+From: Jean-Philippe Brucker <jean-philippe@linaro.org>
+To: Jacob Pan <jacob.jun.pan@linux.intel.com>
+Subject: Re: [PATCH 0/2] iommu: Remove iommu_sva_ops::mm_exit()
+Message-ID: <20200409145058.GB69482@myrica>
+References: <20200408140427.212807-1-jean-philippe@linaro.org>
+ <20200408113552.7888bfee@jacob-builder>
+ <20200408190226.GA11886@ziepe.ca>
+ <20200408143552.57f5837c@jacob-builder>
+ <20200408223218.GC11886@ziepe.ca>
+ <20200408164802.155a69e3@jacob-builder>
+ <20200409063905.GA2435@myrica>
+ <20200409071424.1653b889@jacob-builder>
 MIME-Version: 1.0
 Content-Disposition: inline
-In-Reply-To: <40af831b-d00c-0cf9-0a06-e60c048a9ab8@samsung.com>
-User-Agent: Mutt/1.10.1 (2018-07-13)
-Cc: Heiko Stuebner <heiko@sntech.de>,
- Bjorn Andersson <bjorn.andersson@linaro.org>, linux-tegra@vger.kernel.org,
- Thierry Reding <thierry.reding@gmail.com>, Will Deacon <will@kernel.org>,
- Jean-Philippe Brucker <jean-philippe@linaro.org>,
- linux-samsung-soc@vger.kernel.org, Krzysztof Kozlowski <krzk@kernel.org>,
- Jonathan Hunter <jonathanh@nvidia.com>, linux-rockchip@lists.infradead.org,
- Andy Gross <agross@kernel.org>, Joerg Roedel <jroedel@suse.de>,
- linux-s390@vger.kernel.org, linux-arm-msm@vger.kernel.org,
- linux-mediatek@lists.infradead.org, Matthias Brugger <matthias.bgg@gmail.com>,
- virtualization@lists.linux-foundation.org,
- Gerald Schaefer <gerald.schaefer@de.ibm.com>,
- David Woodhouse <dwmw2@infradead.org>, linux-kernel@vger.kernel.org,
- iommu@lists.linux-foundation.org, Kukjin Kim <kgene@kernel.org>,
- Robin Murphy <robin.murphy@arm.com>
+In-Reply-To: <20200409071424.1653b889@jacob-builder>
+Cc: "Yu, Fenghua" <fenghua.yu@intel.com>, arnd@arndb.de,
+ gregkh@linuxfoundation.org, iommu@lists.linux-foundation.org,
+ Jason Gunthorpe <jgg@ziepe.ca>, zhangfei.gao@linaro.org,
+ linux-accelerators@lists.ozlabs.org
 X-BeenThere: iommu@lists.linux-foundation.org
 X-Mailman-Version: 2.1.15
 Precedence: list
@@ -94,26 +116,201 @@ Content-Transfer-Encoding: 7bit
 Errors-To: iommu-bounces@lists.linux-foundation.org
 Sender: "iommu" <iommu-bounces@lists.linux-foundation.org>
 
-Hi Marek,
+On Thu, Apr 09, 2020 at 07:14:24AM -0700, Jacob Pan wrote:
+> On Thu, 9 Apr 2020 08:39:05 +0200
+> Jean-Philippe Brucker <jean-philippe@linaro.org> wrote:
+> 
+> > On Wed, Apr 08, 2020 at 04:48:02PM -0700, Jacob Pan wrote:
+> > > On Wed, 8 Apr 2020 19:32:18 -0300
+> > > Jason Gunthorpe <jgg@ziepe.ca> wrote:
+> > >   
+> > > > On Wed, Apr 08, 2020 at 02:35:52PM -0700, Jacob Pan wrote:  
+> > > > > > On Wed, Apr 08, 2020 at 11:35:52AM -0700, Jacob Pan wrote:    
+> > > > > > > Hi Jean,
+> > > > > > > 
+> > > > > > > On Wed,  8 Apr 2020 16:04:25 +0200
+> > > > > > > Jean-Philippe Brucker <jean-philippe@linaro.org> wrote:
+> > > > > > >       
+> > > > > > > > The IOMMU SVA API currently requires device drivers to
+> > > > > > > > implement an mm_exit() callback, which stops device jobs
+> > > > > > > > that do DMA. This function is called in the release() MMU
+> > > > > > > > notifier, when an address space that is shared with a
+> > > > > > > > device exits.
+> > > > > > > > 
+> > > > > > > > It has been noted several time during discussions about
+> > > > > > > > SVA that cancelling DMA jobs can be slow and complex, and
+> > > > > > > > doing it in the release() notifier might cause
+> > > > > > > > synchronization issues (patch 2 has more background).
+> > > > > > > > Device drivers must in any case call unbind() to remove
+> > > > > > > > their bond, after stopping DMA from a more favorable
+> > > > > > > > context (release of a file descriptor).
+> > > > > > > > 
+> > > > > > > > So after mm exits, rather than notifying device drivers,
+> > > > > > > > we can hold on to the PASID until unbind(), ask IOMMU
+> > > > > > > > drivers to silently abort DMA and Page Requests in the
+> > > > > > > > meantime. This change should relieve the mmput()
+> > > > > > > > path.      
+> > > > > > >
+> > > > > > > I assume mm is destroyed after all the FDs are closed      
+> > > > > > 
+> > > > > > FDs do not hold a mmget(), but they may hold a mmgrab(), ie
+> > > > > > anything using mmu_notifiers has to hold a grab until the
+> > > > > > notifier is destroyed, which is often triggered by FD close.
+> > > > > >     
+> > > > > Sorry, I don't get this. Are you saying we have to hold a
+> > > > > mmgrab() between svm_bind/mmu_notifier_register and
+> > > > > svm_unbind/mmu_notifier_unregister?    
+> > > > 
+> > > > Yes. This is done automatically for the caller inside the
+> > > > mmu_notifier implementation. We now even store the mm_struct
+> > > > pointer inside the notifier.
+> > > > 
+> > > > Once a notifier is registered the mm_struct remains valid memory
+> > > > until the notifier is unregistered.
+> > > >   
+> > > > > Isn't the idea of mmu_notifier is to avoid holding the mm
+> > > > > reference and rely on the notifier to tell us when mm is going
+> > > > > away?    
+> > > > 
+> > > > The notifier only holds a mmgrab(), not a mmget() - this allows
+> > > > exit_mmap to proceed, but the mm_struct memory remains.
+> > > > 
+> > > > This is also probably why it is a bad idea to tie the lifetime of
+> > > > something like a pasid to the mmdrop as a evil user could cause a
+> > > > large number of mm structs to be released but not freed, probably
+> > > > defeating cgroup limits and so forth (not sure)
+> > > >   
+> > > > > It seems both Intel and AMD iommu drivers don't hold mmgrab
+> > > > > after mmu_notifier_register.    
+> > > > 
+> > > > It is done internally to the implementation.
+> > > >   
+> > > > > > So the exit_mmap() -> release() may happen before the FDs are
+> > > > > > destroyed, but the final mmdrop() will be during some FD
+> > > > > > release when the final mmdrop() happens.    
+> > > > > 
+> > > > > Do you mean mmdrop() is after FD release?     
+> > > > 
+> > > > Yes, it will be done by the mmu_notifier_unregister(), which
+> > > > should be called during FD release if the iommu lifetime is
+> > > > linked to some FD. 
+> > > > > If so, unbind is called in FD release should take care of
+> > > > > everything, i.e. stops DMA, clear PASID context on IOMMU, flush
+> > > > > PRS queue etc.    
+> > > > 
+> > > > Yes, this is the proper way, when the DMA is stopped and no use
+> > > > of the PASID remains then you can drop the mmu notifier and
+> > > > release the PASID entirely. If that is linked to the lifetime of
+> > > > the FD then forget completely about the mm_struct lifetime, it
+> > > > doesn't matter.. 
+> > > Got everything above, thanks a lot.
+> > > 
+> > > If everything is in order with the FD close. Why do we need to 
+> > > "ask IOMMU drivers to silently abort DMA and Page Requests in the
+> > > meantime." in mm_exit notifier? This will be done orderly in unbind
+> > > anyway.  
+> > 
+> > When the process is killed, mm release can happen before fds are
+> > released. If you look at do_exit() in kernel/exit.c:
+> > 
+> > 	exit_mm()
+> > 	  mmput()
+> > 	   -> mmu release notifier  
+> > 	...
+> > 	exit_files()
+> > 	  close_files()
+> > 	    fput()
+> > 	exit_task_work()
+> > 	  __fput()
+> > 	   -> unbind()  
+> > 
+> So unbind is coming anyway, the difference in handling in mmu release
+> notifier is whether we silently drop DMA fault vs. reporting fault?
 
-On Thu, Apr 09, 2020 at 03:58:00PM +0200, Marek Szyprowski wrote:
-> The main problem after your conversion is the fact that ->probe_device() 
-> is called very early, before any other platform device (thus IOMMU 
-> controller) is is probed. It doesn't handle EPROBE_DEFER too.
+What I meant is, between mmu release notifier and unbind(), we can't print
+any error from DMA fault on dmesg, because an mm exit is easily triggered
+by userspace. Look at the lifetime of the bond:
 
-I don't quite understand why probe_device() is called too early, as it
-is called at the same time add_device() was called before. But anyway,
-I have seen a similar problem on OMAP. If the SYSMMU for a master is not
-probed yet when probe_device() is called, it can just return -ENODEV and
-in your driver you just call but_iommu_probe() when a new SYSMMU got
-initialized to re-probe uninitialized masters on the bus. This patch-set
-contains a change to export bus_iommu_probe() for exactly that reason.
+bind()
+ |
+ : Here any DMA fault is handled by mm, and on error we don't print
+ : anything to dmesg. Userspace can easily trigger faults by issuing DMA
+ : on unmapped buffers.
+ |
+mm exit -> clear pgd, invalidate IOTLBs
+ |
+ : Here the PASID descriptor doesn't have the pgd anymore, but we don't
+ : print out any error to dmesg either. DMA is likely still running but
+ : any fault has to be ignored.
+ :
+ : We also can't free the PASID yet, since transactions are still coming
+ : in with this PASID.
+ |
+unbind() -> clear context descriptor, release PASID and mmu notifier
+ |
+ : Here the PASID descriptor is clear. If DMA is still running the device
+ : driver really messed up and we have to print out any fault.
 
-What do you think?
+For that middle state I had to introduce a new pasid descriptor state in
+the SMMU driver, to avoid reporting errors between mm exit and unbind().
 
-Regards,
+Thanks,
+Jean
 
-	Joerg
+> If a process crash during unbind, something already went seriously
+> wrong, DMA fault is expected.
+> I think having some error indication is useful, compared to "silently
+> drop"
+> 
+> Thanks,
+> 
+> Jacob
+> 
+> > Thanks,
+> > Jean
+> > 
+> > >   
+> > > > > Enforcing unbind upon FD close might be a precarious path,
+> > > > > perhaps that is why we have to deal with out of order
+> > > > > situation?    
+> > > > 
+> > > > How so? You just put it in the FD release function :)
+> > > >   
+> > > I was thinking some driver may choose to defer unbind in some
+> > > workqueue etc.
+> > >   
+> > > > > > > In VT-d, because of enqcmd and lazy PASID free we plan to
+> > > > > > > hold on to the PASID until mmdrop.
+> > > > > > > https://lore.kernel.org/patchwork/patch/1217762/      
+> > > > > > 
+> > > > > > Why? The bind already gets a mmu_notifier which has refcounts
+> > > > > > and the right lifetime for PASID.. This code could already be
+> > > > > > simplified by using the mmu_notifier_get()/put() stuff.
+> > > > > >     
+> > > > > Yes, I guess mmu_notifier_get()/put() is new :)
+> > > > > +Fenghua    
+> > > > 
+> > > > I was going to convert the intel code when I did many other
+> > > > drivers, but it was a bit too complex..
+> > > > 
+> > > > But the approach is straightforward. Get rid of the mm search
+> > > > list and use mmu_notifier_get(). This returns a singlton notifier
+> > > > for the mm_struct and handles refcounting/etc
+> > > > 
+> > > > Use mmu_notifier_put() during a unbind, it will callback to
+> > > > free_notifier() to do the final frees (ie this is where the pasid
+> > > > should go away)
+> > > > 
+> > > > For the SVM_FLAG_PRIVATE_PASID continue to use
+> > > > mmu_notifier_register, however this can now be mixed with
+> > > > mmu_notifier_put() so the cleanup is the same. A separate ops
+> > > > static struct is needed to create a unique key though
+> > > > 
+> > > > Jason  
+> > > 
+> > > [Jacob Pan]  
+> 
+> [Jacob Pan]
 _______________________________________________
 iommu mailing list
 iommu@lists.linux-foundation.org
