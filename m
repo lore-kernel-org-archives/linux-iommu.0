@@ -2,107 +2,97 @@ Return-Path: <SRS0=CVo8=5Z=lists.linux-foundation.org=iommu-bounces@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-4.3 required=3.0 tests=DKIM_INVALID,DKIM_SIGNED,
-	HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_PATCH,MAILING_LIST_MULTI,SIGNED_OFF_BY,
-	SPF_HELO_NONE,SPF_PASS,TVD_SUBJ_WIPE_DEBT,URIBL_BLOCKED autolearn=no
-	autolearn_force=no version=3.4.0
+X-Spam-Status: No, score=-3.5 required=3.0 tests=DKIM_INVALID,DKIM_SIGNED,
+	HEADER_FROM_DIFFERENT_DOMAINS,MAILING_LIST_MULTI,SIGNED_OFF_BY,SPF_HELO_NONE,
+	SPF_PASS,URIBL_BLOCKED autolearn=no autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 17BFBC2BB86
-	for <iommu@archiver.kernel.org>; Thu,  9 Apr 2020 09:49:18 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 92D9FC352B6
+	for <iommu@archiver.kernel.org>; Thu,  9 Apr 2020 09:54:18 +0000 (UTC)
 Received: from silver.osuosl.org (smtp3.osuosl.org [140.211.166.136])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by mail.kernel.org (Postfix) with ESMTPS id 9C63821D93
-	for <iommu@archiver.kernel.org>; Thu,  9 Apr 2020 09:41:37 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTPS id 918262083E
+	for <iommu@archiver.kernel.org>; Thu,  9 Apr 2020 09:45:03 +0000 (UTC)
 Authentication-Results: mail.kernel.org;
-	dkim=fail reason="signature verification failed" (1024-bit key) header.d=ffwll.ch header.i=@ffwll.ch header.b="WXfJC2xv"
-DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 9C63821D93
-Authentication-Results: mail.kernel.org; dmarc=none (p=none dis=none) header.from=ffwll.ch
+	dkim=fail reason="signature verification failed" (2048-bit key) header.d=linaro.org header.i=@linaro.org header.b="pPOs1I9W"
+DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 918262083E
+Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=linaro.org
 Authentication-Results: mail.kernel.org; spf=pass smtp.mailfrom=iommu-bounces@lists.linux-foundation.org
 Received: from localhost (localhost [127.0.0.1])
-	by silver.osuosl.org (Postfix) with ESMTP id 6F7C120525;
-	Thu,  9 Apr 2020 09:41:37 +0000 (UTC)
+	by silver.osuosl.org (Postfix) with ESMTP id 5AD19242F3;
+	Thu,  9 Apr 2020 09:45:03 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
 Received: from silver.osuosl.org ([127.0.0.1])
 	by localhost (.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
-	with ESMTP id yCUA6+DYdFFm; Thu,  9 Apr 2020 09:41:36 +0000 (UTC)
+	with ESMTP id 97DTUnZ+OVbb; Thu,  9 Apr 2020 09:45:02 +0000 (UTC)
 Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [140.211.9.56])
-	by silver.osuosl.org (Postfix) with ESMTP id 7DF1E20015;
-	Thu,  9 Apr 2020 09:41:36 +0000 (UTC)
+	by silver.osuosl.org (Postfix) with ESMTP id 1B71820015;
+	Thu,  9 Apr 2020 09:45:02 +0000 (UTC)
 Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
-	by lists.linuxfoundation.org (Postfix) with ESMTP id 64FF6C1D7E;
-	Thu,  9 Apr 2020 09:41:36 +0000 (UTC)
-Received: from whitealder.osuosl.org (smtp1.osuosl.org [140.211.166.138])
- by lists.linuxfoundation.org (Postfix) with ESMTP id 38EB6C0177
- for <iommu@lists.linux-foundation.org>; Thu,  9 Apr 2020 09:41:34 +0000 (UTC)
+	by lists.linuxfoundation.org (Postfix) with ESMTP id F0790C1D7E;
+	Thu,  9 Apr 2020 09:45:01 +0000 (UTC)
+Received: from fraxinus.osuosl.org (smtp4.osuosl.org [140.211.166.137])
+ by lists.linuxfoundation.org (Postfix) with ESMTP id 5F87EC0177
+ for <iommu@lists.linux-foundation.org>; Thu,  9 Apr 2020 09:45:01 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
- by whitealder.osuosl.org (Postfix) with ESMTP id 22E26876C0
- for <iommu@lists.linux-foundation.org>; Thu,  9 Apr 2020 09:41:34 +0000 (UTC)
+ by fraxinus.osuosl.org (Postfix) with ESMTP id 4A12B854D0
+ for <iommu@lists.linux-foundation.org>; Thu,  9 Apr 2020 09:45:01 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from whitealder.osuosl.org ([127.0.0.1])
+Received: from fraxinus.osuosl.org ([127.0.0.1])
  by localhost (.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
- with ESMTP id 0gWsMZd4d4gH for <iommu@lists.linux-foundation.org>;
- Thu,  9 Apr 2020 09:41:33 +0000 (UTC)
-X-Greylist: from auto-whitelisted by SQLgrey-1.7.6
-Received: from mail-ot1-f67.google.com (mail-ot1-f67.google.com
- [209.85.210.67])
- by whitealder.osuosl.org (Postfix) with ESMTPS id F1C6787698
- for <iommu@lists.linux-foundation.org>; Thu,  9 Apr 2020 09:41:32 +0000 (UTC)
-Received: by mail-ot1-f67.google.com with SMTP id f52so9834444otf.8
- for <iommu@lists.linux-foundation.org>; Thu, 09 Apr 2020 02:41:32 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ffwll.ch; s=google;
- h=mime-version:references:in-reply-to:from:date:message-id:subject:to
- :cc; bh=AAmPcakirZ+49aStGKItq0c+j+VEsXqfcBH/BMyGspk=;
- b=WXfJC2xvujS1NMEJmo8auNqU+zz3KoHNnFI/ZwIoQGqsenIlj1/rLp7i8g0wrHhNMA
- tB4UaPYqL8fo1FBLJD1QspR85zqLl/OHQQ2XW2wZhxbVmnvXaj4OEg2HGRtpK4xkfIA5
- QryyOXVdb1eBXsQfmBlDoe7W6QRuDag4YOw+c=
+ with ESMTP id MOroKUzXN0lw for <iommu@lists.linux-foundation.org>;
+ Thu,  9 Apr 2020 09:45:00 +0000 (UTC)
+X-Greylist: domain auto-whitelisted by SQLgrey-1.7.6
+Received: from mail-wm1-f67.google.com (mail-wm1-f67.google.com
+ [209.85.128.67])
+ by fraxinus.osuosl.org (Postfix) with ESMTPS id CBAC5853D3
+ for <iommu@lists.linux-foundation.org>; Thu,  9 Apr 2020 09:44:59 +0000 (UTC)
+Received: by mail-wm1-f67.google.com with SMTP id h2so3228436wmb.4
+ for <iommu@lists.linux-foundation.org>; Thu, 09 Apr 2020 02:44:59 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linaro.org; s=google;
+ h=date:from:to:cc:subject:message-id:references:mime-version
+ :content-disposition:content-transfer-encoding:in-reply-to;
+ bh=PesRHogudULc4/x9yhdrVQgI67Y/2LGQZWmhimPv3t4=;
+ b=pPOs1I9W3kE0K0EX32bKoAS7AYeVXe/ym1tzYg00fJ1JDUmSPicjSIVRZkZ7tr403a
+ Hn17sphcjZjxUHxDMHrcZYBwZcHOkCQpBHJWEHLF72kAyR95pS45Ua1yguLyI74N+BR+
+ uD9wHsMyKQrzFG19X0J3ZGmKhQ9sGhQx0d7dCPmr59w3yWlzvZLXH9S7Uyd1sPCe+9tA
+ 7lN+YtMD1q8vcrccr8rCM96+DB13c5XsBsatyYRP64GXCF6RN8JXpLLiQnCAINtrC3aZ
+ 1S6cvDKFr2Xd4o5yOSKoAoH4Mzb1prXSGfPxBCmkJ2OQYEg9PQpScVHFCK0+EPR5a/ix
+ LF/g==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
  d=1e100.net; s=20161025;
- h=x-gm-message-state:mime-version:references:in-reply-to:from:date
- :message-id:subject:to:cc;
- bh=AAmPcakirZ+49aStGKItq0c+j+VEsXqfcBH/BMyGspk=;
- b=R/sAURo8aUjIgLArIr4sech1F0CzuQLcW7HLy5FnRgRqpvpm0vgduFp0gWThGYC8sJ
- DomGgWbRZ4HHOXO0myDvrclZuYDE25/F5O1XAGK/OBS3DOUQUZLjZxmesC2Xh6goPlAG
- jhjk22wMRLdfevfG25ktpz0b3JzFbvq+3005YLs7lCjDDpGPq3cT1S0qZVrTxOOx216N
- iWWEQdR2ESAjyjEhfKytSCMPcWKYGtb2lndFHAeqmIsRRpWV9OgtJgYABClvQFusLQK1
- QOTDg7tdBICRDZ5O1nw8JCanBJSB/WnZH6umFLSXCa0ecIB4lyTkTnmG/UJfEoBn/d98
- thJw==
-X-Gm-Message-State: AGi0PuYvag/P/2kZwmTtY7bFHQqlfVjaMHgZLK9u50Tc2s9fn+ws/Yfr
- yPqv5JyoWtcrBe/vi+VKurMb9ZqW6wKnvtDmWzT1Eg==
-X-Google-Smtp-Source: APiQypLHBVJAv55CZxyRjUHHZPFErxI7m2EAB+edMw28HekqHKAMU8pcbynFySqYUgFQY0OpR/l48dylQu4jTtXwGxw=
-X-Received: by 2002:a4a:4190:: with SMTP id x138mr9186341ooa.35.1586425291875; 
- Thu, 09 Apr 2020 02:41:31 -0700 (PDT)
+ h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+ :mime-version:content-disposition:content-transfer-encoding
+ :in-reply-to;
+ bh=PesRHogudULc4/x9yhdrVQgI67Y/2LGQZWmhimPv3t4=;
+ b=B0oiv2x7Y2GhLMCe8vJy6UtXUPV465PWE9E9WWV2gNQUkwKSF2ETk2WakVvNxJyW++
+ 1vPidlP/XbUwsYz/yianXMnCid3hwYL8xGA4lQjYGYmrdPh5mByEPROwK+gdkku6xDd+
+ wQzF0a02wL9jV5KSZObVS9Iyaz78tDEcfNve9EB/RrO8eSrdpNhGnGONknikNGGL2UB6
+ WVByX7i+4+faqAoBsfU4Eqobz4lIpFEAxCW/Z2gSoluhbDdFnk3lFRhUGHIWFfXHZyRD
+ 4BmLLNyzZqy9CgGFVaY/Iwg5EOT+X1RuFzJN8MNhUMRHO2fYCQDytYHb3HbI2GeBFlga
+ mN1Q==
+X-Gm-Message-State: AGi0Puaw2SR3ntizllEKKpwmA6Nbl3liyVQVagf4B19uidyGAQZgwfM9
+ WYOvo2KQRgxLnUgv0m2hCxsOVw==
+X-Google-Smtp-Source: APiQypLIUrIgM2XxQKdDqHVNyQcqogr57r2ycGCfdl5Lf1OXr2lVGgFDaKqXk4q7eve0zFW7IYgvLg==
+X-Received: by 2002:a1c:4c10:: with SMTP id z16mr9291034wmf.77.1586425498203; 
+ Thu, 09 Apr 2020 02:44:58 -0700 (PDT)
+Received: from myrica ([2001:171b:226b:54a0:116c:c27a:3e7f:5eaf])
+ by smtp.gmail.com with ESMTPSA id n6sm2998144wmc.28.2020.04.09.02.44.57
+ (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+ Thu, 09 Apr 2020 02:44:57 -0700 (PDT)
+Date: Thu, 9 Apr 2020 11:44:50 +0200
+From: Jean-Philippe Brucker <jean-philippe@linaro.org>
+To: Zhangfei Gao <zhangfei.gao@linaro.org>
+Subject: Re: [PATCH 1/2] uacce: Remove mm_exit() op
+Message-ID: <20200409094450.GI2435@myrica>
+References: <20200408140427.212807-1-jean-philippe@linaro.org>
+ <20200408140427.212807-2-jean-philippe@linaro.org>
+ <5741a4d9-c3ae-f0d6-27f9-550bbeaa4c4a@linaro.org>
 MIME-Version: 1.0
-References: <20200408115926.1467567-1-hch@lst.de>
- <20200408115926.1467567-20-hch@lst.de>
- <20200408122504.GO3456981@phenom.ffwll.local>
- <eb48f7b6327e482ea9911b129210c0417ab48345.camel@kernel.crashing.org>
-In-Reply-To: <eb48f7b6327e482ea9911b129210c0417ab48345.camel@kernel.crashing.org>
-From: Daniel Vetter <daniel@ffwll.ch>
-Date: Thu, 9 Apr 2020 11:41:20 +0200
-Message-ID: <CAKMK7uHtkLvdsWFGiAtkzVa5mpnDvXkn3CHZQ6bgJ_enbyAc8A@mail.gmail.com>
-Subject: Re: [PATCH 19/28] gpu/drm: remove the powerpc hack in
- drm_legacy_sg_alloc
-To: Benjamin Herrenschmidt <benh@kernel.crashing.org>
-Cc: linux-hyperv@vger.kernel.org, David Airlie <airlied@linux.ie>,
- dri-devel <dri-devel@lists.freedesktop.org>, Linux MM <linux-mm@kvack.org>,
- "K. Y. Srinivasan" <kys@microsoft.com>, Sumit Semwal <sumit.semwal@linaro.org>,
- "open list:GENERIC INCLUDE/A..." <linux-arch@vger.kernel.org>,
- linux-s390@vger.kernel.org, Wei Liu <wei.liu@kernel.org>,
- Stephen Hemminger <sthemmin@microsoft.com>, X86 ML <x86@kernel.org>,
- Christoph Hellwig <hch@lst.de>, Peter Zijlstra <peterz@infradead.org>,
- Laura Abbott <labbott@redhat.com>, Nitin Gupta <ngupta@vflare.org>,
- Haiyang Zhang <haiyangz@microsoft.com>,
- "moderated list:DMA BUFFER SHARING FRAMEWORK" <linaro-mm-sig@lists.linaro.org>,
- bpf <bpf@vger.kernel.org>, Linux ARM <linux-arm-kernel@lists.infradead.org>,
- Christophe Leroy <christophe.leroy@c-s.fr>,
- Robin Murphy <robin.murphy@arm.com>,
- Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
- Minchan Kim <minchan@kernel.org>,
- "list@263.net:IOMMU DRIVERS <iommu@lists.linux-foundation.org>,
- Joerg Roedel <joro@8bytes.org>, " <iommu@lists.linux-foundation.org>,
- Andrew Morton <akpm@linux-foundation.org>,
- linuxppc-dev <linuxppc-dev@lists.ozlabs.org>
+Content-Disposition: inline
+In-Reply-To: <5741a4d9-c3ae-f0d6-27f9-550bbeaa4c4a@linaro.org>
+Cc: gregkh@linuxfoundation.org, iommu@lists.linux-foundation.org, arnd@arndb.de,
+ linux-accelerators@lists.ozlabs.org, jgg@ziepe.ca
 X-BeenThere: iommu@lists.linux-foundation.org
 X-Mailman-Version: 2.1.15
 Precedence: list
@@ -115,97 +105,38 @@ List-Post: <mailto:iommu@lists.linux-foundation.org>
 List-Help: <mailto:iommu-request@lists.linux-foundation.org?subject=help>
 List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
  <mailto:iommu-request@lists.linux-foundation.org?subject=subscribe>
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: base64
 Errors-To: iommu-bounces@lists.linux-foundation.org
 Sender: "iommu" <iommu-bounces@lists.linux-foundation.org>
 
-On Thu, Apr 9, 2020 at 10:54 AM Benjamin Herrenschmidt
-<benh@kernel.crashing.org> wrote:
->
-> On Wed, 2020-04-08 at 14:25 +0200, Daniel Vetter wrote:
-> > On Wed, Apr 08, 2020 at 01:59:17PM +0200, Christoph Hellwig wrote:
-> > > If this code was broken for non-coherent caches a crude powerpc hack
-> > > isn't going to help anyone else.  Remove the hack as it is the last
-> > > user of __vmalloc passing a page protection flag other than PAGE_KERNEL.
-> >
-> > Well Ben added this to make stuff work on ppc, ofc the home grown dma
-> > layer in drm from back then isn't going to work in other places. I guess
-> > should have at least an ack from him, in case anyone still cares about
-> > this on ppc. Adding Ben to cc.
->
-> This was due to some drivers (radeon ?) trying to use vmalloc pages for
-> coherent DMA, which means on those 4xx powerpc's need to be non-cached.
->
-> There were machines using that (440 based iirc), though I honestly
-> can't tell if anybody still uses any of it.
-
-agp subsystem still seems to happily do that (vmalloc memory for
-device access), never having been ported to dma apis (or well
-converted to iommu drivers, which they kinda are really). So I think
-this all still works exactly as back then, even with the kms radeon
-drivers. Question really is whether we have users left, and I have no
-clue about that either.
-
-Now if these boxes didn't ever have agp then I think we can get away
-with deleting this, since we've already deleted the legacy radeon
-driver. And that one used vmalloc for everything. The new kms one does
-use the dma-api if the gpu isn't connected through agp.
--Daniel
-
-> Cheers,
-> Ben.
->
-> > -Daniel
-> >
-> > >
-> > > Signed-off-by: Christoph Hellwig <hch@lst.de>
-> > > ---
-> > >  drivers/gpu/drm/drm_scatter.c | 11 +----------
-> > >  1 file changed, 1 insertion(+), 10 deletions(-)
-> > >
-> > > diff --git a/drivers/gpu/drm/drm_scatter.c b/drivers/gpu/drm/drm_scatter.c
-> > > index ca520028b2cb..f4e6184d1877 100644
-> > > --- a/drivers/gpu/drm/drm_scatter.c
-> > > +++ b/drivers/gpu/drm/drm_scatter.c
-> > > @@ -43,15 +43,6 @@
-> > >
-> > >  #define DEBUG_SCATTER 0
-> > >
-> > > -static inline void *drm_vmalloc_dma(unsigned long size)
-> > > -{
-> > > -#if defined(__powerpc__) && defined(CONFIG_NOT_COHERENT_CACHE)
-> > > -   return __vmalloc(size, GFP_KERNEL, pgprot_noncached_wc(PAGE_KERNEL));
-> > > -#else
-> > > -   return vmalloc_32(size);
-> > > -#endif
-> > > -}
-> > > -
-> > >  static void drm_sg_cleanup(struct drm_sg_mem * entry)
-> > >  {
-> > >     struct page *page;
-> > > @@ -126,7 +117,7 @@ int drm_legacy_sg_alloc(struct drm_device *dev, void *data,
-> > >             return -ENOMEM;
-> > >     }
-> > >
-> > > -   entry->virtual = drm_vmalloc_dma(pages << PAGE_SHIFT);
-> > > +   entry->virtual = vmalloc_32(pages << PAGE_SHIFT);
-> > >     if (!entry->virtual) {
-> > >             kfree(entry->busaddr);
-> > >             kfree(entry->pagelist);
-> > > --
-> > > 2.25.1
-> > >
-> >
-> >
->
-
-
--- 
-Daniel Vetter
-Software Engineer, Intel Corporation
-+41 (0) 79 365 57 48 - http://blog.ffwll.ch
-_______________________________________________
-iommu mailing list
-iommu@lists.linux-foundation.org
-https://lists.linuxfoundation.org/mailman/listinfo/iommu
+T24gVGh1LCBBcHIgMDksIDIwMjAgYXQgMDU6MDc6MzRQTSArMDgwMCwgWmhhbmdmZWkgR2FvIHdy
+b3RlOgo+IAo+IAo+IE9uIDIwMjAvNC84IOS4i+WNiDEwOjA0LCBKZWFuLVBoaWxpcHBlIEJydWNr
+ZXIgd3JvdGU6Cj4gPiBUaGUgbW1fZXhpdCgpIG9wIHdpbGwgYmUgcmVtb3ZlZCBmcm9tIHRoZSBT
+VkEgQVBJLiBXaGVuIGEgcHJvY2VzcyBkaWVzCj4gPiBhbmQgaXRzIG1tIGdvZXMgYXdheSwgdGhl
+IElPTU1VIGRyaXZlciB3b24ndCBub3RpZnkgZGV2aWNlIGRyaXZlcnMKPiA+IGFueW1vcmUuIERy
+aXZlcnMgc2hvdWxkIGV4cGVjdCB0byBoYW5kbGUgYSBsb3QgbW9yZSBhYm9ydGVkIERNQS4gT24g
+dGhlCj4gPiB1cHNpZGUsIGl0IGRvZXMgZ3JlYXRseSBzaW1wbGlmeSB0aGUgcXVldWUgbWFuYWdl
+bWVudC4KPiA+IAo+ID4gVGhlIHVhY2NlX21tIHN0cnVjdCwgdGhhdCB0cmFja3MgYWxsIHF1ZXVl
+cyBib3VuZCB0byBhbiBtbSwgd2FzIG9ubHkKPiA+IHVzZWQgYnkgdGhlIG1tX2V4aXQoKSBjYWxs
+YmFjay4gUmVtb3ZlIGl0Lgo+ID4gCj4gPiBTaWduZWQtb2ZmLWJ5OiBKZWFuLVBoaWxpcHBlIEJy
+dWNrZXIgPGplYW4tcGhpbGlwcGVAbGluYXJvLm9yZz4KPiBUaGFua3MgSmVhbiBmb3IgZG9pbmcg
+dGhpcy4KPiAKPiBUZXN0ZWQtYnk6IFpoYW5nZmVpIEdhbyA8emhhbmdmZWkuZ2FvQGxpbmFyby5v
+cmc+Cj4gCj4gRXhjZXB0IG9uZSBsaW5lLgo+ID4gLXN0YXRpYyB2b2lkIHVhY2NlX21tX3B1dChz
+dHJ1Y3QgdWFjY2VfcXVldWUgKnEpCj4gPiArc3RhdGljIHZvaWQgdWFjY2VfdW5iaW5kX3F1ZXVl
+KHN0cnVjdCB1YWNjZV9xdWV1ZSAqcSkKPiA+ICAgewo+ID4gLQlzdHJ1Y3QgdWFjY2VfbW0gKnVh
+Y2NlX21tID0gcS0+dWFjY2VfbW07Cj4gPiAtCj4gPiAtCWxvY2tkZXBfYXNzZXJ0X2hlbGQoJnEt
+PnVhY2NlLT5tbV9sb2NrKTsKPiA+IC0KPiA+IC0JbXV0ZXhfbG9jaygmdWFjY2VfbW0tPmxvY2sp
+Owo+ID4gLQlsaXN0X2RlbCgmcS0+bGlzdCk7Cj4gPiAtCW11dGV4X3VubG9jaygmdWFjY2VfbW0t
+PmxvY2spOwo+ID4gLQo+ID4gLQlpZiAobGlzdF9lbXB0eSgmdWFjY2VfbW0tPnF1ZXVlcykpIHsK
+PiA+IC0JCWlmICh1YWNjZV9tbS0+aGFuZGxlKQo+ID4gLQkJCWlvbW11X3N2YV91bmJpbmRfZGV2
+aWNlKHVhY2NlX21tLT5oYW5kbGUpOwo+ID4gLQkJbGlzdF9kZWwoJnVhY2NlX21tLT5saXN0KTsK
+PiA+IC0JCWtmcmVlKHVhY2NlX21tKTsKPiA+IC0JfQo+ID4gKwlpZiAoIXEtPmhhbmRsZSkKPiA+
+ICsJCXJldHVybjsKPiA+ICsJaW9tbXVfc3ZhX3VuYmluZF9kZXZpY2UocS0+aGFuZGxlKTsKPiAr
+IHEtPmhhbmRsZSA9IDA7Cj4gCj4gT3RoZXJ3aXNlIGlvbW11X3N2YV91bmJpbmRfZGV2aWNlIG1h
+eWJlIGNhbGxlZCB0d2ljZS4KPiBTaW5jZSB1YWNjZV91bmJpbmRfcXVldWUgY2FuIGJlIGNhbGxl
+ZCBieSB1YWNjZV9yZW1vdmUgYW5kIHVhY2NlX2ZvcHNfcmVsZWFzZS4KClRoYW5rcywgSSdsbCBh
+ZGQgaXQgaW4gdjIKCkplYW4KX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19f
+X19fX19fX18KaW9tbXUgbWFpbGluZyBsaXN0CmlvbW11QGxpc3RzLmxpbnV4LWZvdW5kYXRpb24u
+b3JnCmh0dHBzOi8vbGlzdHMubGludXhmb3VuZGF0aW9uLm9yZy9tYWlsbWFuL2xpc3RpbmZvL2lv
+bW11
