@@ -1,79 +1,92 @@
-Return-Path: <SRS0=CWSE=5Y=lists.linux-foundation.org=iommu-bounces@kernel.org>
+Return-Path: <SRS0=CVo8=5Z=lists.linux-foundation.org=iommu-bounces@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-2.3 required=3.0 tests=HEADER_FROM_DIFFERENT_DOMAINS,
-	MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS,USER_AGENT_SANE_1 autolearn=no
-	autolearn_force=no version=3.4.0
+X-Spam-Status: No, score=-3.8 required=3.0 tests=HEADER_FROM_DIFFERENT_DOMAINS,
+	INCLUDES_PATCH,MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED
+	autolearn=no autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 5D9E7C2BA2B
-	for <iommu@archiver.kernel.org>; Wed,  8 Apr 2020 23:49:31 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 3E84AC2BA2B
+	for <iommu@archiver.kernel.org>; Thu,  9 Apr 2020 00:16:38 +0000 (UTC)
 Received: from fraxinus.osuosl.org (smtp4.osuosl.org [140.211.166.137])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by mail.kernel.org (Postfix) with ESMTPS id 2452F206C0
-	for <iommu@archiver.kernel.org>; Wed,  8 Apr 2020 23:49:31 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 2452F206C0
+	by mail.kernel.org (Postfix) with ESMTPS id 0ECEE20730
+	for <iommu@archiver.kernel.org>; Thu,  9 Apr 2020 00:16:37 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 0ECEE20730
 Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=intel.com
 Authentication-Results: mail.kernel.org; spf=pass smtp.mailfrom=iommu-bounces@lists.linux-foundation.org
 Received: from localhost (localhost [127.0.0.1])
-	by fraxinus.osuosl.org (Postfix) with ESMTP id E85FE86C35;
-	Wed,  8 Apr 2020 23:49:30 +0000 (UTC)
+	by fraxinus.osuosl.org (Postfix) with ESMTP id DD9348545F;
+	Thu,  9 Apr 2020 00:16:37 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
 Received: from fraxinus.osuosl.org ([127.0.0.1])
 	by localhost (.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
-	with ESMTP id STQAWGMwtwIy; Wed,  8 Apr 2020 23:49:30 +0000 (UTC)
+	with ESMTP id QoGXhaH66zRj; Thu,  9 Apr 2020 00:16:37 +0000 (UTC)
 Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [140.211.9.56])
-	by fraxinus.osuosl.org (Postfix) with ESMTP id 5121686B77;
-	Wed,  8 Apr 2020 23:49:30 +0000 (UTC)
+	by fraxinus.osuosl.org (Postfix) with ESMTP id 092448543E;
+	Thu,  9 Apr 2020 00:16:37 +0000 (UTC)
 Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
-	by lists.linuxfoundation.org (Postfix) with ESMTP id 39BDCC1AE8;
-	Wed,  8 Apr 2020 23:49:30 +0000 (UTC)
-Received: from whitealder.osuosl.org (smtp1.osuosl.org [140.211.166.138])
- by lists.linuxfoundation.org (Postfix) with ESMTP id F3079C0177
- for <iommu@lists.linux-foundation.org>; Wed,  8 Apr 2020 23:49:28 +0000 (UTC)
+	by lists.linuxfoundation.org (Postfix) with ESMTP id DA3B6C1D7E;
+	Thu,  9 Apr 2020 00:16:36 +0000 (UTC)
+Received: from fraxinus.osuosl.org (smtp4.osuosl.org [140.211.166.137])
+ by lists.linuxfoundation.org (Postfix) with ESMTP id 360C4C0177
+ for <iommu@lists.linux-foundation.org>; Thu,  9 Apr 2020 00:16:36 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
- by whitealder.osuosl.org (Postfix) with ESMTP id E17FA88057
- for <iommu@lists.linux-foundation.org>; Wed,  8 Apr 2020 23:49:28 +0000 (UTC)
+ by fraxinus.osuosl.org (Postfix) with ESMTP id 20ADB8544C
+ for <iommu@lists.linux-foundation.org>; Thu,  9 Apr 2020 00:16:36 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from whitealder.osuosl.org ([127.0.0.1])
+Received: from fraxinus.osuosl.org ([127.0.0.1])
  by localhost (.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
- with ESMTP id 4h+-bZeoUjJc for <iommu@lists.linux-foundation.org>;
- Wed,  8 Apr 2020 23:49:28 +0000 (UTC)
+ with ESMTP id ca8Nl6nZl5s4 for <iommu@lists.linux-foundation.org>;
+ Thu,  9 Apr 2020 00:16:35 +0000 (UTC)
 X-Greylist: domain auto-whitelisted by SQLgrey-1.7.6
-Received: from mga18.intel.com (mga18.intel.com [134.134.136.126])
- by whitealder.osuosl.org (Postfix) with ESMTPS id 075ED88051
- for <iommu@lists.linux-foundation.org>; Wed,  8 Apr 2020 23:49:27 +0000 (UTC)
-IronPort-SDR: TT0gDxPedQ7pdHMkdLEdJFQlAQdmcg5TccKXV/Dhs53EU4FwZY9OvHq4CKTph2LoIR4QQJR14y
- wQ/F9LeLWrPw==
+Received: from mga14.intel.com (mga14.intel.com [192.55.52.115])
+ by fraxinus.osuosl.org (Postfix) with ESMTPS id EC0DA8543E
+ for <iommu@lists.linux-foundation.org>; Thu,  9 Apr 2020 00:16:34 +0000 (UTC)
+IronPort-SDR: 7KkvJDMC9PS1NEfVbn4CB1g2dYbsJSzyDAS6j3JN+fG2aXEvHL2Utsg+S4c+pJ0lob4MjyOK08
+ dnFOo9zbCHzg==
 X-Amp-Result: SKIPPED(no attachment in message)
 X-Amp-File-Uploaded: False
-Received: from orsmga002.jf.intel.com ([10.7.209.21])
- by orsmga106.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384;
- 08 Apr 2020 16:49:27 -0700
-IronPort-SDR: f1DBreKqBywE+RdbrQfVEPHrDAn7IP+US7Vh3Uvz7ZHyNsKSxMLXnBAxLF+Y42tuMYJ1FH1Z4C
- y+GttCRDfFfg==
+Received: from fmsmga006.fm.intel.com ([10.253.24.20])
+ by fmsmga103.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384;
+ 08 Apr 2020 17:16:34 -0700
+IronPort-SDR: BdIIXGLp0WX/LrVFgV3mhGDgaForsGLrBpSX5j+9nsec59KXvO8jRoZcY1Ndcq0dzJAc0cACRH
+ liiiHHbKfYiA==
 X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.72,360,1580803200"; d="scan'208";a="269906524"
-Received: from romley-ivt3.sc.intel.com ([172.25.110.60])
- by orsmga002.jf.intel.com with ESMTP; 08 Apr 2020 16:49:27 -0700
-Date: Wed, 8 Apr 2020 16:49:01 -0700
-From: Fenghua Yu <fenghua.yu@intel.com>
-To: Jason Gunthorpe <jgg@ziepe.ca>
-Subject: Re: [PATCH 0/2] iommu: Remove iommu_sva_ops::mm_exit()
-Message-ID: <20200408234901.GA209499@romley-ivt3.sc.intel.com>
-References: <20200408140427.212807-1-jean-philippe@linaro.org>
- <20200408113552.7888bfee@jacob-builder>
- <20200408190226.GA11886@ziepe.ca>
- <20200408143552.57f5837c@jacob-builder>
- <20200408223218.GC11886@ziepe.ca>
+X-IronPort-AV: E=Sophos;i="5.72,360,1580803200"; d="scan'208";a="452988778"
+Received: from orsmsx102.amr.corp.intel.com ([10.22.225.129])
+ by fmsmga006.fm.intel.com with ESMTP; 08 Apr 2020 17:16:34 -0700
+Received: from orsmsx161.amr.corp.intel.com (10.22.240.84) by
+ ORSMSX102.amr.corp.intel.com (10.22.225.129) with Microsoft SMTP Server (TLS)
+ id 14.3.439.0; Wed, 8 Apr 2020 17:16:33 -0700
+Received: from orsmsx101.amr.corp.intel.com ([169.254.8.225]) by
+ ORSMSX161.amr.corp.intel.com ([169.254.4.226]) with mapi id 14.03.0439.000;
+ Wed, 8 Apr 2020 17:16:34 -0700
+From: "Derrick, Jonathan" <jonathan.derrick@intel.com>
+To: "baolu.lu@linux.intel.com" <baolu.lu@linux.intel.com>,
+ "drake@endlessm.com" <drake@endlessm.com>
+Subject: Re: [PATCH v4] iommu/vt-d: consider real PCI device when checking
+ if mapping is needed
+Thread-Topic: [PATCH v4] iommu/vt-d: consider real PCI device when checking
+ if mapping is needed
+Thread-Index: AQHV5tO6P1q7GPBOf0WbPL1Nv6XzmagiZPoAgAGRbgCAAGzJgIBMTL4A
+Date: Thu, 9 Apr 2020 00:16:32 +0000
+Message-ID: <a99ff4f4edc4fd5495c9d6b245a590a256c9261b.camel@intel.com>
+References: <CAD8Lp47Bhv_58-Z+a+JFS9rTZW58_rWvE8N+XVtX7mmB-Tj55A@mail.gmail.com>
+ <20200220100607.9044-1-drake@endlessm.com>
+In-Reply-To: <20200220100607.9044-1-drake@endlessm.com>
+Accept-Language: en-US
+Content-Language: en-US
+X-MS-Has-Attach: 
+X-MS-TNEF-Correlator: 
+x-originating-ip: [10.255.6.119]
+Content-ID: <4DE2C0356C109A4AADA4ED748038DC87@intel.com>
 MIME-Version: 1.0
-Content-Disposition: inline
-In-Reply-To: <20200408223218.GC11886@ziepe.ca>
-User-Agent: Mutt/1.5.23 (2014-03-12)
-Cc: Jean-Philippe Brucker <jean-philippe@linaro.org>, arnd@arndb.de,
- gregkh@linuxfoundation.org, iommu@lists.linux-foundation.org,
- zhangfei.gao@linaro.org, linux-accelerators@lists.ozlabs.org
+Cc: "bhelgaas@google.com" <bhelgaas@google.com>,
+ "dwmw2@infradead.org" <dwmw2@infradead.org>,
+ "iommu@lists.linux-foundation.org" <iommu@lists.linux-foundation.org>,
+ "linux@endlessm.com" <linux@endlessm.com>
 X-BeenThere: iommu@lists.linux-foundation.org
 X-Mailman-Version: 2.1.15
 Precedence: list
@@ -91,77 +104,236 @@ Content-Transfer-Encoding: 7bit
 Errors-To: iommu-bounces@lists.linux-foundation.org
 Sender: "iommu" <iommu-bounces@lists.linux-foundation.org>
 
-On Wed, Apr 08, 2020 at 07:32:18PM -0300, Jason Gunthorpe wrote:
-> On Wed, Apr 08, 2020 at 02:35:52PM -0700, Jacob Pan wrote:
-> > > On Wed, Apr 08, 2020 at 11:35:52AM -0700, Jacob Pan wrote:
-> > > > Hi Jean,
-> > > > 
-> > > > On Wed,  8 Apr 2020 16:04:25 +0200
-> > > > Jean-Philippe Brucker <jean-philippe@linaro.org> wrote:
-> > > >   
-> > > > > The IOMMU SVA API currently requires device drivers to implement
-> > > > > an mm_exit() callback, which stops device jobs that do DMA. This
-> > > > > function is called in the release() MMU notifier, when an address
-> > > > > space that is shared with a device exits.
-> > > > > 
-> > > > > It has been noted several time during discussions about SVA that
-> > > > > cancelling DMA jobs can be slow and complex, and doing it in the
-> > > > > release() notifier might cause synchronization issues (patch 2 has
-> > > > > more background). Device drivers must in any case call unbind() to
-> > > > > remove their bond, after stopping DMA from a more favorable
-> > > > > context (release of a file descriptor).
-> > > > > 
-> > > > > So after mm exits, rather than notifying device drivers, we can
-> > > > > hold on to the PASID until unbind(), ask IOMMU drivers to
-> > > > > silently abort DMA and Page Requests in the meantime. This change
-> > > > > should relieve the mmput() path.  
-> > > >
-> > > > I assume mm is destroyed after all the FDs are closed  
+Hi Daniel,
+
+Reviving this thread
+
+On Thu, 2020-02-20 at 18:06 +0800, Daniel Drake wrote:
+> > On Wed, Feb 19, 2020 at 11:40 AM Lu Baolu <baolu.lu@linux.intel.com> wrote:
+> > > With respect, this is problematical. The parent and all subdevices share
+> > > a single translation entry. The DMA mask should be consistent.
 > > > 
-> > > FDs do not hold a mmget(), but they may hold a mmgrab(), ie anything
-> > > using mmu_notifiers has to hold a grab until the notifier is
-> > > destroyed, which is often triggered by FD close.
-> > > 
-> > Sorry, I don't get this. Are you saying we have to hold a mmgrab()
-> > between svm_bind/mmu_notifier_register and
-> > svm_unbind/mmu_notifier_unregister?
+> > > Otherwise, for example, subdevice A has 64-bit DMA capability and uses
+> > > an identity domain for DMA translation. While subdevice B has 32-bit DMA
+> > > capability and is forced to switch to DMA domain. Subdevice A will be
+> > > impacted without any notification.
 > 
-> Yes. This is done automatically for the caller inside the mmu_notifier
-> implementation. We now even store the mm_struct pointer inside the
-> notifier.
+> Looking closer, this problematic codepath may already be happening for VMD,
+> under intel_iommu_add_device(). Consider this function running for a VMD
+> subdevice, we hit:
 > 
-> Once a notifier is registered the mm_struct remains valid memory until
-> the notifier is unregistered.
+>     domain = iommu_get_domain_for_dev(dev);
 > 
-> > Isn't the idea of mmu_notifier is to avoid holding the mm reference and
-> > rely on the notifier to tell us when mm is going away?
+> I can't quite grasp the code flow here, but domain->type now always seems
+> to return the domain type of the real DMA device, which seems like pretty
+> reasonable behaviour.
 > 
-> The notifier only holds a mmgrab(), not a mmget() - this allows
-> exit_mmap to proceed, but the mm_struct memory remains.
+>     if (domain->type == IOMMU_DOMAIN_DMA) {
 > 
-> This is also probably why it is a bad idea to tie the lifetime of
-> something like a pasid to the mmdrop as a evil user could cause a
-> large number of mm structs to be released but not freed, probably
-> defeating cgroup limits and so forth (not sure)
+> and as detailed in previous mails, the real VMD device seems to be in a DMA
+> domain by default, so we continue.
+> 
+>         if (device_def_domain_type(dev) == IOMMU_DOMAIN_IDENTITY) {
+> 
+> Now we checked the default domain type of the subdevice. This seems rather
+> likely to return IDENTITY because that's effectively the default type...
+> 
+>             ret = iommu_request_dm_for_dev(dev);
+>             if (ret) {
+>                 dmar_remove_one_dev_info(dev);
+>                 dmar_domain->flags |= DOMAIN_FLAG_LOSE_CHILDREN;
+>                 domain_add_dev_info(si_domain, dev);
+>                 dev_info(dev,
+>                      "Device uses a private identity domain.\n");
+>             }
+>         }
+> 
+> and now we're doing the bad stuff that Lu pointed out: we only have one
+> mapping shared for all the subdevices, so if we end up changing it for one
+> subdevice, we're likely to be breaking another.
+> In this case iommu_request_dm_for_dev() returns -EBUSY without doing anything
+> and the following private identity code fortunately seems to have no
+> consequential effects - the real DMA device continues to operate in the DMA
+> domain, and all subdevice DMA requests go through the DMA mapping codepath.
+> That's probably why VMD appears to be working fine anyway, but this seems
+> fragile.
+> 
+> The following changes enforce that the real DMA device is in the DMA domain,
+> and avoid the intel_iommu_add_device() codepaths that would try to change
+> it to a different domain type. Let me know if I'm on the right lines...
+> ---
+>  drivers/iommu/intel-iommu.c               | 16 ++++++++++++++++
+>  drivers/pci/controller/intel-nvme-remap.c |  6 ++++++
+>  2 files changed, 22 insertions(+)
+> 
+> diff --git a/drivers/iommu/intel-iommu.c b/drivers/iommu/intel-iommu.c
+> index 9644a5b3e0ae..8872b8d1780d 100644
+> --- a/drivers/iommu/intel-iommu.c
+> +++ b/drivers/iommu/intel-iommu.c
+> @@ -2911,6 +2911,9 @@ static int device_def_domain_type(struct device *dev)
+>  	if (dev_is_pci(dev)) {
+>  		struct pci_dev *pdev = to_pci_dev(dev);
+>  
+> +		if (pci_real_dma_dev(pdev) != pdev)
+> +			return IOMMU_DOMAIN_DMA;
+> +
+>  		if (device_is_rmrr_locked(dev))
+>  			return IOMMU_DOMAIN_DMA;
+>  
+> @@ -5580,6 +5583,7 @@ static bool intel_iommu_capable(enum iommu_cap cap)
+>  
+>  static int intel_iommu_add_device(struct device *dev)
+>  {
+> +	struct device *real_dev = dev;
+>  	struct dmar_domain *dmar_domain;
+>  	struct iommu_domain *domain;
+>  	struct intel_iommu *iommu;
+> @@ -5591,6 +5595,17 @@ static int intel_iommu_add_device(struct device *dev)
+>  	if (!iommu)
+>  		return -ENODEV;
+>  
+> +	if (dev_is_pci(dev))
+> +		real_dev = &pci_real_dma_dev(to_pci_dev(dev))->dev;
+> +
+> +	if (real_dev != dev) {
+> +		domain = iommu_get_domain_for_dev(real_dev);
+> +		if (domain->type != IOMMU_DOMAIN_DMA) {
+> +			dev_err(dev, "Real DMA device not in DMA domain; can't handle DMA\n");
+> +			return -ENODEV;
+> +		}
+> +	}
+> +
+>  	iommu_device_link(&iommu->iommu, dev);
+>  
+>  	if (translation_pre_enabled(iommu))
+> 
 
-The max number of processes can be limited for a user. PASID is per
-address space so the max number of PASID can be limited for the user.
-So the user cannot exhaust PASID so easily, right?
 
-Intel ENQCMD instruction uses PASID MSR to store the PASID. Each software
-thread can store the PASID in its own MSR/fpu state.
+We need one additional change to enforce IOMMU_DOMAIN_DMA on the real
+dma dev, otherwise it could be put into Identity and the subdevices as
+DMA leading to this WARN:
 
-If free PASID in unbind_mm(), the threads PASID MSRs need to be cleared
-as well: tracking which thread has the MSR set up, searching the threads,
-sending IPIs to the thread to clear the MSR, locking, etc. It's doable but
-complex with low performance.
+struct intel_iommu *domain_get_iommu(struct dmar_domain *domain)
+{
+        int iommu_id;
 
-Binding the PASID to the mm and freeing the PASID in __mmdrop() can get
-ride of the complexity.
+        /* si_domain and vm domain should not get here. */
+        if (WARN_ON(domain->domain.type != IOMMU_DOMAIN_DMA))
+                return NULL;
 
-Thanks.
 
--Fenghua
+We could probably define and enforce it in device_def_domain_type. We
+could also try moving real dma dev to DMA on the first subdevice, like
+below. Though there might be a few cases we can't do that.
+
+
+
+ndex 3851204f6ac0..6c80c6c9d808 100644
+--- a/drivers/iommu/intel-iommu.c
++++ b/drivers/iommu/intel-iommu.c
+@@ -5783,13 +5783,32 @@ static bool intel_iommu_capable(enum iommu_cap cap)
+        return false;
+ }
+ 
++static int intel_iommu_request_dma_domain_for_dev(struct device *dev,
++                                                  struct dmar_domain *domain)
++{
++       int ret;
++
++       ret = iommu_request_dma_domain_for_dev(dev);
++       if (ret) {
++               dmar_remove_one_dev_info(dev);
++               domain->flags |= DOMAIN_FLAG_LOSE_CHILDREN;
++               if (!get_private_domain_for_dev(dev)) {
++                       dev_warn(dev,
++                                "Failed to get a private domain.\n");
++                               return -ENOMEM;
++               }
++       }
++
++       return 0;
++}
++
+ static int intel_iommu_add_device(struct device *dev)
+ {
+-       struct device *real_dev = dev;
+        struct dmar_domain *dmar_domain;
+        struct iommu_domain *domain;
+        struct intel_iommu *iommu;
+        struct iommu_group *group;
++       struct device *real_dev = dev;
+        u8 bus, devfn;
+        int ret;
+ 
+@@ -5797,18 +5816,6 @@ static int intel_iommu_add_device(struct device *dev)
+        if (!iommu)
+                return -ENODEV;
+ 
+-       if (dev_is_pci(dev))
+-               real_dev = &pci_real_dma_dev(to_pci_dev(dev))->dev;
+-
+-       if (real_dev != dev) {
+-               domain = iommu_get_domain_for_dev(real_dev);
+-               if (domain->type != IOMMU_DOMAIN_DMA) {
+-                       dmar_remove_one_dev_info(dev)
+-                       dmar_domain->flags |= DOMAIN_FLAG_LOSE_CHILDREN;
+-                       domain_add_dev_info(IOMMU_DOMAIN_DMA, dev);
+-               }
+-       }
+-
+        iommu_device_link(&iommu->iommu, dev);
+ 
+        if (translation_pre_enabled(iommu))
+@@ -5825,6 +5832,21 @@ static int intel_iommu_add_device(struct device *dev)
+ 
+        domain = iommu_get_domain_for_dev(dev);
+        dmar_domain = to_dmar_domain(domain);
++
++       if (dev_is_pci(dev))
++               real_dev = &pci_real_dma_dev(to_pci_dev(dev))->dev;
++
++       if (real_dev != dev) {
++               domain = iommu_get_domain_for_dev(real_dev);
++               if (domain->type != IOMMU_DOMAIN_DMA) {
++                       dmar_remove_one_dev_info(real_dev);
++
++                       ret = intel_iommu_request_dma_domain_for_dev(real_dev, dmar_domain);
++                       if (ret)
++                               goto unlink;
++               }
++       }
++
+        if (domain->type == IOMMU_DOMAIN_DMA) {
+                if (device_def_domain_type(dev) == IOMMU_DOMAIN_IDENTITY) {
+                        ret = iommu_request_dm_for_dev(dev);
+@@ -5838,20 +5860,12 @@ static int intel_iommu_add_device(struct device *dev)
+                }
+        } else {
+                if (device_def_domain_type(dev) == IOMMU_DOMAIN_DMA) {
+-                       ret = iommu_request_dma_domain_for_dev(dev);
+-                       if (ret) {
+-                               dmar_remove_one_dev_info(dev);
+-                               dmar_domain->flags |= DOMAIN_FLAG_LOSE_CHILDREN;
+-                               if (!get_private_domain_for_dev(dev)) {
+-                                       dev_warn(dev,
+-                                                "Failed to get a private domain.\n");
+-                                       ret = -ENOMEM;
+-                                       goto unlink;
+-                               }
++                       ret = intel_iommu_request_dma_domain_for_dev(dev, dmar_domain);
++                       if (ret)
++                               goto unlink;
+ 
+-                               dev_info(dev,
+-                                        "Device uses a private dma domain.\n");
+-                       }
++                       dev_info(dev,
++                                "Device uses a private dma domain.\n");
+                }
+        }
+ 
+~
+~
 _______________________________________________
 iommu mailing list
 iommu@lists.linux-foundation.org
