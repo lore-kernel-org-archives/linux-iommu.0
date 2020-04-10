@@ -2,80 +2,148 @@ Return-Path: <SRS0=Ithz=52=lists.linux-foundation.org=iommu-bounces@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-8.2 required=3.0 tests=HEADER_FROM_DIFFERENT_DOMAINS,
-	INCLUDES_PATCH,MAILING_LIST_MULTI,SIGNED_OFF_BY,SPF_HELO_NONE,SPF_PASS,
-	URIBL_BLOCKED,USER_AGENT_SANE_2 autolearn=unavailable autolearn_force=no
-	version=3.4.0
+X-Spam-Status: No, score=-3.5 required=3.0 tests=DKIM_INVALID,DKIM_SIGNED,
+	HEADER_FROM_DIFFERENT_DOMAINS,MAILING_LIST_MULTI,SIGNED_OFF_BY,SPF_HELO_NONE,
+	SPF_PASS,URIBL_BLOCKED autolearn=no autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 4292DC2D0EC
-	for <iommu@archiver.kernel.org>; Fri, 10 Apr 2020 21:50:36 +0000 (UTC)
-Received: from hemlock.osuosl.org (smtp2.osuosl.org [140.211.166.133])
+	by smtp.lore.kernel.org (Postfix) with ESMTP id BC71EC2D0EC
+	for <iommu@archiver.kernel.org>; Fri, 10 Apr 2020 23:10:33 +0000 (UTC)
+Received: from whitealder.osuosl.org (smtp1.osuosl.org [140.211.166.138])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by mail.kernel.org (Postfix) with ESMTPS id 10277207FF
-	for <iommu@archiver.kernel.org>; Fri, 10 Apr 2020 21:50:35 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 10277207FF
-Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=linux.intel.com
+	by mail.kernel.org (Postfix) with ESMTPS id 70A8220801
+	for <iommu@archiver.kernel.org>; Fri, 10 Apr 2020 23:10:33 +0000 (UTC)
+Authentication-Results: mail.kernel.org;
+	dkim=fail reason="signature verification failed" (1024-bit key) header.d=microsoft.com header.i=@microsoft.com header.b="Qxl2bm0d"
+DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 70A8220801
+Authentication-Results: mail.kernel.org; dmarc=none (p=none dis=none) header.from=lists.linux-foundation.org
 Authentication-Results: mail.kernel.org; spf=pass smtp.mailfrom=iommu-bounces@lists.linux-foundation.org
 Received: from localhost (localhost [127.0.0.1])
-	by hemlock.osuosl.org (Postfix) with ESMTP id 6D42487D11;
-	Fri, 10 Apr 2020 21:50:35 +0000 (UTC)
+	by whitealder.osuosl.org (Postfix) with ESMTP id 26A29878A1;
+	Fri, 10 Apr 2020 23:10:33 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from hemlock.osuosl.org ([127.0.0.1])
+Received: from whitealder.osuosl.org ([127.0.0.1])
 	by localhost (.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
-	with ESMTP id t5HqFHOvILC1; Fri, 10 Apr 2020 21:50:33 +0000 (UTC)
+	with ESMTP id eIFpDmxDIszm; Fri, 10 Apr 2020 23:10:32 +0000 (UTC)
 Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [140.211.9.56])
-	by hemlock.osuosl.org (Postfix) with ESMTP id 3338887CDA;
-	Fri, 10 Apr 2020 21:50:33 +0000 (UTC)
+	by whitealder.osuosl.org (Postfix) with ESMTP id 3E20287834;
+	Fri, 10 Apr 2020 23:10:32 +0000 (UTC)
 Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
-	by lists.linuxfoundation.org (Postfix) with ESMTP id 1FE01C089F;
-	Fri, 10 Apr 2020 21:50:33 +0000 (UTC)
-Received: from hemlock.osuosl.org (smtp2.osuosl.org [140.211.166.133])
- by lists.linuxfoundation.org (Postfix) with ESMTP id F1ADAC0177
- for <iommu@lists.linux-foundation.org>; Fri, 10 Apr 2020 21:50:31 +0000 (UTC)
+	by lists.linuxfoundation.org (Postfix) with ESMTP id 1BC9CC1D74;
+	Fri, 10 Apr 2020 23:10:32 +0000 (UTC)
+Received: from silver.osuosl.org (smtp3.osuosl.org [140.211.166.136])
+ by lists.linuxfoundation.org (Postfix) with ESMTP id 80CD5C0177
+ for <iommu@lists.linux-foundation.org>; Fri, 10 Apr 2020 23:10:30 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
- by hemlock.osuosl.org (Postfix) with ESMTP id E035587D11
- for <iommu@lists.linux-foundation.org>; Fri, 10 Apr 2020 21:50:31 +0000 (UTC)
+ by silver.osuosl.org (Postfix) with ESMTP id 6F78E204E5
+ for <iommu@lists.linux-foundation.org>; Fri, 10 Apr 2020 23:10:30 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from hemlock.osuosl.org ([127.0.0.1])
+Received: from silver.osuosl.org ([127.0.0.1])
  by localhost (.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
- with ESMTP id H0xBS5faU91J for <iommu@lists.linux-foundation.org>;
- Fri, 10 Apr 2020 21:50:30 +0000 (UTC)
-X-Greylist: domain auto-whitelisted by SQLgrey-1.7.6
-Received: from mga01.intel.com (mga01.intel.com [192.55.52.88])
- by hemlock.osuosl.org (Postfix) with ESMTPS id 9812287C63
- for <iommu@lists.linux-foundation.org>; Fri, 10 Apr 2020 21:50:30 +0000 (UTC)
-IronPort-SDR: acT90ULfWbhAbMq6xFG70WLVpdwfX09y1W9zP9wtnhBni2HK6fxiKsMY8o148l+Q0Cfr+l0R/2
- BI/537rqLG/Q==
-X-Amp-Result: SKIPPED(no attachment in message)
-X-Amp-File-Uploaded: False
-Received: from orsmga006.jf.intel.com ([10.7.209.51])
- by fmsmga101.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384;
- 10 Apr 2020 14:50:29 -0700
-IronPort-SDR: 5VIq3U5HZJU/mz93xVAuYDZXspLYsensQhBi5iAE3/x9rAz9Odp6//CN0rxIAZhEdY+6imvcKF
- r4xd5v1gVBuw==
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.72,368,1580803200"; d="scan'208";a="255591273"
-Received: from jacob-builder.jf.intel.com (HELO jacob-builder) ([10.7.199.155])
- by orsmga006.jf.intel.com with ESMTP; 10 Apr 2020 14:50:29 -0700
-Date: Fri, 10 Apr 2020 14:56:21 -0700
-From: Jacob Pan <jacob.jun.pan@linux.intel.com>
-To: Auger Eric <eric.auger@redhat.com>
-Subject: Re: [PATCH v11 07/10] iommu/vt-d: Add svm/sva invalidate function
-Message-ID: <20200410145621.30242b2d@jacob-builder>
-In-Reply-To: <7867ade8-3e11-30af-b123-7f8ac3722b81@redhat.com>
-References: <1585939334-21396-1-git-send-email-jacob.jun.pan@linux.intel.com>
- <1585939334-21396-8-git-send-email-jacob.jun.pan@linux.intel.com>
- <7867ade8-3e11-30af-b123-7f8ac3722b81@redhat.com>
-Organization: OTC
-X-Mailer: Claws Mail 3.13.2 (GTK+ 2.24.30; x86_64-pc-linux-gnu)
+ with ESMTP id zO9sztXwAVyg for <iommu@lists.linux-foundation.org>;
+ Fri, 10 Apr 2020 23:10:29 +0000 (UTC)
+X-Greylist: delayed 02:15:52 by SQLgrey-1.7.6
+Received: from NAM10-MW2-obe.outbound.protection.outlook.com
+ (mail-mw2nam10on2096.outbound.protection.outlook.com [40.107.94.96])
+ by silver.osuosl.org (Postfix) with ESMTPS id 22891204C1
+ for <iommu@lists.linux-foundation.org>; Fri, 10 Apr 2020 23:10:29 +0000 (UTC)
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=Aw2ZeqTFUqbJByz0S3f+6uLIOSNLHFUDiomjjV8ua+GbcSaK+gCIn4rzEMQblmi5+p27h4GUw4uiopBnOVVX9NF96dKfST1HAj3iwUWIQPocJM11iN5419kd+NJLfqm22mKODVHV9E8h9Xx1bWh98JkLDhMtt2QrEwcaZKXZJQ92vpuV7g4Sf6THY+AU6ClalBZmqoGngult+UE5jVeQCHAIrkAl1PmjRgJF8448LC1xSDbNhlxVCqO/03Zr4K0Jyw2FeE3ALQQoB8xB9538jzVdcEveIiE/vBJFT3x9WasrphlGE0CwSH00gAWtB8cyb3pXbca8HnsVty2/oIl62A==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com; 
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=AxI15cV5ZOZn85Zvvz8N2nkqZ/SNnDxKOx5Qvn0sK2o=;
+ b=A47fAhLmDhyOTdxby1MGYw7lMu+/zehb1fSTvG6tWqxGT0smEbuExsi1JXevWz+15txFJ877FRBDv7HbdzixP7BHla7e626Q7OHVEG4d5Djuzc4NnO4y498+7s10inuqzm+TDrMH/6McVYaecGI7O6fFeiPI/055EMy6QoC6DpLuRvs2hghd0t3lo2+jhFlCQ+TYACq6kgu42PY+ehLpabQzhm4re+3rnJAZz3USl8Ae6yDJO26ytRbOyuhnH1Ogq5jVxGw8UquN/6+Bm6Wjky8pxY5pMpFZAZgPVLUSQRuyoHhCrB6jKFt7XoocAJ2z+82cZkA07w3Y6zPaJkhptA==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=microsoft.com; dmarc=pass action=none
+ header.from=microsoft.com; dkim=pass header.d=microsoft.com; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=selector2;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=AxI15cV5ZOZn85Zvvz8N2nkqZ/SNnDxKOx5Qvn0sK2o=;
+ b=Qxl2bm0d63GzV4vCOvZU6vbiYCA0bwSsF69cDss6OAfBrKUYZ4psysR9PjJR7Inm0DeexkrLFMrLZVpYv9b1zo4484fp9XeXTAbycifTYPqclAPiFdGAo0fCBJfa0QakGSG7iKoJlNjc9BDcyIM/G4VgZGajUOvMUeZ66Xemzck=
+Received: from DM5PR2101MB1047.namprd21.prod.outlook.com (2603:10b6:4:9e::16)
+ by DM5PR2101MB1110.namprd21.prod.outlook.com (2603:10b6:4:a5::39)
+ with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.2921.3; Fri, 10 Apr
+ 2020 20:40:21 +0000
+Received: from DM5PR2101MB1047.namprd21.prod.outlook.com
+ ([fe80::f54c:68f0:35cd:d3a2]) by DM5PR2101MB1047.namprd21.prod.outlook.com
+ ([fe80::f54c:68f0:35cd:d3a2%9]) with mapi id 15.20.2921.009; Fri, 10 Apr 2020
+ 20:40:21 +0000
+To: Christoph Hellwig <hch@lst.de>, Andrew Morton <akpm@linux-foundation.org>, 
+ KY Srinivasan <kys@microsoft.com>, Haiyang Zhang <haiyangz@microsoft.com>, 
+ Stephen Hemminger <sthemmin@microsoft.com>, Wei Liu <wei.liu@kernel.org>, 
+ "x86@kernel.org" <x86@kernel.org>, David Airlie <airlied@linux.ie>, Daniel
+ Vetter <daniel@ffwll.ch>, Laura Abbott <labbott@redhat.com>, Sumit Semwal
+ <sumit.semwal@linaro.org>, Sakari Ailus <sakari.ailus@linux.intel.com>,
+ Minchan Kim <minchan@kernel.org>, Nitin Gupta <ngupta@vflare.org>
+Subject: RE: [PATCH 01/28] x86/hyperv: use vmalloc_exec for the hypercall page
+Thread-Topic: [PATCH 01/28] x86/hyperv: use vmalloc_exec for the hypercall page
+Thread-Index: AQHWDZ0/CoajD68QRkqSIM4FKSNiaKhy1QmA
+Date: Fri, 10 Apr 2020 20:40:21 +0000
+Message-ID: <DM5PR2101MB1047BD681D8EDD0797DD1E28D7DE0@DM5PR2101MB1047.namprd21.prod.outlook.com>
+References: <20200408115926.1467567-1-hch@lst.de>
+ <20200408115926.1467567-2-hch@lst.de>
+In-Reply-To: <20200408115926.1467567-2-hch@lst.de>
+Accept-Language: en-US
+Content-Language: en-US
+X-MS-Has-Attach: 
+X-MS-TNEF-Correlator: 
+msip_labels: MSIP_Label_f42aa342-8706-4288-bd11-ebb85995028c_Enabled=True;
+ MSIP_Label_f42aa342-8706-4288-bd11-ebb85995028c_SiteId=72f988bf-86f1-41af-91ab-2d7cd011db47;
+ MSIP_Label_f42aa342-8706-4288-bd11-ebb85995028c_Owner=mikelley@ntdev.microsoft.com;
+ MSIP_Label_f42aa342-8706-4288-bd11-ebb85995028c_SetDate=2020-04-10T20:40:19.1960251Z;
+ MSIP_Label_f42aa342-8706-4288-bd11-ebb85995028c_Name=General;
+ MSIP_Label_f42aa342-8706-4288-bd11-ebb85995028c_Application=Microsoft Azure
+ Information Protection;
+ MSIP_Label_f42aa342-8706-4288-bd11-ebb85995028c_ActionId=1dcf4db3-748e-409d-8f7c-447fe27e9023;
+ MSIP_Label_f42aa342-8706-4288-bd11-ebb85995028c_Extended_MSFT_Method=Automatic
+authentication-results: spf=none (sender IP is )
+ smtp.mailfrom=mikelley@microsoft.com; 
+x-originating-ip: [24.22.167.197]
+x-ms-publictraffictype: Email
+x-ms-office365-filtering-ht: Tenant
+x-ms-office365-filtering-correlation-id: bd91a062-1bf1-46bf-b911-08d7dd8f638d
+x-ms-traffictypediagnostic: DM5PR2101MB1110:|DM5PR2101MB1110:
+x-ms-exchange-transport-forked: True
+x-microsoft-antispam-prvs: <DM5PR2101MB1110D1A5D643D6374EEBE4D0D7DE0@DM5PR2101MB1110.namprd21.prod.outlook.com>
+x-ms-oob-tlc-oobclassifiers: OLM:1107;
+x-forefront-prvs: 0369E8196C
+x-forefront-antispam-report: CIP:255.255.255.255; CTRY:; LANG:en; SCL:1; SRV:;
+ IPV:NLI; SFV:NSPM; H:DM5PR2101MB1047.namprd21.prod.outlook.com; PTR:; CAT:NONE;
+ SFTY:;
+ SFS:(10019020)(4636009)(346002)(366004)(376002)(396003)(136003)(39860400002)(8676002)(86362001)(8936002)(66476007)(8990500004)(7696005)(66946007)(71200400001)(81156014)(66446008)(54906003)(66556008)(64756008)(10290500003)(478600001)(7416002)(110136005)(316002)(76116006)(6506007)(33656002)(4326008)(82950400001)(55016002)(52536014)(4744005)(186003)(2906002)(82960400001)(26005)(9686003)(5660300002)(921003)(1121003);
+ DIR:OUT; SFP:1102; 
+received-spf: None (protection.outlook.com: microsoft.com does not designate
+ permitted sender hosts)
+x-ms-exchange-senderadcheck: 1
+x-microsoft-antispam: BCL:0;
+x-microsoft-antispam-message-info: iPk50ujolCJd83GkVU8Q/GdEQxRbFm+HhFS2g3hzlQ3M61EOAzDmsYU7m+RWnkrXocM+HsEjPf9is5nPPFthji73D5Xp5Ed8eQyiIjms6PXaV8hi6LIA+PzuVCxyv0tzM2KSRI8J/0UN2ef2n21k5qp4IcuX/HwC7OLLVaioSzeDh2RPdp+6oVJPuNY1Itb9/b3+mtyFMXAv6vWk/8b0hzT6pxcQhjBond3LPQ762DrMG18Jqi1HfvEDKIUSjdDN6PxLmZy3+sgwx39EITjhSVpIS/Sdm7KqyU64jRGCJYS9XNxNNM8hm9BXfXXtPuJCxfN586xwrihjuR3wrgaZWMcKYjExOmUdG3E8n/zlNCcJDhmejfnWkIjNBnlGtLQI64Ihd+nbMzFuwtQW8BVNHqk2VN6FvWOW6pxiEn8+pQrlDp0oZSfGe81Lm40U0WueJkDGmRR7yiZtordaiODqu0t0ONDJn8+LsWdmzwJjkYfoH2/geWTzCwsOicrdobNi
+x-ms-exchange-antispam-messagedata: +tXqJ9SngzkET2ajAkgQpDK07e5qYoklVTvFxbVst2EBqO3DkVFzhGNkyeSOIorrnaoTQMUGzbAGKw+XKL0lj/sUP5klkB6enTMgGsrq59DD/x3W6slha3C2qb10maI+10LsOHRcRWru3TrPfIlLUg==
 MIME-Version: 1.0
-Cc: "Tian, Kevin" <kevin.tian@intel.com>,
- Alex Williamson <alex.williamson@redhat.com>, Raj Ashok <ashok.raj@intel.com>,
- David Woodhouse <dwmw2@infradead.org>, LKML <linux-kernel@vger.kernel.org>,
- iommu@lists.linux-foundation.org,
- Jean-Philippe Brucker <jean-philippe@linaro.com>,
- Jonathan Cameron <jic23@kernel.org>
+X-OriginatorOrg: microsoft.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: bd91a062-1bf1-46bf-b911-08d7dd8f638d
+X-MS-Exchange-CrossTenant-originalarrivaltime: 10 Apr 2020 20:40:21.4349 (UTC)
+X-MS-Exchange-CrossTenant-fromentityheader: Hosted
+X-MS-Exchange-CrossTenant-id: 72f988bf-86f1-41af-91ab-2d7cd011db47
+X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
+X-MS-Exchange-CrossTenant-userprincipalname: ZRCiv8Z7T3QM9EeSCGX8Y25Y1aZn3ejXpj1RdpMAAnRt2CHN5wCBdH+ON5JKRobDX7dRyxf/GdrzMHDy/MBMaoDe+dfn0eOaWJekJQejI5s=
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: DM5PR2101MB1110
+Cc: Christophe Leroy <christophe.leroy@c-s.fr>,
+ "linux-arch@vger.kernel.org" <linux-arch@vger.kernel.org>,
+ "linux-hyperv@vger.kernel.org" <linux-hyperv@vger.kernel.org>,
+ "linux-s390@vger.kernel.org" <linux-s390@vger.kernel.org>,
+ Peter Zijlstra <peterz@infradead.org>,
+ "linuxppc-dev@lists.ozlabs.org" <linuxppc-dev@lists.ozlabs.org>,
+ "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
+ "dri-devel@lists.freedesktop.org" <dri-devel@lists.freedesktop.org>,
+ "linaro-mm-sig@lists.linaro.org" <linaro-mm-sig@lists.linaro.org>,
+ "linux-mm@kvack.org" <linux-mm@kvack.org>,
+ "iommu@lists.linux-foundation.org" <iommu@lists.linux-foundation.org>,
+ "bpf@vger.kernel.org" <bpf@vger.kernel.org>,
+ Robin Murphy <robin.murphy@arm.com>,
+ "linux-arm-kernel@lists.infradead.org" <linux-arm-kernel@lists.infradead.org>
 X-BeenThere: iommu@lists.linux-foundation.org
 X-Mailman-Version: 2.1.15
 Precedence: list
@@ -88,297 +156,26 @@ List-Post: <mailto:iommu@lists.linux-foundation.org>
 List-Help: <mailto:iommu-request@lists.linux-foundation.org?subject=help>
 List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
  <mailto:iommu-request@lists.linux-foundation.org?subject=subscribe>
+From: Michael Kelley via iommu <iommu@lists.linux-foundation.org>
+Reply-To: Michael Kelley <mikelley@microsoft.com>
 Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
 Errors-To: iommu-bounces@lists.linux-foundation.org
 Sender: "iommu" <iommu-bounces@lists.linux-foundation.org>
 
-On Thu, 9 Apr 2020 10:50:34 +0200
-Auger Eric <eric.auger@redhat.com> wrote:
-
-> Hi Jacob,
+From: Christoph Hellwig <hch@lst.de> Sent: Wednesday, April 8, 2020 4:59 AM
 > 
-> On 4/3/20 8:42 PM, Jacob Pan wrote:
-> > When Shared Virtual Address (SVA) is enabled for a guest OS via
-> > vIOMMU, we need to provide invalidation support at IOMMU API and
-> > driver level. This patch adds Intel VT-d specific function to
-> > implement iommu passdown invalidate API for shared virtual address.
-> > 
-> > The use case is for supporting caching structure invalidation
-> > of assigned SVM capable devices. Emulated IOMMU exposes queue
-> > invalidation capability and passes down all descriptors from the
-> > guest to the physical IOMMU.
-> > 
-> > The assumption is that guest to host device ID mapping should be
-> > resolved prior to calling IOMMU driver. Based on the device handle,
-> > host IOMMU driver can replace certain fields before submit to the
-> > invalidation queue.
-> > 
-> > ---
-> > v11 - Removed 2D map array, use -EINVAL in granularity lookup array.
-> >       Fixed devTLB invalidation granularity mapping. Disregard G=1
-> > case and use address selective invalidation only.
-> > 
-> > v7 review fixed in v10
-> > ---
-> > 
-> > Signed-off-by: Jacob Pan <jacob.jun.pan@linux.intel.com>
-> > Signed-off-by: Ashok Raj <ashok.raj@intel.com>
-> > Signed-off-by: Liu, Yi L <yi.l.liu@intel.com>
-> > ---
-> >  drivers/iommu/intel-iommu.c | 158
-> > ++++++++++++++++++++++++++++++++++++++++++++ 1 file changed, 158
-> > insertions(+)
-> > 
-> > diff --git a/drivers/iommu/intel-iommu.c
-> > b/drivers/iommu/intel-iommu.c index 94c7993dac6a..045c5c08d71d
-> > 100644 --- a/drivers/iommu/intel-iommu.c
-> > +++ b/drivers/iommu/intel-iommu.c
-> > @@ -5594,6 +5594,163 @@ static void
-> > intel_iommu_aux_detach_device(struct iommu_domain *domain,
-> > aux_domain_remove_dev(to_dmar_domain(domain), dev); }
-> >  
-> > +/*
-> > + * 2D array for converting and sanitizing IOMMU generic TLB
-> > granularity to
-> > + * VT-d granularity. Invalidation is typically included in the
-> > unmap operation
-> > + * as a result of DMA or VFIO unmap. However, for assigned devices
-> > guest
-> > + * owns the first level page tables. Invalidations of translation
-> > caches in the
-> > + * guest are trapped and passed down to the host.
-> > + *
-> > + * vIOMMU in the guest will only expose first level page tables,
-> > therefore
-> > + * we do not support IOTLB granularity for request without PASID
-> > (second level).
-> > + *
-> > + * For example, to find the VT-d granularity encoding for IOTLB
-> > + * type and page selective granularity within PASID:
-> > + * X: indexed by iommu cache type
-> > + * Y: indexed by enum iommu_inv_granularity
-> > + * [IOMMU_CACHE_INV_TYPE_IOTLB][IOMMU_INV_GRANU_ADDR]
-> > + */
-> > +
-> > +const static int
-> > inv_type_granu_table[IOMMU_CACHE_INV_TYPE_NR][IOMMU_INV_GRANU_NR] =
-> > {
-> > +	/*
-> > +	 * PASID based IOTLB invalidation: PASID selective (per
-> > PASID),
-> > +	 * page selective (address granularity)
-> > +	 */
-> > +	{-EINVAL, QI_GRAN_NONG_PASID, QI_GRAN_PSI_PASID},
-> > +	/* PASID based dev TLBs */
-> > +	{-EINVAL, -EINVAL, QI_DEV_IOTLB_GRAN_PASID_SEL},
-> > +	/* PASID cache */
-> > +	{-EINVAL, -EINVAL, -EINVAL}
-> > +};
-> > +
-> > +static inline int to_vtd_granularity(int type, int granu)
-> > +{
-> > +	return inv_type_granu_table[type][granu];
-> > +}
-> > +
-> > +static inline u64 to_vtd_size(u64 granu_size, u64 nr_granules)
-> > +{
-> > +	u64 nr_pages = (granu_size * nr_granules) >>
-> > VTD_PAGE_SHIFT; +
-> > +	/* VT-d size is encoded as 2^size of 4K pages, 0 for 4k, 9
-> > for 2MB, etc.
-> > +	 * IOMMU cache invalidate API passes granu_size in bytes,
-> > and number of
-> > +	 * granu size in contiguous memory.
-> > +	 */
-> > +	return order_base_2(nr_pages);
-> > +}
-> > +
-> > +#ifdef CONFIG_INTEL_IOMMU_SVM
-> > +static int intel_iommu_sva_invalidate(struct iommu_domain *domain,
-> > +		struct device *dev, struct
-> > iommu_cache_invalidate_info *inv_info) +{
-> > +	struct dmar_domain *dmar_domain = to_dmar_domain(domain);
-> > +	struct device_domain_info *info;
-> > +	struct intel_iommu *iommu;
-> > +	unsigned long flags;
-> > +	int cache_type;
-> > +	u8 bus, devfn;
-> > +	u16 did, sid;
-> > +	int ret = 0;
-> > +	u64 size = 0;
-> > +
-> > +	if (!inv_info || !dmar_domain ||
-> > +		inv_info->version !=
-> > IOMMU_CACHE_INVALIDATE_INFO_VERSION_1)
-> > +		return -EINVAL;
-> > +
-> > +	if (!dev || !dev_is_pci(dev))
-> > +		return -ENODEV;  
+> Use the designated helper for allocating executable kernel memory, and
+> remove the now unused PAGE_KERNEL_RX define.
 > 
-> Check (domain->flags & DOMAIN_FLAG_NESTING_MODE)?
-Good point
-
-> > +
-> > +	iommu = device_to_iommu(dev, &bus, &devfn);
-> > +	if (!iommu)
-> > +		return -ENODEV;
-> > +
-> > +	spin_lock_irqsave(&device_domain_lock, flags);
-> > +	spin_lock(&iommu->lock);
-> > +	info = iommu_support_dev_iotlb(dmar_domain, iommu, bus,
-> > devfn);
-> > +	if (!info) {
-> > +		ret = -EINVAL;
-> > +		goto out_unlock;
-> > +	}
-> > +	did = dmar_domain->iommu_did[iommu->seq_id];
-> > +	sid = PCI_DEVID(bus, devfn);
-> > +
-> > +	/* Size is only valid in non-PASID selective invalidation
-> > */
-> > +	if (inv_info->granularity != IOMMU_INV_GRANU_PASID)
-> > +		size =
-> > to_vtd_size(inv_info->addr_info.granule_size,
-> > +
-> > inv_info->addr_info.nb_granules); +
-> > +	for_each_set_bit(cache_type, (unsigned long
-> > *)&inv_info->cache, IOMMU_CACHE_INV_TYPE_NR) {
-> > +		int granu = 0;
-> > +		u64 pasid = 0;
-> > +
-> > +		granu = to_vtd_granularity(cache_type,
-> > inv_info->granularity);
-> > +		if (granu == -EINVAL) {
-> > +			pr_err("Invalid cache type and granu
-> > combination %d/%d\n", cache_type,
-> > +				inv_info->granularity);  
-> rate unlimited traces here and after.
-> ret = -EINVAL?
-> also related to the discussion we had on the VFIO series. What is the
-> error policy?
-Invalidation should not fail, there is no way to tell the guest. this
-can be a void function or VFIO can ignore it similar to what is done to
-iommu_unmap.
-
-
-> > +			break;
-> > +		}
-> > +
-> > +		/* PASID is stored in different locations based on
-> > granularity */  
-> not sure the above comment really is requested
-Just to explain the situation where PASID can be in pasid_info or
-addr_info.
-
-> > +		if (inv_info->granularity == IOMMU_INV_GRANU_PASID
-> > &&
-> > +			inv_info->pasid_info.flags &
-> > IOMMU_INV_PASID_FLAGS_PASID)
-> > +			pasid = inv_info->pasid_info.pasid;
-> > +		else if (inv_info->granularity ==
-> > IOMMU_INV_GRANU_ADDR &&
-> > +			inv_info->addr_info.flags &
-> > IOMMU_INV_ADDR_FLAGS_PASID)
-> > +			pasid = inv_info->addr_info.pasid;
-> > +
-> > +		switch (BIT(cache_type)) {
-> > +		case IOMMU_CACHE_INV_TYPE_IOTLB:
-> > +			if ((inv_info->granularity ==
-> > IOMMU_INV_GRANU_ADDR) &&
-> > +				size && (inv_info->addr_info.addr
-> > & ((BIT(VTD_PAGE_SHIFT + size)) - 1))) {
-> > +				pr_err("Address out of range,
-> > 0x%llx, size order %llu\n",
-> > +					inv_info->addr_info.addr,
-> > size);
-> > +				ret = -ERANGE;
-> > +				goto out_unlock;
-> > +			}
-> > +
-> > +			qi_flush_piotlb(iommu, did,
-> > +					pasid,
-> > +
-> > mm_to_dma_pfn(inv_info->addr_info.addr),  
-> This does not sound correct to me:
-> inv_info->addr_info.addr and inv_info->addr_info.flags are not valid
-> in case of PASID-selective invalidation
-If granu is PASID-selective, this address is ignored. Since npages = -1.
-
-> > +					(granu ==
-> > QI_GRAN_NONG_PASID) ? -1 : 1 << size,
-> > +					inv_info->addr_info.flags
-> > & IOMMU_INV_ADDR_FLAGS_LEAF); +
-> > +			/*
-> > +			 * Always flush device IOTLB if ATS is
-> > enabled. vIOMMU
-> > +			 * in the guest may assume IOTLB flush is
-> > inclusive,
-> > +			 * which is more efficient.
-> > +			 */
-> > +			if (info->ats_enabled)
-> > +				qi_flush_dev_iotlb_pasid(iommu,
-> > sid, info->pfsid,
-> > +						pasid,
-> > info->ats_qdep,
-> > +
-> > inv_info->addr_info.addr, size,  
-> same
-> > +						granu);
-> > +			break;
-> > +		case IOMMU_CACHE_INV_TYPE_DEV_IOTLB:
-> > +			if (info->ats_enabled)
-> > +				qi_flush_dev_iotlb_pasid(iommu,
-> > sid, info->pfsid,
-> > +
-> > inv_info->addr_info.pasid, info->ats_qdep,  
-> nit: use pasid directly
-will do.
-
-> > +
-> > inv_info->addr_info.addr, size,
-> > +						granu);
-> > +			else
-> > +				pr_warn("Passdown device IOTLB
-> > flush w/o ATS!\n");
-> > +			break;
-> > +		case IOMMU_CACHE_INV_TYPE_PASID:
-> > +			qi_flush_pasid_cache(iommu, did, granu,
-> > inv_info->pasid_info.pasid);
-> > +			break;
-> > +		default:
-> > +			dev_err(dev, "Unsupported IOMMU
-> > invalidation type %d\n",
-> > +				cache_type);
-> > +			ret = -EINVAL;
-> > +		}
-> > +	}
-> > +out_unlock:
-> > +	spin_unlock(&iommu->lock);
-> > +	spin_unlock_irqrestore(&device_domain_lock, flags);
-> > +
-> > +	return ret;
-> > +}
-> > +#endif
-> > +
-> >  static int intel_iommu_map(struct iommu_domain *domain,
-> >  			   unsigned long iova, phys_addr_t hpa,
-> >  			   size_t size, int iommu_prot, gfp_t gfp)
-> > @@ -6179,6 +6336,7 @@ const struct iommu_ops intel_iommu_ops = {
-> >  	.is_attach_deferred	=
-> > intel_iommu_is_attach_deferred, .pgsize_bitmap		=
-> > INTEL_IOMMU_PGSIZES, #ifdef CONFIG_INTEL_IOMMU_SVM
-> > +	.cache_invalidate	= intel_iommu_sva_invalidate,
-> >  	.sva_bind_gpasid	= intel_svm_bind_gpasid,
-> >  	.sva_unbind_gpasid	= intel_svm_unbind_gpasid,
-> >  #endif
-> >   
-> Thanks
-> 
-> Eric
+> Signed-off-by: Christoph Hellwig <hch@lst.de>
+> ---
+>  arch/x86/hyperv/hv_init.c            | 2 +-
+>  arch/x86/include/asm/pgtable_types.h | 2 --
+>  2 files changed, 1 insertion(+), 3 deletions(-)
 > 
 
-[Jacob Pan]
+Reviewed-by: Michael Kelley <mikelley@microsoft.com>
 _______________________________________________
 iommu mailing list
 iommu@lists.linux-foundation.org
