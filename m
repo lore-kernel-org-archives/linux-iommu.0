@@ -2,75 +2,91 @@ Return-Path: <SRS0=UjaL=53=lists.linux-foundation.org=iommu-bounces@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-10.6 required=3.0 tests=DKIM_INVALID,DKIM_SIGNED,
-	HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_PULL_REQUEST,MAILING_LIST_MULTI,
-	MENTIONS_GIT_HOSTING,SPF_HELO_NONE,SPF_PASS autolearn=ham autolearn_force=no
-	version=3.4.0
+X-Spam-Status: No, score=-0.6 required=3.0 tests=DKIM_INVALID,DKIM_SIGNED,
+	HEADER_FROM_DIFFERENT_DOMAINS,MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS
+	autolearn=no autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 64FD0C2BA2B
-	for <iommu@archiver.kernel.org>; Sat, 11 Apr 2020 08:28:07 +0000 (UTC)
-Received: from fraxinus.osuosl.org (smtp4.osuosl.org [140.211.166.137])
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 550AEC2BA2B
+	for <iommu@archiver.kernel.org>; Sat, 11 Apr 2020 09:20:46 +0000 (UTC)
+Received: from silver.osuosl.org (smtp3.osuosl.org [140.211.166.136])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by mail.kernel.org (Postfix) with ESMTPS id 115132078E
-	for <iommu@archiver.kernel.org>; Sat, 11 Apr 2020 08:28:06 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTPS id 1AC2D20857
+	for <iommu@archiver.kernel.org>; Sat, 11 Apr 2020 09:20:46 +0000 (UTC)
 Authentication-Results: mail.kernel.org;
-	dkim=fail reason="signature verification failed" (2048-bit key) header.d=infradead.org header.i=@infradead.org header.b="SNfkwFxF"
-DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 115132078E
-Authentication-Results: mail.kernel.org; dmarc=none (p=none dis=none) header.from=infradead.org
+	dkim=fail reason="signature verification failed" (1024-bit key) header.d=mg.codeaurora.org header.i=@mg.codeaurora.org header.b="pqQVn2dU"
+DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 1AC2D20857
+Authentication-Results: mail.kernel.org; dmarc=none (p=none dis=none) header.from=codeaurora.org
 Authentication-Results: mail.kernel.org; spf=pass smtp.mailfrom=iommu-bounces@lists.linux-foundation.org
 Received: from localhost (localhost [127.0.0.1])
-	by fraxinus.osuosl.org (Postfix) with ESMTP id D278785F7E;
-	Sat, 11 Apr 2020 08:28:06 +0000 (UTC)
+	by silver.osuosl.org (Postfix) with ESMTP id DDE6622763;
+	Sat, 11 Apr 2020 09:20:45 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from fraxinus.osuosl.org ([127.0.0.1])
+Received: from silver.osuosl.org ([127.0.0.1])
 	by localhost (.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
-	with ESMTP id nZzth2xT3u-W; Sat, 11 Apr 2020 08:28:05 +0000 (UTC)
+	with ESMTP id zURoCVu5TYkH; Sat, 11 Apr 2020 09:20:45 +0000 (UTC)
 Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [140.211.9.56])
-	by fraxinus.osuosl.org (Postfix) with ESMTP id B68D585F68;
-	Sat, 11 Apr 2020 08:28:05 +0000 (UTC)
+	by silver.osuosl.org (Postfix) with ESMTP id 33BA6226D7;
+	Sat, 11 Apr 2020 09:20:45 +0000 (UTC)
 Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
-	by lists.linuxfoundation.org (Postfix) with ESMTP id 9EF2BC1831;
-	Sat, 11 Apr 2020 08:28:05 +0000 (UTC)
-Received: from fraxinus.osuosl.org (smtp4.osuosl.org [140.211.166.137])
- by lists.linuxfoundation.org (Postfix) with ESMTP id AAC6FC0177
- for <iommu@lists.linux-foundation.org>; Sat, 11 Apr 2020 08:28:04 +0000 (UTC)
+	by lists.linuxfoundation.org (Postfix) with ESMTP id 0BB37C1D74;
+	Sat, 11 Apr 2020 09:20:45 +0000 (UTC)
+Received: from silver.osuosl.org (smtp3.osuosl.org [140.211.166.136])
+ by lists.linuxfoundation.org (Postfix) with ESMTP id 8B3D2C0177
+ for <iommu@lists.linux-foundation.org>; Sat, 11 Apr 2020 09:20:43 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
- by fraxinus.osuosl.org (Postfix) with ESMTP id 94E9685F72
- for <iommu@lists.linux-foundation.org>; Sat, 11 Apr 2020 08:28:04 +0000 (UTC)
+ by silver.osuosl.org (Postfix) with ESMTP id 618A122763
+ for <iommu@lists.linux-foundation.org>; Sat, 11 Apr 2020 09:20:43 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from fraxinus.osuosl.org ([127.0.0.1])
+Received: from silver.osuosl.org ([127.0.0.1])
  by localhost (.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
- with ESMTP id 4TVMLcYyQGpz for <iommu@lists.linux-foundation.org>;
- Sat, 11 Apr 2020 08:28:03 +0000 (UTC)
+ with ESMTP id 624KNvNcDKuy for <iommu@lists.linux-foundation.org>;
+ Sat, 11 Apr 2020 09:20:42 +0000 (UTC)
 X-Greylist: from auto-whitelisted by SQLgrey-1.7.6
-Received: from bombadil.infradead.org (bombadil.infradead.org
- [198.137.202.133])
- by fraxinus.osuosl.org (Postfix) with ESMTPS id 696A485F68
- for <iommu@lists.linux-foundation.org>; Sat, 11 Apr 2020 08:28:03 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
- d=infradead.org; s=bombadil.20170209; h=Content-Type:MIME-Version:Message-ID:
- Subject:Cc:To:From:Date:Sender:Reply-To:Content-Transfer-Encoding:Content-ID:
- Content-Description:In-Reply-To:References;
- bh=KfuGWUe+2Mm9mM6Tq6DQzvlxZlTVJLQ8Twm6DUylGx0=; b=SNfkwFxFTzvmT9W6Vu4e3A3hT2
- bTlFmVVNjr1HLot9N1LHO/aY0mV5b1s+LHhNHfhIBf09UW9QQcHaK4ZqUzSchx+lThpnTAA+2kju+
- SIgkS85jYu802NOc6Cb9oq/FNbHzjY6JZUxKLtZX92zG4Z7W4hQBFDyLEYiF0tmqpf8KeJfEPpphG
- /oyFF0r35c9F+RMiHB5CORzlap4qGWYN+3jbNKhO/uU6rFQ+AVlU4QW8UkT2Muv+EEeLJIbNx5aGL
- 5FME3ZaDTwgpXMMUsRBiXF+myUU006aZDscpsINyoDYqdHGHNFdb+4X20r8I8boyuzYXuv8DbpH3z
- eBlWitcQ==;
-Received: from [2001:4bb8:180:5765:8cdf:b820:7ed9:b80c] (helo=localhost)
- by bombadil.infradead.org with esmtpsa (Exim 4.92.3 #3 (Red Hat Linux))
- id 1jNBUf-0002nz-VN; Sat, 11 Apr 2020 08:28:02 +0000
-Date: Sat, 11 Apr 2020 10:28:00 +0200
-From: Christoph Hellwig <hch@infradead.org>
-To: Linus Torvalds <torvalds@linux-foundation.org>
-Subject: [GIT PULL] dma-mapping fixes for 5.7
-Message-ID: <20200411082800.GA1807013@infradead.org>
+Received: from mail27.static.mailgun.info (mail27.static.mailgun.info
+ [104.130.122.27])
+ by silver.osuosl.org (Postfix) with ESMTPS id BEBED226D7
+ for <iommu@lists.linux-foundation.org>; Sat, 11 Apr 2020 09:20:38 +0000 (UTC)
+DKIM-Signature: a=rsa-sha256; v=1; c=relaxed/relaxed; d=mg.codeaurora.org;
+ q=dns/txt; 
+ s=smtp; t=1586596842; h=Message-ID: References: In-Reply-To: Subject:
+ Cc: To: From: Date: Content-Transfer-Encoding: Content-Type:
+ MIME-Version: Sender; bh=m64rlGIY/ze74hM+6TJxI24Fs9sSBQEMm8EnQhf5+Gs=;
+ b=pqQVn2dUvba7tUcCvjBAf7pjQf8/06fSH3Z3jxbv7zxIVwGEevChe93V+9JGVr8siBlGPMti
+ Z6FckJiviKuUQu3f9Ln7DHreI0t4G2LI88EoYufnUGj/e8coVvIUwoWAB4JCcFbp8uHV/a5F
+ PgeEWB9IdjO7WmdwBW2j7Yywjyo=
+X-Mailgun-Sending-Ip: 104.130.122.27
+X-Mailgun-Sid: WyI3NDkwMCIsICJpb21tdUBsaXN0cy5saW51eC1mb3VuZGF0aW9uLm9yZyIsICJiZTllNGEiXQ==
+Received: from smtp.codeaurora.org
+ (ec2-35-166-182-171.us-west-2.compute.amazonaws.com [35.166.182.171])
+ by mxa.mailgun.org with ESMTP id 5e918bce.7f4598998688-smtp-out-n02;
+ Sat, 11 Apr 2020 09:20:14 -0000 (UTC)
+Received: by smtp.codeaurora.org (Postfix, from userid 1001)
+ id A7084C4478C; Sat, 11 Apr 2020 09:20:13 +0000 (UTC)
+Received: from mail.codeaurora.org (localhost.localdomain [127.0.0.1])
+ (using TLSv1 with cipher ECDHE-RSA-AES256-SHA (256/256 bits))
+ (No client certificate requested)
+ (Authenticated sender: saiprakash.ranjan)
+ by smtp.codeaurora.org (Postfix) with ESMTPSA id 01845C433CB;
+ Sat, 11 Apr 2020 09:20:12 +0000 (UTC)
 MIME-Version: 1.0
-Content-Disposition: inline
-X-SRS-Rewrite: SMTP reverse-path rewritten from <hch@infradead.org> by
- bombadil.infradead.org. See http://www.infradead.org/rpr.html
-Cc: iommu@lists.linux-foundation.org, linux-kernel@vger.kernel.org
+Date: Sat, 11 Apr 2020 14:50:12 +0530
+From: Sai Prakash Ranjan <saiprakash.ranjan@codeaurora.org>
+To: Matthias Kaehlcke <mka@chromium.org>, Will Deacon <will@kernel.org>,
+ Robin Murphy <robin.murphy@arm.com>
+Subject: Re: [PATCH 0/2] iommu/arm-smmu: Allow client devices to select direct
+ mapping
+In-Reply-To: <20200409233124.GW199755@google.com>
+References: <cover.1579692800.git.saiprakash.ranjan@codeaurora.org>
+ <7761534cdb4f1891d993e73931894a63@codeaurora.org>
+ <20200409233124.GW199755@google.com>
+Message-ID: <6714ba4f73f6518e5f2f427a0bcc6c53@codeaurora.org>
+X-Sender: saiprakash.ranjan@codeaurora.org
+User-Agent: Roundcube Webmail/1.3.9
+Cc: Rajendra Nayak <rnayak@codeaurora.org>, linux-arm-msm@vger.kernel.org,
+ iommu@lists.linux-foundation.org, linux-kernel@vger.kernel.org,
+ Bjorn Andersson <bjorn.andersson@linaro.org>,
+ Stephen Boyd <swboyd@chromium.org>, linux-arm-kernel@lists.infradead.org
 X-BeenThere: iommu@lists.linux-foundation.org
 X-Mailman-Version: 2.1.15
 Precedence: list
@@ -83,40 +99,54 @@ List-Post: <mailto:iommu@lists.linux-foundation.org>
 List-Help: <mailto:iommu-request@lists.linux-foundation.org?subject=help>
 List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
  <mailto:iommu-request@lists.linux-foundation.org?subject=subscribe>
-Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset="us-ascii"; Format="flowed"
 Errors-To: iommu-bounces@lists.linux-foundation.org
 Sender: "iommu" <iommu-bounces@lists.linux-foundation.org>
 
-The following changes since commit f5e94d10e4c468357019e5c28d48499f677b284f:
+Hi Matthias,
 
-  Merge tag 'drm-next-2020-04-08' of git://anongit.freedesktop.org/drm/drm (2020-04-07 20:24:34 -0700)
+On 2020-04-10 05:01, Matthias Kaehlcke wrote:
+> On Tue, Feb 04, 2020 at 11:12:17PM +0530, Sai Prakash Ranjan wrote:
+>> Hello Robin, Will
+>> 
+>> On 2020-01-22 17:18, Sai Prakash Ranjan wrote:
+>> > This series allows drm devices to set a default identity
+>> > mapping using iommu_request_dm_for_dev(). First patch is
+>> > a cleanup to support other SoCs to call into QCOM specific
+>> > implementation and preparation for second patch.
+>> > Second patch sets the default identity domain for drm devices.
+>> >
+>> > Jordan Crouse (1):
+>> >   iommu/arm-smmu: Allow client devices to select direct mapping
+>> >
+>> > Sai Prakash Ranjan (1):
+>> >   iommu: arm-smmu-impl: Convert to a generic reset implementation
+>> >
+>> >  drivers/iommu/arm-smmu-impl.c |  8 +++--
+>> >  drivers/iommu/arm-smmu-qcom.c | 55 +++++++++++++++++++++++++++++++++--
+>> >  drivers/iommu/arm-smmu.c      |  3 ++
+>> >  drivers/iommu/arm-smmu.h      |  5 ++++
+>> >  4 files changed, 65 insertions(+), 6 deletions(-)
+>> 
+>> Any review comments?
+> 
+> Ping
+> 
+> What is the status of this series, is it ready to land or are any 
+> changes
+> needed?
+> 
 
-are available in the Git repository at:
+I am wondering the same :)
 
-  git://git.infradead.org/users/hch/dma-mapping.git tags/dma-mapping-5.7-1
+Thanks,
+Sai
 
-for you to fetch changes up to 9bb50ed7470944238ec8e30a94ef096caf9056ee:
-
-  dma-debug: fix displaying of dma allocation type (2020-04-08 21:46:57 +0200)
-
-----------------------------------------------------------------
-dma-mapping fixes for 5.7
-
- - fix an integer truncation in dma_direct_get_required_mask
-   (Kishon Vijay Abraham)
- - fix the display of dma mapping types (Grygorii Strashko)
-
-----------------------------------------------------------------
-Grygorii Strashko (1):
-      dma-debug: fix displaying of dma allocation type
-
-Kishon Vijay Abraham I (1):
-      dma-direct: fix data truncation in dma_direct_get_required_mask()
-
- kernel/dma/debug.c  | 9 ++++++---
- kernel/dma/direct.c | 3 ++-
- 2 files changed, 8 insertions(+), 4 deletions(-)
+-- 
+QUALCOMM INDIA, on behalf of Qualcomm Innovation Center, Inc. is a 
+member
+of Code Aurora Forum, hosted by The Linux Foundation
 _______________________________________________
 iommu mailing list
 iommu@lists.linux-foundation.org
