@@ -1,149 +1,98 @@
-Return-Path: <SRS0=Ithz=52=lists.linux-foundation.org=iommu-bounces@kernel.org>
+Return-Path: <SRS0=UjaL=53=lists.linux-foundation.org=iommu-bounces@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-3.5 required=3.0 tests=DKIM_INVALID,DKIM_SIGNED,
-	HEADER_FROM_DIFFERENT_DOMAINS,MAILING_LIST_MULTI,SIGNED_OFF_BY,SPF_HELO_NONE,
-	SPF_PASS,URIBL_BLOCKED autolearn=no autolearn_force=no version=3.4.0
+X-Spam-Status: No, score=-0.7 required=3.0 tests=HEADER_FROM_DIFFERENT_DOMAINS,
+	MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED autolearn=no
+	autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id C319EC2D0EC
-	for <iommu@archiver.kernel.org>; Fri, 10 Apr 2020 23:13:09 +0000 (UTC)
-Received: from fraxinus.osuosl.org (smtp4.osuosl.org [140.211.166.137])
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 97C0CC2BBC7
+	for <iommu@archiver.kernel.org>; Sat, 11 Apr 2020 05:52:38 +0000 (UTC)
+Received: from whitealder.osuosl.org (smtp1.osuosl.org [140.211.166.138])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by mail.kernel.org (Postfix) with ESMTPS id 85CA920801
-	for <iommu@archiver.kernel.org>; Fri, 10 Apr 2020 23:13:09 +0000 (UTC)
-Authentication-Results: mail.kernel.org;
-	dkim=fail reason="signature verification failed" (1024-bit key) header.d=microsoft.com header.i=@microsoft.com header.b="HIwwiQfC"
-DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 85CA920801
-Authentication-Results: mail.kernel.org; dmarc=none (p=none dis=none) header.from=lists.linux-foundation.org
+	by mail.kernel.org (Postfix) with ESMTPS id 6243A20936
+	for <iommu@archiver.kernel.org>; Sat, 11 Apr 2020 05:52:38 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 6243A20936
+Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=intel.com
 Authentication-Results: mail.kernel.org; spf=pass smtp.mailfrom=iommu-bounces@lists.linux-foundation.org
 Received: from localhost (localhost [127.0.0.1])
-	by fraxinus.osuosl.org (Postfix) with ESMTP id 5B96586C69;
-	Fri, 10 Apr 2020 23:13:09 +0000 (UTC)
+	by whitealder.osuosl.org (Postfix) with ESMTP id 3568786917;
+	Sat, 11 Apr 2020 05:52:38 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from fraxinus.osuosl.org ([127.0.0.1])
+Received: from whitealder.osuosl.org ([127.0.0.1])
 	by localhost (.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
-	with ESMTP id czYI10SEBaoT; Fri, 10 Apr 2020 23:13:08 +0000 (UTC)
+	with ESMTP id a6qJsTuEAyUC; Sat, 11 Apr 2020 05:52:36 +0000 (UTC)
 Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [140.211.9.56])
-	by fraxinus.osuosl.org (Postfix) with ESMTP id E738A86B92;
-	Fri, 10 Apr 2020 23:13:08 +0000 (UTC)
+	by whitealder.osuosl.org (Postfix) with ESMTP id 81D5C868E5;
+	Sat, 11 Apr 2020 05:52:36 +0000 (UTC)
 Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
-	by lists.linuxfoundation.org (Postfix) with ESMTP id CEA6CC1D74;
-	Fri, 10 Apr 2020 23:13:08 +0000 (UTC)
-Received: from fraxinus.osuosl.org (smtp4.osuosl.org [140.211.166.137])
- by lists.linuxfoundation.org (Postfix) with ESMTP id 15BAEC0177
- for <iommu@lists.linux-foundation.org>; Fri, 10 Apr 2020 23:13:08 +0000 (UTC)
+	by lists.linuxfoundation.org (Postfix) with ESMTP id 65161C1831;
+	Sat, 11 Apr 2020 05:52:36 +0000 (UTC)
+Received: from silver.osuosl.org (smtp3.osuosl.org [140.211.166.136])
+ by lists.linuxfoundation.org (Postfix) with ESMTP id 65AF8C0177
+ for <iommu@lists.linux-foundation.org>; Sat, 11 Apr 2020 05:52:35 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
- by fraxinus.osuosl.org (Postfix) with ESMTP id 036B286C73
- for <iommu@lists.linux-foundation.org>; Fri, 10 Apr 2020 23:13:08 +0000 (UTC)
+ by silver.osuosl.org (Postfix) with ESMTP id 32C2020499
+ for <iommu@lists.linux-foundation.org>; Sat, 11 Apr 2020 05:52:35 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from fraxinus.osuosl.org ([127.0.0.1])
+Received: from silver.osuosl.org ([127.0.0.1])
  by localhost (.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
- with ESMTP id 7VltLmvdDd2P for <iommu@lists.linux-foundation.org>;
- Fri, 10 Apr 2020 23:13:06 +0000 (UTC)
-X-Greylist: from auto-whitelisted by SQLgrey-1.7.6
-Received: from NAM10-MW2-obe.outbound.protection.outlook.com
- (mail-mw2nam10on2125.outbound.protection.outlook.com [40.107.94.125])
- by fraxinus.osuosl.org (Postfix) with ESMTPS id AFA3386C69
- for <iommu@lists.linux-foundation.org>; Fri, 10 Apr 2020 23:13:06 +0000 (UTC)
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=kaSjwy52vvLHIdWZtF+hFsylnh+qxrspqh0IwLAIitq9VP+NGfoOrhn1ar5VK8S1smSEyW565ysFwNIt5jwmFL6hzpRLe4nIchjiVAbpf4nVdkaVKYY+eRfyOPi5HHeR20iQayViVbEcU8sf6DOdZDg0Yn7vh1fWoPqE2vialpisrKAoMAcdi3NUSoO/0CUvjz6RG4gdBkhBESJH3g3UevXBytf4+2OYxWskSYDMx0C52TIQ/UQ5IKw4d0ygOACIoKu6z5OrOAt1N7umkuMVhMJnq5C783W5JWYLEIo7wdmgYYzAEH0lFFA4MniyeSqnLz8A6pLcRSnwRy6vHY/qcQ==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com; 
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=HoToauhBYeB3BuJLG+DYNXlchkH32OndZ8w44wnlo3k=;
- b=ALXXbU1PrXLLn0AlTjp+RyQBOeDbH29ZkkLS9SOP35StSLMC2Uev3P9pPriLU3lgSdujmaFl60sAlNr5xezzKzDD/Kbd3Gldu8KWimxNEeQ+oXvTjMuLh+zBN7HZgxpu4VB7SsWypTcYpGE4gRZK/QvfkrIjYMLrlf+jL4wi/B2SiJVXNyOyIMvY/WEiCuLdddZ6XTUeKdicEJT+BOEA9umJmyn+1Y7XZU14s3JToRm0auRp3lvLHlDwEX5emFdOqz4UmPDI/YPMtM7nkqv6yTph3cVJWiwn/3wqRBruRxfvhEo+hUlShjuKLQ00y/kGY3zVPdMXNABN25hU7yHPXA==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=microsoft.com; dmarc=pass action=none
- header.from=microsoft.com; dkim=pass header.d=microsoft.com; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=selector2;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=HoToauhBYeB3BuJLG+DYNXlchkH32OndZ8w44wnlo3k=;
- b=HIwwiQfCsMTuKpMCttUu9DBlkiPnoaXTWYPJ0UqwemwR+8BZYXh7AqXqMmPrm+iPpoTC9H9PPaj90l1fh3r9yaSdRi/05cWWj7Ac4f/qG7UWDGiQLAZcCA/Bwrsd4El68Pw2Vx6sTlSHr4KuZmi01uc5DBmyiqGNpzF8PTJL3TY=
-Received: from DM5PR2101MB1047.namprd21.prod.outlook.com (2603:10b6:4:9e::16)
- by DM5PR2101MB1110.namprd21.prod.outlook.com (2603:10b6:4:a5::39)
- with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.2921.3; Fri, 10 Apr
- 2020 20:39:23 +0000
-Received: from DM5PR2101MB1047.namprd21.prod.outlook.com
- ([fe80::f54c:68f0:35cd:d3a2]) by DM5PR2101MB1047.namprd21.prod.outlook.com
- ([fe80::f54c:68f0:35cd:d3a2%9]) with mapi id 15.20.2921.009; Fri, 10 Apr 2020
- 20:39:23 +0000
-To: Christoph Hellwig <hch@lst.de>, Andrew Morton <akpm@linux-foundation.org>, 
- KY Srinivasan <kys@microsoft.com>, Haiyang Zhang <haiyangz@microsoft.com>, 
- Stephen Hemminger <sthemmin@microsoft.com>, Wei Liu <wei.liu@kernel.org>, 
- "x86@kernel.org" <x86@kernel.org>, David Airlie <airlied@linux.ie>, Daniel
- Vetter <daniel@ffwll.ch>, Laura Abbott <labbott@redhat.com>, Sumit Semwal
- <sumit.semwal@linaro.org>, Sakari Ailus <sakari.ailus@linux.intel.com>,
- Minchan Kim <minchan@kernel.org>, Nitin Gupta <ngupta@vflare.org>
-Subject: RE: [PATCH 20/28] mm: remove the pgprot argument to __vmalloc
-Thread-Topic: [PATCH 20/28] mm: remove the pgprot argument to __vmalloc
-Thread-Index: AQHWDZ16T10FJHa5qkmQBiTBI7lC0ahy1JXA
-Date: Fri, 10 Apr 2020 20:39:22 +0000
-Message-ID: <DM5PR2101MB10472EA3373D4D1A73AC0F7ED7DE0@DM5PR2101MB1047.namprd21.prod.outlook.com>
-References: <20200408115926.1467567-1-hch@lst.de>
- <20200408115926.1467567-21-hch@lst.de>
-In-Reply-To: <20200408115926.1467567-21-hch@lst.de>
+ with ESMTP id 3pCmB6vizCKp for <iommu@lists.linux-foundation.org>;
+ Sat, 11 Apr 2020 05:52:34 +0000 (UTC)
+X-Greylist: domain auto-whitelisted by SQLgrey-1.7.6
+Received: from mga01.intel.com (mga01.intel.com [192.55.52.88])
+ by silver.osuosl.org (Postfix) with ESMTPS id F26B82045A
+ for <iommu@lists.linux-foundation.org>; Sat, 11 Apr 2020 05:52:33 +0000 (UTC)
+IronPort-SDR: QxF0HYuwCT0dH83ScwPUDNxZpGrRZqrxa5JdxV+aMTJsf2aLXINpv2s89B2W7fSDQU5RcuKVjk
+ ubYLDxMU6qRg==
+X-Amp-Result: SKIPPED(no attachment in message)
+X-Amp-File-Uploaded: False
+Received: from fmsmga002.fm.intel.com ([10.253.24.26])
+ by fmsmga101.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384;
+ 10 Apr 2020 22:52:33 -0700
+IronPort-SDR: D9S4NmhTY9He0vCHWlIIHDwfxarPdFygWdKBlgYxYMAyjMca3hoZdN6fUp+96mF+lgTf32YNKh
+ C3aiBL+vOCkQ==
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="5.72,368,1580803200"; d="scan'208";a="287382593"
+Received: from fmsmsx103.amr.corp.intel.com ([10.18.124.201])
+ by fmsmga002.fm.intel.com with ESMTP; 10 Apr 2020 22:52:33 -0700
+Received: from fmsmsx115.amr.corp.intel.com (10.18.116.19) by
+ FMSMSX103.amr.corp.intel.com (10.18.124.201) with Microsoft SMTP Server (TLS)
+ id 14.3.439.0; Fri, 10 Apr 2020 22:52:33 -0700
+Received: from shsmsx101.ccr.corp.intel.com (10.239.4.153) by
+ fmsmsx115.amr.corp.intel.com (10.18.116.19) with Microsoft SMTP Server (TLS)
+ id 14.3.439.0; Fri, 10 Apr 2020 22:52:32 -0700
+Received: from shsmsx104.ccr.corp.intel.com ([169.254.5.225]) by
+ SHSMSX101.ccr.corp.intel.com ([169.254.1.129]) with mapi id 14.03.0439.000;
+ Sat, 11 Apr 2020 13:52:23 +0800
+From: "Liu, Yi L" <yi.l.liu@intel.com>
+To: Alex Williamson <alex.williamson@redhat.com>
+Subject: RE: [PATCH v1 6/8] vfio/type1: Bind guest page tables to host
+Thread-Topic: [PATCH v1 6/8] vfio/type1: Bind guest page tables to host
+Thread-Index: AQHWAEUdkW8K+/kg/06c7098DvJyv6hlyxcAgA2TZEA=
+Date: Sat, 11 Apr 2020 05:52:22 +0000
+Message-ID: <A2975661238FB949B60364EF0F2C25743A22AD8E@SHSMSX104.ccr.corp.intel.com>
+References: <1584880325-10561-1-git-send-email-yi.l.liu@intel.com>
+ <1584880325-10561-7-git-send-email-yi.l.liu@intel.com>
+ <20200402135700.0da30021@w520.home>
+In-Reply-To: <20200402135700.0da30021@w520.home>
 Accept-Language: en-US
 Content-Language: en-US
 X-MS-Has-Attach: 
 X-MS-TNEF-Correlator: 
-msip_labels: MSIP_Label_f42aa342-8706-4288-bd11-ebb85995028c_Enabled=True;
- MSIP_Label_f42aa342-8706-4288-bd11-ebb85995028c_SiteId=72f988bf-86f1-41af-91ab-2d7cd011db47;
- MSIP_Label_f42aa342-8706-4288-bd11-ebb85995028c_Owner=mikelley@ntdev.microsoft.com;
- MSIP_Label_f42aa342-8706-4288-bd11-ebb85995028c_SetDate=2020-04-10T20:39:20.2356348Z;
- MSIP_Label_f42aa342-8706-4288-bd11-ebb85995028c_Name=General;
- MSIP_Label_f42aa342-8706-4288-bd11-ebb85995028c_Application=Microsoft Azure
- Information Protection;
- MSIP_Label_f42aa342-8706-4288-bd11-ebb85995028c_ActionId=4bc76ec5-07a6-47b3-a0ad-cdf0dc769870;
- MSIP_Label_f42aa342-8706-4288-bd11-ebb85995028c_Extended_MSFT_Method=Automatic
-authentication-results: spf=none (sender IP is )
- smtp.mailfrom=mikelley@microsoft.com; 
-x-originating-ip: [24.22.167.197]
-x-ms-publictraffictype: Email
-x-ms-office365-filtering-ht: Tenant
-x-ms-office365-filtering-correlation-id: 8eebaa48-c873-4038-513f-08d7dd8f40ce
-x-ms-traffictypediagnostic: DM5PR2101MB1110:|DM5PR2101MB1110:
-x-ms-exchange-transport-forked: True
-x-microsoft-antispam-prvs: <DM5PR2101MB1110D9F93961892981A81C5DD7DE0@DM5PR2101MB1110.namprd21.prod.outlook.com>
-x-ms-oob-tlc-oobclassifiers: OLM:49;
-x-forefront-prvs: 0369E8196C
-x-forefront-antispam-report: CIP:255.255.255.255; CTRY:; LANG:en; SCL:1; SRV:;
- IPV:NLI; SFV:NSPM; H:DM5PR2101MB1047.namprd21.prod.outlook.com; PTR:; CAT:NONE;
- SFTY:;
- SFS:(10019020)(4636009)(346002)(366004)(376002)(396003)(136003)(39860400002)(8676002)(86362001)(8936002)(66476007)(8990500004)(7696005)(66946007)(71200400001)(81156014)(66446008)(54906003)(66556008)(64756008)(10290500003)(478600001)(7416002)(110136005)(316002)(76116006)(6506007)(33656002)(4326008)(82950400001)(55016002)(52536014)(186003)(2906002)(82960400001)(26005)(9686003)(5660300002)(921003)(1121003);
- DIR:OUT; SFP:1102; 
-received-spf: None (protection.outlook.com: microsoft.com does not designate
- permitted sender hosts)
-x-ms-exchange-senderadcheck: 1
-x-microsoft-antispam: BCL:0;
-x-microsoft-antispam-message-info: qrCPnCPp+Ms5eFpNc+uE3nriH+Pey6ezal8zhmYSgPIUJQ3etmXUWaLwfwplCD+Ux/za0JBzwO098D2FgfKB7OpojK71QED/2EYd/2QY08KeyW//+zmo2A6ZW9EV+Qq3KewIMzdu+PRiGb2fZoCjq+CW/K/yvDS3VU3bOYfwNJet0mBCwR+ECLPq9FNgCL1ybGOQHScrvY6Ep8ARIdFbZasDCgcVF2gAnUV3MJHCCYoXO9s0rDjI2NwMOJXyG1DFhm6bDrxTDzZvvHJLhXhCAS4MZN4QtTVk6mD3/hATg6fIXaecU4z5+FFOGbxcZmM0qiy278572y1fShhglMgCim9ycKMfYRgC64e3LHeD7LYxph0S9BfhRoG+zJSstSOLRo15Ngk6K18XqfHHI83Nnr1nCnkwlKdy3K5mLiliuyiCaaAQ+XAnJGzNTteVh7sM3BGZJ9L9k6EuAD2hkOzfZtSDvOJKy3HdjG3bAbk9+do9LdtDlzVTQkWchiaDd6vS
-x-ms-exchange-antispam-messagedata: 2zSQnUGFQyGSIZyjV8zmFy4O0+N9T8YeqzYzFx5WSukNTCQkoNBdAVfLX6BSX+ChCAvD4gGVSkvg6HGIrg+8M3Y/WQ0AVssORU89AKIUaSSrWJbhBv0/2Yh6a0UKriNrywdokZvMloASZYaVIcrTSQ==
+dlp-product: dlpe-windows
+dlp-version: 11.2.0.6
+dlp-reaction: no-action
+x-originating-ip: [10.239.127.40]
 MIME-Version: 1.0
-X-OriginatorOrg: microsoft.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: 8eebaa48-c873-4038-513f-08d7dd8f40ce
-X-MS-Exchange-CrossTenant-originalarrivaltime: 10 Apr 2020 20:39:22.6433 (UTC)
-X-MS-Exchange-CrossTenant-fromentityheader: Hosted
-X-MS-Exchange-CrossTenant-id: 72f988bf-86f1-41af-91ab-2d7cd011db47
-X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
-X-MS-Exchange-CrossTenant-userprincipalname: j0ryeNHVOwrByWoWAqYAZVYhAQZ8fx3teihoxzqpnRd3QTOGMyhID9lRwDcFDF8ZYmG1gLPBZUUxrUv7DYY8mpAbqaqvz8dUSTLPn3WUfNg=
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: DM5PR2101MB1110
-Cc: Christophe Leroy <christophe.leroy@c-s.fr>,
- "linux-arch@vger.kernel.org" <linux-arch@vger.kernel.org>,
- "linux-hyperv@vger.kernel.org" <linux-hyperv@vger.kernel.org>,
- "linux-s390@vger.kernel.org" <linux-s390@vger.kernel.org>,
- Peter Zijlstra <peterz@infradead.org>,
- "linuxppc-dev@lists.ozlabs.org" <linuxppc-dev@lists.ozlabs.org>,
- "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
- "dri-devel@lists.freedesktop.org" <dri-devel@lists.freedesktop.org>,
- "linaro-mm-sig@lists.linaro.org" <linaro-mm-sig@lists.linaro.org>,
- "linux-mm@kvack.org" <linux-mm@kvack.org>,
+Cc: "jean-philippe@linaro.org" <jean-philippe@linaro.org>, "Tian,
+ Kevin" <kevin.tian@intel.com>, "Raj, 
+ Ashok" <ashok.raj@intel.com>, "kvm@vger.kernel.org" <kvm@vger.kernel.org>,
+ "Tian, Jun J" <jun.j.tian@intel.com>,
  "iommu@lists.linux-foundation.org" <iommu@lists.linux-foundation.org>,
- "bpf@vger.kernel.org" <bpf@vger.kernel.org>,
- Robin Murphy <robin.murphy@arm.com>,
- "linux-arm-kernel@lists.infradead.org" <linux-arm-kernel@lists.infradead.org>
+ "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>, "Sun, Yi
+ Y" <yi.y.sun@intel.com>, "Wu, Hao" <hao.wu@intel.com>
 X-BeenThere: iommu@lists.linux-foundation.org
 X-Mailman-Version: 2.1.15
 Precedence: list
@@ -156,55 +105,119 @@ List-Post: <mailto:iommu@lists.linux-foundation.org>
 List-Help: <mailto:iommu-request@lists.linux-foundation.org?subject=help>
 List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
  <mailto:iommu-request@lists.linux-foundation.org?subject=subscribe>
-From: Michael Kelley via iommu <iommu@lists.linux-foundation.org>
-Reply-To: Michael Kelley <mikelley@microsoft.com>
 Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
 Errors-To: iommu-bounces@lists.linux-foundation.org
 Sender: "iommu" <iommu-bounces@lists.linux-foundation.org>
 
-From: Christoph Hellwig <hch@lst.de> Sent: Wednesday, April 8, 2020 4:59 AM
-> 
-> The pgprot argument to __vmalloc is always PROT_KERNEL now, so remove
-> it.
-> 
-> Signed-off-by: Christoph Hellwig <hch@lst.de>
-> ---
->  arch/x86/hyperv/hv_init.c              |  3 +--
->  arch/x86/include/asm/kvm_host.h        |  3 +--
->  arch/x86/kvm/svm.c                     |  3 +--
->  drivers/block/drbd/drbd_bitmap.c       |  4 +---
->  drivers/gpu/drm/etnaviv/etnaviv_dump.c |  4 ++--
->  drivers/lightnvm/pblk-init.c           |  5 ++---
->  drivers/md/dm-bufio.c                  |  4 ++--
->  drivers/mtd/ubi/io.c                   |  4 ++--
->  drivers/scsi/sd_zbc.c                  |  3 +--
->  fs/gfs2/dir.c                          |  9 ++++-----
->  fs/gfs2/quota.c                        |  2 +-
->  fs/nfs/blocklayout/extent_tree.c       |  2 +-
->  fs/ntfs/malloc.h                       |  2 +-
->  fs/ubifs/debug.c                       |  2 +-
->  fs/ubifs/lprops.c                      |  2 +-
->  fs/ubifs/lpt_commit.c                  |  4 ++--
->  fs/ubifs/orphan.c                      |  2 +-
->  fs/xfs/kmem.c                          |  2 +-
->  include/linux/vmalloc.h                |  2 +-
->  kernel/bpf/core.c                      |  6 +++---
->  kernel/groups.c                        |  2 +-
->  kernel/module.c                        |  3 +--
->  mm/nommu.c                             | 15 +++++++--------
->  mm/page_alloc.c                        |  2 +-
->  mm/percpu.c                            |  2 +-
->  mm/vmalloc.c                           |  4 ++--
->  net/bridge/netfilter/ebtables.c        |  6 ++----
->  sound/core/memalloc.c                  |  2 +-
->  sound/core/pcm_memory.c                |  2 +-
->  29 files changed, 47 insertions(+), 59 deletions(-)
-> 
+Hi Alex,
 
-For Hyper-V changes,
+> From: Alex Williamson <alex.williamson@redhat.com>
+> Sent: Friday, April 3, 2020 3:57 AM
+> To: Liu, Yi L <yi.l.liu@intel.com>
+> Subject: Re: [PATCH v1 6/8] vfio/type1: Bind guest page tables to host
+> 
+> On Sun, 22 Mar 2020 05:32:03 -0700
+> "Liu, Yi L" <yi.l.liu@intel.com> wrote:
+> 
+> > From: Liu Yi L <yi.l.liu@intel.com>
+> >
+> > VFIO_TYPE1_NESTING_IOMMU is an IOMMU type which is backed by
+[...]
+> > +/**
+> > + * Unbind specific gpasid, caller of this function requires hold
+> > + * vfio_iommu->lock
+> > + */
+> > +static long vfio_iommu_type1_do_guest_unbind(struct vfio_iommu *iommu,
+> > +				struct iommu_gpasid_bind_data *gbind_data)
+> > +{
+> > +	return vfio_iommu_for_each_dev(iommu,
+> > +				vfio_unbind_gpasid_fn, gbind_data);
+> > +}
+> > +
+> > +static long vfio_iommu_type1_bind_gpasid(struct vfio_iommu *iommu,
+> > +				struct iommu_gpasid_bind_data *gbind_data)
+> > +{
+> > +	int ret = 0;
+> > +
+> > +	mutex_lock(&iommu->lock);
+> > +	if (!IS_IOMMU_CAP_DOMAIN_IN_CONTAINER(iommu)) {
+> > +		ret = -EINVAL;
+> > +		goto out_unlock;
+> > +	}
+> > +
+> > +	ret = vfio_iommu_for_each_dev(iommu,
+> > +			vfio_bind_gpasid_fn, gbind_data);
+> > +	/*
+> > +	 * If bind failed, it may not be a total failure. Some devices
+> > +	 * within the iommu group may have bind successfully. Although
+> > +	 * we don't enable pasid capability for non-singletion iommu
+> > +	 * groups, a unbind operation would be helpful to ensure no
+> > +	 * partial binding for an iommu group.
+> 
+> Where was the non-singleton group restriction done, I missed that.
+> 
+> > +	 */
+> > +	if (ret)
+> > +		/*
+> > +		 * Undo all binds that already succeeded, no need to
+> > +		 * check the return value here since some device within
+> > +		 * the group has no successful bind when coming to this
+> > +		 * place switch.
+> > +		 */
+> > +		vfio_iommu_type1_do_guest_unbind(iommu, gbind_data);
+> 
+> However, the for_each_dev function stops when the callback function
+> returns error, are we just assuming we stop at the same device as we
+> faulted on the first time and that we traverse the same set of devices
+> the second time?  It seems strange to me that unbind should be able to
+> fail.
 
-Reviewed-by: Michael Kelley <mikelley@microsoft.com>
+I think the code needs enhancement. Although one group per container
+and one device per group is the most typical and desired case, but
+the code here loops domains, groups, devices. It should be able to
+unwind prior bind when the loop failed for a device. So I plan to do
+below change for bind path.
+
+list_for_each_entry(domain, &iommu->domain_list, next) {
+	list_for_each_entry(group, &domain->group_list, next) {
+		/*
+		  * if bind failed on a certain device, should unbind prior successful
+		  * bind iommu_group_for_each_dev() should be modified to take two
+		  * callbacks, one for forward loop and one for reverse loop when failure
+		  * happened. "return_upon_failure" indicates whether return upon failure
+		  * during forward loop or not. If yes, iommu_group_for_each_dev() should
+		  * unwind the prior bind in this iommu group before return.
+		  */
+		ret = iommu_group_for_each_dev(iommu_group, bind_gpasid_fn,
+					unbind_gpasid_fn, data, return_upon_failure);
+		if (ret)
+			break;
+	}
+	if (ret) {
+		/* unwind bindings with prior groups */
+		list_for_each_entry_continue_reverse(group,
+							&domain->group_list, next) {
+			iommu_group_for_each_dev(iommu_group, unbind_gpasid_fn,
+						NULL, data, ignore_intermediate_failure);
+		}
+		break;
+	}
+}
+
+if (ret) {
+	/* unwind bindings with prior domains */
+	list_for_each_entry_continue_reverse(domain, &iommu->domain_list, next) {
+		iommu_group_for_each_dev(iommu_group, unbind_gpasid_fn,
+						NULL, data, ignore_intermediate_failure);
+		}
+	}
+}
+
+return ret;
+
+Regards,
+Yi Liu
 _______________________________________________
 iommu mailing list
 iommu@lists.linux-foundation.org
