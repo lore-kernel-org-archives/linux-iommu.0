@@ -2,88 +2,100 @@ Return-Path: <SRS0=l6pd=55=lists.linux-foundation.org=iommu-bounces@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-0.8 required=3.0 tests=HEADER_FROM_DIFFERENT_DOMAINS,
-	MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS autolearn=no autolearn_force=no
-	version=3.4.0
+X-Spam-Status: No, score=-0.6 required=3.0 tests=DKIM_INVALID,DKIM_SIGNED,
+	HEADER_FROM_DIFFERENT_DOMAINS,MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS
+	autolearn=no autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 36719C2BA19
-	for <iommu@archiver.kernel.org>; Mon, 13 Apr 2020 16:08:32 +0000 (UTC)
-Received: from fraxinus.osuosl.org (smtp4.osuosl.org [140.211.166.137])
+	by smtp.lore.kernel.org (Postfix) with ESMTP id BE0D2C2BB1D
+	for <iommu@archiver.kernel.org>; Mon, 13 Apr 2020 19:10:19 +0000 (UTC)
+Received: from silver.osuosl.org (smtp3.osuosl.org [140.211.166.136])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by mail.kernel.org (Postfix) with ESMTPS id 16BB42063A
-	for <iommu@archiver.kernel.org>; Mon, 13 Apr 2020 16:08:31 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 16BB42063A
-Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=intel.com
+	by mail.kernel.org (Postfix) with ESMTPS id 8A1AF20732
+	for <iommu@archiver.kernel.org>; Mon, 13 Apr 2020 19:10:19 +0000 (UTC)
+Authentication-Results: mail.kernel.org;
+	dkim=fail reason="signature verification failed" (1024-bit key) header.d=redhat.com header.i=@redhat.com header.b="LWIU3ZFc"
+DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 8A1AF20732
+Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=redhat.com
 Authentication-Results: mail.kernel.org; spf=pass smtp.mailfrom=iommu-bounces@lists.linux-foundation.org
 Received: from localhost (localhost [127.0.0.1])
-	by fraxinus.osuosl.org (Postfix) with ESMTP id D789A84BB6;
-	Mon, 13 Apr 2020 16:08:31 +0000 (UTC)
+	by silver.osuosl.org (Postfix) with ESMTP id 4EDF120338;
+	Mon, 13 Apr 2020 19:10:19 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from fraxinus.osuosl.org ([127.0.0.1])
+Received: from silver.osuosl.org ([127.0.0.1])
 	by localhost (.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
-	with ESMTP id UfvAhybs8-5A; Mon, 13 Apr 2020 16:08:31 +0000 (UTC)
+	with ESMTP id 4kx7WQoTIgV3; Mon, 13 Apr 2020 19:10:17 +0000 (UTC)
 Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [140.211.9.56])
-	by fraxinus.osuosl.org (Postfix) with ESMTP id 4065784B80;
-	Mon, 13 Apr 2020 16:08:31 +0000 (UTC)
+	by silver.osuosl.org (Postfix) with ESMTP id E14F220013;
+	Mon, 13 Apr 2020 19:10:17 +0000 (UTC)
 Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
-	by lists.linuxfoundation.org (Postfix) with ESMTP id 213EDC1797;
-	Mon, 13 Apr 2020 16:08:31 +0000 (UTC)
+	by lists.linuxfoundation.org (Postfix) with ESMTP id BF46BC1D7D;
+	Mon, 13 Apr 2020 19:10:17 +0000 (UTC)
 Received: from hemlock.osuosl.org (smtp2.osuosl.org [140.211.166.133])
- by lists.linuxfoundation.org (Postfix) with ESMTP id 265A3C0172
- for <iommu@lists.linux-foundation.org>; Mon, 13 Apr 2020 16:08:27 +0000 (UTC)
+ by lists.linuxfoundation.org (Postfix) with ESMTP id B72F9C0172
+ for <iommu@lists.linux-foundation.org>; Mon, 13 Apr 2020 19:10:15 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
- by hemlock.osuosl.org (Postfix) with ESMTP id 20573878ED
- for <iommu@lists.linux-foundation.org>; Mon, 13 Apr 2020 16:08:27 +0000 (UTC)
+ by hemlock.osuosl.org (Postfix) with ESMTP id A624486DF0
+ for <iommu@lists.linux-foundation.org>; Mon, 13 Apr 2020 19:10:15 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
 Received: from hemlock.osuosl.org ([127.0.0.1])
  by localhost (.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
- with ESMTP id miNo2a6J55CJ for <iommu@lists.linux-foundation.org>;
- Mon, 13 Apr 2020 16:08:26 +0000 (UTC)
+ with ESMTP id W9Mkv0pTiwMZ for <iommu@lists.linux-foundation.org>;
+ Mon, 13 Apr 2020 19:10:15 +0000 (UTC)
 X-Greylist: domain auto-whitelisted by SQLgrey-1.7.6
-Received: from mga09.intel.com (mga09.intel.com [134.134.136.24])
- by hemlock.osuosl.org (Postfix) with ESMTPS id 47018878BB
- for <iommu@lists.linux-foundation.org>; Mon, 13 Apr 2020 16:08:26 +0000 (UTC)
-IronPort-SDR: HuYtOtEMAt1XfHPyqthHtGjixHhPjAlhJkZz4Ev56lTyU0afvMzsIQ+tJGfIM3jqMUEpu9+0YV
- 1HojiHDmIHFA==
-X-Amp-Result: SKIPPED(no attachment in message)
-X-Amp-File-Uploaded: False
-Received: from fmsmga001.fm.intel.com ([10.253.24.23])
- by orsmga102.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384;
- 13 Apr 2020 09:08:17 -0700
-IronPort-SDR: AtFFhp8S7rumfycaYYh+yKRUS57LlGaHKanXMToLuDp8lsQWCJ+C9Rc5oGIx5Ek+dW6G0z+zaq
- pNw/I478q4gw==
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.72,378,1580803200"; d="scan'208";a="363109095"
-Received: from orsmsx105.amr.corp.intel.com ([10.22.225.132])
- by fmsmga001.fm.intel.com with ESMTP; 13 Apr 2020 09:08:16 -0700
-Received: from orsmsx101.amr.corp.intel.com ([169.254.8.204]) by
- ORSMSX105.amr.corp.intel.com ([169.254.2.15]) with mapi id 14.03.0439.000;
- Mon, 13 Apr 2020 09:08:16 -0700
-From: "Derrick, Jonathan" <jonathan.derrick@intel.com>
-To: "drake@endlessm.com" <drake@endlessm.com>
-Subject: Re: [PATCH 1/1] iommu/vt-d: use DMA domain for real DMA devices and
- subdevices
-Thread-Topic: [PATCH 1/1] iommu/vt-d: use DMA domain for real DMA devices
- and subdevices
-Thread-Index: AQHWDqWd+ubRYvzlTkCJBotC6+FAWah1UvmAgAJgjoA=
-Date: Mon, 13 Apr 2020 16:08:16 +0000
-Message-ID: <3dc512548fbd40bd00c14ee237eaf293e3d1ecde.camel@intel.com>
-References: <20200409191736.6233-1-jonathan.derrick@intel.com>
- <20200409191736.6233-2-jonathan.derrick@intel.com>
- <CAD8Lp442LO1Sq5xpKOaRUKLsEyGbou4TiHQrDdnMbCOV-TG0+g@mail.gmail.com>
-In-Reply-To: <CAD8Lp442LO1Sq5xpKOaRUKLsEyGbou4TiHQrDdnMbCOV-TG0+g@mail.gmail.com>
-Accept-Language: en-US
-Content-Language: en-US
-X-MS-Has-Attach: 
-X-MS-TNEF-Correlator: 
-x-originating-ip: [10.255.0.111]
-Content-ID: <9B343A591B4C844FB4371E1F47CE2845@intel.com>
+Received: from us-smtp-1.mimecast.com (us-smtp-delivery-1.mimecast.com
+ [207.211.31.120])
+ by hemlock.osuosl.org (Postfix) with ESMTPS id 0337A86DDC
+ for <iommu@lists.linux-foundation.org>; Mon, 13 Apr 2020 19:10:14 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+ s=mimecast20190719; t=1586805013;
+ h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+ to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+ content-transfer-encoding:content-transfer-encoding:
+ in-reply-to:in-reply-to:references:references;
+ bh=D2w0zTL2S2HNCke1rO2a892We/kRrnfinWwPLR7p/D8=;
+ b=LWIU3ZFcxbfVQdR1fhJHUd+6ECoqeCY+4dRObHFLNetbyGRGOIkpto1nzE+ccIHlh6cg/R
+ YEWLX7HE2zSW2aV0iiX86upobyDQZd0JOi7pcks0lVyvGklUF6th+9imGWGOqqax67K+MK
+ KmoA+ooPITRhFTCyr8aOrFTy88U0gQA=
+Received: from mimecast-mx01.redhat.com (mimecast-mx01.redhat.com
+ [209.132.183.4]) (Using TLS) by relay.mimecast.com with ESMTP id
+ us-mta-51-LRRuLY3rMi27XnVi9zMzzg-1; Mon, 13 Apr 2020 15:10:11 -0400
+X-MC-Unique: LRRuLY3rMi27XnVi9zMzzg-1
+Received: from smtp.corp.redhat.com (int-mx03.intmail.prod.int.phx2.redhat.com
+ [10.5.11.13])
+ (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
+ (No client certificate requested)
+ by mimecast-mx01.redhat.com (Postfix) with ESMTPS id 9E339107ACC4;
+ Mon, 13 Apr 2020 19:10:09 +0000 (UTC)
+Received: from w520.home (ovpn-112-162.phx2.redhat.com [10.3.112.162])
+ by smtp.corp.redhat.com (Postfix) with ESMTP id 973D799DEE;
+ Mon, 13 Apr 2020 19:10:08 +0000 (UTC)
+Date: Mon, 13 Apr 2020 13:10:08 -0600
+From: Alex Williamson <alex.williamson@redhat.com>
+To: "Raj, Ashok" <ashok.raj@intel.com>
+Subject: Re: [PATCH v1 2/2] vfio/pci: Emulate PASID/PRI capability for VFs
+Message-ID: <20200413131008.2ae53cc3@w520.home>
+In-Reply-To: <20200413032930.GB18479@araj-mobl1.jf.intel.com>
+References: <1584880394-11184-1-git-send-email-yi.l.liu@intel.com>
+ <1584880394-11184-3-git-send-email-yi.l.liu@intel.com>
+ <20200402165954.48d941ee@w520.home>
+ <A2975661238FB949B60364EF0F2C25743A2204FE@SHSMSX104.ccr.corp.intel.com>
+ <20200403112545.6c115ba3@w520.home>
+ <AADFC41AFE54684AB9EE6CBC0274A5D19D80E13D@SHSMSX104.ccr.corp.intel.com>
+ <20200407095801.648b1371@w520.home>
+ <20200408040021.GS67127@otc-nc-03>
+ <20200408101940.3459943d@w520.home>
+ <20200413031043.GA18183@araj-mobl1.jf.intel.com>
+ <20200413032930.GB18479@araj-mobl1.jf.intel.com>
 MIME-Version: 1.0
-Cc: "linux-pci@vger.kernel.org" <linux-pci@vger.kernel.org>,
+X-Scanned-By: MIMEDefang 2.79 on 10.5.11.13
+Cc: "jean-philippe@linaro.org" <jean-philippe@linaro.org>, "Tian,
+ Kevin" <kevin.tian@intel.com>, "kvm@vger.kernel.org" <kvm@vger.kernel.org>,
+ "Tian, Jun J" <jun.j.tian@intel.com>,
+ "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
  "iommu@lists.linux-foundation.org" <iommu@lists.linux-foundation.org>,
- "helgaas@kernel.org" <helgaas@kernel.org>,
- "linux@endlessm.com" <linux@endlessm.com>
+ Bjorn Helgaas <bhelgaas@google.com>, "Sun, Yi Y" <yi.y.sun@intel.com>, "Wu,
+ Hao" <hao.wu@intel.com>
 X-BeenThere: iommu@lists.linux-foundation.org
 X-Mailman-Version: 2.1.15
 Precedence: list
@@ -101,82 +113,64 @@ Content-Transfer-Encoding: 7bit
 Errors-To: iommu-bounces@lists.linux-foundation.org
 Sender: "iommu" <iommu-bounces@lists.linux-foundation.org>
 
-On Sun, 2020-04-12 at 11:50 +0800, Daniel Drake wrote:
-> Hi Jon,
-> 
-> Thanks for picking this up. Apologies for my absence here - I wasn't
-> able to work on this recently, but I'm back again now.
-> 
-> On Fri, Apr 10, 2020 at 3:32 AM Jon Derrick <jonathan.derrick@intel.com> wrote:
-> > This becomes problematic if the real DMA device and the subdevices have
-> > different addressing capabilities and some require translation. Instead we can
-> > put the real DMA dev and any subdevices on the DMA domain. This change assigns
-> > subdevices to the DMA domain, and moves the real DMA device to the DMA domain
-> > if necessary.
-> 
-> Have you tested this with the real DMA device in identity mode?
-> It is not quite working for me. (Again, I'm not using VMD here, but
-> have looked closely and believe we're working under the same
-> constraints)
+On Sun, 12 Apr 2020 20:29:31 -0700
+"Raj, Ashok" <ashok.raj@intel.com> wrote:
 
-It does work for me when real DMA device starts in Identity, but my
-'real DMA device' doesn't do the DMA. It just provides the source-id.
+> Hi Alex
+> 
+> Going through the PCIe Spec, there seems a lot of such capabilities
+> that are different between PF and VF. Some that make sense
+> and some don't.
+> 
+> 
+> On Sun, Apr 12, 2020 at 08:10:43PM -0700, Raj, Ashok wrote:
+> >   
+> > > 
+> > > I agree though, I don't know why the SIG would preclude implementing
+> > > per VF control of these features.  Thanks,
+> > >   
+> 
+> For e.g. 
+> 
+> VF doesn't have I/O and Mem space enables, but has BME
 
-Does your 'real DMA device' do DMA?
-I suppose that could be the reason. You wouldn't want to change the
-domain on the live device using the method I proposed.
+VFs don't have I/O, so I/O enable is irrelevant.  The memory enable bit
+is emulated, so it doesn't really do anything from the VM perspective.
+The hypervisor could provide more emulation around this, but it hasn't
+proven necessary.
 
-> 
-> First, the real DMA device gets added to the group:
->  pci 0000:00:17.0: Adding to iommu group 9
-> (it's in IDENTITY mode here)
-> 
-> Then later, the first subdevice comes along, and these are the results:
->  pci 10000:00:00.0: [8086:02d7] type 00 class 0x010601
->  pci 10000:00:00.0: reg 0x10: [mem 0xae1a0000-0xae1a7fff]
->  pci 10000:00:00.0: reg 0x14: [mem 0xae1a8000-0xae1a80ff]
->  pci 10000:00:00.0: reg 0x18: [io  0x3090-0x3097]
->  pci 10000:00:00.0: reg 0x1c: [io  0x3080-0x3083]
->  pci 10000:00:00.0: reg 0x20: [io  0x3060-0x307f]
->  pci 10000:00:00.0: reg 0x24: [mem 0xae100000-0xae103fff]
->  pci 10000:00:00.0: PME# supported from D3hot
->  pci 10000:00:00.0: Adding to iommu group 9
->  pci 10000:00:00.0: DMAR: Failed to get a private domain.
-> 
-> That final message is added by your patch and indicates that it's not working.
-> 
-> This is because the subdevice got added to the iommu group before the
-> code you added tried to change to the DMA domain.
-> 
-> It first gets added to the group through this call path:
->     intel_iommu_add_device
-> -> iommu_group_get_for_dev
-> -> iommu_group_add_device
-> 
-> Then, continuing within intel_iommu_add_device we get to the code you
-> added, which tries to move the real DMA dev to DMA mode instead. It
-> calls:
-> 
->    intel_iommu_request_dma_domain_for_dev
-> -> iommu_request_dma_domain_for_dev
-> -> request_default_domain_for_dev
-> 
-> Which fails here:
->     /* Don't change mappings of existing devices */
->     ret = -EBUSY;
->     if (iommu_group_device_count(group) != 1)
->         goto out;
-> 
-> because we already have 2 devices in the group (the real DMA dev, plus
-> the subdevice we're in the process of handling now).
-> 
+> Interrupt Status
 
-You're right. I see the message too, but it still works for me.
+VFs don't have INTx, so this is irrelevant.
 
-> Next I'll look into the iommu group rework that Baolu mentioned.
-> 
-> Thanks,
-> Daniel
+> Correctable Error Reporting
+> Almost all of Device Control Register.
+
+Are we doing anything to virtualize these for VFs?  I think we've
+addressed access control to these for PFs, but I don't see that we try
+to virtualize them for the VF.
+
+> So it seems like there is a ton of them we have to deal with today for 
+> VF's. How do we manage to emulate them without any support for them 
+> in VF's? 
+
+The memory enable bit is just access to the MMIO space of the device,
+the hypervisor could choose to do more, but currently emulating the bit
+itself is sufficient.  This doesn't really affect the device, just
+access to the device.  The device control registers, I don't think
+we've had a need to virtualize them yet and I think we'd run into many
+of the same questions.  If your point is that there exists gaps in the
+spec that make things difficult to virtualize, I won't argue with you
+there.  MPS is a nearby one that's difficult to virtualize on the PF
+since its setting needs to take entire communication channels into
+account.
+
+So far though we aren't inventing new capabilities to add to VF config
+space and pretending they work, we're just stumbling on what the VF
+exposes whether on bare metal or in a VM.  Thanks,
+
+Alex
+
 _______________________________________________
 iommu mailing list
 iommu@lists.linux-foundation.org
