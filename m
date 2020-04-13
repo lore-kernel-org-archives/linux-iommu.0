@@ -6,77 +6,83 @@ X-Spam-Status: No, score=-2.2 required=3.0 tests=HEADER_FROM_DIFFERENT_DOMAINS,
 	MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS,USER_AGENT_SANE_1 autolearn=no
 	autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 43D50C2BB55
-	for <iommu@archiver.kernel.org>; Mon, 13 Apr 2020 02:49:06 +0000 (UTC)
-Received: from hemlock.osuosl.org (smtp2.osuosl.org [140.211.166.133])
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 575AAC2BB85
+	for <iommu@archiver.kernel.org>; Mon, 13 Apr 2020 03:10:56 +0000 (UTC)
+Received: from fraxinus.osuosl.org (smtp4.osuosl.org [140.211.166.137])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by mail.kernel.org (Postfix) with ESMTPS id 14F5A206C3
-	for <iommu@archiver.kernel.org>; Mon, 13 Apr 2020 02:49:05 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 14F5A206C3
+	by mail.kernel.org (Postfix) with ESMTPS id 238D620678
+	for <iommu@archiver.kernel.org>; Mon, 13 Apr 2020 03:10:56 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 238D620678
 Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=linux.intel.com
 Authentication-Results: mail.kernel.org; spf=pass smtp.mailfrom=iommu-bounces@lists.linux-foundation.org
 Received: from localhost (localhost [127.0.0.1])
-	by hemlock.osuosl.org (Postfix) with ESMTP id E36578738A;
-	Mon, 13 Apr 2020 02:49:05 +0000 (UTC)
+	by fraxinus.osuosl.org (Postfix) with ESMTP id EFE8884FFF;
+	Mon, 13 Apr 2020 03:10:55 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from hemlock.osuosl.org ([127.0.0.1])
+Received: from fraxinus.osuosl.org ([127.0.0.1])
 	by localhost (.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
-	with ESMTP id iLUtFvpTiL2T; Mon, 13 Apr 2020 02:49:05 +0000 (UTC)
+	with ESMTP id IiTM7WSZ42XS; Mon, 13 Apr 2020 03:10:52 +0000 (UTC)
 Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [140.211.9.56])
-	by hemlock.osuosl.org (Postfix) with ESMTP id 51A358735E;
-	Mon, 13 Apr 2020 02:49:05 +0000 (UTC)
+	by fraxinus.osuosl.org (Postfix) with ESMTP id 233C584A92;
+	Mon, 13 Apr 2020 03:10:52 +0000 (UTC)
 Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
-	by lists.linuxfoundation.org (Postfix) with ESMTP id 433E2C1D74;
-	Mon, 13 Apr 2020 02:49:05 +0000 (UTC)
+	by lists.linuxfoundation.org (Postfix) with ESMTP id 12D87C1D7D;
+	Mon, 13 Apr 2020 03:10:52 +0000 (UTC)
 Received: from silver.osuosl.org (smtp3.osuosl.org [140.211.166.136])
- by lists.linuxfoundation.org (Postfix) with ESMTP id D1DE7C0172
- for <iommu@lists.linux-foundation.org>; Mon, 13 Apr 2020 02:49:03 +0000 (UTC)
+ by lists.linuxfoundation.org (Postfix) with ESMTP id 9E7A4C0172
+ for <iommu@lists.linux-foundation.org>; Mon, 13 Apr 2020 03:10:50 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
- by silver.osuosl.org (Postfix) with ESMTP id C8A0D2000F
- for <iommu@lists.linux-foundation.org>; Mon, 13 Apr 2020 02:49:03 +0000 (UTC)
+ by silver.osuosl.org (Postfix) with ESMTP id 81F3020010
+ for <iommu@lists.linux-foundation.org>; Mon, 13 Apr 2020 03:10:50 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
 Received: from silver.osuosl.org ([127.0.0.1])
  by localhost (.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
- with ESMTP id vp4a5tNRiLBx for <iommu@lists.linux-foundation.org>;
- Mon, 13 Apr 2020 02:49:01 +0000 (UTC)
+ with ESMTP id r4xIueu+MseE for <iommu@lists.linux-foundation.org>;
+ Mon, 13 Apr 2020 03:10:49 +0000 (UTC)
 X-Greylist: domain auto-whitelisted by SQLgrey-1.7.6
-Received: from mga11.intel.com (mga11.intel.com [192.55.52.93])
- by silver.osuosl.org (Postfix) with ESMTPS id E33351FEE0
- for <iommu@lists.linux-foundation.org>; Mon, 13 Apr 2020 02:49:00 +0000 (UTC)
-IronPort-SDR: qW6b+xaXNv2w+Pov+ZMmpTWDnomc7GDOLOgGb5DMD/ELaoIEgKQqpvPtz7xx88f4SirDKMa3bq
- jtKO50fOULnQ==
+Received: from mga04.intel.com (mga04.intel.com [192.55.52.120])
+ by silver.osuosl.org (Postfix) with ESMTPS id C97ED1FF98
+ for <iommu@lists.linux-foundation.org>; Mon, 13 Apr 2020 03:10:47 +0000 (UTC)
+IronPort-SDR: 4iUG+ecFmCbTwKItR2er9qdelL6EUfQISCsMkTo9ZGom6gcvcBxdXplyCCadbN2i5KQyTlhhrM
+ DZ8aIFVem/uQ==
 X-Amp-Result: SKIPPED(no attachment in message)
 X-Amp-File-Uploaded: False
-Received: from fmsmga001.fm.intel.com ([10.253.24.23])
- by fmsmga102.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384;
- 12 Apr 2020 19:49:00 -0700
-IronPort-SDR: 8h2kJz9H2xByAm0Ehh0zIvn6ATdAcGQpeq1tHagj9rbqQVoUMOGf47be9xS1Z5eyn7z+wHJA8X
- d3LLcRluFVVw==
+Received: from orsmga006.jf.intel.com ([10.7.209.51])
+ by fmsmga104.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384;
+ 12 Apr 2020 20:10:46 -0700
+IronPort-SDR: X4MPwuF9i86nDYyxkd58AVJS6C0MtVzVwtfwzSZA07B1eyXHmQ/3nWj3eREjzKxRZ0o2YeJ2g5
+ uneGmWVHiayA==
 X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.72,377,1580803200"; d="scan'208";a="362961161"
-Received: from blu2-mobl3.ccr.corp.intel.com (HELO [10.254.211.54])
- ([10.254.211.54])
- by fmsmga001.fm.intel.com with ESMTP; 12 Apr 2020 19:48:55 -0700
-Subject: Re: [PATCH 1/1] iommu/vt-d: use DMA domain for real DMA devices and
- subdevices
-To: Daniel Drake <drake@endlessm.com>
-References: <20200409191736.6233-1-jonathan.derrick@intel.com>
- <20200409191736.6233-2-jonathan.derrick@intel.com>
- <09c98569-ed22-8886-3372-f5752334f8af@linux.intel.com>
- <CAD8Lp45dJ3-t6qqctiP1a=c44PEWZ-L04yv0r0=1Nrvwfouz1w@mail.gmail.com>
-From: Lu Baolu <baolu.lu@linux.intel.com>
-Message-ID: <32cc4809-7029-bc5e-5a74-abbe43596e8d@linux.intel.com>
-Date: Mon, 13 Apr 2020 10:48:55 +0800
-User-Agent: Mozilla/5.0 (Windows NT 10.0; WOW64; rv:68.0) Gecko/20100101
- Thunderbird/68.7.0
+X-IronPort-AV: E=Sophos;i="5.72,377,1580803200"; d="scan'208";a="256053141"
+Received: from araj-mobl1.jf.intel.com ([10.255.32.166])
+ by orsmga006.jf.intel.com with ESMTP; 12 Apr 2020 20:10:44 -0700
+Date: Sun, 12 Apr 2020 20:10:43 -0700
+From: "Raj, Ashok" <ashok.raj@linux.intel.com>
+To: Alex Williamson <alex.williamson@redhat.com>
+Subject: Re: [PATCH v1 2/2] vfio/pci: Emulate PASID/PRI capability for VFs
+Message-ID: <20200413031043.GA18183@araj-mobl1.jf.intel.com>
+References: <1584880394-11184-1-git-send-email-yi.l.liu@intel.com>
+ <1584880394-11184-3-git-send-email-yi.l.liu@intel.com>
+ <20200402165954.48d941ee@w520.home>
+ <A2975661238FB949B60364EF0F2C25743A2204FE@SHSMSX104.ccr.corp.intel.com>
+ <20200403112545.6c115ba3@w520.home>
+ <AADFC41AFE54684AB9EE6CBC0274A5D19D80E13D@SHSMSX104.ccr.corp.intel.com>
+ <20200407095801.648b1371@w520.home>
+ <20200408040021.GS67127@otc-nc-03>
+ <20200408101940.3459943d@w520.home>
 MIME-Version: 1.0
-In-Reply-To: <CAD8Lp45dJ3-t6qqctiP1a=c44PEWZ-L04yv0r0=1Nrvwfouz1w@mail.gmail.com>
-Content-Language: en-US
-Cc: Linux PCI <linux-pci@vger.kernel.org>, iommu@lists.linux-foundation.org,
- Bjorn Helgaas <helgaas@kernel.org>,
- Linux Upstreaming Team <linux@endlessm.com>,
- Jon Derrick <jonathan.derrick@intel.com>
+Content-Disposition: inline
+In-Reply-To: <20200408101940.3459943d@w520.home>
+User-Agent: Mutt/1.9.1 (2017-09-22)
+Cc: "jean-philippe@linaro.org" <jean-philippe@linaro.org>, "Tian,
+ Kevin" <kevin.tian@intel.com>, "Raj, Ashok" <ashok.raj@intel.com>,
+ "kvm@vger.kernel.org" <kvm@vger.kernel.org>, "Tian,
+ Jun J" <jun.j.tian@intel.com>,
+ "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
+ "iommu@lists.linux-foundation.org" <iommu@lists.linux-foundation.org>,
+ Bjorn Helgaas <bhelgaas@google.com>, "Sun, Yi Y" <yi.y.sun@intel.com>, "Wu,
+ Hao" <hao.wu@intel.com>
 X-BeenThere: iommu@lists.linux-foundation.org
 X-Mailman-Version: 2.1.15
 Precedence: list
@@ -89,62 +95,113 @@ List-Post: <mailto:iommu@lists.linux-foundation.org>
 List-Help: <mailto:iommu-request@lists.linux-foundation.org?subject=help>
 List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
  <mailto:iommu-request@lists.linux-foundation.org?subject=subscribe>
+Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
-Content-Type: text/plain; charset="us-ascii"; Format="flowed"
 Errors-To: iommu-bounces@lists.linux-foundation.org
 Sender: "iommu" <iommu-bounces@lists.linux-foundation.org>
 
-Hi Daniel,
+On Wed, Apr 08, 2020 at 10:19:40AM -0600, Alex Williamson wrote:
+> On Tue, 7 Apr 2020 21:00:21 -0700
+> "Raj, Ashok" <ashok.raj@intel.com> wrote:
+> 
+> > Hi Alex
+> > 
+> > + Bjorn
+> 
+>  + Don
+> 
+> > FWIW I can't understand why PCI SIG went different ways with ATS, 
+> > where its enumerated on PF and VF. But for PASID and PRI its only
+> > in PF. 
+> > 
+> > I'm checking with our internal SIG reps to followup on that.
+> > 
+> > On Tue, Apr 07, 2020 at 09:58:01AM -0600, Alex Williamson wrote:
+> > > > Is there vendor guarantee that hidden registers will locate at the
+> > > > same offset between PF and VF config space?   
+> > > 
+> > > I'm not sure if the spec really precludes hidden registers, but the
+> > > fact that these registers are explicitly outside of the capability
+> > > chain implies they're only intended for device specific use, so I'd say
+> > > there are no guarantees about anything related to these registers.  
+> > 
+> > As you had suggested in the other thread, we could consider
+> > using the same offset as in PF, but even that's a better guess
+> > still not reliable.
+> > 
+> > The other option is to maybe extend driver ops in the PF to expose
+> > where the offsets should be. Sort of adding the quirk in the 
+> > implementation. 
+> > 
+> > I'm not sure how prevalent are PASID and PRI in VF devices. If SIG is resisting 
+> > making VF's first class citizen, we might ask them to add some verbiage
+> > to suggest leave the same offsets as PF open to help emulation software.
+> 
+> Even if we know where to expose these capabilities on the VF, it's not
+> clear to me how we can actually virtualize the capability itself.  If
+> the spec defines, for example, an enable bit as r/w then software that
+> interacts with that register expects the bit is settable.  There's no
+> protocol for "try to set the bit and re-read it to see if the hardware
+> accepted it".  Therefore a capability with a fixed enable bit
+> representing the state of the PF, not settable by the VF, is
+> disingenuous to the spec.
 
-On 2020/4/13 10:25, Daniel Drake wrote:
-> On Fri, Apr 10, 2020 at 9:22 AM Lu Baolu <baolu.lu@linux.intel.com> wrote:
->> This is caused by the fragile private domain implementation. We are in
->> process of removing it by enhancing the iommu subsystem with per-group
->> default domain.
->>
->> https://www.spinics.net/lists/iommu/msg42976.html
->>
->> So ultimately VMD subdevices should have their own per-device iommu data
->> and support per-device dma ops.
-> 
-> Interesting. There's also this patchset you posted:
-> [PATCH 00/19] [PULL REQUEST] iommu/vt-d: patches for v5.7
-> https://lists.linuxfoundation.org/pipermail/iommu/2020-April/042967.html
-> (to be pushed out to 5.8)
+I think we are all in violent agreement. A lot of times the pci spec gets
+defined several years ahead of real products and no one remembers
+the justification on why they restricted things the way they did.
 
-Both are trying to solve a same problem.
-
-I have sync'ed with Joerg. This patch set will be replaced with Joerg's
-proposal due to a race concern between domain switching and driver
-binding. I will rebase all vt-d patches in this set on top of Joerg's
-change.
-
-Best regards,
-baolu
+Maybe someone early product wasn't quite exposing these features to the VF
+and hence the spec is bug compatible :-)
 
 > 
-> In there you have:
->> iommu/vt-d: Don't force 32bit devices to uses DMA domain
-> which seems to clash with the approach being explored in this thread.
+> If what we're trying to do is expose that PASID and PRI are enabled on
+> the PF to a VF driver, maybe duplicating the PF capabilities on the VF
+> without the ability to control it is not the right approach.  Maybe we
+
+As long as the capability enable is only provided when the PF has enabled
+the feature. Then it seems the hardware seems to do the right thing.
+
+Assume we expose PASID/PRI only when PF has enabled it. It will be the
+case since the PF driver needs to exist, and IOMMU would have set the 
+PASID/PRI/ATS on PF.
+
+If the emulation is purely spoofing the capability. Once vIOMMU driver
+enables PASID, the context entries for the VF are completely independent
+from the PF context entries. 
+
+vIOMMU would enable PASID, and we just spoof the PASID capability.
+
+If vIOMMU or guest for some reason does disable_pasid(), then the 
+vIOMMU driver can disaable PASID on the VF context entries. So the VF
+although the capability is blanket enabled on PF, IOMMU gaurantees the
+transactions are blocked.
+
+
+In the interim, it seems like the intent of the virtual capability
+can be honored via help from the IOMMU for the controlling aspect.. 
+
+Did i miss anything? 
+
+> need new capabilities exposing these as slave features that cannot be
+> controlled?  We could define our own vendor capability for this, but of
+> course we have both the where to put it in config space issue, as well
+> as the issue of trying to push an ad-hoc standard.  vfio could expose
+> these as device features rather than emulating capabilities, but that
+> still leaves a big gap between vfio in the hypervisor and the driver in
+> the guest VM.  That might still help push the responsibility and policy
+> for how to expose it to the VM as a userspace problem though.
+
+I think this is a good long term solution, but if the vIOMMU implenentations
+can carry us for the time being, we can probably defer them unless
+we are stuck.
+
 > 
-> And:
->> iommu/vt-d: Apply per-device dma_ops
-> This effectively solves the trip point that caused me to open these
-> discussions, where intel_map_page() -> iommu_need_mapping() would
-> incorrectly determine that a intel-iommu DMA mapping was needed for a
-> PCI subdevice running in identity mode. After this patch, a PCI
-> subdevice in identity mode uses the default system dma_ops and
-> completely avoids intel-iommu.
+> I agree though, I don't know why the SIG would preclude implementing
+> per VF control of these features.  Thanks,
 > 
-> So that solves the issues I was looking at. Jon, you might want to
-> check if the problems you see are likewise solved for you by these
-> patches.
-> 
-> I didn't try Joerg's iommu group rework yet as it conflicts with those
-> patches above.
-> 
-> Daniel
-> 
+
+Cheers,
+Ashok
 _______________________________________________
 iommu mailing list
 iommu@lists.linux-foundation.org
