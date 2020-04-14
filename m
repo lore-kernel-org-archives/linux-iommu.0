@@ -2,90 +2,186 @@ Return-Path: <SRS0=5SFN=56=lists.linux-foundation.org=iommu-bounces@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-2.2 required=3.0 tests=HEADER_FROM_DIFFERENT_DOMAINS,
-	MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED,USER_AGENT_SANE_2
-	autolearn=no autolearn_force=no version=3.4.0
+X-Spam-Status: No, score=-7.0 required=3.0 tests=DKIM_INVALID,DKIM_SIGNED,
+	HEADER_FROM_DIFFERENT_DOMAINS,MAILING_LIST_MULTI,MENTIONS_GIT_HOSTING,
+	SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED,USER_AGENT_SANE_1 autolearn=ham
+	autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 2C1A2C2BBFD
-	for <iommu@archiver.kernel.org>; Tue, 14 Apr 2020 04:59:28 +0000 (UTC)
-Received: from fraxinus.osuosl.org (smtp4.osuosl.org [140.211.166.137])
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 40B86C2BB1D
+	for <iommu@archiver.kernel.org>; Tue, 14 Apr 2020 06:21:41 +0000 (UTC)
+Received: from whitealder.osuosl.org (smtp1.osuosl.org [140.211.166.138])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by mail.kernel.org (Postfix) with ESMTPS id EE97520678
-	for <iommu@archiver.kernel.org>; Tue, 14 Apr 2020 04:59:27 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org EE97520678
-Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=linux.intel.com
+	by mail.kernel.org (Postfix) with ESMTPS id 20209206E9
+	for <iommu@archiver.kernel.org>; Tue, 14 Apr 2020 06:21:40 +0000 (UTC)
+Authentication-Results: mail.kernel.org;
+	dkim=fail reason="signature verification failed" (2048-bit key) header.d=ozlabs-ru.20150623.gappssmtp.com header.i=@ozlabs-ru.20150623.gappssmtp.com header.b="jlXnhyu7"
+DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 20209206E9
+Authentication-Results: mail.kernel.org; dmarc=none (p=none dis=none) header.from=ozlabs.ru
 Authentication-Results: mail.kernel.org; spf=pass smtp.mailfrom=iommu-bounces@lists.linux-foundation.org
 Received: from localhost (localhost [127.0.0.1])
-	by fraxinus.osuosl.org (Postfix) with ESMTP id BC12A852F6;
-	Tue, 14 Apr 2020 04:59:27 +0000 (UTC)
-X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from fraxinus.osuosl.org ([127.0.0.1])
-	by localhost (.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
-	with ESMTP id VIhV1KJiYqCn; Tue, 14 Apr 2020 04:59:26 +0000 (UTC)
-Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [140.211.9.56])
-	by fraxinus.osuosl.org (Postfix) with ESMTP id 6A7F985168;
-	Tue, 14 Apr 2020 04:59:26 +0000 (UTC)
-Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
-	by lists.linuxfoundation.org (Postfix) with ESMTP id 43042C1D7D;
-	Tue, 14 Apr 2020 04:59:26 +0000 (UTC)
-Received: from whitealder.osuosl.org (smtp1.osuosl.org [140.211.166.138])
- by lists.linuxfoundation.org (Postfix) with ESMTP id 82B71C0172
- for <iommu@lists.linux-foundation.org>; Tue, 14 Apr 2020 04:59:24 +0000 (UTC)
-Received: from localhost (localhost [127.0.0.1])
- by whitealder.osuosl.org (Postfix) with ESMTP id 6AF7F85497
- for <iommu@lists.linux-foundation.org>; Tue, 14 Apr 2020 04:59:24 +0000 (UTC)
+	by whitealder.osuosl.org (Postfix) with ESMTP id EA55B86439;
+	Tue, 14 Apr 2020 06:21:39 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
 Received: from whitealder.osuosl.org ([127.0.0.1])
+	by localhost (.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
+	with ESMTP id oYDQfg6uX4tU; Tue, 14 Apr 2020 06:21:38 +0000 (UTC)
+Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [140.211.9.56])
+	by whitealder.osuosl.org (Postfix) with ESMTP id CC69D863F4;
+	Tue, 14 Apr 2020 06:21:38 +0000 (UTC)
+Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
+	by lists.linuxfoundation.org (Postfix) with ESMTP id B4FAFC1D7D;
+	Tue, 14 Apr 2020 06:21:38 +0000 (UTC)
+Received: from hemlock.osuosl.org (smtp2.osuosl.org [140.211.166.133])
+ by lists.linuxfoundation.org (Postfix) with ESMTP id 6B9F4C0172
+ for <iommu@lists.linux-foundation.org>; Tue, 14 Apr 2020 06:21:36 +0000 (UTC)
+Received: from localhost (localhost [127.0.0.1])
+ by hemlock.osuosl.org (Postfix) with ESMTP id 59CB887B05
+ for <iommu@lists.linux-foundation.org>; Tue, 14 Apr 2020 06:21:36 +0000 (UTC)
+X-Virus-Scanned: amavisd-new at osuosl.org
+Received: from hemlock.osuosl.org ([127.0.0.1])
  by localhost (.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
- with ESMTP id 0e9-+N3YI7pM for <iommu@lists.linux-foundation.org>;
- Tue, 14 Apr 2020 04:59:23 +0000 (UTC)
-X-Greylist: domain auto-whitelisted by SQLgrey-1.7.6
-Received: from mga04.intel.com (mga04.intel.com [192.55.52.120])
- by whitealder.osuosl.org (Postfix) with ESMTPS id E0975853E3
- for <iommu@lists.linux-foundation.org>; Tue, 14 Apr 2020 04:59:22 +0000 (UTC)
-IronPort-SDR: cbm2sQIKXUtAeNi/TRMn9LlTW/1IFMiWL3hp+DNzRkmE8QiFr5agv+2WnREw2KdE2DWd85V93z
- 1JPspyK7Um6Q==
-X-Amp-Result: SKIPPED(no attachment in message)
-X-Amp-File-Uploaded: False
-Received: from orsmga007.jf.intel.com ([10.7.209.58])
- by fmsmga104.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384;
- 13 Apr 2020 21:59:21 -0700
-IronPort-SDR: CPedGsBVdwDwZVjQ+zHYU1TRgVgUqzuChefRVP3nj21Epo8DLbHcN50alAjE4GMujoedDdxytk
- Wd9bO/XfeA3A==
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.72,381,1580803200"; d="scan'208";a="241873091"
-Received: from jacob-builder.jf.intel.com (HELO jacob-builder) ([10.7.199.155])
- by orsmga007.jf.intel.com with ESMTP; 13 Apr 2020 21:59:21 -0700
-Date: Mon, 13 Apr 2020 22:05:15 -0700
-From: Jacob Pan <jacob.jun.pan@linux.intel.com>
-To: Alex Williamson <alex.williamson@redhat.com>
-Subject: Re: [PATCH v2 1/3] iommu/uapi: Define uapi version and capabilities
-Message-ID: <20200413220515.25a107b6@jacob-builder>
-In-Reply-To: <20200413162129.313b3b5a@w520.home>
-References: <1585178227-17061-1-git-send-email-jacob.jun.pan@linux.intel.com>
- <1585178227-17061-2-git-send-email-jacob.jun.pan@linux.intel.com>
- <20200326092316.GA31648@infradead.org>
- <20200326094442.5be042ce@jacob-builder>
- <AADFC41AFE54684AB9EE6CBC0274A5D19D7ECB45@SHSMSX104.ccr.corp.intel.com>
- <20200327074702.GA27959@infradead.org>
- <20200327165335.397f24a3@jacob-builder>
- <AADFC41AFE54684AB9EE6CBC0274A5D19D7FE150@SHSMSX104.ccr.corp.intel.com>
- <20200330090746.23c5599c@jacob-builder>
- <AADFC41AFE54684AB9EE6CBC0274A5D19D8011A9@SHSMSX104.ccr.corp.intel.com>
- <20200331085444.44bee0bb@jacob-builder>
- <AADFC41AFE54684AB9EE6CBC0274A5D19D803AFF@SHSMSX104.ccr.corp.intel.com>
- <20200402113604.6eea1e6f@jacob-builder>
- <20200413134157.395981a6@jacob-builder>
- <20200413162129.313b3b5a@w520.home>
-Organization: OTC
-X-Mailer: Claws Mail 3.13.2 (GTK+ 2.24.30; x86_64-pc-linux-gnu)
+ with ESMTP id LWGgFtVV7Z0g for <iommu@lists.linux-foundation.org>;
+ Tue, 14 Apr 2020 06:21:35 +0000 (UTC)
+X-Greylist: from auto-whitelisted by SQLgrey-1.7.6
+Received: from mail-pf1-f193.google.com (mail-pf1-f193.google.com
+ [209.85.210.193])
+ by hemlock.osuosl.org (Postfix) with ESMTPS id 0B3CF87AFE
+ for <iommu@lists.linux-foundation.org>; Tue, 14 Apr 2020 06:21:34 +0000 (UTC)
+Received: by mail-pf1-f193.google.com with SMTP id k15so5625508pfh.6
+ for <iommu@lists.linux-foundation.org>; Mon, 13 Apr 2020 23:21:34 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+ d=ozlabs-ru.20150623.gappssmtp.com; s=20150623;
+ h=subject:from:to:cc:references:autocrypt:message-id:date:user-agent
+ :mime-version:in-reply-to:content-language:content-transfer-encoding;
+ bh=T2V6RFxG+St6MIwHonDlDqJYtf1QoZ6rfA/nQPhlGxM=;
+ b=jlXnhyu78Pr3Mf9T3zCyZ59xDjsHm3mWl3rYbZSrzdBF1tTa1afLDAfFkEOx40odgC
+ UOJ2mgADsZhbLZC/mbBFYPobHXNEwLUlvqLwFNNZkbic1x8aOSRRE+nXAXAhGqFbkKiE
+ DX6GdjyxxLEAEOu0fQ/Zv/7nYNhsDQqyH53V7fWCQEL6BQSD6uScccI+8yiNWhYIAIk+
+ lT92xWmziQdvsYLgjUxqFcpcDak5rZHQ9lRwe9MHp/VzXC/Bv7buD/ZWELIV90ZXX6lZ
+ lgQs5ntF0YygigTCZb/4nvzcQYOtHFq1imyoiCZMp5OiLSMQoTc8HWjbi5EWeSQN3fWL
+ n71Q==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+ d=1e100.net; s=20161025;
+ h=x-gm-message-state:subject:from:to:cc:references:autocrypt
+ :message-id:date:user-agent:mime-version:in-reply-to
+ :content-language:content-transfer-encoding;
+ bh=T2V6RFxG+St6MIwHonDlDqJYtf1QoZ6rfA/nQPhlGxM=;
+ b=Ixy1kiain1a9DkswLqVaWbCuorgpcZc9mFiQfGGpnwqD9N4Y5IxZTuiKsdlXn4hwTB
+ NnQ4shziNZY/+qvSI3eNQXVaIOoryzDOwDTzK1baytjH4YM6GIlKefwjpZfm7Ns5zRDR
+ xP/z1yhyqvbwF6gWdG6i/GtjBhC8if4JZEUAvjw8gQwaPNJ+mAytVrSywaT++KWWftaz
+ RShvaaGWUFkDG5RsGdv2cd+bT4QDE/8Eo4kAlcrJ54OT23SGdedjuwejwGnzWkhoHVzO
+ J59kwZUsWgRLa1YL4Xvce6ha1YGCgUzlCKoCgjrg+LWRJ5cZNuGZA8Fx6jT2X5fto5qz
+ XjgA==
+X-Gm-Message-State: AGi0PubOc99hThA295zx/WidGGD493HJpMkNfdSxuU4xRHDELRF794L2
+ 54hfVUjVqIyHEm/PJxSrf//w9w==
+X-Google-Smtp-Source: APiQypL83TT0KlsOsKIJ3fvR06bQJNuFT6Oa4gTm65rKyfX1kCum+En95qF9urIy+WRzq1bLEYqidA==
+X-Received: by 2002:a63:7d5d:: with SMTP id m29mr15941343pgn.65.1586845294300; 
+ Mon, 13 Apr 2020 23:21:34 -0700 (PDT)
+Received: from [192.168.10.94] (124-171-87-207.dyn.iinet.net.au.
+ [124.171.87.207])
+ by smtp.gmail.com with ESMTPSA id u44sm9699150pgn.81.2020.04.13.23.21.30
+ (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+ Mon, 13 Apr 2020 23:21:33 -0700 (PDT)
+Subject: Re: [PATCH 1/2] dma-mapping: add a dma_ops_bypass flag to struct
+ device
+From: Alexey Kardashevskiy <aik@ozlabs.ru>
+To: Christoph Hellwig <hch@lst.de>
+References: <87sghz2ibh.fsf@linux.ibm.com> <20200323172256.GB31269@lst.de>
+ <ffce1af6-a215-dee8-7b5c-2111f43accfd@ozlabs.ru>
+ <20200324075402.GJ23447@lst.de>
+ <41975da3-3a4a-fc3c-2b90-8d607cf220e6@ozlabs.ru>
+ <20200325083740.GC21605@lst.de>
+ <a705afc5-779d-baf4-e5d2-e2da04c82743@ozlabs.ru>
+ <213b0c7d-f908-b4f4-466d-6240c3622cd6@ozlabs.ru>
+ <20200406115016.GA10941@lst.de>
+ <348046e7-7a38-62d6-4df0-e4a537b98926@ozlabs.ru>
+ <20200406171706.GA3231@lst.de>
+ <95395244-bdec-84d2-b81b-3040c076fe4d@ozlabs.ru>
+Autocrypt: addr=aik@ozlabs.ru; keydata=
+ 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
+Message-ID: <44ad32a4-7ce5-4f4d-8237-53356f76f53a@ozlabs.ru>
+Date: Tue, 14 Apr 2020 16:21:27 +1000
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101
+ Thunderbird/68.5.0
 MIME-Version: 1.0
-Cc: "Tian, Kevin" <kevin.tian@intel.com>, "Raj, Ashok" <ashok.raj@intel.com>,
- Jean-Philippe Brucker <jean-philippe@linaro.com>,
- LKML <linux-kernel@vger.kernel.org>,
- "iommu@lists.linux-foundation.org" <iommu@lists.linux-foundation.org>,
- David Woodhouse <dwmw2@infradead.org>
+In-Reply-To: <95395244-bdec-84d2-b81b-3040c076fe4d@ozlabs.ru>
+Content-Language: en-US
+Cc: "Aneesh Kumar K.V" <aneesh.kumar@linux.ibm.com>,
+ Robin Murphy <robin.murphy@arm.com>, linux-kernel@vger.kernel.org,
+ iommu@lists.linux-foundation.org, Michael Ellerman <mpe@ellerman.id.au>,
+ Greg Kroah-Hartman <gregkh@linuxfoundation.org>, linuxppc-dev@lists.ozlabs.org
 X-BeenThere: iommu@lists.linux-foundation.org
 X-Mailman-Version: 2.1.15
 Precedence: list
@@ -103,312 +199,49 @@ Content-Transfer-Encoding: 7bit
 Errors-To: iommu-bounces@lists.linux-foundation.org
 Sender: "iommu" <iommu-bounces@lists.linux-foundation.org>
 
-Hi Alex,
-Thanks a lot for the feedback, my comments inline.
 
-On Mon, 13 Apr 2020 16:21:29 -0600
-Alex Williamson <alex.williamson@redhat.com> wrote:
 
-> On Mon, 13 Apr 2020 13:41:57 -0700
-> Jacob Pan <jacob.jun.pan@linux.intel.com> wrote:
+On 07/04/2020 20:12, Alexey Kardashevskiy wrote:
 > 
-> > Hi All,
-> > 
-> > Just a gentle reminder, any feedback on the options I listed below?
-> > New ideas will be even better.
-> > 
-> > Christoph, does the explanation make sense to you? We do have the
-> > capability/flag based scheme for IOMMU API extension, the version is
-> > mainly used for size lookup. Compatibility checking is another use
-> > of the version, it makes checking easy when a vIOMMU is launched.
-> > 
-> > Thanks,
-> > 
-> > Jacob
-> > 
-> > On Thu, 2 Apr 2020 11:36:04 -0700
-> > Jacob Pan <jacob.jun.pan@linux.intel.com> wrote:
-> >   
-> > > On Wed, 1 Apr 2020 05:32:21 +0000
-> > > "Tian, Kevin" <kevin.tian@intel.com> wrote:
-> > >     
-> > > > > From: Jacob Pan <jacob.jun.pan@linux.intel.com>
-> > > > > Sent: Tuesday, March 31, 2020 11:55 PM
-> > > > > 
-> > > > > On Tue, 31 Mar 2020 06:06:38 +0000
-> > > > > "Tian, Kevin" <kevin.tian@intel.com> wrote:
-> > > > >         
-> > > > > > > From: Jacob Pan <jacob.jun.pan@linux.intel.com>
-> > > > > > > Sent: Tuesday, March 31, 2020 12:08 AM
-> > > > > > >
-> > > > > > > On Mon, 30 Mar 2020 05:40:40 +0000
-> > > > > > > "Tian, Kevin" <kevin.tian@intel.com> wrote:
-> > > > > > >        
-> > > > > > > > > From: Jacob Pan <jacob.jun.pan@linux.intel.com>
-> > > > > > > > > Sent: Saturday, March 28, 2020 7:54 AM
-> > > > > > > > >
-> > > > > > > > > On Fri, 27 Mar 2020 00:47:02 -0700
-> > > > > > > > > Christoph Hellwig <hch@infradead.org> wrote:
-> > > > > > > > >        
-> > > > > > > > > > On Fri, Mar 27, 2020 at 02:49:55AM +0000, Tian,
-> > > > > > > > > > Kevin wrote:        
-> > > > > > > > > > > If those API calls are inter-dependent for
-> > > > > > > > > > > composing a feature (e.g. SVA), shouldn't we need
-> > > > > > > > > > > a way to check them together before exposing the
-> > > > > > > > > > > feature to the guest, e.g. through a
-> > > > > > > > > > > iommu_get_uapi_capabilities interface?        
-> > > > > > > > > >
-> > > > > > > > > > Yes, that makes sense.  The important bit is to
-> > > > > > > > > > have a capability flags and not version
-> > > > > > > > > > numbers.        
-> > > > > > > > >
-> > > > > > > > > The challenge is that there are two consumers in the
-> > > > > > > > > kernel for this. 1. VFIO only look for compatibility,
-> > > > > > > > > and size of each data struct such that it can
-> > > > > > > > > copy_from_user.
-> > > > > > > > >
-> > > > > > > > > 2. IOMMU driver, the "real consumer" of the content.
-> > > > > > > > >
-> > > > > > > > > For 2, I agree and we do plan to use the capability
-> > > > > > > > > flags to check content and maintain backward
-> > > > > > > > > compatibility etc.
-> > > > > > > > >
-> > > > > > > > > For VFIO, it is difficult to do size look up based on
-> > > > > > > > > capability flags.        
-> > > > > > > >
-> > > > > > > > Can you elaborate the difficulty in VFIO? if, as
-> > > > > > > > Christoph Hellwig pointed out, version number is
-> > > > > > > > already avoided everywhere, it is interesting to know
-> > > > > > > > whether this work becomes a real exception or just
-> > > > > > > > requires a different mindset.     
-> > > > > > > From VFIO p.o.v. the IOMMU UAPI data is opaque, it only
-> > > > > > > needs to do two things:
-> > > > > > > 1. is the UAPI compatible?
-> > > > > > > 2. what is the size to copy?
-> > > > > > >
-> > > > > > > If you look at the version number, this is really a
-> > > > > > > "version as size" lookup, as provided by the helper
-> > > > > > > function in this patch. An example can be the newly
-> > > > > > > introduced clone3 syscall.
-> > > > > > > https://lwn.net/Articles/792628/ In clone3, new version
-> > > > > > > must have new size. The slight difference here is that,
-> > > > > > > unlike clone3, we have multiple data structures instead
-> > > > > > > of a single struct clone_args {}. And each struct has
-> > > > > > > flags to enumerate its contents besides size.        
-> > > > > >
-> > > > > > Thanks for providing that link. However clone3 doesn't
-> > > > > > include a version field to do "version as size" lookup.
-> > > > > > Instead, as you said, it includes a size parameter which
-> > > > > > sounds like the option 3 (argsz) listed below.
-> > > > > >        
-> > > > > Right, there is no version in clone3. size = version. I view
-> > > > > this as a 1:1 lookup.
-> > > > >         
-> > > > > > >
-> > > > > > > Besides breaching data abstraction, if VFIO has to check
-> > > > > > > IOMMU flags to determine the sizes, it has many
-> > > > > > > combinations.
-> > > > > > >
-> > > > > > > We also separate the responsibilities into two parts
-> > > > > > > 1. compatibility - version, size by VFIO
-> > > > > > > 2. sanity check - capability flags - by IOMMU        
-> > > > > >
-> > > > > > I feel argsz+flags approach can perfectly meet above
-> > > > > > requirement. The userspace set the size and flags for
-> > > > > > whatever capabilities it uses, and VFIO simply copies the
-> > > > > > parameters by size and pass to IOMMU for further sanity
-> > > > > > check. Of course the assumption is that we do provide an
-> > > > > > interface for userspace to enumerate all supported
-> > > > > > capabilities.       
-> > > > > You cannot trust user for argsz. the size to be copied from
-> > > > > user must be based on knowledge in kernel. That is why we
-> > > > > have this version to size lookup.
-> > > > > 
-> > > > > In VFIO, the size to copy is based on knowledge of each VFIO
-> > > > > UAPI structures and VFIO flags. But here the flags are IOMMU
-> > > > > UAPI flags. As you pointed out in another thread, VFIO is one
-> > > > > user.        
-> > > > 
-> > > > If that is the case, can we let VFIO only copy its own UAPI
-> > > > fields while simply passing the user pointer of IOMMU UAPI
-> > > > structure to IOMMU driver for further size check and copy?
-> > > > Otherwise we are entering a dead end that VFIO doesn't want to
-> > > > parse a structure which is not defined by him while using
-> > > > version to represent the black box size is considered as a
-> > > > discarded scheme and doesn't scale well...     
-> > > I think this could be an other viable option. Let me try to
-> > > summarize since this has been a long discussion since the
-> > > original version.
-> > > 
-> > > Problem statements:
-> > > 1. When launching vIOMMU in the guest, how can we ensure the host
-> > > has compatible support upfront? as compared to fail later.  
 > 
-> This sounds like a feature/extension interface, both KVM and vfio have
-> them to allow userspace to check support of specific features.
+> On 07/04/2020 03:17, Christoph Hellwig wrote:
+>> On Mon, Apr 06, 2020 at 11:25:09PM +1000, Alexey Kardashevskiy wrote:
+>>>>> Do you see any serious problem with this approach? Thanks!
+>>>>
+>>>> Do you have a link to the whole branch?  The github UI is unfortunately
+>>>> unusable for that (or I'm missing something).
+>>>
+>>> The UI shows the branch but since I rebased and forcepushed it, it does
+>>> not. Here is the current one with:
+>>>
+>>> https://github.com/aik/linux/commits/dma-bypass.3
+>>
+>> Ok, so we use the core bypass without persistent memory, and then
+>> have another bypass mode on top.  Not great, but I can't think
+>> of anything better.  Note that your checks for the map_sg case
+>> aren't very efficient - for one it would make sense to calculate
+>> the limit only once, 
 > 
-Yes, the specific features are the APIs:
-- bind guest PASID
-- cache invalidation
-- page requests & response
+> Good points, I'll post revised version when you post your v3 of this.
 
-> > > 2. As UAPI data gets extended (both in size and flags), how can we
-> > > know the size to copy  
+
+
+Any plans on posting v3 of this? Thanks,
+
+
 > 
-> For vfio we of course use the argsz/flags trick where the user tells
-> us how big the buffer is and flags in the header tell us what fields
-> beyond the base specification are enabled.  This can get tricky to
-> extend and there can be confusion whether a flag indicates the
-> presence of a field or the validity of a field.
+>> but also it would make sense to reuse the
+>> calculted diecect mapping addresses instead of doing another pass
+>> later on in the dma-direct code.
 > 
-> We also have interfaces where the ioctl is a header plus a data blob
-> where flags tell us what the data is.  These can serve double duty as
-> a extension check too as we've done for VFIO_DEVICE_FEATURE.  This
-> doesn't really support extension of a defined feature though, rather
-> we'd be more likely to create a set of flags that indicate the data
-> object is feature-v2 and redefine the structure, or of course we
-> revisit the entire featuring question within the structure of that
-> data blob.
+> Probably but I wonder what kind of hardware we need to see the
+> difference. I might try, just need to ride to the office to plug the
+> cable in my 100GBit eth machines :) Thanks,
 > 
-> We also implement capability chains, though they're more meant for
-> passing data to the user, where the user provides a buffer and we link
-> capabilities together within that buffer for the user to walk.  We've
-> defined a mechanism through -ENOSPC and argsz to tell the user how
-> large a buffer is necessary.  I dare mention we have a version per
-> capability as these are largely modeled after capability chains in PCI
-> config space.  We haven't actually incremented any versions, but I
-> imagine we'd do so like PCI, maintaining backwards compatibility and
-> only defining unused bits and adding fields as the version increases.
-> 
-I guess capability chain is more suitable since the IOCTL uses
-container FD instead of device FD in VFIO_DEVICE_FEATURE?
-
-We can give that a try by treating IOMMU UAPIs as capabilities. That
-would address problem #1. We really need to check compatibility upfront
-in that there is no way to fail some of the UAPIs. e.g. unbind guest
-PASID, cache invalidation.
-
-> Is the objection to a global version or to any version fields?  I
-> don't really understand the global version, I'd think a mechanism to
-> check extensions plus a per structure flags/version would be
-> preferred.  The former should resolve how userspace can test support
-> for features requiring multiple interfaces.
-Currently we already have individual version & flags per UAPI data. The
-reason why I introduced a global/unifier is to simplify the
-compatibility checking. Global version is optional.
-With individual version & flags, user may have to keep track of
-combinations of per structure versions.
-
->  A global version also
-> implies that we're only ever adding features and never removing.  For
-> example, feature Foo is added in version 4, but it's replaced by
-> feature Bar in version 5, now userspace can't simply test version >=
-> 4 must include feature Foo.
-> 
-Yes, this is why I was hoping to stick with the rule: open for
-extension, closed to modification.
-It also makes the code backward compatible easy since there old code
-would have no change when adding new features.
-
-> It seems to me that version and flags can also be complimentary, for
-> example a field might be defined by a version but a flag could
-> indicate if it's implemented.  With only the flag, we'd infer the
-> field from the flag, with only the version we'd need to assume the
-> field is always implemented.  So I have a hard time making a blanket
-> statement that all versions fields should be avoided.
->  
-> > > 3. Maintain backward compatibility while allowing extensions?
-> > > 
-> > > I think we all agreed that using flags (capability or types) is
-> > > the way to address #3. As Christoph pointed out, version number
-> > > should not be used for this purpose.
-> > > 
-> > > So for problem 1 & 2, we have the following options:
-> > > 1. Have a version-size mapping as proposed in this set. VFIO
-> > > copies from user the correct size based on version-type lookup.
-> > > Processing of the data is based on flags in IOMMU driver.
-> > > 
-> > > 2. VFIO copy its own minsz then pass the user pointer to IOMMU
-> > > driver for further copy_from_user based on flags. (by Kevin)
-> > > 
-> > > 3. Adopt VFIO argsz scheme, caller fills in argsz for the offset
-> > > the variable size union. VFIO do not check argsz in that it
-> > > requires IOMMU specific knowledge. IOMMU driver Use flags to
-> > > handle the variable size.(by Alex). I think this what we have in
-> > > Yi's VFIO & QEMU patch. argsz filled by QEMU includes bind_data.
-> > > 
-> > > 4. Do not use a unified version, have a fixed size of all UAPI
-> > > structures, padding in struct and union. (Wasteful, not preferred
-> > > per V1 discussion)
-> > > 
-> > > For both 2 & 3, a unified version is not used, each API
-> > > treated separately. vIOMMU will be launched w/o assurance of
-> > > compatibility of all APIs. Fault handling may be more complex in
-> > > normal operations.
-> > > 
-> > > Appreciate everyone's input. Joerg and Alex, could you help to
-> > > make a decision here?  
-> 
-> As above, I think using a global API version number to imply support
-> for a feature is doomed to fail, we should instead expose an interface
-> to check for specific features.
-I agree. I feel we can use the capability chain at container level as
-you mentioned, right?
-
->  In any of the proposed solutions, the
-> IOMMU driver is ultimately responsible for validating the user data,
-> so do we want vfio performing the copy_from_user() to an object that
-> could later be assumed to be sanitized, or should vfio just pass a
-> user pointer to make it obvious that the consumer is responsible for
-> all the user protections?  Seems like the latter.
-I like the latter as well.
-
->  That still really
-> doesn't address what's in that user data blob yet, but the vfio
-> interface could be:
-> 
-> struct {
-> 	__u32 argsz;
-> 	__u32 flags;
-> 	__u8  data[];
-> }
-> 
-> Where flags might be partitioned like we do for DEVICE_FEATURE to
-> indicate the format of data and what vfio should do with it, and data
-> might simply be defined as a (__u64 __user *).
-> 
-So, __user * will be passed to IOMMU driver if VFIO checks minsz
-include flags and they are valid.
-IOMMU driver can copy the rest based on the mandatory version/minsz and
-flags in the IOMMU uAPI structs.
-Does it sound right? This is really choice #2.
-
-> This user pointer would then likely be an IOMMU UAPI struct, so I've
-> only just gotten back the the IOMMU UAPI question at hand, but I don't
-> really see the disadvantage to including both version and flags fields
-> per structure.  Perhaps this is choice 1. above, but with a version at
-> a per structure level indicating the backwards compatible size and
-> layout of the structure and flags being used to indicate support for
-> optional features within those fields.
-
-Per structure version & flags is what we have in the mainline. It
-applies to both choice 1 & 2. The global/unified version is just a
-re-interpretation of the versions such that we have a monolithic
-incrementing version. Again, global version is optional.
-
->  Is a version field still taboo
-> for such a use case?  Thanks,
-
-I will leave that to Christoph :)
-
-Thanks
-
-Jacob
-> 
-> Alex
 > 
 
-[Jacob Pan]
+-- 
+Alexey
 _______________________________________________
 iommu mailing list
 iommu@lists.linux-foundation.org
