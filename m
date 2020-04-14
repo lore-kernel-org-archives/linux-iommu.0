@@ -2,96 +2,105 @@ Return-Path: <SRS0=5SFN=56=lists.linux-foundation.org=iommu-bounces@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-3.6 required=3.0 tests=DKIM_INVALID,DKIM_SIGNED,
-	HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_PATCH,MAILING_LIST_MULTI,SPF_HELO_NONE,
-	SPF_PASS autolearn=no autolearn_force=no version=3.4.0
+X-Spam-Status: No, score=-0.8 required=3.0 tests=HEADER_FROM_DIFFERENT_DOMAINS,
+	MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED autolearn=no
+	autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id E5530C2BBC7
-	for <iommu@archiver.kernel.org>; Tue, 14 Apr 2020 01:36:22 +0000 (UTC)
-Received: from hemlock.osuosl.org (smtp2.osuosl.org [140.211.166.133])
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 11C25C2BB86
+	for <iommu@archiver.kernel.org>; Tue, 14 Apr 2020 02:42:06 +0000 (UTC)
+Received: from whitealder.osuosl.org (smtp1.osuosl.org [140.211.166.138])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by mail.kernel.org (Postfix) with ESMTPS id A4F3A2075E
-	for <iommu@archiver.kernel.org>; Tue, 14 Apr 2020 01:36:22 +0000 (UTC)
-Authentication-Results: mail.kernel.org;
-	dkim=fail reason="signature verification failed" (2048-bit key) header.d=lca.pw header.i=@lca.pw header.b="ZXn2T+dC"
-DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org A4F3A2075E
-Authentication-Results: mail.kernel.org; dmarc=none (p=none dis=none) header.from=lca.pw
+	by mail.kernel.org (Postfix) with ESMTPS id C96DB2075E
+	for <iommu@archiver.kernel.org>; Tue, 14 Apr 2020 02:42:05 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org C96DB2075E
+Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=intel.com
 Authentication-Results: mail.kernel.org; spf=pass smtp.mailfrom=iommu-bounces@lists.linux-foundation.org
 Received: from localhost (localhost [127.0.0.1])
-	by hemlock.osuosl.org (Postfix) with ESMTP id 679F287BC2;
-	Tue, 14 Apr 2020 01:36:22 +0000 (UTC)
+	by whitealder.osuosl.org (Postfix) with ESMTP id 8BF8C85B5D;
+	Tue, 14 Apr 2020 02:42:05 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from hemlock.osuosl.org ([127.0.0.1])
+Received: from whitealder.osuosl.org ([127.0.0.1])
 	by localhost (.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
-	with ESMTP id RnDrNhzqtmOK; Tue, 14 Apr 2020 01:36:21 +0000 (UTC)
+	with ESMTP id kGpBcfZb9XPI; Tue, 14 Apr 2020 02:42:04 +0000 (UTC)
 Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [140.211.9.56])
-	by hemlock.osuosl.org (Postfix) with ESMTP id 7893587874;
-	Tue, 14 Apr 2020 01:36:21 +0000 (UTC)
+	by whitealder.osuosl.org (Postfix) with ESMTP id 3EB3E830FD;
+	Tue, 14 Apr 2020 02:42:04 +0000 (UTC)
 Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
-	by lists.linuxfoundation.org (Postfix) with ESMTP id 5DE79C1797;
-	Tue, 14 Apr 2020 01:36:21 +0000 (UTC)
+	by lists.linuxfoundation.org (Postfix) with ESMTP id 238B8C1D7D;
+	Tue, 14 Apr 2020 02:42:04 +0000 (UTC)
 Received: from hemlock.osuosl.org (smtp2.osuosl.org [140.211.166.133])
- by lists.linuxfoundation.org (Postfix) with ESMTP id 442BFC0172
- for <iommu@lists.linux-foundation.org>; Tue, 14 Apr 2020 01:36:19 +0000 (UTC)
+ by lists.linuxfoundation.org (Postfix) with ESMTP id E4C7DC0172
+ for <iommu@lists.linux-foundation.org>; Tue, 14 Apr 2020 02:42:01 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
- by hemlock.osuosl.org (Postfix) with ESMTP id 3C80687BC0
- for <iommu@lists.linux-foundation.org>; Tue, 14 Apr 2020 01:36:19 +0000 (UTC)
+ by hemlock.osuosl.org (Postfix) with ESMTP id D7DB38731E
+ for <iommu@lists.linux-foundation.org>; Tue, 14 Apr 2020 02:42:01 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
 Received: from hemlock.osuosl.org ([127.0.0.1])
  by localhost (.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
- with ESMTP id IPkpVIAe3VRs for <iommu@lists.linux-foundation.org>;
- Tue, 14 Apr 2020 01:36:18 +0000 (UTC)
-X-Greylist: from auto-whitelisted by SQLgrey-1.7.6
-Received: from mail-qt1-f196.google.com (mail-qt1-f196.google.com
- [209.85.160.196])
- by hemlock.osuosl.org (Postfix) with ESMTPS id E23A687874
- for <iommu@lists.linux-foundation.org>; Tue, 14 Apr 2020 01:36:17 +0000 (UTC)
-Received: by mail-qt1-f196.google.com with SMTP id c16so3166106qtv.1
- for <iommu@lists.linux-foundation.org>; Mon, 13 Apr 2020 18:36:17 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=lca.pw; s=google;
- h=mime-version:subject:from:in-reply-to:date:cc
- :content-transfer-encoding:message-id:references:to;
- bh=dXQotSOk2qSJpkL8ODPR0cF2dsns6oh9latebcWKpWw=;
- b=ZXn2T+dCyGt/hJPrquqf8BBD0V7faB5epnVMunbr/xeiiyrpiJFHFIpsWYz8CWZm99
- jBBs9g5N8E5XQOlADuRZm9K+vRk83NUGg2CXhND7EImHFJNRCNnH75RgVTGQH9O86pSs
- nZdJG/DmIgruWxstH0ajl4yDdKwcp3XIZseCjfkeT3PzxfpZNKRAfnc8tTj59rDhd7Ig
- sWQUavfV4dsyjswYEiLX2WsQrUNECVVO1jfldri2u6l8RlmgcIYicYOLIsBeCQdnczFV
- NRT5lWonJoPE4AOmCacgtl4zwMqGoGQ9hZXmSY5Ff4AukWxEU5ZN/vXkrj/+fOWbvgAp
- fNkQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
- d=1e100.net; s=20161025;
- h=x-gm-message-state:mime-version:subject:from:in-reply-to:date:cc
- :content-transfer-encoding:message-id:references:to;
- bh=dXQotSOk2qSJpkL8ODPR0cF2dsns6oh9latebcWKpWw=;
- b=TqJ/6oTlDbbXJP+SEqS1hAm+eNU3cJ+Y/C4ZTzoh8z2aVFki9wailE7CB5UBl7BUkF
- x95FOrIMtjYCMuLEtwvhtkwCame+MUwgwyQPWYmwRC2RKcaASfOdGDjINjWFz3CZfd4A
- ZYEZn+hdhshtlDNwnZ6TE9xP97TpzSD17Wk4uTeOclTKibfiq0axpkO3ZAOkOoD8jlHr
- kJEOrjQu+Y1qi4panudcDaekkILn3abZj1zRDORZjfVWt0ON7NcF5/UCVMPPlkmaYisH
- 97M0ORN8NSqkDlYMhUURmkboaQaHK4AXVEygxvc98WFtcosw30jB54izieYixMwIxUEp
- TEAA==
-X-Gm-Message-State: AGi0PuZ2KRs6yfOk7AYQyMv+8KEguaD510ipEVqk78mlHDySfpvkVKsq
- moX2RZNsDPPntOGlNp2ynMAGgg==
-X-Google-Smtp-Source: APiQypLisfcHpWJFsLswpdXcbJ/nAChf+Oxr+sSDafAEgmbCiRYEIgG4skSlBnxIsyyK00qjymNGTw==
-X-Received: by 2002:ac8:4e45:: with SMTP id e5mr14283372qtw.101.1586828176628; 
- Mon, 13 Apr 2020 18:36:16 -0700 (PDT)
-Received: from [192.168.1.153] (pool-71-184-117-43.bstnma.fios.verizon.net.
- [71.184.117.43])
- by smtp.gmail.com with ESMTPSA id x14sm6160100qtr.33.2020.04.13.18.36.15
- (version=TLS1_2 cipher=ECDHE-ECDSA-AES128-GCM-SHA256 bits=128/128);
- Mon, 13 Apr 2020 18:36:16 -0700 (PDT)
-Mime-Version: 1.0 (Mac OS X Mail 13.4 \(3608.80.23.2.2\))
-Subject: Re: [RFC PATCH] iommu/amd: fix a race in fetch_pte()
-From: Qian Cai <cai@lca.pw>
-In-Reply-To: <20200408141915.GJ3103@8bytes.org>
-Date: Mon, 13 Apr 2020 21:36:15 -0400
-Message-Id: <527B0883-F59D-4C7A-8102-743872801EFC@lca.pw>
-References: <20200407021246.10941-1-cai@lca.pw>
- <7664E2E7-04D4-44C3-AB7E-A4334CDEC373@lca.pw>
- <20200408141915.GJ3103@8bytes.org>
-To: Joerg Roedel <joro@8bytes.org>
-X-Mailer: Apple Mail (2.3608.80.23.2.2)
-Cc: iommu@lists.linux-foundation.org, linux-kernel@vger.kernel.org
+ with ESMTP id b2W8fxqzkEOS for <iommu@lists.linux-foundation.org>;
+ Tue, 14 Apr 2020 02:42:00 +0000 (UTC)
+X-Greylist: domain auto-whitelisted by SQLgrey-1.7.6
+Received: from mga12.intel.com (mga12.intel.com [192.55.52.136])
+ by hemlock.osuosl.org (Postfix) with ESMTPS id B9DE887032
+ for <iommu@lists.linux-foundation.org>; Tue, 14 Apr 2020 02:42:00 +0000 (UTC)
+IronPort-SDR: 4NWo9KycIW76cnFCYaGiASRD6XZ7Su/NoPC1I0HYnIInUG4akbJCd+Vnxi067rrkwhMsBv31if
+ BKyseZVJBE5Q==
+X-Amp-Result: SKIPPED(no attachment in message)
+X-Amp-File-Uploaded: False
+Received: from fmsmga002.fm.intel.com ([10.253.24.26])
+ by fmsmga106.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384;
+ 13 Apr 2020 19:42:00 -0700
+IronPort-SDR: CirbF6oHQBbMkTima3gtTQoCeHBk/VcyU9hE/Y8vvyELUOS1u+DmORiRuWauHAHe9h0h+3Edbv
+ grX/NJxqgvdw==
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="5.72,381,1580803200"; d="scan'208";a="288073186"
+Received: from fmsmsx103.amr.corp.intel.com ([10.18.124.201])
+ by fmsmga002.fm.intel.com with ESMTP; 13 Apr 2020 19:42:00 -0700
+Received: from fmsmsx117.amr.corp.intel.com (10.18.116.17) by
+ FMSMSX103.amr.corp.intel.com (10.18.124.201) with Microsoft SMTP Server (TLS)
+ id 14.3.439.0; Mon, 13 Apr 2020 19:42:00 -0700
+Received: from shsmsx154.ccr.corp.intel.com (10.239.6.54) by
+ fmsmsx117.amr.corp.intel.com (10.18.116.17) with Microsoft SMTP Server (TLS)
+ id 14.3.439.0; Mon, 13 Apr 2020 19:41:59 -0700
+Received: from shsmsx104.ccr.corp.intel.com ([169.254.5.225]) by
+ SHSMSX154.ccr.corp.intel.com ([169.254.7.214]) with mapi id 14.03.0439.000;
+ Tue, 14 Apr 2020 10:40:58 +0800
+From: "Tian, Kevin" <kevin.tian@intel.com>
+To: Alex Williamson <alex.williamson@redhat.com>
+Subject: RE: [PATCH v1 2/2] vfio/pci: Emulate PASID/PRI capability for VFs
+Thread-Topic: [PATCH v1 2/2] vfio/pci: Emulate PASID/PRI capability for VFs
+Thread-Index: AQHWAEVGCz5QQWvL/U+nYnlD7MiZ7Khl/jEAgACVNICAAJ/EgIAF8c6ggAA/A4CAAMnRgIAAzpAAgAb/OoCAAMrPQIAAC1kAgAA5CgCAAPxYkA==
+Date: Tue, 14 Apr 2020 02:40:58 +0000
+Message-ID: <AADFC41AFE54684AB9EE6CBC0274A5D19D81D376@SHSMSX104.ccr.corp.intel.com>
+References: <1584880394-11184-1-git-send-email-yi.l.liu@intel.com>
+ <1584880394-11184-3-git-send-email-yi.l.liu@intel.com>
+ <20200402165954.48d941ee@w520.home>
+ <A2975661238FB949B60364EF0F2C25743A2204FE@SHSMSX104.ccr.corp.intel.com>
+ <20200403112545.6c115ba3@w520.home>
+ <AADFC41AFE54684AB9EE6CBC0274A5D19D80E13D@SHSMSX104.ccr.corp.intel.com>
+ <20200407095801.648b1371@w520.home>	<20200408040021.GS67127@otc-nc-03>
+ <20200408101940.3459943d@w520.home>
+ <20200413031043.GA18183@araj-mobl1.jf.intel.com>
+ <AADFC41AFE54684AB9EE6CBC0274A5D19D81A31F@SHSMSX104.ccr.corp.intel.com>
+ <20200413132122.46825849@w520.home>
+In-Reply-To: <20200413132122.46825849@w520.home>
+Accept-Language: en-US
+Content-Language: en-US
+X-MS-Has-Attach: 
+X-MS-TNEF-Correlator: 
+dlp-product: dlpe-windows
+dlp-version: 11.2.0.6
+dlp-reaction: no-action
+x-originating-ip: [10.239.127.40]
+MIME-Version: 1.0
+Cc: "jean-philippe@linaro.org" <jean-philippe@linaro.org>, "Raj,
+ Ashok" <ashok.raj@intel.com>, "kvm@vger.kernel.org" <kvm@vger.kernel.org>,
+ "Tian, Jun J" <jun.j.tian@intel.com>,
+ "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
+ "iommu@lists.linux-foundation.org" <iommu@lists.linux-foundation.org>, Bjorn
+ Helgaas <bhelgaas@google.com>, "Sun, Yi Y" <yi.y.sun@intel.com>, "Wu,
+ Hao" <hao.wu@intel.com>
 X-BeenThere: iommu@lists.linux-foundation.org
 X-Mailman-Version: 2.1.15
 Precedence: list
@@ -104,181 +113,198 @@ List-Post: <mailto:iommu@lists.linux-foundation.org>
 List-Help: <mailto:iommu-request@lists.linux-foundation.org?subject=help>
 List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
  <mailto:iommu-request@lists.linux-foundation.org?subject=subscribe>
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: base64
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: 7bit
 Errors-To: iommu-bounces@lists.linux-foundation.org
 Sender: "iommu" <iommu-bounces@lists.linux-foundation.org>
 
-Cgo+IE9uIEFwciA4LCAyMDIwLCBhdCAxMDoxOSBBTSwgSm9lcmcgUm9lZGVsIDxqb3JvQDhieXRl
-cy5vcmc+IHdyb3RlOgo+IAo+IEhpIFFpYW4sCj4gCj4gT24gVHVlLCBBcHIgMDcsIDIwMjAgYXQg
-MTE6MzY6MDVBTSAtMDQwMCwgUWlhbiBDYWkgd3JvdGU6Cj4+IEFmdGVyIGZ1cnRoZXIgdGVzdGlu
-ZywgdGhlIGNoYW5nZSBhbG9uZyBpcyBpbnN1ZmZpY2llbnQuIFdoYXQgSSBhbSBjaGFzaW5nIHJp
-Z2h0Cj4+IG5vdyBpcyB0aGUgc3dhcCBkZXZpY2Ugd2lsbCBnbyBvZmZsaW5lIGFmdGVyIGhlYXZ5
-IG1lbW9yeSBwcmVzc3VyZSBiZWxvdy4gVGhlCj4+IHN5bXB0b20gaXMgc2ltaWxhciB0byB3aGF0
-IHdlIGhhdmUgaW4gdGhlIGNvbW1pdCwKPj4gCj4+IDc1NDI2NWJjYWI3OCAo4oCcaW9tbXUvYW1k
-OiBGaXggcmFjZSBpbiBpbmNyZWFzZV9hZGRyZXNzX3NwYWNlKCnigJ0pCj4+IAo+PiBBcHBhcmVu
-dGx5LCBpdCBpcyBubyBwb3NzaWJsZSB0byB0YWtlIHRoZSBkb21haW4tPmxvY2sgaW4gZmV0Y2hf
-cHRlKCkgYmVjYXVzZSBpdAo+PiBjb3VsZCBzbGVlcC4KPiAKPiBUaGFua3MgYSBsb3QgZm9yIGZp
-bmRpbmcgYW5kIHRyYWNraW5nIGRvd24gYW5vdGhlciByYWNlIGluIHRoZSBBTUQgSU9NTVUKPiBw
-YWdlLXRhYmxlIGNvZGUuICBUaGUgZG9tYWluLT5sb2NrIGlzIGEgc3Bpbi1sb2NrIGFuZCB0YWtp
-bmcgaXQgY2FuJ3QKPiBzbGVlcC4gQnV0IGZldGNoX3B0ZSgpIGlzIGEgZmFzdC1wYXRoIGFuZCBt
-dXN0IG5vdCB0YWtlIGFueSBsb2Nrcy4KPiAKPiBJIHRoaW5rIHRoZSBiZXN0IGZpeCBpcyB0byB1
-cGRhdGUgdGhlIHB0X3Jvb3QgYW5kIG1vZGUgb2YgdGhlIGRvbWFpbgo+IGF0b21pY2FsbHkgYnkg
-c3RvcmluZyB0aGUgbW9kZSBpbiB0aGUgbG93ZXIgMTIgYml0cyBvZiBwdF9yb290LiBUaGlzIHdh
-eQo+IHRoZXkgYXJlIHN0b3JlZCB0b2dldGhlciBhbmQgY2FuIGJlIHJlYWQvd3JpdGUgYXRvbWlj
-YWxseS4KCkxpa2UgdGhpcz8KCmRpZmYgLS1naXQgYS9kcml2ZXJzL2lvbW11L2FtZF9pb21tdS5j
-IGIvZHJpdmVycy9pb21tdS9hbWRfaW9tbXUuYwppbmRleCAyMGNjZTM2NmU5NTEuLmIzNmM2YjA3
-Y2JmZCAxMDA2NDQKLS0tIGEvZHJpdmVycy9pb21tdS9hbWRfaW9tbXUuYworKysgYi9kcml2ZXJz
-L2lvbW11L2FtZF9pb21tdS5jCkBAIC0xMzk3LDEzICsxMzk3LDEzIEBAIHN0YXRpYyBzdHJ1Y3Qg
-cGFnZSAqZnJlZV9zdWJfcHQodW5zaWduZWQgbG9uZyByb290LCBpbnQgbW9kZSwKIAogc3RhdGlj
-IHZvaWQgZnJlZV9wYWdldGFibGUoc3RydWN0IHByb3RlY3Rpb25fZG9tYWluICpkb21haW4pCiB7
-Ci0JdW5zaWduZWQgbG9uZyByb290ID0gKHVuc2lnbmVkIGxvbmcpZG9tYWluLT5wdF9yb290Owor
-CWludCBsZXZlbCA9IGlvbW11X2dldF9tb2RlKGRvbWFpbi0+cHRfcm9vdCk7CisJdW5zaWduZWQg
-bG9uZyByb290ID0gaW9tbXVfZ2V0X3Jvb3QoZG9tYWluLT5wdF9yb290KTsKIAlzdHJ1Y3QgcGFn
-ZSAqZnJlZWxpc3QgPSBOVUxMOwogCi0JQlVHX09OKGRvbWFpbi0+bW9kZSA8IFBBR0VfTU9ERV9O
-T05FIHx8Ci0JICAgICAgIGRvbWFpbi0+bW9kZSA+IFBBR0VfTU9ERV82X0xFVkVMKTsKKwlCVUdf
-T04obGV2ZWwgPCBQQUdFX01PREVfTk9ORSB8fCBsZXZlbCA+IFBBR0VfTU9ERV82X0xFVkVMKTsK
-IAotCWZyZWVsaXN0ID0gZnJlZV9zdWJfcHQocm9vdCwgZG9tYWluLT5tb2RlLCBmcmVlbGlzdCk7
-CisJZnJlZWxpc3QgPSBmcmVlX3N1Yl9wdChyb290LCBsZXZlbCwgZnJlZWxpc3QpOwogCiAJZnJl
-ZV9wYWdlX2xpc3QoZnJlZWxpc3QpOwogfQpAQCAtMTQxNywyNCArMTQxNywyNyBAQCBzdGF0aWMg
-Ym9vbCBpbmNyZWFzZV9hZGRyZXNzX3NwYWNlKHN0cnVjdCBwcm90ZWN0aW9uX2RvbWFpbiAqZG9t
-YWluLAogCQkJCSAgIHVuc2lnbmVkIGxvbmcgYWRkcmVzcywKIAkJCQkgICBnZnBfdCBnZnApCiB7
-CisJaW50IGxldmVsOwogCXVuc2lnbmVkIGxvbmcgZmxhZ3M7CiAJYm9vbCByZXQgPSBmYWxzZTsK
-IAl1NjQgKnB0ZTsKIAogCXNwaW5fbG9ja19pcnFzYXZlKCZkb21haW4tPmxvY2ssIGZsYWdzKTsK
-IAotCWlmIChhZGRyZXNzIDw9IFBNX0xFVkVMX1NJWkUoZG9tYWluLT5tb2RlKSB8fAotCSAgICBX
-QVJOX09OX09OQ0UoZG9tYWluLT5tb2RlID09IFBBR0VfTU9ERV82X0xFVkVMKSkKKwlsZXZlbCA9
-IGlvbW11X2dldF9tb2RlKGRvbWFpbi0+cHRfcm9vdCk7CisKKwlpZiAoYWRkcmVzcyA8PSBQTV9M
-RVZFTF9TSVpFKGxldmVsKSB8fAorCSAgICBXQVJOX09OX09OQ0UobGV2ZWwgPT0gUEFHRV9NT0RF
-XzZfTEVWRUwpKQogCQlnb3RvIG91dDsKIAogCXB0ZSA9ICh2b2lkICopZ2V0X3plcm9lZF9wYWdl
-KGdmcCk7CiAJaWYgKCFwdGUpCiAJCWdvdG8gb3V0OwogCi0JKnB0ZSAgICAgICAgICAgICA9IFBN
-X0xFVkVMX1BERShkb21haW4tPm1vZGUsCi0JCQkJCWlvbW11X3ZpcnRfdG9fcGh5cyhkb21haW4t
-PnB0X3Jvb3QpKTsKLQlkb21haW4tPnB0X3Jvb3QgID0gcHRlOwotCWRvbWFpbi0+bW9kZSAgICAr
-PSAxOworCSpwdGUgPSBQTV9MRVZFTF9QREUobGV2ZWwsCisJCWlvbW11X3ZpcnRfdG9fcGh5cygo
-dm9pZCAqKWlvbW11X2dldF9yb290KGRvbWFpbi0+cHRfcm9vdCkpKTsKKworCVdSSVRFX09OQ0Uo
-ZG9tYWluLT5wdF9yb290LCAodW5zaWduZWQgbG9uZylwdGUgKyBsZXZlbCArIDEpOwogCiAJcmV0
-ID0gdHJ1ZTsKIApAQCAtMTQ1MiwxNSArMTQ1NSwxNyBAQCBzdGF0aWMgdTY0ICphbGxvY19wdGUo
-c3RydWN0IHByb3RlY3Rpb25fZG9tYWluICpkb21haW4sCiAJCSAgICAgIGJvb2wgKnVwZGF0ZWQp
-CiB7CiAJaW50IGxldmVsLCBlbmRfbHZsOwotCXU2NCAqcHRlLCAqcGFnZTsKKwl1NjQgKnB0ZSwg
-KnBhZ2UsICpwdF9yb290LCAqcm9vdDsKIAogCUJVR19PTighaXNfcG93ZXJfb2ZfMihwYWdlX3Np
-emUpKTsKIAotCXdoaWxlIChhZGRyZXNzID4gUE1fTEVWRUxfU0laRShkb21haW4tPm1vZGUpKQor
-CXdoaWxlIChhZGRyZXNzID4gUE1fTEVWRUxfU0laRShpb21tdV9nZXRfbW9kZShkb21haW4tPnB0
-X3Jvb3QpKSkKIAkJKnVwZGF0ZWQgPSBpbmNyZWFzZV9hZGRyZXNzX3NwYWNlKGRvbWFpbiwgYWRk
-cmVzcywgZ2ZwKSB8fCAqdXBkYXRlZDsKIAotCWxldmVsICAgPSBkb21haW4tPm1vZGUgLSAxOwot
-CXB0ZSAgICAgPSAmZG9tYWluLT5wdF9yb290W1BNX0xFVkVMX0lOREVYKGxldmVsLCBhZGRyZXNz
-KV07CisJcHRfcm9vdCA9IFJFQURfT05DRShkb21haW4tPnB0X3Jvb3QpOworCXJvb3QgICAgPSAo
-dm9pZCAqKWlvbW11X2dldF9yb290KHB0X3Jvb3QpOworCWxldmVsICAgPSBpb21tdV9nZXRfbW9k
-ZShwdF9yb290KSAtIDE7CisJcHRlICAgICA9ICZyb290W1BNX0xFVkVMX0lOREVYKGxldmVsLCBh
-ZGRyZXNzKV07CiAJYWRkcmVzcyA9IFBBR0VfU0laRV9BTElHTihhZGRyZXNzLCBwYWdlX3NpemUp
-OwogCWVuZF9sdmwgPSBQQUdFX1NJWkVfTEVWRUwocGFnZV9zaXplKTsKIApAQCAtMTUzNiwxNiAr
-MTU0MSwxOCBAQCBzdGF0aWMgdTY0ICpmZXRjaF9wdGUoc3RydWN0IHByb3RlY3Rpb25fZG9tYWlu
-ICpkb21haW4sCiAJCSAgICAgIHVuc2lnbmVkIGxvbmcgYWRkcmVzcywKIAkJICAgICAgdW5zaWdu
-ZWQgbG9uZyAqcGFnZV9zaXplKQogewotCWludCBsZXZlbDsKIAl1NjQgKnB0ZTsKKwl1NjQgKnB0
-X3Jvb3QgPSBSRUFEX09OQ0UoZG9tYWluLT5wdF9yb290KTsKKwl1NjQgKnJvb3QgICAgPSAodm9p
-ZCAqKWlvbW11X2dldF9yb290KHB0X3Jvb3QpOworCWludCBsZXZlbCAgICA9IGlvbW11X2dldF9t
-b2RlKHB0X3Jvb3QpOwogCiAJKnBhZ2Vfc2l6ZSA9IDA7CiAKLQlpZiAoYWRkcmVzcyA+IFBNX0xF
-VkVMX1NJWkUoZG9tYWluLT5tb2RlKSkKKwlpZiAoYWRkcmVzcyA+IFBNX0xFVkVMX1NJWkUobGV2
-ZWwpKQogCQlyZXR1cm4gTlVMTDsKIAotCWxldmVsCSAgID0gIGRvbWFpbi0+bW9kZSAtIDE7Ci0J
-cHRlCSAgID0gJmRvbWFpbi0+cHRfcm9vdFtQTV9MRVZFTF9JTkRFWChsZXZlbCwgYWRkcmVzcyld
-OworCWxldmVsLS07CisJcHRlCSAgID0gJnJvb3RbUE1fTEVWRUxfSU5ERVgobGV2ZWwsIGFkZHJl
-c3MpXTsKIAkqcGFnZV9zaXplID0gIFBURV9MRVZFTF9QQUdFX1NJWkUobGV2ZWwpOwogCiAJd2hp
-bGUgKGxldmVsID4gMCkgewpAQCAtMTgxNCwxMiArMTgyMSwxMyBAQCBzdGF0aWMgc3RydWN0IHBy
-b3RlY3Rpb25fZG9tYWluICpkbWFfb3BzX2RvbWFpbl9hbGxvYyh2b2lkKQogCWlmIChwcm90ZWN0
-aW9uX2RvbWFpbl9pbml0KGRvbWFpbikpCiAJCWdvdG8gZnJlZV9kb21haW47CiAKLQlkb21haW4t
-Pm1vZGUgPSBQQUdFX01PREVfM19MRVZFTDsKIAlkb21haW4tPnB0X3Jvb3QgPSAodm9pZCAqKWdl
-dF96ZXJvZWRfcGFnZShHRlBfS0VSTkVMKTsKIAlkb21haW4tPmZsYWdzID0gUERfRE1BX09QU19N
-QVNLOwogCWlmICghZG9tYWluLT5wdF9yb290KQogCQlnb3RvIGZyZWVfZG9tYWluOwogCisJZG9t
-YWluLT5wdF9yb290ID0gaW9tbXVfc2V0X21vZGUoZG9tYWluLT5wdF9yb290LCBQQUdFX01PREVf
-M19MRVZFTCk7CisKIAlpZiAoaW9tbXVfZ2V0X2RtYV9jb29raWUoJmRvbWFpbi0+ZG9tYWluKSA9
-PSAtRU5PTUVNKQogCQlnb3RvIGZyZWVfZG9tYWluOwogCkBAIC0xODQ3LDEwICsxODU1LDEwIEBA
-IHN0YXRpYyB2b2lkIHNldF9kdGVfZW50cnkodTE2IGRldmlkLCBzdHJ1Y3QgcHJvdGVjdGlvbl9k
-b21haW4gKmRvbWFpbiwKIAl1NjQgZmxhZ3MgPSAwOwogCXUzMiBvbGRfZG9taWQ7CiAKLQlpZiAo
-ZG9tYWluLT5tb2RlICE9IFBBR0VfTU9ERV9OT05FKQotCQlwdGVfcm9vdCA9IGlvbW11X3ZpcnRf
-dG9fcGh5cyhkb21haW4tPnB0X3Jvb3QpOworCWlmIChpb21tdV9nZXRfbW9kZShkb21haW4tPnB0
-X3Jvb3QpICE9IFBBR0VfTU9ERV9OT05FKQorCQlwdGVfcm9vdCA9IGlvbW11X3ZpcnRfdG9fcGh5
-cygodm9pZCAqKWlvbW11X2dldF9yb290KGRvbWFpbi0+cHRfcm9vdCkpOwogCi0JcHRlX3Jvb3Qg
-fD0gKGRvbWFpbi0+bW9kZSAmIERFVl9FTlRSWV9NT0RFX01BU0spCisJcHRlX3Jvb3QgfD0gKCh1
-bnNpZ25lZCBsb25nKWRvbWFpbi0+cHRfcm9vdCAmIERFVl9FTlRSWV9NT0RFX01BU0spCiAJCSAg
-ICA8PCBERVZfRU5UUllfTU9ERV9TSElGVDsKIAlwdGVfcm9vdCB8PSBEVEVfRkxBR19JUiB8IERU
-RV9GTEFHX0lXIHwgRFRFX0ZMQUdfViB8IERURV9GTEFHX1RWOwogCkBAIC0yMzgyLDEzICsyMzkw
-LDE0IEBAIHN0YXRpYyBzdHJ1Y3QgaW9tbXVfZG9tYWluICphbWRfaW9tbXVfZG9tYWluX2FsbG9j
-KHVuc2lnbmVkIHR5cGUpCiAJCWlmICghcGRvbWFpbikKIAkJCXJldHVybiBOVUxMOwogCi0JCXBk
-b21haW4tPm1vZGUgICAgPSBQQUdFX01PREVfM19MRVZFTDsKIAkJcGRvbWFpbi0+cHRfcm9vdCA9
-ICh2b2lkICopZ2V0X3plcm9lZF9wYWdlKEdGUF9LRVJORUwpOwogCQlpZiAoIXBkb21haW4tPnB0
-X3Jvb3QpIHsKIAkJCXByb3RlY3Rpb25fZG9tYWluX2ZyZWUocGRvbWFpbik7CiAJCQlyZXR1cm4g
-TlVMTDsKIAkJfQogCisJCXBkb21haW4tPnB0X3Jvb3QgPSBpb21tdV9zZXRfbW9kZShwZG9tYWlu
-LT5wdF9yb290LAorCQkJCQkJICBQQUdFX01PREVfM19MRVZFTCk7CiAJCXBkb21haW4tPmRvbWFp
-bi5nZW9tZXRyeS5hcGVydHVyZV9zdGFydCA9IDA7CiAJCXBkb21haW4tPmRvbWFpbi5nZW9tZXRy
-eS5hcGVydHVyZV9lbmQgICA9IH4wVUxMOwogCQlwZG9tYWluLT5kb21haW4uZ2VvbWV0cnkuZm9y
-Y2VfYXBlcnR1cmUgPSB0cnVlOwpAQCAtMjQwNiw3ICsyNDE1LDggQEAgc3RhdGljIHN0cnVjdCBp
-b21tdV9kb21haW4gKmFtZF9pb21tdV9kb21haW5fYWxsb2ModW5zaWduZWQgdHlwZSkKIAkJaWYg
-KCFwZG9tYWluKQogCQkJcmV0dXJuIE5VTEw7CiAKLQkJcGRvbWFpbi0+bW9kZSA9IFBBR0VfTU9E
-RV9OT05FOworCQlwZG9tYWluLT5wdF9yb290ID0gaW9tbXVfc2V0X21vZGUocGRvbWFpbi0+cHRf
-cm9vdCwKKwkJCQkJCSAgUEFHRV9NT0RFX05PTkUpOwogCQlicmVhazsKIAlkZWZhdWx0OgogCQly
-ZXR1cm4gTlVMTDsKQEAgLTI0MzUsNyArMjQ0NSw3IEBAIHN0YXRpYyB2b2lkIGFtZF9pb21tdV9k
-b21haW5fZnJlZShzdHJ1Y3QgaW9tbXVfZG9tYWluICpkb20pCiAJCWRtYV9vcHNfZG9tYWluX2Zy
-ZWUoZG9tYWluKTsKIAkJYnJlYWs7CiAJZGVmYXVsdDoKLQkJaWYgKGRvbWFpbi0+bW9kZSAhPSBQ
-QUdFX01PREVfTk9ORSkKKwkJaWYgKGlvbW11X2dldF9tb2RlKGRvbWFpbi0+cHRfcm9vdCkgIT0g
-UEFHRV9NT0RFX05PTkUpCiAJCQlmcmVlX3BhZ2V0YWJsZShkb21haW4pOwogCiAJCWlmIChkb21h
-aW4tPmZsYWdzICYgUERfSU9NTVVWMl9NQVNLKQpAQCAtMjUyMSw3ICsyNTMxLDcgQEAgc3RhdGlj
-IGludCBhbWRfaW9tbXVfbWFwKHN0cnVjdCBpb21tdV9kb21haW4gKmRvbSwgdW5zaWduZWQgbG9u
-ZyBpb3ZhLAogCWludCBwcm90ID0gMDsKIAlpbnQgcmV0OwogCi0JaWYgKGRvbWFpbi0+bW9kZSA9
-PSBQQUdFX01PREVfTk9ORSkKKwlpZiAoaW9tbXVfZ2V0X21vZGUoZG9tYWluLT5wdF9yb290KSA9
-PSBQQUdFX01PREVfTk9ORSkKIAkJcmV0dXJuIC1FSU5WQUw7CiAKIAlpZiAoaW9tbXVfcHJvdCAm
-IElPTU1VX1JFQUQpCkBAIC0yNTQyLDcgKzI1NTIsNyBAQCBzdGF0aWMgc2l6ZV90IGFtZF9pb21t
-dV91bm1hcChzdHJ1Y3QgaW9tbXVfZG9tYWluICpkb20sIHVuc2lnbmVkIGxvbmcgaW92YSwKIHsK
-IAlzdHJ1Y3QgcHJvdGVjdGlvbl9kb21haW4gKmRvbWFpbiA9IHRvX3Bkb21haW4oZG9tKTsKIAot
-CWlmIChkb21haW4tPm1vZGUgPT0gUEFHRV9NT0RFX05PTkUpCisJaWYgKGlvbW11X2dldF9tb2Rl
-KGRvbWFpbi0+cHRfcm9vdCkgPT0gUEFHRV9NT0RFX05PTkUpCiAJCXJldHVybiAwOwogCiAJcmV0
-dXJuIGlvbW11X3VubWFwX3BhZ2UoZG9tYWluLCBpb3ZhLCBwYWdlX3NpemUpOwpAQCAtMjU1NSw3
-ICsyNTY1LDcgQEAgc3RhdGljIHBoeXNfYWRkcl90IGFtZF9pb21tdV9pb3ZhX3RvX3BoeXMoc3Ry
-dWN0IGlvbW11X2RvbWFpbiAqZG9tLAogCXVuc2lnbmVkIGxvbmcgb2Zmc2V0X21hc2ssIHB0ZV9w
-Z3NpemU7CiAJdTY0ICpwdGUsIF9fcHRlOwogCi0JaWYgKGRvbWFpbi0+bW9kZSA9PSBQQUdFX01P
-REVfTk9ORSkKKwlpZiAoaW9tbXVfZ2V0X21vZGUoZG9tYWluLT5wdF9yb290KSA9PSBQQUdFX01P
-REVfTk9ORSkKIAkJcmV0dXJuIGlvdmE7CiAKIAlwdGUgPSBmZXRjaF9wdGUoZG9tYWluLCBpb3Zh
-LCAmcHRlX3Bnc2l6ZSk7CkBAIC0yNzEzLDcgKzI3MjMsNyBAQCB2b2lkIGFtZF9pb21tdV9kb21h
-aW5fZGlyZWN0X21hcChzdHJ1Y3QgaW9tbXVfZG9tYWluICpkb20pCiAJc3Bpbl9sb2NrX2lycXNh
-dmUoJmRvbWFpbi0+bG9jaywgZmxhZ3MpOwogCiAJLyogVXBkYXRlIGRhdGEgc3RydWN0dXJlICov
-Ci0JZG9tYWluLT5tb2RlICAgID0gUEFHRV9NT0RFX05PTkU7CisJZG9tYWluLT5wdF9yb290ID0g
-aW9tbXVfc2V0X21vZGUoZG9tYWluLT5wdF9yb290LCBQQUdFX01PREVfTk9ORSk7CiAKIAkvKiBN
-YWtlIGNoYW5nZXMgdmlzaWJsZSB0byBJT01NVXMgKi8KIAl1cGRhdGVfZG9tYWluKGRvbWFpbik7
-CkBAIC0yOTEwLDcgKzI5MjAsNyBAQCBzdGF0aWMgaW50IF9fc2V0X2djcjMoc3RydWN0IHByb3Rl
-Y3Rpb25fZG9tYWluICpkb21haW4sIGludCBwYXNpZCwKIHsKIAl1NjQgKnB0ZTsKIAotCWlmIChk
-b21haW4tPm1vZGUgIT0gUEFHRV9NT0RFX05PTkUpCisJaWYgKGlvbW11X2dldF9tb2RlKGRvbWFp
-bi0+cHRfcm9vdCkgIT0gUEFHRV9NT0RFX05PTkUpCiAJCXJldHVybiAtRUlOVkFMOwogCiAJcHRl
-ID0gX19nZXRfZ2NyM19wdGUoZG9tYWluLT5nY3IzX3RibCwgZG9tYWluLT5nbHgsIHBhc2lkLCB0
-cnVlKTsKQEAgLTI5MjYsNyArMjkzNiw3IEBAIHN0YXRpYyBpbnQgX19jbGVhcl9nY3IzKHN0cnVj
-dCBwcm90ZWN0aW9uX2RvbWFpbiAqZG9tYWluLCBpbnQgcGFzaWQpCiB7CiAJdTY0ICpwdGU7CiAK
-LQlpZiAoZG9tYWluLT5tb2RlICE9IFBBR0VfTU9ERV9OT05FKQorCWlmIChpb21tdV9nZXRfbW9k
-ZShkb21haW4tPnB0X3Jvb3QpICE9IFBBR0VfTU9ERV9OT05FKQogCQlyZXR1cm4gLUVJTlZBTDsK
-IAogCXB0ZSA9IF9fZ2V0X2djcjNfcHRlKGRvbWFpbi0+Z2NyM190YmwsIGRvbWFpbi0+Z2x4LCBw
-YXNpZCwgZmFsc2UpOwpkaWZmIC0tZ2l0IGEvZHJpdmVycy9pb21tdS9hbWRfaW9tbXVfcHJvdG8u
-aCBiL2RyaXZlcnMvaW9tbXUvYW1kX2lvbW11X3Byb3RvLmgKaW5kZXggOTJjMmJhNjQ2OGEwLi4z
-NGQ0ZGQ2NmNmOWIgMTAwNjQ0Ci0tLSBhL2RyaXZlcnMvaW9tbXUvYW1kX2lvbW11X3Byb3RvLmgK
-KysrIGIvZHJpdmVycy9pb21tdS9hbWRfaW9tbXVfcHJvdG8uaApAQCAtNjcsNiArNjcsMjEgQEAg
-c3RhdGljIGlubGluZSBpbnQgYW1kX2lvbW11X2NyZWF0ZV9pcnFfZG9tYWluKHN0cnVjdCBhbWRf
-aW9tbXUgKmlvbW11KQogZXh0ZXJuIGludCBhbWRfaW9tbXVfY29tcGxldGVfcHByKHN0cnVjdCBw
-Y2lfZGV2ICpwZGV2LCBpbnQgcGFzaWQsCiAJCQkJICBpbnQgc3RhdHVzLCBpbnQgdGFnKTsKIAor
-c3RhdGljIGlubGluZSBpbnQgaW9tbXVfZ2V0X21vZGUodm9pZCAqcHRfcm9vdCkKK3sKKwlyZXR1
-cm4gKHVuc2lnbmVkIGxvbmcpcHRfcm9vdCAmIH5QQUdFX01BU0s7Cit9CisKK3N0YXRpYyBpbmxp
-bmUgdW5zaWduZWQgbG9uZyBpb21tdV9nZXRfcm9vdCh2b2lkICpwdF9yb290KQoreworCXJldHVy
-biAodW5zaWduZWQgbG9uZylwdF9yb290ICYgUEFHRV9NQVNLOworfQorCitzdGF0aWMgaW5saW5l
-IHZvaWQgKmlvbW11X3NldF9tb2RlKHZvaWQgKnB0X3Jvb3QsIGludCBtb2RlKQoreworCXJldHVy
-biAodm9pZCAqKShpb21tdV9nZXRfcm9vdChwdF9yb290KSArIG1vZGUpOworfQorCiBzdGF0aWMg
-aW5saW5lIGJvb2wgaXNfcmQ4OTBfaW9tbXUoc3RydWN0IHBjaV9kZXYgKnBkZXYpCiB7CiAJcmV0
-dXJuIChwZGV2LT52ZW5kb3IgPT0gUENJX1ZFTkRPUl9JRF9BVEkpICYmCmRpZmYgLS1naXQgYS9k
-cml2ZXJzL2lvbW11L2FtZF9pb21tdV90eXBlcy5oIGIvZHJpdmVycy9pb21tdS9hbWRfaW9tbXVf
-dHlwZXMuaAppbmRleCBjYThjNDUyMjA0NWIuLjIyMWFkZWZhNTZhMCAxMDA2NDQKLS0tIGEvZHJp
-dmVycy9pb21tdS9hbWRfaW9tbXVfdHlwZXMuaAorKysgYi9kcml2ZXJzL2lvbW11L2FtZF9pb21t
-dV90eXBlcy5oCkBAIC00NjgsOCArNDY4LDggQEAgc3RydWN0IHByb3RlY3Rpb25fZG9tYWluIHsK
-IAkJCQkgICAgICAgaW9tbXUgY29yZSBjb2RlICovCiAJc3BpbmxvY2tfdCBsb2NrOwkvKiBtb3N0
-bHkgdXNlZCB0byBsb2NrIHRoZSBwYWdlIHRhYmxlKi8KIAl1MTYgaWQ7CQkJLyogdGhlIGRvbWFp
-biBpZCB3cml0dGVuIHRvIHRoZSBkZXZpY2UgdGFibGUgKi8KLQlpbnQgbW9kZTsJCS8qIHBhZ2lu
-ZyBtb2RlICgwLTYgbGV2ZWxzKSAqLwotCXU2NCAqcHRfcm9vdDsJCS8qIHBhZ2UgdGFibGUgcm9v
-dCBwb2ludGVyICovCisJdTY0ICpwdF9yb290OwkJLyogcGFnZSB0YWJsZSByb290IHBvaW50ZXIg
-YW5kIHBhZ2luZyBtb2RlICgwLTYKKwkJCQkgICBsZXZlbHMpICovCiAJaW50IGdseDsJCS8qIE51
-bWJlciBvZiBsZXZlbHMgZm9yIEdDUjMgdGFibGUgKi8KIAl1NjQgKmdjcjNfdGJsOwkJLyogR3Vl
-c3QgQ1IzIHRhYmxlICovCiAJdW5zaWduZWQgbG9uZyBmbGFnczsJLyogZmxhZ3MgdG8gZmluZCBv
-dXQgdHlwZSBvZiBkb21haW4gKi8KLS0gCjIuMjEuMCAoQXBwbGUgR2l0LTEyMi4yKQpfX19fX19f
-X19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fXwppb21tdSBtYWlsaW5nIGxp
-c3QKaW9tbXVAbGlzdHMubGludXgtZm91bmRhdGlvbi5vcmcKaHR0cHM6Ly9saXN0cy5saW51eGZv
-dW5kYXRpb24ub3JnL21haWxtYW4vbGlzdGluZm8vaW9tbXU=
+> From: Alex Williamson <alex.williamson@redhat.com>
+> Sent: Tuesday, April 14, 2020 3:21 AM
+> 
+> On Mon, 13 Apr 2020 08:05:33 +0000
+> "Tian, Kevin" <kevin.tian@intel.com> wrote:
+> 
+> > > From: Tian, Kevin
+> > > Sent: Monday, April 13, 2020 3:55 PM
+> > >
+> > > > From: Raj, Ashok <ashok.raj@linux.intel.com>
+> > > > Sent: Monday, April 13, 2020 11:11 AM
+> > > >
+> > > > On Wed, Apr 08, 2020 at 10:19:40AM -0600, Alex Williamson wrote:
+> > > > > On Tue, 7 Apr 2020 21:00:21 -0700
+> > > > > "Raj, Ashok" <ashok.raj@intel.com> wrote:
+> > > > >
+> > > > > > Hi Alex
+> > > > > >
+> > > > > > + Bjorn
+> > > > >
+> > > > >  + Don
+> > > > >
+> > > > > > FWIW I can't understand why PCI SIG went different ways with ATS,
+> > > > > > where its enumerated on PF and VF. But for PASID and PRI its only
+> > > > > > in PF.
+> > > > > >
+> > > > > > I'm checking with our internal SIG reps to followup on that.
+> > > > > >
+> > > > > > On Tue, Apr 07, 2020 at 09:58:01AM -0600, Alex Williamson wrote:
+> > > > > > > > Is there vendor guarantee that hidden registers will locate at the
+> > > > > > > > same offset between PF and VF config space?
+> > > > > > >
+> > > > > > > I'm not sure if the spec really precludes hidden registers, but the
+> > > > > > > fact that these registers are explicitly outside of the capability
+> > > > > > > chain implies they're only intended for device specific use, so I'd
+> say
+> > > > > > > there are no guarantees about anything related to these registers.
+> > > > > >
+> > > > > > As you had suggested in the other thread, we could consider
+> > > > > > using the same offset as in PF, but even that's a better guess
+> > > > > > still not reliable.
+> > > > > >
+> > > > > > The other option is to maybe extend driver ops in the PF to expose
+> > > > > > where the offsets should be. Sort of adding the quirk in the
+> > > > > > implementation.
+> > > > > >
+> > > > > > I'm not sure how prevalent are PASID and PRI in VF devices. If SIG is
+> > > > resisting
+> > > > > > making VF's first class citizen, we might ask them to add some
+> verbiage
+> > > > > > to suggest leave the same offsets as PF open to help emulation
+> software.
+> > > > >
+> > > > > Even if we know where to expose these capabilities on the VF, it's not
+> > > > > clear to me how we can actually virtualize the capability itself.  If
+> > > > > the spec defines, for example, an enable bit as r/w then software that
+> > > > > interacts with that register expects the bit is settable.  There's no
+> > > > > protocol for "try to set the bit and re-read it to see if the hardware
+> > > > > accepted it".  Therefore a capability with a fixed enable bit
+> > > > > representing the state of the PF, not settable by the VF, is
+> > > > > disingenuous to the spec.
+> > > >
+> > > > I think we are all in violent agreement. A lot of times the pci spec gets
+> > > > defined several years ahead of real products and no one remembers
+> > > > the justification on why they restricted things the way they did.
+> > > >
+> > > > Maybe someone early product wasn't quite exposing these features to
+> the
+> > > > VF
+> > > > and hence the spec is bug compatible :-)
+> > > >
+> > > > >
+> > > > > If what we're trying to do is expose that PASID and PRI are enabled on
+> > > > > the PF to a VF driver, maybe duplicating the PF capabilities on the VF
+> > > > > without the ability to control it is not the right approach.  Maybe we
+> > > >
+> > > > As long as the capability enable is only provided when the PF has
+> enabled
+> > > > the feature. Then it seems the hardware seems to do the right thing.
+> > > >
+> > > > Assume we expose PASID/PRI only when PF has enabled it. It will be the
+> > > > case since the PF driver needs to exist, and IOMMU would have set the
+> > > > PASID/PRI/ATS on PF.
+> > > >
+> > > > If the emulation is purely spoofing the capability. Once vIOMMU driver
+> > > > enables PASID, the context entries for the VF are completely
+> independent
+> > > > from the PF context entries.
+> > > >
+> > > > vIOMMU would enable PASID, and we just spoof the PASID capability.
+> > > >
+> > > > If vIOMMU or guest for some reason does disable_pasid(), then the
+> > > > vIOMMU driver can disaable PASID on the VF context entries. So the VF
+> > > > although the capability is blanket enabled on PF, IOMMU gaurantees
+> the
+> > > > transactions are blocked.
+> > > >
+> > > >
+> > > > In the interim, it seems like the intent of the virtual capability
+> > > > can be honored via help from the IOMMU for the controlling aspect..
+> > > >
+> > > > Did i miss anything?
+> > >
+> > > Above works for emulating the enable bit (under the assumption that
+> > > PF driver won't disable pasid when vf is assigned). However, there are
+> > > also "Execute permission enable" and "Privileged mode enable" bits in
+> > > PASID control registers. I don't know how those bits could be cleanly
+> > > emulated when the guest writes a value different from PF's...
+> >
+> > sent too quick. the IOMMU also includes control bits for allowing/
+> > blocking execute requests and supervisor requests. We can rely on
+> > IOMMU to block those requests to emulate the disabled cases of
+> > all three control bits in the pasid cap.
+> 
+> 
+> So if the emulation of the PASID capability takes into account the
+> IOMMU configuration to back that emulation, shouldn't we do that
+> emulation in the hypervisor, ie. QEMU, rather than the kernel vfio
+> layer?  Thanks,
+> 
+> Alex
+
+We need enforce it in physical IOMMU, to ensure that even the
+VF may send requests which violate the guest expectation those
+requests are always blocked by IOMMU. Kernel vfio identifies
+such need when emulating the pasid cap and then forward the 
+request to host iommu driver.
+
+Thanks
+Kevin
+
+> 
+> > > Similar problem also exists when talking about PRI emulation, e.g.
+> > > to enable PRI the software usually waits until the 'stopped' bit
+> > > is set (indicating all previously issued requests have completed). How
+> > > to emulate this bit accurately when one guest toggles the enable bit
+> > > while the PF and other VFs are actively issuing page requests through
+> > > the shared page request interface? from pcie spec I didn't find a way
+> > > to catch when all previously-issued requests from a specific VF have
+> > > completed. Can a conservative big-enough timeout value help here?
+> > > I don't know... similar puzzle also exists for emulating the 'reset'
+> > > control bit which is supposed to clear the pending request state for
+> > > the whole page request interface.
+> > >
+> > > I feel the main problem in pcie spec is that, while they invent SR-IOV
+> > > to address I/O virtualization requirement (where strict isolation is
+> > > required), they blurred the boundary by leaving some shared resource
+> > > cross PF and VFs which imply sort of cooperation between PF and VF
+> > > drivers. On bare metal such cooperation is easy to build, by enabling/
+> > > disabling a capability en mass, by using the same set of setting, etc.
+> > > However it doesn't consider the virtualization case where a VF is
+> > > assigned to the guest which considers the VF as a standard PCI/PCIe
+> > > endpoint thus such cooperation is missing. A vendor capability could
+> > > help fix the gap here but making it adopted by major guest OSes will
+> > > take time. But honestly speaking I don't know other good alternative
+> > > now... :/
+> > >
+> > > >
+> > > > > need new capabilities exposing these as slave features that cannot be
+> > > > > controlled?  We could define our own vendor capability for this, but
+> of
+> > > > > course we have both the where to put it in config space issue, as well
+> > > > > as the issue of trying to push an ad-hoc standard.  vfio could expose
+> > > > > these as device features rather than emulating capabilities, but that
+> > > > > still leaves a big gap between vfio in the hypervisor and the driver in
+> > > > > the guest VM.  That might still help push the responsibility and policy
+> > > > > for how to expose it to the VM as a userspace problem though.
+> > > >
+> > > > I think this is a good long term solution, but if the vIOMMU
+> implenentations
+> > > > can carry us for the time being, we can probably defer them unless
+> > > > we are stuck.
+> > > >
+> > > > >
+> > > > > I agree though, I don't know why the SIG would preclude
+> implementing
+> > > > > per VF control of these features.  Thanks,
+> > > > >
+> > > >
+> > > > Cheers,
+> > > > Ashok
+> > >
+> > > Thanks
+> > > Kevin
+> >
+
+_______________________________________________
+iommu mailing list
+iommu@lists.linux-foundation.org
+https://lists.linuxfoundation.org/mailman/listinfo/iommu
