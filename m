@@ -6,70 +6,66 @@ X-Spam-Status: No, score=-2.2 required=3.0 tests=HEADER_FROM_DIFFERENT_DOMAINS,
 	MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED,USER_AGENT_SANE_1
 	autolearn=no autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 58C21C2BB85
-	for <iommu@archiver.kernel.org>; Tue, 14 Apr 2020 06:30:54 +0000 (UTC)
-Received: from hemlock.osuosl.org (smtp2.osuosl.org [140.211.166.133])
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 0DE9BC2BB85
+	for <iommu@archiver.kernel.org>; Tue, 14 Apr 2020 06:35:19 +0000 (UTC)
+Received: from silver.osuosl.org (smtp3.osuosl.org [140.211.166.136])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by mail.kernel.org (Postfix) with ESMTPS id 1166420678
-	for <iommu@archiver.kernel.org>; Tue, 14 Apr 2020 06:30:53 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 1166420678
+	by mail.kernel.org (Postfix) with ESMTPS id DB11820678
+	for <iommu@archiver.kernel.org>; Tue, 14 Apr 2020 06:35:18 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org DB11820678
 Authentication-Results: mail.kernel.org; dmarc=none (p=none dis=none) header.from=lst.de
 Authentication-Results: mail.kernel.org; spf=pass smtp.mailfrom=iommu-bounces@lists.linux-foundation.org
 Received: from localhost (localhost [127.0.0.1])
-	by hemlock.osuosl.org (Postfix) with ESMTP id D6C9487B2B;
-	Tue, 14 Apr 2020 06:30:53 +0000 (UTC)
-X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from hemlock.osuosl.org ([127.0.0.1])
-	by localhost (.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
-	with ESMTP id D1iCcwSOsVkt; Tue, 14 Apr 2020 06:30:53 +0000 (UTC)
-Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [140.211.9.56])
-	by hemlock.osuosl.org (Postfix) with ESMTP id 41C3687B07;
-	Tue, 14 Apr 2020 06:30:53 +0000 (UTC)
-Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
-	by lists.linuxfoundation.org (Postfix) with ESMTP id 251E4C1D7D;
-	Tue, 14 Apr 2020 06:30:53 +0000 (UTC)
-Received: from silver.osuosl.org (smtp3.osuosl.org [140.211.166.136])
- by lists.linuxfoundation.org (Postfix) with ESMTP id E8E11C0172
- for <iommu@lists.linux-foundation.org>; Tue, 14 Apr 2020 06:30:50 +0000 (UTC)
-Received: from localhost (localhost [127.0.0.1])
- by silver.osuosl.org (Postfix) with ESMTP id C0B672044B
- for <iommu@lists.linux-foundation.org>; Tue, 14 Apr 2020 06:30:50 +0000 (UTC)
+	by silver.osuosl.org (Postfix) with ESMTP id 7B5A12044B;
+	Tue, 14 Apr 2020 06:35:18 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
 Received: from silver.osuosl.org ([127.0.0.1])
+	by localhost (.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
+	with ESMTP id AYakqiDag5yc; Tue, 14 Apr 2020 06:35:17 +0000 (UTC)
+Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [140.211.9.56])
+	by silver.osuosl.org (Postfix) with ESMTP id F27ED203D0;
+	Tue, 14 Apr 2020 06:35:16 +0000 (UTC)
+Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
+	by lists.linuxfoundation.org (Postfix) with ESMTP id D92D3C1D7D;
+	Tue, 14 Apr 2020 06:35:16 +0000 (UTC)
+Received: from hemlock.osuosl.org (smtp2.osuosl.org [140.211.166.133])
+ by lists.linuxfoundation.org (Postfix) with ESMTP id 30B33C0172
+ for <iommu@lists.linux-foundation.org>; Tue, 14 Apr 2020 06:35:16 +0000 (UTC)
+Received: from localhost (localhost [127.0.0.1])
+ by hemlock.osuosl.org (Postfix) with ESMTP id 18E4B87B2B
+ for <iommu@lists.linux-foundation.org>; Tue, 14 Apr 2020 06:35:16 +0000 (UTC)
+X-Virus-Scanned: amavisd-new at osuosl.org
+Received: from hemlock.osuosl.org ([127.0.0.1])
  by localhost (.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
- with ESMTP id 4eSTF2U+hFQe for <iommu@lists.linux-foundation.org>;
- Tue, 14 Apr 2020 06:30:49 +0000 (UTC)
+ with ESMTP id mi+tezXT6Lfg for <iommu@lists.linux-foundation.org>;
+ Tue, 14 Apr 2020 06:35:15 +0000 (UTC)
 X-Greylist: from auto-whitelisted by SQLgrey-1.7.6
 Received: from verein.lst.de (verein.lst.de [213.95.11.211])
- by silver.osuosl.org (Postfix) with ESMTPS id 39B8320403
- for <iommu@lists.linux-foundation.org>; Tue, 14 Apr 2020 06:30:49 +0000 (UTC)
+ by hemlock.osuosl.org (Postfix) with ESMTPS id C887387B0F
+ for <iommu@lists.linux-foundation.org>; Tue, 14 Apr 2020 06:35:14 +0000 (UTC)
 Received: by verein.lst.de (Postfix, from userid 2407)
- id E89D5227A81; Tue, 14 Apr 2020 08:30:43 +0200 (CEST)
-Date: Tue, 14 Apr 2020 08:30:43 +0200
+ id B7A7668BEB; Tue, 14 Apr 2020 08:35:11 +0200 (CEST)
+Date: Tue, 14 Apr 2020 08:35:11 +0200
 From: Christoph Hellwig <hch@lst.de>
-To: Alexey Kardashevskiy <aik@ozlabs.ru>
-Subject: Re: [PATCH 1/2] dma-mapping: add a dma_ops_bypass flag to struct
- device
-Message-ID: <20200414063043.GF23154@lst.de>
-References: <20200324075402.GJ23447@lst.de>
- <41975da3-3a4a-fc3c-2b90-8d607cf220e6@ozlabs.ru>
- <20200325083740.GC21605@lst.de>
- <a705afc5-779d-baf4-e5d2-e2da04c82743@ozlabs.ru>
- <213b0c7d-f908-b4f4-466d-6240c3622cd6@ozlabs.ru>
- <20200406115016.GA10941@lst.de>
- <348046e7-7a38-62d6-4df0-e4a537b98926@ozlabs.ru>
- <20200406171706.GA3231@lst.de>
- <95395244-bdec-84d2-b81b-3040c076fe4d@ozlabs.ru>
- <44ad32a4-7ce5-4f4d-8237-53356f76f53a@ozlabs.ru>
+To: David Rientjes <rientjes@google.com>
+Subject: Re: [rfc v2 1/6] dma-remap: separate DMA atomic pools from direct
+ remap code
+Message-ID: <20200414063511.GA23359@lst.de>
+References: <alpine.DEB.2.21.1912311738130.68206@chino.kir.corp.google.com>
+ <b22416ec-cc28-3fd2-3a10-89840be173fa@amd.com>
+ <alpine.DEB.2.21.2002280118461.165532@chino.kir.corp.google.com>
+ <alpine.DEB.2.21.2003011535510.213582@chino.kir.corp.google.com>
+ <alpine.DEB.2.21.2004081418490.19661@chino.kir.corp.google.com>
+ <alpine.DEB.2.21.2004081419190.19661@chino.kir.corp.google.com>
 MIME-Version: 1.0
 Content-Disposition: inline
-In-Reply-To: <44ad32a4-7ce5-4f4d-8237-53356f76f53a@ozlabs.ru>
+In-Reply-To: <alpine.DEB.2.21.2004081419190.19661@chino.kir.corp.google.com>
 User-Agent: Mutt/1.5.17 (2007-11-01)
-Cc: Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
- Robin Murphy <robin.murphy@arm.com>, linux-kernel@vger.kernel.org,
- iommu@lists.linux-foundation.org, Michael Ellerman <mpe@ellerman.id.au>,
- "Aneesh Kumar K.V" <aneesh.kumar@linux.ibm.com>, linuxppc-dev@lists.ozlabs.org,
+Cc: Tom Lendacky <thomas.lendacky@amd.com>, "Singh,
+ Brijesh" <brijesh.singh@amd.com>, "Grimm, Jon" <jon.grimm@amd.com>,
+ "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
+ "iommu@lists.linux-foundation.org" <iommu@lists.linux-foundation.org>,
  Christoph Hellwig <hch@lst.de>
 X-BeenThere: iommu@lists.linux-foundation.org
 X-Mailman-Version: 2.1.15
@@ -88,14 +84,21 @@ Content-Transfer-Encoding: 7bit
 Errors-To: iommu-bounces@lists.linux-foundation.org
 Sender: "iommu" <iommu-bounces@lists.linux-foundation.org>
 
-On Tue, Apr 14, 2020 at 04:21:27PM +1000, Alexey Kardashevskiy wrote:
-> > Good points, I'll post revised version when you post your v3 of this.
-> 
-> 
-> 
-> Any plans on posting v3 of this? Thanks,
+On Wed, Apr 08, 2020 at 02:21:03PM -0700, David Rientjes wrote:
+> +++ b/kernel/dma/pool.c
+> @@ -0,0 +1,125 @@
+> +// SPDX-License-Identifier: GPL-2.0
+> +/*
+> + * Copyright (C) 2012 ARM Ltd.
+> + * Copyright (c) 2014 The Linux Foundation
+> + * Copyright (C) 2020 Google LLC
 
-Just back from a long weekend.  I'll take a stab at it soon.
+Of the old copyrights the LF ones apply to the remapping helpers,
+that are stil in remap.c, so they don't need to be added here.
+
+Otherwise this looks good:
+
+Reviewed-by: Christoph Hellwig <hch@lst.de>
 _______________________________________________
 iommu mailing list
 iommu@lists.linux-foundation.org
