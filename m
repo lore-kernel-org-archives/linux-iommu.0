@@ -6,46 +6,46 @@ X-Spam-Status: No, score=-9.8 required=3.0 tests=HEADER_FROM_DIFFERENT_DOMAINS,
 	INCLUDES_PATCH,MAILING_LIST_MULTI,SIGNED_OFF_BY,SPF_HELO_NONE,SPF_PASS,
 	URIBL_BLOCKED,USER_AGENT_GIT autolearn=ham autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 92FD1C352B6
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 7EEA5C2BB86
 	for <iommu@archiver.kernel.org>; Tue, 14 Apr 2020 13:17:18 +0000 (UTC)
-Received: from fraxinus.osuosl.org (smtp4.osuosl.org [140.211.166.137])
+Received: from silver.osuosl.org (smtp3.osuosl.org [140.211.166.136])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by mail.kernel.org (Postfix) with ESMTPS id 72D082075E
+	by mail.kernel.org (Postfix) with ESMTPS id 5B0DB206A2
 	for <iommu@archiver.kernel.org>; Tue, 14 Apr 2020 13:17:18 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 72D082075E
+DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 5B0DB206A2
 Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=8bytes.org
 Authentication-Results: mail.kernel.org; spf=pass smtp.mailfrom=iommu-bounces@lists.linux-foundation.org
 Received: from localhost (localhost [127.0.0.1])
-	by fraxinus.osuosl.org (Postfix) with ESMTP id 66A1985A78;
+	by silver.osuosl.org (Postfix) with ESMTP id 4D4BB21505;
 	Tue, 14 Apr 2020 13:17:18 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from fraxinus.osuosl.org ([127.0.0.1])
+Received: from silver.osuosl.org ([127.0.0.1])
 	by localhost (.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
-	with ESMTP id KLvVchwkoJTp; Tue, 14 Apr 2020 13:17:15 +0000 (UTC)
+	with ESMTP id rDmL9s7LkHBD; Tue, 14 Apr 2020 13:17:14 +0000 (UTC)
 Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [140.211.9.56])
-	by fraxinus.osuosl.org (Postfix) with ESMTP id 04ABA85D41;
+	by silver.osuosl.org (Postfix) with ESMTP id 727FF2079A;
 	Tue, 14 Apr 2020 13:17:10 +0000 (UTC)
 Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
-	by lists.linuxfoundation.org (Postfix) with ESMTP id DD366C1D7F;
-	Tue, 14 Apr 2020 13:17:09 +0000 (UTC)
+	by lists.linuxfoundation.org (Postfix) with ESMTP id 6D726C1D8D;
+	Tue, 14 Apr 2020 13:17:10 +0000 (UTC)
 Received: from whitealder.osuosl.org (smtp1.osuosl.org [140.211.166.138])
- by lists.linuxfoundation.org (Postfix) with ESMTP id EB623C0172;
- Tue, 14 Apr 2020 13:17:06 +0000 (UTC)
+ by lists.linuxfoundation.org (Postfix) with ESMTP id 13F06C0172;
+ Tue, 14 Apr 2020 13:17:07 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
- by whitealder.osuosl.org (Postfix) with ESMTP id DAA4F86AE3;
+ by whitealder.osuosl.org (Postfix) with ESMTP id 0009E86AE3;
  Tue, 14 Apr 2020 13:17:06 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
 Received: from whitealder.osuosl.org ([127.0.0.1])
  by localhost (.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
- with ESMTP id NL0pd0RkGNQY; Tue, 14 Apr 2020 13:17:05 +0000 (UTC)
+ with ESMTP id x-0kknCVSice; Tue, 14 Apr 2020 13:17:05 +0000 (UTC)
 X-Greylist: from auto-whitelisted by SQLgrey-1.7.6
 X-Greylist: from auto-whitelisted by SQLgrey-1.7.6
 Received: from theia.8bytes.org (8bytes.org [81.169.241.247])
- by whitealder.osuosl.org (Postfix) with ESMTPS id 0A5CB86BAD;
- Tue, 14 Apr 2020 13:16:08 +0000 (UTC)
+ by whitealder.osuosl.org (Postfix) with ESMTPS id 94E0C86B7B;
+ Tue, 14 Apr 2020 13:16:07 +0000 (UTC)
 Received: by theia.8bytes.org (Postfix, from userid 1000)
- id 470097E3; Tue, 14 Apr 2020 15:15:57 +0200 (CEST)
+ id 96EB6768; Tue, 14 Apr 2020 15:15:56 +0200 (CEST)
 From: Joerg Roedel <joro@8bytes.org>
 To: Joerg Roedel <joro@8bytes.org>, Will Deacon <will@kernel.org>,
  Robin Murphy <robin.murphy@arm.com>,
@@ -60,10 +60,10 @@ To: Joerg Roedel <joro@8bytes.org>, Will Deacon <will@kernel.org>,
  Thierry Reding <thierry.reding@gmail.com>,
  Jonathan Hunter <jonathanh@nvidia.com>,
  Jean-Philippe Brucker <jean-philippe@linaro.org>
-Subject: [PATCH v2 30/33] iommu/exynos: Use first SYSMMU in controllers list
- for IOMMU core
-Date: Tue, 14 Apr 2020 15:15:39 +0200
-Message-Id: <20200414131542.25608-31-joro@8bytes.org>
+Subject: [PATCH v2 27/33] iommu/renesas: Convert to probe/release_device()
+ call-backs
+Date: Tue, 14 Apr 2020 15:15:36 +0200
+Message-Id: <20200414131542.25608-28-joro@8bytes.org>
 X-Mailer: git-send-email 2.17.1
 In-Reply-To: <20200414131542.25608-1-joro@8bytes.org>
 References: <20200414131542.25608-1-joro@8bytes.org>
@@ -92,43 +92,123 @@ Sender: "iommu" <iommu-bounces@lists.linux-foundation.org>
 
 From: Joerg Roedel <jroedel@suse.de>
 
-On Exynos platforms there can be more than one SYSMMU (IOMMU) for one
-DMA master device. Since the IOMMU core code expects only one hardware
-IOMMU, use the first SYSMMU in the list.
+Convert the Renesas IOMMU driver to use the probe_device() and
+release_device() call-backs of iommu_ops, so that the iommu core code
+does the group and sysfs setup.
 
 Signed-off-by: Joerg Roedel <jroedel@suse.de>
 ---
- drivers/iommu/exynos-iommu.c | 10 ++++++++++
- 1 file changed, 10 insertions(+)
+ drivers/iommu/ipmmu-vmsa.c | 60 +++++++++++++-------------------------
+ 1 file changed, 20 insertions(+), 40 deletions(-)
 
-diff --git a/drivers/iommu/exynos-iommu.c b/drivers/iommu/exynos-iommu.c
-index 186ff5cc975c..09cdd163560a 100644
---- a/drivers/iommu/exynos-iommu.c
-+++ b/drivers/iommu/exynos-iommu.c
-@@ -1261,6 +1261,11 @@ static int exynos_iommu_add_device(struct device *dev)
- 	}
- 	iommu_group_put(group);
+diff --git a/drivers/iommu/ipmmu-vmsa.c b/drivers/iommu/ipmmu-vmsa.c
+index 310cf09feea3..fb7e702dee23 100644
+--- a/drivers/iommu/ipmmu-vmsa.c
++++ b/drivers/iommu/ipmmu-vmsa.c
+@@ -805,24 +805,8 @@ static int ipmmu_of_xlate(struct device *dev,
+ static int ipmmu_init_arm_mapping(struct device *dev)
+ {
+ 	struct ipmmu_vmsa_device *mmu = to_ipmmu(dev);
+-	struct iommu_group *group;
+ 	int ret;
  
-+	/* There is always at least one entry, see exynos_iommu_of_xlate() */
-+	data = list_first_entry(&owner->controllers,
-+				struct sysmmu_drvdata, owner_node);
-+	iommu_device_link(&data->iommu, dev);
-+
+-	/* Create a device group and add the device to it. */
+-	group = iommu_group_alloc();
+-	if (IS_ERR(group)) {
+-		dev_err(dev, "Failed to allocate IOMMU group\n");
+-		return PTR_ERR(group);
+-	}
+-
+-	ret = iommu_group_add_device(group, dev);
+-	iommu_group_put(group);
+-
+-	if (ret < 0) {
+-		dev_err(dev, "Failed to add device to IPMMU group\n");
+-		return ret;
+-	}
+-
+ 	/*
+ 	 * Create the ARM mapping, used by the ARM DMA mapping core to allocate
+ 	 * VAs. This will allocate a corresponding IOMMU domain.
+@@ -856,48 +840,39 @@ static int ipmmu_init_arm_mapping(struct device *dev)
  	return 0;
+ 
+ error:
+-	iommu_group_remove_device(dev);
+ 	if (mmu->mapping)
+ 		arm_iommu_release_mapping(mmu->mapping);
+ 
+ 	return ret;
  }
  
-@@ -1286,6 +1291,11 @@ static void exynos_iommu_remove_device(struct device *dev)
+-static int ipmmu_add_device(struct device *dev)
++static struct iommu_device *ipmmu_probe_device(struct device *dev)
+ {
+ 	struct ipmmu_vmsa_device *mmu = to_ipmmu(dev);
+-	struct iommu_group *group;
+-	int ret;
  
- 	list_for_each_entry(data, &owner->controllers, owner_node)
- 		device_link_del(data->link);
+ 	/*
+ 	 * Only let through devices that have been verified in xlate()
+ 	 */
+ 	if (!mmu)
+-		return -ENODEV;
++		return ERR_PTR(-ENODEV);
+ 
+-	if (IS_ENABLED(CONFIG_ARM) && !IS_ENABLED(CONFIG_IOMMU_DMA)) {
+-		ret = ipmmu_init_arm_mapping(dev);
+-		if (ret)
+-			return ret;
+-	} else {
+-		group = iommu_group_get_for_dev(dev);
+-		if (IS_ERR(group))
+-			return PTR_ERR(group);
++	return &mmu->iommu;
++}
+ 
+-		iommu_group_put(group);
+-	}
++static void ipmmu_probe_finalize(struct device *dev)
++{
++	int ret = 0;
+ 
+-	iommu_device_link(&mmu->iommu, dev);
+-	return 0;
++	if (IS_ENABLED(CONFIG_ARM) && !IS_ENABLED(CONFIG_IOMMU_DMA))
++		ret = ipmmu_init_arm_mapping(dev);
 +
-+	/* There is always at least one entry, see exynos_iommu_of_xlate() */
-+	data = list_first_entry(&owner->controllers,
-+				struct sysmmu_drvdata, owner_node);
-+	iommu_device_unlink(&data->iommu, dev);
++	if (ret)
++		dev_err(dev, "Can't create IOMMU mapping - DMA-OPS will not work\n");
  }
  
- static int exynos_iommu_of_xlate(struct device *dev,
+-static void ipmmu_remove_device(struct device *dev)
++static void ipmmu_release_device(struct device *dev)
+ {
+-	struct ipmmu_vmsa_device *mmu = to_ipmmu(dev);
+-
+-	iommu_device_unlink(&mmu->iommu, dev);
+ 	arm_iommu_detach_device(dev);
+-	iommu_group_remove_device(dev);
+ }
+ 
+ static struct iommu_group *ipmmu_find_group(struct device *dev)
+@@ -925,9 +900,14 @@ static const struct iommu_ops ipmmu_ops = {
+ 	.flush_iotlb_all = ipmmu_flush_iotlb_all,
+ 	.iotlb_sync = ipmmu_iotlb_sync,
+ 	.iova_to_phys = ipmmu_iova_to_phys,
+-	.add_device = ipmmu_add_device,
+-	.remove_device = ipmmu_remove_device,
++	.probe_device = ipmmu_probe_device,
++	.release_device = ipmmu_release_device,
++	.probe_finalize = ipmmu_probe_finalize,
++#if defined(CONFIG_ARM) && !defined(CONFIG_IOMMU_DMA)
++	.device_group = generic_device_group,
++#else
+ 	.device_group = ipmmu_find_group,
++#endif
+ 	.pgsize_bitmap = SZ_1G | SZ_2M | SZ_4K,
+ 	.of_xlate = ipmmu_of_xlate,
+ };
 -- 
 2.17.1
 
