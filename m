@@ -7,60 +7,60 @@ X-Spam-Status: No, score=-9.6 required=3.0 tests=DKIM_INVALID,DKIM_SIGNED,
 	SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED,USER_AGENT_GIT autolearn=ham
 	autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id D4508C2BA19
-	for <iommu@archiver.kernel.org>; Tue, 14 Apr 2020 13:15:11 +0000 (UTC)
-Received: from silver.osuosl.org (smtp3.osuosl.org [140.211.166.136])
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 68B83C2BA19
+	for <iommu@archiver.kernel.org>; Tue, 14 Apr 2020 13:15:15 +0000 (UTC)
+Received: from whitealder.osuosl.org (smtp1.osuosl.org [140.211.166.138])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by mail.kernel.org (Postfix) with ESMTPS id A77BD20768
-	for <iommu@archiver.kernel.org>; Tue, 14 Apr 2020 13:15:11 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTPS id 3B34F20768
+	for <iommu@archiver.kernel.org>; Tue, 14 Apr 2020 13:15:15 +0000 (UTC)
 Authentication-Results: mail.kernel.org;
-	dkim=fail reason="signature verification failed" (2048-bit key) header.d=infradead.org header.i=@infradead.org header.b="efsgNLHp"
-DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org A77BD20768
+	dkim=fail reason="signature verification failed" (2048-bit key) header.d=infradead.org header.i=@infradead.org header.b="JXYdttdn"
+DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 3B34F20768
 Authentication-Results: mail.kernel.org; dmarc=none (p=none dis=none) header.from=lst.de
 Authentication-Results: mail.kernel.org; spf=pass smtp.mailfrom=iommu-bounces@lists.linux-foundation.org
 Received: from localhost (localhost [127.0.0.1])
-	by silver.osuosl.org (Postfix) with ESMTP id 691152052F;
-	Tue, 14 Apr 2020 13:15:11 +0000 (UTC)
+	by whitealder.osuosl.org (Postfix) with ESMTP id 1552D861E7;
+	Tue, 14 Apr 2020 13:15:15 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from silver.osuosl.org ([127.0.0.1])
+Received: from whitealder.osuosl.org ([127.0.0.1])
 	by localhost (.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
-	with ESMTP id IVT40Y4pGSCs; Tue, 14 Apr 2020 13:15:10 +0000 (UTC)
+	with ESMTP id QVj3GarhRXR2; Tue, 14 Apr 2020 13:15:14 +0000 (UTC)
 Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [140.211.9.56])
-	by silver.osuosl.org (Postfix) with ESMTP id 4BE2920555;
-	Tue, 14 Apr 2020 13:15:10 +0000 (UTC)
+	by whitealder.osuosl.org (Postfix) with ESMTP id 715A3860FF;
+	Tue, 14 Apr 2020 13:15:14 +0000 (UTC)
 Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
-	by lists.linuxfoundation.org (Postfix) with ESMTP id 38B12C1D7D;
-	Tue, 14 Apr 2020 13:15:10 +0000 (UTC)
-Received: from silver.osuosl.org (smtp3.osuosl.org [140.211.166.136])
- by lists.linuxfoundation.org (Postfix) with ESMTP id 4BBBDC0172
- for <iommu@lists.linux-foundation.org>; Tue, 14 Apr 2020 13:15:09 +0000 (UTC)
+	by lists.linuxfoundation.org (Postfix) with ESMTP id 5F1A3C1D7D;
+	Tue, 14 Apr 2020 13:15:14 +0000 (UTC)
+Received: from hemlock.osuosl.org (smtp2.osuosl.org [140.211.166.133])
+ by lists.linuxfoundation.org (Postfix) with ESMTP id 446ECC0172
+ for <iommu@lists.linux-foundation.org>; Tue, 14 Apr 2020 13:15:13 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
- by silver.osuosl.org (Postfix) with ESMTP id 292C420764
- for <iommu@lists.linux-foundation.org>; Tue, 14 Apr 2020 13:15:09 +0000 (UTC)
+ by hemlock.osuosl.org (Postfix) with ESMTP id 32A95879F0
+ for <iommu@lists.linux-foundation.org>; Tue, 14 Apr 2020 13:15:13 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from silver.osuosl.org ([127.0.0.1])
+Received: from hemlock.osuosl.org ([127.0.0.1])
  by localhost (.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
- with ESMTP id N7h9TL83PYRZ for <iommu@lists.linux-foundation.org>;
- Tue, 14 Apr 2020 13:15:08 +0000 (UTC)
+ with ESMTP id HJHCCH2W3P6a for <iommu@lists.linux-foundation.org>;
+ Tue, 14 Apr 2020 13:14:56 +0000 (UTC)
 X-Greylist: from auto-whitelisted by SQLgrey-1.7.6
 Received: from bombadil.infradead.org (bombadil.infradead.org
  [198.137.202.133])
- by silver.osuosl.org (Postfix) with ESMTPS id B243620512
- for <iommu@lists.linux-foundation.org>; Tue, 14 Apr 2020 13:15:07 +0000 (UTC)
+ by hemlock.osuosl.org (Postfix) with ESMTPS id 2CC2386DF0
+ for <iommu@lists.linux-foundation.org>; Tue, 14 Apr 2020 13:14:56 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
  d=infradead.org; s=bombadil.20170209; h=Content-Transfer-Encoding:
  MIME-Version:References:In-Reply-To:Message-Id:Date:Subject:Cc:To:From:Sender
  :Reply-To:Content-Type:Content-ID:Content-Description;
- bh=tYFsPxnL5Cf0xutooZZA35BzCM3FXJLWimeyQwU4Geo=; b=efsgNLHpIN4Yqr2HXTNKVny1ja
- RhW54NXX4njkSCMHQvjm7Ifv3W88BOeKN4BVJFdmqKBn+Hq39bpTnIk/9zF+3R7iZ5ADItXTYxs/T
- GB+rmDWWsKteetqgaAAsSQFaXnWz7cfVUL4O3rb57CERc94sZm33IyCmii25oGkan0JESdDkCtWLD
- 9R7w8VTfPFqpoQoGM/uLMEXjDDeP4lLIFmaRZa0n7fbiJvWGNvpriyAoqbJzAxWzxGDaVIiKp6O9n
- 8UQVzDh4mbS8gOi5U1IUZXQH0by+DSTL/IUiHNEJFj2H1K3Vkwp9Lzn+tMtCKou/z5ti5OwdqIHpa
- jlEnYuxg==;
+ bh=ounqfI9CXMUIXqEGvecn2fVMevKBON5/GtrMu/96rgE=; b=JXYdttdnaHgBP+lrnbNQv+l484
+ AiTLXkeT89LiTTe8UjKuAOXDWRuFGAcQ/0CnDrMoy9ZGKz4sk7r96NGt6CuvaRdpA66qBYAJs0u4x
+ u7ZGjCB5NfHcOgUfTmMxihPOpHU3YzO7ATv3rEodE1mB0A6EDcsMfLgynRGNEoH0URG1N67vsvQ19
+ 2xBcQNMtObO5UAoeqB1qDJY5ftdJr1rvZS8JlFIjADihw193xCv/FJPXcuqN0qXZ02y6IQK+CKIx5
+ yQbDGbmNwBHeYmOIds2Y0zr7VGGy4VAfNmsEEGLFdUk7woS9f96wHe5hQkcMuG6kN1pDBO+UDwMcB
+ 358La5gQ==;
 Received: from [2001:4bb8:180:384b:c70:4a89:bc61:2] (helo=localhost)
  by bombadil.infradead.org with esmtpsa (Exim 4.92.3 #3 (Red Hat Linux))
- id 1jOLOl-0006yj-6V; Tue, 14 Apr 2020 13:14:43 +0000
+ id 1jOLOY-0006i4-0d; Tue, 14 Apr 2020 13:14:30 +0000
 From: Christoph Hellwig <hch@lst.de>
 To: Andrew Morton <akpm@linux-foundation.org>,
  "K. Y. Srinivasan" <kys@microsoft.com>,
@@ -71,10 +71,9 @@ To: Andrew Morton <akpm@linux-foundation.org>,
  Sumit Semwal <sumit.semwal@linaro.org>,
  Sakari Ailus <sakari.ailus@linux.intel.com>,
  Minchan Kim <minchan@kernel.org>, Nitin Gupta <ngupta@vflare.org>
-Subject: [PATCH 15/29] mm: don't return the number of pages from
- map_kernel_range{, _noflush}
-Date: Tue, 14 Apr 2020 15:13:34 +0200
-Message-Id: <20200414131348.444715-16-hch@lst.de>
+Subject: [PATCH 11/29] mm: only allow page table mappings for built-in zsmalloc
+Date: Tue, 14 Apr 2020 15:13:30 +0200
+Message-Id: <20200414131348.444715-12-hch@lst.de>
 X-Mailer: git-send-email 2.25.1
 In-Reply-To: <20200414131348.444715-1-hch@lst.de>
 References: <20200414131348.444715-1-hch@lst.de>
@@ -105,37 +104,56 @@ Content-Transfer-Encoding: 7bit
 Errors-To: iommu-bounces@lists.linux-foundation.org
 Sender: "iommu" <iommu-bounces@lists.linux-foundation.org>
 
-None of the callers needs the number of pages, and a 0 / -errno return
-value is a lot more intuitive.
+This allows to unexport map_vm_area and unmap_kernel_range, which are
+rather deep internal and should not be available to modules, as they for
+example allow fine grained control of mapping permissions, and also
+allow splitting the setup of a vmalloc area and the actual mapping and
+thus expose vmalloc internals.
+
+zsmalloc is typically built-in and continues to work (just like the
+percpu-vm code using a similar patter), while modular zsmalloc also
+continues to work, but must use copies.
 
 Signed-off-by: Christoph Hellwig <hch@lst.de>
 Acked-by: Peter Zijlstra (Intel) <peterz@infradead.org>
 ---
- mm/vmalloc.c | 4 ++--
- 1 file changed, 2 insertions(+), 2 deletions(-)
+ mm/Kconfig   | 2 +-
+ mm/vmalloc.c | 2 --
+ 2 files changed, 1 insertion(+), 3 deletions(-)
 
+diff --git a/mm/Kconfig b/mm/Kconfig
+index 09a9edfb8461..5c0362bd8d56 100644
+--- a/mm/Kconfig
++++ b/mm/Kconfig
+@@ -707,7 +707,7 @@ config ZSMALLOC
+ 
+ config ZSMALLOC_PGTABLE_MAPPING
+ 	bool "Use page table mapping to access object in zsmalloc"
+-	depends on ZSMALLOC
++	depends on ZSMALLOC=y
+ 	help
+ 	  By default, zsmalloc uses a copy-based object mapping method to
+ 	  access allocations that span two pages. However, if a particular
 diff --git a/mm/vmalloc.c b/mm/vmalloc.c
-index a3d810def567..ca8dc5d42580 100644
+index 3375f9508ef6..9183fc0d365a 100644
 --- a/mm/vmalloc.c
 +++ b/mm/vmalloc.c
-@@ -249,7 +249,7 @@ static int vmap_p4d_range(pgd_t *pgd, unsigned long addr,
-  * function.
-  *
-  * RETURNS:
-- * The number of pages mapped on success, -errno on failure.
-+ * 0 on success, -errno on failure.
-  */
- int map_kernel_range_noflush(unsigned long addr, unsigned long size,
- 			     pgprot_t prot, struct page **pages)
-@@ -269,7 +269,7 @@ int map_kernel_range_noflush(unsigned long addr, unsigned long size,
- 			return err;
- 	} while (pgd++, addr = next, addr != end);
- 
--	return nr;
-+	return 0;
+@@ -2046,7 +2046,6 @@ void unmap_kernel_range(unsigned long addr, unsigned long size)
+ 	vunmap_page_range(addr, end);
+ 	flush_tlb_kernel_range(addr, end);
  }
+-EXPORT_SYMBOL_GPL(unmap_kernel_range);
  
- static int map_kernel_range(unsigned long start, unsigned long size,
+ int map_vm_area(struct vm_struct *area, pgprot_t prot, struct page **pages)
+ {
+@@ -2058,7 +2057,6 @@ int map_vm_area(struct vm_struct *area, pgprot_t prot, struct page **pages)
+ 
+ 	return err > 0 ? 0 : err;
+ }
+-EXPORT_SYMBOL_GPL(map_vm_area);
+ 
+ static inline void setup_vmalloc_vm_locked(struct vm_struct *vm,
+ 	struct vmap_area *va, unsigned long flags, const void *caller)
 -- 
 2.25.1
 
