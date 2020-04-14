@@ -4,90 +4,90 @@ X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 X-Spam-Level: 
 X-Spam-Status: No, score=-9.6 required=3.0 tests=DKIM_INVALID,DKIM_SIGNED,
 	HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_PATCH,MAILING_LIST_MULTI,SIGNED_OFF_BY,
-	SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED,USER_AGENT_GIT autolearn=unavailable
+	SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED,USER_AGENT_GIT autolearn=ham
 	autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 0E319C55180
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 3EA6CC55184
 	for <iommu@archiver.kernel.org>; Tue, 14 Apr 2020 17:04:58 +0000 (UTC)
 Received: from whitealder.osuosl.org (smtp1.osuosl.org [140.211.166.138])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by mail.kernel.org (Postfix) with ESMTPS id D63C32075E
-	for <iommu@archiver.kernel.org>; Tue, 14 Apr 2020 17:04:57 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTPS id 136092074D
+	for <iommu@archiver.kernel.org>; Tue, 14 Apr 2020 17:04:58 +0000 (UTC)
 Authentication-Results: mail.kernel.org;
-	dkim=fail reason="signature verification failed" (2048-bit key) header.d=linaro.org header.i=@linaro.org header.b="JI5QkA97"
-DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org D63C32075E
+	dkim=fail reason="signature verification failed" (2048-bit key) header.d=linaro.org header.i=@linaro.org header.b="tSYqciql"
+DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 136092074D
 Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=linaro.org
 Authentication-Results: mail.kernel.org; spf=pass smtp.mailfrom=iommu-bounces@lists.linux-foundation.org
 Received: from localhost (localhost [127.0.0.1])
-	by whitealder.osuosl.org (Postfix) with ESMTP id A90BD86E4F;
+	by whitealder.osuosl.org (Postfix) with ESMTP id D328586E32;
 	Tue, 14 Apr 2020 17:04:57 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
 Received: from whitealder.osuosl.org ([127.0.0.1])
 	by localhost (.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
-	with ESMTP id HhvUJC23Rg33; Tue, 14 Apr 2020 17:04:53 +0000 (UTC)
+	with ESMTP id eP8+myhF6XW3; Tue, 14 Apr 2020 17:04:52 +0000 (UTC)
 Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [140.211.9.56])
-	by whitealder.osuosl.org (Postfix) with ESMTP id 2599686E32;
-	Tue, 14 Apr 2020 17:04:53 +0000 (UTC)
+	by whitealder.osuosl.org (Postfix) with ESMTP id D6CA086E53;
+	Tue, 14 Apr 2020 17:04:52 +0000 (UTC)
 Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
-	by lists.linuxfoundation.org (Postfix) with ESMTP id 1DB30C089E;
-	Tue, 14 Apr 2020 17:04:53 +0000 (UTC)
+	by lists.linuxfoundation.org (Postfix) with ESMTP id BEF1BC089E;
+	Tue, 14 Apr 2020 17:04:52 +0000 (UTC)
 Received: from silver.osuosl.org (smtp3.osuosl.org [140.211.166.136])
- by lists.linuxfoundation.org (Postfix) with ESMTP id 41227C0172
- for <iommu@lists.linux-foundation.org>; Tue, 14 Apr 2020 17:04:52 +0000 (UTC)
+ by lists.linuxfoundation.org (Postfix) with ESMTP id 6342FC0172
+ for <iommu@lists.linux-foundation.org>; Tue, 14 Apr 2020 17:04:51 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
- by silver.osuosl.org (Postfix) with ESMTP id 2BF5421577
- for <iommu@lists.linux-foundation.org>; Tue, 14 Apr 2020 17:04:52 +0000 (UTC)
+ by silver.osuosl.org (Postfix) with ESMTP id 4F5E92156B
+ for <iommu@lists.linux-foundation.org>; Tue, 14 Apr 2020 17:04:51 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
 Received: from silver.osuosl.org ([127.0.0.1])
  by localhost (.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
- with ESMTP id Um0rc2v9s-88 for <iommu@lists.linux-foundation.org>;
- Tue, 14 Apr 2020 17:04:46 +0000 (UTC)
+ with ESMTP id DT7HJSvAwuXB for <iommu@lists.linux-foundation.org>;
+ Tue, 14 Apr 2020 17:04:45 +0000 (UTC)
 X-Greylist: domain auto-whitelisted by SQLgrey-1.7.6
 Received: from mail-wr1-f66.google.com (mail-wr1-f66.google.com
  [209.85.221.66])
- by silver.osuosl.org (Postfix) with ESMTPS id EA7FB2154A
- for <iommu@lists.linux-foundation.org>; Tue, 14 Apr 2020 17:04:45 +0000 (UTC)
-Received: by mail-wr1-f66.google.com with SMTP id f13so15227947wrm.13
- for <iommu@lists.linux-foundation.org>; Tue, 14 Apr 2020 10:04:45 -0700 (PDT)
+ by silver.osuosl.org (Postfix) with ESMTPS id 754B321FF6
+ for <iommu@lists.linux-foundation.org>; Tue, 14 Apr 2020 17:04:44 +0000 (UTC)
+Received: by mail-wr1-f66.google.com with SMTP id j2so15251978wrs.9
+ for <iommu@lists.linux-foundation.org>; Tue, 14 Apr 2020 10:04:44 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linaro.org; s=google;
  h=from:to:cc:subject:date:message-id:in-reply-to:references
  :mime-version:content-transfer-encoding;
- bh=iFQo4eLK0C51ieV33vlbkwWvrpzk0Iu0nUGg4g65CHs=;
- b=JI5QkA97eezOSapi2fPqRY+esAG4E9fuADRTO9KkwAXqshRxQg2LKwGOVpQ8bEJ81f
- 7XPxMj7271i5R78HnNq28pZSLk3B7jV9yN0c4/bTfJRpnWpYm9Lt2jtqPzuqS2HV02Z2
- hkq9kvDb8FIDY1FaOeaNgULZXDgiAcMd9YqMGytbbSvWq4fOyoPZG5zIKdYtbwIwjSXa
- /p9Mczkd/c2xupqo0EB5V5OSAvg3O/E1/F5JPD2SgV6IMuTc6+yiI7lkQVerTEvPWxXm
- XspXwZKvxZ42rz0b7zJEQWuYEyF6WUnRsl/SYo5BgSVSgOvKFQDMOtkvWsn7y2Hxn6V5
- 9ulA==
+ bh=o3CxBoBUQYvmGdKZIOcmkRHgIzTXyZyZ4t2wW/1SA7g=;
+ b=tSYqciqlXtpjJ7vaQSTxjL5MZonaq8ohjbCSix8+DjN0AmayPZAIpS7LY/zTiW9lAV
+ POiAPMbwtCGrqliYceZC5WVj5SXlQqBR90xihQd2WhNlVOzwxkZumgzVIHC8uJ1+X9Ld
+ NY+/1Ctz+wLSZedF+dev8JUV1ocwF1jxxUy+lZv/DbEkXH3kKqGVr6BD+Eki/pfZ/emV
+ B9dC1Qd8PVYzfTTA5YYtlwx2mJZSYHYzkmcH1Br3A9STc52frl2YwBhfk2usMwVWSQHq
+ CdylWdrs5XXvI8yseewVv4rOEzHYZhFARjPFhBzziAmN5msb5YOwMdQkgDktUijog+71
+ /KaQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
  d=1e100.net; s=20161025;
  h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
  :references:mime-version:content-transfer-encoding;
- bh=iFQo4eLK0C51ieV33vlbkwWvrpzk0Iu0nUGg4g65CHs=;
- b=ZFhhBpLHUqQt9WfQwPuY7tT3tTmaZVgVQo9s0Qe9hbQVXhxz4iCCxSPyDVjA1FbpSy
- 4IoGinpFJw9/0XqcCPqT+7pHwLKSfx+GWf/esLM2o+Gfg5lg/+AOSjfMXDkIUle9rnKE
- wKJnmm3K7xx2al8LXaOhC5muWHcvHlJgMnzsAmmylDnIP/evhLyyXMr/XEfvRlFsXtOX
- MCAboLYhmw9bNMDeSzBV8rRo/I4/4B7pVpROfUMAxmxqQK77emsqbnA/t1Pa3KeOQZSz
- 6j/BjEUf+dmMs00SZOqXlNqi7NUOmiVRQcMabmdxbVoG91sG65JCEDB3k10oJo7iZe4c
- bZpQ==
-X-Gm-Message-State: AGi0PubdRHGoO8dQl/gwCr9WyQqGuXA2bQ08qcHk2WJrlXBvOgVhxCW+
- j41+yf1z7ALJ4hd315s5304AbO/DScrF8g==
-X-Google-Smtp-Source: APiQypLZa+lawPw64nTDrcMPpw0HQPprW6BlaWllx/hPptH94lEGFoejVXa1lUE2ugeNThH+6x6yTQ==
-X-Received: by 2002:a5d:4085:: with SMTP id o5mr23364377wrp.327.1586883883718; 
- Tue, 14 Apr 2020 10:04:43 -0700 (PDT)
+ bh=o3CxBoBUQYvmGdKZIOcmkRHgIzTXyZyZ4t2wW/1SA7g=;
+ b=Vu55m0htCzFOpNpSzjCx9Z+8YBP6twTJLVbcklnuugXb3DNLhljClGwq/GDVSZ4mSc
+ nCzy7zPWAKg8pmmwrBsYhmAo7JIf4ffcDObSWfthx8TuN2CNPKqV1Q+TUYSjkMTZFApn
+ /kG3IkyDcG93+b4tWG9pL2xOrQAqXVuADnbKauB7LHrGiw4U9VS69cps4F1svI14GZKp
+ L/SFxWLx7KeDzYMKAZd4mCtajE8grvSwmnqy/iEkPBHTbhC4Omr9DROTPOaQwomo77MP
+ QAd9X22pFmAG17Wy3dZi2s51x4QYrEYh4mEFavJKNKS0OStyTADagftkGgkhLQgq2jrU
+ MU2A==
+X-Gm-Message-State: AGi0Pube/3U4/ug8QHJwEIc9U3mCSQQXFVKWqmCS6Vdk38PLn+iaBx1r
+ 6cYA/RcrGsCke4FlvkAqF+Ipy9Ss+waXXQ==
+X-Google-Smtp-Source: APiQypIIDp3Aj7gJSpVJ/LpltmID+bFQ6t9Z5J6KgWOyiu1YsJcaTx88+obo6kMWqL+PJTWdhscFwQ==
+X-Received: by 2002:a5d:610e:: with SMTP id v14mr15760928wrt.159.1586883882233; 
+ Tue, 14 Apr 2020 10:04:42 -0700 (PDT)
 Received: from localhost.localdomain
  ([2001:171b:226b:54a0:116c:c27a:3e7f:5eaf])
- by smtp.gmail.com with ESMTPSA id x18sm19549147wrs.11.2020.04.14.10.04.42
+ by smtp.gmail.com with ESMTPSA id x18sm19549147wrs.11.2020.04.14.10.04.41
  (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
- Tue, 14 Apr 2020 10:04:43 -0700 (PDT)
+ Tue, 14 Apr 2020 10:04:41 -0700 (PDT)
 From: Jean-Philippe Brucker <jean-philippe@linaro.org>
 To: iommu@lists.linux-foundation.org, devicetree@vger.kernel.org,
  linux-arm-kernel@lists.infradead.org, linux-pci@vger.kernel.org,
  linux-mm@kvack.org
-Subject: [PATCH v5 18/25] iommu/arm-smmu-v3: Hook up ATC invalidation to mm ops
-Date: Tue, 14 Apr 2020 19:02:46 +0200
-Message-Id: <20200414170252.714402-19-jean-philippe@linaro.org>
+Subject: [PATCH v5 17/25] iommu/arm-smmu-v3: Implement mm operations
+Date: Tue, 14 Apr 2020 19:02:45 +0200
+Message-Id: <20200414170252.714402-18-jean-philippe@linaro.org>
 X-Mailer: git-send-email 2.26.0
 In-Reply-To: <20200414170252.714402-1-jean-philippe@linaro.org>
 References: <20200414170252.714402-1-jean-philippe@linaro.org>
@@ -112,141 +112,336 @@ Content-Transfer-Encoding: 7bit
 Errors-To: iommu-bounces@lists.linux-foundation.org
 Sender: "iommu" <iommu-bounces@lists.linux-foundation.org>
 
-iommu-sva calls us when an mm is modified. Perform the required ATC
-invalidations.
+Hook SVA operations to support sharing page tables with the SMMUv3:
+
+* dev_enable/disable/has_feature for device drivers to modify the SVA
+  state.
+* sva_bind/unbind and sva_get_pasid to bind device and address spaces.
+* The mm_attach/detach/clear/invalidate/free callbacks from iommu-sva
+
+The clear() operation has to detach the page tables while DMA may still
+be running (because the process died). To avoid any event 0x0a print
+(C_BAD_CD) we disable translation and error reporting, without clearing
+CD.V. PCIe Translation Requests and Page Requests are silently denied.
+The detach() operation always happens whether or not clear() was
+invoked, and properly disables the CD.
 
 Signed-off-by: Jean-Philippe Brucker <jean-philippe@linaro.org>
 ---
-v4->v5: more comments
+v4->v5: Add clear() operation
 ---
- drivers/iommu/arm-smmu-v3.c | 70 ++++++++++++++++++++++++++++++-------
- 1 file changed, 58 insertions(+), 12 deletions(-)
+ drivers/iommu/Kconfig       |   1 +
+ drivers/iommu/arm-smmu-v3.c | 214 +++++++++++++++++++++++++++++++++++-
+ 2 files changed, 211 insertions(+), 4 deletions(-)
 
+diff --git a/drivers/iommu/Kconfig b/drivers/iommu/Kconfig
+index 411a7ee2ab12d..8118f090a51b3 100644
+--- a/drivers/iommu/Kconfig
++++ b/drivers/iommu/Kconfig
+@@ -435,6 +435,7 @@ config ARM_SMMU_V3
+ 	tristate "ARM Ltd. System MMU Version 3 (SMMUv3) Support"
+ 	depends on ARM64
+ 	select IOMMU_API
++	select IOMMU_SVA
+ 	select IOMMU_IO_PGTABLE_LPAE
+ 	select GENERIC_MSI_IRQ_DOMAIN
+ 	help
 diff --git a/drivers/iommu/arm-smmu-v3.c b/drivers/iommu/arm-smmu-v3.c
-index 6640c2ac2a7c5..c4bffb14461aa 100644
+index d209d85402a83..6640c2ac2a7c5 100644
 --- a/drivers/iommu/arm-smmu-v3.c
 +++ b/drivers/iommu/arm-smmu-v3.c
-@@ -2375,6 +2375,20 @@ arm_smmu_atc_inv_to_cmd(int ssid, unsigned long iova, size_t size,
- 	size_t inval_grain_shift = 12;
- 	unsigned long page_start, page_end;
+@@ -36,6 +36,7 @@
+ #include <linux/amba/bus.h>
+ 
+ #include "io-pgtable-arm.h"
++#include "iommu-sva.h"
+ 
+ /* MMIO registers */
+ #define ARM_SMMU_IDR0			0x0
+@@ -739,6 +740,13 @@ struct arm_smmu_option_prop {
+ static DEFINE_XARRAY_ALLOC1(asid_xa);
+ static DEFINE_SPINLOCK(contexts_lock);
+ 
++/*
++ * When a process dies, DMA is still running but we need to clear the pgd. If we
++ * simply cleared the valid bit from the context descriptor, we'd get event 0x0a
++ * which are not recoverable.
++ */
++static struct arm_smmu_ctx_desc invalid_cd = { 0 };
++
+ static struct arm_smmu_option_prop arm_smmu_options[] = {
+ 	{ ARM_SMMU_OPT_SKIP_PREFETCH, "hisilicon,broken-prefetch-cmd" },
+ 	{ ARM_SMMU_OPT_PAGE0_REGS_ONLY, "cavium,cn9900-broken-page1-regspace"},
+@@ -1649,7 +1657,9 @@ static int __arm_smmu_write_ctx_desc(struct arm_smmu_domain *smmu_domain,
+ 	 * (2) Install a secondary CD, for SID+SSID traffic.
+ 	 * (3) Update ASID of a CD. Atomically write the first 64 bits of the
+ 	 *     CD, then invalidate the old entry and mappings.
+-	 * (4) Remove a secondary CD.
++	 * (4) Quiesce the context without clearing the valid bit. Disable
++	 *     translation, and ignore any translation fault.
++	 * (5) Remove a secondary CD.
+ 	 */
+ 	u64 val;
+ 	bool cd_live;
+@@ -1666,8 +1676,11 @@ static int __arm_smmu_write_ctx_desc(struct arm_smmu_domain *smmu_domain,
+ 	val = le64_to_cpu(cdptr[0]);
+ 	cd_live = !!(val & CTXDESC_CD_0_V);
+ 
+-	if (!cd) { /* (4) */
++	if (!cd) { /* (5) */
+ 		val = 0;
++	} else if (cd == &invalid_cd) { /* (4) */
++		val &= ~(CTXDESC_CD_0_S | CTXDESC_CD_0_R);
++		val |= CTXDESC_CD_0_TCR_EPD0;
+ 	} else if (cd_live) { /* (3) */
+ 		val &= ~CTXDESC_CD_0_ASID;
+ 		val |= FIELD_PREP(CTXDESC_CD_0_ASID, cd->asid);
+@@ -1884,7 +1897,6 @@ static struct arm_smmu_ctx_desc *arm_smmu_share_asid(u16 asid)
+ 	return NULL;
+ }
+ 
+-__maybe_unused
+ static struct arm_smmu_ctx_desc *arm_smmu_alloc_shared_cd(struct mm_struct *mm)
+ {
+ 	u16 asid;
+@@ -1978,7 +1990,6 @@ static struct arm_smmu_ctx_desc *arm_smmu_alloc_shared_cd(struct mm_struct *mm)
+ 	return ERR_PTR(ret);
+ }
+ 
+-__maybe_unused
+ static void arm_smmu_free_shared_cd(struct arm_smmu_ctx_desc *cd)
+ {
+ 	if (arm_smmu_free_asid(cd)) {
+@@ -3008,6 +3019,16 @@ static int arm_smmu_attach_dev(struct iommu_domain *domain, struct device *dev)
+ 	master = dev_iommu_priv_get(dev);
+ 	smmu = master->smmu;
  
 +	/*
-+	 * ATS and PASID:
-+	 *
-+	 * If substream_valid is clear, the PCIe TLP is sent without a PASID
-+	 * prefix. In that case all ATC entries within the address range are
-+	 * invalidated, including those that were requested with a PASID! There
-+	 * is no way to invalidate only entries without PASID.
-+	 *
-+	 * When using STRTAB_STE_1_S1DSS_SSID0 (reserving CD 0 for non-PASID
-+	 * traffic), translation requests without PASID create ATC entries
-+	 * without PASID, which must be invalidated with substream_valid clear.
-+	 * This has the unpleasant side-effect of invalidating all PASID-tagged
-+	 * ATC entries within the address range.
++	 * Checking that SVA is disabled ensures that this device isn't bound to
++	 * any mm, and can be safely detached from its old domain. Bonds cannot
++	 * be removed concurrently since we're holding the group mutex.
 +	 */
- 	*cmd = (struct arm_smmu_cmdq_ent) {
- 		.opcode			= CMDQ_OP_ATC_INV,
- 		.substream_valid	= !!ssid,
-@@ -2418,12 +2432,12 @@ arm_smmu_atc_inv_to_cmd(int ssid, unsigned long iova, size_t size,
- 	cmd->atc.size	= log2_span;
- }
- 
--static int arm_smmu_atc_inv_master(struct arm_smmu_master *master)
-+static int arm_smmu_atc_inv_master(struct arm_smmu_master *master, int ssid)
- {
- 	int i;
- 	struct arm_smmu_cmdq_ent cmd;
- 
--	arm_smmu_atc_inv_to_cmd(0, 0, 0, &cmd);
-+	arm_smmu_atc_inv_to_cmd(ssid, 0, 0, &cmd);
- 
- 	for (i = 0; i < master->num_sids; i++) {
- 		cmd.atc.sid = master->sids[i];
-@@ -2934,7 +2948,7 @@ static void arm_smmu_disable_ats(struct arm_smmu_master *master)
- 	 * ATC invalidation via the SMMU.
- 	 */
- 	wmb();
--	arm_smmu_atc_inv_master(master);
-+	arm_smmu_atc_inv_master(master, 0);
- 	atomic_dec(&smmu_domain->nr_ats_masters);
- }
- 
-@@ -3131,7 +3145,22 @@ arm_smmu_iova_to_phys(struct iommu_domain *domain, dma_addr_t iova)
- static void arm_smmu_mm_invalidate(struct device *dev, int pasid, void *entry,
- 				   unsigned long iova, size_t size)
- {
--	/* TODO: Invalidate ATC */
-+	int i;
-+	struct arm_smmu_cmdq_ent cmd;
-+	struct arm_smmu_cmdq_batch cmds = {};
-+	struct arm_smmu_master *master = dev_iommu_priv_get(dev);
-+
-+	if (!master->ats_enabled)
-+		return;
-+
-+	arm_smmu_atc_inv_to_cmd(pasid, iova, size, &cmd);
-+
-+	for (i = 0; i < master->num_sids; i++) {
-+		cmd.atc.sid = master->sids[i];
-+		arm_smmu_cmdq_batch_add(master->smmu, &cmds, &cmd);
++	if (iommu_sva_enabled(dev)) {
++		dev_err(dev, "cannot attach - SVA enabled\n");
++		return -EBUSY;
 +	}
 +
-+	arm_smmu_cmdq_batch_submit(master->smmu, &cmds);
+ 	arm_smmu_detach_dev(master);
+ 
+ 	mutex_lock(&smmu_domain->init_mutex);
+@@ -3107,6 +3128,99 @@ arm_smmu_iova_to_phys(struct iommu_domain *domain, dma_addr_t iova)
+ 	return ops->iova_to_phys(ops, iova);
  }
  
- static int arm_smmu_mm_attach(struct device *dev, int pasid, void *entry,
-@@ -3168,26 +3197,43 @@ static void arm_smmu_mm_clear(struct device *dev, int pasid, void *entry)
- 	 * for this ASID, so we need to do it manually.
- 	 */
- 	arm_smmu_tlb_inv_asid(smmu_domain->smmu, cd->asid);
--
--	/* TODO: invalidate ATC */
-+	arm_smmu_atc_inv_domain(smmu_domain, pasid, 0, 0);
- }
- 
- static void arm_smmu_mm_detach(struct device *dev, int pasid, void *entry,
- 			       bool detach_domain, bool cleared)
- {
- 	struct arm_smmu_ctx_desc *cd = entry;
-+	struct arm_smmu_master *master = dev_iommu_priv_get(dev);
- 	struct iommu_domain *domain = iommu_get_domain_for_dev(dev);
- 	struct arm_smmu_domain *smmu_domain = to_smmu_domain(domain);
- 
--	if (detach_domain) {
-+	if (detach_domain)
- 		arm_smmu_write_ctx_desc(smmu_domain, pasid, NULL);
- 
--		if (!cleared)
--			/* See comment in arm_smmu_mm_clear() */
--			arm_smmu_tlb_inv_asid(smmu_domain->smmu, cd->asid);
--	}
++static void arm_smmu_mm_invalidate(struct device *dev, int pasid, void *entry,
++				   unsigned long iova, size_t size)
++{
++	/* TODO: Invalidate ATC */
++}
++
++static int arm_smmu_mm_attach(struct device *dev, int pasid, void *entry,
++			      bool attach_domain)
++{
++	struct arm_smmu_ctx_desc *cd = entry;
++	struct iommu_domain *domain = iommu_get_domain_for_dev(dev);
++	struct arm_smmu_domain *smmu_domain = to_smmu_domain(domain);
++
 +	/*
-+	 * If we went through clear(), we've already invalidated, and no new TLB
-+	 * entry can have been formed.
++	 * If another device in the domain has already been attached, the
++	 * context descriptor is already valid.
 +	 */
-+	if (cleared)
-+		return;
++	if (!attach_domain)
++		return 0;
++
++	return arm_smmu_write_ctx_desc(smmu_domain, pasid, cd);
++}
++
++static void arm_smmu_mm_clear(struct device *dev, int pasid, void *entry)
++{
++	struct arm_smmu_ctx_desc *cd = entry;
++	struct iommu_domain *domain = iommu_get_domain_for_dev(dev);
++	struct arm_smmu_domain *smmu_domain = to_smmu_domain(domain);
++
++	/*
++	 * DMA may still be running. Keep the cd valid but disable
++	 * translation, so that new events will still result in stall.
++	 */
++	arm_smmu_write_ctx_desc(smmu_domain, pasid, &invalid_cd);
++
++	/*
++	 * The ASID allocator won't broadcast the final TLB invalidations
++	 * for this ASID, so we need to do it manually.
++	 */
++	arm_smmu_tlb_inv_asid(smmu_domain->smmu, cd->asid);
++
++	/* TODO: invalidate ATC */
++}
++
++static void arm_smmu_mm_detach(struct device *dev, int pasid, void *entry,
++			       bool detach_domain, bool cleared)
++{
++	struct arm_smmu_ctx_desc *cd = entry;
++	struct iommu_domain *domain = iommu_get_domain_for_dev(dev);
++	struct arm_smmu_domain *smmu_domain = to_smmu_domain(domain);
 +
 +	if (detach_domain) {
-+		/* See comment in arm_smmu_mm_clear() */
-+		arm_smmu_tlb_inv_asid(smmu_domain->smmu, cd->asid);
-+		arm_smmu_atc_inv_domain(smmu_domain, pasid, 0, 0);
- 
--	/* TODO: invalidate ATC */
-+	} else if (master->ats_enabled) {
-+		/*
-+		 * There are more devices bound with this PASID in this domain,
-+		 * so we cannot yet clear the PASID entry, and this device could
-+		 * create new ATC entries. Invalidate the ATC for the sake of
-+		 * it. On unbinding the last device we'll properly invalidate
-+		 * all ATCs in the domain. Alternatively, an early detach_dev()
-+		 * on this device will also flush the ATC.
-+		 */
-+		arm_smmu_atc_inv_master(master, pasid);
++		arm_smmu_write_ctx_desc(smmu_domain, pasid, NULL);
++
++		if (!cleared)
++			/* See comment in arm_smmu_mm_clear() */
++			arm_smmu_tlb_inv_asid(smmu_domain->smmu, cd->asid);
 +	}
++
++	/* TODO: invalidate ATC */
++}
++
++static void *arm_smmu_mm_alloc(struct mm_struct *mm)
++{
++	return arm_smmu_alloc_shared_cd(mm);
++}
++
++static void arm_smmu_mm_free(void *entry)
++{
++	arm_smmu_free_shared_cd(entry);
++}
++
++static struct io_mm_ops arm_smmu_mm_ops = {
++	.alloc		= arm_smmu_mm_alloc,
++	.invalidate	= arm_smmu_mm_invalidate,
++	.attach		= arm_smmu_mm_attach,
++	.clear		= arm_smmu_mm_clear,
++	.detach		= arm_smmu_mm_detach,
++	.free		= arm_smmu_mm_free,
++};
++
++static struct iommu_sva *
++arm_smmu_sva_bind(struct device *dev, struct mm_struct *mm, void *drvdata)
++{
++	struct iommu_domain *domain = iommu_get_domain_for_dev(dev);
++	struct arm_smmu_domain *smmu_domain = to_smmu_domain(domain);
++
++	if (smmu_domain->stage != ARM_SMMU_DOMAIN_S1)
++		return ERR_PTR(-EINVAL);
++
++	return iommu_sva_bind_generic(dev, mm, &arm_smmu_mm_ops, drvdata);
++}
++
+ static struct platform_driver arm_smmu_driver;
+ 
+ static
+@@ -3225,6 +3339,7 @@ static void arm_smmu_remove_device(struct device *dev)
+ 
+ 	master = dev_iommu_priv_get(dev);
+ 	smmu = master->smmu;
++	WARN_ON(iommu_sva_disable(dev));
+ 	arm_smmu_detach_dev(master);
+ 	iommu_group_remove_device(dev);
+ 	iommu_device_unlink(&smmu->iommu, dev);
+@@ -3344,6 +3459,90 @@ static void arm_smmu_get_resv_regions(struct device *dev,
+ 	iommu_dma_get_resv_regions(dev, head);
  }
  
- static void *arm_smmu_mm_alloc(struct mm_struct *mm)
++static bool arm_smmu_iopf_supported(struct arm_smmu_master *master)
++{
++	return false;
++}
++
++static bool arm_smmu_dev_has_feature(struct device *dev,
++				     enum iommu_dev_features feat)
++{
++	struct arm_smmu_master *master = dev_iommu_priv_get(dev);
++
++	if (!master)
++		return false;
++
++	switch (feat) {
++	case IOMMU_DEV_FEAT_SVA:
++		if (!(master->smmu->features & ARM_SMMU_FEAT_SVA))
++			return false;
++
++		/* SSID and IOPF support are mandatory for the moment */
++		return master->ssid_bits && arm_smmu_iopf_supported(master);
++	default:
++		return false;
++	}
++}
++
++static bool arm_smmu_dev_feature_enabled(struct device *dev,
++					 enum iommu_dev_features feat)
++{
++	struct arm_smmu_master *master = dev_iommu_priv_get(dev);
++
++	if (!master)
++		return false;
++
++	switch (feat) {
++	case IOMMU_DEV_FEAT_SVA:
++		return iommu_sva_enabled(dev);
++	default:
++		return false;
++	}
++}
++
++static int arm_smmu_dev_enable_sva(struct device *dev)
++{
++	struct arm_smmu_master *master = dev_iommu_priv_get(dev);
++	struct iommu_sva_param param = {
++		.min_pasid = 1,
++		.max_pasid = 0xfffffU,
++	};
++
++	param.max_pasid = min(param.max_pasid, (1U << master->ssid_bits) - 1);
++	return iommu_sva_enable(dev, &param);
++}
++
++static int arm_smmu_dev_enable_feature(struct device *dev,
++				       enum iommu_dev_features feat)
++{
++	if (!arm_smmu_dev_has_feature(dev, feat))
++		return -ENODEV;
++
++	if (arm_smmu_dev_feature_enabled(dev, feat))
++		return -EBUSY;
++
++	switch (feat) {
++	case IOMMU_DEV_FEAT_SVA:
++		return arm_smmu_dev_enable_sva(dev);
++	default:
++		return -EINVAL;
++	}
++}
++
++static int arm_smmu_dev_disable_feature(struct device *dev,
++					enum iommu_dev_features feat)
++{
++	if (!arm_smmu_dev_feature_enabled(dev, feat))
++		return -EINVAL;
++
++	switch (feat) {
++	case IOMMU_DEV_FEAT_SVA:
++		return iommu_sva_disable(dev);
++	default:
++		return -EINVAL;
++	}
++}
++
+ static struct iommu_ops arm_smmu_ops = {
+ 	.capable		= arm_smmu_capable,
+ 	.domain_alloc		= arm_smmu_domain_alloc,
+@@ -3362,6 +3561,13 @@ static struct iommu_ops arm_smmu_ops = {
+ 	.of_xlate		= arm_smmu_of_xlate,
+ 	.get_resv_regions	= arm_smmu_get_resv_regions,
+ 	.put_resv_regions	= generic_iommu_put_resv_regions,
++	.dev_has_feat		= arm_smmu_dev_has_feature,
++	.dev_feat_enabled	= arm_smmu_dev_feature_enabled,
++	.dev_enable_feat	= arm_smmu_dev_enable_feature,
++	.dev_disable_feat	= arm_smmu_dev_disable_feature,
++	.sva_bind		= arm_smmu_sva_bind,
++	.sva_unbind		= iommu_sva_unbind_generic,
++	.sva_get_pasid		= iommu_sva_get_pasid_generic,
+ 	.pgsize_bitmap		= -1UL, /* Restricted during device attach */
+ };
+ 
 -- 
 2.26.0
 
