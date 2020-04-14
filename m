@@ -7,87 +7,87 @@ X-Spam-Status: No, score=-9.6 required=3.0 tests=DKIM_INVALID,DKIM_SIGNED,
 	SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED,USER_AGENT_GIT autolearn=ham
 	autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 4C745C54FC9
-	for <iommu@archiver.kernel.org>; Tue, 14 Apr 2020 17:04:38 +0000 (UTC)
-Received: from silver.osuosl.org (smtp3.osuosl.org [140.211.166.136])
+	by smtp.lore.kernel.org (Postfix) with ESMTP id EECD9C54FD0
+	for <iommu@archiver.kernel.org>; Tue, 14 Apr 2020 17:04:39 +0000 (UTC)
+Received: from fraxinus.osuosl.org (smtp4.osuosl.org [140.211.166.137])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by mail.kernel.org (Postfix) with ESMTPS id 196C9206A2
-	for <iommu@archiver.kernel.org>; Tue, 14 Apr 2020 17:04:37 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTPS id BC7EC2074D
+	for <iommu@archiver.kernel.org>; Tue, 14 Apr 2020 17:04:39 +0000 (UTC)
 Authentication-Results: mail.kernel.org;
-	dkim=fail reason="signature verification failed" (2048-bit key) header.d=linaro.org header.i=@linaro.org header.b="s8kwev4q"
-DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 196C9206A2
+	dkim=fail reason="signature verification failed" (2048-bit key) header.d=linaro.org header.i=@linaro.org header.b="po6t4my3"
+DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org BC7EC2074D
 Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=linaro.org
 Authentication-Results: mail.kernel.org; spf=pass smtp.mailfrom=iommu-bounces@lists.linux-foundation.org
 Received: from localhost (localhost [127.0.0.1])
-	by silver.osuosl.org (Postfix) with ESMTP id C7C5521514;
-	Tue, 14 Apr 2020 17:04:37 +0000 (UTC)
+	by fraxinus.osuosl.org (Postfix) with ESMTP id A9CBD85C52;
+	Tue, 14 Apr 2020 17:04:39 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from silver.osuosl.org ([127.0.0.1])
+Received: from fraxinus.osuosl.org ([127.0.0.1])
 	by localhost (.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
-	with ESMTP id sF-mM2uUDy1p; Tue, 14 Apr 2020 17:04:33 +0000 (UTC)
+	with ESMTP id i5ZIN9XdpJhM; Tue, 14 Apr 2020 17:04:35 +0000 (UTC)
 Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [140.211.9.56])
-	by silver.osuosl.org (Postfix) with ESMTP id 34E402152E;
-	Tue, 14 Apr 2020 17:04:33 +0000 (UTC)
+	by fraxinus.osuosl.org (Postfix) with ESMTP id 71BCB85DD1;
+	Tue, 14 Apr 2020 17:04:35 +0000 (UTC)
 Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
-	by lists.linuxfoundation.org (Postfix) with ESMTP id 03FF5C089E;
-	Tue, 14 Apr 2020 17:04:33 +0000 (UTC)
-Received: from silver.osuosl.org (smtp3.osuosl.org [140.211.166.136])
- by lists.linuxfoundation.org (Postfix) with ESMTP id 46C33C0172
- for <iommu@lists.linux-foundation.org>; Tue, 14 Apr 2020 17:04:31 +0000 (UTC)
+	by lists.linuxfoundation.org (Postfix) with ESMTP id 60EA7C089E;
+	Tue, 14 Apr 2020 17:04:35 +0000 (UTC)
+Received: from whitealder.osuosl.org (smtp1.osuosl.org [140.211.166.138])
+ by lists.linuxfoundation.org (Postfix) with ESMTP id B032DC0172
+ for <iommu@lists.linux-foundation.org>; Tue, 14 Apr 2020 17:04:33 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
- by silver.osuosl.org (Postfix) with ESMTP id 304012154E
- for <iommu@lists.linux-foundation.org>; Tue, 14 Apr 2020 17:04:31 +0000 (UTC)
+ by whitealder.osuosl.org (Postfix) with ESMTP id 8D3EB86DEA
+ for <iommu@lists.linux-foundation.org>; Tue, 14 Apr 2020 17:04:33 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from silver.osuosl.org ([127.0.0.1])
+Received: from whitealder.osuosl.org ([127.0.0.1])
  by localhost (.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
- with ESMTP id F7upkVSSU7Nw for <iommu@lists.linux-foundation.org>;
- Tue, 14 Apr 2020 17:04:25 +0000 (UTC)
+ with ESMTP id tPzDljnlcG+5 for <iommu@lists.linux-foundation.org>;
+ Tue, 14 Apr 2020 17:04:29 +0000 (UTC)
 X-Greylist: domain auto-whitelisted by SQLgrey-1.7.6
-Received: from mail-wm1-f68.google.com (mail-wm1-f68.google.com
- [209.85.128.68])
- by silver.osuosl.org (Postfix) with ESMTPS id 76AA8203A4
- for <iommu@lists.linux-foundation.org>; Tue, 14 Apr 2020 17:04:25 +0000 (UTC)
-Received: by mail-wm1-f68.google.com with SMTP id x25so13829645wmc.0
- for <iommu@lists.linux-foundation.org>; Tue, 14 Apr 2020 10:04:25 -0700 (PDT)
+Received: from mail-wm1-f65.google.com (mail-wm1-f65.google.com
+ [209.85.128.65])
+ by whitealder.osuosl.org (Postfix) with ESMTPS id E917286DAB
+ for <iommu@lists.linux-foundation.org>; Tue, 14 Apr 2020 17:04:28 +0000 (UTC)
+Received: by mail-wm1-f65.google.com with SMTP id o81so8229749wmo.2
+ for <iommu@lists.linux-foundation.org>; Tue, 14 Apr 2020 10:04:28 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linaro.org; s=google;
  h=from:to:cc:subject:date:message-id:in-reply-to:references
  :mime-version:content-transfer-encoding;
- bh=VGMc5wLgmgx1eLWq9RQ7RG7NMxWRw2tpIDY5WHUtd3w=;
- b=s8kwev4qB+FwMlvJnZIEgUlpsfPv5PqQmyfezwvPiaaBckIACLW3XMkbvKRq6DnKDi
- t2UKqeUTPQYcigtkMp+zlJsyJsWC29+hzyF/YILdw1kem5LX+rUdahvgddngTIewGKPI
- Ls9qOOWbX1+GZLw2eHVDQ0C+3Q+XuIo7i0CpC5yzUkrPvbUvTws6yMxrz4kHGk4gH7S2
- lLF7B3VkEZoHfACdrS90vN31rEj3/80zND2C7VWgfzHYgNywd5gdWfI831crvwFJA6Fr
- T0J9K0/WC/Dm3PeoZXFwuI8vTy1x6RYRQz3w1oY7B7IC5RAT8PsArjVC3oEpvuMEqYG7
- NofQ==
+ bh=GCsqjS+Tnwu1hr3WMvNuD+P9uXkPM0pVKS2lTlLCiJU=;
+ b=po6t4my3Go9g7beq4oi5gBqHe0K8I8gLjjolwSf6g7Inuex/2pKCElDmTw05chnprB
+ VpcDmTm9mJndKQ44OUnWiFNGWAnRefKxTsOEpgZkGH6fmib0dAJkrwdNZzEReQlfHRLw
+ zmHfO/enRYNLngF50Q/ItNGZfOVNZOP1Wjn1Tm/UzlvI3Aq2ub4XSW6+HyraLp5KrRtN
+ gUQ66eIR/V7LC06nJlZF2rLHNx0sFnWE5LcK9o3Z9V83oIkL5irCCS39MKos1xZK1qWT
+ MZY9xrqkkCHiVCztI/hzFS5XxD5U/SGIE/6AMMBqlAMbF3wtNCRxo5V2z/5fM3LcFagm
+ S0GQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
  d=1e100.net; s=20161025;
  h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
  :references:mime-version:content-transfer-encoding;
- bh=VGMc5wLgmgx1eLWq9RQ7RG7NMxWRw2tpIDY5WHUtd3w=;
- b=MOiWG5sBu1uxXo6Z4ROzT4zF1YcxNriCNiPCsAVPJruJrQ5QexsUf9oMnlb5GYCxIq
- CraHrMy3FnFkbeMU8O8QNOlJJ1lp0BbxEmbSJL51hDDyv9+6XA0G72swYgGxUD5lpYvi
- uIth7UEi8vzno/ZmdzkoS8XuDNKzAj1PrxqBJbemHaYojuNBbHblzow49hldkb0oLttR
- megB16SDn1AZJQyDDrM0zSpBaR/kIlgG/WYyhIeF78U9SkmAupVmw/vyxd9qhQJVnpru
- 05qlYAjG5qrie/1nvf9XOR8bIPu85geCumlTcWmfcITJpHHcI1Wbnpqsu1ycvR4miick
- lKog==
-X-Gm-Message-State: AGi0Pub1stikKbGZuXiaVPGdoOt/Veh69PoQYRLE4lwvj8MOgvTm4Qcd
- RP1FyEeQL2FkEro2DOwqRbhBlnxNJ2JK8A==
-X-Google-Smtp-Source: APiQypL42n0W5SIMAbcNDaJARHcsQO61MSaD9RMrsbqmlsVv6uHGjdhQFjv16aEzCb2QZXgo0ox3nw==
-X-Received: by 2002:a1c:e906:: with SMTP id q6mr775518wmc.62.1586883863302;
- Tue, 14 Apr 2020 10:04:23 -0700 (PDT)
+ bh=GCsqjS+Tnwu1hr3WMvNuD+P9uXkPM0pVKS2lTlLCiJU=;
+ b=NseOVHeeYpoTh+wG5QIr9769CsroUwsXi+ElKk8d25vkcfoJZnQtqWyPm0PfUpOjJx
+ iJW7AuB1xdovi8Zkq8RtkPSQJs28O9MJHntUghSq/gBPIBc+0ODzpThUWPGr0eK0lwkO
+ KGMm/P57phsxJHXRSe2cVKS0zJfWJyHoIsBeaLgLUeTio/kFn9K0Skks8gdZeYZd6l4T
+ yUp9XFmDKiAJrElLnhWfIQvSd6CfnvcnfzIviG8D0sx3pCv76Lo+d5dKtT3uZuvnciVD
+ YskJT1ah0fbDQuc2mOI+x8BEiJH4oPAx7eyVnp3bDG/nJQp2NItMlierQb1CtGXHptgJ
+ fw3g==
+X-Gm-Message-State: AGi0PuY6panw6CsIjl2LMWjb2Iuqf7HNr1OYsoAVNs1HgYDFp4KKW38I
+ urTO6mnag2Qn02eRrcYJosUMpyEQHX/80w==
+X-Google-Smtp-Source: APiQypItrJFyYm1dKZ3R07kVZC02nj/EnEUI4s9HX58/CnIZwkPk4I7z7a9PSJbV36nuH4swD5HWaA==
+X-Received: by 2002:a1c:3281:: with SMTP id y123mr814694wmy.30.1586883867167; 
+ Tue, 14 Apr 2020 10:04:27 -0700 (PDT)
 Received: from localhost.localdomain
  ([2001:171b:226b:54a0:116c:c27a:3e7f:5eaf])
- by smtp.gmail.com with ESMTPSA id x18sm19549147wrs.11.2020.04.14.10.04.21
+ by smtp.gmail.com with ESMTPSA id x18sm19549147wrs.11.2020.04.14.10.04.26
  (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
- Tue, 14 Apr 2020 10:04:22 -0700 (PDT)
+ Tue, 14 Apr 2020 10:04:26 -0700 (PDT)
 From: Jean-Philippe Brucker <jean-philippe@linaro.org>
 To: iommu@lists.linux-foundation.org, devicetree@vger.kernel.org,
  linux-arm-kernel@lists.infradead.org, linux-pci@vger.kernel.org,
  linux-mm@kvack.org
-Subject: [PATCH v5 04/25] iommu/sva: Search mm by PASID
-Date: Tue, 14 Apr 2020 19:02:32 +0200
-Message-Id: <20200414170252.714402-5-jean-philippe@linaro.org>
+Subject: [PATCH v5 07/25] arm64: mm: Add asid_gen_match() helper
+Date: Tue, 14 Apr 2020 19:02:35 +0200
+Message-Id: <20200414170252.714402-8-jean-philippe@linaro.org>
 X-Mailer: git-send-email 2.26.0
 In-Reply-To: <20200414170252.714402-1-jean-philippe@linaro.org>
 References: <20200414170252.714402-1-jean-philippe@linaro.org>
@@ -112,62 +112,49 @@ Content-Transfer-Encoding: 7bit
 Errors-To: iommu-bounces@lists.linux-foundation.org
 Sender: "iommu" <iommu-bounces@lists.linux-foundation.org>
 
-The fault handler will need to find an mm given its PASID. This is the
-reason we have an IDR for storing address spaces, so hook it up.
+Add a macro to check if an ASID is from the current generation, since a
+subsequent patch will introduce a third user for this test.
 
 Signed-off-by: Jean-Philippe Brucker <jean-philippe@linaro.org>
 ---
- include/linux/iommu.h     |  9 +++++++++
- drivers/iommu/iommu-sva.c | 19 +++++++++++++++++++
- 2 files changed, 28 insertions(+)
+v4->v5: new
+---
+ arch/arm64/mm/context.c | 8 +++++---
+ 1 file changed, 5 insertions(+), 3 deletions(-)
 
-diff --git a/include/linux/iommu.h b/include/linux/iommu.h
-index 5a3d092c2568a..4b9c25d7246d5 100644
---- a/include/linux/iommu.h
-+++ b/include/linux/iommu.h
-@@ -1081,6 +1081,15 @@ void iommu_debugfs_setup(void);
- static inline void iommu_debugfs_setup(void) {}
- #endif
- 
-+#ifdef CONFIG_IOMMU_SVA
-+extern struct mm_struct *iommu_sva_find(int pasid);
-+#else /* !CONFIG_IOMMU_SVA */
-+static inline struct mm_struct *iommu_sva_find(int pasid)
-+{
-+	return NULL;
-+}
-+#endif /* !CONFIG_IOMMU_SVA */
-+
- #ifdef CONFIG_IOMMU_PAGE_FAULT
- extern int iommu_queue_iopf(struct iommu_fault *fault, void *cookie);
- 
-diff --git a/drivers/iommu/iommu-sva.c b/drivers/iommu/iommu-sva.c
-index 7fecc74a9f7d6..b177d6cbf4fff 100644
---- a/drivers/iommu/iommu-sva.c
-+++ b/drivers/iommu/iommu-sva.c
-@@ -525,3 +525,22 @@ int iommu_sva_get_pasid_generic(struct iommu_sva *handle)
- 	return bond->io_mm->pasid;
+diff --git a/arch/arm64/mm/context.c b/arch/arm64/mm/context.c
+index 9b26f9a88724f..d702d60e64dab 100644
+--- a/arch/arm64/mm/context.c
++++ b/arch/arm64/mm/context.c
+@@ -92,6 +92,9 @@ static void set_reserved_asid_bits(void)
+ 		bitmap_clear(asid_map, 0, NUM_USER_ASIDS);
  }
- EXPORT_SYMBOL_GPL(iommu_sva_get_pasid_generic);
+ 
++#define asid_gen_match(asid) \
++	(!(((asid) ^ atomic64_read(&asid_generation)) >> asid_bits))
 +
-+/* ioasid wants a void * argument */
-+static bool __mmget_not_zero(void *mm)
-+{
-+	return mmget_not_zero(mm);
-+}
-+
-+/**
-+ * iommu_sva_find() - Find mm associated to the given PASID
-+ * @pasid: Process Address Space ID assigned to the mm
-+ *
-+ * Returns the mm corresponding to this PASID, or an error if not found. A
-+ * reference to the mm is taken, and must be released with mmput().
-+ */
-+struct mm_struct *iommu_sva_find(int pasid)
-+{
-+	return ioasid_find(&shared_pasid, pasid, __mmget_not_zero);
-+}
-+EXPORT_SYMBOL_GPL(iommu_sva_find);
+ static void flush_context(void)
+ {
+ 	int i;
+@@ -220,8 +223,7 @@ void check_and_switch_context(struct mm_struct *mm, unsigned int cpu)
+ 	 *   because atomic RmWs are totally ordered for a given location.
+ 	 */
+ 	old_active_asid = atomic64_read(&per_cpu(active_asids, cpu));
+-	if (old_active_asid &&
+-	    !((asid ^ atomic64_read(&asid_generation)) >> asid_bits) &&
++	if (old_active_asid && asid_gen_match(asid) &&
+ 	    atomic64_cmpxchg_relaxed(&per_cpu(active_asids, cpu),
+ 				     old_active_asid, asid))
+ 		goto switch_mm_fastpath;
+@@ -229,7 +231,7 @@ void check_and_switch_context(struct mm_struct *mm, unsigned int cpu)
+ 	raw_spin_lock_irqsave(&cpu_asid_lock, flags);
+ 	/* Check that our ASID belongs to the current generation. */
+ 	asid = atomic64_read(&mm->context.id);
+-	if ((asid ^ atomic64_read(&asid_generation)) >> asid_bits) {
++	if (!asid_gen_match(asid)) {
+ 		asid = new_context(mm);
+ 		atomic64_set(&mm->context.id, asid);
+ 	}
 -- 
 2.26.0
 
