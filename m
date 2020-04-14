@@ -4,48 +4,48 @@ X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 X-Spam-Level: 
 X-Spam-Status: No, score=-9.8 required=3.0 tests=HEADER_FROM_DIFFERENT_DOMAINS,
 	INCLUDES_PATCH,MAILING_LIST_MULTI,SIGNED_OFF_BY,SPF_HELO_NONE,SPF_PASS,
-	URIBL_BLOCKED,USER_AGENT_GIT autolearn=ham autolearn_force=no version=3.4.0
+	USER_AGENT_GIT autolearn=unavailable autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 46697C352B6
-	for <iommu@archiver.kernel.org>; Tue, 14 Apr 2020 13:17:14 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 3512CC2BBC7
+	for <iommu@archiver.kernel.org>; Tue, 14 Apr 2020 13:17:18 +0000 (UTC)
 Received: from silver.osuosl.org (smtp3.osuosl.org [140.211.166.136])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by mail.kernel.org (Postfix) with ESMTPS id 2690C206A2
-	for <iommu@archiver.kernel.org>; Tue, 14 Apr 2020 13:17:14 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 2690C206A2
+	by mail.kernel.org (Postfix) with ESMTPS id 1505D20732
+	for <iommu@archiver.kernel.org>; Tue, 14 Apr 2020 13:17:17 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 1505D20732
 Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=8bytes.org
 Authentication-Results: mail.kernel.org; spf=pass smtp.mailfrom=iommu-bounces@lists.linux-foundation.org
 Received: from localhost (localhost [127.0.0.1])
-	by silver.osuosl.org (Postfix) with ESMTP id BA5C320780;
-	Tue, 14 Apr 2020 13:17:13 +0000 (UTC)
+	by silver.osuosl.org (Postfix) with ESMTP id D308C214D2;
+	Tue, 14 Apr 2020 13:17:17 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
 Received: from silver.osuosl.org ([127.0.0.1])
 	by localhost (.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
-	with ESMTP id ZVvqhA-ZSjmi; Tue, 14 Apr 2020 13:17:08 +0000 (UTC)
+	with ESMTP id nIvSrCRhuYPT; Tue, 14 Apr 2020 13:17:15 +0000 (UTC)
 Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [140.211.9.56])
-	by silver.osuosl.org (Postfix) with ESMTP id 0C8F121509;
-	Tue, 14 Apr 2020 13:17:08 +0000 (UTC)
+	by silver.osuosl.org (Postfix) with ESMTP id B4F56214EC;
+	Tue, 14 Apr 2020 13:17:10 +0000 (UTC)
 Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
-	by lists.linuxfoundation.org (Postfix) with ESMTP id E84C9C1D7F;
-	Tue, 14 Apr 2020 13:17:07 +0000 (UTC)
+	by lists.linuxfoundation.org (Postfix) with ESMTP id B08B5C1D7D;
+	Tue, 14 Apr 2020 13:17:10 +0000 (UTC)
 Received: from whitealder.osuosl.org (smtp1.osuosl.org [140.211.166.138])
- by lists.linuxfoundation.org (Postfix) with ESMTP id 9D69FC0172;
- Tue, 14 Apr 2020 13:17:06 +0000 (UTC)
+ by lists.linuxfoundation.org (Postfix) with ESMTP id 60214C0172;
+ Tue, 14 Apr 2020 13:17:09 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
- by whitealder.osuosl.org (Postfix) with ESMTP id 85D6B86A26;
- Tue, 14 Apr 2020 13:17:06 +0000 (UTC)
+ by whitealder.osuosl.org (Postfix) with ESMTP id 585FC86B7B;
+ Tue, 14 Apr 2020 13:17:09 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
 Received: from whitealder.osuosl.org ([127.0.0.1])
  by localhost (.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
- with ESMTP id IGPKoUqQCQzj; Tue, 14 Apr 2020 13:17:01 +0000 (UTC)
+ with ESMTP id A7XP+UcB0hcv; Tue, 14 Apr 2020 13:17:06 +0000 (UTC)
 X-Greylist: from auto-whitelisted by SQLgrey-1.7.6
 X-Greylist: from auto-whitelisted by SQLgrey-1.7.6
 Received: from theia.8bytes.org (8bytes.org [81.169.241.247])
- by whitealder.osuosl.org (Postfix) with ESMTPS id 7D4C186B11;
- Tue, 14 Apr 2020 13:16:05 +0000 (UTC)
+ by whitealder.osuosl.org (Postfix) with ESMTPS id 08CA786B94;
+ Tue, 14 Apr 2020 13:16:08 +0000 (UTC)
 Received: by theia.8bytes.org (Postfix, from userid 1000)
- id 6E61175B; Tue, 14 Apr 2020 15:15:56 +0200 (CEST)
+ id 701C280A; Tue, 14 Apr 2020 15:15:57 +0200 (CEST)
 From: Joerg Roedel <joro@8bytes.org>
 To: Joerg Roedel <joro@8bytes.org>, Will Deacon <will@kernel.org>,
  Robin Murphy <robin.murphy@arm.com>,
@@ -60,10 +60,10 @@ To: Joerg Roedel <joro@8bytes.org>, Will Deacon <will@kernel.org>,
  Thierry Reding <thierry.reding@gmail.com>,
  Jonathan Hunter <jonathanh@nvidia.com>,
  Jean-Philippe Brucker <jean-philippe@linaro.org>
-Subject: [PATCH v2 26/33] iommu/tegra: Convert to probe/release_device()
+Subject: [PATCH v2 31/33] iommu/exynos: Convert to probe/release_device()
  call-backs
-Date: Tue, 14 Apr 2020 15:15:35 +0200
-Message-Id: <20200414131542.25608-27-joro@8bytes.org>
+Date: Tue, 14 Apr 2020 15:15:40 +0200
+Message-Id: <20200414131542.25608-32-joro@8bytes.org>
 X-Mailer: git-send-email 2.17.1
 In-Reply-To: <20200414131542.25608-1-joro@8bytes.org>
 References: <20200414131542.25608-1-joro@8bytes.org>
@@ -92,149 +92,88 @@ Sender: "iommu" <iommu-bounces@lists.linux-foundation.org>
 
 From: Joerg Roedel <jroedel@suse.de>
 
-Convert the Tegra IOMMU drivers to use the probe_device() and
+Convert the Exynos IOMMU driver to use the probe_device() and
 release_device() call-backs of iommu_ops, so that the iommu core code
 does the group and sysfs setup.
 
 Signed-off-by: Joerg Roedel <jroedel@suse.de>
 ---
- drivers/iommu/tegra-gart.c | 24 ++++++------------------
- drivers/iommu/tegra-smmu.c | 31 ++++++++-----------------------
- 2 files changed, 14 insertions(+), 41 deletions(-)
+ drivers/iommu/exynos-iommu.c | 26 ++++++--------------------
+ 1 file changed, 6 insertions(+), 20 deletions(-)
 
-diff --git a/drivers/iommu/tegra-gart.c b/drivers/iommu/tegra-gart.c
-index db6559e8336f..5fbdff6ff41a 100644
---- a/drivers/iommu/tegra-gart.c
-+++ b/drivers/iommu/tegra-gart.c
-@@ -243,28 +243,16 @@ static bool gart_iommu_capable(enum iommu_cap cap)
- 	return false;
+diff --git a/drivers/iommu/exynos-iommu.c b/drivers/iommu/exynos-iommu.c
+index 09cdd163560a..60c8a56e4a3f 100644
+--- a/drivers/iommu/exynos-iommu.c
++++ b/drivers/iommu/exynos-iommu.c
+@@ -1235,19 +1235,13 @@ static phys_addr_t exynos_iommu_iova_to_phys(struct iommu_domain *iommu_domain,
+ 	return phys;
  }
  
--static int gart_iommu_add_device(struct device *dev)
-+static struct iommu_device *gart_iommu_probe_device(struct device *dev)
+-static int exynos_iommu_add_device(struct device *dev)
++static struct iommu_device *exynos_iommu_probe_device(struct device *dev)
  {
+ 	struct exynos_iommu_owner *owner = dev->archdata.iommu;
+ 	struct sysmmu_drvdata *data;
 -	struct iommu_group *group;
--
- 	if (!dev_iommu_fwspec_get(dev))
+ 
+ 	if (!has_sysmmu(dev))
 -		return -ENODEV;
 -
 -	group = iommu_group_get_for_dev(dev);
+-
 -	if (IS_ERR(group))
 -		return PTR_ERR(group);
--
--	iommu_group_put(group);
 +		return ERR_PTR(-ENODEV);
  
--	iommu_device_link(&gart_handle->iommu, dev);
--
--	return 0;
-+	return &gart_handle->iommu;
- }
- 
--static void gart_iommu_remove_device(struct device *dev)
-+static void gart_iommu_release_device(struct device *dev)
- {
--	iommu_group_remove_device(dev);
--	iommu_device_unlink(&gart_handle->iommu, dev);
- }
- 
- static int gart_iommu_of_xlate(struct device *dev,
-@@ -290,8 +278,8 @@ static const struct iommu_ops gart_iommu_ops = {
- 	.domain_free	= gart_iommu_domain_free,
- 	.attach_dev	= gart_iommu_attach_dev,
- 	.detach_dev	= gart_iommu_detach_dev,
--	.add_device	= gart_iommu_add_device,
--	.remove_device	= gart_iommu_remove_device,
-+	.probe_device	= gart_iommu_probe_device,
-+	.release_device	= gart_iommu_release_device,
- 	.device_group	= generic_device_group,
- 	.map		= gart_iommu_map,
- 	.unmap		= gart_iommu_unmap,
-diff --git a/drivers/iommu/tegra-smmu.c b/drivers/iommu/tegra-smmu.c
-index 63a147b623e6..7426b7666e2b 100644
---- a/drivers/iommu/tegra-smmu.c
-+++ b/drivers/iommu/tegra-smmu.c
-@@ -757,11 +757,10 @@ static int tegra_smmu_configure(struct tegra_smmu *smmu, struct device *dev,
- 	return 0;
- }
- 
--static int tegra_smmu_add_device(struct device *dev)
-+static struct iommu_device *tegra_smmu_probe_device(struct device *dev)
- {
- 	struct device_node *np = dev->of_node;
- 	struct tegra_smmu *smmu = NULL;
--	struct iommu_group *group;
- 	struct of_phandle_args args;
- 	unsigned int index = 0;
- 	int err;
-@@ -774,7 +773,7 @@ static int tegra_smmu_add_device(struct device *dev)
- 			of_node_put(args.np);
- 
- 			if (err < 0)
--				return err;
-+				return ERR_PTR(err);
- 
- 			/*
- 			 * Only a single IOMMU master interface is currently
-@@ -783,8 +782,6 @@ static int tegra_smmu_add_device(struct device *dev)
- 			 */
- 			dev->archdata.iommu = smmu;
- 
--			iommu_device_link(&smmu->iommu, dev);
--
- 			break;
- 		}
- 
-@@ -793,26 +790,14 @@ static int tegra_smmu_add_device(struct device *dev)
+ 	list_for_each_entry(data, &owner->controllers, owner_node) {
+ 		/*
+@@ -1259,17 +1253,15 @@ static int exynos_iommu_add_device(struct device *dev)
+ 					     DL_FLAG_STATELESS |
+ 					     DL_FLAG_PM_RUNTIME);
  	}
- 
- 	if (!smmu)
--		return -ENODEV;
--
--	group = iommu_group_get_for_dev(dev);
--	if (IS_ERR(group))
--		return PTR_ERR(group);
--
 -	iommu_group_put(group);
-+		return ERR_PTR(-ENODEV);
+ 
+ 	/* There is always at least one entry, see exynos_iommu_of_xlate() */
+ 	data = list_first_entry(&owner->controllers,
+ 				struct sysmmu_drvdata, owner_node);
+-	iommu_device_link(&data->iommu, dev);
  
 -	return 0;
-+	return &smmu->iommu;
++	return &data->iommu;
  }
  
--static void tegra_smmu_remove_device(struct device *dev)
-+static void tegra_smmu_release_device(struct device *dev)
+-static void exynos_iommu_remove_device(struct device *dev)
++static void exynos_iommu_release_device(struct device *dev)
  {
--	struct tegra_smmu *smmu = dev->archdata.iommu;
--
--	if (smmu)
--		iommu_device_unlink(&smmu->iommu, dev);
--
- 	dev->archdata.iommu = NULL;
+ 	struct exynos_iommu_owner *owner = dev->archdata.iommu;
+ 	struct sysmmu_drvdata *data;
+@@ -1287,15 +1279,9 @@ static void exynos_iommu_remove_device(struct device *dev)
+ 			iommu_group_put(group);
+ 		}
+ 	}
 -	iommu_group_remove_device(dev);
+ 
+ 	list_for_each_entry(data, &owner->controllers, owner_node)
+ 		device_link_del(data->link);
+-
+-	/* There is always at least one entry, see exynos_iommu_of_xlate() */
+-	data = list_first_entry(&owner->controllers,
+-				struct sysmmu_drvdata, owner_node);
+-	iommu_device_unlink(&data->iommu, dev);
  }
  
- static const struct tegra_smmu_group_soc *
-@@ -895,8 +880,8 @@ static const struct iommu_ops tegra_smmu_ops = {
- 	.domain_free = tegra_smmu_domain_free,
- 	.attach_dev = tegra_smmu_attach_dev,
- 	.detach_dev = tegra_smmu_detach_dev,
--	.add_device = tegra_smmu_add_device,
--	.remove_device = tegra_smmu_remove_device,
-+	.probe_device = tegra_smmu_probe_device,
-+	.release_device = tegra_smmu_release_device,
- 	.device_group = tegra_smmu_device_group,
- 	.map = tegra_smmu_map,
- 	.unmap = tegra_smmu_unmap,
-@@ -1015,7 +1000,7 @@ struct tegra_smmu *tegra_smmu_probe(struct device *dev,
- 	 * value. However the IOMMU registration process will attempt to add
- 	 * all devices to the IOMMU when bus_set_iommu() is called. In order
- 	 * not to rely on global variables to track the IOMMU instance, we
--	 * set it here so that it can be looked up from the .add_device()
-+	 * set it here so that it can be looked up from the .probe_device()
- 	 * callback via the IOMMU device's .drvdata field.
- 	 */
- 	mc->smmu = smmu;
+ static int exynos_iommu_of_xlate(struct device *dev,
+@@ -1341,8 +1327,8 @@ static const struct iommu_ops exynos_iommu_ops = {
+ 	.unmap = exynos_iommu_unmap,
+ 	.iova_to_phys = exynos_iommu_iova_to_phys,
+ 	.device_group = generic_device_group,
+-	.add_device = exynos_iommu_add_device,
+-	.remove_device = exynos_iommu_remove_device,
++	.probe_device = exynos_iommu_probe_device,
++	.release_device = exynos_iommu_release_device,
+ 	.pgsize_bitmap = SECT_SIZE | LPAGE_SIZE | SPAGE_SIZE,
+ 	.of_xlate = exynos_iommu_of_xlate,
+ };
 -- 
 2.17.1
 
