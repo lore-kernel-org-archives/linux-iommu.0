@@ -4,49 +4,48 @@ X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 X-Spam-Level: 
 X-Spam-Status: No, score=-9.8 required=3.0 tests=HEADER_FROM_DIFFERENT_DOMAINS,
 	INCLUDES_PATCH,MAILING_LIST_MULTI,SIGNED_OFF_BY,SPF_HELO_NONE,SPF_PASS,
-	URIBL_BLOCKED,USER_AGENT_GIT autolearn=unavailable autolearn_force=no
-	version=3.4.0
+	URIBL_BLOCKED,USER_AGENT_GIT autolearn=ham autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id F1B35C2BB86
-	for <iommu@archiver.kernel.org>; Tue, 14 Apr 2020 13:17:07 +0000 (UTC)
-Received: from fraxinus.osuosl.org (smtp4.osuosl.org [140.211.166.137])
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 40EC5C2BBC7
+	for <iommu@archiver.kernel.org>; Tue, 14 Apr 2020 13:17:08 +0000 (UTC)
+Received: from whitealder.osuosl.org (smtp1.osuosl.org [140.211.166.138])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by mail.kernel.org (Postfix) with ESMTPS id CF6982063A
-	for <iommu@archiver.kernel.org>; Tue, 14 Apr 2020 13:17:07 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org CF6982063A
+	by mail.kernel.org (Postfix) with ESMTPS id 13D972063A
+	for <iommu@archiver.kernel.org>; Tue, 14 Apr 2020 13:17:08 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 13D972063A
 Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=8bytes.org
 Authentication-Results: mail.kernel.org; spf=pass smtp.mailfrom=iommu-bounces@lists.linux-foundation.org
 Received: from localhost (localhost [127.0.0.1])
-	by fraxinus.osuosl.org (Postfix) with ESMTP id C42AC85C92;
+	by whitealder.osuosl.org (Postfix) with ESMTP id E6E6F85B5D;
 	Tue, 14 Apr 2020 13:17:07 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from fraxinus.osuosl.org ([127.0.0.1])
-	by localhost (.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
-	with ESMTP id ph4fCri12OaX; Tue, 14 Apr 2020 13:17:05 +0000 (UTC)
-Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [140.211.9.56])
-	by fraxinus.osuosl.org (Postfix) with ESMTP id AA5FD85B3D;
-	Tue, 14 Apr 2020 13:17:01 +0000 (UTC)
-Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
-	by lists.linuxfoundation.org (Postfix) with ESMTP id A5E7BC1D8F;
-	Tue, 14 Apr 2020 13:17:01 +0000 (UTC)
-Received: from whitealder.osuosl.org (smtp1.osuosl.org [140.211.166.138])
- by lists.linuxfoundation.org (Postfix) with ESMTP id 47FDAC1D8E;
- Tue, 14 Apr 2020 13:17:00 +0000 (UTC)
-Received: from localhost (localhost [127.0.0.1])
- by whitealder.osuosl.org (Postfix) with ESMTP id 38070866FC;
- Tue, 14 Apr 2020 13:17:00 +0000 (UTC)
-X-Virus-Scanned: amavisd-new at osuosl.org
 Received: from whitealder.osuosl.org ([127.0.0.1])
+	by localhost (.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
+	with ESMTP id a3eddiCoaDCU; Tue, 14 Apr 2020 13:17:03 +0000 (UTC)
+Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [140.211.9.56])
+	by whitealder.osuosl.org (Postfix) with ESMTP id A8E5E86B47;
+	Tue, 14 Apr 2020 13:16:06 +0000 (UTC)
+Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
+	by lists.linuxfoundation.org (Postfix) with ESMTP id 97E6DC1D8D;
+	Tue, 14 Apr 2020 13:16:06 +0000 (UTC)
+Received: from hemlock.osuosl.org (smtp2.osuosl.org [140.211.166.133])
+ by lists.linuxfoundation.org (Postfix) with ESMTP id 94181C0172;
+ Tue, 14 Apr 2020 13:16:04 +0000 (UTC)
+Received: from localhost (localhost [127.0.0.1])
+ by hemlock.osuosl.org (Postfix) with ESMTP id 8C76987BB1;
+ Tue, 14 Apr 2020 13:16:04 +0000 (UTC)
+X-Virus-Scanned: amavisd-new at osuosl.org
+Received: from hemlock.osuosl.org ([127.0.0.1])
  by localhost (.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
- with ESMTP id Osm6okSG+O6f; Tue, 14 Apr 2020 13:16:56 +0000 (UTC)
+ with ESMTP id 6LzceZ5uCga9; Tue, 14 Apr 2020 13:16:02 +0000 (UTC)
 X-Greylist: from auto-whitelisted by SQLgrey-1.7.6
 X-Greylist: from auto-whitelisted by SQLgrey-1.7.6
 Received: from theia.8bytes.org (8bytes.org [81.169.241.247])
- by whitealder.osuosl.org (Postfix) with ESMTPS id 0FD0F86988;
- Tue, 14 Apr 2020 13:15:56 +0000 (UTC)
+ by hemlock.osuosl.org (Postfix) with ESMTPS id 1156487A2F;
+ Tue, 14 Apr 2020 13:16:02 +0000 (UTC)
 Received: by theia.8bytes.org (Postfix, from userid 1000)
- id B35903A2; Tue, 14 Apr 2020 15:15:51 +0200 (CEST)
+ id D28195D8; Tue, 14 Apr 2020 15:15:53 +0200 (CEST)
 From: Joerg Roedel <joro@8bytes.org>
 To: Joerg Roedel <joro@8bytes.org>, Will Deacon <will@kernel.org>,
  Robin Murphy <robin.murphy@arm.com>,
@@ -61,9 +60,10 @@ To: Joerg Roedel <joro@8bytes.org>, Will Deacon <will@kernel.org>,
  Thierry Reding <thierry.reding@gmail.com>,
  Jonathan Hunter <jonathanh@nvidia.com>,
  Jean-Philippe Brucker <jean-philippe@linaro.org>
-Subject: [PATCH v2 02/33] iommu: Add def_domain_type() callback in iommu_ops
-Date: Tue, 14 Apr 2020 15:15:11 +0200
-Message-Id: <20200414131542.25608-3-joro@8bytes.org>
+Subject: [PATCH v2 13/33] iommu: Export bus_iommu_probe() and make is safe for
+ re-probing
+Date: Tue, 14 Apr 2020 15:15:22 +0200
+Message-Id: <20200414131542.25608-14-joro@8bytes.org>
 X-Mailer: git-send-email 2.17.1
 In-Reply-To: <20200414131542.25608-1-joro@8bytes.org>
 References: <20200414131542.25608-1-joro@8bytes.org>
@@ -90,100 +90,54 @@ Content-Transfer-Encoding: 7bit
 Errors-To: iommu-bounces@lists.linux-foundation.org
 Sender: "iommu" <iommu-bounces@lists.linux-foundation.org>
 
-From: Sai Praneeth Prakhya <sai.praneeth.prakhya@intel.com>
+From: Joerg Roedel <jroedel@suse.de>
 
-Some devices are reqired to use a specific type (identity or dma)
-of default domain when they are used with a vendor iommu. When the
-system level default domain type is different from it, the vendor
-iommu driver has to request a new default domain with
-iommu_request_dma_domain_for_dev() and iommu_request_dm_for_dev()
-in the add_dev() callback. Unfortunately, these two helpers only
-work when the group hasn't been assigned to any other devices,
-hence, some vendor iommu driver has to use a private domain if
-it fails to request a new default one.
+Add a check to the bus_iommu_probe() call-path to make sure it ignores
+devices which have already been successfully probed. Then export the
+bus_iommu_probe() function so it can be used by IOMMU drivers.
 
-This adds def_domain_type() callback in the iommu_ops, so that
-any special requirement of default domain for a device could be
-aware by the iommu generic layer.
-
-Signed-off-by: Sai Praneeth Prakhya <sai.praneeth.prakhya@intel.com>
-Signed-off-by: Lu Baolu <baolu.lu@linux.intel.com>
-[ jroedel@suse.de: Added iommu_get_def_domain_type() function and use
-                   it to allocate the default domain ]
-Co-developed-by: Joerg Roedel <jroedel@suse.de>
 Signed-off-by: Joerg Roedel <jroedel@suse.de>
 ---
- drivers/iommu/iommu.c | 20 +++++++++++++++++---
- include/linux/iommu.h |  6 ++++++
- 2 files changed, 23 insertions(+), 3 deletions(-)
+ drivers/iommu/iommu.c | 6 +++++-
+ include/linux/iommu.h | 1 +
+ 2 files changed, 6 insertions(+), 1 deletion(-)
 
 diff --git a/drivers/iommu/iommu.c b/drivers/iommu/iommu.c
-index bfe011760ed1..5877abd9b693 100644
+index 834a45da0ed0..a2ff95424044 100644
 --- a/drivers/iommu/iommu.c
 +++ b/drivers/iommu/iommu.c
-@@ -1361,21 +1361,35 @@ struct iommu_group *fsl_mc_device_group(struct device *dev)
+@@ -1615,6 +1615,10 @@ static int probe_iommu_group(struct device *dev, void *data)
+ 	if (!dev_iommu_get(dev))
+ 		return -ENOMEM;
+ 
++	/* Device is probed already if in a group */
++	if (iommu_group_get(dev) != NULL)
++		return 0;
++
+ 	if (!try_module_get(ops->owner)) {
+ 		ret = -EINVAL;
+ 		goto err_free_dev_iommu;
+@@ -1783,7 +1787,7 @@ static int iommu_group_create_direct_mappings(struct iommu_group *group)
+ 					  iommu_do_create_direct_mappings);
  }
- EXPORT_SYMBOL_GPL(fsl_mc_device_group);
  
-+static int iommu_get_def_domain_type(struct device *dev)
-+{
-+	const struct iommu_ops *ops = dev->bus->iommu_ops;
-+	unsigned int type = 0;
-+
-+	if (ops->def_domain_type)
-+		type = ops->def_domain_type(dev);
-+
-+	return (type == 0) ? iommu_def_domain_type : type;
-+}
-+
- static int iommu_alloc_default_domain(struct device *dev,
- 				      struct iommu_group *group)
+-static int bus_iommu_probe(struct bus_type *bus)
++int bus_iommu_probe(struct bus_type *bus)
  {
- 	struct iommu_domain *dom;
-+	unsigned int type;
- 
- 	if (group->default_domain)
- 		return 0;
- 
--	dom = __iommu_domain_alloc(dev->bus, iommu_def_domain_type);
--	if (!dom && iommu_def_domain_type != IOMMU_DOMAIN_DMA) {
-+	type = iommu_get_def_domain_type(dev);
-+
-+	dom = __iommu_domain_alloc(dev->bus, type);
-+	if (!dom && type != IOMMU_DOMAIN_DMA) {
- 		dom = __iommu_domain_alloc(dev->bus, IOMMU_DOMAIN_DMA);
- 		if (dom) {
- 			dev_warn(dev,
- 				 "failed to allocate default IOMMU domain of type %u; falling back to IOMMU_DOMAIN_DMA",
--				 iommu_def_domain_type);
-+				 type);
- 		}
- 	}
- 
+ 	const struct iommu_ops *ops = bus->iommu_ops;
+ 	int ret;
 diff --git a/include/linux/iommu.h b/include/linux/iommu.h
-index 7ef8b0bda695..1f027b07e499 100644
+index 30170d191e5e..fea1622408ad 100644
 --- a/include/linux/iommu.h
 +++ b/include/linux/iommu.h
-@@ -248,6 +248,10 @@ struct iommu_iotlb_gather {
-  * @cache_invalidate: invalidate translation caches
-  * @sva_bind_gpasid: bind guest pasid and mm
-  * @sva_unbind_gpasid: unbind guest pasid and mm
-+ * @def_domain_type: device default domain type, return value:
-+ *		- IOMMU_DOMAIN_IDENTITY: must use an identity domain
-+ *		- IOMMU_DOMAIN_DMA: must use a dma domain
-+ *		- 0: use the default setting
-  * @pgsize_bitmap: bitmap of all possible supported page sizes
-  * @owner: Driver module providing these ops
-  */
-@@ -318,6 +322,8 @@ struct iommu_ops {
+@@ -445,6 +445,7 @@ static inline void iommu_iotlb_gather_init(struct iommu_iotlb_gather *gather)
+ #define IOMMU_GROUP_NOTIFY_UNBOUND_DRIVER	6 /* Post Driver unbind */
  
- 	int (*sva_unbind_gpasid)(struct device *dev, int pasid);
- 
-+	int (*def_domain_type)(struct device *dev);
-+
- 	unsigned long pgsize_bitmap;
- 	struct module *owner;
- };
+ extern int bus_set_iommu(struct bus_type *bus, const struct iommu_ops *ops);
++extern int bus_iommu_probe(struct bus_type *bus);
+ extern bool iommu_present(struct bus_type *bus);
+ extern bool iommu_capable(struct bus_type *bus, enum iommu_cap cap);
+ extern struct iommu_domain *iommu_domain_alloc(struct bus_type *bus);
 -- 
 2.17.1
 
