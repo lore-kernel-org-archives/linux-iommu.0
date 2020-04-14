@@ -7,60 +7,60 @@ X-Spam-Status: No, score=-9.6 required=3.0 tests=DKIM_INVALID,DKIM_SIGNED,
 	SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED,USER_AGENT_GIT autolearn=ham
 	autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 53A3BC2BBC7
-	for <iommu@archiver.kernel.org>; Tue, 14 Apr 2020 13:15:38 +0000 (UTC)
-Received: from silver.osuosl.org (smtp3.osuosl.org [140.211.166.136])
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 24AD1C2BB86
+	for <iommu@archiver.kernel.org>; Tue, 14 Apr 2020 13:15:46 +0000 (UTC)
+Received: from hemlock.osuosl.org (smtp2.osuosl.org [140.211.166.133])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by mail.kernel.org (Postfix) with ESMTPS id 29104206A2
-	for <iommu@archiver.kernel.org>; Tue, 14 Apr 2020 13:15:38 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTPS id EE8302063A
+	for <iommu@archiver.kernel.org>; Tue, 14 Apr 2020 13:15:45 +0000 (UTC)
 Authentication-Results: mail.kernel.org;
-	dkim=fail reason="signature verification failed" (2048-bit key) header.d=infradead.org header.i=@infradead.org header.b="B/my2Tdq"
-DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 29104206A2
+	dkim=fail reason="signature verification failed" (2048-bit key) header.d=infradead.org header.i=@infradead.org header.b="PcmMdK8k"
+DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org EE8302063A
 Authentication-Results: mail.kernel.org; dmarc=none (p=none dis=none) header.from=lst.de
 Authentication-Results: mail.kernel.org; spf=pass smtp.mailfrom=iommu-bounces@lists.linux-foundation.org
 Received: from localhost (localhost [127.0.0.1])
-	by silver.osuosl.org (Postfix) with ESMTP id 04CE320535;
-	Tue, 14 Apr 2020 13:15:38 +0000 (UTC)
+	by hemlock.osuosl.org (Postfix) with ESMTP id CBB3287A12;
+	Tue, 14 Apr 2020 13:15:45 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from silver.osuosl.org ([127.0.0.1])
+Received: from hemlock.osuosl.org ([127.0.0.1])
 	by localhost (.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
-	with ESMTP id pLiOLC1pqugh; Tue, 14 Apr 2020 13:15:36 +0000 (UTC)
+	with ESMTP id ZQuQsZ71gEaM; Tue, 14 Apr 2020 13:15:45 +0000 (UTC)
 Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [140.211.9.56])
-	by silver.osuosl.org (Postfix) with ESMTP id A6F8B20512;
-	Tue, 14 Apr 2020 13:15:36 +0000 (UTC)
+	by hemlock.osuosl.org (Postfix) with ESMTP id 5F7F086E1D;
+	Tue, 14 Apr 2020 13:15:45 +0000 (UTC)
 Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
-	by lists.linuxfoundation.org (Postfix) with ESMTP id 8E145C1D7D;
-	Tue, 14 Apr 2020 13:15:36 +0000 (UTC)
+	by lists.linuxfoundation.org (Postfix) with ESMTP id 4E3DCC1D7D;
+	Tue, 14 Apr 2020 13:15:45 +0000 (UTC)
 Received: from silver.osuosl.org (smtp3.osuosl.org [140.211.166.136])
- by lists.linuxfoundation.org (Postfix) with ESMTP id BC3D9C0172
- for <iommu@lists.linux-foundation.org>; Tue, 14 Apr 2020 13:15:34 +0000 (UTC)
+ by lists.linuxfoundation.org (Postfix) with ESMTP id 00593C0172
+ for <iommu@lists.linux-foundation.org>; Tue, 14 Apr 2020 13:15:43 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
- by silver.osuosl.org (Postfix) with ESMTP id 8F18F20535
- for <iommu@lists.linux-foundation.org>; Tue, 14 Apr 2020 13:15:34 +0000 (UTC)
+ by silver.osuosl.org (Postfix) with ESMTP id DF7B620535
+ for <iommu@lists.linux-foundation.org>; Tue, 14 Apr 2020 13:15:43 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
 Received: from silver.osuosl.org ([127.0.0.1])
  by localhost (.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
- with ESMTP id U0JGJsmOmMYi for <iommu@lists.linux-foundation.org>;
- Tue, 14 Apr 2020 13:15:32 +0000 (UTC)
+ with ESMTP id KSeE41YnH-F0 for <iommu@lists.linux-foundation.org>;
+ Tue, 14 Apr 2020 13:15:43 +0000 (UTC)
 X-Greylist: from auto-whitelisted by SQLgrey-1.7.6
 Received: from bombadil.infradead.org (bombadil.infradead.org
  [198.137.202.133])
- by silver.osuosl.org (Postfix) with ESMTPS id D0BD820518
- for <iommu@lists.linux-foundation.org>; Tue, 14 Apr 2020 13:15:32 +0000 (UTC)
+ by silver.osuosl.org (Postfix) with ESMTPS id 4A3CA20518
+ for <iommu@lists.linux-foundation.org>; Tue, 14 Apr 2020 13:15:43 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
  d=infradead.org; s=bombadil.20170209; h=Content-Transfer-Encoding:
  MIME-Version:References:In-Reply-To:Message-Id:Date:Subject:Cc:To:From:Sender
  :Reply-To:Content-Type:Content-ID:Content-Description;
- bh=AL2UqXVJJHqpYowkgnsEWwQarq+t+/weZMnyt1+pBt0=; b=B/my2Tdq0VZf/1/JSQ7y29BtMV
- aRLAeQEoSa/sLerLGjrs28Y3wb1WmC9cEDez+gx8tic5JHxbVRtWrlF/YDKBOgAQALGPluzUuNMKE
- jATdiVUDrZlyT0o7TD0i+M/EDHYwKXnsIhzxQibRrVW7bzWI4b+MElGbDE92UCwCunUfZP1duL2Xp
- ItK5JL9JgOK9mP76R2aMyVUr5i+bR06mfl7Fd5MHbxWeKWwctrP8LLxwyr0L0qtCMSvOroer0qD7o
- WktytOMl8uWeYAYC7UV1s0LGFdAIF44rITzkxVHoSkqibeoL6lZOxnu50leC8IqClOas/3f9OgNGi
- WuDBhHrg==;
+ bh=6sJQuOygNStqUzy0dvxZer84i/b5PdaasxEnDJbgqnw=; b=PcmMdK8kY4bZkfE15aAordKDlx
+ GlT4lq/kS804FHRlRi+T89yKOVvErpgOrz88kZt64xoftzGx78aWJi5iiyGY4KaffhgS6kvzhHBIj
+ at4T0KA7YgERBb/M/BV/STN1DYwrVSE7JDrDha/CzPT+vW0aYgmAVcroOb2M9kGWMttQ8sTk+o6rp
+ KR9hzDLHLvh4JHXbZG9WYih7btPPUQjiFSSJ/N+BrNYxc51iyjYbkcNa+9j32PgbQxNPEDfj5B8ZH
+ lyyuahQSZUWylH/vbhu0Ib6zRYsLiKu9OXA63+HRaPZAXtnBdIq9lDLeSGdD+zUZi5MMMC7AmczXi
+ uSOJDj9g==;
 Received: from [2001:4bb8:180:384b:c70:4a89:bc61:2] (helo=localhost)
  by bombadil.infradead.org with esmtpsa (Exim 4.92.3 #3 (Red Hat Linux))
- id 1jOLP9-0007sF-W9; Tue, 14 Apr 2020 13:15:08 +0000
+ id 1jOLPR-0001kS-T9; Tue, 14 Apr 2020 13:15:26 +0000
 From: Christoph Hellwig <hch@lst.de>
 To: Andrew Morton <akpm@linux-foundation.org>,
  "K. Y. Srinivasan" <kys@microsoft.com>,
@@ -71,9 +71,9 @@ To: Andrew Morton <akpm@linux-foundation.org>,
  Sumit Semwal <sumit.semwal@linaro.org>,
  Sakari Ailus <sakari.ailus@linux.intel.com>,
  Minchan Kim <minchan@kernel.org>, Nitin Gupta <ngupta@vflare.org>
-Subject: [PATCH 22/29] mm: remove the prot argument to __vmalloc_node
-Date: Tue, 14 Apr 2020 15:13:41 +0200
-Message-Id: <20200414131348.444715-23-hch@lst.de>
+Subject: [PATCH 27/29] arm64: use __vmalloc_node in arch_alloc_vmap_stack
+Date: Tue, 14 Apr 2020 15:13:46 +0200
+Message-Id: <20200414131348.444715-28-hch@lst.de>
 X-Mailer: git-send-email 2.25.1
 In-Reply-To: <20200414131348.444715-1-hch@lst.de>
 References: <20200414131348.444715-1-hch@lst.de>
@@ -104,124 +104,31 @@ Content-Transfer-Encoding: 7bit
 Errors-To: iommu-bounces@lists.linux-foundation.org
 Sender: "iommu" <iommu-bounces@lists.linux-foundation.org>
 
-This is always PAGE_KERNEL now.
+arch_alloc_vmap_stack can use a slightly higher level vmalloc function.
 
 Signed-off-by: Christoph Hellwig <hch@lst.de>
 Acked-by: Peter Zijlstra (Intel) <peterz@infradead.org>
 ---
- mm/vmalloc.c | 35 ++++++++++++++---------------------
- 1 file changed, 14 insertions(+), 21 deletions(-)
+ arch/arm64/include/asm/vmap_stack.h | 6 ++----
+ 1 file changed, 2 insertions(+), 4 deletions(-)
 
-diff --git a/mm/vmalloc.c b/mm/vmalloc.c
-index 466a449b3a15..de7952959e82 100644
---- a/mm/vmalloc.c
-+++ b/mm/vmalloc.c
-@@ -2401,8 +2401,7 @@ void *vmap(struct page **pages, unsigned int count,
- EXPORT_SYMBOL(vmap);
+diff --git a/arch/arm64/include/asm/vmap_stack.h b/arch/arm64/include/asm/vmap_stack.h
+index 0a12115d9638..0cc6636e3f15 100644
+--- a/arch/arm64/include/asm/vmap_stack.h
++++ b/arch/arm64/include/asm/vmap_stack.h
+@@ -19,10 +19,8 @@ static inline unsigned long *arch_alloc_vmap_stack(size_t stack_size, int node)
+ {
+ 	BUILD_BUG_ON(!IS_ENABLED(CONFIG_VMAP_STACK));
  
- static void *__vmalloc_node(unsigned long size, unsigned long align,
--			    gfp_t gfp_mask, pgprot_t prot,
--			    int node, const void *caller);
-+			    gfp_t gfp_mask, int node, const void *caller);
- static void *__vmalloc_area_node(struct vm_struct *area, gfp_t gfp_mask,
- 				 pgprot_t prot, int node)
- {
-@@ -2420,7 +2419,7 @@ static void *__vmalloc_area_node(struct vm_struct *area, gfp_t gfp_mask,
- 	/* Please note that the recursion is strictly bounded. */
- 	if (array_size > PAGE_SIZE) {
- 		pages = __vmalloc_node(array_size, 1, nested_gfp|highmem_mask,
--				PAGE_KERNEL, node, area->caller);
-+				node, area->caller);
- 	} else {
- 		pages = kmalloc_node(array_size, nested_gfp, node);
- 	}
-@@ -2539,13 +2538,11 @@ EXPORT_SYMBOL_GPL(__vmalloc_node_range);
-  * @size:	    allocation size
-  * @align:	    desired alignment
-  * @gfp_mask:	    flags for the page level allocator
-- * @prot:	    protection mask for the allocated pages
-  * @node:	    node to use for allocation or NUMA_NO_NODE
-  * @caller:	    caller's return address
-  *
-- * Allocate enough pages to cover @size from the page level
-- * allocator with @gfp_mask flags.  Map them into contiguous
-- * kernel virtual space, using a pagetable protection of @prot.
-+ * Allocate enough pages to cover @size from the page level allocator with
-+ * @gfp_mask flags.  Map them into contiguous kernel virtual space.
-  *
-  * Reclaim modifiers in @gfp_mask - __GFP_NORETRY, __GFP_RETRY_MAYFAIL
-  * and __GFP_NOFAIL are not supported
-@@ -2556,16 +2553,15 @@ EXPORT_SYMBOL_GPL(__vmalloc_node_range);
-  * Return: pointer to the allocated memory or %NULL on error
-  */
- static void *__vmalloc_node(unsigned long size, unsigned long align,
--			    gfp_t gfp_mask, pgprot_t prot,
--			    int node, const void *caller)
-+			    gfp_t gfp_mask, int node, const void *caller)
- {
- 	return __vmalloc_node_range(size, align, VMALLOC_START, VMALLOC_END,
--				gfp_mask, prot, 0, node, caller);
-+				gfp_mask, PAGE_KERNEL, 0, node, caller);
- }
- 
- void *__vmalloc(unsigned long size, gfp_t gfp_mask)
- {
--	return __vmalloc_node(size, 1, gfp_mask, PAGE_KERNEL, NUMA_NO_NODE,
-+	return __vmalloc_node(size, 1, gfp_mask, NUMA_NO_NODE,
- 				__builtin_return_address(0));
- }
- EXPORT_SYMBOL(__vmalloc);
-@@ -2573,15 +2569,15 @@ EXPORT_SYMBOL(__vmalloc);
- static inline void *__vmalloc_node_flags(unsigned long size,
- 					int node, gfp_t flags)
- {
--	return __vmalloc_node(size, 1, flags, PAGE_KERNEL,
--					node, __builtin_return_address(0));
-+	return __vmalloc_node(size, 1, flags, node,
-+				__builtin_return_address(0));
- }
- 
- 
- void *__vmalloc_node_flags_caller(unsigned long size, int node, gfp_t flags,
- 				  void *caller)
- {
--	return __vmalloc_node(size, 1, flags, PAGE_KERNEL, node, caller);
-+	return __vmalloc_node(size, 1, flags, node, caller);
- }
- 
- /**
-@@ -2656,8 +2652,8 @@ EXPORT_SYMBOL(vmalloc_user);
-  */
- void *vmalloc_node(unsigned long size, int node)
- {
--	return __vmalloc_node(size, 1, GFP_KERNEL, PAGE_KERNEL,
--					node, __builtin_return_address(0));
-+	return __vmalloc_node(size, 1, GFP_KERNEL, node,
+-	return __vmalloc_node_range(stack_size, THREAD_ALIGN,
+-				    VMALLOC_START, VMALLOC_END,
+-				    THREADINFO_GFP, PAGE_KERNEL, 0, node,
+-				    __builtin_return_address(0));
++	return __vmalloc_node(stack_size, THREAD_ALIGN, THREADINFO_GFP, node,
 +			__builtin_return_address(0));
  }
- EXPORT_SYMBOL(vmalloc_node);
  
-@@ -2670,9 +2666,6 @@ EXPORT_SYMBOL(vmalloc_node);
-  * allocator and map them into contiguous kernel virtual space.
-  * The memory allocated is set to zero.
-  *
-- * For tight control over page level allocator and protection flags
-- * use __vmalloc_node() instead.
-- *
-  * Return: pointer to the allocated memory or %NULL on error
-  */
- void *vzalloc_node(unsigned long size, int node)
-@@ -2745,8 +2738,8 @@ void *vmalloc_exec(unsigned long size)
-  */
- void *vmalloc_32(unsigned long size)
- {
--	return __vmalloc_node(size, 1, GFP_VMALLOC32, PAGE_KERNEL,
--			      NUMA_NO_NODE, __builtin_return_address(0));
-+	return __vmalloc_node(size, 1, GFP_VMALLOC32, NUMA_NO_NODE,
-+			__builtin_return_address(0));
- }
- EXPORT_SYMBOL(vmalloc_32);
- 
+ #endif /* __ASM_VMAP_STACK_H */
 -- 
 2.25.1
 
