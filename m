@@ -6,59 +6,62 @@ X-Spam-Status: No, score=-0.8 required=3.0 tests=HEADER_FROM_DIFFERENT_DOMAINS,
 	MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED autolearn=no
 	autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id D4477C2BA19
-	for <iommu@archiver.kernel.org>; Tue, 14 Apr 2020 13:19:34 +0000 (UTC)
-Received: from whitealder.osuosl.org (smtp1.osuosl.org [140.211.166.138])
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 45344C2BA19
+	for <iommu@archiver.kernel.org>; Tue, 14 Apr 2020 13:20:36 +0000 (UTC)
+Received: from silver.osuosl.org (smtp3.osuosl.org [140.211.166.136])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by mail.kernel.org (Postfix) with ESMTPS id A3E4B2064A
-	for <iommu@archiver.kernel.org>; Tue, 14 Apr 2020 13:19:34 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org A3E4B2064A
+	by mail.kernel.org (Postfix) with ESMTPS id 1FDC12063A
+	for <iommu@archiver.kernel.org>; Tue, 14 Apr 2020 13:20:36 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 1FDC12063A
 Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=8bytes.org
 Authentication-Results: mail.kernel.org; spf=pass smtp.mailfrom=iommu-bounces@lists.linux-foundation.org
 Received: from localhost (localhost [127.0.0.1])
-	by whitealder.osuosl.org (Postfix) with ESMTP id 8B1DA8685D;
-	Tue, 14 Apr 2020 13:19:34 +0000 (UTC)
+	by silver.osuosl.org (Postfix) with ESMTP id 036352001E;
+	Tue, 14 Apr 2020 13:20:36 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from whitealder.osuosl.org ([127.0.0.1])
+Received: from silver.osuosl.org ([127.0.0.1])
 	by localhost (.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
-	with ESMTP id HwJB5Q7WXlGG; Tue, 14 Apr 2020 13:19:33 +0000 (UTC)
+	with ESMTP id PKuvRa++e-pX; Tue, 14 Apr 2020 13:20:34 +0000 (UTC)
 Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [140.211.9.56])
-	by whitealder.osuosl.org (Postfix) with ESMTP id BF233864DF;
-	Tue, 14 Apr 2020 13:19:33 +0000 (UTC)
+	by silver.osuosl.org (Postfix) with ESMTP id 18253203A2;
+	Tue, 14 Apr 2020 13:20:34 +0000 (UTC)
 Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
-	by lists.linuxfoundation.org (Postfix) with ESMTP id A9AD8C1D7D;
-	Tue, 14 Apr 2020 13:19:33 +0000 (UTC)
+	by lists.linuxfoundation.org (Postfix) with ESMTP id 02336C1D7D;
+	Tue, 14 Apr 2020 13:20:33 +0000 (UTC)
 Received: from hemlock.osuosl.org (smtp2.osuosl.org [140.211.166.133])
- by lists.linuxfoundation.org (Postfix) with ESMTP id 0C374C0172;
- Tue, 14 Apr 2020 13:19:32 +0000 (UTC)
+ by lists.linuxfoundation.org (Postfix) with ESMTP id 551A1C0172;
+ Tue, 14 Apr 2020 13:20:33 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
- by hemlock.osuosl.org (Postfix) with ESMTP id E96C187D73;
- Tue, 14 Apr 2020 13:19:31 +0000 (UTC)
+ by hemlock.osuosl.org (Postfix) with ESMTP id 4175187D7C;
+ Tue, 14 Apr 2020 13:20:33 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
 Received: from hemlock.osuosl.org ([127.0.0.1])
  by localhost (.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
- with ESMTP id tCKHJPPX7GmK; Tue, 14 Apr 2020 13:17:28 +0000 (UTC)
+ with ESMTP id DIyvegUTN1bg; Tue, 14 Apr 2020 13:20:32 +0000 (UTC)
 X-Greylist: from auto-whitelisted by SQLgrey-1.7.6
 X-Greylist: from auto-whitelisted by SQLgrey-1.7.6
 Received: from theia.8bytes.org (8bytes.org [81.169.241.247])
- by hemlock.osuosl.org (Postfix) with ESMTPS id 0417887D11;
- Tue, 14 Apr 2020 13:17:27 +0000 (UTC)
+ by hemlock.osuosl.org (Postfix) with ESMTPS id B8FA087D73;
+ Tue, 14 Apr 2020 13:20:32 +0000 (UTC)
 Received: by theia.8bytes.org (Postfix, from userid 1000)
- id 7CE0145B; Tue, 14 Apr 2020 15:17:26 +0200 (CEST)
-Date: Tue, 14 Apr 2020 15:17:24 +0200
+ id 340BE45B; Tue, 14 Apr 2020 15:20:31 +0200 (CEST)
+Date: Tue, 14 Apr 2020 15:20:29 +0200
 From: Joerg Roedel <joro@8bytes.org>
 To: Marek Szyprowski <m.szyprowski@samsung.com>
-Subject: Re: [RFC PATCH 33/34] iommu: Remove add_device()/remove_device()
- code-paths
-Message-ID: <20200414131724.GA14731@8bytes.org>
+Subject: Re: [PATCH] iommu/exynos: Get rid of 'struct exynos_iommu_owner'
+ exynos_iommu_owner
+Message-ID: <20200414132029.GB14731@8bytes.org>
 References: <20200407183742.4344-1-joro@8bytes.org>
- <CGME20200407183806eucas1p2cf45fbce5a43a6b4fe3a623b28da0606@eucas1p2.samsung.com>
- <20200407183742.4344-34-joro@8bytes.org>
- <1a88547f-ac90-825e-e529-a56c2c4e0391@samsung.com>
+ <CGME20200407184501eucas1p25407bc96e4345df406cf6ba061ae6a82@eucas1p2.samsung.com>
+ <20200407183742.4344-32-joro@8bytes.org>
+ <449e7f16-e719-9617-ec92-63b82c0bc33f@samsung.com>
+ <f59b0bb3-8c08-9cc9-bb1a-e69b7b226f60@samsung.com>
+ <20200409114620.GA16298@8bytes.org>
+ <40af831b-d00c-0cf9-0a06-e60c048a9ab8@samsung.com>
 MIME-Version: 1.0
 Content-Disposition: inline
-In-Reply-To: <1a88547f-ac90-825e-e529-a56c2c4e0391@samsung.com>
+In-Reply-To: <40af831b-d00c-0cf9-0a06-e60c048a9ab8@samsung.com>
 Cc: Heiko Stuebner <heiko@sntech.de>,
  Bjorn Andersson <bjorn.andersson@linaro.org>, linux-tegra@vger.kernel.org,
  Thierry Reding <thierry.reding@gmail.com>, Will Deacon <will@kernel.org>,
@@ -90,16 +93,19 @@ Content-Transfer-Encoding: 7bit
 Errors-To: iommu-bounces@lists.linux-foundation.org
 Sender: "iommu" <iommu-bounces@lists.linux-foundation.org>
 
-Hi Marek,
+On Thu, Apr 09, 2020 at 03:58:00PM +0200, Marek Szyprowski wrote:
+> I've checked and it works fine on top of 
+> ff68eb23308e6538ec7864c83d39540f423bbe90. However I'm not a fan of 
+> removing this 'owner' structure. It gave a nice abstraction for the all 
+> SYSMMU controllers for the given device (although most devices in the 
+> system have only one SYSMMU). Why this structure is a problem for your 
+> rework?
 
-On Fri, Apr 10, 2020 at 12:39:38PM +0200, Marek Szyprowski wrote:
-> > +		if (!group->default_domain)
-> > +			continue;
-> 
-> It doesn't look straight from the above diff, but this continue leaks 
-> group->lock taken.
-
-You are right, thanks for the review! I fixed it in v2.
+Okay, the structure itself is not a problem, I just thought it is not
+really necessary. But to keep things simple I've taken another approach
+for v2 of this series: Just use the first SYSMMU of the controllers list
+to link the device and the IOMMU. When the owner structure exists there
+is always one entry in this list, so that should work fine.
 
 Regards,
 
