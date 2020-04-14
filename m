@@ -6,46 +6,46 @@ X-Spam-Status: No, score=-9.8 required=3.0 tests=HEADER_FROM_DIFFERENT_DOMAINS,
 	INCLUDES_PATCH,MAILING_LIST_MULTI,SIGNED_OFF_BY,SPF_HELO_NONE,SPF_PASS,
 	URIBL_BLOCKED,USER_AGENT_GIT autolearn=ham autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id EE2D2C2BB86
-	for <iommu@archiver.kernel.org>; Tue, 14 Apr 2020 13:16:18 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 4E652C2BB86
+	for <iommu@archiver.kernel.org>; Tue, 14 Apr 2020 13:16:22 +0000 (UTC)
 Received: from hemlock.osuosl.org (smtp2.osuosl.org [140.211.166.133])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by mail.kernel.org (Postfix) with ESMTPS id CD4472075E
-	for <iommu@archiver.kernel.org>; Tue, 14 Apr 2020 13:16:18 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org CD4472075E
+	by mail.kernel.org (Postfix) with ESMTPS id 2C8792063A
+	for <iommu@archiver.kernel.org>; Tue, 14 Apr 2020 13:16:22 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 2C8792063A
 Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=8bytes.org
 Authentication-Results: mail.kernel.org; spf=pass smtp.mailfrom=iommu-bounces@lists.linux-foundation.org
 Received: from localhost (localhost [127.0.0.1])
-	by hemlock.osuosl.org (Postfix) with ESMTP id 95A7F86EA3;
-	Tue, 14 Apr 2020 13:16:18 +0000 (UTC)
+	by hemlock.osuosl.org (Postfix) with ESMTP id 12A9786EA3;
+	Tue, 14 Apr 2020 13:16:22 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
 Received: from hemlock.osuosl.org ([127.0.0.1])
 	by localhost (.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
-	with ESMTP id nIkYhxbNI-Dk; Tue, 14 Apr 2020 13:16:15 +0000 (UTC)
+	with ESMTP id bw+bUI0AkPDX; Tue, 14 Apr 2020 13:16:18 +0000 (UTC)
 Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [140.211.9.56])
-	by hemlock.osuosl.org (Postfix) with ESMTP id 4DA0387B8A;
-	Tue, 14 Apr 2020 13:16:10 +0000 (UTC)
+	by hemlock.osuosl.org (Postfix) with ESMTP id 096B787B82;
+	Tue, 14 Apr 2020 13:16:11 +0000 (UTC)
 Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
-	by lists.linuxfoundation.org (Postfix) with ESMTP id 3C783C0172;
+	by lists.linuxfoundation.org (Postfix) with ESMTP id ECF33C1D8E;
 	Tue, 14 Apr 2020 13:16:10 +0000 (UTC)
-Received: from silver.osuosl.org (smtp3.osuosl.org [140.211.166.136])
- by lists.linuxfoundation.org (Postfix) with ESMTP id B32D7C1D7D;
- Tue, 14 Apr 2020 13:16:05 +0000 (UTC)
+Received: from hemlock.osuosl.org (smtp2.osuosl.org [140.211.166.133])
+ by lists.linuxfoundation.org (Postfix) with ESMTP id 37740C1D7D;
+ Tue, 14 Apr 2020 13:16:07 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
- by silver.osuosl.org (Postfix) with ESMTP id 9E0BC20535;
- Tue, 14 Apr 2020 13:16:05 +0000 (UTC)
+ by hemlock.osuosl.org (Postfix) with ESMTP id 2358087D14;
+ Tue, 14 Apr 2020 13:16:07 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from silver.osuosl.org ([127.0.0.1])
+Received: from hemlock.osuosl.org ([127.0.0.1])
  by localhost (.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
- with ESMTP id 2QYmj2ejokAo; Tue, 14 Apr 2020 13:16:01 +0000 (UTC)
+ with ESMTP id IEpSAQi5PygC; Tue, 14 Apr 2020 13:16:02 +0000 (UTC)
 X-Greylist: from auto-whitelisted by SQLgrey-1.7.6
 X-Greylist: from auto-whitelisted by SQLgrey-1.7.6
 Received: from theia.8bytes.org (8bytes.org [81.169.241.247])
- by silver.osuosl.org (Postfix) with ESMTPS id F151920762;
- Tue, 14 Apr 2020 13:16:00 +0000 (UTC)
+ by hemlock.osuosl.org (Postfix) with ESMTPS id C690487A00;
+ Tue, 14 Apr 2020 13:16:01 +0000 (UTC)
 Received: by theia.8bytes.org (Postfix, from userid 1000)
- id 06C7E4CA; Tue, 14 Apr 2020 15:15:52 +0200 (CEST)
+ id 9D76E50C; Tue, 14 Apr 2020 15:15:53 +0200 (CEST)
 From: Joerg Roedel <joro@8bytes.org>
 To: Joerg Roedel <joro@8bytes.org>, Will Deacon <will@kernel.org>,
  Robin Murphy <robin.murphy@arm.com>,
@@ -60,10 +60,10 @@ To: Joerg Roedel <joro@8bytes.org>, Will Deacon <will@kernel.org>,
  Thierry Reding <thierry.reding@gmail.com>,
  Jonathan Hunter <jonathanh@nvidia.com>,
  Jean-Philippe Brucker <jean-philippe@linaro.org>
-Subject: [PATCH v2 08/33] iommu: Move default domain allocation to
- iommu_probe_device()
-Date: Tue, 14 Apr 2020 15:15:17 +0200
-Message-Id: <20200414131542.25608-9-joro@8bytes.org>
+Subject: [PATCH v2 12/33] iommu: Move iommu_group_create_direct_mappings() out
+ of iommu_group_add_device()
+Date: Tue, 14 Apr 2020 15:15:21 +0200
+Message-Id: <20200414131542.25608-13-joro@8bytes.org>
 X-Mailer: git-send-email 2.17.1
 In-Reply-To: <20200414131542.25608-1-joro@8bytes.org>
 References: <20200414131542.25608-1-joro@8bytes.org>
@@ -92,182 +92,131 @@ Sender: "iommu" <iommu-bounces@lists.linux-foundation.org>
 
 From: Joerg Roedel <jroedel@suse.de>
 
-Well, not really. The call to iommu_alloc_default_domain() in
-iommu_group_get_for_dev() has to stay around as long as there are
-IOMMU drivers using the add/remove_device() call-backs instead of
-probe/release_device().
+After the previous changes the iommu group may not have a default
+domain when iommu_group_add_device() is called. With no default domain
+iommu_group_create_direct_mappings() will do nothing and no direct
+mappings will be created.
 
-Those drivers expect that iommu_group_get_for_dev() returns the device
-attached to a group and the group set up with a default domain (and
-the device attached to the groups current domain).
-
-But when all drivers are converted this compatability mess can be
-removed.
+Rename iommu_group_create_direct_mappings() to
+iommu_create_device_direct_mappings() to better reflect that the
+function creates direct mappings only for one device and not for all
+devices in the group. Then move the call to the places where a default
+domain actually exists.
 
 Signed-off-by: Joerg Roedel <jroedel@suse.de>
 ---
- drivers/iommu/iommu.c | 102 +++++++++++++++++++++++++++++-------------
- 1 file changed, 71 insertions(+), 31 deletions(-)
+ drivers/iommu/iommu.c | 35 ++++++++++++++++++++++++++++++-----
+ 1 file changed, 30 insertions(+), 5 deletions(-)
 
 diff --git a/drivers/iommu/iommu.c b/drivers/iommu/iommu.c
-index 6cfe7799dc8c..7a385c18e1a5 100644
+index 7de0e29db333..834a45da0ed0 100644
 --- a/drivers/iommu/iommu.c
 +++ b/drivers/iommu/iommu.c
-@@ -79,6 +79,16 @@ static bool iommu_cmd_line_dma_api(void)
- 	return !!(iommu_cmd_line & IOMMU_CMD_LINE_DMA_API);
- }
+@@ -89,6 +89,8 @@ static int __iommu_attach_group(struct iommu_domain *domain,
+ 				struct iommu_group *group);
+ static void __iommu_detach_group(struct iommu_domain *domain,
+ 				 struct iommu_group *group);
++static int iommu_create_device_direct_mappings(struct iommu_group *group,
++					       struct device *dev);
  
-+static int iommu_alloc_default_domain(struct device *dev);
-+static struct iommu_domain *__iommu_domain_alloc(struct bus_type *bus,
-+						 unsigned type);
-+static int __iommu_attach_device(struct iommu_domain *domain,
-+				 struct device *dev);
-+static int __iommu_attach_group(struct iommu_domain *domain,
-+				struct iommu_group *group);
-+static void __iommu_detach_group(struct iommu_domain *domain,
-+				 struct iommu_group *group);
-+
  #define IOMMU_GROUP_ATTR(_name, _mode, _show, _store)		\
  struct iommu_group_attribute iommu_group_attr_##_name =		\
- 	__ATTR(_name, _mode, _show, _store)
-@@ -221,10 +231,29 @@ int iommu_probe_device(struct device *dev)
- 		goto err_free_dev_param;
- 	}
+@@ -243,6 +245,8 @@ static int __iommu_probe_device_helper(struct device *dev)
+ 	if (group->default_domain)
+ 		ret = __iommu_attach_device(group->default_domain, dev);
  
--	if (ops->probe_device)
-+	if (ops->probe_device) {
-+		struct iommu_group *group;
++	iommu_create_device_direct_mappings(group, dev);
 +
- 		ret = __iommu_probe_device(dev);
--	else
-+
-+		/*
-+		 * Try to allocate a default domain - needs support from the
-+		 * IOMMU driver. There are still some drivers which don't
-+		 * support default domains, so the return value is not yet
-+		 * checked.
-+		 */
-+		if (!ret)
-+			iommu_alloc_default_domain(dev);
-+
-+		group = iommu_group_get(dev);
-+		if (group && group->default_domain) {
-+			ret = __iommu_attach_device(group->default_domain, dev);
-+			iommu_group_put(group);
-+		}
-+
-+	} else {
- 		ret = ops->add_device(dev);
-+	}
+ 	iommu_group_put(group);
  
  	if (ret)
- 		goto err_module_put;
-@@ -268,15 +297,6 @@ void iommu_release_device(struct device *dev)
- 	dev_iommu_free(dev);
- }
- 
--static struct iommu_domain *__iommu_domain_alloc(struct bus_type *bus,
--						 unsigned type);
--static int __iommu_attach_device(struct iommu_domain *domain,
--				 struct device *dev);
--static int __iommu_attach_group(struct iommu_domain *domain,
--				struct iommu_group *group);
--static void __iommu_detach_group(struct iommu_domain *domain,
--				 struct iommu_group *group);
--
- static int __init iommu_set_def_domain_type(char *str)
+@@ -263,6 +267,7 @@ static int __iommu_probe_device_helper(struct device *dev)
+ int iommu_probe_device(struct device *dev)
  {
- 	bool pt;
-@@ -1423,25 +1443,18 @@ static int iommu_get_def_domain_type(struct device *dev)
- 	return (type == 0) ? iommu_def_domain_type : type;
- }
- 
--static int iommu_alloc_default_domain(struct device *dev,
--				      struct iommu_group *group)
-+static int iommu_group_alloc_default_domain(struct bus_type *bus,
-+					    struct iommu_group *group,
-+					    unsigned int type)
- {
- 	struct iommu_domain *dom;
--	unsigned int type;
--
--	if (group->default_domain)
--		return 0;
- 
--	type = iommu_get_def_domain_type(dev);
--
--	dom = __iommu_domain_alloc(dev->bus, type);
-+	dom = __iommu_domain_alloc(bus, type);
- 	if (!dom && type != IOMMU_DOMAIN_DMA) {
--		dom = __iommu_domain_alloc(dev->bus, IOMMU_DOMAIN_DMA);
--		if (dom) {
--			dev_warn(dev,
--				 "failed to allocate default IOMMU domain of type %u; falling back to IOMMU_DOMAIN_DMA",
--				 type);
--		}
-+		dom = __iommu_domain_alloc(bus, IOMMU_DOMAIN_DMA);
-+		if (dom)
-+			pr_warn("Failed to allocate default IOMMU domain of type %u for group %s - Falling back to IOMMU_DOMAIN_DMA",
-+				type, group->name);
- 	}
- 
- 	if (!dom)
-@@ -1461,6 +1474,23 @@ static int iommu_alloc_default_domain(struct device *dev,
- 	return 0;
- }
- 
-+static int iommu_alloc_default_domain(struct device *dev)
-+{
+ 	const struct iommu_ops *ops = dev->bus->iommu_ops;
 +	struct iommu_group *group;
-+	unsigned int type;
-+
+ 	int ret;
+ 
+ 	WARN_ON(dev->iommu_group);
+@@ -285,6 +290,10 @@ int iommu_probe_device(struct device *dev)
+ 	if (ret)
+ 		goto err_module_put;
+ 
 +	group = iommu_group_get(dev);
-+	if (!group)
-+		return -ENODEV;
++	iommu_create_device_direct_mappings(group, dev);
++	iommu_group_put(group);
 +
-+	if (group->default_domain)
-+		return 0;
+ 	if (ops->probe_finalize)
+ 		ops->probe_finalize(dev);
+ 
+@@ -736,8 +745,8 @@ int iommu_group_set_name(struct iommu_group *group, const char *name)
+ }
+ EXPORT_SYMBOL_GPL(iommu_group_set_name);
+ 
+-static int iommu_group_create_direct_mappings(struct iommu_group *group,
+-					      struct device *dev)
++static int iommu_create_device_direct_mappings(struct iommu_group *group,
++					       struct device *dev)
+ {
+ 	struct iommu_domain *domain = group->default_domain;
+ 	struct iommu_resv_region *entry;
+@@ -841,8 +850,6 @@ int iommu_group_add_device(struct iommu_group *group, struct device *dev)
+ 
+ 	dev->iommu_group = group;
+ 
+-	iommu_group_create_direct_mappings(group, dev);
+-
+ 	mutex_lock(&group->mutex);
+ 	list_add_tail(&device->list, &group->devices);
+ 	if (group->domain)
+@@ -1736,6 +1743,7 @@ static void probe_alloc_default_domain(struct bus_type *bus,
+ 		gtype.type = iommu_def_domain_type;
+ 
+ 	iommu_group_alloc_default_domain(bus, group, gtype.type);
 +
-+	type = iommu_get_def_domain_type(dev);
+ }
+ 
+ static int iommu_group_do_dma_attach(struct device *dev, void *data)
+@@ -1760,6 +1768,21 @@ static int __iommu_group_dma_attach(struct iommu_group *group)
+ 					  iommu_group_do_dma_attach);
+ }
+ 
++static int iommu_do_create_direct_mappings(struct device *dev, void *data)
++{
++	struct iommu_group *group = data;
 +
-+	return iommu_group_alloc_default_domain(dev->bus, group, type);
++	iommu_create_device_direct_mappings(group, dev);
++
++	return 0;
 +}
 +
- /**
-  * iommu_group_get_for_dev - Find or create the IOMMU group for a device
-  * @dev: target device
-@@ -1491,16 +1521,26 @@ struct iommu_group *iommu_group_get_for_dev(struct device *dev)
- 	if (IS_ERR(group))
- 		return group;
- 
-+	ret = iommu_group_add_device(group, dev);
-+	if (ret)
-+		goto out_put_group;
++static int iommu_group_create_direct_mappings(struct iommu_group *group)
++{
++	return __iommu_group_for_each_dev(group, group,
++					  iommu_do_create_direct_mappings);
++}
 +
- 	/*
- 	 * Try to allocate a default domain - needs support from the
- 	 * IOMMU driver. There are still some drivers which don't support
--	 * default domains, so the return value is not yet checked.
-+	 * default domains, so the return value is not yet checked. Only
-+	 * allocate the domain here when the driver still has the
-+	 * add_device/remove_device call-backs implemented.
- 	 */
--	iommu_alloc_default_domain(dev, group);
-+	if (!ops->probe_device) {
-+		iommu_alloc_default_domain(dev);
+ static int bus_iommu_probe(struct bus_type *bus)
+ {
+ 	const struct iommu_ops *ops = bus->iommu_ops;
+@@ -1792,6 +1815,8 @@ static int bus_iommu_probe(struct bus_type *bus)
+ 				continue;
+ 			}
  
--	ret = iommu_group_add_device(group, dev);
--	if (ret)
--		goto out_put_group;
-+		if (group->default_domain)
-+			ret = __iommu_attach_device(group->default_domain, dev);
++			iommu_group_create_direct_mappings(group);
 +
-+		if (ret)
-+			goto out_put_group;
-+	}
+ 			ret = __iommu_group_dma_attach(group);
  
- 	return group;
+ 			mutex_unlock(&group->mutex);
+@@ -2632,7 +2657,7 @@ request_default_domain_for_dev(struct device *dev, unsigned long type)
+ 		iommu_domain_free(group->default_domain);
+ 	group->default_domain = domain;
  
+-	iommu_group_create_direct_mappings(group, dev);
++	iommu_create_device_direct_mappings(group, dev);
+ 
+ 	dev_info(dev, "Using iommu %s mapping\n",
+ 		 type == IOMMU_DOMAIN_DMA ? "dma" : "direct");
 -- 
 2.17.1
 
