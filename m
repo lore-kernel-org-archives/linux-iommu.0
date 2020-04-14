@@ -7,60 +7,60 @@ X-Spam-Status: No, score=-9.6 required=3.0 tests=DKIM_INVALID,DKIM_SIGNED,
 	SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED,USER_AGENT_GIT autolearn=ham
 	autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 50416C352B6
-	for <iommu@archiver.kernel.org>; Tue, 14 Apr 2020 13:14:39 +0000 (UTC)
-Received: from whitealder.osuosl.org (smtp1.osuosl.org [140.211.166.138])
+	by smtp.lore.kernel.org (Postfix) with ESMTP id A1EC2C3815B
+	for <iommu@archiver.kernel.org>; Tue, 14 Apr 2020 13:14:46 +0000 (UTC)
+Received: from silver.osuosl.org (smtp3.osuosl.org [140.211.166.136])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by mail.kernel.org (Postfix) with ESMTPS id 25006206A2
-	for <iommu@archiver.kernel.org>; Tue, 14 Apr 2020 13:14:39 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTPS id 7885F20732
+	for <iommu@archiver.kernel.org>; Tue, 14 Apr 2020 13:14:46 +0000 (UTC)
 Authentication-Results: mail.kernel.org;
-	dkim=fail reason="signature verification failed" (2048-bit key) header.d=infradead.org header.i=@infradead.org header.b="XTwpKCcD"
-DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 25006206A2
+	dkim=fail reason="signature verification failed" (2048-bit key) header.d=infradead.org header.i=@infradead.org header.b="TknBV49y"
+DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 7885F20732
 Authentication-Results: mail.kernel.org; dmarc=none (p=none dis=none) header.from=lst.de
 Authentication-Results: mail.kernel.org; spf=pass smtp.mailfrom=iommu-bounces@lists.linux-foundation.org
 Received: from localhost (localhost [127.0.0.1])
-	by whitealder.osuosl.org (Postfix) with ESMTP id E35A7860FF;
-	Tue, 14 Apr 2020 13:14:38 +0000 (UTC)
+	by silver.osuosl.org (Postfix) with ESMTP id 65D1C20535;
+	Tue, 14 Apr 2020 13:14:46 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from whitealder.osuosl.org ([127.0.0.1])
+Received: from silver.osuosl.org ([127.0.0.1])
 	by localhost (.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
-	with ESMTP id 8N4n2k677AVK; Tue, 14 Apr 2020 13:14:36 +0000 (UTC)
+	with ESMTP id j2JQ0gFX6sy2; Tue, 14 Apr 2020 13:14:45 +0000 (UTC)
 Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [140.211.9.56])
-	by whitealder.osuosl.org (Postfix) with ESMTP id D4949858AE;
-	Tue, 14 Apr 2020 13:14:36 +0000 (UTC)
+	by silver.osuosl.org (Postfix) with ESMTP id 3200620518;
+	Tue, 14 Apr 2020 13:14:45 +0000 (UTC)
 Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
-	by lists.linuxfoundation.org (Postfix) with ESMTP id D0657C1D7D;
-	Tue, 14 Apr 2020 13:14:36 +0000 (UTC)
+	by lists.linuxfoundation.org (Postfix) with ESMTP id 2D638C1D7D;
+	Tue, 14 Apr 2020 13:14:45 +0000 (UTC)
 Received: from whitealder.osuosl.org (smtp1.osuosl.org [140.211.166.138])
- by lists.linuxfoundation.org (Postfix) with ESMTP id EDB0EC0172
- for <iommu@lists.linux-foundation.org>; Tue, 14 Apr 2020 13:14:34 +0000 (UTC)
+ by lists.linuxfoundation.org (Postfix) with ESMTP id C07B4C0172
+ for <iommu@lists.linux-foundation.org>; Tue, 14 Apr 2020 13:14:44 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
- by whitealder.osuosl.org (Postfix) with ESMTP id DC719860FF
- for <iommu@lists.linux-foundation.org>; Tue, 14 Apr 2020 13:14:34 +0000 (UTC)
+ by whitealder.osuosl.org (Postfix) with ESMTP id AD215860FF
+ for <iommu@lists.linux-foundation.org>; Tue, 14 Apr 2020 13:14:44 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
 Received: from whitealder.osuosl.org ([127.0.0.1])
  by localhost (.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
- with ESMTP id 4PBHOzxH1fNs for <iommu@lists.linux-foundation.org>;
- Tue, 14 Apr 2020 13:14:34 +0000 (UTC)
+ with ESMTP id wQKrPeUaySrh for <iommu@lists.linux-foundation.org>;
+ Tue, 14 Apr 2020 13:14:43 +0000 (UTC)
 X-Greylist: from auto-whitelisted by SQLgrey-1.7.6
 Received: from bombadil.infradead.org (bombadil.infradead.org
  [198.137.202.133])
- by whitealder.osuosl.org (Postfix) with ESMTPS id 4BDEB858AE
- for <iommu@lists.linux-foundation.org>; Tue, 14 Apr 2020 13:14:34 +0000 (UTC)
+ by whitealder.osuosl.org (Postfix) with ESMTPS id 73966858AE
+ for <iommu@lists.linux-foundation.org>; Tue, 14 Apr 2020 13:14:43 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
  d=infradead.org; s=bombadil.20170209; h=Content-Transfer-Encoding:
  MIME-Version:References:In-Reply-To:Message-Id:Date:Subject:Cc:To:From:Sender
  :Reply-To:Content-Type:Content-ID:Content-Description;
- bh=X5IQDaE4FDPPPfdQylGsBh5aBUxIuo1skWHhwnkas7o=; b=XTwpKCcDt18qH05v3/s2Akijrl
- 49ajjR8xl73AG8S5lUoPSN9ROglSWwmdd4W1dxIJYwySK6kYEuF9dzIaSi8/zFVOZgy+5XM418ii8
- Vdp5QCwhYeDZdeZcvEJH7rn5pL/7m6opZJ8IycgKS92aKqgCOQ351H2OqFDBLXHBRTXReUEscSo9x
- jt7FcIG/yiLbIFv7ZWMvAAR6eyK52xMct+n+kAtTyOE0n4KkQ2EMMMGNn7A0NgOTbNnjyzmSIdA4/
- zrjc472yjv3zsTH+NggHsoBjycsdgZ2sqJAY5i3rZKYgOVsm4PbFfCk+YSN9cHDzj3MShXW7zCbB1
- UQ3U6iRg==;
+ bh=El3K7mGKX6B9o1n3n8/uSzRNv+M9pQhI906vP4nRJj0=; b=TknBV49y24E5J7xFzadKo5kjo5
+ H8QYGdmubIg2vBwe4mYro12NwuYp1KZTwMSErFsx1s9TwfxWwFDRWSyYmrajo1Y/8Dd7olymaZiKB
+ OUeMc4IYdXC9zX9BTcv/N9q3I31wh3TlIc98iy/C6FIEx45kob0iaVmoDToA6yCmEag/F5zzdsuW3
+ ZFo+awA/3wTJWtGY2E0rKHXogHWWApzIqlcsjjb6Awp4NUqZi+Hx1hc/D0P1cAD7SDlvPd8K2icXI
+ wl+6z7yHRJpbpDdPSvQSP4Id+GQVwc5XlDPmgap8nH2NdGYXZ9fDSfOeggdXxpsBX7IxfyPfaRIBb
+ KZM3myUg==;
 Received: from [2001:4bb8:180:384b:c70:4a89:bc61:2] (helo=localhost)
  by bombadil.infradead.org with esmtpsa (Exim 4.92.3 #3 (Red Hat Linux))
- id 1jOLO9-0006Mm-NN; Tue, 14 Apr 2020 13:14:06 +0000
+ id 1jOLOG-0006SH-MB; Tue, 14 Apr 2020 13:14:13 +0000
 From: Christoph Hellwig <hch@lst.de>
 To: Andrew Morton <akpm@linux-foundation.org>,
  "K. Y. Srinivasan" <kys@microsoft.com>,
@@ -71,10 +71,9 @@ To: Andrew Morton <akpm@linux-foundation.org>,
  Sumit Semwal <sumit.semwal@linaro.org>,
  Sakari Ailus <sakari.ailus@linux.intel.com>,
  Minchan Kim <minchan@kernel.org>, Nitin Gupta <ngupta@vflare.org>
-Subject: [PATCH 04/29] staging: media: ipu3: use vmap instead of
- reimplementing it
-Date: Tue, 14 Apr 2020 15:13:23 +0200
-Message-Id: <20200414131348.444715-5-hch@lst.de>
+Subject: [PATCH 06/29] powerpc: add an ioremap_phb helper
+Date: Tue, 14 Apr 2020 15:13:25 +0200
+Message-Id: <20200414131348.444715-7-hch@lst.de>
 X-Mailer: git-send-email 2.25.1
 In-Reply-To: <20200414131348.444715-1-hch@lst.de>
 References: <20200414131348.444715-1-hch@lst.de>
@@ -105,117 +104,221 @@ Content-Transfer-Encoding: 7bit
 Errors-To: iommu-bounces@lists.linux-foundation.org
 Sender: "iommu" <iommu-bounces@lists.linux-foundation.org>
 
-Just use vmap instead of messing with vmalloc internals.
+Factor code shared between pci_64 and electra_cf into a ioremap_pbh
+helper that follows the normal ioremap semantics, and returns a
+useful __iomem pointer.  Note that it opencodes __ioremap_at as
+we know from the callers the slab is available.  Switch pci_64
+to also store the result as __iomem pointer, and unmap the result
+using iounmap instead of force casting and using vmalloc APIs.
 
 Signed-off-by: Christoph Hellwig <hch@lst.de>
 Acked-by: Peter Zijlstra (Intel) <peterz@infradead.org>
 ---
- drivers/staging/media/ipu3/ipu3-css-pool.h |  4 +--
- drivers/staging/media/ipu3/ipu3-dmamap.c   | 30 ++++++----------------
- 2 files changed, 9 insertions(+), 25 deletions(-)
+ arch/powerpc/include/asm/io.h         |  2 +
+ arch/powerpc/include/asm/pci-bridge.h |  2 +-
+ arch/powerpc/kernel/pci_64.c          | 53 ++++++++++++++++++---------
+ drivers/pcmcia/electra_cf.c           | 45 ++++++++---------------
+ 4 files changed, 54 insertions(+), 48 deletions(-)
 
-diff --git a/drivers/staging/media/ipu3/ipu3-css-pool.h b/drivers/staging/media/ipu3/ipu3-css-pool.h
-index f4a60b41401b..a8ccd4f70320 100644
---- a/drivers/staging/media/ipu3/ipu3-css-pool.h
-+++ b/drivers/staging/media/ipu3/ipu3-css-pool.h
-@@ -15,14 +15,12 @@ struct imgu_device;
-  * @size:		size of the buffer in bytes.
-  * @vaddr:		kernel virtual address.
-  * @daddr:		iova dma address to access IPU3.
-- * @vma:		private, a pointer to &struct vm_struct,
-- *			used for imgu_dmamap_free.
-  */
- struct imgu_css_map {
- 	size_t size;
- 	void *vaddr;
- 	dma_addr_t daddr;
--	struct vm_struct *vma;
-+	struct page **pages;
- };
+diff --git a/arch/powerpc/include/asm/io.h b/arch/powerpc/include/asm/io.h
+index 635969b5b58e..91320985d33f 100644
+--- a/arch/powerpc/include/asm/io.h
++++ b/arch/powerpc/include/asm/io.h
+@@ -719,6 +719,8 @@ void __iomem *ioremap_coherent(phys_addr_t address, unsigned long size);
  
- /**
-diff --git a/drivers/staging/media/ipu3/ipu3-dmamap.c b/drivers/staging/media/ipu3/ipu3-dmamap.c
-index 7431322379f6..8a19b0024152 100644
---- a/drivers/staging/media/ipu3/ipu3-dmamap.c
-+++ b/drivers/staging/media/ipu3/ipu3-dmamap.c
-@@ -96,6 +96,7 @@ void *imgu_dmamap_alloc(struct imgu_device *imgu, struct imgu_css_map *map,
- 	unsigned long shift = iova_shift(&imgu->iova_domain);
- 	struct device *dev = &imgu->pci_dev->dev;
- 	size_t size = PAGE_ALIGN(len);
-+	int count = size >> PAGE_SHIFT;
- 	struct page **pages;
- 	dma_addr_t iovaddr;
- 	struct iova *iova;
-@@ -114,7 +115,7 @@ void *imgu_dmamap_alloc(struct imgu_device *imgu, struct imgu_css_map *map,
+ extern void iounmap(volatile void __iomem *addr);
  
- 	/* Call IOMMU driver to setup pgt */
- 	iovaddr = iova_dma_addr(&imgu->iova_domain, iova);
--	for (i = 0; i < size / PAGE_SIZE; ++i) {
-+	for (i = 0; i < count; ++i) {
- 		rval = imgu_mmu_map(imgu->mmu, iovaddr,
- 				    page_to_phys(pages[i]), PAGE_SIZE);
- 		if (rval)
-@@ -123,33 +124,23 @@ void *imgu_dmamap_alloc(struct imgu_device *imgu, struct imgu_css_map *map,
- 		iovaddr += PAGE_SIZE;
- 	}
++void __iomem *ioremap_phb(phys_addr_t paddr, unsigned long size);
++
+ int early_ioremap_range(unsigned long ea, phys_addr_t pa,
+ 			unsigned long size, pgprot_t prot);
+ void __iomem *do_ioremap(phys_addr_t pa, phys_addr_t offset, unsigned long size,
+diff --git a/arch/powerpc/include/asm/pci-bridge.h b/arch/powerpc/include/asm/pci-bridge.h
+index 69f4cb3b7c56..b92e81b256e5 100644
+--- a/arch/powerpc/include/asm/pci-bridge.h
++++ b/arch/powerpc/include/asm/pci-bridge.h
+@@ -66,7 +66,7 @@ struct pci_controller {
  
--	/* Now grab a virtual region */
--	map->vma = __get_vm_area(size, VM_USERMAP, VMALLOC_START, VMALLOC_END);
--	if (!map->vma)
-+	map->vaddr = vmap(pages, count, VM_USERMAP, PAGE_KERNEL);
-+	if (!map->vaddr)
- 		goto out_unmap;
+ 	void __iomem *io_base_virt;
+ #ifdef CONFIG_PPC64
+-	void *io_base_alloc;
++	void __iomem *io_base_alloc;
+ #endif
+ 	resource_size_t io_base_phys;
+ 	resource_size_t pci_io_size;
+diff --git a/arch/powerpc/kernel/pci_64.c b/arch/powerpc/kernel/pci_64.c
+index f83d1f69b1dd..2a976314f169 100644
+--- a/arch/powerpc/kernel/pci_64.c
++++ b/arch/powerpc/kernel/pci_64.c
+@@ -109,23 +109,46 @@ int pcibios_unmap_io_space(struct pci_bus *bus)
+ 	/* Get the host bridge */
+ 	hose = pci_bus_to_host(bus);
  
--	map->vma->pages = pages;
--	/* And map it in KVA */
--	if (map_vm_area(map->vma, PAGE_KERNEL, pages))
--		goto out_vunmap;
+-	/* Check if we have IOs allocated */
+-	if (hose->io_base_alloc == NULL)
+-		return 0;
 -
-+	map->pages = pages;
- 	map->size = size;
- 	map->daddr = iova_dma_addr(&imgu->iova_domain, iova);
--	map->vaddr = map->vma->addr;
+ 	pr_debug("IO unmapping for PHB %pOF\n", hose->dn);
+ 	pr_debug("  alloc=0x%p\n", hose->io_base_alloc);
  
- 	dev_dbg(dev, "%s: allocated %zu @ IOVA %pad @ VA %p\n", __func__,
--		size, &map->daddr, map->vma->addr);
+-	/* This is a PHB, we fully unmap the IO area */
+-	vunmap(hose->io_base_alloc);
 -
--	return map->vma->addr;
-+		size, &map->daddr, map->vaddr);
- 
--out_vunmap:
--	vunmap(map->vma->addr);
-+	return map->vaddr;
- 
- out_unmap:
- 	imgu_dmamap_free_buffer(pages, size);
- 	imgu_mmu_unmap(imgu->mmu, iova_dma_addr(&imgu->iova_domain, iova),
- 		       i * PAGE_SIZE);
--	map->vma = NULL;
- 
- out_free_iova:
- 	__free_iova(&imgu->iova_domain, iova);
-@@ -177,8 +168,6 @@ void imgu_dmamap_unmap(struct imgu_device *imgu, struct imgu_css_map *map)
-  */
- void imgu_dmamap_free(struct imgu_device *imgu, struct imgu_css_map *map)
- {
--	struct vm_struct *area = map->vma;
--
- 	dev_dbg(&imgu->pci_dev->dev, "%s: freeing %zu @ IOVA %pad @ VA %p\n",
- 		__func__, map->size, &map->daddr, map->vaddr);
- 
-@@ -187,11 +176,8 @@ void imgu_dmamap_free(struct imgu_device *imgu, struct imgu_css_map *map)
- 
- 	imgu_dmamap_unmap(imgu, map);
- 
--	if (WARN_ON(!area) || WARN_ON(!area->pages))
--		return;
--
--	imgu_dmamap_free_buffer(area->pages, map->size);
- 	vunmap(map->vaddr);
-+	imgu_dmamap_free_buffer(map->pages, map->size);
- 	map->vaddr = NULL;
++	iounmap(hose->io_base_alloc);
+ 	return 0;
  }
+ EXPORT_SYMBOL_GPL(pcibios_unmap_io_space);
  
+-static int pcibios_map_phb_io_space(struct pci_controller *hose)
++void __iomem *ioremap_phb(phys_addr_t paddr, unsigned long size)
+ {
+ 	struct vm_struct *area;
++	unsigned long addr;
++
++	WARN_ON_ONCE(paddr & ~PAGE_MASK);
++	WARN_ON_ONCE(size & ~PAGE_MASK);
++
++	/*
++	 * Let's allocate some IO space for that guy. We don't pass VM_IOREMAP
++	 * because we don't care about alignment tricks that the core does in
++	 * that case.  Maybe we should due to stupid card with incomplete
++	 * address decoding but I'd rather not deal with those outside of the
++	 * reserved 64K legacy region.
++	 */
++	area = __get_vm_area(size, 0, PHB_IO_BASE, PHB_IO_END);
++	if (!area)
++		return NULL;
++
++	addr = (unsigned long)area->addr;
++	if (ioremap_page_range(addr, addr + size, paddr,
++			pgprot_noncached(PAGE_KERNEL))) {
++		unmap_kernel_range(addr, size);
++		return NULL;
++	}
++
++	return (void __iomem *)addr;
++}
++EXPORT_SYMBOL_GPL(ioremap_phb);
++
++static int pcibios_map_phb_io_space(struct pci_controller *hose)
++{
+ 	unsigned long phys_page;
+ 	unsigned long size_page;
+ 	unsigned long io_virt_offset;
+@@ -146,12 +169,11 @@ static int pcibios_map_phb_io_space(struct pci_controller *hose)
+ 	 * with incomplete address decoding but I'd rather not deal with
+ 	 * those outside of the reserved 64K legacy region.
+ 	 */
+-	area = __get_vm_area(size_page, 0, PHB_IO_BASE, PHB_IO_END);
+-	if (area == NULL)
++	hose->io_base_alloc = ioremap_phb(phys_page, size_page);
++	if (!hose->io_base_alloc)
+ 		return -ENOMEM;
+-	hose->io_base_alloc = area->addr;
+-	hose->io_base_virt = (void __iomem *)(area->addr +
+-					      hose->io_base_phys - phys_page);
++	hose->io_base_virt = hose->io_base_alloc +
++				hose->io_base_phys - phys_page;
+ 
+ 	pr_debug("IO mapping for PHB %pOF\n", hose->dn);
+ 	pr_debug("  phys=0x%016llx, virt=0x%p (alloc=0x%p)\n",
+@@ -159,11 +181,6 @@ static int pcibios_map_phb_io_space(struct pci_controller *hose)
+ 	pr_debug("  size=0x%016llx (alloc=0x%016lx)\n",
+ 		 hose->pci_io_size, size_page);
+ 
+-	/* Establish the mapping */
+-	if (__ioremap_at(phys_page, area->addr, size_page,
+-			 pgprot_noncached(PAGE_KERNEL)) == NULL)
+-		return -ENOMEM;
+-
+ 	/* Fixup hose IO resource */
+ 	io_virt_offset = pcibios_io_space_offset(hose);
+ 	hose->io_resource.start += io_virt_offset;
+diff --git a/drivers/pcmcia/electra_cf.c b/drivers/pcmcia/electra_cf.c
+index f2741c04289d..35158cfd9c1a 100644
+--- a/drivers/pcmcia/electra_cf.c
++++ b/drivers/pcmcia/electra_cf.c
+@@ -178,10 +178,9 @@ static int electra_cf_probe(struct platform_device *ofdev)
+ 	struct device_node *np = ofdev->dev.of_node;
+ 	struct electra_cf_socket   *cf;
+ 	struct resource mem, io;
+-	int status;
++	int status = -ENOMEM;
+ 	const unsigned int *prop;
+ 	int err;
+-	struct vm_struct *area;
+ 
+ 	err = of_address_to_resource(np, 0, &mem);
+ 	if (err)
+@@ -202,30 +201,19 @@ static int electra_cf_probe(struct platform_device *ofdev)
+ 	cf->mem_phys = mem.start;
+ 	cf->mem_size = PAGE_ALIGN(resource_size(&mem));
+ 	cf->mem_base = ioremap(cf->mem_phys, cf->mem_size);
++	if (!cf->mem_base)
++		goto out_free_cf;
+ 	cf->io_size = PAGE_ALIGN(resource_size(&io));
+-
+-	area = __get_vm_area(cf->io_size, 0, PHB_IO_BASE, PHB_IO_END);
+-	if (area == NULL) {
+-		status = -ENOMEM;
+-		goto fail1;
+-	}
+-
+-	cf->io_virt = (void __iomem *)(area->addr);
++	cf->io_virt = ioremap_phb(io.start, cf->io_size);
++	if (!cf->io_virt)
++		goto out_unmap_mem;
+ 
+ 	cf->gpio_base = ioremap(0xfc103000, 0x1000);
++	if (!cf->gpio_base)
++		goto out_unmap_virt;
+ 	dev_set_drvdata(device, cf);
+ 
+-	if (!cf->mem_base || !cf->io_virt || !cf->gpio_base ||
+-	    (__ioremap_at(io.start, cf->io_virt, cf->io_size,
+-			  pgprot_noncached(PAGE_KERNEL)) == NULL)) {
+-		dev_err(device, "can't ioremap ranges\n");
+-		status = -ENOMEM;
+-		goto fail1;
+-	}
+-
+-
+ 	cf->io_base = (unsigned long)cf->io_virt - VMALLOC_END;
+-
+ 	cf->iomem.start = (unsigned long)cf->mem_base;
+ 	cf->iomem.end = (unsigned long)cf->mem_base + (mem.end - mem.start);
+ 	cf->iomem.flags = IORESOURCE_MEM;
+@@ -305,14 +293,13 @@ static int electra_cf_probe(struct platform_device *ofdev)
+ 	if (cf->irq)
+ 		free_irq(cf->irq, cf);
+ 
+-	if (cf->io_virt)
+-		__iounmap_at(cf->io_virt, cf->io_size);
+-	if (cf->mem_base)
+-		iounmap(cf->mem_base);
+-	if (cf->gpio_base)
+-		iounmap(cf->gpio_base);
+-	if (area)
+-		device_init_wakeup(&ofdev->dev, 0);
++	iounmap(cf->gpio_base);
++out_unmap_virt:
++	device_init_wakeup(&ofdev->dev, 0);
++	iounmap(cf->io_virt);
++out_unmap_mem:
++	iounmap(cf->mem_base);
++out_free_cf:
+ 	kfree(cf);
+ 	return status;
+ 
+@@ -330,7 +317,7 @@ static int electra_cf_remove(struct platform_device *ofdev)
+ 	free_irq(cf->irq, cf);
+ 	del_timer_sync(&cf->timer);
+ 
+-	__iounmap_at(cf->io_virt, cf->io_size);
++	iounmap(cf->io_virt);
+ 	iounmap(cf->mem_base);
+ 	iounmap(cf->gpio_base);
+ 	release_mem_region(cf->mem_phys, cf->mem_size);
 -- 
 2.25.1
 
