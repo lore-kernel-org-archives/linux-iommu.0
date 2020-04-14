@@ -2,99 +2,92 @@ Return-Path: <SRS0=5SFN=56=lists.linux-foundation.org=iommu-bounces@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-9.6 required=3.0 tests=DKIM_INVALID,DKIM_SIGNED,
-	HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_PATCH,MAILING_LIST_MULTI,SIGNED_OFF_BY,
-	SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED,USER_AGENT_GIT autolearn=unavailable
-	autolearn_force=no version=3.4.0
+X-Spam-Status: No, score=-5.2 required=3.0 tests=HEADER_FROM_DIFFERENT_DOMAINS,
+	INCLUDES_PATCH,MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED,
+	USER_AGENT_SANE_2 autolearn=unavailable autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 1E424C38A29
-	for <iommu@archiver.kernel.org>; Tue, 14 Apr 2020 17:05:14 +0000 (UTC)
-Received: from silver.osuosl.org (smtp3.osuosl.org [140.211.166.136])
+	by smtp.lore.kernel.org (Postfix) with ESMTP id AC4DEC2BA19
+	for <iommu@archiver.kernel.org>; Tue, 14 Apr 2020 17:13:14 +0000 (UTC)
+Received: from fraxinus.osuosl.org (smtp4.osuosl.org [140.211.166.137])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by mail.kernel.org (Postfix) with ESMTPS id E46C42076B
-	for <iommu@archiver.kernel.org>; Tue, 14 Apr 2020 17:05:13 +0000 (UTC)
-Authentication-Results: mail.kernel.org;
-	dkim=fail reason="signature verification failed" (2048-bit key) header.d=linaro.org header.i=@linaro.org header.b="JkRjzmM2"
-DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org E46C42076B
-Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=linaro.org
+	by mail.kernel.org (Postfix) with ESMTPS id 7AE5B20767
+	for <iommu@archiver.kernel.org>; Tue, 14 Apr 2020 17:13:14 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 7AE5B20767
+Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=linux.intel.com
 Authentication-Results: mail.kernel.org; spf=pass smtp.mailfrom=iommu-bounces@lists.linux-foundation.org
 Received: from localhost (localhost [127.0.0.1])
-	by silver.osuosl.org (Postfix) with ESMTP id C370D2152C;
-	Tue, 14 Apr 2020 17:05:13 +0000 (UTC)
+	by fraxinus.osuosl.org (Postfix) with ESMTP id 47AF185BDF;
+	Tue, 14 Apr 2020 17:13:14 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from silver.osuosl.org ([127.0.0.1])
+Received: from fraxinus.osuosl.org ([127.0.0.1])
 	by localhost (.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
-	with ESMTP id OtMz8gm9eJlT; Tue, 14 Apr 2020 17:05:05 +0000 (UTC)
+	with ESMTP id G_V48NVhsr9X; Tue, 14 Apr 2020 17:13:12 +0000 (UTC)
 Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [140.211.9.56])
-	by silver.osuosl.org (Postfix) with ESMTP id 26B422201C;
-	Tue, 14 Apr 2020 17:05:02 +0000 (UTC)
+	by fraxinus.osuosl.org (Postfix) with ESMTP id BB7668453D;
+	Tue, 14 Apr 2020 17:13:12 +0000 (UTC)
 Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
-	by lists.linuxfoundation.org (Postfix) with ESMTP id 13E10C089E;
-	Tue, 14 Apr 2020 17:05:02 +0000 (UTC)
+	by lists.linuxfoundation.org (Postfix) with ESMTP id B0F38C089E;
+	Tue, 14 Apr 2020 17:13:12 +0000 (UTC)
 Received: from hemlock.osuosl.org (smtp2.osuosl.org [140.211.166.133])
- by lists.linuxfoundation.org (Postfix) with ESMTP id 3789FC0172
- for <iommu@lists.linux-foundation.org>; Tue, 14 Apr 2020 17:05:01 +0000 (UTC)
+ by lists.linuxfoundation.org (Postfix) with ESMTP id 49845C0172
+ for <iommu@lists.linux-foundation.org>; Tue, 14 Apr 2020 17:13:11 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
- by hemlock.osuosl.org (Postfix) with ESMTP id 26C5D87E53
- for <iommu@lists.linux-foundation.org>; Tue, 14 Apr 2020 17:05:01 +0000 (UTC)
+ by hemlock.osuosl.org (Postfix) with ESMTP id 33E6C84FB1
+ for <iommu@lists.linux-foundation.org>; Tue, 14 Apr 2020 17:13:11 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
 Received: from hemlock.osuosl.org ([127.0.0.1])
  by localhost (.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
- with ESMTP id VeEIC5IdslFz for <iommu@lists.linux-foundation.org>;
- Tue, 14 Apr 2020 17:04:55 +0000 (UTC)
+ with ESMTP id 4XUzGn+t1XVF for <iommu@lists.linux-foundation.org>;
+ Tue, 14 Apr 2020 17:13:09 +0000 (UTC)
 X-Greylist: domain auto-whitelisted by SQLgrey-1.7.6
-Received: from mail-wm1-f67.google.com (mail-wm1-f67.google.com
- [209.85.128.67])
- by hemlock.osuosl.org (Postfix) with ESMTPS id 7D7A587E23
- for <iommu@lists.linux-foundation.org>; Tue, 14 Apr 2020 17:04:55 +0000 (UTC)
-Received: by mail-wm1-f67.google.com with SMTP id g12so7077042wmh.3
- for <iommu@lists.linux-foundation.org>; Tue, 14 Apr 2020 10:04:55 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linaro.org; s=google;
- h=from:to:cc:subject:date:message-id:in-reply-to:references
- :mime-version:content-transfer-encoding;
- bh=u0HAzwSaZgER/8QZ83ZQZ3tP3MIVx8mETnUVm6/V0ok=;
- b=JkRjzmM2nMv/rv2CSYLN179blYrWt4qE24gHB6fvaK7iiCOzcyiruWS8RU9vxYUOUd
- 0DZH/sOQaty0opTw21po0Pm0ce4idbw6mhOoJyXv3eY9TOcKLpYHanIILGQXh0SPsuBH
- h9azjdsiRzdAW07LSYDzEApf7YxGv371mAn1Xh9vAcvWKSIsmFS44VWE5+1YU+JMwimg
- mWkknrUrtlHzRjoS5eJYOwn673r7L12TP2n2Mx4tjf3LC5ho++Wq5QhNzHWG6JpcdRzo
- mzkuOLuA/vuC/zDAS62oUNeZMqxysc/T5vD8EvfiVKBMC5a1CYf1g6Tcih7PJmG6ir92
- ekMw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
- d=1e100.net; s=20161025;
- h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
- :references:mime-version:content-transfer-encoding;
- bh=u0HAzwSaZgER/8QZ83ZQZ3tP3MIVx8mETnUVm6/V0ok=;
- b=r9NdVfyCGE/9lZ9zsXkf+Dcsx/DNrEUMoCBUNME+eb5QGBtWBQJMAokGnXKdEXDk7W
- 6l8qbklZ3pdnih7GWY+nhGGX4OlOrgVE1HbmFZNGJddJLlw6EUjtfscpYMlV7S1blAt8
- 9XrX0ej6LAMv4UwqHEqeP+ySps726ctpRLKUx/RmUnfaWpwdNCztqJfldpOzJGJYKUk9
- 1NvzBFNqf2a7/YmqSD/kuXYPyL5x16xNhZ/ltpcSOXbPYf3mednikfGuEHT+7IzA7De/
- 99EtYxc3cW3ZQ+9R9uPdeGvWYezqAewz9gv5uHEsg0shMe1RtYERz+URzcJsmodwtjWF
- nQow==
-X-Gm-Message-State: AGi0Pub5qbYxy2Gsgk9Ei5UbaouWQ7d34cUV8DVRFAw6T4qe6g5kfSp7
- DG/6gYlgtT3zGyaRXd9yi7untaUA//cGfQ==
-X-Google-Smtp-Source: APiQypLUqywIpZq3/12p2mCLDdQ4JGrywsXNVqfp8FvSh3tZw2ecvsNlH/ESSfnJwGNoxP55MEbspw==
-X-Received: by 2002:a7b:c459:: with SMTP id l25mr796940wmi.52.1586883893294;
- Tue, 14 Apr 2020 10:04:53 -0700 (PDT)
-Received: from localhost.localdomain
- ([2001:171b:226b:54a0:116c:c27a:3e7f:5eaf])
- by smtp.gmail.com with ESMTPSA id x18sm19549147wrs.11.2020.04.14.10.04.52
- (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
- Tue, 14 Apr 2020 10:04:52 -0700 (PDT)
-From: Jean-Philippe Brucker <jean-philippe@linaro.org>
-To: iommu@lists.linux-foundation.org, devicetree@vger.kernel.org,
- linux-arm-kernel@lists.infradead.org, linux-pci@vger.kernel.org,
- linux-mm@kvack.org
-Subject: [PATCH v5 25/25] iommu/arm-smmu-v3: Add support for PRI
-Date: Tue, 14 Apr 2020 19:02:53 +0200
-Message-Id: <20200414170252.714402-26-jean-philippe@linaro.org>
-X-Mailer: git-send-email 2.26.0
-In-Reply-To: <20200414170252.714402-1-jean-philippe@linaro.org>
-References: <20200414170252.714402-1-jean-philippe@linaro.org>
+Received: from mga07.intel.com (mga07.intel.com [134.134.136.100])
+ by hemlock.osuosl.org (Postfix) with ESMTPS id 4A85E83CBF
+ for <iommu@lists.linux-foundation.org>; Tue, 14 Apr 2020 17:13:07 +0000 (UTC)
+IronPort-SDR: gDtVqhJ2wGIho9dxl76yMHFn2bs0YQOq7CdQQ1+VWqLp78lIUrgGFBHRHYoyjW+S4q/SOALac1
+ UaUbWzP3P29g==
+X-Amp-Result: SKIPPED(no attachment in message)
+X-Amp-File-Uploaded: False
+Received: from orsmga008.jf.intel.com ([10.7.209.65])
+ by orsmga105.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384;
+ 14 Apr 2020 10:07:09 -0700
+IronPort-SDR: DdRZ7xo8mIDLANQv+GTA4W57ph8gfabjpdvjSHXXjD6rA59qVV+jUk6jjWuipnrykGolju8IqE
+ OSSHZelHd5Xg==
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="5.72,383,1580803200"; d="scan'208";a="270898095"
+Received: from jacob-builder.jf.intel.com (HELO jacob-builder) ([10.7.199.155])
+ by orsmga008.jf.intel.com with ESMTP; 14 Apr 2020 10:07:09 -0700
+Date: Tue, 14 Apr 2020 10:13:04 -0700
+From: Jacob Pan <jacob.jun.pan@linux.intel.com>
+To: Alex Williamson <alex.williamson@redhat.com>
+Subject: Re: [PATCH v2 1/3] iommu/uapi: Define uapi version and capabilities
+Message-ID: <20200414101304.27e587eb@jacob-builder>
+In-Reply-To: <20200414101358.3ae66ac5@w520.home>
+References: <1585178227-17061-1-git-send-email-jacob.jun.pan@linux.intel.com>
+ <1585178227-17061-2-git-send-email-jacob.jun.pan@linux.intel.com>
+ <20200326092316.GA31648@infradead.org>
+ <20200326094442.5be042ce@jacob-builder>
+ <AADFC41AFE54684AB9EE6CBC0274A5D19D7ECB45@SHSMSX104.ccr.corp.intel.com>
+ <20200327074702.GA27959@infradead.org>
+ <20200327165335.397f24a3@jacob-builder>
+ <AADFC41AFE54684AB9EE6CBC0274A5D19D7FE150@SHSMSX104.ccr.corp.intel.com>
+ <20200330090746.23c5599c@jacob-builder>
+ <AADFC41AFE54684AB9EE6CBC0274A5D19D8011A9@SHSMSX104.ccr.corp.intel.com>
+ <20200331085444.44bee0bb@jacob-builder>
+ <AADFC41AFE54684AB9EE6CBC0274A5D19D803AFF@SHSMSX104.ccr.corp.intel.com>
+ <20200402113604.6eea1e6f@jacob-builder>
+ <20200413134157.395981a6@jacob-builder>
+ <20200413162129.313b3b5a@w520.home>
+ <20200413220515.25a107b6@jacob-builder>
+ <20200414101358.3ae66ac5@w520.home>
+Organization: OTC
+X-Mailer: Claws Mail 3.13.2 (GTK+ 2.24.30; x86_64-pc-linux-gnu)
 MIME-Version: 1.0
-Cc: Jean-Philippe Brucker <jean-philippe@linaro.org>, kevin.tian@intel.com,
- catalin.marinas@arm.com, robin.murphy@arm.com, jgg@ziepe.ca,
- zhangfei.gao@linaro.org, will@kernel.org, christian.koenig@amd.com
+Cc: "Tian, Kevin" <kevin.tian@intel.com>, "Raj, Ashok" <ashok.raj@intel.com>,
+ Jean-Philippe Brucker <jean-philippe@linaro.com>,
+ LKML <linux-kernel@vger.kernel.org>,
+ "iommu@lists.linux-foundation.org" <iommu@lists.linux-foundation.org>,
+ David Woodhouse <dwmw2@infradead.org>
 X-BeenThere: iommu@lists.linux-foundation.org
 X-Mailman-Version: 2.1.15
 Precedence: list
@@ -112,470 +105,389 @@ Content-Transfer-Encoding: 7bit
 Errors-To: iommu-bounces@lists.linux-foundation.org
 Sender: "iommu" <iommu-bounces@lists.linux-foundation.org>
 
-For PCI devices that support it, enable the PRI capability and handle PRI
-Page Requests with the generic fault handler. It is enabled on demand by
-iommu_sva_device_init().
+On Tue, 14 Apr 2020 10:13:58 -0600
+Alex Williamson <alex.williamson@redhat.com> wrote:
 
-Signed-off-by: Jean-Philippe Brucker <jean-philippe@linaro.org>
----
- drivers/iommu/arm-smmu-v3.c | 284 +++++++++++++++++++++++++++++-------
- 1 file changed, 234 insertions(+), 50 deletions(-)
+> On Mon, 13 Apr 2020 22:05:15 -0700
+> Jacob Pan <jacob.jun.pan@linux.intel.com> wrote:
+> 
+> > Hi Alex,
+> > Thanks a lot for the feedback, my comments inline.
+> > 
+> > On Mon, 13 Apr 2020 16:21:29 -0600
+> > Alex Williamson <alex.williamson@redhat.com> wrote:
+> >   
+> > > On Mon, 13 Apr 2020 13:41:57 -0700
+> > > Jacob Pan <jacob.jun.pan@linux.intel.com> wrote:
+> > >     
+> > > > Hi All,
+> > > > 
+> > > > Just a gentle reminder, any feedback on the options I listed
+> > > > below? New ideas will be even better.
+> > > > 
+> > > > Christoph, does the explanation make sense to you? We do have
+> > > > the capability/flag based scheme for IOMMU API extension, the
+> > > > version is mainly used for size lookup. Compatibility checking
+> > > > is another use of the version, it makes checking easy when a
+> > > > vIOMMU is launched.
+> > > > 
+> > > > Thanks,
+> > > > 
+> > > > Jacob
+> > > > 
+> > > > On Thu, 2 Apr 2020 11:36:04 -0700
+> > > > Jacob Pan <jacob.jun.pan@linux.intel.com> wrote:
+> > > >       
+> > > > > On Wed, 1 Apr 2020 05:32:21 +0000
+> > > > > "Tian, Kevin" <kevin.tian@intel.com> wrote:
+> > > > >         
+> > > > > > > From: Jacob Pan <jacob.jun.pan@linux.intel.com>
+> > > > > > > Sent: Tuesday, March 31, 2020 11:55 PM
+> > > > > > > 
+> > > > > > > On Tue, 31 Mar 2020 06:06:38 +0000
+> > > > > > > "Tian, Kevin" <kevin.tian@intel.com> wrote:
+> > > > > > >             
+> > > > > > > > > From: Jacob Pan <jacob.jun.pan@linux.intel.com>
+> > > > > > > > > Sent: Tuesday, March 31, 2020 12:08 AM
+> > > > > > > > >
+> > > > > > > > > On Mon, 30 Mar 2020 05:40:40 +0000
+> > > > > > > > > "Tian, Kevin" <kevin.tian@intel.com> wrote:
+> > > > > > > > >            
+> > > > > > > > > > > From: Jacob Pan <jacob.jun.pan@linux.intel.com>
+> > > > > > > > > > > Sent: Saturday, March 28, 2020 7:54 AM
+> > > > > > > > > > >
+> > > > > > > > > > > On Fri, 27 Mar 2020 00:47:02 -0700
+> > > > > > > > > > > Christoph Hellwig <hch@infradead.org> wrote:
+> > > > > > > > > > >            
+> > > > > > > > > > > > On Fri, Mar 27, 2020 at 02:49:55AM +0000, Tian,
+> > > > > > > > > > > > Kevin wrote:            
+> > > > > > > > > > > > > If those API calls are inter-dependent for
+> > > > > > > > > > > > > composing a feature (e.g. SVA), shouldn't we
+> > > > > > > > > > > > > need a way to check them together before
+> > > > > > > > > > > > > exposing the feature to the guest, e.g.
+> > > > > > > > > > > > > through a iommu_get_uapi_capabilities
+> > > > > > > > > > > > > interface?            
+> > > > > > > > > > > >
+> > > > > > > > > > > > Yes, that makes sense.  The important bit is to
+> > > > > > > > > > > > have a capability flags and not version
+> > > > > > > > > > > > numbers.            
+> > > > > > > > > > >
+> > > > > > > > > > > The challenge is that there are two consumers in
+> > > > > > > > > > > the kernel for this. 1. VFIO only look for
+> > > > > > > > > > > compatibility, and size of each data struct such
+> > > > > > > > > > > that it can copy_from_user.
+> > > > > > > > > > >
+> > > > > > > > > > > 2. IOMMU driver, the "real consumer" of the
+> > > > > > > > > > > content.
+> > > > > > > > > > >
+> > > > > > > > > > > For 2, I agree and we do plan to use the
+> > > > > > > > > > > capability flags to check content and maintain
+> > > > > > > > > > > backward compatibility etc.
+> > > > > > > > > > >
+> > > > > > > > > > > For VFIO, it is difficult to do size look up
+> > > > > > > > > > > based on capability flags.            
+> > > > > > > > > >
+> > > > > > > > > > Can you elaborate the difficulty in VFIO? if, as
+> > > > > > > > > > Christoph Hellwig pointed out, version number is
+> > > > > > > > > > already avoided everywhere, it is interesting to
+> > > > > > > > > > know whether this work becomes a real exception or
+> > > > > > > > > > just requires a different mindset.         
+> > > > > > > > > From VFIO p.o.v. the IOMMU UAPI data is opaque, it
+> > > > > > > > > only needs to do two things:
+> > > > > > > > > 1. is the UAPI compatible?
+> > > > > > > > > 2. what is the size to copy?
+> > > > > > > > >
+> > > > > > > > > If you look at the version number, this is really a
+> > > > > > > > > "version as size" lookup, as provided by the helper
+> > > > > > > > > function in this patch. An example can be the newly
+> > > > > > > > > introduced clone3 syscall.
+> > > > > > > > > https://lwn.net/Articles/792628/ In clone3, new
+> > > > > > > > > version must have new size. The slight difference
+> > > > > > > > > here is that, unlike clone3, we have multiple data
+> > > > > > > > > structures instead of a single struct clone_args {}.
+> > > > > > > > > And each struct has flags to enumerate its contents
+> > > > > > > > > besides size.            
+> > > > > > > >
+> > > > > > > > Thanks for providing that link. However clone3 doesn't
+> > > > > > > > include a version field to do "version as size" lookup.
+> > > > > > > > Instead, as you said, it includes a size parameter which
+> > > > > > > > sounds like the option 3 (argsz) listed below.
+> > > > > > > >            
+> > > > > > > Right, there is no version in clone3. size = version. I
+> > > > > > > view this as a 1:1 lookup.
+> > > > > > >             
+> > > > > > > > >
+> > > > > > > > > Besides breaching data abstraction, if VFIO has to
+> > > > > > > > > check IOMMU flags to determine the sizes, it has many
+> > > > > > > > > combinations.
+> > > > > > > > >
+> > > > > > > > > We also separate the responsibilities into two parts
+> > > > > > > > > 1. compatibility - version, size by VFIO
+> > > > > > > > > 2. sanity check - capability flags - by
+> > > > > > > > > IOMMU            
+> > > > > > > >
+> > > > > > > > I feel argsz+flags approach can perfectly meet above
+> > > > > > > > requirement. The userspace set the size and flags for
+> > > > > > > > whatever capabilities it uses, and VFIO simply copies
+> > > > > > > > the parameters by size and pass to IOMMU for further
+> > > > > > > > sanity check. Of course the assumption is that we do
+> > > > > > > > provide an interface for userspace to enumerate all
+> > > > > > > > supported capabilities.           
+> > > > > > > You cannot trust user for argsz. the size to be copied
+> > > > > > > from user must be based on knowledge in kernel. That is
+> > > > > > > why we have this version to size lookup.
+> > > > > > > 
+> > > > > > > In VFIO, the size to copy is based on knowledge of each
+> > > > > > > VFIO UAPI structures and VFIO flags. But here the flags
+> > > > > > > are IOMMU UAPI flags. As you pointed out in another
+> > > > > > > thread, VFIO is one user.            
+> > > > > > 
+> > > > > > If that is the case, can we let VFIO only copy its own UAPI
+> > > > > > fields while simply passing the user pointer of IOMMU UAPI
+> > > > > > structure to IOMMU driver for further size check and copy?
+> > > > > > Otherwise we are entering a dead end that VFIO doesn't want
+> > > > > > to parse a structure which is not defined by him while using
+> > > > > > version to represent the black box size is considered as a
+> > > > > > discarded scheme and doesn't scale well...         
+> > > > > I think this could be an other viable option. Let me try to
+> > > > > summarize since this has been a long discussion since the
+> > > > > original version.
+> > > > > 
+> > > > > Problem statements:
+> > > > > 1. When launching vIOMMU in the guest, how can we ensure the
+> > > > > host has compatible support upfront? as compared to fail
+> > > > > later.      
+> > > 
+> > > This sounds like a feature/extension interface, both KVM and vfio
+> > > have them to allow userspace to check support of specific
+> > > features. 
+> > Yes, the specific features are the APIs:
+> > - bind guest PASID
+> > - cache invalidation
+> > - page requests & response
+> >   
+> > > > > 2. As UAPI data gets extended (both in size and flags), how
+> > > > > can we know the size to copy      
+> > > 
+> > > For vfio we of course use the argsz/flags trick where the user
+> > > tells us how big the buffer is and flags in the header tell us
+> > > what fields beyond the base specification are enabled.  This can
+> > > get tricky to extend and there can be confusion whether a flag
+> > > indicates the presence of a field or the validity of a field.
+> > > 
+> > > We also have interfaces where the ioctl is a header plus a data
+> > > blob where flags tell us what the data is.  These can serve
+> > > double duty as a extension check too as we've done for
+> > > VFIO_DEVICE_FEATURE.  This doesn't really support extension of a
+> > > defined feature though, rather we'd be more likely to create a
+> > > set of flags that indicate the data object is feature-v2 and
+> > > redefine the structure, or of course we revisit the entire
+> > > featuring question within the structure of that data blob.
+> > > 
+> > > We also implement capability chains, though they're more meant for
+> > > passing data to the user, where the user provides a buffer and we
+> > > link capabilities together within that buffer for the user to
+> > > walk.  We've defined a mechanism through -ENOSPC and argsz to
+> > > tell the user how large a buffer is necessary.  I dare mention we
+> > > have a version per capability as these are largely modeled after
+> > > capability chains in PCI config space.  We haven't actually
+> > > incremented any versions, but I imagine we'd do so like PCI,
+> > > maintaining backwards compatibility and only defining unused bits
+> > > and adding fields as the version increases. 
+> > I guess capability chain is more suitable since the IOCTL uses
+> > container FD instead of device FD in VFIO_DEVICE_FEATURE?
+> > 
+> > We can give that a try by treating IOMMU UAPIs as capabilities. That
+> > would address problem #1. We really need to check compatibility
+> > upfront in that there is no way to fail some of the UAPIs. e.g.
+> > unbind guest PASID, cache invalidation.
+> >   
+> > > Is the objection to a global version or to any version fields?  I
+> > > don't really understand the global version, I'd think a mechanism
+> > > to check extensions plus a per structure flags/version would be
+> > > preferred.  The former should resolve how userspace can test
+> > > support for features requiring multiple interfaces.    
+> > Currently we already have individual version & flags per UAPI data.
+> > The reason why I introduced a global/unifier is to simplify the
+> > compatibility checking. Global version is optional.
+> > With individual version & flags, user may have to keep track of
+> > combinations of per structure versions.  
+> 
+> A user would only need to meet the minimum uapi matching the feature
+> they want to support, right?
+> 
+Yes, then no need for checking all combinations. I guess validation
+cases have to cover all legal combinations, but not an issue.
 
-diff --git a/drivers/iommu/arm-smmu-v3.c b/drivers/iommu/arm-smmu-v3.c
-index a7becf1c5347e..8017700c33c46 100644
---- a/drivers/iommu/arm-smmu-v3.c
-+++ b/drivers/iommu/arm-smmu-v3.c
-@@ -251,6 +251,7 @@
- #define STRTAB_STE_1_S1COR		GENMASK_ULL(5, 4)
- #define STRTAB_STE_1_S1CSH		GENMASK_ULL(7, 6)
- 
-+#define STRTAB_STE_1_PPAR		(1UL << 18)
- #define STRTAB_STE_1_S1STALLD		(1UL << 27)
- 
- #define STRTAB_STE_1_EATS		GENMASK_ULL(29, 28)
-@@ -381,6 +382,9 @@
- #define CMDQ_PRI_0_SID			GENMASK_ULL(63, 32)
- #define CMDQ_PRI_1_GRPID		GENMASK_ULL(8, 0)
- #define CMDQ_PRI_1_RESP			GENMASK_ULL(13, 12)
-+#define CMDQ_PRI_1_RESP_FAILURE		0UL
-+#define CMDQ_PRI_1_RESP_INVALID		1UL
-+#define CMDQ_PRI_1_RESP_SUCCESS		2UL
- 
- #define CMDQ_RESUME_0_SID		GENMASK_ULL(63, 32)
- #define CMDQ_RESUME_0_RESP_TERM		0UL
-@@ -453,12 +457,6 @@ module_param_named(disable_bypass, disable_bypass, bool, S_IRUGO);
- MODULE_PARM_DESC(disable_bypass,
- 	"Disable bypass streams such that incoming transactions from devices that are not attached to an iommu domain will report an abort back to the device and will not be allowed to pass through the SMMU.");
- 
--enum pri_resp {
--	PRI_RESP_DENY = 0,
--	PRI_RESP_FAIL = 1,
--	PRI_RESP_SUCC = 2,
--};
--
- enum arm_smmu_msi_index {
- 	EVTQ_MSI_INDEX,
- 	GERROR_MSI_INDEX,
-@@ -545,7 +543,7 @@ struct arm_smmu_cmdq_ent {
- 			u32			sid;
- 			u32			ssid;
- 			u16			grpid;
--			enum pri_resp		resp;
-+			u8			resp;
- 		} pri;
- 
- 		#define CMDQ_OP_RESUME		0x44
-@@ -623,6 +621,7 @@ struct arm_smmu_evtq {
- 
- struct arm_smmu_priq {
- 	struct arm_smmu_queue		q;
-+	struct iopf_queue		*iopf;
- };
- 
- /* High-level stream table and context descriptor structures */
-@@ -756,6 +755,8 @@ struct arm_smmu_master {
- 	unsigned int			num_streams;
- 	bool				ats_enabled;
- 	bool				stall_enabled;
-+	bool				pri_supported;
-+	bool				prg_resp_needs_ssid;
- 	unsigned int			ssid_bits;
- };
- 
-@@ -1034,14 +1035,6 @@ static int arm_smmu_cmdq_build_cmd(u64 *cmd, struct arm_smmu_cmdq_ent *ent)
- 		cmd[0] |= FIELD_PREP(CMDQ_PRI_0_SSID, ent->pri.ssid);
- 		cmd[0] |= FIELD_PREP(CMDQ_PRI_0_SID, ent->pri.sid);
- 		cmd[1] |= FIELD_PREP(CMDQ_PRI_1_GRPID, ent->pri.grpid);
--		switch (ent->pri.resp) {
--		case PRI_RESP_DENY:
--		case PRI_RESP_FAIL:
--		case PRI_RESP_SUCC:
--			break;
--		default:
--			return -EINVAL;
--		}
- 		cmd[1] |= FIELD_PREP(CMDQ_PRI_1_RESP, ent->pri.resp);
- 		break;
- 	case CMDQ_OP_RESUME:
-@@ -1621,6 +1614,7 @@ static int arm_smmu_page_response(struct device *dev,
- {
- 	struct arm_smmu_cmdq_ent cmd = {0};
- 	struct arm_smmu_master *master = dev_iommu_priv_get(dev);
-+	bool pasid_valid = resp->flags & IOMMU_PAGE_RESP_PASID_VALID;
- 	int sid = master->streams[0].id;
- 
- 	if (master->stall_enabled) {
-@@ -1638,8 +1632,27 @@ static int arm_smmu_page_response(struct device *dev,
- 		default:
- 			return -EINVAL;
- 		}
-+	} else if (master->pri_supported) {
-+		cmd.opcode		= CMDQ_OP_PRI_RESP;
-+		cmd.substream_valid	= pasid_valid &&
-+					  master->prg_resp_needs_ssid;
-+		cmd.pri.sid		= sid;
-+		cmd.pri.ssid		= resp->pasid;
-+		cmd.pri.grpid		= resp->grpid;
-+		switch (resp->code) {
-+		case IOMMU_PAGE_RESP_FAILURE:
-+			cmd.pri.resp = CMDQ_PRI_1_RESP_FAILURE;
-+			break;
-+		case IOMMU_PAGE_RESP_INVALID:
-+			cmd.pri.resp = CMDQ_PRI_1_RESP_INVALID;
-+			break;
-+		case IOMMU_PAGE_RESP_SUCCESS:
-+			cmd.pri.resp = CMDQ_PRI_1_RESP_SUCCESS;
-+			break;
-+		default:
-+			return -EINVAL;
-+		}
- 	} else {
--		/* TODO: insert PRI response here */
- 		return -ENODEV;
- 	}
- 
-@@ -2236,6 +2249,9 @@ static void arm_smmu_write_strtab_ent(struct arm_smmu_master *master, u32 sid,
- 			 FIELD_PREP(STRTAB_STE_1_S1CSH, ARM_SMMU_SH_ISH) |
- 			 FIELD_PREP(STRTAB_STE_1_STRW, strw));
- 
-+		if (master->prg_resp_needs_ssid)
-+			dst[1] |= STRTAB_STE_1_PPAR;
-+
- 		if (smmu->features & ARM_SMMU_FEAT_STALLS &&
- 		    !master->stall_enabled)
- 			dst[1] |= cpu_to_le64(STRTAB_STE_1_S1STALLD);
-@@ -2480,61 +2496,110 @@ static irqreturn_t arm_smmu_evtq_thread(int irq, void *dev)
- 
- static void arm_smmu_handle_ppr(struct arm_smmu_device *smmu, u64 *evt)
- {
--	u32 sid, ssid;
--	u16 grpid;
--	bool ssv, last;
--
--	sid = FIELD_GET(PRIQ_0_SID, evt[0]);
--	ssv = FIELD_GET(PRIQ_0_SSID_V, evt[0]);
--	ssid = ssv ? FIELD_GET(PRIQ_0_SSID, evt[0]) : 0;
--	last = FIELD_GET(PRIQ_0_PRG_LAST, evt[0]);
--	grpid = FIELD_GET(PRIQ_1_PRG_IDX, evt[1]);
--
--	dev_info(smmu->dev, "unexpected PRI request received:\n");
--	dev_info(smmu->dev,
--		 "\tsid 0x%08x.0x%05x: [%u%s] %sprivileged %s%s%s access at iova 0x%016llx\n",
--		 sid, ssid, grpid, last ? "L" : "",
--		 evt[0] & PRIQ_0_PERM_PRIV ? "" : "un",
--		 evt[0] & PRIQ_0_PERM_READ ? "R" : "",
--		 evt[0] & PRIQ_0_PERM_WRITE ? "W" : "",
--		 evt[0] & PRIQ_0_PERM_EXEC ? "X" : "",
--		 evt[1] & PRIQ_1_ADDR_MASK);
--
--	if (last) {
--		struct arm_smmu_cmdq_ent cmd = {
--			.opcode			= CMDQ_OP_PRI_RESP,
--			.substream_valid	= ssv,
--			.pri			= {
--				.sid	= sid,
--				.ssid	= ssid,
--				.grpid	= grpid,
--				.resp	= PRI_RESP_DENY,
--			},
-+	u32 sid = FIELD_PREP(PRIQ_0_SID, evt[0]);
-+
-+	bool pasid_valid, last;
-+	struct arm_smmu_master *master;
-+	struct iommu_fault_event fault_evt = {
-+		.fault.type = IOMMU_FAULT_PAGE_REQ,
-+		.fault.prm = {
-+			.pasid		= FIELD_GET(PRIQ_0_SSID, evt[0]),
-+			.grpid		= FIELD_GET(PRIQ_1_PRG_IDX, evt[1]),
-+			.addr		= evt[1] & PRIQ_1_ADDR_MASK,
-+		},
-+	};
-+	struct iommu_fault_page_request *pr = &fault_evt.fault.prm;
-+
-+	pasid_valid = evt[0] & PRIQ_0_SSID_V;
-+	last = evt[0] & PRIQ_0_PRG_LAST;
-+
-+	/* Discard Stop PASID marker, it isn't used */
-+	if (!(evt[0] & (PRIQ_0_PERM_READ | PRIQ_0_PERM_WRITE)) && last)
-+		return;
-+
-+	if (last)
-+		pr->flags |= IOMMU_FAULT_PAGE_REQUEST_LAST_PAGE;
-+	if (pasid_valid)
-+		pr->flags |= IOMMU_FAULT_PAGE_REQUEST_PASID_VALID;
-+	if (evt[0] & PRIQ_0_PERM_READ)
-+		pr->perm |= IOMMU_FAULT_PERM_READ;
-+	if (evt[0] & PRIQ_0_PERM_WRITE)
-+		pr->perm |= IOMMU_FAULT_PERM_WRITE;
-+	if (evt[0] & PRIQ_0_PERM_EXEC)
-+		pr->perm |= IOMMU_FAULT_PERM_EXEC;
-+	if (evt[0] & PRIQ_0_PERM_PRIV)
-+		pr->perm |= IOMMU_FAULT_PERM_PRIV;
-+
-+	master = arm_smmu_find_master(smmu, sid);
-+	if (WARN_ON(!master))
-+		return;
-+
-+	if (iommu_report_device_fault(master->dev, &fault_evt)) {
-+		/*
-+		 * No handler registered, so subsequent faults won't produce
-+		 * better results. Try to disable PRI.
-+		 */
-+		struct iommu_page_response resp = {
-+			.flags		= pasid_valid ?
-+					  IOMMU_PAGE_RESP_PASID_VALID : 0,
-+			.pasid		= pr->pasid,
-+			.grpid		= pr->grpid,
-+			.code		= IOMMU_PAGE_RESP_FAILURE,
- 		};
- 
--		arm_smmu_cmdq_issue_cmd(smmu, &cmd);
-+		dev_warn(master->dev,
-+			 "PPR 0x%x:0x%llx 0x%x: nobody cared, disabling PRI\n",
-+			 pasid_valid ? pr->pasid : 0, pr->addr, pr->perm);
-+		if (last)
-+			arm_smmu_page_response(master->dev, NULL, &resp);
- 	}
- }
- 
- static irqreturn_t arm_smmu_priq_thread(int irq, void *dev)
- {
-+	int num_handled = 0;
-+	bool overflow = false;
- 	struct arm_smmu_device *smmu = dev;
- 	struct arm_smmu_queue *q = &smmu->priq.q;
- 	struct arm_smmu_ll_queue *llq = &q->llq;
-+	size_t queue_size = 1 << llq->max_n_shift;
- 	u64 evt[PRIQ_ENT_DWORDS];
- 
-+	spin_lock(&q->wq.lock);
- 	do {
--		while (!queue_remove_raw(q, evt))
-+		while (!queue_remove_raw(q, evt)) {
-+			spin_unlock(&q->wq.lock);
- 			arm_smmu_handle_ppr(smmu, evt);
-+			spin_lock(&q->wq.lock);
-+			if (++num_handled == queue_size) {
-+				q->batch++;
-+				wake_up_all_locked(&q->wq);
-+				num_handled = 0;
-+			}
-+		}
- 
--		if (queue_sync_prod_in(q) == -EOVERFLOW)
-+		if (queue_sync_prod_in(q) == -EOVERFLOW) {
- 			dev_err(smmu->dev, "PRIQ overflow detected -- requests lost\n");
-+			overflow = true;
-+		}
- 	} while (!queue_empty(llq));
- 
- 	/* Sync our overflow flag, as we believe we're up to speed */
- 	llq->cons = Q_OVF(llq->prod) | Q_WRP(llq, llq->cons) |
- 		      Q_IDX(llq, llq->cons);
- 	queue_sync_cons_out(q);
-+
-+	wake_up_all_locked(&q->wq);
-+	spin_unlock(&q->wq.lock);
-+
-+	/*
-+	 * On overflow, the SMMU might have discarded the last PPR in a group.
-+	 * There is no way to know more about it, so we have to discard all
-+	 * partial faults already queued.
-+	 */
-+	if (overflow)
-+		iopf_queue_discard_partial(smmu->priq.iopf);
-+
- 	return IRQ_HANDLED;
- }
- 
-@@ -2569,6 +2634,36 @@ static int arm_smmu_flush_evtq(void *cookie, struct device *dev, int pasid)
- 	return ret;
- }
- 
-+/*
-+ * arm_smmu_flush_priq - wait until all requests currently in the queue have
-+ *                       been consumed.
-+ *
-+ * See arm_smmu_flush_evtq().
-+ */
-+static int arm_smmu_flush_priq(void *cookie, struct device *dev, int pasid)
-+{
-+	int ret;
-+	u64 batch;
-+	bool overflow = false;
-+	struct arm_smmu_device *smmu = cookie;
-+	struct arm_smmu_queue *q = &smmu->priq.q;
-+
-+	spin_lock(&q->wq.lock);
-+	if (queue_sync_prod_in(q) == -EOVERFLOW) {
-+		dev_err(smmu->dev, "priq overflow detected -- requests lost\n");
-+		overflow = true;
-+	}
-+
-+	batch = q->batch;
-+	ret = wait_event_interruptible_locked(q->wq, queue_empty(&q->llq) ||
-+					      q->batch >= batch + 2);
-+	spin_unlock(&q->wq.lock);
-+
-+	if (overflow)
-+		iopf_queue_discard_partial(smmu->priq.iopf);
-+	return ret;
-+}
-+
- static int arm_smmu_device_disable(struct arm_smmu_device *smmu);
- 
- static irqreturn_t arm_smmu_gerror_handler(int irq, void *dev)
-@@ -3270,6 +3365,75 @@ static void arm_smmu_disable_pasid(struct arm_smmu_master *master)
- 	pci_disable_pasid(pdev);
- }
- 
-+static int arm_smmu_init_pri(struct arm_smmu_master *master)
-+{
-+	int pos;
-+	struct pci_dev *pdev;
-+
-+	if (!dev_is_pci(master->dev))
-+		return -EINVAL;
-+
-+	if (!(master->smmu->features & ARM_SMMU_FEAT_PRI))
-+		return 0;
-+
-+	pdev = to_pci_dev(master->dev);
-+	pos = pci_find_ext_capability(pdev, PCI_EXT_CAP_ID_PRI);
-+	if (!pos)
-+		return 0;
-+
-+	/* If the device supports PASID and PRI, set STE.PPAR */
-+	if (master->ssid_bits)
-+		master->prg_resp_needs_ssid = pci_prg_resp_pasid_required(pdev);
-+
-+	master->pri_supported = true;
-+	return 0;
-+}
-+
-+static int arm_smmu_enable_pri(struct arm_smmu_master *master)
-+{
-+	int ret;
-+	struct pci_dev *pdev;
-+	/*
-+	 * TODO: find a good inflight PPR number. We should divide the PRI queue
-+	 * by the number of PRI-capable devices, but it's impossible to know
-+	 * about future (probed late or hotplugged) devices. So we're at risk of
-+	 * dropping PPRs (and leaking pending requests in the FQ).
-+	 */
-+	size_t max_inflight_pprs = 16;
-+
-+	if (!master->pri_supported || !master->ats_enabled)
-+		return -ENODEV;
-+
-+	pdev = to_pci_dev(master->dev);
-+
-+	ret = pci_reset_pri(pdev);
-+	if (ret)
-+		return ret;
-+
-+	ret = pci_enable_pri(pdev, max_inflight_pprs);
-+	if (ret) {
-+		dev_err(master->dev, "cannot enable PRI: %d\n", ret);
-+		return ret;
-+	}
-+
-+	return 0;
-+}
-+
-+static void arm_smmu_disable_pri(struct arm_smmu_master *master)
-+{
-+	struct pci_dev *pdev;
-+
-+	if (!dev_is_pci(master->dev))
-+		return;
-+
-+	pdev = to_pci_dev(master->dev);
-+
-+	if (!pdev->pri_enabled)
-+		return;
-+
-+	pci_disable_pri(pdev);
-+}
-+
- static void arm_smmu_detach_dev(struct arm_smmu_master *master)
- {
- 	unsigned long flags;
-@@ -3705,6 +3869,8 @@ static int arm_smmu_add_device(struct device *dev)
- 	    smmu->features & ARM_SMMU_FEAT_STALL_FORCE)
- 		master->stall_enabled = true;
- 
-+	arm_smmu_init_pri(master);
-+
- 	ret = iommu_device_link(&smmu->iommu, dev);
- 	if (ret)
- 		goto err_disable_pasid;
-@@ -3741,6 +3907,7 @@ static void arm_smmu_remove_device(struct device *dev)
- 	master = dev_iommu_priv_get(dev);
- 	smmu = master->smmu;
- 	iopf_queue_remove_device(smmu->evtq.iopf, dev);
-+	iopf_queue_remove_device(smmu->priq.iopf, dev);
- 	WARN_ON(iommu_sva_disable(dev));
- 	arm_smmu_detach_dev(master);
- 	iommu_group_remove_device(dev);
-@@ -3864,7 +4031,7 @@ static void arm_smmu_get_resv_regions(struct device *dev,
- 
- static bool arm_smmu_iopf_supported(struct arm_smmu_master *master)
- {
--	return master->stall_enabled;
-+	return master->stall_enabled || master->pri_supported;
- }
- 
- static bool arm_smmu_dev_has_feature(struct device *dev,
-@@ -3922,6 +4089,15 @@ static int arm_smmu_dev_enable_sva(struct device *dev)
- 		ret = iopf_queue_add_device(master->smmu->evtq.iopf, dev);
- 		if (ret)
- 			goto err_disable_sva;
-+	} else if (master->pri_supported) {
-+		ret = iopf_queue_add_device(master->smmu->priq.iopf, dev);
-+		if (ret)
-+			goto err_disable_sva;
-+
-+		if (arm_smmu_enable_pri(master)) {
-+			iopf_queue_remove_device(master->smmu->priq.iopf, dev);
-+			goto err_disable_sva;
-+		}
- 	}
- 	return 0;
- 
-@@ -3957,7 +4133,9 @@ static int arm_smmu_dev_disable_feature(struct device *dev,
- 
- 	switch (feat) {
- 	case IOMMU_DEV_FEAT_SVA:
-+		arm_smmu_disable_pri(master);
- 		iopf_queue_remove_device(master->smmu->evtq.iopf, dev);
-+		iopf_queue_remove_device(master->smmu->priq.iopf, dev);
- 		return iommu_sva_disable(dev);
- 	default:
- 		return -EINVAL;
-@@ -4101,6 +4279,11 @@ static int arm_smmu_init_queues(struct arm_smmu_device *smmu)
- 	if (!(smmu->features & ARM_SMMU_FEAT_PRI))
- 		return 0;
- 
-+	smmu->priq.iopf = iopf_queue_alloc(dev_name(smmu->dev),
-+					   arm_smmu_flush_priq, smmu);
-+	if (!smmu->priq.iopf)
-+		return -ENOMEM;
-+
- 	return arm_smmu_init_one_queue(smmu, &smmu->priq.q, ARM_SMMU_PRIQ_PROD,
- 				       ARM_SMMU_PRIQ_CONS, PRIQ_ENT_DWORDS,
- 				       "priq");
-@@ -5078,6 +5261,7 @@ static int arm_smmu_device_remove(struct platform_device *pdev)
- 	iommu_device_sysfs_remove(&smmu->iommu);
- 	arm_smmu_device_disable(smmu);
- 	iopf_queue_free(smmu->evtq.iopf);
-+	iopf_queue_free(smmu->priq.iopf);
- 
- 	return 0;
- }
--- 
-2.26.0
+> > >  A global version also
+> > > implies that we're only ever adding features and never removing.
+> > > For example, feature Foo is added in version 4, but it's replaced
+> > > by feature Bar in version 5, now userspace can't simply test
+> > > version >= 4 must include feature Foo.
+> > >     
+> > Yes, this is why I was hoping to stick with the rule: open for
+> > extension, closed to modification.
+> > It also makes the code backward compatible easy since there old code
+> > would have no change when adding new features.  
+> 
+> But we need a way to deprecate things.  The version interface is not
+> good for that.
+> 
+Agreed, flags are good for deprecation.
 
+> > > It seems to me that version and flags can also be complimentary,
+> > > for example a field might be defined by a version but a flag could
+> > > indicate if it's implemented.  With only the flag, we'd infer the
+> > > field from the flag, with only the version we'd need to assume the
+> > > field is always implemented.  So I have a hard time making a
+> > > blanket statement that all versions fields should be avoided.
+> > >      
+> > > > > 3. Maintain backward compatibility while allowing extensions?
+> > > > > 
+> > > > > I think we all agreed that using flags (capability or types)
+> > > > > is the way to address #3. As Christoph pointed out, version
+> > > > > number should not be used for this purpose.
+> > > > > 
+> > > > > So for problem 1 & 2, we have the following options:
+> > > > > 1. Have a version-size mapping as proposed in this set. VFIO
+> > > > > copies from user the correct size based on version-type
+> > > > > lookup. Processing of the data is based on flags in IOMMU
+> > > > > driver.
+> > > > > 
+> > > > > 2. VFIO copy its own minsz then pass the user pointer to IOMMU
+> > > > > driver for further copy_from_user based on flags. (by Kevin)
+> > > > > 
+> > > > > 3. Adopt VFIO argsz scheme, caller fills in argsz for the
+> > > > > offset the variable size union. VFIO do not check argsz in
+> > > > > that it requires IOMMU specific knowledge. IOMMU driver Use
+> > > > > flags to handle the variable size.(by Alex). I think this
+> > > > > what we have in Yi's VFIO & QEMU patch. argsz filled by QEMU
+> > > > > includes bind_data.
+> > > > > 
+> > > > > 4. Do not use a unified version, have a fixed size of all UAPI
+> > > > > structures, padding in struct and union. (Wasteful, not
+> > > > > preferred per V1 discussion)
+> > > > > 
+> > > > > For both 2 & 3, a unified version is not used, each API
+> > > > > treated separately. vIOMMU will be launched w/o assurance of
+> > > > > compatibility of all APIs. Fault handling may be more complex
+> > > > > in normal operations.
+> > > > > 
+> > > > > Appreciate everyone's input. Joerg and Alex, could you help to
+> > > > > make a decision here?      
+> > > 
+> > > As above, I think using a global API version number to imply
+> > > support for a feature is doomed to fail, we should instead expose
+> > > an interface to check for specific features.    
+> > I agree. I feel we can use the capability chain at container level
+> > as you mentioned, right?  
+> 
+> We could either do a capability chain on the IOMMU_GET_INFO ioctl or
+> we have the CHECK_EXTENSION ioctl.  The latter is quite a bit easier
+> to implement, but limited in what it can expose and the semantics
+> around checking extensions before vs after an IOMMU model is set can
+> be confusing.  I didn't have a strong preference between them when
+> suggesting Kirti use one of these to indicate dirty page tracking, but
+> it would be nice if both features used the same mechanism
+> 
+Sounds good. Just to clarify, similar to Yi's patch that uses
+CHECK_EXTENSION
+https://lkml.org/lkml/2020/3/22/109
+
+But instead of checking for the global UAPI version, we check for each
+feature. i.e.
+diff --git a/include/uapi/linux/vfio.h b/include/uapi/linux/vfio.h
+index b959d0a37c4f..639e3c970b31 100644
+--- a/include/uapi/linux/vfio.h
++++ b/include/uapi/linux/vfio.h
+@@ -46,6 +46,9 @@
+  * code will taint the host kernel and should be used with extrem
+  */
+ #define VFIO_NOIOMMU_IOMMU             8
++#define VFIO_IOMMU_BIND_GPASID         9
++#define VFIO_IOMMU_INVALIDATE          10
++#define VFIO_IOMMU_PAGE_REQUEST        11
+
+Applications such as QEMU would include uapi/iommu.h, which has the
+IOMMU UAPI extensions defined.
+e.g.
+#define IOMMU_GPASID_BIND_VERSION_1
+
+When VM starts, it will check all uAPI extensions returned by the
+kernel against what is in its header, e.g.
+
+extension = ioctl(s->container, VFIO_CHECK_EXTENSION,
+VFIO_IOMMU_BIND_GPASID);
+if (extension >= IOMMU_GPASID_BIND_VERSION_1) {
+	/* Kernel has newer extensions, we are good */
+} else {
+	stop_viommu();
+}
+
+> > >  In any of the proposed solutions, the
+> > > IOMMU driver is ultimately responsible for validating the user
+> > > data, so do we want vfio performing the copy_from_user() to an
+> > > object that could later be assumed to be sanitized, or should
+> > > vfio just pass a user pointer to make it obvious that the
+> > > consumer is responsible for all the user protections?  Seems like
+> > > the latter.    
+> > I like the latter as well.
+> >   
+> > >  That still really
+> > > doesn't address what's in that user data blob yet, but the vfio
+> > > interface could be:
+> > > 
+> > > struct {
+> > > 	__u32 argsz;
+> > > 	__u32 flags;
+> > > 	__u8  data[];
+> > > }
+> > > 
+> > > Where flags might be partitioned like we do for DEVICE_FEATURE to
+> > > indicate the format of data and what vfio should do with it, and
+> > > data might simply be defined as a (__u64 __user *).
+> > >     
+> > So, __user * will be passed to IOMMU driver if VFIO checks minsz
+> > include flags and they are valid.
+> > IOMMU driver can copy the rest based on the mandatory version/minsz
+> > and flags in the IOMMU uAPI structs.
+> > Does it sound right? This is really choice #2.  
+> 
+> Sounds like each IOMMU UAPI struct just needs to have an embedded size
+> and flags field, but yes.
+> 
+Yes, an argsz field can be added to each UAPI. There are already flags
+or the equivalent. IOMMU driver can process the __user * based on the
+argsz, flags, check argsz against offsetofend(iommu_uapi_struct,
+last_element), etc.;
+
+> > > This user pointer would then likely be an IOMMU UAPI struct, so
+> > > I've only just gotten back the the IOMMU UAPI question at hand,
+> > > but I don't really see the disadvantage to including both version
+> > > and flags fields per structure.  Perhaps this is choice 1. above,
+> > > but with a version at a per structure level indicating the
+> > > backwards compatible size and layout of the structure and flags
+> > > being used to indicate support for optional features within those
+> > > fields.    
+> > 
+> > Per structure version & flags is what we have in the mainline. It
+> > applies to both choice 1 & 2. The global/unified version is just a
+> > re-interpretation of the versions such that we have a monolithic
+> > incrementing version. Again, global version is optional.
+> >   
+> > >  Is a version field still taboo
+> > > for such a use case?  Thanks,    
+> > 
+> > I will leave that to Christoph :)  
+> 
+> Looks like if we drop the global version in favor of an
+> extension/feature check and embed size and flags fields in each IOMMU
+> UAPI struct, Christoph will be satisfied.  Thanks,
+> 
+Agreed, we will work towards it. Thanks a lot!
+
+> Alex
+> 
 _______________________________________________
 iommu mailing list
 iommu@lists.linux-foundation.org
