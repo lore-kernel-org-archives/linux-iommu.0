@@ -2,92 +2,73 @@ Return-Path: <SRS0=5SFN=56=lists.linux-foundation.org=iommu-bounces@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-9.6 required=3.0 tests=DKIM_INVALID,DKIM_SIGNED,
-	HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_PATCH,MAILING_LIST_MULTI,SIGNED_OFF_BY,
-	SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED,USER_AGENT_GIT autolearn=unavailable
-	autolearn_force=no version=3.4.0
+X-Spam-Status: No, score=-8.8 required=3.0 tests=HEADER_FROM_DIFFERENT_DOMAINS,
+	MAILING_LIST_MULTI,MENTIONS_GIT_HOSTING,SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED,
+	USER_AGENT_GIT autolearn=ham autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 53A30C2BBC7
-	for <iommu@archiver.kernel.org>; Tue, 14 Apr 2020 13:17:04 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 8F5DAC2BB86
+	for <iommu@archiver.kernel.org>; Tue, 14 Apr 2020 13:17:05 +0000 (UTC)
 Received: from fraxinus.osuosl.org (smtp4.osuosl.org [140.211.166.137])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by mail.kernel.org (Postfix) with ESMTPS id 28AA92063A
-	for <iommu@archiver.kernel.org>; Tue, 14 Apr 2020 13:17:04 +0000 (UTC)
-Authentication-Results: mail.kernel.org;
-	dkim=fail reason="signature verification failed" (2048-bit key) header.d=infradead.org header.i=@infradead.org header.b="DuJhJNoi"
-DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 28AA92063A
-Authentication-Results: mail.kernel.org; dmarc=none (p=none dis=none) header.from=lst.de
+	by mail.kernel.org (Postfix) with ESMTPS id 6FA4C206A2
+	for <iommu@archiver.kernel.org>; Tue, 14 Apr 2020 13:17:05 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 6FA4C206A2
+Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=8bytes.org
 Authentication-Results: mail.kernel.org; spf=pass smtp.mailfrom=iommu-bounces@lists.linux-foundation.org
 Received: from localhost (localhost [127.0.0.1])
-	by fraxinus.osuosl.org (Postfix) with ESMTP id 1782785932;
-	Tue, 14 Apr 2020 13:17:04 +0000 (UTC)
+	by fraxinus.osuosl.org (Postfix) with ESMTP id 3B24C856E8;
+	Tue, 14 Apr 2020 13:17:05 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
 Received: from fraxinus.osuosl.org ([127.0.0.1])
 	by localhost (.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
-	with ESMTP id OF_mYf8GTmHA; Tue, 14 Apr 2020 13:17:02 +0000 (UTC)
+	with ESMTP id QBWopgOfEAA0; Tue, 14 Apr 2020 13:17:03 +0000 (UTC)
 Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [140.211.9.56])
-	by fraxinus.osuosl.org (Postfix) with ESMTP id E33D685A9E;
-	Tue, 14 Apr 2020 13:17:00 +0000 (UTC)
+	by fraxinus.osuosl.org (Postfix) with ESMTP id 1514885B04;
+	Tue, 14 Apr 2020 13:17:01 +0000 (UTC)
 Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
-	by lists.linuxfoundation.org (Postfix) with ESMTP id CE6FBC1D91;
-	Tue, 14 Apr 2020 13:17:00 +0000 (UTC)
+	by lists.linuxfoundation.org (Postfix) with ESMTP id 01C90C1D91;
+	Tue, 14 Apr 2020 13:17:01 +0000 (UTC)
 Received: from whitealder.osuosl.org (smtp1.osuosl.org [140.211.166.138])
- by lists.linuxfoundation.org (Postfix) with ESMTP id 8A12DC0172
- for <iommu@lists.linux-foundation.org>; Tue, 14 Apr 2020 13:16:59 +0000 (UTC)
+ by lists.linuxfoundation.org (Postfix) with ESMTP id 0209AC0172;
+ Tue, 14 Apr 2020 13:17:00 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
- by whitealder.osuosl.org (Postfix) with ESMTP id 83D1A8680C
- for <iommu@lists.linux-foundation.org>; Tue, 14 Apr 2020 13:16:59 +0000 (UTC)
+ by whitealder.osuosl.org (Postfix) with ESMTP id E64D586793;
+ Tue, 14 Apr 2020 13:16:59 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
 Received: from whitealder.osuosl.org ([127.0.0.1])
  by localhost (.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
- with ESMTP id WxftY+UcgA3Y for <iommu@lists.linux-foundation.org>;
- Tue, 14 Apr 2020 13:16:55 +0000 (UTC)
+ with ESMTP id 5jrWoRqNYZRO; Tue, 14 Apr 2020 13:16:56 +0000 (UTC)
 X-Greylist: from auto-whitelisted by SQLgrey-1.7.6
-Received: from bombadil.infradead.org (bombadil.infradead.org
- [198.137.202.133])
- by whitealder.osuosl.org (Postfix) with ESMTPS id 9C2E7868D8
- for <iommu@lists.linux-foundation.org>; Tue, 14 Apr 2020 13:15:41 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
- d=infradead.org; s=bombadil.20170209; h=Content-Transfer-Encoding:
- MIME-Version:References:In-Reply-To:Message-Id:Date:Subject:Cc:To:From:Sender
- :Reply-To:Content-Type:Content-ID:Content-Description;
- bh=ZI4U6BB9zlUyzXcQXfM3VhQxGL0k8FwW66WlTWcFnjw=; b=DuJhJNoi84j4y+ELSEk4TJJjyZ
- 8E0g/lTAW0lXP4it4eZ25t7S3NAemXF7vCY6cSs+mAdTzydbKgGd7mpBCmkLnEQJJafJ/e0JSFQWA
- 2sfV6l/SpE7aHPfshqIjorcf5C/UM2ChZjnjIzLCtv6oMiyTEpupPp0FO1YAlTJ0/6fCTX6yygOiB
- wsbflnnRcwmSE2DirRcX363HrqCLCWAr2oLn/deFV/kxMA43WQrMaT3aQyHGkgf8hHvL2/FREsjwt
- hHOEtE3xtVAjP6xBHsf3esbTCRkLw4FlmZO8SHDdGGF/R9Aat+5w/2QTWxUoTypO/JCUluyZkGGnq
- 2iLfPbLA==;
-Received: from [2001:4bb8:180:384b:c70:4a89:bc61:2] (helo=localhost)
- by bombadil.infradead.org with esmtpsa (Exim 4.92.3 #3 (Red Hat Linux))
- id 1jOLPN-0001bW-Iw; Tue, 14 Apr 2020 13:15:23 +0000
-From: Christoph Hellwig <hch@lst.de>
-To: Andrew Morton <akpm@linux-foundation.org>,
- "K. Y. Srinivasan" <kys@microsoft.com>,
- Haiyang Zhang <haiyangz@microsoft.com>,
- Stephen Hemminger <sthemmin@microsoft.com>, Wei Liu <wei.liu@kernel.org>,
- x86@kernel.org, David Airlie <airlied@linux.ie>,
- Daniel Vetter <daniel@ffwll.ch>, Laura Abbott <labbott@redhat.com>,
- Sumit Semwal <sumit.semwal@linaro.org>,
- Sakari Ailus <sakari.ailus@linux.intel.com>,
- Minchan Kim <minchan@kernel.org>, Nitin Gupta <ngupta@vflare.org>
-Subject: [PATCH 26/29] mm: remove vmalloc_user_node_flags
-Date: Tue, 14 Apr 2020 15:13:45 +0200
-Message-Id: <20200414131348.444715-27-hch@lst.de>
-X-Mailer: git-send-email 2.25.1
-In-Reply-To: <20200414131348.444715-1-hch@lst.de>
-References: <20200414131348.444715-1-hch@lst.de>
-MIME-Version: 1.0
-X-SRS-Rewrite: SMTP reverse-path rewritten from <hch@infradead.org> by
- bombadil.infradead.org. See http://www.infradead.org/rpr.html
-Cc: Christophe Leroy <christophe.leroy@c-s.fr>, linux-arch@vger.kernel.org,
- linux-hyperv@vger.kernel.org, linux-s390@vger.kernel.org,
- Peter Zijlstra <peterz@infradead.org>, linuxppc-dev@lists.ozlabs.org,
- linux-kernel@vger.kernel.org, dri-devel@lists.freedesktop.org,
- linaro-mm-sig@lists.linaro.org, linux-mm@kvack.org,
- iommu@lists.linux-foundation.org, Johannes Weiner <hannes@cmpxchg.org>,
- bpf@vger.kernel.org, Robin Murphy <robin.murphy@arm.com>,
- linux-arm-kernel@lists.infradead.org
+X-Greylist: from auto-whitelisted by SQLgrey-1.7.6
+Received: from theia.8bytes.org (8bytes.org [81.169.241.247])
+ by whitealder.osuosl.org (Postfix) with ESMTPS id 4F0B386970;
+ Tue, 14 Apr 2020 13:15:55 +0000 (UTC)
+Received: by theia.8bytes.org (Postfix, from userid 1000)
+ id 6821A2B0; Tue, 14 Apr 2020 15:15:51 +0200 (CEST)
+From: Joerg Roedel <joro@8bytes.org>
+To: Joerg Roedel <joro@8bytes.org>, Will Deacon <will@kernel.org>,
+ Robin Murphy <robin.murphy@arm.com>,
+ Marek Szyprowski <m.szyprowski@samsung.com>, Kukjin Kim <kgene@kernel.org>,
+ Krzysztof Kozlowski <krzk@kernel.org>,
+ David Woodhouse <dwmw2@infradead.org>, Lu Baolu <baolu.lu@linux.intel.com>,
+ Andy Gross <agross@kernel.org>,
+ Bjorn Andersson <bjorn.andersson@linaro.org>,
+ Matthias Brugger <matthias.bgg@gmail.com>, Rob Clark <robdclark@gmail.com>,
+ Heiko Stuebner <heiko@sntech.de>,
+ Gerald Schaefer <gerald.schaefer@de.ibm.com>,
+ Thierry Reding <thierry.reding@gmail.com>,
+ Jonathan Hunter <jonathanh@nvidia.com>,
+ Jean-Philippe Brucker <jean-philippe@linaro.org>
+Subject: [PATCH v2 00/33] iommu: Move iommu_group setup to IOMMU core code
+Date: Tue, 14 Apr 2020 15:15:09 +0200
+Message-Id: <20200414131542.25608-1-joro@8bytes.org>
+X-Mailer: git-send-email 2.17.1
+Cc: linux-s390@vger.kernel.org, linux-samsung-soc@vger.kernel.org,
+ linux-arm-msm@vger.kernel.org, linux-kernel@vger.kernel.org,
+ virtualization@lists.linux-foundation.org, linux-rockchip@lists.infradead.org,
+ iommu@lists.linux-foundation.org, linux-mediatek@lists.infradead.org,
+ linux-tegra@vger.kernel.org
 X-BeenThere: iommu@lists.linux-foundation.org
 X-Mailman-Version: 2.1.15
 Precedence: list
@@ -100,157 +81,104 @@ List-Post: <mailto:iommu@lists.linux-foundation.org>
 List-Help: <mailto:iommu-request@lists.linux-foundation.org?subject=help>
 List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
  <mailto:iommu-request@lists.linux-foundation.org?subject=subscribe>
+MIME-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
 Errors-To: iommu-bounces@lists.linux-foundation.org
 Sender: "iommu" <iommu-bounces@lists.linux-foundation.org>
 
-Open code it in __bpf_map_area_alloc, which is the only caller.  Also
-clean up __bpf_map_area_alloc to have a single vmalloc call with
-slightly different flags instead of the current two different calls.
+Hi,
 
-For this to compile for the nommu case add a __vmalloc_node_range stub
-to nommu.c.
+here is the second version of this patch-set. The first version with
+some more introductory text can be found here:
 
-Signed-off-by: Christoph Hellwig <hch@lst.de>
-Acked-by: Peter Zijlstra (Intel) <peterz@infradead.org>
-Acked-by: Johannes Weiner <hannes@cmpxchg.org>
----
- include/linux/vmalloc.h |  1 -
- kernel/bpf/syscall.c    | 24 ++++++++++++++----------
- mm/nommu.c              | 14 ++++++++------
- mm/vmalloc.c            | 20 --------------------
- 4 files changed, 22 insertions(+), 37 deletions(-)
+	https://lore.kernel.org/lkml/20200407183742.4344-1-joro@8bytes.org/
 
-diff --git a/include/linux/vmalloc.h b/include/linux/vmalloc.h
-index 108f49b47756..f90f2946aac2 100644
---- a/include/linux/vmalloc.h
-+++ b/include/linux/vmalloc.h
-@@ -106,7 +106,6 @@ extern void *vzalloc(unsigned long size);
- extern void *vmalloc_user(unsigned long size);
- extern void *vmalloc_node(unsigned long size, int node);
- extern void *vzalloc_node(unsigned long size, int node);
--extern void *vmalloc_user_node_flags(unsigned long size, int node, gfp_t flags);
- extern void *vmalloc_exec(unsigned long size);
- extern void *vmalloc_32(unsigned long size);
- extern void *vmalloc_32_user(unsigned long size);
-diff --git a/kernel/bpf/syscall.c b/kernel/bpf/syscall.c
-index 48d98ea8fad6..dd30b334c554 100644
---- a/kernel/bpf/syscall.c
-+++ b/kernel/bpf/syscall.c
-@@ -25,6 +25,7 @@
- #include <linux/nospec.h>
- #include <linux/audit.h>
- #include <uapi/linux/btf.h>
-+#include <asm/pgtable.h>
- #include <linux/bpf_lsm.h>
- 
- #define IS_FD_ARRAY(map) ((map)->map_type == BPF_MAP_TYPE_PERF_EVENT_ARRAY || \
-@@ -281,26 +282,29 @@ static void *__bpf_map_area_alloc(u64 size, int numa_node, bool mmapable)
- 	 * __GFP_RETRY_MAYFAIL to avoid such situations.
- 	 */
- 
--	const gfp_t flags = __GFP_NOWARN | __GFP_ZERO;
-+	const gfp_t gfp = __GFP_NOWARN | __GFP_ZERO;
-+	unsigned int flags = 0;
-+	unsigned long align = 1;
- 	void *area;
- 
- 	if (size >= SIZE_MAX)
- 		return NULL;
- 
- 	/* kmalloc()'ed memory can't be mmap()'ed */
--	if (!mmapable && size <= (PAGE_SIZE << PAGE_ALLOC_COSTLY_ORDER)) {
--		area = kmalloc_node(size, GFP_USER | __GFP_NORETRY | flags,
-+	if (mmapable) {
-+		BUG_ON(!PAGE_ALIGNED(size));
-+		align = SHMLBA;
-+		flags = VM_USERMAP;
-+	} else if (size <= (PAGE_SIZE << PAGE_ALLOC_COSTLY_ORDER)) {
-+		area = kmalloc_node(size, gfp | GFP_USER | __GFP_NORETRY,
- 				    numa_node);
- 		if (area != NULL)
- 			return area;
- 	}
--	if (mmapable) {
--		BUG_ON(!PAGE_ALIGNED(size));
--		return vmalloc_user_node_flags(size, numa_node, GFP_KERNEL |
--					       __GFP_RETRY_MAYFAIL | flags);
--	}
--	return __vmalloc_node(size, 1, GFP_KERNEL | __GFP_RETRY_MAYFAIL | flags,
--			      numa_node, __builtin_return_address(0));
-+
-+	return __vmalloc_node_range(size, align, VMALLOC_START, VMALLOC_END,
-+			gfp | GFP_KERNEL | __GFP_RETRY_MAYFAIL, PAGE_KERNEL,
-+			flags, numa_node, __builtin_return_address(0));
- }
- 
- void *bpf_map_area_alloc(u64 size, int numa_node)
-diff --git a/mm/nommu.c b/mm/nommu.c
-index 81a86cd85893..b42cd6003d7d 100644
---- a/mm/nommu.c
-+++ b/mm/nommu.c
-@@ -150,6 +150,14 @@ void *__vmalloc(unsigned long size, gfp_t gfp_mask)
- }
- EXPORT_SYMBOL(__vmalloc);
- 
-+void *__vmalloc_node_range(unsigned long size, unsigned long align,
-+		unsigned long start, unsigned long end, gfp_t gfp_mask,
-+		pgprot_t prot, unsigned long vm_flags, int node,
-+		const void *caller)
-+{
-+	return __vmalloc(size, flags);
-+}
-+
- void *__vmalloc_node(unsigned long size, unsigned long align, gfp_t gfp_mask,
- 		int node, const void *caller)
- {
-@@ -180,12 +188,6 @@ void *vmalloc_user(unsigned long size)
- }
- EXPORT_SYMBOL(vmalloc_user);
- 
--void *vmalloc_user_node_flags(unsigned long size, int node, gfp_t flags)
--{
--	return __vmalloc_user_flags(size, flags | __GFP_ZERO);
--}
--EXPORT_SYMBOL(vmalloc_user_node_flags);
--
- struct page *vmalloc_to_page(const void *addr)
- {
- 	return virt_to_page(addr);
-diff --git a/mm/vmalloc.c b/mm/vmalloc.c
-index 333fbe77255a..f6f2acdaf70c 100644
---- a/mm/vmalloc.c
-+++ b/mm/vmalloc.c
-@@ -2658,26 +2658,6 @@ void *vzalloc_node(unsigned long size, int node)
- }
- EXPORT_SYMBOL(vzalloc_node);
- 
--/**
-- * vmalloc_user_node_flags - allocate memory for userspace on a specific node
-- * @size: allocation size
-- * @node: numa node
-- * @flags: flags for the page level allocator
-- *
-- * The resulting memory area is zeroed so it can be mapped to userspace
-- * without leaking data.
-- *
-- * Return: pointer to the allocated memory or %NULL on error
-- */
--void *vmalloc_user_node_flags(unsigned long size, int node, gfp_t flags)
--{
--	return __vmalloc_node_range(size, SHMLBA,  VMALLOC_START, VMALLOC_END,
--				    flags | __GFP_ZERO, PAGE_KERNEL,
--				    VM_USERMAP, node,
--				    __builtin_return_address(0));
--}
--EXPORT_SYMBOL(vmalloc_user_node_flags);
--
- /**
-  * vmalloc_exec - allocate virtually contiguous, executable memory
-  * @size:	  allocation size
+Changes v1->v2:
+
+	* Rebased to v5.7-rc1
+
+	* Re-wrote the arm-smmu changes as suggested by Robin Murphy
+
+	* Re-worked the Exynos patches to hopefully not break the
+	  driver anymore
+
+	* Fixed a missing mutex_unlock() reported by Marek Szyprowski,
+	  thanks for that.
+
+There is also a git-branch available with these patches applied:
+
+	https://git.kernel.org/pub/scm/linux/kernel/git/joro/linux.git/log/?h=iommu-probe-device-v2
+
+Please review.
+
+Thanks,
+
+	Joerg
+
+Joerg Roedel (32):
+  iommu: Move default domain allocation to separate function
+  iommu/amd: Implement iommu_ops->def_domain_type call-back
+  iommu/vt-d: Wire up iommu_ops->def_domain_type
+  iommu/amd: Remove dma_mask check from check_device()
+  iommu/amd: Return -ENODEV in add_device when device is not handled by
+    IOMMU
+  iommu: Add probe_device() and remove_device() call-backs
+  iommu: Move default domain allocation to iommu_probe_device()
+  iommu: Keep a list of allocated groups in __iommu_probe_device()
+  iommu: Move new probe_device path to separate function
+  iommu: Split off default domain allocation from group assignment
+  iommu: Move iommu_group_create_direct_mappings() out of
+    iommu_group_add_device()
+  iommu: Export bus_iommu_probe() and make is safe for re-probing
+  iommu/amd: Remove dev_data->passthrough
+  iommu/amd: Convert to probe/release_device() call-backs
+  iommu/vt-d: Convert to probe/release_device() call-backs
+  iommu/arm-smmu: Convert to probe/release_device() call-backs
+  iommu/pamu: Convert to probe/release_device() call-backs
+  iommu/s390: Convert to probe/release_device() call-backs
+  iommu/virtio: Convert to probe/release_device() call-backs
+  iommu/msm: Convert to probe/release_device() call-backs
+  iommu/mediatek: Convert to probe/release_device() call-backs
+  iommu/mediatek-v1 Convert to probe/release_device() call-backs
+  iommu/qcom: Convert to probe/release_device() call-backs
+  iommu/rockchip: Convert to probe/release_device() call-backs
+  iommu/tegra: Convert to probe/release_device() call-backs
+  iommu/renesas: Convert to probe/release_device() call-backs
+  iommu/omap: Remove orphan_dev tracking
+  iommu/omap: Convert to probe/release_device() call-backs
+  iommu/exynos: Use first SYSMMU in controllers list for IOMMU core
+  iommu/exynos: Convert to probe/release_device() call-backs
+  iommu: Remove add_device()/remove_device() code-paths
+  iommu: Unexport iommu_group_get_for_dev()
+
+Sai Praneeth Prakhya (1):
+  iommu: Add def_domain_type() callback in iommu_ops
+
+ drivers/iommu/amd_iommu.c       |  97 ++++----
+ drivers/iommu/amd_iommu_types.h |   1 -
+ drivers/iommu/arm-smmu-v3.c     |  38 +--
+ drivers/iommu/arm-smmu.c        |  39 ++--
+ drivers/iommu/exynos-iommu.c    |  24 +-
+ drivers/iommu/fsl_pamu_domain.c |  22 +-
+ drivers/iommu/intel-iommu.c     |  68 +-----
+ drivers/iommu/iommu.c           | 393 +++++++++++++++++++++++++-------
+ drivers/iommu/ipmmu-vmsa.c      |  60 ++---
+ drivers/iommu/msm_iommu.c       |  34 +--
+ drivers/iommu/mtk_iommu.c       |  24 +-
+ drivers/iommu/mtk_iommu_v1.c    |  50 ++--
+ drivers/iommu/omap-iommu.c      |  99 ++------
+ drivers/iommu/qcom_iommu.c      |  24 +-
+ drivers/iommu/rockchip-iommu.c  |  26 +--
+ drivers/iommu/s390-iommu.c      |  22 +-
+ drivers/iommu/tegra-gart.c      |  24 +-
+ drivers/iommu/tegra-smmu.c      |  31 +--
+ drivers/iommu/virtio-iommu.c    |  41 +---
+ include/linux/iommu.h           |  21 +-
+ 20 files changed, 533 insertions(+), 605 deletions(-)
+
 -- 
-2.25.1
+2.17.1
 
 _______________________________________________
 iommu mailing list
