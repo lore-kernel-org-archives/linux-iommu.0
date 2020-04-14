@@ -2,92 +2,69 @@ Return-Path: <SRS0=5SFN=56=lists.linux-foundation.org=iommu-bounces@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-5.2 required=3.0 tests=HEADER_FROM_DIFFERENT_DOMAINS,
-	INCLUDES_PATCH,MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED,
-	USER_AGENT_SANE_2 autolearn=unavailable autolearn_force=no version=3.4.0
+X-Spam-Status: No, score=-2.2 required=3.0 tests=HEADER_FROM_DIFFERENT_DOMAINS,
+	MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED,USER_AGENT_SANE_1
+	autolearn=no autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id AC4DEC2BA19
-	for <iommu@archiver.kernel.org>; Tue, 14 Apr 2020 17:13:14 +0000 (UTC)
-Received: from fraxinus.osuosl.org (smtp4.osuosl.org [140.211.166.137])
+	by smtp.lore.kernel.org (Postfix) with ESMTP id EAAC8C2BA19
+	for <iommu@archiver.kernel.org>; Tue, 14 Apr 2020 17:15:43 +0000 (UTC)
+Received: from whitealder.osuosl.org (smtp1.osuosl.org [140.211.166.138])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by mail.kernel.org (Postfix) with ESMTPS id 7AE5B20767
-	for <iommu@archiver.kernel.org>; Tue, 14 Apr 2020 17:13:14 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 7AE5B20767
-Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=linux.intel.com
+	by mail.kernel.org (Postfix) with ESMTPS id BB1D420678
+	for <iommu@archiver.kernel.org>; Tue, 14 Apr 2020 17:15:43 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org BB1D420678
+Authentication-Results: mail.kernel.org; dmarc=none (p=none dis=none) header.from=arm.com
 Authentication-Results: mail.kernel.org; spf=pass smtp.mailfrom=iommu-bounces@lists.linux-foundation.org
 Received: from localhost (localhost [127.0.0.1])
-	by fraxinus.osuosl.org (Postfix) with ESMTP id 47AF185BDF;
-	Tue, 14 Apr 2020 17:13:14 +0000 (UTC)
+	by whitealder.osuosl.org (Postfix) with ESMTP id 811A486F8A;
+	Tue, 14 Apr 2020 17:15:43 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from fraxinus.osuosl.org ([127.0.0.1])
+Received: from whitealder.osuosl.org ([127.0.0.1])
 	by localhost (.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
-	with ESMTP id G_V48NVhsr9X; Tue, 14 Apr 2020 17:13:12 +0000 (UTC)
+	with ESMTP id PjIHKI0sCmqk; Tue, 14 Apr 2020 17:15:42 +0000 (UTC)
 Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [140.211.9.56])
-	by fraxinus.osuosl.org (Postfix) with ESMTP id BB7668453D;
-	Tue, 14 Apr 2020 17:13:12 +0000 (UTC)
+	by whitealder.osuosl.org (Postfix) with ESMTP id 4C8ED86F87;
+	Tue, 14 Apr 2020 17:15:42 +0000 (UTC)
 Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
-	by lists.linuxfoundation.org (Postfix) with ESMTP id B0F38C089E;
-	Tue, 14 Apr 2020 17:13:12 +0000 (UTC)
-Received: from hemlock.osuosl.org (smtp2.osuosl.org [140.211.166.133])
- by lists.linuxfoundation.org (Postfix) with ESMTP id 49845C0172
- for <iommu@lists.linux-foundation.org>; Tue, 14 Apr 2020 17:13:11 +0000 (UTC)
+	by lists.linuxfoundation.org (Postfix) with ESMTP id 33AD0C1D7D;
+	Tue, 14 Apr 2020 17:15:42 +0000 (UTC)
+Received: from silver.osuosl.org (smtp3.osuosl.org [140.211.166.136])
+ by lists.linuxfoundation.org (Postfix) with ESMTP id 58786C0172
+ for <iommu@lists.linux-foundation.org>; Tue, 14 Apr 2020 17:15:40 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
- by hemlock.osuosl.org (Postfix) with ESMTP id 33E6C84FB1
- for <iommu@lists.linux-foundation.org>; Tue, 14 Apr 2020 17:13:11 +0000 (UTC)
+ by silver.osuosl.org (Postfix) with ESMTP id 3AE9E2152E
+ for <iommu@lists.linux-foundation.org>; Tue, 14 Apr 2020 17:15:40 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from hemlock.osuosl.org ([127.0.0.1])
+Received: from silver.osuosl.org ([127.0.0.1])
  by localhost (.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
- with ESMTP id 4XUzGn+t1XVF for <iommu@lists.linux-foundation.org>;
- Tue, 14 Apr 2020 17:13:09 +0000 (UTC)
+ with ESMTP id 5RX8IKKmQmBe for <iommu@lists.linux-foundation.org>;
+ Tue, 14 Apr 2020 17:15:39 +0000 (UTC)
 X-Greylist: domain auto-whitelisted by SQLgrey-1.7.6
-Received: from mga07.intel.com (mga07.intel.com [134.134.136.100])
- by hemlock.osuosl.org (Postfix) with ESMTPS id 4A85E83CBF
- for <iommu@lists.linux-foundation.org>; Tue, 14 Apr 2020 17:13:07 +0000 (UTC)
-IronPort-SDR: gDtVqhJ2wGIho9dxl76yMHFn2bs0YQOq7CdQQ1+VWqLp78lIUrgGFBHRHYoyjW+S4q/SOALac1
- UaUbWzP3P29g==
-X-Amp-Result: SKIPPED(no attachment in message)
-X-Amp-File-Uploaded: False
-Received: from orsmga008.jf.intel.com ([10.7.209.65])
- by orsmga105.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384;
- 14 Apr 2020 10:07:09 -0700
-IronPort-SDR: DdRZ7xo8mIDLANQv+GTA4W57ph8gfabjpdvjSHXXjD6rA59qVV+jUk6jjWuipnrykGolju8IqE
- OSSHZelHd5Xg==
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.72,383,1580803200"; d="scan'208";a="270898095"
-Received: from jacob-builder.jf.intel.com (HELO jacob-builder) ([10.7.199.155])
- by orsmga008.jf.intel.com with ESMTP; 14 Apr 2020 10:07:09 -0700
-Date: Tue, 14 Apr 2020 10:13:04 -0700
-From: Jacob Pan <jacob.jun.pan@linux.intel.com>
-To: Alex Williamson <alex.williamson@redhat.com>
-Subject: Re: [PATCH v2 1/3] iommu/uapi: Define uapi version and capabilities
-Message-ID: <20200414101304.27e587eb@jacob-builder>
-In-Reply-To: <20200414101358.3ae66ac5@w520.home>
-References: <1585178227-17061-1-git-send-email-jacob.jun.pan@linux.intel.com>
- <1585178227-17061-2-git-send-email-jacob.jun.pan@linux.intel.com>
- <20200326092316.GA31648@infradead.org>
- <20200326094442.5be042ce@jacob-builder>
- <AADFC41AFE54684AB9EE6CBC0274A5D19D7ECB45@SHSMSX104.ccr.corp.intel.com>
- <20200327074702.GA27959@infradead.org>
- <20200327165335.397f24a3@jacob-builder>
- <AADFC41AFE54684AB9EE6CBC0274A5D19D7FE150@SHSMSX104.ccr.corp.intel.com>
- <20200330090746.23c5599c@jacob-builder>
- <AADFC41AFE54684AB9EE6CBC0274A5D19D8011A9@SHSMSX104.ccr.corp.intel.com>
- <20200331085444.44bee0bb@jacob-builder>
- <AADFC41AFE54684AB9EE6CBC0274A5D19D803AFF@SHSMSX104.ccr.corp.intel.com>
- <20200402113604.6eea1e6f@jacob-builder>
- <20200413134157.395981a6@jacob-builder>
- <20200413162129.313b3b5a@w520.home>
- <20200413220515.25a107b6@jacob-builder>
- <20200414101358.3ae66ac5@w520.home>
-Organization: OTC
-X-Mailer: Claws Mail 3.13.2 (GTK+ 2.24.30; x86_64-pc-linux-gnu)
+Received: from foss.arm.com (foss.arm.com [217.140.110.172])
+ by silver.osuosl.org (Postfix) with ESMTP id 7363821514
+ for <iommu@lists.linux-foundation.org>; Tue, 14 Apr 2020 17:15:39 +0000 (UTC)
+Received: from usa-sjc-imap-foss1.foss.arm.com (unknown [10.121.207.14])
+ by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id D186C30E;
+ Tue, 14 Apr 2020 10:15:38 -0700 (PDT)
+Received: from [10.57.33.145] (unknown [10.57.33.145])
+ by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPSA id D2BE93F6C4;
+ Tue, 14 Apr 2020 10:15:37 -0700 (PDT)
+Subject: Re: [PATCH] dt-bndings: iommu: renesas, ipmmu-vmsa: convert to
+ json-schema
+To: Yoshihiro Shimoda <yoshihiro.shimoda.uh@renesas.com>, joro@8bytes.org,
+ robh+dt@kernel.org
+References: <1586773533-8893-1-git-send-email-yoshihiro.shimoda.uh@renesas.com>
+From: Robin Murphy <robin.murphy@arm.com>
+Message-ID: <fef59497-e5ef-bfe4-e845-389fd623783b@arm.com>
+Date: Tue, 14 Apr 2020 18:15:35 +0100
+User-Agent: Mozilla/5.0 (Windows NT 10.0; rv:68.0) Gecko/20100101
+ Thunderbird/68.7.0
 MIME-Version: 1.0
-Cc: "Tian, Kevin" <kevin.tian@intel.com>, "Raj, Ashok" <ashok.raj@intel.com>,
- Jean-Philippe Brucker <jean-philippe@linaro.com>,
- LKML <linux-kernel@vger.kernel.org>,
- "iommu@lists.linux-foundation.org" <iommu@lists.linux-foundation.org>,
- David Woodhouse <dwmw2@infradead.org>
+In-Reply-To: <1586773533-8893-1-git-send-email-yoshihiro.shimoda.uh@renesas.com>
+Content-Language: en-GB
+Cc: linux-renesas-soc@vger.kernel.org, devicetree@vger.kernel.org,
+ iommu@lists.linux-foundation.org
 X-BeenThere: iommu@lists.linux-foundation.org
 X-Mailman-Version: 2.1.15
 Precedence: list
@@ -100,394 +77,30 @@ List-Post: <mailto:iommu@lists.linux-foundation.org>
 List-Help: <mailto:iommu-request@lists.linux-foundation.org?subject=help>
 List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
  <mailto:iommu-request@lists.linux-foundation.org?subject=subscribe>
-Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset="us-ascii"; Format="flowed"
 Errors-To: iommu-bounces@lists.linux-foundation.org
 Sender: "iommu" <iommu-bounces@lists.linux-foundation.org>
 
-On Tue, 14 Apr 2020 10:13:58 -0600
-Alex Williamson <alex.williamson@redhat.com> wrote:
+On 2020-04-13 11:25 am, Yoshihiro Shimoda wrote:
+[...]
+> -Each bus master connected to an IPMMU must reference the IPMMU in its device
+> -node with the following property:
+> -
+> -  - iommus: A reference to the IPMMU in two cells. The first cell is a phandle
+> -    to the IPMMU and the second cell the number of the micro-TLB that the
+> -    device is connected to.
 
-> On Mon, 13 Apr 2020 22:05:15 -0700
-> Jacob Pan <jacob.jun.pan@linux.intel.com> wrote:
-> 
-> > Hi Alex,
-> > Thanks a lot for the feedback, my comments inline.
-> > 
-> > On Mon, 13 Apr 2020 16:21:29 -0600
-> > Alex Williamson <alex.williamson@redhat.com> wrote:
-> >   
-> > > On Mon, 13 Apr 2020 13:41:57 -0700
-> > > Jacob Pan <jacob.jun.pan@linux.intel.com> wrote:
-> > >     
-> > > > Hi All,
-> > > > 
-> > > > Just a gentle reminder, any feedback on the options I listed
-> > > > below? New ideas will be even better.
-> > > > 
-> > > > Christoph, does the explanation make sense to you? We do have
-> > > > the capability/flag based scheme for IOMMU API extension, the
-> > > > version is mainly used for size lookup. Compatibility checking
-> > > > is another use of the version, it makes checking easy when a
-> > > > vIOMMU is launched.
-> > > > 
-> > > > Thanks,
-> > > > 
-> > > > Jacob
-> > > > 
-> > > > On Thu, 2 Apr 2020 11:36:04 -0700
-> > > > Jacob Pan <jacob.jun.pan@linux.intel.com> wrote:
-> > > >       
-> > > > > On Wed, 1 Apr 2020 05:32:21 +0000
-> > > > > "Tian, Kevin" <kevin.tian@intel.com> wrote:
-> > > > >         
-> > > > > > > From: Jacob Pan <jacob.jun.pan@linux.intel.com>
-> > > > > > > Sent: Tuesday, March 31, 2020 11:55 PM
-> > > > > > > 
-> > > > > > > On Tue, 31 Mar 2020 06:06:38 +0000
-> > > > > > > "Tian, Kevin" <kevin.tian@intel.com> wrote:
-> > > > > > >             
-> > > > > > > > > From: Jacob Pan <jacob.jun.pan@linux.intel.com>
-> > > > > > > > > Sent: Tuesday, March 31, 2020 12:08 AM
-> > > > > > > > >
-> > > > > > > > > On Mon, 30 Mar 2020 05:40:40 +0000
-> > > > > > > > > "Tian, Kevin" <kevin.tian@intel.com> wrote:
-> > > > > > > > >            
-> > > > > > > > > > > From: Jacob Pan <jacob.jun.pan@linux.intel.com>
-> > > > > > > > > > > Sent: Saturday, March 28, 2020 7:54 AM
-> > > > > > > > > > >
-> > > > > > > > > > > On Fri, 27 Mar 2020 00:47:02 -0700
-> > > > > > > > > > > Christoph Hellwig <hch@infradead.org> wrote:
-> > > > > > > > > > >            
-> > > > > > > > > > > > On Fri, Mar 27, 2020 at 02:49:55AM +0000, Tian,
-> > > > > > > > > > > > Kevin wrote:            
-> > > > > > > > > > > > > If those API calls are inter-dependent for
-> > > > > > > > > > > > > composing a feature (e.g. SVA), shouldn't we
-> > > > > > > > > > > > > need a way to check them together before
-> > > > > > > > > > > > > exposing the feature to the guest, e.g.
-> > > > > > > > > > > > > through a iommu_get_uapi_capabilities
-> > > > > > > > > > > > > interface?            
-> > > > > > > > > > > >
-> > > > > > > > > > > > Yes, that makes sense.  The important bit is to
-> > > > > > > > > > > > have a capability flags and not version
-> > > > > > > > > > > > numbers.            
-> > > > > > > > > > >
-> > > > > > > > > > > The challenge is that there are two consumers in
-> > > > > > > > > > > the kernel for this. 1. VFIO only look for
-> > > > > > > > > > > compatibility, and size of each data struct such
-> > > > > > > > > > > that it can copy_from_user.
-> > > > > > > > > > >
-> > > > > > > > > > > 2. IOMMU driver, the "real consumer" of the
-> > > > > > > > > > > content.
-> > > > > > > > > > >
-> > > > > > > > > > > For 2, I agree and we do plan to use the
-> > > > > > > > > > > capability flags to check content and maintain
-> > > > > > > > > > > backward compatibility etc.
-> > > > > > > > > > >
-> > > > > > > > > > > For VFIO, it is difficult to do size look up
-> > > > > > > > > > > based on capability flags.            
-> > > > > > > > > >
-> > > > > > > > > > Can you elaborate the difficulty in VFIO? if, as
-> > > > > > > > > > Christoph Hellwig pointed out, version number is
-> > > > > > > > > > already avoided everywhere, it is interesting to
-> > > > > > > > > > know whether this work becomes a real exception or
-> > > > > > > > > > just requires a different mindset.         
-> > > > > > > > > From VFIO p.o.v. the IOMMU UAPI data is opaque, it
-> > > > > > > > > only needs to do two things:
-> > > > > > > > > 1. is the UAPI compatible?
-> > > > > > > > > 2. what is the size to copy?
-> > > > > > > > >
-> > > > > > > > > If you look at the version number, this is really a
-> > > > > > > > > "version as size" lookup, as provided by the helper
-> > > > > > > > > function in this patch. An example can be the newly
-> > > > > > > > > introduced clone3 syscall.
-> > > > > > > > > https://lwn.net/Articles/792628/ In clone3, new
-> > > > > > > > > version must have new size. The slight difference
-> > > > > > > > > here is that, unlike clone3, we have multiple data
-> > > > > > > > > structures instead of a single struct clone_args {}.
-> > > > > > > > > And each struct has flags to enumerate its contents
-> > > > > > > > > besides size.            
-> > > > > > > >
-> > > > > > > > Thanks for providing that link. However clone3 doesn't
-> > > > > > > > include a version field to do "version as size" lookup.
-> > > > > > > > Instead, as you said, it includes a size parameter which
-> > > > > > > > sounds like the option 3 (argsz) listed below.
-> > > > > > > >            
-> > > > > > > Right, there is no version in clone3. size = version. I
-> > > > > > > view this as a 1:1 lookup.
-> > > > > > >             
-> > > > > > > > >
-> > > > > > > > > Besides breaching data abstraction, if VFIO has to
-> > > > > > > > > check IOMMU flags to determine the sizes, it has many
-> > > > > > > > > combinations.
-> > > > > > > > >
-> > > > > > > > > We also separate the responsibilities into two parts
-> > > > > > > > > 1. compatibility - version, size by VFIO
-> > > > > > > > > 2. sanity check - capability flags - by
-> > > > > > > > > IOMMU            
-> > > > > > > >
-> > > > > > > > I feel argsz+flags approach can perfectly meet above
-> > > > > > > > requirement. The userspace set the size and flags for
-> > > > > > > > whatever capabilities it uses, and VFIO simply copies
-> > > > > > > > the parameters by size and pass to IOMMU for further
-> > > > > > > > sanity check. Of course the assumption is that we do
-> > > > > > > > provide an interface for userspace to enumerate all
-> > > > > > > > supported capabilities.           
-> > > > > > > You cannot trust user for argsz. the size to be copied
-> > > > > > > from user must be based on knowledge in kernel. That is
-> > > > > > > why we have this version to size lookup.
-> > > > > > > 
-> > > > > > > In VFIO, the size to copy is based on knowledge of each
-> > > > > > > VFIO UAPI structures and VFIO flags. But here the flags
-> > > > > > > are IOMMU UAPI flags. As you pointed out in another
-> > > > > > > thread, VFIO is one user.            
-> > > > > > 
-> > > > > > If that is the case, can we let VFIO only copy its own UAPI
-> > > > > > fields while simply passing the user pointer of IOMMU UAPI
-> > > > > > structure to IOMMU driver for further size check and copy?
-> > > > > > Otherwise we are entering a dead end that VFIO doesn't want
-> > > > > > to parse a structure which is not defined by him while using
-> > > > > > version to represent the black box size is considered as a
-> > > > > > discarded scheme and doesn't scale well...         
-> > > > > I think this could be an other viable option. Let me try to
-> > > > > summarize since this has been a long discussion since the
-> > > > > original version.
-> > > > > 
-> > > > > Problem statements:
-> > > > > 1. When launching vIOMMU in the guest, how can we ensure the
-> > > > > host has compatible support upfront? as compared to fail
-> > > > > later.      
-> > > 
-> > > This sounds like a feature/extension interface, both KVM and vfio
-> > > have them to allow userspace to check support of specific
-> > > features. 
-> > Yes, the specific features are the APIs:
-> > - bind guest PASID
-> > - cache invalidation
-> > - page requests & response
-> >   
-> > > > > 2. As UAPI data gets extended (both in size and flags), how
-> > > > > can we know the size to copy      
-> > > 
-> > > For vfio we of course use the argsz/flags trick where the user
-> > > tells us how big the buffer is and flags in the header tell us
-> > > what fields beyond the base specification are enabled.  This can
-> > > get tricky to extend and there can be confusion whether a flag
-> > > indicates the presence of a field or the validity of a field.
-> > > 
-> > > We also have interfaces where the ioctl is a header plus a data
-> > > blob where flags tell us what the data is.  These can serve
-> > > double duty as a extension check too as we've done for
-> > > VFIO_DEVICE_FEATURE.  This doesn't really support extension of a
-> > > defined feature though, rather we'd be more likely to create a
-> > > set of flags that indicate the data object is feature-v2 and
-> > > redefine the structure, or of course we revisit the entire
-> > > featuring question within the structure of that data blob.
-> > > 
-> > > We also implement capability chains, though they're more meant for
-> > > passing data to the user, where the user provides a buffer and we
-> > > link capabilities together within that buffer for the user to
-> > > walk.  We've defined a mechanism through -ENOSPC and argsz to
-> > > tell the user how large a buffer is necessary.  I dare mention we
-> > > have a version per capability as these are largely modeled after
-> > > capability chains in PCI config space.  We haven't actually
-> > > incremented any versions, but I imagine we'd do so like PCI,
-> > > maintaining backwards compatibility and only defining unused bits
-> > > and adding fields as the version increases. 
-> > I guess capability chain is more suitable since the IOCTL uses
-> > container FD instead of device FD in VFIO_DEVICE_FEATURE?
-> > 
-> > We can give that a try by treating IOMMU UAPIs as capabilities. That
-> > would address problem #1. We really need to check compatibility
-> > upfront in that there is no way to fail some of the UAPIs. e.g.
-> > unbind guest PASID, cache invalidation.
-> >   
-> > > Is the objection to a global version or to any version fields?  I
-> > > don't really understand the global version, I'd think a mechanism
-> > > to check extensions plus a per structure flags/version would be
-> > > preferred.  The former should resolve how userspace can test
-> > > support for features requiring multiple interfaces.    
-> > Currently we already have individual version & flags per UAPI data.
-> > The reason why I introduced a global/unifier is to simplify the
-> > compatibility checking. Global version is optional.
-> > With individual version & flags, user may have to keep track of
-> > combinations of per structure versions.  
-> 
-> A user would only need to meet the minimum uapi matching the feature
-> they want to support, right?
-> 
-Yes, then no need for checking all combinations. I guess validation
-cases have to cover all legal combinations, but not an issue.
+This definition of what the phandle argument means...
 
-> > >  A global version also
-> > > implies that we're only ever adding features and never removing.
-> > > For example, feature Foo is added in version 4, but it's replaced
-> > > by feature Bar in version 5, now userspace can't simply test
-> > > version >= 4 must include feature Foo.
-> > >     
-> > Yes, this is why I was hoping to stick with the rule: open for
-> > extension, closed to modification.
-> > It also makes the code backward compatible easy since there old code
-> > would have no change when adding new features.  
-> 
-> But we need a way to deprecate things.  The version interface is not
-> good for that.
-> 
-Agreed, flags are good for deprecation.
+[...]
+> +  '#iommu-cells':
+> +    const: 1
+ > +
 
-> > > It seems to me that version and flags can also be complimentary,
-> > > for example a field might be defined by a version but a flag could
-> > > indicate if it's implemented.  With only the flag, we'd infer the
-> > > field from the flag, with only the version we'd need to assume the
-> > > field is always implemented.  So I have a hard time making a
-> > > blanket statement that all versions fields should be avoided.
-> > >      
-> > > > > 3. Maintain backward compatibility while allowing extensions?
-> > > > > 
-> > > > > I think we all agreed that using flags (capability or types)
-> > > > > is the way to address #3. As Christoph pointed out, version
-> > > > > number should not be used for this purpose.
-> > > > > 
-> > > > > So for problem 1 & 2, we have the following options:
-> > > > > 1. Have a version-size mapping as proposed in this set. VFIO
-> > > > > copies from user the correct size based on version-type
-> > > > > lookup. Processing of the data is based on flags in IOMMU
-> > > > > driver.
-> > > > > 
-> > > > > 2. VFIO copy its own minsz then pass the user pointer to IOMMU
-> > > > > driver for further copy_from_user based on flags. (by Kevin)
-> > > > > 
-> > > > > 3. Adopt VFIO argsz scheme, caller fills in argsz for the
-> > > > > offset the variable size union. VFIO do not check argsz in
-> > > > > that it requires IOMMU specific knowledge. IOMMU driver Use
-> > > > > flags to handle the variable size.(by Alex). I think this
-> > > > > what we have in Yi's VFIO & QEMU patch. argsz filled by QEMU
-> > > > > includes bind_data.
-> > > > > 
-> > > > > 4. Do not use a unified version, have a fixed size of all UAPI
-> > > > > structures, padding in struct and union. (Wasteful, not
-> > > > > preferred per V1 discussion)
-> > > > > 
-> > > > > For both 2 & 3, a unified version is not used, each API
-> > > > > treated separately. vIOMMU will be launched w/o assurance of
-> > > > > compatibility of all APIs. Fault handling may be more complex
-> > > > > in normal operations.
-> > > > > 
-> > > > > Appreciate everyone's input. Joerg and Alex, could you help to
-> > > > > make a decision here?      
-> > > 
-> > > As above, I think using a global API version number to imply
-> > > support for a feature is doomed to fail, we should instead expose
-> > > an interface to check for specific features.    
-> > I agree. I feel we can use the capability chain at container level
-> > as you mentioned, right?  
-> 
-> We could either do a capability chain on the IOMMU_GET_INFO ioctl or
-> we have the CHECK_EXTENSION ioctl.  The latter is quite a bit easier
-> to implement, but limited in what it can expose and the semantics
-> around checking extensions before vs after an IOMMU model is set can
-> be confusing.  I didn't have a strong preference between them when
-> suggesting Kirti use one of these to indicate dirty page tracking, but
-> it would be nice if both features used the same mechanism
-> 
-Sounds good. Just to clarify, similar to Yi's patch that uses
-CHECK_EXTENSION
-https://lkml.org/lkml/2020/3/22/109
+...deserves to be captured in a description here.
 
-But instead of checking for the global UAPI version, we check for each
-feature. i.e.
-diff --git a/include/uapi/linux/vfio.h b/include/uapi/linux/vfio.h
-index b959d0a37c4f..639e3c970b31 100644
---- a/include/uapi/linux/vfio.h
-+++ b/include/uapi/linux/vfio.h
-@@ -46,6 +46,9 @@
-  * code will taint the host kernel and should be used with extrem
-  */
- #define VFIO_NOIOMMU_IOMMU             8
-+#define VFIO_IOMMU_BIND_GPASID         9
-+#define VFIO_IOMMU_INVALIDATE          10
-+#define VFIO_IOMMU_PAGE_REQUEST        11
-
-Applications such as QEMU would include uapi/iommu.h, which has the
-IOMMU UAPI extensions defined.
-e.g.
-#define IOMMU_GPASID_BIND_VERSION_1
-
-When VM starts, it will check all uAPI extensions returned by the
-kernel against what is in its header, e.g.
-
-extension = ioctl(s->container, VFIO_CHECK_EXTENSION,
-VFIO_IOMMU_BIND_GPASID);
-if (extension >= IOMMU_GPASID_BIND_VERSION_1) {
-	/* Kernel has newer extensions, we are good */
-} else {
-	stop_viommu();
-}
-
-> > >  In any of the proposed solutions, the
-> > > IOMMU driver is ultimately responsible for validating the user
-> > > data, so do we want vfio performing the copy_from_user() to an
-> > > object that could later be assumed to be sanitized, or should
-> > > vfio just pass a user pointer to make it obvious that the
-> > > consumer is responsible for all the user protections?  Seems like
-> > > the latter.    
-> > I like the latter as well.
-> >   
-> > >  That still really
-> > > doesn't address what's in that user data blob yet, but the vfio
-> > > interface could be:
-> > > 
-> > > struct {
-> > > 	__u32 argsz;
-> > > 	__u32 flags;
-> > > 	__u8  data[];
-> > > }
-> > > 
-> > > Where flags might be partitioned like we do for DEVICE_FEATURE to
-> > > indicate the format of data and what vfio should do with it, and
-> > > data might simply be defined as a (__u64 __user *).
-> > >     
-> > So, __user * will be passed to IOMMU driver if VFIO checks minsz
-> > include flags and they are valid.
-> > IOMMU driver can copy the rest based on the mandatory version/minsz
-> > and flags in the IOMMU uAPI structs.
-> > Does it sound right? This is really choice #2.  
-> 
-> Sounds like each IOMMU UAPI struct just needs to have an embedded size
-> and flags field, but yes.
-> 
-Yes, an argsz field can be added to each UAPI. There are already flags
-or the equivalent. IOMMU driver can process the __user * based on the
-argsz, flags, check argsz against offsetofend(iommu_uapi_struct,
-last_element), etc.;
-
-> > > This user pointer would then likely be an IOMMU UAPI struct, so
-> > > I've only just gotten back the the IOMMU UAPI question at hand,
-> > > but I don't really see the disadvantage to including both version
-> > > and flags fields per structure.  Perhaps this is choice 1. above,
-> > > but with a version at a per structure level indicating the
-> > > backwards compatible size and layout of the structure and flags
-> > > being used to indicate support for optional features within those
-> > > fields.    
-> > 
-> > Per structure version & flags is what we have in the mainline. It
-> > applies to both choice 1 & 2. The global/unified version is just a
-> > re-interpretation of the versions such that we have a monolithic
-> > incrementing version. Again, global version is optional.
-> >   
-> > >  Is a version field still taboo
-> > > for such a use case?  Thanks,    
-> > 
-> > I will leave that to Christoph :)  
-> 
-> Looks like if we drop the global version in favor of an
-> extension/feature check and embed size and flags fields in each IOMMU
-> UAPI struct, Christoph will be satisfied.  Thanks,
-> 
-Agreed, we will work towards it. Thanks a lot!
-
-> Alex
-> 
+Robin.
 _______________________________________________
 iommu mailing list
 iommu@lists.linux-foundation.org
