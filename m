@@ -6,66 +6,66 @@ X-Spam-Status: No, score=-9.8 required=3.0 tests=DKIM_INVALID,DKIM_SIGNED,
 	INCLUDES_PATCH,MAILING_LIST_MULTI,SIGNED_OFF_BY,SPF_HELO_NONE,SPF_PASS,
 	USER_AGENT_GIT autolearn=ham autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 3CB40C2BB55
-	for <iommu@archiver.kernel.org>; Wed, 15 Apr 2020 11:37:07 +0000 (UTC)
-Received: from silver.osuosl.org (smtp3.osuosl.org [140.211.166.136])
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 26CD4C38A2D
+	for <iommu@archiver.kernel.org>; Wed, 15 Apr 2020 11:37:09 +0000 (UTC)
+Received: from hemlock.osuosl.org (smtp2.osuosl.org [140.211.166.133])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by mail.kernel.org (Postfix) with ESMTPS id 137A321556
-	for <iommu@archiver.kernel.org>; Wed, 15 Apr 2020 11:37:07 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTPS id F05E7214D8
+	for <iommu@archiver.kernel.org>; Wed, 15 Apr 2020 11:37:08 +0000 (UTC)
 Authentication-Results: mail.kernel.org;
-	dkim=fail reason="signature verification failed" (1024-bit key) header.d=kernel.org header.i=@kernel.org header.b="bFDsjggX"
-DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 137A321556
+	dkim=fail reason="signature verification failed" (1024-bit key) header.d=kernel.org header.i=@kernel.org header.b="JeB0uawF"
+DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org F05E7214D8
 Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=kernel.org
 Authentication-Results: mail.kernel.org; spf=pass smtp.mailfrom=iommu-bounces@lists.linux-foundation.org
 Received: from localhost (localhost [127.0.0.1])
-	by silver.osuosl.org (Postfix) with ESMTP id E9A5C204F6;
-	Wed, 15 Apr 2020 11:37:06 +0000 (UTC)
+	by hemlock.osuosl.org (Postfix) with ESMTP id D715B86EC8;
+	Wed, 15 Apr 2020 11:37:08 +0000 (UTC)
+X-Virus-Scanned: amavisd-new at osuosl.org
+Received: from hemlock.osuosl.org ([127.0.0.1])
+	by localhost (.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
+	with ESMTP id 9X6Mu1zlNLD5; Wed, 15 Apr 2020 11:37:08 +0000 (UTC)
+Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [140.211.9.56])
+	by hemlock.osuosl.org (Postfix) with ESMTP id 61FBF87A80;
+	Wed, 15 Apr 2020 11:37:08 +0000 (UTC)
+Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
+	by lists.linuxfoundation.org (Postfix) with ESMTP id 4FCF8C089E;
+	Wed, 15 Apr 2020 11:37:08 +0000 (UTC)
+Received: from silver.osuosl.org (smtp3.osuosl.org [140.211.166.136])
+ by lists.linuxfoundation.org (Postfix) with ESMTP id 8A866C0172
+ for <iommu@lists.linux-foundation.org>; Wed, 15 Apr 2020 11:37:06 +0000 (UTC)
+Received: from localhost (localhost [127.0.0.1])
+ by silver.osuosl.org (Postfix) with ESMTP id 6E07D204FB
+ for <iommu@lists.linux-foundation.org>; Wed, 15 Apr 2020 11:37:06 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
 Received: from silver.osuosl.org ([127.0.0.1])
-	by localhost (.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
-	with ESMTP id qJeGgikPyz-C; Wed, 15 Apr 2020 11:37:06 +0000 (UTC)
-Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [140.211.9.56])
-	by silver.osuosl.org (Postfix) with ESMTP id 379E520527;
-	Wed, 15 Apr 2020 11:37:06 +0000 (UTC)
-Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
-	by lists.linuxfoundation.org (Postfix) with ESMTP id 2061BC089E;
-	Wed, 15 Apr 2020 11:37:06 +0000 (UTC)
-Received: from whitealder.osuosl.org (smtp1.osuosl.org [140.211.166.138])
- by lists.linuxfoundation.org (Postfix) with ESMTP id 9D98CC0172
- for <iommu@lists.linux-foundation.org>; Wed, 15 Apr 2020 11:37:04 +0000 (UTC)
-Received: from localhost (localhost [127.0.0.1])
- by whitealder.osuosl.org (Postfix) with ESMTP id 87F3386E82
- for <iommu@lists.linux-foundation.org>; Wed, 15 Apr 2020 11:37:04 +0000 (UTC)
-X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from whitealder.osuosl.org ([127.0.0.1])
  by localhost (.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
- with ESMTP id 70VEJsW7D8yK for <iommu@lists.linux-foundation.org>;
- Wed, 15 Apr 2020 11:37:04 +0000 (UTC)
+ with ESMTP id HOEiLrestaNE for <iommu@lists.linux-foundation.org>;
+ Wed, 15 Apr 2020 11:37:05 +0000 (UTC)
 X-Greylist: domain auto-whitelisted by SQLgrey-1.7.6
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
- by whitealder.osuosl.org (Postfix) with ESMTPS id 0704986FA6
- for <iommu@lists.linux-foundation.org>; Wed, 15 Apr 2020 11:37:04 +0000 (UTC)
+ by silver.osuosl.org (Postfix) with ESMTPS id 407D5204F6
+ for <iommu@lists.linux-foundation.org>; Wed, 15 Apr 2020 11:37:05 +0000 (UTC)
 Received: from sasha-vm.mshome.net (c-73-47-72-35.hsd1.nh.comcast.net
  [73.47.72.35])
  (using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
  (No client certificate requested)
- by mail.kernel.org (Postfix) with ESMTPSA id 259C82137B;
- Wed, 15 Apr 2020 11:37:03 +0000 (UTC)
+ by mail.kernel.org (Postfix) with ESMTPSA id 41E6620857;
+ Wed, 15 Apr 2020 11:37:04 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
- s=default; t=1586950623;
- bh=fGz7a64lWYFN33TvpNVh9lbizXvizlbW6RS4o/D26oI=;
+ s=default; t=1586950625;
+ bh=0NX5m65ZX918gnHGu6BeQVuUAFP1/jHZfec34UtVYrg=;
  h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
- b=bFDsjggXoiq2Qcu9kT9/elRYw5DSqAcmNMVQBw8/zOBhVdwVL+IUCMW9MApYa1/j6
- JRguECdlP4kmQlQ9iNPhl/dishBje828JfO26iCbMF5nRS1sgeC1HMX0UXkrYL2FKU
- XVxu3yS+r6lXbNaF5SFVhjDQggJO37ibKrfqQB9Y=
+ b=JeB0uawFSum/O1VKR6XkQGVfWRquKsYQ7Qo+pd0HiZPqSi1EG9QIpPNxR8BzVfEIX
+ 2V2LXiIo7j+VVrBU95cbZD6P6ZH/oQijxkRgSvU8v95OFsIIQB/BmH56yQdzJhm2Qs
+ X+sZERbfVx0ECT3i+SXysjFKP0njhP/KTz3sUTcI=
 From: Sasha Levin <sashal@kernel.org>
 To: linux-kernel@vger.kernel.org,
 	stable@vger.kernel.org
-Subject: [PATCH AUTOSEL 5.6 115/129] iommu/vt-d: Silence RCU-list debugging
- warning in dmar_find_atsr()
-Date: Wed, 15 Apr 2020 07:34:30 -0400
-Message-Id: <20200415113445.11881-115-sashal@kernel.org>
+Subject: [PATCH AUTOSEL 5.6 116/129] iommu/vt-d: Fix page request descriptor
+ size
+Date: Wed, 15 Apr 2020 07:34:31 -0400
+Message-Id: <20200415113445.11881-116-sashal@kernel.org>
 X-Mailer: git-send-email 2.20.1
 In-Reply-To: <20200415113445.11881-1-sashal@kernel.org>
 References: <20200415113445.11881-1-sashal@kernel.org>
@@ -91,53 +91,38 @@ Content-Transfer-Encoding: 7bit
 Errors-To: iommu-bounces@lists.linux-foundation.org
 Sender: "iommu" <iommu-bounces@lists.linux-foundation.org>
 
-From: Qian Cai <cai@lca.pw>
+From: Jacob Pan <jacob.jun.pan@linux.intel.com>
 
-[ Upstream commit c6f4ebdeba4cff590594df931ff1ee610c426431 ]
+[ Upstream commit 52355fb1919ef7ed9a38e0f3de6e928de1f57217 ]
 
-dmar_find_atsr() calls list_for_each_entry_rcu() outside of an RCU read
-side critical section but with dmar_global_lock held. Silence this
-false positive.
+Intel VT-d might support PRS (Page Reqest Support) when it's
+running in the scalable mode. Each page request descriptor
+occupies 32 bytes and is 32-bytes aligned. The page request
+descriptor offset mask should be 32-bytes aligned.
 
- drivers/iommu/intel-iommu.c:4504 RCU-list traversed in non-reader section!!
- 1 lock held by swapper/0/1:
- #0: ffffffff9755bee8 (dmar_global_lock){+.+.}, at: intel_iommu_init+0x1a6/0xe19
-
- Call Trace:
-  dump_stack+0xa4/0xfe
-  lockdep_rcu_suspicious+0xeb/0xf5
-  dmar_find_atsr+0x1ab/0x1c0
-  dmar_parse_one_atsr+0x64/0x220
-  dmar_walk_remapping_entries+0x130/0x380
-  dmar_table_init+0x166/0x243
-  intel_iommu_init+0x1ab/0xe19
-  pci_iommu_init+0x1a/0x44
-  do_one_initcall+0xae/0x4d0
-  kernel_init_freeable+0x412/0x4c5
-  kernel_init+0x19/0x193
-
-Signed-off-by: Qian Cai <cai@lca.pw>
-Acked-by: Lu Baolu <baolu.lu@linux.intel.com>
+Fixes: 5b438f4ba315d ("iommu/vt-d: Support page request in scalable mode")
+Signed-off-by: Lu Baolu <baolu.lu@linux.intel.com>
+Signed-off-by: Liu Yi L <yi.l.liu@intel.com>
+Signed-off-by: Jacob Pan <jacob.jun.pan@linux.intel.com>
 Signed-off-by: Joerg Roedel <jroedel@suse.de>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/iommu/intel-iommu.c | 3 ++-
- 1 file changed, 2 insertions(+), 1 deletion(-)
+ drivers/iommu/intel-svm.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-diff --git a/drivers/iommu/intel-iommu.c b/drivers/iommu/intel-iommu.c
-index 4be5494786918..ef0a5246700e5 100644
---- a/drivers/iommu/intel-iommu.c
-+++ b/drivers/iommu/intel-iommu.c
-@@ -4501,7 +4501,8 @@ static struct dmar_atsr_unit *dmar_find_atsr(struct acpi_dmar_atsr *atsr)
- 	struct dmar_atsr_unit *atsru;
- 	struct acpi_dmar_atsr *tmp;
+diff --git a/drivers/iommu/intel-svm.c b/drivers/iommu/intel-svm.c
+index fc7d78876e021..2998418f0a383 100644
+--- a/drivers/iommu/intel-svm.c
++++ b/drivers/iommu/intel-svm.c
+@@ -531,7 +531,7 @@ struct page_req_dsc {
+ 	u64 priv_data[2];
+ };
  
--	list_for_each_entry_rcu(atsru, &dmar_atsr_units, list) {
-+	list_for_each_entry_rcu(atsru, &dmar_atsr_units, list,
-+				dmar_rcu_check()) {
- 		tmp = (struct acpi_dmar_atsr *)atsru->hdr;
- 		if (atsr->segment != tmp->segment)
- 			continue;
+-#define PRQ_RING_MASK ((0x1000 << PRQ_ORDER) - 0x10)
++#define PRQ_RING_MASK	((0x1000 << PRQ_ORDER) - 0x20)
+ 
+ static bool access_error(struct vm_area_struct *vma, struct page_req_dsc *req)
+ {
 -- 
 2.20.1
 
