@@ -2,99 +2,107 @@ Return-Path: <SRS0=YkH/=57=lists.linux-foundation.org=iommu-bounces@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-8.1 required=3.0 tests=DKIM_INVALID,DKIM_SIGNED,
-	HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_PATCH,MAILING_LIST_MULTI,SIGNED_OFF_BY,
-	SPF_HELO_NONE,SPF_PASS,USER_AGENT_SANE_1 autolearn=ham autolearn_force=no
-	version=3.4.0
+X-Spam-Status: No, score=-0.6 required=3.0 tests=DKIM_INVALID,DKIM_SIGNED,
+	HEADER_FROM_DIFFERENT_DOMAINS,MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS
+	autolearn=no autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 3CCEEC2BB1D
-	for <iommu@archiver.kernel.org>; Wed, 15 Apr 2020 00:05:09 +0000 (UTC)
-Received: from whitealder.osuosl.org (smtp1.osuosl.org [140.211.166.138])
+	by smtp.lore.kernel.org (Postfix) with ESMTP id BAAA5C2BB1D
+	for <iommu@archiver.kernel.org>; Wed, 15 Apr 2020 00:36:13 +0000 (UTC)
+Received: from hemlock.osuosl.org (smtp2.osuosl.org [140.211.166.133])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by mail.kernel.org (Postfix) with ESMTPS id 0D85420771
-	for <iommu@archiver.kernel.org>; Wed, 15 Apr 2020 00:05:08 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTPS id 67C3320784
+	for <iommu@archiver.kernel.org>; Wed, 15 Apr 2020 00:36:13 +0000 (UTC)
 Authentication-Results: mail.kernel.org;
-	dkim=fail reason="signature verification failed" (2048-bit key) header.d=google.com header.i=@google.com header.b="S+BkzuaF"
-DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 0D85420771
-Authentication-Results: mail.kernel.org; dmarc=none (p=none dis=none) header.from=lists.linux-foundation.org
+	dkim=fail reason="signature verification failed" (1024-bit key) header.d=redhat.com header.i=@redhat.com header.b="Y0tiKxEa"
+DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 67C3320784
+Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=redhat.com
 Authentication-Results: mail.kernel.org; spf=pass smtp.mailfrom=iommu-bounces@lists.linux-foundation.org
 Received: from localhost (localhost [127.0.0.1])
-	by whitealder.osuosl.org (Postfix) with ESMTP id E6E9786D13;
-	Wed, 15 Apr 2020 00:05:08 +0000 (UTC)
+	by hemlock.osuosl.org (Postfix) with ESMTP id 34BB887E6F;
+	Wed, 15 Apr 2020 00:36:13 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from whitealder.osuosl.org ([127.0.0.1])
+Received: from hemlock.osuosl.org ([127.0.0.1])
 	by localhost (.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
-	with ESMTP id gHXYiJ0flzik; Wed, 15 Apr 2020 00:05:08 +0000 (UTC)
+	with ESMTP id hr3TdAb5MKGB; Wed, 15 Apr 2020 00:36:12 +0000 (UTC)
 Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [140.211.9.56])
-	by whitealder.osuosl.org (Postfix) with ESMTP id 7EEA486C1A;
-	Wed, 15 Apr 2020 00:05:08 +0000 (UTC)
+	by hemlock.osuosl.org (Postfix) with ESMTP id 319E487E56;
+	Wed, 15 Apr 2020 00:36:12 +0000 (UTC)
 Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
-	by lists.linuxfoundation.org (Postfix) with ESMTP id DFB64C089E;
-	Wed, 15 Apr 2020 00:05:07 +0000 (UTC)
-Received: from whitealder.osuosl.org (smtp1.osuosl.org [140.211.166.138])
- by lists.linuxfoundation.org (Postfix) with ESMTP id E01D8C0172
- for <iommu@lists.linux-foundation.org>; Wed, 15 Apr 2020 00:05:04 +0000 (UTC)
+	by lists.linuxfoundation.org (Postfix) with ESMTP id 21484C089E;
+	Wed, 15 Apr 2020 00:36:12 +0000 (UTC)
+Received: from fraxinus.osuosl.org (smtp4.osuosl.org [140.211.166.137])
+ by lists.linuxfoundation.org (Postfix) with ESMTP id 8B610C0172
+ for <iommu@lists.linux-foundation.org>; Wed, 15 Apr 2020 00:36:10 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
- by whitealder.osuosl.org (Postfix) with ESMTP id DB13886B94
- for <iommu@lists.linux-foundation.org>; Wed, 15 Apr 2020 00:05:04 +0000 (UTC)
+ by fraxinus.osuosl.org (Postfix) with ESMTP id 755E185D2B
+ for <iommu@lists.linux-foundation.org>; Wed, 15 Apr 2020 00:36:10 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from whitealder.osuosl.org ([127.0.0.1])
+Received: from fraxinus.osuosl.org ([127.0.0.1])
  by localhost (.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
- with ESMTP id VbncG4Qpy23R for <iommu@lists.linux-foundation.org>;
- Wed, 15 Apr 2020 00:05:04 +0000 (UTC)
+ with ESMTP id zSxz3HqKDhF6 for <iommu@lists.linux-foundation.org>;
+ Wed, 15 Apr 2020 00:36:09 +0000 (UTC)
 X-Greylist: domain auto-whitelisted by SQLgrey-1.7.6
-Received: from mail-pf1-f195.google.com (mail-pf1-f195.google.com
- [209.85.210.195])
- by whitealder.osuosl.org (Postfix) with ESMTPS id 55C6E86D13
- for <iommu@lists.linux-foundation.org>; Wed, 15 Apr 2020 00:05:04 +0000 (UTC)
-Received: by mail-pf1-f195.google.com with SMTP id x3so715310pfp.7
- for <iommu@lists.linux-foundation.org>; Tue, 14 Apr 2020 17:05:04 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=google.com; s=20161025;
- h=date:from:to:cc:subject:in-reply-to:message-id:references
- :user-agent:mime-version;
- bh=ZqTkeiwENaudq21J8vTW1kd2VtXPsvTLGQP3XXO1NHU=;
- b=S+BkzuaFI/ql7zPm2jJufYxYG9LrRhNZMXcnwMDr7r8jFf1R3XOoh24P7ornVUb67I
- YnoIPO/xfD8edhC3LLxFzpaTtlRpgEOytqa8xPXxxqKqorQUvfz0wf8ZHtB5uGv0ZYVz
- qCBlHrTG4aJSE5yGfJsI37wsCiRMfGfxBRT2z9h5kbsqd+JhBFOC8+oF0kRc1t+emm+L
- msn8bCFxkGC6BDW+UG46VXrTXMQb6xMS6pbTr3Ee0LU4xkK3pHGDVgEBxgmItKzP8slj
- NK6YH0jTf2gwTzf64e5XUml8dQBx8sF1TInfy1UzMxRODBDmXLPg3IXznuV4qTtR0aKU
- wt8g==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
- d=1e100.net; s=20161025;
- h=x-gm-message-state:date:from:to:cc:subject:in-reply-to:message-id
- :references:user-agent:mime-version;
- bh=ZqTkeiwENaudq21J8vTW1kd2VtXPsvTLGQP3XXO1NHU=;
- b=XxzGEdRzdjMcwVqBwdUvH2nvvKACL9yriZNRal0TxYXFJFxIcsTY5Pvvhg2aSIv6I9
- xg2EpRebTa+dIRvlvJMREDip6tvbjeLhFTLmb+IX4mMY/RDlojfoT6I9/jNdqZc/3vYN
- FCcEfmazR1+dzTaqJCriVnmvqiQbhgeEGmsvUj/Wvlv2fbuiCAl2fMhzw0an+ZLEStW3
- 4bi0aR/4EjhyvaBvt0egppGTh/6+5HODNYaj6VzVJfQ/JysuFc2CAxGEPsx5TfPJY89a
- wnximQ+OwQO/h/BQQ3dFic74AmWmG6FlGLLuFTn6IUwtPk40EzgsjOWAlDlVDWtaXR6X
- +j0g==
-X-Gm-Message-State: AGi0PubMdGRQz5qRlX2ca4RbkAfXybmB86iYgLMkCcVliyYoO+zgkPdj
- KmWIhUut9Qjs5XWOaPVpImcNHg==
-X-Google-Smtp-Source: APiQypL9+7skSK7zQht9VcXx962nONsEqOmoABTSyGj/fSCQq8rGrYJUyLaBuqdKiaF9VGYSi3ZrQg==
-X-Received: by 2002:a63:ff49:: with SMTP id s9mr5626054pgk.46.1586909103760;
- Tue, 14 Apr 2020 17:05:03 -0700 (PDT)
-Received: from [2620:15c:17:3:3a5:23a7:5e32:4598]
- ([2620:15c:17:3:3a5:23a7:5e32:4598])
- by smtp.gmail.com with ESMTPSA id d203sm6772412pfd.79.2020.04.14.17.05.02
- (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
- Tue, 14 Apr 2020 17:05:03 -0700 (PDT)
-Date: Tue, 14 Apr 2020 17:05:02 -0700 (PDT)
-X-X-Sender: rientjes@chino.kir.corp.google.com
-To: Christoph Hellwig <hch@lst.de>, Tom Lendacky <thomas.lendacky@amd.com>
-Subject: [patch 7/7] dma-pool: scale the default DMA coherent pool size with
- memory capacity
-In-Reply-To: <alpine.DEB.2.22.394.2004141700480.68516@chino.kir.corp.google.com>
-Message-ID: <alpine.DEB.2.22.394.2004141704330.68516@chino.kir.corp.google.com>
-References: <alpine.DEB.2.22.394.2004141700480.68516@chino.kir.corp.google.com>
-User-Agent: Alpine 2.22 (DEB 394 2020-01-19)
+Received: from us-smtp-delivery-1.mimecast.com (us-smtp-1.mimecast.com
+ [205.139.110.61])
+ by fraxinus.osuosl.org (Postfix) with ESMTPS id 02D9285CFF
+ for <iommu@lists.linux-foundation.org>; Wed, 15 Apr 2020 00:36:08 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+ s=mimecast20190719; t=1586910967;
+ h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+ to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+ content-transfer-encoding:content-transfer-encoding:
+ in-reply-to:in-reply-to:references:references;
+ bh=786rE4ds0gc5WHCPY+q2eHQ8wC/MbWgvAdjaVMoQMSc=;
+ b=Y0tiKxEaZFr8vcojtlEsScQvhMKk9OUzGP9xQ5Gv9/zBvCVNUt5IdSxQ1tmDquNKUdkT89
+ eSMsxKoU+nrR8O2v1349DK0f4Wmr9ZSNoqcz/ZvHboUIfnbDsIylKUyOU8ttcq7n1Mw95b
+ zDjHBe/qCiT9hSMLRcsf7FJFoIS1U4U=
+Received: from mimecast-mx01.redhat.com (mimecast-mx01.redhat.com
+ [209.132.183.4]) (Using TLS) by relay.mimecast.com with ESMTP id
+ us-mta-122-kNJ3Cwp3NFe9fEEBqLLOhA-1; Tue, 14 Apr 2020 20:36:05 -0400
+X-MC-Unique: kNJ3Cwp3NFe9fEEBqLLOhA-1
+Received: from smtp.corp.redhat.com (int-mx04.intmail.prod.int.phx2.redhat.com
+ [10.5.11.14])
+ (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
+ (No client certificate requested)
+ by mimecast-mx01.redhat.com (Postfix) with ESMTPS id ACBE813F9;
+ Wed, 15 Apr 2020 00:36:03 +0000 (UTC)
+Received: from x1.home (ovpn-112-162.phx2.redhat.com [10.3.112.162])
+ by smtp.corp.redhat.com (Postfix) with ESMTP id A33425D9E5;
+ Wed, 15 Apr 2020 00:36:02 +0000 (UTC)
+Date: Tue, 14 Apr 2020 18:36:02 -0600
+From: Alex Williamson <alex.williamson@redhat.com>
+To: "Tian, Kevin" <kevin.tian@intel.com>
+Subject: Re: [PATCH v1 2/2] vfio/pci: Emulate PASID/PRI capability for VFs
+Message-ID: <20200414183602.7de084b0@x1.home>
+In-Reply-To: <AADFC41AFE54684AB9EE6CBC0274A5D19D81F946@SHSMSX104.ccr.corp.intel.com>
+References: <1584880394-11184-1-git-send-email-yi.l.liu@intel.com>
+ <1584880394-11184-3-git-send-email-yi.l.liu@intel.com>
+ <20200402165954.48d941ee@w520.home>
+ <A2975661238FB949B60364EF0F2C25743A2204FE@SHSMSX104.ccr.corp.intel.com>
+ <20200403112545.6c115ba3@w520.home>
+ <AADFC41AFE54684AB9EE6CBC0274A5D19D80E13D@SHSMSX104.ccr.corp.intel.com>
+ <20200407095801.648b1371@w520.home>
+ <20200408040021.GS67127@otc-nc-03>
+ <20200408101940.3459943d@w520.home>
+ <20200413031043.GA18183@araj-mobl1.jf.intel.com>
+ <AADFC41AFE54684AB9EE6CBC0274A5D19D81A31F@SHSMSX104.ccr.corp.intel.com>
+ <20200413132122.46825849@w520.home>
+ <AADFC41AFE54684AB9EE6CBC0274A5D19D81D376@SHSMSX104.ccr.corp.intel.com>
+ <20200413212836.117b4c86@x1.home>
+ <AADFC41AFE54684AB9EE6CBC0274A5D19D81D456@SHSMSX104.ccr.corp.intel.com>
+ <20200414092401.039edef6@w520.home>
+ <AADFC41AFE54684AB9EE6CBC0274A5D19D81F946@SHSMSX104.ccr.corp.intel.com>
+Organization: Red Hat
 MIME-Version: 1.0
-Cc: x86@kernel.org, Brijesh Singh <brijesh.singh@amd.com>,
- Jon Grimm <jon.grimm@amd.com>, linux-kernel@vger.kernel.org,
- iommu@lists.linux-foundation.org, Ingo Molnar <mingo@redhat.com>,
- Borislav Petkov <bp@alien8.de>, Thomas Gleixner <tglx@linutronix.de>
+X-Scanned-By: MIMEDefang 2.79 on 10.5.11.14
+Cc: "jean-philippe@linaro.org" <jean-philippe@linaro.org>, "Raj,
+ Ashok" <ashok.raj@intel.com>, "kvm@vger.kernel.org" <kvm@vger.kernel.org>,
+ "Tian, Jun J" <jun.j.tian@intel.com>,
+ "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
+ "iommu@lists.linux-foundation.org" <iommu@lists.linux-foundation.org>, Bjorn
+ Helgaas <bhelgaas@google.com>, "Sun, Yi Y" <yi.y.sun@intel.com>, "Wu,
+ Hao" <hao.wu@intel.com>
 X-BeenThere: iommu@lists.linux-foundation.org
 X-Mailman-Version: 2.1.15
 Precedence: list
@@ -107,66 +115,243 @@ List-Post: <mailto:iommu@lists.linux-foundation.org>
 List-Help: <mailto:iommu-request@lists.linux-foundation.org?subject=help>
 List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
  <mailto:iommu-request@lists.linux-foundation.org?subject=subscribe>
-From: David Rientjes via iommu <iommu@lists.linux-foundation.org>
-Reply-To: David Rientjes <rientjes@google.com>
 Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
 Errors-To: iommu-bounces@lists.linux-foundation.org
 Sender: "iommu" <iommu-bounces@lists.linux-foundation.org>
 
-When AMD memory encryption is enabled, some devices may use more than
-256KB/sec from the atomic pools.  It would be more appropriate to scale
-the default size based on memory capacity unless the coherent_pool
-option is used on the kernel command line.
+On Tue, 14 Apr 2020 23:57:33 +0000
+"Tian, Kevin" <kevin.tian@intel.com> wrote:
 
-This provides a slight optimization on initial expansion and is deemed
-appropriate due to the increased reliance on the atomic pools.  Note that
-the default size of 128KB per pool will normally be larger than the
-single coherent pool implementation since there are now up to three
-coherent pools (DMA, DMA32, and kernel).
+> > From: Alex Williamson <alex.williamson@redhat.com>
+> > Sent: Tuesday, April 14, 2020 11:24 PM
+> > 
+> > On Tue, 14 Apr 2020 03:42:42 +0000
+> > "Tian, Kevin" <kevin.tian@intel.com> wrote:
+> >   
+> > > > From: Alex Williamson <alex.williamson@redhat.com>
+> > > > Sent: Tuesday, April 14, 2020 11:29 AM
+> > > >
+> > > > On Tue, 14 Apr 2020 02:40:58 +0000
+> > > > "Tian, Kevin" <kevin.tian@intel.com> wrote:
+> > > >  
+> > > > > > From: Alex Williamson <alex.williamson@redhat.com>
+> > > > > > Sent: Tuesday, April 14, 2020 3:21 AM
+> > > > > >
+> > > > > > On Mon, 13 Apr 2020 08:05:33 +0000
+> > > > > > "Tian, Kevin" <kevin.tian@intel.com> wrote:
+> > > > > >  
+> > > > > > > > From: Tian, Kevin
+> > > > > > > > Sent: Monday, April 13, 2020 3:55 PM
+> > > > > > > >  
+> > > > > > > > > From: Raj, Ashok <ashok.raj@linux.intel.com>
+> > > > > > > > > Sent: Monday, April 13, 2020 11:11 AM
+> > > > > > > > >
+> > > > > > > > > On Wed, Apr 08, 2020 at 10:19:40AM -0600, Alex Williamson  
+> > wrote:  
+> > > > > > > > > > On Tue, 7 Apr 2020 21:00:21 -0700
+> > > > > > > > > > "Raj, Ashok" <ashok.raj@intel.com> wrote:
+> > > > > > > > > >  
+> > > > > > > > > > > Hi Alex
+> > > > > > > > > > >
+> > > > > > > > > > > + Bjorn  
+> > > > > > > > > >
+> > > > > > > > > >  + Don
+> > > > > > > > > >  
+> > > > > > > > > > > FWIW I can't understand why PCI SIG went different ways  
+> > with  
+> > > > ATS,  
+> > > > > > > > > > > where its enumerated on PF and VF. But for PASID and PRI its  
+> > > > only  
+> > > > > > > > > > > in PF.
+> > > > > > > > > > >
+> > > > > > > > > > > I'm checking with our internal SIG reps to followup on that.
+> > > > > > > > > > >
+> > > > > > > > > > > On Tue, Apr 07, 2020 at 09:58:01AM -0600, Alex Williamson  
+> > > > wrote:  
+> > > > > > > > > > > > > Is there vendor guarantee that hidden registers will locate  
+> > at  
+> > > > the  
+> > > > > > > > > > > > > same offset between PF and VF config space?  
+> > > > > > > > > > > >
+> > > > > > > > > > > > I'm not sure if the spec really precludes hidden registers,  
+> > but  
+> > > > the  
+> > > > > > > > > > > > fact that these registers are explicitly outside of the  
+> > capability  
+> > > > > > > > > > > > chain implies they're only intended for device specific use,  
+> > so  
+> > > > I'd  
+> > > > > > say  
+> > > > > > > > > > > > there are no guarantees about anything related to these  
+> > > > registers.  
+> > > > > > > > > > >
+> > > > > > > > > > > As you had suggested in the other thread, we could consider
+> > > > > > > > > > > using the same offset as in PF, but even that's a better guess
+> > > > > > > > > > > still not reliable.
+> > > > > > > > > > >
+> > > > > > > > > > > The other option is to maybe extend driver ops in the PF to  
+> > > > expose  
+> > > > > > > > > > > where the offsets should be. Sort of adding the quirk in the
+> > > > > > > > > > > implementation.
+> > > > > > > > > > >
+> > > > > > > > > > > I'm not sure how prevalent are PASID and PRI in VF devices. If  
+> > > > SIG is  
+> > > > > > > > > resisting  
+> > > > > > > > > > > making VF's first class citizen, we might ask them to add  
+> > some  
+> > > > > > verbiage  
+> > > > > > > > > > > to suggest leave the same offsets as PF open to help  
+> > emulation  
+> > > > > > software.  
+> > > > > > > > > >
+> > > > > > > > > > Even if we know where to expose these capabilities on the VF,  
+> > it's  
+> > > > not  
+> > > > > > > > > > clear to me how we can actually virtualize the capability itself.  
+> > If  
+> > > > > > > > > > the spec defines, for example, an enable bit as r/w then  
+> > software  
+> > > > that  
+> > > > > > > > > > interacts with that register expects the bit is settable.  There's  
+> > no  
+> > > > > > > > > > protocol for "try to set the bit and re-read it to see if the  
+> > hardware  
+> > > > > > > > > > accepted it".  Therefore a capability with a fixed enable bit
+> > > > > > > > > > representing the state of the PF, not settable by the VF, is
+> > > > > > > > > > disingenuous to the spec.  
+> > > > > > > > >
+> > > > > > > > > I think we are all in violent agreement. A lot of times the pci spec  
+> > > > gets  
+> > > > > > > > > defined several years ahead of real products and no one  
+> > > > remembers  
+> > > > > > > > > the justification on why they restricted things the way they did.
+> > > > > > > > >
+> > > > > > > > > Maybe someone early product wasn't quite exposing these  
+> > features  
+> > > > to  
+> > > > > > the  
+> > > > > > > > > VF
+> > > > > > > > > and hence the spec is bug compatible :-)
+> > > > > > > > >  
+> > > > > > > > > >
+> > > > > > > > > > If what we're trying to do is expose that PASID and PRI are  
+> > enabled  
+> > > > on  
+> > > > > > > > > > the PF to a VF driver, maybe duplicating the PF capabilities on  
+> > the  
+> > > > VF  
+> > > > > > > > > > without the ability to control it is not the right approach.  
+> > Maybe  
+> > > > we  
+> > > > > > > > >
+> > > > > > > > > As long as the capability enable is only provided when the PF has  
+> > > > > > enabled  
+> > > > > > > > > the feature. Then it seems the hardware seems to do the right  
+> > thing.  
+> > > > > > > > >
+> > > > > > > > > Assume we expose PASID/PRI only when PF has enabled it. It will  
+> > be  
+> > > > the  
+> > > > > > > > > case since the PF driver needs to exist, and IOMMU would have  
+> > set  
+> > > > the  
+> > > > > > > > > PASID/PRI/ATS on PF.
+> > > > > > > > >
+> > > > > > > > > If the emulation is purely spoofing the capability. Once vIOMMU  
+> > > > driver  
+> > > > > > > > > enables PASID, the context entries for the VF are completely  
+> > > > > > independent  
+> > > > > > > > > from the PF context entries.
+> > > > > > > > >
+> > > > > > > > > vIOMMU would enable PASID, and we just spoof the PASID  
+> > > > capability.  
+> > > > > > > > >
+> > > > > > > > > If vIOMMU or guest for some reason does disable_pasid(), then  
+> > the  
+> > > > > > > > > vIOMMU driver can disaable PASID on the VF context entries. So  
+> > the  
+> > > > VF  
+> > > > > > > > > although the capability is blanket enabled on PF, IOMMU  
+> > gaurantees  
+> > > > > > the  
+> > > > > > > > > transactions are blocked.
+> > > > > > > > >
+> > > > > > > > >
+> > > > > > > > > In the interim, it seems like the intent of the virtual capability
+> > > > > > > > > can be honored via help from the IOMMU for the controlling  
+> > aspect..  
+> > > > > > > > >
+> > > > > > > > > Did i miss anything?  
+> > > > > > > >
+> > > > > > > > Above works for emulating the enable bit (under the assumption  
+> > that  
+> > > > > > > > PF driver won't disable pasid when vf is assigned). However, there  
+> > are  
+> > > > > > > > also "Execute permission enable" and "Privileged mode enable"  
+> > bits in  
+> > > > > > > > PASID control registers. I don't know how those bits could be  
+> > cleanly  
+> > > > > > > > emulated when the guest writes a value different from PF's...  
+> > > > > > >
+> > > > > > > sent too quick. the IOMMU also includes control bits for allowing/
+> > > > > > > blocking execute requests and supervisor requests. We can rely on
+> > > > > > > IOMMU to block those requests to emulate the disabled cases of
+> > > > > > > all three control bits in the pasid cap.  
+> > > > > >
+> > > > > >
+> > > > > > So if the emulation of the PASID capability takes into account the
+> > > > > > IOMMU configuration to back that emulation, shouldn't we do that
+> > > > > > emulation in the hypervisor, ie. QEMU, rather than the kernel vfio
+> > > > > > layer?  Thanks,
+> > > > > >
+> > > > > > Alex  
+> > > > >
+> > > > > We need enforce it in physical IOMMU, to ensure that even the
+> > > > > VF may send requests which violate the guest expectation those
+> > > > > requests are always blocked by IOMMU. Kernel vfio identifies
+> > > > > such need when emulating the pasid cap and then forward the
+> > > > > request to host iommu driver.  
+> > > >
+> > > > Implementing this in the kernel would be necessary if we needed to
+> > > > protect from the guest device doing something bad to the host or
+> > > > other devices.  Making sure the physical IOMMU is configured to meet
+> > > > guest expectations doesn't sound like it necessarily falls into that
+> > > > category.  We do that on a regular basis to program the DMA mappings.
+> > > > Tell me more about why the hypervisor can't handle this piece of
+> > > > guest/host synchronization on top of all the other things it
+> > > > synchronizes to make a VM.  Thanks,
+> > > >  
+> > >
+> > > I care more about "execution permission" and "privileged mode".
+> > > It might be dangerous when the guest disallows the VF from sending  
+> > 
+> > "Dangerous" how?  We're generally ok with the user managing their own
+> > consistency, it's when the user can affect other users/devices that we
+> > require vfio in the kernel to actively manage something.  There's a very
+> > different scope to the vfio-pci kernel module implementing a fake
+> > capability and trying to make it behave indistinguishably from the real
+> > capability versus a userspace driver piecing together an emulation
+> > that's good enough for their purposes.  Thanks,
+> >  
+> 
+> How could emulation fix this gap when the VF DMAs don't go through
+> the vIOMMU? What you explained all makes sense before talking about
+> the emulation of PASID capability, i.e. vfio only cares about isolation 
+> between assigned devices. However now vfio exposes a capability 
+> which is shared by PF/VF while pure software emulation may break 
+> the guest expectation, and now the only viable mitigation is to get 
+> the help from physical IOMMU. then why cannot vfio include such 
+> mitigation in its emulation of the PASID capability? 
 
-Note that even prior to this patch, coherent_pool= for sizes larger than
-1 << (PAGE_SHIFT + MAX_ORDER-1) can fail.  With new dynamic expansion
-support, this would be trivially extensible to allow even larger initial
-sizes.
+DMA never actually goes "through" the vIOMMU.  I'm not suggesting that
+vfio doesn't participate some how, but I don't know that emulating a
+capability that doesn't exist and involves policy should be done in the
+kernel, versus providing userspace with an interface to control what
+they need to implement that emulation.  Thanks,
 
-Signed-off-by: David Rientjes <rientjes@google.com>
----
- kernel/dma/pool.c | 14 ++++++++++++--
- 1 file changed, 12 insertions(+), 2 deletions(-)
+Alex
 
-diff --git a/kernel/dma/pool.c b/kernel/dma/pool.c
-index 3e22022c933b..763b687569b0 100644
---- a/kernel/dma/pool.c
-+++ b/kernel/dma/pool.c
-@@ -22,8 +22,8 @@ static unsigned long pool_size_dma32;
- static unsigned long pool_size_kernel;
- #endif
- 
--#define DEFAULT_DMA_COHERENT_POOL_SIZE  SZ_256K
--static size_t atomic_pool_size = DEFAULT_DMA_COHERENT_POOL_SIZE;
-+/* Size can be defined by the coherent_pool command line */
-+static size_t atomic_pool_size;
- 
- /* Dynamic background expansion when the atomic pool is near capacity */
- static struct work_struct atomic_pool_work;
-@@ -181,6 +181,16 @@ static int __init dma_atomic_pool_init(void)
- {
- 	int ret = 0;
- 
-+	/*
-+	 * If coherent_pool was not used on the command line, default the pool
-+	 * sizes to 128KB per 1GB of memory, min 128KB, max MAX_ORDER-1.
-+	 */
-+	if (!atomic_pool_size) {
-+		atomic_pool_size = max(totalram_pages() >> PAGE_SHIFT, 1UL) *
-+					SZ_128K;
-+		atomic_pool_size = min_t(size_t, atomic_pool_size,
-+					 1 << (PAGE_SHIFT + MAX_ORDER-1));
-+	}
- 	INIT_WORK(&atomic_pool_work, atomic_pool_work_fn);
- 
- 	atomic_pool_kernel = __dma_atomic_pool_init(atomic_pool_size,
 _______________________________________________
 iommu mailing list
 iommu@lists.linux-foundation.org
