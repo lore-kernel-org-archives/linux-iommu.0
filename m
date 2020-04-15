@@ -2,80 +2,99 @@ Return-Path: <SRS0=YkH/=57=lists.linux-foundation.org=iommu-bounces@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-3.7 required=3.0 tests=HEADER_FROM_DIFFERENT_DOMAINS,
-	MAILING_LIST_MULTI,SIGNED_OFF_BY,SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED
-	autolearn=no autolearn_force=no version=3.4.0
+X-Spam-Status: No, score=-8.2 required=3.0 tests=HEADER_FROM_DIFFERENT_DOMAINS,
+	INCLUDES_PATCH,MAILING_LIST_MULTI,SIGNED_OFF_BY,SPF_HELO_NONE,SPF_PASS,
+	URIBL_BLOCKED,USER_AGENT_SANE_1 autolearn=ham autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 9E1D0C2BA19
-	for <iommu@archiver.kernel.org>; Wed, 15 Apr 2020 14:21:27 +0000 (UTC)
-Received: from fraxinus.osuosl.org (smtp4.osuosl.org [140.211.166.137])
+	by smtp.lore.kernel.org (Postfix) with ESMTP id E2443C2BA19
+	for <iommu@archiver.kernel.org>; Wed, 15 Apr 2020 14:37:01 +0000 (UTC)
+Received: from whitealder.osuosl.org (smtp1.osuosl.org [140.211.166.138])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by mail.kernel.org (Postfix) with ESMTPS id 7C3BB20857
-	for <iommu@archiver.kernel.org>; Wed, 15 Apr 2020 14:21:27 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 7C3BB20857
-Authentication-Results: mail.kernel.org; dmarc=none (p=none dis=none) header.from=linux-m68k.org
+	by mail.kernel.org (Postfix) with ESMTPS id B2F842076D
+	for <iommu@archiver.kernel.org>; Wed, 15 Apr 2020 14:37:01 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org B2F842076D
+Authentication-Results: mail.kernel.org; dmarc=none (p=none dis=none) header.from=lespocky.de
 Authentication-Results: mail.kernel.org; spf=pass smtp.mailfrom=iommu-bounces@lists.linux-foundation.org
 Received: from localhost (localhost [127.0.0.1])
-	by fraxinus.osuosl.org (Postfix) with ESMTP id 1987E85F2D;
-	Wed, 15 Apr 2020 14:21:27 +0000 (UTC)
+	by whitealder.osuosl.org (Postfix) with ESMTP id 8639386430;
+	Wed, 15 Apr 2020 14:37:01 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from fraxinus.osuosl.org ([127.0.0.1])
+Received: from whitealder.osuosl.org ([127.0.0.1])
 	by localhost (.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
-	with ESMTP id 02uoetpS3qAn; Wed, 15 Apr 2020 14:21:26 +0000 (UTC)
+	with ESMTP id GeHIxdccsymZ; Wed, 15 Apr 2020 14:36:59 +0000 (UTC)
 Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [140.211.9.56])
-	by fraxinus.osuosl.org (Postfix) with ESMTP id 7AB51859BA;
-	Wed, 15 Apr 2020 14:21:26 +0000 (UTC)
+	by whitealder.osuosl.org (Postfix) with ESMTP id 4AA9D861F4;
+	Wed, 15 Apr 2020 14:36:59 +0000 (UTC)
 Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
-	by lists.linuxfoundation.org (Postfix) with ESMTP id 4E841C1AE2;
-	Wed, 15 Apr 2020 14:21:26 +0000 (UTC)
-Received: from fraxinus.osuosl.org (smtp4.osuosl.org [140.211.166.137])
- by lists.linuxfoundation.org (Postfix) with ESMTP id 49F92C0172
- for <iommu@lists.linux-foundation.org>; Wed, 15 Apr 2020 14:21:24 +0000 (UTC)
+	by lists.linuxfoundation.org (Postfix) with ESMTP id 180ACC1AE2;
+	Wed, 15 Apr 2020 14:36:59 +0000 (UTC)
+Received: from silver.osuosl.org (smtp3.osuosl.org [140.211.166.136])
+ by lists.linuxfoundation.org (Postfix) with ESMTP id A40E7C0172
+ for <iommu@lists.linux-foundation.org>; Wed, 15 Apr 2020 14:36:57 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
- by fraxinus.osuosl.org (Postfix) with ESMTP id 3475685EEF
- for <iommu@lists.linux-foundation.org>; Wed, 15 Apr 2020 14:21:24 +0000 (UTC)
+ by silver.osuosl.org (Postfix) with ESMTP id 838CC2013C
+ for <iommu@lists.linux-foundation.org>; Wed, 15 Apr 2020 14:36:57 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from fraxinus.osuosl.org ([127.0.0.1])
+Received: from silver.osuosl.org ([127.0.0.1])
  by localhost (.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
- with ESMTP id ElNOM_avj81o for <iommu@lists.linux-foundation.org>;
- Wed, 15 Apr 2020 14:21:23 +0000 (UTC)
-X-Greylist: domain auto-whitelisted by SQLgrey-1.7.6
-Received: from mail-ot1-f68.google.com (mail-ot1-f68.google.com
- [209.85.210.68])
- by fraxinus.osuosl.org (Postfix) with ESMTPS id 249F1859BA
- for <iommu@lists.linux-foundation.org>; Wed, 15 Apr 2020 14:21:23 +0000 (UTC)
-Received: by mail-ot1-f68.google.com with SMTP id f52so16443otf.8
- for <iommu@lists.linux-foundation.org>; Wed, 15 Apr 2020 07:21:23 -0700 (PDT)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
- d=1e100.net; s=20161025;
- h=x-gm-message-state:mime-version:references:in-reply-to:from:date
- :message-id:subject:to:cc;
- bh=dnvZD4Dm4e5FRgntE759Yt2PxA+q1fuND8zsrub9kLs=;
- b=IOOPNxkTzm9KBNHFbXNlrfGV5x9R+jSZFRUwBoZiDYvGvA/Ho74btMjUfaFByeLT9P
- rA5D+yW1kSD5E6ORcREa49JU6YbbxpYTxYQA/OYfn1A+qZZs9AGNUKEXbHRX1VdVTUe8
- MJlF4JMx/YS0b6b5ka5e99aopgvJbv8Y0SUXXnoI6/pCjyAm0qMh2lXXGtj66AHY1mmh
- Ya1Pt+CNHIgORFwff7sTgnXB5EoYhUlkKogmBJkAyTt/2W8cNifP8PVPArX18ieP5v8i
- f3AdlF12tDaYkYppypRo8bvGTOukrDwAdaOdlAhyB1Tq2nhZxvSeaKpTa84oMG43Hs2r
- c4XQ==
-X-Gm-Message-State: AGi0PubTrispxSzOZ9gNPP8mEs8MuciiHk9y5puGdTg+NUqvLOOCgYBC
- sKqDqv3EtNjumUBgrD/17OoQl5j4fyD3pKdN48s=
-X-Google-Smtp-Source: APiQypIG2ckswGmQ7Vt/axIUAX+BtAwJOJQokWKIZnojuoFp2TeGwYdTsUd02L9Tf1SQqNYp+XNW0q+iQh9SWBYejGA=
-X-Received: by 2002:a9d:76c7:: with SMTP id p7mr21994872otl.145.1586960482326; 
- Wed, 15 Apr 2020 07:21:22 -0700 (PDT)
+ with ESMTP id Z+3qXr3Qvsr6 for <iommu@lists.linux-foundation.org>;
+ Wed, 15 Apr 2020 14:36:55 +0000 (UTC)
+X-Greylist: from auto-whitelisted by SQLgrey-1.7.6
+Received: from mout.kundenserver.de (mout.kundenserver.de [212.227.126.134])
+ by silver.osuosl.org (Postfix) with ESMTPS id 663561FF59
+ for <iommu@lists.linux-foundation.org>; Wed, 15 Apr 2020 14:36:55 +0000 (UTC)
+Received: from methusalix.internal.home.lespocky.de ([92.117.44.186]) by
+ mrelayeu.kundenserver.de (mreue009 [212.227.15.167]) with ESMTPSA (Nemesis)
+ id 1MSKq0-1jrQ5p0Ebw-00ShhZ; Wed, 15 Apr 2020 16:35:29 +0200
+Received: from falbala.internal.home.lespocky.de ([192.168.243.94])
+ by methusalix.internal.home.lespocky.de with esmtpsa
+ (TLSv1.2:ECDHE-RSA-AES256-GCM-SHA384:256) (Exim 4.92.3)
+ (envelope-from <post@lespocky.de>)
+ id 1jOj8M-0000YX-Nj; Wed, 15 Apr 2020 16:35:26 +0200
+Date: Wed, 15 Apr 2020 16:35:21 +0200
+From: Alexander Dahl <post@lespocky.de>
+To: x86@kernel.org
+Subject: Re: [PATCH v2] dma: Fix max PFN arithmetic overflow on 32 bit systems
+Message-ID: <20200415143519.iev6r4llqs3hwtgz@falbala.internal.home.lespocky.de>
+Mail-Followup-To: x86@kernel.org, iommu@lists.linux-foundation.org,
+ linux-kernel@vger.kernel.org,
+ Alan Jenkins <alan.christopher.jenkins@gmail.com>,
+ Ingo Molnar <mingo@redhat.com>, Borislav Petkov <bp@alien8.de>,
+ "H . Peter Anvin" <hpa@zytor.com>,
+ Thomas Gleixner <tglx@linutronix.de>,
+ Robin Murphy <robin.murphy@arm.com>,
+ Florian Wolters <florian@florian-wolters.de>
+References: <20200319153154.usbqsk6uspegw5pr@falbala.internal.home.lespocky.de>
+ <20200321182823.1912-1-post@lespocky.de>
 MIME-Version: 1.0
-References: <1586773533-8893-1-git-send-email-yoshihiro.shimoda.uh@renesas.com>
-In-Reply-To: <1586773533-8893-1-git-send-email-yoshihiro.shimoda.uh@renesas.com>
-From: Geert Uytterhoeven <geert@linux-m68k.org>
-Date: Wed, 15 Apr 2020 16:21:10 +0200
-Message-ID: <CAMuHMdXvZp5GFY5-SjXP0PLE8MiwYencVMti93wU4E3N2c0QVg@mail.gmail.com>
-Subject: Re: [PATCH] dt-bndings: iommu: renesas,
- ipmmu-vmsa: convert to json-schema
-To: Yoshihiro Shimoda <yoshihiro.shimoda.uh@renesas.com>
-Cc: Linux-Renesas <linux-renesas-soc@vger.kernel.org>,
- "open list:OPEN FIRMWARE AND FLATTENED DEVICE TREE BINDINGS"
- <devicetree@vger.kernel.org>, Rob Herring <robh+dt@kernel.org>,
- Linux IOMMU <iommu@lists.linux-foundation.org>
+In-Reply-To: <20200321182823.1912-1-post@lespocky.de>
+User-Agent: NeoMutt/20170113 (1.7.2)
+X-Scan-Signature: da85ea8975133f28083df41d042c8ce6
+X-Provags-ID: V03:K1:IVw6I1Kpwa21fkaHCKwXojjV4/ttMR/aUvFUOzfL6qppUNnSm/b
+ UOdZ95kulgEkWlmiCSwgMdour6+Xv+i2p8MV8SEK3zkp+1lqYiGp8hlNfWswyh69gW3vtVI
+ mriMwnD7dgb+d9KcTN/AFzj+b1T7QGV88jn7/JZwq0CdnukucuS7MczDc7i5LE7J46w4bxK
+ J31vvASfiEIOJjjq+PeJA==
+X-UI-Out-Filterresults: notjunk:1;V03:K0:38CJH6+4tJU=:sbqlGgtb9QRA8SmwEjQnUt
+ 0/9BGzpd/YLLHpDLnuSR9wokBVkVI3gbEUeW1FumvI7RwHg3Mvkxu7fXAppyto5l4qQS7+IwX
+ OoXfEX6sGSzVMPTTdnQllS3l6sVHTshwbUv+Z4fEmbV1JhPxe3JmnKx/3X+93KRA3oVh93ihY
+ YhaL9yYWRcA+rddzxZMXr865rT2gCMrr515MOrseLaboI/0vesg8WFN5qcfwJwkQjRbImr0u3
+ COJcYoV2Lg2s044wTg1wj3eQ0aOq1YqiyI9q/dg+ZChcip0D8N7IIbSHm00Uk0bHH1wpROrW3
+ +/U4K64rvuQ4p/uYu5YBUHvfEHnjdIbaFZrph1l8Cb8V9wokdy81da0i0vXeXRDcy5nRgiyQ+
+ 9ZHTNmKXjiHELFKjRA0rpzrVdR4yLiJMXDnCr4PTKm4zWn+hkS/4XvGTuw6Buqrh939ZEbE6x
+ S6TJr3Fgt80SmR87vHpkHqFkisty7jeKdm7T1U61VZXPscz7LRmterhRdNknMPRh5lgnIvOeW
+ gse+ZgqgLSYc1kDTG6A/8964M6Il6BQFXHNWOc27ahFWMKy0/KEilmc0FghjLRA26wvAqUPcL
+ GplUXb+Rh03iEEYr8/GAfve0PZfi2xzls5KwdyHnBTYbvBnVK1yfl7PswA5jpB9LtO1DJ2vQg
+ XfWelXTM09gDIwC4sXMFTndqbQs0NrY5akjoTD8KesMAD9ohzxP+m8g4noU2QOzfeteBFisCx
+ VOpi71/ridCEWDBz2hnN7eeP/pBCKwWhAtM5/YmqwXlU6IIrvlgJ9gCsFzyWuMQCs6c2NXDEw
+ IrRmrpWt5jTVO6zV78m4waZQ3WKI7kAzJN+Ed1Us2Bl0ieWI6BoUH1jbnKBXFqaM+mANAJJ
+Cc: Alexander Dahl <post@lespocky.de>, iommu@lists.linux-foundation.org,
+ linux-kernel@vger.kernel.org,
+ Alan Jenkins <alan.christopher.jenkins@gmail.com>,
+ Ingo Molnar <mingo@redhat.com>, Borislav Petkov <bp@alien8.de>,
+ "H . Peter Anvin" <hpa@zytor.com>, Thomas Gleixner <tglx@linutronix.de>,
+ Robin Murphy <robin.murphy@arm.com>,
+ Florian Wolters <florian@florian-wolters.de>
 X-BeenThere: iommu@lists.linux-foundation.org
 X-Mailman-Version: 2.1.15
 Precedence: list
@@ -88,127 +107,141 @@ List-Post: <mailto:iommu@lists.linux-foundation.org>
 List-Help: <mailto:iommu-request@lists.linux-foundation.org?subject=help>
 List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
  <mailto:iommu-request@lists.linux-foundation.org?subject=subscribe>
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: 7bit
+Content-Type: multipart/mixed; boundary="===============5331829522562916576=="
 Errors-To: iommu-bounces@lists.linux-foundation.org
 Sender: "iommu" <iommu-bounces@lists.linux-foundation.org>
 
-Hi Shimoda-san,
 
-On Tue, Apr 14, 2020 at 2:26 AM Yoshihiro Shimoda
-<yoshihiro.shimoda.uh@renesas.com> wrote:
-> Convert Renesas VMSA-Compatible IOMMU bindings documentation
-> to json-schema.
->
-> Signed-off-by: Yoshihiro Shimoda <yoshihiro.shimoda.uh@renesas.com>
+--===============5331829522562916576==
+Content-Type: multipart/signed; micalg=pgp-sha256;
+	protocol="application/pgp-signature"; boundary="ahhticrbe2tikgv5"
+Content-Disposition: inline
 
-> --- /dev/null
-> +++ b/Documentation/devicetree/bindings/iommu/renesas,ipmmu-vmsa.yaml
-> @@ -0,0 +1,90 @@
-> +# SPDX-License-Identifier: (GPL-2.0-only OR BSD-2-Clause)
-> +%YAML 1.2
-> +---
-> +$id: http://devicetree.org/schemas/iommu/renesas,ipmmu-vmsa.yaml#
-> +$schema: http://devicetree.org/meta-schemas/core.yaml#
-> +
-> +title: Renesas VMSA-Compatible IOMMU
-> +
-> +maintainers:
-> +  - Yoshihiro Shimoda <yoshihiro.shimoda.uh@renesas.com>
-> +
-> +description:
-> +  The IPMMU is an IOMMU implementation compatible with the ARM VMSA page tables.
-> +  It provides address translation for bus masters outside of the CPU, each
-> +  connected to the IPMMU through a port called micro-TLB.
-> +
-> +properties:
-> +  compatible:
-> +    oneOf:
-> +      - items:
-> +          - enum:
-> +              - renesas,ipmmu-r8a7743  # RZ/G1M
-> +              - renesas,ipmmu-r8a7744  # RZ/G1N
-> +              - renesas,ipmmu-r8a7745  # RZ/G1E
-> +              - renesas,ipmmu-r8a7790  # R-Car H2
-> +              - renesas,ipmmu-r8a7791  # R-Car M2-W
-> +              - renesas,ipmmu-r8a7793  # R-Car M2-N
-> +              - renesas,ipmmu-r8a7794  # R-Car E2
-> +              - renesas,ipmmu-r8a7795  # R-Car H3
-> +          - const: renesas,ipmmu-vmsa  # R-Car Gen2 or RZ/G1
-> +      - items:
-> +          - enum:
-> +              - renesas,ipmmu-r8a73a4  # R-Mobile APE6
 
-I believe the R-Mobile APE6 IPMMU is similar to the R-Car Gen2 IPMMU,
-and thus belongs in the section above instead.
+--ahhticrbe2tikgv5
+Content-Type: text/plain; charset=utf-8
+Content-Disposition: inline
+Content-Transfer-Encoding: quoted-printable
 
-> +              - renesas,ipmmu-r8a774a1 # RZ/G2M
-> +              - renesas,ipmmu-r8a774b1 # RZ/G2N
-> +              - renesas,ipmmu-r8a774c0 # RZ/G2E
-> +              - renesas,ipmmu-r8a7796  # R-Car M3-W
-> +              - renesas,ipmmu-r8a77965 # R-Car M3-N
-> +              - renesas,ipmmu-r8a77970 # R-Car V3M
-> +              - renesas,ipmmu-r8a77980 # R-Car V3H
-> +              - renesas,ipmmu-r8a77990 # R-Car E3
-> +              - renesas,ipmmu-r8a77995 # R-Car D3
-> +
-> +  reg:
-> +    maxItems: 1
-> +
-> +  interrupts:
-> +    minItems: 1
-> +    maxItems: 2
-> +    description:
-> +      Specifiers for the MMU fault interrupts. For instances that support
-> +      secure mode two interrupts must be specified, for non-secure and secure
-> +      mode, in that order. For instances that don't support secure mode a
-> +      single interrupt must be specified. Not required for cache IPMMUs.
+Hello,
 
-    items:
-      - description: <non-secure ...>
-      - description: <secure ...>
+now after v5.7-rc1 is out, I would kindly ask, if anyone had time to
+review this one line patch? Is anything wrong with that fix?
 
-> +
-> +  '#iommu-cells':
-> +    const: 1
-> +
-> +  power-domains:
-> +    maxItems: 1
-> +
-> +  renesas,ipmmu-main:
-> +    $ref: /schemas/types.yaml#/definitions/phandle-array
-> +    description:
-> +      Reference to the main IPMMU instance in two cells. The first cell is
-> +      a phandle to the main IPMMU and the second cell is the interrupt bit
-> +      number associated with the particular cache IPMMU device. The interrupt
-> +      bit number needs to match the main IPMMU IMSSTR register. Only used by
-> +      cache IPMMU instances.
+(I added the current fli4l kernel package maintainer Florian to Cc to
+let him know I'm still having an eye on this.)
 
-This property is not valid only on R-Car Gen2 and R-Mobile APE6.
+Greets
+Alex
 
-(untested)
+On Sat, Mar 21, 2020 at 07:28:23PM +0100, Alexander Dahl wrote:
+> For ARCH=3Dx86 (32 bit) when you set CONFIG_IOMMU_INTEL since c5a5dc4cbbf4
+> ("iommu/vt-d: Don't switch off swiotlb if bounce page is used") there's
+> a dependency on CONFIG_SWIOTLB, which was not necessarily active before.
+>=20
+> The init code for swiotlb in 'pci_swiotlb_detect_4gb()' compares
+> something against MAX_DMA32_PFN to decide if it should be active.
+> However that define suffers from an arithmetic overflow since
+> 1b7e03ef7570 ("x86, NUMA: Enable emulation on 32bit too") when it was
+> first made visible to x86_32.
+>=20
+> The effect is at boot time 64 MiB (default size) were allocated for
+> bounce buffers now, which is a noticeable amount of memory on small
+> systems. We noticed this effect on the fli4l Linux distribution when
+> migrating from kernel v4.19 (LTS) to v5.4 (LTS) on boards like pcengines
+> ALIX 2D3 with 256 MiB memory for example:
+>=20
+>   Linux version 5.4.22 (buildroot@buildroot) (gcc version 7.3.0 (Buildroo=
+t 2018.02.8)) #1 SMP Mon Nov 26 23:40:00 CET 2018
+>   =E2=80=A6
+>   Memory: 183484K/261756K available (4594K kernel code, 393K rwdata, 1660=
+K rodata, 536K init, 456K bss , 78272K reserved, 0K cma-reserved, 0K highme=
+m)
+>   =E2=80=A6
+>   PCI-DMA: Using software bounce buffering for IO (SWIOTLB)
+>   software IO TLB: mapped [mem 0x0bb78000-0x0fb78000] (64MB)
+>=20
+> The initial analysis and the suggested fix was done by user 'sourcejedi'
+> at stackoverflow and explicitly marked as GPLv2 for inclusion in the
+> Linux kernel:
+>=20
+>   https://unix.stackexchange.com/a/520525/50007
+>=20
+> The actual calculation however is the same as for arch/mips now as
+> suggested by Robin Murphy.
+>=20
+> Fixes: https://web.nettworks.org/bugs/browse/FFL-2560
+> Fixes: https://unix.stackexchange.com/q/520065/50007
+> Reported-by: Alan Jenkins <alan.christopher.jenkins@gmail.com>
+> Suggested-by: Robin Murphy <robin.murphy@arm.com>
+> Signed-off-by: Alexander Dahl <post@lespocky.de>
+> ---
+>=20
+> Notes:
+>     v1 -> v2:
+>       - use the same calculation as with arch/mips (Robin Murphy)
+>=20
+>  arch/x86/include/asm/dma.h | 2 +-
+>  1 file changed, 1 insertion(+), 1 deletion(-)
+>=20
+> diff --git a/arch/x86/include/asm/dma.h b/arch/x86/include/asm/dma.h
+> index 00f7cf45e699..8e95aa4b0d17 100644
+> --- a/arch/x86/include/asm/dma.h
+> +++ b/arch/x86/include/asm/dma.h
+> @@ -74,7 +74,7 @@
+>  #define MAX_DMA_PFN   ((16UL * 1024 * 1024) >> PAGE_SHIFT)
+> =20
+>  /* 4GB broken PCI/AGP hardware bus master zone */
+> -#define MAX_DMA32_PFN ((4UL * 1024 * 1024 * 1024) >> PAGE_SHIFT)
+> +#define MAX_DMA32_PFN (1UL << (32 - PAGE_SHIFT))
+> =20
+>  #ifdef CONFIG_X86_32
+>  /* The maximum address that we can perform a DMA transfer to on this pla=
+tform */
+> --=20
+> 2.20.1
+>=20
+> _______________________________________________
+> iommu mailing list
+> iommu@lists.linux-foundation.org
+> https://lists.linuxfoundation.org/mailman/listinfo/iommu
 
-oneOf:
-  - properties:
-      contains:
-        const: renesas,ipmmu-vmsa
-  - properties:
-      renesas,ipmmu-main:
-        $ref: /schemas/types.yaml#/definitions/phandle-array
-        description:
-          [...]
+--=20
+/"\ ASCII RIBBON | =C2=BBWith the first link, the chain is forged. The first
+\ / CAMPAIGN     | speech censured, the first thought forbidden, the
+ X  AGAINST      | first freedom denied, chains us all irrevocably.=C2=AB
+/ \ HTML MAIL    | (Jean-Luc Picard, quoting Judge Aaron Satie)
 
-Gr{oetje,eeting}s,
+--ahhticrbe2tikgv5
+Content-Type: application/pgp-signature; name="signature.asc"
 
-                        Geert
+-----BEGIN PGP SIGNATURE-----
 
--- 
-Geert Uytterhoeven -- There's lots of Linux beyond ia32 -- geert@linux-m68k.org
+iQIzBAABCAAdFiEEwo7muQJjlc+Prwj6NK3NAHIhXMYFAl6XG6IACgkQNK3NAHIh
+XMbmog//e9M196yeEg88JKJH2mpdtfl60nTuzTfAj+jq/iuzzPTdrzfyBPqIhR97
+DoG+nyi5M9OoBHtRNbruPAicBCjJGoiAvF7kI8fJkdbppDbxxIK4SwZfvB9SBTn9
+YfW0l16y7OaAtTU8tGkiHpIl+D/uvEjlvoaxsYj12fZA5m/3V0FV5yCLPOAaUvMC
+dJZ2Jhyyqk56M/6uCJsoYixeFnKZplOJE9RoNlSQVgFnjVPQVzJn+vgBpyBPpuLM
+qNxxFFv8oA6tZD7coxL25Dkse9r/qTiT4aox+k9OtoHD0aLJBeBUBuQxXHCSuzOq
++ubisc0GxSIasuLlQzi2PshoxpUPgzTAAYSPmJs/fUFMCKz8YuMRRZiZdOWD9RRi
+AZ5S5t7/A0AodDQEMDJ235xtAXIVQgF5yMdn7ihwhrtjeQkhFaCjFkMwkXs7ezwY
+1fOmETmU8wJRsiKYgjsRpG47oX0wXquhJ6wCJNDvAE1V42ZfARGAtquG+i3D5XFU
+Z3rav+9lc+ezeKX+Wb7e98GYL2v7FqT+G8U75A4otq+hZSUeD7gfhzNCKPqwzi5K
+m2+9jchVeWaHyD+h0wYIiEUSS0snv//bw9I8iUhaNmtOC7obnGuRLaRC6r53TZeR
+VhSG72hOG9MBVDfXp+abOL4PmBaziGcAN973BwGrtO3STpxKVbw=
+=PSc6
+-----END PGP SIGNATURE-----
 
-In personal conversations with technical people, I call myself a hacker. But
-when I'm talking to journalists I just say "programmer" or something like that.
-                                -- Linus Torvalds
+--ahhticrbe2tikgv5--
+
+--===============5331829522562916576==
+Content-Type: text/plain; charset="us-ascii"
+MIME-Version: 1.0
+Content-Transfer-Encoding: 7bit
+Content-Disposition: inline
+
 _______________________________________________
 iommu mailing list
 iommu@lists.linux-foundation.org
 https://lists.linuxfoundation.org/mailman/listinfo/iommu
+--===============5331829522562916576==--
