@@ -2,111 +2,125 @@ Return-Path: <SRS0=YkH/=57=lists.linux-foundation.org=iommu-bounces@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-0.8 required=3.0 tests=HEADER_FROM_DIFFERENT_DOMAINS,
-	MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS autolearn=no autolearn_force=no
-	version=3.4.0
+X-Spam-Status: No, score=-0.6 required=3.0 tests=DKIM_INVALID,DKIM_SIGNED,
+	HEADER_FROM_DIFFERENT_DOMAINS,MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS,
+	URIBL_BLOCKED autolearn=no autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id A6337C352BE
-	for <iommu@archiver.kernel.org>; Wed, 15 Apr 2020 01:01:58 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 0FB3DC2BB1D
+	for <iommu@archiver.kernel.org>; Wed, 15 Apr 2020 02:00:16 +0000 (UTC)
 Received: from silver.osuosl.org (smtp3.osuosl.org [140.211.166.136])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by mail.kernel.org (Postfix) with ESMTPS id 75A1A2072D
-	for <iommu@archiver.kernel.org>; Wed, 15 Apr 2020 01:01:58 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 75A1A2072D
-Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=intel.com
+	by mail.kernel.org (Postfix) with ESMTPS id 9F14D206D9
+	for <iommu@archiver.kernel.org>; Wed, 15 Apr 2020 02:00:15 +0000 (UTC)
+Authentication-Results: mail.kernel.org;
+	dkim=fail reason="signature verification failed" (1024-bit key) header.d=renesasgroup.onmicrosoft.com header.i=@renesasgroup.onmicrosoft.com header.b="gSC5ttgw"
+DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 9F14D206D9
+Authentication-Results: mail.kernel.org; dmarc=none (p=none dis=none) header.from=renesas.com
 Authentication-Results: mail.kernel.org; spf=pass smtp.mailfrom=iommu-bounces@lists.linux-foundation.org
 Received: from localhost (localhost [127.0.0.1])
-	by silver.osuosl.org (Postfix) with ESMTP id 3387121FF6;
-	Wed, 15 Apr 2020 01:01:58 +0000 (UTC)
+	by silver.osuosl.org (Postfix) with ESMTP id 6FB1B2052A;
+	Wed, 15 Apr 2020 02:00:15 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
 Received: from silver.osuosl.org ([127.0.0.1])
 	by localhost (.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
-	with ESMTP id aHXGb0e-e7F6; Wed, 15 Apr 2020 01:01:55 +0000 (UTC)
+	with ESMTP id k9KeAURmi9Rx; Wed, 15 Apr 2020 02:00:14 +0000 (UTC)
 Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [140.211.9.56])
-	by silver.osuosl.org (Postfix) with ESMTP id 8087620503;
-	Wed, 15 Apr 2020 01:01:55 +0000 (UTC)
+	by silver.osuosl.org (Postfix) with ESMTP id C7FCE204ED;
+	Wed, 15 Apr 2020 02:00:14 +0000 (UTC)
 Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
-	by lists.linuxfoundation.org (Postfix) with ESMTP id 77F11C089E;
-	Wed, 15 Apr 2020 01:01:55 +0000 (UTC)
-Received: from fraxinus.osuosl.org (smtp4.osuosl.org [140.211.166.137])
- by lists.linuxfoundation.org (Postfix) with ESMTP id 84FFBC0172
- for <iommu@lists.linux-foundation.org>; Wed, 15 Apr 2020 01:01:54 +0000 (UTC)
+	by lists.linuxfoundation.org (Postfix) with ESMTP id 9DB67C1D7D;
+	Wed, 15 Apr 2020 02:00:14 +0000 (UTC)
+Received: from silver.osuosl.org (smtp3.osuosl.org [140.211.166.136])
+ by lists.linuxfoundation.org (Postfix) with ESMTP id 34D27C0172
+ for <iommu@lists.linux-foundation.org>; Wed, 15 Apr 2020 02:00:13 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
- by fraxinus.osuosl.org (Postfix) with ESMTP id 7B1158598A
- for <iommu@lists.linux-foundation.org>; Wed, 15 Apr 2020 01:01:54 +0000 (UTC)
+ by silver.osuosl.org (Postfix) with ESMTP id 2FA0F2051F
+ for <iommu@lists.linux-foundation.org>; Wed, 15 Apr 2020 02:00:13 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from fraxinus.osuosl.org ([127.0.0.1])
+Received: from silver.osuosl.org ([127.0.0.1])
  by localhost (.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
- with ESMTP id RkshfG1l1Sv8 for <iommu@lists.linux-foundation.org>;
- Wed, 15 Apr 2020 01:01:53 +0000 (UTC)
+ with ESMTP id N0YD4LanQ7Xd for <iommu@lists.linux-foundation.org>;
+ Wed, 15 Apr 2020 02:00:11 +0000 (UTC)
 X-Greylist: domain auto-whitelisted by SQLgrey-1.7.6
-Received: from mga05.intel.com (mga05.intel.com [192.55.52.43])
- by fraxinus.osuosl.org (Postfix) with ESMTPS id 3B8058592F
- for <iommu@lists.linux-foundation.org>; Wed, 15 Apr 2020 01:01:53 +0000 (UTC)
-IronPort-SDR: H+pp6q1UP8CmUydyGTD0KHRevIofvjKrU+Tpgpm4sgpcpTPFS6xUFseMQ0CrPsmH1iOC97fU13
- Bd2sZzkv+I9g==
-X-Amp-Result: SKIPPED(no attachment in message)
-X-Amp-File-Uploaded: False
-Received: from fmsmga006.fm.intel.com ([10.253.24.20])
- by fmsmga105.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384;
- 14 Apr 2020 18:01:52 -0700
-IronPort-SDR: /+xvEisTyLnHW4UMqHi/fNFqhKmCQ1uPOPrlC75ROdYMwn1HbDuxjs5Y3ahzdAYV1BMGl1DMWH
- cOP1BECRvj7g==
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.72,385,1580803200"; d="scan'208";a="454746459"
-Received: from fmsmsx106.amr.corp.intel.com ([10.18.124.204])
- by fmsmga006.fm.intel.com with ESMTP; 14 Apr 2020 18:01:52 -0700
-Received: from FMSMSX110.amr.corp.intel.com (10.18.116.10) by
- FMSMSX106.amr.corp.intel.com (10.18.124.204) with Microsoft SMTP Server (TLS)
- id 14.3.439.0; Tue, 14 Apr 2020 18:01:52 -0700
-Received: from shsmsx152.ccr.corp.intel.com (10.239.6.52) by
- fmsmsx110.amr.corp.intel.com (10.18.116.10) with Microsoft SMTP Server (TLS)
- id 14.3.439.0; Tue, 14 Apr 2020 18:01:52 -0700
-Received: from shsmsx104.ccr.corp.intel.com ([169.254.5.225]) by
- SHSMSX152.ccr.corp.intel.com ([169.254.6.209]) with mapi id 14.03.0439.000;
- Wed, 15 Apr 2020 09:01:48 +0800
-From: "Tian, Kevin" <kevin.tian@intel.com>
-To: Alex Williamson <alex.williamson@redhat.com>
-Subject: RE: [PATCH v1 2/2] vfio/pci: Emulate PASID/PRI capability for VFs
-Thread-Topic: [PATCH v1 2/2] vfio/pci: Emulate PASID/PRI capability for VFs
-Thread-Index: AQHWAEVGCz5QQWvL/U+nYnlD7MiZ7Khl/jEAgACVNICAAJ/EgIAF8c6ggAA/A4CAAMnRgIAAzpAAgAb/OoCAAMrPQIAAC1kAgAA5CgCAAPxYkP//i8oAgACGwnCAAEEggIABEuCg//+HXACAAIqw4A==
-Date: Wed, 15 Apr 2020 01:01:48 +0000
-Message-ID: <AADFC41AFE54684AB9EE6CBC0274A5D19D81FB7D@SHSMSX104.ccr.corp.intel.com>
-References: <1584880394-11184-1-git-send-email-yi.l.liu@intel.com>
- <1584880394-11184-3-git-send-email-yi.l.liu@intel.com>
- <20200402165954.48d941ee@w520.home>
- <A2975661238FB949B60364EF0F2C25743A2204FE@SHSMSX104.ccr.corp.intel.com>
- <20200403112545.6c115ba3@w520.home>
- <AADFC41AFE54684AB9EE6CBC0274A5D19D80E13D@SHSMSX104.ccr.corp.intel.com>
- <20200407095801.648b1371@w520.home>	<20200408040021.GS67127@otc-nc-03>
- <20200408101940.3459943d@w520.home>
- <20200413031043.GA18183@araj-mobl1.jf.intel.com>
- <AADFC41AFE54684AB9EE6CBC0274A5D19D81A31F@SHSMSX104.ccr.corp.intel.com>
- <20200413132122.46825849@w520.home>
- <AADFC41AFE54684AB9EE6CBC0274A5D19D81D376@SHSMSX104.ccr.corp.intel.com>
- <20200413212836.117b4c86@x1.home>
- <AADFC41AFE54684AB9EE6CBC0274A5D19D81D456@SHSMSX104.ccr.corp.intel.com>
- <20200414092401.039edef6@w520.home>
- <AADFC41AFE54684AB9EE6CBC0274A5D19D81F946@SHSMSX104.ccr.corp.intel.com>
- <20200414183602.7de084b0@x1.home>
-In-Reply-To: <20200414183602.7de084b0@x1.home>
-Accept-Language: en-US
-Content-Language: en-US
+Received: from JPN01-TY1-obe.outbound.protection.outlook.com
+ (mail-eopbgr1400119.outbound.protection.outlook.com [40.107.140.119])
+ by silver.osuosl.org (Postfix) with ESMTPS id 9695C204ED
+ for <iommu@lists.linux-foundation.org>; Wed, 15 Apr 2020 02:00:11 +0000 (UTC)
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=HJF+4axQ3p25WNc9azufmlpUXd1y6nU/Wkv5lRQHf8TWHh+A5+1a+LGU6k3Q7D30NzlSNSaBJBl4EMNLc0Riz/W32fhQWHvOlfOukKzy9vv3rRv5N/JTM2I33YbGs3WAPVXCxlNnYsYIobekErAJfvqSb5Qzq/js1YwVxQYH5ZQdLzIFWfKoEwAK0/174kPq3WYRmAYuoM2eaw+VsTkcNJZr2vWuWDsd0tXCP3m9bKD7bo8X7wISqsPMuH9pG8yaHsta23/Hhm+MoCsZZ70UJE0RQusbEZa50j7VRqkqDvXcpRgumCXAnbyLnDQHcUfVLmB1aP/QUscAMx3DnPCXDQ==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com; 
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=oW84VRQHUm8XVO+2rLPV9WEuX3gDX+ExJuC6NsIs+Zs=;
+ b=VLsj5Cp5zmUokhNc3Q4ScOyJuBaGhAJX+4O873xplFMi3qV92wzT0Zfz37xO3GDB9uHyM4UUl5EuX1v65v1k4btRMJIaxc19lPb+6RteirKyl2Lc8ObBLsNtpgBZ9wx8JyQDecPAIVGBs7oTQ3z5arHmJa1ORzFXHT02akezEV4ErZ/OpP+jfNtVAWvl7JHRId1FH+HL6+zBPggpo/HCdrCrh7hA6q0WRtM93NOtlc8rgQ/x/d+Z1iualkGPDWuPKsd3fC1SY7eLmVGjFsuKL/t0Ego2PKnOX61SWrpc/+IKrJj3fNYWL1TeMm3U74Q5NOmZubeDQ0kT3uydcPUr8Q==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=renesas.com; dmarc=pass action=none header.from=renesas.com;
+ dkim=pass header.d=renesas.com; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+ d=renesasgroup.onmicrosoft.com; s=selector2-renesasgroup-onmicrosoft-com;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=oW84VRQHUm8XVO+2rLPV9WEuX3gDX+ExJuC6NsIs+Zs=;
+ b=gSC5ttgwmoBE9HoTMbPsWPK8MEMYmxJYVgc8W3SuiQYSjVgKoUBmVO/DgylTNCoVCU34gZP2LTomtk3ASTRkXKoZ+m1kJg6IAX7lWJJiot6HRgCOXG3zbEhhcnR/OWHGDd3LauEjCo7CiaZpfdk6QHUGDi9vCtr8WB3xbvf7mB8=
+Received: from TYAPR01MB4544.jpnprd01.prod.outlook.com (20.179.175.203) by
+ TYAPR01MB3520.jpnprd01.prod.outlook.com (20.178.137.208) with Microsoft SMTP
+ Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.20.2900.15; Wed, 15 Apr 2020 02:00:08 +0000
+Received: from TYAPR01MB4544.jpnprd01.prod.outlook.com
+ ([fe80::ed7f:1268:55a9:fc06]) by TYAPR01MB4544.jpnprd01.prod.outlook.com
+ ([fe80::ed7f:1268:55a9:fc06%4]) with mapi id 15.20.2900.028; Wed, 15 Apr 2020
+ 02:00:08 +0000
+From: Yoshihiro Shimoda <yoshihiro.shimoda.uh@renesas.com>
+To: Robin Murphy <robin.murphy@arm.com>, "joro@8bytes.org" <joro@8bytes.org>, 
+ "robh+dt@kernel.org" <robh+dt@kernel.org>
+Subject: RE: [PATCH] dt-bndings: iommu: renesas, ipmmu-vmsa: convert to
+ json-schema
+Thread-Topic: [PATCH] dt-bndings: iommu: renesas, ipmmu-vmsa: convert to
+ json-schema
+Thread-Index: AQHWEoBV45dVUwCDv0GH/0iVUxi6YKh5bfPg
+Date: Wed, 15 Apr 2020 02:00:08 +0000
+Message-ID: <TYAPR01MB454430982D630B6B7973C11BD8DB0@TYAPR01MB4544.jpnprd01.prod.outlook.com>
+References: <1586773533-8893-1-git-send-email-yoshihiro.shimoda.uh@renesas.com>
+ <fef59497-e5ef-bfe4-e845-389fd623783b@arm.com>
+In-Reply-To: <fef59497-e5ef-bfe4-e845-389fd623783b@arm.com>
+Accept-Language: ja-JP, en-US
+Content-Language: ja-JP
 X-MS-Has-Attach: 
 X-MS-TNEF-Correlator: 
-dlp-product: dlpe-windows
-dlp-version: 11.2.0.6
-dlp-reaction: no-action
-x-originating-ip: [10.239.127.40]
+authentication-results: spf=none (sender IP is )
+ smtp.mailfrom=yoshihiro.shimoda.uh@renesas.com; 
+x-originating-ip: [124.210.22.195]
+x-ms-publictraffictype: Email
+x-ms-office365-filtering-ht: Tenant
+x-ms-office365-filtering-correlation-id: 35be0a30-2028-4419-6a7e-08d7e0e0b98d
+x-ms-traffictypediagnostic: TYAPR01MB3520:
+x-microsoft-antispam-prvs: <TYAPR01MB352049823309AE4A7949DDB6D8DB0@TYAPR01MB3520.jpnprd01.prod.outlook.com>
+x-ms-oob-tlc-oobclassifiers: OLM:6790;
+x-forefront-prvs: 0374433C81
+x-forefront-antispam-report: CIP:255.255.255.255; CTRY:; LANG:en; SCL:1; SRV:;
+ IPV:NLI; SFV:NSPM; H:TYAPR01MB4544.jpnprd01.prod.outlook.com; PTR:; CAT:NONE;
+ SFTY:;
+ SFS:(10019020)(4636009)(396003)(136003)(346002)(39860400002)(376002)(366004)(6506007)(53546011)(478600001)(9686003)(7696005)(110136005)(316002)(55016002)(2906002)(55236004)(4326008)(5660300002)(71200400001)(186003)(76116006)(33656002)(52536014)(66446008)(8936002)(66556008)(66946007)(64756008)(86362001)(66476007)(4744005)(54906003)(26005)(8676002)(81156014);
+ DIR:OUT; SFP:1102; 
+received-spf: None (protection.outlook.com: renesas.com does not designate
+ permitted sender hosts)
+x-ms-exchange-senderadcheck: 1
+x-microsoft-antispam: BCL:0;
+x-microsoft-antispam-message-info: ttBIFz3kQMH8dB6SMg4SgzcZRj0057kIYtsgVHPsD2n0Jgzdz57GYKKo3PozhV5lcuP9rQRj/f1OnftIpy4UZ+LLI962QVn+byFmVcyBPmQwX1eA/s08TDq8Jdbbd+KIJdODKKeFTx3tSr6VLcqya9Put4ZHPLjvw0clVcrp7mIhrBuNvJ76XflvD8i7PUYPlUWPGMudReAojR7PlDd3LCZ0UuSZIJo1pH+Ohy6bbPxuCSwnCfAnUuicoNX+vVkKB8+Y2x1dnBHClWwOMz6zMwvY3Z283TaiP+i4Xis8WoYDOB38uG4dgJKGdEN3vS0umqGYrqKYKEeyTZNvM0PGInRm5Vkr+ZLlOZNYAeb4HMfJI8tyfvSzbVa85z1eHMrTlKNTk5BxIsuUWSY8bU7U1wFvTuO2oavHQ/j3VdcQ1Rwsr47DidUmWzpO+8bh7Faa
+x-ms-exchange-antispam-messagedata: aqCgtKSbn94lR9PqGk+C/ASj2sBDswoH2ZqGWKLKeCdW8nUltGbxgM0Nl1MnHf/6pTYwj1l2jBAcOzfXq+RGaUTug3AuNPPsyzGmBY2R2c4EUGyf1ZbvXoVcL4ACy41FzDglrzIV0eOl9aQZ/5C8Ng==
+x-ms-exchange-transport-forked: True
 MIME-Version: 1.0
-Cc: "jean-philippe@linaro.org" <jean-philippe@linaro.org>, "Raj,
- Ashok" <ashok.raj@intel.com>, "kvm@vger.kernel.org" <kvm@vger.kernel.org>,
- "Tian, Jun J" <jun.j.tian@intel.com>,
- "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
- "iommu@lists.linux-foundation.org" <iommu@lists.linux-foundation.org>, Bjorn
- Helgaas <bhelgaas@google.com>, "Sun, Yi Y" <yi.y.sun@intel.com>, "Wu,
- Hao" <hao.wu@intel.com>
+X-OriginatorOrg: renesas.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: 35be0a30-2028-4419-6a7e-08d7e0e0b98d
+X-MS-Exchange-CrossTenant-originalarrivaltime: 15 Apr 2020 02:00:08.5723 (UTC)
+X-MS-Exchange-CrossTenant-fromentityheader: Hosted
+X-MS-Exchange-CrossTenant-id: 53d82571-da19-47e4-9cb4-625a166a4a2a
+X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
+X-MS-Exchange-CrossTenant-userprincipalname: HgLfysfL2PxvfDKC2itExWo40yPlLApEbJoj4ROxyur7lzaot8GzL7XJ9hHGQX6EXvVb0KMBIimoZcW5DhvP8Vvm78dbb0AaX+UdpzBMEfDL2CbiC3HubVSL3mFtHYwe
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: TYAPR01MB3520
+Cc: "linux-renesas-soc@vger.kernel.org" <linux-renesas-soc@vger.kernel.org>,
+ "devicetree@vger.kernel.org" <devicetree@vger.kernel.org>,
+ "iommu@lists.linux-foundation.org" <iommu@lists.linux-foundation.org>
 X-BeenThere: iommu@lists.linux-foundation.org
 X-Mailman-Version: 2.1.15
 Precedence: list
@@ -124,279 +138,34 @@ Content-Transfer-Encoding: 7bit
 Errors-To: iommu-bounces@lists.linux-foundation.org
 Sender: "iommu" <iommu-bounces@lists.linux-foundation.org>
 
-> From: Alex Williamson <alex.williamson@redhat.com>
-> Sent: Wednesday, April 15, 2020 8:36 AM
-> 
-> On Tue, 14 Apr 2020 23:57:33 +0000
-> "Tian, Kevin" <kevin.tian@intel.com> wrote:
-> 
-> > > From: Alex Williamson <alex.williamson@redhat.com>
-> > > Sent: Tuesday, April 14, 2020 11:24 PM
-> > >
-> > > On Tue, 14 Apr 2020 03:42:42 +0000
-> > > "Tian, Kevin" <kevin.tian@intel.com> wrote:
-> > >
-> > > > > From: Alex Williamson <alex.williamson@redhat.com>
-> > > > > Sent: Tuesday, April 14, 2020 11:29 AM
-> > > > >
-> > > > > On Tue, 14 Apr 2020 02:40:58 +0000
-> > > > > "Tian, Kevin" <kevin.tian@intel.com> wrote:
-> > > > >
-> > > > > > > From: Alex Williamson <alex.williamson@redhat.com>
-> > > > > > > Sent: Tuesday, April 14, 2020 3:21 AM
-> > > > > > >
-> > > > > > > On Mon, 13 Apr 2020 08:05:33 +0000
-> > > > > > > "Tian, Kevin" <kevin.tian@intel.com> wrote:
-> > > > > > >
-> > > > > > > > > From: Tian, Kevin
-> > > > > > > > > Sent: Monday, April 13, 2020 3:55 PM
-> > > > > > > > >
-> > > > > > > > > > From: Raj, Ashok <ashok.raj@linux.intel.com>
-> > > > > > > > > > Sent: Monday, April 13, 2020 11:11 AM
-> > > > > > > > > >
-> > > > > > > > > > On Wed, Apr 08, 2020 at 10:19:40AM -0600, Alex Williamson
-> > > wrote:
-> > > > > > > > > > > On Tue, 7 Apr 2020 21:00:21 -0700
-> > > > > > > > > > > "Raj, Ashok" <ashok.raj@intel.com> wrote:
-> > > > > > > > > > >
-> > > > > > > > > > > > Hi Alex
-> > > > > > > > > > > >
-> > > > > > > > > > > > + Bjorn
-> > > > > > > > > > >
-> > > > > > > > > > >  + Don
-> > > > > > > > > > >
-> > > > > > > > > > > > FWIW I can't understand why PCI SIG went different ways
-> > > with
-> > > > > ATS,
-> > > > > > > > > > > > where its enumerated on PF and VF. But for PASID and
-> PRI its
-> > > > > only
-> > > > > > > > > > > > in PF.
-> > > > > > > > > > > >
-> > > > > > > > > > > > I'm checking with our internal SIG reps to followup on
-> that.
-> > > > > > > > > > > >
-> > > > > > > > > > > > On Tue, Apr 07, 2020 at 09:58:01AM -0600, Alex
-> Williamson
-> > > > > wrote:
-> > > > > > > > > > > > > > Is there vendor guarantee that hidden registers will
-> locate
-> > > at
-> > > > > the
-> > > > > > > > > > > > > > same offset between PF and VF config space?
-> > > > > > > > > > > > >
-> > > > > > > > > > > > > I'm not sure if the spec really precludes hidden registers,
-> > > but
-> > > > > the
-> > > > > > > > > > > > > fact that these registers are explicitly outside of the
-> > > capability
-> > > > > > > > > > > > > chain implies they're only intended for device specific
-> use,
-> > > so
-> > > > > I'd
-> > > > > > > say
-> > > > > > > > > > > > > there are no guarantees about anything related to these
-> > > > > registers.
-> > > > > > > > > > > >
-> > > > > > > > > > > > As you had suggested in the other thread, we could
-> consider
-> > > > > > > > > > > > using the same offset as in PF, but even that's a better
-> guess
-> > > > > > > > > > > > still not reliable.
-> > > > > > > > > > > >
-> > > > > > > > > > > > The other option is to maybe extend driver ops in the PF
-> to
-> > > > > expose
-> > > > > > > > > > > > where the offsets should be. Sort of adding the quirk in
-> the
-> > > > > > > > > > > > implementation.
-> > > > > > > > > > > >
-> > > > > > > > > > > > I'm not sure how prevalent are PASID and PRI in VF
-> devices. If
-> > > > > SIG is
-> > > > > > > > > > resisting
-> > > > > > > > > > > > making VF's first class citizen, we might ask them to add
-> > > some
-> > > > > > > verbiage
-> > > > > > > > > > > > to suggest leave the same offsets as PF open to help
-> > > emulation
-> > > > > > > software.
-> > > > > > > > > > >
-> > > > > > > > > > > Even if we know where to expose these capabilities on the
-> VF,
-> > > it's
-> > > > > not
-> > > > > > > > > > > clear to me how we can actually virtualize the capability
-> itself.
-> > > If
-> > > > > > > > > > > the spec defines, for example, an enable bit as r/w then
-> > > software
-> > > > > that
-> > > > > > > > > > > interacts with that register expects the bit is settable.
-> There's
-> > > no
-> > > > > > > > > > > protocol for "try to set the bit and re-read it to see if the
-> > > hardware
-> > > > > > > > > > > accepted it".  Therefore a capability with a fixed enable bit
-> > > > > > > > > > > representing the state of the PF, not settable by the VF, is
-> > > > > > > > > > > disingenuous to the spec.
-> > > > > > > > > >
-> > > > > > > > > > I think we are all in violent agreement. A lot of times the pci
-> spec
-> > > > > gets
-> > > > > > > > > > defined several years ahead of real products and no one
-> > > > > remembers
-> > > > > > > > > > the justification on why they restricted things the way they
-> did.
-> > > > > > > > > >
-> > > > > > > > > > Maybe someone early product wasn't quite exposing these
-> > > features
-> > > > > to
-> > > > > > > the
-> > > > > > > > > > VF
-> > > > > > > > > > and hence the spec is bug compatible :-)
-> > > > > > > > > >
-> > > > > > > > > > >
-> > > > > > > > > > > If what we're trying to do is expose that PASID and PRI are
-> > > enabled
-> > > > > on
-> > > > > > > > > > > the PF to a VF driver, maybe duplicating the PF capabilities
-> on
-> > > the
-> > > > > VF
-> > > > > > > > > > > without the ability to control it is not the right approach.
-> > > Maybe
-> > > > > we
-> > > > > > > > > >
-> > > > > > > > > > As long as the capability enable is only provided when the PF
-> has
-> > > > > > > enabled
-> > > > > > > > > > the feature. Then it seems the hardware seems to do the
-> right
-> > > thing.
-> > > > > > > > > >
-> > > > > > > > > > Assume we expose PASID/PRI only when PF has enabled it. It
-> will
-> > > be
-> > > > > the
-> > > > > > > > > > case since the PF driver needs to exist, and IOMMU would
-> have
-> > > set
-> > > > > the
-> > > > > > > > > > PASID/PRI/ATS on PF.
-> > > > > > > > > >
-> > > > > > > > > > If the emulation is purely spoofing the capability. Once
-> vIOMMU
-> > > > > driver
-> > > > > > > > > > enables PASID, the context entries for the VF are completely
-> > > > > > > independent
-> > > > > > > > > > from the PF context entries.
-> > > > > > > > > >
-> > > > > > > > > > vIOMMU would enable PASID, and we just spoof the PASID
-> > > > > capability.
-> > > > > > > > > >
-> > > > > > > > > > If vIOMMU or guest for some reason does disable_pasid(),
-> then
-> > > the
-> > > > > > > > > > vIOMMU driver can disaable PASID on the VF context entries.
-> So
-> > > the
-> > > > > VF
-> > > > > > > > > > although the capability is blanket enabled on PF, IOMMU
-> > > gaurantees
-> > > > > > > the
-> > > > > > > > > > transactions are blocked.
-> > > > > > > > > >
-> > > > > > > > > >
-> > > > > > > > > > In the interim, it seems like the intent of the virtual capability
-> > > > > > > > > > can be honored via help from the IOMMU for the controlling
-> > > aspect..
-> > > > > > > > > >
-> > > > > > > > > > Did i miss anything?
-> > > > > > > > >
-> > > > > > > > > Above works for emulating the enable bit (under the
-> assumption
-> > > that
-> > > > > > > > > PF driver won't disable pasid when vf is assigned). However,
-> there
-> > > are
-> > > > > > > > > also "Execute permission enable" and "Privileged mode
-> enable"
-> > > bits in
-> > > > > > > > > PASID control registers. I don't know how those bits could be
-> > > cleanly
-> > > > > > > > > emulated when the guest writes a value different from PF's...
-> > > > > > > >
-> > > > > > > > sent too quick. the IOMMU also includes control bits for
-> allowing/
-> > > > > > > > blocking execute requests and supervisor requests. We can rely
-> on
-> > > > > > > > IOMMU to block those requests to emulate the disabled cases of
-> > > > > > > > all three control bits in the pasid cap.
-> > > > > > >
-> > > > > > >
-> > > > > > > So if the emulation of the PASID capability takes into account the
-> > > > > > > IOMMU configuration to back that emulation, shouldn't we do
-> that
-> > > > > > > emulation in the hypervisor, ie. QEMU, rather than the kernel vfio
-> > > > > > > layer?  Thanks,
-> > > > > > >
-> > > > > > > Alex
-> > > > > >
-> > > > > > We need enforce it in physical IOMMU, to ensure that even the
-> > > > > > VF may send requests which violate the guest expectation those
-> > > > > > requests are always blocked by IOMMU. Kernel vfio identifies
-> > > > > > such need when emulating the pasid cap and then forward the
-> > > > > > request to host iommu driver.
-> > > > >
-> > > > > Implementing this in the kernel would be necessary if we needed to
-> > > > > protect from the guest device doing something bad to the host or
-> > > > > other devices.  Making sure the physical IOMMU is configured to meet
-> > > > > guest expectations doesn't sound like it necessarily falls into that
-> > > > > category.  We do that on a regular basis to program the DMA
-> mappings.
-> > > > > Tell me more about why the hypervisor can't handle this piece of
-> > > > > guest/host synchronization on top of all the other things it
-> > > > > synchronizes to make a VM.  Thanks,
-> > > > >
-> > > >
-> > > > I care more about "execution permission" and "privileged mode".
-> > > > It might be dangerous when the guest disallows the VF from sending
-> > >
-> > > "Dangerous" how?  We're generally ok with the user managing their own
-> > > consistency, it's when the user can affect other users/devices that we
-> > > require vfio in the kernel to actively manage something.  There's a very
-> > > different scope to the vfio-pci kernel module implementing a fake
-> > > capability and trying to make it behave indistinguishably from the real
-> > > capability versus a userspace driver piecing together an emulation
-> > > that's good enough for their purposes.  Thanks,
-> > >
-> >
-> > How could emulation fix this gap when the VF DMAs don't go through
-> > the vIOMMU? What you explained all makes sense before talking about
-> > the emulation of PASID capability, i.e. vfio only cares about isolation
-> > between assigned devices. However now vfio exposes a capability
-> > which is shared by PF/VF while pure software emulation may break
-> > the guest expectation, and now the only viable mitigation is to get
-> > the help from physical IOMMU. then why cannot vfio include such
-> > mitigation in its emulation of the PASID capability?
-> 
-> DMA never actually goes "through" the vIOMMU.  I'm not suggesting that
-> vfio doesn't participate some how, but I don't know that emulating a
-> capability that doesn't exist and involves policy should be done in the
-> kernel, versus providing userspace with an interface to control what
-> they need to implement that emulation.  Thanks,
-> 
+Hi Robin,
 
-OK, I see your point. We'll think about the latter option (e.g. through 
-DEVICE_FEATURE) and put a proposal for further discussion.
+> From: Robin Murphy, Sent: Wednesday, April 15, 2020 2:16 AM
+> 
+> On 2020-04-13 11:25 am, Yoshihiro Shimoda wrote:
+> [...]
+> > -Each bus master connected to an IPMMU must reference the IPMMU in its device
+> > -node with the following property:
+> > -
+> > -  - iommus: A reference to the IPMMU in two cells. The first cell is a phandle
+> > -    to the IPMMU and the second cell the number of the micro-TLB that the
+> > -    device is connected to.
+> 
+> This definition of what the phandle argument means...
+> 
+> [...]
+> > +  '#iommu-cells':
+> > +    const: 1
+>  > +
+> 
+> ...deserves to be captured in a description here.
 
-btw as I commented earlier, let's focus on PF first to enable vSVA 
-given that there are already many flying bits. After that we can then
-extend the vSVA support to VF based on discussions in this thread.
+Thank you for the comment! I'll fix this.
 
-Thanks
-Kevin
+Best regards,
+Yoshihiro Shimoda
+
+> Robin.
 _______________________________________________
 iommu mailing list
 iommu@lists.linux-foundation.org
