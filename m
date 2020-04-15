@@ -2,99 +2,94 @@ Return-Path: <SRS0=YkH/=57=lists.linux-foundation.org=iommu-bounces@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-8.2 required=3.0 tests=HEADER_FROM_DIFFERENT_DOMAINS,
-	INCLUDES_PATCH,MAILING_LIST_MULTI,SIGNED_OFF_BY,SPF_HELO_NONE,SPF_PASS,
-	URIBL_BLOCKED,USER_AGENT_SANE_1 autolearn=ham autolearn_force=no version=3.4.0
+X-Spam-Status: No, score=-8.0 required=3.0 tests=DKIM_INVALID,DKIM_SIGNED,
+	HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_PATCH,MAILING_LIST_MULTI,SIGNED_OFF_BY,
+	SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED,USER_AGENT_SANE_1 autolearn=unavailable
+	autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id E2443C2BA19
-	for <iommu@archiver.kernel.org>; Wed, 15 Apr 2020 14:37:01 +0000 (UTC)
-Received: from whitealder.osuosl.org (smtp1.osuosl.org [140.211.166.138])
+	by smtp.lore.kernel.org (Postfix) with ESMTP id B953EC2BA19
+	for <iommu@archiver.kernel.org>; Wed, 15 Apr 2020 14:52:37 +0000 (UTC)
+Received: from silver.osuosl.org (smtp3.osuosl.org [140.211.166.136])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by mail.kernel.org (Postfix) with ESMTPS id B2F842076D
-	for <iommu@archiver.kernel.org>; Wed, 15 Apr 2020 14:37:01 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org B2F842076D
-Authentication-Results: mail.kernel.org; dmarc=none (p=none dis=none) header.from=lespocky.de
+	by mail.kernel.org (Postfix) with ESMTPS id 88F8E2076D
+	for <iommu@archiver.kernel.org>; Wed, 15 Apr 2020 14:52:36 +0000 (UTC)
+Authentication-Results: mail.kernel.org;
+	dkim=fail reason="signature verification failed" (1024-bit key) header.d=redhat.com header.i=@redhat.com header.b="djamc2Oo"
+DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 88F8E2076D
+Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=redhat.com
 Authentication-Results: mail.kernel.org; spf=pass smtp.mailfrom=iommu-bounces@lists.linux-foundation.org
 Received: from localhost (localhost [127.0.0.1])
-	by whitealder.osuosl.org (Postfix) with ESMTP id 8639386430;
-	Wed, 15 Apr 2020 14:37:01 +0000 (UTC)
-X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from whitealder.osuosl.org ([127.0.0.1])
-	by localhost (.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
-	with ESMTP id GeHIxdccsymZ; Wed, 15 Apr 2020 14:36:59 +0000 (UTC)
-Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [140.211.9.56])
-	by whitealder.osuosl.org (Postfix) with ESMTP id 4AA9D861F4;
-	Wed, 15 Apr 2020 14:36:59 +0000 (UTC)
-Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
-	by lists.linuxfoundation.org (Postfix) with ESMTP id 180ACC1AE2;
-	Wed, 15 Apr 2020 14:36:59 +0000 (UTC)
-Received: from silver.osuosl.org (smtp3.osuosl.org [140.211.166.136])
- by lists.linuxfoundation.org (Postfix) with ESMTP id A40E7C0172
- for <iommu@lists.linux-foundation.org>; Wed, 15 Apr 2020 14:36:57 +0000 (UTC)
-Received: from localhost (localhost [127.0.0.1])
- by silver.osuosl.org (Postfix) with ESMTP id 838CC2013C
- for <iommu@lists.linux-foundation.org>; Wed, 15 Apr 2020 14:36:57 +0000 (UTC)
+	by silver.osuosl.org (Postfix) with ESMTP id 87AE620380;
+	Wed, 15 Apr 2020 14:52:36 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
 Received: from silver.osuosl.org ([127.0.0.1])
+	by localhost (.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
+	with ESMTP id oOLNPjzfdRPR; Wed, 15 Apr 2020 14:52:35 +0000 (UTC)
+Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [140.211.9.56])
+	by silver.osuosl.org (Postfix) with ESMTP id 2B10020378;
+	Wed, 15 Apr 2020 14:52:35 +0000 (UTC)
+Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
+	by lists.linuxfoundation.org (Postfix) with ESMTP id 08B4CC1AE2;
+	Wed, 15 Apr 2020 14:52:35 +0000 (UTC)
+Received: from whitealder.osuosl.org (smtp1.osuosl.org [140.211.166.138])
+ by lists.linuxfoundation.org (Postfix) with ESMTP id 97C61C0172
+ for <iommu@lists.linux-foundation.org>; Wed, 15 Apr 2020 14:52:33 +0000 (UTC)
+Received: from localhost (localhost [127.0.0.1])
+ by whitealder.osuosl.org (Postfix) with ESMTP id 8B3D684D22
+ for <iommu@lists.linux-foundation.org>; Wed, 15 Apr 2020 14:52:33 +0000 (UTC)
+X-Virus-Scanned: amavisd-new at osuosl.org
+Received: from whitealder.osuosl.org ([127.0.0.1])
  by localhost (.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
- with ESMTP id Z+3qXr3Qvsr6 for <iommu@lists.linux-foundation.org>;
- Wed, 15 Apr 2020 14:36:55 +0000 (UTC)
-X-Greylist: from auto-whitelisted by SQLgrey-1.7.6
-Received: from mout.kundenserver.de (mout.kundenserver.de [212.227.126.134])
- by silver.osuosl.org (Postfix) with ESMTPS id 663561FF59
- for <iommu@lists.linux-foundation.org>; Wed, 15 Apr 2020 14:36:55 +0000 (UTC)
-Received: from methusalix.internal.home.lespocky.de ([92.117.44.186]) by
- mrelayeu.kundenserver.de (mreue009 [212.227.15.167]) with ESMTPSA (Nemesis)
- id 1MSKq0-1jrQ5p0Ebw-00ShhZ; Wed, 15 Apr 2020 16:35:29 +0200
-Received: from falbala.internal.home.lespocky.de ([192.168.243.94])
- by methusalix.internal.home.lespocky.de with esmtpsa
- (TLSv1.2:ECDHE-RSA-AES256-GCM-SHA384:256) (Exim 4.92.3)
- (envelope-from <post@lespocky.de>)
- id 1jOj8M-0000YX-Nj; Wed, 15 Apr 2020 16:35:26 +0200
-Date: Wed, 15 Apr 2020 16:35:21 +0200
-From: Alexander Dahl <post@lespocky.de>
-To: x86@kernel.org
-Subject: Re: [PATCH v2] dma: Fix max PFN arithmetic overflow on 32 bit systems
-Message-ID: <20200415143519.iev6r4llqs3hwtgz@falbala.internal.home.lespocky.de>
-Mail-Followup-To: x86@kernel.org, iommu@lists.linux-foundation.org,
- linux-kernel@vger.kernel.org,
- Alan Jenkins <alan.christopher.jenkins@gmail.com>,
- Ingo Molnar <mingo@redhat.com>, Borislav Petkov <bp@alien8.de>,
- "H . Peter Anvin" <hpa@zytor.com>,
- Thomas Gleixner <tglx@linutronix.de>,
- Robin Murphy <robin.murphy@arm.com>,
- Florian Wolters <florian@florian-wolters.de>
-References: <20200319153154.usbqsk6uspegw5pr@falbala.internal.home.lespocky.de>
- <20200321182823.1912-1-post@lespocky.de>
+ with ESMTP id S4MatccWprFS for <iommu@lists.linux-foundation.org>;
+ Wed, 15 Apr 2020 14:52:32 +0000 (UTC)
+X-Greylist: domain auto-whitelisted by SQLgrey-1.7.6
+Received: from us-smtp-1.mimecast.com (us-smtp-delivery-1.mimecast.com
+ [207.211.31.120])
+ by whitealder.osuosl.org (Postfix) with ESMTPS id 966D584D16
+ for <iommu@lists.linux-foundation.org>; Wed, 15 Apr 2020 14:52:32 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+ s=mimecast20190719; t=1586962351;
+ h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+ to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+ content-transfer-encoding:content-transfer-encoding:
+ in-reply-to:in-reply-to:references:references;
+ bh=V4Hx+IN0pRdVO48Kb3j2SU1ntxZSQY+XRptloJnqRvo=;
+ b=djamc2Ooo+0t2+lpxGoSyfiGDkkZ6cpwmjcPJ56mk/E8YSokgPme+keQGhtJZ1UOh50uF+
+ 1IE+lerSragKrNXQiMqA8OTIIP1yyUhUElyOjMHcwcXnMRLj6cPa/FnHXsgknGQMGCLRW2
+ VNTURADibp/1razxnTEynETvZnDuViM=
+Received: from mimecast-mx01.redhat.com (mimecast-mx01.redhat.com
+ [209.132.183.4]) (Using TLS) by relay.mimecast.com with ESMTP id
+ us-mta-151-UJ0WusaKNHC3XykYzkbsIw-1; Wed, 15 Apr 2020 10:52:22 -0400
+X-MC-Unique: UJ0WusaKNHC3XykYzkbsIw-1
+Received: from smtp.corp.redhat.com (int-mx03.intmail.prod.int.phx2.redhat.com
+ [10.5.11.13])
+ (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
+ (No client certificate requested)
+ by mimecast-mx01.redhat.com (Postfix) with ESMTPS id 7B39018C8C0C;
+ Wed, 15 Apr 2020 14:52:19 +0000 (UTC)
+Received: from [10.36.115.53] (ovpn-115-53.ams2.redhat.com [10.36.115.53])
+ by smtp.corp.redhat.com (Postfix) with ESMTPS id 807A89F9B6;
+ Wed, 15 Apr 2020 14:52:12 +0000 (UTC)
+Subject: Re: [PATCH v11 01/13] iommu: Introduce attach/detach_pasid_table API
+To: Jacob Pan <jacob.jun.pan@linux.intel.com>
+References: <20200414150607.28488-1-eric.auger@redhat.com>
+ <20200414150607.28488-2-eric.auger@redhat.com>
+ <20200414151548.658a0401@jacob-builder>
+From: Auger Eric <eric.auger@redhat.com>
+Message-ID: <c781ce8d-7fe4-0fee-ba95-a1e493e003f5@redhat.com>
+Date: Wed, 15 Apr 2020 16:52:10 +0200
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:60.0) Gecko/20100101
+ Thunderbird/60.4.0
 MIME-Version: 1.0
-In-Reply-To: <20200321182823.1912-1-post@lespocky.de>
-User-Agent: NeoMutt/20170113 (1.7.2)
-X-Scan-Signature: da85ea8975133f28083df41d042c8ce6
-X-Provags-ID: V03:K1:IVw6I1Kpwa21fkaHCKwXojjV4/ttMR/aUvFUOzfL6qppUNnSm/b
- UOdZ95kulgEkWlmiCSwgMdour6+Xv+i2p8MV8SEK3zkp+1lqYiGp8hlNfWswyh69gW3vtVI
- mriMwnD7dgb+d9KcTN/AFzj+b1T7QGV88jn7/JZwq0CdnukucuS7MczDc7i5LE7J46w4bxK
- J31vvASfiEIOJjjq+PeJA==
-X-UI-Out-Filterresults: notjunk:1;V03:K0:38CJH6+4tJU=:sbqlGgtb9QRA8SmwEjQnUt
- 0/9BGzpd/YLLHpDLnuSR9wokBVkVI3gbEUeW1FumvI7RwHg3Mvkxu7fXAppyto5l4qQS7+IwX
- OoXfEX6sGSzVMPTTdnQllS3l6sVHTshwbUv+Z4fEmbV1JhPxe3JmnKx/3X+93KRA3oVh93ihY
- YhaL9yYWRcA+rddzxZMXr865rT2gCMrr515MOrseLaboI/0vesg8WFN5qcfwJwkQjRbImr0u3
- COJcYoV2Lg2s044wTg1wj3eQ0aOq1YqiyI9q/dg+ZChcip0D8N7IIbSHm00Uk0bHH1wpROrW3
- +/U4K64rvuQ4p/uYu5YBUHvfEHnjdIbaFZrph1l8Cb8V9wokdy81da0i0vXeXRDcy5nRgiyQ+
- 9ZHTNmKXjiHELFKjRA0rpzrVdR4yLiJMXDnCr4PTKm4zWn+hkS/4XvGTuw6Buqrh939ZEbE6x
- S6TJr3Fgt80SmR87vHpkHqFkisty7jeKdm7T1U61VZXPscz7LRmterhRdNknMPRh5lgnIvOeW
- gse+ZgqgLSYc1kDTG6A/8964M6Il6BQFXHNWOc27ahFWMKy0/KEilmc0FghjLRA26wvAqUPcL
- GplUXb+Rh03iEEYr8/GAfve0PZfi2xzls5KwdyHnBTYbvBnVK1yfl7PswA5jpB9LtO1DJ2vQg
- XfWelXTM09gDIwC4sXMFTndqbQs0NrY5akjoTD8KesMAD9ohzxP+m8g4noU2QOzfeteBFisCx
- VOpi71/ridCEWDBz2hnN7eeP/pBCKwWhAtM5/YmqwXlU6IIrvlgJ9gCsFzyWuMQCs6c2NXDEw
- IrRmrpWt5jTVO6zV78m4waZQ3WKI7kAzJN+Ed1Us2Bl0ieWI6BoUH1jbnKBXFqaM+mANAJJ
-Cc: Alexander Dahl <post@lespocky.de>, iommu@lists.linux-foundation.org,
- linux-kernel@vger.kernel.org,
- Alan Jenkins <alan.christopher.jenkins@gmail.com>,
- Ingo Molnar <mingo@redhat.com>, Borislav Petkov <bp@alien8.de>,
- "H . Peter Anvin" <hpa@zytor.com>, Thomas Gleixner <tglx@linutronix.de>,
- Robin Murphy <robin.murphy@arm.com>,
- Florian Wolters <florian@florian-wolters.de>
+In-Reply-To: <20200414151548.658a0401@jacob-builder>
+Content-Language: en-US
+X-Scanned-By: MIMEDefang 2.79 on 10.5.11.13
+Cc: jean-philippe@linaro.org, alex.williamson@redhat.com, kvm@vger.kernel.org,
+ peter.maydell@linaro.org, maz@kernel.org, zhangfei.gao@foxmail.com,
+ linux-kernel@vger.kernel.org, iommu@lists.linux-foundation.org,
+ zhangfei.gao@linaro.org, robin.murphy@arm.com, bbhushan2@marvell.com,
+ will@kernel.org, kvmarm@lists.cs.columbia.edu, eric.auger.pro@gmail.com
 X-BeenThere: iommu@lists.linux-foundation.org
 X-Mailman-Version: 2.1.15
 Precedence: list
@@ -107,141 +102,234 @@ List-Post: <mailto:iommu@lists.linux-foundation.org>
 List-Help: <mailto:iommu-request@lists.linux-foundation.org?subject=help>
 List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
  <mailto:iommu-request@lists.linux-foundation.org?subject=subscribe>
-Content-Type: multipart/mixed; boundary="===============5331829522562916576=="
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: 7bit
 Errors-To: iommu-bounces@lists.linux-foundation.org
 Sender: "iommu" <iommu-bounces@lists.linux-foundation.org>
 
+Hi Jacob,
+On 4/15/20 12:15 AM, Jacob Pan wrote:
+> Hi Eric,
+> 
+> There are some discussions about how to size the uAPI data.
+> https://lkml.org/lkml/2020/4/14/939
+> 
+> I think the problem with the current scheme is that when uAPI data gets
+> extended, if VFIO continue to use:
+> 
+> minsz = offsetofend(struct vfio_iommu_type1_set_pasid_table, config);
+> if (copy_from_user(&spt, (void __user *)arg, minsz))
+> 
+> It may copy more data from user than what was setup by the user.
+> 
+> So, as suggested by Alex, we could add argsz to the IOMMU uAPI struct.
+> So if argsz > minsz, then fail the attach_table since kernel might be
+> old, doesn't know about the extra data.
+> If argsz <= minsz, kernel can support the attach_table but must process
+> the data based on flags or config.
 
---===============5331829522562916576==
-Content-Type: multipart/signed; micalg=pgp-sha256;
-	protocol="application/pgp-signature"; boundary="ahhticrbe2tikgv5"
-Content-Disposition: inline
+So I guess we would need both an argsz _u32 + a new flag _u32 right?
 
+I am ok with that idea. Besides how will you manage for existing IOMMU
+UAPIs? At some point you envisionned to have a getter at iommu api level
+to retrieve the size of a structure for a given version, right?
 
---ahhticrbe2tikgv5
-Content-Type: text/plain; charset=utf-8
-Content-Disposition: inline
-Content-Transfer-Encoding: quoted-printable
+Thanks
 
-Hello,
-
-now after v5.7-rc1 is out, I would kindly ask, if anyone had time to
-review this one line patch? Is anything wrong with that fix?
-
-(I added the current fli4l kernel package maintainer Florian to Cc to
-let him know I'm still having an eye on this.)
-
-Greets
-Alex
-
-On Sat, Mar 21, 2020 at 07:28:23PM +0100, Alexander Dahl wrote:
-> For ARCH=3Dx86 (32 bit) when you set CONFIG_IOMMU_INTEL since c5a5dc4cbbf4
-> ("iommu/vt-d: Don't switch off swiotlb if bounce page is used") there's
-> a dependency on CONFIG_SWIOTLB, which was not necessarily active before.
->=20
-> The init code for swiotlb in 'pci_swiotlb_detect_4gb()' compares
-> something against MAX_DMA32_PFN to decide if it should be active.
-> However that define suffers from an arithmetic overflow since
-> 1b7e03ef7570 ("x86, NUMA: Enable emulation on 32bit too") when it was
-> first made visible to x86_32.
->=20
-> The effect is at boot time 64 MiB (default size) were allocated for
-> bounce buffers now, which is a noticeable amount of memory on small
-> systems. We noticed this effect on the fli4l Linux distribution when
-> migrating from kernel v4.19 (LTS) to v5.4 (LTS) on boards like pcengines
-> ALIX 2D3 with 256 MiB memory for example:
->=20
->   Linux version 5.4.22 (buildroot@buildroot) (gcc version 7.3.0 (Buildroo=
-t 2018.02.8)) #1 SMP Mon Nov 26 23:40:00 CET 2018
->   =E2=80=A6
->   Memory: 183484K/261756K available (4594K kernel code, 393K rwdata, 1660=
-K rodata, 536K init, 456K bss , 78272K reserved, 0K cma-reserved, 0K highme=
-m)
->   =E2=80=A6
->   PCI-DMA: Using software bounce buffering for IO (SWIOTLB)
->   software IO TLB: mapped [mem 0x0bb78000-0x0fb78000] (64MB)
->=20
-> The initial analysis and the suggested fix was done by user 'sourcejedi'
-> at stackoverflow and explicitly marked as GPLv2 for inclusion in the
-> Linux kernel:
->=20
->   https://unix.stackexchange.com/a/520525/50007
->=20
-> The actual calculation however is the same as for arch/mips now as
-> suggested by Robin Murphy.
->=20
-> Fixes: https://web.nettworks.org/bugs/browse/FFL-2560
-> Fixes: https://unix.stackexchange.com/q/520065/50007
-> Reported-by: Alan Jenkins <alan.christopher.jenkins@gmail.com>
-> Suggested-by: Robin Murphy <robin.murphy@arm.com>
-> Signed-off-by: Alexander Dahl <post@lespocky.de>
-> ---
->=20
-> Notes:
->     v1 -> v2:
->       - use the same calculation as with arch/mips (Robin Murphy)
->=20
->  arch/x86/include/asm/dma.h | 2 +-
->  1 file changed, 1 insertion(+), 1 deletion(-)
->=20
-> diff --git a/arch/x86/include/asm/dma.h b/arch/x86/include/asm/dma.h
-> index 00f7cf45e699..8e95aa4b0d17 100644
-> --- a/arch/x86/include/asm/dma.h
-> +++ b/arch/x86/include/asm/dma.h
-> @@ -74,7 +74,7 @@
->  #define MAX_DMA_PFN   ((16UL * 1024 * 1024) >> PAGE_SHIFT)
-> =20
->  /* 4GB broken PCI/AGP hardware bus master zone */
-> -#define MAX_DMA32_PFN ((4UL * 1024 * 1024 * 1024) >> PAGE_SHIFT)
-> +#define MAX_DMA32_PFN (1UL << (32 - PAGE_SHIFT))
-> =20
->  #ifdef CONFIG_X86_32
->  /* The maximum address that we can perform a DMA transfer to on this pla=
-tform */
-> --=20
-> 2.20.1
->=20
-> _______________________________________________
-> iommu mailing list
-> iommu@lists.linux-foundation.org
-> https://lists.linuxfoundation.org/mailman/listinfo/iommu
-
---=20
-/"\ ASCII RIBBON | =C2=BBWith the first link, the chain is forged. The first
-\ / CAMPAIGN     | speech censured, the first thought forbidden, the
- X  AGAINST      | first freedom denied, chains us all irrevocably.=C2=AB
-/ \ HTML MAIL    | (Jean-Luc Picard, quoting Judge Aaron Satie)
-
---ahhticrbe2tikgv5
-Content-Type: application/pgp-signature; name="signature.asc"
-
------BEGIN PGP SIGNATURE-----
-
-iQIzBAABCAAdFiEEwo7muQJjlc+Prwj6NK3NAHIhXMYFAl6XG6IACgkQNK3NAHIh
-XMbmog//e9M196yeEg88JKJH2mpdtfl60nTuzTfAj+jq/iuzzPTdrzfyBPqIhR97
-DoG+nyi5M9OoBHtRNbruPAicBCjJGoiAvF7kI8fJkdbppDbxxIK4SwZfvB9SBTn9
-YfW0l16y7OaAtTU8tGkiHpIl+D/uvEjlvoaxsYj12fZA5m/3V0FV5yCLPOAaUvMC
-dJZ2Jhyyqk56M/6uCJsoYixeFnKZplOJE9RoNlSQVgFnjVPQVzJn+vgBpyBPpuLM
-qNxxFFv8oA6tZD7coxL25Dkse9r/qTiT4aox+k9OtoHD0aLJBeBUBuQxXHCSuzOq
-+ubisc0GxSIasuLlQzi2PshoxpUPgzTAAYSPmJs/fUFMCKz8YuMRRZiZdOWD9RRi
-AZ5S5t7/A0AodDQEMDJ235xtAXIVQgF5yMdn7ihwhrtjeQkhFaCjFkMwkXs7ezwY
-1fOmETmU8wJRsiKYgjsRpG47oX0wXquhJ6wCJNDvAE1V42ZfARGAtquG+i3D5XFU
-Z3rav+9lc+ezeKX+Wb7e98GYL2v7FqT+G8U75A4otq+hZSUeD7gfhzNCKPqwzi5K
-m2+9jchVeWaHyD+h0wYIiEUSS0snv//bw9I8iUhaNmtOC7obnGuRLaRC6r53TZeR
-VhSG72hOG9MBVDfXp+abOL4PmBaziGcAN973BwGrtO3STpxKVbw=
-=PSc6
------END PGP SIGNATURE-----
-
---ahhticrbe2tikgv5--
-
---===============5331829522562916576==
-Content-Type: text/plain; charset="us-ascii"
-MIME-Version: 1.0
-Content-Transfer-Encoding: 7bit
-Content-Disposition: inline
+Eric
+> 
+> Does it make sense to you?
+> 
+> 
+> On Tue, 14 Apr 2020 17:05:55 +0200
+> Eric Auger <eric.auger@redhat.com> wrote:
+> 
+>> From: Jacob Pan <jacob.jun.pan@linux.intel.com>
+>>
+>> In virtualization use case, when a guest is assigned
+>> a PCI host device, protected by a virtual IOMMU on the guest,
+>> the physical IOMMU must be programmed to be consistent with
+>> the guest mappings. If the physical IOMMU supports two
+>> translation stages it makes sense to program guest mappings
+>> onto the first stage/level (ARM/Intel terminology) while the host
+>> owns the stage/level 2.
+>>
+>> In that case, it is mandated to trap on guest configuration
+>> settings and pass those to the physical iommu driver.
+>>
+>> This patch adds a new API to the iommu subsystem that allows
+>> to set/unset the pasid table information.
+>>
+>> A generic iommu_pasid_table_config struct is introduced in
+>> a new iommu.h uapi header. This is going to be used by the VFIO
+>> user API.
+>>
+>> Signed-off-by: Jean-Philippe Brucker <jean-philippe.brucker@arm.com>
+>> Signed-off-by: Liu, Yi L <yi.l.liu@linux.intel.com>
+>> Signed-off-by: Ashok Raj <ashok.raj@intel.com>
+>> Signed-off-by: Jacob Pan <jacob.jun.pan@linux.intel.com>
+>> Signed-off-by: Eric Auger <eric.auger@redhat.com>
+>> Reviewed-by: Jean-Philippe Brucker <jean-philippe.brucker@arm.com>
+>> ---
+>>  drivers/iommu/iommu.c      | 19 ++++++++++++++
+>>  include/linux/iommu.h      | 18 ++++++++++++++
+>>  include/uapi/linux/iommu.h | 51
+>> ++++++++++++++++++++++++++++++++++++++ 3 files changed, 88
+>> insertions(+)
+>>
+>> diff --git a/drivers/iommu/iommu.c b/drivers/iommu/iommu.c
+>> index 2b471419e26c..b71ad56f8c99 100644
+>> --- a/drivers/iommu/iommu.c
+>> +++ b/drivers/iommu/iommu.c
+>> @@ -1723,6 +1723,25 @@ int iommu_sva_unbind_gpasid(struct
+>> iommu_domain *domain, struct device *dev, }
+>>  EXPORT_SYMBOL_GPL(iommu_sva_unbind_gpasid);
+>>  
+>> +int iommu_attach_pasid_table(struct iommu_domain *domain,
+>> +			     struct iommu_pasid_table_config *cfg)
+>> +{
+>> +	if (unlikely(!domain->ops->attach_pasid_table))
+>> +		return -ENODEV;
+>> +
+>> +	return domain->ops->attach_pasid_table(domain, cfg);
+>> +}
+>> +EXPORT_SYMBOL_GPL(iommu_attach_pasid_table);
+>> +
+>> +void iommu_detach_pasid_table(struct iommu_domain *domain)
+>> +{
+>> +	if (unlikely(!domain->ops->detach_pasid_table))
+>> +		return;
+>> +
+>> +	domain->ops->detach_pasid_table(domain);
+>> +}
+>> +EXPORT_SYMBOL_GPL(iommu_detach_pasid_table);
+>> +
+>>  static void __iommu_detach_device(struct iommu_domain *domain,
+>>  				  struct device *dev)
+>>  {
+>> diff --git a/include/linux/iommu.h b/include/linux/iommu.h
+>> index 7ef8b0bda695..3e1057c3585a 100644
+>> --- a/include/linux/iommu.h
+>> +++ b/include/linux/iommu.h
+>> @@ -248,6 +248,8 @@ struct iommu_iotlb_gather {
+>>   * @cache_invalidate: invalidate translation caches
+>>   * @sva_bind_gpasid: bind guest pasid and mm
+>>   * @sva_unbind_gpasid: unbind guest pasid and mm
+>> + * @attach_pasid_table: attach a pasid table
+>> + * @detach_pasid_table: detach the pasid table
+>>   * @pgsize_bitmap: bitmap of all possible supported page sizes
+>>   * @owner: Driver module providing these ops
+>>   */
+>> @@ -307,6 +309,9 @@ struct iommu_ops {
+>>  				      void *drvdata);
+>>  	void (*sva_unbind)(struct iommu_sva *handle);
+>>  	int (*sva_get_pasid)(struct iommu_sva *handle);
+>> +	int (*attach_pasid_table)(struct iommu_domain *domain,
+>> +				  struct iommu_pasid_table_config
+>> *cfg);
+>> +	void (*detach_pasid_table)(struct iommu_domain *domain);
+>>  
+>>  	int (*page_response)(struct device *dev,
+>>  			     struct iommu_fault_event *evt,
+>> @@ -446,6 +451,9 @@ extern int iommu_sva_bind_gpasid(struct
+>> iommu_domain *domain, struct device *dev, struct
+>> iommu_gpasid_bind_data *data); extern int
+>> iommu_sva_unbind_gpasid(struct iommu_domain *domain, struct device
+>> *dev, ioasid_t pasid); +extern int iommu_attach_pasid_table(struct
+>> iommu_domain *domain,
+>> +				    struct iommu_pasid_table_config
+>> *cfg); +extern void iommu_detach_pasid_table(struct iommu_domain
+>> *domain); extern struct iommu_domain *iommu_get_domain_for_dev(struct
+>> device *dev); extern struct iommu_domain *iommu_get_dma_domain(struct
+>> device *dev); extern int iommu_map(struct iommu_domain *domain,
+>> unsigned long iova, @@ -1048,6 +1056,16 @@ iommu_aux_get_pasid(struct
+>> iommu_domain *domain, struct device *dev) return -ENODEV;
+>>  }
+>>  
+>> +static inline
+>> +int iommu_attach_pasid_table(struct iommu_domain *domain,
+>> +			     struct iommu_pasid_table_config *cfg)
+>> +{
+>> +	return -ENODEV;
+>> +}
+>> +
+>> +static inline
+>> +void iommu_detach_pasid_table(struct iommu_domain *domain) {}
+>> +
+>>  static inline struct iommu_sva *
+>>  iommu_sva_bind_device(struct device *dev, struct mm_struct *mm, void
+>> *drvdata) {
+>> diff --git a/include/uapi/linux/iommu.h b/include/uapi/linux/iommu.h
+>> index 4ad3496e5c43..8d00be10dc6d 100644
+>> --- a/include/uapi/linux/iommu.h
+>> +++ b/include/uapi/linux/iommu.h
+>> @@ -321,4 +321,55 @@ struct iommu_gpasid_bind_data {
+>>  	};
+>>  };
+>>  
+>> +/**
+>> + * struct iommu_pasid_smmuv3 - ARM SMMUv3 Stream Table Entry stage 1
+>> related
+>> + *     information
+>> + * @version: API version of this structure
+>> + * @s1fmt: STE s1fmt (format of the CD table: single CD, linear table
+>> + *         or 2-level table)
+>> + * @s1dss: STE s1dss (specifies the behavior when @pasid_bits != 0
+>> + *         and no PASID is passed along with the incoming
+>> transaction)
+>> + * @padding: reserved for future use (should be zero)
+>> + *
+>> + * The PASID table is referred to as the Context Descriptor (CD)
+>> table on ARM
+>> + * SMMUv3. Please refer to the ARM SMMU 3.x spec (ARM IHI 0070A) for
+>> full
+>> + * details.
+>> + */
+>> +struct iommu_pasid_smmuv3 {
+>> +#define PASID_TABLE_SMMUV3_CFG_VERSION_1 1
+>> +	__u32	version;
+>> +	__u8	s1fmt;
+>> +	__u8	s1dss;
+>> +	__u8	padding[2];
+>> +};
+>> +
+>> +/**
+>> + * struct iommu_pasid_table_config - PASID table data used to bind
+>> guest PASID
+>> + *     table to the host IOMMU
+>> + * @version: API version to prepare for future extensions
+>> + * @format: format of the PASID table
+>> + * @base_ptr: guest physical address of the PASID table
+>> + * @pasid_bits: number of PASID bits used in the PASID table
+>> + * @config: indicates whether the guest translation stage must
+>> + *          be translated, bypassed or aborted.
+>> + * @padding: reserved for future use (should be zero)
+>> + * @smmuv3: table information when @format is
+>> %IOMMU_PASID_FORMAT_SMMUV3
+>> + */
+>> +struct iommu_pasid_table_config {
+>> +#define PASID_TABLE_CFG_VERSION_1 1
+>> +	__u32	version;
+>> +#define IOMMU_PASID_FORMAT_SMMUV3	1
+>> +	__u32	format;
+>> +	__u64	base_ptr;
+>> +	__u8	pasid_bits;
+>> +#define IOMMU_PASID_CONFIG_TRANSLATE	1
+>> +#define IOMMU_PASID_CONFIG_BYPASS	2
+>> +#define IOMMU_PASID_CONFIG_ABORT	3
+>> +	__u8	config;
+>> +	__u8    padding[6];
+>> +	union {
+>> +		struct iommu_pasid_smmuv3 smmuv3;
+>> +	};
+>> +};
+>> +
+>>  #endif /* _UAPI_IOMMU_H */
+> 
+> [Jacob Pan]
+> 
 
 _______________________________________________
 iommu mailing list
 iommu@lists.linux-foundation.org
 https://lists.linuxfoundation.org/mailman/listinfo/iommu
---===============5331829522562916576==--
