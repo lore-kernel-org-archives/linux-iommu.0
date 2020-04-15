@@ -6,75 +6,76 @@ X-Spam-Status: No, score=-9.8 required=3.0 tests=DKIM_INVALID,DKIM_SIGNED,
 	INCLUDES_PATCH,MAILING_LIST_MULTI,SIGNED_OFF_BY,SPF_HELO_NONE,SPF_PASS,
 	USER_AGENT_GIT autolearn=ham autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 6F39CC3815B
-	for <iommu@archiver.kernel.org>; Wed, 15 Apr 2020 11:45:02 +0000 (UTC)
-Received: from silver.osuosl.org (smtp3.osuosl.org [140.211.166.136])
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 94DA3C2BA19
+	for <iommu@archiver.kernel.org>; Wed, 15 Apr 2020 11:46:07 +0000 (UTC)
+Received: from hemlock.osuosl.org (smtp2.osuosl.org [140.211.166.133])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by mail.kernel.org (Postfix) with ESMTPS id 3F8C121569
-	for <iommu@archiver.kernel.org>; Wed, 15 Apr 2020 11:45:02 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTPS id 5EF6920768
+	for <iommu@archiver.kernel.org>; Wed, 15 Apr 2020 11:46:07 +0000 (UTC)
 Authentication-Results: mail.kernel.org;
-	dkim=fail reason="signature verification failed" (1024-bit key) header.d=kernel.org header.i=@kernel.org header.b="mg43Nnjb"
-DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 3F8C121569
+	dkim=fail reason="signature verification failed" (1024-bit key) header.d=kernel.org header.i=@kernel.org header.b="qR1PY9lc"
+DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 5EF6920768
 Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=kernel.org
 Authentication-Results: mail.kernel.org; spf=pass smtp.mailfrom=iommu-bounces@lists.linux-foundation.org
 Received: from localhost (localhost [127.0.0.1])
-	by silver.osuosl.org (Postfix) with ESMTP id 19E1220551;
-	Wed, 15 Apr 2020 11:45:02 +0000 (UTC)
+	by hemlock.osuosl.org (Postfix) with ESMTP id 31F3C87A77;
+	Wed, 15 Apr 2020 11:46:07 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from silver.osuosl.org ([127.0.0.1])
+Received: from hemlock.osuosl.org ([127.0.0.1])
 	by localhost (.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
-	with ESMTP id Wtz76IckF5t6; Wed, 15 Apr 2020 11:45:01 +0000 (UTC)
+	with ESMTP id mbD-9F6ZcDtd; Wed, 15 Apr 2020 11:46:06 +0000 (UTC)
 Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [140.211.9.56])
-	by silver.osuosl.org (Postfix) with ESMTP id D40D2204FF;
-	Wed, 15 Apr 2020 11:45:01 +0000 (UTC)
+	by hemlock.osuosl.org (Postfix) with ESMTP id 8391F87B0F;
+	Wed, 15 Apr 2020 11:46:06 +0000 (UTC)
 Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
-	by lists.linuxfoundation.org (Postfix) with ESMTP id C11CDC089E;
-	Wed, 15 Apr 2020 11:45:01 +0000 (UTC)
+	by lists.linuxfoundation.org (Postfix) with ESMTP id 63B11C089E;
+	Wed, 15 Apr 2020 11:46:06 +0000 (UTC)
 Received: from whitealder.osuosl.org (smtp1.osuosl.org [140.211.166.138])
- by lists.linuxfoundation.org (Postfix) with ESMTP id D5D0EC0172
- for <iommu@lists.linux-foundation.org>; Wed, 15 Apr 2020 11:45:00 +0000 (UTC)
+ by lists.linuxfoundation.org (Postfix) with ESMTP id 5069DC0172;
+ Wed, 15 Apr 2020 11:46:05 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
- by whitealder.osuosl.org (Postfix) with ESMTP id C363B873B8
- for <iommu@lists.linux-foundation.org>; Wed, 15 Apr 2020 11:45:00 +0000 (UTC)
+ by whitealder.osuosl.org (Postfix) with ESMTP id 4BD6F873C5;
+ Wed, 15 Apr 2020 11:46:05 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
 Received: from whitealder.osuosl.org ([127.0.0.1])
  by localhost (.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
- with ESMTP id E-2Bnj7+mSHm for <iommu@lists.linux-foundation.org>;
- Wed, 15 Apr 2020 11:45:00 +0000 (UTC)
+ with ESMTP id BbHZ2vlQtw+D; Wed, 15 Apr 2020 11:46:04 +0000 (UTC)
+X-Greylist: domain auto-whitelisted by SQLgrey-1.7.6
 X-Greylist: domain auto-whitelisted by SQLgrey-1.7.6
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
- by whitealder.osuosl.org (Postfix) with ESMTPS id 38C6D873C5
- for <iommu@lists.linux-foundation.org>; Wed, 15 Apr 2020 11:45:00 +0000 (UTC)
+ by whitealder.osuosl.org (Postfix) with ESMTPS id D2467870B3;
+ Wed, 15 Apr 2020 11:46:04 +0000 (UTC)
 Received: from sasha-vm.mshome.net (c-73-47-72-35.hsd1.nh.comcast.net
  [73.47.72.35])
  (using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
  (No client certificate requested)
- by mail.kernel.org (Postfix) with ESMTPSA id 6E213215A4;
- Wed, 15 Apr 2020 11:44:59 +0000 (UTC)
+ by mail.kernel.org (Postfix) with ESMTPSA id C86B221582;
+ Wed, 15 Apr 2020 11:46:03 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
- s=default; t=1586951100;
- bh=fa6sFC6ExgJLrtzdqYbGOIXx3ZLfMUmZOOEM2DJyOJ4=;
+ s=default; t=1586951164;
+ bh=QSO+MTYLOIEKsq08PJYUz+Ls1m/XYejmU5s/QbqlFiI=;
  h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
- b=mg43Nnjb+3TJ7SxpfWFdzWkykMVYOg+vBm1CbUzI9RrdApNyg8iqx4wULzzQDnQqz
- Tljt+giiLswr+kLLdX84i8tRw2wlR9lUltPlgdKnnZDhkTVyPABgK9jj/+MMYQLjIn
- 6W+L7GzqXwfCVKdRFQSziVeJJ2v6ylcIcQ5Vacy8=
+ b=qR1PY9lcNF0ewOkv22ZK+DrUYOmYi1+TWzMjtPg0fKsJKdKlTZXMJ/xXcI7gsMRvN
+ lSawDwdb86TeSIH+g3GidxgIy44vu+PMddS37maukW5x2I0H3B/fwa5RBIZ9iS3Uv8
+ MvARhw2FPJifr+DcCAZX26xKBhs5+T4bDdsf1l6Q=
 From: Sasha Levin <sashal@kernel.org>
 To: linux-kernel@vger.kernel.org,
 	stable@vger.kernel.org
-Subject: [PATCH AUTOSEL 5.4 15/84] dma-coherent: fix integer overflow in the
- reserved-memory dma allocation
-Date: Wed, 15 Apr 2020 07:43:32 -0400
-Message-Id: <20200415114442.14166-15-sashal@kernel.org>
+Subject: [PATCH AUTOSEL 5.4 69/84] iommu/virtio: Fix freeing of incomplete
+ domains
+Date: Wed, 15 Apr 2020 07:44:26 -0400
+Message-Id: <20200415114442.14166-69-sashal@kernel.org>
 X-Mailer: git-send-email 2.20.1
 In-Reply-To: <20200415114442.14166-1-sashal@kernel.org>
 References: <20200415114442.14166-1-sashal@kernel.org>
 MIME-Version: 1.0
 X-stable: review
 X-Patchwork-Hint: Ignore
-Cc: Sasha Levin <sashal@kernel.org>, iommu@lists.linux-foundation.org,
- Kevin Grandemange <kevin.grandemange@allegrodvt.com>,
- Christoph Hellwig <hch@lst.de>
+Cc: Sasha Levin <sashal@kernel.org>,
+ Jean-Philippe Brucker <jean-philippe@linaro.org>,
+ Joerg Roedel <jroedel@suse.de>, virtualization@lists.linux-foundation.org,
+ iommu@lists.linux-foundation.org, Robin Murphy <robin.murphy@arm.com>
 X-BeenThere: iommu@lists.linux-foundation.org
 X-Mailman-Version: 2.1.15
 Precedence: list
@@ -92,81 +93,61 @@ Content-Transfer-Encoding: 7bit
 Errors-To: iommu-bounces@lists.linux-foundation.org
 Sender: "iommu" <iommu-bounces@lists.linux-foundation.org>
 
-From: Kevin Grandemange <kevin.grandemange@allegrodvt.com>
+From: Jean-Philippe Brucker <jean-philippe@linaro.org>
 
-[ Upstream commit 286c21de32b904131f8cf6a36ce40b8b0c9c5da3 ]
+[ Upstream commit 7062af3ed2ba451029e3733d9f677c68f5ea9e77 ]
 
-pageno is an int and the PAGE_SHIFT shift is done on an int,
-overflowing if the memory is bigger than 2G
+Calling viommu_domain_free() on a domain that hasn't been finalised (not
+attached to any device, for example) can currently cause an Oops,
+because we attempt to call ida_free() on ID 0, which may either be
+unallocated or used by another domain.
 
-This can be reproduced using for example a reserved-memory of 4G
+Only initialise the vdomain->viommu pointer, which denotes a finalised
+domain, at the end of a successful viommu_domain_finalise().
 
-reserved-memory {
-		    #address-cells = <2>;
-		    #size-cells = <2>;
-		    ranges;
-
-		    reserved_dma: buffer@0 {
-		        compatible = "shared-dma-pool";
-		        no-map;
-		        reg = <0x5 0x00000000 0x1 0x0>;
-        };
-};
-
-Signed-off-by: Kevin Grandemange <kevin.grandemange@allegrodvt.com>
-Signed-off-by: Christoph Hellwig <hch@lst.de>
+Fixes: edcd69ab9a32 ("iommu: Add virtio-iommu driver")
+Reported-by: Eric Auger <eric.auger@redhat.com>
+Signed-off-by: Jean-Philippe Brucker <jean-philippe@linaro.org>
+Reviewed-by: Robin Murphy <robin.murphy@arm.com>
+Link: https://lore.kernel.org/r/20200326093558.2641019-3-jean-philippe@linaro.org
+Signed-off-by: Joerg Roedel <jroedel@suse.de>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- kernel/dma/coherent.c | 13 +++++++------
- 1 file changed, 7 insertions(+), 6 deletions(-)
+ drivers/iommu/virtio-iommu.c | 16 +++++++++-------
+ 1 file changed, 9 insertions(+), 7 deletions(-)
 
-diff --git a/kernel/dma/coherent.c b/kernel/dma/coherent.c
-index 551b0eb7028a3..2a0c4985f38e4 100644
---- a/kernel/dma/coherent.c
-+++ b/kernel/dma/coherent.c
-@@ -134,7 +134,7 @@ static void *__dma_alloc_from_coherent(struct device *dev,
+diff --git a/drivers/iommu/virtio-iommu.c b/drivers/iommu/virtio-iommu.c
+index 3ea9d76829995..6c340a4f4fd28 100644
+--- a/drivers/iommu/virtio-iommu.c
++++ b/drivers/iommu/virtio-iommu.c
+@@ -614,18 +614,20 @@ static int viommu_domain_finalise(struct viommu_dev *viommu,
+ 	int ret;
+ 	struct viommu_domain *vdomain = to_viommu_domain(domain);
  
- 	spin_lock_irqsave(&mem->spinlock, flags);
+-	vdomain->viommu		= viommu;
+-	vdomain->map_flags	= viommu->map_flags;
++	ret = ida_alloc_range(&viommu->domain_ids, viommu->first_domain,
++			      viommu->last_domain, GFP_KERNEL);
++	if (ret < 0)
++		return ret;
++
++	vdomain->id		= (unsigned int)ret;
  
--	if (unlikely(size > (mem->size << PAGE_SHIFT)))
-+	if (unlikely(size > ((dma_addr_t)mem->size << PAGE_SHIFT)))
- 		goto err;
+ 	domain->pgsize_bitmap	= viommu->pgsize_bitmap;
+ 	domain->geometry	= viommu->geometry;
  
- 	pageno = bitmap_find_free_region(mem->bitmap, mem->size, order);
-@@ -144,8 +144,9 @@ static void *__dma_alloc_from_coherent(struct device *dev,
- 	/*
- 	 * Memory was found in the coherent area.
- 	 */
--	*dma_handle = dma_get_device_base(dev, mem) + (pageno << PAGE_SHIFT);
--	ret = mem->virt_base + (pageno << PAGE_SHIFT);
-+	*dma_handle = dma_get_device_base(dev, mem) +
-+			((dma_addr_t)pageno << PAGE_SHIFT);
-+	ret = mem->virt_base + ((dma_addr_t)pageno << PAGE_SHIFT);
- 	spin_unlock_irqrestore(&mem->spinlock, flags);
- 	memset(ret, 0, size);
- 	return ret;
-@@ -194,7 +195,7 @@ static int __dma_release_from_coherent(struct dma_coherent_mem *mem,
- 				       int order, void *vaddr)
- {
- 	if (mem && vaddr >= mem->virt_base && vaddr <
--		   (mem->virt_base + (mem->size << PAGE_SHIFT))) {
-+		   (mem->virt_base + ((dma_addr_t)mem->size << PAGE_SHIFT))) {
- 		int page = (vaddr - mem->virt_base) >> PAGE_SHIFT;
- 		unsigned long flags;
+-	ret = ida_alloc_range(&viommu->domain_ids, viommu->first_domain,
+-			      viommu->last_domain, GFP_KERNEL);
+-	if (ret >= 0)
+-		vdomain->id = (unsigned int)ret;
++	vdomain->map_flags	= viommu->map_flags;
++	vdomain->viommu		= viommu;
  
-@@ -238,10 +239,10 @@ static int __dma_mmap_from_coherent(struct dma_coherent_mem *mem,
- 		struct vm_area_struct *vma, void *vaddr, size_t size, int *ret)
- {
- 	if (mem && vaddr >= mem->virt_base && vaddr + size <=
--		   (mem->virt_base + (mem->size << PAGE_SHIFT))) {
-+		   (mem->virt_base + ((dma_addr_t)mem->size << PAGE_SHIFT))) {
- 		unsigned long off = vma->vm_pgoff;
- 		int start = (vaddr - mem->virt_base) >> PAGE_SHIFT;
--		int user_count = vma_pages(vma);
-+		unsigned long user_count = vma_pages(vma);
- 		int count = PAGE_ALIGN(size) >> PAGE_SHIFT;
+-	return ret > 0 ? 0 : ret;
++	return 0;
+ }
  
- 		*ret = -ENXIO;
+ static void viommu_domain_free(struct iommu_domain *domain)
 -- 
 2.20.1
 
