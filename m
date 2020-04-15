@@ -2,96 +2,66 @@ Return-Path: <SRS0=YkH/=57=lists.linux-foundation.org=iommu-bounces@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-6.8 required=3.0 tests=HEADER_FROM_DIFFERENT_DOMAINS,
-	INCLUDES_PATCH,MAILING_LIST_MULTI,SIGNED_OFF_BY,SPF_HELO_NONE,SPF_PASS
-	autolearn=ham autolearn_force=no version=3.4.0
+X-Spam-Status: No, score=-9.7 required=3.0 tests=HEADER_FROM_DIFFERENT_DOMAINS,
+	INCLUDES_PATCH,MAILING_LIST_MULTI,SIGNED_OFF_BY,SPF_HELO_NONE,SPF_PASS,
+	URIBL_BLOCKED,USER_AGENT_GIT autolearn=unavailable autolearn_force=no
+	version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 74B68C2BB85
-	for <iommu@archiver.kernel.org>; Wed, 15 Apr 2020 08:51:24 +0000 (UTC)
-Received: from fraxinus.osuosl.org (smtp4.osuosl.org [140.211.166.137])
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 93E71C2BB85
+	for <iommu@archiver.kernel.org>; Wed, 15 Apr 2020 09:02:33 +0000 (UTC)
+Received: from silver.osuosl.org (smtp3.osuosl.org [140.211.166.136])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by mail.kernel.org (Postfix) with ESMTPS id 4462820784
-	for <iommu@archiver.kernel.org>; Wed, 15 Apr 2020 08:51:24 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 4462820784
-Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=intel.com
+	by mail.kernel.org (Postfix) with ESMTPS id 71122206E9
+	for <iommu@archiver.kernel.org>; Wed, 15 Apr 2020 09:02:33 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 71122206E9
+Authentication-Results: mail.kernel.org; dmarc=none (p=none dis=none) header.from=renesas.com
 Authentication-Results: mail.kernel.org; spf=pass smtp.mailfrom=iommu-bounces@lists.linux-foundation.org
 Received: from localhost (localhost [127.0.0.1])
-	by fraxinus.osuosl.org (Postfix) with ESMTP id 1704585F9A;
-	Wed, 15 Apr 2020 08:51:24 +0000 (UTC)
+	by silver.osuosl.org (Postfix) with ESMTP id 253552040F;
+	Wed, 15 Apr 2020 09:02:33 +0000 (UTC)
+X-Virus-Scanned: amavisd-new at osuosl.org
+Received: from silver.osuosl.org ([127.0.0.1])
+	by localhost (.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
+	with ESMTP id 3c7Cv7-ZvuZB; Wed, 15 Apr 2020 09:02:30 +0000 (UTC)
+Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [140.211.9.56])
+	by silver.osuosl.org (Postfix) with ESMTP id 109B720358;
+	Wed, 15 Apr 2020 09:02:30 +0000 (UTC)
+Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
+	by lists.linuxfoundation.org (Postfix) with ESMTP id DD069C1AE2;
+	Wed, 15 Apr 2020 09:02:29 +0000 (UTC)
+Received: from fraxinus.osuosl.org (smtp4.osuosl.org [140.211.166.137])
+ by lists.linuxfoundation.org (Postfix) with ESMTP id 4C05FC0172
+ for <iommu@lists.linux-foundation.org>; Wed, 15 Apr 2020 09:02:28 +0000 (UTC)
+Received: from localhost (localhost [127.0.0.1])
+ by fraxinus.osuosl.org (Postfix) with ESMTP id 3217B85D3F
+ for <iommu@lists.linux-foundation.org>; Wed, 15 Apr 2020 09:02:28 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
 Received: from fraxinus.osuosl.org ([127.0.0.1])
-	by localhost (.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
-	with ESMTP id QwdoF4toQV4C; Wed, 15 Apr 2020 08:51:22 +0000 (UTC)
-Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [140.211.9.56])
-	by fraxinus.osuosl.org (Postfix) with ESMTP id C9E4785F90;
-	Wed, 15 Apr 2020 08:51:22 +0000 (UTC)
-Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
-	by lists.linuxfoundation.org (Postfix) with ESMTP id BE177C1AE2;
-	Wed, 15 Apr 2020 08:51:22 +0000 (UTC)
-Received: from whitealder.osuosl.org (smtp1.osuosl.org [140.211.166.138])
- by lists.linuxfoundation.org (Postfix) with ESMTP id E6579C0172
- for <iommu@lists.linux-foundation.org>; Wed, 15 Apr 2020 08:51:21 +0000 (UTC)
-Received: from localhost (localhost [127.0.0.1])
- by whitealder.osuosl.org (Postfix) with ESMTP id CB82386CC7
- for <iommu@lists.linux-foundation.org>; Wed, 15 Apr 2020 08:51:21 +0000 (UTC)
-X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from whitealder.osuosl.org ([127.0.0.1])
  by localhost (.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
- with ESMTP id rbW5HE-yRO6J for <iommu@lists.linux-foundation.org>;
- Wed, 15 Apr 2020 08:51:20 +0000 (UTC)
-X-Greylist: domain auto-whitelisted by SQLgrey-1.7.6
-Received: from mga11.intel.com (mga11.intel.com [192.55.52.93])
- by whitealder.osuosl.org (Postfix) with ESMTPS id C44B586BA4
- for <iommu@lists.linux-foundation.org>; Wed, 15 Apr 2020 08:51:20 +0000 (UTC)
-IronPort-SDR: /Nmsx0s3NuW3B62MoaRWUHZZrK+avpAMRWtHN0cCf3BdH9R1Evfwz3YjDWwJ7FcY251E8e+8oj
- 7zOBWWB0+qig==
-X-Amp-Result: SKIPPED(no attachment in message)
-X-Amp-File-Uploaded: False
-Received: from fmsmga007.fm.intel.com ([10.253.24.52])
- by fmsmga102.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384;
- 15 Apr 2020 01:51:20 -0700
-IronPort-SDR: xd9uDqMgnkX0scbPhyGHWRupxBViiiK/x+vQT2bmXrZTKg+P4RFZwtcmu8IBNIJOiUdtPVSli7
- J1WvFa/VGang==
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.72,386,1580803200"; d="scan'208";a="244050165"
-Received: from fmsmsx105.amr.corp.intel.com ([10.18.124.203])
- by fmsmga007.fm.intel.com with ESMTP; 15 Apr 2020 01:51:20 -0700
-Received: from FMSMSX109.amr.corp.intel.com (10.18.116.9) by
- FMSMSX105.amr.corp.intel.com (10.18.124.203) with Microsoft SMTP Server (TLS)
- id 14.3.439.0; Wed, 15 Apr 2020 01:51:20 -0700
-Received: from shsmsx152.ccr.corp.intel.com (10.239.6.52) by
- fmsmsx109.amr.corp.intel.com (10.18.116.9) with Microsoft SMTP Server (TLS)
- id 14.3.439.0; Wed, 15 Apr 2020 01:51:19 -0700
-Received: from shsmsx104.ccr.corp.intel.com ([169.254.5.225]) by
- SHSMSX152.ccr.corp.intel.com ([169.254.6.209]) with mapi id 14.03.0439.000;
- Wed, 15 Apr 2020 16:51:10 +0800
-From: "Tian, Kevin" <kevin.tian@intel.com>
-To: Lu Baolu <baolu.lu@linux.intel.com>, Joerg Roedel <joro@8bytes.org>
-Subject: RE: [PATCH v2 2/7] iommu/vt-d: Multiple descriptors per
- qi_submit_sync()
-Thread-Topic: [PATCH v2 2/7] iommu/vt-d: Multiple descriptors per
- qi_submit_sync()
-Thread-Index: AQHWEubNcojyloGV5kG0IsggcRYC46h50o9A//+BuQCAAIvZAA==
-Date: Wed, 15 Apr 2020 08:51:10 +0000
-Message-ID: <AADFC41AFE54684AB9EE6CBC0274A5D19D82066C@SHSMSX104.ccr.corp.intel.com>
-References: <20200415052542.30421-1-baolu.lu@linux.intel.com>
- <20200415052542.30421-3-baolu.lu@linux.intel.com>
- <AADFC41AFE54684AB9EE6CBC0274A5D19D82055A@SHSMSX104.ccr.corp.intel.com>
- <85ee7356-dd36-e872-8196-ad44bbc1ad20@linux.intel.com>
-In-Reply-To: <85ee7356-dd36-e872-8196-ad44bbc1ad20@linux.intel.com>
-Accept-Language: en-US
-Content-Language: en-US
-X-MS-Has-Attach: 
-X-MS-TNEF-Correlator: 
-dlp-product: dlpe-windows
-dlp-version: 11.2.0.6
-dlp-reaction: no-action
-x-originating-ip: [10.239.127.40]
-MIME-Version: 1.0
-Cc: "iommu@lists.linux-foundation.org" <iommu@lists.linux-foundation.org>, "Raj,
- Ashok" <ashok.raj@intel.com>,
- "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>
+ with ESMTP id RB6ap-Op7gJR for <iommu@lists.linux-foundation.org>;
+ Wed, 15 Apr 2020 09:02:26 +0000 (UTC)
+X-Greylist: from auto-whitelisted by SQLgrey-1.7.6
+Received: from relmlie6.idc.renesas.com (relmlor2.renesas.com
+ [210.160.252.172])
+ by fraxinus.osuosl.org (Postfix) with ESMTP id 6D3BE85BEC
+ for <iommu@lists.linux-foundation.org>; Wed, 15 Apr 2020 09:02:26 +0000 (UTC)
+X-IronPort-AV: E=Sophos;i="5.72,386,1580742000"; d="scan'208";a="44568584"
+Received: from unknown (HELO relmlir5.idc.renesas.com) ([10.200.68.151])
+ by relmlie6.idc.renesas.com with ESMTP; 15 Apr 2020 18:02:24 +0900
+Received: from localhost.localdomain (unknown [10.166.252.89])
+ by relmlir5.idc.renesas.com (Postfix) with ESMTP id 967D14009BF5;
+ Wed, 15 Apr 2020 18:02:24 +0900 (JST)
+From: Yoshihiro Shimoda <yoshihiro.shimoda.uh@renesas.com>
+To: joro@8bytes.org,
+	robh+dt@kernel.org
+Subject: [PATCH v2] dt-bindings: iommu: renesas,
+ ipmmu-vmsa: convert to json-schema
+Date: Wed, 15 Apr 2020 18:02:17 +0900
+Message-Id: <1586941337-20842-1-git-send-email-yoshihiro.shimoda.uh@renesas.com>
+X-Mailer: git-send-email 2.7.4
+Cc: linux-renesas-soc@vger.kernel.org, devicetree@vger.kernel.org,
+ iommu@lists.linux-foundation.org
 X-BeenThere: iommu@lists.linux-foundation.org
 X-Mailman-Version: 2.1.15
 Precedence: list
@@ -104,101 +74,210 @@ List-Post: <mailto:iommu@lists.linux-foundation.org>
 List-Help: <mailto:iommu-request@lists.linux-foundation.org?subject=help>
 List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
  <mailto:iommu-request@lists.linux-foundation.org?subject=subscribe>
+MIME-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
 Errors-To: iommu-bounces@lists.linux-foundation.org
 Sender: "iommu" <iommu-bounces@lists.linux-foundation.org>
 
-> From: Lu Baolu <baolu.lu@linux.intel.com>
-> Sent: Wednesday, April 15, 2020 4:30 PM
-> 
-> On 2020/4/15 16:18, Tian, Kevin wrote:
-> >> From: Lu Baolu<baolu.lu@linux.intel.com>
-> >> Sent: Wednesday, April 15, 2020 1:26 PM
-> >>
-> >> Extend qi_submit_sync() function to support multiple descriptors.
-> >>
-> >> Signed-off-by: Jacob Pan<jacob.jun.pan@linux.intel.com>
-> >> Signed-off-by: Lu Baolu<baolu.lu@linux.intel.com>
-> >> ---
-> >>   drivers/iommu/dmar.c        | 39 +++++++++++++++++++++++--------------
-> >>   include/linux/intel-iommu.h |  1 +
-> >>   2 files changed, 25 insertions(+), 15 deletions(-)
-> >>
-> >> diff --git a/drivers/iommu/dmar.c b/drivers/iommu/dmar.c
-> >> index bb42177e2369..61d049e91f84 100644
-> >> --- a/drivers/iommu/dmar.c
-> >> +++ b/drivers/iommu/dmar.c
-> >> @@ -1157,12 +1157,11 @@ static inline void reclaim_free_desc(struct
-> >> q_inval *qi)
-> >>   	}
-> >>   }
-> >>
-> >> -static int qi_check_fault(struct intel_iommu *iommu, int index)
-> >> +static int qi_check_fault(struct intel_iommu *iommu, int index, int
-> >> wait_index)
-> >>   {
-> >>   	u32 fault;
-> >>   	int head, tail;
-> >>   	struct q_inval *qi = iommu->qi;
-> >> -	int wait_index = (index + 1) % QI_LENGTH;
-> >>   	int shift = qi_shift(iommu);
-> >>
-> >>   	if (qi->desc_status[wait_index] == QI_ABORT)
-> >> @@ -1234,12 +1233,12 @@ static int qi_check_fault(struct intel_iommu
-> >> *iommu, int index)
-> >>   int qi_submit_sync(struct intel_iommu *iommu, struct qi_desc *desc,
-> >>   		   unsigned int count, unsigned long options)
-> >>   {
-> >> -	int rc;
-> >>   	struct q_inval *qi = iommu->qi;
-> >> -	int offset, shift, length;
-> >>   	struct qi_desc wait_desc;
-> >>   	int wait_index, index;
-> >>   	unsigned long flags;
-> >> +	int offset, shift;
-> >> +	int rc, i;
-> >>
-> >>   	if (!qi)
-> >>   		return 0;
-> >> @@ -1248,32 +1247,41 @@ int qi_submit_sync(struct intel_iommu
-> *iommu,
-> >> struct qi_desc *desc,
-> >>   	rc = 0;
-> >>
-> >>   	raw_spin_lock_irqsave(&qi->q_lock, flags);
-> >> -	while (qi->free_cnt < 3) {
-> >> +	/*
-> >> +	 * Check if we have enough empty slots in the queue to submit,
-> >> +	 * the calculation is based on:
-> >> +	 * # of desc + 1 wait desc + 1 space between head and tail
-> >> +	 */
-> >> +	while (qi->free_cnt < count + 2) {
-> >>   		raw_spin_unlock_irqrestore(&qi->q_lock, flags);
-> >>   		cpu_relax();
-> >>   		raw_spin_lock_irqsave(&qi->q_lock, flags);
-> >>   	}
-> >>
-> >>   	index = qi->free_head;
-> >> -	wait_index = (index + 1) % QI_LENGTH;
-> >> +	wait_index = (index + count) % QI_LENGTH;
-> >>   	shift = qi_shift(iommu);
-> >> -	length = 1 << shift;
-> >>
-> >> -	qi->desc_status[index] = qi->desc_status[wait_index] = QI_IN_USE;
-> >> +	for (i = 0; i < count; i++) {
-> >> +		offset = ((index + i) % QI_LENGTH) << shift;
-> >> +		memcpy(qi->desc + offset, &desc[i], 1 << shift);
-> >> +		qi->desc_status[(index + i) % QI_LENGTH] = QI_IN_USE;
-> >> +	}
-> > what about doing one memcpy and leave the loop only for updating
-> > qi status?
-> >
-> 
-> One memcpy might cross the table boundary.
-> 
+Convert Renesas VMSA-Compatible IOMMU bindings documentation
+to json-schema.
 
-Thanks. you are right.
+Signed-off-by: Yoshihiro Shimoda <yoshihiro.shimoda.uh@renesas.com>
+---
+ Changes from v1:
+ - Fix typo in the subject.
+ - Add a description on #iommu-cells.
+ https://patchwork.kernel.org/patch/11485415/
+
+ .../bindings/iommu/renesas,ipmmu-vmsa.txt          | 73 -----------------
+ .../bindings/iommu/renesas,ipmmu-vmsa.yaml         | 94 ++++++++++++++++++++++
+ 2 files changed, 94 insertions(+), 73 deletions(-)
+ delete mode 100644 Documentation/devicetree/bindings/iommu/renesas,ipmmu-vmsa.txt
+ create mode 100644 Documentation/devicetree/bindings/iommu/renesas,ipmmu-vmsa.yaml
+
+diff --git a/Documentation/devicetree/bindings/iommu/renesas,ipmmu-vmsa.txt b/Documentation/devicetree/bindings/iommu/renesas,ipmmu-vmsa.txt
+deleted file mode 100644
+index 020d6f2..00000000
+--- a/Documentation/devicetree/bindings/iommu/renesas,ipmmu-vmsa.txt
++++ /dev/null
+@@ -1,73 +0,0 @@
+-* Renesas VMSA-Compatible IOMMU
+-
+-The IPMMU is an IOMMU implementation compatible with the ARM VMSA page tables.
+-It provides address translation for bus masters outside of the CPU, each
+-connected to the IPMMU through a port called micro-TLB.
+-
+-
+-Required Properties:
+-
+-  - compatible: Must contain SoC-specific and generic entry below in case
+-    the device is compatible with the R-Car Gen2 VMSA-compatible IPMMU.
+-
+-    - "renesas,ipmmu-r8a73a4" for the R8A73A4 (R-Mobile APE6) IPMMU.
+-    - "renesas,ipmmu-r8a7743" for the R8A7743 (RZ/G1M) IPMMU.
+-    - "renesas,ipmmu-r8a7744" for the R8A7744 (RZ/G1N) IPMMU.
+-    - "renesas,ipmmu-r8a7745" for the R8A7745 (RZ/G1E) IPMMU.
+-    - "renesas,ipmmu-r8a774a1" for the R8A774A1 (RZ/G2M) IPMMU.
+-    - "renesas,ipmmu-r8a774b1" for the R8A774B1 (RZ/G2N) IPMMU.
+-    - "renesas,ipmmu-r8a774c0" for the R8A774C0 (RZ/G2E) IPMMU.
+-    - "renesas,ipmmu-r8a7790" for the R8A7790 (R-Car H2) IPMMU.
+-    - "renesas,ipmmu-r8a7791" for the R8A7791 (R-Car M2-W) IPMMU.
+-    - "renesas,ipmmu-r8a7793" for the R8A7793 (R-Car M2-N) IPMMU.
+-    - "renesas,ipmmu-r8a7794" for the R8A7794 (R-Car E2) IPMMU.
+-    - "renesas,ipmmu-r8a7795" for the R8A7795 (R-Car H3) IPMMU.
+-    - "renesas,ipmmu-r8a7796" for the R8A7796 (R-Car M3-W) IPMMU.
+-    - "renesas,ipmmu-r8a77965" for the R8A77965 (R-Car M3-N) IPMMU.
+-    - "renesas,ipmmu-r8a77970" for the R8A77970 (R-Car V3M) IPMMU.
+-    - "renesas,ipmmu-r8a77980" for the R8A77980 (R-Car V3H) IPMMU.
+-    - "renesas,ipmmu-r8a77990" for the R8A77990 (R-Car E3) IPMMU.
+-    - "renesas,ipmmu-r8a77995" for the R8A77995 (R-Car D3) IPMMU.
+-    - "renesas,ipmmu-vmsa" for generic R-Car Gen2 or RZ/G1 VMSA-compatible
+-			   IPMMU.
+-
+-  - reg: Base address and size of the IPMMU registers.
+-  - interrupts: Specifiers for the MMU fault interrupts. For instances that
+-    support secure mode two interrupts must be specified, for non-secure and
+-    secure mode, in that order. For instances that don't support secure mode a
+-    single interrupt must be specified. Not required for cache IPMMUs.
+-
+-  - #iommu-cells: Must be 1.
+-
+-Optional properties:
+-
+-  - renesas,ipmmu-main: reference to the main IPMMU instance in two cells.
+-    The first cell is a phandle to the main IPMMU and the second cell is
+-    the interrupt bit number associated with the particular cache IPMMU device.
+-    The interrupt bit number needs to match the main IPMMU IMSSTR register.
+-    Only used by cache IPMMU instances.
+-
+-
+-Each bus master connected to an IPMMU must reference the IPMMU in its device
+-node with the following property:
+-
+-  - iommus: A reference to the IPMMU in two cells. The first cell is a phandle
+-    to the IPMMU and the second cell the number of the micro-TLB that the
+-    device is connected to.
+-
+-
+-Example: R8A7791 IPMMU-MX and VSP1-D0 bus master
+-
+-	ipmmu_mx: mmu@fe951000 {
+-		compatible = "renasas,ipmmu-r8a7791", "renasas,ipmmu-vmsa";
+-		reg = <0 0xfe951000 0 0x1000>;
+-		interrupts = <0 222 IRQ_TYPE_LEVEL_HIGH>,
+-			     <0 221 IRQ_TYPE_LEVEL_HIGH>;
+-		#iommu-cells = <1>;
+-	};
+-
+-	vsp@fe928000 {
+-		...
+-		iommus = <&ipmmu_mx 13>;
+-		...
+-	};
+diff --git a/Documentation/devicetree/bindings/iommu/renesas,ipmmu-vmsa.yaml b/Documentation/devicetree/bindings/iommu/renesas,ipmmu-vmsa.yaml
+new file mode 100644
+index 00000000..2c69f1f
+--- /dev/null
++++ b/Documentation/devicetree/bindings/iommu/renesas,ipmmu-vmsa.yaml
+@@ -0,0 +1,94 @@
++# SPDX-License-Identifier: (GPL-2.0-only OR BSD-2-Clause)
++%YAML 1.2
++---
++$id: http://devicetree.org/schemas/iommu/renesas,ipmmu-vmsa.yaml#
++$schema: http://devicetree.org/meta-schemas/core.yaml#
++
++title: Renesas VMSA-Compatible IOMMU
++
++maintainers:
++  - Yoshihiro Shimoda <yoshihiro.shimoda.uh@renesas.com>
++
++description:
++  The IPMMU is an IOMMU implementation compatible with the ARM VMSA page tables.
++  It provides address translation for bus masters outside of the CPU, each
++  connected to the IPMMU through a port called micro-TLB.
++
++properties:
++  compatible:
++    oneOf:
++      - items:
++          - enum:
++              - renesas,ipmmu-r8a7743  # RZ/G1M
++              - renesas,ipmmu-r8a7744  # RZ/G1N
++              - renesas,ipmmu-r8a7745  # RZ/G1E
++              - renesas,ipmmu-r8a7790  # R-Car H2
++              - renesas,ipmmu-r8a7791  # R-Car M2-W
++              - renesas,ipmmu-r8a7793  # R-Car M2-N
++              - renesas,ipmmu-r8a7794  # R-Car E2
++              - renesas,ipmmu-r8a7795  # R-Car H3
++          - const: renesas,ipmmu-vmsa  # R-Car Gen2 or RZ/G1
++      - items:
++          - enum:
++              - renesas,ipmmu-r8a73a4  # R-Mobile APE6
++              - renesas,ipmmu-r8a774a1 # RZ/G2M
++              - renesas,ipmmu-r8a774b1 # RZ/G2N
++              - renesas,ipmmu-r8a774c0 # RZ/G2E
++              - renesas,ipmmu-r8a7796  # R-Car M3-W
++              - renesas,ipmmu-r8a77965 # R-Car M3-N
++              - renesas,ipmmu-r8a77970 # R-Car V3M
++              - renesas,ipmmu-r8a77980 # R-Car V3H
++              - renesas,ipmmu-r8a77990 # R-Car E3
++              - renesas,ipmmu-r8a77995 # R-Car D3
++
++  reg:
++    maxItems: 1
++
++  interrupts:
++    minItems: 1
++    maxItems: 2
++    description:
++      Specifiers for the MMU fault interrupts. For instances that support
++      secure mode two interrupts must be specified, for non-secure and secure
++      mode, in that order. For instances that don't support secure mode a
++      single interrupt must be specified. Not required for cache IPMMUs.
++
++  '#iommu-cells':
++    const: 1
++    description:
++      A reference to the IPMMU in two cells. The first cell is a phandle
++      to the IPMMU and the second cell the number of the micro-TLB that the
++      device is connected to.
++
++  power-domains:
++    maxItems: 1
++
++  renesas,ipmmu-main:
++    $ref: /schemas/types.yaml#/definitions/phandle-array
++    description:
++      Reference to the main IPMMU instance in two cells. The first cell is
++      a phandle to the main IPMMU and the second cell is the interrupt bit
++      number associated with the particular cache IPMMU device. The interrupt
++      bit number needs to match the main IPMMU IMSSTR register. Only used by
++      cache IPMMU instances.
++
++required:
++  - compatible
++  - reg
++  - '#iommu-cells'
++
++additionalProperties: false
++
++examples:
++  - |
++    #include <dt-bindings/clock/r8a7791-cpg-mssr.h>
++    #include <dt-bindings/interrupt-controller/arm-gic.h>
++    #include <dt-bindings/power/r8a7791-sysc.h>
++
++    ipmmu_mx: mmu@fe951000 {
++        compatible = "renasas,ipmmu-r8a7791", "renasas,ipmmu-vmsa";
++        reg = <0xfe951000 0x1000>;
++        interrupts = <GIC_SPI 222 IRQ_TYPE_LEVEL_HIGH>,
++                     <GIC_SPI 221 IRQ_TYPE_LEVEL_HIGH>;
++        #iommu-cells = <1>;
++    };
+-- 
+2.7.4
+
 _______________________________________________
 iommu mailing list
 iommu@lists.linux-foundation.org
