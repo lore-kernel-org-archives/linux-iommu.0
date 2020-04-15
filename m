@@ -2,96 +2,77 @@ Return-Path: <SRS0=YkH/=57=lists.linux-foundation.org=iommu-bounces@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-8.0 required=3.0 tests=DKIM_INVALID,DKIM_SIGNED,
-	HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_PATCH,MAILING_LIST_MULTI,SIGNED_OFF_BY,
-	SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED,USER_AGENT_SANE_1 autolearn=unavailable
-	autolearn_force=no version=3.4.0
+X-Spam-Status: No, score=-8.2 required=3.0 tests=HEADER_FROM_DIFFERENT_DOMAINS,
+	INCLUDES_PATCH,MAILING_LIST_MULTI,SIGNED_OFF_BY,SPF_HELO_NONE,SPF_PASS,
+	USER_AGENT_SANE_1 autolearn=unavailable autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id BCD23C3815B
-	for <iommu@archiver.kernel.org>; Wed, 15 Apr 2020 16:02:59 +0000 (UTC)
-Received: from hemlock.osuosl.org (smtp2.osuosl.org [140.211.166.133])
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 078BDC2BB55
+	for <iommu@archiver.kernel.org>; Wed, 15 Apr 2020 16:04:40 +0000 (UTC)
+Received: from whitealder.osuosl.org (smtp1.osuosl.org [140.211.166.138])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by mail.kernel.org (Postfix) with ESMTPS id 854EE21569
-	for <iommu@archiver.kernel.org>; Wed, 15 Apr 2020 16:02:59 +0000 (UTC)
-Authentication-Results: mail.kernel.org;
-	dkim=fail reason="signature verification failed" (1024-bit key) header.d=redhat.com header.i=@redhat.com header.b="IzNjV1/C"
-DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 854EE21569
-Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=redhat.com
+	by mail.kernel.org (Postfix) with ESMTPS id CFEE82166E
+	for <iommu@archiver.kernel.org>; Wed, 15 Apr 2020 16:04:39 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org CFEE82166E
+Authentication-Results: mail.kernel.org; dmarc=none (p=none dis=none) header.from=arm.com
 Authentication-Results: mail.kernel.org; spf=pass smtp.mailfrom=iommu-bounces@lists.linux-foundation.org
 Received: from localhost (localhost [127.0.0.1])
-	by hemlock.osuosl.org (Postfix) with ESMTP id 5373087762;
-	Wed, 15 Apr 2020 16:02:59 +0000 (UTC)
+	by whitealder.osuosl.org (Postfix) with ESMTP id 9099286A48;
+	Wed, 15 Apr 2020 16:04:39 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from hemlock.osuosl.org ([127.0.0.1])
+Received: from whitealder.osuosl.org ([127.0.0.1])
 	by localhost (.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
-	with ESMTP id AqLFNQm9p4WA; Wed, 15 Apr 2020 16:02:58 +0000 (UTC)
+	with ESMTP id rFlHxcDxVbRq; Wed, 15 Apr 2020 16:04:37 +0000 (UTC)
 Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [140.211.9.56])
-	by hemlock.osuosl.org (Postfix) with ESMTP id 68BBD870A9;
-	Wed, 15 Apr 2020 16:02:58 +0000 (UTC)
+	by whitealder.osuosl.org (Postfix) with ESMTP id B6BA086B0E;
+	Wed, 15 Apr 2020 16:04:37 +0000 (UTC)
 Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
-	by lists.linuxfoundation.org (Postfix) with ESMTP id 4ED51C089E;
-	Wed, 15 Apr 2020 16:02:58 +0000 (UTC)
-Received: from fraxinus.osuosl.org (smtp4.osuosl.org [140.211.166.137])
- by lists.linuxfoundation.org (Postfix) with ESMTP id B81E0C0172
- for <iommu@lists.linux-foundation.org>; Wed, 15 Apr 2020 16:02:56 +0000 (UTC)
+	by lists.linuxfoundation.org (Postfix) with ESMTP id A2C73C089E;
+	Wed, 15 Apr 2020 16:04:37 +0000 (UTC)
+Received: from silver.osuosl.org (smtp3.osuosl.org [140.211.166.136])
+ by lists.linuxfoundation.org (Postfix) with ESMTP id 61289C0172
+ for <iommu@lists.linux-foundation.org>; Wed, 15 Apr 2020 16:04:36 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
- by fraxinus.osuosl.org (Postfix) with ESMTP id A4AB686078
- for <iommu@lists.linux-foundation.org>; Wed, 15 Apr 2020 16:02:56 +0000 (UTC)
+ by silver.osuosl.org (Postfix) with ESMTP id 4A7E920358
+ for <iommu@lists.linux-foundation.org>; Wed, 15 Apr 2020 16:04:36 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from fraxinus.osuosl.org ([127.0.0.1])
+Received: from silver.osuosl.org ([127.0.0.1])
  by localhost (.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
- with ESMTP id geIDBN_bLT8R for <iommu@lists.linux-foundation.org>;
- Wed, 15 Apr 2020 16:02:55 +0000 (UTC)
+ with ESMTP id kwsCQMJzRFlO for <iommu@lists.linux-foundation.org>;
+ Wed, 15 Apr 2020 16:04:34 +0000 (UTC)
 X-Greylist: domain auto-whitelisted by SQLgrey-1.7.6
-Received: from us-smtp-delivery-1.mimecast.com (us-smtp-1.mimecast.com
- [207.211.31.81])
- by fraxinus.osuosl.org (Postfix) with ESMTPS id 3BE4D8604A
- for <iommu@lists.linux-foundation.org>; Wed, 15 Apr 2020 16:02:55 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
- s=mimecast20190719; t=1586966574;
- h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
- to:to:cc:cc:mime-version:mime-version:content-type:content-type:
- content-transfer-encoding:content-transfer-encoding:
- in-reply-to:in-reply-to:references:references;
- bh=l2EMmyfwDOhqKqegPiY43eoRXqZvWZppla3x2GSdLI4=;
- b=IzNjV1/CZ4PksJPEmLQXfl21flV85Vp/myZBA+rLNJxupUN2nY8kJz0pdzVeAemF/bIuqb
- MLM6MRm6glLE1DFjGxA1aXzrLJ9FIEY5pdlIkFBRoQE/dwbFEjG8xZOY0VhBJw21geg3JS
- dh+hy1XSHR3bB1I6JYQ481XTbelFwYA=
-Received: from mimecast-mx01.redhat.com (mimecast-mx01.redhat.com
- [209.132.183.4]) (Using TLS) by relay.mimecast.com with ESMTP id
- us-mta-49-qGT5X4sKOH6LuoScgTfedg-1; Wed, 15 Apr 2020 12:02:46 -0400
-X-MC-Unique: qGT5X4sKOH6LuoScgTfedg-1
-Received: from smtp.corp.redhat.com (int-mx01.intmail.prod.int.phx2.redhat.com
- [10.5.11.11])
- (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
- (No client certificate requested)
- by mimecast-mx01.redhat.com (Postfix) with ESMTPS id 921641005509;
- Wed, 15 Apr 2020 16:02:43 +0000 (UTC)
-Received: from [10.36.115.53] (ovpn-115-53.ams2.redhat.com [10.36.115.53])
- by smtp.corp.redhat.com (Postfix) with ESMTPS id B35A211D2D9;
- Wed, 15 Apr 2020 16:02:35 +0000 (UTC)
-Subject: Re: [PATCH v11 01/13] iommu: Introduce attach/detach_pasid_table API
-To: Jacob Pan <jacob.jun.pan@linux.intel.com>
-References: <20200414150607.28488-1-eric.auger@redhat.com>
- <20200414150607.28488-2-eric.auger@redhat.com>
- <20200414151548.658a0401@jacob-builder>
- <c781ce8d-7fe4-0fee-ba95-a1e493e003f5@redhat.com>
- <20200415085908.0e1803b7@jacob-builder>
-From: Auger Eric <eric.auger@redhat.com>
-Message-ID: <e4f28607-8235-7a66-15ec-379bb559b0fd@redhat.com>
-Date: Wed, 15 Apr 2020 18:02:34 +0200
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:60.0) Gecko/20100101
- Thunderbird/60.4.0
+Received: from foss.arm.com (foss.arm.com [217.140.110.172])
+ by silver.osuosl.org (Postfix) with ESMTP id 681502013C
+ for <iommu@lists.linux-foundation.org>; Wed, 15 Apr 2020 16:04:34 +0000 (UTC)
+Received: from usa-sjc-imap-foss1.foss.arm.com (unknown [10.121.207.14])
+ by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id BD6FF1FB;
+ Wed, 15 Apr 2020 09:04:33 -0700 (PDT)
+Received: from e121166-lin.cambridge.arm.com (e121166-lin.cambridge.arm.com
+ [10.1.196.255])
+ by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPSA id 38A133F6C4;
+ Wed, 15 Apr 2020 09:04:31 -0700 (PDT)
+Date: Wed, 15 Apr 2020 17:04:25 +0100
+From: Lorenzo Pieralisi <lorenzo.pieralisi@arm.com>
+To: Laurentiu Tudor <laurentiu.tudor@nxp.com>
+Subject: Re: [RFC PATCH 1/4] bus: fsl-mc: add custom .dma_configure
+ implementation
+Message-ID: <20200415160425.GA6436@e121166-lin.cambridge.arm.com>
+References: <20200227100542.13819-1-laurentiu.tudor@nxp.com>
+ <20200325125109.GA5430@red-moon.cambridge.arm.com>
+ <499fbf9a-416f-d7c7-0655-881d92138a6c@nxp.com>
+ <20200414143211.GA14905@red-moon.cambridge.arm.com>
+ <d37ca4e3-58cb-9d6f-3a98-5e4a21ca948b@nxp.com>
 MIME-Version: 1.0
-In-Reply-To: <20200415085908.0e1803b7@jacob-builder>
-Content-Language: en-US
-X-Scanned-By: MIMEDefang 2.79 on 10.5.11.11
-Cc: jean-philippe@linaro.org, alex.williamson@redhat.com, kvm@vger.kernel.org,
- peter.maydell@linaro.org, maz@kernel.org, zhangfei.gao@foxmail.com,
- linux-kernel@vger.kernel.org, iommu@lists.linux-foundation.org,
- zhangfei.gao@linaro.org, robin.murphy@arm.com, bbhushan2@marvell.com,
- will@kernel.org, kvmarm@lists.cs.columbia.edu, eric.auger.pro@gmail.com
+Content-Disposition: inline
+In-Reply-To: <d37ca4e3-58cb-9d6f-3a98-5e4a21ca948b@nxp.com>
+User-Agent: Mutt/1.9.4 (2018-02-28)
+Cc: jason@lakedaemon.net, calvin.johnson@nxp.com, ard.biesheuvel@linaro.org,
+ maz@kernel.org, pankaj.bansal@nxp.com, diana.craciun@oss.nxp.com,
+ jon@solid-run.com, linux-kernel@vger.kernel.org, jeremy.linton@arm.com,
+ linux-acpi@vger.kernel.org, iommu@lists.linux-foundation.org,
+ cristian.sovaiala@nxp.com, tglx@linutronix.de, makarand.pawagi@nxp.com,
+ ioana.ciornei@nxp.com, Stuart.Yoder@arm.com, robin.murphy@arm.com,
+ linux-arm-kernel@lists.infradead.org, V.Sethi@nxp.com
 X-BeenThere: iommu@lists.linux-foundation.org
 X-Mailman-Version: 2.1.15
 Precedence: list
@@ -109,256 +90,116 @@ Content-Transfer-Encoding: 7bit
 Errors-To: iommu-bounces@lists.linux-foundation.org
 Sender: "iommu" <iommu-bounces@lists.linux-foundation.org>
 
-Hi Jacob,
+On Wed, Apr 15, 2020 at 06:44:37PM +0300, Laurentiu Tudor wrote:
+> 
+> 
+> On 4/14/2020 5:32 PM, Lorenzo Pieralisi wrote:
+> > On Wed, Mar 25, 2020 at 06:48:55PM +0200, Laurentiu Tudor wrote:
+> >> Hi Lorenzo,
+> >>
+> >> On 3/25/2020 2:51 PM, Lorenzo Pieralisi wrote:
+> >>> On Thu, Feb 27, 2020 at 12:05:39PM +0200, laurentiu.tudor@nxp.com wrote:
+> >>>> From: Laurentiu Tudor <laurentiu.tudor@nxp.com>
+> >>>>
+> >>>> The devices on this bus are not discovered by way of device tree
+> >>>> but by queries to the firmware. It makes little sense to trick the
+> >>>> generic of layer into thinking that these devices are of related so
+> >>>> that we can get our dma configuration. Instead of doing that, add
+> >>>> our custom dma configuration implementation.
+> >>>>
+> >>>> Signed-off-by: Laurentiu Tudor <laurentiu.tudor@nxp.com>
+> >>>> ---
+> >>>>  drivers/bus/fsl-mc/fsl-mc-bus.c | 31 ++++++++++++++++++++++++++++++-
+> >>>>  1 file changed, 30 insertions(+), 1 deletion(-)
+> >>>>
+> >>>> diff --git a/drivers/bus/fsl-mc/fsl-mc-bus.c b/drivers/bus/fsl-mc/fsl-mc-bus.c
+> >>>> index 36eb25f82c8e..eafaa0e0b906 100644
+> >>>> --- a/drivers/bus/fsl-mc/fsl-mc-bus.c
+> >>>> +++ b/drivers/bus/fsl-mc/fsl-mc-bus.c
+> >>>> @@ -132,11 +132,40 @@ static int fsl_mc_bus_uevent(struct device *dev, struct kobj_uevent_env *env)
+> >>>>  static int fsl_mc_dma_configure(struct device *dev)
+> >>>>  {
+> >>>>  	struct device *dma_dev = dev;
+> >>>> +	struct iommu_fwspec *fwspec;
+> >>>> +	const struct iommu_ops *iommu_ops;
+> >>>> +	struct fsl_mc_device *mc_dev = to_fsl_mc_device(dev);
+> >>>> +	int ret;
+> >>>> +	u32 icid;
+> >>>>  
+> >>>>  	while (dev_is_fsl_mc(dma_dev))
+> >>>>  		dma_dev = dma_dev->parent;
+> >>>>  
+> >>>> -	return of_dma_configure(dev, dma_dev->of_node, 0);
+> >>>> +	fwspec = dev_iommu_fwspec_get(dma_dev);
+> >>>> +	if (!fwspec)
+> >>>> +		return -ENODEV;
+> >>>> +	iommu_ops = iommu_ops_from_fwnode(fwspec->iommu_fwnode);
+> >>>> +	if (!iommu_ops)
+> >>>> +		return -ENODEV;
+> >>>> +
+> >>>> +	ret = iommu_fwspec_init(dev, fwspec->iommu_fwnode, iommu_ops);
+> >>>> +	if (ret)
+> >>>> +		return ret;
+> >>>> +
+> >>>> +	icid = mc_dev->icid;
+> >>>> +	ret = iommu_fwspec_add_ids(dev, &icid, 1);
+> >>>
+> >>> I see. So with this patch we would use the MC named component only to
+> >>> retrieve the iommu_ops
+> >>
+> >> Right. I'd also add that the implementation tries to follow the existing
+> >> standard .dma_configure implementations, e.g. of_dma_configure +
+> >> of_iommu_configure. I'd also note that similarly to the ACPI case, this
+> >> MC FW device is probed as a platform device in the DT scenario, binding
+> >> here [1].
+> >> A similar approach is used for the retrieval of the msi irq domain, see
+> >> following patch.
+> >>
+> >>> - the streamid are injected directly here bypassing OF/IORT bindings translations altogether. 
+> >>
+> >> Actually I've submitted a v2 [2] that calls into .of_xlate() to allow
+> >> the smmu driver to do some processing on the raw streamid coming from
+> >> the firmware. I have not yet tested this with ACPI but expect it to
+> >> work, however, it's debatable how valid is this approach in the context
+> >> of ACPI.
+> > 
+> > Actually, what I think you need is of_map_rid() (and an IORT
+> > equivalent, that I am going to write - generalizing iort_msi_map_rid()).
+> > 
+> > Would that be enough to enable IORT "normal" mappings in the MC bus
+> > named components ?
+> > 
+> 
+> At a first glance, looks like this could very well fix the ACPI
+> scenario, but I have some unclarities on the approach:
+>  * are we going to rely in DT and ACPI generic layers even if these
+> devices are not published / enumerated through DT or ACPI tables?
+>  * the firmware manages and provides discrete streamids for the devices
+> it exposes so there's no translation involved. There's no
+>    requestor_id / input_id involved but it seems that we would still do
+> some kind of translation relying for this on the DT/ACPI functions.
+>  * MC firmware has its own stream_id (e.g. on some chips 0x4000, others
+> 0xf00, so outside the range of stream_ids used for the mc devices)
+>    while for the devices on this bus, MC allocates stream_ids from a
+> range (e.g. 0x17 - 0x3f). Is it possible to describe this in the IORT table?
+>  * Regarding the of_map_rid() use you mentioned, I was planning to
+> decouple the mc bus from the DT layer by dropping the use of
+> of_map_rid(), see patch 4.
+> I briefly glanced over the iort code and spotted this static function:
+> iort_iommu_xlate(). Wouldn't it also help, of course after making it public?
 
-On 4/15/20 5:59 PM, Jacob Pan wrote:
-> On Wed, 15 Apr 2020 16:52:10 +0200
-> Auger Eric <eric.auger@redhat.com> wrote:
-> 
->> Hi Jacob,
->> On 4/15/20 12:15 AM, Jacob Pan wrote:
->>> Hi Eric,
->>>
->>> There are some discussions about how to size the uAPI data.
->>> https://lkml.org/lkml/2020/4/14/939
->>>
->>> I think the problem with the current scheme is that when uAPI data
->>> gets extended, if VFIO continue to use:
->>>
->>> minsz = offsetofend(struct vfio_iommu_type1_set_pasid_table,
->>> config); if (copy_from_user(&spt, (void __user *)arg, minsz))
->>>
->>> It may copy more data from user than what was setup by the user.
->>>
->>> So, as suggested by Alex, we could add argsz to the IOMMU uAPI
->>> struct. So if argsz > minsz, then fail the attach_table since
->>> kernel might be old, doesn't know about the extra data.
->>> If argsz <= minsz, kernel can support the attach_table but must
->>> process the data based on flags or config.  
->>
->> So I guess we would need both an argsz _u32 + a new flag _u32 right?
->>
-> Yes.
->> I am ok with that idea. Besides how will you manage for existing IOMMU
->> UAPIs?
-> I plan to add argsz and flags (if not already have one)
-> 
->> At some point you envisionned to have a getter at iommu api
->> level to retrieve the size of a structure for a given version, right?
->>
-> This idea is shot down. There is no version-size lookup.
-> So the current plan is for user to fill out argsz in each IOMMU uAPI
-> struct. VFIO does the copy_from_user() based on argsz (sanitized
-> against the size of current kernel struct).
-> 
-> IOMMU vendor driver process the data based on flags which indicates
-> new capability/extensions.
-OK. Sounds sensible
+Guys I have lost you honestly. I don't understand what you really need
+to do with DT and ACPI here. Are they needed to describe what you need
+or not ? If the MC dma configure function does not need any DT/ACPI
+bindings that's fine by me, I don't understand though why you are still
+asking how to represent MC in ACPI then, what for.
 
-Thanks
+Can you talk between *yourselves* please and decide what you need ?
 
-Eric
-> 
->> Thanks
->>
->> Eric
->>>
->>> Does it make sense to you?
->>>
->>>
->>> On Tue, 14 Apr 2020 17:05:55 +0200
->>> Eric Auger <eric.auger@redhat.com> wrote:
->>>   
->>>> From: Jacob Pan <jacob.jun.pan@linux.intel.com>
->>>>
->>>> In virtualization use case, when a guest is assigned
->>>> a PCI host device, protected by a virtual IOMMU on the guest,
->>>> the physical IOMMU must be programmed to be consistent with
->>>> the guest mappings. If the physical IOMMU supports two
->>>> translation stages it makes sense to program guest mappings
->>>> onto the first stage/level (ARM/Intel terminology) while the host
->>>> owns the stage/level 2.
->>>>
->>>> In that case, it is mandated to trap on guest configuration
->>>> settings and pass those to the physical iommu driver.
->>>>
->>>> This patch adds a new API to the iommu subsystem that allows
->>>> to set/unset the pasid table information.
->>>>
->>>> A generic iommu_pasid_table_config struct is introduced in
->>>> a new iommu.h uapi header. This is going to be used by the VFIO
->>>> user API.
->>>>
->>>> Signed-off-by: Jean-Philippe Brucker
->>>> <jean-philippe.brucker@arm.com> Signed-off-by: Liu, Yi L
->>>> <yi.l.liu@linux.intel.com> Signed-off-by: Ashok Raj
->>>> <ashok.raj@intel.com> Signed-off-by: Jacob Pan
->>>> <jacob.jun.pan@linux.intel.com> Signed-off-by: Eric Auger
->>>> <eric.auger@redhat.com> Reviewed-by: Jean-Philippe Brucker
->>>> <jean-philippe.brucker@arm.com> ---
->>>>  drivers/iommu/iommu.c      | 19 ++++++++++++++
->>>>  include/linux/iommu.h      | 18 ++++++++++++++
->>>>  include/uapi/linux/iommu.h | 51
->>>> ++++++++++++++++++++++++++++++++++++++ 3 files changed, 88
->>>> insertions(+)
->>>>
->>>> diff --git a/drivers/iommu/iommu.c b/drivers/iommu/iommu.c
->>>> index 2b471419e26c..b71ad56f8c99 100644
->>>> --- a/drivers/iommu/iommu.c
->>>> +++ b/drivers/iommu/iommu.c
->>>> @@ -1723,6 +1723,25 @@ int iommu_sva_unbind_gpasid(struct
->>>> iommu_domain *domain, struct device *dev, }
->>>>  EXPORT_SYMBOL_GPL(iommu_sva_unbind_gpasid);
->>>>  
->>>> +int iommu_attach_pasid_table(struct iommu_domain *domain,
->>>> +			     struct iommu_pasid_table_config *cfg)
->>>> +{
->>>> +	if (unlikely(!domain->ops->attach_pasid_table))
->>>> +		return -ENODEV;
->>>> +
->>>> +	return domain->ops->attach_pasid_table(domain, cfg);
->>>> +}
->>>> +EXPORT_SYMBOL_GPL(iommu_attach_pasid_table);
->>>> +
->>>> +void iommu_detach_pasid_table(struct iommu_domain *domain)
->>>> +{
->>>> +	if (unlikely(!domain->ops->detach_pasid_table))
->>>> +		return;
->>>> +
->>>> +	domain->ops->detach_pasid_table(domain);
->>>> +}
->>>> +EXPORT_SYMBOL_GPL(iommu_detach_pasid_table);
->>>> +
->>>>  static void __iommu_detach_device(struct iommu_domain *domain,
->>>>  				  struct device *dev)
->>>>  {
->>>> diff --git a/include/linux/iommu.h b/include/linux/iommu.h
->>>> index 7ef8b0bda695..3e1057c3585a 100644
->>>> --- a/include/linux/iommu.h
->>>> +++ b/include/linux/iommu.h
->>>> @@ -248,6 +248,8 @@ struct iommu_iotlb_gather {
->>>>   * @cache_invalidate: invalidate translation caches
->>>>   * @sva_bind_gpasid: bind guest pasid and mm
->>>>   * @sva_unbind_gpasid: unbind guest pasid and mm
->>>> + * @attach_pasid_table: attach a pasid table
->>>> + * @detach_pasid_table: detach the pasid table
->>>>   * @pgsize_bitmap: bitmap of all possible supported page sizes
->>>>   * @owner: Driver module providing these ops
->>>>   */
->>>> @@ -307,6 +309,9 @@ struct iommu_ops {
->>>>  				      void *drvdata);
->>>>  	void (*sva_unbind)(struct iommu_sva *handle);
->>>>  	int (*sva_get_pasid)(struct iommu_sva *handle);
->>>> +	int (*attach_pasid_table)(struct iommu_domain *domain,
->>>> +				  struct iommu_pasid_table_config
->>>> *cfg);
->>>> +	void (*detach_pasid_table)(struct iommu_domain *domain);
->>>>  
->>>>  	int (*page_response)(struct device *dev,
->>>>  			     struct iommu_fault_event *evt,
->>>> @@ -446,6 +451,9 @@ extern int iommu_sva_bind_gpasid(struct
->>>> iommu_domain *domain, struct device *dev, struct
->>>> iommu_gpasid_bind_data *data); extern int
->>>> iommu_sva_unbind_gpasid(struct iommu_domain *domain, struct device
->>>> *dev, ioasid_t pasid); +extern int iommu_attach_pasid_table(struct
->>>> iommu_domain *domain,
->>>> +				    struct
->>>> iommu_pasid_table_config *cfg); +extern void
->>>> iommu_detach_pasid_table(struct iommu_domain *domain); extern
->>>> struct iommu_domain *iommu_get_domain_for_dev(struct device *dev);
->>>> extern struct iommu_domain *iommu_get_dma_domain(struct device
->>>> *dev); extern int iommu_map(struct iommu_domain *domain, unsigned
->>>> long iova, @@ -1048,6 +1056,16 @@ iommu_aux_get_pasid(struct
->>>> iommu_domain *domain, struct device *dev) return -ENODEV; }
->>>>  
->>>> +static inline
->>>> +int iommu_attach_pasid_table(struct iommu_domain *domain,
->>>> +			     struct iommu_pasid_table_config *cfg)
->>>> +{
->>>> +	return -ENODEV;
->>>> +}
->>>> +
->>>> +static inline
->>>> +void iommu_detach_pasid_table(struct iommu_domain *domain) {}
->>>> +
->>>>  static inline struct iommu_sva *
->>>>  iommu_sva_bind_device(struct device *dev, struct mm_struct *mm,
->>>> void *drvdata) {
->>>> diff --git a/include/uapi/linux/iommu.h
->>>> b/include/uapi/linux/iommu.h index 4ad3496e5c43..8d00be10dc6d
->>>> 100644 --- a/include/uapi/linux/iommu.h
->>>> +++ b/include/uapi/linux/iommu.h
->>>> @@ -321,4 +321,55 @@ struct iommu_gpasid_bind_data {
->>>>  	};
->>>>  };
->>>>  
->>>> +/**
->>>> + * struct iommu_pasid_smmuv3 - ARM SMMUv3 Stream Table Entry
->>>> stage 1 related
->>>> + *     information
->>>> + * @version: API version of this structure
->>>> + * @s1fmt: STE s1fmt (format of the CD table: single CD, linear
->>>> table
->>>> + *         or 2-level table)
->>>> + * @s1dss: STE s1dss (specifies the behavior when @pasid_bits != 0
->>>> + *         and no PASID is passed along with the incoming
->>>> transaction)
->>>> + * @padding: reserved for future use (should be zero)
->>>> + *
->>>> + * The PASID table is referred to as the Context Descriptor (CD)
->>>> table on ARM
->>>> + * SMMUv3. Please refer to the ARM SMMU 3.x spec (ARM IHI 0070A)
->>>> for full
->>>> + * details.
->>>> + */
->>>> +struct iommu_pasid_smmuv3 {
->>>> +#define PASID_TABLE_SMMUV3_CFG_VERSION_1 1
->>>> +	__u32	version;
->>>> +	__u8	s1fmt;
->>>> +	__u8	s1dss;
->>>> +	__u8	padding[2];
->>>> +};
->>>> +
->>>> +/**
->>>> + * struct iommu_pasid_table_config - PASID table data used to bind
->>>> guest PASID
->>>> + *     table to the host IOMMU
->>>> + * @version: API version to prepare for future extensions
->>>> + * @format: format of the PASID table
->>>> + * @base_ptr: guest physical address of the PASID table
->>>> + * @pasid_bits: number of PASID bits used in the PASID table
->>>> + * @config: indicates whether the guest translation stage must
->>>> + *          be translated, bypassed or aborted.
->>>> + * @padding: reserved for future use (should be zero)
->>>> + * @smmuv3: table information when @format is
->>>> %IOMMU_PASID_FORMAT_SMMUV3
->>>> + */
->>>> +struct iommu_pasid_table_config {
->>>> +#define PASID_TABLE_CFG_VERSION_1 1
->>>> +	__u32	version;
->>>> +#define IOMMU_PASID_FORMAT_SMMUV3	1
->>>> +	__u32	format;
->>>> +	__u64	base_ptr;
->>>> +	__u8	pasid_bits;
->>>> +#define IOMMU_PASID_CONFIG_TRANSLATE	1
->>>> +#define IOMMU_PASID_CONFIG_BYPASS	2
->>>> +#define IOMMU_PASID_CONFIG_ABORT	3
->>>> +	__u8	config;
->>>> +	__u8    padding[6];
->>>> +	union {
->>>> +		struct iommu_pasid_smmuv3 smmuv3;
->>>> +	};
->>>> +};
->>>> +
->>>>  #endif /* _UAPI_IOMMU_H */  
->>>
->>> [Jacob Pan]
->>>   
->>
-> 
-> [Jacob Pan]
-> 
+What's the problem ?
 
+Thanks,
+Lorenzo
 _______________________________________________
 iommu mailing list
 iommu@lists.linux-foundation.org
