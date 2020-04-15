@@ -6,76 +6,73 @@ X-Spam-Status: No, score=-9.8 required=3.0 tests=DKIM_INVALID,DKIM_SIGNED,
 	INCLUDES_PATCH,MAILING_LIST_MULTI,SIGNED_OFF_BY,SPF_HELO_NONE,SPF_PASS,
 	USER_AGENT_GIT autolearn=ham autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 94DA3C2BA19
-	for <iommu@archiver.kernel.org>; Wed, 15 Apr 2020 11:46:07 +0000 (UTC)
-Received: from hemlock.osuosl.org (smtp2.osuosl.org [140.211.166.133])
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 7329EC3815B
+	for <iommu@archiver.kernel.org>; Wed, 15 Apr 2020 11:46:09 +0000 (UTC)
+Received: from fraxinus.osuosl.org (smtp4.osuosl.org [140.211.166.137])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by mail.kernel.org (Postfix) with ESMTPS id 5EF6920768
-	for <iommu@archiver.kernel.org>; Wed, 15 Apr 2020 11:46:07 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTPS id 4387F206A2
+	for <iommu@archiver.kernel.org>; Wed, 15 Apr 2020 11:46:09 +0000 (UTC)
 Authentication-Results: mail.kernel.org;
-	dkim=fail reason="signature verification failed" (1024-bit key) header.d=kernel.org header.i=@kernel.org header.b="qR1PY9lc"
-DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 5EF6920768
+	dkim=fail reason="signature verification failed" (1024-bit key) header.d=kernel.org header.i=@kernel.org header.b="cVF54EiJ"
+DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 4387F206A2
 Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=kernel.org
 Authentication-Results: mail.kernel.org; spf=pass smtp.mailfrom=iommu-bounces@lists.linux-foundation.org
 Received: from localhost (localhost [127.0.0.1])
-	by hemlock.osuosl.org (Postfix) with ESMTP id 31F3C87A77;
-	Wed, 15 Apr 2020 11:46:07 +0000 (UTC)
+	by fraxinus.osuosl.org (Postfix) with ESMTP id 2390B85F8E;
+	Wed, 15 Apr 2020 11:46:09 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from hemlock.osuosl.org ([127.0.0.1])
+Received: from fraxinus.osuosl.org ([127.0.0.1])
 	by localhost (.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
-	with ESMTP id mbD-9F6ZcDtd; Wed, 15 Apr 2020 11:46:06 +0000 (UTC)
+	with ESMTP id G6WRb2xTSiiA; Wed, 15 Apr 2020 11:46:08 +0000 (UTC)
 Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [140.211.9.56])
-	by hemlock.osuosl.org (Postfix) with ESMTP id 8391F87B0F;
-	Wed, 15 Apr 2020 11:46:06 +0000 (UTC)
+	by fraxinus.osuosl.org (Postfix) with ESMTP id B8135845D2;
+	Wed, 15 Apr 2020 11:46:08 +0000 (UTC)
 Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
-	by lists.linuxfoundation.org (Postfix) with ESMTP id 63B11C089E;
-	Wed, 15 Apr 2020 11:46:06 +0000 (UTC)
-Received: from whitealder.osuosl.org (smtp1.osuosl.org [140.211.166.138])
- by lists.linuxfoundation.org (Postfix) with ESMTP id 5069DC0172;
- Wed, 15 Apr 2020 11:46:05 +0000 (UTC)
+	by lists.linuxfoundation.org (Postfix) with ESMTP id A37A6C089E;
+	Wed, 15 Apr 2020 11:46:08 +0000 (UTC)
+Received: from silver.osuosl.org (smtp3.osuosl.org [140.211.166.136])
+ by lists.linuxfoundation.org (Postfix) with ESMTP id BBA1EC0172
+ for <iommu@lists.linux-foundation.org>; Wed, 15 Apr 2020 11:46:06 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
- by whitealder.osuosl.org (Postfix) with ESMTP id 4BD6F873C5;
- Wed, 15 Apr 2020 11:46:05 +0000 (UTC)
+ by silver.osuosl.org (Postfix) with ESMTP id A5A40204F6
+ for <iommu@lists.linux-foundation.org>; Wed, 15 Apr 2020 11:46:06 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from whitealder.osuosl.org ([127.0.0.1])
+Received: from silver.osuosl.org ([127.0.0.1])
  by localhost (.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
- with ESMTP id BbHZ2vlQtw+D; Wed, 15 Apr 2020 11:46:04 +0000 (UTC)
-X-Greylist: domain auto-whitelisted by SQLgrey-1.7.6
+ with ESMTP id IwoFSL4vYSf3 for <iommu@lists.linux-foundation.org>;
+ Wed, 15 Apr 2020 11:46:06 +0000 (UTC)
 X-Greylist: domain auto-whitelisted by SQLgrey-1.7.6
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
- by whitealder.osuosl.org (Postfix) with ESMTPS id D2467870B3;
- Wed, 15 Apr 2020 11:46:04 +0000 (UTC)
+ by silver.osuosl.org (Postfix) with ESMTPS id 03F3520773
+ for <iommu@lists.linux-foundation.org>; Wed, 15 Apr 2020 11:46:05 +0000 (UTC)
 Received: from sasha-vm.mshome.net (c-73-47-72-35.hsd1.nh.comcast.net
  [73.47.72.35])
  (using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
  (No client certificate requested)
- by mail.kernel.org (Postfix) with ESMTPSA id C86B221582;
- Wed, 15 Apr 2020 11:46:03 +0000 (UTC)
+ by mail.kernel.org (Postfix) with ESMTPSA id 1F5762078A;
+ Wed, 15 Apr 2020 11:46:05 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
- s=default; t=1586951164;
- bh=QSO+MTYLOIEKsq08PJYUz+Ls1m/XYejmU5s/QbqlFiI=;
+ s=default; t=1586951165;
+ bh=oInKObr4lNnwZetiYJiXWFagFaAcWKQY3usP8woXmFw=;
  h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
- b=qR1PY9lcNF0ewOkv22ZK+DrUYOmYi1+TWzMjtPg0fKsJKdKlTZXMJ/xXcI7gsMRvN
- lSawDwdb86TeSIH+g3GidxgIy44vu+PMddS37maukW5x2I0H3B/fwa5RBIZ9iS3Uv8
- MvARhw2FPJifr+DcCAZX26xKBhs5+T4bDdsf1l6Q=
+ b=cVF54EiJgJKFW0meUv9FozxWLisUNHZ/N9CPYZH6Z2EJAPY8riyih4mgt7mjFrzk7
+ aliS1nNNd1DoNmxDbXiN8SzhR4Ysx1SF2wVT/CBCL813YUGGopK/wp1g38VtvsrJzt
+ kEDts+OhS8u85fXOOGBgXHQ4JoJ7TZPvj9weWvSg=
 From: Sasha Levin <sashal@kernel.org>
 To: linux-kernel@vger.kernel.org,
 	stable@vger.kernel.org
-Subject: [PATCH AUTOSEL 5.4 69/84] iommu/virtio: Fix freeing of incomplete
- domains
-Date: Wed, 15 Apr 2020 07:44:26 -0400
-Message-Id: <20200415114442.14166-69-sashal@kernel.org>
+Subject: [PATCH AUTOSEL 5.4 70/84] iommu/vt-d: Fix mm reference leak
+Date: Wed, 15 Apr 2020 07:44:27 -0400
+Message-Id: <20200415114442.14166-70-sashal@kernel.org>
 X-Mailer: git-send-email 2.20.1
 In-Reply-To: <20200415114442.14166-1-sashal@kernel.org>
 References: <20200415114442.14166-1-sashal@kernel.org>
 MIME-Version: 1.0
 X-stable: review
 X-Patchwork-Hint: Ignore
-Cc: Sasha Levin <sashal@kernel.org>,
- Jean-Philippe Brucker <jean-philippe@linaro.org>,
- Joerg Roedel <jroedel@suse.de>, virtualization@lists.linux-foundation.org,
- iommu@lists.linux-foundation.org, Robin Murphy <robin.murphy@arm.com>
+Cc: Sasha Levin <sashal@kernel.org>, iommu@lists.linux-foundation.org,
+ Joerg Roedel <jroedel@suse.de>
 X-BeenThere: iommu@lists.linux-foundation.org
 X-Mailman-Version: 2.1.15
 Precedence: list
@@ -93,61 +90,45 @@ Content-Transfer-Encoding: 7bit
 Errors-To: iommu-bounces@lists.linux-foundation.org
 Sender: "iommu" <iommu-bounces@lists.linux-foundation.org>
 
-From: Jean-Philippe Brucker <jean-philippe@linaro.org>
+From: Jacob Pan <jacob.jun.pan@linux.intel.com>
 
-[ Upstream commit 7062af3ed2ba451029e3733d9f677c68f5ea9e77 ]
+[ Upstream commit 902baf61adf6b187f0a6b789e70d788ea71ff5bc ]
 
-Calling viommu_domain_free() on a domain that hasn't been finalised (not
-attached to any device, for example) can currently cause an Oops,
-because we attempt to call ida_free() on ID 0, which may either be
-unallocated or used by another domain.
+Move canonical address check before mmget_not_zero() to avoid mm
+reference leak.
 
-Only initialise the vdomain->viommu pointer, which denotes a finalised
-domain, at the end of a successful viommu_domain_finalise().
-
-Fixes: edcd69ab9a32 ("iommu: Add virtio-iommu driver")
-Reported-by: Eric Auger <eric.auger@redhat.com>
-Signed-off-by: Jean-Philippe Brucker <jean-philippe@linaro.org>
-Reviewed-by: Robin Murphy <robin.murphy@arm.com>
-Link: https://lore.kernel.org/r/20200326093558.2641019-3-jean-philippe@linaro.org
+Fixes: 9d8c3af31607 ("iommu/vt-d: IOMMU Page Request needs to check if address is canonical.")
+Signed-off-by: Jacob Pan <jacob.jun.pan@linux.intel.com>
+Acked-by: Lu Baolu <baolu.lu@linux.intel.com>
 Signed-off-by: Joerg Roedel <jroedel@suse.de>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/iommu/virtio-iommu.c | 16 +++++++++-------
- 1 file changed, 9 insertions(+), 7 deletions(-)
+ drivers/iommu/intel-svm.c | 7 ++++---
+ 1 file changed, 4 insertions(+), 3 deletions(-)
 
-diff --git a/drivers/iommu/virtio-iommu.c b/drivers/iommu/virtio-iommu.c
-index 3ea9d76829995..6c340a4f4fd28 100644
---- a/drivers/iommu/virtio-iommu.c
-+++ b/drivers/iommu/virtio-iommu.c
-@@ -614,18 +614,20 @@ static int viommu_domain_finalise(struct viommu_dev *viommu,
- 	int ret;
- 	struct viommu_domain *vdomain = to_viommu_domain(domain);
+diff --git a/drivers/iommu/intel-svm.c b/drivers/iommu/intel-svm.c
+index 518d0b2d12afd..3020506180c10 100644
+--- a/drivers/iommu/intel-svm.c
++++ b/drivers/iommu/intel-svm.c
+@@ -583,14 +583,15 @@ static irqreturn_t prq_event_thread(int irq, void *d)
+ 		 * any faults on kernel addresses. */
+ 		if (!svm->mm)
+ 			goto bad_req;
+-		/* If the mm is already defunct, don't handle faults. */
+-		if (!mmget_not_zero(svm->mm))
+-			goto bad_req;
  
--	vdomain->viommu		= viommu;
--	vdomain->map_flags	= viommu->map_flags;
-+	ret = ida_alloc_range(&viommu->domain_ids, viommu->first_domain,
-+			      viommu->last_domain, GFP_KERNEL);
-+	if (ret < 0)
-+		return ret;
+ 		/* If address is not canonical, return invalid response */
+ 		if (!is_canonical_address(address))
+ 			goto bad_req;
+ 
++		/* If the mm is already defunct, don't handle faults. */
++		if (!mmget_not_zero(svm->mm))
++			goto bad_req;
 +
-+	vdomain->id		= (unsigned int)ret;
- 
- 	domain->pgsize_bitmap	= viommu->pgsize_bitmap;
- 	domain->geometry	= viommu->geometry;
- 
--	ret = ida_alloc_range(&viommu->domain_ids, viommu->first_domain,
--			      viommu->last_domain, GFP_KERNEL);
--	if (ret >= 0)
--		vdomain->id = (unsigned int)ret;
-+	vdomain->map_flags	= viommu->map_flags;
-+	vdomain->viommu		= viommu;
- 
--	return ret > 0 ? 0 : ret;
-+	return 0;
- }
- 
- static void viommu_domain_free(struct iommu_domain *domain)
+ 		down_read(&svm->mm->mmap_sem);
+ 		vma = find_extend_vma(svm->mm, address);
+ 		if (!vma || address < vma->vm_start)
 -- 
 2.20.1
 
