@@ -2,95 +2,85 @@ Return-Path: <SRS0=YkH/=57=lists.linux-foundation.org=iommu-bounces@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-2.2 required=3.0 tests=HEADER_FROM_DIFFERENT_DOMAINS,
-	MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS,USER_AGENT_SANE_2 autolearn=no
-	autolearn_force=no version=3.4.0
+X-Spam-Status: No, score=-8.2 required=3.0 tests=HEADER_FROM_DIFFERENT_DOMAINS,
+	INCLUDES_PATCH,MAILING_LIST_MULTI,SIGNED_OFF_BY,SPF_HELO_NONE,SPF_PASS,
+	USER_AGENT_SANE_1 autolearn=ham autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 23EFBC3815B
-	for <iommu@archiver.kernel.org>; Wed, 15 Apr 2020 15:33:06 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 36B94C2BA19
+	for <iommu@archiver.kernel.org>; Wed, 15 Apr 2020 15:43:32 +0000 (UTC)
 Received: from fraxinus.osuosl.org (smtp4.osuosl.org [140.211.166.137])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by mail.kernel.org (Postfix) with ESMTPS id E08A120767
-	for <iommu@archiver.kernel.org>; Wed, 15 Apr 2020 15:33:05 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org E08A120767
-Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=linux.intel.com
+	by mail.kernel.org (Postfix) with ESMTPS id 02A1E20771
+	for <iommu@archiver.kernel.org>; Wed, 15 Apr 2020 15:43:31 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 02A1E20771
+Authentication-Results: mail.kernel.org; dmarc=none (p=none dis=none) header.from=arm.com
 Authentication-Results: mail.kernel.org; spf=pass smtp.mailfrom=iommu-bounces@lists.linux-foundation.org
 Received: from localhost (localhost [127.0.0.1])
-	by fraxinus.osuosl.org (Postfix) with ESMTP id A703D85E8C;
-	Wed, 15 Apr 2020 15:33:05 +0000 (UTC)
+	by fraxinus.osuosl.org (Postfix) with ESMTP id DC8FF85F2D;
+	Wed, 15 Apr 2020 15:43:31 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
 Received: from fraxinus.osuosl.org ([127.0.0.1])
 	by localhost (.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
-	with ESMTP id GnfiilLU-zgg; Wed, 15 Apr 2020 15:33:04 +0000 (UTC)
+	with ESMTP id K-vXYXUGjk67; Wed, 15 Apr 2020 15:43:31 +0000 (UTC)
 Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [140.211.9.56])
-	by fraxinus.osuosl.org (Postfix) with ESMTP id 3B3B48594B;
-	Wed, 15 Apr 2020 15:33:04 +0000 (UTC)
+	by fraxinus.osuosl.org (Postfix) with ESMTP id 26C0785EF1;
+	Wed, 15 Apr 2020 15:43:31 +0000 (UTC)
 Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
-	by lists.linuxfoundation.org (Postfix) with ESMTP id 12B40C089E;
-	Wed, 15 Apr 2020 15:33:04 +0000 (UTC)
-Received: from hemlock.osuosl.org (smtp2.osuosl.org [140.211.166.133])
- by lists.linuxfoundation.org (Postfix) with ESMTP id 74064C0172
- for <iommu@lists.linux-foundation.org>; Wed, 15 Apr 2020 15:33:02 +0000 (UTC)
+	by lists.linuxfoundation.org (Postfix) with ESMTP id E8783C089E;
+	Wed, 15 Apr 2020 15:43:30 +0000 (UTC)
+Received: from fraxinus.osuosl.org (smtp4.osuosl.org [140.211.166.137])
+ by lists.linuxfoundation.org (Postfix) with ESMTP id 58C5DC0172
+ for <iommu@lists.linux-foundation.org>; Wed, 15 Apr 2020 15:43:29 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
- by hemlock.osuosl.org (Postfix) with ESMTP id 5EB6F86416
- for <iommu@lists.linux-foundation.org>; Wed, 15 Apr 2020 15:33:02 +0000 (UTC)
+ by fraxinus.osuosl.org (Postfix) with ESMTP id 3FB1185EF3
+ for <iommu@lists.linux-foundation.org>; Wed, 15 Apr 2020 15:43:29 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from hemlock.osuosl.org ([127.0.0.1])
+Received: from fraxinus.osuosl.org ([127.0.0.1])
  by localhost (.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
- with ESMTP id fjUFHOT-nXP7 for <iommu@lists.linux-foundation.org>;
- Wed, 15 Apr 2020 15:33:00 +0000 (UTC)
+ with ESMTP id wNJPULUCh52F for <iommu@lists.linux-foundation.org>;
+ Wed, 15 Apr 2020 15:43:28 +0000 (UTC)
 X-Greylist: domain auto-whitelisted by SQLgrey-1.7.6
-Received: from mga17.intel.com (mga17.intel.com [192.55.52.151])
- by hemlock.osuosl.org (Postfix) with ESMTPS id 5ED8686408
- for <iommu@lists.linux-foundation.org>; Wed, 15 Apr 2020 15:33:00 +0000 (UTC)
-IronPort-SDR: BH2+Sns9qhWnCmyAE0CgORGxBr0nGFxFqT8+WybQJTc6tBGXEZT6zlrG2A8/jTmkanmHIxYf61
- pfBCjrJpcM4Q==
-X-Amp-Result: SKIPPED(no attachment in message)
-X-Amp-File-Uploaded: False
-Received: from orsmga001.jf.intel.com ([10.7.209.18])
- by fmsmga107.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384;
- 15 Apr 2020 08:32:59 -0700
-IronPort-SDR: zAszhCrP0cBmRUBK375yX4GljVs7Z18jsJ86HFuEIjlqxcIX/EPEnOkPYGrkiVj40CsJOWBRfI
- 9ZxQ4i8L2FjQ==
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.72,387,1580803200"; d="scan'208";a="332530368"
-Received: from jacob-builder.jf.intel.com (HELO jacob-builder) ([10.7.199.155])
- by orsmga001.jf.intel.com with ESMTP; 15 Apr 2020 08:32:59 -0700
-Date: Wed, 15 Apr 2020 08:38:54 -0700
-From: Jacob Pan <jacob.jun.pan@linux.intel.com>
-To: "Tian, Kevin" <kevin.tian@intel.com>
-Subject: Re: [PATCH v2 1/3] iommu/uapi: Define uapi version and capabilities
-Message-ID: <20200415083854.6fefac01@jacob-builder>
-In-Reply-To: <AADFC41AFE54684AB9EE6CBC0274A5D19D81F901@SHSMSX104.ccr.corp.intel.com>
-References: <1585178227-17061-1-git-send-email-jacob.jun.pan@linux.intel.com>
- <20200326092316.GA31648@infradead.org>
- <20200326094442.5be042ce@jacob-builder>
- <AADFC41AFE54684AB9EE6CBC0274A5D19D7ECB45@SHSMSX104.ccr.corp.intel.com>
- <20200327074702.GA27959@infradead.org>
- <20200327165335.397f24a3@jacob-builder>
- <AADFC41AFE54684AB9EE6CBC0274A5D19D7FE150@SHSMSX104.ccr.corp.intel.com>
- <20200330090746.23c5599c@jacob-builder>
- <AADFC41AFE54684AB9EE6CBC0274A5D19D8011A9@SHSMSX104.ccr.corp.intel.com>
- <20200331085444.44bee0bb@jacob-builder>
- <AADFC41AFE54684AB9EE6CBC0274A5D19D803AFF@SHSMSX104.ccr.corp.intel.com>
- <20200402113604.6eea1e6f@jacob-builder>
- <20200413134157.395981a6@jacob-builder>
- <20200413162129.313b3b5a@w520.home>
- <20200413220515.25a107b6@jacob-builder>
- <20200414101358.3ae66ac5@w520.home>
- <20200414101304.27e587eb@jacob-builder>
- <20200414153226.30d8cab3@jacob-builder>
- <AADFC41AFE54684AB9EE6CBC0274A5D19D81F901@SHSMSX104.ccr.corp.intel.com>
-Organization: OTC
-X-Mailer: Claws Mail 3.13.2 (GTK+ 2.24.30; x86_64-pc-linux-gnu)
+Received: from foss.arm.com (foss.arm.com [217.140.110.172])
+ by fraxinus.osuosl.org (Postfix) with ESMTP id EC55185EF1
+ for <iommu@lists.linux-foundation.org>; Wed, 15 Apr 2020 15:43:27 +0000 (UTC)
+Received: from usa-sjc-imap-foss1.foss.arm.com (unknown [10.121.207.14])
+ by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id 145191FB;
+ Wed, 15 Apr 2020 08:43:27 -0700 (PDT)
+Received: from red-moon.cambridge.arm.com (unknown [10.57.31.189])
+ by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPSA id 562743F6C4;
+ Wed, 15 Apr 2020 08:43:24 -0700 (PDT)
+Date: Wed, 15 Apr 2020 16:43:18 +0100
+From: Lorenzo Pieralisi <lorenzo.pieralisi@arm.com>
+To: Makarand Pawagi <makarand.pawagi@nxp.com>
+Subject: Re: [EXT] Re: [RFC PATCH 1/4] bus: fsl-mc: add custom .dma_configure
+ implementation
+Message-ID: <20200415153901.GA21296@red-moon.cambridge.arm.com>
+References: <20200227100542.13819-1-laurentiu.tudor@nxp.com>
+ <20200325125109.GA5430@red-moon.cambridge.arm.com>
+ <499fbf9a-416f-d7c7-0655-881d92138a6c@nxp.com>
+ <20200414143211.GA14905@red-moon.cambridge.arm.com>
+ <DB7PR04MB4986A8A3427DBA096628D6FBEBDB0@DB7PR04MB4986.eurprd04.prod.outlook.com>
 MIME-Version: 1.0
-Cc: "Raj, Ashok" <ashok.raj@intel.com>,
- Jean-Philippe Brucker <jean-philippe@linaro.com>,
- LKML <linux-kernel@vger.kernel.org>,
+Content-Disposition: inline
+In-Reply-To: <DB7PR04MB4986A8A3427DBA096628D6FBEBDB0@DB7PR04MB4986.eurprd04.prod.outlook.com>
+User-Agent: Mutt/1.9.4 (2018-02-28)
+Cc: "jason@lakedaemon.net" <jason@lakedaemon.net>,
+ Calvin Johnson <calvin.johnson@nxp.com>,
+ "ard.biesheuvel@linaro.org" <ard.biesheuvel@linaro.org>,
+ "maz@kernel.org" <maz@kernel.org>, Pankaj Bansal <pankaj.bansal@nxp.com>,
+ "Diana Madalina Craciun \(OSS\)" <diana.craciun@oss.nxp.com>,
+ "jon@solid-run.com" <jon@solid-run.com>,
+ "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
+ "jeremy.linton@arm.com" <jeremy.linton@arm.com>,
+ "linux-acpi@vger.kernel.org" <linux-acpi@vger.kernel.org>,
  "iommu@lists.linux-foundation.org" <iommu@lists.linux-foundation.org>,
- Alex Williamson <alex.williamson@redhat.com>,
- David Woodhouse <dwmw2@infradead.org>
+ Cristi Sovaiala <cristian.sovaiala@nxp.com>,
+ "tglx@linutronix.de" <tglx@linutronix.de>, Varun Sethi <V.Sethi@nxp.com>,
+ Ioana Ciornei <ioana.ciornei@nxp.com>,
+ "Stuart.Yoder@arm.com" <Stuart.Yoder@arm.com>,
+ "robin.murphy@arm.com" <robin.murphy@arm.com>,
+ "linux-arm-kernel@lists.infradead.org" <linux-arm-kernel@lists.infradead.org>
 X-BeenThere: iommu@lists.linux-foundation.org
 X-Mailman-Version: 2.1.15
 Precedence: list
@@ -108,87 +98,115 @@ Content-Transfer-Encoding: 7bit
 Errors-To: iommu-bounces@lists.linux-foundation.org
 Sender: "iommu" <iommu-bounces@lists.linux-foundation.org>
 
-On Tue, 14 Apr 2020 23:47:40 +0000
-"Tian, Kevin" <kevin.tian@intel.com> wrote:
-
-> > From: Jacob Pan <jacob.jun.pan@linux.intel.com>
-> > Sent: Wednesday, April 15, 2020 6:32 AM
-> > 
-> > On Tue, 14 Apr 2020 10:13:04 -0700
-> > Jacob Pan <jacob.jun.pan@linux.intel.com> wrote:
-> >   
-> > > > > >  In any of the proposed solutions, the
-> > > > > > IOMMU driver is ultimately responsible for validating the
-> > > > > > user data, so do we want vfio performing the
-> > > > > > copy_from_user() to an object that could later be assumed
-> > > > > > to be sanitized, or should vfio just pass a user pointer to
-> > > > > > make it obvious that the consumer is responsible for all
-> > > > > > the user protections?  Seems like the latter.  
-> > > > > I like the latter as well.
-> > > > >  
-> > On a second thought, I think the former is better. Two reasons:
-> > 
-> > 1. IOMMU API such as page_response is also used in baremetal. So it
-> > is not suitable to pass a __user *.
-> > https://www.spinics.net/lists/arm-kernel/msg798677.html  
+On Wed, Apr 15, 2020 at 05:42:03AM +0000, Makarand Pawagi wrote:
 > 
-> You can have a wrapped version accepting a __user* and an internal
-> version for kernel pointers.
 > 
-I have thought about that also but the problem is that some of the
-flags are processed in the vendor IOMMU ops so it is hard to do that in
-a generic wrapper.
-
+> > -----Original Message-----
+> > From: Lorenzo Pieralisi <lorenzo.pieralisi@arm.com>
+> > Sent: Tuesday, April 14, 2020 8:02 PM
+> > To: Laurentiu Tudor <laurentiu.tudor@nxp.com>
+> > Cc: linux-kernel@vger.kernel.org; iommu@lists.linux-foundation.org; linux-arm-
+> > kernel@lists.infradead.org; linux-acpi@vger.kernel.org;
+> > robin.murphy@arm.com; ard.biesheuvel@linaro.org; Ioana Ciornei
+> > <ioana.ciornei@nxp.com>; Diana Madalina Craciun (OSS)
+> > <diana.craciun@oss.nxp.com>; maz@kernel.org; jon@solid-run.com; Pankaj
+> > Bansal <pankaj.bansal@nxp.com>; Makarand Pawagi
+> > <makarand.pawagi@nxp.com>; Calvin Johnson <calvin.johnson@nxp.com>;
+> > Varun Sethi <V.Sethi@nxp.com>; Cristi Sovaiala <cristian.sovaiala@nxp.com>;
+> > Stuart.Yoder@arm.com; jeremy.linton@arm.com; joro@8bytes.org;
+> > tglx@linutronix.de; jason@lakedaemon.net
+> > Subject: [EXT] Re: [RFC PATCH 1/4] bus: fsl-mc: add custom .dma_configure
+> > implementation
 > > 
-> > 2. Some data are in the mandatory (fixed offset, never removed or
-> > extended) portion of the uAPI structure. It is simpler for VFIO to
-> > extract that and pass it to IOMMU API. For example, the PASID value
-> > used for unbind_gpasid(). VFIO also need to sanitize the PASID
-> > value to make sure it belongs to the same VM that did the
-> > allocation.  
-> 
-> I don't think this makes much difference. If anyway you still plan to
-> let IOMMU driver parse some user pointers, why not making a clear
-> split to have it sparse all IOMMU specific fields?
->
-The plan is not to have IOMMU driver parse user pointers. This is the
-"former" case in Alex's comment. I.e. vfio performing the
-copy_from_user based on argsz in IOMMU uAPI.
- 
-> Thanks
-> Kevin
-> 
+> > Caution: EXT Email
 > > 
-> >   
-> > > > > >  That still really
-> > > > > > doesn't address what's in that user data blob yet, but the
-> > > > > > vfio interface could be:
-> > > > > >
-> > > > > > struct {
-> > > > > > 	__u32 argsz;
-> > > > > > 	__u32 flags;
-> > > > > > 	__u8  data[];
-> > > > > > }
-> > > > > >
-> > > > > > Where flags might be partitioned like we do for
-> > > > > > DEVICE_FEATURE to indicate the format of data and what vfio
-> > > > > > should do with it, and data might simply be defined as a
-> > > > > > (__u64 __user *). 
-> > > > > So, __user * will be passed to IOMMU driver if VFIO checks
-> > > > > minsz include flags and they are valid.
-> > > > > IOMMU driver can copy the rest based on the mandatory
-> > > > > version/minsz and flags in the IOMMU uAPI structs.
-> > > > > Does it sound right? This is really choice #2.  
+> > On Wed, Mar 25, 2020 at 06:48:55PM +0200, Laurentiu Tudor wrote:
+> > > Hi Lorenzo,
+> > >
+> > > On 3/25/2020 2:51 PM, Lorenzo Pieralisi wrote:
+> > > > On Thu, Feb 27, 2020 at 12:05:39PM +0200, laurentiu.tudor@nxp.com wrote:
+> > > >> From: Laurentiu Tudor <laurentiu.tudor@nxp.com>
+> > > >>
+> > > >> The devices on this bus are not discovered by way of device tree
+> > > >> but by queries to the firmware. It makes little sense to trick the
+> > > >> generic of layer into thinking that these devices are of related so
+> > > >> that we can get our dma configuration. Instead of doing that, add
+> > > >> our custom dma configuration implementation.
+> > > >>
+> > > >> Signed-off-by: Laurentiu Tudor <laurentiu.tudor@nxp.com>
+> > > >> ---
+> > > >>  drivers/bus/fsl-mc/fsl-mc-bus.c | 31
+> > > >> ++++++++++++++++++++++++++++++-
+> > > >>  1 file changed, 30 insertions(+), 1 deletion(-)
+> > > >>
+> > > >> diff --git a/drivers/bus/fsl-mc/fsl-mc-bus.c
+> > > >> b/drivers/bus/fsl-mc/fsl-mc-bus.c index 36eb25f82c8e..eafaa0e0b906
+> > > >> 100644
+> > > >> --- a/drivers/bus/fsl-mc/fsl-mc-bus.c
+> > > >> +++ b/drivers/bus/fsl-mc/fsl-mc-bus.c
+> > > >> @@ -132,11 +132,40 @@ static int fsl_mc_bus_uevent(struct device
+> > > >> *dev, struct kobj_uevent_env *env)  static int
+> > > >> fsl_mc_dma_configure(struct device *dev)  {
+> > > >>    struct device *dma_dev = dev;
+> > > >> +  struct iommu_fwspec *fwspec;
+> > > >> +  const struct iommu_ops *iommu_ops;  struct fsl_mc_device *mc_dev
+> > > >> + = to_fsl_mc_device(dev);  int ret;
+> > > >> +  u32 icid;
+> > > >>
+> > > >>    while (dev_is_fsl_mc(dma_dev))
+> > > >>            dma_dev = dma_dev->parent;
+> > > >>
+> > > >> -  return of_dma_configure(dev, dma_dev->of_node, 0);
+> > > >> +  fwspec = dev_iommu_fwspec_get(dma_dev);  if (!fwspec)
+> > > >> +          return -ENODEV;
+> > > >> +  iommu_ops = iommu_ops_from_fwnode(fwspec->iommu_fwnode);
+> > > >> +  if (!iommu_ops)
+> > > >> +          return -ENODEV;
+> > > >> +
+> > > >> +  ret = iommu_fwspec_init(dev, fwspec->iommu_fwnode, iommu_ops);
+> > > >> + if (ret)
+> > > >> +          return ret;
+> > > >> +
+> > > >> +  icid = mc_dev->icid;
+> > > >> +  ret = iommu_fwspec_add_ids(dev, &icid, 1);
 > > > >
-> > > > Sounds like each IOMMU UAPI struct just needs to have an
-> > > > embedded size and flags field, but yes.
-> > > >  
-> > > Yes, an argsz field can be added to each UAPI. There are already
-> > > flags or the equivalent. IOMMU driver can process the __user *
-> > > based on the argsz, flags, check argsz against
-> > > offsetofend(iommu_uapi_struct, last_element), etc.;  
+> > > > I see. So with this patch we would use the MC named component only
+> > > > to retrieve the iommu_ops
+> > >
+> > > Right. I'd also add that the implementation tries to follow the
+> > > existing standard .dma_configure implementations, e.g.
+> > > of_dma_configure + of_iommu_configure. I'd also note that similarly to
+> > > the ACPI case, this MC FW device is probed as a platform device in the
+> > > DT scenario, binding here [1].
+> > > A similar approach is used for the retrieval of the msi irq domain,
+> > > see following patch.
+> > >
+> > > > - the streamid are injected directly here bypassing OF/IORT bindings
+> > translations altogether.
+> > >
+> > > Actually I've submitted a v2 [2] that calls into .of_xlate() to allow
+> > > the smmu driver to do some processing on the raw streamid coming from
+> > > the firmware. I have not yet tested this with ACPI but expect it to
+> > > work, however, it's debatable how valid is this approach in the
+> > > context of ACPI.
+> > 
+> > Actually, what I think you need is of_map_rid() (and an IORT equivalent, that I
+> > am going to write - generalizing iort_msi_map_rid()).
+> > 
+> 
+> That would help.
+> 
+> > Would that be enough to enable IORT "normal" mappings in the MC bus named
+> > components ?
+> > 
+> 
+> But still the question remain unanswered that how we are going to represent MC? As Platform device with single ID mapping flag?
 
-[Jacob Pan]
+No, "normal" mappings, that's what I wrote above and it is not a
+platform device it is a named component in ACPI/IORT terms.
+
+Thanks,
+Lorenzo
 _______________________________________________
 iommu mailing list
 iommu@lists.linux-foundation.org
