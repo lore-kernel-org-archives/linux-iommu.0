@@ -2,96 +2,150 @@ Return-Path: <SRS0=meaX=6A=lists.linux-foundation.org=iommu-bounces@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-8.1 required=3.0 tests=DKIM_INVALID,DKIM_SIGNED,
-	HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_PATCH,MAILING_LIST_MULTI,SIGNED_OFF_BY,
+X-Spam-Status: No, score=-7.0 required=3.0 tests=DKIM_INVALID,DKIM_SIGNED,
+	HEADER_FROM_DIFFERENT_DOMAINS,MAILING_LIST_MULTI,MENTIONS_GIT_HOSTING,
 	SPF_HELO_NONE,SPF_PASS,USER_AGENT_SANE_1 autolearn=ham autolearn_force=no
 	version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 5E518C352BE
-	for <iommu@archiver.kernel.org>; Thu, 16 Apr 2020 10:59:33 +0000 (UTC)
-Received: from fraxinus.osuosl.org (smtp4.osuosl.org [140.211.166.137])
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 90183C2BB55
+	for <iommu@archiver.kernel.org>; Thu, 16 Apr 2020 11:48:57 +0000 (UTC)
+Received: from whitealder.osuosl.org (smtp1.osuosl.org [140.211.166.138])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by mail.kernel.org (Postfix) with ESMTPS id 18D152192A
-	for <iommu@archiver.kernel.org>; Thu, 16 Apr 2020 10:59:33 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTPS id 57718206E9
+	for <iommu@archiver.kernel.org>; Thu, 16 Apr 2020 11:48:57 +0000 (UTC)
 Authentication-Results: mail.kernel.org;
-	dkim=fail reason="signature verification failed" (1024-bit key) header.d=redhat.com header.i=@redhat.com header.b="GZ8KKuv7"
-DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 18D152192A
-Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=redhat.com
+	dkim=fail reason="signature verification failed" (1024-bit key) header.d=samsung.com header.i=@samsung.com header.b="SfpxavV1"
+DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 57718206E9
+Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=samsung.com
 Authentication-Results: mail.kernel.org; spf=pass smtp.mailfrom=iommu-bounces@lists.linux-foundation.org
 Received: from localhost (localhost [127.0.0.1])
-	by fraxinus.osuosl.org (Postfix) with ESMTP id E5E8A86211;
-	Thu, 16 Apr 2020 10:59:32 +0000 (UTC)
+	by whitealder.osuosl.org (Postfix) with ESMTP id 257C58405F;
+	Thu, 16 Apr 2020 11:48:57 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from fraxinus.osuosl.org ([127.0.0.1])
+Received: from whitealder.osuosl.org ([127.0.0.1])
 	by localhost (.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
-	with ESMTP id bYGyYXMC8oTm; Thu, 16 Apr 2020 10:59:31 +0000 (UTC)
+	with ESMTP id A2FggoUUJ+sF; Thu, 16 Apr 2020 11:48:55 +0000 (UTC)
 Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [140.211.9.56])
-	by fraxinus.osuosl.org (Postfix) with ESMTP id C6F43860FE;
-	Thu, 16 Apr 2020 10:59:31 +0000 (UTC)
+	by whitealder.osuosl.org (Postfix) with ESMTP id DFEB183C00;
+	Thu, 16 Apr 2020 11:48:55 +0000 (UTC)
 Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
-	by lists.linuxfoundation.org (Postfix) with ESMTP id B0EE7C1AE8;
-	Thu, 16 Apr 2020 10:59:31 +0000 (UTC)
+	by lists.linuxfoundation.org (Postfix) with ESMTP id B8794C089E;
+	Thu, 16 Apr 2020 11:48:55 +0000 (UTC)
 Received: from silver.osuosl.org (smtp3.osuosl.org [140.211.166.136])
- by lists.linuxfoundation.org (Postfix) with ESMTP id 3B4EDC0172
- for <iommu@lists.linux-foundation.org>; Thu, 16 Apr 2020 10:59:30 +0000 (UTC)
+ by lists.linuxfoundation.org (Postfix) with ESMTP id 56F12C0172
+ for <iommu@lists.linux-foundation.org>; Thu, 16 Apr 2020 11:48:54 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
- by silver.osuosl.org (Postfix) with ESMTP id 22855221AF
- for <iommu@lists.linux-foundation.org>; Thu, 16 Apr 2020 10:59:30 +0000 (UTC)
+ by silver.osuosl.org (Postfix) with ESMTP id 0ACCF21FA8
+ for <iommu@lists.linux-foundation.org>; Thu, 16 Apr 2020 11:48:54 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
 Received: from silver.osuosl.org ([127.0.0.1])
  by localhost (.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
- with ESMTP id PqB3kW39a1hY for <iommu@lists.linux-foundation.org>;
- Thu, 16 Apr 2020 10:59:28 +0000 (UTC)
-X-Greylist: domain auto-whitelisted by SQLgrey-1.7.6
-Received: from us-smtp-1.mimecast.com (us-smtp-delivery-1.mimecast.com
- [207.211.31.120])
- by silver.osuosl.org (Postfix) with ESMTPS id 59E71220C1
- for <iommu@lists.linux-foundation.org>; Thu, 16 Apr 2020 10:59:28 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
- s=mimecast20190719; t=1587034767;
- h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
- to:to:cc:cc:mime-version:mime-version:content-type:content-type:
- content-transfer-encoding:content-transfer-encoding:
- in-reply-to:in-reply-to:references:references;
- bh=zrEKSSN8/EAqQUNimNNV6BWUwR7d8MldVkCfVxEYZ00=;
- b=GZ8KKuv7GilWw/jN+gAJaRe/7U7aedS+H3bimWOQJ8WkpEHUjG61hK17Res4qSRYhgYKOE
- qCKbVU/ART68a4Gto+a349Juxar/tbJmaAmCm23SiF+jhtvZ6itK8V8sQ0sfxcc/gd71el
- YfGtjEO0q//BSFfUbwy8M2JYpAPQK4M=
-Received: from mimecast-mx01.redhat.com (mimecast-mx01.redhat.com
- [209.132.183.4]) (Using TLS) by relay.mimecast.com with ESMTP id
- us-mta-255-41x9CDCPN-iIoR7bt7X92g-1; Thu, 16 Apr 2020 06:59:23 -0400
-X-MC-Unique: 41x9CDCPN-iIoR7bt7X92g-1
-Received: from smtp.corp.redhat.com (int-mx04.intmail.prod.int.phx2.redhat.com
- [10.5.11.14])
- (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
- (No client certificate requested)
- by mimecast-mx01.redhat.com (Postfix) with ESMTPS id 7FE418017FF;
- Thu, 16 Apr 2020 10:59:21 +0000 (UTC)
-Received: from [10.36.115.53] (ovpn-115-53.ams2.redhat.com [10.36.115.53])
- by smtp.corp.redhat.com (Postfix) with ESMTPS id AA0CA5D9E2;
- Thu, 16 Apr 2020 10:59:15 +0000 (UTC)
-Subject: Re: [PATCH v11 07/10] iommu/vt-d: Add svm/sva invalidate function
-To: Jacob Pan <jacob.jun.pan@linux.intel.com>
-References: <1585939334-21396-1-git-send-email-jacob.jun.pan@linux.intel.com>
- <1585939334-21396-8-git-send-email-jacob.jun.pan@linux.intel.com>
- <7867ade8-3e11-30af-b123-7f8ac3722b81@redhat.com>
- <20200410145621.30242b2d@jacob-builder>
-From: Auger Eric <eric.auger@redhat.com>
-Message-ID: <abee5ee3-ff7c-4849-4831-9591eb07ea63@redhat.com>
-Date: Thu, 16 Apr 2020 12:59:14 +0200
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:60.0) Gecko/20100101
- Thunderbird/60.4.0
+ with ESMTP id LYxXNrKXLnKP for <iommu@lists.linux-foundation.org>;
+ Thu, 16 Apr 2020 11:48:52 +0000 (UTC)
+X-Greylist: from auto-whitelisted by SQLgrey-1.7.6
+Received: from mailout2.w1.samsung.com (mailout2.w1.samsung.com
+ [210.118.77.12])
+ by silver.osuosl.org (Postfix) with ESMTPS id CD8F320368
+ for <iommu@lists.linux-foundation.org>; Thu, 16 Apr 2020 11:48:51 +0000 (UTC)
+Received: from eucas1p2.samsung.com (unknown [182.198.249.207])
+ by mailout2.w1.samsung.com (KnoxPortal) with ESMTP id
+ 20200416114849euoutp02b38a19e4d8480a0a2b500f3a87b7c23e~GSmgFfQmf3088030880euoutp02G
+ for <iommu@lists.linux-foundation.org>; Thu, 16 Apr 2020 11:48:49 +0000 (GMT)
+DKIM-Filter: OpenDKIM Filter v2.11.0 mailout2.w1.samsung.com
+ 20200416114849euoutp02b38a19e4d8480a0a2b500f3a87b7c23e~GSmgFfQmf3088030880euoutp02G
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=samsung.com;
+ s=mail20170921; t=1587037729;
+ bh=LtJiapRZh1Ea64p7LdbSiBgjXuP3s8Uvyni6NX+lMbI=;
+ h=Subject:To:Cc:From:Date:In-Reply-To:References:From;
+ b=SfpxavV1P9cZ5c5nOEaxfLj3RP0aNc+JtZ78ozQRM6iQ8N5LhcGpunGHkJbVpbOcc
+ cFP0TuQ0jDXD8WXLRECz/pQT8/mqxu4vrqfMMQebCW6zADsKklQwPTFV21OF0agVdu
+ VlGyEqiRvBW+JFL5Zv2Nk0X68sk/DgU6ksOXm9QQ=
+Received: from eusmges2new.samsung.com (unknown [203.254.199.244]) by
+ eucas1p2.samsung.com (KnoxPortal) with ESMTP id
+ 20200416114848eucas1p22ab13090a3fe7b4992627149d2e5ac90~GSmfuxvu60903309033eucas1p28;
+ Thu, 16 Apr 2020 11:48:48 +0000 (GMT)
+Received: from eucas1p2.samsung.com ( [182.198.249.207]) by
+ eusmges2new.samsung.com (EUCPMTA) with SMTP id 8B.5A.60679.026489E5; Thu, 16
+ Apr 2020 12:48:48 +0100 (BST)
+Received: from eusmtrp2.samsung.com (unknown [182.198.249.139]) by
+ eucas1p2.samsung.com (KnoxPortal) with ESMTPA id
+ 20200416114848eucas1p26436783dd625463955ec0d8fc9bb6e09~GSmfQuTS71105311053eucas1p2p;
+ Thu, 16 Apr 2020 11:48:48 +0000 (GMT)
+Received: from eusmgms2.samsung.com (unknown [182.198.249.180]) by
+ eusmtrp2.samsung.com (KnoxPortal) with ESMTP id
+ 20200416114848eusmtrp2def4490817dd88b069636a889ccc2aa7~GSmfPshja1089610896eusmtrp2L;
+ Thu, 16 Apr 2020 11:48:48 +0000 (GMT)
+X-AuditID: cbfec7f4-0cbff7000001ed07-0c-5e9846205236
+Received: from eusmtip1.samsung.com ( [203.254.199.221]) by
+ eusmgms2.samsung.com (EUCPMTA) with SMTP id 41.C0.07950.026489E5; Thu, 16
+ Apr 2020 12:48:48 +0100 (BST)
+Received: from [106.210.88.143] (unknown [106.210.88.143]) by
+ eusmtip1.samsung.com (KnoxPortal) with ESMTPA id
+ 20200416114847eusmtip140b27105c59b66ea3210be2b8bb787db~GSmd8phLs0505005050eusmtip1R;
+ Thu, 16 Apr 2020 11:48:46 +0000 (GMT)
+Subject: Re: [PATCH v2 00/33] iommu: Move iommu_group setup to IOMMU core code
+To: Joerg Roedel <joro@8bytes.org>, Will Deacon <will@kernel.org>, Robin
+ Murphy <robin.murphy@arm.com>, Kukjin Kim <kgene@kernel.org>, Krzysztof
+ Kozlowski <krzk@kernel.org>, David Woodhouse <dwmw2@infradead.org>, Lu Baolu
+ <baolu.lu@linux.intel.com>, Andy Gross <agross@kernel.org>, Bjorn Andersson
+ <bjorn.andersson@linaro.org>, Matthias Brugger <matthias.bgg@gmail.com>, Rob
+ Clark <robdclark@gmail.com>, Heiko Stuebner <heiko@sntech.de>, Gerald
+ Schaefer <gerald.schaefer@de.ibm.com>, Thierry Reding
+ <thierry.reding@gmail.com>, Jonathan Hunter <jonathanh@nvidia.com>,
+ Jean-Philippe Brucker <jean-philippe@linaro.org>
+From: Marek Szyprowski <m.szyprowski@samsung.com>
+Message-ID: <551c48b8-3268-6034-2dc6-cec3dbbec250@samsung.com>
+Date: Thu, 16 Apr 2020 13:48:46 +0200
+User-Agent: Mozilla/5.0 (Windows NT 10.0; WOW64; rv:68.0) Gecko/20100101
+ Thunderbird/68.7.0
 MIME-Version: 1.0
-In-Reply-To: <20200410145621.30242b2d@jacob-builder>
+In-Reply-To: <20200414131542.25608-1-joro@8bytes.org>
 Content-Language: en-US
-X-Scanned-By: MIMEDefang 2.79 on 10.5.11.14
-Cc: "Tian, Kevin" <kevin.tian@intel.com>,
- Alex Williamson <alex.williamson@redhat.com>, Raj Ashok <ashok.raj@intel.com>,
- David Woodhouse <dwmw2@infradead.org>, LKML <linux-kernel@vger.kernel.org>,
- iommu@lists.linux-foundation.org,
- Jean-Philippe Brucker <jean-philippe@linaro.com>,
- Jonathan Cameron <jic23@kernel.org>
+X-Brightmail-Tracker: H4sIAAAAAAAAA02Se0hTYRjG+XaOZ2fW5HMVvlp0GRQVZhcTPjKyoOIQVHYhKrBa7WiSW7Kj
+ lhVkbV1cV5NwTVtm0bSbpmkqlmiY1NKtVhahZLnuzsTZxS4ut5Plf8/7fL+H93nhYynFJSaM
+ TdSm8DqtKknJBNIV9/rs08YvNm2YYdVHkeaOnzQpyypniK22iyZZRdkUqep8zxDv608BJL82
+ mmRccQQQg7mAJpm5JVJyouMTRez2AZVV2yQlzuo8hjj1jxDpafdS5OR5PUVM9jsSktlrZsh+
+ QyR5d/47Req6XQGkr9pCE2uThSGG1qj5oZyrziLhrlquIq7udT3DVZnbpFxZ4VSu9HImw7W2
+ 1DCc5f4KruziXi77uRVxx/RdDHerxUJxntKxsfL1gXPVfFJiGq+bPm9T4NbvPZV0cueEnQXv
+ 8iQZyBNmRDIW8GwoNJymjSiQVeBCBDUP8xhx6EVwz2hifJQCexAUH9s9mHjpLJGIkBWB3tT3
+ F/qM4LZH4dMjcCw4zvZTPmgk/kZDfkO5f6BwpQS+Nr1BPorBM8HoNvrTcjwPbG3H/ZrGE8HV
+ kTEQYNlROA5yWlaLSDDcP+OifbYMR8GzU+t8NoXHwS13HiXqEHjhOucvB9jFgje3SiK2XggV
+ XYeQqEfAx8abUlGPAW/VYECP4FXzNak4HEXg3G/6m4iG1uYfjG8zhadAcfV00V4Amcfdfhtw
+ EDx3B4slguBURQ4l2nI4fFAh0pPA3Hj939o6x2PqJFKah1xmHnKOecg55v978xF9GYXwqYIm
+ gRdmafkdEYJKI6RqEyK2bNeUooHfa+tv7K1E1b821yPMIuVw+aYY0wZFgCpNSNfUI2Ap5Uh5
+ UNSAJVer0nfxuu0bdalJvFCPRrO0MkQeWfAhToETVCn8Np5P5nWDrxJWFpaBlqEDb7qLDPPV
+ 0omlZ7Jr5qwrXrL8rSdtSvcq57C1i8rVX9vu2qJXdkesyYlL7my3hYZXLt1bNM7xpD94TU/z
+ B2tFfGs6p1k9rTDu6Z5IY/yNlAvxk5MTr8Rc/1hQtm+3Vx1+4rfkiPSbUMJs+xK+0Y3Xygwy
+ +4MLsQ3h2gZ3jGOHR0kLW1Uzp1I6QfUHpZO/gLkDAAA=
+X-Brightmail-Tracker: H4sIAAAAAAAAA02SXUhTYRzGeXfOjmfS4ji/XiX8mHhR0HSb09c+LLuQI0gYQyFLa+lJK7fZ
+ ziYZUSu9mKPyq0ynrBJLLS/MVdMpyiRKMTORLEOx3MrCHKG7KIxscwa7+/E8v+eFF/4kJujn
+ RpJnVFpGo1KUColAfPzvq/ndMRlNBYnrE2HojWMdR5a6ZwQaH3bhqK6rAUP9P74RaGNxmYvu
+ De9F+sdvuajK1Iaj6paeAFTjWMbQ5KSH6oYnAtC0rZVA05VTAK1+2sBQ7f1KDDVNDnFQtdtE
+ oGtVUrR0/xeG7D+dXPTbZsZRx4SZQFVzsoMRtNNu5tDd5m5A2xdHCLrfNB9AWzp30b2Pqgl6
+ bmaQoM1jR2hL+xW64UMHoG9UugjaOmPG6LXeqGx+nmifRq3TMjElala7X3hMjCQicSoSSZJS
+ RWJpSv4eiUyYkLaviCk9U85oEtJOikp+rfbhZT9iL7QttXL0YC3SCHgkpJLgwnQPxwgCSQH1
+ AMCvyxaur9gBxxr1WxwM/8wYCZ+0AmBnswPzFsHUYWh/+AR4ixBqHYftHwY2LYzq48DVhheb
+ loAyAPj3e6yXCUoMjSvep3gkn0qD4/M3Nxmn4qHToff4JBlK5cOqqZ0+JQiONTtxb8yjZPB9
+ /VFvjFHJ0Gz5jPk4GlpXWrc4HH503uXUAoHJb23ym5j8Jia/yT2APwIhjI5VFitZiYhVKFmd
+ qlhUqFb2As/ZPH/5+2kfMLrkI4AigXAb/+SBpgIBV1HOVihHACQxYQh/u8wT8YsUFRcZjfqE
+ RlfKsCNA5vlaHRYZWqj2HKFKe0IsE6egVHGKNEWajIThfANlPy6gihVa5hzDlDGa/zsOyYvU
+ g5brVrTDVfGV/qI7dDuvKH8+fiEqYiDXFpr9OrvJmvVe3uEuD7rTUnJpNi19tswuz0nN2bC8
+ G1L2R0d/mijkz6VLqbOLo39yTxska6EPVjtiDVfjglhbTafz1uVTe89nxv18OEoMLqMG13pW
+ zeucRNSu6eJdzOh0yzPr3X1hjUKcLVGId2EaVvEPnvogHEwDAAA=
+X-CMS-MailID: 20200416114848eucas1p26436783dd625463955ec0d8fc9bb6e09
+X-Msg-Generator: CA
+X-RootMTR: 20200414131600eucas1p16f1ff6aedb780eb795a770dc08e5dec5
+X-EPHeader: CA
+CMS-TYPE: 201P
+X-CMS-RootMailID: 20200414131600eucas1p16f1ff6aedb780eb795a770dc08e5dec5
+References: <CGME20200414131600eucas1p16f1ff6aedb780eb795a770dc08e5dec5@eucas1p1.samsung.com>
+ <20200414131542.25608-1-joro@8bytes.org>
+Cc: linux-s390@vger.kernel.org, linux-samsung-soc@vger.kernel.org,
+ linux-arm-msm@vger.kernel.org, linux-kernel@vger.kernel.org,
+ virtualization@lists.linux-foundation.org, linux-rockchip@lists.infradead.org,
+ iommu@lists.linux-foundation.org, linux-mediatek@lists.infradead.org,
+ linux-tegra@vger.kernel.org
 X-BeenThere: iommu@lists.linux-foundation.org
 X-Mailman-Version: 2.1.15
 Precedence: list
@@ -109,303 +163,109 @@ Content-Transfer-Encoding: 7bit
 Errors-To: iommu-bounces@lists.linux-foundation.org
 Sender: "iommu" <iommu-bounces@lists.linux-foundation.org>
 
-Hi Jacob,
-On 4/10/20 11:56 PM, Jacob Pan wrote:
-> On Thu, 9 Apr 2020 10:50:34 +0200
-> Auger Eric <eric.auger@redhat.com> wrote:
-> 
->> Hi Jacob,
->>
->> On 4/3/20 8:42 PM, Jacob Pan wrote:
->>> When Shared Virtual Address (SVA) is enabled for a guest OS via
->>> vIOMMU, we need to provide invalidation support at IOMMU API and
->>> driver level. This patch adds Intel VT-d specific function to
->>> implement iommu passdown invalidate API for shared virtual address.
->>>
->>> The use case is for supporting caching structure invalidation
->>> of assigned SVM capable devices. Emulated IOMMU exposes queue
->>> invalidation capability and passes down all descriptors from the
->>> guest to the physical IOMMU.
->>>
->>> The assumption is that guest to host device ID mapping should be
->>> resolved prior to calling IOMMU driver. Based on the device handle,
->>> host IOMMU driver can replace certain fields before submit to the
->>> invalidation queue.
->>>
->>> ---
->>> v11 - Removed 2D map array, use -EINVAL in granularity lookup array.
->>>       Fixed devTLB invalidation granularity mapping. Disregard G=1
->>> case and use address selective invalidation only.
->>>
->>> v7 review fixed in v10
->>> ---
->>>
->>> Signed-off-by: Jacob Pan <jacob.jun.pan@linux.intel.com>
->>> Signed-off-by: Ashok Raj <ashok.raj@intel.com>
->>> Signed-off-by: Liu, Yi L <yi.l.liu@intel.com>
->>> ---
->>>  drivers/iommu/intel-iommu.c | 158
->>> ++++++++++++++++++++++++++++++++++++++++++++ 1 file changed, 158
->>> insertions(+)
->>>
->>> diff --git a/drivers/iommu/intel-iommu.c
->>> b/drivers/iommu/intel-iommu.c index 94c7993dac6a..045c5c08d71d
->>> 100644 --- a/drivers/iommu/intel-iommu.c
->>> +++ b/drivers/iommu/intel-iommu.c
->>> @@ -5594,6 +5594,163 @@ static void
->>> intel_iommu_aux_detach_device(struct iommu_domain *domain,
->>> aux_domain_remove_dev(to_dmar_domain(domain), dev); }
->>>  
->>> +/*
->>> + * 2D array for converting and sanitizing IOMMU generic TLB
->>> granularity to
->>> + * VT-d granularity. Invalidation is typically included in the
->>> unmap operation
->>> + * as a result of DMA or VFIO unmap. However, for assigned devices
->>> guest
->>> + * owns the first level page tables. Invalidations of translation
->>> caches in the
->>> + * guest are trapped and passed down to the host.
->>> + *
->>> + * vIOMMU in the guest will only expose first level page tables,
->>> therefore
->>> + * we do not support IOTLB granularity for request without PASID
->>> (second level).
->>> + *
->>> + * For example, to find the VT-d granularity encoding for IOTLB
->>> + * type and page selective granularity within PASID:
->>> + * X: indexed by iommu cache type
->>> + * Y: indexed by enum iommu_inv_granularity
->>> + * [IOMMU_CACHE_INV_TYPE_IOTLB][IOMMU_INV_GRANU_ADDR]
->>> + */
->>> +
->>> +const static int
->>> inv_type_granu_table[IOMMU_CACHE_INV_TYPE_NR][IOMMU_INV_GRANU_NR] =
->>> {
->>> +	/*
->>> +	 * PASID based IOTLB invalidation: PASID selective (per
->>> PASID),
->>> +	 * page selective (address granularity)
->>> +	 */
->>> +	{-EINVAL, QI_GRAN_NONG_PASID, QI_GRAN_PSI_PASID},
->>> +	/* PASID based dev TLBs */
->>> +	{-EINVAL, -EINVAL, QI_DEV_IOTLB_GRAN_PASID_SEL},
->>> +	/* PASID cache */
->>> +	{-EINVAL, -EINVAL, -EINVAL}
->>> +};
->>> +
->>> +static inline int to_vtd_granularity(int type, int granu)
->>> +{
->>> +	return inv_type_granu_table[type][granu];
->>> +}
->>> +
->>> +static inline u64 to_vtd_size(u64 granu_size, u64 nr_granules)
->>> +{
->>> +	u64 nr_pages = (granu_size * nr_granules) >>
->>> VTD_PAGE_SHIFT; +
->>> +	/* VT-d size is encoded as 2^size of 4K pages, 0 for 4k, 9
->>> for 2MB, etc.
->>> +	 * IOMMU cache invalidate API passes granu_size in bytes,
->>> and number of
->>> +	 * granu size in contiguous memory.
->>> +	 */
->>> +	return order_base_2(nr_pages);
->>> +}
->>> +
->>> +#ifdef CONFIG_INTEL_IOMMU_SVM
->>> +static int intel_iommu_sva_invalidate(struct iommu_domain *domain,
->>> +		struct device *dev, struct
->>> iommu_cache_invalidate_info *inv_info) +{
->>> +	struct dmar_domain *dmar_domain = to_dmar_domain(domain);
->>> +	struct device_domain_info *info;
->>> +	struct intel_iommu *iommu;
->>> +	unsigned long flags;
->>> +	int cache_type;
->>> +	u8 bus, devfn;
->>> +	u16 did, sid;
->>> +	int ret = 0;
->>> +	u64 size = 0;
->>> +
->>> +	if (!inv_info || !dmar_domain ||
->>> +		inv_info->version !=
->>> IOMMU_CACHE_INVALIDATE_INFO_VERSION_1)
->>> +		return -EINVAL;
->>> +
->>> +	if (!dev || !dev_is_pci(dev))
->>> +		return -ENODEV;  
->>
->> Check (domain->flags & DOMAIN_FLAG_NESTING_MODE)?
-> Good point
-> 
->>> +
->>> +	iommu = device_to_iommu(dev, &bus, &devfn);
->>> +	if (!iommu)
->>> +		return -ENODEV;
->>> +
->>> +	spin_lock_irqsave(&device_domain_lock, flags);
->>> +	spin_lock(&iommu->lock);
->>> +	info = iommu_support_dev_iotlb(dmar_domain, iommu, bus,
->>> devfn);
->>> +	if (!info) {
->>> +		ret = -EINVAL;
->>> +		goto out_unlock;
->>> +	}
->>> +	did = dmar_domain->iommu_did[iommu->seq_id];
->>> +	sid = PCI_DEVID(bus, devfn);
->>> +
->>> +	/* Size is only valid in non-PASID selective invalidation
->>> */
->>> +	if (inv_info->granularity != IOMMU_INV_GRANU_PASID)
->>> +		size =
->>> to_vtd_size(inv_info->addr_info.granule_size,
->>> +
->>> inv_info->addr_info.nb_granules); +
->>> +	for_each_set_bit(cache_type, (unsigned long
->>> *)&inv_info->cache, IOMMU_CACHE_INV_TYPE_NR) {
->>> +		int granu = 0;
->>> +		u64 pasid = 0;
->>> +
->>> +		granu = to_vtd_granularity(cache_type,
->>> inv_info->granularity);
->>> +		if (granu == -EINVAL) {
->>> +			pr_err("Invalid cache type and granu
->>> combination %d/%d\n", cache_type,
->>> +				inv_info->granularity);  
->> rate unlimited traces here and after.
-still to be fixed
->> ret = -EINVAL?
->> also related to the discussion we had on the VFIO series. What is the
->> error policy?
-> Invalidation should not fail, there is no way to tell the guest. this
-> can be a void function or VFIO can ignore it similar to what is done to
-> iommu_unmap.
-OK it was just for reminder
-> 
-> 
->>> +			break;
->>> +		}
->>> +
->>> +		/* PASID is stored in different locations based on
->>> granularity */  
->> not sure the above comment really is requested
-> Just to explain the situation where PASID can be in pasid_info or
-> addr_info.
-> 
->>> +		if (inv_info->granularity == IOMMU_INV_GRANU_PASID
->>> &&
->>> +			inv_info->pasid_info.flags &
->>> IOMMU_INV_PASID_FLAGS_PASID)
->>> +			pasid = inv_info->pasid_info.pasid;
->>> +		else if (inv_info->granularity ==
->>> IOMMU_INV_GRANU_ADDR &&
->>> +			inv_info->addr_info.flags &
->>> IOMMU_INV_ADDR_FLAGS_PASID)
->>> +			pasid = inv_info->addr_info.pasid;
->>> +
->>> +		switch (BIT(cache_type)) {
->>> +		case IOMMU_CACHE_INV_TYPE_IOTLB:
->>> +			if ((inv_info->granularity ==
->>> IOMMU_INV_GRANU_ADDR) &&
->>> +				size && (inv_info->addr_info.addr
->>> & ((BIT(VTD_PAGE_SHIFT + size)) - 1))) {
->>> +				pr_err("Address out of range,
->>> 0x%llx, size order %llu\n",
->>> +					inv_info->addr_info.addr,
->>> size);
->>> +				ret = -ERANGE;
->>> +				goto out_unlock;
->>> +			}
->>> +
->>> +			qi_flush_piotlb(iommu, did,
->>> +					pasid,
->>> +
->>> mm_to_dma_pfn(inv_info->addr_info.addr),  
->> This does not sound correct to me:
->> inv_info->addr_info.addr and inv_info->addr_info.flags are not valid
->> in case of PASID-selective invalidation
-> If granu is PASID-selective, this address is ignored. Since npages = -1.
-Ah OK. Maybe add a comment since it is a bit strange to see irrelevant
-fields to be called in PASID-selective case.
+Hi Joerg,
 
-Thanks
+On 14.04.2020 15:15, Joerg Roedel wrote:
+> here is the second version of this patch-set. The first version with
+> some more introductory text can be found here:
+>
+> 	https://lore.kernel.org/lkml/20200407183742.4344-1-joro@8bytes.org/
+>
+> Changes v1->v2:
+>
+> 	* Rebased to v5.7-rc1
+>
+> 	* Re-wrote the arm-smmu changes as suggested by Robin Murphy
+>
+> 	* Re-worked the Exynos patches to hopefully not break the
+> 	  driver anymore
 
-Eric
-> 
->>> +					(granu ==
->>> QI_GRAN_NONG_PASID) ? -1 : 1 << size,
->>> +					inv_info->addr_info.flags
->>> & IOMMU_INV_ADDR_FLAGS_LEAF); +
->>> +			/*
->>> +			 * Always flush device IOTLB if ATS is
->>> enabled. vIOMMU
->>> +			 * in the guest may assume IOTLB flush is
->>> inclusive,
->>> +			 * which is more efficient.
->>> +			 */
->>> +			if (info->ats_enabled)
->>> +				qi_flush_dev_iotlb_pasid(iommu,
->>> sid, info->pfsid,
->>> +						pasid,
->>> info->ats_qdep,
->>> +
->>> inv_info->addr_info.addr, size,  
->> same
->>> +						granu);
->>> +			break;
->>> +		case IOMMU_CACHE_INV_TYPE_DEV_IOTLB:
->>> +			if (info->ats_enabled)
->>> +				qi_flush_dev_iotlb_pasid(iommu,
->>> sid, info->pfsid,
->>> +
->>> inv_info->addr_info.pasid, info->ats_qdep,  
->> nit: use pasid directly
-> will do.
-> 
->>> +
->>> inv_info->addr_info.addr, size,
->>> +						granu);
->>> +			else
->>> +				pr_warn("Passdown device IOTLB
->>> flush w/o ATS!\n");
->>> +			break;
->>> +		case IOMMU_CACHE_INV_TYPE_PASID:
->>> +			qi_flush_pasid_cache(iommu, did, granu,
->>> inv_info->pasid_info.pasid);
->>> +			break;
->>> +		default:
->>> +			dev_err(dev, "Unsupported IOMMU
->>> invalidation type %d\n",
->>> +				cache_type);
->>> +			ret = -EINVAL;
->>> +		}
->>> +	}
->>> +out_unlock:
->>> +	spin_unlock(&iommu->lock);
->>> +	spin_unlock_irqrestore(&device_domain_lock, flags);
->>> +
->>> +	return ret;
->>> +}
->>> +#endif
->>> +
->>>  static int intel_iommu_map(struct iommu_domain *domain,
->>>  			   unsigned long iova, phys_addr_t hpa,
->>>  			   size_t size, int iommu_prot, gfp_t gfp)
->>> @@ -6179,6 +6336,7 @@ const struct iommu_ops intel_iommu_ops = {
->>>  	.is_attach_deferred	=
->>> intel_iommu_is_attach_deferred, .pgsize_bitmap		=
->>> INTEL_IOMMU_PGSIZES, #ifdef CONFIG_INTEL_IOMMU_SVM
->>> +	.cache_invalidate	= intel_iommu_sva_invalidate,
->>>  	.sva_bind_gpasid	= intel_svm_bind_gpasid,
->>>  	.sva_unbind_gpasid	= intel_svm_unbind_gpasid,
->>>  #endif
->>>   
->> Thanks
->>
->> Eric
->>
-> 
-> [Jacob Pan]
-> 
+Thanks for this rework. This version is much better. Works fine on 
+various Exynos-based boards (ARM and ARM64).
+
+Tested-by: Marek Szyprowski <m.szyprowski@samsung.com>
+
+Acked-by: Marek Szyprowski <m.szyprowski@samsung.com> (for Exynos and 
+core changes)
+
+> 	* Fixed a missing mutex_unlock() reported by Marek Szyprowski,
+> 	  thanks for that.
+>
+> There is also a git-branch available with these patches applied:
+>
+> 	https://git.kernel.org/pub/scm/linux/kernel/git/joro/linux.git/log/?h=iommu-probe-device-v2
+>
+> Please review.
+>
+> Thanks,
+>
+> 	Joerg
+>
+> Joerg Roedel (32):
+>    iommu: Move default domain allocation to separate function
+>    iommu/amd: Implement iommu_ops->def_domain_type call-back
+>    iommu/vt-d: Wire up iommu_ops->def_domain_type
+>    iommu/amd: Remove dma_mask check from check_device()
+>    iommu/amd: Return -ENODEV in add_device when device is not handled by
+>      IOMMU
+>    iommu: Add probe_device() and remove_device() call-backs
+>    iommu: Move default domain allocation to iommu_probe_device()
+>    iommu: Keep a list of allocated groups in __iommu_probe_device()
+>    iommu: Move new probe_device path to separate function
+>    iommu: Split off default domain allocation from group assignment
+>    iommu: Move iommu_group_create_direct_mappings() out of
+>      iommu_group_add_device()
+>    iommu: Export bus_iommu_probe() and make is safe for re-probing
+>    iommu/amd: Remove dev_data->passthrough
+>    iommu/amd: Convert to probe/release_device() call-backs
+>    iommu/vt-d: Convert to probe/release_device() call-backs
+>    iommu/arm-smmu: Convert to probe/release_device() call-backs
+>    iommu/pamu: Convert to probe/release_device() call-backs
+>    iommu/s390: Convert to probe/release_device() call-backs
+>    iommu/virtio: Convert to probe/release_device() call-backs
+>    iommu/msm: Convert to probe/release_device() call-backs
+>    iommu/mediatek: Convert to probe/release_device() call-backs
+>    iommu/mediatek-v1 Convert to probe/release_device() call-backs
+>    iommu/qcom: Convert to probe/release_device() call-backs
+>    iommu/rockchip: Convert to probe/release_device() call-backs
+>    iommu/tegra: Convert to probe/release_device() call-backs
+>    iommu/renesas: Convert to probe/release_device() call-backs
+>    iommu/omap: Remove orphan_dev tracking
+>    iommu/omap: Convert to probe/release_device() call-backs
+>    iommu/exynos: Use first SYSMMU in controllers list for IOMMU core
+>    iommu/exynos: Convert to probe/release_device() call-backs
+>    iommu: Remove add_device()/remove_device() code-paths
+>    iommu: Unexport iommu_group_get_for_dev()
+>
+> Sai Praneeth Prakhya (1):
+>    iommu: Add def_domain_type() callback in iommu_ops
+>
+>   drivers/iommu/amd_iommu.c       |  97 ++++----
+>   drivers/iommu/amd_iommu_types.h |   1 -
+>   drivers/iommu/arm-smmu-v3.c     |  38 +--
+>   drivers/iommu/arm-smmu.c        |  39 ++--
+>   drivers/iommu/exynos-iommu.c    |  24 +-
+>   drivers/iommu/fsl_pamu_domain.c |  22 +-
+>   drivers/iommu/intel-iommu.c     |  68 +-----
+>   drivers/iommu/iommu.c           | 393 +++++++++++++++++++++++++-------
+>   drivers/iommu/ipmmu-vmsa.c      |  60 ++---
+>   drivers/iommu/msm_iommu.c       |  34 +--
+>   drivers/iommu/mtk_iommu.c       |  24 +-
+>   drivers/iommu/mtk_iommu_v1.c    |  50 ++--
+>   drivers/iommu/omap-iommu.c      |  99 ++------
+>   drivers/iommu/qcom_iommu.c      |  24 +-
+>   drivers/iommu/rockchip-iommu.c  |  26 +--
+>   drivers/iommu/s390-iommu.c      |  22 +-
+>   drivers/iommu/tegra-gart.c      |  24 +-
+>   drivers/iommu/tegra-smmu.c      |  31 +--
+>   drivers/iommu/virtio-iommu.c    |  41 +---
+>   include/linux/iommu.h           |  21 +-
+>   20 files changed, 533 insertions(+), 605 deletions(-)
+>
+Best regards
+-- 
+Marek Szyprowski, PhD
+Samsung R&D Institute Poland
 
 _______________________________________________
 iommu mailing list
