@@ -2,94 +2,115 @@ Return-Path: <SRS0=meaX=6A=lists.linux-foundation.org=iommu-bounces@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-6.5 required=3.0 tests=DKIM_INVALID,DKIM_SIGNED,
-	HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_PATCH,MAILING_LIST_MULTI,SIGNED_OFF_BY,
-	SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED autolearn=unavailable autolearn_force=no
-	version=3.4.0
+X-Spam-Status: No, score=-5.8 required=3.0 tests=DKIM_INVALID,DKIM_SIGNED,
+	MAILING_LIST_MULTI,MENTIONS_GIT_HOSTING,SPF_HELO_NONE,SPF_PASS autolearn=ham
+	autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 371F4C352BE
-	for <iommu@archiver.kernel.org>; Thu, 16 Apr 2020 17:44:12 +0000 (UTC)
-Received: from hemlock.osuosl.org (smtp2.osuosl.org [140.211.166.133])
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 6F85AC38A2C
+	for <iommu@archiver.kernel.org>; Thu, 16 Apr 2020 20:37:44 +0000 (UTC)
+Received: from silver.osuosl.org (smtp3.osuosl.org [140.211.166.136])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by mail.kernel.org (Postfix) with ESMTPS id E962C2078B
-	for <iommu@archiver.kernel.org>; Thu, 16 Apr 2020 17:44:11 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTPS id 31ACA22245
+	for <iommu@archiver.kernel.org>; Thu, 16 Apr 2020 20:37:44 +0000 (UTC)
 Authentication-Results: mail.kernel.org;
-	dkim=fail reason="signature verification failed" (1024-bit key) header.d=mg.codeaurora.org header.i=@mg.codeaurora.org header.b="HtfFFiu/"
-DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org E962C2078B
-Authentication-Results: mail.kernel.org; dmarc=none (p=none dis=none) header.from=codeaurora.org
+	dkim=fail reason="signature verification failed" (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="gnCYkWmG"
+DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 31ACA22245
+Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=kernel.org
 Authentication-Results: mail.kernel.org; spf=pass smtp.mailfrom=iommu-bounces@lists.linux-foundation.org
 Received: from localhost (localhost [127.0.0.1])
-	by hemlock.osuosl.org (Postfix) with ESMTP id 803C287DB1;
-	Thu, 16 Apr 2020 17:44:11 +0000 (UTC)
+	by silver.osuosl.org (Postfix) with ESMTP id F306420425;
+	Thu, 16 Apr 2020 20:37:43 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from hemlock.osuosl.org ([127.0.0.1])
+Received: from silver.osuosl.org ([127.0.0.1])
 	by localhost (.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
-	with ESMTP id btfvcAwJn71F; Thu, 16 Apr 2020 17:44:10 +0000 (UTC)
+	with ESMTP id G9t02FRViGIq; Thu, 16 Apr 2020 20:37:43 +0000 (UTC)
 Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [140.211.9.56])
-	by hemlock.osuosl.org (Postfix) with ESMTP id A2D718749A;
-	Thu, 16 Apr 2020 17:44:10 +0000 (UTC)
+	by silver.osuosl.org (Postfix) with ESMTP id 06D7C203DF;
+	Thu, 16 Apr 2020 20:37:43 +0000 (UTC)
 Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
-	by lists.linuxfoundation.org (Postfix) with ESMTP id 95369C089E;
-	Thu, 16 Apr 2020 17:44:10 +0000 (UTC)
-Received: from whitealder.osuosl.org (smtp1.osuosl.org [140.211.166.138])
- by lists.linuxfoundation.org (Postfix) with ESMTP id 699F1C0172
- for <iommu@lists.linux-foundation.org>; Thu, 16 Apr 2020 17:44:09 +0000 (UTC)
+	by lists.linuxfoundation.org (Postfix) with ESMTP id E71AFC1AE8;
+	Thu, 16 Apr 2020 20:37:42 +0000 (UTC)
+Received: from silver.osuosl.org (smtp3.osuosl.org [140.211.166.136])
+ by lists.linuxfoundation.org (Postfix) with ESMTP id 418C2C0172
+ for <iommu@lists.linux-foundation.org>; Thu, 16 Apr 2020 20:37:42 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
- by whitealder.osuosl.org (Postfix) with ESMTP id 54AFE86096
- for <iommu@lists.linux-foundation.org>; Thu, 16 Apr 2020 17:44:09 +0000 (UTC)
+ by silver.osuosl.org (Postfix) with ESMTP id 2FDBB20425
+ for <iommu@lists.linux-foundation.org>; Thu, 16 Apr 2020 20:37:42 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from whitealder.osuosl.org ([127.0.0.1])
+Received: from silver.osuosl.org ([127.0.0.1])
  by localhost (.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
- with ESMTP id IbAELne8XCdN for <iommu@lists.linux-foundation.org>;
- Thu, 16 Apr 2020 17:44:08 +0000 (UTC)
-X-Greylist: from auto-whitelisted by SQLgrey-1.7.6
-Received: from mail26.static.mailgun.info (mail26.static.mailgun.info
- [104.130.122.26])
- by whitealder.osuosl.org (Postfix) with ESMTPS id 4FEA885C3B
- for <iommu@lists.linux-foundation.org>; Thu, 16 Apr 2020 17:44:04 +0000 (UTC)
-DKIM-Signature: a=rsa-sha256; v=1; c=relaxed/relaxed; d=mg.codeaurora.org;
- q=dns/txt; 
- s=smtp; t=1587059048; h=Message-ID: References: In-Reply-To: Subject:
- Cc: To: From: Date: Content-Transfer-Encoding: Content-Type:
- MIME-Version: Sender; bh=JC4ZwghNo+JEiak2hmqi7d8kddFUllqOr9vrtZr5HYE=;
- b=HtfFFiu/hExld+CefooChbbDpqi/ujJRZ/G3ZBmDODdaxKw3E7ajwun2kNfndZ4fPdITiFPs
- FTkRHUe0DigQUAF8Gx+SRJYfdzwbVUxXh/EDfYmHrP12Ckfv/aMKP/fg4WTo2cle7QENboH7
- hLRKutxnbnoFXRHkzXMbm7NxZJ4=
-X-Mailgun-Sending-Ip: 104.130.122.26
-X-Mailgun-Sid: WyI3NDkwMCIsICJpb21tdUBsaXN0cy5saW51eC1mb3VuZGF0aW9uLm9yZyIsICJiZTllNGEiXQ==
-Received: from smtp.codeaurora.org
- (ec2-35-166-182-171.us-west-2.compute.amazonaws.com [35.166.182.171])
- by mxa.mailgun.org with ESMTP id 5e989958.7efd1aae9260-smtp-out-n04;
- Thu, 16 Apr 2020 17:43:52 -0000 (UTC)
-Received: by smtp.codeaurora.org (Postfix, from userid 1001)
- id 7FDBBC4478C; Thu, 16 Apr 2020 17:43:52 +0000 (UTC)
-Received: from mail.codeaurora.org (localhost.localdomain [127.0.0.1])
- (using TLSv1 with cipher ECDHE-RSA-AES256-SHA (256/256 bits))
- (No client certificate requested)
- (Authenticated sender: saiprakash.ranjan)
- by smtp.codeaurora.org (Postfix) with ESMTPSA id 7D284C4478C;
- Thu, 16 Apr 2020 17:43:50 +0000 (UTC)
+ with ESMTP id Tv5MssOhuwjJ for <iommu@lists.linux-foundation.org>;
+ Thu, 16 Apr 2020 20:37:41 +0000 (UTC)
+X-Greylist: domain auto-whitelisted by SQLgrey-1.7.6
+Received: from mail-pg1-f195.google.com (mail-pg1-f195.google.com
+ [209.85.215.195])
+ by silver.osuosl.org (Postfix) with ESMTPS id 72792203DF
+ for <iommu@lists.linux-foundation.org>; Thu, 16 Apr 2020 20:37:41 +0000 (UTC)
+Received: by mail-pg1-f195.google.com with SMTP id t11so2205475pgg.2
+ for <iommu@lists.linux-foundation.org>; Thu, 16 Apr 2020 13:37:41 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=gmail.com; s=20161025;
+ h=sender:date:from:to:cc:subject:message-id:references:mime-version
+ :content-disposition:in-reply-to;
+ bh=XptGLsb8LK835cBV0jSCf0HRG/zsBSED6dv7tPgulp4=;
+ b=gnCYkWmGETLB8PFSLV04Wdrz2FK+gEIIVYi1koqv0Kj68T1sE9a0zKATXAPY7gyzfJ
+ suAROh/dNMoI6pHy/mCCmAEukmmvuLcuT+oRiOR7pSsJ7zs8in52Gebp1M1SYorAU4tK
+ gOw3D6aDwjxZUg6c2JW6Y26Oj3CTSIyaIex5HlRUwrN0Akr9mc2rJN/ETJ63AkMWNaPZ
+ lBqmfTlQr2tQLv3hxk3korpwrPMIzUOkCHKM9MiAc5EcYNrnyoXofMkm1N6eYHhs/DeF
+ 913mMDnNGshbbDlgR/ygTf2Uto9ROB2t1oEKoFobtuWYnROIBcT0nnQEOaLeZGRWafc8
+ pefQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+ d=1e100.net; s=20161025;
+ h=x-gm-message-state:sender:date:from:to:cc:subject:message-id
+ :references:mime-version:content-disposition:in-reply-to;
+ bh=XptGLsb8LK835cBV0jSCf0HRG/zsBSED6dv7tPgulp4=;
+ b=SVYB/Xa9xZP5xrC2Cv/0IkuKyJYx+KvAlmXCgFHYZLMNibO4HxLZ5rCRa/4P+l4nfl
+ eKu4IHhVRCa7CmLgAXrrthqTqbVXdxGCtrg4xncuSJNo2c7tCpw7mIPs5ecBZr8Zl3qN
+ GkFDZkc4D38h18XfkKKopTV8YCgPO9u02V1120WHOXGGEfusvmC7Ax7kDhLLXDDfscIg
+ pxbrDG/vN9ZdatzFZduq4+RtwdEZLbmH8zDFvmzr1MQZPbvK/MVYTO/aCzoF71bAwEhJ
+ FDqWtp6cN1VYSIf68fqgCevL/YoSYHFx8MYaF3e9dLE1wnaQ+dtXFeThuNwqaAH51xxS
+ 62wA==
+X-Gm-Message-State: AGi0PuaFnGwwbodY9+k2k/kvp+j50ClBOgcLyQIGkA/F/O3hWM0lrPm4
+ D1+Uymwp4WoQcQWRUF/62E4=
+X-Google-Smtp-Source: APiQypLz/G622vMAZI/1t7tx6iXdrAiprqdhsptFvPk2bcCnaQJR//IYq0Xxli2CBTatOLYd6eCB1g==
+X-Received: by 2002:a63:2e03:: with SMTP id u3mr15186804pgu.121.1587069460712; 
+ Thu, 16 Apr 2020 13:37:40 -0700 (PDT)
+Received: from google.com ([2601:647:4001:3000::50e3])
+ by smtp.gmail.com with ESMTPSA id u13sm3654978pjb.45.2020.04.16.13.37.37
+ (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+ Thu, 16 Apr 2020 13:37:38 -0700 (PDT)
+Date: Thu, 16 Apr 2020 13:37:36 -0700
+From: Minchan Kim <minchan@kernel.org>
+To: Christoph Hellwig <hch@lst.de>
+Subject: Re: [PATCH 10/28] mm: only allow page table mappings for built-in
+ zsmalloc
+Message-ID: <20200416203736.GB50092@google.com>
+References: <20200408115926.1467567-1-hch@lst.de>
+ <20200408115926.1467567-11-hch@lst.de>
+ <20200409160826.GC247701@google.com>
+ <20200409165030.GG20713@hirez.programming.kicks-ass.net>
+ <20200409170813.GD247701@google.com>
+ <20200410023845.GA2354@jagdpanzerIV.localdomain>
+ <20200410231136.GA101325@google.com>
+ <20200411072052.GA31242@lst.de>
 MIME-Version: 1.0
-Date: Thu, 16 Apr 2020 23:13:50 +0530
-From: Sai Prakash Ranjan <saiprakash.ranjan@codeaurora.org>
-To: Robin Murphy <robin.murphy@arm.com>
-Subject: Re: [PATCH 2/2] iommu/arm-smmu: Allow client devices to select direct
- mapping
-In-Reply-To: <fdc265e4-5a96-2def-df13-376249e16b49@arm.com>
-References: <cover.1579692800.git.saiprakash.ranjan@codeaurora.org>
- <813cc5b2da10c27db982254b274bf26008a9e6da.1579692800.git.saiprakash.ranjan@codeaurora.org>
- <3f12cefb-3887-859c-ddf5-c7a0fc755152@arm.com>
- <540fc55811d0a60a929ff1f694d6d271@codeaurora.org>
- <fdc265e4-5a96-2def-df13-376249e16b49@arm.com>
-Message-ID: <c84cf5debc171c0744e32049c70197e7@codeaurora.org>
-X-Sender: saiprakash.ranjan@codeaurora.org
-User-Agent: Roundcube Webmail/1.3.9
-Cc: Rajendra Nayak <rnayak@codeaurora.org>, linux-arm-msm@vger.kernel.org,
- iommu@lists.linux-foundation.org, Matthias Kaehlcke <mka@chromium.org>,
- Bjorn Andersson <bjorn.andersson@linaro.org>,
- linux-arm-kernel@lists.infradead.org, Stephen Boyd <swboyd@chromium.org>,
- Will Deacon <will@kernel.org>, linux-kernel@vger.kernel.org
+Content-Disposition: inline
+In-Reply-To: <20200411072052.GA31242@lst.de>
+Cc: linux-hyperv@vger.kernel.org, David Airlie <airlied@linux.ie>,
+ dri-devel@lists.freedesktop.org, linux-mm@kvack.org,
+ "K. Y. Srinivasan" <kys@microsoft.com>, Sumit Semwal <sumit.semwal@linaro.org>,
+ linux-arch@vger.kernel.org, linux-s390@vger.kernel.org,
+ Wei Liu <wei.liu@kernel.org>, Stephen Hemminger <sthemmin@microsoft.com>,
+ x86@kernel.org, Peter Zijlstra <peterz@infradead.org>,
+ Laura Abbott <labbott@redhat.com>, Nitin Gupta <ngupta@vflare.org>,
+ Daniel Vetter <daniel@ffwll.ch>, Haiyang Zhang <haiyangz@microsoft.com>,
+ linaro-mm-sig@lists.linaro.org, bpf@vger.kernel.org,
+ linux-arm-kernel@lists.infradead.org,
+ Christophe Leroy <christophe.leroy@c-s.fr>,
+ Robin Murphy <robin.murphy@arm.com>, linux-kernel@vger.kernel.org,
+ Sergey Senozhatsky <sergey.senozhatsky@gmail.com>,
+ iommu@lists.linux-foundation.org, Andrew Morton <akpm@linux-foundation.org>,
+ linuxppc-dev@lists.ozlabs.org
 X-BeenThere: iommu@lists.linux-foundation.org
 X-Mailman-Version: 2.1.15
 Precedence: list
@@ -102,76 +123,48 @@ List-Post: <mailto:iommu@lists.linux-foundation.org>
 List-Help: <mailto:iommu-request@lists.linux-foundation.org?subject=help>
 List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
  <mailto:iommu-request@lists.linux-foundation.org?subject=subscribe>
-Content-Transfer-Encoding: base64
-Content-Type: text/plain; charset="utf-8"; Format="flowed"
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: 7bit
 Errors-To: iommu-bounces@lists.linux-foundation.org
 Sender: "iommu" <iommu-bounces@lists.linux-foundation.org>
 
-SGkgUm9iaW4sCgpPbiAyMDIwLTA0LTE2IDIyOjQ3LCBSb2JpbiBNdXJwaHkgd3JvdGU6Cj4gT24g
-MjAyMC0wNC0xNiA1OjIzIHBtLCBTYWkgUHJha2FzaCBSYW5qYW4gd3JvdGU6Cj4+IEhpIFJvYmlu
-LAo+PiAKPj4gT24gMjAyMC0wNC0xNiAxOToyOCwgUm9iaW4gTXVycGh5IHdyb3RlOgo+Pj4gT24g
-MjAyMC0wMS0yMiAxMTo0OCBhbSwgU2FpIFByYWthc2ggUmFuamFuIHdyb3RlOgo+Pj4+IEZyb206
-IEpvcmRhbiBDcm91c2UgPGpjcm91c2VAY29kZWF1cm9yYS5vcmc+Cj4+Pj4gCj4+Pj4gU29tZSBj
-bGllbnQgZGV2aWNlcyB3YW50IHRvIGRpcmVjdGx5IG1hcCB0aGUgSU9NTVUgdGhlbXNlbHZlcyAK
-Pj4+PiBpbnN0ZWFkCj4+Pj4gb2YgdXNpbmcgdGhlIERNQSBkb21haW4uIEFsbG93IHRob3NlIGRl
-dmljZXMgdG8gb3B0IGluIHRvIGRpcmVjdAo+Pj4+IG1hcHBpbmcgYnkgd2F5IG9mIGEgbGlzdCBv
-ZiBjb21wYXRpYmxlIHN0cmluZ3MuCj4+Pj4gCj4+Pj4gU2lnbmVkLW9mZi1ieTogSm9yZGFuIENy
-b3VzZSA8amNyb3VzZUBjb2RlYXVyb3JhLm9yZz4KPj4+PiBDby1kZXZlbG9wZWQtYnk6IFNhaSBQ
-cmFrYXNoIFJhbmphbiAKPj4+PiA8c2FpcHJha2FzaC5yYW5qYW5AY29kZWF1cm9yYS5vcmc+Cj4+
-Pj4gU2lnbmVkLW9mZi1ieTogU2FpIFByYWthc2ggUmFuamFuIDxzYWlwcmFrYXNoLnJhbmphbkBj
-b2RlYXVyb3JhLm9yZz4KPj4+PiAtLS0KPj4+PiDCoCBkcml2ZXJzL2lvbW11L2FybS1zbW11LXFj
-b20uYyB8IDM5IAo+Pj4+ICsrKysrKysrKysrKysrKysrKysrKysrKysrKysrKysrKysrCj4+Pj4g
-wqAgZHJpdmVycy9pb21tdS9hcm0tc21tdS5jwqDCoMKgwqDCoCB8wqAgMyArKysKPj4+PiDCoCBk
-cml2ZXJzL2lvbW11L2FybS1zbW11LmjCoMKgwqDCoMKgIHzCoCA1ICsrKysrCj4+Pj4gwqAgMyBm
-aWxlcyBjaGFuZ2VkLCA0NyBpbnNlcnRpb25zKCspCj4+Pj4gCj4+Pj4gZGlmZiAtLWdpdCBhL2Ry
-aXZlcnMvaW9tbXUvYXJtLXNtbXUtcWNvbS5jIAo+Pj4+IGIvZHJpdmVycy9pb21tdS9hcm0tc21t
-dS1xY29tLmMKPj4+PiBpbmRleCA2NGE0YWIyNzBhYjcuLmZmNzQ2YWNkMWM4MSAxMDA2NDQKPj4+
-PiAtLS0gYS9kcml2ZXJzL2lvbW11L2FybS1zbW11LXFjb20uYwo+Pj4+ICsrKyBiL2RyaXZlcnMv
-aW9tbXUvYXJtLXNtbXUtcWNvbS5jCj4+Pj4gQEAgLTMsNiArMyw3IEBACj4+Pj4gwqDCoCAqIENv
-cHlyaWdodCAoYykgMjAxOSwgVGhlIExpbnV4IEZvdW5kYXRpb24uIEFsbCByaWdodHMgcmVzZXJ2
-ZWQuCj4+Pj4gwqDCoCAqLwo+Pj4+IMKgICsjaW5jbHVkZSA8bGludXgvb2ZfZGV2aWNlLmg+Cj4+
-Pj4gwqAgI2luY2x1ZGUgPGxpbnV4L3Fjb21fc2NtLmg+Cj4+Pj4gwqDCoMKgICNpbmNsdWRlICJh
-cm0tc21tdS5oIgo+Pj4+IEBAIC0xMSw2ICsxMiw0MyBAQCBzdHJ1Y3QgcWNvbV9zbW11IHsKPj4+
-PiDCoMKgwqDCoMKgIHN0cnVjdCBhcm1fc21tdV9kZXZpY2Ugc21tdTsKPj4+PiDCoCB9Owo+Pj4+
-IMKgICtzdGF0aWMgY29uc3Qgc3RydWN0IGFybV9zbW11X2NsaWVudF9tYXRjaF9kYXRhIHFjb21f
-YWRyZW5vID0gewo+Pj4+ICvCoMKgwqAgLmRpcmVjdF9tYXBwaW5nID0gdHJ1ZSwKPj4+PiArfTsK
-Pj4+PiArCj4+Pj4gK3N0YXRpYyBjb25zdCBzdHJ1Y3QgYXJtX3NtbXVfY2xpZW50X21hdGNoX2Rh
-dGEgcWNvbV9tZHNzID0gewo+Pj4+ICvCoMKgwqAgLmRpcmVjdF9tYXBwaW5nID0gdHJ1ZSwKPj4+
-PiArfTsKPj4+IAo+Pj4gTWlnaHQgaXQgbWFrZSBzZW5zZSB0byBncm91cCB0aGVzZSBieSB0aGUg
-ZGVzaXJlZCBTTU1VIGJlaGF2aW91cgo+Pj4gcmF0aGVyIHRoYW4gKGFwcGFyZW50bHkpIHdoYXQg
-a2luZCBvZiBkZXZpY2UgdGhlIGNsaWVudCBoYXBwZW5zIHRvIAo+Pj4gYmUsCj4+PiB3aGljaCBz
-ZWVtcyBsaWtlIGEgY29tcGxldGVseSBhcmJpdHJhcnkgZGlzdGluY3Rpb24gZnJvbSB0aGUgU01N
-VQo+Pj4gZHJpdmVyJ3MgUG9WPwo+Pj4gCj4+IAo+PiBTb3JyeSwgSSBkaWQgbm90IGdldCB0aGUg
-Imdyb3VwaW5nIGJ5IHRoZSBkZXNpcmVkIFNNTVUgYmVoYXZpb3VyIiAKPj4gdGhpbmcuCj4+IENv
-dWxkIHlvdSBwbGVhc2UgZ2l2ZSBzb21lIG1vcmUgZGV0YWlscz8KPiAKPiBJIG1lYW4gdGhpcyBw
-YXR0ZXJuOgo+IAo+IGRldmljZV9hX2RhdGEgewo+IAkudGhpbmcgPSB0aGlzOwo+IH0KPiAKPiBk
-ZXZpY2VfYl9kYXRhIHsKPiAJLnRoaW5nID0gdGhpczsKPiB9Cj4gCj4gZGV2aWNlX2NfZGF0YSB7
-Cj4gCS50aGluZyA9IHRoYXQ7Cj4gfQo+IAo+IG1hdGNoW10gPSB7Cj4gCXsgLmNvbXBhdGlibGUg
-PSAiQSIsIC5kYXRhID0gJmRldmljZV9hX2RhdGEgfSwKPiAJeyAuY29tcGF0aWJsZSA9ICJCIiwg
-LmRhdGEgPSAmZGV2aWNlX2JfZGF0YSB9LAo+IAl7IC5jb21wYXRpYmxlID0gIkMiLCAuZGF0YSA9
-ICZkZXZpY2VfY19kYXRhIH0sCj4gfTsKPiAKPiAuLi52cy4gdGhpcyBwYXR0ZXJuOgo+IAo+IGRv
-X3RoaXMgewo+IAkudGhpbmcgPSB0aGlzOwo+IH0KPiAKPiBkb190aGF0IHsKPiAJLnRoaW5nID0g
-dGhhdDsKPiB9Cj4gCj4gbWF0Y2hbXSA9IHsKPiAJeyAuY29tcGF0aWJsZSA9ICJBIiwgLmRhdGEg
-PSAmZG9fdGhpcyB9LAo+IAl7IC5jb21wYXRpYmxlID0gIkIiLCAuZGF0YSA9ICZkb190aGlzIH0s
-Cj4gCXsgLmNvbXBhdGlibGUgPSAiQyIsIC5kYXRhID0gJmRvX3RoYXQgfSwKPiB9Owo+IAo+IEZy
-b20gdGhlIHBlcnNwZWN0aXZlIG9mIHRoZSB0aGluZyBkb2luZyB0aGUgdGhpbmcsIGdyb3VwaW5n
-IHRoZSBkYXRhCj4gYnkgZGV2aWNlIGlzIG1lYW5pbmdsZXNzIGlmIGFsbCB0aGF0IG1hdHRlcnMg
-aXMgd2hldGhlciB0byBkbyB0aGlzIG9yCj4gdGhhdC4gVGhlIHNlY29uZCBwYXR0ZXJuIGV4cHJl
-c3NlcyB0aGF0IG1vcmUgbmF0dXJhbGx5Lgo+IAo+IE9mIGNvdXJzZSBpZiBldmVyeSBkZXZpY2Ug
-dHVybnMgb3V0IHRvIG5lZWQgYSB1bmlxdWUgY29tYmluYXRpb24gb2YKPiBzZXZlcmFsIGJlaGF2
-aW91cnMsIHRoZW4gdGhlcmUgZW5kcyB1cCBiZWluZyBubyBwcmFjdGljYWwgZGlmZmVyZW5jZQo+
-IGV4Y2VwdCB0aGF0IGl0J3MgcHJvYmFibHkgZWFzaWVyIHRvIGNvbWUgdXAgd2l0aCBuaWNlIG5h
-bWVzIHVuZGVyIHRoZQo+IGZpcnN0IHBhdHRlcm4uIEkgZ3Vlc3MgaXQncyB1cCB0byBob3cgeW91
-IHNlZSB0aGlzIGRldmVsb3BpbmcgaW4KPiBmdXR1cmU7IHdoZXRoZXIgeW91J3JlIGxpa2VseSB0
-byBuZWVkIGZpbmUtZ3JhaW5lZCBwZXItZGV2aWNlIGNvbnRyb2wsCj4gb3IgZG9uJ3QgZXhwZWN0
-IGl0IHRvIGdvIG11Y2ggYmV5b25kIGRvbWFpbiB0eXBlLgo+IAoKVGhhbmtzIGZvciBleHBsYWlu
-aW5nICp0aGlzIHRoaW5nKiA6KQpJIHdpbGwgdXBkYXRlIHRoZSBwYXRjaCB0byBmb2xsb3cgdGhl
-IDJuZCBwYXR0ZXJuIGFzIGl0IG1ha2VzIG1vcmUgc2Vuc2UKdG8gZG9fdGhpcyBvciBkb190aGF0
-IGRpcmVjdGx5LiBJJ20gbm90IGV4cGVjdGluZyBhbnl0aGluZyBvdGhlciB0aGFuCmRvbWFpbiB0
-eXBlIGF0bGVhc3QgZm9yIG5vdyBidXQgaGV5IHdlIGNhbiBhbHdheXMgYWRkIHRoZSBmdW5jdGlv
-bmFsaXR5CmlmIHRoZSBuZWVkIGFyaXNlcy4KClRoYW5rcywKU2FpCgotLSAKUVVBTENPTU0gSU5E
-SUEsIG9uIGJlaGFsZiBvZiBRdWFsY29tbSBJbm5vdmF0aW9uIENlbnRlciwgSW5jLiBpcyBhIApt
-ZW1iZXIKb2YgQ29kZSBBdXJvcmEgRm9ydW0sIGhvc3RlZCBieSBUaGUgTGludXggRm91bmRhdGlv
-bgpfX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fXwppb21tdSBt
-YWlsaW5nIGxpc3QKaW9tbXVAbGlzdHMubGludXgtZm91bmRhdGlvbi5vcmcKaHR0cHM6Ly9saXN0
-cy5saW51eGZvdW5kYXRpb24ub3JnL21haWxtYW4vbGlzdGluZm8vaW9tbXU=
+Hi Christoph,
+
+
+Sorry for the late.
+
+On Sat, Apr 11, 2020 at 09:20:52AM +0200, Christoph Hellwig wrote:
+> Hi Minchan,
+> 
+> On Fri, Apr 10, 2020 at 04:11:36PM -0700, Minchan Kim wrote:
+> > It doesn't mean we couldn't use zsmalloc as module any longer. It means
+> > we couldn't use zsmalloc as module with pgtable mapping whcih was little
+> > bit faster on microbenchmark in some architecutre(However, I usually temped
+> > to remove it since it had several problems). However, we could still use
+> > zsmalloc as module as copy way instead of pgtable mapping. Thus, if someone
+> > really want to rollback the feature, they should provide reasonable reason
+> > why it doesn't work for them. "A little fast" wouldn't be enough to exports
+> > deep internal to the module.
+> 
+> do you have any data how much faster it is on arm (and does that include
+> arm64 as well)?  Besides the exports which were my prime concern,
+
+https://github.com/sjenning/zsmapbench
+
+I need to recall the memory. IIRC, it was almost 30% faster at that time
+in ARM so was not trivial at that time. However, it was story from
+several years ago.
+
+> zsmalloc with pgtable mappings also is the only user of map_kernel_range
+> outside of vmalloc.c, if it really is another code base for tiny
+> improvements we could mark map_kernel_range or in fact remove it entirely
+> and open code it in the remaining callers.
+
+I alsh have temped to remove it. Let me have time to revist it in this
+chance.
+
+Thanks.
+_______________________________________________
+iommu mailing list
+iommu@lists.linux-foundation.org
+https://lists.linuxfoundation.org/mailman/listinfo/iommu
