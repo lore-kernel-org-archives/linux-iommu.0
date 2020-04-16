@@ -2,78 +2,137 @@ Return-Path: <SRS0=meaX=6A=lists.linux-foundation.org=iommu-bounces@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-8.2 required=3.0 tests=HEADER_FROM_DIFFERENT_DOMAINS,
-	INCLUDES_PATCH,MAILING_LIST_MULTI,SIGNED_OFF_BY,SPF_HELO_NONE,SPF_PASS,
-	URIBL_BLOCKED,USER_AGENT_SANE_1 autolearn=unavailable autolearn_force=no
-	version=3.4.0
+X-Spam-Status: No, score=-8.0 required=3.0 tests=DKIM_INVALID,DKIM_SIGNED,
+	HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_PATCH,MAILING_LIST_MULTI,
+	MSGID_FROM_MTA_HEADER,SIGNED_OFF_BY,SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED,
+	USER_AGENT_SANE_1 autolearn=ham autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 4B31FC2BB55
-	for <iommu@archiver.kernel.org>; Thu, 16 Apr 2020 13:58:36 +0000 (UTC)
-Received: from whitealder.osuosl.org (smtp1.osuosl.org [140.211.166.138])
+	by smtp.lore.kernel.org (Postfix) with ESMTP id B1DAEC352BE
+	for <iommu@archiver.kernel.org>; Thu, 16 Apr 2020 14:39:12 +0000 (UTC)
+Received: from hemlock.osuosl.org (smtp2.osuosl.org [140.211.166.133])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by mail.kernel.org (Postfix) with ESMTPS id 205DE21744
-	for <iommu@archiver.kernel.org>; Thu, 16 Apr 2020 13:58:36 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 205DE21744
-Authentication-Results: mail.kernel.org; dmarc=none (p=none dis=none) header.from=arm.com
+	by mail.kernel.org (Postfix) with ESMTPS id 7421321D7E
+	for <iommu@archiver.kernel.org>; Thu, 16 Apr 2020 14:39:12 +0000 (UTC)
+Authentication-Results: mail.kernel.org;
+	dkim=fail reason="signature verification failed" (1024-bit key) header.d=nxp.com header.i=@nxp.com header.b="KbG4b23U"
+DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 7421321D7E
+Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=nxp.com
 Authentication-Results: mail.kernel.org; spf=pass smtp.mailfrom=iommu-bounces@lists.linux-foundation.org
 Received: from localhost (localhost [127.0.0.1])
-	by whitealder.osuosl.org (Postfix) with ESMTP id BFFFD8306B;
-	Thu, 16 Apr 2020 13:58:35 +0000 (UTC)
+	by hemlock.osuosl.org (Postfix) with ESMTP id 3B70287DA1;
+	Thu, 16 Apr 2020 14:39:12 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from whitealder.osuosl.org ([127.0.0.1])
+Received: from hemlock.osuosl.org ([127.0.0.1])
 	by localhost (.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
-	with ESMTP id cJSFaKTF8K5F; Thu, 16 Apr 2020 13:58:33 +0000 (UTC)
+	with ESMTP id EUxVSxEohUGs; Thu, 16 Apr 2020 14:39:11 +0000 (UTC)
 Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [140.211.9.56])
-	by whitealder.osuosl.org (Postfix) with ESMTP id A2F2C820D3;
-	Thu, 16 Apr 2020 13:58:33 +0000 (UTC)
+	by hemlock.osuosl.org (Postfix) with ESMTP id 14D4587AF3;
+	Thu, 16 Apr 2020 14:39:11 +0000 (UTC)
 Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
-	by lists.linuxfoundation.org (Postfix) with ESMTP id 8F9B0C089E;
-	Thu, 16 Apr 2020 13:58:33 +0000 (UTC)
-Received: from silver.osuosl.org (smtp3.osuosl.org [140.211.166.136])
- by lists.linuxfoundation.org (Postfix) with ESMTP id A09DDC0172
- for <iommu@lists.linux-foundation.org>; Thu, 16 Apr 2020 13:58:32 +0000 (UTC)
+	by lists.linuxfoundation.org (Postfix) with ESMTP id EBE2DC1AE8;
+	Thu, 16 Apr 2020 14:39:10 +0000 (UTC)
+Received: from fraxinus.osuosl.org (smtp4.osuosl.org [140.211.166.137])
+ by lists.linuxfoundation.org (Postfix) with ESMTP id 9461BC0172
+ for <iommu@lists.linux-foundation.org>; Thu, 16 Apr 2020 14:39:09 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
- by silver.osuosl.org (Postfix) with ESMTP id 8F2D122264
- for <iommu@lists.linux-foundation.org>; Thu, 16 Apr 2020 13:58:32 +0000 (UTC)
+ by fraxinus.osuosl.org (Postfix) with ESMTP id 7DDA384499
+ for <iommu@lists.linux-foundation.org>; Thu, 16 Apr 2020 14:39:09 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from silver.osuosl.org ([127.0.0.1])
+Received: from fraxinus.osuosl.org ([127.0.0.1])
  by localhost (.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
- with ESMTP id eaIwc8a7CwW7 for <iommu@lists.linux-foundation.org>;
- Thu, 16 Apr 2020 13:58:31 +0000 (UTC)
+ with ESMTP id Xt4SwQGj52A7 for <iommu@lists.linux-foundation.org>;
+ Thu, 16 Apr 2020 14:39:07 +0000 (UTC)
 X-Greylist: domain auto-whitelisted by SQLgrey-1.7.6
-Received: from foss.arm.com (foss.arm.com [217.140.110.172])
- by silver.osuosl.org (Postfix) with ESMTP id 4E09B1FEB7
- for <iommu@lists.linux-foundation.org>; Thu, 16 Apr 2020 13:58:31 +0000 (UTC)
-Received: from usa-sjc-imap-foss1.foss.arm.com (unknown [10.121.207.14])
- by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id 95ABD1FB;
- Thu, 16 Apr 2020 06:58:30 -0700 (PDT)
-Received: from [10.57.59.184] (unknown [10.57.59.184])
- by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPSA id 4786A3F237;
- Thu, 16 Apr 2020 06:58:27 -0700 (PDT)
-Subject: Re: [PATCH 2/2] iommu/arm-smmu: Allow client devices to select direct
- mapping
-To: Sai Prakash Ranjan <saiprakash.ranjan@codeaurora.org>,
- Will Deacon <will@kernel.org>, Joerg Roedel <joro@8bytes.org>,
- Jordan Crouse <jcrouse@codeaurora.org>, Rob Clark <robdclark@gmail.com>
-References: <cover.1579692800.git.saiprakash.ranjan@codeaurora.org>
- <813cc5b2da10c27db982254b274bf26008a9e6da.1579692800.git.saiprakash.ranjan@codeaurora.org>
-From: Robin Murphy <robin.murphy@arm.com>
-Message-ID: <3f12cefb-3887-859c-ddf5-c7a0fc755152@arm.com>
-Date: Thu, 16 Apr 2020 14:58:25 +0100
-User-Agent: Mozilla/5.0 (Windows NT 10.0; rv:68.0) Gecko/20100101
+Received: from EUR05-DB8-obe.outbound.protection.outlook.com
+ (mail-db8eur05on2062.outbound.protection.outlook.com [40.107.20.62])
+ by fraxinus.osuosl.org (Postfix) with ESMTPS id 0DA6984477
+ for <iommu@lists.linux-foundation.org>; Thu, 16 Apr 2020 14:39:06 +0000 (UTC)
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=gPIfSK/AMuPaBKKcofA9NOGTMY0DMsV7WAqyqu/8Km/F5+wW2GfnOxK37iV1HNPBeX1yI0GvsMZEp0QcnSOhdv9wkSwImAjMd9hm8nOzEhFboh6WEKDJ8KwURFSyWDngMoVZyWtFF692ywxeL+byg48KL80fzIsNBIwqPmv5r6uKwZYBWVbITij+yiYN1SZ8jtCBRv8hdEAywrRCvTMTvSOBon7PAeRNYsUH1m8SQV51pDJ0ZYYHTuqhu66d5OFmza/hq0GEsWnGer7rQzC/7EWWUi9/zvbgE/jN+YlTQ+GyP2kKkvcdstgYHKbydkCb+timP8SU2ESXIlyDLaje3Q==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com; 
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=mv0L9wisMdrDeZAAW4q1d3+Ep4YUnQEGSJbfPcidB8A=;
+ b=G4UCjFsx+ca7elC2aFSlty8LQxHQX5sgSC+9VHZWK8z/lR/1jXYAztJQnD/P7H2cVzrldORz9XQd5DV1E/ymJCWCkz+Ubtd8UwST37mJnXC2xc1v8+UiGveylanesVw2gqISAfMvt86aHRfD2Fw3Pg76kTycEvwxKslhnE4TQegCG2jpJ9zP5372jbkEd7WAkq4Z/+sGZojbaKZ90Gzr9Mt4ugwSpw/6l6IrIz0Zkse0fi+aQEQ177V5CjiznHg9HZKqzO19HNGbAdnO7swZkj4bvKpB6CJWyiFkZ8MGtnSjs9GyzSmZCMo0Dttt2K+LDAU9ulJtWexRZb0ORjTJXA==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=nxp.com; dmarc=pass action=none header.from=nxp.com; dkim=pass
+ header.d=nxp.com; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=nxp.com; s=selector2; 
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=mv0L9wisMdrDeZAAW4q1d3+Ep4YUnQEGSJbfPcidB8A=;
+ b=KbG4b23UX8zrNhlfnX2Ntlb2CRcZLZIKCp6k+D1D4xIJf3kM1PGNeUdiONFvs4+OOGW/9S3WFSVwOjLKaS8Zy05YSufmDxQc2aOjz5nqXRjFFG9q190+vphWCVNsTHfy5aQZDbY8jJ6aKAVYTZJAA0Q85VeCXNHGi42Ky5mjFxo=
+Authentication-Results: spf=none (sender IP is )
+ smtp.mailfrom=laurentiu.tudor@nxp.com; 
+Received: from AM6PR04MB5925.eurprd04.prod.outlook.com (2603:10a6:20b:ab::19)
+ by AM6PR04MB5173.eurprd04.prod.outlook.com (2603:10a6:20b:d::15) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.2900.26; Thu, 16 Apr
+ 2020 14:39:02 +0000
+Received: from AM6PR04MB5925.eurprd04.prod.outlook.com
+ ([fe80::dd71:5f33:1b21:cd9e]) by AM6PR04MB5925.eurprd04.prod.outlook.com
+ ([fe80::dd71:5f33:1b21:cd9e%5]) with mapi id 15.20.2900.028; Thu, 16 Apr 2020
+ 14:39:02 +0000
+Subject: Re: [RFC PATCH 1/4] bus: fsl-mc: add custom .dma_configure
+ implementation
+To: Lorenzo Pieralisi <lorenzo.pieralisi@arm.com>
+References: <20200227100542.13819-1-laurentiu.tudor@nxp.com>
+ <20200325125109.GA5430@red-moon.cambridge.arm.com>
+ <499fbf9a-416f-d7c7-0655-881d92138a6c@nxp.com>
+ <20200414143211.GA14905@red-moon.cambridge.arm.com>
+ <d37ca4e3-58cb-9d6f-3a98-5e4a21ca948b@nxp.com>
+ <20200415160425.GA6436@e121166-lin.cambridge.arm.com>
+From: Laurentiu Tudor <laurentiu.tudor@nxp.com>
+Message-ID: <bd786e30-321a-26b1-dbc5-bc233f89c11b@nxp.com>
+Date: Thu, 16 Apr 2020 17:38:56 +0300
+User-Agent: Mozilla/5.0 (Windows NT 10.0; WOW64; rv:68.0) Gecko/20100101
  Thunderbird/68.7.0
+In-Reply-To: <20200415160425.GA6436@e121166-lin.cambridge.arm.com>
+Content-Language: en-US
+X-ClientProxiedBy: AM0PR06CA0101.eurprd06.prod.outlook.com
+ (2603:10a6:208:fa::42) To AM6PR04MB5925.eurprd04.prod.outlook.com
+ (2603:10a6:20b:ab::19)
 MIME-Version: 1.0
-In-Reply-To: <813cc5b2da10c27db982254b274bf26008a9e6da.1579692800.git.saiprakash.ranjan@codeaurora.org>
-Content-Language: en-GB
-Cc: Rajendra Nayak <rnayak@codeaurora.org>,
- "linux-arm-msm@vger.kernel.org" <linux-arm-msm@vger.kernel.org>,
- "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
- Stephen Boyd <swboyd@chromium.org>,
- "iommu@lists.linux-foundation.org" <iommu@lists.linux-foundation.org>,
- Matthias Kaehlcke <mka@chromium.org>,
- Bjorn Andersson <bjorn.andersson@linaro.org>,
- "linux-arm-kernel@lists.infradead.org" <linux-arm-kernel@lists.infradead.org>
+X-MS-Exchange-MessageSentRepresentingType: 1
+Received: from [192.168.1.107] (86.123.59.151) by
+ AM0PR06CA0101.eurprd06.prod.outlook.com (2603:10a6:208:fa::42) with Microsoft
+ SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.20.2921.25 via Frontend Transport; Thu, 16 Apr 2020 14:38:59 +0000
+X-Originating-IP: [86.123.59.151]
+X-MS-PublicTrafficType: Email
+X-MS-Office365-Filtering-HT: Tenant
+X-MS-Office365-Filtering-Correlation-Id: d34658d0-2807-4807-ffa1-08d7e213e810
+X-MS-TrafficTypeDiagnostic: AM6PR04MB5173:|AM6PR04MB5173:
+X-MS-Exchange-Transport-Forked: True
+X-Microsoft-Antispam-PRVS: <AM6PR04MB5173EAF19513D8155EE26B46ECD80@AM6PR04MB5173.eurprd04.prod.outlook.com>
+X-MS-Oob-TLC-OOBClassifiers: OLM:10000;
+X-Forefront-PRVS: 0375972289
+X-Forefront-Antispam-Report: CIP:255.255.255.255; CTRY:; LANG:en; SCL:1; SRV:;
+ IPV:NLI; SFV:NSPM; H:AM6PR04MB5925.eurprd04.prod.outlook.com; PTR:; CAT:NONE;
+ SFTY:;
+ SFS:(10009020)(4636009)(376002)(366004)(136003)(396003)(39860400002)(346002)(2906002)(81156014)(316002)(6486002)(478600001)(8676002)(4326008)(31696002)(8936002)(2616005)(36756003)(6666004)(86362001)(6916009)(7416002)(52116002)(44832011)(66556008)(956004)(66476007)(16576012)(66946007)(26005)(31686004)(53546011)(16526019)(5660300002)(186003)(142923001);
+ DIR:OUT; SFP:1101; 
+Received-SPF: None (protection.outlook.com: nxp.com does not designate
+ permitted sender hosts)
+X-MS-Exchange-SenderADCheck: 1
+X-Microsoft-Antispam: BCL:0;
+X-Microsoft-Antispam-Message-Info: pZuSikilcFEwzZIUbEH+S6NszKBybxsb9JG4Ck4wEr4dZnHAaXkXUPrRqkbid/Hn7zcvNT5ZVszzTL4JgEs1m2rM4dI0zNPlCR1LiFbFYHfgBI4D0mNM5G/6UrVmIuED30ZtMXa2MIfdzyeQXybanrFydGT7cn50klHe29uvjWVvbJhU0jeHQju5jpbcZBQLzlLpbKijnfAC0ArPObqWfNj2eX5UTYuTt1XWaW/VjlX41Hshubp5lx2mHktvtELs1ixEfYy9ibeFirSjXHnOkfPvP6cv+Z/fiT8tQotNJjVGvTMRcuLf2PFqXphg/aijXCYxe9NqkXHxG+o//M4VCPGGE8i61bA8RgmfbKdxGDVjjkOxC843z+ra0H+9ST9FWE/oNWNbgrXKv4I56GMWl3NGUCxw76tbH2f8mDbaNHl6KKLr9rKi64suT8AeXnqP2GtLuU4y33KaaK+Mjq7SRXbc1EfysQ6cNjrrpwsBiHk6NFguBIV90WD8ieSYQ+5r
+X-MS-Exchange-AntiSpam-MessageData: pEKdB/zdcSu9HzeeFwfLURt9TP/f6Hy3Ex6SPuzVDF7MZ7UUSXjArAyB2Hj0UdP+VIEAHh+5bI/k43afraPS+Xm2f3pBVftfPaaYiNa8vEV5vtIb/yeVo4TjUTKsLucThbrVBpImfqltOg7Yku9hoQ==
+X-OriginatorOrg: nxp.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: d34658d0-2807-4807-ffa1-08d7e213e810
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 16 Apr 2020 14:39:02.4477 (UTC)
+X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
+X-MS-Exchange-CrossTenant-Id: 686ea1d3-bc2b-4c6f-a92c-d99c5c301635
+X-MS-Exchange-CrossTenant-MailboxType: HOSTED
+X-MS-Exchange-CrossTenant-UserPrincipalName: DMGvykdCt0ATECvepsAlhQ/0U4cNoTtBZ4dtIi9/ZlWFYz5flBD4dY80ruQTCR72b+JRHevjGWN9DYqAtbi18A==
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: AM6PR04MB5173
+Cc: jason@lakedaemon.net, calvin.johnson@nxp.com, ard.biesheuvel@linaro.org,
+ maz@kernel.org, pankaj.bansal@nxp.com, diana.craciun@oss.nxp.com,
+ jon@solid-run.com, linux-kernel@vger.kernel.org, jeremy.linton@arm.com,
+ linux-acpi@vger.kernel.org, iommu@lists.linux-foundation.org,
+ cristian.sovaiala@nxp.com, tglx@linutronix.de, makarand.pawagi@nxp.com,
+ ioana.ciornei@nxp.com, Stuart.Yoder@arm.com, robin.murphy@arm.com,
+ linux-arm-kernel@lists.infradead.org, V.Sethi@nxp.com
 X-BeenThere: iommu@lists.linux-foundation.org
 X-Mailman-Version: 2.1.15
 Precedence: list
@@ -86,149 +145,125 @@ List-Post: <mailto:iommu@lists.linux-foundation.org>
 List-Help: <mailto:iommu-request@lists.linux-foundation.org?subject=help>
 List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
  <mailto:iommu-request@lists.linux-foundation.org?subject=subscribe>
+Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
-Content-Type: text/plain; charset="us-ascii"; Format="flowed"
 Errors-To: iommu-bounces@lists.linux-foundation.org
 Sender: "iommu" <iommu-bounces@lists.linux-foundation.org>
 
-On 2020-01-22 11:48 am, Sai Prakash Ranjan wrote:
-> From: Jordan Crouse <jcrouse@codeaurora.org>
+
+
+On 4/15/2020 7:04 PM, Lorenzo Pieralisi wrote:
+> On Wed, Apr 15, 2020 at 06:44:37PM +0300, Laurentiu Tudor wrote:
+>>
+>>
+>> On 4/14/2020 5:32 PM, Lorenzo Pieralisi wrote:
+>>> On Wed, Mar 25, 2020 at 06:48:55PM +0200, Laurentiu Tudor wrote:
+>>>> Hi Lorenzo,
+>>>>
+>>>> On 3/25/2020 2:51 PM, Lorenzo Pieralisi wrote:
+>>>>> On Thu, Feb 27, 2020 at 12:05:39PM +0200, laurentiu.tudor@nxp.com wrote:
+>>>>>> From: Laurentiu Tudor <laurentiu.tudor@nxp.com>
+>>>>>>
+>>>>>> The devices on this bus are not discovered by way of device tree
+>>>>>> but by queries to the firmware. It makes little sense to trick the
+>>>>>> generic of layer into thinking that these devices are of related so
+>>>>>> that we can get our dma configuration. Instead of doing that, add
+>>>>>> our custom dma configuration implementation.
+>>>>>>
+>>>>>> Signed-off-by: Laurentiu Tudor <laurentiu.tudor@nxp.com>
+>>>>>> ---
+>>>>>>  drivers/bus/fsl-mc/fsl-mc-bus.c | 31 ++++++++++++++++++++++++++++++-
+>>>>>>  1 file changed, 30 insertions(+), 1 deletion(-)
+>>>>>>
+>>>>>> diff --git a/drivers/bus/fsl-mc/fsl-mc-bus.c b/drivers/bus/fsl-mc/fsl-mc-bus.c
+>>>>>> index 36eb25f82c8e..eafaa0e0b906 100644
+>>>>>> --- a/drivers/bus/fsl-mc/fsl-mc-bus.c
+>>>>>> +++ b/drivers/bus/fsl-mc/fsl-mc-bus.c
+>>>>>> @@ -132,11 +132,40 @@ static int fsl_mc_bus_uevent(struct device *dev, struct kobj_uevent_env *env)
+>>>>>>  static int fsl_mc_dma_configure(struct device *dev)
+>>>>>>  {
+>>>>>>  	struct device *dma_dev = dev;
+>>>>>> +	struct iommu_fwspec *fwspec;
+>>>>>> +	const struct iommu_ops *iommu_ops;
+>>>>>> +	struct fsl_mc_device *mc_dev = to_fsl_mc_device(dev);
+>>>>>> +	int ret;
+>>>>>> +	u32 icid;
+>>>>>>  
+>>>>>>  	while (dev_is_fsl_mc(dma_dev))
+>>>>>>  		dma_dev = dma_dev->parent;
+>>>>>>  
+>>>>>> -	return of_dma_configure(dev, dma_dev->of_node, 0);
+>>>>>> +	fwspec = dev_iommu_fwspec_get(dma_dev);
+>>>>>> +	if (!fwspec)
+>>>>>> +		return -ENODEV;
+>>>>>> +	iommu_ops = iommu_ops_from_fwnode(fwspec->iommu_fwnode);
+>>>>>> +	if (!iommu_ops)
+>>>>>> +		return -ENODEV;
+>>>>>> +
+>>>>>> +	ret = iommu_fwspec_init(dev, fwspec->iommu_fwnode, iommu_ops);
+>>>>>> +	if (ret)
+>>>>>> +		return ret;
+>>>>>> +
+>>>>>> +	icid = mc_dev->icid;
+>>>>>> +	ret = iommu_fwspec_add_ids(dev, &icid, 1);
+>>>>>
+>>>>> I see. So with this patch we would use the MC named component only to
+>>>>> retrieve the iommu_ops
+>>>>
+>>>> Right. I'd also add that the implementation tries to follow the existing
+>>>> standard .dma_configure implementations, e.g. of_dma_configure +
+>>>> of_iommu_configure. I'd also note that similarly to the ACPI case, this
+>>>> MC FW device is probed as a platform device in the DT scenario, binding
+>>>> here [1].
+>>>> A similar approach is used for the retrieval of the msi irq domain, see
+>>>> following patch.
+>>>>
+>>>>> - the streamid are injected directly here bypassing OF/IORT bindings translations altogether. 
+>>>>
+>>>> Actually I've submitted a v2 [2] that calls into .of_xlate() to allow
+>>>> the smmu driver to do some processing on the raw streamid coming from
+>>>> the firmware. I have not yet tested this with ACPI but expect it to
+>>>> work, however, it's debatable how valid is this approach in the context
+>>>> of ACPI.
+>>>
+>>> Actually, what I think you need is of_map_rid() (and an IORT
+>>> equivalent, that I am going to write - generalizing iort_msi_map_rid()).
+>>>
+>>> Would that be enough to enable IORT "normal" mappings in the MC bus
+>>> named components ?
+>>>
+>>
+>> At a first glance, looks like this could very well fix the ACPI
+>> scenario, but I have some unclarities on the approach:
+>>  * are we going to rely in DT and ACPI generic layers even if these
+>> devices are not published / enumerated through DT or ACPI tables?
+>>  * the firmware manages and provides discrete streamids for the devices
+>> it exposes so there's no translation involved. There's no
+>>    requestor_id / input_id involved but it seems that we would still do
+>> some kind of translation relying for this on the DT/ACPI functions.
+>>  * MC firmware has its own stream_id (e.g. on some chips 0x4000, others
+>> 0xf00, so outside the range of stream_ids used for the mc devices)
+>>    while for the devices on this bus, MC allocates stream_ids from a
+>> range (e.g. 0x17 - 0x3f). Is it possible to describe this in the IORT table?
+>>  * Regarding the of_map_rid() use you mentioned, I was planning to
+>> decouple the mc bus from the DT layer by dropping the use of
+>> of_map_rid(), see patch 4.
+>> I briefly glanced over the iort code and spotted this static function:
+>> iort_iommu_xlate(). Wouldn't it also help, of course after making it public?
 > 
-> Some client devices want to directly map the IOMMU themselves instead
-> of using the DMA domain. Allow those devices to opt in to direct
-> mapping by way of a list of compatible strings.
+> Guys I have lost you honestly. I don't understand what you really need
+> to do with DT and ACPI here. Are they needed to describe what you need
+> or not ? If the MC dma configure function does not need any DT/ACPI
+> bindings that's fine by me, I don't understand though why you are still
+> asking how to represent MC in ACPI then, what for.
 > 
-> Signed-off-by: Jordan Crouse <jcrouse@codeaurora.org>
-> Co-developed-by: Sai Prakash Ranjan <saiprakash.ranjan@codeaurora.org>
-> Signed-off-by: Sai Prakash Ranjan <saiprakash.ranjan@codeaurora.org>
-> ---
->   drivers/iommu/arm-smmu-qcom.c | 39 +++++++++++++++++++++++++++++++++++
->   drivers/iommu/arm-smmu.c      |  3 +++
->   drivers/iommu/arm-smmu.h      |  5 +++++
->   3 files changed, 47 insertions(+)
-> 
-> diff --git a/drivers/iommu/arm-smmu-qcom.c b/drivers/iommu/arm-smmu-qcom.c
-> index 64a4ab270ab7..ff746acd1c81 100644
-> --- a/drivers/iommu/arm-smmu-qcom.c
-> +++ b/drivers/iommu/arm-smmu-qcom.c
-> @@ -3,6 +3,7 @@
->    * Copyright (c) 2019, The Linux Foundation. All rights reserved.
->    */
->   
-> +#include <linux/of_device.h>
->   #include <linux/qcom_scm.h>
->   
->   #include "arm-smmu.h"
-> @@ -11,6 +12,43 @@ struct qcom_smmu {
->   	struct arm_smmu_device smmu;
->   };
->   
-> +static const struct arm_smmu_client_match_data qcom_adreno = {
-> +	.direct_mapping = true,
-> +};
-> +
-> +static const struct arm_smmu_client_match_data qcom_mdss = {
-> +	.direct_mapping = true,
-> +};
 
-Might it make sense to group these by the desired SMMU behaviour rather 
-than (apparently) what kind of device the client happens to be, which 
-seems like a completely arbitrary distinction from the SMMU driver's PoV?
-
-> +
-> +static const struct of_device_id qcom_smmu_client_of_match[] = {
-> +	{ .compatible = "qcom,adreno", .data = &qcom_adreno },
-> +	{ .compatible = "qcom,mdp4", .data = &qcom_mdss },
-> +	{ .compatible = "qcom,mdss", .data = &qcom_mdss },
-> +	{ .compatible = "qcom,sc7180-mdss", .data = &qcom_mdss },
-> +	{ .compatible = "qcom,sdm845-mdss", .data = &qcom_mdss },
-> +	{},
-> +};
-> +
-> +static const struct arm_smmu_client_match_data *
-> +qcom_smmu_client_data(struct device *dev)
-> +{
-> +	const struct of_device_id *match =
-> +		of_match_device(qcom_smmu_client_of_match, dev);
-> +
-> +	return match ? match->data : NULL;
-
-of_device_get_match_data() is your friend.
-
-> +}
-> +
-> +static int qcom_smmu_request_domain(struct device *dev)
-> +{
-> +	const struct arm_smmu_client_match_data *client;
-> +
-> +	client = qcom_smmu_client_data(dev);
-> +	if (client)
-> +		iommu_request_dm_for_dev(dev);
-> +
-> +	return 0;
-> +}
-> +
->   static int qcom_sdm845_smmu500_reset(struct arm_smmu_device *smmu)
->   {
->   	int ret;
-> @@ -41,6 +79,7 @@ static int qcom_smmu500_reset(struct arm_smmu_device *smmu)
->   }
->   
->   static const struct arm_smmu_impl qcom_smmu_impl = {
-> +	.req_domain = qcom_smmu_request_domain,
->   	.reset = qcom_smmu500_reset,
->   };
->   
-> diff --git a/drivers/iommu/arm-smmu.c b/drivers/iommu/arm-smmu.c
-> index 16c4b87af42b..67dd9326247a 100644
-> --- a/drivers/iommu/arm-smmu.c
-> +++ b/drivers/iommu/arm-smmu.c
-> @@ -1448,6 +1448,9 @@ static int arm_smmu_add_device(struct device *dev)
->   	device_link_add(dev, smmu->dev,
->   			DL_FLAG_PM_RUNTIME | DL_FLAG_AUTOREMOVE_SUPPLIER);
->   
-> +	if (smmu->impl && smmu->impl->req_domain)
-> +		return smmu->impl->req_domain(dev);
-> +
-
-There are about 5 different patchsets flying around at the moment that 
-all touch default domain allocation, so this is a fast-moving target, 
-but I think where the dust should settle is with arm_smmu_ops forwarding 
-.def_domain_type (or whatever it ends up as) calls to arm_smmu_impl as 
-appropriate.
-
->   	return 0;
->   
->   out_cfg_free:
-> diff --git a/drivers/iommu/arm-smmu.h b/drivers/iommu/arm-smmu.h
-> index 8d1cd54d82a6..059dc9c39f64 100644
-> --- a/drivers/iommu/arm-smmu.h
-> +++ b/drivers/iommu/arm-smmu.h
-> @@ -244,6 +244,10 @@ enum arm_smmu_arch_version {
->   	ARM_SMMU_V2,
->   };
->   
-> +struct arm_smmu_client_match_data {
-> +	bool direct_mapping;
-> +};
-
-Does this need to be public? I don't see the other users...
-
-Robin.
-
-> +
->   enum arm_smmu_implementation {
->   	GENERIC_SMMU,
->   	ARM_MMU500,
-> @@ -386,6 +390,7 @@ struct arm_smmu_impl {
->   	int (*init_context)(struct arm_smmu_domain *smmu_domain);
->   	void (*tlb_sync)(struct arm_smmu_device *smmu, int page, int sync,
->   			 int status);
-> +	int (*req_domain)(struct device *dev);
->   };
->   
->   static inline void __iomem *arm_smmu_page(struct arm_smmu_device *smmu, int n)
-> 
+Sorry for the stress and all this back and forth. Perhaps it's due to my
+lack of understanding why we would need this translation complexity.
+We'll return with a proposal in the next spin of the patches so we have
+something concrete to discuss on.
+---
+Thanks & Best Regards, Laurentiu
 _______________________________________________
 iommu mailing list
 iommu@lists.linux-foundation.org
