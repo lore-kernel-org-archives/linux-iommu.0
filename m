@@ -6,75 +6,80 @@ X-Spam-Status: No, score=-0.8 required=3.0 tests=HEADER_FROM_DIFFERENT_DOMAINS,
 	MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS autolearn=no autolearn_force=no
 	version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 3F3C4C2D0EF
-	for <iommu@archiver.kernel.org>; Fri, 17 Apr 2020 02:27:59 +0000 (UTC)
-Received: from hemlock.osuosl.org (smtp2.osuosl.org [140.211.166.133])
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 43561C2BA2B
+	for <iommu@archiver.kernel.org>; Fri, 17 Apr 2020 02:45:38 +0000 (UTC)
+Received: from whitealder.osuosl.org (smtp1.osuosl.org [140.211.166.138])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by mail.kernel.org (Postfix) with ESMTPS id 093AA20776
-	for <iommu@archiver.kernel.org>; Fri, 17 Apr 2020 02:27:58 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 093AA20776
+	by mail.kernel.org (Postfix) with ESMTPS id 16E3621841
+	for <iommu@archiver.kernel.org>; Fri, 17 Apr 2020 02:45:37 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 16E3621841
 Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=intel.com
 Authentication-Results: mail.kernel.org; spf=pass smtp.mailfrom=iommu-bounces@lists.linux-foundation.org
 Received: from localhost (localhost [127.0.0.1])
-	by hemlock.osuosl.org (Postfix) with ESMTP id D433387A5F;
-	Fri, 17 Apr 2020 02:27:58 +0000 (UTC)
+	by whitealder.osuosl.org (Postfix) with ESMTP id DD5D686BB7;
+	Fri, 17 Apr 2020 02:45:37 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from hemlock.osuosl.org ([127.0.0.1])
+Received: from whitealder.osuosl.org ([127.0.0.1])
 	by localhost (.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
-	with ESMTP id J23FYl9zhpH3; Fri, 17 Apr 2020 02:27:57 +0000 (UTC)
+	with ESMTP id 9SxxBWK+AXss; Fri, 17 Apr 2020 02:45:35 +0000 (UTC)
 Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [140.211.9.56])
-	by hemlock.osuosl.org (Postfix) with ESMTP id 7EC6A87568;
-	Fri, 17 Apr 2020 02:27:57 +0000 (UTC)
+	by whitealder.osuosl.org (Postfix) with ESMTP id C413C86B28;
+	Fri, 17 Apr 2020 02:45:35 +0000 (UTC)
 Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
-	by lists.linuxfoundation.org (Postfix) with ESMTP id 5FB5AC089E;
-	Fri, 17 Apr 2020 02:27:57 +0000 (UTC)
+	by lists.linuxfoundation.org (Postfix) with ESMTP id B7572C089E;
+	Fri, 17 Apr 2020 02:45:35 +0000 (UTC)
 Received: from fraxinus.osuosl.org (smtp4.osuosl.org [140.211.166.137])
- by lists.linuxfoundation.org (Postfix) with ESMTP id 7B70AC0172
- for <iommu@lists.linux-foundation.org>; Fri, 17 Apr 2020 02:27:56 +0000 (UTC)
+ by lists.linuxfoundation.org (Postfix) with ESMTP id A366DC0172
+ for <iommu@lists.linux-foundation.org>; Fri, 17 Apr 2020 02:45:34 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
- by fraxinus.osuosl.org (Postfix) with ESMTP id 66C31861DE
- for <iommu@lists.linux-foundation.org>; Fri, 17 Apr 2020 02:27:56 +0000 (UTC)
+ by fraxinus.osuosl.org (Postfix) with ESMTP id 980C984EA7
+ for <iommu@lists.linux-foundation.org>; Fri, 17 Apr 2020 02:45:34 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
 Received: from fraxinus.osuosl.org ([127.0.0.1])
  by localhost (.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
- with ESMTP id mnVE9QlB9Q4B for <iommu@lists.linux-foundation.org>;
- Fri, 17 Apr 2020 02:27:55 +0000 (UTC)
+ with ESMTP id OktSYginT5NM for <iommu@lists.linux-foundation.org>;
+ Fri, 17 Apr 2020 02:45:34 +0000 (UTC)
 X-Greylist: domain auto-whitelisted by SQLgrey-1.7.6
-Received: from mga11.intel.com (mga11.intel.com [192.55.52.93])
- by fraxinus.osuosl.org (Postfix) with ESMTPS id C1EE686135
- for <iommu@lists.linux-foundation.org>; Fri, 17 Apr 2020 02:27:55 +0000 (UTC)
-IronPort-SDR: YqEn4s07qPKa+I6d3tWXJrFqq90M9b5d6+n+cBvbUbra+x8zsu5ke02/cOkOAs9aNQBtDqe4Gx
- kv1ffvnY0uig==
+Received: from mga17.intel.com (mga17.intel.com [192.55.52.151])
+ by fraxinus.osuosl.org (Postfix) with ESMTPS id 0089E84D62
+ for <iommu@lists.linux-foundation.org>; Fri, 17 Apr 2020 02:45:33 +0000 (UTC)
+IronPort-SDR: qJANlBHD54LS9dh+SbJn9Ao8EwwSf7Kz+dsFDlFSdfLwIEzywPZiC4bXrzxwvh5kTTpRbhLlW+
+ I2zwgfaNu4vw==
 X-Amp-Result: SKIPPED(no attachment in message)
 X-Amp-File-Uploaded: False
-Received: from fmsmga003.fm.intel.com ([10.253.24.29])
- by fmsmga102.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384;
- 16 Apr 2020 19:27:55 -0700
-IronPort-SDR: o9hkvLAaiO9Rb19BdwJ3FoHao5MY1QDR6RB4lAjMFbD5RyuhafnYlDuWMDlgKtfhXe28uxz0AZ
- JCgxPSKKjYdg==
+Received: from fmsmga004.fm.intel.com ([10.253.24.48])
+ by fmsmga107.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384;
+ 16 Apr 2020 19:45:32 -0700
+IronPort-SDR: eCPijPNfhNoemscwgxRcefwZ2Y8SDR6sV++TqTEKQKEU4t7fpT3657DIOrOonPGx1svabfdC4R
+ GFebdUbl5iyQ==
 X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.72,393,1580803200"; d="scan'208";a="299480898"
-Received: from fmsmsx107.amr.corp.intel.com ([10.18.124.205])
- by FMSMGA003.fm.intel.com with ESMTP; 16 Apr 2020 19:27:54 -0700
+X-IronPort-AV: E=Sophos;i="5.72,393,1580803200"; d="scan'208";a="278222332"
+Received: from fmsmsx108.amr.corp.intel.com ([10.18.124.206])
+ by fmsmga004.fm.intel.com with ESMTP; 16 Apr 2020 19:45:32 -0700
+Received: from FMSMSX109.amr.corp.intel.com (10.18.116.9) by
+ FMSMSX108.amr.corp.intel.com (10.18.124.206) with Microsoft SMTP Server (TLS)
+ id 14.3.439.0; Thu, 16 Apr 2020 19:45:32 -0700
 Received: from shsmsx101.ccr.corp.intel.com (10.239.4.153) by
- fmsmsx107.amr.corp.intel.com (10.18.124.205) with Microsoft SMTP Server (TLS)
- id 14.3.439.0; Thu, 16 Apr 2020 19:27:52 -0700
+ fmsmsx109.amr.corp.intel.com (10.18.116.9) with Microsoft SMTP Server (TLS)
+ id 14.3.439.0; Thu, 16 Apr 2020 19:45:32 -0700
 Received: from shsmsx104.ccr.corp.intel.com ([169.254.5.225]) by
  SHSMSX101.ccr.corp.intel.com ([169.254.1.129]) with mapi id 14.03.0439.000;
- Fri, 17 Apr 2020 10:27:49 +0800
+ Fri, 17 Apr 2020 10:45:23 +0800
 From: "Tian, Kevin" <kevin.tian@intel.com>
-To: Lu Baolu <baolu.lu@linux.intel.com>, Joerg Roedel <joro@8bytes.org>
-Subject: RE: [PATCH v2 6/7] iommu/vt-d: Add page request draining support
-Thread-Topic: [PATCH v2 6/7] iommu/vt-d: Add page request draining support
-Thread-Index: AQHWEubS8xobodm1XE6sOT1OPN2bNqh579XggAD5A4CAAa9E8A==
-Date: Fri, 17 Apr 2020 02:27:49 +0000
-Message-ID: <AADFC41AFE54684AB9EE6CBC0274A5D19D824051@SHSMSX104.ccr.corp.intel.com>
-References: <20200415052542.30421-1-baolu.lu@linux.intel.com>
- <20200415052542.30421-7-baolu.lu@linux.intel.com>
- <AADFC41AFE54684AB9EE6CBC0274A5D19D8209CE@SHSMSX104.ccr.corp.intel.com>
- <acf26559-49d2-653c-156d-3ef383b43879@linux.intel.com>
-In-Reply-To: <acf26559-49d2-653c-156d-3ef383b43879@linux.intel.com>
+To: Auger Eric <eric.auger@redhat.com>, Jacob Pan
+ <jacob.jun.pan@linux.intel.com>
+Subject: RE: [PATCH v11 05/10] iommu/vt-d: Add bind guest PASID support
+Thread-Topic: [PATCH v11 05/10] iommu/vt-d: Add bind guest PASID support
+Thread-Index: AQHWCebOp12IiW87IUSByO2zgM/w7qhv6qkAgAJcu4CACNZVgIABkaSw
+Date: Fri, 17 Apr 2020 02:45:22 +0000
+Message-ID: <AADFC41AFE54684AB9EE6CBC0274A5D19D824106@SHSMSX104.ccr.corp.intel.com>
+References: <1585939334-21396-1-git-send-email-jacob.jun.pan@linux.intel.com>
+ <1585939334-21396-6-git-send-email-jacob.jun.pan@linux.intel.com>
+ <ab57b85b-235f-dc80-1c25-9b3d42dc5f4e@redhat.com>
+ <20200410124557.4012b99b@jacob-builder>
+ <6d9721a8-2198-5ecd-6c8b-fc43ff2ad7e1@redhat.com>
+In-Reply-To: <6d9721a8-2198-5ecd-6c8b-fc43ff2ad7e1@redhat.com>
 Accept-Language: en-US
 Content-Language: en-US
 X-MS-Has-Attach: 
@@ -84,9 +89,12 @@ dlp-version: 11.2.0.6
 dlp-reaction: no-action
 x-originating-ip: [10.239.127.40]
 MIME-Version: 1.0
-Cc: "iommu@lists.linux-foundation.org" <iommu@lists.linux-foundation.org>, "Raj,
- Ashok" <ashok.raj@intel.com>,
- "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>
+Cc: Yi L <yi.l.liu@linux.intel.com>, "Raj, Ashok" <ashok.raj@intel.com>,
+ Jean-Philippe Brucker <jean-philippe@linaro.com>,
+ "iommu@lists.linux-foundation.org" <iommu@lists.linux-foundation.org>,
+ LKML <linux-kernel@vger.kernel.org>,
+ Alex Williamson <alex.williamson@redhat.com>, David
+ Woodhouse <dwmw2@infradead.org>, Jonathan Cameron <jic23@kernel.org>
 X-BeenThere: iommu@lists.linux-foundation.org
 X-Mailman-Version: 2.1.15
 Precedence: list
@@ -104,43 +112,46 @@ Content-Transfer-Encoding: 7bit
 Errors-To: iommu-bounces@lists.linux-foundation.org
 Sender: "iommu" <iommu-bounces@lists.linux-foundation.org>
 
-> From: Lu Baolu <baolu.lu@linux.intel.com>
-> Sent: Thursday, April 16, 2020 4:38 PM
+> From: Auger Eric
+> Sent: Thursday, April 16, 2020 6:43 PM
 > 
-> Hi Kevin,
+[...]
+> >>> +	if (svm) {
+> >>> +		/*
+> >>> +		 * If we found svm for the PASID, there must be at
+> >>> +		 * least one device bond, otherwise svm should be
+> >>> freed.
+> >>> +		 */
+> >>> +		if (WARN_ON(list_empty(&svm->devs))) {
+> >>> +			ret = -EINVAL;
+> >>> +			goto out;
+> >>> +		}
+> >>> +
+> >>> +		for_each_svm_dev(sdev, svm, dev) {
+> >>> +			/* In case of multiple sub-devices of the
+> >>> same pdev
+> >>> +			 * assigned, we should allow multiple bind
+> >>> calls with
+> >>> +			 * the same PASID and pdev.
+> >>> +			 */
+> >>> +			sdev->users++;
+> >> What if this is not an mdev device. Is it also allowed?
+> > Yes. IOMMU and VT-d driver is not mdev aware. Here mdev is just an
+> > example of normal use case. You can bind the same PCI device (PF or
+> > SRIOV VF) more than once to the same PASID. Just need to unbind also.
 > 
-> On 2020/4/15 19:10, Tian, Kevin wrote:
-> > the completion of above sequence ensures that previous queued
-> > page group responses are sent out and received by the endpoint
-> > and vice versa all in-fly page requests from the endpoint are queued
-> > in iommu page request queue. Then comes a problem - you didn't
-> > wait for completion of those newly-queued requests and their
-> > responses.
-> 
-> I thought about this again.
-> 
-> We do page request draining after PASID table entry gets torn down and
-> the devTLB gets invalidated. At this point, if any new page request for
-> this pasid comes in, IOMMU will generate an unrecoverable fault and
-> response the device with IR (Invalid Request). IOMMU won't put this page
-> request into the queue. [VT-d spec 7.4.1]
+> I don't get the point of binding a non mdev device several times with
+> the same PASID. Do you intend to allow that at userspace level or
+> prevent this from happening in VFIO?
 
-Non-coverable fault implies severe errors, so I don't see why we should
-allow such thing happen when handling a normal situation. if you look at
-the start of chapter 7:
---
-Non-recoverable Faults: Requests that encounter non-recoverable 
-address translation faults are aborted by the remapping hardware, 
-and typically require a reset of the device (such as through a function-
-level-reset) to recover and re-initialize the device to put it back into 
-service.
---
+I feel it's better to prevent this from happening, otherwise VFIO also
+needs to track the bind count and do multiple unbinds at mm_exit.
+But it's not necessary to prevent it in VFIO. We can check here
+upon whether aux_domain is valid, and if not return -EBUSY.
 
 > 
-> Hence, we don't need to worry about the newly-queued requests here.
-> 
-> Best regards,
-> Baolu
+> Besides, the comment is a bit misleading as it gives the impression it
+> is only true for mdev and there is no associated check.
 
 Thanks
 Kevin
