@@ -6,65 +6,66 @@ X-Spam-Status: No, score=-9.8 required=3.0 tests=DKIM_INVALID,DKIM_SIGNED,
 	INCLUDES_PATCH,MAILING_LIST_MULTI,SIGNED_OFF_BY,SPF_HELO_NONE,SPF_PASS,
 	URIBL_BLOCKED,USER_AGENT_GIT autolearn=ham autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 3674BC38A29
-	for <iommu@archiver.kernel.org>; Sat, 18 Apr 2020 14:41:00 +0000 (UTC)
-Received: from hemlock.osuosl.org (smtp2.osuosl.org [140.211.166.133])
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 39061C3A5A0
+	for <iommu@archiver.kernel.org>; Sat, 18 Apr 2020 14:41:18 +0000 (UTC)
+Received: from fraxinus.osuosl.org (smtp4.osuosl.org [140.211.166.137])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by mail.kernel.org (Postfix) with ESMTPS id 0838E21D79
-	for <iommu@archiver.kernel.org>; Sat, 18 Apr 2020 14:40:59 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTPS id 0CB7E22260
+	for <iommu@archiver.kernel.org>; Sat, 18 Apr 2020 14:41:17 +0000 (UTC)
 Authentication-Results: mail.kernel.org;
-	dkim=fail reason="signature verification failed" (1024-bit key) header.d=kernel.org header.i=@kernel.org header.b="XJmug0S9"
-DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 0838E21D79
+	dkim=fail reason="signature verification failed" (1024-bit key) header.d=kernel.org header.i=@kernel.org header.b="oblOSCOu"
+DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 0CB7E22260
 Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=kernel.org
 Authentication-Results: mail.kernel.org; spf=pass smtp.mailfrom=iommu-bounces@lists.linux-foundation.org
 Received: from localhost (localhost [127.0.0.1])
-	by hemlock.osuosl.org (Postfix) with ESMTP id BFB8088249;
-	Sat, 18 Apr 2020 14:40:59 +0000 (UTC)
+	by fraxinus.osuosl.org (Postfix) with ESMTP id DF82E84547;
+	Sat, 18 Apr 2020 14:41:17 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from hemlock.osuosl.org ([127.0.0.1])
+Received: from fraxinus.osuosl.org ([127.0.0.1])
 	by localhost (.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
-	with ESMTP id dJHO77j26+91; Sat, 18 Apr 2020 14:40:59 +0000 (UTC)
+	with ESMTP id 2QCgYgVvZeg0; Sat, 18 Apr 2020 14:41:17 +0000 (UTC)
 Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [140.211.9.56])
-	by hemlock.osuosl.org (Postfix) with ESMTP id 46FE8880C2;
-	Sat, 18 Apr 2020 14:40:59 +0000 (UTC)
+	by fraxinus.osuosl.org (Postfix) with ESMTP id 7D72884410;
+	Sat, 18 Apr 2020 14:41:17 +0000 (UTC)
 Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
-	by lists.linuxfoundation.org (Postfix) with ESMTP id 421A0C1D7E;
-	Sat, 18 Apr 2020 14:40:59 +0000 (UTC)
+	by lists.linuxfoundation.org (Postfix) with ESMTP id 6A201C1D7E;
+	Sat, 18 Apr 2020 14:41:17 +0000 (UTC)
 Received: from whitealder.osuosl.org (smtp1.osuosl.org [140.211.166.138])
- by lists.linuxfoundation.org (Postfix) with ESMTP id 7A8DFC0172
- for <iommu@lists.linux-foundation.org>; Sat, 18 Apr 2020 14:40:57 +0000 (UTC)
+ by lists.linuxfoundation.org (Postfix) with ESMTP id 47D20C0172
+ for <iommu@lists.linux-foundation.org>; Sat, 18 Apr 2020 14:41:15 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
- by whitealder.osuosl.org (Postfix) with ESMTP id 6A4B5876FB
- for <iommu@lists.linux-foundation.org>; Sat, 18 Apr 2020 14:40:57 +0000 (UTC)
+ by whitealder.osuosl.org (Postfix) with ESMTP id 32548876FB
+ for <iommu@lists.linux-foundation.org>; Sat, 18 Apr 2020 14:41:15 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
 Received: from whitealder.osuosl.org ([127.0.0.1])
  by localhost (.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
- with ESMTP id ZdreIYltNiPM for <iommu@lists.linux-foundation.org>;
- Sat, 18 Apr 2020 14:40:56 +0000 (UTC)
+ with ESMTP id yickerK058X9 for <iommu@lists.linux-foundation.org>;
+ Sat, 18 Apr 2020 14:41:14 +0000 (UTC)
 X-Greylist: domain auto-whitelisted by SQLgrey-1.7.6
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
- by whitealder.osuosl.org (Postfix) with ESMTPS id CE8BB8770B
- for <iommu@lists.linux-foundation.org>; Sat, 18 Apr 2020 14:40:56 +0000 (UTC)
+ by whitealder.osuosl.org (Postfix) with ESMTPS id B9BF886E2A
+ for <iommu@lists.linux-foundation.org>; Sat, 18 Apr 2020 14:41:14 +0000 (UTC)
 Received: from sasha-vm.mshome.net (c-73-47-72-35.hsd1.nh.comcast.net
  [73.47.72.35])
  (using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
  (No client certificate requested)
- by mail.kernel.org (Postfix) with ESMTPSA id E83E221D82;
- Sat, 18 Apr 2020 14:40:55 +0000 (UTC)
+ by mail.kernel.org (Postfix) with ESMTPSA id ED05122253;
+ Sat, 18 Apr 2020 14:41:13 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
- s=default; t=1587220856;
- bh=2t9JhdTexDKfy3vJF9n4wUfNR/wrU2njNHPwpTWhbTg=;
+ s=default; t=1587220874;
+ bh=2TFAKaSdT+EMO+YKZ/LNnCEY582EwDyXXk3/bqOThdo=;
  h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
- b=XJmug0S9BAZHydcqKIK3xVY9ozJH23c17c+zPYUg+XQOkLsB8p19Uq7SdowlOwJhx
- mmZFPkiUP4ZrpYkx+7ZFbUEhndQFjprkt44/twVBXS+dUYP0pbAAwZiR7hQ0S8tJ/D
- WltCOAdpjuV8DiBnGvsQ6JG2WkKxTi/VpzofZVnQ=
+ b=oblOSCOuOxuMFlmFnqdV36GerDpyP10qrKLgpf2ipE6XNowKCpMbTZa+TcksetwTJ
+ DaMlM31k3RThyEffc9UowUZnCRPC9GW97vbm9PMLGGBXCeWaILHn4aGw0pEJ3dpM9v
+ BfZCtQv0jZj0/QwwxPzzUk6Dy7DkfMT1gKc7uBDw=
 From: Sasha Levin <sashal@kernel.org>
 To: linux-kernel@vger.kernel.org,
 	stable@vger.kernel.org
-Subject: [PATCH AUTOSEL 5.4 07/78] iommu/vt-d: Fix mm reference leak
-Date: Sat, 18 Apr 2020 10:39:36 -0400
-Message-Id: <20200418144047.9013-7-sashal@kernel.org>
+Subject: [PATCH AUTOSEL 5.4 22/78] dma-direct: fix data truncation in
+ dma_direct_get_required_mask()
+Date: Sat, 18 Apr 2020 10:39:51 -0400
+Message-Id: <20200418144047.9013-22-sashal@kernel.org>
 X-Mailer: git-send-email 2.20.1
 In-Reply-To: <20200418144047.9013-1-sashal@kernel.org>
 References: <20200418144047.9013-1-sashal@kernel.org>
@@ -72,7 +73,7 @@ MIME-Version: 1.0
 X-stable: review
 X-Patchwork-Hint: Ignore
 Cc: Sasha Levin <sashal@kernel.org>, iommu@lists.linux-foundation.org,
- Joerg Roedel <jroedel@suse.de>
+ Christoph Hellwig <hch@lst.de>, Kishon Vijay Abraham I <kishon@ti.com>
 X-BeenThere: iommu@lists.linux-foundation.org
 X-Mailman-Version: 2.1.15
 Precedence: list
@@ -90,45 +91,39 @@ Content-Transfer-Encoding: 7bit
 Errors-To: iommu-bounces@lists.linux-foundation.org
 Sender: "iommu" <iommu-bounces@lists.linux-foundation.org>
 
-From: Jacob Pan <jacob.jun.pan@linux.intel.com>
+From: Kishon Vijay Abraham I <kishon@ti.com>
 
-[ Upstream commit 902baf61adf6b187f0a6b789e70d788ea71ff5bc ]
+[ Upstream commit cdcda0d1f8f4ab84efe7cd9921c98364398aefd7 ]
 
-Move canonical address check before mmget_not_zero() to avoid mm
-reference leak.
+The upper 32-bit physical address gets truncated inadvertently
+when dma_direct_get_required_mask() invokes phys_to_dma_direct().
+This results in dma_addressing_limited() return incorrect value
+when used in platforms with LPAE enabled.
+Fix it here by explicitly type casting 'max_pfn' to phys_addr_t
+in order to prevent overflow of intermediate value while evaluating
+'(max_pfn - 1) << PAGE_SHIFT'.
 
-Fixes: 9d8c3af31607 ("iommu/vt-d: IOMMU Page Request needs to check if address is canonical.")
-Signed-off-by: Jacob Pan <jacob.jun.pan@linux.intel.com>
-Acked-by: Lu Baolu <baolu.lu@linux.intel.com>
-Signed-off-by: Joerg Roedel <jroedel@suse.de>
+Signed-off-by: Kishon Vijay Abraham I <kishon@ti.com>
+Signed-off-by: Christoph Hellwig <hch@lst.de>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/iommu/intel-svm.c | 7 ++++---
- 1 file changed, 4 insertions(+), 3 deletions(-)
+ kernel/dma/direct.c | 3 ++-
+ 1 file changed, 2 insertions(+), 1 deletion(-)
 
-diff --git a/drivers/iommu/intel-svm.c b/drivers/iommu/intel-svm.c
-index 5313d043a6cf2..1d3816cd65d57 100644
---- a/drivers/iommu/intel-svm.c
-+++ b/drivers/iommu/intel-svm.c
-@@ -583,14 +583,15 @@ static irqreturn_t prq_event_thread(int irq, void *d)
- 		 * any faults on kernel addresses. */
- 		if (!svm->mm)
- 			goto bad_req;
--		/* If the mm is already defunct, don't handle faults. */
--		if (!mmget_not_zero(svm->mm))
--			goto bad_req;
+diff --git a/kernel/dma/direct.c b/kernel/dma/direct.c
+index 867fd72cb2605..0a093a675b632 100644
+--- a/kernel/dma/direct.c
++++ b/kernel/dma/direct.c
+@@ -45,7 +45,8 @@ static inline dma_addr_t phys_to_dma_direct(struct device *dev,
  
- 		/* If address is not canonical, return invalid response */
- 		if (!is_canonical_address(address))
- 			goto bad_req;
+ u64 dma_direct_get_required_mask(struct device *dev)
+ {
+-	u64 max_dma = phys_to_dma_direct(dev, (max_pfn - 1) << PAGE_SHIFT);
++	phys_addr_t phys = (phys_addr_t)(max_pfn - 1) << PAGE_SHIFT;
++	u64 max_dma = phys_to_dma_direct(dev, phys);
  
-+		/* If the mm is already defunct, don't handle faults. */
-+		if (!mmget_not_zero(svm->mm))
-+			goto bad_req;
-+
- 		down_read(&svm->mm->mmap_sem);
- 		vma = find_extend_vma(svm->mm, address);
- 		if (!vma || address < vma->vm_start)
+ 	return (1ULL << (fls64(max_dma) - 1)) * 2 - 1;
+ }
 -- 
 2.20.1
 
