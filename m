@@ -6,65 +6,65 @@ X-Spam-Status: No, score=-9.8 required=3.0 tests=DKIM_INVALID,DKIM_SIGNED,
 	INCLUDES_PATCH,MAILING_LIST_MULTI,SIGNED_OFF_BY,SPF_HELO_NONE,SPF_PASS,
 	URIBL_BLOCKED,USER_AGENT_GIT autolearn=ham autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 6CA2AC38A2F
-	for <iommu@archiver.kernel.org>; Sat, 18 Apr 2020 13:48:26 +0000 (UTC)
-Received: from silver.osuosl.org (smtp3.osuosl.org [140.211.166.136])
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 0F90CC3A5A9
+	for <iommu@archiver.kernel.org>; Sat, 18 Apr 2020 13:48:27 +0000 (UTC)
+Received: from whitealder.osuosl.org (smtp1.osuosl.org [140.211.166.138])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by mail.kernel.org (Postfix) with ESMTPS id 43F152220A
+	by mail.kernel.org (Postfix) with ESMTPS id DA49622202
 	for <iommu@archiver.kernel.org>; Sat, 18 Apr 2020 13:48:26 +0000 (UTC)
 Authentication-Results: mail.kernel.org;
-	dkim=fail reason="signature verification failed" (1024-bit key) header.d=kernel.org header.i=@kernel.org header.b="wB7ijBeH"
-DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 43F152220A
+	dkim=fail reason="signature verification failed" (1024-bit key) header.d=kernel.org header.i=@kernel.org header.b="BYwV4lkO"
+DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org DA49622202
 Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=kernel.org
 Authentication-Results: mail.kernel.org; spf=pass smtp.mailfrom=iommu-bounces@lists.linux-foundation.org
 Received: from localhost (localhost [127.0.0.1])
-	by silver.osuosl.org (Postfix) with ESMTP id 182E920409;
+	by whitealder.osuosl.org (Postfix) with ESMTP id B5FD8876C9;
 	Sat, 18 Apr 2020 13:48:26 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from silver.osuosl.org ([127.0.0.1])
+Received: from whitealder.osuosl.org ([127.0.0.1])
 	by localhost (.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
-	with ESMTP id d-Futlg1KfAV; Sat, 18 Apr 2020 13:48:25 +0000 (UTC)
+	with ESMTP id 0zMzQzu4h2Op; Sat, 18 Apr 2020 13:48:26 +0000 (UTC)
 Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [140.211.9.56])
-	by silver.osuosl.org (Postfix) with ESMTP id 284BB20031;
-	Sat, 18 Apr 2020 13:48:25 +0000 (UTC)
+	by whitealder.osuosl.org (Postfix) with ESMTP id 58696876BB;
+	Sat, 18 Apr 2020 13:48:26 +0000 (UTC)
 Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
-	by lists.linuxfoundation.org (Postfix) with ESMTP id 1A6A1C089F;
-	Sat, 18 Apr 2020 13:48:25 +0000 (UTC)
-Received: from silver.osuosl.org (smtp3.osuosl.org [140.211.166.136])
- by lists.linuxfoundation.org (Postfix) with ESMTP id C5965C0172
- for <iommu@lists.linux-foundation.org>; Sat, 18 Apr 2020 13:48:23 +0000 (UTC)
+	by lists.linuxfoundation.org (Postfix) with ESMTP id 52DC2C089F;
+	Sat, 18 Apr 2020 13:48:26 +0000 (UTC)
+Received: from hemlock.osuosl.org (smtp2.osuosl.org [140.211.166.133])
+ by lists.linuxfoundation.org (Postfix) with ESMTP id 50D1BC089F
+ for <iommu@lists.linux-foundation.org>; Sat, 18 Apr 2020 13:48:25 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
- by silver.osuosl.org (Postfix) with ESMTP id B1FA8203DC
- for <iommu@lists.linux-foundation.org>; Sat, 18 Apr 2020 13:48:23 +0000 (UTC)
+ by hemlock.osuosl.org (Postfix) with ESMTP id 3AF2E8816B
+ for <iommu@lists.linux-foundation.org>; Sat, 18 Apr 2020 13:48:25 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from silver.osuosl.org ([127.0.0.1])
+Received: from hemlock.osuosl.org ([127.0.0.1])
  by localhost (.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
- with ESMTP id tnXCi5zHo6Gd for <iommu@lists.linux-foundation.org>;
- Sat, 18 Apr 2020 13:48:22 +0000 (UTC)
+ with ESMTP id NfKbZ2ecnGP1 for <iommu@lists.linux-foundation.org>;
+ Sat, 18 Apr 2020 13:48:24 +0000 (UTC)
 X-Greylist: domain auto-whitelisted by SQLgrey-1.7.6
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
- by silver.osuosl.org (Postfix) with ESMTPS id 2B9B920031
- for <iommu@lists.linux-foundation.org>; Sat, 18 Apr 2020 13:48:22 +0000 (UTC)
+ by hemlock.osuosl.org (Postfix) with ESMTPS id 860E288167
+ for <iommu@lists.linux-foundation.org>; Sat, 18 Apr 2020 13:48:24 +0000 (UTC)
 Received: from sasha-vm.mshome.net (c-73-47-72-35.hsd1.nh.comcast.net
  [73.47.72.35])
  (using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
  (No client certificate requested)
- by mail.kernel.org (Postfix) with ESMTPSA id 187242054F;
- Sat, 18 Apr 2020 13:48:21 +0000 (UTC)
+ by mail.kernel.org (Postfix) with ESMTPSA id 9261E21BE5;
+ Sat, 18 Apr 2020 13:48:23 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
- s=default; t=1587217701;
- bh=Nl8580RGoaAQ7Ng7SmAE+bVCFZ+t8ZBxjYRq/AvSuTU=;
+ s=default; t=1587217704;
+ bh=Lue7JNmC6TQZFYuMx+fDmPgbAJvMm8ETEtKpp+9SUnw=;
  h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
- b=wB7ijBeHJHQ3zhXbBb+Daq24tHIkYMEtvPtSnRXVhyG4G6KJYO+zFuJZCe5SYuVBf
- pKDHyitzq/R9CxEsIdVehUMjC0jmfXk+aksJ+XswbtX9KRygHrtmzAquc+85Mp6N1r
- 6Lc3Ye2/u8Xg1TqunAP1dHGrEzKo7M3DnWAc+cMs=
+ b=BYwV4lkOGbzCqxmIaDxCTF7DZJPpaAPOvogxa8FhV1+0HCKkMFIoA0NXLDWFFROd6
+ tiFxF9KhwNc3H/TMBV9U88lioxTAE6qpzZAk4lbddlxZHckxEEkLc8mlpwlzX3gfbA
+ eIEVmqtnjSi78XrxxqJmp8CLd7nkoGJNEm3dD7g0=
 From: Sasha Levin <sashal@kernel.org>
 To: linux-kernel@vger.kernel.org,
 	stable@vger.kernel.org
-Subject: [PATCH AUTOSEL 5.6 05/73] iommu/vt-d: Fix page request descriptor size
-Date: Sat, 18 Apr 2020 09:47:07 -0400
-Message-Id: <20200418134815.6519-5-sashal@kernel.org>
+Subject: [PATCH AUTOSEL 5.6 07/73] iommu/vt-d: Fix mm reference leak
+Date: Sat, 18 Apr 2020 09:47:09 -0400
+Message-Id: <20200418134815.6519-7-sashal@kernel.org>
 X-Mailer: git-send-email 2.20.1
 In-Reply-To: <20200418134815.6519-1-sashal@kernel.org>
 References: <20200418134815.6519-1-sashal@kernel.org>
@@ -92,36 +92,43 @@ Sender: "iommu" <iommu-bounces@lists.linux-foundation.org>
 
 From: Jacob Pan <jacob.jun.pan@linux.intel.com>
 
-[ Upstream commit 52355fb1919ef7ed9a38e0f3de6e928de1f57217 ]
+[ Upstream commit 902baf61adf6b187f0a6b789e70d788ea71ff5bc ]
 
-Intel VT-d might support PRS (Page Reqest Support) when it's
-running in the scalable mode. Each page request descriptor
-occupies 32 bytes and is 32-bytes aligned. The page request
-descriptor offset mask should be 32-bytes aligned.
+Move canonical address check before mmget_not_zero() to avoid mm
+reference leak.
 
-Fixes: 5b438f4ba315d ("iommu/vt-d: Support page request in scalable mode")
-Signed-off-by: Lu Baolu <baolu.lu@linux.intel.com>
-Signed-off-by: Liu Yi L <yi.l.liu@intel.com>
+Fixes: 9d8c3af31607 ("iommu/vt-d: IOMMU Page Request needs to check if address is canonical.")
 Signed-off-by: Jacob Pan <jacob.jun.pan@linux.intel.com>
+Acked-by: Lu Baolu <baolu.lu@linux.intel.com>
 Signed-off-by: Joerg Roedel <jroedel@suse.de>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/iommu/intel-svm.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+ drivers/iommu/intel-svm.c | 7 ++++---
+ 1 file changed, 4 insertions(+), 3 deletions(-)
 
 diff --git a/drivers/iommu/intel-svm.c b/drivers/iommu/intel-svm.c
-index d7f2a53589002..edac769fc03d8 100644
+index edac769fc03d8..2998418f0a383 100644
 --- a/drivers/iommu/intel-svm.c
 +++ b/drivers/iommu/intel-svm.c
-@@ -531,7 +531,7 @@ struct page_req_dsc {
- 	u64 priv_data[2];
- };
+@@ -611,14 +611,15 @@ static irqreturn_t prq_event_thread(int irq, void *d)
+ 		 * any faults on kernel addresses. */
+ 		if (!svm->mm)
+ 			goto bad_req;
+-		/* If the mm is already defunct, don't handle faults. */
+-		if (!mmget_not_zero(svm->mm))
+-			goto bad_req;
  
--#define PRQ_RING_MASK ((0x1000 << PRQ_ORDER) - 0x10)
-+#define PRQ_RING_MASK	((0x1000 << PRQ_ORDER) - 0x20)
+ 		/* If address is not canonical, return invalid response */
+ 		if (!is_canonical_address(address))
+ 			goto bad_req;
  
- static bool access_error(struct vm_area_struct *vma, struct page_req_dsc *req)
- {
++		/* If the mm is already defunct, don't handle faults. */
++		if (!mmget_not_zero(svm->mm))
++			goto bad_req;
++
+ 		down_read(&svm->mm->mmap_sem);
+ 		vma = find_extend_vma(svm->mm, address);
+ 		if (!vma || address < vma->vm_start)
 -- 
 2.20.1
 
