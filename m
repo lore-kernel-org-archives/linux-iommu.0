@@ -6,66 +6,66 @@ X-Spam-Status: No, score=-9.8 required=3.0 tests=DKIM_INVALID,DKIM_SIGNED,
 	INCLUDES_PATCH,MAILING_LIST_MULTI,SIGNED_OFF_BY,SPF_HELO_NONE,SPF_PASS,
 	URIBL_BLOCKED,USER_AGENT_GIT autolearn=ham autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 39061C3A5A0
-	for <iommu@archiver.kernel.org>; Sat, 18 Apr 2020 14:41:18 +0000 (UTC)
-Received: from fraxinus.osuosl.org (smtp4.osuosl.org [140.211.166.137])
+	by smtp.lore.kernel.org (Postfix) with ESMTP id D4D09C38A29
+	for <iommu@archiver.kernel.org>; Sat, 18 Apr 2020 14:41:19 +0000 (UTC)
+Received: from silver.osuosl.org (smtp3.osuosl.org [140.211.166.136])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by mail.kernel.org (Postfix) with ESMTPS id 0CB7E22260
-	for <iommu@archiver.kernel.org>; Sat, 18 Apr 2020 14:41:17 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTPS id AA84022244
+	for <iommu@archiver.kernel.org>; Sat, 18 Apr 2020 14:41:19 +0000 (UTC)
 Authentication-Results: mail.kernel.org;
-	dkim=fail reason="signature verification failed" (1024-bit key) header.d=kernel.org header.i=@kernel.org header.b="oblOSCOu"
-DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 0CB7E22260
+	dkim=fail reason="signature verification failed" (1024-bit key) header.d=kernel.org header.i=@kernel.org header.b="YoNOiu+x"
+DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org AA84022244
 Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=kernel.org
 Authentication-Results: mail.kernel.org; spf=pass smtp.mailfrom=iommu-bounces@lists.linux-foundation.org
 Received: from localhost (localhost [127.0.0.1])
-	by fraxinus.osuosl.org (Postfix) with ESMTP id DF82E84547;
-	Sat, 18 Apr 2020 14:41:17 +0000 (UTC)
+	by silver.osuosl.org (Postfix) with ESMTP id 850A42040A;
+	Sat, 18 Apr 2020 14:41:19 +0000 (UTC)
+X-Virus-Scanned: amavisd-new at osuosl.org
+Received: from silver.osuosl.org ([127.0.0.1])
+	by localhost (.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
+	with ESMTP id qfhb82B4Fiz4; Sat, 18 Apr 2020 14:41:19 +0000 (UTC)
+Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [140.211.9.56])
+	by silver.osuosl.org (Postfix) with ESMTP id F36D1203E6;
+	Sat, 18 Apr 2020 14:41:18 +0000 (UTC)
+Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
+	by lists.linuxfoundation.org (Postfix) with ESMTP id CAB6CC1D7E;
+	Sat, 18 Apr 2020 14:41:18 +0000 (UTC)
+Received: from fraxinus.osuosl.org (smtp4.osuosl.org [140.211.166.137])
+ by lists.linuxfoundation.org (Postfix) with ESMTP id A480DC0172
+ for <iommu@lists.linux-foundation.org>; Sat, 18 Apr 2020 14:41:16 +0000 (UTC)
+Received: from localhost (localhost [127.0.0.1])
+ by fraxinus.osuosl.org (Postfix) with ESMTP id 929F9844C6
+ for <iommu@lists.linux-foundation.org>; Sat, 18 Apr 2020 14:41:16 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
 Received: from fraxinus.osuosl.org ([127.0.0.1])
-	by localhost (.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
-	with ESMTP id 2QCgYgVvZeg0; Sat, 18 Apr 2020 14:41:17 +0000 (UTC)
-Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [140.211.9.56])
-	by fraxinus.osuosl.org (Postfix) with ESMTP id 7D72884410;
-	Sat, 18 Apr 2020 14:41:17 +0000 (UTC)
-Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
-	by lists.linuxfoundation.org (Postfix) with ESMTP id 6A201C1D7E;
-	Sat, 18 Apr 2020 14:41:17 +0000 (UTC)
-Received: from whitealder.osuosl.org (smtp1.osuosl.org [140.211.166.138])
- by lists.linuxfoundation.org (Postfix) with ESMTP id 47D20C0172
- for <iommu@lists.linux-foundation.org>; Sat, 18 Apr 2020 14:41:15 +0000 (UTC)
-Received: from localhost (localhost [127.0.0.1])
- by whitealder.osuosl.org (Postfix) with ESMTP id 32548876FB
- for <iommu@lists.linux-foundation.org>; Sat, 18 Apr 2020 14:41:15 +0000 (UTC)
-X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from whitealder.osuosl.org ([127.0.0.1])
  by localhost (.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
- with ESMTP id yickerK058X9 for <iommu@lists.linux-foundation.org>;
- Sat, 18 Apr 2020 14:41:14 +0000 (UTC)
+ with ESMTP id aQgyIxz2qBjE for <iommu@lists.linux-foundation.org>;
+ Sat, 18 Apr 2020 14:41:15 +0000 (UTC)
 X-Greylist: domain auto-whitelisted by SQLgrey-1.7.6
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
- by whitealder.osuosl.org (Postfix) with ESMTPS id B9BF886E2A
- for <iommu@lists.linux-foundation.org>; Sat, 18 Apr 2020 14:41:14 +0000 (UTC)
+ by fraxinus.osuosl.org (Postfix) with ESMTPS id CDE5C84410
+ for <iommu@lists.linux-foundation.org>; Sat, 18 Apr 2020 14:41:15 +0000 (UTC)
 Received: from sasha-vm.mshome.net (c-73-47-72-35.hsd1.nh.comcast.net
  [73.47.72.35])
  (using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
  (No client certificate requested)
- by mail.kernel.org (Postfix) with ESMTPSA id ED05122253;
- Sat, 18 Apr 2020 14:41:13 +0000 (UTC)
+ by mail.kernel.org (Postfix) with ESMTPSA id 0A39722250;
+ Sat, 18 Apr 2020 14:41:14 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
- s=default; t=1587220874;
- bh=2TFAKaSdT+EMO+YKZ/LNnCEY582EwDyXXk3/bqOThdo=;
+ s=default; t=1587220875;
+ bh=soZ4/B2BoxZUyjWKiWy4WR/R3mJC1j2t+0ybuaAASdM=;
  h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
- b=oblOSCOuOxuMFlmFnqdV36GerDpyP10qrKLgpf2ipE6XNowKCpMbTZa+TcksetwTJ
- DaMlM31k3RThyEffc9UowUZnCRPC9GW97vbm9PMLGGBXCeWaILHn4aGw0pEJ3dpM9v
- BfZCtQv0jZj0/QwwxPzzUk6Dy7DkfMT1gKc7uBDw=
+ b=YoNOiu+xACGwklHt9oOpElAaxaVxOBXUVnu+JpDOBmtAHWL6nLH/PIr29JO30tjZw
+ 8/YnwzM0DykQV+o3pYXfpFLvUcRogePlBfCIQtfzsPJ7kcFqgXJJJGW29264DBKjKo
+ QGPepkdap2Sz17ylOtPWvvrNARQIZey8251rjRWk=
 From: Sasha Levin <sashal@kernel.org>
 To: linux-kernel@vger.kernel.org,
 	stable@vger.kernel.org
-Subject: [PATCH AUTOSEL 5.4 22/78] dma-direct: fix data truncation in
- dma_direct_get_required_mask()
-Date: Sat, 18 Apr 2020 10:39:51 -0400
-Message-Id: <20200418144047.9013-22-sashal@kernel.org>
+Subject: [PATCH AUTOSEL 5.4 23/78] dma-debug: fix displaying of dma allocation
+ type
+Date: Sat, 18 Apr 2020 10:39:52 -0400
+Message-Id: <20200418144047.9013-23-sashal@kernel.org>
 X-Mailer: git-send-email 2.20.1
 In-Reply-To: <20200418144047.9013-1-sashal@kernel.org>
 References: <20200418144047.9013-1-sashal@kernel.org>
@@ -73,7 +73,7 @@ MIME-Version: 1.0
 X-stable: review
 X-Patchwork-Hint: Ignore
 Cc: Sasha Levin <sashal@kernel.org>, iommu@lists.linux-foundation.org,
- Christoph Hellwig <hch@lst.de>, Kishon Vijay Abraham I <kishon@ti.com>
+ Grygorii Strashko <grygorii.strashko@ti.com>, Christoph Hellwig <hch@lst.de>
 X-BeenThere: iommu@lists.linux-foundation.org
 X-Mailman-Version: 2.1.15
 Precedence: list
@@ -91,39 +91,53 @@ Content-Transfer-Encoding: 7bit
 Errors-To: iommu-bounces@lists.linux-foundation.org
 Sender: "iommu" <iommu-bounces@lists.linux-foundation.org>
 
-From: Kishon Vijay Abraham I <kishon@ti.com>
+From: Grygorii Strashko <grygorii.strashko@ti.com>
 
-[ Upstream commit cdcda0d1f8f4ab84efe7cd9921c98364398aefd7 ]
+[ Upstream commit 9bb50ed7470944238ec8e30a94ef096caf9056ee ]
 
-The upper 32-bit physical address gets truncated inadvertently
-when dma_direct_get_required_mask() invokes phys_to_dma_direct().
-This results in dma_addressing_limited() return incorrect value
-when used in platforms with LPAE enabled.
-Fix it here by explicitly type casting 'max_pfn' to phys_addr_t
-in order to prevent overflow of intermediate value while evaluating
-'(max_pfn - 1) << PAGE_SHIFT'.
+The commit 2e05ea5cdc1a ("dma-mapping: implement dma_map_single_attrs using
+dma_map_page_attrs") removed "dma_debug_page" enum, but missed to update
+type2name string table. This causes incorrect displaying of dma allocation
+type.
+Fix it by removing "page" string from type2name string table and switch to
+use named initializers.
 
-Signed-off-by: Kishon Vijay Abraham I <kishon@ti.com>
+Before (dma_alloc_coherent()):
+k3-ringacc 4b800000.ringacc: scather-gather idx 2208 P=d1140000 N=d114 D=d1140000 L=40 DMA_BIDIRECTIONAL dma map error check not applicable
+k3-ringacc 4b800000.ringacc: scather-gather idx 2216 P=d1150000 N=d115 D=d1150000 L=40 DMA_BIDIRECTIONAL dma map error check not applicable
+
+After:
+k3-ringacc 4b800000.ringacc: coherent idx 2208 P=d1140000 N=d114 D=d1140000 L=40 DMA_BIDIRECTIONAL dma map error check not applicable
+k3-ringacc 4b800000.ringacc: coherent idx 2216 P=d1150000 N=d115 D=d1150000 L=40 DMA_BIDIRECTIONAL dma map error check not applicable
+
+Fixes: 2e05ea5cdc1a ("dma-mapping: implement dma_map_single_attrs using dma_map_page_attrs")
+Signed-off-by: Grygorii Strashko <grygorii.strashko@ti.com>
 Signed-off-by: Christoph Hellwig <hch@lst.de>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- kernel/dma/direct.c | 3 ++-
- 1 file changed, 2 insertions(+), 1 deletion(-)
+ kernel/dma/debug.c | 9 ++++++---
+ 1 file changed, 6 insertions(+), 3 deletions(-)
 
-diff --git a/kernel/dma/direct.c b/kernel/dma/direct.c
-index 867fd72cb2605..0a093a675b632 100644
---- a/kernel/dma/direct.c
-+++ b/kernel/dma/direct.c
-@@ -45,7 +45,8 @@ static inline dma_addr_t phys_to_dma_direct(struct device *dev,
+diff --git a/kernel/dma/debug.c b/kernel/dma/debug.c
+index 4ad74f5987ea9..cb6425e52bf7a 100644
+--- a/kernel/dma/debug.c
++++ b/kernel/dma/debug.c
+@@ -137,9 +137,12 @@ static const char *const maperr2str[] = {
+ 	[MAP_ERR_CHECKED] = "dma map error checked",
+ };
  
- u64 dma_direct_get_required_mask(struct device *dev)
- {
--	u64 max_dma = phys_to_dma_direct(dev, (max_pfn - 1) << PAGE_SHIFT);
-+	phys_addr_t phys = (phys_addr_t)(max_pfn - 1) << PAGE_SHIFT;
-+	u64 max_dma = phys_to_dma_direct(dev, phys);
+-static const char *type2name[5] = { "single", "page",
+-				    "scather-gather", "coherent",
+-				    "resource" };
++static const char *type2name[] = {
++	[dma_debug_single] = "single",
++	[dma_debug_sg] = "scather-gather",
++	[dma_debug_coherent] = "coherent",
++	[dma_debug_resource] = "resource",
++};
  
- 	return (1ULL << (fls64(max_dma) - 1)) * 2 - 1;
- }
+ static const char *dir2name[4] = { "DMA_BIDIRECTIONAL", "DMA_TO_DEVICE",
+ 				   "DMA_FROM_DEVICE", "DMA_NONE" };
 -- 
 2.20.1
 
