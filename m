@@ -2,78 +2,98 @@ Return-Path: <SRS0=tixU=6C=lists.linux-foundation.org=iommu-bounces@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-9.8 required=3.0 tests=DKIM_INVALID,DKIM_SIGNED,
-	INCLUDES_PATCH,MAILING_LIST_MULTI,SIGNED_OFF_BY,SPF_HELO_NONE,SPF_PASS,
-	URIBL_BLOCKED,USER_AGENT_GIT autolearn=ham autolearn_force=no version=3.4.0
+X-Spam-Status: No, score=-8.0 required=3.0 tests=DKIM_INVALID,DKIM_SIGNED,
+	HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_PATCH,MAILING_LIST_MULTI,SIGNED_OFF_BY,
+	SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED,USER_AGENT_SANE_1 autolearn=unavailable
+	autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 51CABC3A5A9
-	for <iommu@archiver.kernel.org>; Sat, 18 Apr 2020 14:44:57 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id E9F5FC38A2F
+	for <iommu@archiver.kernel.org>; Sat, 18 Apr 2020 15:14:22 +0000 (UTC)
 Received: from fraxinus.osuosl.org (smtp4.osuosl.org [140.211.166.137])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by mail.kernel.org (Postfix) with ESMTPS id 2597421D6C
-	for <iommu@archiver.kernel.org>; Sat, 18 Apr 2020 14:44:57 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTPS id AC0672072B
+	for <iommu@archiver.kernel.org>; Sat, 18 Apr 2020 15:14:22 +0000 (UTC)
 Authentication-Results: mail.kernel.org;
-	dkim=fail reason="signature verification failed" (1024-bit key) header.d=kernel.org header.i=@kernel.org header.b="Nc6rq8nG"
-DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 2597421D6C
-Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=kernel.org
+	dkim=fail reason="signature verification failed" (1024-bit key) header.d=c-s.fr header.i=@c-s.fr header.b="Ys2kOrQf"
+DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org AC0672072B
+Authentication-Results: mail.kernel.org; dmarc=none (p=none dis=none) header.from=c-s.fr
 Authentication-Results: mail.kernel.org; spf=pass smtp.mailfrom=iommu-bounces@lists.linux-foundation.org
 Received: from localhost (localhost [127.0.0.1])
-	by fraxinus.osuosl.org (Postfix) with ESMTP id 081548654C;
-	Sat, 18 Apr 2020 14:44:57 +0000 (UTC)
+	by fraxinus.osuosl.org (Postfix) with ESMTP id 72DC386469;
+	Sat, 18 Apr 2020 15:14:22 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
 Received: from fraxinus.osuosl.org ([127.0.0.1])
 	by localhost (.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
-	with ESMTP id a9nor8Fq_dLK; Sat, 18 Apr 2020 14:44:56 +0000 (UTC)
+	with ESMTP id kyrrdkRQwFCm; Sat, 18 Apr 2020 15:14:21 +0000 (UTC)
 Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [140.211.9.56])
-	by fraxinus.osuosl.org (Postfix) with ESMTP id 8693286508;
-	Sat, 18 Apr 2020 14:44:56 +0000 (UTC)
+	by fraxinus.osuosl.org (Postfix) with ESMTP id B4626867C6;
+	Sat, 18 Apr 2020 15:14:20 +0000 (UTC)
 Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
-	by lists.linuxfoundation.org (Postfix) with ESMTP id 726FEC1D7E;
-	Sat, 18 Apr 2020 14:44:56 +0000 (UTC)
-Received: from hemlock.osuosl.org (smtp2.osuosl.org [140.211.166.133])
- by lists.linuxfoundation.org (Postfix) with ESMTP id 47341C0172
- for <iommu@lists.linux-foundation.org>; Sat, 18 Apr 2020 14:44:55 +0000 (UTC)
+	by lists.linuxfoundation.org (Postfix) with ESMTP id 897D8C0172;
+	Sat, 18 Apr 2020 15:14:20 +0000 (UTC)
+Received: from whitealder.osuosl.org (smtp1.osuosl.org [140.211.166.138])
+ by lists.linuxfoundation.org (Postfix) with ESMTP id 7495DC0172;
+ Sat, 18 Apr 2020 15:14:18 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
- by hemlock.osuosl.org (Postfix) with ESMTP id 43B0D8824B
- for <iommu@lists.linux-foundation.org>; Sat, 18 Apr 2020 14:44:55 +0000 (UTC)
+ by whitealder.osuosl.org (Postfix) with ESMTP id 62EA5876A0;
+ Sat, 18 Apr 2020 15:14:18 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from hemlock.osuosl.org ([127.0.0.1])
+Received: from whitealder.osuosl.org ([127.0.0.1])
  by localhost (.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
- with ESMTP id 3b5V2dMypuWP for <iommu@lists.linux-foundation.org>;
- Sat, 18 Apr 2020 14:44:54 +0000 (UTC)
-X-Greylist: domain auto-whitelisted by SQLgrey-1.7.6
-Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
- by hemlock.osuosl.org (Postfix) with ESMTPS id D195388246
- for <iommu@lists.linux-foundation.org>; Sat, 18 Apr 2020 14:44:54 +0000 (UTC)
-Received: from sasha-vm.mshome.net (c-73-47-72-35.hsd1.nh.comcast.net
- [73.47.72.35])
- (using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
- (No client certificate requested)
- by mail.kernel.org (Postfix) with ESMTPSA id ECADA21BE5;
- Sat, 18 Apr 2020 14:44:53 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
- s=default; t=1587221094;
- bh=v3+EC8N0fhkpUc99kbcDjUxlXl49k6/JZtXk0pRDeqg=;
- h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
- b=Nc6rq8nGMKUxudM7Ct0ujp5RaEtN+xGKZrzg25AcsdaDrtawo6Ci9hEKMJrsDz9vF
- LM7NmfzL4wWgpXir8J7bluRGGqs05cQtvdaU1RFN3lVqFxeIUoOe09ySkE2KpiTlSc
- vYBsPw/jZwIFhSvLglypflWWz9ywbwQBgHePK3KM=
-From: Sasha Levin <sashal@kernel.org>
-To: linux-kernel@vger.kernel.org,
-	stable@vger.kernel.org
-Subject: [PATCH AUTOSEL 4.4 14/19] iommu/vt-d: Silence RCU-list debugging
- warning in dmar_find_atsr()
-Date: Sat, 18 Apr 2020 10:44:31 -0400
-Message-Id: <20200418144436.10818-14-sashal@kernel.org>
-X-Mailer: git-send-email 2.20.1
-In-Reply-To: <20200418144436.10818-1-sashal@kernel.org>
-References: <20200418144436.10818-1-sashal@kernel.org>
+ with ESMTP id IVFCbOgVAoiJ; Sat, 18 Apr 2020 15:14:17 +0000 (UTC)
+X-Greylist: from auto-whitelisted by SQLgrey-1.7.6
+X-Greylist: from auto-whitelisted by SQLgrey-1.7.6
+Received: from pegase1.c-s.fr (pegase1.c-s.fr [93.17.236.30])
+ by whitealder.osuosl.org (Postfix) with ESMTPS id 02404862DE;
+ Sat, 18 Apr 2020 15:14:17 +0000 (UTC)
+Received: from localhost (mailhub1-int [192.168.12.234])
+ by localhost (Postfix) with ESMTP id 494GhN3XV3zB09Zc;
+ Sat, 18 Apr 2020 17:14:12 +0200 (CEST)
+Authentication-Results: localhost; dkim=pass
+ reason="1024-bit key; insecure key"
+ header.d=c-s.fr header.i=@c-s.fr header.b=Ys2kOrQf; dkim-adsp=pass;
+ dkim-atps=neutral
+X-Virus-Scanned: Debian amavisd-new at c-s.fr
+Received: from pegase1.c-s.fr ([192.168.12.234])
+ by localhost (pegase1.c-s.fr [192.168.12.234]) (amavisd-new, port 10024)
+ with ESMTP id 2lcJkaGzkoJJ; Sat, 18 Apr 2020 17:14:12 +0200 (CEST)
+Received: from messagerie.si.c-s.fr (messagerie.si.c-s.fr [192.168.25.192])
+ by pegase1.c-s.fr (Postfix) with ESMTP id 494GhN2SjkzB09Zb;
+ Sat, 18 Apr 2020 17:14:12 +0200 (CEST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=c-s.fr; s=mail;
+ t=1587222852; bh=gkdO6wXUCMcpz7NxpipTTUJqjJLTk5RmhAdRmmr2lPk=;
+ h=Subject:To:Cc:References:From:Date:In-Reply-To:From;
+ b=Ys2kOrQf8+IsQpw3uLxwRHJvEe2aifLm5D4UpWeMK0kDv1AR/2xUb1tP1bpBnc6tU
+ /FXFqj/0reLL0AhKcAmepR4fiN+Nst88VgI4jysw3UkXqTDfBFUmEuw5zgvR7IUyfx
+ GD8U+NDoD3gPnh1LMFlS4lGOU/NlhxN/aglDeXYA=
+Received: from localhost (localhost [127.0.0.1])
+ by messagerie.si.c-s.fr (Postfix) with ESMTP id 129F48BBCF;
+ Sat, 18 Apr 2020 17:14:14 +0200 (CEST)
+X-Virus-Scanned: amavisd-new at c-s.fr
+Received: from messagerie.si.c-s.fr ([127.0.0.1])
+ by localhost (messagerie.si.c-s.fr [127.0.0.1]) (amavisd-new, port 10023)
+ with ESMTP id CTX-Cucux1p0; Sat, 18 Apr 2020 17:14:14 +0200 (CEST)
+Received: from pc16570vm.idsi0.si.c-s.fr (unknown [192.168.4.90])
+ by messagerie.si.c-s.fr (Postfix) with ESMTP id 5D8FE8B75E;
+ Sat, 18 Apr 2020 17:14:13 +0200 (CEST)
+Subject: Re: [PATCH] iommu: spapr_tce: Disable compile testing to fix build on
+ book3s_32 config
+To: Krzysztof Kozlowski <krzk@kernel.org>, Joerg Roedel <joro@8bytes.org>,
+ iommu@lists.linux-foundation.org, linux-kernel@vger.kernel.org
+References: <20200414142630.21153-1-krzk@kernel.org>
+From: Christophe Leroy <christophe.leroy@c-s.fr>
+Message-ID: <a99ee461-664c-51ae-cb3a-cf5d87048d86@c-s.fr>
+Date: Sat, 18 Apr 2020 15:14:02 +0000
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:52.0) Gecko/20100101
+ Thunderbird/52.7.0
 MIME-Version: 1.0
-X-stable: review
-X-Patchwork-Hint: Ignore
-Cc: Sasha Levin <sashal@kernel.org>, iommu@lists.linux-foundation.org,
- Joerg Roedel <jroedel@suse.de>
+In-Reply-To: <20200414142630.21153-1-krzk@kernel.org>
+Content-Language: en-US
+Cc: linuxppc-dev@lists.ozlabs.org, netdev@vger.kernel.org,
+ Geert Uytterhoeven <geert@linux-m68k.org>,
+ Michael Ellerman <mpe@ellerman.id.au>,
+ virtualization@lists.linux-foundation.org
 X-BeenThere: iommu@lists.linux-foundation.org
 X-Mailman-Version: 2.1.15
 Precedence: list
@@ -86,61 +106,78 @@ List-Post: <mailto:iommu@lists.linux-foundation.org>
 List-Help: <mailto:iommu-request@lists.linux-foundation.org?subject=help>
 List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
  <mailto:iommu-request@lists.linux-foundation.org?subject=subscribe>
-Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset="us-ascii"; Format="flowed"
 Errors-To: iommu-bounces@lists.linux-foundation.org
 Sender: "iommu" <iommu-bounces@lists.linux-foundation.org>
 
-From: Qian Cai <cai@lca.pw>
 
-[ Upstream commit c6f4ebdeba4cff590594df931ff1ee610c426431 ]
 
-dmar_find_atsr() calls list_for_each_entry_rcu() outside of an RCU read
-side critical section but with dmar_global_lock held. Silence this
-false positive.
+On 04/14/2020 02:26 PM, Krzysztof Kozlowski wrote:
+> Although SPAPR_TCE_IOMMU itself can be compile tested on certain PowerPC
+> configurations, its presence makes arch/powerpc/kvm/Makefile to select
+> modules which do not build in such configuration.
+> 
+> The arch/powerpc/kvm/ modules use kvm_arch.spapr_tce_tables which exists
+> only with CONFIG_PPC_BOOK3S_64.  However these modules are selected when
+> COMPILE_TEST and SPAPR_TCE_IOMMU are chosen leading to build failures:
+> 
+>      In file included from arch/powerpc/include/asm/book3s/64/mmu-hash.h:20:0,
+>                       from arch/powerpc/kvm/book3s_64_vio_hv.c:22:
+>      arch/powerpc/include/asm/book3s/64/pgtable.h:17:0: error: "_PAGE_EXEC" redefined [-Werror]
+>       #define _PAGE_EXEC  0x00001 /* execute permission */
+> 
+>      In file included from arch/powerpc/include/asm/book3s/32/pgtable.h:8:0,
+>                       from arch/powerpc/include/asm/book3s/pgtable.h:8,
+>                       from arch/powerpc/include/asm/pgtable.h:18,
+>                       from include/linux/mm.h:95,
+>                       from arch/powerpc/include/asm/io.h:29,
+>                       from include/linux/io.h:13,
+>                       from include/linux/irq.h:20,
+>                       from arch/powerpc/include/asm/hardirq.h:6,
+>                       from include/linux/hardirq.h:9,
+>                       from include/linux/kvm_host.h:7,
+>                       from arch/powerpc/kvm/book3s_64_vio_hv.c:12:
+>      arch/powerpc/include/asm/book3s/32/hash.h:29:0: note: this is the location of the previous definition
+>       #define _PAGE_EXEC 0x200 /* software: exec allowed */
+> 
+> Reported-by: Geert Uytterhoeven <geert@linux-m68k.org>
+> Fixes: e93a1695d7fb ("iommu: Enable compile testing for some of drivers")
+> Signed-off-by: Krzysztof Kozlowski <krzk@kernel.org>
+> ---
+>   drivers/iommu/Kconfig | 2 +-
+>   1 file changed, 1 insertion(+), 1 deletion(-)
+> 
+> diff --git a/drivers/iommu/Kconfig b/drivers/iommu/Kconfig
+> index 58b4a4dbfc78..3532b1ead19d 100644
+> --- a/drivers/iommu/Kconfig
+> +++ b/drivers/iommu/Kconfig
+> @@ -362,7 +362,7 @@ config IPMMU_VMSA
+>   
+>   config SPAPR_TCE_IOMMU
+>   	bool "sPAPR TCE IOMMU Support"
+> -	depends on PPC_POWERNV || PPC_PSERIES || (PPC && COMPILE_TEST)
+> +	depends on PPC_POWERNV || PPC_PSERIES
+>   	select IOMMU_API
+>   	help
+>   	  Enables bits of IOMMU API required by VFIO. The iommu_ops
+> 
 
- drivers/iommu/intel-iommu.c:4504 RCU-list traversed in non-reader section!!
- 1 lock held by swapper/0/1:
- #0: ffffffff9755bee8 (dmar_global_lock){+.+.}, at: intel_iommu_init+0x1a6/0xe19
+Should it be fixed the other way round, something like:
 
- Call Trace:
-  dump_stack+0xa4/0xfe
-  lockdep_rcu_suspicious+0xeb/0xf5
-  dmar_find_atsr+0x1ab/0x1c0
-  dmar_parse_one_atsr+0x64/0x220
-  dmar_walk_remapping_entries+0x130/0x380
-  dmar_table_init+0x166/0x243
-  intel_iommu_init+0x1ab/0xe19
-  pci_iommu_init+0x1a/0x44
-  do_one_initcall+0xae/0x4d0
-  kernel_init_freeable+0x412/0x4c5
-  kernel_init+0x19/0x193
+diff --git a/arch/powerpc/kvm/Makefile b/arch/powerpc/kvm/Makefile
+index 2bfeaa13befb..906707d15810 100644
+--- a/arch/powerpc/kvm/Makefile
++++ b/arch/powerpc/kvm/Makefile
+@@ -135,4 +135,4 @@ obj-$(CONFIG_KVM_BOOK3S_32) += kvm.o
+  obj-$(CONFIG_KVM_BOOK3S_64_PR) += kvm-pr.o
+  obj-$(CONFIG_KVM_BOOK3S_64_HV) += kvm-hv.o
 
-Signed-off-by: Qian Cai <cai@lca.pw>
-Acked-by: Lu Baolu <baolu.lu@linux.intel.com>
-Signed-off-by: Joerg Roedel <jroedel@suse.de>
-Signed-off-by: Sasha Levin <sashal@kernel.org>
----
- drivers/iommu/intel-iommu.c | 3 ++-
- 1 file changed, 2 insertions(+), 1 deletion(-)
+-obj-y += $(kvm-book3s_64-builtin-objs-y)
++obj-$(CONFIG_KVM_BOOK3S_64) += $(kvm-book3s_64-builtin-objs-y)
 
-diff --git a/drivers/iommu/intel-iommu.c b/drivers/iommu/intel-iommu.c
-index ed6cb3abf645c..73ac0888d3995 100644
---- a/drivers/iommu/intel-iommu.c
-+++ b/drivers/iommu/intel-iommu.c
-@@ -4164,7 +4164,8 @@ static struct dmar_atsr_unit *dmar_find_atsr(struct acpi_dmar_atsr *atsr)
- 	struct dmar_atsr_unit *atsru;
- 	struct acpi_dmar_atsr *tmp;
- 
--	list_for_each_entry_rcu(atsru, &dmar_atsr_units, list) {
-+	list_for_each_entry_rcu(atsru, &dmar_atsr_units, list,
-+				dmar_rcu_check()) {
- 		tmp = (struct acpi_dmar_atsr *)atsru->hdr;
- 		if (atsr->segment != tmp->segment)
- 			continue;
--- 
-2.20.1
 
+Christophe
 _______________________________________________
 iommu mailing list
 iommu@lists.linux-foundation.org
