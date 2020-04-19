@@ -7,64 +7,65 @@ X-Spam-Status: No, score=-6.8 required=3.0 tests=DKIM_INVALID,DKIM_SIGNED,
 	MAILING_LIST_MULTI,MENTIONS_GIT_HOSTING,SPF_HELO_NONE,SPF_PASS,
 	USER_AGENT_SANE_1 autolearn=ham autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id C23C1C38A30
-	for <iommu@archiver.kernel.org>; Sun, 19 Apr 2020 12:32:44 +0000 (UTC)
-Received: from whitealder.osuosl.org (smtp1.osuosl.org [140.211.166.138])
+	by smtp.lore.kernel.org (Postfix) with ESMTP id AA4BCC38A30
+	for <iommu@archiver.kernel.org>; Sun, 19 Apr 2020 13:10:57 +0000 (UTC)
+Received: from hemlock.osuosl.org (smtp2.osuosl.org [140.211.166.133])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by mail.kernel.org (Postfix) with ESMTPS id 88F08214D8
-	for <iommu@archiver.kernel.org>; Sun, 19 Apr 2020 12:32:44 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTPS id 70A4A22247
+	for <iommu@archiver.kernel.org>; Sun, 19 Apr 2020 13:10:57 +0000 (UTC)
 Authentication-Results: mail.kernel.org;
-	dkim=fail reason="signature verification failed" (1024-bit key) header.d=web.de header.i=@web.de header.b="hwUT37Zy"
-DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 88F08214D8
+	dkim=fail reason="signature verification failed" (1024-bit key) header.d=web.de header.i=@web.de header.b="Uu0sq4Dt"
+DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 70A4A22247
 Authentication-Results: mail.kernel.org; dmarc=none (p=none dis=none) header.from=web.de
 Authentication-Results: mail.kernel.org; spf=pass smtp.mailfrom=iommu-bounces@lists.linux-foundation.org
 Received: from localhost (localhost [127.0.0.1])
-	by whitealder.osuosl.org (Postfix) with ESMTP id 718DE8614D;
-	Sun, 19 Apr 2020 12:32:44 +0000 (UTC)
+	by hemlock.osuosl.org (Postfix) with ESMTP id 46BAA87525;
+	Sun, 19 Apr 2020 13:10:57 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from whitealder.osuosl.org ([127.0.0.1])
+Received: from hemlock.osuosl.org ([127.0.0.1])
 	by localhost (.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
-	with ESMTP id zlJYxlzXUkj8; Sun, 19 Apr 2020 12:32:43 +0000 (UTC)
+	with ESMTP id zWsxShKh4Nts; Sun, 19 Apr 2020 13:10:56 +0000 (UTC)
 Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [140.211.9.56])
-	by whitealder.osuosl.org (Postfix) with ESMTP id 9D186857A4;
-	Sun, 19 Apr 2020 12:32:43 +0000 (UTC)
+	by hemlock.osuosl.org (Postfix) with ESMTP id 2ECF081EBC;
+	Sun, 19 Apr 2020 13:10:56 +0000 (UTC)
 Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
-	by lists.linuxfoundation.org (Postfix) with ESMTP id 6A3EEC07FF;
-	Sun, 19 Apr 2020 12:32:43 +0000 (UTC)
-Received: from silver.osuosl.org (smtp3.osuosl.org [140.211.166.136])
- by lists.linuxfoundation.org (Postfix) with ESMTP id A57B9C0177
- for <iommu@lists.linux-foundation.org>; Sun, 19 Apr 2020 12:32:41 +0000 (UTC)
+	by lists.linuxfoundation.org (Postfix) with ESMTP id 0B600C1D7E;
+	Sun, 19 Apr 2020 13:10:56 +0000 (UTC)
+Received: from fraxinus.osuosl.org (smtp4.osuosl.org [140.211.166.137])
+ by lists.linuxfoundation.org (Postfix) with ESMTP id C20F5C0177
+ for <iommu@lists.linux-foundation.org>; Sun, 19 Apr 2020 13:10:53 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
- by silver.osuosl.org (Postfix) with ESMTP id 73FE4203BD
- for <iommu@lists.linux-foundation.org>; Sun, 19 Apr 2020 12:32:41 +0000 (UTC)
+ by fraxinus.osuosl.org (Postfix) with ESMTP id B04CD85361
+ for <iommu@lists.linux-foundation.org>; Sun, 19 Apr 2020 13:10:53 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from silver.osuosl.org ([127.0.0.1])
+Received: from fraxinus.osuosl.org ([127.0.0.1])
  by localhost (.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
- with ESMTP id CaTBvBdzr61V for <iommu@lists.linux-foundation.org>;
- Sun, 19 Apr 2020 12:32:40 +0000 (UTC)
+ with ESMTP id klLa1u02meCq for <iommu@lists.linux-foundation.org>;
+ Sun, 19 Apr 2020 13:10:53 +0000 (UTC)
 X-Greylist: domain auto-whitelisted by SQLgrey-1.7.6
 Received: from mout.web.de (mout.web.de [212.227.17.12])
- by silver.osuosl.org (Postfix) with ESMTPS id E46CE20035
- for <iommu@lists.linux-foundation.org>; Sun, 19 Apr 2020 12:32:39 +0000 (UTC)
+ by fraxinus.osuosl.org (Postfix) with ESMTPS id 946DF8535F
+ for <iommu@lists.linux-foundation.org>; Sun, 19 Apr 2020 13:10:52 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=web.de;
- s=dbaedf251592; t=1587299542;
- bh=Ony+WtCvlJwCqxG8+ifcy1TdD6Z04JNAUahBHfvqML0=;
- h=X-UI-Sender-Class:To:Cc:Subject:From:Date;
- b=hwUT37ZyJ1NZa2m+oW4WilqNetQKZGbV3Lpon+oHOpiD0cHy8nFjrsWvi9c19zQ6l
- EaFrBCgqQvsEYPNweB8cxUDLdOgMwQ86YFhlE0mJsLyntvJKTtB8wJRIC8f8g3e0ea
- 85DnTNWN4s0RdTAKRNhHlgNG9RGYRo3g9/klrxCg=
+ s=dbaedf251592; t=1587301835;
+ bh=4oYS+cYKZQPqayi2RhTLLU5txfFXZV6+2Fd5/sGAsQU=;
+ h=X-UI-Sender-Class:Subject:From:To:Cc:References:Date:In-Reply-To;
+ b=Uu0sq4DtAPDVTCgJ9WqHiPgBHd2Oi/cHMeCerwQ/eeaE975R4sz5wZhTpnI8Uqy0Z
+ CAFAGJp1UTswDU6oDEzcfnruPCz5zCe9rrmbk8S6S1Plq7c6Qf/IuGCAr65PU/tZl3
+ WQmi0d75aBYmjpCJ7GBxqplFcGIE4t6enyS/Yzvg=
 X-UI-Sender-Class: c548c8c5-30a9-4db5-a2e7-cb6cb037b8f9
-Received: from [192.168.1.2] ([2.243.85.208]) by smtp.web.de (mrweb103
- [213.165.67.124]) with ESMTPSA (Nemesis) id 0Lrryk-1jEhom2LNO-013aGB; Sun, 19
- Apr 2020 14:32:22 +0200
+Received: from [192.168.1.2] ([2.243.85.208]) by smtp.web.de (mrweb101
+ [213.165.67.124]) with ESMTPSA (Nemesis) id 0MWAwH-1jkCcF42dV-00XH53; Sun, 19
+ Apr 2020 15:10:35 +0200
+Subject: Re: [PATCH v2] iommu/qcom: Fix local_base status check
+From: Markus Elfring <Markus.Elfring@web.de>
 To: Tang Bin <tangbin@cmss.chinamobile.com>,
  iommu@lists.linux-foundation.org, linux-arm-msm@vger.kernel.org,
  Andy Gross <agross@kernel.org>, Bjorn Andersson
  <bjorn.andersson@linaro.org>, =?UTF-8?B?SsO2cmcgUsO2ZGVs?=
  <joro@8bytes.org>, Rob Clark <robdclark@gmail.com>
-Subject: Re: [PATCH v2] iommu/qcom: Fix local_base status check
-From: Markus Elfring <Markus.Elfring@web.de>
+References: <73736017-cae3-1c2a-dcf4-d771d0f3bbbf@web.de>
 Autocrypt: addr=Markus.Elfring@web.de; prefer-encrypt=mutual; keydata=
  mQINBFg2+xABEADBJW2hoUoFXVFWTeKbqqif8VjszdMkriilx90WB5c0ddWQX14h6w5bT/A8
  +v43YoGpDNyhgA0w9CEhuwfZrE91GocMtjLO67TAc2i2nxMc/FJRDI0OemO4VJ9RwID6ltwt
@@ -108,36 +109,38 @@ Autocrypt: addr=Markus.Elfring@web.de; prefer-encrypt=mutual; keydata=
  Z/wsLiWTgKlih2QYULvW61XU+mWsK8+ZlYUrRMpkauN4CJ5yTpvp+Orcz5KixHQmc5tbkLWf
  x0n1QFc1xxJhbzN+r9djSGGN/5IBDfUqSANC8cWzHpWaHmSuU3JSAMB/N+yQjIad2ztTckZY
  pwT6oxng29LzZspTYUEzMz3wK2jQHw+U66qBFk8whA7B2uAU1QdGyPgahLYSOa4XAEGb6wbI FEE=
-Message-ID: <73736017-cae3-1c2a-dcf4-d771d0f3bbbf@web.de>
-Date: Sun, 19 Apr 2020 14:32:20 +0200
+Message-ID: <b07d3b02-bf96-fd73-8333-a1104da9ae47@web.de>
+Date: Sun, 19 Apr 2020 15:10:33 +0200
 User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101
  Thunderbird/68.7.0
 MIME-Version: 1.0
+In-Reply-To: <73736017-cae3-1c2a-dcf4-d771d0f3bbbf@web.de>
 Content-Language: en-GB
-X-Provags-ID: V03:K1:aM9D41FDFG533iB8w4muwOHig3soCihnk6pAK/NdvHKorniyPir
- iyQlK51/Kfk4yD8O+bwuZeovMtlA7rs/2WH5M9OlWqRCCbgeKVEQESYq+3M+0690hF18C9c
- qqkiLrbft/PoMxtRn19FtmatjUFPexga8qEjY5CKq5LZ8kAUPGaIK2AimKjj2+SPDwUaUYx
- coVSg/uQkvT05B1rJSviw==
-X-UI-Out-Filterresults: notjunk:1;V03:K0:YfONjDXL5x0=:3wx3LPQ+RgsxVKYkWsZgwg
- 3QgRYFxbV80SPNOpnRpsERd9bDi5bH8kHBZCZkpbGbIC/BoxJnxEOraXfCbUOj0R3LwhlYzCX
- Do2unHX8eqH2+utRbDs/WJKxbMeaDr7vodPvcV1vE0CRInXUQpJ3vVIsN8eQfXYtQdZoEGmjI
- nLSRsA1RYbAiFLLhIdngkurSmm9wMynXWZtfBwka03y1m7LuKAA/9NZHvpjJUtKeg0LYQbt5P
- q48+tvmOxxHPYPt/XpgsbYI0GfC543CZU8vHxA1RGbsw6C5iswVCGo8TzHs/mlHca3rkpJuv8
- fDNIAIRuzONIdxTXgESaYpXySEB/Fwm7WOhmsxz6QpAb5Ilr4arWLIhJjLmfHHVIjdOntECwZ
- Z6bxDkZAkt0WMoCcCO1n0gS5T76xJg1zED1G7VvgrhwMaTyOQocFTuXnsrGQ4jc+EQjdwu2Ab
- NW6ZCfu46ZFScj0Y9OPll8D5M+frIcC9HQBUUIP0SvNJFL7me/2sAKqvUa70MuNv6UqmODtJ2
- 9fykdEdMNBvbM5ARFWsVerWcmdAWBzttswdw/Ejf72qNCiGEs4JP5jKRmq4a5zgUcDD9NHFPN
- N/Sl4E5plJ3cQXqoIyPhPZYuCtK3M769oYby+9vSQVIUhV5P+NdKZFXfYLaQ1SqrjUmQPKEmf
- +FSaukDfxfphjYxlSph3uJvAPTLYKbGsGIiCVHAaZ7LL3v/owPeTEN2to7wcFwd2etQsx1Qv6
- GJ+Ll3HnvqaWd+9twFGS9KcvKBr5Mr+y28HPIQsxot5lQdpGGMJ4Q9/OQC1LgNrN0EnmeIilU
- MQPhjXP96P4LnWLX0fGDkm5om31eApBqjHUcB0QOBl7ZKSDrk4VbM6jhUjv1tlfzJqJwB/sSD
- v0M9BqgZtIMGnC7fbyPn+VCu7vdfoBjcZqR3ExO0IhXmXZQSGat2etii1b0uC9vC1NimX7KK2
- //PazBLnUjlfHQBHihX2hGJwZ36CVzYty2NJGtdplii/sIg/gghw56RW8SWjDuQYhLErW5njH
- N7OIGMQKf8y7xDLDImFe+EIPBaGT8BtpzUawYujG5dO1Ff9YjGP2JbTqPgONIYMBT/xMe/mxj
- ZYHAqrPlxau0VRLD285o5eYf9vLm1ei4Kf/e024S5cNebqS7RYpC/GTFgdc1x498hLbGJTFjF
- sDZZpCAfsD/R75venw8Ue0HMZWOey3VZwrL2ZGdJjJGo8QB/wfh0Q6FAON8+OWNsMV2mIdRc1
- 8pqehv5/i1X/1uGGK
-Cc: kernel-janitors@vger.kernel.org, linux-kernel@vger.kernel.org
+X-Provags-ID: V03:K1:csvZDhaz4z/yZURfSdj4uatoN5JobxslgnDWP5IBxiUdVCF5P5L
+ ErUP3aEhDKRvkvI0W5p/UlEAj0rYAkeYiydJVgRWD0r9G+hGdRnodq86bkiKFTGxzhD6gSj
+ pHrmlB5ryh9ibKQN+RHlS++X/pcKSdWPZEhw7ilC6gFlwKXzdfiOJIc49wbhuJK2zspdIuZ
+ qzQYBsqiGNlKkLgtxQRPQ==
+X-UI-Out-Filterresults: notjunk:1;V03:K0:YP5tX25VIBU=:MbOSbvZbuDSo89A1cbzHeO
+ JWHwRkc3GSnQ8758M2xMrm2LEep79GLVIHpXGaHXPXMNw86ZQFNw7wMcCzJxhYffml32FcbhP
+ CpqfPD0On3BApJ0Jf7SfHqJ+AVdbmGyEPZWZ0WJapSgpknXoh5o7k5zmSy3m2mO58Ic9u9y6D
+ rmZQRsfP37ysXWjwBBBG0Dr4RB1NqZMoXCGVW0gIGgCYoUCZoSuy1/uaFfSluANXeGBl1Z3PG
+ NvoeRrFcegkhCEOCKnU5l0N3B9QLfA4HoM/xA5qwykWqciRkd6RdAxiUYpnQU7/Ox1kl2jXcz
+ Ur1WXBhvWPOBKXDdRKzMD2F0iCajnhPceE+P3OaVV1rJD7ujvwUqw4eJgtW/+BZPYAwycBVNJ
+ OFDCo0G+NmIOqmgA1Rf7qo+PJCqdToud3tmqvemrjEE2hwZ/rIYG9n87/YxxvIDYH1JzViuaX
+ DqJEt1oaDtAD0b8UUUM6AwVuERNGxOCBeQrR6uU8SfSph+3RKdvuLPnKxbgq3qz++WpfkCJI4
+ qF9meDyaUIkNjTs7eZpjGJWoQNFNvMJ1pI/q5gduZKztXrXP+MGU4QCK4y/PgCsGiLcwSYkI4
+ IP1hEg1RcrePU8eBmx6DF3RRwhW9Mlmw5qFCgpUbWKvEKjYjXAIgkvAzwf8jfS/wRsyvK6FQt
+ TdnGD9sF3Dl6f4chUzf9i2d4CJswCXw2ISZWsVGKhHzt/zWGNqIhMTrVTn4eQSVlQqm2AErHK
+ TWx7nV9o2Lprpc6vWDevZSrUjwYt5gHZJhd4jT0qnPFJuzaC5IEdFJJcXFE5QhBpuwzy1Z9mm
+ KZtBcTlPDm2gpwuJLsTIRMKzpyv0QrZb1+3ZCYV4C215CBYI7X7dUN/JU9NhqdGi5YSDO50lA
+ ZNAi7GXbxa5p2fIxGF69g50ISNK4718orUHdPl6a5yvTXjZGlRGZGDHHOGSr6L7kDS1ar1i8p
+ iGlCcTMQOhYhS1L1rMG1Rx2yhnf7I/xGu3D60ONfNue+Pi47ETKscGZMSlvJjFaCisU9bFe4M
+ SKPg5xJQSEGSEUpQv3cBeH7xv07y5AhiOxVyjBW7ZoGLII7n/cSoPiC2HHsY2SwE8sNBevymO
+ dE5BtMe9vZU4w3QIti7qhbRxMinenU2sTbgPYpGPSithcHfKxwXtu68FINbxEdBHxrVWy/eO+
+ HwKXDhOjAa8s+/QYHh0Mn9+rhcz0gp5p9hMNDdToKLkIm/jeiUZmDs8jwsAFyf3s3ON/0RW0y
+ MyLPcV62MtucsrWHT
+Cc: Dejin Zheng <zhengdejin5@gmail.com>, kernel-janitors@vger.kernel.org,
+ linux-kernel@vger.kernel.org
 X-BeenThere: iommu@lists.linux-foundation.org
 X-Mailman-Version: 2.1.15
 Precedence: list
@@ -155,26 +158,19 @@ Content-Transfer-Encoding: base64
 Errors-To: iommu-bounces@lists.linux-foundation.org
 Sender: "iommu" <iommu-bounces@lists.linux-foundation.org>
 
-PiBUaGUgZnVuY3Rpb24gcWNvbV9pb21tdV9kZXZpY2VfcHJvYmUoKSBkb2VzIG5vdCBwZXJmb3Jt
-IHN1ZmZpY2llbnQKPiBlcnJvciBjaGVja2luZyBhZnRlciBleGVjdXRpbmcgZGV2bV9pb3JlbWFw
-X3Jlc291cmNlKCksIHdoaWNoIGNhbgo+IHJlc3VsdCBpbiBjcmFzaGVzIGlmIGEgY3JpdGljYWwg
-ZXJyb3IgcGF0aCBpcyBlbmNvdW50ZXJlZC4KCllvdXIgdXBkYXRlIHN1Z2dlc3Rpb24gd2lsbCBi
-ZSByZWNoZWNrZWQgb25jZSBtb3JlLgoKKiBDYW4gaXQgYmUgdGhhdCB0aGUgcGF0Y2ggd291bGQg
-bmVlZCBhIGhpZ2hlciB2ZXJzaW9uIG51bWJlcgogIGFjY29yZGluZyB0byBwcmV2aW91cyByZXZp
-ZXcgY29tbWVudHM/CgoqIFdvdWxkIHlvdSBsaWtlIHRvIGFkanVzdCB0aGUgcGF0Y2ggc3ViamVj
-dD8KCgrigKYKPiArKysgYi9kcml2ZXJzL2lvbW11L3Fjb21faW9tbXUuYwo+IEBAIC04MTMsOCAr
-ODEzLDExIEBAIHN0YXRpYyBpbnQgcWNvbV9pb21tdV9kZXZpY2VfcHJvYmUoc3RydWN0IHBsYXRm
-b3JtX2RldmljZSAqcGRldikKPiAgCXFjb21faW9tbXUtPmRldiA9IGRldjsKPgo+ICAJcmVzID0g
-cGxhdGZvcm1fZ2V0X3Jlc291cmNlKHBkZXYsIElPUkVTT1VSQ0VfTUVNLCAwKTsKPiAtCWlmIChy
-ZXMpCgpJIGZpbmQgdGhlIGRlbGV0aW9uIG9mIHRoaXMgY2hlY2sgYXBwcm9wcmlhdGUuCgoKPiAr
-CWlmIChyZXMpIHsKPiAgCQlxY29tX2lvbW11LT5sb2NhbF9iYXNlID0gZGV2bV9pb3JlbWFwX3Jl
-c291cmNlKGRldiwgcmVzKTsKCkJ1dCBJIGRvIG5vdCBzZWUgYSBuZWVkIHRvIHByZXNlcnZlIHN1
-Y2ggYSBjaGVjayBiZWNhdXNlIHRoaXMgZnVuY3Rpb24KcGVyZm9ybXMgaW5wdXQgcGFyYW1ldGVy
-IHZhbGlkYXRpb24uCmh0dHBzOi8vZWxpeGlyLmJvb3RsaW4uY29tL2xpbnV4L3Y1LjctcmMxL3Nv
-dXJjZS9saWIvZGV2cmVzLmMjTDExNgpodHRwczovL2dpdC5rZXJuZWwub3JnL3B1Yi9zY20vbGlu
-dXgva2VybmVsL2dpdC90b3J2YWxkcy9saW51eC5naXQvdHJlZS9saWIvZGV2cmVzLmM/aWQ9NTBj
-YzA5YzE4OTg1ZWFjYmJkNjY2YWNmZDdiZTIzOTEzOTQ3MzNmNSNuMTE2CgpQbGVhc2UgdGFrZSBh
-bm90aGVyIGxvb2sgYXQgYSBjb3JyZXNwb25kaW5nIHVzYWdlIGV4YW1wbGUuCgpSZWdhcmRzLApN
-YXJrdXMKX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX18KaW9t
-bXUgbWFpbGluZyBsaXN0CmlvbW11QGxpc3RzLmxpbnV4LWZvdW5kYXRpb24ub3JnCmh0dHBzOi8v
-bGlzdHMubGludXhmb3VuZGF0aW9uLm9yZy9tYWlsbWFuL2xpc3RpbmZvL2lvbW11
+PiDigKYKPj4gKysrIGIvZHJpdmVycy9pb21tdS9xY29tX2lvbW11LmMKPj4gQEAgLTgxMyw4ICs4
+MTMsMTEgQEAgc3RhdGljIGludCBxY29tX2lvbW11X2RldmljZV9wcm9iZShzdHJ1Y3QgcGxhdGZv
+cm1fZGV2aWNlICpwZGV2KQo+PiAgCXFjb21faW9tbXUtPmRldiA9IGRldjsKPj4KPj4gIAlyZXMg
+PSBwbGF0Zm9ybV9nZXRfcmVzb3VyY2UocGRldiwgSU9SRVNPVVJDRV9NRU0sIDApOwrigKYKPj4g
+IAkJcWNvbV9pb21tdS0+bG9jYWxfYmFzZSA9IGRldm1faW9yZW1hcF9yZXNvdXJjZShkZXYsIHJl
+cyk7CuKApgo+IFBsZWFzZSB0YWtlIGFub3RoZXIgbG9vayBhdCBhIGNvcnJlc3BvbmRpbmcgdXNh
+Z2UgZXhhbXBsZS4KCkkgd291bGQgbGlrZSB0byBwb2ludCBhbm90aGVyIHBvc3NpYmlsaXR5IG91
+dCBmb3IgZGVzaXJhYmxlIHNvZnR3YXJlIGV2b2x1dGlvbi4KSG93IGRvIHlvdSB0aGluayBhYm91
+dCB0byBjYWxsIGEg4oCca25vd27igJ0gd3JhcHBlciBmdW5jdGlvbiBpbnN0ZWFkPwoKZGV2bV9w
+bGF0Zm9ybV9nZXRfYW5kX2lvcmVtYXBfcmVzb3VyY2UKaHR0cHM6Ly9lbGl4aXIuYm9vdGxpbi5j
+b20vbGludXgvdjUuNy1yYzEvc291cmNlL2RyaXZlcnMvYmFzZS9wbGF0Zm9ybS5jI0w2NgpodHRw
+czovL2dpdC5rZXJuZWwub3JnL3B1Yi9zY20vbGludXgva2VybmVsL2dpdC90b3J2YWxkcy9saW51
+eC5naXQvbG9nL2RyaXZlcnMvYmFzZS9wbGF0Zm9ybS5jCgpSZWdhcmRzLApNYXJrdXMKX19fX19f
+X19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX18KaW9tbXUgbWFpbGluZyBs
+aXN0CmlvbW11QGxpc3RzLmxpbnV4LWZvdW5kYXRpb24ub3JnCmh0dHBzOi8vbGlzdHMubGludXhm
+b3VuZGF0aW9uLm9yZy9tYWlsbWFuL2xpc3RpbmZvL2lvbW11
