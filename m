@@ -6,62 +6,62 @@ X-Spam-Status: No, score=-2.2 required=3.0 tests=HEADER_FROM_DIFFERENT_DOMAINS,
 	MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS,USER_AGENT_SANE_1 autolearn=no
 	autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 82CC1C2BA2B
-	for <iommu@archiver.kernel.org>; Sun, 19 Apr 2020 08:01:07 +0000 (UTC)
-Received: from hemlock.osuosl.org (smtp2.osuosl.org [140.211.166.133])
+	by smtp.lore.kernel.org (Postfix) with ESMTP id E693FC38A30
+	for <iommu@archiver.kernel.org>; Sun, 19 Apr 2020 12:25:11 +0000 (UTC)
+Received: from whitealder.osuosl.org (smtp1.osuosl.org [140.211.166.138])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by mail.kernel.org (Postfix) with ESMTPS id 51A1221D82
-	for <iommu@archiver.kernel.org>; Sun, 19 Apr 2020 08:01:07 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 51A1221D82
-Authentication-Results: mail.kernel.org; dmarc=none (p=none dis=none) header.from=lst.de
+	by mail.kernel.org (Postfix) with ESMTPS id 92C7A214AF
+	for <iommu@archiver.kernel.org>; Sun, 19 Apr 2020 12:25:11 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 92C7A214AF
+Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=8bytes.org
 Authentication-Results: mail.kernel.org; spf=pass smtp.mailfrom=iommu-bounces@lists.linux-foundation.org
 Received: from localhost (localhost [127.0.0.1])
-	by hemlock.osuosl.org (Postfix) with ESMTP id 1AEE78768B;
-	Sun, 19 Apr 2020 08:01:07 +0000 (UTC)
+	by whitealder.osuosl.org (Postfix) with ESMTP id 60ACB860DB;
+	Sun, 19 Apr 2020 12:25:11 +0000 (UTC)
+X-Virus-Scanned: amavisd-new at osuosl.org
+Received: from whitealder.osuosl.org ([127.0.0.1])
+	by localhost (.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
+	with ESMTP id 2-CEvO2-xxnp; Sun, 19 Apr 2020 12:25:10 +0000 (UTC)
+Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [140.211.9.56])
+	by whitealder.osuosl.org (Postfix) with ESMTP id 843778614D;
+	Sun, 19 Apr 2020 12:25:10 +0000 (UTC)
+Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
+	by lists.linuxfoundation.org (Postfix) with ESMTP id 5EB07C07FF;
+	Sun, 19 Apr 2020 12:25:10 +0000 (UTC)
+Received: from hemlock.osuosl.org (smtp2.osuosl.org [140.211.166.133])
+ by lists.linuxfoundation.org (Postfix) with ESMTP id C76FEC0177
+ for <iommu@lists.linux-foundation.org>; Sun, 19 Apr 2020 12:25:08 +0000 (UTC)
+Received: from localhost (localhost [127.0.0.1])
+ by hemlock.osuosl.org (Postfix) with ESMTP id B50A2875BE
+ for <iommu@lists.linux-foundation.org>; Sun, 19 Apr 2020 12:25:08 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
 Received: from hemlock.osuosl.org ([127.0.0.1])
-	by localhost (.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
-	with ESMTP id gQkMmg4PVKXF; Sun, 19 Apr 2020 08:01:06 +0000 (UTC)
-Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [140.211.9.56])
-	by hemlock.osuosl.org (Postfix) with ESMTP id 325A887524;
-	Sun, 19 Apr 2020 08:01:06 +0000 (UTC)
-Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
-	by lists.linuxfoundation.org (Postfix) with ESMTP id 1FD7FC1D7E;
-	Sun, 19 Apr 2020 08:01:06 +0000 (UTC)
-Received: from fraxinus.osuosl.org (smtp4.osuosl.org [140.211.166.137])
- by lists.linuxfoundation.org (Postfix) with ESMTP id 9F171C0177
- for <iommu@lists.linux-foundation.org>; Sun, 19 Apr 2020 08:01:04 +0000 (UTC)
-Received: from localhost (localhost [127.0.0.1])
- by fraxinus.osuosl.org (Postfix) with ESMTP id 8F1B98544C
- for <iommu@lists.linux-foundation.org>; Sun, 19 Apr 2020 08:01:04 +0000 (UTC)
-X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from fraxinus.osuosl.org ([127.0.0.1])
  by localhost (.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
- with ESMTP id CwW7r6vO8L2I for <iommu@lists.linux-foundation.org>;
- Sun, 19 Apr 2020 08:01:03 +0000 (UTC)
+ with ESMTP id OHSpsgBaGtyW for <iommu@lists.linux-foundation.org>;
+ Sun, 19 Apr 2020 12:25:07 +0000 (UTC)
 X-Greylist: from auto-whitelisted by SQLgrey-1.7.6
-Received: from verein.lst.de (verein.lst.de [213.95.11.211])
- by fraxinus.osuosl.org (Postfix) with ESMTPS id 3218385427
- for <iommu@lists.linux-foundation.org>; Sun, 19 Apr 2020 08:01:03 +0000 (UTC)
-Received: by verein.lst.de (Postfix, from userid 2407)
- id 7C63E68BEB; Sun, 19 Apr 2020 10:00:58 +0200 (CEST)
-Date: Sun, 19 Apr 2020 10:00:58 +0200
-From: Christoph Hellwig <hch@lst.de>
-To: Joerg Roedel <joro@8bytes.org>
+Received: from theia.8bytes.org (8bytes.org [81.169.241.247])
+ by hemlock.osuosl.org (Postfix) with ESMTPS id 055F9872A6
+ for <iommu@lists.linux-foundation.org>; Sun, 19 Apr 2020 12:25:07 +0000 (UTC)
+Received: by theia.8bytes.org (Postfix, from userid 1000)
+ id EB734342; Sun, 19 Apr 2020 14:25:03 +0200 (CEST)
+Date: Sun, 19 Apr 2020 14:25:02 +0200
+From: Joerg Roedel <joro@8bytes.org>
+To: Christoph Hellwig <hch@lst.de>
 Subject: Re: [PATCH 3/4] dma-mapping: add a dma_ops_bypass flag to struct
  device
-Message-ID: <20200419080058.GB12222@lst.de>
+Message-ID: <20200419122502.GI21900@8bytes.org>
 References: <20200414122506.438134-1-hch@lst.de>
- <20200414122506.438134-4-hch@lst.de> <20200418124205.GD6113@8bytes.org>
+ <20200414122506.438134-4-hch@lst.de>
+ <20200418124205.GD6113@8bytes.org> <20200419080058.GB12222@lst.de>
 MIME-Version: 1.0
 Content-Disposition: inline
-In-Reply-To: <20200418124205.GD6113@8bytes.org>
-User-Agent: Mutt/1.5.17 (2007-11-01)
+In-Reply-To: <20200419080058.GB12222@lst.de>
+User-Agent: Mutt/1.10.1 (2018-07-13)
 Cc: Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
  Robin Murphy <robin.murphy@arm.com>, linux-kernel@vger.kernel.org,
- iommu@lists.linux-foundation.org, linuxppc-dev@lists.ozlabs.org,
- Christoph Hellwig <hch@lst.de>
+ iommu@lists.linux-foundation.org, linuxppc-dev@lists.ozlabs.org
 X-BeenThere: iommu@lists.linux-foundation.org
 X-Mailman-Version: 2.1.15
 Precedence: list
@@ -79,34 +79,34 @@ Content-Transfer-Encoding: 7bit
 Errors-To: iommu-bounces@lists.linux-foundation.org
 Sender: "iommu" <iommu-bounces@lists.linux-foundation.org>
 
-On Sat, Apr 18, 2020 at 02:42:05PM +0200, Joerg Roedel wrote:
-> Hi Christoph,
-> 
-> On Tue, Apr 14, 2020 at 02:25:05PM +0200, Christoph Hellwig wrote:
-> > +static inline bool dma_map_direct(struct device *dev,
-> > +		const struct dma_map_ops *ops)
-> > +{
-> > +	if (likely(!ops))
-> > +		return true;
-> > +	if (!dev->dma_ops_bypass)
-> > +		return false;
-> > +
-> > +	return min_not_zero(*dev->dma_mask, dev->bus_dma_limit) >=
-> > +			    dma_direct_get_required_mask(dev);
-> 
-> Why is the dma-mask check done here? The dma-direct code handles memory
-> outside of the devices dma-mask with swiotlb, no?
-> 
-> I also don't quite get what the difference between setting the
-> dma_ops_bypass flag non-zero and setting ops to NULL is.
+On Sun, Apr 19, 2020 at 10:00:58AM +0200, Christoph Hellwig wrote:
+> The difference is that NULL ops mean imply the direct mapping is always
+> used, dma_ops_bypass means a direct mapping is used if no bounce buffering
+> using swiotlb is needed, which should also answer your first question.
+> The idea is to consolidate code in the core to use an opportunistic
+> direct mapping instead of the dynamic iommu mapping.  I though the cover
+> letter and commit log explained this well enough, but maybe I need to
+> do a better job.
 
-The difference is that NULL ops mean imply the direct mapping is always
-used, dma_ops_bypass means a direct mapping is used if no bounce buffering
-using swiotlb is needed, which should also answer your first question.
-The idea is to consolidate code in the core to use an opportunistic
-direct mapping instead of the dynamic iommu mapping.  I though the cover
-letter and commit log explained this well enough, but maybe I need to
-do a better job.
+Ah right, now I see it, when dma_ops_bypass is set it will only use
+direct mapping when the available memory fits into the device's
+dma_masks, and calls into dma_ops otherwise.
+
+I wonder how that will interact with an IOMMU driver, which has to make
+sure that the direct mapping is accessible for the device at all.  It
+can either put the device into a passthrough domain for direct mapping
+or into a re-mapped domain, but then all DMA-API calls need to use dma-ops.
+When the dma_mask covers available memory but coherent_mask doesn't,
+the streaming calls will use dma-direct and alloc_coherent() calls into
+dma-ops. There is no way for the IOMMU driver to ensure both works.
+
+So what are the conditions under which an IOMMU driver would set
+dma_ops_bypass to 1 and get a different result as to when setting
+dev->dma_ops to NULL?
+
+Regards,
+
+	Joerg
 _______________________________________________
 iommu mailing list
 iommu@lists.linux-foundation.org
