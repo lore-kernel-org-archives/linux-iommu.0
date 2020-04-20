@@ -7,71 +7,71 @@ X-Spam-Status: No, score=-9.6 required=3.0 tests=DKIM_INVALID,DKIM_SIGNED,
 	SPF_HELO_NONE,SPF_PASS,USER_AGENT_GIT autolearn=ham autolearn_force=no
 	version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 2736AC3815B
-	for <iommu@archiver.kernel.org>; Mon, 20 Apr 2020 18:34:55 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 3F333C38A30
+	for <iommu@archiver.kernel.org>; Mon, 20 Apr 2020 18:34:56 +0000 (UTC)
 Received: from silver.osuosl.org (smtp3.osuosl.org [140.211.166.136])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by mail.kernel.org (Postfix) with ESMTPS id E37052074F
-	for <iommu@archiver.kernel.org>; Mon, 20 Apr 2020 18:34:54 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTPS id 17BB22080C
+	for <iommu@archiver.kernel.org>; Mon, 20 Apr 2020 18:34:56 +0000 (UTC)
 Authentication-Results: mail.kernel.org;
-	dkim=fail reason="signature verification failed" (1024-bit key) header.d=mg.codeaurora.org header.i=@mg.codeaurora.org header.b="WSwzOzwY"
-DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org E37052074F
+	dkim=fail reason="signature verification failed" (1024-bit key) header.d=mg.codeaurora.org header.i=@mg.codeaurora.org header.b="tBqYclOU"
+DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 17BB22080C
 Authentication-Results: mail.kernel.org; dmarc=none (p=none dis=none) header.from=codeaurora.org
 Authentication-Results: mail.kernel.org; spf=pass smtp.mailfrom=iommu-bounces@lists.linux-foundation.org
 Received: from localhost (localhost [127.0.0.1])
-	by silver.osuosl.org (Postfix) with ESMTP id B29D9220DD;
-	Mon, 20 Apr 2020 18:34:54 +0000 (UTC)
+	by silver.osuosl.org (Postfix) with ESMTP id E974C2221C;
+	Mon, 20 Apr 2020 18:34:55 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
 Received: from silver.osuosl.org ([127.0.0.1])
 	by localhost (.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
-	with ESMTP id 41fXWnfcMjmv; Mon, 20 Apr 2020 18:34:54 +0000 (UTC)
+	with ESMTP id PHbywvAIShL3; Mon, 20 Apr 2020 18:34:55 +0000 (UTC)
 Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [140.211.9.56])
-	by silver.osuosl.org (Postfix) with ESMTP id 0AC2D21FF8;
-	Mon, 20 Apr 2020 18:34:54 +0000 (UTC)
+	by silver.osuosl.org (Postfix) with ESMTP id 4C128220C2;
+	Mon, 20 Apr 2020 18:34:55 +0000 (UTC)
 Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
-	by lists.linuxfoundation.org (Postfix) with ESMTP id E1E2DC1D74;
-	Mon, 20 Apr 2020 18:34:53 +0000 (UTC)
-Received: from whitealder.osuosl.org (smtp1.osuosl.org [140.211.166.138])
- by lists.linuxfoundation.org (Postfix) with ESMTP id DCF1FC0177
- for <iommu@lists.linux-foundation.org>; Mon, 20 Apr 2020 18:34:52 +0000 (UTC)
+	by lists.linuxfoundation.org (Postfix) with ESMTP id 3A4F0C1D74;
+	Mon, 20 Apr 2020 18:34:55 +0000 (UTC)
+Received: from fraxinus.osuosl.org (smtp4.osuosl.org [140.211.166.137])
+ by lists.linuxfoundation.org (Postfix) with ESMTP id 9CC9CC0177
+ for <iommu@lists.linux-foundation.org>; Mon, 20 Apr 2020 18:34:53 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
- by whitealder.osuosl.org (Postfix) with ESMTP id CC0398773D
- for <iommu@lists.linux-foundation.org>; Mon, 20 Apr 2020 18:34:52 +0000 (UTC)
+ by fraxinus.osuosl.org (Postfix) with ESMTP id 9919086932
+ for <iommu@lists.linux-foundation.org>; Mon, 20 Apr 2020 18:34:53 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from whitealder.osuosl.org ([127.0.0.1])
+Received: from fraxinus.osuosl.org ([127.0.0.1])
  by localhost (.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
- with ESMTP id qY96nuO5qEjc for <iommu@lists.linux-foundation.org>;
- Mon, 20 Apr 2020 18:34:52 +0000 (UTC)
+ with ESMTP id eZxWYOA8sFlD for <iommu@lists.linux-foundation.org>;
+ Mon, 20 Apr 2020 18:34:53 +0000 (UTC)
 X-Greylist: from auto-whitelisted by SQLgrey-1.7.6
-Received: from mail26.static.mailgun.info (mail26.static.mailgun.info
- [104.130.122.26])
- by whitealder.osuosl.org (Postfix) with ESMTPS id 0348187691
- for <iommu@lists.linux-foundation.org>; Mon, 20 Apr 2020 18:34:48 +0000 (UTC)
+Received: from mail27.static.mailgun.info (mail27.static.mailgun.info
+ [104.130.122.27])
+ by fraxinus.osuosl.org (Postfix) with ESMTPS id 6132486930
+ for <iommu@lists.linux-foundation.org>; Mon, 20 Apr 2020 18:34:50 +0000 (UTC)
 DKIM-Signature: a=rsa-sha256; v=1; c=relaxed/relaxed; d=mg.codeaurora.org;
  q=dns/txt; 
- s=smtp; t=1587407692; h=Content-Transfer-Encoding: MIME-Version:
+ s=smtp; t=1587407693; h=Content-Transfer-Encoding: MIME-Version:
  References: In-Reply-To: Message-Id: Date: Subject: Cc: To: From:
- Sender; bh=ax3N22sYBdeUbaN4NLYRPXOyfXR6puUCVOonkas/6+M=;
- b=WSwzOzwYQbeP//xy2ctelhNEGhTcZAYdPTuSA9AGeXWJrsK1Kt3jLzOjkc6JdlgGPRoj9Jw8
- eYe7xb9t5e9UuQTKVDIf8XRmAGEGmaIb7Gv5CehOzAMkQNv9qGSb05GweJ+UNErUrhRjON4L
- ymOA8xz0TVm7OilTznBBg6SAZzg=
-X-Mailgun-Sending-Ip: 104.130.122.26
+ Sender; bh=Tj2PQ/woMiwCdJuPYcUQx4SEawLDLIWZBKxuQ9AsVhE=;
+ b=tBqYclOUM5HxZVRQ9dyq7vL7PS9K9MC1QP1rw91kxYXNGrIPTm577rEPIleXLVXtZelToYTs
+ 6CDEsfesz9lBL1KCg21/Q7eC5ZPfwLoQ4XNZPk7OB4zxFFrFhxATNnHqUxFSdW/pCOHEfLai
+ Sxx6F+RAphB7mFgVMNOdcL0UjYw=
+X-Mailgun-Sending-Ip: 104.130.122.27
 X-Mailgun-Sid: WyI3NDkwMCIsICJpb21tdUBsaXN0cy5saW51eC1mb3VuZGF0aW9uLm9yZyIsICJiZTllNGEiXQ==
 Received: from smtp.codeaurora.org
  (ec2-35-166-182-171.us-west-2.compute.amazonaws.com [35.166.182.171])
- by mxa.mailgun.org with ESMTP id 5e9deb32.7f6a62f29688-smtp-out-n05;
- Mon, 20 Apr 2020 18:34:26 -0000 (UTC)
+ by mxa.mailgun.org with ESMTP id 5e9deb41.7f59ab7379d0-smtp-out-n03;
+ Mon, 20 Apr 2020 18:34:41 -0000 (UTC)
 Received: by smtp.codeaurora.org (Postfix, from userid 1001)
- id ACA80C00448; Mon, 20 Apr 2020 18:34:25 +0000 (UTC)
+ id 58951C44795; Mon, 20 Apr 2020 18:34:40 +0000 (UTC)
 Received: from blr-ubuntu-311.qualcomm.com
  (blr-bdr-fw-01_GlobalNAT_AllZones-Outside.qualcomm.com [103.229.18.19])
  (using TLSv1.2 with cipher ECDHE-RSA-AES128-SHA256 (128/128 bits))
  (No client certificate requested)
  (Authenticated sender: saiprakash.ranjan)
- by smtp.codeaurora.org (Postfix) with ESMTPSA id 7065CC00448;
- Mon, 20 Apr 2020 18:34:18 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.3.2 smtp.codeaurora.org 7065CC00448
+ by smtp.codeaurora.org (Postfix) with ESMTPSA id 78D29C44788;
+ Mon, 20 Apr 2020 18:34:34 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.3.2 smtp.codeaurora.org 78D29C44788
 Authentication-Results: aws-us-west-2-caf-mail-1.web.codeaurora.org;
  dmarc=none (p=none dis=none) header.from=codeaurora.org
 Authentication-Results: aws-us-west-2-caf-mail-1.web.codeaurora.org; spf=none
@@ -81,18 +81,17 @@ To: Will Deacon <will@kernel.org>, Robin Murphy <robin.murphy@arm.com>,
  Joerg Roedel <joro@8bytes.org>, Sibi Sankar <sibis@codeaurora.org>,
  Bjorn Andersson <bjorn.andersson@linaro.org>,
  Jordan Crouse <jcrouse@codeaurora.org>, Rob Clark <robdclark@gmail.com>
-Subject: [PATCHv4 3/6] iommu/arm-smmu: Allow client devices to select direct
- mapping
-Date: Tue, 21 Apr 2020 00:03:51 +0530
-Message-Id: <7cf1f64167b5545b7f42275395be1f1e2ea3a6ac.1587407458.git.saiprakash.ranjan@codeaurora.org>
+Subject: [PATCHv4 5/6] dt-bindings: remoteproc: qcom: Add iommus property
+Date: Tue, 21 Apr 2020 00:03:53 +0530
+Message-Id: <561e9b42b8665fc9712fdb40a525ab8871fcbdac.1587407458.git.saiprakash.ranjan@codeaurora.org>
 X-Mailer: git-send-email 2.22.0
 In-Reply-To: <cover.1587407458.git.saiprakash.ranjan@codeaurora.org>
 References: <cover.1587407458.git.saiprakash.ranjan@codeaurora.org>
 MIME-Version: 1.0
-Cc: linux-arm-msm@vger.kernel.org, linux-kernel@vger.kernel.org,
- Evan Green <evgreen@chromium.org>, Stephen Boyd <swboyd@chromium.org>,
- iommu@lists.linux-foundation.org, Matthias Kaehlcke <mka@chromium.org>,
- linux-arm-kernel@lists.infradead.org
+Cc: Rob Herring <robh@kernel.org>, linux-arm-msm@vger.kernel.org,
+ linux-kernel@vger.kernel.org, Evan Green <evgreen@chromium.org>,
+ Stephen Boyd <swboyd@chromium.org>, iommu@lists.linux-foundation.org,
+ Matthias Kaehlcke <mka@chromium.org>, linux-arm-kernel@lists.infradead.org
 X-BeenThere: iommu@lists.linux-foundation.org
 X-Mailman-Version: 2.1.15
 Precedence: list
@@ -110,64 +109,32 @@ Content-Transfer-Encoding: 7bit
 Errors-To: iommu-bounces@lists.linux-foundation.org
 Sender: "iommu" <iommu-bounces@lists.linux-foundation.org>
 
-From: Jordan Crouse <jcrouse@codeaurora.org>
+From: Sibi Sankar <sibis@codeaurora.org>
 
-Some client devices want to directly map the IOMMU themselves instead
-of using the DMA domain. Allow those devices to opt in to direct
-mapping by way of a list of compatible strings.
+Add iommus property to allow Q6 modem to boot on platforms which do
+not have trustZone.
 
-Signed-off-by: Jordan Crouse <jcrouse@codeaurora.org>
-Co-developed-by: Sai Prakash Ranjan <saiprakash.ranjan@codeaurora.org>
+Signed-off-by: Sibi Sankar <sibis@codeaurora.org>
 Signed-off-by: Sai Prakash Ranjan <saiprakash.ranjan@codeaurora.org>
-Reviewed-by: Robin Murphy <robin.murphy@arm.com>
+Acked-by: Rob Herring <robh@kernel.org>
 ---
- drivers/iommu/arm-smmu-qcom.c | 19 +++++++++++++++++++
- 1 file changed, 19 insertions(+)
+ Documentation/devicetree/bindings/remoteproc/qcom,q6v5.txt | 3 +++
+ 1 file changed, 3 insertions(+)
 
-diff --git a/drivers/iommu/arm-smmu-qcom.c b/drivers/iommu/arm-smmu-qcom.c
-index 64a4ab270ab7..5bedf21587a5 100644
---- a/drivers/iommu/arm-smmu-qcom.c
-+++ b/drivers/iommu/arm-smmu-qcom.c
-@@ -3,6 +3,7 @@
-  * Copyright (c) 2019, The Linux Foundation. All rights reserved.
-  */
+diff --git a/Documentation/devicetree/bindings/remoteproc/qcom,q6v5.txt b/Documentation/devicetree/bindings/remoteproc/qcom,q6v5.txt
+index 88dfa3fc15f7..130e50aab741 100644
+--- a/Documentation/devicetree/bindings/remoteproc/qcom,q6v5.txt
++++ b/Documentation/devicetree/bindings/remoteproc/qcom,q6v5.txt
+@@ -184,6 +184,9 @@ For the compatible strings below the following phandle references are required:
+ 		    followed by the offset within syscon for conn_box_spare0
+ 		    register.
  
-+#include <linux/of_device.h>
- #include <linux/qcom_scm.h>
- 
- #include "arm-smmu.h"
-@@ -11,6 +12,23 @@ struct qcom_smmu {
- 	struct arm_smmu_device smmu;
- };
- 
-+static const struct of_device_id qcom_smmu_client_of_match[] = {
-+	{ .compatible = "qcom,adreno" },
-+	{ .compatible = "qcom,mdp4" },
-+	{ .compatible = "qcom,mdss" },
-+	{ .compatible = "qcom,sc7180-mdss" },
-+	{ .compatible = "qcom,sdm845-mdss" },
-+	{ }
-+};
++The Hexagon node must contain iommus property as described in ../iommu/iommu.txt
++on platforms which do not have TrustZone.
 +
-+static int qcom_smmu_def_domain_type(struct device *dev)
-+{
-+	const struct of_device_id *match =
-+		of_match_device(qcom_smmu_client_of_match, dev);
-+
-+	return match ? IOMMU_DOMAIN_IDENTITY : 0;
-+}
-+
- static int qcom_sdm845_smmu500_reset(struct arm_smmu_device *smmu)
- {
- 	int ret;
-@@ -41,6 +59,7 @@ static int qcom_smmu500_reset(struct arm_smmu_device *smmu)
- }
- 
- static const struct arm_smmu_impl qcom_smmu_impl = {
-+	.def_domain_type = qcom_smmu_def_domain_type,
- 	.reset = qcom_smmu500_reset,
- };
- 
+ = SUBNODES:
+ The Hexagon node must contain two subnodes, named "mba" and "mpss" representing
+ the memory regions used by the Hexagon firmware. Each sub-node must contain:
 -- 
 QUALCOMM INDIA, on behalf of Qualcomm Innovation Center, Inc. is a member
 of Code Aurora Forum, hosted by The Linux Foundation
