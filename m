@@ -4,79 +4,93 @@ X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 X-Spam-Level: 
 X-Spam-Status: No, score=-6.5 required=3.0 tests=DKIM_INVALID,DKIM_SIGNED,
 	HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_PATCH,MAILING_LIST_MULTI,SIGNED_OFF_BY,
-	SPF_HELO_NONE,SPF_PASS autolearn=unavailable autolearn_force=no version=3.4.0
+	SPF_HELO_NONE,SPF_PASS autolearn=ham autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 81111C54FCB
-	for <iommu@archiver.kernel.org>; Mon, 20 Apr 2020 03:04:44 +0000 (UTC)
-Received: from fraxinus.osuosl.org (smtp4.osuosl.org [140.211.166.137])
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 10C83C54FD0
+	for <iommu@archiver.kernel.org>; Mon, 20 Apr 2020 04:52:45 +0000 (UTC)
+Received: from silver.osuosl.org (smtp3.osuosl.org [140.211.166.136])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by mail.kernel.org (Postfix) with ESMTPS id 3FF6B2074B
-	for <iommu@archiver.kernel.org>; Mon, 20 Apr 2020 03:04:44 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTPS id CC8C1206D4
+	for <iommu@archiver.kernel.org>; Mon, 20 Apr 2020 04:52:44 +0000 (UTC)
 Authentication-Results: mail.kernel.org;
-	dkim=fail reason="signature verification failed" (2048-bit key) header.d=ellerman.id.au header.i=@ellerman.id.au header.b="Gdf0lZfu"
-DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 3FF6B2074B
-Authentication-Results: mail.kernel.org; dmarc=none (p=none dis=none) header.from=ellerman.id.au
+	dkim=fail reason="signature verification failed" (2048-bit key) header.d=linaro.org header.i=@linaro.org header.b="llneVi56"
+DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org CC8C1206D4
+Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=linaro.org
 Authentication-Results: mail.kernel.org; spf=pass smtp.mailfrom=iommu-bounces@lists.linux-foundation.org
 Received: from localhost (localhost [127.0.0.1])
-	by fraxinus.osuosl.org (Postfix) with ESMTP id 0F5B485657;
-	Mon, 20 Apr 2020 03:04:44 +0000 (UTC)
-X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from fraxinus.osuosl.org ([127.0.0.1])
-	by localhost (.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
-	with ESMTP id bCiKAFdtQzVo; Mon, 20 Apr 2020 03:04:43 +0000 (UTC)
-Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [140.211.9.56])
-	by fraxinus.osuosl.org (Postfix) with ESMTP id 87AFE85653;
-	Mon, 20 Apr 2020 03:04:42 +0000 (UTC)
-Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
-	by lists.linuxfoundation.org (Postfix) with ESMTP id 7D675C1D8D;
-	Mon, 20 Apr 2020 03:04:42 +0000 (UTC)
-Received: from silver.osuosl.org (smtp3.osuosl.org [140.211.166.136])
- by lists.linuxfoundation.org (Postfix) with ESMTP id D7678C0177;
- Mon, 20 Apr 2020 03:04:40 +0000 (UTC)
-Received: from localhost (localhost [127.0.0.1])
- by silver.osuosl.org (Postfix) with ESMTP id BE328204D5;
- Mon, 20 Apr 2020 03:04:40 +0000 (UTC)
+	by silver.osuosl.org (Postfix) with ESMTP id 92A4B204A9;
+	Mon, 20 Apr 2020 04:52:44 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
 Received: from silver.osuosl.org ([127.0.0.1])
+	by localhost (.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
+	with ESMTP id z8M3VcKKbeWw; Mon, 20 Apr 2020 04:52:43 +0000 (UTC)
+Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [140.211.9.56])
+	by silver.osuosl.org (Postfix) with ESMTP id BC96920386;
+	Mon, 20 Apr 2020 04:52:43 +0000 (UTC)
+Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
+	by lists.linuxfoundation.org (Postfix) with ESMTP id A0B22C1D74;
+	Mon, 20 Apr 2020 04:52:43 +0000 (UTC)
+Received: from whitealder.osuosl.org (smtp1.osuosl.org [140.211.166.138])
+ by lists.linuxfoundation.org (Postfix) with ESMTP id 10DC2C0177
+ for <iommu@lists.linux-foundation.org>; Mon, 20 Apr 2020 04:52:43 +0000 (UTC)
+Received: from localhost (localhost [127.0.0.1])
+ by whitealder.osuosl.org (Postfix) with ESMTP id 071338575A
+ for <iommu@lists.linux-foundation.org>; Mon, 20 Apr 2020 04:52:43 +0000 (UTC)
+X-Virus-Scanned: amavisd-new at osuosl.org
+Received: from whitealder.osuosl.org ([127.0.0.1])
  by localhost (.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
- with ESMTP id 6G39NidtJnUT; Mon, 20 Apr 2020 03:04:39 +0000 (UTC)
-X-Greylist: from auto-whitelisted by SQLgrey-1.7.6
-X-Greylist: from auto-whitelisted by SQLgrey-1.7.6
-Received: from ozlabs.org (bilbo.ozlabs.org [203.11.71.1])
- by silver.osuosl.org (Postfix) with ESMTPS id 44846204A6;
- Mon, 20 Apr 2020 03:04:39 +0000 (UTC)
-Received: from authenticated.ozlabs.org (localhost [127.0.0.1])
- (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
- key-exchange ECDHE (P-256) server-signature RSA-PSS (4096 bits) server-digest
- SHA256) (No client certificate requested)
- by mail.ozlabs.org (Postfix) with ESMTPSA id 495BPY1B6Sz9sR4;
- Mon, 20 Apr 2020 13:04:33 +1000 (AEST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=ellerman.id.au;
- s=201909; t=1587351874;
- bh=zqFglfs+OWwiFYdz+pg3YEVVbd/md31jahle7Ih0HU4=;
- h=From:To:Cc:Subject:In-Reply-To:References:Date:From;
- b=Gdf0lZfuhRtXWn9XYKXxepVVuDOfiv59WFv1PTE2PQfslSmIGkxjwQqS9XEdGF7W9
- QR/uesda+C73aEg+f1PQ+m8355evDSUOoxV8DIjYahUJ/ZYQoCoT7hZ6Kg8Z31hF6+
- a3OMF1pX9eZYurylCG6+u9z7sGwffoOz+sSLn2vWw1d0FhMaaZZwrfWj4M9iTioCqO
- eIyWKkGK0p+b6Gp3XRrE7PVPdFEtB9hRR1eHqWZe+iumg9WDjt+PNlyFLyJlYQ4aqQ
- kVs9kfQiA99CtIFHnF9vJVqVq4HwpVWdAfLTptcbYjkqt05vc2TSg9wVf6+7hu/A91
- DCnoO0yM3nxiQ==
-From: Michael Ellerman <mpe@ellerman.id.au>
-To: Christophe Leroy <christophe.leroy@c-s.fr>,
- Krzysztof Kozlowski <krzk@kernel.org>, Joerg Roedel <joro@8bytes.org>,
- iommu@lists.linux-foundation.org, linux-kernel@vger.kernel.org
-Subject: Re: [PATCH] iommu: spapr_tce: Disable compile testing to fix build on
- book3s_32 config
-In-Reply-To: <a99ee461-664c-51ae-cb3a-cf5d87048d86@c-s.fr>
-References: <20200414142630.21153-1-krzk@kernel.org>
- <a99ee461-664c-51ae-cb3a-cf5d87048d86@c-s.fr>
-Date: Mon, 20 Apr 2020 13:04:47 +1000
-Message-ID: <874ktej1rk.fsf@mpe.ellerman.id.au>
+ with ESMTP id OTTfNjWbZW5r for <iommu@lists.linux-foundation.org>;
+ Mon, 20 Apr 2020 04:52:40 +0000 (UTC)
+X-Greylist: domain auto-whitelisted by SQLgrey-1.7.6
+Received: from mail-pf1-f193.google.com (mail-pf1-f193.google.com
+ [209.85.210.193])
+ by whitealder.osuosl.org (Postfix) with ESMTPS id D11FD85810
+ for <iommu@lists.linux-foundation.org>; Mon, 20 Apr 2020 04:52:40 +0000 (UTC)
+Received: by mail-pf1-f193.google.com with SMTP id b12so1392098pff.4
+ for <iommu@lists.linux-foundation.org>; Sun, 19 Apr 2020 21:52:40 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linaro.org; s=google;
+ h=date:from:to:cc:subject:message-id:references:mime-version
+ :content-disposition:in-reply-to;
+ bh=oNKRiUuDH3HcT8/Qwk9sSK+q6T3XdbwZxPtum7dk+0k=;
+ b=llneVi56W55NiLr4/oEdHvQsx+uYbkRQzHPT7RXrZNrdWl4RLJewuv+rVJiKFrxkY4
+ nmoFjBHPPeFNYEhI0kfaqgQBF6znWdA/EnlSHtnOx4AclT+kIaTuWS5tm4iSecLCnJ2R
+ dooRwMKfMVWt3HMIgWpLAcKKHUSvFmDPybPwq4jo9AkyuK8Dnd4CBBSVaOkqsH7FwfLR
+ s0D/bjS8qTOYDnSracP58KpC0hBcOwJYF3kbiuPScSMwMAdeyIIRIryN1guKVbLzk3eE
+ 1Rl9U9+MmfT//SMqV+TPzyfgxNh7I+SU//n/RgeKQLzsejwKAlcB3D8JTWza3p0o0Svh
+ WsJg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+ d=1e100.net; s=20161025;
+ h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+ :mime-version:content-disposition:in-reply-to;
+ bh=oNKRiUuDH3HcT8/Qwk9sSK+q6T3XdbwZxPtum7dk+0k=;
+ b=IKB60C1onmzyrLU9/G++EdRsxfmtcMhQqR5AXUiYDDdv5YxHrqwqJf5GVAGScXotWS
+ Ly2mevxJWiKkZq5RvjZNJvAJoQbJozhR1JrmYw47lRz1+yR4TsY6cwtn39oBMJZmJnjG
+ ZlIK3DT+T1mdbGZJPV8nFD1dzlLfvsSqGehCzM+hAGjh3parJHSwnGr/taCVHATFrDwr
+ t+1oO8LmhJ3WK1zopgSdO06LTcZgLAJgm8sVbgnBA33ETyHEZyojlwaCzbMNPm15y3DM
+ QsEHlbHT7tGIOpZm4Y8N0tdQtxVgE/Umevh0AzvXCuKjqOvv7YTdEzt4FTwLBf4bd/sT
+ AdHA==
+X-Gm-Message-State: AGi0PuYU+ati236sWm2gg6FZP0MCvOu+z1Utdxk+a5hBpP2SI5sbYig+
+ BvefSJWnPTjTt7oT8xb5leP9nA==
+X-Google-Smtp-Source: APiQypL47lTKmGwxOxVtKUAf13H57l0+QHnxWnUbjOkYcpSlzaMu1RjcsaR+CpdIXKiQMYpYBNys4A==
+X-Received: by 2002:a63:514a:: with SMTP id r10mr12687721pgl.246.1587358360091; 
+ Sun, 19 Apr 2020 21:52:40 -0700 (PDT)
+Received: from yoga (104-188-17-28.lightspeed.sndgca.sbcglobal.net.
+ [104.188.17.28])
+ by smtp.gmail.com with ESMTPSA id e26sm25908782pfi.84.2020.04.19.21.52.38
+ (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+ Sun, 19 Apr 2020 21:52:39 -0700 (PDT)
+Date: Sun, 19 Apr 2020 21:52:37 -0700
+From: Bjorn Andersson <bjorn.andersson@linaro.org>
+To: Tang Bin <tangbin@cmss.chinamobile.com>
+Subject: Re: [PATCH v2]iommu/qcom:fix local_base status check
+Message-ID: <20200420045237.GH987656@yoga>
+References: <20200418134703.1760-1-tangbin@cmss.chinamobile.com>
 MIME-Version: 1.0
-Cc: linuxppc-dev@lists.ozlabs.org, netdev@vger.kernel.org,
- Geert Uytterhoeven <geert@linux-m68k.org>,
- virtualization@lists.linux-foundation.org
+Content-Disposition: inline
+In-Reply-To: <20200418134703.1760-1-tangbin@cmss.chinamobile.com>
+Cc: linux-arm-msm@vger.kernel.org, iommu@lists.linux-foundation.org,
+ linux-kernel@vger.kernel.org, agross@kernel.org
 X-BeenThere: iommu@lists.linux-foundation.org
 X-Mailman-Version: 2.1.15
 Precedence: list
@@ -94,86 +108,52 @@ Content-Transfer-Encoding: 7bit
 Errors-To: iommu-bounces@lists.linux-foundation.org
 Sender: "iommu" <iommu-bounces@lists.linux-foundation.org>
 
-Christophe Leroy <christophe.leroy@c-s.fr> writes:
-> On 04/14/2020 02:26 PM, Krzysztof Kozlowski wrote:
->> Although SPAPR_TCE_IOMMU itself can be compile tested on certain PowerPC
->> configurations, its presence makes arch/powerpc/kvm/Makefile to select
->> modules which do not build in such configuration.
->> 
->> The arch/powerpc/kvm/ modules use kvm_arch.spapr_tce_tables which exists
->> only with CONFIG_PPC_BOOK3S_64.  However these modules are selected when
->> COMPILE_TEST and SPAPR_TCE_IOMMU are chosen leading to build failures:
->> 
->>      In file included from arch/powerpc/include/asm/book3s/64/mmu-hash.h:20:0,
->>                       from arch/powerpc/kvm/book3s_64_vio_hv.c:22:
->>      arch/powerpc/include/asm/book3s/64/pgtable.h:17:0: error: "_PAGE_EXEC" redefined [-Werror]
->>       #define _PAGE_EXEC  0x00001 /* execute permission */
->> 
->>      In file included from arch/powerpc/include/asm/book3s/32/pgtable.h:8:0,
->>                       from arch/powerpc/include/asm/book3s/pgtable.h:8,
->>                       from arch/powerpc/include/asm/pgtable.h:18,
->>                       from include/linux/mm.h:95,
->>                       from arch/powerpc/include/asm/io.h:29,
->>                       from include/linux/io.h:13,
->>                       from include/linux/irq.h:20,
->>                       from arch/powerpc/include/asm/hardirq.h:6,
->>                       from include/linux/hardirq.h:9,
->>                       from include/linux/kvm_host.h:7,
->>                       from arch/powerpc/kvm/book3s_64_vio_hv.c:12:
->>      arch/powerpc/include/asm/book3s/32/hash.h:29:0: note: this is the location of the previous definition
->>       #define _PAGE_EXEC 0x200 /* software: exec allowed */
->> 
->> Reported-by: Geert Uytterhoeven <geert@linux-m68k.org>
->> Fixes: e93a1695d7fb ("iommu: Enable compile testing for some of drivers")
->> Signed-off-by: Krzysztof Kozlowski <krzk@kernel.org>
->> ---
->>   drivers/iommu/Kconfig | 2 +-
->>   1 file changed, 1 insertion(+), 1 deletion(-)
->> 
->> diff --git a/drivers/iommu/Kconfig b/drivers/iommu/Kconfig
->> index 58b4a4dbfc78..3532b1ead19d 100644
->> --- a/drivers/iommu/Kconfig
->> +++ b/drivers/iommu/Kconfig
->> @@ -362,7 +362,7 @@ config IPMMU_VMSA
->>   
->>   config SPAPR_TCE_IOMMU
->>   	bool "sPAPR TCE IOMMU Support"
->> -	depends on PPC_POWERNV || PPC_PSERIES || (PPC && COMPILE_TEST)
->> +	depends on PPC_POWERNV || PPC_PSERIES
->>   	select IOMMU_API
->>   	help
->>   	  Enables bits of IOMMU API required by VFIO. The iommu_ops
->> 
->
-> Should it be fixed the other way round, something like:
+On Sat 18 Apr 06:47 PDT 2020, Tang Bin wrote:
 
-That doesn't actually fix this specific issue, the code will build but
-then not link:
+> The function qcom_iommu_device_probe() does not perform sufficient
+> error checking after executing devm_ioremap_resource(), which can
+> result in crashes if a critical error path is encountered.
+> 
 
-  ld: arch/powerpc/../../virt/kvm/vfio.o: in function `.kvm_spapr_tce_release_vfio_group':
-  vfio.c:(.text.kvm_spapr_tce_release_vfio_group+0xb0): undefined reference to `.kvm_spapr_tce_release_iommu_group'
-  ld: arch/powerpc/../../virt/kvm/vfio.o: in function `.kvm_vfio_set_group':
-  vfio.c:(.text.kvm_vfio_set_group+0x7f4): undefined reference to `.kvm_spapr_tce_attach_iommu_group'
-  ld: arch/powerpc/kvm/powerpc.o: in function `.kvm_arch_vm_ioctl':
-  (.text.kvm_arch_vm_ioctl+0x1a4): undefined reference to `.kvm_vm_ioctl_create_spapr_tce'
-  ld: (.text.kvm_arch_vm_ioctl+0x230): undefined reference to `.kvm_vm_ioctl_create_spapr_tce'
-  make[1]: *** [/home/michael/linux/Makefile:1106: vmlinux] Error 1
+Thanks, that's much better.
 
-> diff --git a/arch/powerpc/kvm/Makefile b/arch/powerpc/kvm/Makefile
-> index 2bfeaa13befb..906707d15810 100644
-> --- a/arch/powerpc/kvm/Makefile
-> +++ b/arch/powerpc/kvm/Makefile
-> @@ -135,4 +135,4 @@ obj-$(CONFIG_KVM_BOOK3S_32) += kvm.o
->   obj-$(CONFIG_KVM_BOOK3S_64_PR) += kvm-pr.o
->   obj-$(CONFIG_KVM_BOOK3S_64_HV) += kvm-hv.o
->
-> -obj-y += $(kvm-book3s_64-builtin-objs-y)
-> +obj-$(CONFIG_KVM_BOOK3S_64) += $(kvm-book3s_64-builtin-objs-y)
+Reviewed-by: Bjorn Andersson <bjorn.andersson@linaro.org>
 
-But this is probably still a good thing to do, as it would have made the
-error messages clearer in this case I think.
+Regards,
+Bjorn
 
-cheers
+> Fixes: 0ae349a0f33f ("iommu/qcom: Add qcom_iommu")
+> 
+> Signed-off-by: Tang Bin <tangbin@cmss.chinamobile.com>
+> ---
+> v2:
+>  - fix commit message and add fixed tag
+> ---
+>  drivers/iommu/qcom_iommu.c | 5 ++++-
+>  1 file changed, 4 insertions(+), 1 deletion(-)
+> 
+> diff --git a/drivers/iommu/qcom_iommu.c b/drivers/iommu/qcom_iommu.c
+> index 4328da0b0..b160cf140 100644
+> --- a/drivers/iommu/qcom_iommu.c
+> +++ b/drivers/iommu/qcom_iommu.c
+> @@ -813,8 +813,11 @@ static int qcom_iommu_device_probe(struct platform_device *pdev)
+>  	qcom_iommu->dev = dev;
+>  
+>  	res = platform_get_resource(pdev, IORESOURCE_MEM, 0);
+> -	if (res)
+> +	if (res) {
+>  		qcom_iommu->local_base = devm_ioremap_resource(dev, res);
+> +		if (IS_ERR(qcom_iommu->local_base))
+> +			return PTR_ERR(qcom_iommu->local_base);
+> +	}
+>  
+>  	qcom_iommu->iface_clk = devm_clk_get(dev, "iface");
+>  	if (IS_ERR(qcom_iommu->iface_clk)) {
+> -- 
+> 2.20.1.windows.1
+> 
+> 
+> 
 _______________________________________________
 iommu mailing list
 iommu@lists.linux-foundation.org
