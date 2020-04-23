@@ -7,86 +7,86 @@ X-Spam-Status: No, score=-9.6 required=3.0 tests=DKIM_INVALID,DKIM_SIGNED,
 	SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED,USER_AGENT_GIT autolearn=ham
 	autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id D8BAEC54FCB
-	for <iommu@archiver.kernel.org>; Thu, 23 Apr 2020 12:55:19 +0000 (UTC)
-Received: from hemlock.osuosl.org (smtp2.osuosl.org [140.211.166.133])
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 1DF36C54FCB
+	for <iommu@archiver.kernel.org>; Thu, 23 Apr 2020 12:55:31 +0000 (UTC)
+Received: from silver.osuosl.org (smtp3.osuosl.org [140.211.166.136])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by mail.kernel.org (Postfix) with ESMTPS id AA9092077D
-	for <iommu@archiver.kernel.org>; Thu, 23 Apr 2020 12:55:19 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTPS id E1E552077D
+	for <iommu@archiver.kernel.org>; Thu, 23 Apr 2020 12:55:30 +0000 (UTC)
 Authentication-Results: mail.kernel.org;
-	dkim=fail reason="signature verification failed" (2048-bit key) header.d=linaro.org header.i=@linaro.org header.b="yqE28Hpx"
-DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org AA9092077D
+	dkim=fail reason="signature verification failed" (2048-bit key) header.d=linaro.org header.i=@linaro.org header.b="B2T6IS/g"
+DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org E1E552077D
 Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=linaro.org
 Authentication-Results: mail.kernel.org; spf=pass smtp.mailfrom=iommu-bounces@lists.linux-foundation.org
 Received: from localhost (localhost [127.0.0.1])
-	by hemlock.osuosl.org (Postfix) with ESMTP id 780B2885B9;
-	Thu, 23 Apr 2020 12:55:19 +0000 (UTC)
+	by silver.osuosl.org (Postfix) with ESMTP id CF8442042D;
+	Thu, 23 Apr 2020 12:55:30 +0000 (UTC)
+X-Virus-Scanned: amavisd-new at osuosl.org
+Received: from silver.osuosl.org ([127.0.0.1])
+	by localhost (.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
+	with ESMTP id S7Xw82VF0fz0; Thu, 23 Apr 2020 12:55:29 +0000 (UTC)
+Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [140.211.9.56])
+	by silver.osuosl.org (Postfix) with ESMTP id CB60E2012D;
+	Thu, 23 Apr 2020 12:55:29 +0000 (UTC)
+Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
+	by lists.linuxfoundation.org (Postfix) with ESMTP id BA16EC1797;
+	Thu, 23 Apr 2020 12:55:29 +0000 (UTC)
+Received: from hemlock.osuosl.org (smtp2.osuosl.org [140.211.166.133])
+ by lists.linuxfoundation.org (Postfix) with ESMTP id 47D7CC0175
+ for <iommu@lists.linux-foundation.org>; Thu, 23 Apr 2020 12:55:28 +0000 (UTC)
+Received: from localhost (localhost [127.0.0.1])
+ by hemlock.osuosl.org (Postfix) with ESMTP id 4266888581
+ for <iommu@lists.linux-foundation.org>; Thu, 23 Apr 2020 12:55:28 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
 Received: from hemlock.osuosl.org ([127.0.0.1])
-	by localhost (.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
-	with ESMTP id NJMBHQUyLAzV; Thu, 23 Apr 2020 12:55:18 +0000 (UTC)
-Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [140.211.9.56])
-	by hemlock.osuosl.org (Postfix) with ESMTP id A083888498;
-	Thu, 23 Apr 2020 12:55:18 +0000 (UTC)
-Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
-	by lists.linuxfoundation.org (Postfix) with ESMTP id 86076C1797;
-	Thu, 23 Apr 2020 12:55:18 +0000 (UTC)
-Received: from fraxinus.osuosl.org (smtp4.osuosl.org [140.211.166.137])
- by lists.linuxfoundation.org (Postfix) with ESMTP id 739C3C0175
- for <iommu@lists.linux-foundation.org>; Thu, 23 Apr 2020 12:55:17 +0000 (UTC)
-Received: from localhost (localhost [127.0.0.1])
- by fraxinus.osuosl.org (Postfix) with ESMTP id 62FF086CA7
- for <iommu@lists.linux-foundation.org>; Thu, 23 Apr 2020 12:55:17 +0000 (UTC)
-X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from fraxinus.osuosl.org ([127.0.0.1])
  by localhost (.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
- with ESMTP id O8PeZuCWbLcE for <iommu@lists.linux-foundation.org>;
- Thu, 23 Apr 2020 12:55:16 +0000 (UTC)
+ with ESMTP id iKwVNyI9ZDrT for <iommu@lists.linux-foundation.org>;
+ Thu, 23 Apr 2020 12:55:27 +0000 (UTC)
 X-Greylist: domain auto-whitelisted by SQLgrey-1.7.6
-Received: from mail-wm1-f68.google.com (mail-wm1-f68.google.com
- [209.85.128.68])
- by fraxinus.osuosl.org (Postfix) with ESMTPS id 0F28986C78
- for <iommu@lists.linux-foundation.org>; Thu, 23 Apr 2020 12:55:16 +0000 (UTC)
-Received: by mail-wm1-f68.google.com with SMTP id r26so6443959wmh.0
- for <iommu@lists.linux-foundation.org>; Thu, 23 Apr 2020 05:55:15 -0700 (PDT)
+Received: from mail-wm1-f67.google.com (mail-wm1-f67.google.com
+ [209.85.128.67])
+ by hemlock.osuosl.org (Postfix) with ESMTPS id 1405488498
+ for <iommu@lists.linux-foundation.org>; Thu, 23 Apr 2020 12:55:27 +0000 (UTC)
+Received: by mail-wm1-f67.google.com with SMTP id g12so6421435wmh.3
+ for <iommu@lists.linux-foundation.org>; Thu, 23 Apr 2020 05:55:26 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linaro.org; s=google;
  h=from:to:cc:subject:date:message-id:in-reply-to:references
  :mime-version:content-transfer-encoding;
- bh=OaaztZ5bBKIBkeW9HRaPwk71y2NkxM3Bil0OAmxCF84=;
- b=yqE28Hpx7fIY2K2uyhr7VQs27fQ6wdVDQaWszm7Xolk1Y9aZSNK1PmlGLgyI3msb1p
- 1qaoQrm1QtsPhmsooGbM3bfYwIu61s/NfadUn6iH3xkYeRMG2amRK6OtvafBVXkHAUmi
- wdIH2dLj5Hr8M2UOdhLPMtzrhkK8GCBQulxR7ZVDN57pdaW1tEtZ8y7OyzWuuP1r6Not
- cyveZwJCzrArMYDynZFuBzpP5FaP8uMC6qidrscFldBrahKUyBKBXRapkP0705zWnXWK
- T5dyZ6CQeiLDBrRGioCkBfS0OWrQgxjUgFCribddsPSFYNcO6NYsrg0M3G8loMlLLuAD
- SYuQ==
+ bh=SgbuLdDP1Mxc0Wy+JF9cWOFI+YrpHFN5Gr1r0SSOMao=;
+ b=B2T6IS/gES1zUUVuV5qoXzCO9MyycYQ5RPN6RzfRpRZg3ehcZ64IRCnKZcEyGMpyQ5
+ oyucPD2Qaxuh89w4S7V7tASNzB6cTdWTCA0b12cvMf1G5DIk+C0Gg30xlnQpmFP5Vilw
+ 9LV1X2PUlUl2WIlnP/WH7+fjrRpmlhyUVKRdyaKkAc0IpBZ5/jasHWlGS4wXRXnOHTID
+ dJjIf5jYBgOoOneStaGBkmDZOzY12CjZGIBW/+LAO5dQdS8w/SvSkAAnIA+RjJlWWqp6
+ wAPd2YgZNG3TtPMyZYapBZpBQ+DiLG9/lbAc8JeGdDQbuMxVZMVznMdCkNJg3L8j2DKs
+ U/6Q==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
  d=1e100.net; s=20161025;
  h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
  :references:mime-version:content-transfer-encoding;
- bh=OaaztZ5bBKIBkeW9HRaPwk71y2NkxM3Bil0OAmxCF84=;
- b=ocQpP0K6sTMUmx3XOMbe0RMp2m5M2WEILGcFCIHhKjKN/CkzMyluuwgB68LF/kt/Nb
- PyixUgzt2PGlHK74UEqPezbhc9fYGRiOz3F7Ts3KIhOsN+6Ys5XR95i9QcxAG1hNkh+W
- CwGCjdFkoJM9sfp05rMZWAYUVRJiHVZyNZ5iSMWS66j92z6fOMB7PegzcIgGz26RNbz0
- 44N616bkLDyqPqxsWLeepvWPDRWKq3ZlQKucZPuAlHo7Pz+u7dF2xqy7PcLEHzMNM+J0
- FfDdUWSVCQg72NIhU4qYqXznazOHPn1LPJVq9+5C5UQhZi2p4oRQuOUJQUg/5LgBgf04
- QS5Q==
-X-Gm-Message-State: AGi0PuYnc0nIOSTzVuwu98AEl2qjOFZEIQs6qIjfcVpq31nY6DlCsoqp
- WoU6fdp+Vu/9Z+B+LofAreUQX+FUu7Q=
-X-Google-Smtp-Source: APiQypKVE7G+JLw53SinSii1A7L9imAPz996wJ53Lzw2aCpvZOINbmQb9MaCC3wPHclf37OmB09O4A==
-X-Received: by 2002:a1c:1b88:: with SMTP id b130mr3975959wmb.75.1587646514120; 
- Thu, 23 Apr 2020 05:55:14 -0700 (PDT)
+ bh=SgbuLdDP1Mxc0Wy+JF9cWOFI+YrpHFN5Gr1r0SSOMao=;
+ b=OUgMnM7VO6mm3RJXPfE+eV+chUjo4qGMbBem8eF7gYZ8pBZqDIOM3a8HVDb72qiHKK
+ dwUGZ9givKzr+R5UrCbrUy0dZTtdeqJ+1waonzAKE+ykJcuZYDKaj08HMi0SnlFogvFr
+ pUJ0xeMRXjvN3WGJgLvCYe8Zh1hZ0rXb5Z9cCVPFW95M56jie6jxcPrw1Lqy5Bm62oNa
+ r0rdMQNW/+TPTy5R8pPbY2ddNxjXSdGFImi/gxtvkmBPb7g3hCy76vJJdWFoc8Er+jmE
+ bcFr7M8Xw6H2XY1nwoK6kqdsWPmEN9mO3hTyWErAM2VBVX1dpfZtJ+hFmNHiDnCiCxX2
+ kQXQ==
+X-Gm-Message-State: AGi0PuafMssNAzorcRXXYbLaUooiLvX2UZw3aykF0Cj1OCdlJ6O278Av
+ vToz0k0aeSvSdtJ/Xe2iaeYF10RiDKI=
+X-Google-Smtp-Source: APiQypIZMh8Z66ZJlX50H9mE2uL0b/PplvI+VqDR858LMBD44nhr8z/BmkhEt5gVXXcw/5slV+VOjQ==
+X-Received: by 2002:a1c:9cca:: with SMTP id f193mr3954229wme.71.1587646525237; 
+ Thu, 23 Apr 2020 05:55:25 -0700 (PDT)
 Received: from localhost.localdomain
  ([2001:171b:226b:54a0:116c:c27a:3e7f:5eaf])
- by smtp.gmail.com with ESMTPSA id x23sm3482784wmj.6.2020.04.23.05.55.13
+ by smtp.gmail.com with ESMTPSA id x23sm3482784wmj.6.2020.04.23.05.55.24
  (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
- Thu, 23 Apr 2020 05:55:13 -0700 (PDT)
+ Thu, 23 Apr 2020 05:55:24 -0700 (PDT)
 From: Jean-Philippe Brucker <jean-philippe@linaro.org>
 To: iommu@lists.linux-foundation.org,
 	linux-accelerators@lists.ozlabs.org
-Subject: [PATCH v2 1/2] uacce: Remove mm_exit() op
-Date: Thu, 23 Apr 2020 14:53:28 +0200
-Message-Id: <20200423125329.782066-2-jean-philippe@linaro.org>
+Subject: [PATCH v2 2/2] iommu: Remove iommu_sva_ops::mm_exit()
+Date: Thu, 23 Apr 2020 14:53:30 +0200
+Message-Id: <20200423125329.782066-3-jean-philippe@linaro.org>
 X-Mailer: git-send-email 2.26.0
 In-Reply-To: <20200423125329.782066-1-jean-philippe@linaro.org>
 References: <20200423125329.782066-1-jean-philippe@linaro.org>
@@ -110,341 +110,158 @@ Content-Transfer-Encoding: 7bit
 Errors-To: iommu-bounces@lists.linux-foundation.org
 Sender: "iommu" <iommu-bounces@lists.linux-foundation.org>
 
-The mm_exit() op will be removed from the SVA API. When a process dies
-and its mm goes away, the IOMMU driver won't notify device drivers
-anymore. Drivers should expect to handle a lot more aborted DMA. On the
-upside, it does greatly simplify the queue management.
+After binding a device to an mm, device drivers currently need to
+register a mm_exit handler. This function is called when the mm exits,
+to gracefully stop DMA targeting the address space and flush page faults
+to the IOMMU.
 
-The uacce_mm struct, that tracks all queues bound to an mm, was only
-used by the mm_exit() callback. Remove it.
+This is deemed too complex for the MMU release() notifier, which may be
+triggered by any mmput() invocation, from about 120 callsites [1]. The
+upcoming SVA module has an example of such complexity: the I/O Page
+Fault handler would need to call mmput_async() instead of mmput() after
+handling an IOPF, to avoid triggering the release() notifier which would
+in turn drain the IOPF queue and lock up.
+
+Another concern is the DMA stop function taking too long, up to several
+minutes [2]. For some mmput() callers this may disturb other users. For
+example, if the OOM killer picks the mm bound to a device as the victim
+and that mm's memory is locked, if the release() takes too long, it
+might choose additional innocent victims to kill.
+
+To simplify the MMU release notifier, don't forward the notification to
+device drivers. Since they don't stop DMA on mm exit anymore, the PASID
+lifetime is extended:
+
+(1) The device driver calls bind(). A PASID is allocated.
+
+  Here any DMA fault is handled by mm, and on error we don't print
+  anything to dmesg. Userspace can easily trigger errors by issuing DMA
+  on unmapped buffers.
+
+(2) exit_mmap(), for example the process took a SIGKILL. This step
+    doesn't happen during normal operations. Remove the pgd from the
+    PASID table, since the page tables are about to be freed. Invalidate
+    the IOTLBs.
+
+  Here the device may still perform DMA on the address space. Incoming
+  transactions are aborted but faults aren't printed out. ATS
+  Translation Requests return Successful Translation Completions with
+  R=W=0. PRI Page Requests return with Invalid Request.
+
+(3) The device driver stops DMA, possibly following release of a fd, and
+    calls unbind(). PASID table is cleared, IOTLB invalidated if
+    necessary. The page fault queues are drained, and the PASID is
+    freed.
+
+  If DMA for that PASID is still running here, something went seriously
+  wrong and errors should be reported.
+
+For now remove iommu_sva_ops entirely. We might need to re-introduce
+them at some point, for example to notify device drivers of unhandled
+IOPF.
+
+[1] https://lore.kernel.org/linux-iommu/20200306174239.GM31668@ziepe.ca/
+[2] https://lore.kernel.org/linux-iommu/4d68da96-0ad5-b412-5987-2f7a6aa796c3@amd.com/
 
 Signed-off-by: Jean-Philippe Brucker <jean-philippe@linaro.org>
 ---
-v1->v2: clear q->handle after unbind
+v1->v2: tried to clarify the lifetime of the PASID
 ---
- include/linux/uacce.h      |  34 ++------
- drivers/misc/uacce/uacce.c | 172 +++++++++----------------------------
- 2 files changed, 51 insertions(+), 155 deletions(-)
+ include/linux/iommu.h | 30 ------------------------------
+ drivers/iommu/iommu.c | 11 -----------
+ 2 files changed, 41 deletions(-)
 
-diff --git a/include/linux/uacce.h b/include/linux/uacce.h
-index 0e215e6d0534a..454c2f6672d79 100644
---- a/include/linux/uacce.h
-+++ b/include/linux/uacce.h
-@@ -68,19 +68,21 @@ enum uacce_q_state {
-  * @uacce: pointer to uacce
-  * @priv: private pointer
-  * @wait: wait queue head
-- * @list: index into uacce_mm
-- * @uacce_mm: the corresponding mm
-+ * @list: index into uacce queues list
-  * @qfrs: pointer of qfr regions
-  * @state: queue state machine
-+ * @pasid: pasid associated to the mm
-+ * @handle: iommu_sva handle returned by iommu_sva_bind_device()
-  */
- struct uacce_queue {
- 	struct uacce_device *uacce;
- 	void *priv;
- 	wait_queue_head_t wait;
- 	struct list_head list;
--	struct uacce_mm *uacce_mm;
- 	struct uacce_qfile_region *qfrs[UACCE_MAX_REGION];
- 	enum uacce_q_state state;
-+	int pasid;
-+	struct iommu_sva *handle;
- };
+diff --git a/include/linux/iommu.h b/include/linux/iommu.h
+index 7ef8b0bda6951..bd330d6343b78 100644
+--- a/include/linux/iommu.h
++++ b/include/linux/iommu.h
+@@ -53,8 +53,6 @@ struct iommu_fault_event;
+ 
+ typedef int (*iommu_fault_handler_t)(struct iommu_domain *,
+ 			struct device *, unsigned long, int, void *);
+-typedef int (*iommu_mm_exit_handler_t)(struct device *dev, struct iommu_sva *,
+-				       void *);
+ typedef int (*iommu_dev_fault_handler_t)(struct iommu_fault *, void *);
+ 
+ struct iommu_domain_geometry {
+@@ -171,25 +169,6 @@ enum iommu_dev_features {
+ 
+ #define IOMMU_PASID_INVALID	(-1U)
+ 
+-/**
+- * struct iommu_sva_ops - device driver callbacks for an SVA context
+- *
+- * @mm_exit: called when the mm is about to be torn down by exit_mmap. After
+- *           @mm_exit returns, the device must not issue any more transaction
+- *           with the PASID given as argument.
+- *
+- *           The @mm_exit handler is allowed to sleep. Be careful about the
+- *           locks taken in @mm_exit, because they might lead to deadlocks if
+- *           they are also held when dropping references to the mm. Consider the
+- *           following call chain:
+- *           mutex_lock(A); mmput(mm) -> exit_mm() -> @mm_exit() -> mutex_lock(A)
+- *           Using mmput_async() prevents this scenario.
+- *
+- */
+-struct iommu_sva_ops {
+-	iommu_mm_exit_handler_t mm_exit;
+-};
+-
+ #ifdef CONFIG_IOMMU_API
  
  /**
-@@ -96,8 +98,8 @@ struct uacce_queue {
-  * @cdev: cdev of the uacce
-  * @dev: dev of the uacce
-  * @priv: private pointer of the uacce
-- * @mm_list: list head of uacce_mm->list
-- * @mm_lock: lock for mm_list
-+ * @queues: list of queues
-+ * @queues_lock: lock for queues list
-  * @inode: core vfs
+@@ -605,7 +584,6 @@ struct iommu_fwspec {
   */
- struct uacce_device {
-@@ -112,27 +114,9 @@ struct uacce_device {
- 	struct cdev *cdev;
- 	struct device dev;
- 	void *priv;
--	struct list_head mm_list;
--	struct mutex mm_lock;
--	struct inode *inode;
--};
--
--/**
-- * struct uacce_mm - keep track of queues bound to a process
-- * @list: index into uacce_device
-- * @queues: list of queues
-- * @mm: the mm struct
-- * @lock: protects the list of queues
-- * @pasid: pasid of the uacce_mm
-- * @handle: iommu_sva handle return from iommu_sva_bind_device
-- */
--struct uacce_mm {
--	struct list_head list;
- 	struct list_head queues;
--	struct mm_struct *mm;
--	struct mutex lock;
--	int pasid;
--	struct iommu_sva *handle;
-+	struct mutex queues_lock;
-+	struct inode *inode;
+ struct iommu_sva {
+ 	struct device			*dev;
+-	const struct iommu_sva_ops	*ops;
  };
  
- #if IS_ENABLED(CONFIG_UACCE)
-diff --git a/drivers/misc/uacce/uacce.c b/drivers/misc/uacce/uacce.c
-index d39307f060bd6..107028e77ca37 100644
---- a/drivers/misc/uacce/uacce.c
-+++ b/drivers/misc/uacce/uacce.c
-@@ -90,109 +90,39 @@ static long uacce_fops_compat_ioctl(struct file *filep,
- }
- #endif
+ int iommu_fwspec_init(struct device *dev, struct fwnode_handle *iommu_fwnode,
+@@ -653,8 +631,6 @@ struct iommu_sva *iommu_sva_bind_device(struct device *dev,
+ 					struct mm_struct *mm,
+ 					void *drvdata);
+ void iommu_sva_unbind_device(struct iommu_sva *handle);
+-int iommu_sva_set_ops(struct iommu_sva *handle,
+-		      const struct iommu_sva_ops *ops);
+ int iommu_sva_get_pasid(struct iommu_sva *handle);
  
--static int uacce_sva_exit(struct device *dev, struct iommu_sva *handle,
--			  void *data)
-+static int uacce_bind_queue(struct uacce_device *uacce, struct uacce_queue *q)
+ #else /* CONFIG_IOMMU_API */
+@@ -1058,12 +1034,6 @@ static inline void iommu_sva_unbind_device(struct iommu_sva *handle)
  {
--	struct uacce_mm *uacce_mm = data;
--	struct uacce_queue *q;
--
--	/*
--	 * No new queue can be added concurrently because no caller can have a
--	 * reference to this mm. But there may be concurrent calls to
--	 * uacce_mm_put(), so we need the lock.
--	 */
--	mutex_lock(&uacce_mm->lock);
--	list_for_each_entry(q, &uacce_mm->queues, list)
--		uacce_put_queue(q);
--	uacce_mm->mm = NULL;
--	mutex_unlock(&uacce_mm->lock);
-+	int pasid;
-+	struct iommu_sva *handle;
+ }
  
--	return 0;
+-static inline int iommu_sva_set_ops(struct iommu_sva *handle,
+-				    const struct iommu_sva_ops *ops)
+-{
+-	return -EINVAL;
 -}
 -
--static struct iommu_sva_ops uacce_sva_ops = {
--	.mm_exit = uacce_sva_exit,
--};
--
--static struct uacce_mm *uacce_mm_get(struct uacce_device *uacce,
--				     struct uacce_queue *q,
--				     struct mm_struct *mm)
+ static inline int iommu_sva_get_pasid(struct iommu_sva *handle)
+ {
+ 	return IOMMU_PASID_INVALID;
+diff --git a/drivers/iommu/iommu.c b/drivers/iommu/iommu.c
+index 2b471419e26c3..dfed12328c032 100644
+--- a/drivers/iommu/iommu.c
++++ b/drivers/iommu/iommu.c
+@@ -2637,17 +2637,6 @@ void iommu_sva_unbind_device(struct iommu_sva *handle)
+ }
+ EXPORT_SYMBOL_GPL(iommu_sva_unbind_device);
+ 
+-int iommu_sva_set_ops(struct iommu_sva *handle,
+-		      const struct iommu_sva_ops *sva_ops)
 -{
--	struct uacce_mm *uacce_mm = NULL;
--	struct iommu_sva *handle = NULL;
--	int ret;
+-	if (handle->ops && handle->ops != sva_ops)
+-		return -EEXIST;
 -
--	lockdep_assert_held(&uacce->mm_lock);
+-	handle->ops = sva_ops;
+-	return 0;
+-}
+-EXPORT_SYMBOL_GPL(iommu_sva_set_ops);
 -
--	list_for_each_entry(uacce_mm, &uacce->mm_list, list) {
--		if (uacce_mm->mm == mm) {
--			mutex_lock(&uacce_mm->lock);
--			list_add(&q->list, &uacce_mm->queues);
--			mutex_unlock(&uacce_mm->lock);
--			return uacce_mm;
--		}
--	}
--
--	uacce_mm = kzalloc(sizeof(*uacce_mm), GFP_KERNEL);
--	if (!uacce_mm)
--		return NULL;
-+	if (!(uacce->flags & UACCE_DEV_SVA))
-+		return 0;
- 
--	if (uacce->flags & UACCE_DEV_SVA) {
--		/*
--		 * Safe to pass an incomplete uacce_mm, since mm_exit cannot
--		 * fire while we hold a reference to the mm.
--		 */
--		handle = iommu_sva_bind_device(uacce->parent, mm, uacce_mm);
--		if (IS_ERR(handle))
--			goto err_free;
-+	handle = iommu_sva_bind_device(uacce->parent, current->mm, NULL);
-+	if (IS_ERR(handle))
-+		return PTR_ERR(handle);
- 
--		ret = iommu_sva_set_ops(handle, &uacce_sva_ops);
--		if (ret)
--			goto err_unbind;
--
--		uacce_mm->pasid = iommu_sva_get_pasid(handle);
--		if (uacce_mm->pasid == IOMMU_PASID_INVALID)
--			goto err_unbind;
-+	pasid = iommu_sva_get_pasid(handle);
-+	if (pasid == IOMMU_PASID_INVALID) {
-+		iommu_sva_unbind_device(handle);
-+		return -ENODEV;
- 	}
- 
--	uacce_mm->mm = mm;
--	uacce_mm->handle = handle;
--	INIT_LIST_HEAD(&uacce_mm->queues);
--	mutex_init(&uacce_mm->lock);
--	list_add(&q->list, &uacce_mm->queues);
--	list_add(&uacce_mm->list, &uacce->mm_list);
--
--	return uacce_mm;
--
--err_unbind:
--	if (handle)
--		iommu_sva_unbind_device(handle);
--err_free:
--	kfree(uacce_mm);
--	return NULL;
-+	q->handle = handle;
-+	q->pasid = pasid;
-+	return 0;
- }
- 
--static void uacce_mm_put(struct uacce_queue *q)
-+static void uacce_unbind_queue(struct uacce_queue *q)
+ int iommu_sva_get_pasid(struct iommu_sva *handle)
  {
--	struct uacce_mm *uacce_mm = q->uacce_mm;
--
--	lockdep_assert_held(&q->uacce->mm_lock);
--
--	mutex_lock(&uacce_mm->lock);
--	list_del(&q->list);
--	mutex_unlock(&uacce_mm->lock);
--
--	if (list_empty(&uacce_mm->queues)) {
--		if (uacce_mm->handle)
--			iommu_sva_unbind_device(uacce_mm->handle);
--		list_del(&uacce_mm->list);
--		kfree(uacce_mm);
--	}
-+	if (!q->handle)
-+		return;
-+	iommu_sva_unbind_device(q->handle);
-+	q->handle = NULL;
- }
- 
- static int uacce_fops_open(struct inode *inode, struct file *filep)
- {
--	struct uacce_mm *uacce_mm = NULL;
- 	struct uacce_device *uacce;
- 	struct uacce_queue *q;
- 	int ret = 0;
-@@ -205,21 +135,16 @@ static int uacce_fops_open(struct inode *inode, struct file *filep)
- 	if (!q)
- 		return -ENOMEM;
- 
--	mutex_lock(&uacce->mm_lock);
--	uacce_mm = uacce_mm_get(uacce, q, current->mm);
--	mutex_unlock(&uacce->mm_lock);
--	if (!uacce_mm) {
--		ret = -ENOMEM;
-+	ret = uacce_bind_queue(uacce, q);
-+	if (ret)
- 		goto out_with_mem;
--	}
- 
- 	q->uacce = uacce;
--	q->uacce_mm = uacce_mm;
- 
- 	if (uacce->ops->get_queue) {
--		ret = uacce->ops->get_queue(uacce, uacce_mm->pasid, q);
-+		ret = uacce->ops->get_queue(uacce, q->pasid, q);
- 		if (ret < 0)
--			goto out_with_mm;
-+			goto out_with_bond;
- 	}
- 
- 	init_waitqueue_head(&q->wait);
-@@ -227,12 +152,14 @@ static int uacce_fops_open(struct inode *inode, struct file *filep)
- 	uacce->inode = inode;
- 	q->state = UACCE_Q_INIT;
- 
-+	mutex_lock(&uacce->queues_lock);
-+	list_add(&q->list, &uacce->queues);
-+	mutex_unlock(&uacce->queues_lock);
-+
- 	return 0;
- 
--out_with_mm:
--	mutex_lock(&uacce->mm_lock);
--	uacce_mm_put(q);
--	mutex_unlock(&uacce->mm_lock);
-+out_with_bond:
-+	uacce_unbind_queue(q);
- out_with_mem:
- 	kfree(q);
- 	return ret;
-@@ -241,14 +168,12 @@ static int uacce_fops_open(struct inode *inode, struct file *filep)
- static int uacce_fops_release(struct inode *inode, struct file *filep)
- {
- 	struct uacce_queue *q = filep->private_data;
--	struct uacce_device *uacce = q->uacce;
- 
-+	mutex_lock(&q->uacce->queues_lock);
-+	list_del(&q->list);
-+	mutex_unlock(&q->uacce->queues_lock);
- 	uacce_put_queue(q);
--
--	mutex_lock(&uacce->mm_lock);
--	uacce_mm_put(q);
--	mutex_unlock(&uacce->mm_lock);
--
-+	uacce_unbind_queue(q);
- 	kfree(q);
- 
- 	return 0;
-@@ -513,8 +438,8 @@ struct uacce_device *uacce_alloc(struct device *parent,
- 	if (ret < 0)
- 		goto err_with_uacce;
- 
--	INIT_LIST_HEAD(&uacce->mm_list);
--	mutex_init(&uacce->mm_lock);
-+	INIT_LIST_HEAD(&uacce->queues);
-+	mutex_init(&uacce->queues_lock);
- 	device_initialize(&uacce->dev);
- 	uacce->dev.devt = MKDEV(MAJOR(uacce_devt), uacce->dev_id);
- 	uacce->dev.class = uacce_class;
-@@ -561,8 +486,7 @@ EXPORT_SYMBOL_GPL(uacce_register);
-  */
- void uacce_remove(struct uacce_device *uacce)
- {
--	struct uacce_mm *uacce_mm;
--	struct uacce_queue *q;
-+	struct uacce_queue *q, *next_q;
- 
- 	if (!uacce)
- 		return;
-@@ -574,24 +498,12 @@ void uacce_remove(struct uacce_device *uacce)
- 		unmap_mapping_range(uacce->inode->i_mapping, 0, 0, 1);
- 
- 	/* ensure no open queue remains */
--	mutex_lock(&uacce->mm_lock);
--	list_for_each_entry(uacce_mm, &uacce->mm_list, list) {
--		/*
--		 * We don't take the uacce_mm->lock here. Since we hold the
--		 * device's mm_lock, no queue can be added to or removed from
--		 * this uacce_mm. We may run concurrently with mm_exit, but
--		 * uacce_put_queue() is serialized and iommu_sva_unbind_device()
--		 * waits for the lock that mm_exit is holding.
--		 */
--		list_for_each_entry(q, &uacce_mm->queues, list)
--			uacce_put_queue(q);
--
--		if (uacce->flags & UACCE_DEV_SVA) {
--			iommu_sva_unbind_device(uacce_mm->handle);
--			uacce_mm->handle = NULL;
--		}
-+	mutex_lock(&uacce->queues_lock);
-+	list_for_each_entry_safe(q, next_q, &uacce->queues, list) {
-+		uacce_put_queue(q);
-+		uacce_unbind_queue(q);
- 	}
--	mutex_unlock(&uacce->mm_lock);
-+	mutex_unlock(&uacce->queues_lock);
- 
- 	/* disable sva now since no opened queues */
- 	if (uacce->flags & UACCE_DEV_SVA)
+ 	const struct iommu_ops *ops = handle->dev->bus->iommu_ops;
 -- 
 2.26.0
 
