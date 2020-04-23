@@ -2,104 +2,98 @@ Return-Path: <SRS0=eKRE=6H=lists.linux-foundation.org=iommu-bounces@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-6.8 required=3.0 tests=HEADER_FROM_DIFFERENT_DOMAINS,
-	INCLUDES_PATCH,MAILING_LIST_MULTI,SIGNED_OFF_BY,SPF_HELO_NONE,SPF_PASS,
-	URIBL_BLOCKED autolearn=unavailable autolearn_force=no version=3.4.0
+X-Spam-Status: No, score=-0.6 required=3.0 tests=DKIM_INVALID,DKIM_SIGNED,
+	HEADER_FROM_DIFFERENT_DOMAINS,MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS,
+	URIBL_BLOCKED autolearn=no autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 8546DC2BA19
-	for <iommu@archiver.kernel.org>; Thu, 23 Apr 2020 07:30:19 +0000 (UTC)
-Received: from whitealder.osuosl.org (smtp1.osuosl.org [140.211.166.138])
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 08784C2BA19
+	for <iommu@archiver.kernel.org>; Thu, 23 Apr 2020 08:17:12 +0000 (UTC)
+Received: from silver.osuosl.org (smtp3.osuosl.org [140.211.166.136])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by mail.kernel.org (Postfix) with ESMTPS id 5650F2076C
-	for <iommu@archiver.kernel.org>; Thu, 23 Apr 2020 07:30:19 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 5650F2076C
-Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=intel.com
+	by mail.kernel.org (Postfix) with ESMTPS id BD888208E4
+	for <iommu@archiver.kernel.org>; Thu, 23 Apr 2020 08:17:11 +0000 (UTC)
+Authentication-Results: mail.kernel.org;
+	dkim=fail reason="signature verification failed" (1024-bit key) header.d=mg.codeaurora.org header.i=@mg.codeaurora.org header.b="WfyS9G7y"
+DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org BD888208E4
+Authentication-Results: mail.kernel.org; dmarc=none (p=none dis=none) header.from=codeaurora.org
 Authentication-Results: mail.kernel.org; spf=pass smtp.mailfrom=iommu-bounces@lists.linux-foundation.org
 Received: from localhost (localhost [127.0.0.1])
-	by whitealder.osuosl.org (Postfix) with ESMTP id 1172387D9D;
-	Thu, 23 Apr 2020 07:30:19 +0000 (UTC)
+	by silver.osuosl.org (Postfix) with ESMTP id 73FF7231A0;
+	Thu, 23 Apr 2020 08:17:11 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from whitealder.osuosl.org ([127.0.0.1])
+Received: from silver.osuosl.org ([127.0.0.1])
 	by localhost (.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
-	with ESMTP id CmimNTXprgnl; Thu, 23 Apr 2020 07:30:18 +0000 (UTC)
+	with ESMTP id nREwE3KR005s; Thu, 23 Apr 2020 08:17:09 +0000 (UTC)
 Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [140.211.9.56])
-	by whitealder.osuosl.org (Postfix) with ESMTP id 66D37877D3;
-	Thu, 23 Apr 2020 07:30:18 +0000 (UTC)
+	by silver.osuosl.org (Postfix) with ESMTP id A12BA203EF;
+	Thu, 23 Apr 2020 08:17:09 +0000 (UTC)
 Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
-	by lists.linuxfoundation.org (Postfix) with ESMTP id 45FF8C1797;
-	Thu, 23 Apr 2020 07:30:18 +0000 (UTC)
-Received: from fraxinus.osuosl.org (smtp4.osuosl.org [140.211.166.137])
- by lists.linuxfoundation.org (Postfix) with ESMTP id 56F6CC0175
- for <iommu@lists.linux-foundation.org>; Thu, 23 Apr 2020 07:30:16 +0000 (UTC)
+	by lists.linuxfoundation.org (Postfix) with ESMTP id 85F63C08A2;
+	Thu, 23 Apr 2020 08:17:09 +0000 (UTC)
+Received: from hemlock.osuosl.org (smtp2.osuosl.org [140.211.166.133])
+ by lists.linuxfoundation.org (Postfix) with ESMTP id 7B8B9C0175
+ for <iommu@lists.linux-foundation.org>; Thu, 23 Apr 2020 08:17:08 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
- by fraxinus.osuosl.org (Postfix) with ESMTP id 5316686739
- for <iommu@lists.linux-foundation.org>; Thu, 23 Apr 2020 07:30:16 +0000 (UTC)
+ by hemlock.osuosl.org (Postfix) with ESMTP id 6A02A87918
+ for <iommu@lists.linux-foundation.org>; Thu, 23 Apr 2020 08:17:08 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from fraxinus.osuosl.org ([127.0.0.1])
+Received: from hemlock.osuosl.org ([127.0.0.1])
  by localhost (.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
- with ESMTP id caNM7Wlujg2r for <iommu@lists.linux-foundation.org>;
- Thu, 23 Apr 2020 07:30:15 +0000 (UTC)
-X-Greylist: domain auto-whitelisted by SQLgrey-1.7.6
-Received: from mga03.intel.com (mga03.intel.com [134.134.136.65])
- by fraxinus.osuosl.org (Postfix) with ESMTPS id E93CE85F6C
- for <iommu@lists.linux-foundation.org>; Thu, 23 Apr 2020 07:30:14 +0000 (UTC)
-IronPort-SDR: q1A7yeWSIB5FHKX9zrb/yUlK4WO2D2xXOpMhEQP9PqnG3wZPGVRwcuz4U1aQqqxE7j7CHRiAQG
- r5XWRWLuip2w==
-X-Amp-Result: SKIPPED(no attachment in message)
-X-Amp-File-Uploaded: False
-Received: from orsmga002.jf.intel.com ([10.7.209.21])
- by orsmga103.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384;
- 23 Apr 2020 00:30:13 -0700
-IronPort-SDR: 5nWklFsLj8V+HPKfgDgkg+qhYZpUR6WsZFxOaqMu8KKW2eEaKoS9dEfu8FUT6uBctg/FZkDkd9
- qOtaavvisRbA==
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.73,306,1583222400"; d="scan'208";a="274148072"
-Received: from fmsmsx105.amr.corp.intel.com ([10.18.124.203])
- by orsmga002.jf.intel.com with ESMTP; 23 Apr 2020 00:30:12 -0700
-Received: from fmsmsx604.amr.corp.intel.com (10.18.126.84) by
- FMSMSX105.amr.corp.intel.com (10.18.124.203) with Microsoft SMTP Server (TLS)
- id 14.3.439.0; Thu, 23 Apr 2020 00:30:02 -0700
-Received: from fmsmsx604.amr.corp.intel.com (10.18.126.84) by
- fmsmsx604.amr.corp.intel.com (10.18.126.84) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.1713.5; Thu, 23 Apr 2020 00:29:59 -0700
-Received: from shsmsx152.ccr.corp.intel.com (10.239.6.52) by
- fmsmsx604.amr.corp.intel.com (10.18.126.84) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256) id 15.1.1713.5
- via Frontend Transport; Thu, 23 Apr 2020 00:29:59 -0700
-Received: from shsmsx104.ccr.corp.intel.com ([169.254.5.225]) by
- SHSMSX152.ccr.corp.intel.com ([169.254.6.209]) with mapi id 14.03.0439.000;
- Thu, 23 Apr 2020 15:29:57 +0800
-From: "Tian, Kevin" <kevin.tian@intel.com>
-To: Jacob Pan <jacob.jun.pan@linux.intel.com>, Lu Baolu
- <baolu.lu@linux.intel.com>, "iommu@lists.linux-foundation.org"
- <iommu@lists.linux-foundation.org>, LKML <linux-kernel@vger.kernel.org>,
- Joerg Roedel <joro@8bytes.org>, David Woodhouse <dwmw2@infradead.org>,
- Jean-Philippe Brucker <jean-philippe@linaro.com>, Eric Auger
- <eric.auger@redhat.com>
-Subject: RE: [PATCH v12 2/8] iommu/vt-d: Use a helper function to skip agaw
- for SL
-Thread-Topic: [PATCH v12 2/8] iommu/vt-d: Use a helper function to skip agaw
- for SL
-Thread-Index: AQHWGA061s2Otz/cL0WDDwOKAajsVqiGUa+A
-Date: Thu, 23 Apr 2020 07:29:56 +0000
-Message-ID: <AADFC41AFE54684AB9EE6CBC0274A5D19D878FBA@SHSMSX104.ccr.corp.intel.com>
-References: <1587495165-80096-1-git-send-email-jacob.jun.pan@linux.intel.com>
- <1587495165-80096-3-git-send-email-jacob.jun.pan@linux.intel.com>
-In-Reply-To: <1587495165-80096-3-git-send-email-jacob.jun.pan@linux.intel.com>
-Accept-Language: en-US
-Content-Language: en-US
-X-MS-Has-Attach: 
-X-MS-TNEF-Correlator: 
-dlp-product: dlpe-windows
-dlp-version: 11.2.0.6
-dlp-reaction: no-action
-x-originating-ip: [10.239.127.40]
+ with ESMTP id 3Fl9DZEAd54B for <iommu@lists.linux-foundation.org>;
+ Thu, 23 Apr 2020 08:17:07 +0000 (UTC)
+X-Greylist: from auto-whitelisted by SQLgrey-1.7.6
+Received: from mail27.static.mailgun.info (mail27.static.mailgun.info
+ [104.130.122.27])
+ by hemlock.osuosl.org (Postfix) with ESMTPS id 2261087824
+ for <iommu@lists.linux-foundation.org>; Thu, 23 Apr 2020 08:17:07 +0000 (UTC)
+DKIM-Signature: a=rsa-sha256; v=1; c=relaxed/relaxed; d=mg.codeaurora.org;
+ q=dns/txt; 
+ s=smtp; t=1587629827; h=Message-ID: References: In-Reply-To: Subject:
+ Cc: To: From: Date: Content-Transfer-Encoding: Content-Type:
+ MIME-Version: Sender; bh=NMXGFFpZfb9Xhg9uciZUMKKswWRFPn2XrtWUl2kVbYo=;
+ b=WfyS9G7y5s7vYj69GCrIIzLYtsKfGIVvbvwr8V4zNrd+zIXAP1EplGkHLYndYbwBR6Zvsk2a
+ dgUzHg80YDSGFLuFUjYGDhNac1ZGF5leC64ZGqdFP9jznI9X29tBWwHW6mKXGaUueFZU0ooX
+ kCpLpWxsWNKZXYazzYB5y4cShO0=
+X-Mailgun-Sending-Ip: 104.130.122.27
+X-Mailgun-Sid: WyI3NDkwMCIsICJpb21tdUBsaXN0cy5saW51eC1mb3VuZGF0aW9uLm9yZyIsICJiZTllNGEiXQ==
+Received: from smtp.codeaurora.org
+ (ec2-35-166-182-171.us-west-2.compute.amazonaws.com [35.166.182.171])
+ by mxa.mailgun.org with ESMTP id 5ea14f01.7f87acd0b7d8-smtp-out-n02;
+ Thu, 23 Apr 2020 08:17:05 -0000 (UTC)
+Received: by smtp.codeaurora.org (Postfix, from userid 1001)
+ id DF2DFC432C2; Thu, 23 Apr 2020 08:17:04 +0000 (UTC)
+Received: from mail.codeaurora.org (localhost.localdomain [127.0.0.1])
+ (using TLSv1 with cipher ECDHE-RSA-AES256-SHA (256/256 bits))
+ (No client certificate requested)
+ (Authenticated sender: saiprakash.ranjan)
+ by smtp.codeaurora.org (Postfix) with ESMTPSA id 0A186C433D2;
+ Thu, 23 Apr 2020 08:17:04 +0000 (UTC)
 MIME-Version: 1.0
-Cc: Christoph Hellwig <hch@infradead.org>,
- Alex Williamson <alex.williamson@redhat.com>, "Raj,
- Ashok" <ashok.raj@intel.com>, Jonathan Cameron <jic23@kernel.org>
+Date: Thu, 23 Apr 2020 13:47:03 +0530
+From: Sai Prakash Ranjan <saiprakash.ranjan@codeaurora.org>
+To: Doug Anderson <dianders@chromium.org>, Will Deacon <will@kernel.org>,
+ Robin Murphy <robin.murphy@arm.com>
+Subject: Re: [PATCH] iommu/arm-smmu: Demote error messages to debug in
+ shutdown callback
+In-Reply-To: <CAD=FV=VBM6cS1UmWTUJ2vrt0a2zn7xV3C53tpthBx58M2=1JPg@mail.gmail.com>
+References: <20200327132852.10352-1-saiprakash.ranjan@codeaurora.org>
+ <0023bc68-45fb-4e80-00c8-01fd0369243f@arm.com>
+ <37db9a4d524aa4d7529ae47a8065c9e0@codeaurora.org>
+ <5858bdac-b7f9-ac26-0c0d-c9653cef841d@arm.com>
+ <d60196b548e1241b8334fadd0e8c2fb5@codeaurora.org>
+ <CAD=FV=WXTN6xxqtL6d6MHxG8Epuo6FSQERRPfnoSCskhjh1KeQ@mail.gmail.com>
+ <890456524e2df548ba5d44752513a62c@codeaurora.org>
+ <20200331074400.GB25612@willie-the-truck>
+ <1bf04938249bcd5b2111c1921facfd25@codeaurora.org>
+ <CAD=FV=VBM6cS1UmWTUJ2vrt0a2zn7xV3C53tpthBx58M2=1JPg@mail.gmail.com>
+Message-ID: <6c82e688f335b9c07b0f52987244664b@codeaurora.org>
+X-Sender: saiprakash.ranjan@codeaurora.org
+User-Agent: Roundcube Webmail/1.3.9
+Cc: linux-arm-msm <linux-arm-msm@vger.kernel.org>,
+ linux-arm-msm-owner@vger.kernel.org, "list@263.net:IOMMU DRIVERS , Joerg
+ Roedel <joro@8bytes.org>, " <iommu@lists.linux-foundation.org>,
+ LKML <linux-kernel@vger.kernel.org>
 X-BeenThere: iommu@lists.linux-foundation.org
 X-Mailman-Version: 2.1.15
 Precedence: list
@@ -112,83 +106,93 @@ List-Post: <mailto:iommu@lists.linux-foundation.org>
 List-Help: <mailto:iommu-request@lists.linux-foundation.org?subject=help>
 List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
  <mailto:iommu-request@lists.linux-foundation.org?subject=subscribe>
-Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset="us-ascii"; Format="flowed"
 Errors-To: iommu-bounces@lists.linux-foundation.org
 Sender: "iommu" <iommu-bounces@lists.linux-foundation.org>
 
-> From: Jacob Pan <jacob.jun.pan@linux.intel.com>
-> Sent: Wednesday, April 22, 2020 2:53 AM
-> 
-> An Intel iommu domain uses 5-level page table by default. If the
-> iommu that the domain tries to attach supports less page levels,
-> the top level page tables should be skipped. Add a helper to do
-> this so that it could be used in other places.
-> 
-> Signed-off-by: Jacob Pan <jacob.jun.pan@linux.intel.com>
-> Reviewed-by: Eric Auger <eric.auger@redhat.com>
-> ---
->  drivers/iommu/intel-pasid.c | 33 +++++++++++++++++++++++----------
->  1 file changed, 23 insertions(+), 10 deletions(-)
-> 
-> diff --git a/drivers/iommu/intel-pasid.c b/drivers/iommu/intel-pasid.c
-> index 22b30f10b396..d9cea3011b58 100644
-> --- a/drivers/iommu/intel-pasid.c
-> +++ b/drivers/iommu/intel-pasid.c
-> @@ -500,6 +500,25 @@ int intel_pasid_setup_first_level(struct intel_iommu
-> *iommu,
->  }
-> 
->  /*
-> + * Skip top levels of page tables for iommu which has less agaw
-> + * than default. Unnecessary for PT mode.
-> + */
-> +static inline int iommu_skip_agaw(struct dmar_domain *domain,
-> +				  struct intel_iommu *iommu,
-> +				  struct dma_pte **pgd)
-> +{
-> +	int agaw;
-> +
-> +	for (agaw = domain->agaw; agaw > iommu->agaw; agaw--) {
-> +		*pgd = phys_to_virt(dma_pte_addr(*pgd));
-> +		if (!dma_pte_present(*pgd))
-> +			return -EINVAL;
-> +	}
-> +
-> +	return agaw;
-> +}
-> +
-> +/*
->   * Set up the scalable mode pasid entry for second only translation type.
->   */
->  int intel_pasid_setup_second_level(struct intel_iommu *iommu,
-> @@ -522,17 +541,11 @@ int intel_pasid_setup_second_level(struct
-> intel_iommu *iommu,
->  		return -EINVAL;
->  	}
-> 
-> -	/*
-> -	 * Skip top levels of page tables for iommu which has less agaw
-> -	 * than default. Unnecessary for PT mode.
-> -	 */
->  	pgd = domain->pgd;
-> -	for (agaw = domain->agaw; agaw > iommu->agaw; agaw--) {
-> -		pgd = phys_to_virt(dma_pte_addr(pgd));
-> -		if (!dma_pte_present(pgd)) {
-> -			dev_err(dev, "Invalid domain page table\n");
-> -			return -EINVAL;
-> -		}
-> +	agaw = iommu_skip_agaw(domain, iommu, &pgd);
-> +	if (agaw < 0) {
-> +		dev_err(dev, "Invalid domain page table\n");
-> +		return -EINVAL;
->  	}
-> 
->  	pgd_val = virt_to_phys(pgd);
-> --
-> 2.7.4
+Hi,
 
-Reviewed-by: Kevin Tian <kevin.tian@intel.com>
+On 2020-04-23 01:19, Doug Anderson wrote:
+> Hi,
+> 
+> On Tue, Mar 31, 2020 at 12:53 AM Sai Prakash Ranjan
+> <saiprakash.ranjan@codeaurora.org> wrote:
+>> 
+>> Hi Will,
+>> 
+>> On 2020-03-31 13:14, Will Deacon wrote:
+>> > On Tue, Mar 31, 2020 at 01:06:11PM +0530, Sai Prakash Ranjan wrote:
+>> >> On 2020-03-30 23:54, Doug Anderson wrote:
+>> >> > On Sat, Mar 28, 2020 at 12:35 AM Sai Prakash Ranjan
+>> >> > <saiprakash.ranjan@codeaurora.org> wrote:
+>> >> > >
+>> >> > > > Of course the fact that in practice we'll *always* see the warning
+>> >> > > > because there's no way to tear down the default DMA domains, and even
+>> >> > > > if all devices *have* been nicely quiesced there's no way to tell, is
+>> >> > > > certainly less than ideal. Like I say, it's not entirely clear-cut
+>> >> > > > either way...
+>> >> > > >
+>> >> > >
+>> >> > > Thanks for these examples, good to know these scenarios in case we
+>> >> > > come
+>> >> > > across these.
+>> >> > > However, if we see these error/warning messages appear everytime then
+>> >> > > what will be
+>> >> > > the credibility of these messages? We will just ignore these messages
+>> >> > > when
+>> >> > > these issues you mention actually appears because we see them
+>> >> > > everytime
+>> >> > > on
+>> >> > > reboot or shutdown.
+>> >> >
+>> >> > I would agree that if these messages are expected to be seen every
+>> >> > time, there's no way to fix them, and they're not indicative of any
+>> >> > problem then something should be done.  Seeing something printed at
+>> >> > "dev_error" level with an exclamation point (!) at the end makes me
+>> >> > feel like this is something that needs immediate action on my part.
+>> >> >
+>> >> > If we really can't do better but feel that the messages need to be
+>> >> > there, at least make them dev_info and less scary like:
+>> >> >
+>> >> >   arm-smmu 15000000.iommu: turning off; DMA should be quiesced before
+>> >> > now
+>> >> >
+>> >> > ...that would still give you a hint in the logs that if you saw a DMA
+>> >> > transaction after the message that it was a bug but also wouldn't
+>> >> > sound scary to someone who wasn't seeing any other problems.
+>> >> >
+>> >>
+>> >> We can do this if Robin is OK?
+>> >
+>> > It would be nice if you could figure out which domains are still live
+>> > when
+>> > the SMMU is being shut down in your case and verify that it *is* infact
+>> > benign before we start making the message more friendly. As Robin said
+>> > earlier, rogue DMA is a real nightmare to debug.
+>> >
+>> 
+>> I could see this error message for all the clients of apps_smmu.
+>> I checked manually enabling bypass and removing iommus dt property
+>> for each client of apps_smmu.
+> 
+> Any update on the status here?  If I'm reading the conversation above,
+> Robin said: "we'll *always* see the warning because there's no way to
+> tear down the default DMA domains, and even if all devices *have* been
+> nicely quiesced there's no way to tell".  Did I understand that
+> properly?  If so, it seems like it's fully expected to see this
+> message on every reboot and it doesn't necessarily signify anything
+> bad.
+> 
+
+Understanding is the same, waiting for Will and Robin to check if its OK
+to make the message more friendly.
+
+-Sai
+-- 
+QUALCOMM INDIA, on behalf of Qualcomm Innovation Center, Inc. is a 
+member
+of Code Aurora Forum, hosted by The Linux Foundation
 _______________________________________________
 iommu mailing list
 iommu@lists.linux-foundation.org
