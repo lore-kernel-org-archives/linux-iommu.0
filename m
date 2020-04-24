@@ -7,83 +7,84 @@ X-Spam-Status: No, score=2.7 required=3.0 tests=DKIM_ADSP_CUSTOM_MED,
 	HEADER_FROM_DIFFERENT_DOMAINS,HTML_MESSAGE,MAILING_LIST_MULTI,SPF_HELO_NONE,
 	SPF_PASS autolearn=no autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 5057CC54FD0
-	for <iommu@archiver.kernel.org>; Fri, 24 Apr 2020 12:01:16 +0000 (UTC)
-Received: from silver.osuosl.org (smtp3.osuosl.org [140.211.166.136])
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 5A81FC54FD0
+	for <iommu@archiver.kernel.org>; Fri, 24 Apr 2020 12:06:52 +0000 (UTC)
+Received: from fraxinus.osuosl.org (smtp4.osuosl.org [140.211.166.137])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by mail.kernel.org (Postfix) with ESMTPS id 116DD20736
-	for <iommu@archiver.kernel.org>; Fri, 24 Apr 2020 12:01:15 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTPS id 0636E20728
+	for <iommu@archiver.kernel.org>; Fri, 24 Apr 2020 12:06:51 +0000 (UTC)
 Authentication-Results: mail.kernel.org;
-	dkim=fail reason="signature verification failed" (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="uGde7jYq"
-DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 116DD20736
+	dkim=fail reason="signature verification failed" (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="ZiDcDGt+"
+DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 0636E20728
 Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=gmail.com
 Authentication-Results: mail.kernel.org; spf=pass smtp.mailfrom=iommu-bounces@lists.linux-foundation.org
 Received: from localhost (localhost [127.0.0.1])
-	by silver.osuosl.org (Postfix) with ESMTP id CBACB24C2A;
-	Fri, 24 Apr 2020 12:01:15 +0000 (UTC)
+	by fraxinus.osuosl.org (Postfix) with ESMTP id B67D186F89;
+	Fri, 24 Apr 2020 12:06:51 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from silver.osuosl.org ([127.0.0.1])
+Received: from fraxinus.osuosl.org ([127.0.0.1])
 	by localhost (.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
-	with ESMTP id 0QQsh1n8zzbs; Fri, 24 Apr 2020 12:01:13 +0000 (UTC)
+	with ESMTP id Zz0vkntv7zRP; Fri, 24 Apr 2020 12:06:50 +0000 (UTC)
 Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [140.211.9.56])
-	by silver.osuosl.org (Postfix) with ESMTP id 0EF30236B5;
-	Fri, 24 Apr 2020 12:01:13 +0000 (UTC)
+	by fraxinus.osuosl.org (Postfix) with ESMTP id AB67686F6A;
+	Fri, 24 Apr 2020 12:06:50 +0000 (UTC)
 Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
-	by lists.linuxfoundation.org (Postfix) with ESMTP id 00C37C089E;
-	Fri, 24 Apr 2020 12:01:13 +0000 (UTC)
+	by lists.linuxfoundation.org (Postfix) with ESMTP id 85DBCC089E;
+	Fri, 24 Apr 2020 12:06:50 +0000 (UTC)
 Received: from hemlock.osuosl.org (smtp2.osuosl.org [140.211.166.133])
- by lists.linuxfoundation.org (Postfix) with ESMTP id 08C07C0175
- for <iommu@lists.linux-foundation.org>; Fri, 24 Apr 2020 12:01:12 +0000 (UTC)
+ by lists.linuxfoundation.org (Postfix) with ESMTP id 7FEDFC0175
+ for <iommu@lists.linux-foundation.org>; Fri, 24 Apr 2020 12:06:48 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
- by hemlock.osuosl.org (Postfix) with ESMTP id EA821887AA
- for <iommu@lists.linux-foundation.org>; Fri, 24 Apr 2020 12:01:11 +0000 (UTC)
+ by hemlock.osuosl.org (Postfix) with ESMTP id D24F0848AF
+ for <iommu@lists.linux-foundation.org>; Fri, 24 Apr 2020 12:06:27 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
 Received: from hemlock.osuosl.org ([127.0.0.1])
  by localhost (.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
- with ESMTP id YoyxBqchL6on for <iommu@lists.linux-foundation.org>;
- Fri, 24 Apr 2020 12:01:10 +0000 (UTC)
+ with ESMTP id Mt2evWvuCwPW for <iommu@lists.linux-foundation.org>;
+ Fri, 24 Apr 2020 12:06:26 +0000 (UTC)
 X-Greylist: domain auto-whitelisted by SQLgrey-1.7.6
 Received: from mail-wr1-f67.google.com (mail-wr1-f67.google.com
  [209.85.221.67])
- by hemlock.osuosl.org (Postfix) with ESMTPS id 93A59887B5
- for <iommu@lists.linux-foundation.org>; Fri, 24 Apr 2020 12:01:10 +0000 (UTC)
-Received: by mail-wr1-f67.google.com with SMTP id k13so10466318wrw.7
- for <iommu@lists.linux-foundation.org>; Fri, 24 Apr 2020 05:01:10 -0700 (PDT)
+ by hemlock.osuosl.org (Postfix) with ESMTPS id 07A83887FE
+ for <iommu@lists.linux-foundation.org>; Fri, 24 Apr 2020 12:06:25 +0000 (UTC)
+Received: by mail-wr1-f67.google.com with SMTP id i10so10474500wrv.10
+ for <iommu@lists.linux-foundation.org>; Fri, 24 Apr 2020 05:06:24 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=gmail.com; s=20161025;
  h=mime-version:references:in-reply-to:from:date:message-id:subject:to
- :cc; bh=EQzCDDHNTuJWaLCmaTnBy3CgPo4x1idXZil7GTt5qSE=;
- b=uGde7jYq1DsgcMXXKAm2O4Qp0PmwiV99Os87c8n/7gvCzHvRsmsdEBvM+Z5Go+DlHe
- EzuoQac45cniYi9gWx9K5lRiq66DZapWQEgVWlUa/lbrD5ZW/BcPrpfuxzyJ3QWuEEir
- WGV3N1ZspikHqyPaCsHmNMXfXrkl7g66h+7trZuNisz+VEyMBLmfn+V3NKkmg0Lt8N21
- UoSWpVI9JeGb0OfuNBXsjRyOaSNGGDREyC0EYfALLQ5msydmKsiHDkr6GInp6qiJz4Oo
- w/aW/wiMnq1DI6IG9hdc5LhfBRrTjfiptiMrKgDk56SYBUXDZUZtX25MXqdom8izJk5O
- 4vXg==
+ :cc; bh=6x4Tc/87n1LP0q/E3bL9rHD3l+EpQDjrfoTH6EG8k1Y=;
+ b=ZiDcDGt+w60GzhHqGYUqfcJKoqfZSt/b9WQiSbilnJ+eGHrsyrObS/zEZYKDN6dSYX
+ 8nOaObycuQUXO4QMSzEG6x96e8r0bWfj+2A2Do0iN6F5nYXjlga5dGcHEvDeGL53yLg5
+ teXh66M7YrXaN+kgICY1d8dT3pJtEfVEl5P9VClRCvEtvwOKA6rLD6B5wB6Iifdh6cIp
+ Hm8GvRBtjD4PxB5DHs2t231rVJaCN4/TS7UDjopnKxIAc7uZu2o6du8kFPFeEKPT+wZa
+ 7YJ+DxzB/1IVi340N/pRGehjXyEXBQtoxKF2xoDq1SjC0+qBF4+EEaPgF/Od5onrcS1M
+ 1EUQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
  d=1e100.net; s=20161025;
  h=x-gm-message-state:mime-version:references:in-reply-to:from:date
  :message-id:subject:to:cc;
- bh=EQzCDDHNTuJWaLCmaTnBy3CgPo4x1idXZil7GTt5qSE=;
- b=OnaKKpkwNJ4kMTZJ8AZFfqEg9qbe84/VHO/u8LOwluF+UnZe5su8N5m2lBlHVBPiW5
- hhV5WZ3CpFqruu68LoiiDTPvVzXAcVW/2EJcgxK4No3gsqPKFQPFNHlQqfEl89duaLgV
- bc4r+CTnyLc1bmw3/AjcfQJRfTdi8cjAKpwN+OG8Zik5tYSM7a0cB9SvOb1xGAdClRE5
- qmLxCfTpzk4PUXe6faLQTCrbSlO0oifyuplo8okjhmvSUxbZljzGpDH6sB3dG2OULan8
- 6Pa1lIu8H1slBAggwrpYimag51SKobKGFcfWOoZlh5ixMCajrch+KVuGAzy/JktHm5WQ
- /MCg==
-X-Gm-Message-State: AGi0PuYjWod1uvou93hQepM3tKbd4TQ7eiDw9v6pH6qtSud7Uz7KxYBy
- Aztcrhfy5k1zyTwox3tMd0VfZuR78IZpl1Mqafs=
-X-Google-Smtp-Source: APiQypID0lTZ2HNuPFyP9zNU7e3zhDgGSpjT2iNk3VfalxgjsfOTbP57EezkpI7O8jv7Mjxj3I4Wc2NdFs2qDGJj7oI=
-X-Received: by 2002:adf:ab1b:: with SMTP id q27mr11489816wrc.220.1587729668720; 
- Fri, 24 Apr 2020 05:01:08 -0700 (PDT)
+ bh=6x4Tc/87n1LP0q/E3bL9rHD3l+EpQDjrfoTH6EG8k1Y=;
+ b=OfsegAoUCYaDUnx9fWPD/rfh/MwePKq8X1xdhHQgZ3eg53Lf6XiOgAcmiK8ScpmPBw
+ o2xcfemzW5UdXd9W+DmnDY7s5zT/YKoLbEXhPpeYABO0vxj39sEufp2UpdYt/cQKHlqj
+ puJeSV0LxxZSVPH4f+lR0WnqVkAdYB2mE+y+L5yIWL+wcCR1CgEiG8o8sXCGF9lHB55j
+ Spxi3iVp5/jYPBr8PK8wKe0K28Bx4qeF8igNy6CegtlboB0M/YzEPbB/gThoADoFmW6o
+ 00IKhgoPfMwX4VGzQgKn/Vn76j3l88JVF4z1FL7T+h1LZ81SdLQgXFTmH30FgO/Z4upe
+ WqFQ==
+X-Gm-Message-State: AGi0PuZWKHeZe2mZZXjfQ1siKi49a4jhlHzl5yNnnFpMOkl3iYkKIIKo
+ k3rOSRz6sewd8JzOonQ+0bJ1lJ7wVp3wJbgo2nFHVw==
+X-Google-Smtp-Source: APiQypIBFY7jlY3jSktITM662hFCZ8xX676zWupJkFp1XkpFDknNZ2x7hdO39/j+Tg1wp73G7s09N+o5FH2oa6MoJ4s=
+X-Received: by 2002:adf:ab1b:: with SMTP id q27mr11519247wrc.220.1587729983322; 
+ Fri, 24 Apr 2020 05:06:23 -0700 (PDT)
 MIME-Version: 1.0
 References: <CAEbUFv6SHY8z2kuNFwZ4khFwgqLZjxi4-KfDv5kVANeROMU_Vw@mail.gmail.com>
  <CAEbUFv5AybVFe8Wg6ZKLaiUoUj25G_oRk+Xi_HVSvb6pTsgYzQ@mail.gmail.com>
  <CAEbUFv7YZCh5V5btB4npBLg_FcZqB01LOp_QQKM7qURmucPAqQ@mail.gmail.com>
  <562c9033-05b2-2a15-5294-f68e40c02e92@arm.com>
-In-Reply-To: <562c9033-05b2-2a15-5294-f68e40c02e92@arm.com>
+ <CAEbUFv5_bG7-rNFZ0R8f0ndgbc84aM_jyV8pi8wusy6qs9=hVA@mail.gmail.com>
+In-Reply-To: <CAEbUFv5_bG7-rNFZ0R8f0ndgbc84aM_jyV8pi8wusy6qs9=hVA@mail.gmail.com>
 From: Bin <anole1949@gmail.com>
-Date: Fri, 24 Apr 2020 20:00:57 +0800
-Message-ID: <CAEbUFv5_bG7-rNFZ0R8f0ndgbc84aM_jyV8pi8wusy6qs9=hVA@mail.gmail.com>
+Date: Fri, 24 Apr 2020 20:06:11 +0800
+Message-ID: <CAEbUFv5mxo1TnJ7KyjpcPaefP4=3rB=_vgu8O3EHKcQQiBXo-Q@mail.gmail.com>
 Subject: Re: iommu_iova slab eats too much memory
 To: Robin Murphy <robin.murphy@arm.com>
 Cc: iommu@lists.linux-foundation.org
@@ -99,229 +100,252 @@ List-Post: <mailto:iommu@lists.linux-foundation.org>
 List-Help: <mailto:iommu-request@lists.linux-foundation.org?subject=help>
 List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
  <mailto:iommu-request@lists.linux-foundation.org?subject=subscribe>
-Content-Type: multipart/mixed; boundary="===============1201098509244631259=="
+Content-Type: multipart/mixed; boundary="===============5015288781368094430=="
 Errors-To: iommu-bounces@lists.linux-foundation.org
 Sender: "iommu" <iommu-bounces@lists.linux-foundation.org>
 
---===============1201098509244631259==
-Content-Type: multipart/alternative; boundary="000000000000e74e4705a4081ebf"
+--===============5015288781368094430==
+Content-Type: multipart/alternative; boundary="000000000000a7bda905a40831fc"
 
---000000000000e74e4705a4081ebf
+--000000000000a7bda905a40831fc
 Content-Type: text/plain; charset="UTF-8"
 Content-Transfer-Encoding: quoted-printable
 
-Well, that's the problem! I'm assuming the iommu kernel module is leaking
-memory. But I don't know why and how.
+I'm not familiar with the mmu stuff, so what you mean by "some driver
+leaking DMA mappings", is it possible that some other kernel module like
+KVM or NIC driver leads to the leaking problem instead of the iommu module
+itself?
 
-Do you have any idea about it? Or any further information is needed?
+Bin <anole1949@gmail.com> =E4=BA=8E 2020=E5=B9=B44=E6=9C=8824=E6=97=A5=E5=
+=91=A8=E4=BA=94 20:00=E5=86=99=E9=81=93=EF=BC=9A
 
-Robin Murphy <robin.murphy@arm.com> =E4=BA=8E 2020=E5=B9=B44=E6=9C=8824=E6=
-=97=A5=E5=91=A8=E4=BA=94 19:20=E5=86=99=E9=81=93=EF=BC=9A
-
-> On 2020-04-24 1:40 am, Bin wrote:
-> > Hello? anyone there?
-> >
-> > Bin <anole1949@gmail.com> =E4=BA=8E2020=E5=B9=B44=E6=9C=8823=E6=97=A5=
+> Well, that's the problem! I'm assuming the iommu kernel module is leaking
+> memory. But I don't know why and how.
+>
+> Do you have any idea about it? Or any further information is needed?
+>
+> Robin Murphy <robin.murphy@arm.com> =E4=BA=8E 2020=E5=B9=B44=E6=9C=8824=
+=E6=97=A5=E5=91=A8=E4=BA=94 19:20=E5=86=99=E9=81=93=EF=BC=9A
+>
+>> On 2020-04-24 1:40 am, Bin wrote:
+>> > Hello? anyone there?
+>> >
+>> > Bin <anole1949@gmail.com> =E4=BA=8E2020=E5=B9=B44=E6=9C=8823=E6=97=A5=
 =E5=91=A8=E5=9B=9B =E4=B8=8B=E5=8D=885:14=E5=86=99=E9=81=93=EF=BC=9A
-> >
-> >> Forget to mention, I've already disabled the slab merge, so this is wh=
-at
-> >> it is.
-> >>
-> >> Bin <anole1949@gmail.com> =E4=BA=8E2020=E5=B9=B44=E6=9C=8823=E6=97=A5=
+>> >
+>> >> Forget to mention, I've already disabled the slab merge, so this is
+>> what
+>> >> it is.
+>> >>
+>> >> Bin <anole1949@gmail.com> =E4=BA=8E2020=E5=B9=B44=E6=9C=8823=E6=97=A5=
 =E5=91=A8=E5=9B=9B =E4=B8=8B=E5=8D=885:11=E5=86=99=E9=81=93=EF=BC=9A
-> >>
-> >>> Hey, guys:
-> >>>
-> >>> I'm running a batch of CoreOS boxes, the lsb_release is:
-> >>>
-> >>> ```
-> >>> # cat /etc/lsb-release
-> >>> DISTRIB_ID=3D"Container Linux by CoreOS"
-> >>> DISTRIB_RELEASE=3D2303.3.0
-> >>> DISTRIB_CODENAME=3D"Rhyolite"
-> >>> DISTRIB_DESCRIPTION=3D"Container Linux by CoreOS 2303.3.0 (Rhyolite)"
-> >>> ```
-> >>>
-> >>> ```
-> >>> # uname -a
-> >>> Linux cloud-worker-25 4.19.86-coreos #1 SMP Mon Dec 2 20:13:38 -00 20=
-19
-> >>> x86_64 Intel(R) Xeon(R) CPU E5-2640 v2 @ 2.00GHz GenuineIntel GNU/Lin=
-ux
-> >>> ```
-> >>> Recently, I found my vms constently being killed due to OOM, and afte=
-r
-> >>> digging into the problem, I finally realized that the kernel is leaki=
-ng
-> >>> memory.
-> >>>
-> >>> Here's my slabinfo:
-> >>>
-> >>>   Active / Total Objects (% used)    : 83818306 / 84191607 (99.6%)
-> >>>   Active / Total Slabs (% used)      : 1336293 / 1336293 (100.0%)
-> >>>   Active / Total Caches (% used)     : 152 / 217 (70.0%)
-> >>>   Active / Total Size (% used)       : 5828768.08K / 5996848.72K
-> (97.2%)
-> >>>   Minimum / Average / Maximum Object : 0.01K / 0.07K / 23.25K
-> >>>
-> >>>    OBJS ACTIVE  USE OBJ SIZE  SLABS OBJ/SLAB CACHE SIZE NAME
-> >>>
-> >>> 80253888 80253888 100%    0.06K 1253967       64   5015868K iommu_iov=
-a
->
-> Do you really have a peak demand of ~80 million simultaneous DMA
-> buffers, or is some driver leaking DMA mappings?
->
-> Robin.
->
-> >>> 489472 489123  99%    0.03K   3824      128     15296K kmalloc-32
-> >>>
-> >>> 297444 271112  91%    0.19K   7082       42     56656K dentry
-> >>>
-> >>> 254400 252784  99%    0.06K   3975       64     15900K anon_vma_chain
-> >>>
-> >>> 222528  39255  17%    0.50K   6954       32    111264K kmalloc-512
-> >>>
-> >>> 202482 201814  99%    0.19K   4821       42     38568K vm_area_struct
-> >>>
-> >>> 200192 200192 100%    0.01K    391      512      1564K kmalloc-8
-> >>>
-> >>> 170528 169359  99%    0.25K   5329       32     42632K filp
-> >>>
-> >>> 158144 153508  97%    0.06K   2471       64      9884K kmalloc-64
-> >>>
-> >>> 149914 149365  99%    0.09K   3259       46     13036K anon_vma
-> >>>
-> >>> 146640 143123  97%    0.10K   3760       39     15040K buffer_head
-> >>>
-> >>> 130368  32791  25%    0.09K   3104       42     12416K kmalloc-96
-> >>>
-> >>> 129752 129752 100%    0.07K   2317       56      9268K Acpi-Operand
-> >>>
-> >>> 105468 105106  99%    0.04K   1034      102      4136K
-> >>> selinux_inode_security
-> >>>   73080  73080 100%    0.13K   2436       30      9744K
-> kernfs_node_cache
-> >>>
-> >>>   72360  70261  97%    0.59K   1340       54     42880K inode_cache
-> >>>
-> >>>   71040  71040 100%    0.12K   2220       32      8880K eventpoll_epi
-> >>>
-> >>>   68096  59262  87%    0.02K    266      256      1064K kmalloc-16
-> >>>
-> >>>   53652  53652 100%    0.04K    526      102      2104K pde_opener
-> >>>
-> >>>   50496  31654  62%    2.00K   3156       16    100992K kmalloc-2048
-> >>>
-> >>>   46242  46242 100%    0.19K   1101       42      8808K cred_jar
-> >>>
-> >>>   44496  43013  96%    0.66K    927       48     29664K
-> proc_inode_cache
-> >>>
-> >>>   44352  44352 100%    0.06K    693       64      2772K task_delay_in=
-fo
-> >>>
-> >>>   43516  43471  99%    0.69K    946       46     30272K
-> sock_inode_cache
-> >>>
-> >>>   37856  27626  72%    1.00K   1183       32     37856K kmalloc-1024
-> >>>
-> >>>   36736  36736 100%    0.07K    656       56      2624K eventpoll_pwq
-> >>>
-> >>>   34076  31282  91%    0.57K   1217       28     19472K radix_tree_no=
-de
-> >>>
-> >>>   33660  30528  90%    1.05K   1122       30     35904K
-> ext4_inode_cache
-> >>>
-> >>>   32760  30959  94%    0.19K    780       42      6240K kmalloc-192
-> >>>
-> >>>   32028  32028 100%    0.04K    314      102      1256K
-> ext4_extent_status
-> >>>
-> >>>   30048  30048 100%    0.25K    939       32      7512K
-> skbuff_head_cache
-> >>>
-> >>>   28736  28736 100%    0.06K    449       64      1796K fs_cache
-> >>>
-> >>>   24702  24702 100%    0.69K    537       46     17184K files_cache
-> >>>
-> >>>   23808  23808 100%    0.66K    496       48     15872K ovl_inode
-> >>>
-> >>>   23104  22945  99%    0.12K    722       32      2888K kmalloc-128
-> >>>
-> >>>   22724  21307  93%    0.69K    494       46     15808K
-> shmem_inode_cache
-> >>>
-> >>>   21472  21472 100%    0.12K    671       32      2684K seq_file
-> >>>
-> >>>   19904  19904 100%    1.00K    622       32     19904K UNIX
-> >>>
-> >>>   17340  17340 100%    1.06K    578       30     18496K mm_struct
-> >>>
-> >>>   15980  15980 100%    0.02K     94      170       376K avtab_node
-> >>>
-> >>>   14070  14070 100%    1.06K    469       30     15008K signal_cache
-> >>>
-> >>>   13248  13248 100%    0.12K    414       32      1656K pid
-> >>>
-> >>>   12128  11777  97%    0.25K    379       32      3032K kmalloc-256
-> >>>
-> >>>   11008  11008 100%    0.02K     43      256       172K
-> >>> selinux_file_security
-> >>>   10812  10812 100%    0.04K    106      102       424K Acpi-Namespac=
-e
-> >>>
-> >>> These information shows that the 'iommu_iova' is the top memory
-> consumer.
-> >>> In order to optimize the network performence of Openstack virtual
-> machines,
-> >>> I enabled the vt-d feature in bios and sriov feature of Intel 82599 1=
-0G
-> >>> NIC. I'm assuming this is the root cause of this issue.
-> >>>
-> >>> Is there anything I can do to fix it?
-> >>>
-> >>
-> >
-> >
-> > _______________________________________________
-> > iommu mailing list
-> > iommu@lists.linux-foundation.org
-> > https://lists.linuxfoundation.org/mailman/listinfo/iommu
-> >
+>> >>
+>> >>> Hey, guys:
+>> >>>
+>> >>> I'm running a batch of CoreOS boxes, the lsb_release is:
+>> >>>
+>> >>> ```
+>> >>> # cat /etc/lsb-release
+>> >>> DISTRIB_ID=3D"Container Linux by CoreOS"
+>> >>> DISTRIB_RELEASE=3D2303.3.0
+>> >>> DISTRIB_CODENAME=3D"Rhyolite"
+>> >>> DISTRIB_DESCRIPTION=3D"Container Linux by CoreOS 2303.3.0 (Rhyolite)=
+"
+>> >>> ```
+>> >>>
+>> >>> ```
+>> >>> # uname -a
+>> >>> Linux cloud-worker-25 4.19.86-coreos #1 SMP Mon Dec 2 20:13:38 -00
+>> 2019
+>> >>> x86_64 Intel(R) Xeon(R) CPU E5-2640 v2 @ 2.00GHz GenuineIntel
+>> GNU/Linux
+>> >>> ```
+>> >>> Recently, I found my vms constently being killed due to OOM, and aft=
+er
+>> >>> digging into the problem, I finally realized that the kernel is
+>> leaking
+>> >>> memory.
+>> >>>
+>> >>> Here's my slabinfo:
+>> >>>
+>> >>>   Active / Total Objects (% used)    : 83818306 / 84191607 (99.6%)
+>> >>>   Active / Total Slabs (% used)      : 1336293 / 1336293 (100.0%)
+>> >>>   Active / Total Caches (% used)     : 152 / 217 (70.0%)
+>> >>>   Active / Total Size (% used)       : 5828768.08K / 5996848.72K
+>> (97.2%)
+>> >>>   Minimum / Average / Maximum Object : 0.01K / 0.07K / 23.25K
+>> >>>
+>> >>>    OBJS ACTIVE  USE OBJ SIZE  SLABS OBJ/SLAB CACHE SIZE NAME
+>> >>>
+>> >>> 80253888 80253888 100%    0.06K 1253967       64   5015868K iommu_io=
+va
+>>
+>> Do you really have a peak demand of ~80 million simultaneous DMA
+>> buffers, or is some driver leaking DMA mappings?
+>>
+>> Robin.
+>>
+>> >>> 489472 489123  99%    0.03K   3824      128     15296K kmalloc-32
+>> >>>
+>> >>> 297444 271112  91%    0.19K   7082       42     56656K dentry
+>> >>>
+>> >>> 254400 252784  99%    0.06K   3975       64     15900K anon_vma_chai=
+n
+>> >>>
+>> >>> 222528  39255  17%    0.50K   6954       32    111264K kmalloc-512
+>> >>>
+>> >>> 202482 201814  99%    0.19K   4821       42     38568K vm_area_struc=
+t
+>> >>>
+>> >>> 200192 200192 100%    0.01K    391      512      1564K kmalloc-8
+>> >>>
+>> >>> 170528 169359  99%    0.25K   5329       32     42632K filp
+>> >>>
+>> >>> 158144 153508  97%    0.06K   2471       64      9884K kmalloc-64
+>> >>>
+>> >>> 149914 149365  99%    0.09K   3259       46     13036K anon_vma
+>> >>>
+>> >>> 146640 143123  97%    0.10K   3760       39     15040K buffer_head
+>> >>>
+>> >>> 130368  32791  25%    0.09K   3104       42     12416K kmalloc-96
+>> >>>
+>> >>> 129752 129752 100%    0.07K   2317       56      9268K Acpi-Operand
+>> >>>
+>> >>> 105468 105106  99%    0.04K   1034      102      4136K
+>> >>> selinux_inode_security
+>> >>>   73080  73080 100%    0.13K   2436       30      9744K
+>> kernfs_node_cache
+>> >>>
+>> >>>   72360  70261  97%    0.59K   1340       54     42880K inode_cache
+>> >>>
+>> >>>   71040  71040 100%    0.12K   2220       32      8880K eventpoll_ep=
+i
+>> >>>
+>> >>>   68096  59262  87%    0.02K    266      256      1064K kmalloc-16
+>> >>>
+>> >>>   53652  53652 100%    0.04K    526      102      2104K pde_opener
+>> >>>
+>> >>>   50496  31654  62%    2.00K   3156       16    100992K kmalloc-2048
+>> >>>
+>> >>>   46242  46242 100%    0.19K   1101       42      8808K cred_jar
+>> >>>
+>> >>>   44496  43013  96%    0.66K    927       48     29664K
+>> proc_inode_cache
+>> >>>
+>> >>>   44352  44352 100%    0.06K    693       64      2772K
+>> task_delay_info
+>> >>>
+>> >>>   43516  43471  99%    0.69K    946       46     30272K
+>> sock_inode_cache
+>> >>>
+>> >>>   37856  27626  72%    1.00K   1183       32     37856K kmalloc-1024
+>> >>>
+>> >>>   36736  36736 100%    0.07K    656       56      2624K eventpoll_pw=
+q
+>> >>>
+>> >>>   34076  31282  91%    0.57K   1217       28     19472K
+>> radix_tree_node
+>> >>>
+>> >>>   33660  30528  90%    1.05K   1122       30     35904K
+>> ext4_inode_cache
+>> >>>
+>> >>>   32760  30959  94%    0.19K    780       42      6240K kmalloc-192
+>> >>>
+>> >>>   32028  32028 100%    0.04K    314      102      1256K
+>> ext4_extent_status
+>> >>>
+>> >>>   30048  30048 100%    0.25K    939       32      7512K
+>> skbuff_head_cache
+>> >>>
+>> >>>   28736  28736 100%    0.06K    449       64      1796K fs_cache
+>> >>>
+>> >>>   24702  24702 100%    0.69K    537       46     17184K files_cache
+>> >>>
+>> >>>   23808  23808 100%    0.66K    496       48     15872K ovl_inode
+>> >>>
+>> >>>   23104  22945  99%    0.12K    722       32      2888K kmalloc-128
+>> >>>
+>> >>>   22724  21307  93%    0.69K    494       46     15808K
+>> shmem_inode_cache
+>> >>>
+>> >>>   21472  21472 100%    0.12K    671       32      2684K seq_file
+>> >>>
+>> >>>   19904  19904 100%    1.00K    622       32     19904K UNIX
+>> >>>
+>> >>>   17340  17340 100%    1.06K    578       30     18496K mm_struct
+>> >>>
+>> >>>   15980  15980 100%    0.02K     94      170       376K avtab_node
+>> >>>
+>> >>>   14070  14070 100%    1.06K    469       30     15008K signal_cache
+>> >>>
+>> >>>   13248  13248 100%    0.12K    414       32      1656K pid
+>> >>>
+>> >>>   12128  11777  97%    0.25K    379       32      3032K kmalloc-256
+>> >>>
+>> >>>   11008  11008 100%    0.02K     43      256       172K
+>> >>> selinux_file_security
+>> >>>   10812  10812 100%    0.04K    106      102       424K Acpi-Namespa=
+ce
+>> >>>
+>> >>> These information shows that the 'iommu_iova' is the top memory
+>> consumer.
+>> >>> In order to optimize the network performence of Openstack virtual
+>> machines,
+>> >>> I enabled the vt-d feature in bios and sriov feature of Intel 82599
+>> 10G
+>> >>> NIC. I'm assuming this is the root cause of this issue.
+>> >>>
+>> >>> Is there anything I can do to fix it?
+>> >>>
+>> >>
+>> >
+>> >
+>> > _______________________________________________
+>> > iommu mailing list
+>> > iommu@lists.linux-foundation.org
+>> > https://lists.linuxfoundation.org/mailman/listinfo/iommu
+>> >
+>>
 >
 
---000000000000e74e4705a4081ebf
+--000000000000a7bda905a40831fc
 Content-Type: text/html; charset="UTF-8"
 Content-Transfer-Encoding: quoted-printable
 
-<div dir=3D"auto"><div>Well, that&#39;s the problem! I&#39;m assuming the i=
-ommu kernel module is leaking memory. But I don&#39;t know why and how.</di=
-v><div dir=3D"auto"><br></div><div dir=3D"auto">Do you have any idea about =
-it? Or any further information is needed?</div><div dir=3D"auto"><br><div c=
-lass=3D"gmail_quote" dir=3D"auto"><div dir=3D"ltr" class=3D"gmail_attr">Rob=
-in Murphy &lt;<a href=3D"mailto:robin.murphy@arm.com">robin.murphy@arm.com<=
-/a>&gt; =E4=BA=8E 2020=E5=B9=B44=E6=9C=8824=E6=97=A5=E5=91=A8=E4=BA=94 19:2=
-0=E5=86=99=E9=81=93=EF=BC=9A<br></div><blockquote class=3D"gmail_quote" sty=
-le=3D"margin:0 0 0 .8ex;border-left:1px #ccc solid;padding-left:1ex">On 202=
-0-04-24 1:40 am, Bin wrote:<br>
+<div dir=3D"auto">I&#39;m not familiar with the mmu stuff, so what you mean=
+ by &quot;some driver leaking DMA mappings&quot;, is it possible that some =
+other kernel module like KVM or NIC driver leads to the leaking problem ins=
+tead of the iommu module itself?</div><br><div class=3D"gmail_quote"><div d=
+ir=3D"ltr" class=3D"gmail_attr">Bin &lt;<a href=3D"mailto:anole1949@gmail.c=
+om">anole1949@gmail.com</a>&gt; =E4=BA=8E 2020=E5=B9=B44=E6=9C=8824=E6=97=
+=A5=E5=91=A8=E4=BA=94 20:00=E5=86=99=E9=81=93=EF=BC=9A<br></div><blockquote=
+ class=3D"gmail_quote" style=3D"margin:0 0 0 .8ex;border-left:1px #ccc soli=
+d;padding-left:1ex"><div dir=3D"auto"><div>Well, that&#39;s the problem! I&=
+#39;m assuming the iommu kernel module is leaking memory. But I don&#39;t k=
+now why and how.</div><div dir=3D"auto"><br></div><div dir=3D"auto">Do you =
+have any idea about it? Or any further information is needed?</div><div dir=
+=3D"auto"><br><div class=3D"gmail_quote" dir=3D"auto"><div dir=3D"ltr" clas=
+s=3D"gmail_attr">Robin Murphy &lt;<a href=3D"mailto:robin.murphy@arm.com" t=
+arget=3D"_blank" rel=3D"noreferrer">robin.murphy@arm.com</a>&gt; =E4=BA=8E =
+2020=E5=B9=B44=E6=9C=8824=E6=97=A5=E5=91=A8=E4=BA=94 19:20=E5=86=99=E9=81=
+=93=EF=BC=9A<br></div><blockquote class=3D"gmail_quote" style=3D"margin:0 0=
+ 0 .8ex;border-left:1px #ccc solid;padding-left:1ex">On 2020-04-24 1:40 am,=
+ Bin wrote:<br>
 &gt; Hello? anyone there?<br>
 &gt; <br>
-&gt; Bin &lt;<a href=3D"mailto:anole1949@gmail.com" target=3D"_blank" rel=
-=3D"noreferrer">anole1949@gmail.com</a>&gt; =E4=BA=8E2020=E5=B9=B44=E6=9C=
-=8823=E6=97=A5=E5=91=A8=E5=9B=9B =E4=B8=8B=E5=8D=885:14=E5=86=99=E9=81=93=
-=EF=BC=9A<br>
+&gt; Bin &lt;<a href=3D"mailto:anole1949@gmail.com" rel=3D"noreferrer noref=
+errer" target=3D"_blank">anole1949@gmail.com</a>&gt; =E4=BA=8E2020=E5=B9=B4=
+4=E6=9C=8823=E6=97=A5=E5=91=A8=E5=9B=9B =E4=B8=8B=E5=8D=885:14=E5=86=99=E9=
+=81=93=EF=BC=9A<br>
 &gt; <br>
 &gt;&gt; Forget to mention, I&#39;ve already disabled the slab merge, so th=
 is is what<br>
 &gt;&gt; it is.<br>
 &gt;&gt;<br>
-&gt;&gt; Bin &lt;<a href=3D"mailto:anole1949@gmail.com" target=3D"_blank" r=
-el=3D"noreferrer">anole1949@gmail.com</a>&gt; =E4=BA=8E2020=E5=B9=B44=E6=9C=
-=8823=E6=97=A5=E5=91=A8=E5=9B=9B =E4=B8=8B=E5=8D=885:11=E5=86=99=E9=81=93=
-=EF=BC=9A<br>
+&gt;&gt; Bin &lt;<a href=3D"mailto:anole1949@gmail.com" rel=3D"noreferrer n=
+oreferrer" target=3D"_blank">anole1949@gmail.com</a>&gt; =E4=BA=8E2020=E5=
+=B9=B44=E6=9C=8823=E6=97=A5=E5=91=A8=E5=9B=9B =E4=B8=8B=E5=8D=885:11=E5=86=
+=99=E9=81=93=EF=BC=9A<br>
 &gt;&gt;<br>
 &gt;&gt;&gt; Hey, guys:<br>
 &gt;&gt;&gt;<br>
@@ -549,17 +573,18 @@ ual machines,<br>
 &gt; <br>
 &gt; _______________________________________________<br>
 &gt; iommu mailing list<br>
-&gt; <a href=3D"mailto:iommu@lists.linux-foundation.org" target=3D"_blank" =
-rel=3D"noreferrer">iommu@lists.linux-foundation.org</a><br>
+&gt; <a href=3D"mailto:iommu@lists.linux-foundation.org" rel=3D"noreferrer =
+noreferrer" target=3D"_blank">iommu@lists.linux-foundation.org</a><br>
 &gt; <a href=3D"https://lists.linuxfoundation.org/mailman/listinfo/iommu" r=
-el=3D"noreferrer noreferrer" target=3D"_blank">https://lists.linuxfoundatio=
-n.org/mailman/listinfo/iommu</a><br>
+el=3D"noreferrer noreferrer noreferrer" target=3D"_blank">https://lists.lin=
+uxfoundation.org/mailman/listinfo/iommu</a><br>
 &gt; <br>
 </blockquote></div></div></div>
+</blockquote></div>
 
---000000000000e74e4705a4081ebf--
+--000000000000a7bda905a40831fc--
 
---===============1201098509244631259==
+--===============5015288781368094430==
 Content-Type: text/plain; charset="us-ascii"
 MIME-Version: 1.0
 Content-Transfer-Encoding: 7bit
@@ -569,4 +594,4 @@ _______________________________________________
 iommu mailing list
 iommu@lists.linux-foundation.org
 https://lists.linuxfoundation.org/mailman/listinfo/iommu
---===============1201098509244631259==--
+--===============5015288781368094430==--
