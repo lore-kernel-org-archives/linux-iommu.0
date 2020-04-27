@@ -3,71 +3,71 @@ X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
 X-Spam-Status: No, score=-5.3 required=3.0 tests=HEADER_FROM_DIFFERENT_DOMAINS,
-	INCLUDES_PATCH,MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS,USER_AGENT_SANE_1
+	MAILING_LIST_MULTI,SIGNED_OFF_BY,SPF_HELO_NONE,SPF_PASS,USER_AGENT_SANE_1
 	autolearn=unavailable autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id E6991C81B42
-	for <iommu@archiver.kernel.org>; Mon, 27 Apr 2020 20:12:43 +0000 (UTC)
-Received: from silver.osuosl.org (smtp3.osuosl.org [140.211.166.136])
+	by smtp.lore.kernel.org (Postfix) with ESMTP id AA55AC4CECD
+	for <iommu@archiver.kernel.org>; Mon, 27 Apr 2020 20:14:57 +0000 (UTC)
+Received: from fraxinus.osuosl.org (smtp4.osuosl.org [140.211.166.137])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by mail.kernel.org (Postfix) with ESMTPS id BE72D2072D
-	for <iommu@archiver.kernel.org>; Mon, 27 Apr 2020 20:12:43 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org BE72D2072D
+	by mail.kernel.org (Postfix) with ESMTPS id 8B0D42072D
+	for <iommu@archiver.kernel.org>; Mon, 27 Apr 2020 20:14:57 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 8B0D42072D
 Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=intel.com
 Authentication-Results: mail.kernel.org; spf=pass smtp.mailfrom=iommu-bounces@lists.linux-foundation.org
 Received: from localhost (localhost [127.0.0.1])
-	by silver.osuosl.org (Postfix) with ESMTP id 97CFF2221C;
-	Mon, 27 Apr 2020 20:12:43 +0000 (UTC)
-X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from silver.osuosl.org ([127.0.0.1])
-	by localhost (.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
-	with ESMTP id amIsYzLRizic; Mon, 27 Apr 2020 20:12:41 +0000 (UTC)
-Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [140.211.9.56])
-	by silver.osuosl.org (Postfix) with ESMTP id E5E172226E;
-	Mon, 27 Apr 2020 20:12:40 +0000 (UTC)
-Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
-	by lists.linuxfoundation.org (Postfix) with ESMTP id D00AEC0172;
-	Mon, 27 Apr 2020 20:12:40 +0000 (UTC)
-Received: from fraxinus.osuosl.org (smtp4.osuosl.org [140.211.166.137])
- by lists.linuxfoundation.org (Postfix) with ESMTP id B2A8EC003B
- for <iommu@lists.linux-foundation.org>; Mon, 27 Apr 2020 20:12:39 +0000 (UTC)
-Received: from localhost (localhost [127.0.0.1])
- by fraxinus.osuosl.org (Postfix) with ESMTP id AE39585BEE
- for <iommu@lists.linux-foundation.org>; Mon, 27 Apr 2020 20:12:39 +0000 (UTC)
+	by fraxinus.osuosl.org (Postfix) with ESMTP id 65CA2860C4;
+	Mon, 27 Apr 2020 20:14:57 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
 Received: from fraxinus.osuosl.org ([127.0.0.1])
+	by localhost (.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
+	with ESMTP id vWiPLpBY-VSJ; Mon, 27 Apr 2020 20:14:56 +0000 (UTC)
+Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [140.211.9.56])
+	by fraxinus.osuosl.org (Postfix) with ESMTP id 4B47585DF6;
+	Mon, 27 Apr 2020 20:14:56 +0000 (UTC)
+Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
+	by lists.linuxfoundation.org (Postfix) with ESMTP id 365ADC0172;
+	Mon, 27 Apr 2020 20:14:56 +0000 (UTC)
+Received: from hemlock.osuosl.org (smtp2.osuosl.org [140.211.166.133])
+ by lists.linuxfoundation.org (Postfix) with ESMTP id A0B4CC003B
+ for <iommu@lists.linux-foundation.org>; Mon, 27 Apr 2020 20:14:55 +0000 (UTC)
+Received: from localhost (localhost [127.0.0.1])
+ by hemlock.osuosl.org (Postfix) with ESMTP id 8EA1C87F1F
+ for <iommu@lists.linux-foundation.org>; Mon, 27 Apr 2020 20:14:55 +0000 (UTC)
+X-Virus-Scanned: amavisd-new at osuosl.org
+Received: from hemlock.osuosl.org ([127.0.0.1])
  by localhost (.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
- with ESMTP id oEqSx8T7MYQr for <iommu@lists.linux-foundation.org>;
- Mon, 27 Apr 2020 20:12:38 +0000 (UTC)
+ with ESMTP id BdesMdhHhPYe for <iommu@lists.linux-foundation.org>;
+ Mon, 27 Apr 2020 20:14:54 +0000 (UTC)
 X-Greylist: domain auto-whitelisted by SQLgrey-1.7.6
-Received: from mga18.intel.com (mga18.intel.com [134.134.136.126])
- by fraxinus.osuosl.org (Postfix) with ESMTPS id BF7DD86142
- for <iommu@lists.linux-foundation.org>; Mon, 27 Apr 2020 20:12:38 +0000 (UTC)
-IronPort-SDR: HI83kJOcbLhonjUgYMQ4KSlG2JfSScM+x/GiCh5ix17vgBMlgkpjjQMsGDkcywEKvPL41QjlYN
- 2qP7vGQBXdOQ==
+Received: from mga03.intel.com (mga03.intel.com [134.134.136.65])
+ by hemlock.osuosl.org (Postfix) with ESMTPS id BD3F387EE8
+ for <iommu@lists.linux-foundation.org>; Mon, 27 Apr 2020 20:14:54 +0000 (UTC)
+IronPort-SDR: 7K/HvPczqWMju7la0FJvuOz8LCTp/kaftq24J7r/UrXx5qao0tqY8I46eWiQ+SRFsOfPs7O0+x
+ ELfVy7Ls2JdQ==
 X-Amp-Result: SKIPPED(no attachment in message)
 X-Amp-File-Uploaded: False
 Received: from orsmga004.jf.intel.com ([10.7.209.38])
- by orsmga106.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384;
- 27 Apr 2020 13:12:38 -0700
-IronPort-SDR: YBiqKDU6yALRocwGMfAP5WdABSpYbxOMw94dJKnOcHjyDm/PQNZwcV+8e63r+ViAUTAQzF2MWh
- 3uvOvlkaS+iA==
+ by orsmga103.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384;
+ 27 Apr 2020 13:14:54 -0700
+IronPort-SDR: oSH1QzudxMhvrNKYYa85wCPYgn+CzdEisFQatM2S+MaevgrPdVt+tmmUWR2NSoLtOYQv8SqrGt
+ 31V5QV9sFD6Q==
 X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.73,325,1583222400"; d="scan'208";a="404431049"
+X-IronPort-AV: E=Sophos;i="5.73,325,1583222400"; d="scan'208";a="404431741"
 Received: from romley-ivt3.sc.intel.com ([172.25.110.60])
- by orsmga004.jf.intel.com with ESMTP; 27 Apr 2020 13:12:37 -0700
-Date: Mon, 27 Apr 2020 13:11:42 -0700
+ by orsmga004.jf.intel.com with ESMTP; 27 Apr 2020 13:14:53 -0700
+Date: Mon, 27 Apr 2020 13:13:57 -0700
 From: Fenghua Yu <fenghua.yu@intel.com>
 To: Thomas Gleixner <tglx@linutronix.de>
-Subject: Re: [PATCH 6/7] x86/traps: Fix up invalid PASID
-Message-ID: <20200427201141.GA242333@romley-ivt3.sc.intel.com>
+Subject: Re: [PATCH 1/7] docs: x86: Add a documentation for ENQCMD
+Message-ID: <20200427201357.GB242333@romley-ivt3.sc.intel.com>
 References: <1585596788-193989-1-git-send-email-fenghua.yu@intel.com>
- <1585596788-193989-7-git-send-email-fenghua.yu@intel.com>
- <87mu6ys20d.fsf@nanos.tec.linutronix.de>
+ <1585596788-193989-2-git-send-email-fenghua.yu@intel.com>
+ <87368qtsqz.fsf@nanos.tec.linutronix.de>
 MIME-Version: 1.0
 Content-Disposition: inline
-In-Reply-To: <87mu6ys20d.fsf@nanos.tec.linutronix.de>
+In-Reply-To: <87368qtsqz.fsf@nanos.tec.linutronix.de>
 User-Agent: Mutt/1.5.23 (2014-03-12)
 Cc: Ravi V Shankar <ravi.v.shankar@intel.com>, Tony Luck <tony.luck@intel.com>,
  Dave Jiang <dave.jiang@intel.com>, Ashok Raj <ashok.raj@intel.com>,
@@ -93,146 +93,86 @@ Content-Transfer-Encoding: 7bit
 Errors-To: iommu-bounces@lists.linux-foundation.org
 Sender: "iommu" <iommu-bounces@lists.linux-foundation.org>
 
-On Sun, Apr 26, 2020 at 05:25:06PM +0200, Thomas Gleixner wrote:
+On Sun, Apr 26, 2020 at 01:02:12PM +0200, Thomas Gleixner wrote:
 > Fenghua Yu <fenghua.yu@intel.com> writes:
-> > A #GP fault is generated when ENQCMD instruction is executed without
-> > a valid PASID value programmed in.
 > 
-> Programmed in what?
-
-Will change to "...programmed in the PASID MSR".
-
+> s/Add a documentation/Add documentation/
 > 
-> > The #GP fault handler will initialize the current thread's PASID MSR.
+> > From: Ashok Raj <ashok.raj@intel.com>
 > >
-> > The following heuristic is used to avoid decoding the user instructions
-> > to determine the precise reason for the #GP fault:
-> > 1) If the mm for the process has not been allocated a PASID, this #GP
-> >    cannot be fixed.
-> > 2) If the PASID MSR is already initialized, then the #GP was for some
-> >    other reason
-> > 3) Try initializing the PASID MSR and returning. If the #GP was from
-> >    an ENQCMD this will fix it. If not, the #GP fault will be repeated
-> >    and we will hit case "2".
+> > ENQCMD and Data Streaming Accelerator (DSA) and all of their associated
+> > features are a complicated stack with lots of interconnected pieces.
+> > This documentation provides a big picture overview for all of the
+> > features.
 > >
-> > Suggested-by: Thomas Gleixner <tglx@linutronix.de>
+> > Signed-off-by: Ashok Raj <ashok.raj@intel.com>
+> > Co-developed-by: Fenghua Yu <fenghua.yu@intel.com>
+> > Signed-off-by: Fenghua Yu <fenghua.yu@intel.com>
+> > Reviewed-by: Tony Luck <tony.luck@intel.com>
+> > ---
+> >  Documentation/x86/enqcmd.rst | 185 +++++++++++++++++++++++++++++++++++
 > 
-> Just for the record I also suggested to have a proper errorcode in the
-> #GP for ENQCMD and I surely did not suggest to avoid decoding the user
-> instructions.
+> How is that hooked up into the Documentation index?
 > 
-> >  void __free_pasid(struct mm_struct *mm);
-> > +bool __fixup_pasid_exception(void);
-> >  
-> >  #endif /* _ASM_X86_IOMMU_H */
-> > diff --git a/arch/x86/kernel/traps.c b/arch/x86/kernel/traps.c
-> > index 6ef00eb6fbb9..369b5ba94635 100644
-> > --- a/arch/x86/kernel/traps.c
-> > +++ b/arch/x86/kernel/traps.c
-> > @@ -56,6 +56,7 @@
-> >  #include <asm/umip.h>
-> >  #include <asm/insn.h>
-> >  #include <asm/insn-eval.h>
-> > +#include <asm/iommu.h>
-> >  
-> >  #ifdef CONFIG_X86_64
-> >  #include <asm/x86_init.h>
-> > @@ -488,6 +489,16 @@ static enum kernel_gp_hint get_kernel_gp_address(struct pt_regs *regs,
-> >  	return GP_CANONICAL;
-> >  }
-> >  
-> > +static bool fixup_pasid_exception(void)
-> > +{
-> > +	if (!IS_ENABLED(CONFIG_INTEL_IOMMU_SVM))
-> > +		return false;
-> > +	if (!static_cpu_has(X86_FEATURE_ENQCMD))
-> > +		return false;
-> > +
-> > +	return __fixup_pasid_exception();
-> > +}
-> > +
-> >  #define GPFSTR "general protection fault"
-> >  
-> >  dotraplinkage void do_general_protection(struct pt_regs *regs, long error_code)
-> > @@ -499,6 +510,12 @@ dotraplinkage void do_general_protection(struct pt_regs *regs, long error_code)
-> >  	int ret;
-> >  
-> >  	RCU_LOCKDEP_WARN(!rcu_is_watching(), "entry code didn't wake RCU");
-> > +
-> > +	if (user_mode(regs) && fixup_pasid_exception()) {
-> > +		cond_local_irq_enable(regs);
+>  Documentation/x86/enqcmd.rst: WARNING: document isn't included in any toctree
 > 
-> The point of this conditional irq enable _AFTER_ calling into the fixup
-> function is? Also what's the reason for keeping interrupts disabled
-> while calling into that function? Comments exist for a reason.
-
-irq needs to be disabled because the fixup function requires to disable
-preempt in order to update the PASID MSR on the faulting CPU.
-
-Will add comments here.
-
+> > +++ b/Documentation/x86/enqcmd.rst
+> > @@ -0,0 +1,185 @@
+> > +.. SPDX-License-Identifier: GPL-2.0
+> > +
+> > +Improved Device Interaction Overview
 > 
-> > +		return;
-> > +	}
-> > +
-> >  	cond_local_irq_enable(regs);
-> >  
-> >  	if (static_cpu_has(X86_FEATURE_UMIP)) {
-> > diff --git a/drivers/iommu/intel-svm.c b/drivers/iommu/intel-svm.c
-> > index da718a49e91e..5ed39a022adb 100644
-> > --- a/drivers/iommu/intel-svm.c
-> > +++ b/drivers/iommu/intel-svm.c
-> > @@ -759,3 +759,40 @@ void __free_pasid(struct mm_struct *mm)
-> >  	 */
-> >  	ioasid_free(pasid);
-> >  }
-> > +
-> > +/*
-> > + * Fix up the PASID MSR if possible.
-> > + *
-> > + * But if the #GP was due to another reason, a second #GP might be triggered
-> > + * to force proper behavior.
-> > + */
-> > +bool __fixup_pasid_exception(void)
-> > +{
-> > +	struct mm_struct *mm;
-> > +	bool ret = true;
-> > +	u64 pasid_msr;
-> > +	int pasid;
-> > +
-> > +	mm = get_task_mm(current);
+> So the document is about ENQCMD, right? Can you please make that in some
+> way consistently named?
 > 
-> Why do you need a reference to current->mm ?
-
-The PASID for the address space is per mm and is stored in mm.
-To get the PASID, we need to get the mm and the pasid=mm->context.pasid.
-
-
+> > +
+> > +== Background ==
 > 
-> > +	/* This #GP was triggered from user mode. So mm cannot be NULL. */
-> > +	pasid = mm->context.pasid;
-> > +	/* Ensure this process has been bound to a PASID. */
-> > +	if (!pasid) {
-> > +		ret = false;
-> > +		goto out;
-> > +	}
+> This lacks any docbook formatting.... The resulting HTML looks like ...
+> 
 > > +
-> > +	/* Check to see if the PASID MSR has already been set for this task. */
-> > +	rdmsrl(MSR_IA32_PASID, pasid_msr);
-> > +	if (pasid_msr & MSR_IA32_PASID_VALID) {
-> > +		ret = false;
-> > +		goto out;
-> > +	}
+> > +Shared Virtual Addressing (SVA) allows the processor and device to use the
+> > +same virtual addresses avoiding the need for software to translate virtual
+> > +addresses to physical addresses. ENQCMD is a new instruction on Intel
+> > +platforms that allows user applications to directly notify hardware of new
+> > +work, much like doorbells are used in some hardware, but carries a payload
+> > +that carries the PASID and some additional device specific commands
+> > +along with it.
+> 
+> Sorry that's not background information, that's an agglomeration of
+> words.
+> 
+> Can you please explain properly what's the background of SVA, how it
+> differs from regular device addressing and what kind of requirements it
+> has?
+> 
+> ENQCMD is not related to background. It's part of the new technology.
+> 
+> > +== Address Space Tagging ==
 > > +
-> > +	/* Fix up the MSR. */
-> > +	wrmsrl(MSR_IA32_PASID, pasid | MSR_IA32_PASID_VALID);
-> > +out:
-> > +	mmput(mm);
+> > +A new MSR (MSR_IA32_PASID) allows an application address space to be
+> > +associated with what the PCIe spec calls a Process Address Space ID
+> > +(PASID). This PASID tag is carried along with all requests between
+> > +applications and devices and allows devices to interact with the process
+> > +address space.
+> 
+> Sigh. The important part here is not the MSR. The important part is to
+> explain what PASID is and where it comes from. Documentation has similar
+> rules as changelogs:
+> 
+>       1) Provide context
+> 
+>       2) Explain requirements
+>       
+>       3) Explain implementation
+> 
+> The pile you provided is completely backwards and unstructured.
 
-Thanks,
+Ok. Will address all of the comments.
+
+Thanks.
 
 -Fenghua
-
 _______________________________________________
 iommu mailing list
 iommu@lists.linux-foundation.org
