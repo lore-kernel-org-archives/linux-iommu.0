@@ -1,77 +1,86 @@
-Return-Path: <SRS0=zWGe=6K=lists.linux-foundation.org=iommu-bounces@kernel.org>
+Return-Path: <SRS0=6Sm1=6L=lists.linux-foundation.org=iommu-bounces@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-3.8 required=3.0 tests=HEADER_FROM_DIFFERENT_DOMAINS,
-	INCLUDES_PATCH,MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS autolearn=no
+X-Spam-Status: No, score=-2.3 required=3.0 tests=HEADER_FROM_DIFFERENT_DOMAINS,
+	MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS,USER_AGENT_SANE_2 autolearn=no
 	autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id CCB5EC55199
-	for <iommu@archiver.kernel.org>; Sun, 26 Apr 2020 15:25:23 +0000 (UTC)
-Received: from silver.osuosl.org (smtp3.osuosl.org [140.211.166.136])
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 4CACAC54FD0
+	for <iommu@archiver.kernel.org>; Mon, 27 Apr 2020 17:22:22 +0000 (UTC)
+Received: from whitealder.osuosl.org (smtp1.osuosl.org [140.211.166.138])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by mail.kernel.org (Postfix) with ESMTPS id 9A6022070A
-	for <iommu@archiver.kernel.org>; Sun, 26 Apr 2020 15:25:23 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 9A6022070A
-Authentication-Results: mail.kernel.org; dmarc=none (p=none dis=none) header.from=linutronix.de
+	by mail.kernel.org (Postfix) with ESMTPS id 1D239208FE
+	for <iommu@archiver.kernel.org>; Mon, 27 Apr 2020 17:22:22 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 1D239208FE
+Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=linux.intel.com
 Authentication-Results: mail.kernel.org; spf=pass smtp.mailfrom=iommu-bounces@lists.linux-foundation.org
 Received: from localhost (localhost [127.0.0.1])
-	by silver.osuosl.org (Postfix) with ESMTP id 63B912000E;
-	Sun, 26 Apr 2020 15:25:23 +0000 (UTC)
+	by whitealder.osuosl.org (Postfix) with ESMTP id E5A44869C7;
+	Mon, 27 Apr 2020 17:22:21 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from silver.osuosl.org ([127.0.0.1])
+Received: from whitealder.osuosl.org ([127.0.0.1])
 	by localhost (.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
-	with ESMTP id afJb3D8eQ0Lq; Sun, 26 Apr 2020 15:25:22 +0000 (UTC)
+	with ESMTP id 2sNtlq3Zb-Dl; Mon, 27 Apr 2020 17:22:21 +0000 (UTC)
 Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [140.211.9.56])
-	by silver.osuosl.org (Postfix) with ESMTP id 7E7E42075B;
-	Sun, 26 Apr 2020 15:25:22 +0000 (UTC)
+	by whitealder.osuosl.org (Postfix) with ESMTP id EE5E58493F;
+	Mon, 27 Apr 2020 17:22:20 +0000 (UTC)
 Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
-	by lists.linuxfoundation.org (Postfix) with ESMTP id 685A5C089E;
-	Sun, 26 Apr 2020 15:25:22 +0000 (UTC)
+	by lists.linuxfoundation.org (Postfix) with ESMTP id D76A4C18DC;
+	Mon, 27 Apr 2020 17:22:20 +0000 (UTC)
 Received: from silver.osuosl.org (smtp3.osuosl.org [140.211.166.136])
- by lists.linuxfoundation.org (Postfix) with ESMTP id CD29EC0172
- for <iommu@lists.linux-foundation.org>; Sun, 26 Apr 2020 15:25:20 +0000 (UTC)
+ by lists.linuxfoundation.org (Postfix) with ESMTP id 93A3EC0172
+ for <iommu@lists.linux-foundation.org>; Mon, 27 Apr 2020 17:22:19 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
- by silver.osuosl.org (Postfix) with ESMTP id B3B5A2075B
- for <iommu@lists.linux-foundation.org>; Sun, 26 Apr 2020 15:25:20 +0000 (UTC)
+ by silver.osuosl.org (Postfix) with ESMTP id 8CD6F20528
+ for <iommu@lists.linux-foundation.org>; Mon, 27 Apr 2020 17:22:19 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
 Received: from silver.osuosl.org ([127.0.0.1])
  by localhost (.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
- with ESMTP id e6vVbxXWKCu3 for <iommu@lists.linux-foundation.org>;
- Sun, 26 Apr 2020 15:25:17 +0000 (UTC)
-X-Greylist: from auto-whitelisted by SQLgrey-1.7.6
-Received: from Galois.linutronix.de (Galois.linutronix.de [193.142.43.55])
- by silver.osuosl.org (Postfix) with ESMTPS id BE0752000E
- for <iommu@lists.linux-foundation.org>; Sun, 26 Apr 2020 15:25:17 +0000 (UTC)
-Received: from p5de0bf0b.dip0.t-ipconnect.de ([93.224.191.11]
- helo=nanos.tec.linutronix.de)
- by Galois.linutronix.de with esmtpsa (TLS1.2:DHE_RSA_AES_256_CBC_SHA256:256)
- (Exim 4.80) (envelope-from <tglx@linutronix.de>)
- id 1jSj9W-0004rs-Tl; Sun, 26 Apr 2020 17:25:07 +0200
-Received: by nanos.tec.linutronix.de (Postfix, from userid 1000)
- id 541F0100605; Sun, 26 Apr 2020 17:25:06 +0200 (CEST)
-From: Thomas Gleixner <tglx@linutronix.de>
-To: Fenghua Yu <fenghua.yu@intel.com>, Ingo Molnar <mingo@redhat.com>,
- Borislav Petkov <bp@alien8.de>, H Peter Anvin <hpa@zytor.com>,
- David Woodhouse <dwmw2@infradead.org>, Lu Baolu <baolu.lu@linux.intel.com>,
- Dave Hansen <dave.hansen@intel.com>, Tony Luck <tony.luck@intel.com>,
- Ashok Raj <ashok.raj@intel.com>, Jacob Jun Pan <jacob.jun.pan@intel.com>,
- Dave Jiang <dave.jiang@intel.com>, Sohil Mehta <sohil.mehta@intel.com>,
- Ravi V Shankar <ravi.v.shankar@intel.com>
-Subject: Re: [PATCH 6/7] x86/traps: Fix up invalid PASID
-In-Reply-To: <1585596788-193989-7-git-send-email-fenghua.yu@intel.com>
-References: <1585596788-193989-1-git-send-email-fenghua.yu@intel.com>
- <1585596788-193989-7-git-send-email-fenghua.yu@intel.com>
-Date: Sun, 26 Apr 2020 17:25:06 +0200
-Message-ID: <87mu6ys20d.fsf@nanos.tec.linutronix.de>
+ with ESMTP id YlyjltbcJWns for <iommu@lists.linux-foundation.org>;
+ Mon, 27 Apr 2020 17:22:18 +0000 (UTC)
+X-Greylist: domain auto-whitelisted by SQLgrey-1.7.6
+Received: from mga01.intel.com (mga01.intel.com [192.55.52.88])
+ by silver.osuosl.org (Postfix) with ESMTPS id 2ECC7203F9
+ for <iommu@lists.linux-foundation.org>; Mon, 27 Apr 2020 17:22:18 +0000 (UTC)
+IronPort-SDR: yTeu5CgNJzPCzDDbjnyTOE8Zg4eOzAMuDR/yKx8xDoe3Kxk5XEGITmH9/f05u9Wi4I58gcYTH5
+ ekC60wwUYAkg==
+X-Amp-Result: SKIPPED(no attachment in message)
+X-Amp-File-Uploaded: False
+Received: from orsmga007.jf.intel.com ([10.7.209.58])
+ by fmsmga101.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384;
+ 27 Apr 2020 10:22:17 -0700
+IronPort-SDR: cty6BTaKNAuOIqyV63AVgsffvuSJ2Go2HVrN1ezpx76NIyJffdY5+R/v/Z9EypFUyoF6tCYQ2u
+ rb+jwhftVCyw==
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="5.73,324,1583222400"; d="scan'208";a="246211449"
+Received: from jacob-builder.jf.intel.com (HELO jacob-builder) ([10.7.199.155])
+ by orsmga007.jf.intel.com with ESMTP; 27 Apr 2020 10:22:17 -0700
+Date: Mon, 27 Apr 2020 10:28:18 -0700
+From: Jacob Pan <jacob.jun.pan@linux.intel.com>
+To: "Tian, Kevin" <kevin.tian@intel.com>
+Subject: Re: [PATCH v11 05/10] iommu/vt-d: Add bind guest PASID support
+Message-ID: <20200427102818.5f877d53@jacob-builder>
+In-Reply-To: <AADFC41AFE54684AB9EE6CBC0274A5D19D826F9D@SHSMSX104.ccr.corp.intel.com>
+References: <1585939334-21396-1-git-send-email-jacob.jun.pan@linux.intel.com>
+ <1585939334-21396-6-git-send-email-jacob.jun.pan@linux.intel.com>
+ <ab57b85b-235f-dc80-1c25-9b3d42dc5f4e@redhat.com>
+ <20200410124557.4012b99b@jacob-builder>
+ <6d9721a8-2198-5ecd-6c8b-fc43ff2ad7e1@redhat.com>
+ <AADFC41AFE54684AB9EE6CBC0274A5D19D824106@SHSMSX104.ccr.corp.intel.com>
+ <2025736d-e7f2-d746-e030-e609b2f465e2@redhat.com>
+ <20200417082839.45d6321e@jacob-builder>
+ <AADFC41AFE54684AB9EE6CBC0274A5D19D826F9D@SHSMSX104.ccr.corp.intel.com>
+Organization: OTC
+X-Mailer: Claws Mail 3.13.2 (GTK+ 2.24.30; x86_64-pc-linux-gnu)
 MIME-Version: 1.0
-X-Linutronix-Spam-Score: -1.0
-X-Linutronix-Spam-Level: -
-X-Linutronix-Spam-Status: No , -1.0 points, 5.0 required, ALL_TRUSTED=-1,
- SHORTCIRCUIT=-0.0001
-Cc: Fenghua Yu <fenghua.yu@intel.com>, iommu@lists.linux-foundation.org,
- x86 <x86@kernel.org>, linux-kernel <linux-kernel@vger.kernel.org>
+Cc: Yi L <yi.l.liu@linux.intel.com>, "Raj, Ashok" <ashok.raj@intel.com>,
+ Jean-Philippe Brucker <jean-philippe@linaro.com>,
+ LKML <linux-kernel@vger.kernel.org>,
+ "iommu@lists.linux-foundation.org" <iommu@lists.linux-foundation.org>,
+ Alex Williamson <alex.williamson@redhat.com>,
+ David Woodhouse <dwmw2@infradead.org>, Jonathan Cameron <jic23@kernel.org>
 X-BeenThere: iommu@lists.linux-foundation.org
 X-Mailman-Version: 2.1.15
 Precedence: list
@@ -89,130 +98,78 @@ Content-Transfer-Encoding: 7bit
 Errors-To: iommu-bounces@lists.linux-foundation.org
 Sender: "iommu" <iommu-bounces@lists.linux-foundation.org>
 
-Fenghua Yu <fenghua.yu@intel.com> writes:
-> A #GP fault is generated when ENQCMD instruction is executed without
-> a valid PASID value programmed in.
+On Fri, 17 Apr 2020 23:46:13 +0000
+"Tian, Kevin" <kevin.tian@intel.com> wrote:
 
-Programmed in what?
+> > From: Jacob Pan <jacob.jun.pan@linux.intel.com>
+> > Sent: Friday, April 17, 2020 11:29 PM
+> > 
+> > On Fri, 17 Apr 2020 09:46:55 +0200
+> > Auger Eric <eric.auger@redhat.com> wrote:
+> >   
+> > > Hi Kevin,
+> > > On 4/17/20 4:45 AM, Tian, Kevin wrote:  
+> > > >> From: Auger Eric
+> > > >> Sent: Thursday, April 16, 2020 6:43 PM
+> > > >>  
+> > > > [...]  
+> > > >>>>> +	if (svm) {
+> > > >>>>> +		/*
+> > > >>>>> +		 * If we found svm for the PASID, there
+> > > >>>>> must be at
+> > > >>>>> +		 * least one device bond, otherwise svm
+> > > >>>>> should be freed.
+> > > >>>>> +		 */
+> > > >>>>> +		if (WARN_ON(list_empty(&svm->devs))) {
+> > > >>>>> +			ret = -EINVAL;
+> > > >>>>> +			goto out;
+> > > >>>>> +		}
+> > > >>>>> +
+> > > >>>>> +		for_each_svm_dev(sdev, svm, dev) {
+> > > >>>>> +			/* In case of multiple sub-devices
+> > > >>>>> of the same pdev
+> > > >>>>> +			 * assigned, we should allow
+> > > >>>>> multiple bind calls with
+> > > >>>>> +			 * the same PASID and pdev.
+> > > >>>>> +			 */
+> > > >>>>> +			sdev->users++;  
+> > > >>>> What if this is not an mdev device. Is it also allowed?  
+> > > >>> Yes. IOMMU and VT-d driver is not mdev aware. Here mdev is
+> > > >>> just an example of normal use case. You can bind the same PCI
+> > > >>> device (PF or SRIOV VF) more than once to the same PASID.
+> > > >>> Just need to unbind also.  
+> > > >>
+> > > >> I don't get the point of binding a non mdev device several
+> > > >> times with the same PASID. Do you intend to allow that at
+> > > >> userspace level or prevent this from happening in VFIO?  
+> > > >
+> > > > I feel it's better to prevent this from happening, otherwise
+> > > > VFIO also needs to track the bind count and do multiple unbinds
+> > > > at mm_exit. But it's not necessary to prevent it in VFIO. We
+> > > > can check here upon whether aux_domain is valid, and if not
+> > > > return -EBUSY.  
+> > > Ah OK. So if we can detect the case here it is even better
+> > >  
+> > I don't understand why VFIO cannot track, since it is mdev aware.
+> > if we don;t refcount the users, one mdev unbind will result unbind
+> > for all mdev under the same pdev. That may not be the right thing
+> > to do. 
+> 
+> The open here is not for mdev, which refcount is still required.
+> Eric's point is for non-mdev endpoints. It's meaningless and not
+> intuitive to allow binding a PASID multiple-times to the same device. 
+> 
+That seems contradictory. The refcount here is intended/required for sub
+devices such as mdev. Since IOMMU driver is not mdev aware, we cannot
+treat devices differently.
 
-> The #GP fault handler will initialize the current thread's PASID MSR.
->
-> The following heuristic is used to avoid decoding the user instructions
-> to determine the precise reason for the #GP fault:
-> 1) If the mm for the process has not been allocated a PASID, this #GP
->    cannot be fixed.
-> 2) If the PASID MSR is already initialized, then the #GP was for some
->    other reason
-> 3) Try initializing the PASID MSR and returning. If the #GP was from
->    an ENQCMD this will fix it. If not, the #GP fault will be repeated
->    and we will hit case "2".
->
-> Suggested-by: Thomas Gleixner <tglx@linutronix.de>
+Perhaps Yi can clarify if this case is handled within VFIO, then I can
+drop the refcount here.
 
-Just for the record I also suggested to have a proper errorcode in the
-#GP for ENQCMD and I surely did not suggest to avoid decoding the user
-instructions.
+> Thanks
+> Kevin
 
->  void __free_pasid(struct mm_struct *mm);
-> +bool __fixup_pasid_exception(void);
->  
->  #endif /* _ASM_X86_IOMMU_H */
-> diff --git a/arch/x86/kernel/traps.c b/arch/x86/kernel/traps.c
-> index 6ef00eb6fbb9..369b5ba94635 100644
-> --- a/arch/x86/kernel/traps.c
-> +++ b/arch/x86/kernel/traps.c
-> @@ -56,6 +56,7 @@
->  #include <asm/umip.h>
->  #include <asm/insn.h>
->  #include <asm/insn-eval.h>
-> +#include <asm/iommu.h>
->  
->  #ifdef CONFIG_X86_64
->  #include <asm/x86_init.h>
-> @@ -488,6 +489,16 @@ static enum kernel_gp_hint get_kernel_gp_address(struct pt_regs *regs,
->  	return GP_CANONICAL;
->  }
->  
-> +static bool fixup_pasid_exception(void)
-> +{
-> +	if (!IS_ENABLED(CONFIG_INTEL_IOMMU_SVM))
-> +		return false;
-> +	if (!static_cpu_has(X86_FEATURE_ENQCMD))
-> +		return false;
-> +
-> +	return __fixup_pasid_exception();
-> +}
-> +
->  #define GPFSTR "general protection fault"
->  
->  dotraplinkage void do_general_protection(struct pt_regs *regs, long error_code)
-> @@ -499,6 +510,12 @@ dotraplinkage void do_general_protection(struct pt_regs *regs, long error_code)
->  	int ret;
->  
->  	RCU_LOCKDEP_WARN(!rcu_is_watching(), "entry code didn't wake RCU");
-> +
-> +	if (user_mode(regs) && fixup_pasid_exception()) {
-> +		cond_local_irq_enable(regs);
-
-The point of this conditional irq enable _AFTER_ calling into the fixup
-function is? Also what's the reason for keeping interrupts disabled
-while calling into that function? Comments exist for a reason.
-
-> +		return;
-> +	}
-> +
->  	cond_local_irq_enable(regs);
->  
->  	if (static_cpu_has(X86_FEATURE_UMIP)) {
-> diff --git a/drivers/iommu/intel-svm.c b/drivers/iommu/intel-svm.c
-> index da718a49e91e..5ed39a022adb 100644
-> --- a/drivers/iommu/intel-svm.c
-> +++ b/drivers/iommu/intel-svm.c
-> @@ -759,3 +759,40 @@ void __free_pasid(struct mm_struct *mm)
->  	 */
->  	ioasid_free(pasid);
->  }
-> +
-> +/*
-> + * Fix up the PASID MSR if possible.
-> + *
-> + * But if the #GP was due to another reason, a second #GP might be triggered
-> + * to force proper behavior.
-> + */
-> +bool __fixup_pasid_exception(void)
-> +{
-> +	struct mm_struct *mm;
-> +	bool ret = true;
-> +	u64 pasid_msr;
-> +	int pasid;
-> +
-> +	mm = get_task_mm(current);
-
-Why do you need a reference to current->mm ?
-
-> +	/* This #GP was triggered from user mode. So mm cannot be NULL. */
-> +	pasid = mm->context.pasid;
-> +	/* Ensure this process has been bound to a PASID. */
-> +	if (!pasid) {
-> +		ret = false;
-> +		goto out;
-> +	}
-> +
-> +	/* Check to see if the PASID MSR has already been set for this task. */
-> +	rdmsrl(MSR_IA32_PASID, pasid_msr);
-> +	if (pasid_msr & MSR_IA32_PASID_VALID) {
-> +		ret = false;
-> +		goto out;
-> +	}
-> +
-> +	/* Fix up the MSR. */
-> +	wrmsrl(MSR_IA32_PASID, pasid | MSR_IA32_PASID_VALID);
-> +out:
-> +	mmput(mm);
-
-Thanks,
-
-        tglx
+[Jacob Pan]
 _______________________________________________
 iommu mailing list
 iommu@lists.linux-foundation.org
