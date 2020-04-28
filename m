@@ -6,75 +6,78 @@ X-Spam-Status: No, score=-2.3 required=3.0 tests=DKIM_INVALID,DKIM_SIGNED,
 	MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED,USER_AGENT_SANE_1
 	autolearn=no autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 1EE95C83000
-	for <iommu@archiver.kernel.org>; Tue, 28 Apr 2020 22:54:01 +0000 (UTC)
-Received: from silver.osuosl.org (smtp3.osuosl.org [140.211.166.136])
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 82FE0C83004
+	for <iommu@archiver.kernel.org>; Tue, 28 Apr 2020 23:04:38 +0000 (UTC)
+Received: from hemlock.osuosl.org (smtp2.osuosl.org [140.211.166.133])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by mail.kernel.org (Postfix) with ESMTPS id DB3C42070B
-	for <iommu@archiver.kernel.org>; Tue, 28 Apr 2020 22:54:00 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTPS id 492C420730
+	for <iommu@archiver.kernel.org>; Tue, 28 Apr 2020 23:04:38 +0000 (UTC)
 Authentication-Results: mail.kernel.org;
-	dkim=fail reason="signature verification failed" (1024-bit key) header.d=kernel.org header.i=@kernel.org header.b="K8ywBOYN"
-DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org DB3C42070B
+	dkim=fail reason="signature verification failed" (1024-bit key) header.d=kernel.org header.i=@kernel.org header.b="yFtq8fVR"
+DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 492C420730
 Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=kernel.org
 Authentication-Results: mail.kernel.org; spf=pass smtp.mailfrom=iommu-bounces@lists.linux-foundation.org
 Received: from localhost (localhost [127.0.0.1])
-	by silver.osuosl.org (Postfix) with ESMTP id ABA63229D4;
-	Tue, 28 Apr 2020 22:54:00 +0000 (UTC)
+	by hemlock.osuosl.org (Postfix) with ESMTP id 270E588303;
+	Tue, 28 Apr 2020 23:04:38 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from silver.osuosl.org ([127.0.0.1])
+Received: from hemlock.osuosl.org ([127.0.0.1])
 	by localhost (.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
-	with ESMTP id MJIkGUCzodBQ; Tue, 28 Apr 2020 22:53:58 +0000 (UTC)
+	with ESMTP id U7+TPZWbU2va; Tue, 28 Apr 2020 23:04:37 +0000 (UTC)
 Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [140.211.9.56])
-	by silver.osuosl.org (Postfix) with ESMTP id B30782154E;
-	Tue, 28 Apr 2020 22:53:58 +0000 (UTC)
+	by hemlock.osuosl.org (Postfix) with ESMTP id 7BF81882C4;
+	Tue, 28 Apr 2020 23:04:37 +0000 (UTC)
 Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
-	by lists.linuxfoundation.org (Postfix) with ESMTP id 7A116C0864;
-	Tue, 28 Apr 2020 22:53:58 +0000 (UTC)
-Received: from whitealder.osuosl.org (smtp1.osuosl.org [140.211.166.138])
- by lists.linuxfoundation.org (Postfix) with ESMTP id 49091C0172;
- Tue, 28 Apr 2020 22:53:57 +0000 (UTC)
+	by lists.linuxfoundation.org (Postfix) with ESMTP id 6E0C7C0864;
+	Tue, 28 Apr 2020 23:04:37 +0000 (UTC)
+Received: from hemlock.osuosl.org (smtp2.osuosl.org [140.211.166.133])
+ by lists.linuxfoundation.org (Postfix) with ESMTP id 44FE5C0172;
+ Tue, 28 Apr 2020 23:04:36 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
- by whitealder.osuosl.org (Postfix) with ESMTP id 31DFD843BD;
- Tue, 28 Apr 2020 22:53:57 +0000 (UTC)
+ by hemlock.osuosl.org (Postfix) with ESMTP id 2B40D882E3;
+ Tue, 28 Apr 2020 23:04:36 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from whitealder.osuosl.org ([127.0.0.1])
+Received: from hemlock.osuosl.org ([127.0.0.1])
  by localhost (.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
- with ESMTP id 0jQFLgzv8dFO; Tue, 28 Apr 2020 22:53:56 +0000 (UTC)
+ with ESMTP id bF3J5H4MF2ae; Tue, 28 Apr 2020 23:04:35 +0000 (UTC)
 X-Greylist: domain auto-whitelisted by SQLgrey-1.7.6
 X-Greylist: domain auto-whitelisted by SQLgrey-1.7.6
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
- by whitealder.osuosl.org (Postfix) with ESMTPS id 8C45D84273;
- Tue, 28 Apr 2020 22:53:56 +0000 (UTC)
+ by hemlock.osuosl.org (Postfix) with ESMTPS id B0A3A882C4;
+ Tue, 28 Apr 2020 23:04:35 +0000 (UTC)
 Received: from localhost (c-67-164-102-47.hsd1.ca.comcast.net [67.164.102.47])
  (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256
  bits)) (No client certificate requested)
- by mail.kernel.org (Postfix) with ESMTPSA id ACB2E206D9;
- Tue, 28 Apr 2020 22:53:55 +0000 (UTC)
+ by mail.kernel.org (Postfix) with ESMTPSA id E881120656;
+ Tue, 28 Apr 2020 23:04:34 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
- s=default; t=1588114436;
- bh=ywVtSYZTVnlMl6doGY8VJNhfjwkHTSTfeN9miNjuHLc=;
+ s=default; t=1588115075;
+ bh=bo21LaVDiN3p5qRExTfq+J7LOaI4TxtlxHpokeU5a/o=;
  h=Date:From:To:cc:Subject:In-Reply-To:References:From;
- b=K8ywBOYNFWIro+8tTcJPkzDdktI4MKmTQFI2jKuDDCZxz/UPDSdJCkEwANhDBlV4Z
- +AD2jXT3SglB96bLRp2T+E2dhPpvIycmfgpopwde4gOSyMWOMgY/EG/59z2V1xC782
- pzdsNh2DvdLoOlNaBrJ/mPX3Dl7yMXVfFt5esrDw=
-Date: Tue, 28 Apr 2020 15:53:55 -0700 (PDT)
+ b=yFtq8fVR/VOkhVWVlZwlZokdulMlFu18XJsQJY7pDxJcDZzrCvZYs0XLTYNZmxQFB
+ TBC5AJbU1fcRxpBlV7gSsUZbbrInB3b/KP1iNNFQvhDadkU4ftnPdNkgd7QRwiGDNB
+ fSoqdmY8NaFIDGsoCMkQHQ8Ab/XP58R2TcfoPOUo=
+Date: Tue, 28 Apr 2020 16:04:34 -0700 (PDT)
 From: Stefano Stabellini <sstabellini@kernel.org>
 X-X-Sender: sstabellini@sstabellini-ThinkPad-T480s
-To: Srivatsa Vaddagiri <vatsa@codeaurora.org>
+To: "Michael S. Tsirkin" <mst@redhat.com>
 Subject: Re: [PATCH 5/5] virtio: Add bounce DMA ops
-In-Reply-To: <1588073958-1793-6-git-send-email-vatsa@codeaurora.org>
-Message-ID: <alpine.DEB.2.21.2004281542010.29217@sstabellini-ThinkPad-T480s>
+In-Reply-To: <20200428163448-mutt-send-email-mst@kernel.org>
+Message-ID: <alpine.DEB.2.21.2004281556180.29217@sstabellini-ThinkPad-T480s>
 References: <1588073958-1793-1-git-send-email-vatsa@codeaurora.org>
  <1588073958-1793-6-git-send-email-vatsa@codeaurora.org>
+ <20200428121232-mutt-send-email-mst@kernel.org>
+ <20200428174952.GA5097@quicinc.com>
+ <20200428163448-mutt-send-email-mst@kernel.org>
 User-Agent: Alpine 2.21 (DEB 202 2017-01-01)
 MIME-Version: 1.0
-Cc: tsoni@codeaurora.org, virtio-dev@lists.oasis-open.org, mst@redhat.com,
- jan.kiszka@siemens.com, jasowang@redhat.com, konrad.wilk@oracle.com,
- christoffer.dall@arm.com, virtualization@lists.linux-foundation.org,
- alex.bennee@linaro.org, iommu@lists.linux-foundation.org,
- stefano.stabellini@xilinx.com, will@kernel.org, linux-kernel@vger.kernel.org,
- pratikp@codeaurora.org
+Cc: tsoni@codeaurora.org, virtio-dev@lists.oasis-open.org,
+ konrad.wilk@oracle.com, jan.kiszka@siemens.com, jasowang@redhat.com,
+ Srivatsa Vaddagiri <vatsa@codeaurora.org>, christoffer.dall@arm.com,
+ virtualization@lists.linux-foundation.org, alex.bennee@linaro.org,
+ iommu@lists.linux-foundation.org, stefano.stabellini@xilinx.com,
+ will@kernel.org, linux-kernel@vger.kernel.org, pratikp@codeaurora.org
 X-BeenThere: iommu@lists.linux-foundation.org
 X-Mailman-Version: 2.1.15
 Precedence: list
@@ -92,32 +95,33 @@ Content-Transfer-Encoding: 7bit
 Errors-To: iommu-bounces@lists.linux-foundation.org
 Sender: "iommu" <iommu-bounces@lists.linux-foundation.org>
 
-On Tue, 28 Apr 2020, Srivatsa Vaddagiri wrote:
-> For better security, its desirable that a guest VM's memory is
-> not accessible to any entity that executes outside the context of
-> guest VM. In case of virtio, backend drivers execute outside the
-> context of guest VM and in general will need access to complete
-> guest VM memory.  One option to restrict the access provided to
-> backend driver is to make use of a bounce buffer. The bounce
-> buffer is accessible to both backend and frontend drivers. All IO
-> buffers that are in private space of guest VM are bounced to be
-> accessible to backend.
+On Tue, 28 Apr 2020, Michael S. Tsirkin wrote:
+> On Tue, Apr 28, 2020 at 11:19:52PM +0530, Srivatsa Vaddagiri wrote:
+> > * Michael S. Tsirkin <mst@redhat.com> [2020-04-28 12:17:57]:
+> > 
+> > > Okay, but how is all this virtio specific?  For example, why not allow
+> > > separate swiotlbs for any type of device?
+> > > For example, this might make sense if a given device is from a
+> > > different, less trusted vendor.
+> > 
+> > Is swiotlb commonly used for multiple devices that may be on different trust
+> > boundaries (and not behind a hardware iommu)?
 
-[...]
+The trust boundary is not a good way of describing the scenario and I
+think it leads to miscommunication.
 
-> +static int __init virtio_bounce_setup(struct reserved_mem *rmem)
-> +{
-> +	unsigned long node = rmem->fdt_node;
-> +
-> +	if (!of_get_flat_dt_prop(node, "no-map", NULL))
-> +		return -EINVAL;
-> +
-> +	return virtio_register_bounce_buffer(rmem->base, rmem->size);
-> +}
-> +
-> +RESERVEDMEM_OF_DECLARE(virtio, "virtio_bounce_pool", virtio_bounce_setup);
+A better way to describe the scenario would be that the device can only
+DMA to/from a small reserved-memory region advertised on device tree.
 
-Is this special reserved-memory region documented somewhere?
+Do we have other instances of devices that can only DMA to/from very
+specific and non-configurable address ranges? If so, this series could
+follow their example.
+
+
+> Even a hardware iommu does not imply a 100% security from malicious
+> hardware. First lots of people use iommu=pt for performance reasons.
+> Second even without pt, unmaps are often batched, and sub-page buffers
+> might be used for DMA, so we are not 100% protected at all times.
 _______________________________________________
 iommu mailing list
 iommu@lists.linux-foundation.org
