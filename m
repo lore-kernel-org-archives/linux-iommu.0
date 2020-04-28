@@ -2,74 +2,94 @@ Return-Path: <SRS0=7g3a=6M=lists.linux-foundation.org=iommu-bounces@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-8.2 required=3.0 tests=HEADER_FROM_DIFFERENT_DOMAINS,
-	INCLUDES_PATCH,MAILING_LIST_MULTI,SIGNED_OFF_BY,SPF_HELO_NONE,SPF_PASS,
-	URIBL_BLOCKED,USER_AGENT_SANE_1 autolearn=unavailable autolearn_force=no
-	version=3.4.0
+X-Spam-Status: No, score=-9.6 required=3.0 tests=DKIM_INVALID,DKIM_SIGNED,
+	HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_PATCH,MAILING_LIST_MULTI,SIGNED_OFF_BY,
+	SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED,USER_AGENT_GIT autolearn=unavailable
+	autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 27360C83004
-	for <iommu@archiver.kernel.org>; Tue, 28 Apr 2020 10:19:53 +0000 (UTC)
-Received: from silver.osuosl.org (smtp3.osuosl.org [140.211.166.136])
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 7E86AC83000
+	for <iommu@archiver.kernel.org>; Tue, 28 Apr 2020 12:05:47 +0000 (UTC)
+Received: from hemlock.osuosl.org (smtp2.osuosl.org [140.211.166.133])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by mail.kernel.org (Postfix) with ESMTPS id EFBAE206C0
-	for <iommu@archiver.kernel.org>; Tue, 28 Apr 2020 10:19:52 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org EFBAE206C0
-Authentication-Results: mail.kernel.org; dmarc=none (p=none dis=none) header.from=suse.com
+	by mail.kernel.org (Postfix) with ESMTPS id 45C2B206D7
+	for <iommu@archiver.kernel.org>; Tue, 28 Apr 2020 12:05:47 +0000 (UTC)
+Authentication-Results: mail.kernel.org;
+	dkim=fail reason="signature verification failed" (1024-bit key) header.d=mg.codeaurora.org header.i=@mg.codeaurora.org header.b="jmyHZBy9"
+DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 45C2B206D7
+Authentication-Results: mail.kernel.org; dmarc=none (p=none dis=none) header.from=codeaurora.org
 Authentication-Results: mail.kernel.org; spf=pass smtp.mailfrom=iommu-bounces@lists.linux-foundation.org
 Received: from localhost (localhost [127.0.0.1])
-	by silver.osuosl.org (Postfix) with ESMTP id B64C822008;
-	Tue, 28 Apr 2020 10:19:52 +0000 (UTC)
+	by hemlock.osuosl.org (Postfix) with ESMTP id 16E0A8817D;
+	Tue, 28 Apr 2020 12:05:47 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from silver.osuosl.org ([127.0.0.1])
+Received: from hemlock.osuosl.org ([127.0.0.1])
 	by localhost (.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
-	with ESMTP id Qctb9ieaG1xu; Tue, 28 Apr 2020 10:19:49 +0000 (UTC)
+	with ESMTP id r5wrAzgQGBJS; Tue, 28 Apr 2020 12:05:46 +0000 (UTC)
 Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [140.211.9.56])
-	by silver.osuosl.org (Postfix) with ESMTP id 953FA20386;
-	Tue, 28 Apr 2020 10:19:49 +0000 (UTC)
+	by hemlock.osuosl.org (Postfix) with ESMTP id EB6818815D;
+	Tue, 28 Apr 2020 12:05:45 +0000 (UTC)
 Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
-	by lists.linuxfoundation.org (Postfix) with ESMTP id 7EF79C0864;
-	Tue, 28 Apr 2020 10:19:49 +0000 (UTC)
+	by lists.linuxfoundation.org (Postfix) with ESMTP id B8BECC0889;
+	Tue, 28 Apr 2020 12:05:45 +0000 (UTC)
 Received: from hemlock.osuosl.org (smtp2.osuosl.org [140.211.166.133])
- by lists.linuxfoundation.org (Postfix) with ESMTP id 9FFB9C0172
- for <iommu@lists.linux-foundation.org>; Tue, 28 Apr 2020 10:19:47 +0000 (UTC)
+ by lists.linuxfoundation.org (Postfix) with ESMTP id 0F321C0172
+ for <iommu@lists.linux-foundation.org>; Tue, 28 Apr 2020 11:40:00 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
- by hemlock.osuosl.org (Postfix) with ESMTP id 8E64186F12
- for <iommu@lists.linux-foundation.org>; Tue, 28 Apr 2020 10:19:47 +0000 (UTC)
+ by hemlock.osuosl.org (Postfix) with ESMTP id EC3FC88046
+ for <iommu@lists.linux-foundation.org>; Tue, 28 Apr 2020 11:39:59 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
 Received: from hemlock.osuosl.org ([127.0.0.1])
  by localhost (.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
- with ESMTP id RNXKn7zRGO6o for <iommu@lists.linux-foundation.org>;
- Tue, 28 Apr 2020 10:19:45 +0000 (UTC)
-X-Greylist: domain auto-whitelisted by SQLgrey-1.7.6
-Received: from mx2.suse.de (mx2.suse.de [195.135.220.15])
- by hemlock.osuosl.org (Postfix) with ESMTPS id 4232784B6A
- for <iommu@lists.linux-foundation.org>; Tue, 28 Apr 2020 10:19:45 +0000 (UTC)
-X-Virus-Scanned: by amavisd-new at test-mx.suse.de
-Received: from relay2.suse.de (unknown [195.135.220.254])
- by mx2.suse.de (Postfix) with ESMTP id E60A4AED6;
- Tue, 28 Apr 2020 10:19:41 +0000 (UTC)
-Subject: Re: [PATCH] xen/swiotlb: correct the check for
- xen_destroy_contiguous_region
-To: Peng Fan <peng.fan@nxp.com>,
- "konrad.wilk@oracle.com" <konrad.wilk@oracle.com>,
- "boris.ostrovsky@oracle.com" <boris.ostrovsky@oracle.com>,
- "sstabellini@kernel.org" <sstabellini@kernel.org>
-References: <1588059225-11245-1-git-send-email-peng.fan@nxp.com>
- <1c01e97a-adcd-a703-55b5-8975b4ce4d2c@suse.com>
- <DB6PR0402MB2760A05135338B0CBB28123488AC0@DB6PR0402MB2760.eurprd04.prod.outlook.com>
-From: =?UTF-8?B?SsO8cmdlbiBHcm/Dnw==?= <jgross@suse.com>
-Message-ID: <dba804ea-4268-24ff-7447-ddef00e9e20c@suse.com>
-Date: Tue, 28 Apr 2020 12:19:41 +0200
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101
- Thunderbird/68.6.0
-MIME-Version: 1.0
-In-Reply-To: <DB6PR0402MB2760A05135338B0CBB28123488AC0@DB6PR0402MB2760.eurprd04.prod.outlook.com>
-Content-Language: en-US
-Cc: "xen-devel@lists.xenproject.org" <xen-devel@lists.xenproject.org>,
- "iommu@lists.linux-foundation.org" <iommu@lists.linux-foundation.org>,
- "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
- dl-linux-imx <linux-imx@nxp.com>
+ with ESMTP id gV83qSjlPXau for <iommu@lists.linux-foundation.org>;
+ Tue, 28 Apr 2020 11:39:59 +0000 (UTC)
+X-Greylist: from auto-whitelisted by SQLgrey-1.7.6
+Received: from mail27.static.mailgun.info (mail27.static.mailgun.info
+ [104.130.122.27])
+ by hemlock.osuosl.org (Postfix) with ESMTPS id CEE7F88058
+ for <iommu@lists.linux-foundation.org>; Tue, 28 Apr 2020 11:39:56 +0000 (UTC)
+DKIM-Signature: a=rsa-sha256; v=1; c=relaxed/relaxed; d=mg.codeaurora.org;
+ q=dns/txt; 
+ s=smtp; t=1588073999; h=References: In-Reply-To: Message-Id: Date:
+ Subject: Cc: To: From: Sender;
+ bh=+B++ebBAF6JRFSA5Mk6Qhv4WL/YpE+dNWWEEO2SgL98=;
+ b=jmyHZBy9Uai/sCtPieihxESA7KKRXxIQeAlygrQCUnu6ldIhagTKZGqUfBe9SPMa0rMjnAmg
+ YnR3IQdCexla3GzbTdfCHcMi2nYBOCfasSixIeYWjo0/dHqtG0bX5nAB21NYpSZfUItCg3l5
+ VGYNdYZlb02yk2rPz9j+kfkntkU=
+X-Mailgun-Sending-Ip: 104.130.122.27
+X-Mailgun-Sid: WyI3NDkwMCIsICJpb21tdUBsaXN0cy5saW51eC1mb3VuZGF0aW9uLm9yZyIsICJiZTllNGEiXQ==
+Received: from smtp.codeaurora.org
+ (ec2-35-166-182-171.us-west-2.compute.amazonaws.com [35.166.182.171])
+ by mxa.mailgun.org with ESMTP id 5ea815fe.7fe1f216e960-smtp-out-n05;
+ Tue, 28 Apr 2020 11:39:42 -0000 (UTC)
+Received: by smtp.codeaurora.org (Postfix, from userid 1001)
+ id 61659C433F2; Tue, 28 Apr 2020 11:39:41 +0000 (UTC)
+Received: from blr-ubuntu-31.qualcomm.com
+ (blr-bdr-fw-01_GlobalNAT_AllZones-Outside.qualcomm.com [103.229.18.19])
+ (using TLSv1.2 with cipher ECDHE-RSA-AES128-SHA256 (128/128 bits))
+ (No client certificate requested) (Authenticated sender: svaddagi)
+ by smtp.codeaurora.org (Postfix) with ESMTPSA id DD1ABC433D2;
+ Tue, 28 Apr 2020 11:39:35 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.3.2 smtp.codeaurora.org DD1ABC433D2
+Authentication-Results: aws-us-west-2-caf-mail-1.web.codeaurora.org;
+ dmarc=none (p=none dis=none) header.from=codeaurora.org
+Authentication-Results: aws-us-west-2-caf-mail-1.web.codeaurora.org;
+ spf=none smtp.mailfrom=vatsa@codeaurora.org
+From: Srivatsa Vaddagiri <vatsa@codeaurora.org>
+To: konrad.wilk@oracle.com, mst@redhat.com, jasowang@redhat.com,
+ jan.kiszka@siemens.com, will@kernel.org, stefano.stabellini@xilinx.com
+Subject: [PATCH 2/5] swiotlb: Allow for non-linear mapping between paddr and
+ vaddr
+Date: Tue, 28 Apr 2020 17:09:15 +0530
+Message-Id: <1588073958-1793-3-git-send-email-vatsa@codeaurora.org>
+X-Mailer: git-send-email 2.7.4
+In-Reply-To: <1588073958-1793-1-git-send-email-vatsa@codeaurora.org>
+References: <1588073958-1793-1-git-send-email-vatsa@codeaurora.org>
+X-Mailman-Approved-At: Tue, 28 Apr 2020 12:05:44 +0000
+Cc: tsoni@codeaurora.org, virtio-dev@lists.oasis-open.org,
+ alex.bennee@linaro.org, vatsa@codeaurora.org, christoffer.dall@arm.com,
+ virtualization@lists.linux-foundation.org, iommu@lists.linux-foundation.org,
+ pratikp@codeaurora.org, linux-kernel@vger.kernel.org
 X-BeenThere: iommu@lists.linux-foundation.org
 X-Mailman-Version: 2.1.15
 Precedence: list
@@ -82,115 +102,132 @@ List-Post: <mailto:iommu@lists.linux-foundation.org>
 List-Help: <mailto:iommu-request@lists.linux-foundation.org?subject=help>
 List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
  <mailto:iommu-request@lists.linux-foundation.org?subject=subscribe>
+MIME-Version: 1.0
+Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
-Content-Type: text/plain; charset="us-ascii"; Format="flowed"
 Errors-To: iommu-bounces@lists.linux-foundation.org
 Sender: "iommu" <iommu-bounces@lists.linux-foundation.org>
 
-On 28.04.20 10:25, Peng Fan wrote:
->> Subject: Re: [PATCH] xen/swiotlb: correct the check for
->> xen_destroy_contiguous_region
->>
->> On 28.04.20 09:33, peng.fan@nxp.com wrote:
->>> From: Peng Fan <peng.fan@nxp.com>
->>>
->>> When booting xen on i.MX8QM, met:
->>> "
->>> [    3.602128] Unable to handle kernel paging request at virtual address
->> 0000000000272d40
->>> [    3.610804] Mem abort info:
->>> [    3.613905]   ESR = 0x96000004
->>> [    3.617332]   EC = 0x25: DABT (current EL), IL = 32 bits
->>> [    3.623211]   SET = 0, FnV = 0
->>> [    3.626628]   EA = 0, S1PTW = 0
->>> [    3.630128] Data abort info:
->>> [    3.633362]   ISV = 0, ISS = 0x00000004
->>> [    3.637630]   CM = 0, WnR = 0
->>> [    3.640955] [0000000000272d40] user address but active_mm is
->> swapper
->>> [    3.647983] Internal error: Oops: 96000004 [#1] PREEMPT SMP
->>> [    3.654137] Modules linked in:
->>> [    3.677285] Hardware name: Freescale i.MX8QM MEK (DT)
->>> [    3.677302] Workqueue: events deferred_probe_work_func
->>> [    3.684253] imx6q-pcie 5f000000.pcie: PCI host bridge to bus 0000:00
->>> [    3.688297] pstate: 60000005 (nZCv daif -PAN -UAO)
->>> [    3.688310] pc : xen_swiotlb_free_coherent+0x180/0x1c0
->>> [    3.693993] pci_bus 0000:00: root bus resource [bus 00-ff]
->>> [    3.701002] lr : xen_swiotlb_free_coherent+0x44/0x1c0
->>> "
->>>
->>> In xen_swiotlb_alloc_coherent, if !(dev_addr + size - 1 <= dma_mask)
->>> or range_straddles_page_boundary(phys, size) are true, it will create
->>> contiguous region. So when free, we need to free contiguous region use
->>> upper check condition.
->>
->> No, this will break PV guests on x86.
-> 
-> Could you share more details why alloc and free not matching for the check?
+Some of the memory pool managed by swiotlb driver could fall
+outside the direct-mapped range, made accessible via memremap()
+routine. To facilitate easy conversion between virtual and
+physical address of such memory, store the virtual address of
+memory pool in addition to its physical address.
 
-xen_create_contiguous_region() is needed only in case:
+Signed-off-by: Srivatsa Vaddagiri <vatsa@codeaurora.org>
+---
+ include/linux/swiotlb.h |  2 ++
+ kernel/dma/swiotlb.c    | 20 ++++++++++++++------
+ 2 files changed, 16 insertions(+), 6 deletions(-)
 
-- the bus address is not within dma_mask, or
-- the memory region is not physically contiguous (can happen only for
-   PV guests)
+diff --git a/include/linux/swiotlb.h b/include/linux/swiotlb.h
+index 8c7843f..c634b4d 100644
+--- a/include/linux/swiotlb.h
++++ b/include/linux/swiotlb.h
+@@ -61,6 +61,8 @@ struct swiotlb_pool {
+ 
+ 	phys_addr_t io_tlb_start, io_tlb_end;
+ 
++	void *io_tlb_vstart;
++
+ 	/*
+ 	 * The number of IO TLB blocks (in groups of 64) between io_tlb_start
+ 	 * and io_tlb_end.  This is command line adjustable via
+diff --git a/kernel/dma/swiotlb.c b/kernel/dma/swiotlb.c
+index 9c504d3..8cf0b57 100644
+--- a/kernel/dma/swiotlb.c
++++ b/kernel/dma/swiotlb.c
+@@ -178,6 +178,7 @@ int __init swiotlb_init_with_tbl(char *tlb, unsigned long nslabs, int verbose)
+ 	default_swiotlb_pool.io_tlb_start = __pa(tlb);
+ 	default_swiotlb_pool.io_tlb_end =
+ 			default_swiotlb_pool.io_tlb_start + bytes;
++	default_swiotlb_pool.io_tlb_vstart = tlb;
+ 
+ 	/*
+ 	 * Allocate and initialize the free list array.  This array is used
+@@ -307,6 +308,7 @@ static void swiotlb_cleanup(void)
+ 	default_swiotlb_pool.io_tlb_start = 0;
+ 	default_swiotlb_pool.io_tlb_nslabs = 0;
+ 	default_swiotlb_pool.max_segment = 0;
++	default_swiotlb_pool.io_tlb_vstart = NULL;
+ }
+ 
+ int
+@@ -320,6 +322,7 @@ swiotlb_late_init_with_tbl(char *tlb, unsigned long nslabs)
+ 	default_swiotlb_pool.io_tlb_start = virt_to_phys(tlb);
+ 	default_swiotlb_pool.io_tlb_end =
+ 			default_swiotlb_pool.io_tlb_start + bytes;
++	default_swiotlb_pool.io_tlb_vstart = tlb;
+ 
+ 	set_memory_decrypted((unsigned long)tlb, bytes >> PAGE_SHIFT);
+ 	memset(tlb, 0, bytes);
+@@ -400,11 +403,10 @@ void __init swiotlb_exit(void)
+ /*
+  * Bounce: copy the swiotlb buffer from or back to the original dma location
+  */
+-static void swiotlb_bounce(phys_addr_t orig_addr, phys_addr_t tlb_addr,
++static void swiotlb_bounce(phys_addr_t orig_addr, void *vaddr,
+ 			   size_t size, enum dma_data_direction dir)
+ {
+ 	unsigned long pfn = PFN_DOWN(orig_addr);
+-	unsigned char *vaddr = phys_to_virt(tlb_addr);
+ 
+ 	if (PageHighMem(pfn_to_page(pfn))) {
+ 		/* The buffer does not have a mapping.  Map it in and copy */
+@@ -437,6 +439,11 @@ static void swiotlb_bounce(phys_addr_t orig_addr, phys_addr_t tlb_addr,
+ 	}
+ }
+ 
++static inline void *tlb_vaddr(struct swiotlb_pool *pool, phys_addr_t tlb_addr)
++{
++	return pool->io_tlb_vstart + (tlb_addr - pool->io_tlb_start);
++}
++
+ phys_addr_t _swiotlb_tbl_map_single(struct swiotlb_pool *pool,
+ 				   struct device *hwdev,
+ 				   dma_addr_t tbl_dma_addr,
+@@ -569,7 +576,7 @@ phys_addr_t _swiotlb_tbl_map_single(struct swiotlb_pool *pool,
+ 						(i << IO_TLB_SHIFT);
+ 	if (!(attrs & DMA_ATTR_SKIP_CPU_SYNC) &&
+ 	    (dir == DMA_TO_DEVICE || dir == DMA_BIDIRECTIONAL))
+-		swiotlb_bounce(orig_addr, tlb_addr,
++		swiotlb_bounce(orig_addr, tlb_vaddr(pool, tlb_addr),
+ 					mapping_size, DMA_TO_DEVICE);
+ 
+ 	return tlb_addr;
+@@ -594,7 +601,8 @@ void _swiotlb_tbl_unmap_single(struct swiotlb_pool *pool,
+ 	if (orig_addr != INVALID_PHYS_ADDR &&
+ 	    !(attrs & DMA_ATTR_SKIP_CPU_SYNC) &&
+ 	    ((dir == DMA_FROM_DEVICE) || (dir == DMA_BIDIRECTIONAL)))
+-		swiotlb_bounce(orig_addr, tlb_addr, mapping_size, DMA_FROM_DEVICE);
++		swiotlb_bounce(orig_addr, tlb_vaddr(pool, tlb_addr),
++						mapping_size, DMA_FROM_DEVICE);
+ 
+ 	/*
+ 	 * Return the buffer to the free list by setting the corresponding
+@@ -643,14 +651,14 @@ void _swiotlb_tbl_sync_single(struct swiotlb_pool *pool,
+ 	switch (target) {
+ 	case SYNC_FOR_CPU:
+ 		if (likely(dir == DMA_FROM_DEVICE || dir == DMA_BIDIRECTIONAL))
+-			swiotlb_bounce(orig_addr, tlb_addr,
++			swiotlb_bounce(orig_addr, tlb_vaddr(pool, tlb_addr),
+ 				       size, DMA_FROM_DEVICE);
+ 		else
+ 			BUG_ON(dir != DMA_TO_DEVICE);
+ 		break;
+ 	case SYNC_FOR_DEVICE:
+ 		if (likely(dir == DMA_TO_DEVICE || dir == DMA_BIDIRECTIONAL))
+-			swiotlb_bounce(orig_addr, tlb_addr,
++			swiotlb_bounce(orig_addr, tlb_vaddr(pool, tlb_addr),
+ 				       size, DMA_TO_DEVICE);
+ 		else
+ 			BUG_ON(dir != DMA_FROM_DEVICE);
+-- 
+2.7.4
 
-In any case it should arrange for the memory to be suitable for the
-DMA operation, so to be contiguous and within dma_mask afterwards. So
-xen_destroy_contiguous_region() should only ever called for areas
-which match above criteria, as otherwise we can be sure
-xen_create_contiguous_region() was not used for making the area DMA-able
-in the beginning.
-
-And this is very important in the PV case, as in those guests the page
-tables are containing the host-PFNs, not the guest-PFNS, and
-xen_create_contiguous_region() will fiddle with host- vs. guest-PFN
-arrangements, and xen_destroy_contiguous_region() is reverting this
-fiddling. Any call of xen_destroy_contiguous_region() for an area it
-was not intended to be called for might swap physical pages beneath
-random virtual addresses, which was the reason for this test to be
-added by me.
-
-
-Juergen
-
-> 
-> Thanks,
-> Peng.
-> 
->>
->> I think there is something wrong with your setup in combination with the ARM
->> xen_create_contiguous_region() implementation.
->>
->> Stefano?
->>
->>
->> Juergen
->>
->>>
->>> Signed-off-by: Peng Fan <peng.fan@nxp.com>
->>> ---
->>>    drivers/xen/swiotlb-xen.c | 4 ++--
->>>    1 file changed, 2 insertions(+), 2 deletions(-)
->>>
->>> diff --git a/drivers/xen/swiotlb-xen.c b/drivers/xen/swiotlb-xen.c
->>> index b6d27762c6f8..ab96e468584f 100644
->>> --- a/drivers/xen/swiotlb-xen.c
->>> +++ b/drivers/xen/swiotlb-xen.c
->>> @@ -346,8 +346,8 @@ xen_swiotlb_free_coherent(struct device *hwdev,
->> size_t size, void *vaddr,
->>>    	/* Convert the size to actually allocated. */
->>>    	size = 1UL << (order + XEN_PAGE_SHIFT);
->>>
->>> -	if (!WARN_ON((dev_addr + size - 1 > dma_mask) ||
->>> -		     range_straddles_page_boundary(phys, size)) &&
->>> +	if (((dev_addr + size - 1 > dma_mask) ||
->>> +	    range_straddles_page_boundary(phys, size)) &&
->>>    	    TestClearPageXenRemapped(virt_to_page(vaddr)))
->>>    		xen_destroy_contiguous_region(phys, order);
->>>
->>>
-> 
-
+-- 
+QUALCOMM INDIA, on behalf of Qualcomm Innovation Center, Inc. is a member
+of Code Aurora Forum, hosted by The Linux Foundation
 _______________________________________________
 iommu mailing list
 iommu@lists.linux-foundation.org
