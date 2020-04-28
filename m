@@ -2,79 +2,68 @@ Return-Path: <SRS0=7g3a=6M=lists.linux-foundation.org=iommu-bounces@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-6.5 required=3.0 tests=DKIM_INVALID,DKIM_SIGNED,
-	HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_PATCH,MAILING_LIST_MULTI,SIGNED_OFF_BY,
-	SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED autolearn=ham autolearn_force=no
+X-Spam-Status: No, score=-8.2 required=3.0 tests=HEADER_FROM_DIFFERENT_DOMAINS,
+	INCLUDES_PATCH,MAILING_LIST_MULTI,SIGNED_OFF_BY,SPF_HELO_NONE,SPF_PASS,
+	URIBL_BLOCKED,USER_AGENT_SANE_1 autolearn=unavailable autolearn_force=no
 	version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id ABC80C83007
-	for <iommu@archiver.kernel.org>; Tue, 28 Apr 2020 08:02:22 +0000 (UTC)
-Received: from whitealder.osuosl.org (smtp1.osuosl.org [140.211.166.138])
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 61952C83004
+	for <iommu@archiver.kernel.org>; Tue, 28 Apr 2020 08:10:14 +0000 (UTC)
+Received: from fraxinus.osuosl.org (smtp4.osuosl.org [140.211.166.137])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by mail.kernel.org (Postfix) with ESMTPS id 7A197206B9
-	for <iommu@archiver.kernel.org>; Tue, 28 Apr 2020 08:02:22 +0000 (UTC)
-Authentication-Results: mail.kernel.org;
-	dkim=fail reason="signature verification failed" (2048-bit key) header.d=infradead.org header.i=@infradead.org header.b="AkRzSgUB"
-DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 7A197206B9
-Authentication-Results: mail.kernel.org; dmarc=none (p=none dis=none) header.from=infradead.org
+	by mail.kernel.org (Postfix) with ESMTPS id 3B114206D7
+	for <iommu@archiver.kernel.org>; Tue, 28 Apr 2020 08:10:14 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 3B114206D7
+Authentication-Results: mail.kernel.org; dmarc=none (p=none dis=none) header.from=suse.com
 Authentication-Results: mail.kernel.org; spf=pass smtp.mailfrom=iommu-bounces@lists.linux-foundation.org
 Received: from localhost (localhost [127.0.0.1])
-	by whitealder.osuosl.org (Postfix) with ESMTP id 54D88864C1;
-	Tue, 28 Apr 2020 08:02:22 +0000 (UTC)
+	by fraxinus.osuosl.org (Postfix) with ESMTP id 1F352861FF;
+	Tue, 28 Apr 2020 08:10:14 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from whitealder.osuosl.org ([127.0.0.1])
+Received: from fraxinus.osuosl.org ([127.0.0.1])
 	by localhost (.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
-	with ESMTP id rqadX9WJNX8b; Tue, 28 Apr 2020 08:02:21 +0000 (UTC)
+	with ESMTP id glEJd7PuAtF2; Tue, 28 Apr 2020 08:10:13 +0000 (UTC)
 Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [140.211.9.56])
-	by whitealder.osuosl.org (Postfix) with ESMTP id B66C585BCC;
-	Tue, 28 Apr 2020 08:02:21 +0000 (UTC)
+	by fraxinus.osuosl.org (Postfix) with ESMTP id 10C04854AD;
+	Tue, 28 Apr 2020 08:10:13 +0000 (UTC)
 Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
-	by lists.linuxfoundation.org (Postfix) with ESMTP id A8671C0863;
-	Tue, 28 Apr 2020 08:02:21 +0000 (UTC)
+	by lists.linuxfoundation.org (Postfix) with ESMTP id E30F1C0863;
+	Tue, 28 Apr 2020 08:10:12 +0000 (UTC)
 Received: from fraxinus.osuosl.org (smtp4.osuosl.org [140.211.166.137])
- by lists.linuxfoundation.org (Postfix) with ESMTP id B9501C0172
- for <iommu@lists.linux-foundation.org>; Tue, 28 Apr 2020 08:02:15 +0000 (UTC)
+ by lists.linuxfoundation.org (Postfix) with ESMTP id 3833BC0172
+ for <iommu@lists.linux-foundation.org>; Tue, 28 Apr 2020 08:10:11 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
- by fraxinus.osuosl.org (Postfix) with ESMTP id A76DC85A96
- for <iommu@lists.linux-foundation.org>; Tue, 28 Apr 2020 08:02:15 +0000 (UTC)
+ by fraxinus.osuosl.org (Postfix) with ESMTP id 26F4C85F7E
+ for <iommu@lists.linux-foundation.org>; Tue, 28 Apr 2020 08:10:11 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
 Received: from fraxinus.osuosl.org ([127.0.0.1])
  by localhost (.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
- with ESMTP id iWKozsmXAgoZ for <iommu@lists.linux-foundation.org>;
- Tue, 28 Apr 2020 08:02:15 +0000 (UTC)
-X-Greylist: from auto-whitelisted by SQLgrey-1.7.6
-Received: from bombadil.infradead.org (bombadil.infradead.org
- [198.137.202.133])
- by fraxinus.osuosl.org (Postfix) with ESMTPS id 2C31385A60
- for <iommu@lists.linux-foundation.org>; Tue, 28 Apr 2020 08:02:15 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
- d=infradead.org; s=bombadil.20170209; h=In-Reply-To:Content-Type:MIME-Version
- :References:Message-ID:Subject:Cc:To:From:Date:Sender:Reply-To:
- Content-Transfer-Encoding:Content-ID:Content-Description;
- bh=0Gc8wiZaH5vxzoL7Y4RD61mnokWImM3/OUm105M5x4Q=; b=AkRzSgUBS3spTGGb1FU2ZdnFp4
- 7BKimlNU77GlBbuUM/8B5MPQQ/E6pQxNnqbGv+7iaZdB1yzXSBR4E6U5GIwvyG6VLpIOzmZt8b+Af
- FhXp4/msJvZ5wc9Q/RiSGYZjj5WugzIgMCgyvRtTHLiMoRI/isejvWR1rP9hHQqpa9qWD+mUpziT9
- uaVqa13Hhc/t59XAU11bOMVnUb4ynS0/3sHmfE672BTSnYmRzfdf+63SFCOFf2DKOM2/lg8NAzimF
- fD0PTuRTAIjTIr+c2X26hXxC4p/Xa5P+lwbVfvO9LSTlCL0fe8zEy86Odd6yWyhlALdnxCk28aydq
- KqW8hdGw==;
-Received: from hch by bombadil.infradead.org with local (Exim 4.92.3 #3 (Red
- Hat Linux)) id 1jTLBy-0000XO-Ed; Tue, 28 Apr 2020 08:02:10 +0000
-Date: Tue, 28 Apr 2020 01:02:10 -0700
-From: Christoph Hellwig <hch@infradead.org>
-To: peng.fan@nxp.com
+ with ESMTP id XZ6qi_L2_Gky for <iommu@lists.linux-foundation.org>;
+ Tue, 28 Apr 2020 08:10:09 +0000 (UTC)
+X-Greylist: domain auto-whitelisted by SQLgrey-1.7.6
+Received: from mx2.suse.de (mx2.suse.de [195.135.220.15])
+ by fraxinus.osuosl.org (Postfix) with ESMTPS id 1C7C4854AD
+ for <iommu@lists.linux-foundation.org>; Tue, 28 Apr 2020 08:09:12 +0000 (UTC)
+X-Virus-Scanned: by amavisd-new at test-mx.suse.de
+Received: from relay2.suse.de (unknown [195.135.220.254])
+ by mx2.suse.de (Postfix) with ESMTP id 4E629AC4A;
+ Tue, 28 Apr 2020 08:09:09 +0000 (UTC)
 Subject: Re: [PATCH] xen/swiotlb: correct the check for
  xen_destroy_contiguous_region
-Message-ID: <20200428080210.GA25643@infradead.org>
+To: peng.fan@nxp.com, konrad.wilk@oracle.com, boris.ostrovsky@oracle.com,
+ sstabellini@kernel.org
 References: <1588059225-11245-1-git-send-email-peng.fan@nxp.com>
+From: =?UTF-8?B?SsO8cmdlbiBHcm/Dnw==?= <jgross@suse.com>
+Message-ID: <1c01e97a-adcd-a703-55b5-8975b4ce4d2c@suse.com>
+Date: Tue, 28 Apr 2020 10:09:08 +0200
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101
+ Thunderbird/68.6.0
 MIME-Version: 1.0
-Content-Disposition: inline
 In-Reply-To: <1588059225-11245-1-git-send-email-peng.fan@nxp.com>
-X-SRS-Rewrite: SMTP reverse-path rewritten from <hch@infradead.org> by
- bombadil.infradead.org. See http://www.infradead.org/rpr.html
-Cc: jgross@suse.com, sstabellini@kernel.org, konrad.wilk@oracle.com,
- linux-kernel@vger.kernel.org, iommu@lists.linux-foundation.org,
- linux-imx@nxp.com, xen-devel@lists.xenproject.org, boris.ostrovsky@oracle.com
+Content-Language: en-US
+Cc: xen-devel@lists.xenproject.org, iommu@lists.linux-foundation.org,
+ linux-kernel@vger.kernel.org, linux-imx@nxp.com
 X-BeenThere: iommu@lists.linux-foundation.org
 X-Mailman-Version: 2.1.15
 Precedence: list
@@ -87,50 +76,74 @@ List-Post: <mailto:iommu@lists.linux-foundation.org>
 List-Help: <mailto:iommu-request@lists.linux-foundation.org?subject=help>
 List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
  <mailto:iommu-request@lists.linux-foundation.org?subject=subscribe>
-Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset="us-ascii"; Format="flowed"
 Errors-To: iommu-bounces@lists.linux-foundation.org
 Sender: "iommu" <iommu-bounces@lists.linux-foundation.org>
 
-On Tue, Apr 28, 2020 at 03:33:45PM +0800, peng.fan@nxp.com wrote:
+On 28.04.20 09:33, peng.fan@nxp.com wrote:
+> From: Peng Fan <peng.fan@nxp.com>
+> 
+> When booting xen on i.MX8QM, met:
+> "
+> [    3.602128] Unable to handle kernel paging request at virtual address 0000000000272d40
+> [    3.610804] Mem abort info:
+> [    3.613905]   ESR = 0x96000004
+> [    3.617332]   EC = 0x25: DABT (current EL), IL = 32 bits
+> [    3.623211]   SET = 0, FnV = 0
+> [    3.626628]   EA = 0, S1PTW = 0
+> [    3.630128] Data abort info:
+> [    3.633362]   ISV = 0, ISS = 0x00000004
+> [    3.637630]   CM = 0, WnR = 0
+> [    3.640955] [0000000000272d40] user address but active_mm is swapper
+> [    3.647983] Internal error: Oops: 96000004 [#1] PREEMPT SMP
+> [    3.654137] Modules linked in:
+> [    3.677285] Hardware name: Freescale i.MX8QM MEK (DT)
+> [    3.677302] Workqueue: events deferred_probe_work_func
+> [    3.684253] imx6q-pcie 5f000000.pcie: PCI host bridge to bus 0000:00
+> [    3.688297] pstate: 60000005 (nZCv daif -PAN -UAO)
+> [    3.688310] pc : xen_swiotlb_free_coherent+0x180/0x1c0
+> [    3.693993] pci_bus 0000:00: root bus resource [bus 00-ff]
+> [    3.701002] lr : xen_swiotlb_free_coherent+0x44/0x1c0
+> "
 > 
 > In xen_swiotlb_alloc_coherent, if !(dev_addr + size - 1 <= dma_mask) or
 > range_straddles_page_boundary(phys, size) are true, it will
 > create contiguous region. So when free, we need to free contiguous
 > region use upper check condition.
+
+No, this will break PV guests on x86.
+
+I think there is something wrong with your setup in combination with
+the ARM xen_create_contiguous_region() implementation.
+
+Stefano?
+
+
+Juergen
+
 > 
 > Signed-off-by: Peng Fan <peng.fan@nxp.com>
 > ---
->  drivers/xen/swiotlb-xen.c | 4 ++--
->  1 file changed, 2 insertions(+), 2 deletions(-)
+>   drivers/xen/swiotlb-xen.c | 4 ++--
+>   1 file changed, 2 insertions(+), 2 deletions(-)
 > 
 > diff --git a/drivers/xen/swiotlb-xen.c b/drivers/xen/swiotlb-xen.c
 > index b6d27762c6f8..ab96e468584f 100644
 > --- a/drivers/xen/swiotlb-xen.c
 > +++ b/drivers/xen/swiotlb-xen.c
 > @@ -346,8 +346,8 @@ xen_swiotlb_free_coherent(struct device *hwdev, size_t size, void *vaddr,
->  	/* Convert the size to actually allocated. */
->  	size = 1UL << (order + XEN_PAGE_SHIFT);
->  
+>   	/* Convert the size to actually allocated. */
+>   	size = 1UL << (order + XEN_PAGE_SHIFT);
+>   
 > -	if (!WARN_ON((dev_addr + size - 1 > dma_mask) ||
 > -		     range_straddles_page_boundary(phys, size)) &&
 > +	if (((dev_addr + size - 1 > dma_mask) ||
 > +	    range_straddles_page_boundary(phys, size)) &&
->  	    TestClearPageXenRemapped(virt_to_page(vaddr)))
-
-No need for the inner braces.
-
-But more importantly please factor our a helper that can be used by
-alloc and free to make sure that they always stay in sync.  Something
-like:
-
-static inline bool xen_swiotlb_need_contiguous_region(struct device *dev,
-		phys_addr_t phys, size_t size)
-{
-	
-	return xen_phys_to_bus(phys) + size - 1 > dev->coherent_dma_mask ||
-		range_straddles_page_boundary(phys, size))
-}
+>   	    TestClearPageXenRemapped(virt_to_page(vaddr)))
+>   		xen_destroy_contiguous_region(phys, order);
+>   
+> 
 
 _______________________________________________
 iommu mailing list
