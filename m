@@ -2,80 +2,77 @@ Return-Path: <SRS0=7g3a=6M=lists.linux-foundation.org=iommu-bounces@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-8.3 required=3.0 tests=DKIM_INVALID,DKIM_SIGNED,
-	INCLUDES_PATCH,MAILING_LIST_MULTI,SIGNED_OFF_BY,SPF_HELO_NONE,SPF_PASS,
-	URIBL_BLOCKED,USER_AGENT_SANE_1 autolearn=ham autolearn_force=no version=3.4.0
+X-Spam-Status: No, score=-0.8 required=3.0 tests=HEADER_FROM_DIFFERENT_DOMAINS,
+	MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS autolearn=no autolearn_force=no
+	version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 034C6C83004
-	for <iommu@archiver.kernel.org>; Tue, 28 Apr 2020 18:46:47 +0000 (UTC)
-Received: from whitealder.osuosl.org (smtp1.osuosl.org [140.211.166.138])
+	by smtp.lore.kernel.org (Postfix) with ESMTP id AA203C83004
+	for <iommu@archiver.kernel.org>; Tue, 28 Apr 2020 18:54:25 +0000 (UTC)
+Received: from fraxinus.osuosl.org (smtp4.osuosl.org [140.211.166.137])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by mail.kernel.org (Postfix) with ESMTPS id C1B86206A1
-	for <iommu@archiver.kernel.org>; Tue, 28 Apr 2020 18:46:46 +0000 (UTC)
-Authentication-Results: mail.kernel.org;
-	dkim=fail reason="signature verification failed" (1024-bit key) header.d=kernel.org header.i=@kernel.org header.b="rpFe5bw3"
-DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org C1B86206A1
-Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=kernel.org
+	by mail.kernel.org (Postfix) with ESMTPS id 77B0B206D6
+	for <iommu@archiver.kernel.org>; Tue, 28 Apr 2020 18:54:25 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 77B0B206D6
+Authentication-Results: mail.kernel.org; dmarc=none (p=none dis=none) header.from=linutronix.de
 Authentication-Results: mail.kernel.org; spf=pass smtp.mailfrom=iommu-bounces@lists.linux-foundation.org
 Received: from localhost (localhost [127.0.0.1])
-	by whitealder.osuosl.org (Postfix) with ESMTP id 9911885BCC;
-	Tue, 28 Apr 2020 18:46:46 +0000 (UTC)
+	by fraxinus.osuosl.org (Postfix) with ESMTP id 38E3B857CE;
+	Tue, 28 Apr 2020 18:54:25 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from whitealder.osuosl.org ([127.0.0.1])
+Received: from fraxinus.osuosl.org ([127.0.0.1])
 	by localhost (.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
-	with ESMTP id 2NkmzKk4A8MD; Tue, 28 Apr 2020 18:46:46 +0000 (UTC)
+	with ESMTP id OOzFNAvzZxNX; Tue, 28 Apr 2020 18:54:24 +0000 (UTC)
 Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [140.211.9.56])
-	by whitealder.osuosl.org (Postfix) with ESMTP id F133585BC9;
-	Tue, 28 Apr 2020 18:46:45 +0000 (UTC)
+	by fraxinus.osuosl.org (Postfix) with ESMTP id 0CBBD844AA;
+	Tue, 28 Apr 2020 18:54:24 +0000 (UTC)
 Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
-	by lists.linuxfoundation.org (Postfix) with ESMTP id C09CFC0864;
-	Tue, 28 Apr 2020 18:46:45 +0000 (UTC)
-Received: from hemlock.osuosl.org (smtp2.osuosl.org [140.211.166.133])
- by lists.linuxfoundation.org (Postfix) with ESMTP id 8422BC0172
- for <iommu@lists.linux-foundation.org>; Tue, 28 Apr 2020 18:46:43 +0000 (UTC)
+	by lists.linuxfoundation.org (Postfix) with ESMTP id EF718C0864;
+	Tue, 28 Apr 2020 18:54:23 +0000 (UTC)
+Received: from silver.osuosl.org (smtp3.osuosl.org [140.211.166.136])
+ by lists.linuxfoundation.org (Postfix) with ESMTP id 9DBB2C0172
+ for <iommu@lists.linux-foundation.org>; Tue, 28 Apr 2020 18:54:22 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
- by hemlock.osuosl.org (Postfix) with ESMTP id 71F9F86EB1
- for <iommu@lists.linux-foundation.org>; Tue, 28 Apr 2020 18:46:43 +0000 (UTC)
+ by silver.osuosl.org (Postfix) with ESMTP id 16083228D1
+ for <iommu@lists.linux-foundation.org>; Tue, 28 Apr 2020 18:54:22 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from hemlock.osuosl.org ([127.0.0.1])
+Received: from silver.osuosl.org ([127.0.0.1])
  by localhost (.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
- with ESMTP id a5E7v6tIDfRb for <iommu@lists.linux-foundation.org>;
- Tue, 28 Apr 2020 18:46:42 +0000 (UTC)
-X-Greylist: domain auto-whitelisted by SQLgrey-1.7.6
-Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
- by hemlock.osuosl.org (Postfix) with ESMTPS id CFD0286DC6
- for <iommu@lists.linux-foundation.org>; Tue, 28 Apr 2020 18:46:42 +0000 (UTC)
-Received: from localhost (c-67-164-102-47.hsd1.ca.comcast.net [67.164.102.47])
- (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256
- bits)) (No client certificate requested)
- by mail.kernel.org (Postfix) with ESMTPSA id 36DFA206A1;
- Tue, 28 Apr 2020 18:46:42 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
- s=default; t=1588099602;
- bh=dhUsOr1v2mBAanhqQ0gOmvuHvZAHd5hliZZQ3LNcyPk=;
- h=Date:From:To:cc:Subject:In-Reply-To:References:From;
- b=rpFe5bw3nYfTZI/Fw4t782dUbbzbY/e1wgEYuElBHaqtvWX/hfJsEsGLS2XuWDjW+
- bIa1bjuq3y0DPZGSRea+vJdpT7vRGCrl1tbdpGUSeE9+xCmrQUgbqzVktKSAA0Vkgk
- G9OeZjGFgkrrokBQpvUJ6AmBsdTd+Dw9M6vbLLqs=
-Date: Tue, 28 Apr 2020 11:46:41 -0700 (PDT)
-From: Stefano Stabellini <sstabellini@kernel.org>
-X-X-Sender: sstabellini@sstabellini-ThinkPad-T480s
-To: =?UTF-8?Q?J=C3=BCrgen_Gro=C3=9F?= <jgross@suse.com>
-Subject: Re: [PATCH] xen/swiotlb: correct the check for
- xen_destroy_contiguous_region
-In-Reply-To: <1c01e97a-adcd-a703-55b5-8975b4ce4d2c@suse.com>
-Message-ID: <alpine.DEB.2.21.2004281118130.29217@sstabellini-ThinkPad-T480s>
-References: <1588059225-11245-1-git-send-email-peng.fan@nxp.com>
- <1c01e97a-adcd-a703-55b5-8975b4ce4d2c@suse.com>
-User-Agent: Alpine 2.21 (DEB 202 2017-01-01)
+ with ESMTP id O6aL3hXMAiGa for <iommu@lists.linux-foundation.org>;
+ Tue, 28 Apr 2020 18:54:19 +0000 (UTC)
+X-Greylist: from auto-whitelisted by SQLgrey-1.7.6
+Received: from Galois.linutronix.de (Galois.linutronix.de [193.142.43.55])
+ by silver.osuosl.org (Postfix) with ESMTPS id 6D62F2277A
+ for <iommu@lists.linux-foundation.org>; Tue, 28 Apr 2020 18:54:18 +0000 (UTC)
+Received: from p5de0bf0b.dip0.t-ipconnect.de ([93.224.191.11]
+ helo=nanos.tec.linutronix.de)
+ by Galois.linutronix.de with esmtpsa (TLS1.2:DHE_RSA_AES_256_CBC_SHA256:256)
+ (Exim 4.80) (envelope-from <tglx@linutronix.de>)
+ id 1jTVMo-0002sR-0A; Tue, 28 Apr 2020 20:54:02 +0200
+Received: by nanos.tec.linutronix.de (Postfix, from userid 1000)
+ id 40B54100FC0; Tue, 28 Apr 2020 20:54:01 +0200 (CEST)
+From: Thomas Gleixner <tglx@linutronix.de>
+To: "Jacob Pan \(Jun\)" <jacob.jun.pan@intel.com>
+Subject: Re: [PATCH 5/7] x86/mmu: Allocate/free PASID
+In-Reply-To: <20200428112113.000033bd@intel.com>
+References: <1585596788-193989-1-git-send-email-fenghua.yu@intel.com>
+ <1585596788-193989-6-git-send-email-fenghua.yu@intel.com>
+ <87pnbus3du.fsf@nanos.tec.linutronix.de> <20200428112113.000033bd@intel.com>
+Date: Tue, 28 Apr 2020 20:54:01 +0200
+Message-ID: <87tv13o306.fsf@nanos.tec.linutronix.de>
 MIME-Version: 1.0
-Content-Type: multipart/mixed; BOUNDARY="8323329-325783116-1588098351=:29217"
-Content-ID: <alpine.DEB.2.21.2004281125590.29217@sstabellini-ThinkPad-T480s>
-Cc: peng.fan@nxp.com, sstabellini@kernel.org, konrad.wilk@oracle.com,
- linux-kernel@vger.kernel.org, hch@infradead.org,
- iommu@lists.linux-foundation.org, linux-imx@nxp.com,
- xen-devel@lists.xenproject.org, boris.ostrovsky@oracle.com
+X-Linutronix-Spam-Score: -1.0
+X-Linutronix-Spam-Level: -
+X-Linutronix-Spam-Status: No , -1.0 points, 5.0 required, ALL_TRUSTED=-1,
+ SHORTCIRCUIT=-0.0001
+Cc: Fenghua Yu <fenghua.yu@intel.com>, Tony Luck <tony.luck@intel.com>,
+ Dave Jiang <dave.jiang@intel.com>, Ashok Raj <ashok.raj@intel.com>,
+ Ravi V Shankar <ravi.v.shankar@intel.com>, x86 <x86@kernel.org>,
+ linux-kernel <linux-kernel@vger.kernel.org>,
+ Dave Hansen <dave.hansen@intel.com>, iommu@lists.linux-foundation.org,
+ Ingo Molnar <mingo@redhat.com>, Borislav Petkov <bp@alien8.de>,
+ jacob.jun.pan@intel.com, H Peter Anvin <hpa@zytor.com>,
+ David Woodhouse <dwmw2@infradead.org>
 X-BeenThere: iommu@lists.linux-foundation.org
 X-Mailman-Version: 2.1.15
 Precedence: list
@@ -88,128 +85,74 @@ List-Post: <mailto:iommu@lists.linux-foundation.org>
 List-Help: <mailto:iommu-request@lists.linux-foundation.org?subject=help>
 List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
  <mailto:iommu-request@lists.linux-foundation.org?subject=subscribe>
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: 7bit
 Errors-To: iommu-bounces@lists.linux-foundation.org
 Sender: "iommu" <iommu-bounces@lists.linux-foundation.org>
 
-  This message is in MIME format.  The first part should be readable text,
-  while the remaining parts are likely unreadable without MIME-aware tools.
+"Jacob Pan (Jun)" <jacob.jun.pan@intel.com> writes:
+> On Sun, 26 Apr 2020 16:55:25 +0200
+> Thomas Gleixner <tglx@linutronix.de> wrote:
+>> Fenghua Yu <fenghua.yu@intel.com> writes:
+>> > The PASID is freed when the process exits (so no need to keep
+>> > reference counts on how many SVM devices are sharing the PASID).  
+>> 
+>> I'm not buying that. If there is an outstanding request with the PASID
+>> of a process then tearing down the process address space and freeing
+>> the PASID (which might be reused) is fundamentally broken.
+>> 
+> Device driver unbind PASID is tied to FD release. So when a process
+> exits, FD close causes driver to do the following:
+>
+> 1. stops DMA
+> 2. unbind PASID (clears the PASID entry in IOMMU, flush all TLBs, drain
+> in flight page requests)
 
---8323329-325783116-1588098351=:29217
-Content-Type: text/plain; CHARSET=UTF-8
-Content-Transfer-Encoding: 8BIT
-Content-ID: <alpine.DEB.2.21.2004281125591.29217@sstabellini-ThinkPad-T480s>
+Fair enough. Explaining that somewhere might be helpful.
 
-On Tue, 28 Apr 2020, Jürgen Groß wrote:
-> On 28.04.20 09:33, peng.fan@nxp.com wrote:
-> > From: Peng Fan <peng.fan@nxp.com>
-> > 
-> > When booting xen on i.MX8QM, met:
-> > "
-> > [    3.602128] Unable to handle kernel paging request at virtual address
-> > 0000000000272d40
-> > [    3.610804] Mem abort info:
-> > [    3.613905]   ESR = 0x96000004
-> > [    3.617332]   EC = 0x25: DABT (current EL), IL = 32 bits
-> > [    3.623211]   SET = 0, FnV = 0
-> > [    3.626628]   EA = 0, S1PTW = 0
-> > [    3.630128] Data abort info:
-> > [    3.633362]   ISV = 0, ISS = 0x00000004
-> > [    3.637630]   CM = 0, WnR = 0
-> > [    3.640955] [0000000000272d40] user address but active_mm is swapper
-> > [    3.647983] Internal error: Oops: 96000004 [#1] PREEMPT SMP
-> > [    3.654137] Modules linked in:
-> > [    3.677285] Hardware name: Freescale i.MX8QM MEK (DT)
-> > [    3.677302] Workqueue: events deferred_probe_work_func
-> > [    3.684253] imx6q-pcie 5f000000.pcie: PCI host bridge to bus 0000:00
-> > [    3.688297] pstate: 60000005 (nZCv daif -PAN -UAO)
-> > [    3.688310] pc : xen_swiotlb_free_coherent+0x180/0x1c0
-> > [    3.693993] pci_bus 0000:00: root bus resource [bus 00-ff]
-> > [    3.701002] lr : xen_swiotlb_free_coherent+0x44/0x1c0
-> > "
-> > 
-> > In xen_swiotlb_alloc_coherent, if !(dev_addr + size - 1 <= dma_mask) or
-> > range_straddles_page_boundary(phys, size) are true, it will
-> > create contiguous region. So when free, we need to free contiguous
-> > region use upper check condition.
-> 
-> No, this will break PV guests on x86.
-> 
-> I think there is something wrong with your setup in combination with
-> the ARM xen_create_contiguous_region() implementation.
-> 
-> Stefano?
+> For bare metal SVM, if the last mmdrop always happens after FD release,
+> we can ensure no outstanding requests at the point of ioasid_free().
+> Perhaps this is a wrong assumption?
 
-Let me start by asking Peng a couple of questions:
+If fd release cleans up then how should there be something in flight at
+the final mmdrop?
 
+> For guest SVM, there will be more users of a PASID. I am also
+> working on adding refcounting to ioasid. ioasid_free() will not release
+> the PASID back to the pool until all references are dropped.
 
-Peng, could you please add a printk to check which one of the two
-conditions is True for you?  Is it (dev_addr + size - 1 > dma_mask) or
-range_straddles_page_boundary(phys, size)?
+What does more users mean?
 
-Is hwdev->coherent_dma_mask set for your DMA capable device?
+>> > +	if (mm && mm->context.pasid && !(flags &
+>> > SVM_FLAG_PRIVATE_PASID)) {
+>> > +		/*
+>> > +		 * Once a PASID is allocated for this mm, the PASID
+>> > +		 * stays with the mm until the mm is dropped. Reuse
+>> > +		 * the PASID which has been already allocated for
+>> > the
+>> > +		 * mm instead of allocating a new one.
+>> > +		 */
+>> > +		ioasid_set_data(mm->context.pasid, svm);  
+>> 
+>> So if the PASID is reused several times for different SVMs then every
+>> time ioasid_data->private is set to a different SVM. How is that
+>> supposed to work?
+>> 
+> For the lifetime of the mm, there is only one PASID. svm_bind/unbind_mm
+> could happen many times with different private data: intel_svm.
+> Multiple devices can bind to the same PASID as well. But private data
+> don't change within the first bind and last unbind.
 
-Finally, is this patch supposed to fix the crash you are seeing? If not,
-can you tell where is the crash exactly?
+Ok. I read through that spaghetti of intel_svm_bind_mm() again and now I
+start to get an idea how that is supposed to work. What a mess.
 
+That function really wants to be restructured in a way so it is
+understandable to mere mortals. 
 
+Thanks,
 
-Juergen, keep in mind that xen_create_contiguous_region does nothing on
-ARM because in dom0 guest_phys == phys. xen_create_contiguous_region
-simply sets dma_handle to phys. Whatever condition caused the code to
-take the xen_create_contiguous_region branch in
-xen_swiotlb_alloc_coherent, it will also cause it to WARN in
-xen_swiotlb_free_coherent.
-
-
-range_straddles_page_boundary should never return True because
-guest_phys == phys. That leaves us with the dma_mask check:
-
-  dev_addr + size - 1 <= dma_mask
-
-dev_addr is the dma_handle allocated by xen_alloc_coherent_pages.
-dma_mask is either DMA_BIT_MASK(32) or hwdev->coherent_dma_mask.
-
-The implementation of xen_alloc_coherent_pages has been recently changed
-to use dma_direct_alloc.
-
-
-Christoff, does dma_direct_alloc respect hwdev->coherent_dma_mask if
-present? Also, can it return highmem pages?
-
-
-
-> Juergen
-> 
-> > 
-> > Signed-off-by: Peng Fan <peng.fan@nxp.com>
-> > ---
-> >   drivers/xen/swiotlb-xen.c | 4 ++--
-> >   1 file changed, 2 insertions(+), 2 deletions(-)
-> > 
-> > diff --git a/drivers/xen/swiotlb-xen.c b/drivers/xen/swiotlb-xen.c
-> > index b6d27762c6f8..ab96e468584f 100644
-> > --- a/drivers/xen/swiotlb-xen.c
-> > +++ b/drivers/xen/swiotlb-xen.c
-> > @@ -346,8 +346,8 @@ xen_swiotlb_free_coherent(struct device *hwdev, size_t
-> > size, void *vaddr,
-> >   	/* Convert the size to actually allocated. */
-> >   	size = 1UL << (order + XEN_PAGE_SHIFT);
-> >   -	if (!WARN_ON((dev_addr + size - 1 > dma_mask) ||
-> > -		     range_straddles_page_boundary(phys, size)) &&
-> > +	if (((dev_addr + size - 1 > dma_mask) ||
-> > +	    range_straddles_page_boundary(phys, size)) &&
-> >   	    TestClearPageXenRemapped(virt_to_page(vaddr)))
-> >   		xen_destroy_contiguous_region(phys, order);
-> >   
-> 
---8323329-325783116-1588098351=:29217
-Content-Type: text/plain; charset="us-ascii"
-MIME-Version: 1.0
-Content-Transfer-Encoding: 7bit
-Content-Disposition: inline
-
+        tglx
 _______________________________________________
 iommu mailing list
 iommu@lists.linux-foundation.org
 https://lists.linuxfoundation.org/mailman/listinfo/iommu
---8323329-325783116-1588098351=:29217--
