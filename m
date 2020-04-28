@@ -2,110 +2,86 @@ Return-Path: <SRS0=7g3a=6M=lists.linux-foundation.org=iommu-bounces@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-0.6 required=3.0 tests=DKIM_INVALID,DKIM_SIGNED,
-	HEADER_FROM_DIFFERENT_DOMAINS,MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS
+X-Spam-Status: No, score=-2.2 required=3.0 tests=HEADER_FROM_DIFFERENT_DOMAINS,
+	MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED,USER_AGENT_SANE_2
 	autolearn=no autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 86B90C83004
-	for <iommu@archiver.kernel.org>; Tue, 28 Apr 2020 20:41:16 +0000 (UTC)
-Received: from fraxinus.osuosl.org (smtp4.osuosl.org [140.211.166.137])
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 1F966C83000
+	for <iommu@archiver.kernel.org>; Tue, 28 Apr 2020 20:42:07 +0000 (UTC)
+Received: from whitealder.osuosl.org (smtp1.osuosl.org [140.211.166.138])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by mail.kernel.org (Postfix) with ESMTPS id 4D3AA2085B
-	for <iommu@archiver.kernel.org>; Tue, 28 Apr 2020 20:41:16 +0000 (UTC)
-Authentication-Results: mail.kernel.org;
-	dkim=fail reason="signature verification failed" (1024-bit key) header.d=redhat.com header.i=@redhat.com header.b="XGrwQTpu"
-DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 4D3AA2085B
-Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=redhat.com
+	by mail.kernel.org (Postfix) with ESMTPS id F181C2085B
+	for <iommu@archiver.kernel.org>; Tue, 28 Apr 2020 20:42:06 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org F181C2085B
+Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=intel.com
 Authentication-Results: mail.kernel.org; spf=pass smtp.mailfrom=iommu-bounces@lists.linux-foundation.org
 Received: from localhost (localhost [127.0.0.1])
-	by fraxinus.osuosl.org (Postfix) with ESMTP id 729CD80D43;
-	Tue, 28 Apr 2020 20:41:15 +0000 (UTC)
+	by whitealder.osuosl.org (Postfix) with ESMTP id CA614875CF;
+	Tue, 28 Apr 2020 20:42:06 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from fraxinus.osuosl.org ([127.0.0.1])
+Received: from whitealder.osuosl.org ([127.0.0.1])
 	by localhost (.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
-	with ESMTP id a_9en73Pi3BJ; Tue, 28 Apr 2020 20:41:14 +0000 (UTC)
+	with ESMTP id nOGZU654fKnL; Tue, 28 Apr 2020 20:42:04 +0000 (UTC)
 Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [140.211.9.56])
-	by fraxinus.osuosl.org (Postfix) with ESMTP id DCA2786885;
-	Tue, 28 Apr 2020 20:41:14 +0000 (UTC)
+	by whitealder.osuosl.org (Postfix) with ESMTP id 762778493F;
+	Tue, 28 Apr 2020 20:42:04 +0000 (UTC)
 Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
-	by lists.linuxfoundation.org (Postfix) with ESMTP id C3313C0889;
-	Tue, 28 Apr 2020 20:41:14 +0000 (UTC)
-Received: from silver.osuosl.org (smtp3.osuosl.org [140.211.166.136])
- by lists.linuxfoundation.org (Postfix) with ESMTP id 1E9D3C0172
- for <iommu@lists.linux-foundation.org>; Tue, 28 Apr 2020 20:41:14 +0000 (UTC)
+	by lists.linuxfoundation.org (Postfix) with ESMTP id 559CDC0864;
+	Tue, 28 Apr 2020 20:42:04 +0000 (UTC)
+Received: from whitealder.osuosl.org (smtp1.osuosl.org [140.211.166.138])
+ by lists.linuxfoundation.org (Postfix) with ESMTP id B5FEEC0172
+ for <iommu@lists.linux-foundation.org>; Tue, 28 Apr 2020 20:42:02 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
- by silver.osuosl.org (Postfix) with ESMTP id 00586204A3
- for <iommu@lists.linux-foundation.org>; Tue, 28 Apr 2020 20:41:14 +0000 (UTC)
+ by whitealder.osuosl.org (Postfix) with ESMTP id B28AD84AFB
+ for <iommu@lists.linux-foundation.org>; Tue, 28 Apr 2020 20:42:02 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from silver.osuosl.org ([127.0.0.1])
+Received: from whitealder.osuosl.org ([127.0.0.1])
  by localhost (.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
- with ESMTP id iG7n5TzvmjWW for <iommu@lists.linux-foundation.org>;
- Tue, 28 Apr 2020 20:41:12 +0000 (UTC)
+ with ESMTP id xTr5yQWCUUBQ for <iommu@lists.linux-foundation.org>;
+ Tue, 28 Apr 2020 20:42:02 +0000 (UTC)
 X-Greylist: domain auto-whitelisted by SQLgrey-1.7.6
-Received: from us-smtp-delivery-1.mimecast.com (us-smtp-1.mimecast.com
- [205.139.110.61])
- by silver.osuosl.org (Postfix) with ESMTPS id A936620467
- for <iommu@lists.linux-foundation.org>; Tue, 28 Apr 2020 20:41:12 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
- s=mimecast20190719; t=1588106471;
- h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
- to:to:cc:cc:mime-version:mime-version:content-type:content-type:
- in-reply-to:in-reply-to:references:references;
- bh=4eENH6tB0EGZ/BA2dzhb17ThkK45wZijHpRT5Rx0P7Q=;
- b=XGrwQTpu8pFriydV1NgZDH0yBZpe9wwndwTZClFps71bZnTf7NG9BkbtrFytEmF/aBJbOv
- pAIStCYapt0TkY8Ye4VlR86LXPitdO4QNZNCJ3c38LWX9osQQux3XiVEEOGDd9AEW4Jt3L
- xXZBp9/KC+kC3d8njgpvXgrbOoAKix8=
-Received: from mail-wr1-f70.google.com (mail-wr1-f70.google.com
- [209.85.221.70]) (Using TLS) by relay.mimecast.com with ESMTP id
- us-mta-398-icMrv83xMm6phR9XWpCyOw-1; Tue, 28 Apr 2020 16:41:09 -0400
-X-MC-Unique: icMrv83xMm6phR9XWpCyOw-1
-Received: by mail-wr1-f70.google.com with SMTP id r11so44053wrx.21
- for <iommu@lists.linux-foundation.org>; Tue, 28 Apr 2020 13:41:09 -0700 (PDT)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
- d=1e100.net; s=20161025;
- h=x-gm-message-state:date:from:to:cc:subject:message-id:references
- :mime-version:content-disposition:in-reply-to;
- bh=4eENH6tB0EGZ/BA2dzhb17ThkK45wZijHpRT5Rx0P7Q=;
- b=AoG5iF2MoRKxHgfyAaj8aRD1Z6v9LQnP2EWunBaF73xvuCwzNiawKNuSgzJNYsP9vt
- i/LLrc39Ew9CPXiqXrp2F1bMEFlB6m0vPYZVmcYfTi1B5AkqDeq4ZU8GxHIQW/WCwoZK
- WboClG975j33yRPu234sDO9QIYZRgMKhhl4LwpCsA0aPbOS1D+2wG3K7VE0K9Ocf8HHE
- L5K+IXPevt8d6SYh4zBNjVu7YncAcefcoB9HFet/1I7sYsgWm7rcxE4HLxKKu9ElqCR3
- 1IMaoznT30vjOwLG3JxsmhpNU+Pjllh+uUXe2vwRWe4Iuxa4eRmHeLn0I5iLx3iI/5xi
- v0Kw==
-X-Gm-Message-State: AGi0PublMxEX9o/DAV7p9/41C/G9zxq8GYaACydWdPUmgFzeLg67NKxh
- vOKhMm31VfPMzraQcixCko99PsKYqWSuIA2W0n8Rop6Fi5piHgYFeB9ECkyRKQfSR+WfyKTBGh3
- p9vtZNsR97k94cvSnrA1RcV96ShOohw==
-X-Received: by 2002:adf:a3d5:: with SMTP id m21mr35941295wrb.54.1588106468374; 
- Tue, 28 Apr 2020 13:41:08 -0700 (PDT)
-X-Google-Smtp-Source: APiQypJ29J3wRFwAKcd5VfgZy6d80BpVLKwPqj7y7vEzsoMHleANkL6oMYbQYlmbWERgm90rIizbxg==
-X-Received: by 2002:adf:a3d5:: with SMTP id m21mr35941287wrb.54.1588106468180; 
- Tue, 28 Apr 2020 13:41:08 -0700 (PDT)
-Received: from redhat.com (bzq-109-66-7-121.red.bezeqint.net. [109.66.7.121])
- by smtp.gmail.com with ESMTPSA id
- 33sm27359373wrp.5.2020.04.28.13.41.06
- (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
- Tue, 28 Apr 2020 13:41:07 -0700 (PDT)
-Date: Tue, 28 Apr 2020 16:41:04 -0400
-From: "Michael S. Tsirkin" <mst@redhat.com>
-To: Srivatsa Vaddagiri <vatsa@codeaurora.org>
-Subject: Re: [PATCH 5/5] virtio: Add bounce DMA ops
-Message-ID: <20200428163448-mutt-send-email-mst@kernel.org>
-References: <1588073958-1793-1-git-send-email-vatsa@codeaurora.org>
- <1588073958-1793-6-git-send-email-vatsa@codeaurora.org>
- <20200428121232-mutt-send-email-mst@kernel.org>
- <20200428174952.GA5097@quicinc.com>
+Received: from mga02.intel.com (mga02.intel.com [134.134.136.20])
+ by whitealder.osuosl.org (Postfix) with ESMTPS id 022E18493F
+ for <iommu@lists.linux-foundation.org>; Tue, 28 Apr 2020 20:42:01 +0000 (UTC)
+IronPort-SDR: gz8bkZs0cQpStMCL9Tfjk43Dthbmre6qCtxbg6DnF//PT9h3wn8Ag10HlsQRGxg1WVadmC6fI2
+ K70CJ1MT+3+g==
+X-Amp-Result: SKIPPED(no attachment in message)
+X-Amp-File-Uploaded: False
+Received: from orsmga007.jf.intel.com ([10.7.209.58])
+ by orsmga101.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384;
+ 28 Apr 2020 13:42:01 -0700
+IronPort-SDR: xagcZJWK38zXxA6Ieuy00Ct62Fx2wWHz9vTb6SOF2J+n3Zp70Y7WRrXkYEqW+/S3sb23RIPidX
+ V9CDHy8qkx/g==
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="5.73,328,1583222400"; d="scan'208";a="246625188"
+Received: from jpan9-mobl2.amr.corp.intel.com (HELO localhost)
+ ([10.212.240.17])
+ by orsmga007.jf.intel.com with SMTP; 28 Apr 2020 13:42:00 -0700
+Date: Tue, 28 Apr 2020 13:42:00 -0700
+From: "Jacob Pan (Jun)" <jacob.jun.pan@intel.com>
+To: "Luck, Tony" <tony.luck@intel.com>
+Subject: Re: [PATCH 5/7] x86/mmu: Allocate/free PASID
+Message-ID: <20200428134200.000010f7@intel.com>
+In-Reply-To: <3908561D78D1C84285E8C5FCA982C28F7F608BE9@ORSMSX115.amr.corp.intel.com>
+References: <1585596788-193989-1-git-send-email-fenghua.yu@intel.com>
+ <1585596788-193989-6-git-send-email-fenghua.yu@intel.com>
+ <87pnbus3du.fsf@nanos.tec.linutronix.de>
+ <20200428112113.000033bd@intel.com>
+ <87tv13o306.fsf@nanos.tec.linutronix.de>
+ <3908561D78D1C84285E8C5FCA982C28F7F608BE9@ORSMSX115.amr.corp.intel.com>
+Organization: intel
+X-Mailer: Claws Mail 3.17.3 (GTK+ 2.24.32; i686-w64-mingw32)
 MIME-Version: 1.0
-In-Reply-To: <20200428174952.GA5097@quicinc.com>
-X-Mimecast-Spam-Score: 0
-X-Mimecast-Originator: redhat.com
-Content-Disposition: inline
-Cc: tsoni@codeaurora.org, virtio-dev@lists.oasis-open.org,
- konrad.wilk@oracle.com, jan.kiszka@siemens.com, jasowang@redhat.com,
- christoffer.dall@arm.com, virtualization@lists.linux-foundation.org,
- alex.bennee@linaro.org, iommu@lists.linux-foundation.org,
- stefano.stabellini@xilinx.com, will@kernel.org, linux-kernel@vger.kernel.org,
- pratikp@codeaurora.org
+Cc: "Yu, Fenghua" <fenghua.yu@intel.com>, "Jiang, Dave" <dave.jiang@intel.com>,
+ "Raj, Ashok" <ashok.raj@intel.com>, "Shankar, 
+ Ravi V" <ravi.v.shankar@intel.com>, x86 <x86@kernel.org>,
+ linux-kernel <linux-kernel@vger.kernel.org>, "Hansen,
+ Dave" <dave.hansen@intel.com>,
+ "iommu@lists.linux-foundation.org" <iommu@lists.linux-foundation.org>,
+ Ingo Molnar <mingo@redhat.com>, Borislav Petkov <bp@alien8.de>,
+ jacob.jun.pan@intel.com, H Peter Anvin <hpa@zytor.com>,
+ Thomas Gleixner <tglx@linutronix.de>, David Woodhouse <dwmw2@infradead.org>
 X-BeenThere: iommu@lists.linux-foundation.org
 X-Mailman-Version: 2.1.15
 Precedence: list
@@ -123,55 +99,26 @@ Content-Transfer-Encoding: 7bit
 Errors-To: iommu-bounces@lists.linux-foundation.org
 Sender: "iommu" <iommu-bounces@lists.linux-foundation.org>
 
-On Tue, Apr 28, 2020 at 11:19:52PM +0530, Srivatsa Vaddagiri wrote:
-> * Michael S. Tsirkin <mst@redhat.com> [2020-04-28 12:17:57]:
+On Tue, 28 Apr 2020 12:07:25 -0700
+"Luck, Tony" <tony.luck@intel.com> wrote:
+
+> > If fd release cleans up then how should there be something in
+> > flight at the final mmdrop?  
 > 
-> > Okay, but how is all this virtio specific?  For example, why not allow
-> > separate swiotlbs for any type of device?
-> > For example, this might make sense if a given device is from a
-> > different, less trusted vendor.
+> ENQCMD from the user is only synchronous in that it lets the user
+> know their request has been added to a queue (or not).  Execution of
+> the request may happen later (if the device is busy working on
+> requests for other users).  The request will take some time to
+> complete. Someone told me the theoretical worst case once, which I've
+> since forgotten, but it can be a long time.
 > 
-> Is swiotlb commonly used for multiple devices that may be on different trust
-> boundaries (and not behind a hardware iommu)?
-
-Even a hardware iommu does not imply a 100% security from malicious
-hardware. First lots of people use iommu=pt for performance reasons.
-Second even without pt, unmaps are often batched, and sub-page buffers
-might be used for DMA, so we are not 100% protected at all times.
-
-
-> If so, then yes it sounds like a
-> good application of multiple swiotlb pools.
+> So the driver needs to use flush/drain operations to make sure all
+> the in-flight work has completed before releasing/re-using the PASID.
 > 
-> > All this can then maybe be hidden behind the DMA API.
-> 
-> Won't we still need some changes to virtio to make use of its own pool (to
-> bounce buffers)? Something similar to its own DMA ops proposed in this patch?
+Are you suggesting we should let driver also hold a reference of the
+PASID?
 
-If you are doing this for all devices, you need to either find a way
-to do this without chaning DMA ops, or by doing some automatic change
-to all drivers.
-
-
-> > > +void virtio_bounce_set_dma_ops(struct virtio_device *vdev)
-> > > +{
-> > > +	if (!bounce_buf_paddr)
-> > > +		return;
-> > > +
-> > > +	set_dma_ops(vdev->dev.parent, &virtio_dma_ops);
-> > 
-> > 
-> > I don't think DMA API maintainers will be happy with new users
-> > of set_dma_ops.
-> 
-> Is there an alternate API that is more preffered?
-
-all this is supposed to be part of DMA API itself. new drivers aren't
-supposed to have custom DMA ops.
-
-> -- 
-> QUALCOMM INDIA, on behalf of Qualcomm Innovation Center, Inc. is a member
-> of Code Aurora Forum, hosted by The Linux Foundation
+> -Tony
 
 _______________________________________________
 iommu mailing list
