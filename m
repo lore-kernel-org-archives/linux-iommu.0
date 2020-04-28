@@ -1,66 +1,66 @@
-Return-Path: <SRS0=6Sm1=6L=lists.linux-foundation.org=iommu-bounces@kernel.org>
+Return-Path: <SRS0=7g3a=6M=lists.linux-foundation.org=iommu-bounces@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
 X-Spam-Status: No, score=-0.8 required=3.0 tests=HEADER_FROM_DIFFERENT_DOMAINS,
-	MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS autolearn=no autolearn_force=no
-	version=3.4.0
+	MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED autolearn=no
+	autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 59574C83001
-	for <iommu@archiver.kernel.org>; Mon, 27 Apr 2020 23:44:44 +0000 (UTC)
-Received: from silver.osuosl.org (smtp3.osuosl.org [140.211.166.136])
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 6A555C83002
+	for <iommu@archiver.kernel.org>; Tue, 28 Apr 2020 00:13:26 +0000 (UTC)
+Received: from fraxinus.osuosl.org (smtp4.osuosl.org [140.211.166.137])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by mail.kernel.org (Postfix) with ESMTPS id 25FBF2072D
-	for <iommu@archiver.kernel.org>; Mon, 27 Apr 2020 23:44:44 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 25FBF2072D
+	by mail.kernel.org (Postfix) with ESMTPS id 35FCE2087E
+	for <iommu@archiver.kernel.org>; Tue, 28 Apr 2020 00:13:26 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 35FCE2087E
 Authentication-Results: mail.kernel.org; dmarc=none (p=none dis=none) header.from=linutronix.de
 Authentication-Results: mail.kernel.org; spf=pass smtp.mailfrom=iommu-bounces@lists.linux-foundation.org
 Received: from localhost (localhost [127.0.0.1])
-	by silver.osuosl.org (Postfix) with ESMTP id E327522219;
-	Mon, 27 Apr 2020 23:44:43 +0000 (UTC)
+	by fraxinus.osuosl.org (Postfix) with ESMTP id CE23B85F8D;
+	Tue, 28 Apr 2020 00:13:25 +0000 (UTC)
+X-Virus-Scanned: amavisd-new at osuosl.org
+Received: from fraxinus.osuosl.org ([127.0.0.1])
+	by localhost (.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
+	with ESMTP id 14eXn3XsfZDi; Tue, 28 Apr 2020 00:13:25 +0000 (UTC)
+Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [140.211.9.56])
+	by fraxinus.osuosl.org (Postfix) with ESMTP id 4014085F89;
+	Tue, 28 Apr 2020 00:13:25 +0000 (UTC)
+Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
+	by lists.linuxfoundation.org (Postfix) with ESMTP id 256A4C0172;
+	Tue, 28 Apr 2020 00:13:25 +0000 (UTC)
+Received: from silver.osuosl.org (smtp3.osuosl.org [140.211.166.136])
+ by lists.linuxfoundation.org (Postfix) with ESMTP id DC3D7C003B
+ for <iommu@lists.linux-foundation.org>; Tue, 28 Apr 2020 00:13:23 +0000 (UTC)
+Received: from localhost (localhost [127.0.0.1])
+ by silver.osuosl.org (Postfix) with ESMTP id C608622219
+ for <iommu@lists.linux-foundation.org>; Tue, 28 Apr 2020 00:13:23 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
 Received: from silver.osuosl.org ([127.0.0.1])
-	by localhost (.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
-	with ESMTP id MIdgn2Zx9zaR; Mon, 27 Apr 2020 23:44:42 +0000 (UTC)
-Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [140.211.9.56])
-	by silver.osuosl.org (Postfix) with ESMTP id 134062049E;
-	Mon, 27 Apr 2020 23:44:42 +0000 (UTC)
-Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
-	by lists.linuxfoundation.org (Postfix) with ESMTP id F3A54C013E;
-	Mon, 27 Apr 2020 23:44:41 +0000 (UTC)
-Received: from hemlock.osuosl.org (smtp2.osuosl.org [140.211.166.133])
- by lists.linuxfoundation.org (Postfix) with ESMTP id C75DFC003B
- for <iommu@lists.linux-foundation.org>; Mon, 27 Apr 2020 23:44:39 +0000 (UTC)
-Received: from localhost (localhost [127.0.0.1])
- by hemlock.osuosl.org (Postfix) with ESMTP id B5BA787B77
- for <iommu@lists.linux-foundation.org>; Mon, 27 Apr 2020 23:44:39 +0000 (UTC)
-X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from hemlock.osuosl.org ([127.0.0.1])
  by localhost (.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
- with ESMTP id ER-DkFPvd3QV for <iommu@lists.linux-foundation.org>;
- Mon, 27 Apr 2020 23:44:39 +0000 (UTC)
+ with ESMTP id nDuVIfKm17On for <iommu@lists.linux-foundation.org>;
+ Tue, 28 Apr 2020 00:13:23 +0000 (UTC)
 X-Greylist: from auto-whitelisted by SQLgrey-1.7.6
 Received: from Galois.linutronix.de (Galois.linutronix.de [193.142.43.55])
- by hemlock.osuosl.org (Postfix) with ESMTPS id 169CF87B5D
- for <iommu@lists.linux-foundation.org>; Mon, 27 Apr 2020 23:44:39 +0000 (UTC)
+ by silver.osuosl.org (Postfix) with ESMTPS id 17A11204A0
+ for <iommu@lists.linux-foundation.org>; Tue, 28 Apr 2020 00:13:23 +0000 (UTC)
 Received: from p5de0bf0b.dip0.t-ipconnect.de ([93.224.191.11]
  helo=nanos.tec.linutronix.de)
  by Galois.linutronix.de with esmtpsa (TLS1.2:DHE_RSA_AES_256_CBC_SHA256:256)
  (Exim 4.80) (envelope-from <tglx@linutronix.de>)
- id 1jTDQE-0004J5-Fg; Tue, 28 Apr 2020 01:44:22 +0200
+ id 1jTDs8-0004yZ-8l; Tue, 28 Apr 2020 02:13:12 +0200
 Received: by nanos.tec.linutronix.de (Postfix, from userid 1000)
- id E009B100FC0; Tue, 28 Apr 2020 01:44:21 +0200 (CEST)
+ id B194C100FC0; Tue, 28 Apr 2020 02:13:11 +0200 (CEST)
 From: Thomas Gleixner <tglx@linutronix.de>
 To: Fenghua Yu <fenghua.yu@intel.com>
-Subject: Re: [PATCH 5/7] x86/mmu: Allocate/free PASID
-In-Reply-To: <20200427221825.GF242333@romley-ivt3.sc.intel.com>
+Subject: Re: [PATCH 6/7] x86/traps: Fix up invalid PASID
+In-Reply-To: <20200427201141.GA242333@romley-ivt3.sc.intel.com>
 References: <1585596788-193989-1-git-send-email-fenghua.yu@intel.com>
- <1585596788-193989-6-git-send-email-fenghua.yu@intel.com>
- <87pnbus3du.fsf@nanos.tec.linutronix.de>
- <20200427221825.GF242333@romley-ivt3.sc.intel.com>
-Date: Tue, 28 Apr 2020 01:44:21 +0200
-Message-ID: <87d07spk8a.fsf@nanos.tec.linutronix.de>
+ <1585596788-193989-7-git-send-email-fenghua.yu@intel.com>
+ <87mu6ys20d.fsf@nanos.tec.linutronix.de>
+ <20200427201141.GA242333@romley-ivt3.sc.intel.com>
+Date: Tue, 28 Apr 2020 02:13:11 +0200
+Message-ID: <87a72wpiw8.fsf@nanos.tec.linutronix.de>
 MIME-Version: 1.0
 X-Linutronix-Spam-Score: -1.0
 X-Linutronix-Spam-Level: -
@@ -91,38 +91,52 @@ Errors-To: iommu-bounces@lists.linux-foundation.org
 Sender: "iommu" <iommu-bounces@lists.linux-foundation.org>
 
 Fenghua Yu <fenghua.yu@intel.com> writes:
-> On Sun, Apr 26, 2020 at 04:55:25PM +0200, Thomas Gleixner wrote:
->> Fenghua Yu <fenghua.yu@intel.com> writes:
->> > + +#ifdef CONFIG_INTEL_IOMMU_SVM +	int pasid;
+> On Sun, Apr 26, 2020 at 05:25:06PM +0200, Thomas Gleixner wrote:
+>> > @@ -499,6 +510,12 @@ dotraplinkage void do_general_protection(struct pt_regs *regs, long error_code)
+>> >  	int ret;
+>> >  
+>> >  	RCU_LOCKDEP_WARN(!rcu_is_watching(), "entry code didn't wake RCU");
+>> > +
+>> > +	if (user_mode(regs) && fixup_pasid_exception()) {
+>> > +		cond_local_irq_enable(regs);
 >> 
->> int? It's a value which gets programmed into the MSR along with the valid 
->> bit (bit 31) set.
+>> The point of this conditional irq enable _AFTER_ calling into the fixup
+>> function is? Also what's the reason for keeping interrupts disabled
+>> while calling into that function? Comments exist for a reason.
 >
-> The pasid is defined as "int" in struct intel_svm and in 
-> intel_svm_bind_mm() and intel_svm_unbind_mm(). So the pasid defined in this 
-> patch follows the same type defined in those places.
+> irq needs to be disabled because the fixup function requires to disable
+> preempt in order to update the PASID MSR on the faulting CPU.
 
-Which are wrong to begin with.
+No, that's just wrong. It's not about the update itself.
 
->> ioasid_alloc() uses ioasid_t which is
+> Will add comments here.
+
+Factual ones and not some fairy tales please.
+
+>> > +bool __fixup_pasid_exception(void)
+>> > +{
+>> > +	struct mm_struct *mm;
+>> > +	bool ret = true;
+>> > +	u64 pasid_msr;
+>> > +	int pasid;
+>> > +
+>> > +	mm = get_task_mm(current);
 >> 
->> typedef unsigned int ioasid_t;
->> 
->> Can we please have consistent types and behaviour all over the place?
+>> Why do you need a reference to current->mm ?
 >
-> Should I just define "pasid", "pasid_max", "flags" as "unsigned int" for
-> the new functions/code?
->
-> Or should I also change their types to "unsigned int" in the original
-> svm code (struct intel_svm, ...bind_mm(), etc)? I'm afraid that will be
-> a lot of changes and should be in a separate preparation patch.
+> The PASID for the address space is per mm and is stored in mm.
+> To get the PASID, we need to get the mm and the
+> pasid=mm->context.pasid.
 
-Yes, please. The existance of non-sensical code is not an excuse to
-proliferate it.
+It's obvious that you need to access current-mm in order to check
+current->mm->context.pasid. Let me rephrase the question:
+
+   Why do you need to take a reference on current->mm ?
 
 Thanks,
 
         tglx
+
 _______________________________________________
 iommu mailing list
 iommu@lists.linux-foundation.org
