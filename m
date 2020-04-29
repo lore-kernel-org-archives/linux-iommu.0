@@ -4,48 +4,48 @@ X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 X-Spam-Level: 
 X-Spam-Status: No, score=-9.8 required=3.0 tests=HEADER_FROM_DIFFERENT_DOMAINS,
 	INCLUDES_PATCH,MAILING_LIST_MULTI,SIGNED_OFF_BY,SPF_HELO_NONE,SPF_PASS,
-	URIBL_BLOCKED,USER_AGENT_GIT autolearn=ham autolearn_force=no version=3.4.0
+	USER_AGENT_GIT autolearn=ham autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 32794C83006
-	for <iommu@archiver.kernel.org>; Wed, 29 Apr 2020 13:37:54 +0000 (UTC)
-Received: from whitealder.osuosl.org (smtp1.osuosl.org [140.211.166.138])
+	by smtp.lore.kernel.org (Postfix) with ESMTP id C1D49C83003
+	for <iommu@archiver.kernel.org>; Wed, 29 Apr 2020 13:37:55 +0000 (UTC)
+Received: from silver.osuosl.org (smtp3.osuosl.org [140.211.166.136])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by mail.kernel.org (Postfix) with ESMTPS id 0F0DE2085B
-	for <iommu@archiver.kernel.org>; Wed, 29 Apr 2020 13:37:53 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 0F0DE2085B
+	by mail.kernel.org (Postfix) with ESMTPS id 9CE0F206D6
+	for <iommu@archiver.kernel.org>; Wed, 29 Apr 2020 13:37:55 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 9CE0F206D6
 Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=8bytes.org
 Authentication-Results: mail.kernel.org; spf=pass smtp.mailfrom=iommu-bounces@lists.linux-foundation.org
 Received: from localhost (localhost [127.0.0.1])
-	by whitealder.osuosl.org (Postfix) with ESMTP id E31D0878D0;
-	Wed, 29 Apr 2020 13:37:53 +0000 (UTC)
+	by silver.osuosl.org (Postfix) with ESMTP id 789F820432;
+	Wed, 29 Apr 2020 13:37:55 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from whitealder.osuosl.org ([127.0.0.1])
+Received: from silver.osuosl.org ([127.0.0.1])
 	by localhost (.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
-	with ESMTP id X-fZ01+IWHW8; Wed, 29 Apr 2020 13:37:50 +0000 (UTC)
+	with ESMTP id tmNIwDYn6vTN; Wed, 29 Apr 2020 13:37:54 +0000 (UTC)
 Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [140.211.9.56])
-	by whitealder.osuosl.org (Postfix) with ESMTP id D3C338789F;
-	Wed, 29 Apr 2020 13:37:45 +0000 (UTC)
+	by silver.osuosl.org (Postfix) with ESMTP id 26707231A5;
+	Wed, 29 Apr 2020 13:37:54 +0000 (UTC)
 Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
-	by lists.linuxfoundation.org (Postfix) with ESMTP id BF715C0864;
-	Wed, 29 Apr 2020 13:37:45 +0000 (UTC)
-Received: from fraxinus.osuosl.org (smtp4.osuosl.org [140.211.166.137])
- by lists.linuxfoundation.org (Postfix) with ESMTP id 8673BC0172;
- Wed, 29 Apr 2020 13:37:43 +0000 (UTC)
+	by lists.linuxfoundation.org (Postfix) with ESMTP id 13814C0864;
+	Wed, 29 Apr 2020 13:37:54 +0000 (UTC)
+Received: from hemlock.osuosl.org (smtp2.osuosl.org [140.211.166.133])
+ by lists.linuxfoundation.org (Postfix) with ESMTP id 40F75C0172;
+ Wed, 29 Apr 2020 13:37:47 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
- by fraxinus.osuosl.org (Postfix) with ESMTP id 75A37869F6;
- Wed, 29 Apr 2020 13:37:43 +0000 (UTC)
+ by hemlock.osuosl.org (Postfix) with ESMTP id 2B76E883E0;
+ Wed, 29 Apr 2020 13:37:47 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from fraxinus.osuosl.org ([127.0.0.1])
+Received: from hemlock.osuosl.org ([127.0.0.1])
  by localhost (.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
- with ESMTP id CKEA_UnMKUBb; Wed, 29 Apr 2020 13:37:41 +0000 (UTC)
+ with ESMTP id LmrQaiIKqupq; Wed, 29 Apr 2020 13:37:46 +0000 (UTC)
 X-Greylist: from auto-whitelisted by SQLgrey-1.7.6
 X-Greylist: from auto-whitelisted by SQLgrey-1.7.6
 Received: from theia.8bytes.org (8bytes.org [81.169.241.247])
- by fraxinus.osuosl.org (Postfix) with ESMTPS id 146888698B;
- Wed, 29 Apr 2020 13:37:41 +0000 (UTC)
+ by hemlock.osuosl.org (Postfix) with ESMTPS id ED9E4883E4;
+ Wed, 29 Apr 2020 13:37:45 +0000 (UTC)
 Received: by theia.8bytes.org (Postfix, from userid 1000)
- id B843B6BB; Wed, 29 Apr 2020 15:37:35 +0200 (CEST)
+ id 2A8C6CB4; Wed, 29 Apr 2020 15:37:37 +0200 (CEST)
 From: Joerg Roedel <joro@8bytes.org>
 To: Joerg Roedel <joro@8bytes.org>, Will Deacon <will@kernel.org>,
  Robin Murphy <robin.murphy@arm.com>,
@@ -60,10 +60,10 @@ To: Joerg Roedel <joro@8bytes.org>, Will Deacon <will@kernel.org>,
  Thierry Reding <thierry.reding@gmail.com>,
  Jonathan Hunter <jonathanh@nvidia.com>,
  Jean-Philippe Brucker <jean-philippe@linaro.org>
-Subject: [PATCH v3 03/34] iommu/amd: Implement iommu_ops->def_domain_type
- call-back
-Date: Wed, 29 Apr 2020 15:36:41 +0200
-Message-Id: <20200429133712.31431-4-joro@8bytes.org>
+Subject: [PATCH v3 10/34] iommu: Move new probe_device path to separate
+ function
+Date: Wed, 29 Apr 2020 15:36:48 +0200
+Message-Id: <20200429133712.31431-11-joro@8bytes.org>
 X-Mailer: git-send-email 2.17.1
 In-Reply-To: <20200429133712.31431-1-joro@8bytes.org>
 References: <20200429133712.31431-1-joro@8bytes.org>
@@ -93,46 +93,111 @@ Sender: "iommu" <iommu-bounces@lists.linux-foundation.org>
 
 From: Joerg Roedel <jroedel@suse.de>
 
-Implement the new def_domain_type call-back for the AMD IOMMU driver.
+This makes it easier to remove to old code-path when all drivers are
+converted. As a side effect that it also fixes the error cleanup
+path.
 
+Tested-by: Marek Szyprowski <m.szyprowski@samsung.com>
+Acked-by: Marek Szyprowski <m.szyprowski@samsung.com>
 Signed-off-by: Joerg Roedel <jroedel@suse.de>
 ---
- drivers/iommu/amd_iommu.c | 15 +++++++++++++++
- 1 file changed, 15 insertions(+)
+ drivers/iommu/iommu.c | 69 ++++++++++++++++++++++++++++---------------
+ 1 file changed, 46 insertions(+), 23 deletions(-)
 
-diff --git a/drivers/iommu/amd_iommu.c b/drivers/iommu/amd_iommu.c
-index 20cce366e951..73b4f84cf449 100644
---- a/drivers/iommu/amd_iommu.c
-+++ b/drivers/iommu/amd_iommu.c
-@@ -2661,6 +2661,20 @@ static void amd_iommu_iotlb_sync(struct iommu_domain *domain,
- 	amd_iommu_flush_iotlb_all(domain);
+diff --git a/drivers/iommu/iommu.c b/drivers/iommu/iommu.c
+index 18eb3623bd00..8be047a4808f 100644
+--- a/drivers/iommu/iommu.c
++++ b/drivers/iommu/iommu.c
+@@ -218,12 +218,55 @@ static int __iommu_probe_device(struct device *dev, struct list_head *group_list
+ 	return ret;
  }
  
-+static int amd_iommu_def_domain_type(struct device *dev)
++static int __iommu_probe_device_helper(struct device *dev)
 +{
-+	struct iommu_dev_data *dev_data;
++	const struct iommu_ops *ops = dev->bus->iommu_ops;
++	struct iommu_group *group;
++	int ret;
 +
-+	dev_data = get_dev_data(dev);
-+	if (!dev_data)
-+		return 0;
++	ret = __iommu_probe_device(dev, NULL);
++	if (ret)
++		goto err_out;
 +
-+	if (dev_data->iommu_v2)
-+		return IOMMU_DOMAIN_IDENTITY;
++	/*
++	 * Try to allocate a default domain - needs support from the
++	 * IOMMU driver. There are still some drivers which don't
++	 * support default domains, so the return value is not yet
++	 * checked.
++	 */
++	iommu_alloc_default_domain(dev);
++
++	group = iommu_group_get(dev);
++	if (!group)
++		goto err_release;
++
++	if (group->default_domain)
++		ret = __iommu_attach_device(group->default_domain, dev);
++
++	iommu_group_put(group);
++
++	if (ret)
++		goto err_release;
++
++	if (ops->probe_finalize)
++		ops->probe_finalize(dev);
 +
 +	return 0;
++
++err_release:
++	iommu_release_device(dev);
++err_out:
++	return ret;
++
 +}
 +
- const struct iommu_ops amd_iommu_ops = {
- 	.capable = amd_iommu_capable,
- 	.domain_alloc = amd_iommu_domain_alloc,
-@@ -2680,6 +2694,7 @@ const struct iommu_ops amd_iommu_ops = {
- 	.pgsize_bitmap	= AMD_IOMMU_PGSIZES,
- 	.flush_iotlb_all = amd_iommu_flush_iotlb_all,
- 	.iotlb_sync = amd_iommu_iotlb_sync,
-+	.def_domain_type = amd_iommu_def_domain_type,
- };
+ int iommu_probe_device(struct device *dev)
+ {
+ 	const struct iommu_ops *ops = dev->bus->iommu_ops;
+ 	int ret;
  
- /*****************************************************************************
+ 	WARN_ON(dev->iommu_group);
++
+ 	if (!ops)
+ 		return -EINVAL;
+ 
+@@ -235,30 +278,10 @@ int iommu_probe_device(struct device *dev)
+ 		goto err_free_dev_param;
+ 	}
+ 
+-	if (ops->probe_device) {
+-		struct iommu_group *group;
+-
+-		ret = __iommu_probe_device(dev, NULL);
+-
+-		/*
+-		 * Try to allocate a default domain - needs support from the
+-		 * IOMMU driver. There are still some drivers which don't
+-		 * support default domains, so the return value is not yet
+-		 * checked.
+-		 */
+-		if (!ret)
+-			iommu_alloc_default_domain(dev);
+-
+-		group = iommu_group_get(dev);
+-		if (group && group->default_domain) {
+-			ret = __iommu_attach_device(group->default_domain, dev);
+-			iommu_group_put(group);
+-		}
+-
+-	} else {
+-		ret = ops->add_device(dev);
+-	}
++	if (ops->probe_device)
++		return __iommu_probe_device_helper(dev);
+ 
++	ret = ops->add_device(dev);
+ 	if (ret)
+ 		goto err_module_put;
+ 
 -- 
 2.17.1
 
