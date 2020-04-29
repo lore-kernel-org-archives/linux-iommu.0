@@ -6,46 +6,46 @@ X-Spam-Status: No, score=-9.8 required=3.0 tests=HEADER_FROM_DIFFERENT_DOMAINS,
 	INCLUDES_PATCH,MAILING_LIST_MULTI,SIGNED_OFF_BY,SPF_HELO_NONE,SPF_PASS,
 	URIBL_BLOCKED,USER_AGENT_GIT autolearn=ham autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 7BDC7C83006
-	for <iommu@archiver.kernel.org>; Wed, 29 Apr 2020 13:37:58 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 05C84C83004
+	for <iommu@archiver.kernel.org>; Wed, 29 Apr 2020 13:38:00 +0000 (UTC)
 Received: from fraxinus.osuosl.org (smtp4.osuosl.org [140.211.166.137])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by mail.kernel.org (Postfix) with ESMTPS id 582DE206D6
-	for <iommu@archiver.kernel.org>; Wed, 29 Apr 2020 13:37:58 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 582DE206D6
+	by mail.kernel.org (Postfix) with ESMTPS id DB281206D6
+	for <iommu@archiver.kernel.org>; Wed, 29 Apr 2020 13:37:59 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org DB281206D6
 Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=8bytes.org
 Authentication-Results: mail.kernel.org; spf=pass smtp.mailfrom=iommu-bounces@lists.linux-foundation.org
 Received: from localhost (localhost [127.0.0.1])
-	by fraxinus.osuosl.org (Postfix) with ESMTP id C757A86AAC;
-	Wed, 29 Apr 2020 13:37:57 +0000 (UTC)
+	by fraxinus.osuosl.org (Postfix) with ESMTP id C7CC586A4A;
+	Wed, 29 Apr 2020 13:37:59 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
 Received: from fraxinus.osuosl.org ([127.0.0.1])
 	by localhost (.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
-	with ESMTP id 1WKnUn_2SR0Z; Wed, 29 Apr 2020 13:37:56 +0000 (UTC)
+	with ESMTP id UeNrdnRBEOLf; Wed, 29 Apr 2020 13:37:56 +0000 (UTC)
 Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [140.211.9.56])
-	by fraxinus.osuosl.org (Postfix) with ESMTP id 06F0386A8C;
+	by fraxinus.osuosl.org (Postfix) with ESMTP id 3360086A2B;
 	Wed, 29 Apr 2020 13:37:56 +0000 (UTC)
 Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
-	by lists.linuxfoundation.org (Postfix) with ESMTP id DCA4EC088C;
-	Wed, 29 Apr 2020 13:37:55 +0000 (UTC)
-Received: from fraxinus.osuosl.org (smtp4.osuosl.org [140.211.166.137])
- by lists.linuxfoundation.org (Postfix) with ESMTP id 54DAAC0888;
+	by lists.linuxfoundation.org (Postfix) with ESMTP id 19D3CC0888;
+	Wed, 29 Apr 2020 13:37:56 +0000 (UTC)
+Received: from whitealder.osuosl.org (smtp1.osuosl.org [140.211.166.138])
+ by lists.linuxfoundation.org (Postfix) with ESMTP id 98640C0172;
  Wed, 29 Apr 2020 13:37:49 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
- by fraxinus.osuosl.org (Postfix) with ESMTP id 4076086A59;
+ by whitealder.osuosl.org (Postfix) with ESMTP id 87F798793D;
  Wed, 29 Apr 2020 13:37:49 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from fraxinus.osuosl.org ([127.0.0.1])
+Received: from whitealder.osuosl.org ([127.0.0.1])
  by localhost (.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
- with ESMTP id KGPYcPrbKOPh; Wed, 29 Apr 2020 13:37:48 +0000 (UTC)
+ with ESMTP id WnsOszIAIaXn; Wed, 29 Apr 2020 13:37:43 +0000 (UTC)
 X-Greylist: from auto-whitelisted by SQLgrey-1.7.6
 X-Greylist: from auto-whitelisted by SQLgrey-1.7.6
 Received: from theia.8bytes.org (8bytes.org [81.169.241.247])
- by fraxinus.osuosl.org (Postfix) with ESMTPS id 7F99986A39;
- Wed, 29 Apr 2020 13:37:48 +0000 (UTC)
+ by whitealder.osuosl.org (Postfix) with ESMTPS id 74E4487846;
+ Wed, 29 Apr 2020 13:37:43 +0000 (UTC)
 Received: by theia.8bytes.org (Postfix, from userid 1000)
- id 3D260E9A; Wed, 29 Apr 2020 15:37:38 +0200 (CEST)
+ id 9FB358A8; Wed, 29 Apr 2020 15:37:36 +0200 (CEST)
 From: Joerg Roedel <joro@8bytes.org>
 To: Joerg Roedel <joro@8bytes.org>, Will Deacon <will@kernel.org>,
  Robin Murphy <robin.murphy@arm.com>,
@@ -60,10 +60,10 @@ To: Joerg Roedel <joro@8bytes.org>, Will Deacon <will@kernel.org>,
  Thierry Reding <thierry.reding@gmail.com>,
  Jonathan Hunter <jonathanh@nvidia.com>,
  Jean-Philippe Brucker <jean-philippe@linaro.org>
-Subject: [PATCH v3 16/34] iommu/vt-d: Convert to probe/release_device()
+Subject: [PATCH v3 07/34] iommu: Add probe_device() and release_device()
  call-backs
-Date: Wed, 29 Apr 2020 15:36:54 +0200
-Message-Id: <20200429133712.31431-17-joro@8bytes.org>
+Date: Wed, 29 Apr 2020 15:36:45 +0200
+Message-Id: <20200429133712.31431-8-joro@8bytes.org>
 X-Mailer: git-send-email 2.17.1
 In-Reply-To: <20200429133712.31431-1-joro@8bytes.org>
 References: <20200429133712.31431-1-joro@8bytes.org>
@@ -93,124 +93,161 @@ Sender: "iommu" <iommu-bounces@lists.linux-foundation.org>
 
 From: Joerg Roedel <jroedel@suse.de>
 
-Convert the Intel IOMMU driver to use the probe_device() and
-release_device() call-backs of iommu_ops, so that the iommu core code
-does the group and sysfs setup.
+Add call-backs to 'struct iommu_ops' as an alternative to the
+add_device() and remove_device() call-backs, which will be removed when
+all drivers are converted.
 
+The new call-backs will not setup IOMMU groups and domains anymore,
+so also add a probe_finalize() call-back where the IOMMU driver can do
+per-device setup work which require the device to be set up with a
+group and a domain.
+
+Tested-by: Marek Szyprowski <m.szyprowski@samsung.com>
+Acked-by: Marek Szyprowski <m.szyprowski@samsung.com>
 Signed-off-by: Joerg Roedel <jroedel@suse.de>
 ---
- drivers/iommu/intel-iommu.c | 67 ++++---------------------------------
- 1 file changed, 6 insertions(+), 61 deletions(-)
+ drivers/iommu/iommu.c | 63 ++++++++++++++++++++++++++++++++++++++-----
+ include/linux/iommu.h |  9 +++++++
+ 2 files changed, 66 insertions(+), 6 deletions(-)
 
-diff --git a/drivers/iommu/intel-iommu.c b/drivers/iommu/intel-iommu.c
-index b9f905a55dda..b906727f5b85 100644
---- a/drivers/iommu/intel-iommu.c
-+++ b/drivers/iommu/intel-iommu.c
-@@ -5781,78 +5781,27 @@ static bool intel_iommu_capable(enum iommu_cap cap)
- 	return false;
+diff --git a/drivers/iommu/iommu.c b/drivers/iommu/iommu.c
+index 5877abd9b693..6cfe7799dc8c 100644
+--- a/drivers/iommu/iommu.c
++++ b/drivers/iommu/iommu.c
+@@ -174,6 +174,36 @@ static void dev_iommu_free(struct device *dev)
+ 	dev->iommu = NULL;
  }
  
--static int intel_iommu_add_device(struct device *dev)
-+static struct iommu_device *intel_iommu_probe_device(struct device *dev)
++static int __iommu_probe_device(struct device *dev)
++{
++	const struct iommu_ops *ops = dev->bus->iommu_ops;
++	struct iommu_device *iommu_dev;
++	struct iommu_group *group;
++	int ret;
++
++	iommu_dev = ops->probe_device(dev);
++	if (IS_ERR(iommu_dev))
++		return PTR_ERR(iommu_dev);
++
++	dev->iommu->iommu_dev = iommu_dev;
++
++	group = iommu_group_get_for_dev(dev);
++	if (!IS_ERR(group)) {
++		ret = PTR_ERR(group);
++		goto out_release;
++	}
++	iommu_group_put(group);
++
++	iommu_device_link(iommu_dev, dev);
++
++	return 0;
++
++out_release:
++	ops->release_device(dev);
++
++	return ret;
++}
++
+ int iommu_probe_device(struct device *dev)
  {
--	struct dmar_domain *dmar_domain;
--	struct iommu_domain *domain;
- 	struct intel_iommu *iommu;
--	struct iommu_group *group;
- 	u8 bus, devfn;
--	int ret;
- 
- 	iommu = device_to_iommu(dev, &bus, &devfn);
- 	if (!iommu)
--		return -ENODEV;
--
--	iommu_device_link(&iommu->iommu, dev);
-+		return ERR_PTR(-ENODEV);
- 
- 	if (translation_pre_enabled(iommu))
- 		dev->archdata.iommu = DEFER_DEVICE_DOMAIN_INFO;
- 
--	group = iommu_group_get_for_dev(dev);
--
--	if (IS_ERR(group)) {
--		ret = PTR_ERR(group);
--		goto unlink;
--	}
--
--	iommu_group_put(group);
--
--	domain = iommu_get_domain_for_dev(dev);
--	dmar_domain = to_dmar_domain(domain);
--	if (domain->type == IOMMU_DOMAIN_DMA) {
--		if (device_def_domain_type(dev) == IOMMU_DOMAIN_IDENTITY) {
--			ret = iommu_request_dm_for_dev(dev);
--			if (ret) {
--				dmar_remove_one_dev_info(dev);
--				dmar_domain->flags |= DOMAIN_FLAG_LOSE_CHILDREN;
--				domain_add_dev_info(si_domain, dev);
--				dev_info(dev,
--					 "Device uses a private identity domain.\n");
--			}
--		}
--	} else {
--		if (device_def_domain_type(dev) == IOMMU_DOMAIN_DMA) {
--			ret = iommu_request_dma_domain_for_dev(dev);
--			if (ret) {
--				dmar_remove_one_dev_info(dev);
--				dmar_domain->flags |= DOMAIN_FLAG_LOSE_CHILDREN;
--				if (!get_private_domain_for_dev(dev)) {
--					dev_warn(dev,
--						 "Failed to get a private domain.\n");
--					ret = -ENOMEM;
--					goto unlink;
--				}
--
--				dev_info(dev,
--					 "Device uses a private dma domain.\n");
--			}
--		}
--	}
--
- 	if (device_needs_bounce(dev)) {
- 		dev_info(dev, "Use Intel IOMMU bounce page dma_ops\n");
- 		set_dma_ops(dev, &bounce_dma_ops);
+ 	const struct iommu_ops *ops = dev->bus->iommu_ops;
+@@ -191,10 +221,17 @@ int iommu_probe_device(struct device *dev)
+ 		goto err_free_dev_param;
  	}
  
--	return 0;
--
--unlink:
--	iommu_device_unlink(&iommu->iommu, dev);
--	return ret;
-+	return &iommu->iommu;
+-	ret = ops->add_device(dev);
++	if (ops->probe_device)
++		ret = __iommu_probe_device(dev);
++	else
++		ret = ops->add_device(dev);
++
+ 	if (ret)
+ 		goto err_module_put;
+ 
++	if (ops->probe_finalize)
++		ops->probe_finalize(dev);
++
+ 	return 0;
+ 
+ err_module_put:
+@@ -204,17 +241,31 @@ int iommu_probe_device(struct device *dev)
+ 	return ret;
  }
  
--static void intel_iommu_remove_device(struct device *dev)
-+static void intel_iommu_release_device(struct device *dev)
++static void __iommu_release_device(struct device *dev)
++{
++	const struct iommu_ops *ops = dev->bus->iommu_ops;
++
++	iommu_device_unlink(dev->iommu->iommu_dev, dev);
++
++	iommu_group_remove_device(dev);
++
++	ops->release_device(dev);
++}
++
+ void iommu_release_device(struct device *dev)
  {
- 	struct intel_iommu *iommu;
- 	u8 bus, devfn;
-@@ -5863,10 +5812,6 @@ static void intel_iommu_remove_device(struct device *dev)
+ 	const struct iommu_ops *ops = dev->bus->iommu_ops;
  
- 	dmar_remove_one_dev_info(dev);
+-	if (dev->iommu_group)
++	if (!dev->iommu)
++		return;
++
++	if (ops->release_device)
++		__iommu_release_device(dev);
++	else if (dev->iommu_group)
+ 		ops->remove_device(dev);
  
--	iommu_group_remove_device(dev);
--
--	iommu_device_unlink(&iommu->iommu, dev);
--
- 	if (device_needs_bounce(dev))
- 		set_dma_ops(dev, NULL);
+-	if (dev->iommu) {
+-		module_put(ops->owner);
+-		dev_iommu_free(dev);
+-	}
++	module_put(ops->owner);
++	dev_iommu_free(dev);
  }
-@@ -6198,8 +6143,8 @@ const struct iommu_ops intel_iommu_ops = {
- 	.map			= intel_iommu_map,
- 	.unmap			= intel_iommu_unmap,
- 	.iova_to_phys		= intel_iommu_iova_to_phys,
--	.add_device		= intel_iommu_add_device,
--	.remove_device		= intel_iommu_remove_device,
-+	.probe_device		= intel_iommu_probe_device,
-+	.release_device		= intel_iommu_release_device,
- 	.get_resv_regions	= intel_iommu_get_resv_regions,
- 	.put_resv_regions	= generic_iommu_put_resv_regions,
- 	.apply_resv_region	= intel_iommu_apply_resv_region,
+ 
+ static struct iommu_domain *__iommu_domain_alloc(struct bus_type *bus,
+diff --git a/include/linux/iommu.h b/include/linux/iommu.h
+index 1f027b07e499..30170d191e5e 100644
+--- a/include/linux/iommu.h
++++ b/include/linux/iommu.h
+@@ -225,6 +225,10 @@ struct iommu_iotlb_gather {
+  * @iova_to_phys: translate iova to physical address
+  * @add_device: add device to iommu grouping
+  * @remove_device: remove device from iommu grouping
++ * @probe_device: Add device to iommu driver handling
++ * @release_device: Remove device from iommu driver handling
++ * @probe_finalize: Do final setup work after the device is added to an IOMMU
++ *                  group and attached to the groups domain
+  * @device_group: find iommu group for a particular device
+  * @domain_get_attr: Query domain attributes
+  * @domain_set_attr: Change domain attributes
+@@ -275,6 +279,9 @@ struct iommu_ops {
+ 	phys_addr_t (*iova_to_phys)(struct iommu_domain *domain, dma_addr_t iova);
+ 	int (*add_device)(struct device *dev);
+ 	void (*remove_device)(struct device *dev);
++	struct iommu_device *(*probe_device)(struct device *dev);
++	void (*release_device)(struct device *dev);
++	void (*probe_finalize)(struct device *dev);
+ 	struct iommu_group *(*device_group)(struct device *dev);
+ 	int (*domain_get_attr)(struct iommu_domain *domain,
+ 			       enum iommu_attr attr, void *data);
+@@ -375,6 +382,7 @@ struct iommu_fault_param {
+  *
+  * @fault_param: IOMMU detected device fault reporting data
+  * @fwspec:	 IOMMU fwspec data
++ * @iommu_dev:	 IOMMU device this device is linked to
+  * @priv:	 IOMMU Driver private data
+  *
+  * TODO: migrate other per device data pointers under iommu_dev_data, e.g.
+@@ -384,6 +392,7 @@ struct dev_iommu {
+ 	struct mutex lock;
+ 	struct iommu_fault_param	*fault_param;
+ 	struct iommu_fwspec		*fwspec;
++	struct iommu_device		*iommu_dev;
+ 	void				*priv;
+ };
+ 
 -- 
 2.17.1
 
