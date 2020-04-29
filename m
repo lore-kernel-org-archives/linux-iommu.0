@@ -6,46 +6,46 @@ X-Spam-Status: No, score=-9.8 required=3.0 tests=HEADER_FROM_DIFFERENT_DOMAINS,
 	INCLUDES_PATCH,MAILING_LIST_MULTI,SIGNED_OFF_BY,SPF_HELO_NONE,SPF_PASS,
 	URIBL_BLOCKED,USER_AGENT_GIT autolearn=ham autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id A8AA3C83003
-	for <iommu@archiver.kernel.org>; Wed, 29 Apr 2020 13:38:06 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 27FB7C8300B
+	for <iommu@archiver.kernel.org>; Wed, 29 Apr 2020 13:38:08 +0000 (UTC)
 Received: from fraxinus.osuosl.org (smtp4.osuosl.org [140.211.166.137])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by mail.kernel.org (Postfix) with ESMTPS id 893E0206D6
-	for <iommu@archiver.kernel.org>; Wed, 29 Apr 2020 13:38:06 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 893E0206D6
+	by mail.kernel.org (Postfix) with ESMTPS id 04834206D6
+	for <iommu@archiver.kernel.org>; Wed, 29 Apr 2020 13:38:07 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 04834206D6
 Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=8bytes.org
 Authentication-Results: mail.kernel.org; spf=pass smtp.mailfrom=iommu-bounces@lists.linux-foundation.org
 Received: from localhost (localhost [127.0.0.1])
-	by fraxinus.osuosl.org (Postfix) with ESMTP id 3B50586B7B;
-	Wed, 29 Apr 2020 13:38:06 +0000 (UTC)
+	by fraxinus.osuosl.org (Postfix) with ESMTP id D672586BA3;
+	Wed, 29 Apr 2020 13:38:07 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
 Received: from fraxinus.osuosl.org ([127.0.0.1])
 	by localhost (.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
-	with ESMTP id jthCNQoHDOsZ; Wed, 29 Apr 2020 13:38:04 +0000 (UTC)
+	with ESMTP id A3xX5iCFxQ95; Wed, 29 Apr 2020 13:38:05 +0000 (UTC)
 Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [140.211.9.56])
-	by fraxinus.osuosl.org (Postfix) with ESMTP id 2CABA86ADD;
+	by fraxinus.osuosl.org (Postfix) with ESMTP id 865E986A95;
 	Wed, 29 Apr 2020 13:38:00 +0000 (UTC)
 Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
-	by lists.linuxfoundation.org (Postfix) with ESMTP id 18D0CC088A;
+	by lists.linuxfoundation.org (Postfix) with ESMTP id 664D4C0864;
 	Wed, 29 Apr 2020 13:38:00 +0000 (UTC)
-Received: from silver.osuosl.org (smtp3.osuosl.org [140.211.166.136])
- by lists.linuxfoundation.org (Postfix) with ESMTP id 93DFCC0172;
+Received: from hemlock.osuosl.org (smtp2.osuosl.org [140.211.166.133])
+ by lists.linuxfoundation.org (Postfix) with ESMTP id A7E6AC088A;
  Wed, 29 Apr 2020 13:37:51 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
- by silver.osuosl.org (Postfix) with ESMTP id 708C12318D;
+ by hemlock.osuosl.org (Postfix) with ESMTP id 887CC883F5;
  Wed, 29 Apr 2020 13:37:51 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from silver.osuosl.org ([127.0.0.1])
+Received: from hemlock.osuosl.org ([127.0.0.1])
  by localhost (.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
- with ESMTP id lpriyB8p70j7; Wed, 29 Apr 2020 13:37:49 +0000 (UTC)
+ with ESMTP id 5pCMsSCMiu5O; Wed, 29 Apr 2020 13:37:51 +0000 (UTC)
 X-Greylist: from auto-whitelisted by SQLgrey-1.7.6
 X-Greylist: from auto-whitelisted by SQLgrey-1.7.6
 Received: from theia.8bytes.org (8bytes.org [81.169.241.247])
- by silver.osuosl.org (Postfix) with ESMTPS id EC53D2309D;
- Wed, 29 Apr 2020 13:37:48 +0000 (UTC)
+ by hemlock.osuosl.org (Postfix) with ESMTPS id F2E60883EB;
+ Wed, 29 Apr 2020 13:37:50 +0000 (UTC)
 Received: by theia.8bytes.org (Postfix, from userid 1000)
- id A7E6EEC0; Wed, 29 Apr 2020 15:37:38 +0200 (CEST)
+ id 771DAEF0; Wed, 29 Apr 2020 15:37:39 +0200 (CEST)
 From: Joerg Roedel <joro@8bytes.org>
 To: Joerg Roedel <joro@8bytes.org>, Will Deacon <will@kernel.org>,
  Robin Murphy <robin.murphy@arm.com>,
@@ -60,10 +60,10 @@ To: Joerg Roedel <joro@8bytes.org>, Will Deacon <will@kernel.org>,
  Thierry Reding <thierry.reding@gmail.com>,
  Jonathan Hunter <jonathanh@nvidia.com>,
  Jean-Philippe Brucker <jean-philippe@linaro.org>
-Subject: [PATCH v3 18/34] iommu/pamu: Convert to probe/release_device()
+Subject: [PATCH v3 22/34] iommu/mediatek: Convert to probe/release_device()
  call-backs
-Date: Wed, 29 Apr 2020 15:36:56 +0200
-Message-Id: <20200429133712.31431-19-joro@8bytes.org>
+Date: Wed, 29 Apr 2020 15:37:00 +0200
+Message-Id: <20200429133712.31431-23-joro@8bytes.org>
 X-Mailer: git-send-email 2.17.1
 In-Reply-To: <20200429133712.31431-1-joro@8bytes.org>
 References: <20200429133712.31431-1-joro@8bytes.org>
@@ -93,59 +93,73 @@ Sender: "iommu" <iommu-bounces@lists.linux-foundation.org>
 
 From: Joerg Roedel <jroedel@suse.de>
 
-Convert the PAMU IOMMU driver to use the probe_device() and
+Convert the Mediatek IOMMU driver to use the probe_device() and
 release_device() call-backs of iommu_ops, so that the iommu core code
 does the group and sysfs setup.
 
 Signed-off-by: Joerg Roedel <jroedel@suse.de>
 ---
- drivers/iommu/fsl_pamu_domain.c | 22 +++++-----------------
- 1 file changed, 5 insertions(+), 17 deletions(-)
+ drivers/iommu/mtk_iommu.c | 24 ++++++------------------
+ 1 file changed, 6 insertions(+), 18 deletions(-)
 
-diff --git a/drivers/iommu/fsl_pamu_domain.c b/drivers/iommu/fsl_pamu_domain.c
-index 06828e2698d5..928d37771ece 100644
---- a/drivers/iommu/fsl_pamu_domain.c
-+++ b/drivers/iommu/fsl_pamu_domain.c
-@@ -1016,25 +1016,13 @@ static struct iommu_group *fsl_pamu_device_group(struct device *dev)
- 	return group;
+diff --git a/drivers/iommu/mtk_iommu.c b/drivers/iommu/mtk_iommu.c
+index 5f4d6df59cf6..2be96f1cdbd2 100644
+--- a/drivers/iommu/mtk_iommu.c
++++ b/drivers/iommu/mtk_iommu.c
+@@ -441,38 +441,26 @@ static phys_addr_t mtk_iommu_iova_to_phys(struct iommu_domain *domain,
+ 	return pa;
  }
  
--static int fsl_pamu_add_device(struct device *dev)
-+static struct iommu_device *fsl_pamu_probe_device(struct device *dev)
+-static int mtk_iommu_add_device(struct device *dev)
++static struct iommu_device *mtk_iommu_probe_device(struct device *dev)
  {
+ 	struct iommu_fwspec *fwspec = dev_iommu_fwspec_get(dev);
+ 	struct mtk_iommu_data *data;
 -	struct iommu_group *group;
--
+ 
+ 	if (!fwspec || fwspec->ops != &mtk_iommu_ops)
+-		return -ENODEV; /* Not a iommu client device */
++		return ERR_PTR(-ENODEV); /* Not a iommu client device */
+ 
+ 	data = dev_iommu_priv_get(dev);
+-	iommu_device_link(&data->iommu, dev);
+ 
 -	group = iommu_group_get_for_dev(dev);
 -	if (IS_ERR(group))
 -		return PTR_ERR(group);
 -
 -	iommu_group_put(group);
--
--	iommu_device_link(&pamu_iommu, dev);
--
 -	return 0;
-+	return &pamu_iommu;
++	return &data->iommu;
  }
  
--static void fsl_pamu_remove_device(struct device *dev)
-+static void fsl_pamu_release_device(struct device *dev)
+-static void mtk_iommu_remove_device(struct device *dev)
++static void mtk_iommu_release_device(struct device *dev)
  {
--	iommu_device_unlink(&pamu_iommu, dev);
+ 	struct iommu_fwspec *fwspec = dev_iommu_fwspec_get(dev);
+-	struct mtk_iommu_data *data;
+ 
+ 	if (!fwspec || fwspec->ops != &mtk_iommu_ops)
+ 		return;
+ 
+-	data = dev_iommu_priv_get(dev);
+-	iommu_device_unlink(&data->iommu, dev);
+-
 -	iommu_group_remove_device(dev);
+ 	iommu_fwspec_free(dev);
  }
  
- static const struct iommu_ops fsl_pamu_ops = {
-@@ -1048,8 +1036,8 @@ static const struct iommu_ops fsl_pamu_ops = {
- 	.iova_to_phys	= fsl_pamu_iova_to_phys,
- 	.domain_set_attr = fsl_pamu_set_domain_attr,
- 	.domain_get_attr = fsl_pamu_get_domain_attr,
--	.add_device	= fsl_pamu_add_device,
--	.remove_device	= fsl_pamu_remove_device,
-+	.probe_device	= fsl_pamu_probe_device,
-+	.release_device	= fsl_pamu_release_device,
- 	.device_group   = fsl_pamu_device_group,
- };
- 
+@@ -526,8 +514,8 @@ static const struct iommu_ops mtk_iommu_ops = {
+ 	.flush_iotlb_all = mtk_iommu_flush_iotlb_all,
+ 	.iotlb_sync	= mtk_iommu_iotlb_sync,
+ 	.iova_to_phys	= mtk_iommu_iova_to_phys,
+-	.add_device	= mtk_iommu_add_device,
+-	.remove_device	= mtk_iommu_remove_device,
++	.probe_device	= mtk_iommu_probe_device,
++	.release_device	= mtk_iommu_release_device,
+ 	.device_group	= mtk_iommu_device_group,
+ 	.of_xlate	= mtk_iommu_of_xlate,
+ 	.pgsize_bitmap	= SZ_4K | SZ_64K | SZ_1M | SZ_16M,
 -- 
 2.17.1
 
