@@ -6,46 +6,46 @@ X-Spam-Status: No, score=-9.8 required=3.0 tests=HEADER_FROM_DIFFERENT_DOMAINS,
 	INCLUDES_PATCH,MAILING_LIST_MULTI,SIGNED_OFF_BY,SPF_HELO_NONE,SPF_PASS,
 	URIBL_BLOCKED,USER_AGENT_GIT autolearn=ham autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 134CFC83004
-	for <iommu@archiver.kernel.org>; Wed, 29 Apr 2020 13:38:05 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id A8AA3C83003
+	for <iommu@archiver.kernel.org>; Wed, 29 Apr 2020 13:38:06 +0000 (UTC)
 Received: from fraxinus.osuosl.org (smtp4.osuosl.org [140.211.166.137])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by mail.kernel.org (Postfix) with ESMTPS id E339A206D6
-	for <iommu@archiver.kernel.org>; Wed, 29 Apr 2020 13:38:04 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org E339A206D6
+	by mail.kernel.org (Postfix) with ESMTPS id 893E0206D6
+	for <iommu@archiver.kernel.org>; Wed, 29 Apr 2020 13:38:06 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 893E0206D6
 Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=8bytes.org
 Authentication-Results: mail.kernel.org; spf=pass smtp.mailfrom=iommu-bounces@lists.linux-foundation.org
 Received: from localhost (localhost [127.0.0.1])
-	by fraxinus.osuosl.org (Postfix) with ESMTP id AF09B86B4E;
-	Wed, 29 Apr 2020 13:38:04 +0000 (UTC)
+	by fraxinus.osuosl.org (Postfix) with ESMTP id 3B50586B7B;
+	Wed, 29 Apr 2020 13:38:06 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
 Received: from fraxinus.osuosl.org ([127.0.0.1])
 	by localhost (.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
-	with ESMTP id THp15gZnGfxg; Wed, 29 Apr 2020 13:38:00 +0000 (UTC)
+	with ESMTP id jthCNQoHDOsZ; Wed, 29 Apr 2020 13:38:04 +0000 (UTC)
 Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [140.211.9.56])
-	by fraxinus.osuosl.org (Postfix) with ESMTP id 1BE1686AA4;
-	Wed, 29 Apr 2020 13:37:58 +0000 (UTC)
+	by fraxinus.osuosl.org (Postfix) with ESMTP id 2CABA86ADD;
+	Wed, 29 Apr 2020 13:38:00 +0000 (UTC)
 Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
-	by lists.linuxfoundation.org (Postfix) with ESMTP id 08EAFC0888;
-	Wed, 29 Apr 2020 13:37:58 +0000 (UTC)
-Received: from hemlock.osuosl.org (smtp2.osuosl.org [140.211.166.133])
- by lists.linuxfoundation.org (Postfix) with ESMTP id 8D016C0172;
- Wed, 29 Apr 2020 13:37:50 +0000 (UTC)
+	by lists.linuxfoundation.org (Postfix) with ESMTP id 18D0CC088A;
+	Wed, 29 Apr 2020 13:38:00 +0000 (UTC)
+Received: from silver.osuosl.org (smtp3.osuosl.org [140.211.166.136])
+ by lists.linuxfoundation.org (Postfix) with ESMTP id 93DFCC0172;
+ Wed, 29 Apr 2020 13:37:51 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
- by hemlock.osuosl.org (Postfix) with ESMTP id 89453883F5;
- Wed, 29 Apr 2020 13:37:50 +0000 (UTC)
+ by silver.osuosl.org (Postfix) with ESMTP id 708C12318D;
+ Wed, 29 Apr 2020 13:37:51 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from hemlock.osuosl.org ([127.0.0.1])
+Received: from silver.osuosl.org ([127.0.0.1])
  by localhost (.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
- with ESMTP id TH4EbFL58LSd; Wed, 29 Apr 2020 13:37:50 +0000 (UTC)
+ with ESMTP id lpriyB8p70j7; Wed, 29 Apr 2020 13:37:49 +0000 (UTC)
 X-Greylist: from auto-whitelisted by SQLgrey-1.7.6
 X-Greylist: from auto-whitelisted by SQLgrey-1.7.6
 Received: from theia.8bytes.org (8bytes.org [81.169.241.247])
- by hemlock.osuosl.org (Postfix) with ESMTPS id E4ED1883EB;
- Wed, 29 Apr 2020 13:37:49 +0000 (UTC)
+ by silver.osuosl.org (Postfix) with ESMTPS id EC53D2309D;
+ Wed, 29 Apr 2020 13:37:48 +0000 (UTC)
 Received: by theia.8bytes.org (Postfix, from userid 1000)
- id 1F089ED8; Wed, 29 Apr 2020 15:37:39 +0200 (CEST)
+ id A7E6EEC0; Wed, 29 Apr 2020 15:37:38 +0200 (CEST)
 From: Joerg Roedel <joro@8bytes.org>
 To: Joerg Roedel <joro@8bytes.org>, Will Deacon <will@kernel.org>,
  Robin Murphy <robin.murphy@arm.com>,
@@ -60,10 +60,10 @@ To: Joerg Roedel <joro@8bytes.org>, Will Deacon <will@kernel.org>,
  Thierry Reding <thierry.reding@gmail.com>,
  Jonathan Hunter <jonathanh@nvidia.com>,
  Jean-Philippe Brucker <jean-philippe@linaro.org>
-Subject: [PATCH v3 20/34] iommu/virtio: Convert to probe/release_device()
+Subject: [PATCH v3 18/34] iommu/pamu: Convert to probe/release_device()
  call-backs
-Date: Wed, 29 Apr 2020 15:36:58 +0200
-Message-Id: <20200429133712.31431-21-joro@8bytes.org>
+Date: Wed, 29 Apr 2020 15:36:56 +0200
+Message-Id: <20200429133712.31431-19-joro@8bytes.org>
 X-Mailer: git-send-email 2.17.1
 In-Reply-To: <20200429133712.31431-1-joro@8bytes.org>
 References: <20200429133712.31431-1-joro@8bytes.org>
@@ -93,109 +93,59 @@ Sender: "iommu" <iommu-bounces@lists.linux-foundation.org>
 
 From: Joerg Roedel <jroedel@suse.de>
 
-Convert the VirtIO IOMMU driver to use the probe_device() and
+Convert the PAMU IOMMU driver to use the probe_device() and
 release_device() call-backs of iommu_ops, so that the iommu core code
 does the group and sysfs setup.
 
 Signed-off-by: Joerg Roedel <jroedel@suse.de>
 ---
- drivers/iommu/virtio-iommu.c | 41 +++++++++---------------------------
- 1 file changed, 10 insertions(+), 31 deletions(-)
+ drivers/iommu/fsl_pamu_domain.c | 22 +++++-----------------
+ 1 file changed, 5 insertions(+), 17 deletions(-)
 
-diff --git a/drivers/iommu/virtio-iommu.c b/drivers/iommu/virtio-iommu.c
-index d5cac4f46ca5..bda300c2a438 100644
---- a/drivers/iommu/virtio-iommu.c
-+++ b/drivers/iommu/virtio-iommu.c
-@@ -865,24 +865,23 @@ static struct viommu_dev *viommu_get_by_fwnode(struct fwnode_handle *fwnode)
- 	return dev ? dev_to_virtio(dev)->priv : NULL;
+diff --git a/drivers/iommu/fsl_pamu_domain.c b/drivers/iommu/fsl_pamu_domain.c
+index 06828e2698d5..928d37771ece 100644
+--- a/drivers/iommu/fsl_pamu_domain.c
++++ b/drivers/iommu/fsl_pamu_domain.c
+@@ -1016,25 +1016,13 @@ static struct iommu_group *fsl_pamu_device_group(struct device *dev)
+ 	return group;
  }
  
--static int viommu_add_device(struct device *dev)
-+static struct iommu_device *viommu_probe_device(struct device *dev)
+-static int fsl_pamu_add_device(struct device *dev)
++static struct iommu_device *fsl_pamu_probe_device(struct device *dev)
  {
- 	int ret;
 -	struct iommu_group *group;
- 	struct viommu_endpoint *vdev;
- 	struct viommu_dev *viommu = NULL;
- 	struct iommu_fwspec *fwspec = dev_iommu_fwspec_get(dev);
- 
- 	if (!fwspec || fwspec->ops != &viommu_ops)
--		return -ENODEV;
-+		return ERR_PTR(-ENODEV);
- 
- 	viommu = viommu_get_by_fwnode(fwspec->iommu_fwnode);
- 	if (!viommu)
--		return -ENODEV;
-+		return ERR_PTR(-ENODEV);
- 
- 	vdev = kzalloc(sizeof(*vdev), GFP_KERNEL);
- 	if (!vdev)
--		return -ENOMEM;
-+		return ERR_PTR(-ENOMEM);
- 
- 	vdev->dev = dev;
- 	vdev->viommu = viommu;
-@@ -896,45 +895,25 @@ static int viommu_add_device(struct device *dev)
- 			goto err_free_dev;
- 	}
- 
--	ret = iommu_device_link(&viommu->iommu, dev);
--	if (ret)
--		goto err_free_dev;
-+	return &viommu->iommu;
- 
--	/*
--	 * Last step creates a default domain and attaches to it. Everything
--	 * must be ready.
--	 */
+-
 -	group = iommu_group_get_for_dev(dev);
--	if (IS_ERR(group)) {
--		ret = PTR_ERR(group);
--		goto err_unlink_dev;
--	}
+-	if (IS_ERR(group))
+-		return PTR_ERR(group);
 -
 -	iommu_group_put(group);
 -
--	return PTR_ERR_OR_ZERO(group);
+-	iommu_device_link(&pamu_iommu, dev);
 -
--err_unlink_dev:
--	iommu_device_unlink(&viommu->iommu, dev);
- err_free_dev:
- 	generic_iommu_put_resv_regions(dev, &vdev->resv_regions);
- 	kfree(vdev);
- 
--	return ret;
-+	return ERR_PTR(ret);
+-	return 0;
++	return &pamu_iommu;
  }
  
--static void viommu_remove_device(struct device *dev)
-+static void viommu_release_device(struct device *dev)
+-static void fsl_pamu_remove_device(struct device *dev)
++static void fsl_pamu_release_device(struct device *dev)
  {
--	struct viommu_endpoint *vdev;
- 	struct iommu_fwspec *fwspec = dev_iommu_fwspec_get(dev);
-+	struct viommu_endpoint *vdev;
- 
- 	if (!fwspec || fwspec->ops != &viommu_ops)
- 		return;
- 
- 	vdev = dev_iommu_priv_get(dev);
- 
+-	iommu_device_unlink(&pamu_iommu, dev);
 -	iommu_group_remove_device(dev);
--	iommu_device_unlink(&vdev->viommu->iommu, dev);
- 	generic_iommu_put_resv_regions(dev, &vdev->resv_regions);
- 	kfree(vdev);
  }
-@@ -960,8 +939,8 @@ static struct iommu_ops viommu_ops = {
- 	.unmap			= viommu_unmap,
- 	.iova_to_phys		= viommu_iova_to_phys,
- 	.iotlb_sync		= viommu_iotlb_sync,
--	.add_device		= viommu_add_device,
--	.remove_device		= viommu_remove_device,
-+	.probe_device		= viommu_probe_device,
-+	.release_device		= viommu_release_device,
- 	.device_group		= viommu_device_group,
- 	.get_resv_regions	= viommu_get_resv_regions,
- 	.put_resv_regions	= generic_iommu_put_resv_regions,
+ 
+ static const struct iommu_ops fsl_pamu_ops = {
+@@ -1048,8 +1036,8 @@ static const struct iommu_ops fsl_pamu_ops = {
+ 	.iova_to_phys	= fsl_pamu_iova_to_phys,
+ 	.domain_set_attr = fsl_pamu_set_domain_attr,
+ 	.domain_get_attr = fsl_pamu_get_domain_attr,
+-	.add_device	= fsl_pamu_add_device,
+-	.remove_device	= fsl_pamu_remove_device,
++	.probe_device	= fsl_pamu_probe_device,
++	.release_device	= fsl_pamu_release_device,
+ 	.device_group   = fsl_pamu_device_group,
+ };
+ 
 -- 
 2.17.1
 
