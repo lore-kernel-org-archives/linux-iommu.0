@@ -2,76 +2,75 @@ Return-Path: <SRS0=AFVC=6N=lists.linux-foundation.org=iommu-bounces@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-8.3 required=3.0 tests=HEADER_FROM_DIFFERENT_DOMAINS,
-	INCLUDES_PATCH,MAILING_LIST_MULTI,SIGNED_OFF_BY,SPF_HELO_NONE,SPF_PASS,
+X-Spam-Status: No, score=-7.3 required=3.0 tests=HEADER_FROM_DIFFERENT_DOMAINS,
+	MAILING_LIST_MULTI,MENTIONS_GIT_HOSTING,SPF_HELO_NONE,SPF_PASS,
 	USER_AGENT_SANE_1 autolearn=ham autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 07C89C83000
-	for <iommu@archiver.kernel.org>; Wed, 29 Apr 2020 21:07:49 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 2616BC83004
+	for <iommu@archiver.kernel.org>; Wed, 29 Apr 2020 21:07:50 +0000 (UTC)
 Received: from fraxinus.osuosl.org (smtp4.osuosl.org [140.211.166.137])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by mail.kernel.org (Postfix) with ESMTPS id D996C206F0
-	for <iommu@archiver.kernel.org>; Wed, 29 Apr 2020 21:07:48 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org D996C206F0
+	by mail.kernel.org (Postfix) with ESMTPS id F1411206F0
+	for <iommu@archiver.kernel.org>; Wed, 29 Apr 2020 21:07:49 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org F1411206F0
 Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=intel.com
 Authentication-Results: mail.kernel.org; spf=pass smtp.mailfrom=iommu-bounces@lists.linux-foundation.org
 Received: from localhost (localhost [127.0.0.1])
-	by fraxinus.osuosl.org (Postfix) with ESMTP id AA4A186B24;
-	Wed, 29 Apr 2020 21:07:48 +0000 (UTC)
+	by fraxinus.osuosl.org (Postfix) with ESMTP id D368486B10;
+	Wed, 29 Apr 2020 21:07:49 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
 Received: from fraxinus.osuosl.org ([127.0.0.1])
 	by localhost (.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
-	with ESMTP id Tkd_6O9KIg0p; Wed, 29 Apr 2020 21:07:47 +0000 (UTC)
+	with ESMTP id Ixc3910QnQ4h; Wed, 29 Apr 2020 21:07:47 +0000 (UTC)
 Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [140.211.9.56])
-	by fraxinus.osuosl.org (Postfix) with ESMTP id D90D086B66;
-	Wed, 29 Apr 2020 21:07:46 +0000 (UTC)
+	by fraxinus.osuosl.org (Postfix) with ESMTP id 8F0EA86B20;
+	Wed, 29 Apr 2020 21:07:47 +0000 (UTC)
 Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
-	by lists.linuxfoundation.org (Postfix) with ESMTP id BEE63C088A;
-	Wed, 29 Apr 2020 21:07:46 +0000 (UTC)
-Received: from fraxinus.osuosl.org (smtp4.osuosl.org [140.211.166.137])
- by lists.linuxfoundation.org (Postfix) with ESMTP id B08C1C0172;
- Wed, 29 Apr 2020 21:07:44 +0000 (UTC)
+	by lists.linuxfoundation.org (Postfix) with ESMTP id 7C36CC0864;
+	Wed, 29 Apr 2020 21:07:47 +0000 (UTC)
+Received: from whitealder.osuosl.org (smtp1.osuosl.org [140.211.166.138])
+ by lists.linuxfoundation.org (Postfix) with ESMTP id B7F71C0172;
+ Wed, 29 Apr 2020 21:07:45 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
- by fraxinus.osuosl.org (Postfix) with ESMTP id 9DE8D86A85;
- Wed, 29 Apr 2020 21:07:44 +0000 (UTC)
+ by whitealder.osuosl.org (Postfix) with ESMTP id A3E1187997;
+ Wed, 29 Apr 2020 21:07:45 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from fraxinus.osuosl.org ([127.0.0.1])
+Received: from whitealder.osuosl.org ([127.0.0.1])
  by localhost (.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
- with ESMTP id l4mQI1qhEnjI; Wed, 29 Apr 2020 21:07:44 +0000 (UTC)
+ with ESMTP id zbiYxMgv41lL; Wed, 29 Apr 2020 21:07:44 +0000 (UTC)
 X-Greylist: domain auto-whitelisted by SQLgrey-1.7.6
 X-Greylist: domain auto-whitelisted by SQLgrey-1.7.6
-Received: from mga03.intel.com (mga03.intel.com [134.134.136.65])
- by fraxinus.osuosl.org (Postfix) with ESMTPS id CF6AD86A94;
- Wed, 29 Apr 2020 21:07:43 +0000 (UTC)
-IronPort-SDR: SvXoUqHQNvPm26FvrJKqsBI9nwmpxKXWDV5oEHahAJSFDuh8TQ0oPUqjV6usDM5bvRkNlozNQM
- PNhl1jubJchA==
+Received: from mga12.intel.com (mga12.intel.com [192.55.52.136])
+ by whitealder.osuosl.org (Postfix) with ESMTPS id 53362879C2;
+ Wed, 29 Apr 2020 21:07:44 +0000 (UTC)
+IronPort-SDR: Guz4m7uFmEvxx0tsAp2PAZ4xVJ91xOaau+jReoziQeyJJ4yPb8JAPtVQYkCSA2Vt2eMBCzQoFZ
+ MT3bLEWppp5g==
 X-Amp-Result: SKIPPED(no attachment in message)
 X-Amp-File-Uploaded: False
-Received: from fmsmga004.fm.intel.com ([10.253.24.48])
- by orsmga103.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384;
+Received: from orsmga003.jf.intel.com ([10.7.209.27])
+ by fmsmga106.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384;
  29 Apr 2020 14:07:43 -0700
-IronPort-SDR: 9KMFJS/qBz1Tol+HEl7DO7rg0UpWzvVVdxnC3FBPX/0IsSOZRbtMs3zEGHI4Yq+coGpY15G2OR
- IBNCf7YU/YgA==
+IronPort-SDR: fO28tMpy91+h61zlAdF7J+DLy95HhSJ1xZ91vgd72GUoJevjkgLSc21L1bQKX1nPN773x00Tq8
+ TR1D9bkilTVw==
 X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.73,333,1583222400"; d="scan'208";a="282629568"
+X-IronPort-AV: E=Sophos;i="5.73,333,1583222400"; d="scan'208";a="258085302"
 Received: from lkp-server01.sh.intel.com (HELO lkp-server01) ([10.239.97.150])
- by fmsmga004.fm.intel.com with ESMTP; 29 Apr 2020 14:07:39 -0700
+ by orsmga003.jf.intel.com with ESMTP; 29 Apr 2020 14:07:39 -0700
 Received: from kbuild by lkp-server01 with local (Exim 4.89)
  (envelope-from <lkp@intel.com>)
- id 1jTtvf-000GMm-33; Thu, 30 Apr 2020 05:07:39 +0800
-Date: Thu, 30 Apr 2020 05:06:42 +0800
+ id 1jTtvf-000GLJ-0A; Thu, 30 Apr 2020 05:07:39 +0800
+Date: Thu, 30 Apr 2020 05:06:40 +0800
 From: kbuild test robot <lkp@intel.com>
 To: Srivatsa Vaddagiri <vatsa@codeaurora.org>, konrad.wilk@oracle.com,
  mst@redhat.com, jasowang@redhat.com, jan.kiszka@siemens.com,
  will@kernel.org, stefano.stabellini@xilinx.com
-Subject: [RFC PATCH] virtio: virtio_pool can be static
-Message-ID: <20200429210642.GA804@46221c807a07>
+Subject: Re: [PATCH 5/5] virtio: Add bounce DMA ops
+Message-ID: <202004300425.BWcRAuHD%lkp@intel.com>
 References: <1588073958-1793-6-git-send-email-vatsa@codeaurora.org>
 MIME-Version: 1.0
 Content-Disposition: inline
 In-Reply-To: <1588073958-1793-6-git-send-email-vatsa@codeaurora.org>
-X-Patchwork-Hint: ignore
 User-Agent: Mutt/1.10.1 (2018-07-13)
 Cc: tsoni@codeaurora.org, virtio-dev@lists.oasis-open.org,
  kbuild-all@lists.01.org, alex.bennee@linaro.org, vatsa@codeaurora.org,
@@ -95,34 +94,39 @@ Content-Transfer-Encoding: 7bit
 Errors-To: iommu-bounces@lists.linux-foundation.org
 Sender: "iommu" <iommu-bounces@lists.linux-foundation.org>
 
+Hi Srivatsa,
 
-Signed-off-by: kbuild test robot <lkp@intel.com>
+Thank you for the patch! Perhaps something to improve:
+
+[auto build test WARNING on vhost/linux-next]
+[also build test WARNING on xen-tip/linux-next linus/master v5.7-rc3 next-20200428]
+[cannot apply to swiotlb/linux-next]
+[if your patch is applied to the wrong git tree, please drop us a note to help
+improve the system. BTW, we also suggest to use '--base' option to specify the
+base tree in git format-patch, please see https://stackoverflow.com/a/37406982]
+
+url:    https://github.com/0day-ci/linux/commits/Srivatsa-Vaddagiri/virtio-on-Type-1-hypervisor/20200429-032334
+base:   https://git.kernel.org/pub/scm/linux/kernel/git/mst/vhost.git linux-next
+reproduce:
+        # apt-get install sparse
+        # sparse version: v0.6.1-191-gc51a0382-dirty
+        make ARCH=x86_64 allmodconfig
+        make C=1 CF='-fdiagnostic-prefix -D__CHECK_ENDIAN__'
+
+If you fix the issue, kindly add following tag as appropriate
+Reported-by: kbuild test robot <lkp@intel.com>
+
+
+sparse warnings: (new ones prefixed by >>)
+
+>> drivers/virtio/virtio_bounce.c:22:21: sparse: sparse: symbol 'virtio_pool' was not declared. Should it be static?
+>> drivers/virtio/virtio_bounce.c:79:8: sparse: sparse: symbol 'virtio_max_mapping_size' was not declared. Should it be static?
+
+Please review and possibly fold the followup patch.
+
 ---
- virtio_bounce.c |    4 ++--
- 1 file changed, 2 insertions(+), 2 deletions(-)
-
-diff --git a/drivers/virtio/virtio_bounce.c b/drivers/virtio/virtio_bounce.c
-index 3de8e0eb71e48..5a68d48667c42 100644
---- a/drivers/virtio/virtio_bounce.c
-+++ b/drivers/virtio/virtio_bounce.c
-@@ -19,7 +19,7 @@
- static phys_addr_t bounce_buf_paddr;
- static void *bounce_buf_vaddr;
- static size_t bounce_buf_size;
--struct swiotlb_pool *virtio_pool;
-+static struct swiotlb_pool *virtio_pool;
- 
- #define VIRTIO_MAX_BOUNCE_SIZE	(16*4096)
- 
-@@ -76,7 +76,7 @@ static void virtio_unmap_page(struct device *dev, dma_addr_t dev_addr,
- 					size, dir, attrs);
- }
- 
--size_t virtio_max_mapping_size(struct device *dev)
-+static size_t virtio_max_mapping_size(struct device *dev)
- {
- 	return VIRTIO_MAX_BOUNCE_SIZE;
- }
+0-DAY CI Kernel Test Service, Intel Corporation
+https://lists.01.org/hyperkitty/list/kbuild-all@lists.01.org
 _______________________________________________
 iommu mailing list
 iommu@lists.linux-foundation.org
