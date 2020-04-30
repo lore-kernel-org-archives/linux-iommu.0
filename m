@@ -2,93 +2,99 @@ Return-Path: <SRS0=XdCg=6O=lists.linux-foundation.org=iommu-bounces@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-8.2 required=3.0 tests=HEADER_FROM_DIFFERENT_DOMAINS,
-	INCLUDES_PATCH,MAILING_LIST_MULTI,SIGNED_OFF_BY,SPF_HELO_NONE,SPF_PASS,
-	URIBL_BLOCKED,USER_AGENT_SANE_1 autolearn=unavailable autolearn_force=no
+X-Spam-Status: No, score=-5.5 required=3.0 tests=DKIM_INVALID,DKIM_SIGNED,
+	HEADER_FROM_DIFFERENT_DOMAINS,MAILING_LIST_MULTI,MENTIONS_GIT_HOSTING,
+	SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED autolearn=ham autolearn_force=no
 	version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 4DD9AC83000
-	for <iommu@archiver.kernel.org>; Thu, 30 Apr 2020 00:08:13 +0000 (UTC)
-Received: from whitealder.osuosl.org (smtp1.osuosl.org [140.211.166.138])
+	by smtp.lore.kernel.org (Postfix) with ESMTP id EF81CC83000
+	for <iommu@archiver.kernel.org>; Thu, 30 Apr 2020 01:04:37 +0000 (UTC)
+Received: from silver.osuosl.org (smtp3.osuosl.org [140.211.166.136])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by mail.kernel.org (Postfix) with ESMTPS id 1EACF20787
-	for <iommu@archiver.kernel.org>; Thu, 30 Apr 2020 00:08:13 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 1EACF20787
-Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=linux.intel.com
+	by mail.kernel.org (Postfix) with ESMTPS id AD0522082E
+	for <iommu@archiver.kernel.org>; Thu, 30 Apr 2020 01:04:37 +0000 (UTC)
+Authentication-Results: mail.kernel.org;
+	dkim=fail reason="signature verification failed" (2048-bit key) header.d=lca.pw header.i=@lca.pw header.b="AgHK/cFg"
+DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org AD0522082E
+Authentication-Results: mail.kernel.org; dmarc=none (p=none dis=none) header.from=lca.pw
 Authentication-Results: mail.kernel.org; spf=pass smtp.mailfrom=iommu-bounces@lists.linux-foundation.org
 Received: from localhost (localhost [127.0.0.1])
-	by whitealder.osuosl.org (Postfix) with ESMTP id 58D5887D2C;
-	Thu, 30 Apr 2020 00:08:11 +0000 (UTC)
+	by silver.osuosl.org (Postfix) with ESMTP id 6BB8A23C58;
+	Thu, 30 Apr 2020 01:04:37 +0000 (UTC)
+X-Virus-Scanned: amavisd-new at osuosl.org
+Received: from silver.osuosl.org ([127.0.0.1])
+	by localhost (.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
+	with ESMTP id X9n18ff5rmu4; Thu, 30 Apr 2020 01:04:36 +0000 (UTC)
+Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [140.211.9.56])
+	by silver.osuosl.org (Postfix) with ESMTP id 1C5832357A;
+	Thu, 30 Apr 2020 01:04:36 +0000 (UTC)
+Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
+	by lists.linuxfoundation.org (Postfix) with ESMTP id EF346C0865;
+	Thu, 30 Apr 2020 01:04:35 +0000 (UTC)
+Received: from whitealder.osuosl.org (smtp1.osuosl.org [140.211.166.138])
+ by lists.linuxfoundation.org (Postfix) with ESMTP id 9E40CC0172
+ for <iommu@lists.linux-foundation.org>; Thu, 30 Apr 2020 01:04:34 +0000 (UTC)
+Received: from localhost (localhost [127.0.0.1])
+ by whitealder.osuosl.org (Postfix) with ESMTP id 92F1087CAB
+ for <iommu@lists.linux-foundation.org>; Thu, 30 Apr 2020 01:04:34 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
 Received: from whitealder.osuosl.org ([127.0.0.1])
-	by localhost (.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
-	with ESMTP id DMwL9eUofAyt; Thu, 30 Apr 2020 00:08:07 +0000 (UTC)
-Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [140.211.9.56])
-	by whitealder.osuosl.org (Postfix) with ESMTP id 2B66187BE5;
-	Thu, 30 Apr 2020 00:08:07 +0000 (UTC)
-Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
-	by lists.linuxfoundation.org (Postfix) with ESMTP id 214DBC0865;
-	Thu, 30 Apr 2020 00:08:07 +0000 (UTC)
-Received: from fraxinus.osuosl.org (smtp4.osuosl.org [140.211.166.137])
- by lists.linuxfoundation.org (Postfix) with ESMTP id ACF76C0172;
- Thu, 30 Apr 2020 00:08:05 +0000 (UTC)
-Received: from localhost (localhost [127.0.0.1])
- by fraxinus.osuosl.org (Postfix) with ESMTP id 9571F86BF7;
- Thu, 30 Apr 2020 00:08:05 +0000 (UTC)
-X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from fraxinus.osuosl.org ([127.0.0.1])
  by localhost (.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
- with ESMTP id hoOizlc8tlPL; Thu, 30 Apr 2020 00:08:04 +0000 (UTC)
-X-Greylist: domain auto-whitelisted by SQLgrey-1.7.6
-X-Greylist: domain auto-whitelisted by SQLgrey-1.7.6
-Received: from mga11.intel.com (mga11.intel.com [192.55.52.93])
- by fraxinus.osuosl.org (Postfix) with ESMTPS id CDA2186AE1;
- Thu, 30 Apr 2020 00:08:04 +0000 (UTC)
-IronPort-SDR: spgm6ZxHyUktUMsNk28bv/6P8bvnddw6fEIFp2S/29nmDpL5pOQqqNNXsVtLVeBVwBBNeEn8a6
- R0Jy6IXD/Yig==
-X-Amp-Result: SKIPPED(no attachment in message)
-X-Amp-File-Uploaded: False
-Received: from fmsmga002.fm.intel.com ([10.253.24.26])
- by fmsmga102.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384;
- 29 Apr 2020 17:08:04 -0700
-IronPort-SDR: 8lZrsl0wLt7oFUoHi7W//Bntkm29bKrQORzcH1MPPrhb7F9mbLEACH08RrTi8X5hI+ByAQQnM5
- BwXN4hf/V26g==
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.73,333,1583222400"; d="scan'208";a="293378354"
-Received: from chenw5-mobl1.ccr.corp.intel.com (HELO [10.254.209.112])
- ([10.254.209.112])
- by fmsmga002.fm.intel.com with ESMTP; 29 Apr 2020 17:07:58 -0700
-Subject: Re: [PATCH v3 16/34] iommu/vt-d: Convert to probe/release_device()
- call-backs
-To: Joerg Roedel <joro@8bytes.org>, Will Deacon <will@kernel.org>,
- Robin Murphy <robin.murphy@arm.com>,
- Marek Szyprowski <m.szyprowski@samsung.com>, Kukjin Kim <kgene@kernel.org>,
- Krzysztof Kozlowski <krzk@kernel.org>, David Woodhouse
- <dwmw2@infradead.org>, Andy Gross <agross@kernel.org>,
- Bjorn Andersson <bjorn.andersson@linaro.org>,
- Matthias Brugger <matthias.bgg@gmail.com>, Rob Clark <robdclark@gmail.com>,
- Heiko Stuebner <heiko@sntech.de>,
- Gerald Schaefer <gerald.schaefer@de.ibm.com>,
- Thierry Reding <thierry.reding@gmail.com>,
- Jonathan Hunter <jonathanh@nvidia.com>,
- Jean-Philippe Brucker <jean-philippe@linaro.org>
-References: <20200429133712.31431-1-joro@8bytes.org>
- <20200429133712.31431-17-joro@8bytes.org>
-From: Lu Baolu <baolu.lu@linux.intel.com>
-Message-ID: <7ceca31f-cf24-d4f8-04fd-74691dd3c11a@linux.intel.com>
-Date: Thu, 30 Apr 2020 08:07:57 +0800
-User-Agent: Mozilla/5.0 (Windows NT 10.0; WOW64; rv:68.0) Gecko/20100101
- Thunderbird/68.7.0
-MIME-Version: 1.0
-In-Reply-To: <20200429133712.31431-17-joro@8bytes.org>
-Content-Language: en-US
-Cc: linux-s390@vger.kernel.org, linux-samsung-soc@vger.kernel.org,
- linux-arm-msm@vger.kernel.org, linux-kernel@vger.kernel.org,
- Daniel Drake <drake@endlessm.com>, linux-rockchip@lists.infradead.org,
- iommu@lists.linux-foundation.org, Joerg Roedel <jroedel@suse.de>,
- linux-mediatek@lists.infradead.org, linux-tegra@vger.kernel.org,
- virtualization@lists.linux-foundation.org, jonathan.derrick@intel.com
+ with ESMTP id P2UmxgiQ7qIx for <iommu@lists.linux-foundation.org>;
+ Thu, 30 Apr 2020 01:04:32 +0000 (UTC)
+X-Greylist: from auto-whitelisted by SQLgrey-1.7.6
+Received: from mail-qt1-f196.google.com (mail-qt1-f196.google.com
+ [209.85.160.196])
+ by whitealder.osuosl.org (Postfix) with ESMTPS id 6760487BE0
+ for <iommu@lists.linux-foundation.org>; Thu, 30 Apr 2020 01:04:32 +0000 (UTC)
+Received: by mail-qt1-f196.google.com with SMTP id t20so3622419qtq.13
+ for <iommu@lists.linux-foundation.org>; Wed, 29 Apr 2020 18:04:32 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=lca.pw; s=google;
+ h=mime-version:subject:from:in-reply-to:date:cc
+ :content-transfer-encoding:message-id:references:to;
+ bh=nHd4t1dxAGq6mLJOxoRUU+Fay7yLnL9/fA8P7+mfDpQ=;
+ b=AgHK/cFgIOfkFmmQJ2HHgpg3mx5clBmVW8MSgmXFicJyCJ7uFPspAVHR0NEiw9NKoI
+ gep34agHPjs5RuEmiYWHSn+KyGhnMiDOdm2q0JfUMqqaV/P6rJ0s1LLiTktKWnJPcD7L
+ DV2ThlelvfRAnYXjfKYFJIjuY/jQ8d27bN7IBHRgXqNlQedc7yhrytKpevi+SzGJibw/
+ 7ZqEpkp+LVWoZ3Q+jRu0nFJJT24qXdvadNF23JNoMuP8+aI7uNU1szKkiw33VIDiKPLC
+ klezXWYEPlNEOjtem1Ra/HmwgV5jOSGB5Vhp5i2dUuzwwaro53RAyZAesvGtOyahi1ht
+ YsSw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+ d=1e100.net; s=20161025;
+ h=x-gm-message-state:mime-version:subject:from:in-reply-to:date:cc
+ :content-transfer-encoding:message-id:references:to;
+ bh=nHd4t1dxAGq6mLJOxoRUU+Fay7yLnL9/fA8P7+mfDpQ=;
+ b=Zh0dcHQdmhE0gfq6uOS5kZH73DqofkphpOC+NxPN+btCRok6S6fVhppZ1ThkBplSRf
+ deZ9ezwcZNdxxNdlsAEBf2dY76oJPfB95vgrGPZQylIAVGIVftxLpPRtOSSuUNA6ilSy
+ udv5TqdtvfH+MkfA1ScRmx8ICOqZVsE2PhrDxETPNsEFj5kFaQbLmskESEZvLbcqCu+W
+ 8tEA53wbkpIjkckYgoVLi1x8Ua4BcbCJ7eys3ciUxmZxvDobJpVTeZPVkgaMMmhm9QuJ
+ M0ofjz4DZL4fhyZtta91hNJFV5IstXV/capxQ4U7b5yd0TX9M7euMgK0QpQ2wNs0V75x
+ kSLA==
+X-Gm-Message-State: AGi0PubaGPPo+QfEI0dvQahO+Vw5SQ/S1XLhblRo5Z22xPLCuCIrbU+N
+ RT+q/mCZQvxPh8zrngD0iliKkQ==
+X-Google-Smtp-Source: APiQypIinv6LGmMaBvcDc2ShRyQ8bG/OhOfqiG0k/1Z4rM4tPxtPlwHvvLLjHt/GZvL/0oAqyQ51KA==
+X-Received: by 2002:aed:3aa3:: with SMTP id o32mr1207048qte.364.1588208671328; 
+ Wed, 29 Apr 2020 18:04:31 -0700 (PDT)
+Received: from [192.168.1.153] (pool-71-184-117-43.bstnma.fios.verizon.net.
+ [71.184.117.43])
+ by smtp.gmail.com with ESMTPSA id h6sm739542qtd.79.2020.04.29.18.04.30
+ (version=TLS1_2 cipher=ECDHE-ECDSA-AES128-GCM-SHA256 bits=128/128);
+ Wed, 29 Apr 2020 18:04:30 -0700 (PDT)
+Mime-Version: 1.0 (Mac OS X Mail 13.4 \(3608.80.23.2.2\))
+Subject: Re: [RFC PATCH] iommu/amd: fix a race in fetch_pte()
+From: Qian Cai <cai@lca.pw>
+In-Reply-To: <20200429112014.GN21900@8bytes.org>
+Date: Wed, 29 Apr 2020 21:04:29 -0400
+Message-Id: <4B6E0A22-C301-43C9-A8ED-AB473342463C@lca.pw>
+References: <20200418121022.GA6113@8bytes.org>
+ <57CBF6B2-4745-4E36-9AA5-7E0876E3DA8F@lca.pw>
+ <20200418183429.GH21900@8bytes.org>
+ <7D03A3E2-647B-4FAD-886D-EE2764EC1EDB@lca.pw>
+ <20200429112014.GN21900@8bytes.org>
+To: Joerg Roedel <joro@8bytes.org>
+X-Mailer: Apple Mail (2.3608.80.23.2.2)
+Cc: iommu@lists.linux-foundation.org, linux-kernel@vger.kernel.org
 X-BeenThere: iommu@lists.linux-foundation.org
 X-Mailman-Version: 2.1.15
 Precedence: list
@@ -101,140 +107,22 @@ List-Post: <mailto:iommu@lists.linux-foundation.org>
 List-Help: <mailto:iommu-request@lists.linux-foundation.org?subject=help>
 List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
  <mailto:iommu-request@lists.linux-foundation.org?subject=subscribe>
-Content-Transfer-Encoding: 7bit
-Content-Type: text/plain; charset="us-ascii"; Format="flowed"
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: base64
 Errors-To: iommu-bounces@lists.linux-foundation.org
 Sender: "iommu" <iommu-bounces@lists.linux-foundation.org>
 
-On 2020/4/29 21:36, Joerg Roedel wrote:
-> From: Joerg Roedel <jroedel@suse.de>
-> 
-> Convert the Intel IOMMU driver to use the probe_device() and
-> release_device() call-backs of iommu_ops, so that the iommu core code
-> does the group and sysfs setup.
-> 
-> Signed-off-by: Joerg Roedel <jroedel@suse.de>
-
-Reviewed-by: Lu Baolu <baolu.lu@linux.intel.com>
-
-Best regards,
-baolu
-
-> ---
->   drivers/iommu/intel-iommu.c | 67 ++++---------------------------------
->   1 file changed, 6 insertions(+), 61 deletions(-)
-> 
-> diff --git a/drivers/iommu/intel-iommu.c b/drivers/iommu/intel-iommu.c
-> index b9f905a55dda..b906727f5b85 100644
-> --- a/drivers/iommu/intel-iommu.c
-> +++ b/drivers/iommu/intel-iommu.c
-> @@ -5781,78 +5781,27 @@ static bool intel_iommu_capable(enum iommu_cap cap)
->   	return false;
->   }
->   
-> -static int intel_iommu_add_device(struct device *dev)
-> +static struct iommu_device *intel_iommu_probe_device(struct device *dev)
->   {
-> -	struct dmar_domain *dmar_domain;
-> -	struct iommu_domain *domain;
->   	struct intel_iommu *iommu;
-> -	struct iommu_group *group;
->   	u8 bus, devfn;
-> -	int ret;
->   
->   	iommu = device_to_iommu(dev, &bus, &devfn);
->   	if (!iommu)
-> -		return -ENODEV;
-> -
-> -	iommu_device_link(&iommu->iommu, dev);
-> +		return ERR_PTR(-ENODEV);
->   
->   	if (translation_pre_enabled(iommu))
->   		dev->archdata.iommu = DEFER_DEVICE_DOMAIN_INFO;
->   
-> -	group = iommu_group_get_for_dev(dev);
-> -
-> -	if (IS_ERR(group)) {
-> -		ret = PTR_ERR(group);
-> -		goto unlink;
-> -	}
-> -
-> -	iommu_group_put(group);
-> -
-> -	domain = iommu_get_domain_for_dev(dev);
-> -	dmar_domain = to_dmar_domain(domain);
-> -	if (domain->type == IOMMU_DOMAIN_DMA) {
-> -		if (device_def_domain_type(dev) == IOMMU_DOMAIN_IDENTITY) {
-> -			ret = iommu_request_dm_for_dev(dev);
-> -			if (ret) {
-> -				dmar_remove_one_dev_info(dev);
-> -				dmar_domain->flags |= DOMAIN_FLAG_LOSE_CHILDREN;
-> -				domain_add_dev_info(si_domain, dev);
-> -				dev_info(dev,
-> -					 "Device uses a private identity domain.\n");
-> -			}
-> -		}
-> -	} else {
-> -		if (device_def_domain_type(dev) == IOMMU_DOMAIN_DMA) {
-> -			ret = iommu_request_dma_domain_for_dev(dev);
-> -			if (ret) {
-> -				dmar_remove_one_dev_info(dev);
-> -				dmar_domain->flags |= DOMAIN_FLAG_LOSE_CHILDREN;
-> -				if (!get_private_domain_for_dev(dev)) {
-> -					dev_warn(dev,
-> -						 "Failed to get a private domain.\n");
-> -					ret = -ENOMEM;
-> -					goto unlink;
-> -				}
-> -
-> -				dev_info(dev,
-> -					 "Device uses a private dma domain.\n");
-> -			}
-> -		}
-> -	}
-> -
->   	if (device_needs_bounce(dev)) {
->   		dev_info(dev, "Use Intel IOMMU bounce page dma_ops\n");
->   		set_dma_ops(dev, &bounce_dma_ops);
->   	}
->   
-> -	return 0;
-> -
-> -unlink:
-> -	iommu_device_unlink(&iommu->iommu, dev);
-> -	return ret;
-> +	return &iommu->iommu;
->   }
->   
-> -static void intel_iommu_remove_device(struct device *dev)
-> +static void intel_iommu_release_device(struct device *dev)
->   {
->   	struct intel_iommu *iommu;
->   	u8 bus, devfn;
-> @@ -5863,10 +5812,6 @@ static void intel_iommu_remove_device(struct device *dev)
->   
->   	dmar_remove_one_dev_info(dev);
->   
-> -	iommu_group_remove_device(dev);
-> -
-> -	iommu_device_unlink(&iommu->iommu, dev);
-> -
->   	if (device_needs_bounce(dev))
->   		set_dma_ops(dev, NULL);
->   }
-> @@ -6198,8 +6143,8 @@ const struct iommu_ops intel_iommu_ops = {
->   	.map			= intel_iommu_map,
->   	.unmap			= intel_iommu_unmap,
->   	.iova_to_phys		= intel_iommu_iova_to_phys,
-> -	.add_device		= intel_iommu_add_device,
-> -	.remove_device		= intel_iommu_remove_device,
-> +	.probe_device		= intel_iommu_probe_device,
-> +	.release_device		= intel_iommu_release_device,
->   	.get_resv_regions	= intel_iommu_get_resv_regions,
->   	.put_resv_regions	= generic_iommu_put_resv_regions,
->   	.apply_resv_region	= intel_iommu_apply_resv_region,
-> 
-_______________________________________________
-iommu mailing list
-iommu@lists.linux-foundation.org
-https://lists.linuxfoundation.org/mailman/listinfo/iommu
+Cgo+IE9uIEFwciAyOSwgMjAyMCwgYXQgNzoyMCBBTSwgSm9lcmcgUm9lZGVsIDxqb3JvQDhieXRl
+cy5vcmc+IHdyb3RlOgo+IAo+IE9uIE1vbiwgQXByIDIwLCAyMDIwIGF0IDA5OjI2OjEyQU0gLTA0
+MDAsIFFpYW4gQ2FpIHdyb3RlOgo+PiBObyBkaWNlLiBUaGVyZSBjb3VsZCBiZSBzb21lIG90aGVy
+IHJhY2VzLiBGb3IgZXhhbXBsZSwKPiAKPiBDYW4geW91IHBsZWFzZSB0ZXN0IHRoaXMgYnJhbmNo
+Ogo+IAo+IAlodHRwczovL2dpdC5rZXJuZWwub3JnL3B1Yi9zY20vbGludXgva2VybmVsL2dpdC9q
+b3JvL2xpbnV4LmdpdC9sb2cvP2g9YW1kLWlvbW11LWZpeGVzCj4gCj4gSXQgaGFzIHRoZSBwcmV2
+aW91cyBmaXggaW4gaXQgYW5kIGEgY291cGxlIG1vcmUgdG8gbWFrZSBzdXJlIHRoZQo+IGRldmlj
+ZS10YWJsZSBpcyB1cGRhdGVkIGFuZCBmbHVzaGVkIGJlZm9yZSBpbmNyZWFzZV9hZGRyZXNzX3Nw
+YWNlKCkKPiB1cGRhdGVzIGRvbWFpbi0+cHRfcm9vdC4KCkl0IGxvb2tzIHByb21pc2luZyBhcyBp
+dCBzdXJ2aXZlcyBmb3IgYSBkYXnigJlzIHN0cmVzcyB0ZXN0aW5nLiBJ4oCZbGwga2VlcCBpdCBy
+dW5uaW5nIGZvciBhIGZldyBkYXlzIHRvIGJlIHN1cmUuCl9fX19fX19fX19fX19fX19fX19fX19f
+X19fX19fX19fX19fX19fX19fX19fX19fCmlvbW11IG1haWxpbmcgbGlzdAppb21tdUBsaXN0cy5s
+aW51eC1mb3VuZGF0aW9uLm9yZwpodHRwczovL2xpc3RzLmxpbnV4Zm91bmRhdGlvbi5vcmcvbWFp
+bG1hbi9saXN0aW5mby9pb21tdQ==
