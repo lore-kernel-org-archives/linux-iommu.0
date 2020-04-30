@@ -7,96 +7,96 @@ X-Spam-Status: No, score=-9.5 required=3.0 tests=DKIM_INVALID,DKIM_SIGNED,
 	SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED,USER_AGENT_GIT autolearn=ham
 	autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 8F5AFCA906B
+	by smtp.lore.kernel.org (Postfix) with ESMTP id AC04BCA906D
 	for <iommu@archiver.kernel.org>; Thu, 30 Apr 2020 14:40:54 +0000 (UTC)
-Received: from whitealder.osuosl.org (smtp1.osuosl.org [140.211.166.138])
+Received: from fraxinus.osuosl.org (smtp4.osuosl.org [140.211.166.137])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by mail.kernel.org (Postfix) with ESMTPS id 6066120873
+	by mail.kernel.org (Postfix) with ESMTPS id 7EA172051A
 	for <iommu@archiver.kernel.org>; Thu, 30 Apr 2020 14:40:54 +0000 (UTC)
 Authentication-Results: mail.kernel.org;
-	dkim=fail reason="signature verification failed" (2048-bit key) header.d=linaro.org header.i=@linaro.org header.b="t+4aT9+c"
-DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 6066120873
+	dkim=fail reason="signature verification failed" (2048-bit key) header.d=linaro.org header.i=@linaro.org header.b="y8F2CAh6"
+DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 7EA172051A
 Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=linaro.org
 Authentication-Results: mail.kernel.org; spf=pass smtp.mailfrom=iommu-bounces@lists.linux-foundation.org
 Received: from localhost (localhost [127.0.0.1])
-	by whitealder.osuosl.org (Postfix) with ESMTP id 3293F87F08;
+	by fraxinus.osuosl.org (Postfix) with ESMTP id 6BF3286DF2;
 	Thu, 30 Apr 2020 14:40:54 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from whitealder.osuosl.org ([127.0.0.1])
+Received: from fraxinus.osuosl.org ([127.0.0.1])
 	by localhost (.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
-	with ESMTP id HZwJxMlckEUi; Thu, 30 Apr 2020 14:40:53 +0000 (UTC)
+	with ESMTP id 5_7aooJeRU2H; Thu, 30 Apr 2020 14:40:53 +0000 (UTC)
 Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [140.211.9.56])
-	by whitealder.osuosl.org (Postfix) with ESMTP id 87B18877A7;
+	by fraxinus.osuosl.org (Postfix) with ESMTP id DEE0386E09;
 	Thu, 30 Apr 2020 14:40:53 +0000 (UTC)
 Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
-	by lists.linuxfoundation.org (Postfix) with ESMTP id 76C40C0864;
+	by lists.linuxfoundation.org (Postfix) with ESMTP id C2CB2C088D;
 	Thu, 30 Apr 2020 14:40:53 +0000 (UTC)
-Received: from whitealder.osuosl.org (smtp1.osuosl.org [140.211.166.138])
- by lists.linuxfoundation.org (Postfix) with ESMTP id 65928C0864
- for <iommu@lists.linux-foundation.org>; Thu, 30 Apr 2020 14:40:46 +0000 (UTC)
+Received: from hemlock.osuosl.org (smtp2.osuosl.org [140.211.166.133])
+ by lists.linuxfoundation.org (Postfix) with ESMTP id E55EFC016F
+ for <iommu@lists.linux-foundation.org>; Thu, 30 Apr 2020 14:40:48 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
- by whitealder.osuosl.org (Postfix) with ESMTP id 627B487F34
- for <iommu@lists.linux-foundation.org>; Thu, 30 Apr 2020 14:40:46 +0000 (UTC)
+ by hemlock.osuosl.org (Postfix) with ESMTP id D4AB388789
+ for <iommu@lists.linux-foundation.org>; Thu, 30 Apr 2020 14:40:48 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from whitealder.osuosl.org ([127.0.0.1])
+Received: from hemlock.osuosl.org ([127.0.0.1])
  by localhost (.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
- with ESMTP id REdhI7-b0KbV for <iommu@lists.linux-foundation.org>;
- Thu, 30 Apr 2020 14:40:45 +0000 (UTC)
+ with ESMTP id 2PsWOTDeGWXN for <iommu@lists.linux-foundation.org>;
+ Thu, 30 Apr 2020 14:40:48 +0000 (UTC)
 X-Greylist: domain auto-whitelisted by SQLgrey-1.7.6
 Received: from mail-wm1-f65.google.com (mail-wm1-f65.google.com
  [209.85.128.65])
- by whitealder.osuosl.org (Postfix) with ESMTPS id 7EB6A87708
- for <iommu@lists.linux-foundation.org>; Thu, 30 Apr 2020 14:40:45 +0000 (UTC)
-Received: by mail-wm1-f65.google.com with SMTP id 188so2156114wmc.2
- for <iommu@lists.linux-foundation.org>; Thu, 30 Apr 2020 07:40:45 -0700 (PDT)
+ by hemlock.osuosl.org (Postfix) with ESMTPS id E5EF88879B
+ for <iommu@lists.linux-foundation.org>; Thu, 30 Apr 2020 14:40:47 +0000 (UTC)
+Received: by mail-wm1-f65.google.com with SMTP id y24so2204773wma.4
+ for <iommu@lists.linux-foundation.org>; Thu, 30 Apr 2020 07:40:47 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linaro.org; s=google;
  h=from:to:cc:subject:date:message-id:in-reply-to:references
  :mime-version:content-transfer-encoding;
- bh=3qbDs4Y7WviMOr0GSY4nlY77EsYqapJLb3Db4qcN97M=;
- b=t+4aT9+cYprXrpA/0QMDQLTv35ltZRsIzsJhL6WzRIlkGwHMzV+TsilZsqBdYO9os+
- LEmbI9poZBOZzYV00yYcZ2MTRGrHanuT7mbSIOQBDmN22wolY/5LERCWxTie3xScd5i+
- mfXPYaSrV/1gc4GJ4hkv337jnn0KZarzUW+GAESnsUgwH5AStIsuGwjPrCaZW9BXvAda
- ze1VdbzDZPXGJXDAcZRAe+Vz+LRVXXtQ68AFPgXXtAqojny8CzAUyLGsI4qjUN9mU9b9
- QuzOYgjkRq/kGh890dDfQT+uQE4XjhOzPT2Qd7+Ro83BK/yAfy1ITFBBF/jLhKZ5c5sA
- 0KPA==
+ bh=62jj6X1LyxzprUaI/fsrszNvC/iCvzNFlzOxzXxMTmE=;
+ b=y8F2CAh6V2jZZ6B8MaXX8bNU3xhjF6A6xftgKRo5JNfOivZ4u0mxU5xIR4pAdncRts
+ 6l7bUbk1qPf11fVOJF5ftAX+YvaRJ8cXFwCudw6bxApeZPCZrXZtaaHXtPfThk5Jco3K
+ a/O5NV8b14TR6O3KF9WIkjjfc/Gcv12HGrAm6m8EO0m1BeQXzRMZnOhib6MYqbtHBwsT
+ sErFA6eMmDmS52FVu+QrR1ltOzaQfn2PJ62g8elC51l52AIXrpu8StMl/Go2TPf2eTs+
+ JpTwIf91IA6+h7AHE7yatTK0354lTEslYrLGPhBE1Hb4pA4bdkCtICpgF+meBh7cqw9n
+ 5sMA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
  d=1e100.net; s=20161025;
  h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
  :references:mime-version:content-transfer-encoding;
- bh=3qbDs4Y7WviMOr0GSY4nlY77EsYqapJLb3Db4qcN97M=;
- b=PPDQBAISiKkSwV3B/G++BqvGBGrnU9+wNI9gFKK4Z/zSWEnjWRX/JuLsJm1QKrIxac
- N8BBZ53+cLUpqavsv1LSDkXyxVWmt/GDqWwdMAz4vr7p7fP/QoEPkuzBQ3XarWL4W/wN
- TxthGTKXpb/nDdzDYoMh7w6P9q5FeP5l2CzxrCHEW22vC4N9zpJ43+tRc+yXvCEjFJSg
- 1eC/5CmHHwE9v5ECZy6213H25uJrWrMcDcdfizEVOFlwKnsNVa5vHLYpRCHD4H9+MonX
- it8ptOPjjD0N4vrkwt2+Olksk5mZVlfYeFwDNS6/ntcnDEpvU3zqttWUNmlUOaCSGPAn
- e9Ng==
-X-Gm-Message-State: AGi0PuZ4unSUO5L4XpXIXs4oia3Oz+QKM3d+TZQQI9qPokv/8LMfilxn
- 1dS4pMvaUje+UqSdJnwwtl+VjlQXFUg=
-X-Google-Smtp-Source: APiQypIZMn/sX8HP3LNRMIS2Wr5t5ivHYBY9IZ/xvKKh7rTp8GxPMClKn6Q3u2r37yB03vTCOANl8Q==
-X-Received: by 2002:a7b:c44d:: with SMTP id l13mr3255113wmi.72.1588257643793; 
- Thu, 30 Apr 2020 07:40:43 -0700 (PDT)
+ bh=62jj6X1LyxzprUaI/fsrszNvC/iCvzNFlzOxzXxMTmE=;
+ b=UAlaV9MpS4ipK6fettg9MXgbQTM+e1+vHGelrSlt4/XzRR391iAD/Yjykh19K5Q3iJ
+ 8+1qNHJ9duIFruslGv1kOPPk+mw12KyUsHKYJbZAE2iMnRlXZjNP4b5K00ItIgaQtqDX
+ AcZjzaeIVicka4WkvBOfIibNbuNnKCvLaOrIgTFUZaUqhy+SujOXWPavipIKx0nifeHc
+ MdVeRFNPLBZugVEx0YZ5dNV/AUcqxt5xcNed9aFgz5RQFp65ZUbU+OEKD858zLFC4ASS
+ HPF6d6LlFcTBsGm9IoVjw3dfb3yjtdsHWnoyH+nfxjaWa49dVU/Aw7dOnGiFJFT+ANUh
+ OVaA==
+X-Gm-Message-State: AGi0PuZNFAFDYSGb1w5a1nwfkNlllSR/YjsG/ZExtu+5oLPqWRmDQA+t
+ YLgAwJ1xSWpcMxFLKRp8cmZkEkVOy9o=
+X-Google-Smtp-Source: APiQypKtLi1Ei7GLEgyORO8pAsx6cVgJjSvoyoPjqzURXKE3LoS9Wil8gnTZulxN2y2v3ecbYlihTA==
+X-Received: by 2002:a1c:f20c:: with SMTP id s12mr3533862wmc.83.1588257646202; 
+ Thu, 30 Apr 2020 07:40:46 -0700 (PDT)
 Received: from localhost.localdomain
  ([2001:171b:226e:c200:c43b:ef78:d083:b355])
- by smtp.gmail.com with ESMTPSA id n2sm4153286wrt.33.2020.04.30.07.40.42
+ by smtp.gmail.com with ESMTPSA id n2sm4153286wrt.33.2020.04.30.07.40.44
  (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
- Thu, 30 Apr 2020 07:40:43 -0700 (PDT)
+ Thu, 30 Apr 2020 07:40:45 -0700 (PDT)
 From: Jean-Philippe Brucker <jean-philippe@linaro.org>
 To: iommu@lists.linux-foundation.org, devicetree@vger.kernel.org,
  linux-arm-kernel@lists.infradead.org, linux-pci@vger.kernel.org,
  linux-mm@kvack.org
-Subject: [PATCH v6 21/25] dt-bindings: document stall property for IOMMU
- masters
-Date: Thu, 30 Apr 2020 16:34:20 +0200
-Message-Id: <20200430143424.2787566-22-jean-philippe@linaro.org>
+Subject: [PATCH v6 23/25] PCI/ATS: Add PRI stubs
+Date: Thu, 30 Apr 2020 16:34:22 +0200
+Message-Id: <20200430143424.2787566-24-jean-philippe@linaro.org>
 X-Mailer: git-send-email 2.26.2
 In-Reply-To: <20200430143424.2787566-1-jean-philippe@linaro.org>
 References: <20200430143424.2787566-1-jean-philippe@linaro.org>
 MIME-Version: 1.0
-Cc: Rob Herring <robh@kernel.org>, fenghua.yu@intel.com, kevin.tian@intel.com,
- jgg@ziepe.ca, catalin.marinas@arm.com, robin.murphy@arm.com, hch@infradead.org,
+Cc: fenghua.yu@intel.com, kevin.tian@intel.com, jgg@ziepe.ca,
+ catalin.marinas@arm.com, robin.murphy@arm.com, hch@infradead.org,
  zhangfei.gao@linaro.org, Jean-Philippe Brucker <jean-philippe@linaro.org>,
- felix.kuehling@amd.com, will@kernel.org, christian.koenig@amd.com
+ Bjorn Helgaas <bhelgaas@google.com>, felix.kuehling@amd.com, will@kernel.org,
+ christian.koenig@amd.com
 X-BeenThere: iommu@lists.linux-foundation.org
 X-Mailman-Version: 2.1.15
 Precedence: list
@@ -114,45 +114,37 @@ Content-Transfer-Encoding: 7bit
 Errors-To: iommu-bounces@lists.linux-foundation.org
 Sender: "iommu" <iommu-bounces@lists.linux-foundation.org>
 
-On ARM systems, some platform devices behind an IOMMU may support stall,
-which is the ability to recover from page faults. Let the firmware tell us
-when a device supports stall.
+The SMMUv3 driver, which can be built without CONFIG_PCI, will soon gain
+support for PRI.  Partially revert commit c6e9aefbf9db ("PCI/ATS: Remove
+unused PRI and PASID stubs") to re-introduce the PRI stubs, and avoid
+adding more #ifdefs to the SMMU driver.
 
-Reviewed-by: Rob Herring <robh@kernel.org>
+Acked-by: Bjorn Helgaas <bhelgaas@google.com>
+Reviewed-by: Kuppuswamy Sathyanarayanan <sathyanarayanan.kuppuswamy@linux.intel.com>
 Signed-off-by: Jean-Philippe Brucker <jean-philippe@linaro.org>
 ---
- .../devicetree/bindings/iommu/iommu.txt        | 18 ++++++++++++++++++
- 1 file changed, 18 insertions(+)
+ include/linux/pci-ats.h | 8 ++++++++
+ 1 file changed, 8 insertions(+)
 
-diff --git a/Documentation/devicetree/bindings/iommu/iommu.txt b/Documentation/devicetree/bindings/iommu/iommu.txt
-index 3c36334e4f942..26ba9e530f138 100644
---- a/Documentation/devicetree/bindings/iommu/iommu.txt
-+++ b/Documentation/devicetree/bindings/iommu/iommu.txt
-@@ -92,6 +92,24 @@ Optional properties:
-   tagging DMA transactions with an address space identifier. By default,
-   this is 0, which means that the device only has one address space.
+diff --git a/include/linux/pci-ats.h b/include/linux/pci-ats.h
+index f75c307f346de..e9e266df9b37c 100644
+--- a/include/linux/pci-ats.h
++++ b/include/linux/pci-ats.h
+@@ -28,6 +28,14 @@ int pci_enable_pri(struct pci_dev *pdev, u32 reqs);
+ void pci_disable_pri(struct pci_dev *pdev);
+ int pci_reset_pri(struct pci_dev *pdev);
+ int pci_prg_resp_pasid_required(struct pci_dev *pdev);
++#else /* CONFIG_PCI_PRI */
++static inline int pci_enable_pri(struct pci_dev *pdev, u32 reqs)
++{ return -ENODEV; }
++static inline void pci_disable_pri(struct pci_dev *pdev) { }
++static inline int pci_reset_pri(struct pci_dev *pdev)
++{ return -ENODEV; }
++static inline int pci_prg_resp_pasid_required(struct pci_dev *pdev)
++{ return 0; }
+ #endif /* CONFIG_PCI_PRI */
  
-+- dma-can-stall: When present, the master can wait for a transaction to
-+  complete for an indefinite amount of time. Upon translation fault some
-+  IOMMUs, instead of aborting the translation immediately, may first
-+  notify the driver and keep the transaction in flight. This allows the OS
-+  to inspect the fault and, for example, make physical pages resident
-+  before updating the mappings and completing the transaction. Such IOMMU
-+  accepts a limited number of simultaneous stalled transactions before
-+  having to either put back-pressure on the master, or abort new faulting
-+  transactions.
-+
-+  Firmware has to opt-in stalling, because most buses and masters don't
-+  support it. In particular it isn't compatible with PCI, where
-+  transactions have to complete before a time limit. More generally it
-+  won't work in systems and masters that haven't been designed for
-+  stalling. For example the OS, in order to handle a stalled transaction,
-+  may attempt to retrieve pages from secondary storage in a stalled
-+  domain, leading to a deadlock.
-+
- 
- Notes:
- ======
+ #ifdef CONFIG_PCI_PASID
 -- 
 2.26.2
 
