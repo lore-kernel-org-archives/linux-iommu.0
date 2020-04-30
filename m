@@ -7,97 +7,95 @@ X-Spam-Status: No, score=-9.5 required=3.0 tests=DKIM_INVALID,DKIM_SIGNED,
 	SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED,USER_AGENT_GIT autolearn=unavailable
 	autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 74DD9C54E98
+	by smtp.lore.kernel.org (Postfix) with ESMTP id CC095C54E9B
 	for <iommu@archiver.kernel.org>; Thu, 30 Apr 2020 14:40:48 +0000 (UTC)
-Received: from hemlock.osuosl.org (smtp2.osuosl.org [140.211.166.133])
+Received: from whitealder.osuosl.org (smtp1.osuosl.org [140.211.166.138])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by mail.kernel.org (Postfix) with ESMTPS id 46D072137B
+	by mail.kernel.org (Postfix) with ESMTPS id A069D20873
 	for <iommu@archiver.kernel.org>; Thu, 30 Apr 2020 14:40:48 +0000 (UTC)
 Authentication-Results: mail.kernel.org;
-	dkim=fail reason="signature verification failed" (2048-bit key) header.d=linaro.org header.i=@linaro.org header.b="AVtmLG7x"
-DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 46D072137B
+	dkim=fail reason="signature verification failed" (2048-bit key) header.d=linaro.org header.i=@linaro.org header.b="jP7k/LUX"
+DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org A069D20873
 Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=linaro.org
 Authentication-Results: mail.kernel.org; spf=pass smtp.mailfrom=iommu-bounces@lists.linux-foundation.org
 Received: from localhost (localhost [127.0.0.1])
-	by hemlock.osuosl.org (Postfix) with ESMTP id 2E4E888794;
+	by whitealder.osuosl.org (Postfix) with ESMTP id 7AC8C87F46;
 	Thu, 30 Apr 2020 14:40:48 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from hemlock.osuosl.org ([127.0.0.1])
+Received: from whitealder.osuosl.org ([127.0.0.1])
 	by localhost (.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
-	with ESMTP id X7z8pDtJfAtj; Thu, 30 Apr 2020 14:40:47 +0000 (UTC)
+	with ESMTP id CxvS2zsEspx6; Thu, 30 Apr 2020 14:40:47 +0000 (UTC)
 Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [140.211.9.56])
-	by hemlock.osuosl.org (Postfix) with ESMTP id 7D1558878B;
+	by whitealder.osuosl.org (Postfix) with ESMTP id 4687D87708;
 	Thu, 30 Apr 2020 14:40:47 +0000 (UTC)
 Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
-	by lists.linuxfoundation.org (Postfix) with ESMTP id 571CBC088F;
+	by lists.linuxfoundation.org (Postfix) with ESMTP id 2B9AAC0864;
 	Thu, 30 Apr 2020 14:40:47 +0000 (UTC)
-Received: from silver.osuosl.org (smtp3.osuosl.org [140.211.166.136])
- by lists.linuxfoundation.org (Postfix) with ESMTP id 00FD4C016F
+Received: from fraxinus.osuosl.org (smtp4.osuosl.org [140.211.166.137])
+ by lists.linuxfoundation.org (Postfix) with ESMTP id 72224C016F
  for <iommu@lists.linux-foundation.org>; Thu, 30 Apr 2020 14:40:42 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
- by silver.osuosl.org (Postfix) with ESMTP id D5F82250F6
+ by fraxinus.osuosl.org (Postfix) with ESMTP id 6083A86DF6
  for <iommu@lists.linux-foundation.org>; Thu, 30 Apr 2020 14:40:42 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from silver.osuosl.org ([127.0.0.1])
+Received: from fraxinus.osuosl.org ([127.0.0.1])
  by localhost (.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
- with ESMTP id 0000iqLqqmIR for <iommu@lists.linux-foundation.org>;
- Thu, 30 Apr 2020 14:40:38 +0000 (UTC)
+ with ESMTP id ROJ2j4pflphQ for <iommu@lists.linux-foundation.org>;
+ Thu, 30 Apr 2020 14:40:41 +0000 (UTC)
 X-Greylist: domain auto-whitelisted by SQLgrey-1.7.6
 Received: from mail-wm1-f68.google.com (mail-wm1-f68.google.com
  [209.85.128.68])
- by silver.osuosl.org (Postfix) with ESMTPS id 4035D25067
- for <iommu@lists.linux-foundation.org>; Thu, 30 Apr 2020 14:40:38 +0000 (UTC)
-Received: by mail-wm1-f68.google.com with SMTP id y24so2203961wma.4
- for <iommu@lists.linux-foundation.org>; Thu, 30 Apr 2020 07:40:38 -0700 (PDT)
+ by fraxinus.osuosl.org (Postfix) with ESMTPS id 0454F86DF2
+ for <iommu@lists.linux-foundation.org>; Thu, 30 Apr 2020 14:40:41 +0000 (UTC)
+Received: by mail-wm1-f68.google.com with SMTP id u16so2205095wmc.5
+ for <iommu@lists.linux-foundation.org>; Thu, 30 Apr 2020 07:40:40 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linaro.org; s=google;
  h=from:to:cc:subject:date:message-id:in-reply-to:references
  :mime-version:content-transfer-encoding;
- bh=v8m/gvQmdEE9q+Hk6vZz26imXwSjnQ8yRBvjHzdBrII=;
- b=AVtmLG7xYoehDlrnZavnpbAOhvBcGvD8THICXsw2+FmNJiMb6JVlWTGYe4FmG1dmI8
- At5vrjT6MtoEzwTTzQ/y3NsrffNNLmUePhwD3TlPy1PXULk/Y1uUJsFvECAPDGCNQ7fo
- WPg9bTKlMkc/notJMFKWvoyOjQPeX73fDxPWn0d0WwMcnOwyW751edW/3yr44yceNv+8
- ZQ70u9G30xYPpT6uX7q7q6j5dFb0RDjmuo9I0d3VzU/CaL7ueffD2Q/3MwJgwJUt4wz9
- WDvu7KNJaJSo6FtBHyshkNa/Aiz+MdDoA/jrjtMFAOdffIGw3K2yfTNouUR0Lyfn5K4Z
- tUjQ==
+ bh=Bz2nKAGBQ7Mb48cdilmVqA9oljK0+KFUQvrEf7l8brs=;
+ b=jP7k/LUXcUYun710ylXWDuHjjwfGyMBxy/m1+LSqPLKuqXaA9amtE5TKr16a4HzLn+
+ Fm8h54awG/RdW/m4Amcgz5GfpVS0/gUm14HjpIWIj8liLm5GsVy9o/mnfuta6F0438SV
+ o2VUiGJVfqjqfvET5zFfGgdOvxpuAVuyqJZ+BXqhVGOLxt3ft4NeSDJNxBnzomKe/D2F
+ UBTfIFRMBrPnpJJr4pMbm0CXcJ11pQ8Kvm89HSnTCSjXyad7fKnKyumn30vVpe52AA+S
+ 4nZ+RYQbGXvPbgvVXO05cOJcwvkAkjMfdcPSmvJInEN3S7JwqjegV5H/ImS2pYL6as4q
+ 1zsQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
  d=1e100.net; s=20161025;
  h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
  :references:mime-version:content-transfer-encoding;
- bh=v8m/gvQmdEE9q+Hk6vZz26imXwSjnQ8yRBvjHzdBrII=;
- b=h/6fsWx98A2eXTCcbvf+hrR59hGro6K/OHjao10jxgm0AHG1rRH9kb9ZsrD3MpTO5l
- wRVmznj6J+7H9YpUH9P4AqZFKoloiX9r0b2Nqy8hTdYMoRReHQxY0hJef8/3ytbsyM5a
- NTLl9abqEe4WFFD0VGJUrPsLo4HGnl+enwjebiPwRhG5p4yfUuSlP5zHtl61AN9edk8J
- iCSQLMbsrEqiOe+QfJnG8YJZGGf1UZnYkHJz0p/ZKUIeGjJxA0zI3oVMxClE5ddWIgkk
- qUuFc5YOy1dY6z5yJ3J5GJ09W8ze0u1ogV7HAZ3OBMgn3XXAmHRr2BUUwE/yba56jrfN
- 2cMQ==
-X-Gm-Message-State: AGi0PubdO93c38FJiJHb43WHxlijnsjojz57nUja89NLOJYiwkwPX/nS
- ySMOWA/IRb8JCIQJhSWL8MLzgmD6v1c=
-X-Google-Smtp-Source: APiQypKC2Ra8wot+z9FmTb6X9lIUjfF/migCT+XYOIs58HdBF3GJl8+jq+TxpZeczK0hV/dLr58P0Q==
-X-Received: by 2002:a05:600c:414b:: with SMTP id
- h11mr3325816wmm.9.1588257636329; 
- Thu, 30 Apr 2020 07:40:36 -0700 (PDT)
+ bh=Bz2nKAGBQ7Mb48cdilmVqA9oljK0+KFUQvrEf7l8brs=;
+ b=gZ/Tk2PtpYoIzq92OPlDD8QKmT+sywYka3DobCmLcuWKS1NTOk+4vR4sZlKi1zOaRn
+ mROSzmxtnwyPRE4a1xzbE5wa75qcKnjsLLxzYGBUPiS+94+f+Sd66CF4j1bYRWO2qiq3
+ ah2AA6FYp7GqYb39GjamS4tkzh9lJGike42K+Sr4Xex054RXVTcNLamWQjOVyAkNLxzZ
+ bddWouKoiR/ypN/CerMY4IOdGT60IRZFzuDh/uj3ryIZNfIIiFIzNxqOHausndkdQ8Uc
+ 9PWwF/zLnf+lFpAozbtXPRzSOkvE1zth3ErtJO70+IXIsKQMpBHMHyXqYEyep5bTPodP
+ JBlg==
+X-Gm-Message-State: AGi0PuaSCZWmNfYkBX5n5GtjWPkDJrl3Kgz/lbhSAWDoKoEpAuzbagL4
+ 1ZGPwVqL6EtOm92xjOXLZdh2QM5nM9s=
+X-Google-Smtp-Source: APiQypKoy2dcJrSt7kSsjpKijdoaghBX3m1a18Lcgqubk0sb+PDF4FirOU0pVOh6QgmFmWaqie9Eyw==
+X-Received: by 2002:a1c:e1c1:: with SMTP id y184mr3393189wmg.143.1588257638849; 
+ Thu, 30 Apr 2020 07:40:38 -0700 (PDT)
 Received: from localhost.localdomain
  ([2001:171b:226e:c200:c43b:ef78:d083:b355])
- by smtp.gmail.com with ESMTPSA id n2sm4153286wrt.33.2020.04.30.07.40.35
+ by smtp.gmail.com with ESMTPSA id n2sm4153286wrt.33.2020.04.30.07.40.37
  (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
- Thu, 30 Apr 2020 07:40:35 -0700 (PDT)
+ Thu, 30 Apr 2020 07:40:38 -0700 (PDT)
 From: Jean-Philippe Brucker <jean-philippe@linaro.org>
 To: iommu@lists.linux-foundation.org, devicetree@vger.kernel.org,
  linux-arm-kernel@lists.infradead.org, linux-pci@vger.kernel.org,
  linux-mm@kvack.org
-Subject: [PATCH v6 15/25] iommu/arm-smmu-v3: Add SVA feature checking
-Date: Thu, 30 Apr 2020 16:34:14 +0200
-Message-Id: <20200430143424.2787566-16-jean-philippe@linaro.org>
+Subject: [PATCH v6 17/25] iommu/arm-smmu-v3: Implement iommu_sva_bind/unbind()
+Date: Thu, 30 Apr 2020 16:34:16 +0200
+Message-Id: <20200430143424.2787566-18-jean-philippe@linaro.org>
 X-Mailer: git-send-email 2.26.2
 In-Reply-To: <20200430143424.2787566-1-jean-philippe@linaro.org>
 References: <20200430143424.2787566-1-jean-philippe@linaro.org>
 MIME-Version: 1.0
 Cc: fenghua.yu@intel.com, kevin.tian@intel.com, jgg@ziepe.ca,
- catalin.marinas@arm.com, Suzuki K Poulose <suzuki.poulose@arm.com>,
- robin.murphy@arm.com, hch@infradead.org, zhangfei.gao@linaro.org,
- Jean-Philippe Brucker <jean-philippe@linaro.org>, felix.kuehling@amd.com,
- will@kernel.org, christian.koenig@amd.com
+ catalin.marinas@arm.com, robin.murphy@arm.com, hch@infradead.org,
+ zhangfei.gao@linaro.org, Jean-Philippe Brucker <jean-philippe@linaro.org>,
+ felix.kuehling@amd.com, will@kernel.org, christian.koenig@amd.com
 X-BeenThere: iommu@lists.linux-foundation.org
 X-Mailman-Version: 2.1.15
 Precedence: list
@@ -115,114 +113,414 @@ Content-Transfer-Encoding: 7bit
 Errors-To: iommu-bounces@lists.linux-foundation.org
 Sender: "iommu" <iommu-bounces@lists.linux-foundation.org>
 
-Aggregate all sanity-checks for sharing CPU page tables with the SMMU
-under a single ARM_SMMU_FEAT_SVA bit. For PCIe SVA, users also need to
-check FEAT_ATS and FEAT_PRI. For platform SVA, they will most likely have
-to check FEAT_STALLS.
+The sva_bind() function allows devices to access process address spaces
+using a PASID (aka SSID).
 
-Cc: Suzuki K Poulose <suzuki.poulose@arm.com>
+(1) bind() allocates or gets an existing MMU notifier tied to the
+    (domain, mm) pair. Each mm gets one PASID.
+
+(2) Any change to the address space calls invalidate_range() which sends
+    ATC invalidations (in a subsequent patch).
+
+(3) When the process address space dies, the release() notifier disables
+    the CD to allow reclaiming the page tables. Since release() has to
+    be light we do not instruct device drivers to stop DMA here, we just
+    ignore incoming page faults.
+
+    To avoid any event 0x0a print (C_BAD_CD) we disable translation
+    without clearing CD.V. PCIe Translation Requests and Page Requests
+    are silently denied. Don't clear the R bit because the S bit can't
+    be cleared when STALL_MODEL==0b10 (forced), and clearing R without
+    clearing S is useless. Faulting transactions will stall and will be
+    aborted by the IOPF handler.
+
+(4) After stopping DMA, the device driver releases the bond by calling
+    unbind(). We release the MMU notifier, free the PASID and the bond.
+
+Three structures keep track of bonds:
+* arm_smmu_bond: one per (device, mm) pair, the handle returned to the
+  device driver for a bind() request.
+* arm_smmu_mmu_notifier: one per (domain, mm) pair, deals with ATS/TLB
+  invalidations and clearing the context descriptor on mm exit.
+* arm_smmu_ctx_desc: one per mm, holds the pinned ASID and pgd.
+
 Signed-off-by: Jean-Philippe Brucker <jean-philippe@linaro.org>
 ---
- drivers/iommu/arm-smmu-v3.c | 72 +++++++++++++++++++++++++++++++++++++
- 1 file changed, 72 insertions(+)
+v5->v6:
+* Implement bind() directly instead of going through io_mm_ops
+* Don't clear S and R bits in step (3), it doesn't work with
+  STALL_FORCE.
+---
+ drivers/iommu/Kconfig       |   1 +
+ drivers/iommu/arm-smmu-v3.c | 256 +++++++++++++++++++++++++++++++++++-
+ 2 files changed, 253 insertions(+), 4 deletions(-)
 
+diff --git a/drivers/iommu/Kconfig b/drivers/iommu/Kconfig
+index 1e64ee6592e16..f863c4562feeb 100644
+--- a/drivers/iommu/Kconfig
++++ b/drivers/iommu/Kconfig
+@@ -432,6 +432,7 @@ config ARM_SMMU_V3
+ 	tristate "ARM Ltd. System MMU Version 3 (SMMUv3) Support"
+ 	depends on ARM64
+ 	select IOMMU_API
++	select IOMMU_SVA
+ 	select IOMMU_IO_PGTABLE_LPAE
+ 	select GENERIC_MSI_IRQ_DOMAIN
+ 	help
 diff --git a/drivers/iommu/arm-smmu-v3.c b/drivers/iommu/arm-smmu-v3.c
-index a562c4b243292..9b90cc57a609b 100644
+index c7942d0540599..00e5b69bb81a5 100644
 --- a/drivers/iommu/arm-smmu-v3.c
 +++ b/drivers/iommu/arm-smmu-v3.c
-@@ -657,6 +657,7 @@ struct arm_smmu_device {
- #define ARM_SMMU_FEAT_RANGE_INV		(1 << 15)
- #define ARM_SMMU_FEAT_E2H		(1 << 16)
- #define ARM_SMMU_FEAT_BTM		(1 << 17)
-+#define ARM_SMMU_FEAT_SVA		(1 << 18)
- 	u32				features;
+@@ -24,6 +24,7 @@
+ #include <linux/iopoll.h>
+ #include <linux/module.h>
+ #include <linux/mmu_context.h>
++#include <linux/mmu_notifier.h>
+ #include <linux/msi.h>
+ #include <linux/of.h>
+ #include <linux/of_address.h>
+@@ -36,6 +37,7 @@
+ #include <linux/amba/bus.h>
  
- #define ARM_SMMU_OPT_SKIP_PREFETCH	(1 << 0)
-@@ -3925,6 +3926,74 @@ static int arm_smmu_device_reset(struct arm_smmu_device *smmu, bool bypass)
+ #include "io-pgtable-arm.h"
++#include "iommu-sva.h"
+ 
+ /* MMIO registers */
+ #define ARM_SMMU_IDR0			0x0
+@@ -731,8 +733,31 @@ struct arm_smmu_domain {
+ 
+ 	struct list_head		devices;
+ 	spinlock_t			devices_lock;
++
++	struct mmu_notifier_ops		mn_ops;
+ };
+ 
++struct arm_smmu_mmu_notifier {
++	struct mmu_notifier		mn;
++	struct arm_smmu_ctx_desc	*cd;
++	bool				cleared;
++	refcount_t			refs;
++	struct arm_smmu_domain		*domain;
++};
++
++#define mn_to_smmu(mn) container_of(mn, struct arm_smmu_mmu_notifier, mn)
++
++struct arm_smmu_bond {
++	struct iommu_sva		sva;
++	struct mm_struct		*mm;
++	struct arm_smmu_mmu_notifier	*smmu_mn;
++	struct list_head		list;
++	refcount_t			refs;
++};
++
++#define sva_to_bond(handle) \
++	container_of(handle, struct arm_smmu_bond, sva)
++
+ struct arm_smmu_option_prop {
+ 	u32 opt;
+ 	const char *prop;
+@@ -742,6 +767,13 @@ static DEFINE_XARRAY_ALLOC1(asid_xa);
+ static DEFINE_SPINLOCK(contexts_lock);
+ static DEFINE_MUTEX(arm_smmu_sva_lock);
+ 
++/*
++ * When a process dies, DMA is still running but we need to clear the pgd. If we
++ * simply cleared the valid bit from the context descriptor, we'd get event 0x0a
++ * which are not recoverable.
++ */
++static struct arm_smmu_ctx_desc invalid_cd = { 0 };
++
+ static struct arm_smmu_option_prop arm_smmu_options[] = {
+ 	{ ARM_SMMU_OPT_SKIP_PREFETCH, "hisilicon,broken-prefetch-cmd" },
+ 	{ ARM_SMMU_OPT_PAGE0_REGS_ONLY, "cavium,cn9900-broken-page1-regspace"},
+@@ -1652,7 +1684,9 @@ static int __arm_smmu_write_ctx_desc(struct arm_smmu_domain *smmu_domain,
+ 	 * (2) Install a secondary CD, for SID+SSID traffic.
+ 	 * (3) Update ASID of a CD. Atomically write the first 64 bits of the
+ 	 *     CD, then invalidate the old entry and mappings.
+-	 * (4) Remove a secondary CD.
++	 * (4) Quiesce the context without clearing the valid bit. Disable
++	 *     translation, and ignore any translation fault.
++	 * (5) Remove a secondary CD.
+ 	 */
+ 	u64 val;
+ 	bool cd_live;
+@@ -1669,8 +1703,10 @@ static int __arm_smmu_write_ctx_desc(struct arm_smmu_domain *smmu_domain,
+ 	val = le64_to_cpu(cdptr[0]);
+ 	cd_live = !!(val & CTXDESC_CD_0_V);
+ 
+-	if (!cd) { /* (4) */
++	if (!cd) { /* (5) */
+ 		val = 0;
++	} else if (cd == &invalid_cd) { /* (4) */
++		val |= CTXDESC_CD_0_TCR_EPD0;
+ 	} else if (cd_live) { /* (3) */
+ 		val &= ~CTXDESC_CD_0_ASID;
+ 		val |= FIELD_PREP(CTXDESC_CD_0_ASID, cd->asid);
+@@ -1883,7 +1919,6 @@ static struct arm_smmu_ctx_desc *arm_smmu_share_asid(u16 asid)
+ 	return NULL;
+ }
+ 
+-__maybe_unused
+ static struct arm_smmu_ctx_desc *arm_smmu_alloc_shared_cd(struct mm_struct *mm)
+ {
+ 	u16 asid;
+@@ -1976,7 +2011,6 @@ static struct arm_smmu_ctx_desc *arm_smmu_alloc_shared_cd(struct mm_struct *mm)
+ 	return ERR_PTR(ret);
+ }
+ 
+-__maybe_unused
+ static void arm_smmu_free_shared_cd(struct arm_smmu_ctx_desc *cd)
+ {
+ 	if (arm_smmu_free_asid(cd)) {
+@@ -2611,6 +2645,8 @@ static bool arm_smmu_capable(enum iommu_cap cap)
+ 	}
+ }
+ 
++static struct mmu_notifier_ops arm_smmu_mmu_notifier_ops;
++
+ static struct iommu_domain *arm_smmu_domain_alloc(unsigned type)
+ {
+ 	struct arm_smmu_domain *smmu_domain;
+@@ -2638,6 +2674,7 @@ static struct iommu_domain *arm_smmu_domain_alloc(unsigned type)
+ 	mutex_init(&smmu_domain->init_mutex);
+ 	INIT_LIST_HEAD(&smmu_domain->devices);
+ 	spin_lock_init(&smmu_domain->devices_lock);
++	smmu_domain->mn_ops = arm_smmu_mmu_notifier_ops;
+ 
+ 	return &smmu_domain->domain;
+ }
+@@ -3118,6 +3155,208 @@ arm_smmu_iova_to_phys(struct iommu_domain *domain, dma_addr_t iova)
+ 	return ops->iova_to_phys(ops, iova);
+ }
+ 
++static struct mmu_notifier *arm_smmu_mmu_notifier_alloc(struct mm_struct *mm)
++{
++	struct arm_smmu_mmu_notifier *smmu_mn;
++
++	smmu_mn = kzalloc(sizeof(*smmu_mn), GFP_KERNEL);
++	if (!smmu_mn)
++		return ERR_PTR(-ENOMEM);
++
++	smmu_mn->cd = arm_smmu_alloc_shared_cd(mm);
++	if (IS_ERR(smmu_mn->cd)) {
++		void *ptr = ERR_CAST(smmu_mn->cd);
++
++		kfree(smmu_mn);
++		return ptr;
++	}
++	refcount_set(&smmu_mn->refs, 1);
++
++	return &smmu_mn->mn;
++}
++
++static void arm_smmu_mmu_notifier_free(struct mmu_notifier *mn)
++{
++	struct arm_smmu_mmu_notifier *smmu_mn = mn_to_smmu(mn);
++
++	arm_smmu_free_shared_cd(smmu_mn->cd);
++	kfree(smmu_mn);
++}
++
++static void arm_smmu_mm_invalidate_range(struct mmu_notifier *mn,
++					 struct mm_struct *mm,
++					 unsigned long start, unsigned long end)
++{
++	/* TODO: invalidate ATS */
++}
++
++static void arm_smmu_mm_release(struct mmu_notifier *mn, struct mm_struct *mm)
++{
++	struct arm_smmu_mmu_notifier *smmu_mn = mn_to_smmu(mn);
++	struct arm_smmu_domain *smmu_domain;
++
++	mutex_lock(&arm_smmu_sva_lock);
++	if (smmu_mn->cleared) {
++		mutex_unlock(&arm_smmu_sva_lock);
++		return;
++	}
++
++	smmu_domain = smmu_mn->domain;
++
++	/*
++	 * DMA may still be running. Keep the cd valid but disable
++	 * translation, so that new events will still result in stall.
++	 */
++	arm_smmu_write_ctx_desc(smmu_domain, mm->pasid, &invalid_cd);
++
++	arm_smmu_tlb_inv_asid(smmu_domain->smmu, smmu_mn->cd->asid);
++	/* TODO: invalidate ATS */
++
++	smmu_mn->cleared = true;
++	mutex_unlock(&arm_smmu_sva_lock);
++}
++
++static struct mmu_notifier_ops arm_smmu_mmu_notifier_ops = {
++	.alloc_notifier		= arm_smmu_mmu_notifier_alloc,
++	.free_notifier		= arm_smmu_mmu_notifier_free,
++	.invalidate_range	= arm_smmu_mm_invalidate_range,
++	.release		= arm_smmu_mm_release,
++};
++
++static struct iommu_sva *
++__arm_smmu_sva_bind(struct device *dev, struct mm_struct *mm)
++{
++	int ret;
++	ioasid_t pasid;
++	struct mmu_notifier *mn;
++	struct arm_smmu_bond *bond;
++	struct arm_smmu_mmu_notifier *smmu_mn;
++	struct arm_smmu_master *master = dev_iommu_priv_get(dev);
++	struct iommu_domain *domain = iommu_get_domain_for_dev(dev);
++	struct arm_smmu_domain *smmu_domain = to_smmu_domain(domain);
++
++	if (!master || !master->sva_enabled)
++		return ERR_PTR(-ENODEV);
++
++	/* If bind() was already called for this (dev, mm) pair, reuse it. */
++	list_for_each_entry(bond, &master->bonds, list) {
++		if (bond->mm == mm) {
++			refcount_inc(&bond->refs);
++			return &bond->sva;
++		}
++	}
++
++	mn = mmu_notifier_get(&smmu_domain->mn_ops, mm);
++	if (IS_ERR(mn))
++		return ERR_CAST(mn);
++
++	smmu_mn = mn_to_smmu(mn);
++	if (smmu_mn->domain)
++		refcount_inc(&smmu_mn->refs);
++
++	bond = kzalloc(sizeof(*bond), GFP_KERNEL);
++	if (!bond) {
++		ret = -ENOMEM;
++		goto err_put_mn;
++	}
++
++	/* Allocate a PASID for this mm if necessary */
++	pasid = iommu_sva_alloc_pasid(mm, 1, (1U << master->ssid_bits) - 1);
++	if (pasid == INVALID_IOASID) {
++		ret = -ENOSPC;
++		goto err_free_bond;
++	}
++	bond->mm = mm;
++	bond->sva.dev = dev;
++	bond->smmu_mn = smmu_mn;
++	refcount_set(&bond->refs, 1);
++
++	ret = arm_smmu_write_ctx_desc(smmu_domain, mm->pasid, smmu_mn->cd);
++	if (ret)
++		goto err_free_pasid;
++
++	bond->sva.dev = dev;
++	list_add(&bond->list, &master->bonds);
++	smmu_mn->domain = smmu_domain;
++	return &bond->sva;
++
++err_free_pasid:
++	iommu_sva_free_pasid(mm);
++err_free_bond:
++	kfree(bond);
++err_put_mn:
++	refcount_dec(&smmu_mn->refs);
++	mmu_notifier_put(mn);
++	return ERR_PTR(ret);
++}
++
++static void __arm_smmu_sva_unbind(struct iommu_sva *handle)
++{
++	struct arm_smmu_mmu_notifier *smmu_mn;
++	struct arm_smmu_bond *bond = sva_to_bond(handle);
++	struct iommu_domain *domain = iommu_get_domain_for_dev(handle->dev);
++	struct arm_smmu_domain *smmu_domain = to_smmu_domain(domain);
++
++	if (!refcount_dec_and_test(&bond->refs))
++		return;
++
++	list_del(&bond->list);
++
++	smmu_mn = bond->smmu_mn;
++	/*
++	 * This is redundant as the MMU notifier already counts refs, but frees
++	 * the bond in a RCU callback which cannot sleep. We have much cleaning
++	 * to do and we hold all the right locks, so duplicate the refcounting.
++	 */
++	if (refcount_dec_and_test(&smmu_mn->refs)) {
++		arm_smmu_write_ctx_desc(smmu_domain, bond->mm->pasid, NULL);
++
++		/*
++		 * If we went through clear(), we've already invalidated, and no
++		 * new TLB entry can have been formed.
++		 */
++		if (!smmu_mn->cleared) {
++			arm_smmu_tlb_inv_asid(smmu_domain->smmu,
++					      smmu_mn->cd->asid);
++			/* TODO: invalidate ATS */
++		}
++	}
++
++	iommu_sva_free_pasid(bond->mm);
++	kfree(bond);
++	mmu_notifier_put(&smmu_mn->mn);
++}
++
++static struct iommu_sva *
++arm_smmu_sva_bind(struct device *dev, struct mm_struct *mm, void *drvdata)
++{
++	struct iommu_sva *handle;
++	struct iommu_domain *domain = iommu_get_domain_for_dev(dev);
++	struct arm_smmu_domain *smmu_domain = to_smmu_domain(domain);
++
++	if (smmu_domain->stage != ARM_SMMU_DOMAIN_S1)
++		return ERR_PTR(-EINVAL);
++
++	mutex_lock(&arm_smmu_sva_lock);
++	handle = __arm_smmu_sva_bind(dev, mm);
++	mutex_unlock(&arm_smmu_sva_lock);
++	return handle;
++}
++
++static void arm_smmu_sva_unbind(struct iommu_sva *handle)
++{
++	mutex_lock(&arm_smmu_sva_lock);
++	__arm_smmu_sva_unbind(handle);
++	mutex_unlock(&arm_smmu_sva_lock);
++}
++
++static int arm_smmu_sva_get_pasid(struct iommu_sva *handle)
++{
++	struct arm_smmu_bond *bond = sva_to_bond(handle);
++
++	return bond->mm->pasid;
++}
++
+ static struct platform_driver arm_smmu_driver;
+ 
+ static
+@@ -3426,6 +3665,12 @@ static int arm_smmu_dev_disable_sva(struct device *dev)
+ 	master->sva_enabled = false;
+ 	mutex_unlock(&arm_smmu_sva_lock);
+ 
++	/*
++	 * Since the MMU notifier ops are held in the domain, it is not safe to
++	 * free the domain until all MMU notifiers are freed.
++	 */
++	mmu_notifier_synchronize();
++
  	return 0;
  }
  
-+static bool arm_smmu_supports_sva(struct arm_smmu_device *smmu)
-+{
-+	unsigned long reg, fld;
-+	unsigned long oas;
-+	unsigned long asid_bits;
-+
-+	u32 feat_mask = ARM_SMMU_FEAT_BTM | ARM_SMMU_FEAT_COHERENCY;
-+
-+	if ((smmu->features & feat_mask) != feat_mask)
-+		return false;
-+
-+	if (!(smmu->pgsize_bitmap & PAGE_SIZE))
-+		return false;
-+
-+	/*
-+	 * Get the smallest PA size of all CPUs (sanitized by cpufeature). We're
-+	 * not even pretending to support AArch32 here.
-+	 */
-+	reg = read_sanitised_ftr_reg(SYS_ID_AA64MMFR0_EL1);
-+	fld = cpuid_feature_extract_unsigned_field(reg, ID_AA64MMFR0_PARANGE_SHIFT);
-+	switch (fld) {
-+	case 0x0:
-+		oas = 32;
-+		break;
-+	case 0x1:
-+		oas = 36;
-+		break;
-+	case 0x2:
-+		oas = 40;
-+		break;
-+	case 0x3:
-+		oas = 42;
-+		break;
-+	case 0x4:
-+		oas = 44;
-+		break;
-+	case 0x5:
-+		oas = 48;
-+		break;
-+	case 0x6:
-+		oas = 52;
-+		break;
-+	default:
-+		return false;
-+	}
-+
-+	/* abort if MMU outputs addresses greater than what we support. */
-+	if (smmu->oas < oas)
-+		return false;
-+
-+	/* We can support bigger ASIDs than the CPU, but not smaller */
-+	fld = cpuid_feature_extract_unsigned_field(reg, ID_AA64MMFR0_ASID_SHIFT);
-+	asid_bits = fld ? 16 : 8;
-+	if (smmu->asid_bits < asid_bits)
-+		return false;
-+
-+	/*
-+	 * See max_pinned_asids in arch/arm64/mm/context.c. The following is
-+	 * generally the maximum number of bindable processes.
-+	 */
-+	if (IS_ENABLED(CONFIG_UNMAP_KERNEL_AT_EL0))
-+		asid_bits--;
-+	dev_dbg(smmu->dev, "%d shared contexts\n", (1 << asid_bits) -
-+		num_possible_cpus() - 2);
-+
-+	return true;
-+}
-+
- static int arm_smmu_device_hw_probe(struct arm_smmu_device *smmu)
- {
- 	u32 reg;
-@@ -4137,6 +4206,9 @@ static int arm_smmu_device_hw_probe(struct arm_smmu_device *smmu)
+@@ -3482,6 +3727,9 @@ static struct iommu_ops arm_smmu_ops = {
+ 	.dev_feat_enabled	= arm_smmu_dev_feature_enabled,
+ 	.dev_enable_feat	= arm_smmu_dev_enable_feature,
+ 	.dev_disable_feat	= arm_smmu_dev_disable_feature,
++	.sva_bind		= arm_smmu_sva_bind,
++	.sva_unbind		= arm_smmu_sva_unbind,
++	.sva_get_pasid		= arm_smmu_sva_get_pasid,
+ 	.pgsize_bitmap		= -1UL, /* Restricted during device attach */
+ };
  
- 	smmu->ias = max(smmu->ias, smmu->oas);
- 
-+	if (arm_smmu_supports_sva(smmu))
-+		smmu->features |= ARM_SMMU_FEAT_SVA;
-+
- 	dev_info(smmu->dev, "ias %lu-bit, oas %lu-bit (features 0x%08x)\n",
- 		 smmu->ias, smmu->oas, smmu->features);
- 	return 0;
 -- 
 2.26.2
 
