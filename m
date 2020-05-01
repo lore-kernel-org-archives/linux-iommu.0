@@ -2,61 +2,61 @@ Return-Path: <SRS0=bJ3n=6P=lists.linux-foundation.org=iommu-bounces@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-8.2 required=3.0 tests=HEADER_FROM_DIFFERENT_DOMAINS,
-	INCLUDES_PATCH,MAILING_LIST_MULTI,SIGNED_OFF_BY,SPF_HELO_NONE,SPF_PASS,
-	URIBL_BLOCKED,USER_AGENT_SANE_1 autolearn=ham autolearn_force=no version=3.4.0
+X-Spam-Status: No, score=-5.2 required=3.0 tests=HEADER_FROM_DIFFERENT_DOMAINS,
+	MAILING_LIST_MULTI,SIGNED_OFF_BY,SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED,
+	USER_AGENT_SANE_1 autolearn=ham autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 0C9A3C47253
-	for <iommu@archiver.kernel.org>; Fri,  1 May 2020 11:24:01 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 87F4FC47253
+	for <iommu@archiver.kernel.org>; Fri,  1 May 2020 11:31:57 +0000 (UTC)
 Received: from hemlock.osuosl.org (smtp2.osuosl.org [140.211.166.133])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by mail.kernel.org (Postfix) with ESMTPS id CB34B20787
-	for <iommu@archiver.kernel.org>; Fri,  1 May 2020 11:24:00 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org CB34B20787
+	by mail.kernel.org (Postfix) with ESMTPS id 5647E20757
+	for <iommu@archiver.kernel.org>; Fri,  1 May 2020 11:31:57 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 5647E20757
 Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=8bytes.org
 Authentication-Results: mail.kernel.org; spf=pass smtp.mailfrom=iommu-bounces@lists.linux-foundation.org
 Received: from localhost (localhost [127.0.0.1])
-	by hemlock.osuosl.org (Postfix) with ESMTP id A0E9A8ABB1;
-	Fri,  1 May 2020 11:24:00 +0000 (UTC)
+	by hemlock.osuosl.org (Postfix) with ESMTP id 247B489A3E;
+	Fri,  1 May 2020 11:31:57 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
 Received: from hemlock.osuosl.org ([127.0.0.1])
 	by localhost (.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
-	with ESMTP id GUu3x6HBybIy; Fri,  1 May 2020 11:23:58 +0000 (UTC)
+	with ESMTP id tnkEt-ESVyRH; Fri,  1 May 2020 11:31:55 +0000 (UTC)
 Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [140.211.9.56])
-	by hemlock.osuosl.org (Postfix) with ESMTP id C81268ABAA;
-	Fri,  1 May 2020 11:23:58 +0000 (UTC)
+	by hemlock.osuosl.org (Postfix) with ESMTP id CB11A89A09;
+	Fri,  1 May 2020 11:31:55 +0000 (UTC)
 Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
-	by lists.linuxfoundation.org (Postfix) with ESMTP id B24C3C088D;
-	Fri,  1 May 2020 11:23:58 +0000 (UTC)
-Received: from silver.osuosl.org (smtp3.osuosl.org [140.211.166.136])
- by lists.linuxfoundation.org (Postfix) with ESMTP id BDD71C016F
- for <iommu@lists.linux-foundation.org>; Fri,  1 May 2020 11:23:57 +0000 (UTC)
+	by lists.linuxfoundation.org (Postfix) with ESMTP id BE4C0C088D;
+	Fri,  1 May 2020 11:31:55 +0000 (UTC)
+Received: from whitealder.osuosl.org (smtp1.osuosl.org [140.211.166.138])
+ by lists.linuxfoundation.org (Postfix) with ESMTP id 0B9EDC016F
+ for <iommu@lists.linux-foundation.org>; Fri,  1 May 2020 11:31:54 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
- by silver.osuosl.org (Postfix) with ESMTP id A809B2604C
- for <iommu@lists.linux-foundation.org>; Fri,  1 May 2020 11:23:57 +0000 (UTC)
+ by whitealder.osuosl.org (Postfix) with ESMTP id 04CD7886DB
+ for <iommu@lists.linux-foundation.org>; Fri,  1 May 2020 11:31:54 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from silver.osuosl.org ([127.0.0.1])
+Received: from whitealder.osuosl.org ([127.0.0.1])
  by localhost (.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
- with ESMTP id WzU-zMEtVjS4 for <iommu@lists.linux-foundation.org>;
- Fri,  1 May 2020 11:23:56 +0000 (UTC)
+ with ESMTP id GiPOKx4E8m4n for <iommu@lists.linux-foundation.org>;
+ Fri,  1 May 2020 11:31:52 +0000 (UTC)
 X-Greylist: from auto-whitelisted by SQLgrey-1.7.6
 Received: from theia.8bytes.org (8bytes.org [81.169.241.247])
- by silver.osuosl.org (Postfix) with ESMTPS id 0845D203F3
- for <iommu@lists.linux-foundation.org>; Fri,  1 May 2020 11:23:55 +0000 (UTC)
+ by whitealder.osuosl.org (Postfix) with ESMTPS id A6FA9886DA
+ for <iommu@lists.linux-foundation.org>; Fri,  1 May 2020 11:31:52 +0000 (UTC)
 Received: by theia.8bytes.org (Postfix, from userid 1000)
- id EF8D93A4; Fri,  1 May 2020 13:23:53 +0200 (CEST)
-Date: Fri, 1 May 2020 13:23:52 +0200
+ id 2EEAB3A4; Fri,  1 May 2020 13:31:49 +0200 (CEST)
+Date: Fri, 1 May 2020 13:31:47 +0200
 From: Joerg Roedel <joro@8bytes.org>
-To: Jean-Philippe Brucker <jean-philippe@linaro.org>
-Subject: Re: [PATCH] iommu: Free fwspec with the dev_iommu object
-Message-ID: <20200501112352.GB18423@8bytes.org>
-References: <20200422135513.617599-1-jean-philippe@linaro.org>
+To: Lu Baolu <baolu.lu@linux.intel.com>
+Subject: Re: [PATCH 1/1] iommu/vt-d: Use right Kconfig option name
+Message-ID: <20200501113147.GC18423@8bytes.org>
+References: <20200501072427.14265-1-baolu.lu@linux.intel.com>
 MIME-Version: 1.0
 Content-Disposition: inline
-In-Reply-To: <20200422135513.617599-1-jean-philippe@linaro.org>
+In-Reply-To: <20200501072427.14265-1-baolu.lu@linux.intel.com>
 User-Agent: Mutt/1.10.1 (2018-07-13)
-Cc: iommu@lists.linux-foundation.org
+Cc: iommu@lists.linux-foundation.org, Ashok Raj <ashok.raj@intel.com>
 X-BeenThere: iommu@lists.linux-foundation.org
 X-Mailman-Version: 2.1.15
 Precedence: list
@@ -74,37 +74,18 @@ Content-Transfer-Encoding: 7bit
 Errors-To: iommu-bounces@lists.linux-foundation.org
 Sender: "iommu" <iommu-bounces@lists.linux-foundation.org>
 
-Hi Jean-Philippe,
-
-On Wed, Apr 22, 2020 at 03:55:14PM +0200, Jean-Philippe Brucker wrote:
-> Fix this leak by freeing the fwspec in dev_iommu_free().
+On Fri, May 01, 2020 at 03:24:27PM +0800, Lu Baolu wrote:
+> The CONFIG_ prefix should be added in the code.
 > 
-> Fixes: 72acd9df18f1 ("iommu: Move iommu_fwspec to struct dev_iommu")
-> Signed-off-by: Jean-Philippe Brucker <jean-philippe@linaro.org>
+> Fixes: 046182525db61 ("iommu/vt-d: Add Kconfig option to enable/disable scalable mode")
+> Reported-and-tested-by: Kumar, Sanjay K <sanjay.k.kumar@intel.com>
+> Cc: Ashok Raj <ashok.raj@intel.com>
+> Signed-off-by: Lu Baolu <baolu.lu@linux.intel.com>
 > ---
->  drivers/iommu/iommu.c | 1 +
->  1 file changed, 1 insertion(+)
-> 
-> diff --git a/drivers/iommu/iommu.c b/drivers/iommu/iommu.c
-> index 2b471419e26c3..54757c404866c 100644
-> --- a/drivers/iommu/iommu.c
-> +++ b/drivers/iommu/iommu.c
-> @@ -170,6 +170,7 @@ static struct dev_iommu *dev_iommu_get(struct device *dev)
->  
->  static void dev_iommu_free(struct device *dev)
->  {
-> +	iommu_fwspec_free(dev);
->  	kfree(dev->iommu);
->  	dev->iommu = NULL;
->  }
+>  drivers/iommu/intel-iommu.c | 4 ++--
+>  1 file changed, 2 insertions(+), 2 deletions(-)
 
-Sorry, but [1] is already queued.
-
-Thanks,
-
-	Joerg
-
-[1] https://lore.kernel.org/r/20200402143749.40500-1-haokexin@gmail.com
+Applied for v5.7, thanks.
 
 _______________________________________________
 iommu mailing list
