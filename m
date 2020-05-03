@@ -2,58 +2,97 @@ Return-Path: <SRS0=M8Ie=6R=lists.linux-foundation.org=iommu-bounces@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-12.3 required=3.0
-	tests=HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_PULL_REQUEST,MAILING_LIST_MULTI,
-	MENTIONS_GIT_HOSTING,SPF_HELO_NONE,SPF_PASS,USER_AGENT_SANE_1 autolearn=ham
-	autolearn_force=no version=3.4.0
+X-Spam-Status: No, score=-5.6 required=3.0 tests=DKIM_INVALID,DKIM_SIGNED,
+	HEADER_FROM_DIFFERENT_DOMAINS,MAILING_LIST_MULTI,MENTIONS_GIT_HOSTING,
+	SPF_HELO_NONE,SPF_PASS autolearn=ham autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 47451C28CBC
-	for <iommu@archiver.kernel.org>; Sun,  3 May 2020 12:19:46 +0000 (UTC)
-Received: from silver.osuosl.org (smtp3.osuosl.org [140.211.166.136])
+	by smtp.lore.kernel.org (Postfix) with ESMTP id DB184C28CBC
+	for <iommu@archiver.kernel.org>; Sun,  3 May 2020 13:04:12 +0000 (UTC)
+Received: from fraxinus.osuosl.org (smtp4.osuosl.org [140.211.166.137])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by mail.kernel.org (Postfix) with ESMTPS id ECD3C2075B
-	for <iommu@archiver.kernel.org>; Sun,  3 May 2020 12:19:45 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org ECD3C2075B
-Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=8bytes.org
+	by mail.kernel.org (Postfix) with ESMTPS id A15382073E
+	for <iommu@archiver.kernel.org>; Sun,  3 May 2020 13:04:12 +0000 (UTC)
+Authentication-Results: mail.kernel.org;
+	dkim=fail reason="signature verification failed" (2048-bit key) header.d=lca.pw header.i=@lca.pw header.b="Dq4xmUY0"
+DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org A15382073E
+Authentication-Results: mail.kernel.org; dmarc=none (p=none dis=none) header.from=lca.pw
 Authentication-Results: mail.kernel.org; spf=pass smtp.mailfrom=iommu-bounces@lists.linux-foundation.org
 Received: from localhost (localhost [127.0.0.1])
-	by silver.osuosl.org (Postfix) with ESMTP id B90AA20470;
-	Sun,  3 May 2020 12:19:45 +0000 (UTC)
+	by fraxinus.osuosl.org (Postfix) with ESMTP id 7ABB386E2B;
+	Sun,  3 May 2020 13:04:12 +0000 (UTC)
+X-Virus-Scanned: amavisd-new at osuosl.org
+Received: from fraxinus.osuosl.org ([127.0.0.1])
+	by localhost (.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
+	with ESMTP id 2zJipZkldjx1; Sun,  3 May 2020 13:04:11 +0000 (UTC)
+Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [140.211.9.56])
+	by fraxinus.osuosl.org (Postfix) with ESMTP id 6D01786B31;
+	Sun,  3 May 2020 13:04:11 +0000 (UTC)
+Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
+	by lists.linuxfoundation.org (Postfix) with ESMTP id 501BFC088A;
+	Sun,  3 May 2020 13:04:11 +0000 (UTC)
+Received: from silver.osuosl.org (smtp3.osuosl.org [140.211.166.136])
+ by lists.linuxfoundation.org (Postfix) with ESMTP id 8A955C0175
+ for <iommu@lists.linux-foundation.org>; Sun,  3 May 2020 13:04:10 +0000 (UTC)
+Received: from localhost (localhost [127.0.0.1])
+ by silver.osuosl.org (Postfix) with ESMTP id 7C5C22042C
+ for <iommu@lists.linux-foundation.org>; Sun,  3 May 2020 13:04:10 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
 Received: from silver.osuosl.org ([127.0.0.1])
-	by localhost (.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
-	with ESMTP id Y5n6MdqRGols; Sun,  3 May 2020 12:19:43 +0000 (UTC)
-Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [140.211.9.56])
-	by silver.osuosl.org (Postfix) with ESMTP id 6939F22661;
-	Sun,  3 May 2020 12:19:43 +0000 (UTC)
-Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
-	by lists.linuxfoundation.org (Postfix) with ESMTP id 55BB9C088A;
-	Sun,  3 May 2020 12:19:43 +0000 (UTC)
-Received: from whitealder.osuosl.org (smtp1.osuosl.org [140.211.166.138])
- by lists.linuxfoundation.org (Postfix) with ESMTP id A941DC0175
- for <iommu@lists.linux-foundation.org>; Sun,  3 May 2020 12:19:41 +0000 (UTC)
-Received: from localhost (localhost [127.0.0.1])
- by whitealder.osuosl.org (Postfix) with ESMTP id A4E3F87A60
- for <iommu@lists.linux-foundation.org>; Sun,  3 May 2020 12:19:41 +0000 (UTC)
-X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from whitealder.osuosl.org ([127.0.0.1])
  by localhost (.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
- with ESMTP id 8fylIBwLJ7cW for <iommu@lists.linux-foundation.org>;
- Sun,  3 May 2020 12:19:40 +0000 (UTC)
+ with ESMTP id f3RTFFxzmkWW for <iommu@lists.linux-foundation.org>;
+ Sun,  3 May 2020 13:04:08 +0000 (UTC)
 X-Greylist: from auto-whitelisted by SQLgrey-1.7.6
-Received: from theia.8bytes.org (8bytes.org [81.169.241.247])
- by whitealder.osuosl.org (Postfix) with ESMTPS id 0566587863
- for <iommu@lists.linux-foundation.org>; Sun,  3 May 2020 12:19:39 +0000 (UTC)
-Received: by theia.8bytes.org (Postfix, from userid 1000)
- id E13FF3A2; Sun,  3 May 2020 14:19:35 +0200 (CEST)
-Date: Sun, 3 May 2020 14:19:34 +0200
-From: Joerg Roedel <joro@8bytes.org>
-To: Linus Torvalds <torvalds@linux-foundation.org>
-Subject: [git pull] IOMMU Fixes for Linux v5.7-rc3
-Message-ID: <20200503121929.GA10425@8bytes.org>
-MIME-Version: 1.0
-User-Agent: Mutt/1.10.1 (2018-07-13)
+Received: from mail-qv1-f68.google.com (mail-qv1-f68.google.com
+ [209.85.219.68])
+ by silver.osuosl.org (Postfix) with ESMTPS id EF893203BD
+ for <iommu@lists.linux-foundation.org>; Sun,  3 May 2020 13:04:05 +0000 (UTC)
+Received: by mail-qv1-f68.google.com with SMTP id y19so7031717qvv.4
+ for <iommu@lists.linux-foundation.org>; Sun, 03 May 2020 06:04:05 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=lca.pw; s=google;
+ h=mime-version:subject:from:in-reply-to:date:cc
+ :content-transfer-encoding:message-id:references:to;
+ bh=lgDLstrxQHhDxzWYd9/HS8YbBd/gpsI1gpTdprUS3Jg=;
+ b=Dq4xmUY0lO9O9aVqYMQW5AsSTJeAnnfNOWuxdYL/g2r28y6kJLGyYc1PX7+z0JukAq
+ wyAcVZSwZkjc8VRCxLRJn26bGkxezGegSNuTNUn6w67H5qd3dkSA77rAL50b9yC404V4
+ st+f6Z9L6/MaGb5U7JV0MHQEbLyEFw68ozLmhtw0LfDgKYWFJEl+/M0sjOi+SGMPNiuJ
+ 1PYT0sh2oERfJPQEuk2g3WZDGC2RoC37Z5PSNIZz7FSpBei+eYjhf2wy61mmLeqyF9AD
+ ir673fIn5utfDxhEE2iD26R3vkKcGUE67v1Tjt05ErNGuWkt57eXT7Ah9rfKVFuIQ2A/
+ 96QQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+ d=1e100.net; s=20161025;
+ h=x-gm-message-state:mime-version:subject:from:in-reply-to:date:cc
+ :content-transfer-encoding:message-id:references:to;
+ bh=lgDLstrxQHhDxzWYd9/HS8YbBd/gpsI1gpTdprUS3Jg=;
+ b=db1oHAR8BI5RneCxsQyjVU/h/HHu6btxXvGPKSP3uCfrNK5IraHohDzAi84Q/6oHpi
+ SJan6C5Z9iURSEv/UIbIBWkVsR0geZBVOkWr/ZCaAz3E8YW3zQlBk7H6d4w7VOx0QW21
+ cH+H5bFqFJG+Q9q36zdUlXXOpAM74wRwZ5XJBBQXe9+WSxzl+wg74kfiT7YlEUMRIcDv
+ yoSwzkDckLFXVUtzeBNJt7k7vLn1Ac3F+c+79mnPZ9YTt3pSjSSfZJguPxzIiCPd/INC
+ n5gR67xYTd8kjh1nu//hcZaFDI4F3pfxfd+dnKH5wsYkVLzacr3SFOi1Ek+0831Nrifd
+ 0IeA==
+X-Gm-Message-State: AGi0PuZIiOH4ZQ0lqAwqbaWiID+GUxUsVib0mlgso9BAtRTol4ZilJ6g
+ 0yk4JJ/IgxU2MwDpc6fkFdR1ni2HPpHbRw==
+X-Google-Smtp-Source: APiQypLj7z+/+acBcByAY2J0cQ1YHYr/bMN4osB4axBDCIP2jxqqkeKhAAc+D3was7U+m5tQweO+wg==
+X-Received: by 2002:a0c:e992:: with SMTP id z18mr12711287qvn.25.1588511044636; 
+ Sun, 03 May 2020 06:04:04 -0700 (PDT)
+Received: from [192.168.1.153] (pool-71-184-117-43.bstnma.fios.verizon.net.
+ [71.184.117.43])
+ by smtp.gmail.com with ESMTPSA id i5sm7689441qtw.97.2020.05.03.06.04.03
+ (version=TLS1_2 cipher=ECDHE-ECDSA-AES128-GCM-SHA256 bits=128/128);
+ Sun, 03 May 2020 06:04:04 -0700 (PDT)
+Mime-Version: 1.0 (Mac OS X Mail 13.4 \(3608.80.23.2.2\))
+Subject: Re: [RFC PATCH] iommu/amd: fix a race in fetch_pte()
+From: Qian Cai <cai@lca.pw>
+In-Reply-To: <20200429112014.GN21900@8bytes.org>
+Date: Sun, 3 May 2020 09:04:03 -0400
+Message-Id: <E351FE35-3130-48B0-90ED-BC55469C73F7@lca.pw>
+References: <20200418121022.GA6113@8bytes.org>
+ <57CBF6B2-4745-4E36-9AA5-7E0876E3DA8F@lca.pw>
+ <20200418183429.GH21900@8bytes.org>
+ <7D03A3E2-647B-4FAD-886D-EE2764EC1EDB@lca.pw>
+ <20200429112014.GN21900@8bytes.org>
+To: Joerg Roedel <joro@8bytes.org>
+X-Mailer: Apple Mail (2.3608.80.23.2.2)
 Cc: iommu@lists.linux-foundation.org, linux-kernel@vger.kernel.org
 X-BeenThere: iommu@lists.linux-foundation.org
 X-Mailman-Version: 2.1.15
@@ -67,123 +106,28 @@ List-Post: <mailto:iommu@lists.linux-foundation.org>
 List-Help: <mailto:iommu-request@lists.linux-foundation.org?subject=help>
 List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
  <mailto:iommu-request@lists.linux-foundation.org?subject=subscribe>
-Content-Type: multipart/mixed; boundary="===============7936194127449063791=="
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: 7bit
 Errors-To: iommu-bounces@lists.linux-foundation.org
 Sender: "iommu" <iommu-bounces@lists.linux-foundation.org>
 
 
---===============7936194127449063791==
-Content-Type: multipart/signed; micalg=pgp-sha256;
-	protocol="application/pgp-signature"; boundary="Q68bSM7Ycu6FN28Q"
-Content-Disposition: inline
 
+> On Apr 29, 2020, at 7:20 AM, Joerg Roedel <joro@8bytes.org> wrote:
+> 
+> On Mon, Apr 20, 2020 at 09:26:12AM -0400, Qian Cai wrote:
+>> No dice. There could be some other races. For example,
+> 
+> Can you please test this branch:
+> 
+> 	https://git.kernel.org/pub/scm/linux/kernel/git/joro/linux.git/log/?h=amd-iommu-fixes
+> 
+> It has the previous fix in it and a couple more to make sure the
+> device-table is updated and flushed before increase_address_space()
+> updates domain->pt_root.
 
---Q68bSM7Ycu6FN28Q
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-
-Hi Linus,
-
-The following changes since commit 6a8b55ed4056ea5559ebe4f6a4b247f627870d4c:
-
-  Linux 5.7-rc3 (2020-04-26 13:51:02 -0700)
-
-are available in the Git repository at:
-
-  git://git.kernel.org/pub/scm/linux/kernel/git/joro/iommu.git tags/iommu-fixes-v5.7-rc3
-
-for you to fetch changes up to b52649aee6243ea661905bdc5fbe28cc5f6dec76:
-
-  iommu/qcom: Fix local_base status check (2020-05-01 13:37:23 +0200)
-
-----------------------------------------------------------------
-IOMMU Fixes for Linux v5.7-rc3
-
-Including:
-
-	- Fix for a memory leak when dev_iommu gets freed and a
-	  sub-pointer does not.
-
-	- Build dependency fixes for Mediatek, spapr_tce, and
-	  Intel IOMMU driver.
-
-	- Export iommu_group_get_for_dev() only for GPLed modules
-
-	- Fix for AMD IOMMU interrupt remapping when x2apic is
-	  enabled
-
-	- Fix for error path in the QCOM IOMMU driver probe function
-
-----------------------------------------------------------------
-Geert Uytterhoeven (1):
-      iommu/mediatek: Fix MTK_IOMMU dependencies
-
-Greg Kroah-Hartman (1):
-      iommu: Properly export iommu_group_get_for_dev()
-
-Kevin Hao (1):
-      iommu: Fix the memory leak in dev_iommu_free()
-
-Krzysztof Kozlowski (1):
-      iommu: spapr_tce: Disable compile testing to fix build on book3s_32 config
-
-Lu Baolu (1):
-      iommu/vt-d: Use right Kconfig option name
-
-Suravee Suthikulpanit (1):
-      iommu/amd: Fix legacy interrupt remapping for x2APIC-enabled system
-
-Tang Bin (1):
-      iommu/qcom: Fix local_base status check
-
- drivers/iommu/Kconfig          | 4 ++--
- drivers/iommu/amd_iommu_init.c | 2 +-
- drivers/iommu/intel-iommu.c    | 4 ++--
- drivers/iommu/iommu.c          | 3 ++-
- drivers/iommu/qcom_iommu.c     | 5 ++++-
- 5 files changed, 11 insertions(+), 7 deletions(-)
-
-Please pull.
-
-There are also some race condition fixes for the AMD IOMMU driver
-pending, but I wait for more testing feedback from Qian before sending
-them your way, so they are not included here.
-
-Thanks,
-
-	Joerg
-
---Q68bSM7Ycu6FN28Q
-Content-Type: application/pgp-signature; name="signature.asc"
-Content-Description: Digital signature
-
------BEGIN PGP SIGNATURE-----
-
-iQIzBAEBCAAdFiEEr9jSbILcajRFYWYyK/BELZcBGuMFAl6uttAACgkQK/BELZcB
-GuNcNg/9EEptDzjNdWIh4GD+okAC+zWIMeWezt2Te8ytNx/r7zOS1Ye3VqgYq8GS
-TavgT+a5hIeaxo2qTLRj7ZNrxVGcB7vshQBwXqBpFg2rYOeo3O+7lhmBeWpGUgBy
-6IjyF0WctoUYCkxZPVYjAjoUrSI2ZMzYBpjNKto2EpLFj1f8FAR+Wujcx9l3qWFb
-J8G49VIqPhjtHLOGHT1ijmfWaF2MvQmZVpYRsGkRqlaWc//iOrHKc+ONLTApmatP
-ZqnqDTqeQNBSEbP0K4G2WZ4N8D3vdBjVrDRb4jQaPpmunK2WHXnSgv/VJy1IyqUT
-P4jicSh0vr5YKbkrAeGEj11RLKyji8jrHV2yWBIH8TtHNLagJeyIK5KkNqk+Qz02
-g+fUjjiS0Whvxc4zT2r+I+j3MvARZbY2sXRG/3WOUOna6D9HGKLVdQs/7ezDQKES
-2LrYSx3G9omTIdwCugJ2jvItokXuryN6wLL87EpnK5iipKWtYnXKoG8Quq/VgJ3+
-VI2mvqx4nspJ/ENj22DU++bbNO9KhTKgzrOeOgO8eE8QyUK382MGn5/ehBddK0yD
-xnBbTtjEvQPFbAA2rEUrTyZszBE0BhHxQxwNEhmFBVE5CR10BHUseeWdW8HVUI7r
-ZdTpE2CMZxR6tM3+hswWH6d5Vg5IeQbz8Amc4CN8DLYU8xQb8wo=
-=cYaI
------END PGP SIGNATURE-----
-
---Q68bSM7Ycu6FN28Q--
-
---===============7936194127449063791==
-Content-Type: text/plain; charset="us-ascii"
-MIME-Version: 1.0
-Content-Transfer-Encoding: 7bit
-Content-Disposition: inline
-
+I believe this closed the existing races as it had survived for many days. Great work!
 _______________________________________________
 iommu mailing list
 iommu@lists.linux-foundation.org
 https://lists.linuxfoundation.org/mailman/listinfo/iommu
---===============7936194127449063791==--
