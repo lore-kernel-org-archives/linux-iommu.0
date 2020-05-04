@@ -2,139 +2,58 @@ Return-Path: <SRS0=OemM=6S=lists.linux-foundation.org=iommu-bounces@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-9.6 required=3.0 tests=DKIM_INVALID,DKIM_SIGNED,
-	HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_PATCH,MAILING_LIST_MULTI,SIGNED_OFF_BY,
-	SPF_HELO_NONE,SPF_PASS,USER_AGENT_GIT autolearn=ham autolearn_force=no
-	version=3.4.0
+X-Spam-Status: No, score=-3.8 required=3.0 tests=HEADER_FROM_DIFFERENT_DOMAINS,
+	MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS,USER_AGENT_GIT autolearn=no
+	autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 43698C47258
-	for <iommu@archiver.kernel.org>; Mon,  4 May 2020 12:54:23 +0000 (UTC)
-Received: from fraxinus.osuosl.org (smtp4.osuosl.org [140.211.166.137])
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 0C40BC47264
+	for <iommu@archiver.kernel.org>; Mon,  4 May 2020 12:54:27 +0000 (UTC)
+Received: from silver.osuosl.org (smtp3.osuosl.org [140.211.166.136])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by mail.kernel.org (Postfix) with ESMTPS id 0A8DF2075B
-	for <iommu@archiver.kernel.org>; Mon,  4 May 2020 12:54:23 +0000 (UTC)
-Authentication-Results: mail.kernel.org;
-	dkim=fail reason="signature verification failed" (1024-bit key) header.d=samsung.com header.i=@samsung.com header.b="eMeCEPzH"
-DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 0A8DF2075B
-Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=samsung.com
+	by mail.kernel.org (Postfix) with ESMTPS id E07662075E
+	for <iommu@archiver.kernel.org>; Mon,  4 May 2020 12:54:26 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org E07662075E
+Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=8bytes.org
 Authentication-Results: mail.kernel.org; spf=pass smtp.mailfrom=iommu-bounces@lists.linux-foundation.org
 Received: from localhost (localhost [127.0.0.1])
-	by fraxinus.osuosl.org (Postfix) with ESMTP id F267A87692;
-	Mon,  4 May 2020 12:54:22 +0000 (UTC)
+	by silver.osuosl.org (Postfix) with ESMTP id B8B4922EDD;
+	Mon,  4 May 2020 12:54:26 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from fraxinus.osuosl.org ([127.0.0.1])
+Received: from silver.osuosl.org ([127.0.0.1])
 	by localhost (.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
-	with ESMTP id erY7tGVz0-dM; Mon,  4 May 2020 12:54:22 +0000 (UTC)
+	with ESMTP id vEUO55FpSm0T; Mon,  4 May 2020 12:54:25 +0000 (UTC)
 Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [140.211.9.56])
-	by fraxinus.osuosl.org (Postfix) with ESMTP id 57EF2876D7;
-	Mon,  4 May 2020 12:54:22 +0000 (UTC)
+	by silver.osuosl.org (Postfix) with ESMTP id 998EF22DD3;
+	Mon,  4 May 2020 12:54:25 +0000 (UTC)
 Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
-	by lists.linuxfoundation.org (Postfix) with ESMTP id 52A39C088C;
-	Mon,  4 May 2020 12:54:22 +0000 (UTC)
+	by lists.linuxfoundation.org (Postfix) with ESMTP id 7E007C088C;
+	Mon,  4 May 2020 12:54:25 +0000 (UTC)
 Received: from fraxinus.osuosl.org (smtp4.osuosl.org [140.211.166.137])
- by lists.linuxfoundation.org (Postfix) with ESMTP id 73B8EC0175
- for <iommu@lists.linux-foundation.org>; Mon,  4 May 2020 12:54:20 +0000 (UTC)
+ by lists.linuxfoundation.org (Postfix) with ESMTP id BC6B1C0175
+ for <iommu@lists.linux-foundation.org>; Mon,  4 May 2020 12:54:21 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
- by fraxinus.osuosl.org (Postfix) with ESMTP id 5411886FD9
- for <iommu@lists.linux-foundation.org>; Mon,  4 May 2020 12:54:20 +0000 (UTC)
+ by fraxinus.osuosl.org (Postfix) with ESMTP id A9C2F8693B
+ for <iommu@lists.linux-foundation.org>; Mon,  4 May 2020 12:54:21 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
 Received: from fraxinus.osuosl.org ([127.0.0.1])
  by localhost (.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
- with ESMTP id T7ljdeM8pXib for <iommu@lists.linux-foundation.org>;
- Mon,  4 May 2020 12:54:18 +0000 (UTC)
+ with ESMTP id 7RWP5MQ5enFX for <iommu@lists.linux-foundation.org>;
+ Mon,  4 May 2020 12:54:17 +0000 (UTC)
 X-Greylist: from auto-whitelisted by SQLgrey-1.7.6
-Received: from mailout1.w1.samsung.com (mailout1.w1.samsung.com
- [210.118.77.11])
- by fraxinus.osuosl.org (Postfix) with ESMTPS id D1F6B87676
+Received: from theia.8bytes.org (8bytes.org [81.169.241.247])
+ by fraxinus.osuosl.org (Postfix) with ESMTPS id 51D3687589
  for <iommu@lists.linux-foundation.org>; Mon,  4 May 2020 12:54:17 +0000 (UTC)
-Received: from eucas1p1.samsung.com (unknown [182.198.249.206])
- by mailout1.w1.samsung.com (KnoxPortal) with ESMTP id
- 20200504125415euoutp01f3e48d07b6a65e48679f5d3250e4e603~L1Gx62P9r2849828498euoutp011
- for <iommu@lists.linux-foundation.org>; Mon,  4 May 2020 12:54:15 +0000 (GMT)
-DKIM-Filter: OpenDKIM Filter v2.11.0 mailout1.w1.samsung.com
- 20200504125415euoutp01f3e48d07b6a65e48679f5d3250e4e603~L1Gx62P9r2849828498euoutp011
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=samsung.com;
- s=mail20170921; t=1588596856;
- bh=SFZ/7lR7IpjrKlKSLmU4abJrB2xlg5tDaklhAbe7jX0=;
- h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
- b=eMeCEPzHTZBxBizPvf9pXo/5N++dSt0Sp8EtWcKAVl2yNMNjPevL2aNDdcp2j42Oe
- +Sok/9QVhg0LiIvh6lxgageGWOZIA1e896Qe2ga9wBQ/A+cAN3FDPznzXGhN1/x9UH
- aFyggdoMkvc8APoh/uv1GakQuFgWGr12PTU/9B+Q=
-Received: from eusmges3new.samsung.com (unknown [203.254.199.245]) by
- eucas1p2.samsung.com (KnoxPortal) with ESMTP id
- 20200504125415eucas1p200586e88883ec1cdbf36f79bba25a4ad~L1GxkwCJn2246922469eucas1p2e;
- Mon,  4 May 2020 12:54:15 +0000 (GMT)
-Received: from eucas1p1.samsung.com ( [182.198.249.206]) by
- eusmges3new.samsung.com (EUCPMTA) with SMTP id 36.12.60698.77010BE5; Mon,  4
- May 2020 13:54:15 +0100 (BST)
-Received: from eusmtrp1.samsung.com (unknown [182.198.249.138]) by
- eucas1p2.samsung.com (KnoxPortal) with ESMTPA id
- 20200504125415eucas1p2757f9a71add8c7547bc8f85906468113~L1GxNC5to2267422674eucas1p2u;
- Mon,  4 May 2020 12:54:15 +0000 (GMT)
-Received: from eusmgms2.samsung.com (unknown [182.198.249.180]) by
- eusmtrp1.samsung.com (KnoxPortal) with ESMTP id
- 20200504125415eusmtrp1e1284d4f03879fd64553ffa12e4072a2~L1GxMVuIW2497724977eusmtrp1X;
- Mon,  4 May 2020 12:54:15 +0000 (GMT)
-X-AuditID: cbfec7f5-a29ff7000001ed1a-4c-5eb010771511
-Received: from eusmtip2.samsung.com ( [203.254.199.222]) by
- eusmgms2.samsung.com (EUCPMTA) with SMTP id 66.06.07950.77010BE5; Mon,  4
- May 2020 13:54:15 +0100 (BST)
-Received: from AMDC2765.digital.local (unknown [106.120.51.73]) by
- eusmtip2.samsung.com (KnoxPortal) with ESMTPA id
- 20200504125414eusmtip2198d08fccd13a642afb1d3d0a06c7de6~L1Gwe7ZaQ0241602416eusmtip2W;
- Mon,  4 May 2020 12:54:14 +0000 (GMT)
-From: Marek Szyprowski <m.szyprowski@samsung.com>
-To: dri-devel@lists.freedesktop.org, iommu@lists.linux-foundation.org,
- linaro-mm-sig@lists.linaro.org, linux-kernel@vger.kernel.org
-Subject: [PATCH v2 08/21] drm: msm: fix sg_table nents vs. orig_nents misuse
-Date: Mon,  4 May 2020 14:53:46 +0200
-Message-Id: <20200504125359.5678-8-m.szyprowski@samsung.com>
+Received: by theia.8bytes.org (Postfix, from userid 1000)
+ id B004139F; Mon,  4 May 2020 14:54:14 +0200 (CEST)
+From: Joerg Roedel <joro@8bytes.org>
+To: iommu@lists.linux-foundation.org
+Subject: [PATCH 0/5] iommu/amd: Fix race conditions around
+ increase_address_space()
+Date: Mon,  4 May 2020 14:54:08 +0200
+Message-Id: <20200504125413.16798-1-joro@8bytes.org>
 X-Mailer: git-send-email 2.17.1
-In-Reply-To: <20200504125359.5678-1-m.szyprowski@samsung.com>
-X-Brightmail-Tracker: H4sIAAAAAAAAA0VSWUwTURT1dabToVAdCpEXJBBr1IgIEkBHAQPExAnhw+CPwYhUGFoiBdKy
- /9igglaqshihgKKi7LIKWMJWlmpZJCwGkQYRBSE0YlgiqCBlAP/Odt+5uXk4wu9gW+NhEdG0
- NEIYLsC4aF3XSt+xOKIy8HjHnB2p7HvHIquyKtjkel0aQg4t/cDI3OleQBaXdrLI/BZ3cnFo
- gkVWT35gk2ktvRxyUJ2LkeUdeg45/fQXQrbNf2WT+owO4LWHKntcBqim5XyUeqPSc6j65c9s
- avyulkXVFFynPq1NIlTGSCGgGj/KMUqrHuVQ92pLALVQbXveLIDrEUKHh8XSUqczQVxx6Zc1
- ELXMj9cZ3ORATiiACQ4JV/ileQxRAC7OJ4oAXH2/jjJkEUClepHFkAUAM1/oONsjOTU9gDEK
- AVSk52E7I8sF1SxjCiOcocKgwIzYkrgF4FulmTGEECoEftf83jQsCD+YoxtGjRglDsIUXTZb
- AXCcR3jA8akTTJsdLK1sRYyyCeEJs5WHjc9AYpQD1cqHGJM5C0v1eSwGW8BZbe3WpjawOyMV
- ZQZuADjRV85hSCqAg0lZgEm5w7G+VczYgBBHYIXaiZG94WDe9OY+kNgNRwzmRhnZgOl1jxBG
- 5sHbyXwmfQiqtK92atv6BxAGU/DOkmrrvu0ArvSPgwfATvW/LB+AEmBFx8gkIlrmEkHHOcqE
- EllMhMgxOFJSDTb+VveadqkBNP+5qgEEDgRmvIsLFYF8tjBWliDRAIgjAktew80NiRciTEik
- pZFXpDHhtEwD9uGowIrn8mzmMp8QCaPpazQdRUu3XRZuYi0HvKCT8W7W6fx1JLEn0TcYjxxW
- nNv784JfQFF7aPNfgzfu1aUQ+/sunW48WpXEXzNNbg6db/jW4+g5JRUl2x+w8N41a1rkWh9n
- OmqjLdaIZtlDwc7745/YrKbc11/ys+130Ou9Ol/nOvo0Pbd9uThXP2Be6+QjPpWJxvuLfR1m
- WgWoTCx0tkekMuE/ZvP2N1cDAAA=
-X-Brightmail-Tracker: H4sIAAAAAAAAA+NgFlrKIsWRmVeSWpSXmKPExsVy+t/xe7rlAhviDM5u5bToPXeSyWLjjPWs
- Fv+3TWS2uPL1PZvFnOdnGS1Wrj7KZLFgv7XFlysPmSw2Pb7GajFx/1l2i8u75rBZrD1yl93i
- +cIfzBYHPzxhtbg7+QijA7/HmnlrGD32flvA4rFz1l12j+3fHrB63O8+zuSxeUm9x+1/j5k9
- Jt9Yzuix+2YDm8fxXbfYPfq2rGL0+LxJLoAnSs+mKL+0JFUhI7+4xFYp2tDCSM/Q0kLPyMRS
- z9DYPNbKyFRJ384mJTUnsyy1SN8uQS9j9aN/jAXfhCpOvTVtYGwQ6GLk5JAQMJGYvfkMYxcj
- F4eQwFJGiZer3rBAJGQkTk5rYIWwhSX+XOtigyj6xChxrnsTWIJNwFCi6y1EQkSgk1FiWvdH
- dhCHWWAJs0Tf1EtsIFXCAj4Ss09dBRvLIqAq0X5qJlA3BwevgI3E/WdmEBvkJVZvOMAMEuYU
- sJWY2asOEhYSyJe4+/QfywRGvgWMDKsYRVJLi3PTc4uN9IoTc4tL89L1kvNzNzECo2jbsZ9b
- djB2vQs+xCjAwajEw7vh6/o4IdbEsuLK3EOMEhzMSiK8O1qAQrwpiZVVqUX58UWlOanFhxhN
- gU6ayCwlmpwPjPC8knhDU0NzC0tDc2NzYzMLJXHeDoGDMUIC6YklqdmpqQWpRTB9TBycUg2M
- LcIGjmedQ/1YHl9ymXz1wByNa79Co7TVvrHUFMvMfzxVudXZ+pfOlSlvDSTKP9fP6OqvU7T7
- G6hW8FuZ91r3s/q34pyrjsQ0bH+8r3jjg9LHH/tcl1gbd5dJBt64xsLHnCRodzb2f0r5zk1m
- O25veW0VVTzZ73/LhL8PXgcU/oiffTsn7s4CJZbijERDLeai4kQAb5PeGrgCAAA=
-X-CMS-MailID: 20200504125415eucas1p2757f9a71add8c7547bc8f85906468113
-X-Msg-Generator: CA
-X-RootMTR: 20200504125415eucas1p2757f9a71add8c7547bc8f85906468113
-X-EPHeader: CA
-CMS-TYPE: 201P
-X-CMS-RootMailID: 20200504125415eucas1p2757f9a71add8c7547bc8f85906468113
-References: <20200504125017.5494-1-m.szyprowski@samsung.com>
- <20200504125359.5678-1-m.szyprowski@samsung.com>
- <CGME20200504125415eucas1p2757f9a71add8c7547bc8f85906468113@eucas1p2.samsung.com>
-Cc: freedreno@lists.freedesktop.org,
- Bartlomiej Zolnierkiewicz <b.zolnierkie@samsung.com>,
- David Airlie <airlied@linux.ie>, Sean Paul <sean@poorly.run>,
- Daniel Vetter <daniel@ffwll.ch>, linux-arm-msm@vger.kernel.org,
- Robin Murphy <robin.murphy@arm.com>, Christoph Hellwig <hch@lst.de>,
- linux-arm-kernel@lists.infradead.org
+Cc: Qian Cai <cai@lca.pw>, linux-kernel@vger.kernel.org
 X-BeenThere: iommu@lists.linux-foundation.org
 X-Mailman-Version: 2.1.15
 Precedence: list
@@ -153,68 +72,47 @@ Content-Transfer-Encoding: 7bit
 Errors-To: iommu-bounces@lists.linux-foundation.org
 Sender: "iommu" <iommu-bounces@lists.linux-foundation.org>
 
-The Documentation/DMA-API-HOWTO.txt states that dma_map_sg returns the
-numer of the created entries in the DMA address space. However the
-subsequent calls to dma_sync_sg_for_{device,cpu} and dma_unmap_sg must be
-called with the original number of entries passed to dma_map_sg. The
-sg_table->nents in turn holds the result of the dma_map_sg call as stated
-in include/linux/scatterlist.h. Adapt the code to obey those rules.
+Hi,
 
-Signed-off-by: Marek Szyprowski <m.szyprowski@samsung.com>
----
-For more information, see '[PATCH v2 00/21] DRM: fix struct sg_table nents
-vs. orig_nents misuse' thread: https://lkml.org/lkml/2020/5/4/373
----
- drivers/gpu/drm/msm/msm_gem.c   | 8 ++++----
- drivers/gpu/drm/msm/msm_iommu.c | 3 ++-
- 2 files changed, 6 insertions(+), 5 deletions(-)
+Qian reported more race conditions around the dma-mapping
+code path in the AMD IOMMU driver. The race condtions are
+between increas_address_space() and fetch_pte(), there were
+two of them:
 
-diff --git a/drivers/gpu/drm/msm/msm_gem.c b/drivers/gpu/drm/msm/msm_gem.c
-index 5a6a79f..54c3bbb 100644
---- a/drivers/gpu/drm/msm/msm_gem.c
-+++ b/drivers/gpu/drm/msm/msm_gem.c
-@@ -54,10 +54,10 @@ static void sync_for_device(struct msm_gem_object *msm_obj)
- 
- 	if (get_dma_ops(dev) && IS_ENABLED(CONFIG_ARM64)) {
- 		dma_sync_sg_for_device(dev, msm_obj->sgt->sgl,
--			msm_obj->sgt->nents, DMA_BIDIRECTIONAL);
-+			msm_obj->sgt->orig_nents, DMA_BIDIRECTIONAL);
- 	} else {
- 		dma_map_sg(dev, msm_obj->sgt->sgl,
--			msm_obj->sgt->nents, DMA_BIDIRECTIONAL);
-+			msm_obj->sgt->orig_nents, DMA_BIDIRECTIONAL);
- 	}
- }
- 
-@@ -67,10 +67,10 @@ static void sync_for_cpu(struct msm_gem_object *msm_obj)
- 
- 	if (get_dma_ops(dev) && IS_ENABLED(CONFIG_ARM64)) {
- 		dma_sync_sg_for_cpu(dev, msm_obj->sgt->sgl,
--			msm_obj->sgt->nents, DMA_BIDIRECTIONAL);
-+			msm_obj->sgt->orig_nents, DMA_BIDIRECTIONAL);
- 	} else {
- 		dma_unmap_sg(dev, msm_obj->sgt->sgl,
--			msm_obj->sgt->nents, DMA_BIDIRECTIONAL);
-+			msm_obj->sgt->orig_nents, DMA_BIDIRECTIONAL);
- 	}
- }
- 
-diff --git a/drivers/gpu/drm/msm/msm_iommu.c b/drivers/gpu/drm/msm/msm_iommu.c
-index ad58cfe..b0ca084 100644
---- a/drivers/gpu/drm/msm/msm_iommu.c
-+++ b/drivers/gpu/drm/msm/msm_iommu.c
-@@ -43,7 +43,8 @@ static int msm_iommu_map(struct msm_mmu *mmu, uint64_t iova,
- 	struct msm_iommu *iommu = to_msm_iommu(mmu);
- 	size_t ret;
- 
--	ret = iommu_map_sg(iommu->domain, iova, sgt->sgl, sgt->nents, prot);
-+	ret = iommu_map_sg(iommu->domain, iova, sgt->sgl, sgt->orig_nents,
-+			   prot);
- 	WARN_ON(!ret);
- 
- 	return (ret == len) ? 0 : -EINVAL;
+	1) the 'pt_root' and 'mode' fields of 'struct
+	   protection_domain' relate to each other so that
+	   they must be updated together atomically.
+
+	2) The increase_address_space() function publishes
+	   the updated page-table before it has been written
+	   to the DTE. This might cause PTEs to be mapped
+	   and addresses handed to the device which are not
+	   yet reachable through the DTE entry, causing IO
+	   page-faults.
+
+This patch-set fixes these issues, as tested by Qian Cai.
+
+Thanks a lot again for reporting these issued and testing
+the fixes!
+
+Regards,
+
+	Joerg
+
+
+Joerg Roedel (5):
+  iommu/amd: Fix race in increase_address_space()/fetch_pte()
+  iommu/amd: Do not loop forever when trying to increase address space
+  iommu/amd: Call domain_flush_complete() in update_domain()
+  iommu/amd: Update Device Table in increase_address_space()
+  iommu/amd: Do not flush Device Table in iommu_map_page()
+
+ drivers/iommu/amd_iommu.c       | 198 +++++++++++++++++++++++++-------
+ drivers/iommu/amd_iommu_types.h |   9 +-
+ 2 files changed, 161 insertions(+), 46 deletions(-)
+
 -- 
-1.9.1
+2.17.1
 
 _______________________________________________
 iommu mailing list
