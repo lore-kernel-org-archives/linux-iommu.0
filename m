@@ -2,61 +2,140 @@ Return-Path: <SRS0=OemM=6S=lists.linux-foundation.org=iommu-bounces@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-9.8 required=3.0 tests=HEADER_FROM_DIFFERENT_DOMAINS,
-	INCLUDES_PATCH,MAILING_LIST_MULTI,SIGNED_OFF_BY,SPF_HELO_NONE,SPF_PASS,
-	USER_AGENT_GIT autolearn=ham autolearn_force=no version=3.4.0
+X-Spam-Status: No, score=-9.6 required=3.0 tests=DKIM_INVALID,DKIM_SIGNED,
+	HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_PATCH,MAILING_LIST_MULTI,SIGNED_OFF_BY,
+	SPF_HELO_NONE,SPF_PASS,USER_AGENT_GIT autolearn=ham autolearn_force=no
+	version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 17C3BC54E47
-	for <iommu@archiver.kernel.org>; Mon,  4 May 2020 12:54:30 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 9D970C4CECC
+	for <iommu@archiver.kernel.org>; Mon,  4 May 2020 12:54:27 +0000 (UTC)
 Received: from hemlock.osuosl.org (smtp2.osuosl.org [140.211.166.133])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by mail.kernel.org (Postfix) with ESMTPS id DF14820757
-	for <iommu@archiver.kernel.org>; Mon,  4 May 2020 12:54:29 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org DF14820757
-Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=8bytes.org
+	by mail.kernel.org (Postfix) with ESMTPS id 7312A2075E
+	for <iommu@archiver.kernel.org>; Mon,  4 May 2020 12:54:27 +0000 (UTC)
+Authentication-Results: mail.kernel.org;
+	dkim=fail reason="signature verification failed" (1024-bit key) header.d=samsung.com header.i=@samsung.com header.b="TBa2bsb5"
+DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 7312A2075E
+Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=samsung.com
 Authentication-Results: mail.kernel.org; spf=pass smtp.mailfrom=iommu-bounces@lists.linux-foundation.org
 Received: from localhost (localhost [127.0.0.1])
-	by hemlock.osuosl.org (Postfix) with ESMTP id CF34E88637;
-	Mon,  4 May 2020 12:54:29 +0000 (UTC)
+	by hemlock.osuosl.org (Postfix) with ESMTP id 4A65E888E4;
+	Mon,  4 May 2020 12:54:27 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
 Received: from hemlock.osuosl.org ([127.0.0.1])
 	by localhost (.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
-	with ESMTP id 7G57Al1fDQSR; Mon,  4 May 2020 12:54:24 +0000 (UTC)
+	with ESMTP id rYx1M4MW1VSw; Mon,  4 May 2020 12:54:25 +0000 (UTC)
 Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [140.211.9.56])
-	by hemlock.osuosl.org (Postfix) with ESMTP id 2702F88A83;
+	by hemlock.osuosl.org (Postfix) with ESMTP id 6403B88AA7;
 	Mon,  4 May 2020 12:54:23 +0000 (UTC)
 Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
-	by lists.linuxfoundation.org (Postfix) with ESMTP id 0DACDC088F;
+	by lists.linuxfoundation.org (Postfix) with ESMTP id 4FCFBC0893;
 	Mon,  4 May 2020 12:54:23 +0000 (UTC)
-Received: from hemlock.osuosl.org (smtp2.osuosl.org [140.211.166.133])
- by lists.linuxfoundation.org (Postfix) with ESMTP id 24B25C088C
+Received: from fraxinus.osuosl.org (smtp4.osuosl.org [140.211.166.137])
+ by lists.linuxfoundation.org (Postfix) with ESMTP id 36D66C0894
  for <iommu@lists.linux-foundation.org>; Mon,  4 May 2020 12:54:21 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
- by hemlock.osuosl.org (Postfix) with ESMTP id 1ECED883C0
- for <iommu@lists.linux-foundation.org>; Mon,  4 May 2020 12:54:21 +0000 (UTC)
+ by fraxinus.osuosl.org (Postfix) with ESMTP id E741887692
+ for <iommu@lists.linux-foundation.org>; Mon,  4 May 2020 12:54:20 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from hemlock.osuosl.org ([127.0.0.1])
+Received: from fraxinus.osuosl.org ([127.0.0.1])
  by localhost (.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
- with ESMTP id ehdG-E8Ls4H3 for <iommu@lists.linux-foundation.org>;
- Mon,  4 May 2020 12:54:18 +0000 (UTC)
+ with ESMTP id 4GV6l7M6Wamw for <iommu@lists.linux-foundation.org>;
+ Mon,  4 May 2020 12:54:19 +0000 (UTC)
 X-Greylist: from auto-whitelisted by SQLgrey-1.7.6
-Received: from theia.8bytes.org (8bytes.org [81.169.241.247])
- by hemlock.osuosl.org (Postfix) with ESMTPS id 23501883F8
+Received: from mailout2.w1.samsung.com (mailout2.w1.samsung.com
+ [210.118.77.12])
+ by fraxinus.osuosl.org (Postfix) with ESMTPS id 86294876D2
  for <iommu@lists.linux-foundation.org>; Mon,  4 May 2020 12:54:18 +0000 (UTC)
-Received: by theia.8bytes.org (Postfix, from userid 1000)
- id B870422A; Mon,  4 May 2020 14:54:14 +0200 (CEST)
-From: Joerg Roedel <joro@8bytes.org>
-To: iommu@lists.linux-foundation.org
-Subject: [PATCH 1/5] iommu/amd: Fix race in
- increase_address_space()/fetch_pte()
-Date: Mon,  4 May 2020 14:54:09 +0200
-Message-Id: <20200504125413.16798-2-joro@8bytes.org>
+Received: from eucas1p1.samsung.com (unknown [182.198.249.206])
+ by mailout2.w1.samsung.com (KnoxPortal) with ESMTP id
+ 20200504125416euoutp02311389f6c05447cdf1567e606eb199e7~L1Gy37nmv1771917719euoutp02b
+ for <iommu@lists.linux-foundation.org>; Mon,  4 May 2020 12:54:16 +0000 (GMT)
+DKIM-Filter: OpenDKIM Filter v2.11.0 mailout2.w1.samsung.com
+ 20200504125416euoutp02311389f6c05447cdf1567e606eb199e7~L1Gy37nmv1771917719euoutp02b
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=samsung.com;
+ s=mail20170921; t=1588596857;
+ bh=4gYupzc/UJMgmHWpPu2pQvg0evsLFhb5hvvpEtLWtk4=;
+ h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
+ b=TBa2bsb5mbktXySJBoleq/q280OjjLCbSxWdW6KDVoGNlN9O2MF2vqs+Sv1m99jbG
+ 24gENpjKKpMGXZLz8ZD0LlsLcCW4jw+5T7QGtK+lXZsVgWmElToPyeeHKKI0YOZA/x
+ ad+5M/JLVaFOPnk/OWEBBY9K7gVQ01GRLSuJzKqs=
+Received: from eusmges2new.samsung.com (unknown [203.254.199.244]) by
+ eucas1p2.samsung.com (KnoxPortal) with ESMTP id
+ 20200504125416eucas1p2f417af8300199cd00291584432cff973~L1GyhfFMd2227522275eucas1p2m;
+ Mon,  4 May 2020 12:54:16 +0000 (GMT)
+Received: from eucas1p2.samsung.com ( [182.198.249.207]) by
+ eusmges2new.samsung.com (EUCPMTA) with SMTP id EB.D2.60679.87010BE5; Mon,  4
+ May 2020 13:54:16 +0100 (BST)
+Received: from eusmtrp1.samsung.com (unknown [182.198.249.138]) by
+ eucas1p1.samsung.com (KnoxPortal) with ESMTPA id
+ 20200504125415eucas1p1eea125ce87eec4e7c2e2dcc75f965896~L1Gx8x-ai1176711767eucas1p1S;
+ Mon,  4 May 2020 12:54:15 +0000 (GMT)
+Received: from eusmgms2.samsung.com (unknown [182.198.249.180]) by
+ eusmtrp1.samsung.com (KnoxPortal) with ESMTP id
+ 20200504125415eusmtrp1ab58d44cf2acebca7c2c1109419622b6~L1Gx8GCL92470624706eusmtrp1i;
+ Mon,  4 May 2020 12:54:15 +0000 (GMT)
+X-AuditID: cbfec7f4-0cbff7000001ed07-a4-5eb01078b33a
+Received: from eusmtip2.samsung.com ( [203.254.199.222]) by
+ eusmgms2.samsung.com (EUCPMTA) with SMTP id 87.06.07950.77010BE5; Mon,  4
+ May 2020 13:54:15 +0100 (BST)
+Received: from AMDC2765.digital.local (unknown [106.120.51.73]) by
+ eusmtip2.samsung.com (KnoxPortal) with ESMTPA id
+ 20200504125415eusmtip2131813f4a891672552b948480ffbdf1e~L1GxNGVje0350403504eusmtip26;
+ Mon,  4 May 2020 12:54:15 +0000 (GMT)
+From: Marek Szyprowski <m.szyprowski@samsung.com>
+To: dri-devel@lists.freedesktop.org, iommu@lists.linux-foundation.org,
+ linaro-mm-sig@lists.linaro.org, linux-kernel@vger.kernel.org
+Subject: [PATCH v2 09/21] drm: panfrost: fix sg_table nents vs. orig_nents
+ misuse
+Date: Mon,  4 May 2020 14:53:47 +0200
+Message-Id: <20200504125359.5678-9-m.szyprowski@samsung.com>
 X-Mailer: git-send-email 2.17.1
-In-Reply-To: <20200504125413.16798-1-joro@8bytes.org>
-References: <20200504125413.16798-1-joro@8bytes.org>
-Cc: Joerg Roedel <jroedel@suse.de>, Qian Cai <cai@lca.pw>,
- linux-kernel@vger.kernel.org
+In-Reply-To: <20200504125359.5678-1-m.szyprowski@samsung.com>
+X-Brightmail-Tracker: H4sIAAAAAAAAA0WSeyyVYRzHPee9nJc5ehzKM7lsZ4vVFpE/3o1aNavX+qeWtWpL3niH5bbz
+ Oi5tSoQcjnGUJDUrzfVECCHnOC4nMZXblOT6D5tuLkkuOb3ov+/3+3y++/7+eChMqiNsqZDw
+ KE4ezobKSDO8rvP3u4OxsMrvUG6HI63q7RLRvX3pBP0ir5KgN+qyMXpg8RtJl5Z3iOhCrSe9
+ MDAhoqunhgi6v7GApDXto2J6o7lBTLd+nyboW+2bbKamjzy2i6l4XAGYhtEiwLxeKsSZ6rI0
+ kqlfGieYsXSDiKkpusmMrE9hTM5wMWCaPiaQTGZtGWDmqx3OmF8y8wrkQkOiObnrUX+z4D+1
+ lpHNu2ILmsrxBLBurgSmFIIeqEQ5CJTAjJLCEoAG5ztFglkAaC2xBxPMPEAV469E2xXDz+It
+ qhggnX4O26l0TqqAkSKhG1LOKUmjtobJAL1R/RvEoA5D4x27lUBMWcFzqM3XmOJwH0rpWhUb
+ tQR6oay0EUzYckTlVbpNTVGm8Ah6oHI2LiH4SYx0Hxa3GG809Khl6zYrNGuoFQvaDnXnZOBC
+ IQmgiV6NWDAZAPUn5gGB8kSfe1dI4wIG96PKRlchPo5Se7QiY4ygBRqesxSut0DquvuYEEvQ
+ nRSpQDuhfMPzndnW931bCIOe3XMxxlLYBlBODZ8FHPP/TxUCUAZsOAUfFsTx7uFcjAvPhvGK
+ 8CCXgIiwarD5r7rXDQsNoHH1qh5ACsjMJRfmK/2kBBvNx4XpAaIwmbWk4fZmJAlk465z8ogr
+ ckUox+vBXgqX2UgOP5m5LIVBbBR3jeMiOfn2q4gytU0AyVnqsvjc0FGP1BF/K9Zbkeh48cRT
+ 3L6pcd3V12kPUZdU4LPiaeFWZTJZcuPXSG7acn5rocPosnqhFjNxidGWVHQOmbyFPia5J1UT
+ +FhkKd2e4a6YnrhrP3t6zrflfL3/w5k+3Zev2oDseD0R4fxSPcR6ZZ3ysNOc1f6QFUvWZDgf
+ zLodwOQ8+xeC4Ld/UwMAAA==
+X-Brightmail-Tracker: H4sIAAAAAAAAA+NgFlrGIsWRmVeSWpSXmKPExsVy+t/xe7rlAhviDFatsLDoPXeSyeLcpW5W
+ i40z1rNa/N82kdniytf3bBYrVx9lsliw39riy5WHTBabHl9jtbi8aw6bxdojd9kt/u/ZwW5x
+ 8MMTVovGI0C1fWsvsTnwe6yZt4bRY8fdJYwee78tYPHYtKqTzWP7twesHve7jzN5bF5S73H7
+ 32Nmj8k3ljN67L7ZwObRt2UVo8fnTXIBPFF6NkX5pSWpChn5xSW2StGGFkZ6hpYWekYmlnqG
+ xuaxVkamSvp2NimpOZllqUX6dgl6Gb+3CBbs4a+Ys3s1SwPjP54uRk4OCQETieOfljN1MXJx
+ CAksZZS4dP8aK0RCRuLktAYoW1jiz7UuNoiiT4wS13vusYEk2AQMJbreQiREBDoZJaZ1f2QH
+ cZgFTjFL3Jh9DaxKWCBQou/VbmYQm0VAVaLt5B92EJtXwEZiQudtZogV8hKrNxwAsjk4OAVs
+ JWb2qoOEhQTyJe4+/ccygZFvASPDKkaR1NLi3PTcYiO94sTc4tK8dL3k/NxNjMA42nbs55Yd
+ jF3vgg8xCnAwKvHwbvi6Pk6INbGsuDL3EKMEB7OSCO+OFqAQb0piZVVqUX58UWlOavEhRlOg
+ myYyS4km5wNjPK8k3tDU0NzC0tDc2NzYzEJJnLdD4GCMkEB6YklqdmpqQWoRTB8TB6dUA+P2
+ iveW57ieMcw8fWVp9oGzgWJCmbadnKztN8Rrnbzm9U4+43cvyK7scvAr+ecsnJYm15q8nee/
+ tNBb4fLE/ehGT97Td/Y+13t5ojR4yylhpYt/05/n/8rfcuu5Kqfsnk0B7pMapXLOrK558Ypj
+ XYfsoY3PeF8aMfYy3ZwefHKOptJeuw/rIwyUWIozEg21mIuKEwGkmqhquQIAAA==
+X-CMS-MailID: 20200504125415eucas1p1eea125ce87eec4e7c2e2dcc75f965896
+X-Msg-Generator: CA
+X-RootMTR: 20200504125415eucas1p1eea125ce87eec4e7c2e2dcc75f965896
+X-EPHeader: CA
+CMS-TYPE: 201P
+X-CMS-RootMailID: 20200504125415eucas1p1eea125ce87eec4e7c2e2dcc75f965896
+References: <20200504125017.5494-1-m.szyprowski@samsung.com>
+ <20200504125359.5678-1-m.szyprowski@samsung.com>
+ <CGME20200504125415eucas1p1eea125ce87eec4e7c2e2dcc75f965896@eucas1p1.samsung.com>
+Cc: Rob Herring <robh@kernel.org>, Tomeu Vizoso <tomeu.vizoso@collabora.com>,
+ Bartlomiej Zolnierkiewicz <b.zolnierkie@samsung.com>,
+ David Airlie <airlied@linux.ie>, Steven Price <steven.price@arm.com>,
+ Alyssa Rosenzweig <alyssa.rosenzweig@collabora.com>,
+ Daniel Vetter <daniel@ffwll.ch>, Robin Murphy <robin.murphy@arm.com>,
+ Christoph Hellwig <hch@lst.de>, linux-arm-kernel@lists.infradead.org
 X-BeenThere: iommu@lists.linux-foundation.org
 X-Mailman-Version: 2.1.15
 Precedence: list
@@ -75,388 +154,53 @@ Content-Transfer-Encoding: 7bit
 Errors-To: iommu-bounces@lists.linux-foundation.org
 Sender: "iommu" <iommu-bounces@lists.linux-foundation.org>
 
-From: Joerg Roedel <jroedel@suse.de>
+The Documentation/DMA-API-HOWTO.txt states that dma_map_sg returns the
+numer of the created entries in the DMA address space. However the
+subsequent calls to dma_sync_sg_for_{device,cpu} and dma_unmap_sg must be
+called with the original number of entries passed to dma_map_sg. The
+sg_table->nents in turn holds the result of the dma_map_sg call as stated
+in include/linux/scatterlist.h. Adapt the code to obey those rules.
 
-The 'pt_root' and 'mode' struct members of 'struct protection_domain'
-need to be get/set atomically, otherwise the page-table of the domain
-can get corrupted.
-
-Merge the fields into one atomic64_t struct member which can be
-get/set atomically.
-
-Fixes: 92d420ec028d ("iommu/amd: Relax locking in dma_ops path")
-Reported-by: Qian Cai <cai@lca.pw>
-Tested-by: Qian Cai <cai@lca.pw>
-Signed-off-by: Joerg Roedel <jroedel@suse.de>
+Signed-off-by: Marek Szyprowski <m.szyprowski@samsung.com>
 ---
- drivers/iommu/amd_iommu.c       | 140 ++++++++++++++++++++++++--------
- drivers/iommu/amd_iommu_types.h |   9 +-
- 2 files changed, 112 insertions(+), 37 deletions(-)
+For more information, see '[PATCH v2 00/21] DRM: fix struct sg_table nents
+vs. orig_nents misuse' thread: https://lkml.org/lkml/2020/5/4/373
+---
+ drivers/gpu/drm/panfrost/panfrost_gem.c | 3 ++-
+ drivers/gpu/drm/panfrost/panfrost_mmu.c | 4 +++-
+ 2 files changed, 5 insertions(+), 2 deletions(-)
 
-diff --git a/drivers/iommu/amd_iommu.c b/drivers/iommu/amd_iommu.c
-index 20cce366e951..28229a38af4d 100644
---- a/drivers/iommu/amd_iommu.c
-+++ b/drivers/iommu/amd_iommu.c
-@@ -151,6 +151,26 @@ static struct protection_domain *to_pdomain(struct iommu_domain *dom)
- 	return container_of(dom, struct protection_domain, domain);
- }
- 
-+static void amd_iommu_domain_get_pgtable(struct protection_domain *domain,
-+					 struct domain_pgtable *pgtable)
-+{
-+	u64 pt_root = atomic64_read(&domain->pt_root);
-+
-+	pgtable->root = (u64 *)(pt_root & PAGE_MASK);
-+	pgtable->mode = pt_root & 7; /* lowest 3 bits encode pgtable mode */
-+}
-+
-+static u64 amd_iommu_domain_encode_pgtable(u64 *root, int mode)
-+{
-+	u64 pt_root;
-+
-+	/* lowest 3 bits encode pgtable mode */
-+	pt_root = mode & 7;
-+	pt_root |= (u64)root;
-+
-+	return pt_root;
-+}
-+
- static struct iommu_dev_data *alloc_dev_data(u16 devid)
- {
- 	struct iommu_dev_data *dev_data;
-@@ -1397,13 +1417,18 @@ static struct page *free_sub_pt(unsigned long root, int mode,
- 
- static void free_pagetable(struct protection_domain *domain)
- {
--	unsigned long root = (unsigned long)domain->pt_root;
-+	struct domain_pgtable pgtable;
- 	struct page *freelist = NULL;
-+	unsigned long root;
-+
-+	amd_iommu_domain_get_pgtable(domain, &pgtable);
-+	atomic64_set(&domain->pt_root, 0);
- 
--	BUG_ON(domain->mode < PAGE_MODE_NONE ||
--	       domain->mode > PAGE_MODE_6_LEVEL);
-+	BUG_ON(pgtable.mode < PAGE_MODE_NONE ||
-+	       pgtable.mode > PAGE_MODE_6_LEVEL);
- 
--	freelist = free_sub_pt(root, domain->mode, freelist);
-+	root = (unsigned long)pgtable.root;
-+	freelist = free_sub_pt(root, pgtable.mode, freelist);
- 
- 	free_page_list(freelist);
- }
-@@ -1417,24 +1442,28 @@ static bool increase_address_space(struct protection_domain *domain,
- 				   unsigned long address,
- 				   gfp_t gfp)
- {
-+	struct domain_pgtable pgtable;
- 	unsigned long flags;
- 	bool ret = false;
--	u64 *pte;
-+	u64 *pte, root;
- 
- 	spin_lock_irqsave(&domain->lock, flags);
- 
--	if (address <= PM_LEVEL_SIZE(domain->mode) ||
--	    WARN_ON_ONCE(domain->mode == PAGE_MODE_6_LEVEL))
-+	amd_iommu_domain_get_pgtable(domain, &pgtable);
-+
-+	if (address <= PM_LEVEL_SIZE(pgtable.mode) ||
-+	    WARN_ON_ONCE(pgtable.mode == PAGE_MODE_6_LEVEL))
- 		goto out;
- 
- 	pte = (void *)get_zeroed_page(gfp);
- 	if (!pte)
- 		goto out;
- 
--	*pte             = PM_LEVEL_PDE(domain->mode,
--					iommu_virt_to_phys(domain->pt_root));
--	domain->pt_root  = pte;
--	domain->mode    += 1;
-+	*pte = PM_LEVEL_PDE(pgtable.mode, iommu_virt_to_phys(pgtable.root));
-+
-+	root = amd_iommu_domain_encode_pgtable(pte, pgtable.mode + 1);
-+
-+	atomic64_set(&domain->pt_root, root);
- 
- 	ret = true;
- 
-@@ -1451,16 +1480,22 @@ static u64 *alloc_pte(struct protection_domain *domain,
- 		      gfp_t gfp,
- 		      bool *updated)
- {
-+	struct domain_pgtable pgtable;
- 	int level, end_lvl;
- 	u64 *pte, *page;
- 
- 	BUG_ON(!is_power_of_2(page_size));
- 
--	while (address > PM_LEVEL_SIZE(domain->mode))
-+	amd_iommu_domain_get_pgtable(domain, &pgtable);
-+
-+	while (address > PM_LEVEL_SIZE(pgtable.mode)) {
- 		*updated = increase_address_space(domain, address, gfp) || *updated;
-+		amd_iommu_domain_get_pgtable(domain, &pgtable);
-+	}
-+
- 
--	level   = domain->mode - 1;
--	pte     = &domain->pt_root[PM_LEVEL_INDEX(level, address)];
-+	level   = pgtable.mode - 1;
-+	pte     = &pgtable.root[PM_LEVEL_INDEX(level, address)];
- 	address = PAGE_SIZE_ALIGN(address, page_size);
- 	end_lvl = PAGE_SIZE_LEVEL(page_size);
- 
-@@ -1536,16 +1571,19 @@ static u64 *fetch_pte(struct protection_domain *domain,
- 		      unsigned long address,
- 		      unsigned long *page_size)
- {
-+	struct domain_pgtable pgtable;
- 	int level;
- 	u64 *pte;
- 
- 	*page_size = 0;
- 
--	if (address > PM_LEVEL_SIZE(domain->mode))
-+	amd_iommu_domain_get_pgtable(domain, &pgtable);
-+
-+	if (address > PM_LEVEL_SIZE(pgtable.mode))
- 		return NULL;
- 
--	level	   =  domain->mode - 1;
--	pte	   = &domain->pt_root[PM_LEVEL_INDEX(level, address)];
-+	level	   =  pgtable.mode - 1;
-+	pte	   = &pgtable.root[PM_LEVEL_INDEX(level, address)];
- 	*page_size =  PTE_LEVEL_PAGE_SIZE(level);
- 
- 	while (level > 0) {
-@@ -1806,6 +1844,7 @@ static void dma_ops_domain_free(struct protection_domain *domain)
- static struct protection_domain *dma_ops_domain_alloc(void)
- {
- 	struct protection_domain *domain;
-+	u64 *pt_root, root;
- 
- 	domain = kzalloc(sizeof(struct protection_domain), GFP_KERNEL);
- 	if (!domain)
-@@ -1814,12 +1853,14 @@ static struct protection_domain *dma_ops_domain_alloc(void)
- 	if (protection_domain_init(domain))
- 		goto free_domain;
- 
--	domain->mode = PAGE_MODE_3_LEVEL;
--	domain->pt_root = (void *)get_zeroed_page(GFP_KERNEL);
--	domain->flags = PD_DMA_OPS_MASK;
--	if (!domain->pt_root)
-+	pt_root = (void *)get_zeroed_page(GFP_KERNEL);
-+	if (!pt_root)
- 		goto free_domain;
- 
-+	root = amd_iommu_domain_encode_pgtable(pt_root, PAGE_MODE_3_LEVEL);
-+	atomic64_set(&domain->pt_root, root);
-+	domain->flags = PD_DMA_OPS_MASK;
-+
- 	if (iommu_get_dma_cookie(&domain->domain) == -ENOMEM)
- 		goto free_domain;
- 
-@@ -1843,14 +1884,17 @@ static bool dma_ops_domain(struct protection_domain *domain)
- static void set_dte_entry(u16 devid, struct protection_domain *domain,
- 			  bool ats, bool ppr)
- {
-+	struct domain_pgtable pgtable;
- 	u64 pte_root = 0;
- 	u64 flags = 0;
- 	u32 old_domid;
- 
--	if (domain->mode != PAGE_MODE_NONE)
--		pte_root = iommu_virt_to_phys(domain->pt_root);
-+	amd_iommu_domain_get_pgtable(domain, &pgtable);
-+
-+	if (pgtable.mode != PAGE_MODE_NONE)
-+		pte_root = iommu_virt_to_phys(pgtable.root);
- 
--	pte_root |= (domain->mode & DEV_ENTRY_MODE_MASK)
-+	pte_root |= (pgtable.mode & DEV_ENTRY_MODE_MASK)
- 		    << DEV_ENTRY_MODE_SHIFT;
- 	pte_root |= DTE_FLAG_IR | DTE_FLAG_IW | DTE_FLAG_V | DTE_FLAG_TV;
- 
-@@ -2375,6 +2419,7 @@ static struct protection_domain *protection_domain_alloc(void)
- static struct iommu_domain *amd_iommu_domain_alloc(unsigned type)
- {
- 	struct protection_domain *pdomain;
-+	u64 *pt_root, root;
- 
- 	switch (type) {
- 	case IOMMU_DOMAIN_UNMANAGED:
-@@ -2382,13 +2427,15 @@ static struct iommu_domain *amd_iommu_domain_alloc(unsigned type)
- 		if (!pdomain)
- 			return NULL;
- 
--		pdomain->mode    = PAGE_MODE_3_LEVEL;
--		pdomain->pt_root = (void *)get_zeroed_page(GFP_KERNEL);
--		if (!pdomain->pt_root) {
-+		pt_root = (void *)get_zeroed_page(GFP_KERNEL);
-+		if (!pt_root) {
- 			protection_domain_free(pdomain);
- 			return NULL;
+diff --git a/drivers/gpu/drm/panfrost/panfrost_gem.c b/drivers/gpu/drm/panfrost/panfrost_gem.c
+index 17b654e..22fec7c 100644
+--- a/drivers/gpu/drm/panfrost/panfrost_gem.c
++++ b/drivers/gpu/drm/panfrost/panfrost_gem.c
+@@ -42,7 +42,8 @@ static void panfrost_gem_free_object(struct drm_gem_object *obj)
+ 		for (i = 0; i < n_sgt; i++) {
+ 			if (bo->sgts[i].sgl) {
+ 				dma_unmap_sg(pfdev->dev, bo->sgts[i].sgl,
+-					     bo->sgts[i].nents, DMA_BIDIRECTIONAL);
++					     bo->sgts[i].orig_nents,
++					     DMA_BIDIRECTIONAL);
+ 				sg_free_table(&bo->sgts[i]);
+ 			}
  		}
+diff --git a/drivers/gpu/drm/panfrost/panfrost_mmu.c b/drivers/gpu/drm/panfrost/panfrost_mmu.c
+index ed28aeb..2d9b1f9 100644
+--- a/drivers/gpu/drm/panfrost/panfrost_mmu.c
++++ b/drivers/gpu/drm/panfrost/panfrost_mmu.c
+@@ -517,7 +517,9 @@ static int panfrost_mmu_map_fault_addr(struct panfrost_device *pfdev, int as,
+ 	if (ret)
+ 		goto err_pages;
  
-+		root = amd_iommu_domain_encode_pgtable(pt_root, PAGE_MODE_3_LEVEL);
-+		atomic64_set(&pdomain->pt_root, root);
-+
- 		pdomain->domain.geometry.aperture_start = 0;
- 		pdomain->domain.geometry.aperture_end   = ~0ULL;
- 		pdomain->domain.geometry.force_aperture = true;
-@@ -2406,7 +2453,7 @@ static struct iommu_domain *amd_iommu_domain_alloc(unsigned type)
- 		if (!pdomain)
- 			return NULL;
- 
--		pdomain->mode = PAGE_MODE_NONE;
-+		atomic64_set(&pdomain->pt_root, PAGE_MODE_NONE);
- 		break;
- 	default:
- 		return NULL;
-@@ -2418,6 +2465,7 @@ static struct iommu_domain *amd_iommu_domain_alloc(unsigned type)
- static void amd_iommu_domain_free(struct iommu_domain *dom)
- {
- 	struct protection_domain *domain;
-+	struct domain_pgtable pgtable;
- 
- 	domain = to_pdomain(dom);
- 
-@@ -2435,7 +2483,9 @@ static void amd_iommu_domain_free(struct iommu_domain *dom)
- 		dma_ops_domain_free(domain);
- 		break;
- 	default:
--		if (domain->mode != PAGE_MODE_NONE)
-+		amd_iommu_domain_get_pgtable(domain, &pgtable);
-+
-+		if (pgtable.mode != PAGE_MODE_NONE)
- 			free_pagetable(domain);
- 
- 		if (domain->flags & PD_IOMMUV2_MASK)
-@@ -2518,10 +2568,12 @@ static int amd_iommu_map(struct iommu_domain *dom, unsigned long iova,
- 			 gfp_t gfp)
- {
- 	struct protection_domain *domain = to_pdomain(dom);
-+	struct domain_pgtable pgtable;
- 	int prot = 0;
- 	int ret;
- 
--	if (domain->mode == PAGE_MODE_NONE)
-+	amd_iommu_domain_get_pgtable(domain, &pgtable);
-+	if (pgtable.mode == PAGE_MODE_NONE)
- 		return -EINVAL;
- 
- 	if (iommu_prot & IOMMU_READ)
-@@ -2541,8 +2593,10 @@ static size_t amd_iommu_unmap(struct iommu_domain *dom, unsigned long iova,
- 			      struct iommu_iotlb_gather *gather)
- {
- 	struct protection_domain *domain = to_pdomain(dom);
-+	struct domain_pgtable pgtable;
- 
--	if (domain->mode == PAGE_MODE_NONE)
-+	amd_iommu_domain_get_pgtable(domain, &pgtable);
-+	if (pgtable.mode == PAGE_MODE_NONE)
- 		return 0;
- 
- 	return iommu_unmap_page(domain, iova, page_size);
-@@ -2553,9 +2607,11 @@ static phys_addr_t amd_iommu_iova_to_phys(struct iommu_domain *dom,
- {
- 	struct protection_domain *domain = to_pdomain(dom);
- 	unsigned long offset_mask, pte_pgsize;
-+	struct domain_pgtable pgtable;
- 	u64 *pte, __pte;
- 
--	if (domain->mode == PAGE_MODE_NONE)
-+	amd_iommu_domain_get_pgtable(domain, &pgtable);
-+	if (pgtable.mode == PAGE_MODE_NONE)
- 		return iova;
- 
- 	pte = fetch_pte(domain, iova, &pte_pgsize);
-@@ -2708,16 +2764,26 @@ EXPORT_SYMBOL(amd_iommu_unregister_ppr_notifier);
- void amd_iommu_domain_direct_map(struct iommu_domain *dom)
- {
- 	struct protection_domain *domain = to_pdomain(dom);
-+	struct domain_pgtable pgtable;
- 	unsigned long flags;
-+	u64 pt_root;
- 
- 	spin_lock_irqsave(&domain->lock, flags);
- 
-+	/* First save pgtable configuration*/
-+	amd_iommu_domain_get_pgtable(domain, &pgtable);
-+
- 	/* Update data structure */
--	domain->mode    = PAGE_MODE_NONE;
-+	pt_root = amd_iommu_domain_encode_pgtable(NULL, PAGE_MODE_NONE);
-+	atomic64_set(&domain->pt_root, pt_root);
- 
- 	/* Make changes visible to IOMMUs */
- 	update_domain(domain);
- 
-+	/* Restore old pgtable in domain->ptroot to free page-table */
-+	pt_root = amd_iommu_domain_encode_pgtable(pgtable.root, pgtable.mode);
-+	atomic64_set(&domain->pt_root, pt_root);
-+
- 	/* Page-table is not visible to IOMMU anymore, so free it */
- 	free_pagetable(domain);
- 
-@@ -2908,9 +2974,11 @@ static u64 *__get_gcr3_pte(u64 *root, int level, int pasid, bool alloc)
- static int __set_gcr3(struct protection_domain *domain, int pasid,
- 		      unsigned long cr3)
- {
-+	struct domain_pgtable pgtable;
- 	u64 *pte;
- 
--	if (domain->mode != PAGE_MODE_NONE)
-+	amd_iommu_domain_get_pgtable(domain, &pgtable);
-+	if (pgtable.mode != PAGE_MODE_NONE)
- 		return -EINVAL;
- 
- 	pte = __get_gcr3_pte(domain->gcr3_tbl, domain->glx, pasid, true);
-@@ -2924,9 +2992,11 @@ static int __set_gcr3(struct protection_domain *domain, int pasid,
- 
- static int __clear_gcr3(struct protection_domain *domain, int pasid)
- {
-+	struct domain_pgtable pgtable;
- 	u64 *pte;
- 
--	if (domain->mode != PAGE_MODE_NONE)
-+	amd_iommu_domain_get_pgtable(domain, &pgtable);
-+	if (pgtable.mode != PAGE_MODE_NONE)
- 		return -EINVAL;
- 
- 	pte = __get_gcr3_pte(domain->gcr3_tbl, domain->glx, pasid, false);
-diff --git a/drivers/iommu/amd_iommu_types.h b/drivers/iommu/amd_iommu_types.h
-index ca8c4522045b..7a8fdec138bd 100644
---- a/drivers/iommu/amd_iommu_types.h
-+++ b/drivers/iommu/amd_iommu_types.h
-@@ -468,8 +468,7 @@ struct protection_domain {
- 				       iommu core code */
- 	spinlock_t lock;	/* mostly used to lock the page table*/
- 	u16 id;			/* the domain id written to the device table */
--	int mode;		/* paging mode (0-6 levels) */
--	u64 *pt_root;		/* page table root pointer */
-+	atomic64_t pt_root;	/* pgtable root and pgtable mode */
- 	int glx;		/* Number of levels for GCR3 table */
- 	u64 *gcr3_tbl;		/* Guest CR3 table */
- 	unsigned long flags;	/* flags to find out type of domain */
-@@ -477,6 +476,12 @@ struct protection_domain {
- 	unsigned dev_iommu[MAX_IOMMUS]; /* per-IOMMU reference count */
- };
- 
-+/* For decocded pt_root */
-+struct domain_pgtable {
-+	int mode;
-+	u64 *root;
-+};
-+
- /*
-  * Structure where we save information about one hardware AMD IOMMU in the
-  * system.
+-	if (!dma_map_sg(pfdev->dev, sgt->sgl, sgt->nents, DMA_BIDIRECTIONAL)) {
++	sgt->nents = dma_map_sg(pfdev->dev, sgt->sgl, sgt->orig_nents,
++				DMA_BIDIRECTIONAL);
++	if (!sgt->nents) {
+ 		ret = -EINVAL;
+ 		goto err_map;
+ 	}
 -- 
-2.17.1
+1.9.1
 
 _______________________________________________
 iommu mailing list
