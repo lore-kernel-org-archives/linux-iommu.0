@@ -2,60 +2,138 @@ Return-Path: <SRS0=OemM=6S=lists.linux-foundation.org=iommu-bounces@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-9.8 required=3.0 tests=HEADER_FROM_DIFFERENT_DOMAINS,
-	INCLUDES_PATCH,MAILING_LIST_MULTI,SIGNED_OFF_BY,SPF_HELO_NONE,SPF_PASS,
-	USER_AGENT_GIT autolearn=ham autolearn_force=no version=3.4.0
+X-Spam-Status: No, score=-9.6 required=3.0 tests=DKIM_INVALID,DKIM_SIGNED,
+	HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_PATCH,MAILING_LIST_MULTI,SIGNED_OFF_BY,
+	SPF_HELO_NONE,SPF_PASS,USER_AGENT_GIT autolearn=ham autolearn_force=no
+	version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 652EDC47260
-	for <iommu@archiver.kernel.org>; Mon,  4 May 2020 12:54:24 +0000 (UTC)
-Received: from hemlock.osuosl.org (smtp2.osuosl.org [140.211.166.133])
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 24546C4725C
+	for <iommu@archiver.kernel.org>; Mon,  4 May 2020 12:54:31 +0000 (UTC)
+Received: from whitealder.osuosl.org (smtp1.osuosl.org [140.211.166.138])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by mail.kernel.org (Postfix) with ESMTPS id 1F5DD21BE5
-	for <iommu@archiver.kernel.org>; Mon,  4 May 2020 12:54:24 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 1F5DD21BE5
-Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=8bytes.org
+	by mail.kernel.org (Postfix) with ESMTPS id E286520757
+	for <iommu@archiver.kernel.org>; Mon,  4 May 2020 12:54:30 +0000 (UTC)
+Authentication-Results: mail.kernel.org;
+	dkim=fail reason="signature verification failed" (1024-bit key) header.d=samsung.com header.i=@samsung.com header.b="gptGuzFa"
+DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org E286520757
+Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=samsung.com
 Authentication-Results: mail.kernel.org; spf=pass smtp.mailfrom=iommu-bounces@lists.linux-foundation.org
 Received: from localhost (localhost [127.0.0.1])
-	by hemlock.osuosl.org (Postfix) with ESMTP id 0FF1B888CF;
-	Mon,  4 May 2020 12:54:24 +0000 (UTC)
-X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from hemlock.osuosl.org ([127.0.0.1])
-	by localhost (.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
-	with ESMTP id TVzZ68YVsIM8; Mon,  4 May 2020 12:54:22 +0000 (UTC)
-Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [140.211.9.56])
-	by hemlock.osuosl.org (Postfix) with ESMTP id 1313E8895B;
-	Mon,  4 May 2020 12:54:22 +0000 (UTC)
-Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
-	by lists.linuxfoundation.org (Postfix) with ESMTP id 0E9E5C088E;
-	Mon,  4 May 2020 12:54:22 +0000 (UTC)
-Received: from whitealder.osuosl.org (smtp1.osuosl.org [140.211.166.138])
- by lists.linuxfoundation.org (Postfix) with ESMTP id 4C412C0175
- for <iommu@lists.linux-foundation.org>; Mon,  4 May 2020 12:54:20 +0000 (UTC)
-Received: from localhost (localhost [127.0.0.1])
- by whitealder.osuosl.org (Postfix) with ESMTP id 395C386C7E
- for <iommu@lists.linux-foundation.org>; Mon,  4 May 2020 12:54:20 +0000 (UTC)
+	by whitealder.osuosl.org (Postfix) with ESMTP id BC13E880DF;
+	Mon,  4 May 2020 12:54:30 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
 Received: from whitealder.osuosl.org ([127.0.0.1])
+	by localhost (.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
+	with ESMTP id vrC82LJpko3G; Mon,  4 May 2020 12:54:27 +0000 (UTC)
+Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [140.211.9.56])
+	by whitealder.osuosl.org (Postfix) with ESMTP id 6DFED88093;
+	Mon,  4 May 2020 12:54:27 +0000 (UTC)
+Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
+	by lists.linuxfoundation.org (Postfix) with ESMTP id 5A56BC088C;
+	Mon,  4 May 2020 12:54:27 +0000 (UTC)
+Received: from silver.osuosl.org (smtp3.osuosl.org [140.211.166.136])
+ by lists.linuxfoundation.org (Postfix) with ESMTP id 33A9EC0175
+ for <iommu@lists.linux-foundation.org>; Mon,  4 May 2020 12:54:24 +0000 (UTC)
+Received: from localhost (localhost [127.0.0.1])
+ by silver.osuosl.org (Postfix) with ESMTP id 2165022EDD
+ for <iommu@lists.linux-foundation.org>; Mon,  4 May 2020 12:54:24 +0000 (UTC)
+X-Virus-Scanned: amavisd-new at osuosl.org
+Received: from silver.osuosl.org ([127.0.0.1])
  by localhost (.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
- with ESMTP id kbN-TKNzYaKl for <iommu@lists.linux-foundation.org>;
- Mon,  4 May 2020 12:54:17 +0000 (UTC)
+ with ESMTP id UYbLfXHYDyi2 for <iommu@lists.linux-foundation.org>;
+ Mon,  4 May 2020 12:54:20 +0000 (UTC)
 X-Greylist: from auto-whitelisted by SQLgrey-1.7.6
-Received: from theia.8bytes.org (8bytes.org [81.169.241.247])
- by whitealder.osuosl.org (Postfix) with ESMTPS id 7C69E86FBB
- for <iommu@lists.linux-foundation.org>; Mon,  4 May 2020 12:54:17 +0000 (UTC)
-Received: by theia.8bytes.org (Postfix, from userid 1000)
- id 189864BB; Mon,  4 May 2020 14:54:15 +0200 (CEST)
-From: Joerg Roedel <joro@8bytes.org>
-To: iommu@lists.linux-foundation.org
-Subject: [PATCH 4/5] iommu/amd: Update Device Table in increase_address_space()
-Date: Mon,  4 May 2020 14:54:12 +0200
-Message-Id: <20200504125413.16798-5-joro@8bytes.org>
+Received: from mailout2.w1.samsung.com (mailout2.w1.samsung.com
+ [210.118.77.12])
+ by silver.osuosl.org (Postfix) with ESMTPS id BD3F922D33
+ for <iommu@lists.linux-foundation.org>; Mon,  4 May 2020 12:54:20 +0000 (UTC)
+Received: from eucas1p1.samsung.com (unknown [182.198.249.206])
+ by mailout2.w1.samsung.com (KnoxPortal) with ESMTP id
+ 20200504125418euoutp02cb77c5d69204c97a4792f53847a51a71~L1G0oFjRE1771917719euoutp02f
+ for <iommu@lists.linux-foundation.org>; Mon,  4 May 2020 12:54:18 +0000 (GMT)
+DKIM-Filter: OpenDKIM Filter v2.11.0 mailout2.w1.samsung.com
+ 20200504125418euoutp02cb77c5d69204c97a4792f53847a51a71~L1G0oFjRE1771917719euoutp02f
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=samsung.com;
+ s=mail20170921; t=1588596858;
+ bh=oXKAiZsd3uylE1bkjXQANkaBzCM+Y/1iAKwOReHGbvk=;
+ h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
+ b=gptGuzFau/RJBmBktbg/UCm3+JKBqaq5GWF4LsutRzTneuMcDa8cqM2OyJiHDbxGh
+ 4Ykjqh/T7AGN/Lm8Tu8me4viAA2EPYkiT35a4UCIMUYZPNHaIPaIzTVYt5j0PyJaQ4
+ ywskVGGPlIj7s0+PSMwYQvh5yKUl06IcUocXQPLg=
+Received: from eusmges3new.samsung.com (unknown [203.254.199.245]) by
+ eucas1p1.samsung.com (KnoxPortal) with ESMTP id
+ 20200504125418eucas1p17e73f107eede867dcb8807733386f81f~L1G0XsQls1174811748eucas1p1Z;
+ Mon,  4 May 2020 12:54:18 +0000 (GMT)
+Received: from eucas1p2.samsung.com ( [182.198.249.207]) by
+ eusmges3new.samsung.com (EUCPMTA) with SMTP id B8.12.60698.A7010BE5; Mon,  4
+ May 2020 13:54:18 +0100 (BST)
+Received: from eusmtrp1.samsung.com (unknown [182.198.249.138]) by
+ eucas1p2.samsung.com (KnoxPortal) with ESMTPA id
+ 20200504125418eucas1p2d649919f1969a85c8f7dfc8c73d58459~L1G0ACwsc2250922509eucas1p26;
+ Mon,  4 May 2020 12:54:18 +0000 (GMT)
+Received: from eusmgms2.samsung.com (unknown [182.198.249.180]) by
+ eusmtrp1.samsung.com (KnoxPortal) with ESMTP id
+ 20200504125418eusmtrp19882edb11d87b702b04b993e8472678e~L1Gz-TuXK2470624706eusmtrp1l;
+ Mon,  4 May 2020 12:54:18 +0000 (GMT)
+X-AuditID: cbfec7f5-a29ff7000001ed1a-54-5eb0107ac8e4
+Received: from eusmtip2.samsung.com ( [203.254.199.222]) by
+ eusmgms2.samsung.com (EUCPMTA) with SMTP id 0A.06.07950.A7010BE5; Mon,  4
+ May 2020 13:54:18 +0100 (BST)
+Received: from AMDC2765.digital.local (unknown [106.120.51.73]) by
+ eusmtip2.samsung.com (KnoxPortal) with ESMTPA id
+ 20200504125417eusmtip275f66edcfb0b7cf1a6159b74762416f5~L1GzUHuQe0350103501eusmtip22;
+ Mon,  4 May 2020 12:54:17 +0000 (GMT)
+From: Marek Szyprowski <m.szyprowski@samsung.com>
+To: dri-devel@lists.freedesktop.org, iommu@lists.linux-foundation.org,
+ linaro-mm-sig@lists.linaro.org, linux-kernel@vger.kernel.org
+Subject: [PATCH v2 12/21] drm: tegra: fix sg_table nents vs. orig_nents misuse
+Date: Mon,  4 May 2020 14:53:50 +0200
+Message-Id: <20200504125359.5678-12-m.szyprowski@samsung.com>
 X-Mailer: git-send-email 2.17.1
-In-Reply-To: <20200504125413.16798-1-joro@8bytes.org>
-References: <20200504125413.16798-1-joro@8bytes.org>
-Cc: Joerg Roedel <jroedel@suse.de>, Qian Cai <cai@lca.pw>,
- linux-kernel@vger.kernel.org
+In-Reply-To: <20200504125359.5678-1-m.szyprowski@samsung.com>
+X-Brightmail-Tracker: H4sIAAAAAAAAA0WSezBUYRjG59uze/bYsTqW8o0uZrahmMllpDlREmY6/aEx/aNM0eIMJrfZ
+ gzCjhExt6GJCWxktjVwXyxLJ3VYaGpeQSy5NN5cuFimpPQ7673mf9/d8z8w7H4aIGnimWHBY
+ JCUNk4SIUQFX3bHcvS8OL/exvdy6k0jresEhKrKVPOKv+hZC9C18RYnC4nYOkdvoRCTLFVxC
+ 2zfBISqn3vCI3rr7KHFNK0eJ0rZRPtH87T2PWK7L4boYkCU5JYBsWMzlkk/ko3yyZnGcR767
+ ruGQqvxL5PDqFEJmDBYAsn4oASXTkuZQMr2qCJDzlbs89b0FhwKokOBoSmrjfE4Q1PDANWLa
+ KqZ2dpKTANrFMqCHQXw/nKlP5MuAABPhjwFU9fXy2EELoGJ8an2YB7DsXhJvI/I2VYWwiwIA
+ P42pwWbk+Y0yDkOhuB2UzcpQRhvjV3SLNH0GQvBUBDZlLukSGGaEe8JGlQcjubg5HM5zY3Ah
+ fhhWqn5z2DIzWFzehDCIns6/m7aHeQXiPXz4Z/Iln2Xc4Q9lP8pqI/hFU7Xu74CdGalcNpAE
+ 4ERXKZ8dUgHsTcwGLOUER7p+oUwDgltCZZ0Nax+F6jv9azbEDeDgrCFjIzp5W52FsLYQXk0R
+ sbQFlGvKNmubX/cgrCZhxlL+2t1EeCuAs3kON4GZ/H9XLgBFwISKokMDKdo+jLpgTUtC6aiw
+ QGv/8NBKoPtUnauahVrwbMWvBeAYEOsLT80rfUQ8STQdG9oCIIaIjYW1yTpLGCCJjaOk4b7S
+ qBCKbgHbMa7YRGiv+HxWhAdKIqnzFBVBSTe2HEzPNAG4zhiszFvE//zgkLUiS4ffqw8+ass+
+ Y+m/V2vr1x2S5JWDGSorYl6JhzqsR3qz7MoVUB0+npIZlPzQy8i9SvOxesnBA3UZE2inNfGt
+ Pd7b5hq2Nvtotww8dR7aHX784lhEQG3eSbdj/bvlfb41dM8Jx9Mzmf3WNeZHHA8MFA5JZGIu
+ HSSxs0KktOQfYKycRVADAAA=
+X-Brightmail-Tracker: H4sIAAAAAAAAA+NgFprPIsWRmVeSWpSXmKPExsVy+t/xe7pVAhviDGY+4LToPXeSyWLjjPWs
+ Fv+3TWS2uPL1PZvFytVHmSwW7Le2aJm1iMXiy5WHTBabHl9jtbi8aw6bReeXWWwWa4/cZbc4
+ +OEJq8XPXfNYHPg81sxbw+ix99sCFo+ds+6ye2z/9oDV4373cSaPzUvqPW7/e8zsMfnGckaP
+ 3Tcb2Dx6m9+xefRtWcXo8XmTXABPlJ5NUX5pSapCRn5xia1StKGFkZ6hpYWekYmlnqGxeayV
+ kamSvp1NSmpOZllqkb5dgl7G3rlOBa+1Kna8fcTUwHhUqYuRk0NCwETiVs9m5i5GLg4hgaWM
+ Es937GOFSMhInJzWAGULS/y51sUGUfSJUeLG648sIAk2AUOJrrcQCRGBTkaJad0f2UEcZoEp
+ zBJT7zcwdjFycAgL+Ems/2IOYrIIqErcXuwM0ssrYCuxafNvJogF8hKrNxxgBinhBIrP7FUH
+ CQsJ5EvcffqPZQIj3wJGhlWMIqmlxbnpucVGesWJucWleel6yfm5mxiBkbPt2M8tOxi73gUf
+ YhTgYFTi4d3wdX2cEGtiWXFl7iFGCQ5mJRHeHS1AId6UxMqq1KL8+KLSnNTiQ4ymQCdNZJYS
+ Tc4HRnVeSbyhqaG5haWhubG5sZmFkjhvh8DBGCGB9MSS1OzU1ILUIpg+Jg5OqQbGPVGrF0m4
+ 2/StOxsszlsqXcfrf6ow3/lR789LP3dtu1ZSvvH/L9WqHXkPZufNLLGpzhffq/xK5s3zA5vr
+ Xy6b29T9b/3ipAluD2x/K29j3SGj/WPen3+XS2bI3PnT7PbY1r2n0+16yft9MUlLAjvitipK
+ R3GfCIgxPxXAMJurddL9kknO+UcWKrEUZyQaajEXFScCAKM6r9iyAgAA
+X-CMS-MailID: 20200504125418eucas1p2d649919f1969a85c8f7dfc8c73d58459
+X-Msg-Generator: CA
+X-RootMTR: 20200504125418eucas1p2d649919f1969a85c8f7dfc8c73d58459
+X-EPHeader: CA
+CMS-TYPE: 201P
+X-CMS-RootMailID: 20200504125418eucas1p2d649919f1969a85c8f7dfc8c73d58459
+References: <20200504125017.5494-1-m.szyprowski@samsung.com>
+ <20200504125359.5678-1-m.szyprowski@samsung.com>
+ <CGME20200504125418eucas1p2d649919f1969a85c8f7dfc8c73d58459@eucas1p2.samsung.com>
+Cc: Bartlomiej Zolnierkiewicz <b.zolnierkie@samsung.com>,
+ David Airlie <airlied@linux.ie>, Jonathan Hunter <jonathanh@nvidia.com>,
+ Thierry Reding <thierry.reding@gmail.com>, Daniel Vetter <daniel@ffwll.ch>,
+ linux-tegra@vger.kernel.org, Robin Murphy <robin.murphy@arm.com>,
+ Christoph Hellwig <hch@lst.de>, linux-arm-kernel@lists.infradead.org
 X-BeenThere: iommu@lists.linux-foundation.org
 X-Mailman-Version: 2.1.15
 Precedence: list
@@ -74,137 +152,154 @@ Content-Transfer-Encoding: 7bit
 Errors-To: iommu-bounces@lists.linux-foundation.org
 Sender: "iommu" <iommu-bounces@lists.linux-foundation.org>
 
-From: Joerg Roedel <jroedel@suse.de>
+The Documentation/DMA-API-HOWTO.txt states that dma_map_sg returns the
+numer of the created entries in the DMA address space. However the
+subsequent calls to dma_sync_sg_for_{device,cpu} and dma_unmap_sg must be
+called with the original number of entries passed to dma_map_sg. The
+sg_table->nents in turn holds the result of the dma_map_sg call as stated
+in include/linux/scatterlist.h. Adapt the code to obey those rules.
 
-The Device Table needs to be updated before the new page-table root
-can be published in domain->pt_root. Otherwise a concurrent call to
-fetch_pte might fetch a PTE which is not reachable through the Device
-Table Entry.
-
-Fixes: 92d420ec028d ("iommu/amd: Relax locking in dma_ops path")
-Reported-by: Qian Cai <cai@lca.pw>
-Tested-by: Qian Cai <cai@lca.pw>
-Signed-off-by: Joerg Roedel <jroedel@suse.de>
+Signed-off-by: Marek Szyprowski <m.szyprowski@samsung.com>
 ---
- drivers/iommu/amd_iommu.c | 49 ++++++++++++++++++++++++++++-----------
- 1 file changed, 36 insertions(+), 13 deletions(-)
+For more information, see '[PATCH v2 00/21] DRM: fix struct sg_table nents
+vs. orig_nents misuse' thread: https://lkml.org/lkml/2020/5/4/373
+---
+ drivers/gpu/drm/tegra/gem.c   | 25 +++++++++++++------------
+ drivers/gpu/drm/tegra/plane.c | 13 +++++++------
+ 2 files changed, 20 insertions(+), 18 deletions(-)
 
-diff --git a/drivers/iommu/amd_iommu.c b/drivers/iommu/amd_iommu.c
-index d2499c86d395..2ae1daac888a 100644
---- a/drivers/iommu/amd_iommu.c
-+++ b/drivers/iommu/amd_iommu.c
-@@ -101,6 +101,8 @@ struct kmem_cache *amd_iommu_irq_cache;
- static void update_domain(struct protection_domain *domain);
- static int protection_domain_init(struct protection_domain *domain);
- static void detach_device(struct device *dev);
-+static void update_and_flush_device_table(struct protection_domain *domain,
-+					  struct domain_pgtable *pgtable);
+diff --git a/drivers/gpu/drm/tegra/gem.c b/drivers/gpu/drm/tegra/gem.c
+index 6237681..5710ab4 100644
+--- a/drivers/gpu/drm/tegra/gem.c
++++ b/drivers/gpu/drm/tegra/gem.c
+@@ -98,8 +98,8 @@ static struct sg_table *tegra_bo_pin(struct device *dev, struct host1x_bo *bo,
+ 		 * the SG table needs to be copied to avoid overwriting any
+ 		 * other potential users of the original SG table.
+ 		 */
+-		err = sg_alloc_table_from_sg(sgt, obj->sgt->sgl, obj->sgt->nents,
+-					     GFP_KERNEL);
++		err = sg_alloc_table_from_sg(sgt, obj->sgt->sgl,
++					     obj->sgt->orig_nents, GFP_KERNEL);
+ 		if (err < 0)
+ 			goto free;
+ 	} else {
+@@ -197,7 +197,7 @@ static int tegra_bo_iommu_map(struct tegra_drm *tegra, struct tegra_bo *bo)
+ 	bo->iova = bo->mm->start;
  
- /****************************************************************************
-  *
-@@ -1461,8 +1463,16 @@ static bool increase_address_space(struct protection_domain *domain,
- 
- 	*pte = PM_LEVEL_PDE(pgtable.mode, iommu_virt_to_phys(pgtable.root));
- 
--	root = amd_iommu_domain_encode_pgtable(pte, pgtable.mode + 1);
-+	pgtable.root  = pte;
-+	pgtable.mode += 1;
-+	update_and_flush_device_table(domain, &pgtable);
-+	domain_flush_complete(domain);
- 
-+	/*
-+	 * Device Table needs to be updated and flushed before the new root can
-+	 * be published.
-+	 */
-+	root = amd_iommu_domain_encode_pgtable(pte, pgtable.mode);
- 	atomic64_set(&domain->pt_root, root);
- 
- 	ret = true;
-@@ -1893,19 +1903,17 @@ static bool dma_ops_domain(struct protection_domain *domain)
- }
- 
- static void set_dte_entry(u16 devid, struct protection_domain *domain,
-+			  struct domain_pgtable *pgtable,
- 			  bool ats, bool ppr)
+ 	bo->size = iommu_map_sg(tegra->domain, bo->iova, bo->sgt->sgl,
+-				bo->sgt->nents, prot);
++				bo->sgt->orig_nents, prot);
+ 	if (!bo->size) {
+ 		dev_err(tegra->drm->dev, "failed to map buffer\n");
+ 		err = -ENOMEM;
+@@ -264,7 +264,7 @@ static struct tegra_bo *tegra_bo_alloc_object(struct drm_device *drm,
+ static void tegra_bo_free(struct drm_device *drm, struct tegra_bo *bo)
  {
--	struct domain_pgtable pgtable;
- 	u64 pte_root = 0;
- 	u64 flags = 0;
- 	u32 old_domid;
- 
--	amd_iommu_domain_get_pgtable(domain, &pgtable);
-+	if (pgtable->mode != PAGE_MODE_NONE)
-+		pte_root = iommu_virt_to_phys(pgtable->root);
- 
--	if (pgtable.mode != PAGE_MODE_NONE)
--		pte_root = iommu_virt_to_phys(pgtable.root);
--
--	pte_root |= (pgtable.mode & DEV_ENTRY_MODE_MASK)
-+	pte_root |= (pgtable->mode & DEV_ENTRY_MODE_MASK)
- 		    << DEV_ENTRY_MODE_SHIFT;
- 	pte_root |= DTE_FLAG_IR | DTE_FLAG_IW | DTE_FLAG_V | DTE_FLAG_TV;
- 
-@@ -1978,6 +1986,7 @@ static void clear_dte_entry(u16 devid)
- static void do_attach(struct iommu_dev_data *dev_data,
- 		      struct protection_domain *domain)
- {
-+	struct domain_pgtable pgtable;
- 	struct amd_iommu *iommu;
- 	bool ats;
- 
-@@ -1993,7 +2002,9 @@ static void do_attach(struct iommu_dev_data *dev_data,
- 	domain->dev_cnt                 += 1;
- 
- 	/* Update device table */
--	set_dte_entry(dev_data->devid, domain, ats, dev_data->iommu_v2);
-+	amd_iommu_domain_get_pgtable(domain, &pgtable);
-+	set_dte_entry(dev_data->devid, domain, &pgtable,
-+		      ats, dev_data->iommu_v2);
- 	clone_aliases(dev_data->pdev);
- 
- 	device_flush_dte(dev_data);
-@@ -2304,22 +2315,34 @@ static int amd_iommu_domain_get_attr(struct iommu_domain *domain,
-  *
-  *****************************************************************************/
- 
--static void update_device_table(struct protection_domain *domain)
-+static void update_device_table(struct protection_domain *domain,
-+				struct domain_pgtable *pgtable)
- {
- 	struct iommu_dev_data *dev_data;
- 
- 	list_for_each_entry(dev_data, &domain->dev_list, list) {
--		set_dte_entry(dev_data->devid, domain, dev_data->ats.enabled,
--			      dev_data->iommu_v2);
-+		set_dte_entry(dev_data->devid, domain, pgtable,
-+			      dev_data->ats.enabled, dev_data->iommu_v2);
- 		clone_aliases(dev_data->pdev);
+ 	if (bo->pages) {
+-		dma_unmap_sg(drm->dev, bo->sgt->sgl, bo->sgt->nents,
++		dma_unmap_sg(drm->dev, bo->sgt->sgl, bo->sgt->orig_nents,
+ 			     DMA_FROM_DEVICE);
+ 		drm_gem_put_pages(&bo->gem, bo->pages, true, true);
+ 		sg_free_table(bo->sgt);
+@@ -290,9 +290,9 @@ static int tegra_bo_get_pages(struct drm_device *drm, struct tegra_bo *bo)
+ 		goto put_pages;
  	}
- }
  
-+static void update_and_flush_device_table(struct protection_domain *domain,
-+					  struct domain_pgtable *pgtable)
-+{
-+	update_device_table(domain, pgtable);
-+	domain_flush_devices(domain);
-+}
-+
- static void update_domain(struct protection_domain *domain)
- {
--	update_device_table(domain);
-+	struct domain_pgtable pgtable;
+-	err = dma_map_sg(drm->dev, bo->sgt->sgl, bo->sgt->nents,
+-			 DMA_FROM_DEVICE);
+-	if (err == 0) {
++	bo->sgt->nents = dma_map_sg(drm->dev, bo->sgt->sgl, bo->sgt->orig_nents,
++				DMA_FROM_DEVICE);
++	if (bo->sgt->nents == 0) {
+ 		err = -EFAULT;
+ 		goto free_sgt;
+ 	}
+@@ -571,7 +571,8 @@ int tegra_drm_mmap(struct file *file, struct vm_area_struct *vma)
+ 			goto free;
+ 	}
  
--	domain_flush_devices(domain);
-+	/* Update device table */
-+	amd_iommu_domain_get_pgtable(domain, &pgtable);
-+	update_and_flush_device_table(domain, &pgtable);
-+
-+	/* Flush domain TLB(s) and wait for completion */
- 	domain_flush_tlb_pde(domain);
- 	domain_flush_complete(domain);
+-	if (dma_map_sg(attach->dev, sgt->sgl, sgt->nents, dir) == 0)
++	sgt->nents = dma_map_sg(attach->dev, sgt->sgl, sgt->orig_nents, dir);
++	if (sgt->nents == 0)
+ 		goto free;
+ 
+ 	return sgt;
+@@ -590,7 +591,7 @@ static void tegra_gem_prime_unmap_dma_buf(struct dma_buf_attachment *attach,
+ 	struct tegra_bo *bo = to_tegra_bo(gem);
+ 
+ 	if (bo->pages)
+-		dma_unmap_sg(attach->dev, sgt->sgl, sgt->nents, dir);
++		dma_unmap_sg(attach->dev, sgt->sgl, sgt->orig_nents, dir);
+ 
+ 	sg_free_table(sgt);
+ 	kfree(sgt);
+@@ -609,7 +610,7 @@ static int tegra_gem_prime_begin_cpu_access(struct dma_buf *buf,
+ 	struct drm_device *drm = gem->dev;
+ 
+ 	if (bo->pages)
+-		dma_sync_sg_for_cpu(drm->dev, bo->sgt->sgl, bo->sgt->nents,
++		dma_sync_sg_for_cpu(drm->dev, bo->sgt->sgl, bo->sgt->orig_nents,
+ 				    DMA_FROM_DEVICE);
+ 
+ 	return 0;
+@@ -623,8 +624,8 @@ static int tegra_gem_prime_end_cpu_access(struct dma_buf *buf,
+ 	struct drm_device *drm = gem->dev;
+ 
+ 	if (bo->pages)
+-		dma_sync_sg_for_device(drm->dev, bo->sgt->sgl, bo->sgt->nents,
+-				       DMA_TO_DEVICE);
++		dma_sync_sg_for_device(drm->dev, bo->sgt->sgl,
++				       bo->sgt->orig_nents, DMA_TO_DEVICE);
+ 
+ 	return 0;
  }
+diff --git a/drivers/gpu/drm/tegra/plane.c b/drivers/gpu/drm/tegra/plane.c
+index 9ccfb56..3982bf8 100644
+--- a/drivers/gpu/drm/tegra/plane.c
++++ b/drivers/gpu/drm/tegra/plane.c
+@@ -130,9 +130,10 @@ static int tegra_dc_pin(struct tegra_dc *dc, struct tegra_plane_state *state)
+ 		}
+ 
+ 		if (sgt) {
+-			err = dma_map_sg(dc->dev, sgt->sgl, sgt->nents,
+-					 DMA_TO_DEVICE);
+-			if (err == 0) {
++			sgt->nents = dma_map_sg(dc->dev, sgt->sgl,
++						sgt->orig_nents,
++						DMA_TO_DEVICE);
++			if (sgt->nents == 0) {
+ 				err = -ENOMEM;
+ 				goto unpin;
+ 			}
+@@ -143,7 +144,7 @@ static int tegra_dc_pin(struct tegra_dc *dc, struct tegra_plane_state *state)
+ 			 * map its SG table to a single contiguous chunk of
+ 			 * I/O virtual memory.
+ 			 */
+-			if (err > 1) {
++			if (sgt->nents > 1) {
+ 				err = -EINVAL;
+ 				goto unpin;
+ 			}
+@@ -165,7 +166,7 @@ static int tegra_dc_pin(struct tegra_dc *dc, struct tegra_plane_state *state)
+ 		struct sg_table *sgt = state->sgt[i];
+ 
+ 		if (sgt)
+-			dma_unmap_sg(dc->dev, sgt->sgl, sgt->nents,
++			dma_unmap_sg(dc->dev, sgt->sgl, sgt->orig_nents,
+ 				     DMA_TO_DEVICE);
+ 
+ 		host1x_bo_unpin(dc->dev, &bo->base, sgt);
+@@ -185,7 +186,7 @@ static void tegra_dc_unpin(struct tegra_dc *dc, struct tegra_plane_state *state)
+ 		struct sg_table *sgt = state->sgt[i];
+ 
+ 		if (sgt)
+-			dma_unmap_sg(dc->dev, sgt->sgl, sgt->nents,
++			dma_unmap_sg(dc->dev, sgt->sgl, sgt->orig_nents,
+ 				     DMA_TO_DEVICE);
+ 
+ 		host1x_bo_unpin(dc->dev, &bo->base, sgt);
 -- 
-2.17.1
+1.9.1
 
 _______________________________________________
 iommu mailing list
