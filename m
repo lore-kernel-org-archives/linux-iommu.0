@@ -1,96 +1,75 @@
-Return-Path: <SRS0=M8Ie=6R=lists.linux-foundation.org=iommu-bounces@kernel.org>
+Return-Path: <SRS0=OemM=6S=lists.linux-foundation.org=iommu-bounces@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-0.6 required=3.0 tests=DKIM_INVALID,DKIM_SIGNED,
-	HEADER_FROM_DIFFERENT_DOMAINS,MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS
-	autolearn=no autolearn_force=no version=3.4.0
+X-Spam-Status: No, score=-8.3 required=3.0 tests=HEADER_FROM_DIFFERENT_DOMAINS,
+	INCLUDES_PATCH,MAILING_LIST_MULTI,SIGNED_OFF_BY,SPF_HELO_NONE,SPF_PASS,
+	USER_AGENT_SANE_1 autolearn=ham autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 63D84C28CBC
-	for <iommu@archiver.kernel.org>; Sun,  3 May 2020 19:20:23 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 5C3D2C47247
+	for <iommu@archiver.kernel.org>; Mon,  4 May 2020 01:53:04 +0000 (UTC)
 Received: from whitealder.osuosl.org (smtp1.osuosl.org [140.211.166.138])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by mail.kernel.org (Postfix) with ESMTPS id 2336A206E9
-	for <iommu@archiver.kernel.org>; Sun,  3 May 2020 19:20:23 +0000 (UTC)
-Authentication-Results: mail.kernel.org;
-	dkim=fail reason="signature verification failed" (2048-bit key) header.d=lca.pw header.i=@lca.pw header.b="Hgghv2QJ"
-DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 2336A206E9
-Authentication-Results: mail.kernel.org; dmarc=none (p=none dis=none) header.from=lca.pw
+	by mail.kernel.org (Postfix) with ESMTPS id 30C5A20735
+	for <iommu@archiver.kernel.org>; Mon,  4 May 2020 01:53:03 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 30C5A20735
+Authentication-Results: mail.kernel.org; dmarc=none (p=none dis=none) header.from=huawei.com
 Authentication-Results: mail.kernel.org; spf=pass smtp.mailfrom=iommu-bounces@lists.linux-foundation.org
 Received: from localhost (localhost [127.0.0.1])
-	by whitealder.osuosl.org (Postfix) with ESMTP id EB6E087849;
-	Sun,  3 May 2020 19:20:22 +0000 (UTC)
+	by whitealder.osuosl.org (Postfix) with ESMTP id 2DE49875CA;
+	Mon,  4 May 2020 01:53:03 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
 Received: from whitealder.osuosl.org ([127.0.0.1])
 	by localhost (.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
-	with ESMTP id hE2A0otN6VaM; Sun,  3 May 2020 19:20:20 +0000 (UTC)
+	with ESMTP id c-+8X9kAehNs; Mon,  4 May 2020 01:53:02 +0000 (UTC)
 Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [140.211.9.56])
-	by whitealder.osuosl.org (Postfix) with ESMTP id D567E8770B;
-	Sun,  3 May 2020 19:20:20 +0000 (UTC)
+	by whitealder.osuosl.org (Postfix) with ESMTP id EA5CA875B7;
+	Mon,  4 May 2020 01:53:01 +0000 (UTC)
 Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
-	by lists.linuxfoundation.org (Postfix) with ESMTP id BC449C0176;
-	Sun,  3 May 2020 19:20:20 +0000 (UTC)
+	by lists.linuxfoundation.org (Postfix) with ESMTP id D4AE6C0176;
+	Mon,  4 May 2020 01:53:01 +0000 (UTC)
 Received: from silver.osuosl.org (smtp3.osuosl.org [140.211.166.136])
- by lists.linuxfoundation.org (Postfix) with ESMTP id 34897C0175
- for <iommu@lists.linux-foundation.org>; Sun,  3 May 2020 19:20:19 +0000 (UTC)
+ by lists.linuxfoundation.org (Postfix) with ESMTP id 04363C0175
+ for <iommu@lists.linux-foundation.org>; Mon,  4 May 2020 01:53:00 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
- by silver.osuosl.org (Postfix) with ESMTP id 0D01D2042D
- for <iommu@lists.linux-foundation.org>; Sun,  3 May 2020 19:20:19 +0000 (UTC)
+ by silver.osuosl.org (Postfix) with ESMTP id E091D226F5
+ for <iommu@lists.linux-foundation.org>; Mon,  4 May 2020 01:53:00 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
 Received: from silver.osuosl.org ([127.0.0.1])
  by localhost (.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
- with ESMTP id kIqufV7maNPS for <iommu@lists.linux-foundation.org>;
- Sun,  3 May 2020 19:20:17 +0000 (UTC)
-X-Greylist: from auto-whitelisted by SQLgrey-1.7.6
-Received: from mail-qt1-f196.google.com (mail-qt1-f196.google.com
- [209.85.160.196])
- by silver.osuosl.org (Postfix) with ESMTPS id 808732034C
- for <iommu@lists.linux-foundation.org>; Sun,  3 May 2020 19:20:17 +0000 (UTC)
-Received: by mail-qt1-f196.google.com with SMTP id s30so12319880qth.2
- for <iommu@lists.linux-foundation.org>; Sun, 03 May 2020 12:20:17 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=lca.pw; s=google;
- h=content-transfer-encoding:from:mime-version:subject:date:message-id
- :references:cc:in-reply-to:to;
- bh=QjQNTEl64oFXby2DcLfNG1WpAuKAiDgue7kNNdacJts=;
- b=Hgghv2QJ8bnac2HvY//5dPe+3V01b//VZCjt/zPRvjM7sm9jIt80ZBdVClOxnSjU7b
- ilPS4ugIYt9vvS3ClL6ewC4aYHioCOtQci7kozyJPcCscPNunCZ1xZGpaPUwCxyh68UB
- /W6ac3C32vabUS5BIBVUqp30Vbe+cmgOuFcl2d6uM6HzgCoM2WgAwnPmstT9c8WjC1a6
- FxSRnJkjQcEzCHZQER1maDAD1hqApgStExaPBxzTFvp+LcXmQPxxabiQ7pxrAqrDqVKy
- 6eUsHobeZdKy6+X4fwTVOj8KYu8CGTQ/VnKnZVEf+WneJ6MX1uJT3/t+Jjm0FWo1l4mO
- VqKg==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
- d=1e100.net; s=20161025;
- h=x-gm-message-state:content-transfer-encoding:from:mime-version
- :subject:date:message-id:references:cc:in-reply-to:to;
- bh=QjQNTEl64oFXby2DcLfNG1WpAuKAiDgue7kNNdacJts=;
- b=dgBuy0FNjh9aT/uqjBQvosOGOPXX2rYoaRkXlaLM9o7XILwN2JnNQ215Bj2Ihm9m+u
- R5u8Zq6zfWf01BNSrVwzTAJL4UKKeXTMbfbqYVsNEEKssKFGFBi+r63zjB6mgDhSWVux
- TYYqI7LrRmAAkB2TBgzSuI6XBGZY1Q/9inZnuMP2k9nB7aLRdGWN8W1NJJJk3GOItiCo
- KnapDbN3X3A3zwIV0+o4v188QV/HDMMA2rOdsZKHMTPwJ/6n+jQrsGcVXUZCZsPg+hdn
- vOWZKWHg7OfvjUjTtwMK69UVpPXJlT2V6zWUnAxBR5H9T3R7KrLs0wtl6kc6X/psLiE/
- aynA==
-X-Gm-Message-State: AGi0PuYV1QaMzu0opAMB49Wre0S1vHmHjuPe4Eew0V6TOcCPoFWJEPwc
- +ubCkmLXh1cUPUEzz11y1H5BMsIwo3X7Uw==
-X-Google-Smtp-Source: APiQypJibEKO4v/ek1bD86VUTy9GbWtdTI0sl6Lx3Eq8OG4JLinle7zFyUbyOwqebbSWTG5eTbuyuQ==
-X-Received: by 2002:a37:6dc4:: with SMTP id
- i187mr13342595qkc.358.1588533136798; 
- Sun, 03 May 2020 12:12:16 -0700 (PDT)
-Received: from [192.168.1.183] (pool-71-184-117-43.bstnma.fios.verizon.net.
- [71.184.117.43])
- by smtp.gmail.com with ESMTPSA id t15sm9023400qtc.64.2020.05.03.12.12.15
- (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
- Sun, 03 May 2020 12:12:16 -0700 (PDT)
-From: Qian Cai <cai@lca.pw>
-Mime-Version: 1.0 (1.0)
-Subject: Re: [RFC PATCH] iommu/amd: fix a race in fetch_pte()
-Date: Sun, 3 May 2020 15:12:15 -0400
-Message-Id: <E18E118B-A79A-40A8-89D4-4B81C24FB486@lca.pw>
-References: <20200503183927.GA18353@8bytes.org>
-In-Reply-To: <20200503183927.GA18353@8bytes.org>
-To: Joerg Roedel <joro@8bytes.org>
-X-Mailer: iPhone Mail (17D50)
-Cc: iommu@lists.linux-foundation.org, linux-kernel@vger.kernel.org
+ with ESMTP id 9W5qjSVRl+YX for <iommu@lists.linux-foundation.org>;
+ Mon,  4 May 2020 01:52:58 +0000 (UTC)
+X-Greylist: domain auto-whitelisted by SQLgrey-1.7.6
+Received: from huawei.com (szxga06-in.huawei.com [45.249.212.32])
+ by silver.osuosl.org (Postfix) with ESMTPS id CB44C226F3
+ for <iommu@lists.linux-foundation.org>; Mon,  4 May 2020 01:52:57 +0000 (UTC)
+Received: from DGGEMS407-HUB.china.huawei.com (unknown [172.30.72.60])
+ by Forcepoint Email with ESMTP id 9683FB5E5B4FEA773DF0;
+ Mon,  4 May 2020 09:52:54 +0800 (CST)
+Received: from [127.0.0.1] (10.67.101.242) by DGGEMS407-HUB.china.huawei.com
+ (10.3.19.207) with Microsoft SMTP Server id 14.3.487.0; Mon, 4 May 2020
+ 09:52:45 +0800
+Subject: Re: [PATCH v6 01/25] mm: Add a PASID field to mm_struct
+To: Jean-Philippe Brucker <jean-philippe@linaro.org>,
+ <iommu@lists.linux-foundation.org>, <devicetree@vger.kernel.org>,
+ <linux-arm-kernel@lists.infradead.org>, <linux-pci@vger.kernel.org>,
+ <linux-mm@kvack.org>
+References: <20200430143424.2787566-1-jean-philippe@linaro.org>
+ <20200430143424.2787566-2-jean-philippe@linaro.org>
+From: Xu Zaibo <xuzaibo@huawei.com>
+Message-ID: <ffe0aca4-575b-98d3-0ba5-88d5e6eb29fe@huawei.com>
+Date: Mon, 4 May 2020 09:52:44 +0800
+User-Agent: Mozilla/5.0 (Windows NT 10.0; WOW64; rv:45.0) Gecko/20100101
+ Thunderbird/45.7.1
+MIME-Version: 1.0
+In-Reply-To: <20200430143424.2787566-2-jean-philippe@linaro.org>
+X-Originating-IP: [10.67.101.242]
+X-CFilter-Loop: Reflected
+Cc: fenghua.yu@intel.com, kevin.tian@intel.com, jgg@ziepe.ca,
+ catalin.marinas@arm.com, robin.murphy@arm.com, hch@infradead.org,
+ zhangfei.gao@linaro.org, felix.kuehling@amd.com, will@kernel.org,
+ christian.koenig@amd.com
 X-BeenThere: iommu@lists.linux-foundation.org
 X-Mailman-Version: 2.1.15
 Precedence: list
@@ -103,21 +82,55 @@ List-Post: <mailto:iommu@lists.linux-foundation.org>
 List-Help: <mailto:iommu-request@lists.linux-foundation.org?subject=help>
 List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
  <mailto:iommu-request@lists.linux-foundation.org?subject=subscribe>
-Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset="us-ascii"; Format="flowed"
 Errors-To: iommu-bounces@lists.linux-foundation.org
 Sender: "iommu" <iommu-bounces@lists.linux-foundation.org>
 
 
+On 2020/4/30 22:34, Jean-Philippe Brucker wrote:
+> Some devices can tag their DMA requests with a 20-bit Process Address
+> Space ID (PASID), allowing them to access multiple address spaces. In
+> combination with recoverable I/O page faults (for example PCIe PRI),
+> PASID allows the IOMMU to share page tables with the MMU.
+>
+> To make sure that a single PASID is allocated for each address space, as
+> required by Intel ENQCMD, store the PASID in the mm_struct. The IOMMU
+> driver is in charge of serializing modifications to the PASID field.
+>
+> Signed-off-by: Jean-Philippe Brucker <jean-philippe@linaro.org>
+> ---
+> For the field's validity I'm thinking invalid PASID = 0. In ioasid.h we
+> define INVALID_IOASID as ~0U, but I think we can now change it to 0,
+> since Intel is now also reserving PASID #0 for Transactions without
+> PASID and AMD IOMMU uses GIoV for this too.
+> ---
+>   include/linux/mm_types.h | 4 ++++
+>   1 file changed, 4 insertions(+)
+>
+> diff --git a/include/linux/mm_types.h b/include/linux/mm_types.h
+> index 4aba6c0c2ba80..8db6472758175 100644
+> --- a/include/linux/mm_types.h
+> +++ b/include/linux/mm_types.h
+> @@ -534,6 +534,10 @@ struct mm_struct {
+>   		atomic_long_t hugetlb_usage;
+>   #endif
+>   		struct work_struct async_put_work;
+> +#ifdef CONFIG_IOMMU_SUPPORT
+> +		/* Address space ID used by device DMA */
+> +		unsigned int pasid;
+> +#endif
+Maybe '#ifdef CONFIG_IOMMU_SVA ... #endif' is more reasonable?
 
-> On May 3, 2020, at 2:39 PM, Joerg Roedel <joro@8bytes.org> wrote:
-> 
-> Can I add your Tested-by when I
-> send them to the mailing list tomorrow?
+Thanks,
+Zaibo
 
-Sure. Feel free to add,
+.
+>   	} __randomize_layout;
+>   
+>   	/*
 
-Tested-by: Qian Cai <cai@lca.pw>
+
 _______________________________________________
 iommu mailing list
 iommu@lists.linux-foundation.org
