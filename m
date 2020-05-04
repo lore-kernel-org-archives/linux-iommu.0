@@ -2,80 +2,101 @@ Return-Path: <SRS0=OemM=6S=lists.linux-foundation.org=iommu-bounces@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-8.3 required=3.0 tests=HEADER_FROM_DIFFERENT_DOMAINS,
-	INCLUDES_PATCH,MAILING_LIST_MULTI,SIGNED_OFF_BY,SPF_HELO_NONE,SPF_PASS,
-	USER_AGENT_SANE_1 autolearn=unavailable autolearn_force=no version=3.4.0
+X-Spam-Status: No, score=-3.6 required=3.0 tests=DKIM_INVALID,DKIM_SIGNED,
+	HEADER_FROM_DIFFERENT_DOMAINS,MAILING_LIST_MULTI,SIGNED_OFF_BY,SPF_HELO_NONE,
+	SPF_PASS autolearn=no autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id E69E7C3A5A9
-	for <iommu@archiver.kernel.org>; Mon,  4 May 2020 13:28:11 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 16DEEC4725B
+	for <iommu@archiver.kernel.org>; Mon,  4 May 2020 14:12:18 +0000 (UTC)
 Received: from silver.osuosl.org (smtp3.osuosl.org [140.211.166.136])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by mail.kernel.org (Postfix) with ESMTPS id AF89F21973
-	for <iommu@archiver.kernel.org>; Mon,  4 May 2020 13:28:11 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org AF89F21973
-Authentication-Results: mail.kernel.org; dmarc=none (p=none dis=none) header.from=arm.com
+	by mail.kernel.org (Postfix) with ESMTPS id CFC862078E
+	for <iommu@archiver.kernel.org>; Mon,  4 May 2020 14:12:17 +0000 (UTC)
+Authentication-Results: mail.kernel.org;
+	dkim=fail reason="signature verification failed" (2048-bit key) header.d=linaro.org header.i=@linaro.org header.b="Vq2ie4yP"
+DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org CFC862078E
+Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=linaro.org
 Authentication-Results: mail.kernel.org; spf=pass smtp.mailfrom=iommu-bounces@lists.linux-foundation.org
 Received: from localhost (localhost [127.0.0.1])
-	by silver.osuosl.org (Postfix) with ESMTP id E13F22041C;
-	Mon,  4 May 2020 13:28:10 +0000 (UTC)
+	by silver.osuosl.org (Postfix) with ESMTP id 8E34022EE7;
+	Mon,  4 May 2020 14:12:17 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
 Received: from silver.osuosl.org ([127.0.0.1])
 	by localhost (.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
-	with ESMTP id KbjD4LQ-zpCn; Mon,  4 May 2020 13:28:05 +0000 (UTC)
+	with ESMTP id ygEGiJDHZ3Rz; Mon,  4 May 2020 14:12:16 +0000 (UTC)
 Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [140.211.9.56])
-	by silver.osuosl.org (Postfix) with ESMTP id B247120243;
-	Mon,  4 May 2020 13:28:05 +0000 (UTC)
+	by silver.osuosl.org (Postfix) with ESMTP id F259420381;
+	Mon,  4 May 2020 14:12:15 +0000 (UTC)
 Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
-	by lists.linuxfoundation.org (Postfix) with ESMTP id 9BEDFC088A;
-	Mon,  4 May 2020 13:28:05 +0000 (UTC)
-Received: from hemlock.osuosl.org (smtp2.osuosl.org [140.211.166.133])
- by lists.linuxfoundation.org (Postfix) with ESMTP id 7F914C0175
- for <iommu@lists.linux-foundation.org>; Mon,  4 May 2020 13:28:03 +0000 (UTC)
+	by lists.linuxfoundation.org (Postfix) with ESMTP id D3C82C088C;
+	Mon,  4 May 2020 14:12:15 +0000 (UTC)
+Received: from silver.osuosl.org (smtp3.osuosl.org [140.211.166.136])
+ by lists.linuxfoundation.org (Postfix) with ESMTP id 13C59C0175
+ for <iommu@lists.linux-foundation.org>; Mon,  4 May 2020 14:12:15 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
- by hemlock.osuosl.org (Postfix) with ESMTP id 67DF088309
- for <iommu@lists.linux-foundation.org>; Mon,  4 May 2020 13:28:03 +0000 (UTC)
+ by silver.osuosl.org (Postfix) with ESMTP id 04B5C20430
+ for <iommu@lists.linux-foundation.org>; Mon,  4 May 2020 14:12:15 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from hemlock.osuosl.org ([127.0.0.1])
+Received: from silver.osuosl.org ([127.0.0.1])
  by localhost (.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
- with ESMTP id 9ZUJ2m3i7ML0 for <iommu@lists.linux-foundation.org>;
- Mon,  4 May 2020 13:28:01 +0000 (UTC)
+ with ESMTP id 5woQ-nq0+X4e for <iommu@lists.linux-foundation.org>;
+ Mon,  4 May 2020 14:12:13 +0000 (UTC)
 X-Greylist: domain auto-whitelisted by SQLgrey-1.7.6
-Received: from foss.arm.com (foss.arm.com [217.140.110.172])
- by hemlock.osuosl.org (Postfix) with ESMTP id 6AA9C882B0
- for <iommu@lists.linux-foundation.org>; Mon,  4 May 2020 13:28:01 +0000 (UTC)
-Received: from usa-sjc-imap-foss1.foss.arm.com (unknown [10.121.207.14])
- by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id C61241FB;
- Mon,  4 May 2020 06:28:00 -0700 (PDT)
-Received: from [192.168.1.84] (unknown [172.31.20.19])
- by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPSA id D88F43F71F;
- Mon,  4 May 2020 06:27:57 -0700 (PDT)
-Subject: Re: [PATCH v2 09/21] drm: panfrost: fix sg_table nents vs. orig_nents
- misuse
-To: Marek Szyprowski <m.szyprowski@samsung.com>,
- "dri-devel@lists.freedesktop.org" <dri-devel@lists.freedesktop.org>,
- "iommu@lists.linux-foundation.org" <iommu@lists.linux-foundation.org>,
- "linaro-mm-sig@lists.linaro.org" <linaro-mm-sig@lists.linaro.org>,
- "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>
-References: <20200504125017.5494-1-m.szyprowski@samsung.com>
- <20200504125359.5678-1-m.szyprowski@samsung.com>
- <CGME20200504125415eucas1p1eea125ce87eec4e7c2e2dcc75f965896@eucas1p1.samsung.com>
- <20200504125359.5678-9-m.szyprowski@samsung.com>
-From: Steven Price <steven.price@arm.com>
-Message-ID: <607fc87f-eb1c-6362-d8ff-3ac6ccf31bdf@arm.com>
-Date: Mon, 4 May 2020 14:27:56 +0100
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101
- Thunderbird/68.7.0
+Received: from mail-wm1-f66.google.com (mail-wm1-f66.google.com
+ [209.85.128.66])
+ by silver.osuosl.org (Postfix) with ESMTPS id 6EF3B20381
+ for <iommu@lists.linux-foundation.org>; Mon,  4 May 2020 14:12:13 +0000 (UTC)
+Received: by mail-wm1-f66.google.com with SMTP id g12so9213721wmh.3
+ for <iommu@lists.linux-foundation.org>; Mon, 04 May 2020 07:12:13 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linaro.org; s=google;
+ h=date:from:to:cc:subject:message-id:references:mime-version
+ :content-disposition:in-reply-to;
+ bh=cBYi8j74hWiNZr+qveo+/wt9+YdcPXbPEFJvXHtn9pk=;
+ b=Vq2ie4yP/X47QYD6lxsDV5syeThtLJI2ewNwfJLRuRvqg9UoVTEgtYRgWLvaBdnVPa
+ 0wxiY2Klubhm0nN4CMoAjyALlAO50NfO102r/fy+H5GCSi63zznRgC0xu4L85wpV03xu
+ DfhamtALWXxNYB9JgzXyAATJJmNT8UEf6XEH6k0T1kswbiEY71Yel0l1afn0RX60zeBH
+ aqxDJDIPxXQSFKQhe8Dd/PnFMhfN2602ltmhdR00hWRbv/fHUel+9cX1FVpDN6rRaZVF
+ s/UX7jAgy7BBd0Tzf4XpwroHU3tmThERIbg1xf8cdc1LjpguouxRX8TELXLyxcryX5LF
+ R2oQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+ d=1e100.net; s=20161025;
+ h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+ :mime-version:content-disposition:in-reply-to;
+ bh=cBYi8j74hWiNZr+qveo+/wt9+YdcPXbPEFJvXHtn9pk=;
+ b=SXZ0fV2ASOdzE6BgL3ZhqtZlu1VvO1zUnALfSI7zIuitPPmybz8KY7svWVLroccZq2
+ eTBSAcZ4VWKppAk6RxKaMEqkEIdsiZwsmrC+pASUJVnYbpYjOQsIco6HZ3eZa1gMM09u
+ ez8QH+j7OQ67aSAgkldRhqt6ity062nVlgHQJs6Uk5+ZU0dfsiANl+rRF+hI+ao0cumk
+ w2isKFDBNwVkd5fOSlKLsiqTV/BosjQPMr7qB+N1oahSpL9f6Qiyc93Jt9P8l5EzWpzG
+ 2krQohcO3zEfzF8Brh/VyPq1f/7o5er0rA6lQ4tNVr2++2jCVZvD3bamq68jabDVvBMM
+ dfqA==
+X-Gm-Message-State: AGi0PuYgGzudheSGusnTdCtLAHtAMFd6ZWaV+3rjz9oCbdMdOXzLXwNp
+ uKLf1aBgx8IWMowjYAjY8lpO4Q==
+X-Google-Smtp-Source: APiQypJGsU7OdMfQlFADSEeYP/iyop6F2RgiIW4sMbSjpQ+r/TAhN3MWxBAEOgHp3eUgHcwFPiU/5w==
+X-Received: by 2002:a05:600c:290f:: with SMTP id
+ i15mr14075509wmd.167.1588601531837; 
+ Mon, 04 May 2020 07:12:11 -0700 (PDT)
+Received: from myrica ([2001:171b:226e:c200:c43b:ef78:d083:b355])
+ by smtp.gmail.com with ESMTPSA id r23sm13017379wra.74.2020.05.04.07.11.46
+ (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+ Mon, 04 May 2020 07:11:52 -0700 (PDT)
+Date: Mon, 4 May 2020 16:11:37 +0200
+From: Jean-Philippe Brucker <jean-philippe@linaro.org>
+To: Suzuki K Poulose <suzuki.poulose@arm.com>
+Subject: Re: [PATCH v6 11/25] iommu/arm-smmu-v3: Share process page tables
+Message-ID: <20200504141137.GA170104@myrica>
+References: <20200430143424.2787566-1-jean-philippe@linaro.org>
+ <20200430143424.2787566-12-jean-philippe@linaro.org>
+ <580a915f-f8bf-3b3e-c77d-6d0c2ea4bd02@arm.com>
 MIME-Version: 1.0
-In-Reply-To: <20200504125359.5678-9-m.szyprowski@samsung.com>
-Content-Language: en-GB
-Cc: Rob Herring <robh@kernel.org>, Tomeu Vizoso <tomeu.vizoso@collabora.com>,
- Bartlomiej Zolnierkiewicz <b.zolnierkie@samsung.com>,
- David Airlie <airlied@linux.ie>,
- Alyssa Rosenzweig <alyssa.rosenzweig@collabora.com>,
- Daniel Vetter <daniel@ffwll.ch>, Robin Murphy <Robin.Murphy@arm.com>,
- Christoph Hellwig <hch@lst.de>,
- "linux-arm-kernel@lists.infradead.org" <linux-arm-kernel@lists.infradead.org>
+Content-Disposition: inline
+In-Reply-To: <580a915f-f8bf-3b3e-c77d-6d0c2ea4bd02@arm.com>
+Cc: devicetree@vger.kernel.org, kevin.tian@intel.com, jgg@ziepe.ca,
+ linux-pci@vger.kernel.org, robin.murphy@arm.com, fenghua.yu@intel.com,
+ hch@infradead.org, linux-mm@kvack.org, iommu@lists.linux-foundation.org,
+ zhangfei.gao@linaro.org, catalin.marinas@arm.com, felix.kuehling@amd.com,
+ will@kernel.org, christian.koenig@amd.com,
+ linux-arm-kernel@lists.infradead.org
 X-BeenThere: iommu@lists.linux-foundation.org
 X-Mailman-Version: 2.1.15
 Precedence: list
@@ -88,74 +109,62 @@ List-Post: <mailto:iommu@lists.linux-foundation.org>
 List-Help: <mailto:iommu-request@lists.linux-foundation.org?subject=help>
 List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
  <mailto:iommu-request@lists.linux-foundation.org?subject=subscribe>
+Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
-Content-Type: text/plain; charset="us-ascii"; Format="flowed"
 Errors-To: iommu-bounces@lists.linux-foundation.org
 Sender: "iommu" <iommu-bounces@lists.linux-foundation.org>
 
-On 04/05/2020 13:53, Marek Szyprowski wrote:
-> The Documentation/DMA-API-HOWTO.txt states that dma_map_sg returns the
-> numer of the created entries in the DMA address space. However the
-> subsequent calls to dma_sync_sg_for_{device,cpu} and dma_unmap_sg must be
-> called with the original number of entries passed to dma_map_sg. The
-> sg_table->nents in turn holds the result of the dma_map_sg call as stated
-> in include/linux/scatterlist.h. Adapt the code to obey those rules.
-
-I find this commit message a bit confusing, but AFAICT the problem with 
-the Panfrost code is really in mmu_map_sg() where we don't have the 
-return value from dma_map_sg() and the for_each_sg() loop could (in 
-theory) run off the end of the list.
-
-The fix seems correct - store the return where it's meant to be (nents) 
-and make sure when unmapping we use the original (orig_nents). So you 
-might also consider adding:
-
-Fixes: f3ba91228e8e ("drm/panfrost: Add initial panfrost driver")
-
-Even better would be the wrappers you mention in the cover letter! ;)
-
-Reviewed-by: Steven Price <steven.price@arm.com>
-
+On Thu, Apr 30, 2020 at 04:39:53PM +0100, Suzuki K Poulose wrote:
+> On 04/30/2020 03:34 PM, Jean-Philippe Brucker wrote:
+> > With Shared Virtual Addressing (SVA), we need to mirror CPU TTBR, TCR,
+> > MAIR and ASIDs in SMMU contexts. Each SMMU has a single ASID space split
+> > into two sets, shared and private. Shared ASIDs correspond to those
+> > obtained from the arch ASID allocator, and private ASIDs are used for
+> > "classic" map/unmap DMA.
+> > 
+> > Cc: Suzuki K Poulose <suzuki.poulose@arm.com>
+> > Signed-off-by: Jean-Philippe Brucker <jean-philippe@linaro.org>
+> > ---
 > 
-> Signed-off-by: Marek Szyprowski <m.szyprowski@samsung.com>
-> ---
-> For more information, see '[PATCH v2 00/21] DRM: fix struct sg_table nents
-> vs. orig_nents misuse' thread: https://lkml.org/lkml/2020/5/4/373
-> ---
->   drivers/gpu/drm/panfrost/panfrost_gem.c | 3 ++-
->   drivers/gpu/drm/panfrost/panfrost_mmu.c | 4 +++-
->   2 files changed, 5 insertions(+), 2 deletions(-)
+> > +
+> > +	tcr = FIELD_PREP(CTXDESC_CD_0_TCR_T0SZ, 64ULL - VA_BITS) |
+> > +	      FIELD_PREP(CTXDESC_CD_0_TCR_IRGN0, ARM_LPAE_TCR_RGN_WBWA) |
+> > +	      FIELD_PREP(CTXDESC_CD_0_TCR_ORGN0, ARM_LPAE_TCR_RGN_WBWA) |
+> > +	      FIELD_PREP(CTXDESC_CD_0_TCR_SH0, ARM_LPAE_TCR_SH_IS) |
+> > +	      CTXDESC_CD_0_TCR_EPD1 | CTXDESC_CD_0_AA64;
+> > +
+> > +	switch (PAGE_SIZE) {
+> > +	case SZ_4K:
+> > +		tcr |= FIELD_PREP(CTXDESC_CD_0_TCR_TG0, ARM_LPAE_TCR_TG0_4K);
+> > +		break;
+> > +	case SZ_16K:
+> > +		tcr |= FIELD_PREP(CTXDESC_CD_0_TCR_TG0, ARM_LPAE_TCR_TG0_16K);
+> > +		break;
+> > +	case SZ_64K:
+> > +		tcr |= FIELD_PREP(CTXDESC_CD_0_TCR_TG0, ARM_LPAE_TCR_TG0_64K);
+> > +		break;
+> > +	default:
+> > +		WARN_ON(1);
+> > +		ret = -EINVAL;
+> > +		goto err_free_asid;
+> > +	}
+> > +
+> > +	reg = read_sanitised_ftr_reg(SYS_ID_AA64MMFR0_EL1);
+> > +	par = cpuid_feature_extract_unsigned_field(reg, ID_AA64MMFR0_PARANGE_SHIFT);
+> > +	tcr |= FIELD_PREP(CTXDESC_CD_0_TCR_IPS, par);
+> > +
+> > +	cd->ttbr = virt_to_phys(mm->pgd);
 > 
-> diff --git a/drivers/gpu/drm/panfrost/panfrost_gem.c b/drivers/gpu/drm/panfrost/panfrost_gem.c
-> index 17b654e..22fec7c 100644
-> --- a/drivers/gpu/drm/panfrost/panfrost_gem.c
-> +++ b/drivers/gpu/drm/panfrost/panfrost_gem.c
-> @@ -42,7 +42,8 @@ static void panfrost_gem_free_object(struct drm_gem_object *obj)
->   		for (i = 0; i < n_sgt; i++) {
->   			if (bo->sgts[i].sgl) {
->   				dma_unmap_sg(pfdev->dev, bo->sgts[i].sgl,
-> -					     bo->sgts[i].nents, DMA_BIDIRECTIONAL);
-> +					     bo->sgts[i].orig_nents,
-> +					     DMA_BIDIRECTIONAL);
->   				sg_free_table(&bo->sgts[i]);
->   			}
->   		}
-> diff --git a/drivers/gpu/drm/panfrost/panfrost_mmu.c b/drivers/gpu/drm/panfrost/panfrost_mmu.c
-> index ed28aeb..2d9b1f9 100644
-> --- a/drivers/gpu/drm/panfrost/panfrost_mmu.c
-> +++ b/drivers/gpu/drm/panfrost/panfrost_mmu.c
-> @@ -517,7 +517,9 @@ static int panfrost_mmu_map_fault_addr(struct panfrost_device *pfdev, int as,
->   	if (ret)
->   		goto err_pages;
->   
-> -	if (!dma_map_sg(pfdev->dev, sgt->sgl, sgt->nents, DMA_BIDIRECTIONAL)) {
-> +	sgt->nents = dma_map_sg(pfdev->dev, sgt->sgl, sgt->orig_nents,
-> +				DMA_BIDIRECTIONAL);
-> +	if (!sgt->nents) {
->   		ret = -EINVAL;
->   		goto err_map;
->   	}
-> 
+> Does the TTBR follow the same layout as TTBR_ELx for 52bit IPA ? i.e,
+> TTBR[5:2] = BADDR[51:48] ? Are you covered for that ?
+
+Good point, I don't remember checking this. The SMMU TTBR doesn't have the
+same layout as the CPU's, and we don't need to swizzle the bits. For the
+lower bits, the alignment requirements on the pgd are identical to the
+MMU.
+
+Thanks,
+Jean
 
 _______________________________________________
 iommu mailing list
