@@ -2,91 +2,88 @@ Return-Path: <SRS0=kPPe=6T=lists.linux-foundation.org=iommu-bounces@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-3.8 required=3.0 tests=HEADER_FROM_DIFFERENT_DOMAINS,
-	MAILING_LIST_MULTI,SIGNED_OFF_BY,SPF_HELO_NONE,SPF_PASS autolearn=no
+X-Spam-Status: No, score=-9.5 required=3.0 tests=DKIM_INVALID,DKIM_SIGNED,
+	HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_PATCH,MAILING_LIST_MULTI,SIGNED_OFF_BY,
+	SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED,USER_AGENT_GIT autolearn=ham
 	autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 8FCC9C47256
-	for <iommu@archiver.kernel.org>; Tue,  5 May 2020 09:24:55 +0000 (UTC)
-Received: from silver.osuosl.org (smtp3.osuosl.org [140.211.166.136])
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 4314FC47254
+	for <iommu@archiver.kernel.org>; Tue,  5 May 2020 09:30:22 +0000 (UTC)
+Received: from fraxinus.osuosl.org (smtp4.osuosl.org [140.211.166.137])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by mail.kernel.org (Postfix) with ESMTPS id 5F5C920721
-	for <iommu@archiver.kernel.org>; Tue,  5 May 2020 09:24:55 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 5F5C920721
-Authentication-Results: mail.kernel.org; dmarc=none (p=none dis=none) header.from=linux-m68k.org
+	by mail.kernel.org (Postfix) with ESMTPS id 00BBD20675
+	for <iommu@archiver.kernel.org>; Tue,  5 May 2020 09:30:21 +0000 (UTC)
+Authentication-Results: mail.kernel.org;
+	dkim=fail reason="key not found in DNS" (0-bit key) header.d=marvell.com header.i=@marvell.com header.b="f1G3mDXp"
+DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 00BBD20675
+Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=marvell.com
 Authentication-Results: mail.kernel.org; spf=pass smtp.mailfrom=iommu-bounces@lists.linux-foundation.org
 Received: from localhost (localhost [127.0.0.1])
-	by silver.osuosl.org (Postfix) with ESMTP id 2E7AB22879;
-	Tue,  5 May 2020 09:24:55 +0000 (UTC)
+	by fraxinus.osuosl.org (Postfix) with ESMTP id D160A86C6E;
+	Tue,  5 May 2020 09:30:21 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from silver.osuosl.org ([127.0.0.1])
+Received: from fraxinus.osuosl.org ([127.0.0.1])
 	by localhost (.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
-	with ESMTP id Zcf+ZKiwb9xp; Tue,  5 May 2020 09:24:54 +0000 (UTC)
+	with ESMTP id D7mqpEmsDdhL; Tue,  5 May 2020 09:30:20 +0000 (UTC)
 Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [140.211.9.56])
-	by silver.osuosl.org (Postfix) with ESMTP id 5866B204A7;
-	Tue,  5 May 2020 09:24:54 +0000 (UTC)
+	by fraxinus.osuosl.org (Postfix) with ESMTP id A258B86C5E;
+	Tue,  5 May 2020 09:30:20 +0000 (UTC)
 Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
-	by lists.linuxfoundation.org (Postfix) with ESMTP id D66DFC088B;
-	Tue,  5 May 2020 09:24:53 +0000 (UTC)
-Received: from silver.osuosl.org (smtp3.osuosl.org [140.211.166.136])
- by lists.linuxfoundation.org (Postfix) with ESMTP id 30702C0175
- for <iommu@lists.linux-foundation.org>; Tue,  5 May 2020 09:24:52 +0000 (UTC)
+	by lists.linuxfoundation.org (Postfix) with ESMTP id 973E4C088B;
+	Tue,  5 May 2020 09:30:20 +0000 (UTC)
+Received: from fraxinus.osuosl.org (smtp4.osuosl.org [140.211.166.137])
+ by lists.linuxfoundation.org (Postfix) with ESMTP id 7609CC0175;
+ Tue,  5 May 2020 09:30:19 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
- by silver.osuosl.org (Postfix) with ESMTP id 22115204A7
- for <iommu@lists.linux-foundation.org>; Tue,  5 May 2020 09:24:52 +0000 (UTC)
+ by fraxinus.osuosl.org (Postfix) with ESMTP id 70E4286C6E;
+ Tue,  5 May 2020 09:30:19 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from silver.osuosl.org ([127.0.0.1])
+Received: from fraxinus.osuosl.org ([127.0.0.1])
  by localhost (.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
- with ESMTP id efGDVyVDqB8c for <iommu@lists.linux-foundation.org>;
- Tue,  5 May 2020 09:24:49 +0000 (UTC)
+ with ESMTP id 9ZF-wQWECQL1; Tue,  5 May 2020 09:30:18 +0000 (UTC)
 X-Greylist: domain auto-whitelisted by SQLgrey-1.7.6
-Received: from mail-oi1-f193.google.com (mail-oi1-f193.google.com
- [209.85.167.193])
- by silver.osuosl.org (Postfix) with ESMTPS id 194D62047D
- for <iommu@lists.linux-foundation.org>; Tue,  5 May 2020 09:24:49 +0000 (UTC)
-Received: by mail-oi1-f193.google.com with SMTP id a2so1212705oia.11
- for <iommu@lists.linux-foundation.org>; Tue, 05 May 2020 02:24:49 -0700 (PDT)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
- d=1e100.net; s=20161025;
- h=x-gm-message-state:mime-version:references:in-reply-to:from:date
- :message-id:subject:to:cc;
- bh=fA6tjdmApvG0BpsjkTdWv9/ZTQZ9vjPp82obp9l863E=;
- b=l83fcDYTq7Awnk2QCoCTpthD0JeQvn3ll9cI2EcKAd8QXxOqZW2kOt/37Kkupmz4B8
- UCHTgVLsCD0zK+g0l69VLN/arBDGdLP34JrqHhhuCk2MMRsqapeMs8XXyyyxqCt9uFVa
- 8OEY7b8kCmqLX/h0o3dT5EefmhsgQ4Sm6TJF1oT1qCyejxXVoEJsmrsgchBRVSycd3Fk
- D4+nWkIhxGQ7/lnA0ljjo99ZZbL/LEIarl6LHgtUfl3nyZG2NwWGD8POkaugALHCj0WW
- hL9rkRBGYbVIVnj/LxtRVNfiDVcoK6ZT5W1ldPWHejrMVywb2IVJh21LsGY6j3kzKj94
- NxXA==
-X-Gm-Message-State: AGi0PuZbuldx38Fx99I6DGMACOtHrTkd0i7oQHHAsjG6h5naxVEijJMh
- Qpf7dPXbtp+j1iC1PkktxmyKdQmn+hKoRv9DZu4=
-X-Google-Smtp-Source: APiQypKOjAo7caYTLLrvaP2LfYH11Xj01QYaa+uBtqm/9mZJ41Mdkz0F6pXJ47B38HgwsYDHPLvoSnLN/Mh8S4elUzU=
-X-Received: by 2002:aca:f541:: with SMTP id t62mr1674694oih.148.1588670688206; 
- Tue, 05 May 2020 02:24:48 -0700 (PDT)
+X-Greylist: domain auto-whitelisted by SQLgrey-1.7.6
+Received: from mx0b-0016f401.pphosted.com (mx0a-0016f401.pphosted.com
+ [67.231.148.174])
+ by fraxinus.osuosl.org (Postfix) with ESMTPS id 4B3CB86C5E;
+ Tue,  5 May 2020 09:30:18 +0000 (UTC)
+Received: from pps.filterd (m0045849.ppops.net [127.0.0.1])
+ by mx0a-0016f401.pphosted.com (8.16.0.42/8.16.0.42) with SMTP id
+ 0459U3Mk007690; Tue, 5 May 2020 02:30:12 -0700
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=marvell.com;
+ h=from : to : cc :
+ subject : date : message-id : mime-version : content-type; s=pfpt0818;
+ bh=qLR97FpW5SzS4jbbK0Z8VGx3bL/TgT3yyQI+fufG2xU=;
+ b=f1G3mDXpEBN01P1JgrM53qO13JquvwgFGYFZnBZNUzVbhktmoMkG6VX3ncGyRVp7VJEv
+ KjkfjzOo5mAoaQNvcTa4GxfhNoy33SOasWM3Glu0BL+8ZUeoJh2wpCAAAYfWHyGcOyB0
+ Q3BgJ0+DU+llmqhSsbVcaGUFTJDJmrthqZ5pN8LXAKr+hc8ism6pDXfeNN/izomxQYmj
+ rou/r4B964+AxpxeXiyrbFVFstK1MMzN+iiV8WYhsA3aTsIkmnd5SG7hoX6sdtjr9OUS
+ PtfVtBSoYZu9aus9UR7xV7hkpf+AM0RisxgYd+Fg9nG9/izlmg1otBdU9PGnjVOZk+8z gQ== 
+Received: from sc-exch04.marvell.com ([199.233.58.184])
+ by mx0a-0016f401.pphosted.com with ESMTP id 30s67qbdwe-1
+ (version=TLSv1.2 cipher=ECDHE-RSA-AES256-SHA384 bits=256 verify=NOT);
+ Tue, 05 May 2020 02:30:12 -0700
+Received: from DC5-EXCH02.marvell.com (10.69.176.39) by SC-EXCH04.marvell.com
+ (10.93.176.84) with Microsoft SMTP Server (TLS) id 15.0.1497.2;
+ Tue, 5 May 2020 02:30:10 -0700
+Received: from bbhushan2.marvell.com (10.69.176.80) by DC5-EXCH02.marvell.com
+ (10.69.176.39) with Microsoft SMTP Server id 15.0.1497.2 via Frontend
+ Transport; Tue, 5 May 2020 02:30:07 -0700
+From: Bharat Bhushan <bbhushan2@marvell.com>
+To: <jean-philippe@linaro.org>, <joro@8bytes.org>, <mst@redhat.com>,
+ <jasowang@redhat.com>, <virtualization@lists.linux-foundation.org>,
+ <iommu@lists.linux-foundation.org>, <linux-kernel@vger.kernel.org>,
+ <eric.auger.pro@gmail.com>, <eric.auger@redhat.com>
+Subject: [PATCH v5] iommu/virtio: Use page size bitmap supported by endpoint
+Date: Tue, 5 May 2020 15:00:04 +0530
+Message-ID: <20200505093004.1935-1-bbhushan2@marvell.com>
+X-Mailer: git-send-email 2.17.1
 MIME-Version: 1.0
-References: <20200505083926.28503-1-m.szyprowski@samsung.com>
- <CGME20200505084634eucas1p1e0ea160dd77afbf6d2f7e6154ded40d0@eucas1p1.samsung.com>
- <20200505084614.30424-1-m.szyprowski@samsung.com>
- <20200505084614.30424-18-m.szyprowski@samsung.com>
-In-Reply-To: <20200505084614.30424-18-m.szyprowski@samsung.com>
-From: Geert Uytterhoeven <geert@linux-m68k.org>
-Date: Tue, 5 May 2020 11:24:37 +0200
-Message-ID: <CAMuHMdVisnijasoxazj+6kUFM3UrTYkVo6kC1dxZv5zK0yD7TQ@mail.gmail.com>
-Subject: Re: [PATCH v3 18/25] drm: rcar-du: fix common struct sg_table related
- issues
-To: Marek Szyprowski <m.szyprowski@samsung.com>
-Cc: Linux-Renesas <linux-renesas-soc@vger.kernel.org>,
- Bartlomiej Zolnierkiewicz <b.zolnierkie@samsung.com>,
- David Airlie <airlied@linux.ie>,
- Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
- DRI Development <dri-devel@lists.freedesktop.org>,
- linaro-mm-sig@lists.linaro.org, Linux IOMMU <iommu@lists.linux-foundation.org>,
- Kieran Bingham <kieran.bingham+renesas@ideasonboard.com>,
- Laurent Pinchart <laurent.pinchart@ideasonboard.com>,
- Daniel Vetter <daniel@ffwll.ch>, Mauro Carvalho Chehab <mchehab@kernel.org>,
- Robin Murphy <robin.murphy@arm.com>, Christoph Hellwig <hch@lst.de>,
- Linux ARM <linux-arm-kernel@lists.infradead.org>,
- Linux Media Mailing List <linux-media@vger.kernel.org>
+X-Proofpoint-Virus-Version: vendor=fsecure engine=2.50.10434:6.0.138, 18.0.676
+ definitions=2020-05-05_06:2020-05-04,
+ 2020-05-05 signatures=0
+Cc: Bharat Bhushan <bbhushan2@marvell.com>
 X-BeenThere: iommu@lists.linux-foundation.org
 X-Mailman-Version: 2.1.15
 Precedence: list
@@ -104,40 +101,155 @@ Content-Transfer-Encoding: 7bit
 Errors-To: iommu-bounces@lists.linux-foundation.org
 Sender: "iommu" <iommu-bounces@lists.linux-foundation.org>
 
-Hi Marek,
+Different endpoint can support different page size, probe
+endpoint if it supports specific page size otherwise use
+global page sizes.
 
-On Tue, May 5, 2020 at 10:48 AM Marek Szyprowski
-<m.szyprowski@samsung.com> wrote:
-> The Documentation/DMA-API-HOWTO.txt states that dma_map_sg returns the
-> numer of the created entries in the DMA address space. However the
-> subsequent calls to dma_sync_sg_for_{device,cpu} and dma_unmap_sg must be
-> called with the original number of the entries passed to dma_map_sg. The
-> sg_table->nents in turn holds the result of the dma_map_sg call as stated
-> in include/linux/scatterlist.h. A common mistake was to ignore a result
-> of the dma_map_sg function and don't use the sg_table->orig_nents at all.
->
-> To avoid such issues, lets use common dma-mapping wrappers operating
-> directly on the struct sg_table objects and adjust references to the
-> nents and orig_nents respectively.
->
-> Signed-off-by: Marek Szyprowski <m.szyprowski@samsung.com>
-> ---
-> For more information, see '[PATCH v3 00/25] DRM: fix struct sg_table nents
-> vs. orig_nents misuse' thread: https://lkml.org/lkml/2020/5/5/187
+Signed-off-by: Bharat Bhushan <bbhushan2@marvell.com>
+---
+v4->v5:
+ - Rebase to Linux v5.7-rc4
 
-For the modern lore-users:
-https://lore.kernel.org/r/20200505083926.28503-1-m.szyprowski@samsung.com/
+v3->v4:
+ - Fix whitespace error
 
-Gr{oetje,eeting}s,
+v2->v3:
+ - Fixed error return for incompatible endpoint
+ - __u64 changed to __le64 in header file
 
-                        Geert
+ drivers/iommu/virtio-iommu.c      | 48 ++++++++++++++++++++++++++++---
+ include/uapi/linux/virtio_iommu.h |  7 +++++
+ 2 files changed, 51 insertions(+), 4 deletions(-)
 
+diff --git a/drivers/iommu/virtio-iommu.c b/drivers/iommu/virtio-iommu.c
+index d5cac4f46ca5..9513d2ab819e 100644
+--- a/drivers/iommu/virtio-iommu.c
++++ b/drivers/iommu/virtio-iommu.c
+@@ -78,6 +78,7 @@ struct viommu_endpoint {
+ 	struct viommu_dev		*viommu;
+ 	struct viommu_domain		*vdomain;
+ 	struct list_head		resv_regions;
++	u64				pgsize_bitmap;
+ };
+ 
+ struct viommu_request {
+@@ -415,6 +416,19 @@ static int viommu_replay_mappings(struct viommu_domain *vdomain)
+ 	return ret;
+ }
+ 
++static int viommu_set_pgsize_bitmap(struct viommu_endpoint *vdev,
++				    struct virtio_iommu_probe_pgsize_mask *mask,
++				    size_t len)
++{
++	u64 pgsize_bitmap = le64_to_cpu(mask->pgsize_bitmap);
++
++	if (len < sizeof(*mask))
++		return -EINVAL;
++
++	vdev->pgsize_bitmap = pgsize_bitmap;
++	return 0;
++}
++
+ static int viommu_add_resv_mem(struct viommu_endpoint *vdev,
+ 			       struct virtio_iommu_probe_resv_mem *mem,
+ 			       size_t len)
+@@ -499,6 +513,9 @@ static int viommu_probe_endpoint(struct viommu_dev *viommu, struct device *dev)
+ 		case VIRTIO_IOMMU_PROBE_T_RESV_MEM:
+ 			ret = viommu_add_resv_mem(vdev, (void *)prop, len);
+ 			break;
++		case VIRTIO_IOMMU_PROBE_T_PAGE_SIZE_MASK:
++			ret = viommu_set_pgsize_bitmap(vdev, (void *)prop, len);
++			break;
+ 		default:
+ 			dev_err(dev, "unknown viommu prop 0x%x\n", type);
+ 		}
+@@ -630,7 +647,7 @@ static int viommu_domain_finalise(struct viommu_endpoint *vdev,
+ 
+ 	vdomain->id		= (unsigned int)ret;
+ 
+-	domain->pgsize_bitmap	= viommu->pgsize_bitmap;
++	domain->pgsize_bitmap	= vdev->pgsize_bitmap;
+ 	domain->geometry	= viommu->geometry;
+ 
+ 	vdomain->map_flags	= viommu->map_flags;
+@@ -654,6 +671,29 @@ static void viommu_domain_free(struct iommu_domain *domain)
+ 	kfree(vdomain);
+ }
+ 
++/*
++ * Check whether the endpoint's capabilities are compatible with other
++ * endpoints in the domain. Report any inconsistency.
++ */
++static bool viommu_endpoint_is_compatible(struct viommu_endpoint *vdev,
++					  struct viommu_domain *vdomain)
++{
++	struct device *dev = vdev->dev;
++
++	if (vdomain->viommu != vdev->viommu) {
++		dev_err(dev, "cannot attach to foreign vIOMMU\n");
++		return false;
++	}
++
++	if (vdomain->domain.pgsize_bitmap != vdev->pgsize_bitmap) {
++		dev_err(dev, "incompatible domain bitmap 0x%lx != 0x%llx\n",
++			vdomain->domain.pgsize_bitmap, vdev->pgsize_bitmap);
++		return false;
++	}
++
++	return true;
++}
++
+ static int viommu_attach_dev(struct iommu_domain *domain, struct device *dev)
+ {
+ 	int i;
+@@ -670,9 +710,8 @@ static int viommu_attach_dev(struct iommu_domain *domain, struct device *dev)
+ 		 * owns it.
+ 		 */
+ 		ret = viommu_domain_finalise(vdev, domain);
+-	} else if (vdomain->viommu != vdev->viommu) {
+-		dev_err(dev, "cannot attach to foreign vIOMMU\n");
+-		ret = -EXDEV;
++	} else if (!viommu_endpoint_is_compatible(vdev, vdomain)) {
++		ret = -EINVAL;
+ 	}
+ 	mutex_unlock(&vdomain->mutex);
+ 
+@@ -886,6 +925,7 @@ static int viommu_add_device(struct device *dev)
+ 
+ 	vdev->dev = dev;
+ 	vdev->viommu = viommu;
++	vdev->pgsize_bitmap = viommu->pgsize_bitmap;
+ 	INIT_LIST_HEAD(&vdev->resv_regions);
+ 	dev_iommu_priv_set(dev, vdev);
+ 
+diff --git a/include/uapi/linux/virtio_iommu.h b/include/uapi/linux/virtio_iommu.h
+index 48e3c29223b5..2cced7accc99 100644
+--- a/include/uapi/linux/virtio_iommu.h
++++ b/include/uapi/linux/virtio_iommu.h
+@@ -111,6 +111,7 @@ struct virtio_iommu_req_unmap {
+ 
+ #define VIRTIO_IOMMU_PROBE_T_NONE		0
+ #define VIRTIO_IOMMU_PROBE_T_RESV_MEM		1
++#define VIRTIO_IOMMU_PROBE_T_PAGE_SIZE_MASK	2
+ 
+ #define VIRTIO_IOMMU_PROBE_T_MASK		0xfff
+ 
+@@ -119,6 +120,12 @@ struct virtio_iommu_probe_property {
+ 	__le16					length;
+ };
+ 
++struct virtio_iommu_probe_pgsize_mask {
++	struct virtio_iommu_probe_property	head;
++	__u8					reserved[4];
++	__le64					pgsize_bitmap;
++};
++
+ #define VIRTIO_IOMMU_RESV_MEM_T_RESERVED	0
+ #define VIRTIO_IOMMU_RESV_MEM_T_MSI		1
+ 
 -- 
-Geert Uytterhoeven -- There's lots of Linux beyond ia32 -- geert@linux-m68k.org
+2.17.1
 
-In personal conversations with technical people, I call myself a hacker. But
-when I'm talking to journalists I just say "programmer" or something like that.
-                                -- Linus Torvalds
 _______________________________________________
 iommu mailing list
 iommu@lists.linux-foundation.org
