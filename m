@@ -2,76 +2,131 @@ Return-Path: <SRS0=kPPe=6T=lists.linux-foundation.org=iommu-bounces@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-8.2 required=3.0 tests=HEADER_FROM_DIFFERENT_DOMAINS,
-	INCLUDES_PATCH,MAILING_LIST_MULTI,SIGNED_OFF_BY,SPF_HELO_NONE,SPF_PASS,
-	URIBL_BLOCKED,USER_AGENT_SANE_1 autolearn=ham autolearn_force=no version=3.4.0
+X-Spam-Status: No, score=-3.5 required=3.0 tests=DKIM_INVALID,DKIM_SIGNED,
+	HEADER_FROM_DIFFERENT_DOMAINS,MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS,
+	URIBL_BLOCKED,USER_AGENT_GIT autolearn=no autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 5ADB9C4725A
-	for <iommu@archiver.kernel.org>; Tue,  5 May 2020 06:11:14 +0000 (UTC)
-Received: from silver.osuosl.org (smtp3.osuosl.org [140.211.166.136])
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 9366AC47259
+	for <iommu@archiver.kernel.org>; Tue,  5 May 2020 08:43:18 +0000 (UTC)
+Received: from fraxinus.osuosl.org (smtp4.osuosl.org [140.211.166.137])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by mail.kernel.org (Postfix) with ESMTPS id 03B64206A5
-	for <iommu@archiver.kernel.org>; Tue,  5 May 2020 06:11:13 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 03B64206A5
-Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=intel.com
+	by mail.kernel.org (Postfix) with ESMTPS id 5A4CF2068E
+	for <iommu@archiver.kernel.org>; Tue,  5 May 2020 08:43:18 +0000 (UTC)
+Authentication-Results: mail.kernel.org;
+	dkim=fail reason="signature verification failed" (1024-bit key) header.d=samsung.com header.i=@samsung.com header.b="usnItLxx"
+DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 5A4CF2068E
+Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=samsung.com
 Authentication-Results: mail.kernel.org; spf=pass smtp.mailfrom=iommu-bounces@lists.linux-foundation.org
 Received: from localhost (localhost [127.0.0.1])
-	by silver.osuosl.org (Postfix) with ESMTP id C239A22829;
-	Tue,  5 May 2020 06:11:13 +0000 (UTC)
-X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from silver.osuosl.org ([127.0.0.1])
-	by localhost (.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
-	with ESMTP id UrzAjvCWlZS6; Tue,  5 May 2020 06:11:12 +0000 (UTC)
-Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [140.211.9.56])
-	by silver.osuosl.org (Postfix) with ESMTP id 7BC0922803;
-	Tue,  5 May 2020 06:11:12 +0000 (UTC)
-Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
-	by lists.linuxfoundation.org (Postfix) with ESMTP id 6DB9EC088C;
-	Tue,  5 May 2020 06:11:12 +0000 (UTC)
-Received: from fraxinus.osuosl.org (smtp4.osuosl.org [140.211.166.137])
- by lists.linuxfoundation.org (Postfix) with ESMTP id C9D63C0175
- for <iommu@lists.linux-foundation.org>; Tue,  5 May 2020 06:11:10 +0000 (UTC)
-Received: from localhost (localhost [127.0.0.1])
- by fraxinus.osuosl.org (Postfix) with ESMTP id B0A76863A1
- for <iommu@lists.linux-foundation.org>; Tue,  5 May 2020 06:11:10 +0000 (UTC)
+	by fraxinus.osuosl.org (Postfix) with ESMTP id 26A79876AD;
+	Tue,  5 May 2020 08:43:18 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
 Received: from fraxinus.osuosl.org ([127.0.0.1])
+	by localhost (.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
+	with ESMTP id 97MkQcWRScyf; Tue,  5 May 2020 08:43:16 +0000 (UTC)
+Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [140.211.9.56])
+	by fraxinus.osuosl.org (Postfix) with ESMTP id EE4EE86C8D;
+	Tue,  5 May 2020 08:43:16 +0000 (UTC)
+Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
+	by lists.linuxfoundation.org (Postfix) with ESMTP id E2DADC088C;
+	Tue,  5 May 2020 08:43:16 +0000 (UTC)
+Received: from hemlock.osuosl.org (smtp2.osuosl.org [140.211.166.133])
+ by lists.linuxfoundation.org (Postfix) with ESMTP id B8928C0175
+ for <iommu@lists.linux-foundation.org>; Tue,  5 May 2020 08:43:14 +0000 (UTC)
+Received: from localhost (localhost [127.0.0.1])
+ by hemlock.osuosl.org (Postfix) with ESMTP id B388F89531
+ for <iommu@lists.linux-foundation.org>; Tue,  5 May 2020 08:43:14 +0000 (UTC)
+X-Virus-Scanned: amavisd-new at osuosl.org
+Received: from hemlock.osuosl.org ([127.0.0.1])
  by localhost (.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
- with ESMTP id h4kOrMnlGzCA for <iommu@lists.linux-foundation.org>;
- Tue,  5 May 2020 06:11:09 +0000 (UTC)
-X-Greylist: domain auto-whitelisted by SQLgrey-1.7.6
-Received: from mga01.intel.com (mga01.intel.com [192.55.52.88])
- by fraxinus.osuosl.org (Postfix) with ESMTPS id 7BB67863A4
- for <iommu@lists.linux-foundation.org>; Tue,  5 May 2020 06:11:09 +0000 (UTC)
-IronPort-SDR: Kkp8t1z5Ym1YLOzvdFYyKm0GfrCV96OK2mSS85eq9VZMSb/n2SXmmf2gRIS5jwS4w2EaVUOn/b
- knHJGSyrGv+Q==
-X-Amp-Result: SKIPPED(no attachment in message)
-X-Amp-File-Uploaded: False
-Received: from fmsmga003.fm.intel.com ([10.253.24.29])
- by fmsmga101.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384;
- 04 May 2020 23:11:08 -0700
-IronPort-SDR: V7xGuKgTmHsrqJ1LWIleEXUUPdshBrPcR0pCTD8WwfbnMI/fV4SMleOaml1JQGO/MXh5MfGbj9
- ZEjnYNeGfOTw==
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.73,354,1583222400"; d="scan'208";a="304386453"
-Received: from araj-mobl1.jf.intel.com ([10.254.74.162])
- by FMSMGA003.fm.intel.com with ESMTP; 04 May 2020 23:11:07 -0700
-Date: Mon, 4 May 2020 23:11:07 -0700
-From: "Raj, Ashok" <ashok.raj@intel.com>
-To: Alex Williamson <alex.williamson@redhat.com>
-Subject: Re: [PATCH] iommu: Relax ACS requirement for RCiEP devices.
-Message-ID: <20200505061107.GA22974@araj-mobl1.jf.intel.com>
-References: <1588653736-10835-1-git-send-email-ashok.raj@intel.com>
- <20200504231936.2bc07fe3@x1.home>
-MIME-Version: 1.0
-Content-Disposition: inline
-In-Reply-To: <20200504231936.2bc07fe3@x1.home>
-User-Agent: Mutt/1.9.1 (2017-09-22)
-Cc: Ashok Raj <ashok.raj@intel.com>, Darrel Goeddel <DGoeddel@forcepoint.com>,
- linux-pci@vger.kernel.org, linux-kernel@vger.kernel.org,
- iommu@lists.linux-foundation.org, Mark Scott <mscott@forcepoint.com>,
- Romil Sharma <rsharma@forcepoint.com>, Bjorn Helgaas <bhelgaas@google.com>
+ with ESMTP id C+P2Wd4+e30r for <iommu@lists.linux-foundation.org>;
+ Tue,  5 May 2020 08:43:12 +0000 (UTC)
+X-Greylist: from auto-whitelisted by SQLgrey-1.7.6
+Received: from mailout1.w1.samsung.com (mailout1.w1.samsung.com
+ [210.118.77.11])
+ by hemlock.osuosl.org (Postfix) with ESMTPS id 9EF858951E
+ for <iommu@lists.linux-foundation.org>; Tue,  5 May 2020 08:43:12 +0000 (UTC)
+Received: from eucas1p2.samsung.com (unknown [182.198.249.207])
+ by mailout1.w1.samsung.com (KnoxPortal) with ESMTP id
+ 20200505084309euoutp01aad26b517edee301dcb65536b4d22318~MFU02OYiI0065500655euoutp01W
+ for <iommu@lists.linux-foundation.org>; Tue,  5 May 2020 08:43:09 +0000 (GMT)
+DKIM-Filter: OpenDKIM Filter v2.11.0 mailout1.w1.samsung.com
+ 20200505084309euoutp01aad26b517edee301dcb65536b4d22318~MFU02OYiI0065500655euoutp01W
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=samsung.com;
+ s=mail20170921; t=1588668189;
+ bh=gWvd1hDyo79x/s7tOktXvp9ucuQRiTgmKZjpFecY7X0=;
+ h=From:To:Cc:Subject:Date:References:From;
+ b=usnItLxxgUdMh6jZjR4EQ1AXCGMA2t/PLscZksyJqHW+MZhfdDoA4njWO0JXQExtt
+ QonZDNG9gvziDO+LvgsIxbBo2K73AzUy/RZSEyd2yvyIfGxwLFhVdc7B+Cm94YGs2+
+ G/dI+xm+BzswzjyMKqO9+RsWU/B70lFtpinEb1w4=
+Received: from eusmges2new.samsung.com (unknown [203.254.199.244]) by
+ eucas1p1.samsung.com (KnoxPortal) with ESMTP id
+ 20200505084309eucas1p1c8645351ceb70dd394c27c84d73af9c1~MFU0btZIj0757407574eucas1p15;
+ Tue,  5 May 2020 08:43:09 +0000 (GMT)
+Received: from eucas1p1.samsung.com ( [182.198.249.206]) by
+ eusmges2new.samsung.com (EUCPMTA) with SMTP id FF.A1.60679.D1721BE5; Tue,  5
+ May 2020 09:43:09 +0100 (BST)
+Received: from eusmtrp1.samsung.com (unknown [182.198.249.138]) by
+ eucas1p1.samsung.com (KnoxPortal) with ESMTPA id
+ 20200505084308eucas1p1aa040c3ae325a6c7d92f956b1f5aad0d~MFUz90wG30752907529eucas1p15;
+ Tue,  5 May 2020 08:43:08 +0000 (GMT)
+Received: from eusmgms2.samsung.com (unknown [182.198.249.180]) by
+ eusmtrp1.samsung.com (KnoxPortal) with ESMTP id
+ 20200505084308eusmtrp1f6d10f1165c581cda2504a3b128040e8~MFUz9FVZm0716407164eusmtrp12;
+ Tue,  5 May 2020 08:43:08 +0000 (GMT)
+X-AuditID: cbfec7f4-0cbff7000001ed07-a8-5eb1271dbcb6
+Received: from eusmtip1.samsung.com ( [203.254.199.221]) by
+ eusmgms2.samsung.com (EUCPMTA) with SMTP id 01.A0.07950.C1721BE5; Tue,  5
+ May 2020 09:43:08 +0100 (BST)
+Received: from AMDC2765.digital.local (unknown [106.120.51.73]) by
+ eusmtip1.samsung.com (KnoxPortal) with ESMTPA id
+ 20200505084308eusmtip13a12b282487c6faf89fcb2ab4db393d5~MFUzetK7V0070700707eusmtip1g;
+ Tue,  5 May 2020 08:43:08 +0000 (GMT)
+From: Marek Szyprowski <m.szyprowski@samsung.com>
+To: dri-devel@lists.freedesktop.org, iommu@lists.linux-foundation.org,
+ linaro-mm-sig@lists.linaro.org, linux-kernel@vger.kernel.org
+Subject: [PATCH v3 00/25] DRM: fix struct sg_table nents vs. orig_nents misuse
+Date: Tue,  5 May 2020 10:43:00 +0200
+Message-Id: <20200505083926.28503-1-m.szyprowski@samsung.com>
+X-Mailer: git-send-email 2.17.1
+X-Brightmail-Tracker: H4sIAAAAAAAAA+NgFprJKsWRmVeSWpSXmKPExsWy7djPc7qy6hvjDHbul7boPXeSyWLjjPWs
+ Fv+3TWS2uPL1PZvFytVHmSwW7Le2+HLlIZPFpsfXWC0u75rDZrH2yF12i4MfnrA6cHusmbeG
+ 0WPvtwUsHtu/PWD1uN99nMlj85J6j9v/HjN7TL6xnNFj980GNo++LasYPT5vkgvgiuKySUnN
+ ySxLLdK3S+DK2LXuA2PBPsuKno1r2RsYL+t0MXJySAiYSLxc/Zuti5GLQ0hgBaPEjpefmUAS
+ QgJfGCX+r3aESHxmlJg7+TcLTMfdy8tYIBLLGSX2XG2HagfqeLjiNlg7m4ChRNfbLjYQW0Sg
+ lVHiRC8PiM0sMINJ4ujrUhBbWCBA4sjX6WBTWQRUJR43tYDZvAK2Ev37ZrNDbJOXWL3hADPI
+ AgmB6ewS2/vOQJ3hItHYc4MNwhaWeHV8C1SDjMTpyT0sEA3NQBedW8sO4fQwSlxumsEIUWUt
+ cefcL6BuDqCTNCXW79KHCDtKPG29wAwSlhDgk7jxVhDiaD6JSdumQ4V5JTrahCCq1SRmHV8H
+ t/bghUvMELaHxPtbLWDDhQRiJRY89ZnAKDcLYdUCRsZVjOKppcW56anFRnmp5XrFibnFpXnp
+ esn5uZsYgQnm9L/jX3Yw7vqTdIhRgINRiYc34vP6OCHWxLLiytxDjBIczEoivMt+bIgT4k1J
+ rKxKLcqPLyrNSS0+xCjNwaIkzmu86GWskEB6YklqdmpqQWoRTJaJg1OqgXHzrvouv+pGg5nb
+ TN/NX2Nj9WFhafAfFu7VIl9C1/q03VfMlDy5Um0aq90ftgsXlPLXqQYtf+v2Ul+mqmrT366W
+ j+KzpII3/Zx1+TarFUdZcr+g5V2F3Ncyta8OnJ+g4X4ope732cbydYntszvWPpd+Ev93ve/z
+ xbnHyzqvfedsNu2s3zbXxU+JpTgj0VCLuag4EQCuXNZLLAMAAA==
+X-Brightmail-Tracker: H4sIAAAAAAAAA+NgFvrILMWRmVeSWpSXmKPExsVy+t/xu7oy6hvjDJYdsLDoPXeSyWLjjPWs
+ Fv+3TWS2uPL1PZvFytVHmSwW7Le2+HLlIZPFpsfXWC0u75rDZrH2yF12i4MfnrA6cHusmbeG
+ 0WPvtwUsHtu/PWD1uN99nMlj85J6j9v/HjN7TL6xnNFj980GNo++LasYPT5vkgvgitKzKcov
+ LUlVyMgvLrFVija0MNIztLTQMzKx1DM0No+1MjJV0rezSUnNySxLLdK3S9DL2LXuA2PBPsuK
+ no1r2RsYL+t0MXJySAiYSNy9vIyli5GLQ0hgKaPE4x1TWSESMhInpzVA2cISf651sUEUfWKU
+ 6Hu/hR0kwSZgKNH1FiIhItDJKDGt+yM7iMMsMI9JYtHDQ0AOB4ewgJ/E0/9JIA0sAqoSj5ta
+ WEBsXgFbif59s9khNshLrN5wgHkCI88CRoZVjCKppcW56bnFRnrFibnFpXnpesn5uZsYgcG9
+ 7djPLTsYu94FH2IU4GBU4uHd8HV9nBBrYllxZe4hRgkOZiUR3mU/NsQJ8aYkVlalFuXHF5Xm
+ pBYfYjQFWj6RWUo0OR8YeXkl8YamhuYWlobmxubGZhZK4rwdAgdjhATSE0tSs1NTC1KLYPqY
+ ODilGhjF2hdPaUzmDRDJ/dU4qe7Sm9ki/5k/bQgxeBCwK+ZlsEvCg5p/mkH3tfXURMLOX1c3
+ v1T5Lts09M33JW6TduXmiS40PRi3Se5LW2lE5j+u2+EZKxuC+Nwe/3/dKftFuF9FN7Hw1QmR
+ v1Uqqp9mCKYzb4j6dORgaWvwxeSNCzqO7BIvjOlZ5KLEUpyRaKjFXFScCADCUtXChAIAAA==
+X-CMS-MailID: 20200505084308eucas1p1aa040c3ae325a6c7d92f956b1f5aad0d
+X-Msg-Generator: CA
+X-RootMTR: 20200505084308eucas1p1aa040c3ae325a6c7d92f956b1f5aad0d
+X-EPHeader: CA
+CMS-TYPE: 201P
+X-CMS-RootMailID: 20200505084308eucas1p1aa040c3ae325a6c7d92f956b1f5aad0d
+References: <CGME20200505084308eucas1p1aa040c3ae325a6c7d92f956b1f5aad0d@eucas1p1.samsung.com>
+Cc: Bartlomiej Zolnierkiewicz <b.zolnierkie@samsung.com>,
+ David Airlie <airlied@linux.ie>, Daniel Vetter <daniel@ffwll.ch>,
+ Robin Murphy <robin.murphy@arm.com>, Christoph Hellwig <hch@lst.de>,
+ linux-arm-kernel@lists.infradead.org
 X-BeenThere: iommu@lists.linux-foundation.org
 X-Mailman-Version: 2.1.15
 Precedence: list
@@ -84,126 +139,159 @@ List-Post: <mailto:iommu@lists.linux-foundation.org>
 List-Help: <mailto:iommu-request@lists.linux-foundation.org?subject=help>
 List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
  <mailto:iommu-request@lists.linux-foundation.org?subject=subscribe>
+MIME-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
 Errors-To: iommu-bounces@lists.linux-foundation.org
 Sender: "iommu" <iommu-bounces@lists.linux-foundation.org>
 
-Hi Alex
+Dear All,
 
-+ Joerg, accidently missed in the Cc.
+During the Exynos DRM GEM rework and fixing the issues in the 
+drm_prime_sg_to_page_addr_arrays() function [1] I've noticed that most
+drivers in DRM framework incorrectly use nents and orig_nents entries of
+the struct sg_table.
 
-On Mon, May 04, 2020 at 11:19:36PM -0600, Alex Williamson wrote:
-> On Mon,  4 May 2020 21:42:16 -0700
-> Ashok Raj <ashok.raj@intel.com> wrote:
-> 
-> > PCIe Spec recommends we can relax ACS requirement for RCIEP devices.
-> > 
-> > PCIe 5.0 Specification.
-> > 6.12 Access Control Services (ACS)
-> > Implementation of ACS in RCiEPs is permitted but not required. It is
-> > explicitly permitted that, within a single Root Complex, some RCiEPs
-> > implement ACS and some do not. It is strongly recommended that Root Complex
-> > implementations ensure that all accesses originating from RCiEPs
-> > (PFs and VFs) without ACS capability are first subjected to processing by
-> > the Translation Agent (TA) in the Root Complex before further decoding and
-> > processing. The details of such Root Complex handling are outside the scope
-> > of this specification.
-> > 
-> > Since Linux didn't give special treatment to allow this exception, certain
-> > RCiEP MFD devices are getting grouped in a single iommu group. This
-> > doesn't permit a single device to be assigned to a guest for instance.
-> > 
-> > In one vendor system: Device 14.x were grouped in a single IOMMU group.
-> > 
-> > /sys/kernel/iommu_groups/5/devices/0000:00:14.0
-> > /sys/kernel/iommu_groups/5/devices/0000:00:14.2
-> > /sys/kernel/iommu_groups/5/devices/0000:00:14.3
-> > 
-> > After the patch:
-> > /sys/kernel/iommu_groups/5/devices/0000:00:14.0
-> > /sys/kernel/iommu_groups/5/devices/0000:00:14.2
-> > /sys/kernel/iommu_groups/6/devices/0000:00:14.3 <<< new group
-> > 
-> > 14.0 and 14.2 are integrated devices, but legacy end points.
-> > Whereas 14.3 was a PCIe compliant RCiEP.
-> > 
-> > 00:14.3 Network controller: Intel Corporation Device 9df0 (rev 30)
-> > Capabilities: [40] Express (v2) Root Complex Integrated Endpoint, MSI 00
-> > 
-> > This permits assigning this device to a guest VM.
-> > 
-> > Fixes: f096c061f552 ("iommu: Rework iommu_group_get_for_pci_dev()")
-> > Signed-off-by: Ashok Raj <ashok.raj@intel.com>
-> > To: Joerg Roedel <joro@8bytes.org>
-> > To: Bjorn Helgaas <bhelgaas@google.com>
-> > Cc: linux-kernel@vger.kernel.org
-> > Cc: iommu@lists.linux-foundation.org
-> > Cc: Lu Baolu <baolu.lu@linux.intel.com>
-> > Cc: Alex Williamson <alex.williamson@redhat.com>
-> > Cc: Darrel Goeddel <DGoeddel@forcepoint.com>
-> > Cc: Mark Scott <mscott@forcepoint.com>,
-> > Cc: Romil Sharma <rsharma@forcepoint.com>
-> > Cc: Ashok Raj <ashok.raj@intel.com>
-> > ---
-> >  drivers/iommu/iommu.c | 15 ++++++++++++++-
-> >  1 file changed, 14 insertions(+), 1 deletion(-)
-> > 
-> > diff --git a/drivers/iommu/iommu.c b/drivers/iommu/iommu.c
-> > index 2b471419e26c..5744bd65f3e2 100644
-> > --- a/drivers/iommu/iommu.c
-> > +++ b/drivers/iommu/iommu.c
-> > @@ -1187,7 +1187,20 @@ static struct iommu_group *get_pci_function_alias_group(struct pci_dev *pdev,
-> >  	struct pci_dev *tmp = NULL;
-> >  	struct iommu_group *group;
-> >  
-> > -	if (!pdev->multifunction || pci_acs_enabled(pdev, REQ_ACS_FLAGS))
-> > +	/*
-> > +	 * PCI Spec 5.0, Section 6.12 Access Control Service
-> > +	 * Implementation of ACS in RCiEPs is permitted but not required.
-> > +	 * It is explicitly permitted that, within a single Root
-> > +	 * Complex, some RCiEPs implement ACS and some do not. It is
-> > +	 * strongly recommended that Root Complex implementations ensure
-> > +	 * that all accesses originating from RCiEPs (PFs and VFs) without
-> > +	 * ACS capability are first subjected to processing by the Translation
-> > +	 * Agent (TA) in the Root Complex before further decoding and
-> > +	 * processing.
-> > +	 */
-> 
-> Is the language here really strong enough to make this change?  ACS is
-> an optional feature, so being permitted but not required is rather
-> meaningless.  The spec is also specifically avoiding the words "must"
-> or "shall" and even when emphasized with "strongly", we still only have
-> a recommendation that may or may not be honored.  This seems like a
-> weak basis for assuming that RCiEPs universally honor this
-> recommendation.  Thanks,
-> 
+In case of the most DMA-mapping implementations exchanging those two
+entries or using nents for all loops on the scatterlist is harmless,
+because they both have the same value. There exists however a DMA-mapping
+implementations, for which such incorrect usage breaks things. The nents
+returned by dma_map_sg() might be lower than the nents passed as its
+parameter and this is perfectly fine. DMA framework or IOMMU is allowed
+to join consecutive chunks while mapping if such operation is supported
+by the underlying HW (bus, bridge, IOMMU, etc). Example of the case
+where dma_map_sg() might return 1 'DMA' chunk for the 4 'physical' pages
+is described here [2]
 
-We are speaking about PCIe spec, where people write it about 5 years ahead
-and every vendor tries to massage their product behavior with vague
-words like this..  :)
+The DMA-mapping framework documentation [3] states that dma_map_sg()
+returns the numer of the created entries in the DMA address space.
+However the subsequent calls to dma_sync_sg_for_{device,cpu} and
+dma_unmap_sg must be called with the original number of entries passed to
+dma_map_sg. The common pattern in DRM drivers were to assign the
+dma_map_sg() return value to sg_table->nents and use that value for
+the subsequent calls to dma_sync_sg_* or dma_unmap_sg functions. Also
+the code iterated over nents times to access the pages stored in the
+processed scatterlist, while it should use orig_nents as the numer of
+the page entries.
 
-But honestly for any any RCiEP, or even integrated endpoints, there 
-is no way to send them except up north. These aren't behind a RP.
+I've tried to identify all such incorrect usage of sg_table->nents and
+this is a result of my research. It looks that the incorrect pattern has
+been copied over the many drivers mainly in the DRM subsystem. Too bad in
+most cases it even worked correctly if the system used simple, linear
+DMA-mapping implementation, for which swapping nents and orig_nents
+doesn't make any difference. To avoid similar issues in the future, I've
+introduced a common dma-mapping wrappers, which operate directly on the
+sg_table objects.
 
-I did check with couple folks who are part of the SIG, and seem to agree
-that ACS treatment for RCiEP's doesn't mean much. 
+The biggest TODO is DRM/i915 driver and I don't feel brave enough to fix
+it fully. The driver creatively uses sg_table->orig_nents to store the
+size of the allocate scatterlist and ignores the number of the entries
+returned by dma_map_sg function. In this patchset I only fixed the
+sg_table objects exported by dmabuf related functions. I hope that I
+didn't break anything there.
 
-I understand the language isn't strong, but it doesn't seem like ACS should
-be a strong requirement for RCiEP's and reasonable to relax.
+Patches are based on top of Linux next-20200504.
 
-What are your thoughts? 
+Best regards,
+Marek Szyprowski
 
-Cheers,
-Ashok
-> 
-> > +	if (!pdev->multifunction ||
-> > +	    (pci_pcie_type(pdev) == PCI_EXP_TYPE_RC_END) ||
-> > +	     pci_acs_enabled(pdev, REQ_ACS_FLAGS))
-> >  		return NULL;
-> >  
-> >  	for_each_pci_dev(tmp) {
-> 
+
+References:
+
+[1] https://lkml.org/lkml/2020/3/27/555 
+[2] https://lkml.org/lkml/2020/3/29/65
+[3] Documentation/DMA-API-HOWTO.txt
+
+
+Changelog:
+
+v3:
+- introduce dma_*_sgtable_* wrappers and use them in all patches
+
+v2: https://lore.kernel.org/linux-iommu/c01c9766-9778-fd1f-f36e-2dc7bd376ba4@arm.com/T/
+- dropped most of the changes to drm/i915
+- added fixes for rcar-du, xen, media and ion
+- fixed a few issues pointed by kbuild test robot
+- added wide cc: list for each patch
+
+v1: https://lore.kernel.org/linux-iommu/c01c9766-9778-fd1f-f36e-2dc7bd376ba4@arm.com/T/
+- initial version
+
+
+Patch summary:
+
+Marek Szyprowski (25):
+  dma-mapping: add generic helpers for mapping sgtable objects
+  drm: core: fix common struct sg_table related issues
+  drm: amdgpu: fix common struct sg_table related issues
+  drm: armada: fix common struct sg_table related issues
+  drm: etnaviv: fix common struct sg_table related issues
+  drm: exynos: fix common struct sg_table related issues
+  drm: i915: fix common struct sg_table related issues
+  drm: lima: fix common struct sg_table related issues
+  drm: msm: fix common struct sg_table related issues
+  drm: panfrost: fix common struct sg_table related issues
+  drm: radeon: fix common struct sg_table related issues
+  drm: rockchip: fix common struct sg_table related issues
+  drm: tegra: fix common struct sg_table related issues
+  drm: virtio: fix common struct sg_table related issues
+  drm: vmwgfx: fix common struct sg_table related issues
+  xen: gntdev: fix common struct sg_table related issues
+  drm: host1x: fix common struct sg_table related issues
+  drm: rcar-du: fix common struct sg_table related issues
+  dmabuf: fix common struct sg_table related issues
+  staging: ion: fix common struct sg_table related issues
+  staging: tegra-vde: fix common struct sg_table related issues
+  misc: fastrpc: fix common struct sg_table related issues
+  rapidio: fix common struct sg_table related issues
+  samples: vfio-mdev/mbochs: fix common struct sg_table related issues
+  media: pci: fix common ALSA DMA-mapping related codes
+
+ drivers/dma-buf/heaps/heap-helpers.c             | 13 +++++-----
+ drivers/dma-buf/udmabuf.c                        |  7 +++---
+ drivers/gpu/drm/amd/amdgpu/amdgpu_dma_buf.c      |  6 ++---
+ drivers/gpu/drm/amd/amdgpu/amdgpu_ttm.c          |  9 +++----
+ drivers/gpu/drm/armada/armada_gem.c              | 10 ++++----
+ drivers/gpu/drm/drm_cache.c                      |  2 +-
+ drivers/gpu/drm/drm_gem_shmem_helper.c           | 14 +++++++----
+ drivers/gpu/drm/drm_prime.c                      | 13 +++++-----
+ drivers/gpu/drm/etnaviv/etnaviv_gem.c            | 12 ++++-----
+ drivers/gpu/drm/exynos/exynos_drm_g2d.c          |  9 +++----
+ drivers/gpu/drm/i915/gem/i915_gem_dmabuf.c       | 13 ++++------
+ drivers/gpu/drm/i915/gem/selftests/mock_dmabuf.c |  7 +++---
+ drivers/gpu/drm/lima/lima_gem.c                  | 11 +++++---
+ drivers/gpu/drm/msm/msm_gem.c                    | 13 ++++------
+ drivers/gpu/drm/msm/msm_iommu.c                  |  2 +-
+ drivers/gpu/drm/panfrost/panfrost_gem.c          |  4 +--
+ drivers/gpu/drm/panfrost/panfrost_mmu.c          |  5 ++--
+ drivers/gpu/drm/radeon/radeon_ttm.c              | 11 ++++----
+ drivers/gpu/drm/rockchip/rockchip_drm_gem.c      | 26 +++++++++----------
+ drivers/gpu/drm/tegra/gem.c                      | 27 ++++++++------------
+ drivers/gpu/drm/tegra/plane.c                    | 15 ++++-------
+ drivers/gpu/drm/virtio/virtgpu_object.c          | 17 ++++++-------
+ drivers/gpu/drm/virtio/virtgpu_vq.c              | 10 +++-----
+ drivers/gpu/drm/vmwgfx/vmwgfx_ttm_buffer.c       | 17 +++----------
+ drivers/gpu/host1x/job.c                         | 22 ++++++----------
+ drivers/media/pci/cx23885/cx23885-alsa.c         |  2 +-
+ drivers/media/pci/cx25821/cx25821-alsa.c         |  2 +-
+ drivers/media/pci/cx88/cx88-alsa.c               |  2 +-
+ drivers/media/pci/saa7134/saa7134-alsa.c         |  2 +-
+ drivers/media/platform/vsp1/vsp1_drm.c           |  9 ++++---
+ drivers/misc/fastrpc.c                           |  4 +--
+ drivers/rapidio/devices/rio_mport_cdev.c         |  8 +++---
+ drivers/staging/android/ion/ion.c                | 25 ++++++++----------
+ drivers/staging/android/ion/ion_heap.c           |  6 ++---
+ drivers/staging/android/ion/ion_system_heap.c    |  2 +-
+ drivers/staging/media/tegra-vde/iommu.c          |  4 +--
+ drivers/xen/gntdev-dmabuf.c                      |  7 +++---
+ include/linux/dma-mapping.h                      | 32 ++++++++++++++++++++++++
+ include/linux/iommu.h                            |  6 +++++
+ samples/vfio-mdev/mbochs.c                       |  3 ++-
+ 40 files changed, 202 insertions(+), 207 deletions(-)
+
+-- 
+1.9.1
+
 _______________________________________________
 iommu mailing list
 iommu@lists.linux-foundation.org
