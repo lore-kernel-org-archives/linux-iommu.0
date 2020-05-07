@@ -7,62 +7,63 @@ X-Spam-Status: No, score=-9.7 required=3.0 tests=HEADER_FROM_DIFFERENT_DOMAINS,
 	URIBL_BLOCKED,USER_AGENT_GIT autolearn=unavailable autolearn_force=no
 	version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 1A9F7C47257
-	for <iommu@archiver.kernel.org>; Thu,  7 May 2020 00:59:10 +0000 (UTC)
-Received: from fraxinus.osuosl.org (smtp4.osuosl.org [140.211.166.137])
+	by smtp.lore.kernel.org (Postfix) with ESMTP id C07BAC54E4A
+	for <iommu@archiver.kernel.org>; Thu,  7 May 2020 00:59:11 +0000 (UTC)
+Received: from hemlock.osuosl.org (smtp2.osuosl.org [140.211.166.133])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by mail.kernel.org (Postfix) with ESMTPS id EAC7720708
-	for <iommu@archiver.kernel.org>; Thu,  7 May 2020 00:59:09 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org EAC7720708
+	by mail.kernel.org (Postfix) with ESMTPS id 97E8220708
+	for <iommu@archiver.kernel.org>; Thu,  7 May 2020 00:59:11 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 97E8220708
 Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=linux.intel.com
 Authentication-Results: mail.kernel.org; spf=pass smtp.mailfrom=iommu-bounces@lists.linux-foundation.org
 Received: from localhost (localhost [127.0.0.1])
-	by fraxinus.osuosl.org (Postfix) with ESMTP id C867A86CA1;
-	Thu,  7 May 2020 00:59:09 +0000 (UTC)
+	by hemlock.osuosl.org (Postfix) with ESMTP id 7FBDD89063;
+	Thu,  7 May 2020 00:59:11 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from fraxinus.osuosl.org ([127.0.0.1])
+Received: from hemlock.osuosl.org ([127.0.0.1])
 	by localhost (.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
-	with ESMTP id KfcVO0j4OfQQ; Thu,  7 May 2020 00:59:07 +0000 (UTC)
+	with ESMTP id 0XxFiqK2kzoU; Thu,  7 May 2020 00:59:10 +0000 (UTC)
 Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [140.211.9.56])
-	by fraxinus.osuosl.org (Postfix) with ESMTP id BECA486C9B;
-	Thu,  7 May 2020 00:59:07 +0000 (UTC)
+	by hemlock.osuosl.org (Postfix) with ESMTP id E27CC88E1E;
+	Thu,  7 May 2020 00:59:10 +0000 (UTC)
 Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
-	by lists.linuxfoundation.org (Postfix) with ESMTP id 9A98BC088F;
-	Thu,  7 May 2020 00:59:07 +0000 (UTC)
+	by lists.linuxfoundation.org (Postfix) with ESMTP id D01C9C0863;
+	Thu,  7 May 2020 00:59:10 +0000 (UTC)
 Received: from silver.osuosl.org (smtp3.osuosl.org [140.211.166.136])
- by lists.linuxfoundation.org (Postfix) with ESMTP id 3C454C0859
- for <iommu@lists.linux-foundation.org>; Thu,  7 May 2020 00:59:06 +0000 (UTC)
+ by lists.linuxfoundation.org (Postfix) with ESMTP id EC945C0859
+ for <iommu@lists.linux-foundation.org>; Thu,  7 May 2020 00:59:08 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
- by silver.osuosl.org (Postfix) with ESMTP id 3004A2045A
- for <iommu@lists.linux-foundation.org>; Thu,  7 May 2020 00:59:06 +0000 (UTC)
+ by silver.osuosl.org (Postfix) with ESMTP id D73BC20465
+ for <iommu@lists.linux-foundation.org>; Thu,  7 May 2020 00:59:08 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
 Received: from silver.osuosl.org ([127.0.0.1])
  by localhost (.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
- with ESMTP id VoipukAubcH1 for <iommu@lists.linux-foundation.org>;
- Thu,  7 May 2020 00:59:05 +0000 (UTC)
+ with ESMTP id 1bl3sfkeAPyN for <iommu@lists.linux-foundation.org>;
+ Thu,  7 May 2020 00:59:07 +0000 (UTC)
 X-Greylist: domain auto-whitelisted by SQLgrey-1.7.6
 Received: from mga11.intel.com (mga11.intel.com [192.55.52.93])
- by silver.osuosl.org (Postfix) with ESMTPS id EC8692045B
- for <iommu@lists.linux-foundation.org>; Thu,  7 May 2020 00:59:04 +0000 (UTC)
-IronPort-SDR: zVLgkvaXRCvoucCjFzoDAKumQtabQk3Di6G2hJIkOF8OGfENQN0Or6I20mQj8v4usj1JGAQsNR
- Gu01Gs+YWfpQ==
+ by silver.osuosl.org (Postfix) with ESMTPS id 4339D2045A
+ for <iommu@lists.linux-foundation.org>; Thu,  7 May 2020 00:59:07 +0000 (UTC)
+IronPort-SDR: 4bGtmIPU4JFpxinLYg28Icn12jjffIXLkOLFvjpaqxg1TtPdyUcTHjSvy9WSFEYS2bl9N0OazZ
+ hrqdxa/owcYA==
 X-Amp-Result: SKIPPED(no attachment in message)
 X-Amp-File-Uploaded: False
 Received: from orsmga004.jf.intel.com ([10.7.209.38])
  by fmsmga102.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384;
- 06 May 2020 17:59:04 -0700
-IronPort-SDR: jv/BM+qZZXwvKBxGZziruUfT/lC2I4wyE13yR4SAKUO21LcXvwzLaxLHXoUrwjMrBBpYM2jgA9
- Ttl0dJW5ix9A==
+ 06 May 2020 17:59:07 -0700
+IronPort-SDR: LBI6ExzxJeETdCifeW06XYFZJ9rRE93oxIFxfegPQ7XNyO495vHbc4OErYCyqxbF4zYIMRveKN
+ 559tI/Sbkclw==
 X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.73,361,1583222400"; d="scan'208";a="407461789"
+X-IronPort-AV: E=Sophos;i="5.73,361,1583222400"; d="scan'208";a="407461799"
 Received: from allen-box.sh.intel.com ([10.239.159.139])
- by orsmga004.jf.intel.com with ESMTP; 06 May 2020 17:59:02 -0700
+ by orsmga004.jf.intel.com with ESMTP; 06 May 2020 17:59:04 -0700
 From: Lu Baolu <baolu.lu@linux.intel.com>
 To: Joerg Roedel <joro@8bytes.org>
-Subject: [PATCH v4 1/5] iommu/vt-d: Multiple descriptors per qi_submit_sync()
-Date: Thu,  7 May 2020 08:55:30 +0800
-Message-Id: <20200507005534.3080-2-baolu.lu@linux.intel.com>
+Subject: [PATCH v4 2/5] iommu/vt-d: debugfs: Add support to show inv queue
+ internals
+Date: Thu,  7 May 2020 08:55:31 +0800
+Message-Id: <20200507005534.3080-3-baolu.lu@linux.intel.com>
 X-Mailer: git-send-email 2.17.1
 In-Reply-To: <20200507005534.3080-1-baolu.lu@linux.intel.com>
 References: <20200507005534.3080-1-baolu.lu@linux.intel.com>
@@ -86,293 +87,111 @@ Content-Transfer-Encoding: 7bit
 Errors-To: iommu-bounces@lists.linux-foundation.org
 Sender: "iommu" <iommu-bounces@lists.linux-foundation.org>
 
-Current qi_submit_sync() only supports single invalidation descriptor
-per submission and appends wait descriptor after each submission to
-poll the hardware completion. This extends the qi_submit_sync() helper
-to support multiple descriptors, and add an option so that the caller
-could specify the Page-request Drain (PD) bit in the wait descriptor.
+Export invalidation queue internals of each iommu device through the
+debugfs.
 
-Signed-off-by: Jacob Pan <jacob.jun.pan@linux.intel.com>
+Example of such dump on a Skylake machine:
+
+$ sudo cat /sys/kernel/debug/iommu/intel/invalidation_queue
+Invalidation queue on IOMMU: dmar1
+ Base: 0x1672c9000      Head: 80        Tail: 80
+Index           qw0                     qw1                     status
+    0   0000000000000004        0000000000000000        0000000000000000
+    1   0000000200000025        00000001672be804        0000000000000000
+    2   0000000000000011        0000000000000000        0000000000000000
+    3   0000000200000025        00000001672be80c        0000000000000000
+    4   00000000000000d2        0000000000000000        0000000000000000
+    5   0000000200000025        00000001672be814        0000000000000000
+    6   0000000000000014        0000000000000000        0000000000000000
+    7   0000000200000025        00000001672be81c        0000000000000000
+    8   0000000000000014        0000000000000000        0000000000000000
+    9   0000000200000025        00000001672be824        0000000000000000
+
 Signed-off-by: Lu Baolu <baolu.lu@linux.intel.com>
 ---
- drivers/iommu/dmar.c                | 63 +++++++++++++++++------------
- drivers/iommu/intel-pasid.c         |  4 +-
- drivers/iommu/intel-svm.c           |  6 +--
- drivers/iommu/intel_irq_remapping.c |  2 +-
- include/linux/intel-iommu.h         |  9 ++++-
- 5 files changed, 52 insertions(+), 32 deletions(-)
+ drivers/iommu/intel-iommu-debugfs.c | 62 +++++++++++++++++++++++++++++
+ 1 file changed, 62 insertions(+)
 
-diff --git a/drivers/iommu/dmar.c b/drivers/iommu/dmar.c
-index d9dc787feef7..61d049e91f84 100644
---- a/drivers/iommu/dmar.c
-+++ b/drivers/iommu/dmar.c
-@@ -1157,12 +1157,11 @@ static inline void reclaim_free_desc(struct q_inval *qi)
- 	}
+diff --git a/drivers/iommu/intel-iommu-debugfs.c b/drivers/iommu/intel-iommu-debugfs.c
+index 3eb1fe240fb0..e3089865b8f3 100644
+--- a/drivers/iommu/intel-iommu-debugfs.c
++++ b/drivers/iommu/intel-iommu-debugfs.c
+@@ -372,6 +372,66 @@ static int domain_translation_struct_show(struct seq_file *m, void *unused)
  }
+ DEFINE_SHOW_ATTRIBUTE(domain_translation_struct);
  
--static int qi_check_fault(struct intel_iommu *iommu, int index)
-+static int qi_check_fault(struct intel_iommu *iommu, int index, int wait_index)
- {
- 	u32 fault;
- 	int head, tail;
- 	struct q_inval *qi = iommu->qi;
--	int wait_index = (index + 1) % QI_LENGTH;
- 	int shift = qi_shift(iommu);
- 
- 	if (qi->desc_status[wait_index] == QI_ABORT)
-@@ -1225,17 +1224,21 @@ static int qi_check_fault(struct intel_iommu *iommu, int index)
- }
- 
- /*
-- * Submit the queued invalidation descriptor to the remapping
-- * hardware unit and wait for its completion.
-+ * Function to submit invalidation descriptors of all types to the queued
-+ * invalidation interface(QI). Multiple descriptors can be submitted at a
-+ * time, a wait descriptor will be appended to each submission to ensure
-+ * hardware has completed the invalidation before return. Wait descriptors
-+ * can be part of the submission but it will not be polled for completion.
-  */
--int qi_submit_sync(struct qi_desc *desc, struct intel_iommu *iommu)
-+int qi_submit_sync(struct intel_iommu *iommu, struct qi_desc *desc,
-+		   unsigned int count, unsigned long options)
- {
--	int rc;
- 	struct q_inval *qi = iommu->qi;
--	int offset, shift, length;
- 	struct qi_desc wait_desc;
- 	int wait_index, index;
- 	unsigned long flags;
-+	int offset, shift;
-+	int rc, i;
- 
- 	if (!qi)
- 		return 0;
-@@ -1244,32 +1247,41 @@ int qi_submit_sync(struct qi_desc *desc, struct intel_iommu *iommu)
- 	rc = 0;
- 
- 	raw_spin_lock_irqsave(&qi->q_lock, flags);
--	while (qi->free_cnt < 3) {
-+	/*
-+	 * Check if we have enough empty slots in the queue to submit,
-+	 * the calculation is based on:
-+	 * # of desc + 1 wait desc + 1 space between head and tail
-+	 */
-+	while (qi->free_cnt < count + 2) {
- 		raw_spin_unlock_irqrestore(&qi->q_lock, flags);
- 		cpu_relax();
- 		raw_spin_lock_irqsave(&qi->q_lock, flags);
- 	}
- 
- 	index = qi->free_head;
--	wait_index = (index + 1) % QI_LENGTH;
-+	wait_index = (index + count) % QI_LENGTH;
- 	shift = qi_shift(iommu);
--	length = 1 << shift;
- 
--	qi->desc_status[index] = qi->desc_status[wait_index] = QI_IN_USE;
-+	for (i = 0; i < count; i++) {
-+		offset = ((index + i) % QI_LENGTH) << shift;
-+		memcpy(qi->desc + offset, &desc[i], 1 << shift);
-+		qi->desc_status[(index + i) % QI_LENGTH] = QI_IN_USE;
++static void invalidation_queue_entry_show(struct seq_file *m,
++					  struct intel_iommu *iommu)
++{
++	int index, shift = qi_shift(iommu);
++	struct qi_desc *desc;
++	int offset;
++
++	if (ecap_smts(iommu->ecap))
++		seq_puts(m, "Index\t\tqw0\t\t\tqw1\t\t\tqw2\t\t\tqw3\t\t\tstatus\n");
++	else
++		seq_puts(m, "Index\t\tqw0\t\t\tqw1\t\t\tstatus\n");
++
++	for (index = 0; index < QI_LENGTH; index++) {
++		offset = index << shift;
++		desc = iommu->qi->desc + offset;
++		if (ecap_smts(iommu->ecap))
++			seq_printf(m, "%5d\t%016llx\t%016llx\t%016llx\t%016llx\t%016x\n",
++				   index, desc->qw0, desc->qw1,
++				   desc->qw2, desc->qw3,
++				   iommu->qi->desc_status[index]);
++		else
++			seq_printf(m, "%5d\t%016llx\t%016llx\t%016x\n",
++				   index, desc->qw0, desc->qw1,
++				   iommu->qi->desc_status[index]);
 +	}
-+	qi->desc_status[wait_index] = QI_IN_USE;
- 
--	offset = index << shift;
--	memcpy(qi->desc + offset, desc, length);
- 	wait_desc.qw0 = QI_IWD_STATUS_DATA(QI_DONE) |
- 			QI_IWD_STATUS_WRITE | QI_IWD_TYPE;
-+	if (options & QI_OPT_WAIT_DRAIN)
-+		wait_desc.qw0 |= QI_IWD_PRQ_DRAIN;
- 	wait_desc.qw1 = virt_to_phys(&qi->desc_status[wait_index]);
- 	wait_desc.qw2 = 0;
- 	wait_desc.qw3 = 0;
- 
- 	offset = wait_index << shift;
--	memcpy(qi->desc + offset, &wait_desc, length);
-+	memcpy(qi->desc + offset, &wait_desc, 1 << shift);
- 
--	qi->free_head = (qi->free_head + 2) % QI_LENGTH;
--	qi->free_cnt -= 2;
-+	qi->free_head = (qi->free_head + count + 1) % QI_LENGTH;
-+	qi->free_cnt -= count + 1;
- 
- 	/*
- 	 * update the HW tail register indicating the presence of
-@@ -1285,7 +1297,7 @@ int qi_submit_sync(struct qi_desc *desc, struct intel_iommu *iommu)
- 		 * a deadlock where the interrupt context can wait indefinitely
- 		 * for free slots in the queue.
- 		 */
--		rc = qi_check_fault(iommu, index);
-+		rc = qi_check_fault(iommu, index, wait_index);
- 		if (rc)
- 			break;
- 
-@@ -1294,7 +1306,8 @@ int qi_submit_sync(struct qi_desc *desc, struct intel_iommu *iommu)
- 		raw_spin_lock(&qi->q_lock);
- 	}
- 
--	qi->desc_status[index] = QI_DONE;
-+	for (i = 0; i < count; i++)
-+		qi->desc_status[(index + i) % QI_LENGTH] = QI_DONE;
- 
- 	reclaim_free_desc(qi);
- 	raw_spin_unlock_irqrestore(&qi->q_lock, flags);
-@@ -1318,7 +1331,7 @@ void qi_global_iec(struct intel_iommu *iommu)
- 	desc.qw3 = 0;
- 
- 	/* should never fail */
--	qi_submit_sync(&desc, iommu);
-+	qi_submit_sync(iommu, &desc, 1, 0);
- }
- 
- void qi_flush_context(struct intel_iommu *iommu, u16 did, u16 sid, u8 fm,
-@@ -1332,7 +1345,7 @@ void qi_flush_context(struct intel_iommu *iommu, u16 did, u16 sid, u8 fm,
- 	desc.qw2 = 0;
- 	desc.qw3 = 0;
- 
--	qi_submit_sync(&desc, iommu);
-+	qi_submit_sync(iommu, &desc, 1, 0);
- }
- 
- void qi_flush_iotlb(struct intel_iommu *iommu, u16 did, u64 addr,
-@@ -1356,7 +1369,7 @@ void qi_flush_iotlb(struct intel_iommu *iommu, u16 did, u64 addr,
- 	desc.qw2 = 0;
- 	desc.qw3 = 0;
- 
--	qi_submit_sync(&desc, iommu);
-+	qi_submit_sync(iommu, &desc, 1, 0);
- }
- 
- void qi_flush_dev_iotlb(struct intel_iommu *iommu, u16 sid, u16 pfsid,
-@@ -1378,7 +1391,7 @@ void qi_flush_dev_iotlb(struct intel_iommu *iommu, u16 sid, u16 pfsid,
- 	desc.qw2 = 0;
- 	desc.qw3 = 0;
- 
--	qi_submit_sync(&desc, iommu);
-+	qi_submit_sync(iommu, &desc, 1, 0);
- }
- 
- /* PASID-based IOTLB invalidation */
-@@ -1419,7 +1432,7 @@ void qi_flush_piotlb(struct intel_iommu *iommu, u16 did, u32 pasid, u64 addr,
- 				QI_EIOTLB_AM(mask);
- 	}
- 
--	qi_submit_sync(&desc, iommu);
-+	qi_submit_sync(iommu, &desc, 1, 0);
- }
- 
- /* PASID-based device IOTLB Invalidate */
-@@ -1448,7 +1461,7 @@ void qi_flush_dev_iotlb_pasid(struct intel_iommu *iommu, u16 sid, u16 pfsid,
- 	if (size_order)
- 		desc.qw1 |= QI_DEV_EIOTLB_SIZE;
- 
--	qi_submit_sync(&desc, iommu);
-+	qi_submit_sync(iommu, &desc, 1, 0);
- }
- 
- void qi_flush_pasid_cache(struct intel_iommu *iommu, u16 did,
-@@ -1458,7 +1471,7 @@ void qi_flush_pasid_cache(struct intel_iommu *iommu, u16 did,
- 
- 	desc.qw0 = QI_PC_PASID(pasid) | QI_PC_DID(did) |
- 			QI_PC_GRAN(granu) | QI_PC_TYPE;
--	qi_submit_sync(&desc, iommu);
-+	qi_submit_sync(iommu, &desc, 1, 0);
- }
- 
- /*
-diff --git a/drivers/iommu/intel-pasid.c b/drivers/iommu/intel-pasid.c
-index 48cc9ca5f3dc..7969e3dac2ad 100644
---- a/drivers/iommu/intel-pasid.c
-+++ b/drivers/iommu/intel-pasid.c
-@@ -498,7 +498,7 @@ pasid_cache_invalidation_with_pasid(struct intel_iommu *iommu,
- 	desc.qw2 = 0;
- 	desc.qw3 = 0;
- 
--	qi_submit_sync(&desc, iommu);
-+	qi_submit_sync(iommu, &desc, 1, 0);
- }
- 
- static void
-@@ -512,7 +512,7 @@ iotlb_invalidation_with_pasid(struct intel_iommu *iommu, u16 did, u32 pasid)
- 	desc.qw2 = 0;
- 	desc.qw3 = 0;
- 
--	qi_submit_sync(&desc, iommu);
-+	qi_submit_sync(iommu, &desc, 1, 0);
- }
- 
- static void
-diff --git a/drivers/iommu/intel-svm.c b/drivers/iommu/intel-svm.c
-index e9f4e979a71f..83dc4319f661 100644
---- a/drivers/iommu/intel-svm.c
-+++ b/drivers/iommu/intel-svm.c
-@@ -138,7 +138,7 @@ static void intel_flush_svm_range_dev (struct intel_svm *svm, struct intel_svm_d
- 	}
- 	desc.qw2 = 0;
- 	desc.qw3 = 0;
--	qi_submit_sync(&desc, svm->iommu);
-+	qi_submit_sync(svm->iommu, &desc, 1, 0);
- 
- 	if (sdev->dev_iotlb) {
- 		desc.qw0 = QI_DEV_EIOTLB_PASID(svm->pasid) |
-@@ -162,7 +162,7 @@ static void intel_flush_svm_range_dev (struct intel_svm *svm, struct intel_svm_d
- 		}
- 		desc.qw2 = 0;
- 		desc.qw3 = 0;
--		qi_submit_sync(&desc, svm->iommu);
-+		qi_submit_sync(svm->iommu, &desc, 1, 0);
- 	}
- }
- 
-@@ -850,7 +850,7 @@ static irqreturn_t prq_event_thread(int irq, void *d)
- 				       sizeof(req->priv_data));
- 			resp.qw2 = 0;
- 			resp.qw3 = 0;
--			qi_submit_sync(&resp, iommu);
-+			qi_submit_sync(iommu, &resp, 1, 0);
- 		}
- 		head = (head + sizeof(*req)) & PRQ_RING_MASK;
- 	}
-diff --git a/drivers/iommu/intel_irq_remapping.c b/drivers/iommu/intel_irq_remapping.c
-index 81e43c1df7ec..a042f123b091 100644
---- a/drivers/iommu/intel_irq_remapping.c
-+++ b/drivers/iommu/intel_irq_remapping.c
-@@ -151,7 +151,7 @@ static int qi_flush_iec(struct intel_iommu *iommu, int index, int mask)
- 	desc.qw2 = 0;
- 	desc.qw3 = 0;
- 
--	return qi_submit_sync(&desc, iommu);
-+	return qi_submit_sync(iommu, &desc, 1, 0);
- }
- 
- static int modify_irte(struct irq_2_iommu *irq_iommu,
-diff --git a/include/linux/intel-iommu.h b/include/linux/intel-iommu.h
-index cfe720f10112..cca1e5f9aeaa 100644
---- a/include/linux/intel-iommu.h
-+++ b/include/linux/intel-iommu.h
-@@ -333,6 +333,7 @@ enum {
- 
- #define QI_IWD_STATUS_DATA(d)	(((u64)d) << 32)
- #define QI_IWD_STATUS_WRITE	(((u64)1) << 5)
-+#define QI_IWD_PRQ_DRAIN	(((u64)1) << 7)
- 
- #define QI_IOTLB_DID(did) 	(((u64)did) << 16)
- #define QI_IOTLB_DR(dr) 	(((u64)dr) << 7)
-@@ -710,7 +711,13 @@ void qi_flush_dev_iotlb_pasid(struct intel_iommu *iommu, u16 sid, u16 pfsid,
- void qi_flush_pasid_cache(struct intel_iommu *iommu, u16 did, u64 granu,
- 			  int pasid);
- 
--extern int qi_submit_sync(struct qi_desc *desc, struct intel_iommu *iommu);
-+int qi_submit_sync(struct intel_iommu *iommu, struct qi_desc *desc,
-+		   unsigned int count, unsigned long options);
-+/*
-+ * Options used in qi_submit_sync:
-+ * QI_OPT_WAIT_DRAIN - Wait for PRQ drain completion, spec 6.5.2.8.
-+ */
-+#define QI_OPT_WAIT_DRAIN		BIT(0)
- 
- extern int dmar_ir_support(void);
- 
++}
++
++static int invalidation_queue_show(struct seq_file *m, void *unused)
++{
++	struct dmar_drhd_unit *drhd;
++	struct intel_iommu *iommu;
++	unsigned long flags;
++	struct q_inval *qi;
++	int shift;
++
++	rcu_read_lock();
++	for_each_active_iommu(iommu, drhd) {
++		qi = iommu->qi;
++		shift = qi_shift(iommu);
++
++		if (!qi || !ecap_qis(iommu->ecap))
++			continue;
++
++		seq_printf(m, "Invalidation queue on IOMMU: %s\n", iommu->name);
++
++		raw_spin_lock_irqsave(&qi->q_lock, flags);
++		seq_printf(m, " Base: 0x%llx\tHead: %lld\tTail: %lld\n",
++			   virt_to_phys(qi->desc),
++			   dmar_readq(iommu->reg + DMAR_IQH_REG) >> shift,
++			   dmar_readq(iommu->reg + DMAR_IQT_REG) >> shift);
++		invalidation_queue_entry_show(m, iommu);
++		raw_spin_unlock_irqrestore(&qi->q_lock, flags);
++		seq_putc(m, '\n');
++	}
++	rcu_read_unlock();
++
++	return 0;
++}
++DEFINE_SHOW_ATTRIBUTE(invalidation_queue);
++
+ #ifdef CONFIG_IRQ_REMAP
+ static void ir_tbl_remap_entry_show(struct seq_file *m,
+ 				    struct intel_iommu *iommu)
+@@ -490,6 +550,8 @@ void __init intel_iommu_debugfs_init(void)
+ 	debugfs_create_file("domain_translation_struct", 0444,
+ 			    intel_iommu_debug, NULL,
+ 			    &domain_translation_struct_fops);
++	debugfs_create_file("invalidation_queue", 0444, intel_iommu_debug,
++			    NULL, &invalidation_queue_fops);
+ #ifdef CONFIG_IRQ_REMAP
+ 	debugfs_create_file("ir_translation_struct", 0444, intel_iommu_debug,
+ 			    NULL, &ir_translation_struct_fops);
 -- 
 2.17.1
 
