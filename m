@@ -2,92 +2,93 @@ Return-Path: <SRS0=32yV=6V=lists.linux-foundation.org=iommu-bounces@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-3.5 required=3.0 tests=DKIM_INVALID,DKIM_SIGNED,
-	HEADER_FROM_DIFFERENT_DOMAINS,MAILING_LIST_MULTI,SIGNED_OFF_BY,SPF_HELO_NONE,
-	SPF_PASS,URIBL_BLOCKED autolearn=no autolearn_force=no version=3.4.0
+X-Spam-Status: No, score=-5.5 required=3.0 tests=DKIM_INVALID,DKIM_SIGNED,
+	HEADER_FROM_DIFFERENT_DOMAINS,MAILING_LIST_MULTI,MENTIONS_GIT_HOSTING,
+	SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED autolearn=unavailable autolearn_force=no
+	version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 334A8C4724C
-	for <iommu@archiver.kernel.org>; Thu,  7 May 2020 11:06:11 +0000 (UTC)
-Received: from silver.osuosl.org (smtp3.osuosl.org [140.211.166.136])
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 7D0D6C4724C
+	for <iommu@archiver.kernel.org>; Thu,  7 May 2020 11:08:20 +0000 (UTC)
+Received: from hemlock.osuosl.org (smtp2.osuosl.org [140.211.166.133])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by mail.kernel.org (Postfix) with ESMTPS id EE8ED20736
-	for <iommu@archiver.kernel.org>; Thu,  7 May 2020 11:06:10 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTPS id 4C56820736
+	for <iommu@archiver.kernel.org>; Thu,  7 May 2020 11:08:20 +0000 (UTC)
 Authentication-Results: mail.kernel.org;
-	dkim=fail reason="signature verification failed" (1024-bit key) header.d=mg.codeaurora.org header.i=@mg.codeaurora.org header.b="RMvxfuoQ"
-DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org EE8ED20736
+	dkim=fail reason="signature verification failed" (1024-bit key) header.d=mg.codeaurora.org header.i=@mg.codeaurora.org header.b="InrC29/J"
+DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 4C56820736
 Authentication-Results: mail.kernel.org; dmarc=none (p=none dis=none) header.from=codeaurora.org
 Authentication-Results: mail.kernel.org; spf=pass smtp.mailfrom=iommu-bounces@lists.linux-foundation.org
 Received: from localhost (localhost [127.0.0.1])
-	by silver.osuosl.org (Postfix) with ESMTP id 8C78226242;
-	Thu,  7 May 2020 11:06:10 +0000 (UTC)
-X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from silver.osuosl.org ([127.0.0.1])
-	by localhost (.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
-	with ESMTP id Nuyk0DTWICWU; Thu,  7 May 2020 11:06:06 +0000 (UTC)
-Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [140.211.9.56])
-	by silver.osuosl.org (Postfix) with ESMTP id D1D572045A;
-	Thu,  7 May 2020 11:06:06 +0000 (UTC)
-Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
-	by lists.linuxfoundation.org (Postfix) with ESMTP id BFBA9C0859;
-	Thu,  7 May 2020 11:06:06 +0000 (UTC)
-Received: from hemlock.osuosl.org (smtp2.osuosl.org [140.211.166.133])
- by lists.linuxfoundation.org (Postfix) with ESMTP id C79BBC07FF
- for <iommu@lists.linux-foundation.org>; Thu,  7 May 2020 11:06:05 +0000 (UTC)
-Received: from localhost (localhost [127.0.0.1])
- by hemlock.osuosl.org (Postfix) with ESMTP id C0EBD8937B
- for <iommu@lists.linux-foundation.org>; Thu,  7 May 2020 11:06:05 +0000 (UTC)
+	by hemlock.osuosl.org (Postfix) with ESMTP id 0F59A887D1;
+	Thu,  7 May 2020 11:08:20 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
 Received: from hemlock.osuosl.org ([127.0.0.1])
+	by localhost (.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
+	with ESMTP id IJtm3Q1uQyyz; Thu,  7 May 2020 11:08:19 +0000 (UTC)
+Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [140.211.9.56])
+	by hemlock.osuosl.org (Postfix) with ESMTP id 638DE88757;
+	Thu,  7 May 2020 11:08:19 +0000 (UTC)
+Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
+	by lists.linuxfoundation.org (Postfix) with ESMTP id 44AE8C0859;
+	Thu,  7 May 2020 11:08:19 +0000 (UTC)
+Received: from silver.osuosl.org (smtp3.osuosl.org [140.211.166.136])
+ by lists.linuxfoundation.org (Postfix) with ESMTP id 182B8C07FF
+ for <iommu@lists.linux-foundation.org>; Thu,  7 May 2020 11:08:18 +0000 (UTC)
+Received: from localhost (localhost [127.0.0.1])
+ by silver.osuosl.org (Postfix) with ESMTP id F33BB2076E
+ for <iommu@lists.linux-foundation.org>; Thu,  7 May 2020 11:08:17 +0000 (UTC)
+X-Virus-Scanned: amavisd-new at osuosl.org
+Received: from silver.osuosl.org ([127.0.0.1])
  by localhost (.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
- with ESMTP id fP3oqi0dvhpO for <iommu@lists.linux-foundation.org>;
- Thu,  7 May 2020 11:06:04 +0000 (UTC)
+ with ESMTP id mr3NVfwQFDLt for <iommu@lists.linux-foundation.org>;
+ Thu,  7 May 2020 11:08:17 +0000 (UTC)
 X-Greylist: from auto-whitelisted by SQLgrey-1.7.6
-Received: from mail26.static.mailgun.info (mail26.static.mailgun.info
- [104.130.122.26])
- by hemlock.osuosl.org (Postfix) with ESMTPS id 8D4BC88C62
- for <iommu@lists.linux-foundation.org>; Thu,  7 May 2020 11:05:58 +0000 (UTC)
+Received: from mail27.static.mailgun.info (mail27.static.mailgun.info
+ [104.130.122.27])
+ by silver.osuosl.org (Postfix) with ESMTPS id 7A9972045A
+ for <iommu@lists.linux-foundation.org>; Thu,  7 May 2020 11:08:14 +0000 (UTC)
 DKIM-Signature: a=rsa-sha256; v=1; c=relaxed/relaxed; d=mg.codeaurora.org;
  q=dns/txt; 
- s=smtp; t=1588849564; h=Message-ID: References: In-Reply-To: Subject:
+ s=smtp; t=1588849697; h=Message-ID: References: In-Reply-To: Subject:
  Cc: To: From: Date: Content-Transfer-Encoding: Content-Type:
- MIME-Version: Sender; bh=KUkv11UrsJT4bCOAv4o9yBeyPANsHJVXo3wLqp+3x3w=;
- b=RMvxfuoQiKh+KU12YlPijlNu1pVum11gFHCzx49R/8xaaVgNjZ0Mw8Y6CZBD19oLBILddQX+
- YIAAlmvUWPhV3pY/yOszNMe4IZZ+UGa1B1sNdzTxq6roblWp0umH2Piv7q6EmL92oO5L2cQc
- b5gxIx5+K85S8HAkPD03InC4PXs=
-X-Mailgun-Sending-Ip: 104.130.122.26
+ MIME-Version: Sender; bh=gMmW7XurMTP82sFXTk8ae/eelAs13yx3uauX9ImYmK0=;
+ b=InrC29/JK0KURCw7CTclTfPuuooZ2aw+6PSq4e/9zoo5JKqJAZ6pJtQyvkishmBVKEHl3cYh
+ vHZ7gnOEuj2LTsvOddVrhPBjAwqvVHyfHKeyxCMgbdwdrt4NgWG3GMRjpq8cDzR35hznvS75
+ Pn+BlryRMXAoeHhlhsX3WzwjIm4=
+X-Mailgun-Sending-Ip: 104.130.122.27
 X-Mailgun-Sid: WyI3NDkwMCIsICJpb21tdUBsaXN0cy5saW51eC1mb3VuZGF0aW9uLm9yZyIsICJiZTllNGEiXQ==
 Received: from smtp.codeaurora.org
  (ec2-35-166-182-171.us-west-2.compute.amazonaws.com [35.166.182.171])
- by mxa.mailgun.org with ESMTP id 5eb3eb89.7fcd11868458-smtp-out-n03;
- Thu, 07 May 2020 11:05:45 -0000 (UTC)
+ by mxa.mailgun.org with ESMTP id 5eb3ec13.7ff0eebccd88-smtp-out-n03;
+ Thu, 07 May 2020 11:08:03 -0000 (UTC)
 Received: by smtp.codeaurora.org (Postfix, from userid 1001)
- id 3874EC44791; Thu,  7 May 2020 11:05:45 +0000 (UTC)
+ id C24A3C44792; Thu,  7 May 2020 11:08:01 +0000 (UTC)
 Received: from mail.codeaurora.org (localhost.localdomain [127.0.0.1])
  (using TLSv1 with cipher ECDHE-RSA-AES256-SHA (256/256 bits))
  (No client certificate requested)
  (Authenticated sender: saiprakash.ranjan)
- by smtp.codeaurora.org (Postfix) with ESMTPSA id 5D6E4C433F2;
- Thu,  7 May 2020 11:05:44 +0000 (UTC)
+ by smtp.codeaurora.org (Postfix) with ESMTPSA id BAB7DC433F2;
+ Thu,  7 May 2020 11:08:00 +0000 (UTC)
 MIME-Version: 1.0
-Date: Thu, 07 May 2020 16:35:44 +0530
+Date: Thu, 07 May 2020 16:38:00 +0530
 From: Sai Prakash Ranjan <saiprakash.ranjan@codeaurora.org>
-To: Robin Murphy <robin.murphy@arm.com>
-Subject: Re: [PATCHv2] iommu/arm-smmu: Make remove callback message more
- informative
-In-Reply-To: <2f3cd963-dffe-290b-02bf-819687713738@arm.com>
-References: <20200423095531.9868-1-saiprakash.ranjan@codeaurora.org>
- <CAD=FV=W=d=KrTwgMOO-ukFc7ZhkE92qGYumUEDrtjmhQOpdWbg@mail.gmail.com>
- <CAD=FV=U0Hhae3D1-P8kbcZafHeuqng11BNAbOb2YWPx+M7X5Gw@mail.gmail.com>
- <0b5098c28360d018f390a97155b9776c@codeaurora.org>
- <2f3cd963-dffe-290b-02bf-819687713738@arm.com>
-Message-ID: <7c3fd8c1d5b26ac277b8729d59531474@codeaurora.org>
+To: Will Deacon <will@kernel.org>
+Subject: Re: [PATCHv4 0/6] iommu/arm-smmu: Allow client devices to select
+ identity mapping
+In-Reply-To: <20200507103129.GA29541@willie-the-truck>
+References: <cover.1587407458.git.saiprakash.ranjan@codeaurora.org>
+ <aa54fd00a6d353c72664e41b7a4a4e3d@codeaurora.org>
+ <20200507103129.GA29541@willie-the-truck>
+Message-ID: <84efe9b60e1d7d440e0b5c1777d4eec6@codeaurora.org>
 X-Sender: saiprakash.ranjan@codeaurora.org
 User-Agent: Roundcube Webmail/1.3.9
-Cc: linux-arm-msm <linux-arm-msm@vger.kernel.org>,
- Doug Anderson <dianders@chromium.org>, LKML <linux-kernel@vger.kernel.org>,
- iommu@lists.linux-foundation.org, Will Deacon <will@kernel.org>,
- Linux ARM <linux-arm-kernel@lists.infradead.org>
+Cc: jroedel@suse.de, linux-kernel@vger.kernel.org,
+ iommu@lists.linux-foundation.org, Bjorn Andersson <bjorn.andersson@linaro.org>,
+ Matthias Kaehlcke <mka@chromium.org>, Evan Green <evgreen@chromium.org>,
+ Sibi Sankar <sibis@codeaurora.org>, linux-arm-msm@vger.kernel.org,
+ Stephen Boyd <swboyd@chromium.org>, Robin Murphy <robin.murphy@arm.com>,
+ linux-arm-msm-owner@vger.kernel.org, linux-arm-kernel@lists.infradead.org
 X-BeenThere: iommu@lists.linux-foundation.org
 X-Mailman-Version: 2.1.15
 Precedence: list
@@ -100,54 +101,77 @@ List-Post: <mailto:iommu@lists.linux-foundation.org>
 List-Help: <mailto:iommu-request@lists.linux-foundation.org?subject=help>
 List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
  <mailto:iommu-request@lists.linux-foundation.org?subject=subscribe>
-Content-Transfer-Encoding: base64
-Content-Type: text/plain; charset="utf-8"; Format="flowed"
+Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset="us-ascii"; Format="flowed"
 Errors-To: iommu-bounces@lists.linux-foundation.org
 Sender: "iommu" <iommu-bounces@lists.linux-foundation.org>
 
-T24gMjAyMC0wNS0wNyAxNjowMywgUm9iaW4gTXVycGh5IHdyb3RlOgo+IE9uIDIwMjAtMDUtMDcg
-MTE6MDQgYW0sIFNhaSBQcmFrYXNoIFJhbmphbiB3cm90ZToKPj4gSGksCj4+IAo+PiBPbiAyMDIw
-LTA1LTA3IDA1OjQwLCBEb3VnIEFuZGVyc29uIHdyb3RlOgo+Pj4gSGksCj4+PiAKPj4+IE9uIFRo
-dSwgQXByIDIzLCAyMDIwIGF0IDc6MzUgQU0gRG91ZyBBbmRlcnNvbiA8ZGlhbmRlcnNAY2hyb21p
-dW0ub3JnPiAKPj4+IHdyb3RlOgo+Pj4+IAo+Pj4+IEhpLAo+Pj4+IAo+Pj4+IE9uIFRodSwgQXBy
-IDIzLCAyMDIwIGF0IDI6NTUgQU0gU2FpIFByYWthc2ggUmFuamFuCj4+Pj4gPHNhaXByYWthc2gu
-cmFuamFuQGNvZGVhdXJvcmEub3JnPiB3cm90ZToKPj4+PiA+Cj4+Pj4gPiBDdXJyZW50bHkgb24g
-cmVib290L3NodXRkb3duLCB0aGUgZm9sbG93aW5nIG1lc3NhZ2VzIGFyZQo+Pj4+ID4gZGlzcGxh
-eWVkIG9uIHRoZSBjb25zb2xlIGFzIGVycm9yIG1lc3NhZ2VzIGJlZm9yZSB0aGUKPj4+PiA+IHN5
-c3RlbSByZWJvb3RzL3NodXRkb3duIGFzIHBhcnQgb2YgcmVtb3ZlIGNhbGxiYWNrLgo+Pj4+ID4K
-Pj4+PiA+IE9uIFNDNzE4MDoKPj4+PiA+Cj4+Pj4gPsKgwqAgYXJtLXNtbXUgMTUwMDAwMDAuaW9t
-bXU6IHJlbW92aW5nIGRldmljZSB3aXRoIGFjdGl2ZSBkb21haW5zIQo+Pj4+ID7CoMKgIGFybS1z
-bW11IDUwNDAwMDAuaW9tbXU6IHJlbW92aW5nIGRldmljZSB3aXRoIGFjdGl2ZSBkb21haW5zIQo+
-Pj4+ID4KPj4+PiA+IE1ha2UgdGhpcyBlcnJvciBtZXNzYWdlIG1vcmUgaW5mb3JtYXRpdmUgYW5k
-IGxlc3Mgc2NhcnkuCj4+Pj4gPgo+Pj4+ID4gUmVwb3J0ZWQtYnk6IERvdWdsYXMgQW5kZXJzb24g
-PGRpYW5kZXJzQGNocm9taXVtLm9yZz4KPj4+PiA+IFN1Z2dlc3RlZC1ieTogUm9iaW4gTXVycGh5
-IDxyb2Jpbi5tdXJwaHlAYXJtLmNvbT4KPj4+PiA+IFNpZ25lZC1vZmYtYnk6IFNhaSBQcmFrYXNo
-IFJhbmphbiA8c2FpcHJha2FzaC5yYW5qYW5AY29kZWF1cm9yYS5vcmc+Cj4+Pj4gPiAtLS0KPj4+
-PiA+wqAgZHJpdmVycy9pb21tdS9hcm0tc21tdS5jIHwgMiArLQo+Pj4+ID7CoCAxIGZpbGUgY2hh
-bmdlZCwgMSBpbnNlcnRpb24oKyksIDEgZGVsZXRpb24oLSkKPj4+PiAKPj4+PiBSZXZpZXdlZC1i
-eTogRG91Z2xhcyBBbmRlcnNvbiA8ZGlhbmRlcnNAY2hyb21pdW0ub3JnPgo+Pj4gCj4+PiBJcyB0
-aGlzIHBhdGNoIHdhaXRpbmcgb24gYW55dGhpbmcgaW4gcGFydGljdWxhciBub3c/wqAgRG8gd2Ug
-bmVlZAo+Pj4gcmV2aWV3cyBmcm9tIFJvYmluIGFuZC9vciBXaWxsPwo+Pj4gCj4+IAo+PiBXYWl0
-aW5nIGZvciB0aGVpciByZXZpZXdzIGFzIHRoZXkgYXJlIHRoZSBtYWludGFpbmVycy9yZXZpZXdl
-cnMgOikKPiAKPiBTb3JyeSwgdGhpcyBkaWQgcmVnaXN0ZXIgYXQgdGhlIHRpbWUsIEkganVzdCBm
-ZWx0IHRoYXQgaXQncyBhIGJpdAo+IHJlZHVuZGFudCB0byBnaXZlIGEgcmV2aWV3IHRhZyB0byBz
-YXkgInllcywgdGhpcyBpcyBleGFjdGx5IHdoYXQgSQo+IHN1Z2dlc3RlZCIgOikKPiAKPiBUaGF0
-IHNhaWQsIEkgZG8gd2lzaCBJIGhhZG4ndCBmb3Jnb3R0ZW4gYWJvdXQgdGhlIGRldl9ub3RpY2Ug
-bWVzc2FnZQo+IGxldmVsLCBidXQgSSB0aGluayB0aGF0IGxpZXMgb3ZlciBpbiB0aGUgY29uY2Vw
-dHVhbCBwdXJpdHkgY29ybmVyCj4gcmF0aGVyIHRoYW4gbWFraW5nIGFueSBwcmFjdGljYWwgZGlm
-ZmVyZW5jZSwgc28gSSdtIHN0aWxsIE9LIHdpdGggdGhlCj4gcGF0Y2ggYXMtaXMuIFdpbGw/Cj4g
-CgpJIGNhbiBjaGFuZ2UgdG8gZGV2X25vdGljZSBpZiB5b3UgaGF2ZSBzdHJvbmcgcHJlZmVyZW5j
-ZSBmb3IgdGhhdC4KSSBjaG9zZSBkZXZfaW5mbyBzaW5jZSB3ZSBzZWUgdGhlIG1lc3NhZ2VzIG9u
-IGV2ZXJ5IHJlYm9vdCBhbmQgdGhhdCAKbWFrZXMKaXQgbW9yZSBpbmZvcm1hdGlvbmFsIHRoYW4g
-c29tZXRoaW5nIHRvIG5vdGljZSBldmVyeXRpbWUuCgo+IAo+IHAucy4gd2hvZXZlciBoYXMgdGhp
-cyBlbnRyeSBpbiB0aGVpciBhZGRyZXNzIGJvb2sgZm9yIHRoZSBJT01NVSBsaXN0IAo+IChEb3Vn
-Pyk6Cj4gCj4gImxpc3RAMjYzLm5ldDpJT01NVSBEUklWRVJTIDxpb21tdUBsaXN0cy5saW51eC1m
-b3VuZGF0aW9uLm9yZz4sIEpvZXJnCj4gUm9lZGVsIDxqb3JvQDhieXRlcy5vcmc+LCIgPGlvbW11
-QGxpc3RzLmxpbnV4LWZvdW5kYXRpb24ub3JnPgo+IAo+IGl0IHJlYWxseSBtZXNzZXMgdXAgVGh1
-bmRlcmJpcmQncyBhYmlsaXR5IHRvIGdlbmVyYXRlIHdvcmtpbmcgaGVhZGVycwo+IGZvciBhIHJl
-cGx5IDspCgpOb3QgbWUgOykKClRoYW5rcywKU2FpCi0tIApRVUFMQ09NTSBJTkRJQSwgb24gYmVo
-YWxmIG9mIFF1YWxjb21tIElubm92YXRpb24gQ2VudGVyLCBJbmMuIGlzIGEgCm1lbWJlcgpvZiBD
-b2RlIEF1cm9yYSBGb3J1bSwgaG9zdGVkIGJ5IFRoZSBMaW51eCBGb3VuZGF0aW9uCl9fX19fX19f
-X19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fCmlvbW11IG1haWxpbmcgbGlz
-dAppb21tdUBsaXN0cy5saW51eC1mb3VuZGF0aW9uLm9yZwpodHRwczovL2xpc3RzLmxpbnV4Zm91
-bmRhdGlvbi5vcmcvbWFpbG1hbi9saXN0aW5mby9pb21tdQ==
+Hi Will,
+
+On 2020-05-07 16:01, Will Deacon wrote:
+> On Thu, May 07, 2020 at 03:58:06PM +0530, Sai Prakash Ranjan wrote:
+>> Hi Will, Joerg
+>> 
+>> On 2020-04-21 00:03, Sai Prakash Ranjan wrote:
+>> > This series allows DRM, Modem devices to set a default
+>> > identity mapping in qcom smmu implementation.
+>> >
+>> > Patch 1 is cleanup to support other SoCs to call into
+>> > QCOM specific  implementation.
+>> > Patch 2 sets the default identity domain for DRM devices.
+>> > Patch 3 implements def_domain_type callback for arm-smmu.
+>> > Patch 4 sets the default identity domain for modem device.
+>> > Patch 5-6 adds the iommus property for mss pil.
+>> >
+>> > This is based on Joerg's tree:
+>> >  -
+>> > https://git.kernel.org/pub/scm/linux/kernel/git/joro/linux.git/log/?h=iommu-probe-device-v2
+>> >
+>> > v4:
+>> >  * Updated commit msg for mss pil requesting direct mapping
+>> >
+>> > v3:
+>> >  * Use arm_smmu_master_cfg to get impl instead of long way as per Robin.
+>> >  * Use def_domain_type name for the callback in arm_smmu_imp as per
+>> > Robin
+>> >
+>> > Jordan Crouse (1):
+>> >   iommu/arm-smmu: Allow client devices to select direct mapping
+>> >
+>> > Sai Prakash Ranjan (2):
+>> >   iommu: arm-smmu-impl: Convert to a generic reset implementation
+>> >   iommu/arm-smmu: Implement iommu_ops->def_domain_type call-back
+>> >
+>> > Sibi Sankar (3):
+>> >   iommu/arm-smmu-qcom: Request direct mapping for modem device
+>> >   dt-bindings: remoteproc: qcom: Add iommus property
+>> >   arm64: dts: qcom: sdm845-cheza: Add iommus property
+>> >
+>> >  .../bindings/remoteproc/qcom,q6v5.txt         |  3 ++
+>> >  arch/arm64/boot/dts/qcom/sdm845-cheza.dtsi    |  5 +++
+>> >  drivers/iommu/arm-smmu-impl.c                 |  8 ++--
+>> >  drivers/iommu/arm-smmu-qcom.c                 | 37 +++++++++++++++++--
+>> >  drivers/iommu/arm-smmu.c                      | 12 ++++++
+>> >  drivers/iommu/arm-smmu.h                      |  1 +
+>> >  6 files changed, 60 insertions(+), 6 deletions(-)
+>> 
+>> This series is reviewed by Robin.
+>> Any chance this series can make it to 5.8?
+> 
+> I'm planning to queue smmu stuff next week, been busy with arm64 stuff
+> so far, sorry.
+> 
+
+No problem at all, thought of reminding once just in case.
+
+Thanks
+Sai
+
+-- 
+QUALCOMM INDIA, on behalf of Qualcomm Innovation Center, Inc. is a 
+member
+of Code Aurora Forum, hosted by The Linux Foundation
+_______________________________________________
+iommu mailing list
+iommu@lists.linux-foundation.org
+https://lists.linuxfoundation.org/mailman/listinfo/iommu
