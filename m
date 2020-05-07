@@ -8,90 +8,88 @@ X-Spam-Status: No, score=-6.3 required=3.0 tests=DKIM_ADSP_CUSTOM_MED,
 	SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED autolearn=unavailable autolearn_force=no
 	version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 02E41C38A24
-	for <iommu@archiver.kernel.org>; Thu,  7 May 2020 17:44:22 +0000 (UTC)
-Received: from fraxinus.osuosl.org (smtp4.osuosl.org [140.211.166.137])
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 3933AC38A24
+	for <iommu@archiver.kernel.org>; Thu,  7 May 2020 18:22:19 +0000 (UTC)
+Received: from hemlock.osuosl.org (smtp2.osuosl.org [140.211.166.133])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by mail.kernel.org (Postfix) with ESMTPS id 77FAA215A4
-	for <iommu@archiver.kernel.org>; Thu,  7 May 2020 17:44:21 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTPS id 0184721473
+	for <iommu@archiver.kernel.org>; Thu,  7 May 2020 18:22:18 +0000 (UTC)
 Authentication-Results: mail.kernel.org;
-	dkim=fail reason="signature verification failed" (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="QGIb+LgW"
-DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 77FAA215A4
+	dkim=fail reason="signature verification failed" (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="r83N9YXN"
+DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 0184721473
 Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=gmail.com
 Authentication-Results: mail.kernel.org; spf=pass smtp.mailfrom=iommu-bounces@lists.linux-foundation.org
 Received: from localhost (localhost [127.0.0.1])
-	by fraxinus.osuosl.org (Postfix) with ESMTP id 4FB1487386;
-	Thu,  7 May 2020 17:44:21 +0000 (UTC)
+	by hemlock.osuosl.org (Postfix) with ESMTP id C31DA894EC;
+	Thu,  7 May 2020 18:22:18 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from fraxinus.osuosl.org ([127.0.0.1])
+Received: from hemlock.osuosl.org ([127.0.0.1])
 	by localhost (.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
-	with ESMTP id BEBb6qvmxSgY; Thu,  7 May 2020 17:44:20 +0000 (UTC)
+	with ESMTP id bgtnl32SAJ7I; Thu,  7 May 2020 18:22:17 +0000 (UTC)
 Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [140.211.9.56])
-	by fraxinus.osuosl.org (Postfix) with ESMTP id 9A2E88738B;
-	Thu,  7 May 2020 17:44:20 +0000 (UTC)
+	by hemlock.osuosl.org (Postfix) with ESMTP id 7D54C89393;
+	Thu,  7 May 2020 18:22:17 +0000 (UTC)
 Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
-	by lists.linuxfoundation.org (Postfix) with ESMTP id 798F4C0859;
-	Thu,  7 May 2020 17:44:20 +0000 (UTC)
-Received: from fraxinus.osuosl.org (smtp4.osuosl.org [140.211.166.137])
- by lists.linuxfoundation.org (Postfix) with ESMTP id 17B34C07FF
- for <iommu@lists.linux-foundation.org>; Thu,  7 May 2020 17:44:19 +0000 (UTC)
+	by lists.linuxfoundation.org (Postfix) with ESMTP id 6F18DC0865;
+	Thu,  7 May 2020 18:22:17 +0000 (UTC)
+Received: from silver.osuosl.org (smtp3.osuosl.org [140.211.166.136])
+ by lists.linuxfoundation.org (Postfix) with ESMTP id C5806C07FF
+ for <iommu@lists.linux-foundation.org>; Thu,  7 May 2020 18:22:15 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
- by fraxinus.osuosl.org (Postfix) with ESMTP id 005168738B
- for <iommu@lists.linux-foundation.org>; Thu,  7 May 2020 17:44:19 +0000 (UTC)
+ by silver.osuosl.org (Postfix) with ESMTP id A30C620460
+ for <iommu@lists.linux-foundation.org>; Thu,  7 May 2020 18:22:15 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from fraxinus.osuosl.org ([127.0.0.1])
+Received: from silver.osuosl.org ([127.0.0.1])
  by localhost (.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
- with ESMTP id VJygKTvQXmDE for <iommu@lists.linux-foundation.org>;
- Thu,  7 May 2020 17:44:17 +0000 (UTC)
+ with ESMTP id w7bD+8JVqHaU for <iommu@lists.linux-foundation.org>;
+ Thu,  7 May 2020 18:22:14 +0000 (UTC)
 X-Greylist: domain auto-whitelisted by SQLgrey-1.7.6
 Received: from mail-yb1-f194.google.com (mail-yb1-f194.google.com
  [209.85.219.194])
- by fraxinus.osuosl.org (Postfix) with ESMTPS id B3D5987386
- for <iommu@lists.linux-foundation.org>; Thu,  7 May 2020 17:44:17 +0000 (UTC)
-Received: by mail-yb1-f194.google.com with SMTP id v9so3335320ybq.13
- for <iommu@lists.linux-foundation.org>; Thu, 07 May 2020 10:44:17 -0700 (PDT)
+ by silver.osuosl.org (Postfix) with ESMTPS id 1AA61203AC
+ for <iommu@lists.linux-foundation.org>; Thu,  7 May 2020 18:22:14 +0000 (UTC)
+Received: by mail-yb1-f194.google.com with SMTP id i16so3406200ybq.9
+ for <iommu@lists.linux-foundation.org>; Thu, 07 May 2020 11:22:14 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=gmail.com; s=20161025;
  h=mime-version:in-reply-to:references:from:date:message-id:subject:to
- :cc; bh=OI2xu1NqQ4nK8CSz3pymKBNjObYJMCIvthVEflc/cxo=;
- b=QGIb+LgWoXl3cN2eJu2P4HTuxHd5qUihVbS2Mnt85s2xVStHO3/45lZo/FIosAjj/u
- gfv63P3K/P4BvbK83ulMtgc8BNVU/1+xnCdG9PSoLe/uRwRP+h4KFVJPnS9F0X9Y3loy
- DmBv141/1pv1v5UUDjUzlmHSf3h5Ryq6CueYmTSTHdomeSea+RFp7mR0Y348LbR+YawZ
- 63RBNJCslCPQ60s2JdLLZzaUQOgufCLovaDjm+N53hmW9IcCr4TSsUEM2bYESboIX/NT
- Ram1BavEOssGAxrFsy2ld92UgsSgIw3F1lGKa5e207S3DbfCNTbiEi2LbXQafCozKsGw
- DFfg==
+ :cc; bh=Hio9A8K2n+RsdYoc8pl4frI4S8NgtDDOmOIDiCLHFEg=;
+ b=r83N9YXNHAuysfUCfvdi8Rl5DkYgLHkygL38sXx7PdanrqM5Lnz7xMFP85L4IbZCoi
+ vCyj3Pl++/OcRr0eTL0YpewVfULtTz5to5XRjmXnOAmKmcIPNGdxUdhWDEn2382KDGWo
+ f2uN10wq86ASCiOn1IVDTVnUvLF8VMzW3K0NrfRT2+nDaYUI+coSWuaLXUXRZdz5xcRU
+ dL+SMJaFxZjMNS6kr5Jytapxopu2rlnWRCIHTYbAWxUyuoX4ndxHD2pqvVAz9KDU5Ng+
+ zlcdQ7riCkAtGifkj4MT3XGpPUyT9YxVyZVOHL37IzTh0gQOsy9dd8Ti5XG+XlrKuzIJ
+ HxXA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
  d=1e100.net; s=20161025;
  h=x-gm-message-state:mime-version:in-reply-to:references:from:date
  :message-id:subject:to:cc;
- bh=OI2xu1NqQ4nK8CSz3pymKBNjObYJMCIvthVEflc/cxo=;
- b=uiqw18WY0/Umfgn5aeRzlrkWbDGYIEcEq8qhS1Kgwkd76q+pv0jeWrlGJIVnbCrbXM
- /cg9zifTTcoDZSEvf8zx8rXYqTcX0qcB8paLgDi2XHQ2b//113vhJXa9f/Ywziw1mOEc
- erRxqQOvnRXoeSrr7oXg4PkPTl1ZXbCz5TMe2kqIYI+H+2kLvhSBxlW4yKfCS4VAcWiJ
- lDZD8dEDZzS1hDM+UVA/vv505hmMAOuK3T8usy1H7voaT8thWGSNbb0eOEig3LH1MPcN
- qHV0AQOxL7eknFljU/CRRK1Za2Xh8cPfEmJYvL6Ac2CXaJa9R4r/p7YdUdTKtJXZtpKk
- HHAw==
-X-Gm-Message-State: AGi0Publv5cK3GoUdsj1+aJ2Uq2/Gs4ea5fbkyY0xU+qvspmP+VxNSUp
- xMJGODtzPGbM+3pDgRkldg4Nny3xsJ3+MOoeYXY=
-X-Google-Smtp-Source: APiQypIdmega8gbA7LhTYV3avyaOVVUs0s/qpzhKK7HefXcH48tpjfD18HK4FHSsK6C2hfzWW/8awd8jrE1zmNoSDeQ=
-X-Received: by 2002:a25:bb92:: with SMTP id y18mr25455080ybg.496.1588873455277; 
- Thu, 07 May 2020 10:44:15 -0700 (PDT)
+ bh=Hio9A8K2n+RsdYoc8pl4frI4S8NgtDDOmOIDiCLHFEg=;
+ b=T+oKDnP2Zx0z8JT1piLnzwzkuH2gcA5KkGJAx3cipKf1vnTj2hK/tU4IgLiWqG4R2u
+ irJpMYbS/zl72p9fN/NYBxZ+8sOCDCLZqFs0q4oTQvoWkie9zQ3dZrsGjO78Ek36khWz
+ PXdOkO8syCuFHPVv3f899l+edpqFD2ooWPuK6t7xtAWlpRSNKmiAry054VpG8UMfGzRs
+ F4xWvdu66JJ49Jzu7XFnKi4ULfh6RQ8PzAzk81hwPs+S/QEgBHhsu1puK4SmHeB5FGjk
+ R9h4v6G7g0OvSRiZtK1YWpqhfCN+GYfYL4wMVYzxvEifwDBJFNy7qrsNe0L9P5BasX67
+ zKCQ==
+X-Gm-Message-State: AGi0PuZl+dqLUUSF/xGJX5SMheVwxn0O/PSUlhN+Jz04R4QrZGKps90a
+ i4/hgeyQQ9O91qYq4TZVAG3urkIpOy7dJW048KM=
+X-Google-Smtp-Source: APiQypIpqQ8vVP8B2JUA91YqyMOOXv9lkR2FYk7SR9OMY5dPNlw5NaEr/FYdVE0cOqUKpvZDkh2vyZCqwiGHpQ8RFXo=
+X-Received: by 2002:a25:5081:: with SMTP id e123mr24424676ybb.48.1588875732811; 
+ Thu, 07 May 2020 11:22:12 -0700 (PDT)
 MIME-Version: 1.0
-Received: by 2002:a05:6900:26b:0:0:0:0 with HTTP; Thu, 7 May 2020 10:44:14
+Received: by 2002:a05:6900:26b:0:0:0:0 with HTTP; Thu, 7 May 2020 11:22:12
  -0700 (PDT)
-In-Reply-To: <30e2a563-df52-3fc1-3d59-adc2dc75beff@arm.com>
-References: <CGME20200504185042epcas5p11447ae722d33bd00c7d002a9d1b8d6c1@epcas5p1.samsung.com>
- <20200504183759.42924-1-ajaykumar.rs@samsung.com>
- <30e2a563-df52-3fc1-3d59-adc2dc75beff@arm.com>
+In-Reply-To: <d9bfde9f-8f16-bf1b-311b-ea6c2b8ab93d@arm.com>
+References: <1588795317-20879-1-git-send-email-vjitta@codeaurora.org>
+ <d9bfde9f-8f16-bf1b-311b-ea6c2b8ab93d@arm.com>
 From: Ajay kumar <ajaynumb@gmail.com>
-Date: Thu, 7 May 2020 23:14:14 +0530
-Message-ID: <CAEC9eQOPnWAJvAcgRdndgOkc2-KcZ7gJBo0Tb-izEpxczM+UBw@mail.gmail.com>
-Subject: Re: [RFC PATCH] drivers: iommu: reset cached node if dma_mask is
- changed
+Date: Thu, 7 May 2020 23:52:12 +0530
+Message-ID: <CAEC9eQMKc0dK9jGqOjeOQ3LT0fkJtYjgScb+ZF6MNagLERC7Jw@mail.gmail.com>
+Subject: Re: [PATCH] iommu/iova: Retry from last rb tree node if iova search
+ fails
 To: Robin Murphy <robin.murphy@arm.com>
-Cc: linux-mm@kvack.org, iommu@lists.linux-foundation.org,
- shaik.ameer@samsung.com, Ajay Kumar <ajaykumar.rs@samsung.com>,
- Sathyam Panda <sathya.panda@samsung.com>
+Cc: iommu@lists.linux-foundation.org, linux-kernel@vger.kernel.org,
+ vinmenon@codeaurora.org, vjitta@codeaurora.org, kernel-team@android.com
 X-BeenThere: iommu@lists.linux-foundation.org
 X-Mailman-Version: 2.1.15
 Precedence: list
@@ -109,115 +107,143 @@ Content-Transfer-Encoding: 7bit
 Errors-To: iommu-bounces@lists.linux-foundation.org
 Sender: "iommu" <iommu-bounces@lists.linux-foundation.org>
 
-Hi Robin,
-
 On 5/7/20, Robin Murphy <robin.murphy@arm.com> wrote:
-> On 2020-05-04 7:37 pm, Ajay Kumar wrote:
->> The current IOVA allocation code stores a cached copy of the
->> first allocated IOVA address node, and all the subsequent allocations
->> have no way to get past(higher than) the first allocated IOVA range.
->
-> Strictly they do, after that first allocation gets freed, or if the
-> first limit was <=32 bits and the subsequent limit >32 bits ;)
-In my case, the first allocated buffer is the firmware buffer,
-and its not released.
-
->> This causes issue when dma_mask for the master device is changed.
->> Though the DMA window is increased, the allocation code unaware of
->> the change, goes ahead allocating IOVA address lower than the
->> first allocated IOVA address.
+> On 2020-05-06 9:01 pm, vjitta@codeaurora.org wrote:
+>> From: Vijayanand Jitta <vjitta@codeaurora.org>
 >>
->> This patch adds a check for dma_mask change in the IOVA allocation
->> function and resets the cached IOVA node to anchor node everytime
->> the dma_mask change is observed.
->
-> This isn't the right approach, since limit_pfn is by design a transient
-> per-allocation thing. Devices with different limits may well be
-> allocating from the same IOVA domain concurrently, which is the whole
-> reason for maintaining two cached nodes to serve the expected PCI case
-> of mixing 32-bit and 64-bit limits. Trying to track a per-allocation
-> property on a per-domain basis is just going to thrash and massively
-> hurt such cases.
-Agreed. But if two or more non PCI devices share the same domain,
-and though one of the devices has higher addressable limit,
-the current logic forces it to take the lower window.
-> A somewhat more appropriate fix to the allocation loop itself has been
-> proposed here:
->
-> https://lore.kernel.org/linux-iommu/1588795317-20879-1-git-send-email-vjitta@codeaurora.org/
-This patch addresses my problem indirectly. Shall add my concerns there.
-
-Ajay
->> NOTE:
->>   This patch is needed to address the issue discussed in below thread:
->>   https://www.spinics.net/lists/iommu/msg43586.html
+>> When ever a new iova alloc request comes iova is always searched
+>> from the cached node and the nodes which are previous to cached
+>> node. So, even if there is free iova space available in the nodes
+>> which are next to the cached node iova allocation can still fail
+>> because of this approach.
 >>
->> Signed-off-by: Ajay Kumar <ajaykumar.rs@samsung.com>
->> Signed-off-by: Sathyam Panda <sathya.panda@samsung.com>
+>> Consider the following sequence of iova alloc and frees on
+>> 1GB of iova space
+>>
+>> 1) alloc - 500MB
+>> 2) alloc - 12MB
+>> 3) alloc - 499MB
+>> 4) free -  12MB which was allocated in step 2
+>> 5) alloc - 13MB
+>>
+>> After the above sequence we will have 12MB of free iova space and
+>> cached node will be pointing to the iova pfn of last alloc of 13MB
+>> which will be the lowest iova pfn of that iova space. Now if we get an
+>> alloc request of 2MB we just search from cached node and then look
+>> for lower iova pfn's for free iova and as they aren't any, iova alloc
+>> fails though there is 12MB of free iova space.
+>
+> Yup, this could definitely do with improving. Unfortunately I think this
+> particular implementation is slightly flawed...
+>
+>> To avoid such iova search failures do a retry from the last rb tree node
+>> when iova search fails, this will search the entire tree and get an iova
+>> if its available
+>>
+>> Signed-off-by: Vijayanand Jitta <vjitta@codeaurora.org>
 >> ---
->>   drivers/iommu/iova.c | 17 ++++++++++++++++-
->>   include/linux/iova.h |  1 +
->>   2 files changed, 17 insertions(+), 1 deletion(-)
+>>   drivers/iommu/iova.c | 11 +++++++++++
+>>   1 file changed, 11 insertions(+)
 >>
 >> diff --git a/drivers/iommu/iova.c b/drivers/iommu/iova.c
->> index 41c605b0058f..0e99975036ae 100644
+>> index 0e6a953..2985222 100644
 >> --- a/drivers/iommu/iova.c
 >> +++ b/drivers/iommu/iova.c
->> @@ -44,6 +44,7 @@ init_iova_domain(struct iova_domain *iovad, unsigned
->> long granule,
->>   	iovad->granule = granule;
->>   	iovad->start_pfn = start_pfn;
->>   	iovad->dma_32bit_pfn = 1UL << (32 - iova_shift(iovad));
->> +	iovad->curr_limit_pfn = iovad->dma_32bit_pfn;
->>   	iovad->max32_alloc_size = iovad->dma_32bit_pfn;
->>   	iovad->flush_cb = NULL;
->>   	iovad->fq = NULL;
->> @@ -116,9 +117,20 @@ EXPORT_SYMBOL_GPL(init_iova_flush_queue);
->>   static struct rb_node *
->>   __get_cached_rbnode(struct iova_domain *iovad, unsigned long limit_pfn)
->>   {
->> -	if (limit_pfn <= iovad->dma_32bit_pfn)
->> +	if (limit_pfn <= iovad->dma_32bit_pfn) {
->> +		/* re-init cached node if DMA limit has changed */
->> +		if (limit_pfn != iovad->curr_limit_pfn) {
->> +			iovad->cached32_node = &iovad->anchor.node;
->> +			iovad->curr_limit_pfn = limit_pfn;
->> +		}
->>   		return iovad->cached32_node;
->> +	}
->>
->> +	/* re-init cached node if DMA limit has changed */
->> +	if (limit_pfn != iovad->curr_limit_pfn) {
->> +		iovad->cached_node = &iovad->anchor.node;
->> +		iovad->curr_limit_pfn = limit_pfn;
->> +	}
->>   	return iovad->cached_node;
->>   }
->>
->> @@ -190,6 +202,9 @@ static int __alloc_and_insert_iova_range(struct
+>> @@ -186,6 +186,7 @@ static int __alloc_and_insert_iova_range(struct
 >> iova_domain *iovad,
+>>   	unsigned long flags;
+>>   	unsigned long new_pfn;
+>>   	unsigned long align_mask = ~0UL;
+>> +	bool retry = false;
+>>
 >>   	if (size_aligned)
 >>   		align_mask <<= fls_long(size - 1);
+>> @@ -198,6 +199,8 @@ static int __alloc_and_insert_iova_range(struct
+>> iova_domain *iovad,
 >>
->> +	if (limit_pfn != iovad->curr_limit_pfn)
->> +		iovad->max32_alloc_size = iovad->dma_32bit_pfn;
+>>   	curr = __get_cached_rbnode(iovad, limit_pfn);
+>>   	curr_iova = rb_entry(curr, struct iova, node);
 >> +
->>   	/* Walk the tree backwards */
->>   	spin_lock_irqsave(&iovad->iova_rbtree_lock, flags);
->>   	if (limit_pfn <= iovad->dma_32bit_pfn &&
->> diff --git a/include/linux/iova.h b/include/linux/iova.h
->> index a0637abffee8..be2220c096ef 100644
->> --- a/include/linux/iova.h
->> +++ b/include/linux/iova.h
->> @@ -73,6 +73,7 @@ struct iova_domain {
->>   	unsigned long	granule;	/* pfn granularity for this domain */
->>   	unsigned long	start_pfn;	/* Lower limit for this domain */
->>   	unsigned long	dma_32bit_pfn;
->> +	unsigned long	curr_limit_pfn;	/* Current max limit for this domain */
->>   	unsigned long	max32_alloc_size; /* Size of last failed allocation */
->>   	struct iova_fq __percpu *fq;	/* Flush Queue */
+>> +retry_search:
+>>   	do {
+>>   		limit_pfn = min(limit_pfn, curr_iova->pfn_lo);
+>>   		new_pfn = (limit_pfn - size) & align_mask;
+>> @@ -207,6 +210,14 @@ static int __alloc_and_insert_iova_range(struct
+>> iova_domain *iovad,
+>>   	} while (curr && new_pfn <= curr_iova->pfn_hi);
 >>
->>
+>>   	if (limit_pfn < size || new_pfn < iovad->start_pfn) {
+>> +		if (!retry) {
+>> +			curr = rb_last(&iovad->rbroot);
+>
+> Why walk when there's an anchor node there already? However...
++1
+>
+>> +			curr_iova = rb_entry(curr, struct iova, node);
+>> +			limit_pfn = curr_iova->pfn_lo;
+>
+> ...this doesn't look right, as by now we've lost the original limit_pfn
+> supplied by the caller, so are highly likely to allocate beyond the
+> range our caller asked for. In fact AFAICS we'd start allocating from
+> directly directly below the anchor node, beyond the end of the entire
+> address space.
++1
+>
+> The logic I was imagining we want here was something like the rapidly
+> hacked up (and untested) diff below.
+>
+> Thanks,
+> Robin.
+>
+> ----->8-----
+> diff --git a/drivers/iommu/iova.c b/drivers/iommu/iova.c
+> index 0e6a9536eca6..3574c19272d6 100644
+> --- a/drivers/iommu/iova.c
+> +++ b/drivers/iommu/iova.c
+> @@ -186,6 +186,7 @@ static int __alloc_and_insert_iova_range(struct
+> iova_domain *iovad,
+>          unsigned long flags;
+>          unsigned long new_pfn;
+>          unsigned long align_mask = ~0UL;
+> +       unsigned long alloc_hi, alloc_lo;
+>
+>          if (size_aligned)
+>                  align_mask <<= fls_long(size - 1);
+> @@ -196,17 +197,27 @@ static int __alloc_and_insert_iova_range(struct
+> iova_domain *iovad,
+>                          size >= iovad->max32_alloc_size)
+>                  goto iova32_full;
+>
+> +       alloc_hi = IOVA_ANCHOR;
+> +       alloc_lo = iovad->start_pfn;
+> +retry:
+>          curr = __get_cached_rbnode(iovad, limit_pfn);
+>          curr_iova = rb_entry(curr, struct iova, node);
+> +       if (alloc_hi < curr_iova->pfn_hi) {
+> +               alloc_lo = curr_iova->pfn_hi;
+> +               alloc_hi = limit_pfn;
+> +       }
+> +
+>          do {
+> -               limit_pfn = min(limit_pfn, curr_iova->pfn_lo);
+> -               new_pfn = (limit_pfn - size) & align_mask;
+> +               alloc_hi = min(alloc_hi, curr_iova->pfn_lo);
+During retry case, the curr and curr_iova is not updated. Kindly check it.
+
+Ajay
+> +               new_pfn = (alloc_hi - size) & align_mask;
+>                  prev = curr;
+>                  curr = rb_prev(curr);
+>                  curr_iova = rb_entry(curr, struct iova, node);
+>          } while (curr && new_pfn <= curr_iova->pfn_hi);
+>
+> -       if (limit_pfn < size || new_pfn < iovad->start_pfn) {
+> +       if (limit_pfn < size || new_pfn < alloc_lo) {
+> +               if (alloc_lo == iovad->start_pfn)
+> +                       goto retry;
+>                  iovad->max32_alloc_size = size;
+>                  goto iova32_full;
+>          }
 > _______________________________________________
 > iommu mailing list
 > iommu@lists.linux-foundation.org
