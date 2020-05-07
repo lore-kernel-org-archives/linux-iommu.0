@@ -2,72 +2,74 @@ Return-Path: <SRS0=32yV=6V=lists.linux-foundation.org=iommu-bounces@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-2.2 required=3.0 tests=HEADER_FROM_DIFFERENT_DOMAINS,
-	MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS,USER_AGENT_SANE_1 autolearn=no
-	autolearn_force=no version=3.4.0
+X-Spam-Status: No, score=-9.7 required=3.0 tests=HEADER_FROM_DIFFERENT_DOMAINS,
+	INCLUDES_PATCH,MAILING_LIST_MULTI,SIGNED_OFF_BY,SPF_HELO_NONE,SPF_PASS,
+	URIBL_BLOCKED,USER_AGENT_GIT autolearn=ham autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id A596CC38A24
-	for <iommu@archiver.kernel.org>; Thu,  7 May 2020 14:56:35 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 399A1C38A24
+	for <iommu@archiver.kernel.org>; Thu,  7 May 2020 16:18:15 +0000 (UTC)
 Received: from whitealder.osuosl.org (smtp1.osuosl.org [140.211.166.138])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by mail.kernel.org (Postfix) with ESMTPS id 799F72070B
-	for <iommu@archiver.kernel.org>; Thu,  7 May 2020 14:56:35 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 799F72070B
-Authentication-Results: mail.kernel.org; dmarc=none (p=none dis=none) header.from=arm.com
+	by mail.kernel.org (Postfix) with ESMTPS id 035E82083B
+	for <iommu@archiver.kernel.org>; Thu,  7 May 2020 16:18:14 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 035E82083B
+Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=linux.intel.com
 Authentication-Results: mail.kernel.org; spf=pass smtp.mailfrom=iommu-bounces@lists.linux-foundation.org
 Received: from localhost (localhost [127.0.0.1])
-	by whitealder.osuosl.org (Postfix) with ESMTP id 5221C8867F;
-	Thu,  7 May 2020 14:56:35 +0000 (UTC)
+	by whitealder.osuosl.org (Postfix) with ESMTP id C056A888CF;
+	Thu,  7 May 2020 16:18:14 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
 Received: from whitealder.osuosl.org ([127.0.0.1])
 	by localhost (.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
-	with ESMTP id pCiPChnD4A-D; Thu,  7 May 2020 14:56:33 +0000 (UTC)
+	with ESMTP id aTsr386hjpVl; Thu,  7 May 2020 16:18:11 +0000 (UTC)
 Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [140.211.9.56])
-	by whitealder.osuosl.org (Postfix) with ESMTP id DBBE488634;
-	Thu,  7 May 2020 14:56:33 +0000 (UTC)
+	by whitealder.osuosl.org (Postfix) with ESMTP id D7478888AB;
+	Thu,  7 May 2020 16:18:11 +0000 (UTC)
 Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
-	by lists.linuxfoundation.org (Postfix) with ESMTP id CA709C0859;
-	Thu,  7 May 2020 14:56:33 +0000 (UTC)
-Received: from silver.osuosl.org (smtp3.osuosl.org [140.211.166.136])
- by lists.linuxfoundation.org (Postfix) with ESMTP id 94845C07FF
- for <iommu@lists.linux-foundation.org>; Thu,  7 May 2020 14:56:32 +0000 (UTC)
+	by lists.linuxfoundation.org (Postfix) with ESMTP id B5277C0865;
+	Thu,  7 May 2020 16:18:11 +0000 (UTC)
+Received: from whitealder.osuosl.org (smtp1.osuosl.org [140.211.166.138])
+ by lists.linuxfoundation.org (Postfix) with ESMTP id 1E144C07FF
+ for <iommu@lists.linux-foundation.org>; Thu,  7 May 2020 16:18:10 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
- by silver.osuosl.org (Postfix) with ESMTP id 7C96D26475
- for <iommu@lists.linux-foundation.org>; Thu,  7 May 2020 14:56:32 +0000 (UTC)
+ by whitealder.osuosl.org (Postfix) with ESMTP id 02181888AB
+ for <iommu@lists.linux-foundation.org>; Thu,  7 May 2020 16:18:10 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from silver.osuosl.org ([127.0.0.1])
+Received: from whitealder.osuosl.org ([127.0.0.1])
  by localhost (.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
- with ESMTP id ylZ8kx4CBvzn for <iommu@lists.linux-foundation.org>;
- Thu,  7 May 2020 14:56:31 +0000 (UTC)
+ with ESMTP id f9qxXLpdGG3Y for <iommu@lists.linux-foundation.org>;
+ Thu,  7 May 2020 16:18:09 +0000 (UTC)
 X-Greylist: domain auto-whitelisted by SQLgrey-1.7.6
-Received: from foss.arm.com (foss.arm.com [217.140.110.172])
- by silver.osuosl.org (Postfix) with ESMTP id 0D27626428
- for <iommu@lists.linux-foundation.org>; Thu,  7 May 2020 14:56:30 +0000 (UTC)
-Received: from usa-sjc-imap-foss1.foss.arm.com (unknown [10.121.207.14])
- by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id 75A1C1FB;
- Thu,  7 May 2020 07:56:30 -0700 (PDT)
-Received: from [10.57.36.85] (unknown [10.57.36.85])
- by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPSA id 1D63D3F68F;
- Thu,  7 May 2020 07:56:28 -0700 (PDT)
-Subject: Re: [PATCH] iomm/arm-smmu: Add stall implementation hook
-To: Sai Prakash Ranjan <saiprakash.ranjan@codeaurora.org>,
- Rob Clark <robdclark@gmail.com>
-References: <20200421202004.11686-1-saiprakash.ranjan@codeaurora.org>
- <b491e02ad790a437115fdeab6b21bc48@codeaurora.org>
- <1ced023b-157c-21a0-ac75-1adef7f029f0@arm.com>
- <fad5dc096a2bd9404341ba8738ba8fc9@codeaurora.org>
-From: Robin Murphy <robin.murphy@arm.com>
-Message-ID: <80a3b07d-f3a7-07c4-4e8f-76e28563027c@arm.com>
-Date: Thu, 7 May 2020 15:56:28 +0100
-User-Agent: Mozilla/5.0 (Windows NT 10.0; rv:68.0) Gecko/20100101
- Thunderbird/68.7.0
+Received: from mga14.intel.com (mga14.intel.com [192.55.52.115])
+ by whitealder.osuosl.org (Postfix) with ESMTPS id 7B5B8886E3
+ for <iommu@lists.linux-foundation.org>; Thu,  7 May 2020 16:18:09 +0000 (UTC)
+IronPort-SDR: VwM63XVGig6e4agh5QKpOowK87YXsjkJFuQDWXj3YDtnmTixBXjJd2YUyKezb08fckgl+8cpyT
+ N3bxxGRBZrDA==
+X-Amp-Result: SKIPPED(no attachment in message)
+X-Amp-File-Uploaded: False
+Received: from orsmga007.jf.intel.com ([10.7.209.58])
+ by fmsmga103.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384;
+ 07 May 2020 09:18:08 -0700
+IronPort-SDR: mV9JZDgF6XIriWO8RxMWOyQZXmCeOKLv0AANIBCbZjIDKTqRSIwTAOU+a31YkB3KovTWNNMJjo
+ jltMiIWwxt+Q==
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="5.73,364,1583222400"; d="scan'208";a="249333034"
+Received: from black.fi.intel.com ([10.237.72.28])
+ by orsmga007.jf.intel.com with ESMTP; 07 May 2020 09:18:07 -0700
+Received: by black.fi.intel.com (Postfix, from userid 1003)
+ id 35678101; Thu,  7 May 2020 19:18:06 +0300 (EEST)
+From: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
+To: Joerg Roedel <joro@8bytes.org>, David Woodhouse <dwmw2@infradead.org>,
+ Lu Baolu <baolu.lu@linux.intel.com>, iommu@lists.linux-foundation.org
+Subject: [PATCH v1 2/3] iommu/iova: Unify format of the printed messages
+Date: Thu,  7 May 2020 19:18:03 +0300
+Message-Id: <20200507161804.13275-2-andriy.shevchenko@linux.intel.com>
+X-Mailer: git-send-email 2.26.2
+In-Reply-To: <20200507161804.13275-1-andriy.shevchenko@linux.intel.com>
+References: <20200507161804.13275-1-andriy.shevchenko@linux.intel.com>
 MIME-Version: 1.0
-In-Reply-To: <fad5dc096a2bd9404341ba8738ba8fc9@codeaurora.org>
-Content-Language: en-GB
-Cc: linux-arm-msm@vger.kernel.org, iommu@lists.linux-foundation.org,
- linux-kernel@vger.kernel.org, Will Deacon <will@kernel.org>,
- linux-arm-kernel@lists.infradead.org
+Cc: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
 X-BeenThere: iommu@lists.linux-foundation.org
 X-Mailman-Version: 2.1.15
 Precedence: list
@@ -80,31 +82,46 @@ List-Post: <mailto:iommu@lists.linux-foundation.org>
 List-Help: <mailto:iommu-request@lists.linux-foundation.org?subject=help>
 List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
  <mailto:iommu-request@lists.linux-foundation.org?subject=subscribe>
+Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
-Content-Type: text/plain; charset="us-ascii"; Format="flowed"
 Errors-To: iommu-bounces@lists.linux-foundation.org
 Sender: "iommu" <iommu-bounces@lists.linux-foundation.org>
 
-On 2020-05-07 1:06 pm, Sai Prakash Ranjan wrote:
-[...]
-> We could have our own context fault handler in QCOM implementation,
-> but that would just be duplicating things from arm-smmu context fault
-> handler. So I did not think it makes much sense to have our own
-> fault handler in qcom impl just for enabling stall model.
+Unify format of the printed messages, i.e. replace printk(LEVEL ... )
+with pr_level(...).
 
-Hmm, it's probably worth thinking ahead a bit here, to the "actually 
-doing things with stalls" plan. I don't have a clear picture off-hand of 
-how well the new device fault handler API might fit into arm-smmu - at 
-the very least trying to make it truly generic implies having to play 
-nasty tricks with disable_irq() for the general case given the "IRQ may 
-remain asserted while SS is active" possibility, and that isn't 
-particularly inviting. Not to mention tying it into the 
-pretend-auxdomain stuff that *is* rather dependent on the qcom impl. If 
-it turns out that you'll eventually have to reimplement the IRQ handler 
-anyway for all that, then starting off down that route *might* work out 
-cleaner and less hassle overall.
+Signed-off-by: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
+---
+ drivers/iommu/iova.c | 6 +++---
+ 1 file changed, 3 insertions(+), 3 deletions(-)
 
-Robin.
+diff --git a/drivers/iommu/iova.c b/drivers/iommu/iova.c
+index 0e6a9536eca62..49fc01f2a28d4 100644
+--- a/drivers/iommu/iova.c
++++ b/drivers/iommu/iova.c
+@@ -253,7 +253,7 @@ int iova_cache_get(void)
+ 			SLAB_HWCACHE_ALIGN, NULL);
+ 		if (!iova_cache) {
+ 			mutex_unlock(&iova_cache_mutex);
+-			printk(KERN_ERR "Couldn't create iova cache\n");
++			pr_err("Couldn't create iova cache\n");
+ 			return -ENOMEM;
+ 		}
+ 	}
+@@ -718,8 +718,8 @@ copy_reserved_iova(struct iova_domain *from, struct iova_domain *to)
+ 
+ 		new_iova = reserve_iova(to, iova->pfn_lo, iova->pfn_hi);
+ 		if (!new_iova)
+-			printk(KERN_ERR "Reserve iova range %lx@%lx failed\n",
+-				iova->pfn_lo, iova->pfn_lo);
++			pr_err("Reserve iova range %lx@%lx failed\n",
++			       iova->pfn_lo, iova->pfn_lo);
+ 	}
+ 	spin_unlock_irqrestore(&from->iova_rbtree_lock, flags);
+ }
+-- 
+2.26.2
+
 _______________________________________________
 iommu mailing list
 iommu@lists.linux-foundation.org
