@@ -7,74 +7,74 @@ X-Spam-Status: No, score=-9.6 required=3.0 tests=DKIM_INVALID,DKIM_SIGNED,
 	SPF_HELO_NONE,SPF_PASS,UNPARSEABLE_RELAY,USER_AGENT_GIT autolearn=ham
 	autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id C7711C54E49
-	for <iommu@archiver.kernel.org>; Sat,  9 May 2020 08:45:30 +0000 (UTC)
-Received: from hemlock.osuosl.org (smtp2.osuosl.org [140.211.166.133])
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 9994BC28CBC
+	for <iommu@archiver.kernel.org>; Sat,  9 May 2020 08:51:17 +0000 (UTC)
+Received: from fraxinus.osuosl.org (smtp4.osuosl.org [140.211.166.137])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by mail.kernel.org (Postfix) with ESMTPS id 998E624957
-	for <iommu@archiver.kernel.org>; Sat,  9 May 2020 08:45:30 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTPS id 57D9A2184D
+	for <iommu@archiver.kernel.org>; Sat,  9 May 2020 08:51:17 +0000 (UTC)
 Authentication-Results: mail.kernel.org;
-	dkim=fail reason="signature verification failed" (1024-bit key) header.d=mediatek.com header.i=@mediatek.com header.b="s3J3L8Vl"
-DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 998E624957
+	dkim=fail reason="signature verification failed" (1024-bit key) header.d=mediatek.com header.i=@mediatek.com header.b="WuPkTU2y"
+DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 57D9A2184D
 Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=mediatek.com
 Authentication-Results: mail.kernel.org; spf=pass smtp.mailfrom=iommu-bounces@lists.linux-foundation.org
 Received: from localhost (localhost [127.0.0.1])
-	by hemlock.osuosl.org (Postfix) with ESMTP id 7CF4888A5E;
-	Sat,  9 May 2020 08:45:30 +0000 (UTC)
+	by fraxinus.osuosl.org (Postfix) with ESMTP id 3206786B63;
+	Sat,  9 May 2020 08:51:17 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from hemlock.osuosl.org ([127.0.0.1])
+Received: from fraxinus.osuosl.org ([127.0.0.1])
 	by localhost (.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
-	with ESMTP id 1RREsmc1-y07; Sat,  9 May 2020 08:45:29 +0000 (UTC)
+	with ESMTP id Xiqi-j4VIiPT; Sat,  9 May 2020 08:51:16 +0000 (UTC)
 Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [140.211.9.56])
-	by hemlock.osuosl.org (Postfix) with ESMTP id EC2B988CCD;
-	Sat,  9 May 2020 08:45:29 +0000 (UTC)
+	by fraxinus.osuosl.org (Postfix) with ESMTP id E3B1E87199;
+	Sat,  9 May 2020 08:50:20 +0000 (UTC)
 Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
-	by lists.linuxfoundation.org (Postfix) with ESMTP id E6B51C0888;
-	Sat,  9 May 2020 08:45:29 +0000 (UTC)
+	by lists.linuxfoundation.org (Postfix) with ESMTP id BDD75C0888;
+	Sat,  9 May 2020 08:50:20 +0000 (UTC)
 Received: from whitealder.osuosl.org (smtp1.osuosl.org [140.211.166.138])
- by lists.linuxfoundation.org (Postfix) with ESMTP id BD661C07FF
- for <iommu@lists.linux-foundation.org>; Sat,  9 May 2020 08:45:27 +0000 (UTC)
+ by lists.linuxfoundation.org (Postfix) with ESMTP id 8B42BC07FF
+ for <iommu@lists.linux-foundation.org>; Sat,  9 May 2020 08:50:18 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
- by whitealder.osuosl.org (Postfix) with ESMTP id AF8CE880BB
- for <iommu@lists.linux-foundation.org>; Sat,  9 May 2020 08:45:27 +0000 (UTC)
+ by whitealder.osuosl.org (Postfix) with ESMTP id 79E1C87527
+ for <iommu@lists.linux-foundation.org>; Sat,  9 May 2020 08:50:18 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
 Received: from whitealder.osuosl.org ([127.0.0.1])
  by localhost (.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
- with ESMTP id HmjDv3ebdLWR for <iommu@lists.linux-foundation.org>;
- Sat,  9 May 2020 08:45:27 +0000 (UTC)
+ with ESMTP id rZEMs9LBD1u7 for <iommu@lists.linux-foundation.org>;
+ Sat,  9 May 2020 08:50:17 +0000 (UTC)
 X-Greylist: from auto-whitelisted by SQLgrey-1.7.6
 Received: from mailgw02.mediatek.com (unknown [210.61.82.184])
- by whitealder.osuosl.org (Postfix) with ESMTP id CA30788086
- for <iommu@lists.linux-foundation.org>; Sat,  9 May 2020 08:45:26 +0000 (UTC)
-X-UUID: f3c53d4f55134e16967f923e729c10c0-20200509
+ by whitealder.osuosl.org (Postfix) with ESMTP id EC7D68805C
+ for <iommu@lists.linux-foundation.org>; Sat,  9 May 2020 08:50:16 +0000 (UTC)
+X-UUID: 7c251213387c4065897a7ac78f45bf7d-20200509
 DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=mediatek.com;
  s=dk; 
  h=Content-Transfer-Encoding:Content-Type:MIME-Version:References:In-Reply-To:Message-ID:Date:Subject:CC:To:From;
- bh=CJeloX2LqvuI/dnpF7lv9RpSaPjcGxrPB01SIxCcvJ4=; 
- b=s3J3L8VldYu0mSndSD9vtZd4DcTRBnT5J5hbpKabTyvtx3tVKU0gh1yKomqrfDujNqFM6WyQPAq3k7PfKBLvV93m6+e5bOG4pGw60nTcGwEyxYOrzIQyfU6w3jmmLMNvwFnquQVNr91spIf+qRBxbiOpf7Ne76Z60xiIEDf0WwE=;
-X-UUID: f3c53d4f55134e16967f923e729c10c0-20200509
-Received: from mtkcas10.mediatek.inc [(172.21.101.39)] by mailgw02.mediatek.com
+ bh=Ezxnpacb1Qfl7kqFt1JuWZJN2mz/b27zc594wQ0UDDo=; 
+ b=WuPkTU2yuqjsaGfk+XXZBzWWMs5unewx4YIU31GjzPkVq4A1KiLwBjhKDLJJZVGR2O7Z+kf27dzKla3aWaBxU7xt86E3xEhDgtd0DfdMztlNX1D5YoJJtQiyQMFSjzAkl+xCbiHOI3qsXlG/yGQKKPKKg6WzWdxtYImhjcgGVWA=;
+X-UUID: 7c251213387c4065897a7ac78f45bf7d-20200509
+Received: from mtkcas06.mediatek.inc [(172.21.101.30)] by mailgw02.mediatek.com
  (envelope-from <chao.hao@mediatek.com>)
  (Cellopoint E-mail Firewall v4.1.10 Build 0809 with TLS)
- with ESMTP id 922219923; Sat, 09 May 2020 16:40:23 +0800
+ with ESMTP id 226198438; Sat, 09 May 2020 16:40:10 +0800
 Received: from mtkcas08.mediatek.inc (172.21.101.126) by
  mtkmbs01n2.mediatek.inc (172.21.101.79) with Microsoft SMTP Server (TLS) id
- 15.0.1497.2; Sat, 9 May 2020 16:40:20 +0800
+ 15.0.1497.2; Sat, 9 May 2020 16:40:07 +0800
 Received: from localhost.localdomain (10.15.20.246) by mtkcas08.mediatek.inc
  (172.21.101.73) with Microsoft SMTP Server id 15.0.1497.2 via Frontend
- Transport; Sat, 9 May 2020 16:40:19 +0800
+ Transport; Sat, 9 May 2020 16:40:06 +0800
 From: Chao Hao <chao.hao@mediatek.com>
 To: Joerg Roedel <joro@8bytes.org>, Rob Herring <robh+dt@kernel.org>, Matthias
  Brugger <matthias.bgg@gmail.com>
-Subject: [PATCH v3 7/7] iommu/mediatek: Add mt6779 basic support
-Date: Sat, 9 May 2020 16:36:54 +0800
-Message-ID: <20200509083654.5178-8-chao.hao@mediatek.com>
+Subject: [PATCH v3 3/7] iommu/mediatek: Disable STANDARD_AXI_MODE in MISC_CTRL
+Date: Sat, 9 May 2020 16:36:50 +0800
+Message-ID: <20200509083654.5178-4-chao.hao@mediatek.com>
 X-Mailer: git-send-email 2.18.0
 In-Reply-To: <20200509083654.5178-1-chao.hao@mediatek.com>
 References: <20200509083654.5178-1-chao.hao@mediatek.com>
 MIME-Version: 1.0
-X-TM-SNTS-SMTP: 3A137A09BE077EE258C0837B180446A21F7D2EEC13F5CA1EF7311B16A30ACAD62000:8
+X-TM-SNTS-SMTP: 3B61293D89B03B88DD10C331106402621E780E90FEB2590354515292684FA6732000:8
 X-MTK: N
 Cc: devicetree@vger.kernel.org, FY Yang <fy.yang@mediatek.com>,
  wsd_upstream@mediatek.com, linux-kernel@vger.kernel.org,
@@ -98,91 +98,53 @@ Content-Transfer-Encoding: 7bit
 Errors-To: iommu-bounces@lists.linux-foundation.org
 Sender: "iommu" <iommu-bounces@lists.linux-foundation.org>
 
-1. Start from mt6779, INVLDT_SEL move to offset=0x2c, so we add
-   REG_MMU_INV_SEL_GEN2 definition and mt6779 uses it.
-2. Change PROTECT_PA_ALIGN from 128 byte to 256 byte.
-3. For REG_MMU_CTRL_REG register, we only need to change bit[2:0],
-   others bits keep default value, ex: enable victim tlb.
-4. Add mt6779_data to support mm_iommu HW init.
+In order to improve performance, we always disable STANDARD_AXI_MODE in
+MISC_CTRL.
 
 Signed-off-by: Chao Hao <chao.hao@mediatek.com>
 ---
- drivers/iommu/mtk_iommu.c | 18 +++++++++++++++---
- drivers/iommu/mtk_iommu.h |  1 +
- 2 files changed, 16 insertions(+), 3 deletions(-)
+ drivers/iommu/mtk_iommu.c | 8 +++++++-
+ drivers/iommu/mtk_iommu.h | 1 +
+ 2 files changed, 8 insertions(+), 1 deletion(-)
 
 diff --git a/drivers/iommu/mtk_iommu.c b/drivers/iommu/mtk_iommu.c
-index dc9ae944e712..34c4ffb77c73 100644
+index e7e7c7695ed1..9ede327a418d 100644
 --- a/drivers/iommu/mtk_iommu.c
 +++ b/drivers/iommu/mtk_iommu.c
-@@ -37,6 +37,7 @@
- #define REG_MMU_INVLD_START_A			0x024
- #define REG_MMU_INVLD_END_A			0x028
- 
-+#define REG_MMU_INV_SEL_GEN2			0x02c
- #define REG_MMU_INV_SEL_GEN1			0x038
- #define F_INVLD_EN0				BIT(0)
+@@ -42,6 +42,8 @@
  #define F_INVLD_EN1				BIT(1)
-@@ -97,7 +98,7 @@
- #define F_MMU_INT_ID_LARB_ID(a)			(((a) >> 7) & 0x7)
- #define F_MMU_INT_ID_PORT_ID(a)			(((a) >> 2) & 0x1f)
  
--#define MTK_PROTECT_PA_ALIGN			128
-+#define MTK_PROTECT_PA_ALIGN			256
- 
- /*
-  * Get the local arbiter ID and the portid within the larb arbiter
-@@ -554,11 +555,12 @@ static int mtk_iommu_hw_init(const struct mtk_iommu_data *data)
- 		return ret;
- 	}
- 
-+	regval = readl_relaxed(data->base + REG_MMU_CTRL_REG);
- 	if (data->plat_data->m4u_plat == M4U_MT8173)
--		regval = F_MMU_PREFETCH_RT_REPLACE_MOD |
-+		regval |= F_MMU_PREFETCH_RT_REPLACE_MOD |
- 			 F_MMU_TF_PROT_TO_PROGRAM_ADDR_MT8173;
- 	else
--		regval = F_MMU_TF_PROT_TO_PROGRAM_ADDR;
-+		regval |= F_MMU_TF_PROT_TO_PROGRAM_ADDR;
- 	writel_relaxed(regval, data->base + REG_MMU_CTRL_REG);
- 
- 	regval = F_L2_MULIT_HIT_EN |
-@@ -804,6 +806,15 @@ static const struct mtk_iommu_plat_data mt2712_data = {
- 	.larbid_remap = {{0}, {1}, {2}, {3}, {4}, {5}, {6}, {7}},
- };
- 
-+static const struct mtk_iommu_plat_data mt6779_data = {
-+	.m4u_plat = M4U_MT6779,
-+	.larbid_remap = {{0}, {1}, {2}, {3}, {5}, {7, 8}, {10}, {9}},
-+	.has_sub_comm = true,
-+	.has_wr_len = true,
-+	.has_misc_ctrl = true,
-+	.inv_sel_reg = REG_MMU_INV_SEL_GEN2,
-+};
+ #define REG_MMU_MISC_CTRL			0x048
++#define F_MMU_STANDARD_AXI_MODE_BIT		(BIT(3) | BIT(19))
 +
- static const struct mtk_iommu_plat_data mt8173_data = {
- 	.m4u_plat     = M4U_MT8173,
- 	.has_4gb_mode = true,
-@@ -822,6 +833,7 @@ static const struct mtk_iommu_plat_data mt8183_data = {
+ #define REG_MMU_DCM_DIS				0x050
  
- static const struct of_device_id mtk_iommu_of_ids[] = {
- 	{ .compatible = "mediatek,mt2712-m4u", .data = &mt2712_data},
-+	{ .compatible = "mediatek,mt6779-m4u", .data = &mt6779_data},
- 	{ .compatible = "mediatek,mt8173-m4u", .data = &mt8173_data},
- 	{ .compatible = "mediatek,mt8183-m4u", .data = &mt8183_data},
- 	{}
+ #define REG_MMU_CTRL_REG			0x110
+@@ -585,7 +587,11 @@ static int mtk_iommu_hw_init(const struct mtk_iommu_data *data)
+ 	}
+ 	writel_relaxed(0, data->base + REG_MMU_DCM_DIS);
+ 
+-	if (data->plat_data->reset_axi) {
++	if (data->plat_data->has_misc_ctrl) {
++		regval = readl_relaxed(data->base + REG_MMU_MISC_CTRL);
++		regval &= ~F_MMU_STANDARD_AXI_MODE_BIT;
++		writel_relaxed(regval, data->base + REG_MMU_MISC_CTRL);
++	} else if (data->plat_data->reset_axi) {
+ 		/* The register is called STANDARD_AXI_MODE in this case */
+ 		writel_relaxed(0, data->base + REG_MMU_MISC_CTRL);
+ 	}
 diff --git a/drivers/iommu/mtk_iommu.h b/drivers/iommu/mtk_iommu.h
-index 9971cedd72ea..fb79e710c8d9 100644
+index 1b6ea839b92c..d711ac630037 100644
 --- a/drivers/iommu/mtk_iommu.h
 +++ b/drivers/iommu/mtk_iommu.h
-@@ -31,6 +31,7 @@ struct mtk_iommu_suspend_reg {
- enum mtk_iommu_plat {
- 	M4U_MT2701,
- 	M4U_MT2712,
-+	M4U_MT6779,
- 	M4U_MT8173,
- 	M4U_MT8183,
- };
+@@ -40,6 +40,7 @@ struct mtk_iommu_plat_data {
+ 
+ 	/* HW will use the EMI clock if there isn't the "bclk". */
+ 	bool                has_bclk;
++	bool		    has_misc_ctrl;
+ 	bool                has_vld_pa_rng;
+ 	bool                reset_axi;
+ 	unsigned char       larbid_remap[MTK_LARB_NR_MAX];
 -- 
 2.18.0
 _______________________________________________
