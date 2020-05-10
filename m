@@ -6,59 +6,74 @@ X-Spam-Status: No, score=-2.3 required=3.0 tests=HEADER_FROM_DIFFERENT_DOMAINS,
 	MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS,USER_AGENT_SANE_1 autolearn=no
 	autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id D8AD3C54E8D
-	for <iommu@archiver.kernel.org>; Sun, 10 May 2020 22:25:50 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 03ECDC54E8E
+	for <iommu@archiver.kernel.org>; Sun, 10 May 2020 23:20:01 +0000 (UTC)
 Received: from fraxinus.osuosl.org (smtp4.osuosl.org [140.211.166.137])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by mail.kernel.org (Postfix) with ESMTPS id A81DF20720
-	for <iommu@archiver.kernel.org>; Sun, 10 May 2020 22:25:50 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org A81DF20720
-Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=8bytes.org
+	by mail.kernel.org (Postfix) with ESMTPS id BC24E20725
+	for <iommu@archiver.kernel.org>; Sun, 10 May 2020 23:20:00 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org BC24E20725
+Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=linux.intel.com
 Authentication-Results: mail.kernel.org; spf=pass smtp.mailfrom=iommu-bounces@lists.linux-foundation.org
 Received: from localhost (localhost [127.0.0.1])
-	by fraxinus.osuosl.org (Postfix) with ESMTP id 7B49186366;
-	Sun, 10 May 2020 22:25:50 +0000 (UTC)
+	by fraxinus.osuosl.org (Postfix) with ESMTP id 8130D868B5;
+	Sun, 10 May 2020 23:20:00 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
 Received: from fraxinus.osuosl.org ([127.0.0.1])
 	by localhost (.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
-	with ESMTP id OiUXhznTfAsY; Sun, 10 May 2020 22:25:49 +0000 (UTC)
+	with ESMTP id SriVZQxVF-TA; Sun, 10 May 2020 23:20:00 +0000 (UTC)
 Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [140.211.9.56])
-	by fraxinus.osuosl.org (Postfix) with ESMTP id 279C8863AC;
-	Sun, 10 May 2020 22:25:49 +0000 (UTC)
+	by fraxinus.osuosl.org (Postfix) with ESMTP id EBAED866C8;
+	Sun, 10 May 2020 23:19:59 +0000 (UTC)
 Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
-	by lists.linuxfoundation.org (Postfix) with ESMTP id 1B028C0178;
-	Sun, 10 May 2020 22:25:49 +0000 (UTC)
-Received: from whitealder.osuosl.org (smtp1.osuosl.org [140.211.166.138])
- by lists.linuxfoundation.org (Postfix) with ESMTP id 919A9C016F
- for <iommu@lists.linux-foundation.org>; Sun, 10 May 2020 22:25:47 +0000 (UTC)
+	by lists.linuxfoundation.org (Postfix) with ESMTP id D0E44C0888;
+	Sun, 10 May 2020 23:19:59 +0000 (UTC)
+Received: from silver.osuosl.org (smtp3.osuosl.org [140.211.166.136])
+ by lists.linuxfoundation.org (Postfix) with ESMTP id DCAD9C016F
+ for <iommu@lists.linux-foundation.org>; Sun, 10 May 2020 23:19:58 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
- by whitealder.osuosl.org (Postfix) with ESMTP id 79A5387969
- for <iommu@lists.linux-foundation.org>; Sun, 10 May 2020 22:25:47 +0000 (UTC)
+ by silver.osuosl.org (Postfix) with ESMTP id 9A82422882
+ for <iommu@lists.linux-foundation.org>; Sun, 10 May 2020 23:19:58 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from whitealder.osuosl.org ([127.0.0.1])
+Received: from silver.osuosl.org ([127.0.0.1])
  by localhost (.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
- with ESMTP id e4NTTjDrZGMV for <iommu@lists.linux-foundation.org>;
- Sun, 10 May 2020 22:25:46 +0000 (UTC)
-X-Greylist: from auto-whitelisted by SQLgrey-1.7.6
-Received: from theia.8bytes.org (8bytes.org [81.169.241.247])
- by whitealder.osuosl.org (Postfix) with ESMTPS id E2FE3878C0
- for <iommu@lists.linux-foundation.org>; Sun, 10 May 2020 22:25:45 +0000 (UTC)
-Received: by theia.8bytes.org (Postfix, from userid 1000)
- id DA7F12C8; Mon, 11 May 2020 00:25:42 +0200 (CEST)
-Date: Mon, 11 May 2020 00:25:41 +0200
-From: Joerg Roedel <joro@8bytes.org>
-To: Linus Torvalds <torvalds@linux-foundation.org>
-Subject: Re: [git pull] IOMMU Fixes for Linux v5.7-rc4
-Message-ID: <20200510222540.GF18353@8bytes.org>
-References: <20200510122634.GA32616@8bytes.org>
- <CAHk-=wht3yDtJ6zka=DNaB8Nymh-zmUMZhGaC8yFz29nuW-EsA@mail.gmail.com>
+ with ESMTP id cNMHxBxFXCI9 for <iommu@lists.linux-foundation.org>;
+ Sun, 10 May 2020 23:19:57 +0000 (UTC)
+X-Greylist: domain auto-whitelisted by SQLgrey-1.7.6
+Received: from mga05.intel.com (mga05.intel.com [192.55.52.43])
+ by silver.osuosl.org (Postfix) with ESMTPS id 7EAA522846
+ for <iommu@lists.linux-foundation.org>; Sun, 10 May 2020 23:19:57 +0000 (UTC)
+IronPort-SDR: 5IQoU251DZuylIG+aKfz0HBBZAUFRwjzCC8q0Ommx1M5+FKsHbSpIrs1eRZ35S6sbMlhfrGK9t
+ MKMxk2y6I4eQ==
+X-Amp-Result: SKIPPED(no attachment in message)
+X-Amp-File-Uploaded: False
+Received: from orsmga002.jf.intel.com ([10.7.209.21])
+ by fmsmga105.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384;
+ 10 May 2020 16:19:56 -0700
+IronPort-SDR: bMVr+HfzhLC7IDcW8Rgd6plGgxxu9+/Eji/jiXNKDERKa1e19pHZ6VicKFtf8Dpfrh0Rmd2H7z
+ fTYtNw4Yfwng==
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="5.73,377,1583222400"; d="scan'208";a="279614189"
+Received: from allen-box.sh.intel.com (HELO [10.239.159.139])
+ ([10.239.159.139])
+ by orsmga002.jf.intel.com with ESMTP; 10 May 2020 16:19:53 -0700
+Subject: Re: [PATCH v4 0/3] Replace private domain with per-group default
+ domain
+To: Joerg Roedel <joro@8bytes.org>
+References: <20200506015947.28662-1-baolu.lu@linux.intel.com>
+From: Lu Baolu <baolu.lu@linux.intel.com>
+Message-ID: <7928dd48-93da-62f0-b455-6e6b248d0fae@linux.intel.com>
+Date: Mon, 11 May 2020 07:16:30 +0800
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101
+ Thunderbird/68.7.0
 MIME-Version: 1.0
-Content-Disposition: inline
-In-Reply-To: <CAHk-=wht3yDtJ6zka=DNaB8Nymh-zmUMZhGaC8yFz29nuW-EsA@mail.gmail.com>
-User-Agent: Mutt/1.10.1 (2018-07-13)
-Cc: iommu <iommu@lists.linux-foundation.org>,
- Linux Kernel Mailing List <linux-kernel@vger.kernel.org>
+In-Reply-To: <20200506015947.28662-1-baolu.lu@linux.intel.com>
+Content-Language: en-US
+Cc: kevin.tian@intel.com, ashok.raj@intel.com, linux-kernel@vger.kernel.org,
+ Daniel Drake <drake@endlessm.com>, iommu@lists.linux-foundation.org,
+ Robin Murphy <robin.murphy@arm.com>, Christoph Hellwig <hch@lst.de>,
+ Derrick Jonathan <jonathan.derrick@intel.com>
 X-BeenThere: iommu@lists.linux-foundation.org
 X-Mailman-Version: 2.1.15
 Precedence: list
@@ -71,43 +86,38 @@ List-Post: <mailto:iommu@lists.linux-foundation.org>
 List-Help: <mailto:iommu-request@lists.linux-foundation.org?subject=help>
 List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
  <mailto:iommu-request@lists.linux-foundation.org?subject=subscribe>
-Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset="us-ascii"; Format="flowed"
 Errors-To: iommu-bounces@lists.linux-foundation.org
 Sender: "iommu" <iommu-bounces@lists.linux-foundation.org>
 
-On Sun, May 10, 2020 at 11:34:49AM -0700, Linus Torvalds wrote:
-> On Sun, May 10, 2020 at 5:26 AM Joerg Roedel <joro@8bytes.org> wrote:
-> >
-> >            The first race condition was around
-> >           the non-atomic update of the domain page-table root pointer
-> >           and the variable containing the page-table depth (called
-> >           mode). This is fixed now be merging page-table root and mode
-> >           into one 64-bit field which is read/written atomically.
-> 
-> This seems a bit odd.
-> 
-> The pointer part is always page-aligned, and the "mode" is just three bits.
-> 
-> Why isn't it just encoded as one pointer with the low three bits being the mode?
-> 
-> The thing is, the 64-bit atomic reads/writes are very expensive on
-> 32-bit x86. If it was just a native pointer, it would be much cheaper
-> than an "atomic64_t".
+Hi Joerg,
 
-Yeah, when I think about it again, you are right. I think I used
-atomic64_t just to be on the safe side with memory odering and all. But
-in this case it doesn't really matter when a reader observes the
-update, it is only important that the reader does not observe one field
-updated while the other is not. And that should already be fullfilled
-with 64-bit writes on x86-64, like a native pointer write.
+On 5/6/20 9:59 AM, Lu Baolu wrote:
+> Some devices are required to use a specific type (identity or dma) of
+> default domain when they are used with a vendor iommu. When the system
+> level default domain type is different from it, the vendor iommu driver
+> has to request a new default domain with either
+> iommu_request_dma_domain_for_dev() or iommu_request_dm_for_dev() in the
+> add_dev() callback. Unfortunately, these two helpers only work when the
+> group hasn't been assigned to any other devices, hence, some vendor iommu
+> driver has to use a private domain if it fails to request a new default
+> one.
+> 
+> Joerg proposed an on-going proposal which makes the default domain
+> framework to support configuring per-group default domain during boot
+> process.
+> 
+> https://lkml.org/lkml/2020/4/14/616
+> [This has been applied in iommu/next.]
+> 
+> Hence, there is no need to keep the private domain implementation
+> in the Intel IOMMU driver. This patch series aims to remove it.
 
-I'll send a patch to Qian to test this, just to be sure I am not missing
-anything.
+Can you please take this series to iommu/next for wider test?
 
-Thanks,
-
-	Joerg
+Best regards,
+baolu
 _______________________________________________
 iommu mailing list
 iommu@lists.linux-foundation.org
