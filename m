@@ -2,59 +2,98 @@ Return-Path: <SRS0=ml75=6Y=lists.linux-foundation.org=iommu-bounces@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-12.3 required=3.0
-	tests=HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_PULL_REQUEST,MAILING_LIST_MULTI,
-	MENTIONS_GIT_HOSTING,SPF_HELO_NONE,SPF_PASS,USER_AGENT_SANE_1 autolearn=ham
-	autolearn_force=no version=3.4.0
+X-Spam-Status: No, score=-2.1 required=3.0 tests=DKIM_INVALID,DKIM_SIGNED,
+	HEADER_FROM_DIFFERENT_DOMAINS,MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS,
+	USER_AGENT_SANE_1 autolearn=no autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id C0636C38A2A
-	for <iommu@archiver.kernel.org>; Sun, 10 May 2020 12:26:51 +0000 (UTC)
-Received: from whitealder.osuosl.org (smtp1.osuosl.org [140.211.166.138])
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 136B1C38A2A
+	for <iommu@archiver.kernel.org>; Sun, 10 May 2020 15:28:14 +0000 (UTC)
+Received: from silver.osuosl.org (smtp3.osuosl.org [140.211.166.136])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by mail.kernel.org (Postfix) with ESMTPS id 886612082E
-	for <iommu@archiver.kernel.org>; Sun, 10 May 2020 12:26:51 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 886612082E
-Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=8bytes.org
+	by mail.kernel.org (Postfix) with ESMTPS id B2ADD2082E
+	for <iommu@archiver.kernel.org>; Sun, 10 May 2020 15:28:13 +0000 (UTC)
+Authentication-Results: mail.kernel.org;
+	dkim=fail reason="signature verification failed" (2048-bit key) header.d=linaro.org header.i=@linaro.org header.b="R+MsY9WC"
+DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org B2ADD2082E
+Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=linaro.org
 Authentication-Results: mail.kernel.org; spf=pass smtp.mailfrom=iommu-bounces@lists.linux-foundation.org
 Received: from localhost (localhost [127.0.0.1])
-	by whitealder.osuosl.org (Postfix) with ESMTP id 5973A8764B;
-	Sun, 10 May 2020 12:26:51 +0000 (UTC)
+	by silver.osuosl.org (Postfix) with ESMTP id 6F9FA2049C;
+	Sun, 10 May 2020 15:28:13 +0000 (UTC)
+X-Virus-Scanned: amavisd-new at osuosl.org
+Received: from silver.osuosl.org ([127.0.0.1])
+	by localhost (.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
+	with ESMTP id c4w2H-YwJdGm; Sun, 10 May 2020 15:28:12 +0000 (UTC)
+Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [140.211.9.56])
+	by silver.osuosl.org (Postfix) with ESMTP id 4C95E2033E;
+	Sun, 10 May 2020 15:28:12 +0000 (UTC)
+Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
+	by lists.linuxfoundation.org (Postfix) with ESMTP id 32377C0888;
+	Sun, 10 May 2020 15:28:12 +0000 (UTC)
+Received: from whitealder.osuosl.org (smtp1.osuosl.org [140.211.166.138])
+ by lists.linuxfoundation.org (Postfix) with ESMTP id B56A5C016F
+ for <iommu@lists.linux-foundation.org>; Sun, 10 May 2020 15:28:10 +0000 (UTC)
+Received: from localhost (localhost [127.0.0.1])
+ by whitealder.osuosl.org (Postfix) with ESMTP id A289C868A8
+ for <iommu@lists.linux-foundation.org>; Sun, 10 May 2020 15:28:10 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
 Received: from whitealder.osuosl.org ([127.0.0.1])
-	by localhost (.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
-	with ESMTP id CvoPJbk14DVJ; Sun, 10 May 2020 12:26:49 +0000 (UTC)
-Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [140.211.9.56])
-	by whitealder.osuosl.org (Postfix) with ESMTP id 904A787601;
-	Sun, 10 May 2020 12:26:49 +0000 (UTC)
-Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
-	by lists.linuxfoundation.org (Postfix) with ESMTP id 82DF3C0178;
-	Sun, 10 May 2020 12:26:49 +0000 (UTC)
-Received: from fraxinus.osuosl.org (smtp4.osuosl.org [140.211.166.137])
- by lists.linuxfoundation.org (Postfix) with ESMTP id 5307AC016F
- for <iommu@lists.linux-foundation.org>; Sun, 10 May 2020 12:26:48 +0000 (UTC)
-Received: from localhost (localhost [127.0.0.1])
- by fraxinus.osuosl.org (Postfix) with ESMTP id 3B26D86227
- for <iommu@lists.linux-foundation.org>; Sun, 10 May 2020 12:26:48 +0000 (UTC)
-X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from fraxinus.osuosl.org ([127.0.0.1])
  by localhost (.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
- with ESMTP id 2nXk7j1kpEAj for <iommu@lists.linux-foundation.org>;
- Sun, 10 May 2020 12:26:46 +0000 (UTC)
-X-Greylist: from auto-whitelisted by SQLgrey-1.7.6
-Received: from theia.8bytes.org (8bytes.org [81.169.241.247])
- by fraxinus.osuosl.org (Postfix) with ESMTPS id 9069C86222
- for <iommu@lists.linux-foundation.org>; Sun, 10 May 2020 12:26:46 +0000 (UTC)
-Received: by theia.8bytes.org (Postfix, from userid 1000)
- id 56BAB366; Sun, 10 May 2020 14:26:41 +0200 (CEST)
-Date: Sun, 10 May 2020 14:26:40 +0200
-From: Joerg Roedel <joro@8bytes.org>
-To: Linus Torvalds <torvalds@linux-foundation.org>
-Subject: [git pull] IOMMU Fixes for Linux v5.7-rc4
-Message-ID: <20200510122634.GA32616@8bytes.org>
+ with ESMTP id neb0QjuA8206 for <iommu@lists.linux-foundation.org>;
+ Sun, 10 May 2020 15:28:07 +0000 (UTC)
+X-Greylist: delayed 00:28:44 by SQLgrey-1.7.6
+Received: from mail-vs1-f68.google.com (mail-vs1-f68.google.com
+ [209.85.217.68])
+ by whitealder.osuosl.org (Postfix) with ESMTPS id B8E1087675
+ for <iommu@lists.linux-foundation.org>; Sun, 10 May 2020 15:28:07 +0000 (UTC)
+Received: by mail-vs1-f68.google.com with SMTP id g2so4063922vsb.4
+ for <iommu@lists.linux-foundation.org>; Sun, 10 May 2020 08:28:07 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linaro.org; s=google;
+ h=date:from:to:cc:subject:message-id:references:mime-version
+ :content-disposition:in-reply-to:user-agent;
+ bh=VB6QB0k6yF1xCUNO7qdS9eL2WdSOXXOnR9sFnZiLOd4=;
+ b=R+MsY9WCtRMMxoxZF4KOot1ecgDsOPB1vYqBzsx/sSAFnQsx9ArlIiv1oWrbe6IYzM
+ Zk2VyZUIcN0aB7+7F+8JD/UHUpzpXTubVIrv/E6LkNO2Guiz9jcOztegpRyY0GE9Pcvu
+ tCW74BbqPjb/gEN6ITnZvVZDxPyiMjQpEKZieR+v/hGQJ5Sj3AQG05OZwCtLAz7iWZnF
+ YGG7EPQZ685umqmg2iQn37HlDAlMZfaujGc/l6o+gOSBjXcFfJTtIsAat0fm8UZpDH9H
+ lxZMu7JeudSu6i/Sa4g+vY0TUnSRefgt8matT62fUh8rEHNhj6DVXiBA3VM8gkamkaSq
+ z4TA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+ d=1e100.net; s=20161025;
+ h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+ :mime-version:content-disposition:in-reply-to:user-agent;
+ bh=VB6QB0k6yF1xCUNO7qdS9eL2WdSOXXOnR9sFnZiLOd4=;
+ b=olc4Eium/QKDiZCBMk1IBoRPTu30jazdyry/tZK1xVon5+VN9GqJF9378mzxKVqXaw
+ 9BC7sxl1L6VG/njO/KgBrrewtKLN2chNl4ojmMokxL3R1snDWCb9TCpIQQIWU3Yi4Y1g
+ 4/Muy97i96RYatcf7RAhnYaisN+/eMpzkXvSP6GFAEhPeCFsy5DwIbUhNANUGUdIWTFh
+ bGTg3tnaoIte7W+DOofceEtoUKk+ZA0JQUQitQGi+LtERzkMvuYAtgtAe+XOu/9RiPmr
+ bFtZ5nf71e2Pl0TsxyFaSE57nvz7ruiLnx/IhvEXEdYoRuK5E9tTskUqezRsFeokT9Aw
+ sfkQ==
+X-Gm-Message-State: AGi0PuY0AyyZX8iSE9JhG8W2AV11Ut74MqTd++QaIKxLxoFiA/s9lg2A
+ 1exQuhNHHx1aHB4tVrYLFYf9gajBHEI=
+X-Google-Smtp-Source: APiQypLVS+XTU5o7852M9jAyZ4wpgBqMnBWgIepU1EgoKyX04/8LK6qI8+34szonUh28DVcCpNNSNw==
+X-Received: by 2002:a17:902:bc86:: with SMTP id
+ bb6mr10879547plb.243.1589121033101; 
+ Sun, 10 May 2020 07:30:33 -0700 (PDT)
+Received: from dragon ([80.251.214.228])
+ by smtp.gmail.com with ESMTPSA id g40sm7631138pje.38.2020.05.10.07.30.29
+ (version=TLS1_2 cipher=ECDHE-ECDSA-CHACHA20-POLY1305 bits=256/256);
+ Sun, 10 May 2020 07:30:32 -0700 (PDT)
+Date: Sun, 10 May 2020 22:30:21 +0800
+From: Shawn Guo <shawn.guo@linaro.org>
+To: Stanimir Varbanov <stanimir.varbanov@linaro.org>
+Subject: Re: [PATCH] iommu/qcom: add optional clock for TLB invalidate
+Message-ID: <20200510143020.GA16939@dragon>
+References: <20200509130825.28248-1-shawn.guo@linaro.org>
+ <e8150781-6000-dedc-ca10-6cee232c4364@linaro.org>
 MIME-Version: 1.0
-User-Agent: Mutt/1.10.1 (2018-07-13)
-Cc: iommu@lists.linux-foundation.org, linux-kernel@vger.kernel.org
+Content-Disposition: inline
+In-Reply-To: <e8150781-6000-dedc-ca10-6cee232c4364@linaro.org>
+User-Agent: Mutt/1.9.4 (2018-02-28)
+Cc: linux-arm-msm@vger.kernel.org, Konrad Dybcio <konradybcio@gmail.com>,
+ iommu@lists.linux-foundation.org, Bjorn Andersson <bjorn.andersson@linaro.org>,
+ Andy Gross <agross@kernel.org>
 X-BeenThere: iommu@lists.linux-foundation.org
 X-Mailman-Version: 2.1.15
 Precedence: list
@@ -67,120 +106,30 @@ List-Post: <mailto:iommu@lists.linux-foundation.org>
 List-Help: <mailto:iommu-request@lists.linux-foundation.org?subject=help>
 List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
  <mailto:iommu-request@lists.linux-foundation.org?subject=subscribe>
-Content-Type: multipart/mixed; boundary="===============0534640502516377944=="
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: 7bit
 Errors-To: iommu-bounces@lists.linux-foundation.org
 Sender: "iommu" <iommu-bounces@lists.linux-foundation.org>
 
+Hi Stanimir,
 
---===============0534640502516377944==
-Content-Type: multipart/signed; micalg=pgp-sha256;
-	protocol="application/pgp-signature"; boundary="sdtB3X0nJg68CQEu"
-Content-Disposition: inline
+On Sat, May 09, 2020 at 04:21:20PM +0300, Stanimir Varbanov wrote:
+...
+> > @@ -839,6 +849,12 @@ static int qcom_iommu_device_probe(struct platform_device *pdev)
+> >  		return PTR_ERR(qcom_iommu->bus_clk);
+> >  	}
+> >  
+> > +	qcom_iommu->tlb_clk = devm_clk_get(dev, "tlb");
+> 
+> IMO, devm_clk_get_optional() would be better.
 
+Yes, indeed.  The function will make it clear that the clock is
+an optional one.  I will make the change in v2.
 
---sdtB3X0nJg68CQEu
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
+Thanks for the comment!
 
-Hi Linus,
-
-The following changes since commit 0e698dfa282211e414076f9dc7e83c1c288314fd:
-
-  Linux 5.7-rc4 (2020-05-03 14:56:04 -0700)
-
-are available in the Git repository at:
-
-  git://git.kernel.org/pub/scm/linux/kernel/git/joro/iommu.git tags/iommu-fixes-v5.7-rc4
-
-for you to fetch changes up to fb3637a113349f53830f7d6ca45891b7192cd28f:
-
-  iommu/virtio: Reverse arguments to list_add (2020-05-08 17:31:18 +0200)
-
-----------------------------------------------------------------
-IOMMU Fixes for Linux v5.7-rc4
-
-Including:
-
-	- The race condition fixes for the AMD IOMMU driver. This are 5
-	  patches fixing two race conditions around
-	  increase_address_space(). The first race condition was around
-	  the non-atomic update of the domain page-table root pointer
-	  and the variable containing the page-table depth (called
-	  mode). This is fixed now be merging page-table root and mode
-	  into one 64-bit field which is read/written atomically.
-
-	  The second race condition was around updating the page-table
-	  root pointer and making it public before the hardware caches
-	  were flushed. This could cause addresses to be mapped and
-	  returned to drivers which are not reachable by IOMMU hardware
-	  yet, causing IO page-faults. This is fixed too by adding the
-	  necessary flushes before a new page-table root is published.
-
-	  Related to the race condition fixes these patches also add a
-	  missing domain_flush_complete() barrier to update_domain() and
-	  a fix to bail out of the loop which tries to increase the
-	  address space when the call to increase_address_space() fails.
-
-	  Qian was able to trigger the race conditions under high load
-	  and memory pressure within a few days of testing. He confirmed
-	  that he has seen no issues anymore with the fixes included
-	  here.
-
-	- Fix for a list-handling bug in the VirtIO IOMMU driver.
-
-----------------------------------------------------------------
-Joerg Roedel (5):
-      iommu/amd: Fix race in increase_address_space()/fetch_pte()
-      iommu/amd: Do not loop forever when trying to increase address space
-      iommu/amd: Call domain_flush_complete() in update_domain()
-      iommu/amd: Update Device Table in increase_address_space()
-      iommu/amd: Do not flush Device Table in iommu_map_page()
-
-Julia Lawall (1):
-      iommu/virtio: Reverse arguments to list_add
-
- drivers/iommu/amd_iommu.c       | 198 +++++++++++++++++++++++++++++++---------
- drivers/iommu/amd_iommu_types.h |   9 +-
- drivers/iommu/virtio-iommu.c    |   2 +-
- 3 files changed, 162 insertions(+), 47 deletions(-)
-
-Please pull.
-
-Thanks,
-
-	Joerg
-
---sdtB3X0nJg68CQEu
-Content-Type: application/pgp-signature; name="signature.asc"
-Content-Description: Digital signature
-
------BEGIN PGP SIGNATURE-----
-
-iQIzBAEBCAAdFiEEr9jSbILcajRFYWYyK/BELZcBGuMFAl638voACgkQK/BELZcB
-GuO7WxAAv1h6eqomWyx9rR1/ULA1jp9R6enGO23hy1nx8Y/5oyEke/vB2j5Hyhjz
-b+nFElKWztVuHJnoFzl3NQZG1wKfrUZmrQpoRQOoZ3cL/ouncobiUYB1+a8AUl+P
-ABKMGo3isJeMjaED2n7yewhL1mNbrk7BeuyhSytjmHwLfQsiWQChg3zFwPnB7bjg
-SuuNe1aZodCyo9YA+eAHtnmWAAimAwZiMcnDzlQaBHPoyR6R3k49XLACaen0mqYw
-o/Ldk4YQPXq9HcU7r7C0OzxJ2VJ2iRxRwEX8XqKTa0J+yilrJA6IMmhBz35FesDI
-4ZCWsk+7LbzvTOFd+5pw8vmQmuiH4vSKol6NgtwZHNjsYYQ49WCSxak7L/ILGmvT
-OmCA0InIZbsm8eQ2TwK1s91Vd6NKw53ZY2XiSVOVcxSXzmUjyroS+lCbA2Gq+QST
-1hXIBV3v6itAIQ0yoWSVpnpGswmhPWjaUctEPZZYHgWnOWhlcOxRAfop+/EhB3k9
-IaT6GwFPMsm5n/ZGVe+EuOHRnxJ8gqHaY1AKaQPVNpBppGXsmZPo+raSKJXqcU7k
-z8VVKKKXCds3E7JrMNohur7tBdyigbQ7R9fOpmccILParuYhjX7EtO8ZLMQ8DDoA
-XHXYGdbxzaewlQWHJuY6Lfw09M7v+VvMa3zeXda7W6eXfHV4JQ8=
-=QKO+
------END PGP SIGNATURE-----
-
---sdtB3X0nJg68CQEu--
-
---===============0534640502516377944==
-Content-Type: text/plain; charset="us-ascii"
-MIME-Version: 1.0
-Content-Transfer-Encoding: 7bit
-Content-Disposition: inline
-
+Shawn
 _______________________________________________
 iommu mailing list
 iommu@lists.linux-foundation.org
 https://lists.linuxfoundation.org/mailman/listinfo/iommu
---===============0534640502516377944==--
