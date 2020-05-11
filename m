@@ -2,69 +2,98 @@ Return-Path: <SRS0=Mzfx=6Z=lists.linux-foundation.org=iommu-bounces@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-8.2 required=3.0 tests=HEADER_FROM_DIFFERENT_DOMAINS,
-	INCLUDES_PATCH,MAILING_LIST_MULTI,SIGNED_OFF_BY,SPF_HELO_NONE,SPF_PASS,
-	URIBL_BLOCKED,USER_AGENT_SANE_1 autolearn=unavailable autolearn_force=no
-	version=3.4.0
+X-Spam-Status: No, score=-6.5 required=3.0 tests=DKIM_INVALID,DKIM_SIGNED,
+	HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_PATCH,MAILING_LIST_MULTI,SIGNED_OFF_BY,
+	SPF_HELO_NONE,SPF_PASS autolearn=ham autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 55200C54E8D
-	for <iommu@archiver.kernel.org>; Mon, 11 May 2020 19:03:15 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id EDDD8C47255
+	for <iommu@archiver.kernel.org>; Mon, 11 May 2020 19:37:58 +0000 (UTC)
 Received: from fraxinus.osuosl.org (smtp4.osuosl.org [140.211.166.137])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by mail.kernel.org (Postfix) with ESMTPS id DC61B20736
-	for <iommu@archiver.kernel.org>; Mon, 11 May 2020 19:03:14 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org DC61B20736
-Authentication-Results: mail.kernel.org; dmarc=none (p=none dis=none) header.from=arm.com
+	by mail.kernel.org (Postfix) with ESMTPS id 5EE68206DB
+	for <iommu@archiver.kernel.org>; Mon, 11 May 2020 19:37:58 +0000 (UTC)
+Authentication-Results: mail.kernel.org;
+	dkim=fail reason="signature verification failed" (2048-bit key) header.d=linaro.org header.i=@linaro.org header.b="OzVpqUU6"
+DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 5EE68206DB
+Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=linaro.org
 Authentication-Results: mail.kernel.org; spf=pass smtp.mailfrom=iommu-bounces@lists.linux-foundation.org
 Received: from localhost (localhost [127.0.0.1])
-	by fraxinus.osuosl.org (Postfix) with ESMTP id A339886302;
-	Mon, 11 May 2020 19:03:14 +0000 (UTC)
+	by fraxinus.osuosl.org (Postfix) with ESMTP id 0420D86BB9;
+	Mon, 11 May 2020 19:37:58 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
 Received: from fraxinus.osuosl.org ([127.0.0.1])
 	by localhost (.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
-	with ESMTP id WfZ4_uw82Ry8; Mon, 11 May 2020 19:03:12 +0000 (UTC)
+	with ESMTP id o7X5gtZ6G_2N; Mon, 11 May 2020 19:37:57 +0000 (UTC)
 Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [140.211.9.56])
-	by fraxinus.osuosl.org (Postfix) with ESMTP id B52C586EFD;
-	Mon, 11 May 2020 19:03:12 +0000 (UTC)
+	by fraxinus.osuosl.org (Postfix) with ESMTP id 4B41486BAE;
+	Mon, 11 May 2020 19:37:57 +0000 (UTC)
 Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
-	by lists.linuxfoundation.org (Postfix) with ESMTP id 8E011C0176;
-	Mon, 11 May 2020 19:03:12 +0000 (UTC)
-Received: from silver.osuosl.org (smtp3.osuosl.org [140.211.166.136])
- by lists.linuxfoundation.org (Postfix) with ESMTP id 97B62C016F
- for <iommu@lists.linux-foundation.org>; Mon, 11 May 2020 19:03:11 +0000 (UTC)
+	by lists.linuxfoundation.org (Postfix) with ESMTP id 06D21C0178;
+	Mon, 11 May 2020 19:37:57 +0000 (UTC)
+Received: from whitealder.osuosl.org (smtp1.osuosl.org [140.211.166.138])
+ by lists.linuxfoundation.org (Postfix) with ESMTP id 2FA03C016F
+ for <iommu@lists.linux-foundation.org>; Mon, 11 May 2020 19:37:55 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
- by silver.osuosl.org (Postfix) with ESMTP id 5EDF22502F
- for <iommu@lists.linux-foundation.org>; Mon, 11 May 2020 19:03:11 +0000 (UTC)
+ by whitealder.osuosl.org (Postfix) with ESMTP id 1E63087E1B
+ for <iommu@lists.linux-foundation.org>; Mon, 11 May 2020 19:37:55 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from silver.osuosl.org ([127.0.0.1])
+Received: from whitealder.osuosl.org ([127.0.0.1])
  by localhost (.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
- with ESMTP id hSKa3+ICZWmv for <iommu@lists.linux-foundation.org>;
- Mon, 11 May 2020 19:03:08 +0000 (UTC)
-X-Greylist: domain auto-whitelisted by SQLgrey-1.7.6
-Received: from foss.arm.com (foss.arm.com [217.140.110.172])
- by silver.osuosl.org (Postfix) with ESMTP id 488E320356
- for <iommu@lists.linux-foundation.org>; Mon, 11 May 2020 19:03:08 +0000 (UTC)
-Received: from usa-sjc-imap-foss1.foss.arm.com (unknown [10.121.207.14])
- by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id 611D81FB;
- Mon, 11 May 2020 12:03:07 -0700 (PDT)
-Received: from [10.57.36.85] (unknown [10.57.36.85])
- by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPSA id 6F6683F71E;
- Mon, 11 May 2020 12:03:06 -0700 (PDT)
-Subject: Re: [PATCH] iommu/arm-smmu-v3: Don't reserve implementation defined
- register space
-To: Jean-Philippe Brucker <jean-philippe@linaro.org>,
- iommu@lists.linux-foundation.org, linux-arm-kernel@lists.infradead.org
-References: <20200506174629.1504153-1-jean-philippe@linaro.org>
-From: Robin Murphy <robin.murphy@arm.com>
-Message-ID: <2c5b52c0-8be0-9c22-ed27-3a2acd2b570c@arm.com>
-Date: Mon, 11 May 2020 20:03:05 +0100
-User-Agent: Mozilla/5.0 (Windows NT 10.0; rv:68.0) Gecko/20100101
- Thunderbird/68.8.0
+ with ESMTP id JNoQACgojw7o for <iommu@lists.linux-foundation.org>;
+ Mon, 11 May 2020 19:37:54 +0000 (UTC)
+X-Greylist: delayed 00:07:23 by SQLgrey-1.7.6
+Received: from mail-pg1-f193.google.com (mail-pg1-f193.google.com
+ [209.85.215.193])
+ by whitealder.osuosl.org (Postfix) with ESMTPS id 4F30387856
+ for <iommu@lists.linux-foundation.org>; Mon, 11 May 2020 19:37:54 +0000 (UTC)
+Received: by mail-pg1-f193.google.com with SMTP id f6so5022036pgm.1
+ for <iommu@lists.linux-foundation.org>; Mon, 11 May 2020 12:37:54 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linaro.org; s=google;
+ h=date:from:to:cc:subject:message-id:references:mime-version
+ :content-disposition:in-reply-to;
+ bh=gzyfnO/5LbG2mrH2lA0azbgAQiWtK0agPG/QW/aD0JA=;
+ b=OzVpqUU6k4CDMc0nrbShznwLyn+kmnl+BiPHhPbWnikxGiuco8hPSb3nS1q3qW7Cek
+ TlIdfXMHgEChfZXCfsI3of4zCEHuppr5PoCE3ZmpK0SP1LiofuG1NSTRPyOmD0nbKgGD
+ Bwa03tUplrVt+uaafrpI8WO/Kiw8FLdoImebhEbTRHIm2mxwGlr8SIVV8RSntyAW7IIW
+ m9WJ98M8I/GIgMuti/4gM3KJ4GRCV7VPnkIyNoVSwhRvr8uOQ9XfPJNaLkNucRR21ygo
+ 7yLopUX/fMQxLY0w5Z54iE/yRdh2wOKRkc5CN/QWkO77VCCiI1CCgHTzJiuY46Yq4gJI
+ 1epw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+ d=1e100.net; s=20161025;
+ h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+ :mime-version:content-disposition:in-reply-to;
+ bh=gzyfnO/5LbG2mrH2lA0azbgAQiWtK0agPG/QW/aD0JA=;
+ b=c6fhm4Ck2px4DnPh1RyikYRIjLUEeTlvoTr3HxYALCsvZlewF3Bb4Ijf+QMBOsj5kk
+ mx3liyXDUDE0KWIl8Db+IMaO+tt611U1qmBvRH9IjO7aDXjQSmLVPeMz5qdNsk/sQMD8
+ rk3QdSCCchUpPqi9W+rhNBs/Fk3zcxe6a0zBkOMs8jfkQVePfiWz6lWKEILaPPz+/H5L
+ SUarHYhwu+0B78Qc1SWr7Kjb4oOorZLfgXblzq+LQCX15Xhm2ci05h+/l+A0T/Pcc7Ym
+ /176BoA3V5BZUClUi1PCaP6vHm33MT0Pwkva/THGcUvQUG3j2cq9rf/9l1zOPEqcDaVa
+ 86NQ==
+X-Gm-Message-State: AGi0PubUw5UAtC3Emf6mkVm8qW+5NzaHiTADQIephHCyhgp7HRokRJh6
+ QRSAFyEuWrEY0wgXw9Rbt8nI/ai5+Lg=
+X-Google-Smtp-Source: APiQypIOtVLmN26sBLQEPnN3hrhyIv6xvI5WifHGysFUwEmFLrhzINvd3EvqA0ARHr6GkqxEp7LIOw==
+X-Received: by 2002:a63:750b:: with SMTP id q11mr15767211pgc.138.1589225431230; 
+ Mon, 11 May 2020 12:30:31 -0700 (PDT)
+Received: from builder.lan (104-188-17-28.lightspeed.sndgca.sbcglobal.net.
+ [104.188.17.28])
+ by smtp.gmail.com with ESMTPSA id z185sm8726197pgz.26.2020.05.11.12.30.29
+ (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+ Mon, 11 May 2020 12:30:30 -0700 (PDT)
+Date: Mon, 11 May 2020 12:31:24 -0700
+From: Bjorn Andersson <bjorn.andersson@linaro.org>
+To: Sibi Sankar <sibis@codeaurora.org>
+Subject: Re: [PATCH v6] iommu/arm-smmu-qcom: Request direct mapping for modem
+ device
+Message-ID: <20200511193124.GG20625@builder.lan>
+References: <20200511175532.25874-1-sibis@codeaurora.org>
 MIME-Version: 1.0
-In-Reply-To: <20200506174629.1504153-1-jean-philippe@linaro.org>
-Content-Language: en-GB
-Cc: will@kernel.org, tuanphan@amperemail.onmicrosoft.com
+Content-Disposition: inline
+In-Reply-To: <20200511175532.25874-1-sibis@codeaurora.org>
+Cc: dianders@chromium.org, will@kernel.org, linux-kernel@vger.kernel.org,
+ evgreen@chromium.org, swboyd@chromium.org, iommu@lists.linux-foundation.org,
+ mka@chromium.org, linux-arm-msm@vger.kernel.org, robin.murphy@arm.com,
+ linux-arm-kernel@lists.infradead.org
 X-BeenThere: iommu@lists.linux-foundation.org
 X-Mailman-Version: 2.1.15
 Precedence: list
@@ -77,158 +106,58 @@ List-Post: <mailto:iommu@lists.linux-foundation.org>
 List-Help: <mailto:iommu-request@lists.linux-foundation.org?subject=help>
 List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
  <mailto:iommu-request@lists.linux-foundation.org?subject=subscribe>
+Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
-Content-Type: text/plain; charset="us-ascii"; Format="flowed"
 Errors-To: iommu-bounces@lists.linux-foundation.org
 Sender: "iommu" <iommu-bounces@lists.linux-foundation.org>
 
-On 2020-05-06 6:46 pm, Jean-Philippe Brucker wrote:
-> Some SMMUv3 implementation embed the Perf Monitor Group Registers (PMCG)
-> inside the first 64kB region of the SMMU. Since PMCG are managed by a
-> separate driver, this layout causes resource reservation conflicts
-> during boot.
+On Mon 11 May 10:55 PDT 2020, Sibi Sankar wrote:
+
+> The modem remote processor has two access paths to DDR. One path is
+> directly connected to DDR and another path goes through an SMMU. The
+> SMMU path is configured to be a direct mapping because it's used by
+> various peripherals in the modem subsystem. Typically this direct
+> mapping is configured statically at EL2 by QHEE (Qualcomm's Hypervisor
+> Execution Environment) before the kernel is entered.
 > 
-> To avoid this conflict, only reserve the MMIO region we actually use:
-> the first 0xe0 bytes of page 0 and the first 0xd0 bytes of page 1.
-> Although devm_ioremap() still works on full pages under the hood, this
-> way we benefit from resource conflict checks.
+> In certain firmware configuration, especially when the kernel is already
+> in full control of the SMMU, defer programming the modem SIDs to the
+> kernel. Let's add compatibles here so that we can have the kernel
+> program the SIDs for the modem in these cases.
 > 
-> Signed-off-by: Jean-Philippe Brucker <jean-philippe@linaro.org>
+
+Reviewed-by: Bjorn Andersson <bjorn.andersson@linaro.org>
+
+Regards,
+Bjorn
+
+> Signed-off-by: Sibi Sankar <sibis@codeaurora.org>
 > ---
-> A nicer (and hopefully working) solution to the problem dicussed here:
-> https://lore.kernel.org/linux-iommu/20200421155745.19815-1-jean-philippe@linaro.org/
-> ---
->   drivers/iommu/arm-smmu-v3.c | 50 +++++++++++++++++++++++++++++++++----
->   1 file changed, 45 insertions(+), 5 deletions(-)
 > 
-> diff --git a/drivers/iommu/arm-smmu-v3.c b/drivers/iommu/arm-smmu-v3.c
-> index 82508730feb7a1..fc85cdd5b62cca 100644
-> --- a/drivers/iommu/arm-smmu-v3.c
-> +++ b/drivers/iommu/arm-smmu-v3.c
-> @@ -171,6 +171,9 @@
->   #define ARM_SMMU_PRIQ_IRQ_CFG1		0xd8
->   #define ARM_SMMU_PRIQ_IRQ_CFG2		0xdc
->   
-> +#define ARM_SMMU_PAGE0_REG_SZ		0xe0
-> +#define ARM_SMMU_PAGE1_REG_SZ		0xd0
-
-I wonder if we shouldn't still claim all the way up to 0xdff for good 
-measure, since the IMP-DEF areas only start appearing beyond that.
-
-> +
->   /* Common MSI config fields */
->   #define MSI_CFG0_ADDR_MASK		GENMASK_ULL(51, 2)
->   #define MSI_CFG2_SH			GENMASK(5, 4)
-> @@ -628,6 +631,7 @@ struct arm_smmu_strtab_cfg {
->   struct arm_smmu_device {
->   	struct device			*dev;
->   	void __iomem			*base;
-> +	void __iomem			*page1;
->   
->   #define ARM_SMMU_FEAT_2_LVL_STRTAB	(1 << 0)
->   #define ARM_SMMU_FEAT_2_LVL_CDTAB	(1 << 1)
-> @@ -733,11 +737,14 @@ static struct arm_smmu_option_prop arm_smmu_options[] = {
->   static inline void __iomem *arm_smmu_page1_fixup(unsigned long offset,
->   						 struct arm_smmu_device *smmu)
->   {
-> -	if ((offset > SZ_64K) &&
-> -	    (smmu->options & ARM_SMMU_OPT_PAGE0_REGS_ONLY))
-> -		offset -= SZ_64K;
-> +	void __iomem *base = smmu->base;
->   
-> -	return smmu->base + offset;
-> +	if (offset > SZ_64K) {
-> +		offset -= SZ_64K;
-> +		if (smmu->page1)
-> +			base = smmu->page1;
-> +	}
-> +	return base + offset;
->   }
-
-Why not just assign page1 = base in the Cavium case and let this simply be:
-
-	if (offset > SZ_64K)
-		return smmu->page1 + offset - SZ_64K;
-	return smmu->base + offset;
-
-Then it's only one step further to get rid of the fixup and use page1 
-directly where relevant, but that could be a cleanup on top, since we 
-probably want a minimal change here for the sake of backporting (I 
-believe this deserves to go to stable, now that MMU-600 hardware is 
-reaching the field and will go wonky otherwise).
-
->   
->   static struct arm_smmu_domain *to_smmu_domain(struct iommu_domain *dom)
-> @@ -4021,6 +4028,28 @@ err_reset_pci_ops: __maybe_unused;
->   	return err;
->   }
->   
-> +static void __iomem *arm_smmu_ioremap(struct device *dev,
-> +				      resource_size_t start,
-> +				      resource_size_t size)
-> +{
-> +	void __iomem *dest_ptr;
-> +	struct resource *res;
-> +
-> +	res = devm_request_mem_region(dev, start, size, dev_name(dev));
-> +	if (!res) {
-> +		dev_err(dev, "can't request SMMU region %pa\n", &start);
-> +		return IOMEM_ERR_PTR(-EINVAL);
-> +	}
-> +
-> +	dest_ptr = devm_ioremap(dev, start, size);
-> +	if (!dest_ptr) {
-> +		dev_err(dev, "ioremap failed for SMMU region %pR\n", res);
-> +		devm_release_mem_region(dev, start, size);
-> +		dest_ptr = IOMEM_ERR_PTR(-ENOMEM);
-> +	}
-> +	return dest_ptr;
-> +}
-
-Would it be any less complicated to stick with devm_ioremap_resource() 
-and fix up the resource itself for each call, rather than open-coding it?
-
-> +
->   static int arm_smmu_device_probe(struct platform_device *pdev)
->   {
->   	int irq, ret;
-> @@ -4056,10 +4085,21 @@ static int arm_smmu_device_probe(struct platform_device *pdev)
->   	}
->   	ioaddr = res->start;
->   
-> -	smmu->base = devm_ioremap_resource(dev, res);
-> +	/*
-> +	 * Only map what we need, because the IMPLEMENTATION DEFINED registers
-> +	 * may be used for the PMCGs, which are reserved by the PMU driver.
-> +	 */
-> +	smmu->base = arm_smmu_ioremap(dev, ioaddr, ARM_SMMU_PAGE0_REG_SZ);
->   	if (IS_ERR(smmu->base))
->   		return PTR_ERR(smmu->base);
->   
-> +	if (arm_smmu_resource_size(smmu) > SZ_64K) {
-> +		smmu->page1 = arm_smmu_ioremap(dev, ioaddr + SZ_64K,
-> +					       ARM_SMMU_PAGE1_REG_SZ);
-> +		if (IS_ERR(smmu->page1))
-> +			return PTR_ERR(smmu->page1);
-> +	}
-
-As above,
-
-	} else {
-		smmu->page1 = smmu->base;
-	}
-
-Either way, those are just cleanliness nitpicks; I've no real objection 
-to the patch in its current state. Getting MMU-600 systems un-broken at 
-all is more important, there will always be time for cleanup :)
-
-Robin.
-
-> +
->   	/* Interrupt lines */
->   
->   	irq = platform_get_irq_byname_optional(pdev, "combined");
+> V6
+>  * Rebased on Will's for-joerg/arm-smmu/updates
+>  * Reword commit message and add more details [Stephen]
 > 
+>  drivers/iommu/arm-smmu-qcom.c | 2 ++
+>  1 file changed, 2 insertions(+)
+> 
+> diff --git a/drivers/iommu/arm-smmu-qcom.c b/drivers/iommu/arm-smmu-qcom.c
+> index 5bedf21587a56..cf01d0215a397 100644
+> --- a/drivers/iommu/arm-smmu-qcom.c
+> +++ b/drivers/iommu/arm-smmu-qcom.c
+> @@ -17,7 +17,9 @@ static const struct of_device_id qcom_smmu_client_of_match[] = {
+>  	{ .compatible = "qcom,mdp4" },
+>  	{ .compatible = "qcom,mdss" },
+>  	{ .compatible = "qcom,sc7180-mdss" },
+> +	{ .compatible = "qcom,sc7180-mss-pil" },
+>  	{ .compatible = "qcom,sdm845-mdss" },
+> +	{ .compatible = "qcom,sdm845-mss-pil" },
+>  	{ }
+>  };
+>  
+> -- 
+> The Qualcomm Innovation Center, Inc. is a member of the Code Aurora Forum,
+> a Linux Foundation Collaborative Project
 _______________________________________________
 iommu mailing list
 iommu@lists.linux-foundation.org
