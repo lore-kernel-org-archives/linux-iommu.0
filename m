@@ -7,80 +7,80 @@ X-Spam-Status: No, score=-9.5 required=3.0 tests=DKIM_INVALID,DKIM_SIGNED,
 	SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED,USER_AGENT_GIT autolearn=ham
 	autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 1C9B8C54E8D
-	for <iommu@archiver.kernel.org>; Tue, 12 May 2020 04:09:27 +0000 (UTC)
-Received: from hemlock.osuosl.org (smtp2.osuosl.org [140.211.166.133])
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 5F928C54E4B
+	for <iommu@archiver.kernel.org>; Tue, 12 May 2020 04:10:12 +0000 (UTC)
+Received: from fraxinus.osuosl.org (smtp4.osuosl.org [140.211.166.137])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by mail.kernel.org (Postfix) with ESMTPS id E3FD72072B
-	for <iommu@archiver.kernel.org>; Tue, 12 May 2020 04:09:26 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTPS id 2A1132072B
+	for <iommu@archiver.kernel.org>; Tue, 12 May 2020 04:10:12 +0000 (UTC)
 Authentication-Results: mail.kernel.org;
-	dkim=fail reason="signature verification failed" (2048-bit key) header.d=linaro.org header.i=@linaro.org header.b="MbXe+HW+"
-DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org E3FD72072B
+	dkim=fail reason="signature verification failed" (2048-bit key) header.d=linaro.org header.i=@linaro.org header.b="zKPMo9Vx"
+DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 2A1132072B
 Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=linaro.org
 Authentication-Results: mail.kernel.org; spf=pass smtp.mailfrom=iommu-bounces@lists.linux-foundation.org
 Received: from localhost (localhost [127.0.0.1])
-	by hemlock.osuosl.org (Postfix) with ESMTP id C58F788970;
-	Tue, 12 May 2020 04:09:26 +0000 (UTC)
+	by fraxinus.osuosl.org (Postfix) with ESMTP id 0794F87617;
+	Tue, 12 May 2020 04:09:44 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from hemlock.osuosl.org ([127.0.0.1])
+Received: from fraxinus.osuosl.org ([127.0.0.1])
 	by localhost (.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
-	with ESMTP id ZPLvKY5XfbSo; Tue, 12 May 2020 04:09:26 +0000 (UTC)
+	with ESMTP id BkpCZzoW-RyL; Tue, 12 May 2020 04:09:43 +0000 (UTC)
 Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [140.211.9.56])
-	by hemlock.osuosl.org (Postfix) with ESMTP id 6B0AF88911;
-	Tue, 12 May 2020 04:09:26 +0000 (UTC)
+	by fraxinus.osuosl.org (Postfix) with ESMTP id D4A388614E;
+	Tue, 12 May 2020 04:09:39 +0000 (UTC)
 Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
-	by lists.linuxfoundation.org (Postfix) with ESMTP id 5F8ADC0178;
-	Tue, 12 May 2020 04:09:26 +0000 (UTC)
+	by lists.linuxfoundation.org (Postfix) with ESMTP id A1B79C0178;
+	Tue, 12 May 2020 04:09:39 +0000 (UTC)
 Received: from hemlock.osuosl.org (smtp2.osuosl.org [140.211.166.133])
- by lists.linuxfoundation.org (Postfix) with ESMTP id 688B2C016F
- for <iommu@lists.linux-foundation.org>; Tue, 12 May 2020 04:09:25 +0000 (UTC)
+ by lists.linuxfoundation.org (Postfix) with ESMTP id 59F53C016F
+ for <iommu@lists.linux-foundation.org>; Tue, 12 May 2020 04:09:38 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
- by hemlock.osuosl.org (Postfix) with ESMTP id 64F1A88951
- for <iommu@lists.linux-foundation.org>; Tue, 12 May 2020 04:09:25 +0000 (UTC)
+ by hemlock.osuosl.org (Postfix) with ESMTP id 48F9E88970
+ for <iommu@lists.linux-foundation.org>; Tue, 12 May 2020 04:09:38 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
 Received: from hemlock.osuosl.org ([127.0.0.1])
  by localhost (.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
- with ESMTP id 4Vz-TjBHBuzX for <iommu@lists.linux-foundation.org>;
- Tue, 12 May 2020 04:09:24 +0000 (UTC)
-X-Greylist: from auto-whitelisted by SQLgrey-1.7.6
-Received: from mail-pj1-f67.google.com (mail-pj1-f67.google.com
- [209.85.216.67])
- by hemlock.osuosl.org (Postfix) with ESMTPS id 25B1988911
- for <iommu@lists.linux-foundation.org>; Tue, 12 May 2020 04:09:24 +0000 (UTC)
-Received: by mail-pj1-f67.google.com with SMTP id e6so8744032pjt.4
- for <iommu@lists.linux-foundation.org>; Mon, 11 May 2020 21:09:24 -0700 (PDT)
+ with ESMTP id qsTu27WdnBgE for <iommu@lists.linux-foundation.org>;
+ Tue, 12 May 2020 04:09:37 +0000 (UTC)
+X-Greylist: domain auto-whitelisted by SQLgrey-1.7.6
+Received: from mail-pl1-f193.google.com (mail-pl1-f193.google.com
+ [209.85.214.193])
+ by hemlock.osuosl.org (Postfix) with ESMTPS id CDB7988951
+ for <iommu@lists.linux-foundation.org>; Tue, 12 May 2020 04:09:37 +0000 (UTC)
+Received: by mail-pl1-f193.google.com with SMTP id f15so4820209plr.3
+ for <iommu@lists.linux-foundation.org>; Mon, 11 May 2020 21:09:37 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linaro.org; s=google;
  h=from:to:cc:subject:date:message-id:in-reply-to:references;
- bh=7aGIDKJhsEoY1eFnx3GCg/ODucM/74uibRkoUrBNgnI=;
- b=MbXe+HW+y1nKNTeJX7Rkc7vQR92xitRyMqVJP0a6SsxnDbH6iUYomnq74hWzkTZ68f
- VsDEXcDNI+WiQL7KRKURgC+DnubpxvtlSqRn6orZ3t6ahJUtWU/jba1VmPfGbrAQFqe9
- d0BOXtDZ+KmfLxAs01EAm+ZevUv5lCcWOdbmkxj/n/F+TajL6AyfojV7uQRSExlmsqBt
- LzIIpV/HCvUMd5y8iKO9j+SJ+YZ0MESDLDGKnwdAtg4g2nGjok30yTiubZY4Wdh/s4tp
- eZT6ISiSZ2ssxGHdJ8crKSCVmJ+01cXY+GFP12rW456eaMSvowo+kn4HrkR1btVPh/JZ
- jPwQ==
+ bh=6S28BNiWmQ/hEXUnU1MTnqXBi18kA3ePoZOYdtU1cwQ=;
+ b=zKPMo9VxVy3jMqZvbDFZzd0rfMvjK8sIRqKU+RRM8fhiK3BsQbxVPPqNYrdq3CNlJp
+ srwFwGJmFE53BiW8OELV7eGESL1CDt3+K4ya4VOcLbsiDUEhRhJL5Hsx5wYQmr4/a1ha
+ npM2phtb/qYoGwQEx97t6GacPM8Z7YAe5eoPRlt84htL5JM81zMsdpd3BUasJ+/8QsnH
+ dkV7TQ2UOgKSRXuw2IGL0NHMPpGwN/hPYlde9jC+uvFu5gspfztR7vKX+YVtfvubS0Zb
+ /IgWuGFfL2eesthQolXE8F1dD/HdpBfJqLHJnovOiJQqYzfmg/aL8KblwwEQlXwQIPtH
+ rPJg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
  d=1e100.net; s=20161025;
  h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
  :references;
- bh=7aGIDKJhsEoY1eFnx3GCg/ODucM/74uibRkoUrBNgnI=;
- b=hmL7VavNHOaQSiBdkczdIkLWQGG57+6JbMyvSDRfeWVXZCQvjtqEldB3IRviXPt2x2
- N7IC8Kq2CuCVLUTi/wmgrCHv7LJzkKLY6szt+f8EHKDsQgL94/OfgjnEi4OreXCUSCMs
- OLeoTbC0474OYoXwaAHOQytbA459e/pivtGHQ/bFHvZAz+dTx7S350MNWeUIhbRYFArs
- Tt2bKRWgKhiKb/TbMFj711mrpxoPUGyN2dpeVgD2Jsm+oWcyZbZayIUdZlnvLybRraEH
- aXzM7nJGJ42qNAb5J+5iiK0NHcLoMveO+8umJxx851nmneUZm1FmcA0Ya2I6V3NPTeyn
- nVFQ==
-X-Gm-Message-State: AGi0PuZT7FRzeTtGTX4/xwbzkX7KG+aJY+nIJnUUyqaIoFquZbgOCX9k
- 3MOcZaoJlXHq0Fx1G7zv25uJpA==
-X-Google-Smtp-Source: APiQypLaB23RJirP/v+StJWLJjQaMOF0325fVzznuPTbvKpEkcQWNB3eHs32G8ciUzq8DPIby5tNug==
-X-Received: by 2002:a17:902:c281:: with SMTP id
- i1mr18100582pld.85.1589256563703; 
- Mon, 11 May 2020 21:09:23 -0700 (PDT)
+ bh=6S28BNiWmQ/hEXUnU1MTnqXBi18kA3ePoZOYdtU1cwQ=;
+ b=jeT3Zf0GW5MniCT78igsYgPkcs3qmXUBFqCY92rmUVqYG4KBhu/8Zs9esU8wxDIowu
+ JZxhIiE2yqzeWtAmLUNW43qj0M1TRVyjBHmAIYDWTPm0jam87HOx6apbmTgVGnTdaDMS
+ DEz/XlVLJqySFUJeRnDXCKePx2kE5bAaXK8JmCQYvu3Q3v02PlE0KnVHtiQ/zyhmhQ9g
+ PL/GA5guiV3nge31aq3O5MUL5aHpBrOWmRIu34iowLhEVxW6Dt2EEnXi2bHMELGCHjOZ
+ pgHY8thHIuyA70wfpB3dw1XvNx6xgmH72BTCZbNkbLNEDQvFVU/s4J83znFNui9azNIJ
+ WAFA==
+X-Gm-Message-State: AGi0PuZwLLyvngj03Yf65S46mVbAKrMO+0FlGO9REan99F5hFikGwpRl
+ E0ikChirUUp1IZGszsOZv97BnQ==
+X-Google-Smtp-Source: APiQypIz5wcptWAsZSR4zFqLILzJ6EQ/AyMRL3bPtWuTsky6Bgy54mQMi2/qmxe6ZV1FPbWCHDML+A==
+X-Received: by 2002:a17:902:728e:: with SMTP id
+ d14mr18153543pll.107.1589256577364; 
+ Mon, 11 May 2020 21:09:37 -0700 (PDT)
 Received: from localhost.localdomain ([240e:362:443:6f00:91af:f25c:441c:7ba4])
  by smtp.gmail.com with ESMTPSA id
- e4sm9471527pge.45.2020.05.11.21.09.10
+ e4sm9471527pge.45.2020.05.11.21.09.24
  (version=TLS1_2 cipher=ECDHE-ECDSA-AES128-GCM-SHA256 bits=128/128);
- Mon, 11 May 2020 21:09:23 -0700 (PDT)
+ Mon, 11 May 2020 21:09:36 -0700 (PDT)
 From: Zhangfei Gao <zhangfei.gao@linaro.org>
 To: Joerg Roedel <joro@8bytes.org>,
  Lorenzo Pieralisi <lorenzo.pieralisi@arm.com>,
@@ -90,9 +90,9 @@ To: Joerg Roedel <joro@8bytes.org>,
  Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
  Herbert Xu <herbert@gondor.apana.org.au>, kenneth-lee-2012@foxmail.com,
  Wangzhou <wangzhou1@hisilicon.com>
-Subject: [PATCH 1/2] iommu/of: Let pci_fixup_final access iommu_fwnode
-Date: Tue, 12 May 2020 12:08:30 +0800
-Message-Id: <1589256511-12446-2-git-send-email-zhangfei.gao@linaro.org>
+Subject: [PATCH 2/2] ACPI/IORT: Let pci_fixup_final access iommu_fwnode
+Date: Tue, 12 May 2020 12:08:31 +0800
+Message-Id: <1589256511-12446-3-git-send-email-zhangfei.gao@linaro.org>
 X-Mailer: git-send-email 2.7.4
 In-Reply-To: <1589256511-12446-1-git-send-email-zhangfei.gao@linaro.org>
 References: <1589256511-12446-1-git-send-email-zhangfei.gao@linaro.org>
@@ -117,7 +117,7 @@ Content-Transfer-Encoding: 7bit
 Errors-To: iommu-bounces@lists.linux-foundation.org
 Sender: "iommu" <iommu-bounces@lists.linux-foundation.org>
 
-Calling pci_fixup_final after of_pci_iommu_init, which alloc
+Calling pci_fixup_final after iommu_fwspec_init, which alloc
 iommu_fwnode. Some platform devices appear as PCI but are
 actually on the AMBA bus, and they need fixup in
 drivers/pci/quirks.c handling iommu_fwnode.
@@ -125,21 +125,21 @@ So calling pci_fixup_final after iommu_fwnode is allocated.
 
 Signed-off-by: Zhangfei Gao <zhangfei.gao@linaro.org>
 ---
- drivers/iommu/of_iommu.c | 1 +
+ drivers/acpi/arm64/iort.c | 1 +
  1 file changed, 1 insertion(+)
 
-diff --git a/drivers/iommu/of_iommu.c b/drivers/iommu/of_iommu.c
-index 20738aac..c1b58c4 100644
---- a/drivers/iommu/of_iommu.c
-+++ b/drivers/iommu/of_iommu.c
-@@ -188,6 +188,7 @@ const struct iommu_ops *of_iommu_configure(struct device *dev,
- 		pci_request_acs();
+diff --git a/drivers/acpi/arm64/iort.c b/drivers/acpi/arm64/iort.c
+index 7d04424..02e361d 100644
+--- a/drivers/acpi/arm64/iort.c
++++ b/drivers/acpi/arm64/iort.c
+@@ -1027,6 +1027,7 @@ const struct iommu_ops *iort_iommu_configure(struct device *dev)
+ 		info.node = node;
  		err = pci_for_each_dma_alias(to_pci_dev(dev),
- 					     of_pci_iommu_init, &info);
+ 					     iort_pci_iommu_init, &info);
 +		pci_fixup_device(pci_fixup_final, to_pci_dev(dev));
- 	} else if (dev_is_fsl_mc(dev)) {
- 		err = of_fsl_mc_iommu_init(to_fsl_mc_device(dev), master_np);
- 	} else {
+ 
+ 		fwspec = dev_iommu_fwspec_get(dev);
+ 		if (fwspec && iort_pci_rc_supports_ats(node))
 -- 
 2.7.4
 
