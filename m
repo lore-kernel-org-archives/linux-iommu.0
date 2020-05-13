@@ -2,103 +2,136 @@ Return-Path: <SRS0=oi3Z=63=lists.linux-foundation.org=iommu-bounces@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-7.0 required=3.0 tests=DKIM_INVALID,DKIM_SIGNED,
-	HEADER_FROM_DIFFERENT_DOMAINS,MAILING_LIST_MULTI,MENTIONS_GIT_HOSTING,
-	SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED,USER_AGENT_SANE_1 autolearn=ham
+X-Spam-Status: No, score=-9.5 required=3.0 tests=DKIM_INVALID,DKIM_SIGNED,
+	HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_PATCH,MAILING_LIST_MULTI,SIGNED_OFF_BY,
+	SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED,USER_AGENT_GIT autolearn=unavailable
 	autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 81079C2D0FC
-	for <iommu@archiver.kernel.org>; Wed, 13 May 2020 13:29:08 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 85EF3C2D0FD
+	for <iommu@archiver.kernel.org>; Wed, 13 May 2020 13:33:06 +0000 (UTC)
 Received: from hemlock.osuosl.org (smtp2.osuosl.org [140.211.166.133])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by mail.kernel.org (Postfix) with ESMTPS id 17E3820690
-	for <iommu@archiver.kernel.org>; Wed, 13 May 2020 13:29:07 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTPS id 423C2207C3
+	for <iommu@archiver.kernel.org>; Wed, 13 May 2020 13:33:05 +0000 (UTC)
 Authentication-Results: mail.kernel.org;
-	dkim=fail reason="signature verification failed" (1024-bit key) header.d=redhat.com header.i=@redhat.com header.b="RcTjyLBn"
-DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 17E3820690
-Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=redhat.com
+	dkim=fail reason="signature verification failed" (1024-bit key) header.d=samsung.com header.i=@samsung.com header.b="VKrLxF3K"
+DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 423C2207C3
+Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=samsung.com
 Authentication-Results: mail.kernel.org; spf=pass smtp.mailfrom=iommu-bounces@lists.linux-foundation.org
 Received: from localhost (localhost [127.0.0.1])
-	by hemlock.osuosl.org (Postfix) with ESMTP id 2846A891A0;
-	Wed, 13 May 2020 13:29:08 +0000 (UTC)
+	by hemlock.osuosl.org (Postfix) with ESMTP id 4041088D58;
+	Wed, 13 May 2020 13:33:06 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
 Received: from hemlock.osuosl.org ([127.0.0.1])
 	by localhost (.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
-	with ESMTP id 5gLeGMWvQhQy; Wed, 13 May 2020 13:29:07 +0000 (UTC)
+	with ESMTP id b3cnYrcoQ-7Z; Wed, 13 May 2020 13:33:05 +0000 (UTC)
 Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [140.211.9.56])
-	by hemlock.osuosl.org (Postfix) with ESMTP id 4FE7F8855D;
-	Wed, 13 May 2020 13:29:07 +0000 (UTC)
+	by hemlock.osuosl.org (Postfix) with ESMTP id 393788920C;
+	Wed, 13 May 2020 13:33:05 +0000 (UTC)
 Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
-	by lists.linuxfoundation.org (Postfix) with ESMTP id 3E660C0178;
-	Wed, 13 May 2020 13:29:07 +0000 (UTC)
+	by lists.linuxfoundation.org (Postfix) with ESMTP id 18877C0891;
+	Wed, 13 May 2020 13:33:05 +0000 (UTC)
 Received: from fraxinus.osuosl.org (smtp4.osuosl.org [140.211.166.137])
- by lists.linuxfoundation.org (Postfix) with ESMTP id 71204C016F
- for <iommu@lists.linux-foundation.org>; Wed, 13 May 2020 13:29:05 +0000 (UTC)
+ by lists.linuxfoundation.org (Postfix) with ESMTP id 9417BC088F
+ for <iommu@lists.linux-foundation.org>; Wed, 13 May 2020 13:33:03 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
- by fraxinus.osuosl.org (Postfix) with ESMTP id 5F2EE869EA
- for <iommu@lists.linux-foundation.org>; Wed, 13 May 2020 13:29:05 +0000 (UTC)
+ by fraxinus.osuosl.org (Postfix) with ESMTP id 8BDCD86FA3
+ for <iommu@lists.linux-foundation.org>; Wed, 13 May 2020 13:33:03 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
 Received: from fraxinus.osuosl.org ([127.0.0.1])
  by localhost (.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
- with ESMTP id EZToIUDUtNSH for <iommu@lists.linux-foundation.org>;
- Wed, 13 May 2020 13:29:04 +0000 (UTC)
-X-Greylist: domain auto-whitelisted by SQLgrey-1.7.6
-Received: from us-smtp-1.mimecast.com (us-smtp-delivery-1.mimecast.com
- [207.211.31.120])
- by fraxinus.osuosl.org (Postfix) with ESMTPS id 4D9D086FA3
- for <iommu@lists.linux-foundation.org>; Wed, 13 May 2020 13:29:04 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
- s=mimecast20190719; t=1589376543;
- h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
- to:to:cc:cc:mime-version:mime-version:content-type:content-type:
- content-transfer-encoding:content-transfer-encoding:
- in-reply-to:in-reply-to:references:references;
- bh=KoV5Wqms5AH46esJ6zYoKxLFFe0Vww3N0l8ERghmRN4=;
- b=RcTjyLBnCN8cwUOlTOor2lVXEpwVNshjO4b2+gSQU0hh4fIU54DPQ1j88OI7MeuGTVs0hf
- eyroIJPyYMQ7yHH3pDkSByAhbkKCtgYP8T4DIZOjv31b+F8M3AHaZeSTWPXe0kdvNK3dyL
- 4Nv0/W1w59IqMEwopIqREGf/kwRL2vg=
-Received: from mimecast-mx01.redhat.com (mimecast-mx01.redhat.com
- [209.132.183.4]) (Using TLS) by relay.mimecast.com with ESMTP id
- us-mta-367-HnptDom5NM2MsQHnVL9a5Q-1; Wed, 13 May 2020 09:28:58 -0400
-X-MC-Unique: HnptDom5NM2MsQHnVL9a5Q-1
-Received: from smtp.corp.redhat.com (int-mx07.intmail.prod.int.phx2.redhat.com
- [10.5.11.22])
- (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
- (No client certificate requested)
- by mimecast-mx01.redhat.com (Postfix) with ESMTPS id 0DEED80183C;
- Wed, 13 May 2020 13:28:56 +0000 (UTC)
-Received: from [10.36.112.22] (ovpn-112-22.ams2.redhat.com [10.36.112.22])
- by smtp.corp.redhat.com (Postfix) with ESMTPS id 94BE910013BD;
- Wed, 13 May 2020 13:28:45 +0000 (UTC)
-Subject: Re: [PATCH v11 00/13] SMMUv3 Nested Stage Setup (IOMMU part)
-To: Shameerali Kolothum Thodi <shameerali.kolothum.thodi@huawei.com>,
- Zhangfei Gao <zhangfei.gao@linaro.org>,
- "eric.auger.pro@gmail.com" <eric.auger.pro@gmail.com>,
- "iommu@lists.linux-foundation.org" <iommu@lists.linux-foundation.org>,
- "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
- "kvm@vger.kernel.org" <kvm@vger.kernel.org>,
- "kvmarm@lists.cs.columbia.edu" <kvmarm@lists.cs.columbia.edu>,
- "will@kernel.org" <will@kernel.org>, "joro@8bytes.org" <joro@8bytes.org>,
- "maz@kernel.org" <maz@kernel.org>,
- "robin.murphy@arm.com" <robin.murphy@arm.com>
-References: <20200414150607.28488-1-eric.auger@redhat.com>
- <eb27f625-ad7a-fcb5-2185-5471e4666f09@linaro.org>
- <06fe02f7-2556-8986-2f1e-dcdf59773b8c@redhat.com>
- <c7786a2a314e4c4ab37ef157ddfa23af@huawei.com>
-From: Auger Eric <eric.auger@redhat.com>
-Message-ID: <3858dd8c-ee55-b0d7-96cc-3c047ba8f652@redhat.com>
-Date: Wed, 13 May 2020 15:28:41 +0200
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:60.0) Gecko/20100101
- Thunderbird/60.4.0
-MIME-Version: 1.0
-In-Reply-To: <c7786a2a314e4c4ab37ef157ddfa23af@huawei.com>
-Content-Language: en-US
-X-Scanned-By: MIMEDefang 2.84 on 10.5.11.22
-Cc: "jean-philippe@linaro.org" <jean-philippe@linaro.org>,
- "peter.maydell@linaro.org" <peter.maydell@linaro.org>,
- "alex.williamson@redhat.com" <alex.williamson@redhat.com>,
- "bbhushan2@marvell.com" <bbhushan2@marvell.com>
+ with ESMTP id idUaFivBNbYj for <iommu@lists.linux-foundation.org>;
+ Wed, 13 May 2020 13:33:01 +0000 (UTC)
+X-Greylist: from auto-whitelisted by SQLgrey-1.7.6
+Received: from mailout1.w1.samsung.com (mailout1.w1.samsung.com
+ [210.118.77.11])
+ by fraxinus.osuosl.org (Postfix) with ESMTPS id 109FD86FC9
+ for <iommu@lists.linux-foundation.org>; Wed, 13 May 2020 13:33:00 +0000 (UTC)
+Received: from eucas1p1.samsung.com (unknown [182.198.249.206])
+ by mailout1.w1.samsung.com (KnoxPortal) with ESMTP id
+ 20200513133257euoutp014364644aad0d5680488f41bef20c36eb~OmcIn8yfN2146121461euoutp01y
+ for <iommu@lists.linux-foundation.org>; Wed, 13 May 2020 13:32:57 +0000 (GMT)
+DKIM-Filter: OpenDKIM Filter v2.11.0 mailout1.w1.samsung.com
+ 20200513133257euoutp014364644aad0d5680488f41bef20c36eb~OmcIn8yfN2146121461euoutp01y
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=samsung.com;
+ s=mail20170921; t=1589376777;
+ bh=SMTxZNZpTSAf+VjaRdwIa7Y+Y92ELOA8MjwAFVO+Mus=;
+ h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
+ b=VKrLxF3KEiWmVZ1axlhSlzty0rd2nUqXsHuI7B7LU28r5TvCvsp+0bgDe4vtq9QOY
+ WiKZcd124gvPVjK5otBDPFZ8OFs4Ng94v6RMIBwxoj8zDX9Eu+NKd2eBdrnLRwwAaZ
+ 2zo3AcPWxR1hl6t0/nrmIY5WXFjlcZ6Vzn2OE+7A=
+Received: from eusmges1new.samsung.com (unknown [203.254.199.242]) by
+ eucas1p1.samsung.com (KnoxPortal) with ESMTP id
+ 20200513133257eucas1p1ab88f1465f6ce76a0c7f470a63001ea2~OmcIUwDTB0876608766eucas1p1h;
+ Wed, 13 May 2020 13:32:57 +0000 (GMT)
+Received: from eucas1p1.samsung.com ( [182.198.249.206]) by
+ eusmges1new.samsung.com (EUCPMTA) with SMTP id FD.B5.61286.907FBBE5; Wed, 13
+ May 2020 14:32:57 +0100 (BST)
+Received: from eusmtrp1.samsung.com (unknown [182.198.249.138]) by
+ eucas1p2.samsung.com (KnoxPortal) with ESMTPA id
+ 20200513133256eucas1p273110d0c8f67e52fc7385acef776efaa~OmcH5dMRP0359403594eucas1p2L;
+ Wed, 13 May 2020 13:32:56 +0000 (GMT)
+Received: from eusmgms1.samsung.com (unknown [182.198.249.179]) by
+ eusmtrp1.samsung.com (KnoxPortal) with ESMTP id
+ 20200513133256eusmtrp11bf699394ab06f7b9d70d588c796f3dc~OmcH4xvA20994509945eusmtrp1W;
+ Wed, 13 May 2020 13:32:56 +0000 (GMT)
+X-AuditID: cbfec7f2-ef1ff7000001ef66-28-5ebbf709f135
+Received: from eusmtip1.samsung.com ( [203.254.199.221]) by
+ eusmgms1.samsung.com (EUCPMTA) with SMTP id B7.0A.08375.807FBBE5; Wed, 13
+ May 2020 14:32:56 +0100 (BST)
+Received: from AMDC2765.digital.local (unknown [106.120.51.73]) by
+ eusmtip1.samsung.com (KnoxPortal) with ESMTPA id
+ 20200513133256eusmtip10a029b12870de4156e2e5b8913fad120~OmcHTRPCk2465024650eusmtip1_;
+ Wed, 13 May 2020 13:32:56 +0000 (GMT)
+From: Marek Szyprowski <m.szyprowski@samsung.com>
+To: dri-devel@lists.freedesktop.org, iommu@lists.linux-foundation.org,
+ linaro-mm-sig@lists.linaro.org, linux-kernel@vger.kernel.org
+Subject: [PATCH v5 01/38] dma-mapping: add generic helpers for mapping
+ sgtable objects
+Date: Wed, 13 May 2020 15:32:08 +0200
+Message-Id: <20200513133245.6408-1-m.szyprowski@samsung.com>
+X-Mailer: git-send-email 2.17.1
+In-Reply-To: <20200513132114.6046-1-m.szyprowski@samsung.com>
+X-Brightmail-Tracker: H4sIAAAAAAAAA0VSa0hTYRju29nZzqbT45R80UyYJGSpSf04MLPCfpz+RAVZCpkrD2ptajte
+ +6Moai0NL5XDUsS8OzUvaUzFHNkUaZSaTPOaFZbZwltYoG0erX/P7X2f7/v4CExajbsRMbEJ
+ jDpWoZQJxPyO1xsmX9GvrvAjwzPOVJ5pkEe1aJtxaqujAKNG1ywCqq6hn0eV98qp1dE5HtU6
+ P4ZTI/onAqrx1ZSQ6vv5CT9pR+vKdIjuWS/n053rszg9c8/Io9sq0+gPm/MYXWSuQXTXeLqA
+ vt9ej+iV1v3nxGHiwEhGGZPEqP2DIsTRedn1KL7JO+VBZjWejno8NUhEAHkMzMZapEFiQkrW
+ IuhbsAhthpRcRTC4xeOMFQTlOj3anfg+t8znjBoEj+pKd4h1ouJ9Js+WEpABoFnSCGzYhcxC
+ MJBnb8MYqeVB/2KiDTuTl6HMMLq9lU8egIovOsyGJWQgGAe0ONfmCQ3PXm7rIvI4LD/fwG1l
+ QDYJ4anFaC0jrOQ0zLyhuLwzfDO2Czm8D4aKcvlcPhPBnKlRyJFcBCMZ2p37yGHS9FtgW4SR
+ B6FZ78/Jp8BUqMe5/Q5gXnLizu8AhR3FGCdL4E62lEt7Q4mx6V9t39thjMM0tC+27bxiPoJ2
+ 8yDKR54l/8vKEapHrkwiq4pi2IBYJtmPVajYxNgov+txqlZk/T1Dm8blF2ht+JoBkQSS2Uuo
+ ia5wKa5IYlNVBgQEJnORnG22SpJIReptRh13VZ2oZFgDcif4MlfJ0YqvV6RklCKBuckw8Yx6
+ 1+URIrd0hO9Jsp8oyDhx2P9jWkujV+g7cw3sveDhkdDL5FQ5uKvOB1eG6lLsSkM0d32TJmYV
+ cWeSu8URh5zAyzF1hk3rnizOueW5EPRHqZ2XpGT/yCzqlVvknXaPLzo+ZNDspc35YGHVWOf0
+ Z33bjfGpwKy4kNaSaQsVUqca8MnNlYcVyfhstCLAB1Ozir/3t71COQMAAA==
+X-Brightmail-Tracker: H4sIAAAAAAAAA+NgFupikeLIzCtJLcpLzFFi42I5/e/4XV2O77vjDCb9MbLoPXeSyWLjjPWs
+ Fv+3TWS2uPL1PZvFytVHmSwW7Le2+HLlIZPFpsfXWC0u75rDZrH2yF12i4MfnrA6cHusmbeG
+ 0WPvtwUsHtu/PWD1uN99nMlj85J6j9v/HjN7TL6xnNFj980GNo++LasYPT5vkgvgitKzKcov
+ LUlVyMgvLrFVija0MNIztLTQMzKx1DM0No+1MjJV0rezSUnNySxLLdK3S9DL6G1bxViwTq1i
+ SvMy1gbGvfJdjJwcEgImEm8efmLpYuTiEBJYyijxasFTVoiEjMTJaQ1QtrDEn2tdbBBFnxgl
+ 3h14DpZgEzCU6HoLkRAR6GSUmNb9kR3EYRaYxySx6OEhdpAqYYEwiZ0ftoHZLAKqEouerWEG
+ sXkFbCSOn5gBtUJeYvWGA2BxTgFbiU9bf4LFhYBq1rbOYZvAyLeAkWEVo0hqaXFuem6xoV5x
+ Ym5xaV66XnJ+7iZGYDxsO/Zz8w7GSxuDDzEKcDAq8fBa3NodJ8SaWFZcmXuIUYKDWUmE1289
+ UIg3JbGyKrUoP76oNCe1+BCjKdBRE5mlRJPzgbGaVxJvaGpobmFpaG5sbmxmoSTO2yFwMEZI
+ ID2xJDU7NbUgtQimj4mDU6qBMaSi692hcinJ34t2HWxjfe1+2VN/o1/Uu6n6q+MfJNzYYd+y
+ f00hzz4Z6V1fjF4fPrAveW7xvIJpB6LWr0/nf+uv6ye37IqIcPXl83lKdwIYk5RO7boQpFHR
+ sXx1oEHYzjvRWp+dGJ8EuNV/jedZ3idy947AAeGUS0fPXd6cFXHQk3/htv97piuxFGckGmox
+ FxUnAgDvD09CnQIAAA==
+X-CMS-MailID: 20200513133256eucas1p273110d0c8f67e52fc7385acef776efaa
+X-Msg-Generator: CA
+X-RootMTR: 20200513133256eucas1p273110d0c8f67e52fc7385acef776efaa
+X-EPHeader: CA
+CMS-TYPE: 201P
+X-CMS-RootMailID: 20200513133256eucas1p273110d0c8f67e52fc7385acef776efaa
+References: <20200513132114.6046-1-m.szyprowski@samsung.com>
+ <CGME20200513133256eucas1p273110d0c8f67e52fc7385acef776efaa@eucas1p2.samsung.com>
+Cc: Bartlomiej Zolnierkiewicz <b.zolnierkie@samsung.com>,
+ David Airlie <airlied@linux.ie>, Daniel Vetter <daniel@ffwll.ch>,
+ Robin Murphy <robin.murphy@arm.com>, Christoph Hellwig <hch@lst.de>,
+ linux-arm-kernel@lists.infradead.org
 X-BeenThere: iommu@lists.linux-foundation.org
 X-Mailman-Version: 2.1.15
 Precedence: list
@@ -111,113 +144,130 @@ List-Post: <mailto:iommu@lists.linux-foundation.org>
 List-Help: <mailto:iommu-request@lists.linux-foundation.org?subject=help>
 List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
  <mailto:iommu-request@lists.linux-foundation.org?subject=subscribe>
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: base64
+MIME-Version: 1.0
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: 7bit
 Errors-To: iommu-bounces@lists.linux-foundation.org
 Sender: "iommu" <iommu-bounces@lists.linux-foundation.org>
 
-SGkgU2hhbWVlciwKCk9uIDUvNy8yMCA4OjU5IEFNLCBTaGFtZWVyYWxpIEtvbG90aHVtIFRob2Rp
-IHdyb3RlOgo+IEhpIEVyaWMsCj4gCj4+IC0tLS0tT3JpZ2luYWwgTWVzc2FnZS0tLS0tCj4+IEZy
-b206IFNoYW1lZXJhbGkgS29sb3RodW0gVGhvZGkKPj4gU2VudDogMzAgQXByaWwgMjAyMCAxMDoz
-OAo+PiBUbzogJ0F1Z2VyIEVyaWMnIDxlcmljLmF1Z2VyQHJlZGhhdC5jb20+OyBaaGFuZ2ZlaSBH
-YW8KPj4gPHpoYW5nZmVpLmdhb0BsaW5hcm8ub3JnPjsgZXJpYy5hdWdlci5wcm9AZ21haWwuY29t
-Owo+PiBpb21tdUBsaXN0cy5saW51eC1mb3VuZGF0aW9uLm9yZzsgbGludXgta2VybmVsQHZnZXIu
-a2VybmVsLm9yZzsKPj4ga3ZtQHZnZXIua2VybmVsLm9yZzsga3ZtYXJtQGxpc3RzLmNzLmNvbHVt
-YmlhLmVkdTsgd2lsbEBrZXJuZWwub3JnOwo+PiBqb3JvQDhieXRlcy5vcmc7IG1hekBrZXJuZWwu
-b3JnOyByb2Jpbi5tdXJwaHlAYXJtLmNvbQo+PiBDYzogamVhbi1waGlsaXBwZUBsaW5hcm8ub3Jn
-OyBhbGV4LndpbGxpYW1zb25AcmVkaGF0LmNvbTsKPj4gamFjb2IuanVuLnBhbkBsaW51eC5pbnRl
-bC5jb207IHlpLmwubGl1QGludGVsLmNvbTsgcGV0ZXIubWF5ZGVsbEBsaW5hcm8ub3JnOwo+PiB0
-bkBzZW1paGFsZi5jb207IGJiaHVzaGFuMkBtYXJ2ZWxsLmNvbQo+PiBTdWJqZWN0OiBSRTogW1BB
-VENIIHYxMSAwMC8xM10gU01NVXYzIE5lc3RlZCBTdGFnZSBTZXR1cCAoSU9NTVUgcGFydCkKPj4K
-Pj4gSGkgRXJpYywKPj4KPj4+IC0tLS0tT3JpZ2luYWwgTWVzc2FnZS0tLS0tCj4+PiBGcm9tOiBB
-dWdlciBFcmljIFttYWlsdG86ZXJpYy5hdWdlckByZWRoYXQuY29tXQo+Pj4gU2VudDogMTYgQXBy
-aWwgMjAyMCAwODo0NQo+Pj4gVG86IFpoYW5nZmVpIEdhbyA8emhhbmdmZWkuZ2FvQGxpbmFyby5v
-cmc+OyBlcmljLmF1Z2VyLnByb0BnbWFpbC5jb207Cj4+PiBpb21tdUBsaXN0cy5saW51eC1mb3Vu
-ZGF0aW9uLm9yZzsgbGludXgta2VybmVsQHZnZXIua2VybmVsLm9yZzsKPj4+IGt2bUB2Z2VyLmtl
-cm5lbC5vcmc7IGt2bWFybUBsaXN0cy5jcy5jb2x1bWJpYS5lZHU7IHdpbGxAa2VybmVsLm9yZzsK
-Pj4+IGpvcm9AOGJ5dGVzLm9yZzsgbWF6QGtlcm5lbC5vcmc7IHJvYmluLm11cnBoeUBhcm0uY29t
-Cj4+PiBDYzogamVhbi1waGlsaXBwZUBsaW5hcm8ub3JnOyBTaGFtZWVyYWxpIEtvbG90aHVtIFRo
-b2RpCj4+PiA8c2hhbWVlcmFsaS5rb2xvdGh1bS50aG9kaUBodWF3ZWkuY29tPjsgYWxleC53aWxs
-aWFtc29uQHJlZGhhdC5jb207Cj4+PiBqYWNvYi5qdW4ucGFuQGxpbnV4LmludGVsLmNvbTsgeWku
-bC5saXVAaW50ZWwuY29tOyBwZXRlci5tYXlkZWxsQGxpbmFyby5vcmc7Cj4+PiB0bkBzZW1paGFs
-Zi5jb207IGJiaHVzaGFuMkBtYXJ2ZWxsLmNvbQo+Pj4gU3ViamVjdDogUmU6IFtQQVRDSCB2MTEg
-MDAvMTNdIFNNTVV2MyBOZXN0ZWQgU3RhZ2UgU2V0dXAgKElPTU1VIHBhcnQpCj4+Pgo+Pj4gSGkg
-WmhhbmdmZWksCj4+Pgo+Pj4gT24gNC8xNi8yMCA2OjI1IEFNLCBaaGFuZ2ZlaSBHYW8gd3JvdGU6
-Cj4+Pj4KPj4+Pgo+Pj4+IE9uIDIwMjAvNC8xNCDkuIvljYgxMTowNSwgRXJpYyBBdWdlciB3cm90
-ZToKPj4+Pj4gVGhpcyB2ZXJzaW9uIGZpeGVzIGFuIGlzc3VlIG9ic2VydmVkIGJ5IFNoYW1lZXIg
-b24gYW4gU01NVSAzLjIsCj4+Pj4+IHdoZW4gbW92aW5nIGZyb20gZHVhbCBzdGFnZSBjb25maWcg
-dG8gc3RhZ2UgMSBvbmx5IGNvbmZpZy4KPj4+Pj4gVGhlIDIgaGlnaCA2NGIgb2YgdGhlIFNURSBu
-b3cgZ2V0IHJlc2V0LiBPdGhlcndpc2UsIGxlYXZpbmcgdGhlCj4+Pj4+IFMyVFRCIHNldCBtYXkg
-Y2F1c2UgYSBDX0JBRF9TVEUgZXJyb3IuCj4+Pj4+Cj4+Pj4+IFRoaXMgc2VyaWVzIGNhbiBiZSBm
-b3VuZCBhdDoKPj4+Pj4gaHR0cHM6Ly9naXRodWIuY29tL2VhdWdlci9saW51eC90cmVlL3Y1LjYt
-MnN0YWdlLXYxMV8xMC4xCj4+Pj4+IChpbmNsdWRpbmcgdGhlIFZGSU8gcGFydCkKPj4+Pj4gVGhl
-IFFFTVUgZmVsbG93IHNlcmllcyBzdGlsbCBjYW4gYmUgZm91bmQgYXQ6Cj4+Pj4+IGh0dHBzOi8v
-Z2l0aHViLmNvbS9lYXVnZXIvcWVtdS90cmVlL3Y0LjIuMC0yc3RhZ2UtcmZjdjYKPj4+Pj4KPj4+
-Pj4gVXNlcnMgaGF2ZSBleHByZXNzZWQgaW50ZXJlc3QgaW4gdGhhdCB3b3JrIGFuZCB0ZXN0ZWQg
-djkvdjEwOgo+Pj4+PiAtIGh0dHBzOi8vcGF0Y2h3b3JrLmtlcm5lbC5vcmcvY292ZXIvMTEwMzk5
-OTUvIzIzMDEyMzgxCj4+Pj4+IC0gaHR0cHM6Ly9wYXRjaHdvcmsua2VybmVsLm9yZy9jb3Zlci8x
-MTAzOTk5NS8jMjMxOTcyMzUKPj4+Pj4KPj4+Pj4gQmFja2dyb3VuZDoKPj4+Pj4KPj4+Pj4gVGhp
-cyBzZXJpZXMgYnJpbmdzIHRoZSBJT01NVSBwYXJ0IG9mIEhXIG5lc3RlZCBwYWdpbmcgc3VwcG9y
-dAo+Pj4+PiBpbiB0aGUgU01NVXYzLiBUaGUgVkZJTyBwYXJ0IGlzIHN1Ym1pdHRlZCBzZXBhcmF0
-ZWx5Lgo+Pj4+Pgo+Pj4+PiBUaGUgSU9NTVUgQVBJIGlzIGV4dGVuZGVkIHRvIHN1cHBvcnQgMiBu
-ZXcgQVBJIGZ1bmN0aW9uYWxpdGllczoKPj4+Pj4gMSkgcGFzcyB0aGUgZ3Vlc3Qgc3RhZ2UgMSBj
-b25maWd1cmF0aW9uCj4+Pj4+IDIpIHBhc3Mgc3RhZ2UgMSBNU0kgYmluZGluZ3MKPj4+Pj4KPj4+
-Pj4gVGhlbiB0aG9zZSBjYXBhYmlsaXRpZXMgZ2V0cyBpbXBsZW1lbnRlZCBpbiB0aGUgU01NVXYz
-IGRyaXZlci4KPj4+Pj4KPj4+Pj4gVGhlIHZpcnR1YWxpemVyIHBhc3NlcyBpbmZvcm1hdGlvbiB0
-aHJvdWdoIHRoZSBWRklPIHVzZXIgQVBJCj4+Pj4+IHdoaWNoIGNhc2NhZGVzIHRoZW0gdG8gdGhl
-IGlvbW11IHN1YnN5c3RlbS4gVGhpcyBhbGxvd3MgdGhlIGd1ZXN0Cj4+Pj4+IHRvIG93biBzdGFn
-ZSAxIHRhYmxlcyBhbmQgY29udGV4dCBkZXNjcmlwdG9ycyAoc28tY2FsbGVkIFBBU0lECj4+Pj4+
-IHRhYmxlKSB3aGlsZSB0aGUgaG9zdCBvd25zIHN0YWdlIDIgdGFibGVzIGFuZCBtYWluIGNvbmZp
-Z3VyYXRpb24KPj4+Pj4gc3RydWN0dXJlcyAoU1RFKS4KPj4+Pj4KPj4+Pj4KPj4+Pgo+Pj4+IFRo
-YW5rcyBFcmljCj4+Pj4KPj4+PiBUZXN0ZWQgdjExIG9uIEhpc2lsaWNvbiBrdW5wZW5nOTIwIGJv
-YXJkIHZpYSBoYXJkd2FyZSB6aXAgYWNjZWxlcmF0b3IuCj4+Pj4gMS4gbm8tc3ZhIHdvcmtzLCB3
-aGVyZSBndWVzdCBhcHAgZGlyZWN0bHkgdXNlIHBoeXNpY2FsIGFkZHJlc3MgdmlhIGlvY3RsLgo+
-Pj4gVGhhbmsgeW91IGZvciB0aGUgdGVzdGluZy4gR2xhZCBpdCB3b3JrcyBmb3IgeW91Lgo+Pj4+
-IDIuIHZTVkEgc3RpbGwgbm90IHdvcmssIHNhbWUgYXMgdjEwLAo+Pj4gWWVzIHRoYXQncyBub3Jt
-YWwgdGhpcyBzZXJpZXMgaXMgbm90IG1lYW50IHRvIHN1cHBvcnQgdlNWTSBhdCB0aGlzIHN0YWdl
-Lgo+Pj4KPj4+IEkgaW50ZW5kIHRvIGFkZCB0aGUgbWlzc2luZyBwaWVjZXMgZHVyaW5nIHRoZSBu
-ZXh0IHdlZWtzLgo+Pgo+PiBUaGFua3MgZm9yIHRoYXQuIEkgaGF2ZSBtYWRlIGFuIGF0dGVtcHQg
-dG8gYWRkIHRoZSB2U1ZBIGJhc2VkIG9uCj4+IHlvdXIgdjEwICsgSlBCcyBzdmEgcGF0Y2hlcy4g
-VGhlIGhvc3Qga2VybmVsIGFuZCBRZW11IGNoYW5nZXMgY2FuCj4+IGJlIGZvdW5kIGhlcmVbMV1b
-Ml0uCj4+Cj4+IFRoaXMgYmFzaWNhbGx5IGFkZHMgbXVsdGlwbGUgcGFzaWQgc3VwcG9ydCBvbiB0
-b3Agb2YgeW91ciBjaGFuZ2VzLgo+PiBJIGhhdmUgZG9uZSBzb21lIGJhc2ljIHNhbml0eSB0ZXN0
-aW5nIGFuZCB3ZSBoYXZlIHNvbWUgaW5pdGlhbCBzdWNjZXNzCj4+IHdpdGggdGhlIHppcCB2ZiBk
-ZXYgb24gb3VyIEQwNiBwbGF0Zm9ybS4gUGxlYXNlIG5vdGUgdGhhdCB0aGUgU1RBTEwgZXZlbnQg
-aXMKPj4gbm90IHlldCBzdXBwb3J0ZWQgdGhvdWdoLCBidXQgd29ya3MgZmluZSBpZiB3ZSBtbG9j
-aygpIGd1ZXN0IHVzciBtZW0uCj4gCj4gSSBoYXZlIGFkZGVkIFNUQUxMIHN1cHBvcnQgZm9yIG91
-ciB2U1ZBIHByb3RvdHlwZSBhbmQgaXQgc2VlbXMgdG8gYmUKPiB3b3JraW5nKG9uIG91ciBoYXJk
-d2FyZSkuIEkgaGF2ZSB1cGRhdGVkIHRoZSBrZXJuZWwgYW5kIHFlbXUgYnJhbmNoZXMgd2l0aAo+
-IHRoZSBzYW1lWzFdWzJdLiBJIHNob3VsZCB3YXJuIHlvdSB0aG91Z2ggdGhhdCB0aGVzZSBhcmUg
-cHJvdG90eXBlIGNvZGUgYW5kIEkgYW0gcHJldHR5Cj4gbXVjaCByZS11c2luZyB0aGUgVkZJT19J
-T01NVV9TRVRfUEFTSURfVEFCTEUgaW50ZXJmYWNlIGZvciBhbG1vc3QgZXZlcnl0aGluZy4KPiBC
-dXQgdGhvdWdodCBvZiBzaGFyaW5nLCBpbiBjYXNlIGlmIGl0IGlzIHVzZWZ1bCBzb21laG93IS4K
-ClRoYW5rIHlvdSBhZ2FpbiBmb3Igc2hhcmluZyB0aGUgUE9DLiBJIGxvb2tlZCBhdCB0aGUga2Vy
-bmVsIGFuZCBRRU1VCmJyYW5jaGVzLgoKSGVyZSBhcmUgc29tZSBwcmVsaW1pbmFyeSBjb21tZW50
-czoKLSAiYXJtLXNtbXUtdjM6IFJlc2V0IFMyVFRCIHdoaWxlIHN3aXRjaGluZyBiYWNrIGZyb20g
-bmVzdGVkIHN0YWdlIjogIGFzCnlvdSBtZW50aW9ubmVkIFMyVFRCIHJlc2V0IG5vdyBpcyBmZWF0
-dXJlZCBpbiB2MTEKLSAiYXJtLXNtbXUtdjM6IEFkZCBzdXBwb3J0IGZvciBtdWx0aXBsZSBwYXNp
-ZCBpbiBuZXN0ZWQgbW9kZSI6IEkgY291bGQKZWFzaWx5IGludGVncmF0ZSB0aGlzIGludG8gbXkg
-c2VyaWVzLiBVcGRhdGUgdGhlIGlvbW11IGFwaSBmaXJzdCBhbmQKcGFzcyBtdWx0aXBsZSBDRCBp
-bmZvIGluIGEgc2VwYXJhdGUgcGF0Y2gKLSAiYXJtLXNtbXUtdjM6IEFkZCBzdXBwb3J0IHRvIElu
-dmFsaWRhdGUgQ0QiOiBDRCBpbnZhbGlkYXRpb24gc2hvdWxkIGJlCmNhc2NhZGVkIHRvIGhvc3Qg
-dGhyb3VnaCB0aGUgUEFTSUQgY2FjaGUgaW52YWxpZGF0aW9uIHVhcGkgKG5vIHBiIHlvdQp3YXJu
-ZWQgdXMgZm9yIHRoZSBQT0MgeW91IHNpbXBseSB1c2VkIFZGSU9fSU9NTVVfU0VUX1BBU0lEX1RB
-QkxFKS4gSQp0aGluayBJIHNob3VsZCBhZGQgdGhpcyBzdXBwb3J0IGluIG15IG9yaWdpbmFsIHNl
-cmllcyBhbHRob3VnaCBpdCBkb2VzCm5vdCBzZWVtIHRvIHRyaWdnZXIgYW55IGlzc3VlIHVwIHRv
-IG5vdy4KLSAiYXJtLXNtbXUtdjM6IFJlbW92ZSBkdXBsaWNhdGlvbiBvZiBmYXVsdCBwcm9wYWdh
-dGlvbiIuIEkgdW5kZXJzdGFuZAp0aGUgdHJhbnNjb2RlIGlzIGRvbmUgc29tZXdoZXJlIGVsc2Ug
-d2l0aCBTVkEgYnV0IHdlIHN0aWxsIG5lZWQgdG8gZG8gaXQKaWYgYSBzaW5nbGUgQ0QgaXMgdXNl
-ZCwgcmlnaHQ/IEkgd2lsbCByZXZpZXcgdGhlIFNWQSBjb2RlIHRvIGJldHRlcgp1bmRlcnN0YW5k
-LgotIGZvciB0aGUgU1RBTEwgcmVzcG9uc2UgaW5qZWN0aW9uIEkgd291bGQgdGVuZCB0byB1c2Ug
-YSBuZXcgVkZJTyByZWdpb24KZm9yIHJlc3BvbnNlcy4gQXQgdGhlIG1vbWVudCB0aGVyZSBpcyBh
-IHNpbmdsZSBWRklPIHJlZ2lvbiBmb3IgcmVwb3J0aW5nCnRoZSBmYXVsdC4KCk9uIFFFTVUgc2lk
-ZToKLSBJIGFtIGN1cnJlbnRseSB3b3JraW5nIG9uIDMuMiByYW5nZSBpbnZhbGlkYXRpb24gc3Vw
-cG9ydCB3aGljaCBpcwpuZWVkZWQgZm9yIERQREsvVkZJTwotIFdoaWxlIGF0IGl0IEkgd2lsbCBs
-b29rIGF0IGhvdyB0byBpbmNyZW1lbnRhbGx5IGludHJvZHVjZSBzb21lIG9mIHRoZQpmZWF0dXJl
-cyB5b3UgbmVlZCBpbiB0aGlzIHNlcmllcy4KClRoYW5rcwoKRXJpYwoKCgo+IAo+IFRoYW5rcywK
-PiBTaGFtZWVyCj4gCj4gWzFdaHR0cHM6Ly9naXRodWIuY29tL2hpc2lsaWNvbi9rZXJuZWwtZGV2
-L2NvbW1pdHMvdnN2YS1wcm90b3R5cGUtaG9zdC12MQo+IAo+IFsyXWh0dHBzOi8vZ2l0aHViLmNv
-bS9oaXNpbGljb24vcWVtdS90cmVlL3Y0LjIuMC0yc3RhZ2UtcmZjdjYtdnN2YS1wcm90b3R5cGUt
-djEKPiAKCl9fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fCmlv
-bW11IG1haWxpbmcgbGlzdAppb21tdUBsaXN0cy5saW51eC1mb3VuZGF0aW9uLm9yZwpodHRwczov
-L2xpc3RzLmxpbnV4Zm91bmRhdGlvbi5vcmcvbWFpbG1hbi9saXN0aW5mby9pb21tdQ==
+struct sg_table is a common structure used for describing a memory
+buffer. It consists of a scatterlist with memory pages and DMA addresses
+(sgl entry), as well as the number of scatterlist entries: CPU pages
+(orig_nents entry) and DMA mapped pages (nents entry).
+
+It turned out that it was a common mistake to misuse nents and orig_nents
+entries, calling DMA-mapping functions with a wrong number of entries or
+ignoring the number of mapped entries returned by the dma_map_sg
+function.
+
+To avoid such issues, let's introduce a common wrappers operating directly
+on the struct sg_table objects, which take care of the proper use of
+the nents and orig_nents entries.
+
+Signed-off-by: Marek Szyprowski <m.szyprowski@samsung.com>
+Reviewed-by: Christoph Hellwig <hch@lst.de>
+Reviewed-by: Robin Murphy <robin.murphy@arm.com> 
+---
+For more information, see '[PATCH v5 00/38] DRM: fix struct sg_table nents
+vs. orig_nents misuse' thread:
+https://lore.kernel.org/linux-iommu/20200513132114.6046-1-m.szyprowski@samsung.com/T/
+---
+ include/linux/dma-mapping.h | 78 +++++++++++++++++++++++++++++++++++++++++++++
+ 1 file changed, 78 insertions(+)
+
+diff --git a/include/linux/dma-mapping.h b/include/linux/dma-mapping.h
+index b43116a..b50fe36 100644
+--- a/include/linux/dma-mapping.h
++++ b/include/linux/dma-mapping.h
+@@ -609,6 +609,84 @@ static inline void dma_sync_single_range_for_device(struct device *dev,
+ 	return dma_sync_single_for_device(dev, addr + offset, size, dir);
+ }
+ 
++/**
++ * dma_map_sgtable - Map the given buffer for DMA
++ * @dev:	The device for which to perform the DMA operation
++ * @sgt:	The sg_table object describing the buffer
++ * @dir:	DMA direction
++ * @attrs:	Optional DMA attributes for the map operation
++ *
++ * Maps a buffer described by a scatterlist stored in the given sg_table
++ * object for the @dir DMA operation by the @dev device. After success
++ * the ownership for the buffer is transferred to the DMA domain. One has
++ * to call dma_sync_sgtable_for_cpu() or dma_unmap_sgtable() to move the
++ * ownership of the buffer back to the CPU domain before touching the
++ * buffer by the CPU.
++ * Returns 0 on success or -EINVAL on error during mapping the buffer.
++ */
++static inline int dma_map_sgtable(struct device *dev, struct sg_table *sgt,
++		enum dma_data_direction dir, unsigned long attrs)
++{
++	int n = dma_map_sg_attrs(dev, sgt->sgl, sgt->orig_nents, dir, attrs);
++
++	if (n <= 0)
++		return -EINVAL;
++	sgt->nents = n;
++	return 0;
++}
++
++/**
++ * dma_unmap_sgtable - Unmap the given buffer for DMA
++ * @dev:	The device for which to perform the DMA operation
++ * @sgt:	The sg_table object describing the buffer
++ * @dir:	DMA direction
++ * @attrs:	Optional DMA attributes for the unmap operation
++ *
++ * Unmaps a buffer described by a scatterlist stored in the given sg_table
++ * object for the @dir DMA operation by the @dev device. After this function
++ * the ownership of the buffer is transferred back to the CPU domain.
++ */
++static inline void dma_unmap_sgtable(struct device *dev, struct sg_table *sgt,
++		enum dma_data_direction dir, unsigned long attrs)
++{
++	dma_unmap_sg_attrs(dev, sgt->sgl, sgt->orig_nents, dir, attrs);
++}
++
++/**
++ * dma_sync_sgtable_for_cpu - Synchronize the given buffer for CPU access
++ * @dev:	The device for which to perform the DMA operation
++ * @sgt:	The sg_table object describing the buffer
++ * @dir:	DMA direction
++ *
++ * Performs the needed cache synchronization and moves the ownership of the
++ * buffer back to the CPU domain, so it is safe to perform any access to it
++ * by the CPU. Before doing any further DMA operations, one has to transfer
++ * the ownership of the buffer back to the DMA domain by calling the
++ * dma_sync_sgtable_for_device().
++ */
++static inline void dma_sync_sgtable_for_cpu(struct device *dev,
++		struct sg_table *sgt, enum dma_data_direction dir)
++{
++	dma_sync_sg_for_cpu(dev, sgt->sgl, sgt->orig_nents, dir);
++}
++
++/**
++ * dma_sync_sgtable_for_device - Synchronize the given buffer for DMA
++ * @dev:	The device for which to perform the DMA operation
++ * @sgt:	The sg_table object describing the buffer
++ * @dir:	DMA direction
++ *
++ * Performs the needed cache synchronization and moves the ownership of the
++ * buffer back to the DMA domain, so it is safe to perform the DMA operation.
++ * Once finished, one has to call dma_sync_sgtable_for_cpu() or
++ * dma_unmap_sgtable().
++ */
++static inline void dma_sync_sgtable_for_device(struct device *dev,
++		struct sg_table *sgt, enum dma_data_direction dir)
++{
++	dma_sync_sg_for_device(dev, sgt->sgl, sgt->orig_nents, dir);
++}
++
+ #define dma_map_single(d, a, s, r) dma_map_single_attrs(d, a, s, r, 0)
+ #define dma_unmap_single(d, a, s, r) dma_unmap_single_attrs(d, a, s, r, 0)
+ #define dma_map_sg(d, s, n, r) dma_map_sg_attrs(d, s, n, r, 0)
+-- 
+1.9.1
+
+_______________________________________________
+iommu mailing list
+iommu@lists.linux-foundation.org
+https://lists.linuxfoundation.org/mailman/listinfo/iommu
