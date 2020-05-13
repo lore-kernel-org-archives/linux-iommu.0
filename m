@@ -2,96 +2,102 @@ Return-Path: <SRS0=oi3Z=63=lists.linux-foundation.org=iommu-bounces@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-9.5 required=3.0 tests=DKIM_INVALID,DKIM_SIGNED,
-	HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_PATCH,MAILING_LIST_MULTI,SIGNED_OFF_BY,
-	SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED,USER_AGENT_GIT autolearn=ham
-	autolearn_force=no version=3.4.0
+X-Spam-Status: No, score=-6.7 required=3.0 tests=HEADER_FROM_DIFFERENT_DOMAINS,
+	INCLUDES_PATCH,MAILING_LIST_MULTI,SIGNED_OFF_BY,SPF_HELO_NONE,SPF_PASS,
+	URIBL_BLOCKED autolearn=unavailable autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 541B8CA90AF
-	for <iommu@archiver.kernel.org>; Wed, 13 May 2020 11:07:47 +0000 (UTC)
-Received: from hemlock.osuosl.org (smtp2.osuosl.org [140.211.166.133])
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 8532CCA90AF
+	for <iommu@archiver.kernel.org>; Wed, 13 May 2020 12:01:43 +0000 (UTC)
+Received: from whitealder.osuosl.org (smtp1.osuosl.org [140.211.166.138])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by mail.kernel.org (Postfix) with ESMTPS id 1A3EF20740
-	for <iommu@archiver.kernel.org>; Wed, 13 May 2020 11:07:47 +0000 (UTC)
-Authentication-Results: mail.kernel.org;
-	dkim=fail reason="signature verification failed" (2048-bit key) header.d=linaro.org header.i=@linaro.org header.b="DEil9n0g"
-DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 1A3EF20740
-Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=linaro.org
+	by mail.kernel.org (Postfix) with ESMTPS id 59C9D20740
+	for <iommu@archiver.kernel.org>; Wed, 13 May 2020 12:01:43 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 59C9D20740
+Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=intel.com
 Authentication-Results: mail.kernel.org; spf=pass smtp.mailfrom=iommu-bounces@lists.linux-foundation.org
 Received: from localhost (localhost [127.0.0.1])
-	by hemlock.osuosl.org (Postfix) with ESMTP id E726C88994;
-	Wed, 13 May 2020 11:07:46 +0000 (UTC)
+	by whitealder.osuosl.org (Postfix) with ESMTP id 2442687F35;
+	Wed, 13 May 2020 12:01:43 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from hemlock.osuosl.org ([127.0.0.1])
+Received: from whitealder.osuosl.org ([127.0.0.1])
 	by localhost (.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
-	with ESMTP id p0AbQWUMaGxf; Wed, 13 May 2020 11:07:46 +0000 (UTC)
+	with ESMTP id rozKaikutPgS; Wed, 13 May 2020 12:01:42 +0000 (UTC)
 Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [140.211.9.56])
-	by hemlock.osuosl.org (Postfix) with ESMTP id 29BF6887C7;
-	Wed, 13 May 2020 11:07:46 +0000 (UTC)
+	by whitealder.osuosl.org (Postfix) with ESMTP id 56F7B877D0;
+	Wed, 13 May 2020 12:01:42 +0000 (UTC)
 Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
-	by lists.linuxfoundation.org (Postfix) with ESMTP id 083A8C0178;
-	Wed, 13 May 2020 11:07:46 +0000 (UTC)
-Received: from silver.osuosl.org (smtp3.osuosl.org [140.211.166.136])
- by lists.linuxfoundation.org (Postfix) with ESMTP id 18481C016F
- for <iommu@lists.linux-foundation.org>; Wed, 13 May 2020 11:07:45 +0000 (UTC)
+	by lists.linuxfoundation.org (Postfix) with ESMTP id 3C46FC0178;
+	Wed, 13 May 2020 12:01:42 +0000 (UTC)
+Received: from whitealder.osuosl.org (smtp1.osuosl.org [140.211.166.138])
+ by lists.linuxfoundation.org (Postfix) with ESMTP id 67C69C016F
+ for <iommu@lists.linux-foundation.org>; Wed, 13 May 2020 12:01:40 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
- by silver.osuosl.org (Postfix) with ESMTP id 00582204A6
- for <iommu@lists.linux-foundation.org>; Wed, 13 May 2020 11:07:45 +0000 (UTC)
+ by whitealder.osuosl.org (Postfix) with ESMTP id 56A4487EF6
+ for <iommu@lists.linux-foundation.org>; Wed, 13 May 2020 12:01:40 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from silver.osuosl.org ([127.0.0.1])
+Received: from whitealder.osuosl.org ([127.0.0.1])
  by localhost (.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
- with ESMTP id Hr9dFfy7U-AW for <iommu@lists.linux-foundation.org>;
- Wed, 13 May 2020 11:07:43 +0000 (UTC)
+ with ESMTP id CSvIF7A9H7Zt for <iommu@lists.linux-foundation.org>;
+ Wed, 13 May 2020 12:01:39 +0000 (UTC)
 X-Greylist: domain auto-whitelisted by SQLgrey-1.7.6
-Received: from mail-wr1-f67.google.com (mail-wr1-f67.google.com
- [209.85.221.67])
- by silver.osuosl.org (Postfix) with ESMTPS id 19D4E2048E
- for <iommu@lists.linux-foundation.org>; Wed, 13 May 2020 11:07:43 +0000 (UTC)
-Received: by mail-wr1-f67.google.com with SMTP id l17so6800268wrr.4
- for <iommu@lists.linux-foundation.org>; Wed, 13 May 2020 04:07:43 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linaro.org; s=google;
- h=from:to:cc:subject:date:message-id:mime-version
- :content-transfer-encoding;
- bh=4kyjTfTHMVUTV+THehJYOS1UTUTs5x0t0xpjX4MdtCY=;
- b=DEil9n0gXHGymALBWdas81BFDTL11HXaPejLvIufToKD+XdRHMpgiczE8uCg/IJKMk
- o+Ho9++LbXsr35XpyqX4c4IJQFeMtyCfa25Z+NkqaczakuaLa1cgb/SuqfBlyqu6uIZt
- LuAyrWw70W+TIUDw0tnkwSVEv8E3TEmZkifC9tCH35x+lsGOxkCmABqxj5LnZh0orEl9
- nIEnrm4QxZoTh+mfb2TigA02rRa6ecGNneaJNG7znMXL4WYPOgGsciE2XnqqPHj7XGU2
- UeDj3pweIS0VsnlznSbC/qYmY0zQMH4uf5UCs32Q0qeQG+QL0cM0f9w0i2oc2ys7GVnv
- XfRA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
- d=1e100.net; s=20161025;
- h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
- :content-transfer-encoding;
- bh=4kyjTfTHMVUTV+THehJYOS1UTUTs5x0t0xpjX4MdtCY=;
- b=BHTUcCKqL0FW27tHfHYEJO6giN9yDfSwS49SMI4LmpDYEqphVxKBQB0gNY9Xt0rGgT
- ZFlDv3Hn4xklNL3p/X9mjV7rgsgJ1yyBug11kuHodVRQYfu+EuYndjC4T5EueDZ9X0Cc
- ED61UitH4a1XEb7Y7w2ow2edlJacMDQXjEYLzTRpLm03paNUBCl77pX2dSdpiq5JYVCm
- W/uEUUGunuGSp6x8IqmqM02YvIRLtNJVHaYgHYoB8OkfcPYsItje8ZgnQXGaw3ReRBX/
- 3KcdbcEnHIjO7rGKIXda2uGizWPzoxK+hkTbK4VnWq7jaLyWLisELr1cDKvpzD+QD5jR
- YnOg==
-X-Gm-Message-State: AGi0PuYh3cbv2Ln6OlVHqxvAqM1sLCBJDY7OhPq4HLrv11sDpEJJdas3
- xFEimNGfbBNrDHJUkhNDgkd1v9CpMfA=
-X-Google-Smtp-Source: APiQypKgqLRpEdbQmb0PocsKhfcvRtSmsH2tuQKK5KGLEZF0EGrIVAw4HabuB3b2XrZh4uTNbgbGow==
-X-Received: by 2002:adf:fa44:: with SMTP id y4mr17940958wrr.135.1589368061182; 
- Wed, 13 May 2020 04:07:41 -0700 (PDT)
-Received: from localhost.localdomain
- ([2001:171b:226e:c200:c43b:ef78:d083:b355])
- by smtp.gmail.com with ESMTPSA id q144sm3023804wme.0.2020.05.13.04.07.40
- (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
- Wed, 13 May 2020 04:07:40 -0700 (PDT)
-From: Jean-Philippe Brucker <jean-philippe@linaro.org>
-To: iommu@lists.linux-foundation.org,
-	linux-arm-kernel@lists.infradead.org
-Subject: [PATCH v2] iommu/arm-smmu-v3: Don't reserve implementation defined
- register space
-Date: Wed, 13 May 2020 13:02:57 +0200
-Message-Id: <20200513110255.597203-1-jean-philippe@linaro.org>
-X-Mailer: git-send-email 2.26.2
+Received: from mga04.intel.com (mga04.intel.com [192.55.52.120])
+ by whitealder.osuosl.org (Postfix) with ESMTPS id E16A9877D0
+ for <iommu@lists.linux-foundation.org>; Wed, 13 May 2020 12:01:38 +0000 (UTC)
+IronPort-SDR: obVrauJh+AGMSPyViI9Z+DzIPh3A7e+ozH0waMy90eMHB52p+6ZGQkbNw4WDee6hA6iT1rpC11
+ hcgAWMXL6Ghw==
+X-Amp-Result: SKIPPED(no attachment in message)
+X-Amp-File-Uploaded: False
+Received: from fmsmga004.fm.intel.com ([10.253.24.48])
+ by fmsmga104.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384;
+ 13 May 2020 05:01:38 -0700
+IronPort-SDR: SyXMo6HzRErgjS7rZ6n20RSqoIxXtM4P355JyqBbBnl2WxpDV8mhuNwxOaPESGjZivOTW0tBGN
+ OvBMF+lTzKSg==
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="5.73,387,1583222400"; d="scan'208";a="287005321"
+Received: from fmsmsx108.amr.corp.intel.com ([10.18.124.206])
+ by fmsmga004.fm.intel.com with ESMTP; 13 May 2020 05:01:38 -0700
+Received: from fmsmsx119.amr.corp.intel.com (10.18.124.207) by
+ FMSMSX108.amr.corp.intel.com (10.18.124.206) with Microsoft SMTP Server (TLS)
+ id 14.3.439.0; Wed, 13 May 2020 05:01:38 -0700
+Received: from fmsmsx108.amr.corp.intel.com ([169.254.9.60]) by
+ FMSMSX119.amr.corp.intel.com ([169.254.14.63]) with mapi id 14.03.0439.000;
+ Wed, 13 May 2020 05:01:38 -0700
+From: "Ruhl, Michael J" <michael.j.ruhl@intel.com>
+To: Marek Szyprowski <m.szyprowski@samsung.com>,
+ "dri-devel@lists.freedesktop.org" <dri-devel@lists.freedesktop.org>,
+ "iommu@lists.linux-foundation.org" <iommu@lists.linux-foundation.org>,
+ "linaro-mm-sig@lists.linaro.org" <linaro-mm-sig@lists.linaro.org>,
+ "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>
+Subject: RE: [PATCH v4 38/38] videobuf2: use sgtable-based scatterlist wrappers
+Thread-Topic: [PATCH v4 38/38] videobuf2: use sgtable-based scatterlist
+ wrappers
+Thread-Index: AQHWKDwP0fqa3BxGckm0EsGy+4sAaqikud8QgACkUACAAIvJEA==
+Date: Wed, 13 May 2020 12:01:37 +0000
+Message-ID: <14063C7AD467DE4B82DEDB5C278E8663010E211B19@FMSMSX108.amr.corp.intel.com>
+References: <20200512085710.14688-1-m.szyprowski@samsung.com>
+ <20200512090058.14910-1-m.szyprowski@samsung.com>
+ <CGME20200512090130eucas1p2eb86c5d34be56bbc81032bc0b6927d1e@eucas1p2.samsung.com>
+ <20200512090058.14910-38-m.szyprowski@samsung.com>
+ <14063C7AD467DE4B82DEDB5C278E8663010E210FAC@FMSMSX108.amr.corp.intel.com>
+ <f6242137-82a5-0e33-f1a2-9e73dc679aa9@samsung.com>
+In-Reply-To: <f6242137-82a5-0e33-f1a2-9e73dc679aa9@samsung.com>
+Accept-Language: en-US
+Content-Language: en-US
+X-MS-Has-Attach: 
+X-MS-TNEF-Correlator: 
+dlp-product: dlpe-windows
+dlp-version: 11.2.0.6
+dlp-reaction: no-action
+x-originating-ip: [10.1.200.107]
 MIME-Version: 1.0
-Cc: Jean-Philippe Brucker <jean-philippe@linaro.org>, will@kernel.org,
- tuanphan@amperemail.onmicrosoft.com, robin.murphy@arm.com
+Cc: Pawel Osciak <pawel@osciak.com>,
+ Bartlomiej Zolnierkiewicz <b.zolnierkie@samsung.com>,
+ David Airlie <airlied@linux.ie>, Hans Verkuil <hverkuil-cisco@xs4all.nl>,
+ Mauro Carvalho Chehab <mchehab@kernel.org>,
+ Robin Murphy <robin.murphy@arm.com>, Christoph Hellwig <hch@lst.de>,
+ "linux-arm-kernel@lists.infradead.org" <linux-arm-kernel@lists.infradead.org>,
+ "linux-media@vger.kernel.org" <linux-media@vger.kernel.org>
 X-BeenThere: iommu@lists.linux-foundation.org
 X-Mailman-Version: 2.1.15
 Precedence: list
@@ -109,104 +115,123 @@ Content-Transfer-Encoding: 7bit
 Errors-To: iommu-bounces@lists.linux-foundation.org
 Sender: "iommu" <iommu-bounces@lists.linux-foundation.org>
 
-Some SMMUv3 implementation embed the Perf Monitor Group Registers (PMCG)
-inside the first 64kB region of the SMMU. Since PMCG are managed by a
-separate driver, this layout causes resource reservation conflicts
-during boot.
+>-----Original Message-----
+>From: Marek Szyprowski <m.szyprowski@samsung.com>
+>Sent: Tuesday, May 12, 2020 4:34 PM
+>To: Ruhl, Michael J <michael.j.ruhl@intel.com>; dri-
+>devel@lists.freedesktop.org; iommu@lists.linux-foundation.org; linaro-mm-
+>sig@lists.linaro.org; linux-kernel@vger.kernel.org
+>Cc: Pawel Osciak <pawel@osciak.com>; Bartlomiej Zolnierkiewicz
+><b.zolnierkie@samsung.com>; David Airlie <airlied@linux.ie>; linux-
+>media@vger.kernel.org; Hans Verkuil <hverkuil-cisco@xs4all.nl>; Mauro
+>Carvalho Chehab <mchehab@kernel.org>; Robin Murphy
+><robin.murphy@arm.com>; Christoph Hellwig <hch@lst.de>; linux-arm-
+>kernel@lists.infradead.org
+>Subject: Re: [PATCH v4 38/38] videobuf2: use sgtable-based scatterlist
+>wrappers
+>
+>Hi Michael,
+>
+>On 12.05.2020 19:52, Ruhl, Michael J wrote:
+>>> -----Original Message-----
+>>> From: dri-devel <dri-devel-bounces@lists.freedesktop.org> On Behalf Of
+>>> Marek Szyprowski
+>>> Sent: Tuesday, May 12, 2020 5:01 AM
+>>> To: dri-devel@lists.freedesktop.org; iommu@lists.linux-foundation.org;
+>>> linaro-mm-sig@lists.linaro.org; linux-kernel@vger.kernel.org
+>>> Cc: Pawel Osciak <pawel@osciak.com>; Bartlomiej Zolnierkiewicz
+>>> <b.zolnierkie@samsung.com>; David Airlie <airlied@linux.ie>; linux-
+>>> media@vger.kernel.org; Hans Verkuil <hverkuil-cisco@xs4all.nl>; Mauro
+>>> Carvalho Chehab <mchehab@kernel.org>; Robin Murphy
+>>> <robin.murphy@arm.com>; Christoph Hellwig <hch@lst.de>; linux-arm-
+>>> kernel@lists.infradead.org; Marek Szyprowski
+>>> <m.szyprowski@samsung.com>
+>>> Subject: [PATCH v4 38/38] videobuf2: use sgtable-based scatterlist
+>wrappers
+>>>
+>>> Use recently introduced common wrappers operating directly on the struct
+>>> sg_table objects and scatterlist page iterators to make the code a bit
+>>> more compact, robust, easier to follow and copy/paste safe.
+>>>
+>>> No functional change, because the code already properly did all the
+>>> scaterlist related calls.
+>>>
+>>> Signed-off-by: Marek Szyprowski <m.szyprowski@samsung.com>
+>>> ---
+>>> For more information, see '[PATCH v4 00/38] DRM: fix struct sg_table nents
+>>> vs. orig_nents misuse' thread:
+>>> https://lore.kernel.org/dri-devel/20200512085710.14688-1-
+>>> m.szyprowski@samsung.com/T/
+>>> ---
+>>> .../media/common/videobuf2/videobuf2-dma-contig.c  | 41 ++++++++++-
+>---
+>>> --------
+>>> drivers/media/common/videobuf2/videobuf2-dma-sg.c  | 32 +++++++-----
+>---
+>>> --
+>>> drivers/media/common/videobuf2/videobuf2-vmalloc.c | 12 +++----
+>>> 3 files changed, 34 insertions(+), 51 deletions(-)
+>>>
+>>> diff --git a/drivers/media/common/videobuf2/videobuf2-dma-contig.c
+>>> b/drivers/media/common/videobuf2/videobuf2-dma-contig.c
+>>> index d3a3ee5..bf31a9d 100644
+>>> --- a/drivers/media/common/videobuf2/videobuf2-dma-contig.c
+>>> +++ b/drivers/media/common/videobuf2/videobuf2-dma-contig.c
+>>> @@ -48,16 +48,15 @@ struct vb2_dc_buf {
+>>>
+>>> static unsigned long vb2_dc_get_contiguous_size(struct sg_table *sgt)
+>>> {
+>>> -	struct scatterlist *s;
+>>> 	dma_addr_t expected = sg_dma_address(sgt->sgl);
+>>> -	unsigned int i;
+>>> +	struct sg_dma_page_iter dma_iter;
+>>> 	unsigned long size = 0;
+>>>
+>>> -	for_each_sg(sgt->sgl, s, sgt->nents, i) {
+>>> -		if (sg_dma_address(s) != expected)
+>>> +	for_each_sgtable_dma_page(sgt, &dma_iter, 0) {
+>>> +		if (sg_page_iter_dma_address(&dma_iter) != expected)
+>>> 			break;
+>>> -		expected = sg_dma_address(s) + sg_dma_len(s);
+>>> -		size += sg_dma_len(s);
+>>> +		expected += PAGE_SIZE;
+>>> +		size += PAGE_SIZE;
+>> This code in drm_prime_t_contiguous_size and here.  I seem to remember
+>seeing
+>> the same pattern in other drivers.
+>>
+>> Would it worthwhile to make this a helper as well?
+>I think I've identified such patterns in all DRM drivers and replaced
+>with a common helper. So far I have no idea where to put such helper to
+>make it available for media/videobuf2, so those a few lines are indeed
+>duplicated here.
 
-To avoid this conflict, don't reserve the MMIO regions that are
-implementation defined. Although devm_ioremap_resource() still works on
-full pages under the hood, this way we benefit from resource conflict
-checks.
+I was thinking of drivers outside of DRM/media.  Specifically RDMA.
 
-Fixes: 7d839b4b9e00 ("perf/smmuv3: Add arm64 smmuv3 pmu driver")
-Signed-off-by: Jean-Philippe Brucker <jean-philippe@linaro.org>
----
-v1->v2: simplify following Robin's comments
-https://lore.kernel.org/linux-iommu/20200506174629.1504153-1-jean-philippe@linaro.org/
----
- drivers/iommu/arm-smmu-v3.c | 35 +++++++++++++++++++++++++++++++----
- 1 file changed, 31 insertions(+), 4 deletions(-)
+However, looking at that code, I see that my memory was a little off.
+It is working with continuous pages,  but not finding the size.
 
-diff --git a/drivers/iommu/arm-smmu-v3.c b/drivers/iommu/arm-smmu-v3.c
-index 82508730feb7a1..af21d24a09e888 100644
---- a/drivers/iommu/arm-smmu-v3.c
-+++ b/drivers/iommu/arm-smmu-v3.c
-@@ -171,6 +171,8 @@
- #define ARM_SMMU_PRIQ_IRQ_CFG1		0xd8
- #define ARM_SMMU_PRIQ_IRQ_CFG2		0xdc
- 
-+#define ARM_SMMU_REG_SZ			0xe00
-+
- /* Common MSI config fields */
- #define MSI_CFG0_ADDR_MASK		GENMASK_ULL(51, 2)
- #define MSI_CFG2_SH			GENMASK(5, 4)
-@@ -628,6 +630,7 @@ struct arm_smmu_strtab_cfg {
- struct arm_smmu_device {
- 	struct device			*dev;
- 	void __iomem			*base;
-+	void __iomem			*page1;
- 
- #define ARM_SMMU_FEAT_2_LVL_STRTAB	(1 << 0)
- #define ARM_SMMU_FEAT_2_LVL_CDTAB	(1 << 1)
-@@ -733,9 +736,8 @@ static struct arm_smmu_option_prop arm_smmu_options[] = {
- static inline void __iomem *arm_smmu_page1_fixup(unsigned long offset,
- 						 struct arm_smmu_device *smmu)
- {
--	if ((offset > SZ_64K) &&
--	    (smmu->options & ARM_SMMU_OPT_PAGE0_REGS_ONLY))
--		offset -= SZ_64K;
-+	if (offset > SZ_64K)
-+		return smmu->page1 + offset - SZ_64K;
- 
- 	return smmu->base + offset;
- }
-@@ -4021,6 +4023,18 @@ err_reset_pci_ops: __maybe_unused;
- 	return err;
- }
- 
-+static void __iomem *arm_smmu_ioremap(struct device *dev, resource_size_t start,
-+				      resource_size_t size)
-+{
-+	struct resource res = {
-+		.flags = IORESOURCE_MEM,
-+		.start = start,
-+		.end = start + size - 1,
-+	};
-+
-+	return devm_ioremap_resource(dev, &res);
-+}
-+
- static int arm_smmu_device_probe(struct platform_device *pdev)
- {
- 	int irq, ret;
-@@ -4056,10 +4070,23 @@ static int arm_smmu_device_probe(struct platform_device *pdev)
- 	}
- 	ioaddr = res->start;
- 
--	smmu->base = devm_ioremap_resource(dev, res);
-+	/*
-+	 * Don't map the IMPLEMENTATION DEFINED regions, since they may contain
-+	 * the PMCG registers which are reserved by the PMU driver.
-+	 */
-+	smmu->base = arm_smmu_ioremap(dev, ioaddr, ARM_SMMU_REG_SZ);
- 	if (IS_ERR(smmu->base))
- 		return PTR_ERR(smmu->base);
- 
-+	if (arm_smmu_resource_size(smmu) > SZ_64K) {
-+		smmu->page1 = arm_smmu_ioremap(dev, ioaddr + SZ_64K,
-+					       ARM_SMMU_REG_SZ);
-+		if (IS_ERR(smmu->page1))
-+			return PTR_ERR(smmu->page1);
-+	} else {
-+		smmu->page1 = smmu->base;
-+	}
-+
- 	/* Interrupt lines */
- 
- 	irq = platform_get_irq_byname_optional(pdev, "combined");
--- 
-2.26.2
+>> Also, isn't the sg_dma_len() the actual length of the chunk we are looking
+>at?
+>>
+>> If its I not PAGE_SIZE (ie. dma chunk is 4 * PAGE_SIZE?), does your
+>loop/calculation still work?
+>
+>scaterlist page iterators (for_each_sg_page/for_each_sg_dma_page and
+>their sgtable variants) always operates on PAGE_SIZE units. They
+>correctly handle larger sg_dma_len().
+
+Ahh, ok, I see. 
+
+Thank you!
+
+Mike
+
+>
+>Best regards
+>--
+>Marek Szyprowski, PhD
+>Samsung R&D Institute Poland
 
 _______________________________________________
 iommu mailing list
