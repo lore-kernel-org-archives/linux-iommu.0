@@ -1,150 +1,91 @@
-Return-Path: <SRS0=CZco=62=lists.linux-foundation.org=iommu-bounces@kernel.org>
+Return-Path: <SRS0=oi3Z=63=lists.linux-foundation.org=iommu-bounces@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-8.0 required=3.0 tests=DKIM_INVALID,DKIM_SIGNED,
-	HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_PATCH,MAILING_LIST_MULTI,SIGNED_OFF_BY,
-	SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED,USER_AGENT_SANE_1 autolearn=unavailable
-	autolearn_force=no version=3.4.0
+X-Spam-Status: No, score=-5.5 required=3.0 tests=MAILING_LIST_MULTI,
+	SIGNED_OFF_BY,SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED,USER_AGENT_SANE_1
+	autolearn=ham autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 3AFD7C2D0F7
-	for <iommu@archiver.kernel.org>; Tue, 12 May 2020 20:34:03 +0000 (UTC)
-Received: from fraxinus.osuosl.org (smtp4.osuosl.org [140.211.166.137])
+	by smtp.lore.kernel.org (Postfix) with ESMTP id AB80CC2D0F6
+	for <iommu@archiver.kernel.org>; Wed, 13 May 2020 02:22:43 +0000 (UTC)
+Received: from hemlock.osuosl.org (smtp2.osuosl.org [140.211.166.133])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by mail.kernel.org (Postfix) with ESMTPS id BAED620747
-	for <iommu@archiver.kernel.org>; Tue, 12 May 2020 20:34:02 +0000 (UTC)
-Authentication-Results: mail.kernel.org;
-	dkim=fail reason="signature verification failed" (1024-bit key) header.d=samsung.com header.i=@samsung.com header.b="vFcP7z7i"
-DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org BAED620747
-Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=samsung.com
+	by mail.kernel.org (Postfix) with ESMTPS id 165F920714
+	for <iommu@archiver.kernel.org>; Wed, 13 May 2020 02:22:42 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 165F920714
+Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=kernel.org
 Authentication-Results: mail.kernel.org; spf=pass smtp.mailfrom=iommu-bounces@lists.linux-foundation.org
 Received: from localhost (localhost [127.0.0.1])
-	by fraxinus.osuosl.org (Postfix) with ESMTP id 6BBFD87165;
-	Tue, 12 May 2020 20:34:02 +0000 (UTC)
+	by hemlock.osuosl.org (Postfix) with ESMTP id A8AA185EB4;
+	Wed, 13 May 2020 02:22:42 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from fraxinus.osuosl.org ([127.0.0.1])
+Received: from hemlock.osuosl.org ([127.0.0.1])
 	by localhost (.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
-	with ESMTP id otD3tpFPIVne; Tue, 12 May 2020 20:34:01 +0000 (UTC)
+	with ESMTP id aYBKiHyrBoOB; Wed, 13 May 2020 02:22:42 +0000 (UTC)
 Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [140.211.9.56])
-	by fraxinus.osuosl.org (Postfix) with ESMTP id 2E2C1870EB;
-	Tue, 12 May 2020 20:34:01 +0000 (UTC)
+	by hemlock.osuosl.org (Postfix) with ESMTP id 307E485E7C;
+	Wed, 13 May 2020 02:22:42 +0000 (UTC)
 Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
-	by lists.linuxfoundation.org (Postfix) with ESMTP id 11998C0178;
-	Tue, 12 May 2020 20:34:01 +0000 (UTC)
+	by lists.linuxfoundation.org (Postfix) with ESMTP id 0CA35C0178;
+	Wed, 13 May 2020 02:22:42 +0000 (UTC)
 Received: from hemlock.osuosl.org (smtp2.osuosl.org [140.211.166.133])
- by lists.linuxfoundation.org (Postfix) with ESMTP id D3153C016F
- for <iommu@lists.linux-foundation.org>; Tue, 12 May 2020 20:33:59 +0000 (UTC)
+ by lists.linuxfoundation.org (Postfix) with ESMTP id D629AC016F
+ for <iommu@lists.linux-foundation.org>; Wed, 13 May 2020 02:22:40 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
- by hemlock.osuosl.org (Postfix) with ESMTP id B91B0883B6
- for <iommu@lists.linux-foundation.org>; Tue, 12 May 2020 20:33:59 +0000 (UTC)
+ by hemlock.osuosl.org (Postfix) with ESMTP id D238A85E7C
+ for <iommu@lists.linux-foundation.org>; Wed, 13 May 2020 02:22:40 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
 Received: from hemlock.osuosl.org ([127.0.0.1])
  by localhost (.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
- with ESMTP id eid+jF7vKH0M for <iommu@lists.linux-foundation.org>;
- Tue, 12 May 2020 20:33:57 +0000 (UTC)
-X-Greylist: from auto-whitelisted by SQLgrey-1.7.6
-Received: from mailout1.w1.samsung.com (mailout1.w1.samsung.com
- [210.118.77.11])
- by hemlock.osuosl.org (Postfix) with ESMTPS id B9F91883B0
- for <iommu@lists.linux-foundation.org>; Tue, 12 May 2020 20:33:57 +0000 (UTC)
-Received: from eucas1p1.samsung.com (unknown [182.198.249.206])
- by mailout1.w1.samsung.com (KnoxPortal) with ESMTP id
- 20200512203355euoutp012ae9df2d123553b1a286ceb6d0eec56a~OYiZVpvYa0578505785euoutp01U
- for <iommu@lists.linux-foundation.org>; Tue, 12 May 2020 20:33:55 +0000 (GMT)
-DKIM-Filter: OpenDKIM Filter v2.11.0 mailout1.w1.samsung.com
- 20200512203355euoutp012ae9df2d123553b1a286ceb6d0eec56a~OYiZVpvYa0578505785euoutp01U
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=samsung.com;
- s=mail20170921; t=1589315635;
- bh=wnAc6t9J+MLeu4DXX/UMTG7FIxfuzBk4sujw+pbXYuI=;
- h=Subject:To:Cc:From:Date:In-Reply-To:References:From;
- b=vFcP7z7iNFqcPY/EoZ5ceEWyjH1xwGyPTsFs44xdrk9/usQK/cCqb6wNTikhe/cz3
- VRuU1QMd4IzJN8gNMfXAO/FSr7WAEwp3UEQA958LHOtJuBsPdJUyXn7cor0p/GkEeY
- qrecZ9OJZgAZ759EqpgSB1rwj676W+1IKU9G/b1E=
-Received: from eusmges2new.samsung.com (unknown [203.254.199.244]) by
- eucas1p1.samsung.com (KnoxPortal) with ESMTP id
- 20200512203354eucas1p1ccad241d082e172806147e8051ca5cd5~OYiY_s_Nd1765817658eucas1p1P;
- Tue, 12 May 2020 20:33:54 +0000 (GMT)
-Received: from eucas1p1.samsung.com ( [182.198.249.206]) by
- eusmges2new.samsung.com (EUCPMTA) with SMTP id 59.BC.60679.2380BBE5; Tue, 12
- May 2020 21:33:54 +0100 (BST)
-Received: from eusmtrp2.samsung.com (unknown [182.198.249.139]) by
- eucas1p1.samsung.com (KnoxPortal) with ESMTPA id
- 20200512203354eucas1p1ec0713551239b5437374232a3558db8e~OYiYXwwvs1766317663eucas1p1P;
- Tue, 12 May 2020 20:33:54 +0000 (GMT)
-Received: from eusmgms2.samsung.com (unknown [182.198.249.180]) by
- eusmtrp2.samsung.com (KnoxPortal) with ESMTP id
- 20200512203354eusmtrp29c5130625112f643794304998f69d654~OYiYXBRxv1599815998eusmtrp2e;
- Tue, 12 May 2020 20:33:54 +0000 (GMT)
-X-AuditID: cbfec7f4-0cbff7000001ed07-4a-5ebb08320b1c
-Received: from eusmtip2.samsung.com ( [203.254.199.222]) by
- eusmgms2.samsung.com (EUCPMTA) with SMTP id C1.CA.07950.2380BBE5; Tue, 12
- May 2020 21:33:54 +0100 (BST)
-Received: from [106.210.88.143] (unknown [106.210.88.143]) by
- eusmtip2.samsung.com (KnoxPortal) with ESMTPA id
- 20200512203353eusmtip24e27fc61e27b356e67372df3a9c99d61~OYiXny--L2981929819eusmtip2U;
- Tue, 12 May 2020 20:33:53 +0000 (GMT)
-Subject: Re: [PATCH v4 38/38] videobuf2: use sgtable-based scatterlist wrappers
-To: "Ruhl, Michael J" <michael.j.ruhl@intel.com>,
- "dri-devel@lists.freedesktop.org" <dri-devel@lists.freedesktop.org>,
- "iommu@lists.linux-foundation.org" <iommu@lists.linux-foundation.org>,
- "linaro-mm-sig@lists.linaro.org" <linaro-mm-sig@lists.linaro.org>,
- "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>
-From: Marek Szyprowski <m.szyprowski@samsung.com>
-Message-ID: <f6242137-82a5-0e33-f1a2-9e73dc679aa9@samsung.com>
-Date: Tue, 12 May 2020 22:33:54 +0200
-User-Agent: Mozilla/5.0 (Windows NT 10.0; WOW64; rv:68.0) Gecko/20100101
- Thunderbird/68.8.0
+ with ESMTP id E+PXO4i9+5P7 for <iommu@lists.linux-foundation.org>;
+ Wed, 13 May 2020 02:22:40 +0000 (UTC)
+X-Greylist: domain auto-whitelisted by SQLgrey-1.7.6
+Received: from mail-oi1-f195.google.com (mail-oi1-f195.google.com
+ [209.85.167.195])
+ by hemlock.osuosl.org (Postfix) with ESMTPS id 1B99785EB4
+ for <iommu@lists.linux-foundation.org>; Wed, 13 May 2020 02:22:40 +0000 (UTC)
+Received: by mail-oi1-f195.google.com with SMTP id p127so649044oia.13
+ for <iommu@lists.linux-foundation.org>; Tue, 12 May 2020 19:22:40 -0700 (PDT)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+ d=1e100.net; s=20161025;
+ h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+ :mime-version:content-disposition:in-reply-to:user-agent;
+ bh=AaR/7VLqy6LVKQz0uPuHWvPqsrRu/xq4udfPwcoi4i4=;
+ b=a1jC0EwnzIx+KdxJHoOYtKjtBdhnijIlcIQ2B5QZU/OJTXupS/3QuPYWtWCUL/PTrt
+ 7/pqVZd3X8w8lDocVVWcvvI8aCc6HGbHcFP1ZpQHYUW6GdGreposnOxy9wuhf3RYS0OW
+ +AUbp2yL35H3OiMEvGDfuYsqyrNAFI9sbaWDsS3VTCV1O97Yz5Lxep7PL8VzK3FL6zcG
+ EcVuPSrPfak0Ti8H+H8Nr6eJhiG+/T0QDz8q1LbrdxNo8rnWcywq76i3TFPDrAUfmsXS
+ rlCzx9BnRGdh4uy9RcPs968E9nPz4pfBV+LtweenLO7GcKS7hLFDzNYqUVVY40MJ47oX
+ 9V8g==
+X-Gm-Message-State: AGi0PuYXkclX8wAOg3NRY9CUkHhiuP39kzdLKeyMhiP2rmLuqt6qGTTw
+ vOipfZ5LYFualp/6xxP0Vw==
+X-Google-Smtp-Source: APiQypINVeEjqdUUaUFDCRteAcuJFXQ0VcFRi9yLFbPpHTTIaQYCJC8fJUkJltCCW9Ho2P4Z1GY8Xw==
+X-Received: by 2002:aca:1818:: with SMTP id h24mr26212488oih.71.1589336559137; 
+ Tue, 12 May 2020 19:22:39 -0700 (PDT)
+Received: from rob-hp-laptop (24-155-109-49.dyn.grandenetworks.net.
+ [24.155.109.49])
+ by smtp.gmail.com with ESMTPSA id q3sm1359956oth.2.2020.05.12.19.22.37
+ (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+ Tue, 12 May 2020 19:22:38 -0700 (PDT)
+Received: (nullmailer pid 22790 invoked by uid 1000);
+ Wed, 13 May 2020 02:22:37 -0000
+Date: Tue, 12 May 2020 21:22:37 -0500
+From: Rob Herring <robh@kernel.org>
+To: Maxime Ripard <maxime@cerno.tech>
+Subject: Re: [PATCH v3 2/5] dt-bindings: display: sun8i-mixer: Allow for an
+ iommu property
+Message-ID: <20200513022237.GA22733@bogus>
+References: <cover.70f96f9afd2e04161ebece593ae6cd7e17eca41b.1588673353.git-series.maxime@cerno.tech>
+ <ef88e9d96eafe3f921cfbe087c5f0a25a5dd41ac.1588673353.git-series.maxime@cerno.tech>
 MIME-Version: 1.0
-In-Reply-To: <14063C7AD467DE4B82DEDB5C278E8663010E210FAC@FMSMSX108.amr.corp.intel.com>
-Content-Language: en-US
-X-Brightmail-Tracker: H4sIAAAAAAAAA01SfyyUcRzu+773vveSs9fRfCax3cqWLUVt3k2MVdvbVqv80aaNOnmHdYfu
- TaoxJpOOykjpRpRWuejH3XGclu6K82NJkemHJP4hxjiWH5HzUv57nufzfPY8n+1D4dJpwoOK
- TzjHqRLkChnpKKptnu3YEUA1RO1qMQUw1zpaMeZF8TOC6Z4eJ5nKJ00Y8+FOn4gpbwxibN0D
- GKMb7CGYLlMJyeQ9ryGYh7oFjOk0+jI3x2bFjHliiAh1ZqvuViG24uUwxuq0V0nWOPODYPtz
- rRirf5DOfl0cxNnC3keIbficQbKDc8Mke92gReyUzottm54SH5WccNwbwyniz3OqnSGnHONs
- 83lYUrbnheq+ESwD9burkQMF9B54YnlLqJEjJaUfIzCPvhELxIbgxuRTkUCmEEzO3EZrK9nW
- biQMHiH4dGUeE8g4glaDHre7XOljMJKlwe0DN7oZg/HK+pUUnK7CYWEhR2x3kbQ/qMfUpB1L
- 6BBo1WZidiyit8FMftZK3iY6Etor9EjwuEDrnaHlUhTlQB+HUutWu4zT3mAcK8EF7A5fhspW
- GgF9j4Lq0pbV3vvhVV0lLmBXGLEaxAL2hKX6tYXLCAY6qsUCyUPQlVm8uh0E3zrmSHsyTm+H
- Z6adghwGXbYiZJeBdobeMRehhDMU1N7GBVkCOdlSwe0DGuvTf7Hmzo94PpJp1l2mWXeOZt05
- mv+55UikRe5cMq+M5fiABC7Fj5cr+eSEWL/TiUodWn7G9kWrrQ6ZFqItiKaQzEmyIc0UJSXk
- 5/mLSgsCCpe5SbLi66Okkhj5xUucKvGkKlnB8Ra0mRLJ3CW77w9HSulY+TnuDMclcaq1KUY5
- eGSgjepRW2TBUE9RRFqToiLcwdu7SrNvafBgdPCFI301KRNMRHpgoVvw218DE8bG6iUy8efI
- w67MTB8o2NSGDvncsp5Ujr82O2FlltCfWmNKcUiua07YaPiB1KQ5Zb8uderPluzD/LvK3zFG
- 17NcbmnScAthVrw/Thi8sgK/6zkvmYiPk/v74ipe/hdBiun/iAMAAA==
-X-Brightmail-Tracker: H4sIAAAAAAAAA+NgFmpnleLIzCtJLcpLzFFi42I5/e/4PV0jjt1xBrtmcFv0njvJZLFxxnpW
- iytf37NZrFx9lMni4sy7LBYL9ltbfLnykMli0+NrrBaXd81hs+jZsJXVYtmmP0wWF7ZrWUx5
- +5Pd4uCHJ6wOfB5r5q1h9Fi85yWTx6ZVnWwe2789YPW4332cyWPzknqP2/8eM3tMvrGc0WP3
- zQY2j8e/XrJ59G1ZxejxeZOcx6mvn9kDeKP0bIryS0tSFTLyi0tslaINLYz0DC0t9IxMLPUM
- jc1jrYxMlfTtbFJSczLLUov07RL0Mr787mEqaJOpWHv3FVMD433xLkZODgkBE4m241cYuxi5
- OIQEljJK3NyzmBkiISNxcloDK4QtLPHnWhcbRNFbRomvDZvBioQFAiVetcxiBkmICBxjktjR
- 9owJxGEWWMcs8b3xOTtEC1DmxfufjCAtbAKGEl1vQWZxcvAK2EmcXNXEBGKzCKhKfJvQAlYj
- KhArsfpaKyNEjaDEyZlPWLoYOTg4BcIk5h5XAQkzC5hJzNv8kBnClpfY/nYOlC0ucevJfKYJ
- jEKzkHTPQtIyC0nLLCQtCxhZVjGKpJYW56bnFhvpFSfmFpfmpesl5+duYgQmgm3Hfm7Zwdj1
- LvgQowAHoxIPb0T9rjgh1sSy4srcQ4wSHMxKIrwtmTvjhHhTEiurUovy44tKc1KLDzGaAv02
- kVlKNDkfmKTySuINTQ3NLSwNzY3Njc0slMR5OwQOxggJpCeWpGanphakFsH0MXFwSjUwNm3l
- /NjmYWpvPWe3RtE5l5/PXaMSlHe8Phi5QIVHqIbh8jrPgDxGLr6C913Plnx3yQl9VauyYyHj
- D+bN7+Zt4F0qO1H1z4pGNb22+tTbRpzzV06dp7Zg+96NE668PJztt8Vc6/qyzusMWU97LRbc
- vf1BI87IPinqQOMTUfld7lxpaddntH+bocRSnJFoqMVcVJwIAH0Po9kaAwAA
-X-CMS-MailID: 20200512203354eucas1p1ec0713551239b5437374232a3558db8e
-X-Msg-Generator: CA
-X-RootMTR: 20200512090130eucas1p2eb86c5d34be56bbc81032bc0b6927d1e
-X-EPHeader: CA
-CMS-TYPE: 201P
-X-CMS-RootMailID: 20200512090130eucas1p2eb86c5d34be56bbc81032bc0b6927d1e
-References: <20200512085710.14688-1-m.szyprowski@samsung.com>
- <20200512090058.14910-1-m.szyprowski@samsung.com>
- <CGME20200512090130eucas1p2eb86c5d34be56bbc81032bc0b6927d1e@eucas1p2.samsung.com>
- <20200512090058.14910-38-m.szyprowski@samsung.com>
- <14063C7AD467DE4B82DEDB5C278E8663010E210FAC@FMSMSX108.amr.corp.intel.com>
-Cc: Pawel Osciak <pawel@osciak.com>,
- Bartlomiej Zolnierkiewicz <b.zolnierkie@samsung.com>,
- David Airlie <airlied@linux.ie>, Hans Verkuil <hverkuil-cisco@xs4all.nl>,
- Mauro Carvalho Chehab <mchehab@kernel.org>,
- Robin Murphy <robin.murphy@arm.com>, Christoph Hellwig <hch@lst.de>,
- "linux-arm-kernel@lists.infradead.org" <linux-arm-kernel@lists.infradead.org>,
- "linux-media@vger.kernel.org" <linux-media@vger.kernel.org>
+Content-Disposition: inline
+In-Reply-To: <ef88e9d96eafe3f921cfbe087c5f0a25a5dd41ac.1588673353.git-series.maxime@cerno.tech>
+User-Agent: Mutt/1.10.1 (2018-07-13)
+Cc: Mark Rutland <mark.rutland@arm.com>, devicetree@vger.kernel.org,
+ iommu@lists.linux-foundation.org, Maxime Ripard <mripard@kernel.org>,
+ Chen-Yu Tsai <wens@csie.org>, Rob Herring <robh+dt@kernel.org>,
+ Frank Rowand <frowand.list@gmail.com>, linux-arm-kernel@lists.infradead.org
 X-BeenThere: iommu@lists.linux-foundation.org
 X-Mailman-Version: 2.1.15
 Precedence: list
@@ -162,91 +103,17 @@ Content-Transfer-Encoding: 7bit
 Errors-To: iommu-bounces@lists.linux-foundation.org
 Sender: "iommu" <iommu-bounces@lists.linux-foundation.org>
 
-Hi Michael,
+On Tue,  5 May 2020 12:09:31 +0200, Maxime Ripard wrote:
+> The H6 mixer is attached to an IOMMU, so let's allow that property to be
+> set in the bindings.
+> 
+> Signed-off-by: Maxime Ripard <maxime@cerno.tech>
+> ---
+>  Documentation/devicetree/bindings/display/allwinner,sun8i-a83t-de2-mixer.yaml | 3 +++
+>  1 file changed, 3 insertions(+)
+> 
 
-On 12.05.2020 19:52, Ruhl, Michael J wrote:
->> -----Original Message-----
->> From: dri-devel <dri-devel-bounces@lists.freedesktop.org> On Behalf Of
->> Marek Szyprowski
->> Sent: Tuesday, May 12, 2020 5:01 AM
->> To: dri-devel@lists.freedesktop.org; iommu@lists.linux-foundation.org;
->> linaro-mm-sig@lists.linaro.org; linux-kernel@vger.kernel.org
->> Cc: Pawel Osciak <pawel@osciak.com>; Bartlomiej Zolnierkiewicz
->> <b.zolnierkie@samsung.com>; David Airlie <airlied@linux.ie>; linux-
->> media@vger.kernel.org; Hans Verkuil <hverkuil-cisco@xs4all.nl>; Mauro
->> Carvalho Chehab <mchehab@kernel.org>; Robin Murphy
->> <robin.murphy@arm.com>; Christoph Hellwig <hch@lst.de>; linux-arm-
->> kernel@lists.infradead.org; Marek Szyprowski
->> <m.szyprowski@samsung.com>
->> Subject: [PATCH v4 38/38] videobuf2: use sgtable-based scatterlist wrappers
->>
->> Use recently introduced common wrappers operating directly on the struct
->> sg_table objects and scatterlist page iterators to make the code a bit
->> more compact, robust, easier to follow and copy/paste safe.
->>
->> No functional change, because the code already properly did all the
->> scaterlist related calls.
->>
->> Signed-off-by: Marek Szyprowski <m.szyprowski@samsung.com>
->> ---
->> For more information, see '[PATCH v4 00/38] DRM: fix struct sg_table nents
->> vs. orig_nents misuse' thread:
->> https://lore.kernel.org/dri-devel/20200512085710.14688-1-
->> m.szyprowski@samsung.com/T/
->> ---
->> .../media/common/videobuf2/videobuf2-dma-contig.c  | 41 ++++++++++----
->> --------
->> drivers/media/common/videobuf2/videobuf2-dma-sg.c  | 32 +++++++--------
->> --
->> drivers/media/common/videobuf2/videobuf2-vmalloc.c | 12 +++----
->> 3 files changed, 34 insertions(+), 51 deletions(-)
->>
->> diff --git a/drivers/media/common/videobuf2/videobuf2-dma-contig.c
->> b/drivers/media/common/videobuf2/videobuf2-dma-contig.c
->> index d3a3ee5..bf31a9d 100644
->> --- a/drivers/media/common/videobuf2/videobuf2-dma-contig.c
->> +++ b/drivers/media/common/videobuf2/videobuf2-dma-contig.c
->> @@ -48,16 +48,15 @@ struct vb2_dc_buf {
->>
->> static unsigned long vb2_dc_get_contiguous_size(struct sg_table *sgt)
->> {
->> -	struct scatterlist *s;
->> 	dma_addr_t expected = sg_dma_address(sgt->sgl);
->> -	unsigned int i;
->> +	struct sg_dma_page_iter dma_iter;
->> 	unsigned long size = 0;
->>
->> -	for_each_sg(sgt->sgl, s, sgt->nents, i) {
->> -		if (sg_dma_address(s) != expected)
->> +	for_each_sgtable_dma_page(sgt, &dma_iter, 0) {
->> +		if (sg_page_iter_dma_address(&dma_iter) != expected)
->> 			break;
->> -		expected = sg_dma_address(s) + sg_dma_len(s);
->> -		size += sg_dma_len(s);
->> +		expected += PAGE_SIZE;
->> +		size += PAGE_SIZE;
-> This code in drm_prime_t_contiguous_size and here.  I seem to remember seeing
-> the same pattern in other drivers.
->
-> Would it worthwhile to make this a helper as well?
-I think I've identified such patterns in all DRM drivers and replaced 
-with a common helper. So far I have no idea where to put such helper to 
-make it available for media/videobuf2, so those a few lines are indeed 
-duplicated here.
-> Also, isn't the sg_dma_len() the actual length of the chunk we are looking at?
->
-> If its I not PAGE_SIZE (ie. dma chunk is 4 * PAGE_SIZE?), does your loop/calculation still work?
-
-scaterlist page iterators (for_each_sg_page/for_each_sg_dma_page and 
-their sgtable variants) always operates on PAGE_SIZE units. They 
-correctly handle larger sg_dma_len().
-
-
-Best regards
--- 
-Marek Szyprowski, PhD
-Samsung R&D Institute Poland
-
+Reviewed-by: Rob Herring <robh@kernel.org>
 _______________________________________________
 iommu mailing list
 iommu@lists.linux-foundation.org
