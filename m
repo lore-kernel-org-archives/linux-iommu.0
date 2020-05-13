@@ -2,90 +2,97 @@ Return-Path: <SRS0=oi3Z=63=lists.linux-foundation.org=iommu-bounces@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-0.7 required=3.0 tests=HEADER_FROM_DIFFERENT_DOMAINS,
-	MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED autolearn=no
-	autolearn_force=no version=3.4.0
+X-Spam-Status: No, score=-3.5 required=3.0 tests=DKIM_INVALID,DKIM_SIGNED,
+	HEADER_FROM_DIFFERENT_DOMAINS,MAILING_LIST_MULTI,SIGNED_OFF_BY,SPF_HELO_NONE,
+	SPF_PASS,URIBL_BLOCKED autolearn=no autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id DC2E6C433DF
-	for <iommu@archiver.kernel.org>; Wed, 13 May 2020 15:58:06 +0000 (UTC)
-Received: from hemlock.osuosl.org (smtp2.osuosl.org [140.211.166.133])
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 1B7E0C433DF
+	for <iommu@archiver.kernel.org>; Wed, 13 May 2020 21:51:20 +0000 (UTC)
+Received: from silver.osuosl.org (smtp3.osuosl.org [140.211.166.136])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by mail.kernel.org (Postfix) with ESMTPS id F2E89206A5
-	for <iommu@archiver.kernel.org>; Wed, 13 May 2020 15:58:06 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org F2E89206A5
-Authentication-Results: mail.kernel.org; dmarc=none (p=none dis=none) header.from=huawei.com
+	by mail.kernel.org (Postfix) with ESMTPS id D6B1C20575
+	for <iommu@archiver.kernel.org>; Wed, 13 May 2020 21:51:18 +0000 (UTC)
+Authentication-Results: mail.kernel.org;
+	dkim=fail reason="signature verification failed" (2048-bit key) header.d=anholt-net.20150623.gappssmtp.com header.i=@anholt-net.20150623.gappssmtp.com header.b="O8JCadTs"
+DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org D6B1C20575
+Authentication-Results: mail.kernel.org; dmarc=none (p=none dis=none) header.from=anholt.net
 Authentication-Results: mail.kernel.org; spf=pass smtp.mailfrom=iommu-bounces@lists.linux-foundation.org
 Received: from localhost (localhost [127.0.0.1])
-	by hemlock.osuosl.org (Postfix) with ESMTP id 63FB5893F1;
-	Wed, 13 May 2020 15:58:06 +0000 (UTC)
+	by silver.osuosl.org (Postfix) with ESMTP id 0869625B04;
+	Wed, 13 May 2020 21:51:17 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from hemlock.osuosl.org ([127.0.0.1])
+Received: from silver.osuosl.org ([127.0.0.1])
 	by localhost (.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
-	with ESMTP id 671yXfqVQJoe; Wed, 13 May 2020 15:58:05 +0000 (UTC)
+	with ESMTP id B3K+QM-Atwgm; Wed, 13 May 2020 21:51:16 +0000 (UTC)
 Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [140.211.9.56])
-	by hemlock.osuosl.org (Postfix) with ESMTP id 677AC893C1;
-	Wed, 13 May 2020 15:58:05 +0000 (UTC)
+	by silver.osuosl.org (Postfix) with ESMTP id 6717A21FEF;
+	Wed, 13 May 2020 21:51:16 +0000 (UTC)
 Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
-	by lists.linuxfoundation.org (Postfix) with ESMTP id 46AECC0178;
-	Wed, 13 May 2020 15:58:05 +0000 (UTC)
-Received: from hemlock.osuosl.org (smtp2.osuosl.org [140.211.166.133])
- by lists.linuxfoundation.org (Postfix) with ESMTP id 283CDC016F
- for <iommu@lists.linux-foundation.org>; Wed, 13 May 2020 15:58:04 +0000 (UTC)
+	by lists.linuxfoundation.org (Postfix) with ESMTP id 390BFC0178;
+	Wed, 13 May 2020 21:51:16 +0000 (UTC)
+Received: from whitealder.osuosl.org (smtp1.osuosl.org [140.211.166.138])
+ by lists.linuxfoundation.org (Postfix) with ESMTP id 5F3BEC016F
+ for <iommu@lists.linux-foundation.org>; Wed, 13 May 2020 21:51:15 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
- by hemlock.osuosl.org (Postfix) with ESMTP id E1D368914A
- for <iommu@lists.linux-foundation.org>; Wed, 13 May 2020 15:58:03 +0000 (UTC)
+ by whitealder.osuosl.org (Postfix) with ESMTP id 4AA998862D
+ for <iommu@lists.linux-foundation.org>; Wed, 13 May 2020 21:51:15 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from hemlock.osuosl.org ([127.0.0.1])
+Received: from whitealder.osuosl.org ([127.0.0.1])
  by localhost (.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
- with ESMTP id EM9Wsu2x8miC for <iommu@lists.linux-foundation.org>;
- Wed, 13 May 2020 15:58:02 +0000 (UTC)
-X-Greylist: domain auto-whitelisted by SQLgrey-1.7.6
-Received: from huawei.com (lhrrgout.huawei.com [185.176.76.210])
- by hemlock.osuosl.org (Postfix) with ESMTPS id E49F488F41
- for <iommu@lists.linux-foundation.org>; Wed, 13 May 2020 15:58:01 +0000 (UTC)
-Received: from lhreml710-chm.china.huawei.com (unknown [172.18.7.108])
- by Forcepoint Email with ESMTP id 13164FCC90C3130C7CEA;
- Wed, 13 May 2020 16:57:59 +0100 (IST)
-Received: from lhreml710-chm.china.huawei.com (10.201.108.61) by
- lhreml710-chm.china.huawei.com (10.201.108.61) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.1913.5; Wed, 13 May 2020 16:57:58 +0100
-Received: from lhreml710-chm.china.huawei.com ([169.254.81.184]) by
- lhreml710-chm.china.huawei.com ([169.254.81.184]) with mapi id
- 15.01.1913.007; Wed, 13 May 2020 16:57:58 +0100
-From: Shameerali Kolothum Thodi <shameerali.kolothum.thodi@huawei.com>
-To: Auger Eric <eric.auger@redhat.com>, Zhangfei Gao
- <zhangfei.gao@linaro.org>, "eric.auger.pro@gmail.com"
- <eric.auger.pro@gmail.com>, "iommu@lists.linux-foundation.org"
- <iommu@lists.linux-foundation.org>, "linux-kernel@vger.kernel.org"
- <linux-kernel@vger.kernel.org>, "kvm@vger.kernel.org" <kvm@vger.kernel.org>,
- "kvmarm@lists.cs.columbia.edu" <kvmarm@lists.cs.columbia.edu>,
- "will@kernel.org" <will@kernel.org>, "joro@8bytes.org" <joro@8bytes.org>,
- "maz@kernel.org" <maz@kernel.org>, "robin.murphy@arm.com"
- <robin.murphy@arm.com>
-Subject: RE: [PATCH v11 00/13] SMMUv3 Nested Stage Setup (IOMMU part)
-Thread-Topic: [PATCH v11 00/13] SMMUv3 Nested Stage Setup (IOMMU part)
-Thread-Index: AQHWEm6UKSWHwUIWVEisrcDF38xxfKh7GISAgAA31ACAFixYIIAK1E8AgAnONYCAADUt8A==
-Date: Wed, 13 May 2020 15:57:58 +0000
-Message-ID: <9e323c4668e94ea89beec3689376b893@huawei.com>
-References: <20200414150607.28488-1-eric.auger@redhat.com>
- <eb27f625-ad7a-fcb5-2185-5471e4666f09@linaro.org>
- <06fe02f7-2556-8986-2f1e-dcdf59773b8c@redhat.com>
- <c7786a2a314e4c4ab37ef157ddfa23af@huawei.com>
- <3858dd8c-ee55-b0d7-96cc-3c047ba8f652@redhat.com>
-In-Reply-To: <3858dd8c-ee55-b0d7-96cc-3c047ba8f652@redhat.com>
-Accept-Language: en-GB, en-US
-Content-Language: en-US
-X-MS-Has-Attach: 
-X-MS-TNEF-Correlator: 
-x-originating-ip: [10.47.27.251]
+ with ESMTP id Ek5HE3QcC9+y for <iommu@lists.linux-foundation.org>;
+ Wed, 13 May 2020 21:51:14 +0000 (UTC)
+X-Greylist: from auto-whitelisted by SQLgrey-1.7.6
+Received: from mail-lj1-f196.google.com (mail-lj1-f196.google.com
+ [209.85.208.196])
+ by whitealder.osuosl.org (Postfix) with ESMTPS id 0C6C08861C
+ for <iommu@lists.linux-foundation.org>; Wed, 13 May 2020 21:51:13 +0000 (UTC)
+Received: by mail-lj1-f196.google.com with SMTP id h4so1218996ljg.12
+ for <iommu@lists.linux-foundation.org>; Wed, 13 May 2020 14:51:13 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+ d=anholt-net.20150623.gappssmtp.com; s=20150623;
+ h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+ :cc; bh=c4GzEKN4UHscMkRfgK/KmlmDtv9fIM50sPFyVikryKQ=;
+ b=O8JCadTsQl0Tyvlb72GDnj5fWwBBQal84Q4eYowAUSAU0My9xiciKbQ5opOHnfwl9N
+ Qb5nQGHUjnL79yJetrBRfHA673D+DtgS7C/OXM/Jj+mCy4cl51SspGMJvwVFVu8mQw/d
+ E0lrDdlhkaMITXDJ0+azix8pePd4EjeDt5g7yhokYKopEAlRvUP/8w/RAInfA6caXo+K
+ ruac9LVx6zmyBPRvtCJoQCkeekvevefrJdyMNUMDpe0/sCo9HnlDe3w74ikeYyTigQIj
+ aG+tjvBV7Sqetjfnq4VJ/fo8MRHFgz35H6NVpzXrbNEzRfRmIydljGEGOXoJVfCSbwOl
+ 4D5A==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+ d=1e100.net; s=20161025;
+ h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+ :message-id:subject:to:cc;
+ bh=c4GzEKN4UHscMkRfgK/KmlmDtv9fIM50sPFyVikryKQ=;
+ b=KMbWkgGK0phmsTwoqYDqbP5RTcxrYZVY1lCeZM303AFobj2ttkugSVYnbTWJgHtx5g
+ ounooHlBon85lwYwZ9kRJyvTH+gIo5ivBuyzI7/7MjJEPOcuykUcypfLVomgpVPCzvAD
+ gNYvVZtgo/sgPVT60tScrQoouHSojQDew1QexTYwyOBbbYISEgPSFaImuz0uaHjQy1b6
+ JG8yY3OnxFpObrtUl9lhstDy1eMb7mfedA/v9XnsnQCLxBU8i69VVUT4z2A+8GxZbZUp
+ 5eyInsKJ6kvTLJCyuI2ILTB5b9N146GwGx6aF3sEB+KOU3E0meAddbHekJmkFte9H/07
+ je7w==
+X-Gm-Message-State: AOAM531f+xhe8dwm918RnPeznzXH6V4p/opwf6d6GcysLsqYn1o54lVg
+ hZizK84V3BxIbysEGCyYtAPoIqiZv1I5RxpyS2WWEA==
+X-Google-Smtp-Source: ABdhPJxvVYUU3pLt0Fm0zZnTD0agcvWiYXLQjHfcp4jZKWPnJaLBh2OjEP0dKl4uakuItjfjxNR6jFpY0iO1wNvpqZc=
+X-Received: by 2002:a2e:8047:: with SMTP id p7mr641481ljg.206.1589406671985;
+ Wed, 13 May 2020 14:51:11 -0700 (PDT)
 MIME-Version: 1.0
-X-CFilter-Loop: Reflected
-Cc: "jean-philippe@linaro.org" <jean-philippe@linaro.org>,
- "peter.maydell@linaro.org" <peter.maydell@linaro.org>,
- "alex.williamson@redhat.com" <alex.williamson@redhat.com>,
- "bbhushan2@marvell.com" <bbhushan2@marvell.com>
+References: <20200513132114.6046-1-m.szyprowski@samsung.com>
+ <CGME20200513133314eucas1p1a607b556e32887e7f5ca60eb09a476c6@eucas1p1.samsung.com>
+ <20200513133245.6408-1-m.szyprowski@samsung.com>
+ <20200513133245.6408-24-m.szyprowski@samsung.com>
+In-Reply-To: <20200513133245.6408-24-m.szyprowski@samsung.com>
+From: Eric Anholt <eric@anholt.net>
+Date: Wed, 13 May 2020 14:51:00 -0700
+Message-ID: <CADaigPV7sO1pKrspDya+3OLeX0b0mzkZdjb4ox+gQddsmfw0-w@mail.gmail.com>
+Subject: Re: [PATCH v5 24/38] drm: v3d: fix common struct sg_table related
+ issues
+To: Marek Szyprowski <m.szyprowski@samsung.com>
+Cc: Bartlomiej Zolnierkiewicz <b.zolnierkie@samsung.com>,
+ David Airlie <airlied@linux.ie>, linux-kernel@vger.kernel.org,
+ DRI Development <dri-devel@lists.freedesktop.org>,
+ linaro-mm-sig@lists.linaro.org, iommu@lists.linux-foundation.org,
+ Daniel Vetter <daniel@ffwll.ch>, Robin Murphy <robin.murphy@arm.com>,
+ Christoph Hellwig <hch@lst.de>, linux-arm-kernel@lists.infradead.org
 X-BeenThere: iommu@lists.linux-foundation.org
 X-Mailman-Version: 2.1.15
 Precedence: list
@@ -98,80 +105,41 @@ List-Post: <mailto:iommu@lists.linux-foundation.org>
 List-Help: <mailto:iommu-request@lists.linux-foundation.org?subject=help>
 List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
  <mailto:iommu-request@lists.linux-foundation.org?subject=subscribe>
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: base64
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: 7bit
 Errors-To: iommu-bounces@lists.linux-foundation.org
 Sender: "iommu" <iommu-bounces@lists.linux-foundation.org>
 
-SGkgRXJpYywNCg0KPiAtLS0tLU9yaWdpbmFsIE1lc3NhZ2UtLS0tLQ0KPiBGcm9tOiBBdWdlciBF
-cmljIFttYWlsdG86ZXJpYy5hdWdlckByZWRoYXQuY29tXQ0KPiBTZW50OiAxMyBNYXkgMjAyMCAx
-NDoyOQ0KPiBUbzogU2hhbWVlcmFsaSBLb2xvdGh1bSBUaG9kaSA8c2hhbWVlcmFsaS5rb2xvdGh1
-bS50aG9kaUBodWF3ZWkuY29tPjsNCj4gWmhhbmdmZWkgR2FvIDx6aGFuZ2ZlaS5nYW9AbGluYXJv
-Lm9yZz47IGVyaWMuYXVnZXIucHJvQGdtYWlsLmNvbTsNCj4gaW9tbXVAbGlzdHMubGludXgtZm91
-bmRhdGlvbi5vcmc7IGxpbnV4LWtlcm5lbEB2Z2VyLmtlcm5lbC5vcmc7DQo+IGt2bUB2Z2VyLmtl
-cm5lbC5vcmc7IGt2bWFybUBsaXN0cy5jcy5jb2x1bWJpYS5lZHU7IHdpbGxAa2VybmVsLm9yZzsN
-Cj4gam9yb0A4Ynl0ZXMub3JnOyBtYXpAa2VybmVsLm9yZzsgcm9iaW4ubXVycGh5QGFybS5jb20N
-Cj4gQ2M6IGplYW4tcGhpbGlwcGVAbGluYXJvLm9yZzsgYWxleC53aWxsaWFtc29uQHJlZGhhdC5j
-b207DQo+IGphY29iLmp1bi5wYW5AbGludXguaW50ZWwuY29tOyB5aS5sLmxpdUBpbnRlbC5jb207
-IHBldGVyLm1heWRlbGxAbGluYXJvLm9yZzsNCj4gdG5Ac2VtaWhhbGYuY29tOyBiYmh1c2hhbjJA
-bWFydmVsbC5jb20NCj4gU3ViamVjdDogUmU6IFtQQVRDSCB2MTEgMDAvMTNdIFNNTVV2MyBOZXN0
-ZWQgU3RhZ2UgU2V0dXAgKElPTU1VIHBhcnQpDQo+IA0KWy4uLl0NCg0KPiA+Pj4gWWVzIHRoYXQn
-cyBub3JtYWwgdGhpcyBzZXJpZXMgaXMgbm90IG1lYW50IHRvIHN1cHBvcnQgdlNWTSBhdCB0aGlz
-IHN0YWdlLg0KPiA+Pj4NCj4gPj4+IEkgaW50ZW5kIHRvIGFkZCB0aGUgbWlzc2luZyBwaWVjZXMg
-ZHVyaW5nIHRoZSBuZXh0IHdlZWtzLg0KPiA+Pg0KPiA+PiBUaGFua3MgZm9yIHRoYXQuIEkgaGF2
-ZSBtYWRlIGFuIGF0dGVtcHQgdG8gYWRkIHRoZSB2U1ZBIGJhc2VkIG9uDQo+ID4+IHlvdXIgdjEw
-ICsgSlBCcyBzdmEgcGF0Y2hlcy4gVGhlIGhvc3Qga2VybmVsIGFuZCBRZW11IGNoYW5nZXMgY2Fu
-DQo+ID4+IGJlIGZvdW5kIGhlcmVbMV1bMl0uDQo+ID4+DQo+ID4+IFRoaXMgYmFzaWNhbGx5IGFk
-ZHMgbXVsdGlwbGUgcGFzaWQgc3VwcG9ydCBvbiB0b3Agb2YgeW91ciBjaGFuZ2VzLg0KPiA+PiBJ
-IGhhdmUgZG9uZSBzb21lIGJhc2ljIHNhbml0eSB0ZXN0aW5nIGFuZCB3ZSBoYXZlIHNvbWUgaW5p
-dGlhbCBzdWNjZXNzDQo+ID4+IHdpdGggdGhlIHppcCB2ZiBkZXYgb24gb3VyIEQwNiBwbGF0Zm9y
-bS4gUGxlYXNlIG5vdGUgdGhhdCB0aGUgU1RBTEwgZXZlbnQgaXMNCj4gPj4gbm90IHlldCBzdXBw
-b3J0ZWQgdGhvdWdoLCBidXQgd29ya3MgZmluZSBpZiB3ZSBtbG9jaygpIGd1ZXN0IHVzciBtZW0u
-DQo+ID4NCj4gPiBJIGhhdmUgYWRkZWQgU1RBTEwgc3VwcG9ydCBmb3Igb3VyIHZTVkEgcHJvdG90
-eXBlIGFuZCBpdCBzZWVtcyB0byBiZQ0KPiA+IHdvcmtpbmcob24gb3VyIGhhcmR3YXJlKS4gSSBo
-YXZlIHVwZGF0ZWQgdGhlIGtlcm5lbCBhbmQgcWVtdSBicmFuY2hlcw0KPiB3aXRoDQo+ID4gdGhl
-IHNhbWVbMV1bMl0uIEkgc2hvdWxkIHdhcm4geW91IHRob3VnaCB0aGF0IHRoZXNlIGFyZSBwcm90
-b3R5cGUgY29kZSBhbmQgSQ0KPiBhbSBwcmV0dHkNCj4gPiBtdWNoIHJlLXVzaW5nIHRoZSBWRklP
-X0lPTU1VX1NFVF9QQVNJRF9UQUJMRSBpbnRlcmZhY2UgZm9yIGFsbW9zdA0KPiBldmVyeXRoaW5n
-Lg0KPiA+IEJ1dCB0aG91Z2h0IG9mIHNoYXJpbmcsIGluIGNhc2UgaWYgaXQgaXMgdXNlZnVsIHNv
-bWVob3chLg0KPiANCj4gVGhhbmsgeW91IGFnYWluIGZvciBzaGFyaW5nIHRoZSBQT0MuIEkgbG9v
-a2VkIGF0IHRoZSBrZXJuZWwgYW5kIFFFTVUNCj4gYnJhbmNoZXMuDQo+IA0KPiBIZXJlIGFyZSBz
-b21lIHByZWxpbWluYXJ5IGNvbW1lbnRzOg0KPiAtICJhcm0tc21tdS12MzogUmVzZXQgUzJUVEIg
-d2hpbGUgc3dpdGNoaW5nIGJhY2sgZnJvbSBuZXN0ZWQgc3RhZ2UiOiAgYXMNCj4geW91IG1lbnRp
-b25uZWQgUzJUVEIgcmVzZXQgbm93IGlzIGZlYXR1cmVkIGluIHYxMQ0KDQpZZXMuDQoNCj4gLSAi
-YXJtLXNtbXUtdjM6IEFkZCBzdXBwb3J0IGZvciBtdWx0aXBsZSBwYXNpZCBpbiBuZXN0ZWQgbW9k
-ZSI6IEkgY291bGQNCj4gZWFzaWx5IGludGVncmF0ZSB0aGlzIGludG8gbXkgc2VyaWVzLiBVcGRh
-dGUgdGhlIGlvbW11IGFwaSBmaXJzdCBhbmQNCj4gcGFzcyBtdWx0aXBsZSBDRCBpbmZvIGluIGEg
-c2VwYXJhdGUgcGF0Y2gNCg0KT2suDQo+IC0gImFybS1zbW11LXYzOiBBZGQgc3VwcG9ydCB0byBJ
-bnZhbGlkYXRlIENEIjogQ0QgaW52YWxpZGF0aW9uIHNob3VsZCBiZQ0KPiBjYXNjYWRlZCB0byBo
-b3N0IHRocm91Z2ggdGhlIFBBU0lEIGNhY2hlIGludmFsaWRhdGlvbiB1YXBpIChubyBwYiB5b3UN
-Cj4gd2FybmVkIHVzIGZvciB0aGUgUE9DIHlvdSBzaW1wbHkgdXNlZCBWRklPX0lPTU1VX1NFVF9Q
-QVNJRF9UQUJMRSkuIEkNCj4gdGhpbmsgSSBzaG91bGQgYWRkIHRoaXMgc3VwcG9ydCBpbiBteSBv
-cmlnaW5hbCBzZXJpZXMgYWx0aG91Z2ggaXQgZG9lcw0KPiBub3Qgc2VlbSB0byB0cmlnZ2VyIGFu
-eSBpc3N1ZSB1cCB0byBub3cuDQoNCkFncmVlLiBDYWNoZSBpbnZhbGlkYXRpb24gdWFwaSBpcyBh
-IGJldHRlciBpbnRlcmZhY2UgZm9yIHRoaXMuIEFsc28gSSBkb27igJl0IHRoaW5rDQp0aGlzIG1h
-dHRlcnMgZm9yIG5vbi12c3ZhIGNhc2VzIGFzIEd1ZXN0IGtlcm5lbCB0YWJsZS9DRChwYXNpZCAw
-KSB3aWxsIG5ldmVyDQpnZXQgaW52YWxpZGF0ZWQuIA0KDQo+IC0gImFybS1zbW11LXYzOiBSZW1v
-dmUgZHVwbGljYXRpb24gb2YgZmF1bHQgcHJvcGFnYXRpb24iLiBJIHVuZGVyc3RhbmQNCj4gdGhl
-IHRyYW5zY29kZSBpcyBkb25lIHNvbWV3aGVyZSBlbHNlIHdpdGggU1ZBIGJ1dCB3ZSBzdGlsbCBu
-ZWVkIHRvIGRvIGl0DQo+IGlmIGEgc2luZ2xlIENEIGlzIHVzZWQsIHJpZ2h0PyBJIHdpbGwgcmV2
-aWV3IHRoZSBTVkEgY29kZSB0byBiZXR0ZXINCj4gdW5kZXJzdGFuZC4NCg0KSG1tLi5ub3Qgc3Vy
-ZS4gTmVlZCB0byB0YWtlIGFub3RoZXIgbG9vayB0byBzZWUgd2hldGhlciB3ZSBuZWVkIGEgc3Bl
-Y2lhbA0KaGFuZGxpbmcgZm9yIHNpbmdsZSBDRCBvciBub3QuDQoNCj4gLSBmb3IgdGhlIFNUQUxM
-IHJlc3BvbnNlIGluamVjdGlvbiBJIHdvdWxkIHRlbmQgdG8gdXNlIGEgbmV3IFZGSU8gcmVnaW9u
-DQo+IGZvciByZXNwb25zZXMuIEF0IHRoZSBtb21lbnQgdGhlcmUgaXMgYSBzaW5nbGUgVkZJTyBy
-ZWdpb24gZm9yIHJlcG9ydGluZw0KPiB0aGUgZmF1bHQuDQoNClN1cmUuIFRoYXQgd2lsbCBiZSBt
-dWNoIGNsZWFuZXIgYW5kIHByb2JhYmx5IGltcHJvdmUgdGhlIGNvbnRleHQgc3dpdGNoDQpsYXRl
-bmN5LiBBbm90aGVyIHRoaW5nIEkgbm90ZWQgd2l0aCBTVEFMTCBpcyB0aGF0IHBhc2lkX3ZhbGlk
-IGZsYWcgbmVlZHMgdG8gYmUNCnRha2VuIGNhcmUgaW4gdGhlIFNWQSBrZXJuZWwgcGF0aC4gDQoN
-CiJpb21tdTogUmVtb3ZlIHBhc2lkIHZhbGlkaXR5IGNoZWNrIGZvciBTVEFMTCBtb2RlbCBwYWdl
-IHJlc3BvbnNlIG1zZyINCk5vdCBzdXJlIHRoaXMgb25lIGlzIGEgcHJvcGVyIHdheSB0byBoYW5k
-bGUgdGhpcy4NCiANCj4gT24gUUVNVSBzaWRlOg0KPiAtIEkgYW0gY3VycmVudGx5IHdvcmtpbmcg
-b24gMy4yIHJhbmdlIGludmFsaWRhdGlvbiBzdXBwb3J0IHdoaWNoIGlzDQo+IG5lZWRlZCBmb3Ig
-RFBESy9WRklPDQo+IC0gV2hpbGUgYXQgaXQgSSB3aWxsIGxvb2sgYXQgaG93IHRvIGluY3JlbWVu
-dGFsbHkgaW50cm9kdWNlIHNvbWUgb2YgdGhlDQo+IGZlYXR1cmVzIHlvdSBuZWVkIGluIHRoaXMg
-c2VyaWVzLg0KDQpPay4gDQoNClRoYW5rcyBmb3IgdGFraW5nIGEgbG9vayBhdCB0aGUgUE9DLg0K
-DQpDaGVlcnMsDQpTaGFtZWVyDQoNCl9fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19f
-X19fX19fX19fX19fCmlvbW11IG1haWxpbmcgbGlzdAppb21tdUBsaXN0cy5saW51eC1mb3VuZGF0
-aW9uLm9yZwpodHRwczovL2xpc3RzLmxpbnV4Zm91bmRhdGlvbi5vcmcvbWFpbG1hbi9saXN0aW5m
-by9pb21tdQ==
+On Wed, May 13, 2020 at 6:33 AM Marek Szyprowski
+<m.szyprowski@samsung.com> wrote:
+>
+> The Documentation/DMA-API-HOWTO.txt states that the dma_map_sg() function
+> returns the number of the created entries in the DMA address space.
+> However the subsequent calls to the dma_sync_sg_for_{device,cpu}() and
+> dma_unmap_sg must be called with the original number of the entries
+> passed to the dma_map_sg().
+>
+> struct sg_table is a common structure used for describing a non-contiguous
+> memory buffer, used commonly in the DRM and graphics subsystems. It
+> consists of a scatterlist with memory pages and DMA addresses (sgl entry),
+> as well as the number of scatterlist entries: CPU pages (orig_nents entry)
+> and DMA mapped pages (nents entry).
+>
+> It turned out that it was a common mistake to misuse nents and orig_nents
+> entries, calling DMA-mapping functions with a wrong number of entries or
+> ignoring the number of mapped entries returned by the dma_map_sg()
+> function.
+>
+> To avoid such issues, lets use a common dma-mapping wrappers operating
+> directly on the struct sg_table objects and use scatterlist page
+> iterators where possible. This, almost always, hides references to the
+> nents and orig_nents entries, making the code robust, easier to follow
+> and copy/paste safe.
+>
+> Signed-off-by: Marek Szyprowski <m.szyprowski@samsung.com>
+
+Reviewed-by: Eric Anholt <eric@anholt.net>
+_______________________________________________
+iommu mailing list
+iommu@lists.linux-foundation.org
+https://lists.linuxfoundation.org/mailman/listinfo/iommu
