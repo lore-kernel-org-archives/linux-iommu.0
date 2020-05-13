@@ -2,102 +2,96 @@ Return-Path: <SRS0=oi3Z=63=lists.linux-foundation.org=iommu-bounces@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-0.5 required=3.0 tests=DKIM_INVALID,DKIM_SIGNED,
-	HEADER_FROM_DIFFERENT_DOMAINS,MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS,
-	URIBL_BLOCKED autolearn=no autolearn_force=no version=3.4.0
+X-Spam-Status: No, score=-9.5 required=3.0 tests=DKIM_INVALID,DKIM_SIGNED,
+	HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_PATCH,MAILING_LIST_MULTI,SIGNED_OFF_BY,
+	SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED,USER_AGENT_GIT autolearn=ham
+	autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id CC4C0CA90AF
-	for <iommu@archiver.kernel.org>; Wed, 13 May 2020 10:45:53 +0000 (UTC)
-Received: from fraxinus.osuosl.org (smtp4.osuosl.org [140.211.166.137])
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 541B8CA90AF
+	for <iommu@archiver.kernel.org>; Wed, 13 May 2020 11:07:47 +0000 (UTC)
+Received: from hemlock.osuosl.org (smtp2.osuosl.org [140.211.166.133])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by mail.kernel.org (Postfix) with ESMTPS id 945AF20675
-	for <iommu@archiver.kernel.org>; Wed, 13 May 2020 10:45:53 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTPS id 1A3EF20740
+	for <iommu@archiver.kernel.org>; Wed, 13 May 2020 11:07:47 +0000 (UTC)
 Authentication-Results: mail.kernel.org;
-	dkim=fail reason="signature verification failed" (2048-bit key) header.d=linaro.org header.i=@linaro.org header.b="UC/3PHBo"
-DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 945AF20675
+	dkim=fail reason="signature verification failed" (2048-bit key) header.d=linaro.org header.i=@linaro.org header.b="DEil9n0g"
+DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 1A3EF20740
 Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=linaro.org
 Authentication-Results: mail.kernel.org; spf=pass smtp.mailfrom=iommu-bounces@lists.linux-foundation.org
 Received: from localhost (localhost [127.0.0.1])
-	by fraxinus.osuosl.org (Postfix) with ESMTP id 6C68A85F67;
-	Wed, 13 May 2020 10:45:53 +0000 (UTC)
+	by hemlock.osuosl.org (Postfix) with ESMTP id E726C88994;
+	Wed, 13 May 2020 11:07:46 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from fraxinus.osuosl.org ([127.0.0.1])
+Received: from hemlock.osuosl.org ([127.0.0.1])
 	by localhost (.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
-	with ESMTP id eycS3MFSDmoV; Wed, 13 May 2020 10:45:52 +0000 (UTC)
+	with ESMTP id p0AbQWUMaGxf; Wed, 13 May 2020 11:07:46 +0000 (UTC)
 Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [140.211.9.56])
-	by fraxinus.osuosl.org (Postfix) with ESMTP id 96EA285F3E;
-	Wed, 13 May 2020 10:45:52 +0000 (UTC)
+	by hemlock.osuosl.org (Postfix) with ESMTP id 29BF6887C7;
+	Wed, 13 May 2020 11:07:46 +0000 (UTC)
 Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
-	by lists.linuxfoundation.org (Postfix) with ESMTP id 758ACC088B;
-	Wed, 13 May 2020 10:45:52 +0000 (UTC)
+	by lists.linuxfoundation.org (Postfix) with ESMTP id 083A8C0178;
+	Wed, 13 May 2020 11:07:46 +0000 (UTC)
 Received: from silver.osuosl.org (smtp3.osuosl.org [140.211.166.136])
- by lists.linuxfoundation.org (Postfix) with ESMTP id 84BA3C016F
- for <iommu@lists.linux-foundation.org>; Wed, 13 May 2020 10:45:50 +0000 (UTC)
+ by lists.linuxfoundation.org (Postfix) with ESMTP id 18481C016F
+ for <iommu@lists.linux-foundation.org>; Wed, 13 May 2020 11:07:45 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
- by silver.osuosl.org (Postfix) with ESMTP id 549762154F
- for <iommu@lists.linux-foundation.org>; Wed, 13 May 2020 10:45:50 +0000 (UTC)
+ by silver.osuosl.org (Postfix) with ESMTP id 00582204A6
+ for <iommu@lists.linux-foundation.org>; Wed, 13 May 2020 11:07:45 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
 Received: from silver.osuosl.org ([127.0.0.1])
  by localhost (.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
- with ESMTP id WaiYr0ujdk59 for <iommu@lists.linux-foundation.org>;
- Wed, 13 May 2020 10:45:49 +0000 (UTC)
+ with ESMTP id Hr9dFfy7U-AW for <iommu@lists.linux-foundation.org>;
+ Wed, 13 May 2020 11:07:43 +0000 (UTC)
 X-Greylist: domain auto-whitelisted by SQLgrey-1.7.6
-Received: from mail-wm1-f65.google.com (mail-wm1-f65.google.com
- [209.85.128.65])
- by silver.osuosl.org (Postfix) with ESMTPS id 1368621543
- for <iommu@lists.linux-foundation.org>; Wed, 13 May 2020 10:45:49 +0000 (UTC)
-Received: by mail-wm1-f65.google.com with SMTP id g14so11536471wme.1
- for <iommu@lists.linux-foundation.org>; Wed, 13 May 2020 03:45:48 -0700 (PDT)
+Received: from mail-wr1-f67.google.com (mail-wr1-f67.google.com
+ [209.85.221.67])
+ by silver.osuosl.org (Postfix) with ESMTPS id 19D4E2048E
+ for <iommu@lists.linux-foundation.org>; Wed, 13 May 2020 11:07:43 +0000 (UTC)
+Received: by mail-wr1-f67.google.com with SMTP id l17so6800268wrr.4
+ for <iommu@lists.linux-foundation.org>; Wed, 13 May 2020 04:07:43 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linaro.org; s=google;
- h=date:from:to:cc:subject:message-id:references:mime-version
- :content-disposition:in-reply-to;
- bh=SmNmuU5Aep/IGe3eSTrjS6oLXRSTGYhw6IFWVs9Iuqc=;
- b=UC/3PHBoun3v1rx7wxmHxa5RFjjGfNLNpaCn6pfowgebDNYC32O8cp+YJHnvOEQaLk
- Nz+CjUwKVJxOPjAc+Am8F0hqrPMDiwM2aoGX5r90B7BN76cDKPh6nr/YlAAyxleAFf96
- NlJANIMYq5DpzZ6aRKewyuez8+MQkdZd9DSO/gtHi1WlvxunYaH+dufi8aFhaGuP+ph9
- zIeuSIUI2UQyBg6TbiMKe6swjsAYzSJuHyWPZUsJLZuCjKUsD55B1251N8tC3tLD40aj
- agDxckNYt6eUv6ydoTJ+56CrQqMMdERHKWIgm0l69OYmgLIINQMDX3EQTlKycym24/V8
- XC8g==
+ h=from:to:cc:subject:date:message-id:mime-version
+ :content-transfer-encoding;
+ bh=4kyjTfTHMVUTV+THehJYOS1UTUTs5x0t0xpjX4MdtCY=;
+ b=DEil9n0gXHGymALBWdas81BFDTL11HXaPejLvIufToKD+XdRHMpgiczE8uCg/IJKMk
+ o+Ho9++LbXsr35XpyqX4c4IJQFeMtyCfa25Z+NkqaczakuaLa1cgb/SuqfBlyqu6uIZt
+ LuAyrWw70W+TIUDw0tnkwSVEv8E3TEmZkifC9tCH35x+lsGOxkCmABqxj5LnZh0orEl9
+ nIEnrm4QxZoTh+mfb2TigA02rRa6ecGNneaJNG7znMXL4WYPOgGsciE2XnqqPHj7XGU2
+ UeDj3pweIS0VsnlznSbC/qYmY0zQMH4uf5UCs32Q0qeQG+QL0cM0f9w0i2oc2ys7GVnv
+ XfRA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
  d=1e100.net; s=20161025;
- h=x-gm-message-state:date:from:to:cc:subject:message-id:references
- :mime-version:content-disposition:in-reply-to;
- bh=SmNmuU5Aep/IGe3eSTrjS6oLXRSTGYhw6IFWVs9Iuqc=;
- b=jK8EHlmvVxYYkl0hBXh4V+9+T64qyFfR2Kk5Rkh7ewU/R4aHMiaLRuRTAZJ/6LAzkU
- fIY8Duh8umQjhNyCU1hnwULxGeq8sBu4yYzZE5a/QJu+3rG0lrLGwEbhruLZaTMbF2hD
- aO15Wr00/qhu5PGN/pR8I9USlXEekUU8akDpuM1PpQKwRAt0olVfLeAA+NaTI0sU0LVU
- ZlgP3V6vCPAedqrvonG35aBWxDtQvjpe1M2XED5/V7T3xLDnLwt3J8EEzJe0Z9bU1/+h
- iEL/PN+d6JjZVYfySwW2XyfGWK6b4QHeg0OQtvci4EHaYGQkMgmppYwO8TxDy7sKDWW6
- Sw/g==
-X-Gm-Message-State: AGi0PubgFcHZggXjf6zNzZnSIFQcMHAk8WzqKrjz8zvZRnm4gkZUfGj1
- 7OLZzNeRd9pbsB2NA9h0BM3Gdw==
-X-Google-Smtp-Source: APiQypJmft0/u1tO86sQKhZsj1C97uNs/XnCzX9fNiwnwt1E0uNsNm62LaV0mFWoR6TcsuBFsKHelA==
-X-Received: by 2002:a1c:3c42:: with SMTP id j63mr39555553wma.118.1589366747407; 
- Wed, 13 May 2020 03:45:47 -0700 (PDT)
-Received: from myrica ([2001:171b:226e:c200:c43b:ef78:d083:b355])
- by smtp.gmail.com with ESMTPSA id g135sm17966353wme.22.2020.05.13.03.45.46
+ h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+ :content-transfer-encoding;
+ bh=4kyjTfTHMVUTV+THehJYOS1UTUTs5x0t0xpjX4MdtCY=;
+ b=BHTUcCKqL0FW27tHfHYEJO6giN9yDfSwS49SMI4LmpDYEqphVxKBQB0gNY9Xt0rGgT
+ ZFlDv3Hn4xklNL3p/X9mjV7rgsgJ1yyBug11kuHodVRQYfu+EuYndjC4T5EueDZ9X0Cc
+ ED61UitH4a1XEb7Y7w2ow2edlJacMDQXjEYLzTRpLm03paNUBCl77pX2dSdpiq5JYVCm
+ W/uEUUGunuGSp6x8IqmqM02YvIRLtNJVHaYgHYoB8OkfcPYsItje8ZgnQXGaw3ReRBX/
+ 3KcdbcEnHIjO7rGKIXda2uGizWPzoxK+hkTbK4VnWq7jaLyWLisELr1cDKvpzD+QD5jR
+ YnOg==
+X-Gm-Message-State: AGi0PuYh3cbv2Ln6OlVHqxvAqM1sLCBJDY7OhPq4HLrv11sDpEJJdas3
+ xFEimNGfbBNrDHJUkhNDgkd1v9CpMfA=
+X-Google-Smtp-Source: APiQypKgqLRpEdbQmb0PocsKhfcvRtSmsH2tuQKK5KGLEZF0EGrIVAw4HabuB3b2XrZh4uTNbgbGow==
+X-Received: by 2002:adf:fa44:: with SMTP id y4mr17940958wrr.135.1589368061182; 
+ Wed, 13 May 2020 04:07:41 -0700 (PDT)
+Received: from localhost.localdomain
+ ([2001:171b:226e:c200:c43b:ef78:d083:b355])
+ by smtp.gmail.com with ESMTPSA id q144sm3023804wme.0.2020.05.13.04.07.40
  (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
- Wed, 13 May 2020 03:45:46 -0700 (PDT)
-Date: Wed, 13 May 2020 12:45:37 +0200
+ Wed, 13 May 2020 04:07:40 -0700 (PDT)
 From: Jean-Philippe Brucker <jean-philippe@linaro.org>
-To: Bharat Bhushan <bbhushan2@marvell.com>
-Subject: Re: [EXT] Re: [PATCH v5] iommu/virtio: Use page size bitmap
- supported by endpoint
-Message-ID: <20200513104537.GB214296@myrica>
-References: <20200505093004.1935-1-bbhushan2@marvell.com>
- <20200505200659-mutt-send-email-mst@kernel.org>
- <MWHPR1801MB1966A23A0298654CA6965FB9E3BF0@MWHPR1801MB1966.namprd18.prod.outlook.com>
+To: iommu@lists.linux-foundation.org,
+	linux-arm-kernel@lists.infradead.org
+Subject: [PATCH v2] iommu/arm-smmu-v3: Don't reserve implementation defined
+ register space
+Date: Wed, 13 May 2020 13:02:57 +0200
+Message-Id: <20200513110255.597203-1-jean-philippe@linaro.org>
+X-Mailer: git-send-email 2.26.2
 MIME-Version: 1.0
-Content-Disposition: inline
-In-Reply-To: <MWHPR1801MB1966A23A0298654CA6965FB9E3BF0@MWHPR1801MB1966.namprd18.prod.outlook.com>
-Cc: "Michael S. Tsirkin" <mst@redhat.com>,
- "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
- "virtualization@lists.linux-foundation.org"
- <virtualization@lists.linux-foundation.org>,
- "iommu@lists.linux-foundation.org" <iommu@lists.linux-foundation.org>,
- "jasowang@redhat.com" <jasowang@redhat.com>,
- "eric.auger.pro@gmail.com" <eric.auger.pro@gmail.com>
+Cc: Jean-Philippe Brucker <jean-philippe@linaro.org>, will@kernel.org,
+ tuanphan@amperemail.onmicrosoft.com, robin.murphy@arm.com
 X-BeenThere: iommu@lists.linux-foundation.org
 X-Mailman-Version: 2.1.15
 Precedence: list
@@ -115,50 +109,105 @@ Content-Transfer-Encoding: 7bit
 Errors-To: iommu-bounces@lists.linux-foundation.org
 Sender: "iommu" <iommu-bounces@lists.linux-foundation.org>
 
-On Wed, May 13, 2020 at 09:15:22AM +0000, Bharat Bhushan wrote:
-> Hi Jean,
-> 
-> > -----Original Message-----
-> > From: Michael S. Tsirkin <mst@redhat.com>
-> > Sent: Wednesday, May 6, 2020 5:53 AM
-> > To: Bharat Bhushan <bbhushan2@marvell.com>
-> > Cc: jean-philippe@linaro.org; joro@8bytes.org; jasowang@redhat.com;
-> > virtualization@lists.linux-foundation.org; iommu@lists.linux-foundation.org;
-> > linux-kernel@vger.kernel.org; eric.auger.pro@gmail.com; eric.auger@redhat.com
-> > Subject: [EXT] Re: [PATCH v5] iommu/virtio: Use page size bitmap supported by
-> > endpoint
-[...]
-> > > +struct virtio_iommu_probe_pgsize_mask {
-> > > +	struct virtio_iommu_probe_property	head;
-> > > +	__u8					reserved[4];
-> > > +	__le64					pgsize_bitmap;
-> > > +};
-> > > +
-> > 
-> > This is UAPI. Document the format of pgsize_bitmap please.
-> 
-> I do not see uapi documentation in "Documentation" folder of other data struct in this file, am I missing something?
+Some SMMUv3 implementation embed the Perf Monitor Group Registers (PMCG)
+inside the first 64kB region of the SMMU. Since PMCG are managed by a
+separate driver, this layout causes resource reservation conflicts
+during boot.
 
-I'm not the one requesting this change, but I'm guessing you should add a
-comment in this header, above pgsize_bitmap (which should actually be
-called page_size_mask to follow the spec). I guess I'd add:
+To avoid this conflict, don't reserve the MMIO regions that are
+implementation defined. Although devm_ioremap_resource() still works on
+full pages under the hood, this way we benefit from resource conflict
+checks.
 
-/* Same format as virtio_iommu_config::page_size_mask */
+Fixes: 7d839b4b9e00 ("perf/smmuv3: Add arm64 smmuv3 pmu driver")
+Signed-off-by: Jean-Philippe Brucker <jean-philippe@linaro.org>
+---
+v1->v2: simplify following Robin's comments
+https://lore.kernel.org/linux-iommu/20200506174629.1504153-1-jean-philippe@linaro.org/
+---
+ drivers/iommu/arm-smmu-v3.c | 35 +++++++++++++++++++++++++++++++----
+ 1 file changed, 31 insertions(+), 4 deletions(-)
 
-for this field, and then maybe change the comment of virtio_iommu_config,
-currently "/* Supported page sizes */", to something more precise such as:
+diff --git a/drivers/iommu/arm-smmu-v3.c b/drivers/iommu/arm-smmu-v3.c
+index 82508730feb7a1..af21d24a09e888 100644
+--- a/drivers/iommu/arm-smmu-v3.c
++++ b/drivers/iommu/arm-smmu-v3.c
+@@ -171,6 +171,8 @@
+ #define ARM_SMMU_PRIQ_IRQ_CFG1		0xd8
+ #define ARM_SMMU_PRIQ_IRQ_CFG2		0xdc
+ 
++#define ARM_SMMU_REG_SZ			0xe00
++
+ /* Common MSI config fields */
+ #define MSI_CFG0_ADDR_MASK		GENMASK_ULL(51, 2)
+ #define MSI_CFG2_SH			GENMASK(5, 4)
+@@ -628,6 +630,7 @@ struct arm_smmu_strtab_cfg {
+ struct arm_smmu_device {
+ 	struct device			*dev;
+ 	void __iomem			*base;
++	void __iomem			*page1;
+ 
+ #define ARM_SMMU_FEAT_2_LVL_STRTAB	(1 << 0)
+ #define ARM_SMMU_FEAT_2_LVL_CDTAB	(1 << 1)
+@@ -733,9 +736,8 @@ static struct arm_smmu_option_prop arm_smmu_options[] = {
+ static inline void __iomem *arm_smmu_page1_fixup(unsigned long offset,
+ 						 struct arm_smmu_device *smmu)
+ {
+-	if ((offset > SZ_64K) &&
+-	    (smmu->options & ARM_SMMU_OPT_PAGE0_REGS_ONLY))
+-		offset -= SZ_64K;
++	if (offset > SZ_64K)
++		return smmu->page1 + offset - SZ_64K;
+ 
+ 	return smmu->base + offset;
+ }
+@@ -4021,6 +4023,18 @@ err_reset_pci_ops: __maybe_unused;
+ 	return err;
+ }
+ 
++static void __iomem *arm_smmu_ioremap(struct device *dev, resource_size_t start,
++				      resource_size_t size)
++{
++	struct resource res = {
++		.flags = IORESOURCE_MEM,
++		.start = start,
++		.end = start + size - 1,
++	};
++
++	return devm_ioremap_resource(dev, &res);
++}
++
+ static int arm_smmu_device_probe(struct platform_device *pdev)
+ {
+ 	int irq, ret;
+@@ -4056,10 +4070,23 @@ static int arm_smmu_device_probe(struct platform_device *pdev)
+ 	}
+ 	ioaddr = res->start;
+ 
+-	smmu->base = devm_ioremap_resource(dev, res);
++	/*
++	 * Don't map the IMPLEMENTATION DEFINED regions, since they may contain
++	 * the PMCG registers which are reserved by the PMU driver.
++	 */
++	smmu->base = arm_smmu_ioremap(dev, ioaddr, ARM_SMMU_REG_SZ);
+ 	if (IS_ERR(smmu->base))
+ 		return PTR_ERR(smmu->base);
+ 
++	if (arm_smmu_resource_size(smmu) > SZ_64K) {
++		smmu->page1 = arm_smmu_ioremap(dev, ioaddr + SZ_64K,
++					       ARM_SMMU_REG_SZ);
++		if (IS_ERR(smmu->page1))
++			return PTR_ERR(smmu->page1);
++	} else {
++		smmu->page1 = smmu->base;
++	}
++
+ 	/* Interrupt lines */
+ 
+ 	irq = platform_get_irq_byname_optional(pdev, "combined");
+-- 
+2.26.2
 
-/*
- * Bitmap of supported page sizes. The least significant bit indicates the
- * smallest granularity and the other bits are hints indicating optimal
- * block sizes.
- */
-
-But I don't know how much should be spelled out here, since those details
-are available in the spec.
-
-Thanks,
-Jean
 _______________________________________________
 iommu mailing list
 iommu@lists.linux-foundation.org
