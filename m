@@ -2,109 +2,87 @@ Return-Path: <SRS0=Hf/t=64=lists.linux-foundation.org=iommu-bounces@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-0.5 required=3.0 tests=DKIM_INVALID,DKIM_SIGNED,
-	HEADER_FROM_DIFFERENT_DOMAINS,MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS,
-	URIBL_BLOCKED autolearn=no autolearn_force=no version=3.4.0
+X-Spam-Status: No, score=-0.7 required=3.0 tests=HEADER_FROM_DIFFERENT_DOMAINS,
+	MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED autolearn=no
+	autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 112E2C433DF
-	for <iommu@archiver.kernel.org>; Thu, 14 May 2020 16:22:56 +0000 (UTC)
-Received: from hemlock.osuosl.org (smtp2.osuosl.org [140.211.166.133])
+	by smtp.lore.kernel.org (Postfix) with ESMTP id AE51DC433E0
+	for <iommu@archiver.kernel.org>; Thu, 14 May 2020 17:51:59 +0000 (UTC)
+Received: from whitealder.osuosl.org (smtp1.osuosl.org [140.211.166.138])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by mail.kernel.org (Postfix) with ESMTPS id B6B3520671
-	for <iommu@archiver.kernel.org>; Thu, 14 May 2020 16:22:55 +0000 (UTC)
-Authentication-Results: mail.kernel.org;
-	dkim=fail reason="signature verification failed" (2048-bit key) header.d=cerno.tech header.i=@cerno.tech header.b="Yl/aIKqo";
-	dkim=fail reason="signature verification failed" (2048-bit key) header.d=messagingengine.com header.i=@messagingengine.com header.b="WOtOzTtk"
-DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org B6B3520671
-Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=cerno.tech
+	by mail.kernel.org (Postfix) with ESMTPS id 6E3D620657
+	for <iommu@archiver.kernel.org>; Thu, 14 May 2020 17:51:59 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 6E3D620657
+Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=intel.com
 Authentication-Results: mail.kernel.org; spf=pass smtp.mailfrom=iommu-bounces@lists.linux-foundation.org
 Received: from localhost (localhost [127.0.0.1])
-	by hemlock.osuosl.org (Postfix) with ESMTP id 9216888A4E;
-	Thu, 14 May 2020 16:22:55 +0000 (UTC)
-X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from hemlock.osuosl.org ([127.0.0.1])
-	by localhost (.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
-	with ESMTP id 9aXmrdJGBA4L; Thu, 14 May 2020 16:22:50 +0000 (UTC)
-Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [140.211.9.56])
-	by hemlock.osuosl.org (Postfix) with ESMTP id E7F1688ACE;
-	Thu, 14 May 2020 16:22:50 +0000 (UTC)
-Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
-	by lists.linuxfoundation.org (Postfix) with ESMTP id D1DEAC0863;
-	Thu, 14 May 2020 16:22:50 +0000 (UTC)
-Received: from whitealder.osuosl.org (smtp1.osuosl.org [140.211.166.138])
- by lists.linuxfoundation.org (Postfix) with ESMTP id F2DF8C016F
- for <iommu@lists.linux-foundation.org>; Thu, 14 May 2020 16:22:48 +0000 (UTC)
-Received: from localhost (localhost [127.0.0.1])
- by whitealder.osuosl.org (Postfix) with ESMTP id E22338814C
- for <iommu@lists.linux-foundation.org>; Thu, 14 May 2020 16:22:48 +0000 (UTC)
+	by whitealder.osuosl.org (Postfix) with ESMTP id 4409B88ADA;
+	Thu, 14 May 2020 17:51:59 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
 Received: from whitealder.osuosl.org ([127.0.0.1])
+	by localhost (.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
+	with ESMTP id O9EEWY3+5trT; Thu, 14 May 2020 17:51:53 +0000 (UTC)
+Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [140.211.9.56])
+	by whitealder.osuosl.org (Postfix) with ESMTP id 9B70488A01;
+	Thu, 14 May 2020 17:51:53 +0000 (UTC)
+Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
+	by lists.linuxfoundation.org (Postfix) with ESMTP id 85B04C0178;
+	Thu, 14 May 2020 17:51:53 +0000 (UTC)
+Received: from silver.osuosl.org (smtp3.osuosl.org [140.211.166.136])
+ by lists.linuxfoundation.org (Postfix) with ESMTP id 93937C016F
+ for <iommu@lists.linux-foundation.org>; Thu, 14 May 2020 17:51:52 +0000 (UTC)
+Received: from localhost (localhost [127.0.0.1])
+ by silver.osuosl.org (Postfix) with ESMTP id 6090C22721
+ for <iommu@lists.linux-foundation.org>; Thu, 14 May 2020 17:51:52 +0000 (UTC)
+X-Virus-Scanned: amavisd-new at osuosl.org
+Received: from silver.osuosl.org ([127.0.0.1])
  by localhost (.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
- with ESMTP id n9LkfPLZA3W9 for <iommu@lists.linux-foundation.org>;
- Thu, 14 May 2020 16:22:44 +0000 (UTC)
-X-Greylist: from auto-whitelisted by SQLgrey-1.7.6
-Received: from out2-smtp.messagingengine.com (out2-smtp.messagingengine.com
- [66.111.4.26])
- by whitealder.osuosl.org (Postfix) with ESMTPS id F191A8862D
- for <iommu@lists.linux-foundation.org>; Thu, 14 May 2020 16:22:43 +0000 (UTC)
-Received: from compute4.internal (compute4.nyi.internal [10.202.2.44])
- by mailout.nyi.internal (Postfix) with ESMTP id 963665C0212;
- Thu, 14 May 2020 12:22:42 -0400 (EDT)
-Received: from mailfrontend1 ([10.202.2.162])
- by compute4.internal (MEProxy); Thu, 14 May 2020 12:22:42 -0400
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=cerno.tech; h=
- date:from:to:cc:subject:message-id:references:mime-version
- :content-type:in-reply-to; s=fm2; bh=BBAPlSEHy7qfk456tIvoxyLmZFq
- Ly4UcCnDWEG14lto=; b=Yl/aIKqo4MPIc7QpZmLqew2xx3UMNUzD9BV+J+dmaOQ
- y2UQEJLuUAMouu92M3NUxkyMUMrAkcZxbu6eGRFmQsyEKTyTrudQ8j1QWzTg6ley
- uwky1kRZW7lyxLHTpEls3IwIn/l0Iif3xhcrkhyhl4JcClGUfM4ZQyJo8ktRBY2a
- TiQ7zDyRRrYDdstZPLhTO42CngCXE1WSrAkjS91b+HpAc3M4MYNK4fVtcEW2MTkC
- rcv/7kSZD7FjwP9fNsZ/yBVwP4q2b7A9J6UnIKAoJtc20ZXnEjONDJvu5MDo5GWq
- Z8kyYIxQKc5B9A5cYYeytdN8ZtfgN/MrY6fKPXXXtzQ==
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=
- messagingengine.com; h=cc:content-type:date:from:in-reply-to
- :message-id:mime-version:references:subject:to:x-me-proxy
- :x-me-proxy:x-me-sender:x-me-sender:x-sasl-enc; s=fm2; bh=BBAPlS
- EHy7qfk456tIvoxyLmZFqLy4UcCnDWEG14lto=; b=WOtOzTtkbEXrlLfpeXbIY4
- 4sB3pcXdz+ovlZEpBIeYHiarKEKF9SzbbLqpztSi0ZrSqrv4vjMrp+Z8u92sU4En
- C8o3muOawFpn4+5vjPdC4NkgfstnrhYDl59wNrTerIgFY568s59hkHIMWfmrKQcb
- b/mKZN82qsibYCn/E/FlBx4xiHKlFDX5MwX+ExvAnSLeVkb3f2NOZda+/mGnpVOw
- uNclSAh1q5wC4yjHm3PKQI2+0k1CItr86CsuLl+PuGnmtt5XpzvjYPYA84IHRtXN
- 5lJAxs1YUYNlRGRuIcDGtChpR86NCAw45pUjZ9LnnzhseS0ULx5Y8Mycnh2yQfxg
- ==
-X-ME-Sender: <xms:TXC9XpNDVcPyn68f-ks293yeNgPlPtzPyxTObRAoI-egFr8qGIep2w>
-X-ME-Proxy-Cause: gggruggvucftvghtrhhoucdtuddrgeduhedrleeigdelvdcutefuodetggdotefrodftvf
- curfhrohhfihhlvgemucfhrghsthforghilhdpqfgfvfdpuffrtefokffrpgfnqfghnecu
- uegrihhlohhuthemuceftddtnecusecvtfgvtghiphhivghnthhsucdlqddutddtmdenuc
- fjughrpeffhffvuffkfhggtggujgesghdtreertddtvdenucfhrhhomhepofgrgihimhgv
- ucftihhprghrugcuoehmrgigihhmvgestggvrhhnohdrthgvtghhqeenucggtffrrghtth
- gvrhhnpeelkeeghefhuddtleejgfeljeffheffgfeijefhgfeufefhtdevteegheeiheeg
- udenucfkphepledtrdekledrieekrdejieenucevlhhushhtvghrufhiiigvpedtnecurf
- grrhgrmhepmhgrihhlfhhrohhmpehmrgigihhmvgestggvrhhnohdrthgvtghh
-X-ME-Proxy: <xmx:TXC9Xr_zfdP2leqWlSrUsY3yr_xIyeKY4qRFd6UK5n_0lueJrD8ioQ>
- <xmx:TXC9XoS6EoMGVFTa-s3BvO_emvkjxtlMuKwKEmfImqsXxWpTZ_UHYQ>
- <xmx:TXC9XltuH1G-4lKs5iO5viP83uvaV7km3tzxKbpNBs0cVwYsrJBtfw>
- <xmx:UnC9Xo5iA9Nm8bC-KW7sn6PAEqC6Vm78k-mxEydZzCz8egtAj7uMNw>
-Received: from localhost (lfbn-tou-1-1502-76.w90-89.abo.wanadoo.fr
- [90.89.68.76])
- by mail.messagingengine.com (Postfix) with ESMTPA id 2D873328005A;
- Thu, 14 May 2020 12:22:37 -0400 (EDT)
-Date: Thu, 14 May 2020 18:22:35 +0200
-From: Maxime Ripard <maxime@cerno.tech>
+ with ESMTP id Z754sG7RrDbl for <iommu@lists.linux-foundation.org>;
+ Thu, 14 May 2020 17:51:47 +0000 (UTC)
+X-Greylist: domain auto-whitelisted by SQLgrey-1.7.6
+Received: from mga06.intel.com (mga06.intel.com [134.134.136.31])
+ by silver.osuosl.org (Postfix) with ESMTPS id 2F9122045D
+ for <iommu@lists.linux-foundation.org>; Thu, 14 May 2020 17:51:47 +0000 (UTC)
+IronPort-SDR: xnEkSwjxjUdeRWGoWhhD8qrz3lRSbxV/FzTsFReyjy1Xor9QKLd+At6wH2Ah1M7kCsGPa5AcRe
+ q5qQ4G1dLgsw==
+X-Amp-Result: SKIPPED(no attachment in message)
+X-Amp-File-Uploaded: False
+Received: from fmsmga007.fm.intel.com ([10.253.24.52])
+ by orsmga104.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384;
+ 14 May 2020 10:51:40 -0700
+IronPort-SDR: ug5WrsemdTMJvaFzFshsuNz48MbVxbJ7q5R32YQFkma78Rlfjb6Tb+sLaDry43DJgR1fjGNgwq
+ Var9BQ32IpaA==
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="5.73,392,1583222400"; d="scan'208";a="252142709"
+Received: from orsmsx103.amr.corp.intel.com ([10.22.225.130])
+ by fmsmga007.fm.intel.com with ESMTP; 14 May 2020 10:51:40 -0700
+Received: from orsmsx152.amr.corp.intel.com (10.22.226.39) by
+ ORSMSX103.amr.corp.intel.com (10.22.225.130) with Microsoft SMTP Server (TLS)
+ id 14.3.439.0; Thu, 14 May 2020 10:51:40 -0700
+Received: from orsmsx114.amr.corp.intel.com ([169.254.8.99]) by
+ ORSMSX152.amr.corp.intel.com ([169.254.8.85]) with mapi id 14.03.0439.000;
+ Thu, 14 May 2020 10:51:40 -0700
+From: "Prakhya, Sai Praneeth" <sai.praneeth.prakhya@intel.com>
 To: Joerg Roedel <joro@8bytes.org>
-Subject: Re: [PATCH v4 0/5] iommu: Add Allwinner H6 IOMMU driver
-Message-ID: <20200514162235.he2q7vx3dra5ck2l@gilmour.lan>
-References: <cover.b27dedd61e008ffcf55a028ccddda3bb4d21dfc8.1589378833.git-series.maxime@cerno.tech>
- <20200514123855.GI18353@8bytes.org>
- <20200514130900.k4gvr3zcajg3rouc@gilmour.lan>
- <20200514131647.GK18353@8bytes.org>
+Subject: RE: [PATCH] iommu: Remove functions that support private domain
+Thread-Topic: [PATCH] iommu: Remove functions that support private domain
+Thread-Index: AQHWKXk9fV5tekATV0S4blj7EpvL1KioBUCA///Q9SA=
+Date: Thu, 14 May 2020 17:51:39 +0000
+Message-ID: <FFF73D592F13FD46B8700F0A279B802F573A6427@ORSMSX114.amr.corp.intel.com>
+References: <20200513224721.20504-1-sai.praneeth.prakhya@intel.com>
+ <20200514131315.GJ18353@8bytes.org>
+In-Reply-To: <20200514131315.GJ18353@8bytes.org>
+Accept-Language: en-US
+Content-Language: en-US
+X-MS-Has-Attach: 
+X-MS-TNEF-Correlator: 
+dlp-product: dlpe-windows
+dlp-version: 11.2.0.6
+dlp-reaction: no-action
+x-originating-ip: [10.22.254.138]
 MIME-Version: 1.0
-In-Reply-To: <20200514131647.GK18353@8bytes.org>
-Cc: Mark Rutland <mark.rutland@arm.com>, devicetree@vger.kernel.org,
- iommu@lists.linux-foundation.org, Chen-Yu Tsai <wens@csie.org>,
- Rob Herring <robh+dt@kernel.org>, Frank Rowand <frowand.list@gmail.com>,
- linux-arm-kernel@lists.infradead.org
+Cc: "iommu@lists.linux-foundation.org" <iommu@lists.linux-foundation.org>
 X-BeenThere: iommu@lists.linux-foundation.org
 X-Mailman-Version: 2.1.15
 Precedence: list
@@ -117,92 +95,36 @@ List-Post: <mailto:iommu@lists.linux-foundation.org>
 List-Help: <mailto:iommu-request@lists.linux-foundation.org?subject=help>
 List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
  <mailto:iommu-request@lists.linux-foundation.org?subject=subscribe>
-Content-Type: multipart/mixed; boundary="===============3385901627336910822=="
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: 7bit
 Errors-To: iommu-bounces@lists.linux-foundation.org
 Sender: "iommu" <iommu-bounces@lists.linux-foundation.org>
 
+Hi Joerg,
 
---===============3385901627336910822==
-Content-Type: multipart/signed; micalg=pgp-sha256;
-	protocol="application/pgp-signature"; boundary="phtkiivizeocuqcp"
-Content-Disposition: inline
+> -----Original Message-----
+> From: Joerg Roedel <joro@8bytes.org>
+> Sent: Thursday, May 14, 2020 6:13 AM
+> To: Prakhya, Sai Praneeth <sai.praneeth.prakhya@intel.com>
+> Cc: iommu@lists.linux-foundation.org; Lu Baolu <baolu.lu@linux.intel.com>
+> Subject: Re: [PATCH] iommu: Remove functions that support private domain
+> 
+> On Wed, May 13, 2020 at 03:47:21PM -0700, Sai Praneeth Prakhya wrote:
+> > After moving iommu_group setup to iommu core code [1][2] and removing
+> > private domain support in vt-d [3], there are no users for functions
+> > such as iommu_request_dm_for_dev(),
+> iommu_request_dma_domain_for_dev()
+> > and request_default_domain_for_dev(). So, remove these functions.
+> 
+> I thought these functions are needed for the per-group default-domain patch-
+> set? That is why I left them in for now, but I can also remove them if not.
 
+Sorry! didn't get that quite well. When you meant "per-group default-domain patch-set", do you mean the patch set that I am working on which changes iommu group default domain dynamically by writing to sysfs file?
+If so, they don't use these functions so it should be ok to remove them. If you meant some other patch set, could you please point me to them?
 
---phtkiivizeocuqcp
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-Content-Transfer-Encoding: quoted-printable
-
-Hi,
-
-On Thu, May 14, 2020 at 03:16:47PM +0200, Joerg Roedel wrote:
-> On Thu, May 14, 2020 at 03:09:00PM +0200, Maxime Ripard wrote:
-> > On Thu, May 14, 2020 at 02:38:55PM +0200, Joerg Roedel wrote:
-> > > On Wed, May 13, 2020 at 04:07:19PM +0200, Maxime Ripard wrote:
-> > > > Maxime Ripard (5):
-> > > >   dt-bindings: iommu: Add Allwinner H6 IOMMU bindings
-> > > >   dt-bindings: display: sun8i-mixer: Allow for an iommu property
-> > > >   iommu: Add Allwinner H6 IOMMU driver
-> > > >   arm64: dts: allwinner: h6: Add IOMMU
-> > > >   drm/sun4i: mixer: Call of_dma_configure if there's an IOMMU
-> > >=20
-> > > Applied all to the IOMMU tree, thanks. The code lives in the
-> > > arm/allwinner branch.
-> >=20
-> > Did you also merge the DTS and DRM patches?
-> >=20
-> > Ideally, they should be merged through other trees to avoid the conflic=
-ts as
-> > much as possible (arm-soc and drm-misc respectively).
-> >=20
-> > If it's an option, could you drop all of them but "dt-bindings: iommu: =
-Add
-> > Allwinner H6 IOMMU bindings" and "iommu: Add Allwinner H6 IOMMU driver"?
->=20
-> Okay, just to be on the safe side, I am going to drop:
->=20
-> 	dt-bindings: display: sun8i-mixer: Allow for an iommu property
-> 	arm64: dts: allwinner: h6: Add IOMMU
-> 	drm/sun4i: mixer: Call of_dma_configure if there's an IOMMU
->=20
-> from the iommu-tree?
-
-Yep, please :)
-
-> I took them because you are also maintaining the DRM driver, which
-> counted as an implicit ACK for me :)
-
-I also maintain the DTS patches for that matter, but we have a good number =
-of
-patches queued up for those files in those trees usually, so it's easier for
-everyone to avoid the conflicts and just merge them into separate trees whe=
-n we
-can.
-
-Thanks!
-Maxime
-
---phtkiivizeocuqcp
-Content-Type: application/pgp-signature; name="signature.asc"
-
------BEGIN PGP SIGNATURE-----
-
-iHUEABYIAB0WIQRcEzekXsqa64kGDp7j7w1vZxhRxQUCXr1wSgAKCRDj7w1vZxhR
-xQ1UAP9NNM9p3Y+kfFB3QB7uFNTQoj45RAJZ4+7liXO1OnMMYQD9FQkWyw3VFTeT
-i82PNurLgs71brOZ1Qfwy2UAvsBU8QE=
-=thRW
------END PGP SIGNATURE-----
-
---phtkiivizeocuqcp--
-
---===============3385901627336910822==
-Content-Type: text/plain; charset="us-ascii"
-MIME-Version: 1.0
-Content-Transfer-Encoding: 7bit
-Content-Disposition: inline
-
+Regards,
+Sai
 _______________________________________________
 iommu mailing list
 iommu@lists.linux-foundation.org
 https://lists.linuxfoundation.org/mailman/listinfo/iommu
---===============3385901627336910822==--
