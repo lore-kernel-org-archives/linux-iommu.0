@@ -4,84 +4,82 @@ X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 X-Spam-Level: 
 X-Spam-Status: No, score=-9.5 required=3.0 tests=DKIM_INVALID,DKIM_SIGNED,
 	HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_PATCH,MAILING_LIST_MULTI,SIGNED_OFF_BY,
-	SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED,USER_AGENT_GIT autolearn=unavailable
+	SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED,USER_AGENT_GIT autolearn=ham
 	autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 6322DC433DF
-	for <iommu@archiver.kernel.org>; Thu, 14 May 2020 07:52:04 +0000 (UTC)
-Received: from fraxinus.osuosl.org (smtp4.osuosl.org [140.211.166.137])
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 21FBEC433E0
+	for <iommu@archiver.kernel.org>; Thu, 14 May 2020 07:52:55 +0000 (UTC)
+Received: from silver.osuosl.org (smtp3.osuosl.org [140.211.166.136])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by mail.kernel.org (Postfix) with ESMTPS id 2B2F5206DC
-	for <iommu@archiver.kernel.org>; Thu, 14 May 2020 07:52:03 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTPS id E92CF20575
+	for <iommu@archiver.kernel.org>; Thu, 14 May 2020 07:52:54 +0000 (UTC)
 Authentication-Results: mail.kernel.org;
-	dkim=fail reason="key not found in DNS" (0-bit key) header.d=marvell.com header.i=@marvell.com header.b="TuXbyN+t"
-DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 2B2F5206DC
+	dkim=fail reason="key not found in DNS" (0-bit key) header.d=marvell.com header.i=@marvell.com header.b="rPnfypHL"
+DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org E92CF20575
 Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=marvell.com
 Authentication-Results: mail.kernel.org; spf=pass smtp.mailfrom=iommu-bounces@lists.linux-foundation.org
 Received: from localhost (localhost [127.0.0.1])
-	by fraxinus.osuosl.org (Postfix) with ESMTP id D790687A47;
-	Thu, 14 May 2020 07:52:03 +0000 (UTC)
+	by silver.osuosl.org (Postfix) with ESMTP id B07092D48F;
+	Thu, 14 May 2020 07:52:54 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from fraxinus.osuosl.org ([127.0.0.1])
+Received: from silver.osuosl.org ([127.0.0.1])
 	by localhost (.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
-	with ESMTP id mSMMYUx21w8Q; Thu, 14 May 2020 07:52:03 +0000 (UTC)
+	with ESMTP id tuvEpuW550Us; Thu, 14 May 2020 07:52:54 +0000 (UTC)
 Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [140.211.9.56])
-	by fraxinus.osuosl.org (Postfix) with ESMTP id 2F5BA87A44;
-	Thu, 14 May 2020 07:52:03 +0000 (UTC)
+	by silver.osuosl.org (Postfix) with ESMTP id 688912D403;
+	Thu, 14 May 2020 07:52:54 +0000 (UTC)
 Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
-	by lists.linuxfoundation.org (Postfix) with ESMTP id 214F8C0178;
-	Thu, 14 May 2020 07:52:03 +0000 (UTC)
-Received: from hemlock.osuosl.org (smtp2.osuosl.org [140.211.166.133])
- by lists.linuxfoundation.org (Postfix) with ESMTP id E172EC016F;
- Thu, 14 May 2020 07:52:01 +0000 (UTC)
+	by lists.linuxfoundation.org (Postfix) with ESMTP id 62DD5C0178;
+	Thu, 14 May 2020 07:52:54 +0000 (UTC)
+Received: from silver.osuosl.org (smtp3.osuosl.org [140.211.166.136])
+ by lists.linuxfoundation.org (Postfix) with ESMTP id 288C2C016F;
+ Thu, 14 May 2020 07:52:53 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
- by hemlock.osuosl.org (Postfix) with ESMTP id CFC9B897D8;
- Thu, 14 May 2020 07:52:01 +0000 (UTC)
+ by silver.osuosl.org (Postfix) with ESMTP id 1EC73274E1;
+ Thu, 14 May 2020 07:52:53 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from hemlock.osuosl.org ([127.0.0.1])
+Received: from silver.osuosl.org ([127.0.0.1])
  by localhost (.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
- with ESMTP id rSvuIs7hhyXj; Thu, 14 May 2020 07:52:00 +0000 (UTC)
+ with ESMTP id cbc0Xe6Xqtzg; Thu, 14 May 2020 07:52:50 +0000 (UTC)
 X-Greylist: domain auto-whitelisted by SQLgrey-1.7.6
 X-Greylist: domain auto-whitelisted by SQLgrey-1.7.6
-Received: from mx0b-0016f401.pphosted.com (mx0b-0016f401.pphosted.com
- [67.231.156.173])
- by hemlock.osuosl.org (Postfix) with ESMTPS id 6F4CB897D5;
- Thu, 14 May 2020 07:52:00 +0000 (UTC)
-Received: from pps.filterd (m0045851.ppops.net [127.0.0.1])
- by mx0b-0016f401.pphosted.com (8.16.0.42/8.16.0.42) with SMTP id
- 04E7kFxW027478; Thu, 14 May 2020 00:51:59 -0700
+Received: from mx0b-0016f401.pphosted.com (mx0a-0016f401.pphosted.com
+ [67.231.148.174])
+ by silver.osuosl.org (Postfix) with ESMTPS id 9AEDD2D403;
+ Thu, 14 May 2020 07:52:50 +0000 (UTC)
+Received: from pps.filterd (m0045849.ppops.net [127.0.0.1])
+ by mx0a-0016f401.pphosted.com (8.16.0.42/8.16.0.42) with SMTP id
+ 04E7jXLs003237; Thu, 14 May 2020 00:52:46 -0700
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=marvell.com;
  h=from : to : cc :
- subject : date : message-id : in-reply-to : references : mime-version :
- content-type; s=pfpt0818; bh=p0U/UT02XfTdoUDIf9op35mOVWZuHekP8TFVGz1ZDjg=;
- b=TuXbyN+toTOfF7So1evvV7jLnbMEUF+3HSmnSYVzBXa55ywr9xjWGIsxTT7cmbi+cwn1
- GUkL1bzU0H8aIyhcKZyoldYFcgBFxso8xEHBosjuASSr9ja0pQeu+tUYy2Pc0jvQkb/K
- UPiE2dwcyvc0TioBpMAFlr9XuYc/2nZNaz9ZGyo5x5TbMgFmPDvR7Dc9DUvhMimA+wVm
- v5KtuIsnffoepYzgfZN+ybscd5kdNJinNAjHQflSVZOkCEBrjrouSSt3/76Y+dNGMl6w
- J7V/Ej9ms8zzVgXafsIaz2KwU09kLVzPi8K7QEYiLEUe5e6WXDWMWB6pffHAuj1V4iPa iQ== 
-Received: from sc-exch03.marvell.com ([199.233.58.183])
- by mx0b-0016f401.pphosted.com with ESMTP id 3100xk190s-1
+ subject : date : message-id : mime-version : content-type; s=pfpt0818;
+ bh=p0U/UT02XfTdoUDIf9op35mOVWZuHekP8TFVGz1ZDjg=;
+ b=rPnfypHLYFLgigPGKf4Mx/WClzb5hYR63tfkrzD/Ksg22dEkFLuv5pfoatbPDujevXVA
+ hszxfLeiS9NBUR1KOdEDUFREcEyRGXAUgD202CSwVyiUaQupd0P85h0v0fUXoK8E6o6b
+ KEPPcu1raiNix6fiD7EWDu5olo8VaibmODVIR0MqHYXJOLErI2lwp8OMLS1WOtX3gqDb
+ sBWYMlsfmiqEEijlFJdy3LPzjrZH8A2Iy8n5T/bllgnSANoj9nMSKeW3Fq2GNIWpj2t2
+ 1onOuePV5L3nUiES58zUmJ11G9xOduOMpSP85PAxzBNp/NvRf24ReLfrZ2kP+JKLm0yA +g== 
+Received: from sc-exch01.marvell.com ([199.233.58.181])
+ by mx0a-0016f401.pphosted.com with ESMTP id 3100xah94d-1
  (version=TLSv1.2 cipher=ECDHE-RSA-AES256-SHA384 bits=256 verify=NOT);
- Thu, 14 May 2020 00:51:59 -0700
-Received: from DC5-EXCH02.marvell.com (10.69.176.39) by SC-EXCH03.marvell.com
- (10.93.176.83) with Microsoft SMTP Server (TLS) id 15.0.1497.2;
- Thu, 14 May 2020 00:51:56 -0700
-Received: from bbhushan2.marvell.com (10.69.176.80) by DC5-EXCH02.marvell.com
- (10.69.176.39) with Microsoft SMTP Server id 15.0.1497.2 via Frontend
- Transport; Thu, 14 May 2020 00:51:55 -0700
+ Thu, 14 May 2020 00:52:45 -0700
+Received: from DC5-EXCH01.marvell.com (10.69.176.38) by SC-EXCH01.marvell.com
+ (10.93.176.81) with Microsoft SMTP Server (TLS) id 15.0.1497.2;
+ Thu, 14 May 2020 00:52:44 -0700
+Received: from bbhushan2.marvell.com (10.69.176.80) by DC5-EXCH01.marvell.com
+ (10.69.176.38) with Microsoft SMTP Server id 15.0.1497.2 via Frontend
+ Transport; Thu, 14 May 2020 00:52:41 -0700
 From: Bharat Bhushan <bbhushan2@marvell.com>
 To: <virtualization@lists.linux-foundation.org>,
  <iommu@lists.linux-foundation.org>, <linux-kernel@vger.kernel.org>,
- <virtio-dev@lists.oasis-open.org>
+ <virtio-dev@lists.oasis-open.org>, <jean-philippe@linaro.org>,
+ <joro@8bytes.org>, <mst@redhat.com>, <jasowang@redhat.com>,
+ <eric.auger.pro@gmail.com>, <eric.auger@redhat.com>
 Subject: [PATCH v6] iommu/virtio: Use page size bitmap supported by endpoint
-Date: Thu, 14 May 2020 13:21:51 +0530
-Message-ID: <20200514075152.3892-1-bbhushan2@marvell.com>
+Date: Thu, 14 May 2020 13:22:37 +0530
+Message-ID: <20200514075237.3941-1-bbhushan2@marvell.com>
 X-Mailer: git-send-email 2.17.1
-In-Reply-To: <jean-philippe@linaro.org, joro@8bytes.org, mst@redhat.com,
- jasowang@redhat.com, eric.auger.pro@gmail.com, eric.auger@redhat.com>
-References: <jean-philippe@linaro.org, joro@8bytes.org, mst@redhat.com,
- jasowang@redhat.com, eric.auger.pro@gmail.com, eric.auger@redhat.com>
 MIME-Version: 1.0
 X-Proofpoint-Virus-Version: vendor=fsecure engine=2.50.10434:6.0.216, 18.0.676
  definitions=2020-05-14_01:2020-05-13,
