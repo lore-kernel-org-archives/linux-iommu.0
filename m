@@ -2,67 +2,96 @@ Return-Path: <SRS0=PRYs=65=lists.linux-foundation.org=iommu-bounces@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-2.3 required=3.0 tests=HEADER_FROM_DIFFERENT_DOMAINS,
-	MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS,USER_AGENT_SANE_1 autolearn=no
-	autolearn_force=no version=3.4.0
+X-Spam-Status: No, score=-0.6 required=3.0 tests=DKIM_INVALID,DKIM_SIGNED,
+	HEADER_FROM_DIFFERENT_DOMAINS,MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS
+	autolearn=no autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 1431CC433E0
-	for <iommu@archiver.kernel.org>; Fri, 15 May 2020 10:07:28 +0000 (UTC)
-Received: from fraxinus.osuosl.org (smtp4.osuosl.org [140.211.166.137])
+	by smtp.lore.kernel.org (Postfix) with ESMTP id B8BF2C433DF
+	for <iommu@archiver.kernel.org>; Fri, 15 May 2020 10:12:44 +0000 (UTC)
+Received: from whitealder.osuosl.org (smtp1.osuosl.org [140.211.166.138])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by mail.kernel.org (Postfix) with ESMTPS id CE8AE2073E
-	for <iommu@archiver.kernel.org>; Fri, 15 May 2020 10:07:27 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org CE8AE2073E
-Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=8bytes.org
+	by mail.kernel.org (Postfix) with ESMTPS id 7D01720709
+	for <iommu@archiver.kernel.org>; Fri, 15 May 2020 10:12:44 +0000 (UTC)
+Authentication-Results: mail.kernel.org;
+	dkim=fail reason="signature verification failed" (1024-bit key) header.d=redhat.com header.i=@redhat.com header.b="VAtwvF9v"
+DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 7D01720709
+Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=redhat.com
 Authentication-Results: mail.kernel.org; spf=pass smtp.mailfrom=iommu-bounces@lists.linux-foundation.org
 Received: from localhost (localhost [127.0.0.1])
-	by fraxinus.osuosl.org (Postfix) with ESMTP id ADA0987CA5;
-	Fri, 15 May 2020 10:07:27 +0000 (UTC)
+	by whitealder.osuosl.org (Postfix) with ESMTP id 528DC88D9A;
+	Fri, 15 May 2020 10:12:44 +0000 (UTC)
+X-Virus-Scanned: amavisd-new at osuosl.org
+Received: from whitealder.osuosl.org ([127.0.0.1])
+	by localhost (.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
+	with ESMTP id X1NGRlehve8t; Fri, 15 May 2020 10:12:39 +0000 (UTC)
+Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [140.211.9.56])
+	by whitealder.osuosl.org (Postfix) with ESMTP id C8D4388D19;
+	Fri, 15 May 2020 10:12:39 +0000 (UTC)
+Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
+	by lists.linuxfoundation.org (Postfix) with ESMTP id 9A1BFC0178;
+	Fri, 15 May 2020 10:12:39 +0000 (UTC)
+Received: from fraxinus.osuosl.org (smtp4.osuosl.org [140.211.166.137])
+ by lists.linuxfoundation.org (Postfix) with ESMTP id C5CBEC016F
+ for <iommu@lists.linux-foundation.org>; Fri, 15 May 2020 10:12:38 +0000 (UTC)
+Received: from localhost (localhost [127.0.0.1])
+ by fraxinus.osuosl.org (Postfix) with ESMTP id ADF7D87B99
+ for <iommu@lists.linux-foundation.org>; Fri, 15 May 2020 10:12:38 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
 Received: from fraxinus.osuosl.org ([127.0.0.1])
-	by localhost (.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
-	with ESMTP id aNygG0FWJiMm; Fri, 15 May 2020 10:07:23 +0000 (UTC)
-Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [140.211.9.56])
-	by fraxinus.osuosl.org (Postfix) with ESMTP id 13C4787B15;
-	Fri, 15 May 2020 10:07:23 +0000 (UTC)
-Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
-	by lists.linuxfoundation.org (Postfix) with ESMTP id C56F3C0178;
-	Fri, 15 May 2020 10:07:22 +0000 (UTC)
-Received: from hemlock.osuosl.org (smtp2.osuosl.org [140.211.166.133])
- by lists.linuxfoundation.org (Postfix) with ESMTP id 323D8C016F
- for <iommu@lists.linux-foundation.org>; Fri, 15 May 2020 10:07:22 +0000 (UTC)
-Received: from localhost (localhost [127.0.0.1])
- by hemlock.osuosl.org (Postfix) with ESMTP id 2EE948979E
- for <iommu@lists.linux-foundation.org>; Fri, 15 May 2020 10:07:22 +0000 (UTC)
-X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from hemlock.osuosl.org ([127.0.0.1])
  by localhost (.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
- with ESMTP id ztWdHWXLtidn for <iommu@lists.linux-foundation.org>;
- Fri, 15 May 2020 10:07:21 +0000 (UTC)
-X-Greylist: from auto-whitelisted by SQLgrey-1.7.6
-Received: from theia.8bytes.org (8bytes.org [81.169.241.247])
- by hemlock.osuosl.org (Postfix) with ESMTPS id AEB088979C
- for <iommu@lists.linux-foundation.org>; Fri, 15 May 2020 10:07:21 +0000 (UTC)
-Received: by theia.8bytes.org (Postfix, from userid 1000)
- id 27896379; Fri, 15 May 2020 12:07:20 +0200 (CEST)
-Date: Fri, 15 May 2020 12:07:18 +0200
-From: Joerg Roedel <joro@8bytes.org>
-To: Yong Wu <yong.wu@mediatek.com>
-Subject: Re: [PATCH v2 23/33] iommu/mediatek-v1 Convert to
- probe/release_device() call-backs
-Message-ID: <20200515100718.GS18353@8bytes.org>
-References: <20200414131542.25608-1-joro@8bytes.org>
- <20200414131542.25608-24-joro@8bytes.org>
- <1589528699.26119.9.camel@mhfsdcap03>
+ with ESMTP id MMRkZaivFEC0 for <iommu@lists.linux-foundation.org>;
+ Fri, 15 May 2020 10:12:38 +0000 (UTC)
+X-Greylist: domain auto-whitelisted by SQLgrey-1.7.6
+Received: from us-smtp-delivery-1.mimecast.com (us-smtp-2.mimecast.com
+ [207.211.31.81])
+ by fraxinus.osuosl.org (Postfix) with ESMTPS id D5DA787B6B
+ for <iommu@lists.linux-foundation.org>; Fri, 15 May 2020 10:12:37 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+ s=mimecast20190719; t=1589537556;
+ h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+ to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+ in-reply-to:in-reply-to:references:references;
+ bh=0MKoWH/rG+jrDQ9BJKMgClfKWi0OU8i02iZINw2Eoiw=;
+ b=VAtwvF9vNJRb+V2BdSMZITZcvq5dZlw9feC4bJP7W6HLLm9cbGguIi/+3LqtiAeSfZnBtx
+ T+1BvMORKNTT/f0LFH9Kyh+SFrRk8SB9eKRzoxZ7kl47djsW0sYq19yWrCNoEfKYdOEg/G
+ 1ceeWaHZXB8VVJIzmR5Uhf41Ggb5/AE=
+Received: from mimecast-mx01.redhat.com (mimecast-mx01.redhat.com
+ [209.132.183.4]) (Using TLS) by relay.mimecast.com with ESMTP id
+ us-mta-29-FfsBUAj5OSSzyVChPXN-GA-1; Fri, 15 May 2020 06:12:30 -0400
+X-MC-Unique: FfsBUAj5OSSzyVChPXN-GA-1
+Received: from smtp.corp.redhat.com (int-mx08.intmail.prod.int.phx2.redhat.com
+ [10.5.11.23])
+ (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
+ (No client certificate requested)
+ by mimecast-mx01.redhat.com (Postfix) with ESMTPS id 01163189952E;
+ Fri, 15 May 2020 10:12:28 +0000 (UTC)
+Received: from sirius.home.kraxel.org (ovpn-115-145.ams2.redhat.com
+ [10.36.115.145])
+ by smtp.corp.redhat.com (Postfix) with ESMTP id 0554A26E41;
+ Fri, 15 May 2020 10:12:26 +0000 (UTC)
+Received: by sirius.home.kraxel.org (Postfix, from userid 1000)
+ id EB6CF16E16; Fri, 15 May 2020 12:12:24 +0200 (CEST)
+Date: Fri, 15 May 2020 12:12:24 +0200
+From: Gerd Hoffmann <kraxel@redhat.com>
+To: Marek Szyprowski <m.szyprowski@samsung.com>
+Subject: Re: [PATCH v5 25/38] drm: virtio: fix common struct sg_table related
+ issues
+Message-ID: <20200515101224.vrr6rlzgwc6d35az@sirius.home.kraxel.org>
+References: <20200513132114.6046-1-m.szyprowski@samsung.com>
+ <20200513133245.6408-1-m.szyprowski@samsung.com>
+ <CGME20200513133314eucas1p2f04e32d65e71c613a2a9aacb29064a7d@eucas1p2.samsung.com>
+ <20200513133245.6408-25-m.szyprowski@samsung.com>
 MIME-Version: 1.0
 Content-Disposition: inline
-In-Reply-To: <1589528699.26119.9.camel@mhfsdcap03>
-User-Agent: Mutt/1.10.1 (2018-07-13)
-Cc: Joerg Roedel <jroedel@suse.de>, Will Deacon <will@kernel.org>,
- linux-kernel@vger.kernel.org, iommu@lists.linux-foundation.org,
- linux-mediatek@lists.infradead.org, Matthias Brugger <matthias.bgg@gmail.com>,
- Robin Murphy <robin.murphy@arm.com>
+In-Reply-To: <20200513133245.6408-25-m.szyprowski@samsung.com>
+X-Scanned-By: MIMEDefang 2.84 on 10.5.11.23
+Cc: Bartlomiej Zolnierkiewicz <b.zolnierkie@samsung.com>,
+ David Airlie <airlied@linux.ie>, linux-kernel@vger.kernel.org,
+ dri-devel@lists.freedesktop.org, virtualization@lists.linux-foundation.org,
+ linaro-mm-sig@lists.linaro.org, iommu@lists.linux-foundation.org,
+ Daniel Vetter <daniel@ffwll.ch>, Robin Murphy <robin.murphy@arm.com>,
+ Christoph Hellwig <hch@lst.de>, linux-arm-kernel@lists.infradead.org
 X-BeenThere: iommu@lists.linux-foundation.org
 X-Mailman-Version: 2.1.15
 Precedence: list
@@ -80,48 +109,37 @@ Content-Transfer-Encoding: 7bit
 Errors-To: iommu-bounces@lists.linux-foundation.org
 Sender: "iommu" <iommu-bounces@lists.linux-foundation.org>
 
-Hi,
-
-On Fri, May 15, 2020 at 03:44:59PM +0800, Yong Wu wrote:
-> On Tue, 2020-04-14 at 15:15 +0200, Joerg Roedel wrote:
-> > -	return iommu_device_link(&data->iommu, dev);
-> > +	err = arm_iommu_attach_device(dev, mtk_mapping);
-> > +	if (err)
-> > +		dev_err(dev, "Can't create IOMMU mapping - DMA-OPS will not work\n");
+On Wed, May 13, 2020 at 03:32:32PM +0200, Marek Szyprowski wrote:
+> The Documentation/DMA-API-HOWTO.txt states that the dma_map_sg() function
+> returns the number of the created entries in the DMA address space.
+> However the subsequent calls to the dma_sync_sg_for_{device,cpu}() and
+> dma_unmap_sg must be called with the original number of the entries
+> passed to the dma_map_sg().
 > 
+> struct sg_table is a common structure used for describing a non-contiguous
+> memory buffer, used commonly in the DRM and graphics subsystems. It
+> consists of a scatterlist with memory pages and DMA addresses (sgl entry),
+> as well as the number of scatterlist entries: CPU pages (orig_nents entry)
+> and DMA mapped pages (nents entry).
 > 
-> Hi Joerg,
+> It turned out that it was a common mistake to misuse nents and orig_nents
+> entries, calling DMA-mapping functions with a wrong number of entries or
+> ignoring the number of mapped entries returned by the dma_map_sg()
+> function.
 > 
->      Thanks very much for this patch.
-> 
->      This arm_iommu_attach_device is called just as we expected.
-> 
->      But it will fail in this callstack as the group->mutex was tried to
-> be re-locked...
-> 
-> [<c0938e8c>] (iommu_attach_device) from [<c0317590>]
-> (__arm_iommu_attach_device+0x34/0x90)
-> [<c0317590>] (__arm_iommu_attach_device) from [<c03175f8>]
-> (arm_iommu_attach_device+0xc/0x20)
-> [<c03175f8>] (arm_iommu_attach_device) from [<c09432cc>]
-> (mtk_iommu_probe_finalize+0x34/0x50)
-> [<c09432cc>] (mtk_iommu_probe_finalize) from [<c093a8ac>]
-> (bus_iommu_probe+0x2a8/0x2c4)
-> [<c093a8ac>] (bus_iommu_probe) from [<c093a950>] (bus_set_iommu
-> +0x88/0xd4)
-> [<c093a950>] (bus_set_iommu) from [<c0943c74>] (mtk_iommu_probe
-> +0x2f8/0x364)
+> To avoid such issues, lets use a common dma-mapping wrappers operating
+> directly on the struct sg_table objects and use scatterlist page
+> iterators where possible. This, almost always, hides references to the
+> nents and orig_nents entries, making the code robust, easier to follow
+> and copy/paste safe.
 
-Thanks for the report, is
+Looks all sane.
 
-	https://lore.kernel.org/lkml/1589530123-30240-1-git-send-email-yong.wu@mediatek.com/
+Acked-by: Gerd Hoffmann <kraxel@redhat.com>
 
-The fix for this issue or is something else required?
+take care,
+  Gerd
 
-
-Thanks,
-
-	Joerg
 _______________________________________________
 iommu mailing list
 iommu@lists.linux-foundation.org
