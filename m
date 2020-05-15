@@ -2,79 +2,91 @@ Return-Path: <SRS0=PRYs=65=lists.linux-foundation.org=iommu-bounces@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-2.3 required=3.0 tests=DKIM_INVALID,DKIM_SIGNED,
-	MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS,USER_AGENT_SANE_1 autolearn=no
+X-Spam-Status: No, score=-3.8 required=3.0 tests=HEADER_FROM_DIFFERENT_DOMAINS,
+	MAILING_LIST_MULTI,SIGNED_OFF_BY,SPF_HELO_NONE,SPF_PASS autolearn=no
 	autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 5E1D8C433E1
-	for <iommu@archiver.kernel.org>; Fri, 15 May 2020 17:22:05 +0000 (UTC)
-Received: from whitealder.osuosl.org (smtp1.osuosl.org [140.211.166.138])
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 52638C433E0
+	for <iommu@archiver.kernel.org>; Fri, 15 May 2020 17:54:51 +0000 (UTC)
+Received: from silver.osuosl.org (smtp3.osuosl.org [140.211.166.136])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by mail.kernel.org (Postfix) with ESMTPS id 2922A2073E
-	for <iommu@archiver.kernel.org>; Fri, 15 May 2020 17:22:05 +0000 (UTC)
-Authentication-Results: mail.kernel.org;
-	dkim=fail reason="signature verification failed" (1024-bit key) header.d=kernel.org header.i=@kernel.org header.b="GRNC4iSb"
-DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 2922A2073E
-Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=kernel.org
+	by mail.kernel.org (Postfix) with ESMTPS id DFF1020727
+	for <iommu@archiver.kernel.org>; Fri, 15 May 2020 17:54:50 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org DFF1020727
+Authentication-Results: mail.kernel.org; dmarc=none (p=none dis=none) header.from=lwn.net
 Authentication-Results: mail.kernel.org; spf=pass smtp.mailfrom=iommu-bounces@lists.linux-foundation.org
 Received: from localhost (localhost [127.0.0.1])
-	by whitealder.osuosl.org (Postfix) with ESMTP id 026B788E88;
-	Fri, 15 May 2020 17:22:05 +0000 (UTC)
+	by silver.osuosl.org (Postfix) with ESMTP id 9EA9C2E8F4;
+	Fri, 15 May 2020 17:54:50 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from whitealder.osuosl.org ([127.0.0.1])
+Received: from silver.osuosl.org ([127.0.0.1])
 	by localhost (.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
-	with ESMTP id JGmNbuQBQi78; Fri, 15 May 2020 17:22:01 +0000 (UTC)
+	with ESMTP id 25yf4p0vMBVA; Fri, 15 May 2020 17:54:45 +0000 (UTC)
 Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [140.211.9.56])
-	by whitealder.osuosl.org (Postfix) with ESMTP id 1EDA388E62;
-	Fri, 15 May 2020 17:22:01 +0000 (UTC)
+	by silver.osuosl.org (Postfix) with ESMTP id B6067258B9;
+	Fri, 15 May 2020 17:54:45 +0000 (UTC)
 Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
-	by lists.linuxfoundation.org (Postfix) with ESMTP id E5CA5C0859;
-	Fri, 15 May 2020 17:22:00 +0000 (UTC)
-Received: from fraxinus.osuosl.org (smtp4.osuosl.org [140.211.166.137])
- by lists.linuxfoundation.org (Postfix) with ESMTP id 59825C016F
- for <iommu@lists.linux-foundation.org>; Fri, 15 May 2020 17:21:59 +0000 (UTC)
+	by lists.linuxfoundation.org (Postfix) with ESMTP id 9599EC0859;
+	Fri, 15 May 2020 17:54:45 +0000 (UTC)
+Received: from silver.osuosl.org (smtp3.osuosl.org [140.211.166.136])
+ by lists.linuxfoundation.org (Postfix) with ESMTP id 93097C016F
+ for <iommu@lists.linux-foundation.org>; Fri, 15 May 2020 17:54:44 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
- by fraxinus.osuosl.org (Postfix) with ESMTP id 54E55879EF
- for <iommu@lists.linux-foundation.org>; Fri, 15 May 2020 17:21:59 +0000 (UTC)
+ by silver.osuosl.org (Postfix) with ESMTP id 7BA382E8E5
+ for <iommu@lists.linux-foundation.org>; Fri, 15 May 2020 17:54:44 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from fraxinus.osuosl.org ([127.0.0.1])
+Received: from silver.osuosl.org ([127.0.0.1])
  by localhost (.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
- with ESMTP id Q8k7Ty_d_Gl1 for <iommu@lists.linux-foundation.org>;
- Fri, 15 May 2020 17:21:59 +0000 (UTC)
+ with ESMTP id wME0YZqXWlGm for <iommu@lists.linux-foundation.org>;
+ Fri, 15 May 2020 17:54:42 +0000 (UTC)
 X-Greylist: domain auto-whitelisted by SQLgrey-1.7.6
-Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
- by fraxinus.osuosl.org (Postfix) with ESMTPS id 011078791D
- for <iommu@lists.linux-foundation.org>; Fri, 15 May 2020 17:21:58 +0000 (UTC)
-Received: from willie-the-truck (236.31.169.217.in-addr.arpa [217.169.31.236])
- (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256
- bits)) (No client certificate requested)
- by mail.kernel.org (Postfix) with ESMTPSA id D35B82073E;
- Fri, 15 May 2020 17:21:56 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
- s=default; t=1589563318;
- bh=0P8rL+XmxOR/BVtEmlu60acHvGkwGm2FDdjswXIkm68=;
- h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
- b=GRNC4iSbHX8O2WHd1MLCSQ+5chG8FCYLWzzSuJ1Sdqejq2+A6bxxojc3r++wZatCU
- VsAw+NehG0ZYH8SSRm4A0HLaqagynOVtuaGeMneX4jImS9u7o8WEQgMdCyR8aNkbYU
- e9y0qROMvVqwlLtcwPde3eSYl8XtXXZr11HwXh5M=
-Date: Fri, 15 May 2020 18:21:53 +0100
-From: Will Deacon <will@kernel.org>
-To: "Raj, Ashok" <ashok.raj@intel.com>
-Subject: Re: [PATCH 0/4] PCI, iommu: Factor 'untrusted' check for ATS
- enablement
-Message-ID: <20200515172152.GC23334@willie-the-truck>
-References: <20200515104359.1178606-1-jean-philippe@linaro.org>
- <20200515154351.GA6546@infradead.org>
- <20200515171948.GC75440@otc-nc-03>
+Received: from ms.lwn.net (ms.lwn.net [45.79.88.28])
+ by silver.osuosl.org (Postfix) with ESMTPS id 33E75258B9
+ for <iommu@lists.linux-foundation.org>; Fri, 15 May 2020 17:54:42 +0000 (UTC)
+Received: from lwn.net (localhost [127.0.0.1])
+ (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+ (No client certificate requested)
+ by ms.lwn.net (Postfix) with ESMTPSA id 4EDBB736;
+ Fri, 15 May 2020 17:54:39 +0000 (UTC)
+Date: Fri, 15 May 2020 11:54:38 -0600
+From: Jonathan Corbet <corbet@lwn.net>
+To: Mauro Carvalho Chehab <mchehab+huawei@kernel.org>
+Subject: Re: [PATCH 03/14] docs: fix references for DMA*.txt files
+Message-ID: <20200515115438.52c119d7@lwn.net>
+In-Reply-To: <0539f4b4b442dba92358b6c8d9e8fb5eafcec693.1588345503.git.mchehab+huawei@kernel.org>
+References: <cover.1588345503.git.mchehab+huawei@kernel.org>
+ <0539f4b4b442dba92358b6c8d9e8fb5eafcec693.1588345503.git.mchehab+huawei@kernel.org>
+Organization: LWN.net
 MIME-Version: 1.0
-Content-Disposition: inline
-In-Reply-To: <20200515171948.GC75440@otc-nc-03>
-User-Agent: Mutt/1.10.1 (2018-07-13)
-Cc: Jean-Philippe Brucker <jean-philippe@linaro.org>, linux-pci@vger.kernel.org,
- alex.williamson@redhat.com, Christoph Hellwig <hch@infradead.org>,
- iommu@lists.linux-foundation.org, bhelgaas@google.com, robin.murphy@arm.com,
- dwmw2@infradead.org, linux-arm-kernel@lists.infradead.org
+Cc: Kefeng Wang <wangkefeng.wang@huawei.com>, linux-ia64@vger.kernel.org,
+ Linux Doc Mailing List <linux-doc@vger.kernel.org>,
+ Peter Zijlstra <peterz@infradead.org>, linux-pci@vger.kernel.org,
+ Akira Yokosawa <akiyks@gmail.com>, Dmitry Safonov <0x7f454c46@gmail.com>,
+ David Howells <dhowells@redhat.com>, "H. Peter Anvin" <hpa@zytor.com>,
+ Joel Fernandes <joel@joelfernandes.org>, Will Deacon <will@kernel.org>,
+ Christoph Hellwig <hch@lst.de>, linux-arch@vger.kernel.org,
+ Stephen Rothwell <sfr@canb.auug.org.au>, Logan Gunthorpe <logang@deltatee.com>,
+ Helge Deller <deller@gmx.de>, x86@kernel.org,
+ Mike Rapoport <rppt@linux.ibm.com>, Ingo Molnar <mingo@redhat.com>,
+ Alan Stern <stern@rowland.harvard.edu>, Allison Randal <allison@lohutok.net>,
+ Jade Alglave <j.alglave@ucl.ac.uk>, Daniel Lustig <dlustig@nvidia.com>,
+ Andrea Parri <parri.andrea@gmail.com>, Fenghua Yu <fenghua.yu@intel.com>,
+ Simon Horman <horms+renesas@verge.net.au>,
+ "Paul E. McKenney" <paulmck@kernel.org>, Boqun Feng <boqun.feng@gmail.com>,
+ Nicholas Piggin <npiggin@gmail.com>, SeongJae Park <sj38.park@gmail.com>,
+ Borislav Petkov <bp@alien8.de>, Bjorn Helgaas <bhelgaas@google.com>,
+ Luc Maranget <luc.maranget@inria.fr>, Thomas Gleixner <tglx@linutronix.de>,
+ Tom Vaden <tom.vaden@hpe.com>,
+ Marcos Paulo de Souza <marcos.souza.org@gmail.com>,
+ Jens Axboe <axboe@kernel.dk>,
+ "James E.J. Bottomley" <James.Bottomley@HansenPartnership.com>,
+ Damien Le Moal <damien.lemoal@wdc.com>, Tony Luck <tony.luck@intel.com>,
+ linux-parisc@vger.kernel.org, Mathieu Poirier <mathieu.poirier@linaro.org>,
+ Greg Kroah-Hartman <gregkh@linuxfoundation.org>, linux-kernel@vger.kernel.org,
+ Sergey Senozhatsky <sergey.senozhatsky@gmail.com>,
+ iommu@lists.linux-foundation.org, Andrew Morton <akpm@linux-foundation.org>,
+ Robin Murphy <robin.murphy@arm.com>
 X-BeenThere: iommu@lists.linux-foundation.org
 X-Mailman-Version: 2.1.15
 Precedence: list
@@ -92,25 +104,36 @@ Content-Transfer-Encoding: 7bit
 Errors-To: iommu-bounces@lists.linux-foundation.org
 Sender: "iommu" <iommu-bounces@lists.linux-foundation.org>
 
-Hi,
+On Fri,  1 May 2020 17:37:47 +0200
+Mauro Carvalho Chehab <mchehab+huawei@kernel.org> wrote:
 
-On Fri, May 15, 2020 at 10:19:49AM -0700, Raj, Ashok wrote:
-> On Fri, May 15, 2020 at 08:43:51AM -0700, Christoph Hellwig wrote:
-> > Can you please lift the untrusted flag into struct device?  It really
-> > isn't a PCI specific concept, and we should not have code poking into
-> > pci_dev all over the iommu code.
+> As we moved those files to core-api, fix references to point
+> to their newer locations.
 > 
-> Just for clarification: All IOMMU's today mostly pertain to only PCI devices
-> and for devices that aren't PCI like HPET for instance we give a PCI
-> identifier. Facilities like ATS for instance require the platform to have 
-> an IOMMU.
-> 
-> what additional problems does moving this to struct device solve?
+> Signed-off-by: Mauro Carvalho Chehab <mchehab+huawei@kernel.org>
+> ---
+>  Documentation/PCI/pci.rst                          |  6 +++---
+>  Documentation/block/biodoc.rst                     |  2 +-
+>  Documentation/core-api/bus-virt-phys-mapping.rst   |  2 +-
+>  Documentation/core-api/dma-api.rst                 |  6 +++---
+>  Documentation/core-api/dma-isa-lpc.rst             |  2 +-
+>  Documentation/driver-api/usb/dma.rst               |  6 +++---
+>  Documentation/memory-barriers.txt                  |  6 +++---
+>  .../translations/ko_KR/memory-barriers.txt         |  6 +++---
+>  arch/ia64/hp/common/sba_iommu.c                    | 12 ++++++------
+>  arch/parisc/kernel/pci-dma.c                       |  2 +-
+>  arch/x86/include/asm/dma-mapping.h                 |  4 ++--
+>  arch/x86/kernel/amd_gart_64.c                      |  2 +-
+>  drivers/parisc/sba_iommu.c                         | 14 +++++++-------
+>  include/linux/dma-mapping.h                        |  2 +-
+>  include/media/videobuf-dma-sg.h                    |  2 +-
+>  kernel/dma/debug.c                                 |  2 +-
+>  16 files changed, 38 insertions(+), 38 deletions(-)
 
-ATS is PCI specific, but IOMMUs certainly aren't! The vast majority of
-IOMMUs deployed in arm/arm64 SoCs are /not/ using any sort of PCI.
+...of course, not applying patch 2 causes this one to not apply, so
+holding off for now...
 
-Will
+jon
 _______________________________________________
 iommu mailing list
 iommu@lists.linux-foundation.org
