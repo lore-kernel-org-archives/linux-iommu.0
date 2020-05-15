@@ -2,71 +2,74 @@ Return-Path: <SRS0=PRYs=65=lists.linux-foundation.org=iommu-bounces@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-5.3 required=3.0 tests=HEADER_FROM_DIFFERENT_DOMAINS,
-	INCLUDES_PATCH,MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS,USER_AGENT_SANE_1
-	autolearn=unavailable autolearn_force=no version=3.4.0
+X-Spam-Status: No, score=-6.8 required=3.0 tests=DKIM_INVALID,DKIM_SIGNED,
+	INCLUDES_PATCH,MAILING_LIST_MULTI,SIGNED_OFF_BY,SPF_HELO_NONE,SPF_PASS,
+	URIBL_BLOCKED autolearn=unavailable autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 0B0ACC433E0
-	for <iommu@archiver.kernel.org>; Fri, 15 May 2020 19:23:24 +0000 (UTC)
-Received: from fraxinus.osuosl.org (smtp4.osuosl.org [140.211.166.137])
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 2784FC433E0
+	for <iommu@archiver.kernel.org>; Fri, 15 May 2020 21:18:35 +0000 (UTC)
+Received: from hemlock.osuosl.org (smtp2.osuosl.org [140.211.166.133])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by mail.kernel.org (Postfix) with ESMTPS id 65BCE2070A
-	for <iommu@archiver.kernel.org>; Fri, 15 May 2020 19:23:23 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 65BCE2070A
-Authentication-Results: mail.kernel.org; dmarc=none (p=none dis=none) header.from=arm.com
+	by mail.kernel.org (Postfix) with ESMTPS id 83900205CB
+	for <iommu@archiver.kernel.org>; Fri, 15 May 2020 21:18:34 +0000 (UTC)
+Authentication-Results: mail.kernel.org;
+	dkim=fail reason="signature verification failed" (1024-bit key) header.d=kernel.org header.i=@kernel.org header.b="iYw1rXpY"
+DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 83900205CB
+Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=kernel.org
 Authentication-Results: mail.kernel.org; spf=pass smtp.mailfrom=iommu-bounces@lists.linux-foundation.org
 Received: from localhost (localhost [127.0.0.1])
-	by fraxinus.osuosl.org (Postfix) with ESMTP id 29A8C87F55;
-	Fri, 15 May 2020 19:23:23 +0000 (UTC)
-X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from fraxinus.osuosl.org ([127.0.0.1])
-	by localhost (.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
-	with ESMTP id ax5VzzEZr15m; Fri, 15 May 2020 19:23:18 +0000 (UTC)
-Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [140.211.9.56])
-	by fraxinus.osuosl.org (Postfix) with ESMTP id 7A3D787F41;
-	Fri, 15 May 2020 19:23:18 +0000 (UTC)
-Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
-	by lists.linuxfoundation.org (Postfix) with ESMTP id 63614C0859;
-	Fri, 15 May 2020 19:23:18 +0000 (UTC)
-Received: from hemlock.osuosl.org (smtp2.osuosl.org [140.211.166.133])
- by lists.linuxfoundation.org (Postfix) with ESMTP id 6C899C016F
- for <iommu@lists.linux-foundation.org>; Fri, 15 May 2020 19:23:17 +0000 (UTC)
-Received: from localhost (localhost [127.0.0.1])
- by hemlock.osuosl.org (Postfix) with ESMTP id 68D5B89B92
- for <iommu@lists.linux-foundation.org>; Fri, 15 May 2020 19:23:17 +0000 (UTC)
+	by hemlock.osuosl.org (Postfix) with ESMTP id 407DE89689;
+	Fri, 15 May 2020 21:18:34 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
 Received: from hemlock.osuosl.org ([127.0.0.1])
+	by localhost (.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
+	with ESMTP id QD1rbxOJqmdq; Fri, 15 May 2020 21:18:29 +0000 (UTC)
+Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [140.211.9.56])
+	by hemlock.osuosl.org (Postfix) with ESMTP id 92E1189569;
+	Fri, 15 May 2020 21:18:29 +0000 (UTC)
+Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
+	by lists.linuxfoundation.org (Postfix) with ESMTP id 841EBC0859;
+	Fri, 15 May 2020 21:18:29 +0000 (UTC)
+Received: from fraxinus.osuosl.org (smtp4.osuosl.org [140.211.166.137])
+ by lists.linuxfoundation.org (Postfix) with ESMTP id A8B33C016F
+ for <iommu@lists.linux-foundation.org>; Fri, 15 May 2020 21:18:27 +0000 (UTC)
+Received: from localhost (localhost [127.0.0.1])
+ by fraxinus.osuosl.org (Postfix) with ESMTP id 9D8AC87E6A
+ for <iommu@lists.linux-foundation.org>; Fri, 15 May 2020 21:18:27 +0000 (UTC)
+X-Virus-Scanned: amavisd-new at osuosl.org
+Received: from fraxinus.osuosl.org ([127.0.0.1])
  by localhost (.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
- with ESMTP id vv8bUAJwZqQa for <iommu@lists.linux-foundation.org>;
- Fri, 15 May 2020 19:23:15 +0000 (UTC)
+ with ESMTP id pjpvGu8AAkTR for <iommu@lists.linux-foundation.org>;
+ Fri, 15 May 2020 21:18:23 +0000 (UTC)
 X-Greylist: domain auto-whitelisted by SQLgrey-1.7.6
-Received: from foss.arm.com (foss.arm.com [217.140.110.172])
- by hemlock.osuosl.org (Postfix) with ESMTP id 57BF289B91
- for <iommu@lists.linux-foundation.org>; Fri, 15 May 2020 19:23:15 +0000 (UTC)
-Received: from usa-sjc-imap-foss1.foss.arm.com (unknown [10.121.207.14])
- by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id ADD392F;
- Fri, 15 May 2020 12:23:14 -0700 (PDT)
-Received: from [10.57.27.64] (unknown [10.57.27.64])
- by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPSA id F16A43F71E;
- Fri, 15 May 2020 12:23:13 -0700 (PDT)
-Subject: Re: [PATCH] iommu: Implement deferred domain attachment
-To: Joerg Roedel <jroedel@suse.de>
-References: <20200515094519.20338-1-joro@8bytes.org>
- <d4e1cd9e-fc83-d41a-49c0-8f14f44b2701@arm.com>
- <20200515161400.GZ18353@8bytes.org>
- <e7bdcbf1-a713-618d-3e02-037f509a17e9@arm.com>
- <20200515182600.GJ8135@suse.de>
-From: Robin Murphy <robin.murphy@arm.com>
-Message-ID: <f5c6ec5b-06c6-42e6-b74d-71cf29b44b8d@arm.com>
-Date: Fri, 15 May 2020 20:23:13 +0100
-User-Agent: Mozilla/5.0 (Windows NT 10.0; rv:68.0) Gecko/20100101
- Thunderbird/68.8.0
+Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
+ by fraxinus.osuosl.org (Postfix) with ESMTPS id 6E2FD87E09
+ for <iommu@lists.linux-foundation.org>; Fri, 15 May 2020 21:18:23 +0000 (UTC)
+Received: from localhost (mobile-166-175-190-200.mycingular.net
+ [166.175.190.200])
+ (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+ (No client certificate requested)
+ by mail.kernel.org (Postfix) with ESMTPSA id 99B7F205CB;
+ Fri, 15 May 2020 21:18:22 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+ s=default; t=1589577503;
+ bh=ZQ43XWvnomP6iief7qgRRbmyG/Bi9bziKV7eLxey5z8=;
+ h=Date:From:To:Cc:Subject:In-Reply-To:From;
+ b=iYw1rXpYC7+iTiovQH69ZJN7ikDy6fxVEhYEdV1ssHJazsWRNLymxAPARP3cwPsrF
+ MgKv6QPMsHDyZenI3gXiYZA2LWLuoVh7agD+i9unX1itmKntZUFYS9KRoZeKACj6y1
+ SvAGo7FPYdfzQx+wZlqZKyL/uju5rWadJrrwKKik=
+Date: Fri, 15 May 2020 16:18:20 -0500
+From: Bjorn Helgaas <helgaas@kernel.org>
+To: Jean-Philippe Brucker <jean-philippe@linaro.org>
+Subject: Re: [PATCH 1/4] PCI/ATS: Only enable ATS for trusted devices
+Message-ID: <20200515211820.GA545575@bjorn-Precision-5520>
 MIME-Version: 1.0
-In-Reply-To: <20200515182600.GJ8135@suse.de>
-Content-Language: en-GB
-Cc: iommu@lists.linux-foundation.org, linux-kernel@vger.kernel.org,
- Tom Murphy <murphyt7@tcd.ie>
+Content-Disposition: inline
+In-Reply-To: <20200515104359.1178606-2-jean-philippe@linaro.org>
+Cc: alex.williamson@redhat.com, ashok.raj@intel.com, linux-pci@vger.kernel.org,
+ robin.murphy@arm.com, iommu@lists.linux-foundation.org, bhelgaas@google.com,
+ will@kernel.org, dwmw2@infradead.org, linux-arm-kernel@lists.infradead.org
 X-BeenThere: iommu@lists.linux-foundation.org
 X-Mailman-Version: 2.1.15
 Precedence: list
@@ -79,72 +82,98 @@ List-Post: <mailto:iommu@lists.linux-foundation.org>
 List-Help: <mailto:iommu-request@lists.linux-foundation.org?subject=help>
 List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
  <mailto:iommu-request@lists.linux-foundation.org?subject=subscribe>
+Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
-Content-Type: text/plain; charset="us-ascii"; Format="flowed"
 Errors-To: iommu-bounces@lists.linux-foundation.org
 Sender: "iommu" <iommu-bounces@lists.linux-foundation.org>
 
-On 2020-05-15 19:26, Joerg Roedel wrote:
-> On Fri, May 15, 2020 at 05:28:53PM +0100, Robin Murphy wrote:
->> On 2020-05-15 17:14, Joerg Roedel wrote:
->>> diff --git a/drivers/iommu/dma-iommu.c b/drivers/iommu/dma-iommu.c
->>> index ba128d1cdaee..403fda04ea98 100644
->>> --- a/drivers/iommu/dma-iommu.c
->>> +++ b/drivers/iommu/dma-iommu.c
->>> @@ -362,8 +362,8 @@ static int iommu_dma_deferred_attach(struct device *dev,
->>>    		return 0;
->>>    	if (unlikely(ops->is_attach_deferred &&
->>> -			ops->is_attach_deferred(domain, dev)))
->>> -		return iommu_attach_device(domain, dev);
->>> +		     ops->is_attach_deferred(domain, dev)))
->>> +		return iommu_attach_device_no_defer(domain, dev);
->>
->> Wouldn't it be simpler to just invoke ops->attach_dev directly and avoid
->> having to formalise a public interface that nobody else should ever use
->> anyway?
+On Fri, May 15, 2020 at 12:43:59PM +0200, Jean-Philippe Brucker wrote:
+> Add pci_ats_supported(), which checks whether a device has an ATS
+> capability, and whether it is trusted.  A device is untrusted if it is
+> plugged into an external-facing port such as Thunderbolt and could be
+> spoof an existing device to exploit weaknesses in the IOMMU
+> configuration.  PCIe ATS is one such weaknesses since it allows
+> endpoints to cache IOMMU translations and emit transactions with
+> 'Translated' Address Type (10b) that partially bypass the IOMMU
+> translation.
 > 
-> That would omit the ops->attach_dev != NULL check and the trace-point on
-> device attach. Besides that, it would be a layering violation. But the
-> function is of course entirely internal to the iommu subsytem and is a
-> good canditate to be moved to a header file in drivers/iommu.
-
-Sure, checking the pointer before calling was implied, but the 
-tracepoint is a good argument, I'd forgotten about that :)
-
->> @@ -746,8 +747,11 @@ int iommu_group_add_device(struct iommu_group *group,
->> struct device *dev)
->>
->>          mutex_lock(&group->mutex);
->>          list_add_tail(&device->list, &group->devices);
->> -       if (group->domain)
->> -               ret = __iommu_attach_device(group->domain, dev);
->> +       domain = group->domain;
->> +       if (domain && (!domain->ops->is_attach_deferred ||
->> +                      !domain->ops->is_attach_deferred(domain, dev)))
->> +               ret = __iommu_attach_device(domain, dev);
->> +       }
->>          mutex_unlock(&group->mutex);
->>          if (ret)
->>                  goto err_put_group;
+> The SMMUv3 and VT-d IOMMU drivers already disallow ATS and transactions
+> with 'Translated' Address Type for untrusted devices.  Add the check to
+> pci_enable_ats() to let other drivers (AMD IOMMU for now) benefit from
+> it.
 > 
-> No, doing this in iommu_group_add_device() doesn't solve the problem.
-> The attach must not happen before a device driver took control of the
-> device and silenced any DMA initiated by the old kernel. At probe time
-> this isn't guaranteed.
+> By checking ats_cap, the pci_ats_supported() helper also returns whether
+> ATS was globally disabled with pci=noats, and could later include more
+> things, for example whether the whole PCIe hierarchy down to the
+> endpoint supports ATS.
+> 
+> Signed-off-by: Jean-Philippe Brucker <jean-philippe@linaro.org>
 
-But that's not what this is; this is (supposed to be) the exact same 
-"don't actually perform the attach yet" logic as before, just 
-restricting it to default domains in the one place that it actually 
-needs to be, so as not to fundamentally bugger up iommu_attach_device() 
-in a way that prevents it from working as expected at the correct point 
-later.
+Acked-by: Bjorn Helgaas <bhelgaas@google.com>
 
-Thinking a bit more, consider if the driver resets the device then 
-attaches it straight to its own unmanaged domain rather than calling any 
-DMA ops (e.g. VFIO?) - it looks like that would also be totally broken 
-right now, and no amount of bodges in iommu-dma is going to help there.
-
-Robin.
+> ---
+>  include/linux/pci-ats.h |  3 +++
+>  drivers/pci/ats.c       | 18 +++++++++++++++++-
+>  2 files changed, 20 insertions(+), 1 deletion(-)
+> 
+> diff --git a/include/linux/pci-ats.h b/include/linux/pci-ats.h
+> index d08f0869f1213e..f75c307f346de9 100644
+> --- a/include/linux/pci-ats.h
+> +++ b/include/linux/pci-ats.h
+> @@ -6,11 +6,14 @@
+>  
+>  #ifdef CONFIG_PCI_ATS
+>  /* Address Translation Service */
+> +bool pci_ats_supported(struct pci_dev *dev);
+>  int pci_enable_ats(struct pci_dev *dev, int ps);
+>  void pci_disable_ats(struct pci_dev *dev);
+>  int pci_ats_queue_depth(struct pci_dev *dev);
+>  int pci_ats_page_aligned(struct pci_dev *dev);
+>  #else /* CONFIG_PCI_ATS */
+> +static inline bool pci_ats_supported(struct pci_dev *d)
+> +{ return false; }
+>  static inline int pci_enable_ats(struct pci_dev *d, int ps)
+>  { return -ENODEV; }
+>  static inline void pci_disable_ats(struct pci_dev *d) { }
+> diff --git a/drivers/pci/ats.c b/drivers/pci/ats.c
+> index 390e92f2d8d1fc..15fa0c37fd8e44 100644
+> --- a/drivers/pci/ats.c
+> +++ b/drivers/pci/ats.c
+> @@ -30,6 +30,22 @@ void pci_ats_init(struct pci_dev *dev)
+>  	dev->ats_cap = pos;
+>  }
+>  
+> +/**
+> + * pci_ats_supported - check if the device can use ATS
+> + * @dev: the PCI device
+> + *
+> + * Returns true if the device supports ATS and is allowed to use it, false
+> + * otherwise.
+> + */
+> +bool pci_ats_supported(struct pci_dev *dev)
+> +{
+> +	if (!dev->ats_cap)
+> +		return false;
+> +
+> +	return !dev->untrusted;
+> +}
+> +EXPORT_SYMBOL_GPL(pci_ats_supported);
+> +
+>  /**
+>   * pci_enable_ats - enable the ATS capability
+>   * @dev: the PCI device
+> @@ -42,7 +58,7 @@ int pci_enable_ats(struct pci_dev *dev, int ps)
+>  	u16 ctrl;
+>  	struct pci_dev *pdev;
+>  
+> -	if (!dev->ats_cap)
+> +	if (!pci_ats_supported(dev))
+>  		return -EINVAL;
+>  
+>  	if (WARN_ON(dev->ats_enabled))
+> -- 
+> 2.26.2
+> 
 _______________________________________________
 iommu mailing list
 iommu@lists.linux-foundation.org
