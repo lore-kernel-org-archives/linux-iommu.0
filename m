@@ -2,74 +2,84 @@ Return-Path: <SRS0=PRYs=65=lists.linux-foundation.org=iommu-bounces@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-6.8 required=3.0 tests=DKIM_INVALID,DKIM_SIGNED,
-	INCLUDES_PATCH,MAILING_LIST_MULTI,SIGNED_OFF_BY,SPF_HELO_NONE,SPF_PASS,
-	URIBL_BLOCKED autolearn=unavailable autolearn_force=no version=3.4.0
+X-Spam-Status: No, score=-0.8 required=3.0 tests=HEADER_FROM_DIFFERENT_DOMAINS,
+	MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS autolearn=no autolearn_force=no
+	version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 2784FC433E0
-	for <iommu@archiver.kernel.org>; Fri, 15 May 2020 21:18:35 +0000 (UTC)
-Received: from hemlock.osuosl.org (smtp2.osuosl.org [140.211.166.133])
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 7EBA7C433E0
+	for <iommu@archiver.kernel.org>; Fri, 15 May 2020 21:33:29 +0000 (UTC)
+Received: from fraxinus.osuosl.org (smtp4.osuosl.org [140.211.166.137])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by mail.kernel.org (Postfix) with ESMTPS id 83900205CB
-	for <iommu@archiver.kernel.org>; Fri, 15 May 2020 21:18:34 +0000 (UTC)
-Authentication-Results: mail.kernel.org;
-	dkim=fail reason="signature verification failed" (1024-bit key) header.d=kernel.org header.i=@kernel.org header.b="iYw1rXpY"
-DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 83900205CB
-Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=kernel.org
+	by mail.kernel.org (Postfix) with ESMTPS id 12E9820756
+	for <iommu@archiver.kernel.org>; Fri, 15 May 2020 21:33:28 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 12E9820756
+Authentication-Results: mail.kernel.org; dmarc=none (p=none dis=none) header.from=hisilicon.com
 Authentication-Results: mail.kernel.org; spf=pass smtp.mailfrom=iommu-bounces@lists.linux-foundation.org
 Received: from localhost (localhost [127.0.0.1])
-	by hemlock.osuosl.org (Postfix) with ESMTP id 407DE89689;
-	Fri, 15 May 2020 21:18:34 +0000 (UTC)
+	by fraxinus.osuosl.org (Postfix) with ESMTP id A7C398741F;
+	Fri, 15 May 2020 21:33:28 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from hemlock.osuosl.org ([127.0.0.1])
+Received: from fraxinus.osuosl.org ([127.0.0.1])
 	by localhost (.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
-	with ESMTP id QD1rbxOJqmdq; Fri, 15 May 2020 21:18:29 +0000 (UTC)
+	with ESMTP id a1aKzF4CK1ve; Fri, 15 May 2020 21:33:23 +0000 (UTC)
 Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [140.211.9.56])
-	by hemlock.osuosl.org (Postfix) with ESMTP id 92E1189569;
-	Fri, 15 May 2020 21:18:29 +0000 (UTC)
+	by fraxinus.osuosl.org (Postfix) with ESMTP id 422DC873F0;
+	Fri, 15 May 2020 21:33:23 +0000 (UTC)
 Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
-	by lists.linuxfoundation.org (Postfix) with ESMTP id 841EBC0859;
-	Fri, 15 May 2020 21:18:29 +0000 (UTC)
+	by lists.linuxfoundation.org (Postfix) with ESMTP id 2B531C0859;
+	Fri, 15 May 2020 21:33:23 +0000 (UTC)
 Received: from fraxinus.osuosl.org (smtp4.osuosl.org [140.211.166.137])
- by lists.linuxfoundation.org (Postfix) with ESMTP id A8B33C016F
- for <iommu@lists.linux-foundation.org>; Fri, 15 May 2020 21:18:27 +0000 (UTC)
+ by lists.linuxfoundation.org (Postfix) with ESMTP id 450FAC016F
+ for <iommu@lists.linux-foundation.org>; Fri, 15 May 2020 21:33:21 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
- by fraxinus.osuosl.org (Postfix) with ESMTP id 9D8AC87E6A
- for <iommu@lists.linux-foundation.org>; Fri, 15 May 2020 21:18:27 +0000 (UTC)
+ by fraxinus.osuosl.org (Postfix) with ESMTP id 35E8A8741F
+ for <iommu@lists.linux-foundation.org>; Fri, 15 May 2020 21:33:21 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
 Received: from fraxinus.osuosl.org ([127.0.0.1])
  by localhost (.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
- with ESMTP id pjpvGu8AAkTR for <iommu@lists.linux-foundation.org>;
- Fri, 15 May 2020 21:18:23 +0000 (UTC)
-X-Greylist: domain auto-whitelisted by SQLgrey-1.7.6
-Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
- by fraxinus.osuosl.org (Postfix) with ESMTPS id 6E2FD87E09
- for <iommu@lists.linux-foundation.org>; Fri, 15 May 2020 21:18:23 +0000 (UTC)
-Received: from localhost (mobile-166-175-190-200.mycingular.net
- [166.175.190.200])
- (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
- (No client certificate requested)
- by mail.kernel.org (Postfix) with ESMTPSA id 99B7F205CB;
- Fri, 15 May 2020 21:18:22 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
- s=default; t=1589577503;
- bh=ZQ43XWvnomP6iief7qgRRbmyG/Bi9bziKV7eLxey5z8=;
- h=Date:From:To:Cc:Subject:In-Reply-To:From;
- b=iYw1rXpYC7+iTiovQH69ZJN7ikDy6fxVEhYEdV1ssHJazsWRNLymxAPARP3cwPsrF
- MgKv6QPMsHDyZenI3gXiYZA2LWLuoVh7agD+i9unX1itmKntZUFYS9KRoZeKACj6y1
- SvAGo7FPYdfzQx+wZlqZKyL/uju5rWadJrrwKKik=
-Date: Fri, 15 May 2020 16:18:20 -0500
-From: Bjorn Helgaas <helgaas@kernel.org>
-To: Jean-Philippe Brucker <jean-philippe@linaro.org>
-Subject: Re: [PATCH 1/4] PCI/ATS: Only enable ATS for trusted devices
-Message-ID: <20200515211820.GA545575@bjorn-Precision-5520>
+ with ESMTP id NLt4Wpu_ZPFr for <iommu@lists.linux-foundation.org>;
+ Fri, 15 May 2020 21:33:19 +0000 (UTC)
+X-Greylist: from auto-whitelisted by SQLgrey-1.7.6
+Received: from huawei.com (szxga03-in.huawei.com [45.249.212.189])
+ by fraxinus.osuosl.org (Postfix) with ESMTPS id B4F17873F0
+ for <iommu@lists.linux-foundation.org>; Fri, 15 May 2020 21:33:19 +0000 (UTC)
+Received: from dggemi406-hub.china.huawei.com (unknown [172.30.72.53])
+ by Forcepoint Email with ESMTP id 852FFDD090972E036997;
+ Sat, 16 May 2020 05:33:13 +0800 (CST)
+Received: from DGGEMI525-MBS.china.huawei.com ([169.254.6.251]) by
+ dggemi406-hub.china.huawei.com ([10.3.17.144]) with mapi id 14.03.0487.000;
+ Sat, 16 May 2020 05:33:06 +0800
+From: Song Bao Hua <song.bao.hua@hisilicon.com>
+To: "hch@lst.de" <hch@lst.de>, Robin Murphy <robin.murphy@arm.com>
+Subject: RE: Constantly map and unmap of streaming DMA buffers with IOMMU
+ backend might cause serious performance problem
+Thread-Topic: Constantly map and unmap of streaming DMA buffers with IOMMU
+ backend might cause serious performance problem
+Thread-Index: AdYqec9gnuD/5zUSTfGZehfpOCqtzP//6eGAgAArTwD//wxG4A==
+Date: Fri, 15 May 2020 21:33:05 +0000
+Message-ID: <B926444035E5E2439431908E3842AFD249F9F4@DGGEMI525-MBS.china.huawei.com>
+References: <B926444035E5E2439431908E3842AFD249F263@DGGEMI525-MBS.china.huawei.com>
+ <36d67d68-4381-c7a7-dcf1-6383bd9ae0ad@arm.com>
+ <20200515144522.GA25652@lst.de>
+In-Reply-To: <20200515144522.GA25652@lst.de>
+Accept-Language: en-US
+Content-Language: en-US
+X-MS-Has-Attach: 
+X-MS-TNEF-Correlator: 
+x-originating-ip: [10.126.201.78]
 MIME-Version: 1.0
-Content-Disposition: inline
-In-Reply-To: <20200515104359.1178606-2-jean-philippe@linaro.org>
-Cc: alex.williamson@redhat.com, ashok.raj@intel.com, linux-pci@vger.kernel.org,
- robin.murphy@arm.com, iommu@lists.linux-foundation.org, bhelgaas@google.com,
- will@kernel.org, dwmw2@infradead.org, linux-arm-kernel@lists.infradead.org
+X-CFilter-Loop: Reflected
+Cc: "davidm@hpl.hp.com" <davidm@hpl.hp.com>,
+ "ralf@oss.sgi.com" <ralf@oss.sgi.com>, Linuxarm <linuxarm@huawei.com>,
+ "linux@armlinux.org.uk" <linux@armlinux.org.uk>,
+ "iommu@lists.linux-foundation.org" <iommu@lists.linux-foundation.org>,
+ "sailer@ife.ee.ethz.ch" <sailer@ife.ee.ethz.ch>,
+ "Jay.Estabrook@compaq.com" <Jay.Estabrook@compaq.com>,
+ "dagum@barrel.engr.sgi.com" <dagum@barrel.engr.sgi.com>,
+ "andrea@suse.de" <andrea@suse.de>, "grundler@cup.hp.com" <grundler@cup.hp.com>,
+ "jens.axboe@oracle.com" <jens.axboe@oracle.com>,
+ "linux-arm-kernel@lists.infradead.org" <linux-arm-kernel@lists.infradead.org>
 X-BeenThere: iommu@lists.linux-foundation.org
 X-Mailman-Version: 2.1.15
 Precedence: list
@@ -87,93 +97,62 @@ Content-Transfer-Encoding: 7bit
 Errors-To: iommu-bounces@lists.linux-foundation.org
 Sender: "iommu" <iommu-bounces@lists.linux-foundation.org>
 
-On Fri, May 15, 2020 at 12:43:59PM +0200, Jean-Philippe Brucker wrote:
-> Add pci_ats_supported(), which checks whether a device has an ATS
-> capability, and whether it is trusted.  A device is untrusted if it is
-> plugged into an external-facing port such as Thunderbolt and could be
-> spoof an existing device to exploit weaknesses in the IOMMU
-> configuration.  PCIe ATS is one such weaknesses since it allows
-> endpoints to cache IOMMU translations and emit transactions with
-> 'Translated' Address Type (10b) that partially bypass the IOMMU
-> translation.
+> Subject: Re: Constantly map and unmap of streaming DMA buffers with
+> IOMMU backend might cause serious performance problem
 > 
-> The SMMUv3 and VT-d IOMMU drivers already disallow ATS and transactions
-> with 'Translated' Address Type for untrusted devices.  Add the check to
-> pci_enable_ats() to let other drivers (AMD IOMMU for now) benefit from
-> it.
+> On Fri, May 15, 2020 at 01:10:21PM +0100, Robin Murphy wrote:
+> >> Meanwhile, for the safety of buffers, lower-layer drivers need to make
+> certain the buffers have already been unmapped in iommu before those
+> buffers go back to buddy for other users.
+> >
+> > That sounds like it would only have benefit in a very small set of specific
+> > circumstances, and would be very difficult to generalise to buffers that
+> > are mapped via dma_map_page() or dma_map_single(). Furthermore, a
+> > high-level API that affects a low-level driver's interpretation of
+> > mid-layer API calls without the mid-layer's knowledge sounds like a hideous
+> > abomination of anti-design. If a mid-layer API lends itself to inefficiency
+> > at the lower level, it would seem a lot cleaner and more robust to extend
+> > *that* API for stateful buffer reuse. Failing that, it might possibly be
+> > appropriate to approach this at the driver level - many of the cleverer
+> > network drivers already implement buffer pools to recycle mapped SKBs
+> > internally, couldn't the "zip driver" simply try doing something like that
+> > for itself?
 > 
-> By checking ats_cap, the pci_ats_supported() helper also returns whether
-> ATS was globally disabled with pci=noats, and could later include more
-> things, for example whether the whole PCIe hierarchy down to the
-> endpoint supports ATS.
-> 
-> Signed-off-by: Jean-Philippe Brucker <jean-philippe@linaro.org>
+> Exactly.  If you upper consumer of the DMA API keeps reusing the same
+> pages just map them once and use dma_sync_* to transfer ownership as
+> needed.
 
-Acked-by: Bjorn Helgaas <bhelgaas@google.com>
+The problem is that the lower-layer drivers don't know if upper consumer keeps reusing the same pages. They are running in different software layers.
+For example, Consumer is here in mm/zswap.c
+static int zswap_frontswap_store(unsigned type, pgoff_t offset,
+				struct page *page)
+{
+	...
+	/* compress */
+	dst = get_cpu_var(zswap_dstmem);
+	...
+	ret = crypto_comp_compress(tfm, src, PAGE_SIZE, dst, &dlen);
+	...
+}
 
-> ---
->  include/linux/pci-ats.h |  3 +++
->  drivers/pci/ats.c       | 18 +++++++++++++++++-
->  2 files changed, 20 insertions(+), 1 deletion(-)
-> 
-> diff --git a/include/linux/pci-ats.h b/include/linux/pci-ats.h
-> index d08f0869f1213e..f75c307f346de9 100644
-> --- a/include/linux/pci-ats.h
-> +++ b/include/linux/pci-ats.h
-> @@ -6,11 +6,14 @@
->  
->  #ifdef CONFIG_PCI_ATS
->  /* Address Translation Service */
-> +bool pci_ats_supported(struct pci_dev *dev);
->  int pci_enable_ats(struct pci_dev *dev, int ps);
->  void pci_disable_ats(struct pci_dev *dev);
->  int pci_ats_queue_depth(struct pci_dev *dev);
->  int pci_ats_page_aligned(struct pci_dev *dev);
->  #else /* CONFIG_PCI_ATS */
-> +static inline bool pci_ats_supported(struct pci_dev *d)
-> +{ return false; }
->  static inline int pci_enable_ats(struct pci_dev *d, int ps)
->  { return -ENODEV; }
->  static inline void pci_disable_ats(struct pci_dev *d) { }
-> diff --git a/drivers/pci/ats.c b/drivers/pci/ats.c
-> index 390e92f2d8d1fc..15fa0c37fd8e44 100644
-> --- a/drivers/pci/ats.c
-> +++ b/drivers/pci/ats.c
-> @@ -30,6 +30,22 @@ void pci_ats_init(struct pci_dev *dev)
->  	dev->ats_cap = pos;
->  }
->  
-> +/**
-> + * pci_ats_supported - check if the device can use ATS
-> + * @dev: the PCI device
-> + *
-> + * Returns true if the device supports ATS and is allowed to use it, false
-> + * otherwise.
-> + */
-> +bool pci_ats_supported(struct pci_dev *dev)
-> +{
-> +	if (!dev->ats_cap)
-> +		return false;
-> +
-> +	return !dev->untrusted;
-> +}
-> +EXPORT_SYMBOL_GPL(pci_ats_supported);
-> +
->  /**
->   * pci_enable_ats - enable the ATS capability
->   * @dev: the PCI device
-> @@ -42,7 +58,7 @@ int pci_enable_ats(struct pci_dev *dev, int ps)
->  	u16 ctrl;
->  	struct pci_dev *pdev;
->  
-> -	if (!dev->ats_cap)
-> +	if (!pci_ats_supported(dev))
->  		return -EINVAL;
->  
->  	if (WARN_ON(dev->ats_enabled))
-> -- 
-> 2.26.2
-> 
+But the lower-layer driver is in drivers/crypto/...
+
+Meanwhile, the lower-layer driver couldn't cache the pointers of buffer address coming from consumers to detect if the upper-layer is using the same page.
+Because the same page might come from different users or come from the different stages of the same user with different permissions.
+ 
+For example, consumer A uses the buffer as destination, then returns it to buddy, but consumer B gets the same buffer and uses it as source.
+
+Another possibility is
+Consumer A uses the buffer, returns it to buddy, after some time, it allocates a buffer again, but gets the same buffer from buddy like before.
+
+For the safety of the buffer, lower-layer driver must guarantee the buffer is unmapped when the buffer returns to buddy.
+
+I think only the upper-layer consumer knows if it is reusing the buffer. 
+
+Thanks
+Barry
+
+
 _______________________________________________
 iommu mailing list
 iommu@lists.linux-foundation.org
