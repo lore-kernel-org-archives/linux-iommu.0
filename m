@@ -2,67 +2,69 @@ Return-Path: <SRS0=RRah=66=lists.linux-foundation.org=iommu-bounces@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-3.8 required=3.0 tests=HEADER_FROM_DIFFERENT_DOMAINS,
-	MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED,USER_AGENT_GIT
-	autolearn=no autolearn_force=no version=3.4.0
+X-Spam-Status: No, score=-9.8 required=3.0 tests=HEADER_FROM_DIFFERENT_DOMAINS,
+	INCLUDES_PATCH,MAILING_LIST_MULTI,SIGNED_OFF_BY,SPF_HELO_NONE,SPF_PASS,
+	URIBL_BLOCKED,USER_AGENT_GIT autolearn=ham autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 74BCAC433E0
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 99D47C433DF
 	for <iommu@archiver.kernel.org>; Sat, 16 May 2020 06:24:40 +0000 (UTC)
-Received: from silver.osuosl.org (smtp3.osuosl.org [140.211.166.136])
+Received: from fraxinus.osuosl.org (smtp4.osuosl.org [140.211.166.137])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by mail.kernel.org (Postfix) with ESMTPS id 398C620709
+	by mail.kernel.org (Postfix) with ESMTPS id 754C42075F
 	for <iommu@archiver.kernel.org>; Sat, 16 May 2020 06:24:40 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 398C620709
+DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 754C42075F
 Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=linux.intel.com
 Authentication-Results: mail.kernel.org; spf=pass smtp.mailfrom=iommu-bounces@lists.linux-foundation.org
 Received: from localhost (localhost [127.0.0.1])
-	by silver.osuosl.org (Postfix) with ESMTP id AFA27204D2;
-	Sat, 16 May 2020 06:24:39 +0000 (UTC)
+	by fraxinus.osuosl.org (Postfix) with ESMTP id 586B988242;
+	Sat, 16 May 2020 06:24:40 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from silver.osuosl.org ([127.0.0.1])
+Received: from fraxinus.osuosl.org ([127.0.0.1])
 	by localhost (.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
-	with ESMTP id DkmagDy-XmIy; Sat, 16 May 2020 06:24:38 +0000 (UTC)
+	with ESMTP id VXlVr3zZ_nuu; Sat, 16 May 2020 06:24:39 +0000 (UTC)
 Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [140.211.9.56])
-	by silver.osuosl.org (Postfix) with ESMTP id 9ED7D20446;
-	Sat, 16 May 2020 06:24:38 +0000 (UTC)
+	by fraxinus.osuosl.org (Postfix) with ESMTP id D340187E34;
+	Sat, 16 May 2020 06:24:39 +0000 (UTC)
 Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
-	by lists.linuxfoundation.org (Postfix) with ESMTP id 781D8C0859;
-	Sat, 16 May 2020 06:24:38 +0000 (UTC)
+	by lists.linuxfoundation.org (Postfix) with ESMTP id B842AC0859;
+	Sat, 16 May 2020 06:24:39 +0000 (UTC)
 Received: from fraxinus.osuosl.org (smtp4.osuosl.org [140.211.166.137])
- by lists.linuxfoundation.org (Postfix) with ESMTP id 62205C016F
- for <iommu@lists.linux-foundation.org>; Sat, 16 May 2020 06:24:37 +0000 (UTC)
+ by lists.linuxfoundation.org (Postfix) with ESMTP id 04850C016F
+ for <iommu@lists.linux-foundation.org>; Sat, 16 May 2020 06:24:38 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
- by fraxinus.osuosl.org (Postfix) with ESMTP id 5186787E39
+ by fraxinus.osuosl.org (Postfix) with ESMTP id E71CE87E33
  for <iommu@lists.linux-foundation.org>; Sat, 16 May 2020 06:24:37 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
 Received: from fraxinus.osuosl.org ([127.0.0.1])
  by localhost (.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
- with ESMTP id uO28HFwLRdhM for <iommu@lists.linux-foundation.org>;
- Sat, 16 May 2020 06:24:33 +0000 (UTC)
+ with ESMTP id PrIXqv3GYwCQ for <iommu@lists.linux-foundation.org>;
+ Sat, 16 May 2020 06:24:36 +0000 (UTC)
 X-Greylist: domain auto-whitelisted by SQLgrey-1.7.6
 Received: from mga01.intel.com (mga01.intel.com [192.55.52.88])
- by fraxinus.osuosl.org (Postfix) with ESMTPS id B635187E33
- for <iommu@lists.linux-foundation.org>; Sat, 16 May 2020 06:24:33 +0000 (UTC)
-IronPort-SDR: D9QIAWe1ezeOK/xs0nfYHwgNRkHeTrBid9+vExQQ5hcYUWbnEvECNIAk4t2eHuT+2lm+8QE35o
- ZVgDta6/D51g==
+ by fraxinus.osuosl.org (Postfix) with ESMTPS id 5E4B587E37
+ for <iommu@lists.linux-foundation.org>; Sat, 16 May 2020 06:24:36 +0000 (UTC)
+IronPort-SDR: 4m7BDofNeHXDWu2/TV6jRxosP4CZXvii29TQFtGDISOYyhU/OsQ/mK8UboXlDEVt4nFVYixwok
+ uI54uM/ligfA==
 X-Amp-Result: SKIPPED(no attachment in message)
 X-Amp-File-Uploaded: False
 Received: from orsmga002.jf.intel.com ([10.7.209.21])
  by fmsmga101.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384;
- 15 May 2020 23:24:33 -0700
-IronPort-SDR: 8PQmkv2awsBIJjioBbXvQGQeIYulFoa0XIF7QVMDxQQyHuK2lIxT+Pwcu2fliEbU4xic2Sp4mG
- 6k1sEWa+sG3A==
+ 15 May 2020 23:24:36 -0700
+IronPort-SDR: FT8TspvmXcElR8UfZRZZhXSRJP230hQCcpyd7apGIx2QVuriD2kKHnwW7ieTqvYGT0JKKlbwWI
+ GccxoESo4h1Q==
 X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.73,398,1583222400"; d="scan'208";a="281442384"
+X-IronPort-AV: E=Sophos;i="5.73,398,1583222400"; d="scan'208";a="281442391"
 Received: from allen-box.sh.intel.com ([10.239.159.139])
- by orsmga002.jf.intel.com with ESMTP; 15 May 2020 23:24:31 -0700
+ by orsmga002.jf.intel.com with ESMTP; 15 May 2020 23:24:34 -0700
 From: Lu Baolu <baolu.lu@linux.intel.com>
 To: Joerg Roedel <joro@8bytes.org>
-Subject: [PATCH 00/18] [PULL REQUEST] iommu/vt-d: patches for v5.8
-Date: Sat, 16 May 2020 14:20:43 +0800
-Message-Id: <20200516062101.29541-1-baolu.lu@linux.intel.com>
+Subject: [PATCH 02/18] iommu/vt-d: Use a helper function to skip agaw for SL
+Date: Sat, 16 May 2020 14:20:45 +0800
+Message-Id: <20200516062101.29541-3-baolu.lu@linux.intel.com>
 X-Mailer: git-send-email 2.17.1
+In-Reply-To: <20200516062101.29541-1-baolu.lu@linux.intel.com>
+References: <20200516062101.29541-1-baolu.lu@linux.intel.com>
 Cc: iommu@lists.linux-foundation.org, Tom Murphy <murphyt7@tcd.ie>
 X-BeenThere: iommu@lists.linux-foundation.org
 X-Mailman-Version: 2.1.15
@@ -82,55 +84,73 @@ Content-Transfer-Encoding: 7bit
 Errors-To: iommu-bounces@lists.linux-foundation.org
 Sender: "iommu" <iommu-bounces@lists.linux-foundation.org>
 
-Hi Joerg,
+From: Jacob Pan <jacob.jun.pan@linux.intel.com>
 
-Below patches have been piled up for v5.8. They enable below features:
+An Intel iommu domain uses 5-level page table by default. If the iommu
+that the domain tries to attach supports less page levels, the top level
+page tables should be skipped. Add a helper to do this so that it could
+be used in other places.
 
- - Nested Shared Virtual Address (SVA) VT-d support
- - Replace Intel SVM with IOMMU SVA APIs
- - SVA page request draining support
+Signed-off-by: Jacob Pan <jacob.jun.pan@linux.intel.com>
+Reviewed-by: Eric Auger <eric.auger@redhat.com>
+Reviewed-by: Kevin Tian <kevin.tian@intel.com>
+Signed-off-by: Lu Baolu <baolu.lu@linux.intel.com>
+---
+ drivers/iommu/intel-pasid.c | 33 +++++++++++++++++++++++----------
+ 1 file changed, 23 insertions(+), 10 deletions(-)
 
-Can you please consider them for iommu/next?
-
-Best regards,
-Lu Baolu
-
-Jacob Pan (9):
-  iommu/vt-d: Move domain helper to header
-  iommu/vt-d: Use a helper function to skip agaw for SL
-  iommu/vt-d: Add nested translation helper function
-  iommu/vt-d: Add bind guest PASID support
-  iommu/vt-d: Support flushing more translation cache types
-  iommu/vt-d: Add svm/sva invalidate function
-  iommu/vt-d: Add custom allocator for IOASID
-  iommu/vt-d: Report SVA feature with generic flag
-  iommu/vt-d: Replace intel SVM APIs with generic SVA APIs
-
-Lu Baolu (8):
-  iommu/vt-d: Enlightened PASID allocation
-  iommu/vt-d: Add get_domain_info() helper
-  iommu/vt-d: Multiple descriptors per qi_submit_sync()
-  iommu/vt-d: debugfs: Add support to show inv queue internals
-  iommu/vt-d: Disable non-recoverable fault processing before unbind
-  iommu/vt-d: Add page request draining support
-  iommu/vt-d: Remove redundant IOTLB flush
-  iommu/vt-d: Remove duplicated check in intel_svm_bind_mm()
-
-Tom Murphy (1):
-  iommu/vt-d: Remove IOVA handling code from the non-dma_ops path
-
- drivers/iommu/dmar.c                |  99 ++++--
- drivers/iommu/intel-iommu-debugfs.c |  62 ++++
- drivers/iommu/intel-iommu.c         | 449 +++++++++++++++++++++-------
- drivers/iommu/intel-pasid.c         | 309 +++++++++++++++++--
- drivers/iommu/intel-pasid.h         |  27 +-
- drivers/iommu/intel-svm.c           | 445 ++++++++++++++++++++++-----
- drivers/iommu/intel_irq_remapping.c |   2 +-
- include/linux/intel-iommu.h         |  81 ++++-
- include/linux/intel-svm.h           |  94 +-----
- include/uapi/linux/iommu.h          |   5 +
- 10 files changed, 1252 insertions(+), 321 deletions(-)
-
+diff --git a/drivers/iommu/intel-pasid.c b/drivers/iommu/intel-pasid.c
+index 22b30f10b396..d9cea3011b58 100644
+--- a/drivers/iommu/intel-pasid.c
++++ b/drivers/iommu/intel-pasid.c
+@@ -499,6 +499,25 @@ int intel_pasid_setup_first_level(struct intel_iommu *iommu,
+ 	return 0;
+ }
+ 
++/*
++ * Skip top levels of page tables for iommu which has less agaw
++ * than default. Unnecessary for PT mode.
++ */
++static inline int iommu_skip_agaw(struct dmar_domain *domain,
++				  struct intel_iommu *iommu,
++				  struct dma_pte **pgd)
++{
++	int agaw;
++
++	for (agaw = domain->agaw; agaw > iommu->agaw; agaw--) {
++		*pgd = phys_to_virt(dma_pte_addr(*pgd));
++		if (!dma_pte_present(*pgd))
++			return -EINVAL;
++	}
++
++	return agaw;
++}
++
+ /*
+  * Set up the scalable mode pasid entry for second only translation type.
+  */
+@@ -522,17 +541,11 @@ int intel_pasid_setup_second_level(struct intel_iommu *iommu,
+ 		return -EINVAL;
+ 	}
+ 
+-	/*
+-	 * Skip top levels of page tables for iommu which has less agaw
+-	 * than default. Unnecessary for PT mode.
+-	 */
+ 	pgd = domain->pgd;
+-	for (agaw = domain->agaw; agaw > iommu->agaw; agaw--) {
+-		pgd = phys_to_virt(dma_pte_addr(pgd));
+-		if (!dma_pte_present(pgd)) {
+-			dev_err(dev, "Invalid domain page table\n");
+-			return -EINVAL;
+-		}
++	agaw = iommu_skip_agaw(domain, iommu, &pgd);
++	if (agaw < 0) {
++		dev_err(dev, "Invalid domain page table\n");
++		return -EINVAL;
+ 	}
+ 
+ 	pgd_val = virt_to_phys(pgd);
 -- 
 2.17.1
 
