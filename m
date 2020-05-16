@@ -6,63 +6,62 @@ X-Spam-Status: No, score=-9.8 required=3.0 tests=HEADER_FROM_DIFFERENT_DOMAINS,
 	INCLUDES_PATCH,MAILING_LIST_MULTI,SIGNED_OFF_BY,SPF_HELO_NONE,SPF_PASS,
 	URIBL_BLOCKED,USER_AGENT_GIT autolearn=ham autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 1A2C6C433DF
-	for <iommu@archiver.kernel.org>; Sat, 16 May 2020 06:25:02 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 650B4C433DF
+	for <iommu@archiver.kernel.org>; Sat, 16 May 2020 06:25:06 +0000 (UTC)
 Received: from hemlock.osuosl.org (smtp2.osuosl.org [140.211.166.133])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by mail.kernel.org (Postfix) with ESMTPS id E88922075F
-	for <iommu@archiver.kernel.org>; Sat, 16 May 2020 06:25:01 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org E88922075F
+	by mail.kernel.org (Postfix) with ESMTPS id 40DE720767
+	for <iommu@archiver.kernel.org>; Sat, 16 May 2020 06:25:06 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 40DE720767
 Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=linux.intel.com
 Authentication-Results: mail.kernel.org; spf=pass smtp.mailfrom=iommu-bounces@lists.linux-foundation.org
 Received: from localhost (localhost [127.0.0.1])
-	by hemlock.osuosl.org (Postfix) with ESMTP id CDD4989862;
-	Sat, 16 May 2020 06:25:01 +0000 (UTC)
+	by hemlock.osuosl.org (Postfix) with ESMTP id 20217898FC;
+	Sat, 16 May 2020 06:25:06 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
 Received: from hemlock.osuosl.org ([127.0.0.1])
 	by localhost (.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
-	with ESMTP id tTYPL3qdg-st; Sat, 16 May 2020 06:25:00 +0000 (UTC)
+	with ESMTP id nuDYiSD8iiH0; Sat, 16 May 2020 06:25:04 +0000 (UTC)
 Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [140.211.9.56])
-	by hemlock.osuosl.org (Postfix) with ESMTP id 83FD3898C0;
-	Sat, 16 May 2020 06:25:00 +0000 (UTC)
+	by hemlock.osuosl.org (Postfix) with ESMTP id 374E2898B4;
+	Sat, 16 May 2020 06:25:04 +0000 (UTC)
 Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
-	by lists.linuxfoundation.org (Postfix) with ESMTP id 70C6FC0859;
-	Sat, 16 May 2020 06:25:00 +0000 (UTC)
+	by lists.linuxfoundation.org (Postfix) with ESMTP id 23382C0893;
+	Sat, 16 May 2020 06:25:04 +0000 (UTC)
 Received: from fraxinus.osuosl.org (smtp4.osuosl.org [140.211.166.137])
- by lists.linuxfoundation.org (Postfix) with ESMTP id F0DB5C016F
- for <iommu@lists.linux-foundation.org>; Sat, 16 May 2020 06:24:57 +0000 (UTC)
+ by lists.linuxfoundation.org (Postfix) with ESMTP id 25E97C016F
+ for <iommu@lists.linux-foundation.org>; Sat, 16 May 2020 06:25:03 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
- by fraxinus.osuosl.org (Postfix) with ESMTP id E062E8827D
- for <iommu@lists.linux-foundation.org>; Sat, 16 May 2020 06:24:57 +0000 (UTC)
+ by fraxinus.osuosl.org (Postfix) with ESMTP id 1EBEF88283
+ for <iommu@lists.linux-foundation.org>; Sat, 16 May 2020 06:25:03 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
 Received: from fraxinus.osuosl.org ([127.0.0.1])
  by localhost (.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
- with ESMTP id 7U6yw4hvCWDh for <iommu@lists.linux-foundation.org>;
- Sat, 16 May 2020 06:24:57 +0000 (UTC)
+ with ESMTP id hQ-XtwYwNooQ for <iommu@lists.linux-foundation.org>;
+ Sat, 16 May 2020 06:25:02 +0000 (UTC)
 X-Greylist: domain auto-whitelisted by SQLgrey-1.7.6
 Received: from mga01.intel.com (mga01.intel.com [192.55.52.88])
- by fraxinus.osuosl.org (Postfix) with ESMTPS id 573B68826A
- for <iommu@lists.linux-foundation.org>; Sat, 16 May 2020 06:24:57 +0000 (UTC)
-IronPort-SDR: aUta4G547m03xVJz6GoJt1tP73zhBZFNN5PBOo4jhtQyf9iv3CP586zb0qMOksl5Ifyq7yF8Yi
- MAuVK2AD5OVg==
+ by fraxinus.osuosl.org (Postfix) with ESMTPS id 982D087E3D
+ for <iommu@lists.linux-foundation.org>; Sat, 16 May 2020 06:25:02 +0000 (UTC)
+IronPort-SDR: cwz/TkbYOySPh9/dNUJpZzEvDmgmL8RW1CZWvfa8QFT6BMXg81aeu9roNI6YxViua4pfMMdsUx
+ /uZbGrm7U7og==
 X-Amp-Result: SKIPPED(no attachment in message)
 X-Amp-File-Uploaded: False
 Received: from orsmga002.jf.intel.com ([10.7.209.21])
  by fmsmga101.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384;
- 15 May 2020 23:24:57 -0700
-IronPort-SDR: A2tG8JKKeotGoqeSRSq3gRfuW15VeZuoy7wnxnTRQlwCXoOENbKZ3qYAjAA+QS4kLyO2RdFb1M
- P80JEDp3S71A==
+ 15 May 2020 23:25:02 -0700
+IronPort-SDR: 4ca32MmPVsH8eCHbHdnZy7z6fuFV0dzcPZmfgRXh3TGZvhBWD9/UqyG6tJSpdUNbni55/lwBtj
+ i1X57mNz6Oew==
 X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.73,398,1583222400"; d="scan'208";a="281442449"
+X-IronPort-AV: E=Sophos;i="5.73,398,1583222400"; d="scan'208";a="281442467"
 Received: from allen-box.sh.intel.com ([10.239.159.139])
- by orsmga002.jf.intel.com with ESMTP; 15 May 2020 23:24:55 -0700
+ by orsmga002.jf.intel.com with ESMTP; 15 May 2020 23:25:01 -0700
 From: Lu Baolu <baolu.lu@linux.intel.com>
 To: Joerg Roedel <joro@8bytes.org>
-Subject: [PATCH 13/18] iommu/vt-d: debugfs: Add support to show inv queue
- internals
-Date: Sat, 16 May 2020 14:20:56 +0800
-Message-Id: <20200516062101.29541-14-baolu.lu@linux.intel.com>
+Subject: [PATCH 16/18] iommu/vt-d: Remove redundant IOTLB flush
+Date: Sat, 16 May 2020 14:20:59 +0800
+Message-Id: <20200516062101.29541-17-baolu.lu@linux.intel.com>
 X-Mailer: git-send-email 2.17.1
 In-Reply-To: <20200516062101.29541-1-baolu.lu@linux.intel.com>
 References: <20200516062101.29541-1-baolu.lu@linux.intel.com>
@@ -85,112 +84,49 @@ Content-Transfer-Encoding: 7bit
 Errors-To: iommu-bounces@lists.linux-foundation.org
 Sender: "iommu" <iommu-bounces@lists.linux-foundation.org>
 
-Export invalidation queue internals of each iommu device through the
-debugfs.
+IOTLB flush already included in the PASID tear down and the page request
+drain process. There is no need to flush again.
 
-Example of such dump on a Skylake machine:
-
-$ sudo cat /sys/kernel/debug/iommu/intel/invalidation_queue
-Invalidation queue on IOMMU: dmar1
- Base: 0x1672c9000      Head: 80        Tail: 80
-Index           qw0                     qw1                     status
-    0   0000000000000004        0000000000000000        0000000000000000
-    1   0000000200000025        00000001672be804        0000000000000000
-    2   0000000000000011        0000000000000000        0000000000000000
-    3   0000000200000025        00000001672be80c        0000000000000000
-    4   00000000000000d2        0000000000000000        0000000000000000
-    5   0000000200000025        00000001672be814        0000000000000000
-    6   0000000000000014        0000000000000000        0000000000000000
-    7   0000000200000025        00000001672be81c        0000000000000000
-    8   0000000000000014        0000000000000000        0000000000000000
-    9   0000000200000025        00000001672be824        0000000000000000
-
+Signed-off-by: Jacob Pan <jacob.jun.pan@linux.intel.com>
 Signed-off-by: Lu Baolu <baolu.lu@linux.intel.com>
 Reviewed-by: Kevin Tian <kevin.tian@intel.com>
 ---
- drivers/iommu/intel-iommu-debugfs.c | 62 +++++++++++++++++++++++++++++
- 1 file changed, 62 insertions(+)
+ drivers/iommu/intel-svm.c | 6 +-----
+ 1 file changed, 1 insertion(+), 5 deletions(-)
 
-diff --git a/drivers/iommu/intel-iommu-debugfs.c b/drivers/iommu/intel-iommu-debugfs.c
-index 3eb1fe240fb0..cf1ebb98e418 100644
---- a/drivers/iommu/intel-iommu-debugfs.c
-+++ b/drivers/iommu/intel-iommu-debugfs.c
-@@ -372,6 +372,66 @@ static int domain_translation_struct_show(struct seq_file *m, void *unused)
- }
- DEFINE_SHOW_ATTRIBUTE(domain_translation_struct);
+diff --git a/drivers/iommu/intel-svm.c b/drivers/iommu/intel-svm.c
+index 5ab71107afd5..42f916b9667e 100644
+--- a/drivers/iommu/intel-svm.c
++++ b/drivers/iommu/intel-svm.c
+@@ -209,11 +209,9 @@ static void intel_mm_release(struct mmu_notifier *mn, struct mm_struct *mm)
+ 	 * *has* to handle gracefully without affecting other processes.
+ 	 */
+ 	rcu_read_lock();
+-	list_for_each_entry_rcu(sdev, &svm->devs, list) {
++	list_for_each_entry_rcu(sdev, &svm->devs, list)
+ 		intel_pasid_tear_down_entry(svm->iommu, sdev->dev,
+ 					    svm->pasid, true);
+-		intel_flush_svm_range_dev(svm, sdev, 0, -1, 0);
+-	}
+ 	rcu_read_unlock();
  
-+static void invalidation_queue_entry_show(struct seq_file *m,
-+					  struct intel_iommu *iommu)
-+{
-+	int index, shift = qi_shift(iommu);
-+	struct qi_desc *desc;
-+	int offset;
-+
-+	if (ecap_smts(iommu->ecap))
-+		seq_puts(m, "Index\t\tqw0\t\t\tqw1\t\t\tqw2\t\t\tqw3\t\t\tstatus\n");
-+	else
-+		seq_puts(m, "Index\t\tqw0\t\t\tqw1\t\t\tstatus\n");
-+
-+	for (index = 0; index < QI_LENGTH; index++) {
-+		offset = index << shift;
-+		desc = iommu->qi->desc + offset;
-+		if (ecap_smts(iommu->ecap))
-+			seq_printf(m, "%5d\t%016llx\t%016llx\t%016llx\t%016llx\t%016x\n",
-+				   index, desc->qw0, desc->qw1,
-+				   desc->qw2, desc->qw3,
-+				   iommu->qi->desc_status[index]);
-+		else
-+			seq_printf(m, "%5d\t%016llx\t%016llx\t%016x\n",
-+				   index, desc->qw0, desc->qw1,
-+				   iommu->qi->desc_status[index]);
-+	}
-+}
-+
-+static int invalidation_queue_show(struct seq_file *m, void *unused)
-+{
-+	struct dmar_drhd_unit *drhd;
-+	struct intel_iommu *iommu;
-+	unsigned long flags;
-+	struct q_inval *qi;
-+	int shift;
-+
-+	rcu_read_lock();
-+	for_each_active_iommu(iommu, drhd) {
-+		qi = iommu->qi;
-+		shift = qi_shift(iommu);
-+
-+		if (!qi || !ecap_qis(iommu->ecap))
-+			continue;
-+
-+		seq_printf(m, "Invalidation queue on IOMMU: %s\n", iommu->name);
-+
-+		raw_spin_lock_irqsave(&qi->q_lock, flags);
-+		seq_printf(m, " Base: 0x%llx\tHead: %lld\tTail: %lld\n",
-+			   (u64)virt_to_phys(qi->desc),
-+			   dmar_readq(iommu->reg + DMAR_IQH_REG) >> shift,
-+			   dmar_readq(iommu->reg + DMAR_IQT_REG) >> shift);
-+		invalidation_queue_entry_show(m, iommu);
-+		raw_spin_unlock_irqrestore(&qi->q_lock, flags);
-+		seq_putc(m, '\n');
-+	}
-+	rcu_read_unlock();
-+
-+	return 0;
-+}
-+DEFINE_SHOW_ATTRIBUTE(invalidation_queue);
-+
- #ifdef CONFIG_IRQ_REMAP
- static void ir_tbl_remap_entry_show(struct seq_file *m,
- 				    struct intel_iommu *iommu)
-@@ -490,6 +550,8 @@ void __init intel_iommu_debugfs_init(void)
- 	debugfs_create_file("domain_translation_struct", 0444,
- 			    intel_iommu_debug, NULL,
- 			    &domain_translation_struct_fops);
-+	debugfs_create_file("invalidation_queue", 0444, intel_iommu_debug,
-+			    NULL, &invalidation_queue_fops);
- #ifdef CONFIG_IRQ_REMAP
- 	debugfs_create_file("ir_translation_struct", 0444, intel_iommu_debug,
- 			    NULL, &ir_translation_struct_fops);
+ }
+@@ -403,7 +401,6 @@ int intel_svm_unbind_gpasid(struct device *dev, int pasid)
+ 			intel_pasid_tear_down_entry(iommu, dev,
+ 						    svm->pasid, false);
+ 			intel_svm_drain_prq(dev, svm->pasid);
+-			intel_flush_svm_range_dev(svm, sdev, 0, -1, 0);
+ 			kfree_rcu(sdev, rcu);
+ 
+ 			if (list_empty(&svm->devs)) {
+@@ -643,7 +640,6 @@ int intel_svm_unbind_mm(struct device *dev, int pasid)
+ 			intel_pasid_tear_down_entry(iommu, dev,
+ 						    svm->pasid, false);
+ 			intel_svm_drain_prq(dev, svm->pasid);
+-			intel_flush_svm_range_dev(svm, sdev, 0, -1, 0);
+ 			kfree_rcu(sdev, rcu);
+ 
+ 			if (list_empty(&svm->devs)) {
 -- 
 2.17.1
 
