@@ -1,71 +1,96 @@
-Return-Path: <SRS0=RRah=66=lists.linux-foundation.org=iommu-bounces@kernel.org>
+Return-Path: <SRS0=c7ON=67=lists.linux-foundation.org=iommu-bounces@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-8.2 required=3.0 tests=HEADER_FROM_DIFFERENT_DOMAINS,
-	INCLUDES_PATCH,MAILING_LIST_MULTI,SIGNED_OFF_BY,SPF_HELO_NONE,SPF_PASS,
-	URIBL_BLOCKED,USER_AGENT_SANE_1 autolearn=ham autolearn_force=no version=3.4.0
+X-Spam-Status: No, score=-0.8 required=3.0 tests=HEADER_FROM_DIFFERENT_DOMAINS,
+	MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS autolearn=no autolearn_force=no
+	version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id E8D33C433E0
-	for <iommu@archiver.kernel.org>; Sat, 16 May 2020 15:24:15 +0000 (UTC)
-Received: from fraxinus.osuosl.org (smtp4.osuosl.org [140.211.166.137])
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 5E14CC433DF
+	for <iommu@archiver.kernel.org>; Sun, 17 May 2020 08:29:27 +0000 (UTC)
+Received: from hemlock.osuosl.org (smtp2.osuosl.org [140.211.166.133])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by mail.kernel.org (Postfix) with ESMTPS id 7B95A2065C
-	for <iommu@archiver.kernel.org>; Sat, 16 May 2020 15:24:15 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 7B95A2065C
-Authentication-Results: mail.kernel.org; dmarc=none (p=none dis=none) header.from=huawei.com
+	by mail.kernel.org (Postfix) with ESMTPS id 2590C20735
+	for <iommu@archiver.kernel.org>; Sun, 17 May 2020 08:29:26 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 2590C20735
+Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=intel.com
 Authentication-Results: mail.kernel.org; spf=pass smtp.mailfrom=iommu-bounces@lists.linux-foundation.org
 Received: from localhost (localhost [127.0.0.1])
-	by fraxinus.osuosl.org (Postfix) with ESMTP id 4327D87A21;
-	Sat, 16 May 2020 15:24:15 +0000 (UTC)
+	by hemlock.osuosl.org (Postfix) with ESMTP id 965FE886B4;
+	Sun, 17 May 2020 08:29:26 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from fraxinus.osuosl.org ([127.0.0.1])
+Received: from hemlock.osuosl.org ([127.0.0.1])
 	by localhost (.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
-	with ESMTP id 8bXMBS0qiLFt; Sat, 16 May 2020 15:24:14 +0000 (UTC)
+	with ESMTP id itNj7Sa5NU9F; Sun, 17 May 2020 08:29:23 +0000 (UTC)
 Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [140.211.9.56])
-	by fraxinus.osuosl.org (Postfix) with ESMTP id 7E18D86E3E;
-	Sat, 16 May 2020 15:24:14 +0000 (UTC)
+	by hemlock.osuosl.org (Postfix) with ESMTP id 5F86685344;
+	Sun, 17 May 2020 08:29:23 +0000 (UTC)
 Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
-	by lists.linuxfoundation.org (Postfix) with ESMTP id 6D728C0865;
-	Sat, 16 May 2020 15:24:14 +0000 (UTC)
-Received: from fraxinus.osuosl.org (smtp4.osuosl.org [140.211.166.137])
- by lists.linuxfoundation.org (Postfix) with ESMTP id D90AFC016F
- for <iommu@lists.linux-foundation.org>; Sat, 16 May 2020 10:10:17 +0000 (UTC)
+	by lists.linuxfoundation.org (Postfix) with ESMTP id 4C2EDC0865;
+	Sun, 17 May 2020 08:29:23 +0000 (UTC)
+Received: from silver.osuosl.org (smtp3.osuosl.org [140.211.166.136])
+ by lists.linuxfoundation.org (Postfix) with ESMTP id 6222BC07FF
+ for <iommu@lists.linux-foundation.org>; Sun, 17 May 2020 08:29:21 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
- by fraxinus.osuosl.org (Postfix) with ESMTP id C862E85039
- for <iommu@lists.linux-foundation.org>; Sat, 16 May 2020 10:10:17 +0000 (UTC)
+ by silver.osuosl.org (Postfix) with ESMTP id 59BE62037A
+ for <iommu@lists.linux-foundation.org>; Sun, 17 May 2020 08:29:21 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from fraxinus.osuosl.org ([127.0.0.1])
+Received: from silver.osuosl.org ([127.0.0.1])
  by localhost (.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
- with ESMTP id qt4B67XVxvDG for <iommu@lists.linux-foundation.org>;
- Sat, 16 May 2020 10:10:16 +0000 (UTC)
+ with ESMTP id SuHbFo+M09vD for <iommu@lists.linux-foundation.org>;
+ Sun, 17 May 2020 08:29:20 +0000 (UTC)
 X-Greylist: domain auto-whitelisted by SQLgrey-1.7.6
-Received: from huawei.com (szxga04-in.huawei.com [45.249.212.190])
- by fraxinus.osuosl.org (Postfix) with ESMTPS id 29B33860E0
- for <iommu@lists.linux-foundation.org>; Sat, 16 May 2020 10:09:53 +0000 (UTC)
-Received: from DGGEMS406-HUB.china.huawei.com (unknown [172.30.72.59])
- by Forcepoint Email with ESMTP id 7DC1A5D1BEDB315367B0;
- Sat, 16 May 2020 18:09:49 +0800 (CST)
-Received: from [127.0.0.1] (10.166.215.237) by DGGEMS406-HUB.china.huawei.com
- (10.3.19.206) with Microsoft SMTP Server id 14.3.487.0;
- Sat, 16 May 2020 18:09:38 +0800
-To: Christoph Hellwig <hch@lst.de>, <m.szyprowski@samsung.com>,
- <robin.murphy@arm.com>, <iommu@lists.linux-foundation.org>,
- <linux-kernel@vger.kernel.org>
-From: Yunfeng Ye <yeyunfeng@huawei.com>
-Subject: [PATCH] dma-coherent: switch to bitmap_zalloc() in
- dma_init_coherent_memory()
-Message-ID: <1b02b07b-617e-bc5c-8619-7a46fba5a512@huawei.com>
-Date: Sat, 16 May 2020 18:09:38 +0800
-User-Agent: Mozilla/5.0 (Windows NT 10.0; WOW64; rv:60.0) Gecko/20100101
- Thunderbird/60.6.1
-MIME-Version: 1.0
+Received: from mga04.intel.com (mga04.intel.com [192.55.52.120])
+ by silver.osuosl.org (Postfix) with ESMTPS id EDBF620377
+ for <iommu@lists.linux-foundation.org>; Sun, 17 May 2020 08:29:19 +0000 (UTC)
+IronPort-SDR: w1I8qKGd9RJ7Lox+nQYMbXT1cAHIKQ+OU8GwYn3tzN7pWTP9nzLhcPRfGTJ5HqiQtjdzgO/vts
+ r8dTnrlzqNAQ==
+X-Amp-Result: SKIPPED(no attachment in message)
+X-Amp-File-Uploaded: False
+Received: from orsmga003.jf.intel.com ([10.7.209.27])
+ by fmsmga104.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384;
+ 17 May 2020 01:29:19 -0700
+IronPort-SDR: ERZ1qLrtwfcxnioOmhVkBshkvkZ3Xum1yxukSkFlCoITmyB48j8XHsX3kF1kifUWZ/Y01USK1p
+ DujqguLmlc3w==
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="5.73,402,1583222400"; d="scan'208";a="263644372"
+Received: from orsmsx106.amr.corp.intel.com ([10.22.225.133])
+ by orsmga003.jf.intel.com with ESMTP; 17 May 2020 01:29:19 -0700
+Received: from orsmsx155.amr.corp.intel.com (10.22.240.21) by
+ ORSMSX106.amr.corp.intel.com (10.22.225.133) with Microsoft SMTP Server (TLS)
+ id 14.3.439.0; Sun, 17 May 2020 01:29:18 -0700
+Received: from orsmsx114.amr.corp.intel.com ([169.254.8.99]) by
+ ORSMSX155.amr.corp.intel.com ([169.254.7.186]) with mapi id 14.03.0439.000;
+ Sun, 17 May 2020 01:29:18 -0700
+From: "Prakhya, Sai Praneeth" <sai.praneeth.prakhya@intel.com>
+To: Joerg Roedel <joro@8bytes.org>, Lu Baolu <baolu.lu@linux.intel.com>
+Subject: RE: [PATCH] iommu: Remove functions that support private domain
+Thread-Topic: [PATCH] iommu: Remove functions that support private domain
+Thread-Index: AQHWKXk9fV5tekATV0S4blj7EpvL1KioBUCA///Q9SCAAIhBgP//i0rwgACMGYD//71zcAAlw0mAAAYo/gAABfT8AAAIODdw
+Date: Sun, 17 May 2020 08:29:17 +0000
+Message-ID: <FFF73D592F13FD46B8700F0A279B802F573A6BD6@ORSMSX114.amr.corp.intel.com>
+References: <20200513224721.20504-1-sai.praneeth.prakhya@intel.com>
+ <20200514131315.GJ18353@8bytes.org>
+ <FFF73D592F13FD46B8700F0A279B802F573A6427@ORSMSX114.amr.corp.intel.com>
+ <20200514183233.GO18353@8bytes.org>
+ <FFF73D592F13FD46B8700F0A279B802F573A651E@ORSMSX114.amr.corp.intel.com>
+ <20200514195615.GP18353@8bytes.org>
+ <FFF73D592F13FD46B8700F0A279B802F573A6672@ORSMSX114.amr.corp.intel.com>
+ <20200515095919.GQ18353@8bytes.org>
+ <9d65b30a-d22e-d566-d740-601f8d638bfd@linux.intel.com>
+ <20200515154616.GY18353@8bytes.org>
+In-Reply-To: <20200515154616.GY18353@8bytes.org>
+Accept-Language: en-US
 Content-Language: en-US
-X-Originating-IP: [10.166.215.237]
-X-CFilter-Loop: Reflected
-X-Mailman-Approved-At: Sat, 16 May 2020 15:24:12 +0000
-Cc: Shiyuan Hu <hushiyuan@huawei.com>, Hewenliang <hewenliang4@huawei.com>
+X-MS-Has-Attach: 
+X-MS-TNEF-Correlator: 
+dlp-product: dlpe-windows
+dlp-version: 11.2.0.6
+dlp-reaction: no-action
+x-originating-ip: [10.22.254.140]
+MIME-Version: 1.0
+Cc: "iommu@lists.linux-foundation.org" <iommu@lists.linux-foundation.org>
 X-BeenThere: iommu@lists.linux-foundation.org
 X-Mailman-Version: 2.1.15
 Precedence: list
@@ -83,48 +108,86 @@ Content-Transfer-Encoding: 7bit
 Errors-To: iommu-bounces@lists.linux-foundation.org
 Sender: "iommu" <iommu-bounces@lists.linux-foundation.org>
 
-Switch to bitmap_zalloc() to show clearly in dma_init_coherent_memory().
+> -----Original Message-----
+> From: Joerg Roedel <joro@8bytes.org>
+> Sent: Friday, May 15, 2020 8:46 AM
+> To: Lu Baolu <baolu.lu@linux.intel.com>
+> Cc: Prakhya, Sai Praneeth <sai.praneeth.prakhya@intel.com>;
+> iommu@lists.linux-foundation.org
+> Subject: Re: [PATCH] iommu: Remove functions that support private domain
+> 
+> On Fri, May 15, 2020 at 08:55:42PM +0800, Lu Baolu wrote:
+> > It seems that we can do like this:
+> >
+> > [1] mutex_lock(&group->lock)
+> > [2] for_each_group_device(device_lock())
+> > [3] if (for_each_group_device(!device_is_bound()))
+> > 	change_default_domain()
+> > [4] for_each_group_device_reverse(device_unlock())
+> > [5] mutex_unlock(&group->lock)
 
-No functional change.
+>> A possible problem exists at step 2 when another thread is trying to lock devices in the reverse order at the same time. -> By Allen
 
-Signed-off-by: Yunfeng Ye <yeyunfeng@huawei.com>
----
- kernel/dma/coherent.c | 5 ++---
- 1 file changed, 2 insertions(+), 3 deletions(-)
+Makes sense.. this could happen and we could prevent this if the iommu_group has only one device. So, going with Joerg's suggestion, if we support dynamic switching of default-domain of a group with only one device, I think we shouldn't hit this issue.
 
-diff --git a/kernel/dma/coherent.c b/kernel/dma/coherent.c
-index 2a0c4985f38e..794b31e61ca0 100644
---- a/kernel/dma/coherent.c
-+++ b/kernel/dma/coherent.c
-@@ -44,7 +44,6 @@ static int dma_init_coherent_memory(phys_addr_t phys_addr,
- 	struct dma_coherent_mem *dma_mem = NULL;
- 	void *mem_base = NULL;
- 	int pages = size >> PAGE_SHIFT;
--	int bitmap_size = BITS_TO_LONGS(pages) * sizeof(long);
- 	int ret;
+> The problem here is that I am pretty sure we also have:
+> 
+> 	device_lock() /* from device/driver core code */
+> 	-> bus_notifier()
+> 	  -> iommu_bus_notifier()
+> 	    -> ...
+> 	      -> mutex_lock(&group->lock)
+> 
+> Which would cause lock-inversion with the above code.
 
- 	if (!size) {
-@@ -62,7 +61,7 @@ static int dma_init_coherent_memory(phys_addr_t phys_addr,
- 		ret = -ENOMEM;
- 		goto out;
- 	}
--	dma_mem->bitmap = kzalloc(bitmap_size, GFP_KERNEL);
-+	dma_mem->bitmap = bitmap_zalloc(pages, GFP_KERNEL);
- 	if (!dma_mem->bitmap) {
- 		ret = -ENOMEM;
- 		goto out;
-@@ -90,7 +89,7 @@ static void dma_release_coherent_memory(struct dma_coherent_mem *mem)
- 		return;
+Thanks for this call chain, Joerg. It makes sense to me how lock inversion could happen
 
- 	memunmap(mem->virt_base);
--	kfree(mem->bitmap);
-+	bitmap_free(mem->bitmap);
- 	kfree(mem);
- }
+iommu_bus_notifier()
+-> iommu_release_device()
+ -> ops->release_device() (Eg: intel_iommu_release_device())
+  -> iommu_group_remove_device()
+   -> mutex_lock()
 
--- 
-1.8.3.1
+But, I added print statements to iommu_bus_notifier() and iommu_group_remove_device() and noticed that iommu_group_remove_device() wasn't being called upon modprobe -r <driver_name> and iommu_probe_device() isn't called upon modprobe <driver_name> because
 
+	if (action == BUS_NOTIFY_ADD_DEVICE) {
+		int ret;
+
+		ret = iommu_probe_device(dev);
+		return (ret) ? NOTIFY_DONE : NOTIFY_OK;
+	} else if (action == BUS_NOTIFY_REMOVED_DEVICE) {
+		iommu_release_device(dev);
+		return NOTIFY_OK;
+	}
+
+"action" was != BUS_NOTIFY_ADD_DEVICE || BUS_NOTIFY_REMOVED_DEVICE upon modprobe. So (after booting [1]), I am wondering when would action be == to one of the above so that these iommu functions get called.
+
+And,
+	switch (action) {
+	case BUS_NOTIFY_BIND_DRIVER:
+		group_action = IOMMU_GROUP_NOTIFY_BIND_DRIVER;
+		break;
+	case BUS_NOTIFY_BOUND_DRIVER:
+		group_action = IOMMU_GROUP_NOTIFY_BOUND_DRIVER;
+		break;
+	case BUS_NOTIFY_UNBIND_DRIVER:
+		group_action = IOMMU_GROUP_NOTIFY_UNBIND_DRIVER;
+		break;
+	case BUS_NOTIFY_UNBOUND_DRIVER:
+		group_action = IOMMU_GROUP_NOTIFY_UNBOUND_DRIVER;
+		break;
+	}
+
+	if (group_action)
+		blocking_notifier_call_chain(&group->notifier,
+					     group_action, dev);
+
+I also noticed that vfio is the only one that registers for group notifiers and from a first look it wasn't very obvious if vfio is trying to get group->mutex.
+
+[1] I am interested in after booting because dynamic switching of iommu_group default-domain is supported only through sysfs.
+
+Regards,
+Sai
 _______________________________________________
 iommu mailing list
 iommu@lists.linux-foundation.org
