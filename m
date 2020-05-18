@@ -2,88 +2,69 @@ Return-Path: <SRS0=00Kx=7A=lists.linux-foundation.org=iommu-bounces@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-8.1 required=3.0 tests=DKIM_INVALID,DKIM_SIGNED,
-	HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_PATCH,MAILING_LIST_MULTI,SIGNED_OFF_BY,
-	SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED,USER_AGENT_SANE_1 autolearn=ham
-	autolearn_force=no version=3.4.0
+X-Spam-Status: No, score=-5.3 required=3.0 tests=HEADER_FROM_DIFFERENT_DOMAINS,
+	INCLUDES_PATCH,MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS,USER_AGENT_SANE_1
+	autolearn=unavailable autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id F3D1CC433E0
-	for <iommu@archiver.kernel.org>; Mon, 18 May 2020 12:11:38 +0000 (UTC)
-Received: from fraxinus.osuosl.org (smtp4.osuosl.org [140.211.166.137])
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 63FADC433DF
+	for <iommu@archiver.kernel.org>; Mon, 18 May 2020 13:27:05 +0000 (UTC)
+Received: from hemlock.osuosl.org (smtp2.osuosl.org [140.211.166.133])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by mail.kernel.org (Postfix) with ESMTPS id 9C4C820643
-	for <iommu@archiver.kernel.org>; Mon, 18 May 2020 12:11:38 +0000 (UTC)
-Authentication-Results: mail.kernel.org;
-	dkim=fail reason="signature verification failed" (1024-bit key) header.d=ti.com header.i=@ti.com header.b="DT+qVjbX"
-DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 9C4C820643
-Authentication-Results: mail.kernel.org; dmarc=none (p=none dis=none) header.from=lists.linux-foundation.org
+	by mail.kernel.org (Postfix) with ESMTPS id 2F4492065F
+	for <iommu@archiver.kernel.org>; Mon, 18 May 2020 13:27:05 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 2F4492065F
+Authentication-Results: mail.kernel.org; dmarc=none (p=none dis=none) header.from=suse.de
 Authentication-Results: mail.kernel.org; spf=pass smtp.mailfrom=iommu-bounces@lists.linux-foundation.org
 Received: from localhost (localhost [127.0.0.1])
-	by fraxinus.osuosl.org (Postfix) with ESMTP id 64C2A86A1A;
-	Mon, 18 May 2020 12:11:38 +0000 (UTC)
-X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from fraxinus.osuosl.org ([127.0.0.1])
-	by localhost (.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
-	with ESMTP id U55ZeOKXOixl; Mon, 18 May 2020 12:11:37 +0000 (UTC)
-Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [140.211.9.56])
-	by fraxinus.osuosl.org (Postfix) with ESMTP id D9693868E1;
-	Mon, 18 May 2020 12:11:37 +0000 (UTC)
-Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
-	by lists.linuxfoundation.org (Postfix) with ESMTP id B3FBDC0888;
-	Mon, 18 May 2020 12:11:37 +0000 (UTC)
-Received: from hemlock.osuosl.org (smtp2.osuosl.org [140.211.166.133])
- by lists.linuxfoundation.org (Postfix) with ESMTP id 16272C07FF
- for <iommu@lists.linux-foundation.org>; Mon, 18 May 2020 12:11:36 +0000 (UTC)
-Received: from localhost (localhost [127.0.0.1])
- by hemlock.osuosl.org (Postfix) with ESMTP id 04A72885CA
- for <iommu@lists.linux-foundation.org>; Mon, 18 May 2020 12:11:36 +0000 (UTC)
+	by hemlock.osuosl.org (Postfix) with ESMTP id 0069988313;
+	Mon, 18 May 2020 13:27:05 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
 Received: from hemlock.osuosl.org ([127.0.0.1])
+	by localhost (.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
+	with ESMTP id xZCcK+TdvES5; Mon, 18 May 2020 13:27:03 +0000 (UTC)
+Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [140.211.9.56])
+	by hemlock.osuosl.org (Postfix) with ESMTP id 5752688311;
+	Mon, 18 May 2020 13:27:03 +0000 (UTC)
+Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
+	by lists.linuxfoundation.org (Postfix) with ESMTP id 3C6D1C0888;
+	Mon, 18 May 2020 13:27:03 +0000 (UTC)
+Received: from silver.osuosl.org (smtp3.osuosl.org [140.211.166.136])
+ by lists.linuxfoundation.org (Postfix) with ESMTP id 4A352C07FF
+ for <iommu@lists.linux-foundation.org>; Mon, 18 May 2020 13:27:02 +0000 (UTC)
+Received: from localhost (localhost [127.0.0.1])
+ by silver.osuosl.org (Postfix) with ESMTP id 3661420434
+ for <iommu@lists.linux-foundation.org>; Mon, 18 May 2020 13:27:02 +0000 (UTC)
+X-Virus-Scanned: amavisd-new at osuosl.org
+Received: from silver.osuosl.org ([127.0.0.1])
  by localhost (.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
- with ESMTP id 5woUqopumOLg for <iommu@lists.linux-foundation.org>;
- Mon, 18 May 2020 12:11:34 +0000 (UTC)
+ with ESMTP id JssiWcPrEKae for <iommu@lists.linux-foundation.org>;
+ Mon, 18 May 2020 13:27:01 +0000 (UTC)
 X-Greylist: domain auto-whitelisted by SQLgrey-1.7.6
-Received: from lelv0143.ext.ti.com (lelv0143.ext.ti.com [198.47.23.248])
- by hemlock.osuosl.org (Postfix) with ESMTPS id F1A98885DC
- for <iommu@lists.linux-foundation.org>; Mon, 18 May 2020 12:11:33 +0000 (UTC)
-Received: from lelv0266.itg.ti.com ([10.180.67.225])
- by lelv0143.ext.ti.com (8.15.2/8.15.2) with ESMTP id 04ICBUjx068823;
- Mon, 18 May 2020 07:11:30 -0500
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ti.com;
- s=ti-com-17Q1; t=1589803890;
- bh=PvspkHCHgklIAa8UX8knX0bBRIv88ZmarBlCJ5WRq7Y=;
- h=Subject:To:References:From:Date:In-Reply-To;
- b=DT+qVjbXwu6cXfE0BHH8VsI8TUOU7ZTfWxriSmb3vuU5q7Z+QW0lppAEUPE0FsGRI
- la6hdJSDfSiN9hfwbKvaQ0uRrYYgrpNc37iA2mUDagooLGPDKhNKmgklXKoPyLHGyW
- O9ojyISH0d25lsFQwR5gaMaXsWag8X+Bbntc0sbQ=
-Received: from DLEE100.ent.ti.com (dlee100.ent.ti.com [157.170.170.30])
- by lelv0266.itg.ti.com (8.15.2/8.15.2) with ESMTPS id 04ICBU0q066180
- (version=TLSv1.2 cipher=AES256-GCM-SHA384 bits=256 verify=FAIL);
- Mon, 18 May 2020 07:11:30 -0500
-Received: from DLEE103.ent.ti.com (157.170.170.33) by DLEE100.ent.ti.com
- (157.170.170.30) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256_P256) id 15.1.1979.3; Mon, 18
- May 2020 07:11:29 -0500
-Received: from fllv0040.itg.ti.com (10.64.41.20) by DLEE103.ent.ti.com
- (157.170.170.33) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256_P256) id 15.1.1979.3 via
- Frontend Transport; Mon, 18 May 2020 07:11:29 -0500
-Received: from [127.0.0.1] (ileax41-snat.itg.ti.com [10.172.224.153])
- by fllv0040.itg.ti.com (8.15.2/8.15.2) with ESMTP id 04ICBSBK002503;
- Mon, 18 May 2020 07:11:28 -0500
-Subject: Re: [PATCH] iommu/omap: Add registration for DT fwnode pointer
-To: Tero Kristo <t-kristo@ti.com>, <iommu@lists.linux-foundation.org>,
- <joro@8bytes.org>
-References: <20200424145828.3159-1-t-kristo@ti.com>
-Message-ID: <6a505438-2d2e-27da-fa38-f3ac15832480@ti.com>
-Date: Mon, 18 May 2020 15:11:27 +0300
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101
- Thunderbird/68.4.1
+Received: from mx2.suse.de (mx2.suse.de [195.135.220.15])
+ by silver.osuosl.org (Postfix) with ESMTPS id 115E520420
+ for <iommu@lists.linux-foundation.org>; Mon, 18 May 2020 13:27:01 +0000 (UTC)
+X-Virus-Scanned: by amavisd-new at test-mx.suse.de
+Received: from relay2.suse.de (unknown [195.135.220.254])
+ by mx2.suse.de (Postfix) with ESMTP id 4DDB2ACE3;
+ Mon, 18 May 2020 13:27:01 +0000 (UTC)
+Date: Mon, 18 May 2020 15:26:56 +0200
+From: Joerg Roedel <jroedel@suse.de>
+To: Robin Murphy <robin.murphy@arm.com>
+Subject: Re: [PATCH] iommu: Implement deferred domain attachment
+Message-ID: <20200518132656.GL8135@suse.de>
+References: <20200515094519.20338-1-joro@8bytes.org>
+ <d4e1cd9e-fc83-d41a-49c0-8f14f44b2701@arm.com>
+ <20200515161400.GZ18353@8bytes.org>
+ <e7bdcbf1-a713-618d-3e02-037f509a17e9@arm.com>
+ <20200515182600.GJ8135@suse.de>
+ <f5c6ec5b-06c6-42e6-b74d-71cf29b44b8d@arm.com>
 MIME-Version: 1.0
-In-Reply-To: <20200424145828.3159-1-t-kristo@ti.com>
-Content-Language: en-US
-X-EXCLAIMER-MD-CONFIG: e1e8a2fd-e40a-4ac6-ac9b-f7e9cc9ee180
+Content-Disposition: inline
+In-Reply-To: <f5c6ec5b-06c6-42e6-b74d-71cf29b44b8d@arm.com>
+User-Agent: Mutt/1.10.1 (2018-07-13)
+Cc: iommu@lists.linux-foundation.org, linux-kernel@vger.kernel.org,
+ Tom Murphy <murphyt7@tcd.ie>
 X-BeenThere: iommu@lists.linux-foundation.org
 X-Mailman-Version: 2.1.15
 Precedence: list
@@ -96,51 +77,84 @@ List-Post: <mailto:iommu@lists.linux-foundation.org>
 List-Help: <mailto:iommu-request@lists.linux-foundation.org?subject=help>
 List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
  <mailto:iommu-request@lists.linux-foundation.org?subject=subscribe>
-From: Tero Kristo via iommu <iommu@lists.linux-foundation.org>
-Reply-To: Tero Kristo <t-kristo@ti.com>
+Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
-Content-Type: text/plain; charset="us-ascii"; Format="flowed"
 Errors-To: iommu-bounces@lists.linux-foundation.org
 Sender: "iommu" <iommu-bounces@lists.linux-foundation.org>
 
-On 24/04/2020 17:58, Tero Kristo via iommu wrote:
-> The fwnode pointer must be passed to the iommu core, so that the core
-> can map the IOMMU towards device requests properly. Without this, some
-> IOMMU clients like OMAP remoteproc will fail the iommu configuration
-> multiple times with -EPROBE_DEFER, which will eventually be ignored with
-> a kernel warning banner.
-> 
-> Signed-off-by: Tero Kristo <t-kristo@ti.com>
+On Fri, May 15, 2020 at 08:23:13PM +0100, Robin Murphy wrote:
+> But that's not what this is; this is (supposed to be) the exact same "don't
+> actually perform the attach yet" logic as before, just restricting it to
+> default domains in the one place that it actually needs to be, so as not to
+> fundamentally bugger up iommu_attach_device() in a way that prevents it from
+> working as expected at the correct point later.
 
-Hi Joerg,
+You are right, that is better. I tested it and it seems to work. Updated
+diff attached, with a minor cleanup included. Mind sending it as a
+proper patch I can send upstream?
 
-I noticed this is still missing from next but there are some other OMAP 
-iommu patches queued up (see the bug fix I just posted against -next.)
+Thanks,
 
-Whats the plan with this one?
+	Joerg
 
--Tero
-
-> ---
->   drivers/iommu/omap-iommu.c | 1 +
->   1 file changed, 1 insertion(+)
-> 
-> diff --git a/drivers/iommu/omap-iommu.c b/drivers/iommu/omap-iommu.c
-> index 887fefcb03b4..934726e20b72 100644
-> --- a/drivers/iommu/omap-iommu.c
-> +++ b/drivers/iommu/omap-iommu.c
-> @@ -1248,6 +1248,7 @@ static int omap_iommu_probe(struct platform_device *pdev)
->   			goto out_group;
->   
->   		iommu_device_set_ops(&obj->iommu, &omap_iommu_ops);
-> +		iommu_device_set_fwnode(&obj->iommu, &of->fwnode);
->   
->   		err = iommu_device_register(&obj->iommu);
->   		if (err)
-> 
-
---
-Texas Instruments Finland Oy, Porkkalankatu 22, 00180 Helsinki. Y-tunnus/Business ID: 0615521-4. Kotipaikka/Domicile: Helsinki
+diff --git a/drivers/iommu/iommu.c b/drivers/iommu/iommu.c
+index 7b375421afba..a9d02bc3ab5b 100644
+--- a/drivers/iommu/iommu.c
++++ b/drivers/iommu/iommu.c
+@@ -693,6 +693,15 @@ static int iommu_group_create_direct_mappings(struct iommu_group *group,
+ 	return ret;
+ }
+ 
++static bool iommu_is_attach_deferred(struct iommu_domain *domain,
++				     struct device *dev)
++{
++	if (domain->ops->is_attach_deferred)
++		return domain->ops->is_attach_deferred(domain, dev);
++
++	return false;
++}
++
+ /**
+  * iommu_group_add_device - add a device to an iommu group
+  * @group: the group into which to add the device (reference should be held)
+@@ -705,6 +714,7 @@ int iommu_group_add_device(struct iommu_group *group, struct device *dev)
+ {
+ 	int ret, i = 0;
+ 	struct group_device *device;
++	struct iommu_domain *domain;
+ 
+ 	device = kzalloc(sizeof(*device), GFP_KERNEL);
+ 	if (!device)
+@@ -747,7 +757,8 @@ int iommu_group_add_device(struct iommu_group *group, struct device *dev)
+ 
+ 	mutex_lock(&group->mutex);
+ 	list_add_tail(&device->list, &group->devices);
+-	if (group->domain)
++	domain = group->domain;
++	if (domain  && !iommu_is_attach_deferred(domain, dev))
+ 		ret = __iommu_attach_device(group->domain, dev);
+ 	mutex_unlock(&group->mutex);
+ 	if (ret)
+@@ -1653,9 +1664,6 @@ static int __iommu_attach_device(struct iommu_domain *domain,
+ 				 struct device *dev)
+ {
+ 	int ret;
+-	if ((domain->ops->is_attach_deferred != NULL) &&
+-	    domain->ops->is_attach_deferred(domain, dev))
+-		return 0;
+ 
+ 	if (unlikely(domain->ops->attach_dev == NULL))
+ 		return -ENODEV;
+@@ -1727,8 +1735,7 @@ EXPORT_SYMBOL_GPL(iommu_sva_unbind_gpasid);
+ static void __iommu_detach_device(struct iommu_domain *domain,
+ 				  struct device *dev)
+ {
+-	if ((domain->ops->is_attach_deferred != NULL) &&
+-	    domain->ops->is_attach_deferred(domain, dev))
++	if (iommu_is_attach_deferred(domain, dev))
+ 		return;
+ 
+ 	if (unlikely(domain->ops->detach_dev == NULL))
 _______________________________________________
 iommu mailing list
 iommu@lists.linux-foundation.org
