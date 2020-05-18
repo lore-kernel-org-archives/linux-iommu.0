@@ -2,86 +2,89 @@ Return-Path: <SRS0=00Kx=7A=lists.linux-foundation.org=iommu-bounces@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-2.0 required=3.0 tests=DKIM_INVALID,DKIM_SIGNED,
-	HEADER_FROM_DIFFERENT_DOMAINS,MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS,
-	UNPARSEABLE_RELAY,URIBL_BLOCKED,USER_AGENT_SANE_2 autolearn=no
+X-Spam-Status: No, score=-0.8 required=3.0 tests=HEADER_FROM_DIFFERENT_DOMAINS,
+	MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED autolearn=no
 	autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 7EB88C433DF
-	for <iommu@archiver.kernel.org>; Mon, 18 May 2020 06:58:08 +0000 (UTC)
-Received: from whitealder.osuosl.org (smtp1.osuosl.org [140.211.166.138])
+	by smtp.lore.kernel.org (Postfix) with ESMTP id F160BC433DF
+	for <iommu@archiver.kernel.org>; Mon, 18 May 2020 09:06:58 +0000 (UTC)
+Received: from silver.osuosl.org (smtp3.osuosl.org [140.211.166.136])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by mail.kernel.org (Postfix) with ESMTPS id 2273220715
-	for <iommu@archiver.kernel.org>; Mon, 18 May 2020 06:58:07 +0000 (UTC)
-Authentication-Results: mail.kernel.org;
-	dkim=fail reason="signature verification failed" (1024-bit key) header.d=mediatek.com header.i=@mediatek.com header.b="ptpOJFQJ"
-DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 2273220715
-Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=mediatek.com
+	by mail.kernel.org (Postfix) with ESMTPS id B67DF20643
+	for <iommu@archiver.kernel.org>; Mon, 18 May 2020 09:06:58 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org B67DF20643
+Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=canonical.com
 Authentication-Results: mail.kernel.org; spf=pass smtp.mailfrom=iommu-bounces@lists.linux-foundation.org
 Received: from localhost (localhost [127.0.0.1])
-	by whitealder.osuosl.org (Postfix) with ESMTP id BC98A8784F;
-	Mon, 18 May 2020 06:58:07 +0000 (UTC)
+	by silver.osuosl.org (Postfix) with ESMTP id 76F61203AA;
+	Mon, 18 May 2020 09:06:58 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from whitealder.osuosl.org ([127.0.0.1])
+Received: from silver.osuosl.org ([127.0.0.1])
 	by localhost (.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
-	with ESMTP id wKIRq5IqX9lK; Mon, 18 May 2020 06:58:05 +0000 (UTC)
+	with ESMTP id fcXCSRzgNgJb; Mon, 18 May 2020 09:06:55 +0000 (UTC)
 Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [140.211.9.56])
-	by whitealder.osuosl.org (Postfix) with ESMTP id 916D9877DC;
-	Mon, 18 May 2020 06:58:05 +0000 (UTC)
+	by silver.osuosl.org (Postfix) with ESMTP id 2B3B92077C;
+	Mon, 18 May 2020 09:06:55 +0000 (UTC)
 Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
-	by lists.linuxfoundation.org (Postfix) with ESMTP id 6B3F2C0881;
-	Mon, 18 May 2020 06:58:05 +0000 (UTC)
-Received: from fraxinus.osuosl.org (smtp4.osuosl.org [140.211.166.137])
- by lists.linuxfoundation.org (Postfix) with ESMTP id E3BFFC07FF
- for <iommu@lists.linux-foundation.org>; Mon, 18 May 2020 06:58:03 +0000 (UTC)
+	by lists.linuxfoundation.org (Postfix) with ESMTP id 0FC62C0881;
+	Mon, 18 May 2020 09:06:55 +0000 (UTC)
+Received: from silver.osuosl.org (smtp3.osuosl.org [140.211.166.136])
+ by lists.linuxfoundation.org (Postfix) with ESMTP id 71321C07FF
+ for <iommu@lists.linux-foundation.org>; Mon, 18 May 2020 09:06:54 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
- by fraxinus.osuosl.org (Postfix) with ESMTP id D057D8618F
- for <iommu@lists.linux-foundation.org>; Mon, 18 May 2020 06:58:03 +0000 (UTC)
+ by silver.osuosl.org (Postfix) with ESMTP id 5D1752077C
+ for <iommu@lists.linux-foundation.org>; Mon, 18 May 2020 09:06:54 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from fraxinus.osuosl.org ([127.0.0.1])
+Received: from silver.osuosl.org ([127.0.0.1])
  by localhost (.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
- with ESMTP id PCUiNSop7_yF for <iommu@lists.linux-foundation.org>;
- Mon, 18 May 2020 06:58:02 +0000 (UTC)
-X-Greylist: delayed 00:05:03 by SQLgrey-1.7.6
-Received: from mailgw02.mediatek.com (unknown [1.203.163.81])
- by fraxinus.osuosl.org (Postfix) with ESMTP id 239AC85F66
- for <iommu@lists.linux-foundation.org>; Mon, 18 May 2020 06:58:01 +0000 (UTC)
-X-UUID: 50de2994ee194d24be05a64da9dcc874-20200518
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=mediatek.com;
- s=dk; 
- h=Content-Transfer-Encoding:MIME-Version:Content-Type:References:In-Reply-To:Date:CC:To:From:Subject:Message-ID;
- bh=BE27p8cgAXdiOJaTc4rLjiLgh00VCcwZpGfoS4OOzsM=; 
- b=ptpOJFQJPFBPL0cXkOqi5XQq0/yJTcAYzd6Xd1kQWwUg4VdHh2mnbGPt0mbD9ULSgjuY9RuCQsxe6WDM+RcppeVDqP5klDWQdDGAiu8iiqef6Im9IPnivLimwGbVBzh1ZnPdTsfZL3fSYtLAJ1PlFQquB/C2sLu1OEw+FwOZ+Sc=;
-X-UUID: 50de2994ee194d24be05a64da9dcc874-20200518
-Received: from mtkcas36.mediatek.inc [(172.27.4.253)] by mailgw02.mediatek.com
- (envelope-from <yong.wu@mediatek.com>)
- (mailgw01.mediatek.com ESMTP with TLS)
- with ESMTP id 1666374242; Mon, 18 May 2020 14:52:50 +0800
-Received: from MTKCAS36.mediatek.inc (172.27.4.186) by MTKMBS31N2.mediatek.inc
- (172.27.4.87) with Microsoft SMTP Server (TLS) id 15.0.1497.2;
- Mon, 18 May 2020 14:52:46 +0800
-Received: from [10.17.3.153] (10.17.3.153) by MTKCAS36.mediatek.inc
- (172.27.4.170) with Microsoft SMTP Server id 15.0.1497.2 via Frontend
- Transport; Mon, 18 May 2020 14:52:46 +0800
-Message-ID: <1589784680.15083.19.camel@mhfsdcap03>
-Subject: Re: [PATCH v2 23/33] iommu/mediatek-v1 Convert to
- probe/release_device() call-backs
-From: Yong Wu <yong.wu@mediatek.com>
-To: Joerg Roedel <joro@8bytes.org>
-Date: Mon, 18 May 2020 14:51:20 +0800
-In-Reply-To: <20200515100718.GS18353@8bytes.org>
-References: <20200414131542.25608-1-joro@8bytes.org>
- <20200414131542.25608-24-joro@8bytes.org>
- <1589528699.26119.9.camel@mhfsdcap03> <20200515100718.GS18353@8bytes.org>
-X-Mailer: Evolution 3.10.4-0ubuntu2 
-MIME-Version: 1.0
-X-TM-SNTS-SMTP: 645326C83BAFED16ABAF80B4AAC8D7BA842597586DFE9CAF78B92A85A256ADAF2000:8
-X-MTK: N
-Cc: Joerg Roedel <jroedel@suse.de>, Robin Murphy <robin.murphy@arm.com>,
- linux-kernel@vger.kernel.org, iommu@lists.linux-foundation.org,
- linux-mediatek@lists.infradead.org, Matthias Brugger <matthias.bgg@gmail.com>,
- Will Deacon <will@kernel.org>
+ with ESMTP id 6Phn1kK016qg for <iommu@lists.linux-foundation.org>;
+ Mon, 18 May 2020 09:06:53 +0000 (UTC)
+X-Greylist: domain auto-whitelisted by SQLgrey-1.7.6
+Received: from youngberry.canonical.com (youngberry.canonical.com
+ [91.189.89.112])
+ by silver.osuosl.org (Postfix) with ESMTPS id 4FD7E20C45
+ for <iommu@lists.linux-foundation.org>; Mon, 18 May 2020 09:06:52 +0000 (UTC)
+Received: from mail-pl1-f198.google.com ([209.85.214.198])
+ by youngberry.canonical.com with esmtps
+ (TLS1.2:ECDHE_RSA_AES_128_GCM_SHA256:128) (Exim 4.86_2)
+ (envelope-from <kai.heng.feng@canonical.com>) id 1jabjW-0005d8-0N
+ for iommu@lists.linux-foundation.org; Mon, 18 May 2020 09:06:50 +0000
+Received: by mail-pl1-f198.google.com with SMTP id x4so6922195pll.19
+ for <iommu@lists.linux-foundation.org>; Mon, 18 May 2020 02:06:49 -0700 (PDT)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+ d=1e100.net; s=20161025;
+ h=x-gm-message-state:from:content-transfer-encoding:mime-version
+ :subject:message-id:date:cc:to;
+ bh=fv0kKG3R4oPc9uFx9caWNL7elOwRa1h8BPa4WaUkiiM=;
+ b=sLKzHcCbkL7XUqIjUrOohqXj1TrBoZakDvpbYNKHXR3jAEUJ7liqgCn7G5ufRMigLO
+ qscrwX+Aan0E+PlyEUeRLx/Q+NQzgtuKH5hPs6AWpnVvqRgQXPaEZ4EoPhbGkekgTkVS
+ fRHWS40rdvgzMweFGu7T4po70cdEEt9K2Js0lelegoErNIA4m2M2+3WKM5Xh6MNGc/C/
+ D0DFdwOadz7oEhHvEnY5KlniRbuezqcoBM9AQf3lzP1fU2I5NUsrE5q0NEHxfFM8W8Jr
+ /niPYIgkc/jGHGXg6022gsoJEKOwupZ+E0PfV0uu4Jn/MaR7XM1lJLfcwYVXfsowxL5k
+ v5uw==
+X-Gm-Message-State: AOAM530+xd++Uz3ghlviFRgWe01HDGrXwQZAqteEG2VQ1JkQDXT07v8E
+ C8dIxBI/phIh2goIwFVb3hCOxq1kgjDehcdQOFeWcFw7YO7PIuEEjbfmocGATSWBk5Ex1fkmjIC
+ f0jMsakBHikzaP59l4niSifcUKcbQyHh5eAqmUyOmGs2X81U=
+X-Received: by 2002:a63:ef09:: with SMTP id u9mr14812920pgh.406.1589792808677; 
+ Mon, 18 May 2020 02:06:48 -0700 (PDT)
+X-Google-Smtp-Source: ABdhPJxwRZ2pXW3DEvSMRoiu8LhnK3SCXnElDfQr9CARMhtvMOM3TQfOJr4A6y1/dCWHqF4xIEWWNg==
+X-Received: by 2002:a63:ef09:: with SMTP id u9mr14812892pgh.406.1589792808351; 
+ Mon, 18 May 2020 02:06:48 -0700 (PDT)
+Received: from [192.168.1.208] (220-133-187-190.HINET-IP.hinet.net.
+ [220.133.187.190])
+ by smtp.gmail.com with ESMTPSA id z190sm8256455pfb.1.2020.05.18.02.06.47
+ (version=TLS1_2 cipher=ECDHE-ECDSA-AES128-GCM-SHA256 bits=128/128);
+ Mon, 18 May 2020 02:06:47 -0700 (PDT)
+From: Kai-Heng Feng <kai.heng.feng@canonical.com>
+Mime-Version: 1.0 (Mac OS X Mail 13.4 \(3608.80.23.2.2\))
+Subject: [Regression] "iommu/amd: Relax locking in dma_ops path" makes tg3
+ ethernet transmit queue timeout
+Message-Id: <4E9B03FB-9DA5-4831-B4CE-A0AA645D3F22@canonical.com>
+Date: Mon, 18 May 2020 17:06:45 +0800
+To: jroedel@suse.de
+X-Mailer: Apple Mail (2.3608.80.23.2.2)
+Cc: iommu@lists.linux-foundation.org, open list <linux-kernel@vger.kernel.org>
 X-BeenThere: iommu@lists.linux-foundation.org
 X-Mailman-Version: 2.1.15
 Precedence: list
@@ -99,127 +102,43 @@ Content-Transfer-Encoding: 7bit
 Errors-To: iommu-bounces@lists.linux-foundation.org
 Sender: "iommu" <iommu-bounces@lists.linux-foundation.org>
 
-On Fri, 2020-05-15 at 12:07 +0200, Joerg Roedel wrote:
-> Hi,
-> 
-> On Fri, May 15, 2020 at 03:44:59PM +0800, Yong Wu wrote:
-> > On Tue, 2020-04-14 at 15:15 +0200, Joerg Roedel wrote:
-> > > -	return iommu_device_link(&data->iommu, dev);
-> > > +	err = arm_iommu_attach_device(dev, mtk_mapping);
-> > > +	if (err)
-> > > +		dev_err(dev, "Can't create IOMMU mapping - DMA-OPS will not work\n");
-> > 
-> > 
-> > Hi Joerg,
-> > 
-> >      Thanks very much for this patch.
-> > 
-> >      This arm_iommu_attach_device is called just as we expected.
-> > 
-> >      But it will fail in this callstack as the group->mutex was tried to
-> > be re-locked...
-> > 
-> > [<c0938e8c>] (iommu_attach_device) from [<c0317590>]
-> > (__arm_iommu_attach_device+0x34/0x90)
-> > [<c0317590>] (__arm_iommu_attach_device) from [<c03175f8>]
-> > (arm_iommu_attach_device+0xc/0x20)
-> > [<c03175f8>] (arm_iommu_attach_device) from [<c09432cc>]
-> > (mtk_iommu_probe_finalize+0x34/0x50)
-> > [<c09432cc>] (mtk_iommu_probe_finalize) from [<c093a8ac>]
-> > (bus_iommu_probe+0x2a8/0x2c4)
-> > [<c093a8ac>] (bus_iommu_probe) from [<c093a950>] (bus_set_iommu
-> > +0x88/0xd4)
-> > [<c093a950>] (bus_set_iommu) from [<c0943c74>] (mtk_iommu_probe
-> > +0x2f8/0x364)
-> 
-> Thanks for the report, is
-> 
-> 	https://lore.kernel.org/lkml/1589530123-30240-1-git-send-email-yong.wu@mediatek.com/
-> 
-> The fix for this issue or is something else required?
+Hi,
 
-No. That patch only adjust the internal flow to satisfy the latest
-framework, it's not for fixing this mutex issue. 
+Broadcom ethernet tg3 unusable after commit 92d420ec028d ("iommu/amd: Relax locking in dma_ops path").
+After a short period it stops:
+[  122.717144] WARNING: CPU: 0 PID: 0 at net/sched/sch_generic.c:303 dev_watchdog+0x237/0x240()
+[  122.717152] NETDEV WATCHDOG: enp3s0 (tg3): transmit queue 0 timed out
 
-Here I only reported this issue.
+After testing the patch section by section, this is the part that caused the regression:
 
-below is my local patch. split "dma_attach" to attach_device and
-probe_finalize. About attach_device, Use the existed
-__iommu_attach_group instead. Then rename from the "dma_attach" to
-"probe_finalize" to do the probe_finalize job. And move it outside of
-the mutex_unlock.
-
-I'm not sure if it is right. and of course I will test if you have any
-other solution. Thanks.
-
-
---- a/drivers/iommu/iommu.c
-+++ b/drivers/iommu/iommu.c
-@@ -1665,26 +1665,20 @@ static void probe_alloc_default_domain(struct
-bus_type *bus,
+@@ -2578,19 +2580,8 @@ static dma_addr_t map_page(struct device *dev, struct page *page,
  
- }
+        dma_mask = *dev->dma_mask;
  
--static int iommu_group_do_dma_attach(struct device *dev, void *data)
-+static int iommu_group_do_probe_finalize(struct device *dev, void
-*data)
- {
- 	struct iommu_domain *domain = data;
--	const struct iommu_ops *ops;
--	int ret;
+-       spin_lock_irqsave(&domain->lock, flags);
 -
--	ret = __iommu_attach_device(domain, dev);
+-       addr = __map_single(dev, domain->priv, paddr, size, dir, false,
++       return __map_single(dev, domain->priv, paddr, size, dir, false,
+                            dma_mask);
+-       if (addr == DMA_ERROR_CODE)
+-               goto out;
 -
--	ops = domain->ops;
-+	const struct iommu_ops *ops = domain->ops;
- 
--	if (ret == 0 && ops->probe_finalize)
-+	if (ops->probe_finalize)
- 		ops->probe_finalize(dev);
+-       domain_flush_complete(domain);
 -
--	return ret;
-+	return 0;
+-out:
+-       spin_unlock_irqrestore(&domain->lock, flags);
+-
+-       return addr;
  }
- 
--static int __iommu_group_dma_attach(struct iommu_group *group)
-+static int iommu_group_probe_finalize(struct iommu_group *group)
- {
- 	return __iommu_group_for_each_dev(group, group->default_domain,
--					  iommu_group_do_dma_attach);
-+					  iommu_group_do_probe_finalize);
- }
- 
- static int iommu_do_create_direct_mappings(struct device *dev, void
-*data)
-@@ -1731,12 +1725,14 @@ int bus_iommu_probe(struct bus_type *bus)
- 
- 		iommu_group_create_direct_mappings(group);
- 
--		ret = __iommu_group_dma_attach(group);
-+		ret = __iommu_attach_group(group->default_domain, group);
- 
- 		mutex_unlock(&group->mutex);
- 
- 		if (ret)
- 			break;
-+
-+		iommu_group_probe_finalize(group);
- 	}
- 
- 	return ret;
--- 
 
-> 
-> 
-> Thanks,
-> 
-> 	Joerg
-> 
-> _______________________________________________
-> Linux-mediatek mailing list
-> Linux-mediatek@lists.infradead.org
-> http://lists.infradead.org/mailman/listinfo/linux-mediatek
+Particularly, as soon as the spinlock is removed, the issue can be reproduced.
+Function domain_flush_complete() doesn't seem to affect the status.
 
+However, the .map_page callback was removed by be62dbf554c5 ("iommu/amd: Convert AMD iommu driver to the dma-iommu api"), so there's no easy revert for this issue.
+
+This is still reproducible as of today's mainline kernel, v5.7-rc6.
+
+Kai-Heng
 _______________________________________________
 iommu mailing list
 iommu@lists.linux-foundation.org
