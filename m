@@ -2,75 +2,88 @@ Return-Path: <SRS0=00Kx=7A=lists.linux-foundation.org=iommu-bounces@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-9.8 required=3.0 tests=DKIM_INVALID,DKIM_SIGNED,
-	INCLUDES_PATCH,MAILING_LIST_MULTI,SIGNED_OFF_BY,SPF_HELO_NONE,SPF_PASS,
-	URIBL_BLOCKED,USER_AGENT_GIT autolearn=ham autolearn_force=no version=3.4.0
+X-Spam-Status: No, score=-8.1 required=3.0 tests=DKIM_INVALID,DKIM_SIGNED,
+	HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_PATCH,MAILING_LIST_MULTI,SIGNED_OFF_BY,
+	SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED,USER_AGENT_SANE_1 autolearn=ham
+	autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 8BA44C433DF
-	for <iommu@archiver.kernel.org>; Mon, 18 May 2020 12:09:15 +0000 (UTC)
-Received: from whitealder.osuosl.org (smtp1.osuosl.org [140.211.166.138])
+	by smtp.lore.kernel.org (Postfix) with ESMTP id F3D1CC433E0
+	for <iommu@archiver.kernel.org>; Mon, 18 May 2020 12:11:38 +0000 (UTC)
+Received: from fraxinus.osuosl.org (smtp4.osuosl.org [140.211.166.137])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by mail.kernel.org (Postfix) with ESMTPS id 6120D207D8
-	for <iommu@archiver.kernel.org>; Mon, 18 May 2020 12:09:15 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTPS id 9C4C820643
+	for <iommu@archiver.kernel.org>; Mon, 18 May 2020 12:11:38 +0000 (UTC)
 Authentication-Results: mail.kernel.org;
-	dkim=fail reason="signature verification failed" (1024-bit key) header.d=kernel.org header.i=@kernel.org header.b="l3i7U26e"
-DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 6120D207D8
-Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=kernel.org
+	dkim=fail reason="signature verification failed" (1024-bit key) header.d=ti.com header.i=@ti.com header.b="DT+qVjbX"
+DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 9C4C820643
+Authentication-Results: mail.kernel.org; dmarc=none (p=none dis=none) header.from=lists.linux-foundation.org
 Authentication-Results: mail.kernel.org; spf=pass smtp.mailfrom=iommu-bounces@lists.linux-foundation.org
 Received: from localhost (localhost [127.0.0.1])
-	by whitealder.osuosl.org (Postfix) with ESMTP id 3BC9885BCE;
-	Mon, 18 May 2020 12:09:15 +0000 (UTC)
+	by fraxinus.osuosl.org (Postfix) with ESMTP id 64C2A86A1A;
+	Mon, 18 May 2020 12:11:38 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from whitealder.osuosl.org ([127.0.0.1])
+Received: from fraxinus.osuosl.org ([127.0.0.1])
 	by localhost (.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
-	with ESMTP id pLOFU9gMZeP3; Mon, 18 May 2020 12:09:11 +0000 (UTC)
+	with ESMTP id U55ZeOKXOixl; Mon, 18 May 2020 12:11:37 +0000 (UTC)
 Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [140.211.9.56])
-	by whitealder.osuosl.org (Postfix) with ESMTP id 1C8C080137;
-	Mon, 18 May 2020 12:09:05 +0000 (UTC)
+	by fraxinus.osuosl.org (Postfix) with ESMTP id D9693868E1;
+	Mon, 18 May 2020 12:11:37 +0000 (UTC)
 Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
-	by lists.linuxfoundation.org (Postfix) with ESMTP id 0AB2BC0888;
-	Mon, 18 May 2020 12:09:05 +0000 (UTC)
+	by lists.linuxfoundation.org (Postfix) with ESMTP id B3FBDC0888;
+	Mon, 18 May 2020 12:11:37 +0000 (UTC)
 Received: from hemlock.osuosl.org (smtp2.osuosl.org [140.211.166.133])
- by lists.linuxfoundation.org (Postfix) with ESMTP id 270A7C07FF
- for <iommu@lists.linux-foundation.org>; Mon, 18 May 2020 12:09:04 +0000 (UTC)
+ by lists.linuxfoundation.org (Postfix) with ESMTP id 16272C07FF
+ for <iommu@lists.linux-foundation.org>; Mon, 18 May 2020 12:11:36 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
- by hemlock.osuosl.org (Postfix) with ESMTP id 15AE7885C8
- for <iommu@lists.linux-foundation.org>; Mon, 18 May 2020 12:09:04 +0000 (UTC)
+ by hemlock.osuosl.org (Postfix) with ESMTP id 04A72885CA
+ for <iommu@lists.linux-foundation.org>; Mon, 18 May 2020 12:11:36 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
 Received: from hemlock.osuosl.org ([127.0.0.1])
  by localhost (.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
- with ESMTP id AMkqv1WP-Ryt for <iommu@lists.linux-foundation.org>;
- Mon, 18 May 2020 12:09:03 +0000 (UTC)
+ with ESMTP id 5woUqopumOLg for <iommu@lists.linux-foundation.org>;
+ Mon, 18 May 2020 12:11:34 +0000 (UTC)
 X-Greylist: domain auto-whitelisted by SQLgrey-1.7.6
-Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
- by hemlock.osuosl.org (Postfix) with ESMTPS id 9A971885C4
- for <iommu@lists.linux-foundation.org>; Mon, 18 May 2020 12:09:03 +0000 (UTC)
-Received: from kozik-lap.mshome.net (unknown [194.230.155.188])
- (using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
- (No client certificate requested)
- by mail.kernel.org (Postfix) with ESMTPSA id E3D14207D8;
- Mon, 18 May 2020 12:09:00 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
- s=default; t=1589803743;
- bh=SEByoyU7zUcqsSozfnjODsKZnvuUk1JfOriPckML+F4=;
- h=From:To:Cc:Subject:Date:From;
- b=l3i7U26etrohomOegVf5fBfK9nF8sMSrRZr9e1n0cdxHeZ4Spq8JggfufDwtUFK6/
- cAujaYLrudSVf4FcCMAL/8TRYSkHDpQJwxLF4ly33rlqD/Ujx5kwHLdsNY4ja4eHSb
- cf93eYsTh/FFxkQ3gvoPNnknZD/0SbtETKejRph0=
-From: Krzysztof Kozlowski <krzk@kernel.org>
-To: Tony Luck <tony.luck@intel.com>, Fenghua Yu <fenghua.yu@intel.com>,
- Thomas Gleixner <tglx@linutronix.de>, Ingo Molnar <mingo@redhat.com>,
- Borislav Petkov <bp@alien8.de>, x86@kernel.org,
- "H. Peter Anvin" <hpa@zytor.com>, linux-ia64@vger.kernel.org,
- linux-kernel@vger.kernel.org, Joerg Roedel <joro@8bytes.org>,
- iommu@lists.linux-foundation.org
-Subject: [PATCH 1/2] ia64: Hide the archdata.iommu field behind generic
- IOMMU_API
-Date: Mon, 18 May 2020 14:08:54 +0200
-Message-Id: <20200518120855.27822-1-krzk@kernel.org>
-X-Mailer: git-send-email 2.17.1
-Cc: Krzysztof Kozlowski <krzk@kernel.org>
+Received: from lelv0143.ext.ti.com (lelv0143.ext.ti.com [198.47.23.248])
+ by hemlock.osuosl.org (Postfix) with ESMTPS id F1A98885DC
+ for <iommu@lists.linux-foundation.org>; Mon, 18 May 2020 12:11:33 +0000 (UTC)
+Received: from lelv0266.itg.ti.com ([10.180.67.225])
+ by lelv0143.ext.ti.com (8.15.2/8.15.2) with ESMTP id 04ICBUjx068823;
+ Mon, 18 May 2020 07:11:30 -0500
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ti.com;
+ s=ti-com-17Q1; t=1589803890;
+ bh=PvspkHCHgklIAa8UX8knX0bBRIv88ZmarBlCJ5WRq7Y=;
+ h=Subject:To:References:From:Date:In-Reply-To;
+ b=DT+qVjbXwu6cXfE0BHH8VsI8TUOU7ZTfWxriSmb3vuU5q7Z+QW0lppAEUPE0FsGRI
+ la6hdJSDfSiN9hfwbKvaQ0uRrYYgrpNc37iA2mUDagooLGPDKhNKmgklXKoPyLHGyW
+ O9ojyISH0d25lsFQwR5gaMaXsWag8X+Bbntc0sbQ=
+Received: from DLEE100.ent.ti.com (dlee100.ent.ti.com [157.170.170.30])
+ by lelv0266.itg.ti.com (8.15.2/8.15.2) with ESMTPS id 04ICBU0q066180
+ (version=TLSv1.2 cipher=AES256-GCM-SHA384 bits=256 verify=FAIL);
+ Mon, 18 May 2020 07:11:30 -0500
+Received: from DLEE103.ent.ti.com (157.170.170.33) by DLEE100.ent.ti.com
+ (157.170.170.30) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256_P256) id 15.1.1979.3; Mon, 18
+ May 2020 07:11:29 -0500
+Received: from fllv0040.itg.ti.com (10.64.41.20) by DLEE103.ent.ti.com
+ (157.170.170.33) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256_P256) id 15.1.1979.3 via
+ Frontend Transport; Mon, 18 May 2020 07:11:29 -0500
+Received: from [127.0.0.1] (ileax41-snat.itg.ti.com [10.172.224.153])
+ by fllv0040.itg.ti.com (8.15.2/8.15.2) with ESMTP id 04ICBSBK002503;
+ Mon, 18 May 2020 07:11:28 -0500
+Subject: Re: [PATCH] iommu/omap: Add registration for DT fwnode pointer
+To: Tero Kristo <t-kristo@ti.com>, <iommu@lists.linux-foundation.org>,
+ <joro@8bytes.org>
+References: <20200424145828.3159-1-t-kristo@ti.com>
+Message-ID: <6a505438-2d2e-27da-fa38-f3ac15832480@ti.com>
+Date: Mon, 18 May 2020 15:11:27 +0300
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101
+ Thunderbird/68.4.1
+MIME-Version: 1.0
+In-Reply-To: <20200424145828.3159-1-t-kristo@ti.com>
+Content-Language: en-US
+X-EXCLAIMER-MD-CONFIG: e1e8a2fd-e40a-4ac6-ac9b-f7e9cc9ee180
 X-BeenThere: iommu@lists.linux-foundation.org
 X-Mailman-Version: 2.1.15
 Precedence: list
@@ -83,52 +96,51 @@ List-Post: <mailto:iommu@lists.linux-foundation.org>
 List-Help: <mailto:iommu-request@lists.linux-foundation.org?subject=help>
 List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
  <mailto:iommu-request@lists.linux-foundation.org?subject=subscribe>
-MIME-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
+From: Tero Kristo via iommu <iommu@lists.linux-foundation.org>
+Reply-To: Tero Kristo <t-kristo@ti.com>
 Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset="us-ascii"; Format="flowed"
 Errors-To: iommu-bounces@lists.linux-foundation.org
 Sender: "iommu" <iommu-bounces@lists.linux-foundation.org>
 
-There is a generic, kernel wide configuration symbol for enabling the
-IOMMU specific bits: CONFIG_IOMMU_API.  Implementations (including
-INTEL_IOMMU driver) select it so use it here as well.
+On 24/04/2020 17:58, Tero Kristo via iommu wrote:
+> The fwnode pointer must be passed to the iommu core, so that the core
+> can map the IOMMU towards device requests properly. Without this, some
+> IOMMU clients like OMAP remoteproc will fail the iommu configuration
+> multiple times with -EPROBE_DEFER, which will eventually be ignored with
+> a kernel warning banner.
+> 
+> Signed-off-by: Tero Kristo <t-kristo@ti.com>
 
-This makes the conditional archdata.iommu field consistent with other
-platforms and also fixes any compile test builds of other IOMMU drivers,
-when INTEL_IOMMU is not selected).
+Hi Joerg,
 
-For the case when INTEL_IOMMU and COMPILE_TEST are not selected, this
-should create functionally equivalent code/choice.  With COMPILE_TEST
-this field could appear if other IOMMU drivers are chosen but
-INTEL_IOMMU not.
+I noticed this is still missing from next but there are some other OMAP 
+iommu patches queued up (see the bug fix I just posted against -next.)
 
-Reported-by: kbuild test robot <lkp@intel.com>
-Signed-off-by: Krzysztof Kozlowski <krzk@kernel.org>
+Whats the plan with this one?
 
----
+-Tero
 
-See:
-https://lore.kernel.org/lkml/202005181412.frC4juFy%25lkp@intel.com/
----
- arch/ia64/include/asm/device.h | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+> ---
+>   drivers/iommu/omap-iommu.c | 1 +
+>   1 file changed, 1 insertion(+)
+> 
+> diff --git a/drivers/iommu/omap-iommu.c b/drivers/iommu/omap-iommu.c
+> index 887fefcb03b4..934726e20b72 100644
+> --- a/drivers/iommu/omap-iommu.c
+> +++ b/drivers/iommu/omap-iommu.c
+> @@ -1248,6 +1248,7 @@ static int omap_iommu_probe(struct platform_device *pdev)
+>   			goto out_group;
+>   
+>   		iommu_device_set_ops(&obj->iommu, &omap_iommu_ops);
+> +		iommu_device_set_fwnode(&obj->iommu, &of->fwnode);
+>   
+>   		err = iommu_device_register(&obj->iommu);
+>   		if (err)
+> 
 
-diff --git a/arch/ia64/include/asm/device.h b/arch/ia64/include/asm/device.h
-index 410a769ece95..3eb397415381 100644
---- a/arch/ia64/include/asm/device.h
-+++ b/arch/ia64/include/asm/device.h
-@@ -6,7 +6,7 @@
- #define _ASM_IA64_DEVICE_H
- 
- struct dev_archdata {
--#ifdef CONFIG_INTEL_IOMMU
-+#ifdef CONFIG_IOMMU_API
- 	void *iommu; /* hook for IOMMU specific extension */
- #endif
- };
--- 
-2.17.1
-
+--
+Texas Instruments Finland Oy, Porkkalankatu 22, 00180 Helsinki. Y-tunnus/Business ID: 0615521-4. Kotipaikka/Domicile: Helsinki
 _______________________________________________
 iommu mailing list
 iommu@lists.linux-foundation.org
