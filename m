@@ -4,56 +4,58 @@ X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 X-Spam-Level: 
 X-Spam-Status: No, score=-9.8 required=3.0 tests=HEADER_FROM_DIFFERENT_DOMAINS,
 	INCLUDES_PATCH,MAILING_LIST_MULTI,SIGNED_OFF_BY,SPF_HELO_NONE,SPF_PASS,
-	USER_AGENT_GIT autolearn=unavailable autolearn_force=no version=3.4.0
+	URIBL_BLOCKED,USER_AGENT_GIT autolearn=unavailable autolearn_force=no
+	version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 63A6AC433E1
-	for <iommu@archiver.kernel.org>; Tue, 19 May 2020 13:03:55 +0000 (UTC)
-Received: from hemlock.osuosl.org (smtp2.osuosl.org [140.211.166.133])
+	by smtp.lore.kernel.org (Postfix) with ESMTP id CFBE0C433DF
+	for <iommu@archiver.kernel.org>; Tue, 19 May 2020 13:28:45 +0000 (UTC)
+Received: from fraxinus.osuosl.org (smtp4.osuosl.org [140.211.166.137])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by mail.kernel.org (Postfix) with ESMTPS id 2F6C420709
-	for <iommu@archiver.kernel.org>; Tue, 19 May 2020 13:03:55 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 2F6C420709
+	by mail.kernel.org (Postfix) with ESMTPS id 9600B207D8
+	for <iommu@archiver.kernel.org>; Tue, 19 May 2020 13:28:45 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 9600B207D8
 Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=8bytes.org
 Authentication-Results: mail.kernel.org; spf=pass smtp.mailfrom=iommu-bounces@lists.linux-foundation.org
 Received: from localhost (localhost [127.0.0.1])
-	by hemlock.osuosl.org (Postfix) with ESMTP id 05C8B87ED1;
-	Tue, 19 May 2020 13:03:55 +0000 (UTC)
+	by fraxinus.osuosl.org (Postfix) with ESMTP id 6FCC786103;
+	Tue, 19 May 2020 13:28:45 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from hemlock.osuosl.org ([127.0.0.1])
+Received: from fraxinus.osuosl.org ([127.0.0.1])
 	by localhost (.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
-	with ESMTP id 9sbQSHErZfav; Tue, 19 May 2020 13:03:53 +0000 (UTC)
+	with ESMTP id 5NUF51MdjYSg; Tue, 19 May 2020 13:28:41 +0000 (UTC)
 Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [140.211.9.56])
-	by hemlock.osuosl.org (Postfix) with ESMTP id BDE8D87EA0;
-	Tue, 19 May 2020 13:03:53 +0000 (UTC)
+	by fraxinus.osuosl.org (Postfix) with ESMTP id AD29085E77;
+	Tue, 19 May 2020 13:28:41 +0000 (UTC)
 Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
-	by lists.linuxfoundation.org (Postfix) with ESMTP id 943C9C07FF;
-	Tue, 19 May 2020 13:03:53 +0000 (UTC)
-Received: from whitealder.osuosl.org (smtp1.osuosl.org [140.211.166.138])
- by lists.linuxfoundation.org (Postfix) with ESMTP id F145EC0176
- for <iommu@lists.linux-foundation.org>; Tue, 19 May 2020 13:03:51 +0000 (UTC)
+	by lists.linuxfoundation.org (Postfix) with ESMTP id 95876C0881;
+	Tue, 19 May 2020 13:28:41 +0000 (UTC)
+Received: from silver.osuosl.org (smtp3.osuosl.org [140.211.166.136])
+ by lists.linuxfoundation.org (Postfix) with ESMTP id 6A0F7C0176
+ for <iommu@lists.linux-foundation.org>; Tue, 19 May 2020 13:28:40 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
- by whitealder.osuosl.org (Postfix) with ESMTP id D8CA287F00
- for <iommu@lists.linux-foundation.org>; Tue, 19 May 2020 13:03:51 +0000 (UTC)
+ by silver.osuosl.org (Postfix) with ESMTP id 2B03E22640
+ for <iommu@lists.linux-foundation.org>; Tue, 19 May 2020 13:28:40 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from whitealder.osuosl.org ([127.0.0.1])
+Received: from silver.osuosl.org ([127.0.0.1])
  by localhost (.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
- with ESMTP id AV1Bxn4XYIiJ for <iommu@lists.linux-foundation.org>;
- Tue, 19 May 2020 13:03:51 +0000 (UTC)
+ with ESMTP id jlkSQdrCe80J for <iommu@lists.linux-foundation.org>;
+ Tue, 19 May 2020 13:28:36 +0000 (UTC)
 X-Greylist: from auto-whitelisted by SQLgrey-1.7.6
 Received: from theia.8bytes.org (8bytes.org [81.169.241.247])
- by whitealder.osuosl.org (Postfix) with ESMTPS id D12E8877B4
- for <iommu@lists.linux-foundation.org>; Tue, 19 May 2020 13:03:50 +0000 (UTC)
+ by silver.osuosl.org (Postfix) with ESMTPS id 62A8421553
+ for <iommu@lists.linux-foundation.org>; Tue, 19 May 2020 13:28:36 +0000 (UTC)
 Received: by theia.8bytes.org (Postfix, from userid 1000)
- id D58C3386; Tue, 19 May 2020 15:03:48 +0200 (CEST)
+ id 7785F386; Tue, 19 May 2020 15:28:33 +0200 (CEST)
 From: Joerg Roedel <joro@8bytes.org>
 To: iommu@lists.linux-foundation.org
-Subject: [PATCH] iommu: Fix deferred domain attachment
-Date: Tue, 19 May 2020 15:03:40 +0200
-Message-Id: <20200519130340.14564-1-joro@8bytes.org>
+Subject: [PATCH] iommu: Don't call .probe_finalize() under group->mutex
+Date: Tue, 19 May 2020 15:28:24 +0200
+Message-Id: <20200519132824.15163-1-joro@8bytes.org>
 X-Mailer: git-send-email 2.17.1
 Cc: Joerg Roedel <jroedel@suse.de>, linux-kernel@vger.kernel.org,
- Tom Murphy <murphyt7@tcd.ie>, Robin Murphy <robin.murphy@arm.com>
+ linux-mediatek@lists.infradead.org, Matthias Brugger <matthias.bgg@gmail.com>,
+ linux-arm-kernel@lists.infradead.org
 X-BeenThere: iommu@lists.linux-foundation.org
 X-Mailman-Version: 2.1.15
 Precedence: list
@@ -74,82 +76,77 @@ Sender: "iommu" <iommu-bounces@lists.linux-foundation.org>
 
 From: Joerg Roedel <jroedel@suse.de>
 
-The IOMMU core code has support for deferring the attachment of a domain
-to a device. This is needed in kdump kernels where the new domain must
-not be attached to a device before the device driver takes it over.
+The .probe_finalize() call-back of some IOMMU drivers calls into
+arm_iommu_attach_device(). This function will call back into the
+IOMMU core code, where it tries to take group->mutex again, resulting
+in a deadlock.
 
-When the AMD IOMMU driver got converted to use the dma-iommu
-implementation, the deferred attaching got lost. The code in
-dma-iommu.c has support for deferred attaching, but it calls into
-iommu_attach_device() to actually do it. But iommu_attach_device()
-will check if the device should be deferred in it code-path and do
-nothing, breaking deferred attachment.
+As there is no reason why .probe_finalize() needs to be called under
+that mutex, move it after the lock has been released to fix the
+deadlock.
 
-Move the is_deferred_attach() check out of the attach_device path and
-into iommu_group_add_device() to make deferred attaching work from the
-dma-iommu code.
-
-Cc: Jerry Snitselaar <jsnitsel@redhat.com>
-Cc: Tom Murphy <murphyt7@tcd.ie>
-Cc: Robin Murphy <robin.murphy@arm.com>
-Reported-by: Jerry Snitselaar <jsnitsel@redhat.com>
-Suggested-by: Robin Murphy <robin.murphy@arm.com>
-Tested-by: Jerry Snitselaar <jsnitsel@redhat.com>
-Fixes: 795bbbb9b6f8 ("iommu/dma-iommu: Handle deferred devices")
+Cc: Yong Wu <yong.wu@mediatek.com>
+Reported-by: Yong Wu <yong.wu@mediatek.com>
+Fixes: deac0b3bed26 ("iommu: Split off default domain allocation from group assignment")
 Signed-off-by: Joerg Roedel <jroedel@suse.de>
 ---
- drivers/iommu/iommu.c | 17 +++++++++++------
- 1 file changed, 11 insertions(+), 6 deletions(-)
+ drivers/iommu/iommu.c | 28 ++++++++++++++++++----------
+ 1 file changed, 18 insertions(+), 10 deletions(-)
 
 diff --git a/drivers/iommu/iommu.c b/drivers/iommu/iommu.c
-index 4050569188be..629d209b8e88 100644
+index 629d209b8e88..d5d9fcbc9714 100644
 --- a/drivers/iommu/iommu.c
 +++ b/drivers/iommu/iommu.c
-@@ -769,6 +769,15 @@ static int iommu_create_device_direct_mappings(struct iommu_group *group,
- 	return ret;
+@@ -1683,17 +1683,8 @@ static void probe_alloc_default_domain(struct bus_type *bus,
+ static int iommu_group_do_dma_attach(struct device *dev, void *data)
+ {
+ 	struct iommu_domain *domain = data;
+-	const struct iommu_ops *ops;
+-	int ret;
+-
+-	ret = __iommu_attach_device(domain, dev);
+-
+-	ops = domain->ops;
+-
+-	if (ret == 0 && ops->probe_finalize)
+-		ops->probe_finalize(dev);
+ 
+-	return ret;
++	return __iommu_attach_device(domain, dev);
  }
  
-+static bool iommu_is_attach_deferred(struct iommu_domain *domain,
-+				     struct device *dev)
+ static int __iommu_group_dma_attach(struct iommu_group *group)
+@@ -1702,6 +1693,21 @@ static int __iommu_group_dma_attach(struct iommu_group *group)
+ 					  iommu_group_do_dma_attach);
+ }
+ 
++static int iommu_group_do_probe_finalize(struct device *dev, void *data)
 +{
-+	if (domain->ops->is_attach_deferred)
-+		return domain->ops->is_attach_deferred(domain, dev);
++	struct iommu_domain *domain = data;
 +
-+	return false;
++	if (domain->ops->probe_finalize)
++		domain->ops->probe_finalize(dev);
++
++	return 0;
 +}
 +
- /**
-  * iommu_group_add_device - add a device to an iommu group
-  * @group: the group into which to add the device (reference should be held)
-@@ -821,7 +830,7 @@ int iommu_group_add_device(struct iommu_group *group, struct device *dev)
- 
- 	mutex_lock(&group->mutex);
- 	list_add_tail(&device->list, &group->devices);
--	if (group->domain)
-+	if (group->domain  && !iommu_is_attach_deferred(group->domain, dev))
- 		ret = __iommu_attach_device(group->domain, dev);
- 	mutex_unlock(&group->mutex);
- 	if (ret)
-@@ -1893,9 +1902,6 @@ static int __iommu_attach_device(struct iommu_domain *domain,
- 				 struct device *dev)
++static void __iommu_group_dma_finalize(struct iommu_group *group)
++{
++	__iommu_group_for_each_dev(group, group->default_domain,
++				   iommu_group_do_probe_finalize);
++}
+ static int iommu_do_create_direct_mappings(struct device *dev, void *data)
  {
- 	int ret;
--	if ((domain->ops->is_attach_deferred != NULL) &&
--	    domain->ops->is_attach_deferred(domain, dev))
--		return 0;
+ 	struct iommu_group *group = data;
+@@ -1754,6 +1760,8 @@ int bus_iommu_probe(struct bus_type *bus)
  
- 	if (unlikely(domain->ops->attach_dev == NULL))
- 		return -ENODEV;
-@@ -1967,8 +1973,7 @@ EXPORT_SYMBOL_GPL(iommu_sva_unbind_gpasid);
- static void __iommu_detach_device(struct iommu_domain *domain,
- 				  struct device *dev)
- {
--	if ((domain->ops->is_attach_deferred != NULL) &&
--	    domain->ops->is_attach_deferred(domain, dev))
-+	if (iommu_is_attach_deferred(domain, dev))
- 		return;
+ 		if (ret)
+ 			break;
++
++		__iommu_group_dma_finalize(group);
+ 	}
  
- 	if (unlikely(domain->ops->detach_dev == NULL))
+ 	return ret;
 -- 
 2.25.1
 
