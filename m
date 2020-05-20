@@ -2,101 +2,65 @@ Return-Path: <SRS0=jIn/=7C=lists.linux-foundation.org=iommu-bounces@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-0.6 required=3.0 tests=DKIM_INVALID,DKIM_SIGNED,
-	HEADER_FROM_DIFFERENT_DOMAINS,MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS,
-	URIBL_BLOCKED autolearn=no autolearn_force=no version=3.4.0
+X-Spam-Status: No, score=-13.2 required=3.0
+	tests=HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_PATCH,MAILING_LIST_MULTI,
+	MENTIONS_GIT_HOSTING,SIGNED_OFF_BY,SPF_HELO_NONE,SPF_PASS,UNPARSEABLE_RELAY,
+	URIBL_BLOCKED,USER_AGENT_SANE_1 autolearn=unavailable autolearn_force=no
+	version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id E89BAC433DF
-	for <iommu@archiver.kernel.org>; Wed, 20 May 2020 09:32:59 +0000 (UTC)
-Received: from hemlock.osuosl.org (smtp2.osuosl.org [140.211.166.133])
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 7ACCDC433E0
+	for <iommu@archiver.kernel.org>; Wed, 20 May 2020 09:54:58 +0000 (UTC)
+Received: from whitealder.osuosl.org (smtp1.osuosl.org [140.211.166.138])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by mail.kernel.org (Postfix) with ESMTPS id 9CDEF207F9
-	for <iommu@archiver.kernel.org>; Wed, 20 May 2020 09:32:59 +0000 (UTC)
-Authentication-Results: mail.kernel.org;
-	dkim=fail reason="signature verification failed" (1024-bit key) header.d=mg.codeaurora.org header.i=@mg.codeaurora.org header.b="Z8XCrgMZ"
-DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 9CDEF207F9
-Authentication-Results: mail.kernel.org; dmarc=none (p=none dis=none) header.from=codeaurora.org
+	by mail.kernel.org (Postfix) with ESMTPS id 384D82070A
+	for <iommu@archiver.kernel.org>; Wed, 20 May 2020 09:54:58 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 384D82070A
+Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=collabora.com
 Authentication-Results: mail.kernel.org; spf=pass smtp.mailfrom=iommu-bounces@lists.linux-foundation.org
 Received: from localhost (localhost [127.0.0.1])
-	by hemlock.osuosl.org (Postfix) with ESMTP id 50DB688277;
-	Wed, 20 May 2020 09:32:59 +0000 (UTC)
+	by whitealder.osuosl.org (Postfix) with ESMTP id 0B02D875E9;
+	Wed, 20 May 2020 09:54:58 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from hemlock.osuosl.org ([127.0.0.1])
+Received: from whitealder.osuosl.org ([127.0.0.1])
 	by localhost (.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
-	with ESMTP id T04AkszjIn4L; Wed, 20 May 2020 09:32:58 +0000 (UTC)
+	with ESMTP id njXuYo3f0jqA; Wed, 20 May 2020 09:54:54 +0000 (UTC)
 Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [140.211.9.56])
-	by hemlock.osuosl.org (Postfix) with ESMTP id 3794E87FD8;
-	Wed, 20 May 2020 09:32:58 +0000 (UTC)
+	by whitealder.osuosl.org (Postfix) with ESMTP id D1A13875D9;
+	Wed, 20 May 2020 09:54:54 +0000 (UTC)
 Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
-	by lists.linuxfoundation.org (Postfix) with ESMTP id 13276C07FF;
-	Wed, 20 May 2020 09:32:58 +0000 (UTC)
-Received: from fraxinus.osuosl.org (smtp4.osuosl.org [140.211.166.137])
- by lists.linuxfoundation.org (Postfix) with ESMTP id AF3C2C0176
- for <iommu@lists.linux-foundation.org>; Wed, 20 May 2020 09:32:56 +0000 (UTC)
+	by lists.linuxfoundation.org (Postfix) with ESMTP id C5D35C07FF;
+	Wed, 20 May 2020 09:54:54 +0000 (UTC)
+Received: from silver.osuosl.org (smtp3.osuosl.org [140.211.166.136])
+ by lists.linuxfoundation.org (Postfix) with ESMTP id A16D1C0176
+ for <iommu@lists.linux-foundation.org>; Wed, 20 May 2020 09:54:52 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
- by fraxinus.osuosl.org (Postfix) with ESMTP id 9DCAF862FC
- for <iommu@lists.linux-foundation.org>; Wed, 20 May 2020 09:32:56 +0000 (UTC)
+ by silver.osuosl.org (Postfix) with ESMTP id 8B1F12039A
+ for <iommu@lists.linux-foundation.org>; Wed, 20 May 2020 09:54:52 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from fraxinus.osuosl.org ([127.0.0.1])
+Received: from silver.osuosl.org ([127.0.0.1])
  by localhost (.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
- with ESMTP id s3lzBHxPp0S3 for <iommu@lists.linux-foundation.org>;
- Wed, 20 May 2020 09:32:55 +0000 (UTC)
-X-Greylist: from auto-whitelisted by SQLgrey-1.7.6
-Received: from mail26.static.mailgun.info (mail26.static.mailgun.info
- [104.130.122.26])
- by fraxinus.osuosl.org (Postfix) with ESMTPS id 04746862BC
- for <iommu@lists.linux-foundation.org>; Wed, 20 May 2020 09:32:52 +0000 (UTC)
-DKIM-Signature: a=rsa-sha256; v=1; c=relaxed/relaxed; d=mg.codeaurora.org;
- q=dns/txt; 
- s=smtp; t=1589967175; h=Message-ID: References: In-Reply-To: Subject:
- Cc: To: From: Date: Content-Transfer-Encoding: Content-Type:
- MIME-Version: Sender; bh=kj7KetK7iFPOosbvpCUKYMpyUHmudAmdvJ6fI1OKUq0=;
- b=Z8XCrgMZ0FgPrvTHQLt8XXraCvJo7euCdn+BP8PNrirxhe/dNyQO6d9KvRRJZmRcH/u7h4lA
- Rgs39f2fNvZrUEeI1vXr5na4EaRvKtWIqWkaPi32ko8VNG0fzInE/+U+HGTTZvjJjU/uhizF
- nsRojQ7B6qHBPDnRQaUsq+XU8pQ=
-X-Mailgun-Sending-Ip: 104.130.122.26
-X-Mailgun-Sid: WyI3NDkwMCIsICJpb21tdUBsaXN0cy5saW51eC1mb3VuZGF0aW9uLm9yZyIsICJiZTllNGEiXQ==
-Received: from smtp.codeaurora.org
- (ec2-35-166-182-171.us-west-2.compute.amazonaws.com [35.166.182.171]) by
- smtp-out-n03.prod.us-east-1.postgun.com with SMTP id
- 5ec4f93f0d1be1ca017221a5 (version=TLS1.2,
- cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256); Wed, 20 May 2020 09:32:47
- GMT
-Received: by smtp.codeaurora.org (Postfix, from userid 1001)
- id D0810C43387; Wed, 20 May 2020 09:32:46 +0000 (UTC)
-Received: from mail.codeaurora.org (localhost.localdomain [127.0.0.1])
- (using TLSv1 with cipher ECDHE-RSA-AES256-SHA (256/256 bits))
- (No client certificate requested)
- (Authenticated sender: saiprakash.ranjan)
- by smtp.codeaurora.org (Postfix) with ESMTPSA id 87D87C433CA;
- Wed, 20 May 2020 09:32:45 +0000 (UTC)
+ with ESMTP id Z8lVTo19s2KE for <iommu@lists.linux-foundation.org>;
+ Wed, 20 May 2020 09:54:50 +0000 (UTC)
+X-Greylist: domain auto-whitelisted by SQLgrey-1.7.6
+Received: from bhuna.collabora.co.uk (bhuna.collabora.co.uk [46.235.227.227])
+ by silver.osuosl.org (Postfix) with ESMTPS id CDA2120111
+ for <iommu@lists.linux-foundation.org>; Wed, 20 May 2020 09:54:49 +0000 (UTC)
+Received: from [127.0.0.1] (localhost [127.0.0.1])
+ (Authenticated sender: gtucker) with ESMTPSA id 33A912A2A94
+Subject: Re: next/master bisection: baseline.login on panda
+To: Joerg Roedel <jroedel@suse.de>, Marek Szyprowski <m.szyprowski@samsung.com>
+References: <5ec4eb8e.1c69fb81.19b63.0b07@mx.google.com>
+From: Guillaume Tucker <guillaume.tucker@collabora.com>
+Message-ID: <d30e5ea4-85ae-75c2-2334-f9f951026afd@collabora.com>
+Date: Wed, 20 May 2020 10:54:44 +0100
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101
+ Thunderbird/68.7.0
 MIME-Version: 1.0
-Date: Wed, 20 May 2020 15:02:45 +0530
-From: Sai Prakash Ranjan <saiprakash.ranjan@codeaurora.org>
-To: Rob Clark <robdclark@gmail.com>, Will Deacon <will@kernel.org>, Robin
- Murphy <robin.murphy@arm.com>
-Subject: Re: [PATCH] iomm/arm-smmu: Add stall implementation hook
-In-Reply-To: <CAF6AEGuzBtj+srindmOvhaom5BdS2adLaOF=v_MtguMja14V2w@mail.gmail.com>
-References: <20200421202004.11686-1-saiprakash.ranjan@codeaurora.org>
- <b491e02ad790a437115fdeab6b21bc48@codeaurora.org>
- <1ced023b-157c-21a0-ac75-1adef7f029f0@arm.com>
- <20200507125357.GA31783@willie-the-truck>
- <CAF6AEGuLU+_qP8HNO1s9PTPHqJnCMHzehmcT8NiJhiAwrfSH6w@mail.gmail.com>
- <CAF6AEGvuHKObTR97XdSXjmjKB+qjQ8N1_wxM=ZU8bEkF=cXp-A@mail.gmail.com>
- <20200511173008.GA24282@jcrouse1-lnx.qualcomm.com>
- <20200518154522.GN32394@willie-the-truck>
- <5a0ad639e272026c8be57393937cda22@codeaurora.org>
- <CAF6AEGuzBtj+srindmOvhaom5BdS2adLaOF=v_MtguMja14V2w@mail.gmail.com>
-Message-ID: <a801e79a0a75092c28a6646ae7fa5e36@codeaurora.org>
-X-Sender: saiprakash.ranjan@codeaurora.org
-User-Agent: Roundcube Webmail/1.3.9
-Cc: linux-arm-msm <linux-arm-msm@vger.kernel.org>, "list@263.net:IOMMU DRIVERS ,
- Joerg
- Roedel <joro@8bytes.org>," <iommu@lists.linux-foundation.org>, "moderated
- list:ARM/FREESCALE IMX / MXC ARM ARCHITECTURE"
- <linux-arm-kernel@lists.infradead.org>,
- Linux Kernel Mailing List <linux-kernel@vger.kernel.org>
+In-Reply-To: <5ec4eb8e.1c69fb81.19b63.0b07@mx.google.com>
+Content-Language: en-US
+Cc: iommu@lists.linux-foundation.org, linux-next@vger.kernel.org,
+ linux-kernel@vger.kernel.org
 X-BeenThere: iommu@lists.linux-foundation.org
 X-Mailman-Version: 2.1.15
 Precedence: list
@@ -109,149 +73,241 @@ List-Post: <mailto:iommu@lists.linux-foundation.org>
 List-Help: <mailto:iommu-request@lists.linux-foundation.org?subject=help>
 List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
  <mailto:iommu-request@lists.linux-foundation.org?subject=subscribe>
+Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
-Content-Type: text/plain; charset="us-ascii"; Format="flowed"
 Errors-To: iommu-bounces@lists.linux-foundation.org
 Sender: "iommu" <iommu-bounces@lists.linux-foundation.org>
 
-On 2020-05-19 20:41, Rob Clark wrote:
-> On Tue, May 19, 2020 at 2:26 AM Sai Prakash Ranjan
-> <saiprakash.ranjan@codeaurora.org> wrote:
->> 
->> Hi Will,
->> 
->> On 2020-05-18 21:15, Will Deacon wrote:
->> > On Mon, May 11, 2020 at 11:30:08AM -0600, Jordan Crouse wrote:
->> >> On Fri, May 08, 2020 at 08:40:40AM -0700, Rob Clark wrote:
->> >> > On Fri, May 8, 2020 at 8:32 AM Rob Clark <robdclark@gmail.com> wrote:
->> >> > >
->> >> > > On Thu, May 7, 2020 at 5:54 AM Will Deacon <will@kernel.org> wrote:
->> >> > > >
->> >> > > > On Thu, May 07, 2020 at 11:55:54AM +0100, Robin Murphy wrote:
->> >> > > > > On 2020-05-07 11:14 am, Sai Prakash Ranjan wrote:
->> >> > > > > > On 2020-04-22 01:50, Sai Prakash Ranjan wrote:
->> >> > > > > > > Add stall implementation hook to enable stalling
->> >> > > > > > > faults on QCOM platforms which supports it without
->> >> > > > > > > causing any kind of hardware mishaps. Without this
->> >> > > > > > > on QCOM platforms, GPU faults can cause unrelated
->> >> > > > > > > GPU memory accesses to return zeroes. This has the
->> >> > > > > > > unfortunate result of command-stream reads from CP
->> >> > > > > > > getting invalid data, causing a cascade of fail.
->> >> > > > >
->> >> > > > > I think this came up before, but something about this rationale doesn't add
->> >> > > > > up - we're not *using* stalls at all, we're still terminating faulting
->> >> > > > > transactions unconditionally; we're just using CFCFG to terminate them with
->> >> > > > > a slight delay, rather than immediately. It's really not clear how or why
->> >> > > > > that makes a difference. Is it a GPU bug? Or an SMMU bug? Is this reliable
->> >> > > > > (or even a documented workaround for something), or might things start
->> >> > > > > blowing up again if any other behaviour subtly changes? I'm not dead set
->> >> > > > > against adding this, but I'd *really* like to have a lot more confidence in
->> >> > > > > it.
->> >> > > >
->> >> > > > Rob mentioned something about the "bus returning zeroes" before, but I agree
->> >> > > > that we need more information so that we can reason about this and maintain
->> >> > > > the code as the driver continues to change. That needs to be a comment in
->> >> > > > the driver, and I don't think "but android seems to work" is a good enough
->> >> > > > justification. There was some interaction with HUPCF as well.
->> >> > >
->> >> > > The issue is that there are multiple parallel memory accesses
->> >> > > happening at the same time, for example CP (the cmdstream processor)
->> >> > > will be reading ahead and setting things up for the next draw or
->> >> > > compute grid, in parallel with some memory accesses from the shader
->> >> > > which could trigger a fault.  (And with faults triggered by something
->> >> > > in the shader, there are *many* shader threads running in parallel so
->> >> > > those tend to generate a big number of faults at the same time.)
->> >> > >
->> >> > > We need either CFCFG or HUPCF, otherwise what I have observed is that
->> >> > > while the fault happens, CP's memory access will start returning
->> >> > > zero's instead of valid cmdstream data, which triggers a GPU hang.  I
->> >> > > can't say whether this is something unique to qcom's implementation of
->> >> > > the smmu spec or not.
->> >> > >
->> >> > > *Often* a fault is the result of the usermode gl/vk/cl driver bug,
->> >> > > although I don't think that is an argument against fixing this in the
->> >> > > smmu driver.. I've been carrying around a local patch to set HUPCF for
->> >> > > *years* because debugging usermode driver issues is so much harder
->> >> > > without.  But there are some APIs where faults can be caused by the
->> >> > > user's app on top of the usermode driver.
->> >> > >
->> >> >
->> >> > Also, I'll add to that, a big wish of mine is to have stall with the
->> >> > ability to resume later from a wq context.  That would enable me to
->> >> > hook in the gpu crash dump handling for faults, which would make
->> >> > debugging these sorts of issues much easier.  I think I posted a
->> >> > prototype of this quite some time back, which would schedule a worker
->> >> > on the first fault (since there are cases where you see 1000's of
->> >> > faults at once), which grabbed some information about the currently
->> >> > executing submit and some gpu registers to indicate *where* in the
->> >> > submit (a single submit could have 100's or 1000's of draws), and then
->> >> > resumed the iommu cb.
->> >> >
->> >> > (This would ofc eventually be useful for svm type things.. I expect
->> >> > we'll eventually care about that too.)
->> >>
->> >> Rob is right about HUPCF. Due to the parallel nature of the command
->> >> processor
->> >> there is always a very good chance that a CP access is somewhere in
->> >> the bus so
->> >> any pagefault is usually a death sentence. The GPU context bank would
->> >> always
->> >> want HUPCF set to 1.
->> >
->> > So this sounds like an erratum to me, and I'm happy to set HUPCF if we
->> > detect the broken implementation. However, it will need an entry in
->> > Documentation/arm64/silicon-errata.rst and a decent comment in the
->> > driver
->> > to explain what we're doing and why.
->> >
->> 
->> AFAIK there is no erratum documented internally for this behaviour and
->> this
->> exists from MSM8996 SoC time and errata usually don't survive this 
->> long
->> across generation of SoCs and there is no point for us in disguising 
->> it.
-> 
-> possibly longer, qcom_iommu sets CFCFG..
-> 
+Please see the bisection report below about a boot failure.
 
-Oh right, I was still in college when those SoCs were released ;)
+Reports aren't automatically sent to the public while we're
+trialing new bisection features on kernelci.org but this one
+looks valid.
 
->> Is it OK if we clearly mention it as the "design limitation" or some
->> other
->> term which we can agree upon along with the description which Rob and
->> Jordan
->> provided for setting HUPCF in the driver when we add the set_hupcf
->> callback?
-> 
-> I'm not too picky on what we call it, but afaict it has been this way
-> since the beginning of time, rather than specific to a certain SoC or
-> generation of SoCs.  So it doesn't seem like the hw designers consider
-> it a bug.
-> 
-> (I'm not sure what the expected behavior is.. nor if any other SMMU
-> implementation encounters this sort of situation..)
-> 
+Unfortunately there isn't anything in the kernel log, it's
+probably crashing very early on.  The bisection was run on
+omap4-panda, and there seems to be the same issue on
+omap3-beagle-xm as it's also failing to boot.
 
-Yes, that was my point as well that its probably not counted as a bug
-by the hw designers. So I'm going to post setting HUPCF on QCOM
-implementation with clear comments based on yours and Jordan's 
-description
-of this problem, but I wanted to have a way to set this only for GPU 
-context
-bank and not GMU as Jordan mentioned earlier that GMU doesnt need HUPCF 
-set.
-I was checking as to how do we map cb to device, if it was possible then 
-we can have
-a compatibility thing like we did for identity mapping. Any ideas Robin?
+Please let us know if anyone is able to debug the issue or if we
+need to rerun the KernelCI job with earlyprintk enabled or any
+debug config option.
 
 Thanks,
-Sai
+Guillaume
 
--- 
-QUALCOMM INDIA, on behalf of Qualcomm Innovation Center, Inc. is a 
-member
-of Code Aurora Forum, hosted by The Linux Foundation
+On 20/05/2020 09:34, kernelci.org bot wrote:
+> * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
+> * This automated bisection report was sent to you on the basis  *
+> * that you may be involved with the breaking commit it has      *
+> * found.  No manual investigation has been done to verify it,   *
+> * and the root cause of the problem may be somewhere else.      *
+> *                                                               *
+> * If you do send a fix, please include this trailer:            *
+> *   Reported-by: "kernelci.org bot" <bot@kernelci.org>          *
+> *                                                               *
+> * Hope this helps!                                              *
+> * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
+> 
+> next/master bisection: baseline.login on panda
+> 
+> Summary:
+>   Start:      fb57b1fabcb28 Add linux-next specific files for 20200519
+>   Plain log:  https://storage.kernelci.org/next/master/next-20200519/arm/omap2plus_defconfig/gcc-8/lab-baylibre/baseline-omap4-panda.txt
+>   HTML log:   https://storage.kernelci.org/next/master/next-20200519/arm/omap2plus_defconfig/gcc-8/lab-baylibre/baseline-omap4-panda.html
+>   Result:     ce574c27ae275 iommu: Move iommu_group_create_direct_mappings() out of iommu_group_add_device()
+> 
+> Checks:
+>   revert:     PASS
+>   verify:     PASS
+> 
+> Parameters:
+>   Tree:       next
+>   URL:        https://git.kernel.org/pub/scm/linux/kernel/git/next/linux-next.git
+>   Branch:     master
+>   Target:     panda
+>   CPU arch:   arm
+>   Lab:        lab-baylibre
+>   Compiler:   gcc-8
+>   Config:     omap2plus_defconfig
+>   Test case:  baseline.login
+> 
+> Breaking commit found:
+> 
+> -------------------------------------------------------------------------------
+> commit ce574c27ae275bc51b6437883fc9cd1c46b498e5
+> Author: Joerg Roedel <jroedel@suse.de>
+> Date:   Wed Apr 29 15:36:50 2020 +0200
+> 
+>     iommu: Move iommu_group_create_direct_mappings() out of iommu_group_add_device()
+>     
+>     After the previous changes the iommu group may not have a default
+>     domain when iommu_group_add_device() is called. With no default domain
+>     iommu_group_create_direct_mappings() will do nothing and no direct
+>     mappings will be created.
+>     
+>     Rename iommu_group_create_direct_mappings() to
+>     iommu_create_device_direct_mappings() to better reflect that the
+>     function creates direct mappings only for one device and not for all
+>     devices in the group. Then move the call to the places where a default
+>     domain actually exists.
+>     
+>     Signed-off-by: Joerg Roedel <jroedel@suse.de>
+>     Tested-by: Marek Szyprowski <m.szyprowski@samsung.com>
+>     Acked-by: Marek Szyprowski <m.szyprowski@samsung.com>
+>     Link: https://lore.kernel.org/r/20200429133712.31431-13-joro@8bytes.org
+>     Signed-off-by: Joerg Roedel <jroedel@suse.de>
+> 
+> diff --git a/drivers/iommu/iommu.c b/drivers/iommu/iommu.c
+> index 7de0e29db3338..834a45da0ed0f 100644
+> --- a/drivers/iommu/iommu.c
+> +++ b/drivers/iommu/iommu.c
+> @@ -89,6 +89,8 @@ static int __iommu_attach_group(struct iommu_domain *domain,
+>  				struct iommu_group *group);
+>  static void __iommu_detach_group(struct iommu_domain *domain,
+>  				 struct iommu_group *group);
+> +static int iommu_create_device_direct_mappings(struct iommu_group *group,
+> +					       struct device *dev);
+>  
+>  #define IOMMU_GROUP_ATTR(_name, _mode, _show, _store)		\
+>  struct iommu_group_attribute iommu_group_attr_##_name =		\
+> @@ -243,6 +245,8 @@ static int __iommu_probe_device_helper(struct device *dev)
+>  	if (group->default_domain)
+>  		ret = __iommu_attach_device(group->default_domain, dev);
+>  
+> +	iommu_create_device_direct_mappings(group, dev);
+> +
+>  	iommu_group_put(group);
+>  
+>  	if (ret)
+> @@ -263,6 +267,7 @@ static int __iommu_probe_device_helper(struct device *dev)
+>  int iommu_probe_device(struct device *dev)
+>  {
+>  	const struct iommu_ops *ops = dev->bus->iommu_ops;
+> +	struct iommu_group *group;
+>  	int ret;
+>  
+>  	WARN_ON(dev->iommu_group);
+> @@ -285,6 +290,10 @@ int iommu_probe_device(struct device *dev)
+>  	if (ret)
+>  		goto err_module_put;
+>  
+> +	group = iommu_group_get(dev);
+> +	iommu_create_device_direct_mappings(group, dev);
+> +	iommu_group_put(group);
+> +
+>  	if (ops->probe_finalize)
+>  		ops->probe_finalize(dev);
+>  
+> @@ -736,8 +745,8 @@ int iommu_group_set_name(struct iommu_group *group, const char *name)
+>  }
+>  EXPORT_SYMBOL_GPL(iommu_group_set_name);
+>  
+> -static int iommu_group_create_direct_mappings(struct iommu_group *group,
+> -					      struct device *dev)
+> +static int iommu_create_device_direct_mappings(struct iommu_group *group,
+> +					       struct device *dev)
+>  {
+>  	struct iommu_domain *domain = group->default_domain;
+>  	struct iommu_resv_region *entry;
+> @@ -841,8 +850,6 @@ int iommu_group_add_device(struct iommu_group *group, struct device *dev)
+>  
+>  	dev->iommu_group = group;
+>  
+> -	iommu_group_create_direct_mappings(group, dev);
+> -
+>  	mutex_lock(&group->mutex);
+>  	list_add_tail(&device->list, &group->devices);
+>  	if (group->domain)
+> @@ -1736,6 +1743,7 @@ static void probe_alloc_default_domain(struct bus_type *bus,
+>  		gtype.type = iommu_def_domain_type;
+>  
+>  	iommu_group_alloc_default_domain(bus, group, gtype.type);
+> +
+>  }
+>  
+>  static int iommu_group_do_dma_attach(struct device *dev, void *data)
+> @@ -1760,6 +1768,21 @@ static int __iommu_group_dma_attach(struct iommu_group *group)
+>  					  iommu_group_do_dma_attach);
+>  }
+>  
+> +static int iommu_do_create_direct_mappings(struct device *dev, void *data)
+> +{
+> +	struct iommu_group *group = data;
+> +
+> +	iommu_create_device_direct_mappings(group, dev);
+> +
+> +	return 0;
+> +}
+> +
+> +static int iommu_group_create_direct_mappings(struct iommu_group *group)
+> +{
+> +	return __iommu_group_for_each_dev(group, group,
+> +					  iommu_do_create_direct_mappings);
+> +}
+> +
+>  static int bus_iommu_probe(struct bus_type *bus)
+>  {
+>  	const struct iommu_ops *ops = bus->iommu_ops;
+> @@ -1792,6 +1815,8 @@ static int bus_iommu_probe(struct bus_type *bus)
+>  				continue;
+>  			}
+>  
+> +			iommu_group_create_direct_mappings(group);
+> +
+>  			ret = __iommu_group_dma_attach(group);
+>  
+>  			mutex_unlock(&group->mutex);
+> @@ -2632,7 +2657,7 @@ request_default_domain_for_dev(struct device *dev, unsigned long type)
+>  		iommu_domain_free(group->default_domain);
+>  	group->default_domain = domain;
+>  
+> -	iommu_group_create_direct_mappings(group, dev);
+> +	iommu_create_device_direct_mappings(group, dev);
+>  
+>  	dev_info(dev, "Using iommu %s mapping\n",
+>  		 type == IOMMU_DOMAIN_DMA ? "dma" : "direct");
+> -------------------------------------------------------------------------------
+> 
+> 
+> Git bisection log:
+> 
+> -------------------------------------------------------------------------------
+> git bisect start
+> # good: [642b151f45dd54809ea00ecd3976a56c1ec9b53d] Merge branch 'fixes' of git://git.kernel.org/pub/scm/linux/kernel/git/zohar/linux-integrity
+> git bisect good 642b151f45dd54809ea00ecd3976a56c1ec9b53d
+> # bad: [fb57b1fabcb28f358901b2df90abd2b48abc1ca8] Add linux-next specific files for 20200519
+> git bisect bad fb57b1fabcb28f358901b2df90abd2b48abc1ca8
+> # good: [8b3dd8b61115d665572dcac44bc6b3e95c8f34f2] Merge remote-tracking branch 'crypto/master'
+> git bisect good 8b3dd8b61115d665572dcac44bc6b3e95c8f34f2
+> # bad: [144c0fb86d53982ba156b518e7b3fbee71f56655] Merge remote-tracking branch 'spi/for-next'
+> git bisect bad 144c0fb86d53982ba156b518e7b3fbee71f56655
+> # good: [1a90af6b9ad8a56d9929e69a28b21aa1132fc42c] Merge remote-tracking branch 'amdgpu/drm-next'
+> git bisect good 1a90af6b9ad8a56d9929e69a28b21aa1132fc42c
+> # good: [a27ba83aed2e6a01f16fd56dd322839c9c179c38] Merge remote-tracking branch 'block/for-next'
+> git bisect good a27ba83aed2e6a01f16fd56dd322839c9c179c38
+> # good: [7f58fc25a6c6c9ac84701be427c477d4a09f197e] Merge remote-tracking branch 'integrity/next-integrity'
+> git bisect good 7f58fc25a6c6c9ac84701be427c477d4a09f197e
+> # good: [59ffe4ed0725de96f4710013c34de387fbeac90c] dt-bindings: ehci/ohci: Allow iommus property
+> git bisect good 59ffe4ed0725de96f4710013c34de387fbeac90c
+> # bad: [f74794b89196349ad42fce396d3537672b4db157] Merge remote-tracking branch 'iommu/next'
+> git bisect bad f74794b89196349ad42fce396d3537672b4db157
+> # bad: [14b3526d5909f01e1d1baa05f50952788bb7418e] iommu/vt-d: Allow PCI sub-hierarchy to use DMA domain
+> git bisect bad 14b3526d5909f01e1d1baa05f50952788bb7418e
+> # bad: [21acf6599cfb4407e9745b36f69c93cf99a3d189] iommu/virtio: Convert to probe/release_device() call-backs
+> git bisect bad 21acf6599cfb4407e9745b36f69c93cf99a3d189
+> # good: [cf193888bfbd3d57e03a511e49d26f7d9c6f76df] iommu: Move new probe_device path to separate function
+> git bisect good cf193888bfbd3d57e03a511e49d26f7d9c6f76df
+> # bad: [dce8d6964ebdb333383bacf5e7ab8c27df151218] iommu/amd: Convert to probe/release_device() call-backs
+> git bisect bad dce8d6964ebdb333383bacf5e7ab8c27df151218
+> # bad: [ce574c27ae275bc51b6437883fc9cd1c46b498e5] iommu: Move iommu_group_create_direct_mappings() out of iommu_group_add_device()
+> git bisect bad ce574c27ae275bc51b6437883fc9cd1c46b498e5
+> # good: [deac0b3bed26bb5d04486696b1071d8ec3851100] iommu: Split off default domain allocation from group assignment
+> git bisect good deac0b3bed26bb5d04486696b1071d8ec3851100
+> # first bad commit: [ce574c27ae275bc51b6437883fc9cd1c46b498e5] iommu: Move iommu_group_create_direct_mappings() out of iommu_group_add_device()
+> -------------------------------------------------------------------------------
+> 
+
 _______________________________________________
 iommu mailing list
 iommu@lists.linux-foundation.org
