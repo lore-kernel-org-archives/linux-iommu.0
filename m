@@ -2,100 +2,113 @@ Return-Path: <SRS0=jIn/=7C=lists.linux-foundation.org=iommu-bounces@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-0.6 required=3.0 tests=DKIM_INVALID,DKIM_SIGNED,
-	HEADER_FROM_DIFFERENT_DOMAINS,HTML_MESSAGE,INCLUDES_PATCH,MAILING_LIST_MULTI,
-	SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED autolearn=no autolearn_force=no
-	version=3.4.0
+X-Spam-Status: No, score=-2.0 required=3.0 tests=DKIM_INVALID,DKIM_SIGNED,
+	HEADER_FROM_DIFFERENT_DOMAINS,MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS,
+	URIBL_BLOCKED,USER_AGENT_SANE_1 autolearn=no autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 22F43C433DF
-	for <iommu@archiver.kernel.org>; Wed, 20 May 2020 14:10:17 +0000 (UTC)
-Received: from fraxinus.osuosl.org (smtp4.osuosl.org [140.211.166.137])
+	by smtp.lore.kernel.org (Postfix) with ESMTP id AF55AC433E1
+	for <iommu@archiver.kernel.org>; Wed, 20 May 2020 15:13:31 +0000 (UTC)
+Received: from hemlock.osuosl.org (smtp2.osuosl.org [140.211.166.133])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by mail.kernel.org (Postfix) with ESMTPS id D36AE207D4
-	for <iommu@archiver.kernel.org>; Wed, 20 May 2020 14:10:16 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTPS id 67D0420671
+	for <iommu@archiver.kernel.org>; Wed, 20 May 2020 15:13:31 +0000 (UTC)
 Authentication-Results: mail.kernel.org;
-	dkim=fail reason="signature verification failed" (1024-bit key) header.d=broadcom.com header.i=@broadcom.com header.b="aU7XHviT"
-DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org D36AE207D4
-Authentication-Results: mail.kernel.org; dmarc=none (p=none dis=none) header.from=lists.linux-foundation.org
+	dkim=fail reason="signature verification failed" (1024-bit key) header.d=mg.codeaurora.org header.i=@mg.codeaurora.org header.b="Lsnqs5pq"
+DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 67D0420671
+Authentication-Results: mail.kernel.org; dmarc=none (p=none dis=none) header.from=codeaurora.org
 Authentication-Results: mail.kernel.org; spf=pass smtp.mailfrom=iommu-bounces@lists.linux-foundation.org
 Received: from localhost (localhost [127.0.0.1])
-	by fraxinus.osuosl.org (Postfix) with ESMTP id 2377486DC2;
-	Wed, 20 May 2020 14:09:35 +0000 (UTC)
-X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from fraxinus.osuosl.org ([127.0.0.1])
-	by localhost (.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
-	with ESMTP id 5CDDrpIaSHmO; Wed, 20 May 2020 14:09:34 +0000 (UTC)
-Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [140.211.9.56])
-	by fraxinus.osuosl.org (Postfix) with ESMTP id 38F6286D88;
-	Wed, 20 May 2020 14:09:18 +0000 (UTC)
-Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
-	by lists.linuxfoundation.org (Postfix) with ESMTP id 18AF2C088A;
-	Wed, 20 May 2020 14:09:18 +0000 (UTC)
-Received: from hemlock.osuosl.org (smtp2.osuosl.org [140.211.166.133])
- by lists.linuxfoundation.org (Postfix) with ESMTP id 2FA23C0176
- for <iommu@lists.linux-foundation.org>; Wed, 20 May 2020 14:09:16 +0000 (UTC)
-Received: from localhost (localhost [127.0.0.1])
- by hemlock.osuosl.org (Postfix) with ESMTP id 1864987E8A
- for <iommu@lists.linux-foundation.org>; Wed, 20 May 2020 14:09:16 +0000 (UTC)
+	by hemlock.osuosl.org (Postfix) with ESMTP id 389B788905;
+	Wed, 20 May 2020 15:13:31 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
 Received: from hemlock.osuosl.org ([127.0.0.1])
+	by localhost (.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
+	with ESMTP id ZPBGsfZ5IVab; Wed, 20 May 2020 15:13:30 +0000 (UTC)
+Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [140.211.9.56])
+	by hemlock.osuosl.org (Postfix) with ESMTP id 83205888EA;
+	Wed, 20 May 2020 15:13:30 +0000 (UTC)
+Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
+	by lists.linuxfoundation.org (Postfix) with ESMTP id 6D359C07FF;
+	Wed, 20 May 2020 15:13:30 +0000 (UTC)
+Received: from silver.osuosl.org (smtp3.osuosl.org [140.211.166.136])
+ by lists.linuxfoundation.org (Postfix) with ESMTP id 1F949C0176
+ for <iommu@lists.linux-foundation.org>; Wed, 20 May 2020 15:13:29 +0000 (UTC)
+Received: from localhost (localhost [127.0.0.1])
+ by silver.osuosl.org (Postfix) with ESMTP id 0D0862045B
+ for <iommu@lists.linux-foundation.org>; Wed, 20 May 2020 15:13:29 +0000 (UTC)
+X-Virus-Scanned: amavisd-new at osuosl.org
+Received: from silver.osuosl.org ([127.0.0.1])
  by localhost (.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
- with ESMTP id Ty58gkypx6dK for <iommu@lists.linux-foundation.org>;
- Wed, 20 May 2020 14:09:14 +0000 (UTC)
-X-Greylist: domain auto-whitelisted by SQLgrey-1.7.6
-Received: from mail-wm1-f66.google.com (mail-wm1-f66.google.com
- [209.85.128.66])
- by hemlock.osuosl.org (Postfix) with ESMTPS id 02CA687AB5
- for <iommu@lists.linux-foundation.org>; Wed, 20 May 2020 14:09:13 +0000 (UTC)
-Received: by mail-wm1-f66.google.com with SMTP id w64so3007147wmg.4
- for <iommu@lists.linux-foundation.org>; Wed, 20 May 2020 07:09:13 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=broadcom.com; s=google;
- h=mime-version:references:in-reply-to:from:date:message-id:subject:to
- :cc; bh=5XoJzIvuoDxk2icnoMh30USN5ZKY5vYk0ahPprSURXg=;
- b=aU7XHviTPsBM79cD5P0FtOsRdSVtABt6zbWMK2S9iHCt0ISlDZreVNFSoQyoU4s7t0
- l4GL6P+8NTVoWPLAXgdxE3v8U2O5AuCjsmjVnE5aX0w2sZ2snAIRPsCwXeKrhF/M203R
- vH1DNBocW69G1ASrMPesdHpl4CXQ3styHpUrY=
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
- d=1e100.net; s=20161025;
- h=x-gm-message-state:mime-version:references:in-reply-to:from:date
- :message-id:subject:to:cc;
- bh=5XoJzIvuoDxk2icnoMh30USN5ZKY5vYk0ahPprSURXg=;
- b=GDT+JeAqfy/ZZvfhaPFrUwdutyENFpGdluDeklSmF/VZU02W1lAd+iHhokqJPDIY57
- hh1ZgU7EDHLJX7r4AQbVjlp/GSV7A+IgnP2IOc1E2urT2apKgdPldJFM5sTUj0AFUSuA
- IZ2IZb4EC74o7TEqZ+UtmSQeEgRJ1DomQxvtqsaecmc3q5toUosQ9n4zZLK1KCQDJ1Pt
- xUtwcDmNpZZzAM1IyFXpiG8sINRkefoMVCbnoXcCBjP57VF3li1zOaohseS1H2x8UdAW
- ad6oQYHYK3yQYGGS2VNO74l3ldh2P6Be0d5kcUmaJlccOc3ZJVjPA72d/Xhd+LFvFYFW
- XXCQ==
-X-Gm-Message-State: AOAM533CuZojVcs1rPxvD+e0rfbwue+K6NP8TfMQgw8bhTwHMSVjk5+m
- xca2v75d1brBPRrNmAlBFNf2diEFb9gSm1KfAygeIA==
-X-Google-Smtp-Source: ABdhPJy8+aaE75w2j6LM8UdDVTfpm5fsqus8lix4HOzCfW2Om0mQ70U9CqyysIskmtTUIPYqRl8eiRBclxcac+59LxY=
-X-Received: by 2002:a1c:7305:: with SMTP id d5mr4967930wmb.85.1589983752391;
- Wed, 20 May 2020 07:09:12 -0700 (PDT)
+ with ESMTP id 76zVhZEoEHMT for <iommu@lists.linux-foundation.org>;
+ Wed, 20 May 2020 15:13:27 +0000 (UTC)
+X-Greylist: from auto-whitelisted by SQLgrey-1.7.6
+Received: from mail27.static.mailgun.info (mail27.static.mailgun.info
+ [104.130.122.27])
+ by silver.osuosl.org (Postfix) with ESMTPS id 852FD248A1
+ for <iommu@lists.linux-foundation.org>; Wed, 20 May 2020 15:13:24 +0000 (UTC)
+DKIM-Signature: a=rsa-sha256; v=1; c=relaxed/relaxed; d=mg.codeaurora.org;
+ q=dns/txt; 
+ s=smtp; t=1589987607; h=In-Reply-To: Content-Type: MIME-Version:
+ References: Message-ID: Subject: Cc: To: From: Date: Sender;
+ bh=FU2/F0+z/dsbqHttz+iiGqnFGzScOK5dcu4PKa2fHvs=;
+ b=Lsnqs5pqx+fOEWJ6WCLTcYVOtpAVJlp7c9vJ/ILZB4D9AVzvlo/BuolS2O/u63UY15gsMtqV
+ 2IlYCNoARAJLOkdqHmLIH+w9vTmZcZq9ugbqIklQ4hL6t8VPcFs8K2RXCWO5RqlSdChT1A+J
+ bomT1KRofbfeTZHTdxqfM6C92oA=
+X-Mailgun-Sending-Ip: 104.130.122.27
+X-Mailgun-Sid: WyI3NDkwMCIsICJpb21tdUBsaXN0cy5saW51eC1mb3VuZGF0aW9uLm9yZyIsICJiZTllNGEiXQ==
+Received: from smtp.codeaurora.org
+ (ec2-35-166-182-171.us-west-2.compute.amazonaws.com [35.166.182.171]) by
+ smtp-out-n03.prod.us-east-1.postgun.com with SMTP id
+ 5ec5490c4c3faf51e207121a (version=TLS1.2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256); Wed, 20 May 2020 15:13:16
+ GMT
+Received: by smtp.codeaurora.org (Postfix, from userid 1001)
+ id 85CADC43391; Wed, 20 May 2020 15:13:15 +0000 (UTC)
+Received: from jcrouse1-lnx.qualcomm.com (i-global254.qualcomm.com
+ [199.106.103.254])
+ (using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+ (No client certificate requested) (Authenticated sender: jcrouse)
+ by smtp.codeaurora.org (Postfix) with ESMTPSA id 2BBA5C433C6;
+ Wed, 20 May 2020 15:13:14 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.3.2 smtp.codeaurora.org 2BBA5C433C6
+Authentication-Results: aws-us-west-2-caf-mail-1.web.codeaurora.org;
+ dmarc=none (p=none dis=none) header.from=codeaurora.org
+Authentication-Results: aws-us-west-2-caf-mail-1.web.codeaurora.org;
+ spf=none smtp.mailfrom=jcrouse@codeaurora.org
+Date: Wed, 20 May 2020 09:13:12 -0600
+From: Jordan Crouse <jcrouse@codeaurora.org>
+To: Will Deacon <will@kernel.org>
+Subject: Re: [PATCH v1 2/6] arm/smmu: Add auxiliary domain support for
+ arm-smmuv2
+Message-ID: <20200520151312.GB31730@jcrouse1-lnx.qualcomm.com>
+Mail-Followup-To: Will Deacon <will@kernel.org>,
+ Rob Clark <robdclark@gmail.com>,
+ linux-arm-msm <linux-arm-msm@vger.kernel.org>,
+ Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
+ "list@263.net:IOMMU DRIVERS <iommu@lists.linux-foundation.org>,
+ Joerg Roedel <joro@8bytes.org>, " <iommu@lists.linux-foundation.org>, 
+ Robin Murphy <robin.murphy@arm.com>,
+ "moderated list:ARM/FREESCALE IMX / MXC ARM ARCHITECTURE"
+ <linux-arm-kernel@lists.infradead.org>
+References: <1580249770-1088-1-git-send-email-jcrouse@codeaurora.org>
+ <1580249770-1088-3-git-send-email-jcrouse@codeaurora.org>
+ <20200318224840.GA10796@willie-the-truck>
+ <CAF6AEGu-hj6=3rsCe5XeBq_ffoq9VFmL+ycrQ8N=iv89DZf=8Q@mail.gmail.com>
+ <20200518151838.GL32394@willie-the-truck>
+ <CAF6AEGswv3ZaJyy_kYv6FKAjO5=_juDwEtK+VE9TcVMLGvrdwA@mail.gmail.com>
+ <20200520125700.GD25815@willie-the-truck>
 MIME-Version: 1.0
-References: <20200519203419.12369-1-james.quinlan@broadcom.com>
- <20200519203419.12369-10-james.quinlan@broadcom.com>
- <20200520054349.GB2180554@kroah.com>
- <CA+-6iNyQFauYc0ZNbzRmao_oOZD8XM+1D0XE133HP_-zgMLzuA@mail.gmail.com>
- <20200520140320.GA3624154@kroah.com>
-In-Reply-To: <20200520140320.GA3624154@kroah.com>
-Date: Wed, 20 May 2020 10:08:59 -0400
-Message-ID: <CA+-6iNx191UTktahqtb9uPEq2SqMf3mAH9WD-ffavoN6zwJSwA@mail.gmail.com>
-Subject: Re: [PATCH 09/15] device core: Add ability to handle multiple dma
- offsets
-To: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-Cc: "open list:OPEN FIRMWARE AND FLATTENED DEVICE TREE"
- <devicetree@vger.kernel.org>,
- Heikki Krogerus <heikki.krogerus@linux.intel.com>,
- Saravana Kannan <saravanak@google.com>,
- Suzuki K Poulose <suzuki.poulose@arm.com>,
- Frank Rowand <frowand.list@gmail.com>,
- "Rafael J. Wysocki" <rafael.j.wysocki@intel.com>,
- open list <linux-kernel@vger.kernel.org>,
- "open list:DMA MAPPING HELPERS" <iommu@lists.linux-foundation.org>,
- Rob Herring <robh+dt@kernel.org>, Dan Williams <dan.j.williams@intel.com>,
- Robin Murphy <robin.murphy@arm.com>, Christoph Hellwig <hch@lst.de>,
- Nicolas Saenz Julienne <nsaenzjulienne@suse.de>
+Content-Disposition: inline
+In-Reply-To: <20200520125700.GD25815@willie-the-truck>
+User-Agent: Mutt/1.5.24 (2015-08-30)
+Cc: linux-arm-msm <linux-arm-msm@vger.kernel.org>,
+ Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
+ "list@263.net:IOMMU DRIVERS <iommu@lists.linux-foundation.org>,
+ Joerg Roedel <joro@8bytes.org>, " <iommu@lists.linux-foundation.org>,
+ Robin Murphy <robin.murphy@arm.com>,
+ "moderated list:ARM/FREESCALE IMX / MXC ARM ARCHITECTURE"
+ <linux-arm-kernel@lists.infradead.org>
 X-BeenThere: iommu@lists.linux-foundation.org
 X-Mailman-Version: 2.1.15
 Precedence: list
@@ -108,200 +121,84 @@ List-Post: <mailto:iommu@lists.linux-foundation.org>
 List-Help: <mailto:iommu-request@lists.linux-foundation.org?subject=help>
 List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
  <mailto:iommu-request@lists.linux-foundation.org?subject=subscribe>
-From: Jim Quinlan via iommu <iommu@lists.linux-foundation.org>
-Reply-To: Jim Quinlan <james.quinlan@broadcom.com>
-Content-Type: multipart/mixed; boundary="===============7397478299287332320=="
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: 7bit
 Errors-To: iommu-bounces@lists.linux-foundation.org
 Sender: "iommu" <iommu-bounces@lists.linux-foundation.org>
 
---===============7397478299287332320==
-Content-Type: multipart/alternative; boundary="000000000000c2ec2405a614f0b7"
-
---000000000000c2ec2405a614f0b7
-Content-Type: text/plain; charset="UTF-8"
-
-On Wed, May 20, 2020 at 10:03 AM Greg Kroah-Hartman <
-gregkh@linuxfoundation.org> wrote:
-
-> On Wed, May 20, 2020 at 09:50:36AM -0400, Jim Quinlan wrote:
-> > On Wed, May 20, 2020 at 1:43 AM Greg Kroah-Hartman
-> > <gregkh@linuxfoundation.org> wrote:
-> > >
-> > > On Tue, May 19, 2020 at 04:34:07PM -0400, Jim Quinlan wrote:
-> > > > diff --git a/include/linux/device.h b/include/linux/device.h
-> > > > index ac8e37cd716a..6cd916860b5f 100644
-> > > > --- a/include/linux/device.h
-> > > > +++ b/include/linux/device.h
-> > > > @@ -493,6 +493,8 @@ struct dev_links_info {
-> > > >   * @bus_dma_limit: Limit of an upstream bridge or bus which imposes
-> a smaller
-> > > >   *           DMA limit than the device itself supports.
-> > > >   * @dma_pfn_offset: offset of DMA memory range relatively of RAM
-> > > > + * @dma_map: Like dma_pfn_offset but used when there are multiple
-> > > > + *           pfn offsets for multiple dma-ranges.
-> > > >   * @dma_parms:       A low level driver may set these to teach
-> IOMMU code about
-> > > >   *           segment limitations.
-> > > >   * @dma_pools:       Dma pools (if dma'ble device).
-> > > > @@ -578,7 +580,12 @@ struct device {
-> > > >                                            allocations such
-> descriptors. */
-> > > >       u64             bus_dma_limit;  /* upstream dma constraint */
-> > > >       unsigned long   dma_pfn_offset;
-> > > > -
-> > > > +#ifdef CONFIG_DMA_PFN_OFFSET_MAP
-> > > > +     const void *dma_offset_map;     /* Like dma_pfn_offset, but for
-> > > > +                                      * the unlikely case of
-> multiple
-> > > > +                                      * offsets. If non-null,
-> dma_pfn_offset
-> > > > +                                      * will be 0. */
-> > > > +#endif
-> > > >       struct device_dma_parameters *dma_parms;
+On Wed, May 20, 2020 at 01:57:01PM +0100, Will Deacon wrote:
+> On Mon, May 18, 2020 at 08:50:27AM -0700, Rob Clark wrote:
+> > On Mon, May 18, 2020 at 8:18 AM Will Deacon <will@kernel.org> wrote:
+> > > On Wed, Mar 18, 2020 at 04:43:07PM -0700, Rob Clark wrote:
+> > > > We do in fact need live domain switching, that is really the whole
+> > > > point.  The GPU CP (command processor/parser) is directly updating
+> > > > TTBR0 and triggering TLB flush, asynchronously from the CPU.
 > > > >
-> > > >       struct list_head        dma_pools;      /* dma pools (if
-> dma'ble) */
+> > > > And I think the answer about ASID is easy (on current hw).. it must be zero[*].
 > > >
-> > > I'll defer to Christoph here, but I thought we were trying to get rid
-> of
-> > > stuff like this from struct device, not add new things to it for dma
-> > Hi Greg,
-> >
-> > I wasn't aware of this policy.  I put it in 'struct device' because
-> > just like the existing dma_pfn_offset; it seemed to be the only way to
-> > pull this off.  I'll certainly follow any ideas on alternative
-> > strategies from Christoph et al.
-> >
-> > > apis.  And why is it a void *?
-> > Just wanted to minimize the number of lines I've added to device.h, no
-> > other reason.
->
-> How would using a real type make this more lines?  Never use a void *
-> unless you have to, we want the compiler to check our errors for us :)
->
+> > > Using ASID zero is really bad, because it means that you will end up sharing
+> > > TLB entries with whichever device is using context bank 0.
+> > >
+> > > Is the SMMU only used by the GPU in your SoC?
+> > >
+> > 
+> > yes, the snapdragon SoCs have two SMMU instances, one used by the GPU,
+> > where ASID0/cb0 is the gpu itself, and another cb is the GMU
+> > (basically power control for the gpu), and the second SMMU is
+> > everything else.
+> 
+> Right, in which case I'm starting to think that we should treat this GPU
+> SMMU instance specially. Give it its own compatible string (looks like you
+> need this for HUPCFG anyway) and hook in via arm_smmu_impl_init(). You can
+> then set IO_PGTABLE_QUIRK_ARM_TTBR1 when talking to the io-pgtable code
+> without having to add a domain attribute.
 
-Got it; I did not need to define the struct in device.h.  Will fix if this
-code makes it past v1 :-)
+If we did this via a special GPU SMMU instance then we could also create and
+register a dummy TTBR0 instance along with the TTBR1 instance and then we
+wouldn't need to worry about the aux domains at all.
 
-Jim
+> With that. you'll need to find a way to allow the GPU driver to call into
+> your own hooks for getting at the TTBR0 tables -- given that you're
+> programming these in the hardware, I don't think it makes sense to expose
+> that in the IOMMU API, since most devices won't be able to do anything with
+> that data. Perhaps you could install a couple of function pointers
+> (subdomain_alloc/subdomain_free) in the GPU device when you see it appear
+> from the SMMU driver? Alternatively, you could make an io_pgtable_cfg
+> available so that the GPU driver can interface with io-pgtable directly.
+ 
+I don't want to speak for Rob but I think that this is the same direction we've
+landed on. If we use the implementation specific code to initialize the base
+pagetables then the GPU driver can use io-pgtable directly. We can easily
+construct an io_pgtable_cfg. This feature will only be available for opt-in
+GPU targets that will have a known configuration.
 
+The only gotcha is TLB maintenance but Rob and I have ideas about coordinating
+with the GPU hardware (which has to do a TLBIALL during a switch anyway) and we
+can always use the iommu_tlb_flush_all() hammer from software if we really need
+it. It might take a bit of thought, but it is doable.
 
+> Yes, it's ugly, but I don't think it's worth trying to abstract this.
 
-> thanks,
->
-> greg k-h
->
+I'm not sure how ugly it is. I've always operated under the assumption that the
+GPU SMMU was special (though it had generic registers) just because of where it
+was and how it it was used.  In the long run baking in a implementation specific
+solution would probably be preferable to lots of domain attributes and aux
+domains that would never be used except by us.
 
---000000000000c2ec2405a614f0b7
-Content-Type: text/html; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
+> Thoughts? It's taken me a long time to figure out what's going on here,
+> so sorry if it feels like I'm leading you round the houses.
 
-<div dir=3D"ltr"><div dir=3D"ltr"><br></div><br><div class=3D"gmail_quote">=
-<div dir=3D"ltr" class=3D"gmail_attr">On Wed, May 20, 2020 at 10:03 AM Greg=
- Kroah-Hartman &lt;<a href=3D"mailto:gregkh@linuxfoundation.org">gregkh@lin=
-uxfoundation.org</a>&gt; wrote:<br></div><blockquote class=3D"gmail_quote" =
-style=3D"margin:0px 0px 0px 0.8ex;border-left:1px solid rgb(204,204,204);pa=
-dding-left:1ex">On Wed, May 20, 2020 at 09:50:36AM -0400, Jim Quinlan wrote=
-:<br>
-&gt; On Wed, May 20, 2020 at 1:43 AM Greg Kroah-Hartman<br>
-&gt; &lt;<a href=3D"mailto:gregkh@linuxfoundation.org" target=3D"_blank">gr=
-egkh@linuxfoundation.org</a>&gt; wrote:<br>
-&gt; &gt;<br>
-&gt; &gt; On Tue, May 19, 2020 at 04:34:07PM -0400, Jim Quinlan wrote:<br>
-&gt; &gt; &gt; diff --git a/include/linux/device.h b/include/linux/device.h=
-<br>
-&gt; &gt; &gt; index ac8e37cd716a..6cd916860b5f 100644<br>
-&gt; &gt; &gt; --- a/include/linux/device.h<br>
-&gt; &gt; &gt; +++ b/include/linux/device.h<br>
-&gt; &gt; &gt; @@ -493,6 +493,8 @@ struct dev_links_info {<br>
-&gt; &gt; &gt;=C2=A0 =C2=A0* @bus_dma_limit: Limit of an upstream bridge or=
- bus which imposes a smaller<br>
-&gt; &gt; &gt;=C2=A0 =C2=A0*=C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0DMA li=
-mit than the device itself supports.<br>
-&gt; &gt; &gt;=C2=A0 =C2=A0* @dma_pfn_offset: offset of DMA memory range re=
-latively of RAM<br>
-&gt; &gt; &gt; + * @dma_map: Like dma_pfn_offset but used when there are mu=
-ltiple<br>
-&gt; &gt; &gt; + *=C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0pfn offsets for =
-multiple dma-ranges.<br>
-&gt; &gt; &gt;=C2=A0 =C2=A0* @dma_parms:=C2=A0 =C2=A0 =C2=A0 =C2=A0A low le=
-vel driver may set these to teach IOMMU code about<br>
-&gt; &gt; &gt;=C2=A0 =C2=A0*=C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0segmen=
-t limitations.<br>
-&gt; &gt; &gt;=C2=A0 =C2=A0* @dma_pools:=C2=A0 =C2=A0 =C2=A0 =C2=A0Dma pool=
-s (if dma&#39;ble device).<br>
-&gt; &gt; &gt; @@ -578,7 +580,12 @@ struct device {<br>
-&gt; &gt; &gt;=C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=
-=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =
-=C2=A0 =C2=A0 =C2=A0 allocations such descriptors. */<br>
-&gt; &gt; &gt;=C2=A0 =C2=A0 =C2=A0 =C2=A0u64=C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=
-=A0 =C2=A0 =C2=A0bus_dma_limit;=C2=A0 /* upstream dma constraint */<br>
-&gt; &gt; &gt;=C2=A0 =C2=A0 =C2=A0 =C2=A0unsigned long=C2=A0 =C2=A0dma_pfn_=
-offset;<br>
-&gt; &gt; &gt; -<br>
-&gt; &gt; &gt; +#ifdef CONFIG_DMA_PFN_OFFSET_MAP<br>
-&gt; &gt; &gt; +=C2=A0 =C2=A0 =C2=A0const void *dma_offset_map;=C2=A0 =C2=
-=A0 =C2=A0/* Like dma_pfn_offset, but for<br>
-&gt; &gt; &gt; +=C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=
-=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 *=
- the unlikely case of multiple<br>
-&gt; &gt; &gt; +=C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=
-=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 *=
- offsets. If non-null, dma_pfn_offset<br>
-&gt; &gt; &gt; +=C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=
-=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 *=
- will be 0. */<br>
-&gt; &gt; &gt; +#endif<br>
-&gt; &gt; &gt;=C2=A0 =C2=A0 =C2=A0 =C2=A0struct device_dma_parameters *dma_=
-parms;<br>
-&gt; &gt; &gt;<br>
-&gt; &gt; &gt;=C2=A0 =C2=A0 =C2=A0 =C2=A0struct list_head=C2=A0 =C2=A0 =C2=
-=A0 =C2=A0 dma_pools;=C2=A0 =C2=A0 =C2=A0 /* dma pools (if dma&#39;ble) */<=
-br>
-&gt; &gt;<br>
-&gt; &gt; I&#39;ll defer to Christoph here, but I thought we were trying to=
- get rid of<br>
-&gt; &gt; stuff like this from struct device, not add new things to it for =
-dma<br>
-&gt; Hi Greg,<br>
-&gt; <br>
-&gt; I wasn&#39;t aware of this policy.=C2=A0 I put it in &#39;struct devic=
-e&#39; because<br>
-&gt; just like the existing dma_pfn_offset; it seemed to be the only way to=
-<br>
-&gt; pull this off.=C2=A0 I&#39;ll certainly follow any ideas on alternativ=
-e<br>
-&gt; strategies from Christoph et al.<br>
-&gt; <br>
-&gt; &gt; apis.=C2=A0 And why is it a void *?<br>
-&gt; Just wanted to minimize the number of lines I&#39;ve added to device.h=
-, no<br>
-&gt; other reason.<br>
-<br>
-How would using a real type make this more lines?=C2=A0 Never use a void *<=
-br>
-unless you have to, we want the compiler to check our errors for us :)<br><=
-/blockquote><div><br></div><div>Got it; I did not need to define the struct=
- in device.h.=C2=A0 Will fix if this code makes it past v1 :-)</div><div><b=
-r></div><div>Jim</div><div><br></div><div><br></div><blockquote class=3D"gm=
-ail_quote" style=3D"margin:0px 0px 0px 0.8ex;border-left:1px solid rgb(204,=
-204,204);padding-left:1ex">
-<br>
-thanks,<br>
-<br>
-greg k-h<br>
-</blockquote></div></div>
+I'll hack on this and try to get something in place. It might be dumber on the
+GPU side than we would like but it would at least spur some more conversation.
 
---000000000000c2ec2405a614f0b7--
+Jordan
 
---===============7397478299287332320==
-Content-Type: text/plain; charset="us-ascii"
-MIME-Version: 1.0
-Content-Transfer-Encoding: 7bit
-Content-Disposition: inline
+> Will
 
+-- 
+The Qualcomm Innovation Center, Inc. is a member of Code Aurora Forum,
+a Linux Foundation Collaborative Project
 _______________________________________________
 iommu mailing list
 iommu@lists.linux-foundation.org
 https://lists.linuxfoundation.org/mailman/listinfo/iommu
---===============7397478299287332320==--
