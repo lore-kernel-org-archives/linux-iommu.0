@@ -2,86 +2,81 @@ Return-Path: <SRS0=jIn/=7C=lists.linux-foundation.org=iommu-bounces@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-3.5 required=3.0 tests=DKIM_INVALID,DKIM_SIGNED,
-	HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_PATCH,MAILING_LIST_MULTI,SPF_HELO_NONE,
-	SPF_PASS,URIBL_BLOCKED autolearn=no autolearn_force=no version=3.4.0
+X-Spam-Status: No, score=-8.3 required=3.0 tests=HEADER_FROM_DIFFERENT_DOMAINS,
+	INCLUDES_PATCH,MAILING_LIST_MULTI,SIGNED_OFF_BY,SPF_HELO_NONE,SPF_PASS,
+	USER_AGENT_SANE_1 autolearn=ham autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id EEB15C433DF
-	for <iommu@archiver.kernel.org>; Wed, 20 May 2020 05:43:57 +0000 (UTC)
-Received: from fraxinus.osuosl.org (smtp4.osuosl.org [140.211.166.137])
+	by smtp.lore.kernel.org (Postfix) with ESMTP id CA513C433DF
+	for <iommu@archiver.kernel.org>; Wed, 20 May 2020 06:42:32 +0000 (UTC)
+Received: from silver.osuosl.org (smtp3.osuosl.org [140.211.166.136])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by mail.kernel.org (Postfix) with ESMTPS id 87C2B2075F
-	for <iommu@archiver.kernel.org>; Wed, 20 May 2020 05:43:57 +0000 (UTC)
-Authentication-Results: mail.kernel.org;
-	dkim=fail reason="signature verification failed" (1024-bit key) header.d=kernel.org header.i=@kernel.org header.b="MV9LOgk3"
-DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 87C2B2075F
-Authentication-Results: mail.kernel.org; dmarc=none (p=none dis=none) header.from=linuxfoundation.org
+	by mail.kernel.org (Postfix) with ESMTPS id 92C9520657
+	for <iommu@archiver.kernel.org>; Wed, 20 May 2020 06:42:32 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 92C9520657
+Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=linux.intel.com
 Authentication-Results: mail.kernel.org; spf=pass smtp.mailfrom=iommu-bounces@lists.linux-foundation.org
 Received: from localhost (localhost [127.0.0.1])
-	by fraxinus.osuosl.org (Postfix) with ESMTP id 5C810865AB;
-	Wed, 20 May 2020 05:43:57 +0000 (UTC)
+	by silver.osuosl.org (Postfix) with ESMTP id 6765120553;
+	Wed, 20 May 2020 06:42:32 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from fraxinus.osuosl.org ([127.0.0.1])
+Received: from silver.osuosl.org ([127.0.0.1])
 	by localhost (.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
-	with ESMTP id TWrCFYrN4Iow; Wed, 20 May 2020 05:43:54 +0000 (UTC)
+	with ESMTP id fKRyGBwGyqG5; Wed, 20 May 2020 06:42:31 +0000 (UTC)
 Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [140.211.9.56])
-	by fraxinus.osuosl.org (Postfix) with ESMTP id AB15F864C3;
-	Wed, 20 May 2020 05:43:54 +0000 (UTC)
+	by silver.osuosl.org (Postfix) with ESMTP id 53CC6203AD;
+	Wed, 20 May 2020 06:42:31 +0000 (UTC)
 Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
-	by lists.linuxfoundation.org (Postfix) with ESMTP id 905C7C0881;
-	Wed, 20 May 2020 05:43:54 +0000 (UTC)
+	by lists.linuxfoundation.org (Postfix) with ESMTP id 38E8BC07FF;
+	Wed, 20 May 2020 06:42:31 +0000 (UTC)
 Received: from silver.osuosl.org (smtp3.osuosl.org [140.211.166.136])
- by lists.linuxfoundation.org (Postfix) with ESMTP id 742ACC0176
- for <iommu@lists.linux-foundation.org>; Wed, 20 May 2020 05:43:53 +0000 (UTC)
+ by lists.linuxfoundation.org (Postfix) with ESMTP id 19045C0176
+ for <iommu@lists.linux-foundation.org>; Wed, 20 May 2020 06:42:30 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
- by silver.osuosl.org (Postfix) with ESMTP id 3A59B2001A
- for <iommu@lists.linux-foundation.org>; Wed, 20 May 2020 05:43:53 +0000 (UTC)
+ by silver.osuosl.org (Postfix) with ESMTP id EEC8E204B2
+ for <iommu@lists.linux-foundation.org>; Wed, 20 May 2020 06:42:29 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
 Received: from silver.osuosl.org ([127.0.0.1])
  by localhost (.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
- with ESMTP id 67j6kPEUn5B6 for <iommu@lists.linux-foundation.org>;
- Wed, 20 May 2020 05:43:52 +0000 (UTC)
-X-Greylist: from auto-whitelisted by SQLgrey-1.7.6
-Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
- by silver.osuosl.org (Postfix) with ESMTPS id 8A67620017
- for <iommu@lists.linux-foundation.org>; Wed, 20 May 2020 05:43:52 +0000 (UTC)
-Received: from localhost (83-86-89-107.cable.dynamic.v4.ziggo.nl
- [83.86.89.107])
- (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
- (No client certificate requested)
- by mail.kernel.org (Postfix) with ESMTPSA id B534C2075F;
- Wed, 20 May 2020 05:43:51 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
- s=default; t=1589953432;
- bh=IEc+QC7akchK5eV7/ZYdgqsaG2z+ctbqijAK6mJ6Q98=;
- h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
- b=MV9LOgk3OXP5XC66veg+cLqTxXmgekS2F0K2Lx1avu81cXlkxReu1me2r75MMQ2b+
- ZE/q6upLQs+FrqRHXAntfRYgsnkgOdGK7p4UiV+dhvyZ4PYwI5dyJMh3rzb1/w81wX
- vLFfMmab6HO3EzfJeRgK37kwsXkaZoBeGIY6dFJs=
-Date: Wed, 20 May 2020 07:43:49 +0200
-From: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-To: Jim Quinlan <james.quinlan@broadcom.com>
-Subject: Re: [PATCH 09/15] device core: Add ability to handle multiple dma
- offsets
-Message-ID: <20200520054349.GB2180554@kroah.com>
-References: <20200519203419.12369-1-james.quinlan@broadcom.com>
- <20200519203419.12369-10-james.quinlan@broadcom.com>
+ with ESMTP id 1Pk9C1NbCeWW for <iommu@lists.linux-foundation.org>;
+ Wed, 20 May 2020 06:42:28 +0000 (UTC)
+X-Greylist: domain auto-whitelisted by SQLgrey-1.7.6
+Received: from mga05.intel.com (mga05.intel.com [192.55.52.43])
+ by silver.osuosl.org (Postfix) with ESMTPS id 873A8203AD
+ for <iommu@lists.linux-foundation.org>; Wed, 20 May 2020 06:42:28 +0000 (UTC)
+IronPort-SDR: Lcc9wYCxwRblmeNq4HDawzvOEzUVP2JDJixTbIM1Vl3KMsjk7LH3xSJ5OkeJPyEJ2l6Qyruo3o
+ qYFvDdWyuUng==
+X-Amp-Result: SKIPPED(no attachment in message)
+X-Amp-File-Uploaded: False
+Received: from orsmga002.jf.intel.com ([10.7.209.21])
+ by fmsmga105.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384;
+ 19 May 2020 23:42:27 -0700
+IronPort-SDR: 5wJiWe6pVWB7hyYqiXH2AXwf1QAOQQe/lHI6qJbxXfWjp/3BknyEKxiMDcLSTdLPsWEPoOCHP+
+ EBdQFFjpDghA==
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="5.73,413,1583222400"; d="scan'208";a="282582095"
+Received: from blu2-mobl3.ccr.corp.intel.com (HELO [10.255.28.165])
+ ([10.255.28.165])
+ by orsmga002.jf.intel.com with ESMTP; 19 May 2020 23:42:22 -0700
+Subject: Re: [PATCH v7 04/24] iommu: Add a page fault handler
+To: Jean-Philippe Brucker <jean-philippe@linaro.org>,
+ iommu@lists.linux-foundation.org, devicetree@vger.kernel.org,
+ linux-arm-kernel@lists.infradead.org, linux-pci@vger.kernel.org,
+ linux-mm@kvack.org
+References: <20200519175502.2504091-1-jean-philippe@linaro.org>
+ <20200519175502.2504091-5-jean-philippe@linaro.org>
+From: Lu Baolu <baolu.lu@linux.intel.com>
+Message-ID: <c840d771-188d-9ee5-d117-e4b91d29b329@linux.intel.com>
+Date: Wed, 20 May 2020 14:42:21 +0800
+User-Agent: Mozilla/5.0 (Windows NT 10.0; WOW64; rv:68.0) Gecko/20100101
+ Thunderbird/68.8.0
 MIME-Version: 1.0
-Content-Disposition: inline
-In-Reply-To: <20200519203419.12369-10-james.quinlan@broadcom.com>
-Cc: "open list:OPEN FIRMWARE AND FLATTENED DEVICE TREE"
- <devicetree@vger.kernel.org>,
- Heikki Krogerus <heikki.krogerus@linux.intel.com>,
- Saravana Kannan <saravanak@google.com>,
- Suzuki K Poulose <suzuki.poulose@arm.com>,
- Frank Rowand <frowand.list@gmail.com>,
- "Rafael J. Wysocki" <rafael.j.wysocki@intel.com>,
- open list <linux-kernel@vger.kernel.org>,
- "open list:DMA MAPPING HELPERS" <iommu@lists.linux-foundation.org>,
- Rob Herring <robh+dt@kernel.org>, Dan Williams <dan.j.williams@intel.com>,
- Robin Murphy <robin.murphy@arm.com>, Christoph Hellwig <hch@lst.de>,
- Nicolas Saenz Julienne <nsaenzjulienne@suse.de>
+In-Reply-To: <20200519175502.2504091-5-jean-philippe@linaro.org>
+Content-Language: en-US
+Cc: fenghua.yu@intel.com, kevin.tian@intel.com, jgg@ziepe.ca,
+ catalin.marinas@arm.com, robin.murphy@arm.com, hch@infradead.org,
+ zhangfei.gao@linaro.org, felix.kuehling@amd.com, will@kernel.org,
+ christian.koenig@amd.com
 X-BeenThere: iommu@lists.linux-foundation.org
 X-Mailman-Version: 2.1.15
 Precedence: list
@@ -94,47 +89,324 @@ List-Post: <mailto:iommu@lists.linux-foundation.org>
 List-Help: <mailto:iommu-request@lists.linux-foundation.org?subject=help>
 List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
  <mailto:iommu-request@lists.linux-foundation.org?subject=subscribe>
-Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset="us-ascii"; Format="flowed"
 Errors-To: iommu-bounces@lists.linux-foundation.org
 Sender: "iommu" <iommu-bounces@lists.linux-foundation.org>
 
-On Tue, May 19, 2020 at 04:34:07PM -0400, Jim Quinlan wrote:
-> diff --git a/include/linux/device.h b/include/linux/device.h
-> index ac8e37cd716a..6cd916860b5f 100644
-> --- a/include/linux/device.h
-> +++ b/include/linux/device.h
-> @@ -493,6 +493,8 @@ struct dev_links_info {
->   * @bus_dma_limit: Limit of an upstream bridge or bus which imposes a smaller
->   *		DMA limit than the device itself supports.
->   * @dma_pfn_offset: offset of DMA memory range relatively of RAM
-> + * @dma_map:	Like dma_pfn_offset but used when there are multiple
-> + *		pfn offsets for multiple dma-ranges.
->   * @dma_parms:	A low level driver may set these to teach IOMMU code about
->   * 		segment limitations.
->   * @dma_pools:	Dma pools (if dma'ble device).
-> @@ -578,7 +580,12 @@ struct device {
->  					     allocations such descriptors. */
->  	u64		bus_dma_limit;	/* upstream dma constraint */
->  	unsigned long	dma_pfn_offset;
-> -
-> +#ifdef CONFIG_DMA_PFN_OFFSET_MAP
-> +	const void *dma_offset_map;	/* Like dma_pfn_offset, but for
-> +					 * the unlikely case of multiple
-> +					 * offsets. If non-null, dma_pfn_offset
-> +					 * will be 0. */
-> +#endif
->  	struct device_dma_parameters *dma_parms;
->  
->  	struct list_head	dma_pools;	/* dma pools (if dma'ble) */
+Hi Jean,
 
-I'll defer to Christoph here, but I thought we were trying to get rid of
-stuff like this from struct device, not add new things to it for dma
-apis.  And why is it a void *?
+On 2020/5/20 1:54, Jean-Philippe Brucker wrote:
+> Some systems allow devices to handle I/O Page Faults in the core mm. For
+> example systems implementing the PCIe PRI extension or Arm SMMU stall
+> model. Infrastructure for reporting these recoverable page faults was
+> added to the IOMMU core by commit 0c830e6b3282 ("iommu: Introduce device
+> fault report API"). Add a page fault handler for host SVA.
+> 
+> IOMMU driver can now instantiate several fault workqueues and link them
+> to IOPF-capable devices. Drivers can choose between a single global
+> workqueue, one per IOMMU device, one per low-level fault queue, one per
+> domain, etc.
+> 
+> When it receives a fault event, supposedly in an IRQ handler, the IOMMU
+> driver reports the fault using iommu_report_device_fault(), which calls
+> the registered handler. The page fault handler then calls the mm fault
+> handler, and reports either success or failure with iommu_page_response().
+> When the handler succeeded, the IOMMU retries the access.
+> 
+> The iopf_param pointer could be embedded into iommu_fault_param. But
+> putting iopf_param into the iommu_param structure allows us not to care
+> about ordering between calls to iopf_queue_add_device() and
+> iommu_register_device_fault_handler().
+> 
+> Signed-off-by: Jean-Philippe Brucker <jean-philippe@linaro.org>
+> ---
+> v6->v7: Fix leak in iopf_queue_discard_partial()
+> ---
+>   drivers/iommu/Kconfig      |   4 +
+>   drivers/iommu/Makefile     |   1 +
+>   include/linux/iommu.h      |  51 +++++
+>   drivers/iommu/io-pgfault.c | 459 +++++++++++++++++++++++++++++++++++++
+>   4 files changed, 515 insertions(+)
+>   create mode 100644 drivers/iommu/io-pgfault.c
+> 
+> diff --git a/drivers/iommu/Kconfig b/drivers/iommu/Kconfig
+> index d9fa5b410015..15e9dc4e503c 100644
+> --- a/drivers/iommu/Kconfig
+> +++ b/drivers/iommu/Kconfig
+> @@ -107,6 +107,10 @@ config IOMMU_SVA
+>   	bool
+>   	select IOASID
+>   
+> +config IOMMU_PAGE_FAULT
+> +	bool
+> +	select IOMMU_SVA
+> +
+>   config FSL_PAMU
+>   	bool "Freescale IOMMU support"
+>   	depends on PCI
+> diff --git a/drivers/iommu/Makefile b/drivers/iommu/Makefile
+> index 40c800dd4e3e..bf5cb4ee8409 100644
+> --- a/drivers/iommu/Makefile
+> +++ b/drivers/iommu/Makefile
+> @@ -4,6 +4,7 @@ obj-$(CONFIG_IOMMU_API) += iommu-traces.o
+>   obj-$(CONFIG_IOMMU_API) += iommu-sysfs.o
+>   obj-$(CONFIG_IOMMU_DEBUGFS) += iommu-debugfs.o
+>   obj-$(CONFIG_IOMMU_DMA) += dma-iommu.o
+> +obj-$(CONFIG_IOMMU_PAGE_FAULT) += io-pgfault.o
+>   obj-$(CONFIG_IOMMU_IO_PGTABLE) += io-pgtable.o
+>   obj-$(CONFIG_IOMMU_IO_PGTABLE_ARMV7S) += io-pgtable-arm-v7s.o
+>   obj-$(CONFIG_IOMMU_IO_PGTABLE_LPAE) += io-pgtable-arm.o
 
-thanks,
+[SNIP]
 
-greg k-h
+> +
+> +static enum iommu_page_response_code
+> +iopf_handle_single(struct iopf_fault *iopf)
+> +{
+> +	vm_fault_t ret;
+> +	struct mm_struct *mm;
+> +	struct vm_area_struct *vma;
+> +	unsigned int access_flags = 0;
+> +	unsigned int fault_flags = FAULT_FLAG_REMOTE;
+> +	struct iommu_fault_page_request *prm = &iopf->fault.prm;
+> +	enum iommu_page_response_code status = IOMMU_PAGE_RESP_INVALID;
+> +
+> +	if (!(prm->flags & IOMMU_FAULT_PAGE_REQUEST_PASID_VALID))
+> +		return status;
+> +
+> +	mm = iommu_sva_find(prm->pasid);
+> +	if (IS_ERR_OR_NULL(mm))
+> +		return status;
+> +
+> +	down_read(&mm->mmap_sem);
+> +
+> +	vma = find_extend_vma(mm, prm->addr);
+> +	if (!vma)
+> +		/* Unmapped area */
+> +		goto out_put_mm;
+> +
+> +	if (prm->perm & IOMMU_FAULT_PERM_READ)
+> +		access_flags |= VM_READ;
+> +
+> +	if (prm->perm & IOMMU_FAULT_PERM_WRITE) {
+> +		access_flags |= VM_WRITE;
+> +		fault_flags |= FAULT_FLAG_WRITE;
+> +	}
+> +
+> +	if (prm->perm & IOMMU_FAULT_PERM_EXEC) {
+> +		access_flags |= VM_EXEC;
+> +		fault_flags |= FAULT_FLAG_INSTRUCTION;
+> +	}
+> +
+> +	if (!(prm->perm & IOMMU_FAULT_PERM_PRIV))
+> +		fault_flags |= FAULT_FLAG_USER;
+> +
+> +	if (access_flags & ~vma->vm_flags)
+> +		/* Access fault */
+> +		goto out_put_mm;
+> +
+> +	ret = handle_mm_fault(vma, prm->addr, fault_flags);
+> +	status = ret & VM_FAULT_ERROR ? IOMMU_PAGE_RESP_INVALID :
+
+Do you mind telling why it's IOMMU_PAGE_RESP_INVALID but not
+IOMMU_PAGE_RESP_FAILURE?
+
+> +		IOMMU_PAGE_RESP_SUCCESS;
+> +
+> +out_put_mm:
+> +	up_read(&mm->mmap_sem);
+> +	mmput(mm);
+> +
+> +	return status;
+> +}
+> +
+> +static void iopf_handle_group(struct work_struct *work)
+> +{
+> +	struct iopf_group *group;
+> +	struct iopf_fault *iopf, *next;
+> +	enum iommu_page_response_code status = IOMMU_PAGE_RESP_SUCCESS;
+> +
+> +	group = container_of(work, struct iopf_group, work);
+> +
+> +	list_for_each_entry_safe(iopf, next, &group->faults, list) {
+> +		/*
+> +		 * For the moment, errors are sticky: don't handle subsequent
+> +		 * faults in the group if there is an error.
+> +		 */
+> +		if (status == IOMMU_PAGE_RESP_SUCCESS)
+> +			status = iopf_handle_single(iopf);
+> +
+> +		if (!(iopf->fault.prm.flags &
+> +		      IOMMU_FAULT_PAGE_REQUEST_LAST_PAGE))
+> +			kfree(iopf);
+> +	}
+> +
+> +	iopf_complete_group(group->dev, &group->last_fault, status);
+> +	kfree(group);
+> +}
+> +
+> +/**
+> + * iommu_queue_iopf - IO Page Fault handler
+> + * @evt: fault event
+
+@fault?
+
+> + * @cookie: struct device, passed to iommu_register_device_fault_handler.
+> + *
+> + * Add a fault to the device workqueue, to be handled by mm.
+> + *
+> + * This module doesn't handle PCI PASID Stop Marker; IOMMU drivers must discard
+> + * them before reporting faults. A PASID Stop Marker (LRW = 0b100) doesn't
+> + * expect a response. It may be generated when disabling a PASID (issuing a
+> + * PASID stop request) by some PCI devices.
+> + *
+> + * The PASID stop request is issued by the device driver before unbind(). Once
+> + * it completes, no page request is generated for this PASID anymore and
+> + * outstanding ones have been pushed to the IOMMU (as per PCIe 4.0r1.0 - 6.20.1
+> + * and 10.4.1.2 - Managing PASID TLP Prefix Usage). Some PCI devices will wait
+> + * for all outstanding page requests to come back with a response before
+> + * completing the PASID stop request. Others do not wait for page responses, and
+> + * instead issue this Stop Marker that tells us when the PASID can be
+> + * reallocated.
+> + *
+> + * It is safe to discard the Stop Marker because it is an optimization.
+> + * a. Page requests, which are posted requests, have been flushed to the IOMMU
+> + *    when the stop request completes.
+> + * b. We flush all fault queues on unbind() before freeing the PASID.
+> + *
+> + * So even though the Stop Marker might be issued by the device *after* the stop
+> + * request completes, outstanding faults will have been dealt with by the time
+> + * we free the PASID.
+> + *
+> + * Return: 0 on success and <0 on error.
+> + */
+> +int iommu_queue_iopf(struct iommu_fault *fault, void *cookie)
+> +{
+> +	int ret;
+> +	struct iopf_group *group;
+> +	struct iopf_fault *iopf, *next;
+> +	struct iopf_device_param *iopf_param;
+> +
+> +	struct device *dev = cookie;
+> +	struct dev_iommu *param = dev->iommu;
+> +
+> +	lockdep_assert_held(&param->lock);
+> +
+> +	if (fault->type != IOMMU_FAULT_PAGE_REQ)
+> +		/* Not a recoverable page fault */
+> +		return -EOPNOTSUPP;
+> +
+> +	/*
+> +	 * As long as we're holding param->lock, the queue can't be unlinked
+> +	 * from the device and therefore cannot disappear.
+> +	 */
+> +	iopf_param = param->iopf_param;
+> +	if (!iopf_param)
+> +		return -ENODEV;
+> +
+> +	if (!(fault->prm.flags & IOMMU_FAULT_PAGE_REQUEST_LAST_PAGE)) {
+> +		iopf = kzalloc(sizeof(*iopf), GFP_KERNEL);
+> +		if (!iopf)
+> +			return -ENOMEM;
+> +
+> +		iopf->fault = *fault;
+> +
+> +		/* Non-last request of a group. Postpone until the last one */
+> +		list_add(&iopf->list, &iopf_param->partial);
+> +
+> +		return 0;
+> +	}
+> +
+> +	group = kzalloc(sizeof(*group), GFP_KERNEL);
+> +	if (!group) {
+> +		/*
+> +		 * The caller will send a response to the hardware. But we do
+> +		 * need to clean up before leaving, otherwise partial faults
+> +		 * will be stuck.
+> +		 */
+> +		ret = -ENOMEM;
+> +		goto cleanup_partial;
+> +	}
+> +
+> +	group->dev = dev;
+> +	group->last_fault.fault = *fault;
+> +	INIT_LIST_HEAD(&group->faults);
+> +	list_add(&group->last_fault.list, &group->faults);
+> +	INIT_WORK(&group->work, iopf_handle_group);
+> +
+> +	/* See if we have partial faults for this group */
+> +	list_for_each_entry_safe(iopf, next, &iopf_param->partial, list) {
+> +		if (iopf->fault.prm.grpid == fault->prm.grpid)
+> +			/* Insert *before* the last fault */
+> +			list_move(&iopf->list, &group->faults);
+> +	}
+> +
+> +	queue_work(iopf_param->queue->wq, &group->work);
+> +	return 0;
+> +
+> +cleanup_partial:
+> +	list_for_each_entry_safe(iopf, next, &iopf_param->partial, list) {
+> +		if (iopf->fault.prm.grpid == fault->prm.grpid) {
+> +			list_del(&iopf->list);
+> +			kfree(iopf);
+> +		}
+> +	}
+> +	return ret;
+> +}
+> +EXPORT_SYMBOL_GPL(iommu_queue_iopf);
+
+[SNIP]
+
+> + 
+> +
+> +/**
+> + * iopf_queue_add_device - Add producer to the fault queue
+> + * @queue: IOPF queue
+> + * @dev: device to add
+> + *
+> + * Return: 0 on success and <0 on error.
+> + */
+> +int iopf_queue_add_device(struct iopf_queue *queue, struct device *dev)
+> +{
+> +	int ret = -EBUSY;
+> +	struct iopf_device_param *iopf_param;
+> +	struct dev_iommu *param = dev->iommu;
+> +
+> +	if (!param)
+> +		return -ENODEV;
+> +
+> +	iopf_param = kzalloc(sizeof(*iopf_param), GFP_KERNEL);
+> +	if (!iopf_param)
+> +		return -ENOMEM;
+> +
+> +	INIT_LIST_HEAD(&iopf_param->partial);
+> +	iopf_param->queue = queue; iopf_param->dev = dev;
+
+Two lines?
+
+> +
+> +	mutex_lock(&queue->lock);
+> +	mutex_lock(&param->lock);
+> +	if (!param->iopf_param) {
+> +		list_add(&iopf_param->queue_list, &queue->devices);
+> +		param->iopf_param = iopf_param;
+> +		ret = 0;
+> +	}
+> +	mutex_unlock(&param->lock);
+> +	mutex_unlock(&queue->lock);
+> +
+> +	if (ret)
+> +		kfree(iopf_param);
+> +
+> +	return ret;
+> +}
+> +EXPORT_SYMBOL_GPL(iopf_queue_add_device);
+> +
+
+[SNIP]
+Best regards,
+baolu
 _______________________________________________
 iommu mailing list
 iommu@lists.linux-foundation.org
