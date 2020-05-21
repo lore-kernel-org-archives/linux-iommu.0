@@ -6,84 +6,84 @@ X-Spam-Status: No, score=-6.8 required=3.0 tests=DKIM_INVALID,DKIM_SIGNED,
 	INCLUDES_PATCH,MAILING_LIST_MULTI,SIGNED_OFF_BY,SPF_HELO_NONE,SPF_PASS,
 	URIBL_BLOCKED autolearn=unavailable autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 06067C433E0
-	for <iommu@archiver.kernel.org>; Thu, 21 May 2020 23:11:06 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 284A6C433E2
+	for <iommu@archiver.kernel.org>; Thu, 21 May 2020 23:17:52 +0000 (UTC)
 Received: from hemlock.osuosl.org (smtp2.osuosl.org [140.211.166.133])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by mail.kernel.org (Postfix) with ESMTPS id CFE63207F9
-	for <iommu@archiver.kernel.org>; Thu, 21 May 2020 23:11:04 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTPS id C17B4208A9
+	for <iommu@archiver.kernel.org>; Thu, 21 May 2020 23:17:51 +0000 (UTC)
 Authentication-Results: mail.kernel.org;
-	dkim=fail reason="signature verification failed" (1024-bit key) header.d=kernel.org header.i=@kernel.org header.b="b50y5T4/"
-DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org CFE63207F9
+	dkim=fail reason="signature verification failed" (1024-bit key) header.d=kernel.org header.i=@kernel.org header.b="CLhLY45t"
+DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org C17B4208A9
 Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=kernel.org
 Authentication-Results: mail.kernel.org; spf=pass smtp.mailfrom=iommu-bounces@lists.linux-foundation.org
 Received: from localhost (localhost [127.0.0.1])
-	by hemlock.osuosl.org (Postfix) with ESMTP id 9EA5E894B8;
-	Thu, 21 May 2020 23:11:04 +0000 (UTC)
+	by hemlock.osuosl.org (Postfix) with ESMTP id 9A62E894A8;
+	Thu, 21 May 2020 23:17:51 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
 Received: from hemlock.osuosl.org ([127.0.0.1])
 	by localhost (.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
-	with ESMTP id 0d+6MzIkYss9; Thu, 21 May 2020 23:11:04 +0000 (UTC)
+	with ESMTP id b2w4DCWd3Ham; Thu, 21 May 2020 23:17:50 +0000 (UTC)
 Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [140.211.9.56])
-	by hemlock.osuosl.org (Postfix) with ESMTP id F1C3489493;
-	Thu, 21 May 2020 23:11:03 +0000 (UTC)
+	by hemlock.osuosl.org (Postfix) with ESMTP id D61C389433;
+	Thu, 21 May 2020 23:17:50 +0000 (UTC)
 Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
-	by lists.linuxfoundation.org (Postfix) with ESMTP id E3F55C088B;
-	Thu, 21 May 2020 23:11:03 +0000 (UTC)
-Received: from hemlock.osuosl.org (smtp2.osuosl.org [140.211.166.133])
- by lists.linuxfoundation.org (Postfix) with ESMTP id 7DFBAC0176
- for <iommu@lists.linux-foundation.org>; Thu, 21 May 2020 23:11:02 +0000 (UTC)
+	by lists.linuxfoundation.org (Postfix) with ESMTP id C8877C088A;
+	Thu, 21 May 2020 23:17:50 +0000 (UTC)
+Received: from fraxinus.osuosl.org (smtp4.osuosl.org [140.211.166.137])
+ by lists.linuxfoundation.org (Postfix) with ESMTP id 55C4FC0176
+ for <iommu@lists.linux-foundation.org>; Thu, 21 May 2020 23:17:50 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
- by hemlock.osuosl.org (Postfix) with ESMTP id 7983389494
- for <iommu@lists.linux-foundation.org>; Thu, 21 May 2020 23:11:02 +0000 (UTC)
+ by fraxinus.osuosl.org (Postfix) with ESMTP id 50F6F876A1
+ for <iommu@lists.linux-foundation.org>; Thu, 21 May 2020 23:17:50 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from hemlock.osuosl.org ([127.0.0.1])
+Received: from fraxinus.osuosl.org ([127.0.0.1])
  by localhost (.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
- with ESMTP id Zw1Ozyo4P4Wb for <iommu@lists.linux-foundation.org>;
- Thu, 21 May 2020 23:11:01 +0000 (UTC)
+ with ESMTP id 7iomJ5M_2V-x for <iommu@lists.linux-foundation.org>;
+ Thu, 21 May 2020 23:17:48 +0000 (UTC)
 X-Greylist: domain auto-whitelisted by SQLgrey-1.7.6
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
- by hemlock.osuosl.org (Postfix) with ESMTPS id D604389493
- for <iommu@lists.linux-foundation.org>; Thu, 21 May 2020 23:11:01 +0000 (UTC)
-Received: from mail-oi1-f179.google.com (mail-oi1-f179.google.com
- [209.85.167.179])
+ by fraxinus.osuosl.org (Postfix) with ESMTPS id D1DF6876A0
+ for <iommu@lists.linux-foundation.org>; Thu, 21 May 2020 23:17:48 +0000 (UTC)
+Received: from mail-ot1-f46.google.com (mail-ot1-f46.google.com
+ [209.85.210.46])
  (using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
  (No client certificate requested)
- by mail.kernel.org (Postfix) with ESMTPSA id BD01C20884
- for <iommu@lists.linux-foundation.org>; Thu, 21 May 2020 23:11:00 +0000 (UTC)
+ by mail.kernel.org (Postfix) with ESMTPSA id 798CB21531
+ for <iommu@lists.linux-foundation.org>; Thu, 21 May 2020 23:17:48 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
- s=default; t=1590102660;
- bh=wnVJsMcdVukL+7XmCXsH+1qcmY1rqDsn5grM0oKG+Vg=;
+ s=default; t=1590103068;
+ bh=EyK2DMGY1yaM+F8516LQrBIpk2NNn0s0Z37DLtuZPEA=;
  h=References:In-Reply-To:From:Date:Subject:To:Cc:From;
- b=b50y5T4/xOs+s5TZp/SGmlaI5l765m7i1wx22uNGLyBKIBzdh+5hpkyDWuuwfftfw
- ZMVAwk/zlo8GumNufVyNpb4usNPG//XsYyyQXbgxHwdmLqfTUQP35eVkbpBQ8lm1Eo
- mVRPCZQ5iXEuAXf0diEbUoBLJVSOffrww0tgviDU=
-Received: by mail-oi1-f179.google.com with SMTP id o24so7759265oic.0
- for <iommu@lists.linux-foundation.org>; Thu, 21 May 2020 16:11:00 -0700 (PDT)
-X-Gm-Message-State: AOAM533HWzPVaz11w81U4jiRChzjUGm6XzVXct5zgOYNNhl5XrEeRfbP
- CVbqBZMZgQILtX7lJSpgj1W1wMP7lz8glKJZlA==
-X-Google-Smtp-Source: ABdhPJyY199Y85sucuTO5/BYg8SBRhUI/9X/7ZmJwp5eotefflL8Rgk71V55e2sEv0jRnuhZ/fAClQc1SjSy9dm5eSY=
-X-Received: by 2002:aca:f084:: with SMTP id o126mr744784oih.106.1590102659988; 
- Thu, 21 May 2020 16:10:59 -0700 (PDT)
+ b=CLhLY45tfjDzW/4QzoCLzjzXDitprZjeX6jCl/TTiDNf1smTgNixutkYBE1Ltk7N+
+ bGuj4VCEQRCeGfsupUKY8MgwYvf2v3r3ry5ehzBBz2Vd9XnvyT50v3+/1fYDziASsk
+ an0rGuPaYsEVmZTE5CauU7LzvZWPFnLZ8bU6LsLs=
+Received: by mail-ot1-f46.google.com with SMTP id d26so6875128otc.7
+ for <iommu@lists.linux-foundation.org>; Thu, 21 May 2020 16:17:48 -0700 (PDT)
+X-Gm-Message-State: AOAM531OAxHkz3cZrk/7VYACVKeHAtwbwx4sdZZfn3xeYnQmjk+08juD
+ Lu22kqonZ7MDG4rJwuz6Eux7SH5QwNKehz1hJw==
+X-Google-Smtp-Source: ABdhPJxVgcCXhuH2DfTXSUau1TIQTXIwHoWhmRU4UZnxmjy/ftT6A+o4gIk78ZAgFUEU2gCUM+w/Etpe/R6HZFsyFVk=
+X-Received: by 2002:a05:6830:18d9:: with SMTP id
+ v25mr8467347ote.107.1590103067633; 
+ Thu, 21 May 2020 16:17:47 -0700 (PDT)
 MIME-Version: 1.0
 References: <20200521130008.8266-1-lorenzo.pieralisi@arm.com>
- <20200521130008.8266-10-lorenzo.pieralisi@arm.com>
-In-Reply-To: <20200521130008.8266-10-lorenzo.pieralisi@arm.com>
+ <20200521130008.8266-11-lorenzo.pieralisi@arm.com>
+In-Reply-To: <20200521130008.8266-11-lorenzo.pieralisi@arm.com>
 From: Rob Herring <robh+dt@kernel.org>
-Date: Thu, 21 May 2020 17:10:49 -0600
-X-Gmail-Original-Message-ID: <CAL_Jsq+h18gH2D3B-OZku6ACCgonPUJcUnrN8a5=jApsXHdB5Q@mail.gmail.com>
-Message-ID: <CAL_Jsq+h18gH2D3B-OZku6ACCgonPUJcUnrN8a5=jApsXHdB5Q@mail.gmail.com>
-Subject: Re: [PATCH 09/12] dt-bindings: arm: fsl: Add msi-map device-tree
- binding for fsl-mc bus
+Date: Thu, 21 May 2020 17:17:27 -0600
+X-Gmail-Original-Message-ID: <CAL_JsqLTBxX_3KjiEqMfw0qMaTmj_DdPD3j-yMUvrvONPBSvjg@mail.gmail.com>
+Message-ID: <CAL_JsqLTBxX_3KjiEqMfw0qMaTmj_DdPD3j-yMUvrvONPBSvjg@mail.gmail.com>
+Subject: Re: [PATCH 10/12] of/irq: Make of_msi_map_rid() PCI bus agnostic
 To: Lorenzo Pieralisi <lorenzo.pieralisi@arm.com>
-Cc: devicetree@vger.kernel.org, Catalin Marinas <catalin.marinas@arm.com>,
- Will Deacon <will@kernel.org>, Diana Craciun <diana.craciun@oss.nxp.com>,
- PCI <linux-pci@vger.kernel.org>, Sudeep Holla <sudeep.holla@arm.com>,
- "Rafael J. Wysocki" <rjw@rjwysocki.net>,
+Cc: devicetree@vger.kernel.org, Sudeep Holla <sudeep.holla@arm.com>,
+ Catalin Marinas <catalin.marinas@arm.com>, Will Deacon <will@kernel.org>,
+ Diana Craciun <diana.craciun@oss.nxp.com>, Marc Zyngier <maz@kernel.org>,
+ Hanjun Guo <guohanjun@huawei.com>, "Rafael J. Wysocki" <rjw@rjwysocki.net>,
  Makarand Pawagi <makarand.pawagi@nxp.com>, linux-acpi@vger.kernel.org,
- Linux IOMMU <iommu@lists.linux-foundation.org>, Marc Zyngier <maz@kernel.org>,
- Hanjun Guo <guohanjun@huawei.com>, Bjorn Helgaas <bhelgaas@google.com>,
+ Linux IOMMU <iommu@lists.linux-foundation.org>,
+ PCI <linux-pci@vger.kernel.org>, Bjorn Helgaas <bhelgaas@google.com>,
  Robin Murphy <robin.murphy@arm.com>,
  "moderated list:ARM/FREESCALE IMX / MXC ARM ARCHITECTURE"
  <linux-arm-kernel@lists.infradead.org>
@@ -107,97 +107,134 @@ Sender: "iommu" <iommu-bounces@lists.linux-foundation.org>
 On Thu, May 21, 2020 at 7:00 AM Lorenzo Pieralisi
 <lorenzo.pieralisi@arm.com> wrote:
 >
-> From: Laurentiu Tudor <laurentiu.tudor@nxp.com>
+> There is nothing PCI bus specific in the of_msi_map_rid()
+> implementation other than the requester ID tag for the input
+> ID space. Rename requester ID to a more generic ID so that
+> the translation code can be used by all busses that require
+> input/output ID translations.
 >
-> The existing bindings cannot be used to specify the relationship
-> between fsl-mc devices and GIC ITSes.
+> Leave a wrapper function of_msi_map_rid() in place to keep
+> existing PCI code mapping requester ID syntactically unchanged.
 >
-> Add a generic binding for mapping fsl-mc devices to GIC ITSes, using
-> msi-map property.
+> No functional change intended.
 >
-> Signed-off-by: Laurentiu Tudor <laurentiu.tudor@nxp.com>
+> Signed-off-by: Lorenzo Pieralisi <lorenzo.pieralisi@arm.com>
 > Cc: Rob Herring <robh+dt@kernel.org>
+> Cc: Marc Zyngier <maz@kernel.org>
 > ---
->  .../devicetree/bindings/misc/fsl,qoriq-mc.txt | 30 +++++++++++++++++--
->  1 file changed, 27 insertions(+), 3 deletions(-)
+>  drivers/of/irq.c       | 28 ++++++++++++++--------------
+>  include/linux/of_irq.h | 14 ++++++++++++--
+>  2 files changed, 26 insertions(+), 16 deletions(-)
 >
-> diff --git a/Documentation/devicetree/bindings/misc/fsl,qoriq-mc.txt b/Documentation/devicetree/bindings/misc/fsl,qoriq-mc.txt
-> index 9134e9bcca56..b0813b2d0493 100644
-> --- a/Documentation/devicetree/bindings/misc/fsl,qoriq-mc.txt
-> +++ b/Documentation/devicetree/bindings/misc/fsl,qoriq-mc.txt
-> @@ -18,9 +18,9 @@ same hardware "isolation context" and a 10-bit value called an ICID
->  the requester.
+> diff --git a/drivers/of/irq.c b/drivers/of/irq.c
+> index 48a40326984f..25d17b8a1a1a 100644
+> --- a/drivers/of/irq.c
+> +++ b/drivers/of/irq.c
+> @@ -576,43 +576,43 @@ void __init of_irq_init(const struct of_device_id *matches)
+>         }
+>  }
 >
->  The generic 'iommus' property is insufficient to describe the relationship
-> -between ICIDs and IOMMUs, so an iommu-map property is used to define
-> -the set of possible ICIDs under a root DPRC and how they map to
-> -an IOMMU.
-> +between ICIDs and IOMMUs, so the iommu-map and msi-map properties are used
-> +to define the set of possible ICIDs under a root DPRC and how they map to
-> +an IOMMU and a GIC ITS respectively.
+> -static u32 __of_msi_map_rid(struct device *dev, struct device_node **np,
+> -                           u32 rid_in)
+> +static u32 __of_msi_map_id(struct device *dev, struct device_node **np,
+> +                           u32 id_in)
+>  {
+>         struct device *parent_dev;
+> -       u32 rid_out = rid_in;
+> +       u32 id_out = id_in;
 >
->  For generic IOMMU bindings, see
->  Documentation/devicetree/bindings/iommu/iommu.txt.
-> @@ -28,6 +28,9 @@ Documentation/devicetree/bindings/iommu/iommu.txt.
->  For arm-smmu binding, see:
->  Documentation/devicetree/bindings/iommu/arm,smmu.yaml.
+>         /*
+>          * Walk up the device parent links looking for one with a
+>          * "msi-map" property.
+>          */
+>         for (parent_dev = dev; parent_dev; parent_dev = parent_dev->parent)
+> -               if (!of_map_rid(parent_dev->of_node, rid_in, "msi-map",
+> -                               "msi-map-mask", np, &rid_out))
+> +               if (!of_map_id(parent_dev->of_node, id_in, "msi-map",
+> +                               "msi-map-mask", np, &id_out))
+>                         break;
+> -       return rid_out;
+> +       return id_out;
+>  }
 >
-> +For GICv3 and GIC ITS bindings, see:
-> +Documentation/devicetree/bindings/interrupt-controller/arm,gic-v3.yaml.
-> +
->  Required properties:
+>  /**
+> - * of_msi_map_rid - Map a MSI requester ID for a device.
+> + * of_msi_map_id - Map a MSI ID for a device.
+>   * @dev: device for which the mapping is to be done.
+>   * @msi_np: device node of the expected msi controller.
+> - * @rid_in: unmapped MSI requester ID for the device.
+> + * @id_in: unmapped MSI ID for the device.
+>   *
+>   * Walk up the device hierarchy looking for devices with a "msi-map"
+> - * property.  If found, apply the mapping to @rid_in.
+> + * property.  If found, apply the mapping to @id_in.
+>   *
+> - * Returns the mapped MSI requester ID.
+> + * Returns the mapped MSI ID.
+>   */
+> -u32 of_msi_map_rid(struct device *dev, struct device_node *msi_np, u32 rid_in)
+> +u32 of_msi_map_id(struct device *dev, struct device_node *msi_np, u32 id_in)
+>  {
+> -       return __of_msi_map_rid(dev, &msi_np, rid_in);
+> +       return __of_msi_map_id(dev, &msi_np, id_in);
+>  }
 >
->      - compatible
-> @@ -119,6 +122,15 @@ Optional properties:
->    associated with the listed IOMMU, with the iommu-specifier
->    (i - icid-base + iommu-base).
+>  /**
+>   * of_msi_map_get_device_domain - Use msi-map to find the relevant MSI domain
+>   * @dev: device for which the mapping is to be done.
+> - * @rid: Requester ID for the device.
+> + * @id: Device ID.
+>   * @bus_token: Bus token
+>   *
+>   * Walk up the device hierarchy looking for devices with a "msi-map"
+> @@ -625,7 +625,7 @@ struct irq_domain *of_msi_map_get_device_domain(struct device *dev, u32 id,
+>  {
+>         struct device_node *np = NULL;
 >
-> +- msi-map: Maps an ICID to a GIC ITS and associated iommu-specifier
-> +  data.
-> +
-> +  The property is an arbitrary number of tuples of
-> +  (icid-base,iommu,iommu-base,length).
+> -       __of_msi_map_rid(dev, &np, id);
+> +       __of_msi_map_id(dev, &np, id);
+>         return irq_find_matching_host(np, bus_token);
+>  }
+>
+> diff --git a/include/linux/of_irq.h b/include/linux/of_irq.h
+> index 7142a3722758..cf9cb1e545ce 100644
+> --- a/include/linux/of_irq.h
+> +++ b/include/linux/of_irq.h
+> @@ -55,7 +55,12 @@ extern struct irq_domain *of_msi_map_get_device_domain(struct device *dev,
+>                                                         u32 id,
+>                                                         u32 bus_token);
+>  extern void of_msi_configure(struct device *dev, struct device_node *np);
+> -u32 of_msi_map_rid(struct device *dev, struct device_node *msi_np, u32 rid_in);
+> +u32 of_msi_map_id(struct device *dev, struct device_node *msi_np, u32 id_in);
+> +static inline u32 of_msi_map_rid(struct device *dev,
+> +                                struct device_node *msi_np, u32 rid_in)
+> +{
+> +       return of_msi_map_id(dev, msi_np, rid_in);
+> +}
+>  #else
+>  static inline int of_irq_count(struct device_node *dev)
+>  {
+> @@ -93,10 +98,15 @@ static inline struct irq_domain *of_msi_map_get_device_domain(struct device *dev
+>  static inline void of_msi_configure(struct device *dev, struct device_node *np)
+>  {
+>  }
+> +static inline u32 of_msi_map_id(struct device *dev,
+> +                                struct device_node *msi_np, u32 id_in)
+> +{
+> +       return id_in;
+> +}
+>  static inline u32 of_msi_map_rid(struct device *dev,
+>                                  struct device_node *msi_np, u32 rid_in)
 
-I'm confused because the example has GIC ITS phandle, not an IOMMU.
+Move this out of the ifdef and you only need it declared once.
 
-What is an iommu-base?
+But again, I think I'd just kill of_msi_map_rid.
 
-> +
-> +  Any ICID in the interval [icid-base, icid-base + length) is
-> +  associated with the listed GIC ITS, with the iommu-specifier
-> +  (i - icid-base + iommu-base).
->  Example:
->
->          smmu: iommu@5000000 {
-> @@ -128,6 +140,16 @@ Example:
->                 ...
->          };
->
-> +       gic: interrupt-controller@6000000 {
-> +               compatible = "arm,gic-v3";
-> +               ...
-> +               its: gic-its@6020000 {
-> +                       compatible = "arm,gic-v3-its";
-> +                       msi-controller;
-> +                       ...
-> +               };
-> +       };
-> +
->          fsl_mc: fsl-mc@80c000000 {
->                  compatible = "fsl,qoriq-mc";
->                  reg = <0x00000008 0x0c000000 0 0x40>,    /* MC portal base */
-> @@ -135,6 +157,8 @@ Example:
->                  msi-parent = <&its>;
->                  /* define map for ICIDs 23-64 */
->                  iommu-map = <23 &smmu 23 41>;
-> +                /* define msi map for ICIDs 23-64 */
-> +                msi-map = <23 &its 23 41>;
-
-Seeing 23 twice is odd. The numbers to the right of 'its' should be an
-ITS number space.
-
->                  #address-cells = <3>;
->                  #size-cells = <1>;
+>  {
+> -       return rid_in;
+> +       return of_msi_map_id(dev, msi_np, rid_in);
+>  }
+>  #endif
 >
 > --
 > 2.26.1
