@@ -6,76 +6,76 @@ X-Spam-Status: No, score=-6.8 required=3.0 tests=DKIM_INVALID,DKIM_SIGNED,
 	INCLUDES_PATCH,MAILING_LIST_MULTI,SIGNED_OFF_BY,SPF_HELO_NONE,SPF_PASS,
 	URIBL_BLOCKED autolearn=unavailable autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 003EFC433E0
-	for <iommu@archiver.kernel.org>; Thu, 21 May 2020 19:56:54 +0000 (UTC)
-Received: from silver.osuosl.org (smtp3.osuosl.org [140.211.166.136])
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 6EA36C433E3
+	for <iommu@archiver.kernel.org>; Thu, 21 May 2020 19:57:21 +0000 (UTC)
+Received: from fraxinus.osuosl.org (smtp4.osuosl.org [140.211.166.137])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by mail.kernel.org (Postfix) with ESMTPS id CE7E420738
-	for <iommu@archiver.kernel.org>; Thu, 21 May 2020 19:56:52 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTPS id 38B1620823
+	for <iommu@archiver.kernel.org>; Thu, 21 May 2020 19:57:21 +0000 (UTC)
 Authentication-Results: mail.kernel.org;
-	dkim=fail reason="signature verification failed" (1024-bit key) header.d=kernel.org header.i=@kernel.org header.b="ZEHVBYHL"
-DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org CE7E420738
+	dkim=fail reason="signature verification failed" (1024-bit key) header.d=kernel.org header.i=@kernel.org header.b="gLbu0zhd"
+DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 38B1620823
 Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=kernel.org
 Authentication-Results: mail.kernel.org; spf=pass smtp.mailfrom=iommu-bounces@lists.linux-foundation.org
 Received: from localhost (localhost [127.0.0.1])
-	by silver.osuosl.org (Postfix) with ESMTP id 8BDE322622;
-	Thu, 21 May 2020 19:56:52 +0000 (UTC)
+	by fraxinus.osuosl.org (Postfix) with ESMTP id 089F28757A;
+	Thu, 21 May 2020 19:57:21 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from silver.osuosl.org ([127.0.0.1])
+Received: from fraxinus.osuosl.org ([127.0.0.1])
 	by localhost (.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
-	with ESMTP id di60AV8FmXmV; Thu, 21 May 2020 19:56:50 +0000 (UTC)
+	with ESMTP id BeMn5j7VrZsu; Thu, 21 May 2020 19:57:19 +0000 (UTC)
 Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [140.211.9.56])
-	by silver.osuosl.org (Postfix) with ESMTP id ABA2D20551;
-	Thu, 21 May 2020 19:56:50 +0000 (UTC)
+	by fraxinus.osuosl.org (Postfix) with ESMTP id ED0FE8755A;
+	Thu, 21 May 2020 19:57:19 +0000 (UTC)
 Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
-	by lists.linuxfoundation.org (Postfix) with ESMTP id 8EC16C088A;
-	Thu, 21 May 2020 19:56:50 +0000 (UTC)
-Received: from whitealder.osuosl.org (smtp1.osuosl.org [140.211.166.138])
- by lists.linuxfoundation.org (Postfix) with ESMTP id 04CB4C0176
- for <iommu@lists.linux-foundation.org>; Thu, 21 May 2020 19:56:49 +0000 (UTC)
+	by lists.linuxfoundation.org (Postfix) with ESMTP id D9206C088A;
+	Thu, 21 May 2020 19:57:19 +0000 (UTC)
+Received: from hemlock.osuosl.org (smtp2.osuosl.org [140.211.166.133])
+ by lists.linuxfoundation.org (Postfix) with ESMTP id 30C7AC0176
+ for <iommu@lists.linux-foundation.org>; Thu, 21 May 2020 19:57:18 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
- by whitealder.osuosl.org (Postfix) with ESMTP id E31158855E
- for <iommu@lists.linux-foundation.org>; Thu, 21 May 2020 19:56:48 +0000 (UTC)
+ by hemlock.osuosl.org (Postfix) with ESMTP id 1E6E088522
+ for <iommu@lists.linux-foundation.org>; Thu, 21 May 2020 19:57:18 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from whitealder.osuosl.org ([127.0.0.1])
+Received: from hemlock.osuosl.org ([127.0.0.1])
  by localhost (.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
- with ESMTP id MEXLY3Vvc1rB for <iommu@lists.linux-foundation.org>;
- Thu, 21 May 2020 19:56:46 +0000 (UTC)
+ with ESMTP id qwtwsnW34iJN for <iommu@lists.linux-foundation.org>;
+ Thu, 21 May 2020 19:57:17 +0000 (UTC)
 X-Greylist: domain auto-whitelisted by SQLgrey-1.7.6
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
- by whitealder.osuosl.org (Postfix) with ESMTPS id CBF408855D
- for <iommu@lists.linux-foundation.org>; Thu, 21 May 2020 19:56:46 +0000 (UTC)
+ by hemlock.osuosl.org (Postfix) with ESMTPS id 7C8C287F52
+ for <iommu@lists.linux-foundation.org>; Thu, 21 May 2020 19:57:17 +0000 (UTC)
 Received: from localhost (mobile-166-175-190-200.mycingular.net
  [166.175.190.200])
  (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
  (No client certificate requested)
- by mail.kernel.org (Postfix) with ESMTPSA id 226AE20829;
- Thu, 21 May 2020 19:56:46 +0000 (UTC)
+ by mail.kernel.org (Postfix) with ESMTPSA id E75DF20738;
+ Thu, 21 May 2020 19:57:16 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
- s=default; t=1590091006;
- bh=3pPxhsoMN8AFg9ooaYG2vkfeO0yylrZ+Y4cUkEkWdkk=;
+ s=default; t=1590091037;
+ bh=3GAvSfAMUddifLPCHvTDvFY432iF5D80Ue+hjq5ma/k=;
  h=Date:From:To:Cc:Subject:In-Reply-To:From;
- b=ZEHVBYHLP72nxe38Sw3h1kSXw8ATmk0v5q21R9wchW+xahwMzGbEsDbJgb9EZnlnh
- v7ZanNXBfhlz6GdwVLqNlJXzxGPRQvEBqIMn57kkP7P7rFZALfVOjFui0msOei15uL
- FR4uSaRrm7XQSfofT1IQKrYTYOGx9AwA5sXJqQIE=
-Date: Thu, 21 May 2020 14:56:44 -0500
+ b=gLbu0zhdPVgG7Aa7IJPzjZ012leZ59yB44+hm4Djnqe8e9igB7XrDDOqwRrCvIVps
+ VGzPP6kAzLHPckkBWX0D0Xq9iZwTRZN5nDCIv9E4wOlxFcjK/Q0L66P9VnXc+BbvIF
+ b1FuHaozN67QS9jwH61wycwEOTtGQA/LP4ZnnrZo=
+Date: Thu, 21 May 2020 14:57:15 -0500
 From: Bjorn Helgaas <helgaas@kernel.org>
 To: Lorenzo Pieralisi <lorenzo.pieralisi@arm.com>
-Subject: Re: [PATCH 02/12] ACPI/IORT: Make iort_get_device_domain IRQ domain
+Subject: Re: [PATCH 08/12] of/irq: make of_msi_map_get_device_domain() bus
  agnostic
-Message-ID: <20200521195644.GA1171134@bjorn-Precision-5520>
+Message-ID: <20200521195715.GA1171267@bjorn-Precision-5520>
 MIME-Version: 1.0
 Content-Disposition: inline
-In-Reply-To: <20200521130008.8266-3-lorenzo.pieralisi@arm.com>
-Cc: Marc Zyngier <maz@kernel.org>, devicetree@vger.kernel.org,
- linux-pci@vger.kernel.org, Catalin Marinas <catalin.marinas@arm.com>,
- Hanjun Guo <guohanjun@huawei.com>, "Rafael J. Wysocki" <rjw@rjwysocki.net>,
- Robin Murphy <robin.murphy@arm.com>, linux-acpi@vger.kernel.org,
+In-Reply-To: <20200521130008.8266-9-lorenzo.pieralisi@arm.com>
+Cc: devicetree@vger.kernel.org, Sudeep Holla <sudeep.holla@arm.com>,
+ Catalin Marinas <catalin.marinas@arm.com>, Will Deacon <will@kernel.org>,
+ "Rafael J. Wysocki" <rjw@rjwysocki.net>, Marc Zyngier <maz@kernel.org>,
+ Hanjun Guo <guohanjun@huawei.com>, linux-pci@vger.kernel.org,
+ Makarand Pawagi <makarand.pawagi@nxp.com>, linux-acpi@vger.kernel.org,
  iommu@lists.linux-foundation.org, Rob Herring <robh+dt@kernel.org>,
- Makarand Pawagi <makarand.pawagi@nxp.com>, Sudeep Holla <sudeep.holla@arm.com>,
- Bjorn Helgaas <bhelgaas@google.com>, Diana Craciun <diana.craciun@oss.nxp.com>,
- Will Deacon <will@kernel.org>, linux-arm-kernel@lists.infradead.org
+ Diana Craciun <diana.craciun@oss.nxp.com>, Bjorn Helgaas <bhelgaas@google.com>,
+ Robin Murphy <robin.murphy@arm.com>, linux-arm-kernel@lists.infradead.org
 X-BeenThere: iommu@lists.linux-foundation.org
 X-Mailman-Version: 2.1.15
 Precedence: list
@@ -93,132 +93,91 @@ Content-Transfer-Encoding: 7bit
 Errors-To: iommu-bounces@lists.linux-foundation.org
 Sender: "iommu" <iommu-bounces@lists.linux-foundation.org>
 
-On Thu, May 21, 2020 at 01:59:58PM +0100, Lorenzo Pieralisi wrote:
-> iort_get_device_domain() is PCI specific but it need not be,
-> since it can be used to retrieve IRQ domain nexus of any kind
-> by adding an irq_domain_bus_token input to it.
+On Thu, May 21, 2020 at 02:00:04PM +0100, Lorenzo Pieralisi wrote:
+> From: Diana Craciun <diana.craciun@oss.nxp.com>
 > 
-> Make it PCI agnostic by also renaming the requestor ID input
-> to a more generic ID name.
+> of_msi_map_get_device_domain() is PCI specific but it need not be and
+> can be easily changed to be bus agnostic in order to be used by other
+> busses by adding an IRQ domain bus token as an input parameter.
 > 
+> Signed-off-by: Diana Craciun <diana.craciun@oss.nxp.com>
 > Signed-off-by: Lorenzo Pieralisi <lorenzo.pieralisi@arm.com>
-> Cc: Will Deacon <will@kernel.org>
-> Cc: Hanjun Guo <guohanjun@huawei.com>
 > Cc: Bjorn Helgaas <bhelgaas@google.com>
-> Cc: Sudeep Holla <sudeep.holla@arm.com>
-> Cc: Catalin Marinas <catalin.marinas@arm.com>
-> Cc: Robin Murphy <robin.murphy@arm.com>
-> Cc: "Rafael J. Wysocki" <rjw@rjwysocki.net>
+> Cc: Rob Herring <robh+dt@kernel.org>
 > Cc: Marc Zyngier <maz@kernel.org>
 
 Acked-by: Bjorn Helgaas <bhelgaas@google.com>	# pci/msi.c
 
 > ---
->  drivers/acpi/arm64/iort.c | 14 +++++++-------
->  drivers/pci/msi.c         |  3 ++-
->  include/linux/acpi_iort.h |  7 ++++---
->  3 files changed, 13 insertions(+), 11 deletions(-)
+>  drivers/of/irq.c       | 8 +++++---
+>  drivers/pci/msi.c      | 2 +-
+>  include/linux/of_irq.h | 5 +++--
+>  3 files changed, 9 insertions(+), 6 deletions(-)
 > 
-> diff --git a/drivers/acpi/arm64/iort.c b/drivers/acpi/arm64/iort.c
-> index 7cfd77b5e6e8..8f2a961c1364 100644
-> --- a/drivers/acpi/arm64/iort.c
-> +++ b/drivers/acpi/arm64/iort.c
-> @@ -567,7 +567,6 @@ static struct acpi_iort_node *iort_find_dev_node(struct device *dev)
->  		node = iort_get_iort_node(dev->fwnode);
->  		if (node)
->  			return node;
-> -
->  		/*
->  		 * if not, then it should be a platform device defined in
->  		 * DSDT/SSDT (with Named Component node in IORT)
-> @@ -658,13 +657,13 @@ static int __maybe_unused iort_find_its_base(u32 its_id, phys_addr_t *base)
->  /**
->   * iort_dev_find_its_id() - Find the ITS identifier for a device
->   * @dev: The device.
-> - * @req_id: Device's requester ID
-> + * @id: Device's ID
->   * @idx: Index of the ITS identifier list.
->   * @its_id: ITS identifier.
+> diff --git a/drivers/of/irq.c b/drivers/of/irq.c
+> index a296eaf52a5b..48a40326984f 100644
+> --- a/drivers/of/irq.c
+> +++ b/drivers/of/irq.c
+> @@ -613,18 +613,20 @@ u32 of_msi_map_rid(struct device *dev, struct device_node *msi_np, u32 rid_in)
+>   * of_msi_map_get_device_domain - Use msi-map to find the relevant MSI domain
+>   * @dev: device for which the mapping is to be done.
+>   * @rid: Requester ID for the device.
+> + * @bus_token: Bus token
 >   *
->   * Returns: 0 on success, appropriate error value otherwise
->   */
-> -static int iort_dev_find_its_id(struct device *dev, u32 req_id,
-> +static int iort_dev_find_its_id(struct device *dev, u32 id,
->  				unsigned int idx, int *its_id)
->  {
->  	struct acpi_iort_its_group *its;
-> @@ -674,7 +673,7 @@ static int iort_dev_find_its_id(struct device *dev, u32 req_id,
->  	if (!node)
->  		return -ENXIO;
->  
-> -	node = iort_node_map_id(node, req_id, NULL, IORT_MSI_TYPE);
-> +	node = iort_node_map_id(node, id, NULL, IORT_MSI_TYPE);
->  	if (!node)
->  		return -ENXIO;
->  
-> @@ -697,19 +696,20 @@ static int iort_dev_find_its_id(struct device *dev, u32 req_id,
+>   * Walk up the device hierarchy looking for devices with a "msi-map"
+>   * property.
 >   *
->   * Returns: the MSI domain for this device, NULL otherwise
+>   * Returns: the MSI domain for this device (or NULL on failure)
 >   */
-> -struct irq_domain *iort_get_device_domain(struct device *dev, u32 req_id)
-> +struct irq_domain *iort_get_device_domain(struct device *dev, u32 id,
-> +					  enum irq_domain_bus_token bus_token)
+> -struct irq_domain *of_msi_map_get_device_domain(struct device *dev, u32 rid)
+> +struct irq_domain *of_msi_map_get_device_domain(struct device *dev, u32 id,
+> +						u32 bus_token)
 >  {
->  	struct fwnode_handle *handle;
->  	int its_id;
+>  	struct device_node *np = NULL;
 >  
-> -	if (iort_dev_find_its_id(dev, req_id, 0, &its_id))
-> +	if (iort_dev_find_its_id(dev, id, 0, &its_id))
->  		return NULL;
->  
->  	handle = iort_find_domain_token(its_id);
->  	if (!handle)
->  		return NULL;
->  
-> -	return irq_find_matching_fwnode(handle, DOMAIN_BUS_PCI_MSI);
-> +	return irq_find_matching_fwnode(handle, bus_token);
+> -	__of_msi_map_rid(dev, &np, rid);
+> -	return irq_find_matching_host(np, DOMAIN_BUS_PCI_MSI);
+> +	__of_msi_map_rid(dev, &np, id);
+> +	return irq_find_matching_host(np, bus_token);
 >  }
 >  
->  static void iort_set_device_domain(struct device *dev,
+>  /**
 > diff --git a/drivers/pci/msi.c b/drivers/pci/msi.c
-> index 6b43a5455c7a..74a91f52ecc0 100644
+> index 74a91f52ecc0..9532e1d12d3f 100644
 > --- a/drivers/pci/msi.c
 > +++ b/drivers/pci/msi.c
-> @@ -1558,7 +1558,8 @@ struct irq_domain *pci_msi_get_device_domain(struct pci_dev *pdev)
+> @@ -1556,7 +1556,7 @@ struct irq_domain *pci_msi_get_device_domain(struct pci_dev *pdev)
+>  	u32 rid = pci_dev_id(pdev);
+>  
 >  	pci_for_each_dma_alias(pdev, get_msi_id_cb, &rid);
->  	dom = of_msi_map_get_device_domain(&pdev->dev, rid);
+> -	dom = of_msi_map_get_device_domain(&pdev->dev, rid);
+> +	dom = of_msi_map_get_device_domain(&pdev->dev, rid, DOMAIN_BUS_PCI_MSI);
 >  	if (!dom)
-> -		dom = iort_get_device_domain(&pdev->dev, rid);
-> +		dom = iort_get_device_domain(&pdev->dev, rid,
-> +					     DOMAIN_BUS_PCI_MSI);
->  	return dom;
+>  		dom = iort_get_device_domain(&pdev->dev, rid,
+>  					     DOMAIN_BUS_PCI_MSI);
+> diff --git a/include/linux/of_irq.h b/include/linux/of_irq.h
+> index 1214cabb2247..7142a3722758 100644
+> --- a/include/linux/of_irq.h
+> +++ b/include/linux/of_irq.h
+> @@ -52,7 +52,8 @@ extern struct irq_domain *of_msi_get_domain(struct device *dev,
+>  					    struct device_node *np,
+>  					    enum irq_domain_bus_token token);
+>  extern struct irq_domain *of_msi_map_get_device_domain(struct device *dev,
+> -						       u32 rid);
+> +							u32 id,
+> +							u32 bus_token);
+>  extern void of_msi_configure(struct device *dev, struct device_node *np);
+>  u32 of_msi_map_rid(struct device *dev, struct device_node *msi_np, u32 rid_in);
+>  #else
+> @@ -85,7 +86,7 @@ static inline struct irq_domain *of_msi_get_domain(struct device *dev,
+>  	return NULL;
 >  }
->  #endif /* CONFIG_PCI_MSI_IRQ_DOMAIN */
-> diff --git a/include/linux/acpi_iort.h b/include/linux/acpi_iort.h
-> index 8e7e2ec37f1b..08ec6bd2297f 100644
-> --- a/include/linux/acpi_iort.h
-> +++ b/include/linux/acpi_iort.h
-> @@ -29,7 +29,8 @@ struct fwnode_handle *iort_find_domain_token(int trans_id);
->  #ifdef CONFIG_ACPI_IORT
->  void acpi_iort_init(void);
->  u32 iort_msi_map_rid(struct device *dev, u32 req_id);
-> -struct irq_domain *iort_get_device_domain(struct device *dev, u32 req_id);
-> +struct irq_domain *iort_get_device_domain(struct device *dev, u32 id,
-> +					  enum irq_domain_bus_token bus_token);
->  void acpi_configure_pmsi_domain(struct device *dev);
->  int iort_pmsi_get_dev_id(struct device *dev, u32 *dev_id);
->  /* IOMMU interface */
-> @@ -40,8 +41,8 @@ int iort_iommu_msi_get_resv_regions(struct device *dev, struct list_head *head);
->  static inline void acpi_iort_init(void) { }
->  static inline u32 iort_msi_map_rid(struct device *dev, u32 req_id)
->  { return req_id; }
-> -static inline struct irq_domain *iort_get_device_domain(struct device *dev,
-> -							u32 req_id)
-> +static inline struct irq_domain *iort_get_device_domain(
-> +	struct device *dev, u32 id, enum irq_domain_bus_token bus_token)
->  { return NULL; }
->  static inline void acpi_configure_pmsi_domain(struct device *dev) { }
->  /* IOMMU interface */
+>  static inline struct irq_domain *of_msi_map_get_device_domain(struct device *dev,
+> -							      u32 rid)
+> +						u32 id, u32 bus_token)
+>  {
+>  	return NULL;
+>  }
 > -- 
 > 2.26.1
 > 
