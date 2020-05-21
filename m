@@ -2,80 +2,78 @@ Return-Path: <SRS0=DnMm=7D=lists.linux-foundation.org=iommu-bounces@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-8.3 required=3.0 tests=DKIM_INVALID,DKIM_SIGNED,
-	INCLUDES_PATCH,MAILING_LIST_MULTI,SIGNED_OFF_BY,SPF_HELO_NONE,SPF_PASS,
-	URIBL_BLOCKED,USER_AGENT_SANE_1 autolearn=unavailable autolearn_force=no
-	version=3.4.0
+X-Spam-Status: No, score=-2.3 required=3.0 tests=DKIM_INVALID,DKIM_SIGNED,
+	MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED,USER_AGENT_SANE_1
+	autolearn=no autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id B8F07C433E0
-	for <iommu@archiver.kernel.org>; Thu, 21 May 2020 14:17:14 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id EF3D8C433E3
+	for <iommu@archiver.kernel.org>; Thu, 21 May 2020 14:17:25 +0000 (UTC)
 Received: from fraxinus.osuosl.org (smtp4.osuosl.org [140.211.166.137])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by mail.kernel.org (Postfix) with ESMTPS id 8BA3220721
-	for <iommu@archiver.kernel.org>; Thu, 21 May 2020 14:17:14 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTPS id C490D20884
+	for <iommu@archiver.kernel.org>; Thu, 21 May 2020 14:17:25 +0000 (UTC)
 Authentication-Results: mail.kernel.org;
-	dkim=fail reason="signature verification failed" (1024-bit key) header.d=kernel.org header.i=@kernel.org header.b="Zhp5hS0c"
-DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 8BA3220721
+	dkim=fail reason="signature verification failed" (1024-bit key) header.d=kernel.org header.i=@kernel.org header.b="PoJrVHIF"
+DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org C490D20884
 Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=kernel.org
 Authentication-Results: mail.kernel.org; spf=pass smtp.mailfrom=iommu-bounces@lists.linux-foundation.org
 Received: from localhost (localhost [127.0.0.1])
-	by fraxinus.osuosl.org (Postfix) with ESMTP id 6CA0C875F5;
-	Thu, 21 May 2020 14:17:14 +0000 (UTC)
+	by fraxinus.osuosl.org (Postfix) with ESMTP id 93376875EF;
+	Thu, 21 May 2020 14:17:25 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
 Received: from fraxinus.osuosl.org ([127.0.0.1])
 	by localhost (.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
-	with ESMTP id 9l0ztkmtA05G; Thu, 21 May 2020 14:17:14 +0000 (UTC)
+	with ESMTP id hjFpWHlxQxmz; Thu, 21 May 2020 14:17:25 +0000 (UTC)
 Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [140.211.9.56])
-	by fraxinus.osuosl.org (Postfix) with ESMTP id EC73A875E0;
-	Thu, 21 May 2020 14:17:13 +0000 (UTC)
+	by fraxinus.osuosl.org (Postfix) with ESMTP id 29659875F5;
+	Thu, 21 May 2020 14:17:25 +0000 (UTC)
 Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
-	by lists.linuxfoundation.org (Postfix) with ESMTP id D7F51C088B;
-	Thu, 21 May 2020 14:17:13 +0000 (UTC)
-Received: from silver.osuosl.org (smtp3.osuosl.org [140.211.166.136])
- by lists.linuxfoundation.org (Postfix) with ESMTP id 665A0C0176
- for <iommu@lists.linux-foundation.org>; Thu, 21 May 2020 14:17:12 +0000 (UTC)
+	by lists.linuxfoundation.org (Postfix) with ESMTP id 1AFFEC088B;
+	Thu, 21 May 2020 14:17:25 +0000 (UTC)
+Received: from fraxinus.osuosl.org (smtp4.osuosl.org [140.211.166.137])
+ by lists.linuxfoundation.org (Postfix) with ESMTP id 176FFC0176
+ for <iommu@lists.linux-foundation.org>; Thu, 21 May 2020 14:17:24 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
- by silver.osuosl.org (Postfix) with ESMTP id 3C61F25CBB
- for <iommu@lists.linux-foundation.org>; Thu, 21 May 2020 14:17:12 +0000 (UTC)
+ by fraxinus.osuosl.org (Postfix) with ESMTP id 067CD875F5
+ for <iommu@lists.linux-foundation.org>; Thu, 21 May 2020 14:17:24 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from silver.osuosl.org ([127.0.0.1])
+Received: from fraxinus.osuosl.org ([127.0.0.1])
  by localhost (.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
- with ESMTP id NKtTMyF95gm4 for <iommu@lists.linux-foundation.org>;
- Thu, 21 May 2020 14:17:11 +0000 (UTC)
+ with ESMTP id UU9I1MJWRWXF for <iommu@lists.linux-foundation.org>;
+ Thu, 21 May 2020 14:17:23 +0000 (UTC)
 X-Greylist: domain auto-whitelisted by SQLgrey-1.7.6
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
- by silver.osuosl.org (Postfix) with ESMTPS id A1AB325C66
- for <iommu@lists.linux-foundation.org>; Thu, 21 May 2020 14:17:11 +0000 (UTC)
+ by fraxinus.osuosl.org (Postfix) with ESMTPS id 96D3B875EF
+ for <iommu@lists.linux-foundation.org>; Thu, 21 May 2020 14:17:23 +0000 (UTC)
 Received: from willie-the-truck (236.31.169.217.in-addr.arpa [217.169.31.236])
  (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256
  bits)) (No client certificate requested)
- by mail.kernel.org (Postfix) with ESMTPSA id 34BA420748;
- Thu, 21 May 2020 14:17:08 +0000 (UTC)
+ by mail.kernel.org (Postfix) with ESMTPSA id 52C9920721;
+ Thu, 21 May 2020 14:17:20 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
- s=default; t=1590070631;
- bh=GjzwaRRDCT9qDw4gwlt5yphxvwdwXZXZJrf50Lvn5nM=;
+ s=default; t=1590070643;
+ bh=AZMQPgg7eEixgM0PZYWK7KA66vV+dRiZTPUXhxoYuh8=;
  h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
- b=Zhp5hS0c2hiMcsTRAY10N5jHSgZcntp4kpwpJONYplXF38WzHAEZoGyGf7WtcOmeZ
- SKj5nEInq3SKL2VlD8LFdVsuhHY/aZUa7Jj8fkbSrkOJJPXvL3N6U8V1CkL+2owG/s
- gfSxtKHi1uniXMpcr8PtGe4iCXKURd11/Z63TNoU=
-Date: Thu, 21 May 2020 15:17:05 +0100
+ b=PoJrVHIFNFCAoLW6Mav1ejRUdOpgEryrgFeL/IOpkKIHq+3xr27pkIc9DACE26Z0R
+ rrFfzpT+hatcls+sC7b9iFT0tWtMRai6HF3m35UfE4UsAGvhv6JOtXcspLwBkPqjEr
+ 7TKbYifo2BfeemF071FQzuKO7KfwFiUFwTlR+p88=
+Date: Thu, 21 May 2020 15:17:17 +0100
 From: Will Deacon <will@kernel.org>
 To: Jean-Philippe Brucker <jean-philippe@linaro.org>
-Subject: Re: [PATCH v7 14/24] iommu/arm-smmu-v3: Add SVA feature checking
-Message-ID: <20200521141704.GH6608@willie-the-truck>
+Subject: Re: [PATCH v7 00/24] iommu: Shared Virtual Addressing for SMMUv3
+Message-ID: <20200521141716.GI6608@willie-the-truck>
 References: <20200519175502.2504091-1-jean-philippe@linaro.org>
- <20200519175502.2504091-15-jean-philippe@linaro.org>
+ <20200521103513.GE5360@willie-the-truck>
 MIME-Version: 1.0
 Content-Disposition: inline
-In-Reply-To: <20200519175502.2504091-15-jean-philippe@linaro.org>
+In-Reply-To: <20200521103513.GE5360@willie-the-truck>
 User-Agent: Mutt/1.10.1 (2018-07-13)
-Cc: devicetree@vger.kernel.org, kevin.tian@intel.com, jgg@ziepe.ca,
- linux-pci@vger.kernel.org, Suzuki K Poulose <suzuki.poulose@arm.com>,
- fenghua.yu@intel.com, hch@infradead.org, linux-mm@kvack.org,
- iommu@lists.linux-foundation.org, zhangfei.gao@linaro.org,
- catalin.marinas@arm.com, felix.kuehling@amd.com, robin.murphy@arm.com,
- christian.koenig@amd.com, linux-arm-kernel@lists.infradead.org
+Cc: devicetree@vger.kernel.org, kevin.tian@intel.com, catalin.marinas@arm.com,
+ fenghua.yu@intel.com, linux-pci@vger.kernel.org, christian.koenig@amd.com,
+ hch@infradead.org, jgg@ziepe.ca, iommu@lists.linux-foundation.org,
+ zhangfei.gao@linaro.org, felix.kuehling@amd.com, robin.murphy@arm.com,
+ linux-mm@kvack.org, linux-arm-kernel@lists.infradead.org
 X-BeenThere: iommu@lists.linux-foundation.org
 X-Mailman-Version: 2.1.15
 Precedence: list
@@ -93,84 +91,44 @@ Content-Transfer-Encoding: 7bit
 Errors-To: iommu-bounces@lists.linux-foundation.org
 Sender: "iommu" <iommu-bounces@lists.linux-foundation.org>
 
-On Tue, May 19, 2020 at 07:54:52PM +0200, Jean-Philippe Brucker wrote:
-> Aggregate all sanity-checks for sharing CPU page tables with the SMMU
-> under a single ARM_SMMU_FEAT_SVA bit. For PCIe SVA, users also need to
-> check FEAT_ATS and FEAT_PRI. For platform SVA, they will most likely have
-> to check FEAT_STALLS.
+On Thu, May 21, 2020 at 11:35:14AM +0100, Will Deacon wrote:
+> On Tue, May 19, 2020 at 07:54:38PM +0200, Jean-Philippe Brucker wrote:
+> > Shared Virtual Addressing (SVA) allows to share process page tables with
+> > devices using the IOMMU, PASIDs and I/O page faults. Add SVA support to
+> > the Arm SMMUv3 driver.
+> > 
+> > Since v6 [1]:
+> > * Rename ioasid_free() to ioasid_put() in patch 02, requiring changes to
+> >   the Intel drivers.
+> > * Use mmu_notifier_register() in patch 16 to avoid copying the ops and
+> >   simplify the invalidate() notifier in patch 17.
+> > * As a result, replace context spinlock with a mutex. Simplified locking in
+> >   patch 11 (That patch still looks awful, but I think the series is more
+> >   readable overall). And I've finally been able to remove the GFP_ATOMIC
+> >   allocations.
+> > * Use a single patch (04) for io-pgfault.c, since the code was simplified
+> >   in v6. Fixed partial list in patch 04.
 > 
-> Cc: Suzuki K Poulose <suzuki.poulose@arm.com>
-> Signed-off-by: Jean-Philippe Brucker <jean-philippe@linaro.org>
-> ---
->  drivers/iommu/arm-smmu-v3.c | 72 +++++++++++++++++++++++++++++++++++++
->  1 file changed, 72 insertions(+)
+> There's an awful lot here and it stretches across quite a few subsystems,
+> with different git trees. What's the plan for merging it?
 > 
-> diff --git a/drivers/iommu/arm-smmu-v3.c b/drivers/iommu/arm-smmu-v3.c
-> index 9332253e3608..a9f6f1d7014e 100644
-> --- a/drivers/iommu/arm-smmu-v3.c
-> +++ b/drivers/iommu/arm-smmu-v3.c
-> @@ -660,6 +660,7 @@ struct arm_smmu_device {
->  #define ARM_SMMU_FEAT_RANGE_INV		(1 << 15)
->  #define ARM_SMMU_FEAT_E2H		(1 << 16)
->  #define ARM_SMMU_FEAT_BTM		(1 << 17)
-> +#define ARM_SMMU_FEAT_SVA		(1 << 18)
->  	u32				features;
->  
->  #define ARM_SMMU_OPT_SKIP_PREFETCH	(1 << 0)
-> @@ -3935,6 +3936,74 @@ static int arm_smmu_device_reset(struct arm_smmu_device *smmu, bool bypass)
->  	return 0;
->  }
->  
-> +static bool arm_smmu_supports_sva(struct arm_smmu_device *smmu)
-> +{
-> +	unsigned long reg, fld;
-> +	unsigned long oas;
-> +	unsigned long asid_bits;
-> +
-> +	u32 feat_mask = ARM_SMMU_FEAT_BTM | ARM_SMMU_FEAT_COHERENCY;
+> I'm happy to take some of the arm64 and smmu changes for 5.8, then perhaps
+> we can review what's left and target 5.9? It would also be helpful to split
+> that up into separate series where there aren't strong dependencies, I
+> think.
 
-Aha -- here's the coherency check I missed!
+Hmm, so the way the series is structured makes it quite difficult to apply
+much of this at all :(
 
-> +
-> +	if ((smmu->features & feat_mask) != feat_mask)
-> +		return false;
-> +
-> +	if (!(smmu->pgsize_bitmap & PAGE_SIZE))
-> +		return false;
-> +
-> +	/*
-> +	 * Get the smallest PA size of all CPUs (sanitized by cpufeature). We're
-> +	 * not even pretending to support AArch32 here.
-> +	 */
-> +	reg = read_sanitised_ftr_reg(SYS_ID_AA64MMFR0_EL1);
-> +	fld = cpuid_feature_extract_unsigned_field(reg, ID_AA64MMFR0_PARANGE_SHIFT);
-> +	switch (fld) {
-> +	case 0x0:
-> +		oas = 32;
-> +		break;
-> +	case 0x1:
-> +		oas = 36;
-> +		break;
-> +	case 0x2:
-> +		oas = 40;
-> +		break;
-> +	case 0x3:
-> +		oas = 42;
-> +		break;
-> +	case 0x4:
-> +		oas = 44;
-> +		break;
-> +	case 0x5:
-> +		oas = 48;
-> +		break;
-> +	case 0x6:
+I've taken patch 5 into the arm64 tree and patch 8 into the smmu tree. I'll
+leave a couple of Acks on some of the simpler patches, but I think this
+really needs splitting up a bit to make it more manageable.
 
-We can use ID_AA64MMFR0_PARANGE_xx constants instead of the hardcoded hex
-numbers here.
+I also notice a bunch of TODOs that get introduced and then removed. Given
+that the series needs to be bisectable, these shouldn't be needed and can
+just be removed.
 
-With that:
-
-Acked-by: Will Deacon <will@kernel.org>
+Thanks,
 
 Will
 _______________________________________________
