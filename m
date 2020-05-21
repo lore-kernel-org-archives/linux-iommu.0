@@ -6,69 +6,68 @@ X-Spam-Status: No, score=-5.3 required=3.0 tests=DKIM_INVALID,DKIM_SIGNED,
 	MAILING_LIST_MULTI,SIGNED_OFF_BY,SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED,
 	USER_AGENT_SANE_1 autolearn=ham autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 84063C433E2
-	for <iommu@archiver.kernel.org>; Thu, 21 May 2020 14:16:48 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id AD940C433DF
+	for <iommu@archiver.kernel.org>; Thu, 21 May 2020 14:17:01 +0000 (UTC)
 Received: from silver.osuosl.org (smtp3.osuosl.org [140.211.166.136])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by mail.kernel.org (Postfix) with ESMTPS id 4A02220748
-	for <iommu@archiver.kernel.org>; Thu, 21 May 2020 14:16:48 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTPS id 7B3AB20748
+	for <iommu@archiver.kernel.org>; Thu, 21 May 2020 14:17:01 +0000 (UTC)
 Authentication-Results: mail.kernel.org;
-	dkim=fail reason="signature verification failed" (1024-bit key) header.d=kernel.org header.i=@kernel.org header.b="iLRAgstV"
-DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 4A02220748
+	dkim=fail reason="signature verification failed" (1024-bit key) header.d=kernel.org header.i=@kernel.org header.b="emfD5+Td"
+DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 7B3AB20748
 Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=kernel.org
 Authentication-Results: mail.kernel.org; spf=pass smtp.mailfrom=iommu-bounces@lists.linux-foundation.org
 Received: from localhost (localhost [127.0.0.1])
-	by silver.osuosl.org (Postfix) with ESMTP id 10FEB25C66;
-	Thu, 21 May 2020 14:16:48 +0000 (UTC)
+	by silver.osuosl.org (Postfix) with ESMTP id 5C71425CBB;
+	Thu, 21 May 2020 14:17:01 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
 Received: from silver.osuosl.org ([127.0.0.1])
 	by localhost (.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
-	with ESMTP id WbSWI5hNiRu8; Thu, 21 May 2020 14:16:47 +0000 (UTC)
+	with ESMTP id 2DfcKryR3zit; Thu, 21 May 2020 14:17:00 +0000 (UTC)
 Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [140.211.9.56])
-	by silver.osuosl.org (Postfix) with ESMTP id 6E6892041F;
-	Thu, 21 May 2020 14:16:47 +0000 (UTC)
+	by silver.osuosl.org (Postfix) with ESMTP id B5E0A2041F;
+	Thu, 21 May 2020 14:17:00 +0000 (UTC)
 Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
-	by lists.linuxfoundation.org (Postfix) with ESMTP id 67535C088B;
-	Thu, 21 May 2020 14:16:47 +0000 (UTC)
-Received: from hemlock.osuosl.org (smtp2.osuosl.org [140.211.166.133])
- by lists.linuxfoundation.org (Postfix) with ESMTP id 0D450C0176
- for <iommu@lists.linux-foundation.org>; Thu, 21 May 2020 14:16:47 +0000 (UTC)
+	by lists.linuxfoundation.org (Postfix) with ESMTP id A35A2C088B;
+	Thu, 21 May 2020 14:17:00 +0000 (UTC)
+Received: from silver.osuosl.org (smtp3.osuosl.org [140.211.166.136])
+ by lists.linuxfoundation.org (Postfix) with ESMTP id 84717C0176
+ for <iommu@lists.linux-foundation.org>; Thu, 21 May 2020 14:16:59 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
- by hemlock.osuosl.org (Postfix) with ESMTP id 0918287B97
- for <iommu@lists.linux-foundation.org>; Thu, 21 May 2020 14:16:47 +0000 (UTC)
+ by silver.osuosl.org (Postfix) with ESMTP id 7EA1325C66
+ for <iommu@lists.linux-foundation.org>; Thu, 21 May 2020 14:16:59 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from hemlock.osuosl.org ([127.0.0.1])
+Received: from silver.osuosl.org ([127.0.0.1])
  by localhost (.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
- with ESMTP id w4nnRdfg8zFH for <iommu@lists.linux-foundation.org>;
- Thu, 21 May 2020 14:16:46 +0000 (UTC)
+ with ESMTP id Gmussjb0YNOW for <iommu@lists.linux-foundation.org>;
+ Thu, 21 May 2020 14:16:59 +0000 (UTC)
 X-Greylist: domain auto-whitelisted by SQLgrey-1.7.6
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
- by hemlock.osuosl.org (Postfix) with ESMTPS id 9647187B65
- for <iommu@lists.linux-foundation.org>; Thu, 21 May 2020 14:16:46 +0000 (UTC)
+ by silver.osuosl.org (Postfix) with ESMTPS id F2F002041F
+ for <iommu@lists.linux-foundation.org>; Thu, 21 May 2020 14:16:58 +0000 (UTC)
 Received: from willie-the-truck (236.31.169.217.in-addr.arpa [217.169.31.236])
  (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256
  bits)) (No client certificate requested)
- by mail.kernel.org (Postfix) with ESMTPSA id 3CAC020721;
- Thu, 21 May 2020 14:16:43 +0000 (UTC)
+ by mail.kernel.org (Postfix) with ESMTPSA id AC33920721;
+ Thu, 21 May 2020 14:16:55 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
- s=default; t=1590070606;
- bh=J12/yI4JkwQoq0ZSsn8yVG8aHccxtJvArFtbGq3PfLc=;
+ s=default; t=1590070618;
+ bh=YEpYYTkp5Epc3I02PSQwVAAWySjqR5HmPWamm+n+yqk=;
  h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
- b=iLRAgstVdYm1eiYPWiirwh1nShyQnHb3MswJtEKjwgAgUxm1QVDn5HxOYZ69IgQ9O
- +bdDwuNQWPqhCTAcnwC/oKn7WosmzTgtEnBMm154hZhbBmPdVk0+3b4h92ALYIFy4S
- VN3+rF0oD3wb2KHpTYm7ICypRf6sf4/Xdzh9FkDw=
-Date: Thu, 21 May 2020 15:16:39 +0100
+ b=emfD5+Td4JkWFa9nx6iu3NhZWqXHy0Cul4uBIz9eMW1m5pPlTHa3MQ1L5tweReNSI
+ +nzqkI81I9u0yvHl2QuuuCSWQWBHWnNeJWjSyn9PN2T9MFAPEf2DHjH906FGfDBG7N
+ BL2C2n3EL7yfzDXZBJ3cF8uo2pvDC11Gd/AuJzgo=
+Date: Thu, 21 May 2020 15:16:52 +0100
 From: Will Deacon <will@kernel.org>
 To: Jean-Philippe Brucker <jean-philippe@linaro.org>
-Subject: Re: [PATCH v7 07/24] iommu/io-pgtable-arm: Move some definitions to
- a header
-Message-ID: <20200521141638.GF6608@willie-the-truck>
+Subject: Re: [PATCH v7 12/24] iommu/arm-smmu-v3: Add support for VHE
+Message-ID: <20200521141652.GG6608@willie-the-truck>
 References: <20200519175502.2504091-1-jean-philippe@linaro.org>
- <20200519175502.2504091-8-jean-philippe@linaro.org>
+ <20200519175502.2504091-13-jean-philippe@linaro.org>
 MIME-Version: 1.0
 Content-Disposition: inline
-In-Reply-To: <20200519175502.2504091-8-jean-philippe@linaro.org>
+In-Reply-To: <20200519175502.2504091-13-jean-philippe@linaro.org>
 User-Agent: Mutt/1.10.1 (2018-07-13)
 Cc: devicetree@vger.kernel.org, kevin.tian@intel.com, jgg@ziepe.ca,
  linux-pci@vger.kernel.org, fenghua.yu@intel.com, hch@infradead.org,
@@ -92,17 +91,25 @@ Content-Transfer-Encoding: 7bit
 Errors-To: iommu-bounces@lists.linux-foundation.org
 Sender: "iommu" <iommu-bounces@lists.linux-foundation.org>
 
-On Tue, May 19, 2020 at 07:54:45PM +0200, Jean-Philippe Brucker wrote:
-> Extract some of the most generic TCR defines, so they can be reused by
-> the page table sharing code.
+On Tue, May 19, 2020 at 07:54:50PM +0200, Jean-Philippe Brucker wrote:
+> ARMv8.1 extensions added Virtualization Host Extensions (VHE), which allow
+> to run a host kernel at EL2. When using normal DMA, Device and CPU address
+> spaces are dissociated, and do not need to implement the same
+> capabilities, so VHE hasn't been used in the SMMU until now.
+> 
+> With shared address spaces however, ASIDs are shared between MMU and SMMU,
+> and broadcast TLB invalidations issued by a CPU are taken into account by
+> the SMMU. TLB entries on both sides need to have identical exception level
+> in order to be cleared with a single invalidation.
+> 
+> When the CPU is using VHE, enable VHE in the SMMU for all STEs. Normal DMA
+> mappings will need to use TLBI_EL2 commands instead of TLBI_NH, but
+> shouldn't be otherwise affected by this change.
 > 
 > Signed-off-by: Jean-Philippe Brucker <jean-philippe@linaro.org>
 > ---
->  drivers/iommu/io-pgtable-arm.h | 30 ++++++++++++++++++++++++++++++
->  drivers/iommu/io-pgtable-arm.c | 27 ++-------------------------
->  MAINTAINERS                    |  3 +--
->  3 files changed, 33 insertions(+), 27 deletions(-)
->  create mode 100644 drivers/iommu/io-pgtable-arm.h
+>  drivers/iommu/arm-smmu-v3.c | 31 ++++++++++++++++++++++++++-----
+>  1 file changed, 26 insertions(+), 5 deletions(-)
 
 Acked-by: Will Deacon <will@kernel.org>
 
