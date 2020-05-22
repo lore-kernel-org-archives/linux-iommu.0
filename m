@@ -2,101 +2,138 @@ Return-Path: <SRS0=4l6Q=7E=lists.linux-foundation.org=iommu-bounces@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-6.8 required=3.0 tests=DKIM_ADSP_CUSTOM_MED,
-	DKIM_INVALID,DKIM_SIGNED,FREEMAIL_FORGED_FROMDOMAIN,FREEMAIL_FROM,
-	HEADER_FROM_DIFFERENT_DOMAINS,MAILING_LIST_MULTI,MENTIONS_GIT_HOSTING,
-	SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED,USER_AGENT_SANE_1 autolearn=ham
-	autolearn_force=no version=3.4.0
+X-Spam-Status: No, score=-8.0 required=3.0 tests=DKIM_INVALID,DKIM_SIGNED,
+	HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_PATCH,MAILING_LIST_MULTI,
+	MSGID_FROM_MTA_HEADER,SIGNED_OFF_BY,SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED,
+	USER_AGENT_SANE_1 autolearn=unavailable autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id B6067C433DF
-	for <iommu@archiver.kernel.org>; Fri, 22 May 2020 15:14:55 +0000 (UTC)
-Received: from whitealder.osuosl.org (smtp1.osuosl.org [140.211.166.138])
+	by smtp.lore.kernel.org (Postfix) with ESMTP id AF3CEC433E0
+	for <iommu@archiver.kernel.org>; Fri, 22 May 2020 16:11:36 +0000 (UTC)
+Received: from silver.osuosl.org (smtp3.osuosl.org [140.211.166.136])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by mail.kernel.org (Postfix) with ESMTPS id 7DAF42065C
-	for <iommu@archiver.kernel.org>; Fri, 22 May 2020 15:14:55 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTPS id 560642072C
+	for <iommu@archiver.kernel.org>; Fri, 22 May 2020 16:11:36 +0000 (UTC)
 Authentication-Results: mail.kernel.org;
-	dkim=fail reason="signature verification failed" (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="E9Ss0Uuj"
-DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 7DAF42065C
-Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=gmail.com
+	dkim=fail reason="signature verification failed" (1024-bit key) header.d=nxp.com header.i=@nxp.com header.b="JV2wlbqA"
+DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 560642072C
+Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=nxp.com
 Authentication-Results: mail.kernel.org; spf=pass smtp.mailfrom=iommu-bounces@lists.linux-foundation.org
 Received: from localhost (localhost [127.0.0.1])
-	by whitealder.osuosl.org (Postfix) with ESMTP id 2FFB788AAC;
-	Fri, 22 May 2020 15:14:55 +0000 (UTC)
+	by silver.osuosl.org (Postfix) with ESMTP id 0F9EB24F0C;
+	Fri, 22 May 2020 16:11:36 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from whitealder.osuosl.org ([127.0.0.1])
+Received: from silver.osuosl.org ([127.0.0.1])
 	by localhost (.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
-	with ESMTP id f65lBxa+fPAX; Fri, 22 May 2020 15:14:54 +0000 (UTC)
+	with ESMTP id s3o1SKK+6AET; Fri, 22 May 2020 16:11:34 +0000 (UTC)
 Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [140.211.9.56])
-	by whitealder.osuosl.org (Postfix) with ESMTP id 214C688AB2;
-	Fri, 22 May 2020 15:14:54 +0000 (UTC)
+	by silver.osuosl.org (Postfix) with ESMTP id 24E21204FB;
+	Fri, 22 May 2020 16:11:34 +0000 (UTC)
 Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
-	by lists.linuxfoundation.org (Postfix) with ESMTP id ED332C088B;
-	Fri, 22 May 2020 15:14:53 +0000 (UTC)
+	by lists.linuxfoundation.org (Postfix) with ESMTP id 0DC23C0863;
+	Fri, 22 May 2020 16:11:34 +0000 (UTC)
 Received: from fraxinus.osuosl.org (smtp4.osuosl.org [140.211.166.137])
- by lists.linuxfoundation.org (Postfix) with ESMTP id 5A62EC0176
- for <iommu@lists.linux-foundation.org>; Fri, 22 May 2020 15:14:52 +0000 (UTC)
+ by lists.linuxfoundation.org (Postfix) with ESMTP id 8DFCAC0176
+ for <iommu@lists.linux-foundation.org>; Fri, 22 May 2020 16:11:32 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
- by fraxinus.osuosl.org (Postfix) with ESMTP id 3D537879F3
- for <iommu@lists.linux-foundation.org>; Fri, 22 May 2020 15:14:52 +0000 (UTC)
+ by fraxinus.osuosl.org (Postfix) with ESMTP id 857B887A2F
+ for <iommu@lists.linux-foundation.org>; Fri, 22 May 2020 16:11:32 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
 Received: from fraxinus.osuosl.org ([127.0.0.1])
  by localhost (.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
- with ESMTP id TxEhJcfEuvBh for <iommu@lists.linux-foundation.org>;
- Fri, 22 May 2020 15:14:50 +0000 (UTC)
+ with ESMTP id VnmPWE80r7gB for <iommu@lists.linux-foundation.org>;
+ Fri, 22 May 2020 16:11:30 +0000 (UTC)
 X-Greylist: domain auto-whitelisted by SQLgrey-1.7.6
-Received: from mail-ej1-f67.google.com (mail-ej1-f67.google.com
- [209.85.218.67])
- by fraxinus.osuosl.org (Postfix) with ESMTPS id EA6C68796A
- for <iommu@lists.linux-foundation.org>; Fri, 22 May 2020 15:14:49 +0000 (UTC)
-Received: by mail-ej1-f67.google.com with SMTP id n24so13455599ejd.0
- for <iommu@lists.linux-foundation.org>; Fri, 22 May 2020 08:14:49 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=gmail.com; s=20161025;
- h=date:from:to:cc:subject:message-id:references:mime-version
- :content-disposition:in-reply-to:user-agent;
- bh=ONv7RAIjy3Q1K3aQ2Xg+iraooQhVfbeZiSLj80jauQQ=;
- b=E9Ss0UujEI0SYEcs9cZxxQ+rVts6XZQWRj9MT51aZTaG8pSD3LPME1uFBZadyZshz5
- f5Jawl6ZKk8cAbf7kR6Iistvz3xnXVpkl6RHBUKWnIWaWZdq6VAueDrAJX0T6hZCLeZZ
- jynlv5iBzeXKmp97a/1JvntICi7W/mf0F4aV7ll/8IyJjcXPBlRq6iWc+KPb3Tg2w5bS
- tWMrVoZmRA4NyC+hYrL37yl0OHNtDWDL1OMQ5PwRSdSDxEPo3eDASQsMGIUN7KgPdIKj
- Hi7hl2BtCz9G29tYWzi7L9iq9aLqyF4HC8Vn9cCx8uf404MCMBlcQxsZbzEzdiYky3r/
- gi1A==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
- d=1e100.net; s=20161025;
- h=x-gm-message-state:date:from:to:cc:subject:message-id:references
- :mime-version:content-disposition:in-reply-to:user-agent;
- bh=ONv7RAIjy3Q1K3aQ2Xg+iraooQhVfbeZiSLj80jauQQ=;
- b=MshCzqNigWAbBnYANq4r1AnTXIbmhPA4LxUzECcHH4NiHTyDhsljwWcSO0x+N/96Ls
- omKkiMZAi3uAW9yy0c8AIE0VVkGk5grzKTQnXljieZU2aBKkAQo6A7kM9qgmCCElCQ/y
- jHM3X7ciwExTr2zsK6E8NMOmauC3wPFkLC49A6+M48sLBIXZxxl4cZzmPCTWqnENV3Wh
- aCnTDxYAsDJ/x7on4vBerPc5hG8wprpnccWcyLD/+sI9Buow6N/YRWYpTQtQ/HIoK+4I
- vuU+85zF9CqmDuEH19D6l0GbqjNod3F3AlG/Fwpa4ovdU37EP9/7aAYYSRVNM7K7Bzws
- V71w==
-X-Gm-Message-State: AOAM532Klbbjsk+5+dp+1WPHC+OQEvCm5j4R7iuXqfgLIV0A1Lw/VsJz
- 5hZhyviqsDS5ohYpTM5pcio=
-X-Google-Smtp-Source: ABdhPJwFomesbG5Rf+3D/dsKeFvJkgRXSIEwijrfEx8OUFlSYmcx29sWUdyUjEAtHHUBMHgtwm7Y1A==
-X-Received: by 2002:a17:906:951:: with SMTP id
- j17mr8408199ejd.352.1590160488196; 
- Fri, 22 May 2020 08:14:48 -0700 (PDT)
-Received: from localhost (pd9e51079.dip0.t-ipconnect.de. [217.229.16.121])
- by smtp.gmail.com with ESMTPSA id jp17sm7815410ejb.23.2020.05.22.08.14.45
- (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
- Fri, 22 May 2020 08:14:45 -0700 (PDT)
-Date: Fri, 22 May 2020 17:14:44 +0200
-From: Thierry Reding <thierry.reding@gmail.com>
-To: Krishna Reddy <vdumpa@nvidia.com>
-Subject: Re: [PATCH v5 0/5] Nvidia Arm SMMUv2 Implementation
-Message-ID: <20200522151444.GB2374603@ulmo>
-References: <20200521233107.11968-1-vdumpa@nvidia.com>
+Received: from EUR05-DB8-obe.outbound.protection.outlook.com
+ (mail-db8eur05on2048.outbound.protection.outlook.com [40.107.20.48])
+ by fraxinus.osuosl.org (Postfix) with ESMTPS id 29D2C87A02
+ for <iommu@lists.linux-foundation.org>; Fri, 22 May 2020 16:11:30 +0000 (UTC)
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=QNo6KPnzAMvN7zazUAjYj6PzjceNwOkWiS0Svzveuj5m+nnCTuSP27KDmU0ZfGJtCN/DkQMFw+lL+jcJKEFO3ToWirR5dNTGbiTkXRecjtSfrkTtlnb44C8T9WoALEwEQck3TK88GQvopwTZ1d67XGZeiO/KzUmLzMJBMAhn9Za6aZ94A1c3eEBA3dpdoo0fHjHrSD5PY3tkPbLk7Rp8Z1i2MdJjTS+9CM/vnhYiJCl5ppR3w1aBuuvP7rQpu5kBd/upg8sHe9Z8FqKjhKISl8KmzYnOnxu/RcGxouBwplObJ8eGRouUqTFzYDvjF236COyFB770+8aXztGACkoyMg==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com; 
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=++5RDkQGvKFaD7ymimtcrLCqvOJxSh/XBsqCdIiV2vE=;
+ b=iPuM/CPZj4pMavVi2J1vpz8ZepQeGPBcF/Impp5Nt+sz2csFqbQWQORqgOzZCo59RudR/KYtpkhbZUkOPmJ+BZ+qHgIWPGtEla5ceo6FWeKXYApxtNc+dTMdLBcfhc/yraSKMz08yIfA3YMzVqOyIL9wb2czqfOFFMbF0/i0cagmepGs95MM8gWlkikAenvjEc8856WrJdFsjGpol7HuaVR8kTJK5T4dNWR8p8+6Gl2z5ytuK4H5Io7CADDichzWdvmajK7TzdJy6VA4pH8WyzaZoEyRx6ukqW2WdyR8lAQrx0DMW68tSLJhuMxWfCcVqkwsVUfiGit4vhPOpuIknA==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=nxp.com; dmarc=pass action=none header.from=nxp.com; dkim=pass
+ header.d=nxp.com; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=nxp.com; s=selector2; 
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=++5RDkQGvKFaD7ymimtcrLCqvOJxSh/XBsqCdIiV2vE=;
+ b=JV2wlbqAjh8mGd4KX+KmhYvYUSZKZKBkSDZTCxfuAheiGMZ9tguapXkDHpG3YFZZGRsCdyrcN/riSaB47qf/d1Y5PWOIHb6O0TJ4Mp1/tbKwly11PJVPLK1lXeQRmgbL6C+8idy76efD1EO+PrlSFbcujxY6iZ/TsSRabDnTq30=
+Authentication-Results: lists.infradead.org; dkim=none (message not signed)
+ header.d=none;lists.infradead.org; dmarc=none action=none
+ header.from=nxp.com;
+Received: from VI1PR0402MB3405.eurprd04.prod.outlook.com (2603:10a6:803:3::26)
+ by VI1PR0402MB3904.eurprd04.prod.outlook.com (2603:10a6:803:17::32)
+ with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.3021.24; Fri, 22 May
+ 2020 15:38:44 +0000
+Received: from VI1PR0402MB3405.eurprd04.prod.outlook.com
+ ([fe80::b97a:64f0:3ab5:d7fa]) by VI1PR0402MB3405.eurprd04.prod.outlook.com
+ ([fe80::b97a:64f0:3ab5:d7fa%5]) with mapi id 15.20.3021.027; Fri, 22 May 2020
+ 15:38:44 +0000
+Subject: Re: [PATCH 09/12] dt-bindings: arm: fsl: Add msi-map device-tree
+ binding for fsl-mc bus
+To: Rob Herring <robh+dt@kernel.org>, Robin Murphy <robin.murphy@arm.com>
+References: <20200521130008.8266-1-lorenzo.pieralisi@arm.com>
+ <20200521130008.8266-10-lorenzo.pieralisi@arm.com>
+ <CAL_Jsq+h18gH2D3B-OZku6ACCgonPUJcUnrN8a5=jApsXHdB5Q@mail.gmail.com>
+ <abca6ecb-5d93-832f-ff7c-de53bb6203f3@arm.com>
+ <CAL_JsqKVyqc9QZhGD7FeNLpJ=x3oLzmY0zADBa+6ZaE46dN39w@mail.gmail.com>
+From: Laurentiu Tudor <laurentiu.tudor@nxp.com>
+Message-ID: <73494357-9fd2-97d5-f139-d2353b14b83d@nxp.com>
+Date: Fri, 22 May 2020 18:38:30 +0300
+User-Agent: Mozilla/5.0 (Windows NT 10.0; WOW64; rv:68.0) Gecko/20100101
+ Thunderbird/68.8.0
+In-Reply-To: <CAL_JsqKVyqc9QZhGD7FeNLpJ=x3oLzmY0zADBa+6ZaE46dN39w@mail.gmail.com>
+Content-Language: en-US
+X-ClientProxiedBy: VI1PR0901CA0089.eurprd09.prod.outlook.com
+ (2603:10a6:800:7e::15) To VI1PR0402MB3405.eurprd04.prod.outlook.com
+ (2603:10a6:803:3::26)
 MIME-Version: 1.0
-In-Reply-To: <20200521233107.11968-1-vdumpa@nvidia.com>
-User-Agent: Mutt/1.13.1 (2019-12-14)
-Cc: treding@nvidia.com, bhuntsman@nvidia.com, robin.murphy@arm.com,
- linux-kernel@vger.kernel.org, iommu@lists.linux-foundation.org,
- mperttunen@nvidia.com, talho@nvidia.com, snikam@nvidia.com,
- nicolinc@nvidia.com, linux-tegra@vger.kernel.org, yhsu@nvidia.com,
- praithatha@nvidia.com, will@kernel.org, linux-arm-kernel@lists.infradead.org,
- bbiswas@nvidia.com
+X-MS-Exchange-MessageSentRepresentingType: 1
+Received: from [192.168.1.104] (188.25.97.237) by
+ VI1PR0901CA0089.eurprd09.prod.outlook.com (2603:10a6:800:7e::15) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.3021.23 via Frontend
+ Transport; Fri, 22 May 2020 15:38:43 +0000
+X-Originating-IP: [188.25.97.237]
+X-MS-PublicTrafficType: Email
+X-MS-Office365-Filtering-HT: Tenant
+X-MS-Office365-Filtering-Correlation-Id: 30766822-adb5-49f5-b93e-08d7fe6635af
+X-MS-TrafficTypeDiagnostic: VI1PR0402MB3904:
+X-MS-Exchange-Transport-Forked: True
+X-Microsoft-Antispam-PRVS: <VI1PR0402MB39045664A9DCDCF312E75605ECB40@VI1PR0402MB3904.eurprd04.prod.outlook.com>
+X-MS-Oob-TLC-OOBClassifiers: OLM:8882;
+X-Forefront-PRVS: 04111BAC64
+X-MS-Exchange-SenderADCheck: 1
+X-Microsoft-Antispam: BCL:0;
+X-Microsoft-Antispam-Message-Info: bQe9LqykGMF2pPGiLRDOEKO4YD95ynna/A9KqBf4FOC8F6rebf/QHwEyQ/tRX54orSmAbCqF+COyRuy8PLX6FaDW7Hgc7LjhYTtVvU2WhKQIbOzdAkAH4g2Fgu3bpqLSGFu72DukaX5oo8SGXm01t6onf1wtidmVvb5ud4Tdx1/QgH1DF3DDimz2Ctxoy7NRIJV0kKcZJsb/yerbUHeGj+691Lk5t8BHIyVwX2ZzrpoNmINlrS6fIxouGiUi3U+GKDTT9Vnz+Xz0UhNR1OkqH5OhuEIgoTrITQoEvMnWZIarcA8GVMhZDqSArJr1OvmG0Oqf2dGmYDpLT+xCDVORTGV9W3vo+xIdlOPOxKGzChf8HEIROkqb78mY7bsVZld6
+X-Forefront-Antispam-Report: CIP:255.255.255.255; CTRY:; LANG:en; SCL:1; SRV:;
+ IPV:NLI; SFV:NSPM; H:VI1PR0402MB3405.eurprd04.prod.outlook.com; PTR:; CAT:NONE;
+ SFTY:;
+ SFS:(4636009)(346002)(136003)(366004)(396003)(39860400002)(376002)(44832011)(8936002)(26005)(36756003)(16526019)(8676002)(6666004)(66556008)(186003)(5660300002)(52116002)(86362001)(53546011)(66476007)(66946007)(7416002)(6486002)(2616005)(110136005)(2906002)(316002)(956004)(54906003)(31686004)(478600001)(31696002)(16576012)(4326008)(43740500002);
+ DIR:OUT; SFP:1101; 
+X-MS-Exchange-AntiSpam-MessageData: tg34IxtE9eTVSFcOUNkpKVCY9gYCWEKfgRYLsFB+4OLEhmoIThxdLG69LylFzlVH7SdJXsbMWpIHkS4YlzR+8sMQjS5LFNX1KSaJEJxoZEshjW9/V8FyQjrqa8YUI9WE9qYzxZdVjC3GcCtFl8QgcvcQ4b/rF/Qp6/WL21X+qC1was04Ha+PuaQEvO5V0RuHCHk8bAJKaU4UI3T+5K9D7vmXDlRBpWPSqtmi2pCHtXx7EV2gpTMjeMt+aHoebULCoAT+D/H74SfvSaip0EmUz/OHHHnHEyYy1kT8+IMzZ2fPBPuQWUbBMzk4WguNYNL6brAXirWGNbp9AObLITHCo6IUCv059AhfxLOSPEdf1EyedyNyqQPyH2Pab8Y8/+fI8aDgepx8lCyOEubvrO/mjPLYU50AWRb9Y3KhWmLipw6QZdkmboKD3ds2VhvDVYUZwcECnSG6Os41YGHXgRHV6FPCz4DqT5wrR5oGgljYPVg=
+X-OriginatorOrg: nxp.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: 30766822-adb5-49f5-b93e-08d7fe6635af
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 22 May 2020 15:38:43.9221 (UTC)
+X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
+X-MS-Exchange-CrossTenant-Id: 686ea1d3-bc2b-4c6f-a92c-d99c5c301635
+X-MS-Exchange-CrossTenant-MailboxType: HOSTED
+X-MS-Exchange-CrossTenant-UserPrincipalName: JjK1jzb5YdvqvSM5fosmGyeHv4N0bsvZ+s2RCnCrxL9d+d1/NW2edR2JctjADBgUwH3vmRedhTVTKQY+tt/KRA==
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: VI1PR0402MB3904
+Cc: devicetree@vger.kernel.org, Catalin Marinas <catalin.marinas@arm.com>,
+ Will Deacon <will@kernel.org>, PCI <linux-pci@vger.kernel.org>,
+ Hanjun Guo <guohanjun@huawei.com>, "Rafael J. Wysocki" <rjw@rjwysocki.net>,
+ Makarand Pawagi <makarand.pawagi@nxp.com>, linux-acpi@vger.kernel.org,
+ Linux IOMMU <iommu@lists.linux-foundation.org>, Marc Zyngier <maz@kernel.org>,
+ Sudeep Holla <sudeep.holla@arm.com>, Bjorn Helgaas <bhelgaas@google.com>,
+ Diana Craciun <diana.craciun@oss.nxp.com>,
+ "moderated list:ARM/FREESCALE IMX / MXC ARM ARCHITECTURE"
+ <linux-arm-kernel@lists.infradead.org>
 X-BeenThere: iommu@lists.linux-foundation.org
 X-Mailman-Version: 2.1.15
 Precedence: list
@@ -109,179 +146,142 @@ List-Post: <mailto:iommu@lists.linux-foundation.org>
 List-Help: <mailto:iommu-request@lists.linux-foundation.org?subject=help>
 List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
  <mailto:iommu-request@lists.linux-foundation.org?subject=subscribe>
-Content-Type: multipart/mixed; boundary="===============6262217006252157830=="
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: 7bit
 Errors-To: iommu-bounces@lists.linux-foundation.org
 Sender: "iommu" <iommu-bounces@lists.linux-foundation.org>
 
+On 5/22/2020 5:02 PM, Rob Herring wrote:
+> On Fri, May 22, 2020 at 3:42 AM Robin Murphy <robin.murphy@arm.com> wrote:
+>>
+>> On 2020-05-22 00:10, Rob Herring wrote:
+>>> On Thu, May 21, 2020 at 7:00 AM Lorenzo Pieralisi
+>>> <lorenzo.pieralisi@arm.com> wrote:
+>>>>
+>>>> From: Laurentiu Tudor <laurentiu.tudor@nxp.com>
+>>>>
+>>>> The existing bindings cannot be used to specify the relationship
+>>>> between fsl-mc devices and GIC ITSes.
+>>>>
+>>>> Add a generic binding for mapping fsl-mc devices to GIC ITSes, using
+>>>> msi-map property.
+>>>>
+>>>> Signed-off-by: Laurentiu Tudor <laurentiu.tudor@nxp.com>
+>>>> Cc: Rob Herring <robh+dt@kernel.org>
+>>>> ---
+>>>>   .../devicetree/bindings/misc/fsl,qoriq-mc.txt | 30 +++++++++++++++++--
+>>>>   1 file changed, 27 insertions(+), 3 deletions(-)
+>>>>
+>>>> diff --git a/Documentation/devicetree/bindings/misc/fsl,qoriq-mc.txt b/Documentation/devicetree/bindings/misc/fsl,qoriq-mc.txt
+>>>> index 9134e9bcca56..b0813b2d0493 100644
+>>>> --- a/Documentation/devicetree/bindings/misc/fsl,qoriq-mc.txt
+>>>> +++ b/Documentation/devicetree/bindings/misc/fsl,qoriq-mc.txt
+>>>> @@ -18,9 +18,9 @@ same hardware "isolation context" and a 10-bit value called an ICID
+>>>>   the requester.
+>>>>
+>>>>   The generic 'iommus' property is insufficient to describe the relationship
+>>>> -between ICIDs and IOMMUs, so an iommu-map property is used to define
+>>>> -the set of possible ICIDs under a root DPRC and how they map to
+>>>> -an IOMMU.
+>>>> +between ICIDs and IOMMUs, so the iommu-map and msi-map properties are used
+>>>> +to define the set of possible ICIDs under a root DPRC and how they map to
+>>>> +an IOMMU and a GIC ITS respectively.
+>>>>
+>>>>   For generic IOMMU bindings, see
+>>>>   Documentation/devicetree/bindings/iommu/iommu.txt.
+>>>> @@ -28,6 +28,9 @@ Documentation/devicetree/bindings/iommu/iommu.txt.
+>>>>   For arm-smmu binding, see:
+>>>>   Documentation/devicetree/bindings/iommu/arm,smmu.yaml.
+>>>>
+>>>> +For GICv3 and GIC ITS bindings, see:
+>>>> +Documentation/devicetree/bindings/interrupt-controller/arm,gic-v3.yaml.
+>>>> +
+>>>>   Required properties:
+>>>>
+>>>>       - compatible
+>>>> @@ -119,6 +122,15 @@ Optional properties:
+>>>>     associated with the listed IOMMU, with the iommu-specifier
+>>>>     (i - icid-base + iommu-base).
+>>>>
+>>>> +- msi-map: Maps an ICID to a GIC ITS and associated iommu-specifier
+>>>> +  data.
+>>>> +
+>>>> +  The property is an arbitrary number of tuples of
+>>>> +  (icid-base,iommu,iommu-base,length).
+>>>
+>>> I'm confused because the example has GIC ITS phandle, not an IOMMU.
+>>>
+>>> What is an iommu-base?
+>>
+>> Right, I was already halfway through writing a reply to say that all the
+>> copy-pasted "iommu" references here should be using the terminology from
+>> the pci-msi.txt binding instead.
+>>
+>>>> +
+>>>> +  Any ICID in the interval [icid-base, icid-base + length) is
+>>>> +  associated with the listed GIC ITS, with the iommu-specifier
+>>>> +  (i - icid-base + iommu-base).
+>>>>   Example:
+>>>>
+>>>>           smmu: iommu@5000000 {
+>>>> @@ -128,6 +140,16 @@ Example:
+>>>>                  ...
+>>>>           };
+>>>>
+>>>> +       gic: interrupt-controller@6000000 {
+>>>> +               compatible = "arm,gic-v3";
+>>>> +               ...
+>>>> +               its: gic-its@6020000 {
+>>>> +                       compatible = "arm,gic-v3-its";
+>>>> +                       msi-controller;
+>>>> +                       ...
+>>>> +               };
+>>>> +       };
+>>>> +
+>>>>           fsl_mc: fsl-mc@80c000000 {
+>>>>                   compatible = "fsl,qoriq-mc";
+>>>>                   reg = <0x00000008 0x0c000000 0 0x40>,    /* MC portal base */
+>>>> @@ -135,6 +157,8 @@ Example:
+>>>>                   msi-parent = <&its>;
+>>
+>> Side note: is it right to keep msi-parent here? It rather implies that
+>> the MC itself has a 'native' Device ID rather than an ICID, which I
+>> believe is not strictly true. Plus it's extra-confusing that it doesn't
+>> specify an ID either way, since that makes it look like the legacy PCI
+>> case that gets treated implicitly as an identity msi-map, which makes no
+>> sense at all to combine with an actual msi-map.
+> 
+> No, it doesn't make sense from a binding perspective.
+> 
+>>
+>>>>                   /* define map for ICIDs 23-64 */
+>>>>                   iommu-map = <23 &smmu 23 41>;
+>>>> +                /* define msi map for ICIDs 23-64 */
+>>>> +                msi-map = <23 &its 23 41>;
+>>>
+>>> Seeing 23 twice is odd. The numbers to the right of 'its' should be an
+>>> ITS number space.
+>>
+>> On about 99% of systems the values in the SMMU Stream ID and ITS Device
+>> ID spaces are going to be the same. Nobody's going to bother carrying
+>> *two* sets of sideband data across the interconnect if they don't have to ;)
+> 
+> I'm referring to the 23 on the left and right, not between the msi and
+> iommu. If the left and right are the same, then what are we remapping
+> exactly?
+> 
 
---===============6262217006252157830==
-Content-Type: multipart/signed; micalg=pgp-sha256;
-	protocol="application/pgp-signature"; boundary="i9LlY+UWpKt15+FH"
-Content-Disposition: inline
+I also insisted a lot on keeping things simple and don't do any kind of
+translation but Robin convinced me that this is not such a great idea.
+The truth is that the hardware can be configured in such a way that the
+assumption that icid -> streamid mapping is 1:1 no longer holds.
+It just happens that we currently setup the hw to have 1:1 mappings.
 
+P.S. No idea why, but somehow I got dropped from the thread. Weird.
 
---i9LlY+UWpKt15+FH
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-Content-Transfer-Encoding: quoted-printable
-
-On Thu, May 21, 2020 at 04:31:02PM -0700, Krishna Reddy wrote:
-> Changes in v5:
-> Rebased on top of git://git.kernel.org/pub/scm/linux/kernel/git/joro/iomm=
-u.git next
->=20
-> v4 - https://lkml.org/lkml/2019/10/30/1054
-> v3 - https://lkml.org/lkml/2019/10/18/1601
-> v2 - https://lkml.org/lkml/2019/9/2/980
-> v1 - https://lkml.org/lkml/2019/8/29/1588
->=20
-> Krishna Reddy (5):
->   iommu/arm-smmu: add NVIDIA implementation for dual ARM MMU-500 usage
->   dt-bindings: arm-smmu: Add binding for Tegra194 SMMU
->   iommu/arm-smmu: Add global/context fault implementation hooks
-
-For the record: I don't think we should apply these because we don't
-have a good way of testing them. We currently have three problems that
-prevent us from enabling SMMU on Tegra194:
-
-  1) If we enable SMMU support, then the DMA API will automatically try
-     to use SMMU domains for allocations. This means that translations
-     will happen as soon as a device's IOMMU operations are initialized
-     and that is typically a long time (in kernel time at least) before
-     a driver is bound and has a chance of configuring the device.
-
-     This causes problems for non-quiesced devices like display
-     controllers that the bootloader might have set up to scan out a
-     boot splash.
-
-     What we're missing here is a way to:
-
-     a) advertise reserved memory regions for boot splash framebuffers
-     b) map reserved memory regions early during SMMU setup
-
-     Patches have been floating on the public mailing lists for b) but
-     a) requires changes to the bootloader (both proprietary ones and
-     U-Boot for SoCs prior to Tegra194).
-
-  2) Even if we don't enable SMMU for a given device (by not hooking up
-     the iommus property), with a default kernel configuration we get a
-     bunch of faults during boot because the ARM SMMU driver faults by
-     default (rather than bypass) for masters which aren't hooked up to
-     the SMMU.
-
-     We could work around that by changing the default configuration or
-     overriding it on the command-line, but that's not really an option
-     because it decreases security and means that Tegra194 won't work
-     out-of-the-box.
-
-  3) We don't properly describe the DMA hierarchy, which causes the DMA
-     masks to be improperly set. As a bit of background: Tegra194 has a
-     special address bit (bit 39) that causes some swizzling to happen
-     within the memory controller. As a result, any I/O virtual address
-     that has bit 39 set will cause this swizzling to happen on access.
-     The DMA/IOMMU allocator always starts allocating from the top of
-     the IOVA space, which means that the first couple of gigabytes of
-     allocations will cause most devices to fail because of the
-     undesired swizzling that occurs.
-
-     We had an initial patch for SDHCI merged that hard-codes the DMA
-     mask to DMA_BIT_MASK(39) on Tegra194 to work around that. However,
-     the devices all do support addressing 40 bits and the restriction
-     on bit 39 is really a property of the bus rather than a capability
-     of the device. This means that we would have to work around this
-     for every device driver by adding similar hacks. A better option is
-     to properly describe the DMA hierarchy (using dma-ranges) because
-     that will then automatically be applied as a constraint on each
-     device's DMA mask.
-
-     I have been working on patches to address this, but they are fairly
-     involved because they require device tree bindings changes and so
-     on.
-
-So before we solve all of the above issues we can't really enable SMMU
-on Tegra194 and hence won't be able to test it. As such we don't know if
-these patches even work, nor can we validate that they continue to work.
-
-As such, I don't think there's any use in applying these patches
-upstream since they will be effectively dead code until all of the above
-issues are resolved.
-
->   arm64: tegra: Add DT node for T194 SMMU
->   arm64: tegra: enable SMMU for SDHCI and EQOS on T194
-
-This one is going to cause EQOS to break because of 3) above. It might
-work for SDHCI because of the workaround we currently have in that
-driver. However, I do have a local patch that reverts the workaround
-and replaces it with the proper fix, which uses dma-ranges as mentioned
-above.
-
-That said, I have tested earlier versions of this patchset on top of my
-local branch with fixes for the above and they do seem to work as
-expected.
-
-So I'll leave it up to the IOMMU maintainers whether they're willing to
-merge the driver patches as is. But I want to clarify that I won't be
-applying the DTS patches until we've solved all of the above issues and
-therefore it should be clear that these won't be runtime tested until
-then.
-
-I expect it will take at least until v5.9-rc1 before we have all the
-changes merged that would allow us to enable SMMU support.
-
-Thierry
-
->  .../devicetree/bindings/iommu/arm,smmu.yaml   |   5 +
->  MAINTAINERS                                   |   2 +
->  arch/arm64/boot/dts/nvidia/tegra194.dtsi      |  81 ++++++
->  drivers/iommu/Makefile                        |   2 +-
->  drivers/iommu/arm-smmu-impl.c                 |   3 +
->  drivers/iommu/arm-smmu-nvidia.c               | 261 ++++++++++++++++++
->  drivers/iommu/arm-smmu.c                      |  11 +-
->  drivers/iommu/arm-smmu.h                      |   4 +
->  8 files changed, 366 insertions(+), 3 deletions(-)
->  create mode 100644 drivers/iommu/arm-smmu-nvidia.c
->=20
->=20
-> base-commit: 365f8d504da50feaebf826d180113529c9383670
-> --=20
-> 2.26.2
->=20
->=20
-> _______________________________________________
-> linux-arm-kernel mailing list
-> linux-arm-kernel@lists.infradead.org
-> http://lists.infradead.org/mailman/listinfo/linux-arm-kernel
-
---i9LlY+UWpKt15+FH
-Content-Type: application/pgp-signature; name="signature.asc"
-
------BEGIN PGP SIGNATURE-----
-
-iQIzBAABCAAdFiEEiOrDCAFJzPfAjcif3SOs138+s6EFAl7H7GIACgkQ3SOs138+
-s6ElqQ/+JBjV0XEuyUSw2d7Jz7F2AdG1VGitmIgCcLapsei88OHPW3BCoLB0iMpo
-aIpVGYKX2fT7Rq2hkg4VeNFCSnFeA0MoNtdOcGLZ3/JYsT4SgZpBTKSL1jy4pVmY
-oc+NfkmnuAumMDKIa6GNc/K6uhRtNGCxqW05ynR5Mzvp8/hdmJPm5KAlZ40PEvw3
-zk6SUxQ94pPjg3dHAZqMh7C7SpTrSEQzkUV3DSQpDSi2YlLTKjnLmApKRVEpNgJj
-ugFjySpPpLdTPM7vuooKLv8q34Ya7FAS91DOWzfbSwCEeL8vsuVOZ1ZMG9YZ/T+5
-5uOlVWJcOjWF8hNvHop2lkO64VYFr593pkyz2rMKqteapE/xzadOHvo3ov0awjzO
-B9wp/VqKJGHKWaA6BW7Z9gXnIb4oVh2Ej2vH7a6HnEzjEOWwaaTCj3iqZ1n5A7Mk
-FZUNlcmqTQS+NUxDPKLbB9h5kkiw1pdHI0RJavzFH3iukRPCQ82huSsbcLTjDWMk
-Q9+Kox0o3iBBJ9mCGleDL+yXIW5/44uX26fxGGLyWQ1AHyIBPMNuNJxHzknYr4TN
-CurNIXwSC/ZmB1YE/RUtR6fOy3/HQf/tatUCLhDcU6z0Zr6wS7xAZfAW4MF/hcCm
-a5KxqmF2MQpns0TfB+gB2trhcevp1/0S+wHa1Nx27JWRXJpHiw4=
-=L2CZ
------END PGP SIGNATURE-----
-
---i9LlY+UWpKt15+FH--
-
---===============6262217006252157830==
-Content-Type: text/plain; charset="us-ascii"
-MIME-Version: 1.0
-Content-Transfer-Encoding: 7bit
-Content-Disposition: inline
-
+---
+Best Regards, Laurentiu
 _______________________________________________
 iommu mailing list
 iommu@lists.linux-foundation.org
 https://lists.linuxfoundation.org/mailman/listinfo/iommu
---===============6262217006252157830==--
