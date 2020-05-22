@@ -2,91 +2,92 @@ Return-Path: <SRS0=4l6Q=7E=lists.linux-foundation.org=iommu-bounces@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-9.6 required=3.0 tests=DKIM_INVALID,DKIM_SIGNED,
-	HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_PATCH,MAILING_LIST_MULTI,SIGNED_OFF_BY,
-	SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED,USER_AGENT_GIT autolearn=unavailable
-	autolearn_force=no version=3.4.0
+X-Spam-Status: No, score=-6.8 required=3.0 tests=DKIM_INVALID,DKIM_SIGNED,
+	INCLUDES_PATCH,MAILING_LIST_MULTI,SIGNED_OFF_BY,SPF_HELO_NONE,SPF_PASS,
+	URIBL_BLOCKED autolearn=unavailable autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 103D4C433E0
-	for <iommu@archiver.kernel.org>; Fri, 22 May 2020 13:02:21 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 46D13C433E2
+	for <iommu@archiver.kernel.org>; Fri, 22 May 2020 14:03:11 +0000 (UTC)
 Received: from whitealder.osuosl.org (smtp1.osuosl.org [140.211.166.138])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by mail.kernel.org (Postfix) with ESMTPS id BEB0A206D5
-	for <iommu@archiver.kernel.org>; Fri, 22 May 2020 13:02:19 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTPS id 0D9E121475
+	for <iommu@archiver.kernel.org>; Fri, 22 May 2020 14:03:10 +0000 (UTC)
 Authentication-Results: mail.kernel.org;
-	dkim=fail reason="signature verification failed" (1024-bit key) header.d=mg.codeaurora.org header.i=@mg.codeaurora.org header.b="hVly2wYD"
-DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org BEB0A206D5
-Authentication-Results: mail.kernel.org; dmarc=none (p=none dis=none) header.from=codeaurora.org
+	dkim=fail reason="signature verification failed" (1024-bit key) header.d=kernel.org header.i=@kernel.org header.b="TyuLw6VB"
+DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 0D9E121475
+Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=kernel.org
 Authentication-Results: mail.kernel.org; spf=pass smtp.mailfrom=iommu-bounces@lists.linux-foundation.org
 Received: from localhost (localhost [127.0.0.1])
-	by whitealder.osuosl.org (Postfix) with ESMTP id B616588A90;
-	Fri, 22 May 2020 13:02:19 +0000 (UTC)
+	by whitealder.osuosl.org (Postfix) with ESMTP id D045388753;
+	Fri, 22 May 2020 14:03:10 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
 Received: from whitealder.osuosl.org ([127.0.0.1])
 	by localhost (.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
-	with ESMTP id X-ADnyycUmYs; Fri, 22 May 2020 13:02:15 +0000 (UTC)
+	with ESMTP id 0VyJEVOxW2FB; Fri, 22 May 2020 14:03:09 +0000 (UTC)
 Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [140.211.9.56])
-	by whitealder.osuosl.org (Postfix) with ESMTP id 3F9B788A8F;
-	Fri, 22 May 2020 13:02:15 +0000 (UTC)
+	by whitealder.osuosl.org (Postfix) with ESMTP id 518FD88735;
+	Fri, 22 May 2020 14:03:09 +0000 (UTC)
 Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
-	by lists.linuxfoundation.org (Postfix) with ESMTP id 1BB51C0863;
-	Fri, 22 May 2020 13:02:15 +0000 (UTC)
-Received: from hemlock.osuosl.org (smtp2.osuosl.org [140.211.166.133])
- by lists.linuxfoundation.org (Postfix) with ESMTP id 09446C0176
- for <iommu@lists.linux-foundation.org>; Fri, 22 May 2020 13:02:14 +0000 (UTC)
+	by lists.linuxfoundation.org (Postfix) with ESMTP id 2CA90C088B;
+	Fri, 22 May 2020 14:03:09 +0000 (UTC)
+Received: from fraxinus.osuosl.org (smtp4.osuosl.org [140.211.166.137])
+ by lists.linuxfoundation.org (Postfix) with ESMTP id 20C8CC0176
+ for <iommu@lists.linux-foundation.org>; Fri, 22 May 2020 14:03:08 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
- by hemlock.osuosl.org (Postfix) with ESMTP id EADCC8867B
- for <iommu@lists.linux-foundation.org>; Fri, 22 May 2020 13:02:13 +0000 (UTC)
+ by fraxinus.osuosl.org (Postfix) with ESMTP id 14F9F87949
+ for <iommu@lists.linux-foundation.org>; Fri, 22 May 2020 14:03:08 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from hemlock.osuosl.org ([127.0.0.1])
+Received: from fraxinus.osuosl.org ([127.0.0.1])
  by localhost (.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
- with ESMTP id xHvp5MMt-kjU for <iommu@lists.linux-foundation.org>;
- Fri, 22 May 2020 13:02:13 +0000 (UTC)
-X-Greylist: from auto-whitelisted by SQLgrey-1.7.6
-Received: from mail27.static.mailgun.info (mail27.static.mailgun.info
- [104.130.122.27])
- by hemlock.osuosl.org (Postfix) with ESMTPS id EBD8888647
- for <iommu@lists.linux-foundation.org>; Fri, 22 May 2020 13:02:10 +0000 (UTC)
-DKIM-Signature: a=rsa-sha256; v=1; c=relaxed/relaxed; d=mg.codeaurora.org;
- q=dns/txt; 
- s=smtp; t=1590152533; h=Content-Transfer-Encoding: MIME-Version:
- Message-Id: Date: Subject: Cc: To: From: Sender;
- bh=aZcjMzyQhmF408KAg+aRhNzpY4xzo8oNxhr6p1nbQUY=;
- b=hVly2wYDEVzGlAz+2zyZMYjGqBeovhrvJoa61HIppaWO6ncZX0V8mWgRP2bavztO7RwYwkhi
- Cs1pLkpW1k4lynVftB0xzA9EKCi0eBVgqMXCBiT7IYvOS5B/VMdzo3ObdQm6iYoCrNcrV8HW
- a3RXiGENHi6hQcoGanraSxDAvzQ=
-X-Mailgun-Sending-Ip: 104.130.122.27
-X-Mailgun-Sid: WyI3NDkwMCIsICJpb21tdUBsaXN0cy5saW51eC1mb3VuZGF0aW9uLm9yZyIsICJiZTllNGEiXQ==
-Received: from smtp.codeaurora.org
- (ec2-35-166-182-171.us-west-2.compute.amazonaws.com [35.166.182.171])
- by mxa.mailgun.org with ESMTP id 5ec7cd46.7f93ab1dfdc0-smtp-out-n04;
- Fri, 22 May 2020 13:01:58 -0000 (UTC)
-Received: by smtp.codeaurora.org (Postfix, from userid 1001)
- id 52B70C43395; Fri, 22 May 2020 13:01:58 +0000 (UTC)
-Received: from blr-ubuntu-311.qualcomm.com
- (blr-bdr-fw-01_GlobalNAT_AllZones-Outside.qualcomm.com [103.229.18.19])
- (using TLSv1.2 with cipher ECDHE-RSA-AES128-SHA256 (128/128 bits))
+ with ESMTP id AdZ3Gs3d5jVD for <iommu@lists.linux-foundation.org>;
+ Fri, 22 May 2020 14:03:07 +0000 (UTC)
+X-Greylist: domain auto-whitelisted by SQLgrey-1.7.6
+Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
+ by fraxinus.osuosl.org (Postfix) with ESMTPS id EF822877FD
+ for <iommu@lists.linux-foundation.org>; Fri, 22 May 2020 14:03:06 +0000 (UTC)
+Received: from mail-oi1-f175.google.com (mail-oi1-f175.google.com
+ [209.85.167.175])
+ (using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
  (No client certificate requested)
- (Authenticated sender: saiprakash.ranjan)
- by smtp.codeaurora.org (Postfix) with ESMTPSA id 29C5BC433C6;
- Fri, 22 May 2020 13:01:53 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.3.2 smtp.codeaurora.org 29C5BC433C6
-Authentication-Results: aws-us-west-2-caf-mail-1.web.codeaurora.org;
- dmarc=none (p=none dis=none) header.from=codeaurora.org
-Authentication-Results: aws-us-west-2-caf-mail-1.web.codeaurora.org; spf=none
- smtp.mailfrom=saiprakash.ranjan@codeaurora.org
-From: Sai Prakash Ranjan <saiprakash.ranjan@codeaurora.org>
-To: Will Deacon <will@kernel.org>, Robin Murphy <robin.murphy@arm.com>,
- Joerg Roedel <joro@8bytes.org>, Joerg Roedel <jroedel@suse.de>
-Subject: [PATCH] iommu: Fix group refcount in iommu_alloc_default_domain()
-Date: Fri, 22 May 2020 18:31:45 +0530
-Message-Id: <20200522130145.30067-1-saiprakash.ranjan@codeaurora.org>
-X-Mailer: git-send-email 2.22.0
+ by mail.kernel.org (Postfix) with ESMTPSA id A89CE21475
+ for <iommu@lists.linux-foundation.org>; Fri, 22 May 2020 14:03:06 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+ s=default; t=1590156186;
+ bh=PC+uay0MBJgZb1HrY/dFqAwSM1Ui19cXenE7vxJsLa0=;
+ h=References:In-Reply-To:From:Date:Subject:To:Cc:From;
+ b=TyuLw6VByNbf3Akwv2nKdLOf67tVruG4eCMaraUTwL3hqUcblq+NKU7TLQq2/q6P7
+ Urxcqn76R9RqZme2DhUwavYqB037CsQzmbczJvuF46pziO3YVMZzasuU6xNRwmBL7f
+ vNme/VqvGA771XxXTyZk9gWeSPQE+zPAaWiItqP8=
+Received: by mail-oi1-f175.google.com with SMTP id x23so9388521oic.3
+ for <iommu@lists.linux-foundation.org>; Fri, 22 May 2020 07:03:06 -0700 (PDT)
+X-Gm-Message-State: AOAM5327uzggaho+AiLVi1JweXhPti1tshqy+sRc7IGgBmnbGhqynqB0
+ ZeU4GFAu41Jtdp9t5uuQQGfLbkISEAoq6SGO2Q==
+X-Google-Smtp-Source: ABdhPJz4NPfC/e/rYdjknKeQRurJR6ul989Dp2cHUGc/fsPE+++fhkbh8JKvoUs1QPU5OvCiTH3oazU9MRQGNkQBnro=
+X-Received: by 2002:aca:f084:: with SMTP id o126mr2798405oih.106.1590156185879; 
+ Fri, 22 May 2020 07:03:05 -0700 (PDT)
 MIME-Version: 1.0
-Cc: linux-arm-msm@vger.kernel.org, linux-kernel@vger.kernel.org,
- Evan Green <evgreen@chromium.org>, Douglas Anderson <dianders@chromium.org>,
- iommu@lists.linux-foundation.org, linux-arm-kernel@lists.infradead.org
+References: <20200521130008.8266-1-lorenzo.pieralisi@arm.com>
+ <20200521130008.8266-10-lorenzo.pieralisi@arm.com>
+ <CAL_Jsq+h18gH2D3B-OZku6ACCgonPUJcUnrN8a5=jApsXHdB5Q@mail.gmail.com>
+ <abca6ecb-5d93-832f-ff7c-de53bb6203f3@arm.com>
+In-Reply-To: <abca6ecb-5d93-832f-ff7c-de53bb6203f3@arm.com>
+From: Rob Herring <robh+dt@kernel.org>
+Date: Fri, 22 May 2020 08:02:49 -0600
+X-Gmail-Original-Message-ID: <CAL_JsqKVyqc9QZhGD7FeNLpJ=x3oLzmY0zADBa+6ZaE46dN39w@mail.gmail.com>
+Message-ID: <CAL_JsqKVyqc9QZhGD7FeNLpJ=x3oLzmY0zADBa+6ZaE46dN39w@mail.gmail.com>
+Subject: Re: [PATCH 09/12] dt-bindings: arm: fsl: Add msi-map device-tree
+ binding for fsl-mc bus
+To: Robin Murphy <robin.murphy@arm.com>
+Cc: devicetree@vger.kernel.org, Hanjun Guo <guohanjun@huawei.com>,
+ Catalin Marinas <catalin.marinas@arm.com>, PCI <linux-pci@vger.kernel.org>,
+ Sudeep Holla <sudeep.holla@arm.com>, "Rafael J. Wysocki" <rjw@rjwysocki.net>,
+ Linux IOMMU <iommu@lists.linux-foundation.org>, linux-acpi@vger.kernel.org,
+ Makarand Pawagi <makarand.pawagi@nxp.com>, Marc Zyngier <maz@kernel.org>,
+ Diana Craciun <diana.craciun@oss.nxp.com>, Bjorn Helgaas <bhelgaas@google.com>,
+ Will Deacon <will@kernel.org>,
+ "moderated list:ARM/FREESCALE IMX / MXC ARM ARCHITECTURE"
+ <linux-arm-kernel@lists.infradead.org>
 X-BeenThere: iommu@lists.linux-foundation.org
 X-Mailman-Version: 2.1.15
 Precedence: list
@@ -104,106 +105,125 @@ Content-Transfer-Encoding: 7bit
 Errors-To: iommu-bounces@lists.linux-foundation.org
 Sender: "iommu" <iommu-bounces@lists.linux-foundation.org>
 
-Since the change to move default domain allocation to probe,
-there is a refcount decrement missing for the group in
-iommu_alloc_default_domain(). Because of this missing
-refcount decrement, the device is never released from the
-group as the devices_kobj refcount never reaches 0 in
-iommu_group_remove_device() leading to a lot of issues.
-One such case is that this will lead to a different group
-allocation on every reload of the module which configures
-iommu such as the ath10k module which then finally fails
-to attach this device to the SMMU with -ENOSPC error in
-__arm_smmu_alloc_bitmap() once the count of module reload
-crosses the number of context banks. This will then lead
-to NULL pointer deference in the next reload of the module.
-Add the missing refcount decrement(iommu_group_put()) in
-iommu_alloc_default_domain() to fix this issue.
+On Fri, May 22, 2020 at 3:42 AM Robin Murphy <robin.murphy@arm.com> wrote:
+>
+> On 2020-05-22 00:10, Rob Herring wrote:
+> > On Thu, May 21, 2020 at 7:00 AM Lorenzo Pieralisi
+> > <lorenzo.pieralisi@arm.com> wrote:
+> >>
+> >> From: Laurentiu Tudor <laurentiu.tudor@nxp.com>
+> >>
+> >> The existing bindings cannot be used to specify the relationship
+> >> between fsl-mc devices and GIC ITSes.
+> >>
+> >> Add a generic binding for mapping fsl-mc devices to GIC ITSes, using
+> >> msi-map property.
+> >>
+> >> Signed-off-by: Laurentiu Tudor <laurentiu.tudor@nxp.com>
+> >> Cc: Rob Herring <robh+dt@kernel.org>
+> >> ---
+> >>   .../devicetree/bindings/misc/fsl,qoriq-mc.txt | 30 +++++++++++++++++--
+> >>   1 file changed, 27 insertions(+), 3 deletions(-)
+> >>
+> >> diff --git a/Documentation/devicetree/bindings/misc/fsl,qoriq-mc.txt b/Documentation/devicetree/bindings/misc/fsl,qoriq-mc.txt
+> >> index 9134e9bcca56..b0813b2d0493 100644
+> >> --- a/Documentation/devicetree/bindings/misc/fsl,qoriq-mc.txt
+> >> +++ b/Documentation/devicetree/bindings/misc/fsl,qoriq-mc.txt
+> >> @@ -18,9 +18,9 @@ same hardware "isolation context" and a 10-bit value called an ICID
+> >>   the requester.
+> >>
+> >>   The generic 'iommus' property is insufficient to describe the relationship
+> >> -between ICIDs and IOMMUs, so an iommu-map property is used to define
+> >> -the set of possible ICIDs under a root DPRC and how they map to
+> >> -an IOMMU.
+> >> +between ICIDs and IOMMUs, so the iommu-map and msi-map properties are used
+> >> +to define the set of possible ICIDs under a root DPRC and how they map to
+> >> +an IOMMU and a GIC ITS respectively.
+> >>
+> >>   For generic IOMMU bindings, see
+> >>   Documentation/devicetree/bindings/iommu/iommu.txt.
+> >> @@ -28,6 +28,9 @@ Documentation/devicetree/bindings/iommu/iommu.txt.
+> >>   For arm-smmu binding, see:
+> >>   Documentation/devicetree/bindings/iommu/arm,smmu.yaml.
+> >>
+> >> +For GICv3 and GIC ITS bindings, see:
+> >> +Documentation/devicetree/bindings/interrupt-controller/arm,gic-v3.yaml.
+> >> +
+> >>   Required properties:
+> >>
+> >>       - compatible
+> >> @@ -119,6 +122,15 @@ Optional properties:
+> >>     associated with the listed IOMMU, with the iommu-specifier
+> >>     (i - icid-base + iommu-base).
+> >>
+> >> +- msi-map: Maps an ICID to a GIC ITS and associated iommu-specifier
+> >> +  data.
+> >> +
+> >> +  The property is an arbitrary number of tuples of
+> >> +  (icid-base,iommu,iommu-base,length).
+> >
+> > I'm confused because the example has GIC ITS phandle, not an IOMMU.
+> >
+> > What is an iommu-base?
+>
+> Right, I was already halfway through writing a reply to say that all the
+> copy-pasted "iommu" references here should be using the terminology from
+> the pci-msi.txt binding instead.
+>
+> >> +
+> >> +  Any ICID in the interval [icid-base, icid-base + length) is
+> >> +  associated with the listed GIC ITS, with the iommu-specifier
+> >> +  (i - icid-base + iommu-base).
+> >>   Example:
+> >>
+> >>           smmu: iommu@5000000 {
+> >> @@ -128,6 +140,16 @@ Example:
+> >>                  ...
+> >>           };
+> >>
+> >> +       gic: interrupt-controller@6000000 {
+> >> +               compatible = "arm,gic-v3";
+> >> +               ...
+> >> +               its: gic-its@6020000 {
+> >> +                       compatible = "arm,gic-v3-its";
+> >> +                       msi-controller;
+> >> +                       ...
+> >> +               };
+> >> +       };
+> >> +
+> >>           fsl_mc: fsl-mc@80c000000 {
+> >>                   compatible = "fsl,qoriq-mc";
+> >>                   reg = <0x00000008 0x0c000000 0 0x40>,    /* MC portal base */
+> >> @@ -135,6 +157,8 @@ Example:
+> >>                   msi-parent = <&its>;
+>
+> Side note: is it right to keep msi-parent here? It rather implies that
+> the MC itself has a 'native' Device ID rather than an ICID, which I
+> believe is not strictly true. Plus it's extra-confusing that it doesn't
+> specify an ID either way, since that makes it look like the legacy PCI
+> case that gets treated implicitly as an identity msi-map, which makes no
+> sense at all to combine with an actual msi-map.
 
-Call trace:
+No, it doesn't make sense from a binding perspective.
 
-<snip>...
-  platform wifi-firmware.0: Adding to iommu group 82
-  ath10k_snoc 18800000.wifi: could not attach device: -28
-  platform wifi-firmware.0: Removing from iommu group 82
-  ath10k_snoc 18800000.wifi: failed to initialize firmware: -28
-  ath10k_snoc: probe of 18800000.wifi failed with error -28
-  platform wifi-firmware.0: Adding to iommu group 83
-  Unable to handle kernel NULL pointer dereference at virtual address 0000000000000000
-  Mem abort info:
-    ESR = 0x96000006
-    EC = 0x25: DABT (current EL), IL = 32 bits
-    SET = 0, FnV = 0
-    EA = 0, S1PTW = 0
-  Data abort info:
-    ISV = 0, ISS = 0x00000006
-    CM = 0, WnR = 0
-  user pgtable: 4k pages, 39-bit VAs, pgdp=0000000177a53000
-  [0000000000000000] pgd=00000001e74f5003, pud=00000001e74f5003, pmd=0000000000000000
-  Internal error: Oops: 96000006 [#1] PREEMPT SMP
-  pstate: 60400009 (nZCv daif +PAN -UAO)
-  arm_smmu_flush_iotlb_all+0x20/0x6c
-  iommu_create_device_direct_mappings+0x17c/0x1d8
-  iommu_probe_device+0xc0/0x100
-  of_iommu_configure+0x108/0x240
-  of_dma_configure+0x130/0x1d0
-  ath10k_fw_init+0xc4/0x1c4 [ath10k_snoc]
-  ath10k_snoc_probe+0x5cc/0x678 [ath10k_snoc]
-  platform_drv_probe+0x90/0xb0
-  really_probe+0x134/0x2ec
-  driver_probe_device+0x64/0xfc
-  device_driver_attach+0x4c/0x6c
-  __driver_attach+0xac/0xc0
-  bus_for_each_dev+0x8c/0xd4
-  driver_attach+0x2c/0x38
-  bus_add_driver+0xfc/0x1d0
-  driver_register+0x64/0xf8
-  __platform_driver_register+0x4c/0x58
-  init_module+0x20/0x1000 [ath10k_snoc]
-  do_one_initcall+0x13c/0x2d0
-  do_init_module+0x58/0x1dc
-  load_module+0xde0/0xf10
-  __arm64_sys_finit_module+0xb0/0xe0
-  el0_svc_common+0xa4/0x154
-  el0_svc_compat_handler+0x2c/0x38
-  el0_svc_compat+0x8/0x10
- Code: d503201f f85b8268 b4000248 f8560e74 (f9400280)
- ---[ end trace e5c1470a584952a0 ]---
- Kernel panic - not syncing: Fatal exception
+>
+> >>                   /* define map for ICIDs 23-64 */
+> >>                   iommu-map = <23 &smmu 23 41>;
+> >> +                /* define msi map for ICIDs 23-64 */
+> >> +                msi-map = <23 &its 23 41>;
+> >
+> > Seeing 23 twice is odd. The numbers to the right of 'its' should be an
+> > ITS number space.
+>
+> On about 99% of systems the values in the SMMU Stream ID and ITS Device
+> ID spaces are going to be the same. Nobody's going to bother carrying
+> *two* sets of sideband data across the interconnect if they don't have to ;)
 
-Signed-off-by: Sai Prakash Ranjan <saiprakash.ranjan@codeaurora.org>
----
- drivers/iommu/iommu.c | 7 ++++++-
- 1 file changed, 6 insertions(+), 1 deletion(-)
+I'm referring to the 23 on the left and right, not between the msi and
+iommu. If the left and right are the same, then what are we remapping
+exactly?
 
-diff --git a/drivers/iommu/iommu.c b/drivers/iommu/iommu.c
-index a4c2f122eb8b..05f7b77c432f 100644
---- a/drivers/iommu/iommu.c
-+++ b/drivers/iommu/iommu.c
-@@ -1491,6 +1491,7 @@ static int iommu_alloc_default_domain(struct device *dev)
- {
- 	struct iommu_group *group;
- 	unsigned int type;
-+	int ret;
- 
- 	group = iommu_group_get(dev);
- 	if (!group)
-@@ -1501,7 +1502,11 @@ static int iommu_alloc_default_domain(struct device *dev)
- 
- 	type = iommu_get_def_domain_type(dev);
- 
--	return iommu_group_alloc_default_domain(dev->bus, group, type);
-+	ret = iommu_group_alloc_default_domain(dev->bus, group, type);
-+
-+	iommu_group_put(group);
-+
-+	return ret;
- }
- 
- /**
--- 
-QUALCOMM INDIA, on behalf of Qualcomm Innovation Center, Inc. is a member
-of Code Aurora Forum, hosted by The Linux Foundation
+Rob
 _______________________________________________
 iommu mailing list
 iommu@lists.linux-foundation.org
