@@ -2,101 +2,137 @@ Return-Path: <SRS0=4l6Q=7E=lists.linux-foundation.org=iommu-bounces@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-0.6 required=3.0 tests=DKIM_INVALID,DKIM_SIGNED,
-	HEADER_FROM_DIFFERENT_DOMAINS,MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS,
-	URIBL_BLOCKED autolearn=no autolearn_force=no version=3.4.0
+X-Spam-Status: No, score=-9.6 required=3.0 tests=DKIM_INVALID,DKIM_SIGNED,
+	HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_PATCH,MAILING_LIST_MULTI,SIGNED_OFF_BY,
+	SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED,USER_AGENT_GIT autolearn=unavailable
+	autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 76900C433E2
-	for <iommu@archiver.kernel.org>; Fri, 22 May 2020 10:18:11 +0000 (UTC)
-Received: from fraxinus.osuosl.org (smtp4.osuosl.org [140.211.166.137])
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 29B05C433DF
+	for <iommu@archiver.kernel.org>; Fri, 22 May 2020 12:57:18 +0000 (UTC)
+Received: from whitealder.osuosl.org (smtp1.osuosl.org [140.211.166.138])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by mail.kernel.org (Postfix) with ESMTPS id 4078F206C3
-	for <iommu@archiver.kernel.org>; Fri, 22 May 2020 10:18:11 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTPS id E65A2206D5
+	for <iommu@archiver.kernel.org>; Fri, 22 May 2020 12:57:17 +0000 (UTC)
 Authentication-Results: mail.kernel.org;
-	dkim=fail reason="signature verification failed" (2048-bit key) header.d=linaro.org header.i=@linaro.org header.b="WVJ//CKH"
-DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 4078F206C3
-Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=linaro.org
+	dkim=fail reason="signature verification failed" (1024-bit key) header.d=samsung.com header.i=@samsung.com header.b="s8y14ezW"
+DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org E65A2206D5
+Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=samsung.com
 Authentication-Results: mail.kernel.org; spf=pass smtp.mailfrom=iommu-bounces@lists.linux-foundation.org
 Received: from localhost (localhost [127.0.0.1])
-	by fraxinus.osuosl.org (Postfix) with ESMTP id 0D8BC878E2;
-	Fri, 22 May 2020 10:18:11 +0000 (UTC)
+	by whitealder.osuosl.org (Postfix) with ESMTP id 9782088A8F;
+	Fri, 22 May 2020 12:57:17 +0000 (UTC)
+X-Virus-Scanned: amavisd-new at osuosl.org
+Received: from whitealder.osuosl.org ([127.0.0.1])
+	by localhost (.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
+	with ESMTP id 7PWLyjUp8nXS; Fri, 22 May 2020 12:57:16 +0000 (UTC)
+Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [140.211.9.56])
+	by whitealder.osuosl.org (Postfix) with ESMTP id 6A53788A05;
+	Fri, 22 May 2020 12:57:16 +0000 (UTC)
+Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
+	by lists.linuxfoundation.org (Postfix) with ESMTP id 44990C0863;
+	Fri, 22 May 2020 12:57:16 +0000 (UTC)
+Received: from fraxinus.osuosl.org (smtp4.osuosl.org [140.211.166.137])
+ by lists.linuxfoundation.org (Postfix) with ESMTP id 9634FC0176
+ for <iommu@lists.linux-foundation.org>; Fri, 22 May 2020 12:57:14 +0000 (UTC)
+Received: from localhost (localhost [127.0.0.1])
+ by fraxinus.osuosl.org (Postfix) with ESMTP id 84BA3876FA
+ for <iommu@lists.linux-foundation.org>; Fri, 22 May 2020 12:57:14 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
 Received: from fraxinus.osuosl.org ([127.0.0.1])
-	by localhost (.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
-	with ESMTP id oIc-GPoEVxp7; Fri, 22 May 2020 10:18:10 +0000 (UTC)
-Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [140.211.9.56])
-	by fraxinus.osuosl.org (Postfix) with ESMTP id 646B087853;
-	Fri, 22 May 2020 10:18:10 +0000 (UTC)
-Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
-	by lists.linuxfoundation.org (Postfix) with ESMTP id 4BDDEC0863;
-	Fri, 22 May 2020 10:18:10 +0000 (UTC)
-Received: from hemlock.osuosl.org (smtp2.osuosl.org [140.211.166.133])
- by lists.linuxfoundation.org (Postfix) with ESMTP id 304A6C0176
- for <iommu@lists.linux-foundation.org>; Fri, 22 May 2020 10:18:09 +0000 (UTC)
-Received: from localhost (localhost [127.0.0.1])
- by hemlock.osuosl.org (Postfix) with ESMTP id 0CAE087D76
- for <iommu@lists.linux-foundation.org>; Fri, 22 May 2020 10:18:09 +0000 (UTC)
-X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from hemlock.osuosl.org ([127.0.0.1])
  by localhost (.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
- with ESMTP id fJSdhB74yU5z for <iommu@lists.linux-foundation.org>;
- Fri, 22 May 2020 10:18:08 +0000 (UTC)
-X-Greylist: domain auto-whitelisted by SQLgrey-1.7.6
-Received: from mail-wr1-f68.google.com (mail-wr1-f68.google.com
- [209.85.221.68])
- by hemlock.osuosl.org (Postfix) with ESMTPS id C92F887B5D
- for <iommu@lists.linux-foundation.org>; Fri, 22 May 2020 10:18:07 +0000 (UTC)
-Received: by mail-wr1-f68.google.com with SMTP id l11so9666759wru.0
- for <iommu@lists.linux-foundation.org>; Fri, 22 May 2020 03:18:07 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linaro.org; s=google;
- h=date:from:to:cc:subject:message-id:references:mime-version
- :content-disposition:in-reply-to;
- bh=rDNDKX0HkLYt94EgaC8KrXxbFTf0b5UZDhkhcEUmDsA=;
- b=WVJ//CKH4dmTBE0aqIBZXt0aAGFbLb2/HSsz+TTszSD504939LXSss4CoipdpB/CaP
- UYEC49gciPAa156HBkX3vD6agGFcawT7wJGuqinqgdldtVpJcnYlHy8kYO+4r5wUGW4N
- dybibnHmXgJPE6Yx//FGirSeVMwet4YQ4pqdD8PfOkmlAM9lkmxvRxK8W5pq10wP/QdV
- nPZKGtAyqCQjPtUOqPpWTpK7PWQ7g8PDTvbQ9eAr9/mGFFzSg02tY1TfCtIKZQykmP7N
- B8ikx09FYbHX1EDesimTPNwCJGF8URn5yiI0zH0eo0dpPE+4HsehFV61iZGVMleox6n1
- gTbw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
- d=1e100.net; s=20161025;
- h=x-gm-message-state:date:from:to:cc:subject:message-id:references
- :mime-version:content-disposition:in-reply-to;
- bh=rDNDKX0HkLYt94EgaC8KrXxbFTf0b5UZDhkhcEUmDsA=;
- b=SXERmscPxVFVKZeqsS52WEuM4nSobvwCryixc685gZS+8xlxsSyurKeKhy3b/w9Ewq
- Pt8IrNsK3DPoR7k3pJphVQEu8CTBUmOKBWGGuzO/8hcPD0b0cUVlgHSyG39dcrORneRf
- 5coxdTYMormnNImVpkdmb4oenG+3mw7MQZ4KFOJX33G41+Dq01lVOY7dLBUNx9h016qb
- RNKgi/rDBC5A7HgRg6/AMBUhRZKcZRwtv3gIax7lul93rwmUnCZwEqHE4mFv6HmKu8c/
- dxW8ZPGQ/CtQIpLi0x3lnXE2LoruNB0wvRn6pDOJMryN87biBBFpvKLyp5geD7YuLjBM
- 2o+A==
-X-Gm-Message-State: AOAM531mo33lPpq3Z2I09BuHi3tbP9wa0esFsyg6pUc9A2YKL74fux4s
- SYZICDIEnuwfP6hS7LT0c9YBZw==
-X-Google-Smtp-Source: ABdhPJzB2HI5kI/EmFJDdYOUgVosMpdPIKY9IaspD/NoZu4lv6KFYPamr6Pcq0PBpjpQXhtZ+2g/kQ==
-X-Received: by 2002:a5d:66c5:: with SMTP id k5mr2740621wrw.17.1590142686217;
- Fri, 22 May 2020 03:18:06 -0700 (PDT)
-Received: from myrica ([2001:171b:226e:c200:c43b:ef78:d083:b355])
- by smtp.gmail.com with ESMTPSA id d126sm9765981wmd.32.2020.05.22.03.18.05
- (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
- Fri, 22 May 2020 03:18:05 -0700 (PDT)
-Date: Fri, 22 May 2020 12:17:55 +0200
-From: Jean-Philippe Brucker <jean-philippe@linaro.org>
-To: Marc Zyngier <maz@kernel.org>
-Subject: Re: [PATCH v7 13/24] iommu/arm-smmu-v3: Enable broadcast TLB
- maintenance
-Message-ID: <20200522101755.GA3453945@myrica>
-References: <20200519175502.2504091-1-jean-philippe@linaro.org>
- <20200519175502.2504091-14-jean-philippe@linaro.org>
- <20200521141730.GJ6608@willie-the-truck>
- <0c896ad27b43b2de554cf772f9453d0a@kernel.org>
-MIME-Version: 1.0
-Content-Disposition: inline
-In-Reply-To: <0c896ad27b43b2de554cf772f9453d0a@kernel.org>
-Cc: devicetree@vger.kernel.org, kevin.tian@intel.com, jgg@ziepe.ca,
- linux-pci@vger.kernel.org, robin.murphy@arm.com, fenghua.yu@intel.com,
- hch@infradead.org, linux-mm@kvack.org, iommu@lists.linux-foundation.org,
- zhangfei.gao@linaro.org, catalin.marinas@arm.com, felix.kuehling@amd.com,
- Will Deacon <will@kernel.org>, christian.koenig@amd.com,
+ with ESMTP id 8c25PNqoQRo2 for <iommu@lists.linux-foundation.org>;
+ Fri, 22 May 2020 12:57:12 +0000 (UTC)
+X-Greylist: from auto-whitelisted by SQLgrey-1.7.6
+Received: from mailout1.w1.samsung.com (mailout1.w1.samsung.com
+ [210.118.77.11])
+ by fraxinus.osuosl.org (Postfix) with ESMTPS id 8CDAB876D2
+ for <iommu@lists.linux-foundation.org>; Fri, 22 May 2020 12:57:12 +0000 (UTC)
+Received: from eucas1p1.samsung.com (unknown [182.198.249.206])
+ by mailout1.w1.samsung.com (KnoxPortal) with ESMTP id
+ 20200522125709euoutp01ab87650b7559b241af012f8d1e5d8135~RWwc2Y0Nb2995329953euoutp01J
+ for <iommu@lists.linux-foundation.org>; Fri, 22 May 2020 12:57:09 +0000 (GMT)
+DKIM-Filter: OpenDKIM Filter v2.11.0 mailout1.w1.samsung.com
+ 20200522125709euoutp01ab87650b7559b241af012f8d1e5d8135~RWwc2Y0Nb2995329953euoutp01J
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=samsung.com;
+ s=mail20170921; t=1590152230;
+ bh=YNTaZW2eCrOBB+/EZo2VHocehjAUUuW398emjA1vya4=;
+ h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
+ b=s8y14ezWQp/obQT5eQzlHBx2D6Ufr/neV8oEDj4QmWuKnIp4m5g7xix59W6ecmC7N
+ T/nvlIAf/rGSuF7c0Ti7mHHY3RlU0vsLq6Ckm1BJuAlLy2TKWKVYz0sK3Dutt+bWO8
+ j/Kn/oVcRQpDbsN2pVw4bZHwV4KrnWb/mSs6tuA8=
+Received: from eusmges1new.samsung.com (unknown [203.254.199.242]) by
+ eucas1p2.samsung.com (KnoxPortal) with ESMTP id
+ 20200522125709eucas1p2c9cc74a5e6327f14ff2fec8d00997ac0~RWwcNyFI80249702497eucas1p2n;
+ Fri, 22 May 2020 12:57:09 +0000 (GMT)
+Received: from eucas1p2.samsung.com ( [182.198.249.207]) by
+ eusmges1new.samsung.com (EUCPMTA) with SMTP id 58.BE.61286.52CC7CE5; Fri, 22
+ May 2020 13:57:09 +0100 (BST)
+Received: from eusmtrp2.samsung.com (unknown [182.198.249.139]) by
+ eucas1p2.samsung.com (KnoxPortal) with ESMTPA id
+ 20200522125708eucas1p233b80b0741f087a84d47f24b6d91985f~RWwbxlE_S0903009030eucas1p2y;
+ Fri, 22 May 2020 12:57:08 +0000 (GMT)
+Received: from eusmgms1.samsung.com (unknown [182.198.249.179]) by
+ eusmtrp2.samsung.com (KnoxPortal) with ESMTP id
+ 20200522125708eusmtrp2ce3887019627c346b790bcbe15a7947f~RWwbwTwIw1358513585eusmtrp2R;
+ Fri, 22 May 2020 12:57:08 +0000 (GMT)
+X-AuditID: cbfec7f2-ef1ff7000001ef66-6f-5ec7cc252cc0
+Received: from eusmtip1.samsung.com ( [203.254.199.221]) by
+ eusmgms1.samsung.com (EUCPMTA) with SMTP id 3E.42.08375.42CC7CE5; Fri, 22
+ May 2020 13:57:08 +0100 (BST)
+Received: from AMDC2765.digital.local (unknown [106.120.51.73]) by
+ eusmtip1.samsung.com (KnoxPortal) with ESMTPA id
+ 20200522125708eusmtip1f843fc2153bbac42a292dde233075588~RWwbEtm5i3030830308eusmtip1G;
+ Fri, 22 May 2020 12:57:08 +0000 (GMT)
+From: Marek Szyprowski <m.szyprowski@samsung.com>
+To: dri-devel@lists.freedesktop.org, iommu@lists.linux-foundation.org,
+ linaro-mm-sig@lists.linaro.org, linux-kernel@vger.kernel.org
+Subject: [PATCH v5 39/38] drm: xen: fix common struct sg_table related issues
+Date: Fri, 22 May 2020 14:56:52 +0200
+Message-Id: <20200522125652.18435-1-m.szyprowski@samsung.com>
+X-Mailer: git-send-email 2.17.1
+In-Reply-To: <20200513132114.6046-1-m.szyprowski@samsung.com>
+X-Brightmail-Tracker: H4sIAAAAAAAAA0VSWUwTURTNm5m2A2lhLChPMIKNmGAUJPIxCUowGjN+GCQxxBhBqkxYpIAt
+ rYIfEEAgpRCEDwgg4gbYssm+uLCIxUgGWSSgRTajghCwQFmMVIap+HfuWd65uXk4Kn7Bc8TD
+ o2JpeZQ0UsK3xhrfrvcdde3VBx0bNdmSmcw7hHyeX80jzY33UHJoZYFPPtN1I2TJa29yeWgS
+ IWunh3nkYGsRn6x8MyYgF3ULPLJj8SuPXK3PRXxFVEVxBaAMT1sA9dJUglFNpgkeNZ6hR6i6
+ JwnU581plModKQNU1+IQRrWNJvKprHotoJZq918QXrY+EUJHhqtouYdPsHVYkXEKi9kgbmf9
+ mkcSQYGNGuA4JLzgj5azamCNi4lyANM0sxg3LANY+qXQMiwBONdbg6iB1XbC/KkZ5YQyABt0
+ hfydiKmsFLAuPuEJ1fNqPovtibsA9mQKWRNKrCGQKe0RsIId4Qcfd+RsBzDCFaZWt2EsFhEn
+ YRHzG+XqnKGupn0bW23xxoZ1HvsQJBgB1LYsCzjTGbhmnsA4bAdn9fUWfh80tzxAuEAygJNM
+ pYAbNAAOJuUDzuUNDcwGn70HSrjB6lYPjj4F+yaSUe5MNnBkfhdLo1swpzHPQotgeqqYcx+C
+ BfqqndqODwOW/SmY1tVmOVc2gNrMfiQbOBf8LysBQAscaKVCFkorPKPoW+4KqUyhjAp1vx4t
+ qwVbf+r9pt7YDFYGrnUCAgcSoYho1QeJeVKVIk7WCSCOSuxFD227g8SiEGlcPC2PvipXRtKK
+ TuCEYxIH0fFHM4FiIlQaS9+g6Rha/k9FcCvHRIAFCjGlMHXmSsJg3rqmZpbRaMTdScOB5y6t
+ 1+WQU2NU8ccn5r1ZQcHO8VW9PqXnIwwZvuW946tNpp+ky528g6fz5+r+9Dn5Od484hWGvPLP
+ Kw9w2/OdSVUdkDh57k4x1Fz0D8hua9d+S+jyu48CXbBLpSo9i5b1+xvDUyIKiiWYIkzqeRiV
+ K6R/AfS9l3RPAwAA
+X-Brightmail-Tracker: H4sIAAAAAAAAA+NgFprHIsWRmVeSWpSXmKPExsVy+t/xu7oqZ47HGfxYoGPRe+4kk8XGGetZ
+ Lf5vm8hsceXrezaLlauPMlks2G9t8eXKQyaLTY+vsVpc3jWHzWLtkbvsFh9Wv2e1OPjhCavF
+ 9y2TmRx4PdbMW8PocWfpTkaPvd8WsHhs//aA1eN+93Emj81L6j1u/3vM7DH5xnJGj8MfrrB4
+ 7L7ZwObRt2UVo8fnTXIBPFF6NkX5pSWpChn5xSW2StGGFkZ6hpYWekYmlnqGxuaxVkamSvp2
+ NimpOZllqUX6dgl6GXM+PWIp+CVQ0ffxLVMD4yy+LkZODgkBE4n/t3YwdzFycQgJLGWUmNe4
+ mgkiISNxcloDK4QtLPHnWhcbRNEnRolVp5+zgSTYBAwlut5CJEQEOhklpnV/ZAdxmAX+MUmc
+ 2LsdbJSwgK/EsrUfwDpYBFQl2tbvZgGxeQVsJeac+80MsUJeYvWGA2A2J1D809afYKuFBGwk
+ 1rbOYZvAyLeAkWEVo0hqaXFuem6xoV5xYm5xaV66XnJ+7iZGYNxsO/Zz8w7GSxuDDzEKcDAq
+ 8fDu2H48Tog1say4MvcQowQHs5II70L+o3FCvCmJlVWpRfnxRaU5qcWHGE2BjprILCWanA+M
+ 6bySeENTQ3MLS0NzY3NjMwslcd4OgYMxQgLpiSWp2ampBalFMH1MHJxSDYxqyz02X2Ts7561
+ 6b280cSlX37ILbB+toZpbzjXEcP7Vb+yA57YdfYbz6/qPLRV++U3sbovi0QvnOXQfax5806o
+ k6ziy2m3J3YfT3jE4iD45fShHMe5+j8tlK+YPGu0tKtN6XT24HMOjeafW/Jk/7sb09ZwyU67
+ 7cB6d8oXjwOux5o80tp1eSuUWIozEg21mIuKEwHG6J9ksQIAAA==
+X-CMS-MailID: 20200522125708eucas1p233b80b0741f087a84d47f24b6d91985f
+X-Msg-Generator: CA
+X-RootMTR: 20200522125708eucas1p233b80b0741f087a84d47f24b6d91985f
+X-EPHeader: CA
+CMS-TYPE: 201P
+X-CMS-RootMailID: 20200522125708eucas1p233b80b0741f087a84d47f24b6d91985f
+References: <20200513132114.6046-1-m.szyprowski@samsung.com>
+ <CGME20200522125708eucas1p233b80b0741f087a84d47f24b6d91985f@eucas1p2.samsung.com>
+Cc: Bartlomiej Zolnierkiewicz <b.zolnierkie@samsung.com>,
+ David Airlie <airlied@linux.ie>,
+ Oleksandr Andrushchenko <oleksandr_andrushchenko@epam.com>,
+ Daniel Vetter <daniel@ffwll.ch>, xen-devel@lists.xenproject.org,
+ Robin Murphy <robin.murphy@arm.com>, Christoph Hellwig <hch@lst.de>,
  linux-arm-kernel@lists.infradead.org
 X-BeenThere: iommu@lists.linux-foundation.org
 X-Mailman-Version: 2.1.15
@@ -110,79 +146,63 @@ List-Post: <mailto:iommu@lists.linux-foundation.org>
 List-Help: <mailto:iommu-request@lists.linux-foundation.org?subject=help>
 List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
  <mailto:iommu-request@lists.linux-foundation.org?subject=subscribe>
+MIME-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
 Errors-To: iommu-bounces@lists.linux-foundation.org
 Sender: "iommu" <iommu-bounces@lists.linux-foundation.org>
 
-[+Eric]
+The Documentation/DMA-API-HOWTO.txt states that the dma_map_sg() function
+returns the number of the created entries in the DMA address space.
+However the subsequent calls to the dma_sync_sg_for_{device,cpu}() and
+dma_unmap_sg must be called with the original number of the entries
+passed to the dma_map_sg().
 
-On Thu, May 21, 2020 at 03:38:35PM +0100, Marc Zyngier wrote:
-> On 2020-05-21 15:17, Will Deacon wrote:
-> > [+Marc]
-> > 
-> > On Tue, May 19, 2020 at 07:54:51PM +0200, Jean-Philippe Brucker wrote:
-> > > The SMMUv3 can handle invalidation targeted at TLB entries with shared
-> > > ASIDs. If the implementation supports broadcast TLB maintenance,
-> > > enable it
-> > > and keep track of it in a feature bit. The SMMU will then be
-> > > affected by
-> > > inner-shareable TLB invalidations from other agents.
-> > > 
-> > > A major side-effect of this change is that stage-2 translation
-> > > contexts
-> > > are now affected by all invalidations by VMID. VMIDs are all shared
-> > > and
-> > > the only ways to prevent over-invalidation, since the stage-2 page
-> > > tables
-> > > are not shared between CPU and SMMU, are to either disable BTM or
-> > > allocate
-> > > different VMIDs. This patch does not address the problem.
-> > 
-> > This sounds like a potential performance issue, particularly as we
-> > expose
-> > stage-2 contexts via VFIO directly.
+struct sg_table is a common structure used for describing a non-contiguous
+memory buffer, used commonly in the DRM and graphics subsystems. It
+consists of a scatterlist with memory pages and DMA addresses (sgl entry),
+as well as the number of scatterlist entries: CPU pages (orig_nents entry)
+and DMA mapped pages (nents entry).
 
-Yes it's certainly going to affect SMMU performance, though I haven't
-measured it. QEMU and kvmtool currently use stage-1 translations instead
-of stage-2, so it won't be a problem until they start using nested
-translation (and unless the SMMU only supports stage-2).
+It turned out that it was a common mistake to misuse nents and orig_nents
+entries, calling DMA-mapping functions with a wrong number of entries or
+ignoring the number of mapped entries returned by the dma_map_sg()
+function.
 
-In the coming month I'd like to have a look at coordinating VMID
-allocation between KVM and SMMU, for guest SVA. If the guest wants to
-share page tables with the SMMU, the SMMU has to use the same VMIDs as the
-VM to receive broadcast TLBI.
+Fix the code to refer to proper nents or orig_nents entries. This driver
+reports the number of the pages in the imported scatterlist, so it should
+refer to sg_table->orig_nents entry.
 
-Similarly to patch 06 ("arm64: mm: Pin down ASIDs for sharing mm with
-devices") the SMMU would request a VMID allocated by KVM, when setting up
-a nesting VFIO container. One major downside is that the VMID is pinned
-and cannot be recycled on rollover while it's being used for DMA.
+Signed-off-by: Marek Szyprowski <m.szyprowski@samsung.com>
+Acked-by: Oleksandr Andrushchenko <oleksandr_andrushchenko@epam.com>
+---
+For more information, see '[PATCH v5 00/38] DRM: fix struct sg_table nents
+vs. orig_nents misuse' thread:
+https://lore.kernel.org/linux-iommu/20200513132114.6046-1-m.szyprowski@samsung.com/T/
 
-I wonder if we could use this even when page tables aren't shared between
-CPU and SMMU, to avoid splitting the VMID space.
+This patch has been resurrected on Oleksandr Andrushchenko request. The
+patch was a part of v2 patchset, but then I've dropped it as it only
+fixes the debug output, thus I didn't consider it so critical.
+---
+ drivers/gpu/drm/xen/xen_drm_front_gem.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-> > Maybe we could reserve some portion
-> > of
-> > VMID space for the SMMU? Marc, what do you reckon?
-> 
-> Certainly doable when we have 16bits VMIDs. With smaller VMID spaces (like
-> on
-> v8.0), this is a bit more difficult (we do have pretty large v8.0 systems
-> around).
+diff --git a/drivers/gpu/drm/xen/xen_drm_front_gem.c b/drivers/gpu/drm/xen/xen_drm_front_gem.c
+index f0b85e0..ba4bdc5 100644
+--- a/drivers/gpu/drm/xen/xen_drm_front_gem.c
++++ b/drivers/gpu/drm/xen/xen_drm_front_gem.c
+@@ -215,7 +215,7 @@ struct drm_gem_object *
+ 		return ERR_PTR(ret);
+ 
+ 	DRM_DEBUG("Imported buffer of size %zu with nents %u\n",
+-		  size, sgt->nents);
++		  size, sgt->orig_nents);
+ 
+ 	return &xen_obj->base;
+ }
+-- 
+1.9.1
 
-It's only an issue if those systems have an SMMUv3 supporting DVM. With
-any luck that doesn't exist?
-
-> How many VMID bits are we talking about?
-
-That's anyone's guess... One passed-through device per VM would halve the
-VMID space. But the SMMU allocates one VMID for each device assigned to a
-guest, not one per VM (well one per domain, or VFIO container, but I think
-it boils down to one per device with QEMU). So with SR-IOV for example it
-should be pretty easy to reach 256 VMIDs in the SMMU.
-
-Thanks,
-Jean
 _______________________________________________
 iommu mailing list
 iommu@lists.linux-foundation.org
