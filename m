@@ -3,96 +3,171 @@ X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
 X-Spam-Status: No, score=-0.6 required=3.0 tests=DKIM_INVALID,DKIM_SIGNED,
-	HEADER_FROM_DIFFERENT_DOMAINS,MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS,
-	URIBL_BLOCKED autolearn=no autolearn_force=no version=3.4.0
+	HEADER_FROM_DIFFERENT_DOMAINS,MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS
+	autolearn=no autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id DAEF2C433E0
-	for <iommu@archiver.kernel.org>; Fri, 22 May 2020 17:15:10 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 46DDAC433E0
+	for <iommu@archiver.kernel.org>; Fri, 22 May 2020 18:10:31 +0000 (UTC)
 Received: from hemlock.osuosl.org (smtp2.osuosl.org [140.211.166.133])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by mail.kernel.org (Postfix) with ESMTPS id 6ADF920776
-	for <iommu@archiver.kernel.org>; Fri, 22 May 2020 17:15:10 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTPS id E152220738
+	for <iommu@archiver.kernel.org>; Fri, 22 May 2020 18:10:30 +0000 (UTC)
 Authentication-Results: mail.kernel.org;
-	dkim=fail reason="signature verification failed" (2048-bit key) header.d=linaro.org header.i=@linaro.org header.b="r/uep0uu"
-DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 6ADF920776
-Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=linaro.org
+	dkim=fail reason="signature verification failed" (2048-bit key) header.d=nvidia.com header.i=@nvidia.com header.b="RoT96hQ3"
+DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org E152220738
+Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=nvidia.com
 Authentication-Results: mail.kernel.org; spf=pass smtp.mailfrom=iommu-bounces@lists.linux-foundation.org
 Received: from localhost (localhost [127.0.0.1])
-	by hemlock.osuosl.org (Postfix) with ESMTP id 283A488A19;
-	Fri, 22 May 2020 17:15:10 +0000 (UTC)
+	by hemlock.osuosl.org (Postfix) with ESMTP id 5759B888C1;
+	Fri, 22 May 2020 18:10:30 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
 Received: from hemlock.osuosl.org ([127.0.0.1])
 	by localhost (.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
-	with ESMTP id gBmm8D4rDrj6; Fri, 22 May 2020 17:15:09 +0000 (UTC)
+	with ESMTP id fU8wiA2wS5y7; Fri, 22 May 2020 18:10:29 +0000 (UTC)
 Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [140.211.9.56])
-	by hemlock.osuosl.org (Postfix) with ESMTP id 8D88181B84;
-	Fri, 22 May 2020 17:15:09 +0000 (UTC)
+	by hemlock.osuosl.org (Postfix) with ESMTP id 7FDCA88898;
+	Fri, 22 May 2020 18:10:29 +0000 (UTC)
 Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
-	by lists.linuxfoundation.org (Postfix) with ESMTP id 7150EC088B;
-	Fri, 22 May 2020 17:15:09 +0000 (UTC)
-Received: from fraxinus.osuosl.org (smtp4.osuosl.org [140.211.166.137])
- by lists.linuxfoundation.org (Postfix) with ESMTP id 258AEC0176
- for <iommu@lists.linux-foundation.org>; Fri, 22 May 2020 17:15:08 +0000 (UTC)
+	by lists.linuxfoundation.org (Postfix) with ESMTP id 516F6C0863;
+	Fri, 22 May 2020 18:10:29 +0000 (UTC)
+Received: from whitealder.osuosl.org (smtp1.osuosl.org [140.211.166.138])
+ by lists.linuxfoundation.org (Postfix) with ESMTP id D048BC0176
+ for <iommu@lists.linux-foundation.org>; Fri, 22 May 2020 18:10:27 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
- by fraxinus.osuosl.org (Postfix) with ESMTP id 0DDC887A60
- for <iommu@lists.linux-foundation.org>; Fri, 22 May 2020 17:15:08 +0000 (UTC)
+ by whitealder.osuosl.org (Postfix) with ESMTP id C13398888A
+ for <iommu@lists.linux-foundation.org>; Fri, 22 May 2020 18:10:27 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from fraxinus.osuosl.org ([127.0.0.1])
+Received: from whitealder.osuosl.org ([127.0.0.1])
  by localhost (.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
- with ESMTP id wsPv-8dtmGWn for <iommu@lists.linux-foundation.org>;
- Fri, 22 May 2020 17:15:07 +0000 (UTC)
+ with ESMTP id ibQCp9iptDsG for <iommu@lists.linux-foundation.org>;
+ Fri, 22 May 2020 18:10:26 +0000 (UTC)
 X-Greylist: domain auto-whitelisted by SQLgrey-1.7.6
-Received: from mail-wr1-f67.google.com (mail-wr1-f67.google.com
- [209.85.221.67])
- by fraxinus.osuosl.org (Postfix) with ESMTPS id 0A6E187A5D
- for <iommu@lists.linux-foundation.org>; Fri, 22 May 2020 17:15:07 +0000 (UTC)
-Received: by mail-wr1-f67.google.com with SMTP id l11so10924308wru.0
- for <iommu@lists.linux-foundation.org>; Fri, 22 May 2020 10:15:06 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linaro.org; s=google;
- h=date:from:to:cc:subject:message-id:references:mime-version
- :content-disposition:in-reply-to;
- bh=09cuiPopIOJ5aAQOSJRwjVEJJoZ5ZgmUzhsRLgEZpY0=;
- b=r/uep0uuJQLYx20aHcrEbEpO3MMibL4LPe/jFDu4IN2wSG9yqX5PXP245RsG//+TO/
- Cocvp89LCLIPNNYlc6OykX8uBrz6LwI+ReTQvzxRSOMOey16m0EEisxn2tx5VunYYTPP
- 1jbBQZtV83OTjzCQnsh+N53ProKGcWMS8TGEyyuf7fSKcAfptwIo5LRCJv+avtpmP8L4
- hw0ACBaOW0MFC/hnBrM5W8WeEfd600mle588Ys+xGLVDUUVJWDPhAxhlT3jyUMO8ckJo
- 0HWO5mb4UdgvRrUcQTNZ8YcozyhK/90aBnlFS7/6rR61MKaYkOxfcqk8kWjHK77a+8sz
- MR9g==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
- d=1e100.net; s=20161025;
- h=x-gm-message-state:date:from:to:cc:subject:message-id:references
- :mime-version:content-disposition:in-reply-to;
- bh=09cuiPopIOJ5aAQOSJRwjVEJJoZ5ZgmUzhsRLgEZpY0=;
- b=IYiJtPqPGds6MfK0Gi2NvtofqOP/v1Y8nnGITdZ02CmUWDkQD6g0d9HjAM7eUKSvBg
- tox3FDK6i7I8MC2CtmeIXUXnPi99MdUfpzOdb2BKXbZ3uIb9hlI9Gi/nNuWDwecBIovH
- hg7xePrt4yM91545pp84tT5/ImRi8K0xT6TUAUJKspIVRXLpFNmN+COU9EwvqamPoGn4
- aH7AeIFrzDUxte7yl8r6XDKpR/iXkA4D1p6kJJq8CUkweBbidx/zVLeeuFDIGvm9O6no
- zFuzRyfTaLI7oJBXphhQUuMYTfkoqyTkJNxWujIg8DsP/La6sC3UvEZr2f+xagPXUqkQ
- 4N5w==
-X-Gm-Message-State: AOAM531iKwxp8CBEbeuQVJSREaLog/O+9YkIya/EgaxXNjSKm0xh/9AC
- q/ncY+3Q1lP8aSV6UpbObXw2xA==
-X-Google-Smtp-Source: ABdhPJyxZ7kAMuA18QTw/krT1LaT+RyS8m/xIWMdni16UN7OYLdnQFqzGTPLW06K+87Eh9MIsX4pmw==
-X-Received: by 2002:a5d:49c5:: with SMTP id t5mr4331584wrs.18.1590167705375;
- Fri, 22 May 2020 10:15:05 -0700 (PDT)
-Received: from myrica ([2001:171b:226e:c200:c43b:ef78:d083:b355])
- by smtp.gmail.com with ESMTPSA id h74sm10394613wrh.76.2020.05.22.10.15.02
- (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
- Fri, 22 May 2020 10:15:04 -0700 (PDT)
-Date: Fri, 22 May 2020 19:14:52 +0200
-From: Jean-Philippe Brucker <jean-philippe@linaro.org>
-To: Xiang Zheng <zhengxiang9@huawei.com>
-Subject: Re: [RFC] Use SMMU HTTU for DMA dirty page tracking
-Message-ID: <20200522171452.GC3453945@myrica>
-References: <b926ec0b-fe87-0792-c41d-acad56c656a4@huawei.com>
+Received: from hqnvemgate25.nvidia.com (hqnvemgate25.nvidia.com
+ [216.228.121.64])
+ by whitealder.osuosl.org (Postfix) with ESMTPS id D201F88845
+ for <iommu@lists.linux-foundation.org>; Fri, 22 May 2020 18:10:26 +0000 (UTC)
+Received: from hqpgpgate101.nvidia.com (Not Verified[216.228.121.13]) by
+ hqnvemgate25.nvidia.com (using TLS: TLSv1.2, DES-CBC3-SHA)
+ id <B5ec815420003>; Fri, 22 May 2020 11:09:06 -0700
+Received: from hqmail.nvidia.com ([172.20.161.6])
+ by hqpgpgate101.nvidia.com (PGP Universal service);
+ Fri, 22 May 2020 11:10:26 -0700
+X-PGP-Universal: processed;
+ by hqpgpgate101.nvidia.com on Fri, 22 May 2020 11:10:26 -0700
+Received: from HQMAIL107.nvidia.com (172.20.187.13) by HQMAIL107.nvidia.com
+ (172.20.187.13) with Microsoft SMTP Server (TLS) id 15.0.1473.3; Fri, 22 May
+ 2020 18:10:26 +0000
+Received: from NAM11-CO1-obe.outbound.protection.outlook.com (104.47.56.171)
+ by HQMAIL107.nvidia.com (172.20.187.13) with Microsoft SMTP Server (TLS) id
+ 15.0.1473.3 via Frontend Transport; Fri, 22 May 2020 18:10:26 +0000
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=nj0dCoMvb17YpWqUDCGAsksHxrvCyE/BWCeCCJ2TCaQQMcwGFeTD+d7lMQ/3agzEfQ7AqL4Vpv1ioBgDuhPBTtMQBxXKJfiHO1y9IyoE9EIA7nBIRMLSciXFHvmfIETxMTXf6iF0j2m+vI+PA9UHIpI+Upre/sZC09cKCeW9sZTnOts5UFQRcF4MHEh9YuFrcUqgtZCBVAt30Bi1noZ6gdgorveu6zGQyoVmVEZj+Bs1cAQ3Ds2WqIR/VfppY0SZEYdQJG+B3YVh9ZMHc1uk1INVxAv30A+hYTBDw5qO+ONm3KWv4qEI5puZSbgr/Y27ncilizOPQj48/eb6127jVA==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com; 
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=f/AWzbqnXxlhoRAOIUN3PC1WmhdTIhzrXdtAhLi/5TA=;
+ b=E4hQUZHdjivLIWEai7zp0Q4YvlFHqHu7jgRaf0c605zvywYGpLDpYyAuAecjWmWrv2LkmFeWiSleLlMLCQGQED5EuEYE2Q/Q6ZcqPG/hGLKNz9tEwnoip8J5g89Lv0+dvxJkofZ5oc+3m2pIRPiHquxu6kuL0KeFAW/TUyqXCC+vGUrGWddSgQ7yLddWOGDFCrq1p6P73rgDFRWnpgpNjxje26PRhySoEK6YIWgO3T7+CCjfMSNTQYlLG5U6CuYlJfzqoAn2kUdgmC8WhKbxKxyoJGO7+oAUWF70ckhSYkLKpE8iPdkZAh672cT7/BfAIhdX/0xBJrYbISIFlW2gxA==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=nvidia.com; dmarc=pass action=none header.from=nvidia.com;
+ dkim=pass header.d=nvidia.com; arc=none
+Received: from BYAPR12MB2710.namprd12.prod.outlook.com (2603:10b6:a03:68::11)
+ by BYAPR12MB3432.namprd12.prod.outlook.com (2603:10b6:a03:ac::22)
+ with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.3000.20; Fri, 22 May
+ 2020 18:10:24 +0000
+Received: from BYAPR12MB2710.namprd12.prod.outlook.com
+ ([fe80::1d05:9263:557d:e8a6]) by BYAPR12MB2710.namprd12.prod.outlook.com
+ ([fe80::1d05:9263:557d:e8a6%3]) with mapi id 15.20.3021.020; Fri, 22 May 2020
+ 18:10:24 +0000
+From: Krishna Reddy <vdumpa@nvidia.com>
+To: Thierry Reding <thierry.reding@gmail.com>
+Subject: RE: [PATCH v5 0/5] Nvidia Arm SMMUv2 Implementation
+Thread-Topic: [PATCH v5 0/5] Nvidia Arm SMMUv2 Implementation
+Thread-Index: AQHWL8f5lKtyjrvqv0q1G81xVAkq1ai0N+IAgAAxEhA=
+Date: Fri, 22 May 2020 18:10:23 +0000
+Message-ID: <BYAPR12MB27108F134E65484613449B07B3B40@BYAPR12MB2710.namprd12.prod.outlook.com>
+References: <20200521233107.11968-1-vdumpa@nvidia.com>
+ <20200522151444.GB2374603@ulmo>
+In-Reply-To: <20200522151444.GB2374603@ulmo>
+Accept-Language: en-US
+X-MS-Has-Attach: 
+X-MS-TNEF-Correlator: 
+msip_labels: MSIP_Label_6b558183-044c-4105-8d9c-cea02a2a3d86_Enabled=True;
+ MSIP_Label_6b558183-044c-4105-8d9c-cea02a2a3d86_SiteId=43083d15-7273-40c1-b7db-39efd9ccc17a;
+ MSIP_Label_6b558183-044c-4105-8d9c-cea02a2a3d86_Owner=VDUMPA@nvidia.com;
+ MSIP_Label_6b558183-044c-4105-8d9c-cea02a2a3d86_SetDate=2020-05-22T18:10:21.7852339Z;
+ MSIP_Label_6b558183-044c-4105-8d9c-cea02a2a3d86_Name=Unrestricted;
+ MSIP_Label_6b558183-044c-4105-8d9c-cea02a2a3d86_Application=Microsoft Azure
+ Information Protection;
+ MSIP_Label_6b558183-044c-4105-8d9c-cea02a2a3d86_ActionId=cb7d82d7-369a-4043-9871-c3f0c5ea7075;
+ MSIP_Label_6b558183-044c-4105-8d9c-cea02a2a3d86_Extended_MSFT_Method=Automatic
+authentication-results: gmail.com; dkim=none (message not signed)
+ header.d=none;gmail.com; dmarc=none action=none header.from=nvidia.com;
+x-originating-ip: [216.228.112.22]
+x-ms-publictraffictype: Email
+x-ms-office365-filtering-correlation-id: f641e402-d596-43d6-35e3-08d7fe7b6613
+x-ms-traffictypediagnostic: BYAPR12MB3432:
+x-ms-exchange-transport-forked: True
+x-microsoft-antispam-prvs: <BYAPR12MB343233C2BA83284B856E17C2B3B40@BYAPR12MB3432.namprd12.prod.outlook.com>
+x-ms-oob-tlc-oobclassifiers: OLM:8882;
+x-forefront-prvs: 04111BAC64
+x-ms-exchange-senderadcheck: 1
+x-microsoft-antispam: BCL:0;
+x-microsoft-antispam-message-info: l5tg0yeQYwZ+ntyUMpBrBrr8zf6DnI8s2v7c6qeXYM/u8bTQjCTjR7chopqTPQ2iMZPmXNi/Row41Ix/UlU8ngKuK4vBp6KqKUfkiE/9moXyy9RmyK785gCKWtFS2Un/eygfX3oKrtU1pD+RLaJCALotduCjwMYUcKwGTtXVUNE6Rp2z451caLkk3xwTmnaStR3JX1pveMxh7vFsvZJEhuN0LdWD3pIeRvaD1gl46WmzIn8gdjm2MANHZem91cp2pdl/fJRZWOh45A1/eob3otajGQNwHC6aVOjEdEg3KUyi185c7pGrhANtuVP90nMqZI1yaPGz/l15FvPPIPf8DS66xF97L1fL7FXIvTeVZ+F8yfJxC58Wd+B8mov9DCpKn6Di+0BTFosK9R/7Tunrqq76Htub800zYCbjEaTOepQBWra8+nSTYXEFmop/4aom6D+BGQIzX5yt0tdgK9GD6CLucX8aWEkPu9pf5W1KgR8LFbk+RI2qqphRgFJo3+O3ygujRi1JdwiKBmwGigP+bA==
+x-forefront-antispam-report: CIP:255.255.255.255; CTRY:; LANG:en; SCL:1; SRV:;
+ IPV:NLI; SFV:NSPM; H:BYAPR12MB2710.namprd12.prod.outlook.com; PTR:; CAT:NONE;
+ SFTY:;
+ SFS:(366004)(39860400002)(346002)(136003)(376002)(396003)(66476007)(107886003)(186003)(7696005)(8936002)(2906002)(26005)(33656002)(6916009)(71200400001)(6506007)(4326008)(54906003)(86362001)(64756008)(66946007)(66556008)(478600001)(5660300002)(9686003)(966005)(76116006)(8676002)(52536014)(66446008)(316002)(55016002);
+ DIR:OUT; SFP:1101; 
+x-ms-exchange-antispam-messagedata: yLI4mfd0oeGSh88lDbqOUgjLjZAxZ8Yev0TlhyFAJQ9aoon9sexSvYQK7lpq2Vqt6DPMcV8W7WgQ1FZeJtsvwxrRtq+J73PQgNXDfSGKWlP9p9kwntPu5G4MW5VHr75Y+OHvyjxeZ0W9JplWBfP7QwV+wnJSCZK5dc3TzS0NIi/rjl3T2rZFCT+D4Z0uYcE2TG+7UJMXk5PPdVAfYI/nfCH6PFgkDRSYr9jTPMArQWDwjguyLz3v/opuInUafb4Mvkft930eQwmw62Pf7Wh81hZRDRh+ywwHSptylCsuwerKJ0tO80Z55L1wx0SmQixCAtwZZHdWY/Uo33wpd9RJLiR1VcOvrB24uMj5i8Ubo8JVXPOO8eQxJwuzzix/Y97aTzyWbn/Gi5BL6tntPBzLDysbVRqKdHoP2GKUsvM/nRwtfWntleKjsoBJ5LGiVQpxbF4OaXAsMQcaonBWS1rpa0pzL8anf/HLBgJ9YF+Z5d0OHKpaDavSjWSL0HxRd/oj
 MIME-Version: 1.0
-Content-Disposition: inline
-In-Reply-To: <b926ec0b-fe87-0792-c41d-acad56c656a4@huawei.com>
-Cc: Suzuki K Poulose <suzuki.poulose@arm.com>, maz@kernel.org,
- iommu@lists.linux-foundation.org, James Morse <james.morse@arm.com>,
- julien.thierry.kdev@gmail.com, prime.zeng@hisilicon.com,
- Wang Haibin <wanghaibin.wang@huawei.com>, Will Deacon <will@kernel.org>,
- kvmarm@lists.cs.columbia.edu, linux-arm-kernel@lists.infradead.org
+X-MS-Exchange-CrossTenant-Network-Message-Id: f641e402-d596-43d6-35e3-08d7fe7b6613
+X-MS-Exchange-CrossTenant-originalarrivaltime: 22 May 2020 18:10:24.1153 (UTC)
+X-MS-Exchange-CrossTenant-fromentityheader: Hosted
+X-MS-Exchange-CrossTenant-id: 43083d15-7273-40c1-b7db-39efd9ccc17a
+X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
+X-MS-Exchange-CrossTenant-userprincipalname: ohyYhpCrok9IPYyVLlEXCf/pUVJUGmr2578lw6jfblnakA2z0uF1IQZkYenSVWNjixIZcll/WtlN82J4napgqA==
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: BYAPR12MB3432
+X-OriginatorOrg: Nvidia.com
+Content-Language: en-US
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=nvidia.com; s=n1;
+ t=1590170946; bh=f/AWzbqnXxlhoRAOIUN3PC1WmhdTIhzrXdtAhLi/5TA=;
+ h=X-PGP-Universal:ARC-Seal:ARC-Message-Signature:
+ ARC-Authentication-Results:From:To:CC:Subject:Thread-Topic:
+ Thread-Index:Date:Message-ID:References:In-Reply-To:
+ Accept-Language:X-MS-Has-Attach:X-MS-TNEF-Correlator:msip_labels:
+ authentication-results:x-originating-ip:x-ms-publictraffictype:
+ x-ms-office365-filtering-correlation-id:x-ms-traffictypediagnostic:
+ x-ms-exchange-transport-forked:x-microsoft-antispam-prvs:
+ x-ms-oob-tlc-oobclassifiers:x-forefront-prvs:
+ x-ms-exchange-senderadcheck:x-microsoft-antispam:
+ x-microsoft-antispam-message-info:x-forefront-antispam-report:
+ x-ms-exchange-antispam-messagedata:MIME-Version:
+ X-MS-Exchange-CrossTenant-Network-Message-Id:
+ X-MS-Exchange-CrossTenant-originalarrivaltime:
+ X-MS-Exchange-CrossTenant-fromentityheader:
+ X-MS-Exchange-CrossTenant-id:X-MS-Exchange-CrossTenant-mailboxtype:
+ X-MS-Exchange-CrossTenant-userprincipalname:
+ X-MS-Exchange-Transport-CrossTenantHeadersStamped:X-OriginatorOrg:
+ Content-Language:Content-Type:Content-Transfer-Encoding;
+ b=RoT96hQ3/dJNprhs89miTOEcPTQGRChYsO+IP3RYmW2GPo3T3W8nT3Nk6txGT6Bas
+ lODWIcraLtAUkwm+ey8XNBBRTLh9yZAP1XA2tvJx1U9uJjoqnDzRFeGpxCREme4NUI
+ LbplikAKdP78K8a6kP9KtZjG/6dqcQpwuXfqYntgVy81LzYk6aKpXL7zSoxB+3m/mS
+ 6gO0T6Km73alPqRSezx7cKDIEGoIq8jUhjmqjBR30JomTM5D8JCwQGIc3oJ5wfABrh
+ vAzZcCSld/zCTZIR2qaAUn1J+X349NVM258o/+JlPFI7I/jdyRL4jhgEp+j9esJ+zw
+ 3ucFnTbTcMyKQ==
+Cc: Thierry Reding <treding@nvidia.com>, Bryan Huntsman <bhuntsman@nvidia.com>,
+ "robin.murphy@arm.com" <robin.murphy@arm.com>,
+ "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
+ "iommu@lists.linux-foundation.org" <iommu@lists.linux-foundation.org>,
+ Mikko Perttunen <mperttunen@nvidia.com>, Timo Alho <talho@nvidia.com>,
+ Sachin Nikam <Snikam@nvidia.com>, Nicolin Chen <nicolinc@nvidia.com>,
+ "linux-tegra@vger.kernel.org" <linux-tegra@vger.kernel.org>,
+ Yu-Huan Hsu <YHsu@nvidia.com>, Pritesh Raithatha <praithatha@nvidia.com>,
+ "will@kernel.org" <will@kernel.org>,
+ "linux-arm-kernel@lists.infradead.org" <linux-arm-kernel@lists.infradead.org>,
+ Bitan Biswas <bbiswas@nvidia.com>
 X-BeenThere: iommu@lists.linux-foundation.org
 X-Mailman-Version: 2.1.15
 Precedence: list
@@ -110,58 +185,119 @@ Content-Transfer-Encoding: 7bit
 Errors-To: iommu-bounces@lists.linux-foundation.org
 Sender: "iommu" <iommu-bounces@lists.linux-foundation.org>
 
-Hi,
+>For the record: I don't think we should apply these because we don't have a good way of testing them. We currently have three problems that prevent us from enabling SMMU on Tegra194:
 
-On Tue, May 19, 2020 at 05:42:55PM +0800, Xiang Zheng wrote:
-> Hi all,
+Out of three issues pointed here, I see that only issue 2) is a real blocker for enabling SMMU HW by default in upstream.
+
+>That said, I have tested earlier versions of this patchset on top of my local branch with fixes for the above and they do seem to work as expected.
+>So I'll leave it up to the IOMMU maintainers whether they're willing to merge the driver patches as is.
+> But I want to clarify that I won't be applying the DTS patches until we've solved all of the above issues and therefore it should be clear that these won't be runtime tested until then.
+
+SMMU driver patches as such are complete and can be used by nvidia with a local config change(CONFIG_ARM_SMMU_DISABLE_BYPASS_BY_DEFAULT=n) to disable_bypass and
+Protects the driver patches against kernel changes. This config disable option is tested already by Nicolin Chen and me.
+
+Robin/Will, Can you comment if smmu driver patches alone(1,2,3 out of 5 patches) can be merged without DT enable patches? Is it reasonable to merge the driver patches alone?
+
+>1) If we enable SMMU support, then the DMA API will automatically try
+>     to use SMMU domains for allocations. This means that translations
+>     will happen as soon as a device's IOMMU operations are initialized
+>     and that is typically a long time (in kernel time at least) before
+>     a driver is bound and has a chance of configuring the device.
+
+>     This causes problems for non-quiesced devices like display
+>     controllers that the bootloader might have set up to scan out a
+>     boot splash.
+
+>     What we're missing here is a way to:
+
+>     a) advertise reserved memory regions for boot splash framebuffers
+>     b) map reserved memory regions early during SMMU setup
+
+>     Patches have been floating on the public mailing lists for b) but
+>     a) requires changes to the bootloader (both proprietary ones and
+>     U-Boot for SoCs prior to Tegra194).
+
+This happens if SMMU translations is enabled for display before reserved
+ Memory regions issue is fixed. This issue is not a real blocker for SMMU enable.
+
+
+>  2) Even if we don't enable SMMU for a given device (by not hooking up
+>     the iommus property), with a default kernel configuration we get a
+>     bunch of faults during boot because the ARM SMMU driver faults by
+>     default (rather than bypass) for masters which aren't hooked up to
+>     the SMMU.
+
+>     We could work around that by changing the default configuration or
+>     overriding it on the command-line, but that's not really an option
+>     because it decreases security and means that Tegra194 won't work
+>     out-of-the-box.
+
+This is the real issue that blocks enabling SMMU.  The USF faults for devices
+that don't have SMMU translations enabled should be fixed or WAR'ed before
+SMMU can be enabled. We should look at keeping SID as 0x7F for the devices
+that can't have SMMU enabled yet. SID 0x7f bypasses SMMU externally.
+
+>  3) We don't properly describe the DMA hierarchy, which causes the DMA
+>     masks to be improperly set. As a bit of background: Tegra194 has a
+>     special address bit (bit 39) that causes some swizzling to happen
+>     within the memory controller. As a result, any I/O virtual address
+>     that has bit 39 set will cause this swizzling to happen on access.
+>     The DMA/IOMMU allocator always starts allocating from the top of
+>     the IOVA space, which means that the first couple of gigabytes of
+>     allocations will cause most devices to fail because of the
+>     undesired swizzling that occurs.
+
+>     We had an initial patch for SDHCI merged that hard-codes the DMA
+>     mask to DMA_BIT_MASK(39) on Tegra194 to work around that. However,
+>     the devices all do support addressing 40 bits and the restriction
+>     on bit 39 is really a property of the bus rather than a capability
+>     of the device. This means that we would have to work around this
+>     for every device driver by adding similar hacks. A better option is
+>     to properly describe the DMA hierarchy (using dma-ranges) because
+>     that will then automatically be applied as a constraint on each
+>     device's DMA mask.
+
+>     I have been working on patches to address this, but they are fairly
+>     involved because they require device tree bindings changes and so
+>     on.
+
+Dma_mask issue is again outside SMMU driver and as long as the clients with
+Dma_mask issue don't have SMMU enabled, it would be fine.
+SDHCI can have SMMU enabled in upstream as soon as issue 2 is taken care.
+
+>So before we solve all of the above issues we can't really enable SMMU on Tegra194 and hence won't be able to test it. As such we don't know if these patches even work, nor can we validate that they continue to work.
+>As such, I don't think there's any use in applying these patches upstream since they will be effectively dead code until all of the above issues are resolved.
+>   arm64: tegra: Add DT node for T194 SMMU
+>   arm64: tegra: enable SMMU for SDHCI and EQOS on T194
+>This one is going to cause EQOS to break because of 3) above. It might work for SDHCI because of the workaround we currently have in that driver. However, I do have a local patch that reverts the workaround and replaces it with the proper fix, which uses dma->ranges as mentioned above.
+
+The DT patches can't be merged as of now. The enable patches can follow up later after issue 2 is fixed.
+
+>I expect it will take at least until v5.9-rc1 before we have all the changes merged that would allow us to enable SMMU support.
+
+Thierry
+
+>  .../devicetree/bindings/iommu/arm,smmu.yaml   |   5 +
+>  MAINTAINERS                                   |   2 +
+>  arch/arm64/boot/dts/nvidia/tegra194.dtsi      |  81 ++++++
+>  drivers/iommu/Makefile                        |   2 +-
+>  drivers/iommu/arm-smmu-impl.c                 |   3 +
+>  drivers/iommu/arm-smmu-nvidia.c               | 261 ++++++++++++++++++
+>  drivers/iommu/arm-smmu.c                      |  11 +-
+>  drivers/iommu/arm-smmu.h                      |   4 +
+>  8 files changed, 366 insertions(+), 3 deletions(-)  create mode 
+> 100644 drivers/iommu/arm-smmu-nvidia.c
 > 
-> Is there any plan for enabling SMMU HTTU?
-
-Not outside of SVA, as far as I know.
-
-> I have seen the patch locates in the SVA series patch, which adds
-> support for HTTU:
->     https://www.spinics.net/lists/arm-kernel/msg798694.html
 > 
-> HTTU reduces the number of access faults on SMMU fault queue
-> (permission faults also benifit from it).
+> base-commit: 365f8d504da50feaebf826d180113529c9383670
+> --
+> 2.26.2
 > 
-> Besides reducing the faults, HTTU also helps to track dirty pages for
-> device DMA. Is it feasible to utilize HTTU to get dirty pages on device
-> DMA during VFIO live migration?
-
-As you know there is a VFIO interface for this under discussion:
-https://lore.kernel.org/kvm/1589781397-28368-1-git-send-email-kwankhede@nvidia.com/
-It doesn't implement an internal API to communicate with the IOMMU driver
-about dirty pages.
-
-> If SMMU can track dirty pages, devices are not required to implement
-> additional dirty pages tracking to support VFIO live migration.
-
-It seems feasible, though tracking it in the device might be more
-efficient. I might have misunderstood but I think for live migration of
-the Intel NIC they trap guest accesses to the device and introspect its
-state to figure out which pages it is accessing.
-
-With HTTU I suppose (without much knowledge about live migration) that
-you'd need several new interfaces to the IOMMU drivers:
-
-* A way for VFIO to query HTTU support in the SMMU. There are some
-  discussions about communicating more IOMMU capabilities through VFIO but
-  no implementation yet. When HTTU isn't supported the DIRTY_PAGES bitmap
-  would report all pages as they do now.
-
-* VFIO_IOMMU_DIRTY_PAGES_FLAG_START/STOP would clear the dirty bit
-  for all VFIO mappings (which is going to take some time). There is a
-  walker in io-pgtable for iova_to_phys() which could be extended. I
-  suppose it's also possible to atomically switch the HA and HD bits in
-  context descriptors.
-
-* VFIO_IOMMU_DIRTY_PAGES_FLAG_GET_BITMAP would query the dirty bit for all
-  VFIO mappings.
-
-Thanks,
-Jean
+> 
+> _______________________________________________
+> linux-arm-kernel mailing list
+> linux-arm-kernel@lists.infradead.org
+> http://lists.infradead.org/mailman/listinfo/linux-arm-kernel
 _______________________________________________
 iommu mailing list
 iommu@lists.linux-foundation.org
