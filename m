@@ -8,90 +8,94 @@ X-Spam-Status: No, score=-7.8 required=3.0 tests=DKIM_ADSP_CUSTOM_MED,
 	SPF_HELO_NONE,SPF_PASS,USER_AGENT_SANE_1 autolearn=ham autolearn_force=no
 	version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id C93D9C433E0
-	for <iommu@archiver.kernel.org>; Mon, 25 May 2020 08:36:04 +0000 (UTC)
-Received: from whitealder.osuosl.org (smtp1.osuosl.org [140.211.166.138])
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 360A4C433E0
+	for <iommu@archiver.kernel.org>; Mon, 25 May 2020 10:51:59 +0000 (UTC)
+Received: from silver.osuosl.org (smtp3.osuosl.org [140.211.166.136])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by mail.kernel.org (Postfix) with ESMTPS id 91AA02071A
-	for <iommu@archiver.kernel.org>; Mon, 25 May 2020 08:36:04 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTPS id F34092073B
+	for <iommu@archiver.kernel.org>; Mon, 25 May 2020 10:51:58 +0000 (UTC)
 Authentication-Results: mail.kernel.org;
-	dkim=fail reason="signature verification failed" (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="rsx2pZd8"
-DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 91AA02071A
+	dkim=fail reason="signature verification failed" (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="GHyW8PrU"
+DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org F34092073B
 Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=gmail.com
 Authentication-Results: mail.kernel.org; spf=pass smtp.mailfrom=iommu-bounces@lists.linux-foundation.org
 Received: from localhost (localhost [127.0.0.1])
-	by whitealder.osuosl.org (Postfix) with ESMTP id 6404A86246;
-	Mon, 25 May 2020 08:36:04 +0000 (UTC)
+	by silver.osuosl.org (Postfix) with ESMTP id 9AD0D20343;
+	Mon, 25 May 2020 10:51:58 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from whitealder.osuosl.org ([127.0.0.1])
+Received: from silver.osuosl.org ([127.0.0.1])
 	by localhost (.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
-	with ESMTP id FXlhyiDlgco4; Mon, 25 May 2020 08:36:03 +0000 (UTC)
+	with ESMTP id B6Z31AX5zAia; Mon, 25 May 2020 10:51:57 +0000 (UTC)
 Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [140.211.9.56])
-	by whitealder.osuosl.org (Postfix) with ESMTP id A1E9D8637A;
-	Mon, 25 May 2020 08:36:03 +0000 (UTC)
+	by silver.osuosl.org (Postfix) with ESMTP id 818F920035;
+	Mon, 25 May 2020 10:51:57 +0000 (UTC)
 Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
-	by lists.linuxfoundation.org (Postfix) with ESMTP id 8BD49C0865;
-	Mon, 25 May 2020 08:36:03 +0000 (UTC)
+	by lists.linuxfoundation.org (Postfix) with ESMTP id 6F870C0865;
+	Mon, 25 May 2020 10:51:57 +0000 (UTC)
 Received: from whitealder.osuosl.org (smtp1.osuosl.org [140.211.166.138])
- by lists.linuxfoundation.org (Postfix) with ESMTP id B35ACC016F
- for <iommu@lists.linux-foundation.org>; Mon, 25 May 2020 08:36:01 +0000 (UTC)
+ by lists.linuxfoundation.org (Postfix) with ESMTP id CCF9AC016F
+ for <iommu@lists.linux-foundation.org>; Mon, 25 May 2020 10:51:55 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
- by whitealder.osuosl.org (Postfix) with ESMTP id AE9408637A
- for <iommu@lists.linux-foundation.org>; Mon, 25 May 2020 08:36:01 +0000 (UTC)
+ by whitealder.osuosl.org (Postfix) with ESMTP id C618886A3C
+ for <iommu@lists.linux-foundation.org>; Mon, 25 May 2020 10:51:55 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
 Received: from whitealder.osuosl.org ([127.0.0.1])
  by localhost (.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
- with ESMTP id 0n9Hy8yuMFqE for <iommu@lists.linux-foundation.org>;
- Mon, 25 May 2020 08:36:00 +0000 (UTC)
+ with ESMTP id dTvsR0U4Q9RY for <iommu@lists.linux-foundation.org>;
+ Mon, 25 May 2020 10:51:55 +0000 (UTC)
 X-Greylist: domain auto-whitelisted by SQLgrey-1.7.6
-Received: from mail-ej1-f68.google.com (mail-ej1-f68.google.com
- [209.85.218.68])
- by whitealder.osuosl.org (Postfix) with ESMTPS id 5EB8586246
- for <iommu@lists.linux-foundation.org>; Mon, 25 May 2020 08:36:00 +0000 (UTC)
-Received: by mail-ej1-f68.google.com with SMTP id j21so19692674ejy.1
- for <iommu@lists.linux-foundation.org>; Mon, 25 May 2020 01:36:00 -0700 (PDT)
+Received: from mail-lj1-f196.google.com (mail-lj1-f196.google.com
+ [209.85.208.196])
+ by whitealder.osuosl.org (Postfix) with ESMTPS id A049886B0E
+ for <iommu@lists.linux-foundation.org>; Mon, 25 May 2020 10:51:54 +0000 (UTC)
+Received: by mail-lj1-f196.google.com with SMTP id z13so10600363ljn.7
+ for <iommu@lists.linux-foundation.org>; Mon, 25 May 2020 03:51:54 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=gmail.com; s=20161025;
- h=date:from:to:cc:subject:message-id:references:mime-version
- :content-disposition:in-reply-to:user-agent;
- bh=jQ/1T19bXnZaakT7DH/kq2gJWYm88BN6q+0IdQ40jHg=;
- b=rsx2pZd8wxkoDGQhj/794PwNEe74GuAHRMtWvDBkMmQZCL9cF92qoX/3qFeN9O+et4
- SygvEPvI2P2orOWR3kWalcCWEEv2xfa2myWd8EzT+NUnIhZYW2CBmZEx7vV4dlQMF9nz
- 0d2OLsKIm/8/v6PM3AFBBE6ESvEOMyvblBh17GnHAgJneOpZhzyqRWBKmTtYQzUZp+hx
- Q2ga83CuHFn2qOcno8r5B3A47Mk13CAYh49sCp5+GNW2hSge7JEAWW7an6XdWRKWaItM
- GEueSyWX870sZTv6+ED6SBgFjfdCjXi6Ghq2UD7mYY5VWXEaUvV+ikGlWT/Ozh+jv5uV
- Xwaw==
+ h=subject:to:cc:references:from:message-id:date:user-agent
+ :mime-version:in-reply-to:content-language:content-transfer-encoding;
+ bh=XQIdOLJRAwyJ5EbjAztcZMJDAH7v10sKhYh7WWEKDDE=;
+ b=GHyW8PrU+iJwHOF0FEHSSkP/VUckZK2wd0Xtqn8bJs31enXxhzhcRZlAzA7f/ZkeHv
+ Ri3reeQyEmZ/nTKF4ERTSWCysCRXejtvjTUC3p++uxs0d7ITrrLcN19BqqE9waRXTrwW
+ voCBBClvZwgI26ap+9JIBEweeAH9RRCAXjIma1Ek6E+i6Jrwy2NxwKK2U1RUgUMGdnyh
+ BuUFIgpfgvNlX5SKbiyiRsQTHXHdNlgGDyvK6OIJ2P4BDwL7kQeA9BB1yqUu3wqWNYev
+ kHcj8YNDuujRpn9ovWCyIfgR9bUHhEPis5J6+8vIBxFuBPcGjWQJz2eq03d2iy4wR+ZG
+ ZvzQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
  d=1e100.net; s=20161025;
- h=x-gm-message-state:date:from:to:cc:subject:message-id:references
- :mime-version:content-disposition:in-reply-to:user-agent;
- bh=jQ/1T19bXnZaakT7DH/kq2gJWYm88BN6q+0IdQ40jHg=;
- b=oFq+f+f0ddoAMEVhXwjkYph72OwcobEF+1EuC9j/Sq/wCXxUT1ZfBTnrZ5yikZ/zBZ
- NxqC8ldw+4FX3cxPB1yv3C8JfMEo/tGcdsvqhz6SzeyXruj8hOwFZOwDl0OUAdebGG7n
- VXd6d3OErhRaJ8XQg0/nsegYoSvANQRaUeEQ3Xb2Vt1jTMa0QFbA0oFS9VlHnjolNJn6
- ZRlhbviQtuidT8QqpxDPzNxVJsa+s0cSFuadqY+tHHlv4pxWzRmgCROnMiHd6EFv7vrp
- I6lRuf24lDx40tS8xTdOLz/zEHoweN/U1bTCfFvBPv2R38JMrHLIXne1U/DobXlu/5DN
- L74A==
-X-Gm-Message-State: AOAM531gGosCJD1EfcoqG9C8JW6AMAXCVlHQI10dugwx1jvtetOZ73JI
- HF6zsLBcUvDx/2Lr8KoskCA=
-X-Google-Smtp-Source: ABdhPJzQwaND4vhb1xrd9qgq+0Mdu8VnEgf/VQ6+ZiPeYqLMNuz0AufHgS5BzjTmR0a3Sy+SGa2HWg==
-X-Received: by 2002:a17:906:814b:: with SMTP id
- z11mr16879427ejw.531.1590395758662; 
- Mon, 25 May 2020 01:35:58 -0700 (PDT)
-Received: from localhost (pd9e51079.dip0.t-ipconnect.de. [217.229.16.121])
- by smtp.gmail.com with ESMTPSA id bz15sm14483994ejc.64.2020.05.25.01.35.57
- (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
- Mon, 25 May 2020 01:35:57 -0700 (PDT)
-Date: Mon, 25 May 2020 10:35:56 +0200
-From: Thierry Reding <thierry.reding@gmail.com>
-To: Dmitry Osipenko <digetx@gmail.com>
+ h=x-gm-message-state:subject:to:cc:references:from:message-id:date
+ :user-agent:mime-version:in-reply-to:content-language
+ :content-transfer-encoding;
+ bh=XQIdOLJRAwyJ5EbjAztcZMJDAH7v10sKhYh7WWEKDDE=;
+ b=fFAlw/jYEnaJQlVVot8zgJfthzR+xhb20h0Q8+VMXtJchSPHlVStnaAPGPyHwrQEWq
+ 35/XAD2SjAImrOHPcHmegd6x9yyXp9WylZ8dzv/XKZFuPB4U2eFNt6gwkYvnV4WV8Sb8
+ LbU8krvFvX9EBwMybbnmNHN69tZ8a16UGGqgud1UrfMlloEWYDyWTBobkPbb0t1ZONl1
+ QdBmReVAmo3sms4nSly9PFoI97SjuuPR6Zfkt0qLDBKfHUvR2qUslHaZGNR+yO3dVXe3
+ f0VOb/NmS/R12+QQyENiOFW76GA6t/KMWybUC0PzuzJdMml1REzg8qjPTML6bD6C3VqO
+ KFEg==
+X-Gm-Message-State: AOAM531abOGWCfPArt5LmDeZRYMMAs1nfvSkhEM+ZrP8JeIzmz09vSyY
+ gb67xfg4W5U11eJa75mdoP8=
+X-Google-Smtp-Source: ABdhPJzxEXhkUYgz7wB2wyVTUOtV+rStTtfu8v79n+/fusca3jSbZEbrqAfNoHeG47DgKC4rlRTt0Q==
+X-Received: by 2002:a2e:6a11:: with SMTP id f17mr3222251ljc.328.1590403912651; 
+ Mon, 25 May 2020 03:51:52 -0700 (PDT)
+Received: from [192.168.2.145] (ppp91-76-17-204.pppoe.mtu-net.ru.
+ [91.76.17.204])
+ by smtp.googlemail.com with ESMTPSA id i24sm4472114ljg.82.2020.05.25.03.51.50
+ (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+ Mon, 25 May 2020 03:51:51 -0700 (PDT)
 Subject: Re: [PATCH v1] iommu/tegra-smmu: Add missing locks around mapping
  operations
-Message-ID: <20200525083556.GA2382769@ulmo>
+To: Thierry Reding <thierry.reding@gmail.com>
 References: <20200524183755.3774-1-digetx@gmail.com>
+ <20200525083556.GA2382769@ulmo>
+From: Dmitry Osipenko <digetx@gmail.com>
+Message-ID: <ffa2f98f-1809-e4f0-009e-d06dcde0ed49@gmail.com>
+Date: Mon, 25 May 2020 13:51:50 +0300
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101
+ Thunderbird/68.7.0
 MIME-Version: 1.0
-In-Reply-To: <20200524183755.3774-1-digetx@gmail.com>
-User-Agent: Mutt/1.13.1 (2019-12-14)
+In-Reply-To: <20200525083556.GA2382769@ulmo>
+Content-Language: en-US
 Cc: linux-tegra@vger.kernel.org, linux-kernel@vger.kernel.org,
  iommu@lists.linux-foundation.org, Jonathan Hunter <jonathanh@nvidia.com>
 X-BeenThere: iommu@lists.linux-foundation.org
@@ -106,188 +110,110 @@ List-Post: <mailto:iommu@lists.linux-foundation.org>
 List-Help: <mailto:iommu-request@lists.linux-foundation.org?subject=help>
 List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
  <mailto:iommu-request@lists.linux-foundation.org?subject=subscribe>
-Content-Type: multipart/mixed; boundary="===============7671337750810730311=="
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: base64
 Errors-To: iommu-bounces@lists.linux-foundation.org
 Sender: "iommu" <iommu-bounces@lists.linux-foundation.org>
 
-
---===============7671337750810730311==
-Content-Type: multipart/signed; micalg=pgp-sha256;
-	protocol="application/pgp-signature"; boundary="Q68bSM7Ycu6FN28Q"
-Content-Disposition: inline
-
-
---Q68bSM7Ycu6FN28Q
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-Content-Transfer-Encoding: quoted-printable
-
-On Sun, May 24, 2020 at 09:37:55PM +0300, Dmitry Osipenko wrote:
-> The mapping operations of the Tegra SMMU driver are subjected to a race
-> condition issues because SMMU Address Space isn't allocated and freed
-> atomically, while it should be. This patch makes the mapping operations
-> atomic, it fixes an accidentally released Host1x Address Space problem
-> which happens while running multiple graphics tests in parallel on
-> Tegra30, i.e. by having multiple threads racing with each other in the
-> Host1x's submission and completion code paths, performing IOVA mappings
-> and unmappings in parallel.
->=20
-> Cc: <stable@vger.kernel.org>
-> Signed-off-by: Dmitry Osipenko <digetx@gmail.com>
-> ---
->  drivers/iommu/tegra-smmu.c | 43 +++++++++++++++++++++++++++++++++-----
->  1 file changed, 38 insertions(+), 5 deletions(-)
->=20
-> diff --git a/drivers/iommu/tegra-smmu.c b/drivers/iommu/tegra-smmu.c
-> index 7426b7666e2b..4f956a797838 100644
-> --- a/drivers/iommu/tegra-smmu.c
-> +++ b/drivers/iommu/tegra-smmu.c
-> @@ -12,6 +12,7 @@
->  #include <linux/of_device.h>
->  #include <linux/platform_device.h>
->  #include <linux/slab.h>
-> +#include <linux/spinlock.h>
->  #include <linux/dma-mapping.h>
-> =20
->  #include <soc/tegra/ahb.h>
-> @@ -49,6 +50,7 @@ struct tegra_smmu_as {
->  	struct iommu_domain domain;
->  	struct tegra_smmu *smmu;
->  	unsigned int use_count;
-> +	spinlock_t lock;
->  	u32 *count;
->  	struct page **pts;
->  	struct page *pd;
-> @@ -308,6 +310,8 @@ static struct iommu_domain *tegra_smmu_domain_alloc(u=
-nsigned type)
->  		return NULL;
->  	}
-> =20
-> +	spin_lock_init(&as->lock);
-> +
->  	/* setup aperture */
->  	as->domain.geometry.aperture_start =3D 0;
->  	as->domain.geometry.aperture_end =3D 0xffffffff;
-> @@ -578,7 +582,7 @@ static u32 *as_get_pte(struct tegra_smmu_as *as, dma_=
-addr_t iova,
->  		struct page *page;
->  		dma_addr_t dma;
-> =20
-> -		page =3D alloc_page(GFP_KERNEL | __GFP_DMA | __GFP_ZERO);
-> +		page =3D alloc_page(GFP_ATOMIC | __GFP_DMA | __GFP_ZERO);
-
-I'm not sure this is a good idea. My recollection is that GFP_ATOMIC
-will allocate from a special reserved region of memory, which may be
-easily exhausted.
-
-Is there any reason why we need the spinlock? Can't we use a mutex
-instead?
-
->  		if (!page)
->  			return NULL;
-> =20
-> @@ -655,8 +659,9 @@ static void tegra_smmu_set_pte(struct tegra_smmu_as *=
-as, unsigned long iova,
->  	smmu_flush(smmu);
->  }
-> =20
-> -static int tegra_smmu_map(struct iommu_domain *domain, unsigned long iov=
-a,
-> -			  phys_addr_t paddr, size_t size, int prot, gfp_t gfp)
-> +static int
-> +tegra_smmu_map_locked(struct iommu_domain *domain, unsigned long iova,
-> +		      phys_addr_t paddr, size_t size, int prot, gfp_t gfp)
-
-I think it's more typical to use the _unlocked suffix for functions that
-don't take a lock themselves.
-
->  {
->  	struct tegra_smmu_as *as =3D to_smmu_as(domain);
->  	dma_addr_t pte_dma;
-> @@ -685,8 +690,9 @@ static int tegra_smmu_map(struct iommu_domain *domain=
-, unsigned long iova,
->  	return 0;
->  }
-> =20
-> -static size_t tegra_smmu_unmap(struct iommu_domain *domain, unsigned lon=
-g iova,
-> -			       size_t size, struct iommu_iotlb_gather *gather)
-> +static size_t
-> +tegra_smmu_unmap_locked(struct iommu_domain *domain, unsigned long iova,
-> +			size_t size, struct iommu_iotlb_gather *gather)
->  {
->  	struct tegra_smmu_as *as =3D to_smmu_as(domain);
->  	dma_addr_t pte_dma;
-> @@ -702,6 +708,33 @@ static size_t tegra_smmu_unmap(struct iommu_domain *=
-domain, unsigned long iova,
->  	return size;
->  }
-> =20
-> +static int tegra_smmu_map(struct iommu_domain *domain, unsigned long iov=
-a,
-> +			  phys_addr_t paddr, size_t size, int prot, gfp_t gfp)
-> +{
-> +	struct tegra_smmu_as *as =3D to_smmu_as(domain);
-> +	unsigned long flags;
-> +	int ret;
-> +
-> +	spin_lock_irqsave(&as->lock, flags);
-> +	ret =3D tegra_smmu_map_locked(domain, iova, paddr, size, prot, gfp);
-> +	spin_unlock_irqrestore(&as->lock, flags);
-> +
-> +	return ret;
-> +}
-> +
-> +static size_t tegra_smmu_unmap(struct iommu_domain *domain, unsigned lon=
-g iova,
-> +			       size_t size, struct iommu_iotlb_gather *gather)
-> +{
-> +	struct tegra_smmu_as *as =3D to_smmu_as(domain);
-> +	unsigned long flags;
-> +
-> +	spin_lock_irqsave(&as->lock, flags);
-> +	size =3D tegra_smmu_unmap_locked(domain, iova, size, gather);
-> +	spin_unlock_irqrestore(&as->lock, flags);
-> +
-> +	return size;
-> +}
-
-Why the extra functions here? We never call locked vs. unlocked variants
-in the driver and the IOMMU framework only has a single callback, so I
-think the locking can just move into the main implementation.
-
-Thierry
-
---Q68bSM7Ycu6FN28Q
-Content-Type: application/pgp-signature; name="signature.asc"
-
------BEGIN PGP SIGNATURE-----
-
-iQIzBAABCAAdFiEEiOrDCAFJzPfAjcif3SOs138+s6EFAl7Lg2kACgkQ3SOs138+
-s6F2gQ//eHJZIvBIrliCm/OVpD0ZDodUlg7jxmVdBBCH8SMkbQPXgQhO5YhpHMRq
-LdOAztHnqXwDn+zt+XM3UvMJFoUivCC70GDsOXu9JYRmDMSlH+uE01YGSpC4Rmig
-TZ9KDzarm4EDL7dC9XFOEQguI5LGXtcmwct45oDSXZ/28zcTMj0Od6SgazVOuL1i
-z+jexSPTCoCtBabxvG4BQoolonhl8xpAG53ijryPJKyID4BH7oc+Q3+vAmc1FJII
-iQ67Wi9hhmS9vcqld08KcAspAA6ZAMBHq6dTz/JzptON63FZ80bdmgHUgL6y8szy
-Epf4AMWT4xMQCfOk47J1K3XtpEW+ic9guL3J4KL74bFJp89JgOIY8iRtnSyiMu3h
-xw6omwr7mDCHt/P5U5W2D7UvvhTxJ6eMh3oHicbJbbbKLzDIkvemNvLpXvCZD2Pl
-uOJl6RnGm1/LFyVdBXHt/xzGvw5+hv/tMIDrIc3q+se01IO0zTA31WNB2MxE6jFw
-3mbfHV+LQzuXVgQJYzr8qGXLMSuW9E4tdt55bTCK79dDUr5coiczjSkcKMYy2kHA
-syrAkY5m54tscMcnwBdIxqw7DVNJSRw54mWs6FO/K+oNNZxuBFPYYfpXQouMh+K/
-PPxk8x307iPiOYlvXPF1wS4Za4Zx1vIpfrxvK6h5ddSdFdky9nQ=
-=h3MX
------END PGP SIGNATURE-----
-
---Q68bSM7Ycu6FN28Q--
-
---===============7671337750810730311==
-Content-Type: text/plain; charset="us-ascii"
-MIME-Version: 1.0
-Content-Transfer-Encoding: 7bit
-Content-Disposition: inline
-
-_______________________________________________
-iommu mailing list
-iommu@lists.linux-foundation.org
-https://lists.linuxfoundation.org/mailman/listinfo/iommu
---===============7671337750810730311==--
+MjUuMDUuMjAyMCAxMTozNSwgVGhpZXJyeSBSZWRpbmcg0L/QuNGI0LXRgjoKPiBPbiBTdW4sIE1h
+eSAyNCwgMjAyMCBhdCAwOTozNzo1NVBNICswMzAwLCBEbWl0cnkgT3NpcGVua28gd3JvdGU6Cj4+
+IFRoZSBtYXBwaW5nIG9wZXJhdGlvbnMgb2YgdGhlIFRlZ3JhIFNNTVUgZHJpdmVyIGFyZSBzdWJq
+ZWN0ZWQgdG8gYSByYWNlCj4+IGNvbmRpdGlvbiBpc3N1ZXMgYmVjYXVzZSBTTU1VIEFkZHJlc3Mg
+U3BhY2UgaXNuJ3QgYWxsb2NhdGVkIGFuZCBmcmVlZAo+PiBhdG9taWNhbGx5LCB3aGlsZSBpdCBz
+aG91bGQgYmUuIFRoaXMgcGF0Y2ggbWFrZXMgdGhlIG1hcHBpbmcgb3BlcmF0aW9ucwo+PiBhdG9t
+aWMsIGl0IGZpeGVzIGFuIGFjY2lkZW50YWxseSByZWxlYXNlZCBIb3N0MXggQWRkcmVzcyBTcGFj
+ZSBwcm9ibGVtCj4+IHdoaWNoIGhhcHBlbnMgd2hpbGUgcnVubmluZyBtdWx0aXBsZSBncmFwaGlj
+cyB0ZXN0cyBpbiBwYXJhbGxlbCBvbgo+PiBUZWdyYTMwLCBpLmUuIGJ5IGhhdmluZyBtdWx0aXBs
+ZSB0aHJlYWRzIHJhY2luZyB3aXRoIGVhY2ggb3RoZXIgaW4gdGhlCj4+IEhvc3QxeCdzIHN1Ym1p
+c3Npb24gYW5kIGNvbXBsZXRpb24gY29kZSBwYXRocywgcGVyZm9ybWluZyBJT1ZBIG1hcHBpbmdz
+Cj4+IGFuZCB1bm1hcHBpbmdzIGluIHBhcmFsbGVsLgo+Pgo+PiBDYzogPHN0YWJsZUB2Z2VyLmtl
+cm5lbC5vcmc+Cj4+IFNpZ25lZC1vZmYtYnk6IERtaXRyeSBPc2lwZW5rbyA8ZGlnZXR4QGdtYWls
+LmNvbT4KPj4gLS0tCj4+ICBkcml2ZXJzL2lvbW11L3RlZ3JhLXNtbXUuYyB8IDQzICsrKysrKysr
+KysrKysrKysrKysrKysrKysrKysrKysrKy0tLS0tCj4+ICAxIGZpbGUgY2hhbmdlZCwgMzggaW5z
+ZXJ0aW9ucygrKSwgNSBkZWxldGlvbnMoLSkKPj4KPj4gZGlmZiAtLWdpdCBhL2RyaXZlcnMvaW9t
+bXUvdGVncmEtc21tdS5jIGIvZHJpdmVycy9pb21tdS90ZWdyYS1zbW11LmMKPj4gaW5kZXggNzQy
+NmI3NjY2ZTJiLi40Zjk1NmE3OTc4MzggMTAwNjQ0Cj4+IC0tLSBhL2RyaXZlcnMvaW9tbXUvdGVn
+cmEtc21tdS5jCj4+ICsrKyBiL2RyaXZlcnMvaW9tbXUvdGVncmEtc21tdS5jCj4+IEBAIC0xMiw2
+ICsxMiw3IEBACj4+ICAjaW5jbHVkZSA8bGludXgvb2ZfZGV2aWNlLmg+Cj4+ICAjaW5jbHVkZSA8
+bGludXgvcGxhdGZvcm1fZGV2aWNlLmg+Cj4+ICAjaW5jbHVkZSA8bGludXgvc2xhYi5oPgo+PiAr
+I2luY2x1ZGUgPGxpbnV4L3NwaW5sb2NrLmg+Cj4+ICAjaW5jbHVkZSA8bGludXgvZG1hLW1hcHBp
+bmcuaD4KPj4gIAo+PiAgI2luY2x1ZGUgPHNvYy90ZWdyYS9haGIuaD4KPj4gQEAgLTQ5LDYgKzUw
+LDcgQEAgc3RydWN0IHRlZ3JhX3NtbXVfYXMgewo+PiAgCXN0cnVjdCBpb21tdV9kb21haW4gZG9t
+YWluOwo+PiAgCXN0cnVjdCB0ZWdyYV9zbW11ICpzbW11Owo+PiAgCXVuc2lnbmVkIGludCB1c2Vf
+Y291bnQ7Cj4+ICsJc3BpbmxvY2tfdCBsb2NrOwo+PiAgCXUzMiAqY291bnQ7Cj4+ICAJc3RydWN0
+IHBhZ2UgKipwdHM7Cj4+ICAJc3RydWN0IHBhZ2UgKnBkOwo+PiBAQCAtMzA4LDYgKzMxMCw4IEBA
+IHN0YXRpYyBzdHJ1Y3QgaW9tbXVfZG9tYWluICp0ZWdyYV9zbW11X2RvbWFpbl9hbGxvYyh1bnNp
+Z25lZCB0eXBlKQo+PiAgCQlyZXR1cm4gTlVMTDsKPj4gIAl9Cj4+ICAKPj4gKwlzcGluX2xvY2tf
+aW5pdCgmYXMtPmxvY2spOwo+PiArCj4+ICAJLyogc2V0dXAgYXBlcnR1cmUgKi8KPj4gIAlhcy0+
+ZG9tYWluLmdlb21ldHJ5LmFwZXJ0dXJlX3N0YXJ0ID0gMDsKPj4gIAlhcy0+ZG9tYWluLmdlb21l
+dHJ5LmFwZXJ0dXJlX2VuZCA9IDB4ZmZmZmZmZmY7Cj4+IEBAIC01NzgsNyArNTgyLDcgQEAgc3Rh
+dGljIHUzMiAqYXNfZ2V0X3B0ZShzdHJ1Y3QgdGVncmFfc21tdV9hcyAqYXMsIGRtYV9hZGRyX3Qg
+aW92YSwKPj4gIAkJc3RydWN0IHBhZ2UgKnBhZ2U7Cj4+ICAJCWRtYV9hZGRyX3QgZG1hOwo+PiAg
+Cj4+IC0JCXBhZ2UgPSBhbGxvY19wYWdlKEdGUF9LRVJORUwgfCBfX0dGUF9ETUEgfCBfX0dGUF9a
+RVJPKTsKPj4gKwkJcGFnZSA9IGFsbG9jX3BhZ2UoR0ZQX0FUT01JQyB8IF9fR0ZQX0RNQSB8IF9f
+R0ZQX1pFUk8pOwo+IAo+IEknbSBub3Qgc3VyZSB0aGlzIGlzIGEgZ29vZCBpZGVhLiBNeSByZWNv
+bGxlY3Rpb24gaXMgdGhhdCBHRlBfQVRPTUlDCj4gd2lsbCBhbGxvY2F0ZSBmcm9tIGEgc3BlY2lh
+bCByZXNlcnZlZCByZWdpb24gb2YgbWVtb3J5LCB3aGljaCBtYXkgYmUKPiBlYXNpbHkgZXhoYXVz
+dGVkLgoKU28gZmFyIEkgaGF2ZW4ndCBub3RpY2VkIGFueSBwcm9ibGVtcy4gV2lsbCBiZSBncmVh
+dCBpZiB5b3UgY291bGQKcHJvdmlkZSBtb3JlIGRldGFpbHMgYWJvdXQgdGhlIHBvb2wgc2l6ZSBh
+bmQgaG93IHRoaXMgZXhoYXVzdGlvbiBwcm9ibGVtCmNvdWxkIGJlIHJlcHJvZHVjZWQgaW4gcHJh
+Y3RpY2UuCgo+IElzIHRoZXJlIGFueSByZWFzb24gd2h5IHdlIG5lZWQgdGhlIHNwaW5sb2NrPyBD
+YW4ndCB3ZSB1c2UgYSBtdXRleAo+IGluc3RlYWQ/CgpUaGlzIGlzIHdoYXQgb3RoZXIgSU9NTVUg
+ZHJpdmVycyBkby4gSSBndWVzcyBtdXRleCBtaWdodCBiZSB0b28KZXhwZW5zaXZlLCBpdCBtYXkg
+Y3JlYXRlIGEgbm90aWNlYWJsZSBjb250ZW50aW9uIHdoaWNoIHlvdSBkb24ndCB3YW50IHRvCmhh
+dmUgaW4gYSBjYXNlIG9mIGEgR1BVIHN1Ym1pc3Npb24gY29kZSBwYXRoLgoKSSBhbHNvIHN1c3Bl
+Y3QgdGhhdCBkcml2ZXJzIG9mIG90aGVyIHBsYXRmb3JtcyBhcmUgdXNpbmcgSU9NTVUgQVBJIGlu
+CmludGVycnVwdCBjb250ZXh0LCBhbHRob3VnaCB0b2RheSB0aGlzIGlzIG5vdCBuZWVkZWQgZm9y
+IFRlZ3JhLgoKPj4gIAkJaWYgKCFwYWdlKQo+PiAgCQkJcmV0dXJuIE5VTEw7Cj4+ICAKPj4gQEAg
+LTY1NSw4ICs2NTksOSBAQCBzdGF0aWMgdm9pZCB0ZWdyYV9zbW11X3NldF9wdGUoc3RydWN0IHRl
+Z3JhX3NtbXVfYXMgKmFzLCB1bnNpZ25lZCBsb25nIGlvdmEsCj4+ICAJc21tdV9mbHVzaChzbW11
+KTsKPj4gIH0KPj4gIAo+PiAtc3RhdGljIGludCB0ZWdyYV9zbW11X21hcChzdHJ1Y3QgaW9tbXVf
+ZG9tYWluICpkb21haW4sIHVuc2lnbmVkIGxvbmcgaW92YSwKPj4gLQkJCSAgcGh5c19hZGRyX3Qg
+cGFkZHIsIHNpemVfdCBzaXplLCBpbnQgcHJvdCwgZ2ZwX3QgZ2ZwKQo+PiArc3RhdGljIGludAo+
+PiArdGVncmFfc21tdV9tYXBfbG9ja2VkKHN0cnVjdCBpb21tdV9kb21haW4gKmRvbWFpbiwgdW5z
+aWduZWQgbG9uZyBpb3ZhLAo+PiArCQkgICAgICBwaHlzX2FkZHJfdCBwYWRkciwgc2l6ZV90IHNp
+emUsIGludCBwcm90LCBnZnBfdCBnZnApCj4gCj4gSSB0aGluayBpdCdzIG1vcmUgdHlwaWNhbCB0
+byB1c2UgdGhlIF91bmxvY2tlZCBzdWZmaXggZm9yIGZ1bmN0aW9ucyB0aGF0Cj4gZG9uJ3QgdGFr
+ZSBhIGxvY2sgdGhlbXNlbHZlcy4KClBlcnNvbmFsbHkgSSBjYW4ndCBmZWVsIHRoZSBkaWZmZXJl
+bmNlLiBCb3RoIHZhcmlhbnRzIGFyZSBnb29kIHRvIG1lLiBJCmNhbiByZXBsYWNlIHRoZSBsaXRl
+cmFsIHBvc3RmaXggd2l0aCBhIF9fdGVncmFfc21tdSBwcmVmaXgsIHNpbWlsYXJseSB0bwp3aGF0
+IHdlIGhhdmUgaW4gdGhlIEdBUlQgZHJpdmVyLCB0byBhdm9pZCBiaWtlc2hlZGRpbmcuCgo+PiAg
+ewo+PiAgCXN0cnVjdCB0ZWdyYV9zbW11X2FzICphcyA9IHRvX3NtbXVfYXMoZG9tYWluKTsKPj4g
+IAlkbWFfYWRkcl90IHB0ZV9kbWE7Cj4+IEBAIC02ODUsOCArNjkwLDkgQEAgc3RhdGljIGludCB0
+ZWdyYV9zbW11X21hcChzdHJ1Y3QgaW9tbXVfZG9tYWluICpkb21haW4sIHVuc2lnbmVkIGxvbmcg
+aW92YSwKPj4gIAlyZXR1cm4gMDsKPj4gIH0KPj4gIAo+PiAtc3RhdGljIHNpemVfdCB0ZWdyYV9z
+bW11X3VubWFwKHN0cnVjdCBpb21tdV9kb21haW4gKmRvbWFpbiwgdW5zaWduZWQgbG9uZyBpb3Zh
+LAo+PiAtCQkJICAgICAgIHNpemVfdCBzaXplLCBzdHJ1Y3QgaW9tbXVfaW90bGJfZ2F0aGVyICpn
+YXRoZXIpCj4+ICtzdGF0aWMgc2l6ZV90Cj4+ICt0ZWdyYV9zbW11X3VubWFwX2xvY2tlZChzdHJ1
+Y3QgaW9tbXVfZG9tYWluICpkb21haW4sIHVuc2lnbmVkIGxvbmcgaW92YSwKPj4gKwkJCXNpemVf
+dCBzaXplLCBzdHJ1Y3QgaW9tbXVfaW90bGJfZ2F0aGVyICpnYXRoZXIpCj4+ICB7Cj4+ICAJc3Ry
+dWN0IHRlZ3JhX3NtbXVfYXMgKmFzID0gdG9fc21tdV9hcyhkb21haW4pOwo+PiAgCWRtYV9hZGRy
+X3QgcHRlX2RtYTsKPj4gQEAgLTcwMiw2ICs3MDgsMzMgQEAgc3RhdGljIHNpemVfdCB0ZWdyYV9z
+bW11X3VubWFwKHN0cnVjdCBpb21tdV9kb21haW4gKmRvbWFpbiwgdW5zaWduZWQgbG9uZyBpb3Zh
+LAo+PiAgCXJldHVybiBzaXplOwo+PiAgfQo+PiAgCj4+ICtzdGF0aWMgaW50IHRlZ3JhX3NtbXVf
+bWFwKHN0cnVjdCBpb21tdV9kb21haW4gKmRvbWFpbiwgdW5zaWduZWQgbG9uZyBpb3ZhLAo+PiAr
+CQkJICBwaHlzX2FkZHJfdCBwYWRkciwgc2l6ZV90IHNpemUsIGludCBwcm90LCBnZnBfdCBnZnAp
+Cj4+ICt7Cj4+ICsJc3RydWN0IHRlZ3JhX3NtbXVfYXMgKmFzID0gdG9fc21tdV9hcyhkb21haW4p
+Owo+PiArCXVuc2lnbmVkIGxvbmcgZmxhZ3M7Cj4+ICsJaW50IHJldDsKPj4gKwo+PiArCXNwaW5f
+bG9ja19pcnFzYXZlKCZhcy0+bG9jaywgZmxhZ3MpOwo+PiArCXJldCA9IHRlZ3JhX3NtbXVfbWFw
+X2xvY2tlZChkb21haW4sIGlvdmEsIHBhZGRyLCBzaXplLCBwcm90LCBnZnApOwo+PiArCXNwaW5f
+dW5sb2NrX2lycXJlc3RvcmUoJmFzLT5sb2NrLCBmbGFncyk7Cj4+ICsKPj4gKwlyZXR1cm4gcmV0
+Owo+PiArfQo+PiArCj4+ICtzdGF0aWMgc2l6ZV90IHRlZ3JhX3NtbXVfdW5tYXAoc3RydWN0IGlv
+bW11X2RvbWFpbiAqZG9tYWluLCB1bnNpZ25lZCBsb25nIGlvdmEsCj4+ICsJCQkgICAgICAgc2l6
+ZV90IHNpemUsIHN0cnVjdCBpb21tdV9pb3RsYl9nYXRoZXIgKmdhdGhlcikKPj4gK3sKPj4gKwlz
+dHJ1Y3QgdGVncmFfc21tdV9hcyAqYXMgPSB0b19zbW11X2FzKGRvbWFpbik7Cj4+ICsJdW5zaWdu
+ZWQgbG9uZyBmbGFnczsKPj4gKwo+PiArCXNwaW5fbG9ja19pcnFzYXZlKCZhcy0+bG9jaywgZmxh
+Z3MpOwo+PiArCXNpemUgPSB0ZWdyYV9zbW11X3VubWFwX2xvY2tlZChkb21haW4sIGlvdmEsIHNp
+emUsIGdhdGhlcik7Cj4+ICsJc3Bpbl91bmxvY2tfaXJxcmVzdG9yZSgmYXMtPmxvY2ssIGZsYWdz
+KTsKPj4gKwo+PiArCXJldHVybiBzaXplOwo+PiArfQo+IAo+IFdoeSB0aGUgZXh0cmEgZnVuY3Rp
+b25zIGhlcmU/IFdlIG5ldmVyIGNhbGwgbG9ja2VkIHZzLiB1bmxvY2tlZCB2YXJpYW50cwo+IGlu
+IHRoZSBkcml2ZXIgYW5kIHRoZSBJT01NVSBmcmFtZXdvcmsgb25seSBoYXMgYSBzaW5nbGUgY2Fs
+bGJhY2ssIHNvIEkKPiB0aGluayB0aGUgbG9ja2luZyBjYW4ganVzdCBtb3ZlIGludG8gdGhlIG1h
+aW4gaW1wbGVtZW50YXRpb24uCgpCZWNhdXNlIHRoaXMgbWFrZXMgY29kZSBjbGVhbmVyLCBlYXNp
+ZXIgdG8gcmVhZCBhbmQgZm9sbG93LiBZb3UgZG9uJ3QKbmVlZCB0byBjYXJlIGFib3V0IGhhbmRs
+aW5nIGVycm9yIGNvZGUgcGF0aHMuIFRoaXMgaXMgdGhlIHNhbWUgd2hhdCB3ZQpkbyBpbiB0aGUg
+R0FSVCBkcml2ZXIuIFByZXR0eSBtdWNoIGV2ZXJ5IG90aGVyIElPTU1VIGRyaXZlciB1c2UgdGhp
+cwpjb2RlIHBhdHRlcm4gYXMgd2VsbC4KX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19f
+X19fX19fX19fX19fX18KaW9tbXUgbWFpbGluZyBsaXN0CmlvbW11QGxpc3RzLmxpbnV4LWZvdW5k
+YXRpb24ub3JnCmh0dHBzOi8vbGlzdHMubGludXhmb3VuZGF0aW9uLm9yZy9tYWlsbWFuL2xpc3Rp
+bmZvL2lvbW11
