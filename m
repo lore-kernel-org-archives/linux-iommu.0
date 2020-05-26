@@ -7,68 +7,68 @@ X-Spam-Status: No, score=-9.6 required=3.0 tests=DKIM_INVALID,DKIM_SIGNED,
 	SPF_HELO_NONE,SPF_PASS,USER_AGENT_GIT autolearn=ham autolearn_force=no
 	version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 928ACC433DF
-	for <iommu@archiver.kernel.org>; Tue, 26 May 2020 19:06:25 +0000 (UTC)
-Received: from fraxinus.osuosl.org (smtp4.osuosl.org [140.211.166.137])
+	by smtp.lore.kernel.org (Postfix) with ESMTP id EC112C433E1
+	for <iommu@archiver.kernel.org>; Tue, 26 May 2020 19:11:14 +0000 (UTC)
+Received: from whitealder.osuosl.org (smtp1.osuosl.org [140.211.166.138])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by mail.kernel.org (Postfix) with ESMTPS id 4C24320873
-	for <iommu@archiver.kernel.org>; Tue, 26 May 2020 19:06:25 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTPS id 8D17620776
+	for <iommu@archiver.kernel.org>; Tue, 26 May 2020 19:11:14 +0000 (UTC)
 Authentication-Results: mail.kernel.org;
-	dkim=fail reason="signature verification failed" (1024-bit key) header.d=kernel.org header.i=@kernel.org header.b="M2z7NTUU"
-DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 4C24320873
+	dkim=fail reason="signature verification failed" (1024-bit key) header.d=kernel.org header.i=@kernel.org header.b="2TZAVr4e"
+DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 8D17620776
 Authentication-Results: mail.kernel.org; dmarc=none (p=none dis=none) header.from=linuxfoundation.org
 Authentication-Results: mail.kernel.org; spf=pass smtp.mailfrom=iommu-bounces@lists.linux-foundation.org
 Received: from localhost (localhost [127.0.0.1])
-	by fraxinus.osuosl.org (Postfix) with ESMTP id 234BE868A9;
-	Tue, 26 May 2020 19:06:25 +0000 (UTC)
+	by whitealder.osuosl.org (Postfix) with ESMTP id 50DEC864F3;
+	Tue, 26 May 2020 19:11:14 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from fraxinus.osuosl.org ([127.0.0.1])
+Received: from whitealder.osuosl.org ([127.0.0.1])
 	by localhost (.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
-	with ESMTP id SwtLFWtr1plR; Tue, 26 May 2020 19:06:24 +0000 (UTC)
+	with ESMTP id puFzxHsuEuwC; Tue, 26 May 2020 19:11:13 +0000 (UTC)
 Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [140.211.9.56])
-	by fraxinus.osuosl.org (Postfix) with ESMTP id 875DC8647E;
-	Tue, 26 May 2020 19:06:24 +0000 (UTC)
+	by whitealder.osuosl.org (Postfix) with ESMTP id 9B8C085CEC;
+	Tue, 26 May 2020 19:11:13 +0000 (UTC)
 Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
-	by lists.linuxfoundation.org (Postfix) with ESMTP id 6C319C0888;
-	Tue, 26 May 2020 19:06:24 +0000 (UTC)
+	by lists.linuxfoundation.org (Postfix) with ESMTP id 802BAC0888;
+	Tue, 26 May 2020 19:11:13 +0000 (UTC)
 Received: from silver.osuosl.org (smtp3.osuosl.org [140.211.166.136])
- by lists.linuxfoundation.org (Postfix) with ESMTP id 661FFC016F
- for <iommu@lists.linux-foundation.org>; Tue, 26 May 2020 19:06:22 +0000 (UTC)
+ by lists.linuxfoundation.org (Postfix) with ESMTP id 8C5FFC016F
+ for <iommu@lists.linux-foundation.org>; Tue, 26 May 2020 19:11:12 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
- by silver.osuosl.org (Postfix) with ESMTP id 582FA2288E
- for <iommu@lists.linux-foundation.org>; Tue, 26 May 2020 19:06:22 +0000 (UTC)
+ by silver.osuosl.org (Postfix) with ESMTP id 842E8230BD
+ for <iommu@lists.linux-foundation.org>; Tue, 26 May 2020 19:11:12 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
 Received: from silver.osuosl.org ([127.0.0.1])
  by localhost (.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
- with ESMTP id w7sHm01cFFrz for <iommu@lists.linux-foundation.org>;
- Tue, 26 May 2020 19:06:21 +0000 (UTC)
+ with ESMTP id wv8Ebi-G2UAl for <iommu@lists.linux-foundation.org>;
+ Tue, 26 May 2020 19:11:10 +0000 (UTC)
 X-Greylist: from auto-whitelisted by SQLgrey-1.7.6
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
- by silver.osuosl.org (Postfix) with ESMTPS id 622CA22CC6
- for <iommu@lists.linux-foundation.org>; Tue, 26 May 2020 19:06:21 +0000 (UTC)
+ by silver.osuosl.org (Postfix) with ESMTPS id A64A123491
+ for <iommu@lists.linux-foundation.org>; Tue, 26 May 2020 19:11:10 +0000 (UTC)
 Received: from localhost (83-86-89-107.cable.dynamic.v4.ziggo.nl
  [83.86.89.107])
  (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
  (No client certificate requested)
- by mail.kernel.org (Postfix) with ESMTPSA id 9DC3A20873;
- Tue, 26 May 2020 19:06:20 +0000 (UTC)
+ by mail.kernel.org (Postfix) with ESMTPSA id E1FF520888;
+ Tue, 26 May 2020 19:11:09 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
- s=default; t=1590519981;
- bh=cmVh0OPeml6D5NC6kDs0bsSrpH4XAy+2xRC/rnWJl84=;
+ s=default; t=1590520270;
+ bh=ECHHm1tjjPiVV5BIUfnlAx1LvvWnDMygf0UXIqwcJhQ=;
  h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
- b=M2z7NTUUdWCxY+J/baluyE9whPqhbZYQxiY7Jaj6TVfp63toiQz2Ye4BwLcxLbLaB
- EW4LYaNe7UfB6ef+xila9f5IXCA6AL0WrC4Bq/JgqD9p1v+5O0ro3Eww7pk4vc56IX
- D2F+47qin2ONSTPv0FOXHb20yPUPBxvyGkl6HBDY=
+ b=2TZAVr4eSX95Ris7Vtv2FHOyiZz97dYZgt2LUinVpkQL9WL8FUhq37xy/JPeYkX4T
+ Yt7pItYTB826CIqj7yYOvXlWSqBRzEnAZ0CwVXDWLmz9jaS0du3SnBYN8b+Z/okP+W
+ n5fNgcruqVT7AB353aTAZP0KJL3XyCCb7XdapseY=
 From: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To: linux-kernel@vger.kernel.org
-Subject: [PATCH 5.4 012/111] iommu/amd: Fix over-read of ACPI UID from IVRS
+Subject: [PATCH 5.6 014/126] iommu/amd: Fix over-read of ACPI UID from IVRS
  table
-Date: Tue, 26 May 2020 20:52:30 +0200
-Message-Id: <20200526183933.727706104@linuxfoundation.org>
+Date: Tue, 26 May 2020 20:52:31 +0200
+Message-Id: <20200526183938.780946925@linuxfoundation.org>
 X-Mailer: git-send-email 2.26.2
-In-Reply-To: <20200526183932.245016380@linuxfoundation.org>
-References: <20200526183932.245016380@linuxfoundation.org>
+In-Reply-To: <20200526183937.471379031@linuxfoundation.org>
+References: <20200526183937.471379031@linuxfoundation.org>
 User-Agent: quilt/0.66
 MIME-Version: 1.0
 Cc: Sasha Levin <sashal@kernel.org>, Joerg Roedel <jroedel@suse.de>,
@@ -133,10 +133,10 @@ Signed-off-by: Sasha Levin <sashal@kernel.org>
  1 file changed, 5 insertions(+), 4 deletions(-)
 
 diff --git a/drivers/iommu/amd_iommu_init.c b/drivers/iommu/amd_iommu_init.c
-index ef14b00fa94b..135ae5222cf3 100644
+index 2b9a67ecc6ac..5b81fd16f5fa 100644
 --- a/drivers/iommu/amd_iommu_init.c
 +++ b/drivers/iommu/amd_iommu_init.c
-@@ -1331,8 +1331,8 @@ static int __init init_iommu_from_acpi(struct amd_iommu *iommu,
+@@ -1329,8 +1329,8 @@ static int __init init_iommu_from_acpi(struct amd_iommu *iommu,
  		}
  		case IVHD_DEV_ACPI_HID: {
  			u16 devid;
@@ -147,7 +147,7 @@ index ef14b00fa94b..135ae5222cf3 100644
  			int ret;
  
  			if (h->type != 0x40) {
-@@ -1349,6 +1349,7 @@ static int __init init_iommu_from_acpi(struct amd_iommu *iommu,
+@@ -1347,6 +1347,7 @@ static int __init init_iommu_from_acpi(struct amd_iommu *iommu,
  				break;
  			}
  
@@ -155,7 +155,7 @@ index ef14b00fa94b..135ae5222cf3 100644
  			switch (e->uidf) {
  			case UID_NOT_PRESENT:
  
-@@ -1363,8 +1364,8 @@ static int __init init_iommu_from_acpi(struct amd_iommu *iommu,
+@@ -1361,8 +1362,8 @@ static int __init init_iommu_from_acpi(struct amd_iommu *iommu,
  				break;
  			case UID_IS_CHARACTER:
  
