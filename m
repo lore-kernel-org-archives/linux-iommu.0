@@ -2,104 +2,104 @@ Return-Path: <SRS0=1lY2=7I=lists.linux-foundation.org=iommu-bounces@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-9.6 required=3.0 tests=DKIM_INVALID,DKIM_SIGNED,
-	HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_PATCH,MAILING_LIST_MULTI,SIGNED_OFF_BY,
-	SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED,USER_AGENT_GIT autolearn=ham
-	autolearn_force=no version=3.4.0
+X-Spam-Status: No, score=-2.0 required=3.0 tests=DKIM_INVALID,DKIM_SIGNED,
+	HEADER_FROM_DIFFERENT_DOMAINS,MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS,
+	URIBL_BLOCKED,USER_AGENT_SANE_1 autolearn=no autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 8E357C433E2
-	for <iommu@archiver.kernel.org>; Tue, 26 May 2020 11:50:19 +0000 (UTC)
-Received: from whitealder.osuosl.org (smtp1.osuosl.org [140.211.166.138])
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 5C760C433E3
+	for <iommu@archiver.kernel.org>; Tue, 26 May 2020 12:07:35 +0000 (UTC)
+Received: from silver.osuosl.org (smtp3.osuosl.org [140.211.166.136])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by mail.kernel.org (Postfix) with ESMTPS id 607E420663
-	for <iommu@archiver.kernel.org>; Tue, 26 May 2020 11:50:19 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTPS id 243C620787
+	for <iommu@archiver.kernel.org>; Tue, 26 May 2020 12:07:35 +0000 (UTC)
 Authentication-Results: mail.kernel.org;
-	dkim=fail reason="signature verification failed" (2048-bit key) header.d=linaro.org header.i=@linaro.org header.b="cSls9zjl"
-DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 607E420663
+	dkim=fail reason="signature verification failed" (2048-bit key) header.d=linaro.org header.i=@linaro.org header.b="J+ir68ua"
+DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 243C620787
 Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=linaro.org
 Authentication-Results: mail.kernel.org; spf=pass smtp.mailfrom=iommu-bounces@lists.linux-foundation.org
 Received: from localhost (localhost [127.0.0.1])
-	by whitealder.osuosl.org (Postfix) with ESMTP id 0151586DF4;
-	Tue, 26 May 2020 11:50:19 +0000 (UTC)
+	by silver.osuosl.org (Postfix) with ESMTP id E910422CC7;
+	Tue, 26 May 2020 12:07:34 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from whitealder.osuosl.org ([127.0.0.1])
+Received: from silver.osuosl.org ([127.0.0.1])
 	by localhost (.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
-	with ESMTP id ozjt15WDmkdn; Tue, 26 May 2020 11:50:18 +0000 (UTC)
+	with ESMTP id tvS7wPLc4t-g; Tue, 26 May 2020 12:07:34 +0000 (UTC)
 Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [140.211.9.56])
-	by whitealder.osuosl.org (Postfix) with ESMTP id 5437786E1F;
-	Tue, 26 May 2020 11:50:18 +0000 (UTC)
+	by silver.osuosl.org (Postfix) with ESMTP id 116A4227E1;
+	Tue, 26 May 2020 12:07:34 +0000 (UTC)
 Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
-	by lists.linuxfoundation.org (Postfix) with ESMTP id 40D5BC088D;
-	Tue, 26 May 2020 11:50:18 +0000 (UTC)
-Received: from whitealder.osuosl.org (smtp1.osuosl.org [140.211.166.138])
- by lists.linuxfoundation.org (Postfix) with ESMTP id 7A812C016F
- for <iommu@lists.linux-foundation.org>; Tue, 26 May 2020 11:50:17 +0000 (UTC)
+	by lists.linuxfoundation.org (Postfix) with ESMTP id 09A94C0888;
+	Tue, 26 May 2020 12:07:34 +0000 (UTC)
+Received: from fraxinus.osuosl.org (smtp4.osuosl.org [140.211.166.137])
+ by lists.linuxfoundation.org (Postfix) with ESMTP id 895B5C016F
+ for <iommu@lists.linux-foundation.org>; Tue, 26 May 2020 12:07:33 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
- by whitealder.osuosl.org (Postfix) with ESMTP id 68F1786E1F
- for <iommu@lists.linux-foundation.org>; Tue, 26 May 2020 11:50:17 +0000 (UTC)
+ by fraxinus.osuosl.org (Postfix) with ESMTP id 7833885F83
+ for <iommu@lists.linux-foundation.org>; Tue, 26 May 2020 12:07:33 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from whitealder.osuosl.org ([127.0.0.1])
+Received: from fraxinus.osuosl.org ([127.0.0.1])
  by localhost (.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
- with ESMTP id ClOlbSPuVjoY for <iommu@lists.linux-foundation.org>;
- Tue, 26 May 2020 11:50:16 +0000 (UTC)
-X-Greylist: from auto-whitelisted by SQLgrey-1.7.6
-Received: from mail-pj1-f68.google.com (mail-pj1-f68.google.com
- [209.85.216.68])
- by whitealder.osuosl.org (Postfix) with ESMTPS id C793886DF4
- for <iommu@lists.linux-foundation.org>; Tue, 26 May 2020 11:50:16 +0000 (UTC)
-Received: by mail-pj1-f68.google.com with SMTP id fs4so1332148pjb.5
- for <iommu@lists.linux-foundation.org>; Tue, 26 May 2020 04:50:16 -0700 (PDT)
+ with ESMTP id U2tKuN8B2IgU for <iommu@lists.linux-foundation.org>;
+ Tue, 26 May 2020 12:07:32 +0000 (UTC)
+X-Greylist: domain auto-whitelisted by SQLgrey-1.7.6
+Received: from mail-pl1-f195.google.com (mail-pl1-f195.google.com
+ [209.85.214.195])
+ by fraxinus.osuosl.org (Postfix) with ESMTPS id 4CC0B85F7D
+ for <iommu@lists.linux-foundation.org>; Tue, 26 May 2020 12:07:32 +0000 (UTC)
+Received: by mail-pl1-f195.google.com with SMTP id t16so8606537plo.7
+ for <iommu@lists.linux-foundation.org>; Tue, 26 May 2020 05:07:32 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linaro.org; s=google;
- h=from:to:cc:subject:date:message-id:in-reply-to:references;
- bh=rzP5fzn/E340EPlW7gDpFBlyEkfSVaF1oJz6fYo76k8=;
- b=cSls9zjl0whNH0eR/l2i02O95OOhgGrNGwM26ZGFvkQW9VtZxJfxlywizJRke/rmbm
- DjeTG2qfQRIUFCJCYqf3IQGjZY5BYNOiPnuTiljaUSiUooWYyRzwspOmUiqDqG0M0ZC0
- NH/f8WAxs2sULx5ClU2rSJ/IVPF1eLlml+6rdIo1i25jIwEm+AfsqPAhvJRo8r0X4r3K
- IiHWdbIh+eGq5kqb6u0B/VzWcIY6fcWtE+dhbKonQdK7ew/58LBw5We1pNCxs/7oweP5
- Jjm4EUWxVNg2+Xy8U6NcCfQFYKXK3ubEYUyGEqX5s/R/MQ0L946l4eUlakQO2SpHpvOw
- LfPw==
+ h=subject:to:cc:references:from:message-id:date:user-agent
+ :mime-version:in-reply-to:content-transfer-encoding:content-language;
+ bh=fpsA7Nq2nxropNth7zUzBAVP9PJ+/EXl3l54pU3n9ZM=;
+ b=J+ir68uaqgnC0bpUtYh7gEhKg91ecOFPaqozofq5uKsLc7Q5y3iFeqMqCZAJviMx+s
+ 5ig+pjzGqwz+mFaduqg65bildjvb3DkPZio13iXEBv0mAnfqdngUZrwP8cIh8JeTUCVJ
+ gmFnjjcFBD8aNXil24SDu+Jkirv39gmumTTyj55+HgtSDlf8tVbBjh7E552efJG/Wjo8
+ EJDaQDAdQwq7KwVsaMRKey6Y7TjZsMZCOt/LAThI6/92Dp0fkT6otf1CI6seawSCUyPt
+ WoWoRsARBzdoihaCWqPAXG3jCyZxwI+pM2gsZxtGTudpYt/c710Xf3GM28FbeauVBfE6
+ ryPQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
  d=1e100.net; s=20161025;
- h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
- :references;
- bh=rzP5fzn/E340EPlW7gDpFBlyEkfSVaF1oJz6fYo76k8=;
- b=nNsjkhkBIPaJDKflJ/tE00N/6RmJB2d+GmvyWi4MMkVknZh7o5Q+l0EC9LWOMebmWq
- yOmWsOu8Pd0598U8JYiajJ+eXtG1XetCpTMiRCQnfCz9RwXeWLEb2YlXsaN3hh53vBSp
- YAu+ZbTP/AB47Zf/iOvGsX9QsOhPAMFzobOab0tFtLfhkUJL50QcavmupCNLWsvesOZj
- zUrlSdNP5xsKA85b70gsnHAfx8aKqXjrJQDoiMfkPtBR03VzXKJlZFvqsl9IbP2iAPDO
- EEs1r+N4oZoTmeLdmqVYFdgyee8bPs9CGHWhm9JS2WlWoLuLs/jt2wnJo1CqJ0CM/Iac
- M4wQ==
-X-Gm-Message-State: AOAM5317mdrjlGzBE7EADFzHSgfcZ5xLRXoUzOAxeLLRErGJ9BUn/Mwr
- 2R7vT4jgkRkH7UWkYh8ZcOQTWA==
-X-Google-Smtp-Source: ABdhPJzHFiU9uQ9tpgEPP89QRh+ApddGGVo2/M4MgxGlH4yKc3wRc1jVL2ox1xaiLvr1T78JAyGRGQ==
-X-Received: by 2002:a17:90a:4809:: with SMTP id
- a9mr26082742pjh.196.1590493816386; 
- Tue, 26 May 2020 04:50:16 -0700 (PDT)
-Received: from localhost.localdomain ([45.135.186.9])
- by smtp.gmail.com with ESMTPSA id c12sm15586567pjm.46.2020.05.26.04.50.02
- (version=TLS1_2 cipher=ECDHE-ECDSA-AES128-GCM-SHA256 bits=128/128);
- Tue, 26 May 2020 04:50:16 -0700 (PDT)
+ h=x-gm-message-state:subject:to:cc:references:from:message-id:date
+ :user-agent:mime-version:in-reply-to:content-transfer-encoding
+ :content-language;
+ bh=fpsA7Nq2nxropNth7zUzBAVP9PJ+/EXl3l54pU3n9ZM=;
+ b=eVyjfGtclY4DqjAIU1lfw8dPA/yWvfcy8W3EsayuYZpVQTG0yjilYxEE63fsCBa+ty
+ 3Suqb/ke3z0+hW32ynji64YLHNVWUv9f3ldpiFTrfpWrtnRoi3UGR71Xifz91jmargWr
+ dQDbzHYo7J2ahT+PJcg752/9JGlJWp0VfSgAD+ftHVAEkpc0xVl6uTIcBYNBU3WINZ1v
+ 1xXrM8NW+VumEeWlZTn3JcrppN+Vn4KA2ZVWf/2i3caE+FCye92fBjmiVDQpnV/cvIRk
+ qjkMc8K4WIU+eJ9vEe3nFXCY5+zHcPlByS4QiShOVCb1k8nAo+1K4ZXIsFT4V260FqYv
+ 2iTw==
+X-Gm-Message-State: AOAM531YbcXM8T7QdQXWFbmK5GIhtLWmKBFaqhYzcXyU4edrkNlgpx/f
+ bB6p7Z76qgefhpLR1SmC/mDDLw==
+X-Google-Smtp-Source: ABdhPJwJC/VIL8ph3znchjMxyQibr056u3YncVEhb6v6BwGdiIO+FoFmlj/9d7sAY/kJdEg5hx2xFg==
+X-Received: by 2002:a17:902:6b02:: with SMTP id o2mr822931plk.25.1590494851770; 
+ Tue, 26 May 2020 05:07:31 -0700 (PDT)
+Received: from [10.74.2.18] ([45.135.186.9])
+ by smtp.gmail.com with ESMTPSA id x132sm15300133pfd.214.2020.05.26.05.07.12
+ (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+ Tue, 26 May 2020 05:07:30 -0700 (PDT)
+Subject: Re: [PATCH 0/2] Let pci_fixup_final access iommu_fwnode
+To: Joerg Roedel <joro@8bytes.org>
+References: <1589256511-12446-1-git-send-email-zhangfei.gao@linaro.org>
+ <20200525134318.GB5221@8bytes.org>
 From: Zhangfei Gao <zhangfei.gao@linaro.org>
-To: Joerg Roedel <joro@8bytes.org>, Bjorn Helgaas <bhelgaas@google.com>,
- Arnd Bergmann <arnd@arndb.de>,
- Lorenzo Pieralisi <lorenzo.pieralisi@arm.com>,
- Hanjun Guo <guohanjun@huawei.com>, Sudeep Holla <sudeep.holla@arm.com>,
- "Rafael J. Wysocki" <rjw@rjwysocki.net>, Len Brown <lenb@kernel.org>,
- jean-philippe <jean-philippe@linaro.org>,
+Message-ID: <7c6e9389-c34a-4d30-bc8d-572c41572d15@linaro.org>
+Date: Tue, 26 May 2020 20:07:01 +0800
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101
+ Thunderbird/68.7.0
+MIME-Version: 1.0
+In-Reply-To: <20200525134318.GB5221@8bytes.org>
+Content-Language: en-US
+Cc: jean-philippe <jean-philippe@linaro.org>,
+ Herbert Xu <herbert@gondor.apana.org.au>,
  Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
- Herbert Xu <herbert@gondor.apana.org.au>, kenneth-lee-2012@foxmail.com,
- Wangzhou <wangzhou1@hisilicon.com>
-Subject: [PATCH 2/2] iommu: calling pci_fixup_iommu in iommu_fwspec_init
-Date: Tue, 26 May 2020 19:49:09 +0800
-Message-Id: <1590493749-13823-3-git-send-email-zhangfei.gao@linaro.org>
-X-Mailer: git-send-email 2.7.4
-In-Reply-To: <1590493749-13823-1-git-send-email-zhangfei.gao@linaro.org>
-References: <1590493749-13823-1-git-send-email-zhangfei.gao@linaro.org>
-Cc: linux-pci@vger.kernel.org, linux-kernel@vger.kernel.org,
- linux-acpi@vger.kernel.org, iommu@lists.linux-foundation.org,
- linux-crypto@vger.kernel.org, Zhangfei Gao <zhangfei.gao@linaro.org>,
- linux-arm-kernel@lists.infradead.org
+ Hanjun Guo <guohanjun@huawei.com>, "Rafael J. Wysocki" <rjw@rjwysocki.net>,
+ linux-kernel@vger.kernel.org, iommu@lists.linux-foundation.org,
+ linux-acpi@vger.kernel.org, linux-crypto@vger.kernel.org,
+ Sudeep Holla <sudeep.holla@arm.com>, kenneth-lee-2012@foxmail.com,
+ linux-arm-kernel@lists.infradead.org, Len Brown <lenb@kernel.org>
 X-BeenThere: iommu@lists.linux-foundation.org
 X-Mailman-Version: 2.1.15
 Precedence: list
@@ -112,42 +112,34 @@ List-Post: <mailto:iommu@lists.linux-foundation.org>
 List-Help: <mailto:iommu-request@lists.linux-foundation.org?subject=help>
 List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
  <mailto:iommu-request@lists.linux-foundation.org?subject=subscribe>
-MIME-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: 7bit
+Content-Transfer-Encoding: base64
+Content-Type: text/plain; charset="utf-8"; Format="flowed"
 Errors-To: iommu-bounces@lists.linux-foundation.org
 Sender: "iommu" <iommu-bounces@lists.linux-foundation.org>
 
-Calling pci_fixup_iommu in iommu_fwspec_init, which alloc
-iommu_fwnode. Some platform devices appear as PCI but are
-actually on the AMBA bus, and they need fixup in
-drivers/pci/quirks.c handling iommu_fwnode.
-So calling pci_fixup_iommu after iommu_fwnode is allocated.
-
-Signed-off-by: Zhangfei Gao <zhangfei.gao@linaro.org>
----
- drivers/iommu/iommu.c | 4 ++++
- 1 file changed, 4 insertions(+)
-
-diff --git a/drivers/iommu/iommu.c b/drivers/iommu/iommu.c
-index 7b37542..fb84c42 100644
---- a/drivers/iommu/iommu.c
-+++ b/drivers/iommu/iommu.c
-@@ -2418,6 +2418,10 @@ int iommu_fwspec_init(struct device *dev, struct fwnode_handle *iommu_fwnode,
- 	fwspec->iommu_fwnode = iommu_fwnode;
- 	fwspec->ops = ops;
- 	dev_iommu_fwspec_set(dev, fwspec);
-+
-+	if (dev_is_pci(dev))
-+		pci_fixup_device(pci_fixup_iommu, to_pci_dev(dev));
-+
- 	return 0;
- }
- EXPORT_SYMBOL_GPL(iommu_fwspec_init);
--- 
-2.7.4
-
-_______________________________________________
-iommu mailing list
-iommu@lists.linux-foundation.org
-https://lists.linuxfoundation.org/mailman/listinfo/iommu
+CgpPbiAyMDIwLzUvMjUg5LiL5Y2IOTo0MywgSm9lcmcgUm9lZGVsIHdyb3RlOgo+IE9uIFR1ZSwg
+TWF5IDEyLCAyMDIwIGF0IDEyOjA4OjI5UE0gKzA4MDAsIFpoYW5nZmVpIEdhbyB3cm90ZToKPj4g
+U29tZSBwbGF0Zm9ybSBkZXZpY2VzIGFwcGVhciBhcyBQQ0kgYnV0IGFyZQo+PiBhY3R1YWxseSBv
+biB0aGUgQU1CQSBidXMsIGFuZCB0aGV5IG5lZWQgZml4dXAgaW4KPj4gZHJpdmVycy9wY2kvcXVp
+cmtzLmMgaGFuZGxpbmcgaW9tbXVfZndub2RlLgo+PiBTbyBjYWxsaW5nIHBjaV9maXh1cF9maW5h
+bCBhZnRlciBpb21tdV9md25vZGUgaXMgYWxsb2NhdGVkLgo+Pgo+PiBGb3IgZXhhbXBsZToKPj4g
+SGlzaWxpY29uIHBsYXRmb3JtIGRldmljZSBuZWVkIGZpeHVwIGluCj4+IGRyaXZlcnMvcGNpL3F1
+aXJrcy5jCj4+Cj4+ICtzdGF0aWMgdm9pZCBxdWlya19odWF3ZWlfcGNpZV9zdmEoc3RydWN0IHBj
+aV9kZXYgKnBkZXYpCj4+ICt7Cj4+ICsJc3RydWN0IGlvbW11X2Z3c3BlYyAqZndzcGVjOwo+PiAr
+Cj4+ICsJcGRldi0+ZWV0bHBfcHJlZml4X3BhdGggPSAxOwo+PiArCWZ3c3BlYyA9IGRldl9pb21t
+dV9md3NwZWNfZ2V0KCZwZGV2LT5kZXYpOwo+PiArCWlmIChmd3NwZWMpCj4+ICsJCWZ3c3BlYy0+
+Y2FuX3N0YWxsID0gMTsKPj4gK30KPj4gKwo+PiArREVDTEFSRV9QQ0lfRklYVVBfRklOQUwoUENJ
+X1ZFTkRPUl9JRF9IVUFXRUksIDB4YTI1MCwgcXVpcmtfaHVhd2VpX3BjaWVfc3ZhKTsKPj4gK0RF
+Q0xBUkVfUENJX0ZJWFVQX0ZJTkFMKFBDSV9WRU5ET1JfSURfSFVBV0VJLCAweGEyNTEsIHF1aXJr
+X2h1YXdlaV9wY2llX3N2YSk7Cj4gSSBkb24ndCB0aGluayBpdCBpcyBhIGdyZWF0IGlkZWEgdG8g
+aG9vayB0aGlzIGludG8gUENJX0ZJWFVQX0ZJTkFMLiBUaGUKPiBmaXh1cCBsaXN0IG5lZWRzIHRv
+IGJlIHByb2Nlc3NlZCBmb3IgZXZlcnkgZGV2aWNlLCB3aGljaCB3aWxsIHNsb3cgZG93bgo+IHBy
+b2JpbmcuCj4KPiBTbyBlaXRoZXIgd2UgaW50cm9kdWNlIHNvbWV0aGluZyBsaWtlIFBDSV9GSVhV
+UF9JT01NVSwgaWYgdGhpcyBpcwo+IGVudGlyZWx5IFBDSSBzcGVjaWZpYy4gSWYgaXQgbmVlZHMg
+dG8gYmUgZ2VuZXJpYyB3ZSBuZWVkIHNvbWUgZml4dXAKPiBpbmZyYXN0cnVjdHVyZSBpbiB0aGUg
+SU9NTVUgY29kZSBpdHNlbGYuCgpUaGFua3MgSm9lcmcgZm9yIHRoZSBnb29kIHN1Z2dlc3Rpb24u
+CkkgYW0gdHJ5aW5nIHRvIGludHJvZHVjZSBQQ0lfRklYVVBfSU9NTVUgaW4KaHR0cHM6Ly9sa21s
+Lm9yZy9sa21sLzIwMjAvNS8yNi8zNjYKClRoYW5rcwpfX19fX19fX19fX19fX19fX19fX19fX19f
+X19fX19fX19fX19fX19fX19fX19fXwppb21tdSBtYWlsaW5nIGxpc3QKaW9tbXVAbGlzdHMubGlu
+dXgtZm91bmRhdGlvbi5vcmcKaHR0cHM6Ly9saXN0cy5saW51eGZvdW5kYXRpb24ub3JnL21haWxt
+YW4vbGlzdGluZm8vaW9tbXU=
