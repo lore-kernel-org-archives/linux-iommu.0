@@ -2,92 +2,94 @@ Return-Path: <SRS0=1lY2=7I=lists.linux-foundation.org=iommu-bounces@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-0.6 required=3.0 tests=DKIM_INVALID,DKIM_SIGNED,
-	HEADER_FROM_DIFFERENT_DOMAINS,MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS
-	autolearn=no autolearn_force=no version=3.4.0
+X-Spam-Status: No, score=-6.8 required=3.0 tests=HEADER_FROM_DIFFERENT_DOMAINS,
+	INCLUDES_PATCH,MAILING_LIST_MULTI,SIGNED_OFF_BY,SPF_HELO_NONE,SPF_PASS
+	autolearn=ham autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id E5B7DC433E0
-	for <iommu@archiver.kernel.org>; Tue, 26 May 2020 20:35:01 +0000 (UTC)
-Received: from fraxinus.osuosl.org (smtp4.osuosl.org [140.211.166.137])
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 5568AC433E8
+	for <iommu@archiver.kernel.org>; Tue, 26 May 2020 20:55:00 +0000 (UTC)
+Received: from whitealder.osuosl.org (smtp1.osuosl.org [140.211.166.138])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by mail.kernel.org (Postfix) with ESMTPS id A2440208A7
-	for <iommu@archiver.kernel.org>; Tue, 26 May 2020 20:35:00 +0000 (UTC)
-Authentication-Results: mail.kernel.org;
-	dkim=fail reason="signature verification failed" (2048-bit key) header.d=linaro.org header.i=@linaro.org header.b="vqBfuJzM"
-DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org A2440208A7
-Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=linaro.org
+	by mail.kernel.org (Postfix) with ESMTPS id E7A10208E4
+	for <iommu@archiver.kernel.org>; Tue, 26 May 2020 20:54:59 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org E7A10208E4
+Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=linux.intel.com
 Authentication-Results: mail.kernel.org; spf=pass smtp.mailfrom=iommu-bounces@lists.linux-foundation.org
 Received: from localhost (localhost [127.0.0.1])
-	by fraxinus.osuosl.org (Postfix) with ESMTP id 9569E869E3;
-	Tue, 26 May 2020 20:35:00 +0000 (UTC)
+	by whitealder.osuosl.org (Postfix) with ESMTP id 95059863D9;
+	Tue, 26 May 2020 20:54:59 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from fraxinus.osuosl.org ([127.0.0.1])
+Received: from whitealder.osuosl.org ([127.0.0.1])
 	by localhost (.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
-	with ESMTP id AjZfaDNc8fk6; Tue, 26 May 2020 20:35:00 +0000 (UTC)
+	with ESMTP id uqe+BKAT4QNZ; Tue, 26 May 2020 20:54:55 +0000 (UTC)
 Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [140.211.9.56])
-	by fraxinus.osuosl.org (Postfix) with ESMTP id 0113B8698F;
-	Tue, 26 May 2020 20:34:59 +0000 (UTC)
+	by whitealder.osuosl.org (Postfix) with ESMTP id C0541877F4;
+	Tue, 26 May 2020 20:54:55 +0000 (UTC)
 Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
-	by lists.linuxfoundation.org (Postfix) with ESMTP id E3A6EC0888;
-	Tue, 26 May 2020 20:34:59 +0000 (UTC)
-Received: from hemlock.osuosl.org (smtp2.osuosl.org [140.211.166.133])
- by lists.linuxfoundation.org (Postfix) with ESMTP id 2B753C016F
- for <iommu@lists.linux-foundation.org>; Tue, 26 May 2020 20:34:58 +0000 (UTC)
+	by lists.linuxfoundation.org (Postfix) with ESMTP id A7CF2C0888;
+	Tue, 26 May 2020 20:54:55 +0000 (UTC)
+Received: from whitealder.osuosl.org (smtp1.osuosl.org [140.211.166.138])
+ by lists.linuxfoundation.org (Postfix) with ESMTP id 28AB9C016F
+ for <iommu@lists.linux-foundation.org>; Tue, 26 May 2020 20:54:54 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
- by hemlock.osuosl.org (Postfix) with ESMTP id 18F14885DE
- for <iommu@lists.linux-foundation.org>; Tue, 26 May 2020 20:34:58 +0000 (UTC)
+ by whitealder.osuosl.org (Postfix) with ESMTP id 16CFD877F4
+ for <iommu@lists.linux-foundation.org>; Tue, 26 May 2020 20:54:54 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from hemlock.osuosl.org ([127.0.0.1])
+Received: from whitealder.osuosl.org ([127.0.0.1])
  by localhost (.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
- with ESMTP id aZJ3ldGUN3HE for <iommu@lists.linux-foundation.org>;
- Tue, 26 May 2020 20:34:57 +0000 (UTC)
+ with ESMTP id H3ERRmf5VEc0 for <iommu@lists.linux-foundation.org>;
+ Tue, 26 May 2020 20:54:52 +0000 (UTC)
 X-Greylist: domain auto-whitelisted by SQLgrey-1.7.6
-Received: from mail-ot1-f67.google.com (mail-ot1-f67.google.com
- [209.85.210.67])
- by hemlock.osuosl.org (Postfix) with ESMTPS id 48CB2885DB
- for <iommu@lists.linux-foundation.org>; Tue, 26 May 2020 20:34:57 +0000 (UTC)
-Received: by mail-ot1-f67.google.com with SMTP id o13so17457650otl.5
- for <iommu@lists.linux-foundation.org>; Tue, 26 May 2020 13:34:57 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linaro.org; s=google;
- h=mime-version:references:in-reply-to:from:date:message-id:subject:to
- :cc; bh=Xlg1WEt/1KpzYv+/vA9j7Mf3YWi1IPnXCFcohcpUSKM=;
- b=vqBfuJzMnCts3H+g3tzxBLb3DHdb9u8YAPd1Lr4hpr9zPYnd/hQ9htQE4e+QzEUmjl
- 7ZrK+oEdm0wLIE7MuIMmiI71OhNKS8oqoG5svb2EehG6CFlmnhdeq9cw6Vf2tq/axJ2H
- ssZdHqJcXZVSLkR/cPGAeFiJSasA4lSnrLDZRpKXHynba/SmCOYCvHWd2hPTm3NCdn4r
- BNzmOO0gWoq0pD+6uFTBvcgyL6jgx7zvs2rGaMsCKa11K7bwAsrXJaOHz3GnLa3znOG5
- YZJKlEQz0ZUmv6xTUjr2n7E5cvEvNuf9zyblA43KWchCM+klzpd5j7n4bXULce1BXFzm
- 8BLw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
- d=1e100.net; s=20161025;
- h=x-gm-message-state:mime-version:references:in-reply-to:from:date
- :message-id:subject:to:cc;
- bh=Xlg1WEt/1KpzYv+/vA9j7Mf3YWi1IPnXCFcohcpUSKM=;
- b=WI7qsDne9xawCMSX50T7ikSE9mFKl/PFSc+T5m0binOmoYPFY+BSy0xv+8rQPBK0GR
- xl5VCA7HVlVOiiNSUZJf23CgtgAtePyMNVb1GCms2b3dbdtsUbfqChCAmjtGp1OHedcC
- vAKiDsTrAc4F3+M/fy2FQB1TZ3iJ0bYXfdrmt8o4MYXRxDalHpJBPZof+ZJ22/uK8CKQ
- vNeQPxHftmzE2u5+4tMWH7TcrzHF2itImdR8dgfxObdyMzQhZuDYrUx/cuz6c9m65FoV
- 4iSlYZk0V2r2xVt8l/D1mxjMhkaCkriGT/rltC4CC/nalutSex9YwqZu7qt4b5IN30dx
- G+1A==
-X-Gm-Message-State: AOAM532DA63FsgoZVIwL9HoZ3RG2H/UbDyuCItS96x9dlmGIfx3me4UW
- MXNbDnV0ltZ//akHjJSaQoABVkY3fmJ9RQrtAceIXg==
-X-Google-Smtp-Source: ABdhPJwRnLRczAXOAB9YCm7o1K0N3H8lb7+2jzEf7cyls1IaN/ZEhrkFXvBSwAYhJHpTTYYnVbUBS2F8yL7vvHUmhEs=
-X-Received: by 2002:a9d:b82:: with SMTP id 2mr2072353oth.221.1590525296383;
- Tue, 26 May 2020 13:34:56 -0700 (PDT)
+Received: from mga01.intel.com (mga01.intel.com [192.55.52.88])
+ by whitealder.osuosl.org (Postfix) with ESMTPS id BD1C3863D9
+ for <iommu@lists.linux-foundation.org>; Tue, 26 May 2020 20:54:52 +0000 (UTC)
+IronPort-SDR: IpzvTtGSS28haPX08M+wmwdHprCM251C91M7G+zECFFXYIDXGSE9zsbc5KGkXloPrujv8u/mLn
+ M5SK9foDxMHg==
+X-Amp-Result: SKIPPED(no attachment in message)
+X-Amp-File-Uploaded: False
+Received: from orsmga005.jf.intel.com ([10.7.209.41])
+ by fmsmga101.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384;
+ 26 May 2020 13:54:52 -0700
+IronPort-SDR: f3L56atARRLEE/U2lZMBHr2nLocFVXVdKnAmhBfTF32t3UGNYHpLKEGdVLFgMORNI544HNQKFZ
+ ldzumOMBclpw==
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="5.73,437,1583222400"; d="scan'208";a="442238477"
+Received: from smile.fi.intel.com (HELO smile) ([10.237.68.40])
+ by orsmga005.jf.intel.com with ESMTP; 26 May 2020 13:54:46 -0700
+Received: from andy by smile with local (Exim 4.93)
+ (envelope-from <andriy.shevchenko@linux.intel.com>)
+ id 1jdgb2-0094ug-CN; Tue, 26 May 2020 23:54:48 +0300
+Date: Tue, 26 May 2020 23:54:48 +0300
+From: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
+To: Jim Quinlan <james.quinlan@broadcom.com>
+Subject: Re: [PATCH v2 09/14] device core: Add ability to handle multiple dma
+ offsets
+Message-ID: <20200526205448.GA1634618@smile.fi.intel.com>
+References: <20200526191303.1492-1-james.quinlan@broadcom.com>
+ <20200526191303.1492-10-james.quinlan@broadcom.com>
 MIME-Version: 1.0
-References: <20191209150748.2471814-1-thierry.reding@gmail.com>
- <20200228025700.GA856087@builder> <20200514193249.GE279327@builder.lan>
-In-Reply-To: <20200514193249.GE279327@builder.lan>
-From: John Stultz <john.stultz@linaro.org>
-Date: Tue, 26 May 2020 13:34:45 -0700
-Message-ID: <CALAqxLVmomdKJCwh=e-PX+8-seDX0RXA81FzmG4sEyJmbXBh9A@mail.gmail.com>
-Subject: Re: [RFC 0/2] iommu: arm-smmu: Add support for early direct mappings
-To: Bjorn Andersson <bjorn.andersson@linaro.org>
-Cc: Robin Murphy <robin.murphy@arm.com>, iommu@lists.linux-foundation.org,
- Thierry Reding <thierry.reding@gmail.com>,
- linux-arm-msm <linux-arm-msm@vger.kernel.org>, linux-tegra@vger.kernel.org,
- Will Deacon <will@kernel.org>,
- linux-arm-kernel <linux-arm-kernel@lists.infradead.org>
+Content-Disposition: inline
+In-Reply-To: <20200526191303.1492-10-james.quinlan@broadcom.com>
+Organization: Intel Finland Oy - BIC 0357606-4 - Westendinkatu 7, 02160 Espoo
+Cc: Heikki Krogerus <heikki.krogerus@linux.intel.com>,
+ linux-pci@vger.kernel.org,
+ Srinivas Kandagatla <srinivas.kandagatla@linaro.org>,
+ Frank Rowand <frowand.list@gmail.com>, Christoph Hellwig <hch@lst.de>,
+ Saravana Kannan <saravanak@google.com>,
+ "Rafael J. Wysocki" <rafael.j.wysocki@intel.com>,
+ bcm-kernel-feedback-list@broadcom.com, Alan Stern <stern@rowland.harvard.edu>,
+ "open list:OPEN FIRMWARE AND FLATTENED DEVICE TREE"
+ <devicetree@vger.kernel.org>, Corey Minyard <minyard@acm.org>,
+ Suzuki K Poulose <suzuki.poulose@arm.com>, Rob Herring <robh+dt@kernel.org>,
+ Dan Williams <dan.j.williams@intel.com>,
+ Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+ Oliver Neukum <oneukum@suse.com>, open list <linux-kernel@vger.kernel.org>,
+ Wolfram Sang <wsa@kernel.org>,
+ "open list:DMA MAPPING HELPERS" <iommu@lists.linux-foundation.org>,
+ "open list:USB SUBSYSTEM" <linux-usb@vger.kernel.org>,
+ Robin Murphy <robin.murphy@arm.com>,
+ Nicolas Saenz Julienne <nsaenzjulienne@suse.de>
 X-BeenThere: iommu@lists.linux-foundation.org
 X-Mailman-Version: 2.1.15
 Precedence: list
@@ -105,45 +107,326 @@ Content-Transfer-Encoding: 7bit
 Errors-To: iommu-bounces@lists.linux-foundation.org
 Sender: "iommu" <iommu-bounces@lists.linux-foundation.org>
 
-On Thu, May 14, 2020 at 12:34 PM <bjorn.andersson@linaro.org> wrote:
->
-> On Thu 27 Feb 18:57 PST 2020, Bjorn Andersson wrote:
->
-> Rob, Will, we're reaching the point where upstream has enough
-> functionality that this is becoming a critical issue for us.
->
-> E.g. Lenovo Yoga C630 is lacking this and a single dts patch to boot
-> mainline with display, GPU, WiFi and audio working and the story is
-> similar on several devboards.
->
-> As previously described, the only thing I want is the stream mapping
-> related to the display controller in place, either with the CB with
-> translation disabled or possibly with a way to specify the framebuffer
-> region (although this turns out to mess things up in the display
-> driver...)
->
-> I did pick this up again recently and concluded that by omitting the
-> streams for the USB controllers causes an instability issue seen on one
-> of the controller to disappear. So I would prefer if we somehow could
-> have a mechanism to only pick the display streams and the context
-> allocation for this.
->
->
-> Can you please share some pointers/insights/wishes for how we can
-> conclude on this subject?
+On Tue, May 26, 2020 at 03:12:48PM -0400, Jim Quinlan wrote:
+> The new field in struct device 'dma_pfn_offset_map' is used to facilitate
+> the use of multiple pfn offsets between cpu addrs and dma addrs.  It is
+> similar to 'dma_pfn_offset' except that the offset chosen depends on the
+> cpu or dma address involved.
+> 
+> Signed-off-by: Jim Quinlan <james.quinlan@broadcom.com>
+> ---
+>  drivers/of/address.c        | 65 +++++++++++++++++++++++++++++++++++--
+>  drivers/usb/core/message.c  |  3 ++
+>  drivers/usb/core/usb.c      |  3 ++
+>  include/linux/device.h      | 10 +++++-
+>  include/linux/dma-direct.h  | 10 ++++--
+>  include/linux/dma-mapping.h | 46 ++++++++++++++++++++++++++
+>  kernel/dma/Kconfig          | 13 ++++++++
+>  7 files changed, 144 insertions(+), 6 deletions(-)
+> 
+> diff --git a/drivers/of/address.c b/drivers/of/address.c
+> index 96d8cfb14a60..a01afffcde7d 100644
+> --- a/drivers/of/address.c
+> +++ b/drivers/of/address.c
+> @@ -918,6 +918,47 @@ void __iomem *of_io_request_and_map(struct device_node *np, int index,
+>  }
+>  EXPORT_SYMBOL(of_io_request_and_map);
+>  
+> +#ifdef CONFIG_DMA_PFN_OFFSET_MAP
+> +static int attach_dma_pfn_offset_map(struct device *dev,
+> +				     struct device_node *node, int num_ranges)
+> +{
+> +	struct of_range_parser parser;
+> +	struct of_range range;
+> +	size_t r_size = (num_ranges + 1)
+> +		* sizeof(struct dma_pfn_offset_region);
+> +	struct dma_pfn_offset_region *r;
+> +
 
-Ping? I just wanted to follow up on this discussion as this small
-series is crucial for booting mainline on the Dragonboard 845c
-devboard. It would be really valuable to be able to get some solution
-upstream so we can test mainline w/o adding additional patches.
+> +	r = devm_kzalloc(dev, r_size, GFP_KERNEL);
 
-The rest of the db845c series has been moving forward smoothly, but
-this set seems to be very stuck with no visible progress since Dec.
+devm_?!
 
-Are there any pointers for what folks would prefer to see?
+Looking at r_size it should be rather kcalloc().
 
-thanks
--john
+> +	if (!r)
+> +		return -ENOMEM;
+> +	dev->dma_pfn_offset_map = r;
+> +	of_dma_range_parser_init(&parser, node);
+> +
+> +	/*
+> +	 * Record all info for DMA ranges array.  We could
+> +	 * just use the of_range struct, but if we did that it
+> +	 * would require more calculations for phys_to_dma and
+> +	 * dma_to_phys conversions.
+> +	 */
+> +	for_each_of_range(&parser, &range) {
+> +		r->cpu_beg = range.cpu_addr;
+> +		r->cpu_end = r->cpu_beg + range.size;
+> +		r->dma_beg = range.bus_addr;
+> +		r->dma_end = r->dma_beg + range.size;
+> +		r->pfn_offset = PFN_DOWN(range.cpu_addr)
+> +			- PFN_DOWN(range.bus_addr);
+> +		r++;
+> +	}
+> +	return 0;
+> +}
+> +#else
+> +static int attach_dma_pfn_offset_map(struct device *dev,
+> +				     struct device_node *node, int num_ranges)
+> +{
+> +	return 0;
+> +}
+> +#endif
+> +
+>  /**
+>   * of_dma_get_range - Get DMA range info
+>   * @dev:	device pointer; only needed for a corner case.
+> @@ -947,6 +988,8 @@ int of_dma_get_range(struct device *dev, struct device_node *np, u64 *dma_addr,
+>  	struct of_range_parser parser;
+>  	struct of_range range;
+>  	u64 dma_start = U64_MAX, dma_end = 0, dma_offset = 0;
+> +	bool dma_multi_pfn_offset = false;
+> +	int num_ranges = 0;
+>  
+>  	while (node) {
+>  		ranges = of_get_property(node, "dma-ranges", &len);
+> @@ -977,10 +1020,19 @@ int of_dma_get_range(struct device *dev, struct device_node *np, u64 *dma_addr,
+>  		pr_debug("dma_addr(%llx) cpu_addr(%llx) size(%llx)\n",
+>  			 range.bus_addr, range.cpu_addr, range.size);
+>  
+> +		num_ranges++;
+>  		if (dma_offset && range.cpu_addr - range.bus_addr != dma_offset) {
+> -			pr_warn("Can't handle multiple dma-ranges with different offsets on node(%pOF)\n", node);
+> -			/* Don't error out as we'd break some existing DTs */
+> -			continue;
+> +			if (!IS_ENABLED(CONFIG_DMA_PFN_OFFSET_MAP)) {
+> +				pr_warn("Can't handle multiple dma-ranges with different offsets on node(%pOF)\n", node);
+> +				pr_warn("Perhaps set DMA_PFN_OFFSET_MAP=y?\n");
+> +				/*
+> +				 * Don't error out as we'd break some existing
+> +				 * DTs that are using configs w/o
+> +				 * CONFIG_DMA_PFN_OFFSET_MAP set.
+> +				 */
+> +				continue;
+> +			}
+> +			dma_multi_pfn_offset = true;
+>  		}
+>  		dma_offset = range.cpu_addr - range.bus_addr;
+>  
+> @@ -991,6 +1043,13 @@ int of_dma_get_range(struct device *dev, struct device_node *np, u64 *dma_addr,
+>  			dma_end = range.bus_addr + range.size;
+>  	}
+>  
+> +	if (dma_multi_pfn_offset) {
+> +		dma_offset = 0;
+> +		ret = attach_dma_pfn_offset_map(dev, node, num_ranges);
+> +		if (ret)
+> +			return ret;
+> +	}
+> +
+>  	if (dma_start >= dma_end) {
+>  		ret = -EINVAL;
+>  		pr_debug("Invalid DMA ranges configuration on node(%pOF)\n",
+> diff --git a/drivers/usb/core/message.c b/drivers/usb/core/message.c
+> index 6197938dcc2d..aaa3e58f5eb4 100644
+> --- a/drivers/usb/core/message.c
+> +++ b/drivers/usb/core/message.c
+> @@ -1960,6 +1960,9 @@ int usb_set_configuration(struct usb_device *dev, int configuration)
+>  		 */
+>  		intf->dev.dma_mask = dev->dev.dma_mask;
+>  		intf->dev.dma_pfn_offset = dev->dev.dma_pfn_offset;
+> +#ifdef CONFIG_DMA_PFN_OFFSET_MAP
+> +		intf->dev.dma_pfn_offset_map = dev->dev.dma_pfn_offset_map;
+> +#endif
+>  		INIT_WORK(&intf->reset_ws, __usb_queue_reset_device);
+>  		intf->minor = -1;
+>  		device_initialize(&intf->dev);
+> diff --git a/drivers/usb/core/usb.c b/drivers/usb/core/usb.c
+> index f16c26dc079d..d2ed4d90e56e 100644
+> --- a/drivers/usb/core/usb.c
+> +++ b/drivers/usb/core/usb.c
+> @@ -612,6 +612,9 @@ struct usb_device *usb_alloc_dev(struct usb_device *parent,
+>  	 */
+>  	dev->dev.dma_mask = bus->sysdev->dma_mask;
+>  	dev->dev.dma_pfn_offset = bus->sysdev->dma_pfn_offset;
+> +#ifdef CONFIG_DMA_PFN_OFFSET_MAP
+> +	dev->dev.dma_pfn_offset_map = bus->sysdev->dma_pfn_offset_map;
+> +#endif
+>  	set_dev_node(&dev->dev, dev_to_node(bus->sysdev));
+>  	dev->state = USB_STATE_ATTACHED;
+>  	dev->lpm_disable_count = 1;
+> diff --git a/include/linux/device.h b/include/linux/device.h
+> index ac8e37cd716a..67a240ad4fc5 100644
+> --- a/include/linux/device.h
+> +++ b/include/linux/device.h
+> @@ -493,6 +493,8 @@ struct dev_links_info {
+>   * @bus_dma_limit: Limit of an upstream bridge or bus which imposes a smaller
+>   *		DMA limit than the device itself supports.
+>   * @dma_pfn_offset: offset of DMA memory range relatively of RAM
+> + * @dma_pfn_offset_map:	Like dma_pfn_offset but used when there are multiple
+> + *		pfn offsets for multiple dma-ranges.
+>   * @dma_parms:	A low level driver may set these to teach IOMMU code about
+>   * 		segment limitations.
+>   * @dma_pools:	Dma pools (if dma'ble device).
+> @@ -578,7 +580,13 @@ struct device {
+>  					     allocations such descriptors. */
+>  	u64		bus_dma_limit;	/* upstream dma constraint */
+>  	unsigned long	dma_pfn_offset;
+> -
+> +#ifdef CONFIG_DMA_PFN_OFFSET_MAP
+> +	const struct dma_pfn_offset_region *dma_pfn_offset_map;
+
+> +					/* Like dma_pfn_offset, but for
+> +					 * the unlikely case of multiple
+> +					 * offsets. If non-null, dma_pfn_offset
+> +					 * will be set to 0. */
+
+A bit harder to read comment indented too much and located after the declared variable.
+
+> +#endif
+>  	struct device_dma_parameters *dma_parms;
+>  
+>  	struct list_head	dma_pools;	/* dma pools (if dma'ble) */
+> diff --git a/include/linux/dma-direct.h b/include/linux/dma-direct.h
+> index 24b8684aa21d..03110a57eabc 100644
+> --- a/include/linux/dma-direct.h
+> +++ b/include/linux/dma-direct.h
+> @@ -14,15 +14,21 @@ extern unsigned int zone_dma_bits;
+>  static inline dma_addr_t __phys_to_dma(struct device *dev, phys_addr_t paddr)
+>  {
+>  	dma_addr_t dev_addr = (dma_addr_t)paddr;
+> +	/* The compiler should remove the 2nd term if !DMA_PFN_OFFSET_MAP */
+> +	unsigned long dma_pfn_offset = dev->dma_pfn_offset
+> +		+ dma_pfn_offset_from_phys_addr(dev, paddr);
+>  
+> -	return dev_addr - ((dma_addr_t)dev->dma_pfn_offset << PAGE_SHIFT);
+> +	return dev_addr - ((dma_addr_t)dma_pfn_offset << PAGE_SHIFT);
+>  }
+>  
+>  static inline phys_addr_t __dma_to_phys(struct device *dev, dma_addr_t dev_addr)
+>  {
+>  	phys_addr_t paddr = (phys_addr_t)dev_addr;
+> +	/* The compiler should remove the 2nd term if !DMA_PFN_OFFSET_MAP */
+> +	unsigned long dma_pfn_offset = dev->dma_pfn_offset
+> +		+ dma_pfn_offset_from_dma_addr(dev, paddr);
+>  
+> -	return paddr + ((phys_addr_t)dev->dma_pfn_offset << PAGE_SHIFT);
+> +	return paddr + ((phys_addr_t)dma_pfn_offset << PAGE_SHIFT);
+>  }
+>  #endif /* !CONFIG_ARCH_HAS_PHYS_TO_DMA */
+>  
+> diff --git a/include/linux/dma-mapping.h b/include/linux/dma-mapping.h
+> index 330ad58fbf4d..91940bba2229 100644
+> --- a/include/linux/dma-mapping.h
+> +++ b/include/linux/dma-mapping.h
+> @@ -256,6 +256,52 @@ static inline void dma_direct_sync_sg_for_cpu(struct device *dev,
+>  size_t dma_direct_max_mapping_size(struct device *dev);
+>  
+>  #ifdef CONFIG_HAS_DMA
+> +#ifdef CONFIG_DMA_PFN_OFFSET_MAP
+> +struct dma_pfn_offset_region {
+
+> +	phys_addr_t	cpu_beg;
+> +	phys_addr_t	cpu_end;
+> +	dma_addr_t	dma_beg;
+> +	dma_addr_t	dma_end;
+
+Perhaps
+	s,beg,start,
+in above names
+
+> +	unsigned long	pfn_offset;
+> +};
+> +
+> +static inline unsigned long dma_pfn_offset_from_dma_addr(struct device *dev,
+> +							 dma_addr_t dma_addr)
+> +{
+> +	const struct dma_pfn_offset_region *m = dev->dma_pfn_offset_map;
+
+> +	if (m)
+> +		for (; m->cpu_end; m++)
+
+Why not simple
+
+	while (m) {
+		...
+	}
+
+?
+
+
+> +			if (dma_addr >= m->dma_beg && dma_addr < m->dma_end)
+> +				return m->pfn_offset;
+> +	return 0;
+> +}
+> +
+> +static inline unsigned long dma_pfn_offset_from_phys_addr(struct device *dev,
+> +							  phys_addr_t paddr)
+> +{
+> +	const struct dma_pfn_offset_region *m = dev->dma_pfn_offset_map;
+> +
+
+> +	if (m)
+> +		for (; m->cpu_end; m++)
+
+Ditto.
+
+> +			if (paddr >= m->cpu_beg && paddr < m->cpu_end)
+> +				return m->pfn_offset;
+> +	return 0;
+> +}
+> +#else  /* CONFIG_DMA_PFN_OFFSET_MAP */
+> +static inline unsigned long dma_pfn_offset_from_dma_addr(struct device *dev,
+> +							 dma_addr_t dma_addr)
+> +{
+> +	return 0;
+> +}
+> +
+> +static inline unsigned long dma_pfn_offset_from_phys_addr(struct device *dev,
+> +							  phys_addr_t paddr)
+> +{
+> +	return 0;
+> +}
+> +#endif /* CONFIG_DMA_PFN_OFFSET_MAP */
+> +
+>  #include <asm/dma-mapping.h>
+>  
+>  static inline const struct dma_map_ops *get_dma_ops(struct device *dev)
+> diff --git a/kernel/dma/Kconfig b/kernel/dma/Kconfig
+> index 4c103a24e380..ceb7e5e8f501 100644
+> --- a/kernel/dma/Kconfig
+> +++ b/kernel/dma/Kconfig
+> @@ -195,3 +195,16 @@ config DMA_API_DEBUG_SG
+>  	  is technically out-of-spec.
+>  
+>  	  If unsure, say N.
+> +
+> +config DMA_PFN_OFFSET_MAP
+> +	bool "Uses a DMA range map to calculate PFN offset"
+> +	depends on PCIE_BRCMSTB
+
+> +	default n
+
+Redundant.
+
+> +	help
+> +	  Some devices have a dma-range that gets converted to
+> +	  a dev->dma_pfn_offset value.  This option is for the
+> +	  atypical case of there being multiple dma-ranges requiring
+> +	  multiple pfn offsets, which are selected from when
+> +	  converting to phys to dma and vice versa.
+> +
+> +	  If unsure, say N.
+> -- 
+> 2.17.1
+> 
+
+-- 
+With Best Regards,
+Andy Shevchenko
+
+
 _______________________________________________
 iommu mailing list
 iommu@lists.linux-foundation.org
