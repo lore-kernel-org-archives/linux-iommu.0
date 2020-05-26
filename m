@@ -2,90 +2,107 @@ Return-Path: <SRS0=1lY2=7I=lists.linux-foundation.org=iommu-bounces@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-0.6 required=3.0 tests=DKIM_INVALID,DKIM_SIGNED,
-	HEADER_FROM_DIFFERENT_DOMAINS,MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS,
-	URIBL_BLOCKED autolearn=no autolearn_force=no version=3.4.0
+X-Spam-Status: No, score=-3.5 required=3.0 tests=DKIM_INVALID,DKIM_SIGNED,
+	HEADER_FROM_DIFFERENT_DOMAINS,MAILING_LIST_MULTI,SIGNED_OFF_BY,SPF_HELO_NONE,
+	SPF_PASS,URIBL_BLOCKED autolearn=no autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 60869C433DF
-	for <iommu@archiver.kernel.org>; Tue, 26 May 2020 07:19:18 +0000 (UTC)
-Received: from hemlock.osuosl.org (smtp2.osuosl.org [140.211.166.133])
+	by smtp.lore.kernel.org (Postfix) with ESMTP id E4521C433E0
+	for <iommu@archiver.kernel.org>; Tue, 26 May 2020 07:56:43 +0000 (UTC)
+Received: from whitealder.osuosl.org (smtp1.osuosl.org [140.211.166.138])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by mail.kernel.org (Postfix) with ESMTPS id 2082E2053B
-	for <iommu@archiver.kernel.org>; Tue, 26 May 2020 07:19:17 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTPS id A3D0520787
+	for <iommu@archiver.kernel.org>; Tue, 26 May 2020 07:56:43 +0000 (UTC)
 Authentication-Results: mail.kernel.org;
-	dkim=fail reason="signature verification failed" (1024-bit key) header.d=mg.codeaurora.org header.i=@mg.codeaurora.org header.b="fzC6PYZa"
-DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 2082E2053B
-Authentication-Results: mail.kernel.org; dmarc=none (p=none dis=none) header.from=codeaurora.org
+	dkim=fail reason="signature verification failed" (2048-bit key) header.d=cerno.tech header.i=@cerno.tech header.b="xneF9++a";
+	dkim=fail reason="signature verification failed" (2048-bit key) header.d=messagingengine.com header.i=@messagingengine.com header.b="p0cu4g70"
+DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org A3D0520787
+Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=cerno.tech
 Authentication-Results: mail.kernel.org; spf=pass smtp.mailfrom=iommu-bounces@lists.linux-foundation.org
 Received: from localhost (localhost [127.0.0.1])
-	by hemlock.osuosl.org (Postfix) with ESMTP id D8268882B5;
-	Tue, 26 May 2020 07:19:17 +0000 (UTC)
+	by whitealder.osuosl.org (Postfix) with ESMTP id 6A66486A7C;
+	Tue, 26 May 2020 07:56:43 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from hemlock.osuosl.org ([127.0.0.1])
+Received: from whitealder.osuosl.org ([127.0.0.1])
 	by localhost (.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
-	with ESMTP id QyDSWB325uoG; Tue, 26 May 2020 07:19:16 +0000 (UTC)
+	with ESMTP id eEY-fe9v0aYS; Tue, 26 May 2020 07:56:42 +0000 (UTC)
 Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [140.211.9.56])
-	by hemlock.osuosl.org (Postfix) with ESMTP id D42AE87D75;
-	Tue, 26 May 2020 07:19:16 +0000 (UTC)
+	by whitealder.osuosl.org (Postfix) with ESMTP id EEC5786A10;
+	Tue, 26 May 2020 07:56:41 +0000 (UTC)
 Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
-	by lists.linuxfoundation.org (Postfix) with ESMTP id B8EE5C0888;
-	Tue, 26 May 2020 07:19:16 +0000 (UTC)
-Received: from fraxinus.osuosl.org (smtp4.osuosl.org [140.211.166.137])
- by lists.linuxfoundation.org (Postfix) with ESMTP id 0A33CC016F
- for <iommu@lists.linux-foundation.org>; Tue, 26 May 2020 07:19:15 +0000 (UTC)
+	by lists.linuxfoundation.org (Postfix) with ESMTP id BD578C0888;
+	Tue, 26 May 2020 07:56:41 +0000 (UTC)
+Received: from silver.osuosl.org (smtp3.osuosl.org [140.211.166.136])
+ by lists.linuxfoundation.org (Postfix) with ESMTP id DB574C016F
+ for <iommu@lists.linux-foundation.org>; Tue, 26 May 2020 07:56:40 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
- by fraxinus.osuosl.org (Postfix) with ESMTP id F3E3A851C0
- for <iommu@lists.linux-foundation.org>; Tue, 26 May 2020 07:19:14 +0000 (UTC)
+ by silver.osuosl.org (Postfix) with ESMTP id B49C6204C0
+ for <iommu@lists.linux-foundation.org>; Tue, 26 May 2020 07:56:40 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from fraxinus.osuosl.org ([127.0.0.1])
+Received: from silver.osuosl.org ([127.0.0.1])
  by localhost (.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
- with ESMTP id HU-SSHAAojYb for <iommu@lists.linux-foundation.org>;
- Tue, 26 May 2020 07:19:13 +0000 (UTC)
+ with ESMTP id 4DC-Lc4Fg9pu for <iommu@lists.linux-foundation.org>;
+ Tue, 26 May 2020 07:56:39 +0000 (UTC)
 X-Greylist: from auto-whitelisted by SQLgrey-1.7.6
-Received: from mail26.static.mailgun.info (mail26.static.mailgun.info
- [104.130.122.26])
- by fraxinus.osuosl.org (Postfix) with ESMTPS id E9D04849F0
- for <iommu@lists.linux-foundation.org>; Tue, 26 May 2020 07:19:12 +0000 (UTC)
-DKIM-Signature: a=rsa-sha256; v=1; c=relaxed/relaxed; d=mg.codeaurora.org;
- q=dns/txt; 
- s=smtp; t=1590477553; h=Message-ID: References: In-Reply-To: Subject:
- Cc: To: From: Date: Content-Transfer-Encoding: Content-Type:
- MIME-Version: Sender; bh=t71fVS7j/WcPCfl6939ZO5sEbx5ADmDSJSpSKaYbIN4=;
- b=fzC6PYZahE8T3sVnMW7Apz3ExO5L6uK6Yc5qSgqeJy4+Kks3R93+JCstO0w8hQzL8VeSQ/qF
- Vd8vi+yd931IUZbjLhHLqz6ZocBGHUhZOyawjEGYcKThH+X4534bxnj2ByTkgaJ6FpLFpTy6
- 1d5bPIwGckWhI8spjE2nXmg0kmw=
-X-Mailgun-Sending-Ip: 104.130.122.26
-X-Mailgun-Sid: WyI3NDkwMCIsICJpb21tdUBsaXN0cy5saW51eC1mb3VuZGF0aW9uLm9yZyIsICJiZTllNGEiXQ==
-Received: from smtp.codeaurora.org
- (ec2-35-166-182-171.us-west-2.compute.amazonaws.com [35.166.182.171]) by
- smtp-out-n02.prod.us-east-1.postgun.com with SMTP id
- 5eccc2efb65440fdba6e8cee (version=TLS1.2,
- cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256); Tue, 26 May 2020 07:19:11
- GMT
-Received: by smtp.codeaurora.org (Postfix, from userid 1001)
- id 6B713C43387; Tue, 26 May 2020 07:19:10 +0000 (UTC)
-Received: from mail.codeaurora.org (localhost.localdomain [127.0.0.1])
- (using TLSv1 with cipher ECDHE-RSA-AES256-SHA (256/256 bits))
- (No client certificate requested) (Authenticated sender: guptap)
- by smtp.codeaurora.org (Postfix) with ESMTPSA id B5261C433C6;
- Tue, 26 May 2020 07:19:09 +0000 (UTC)
+Received: from out2-smtp.messagingengine.com (out2-smtp.messagingengine.com
+ [66.111.4.26])
+ by silver.osuosl.org (Postfix) with ESMTPS id 14E79203A6
+ for <iommu@lists.linux-foundation.org>; Tue, 26 May 2020 07:56:38 +0000 (UTC)
+Received: from compute4.internal (compute4.nyi.internal [10.202.2.44])
+ by mailout.nyi.internal (Postfix) with ESMTP id E90A95C0058;
+ Tue, 26 May 2020 03:56:37 -0400 (EDT)
+Received: from mailfrontend1 ([10.202.2.162])
+ by compute4.internal (MEProxy); Tue, 26 May 2020 03:56:37 -0400
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=cerno.tech; h=
+ date:from:to:cc:subject:message-id:references:mime-version
+ :content-type:content-transfer-encoding:in-reply-to; s=fm2; bh=Z
+ u9qqU+I+thjV7ih0gjMq+r1LnUk7vFMdi7Yew8UXJA=; b=xneF9++arCV/I77rR
+ 8tDgoctxQlEU8NQEX4Ez381uoRVlHrFxRnwUQt6j/dmP6Tz8QrKj9xh5oi+qGkf7
+ 7CLIYDqQ50alvXSblYSOK35/JoV/lycqKEVACaq07FM1XhYkpvld9OKDf/T/nPIX
+ oMstbQijFskdWwMkeXr/L2Fnmx/NYkholzSYmB/zk3JRxq7ZopMK+ZAuxGOx9sg8
+ mCq6aiv4ZETpLj26t5tOZPj5jQii2pHk7fvadHK1pjYXIK78++k/8Tt+BbMH++3h
+ 7EErQaTF1K5uUuSQwYOnu2tyg9OvX8rmlI8SaZrEx1Slq9L911h5oOyeS1SglYLp
+ fVUzQ==
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=
+ messagingengine.com; h=cc:content-transfer-encoding:content-type
+ :date:from:in-reply-to:message-id:mime-version:references
+ :subject:to:x-me-proxy:x-me-proxy:x-me-sender:x-me-sender
+ :x-sasl-enc; s=fm2; bh=Zu9qqU+I+thjV7ih0gjMq+r1LnUk7vFMdi7Yew8UX
+ JA=; b=p0cu4g70VqbywSbgNEoJJGrVh0fks3lfYnbqF9+Dt5jSYkkdic/bllsTh
+ O77J/jq4X9lj2+sAWxFz++C7TzM2ywsTdVLknidD6RSBd1EpubjQWs3WLfG+Z3sm
+ 1uPZ0UDxrl9ndLRGaUxZ9lIRmtBR7jWDaUnO95RPsbBhVgo/3BKz/A9/MJH3imaG
+ fmPXLLginST6wZlqGI1y9Ip4j96L2TPbclo22ejhobOsAGAW9xGlzdqn5We3osZ6
+ GTOOr4sFK35zy3jbiTbFHO5hwrAbhp/2Ida66TJgNMpP9x4I8iIHiAoelkRHfJVc
+ yxlj9AyEOox/5lmzjM4IVsdnB96qA==
+X-ME-Sender: <xms:scvMXtW6yirSIt1uH7W78oOy4M0e6wqkOFer8qkJJ2MiaZMPRuFJ2A>
+X-ME-Proxy-Cause: gggruggvucftvghtrhhoucdtuddrgeduhedruddvuddguddvvdcutefuodetggdotefrod
+ ftvfcurfhrohhfihhlvgemucfhrghsthforghilhdpqfgfvfdpuffrtefokffrpgfnqfgh
+ necuuegrihhlohhuthemuceftddtnecusecvtfgvtghiphhivghnthhsucdlqddutddtmd
+ enucfjughrpeffhffvuffkfhggtggugfgjsehtqhertddttddvnecuhfhrohhmpeforgig
+ ihhmvgcutfhiphgrrhguuceomhgrgihimhgvsegtvghrnhhordhtvggthheqnecuggftrf
+ grthhtvghrnhepgfejtedtjefggfffvdetuedthedtheegheeuteekfeeghfdtteejkeel
+ udegvddunecukfhppeeltddrkeelrdeikedrjeeinecuvehluhhsthgvrhfuihiivgeptd
+ enucfrrghrrghmpehmrghilhhfrhhomhepmhgrgihimhgvsegtvghrnhhordhtvggthh
+X-ME-Proxy: <xmx:scvMXtkGf5broUr6pAbTdzLfNgFpIixxtsz-1ba5es1lu3Sy8OiVXA>
+ <xmx:scvMXpY4qalIlkQ9EWDOhnvEhEoTtynFhThong14ufMKt6lp0SZrYA>
+ <xmx:scvMXgVID8mORfqJf9rT0xHxW6GJ7TqUIm3trViClXYj0w8pmMOhJQ>
+ <xmx:tcvMXsyv-p5n67fNuL0DwsQ7uh4PB8z8SzI0caVkb1jgVU5OHgqEQA>
+Received: from localhost (lfbn-tou-1-1502-76.w90-89.abo.wanadoo.fr
+ [90.89.68.76])
+ by mail.messagingengine.com (Postfix) with ESMTPA id E28AD328005E;
+ Tue, 26 May 2020 03:56:32 -0400 (EDT)
+Date: Tue, 26 May 2020 09:56:30 +0200
+From: Maxime Ripard <maxime@cerno.tech>
+To: Rikard Falkeborn <rikard.falkeborn@gmail.com>
+Subject: Re: [PATCH 2/2] iommu/sun50i: Constify sun50i_iommu_ops
+Message-ID: <20200526075630.wjevamadh5mcnleb@gilmour.lan>
+References: <20200525214958.30015-1-rikard.falkeborn@gmail.com>
+ <20200525214958.30015-3-rikard.falkeborn@gmail.com>
 MIME-Version: 1.0
-Date: Tue, 26 May 2020 12:49:09 +0530
-From: guptap@codeaurora.org
-To: Robin Murphy <robin.murphy@arm.com>
-Subject: Re: [PATCH] iommu/dma: limit iova free size to unmmaped iova
-In-Reply-To: <2d873ab9-ebb9-3c2d-f129-55a036ab47d0@arm.com>
-References: <20200521113004.12438-1-guptap@codeaurora.org>
- <7aaa8dcc-6a47-f256-431d-2a1b034b4076@arm.com>
- <90662ef3123dbf2e93f9718ee5cc14a7@codeaurora.org>
- <2d873ab9-ebb9-3c2d-f129-55a036ab47d0@arm.com>
-Message-ID: <4ba082d3bb965524157704ea1ffb1ff4@codeaurora.org>
-X-Sender: guptap@codeaurora.org
-User-Agent: Roundcube Webmail/1.3.9
-Cc: mhocko@suse.com, owner-linux-mm@kvack.org, linux-kernel@vger.kernel.org,
- stable@vger.kernel.org, linux-mm@kvack.org, iommu@lists.linux-foundation.org,
- Andrew Morton <akpm@linux-foundation.org>
+Content-Disposition: inline
+In-Reply-To: <20200525214958.30015-3-rikard.falkeborn@gmail.com>
+Cc: Chen-Yu Tsai <wens@csie.org>, iommu@lists.linux-foundation.org,
+ linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org
 X-BeenThere: iommu@lists.linux-foundation.org
 X-Mailman-Version: 2.1.15
 Precedence: list
@@ -98,57 +115,30 @@ List-Post: <mailto:iommu@lists.linux-foundation.org>
 List-Help: <mailto:iommu-request@lists.linux-foundation.org?subject=help>
 List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
  <mailto:iommu-request@lists.linux-foundation.org?subject=subscribe>
-Content-Transfer-Encoding: base64
-Content-Type: text/plain; charset="utf-8"; Format="flowed"
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: 7bit
 Errors-To: iommu-bounces@lists.linux-foundation.org
 Sender: "iommu" <iommu-bounces@lists.linux-foundation.org>
 
-T24gMjAyMC0wNS0yMiAxNDo1NCwgUm9iaW4gTXVycGh5IHdyb3RlOgo+IE9uIDIwMjAtMDUtMjIg
-MDc6MjUsIGd1cHRhcEBjb2RlYXVyb3JhLm9yZyB3cm90ZToKPj4gT24gMjAyMC0wNS0yMiAwMTo0
-NiwgUm9iaW4gTXVycGh5IHdyb3RlOgo+Pj4gT24gMjAyMC0wNS0yMSAxMjozMCwgUHJha2FzaCBH
-dXB0YSB3cm90ZToKPj4gSSBhZ3JlZSwgd2Ugc2hvdWxkbid0IGJlIGZyZWVpbmcgdGhlIHBhcnRp
-YWwgaW92YS4gSW5zdGVhZCBqdXN0IG1ha2luZwo+PiBzdXJlIGlmIHVubWFwIHdhcyBzdWNjZXNz
-ZnVsIHNob3VsZCBiZSBzdWZmaWNpZW50IGJlZm9yZSBmcmVlaW5nIGlvdmEuIAo+PiBTbyBjaGFu
-Z2UKPj4gY2FuIGluc3RlYWQgYmUgc29tZXRoaW5nIGxpa2UgdGhpczoKPj4gCj4+IC3CoMKgwqAg
-aW9tbXVfZG1hX2ZyZWVfaW92YShjb29raWUsIGRtYV9hZGRyLCBzaXplKTsKPj4gK8KgwqDCoCBp
-ZiAodW5tYXBwZWQpCj4+ICvCoMKgwqDCoMKgwqDCoCBpb21tdV9kbWFfZnJlZV9pb3ZhKGNvb2tp
-ZSwgZG1hX2FkZHIsIHNpemUpOwo+PiAKPj4+IFRCSCBteSBndXQgZmVlbGluZyBoZXJlIGlzIHRo
-YXQgeW91J3JlIHJlYWxseSBqdXN0IHRyeWluZyB0byB0cmVhdCBhCj4+PiBzeW1wdG9tIG9mIGFu
-b3RoZXIgYnVnIGVsc2V3aGVyZSwgbmFtZWx5IHNvbWUgZHJpdmVyIGNhbGxpbmcKPj4+IGRtYV91
-bm1hcF8qIG9yIGRtYV9mcmVlXyogd2l0aCB0aGUgd3JvbmcgYWRkcmVzcyBvciBzaXplIGluIHRo
-ZSBmaXJzdAo+Pj4gcGxhY2UuCj4+PiAKPj4gVGhpcyBjb25kaXRpb24gd291bGQgYXJpc2Ugb25s
-eSBpZiBkcml2ZXIgY2FsbGluZyBkbWFfdW5tYXAvZnJlZV8qIAo+PiB3aXRoIDAKPj4gaW92YV9w
-Zm4uIFRoaXMgd2lsbCBiZSBmbGFnZ2VkIHdpdGggYSB3YXJuaW5nIGR1cmluZyB1bm1hcCBidXQg
-d2lsbCAKPj4gdHJpZ2dlcgo+PiBwYW5pYyBsYXRlciBvbiB3aGlsZSBkb2luZyB1bnJlbGF0ZWQg
-ZG1hX21hcC91bm1hcF8qLiBJZiB1bm1hcHBlZCBoYXMgCj4+IGFscmVhZHkKPj4gZmFpbGVkIGZv
-ciBpbnZhbGlkIGlvdmEsIHRoZXJlIGlzIG5vIHJlYXNvbiB3ZSBzaG91bGQgY29uc2lkZXIgdGhp
-cyBhcyAKPj4gdmFsaWQKPj4gaW92YSBhbmQgZnJlZS4gVGhpcyBwYXJ0IHNob3VsZCBiZSBmaXhl
-ZC4KPiAKPiBJIGRpc2FncmVlLiBJbiBnZW5lcmFsLCBpZiBkcml2ZXJzIGNhbGwgdGhlIERNQSBB
-UEkgaW5jb3JyZWN0bHkgaXQgaXMKPiBsaWFibGUgdG8gbGVhZCB0byBkYXRhIGxvc3MsIG1lbW9y
-eSBjb3JydXB0aW9uLCBhbmQgdmFyaW91cyBvdGhlcgo+IHVucGxlYXNhbnQgbWlzYmVoYXZpb3Vy
-IC0gaXQgaXMgbm90IHRoZSBETUEgbGF5ZXIncyBqb2IgdG8gYXR0ZW1wdCB0bwo+IHBhcGVyIG92
-ZXIgZHJpdmVyIGJ1Z3MuCj4gCj4gVGhlcmUgKmlzKiBhbiBhcmd1bWVudCBmb3IgZG93bmdyYWRp
-bmcgdGhlIEJVR19PTigpIGluCj4gaW92YV9tYWdhemluZV9mcmVlX3BmbnMoKSB0byBhIFdBUk5f
-T04oKSwgc2luY2UgZnJhbmtseSBpdCBpc24ndCBhCj4gc3VmZmljaWVudGx5IHNlcmlvdXMgY29u
-ZGl0aW9uIHRvIGp1c3RpZnkga2lsbGluZyB0aGUgd2hvbGUgbWFjaGluZQo+IGltbWVkaWF0ZWx5
-LCBidXQgTkFLIHRvIGJvZGdpbmcgdGhlIGlvbW11LWRtYSBtaWQtbGF5ZXIgdG8gImZpeCIgdGhh
-dC4KPiBBIHNlcmlvdXMgYnVnIGFscmVhZHkgaGFwcGVuZWQgZWxzZXdoZXJlLCBzbyB0cnlpbmcg
-dG8gaGlkZSB0aGUKPiBmYWxsb3V0IHJlYWxseSBkb2Vzbid0IGhlbHAgYW55b25lLgo+IApTb3Jy
-eSBmb3IgZGVsYXllZCByZXNwb25zZSwgaXQgd2FzIGEgbG9uZyB3ZWVrZW5kLgpJIGFncmVlIHRo
-YXQgaW52YWxpZCBETUEgQVBJIGNhbGwgY2FuIHJlc3VsdCBpbiB1bmV4cGVjdGVkIGlzc3VlcyBh
-bmQgCmNsaWVudApzaG91bGQgZml4IGl0LCBidXQgdGhlbiB0aGUgcHJlc2VudCBiZWhhdmlvciBt
-YWtlcyBpdCBkaWZmaWN1bHQgdG8gY2F0Y2ggCmNhc2VzCndoZW4gZHJpdmVyIGlzIG1ha2luZyB3
-cm9uZyBETUEgQVBJIGNhbGxzLiBXaGVuIGludmFsaWQgaW92YSBwZm4gaXMgCnBhc3NlZCBpdApk
-b2Vzbid0IGZhaWwgdGhlbiBhbmQgdGhlcmUsIHRob3VnaCBETUEgbGF5ZXIgaXMgYXdhcmUgb2Yg
-aW92YSBiZWluZyAKaW52YWxpZC4gSXQKZmFpbHMgbXVjaCBhZnRlciB0aGF0IGluIHRoZSBjb250
-ZXh0IG9mIGFuIHZhbGlkIG1hcC91bm1hcCwgd2l0aCAKQlVHX09OKCkuCgpEb3duZ3JhZGluZyBC
-VUdfT04oKSB0byBXQVJOX09OKCkgaW4gaW92YV9tYWdhemluZV9mcmVlX3BmbnMoKSB3aWxsIG5v
-dCAKaGVscAptdWNoIGFzIGludmFsaWQgaW92YSB3aWxsIGNhdXNlIE5VTEwgcG9pbnRlciBkZXJl
-ZmVyZW5jZS4KCkkgc2VlIG5vIHJlYXNvbiB3aHkgRE1BIGxheWVyIHdhbnRzIHRvIGZyZWUgYW4g
-aW92YSBmb3Igd2hpY2ggdW5tYXBwZWQgCmZhaWxlZC4KSU1ITyBxdWV1aW5nIGFuIGludmFsaWQg
-aW92YSAod2hpY2ggYWxyZWFkeSBmYWlsZWQgdW5tYXApIHRvIHJjYWNoZSAKd2hpY2gKZXZlbnR1
-YWxseSBnb2luZyB0byBjcmFzaCB0aGUgc3lzdGVtIGxvb2tzIGxpa2UgaW9tbXUtZG1hIGxheWVy
-IGlzc3VlLgoKVGhhbmtzLApQcmFrYXNoCl9fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19f
-X19fX19fX19fX19fX19fCmlvbW11IG1haWxpbmcgbGlzdAppb21tdUBsaXN0cy5saW51eC1mb3Vu
-ZGF0aW9uLm9yZwpodHRwczovL2xpc3RzLmxpbnV4Zm91bmRhdGlvbi5vcmcvbWFpbG1hbi9saXN0
-aW5mby9pb21tdQ==
+On Mon, May 25, 2020 at 11:49:58PM +0200, Rikard Falkeborn wrote:
+> The struct sun50i_iommu_ops is not modified and can be made const to
+> allow the compiler to put it in read-only memory.
+> 
+> Before:
+>    text    data     bss     dec     hex filename
+>   14358    2501      64   16923    421b drivers/iommu/sun50i-iommu.o
+> 
+> After:
+>    text    data     bss     dec     hex filename
+>   14726    2117      64   16907    420b drivers/iommu/sun50i-iommu.o
+> 
+> Signed-off-by: Rikard Falkeborn <rikard.falkeborn@gmail.com>
+
+Acked-by: Maxime Ripard <mripard@kernel.org>
+
+Thanks!
+Maxime
+_______________________________________________
+iommu mailing list
+iommu@lists.linux-foundation.org
+https://lists.linuxfoundation.org/mailman/listinfo/iommu
