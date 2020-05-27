@@ -2,155 +2,88 @@ Return-Path: <SRS0=MQAj=7J=lists.linux-foundation.org=iommu-bounces@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-0.6 required=3.0 tests=DKIM_INVALID,DKIM_SIGNED,
-	HEADER_FROM_DIFFERENT_DOMAINS,MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS,
-	URIBL_BLOCKED autolearn=no autolearn_force=no version=3.4.0
+X-Spam-Status: No, score=-9.5 required=3.0 tests=DKIM_INVALID,DKIM_SIGNED,
+	HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_PATCH,MAILING_LIST_MULTI,SIGNED_OFF_BY,
+	SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED,USER_AGENT_GIT autolearn=ham
+	autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 4E6BBC433E0
-	for <iommu@archiver.kernel.org>; Wed, 27 May 2020 03:27:53 +0000 (UTC)
-Received: from silver.osuosl.org (smtp3.osuosl.org [140.211.166.136])
+	by smtp.lore.kernel.org (Postfix) with ESMTP id E608FC433DF
+	for <iommu@archiver.kernel.org>; Wed, 27 May 2020 06:25:09 +0000 (UTC)
+Received: from hemlock.osuosl.org (smtp2.osuosl.org [140.211.166.133])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by mail.kernel.org (Postfix) with ESMTPS id E2B0A2084C
-	for <iommu@archiver.kernel.org>; Wed, 27 May 2020 03:27:52 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTPS id 82D8A20787
+	for <iommu@archiver.kernel.org>; Wed, 27 May 2020 06:25:09 +0000 (UTC)
 Authentication-Results: mail.kernel.org;
-	dkim=fail reason="signature verification failed" (1024-bit key) header.d=intel.onmicrosoft.com header.i=@intel.onmicrosoft.com header.b="t7OR6TuT"
-DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org E2B0A2084C
-Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=intel.com
+	dkim=fail reason="signature verification failed" (1024-bit key) header.d=mg.codeaurora.org header.i=@mg.codeaurora.org header.b="tSDe5jZk"
+DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 82D8A20787
+Authentication-Results: mail.kernel.org; dmarc=none (p=none dis=none) header.from=codeaurora.org
 Authentication-Results: mail.kernel.org; spf=pass smtp.mailfrom=iommu-bounces@lists.linux-foundation.org
 Received: from localhost (localhost [127.0.0.1])
-	by silver.osuosl.org (Postfix) with ESMTP id 967D820506;
-	Wed, 27 May 2020 03:27:52 +0000 (UTC)
+	by hemlock.osuosl.org (Postfix) with ESMTP id 4F92988276;
+	Wed, 27 May 2020 06:25:09 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from silver.osuosl.org ([127.0.0.1])
+Received: from hemlock.osuosl.org ([127.0.0.1])
 	by localhost (.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
-	with ESMTP id 6eIVgUbrSQoY; Wed, 27 May 2020 03:27:51 +0000 (UTC)
+	with ESMTP id ZM1BrBEATMUx; Wed, 27 May 2020 06:25:08 +0000 (UTC)
 Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [140.211.9.56])
-	by silver.osuosl.org (Postfix) with ESMTP id A97E82043C;
-	Wed, 27 May 2020 03:27:51 +0000 (UTC)
+	by hemlock.osuosl.org (Postfix) with ESMTP id ADA9B883D7;
+	Wed, 27 May 2020 06:25:08 +0000 (UTC)
 Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
-	by lists.linuxfoundation.org (Postfix) with ESMTP id 8A07DC088D;
-	Wed, 27 May 2020 03:27:51 +0000 (UTC)
-Received: from silver.osuosl.org (smtp3.osuosl.org [140.211.166.136])
- by lists.linuxfoundation.org (Postfix) with ESMTP id AF577C016F
- for <iommu@lists.linux-foundation.org>; Wed, 27 May 2020 03:27:50 +0000 (UTC)
+	by lists.linuxfoundation.org (Postfix) with ESMTP id 8F5D2C088D;
+	Wed, 27 May 2020 06:25:08 +0000 (UTC)
+Received: from whitealder.osuosl.org (smtp1.osuosl.org [140.211.166.138])
+ by lists.linuxfoundation.org (Postfix) with ESMTP id 73074C016F
+ for <iommu@lists.linux-foundation.org>; Wed, 27 May 2020 06:25:07 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
- by silver.osuosl.org (Postfix) with ESMTP id 901622043C
- for <iommu@lists.linux-foundation.org>; Wed, 27 May 2020 03:27:50 +0000 (UTC)
+ by whitealder.osuosl.org (Postfix) with ESMTP id 6AEB987C02
+ for <iommu@lists.linux-foundation.org>; Wed, 27 May 2020 06:25:07 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from silver.osuosl.org ([127.0.0.1])
+Received: from whitealder.osuosl.org ([127.0.0.1])
  by localhost (.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
- with ESMTP id Y8sf+UIjkWyR for <iommu@lists.linux-foundation.org>;
- Wed, 27 May 2020 03:27:49 +0000 (UTC)
-X-Greylist: domain auto-whitelisted by SQLgrey-1.7.6
-Received: from mga06.intel.com (mga06.intel.com [134.134.136.31])
- by silver.osuosl.org (Postfix) with ESMTPS id 3CF0B2042C
- for <iommu@lists.linux-foundation.org>; Wed, 27 May 2020 03:27:49 +0000 (UTC)
-IronPort-SDR: FoTh+hG8OAvDi7M/yDFRYTq5Ec1KW7ocR3N6ghvA92z4ir7HrOa5KOCpUgvvn9SxOZ0l8O1F8b
- bZjP9RIufa1w==
-X-Amp-Result: SKIPPED(no attachment in message)
-X-Amp-File-Uploaded: False
-Received: from fmsmga006.fm.intel.com ([10.253.24.20])
- by orsmga104.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384;
- 26 May 2020 20:27:48 -0700
-IronPort-SDR: Wg2daB6xUYgbP61JpkF4sz+Azr4I2SWGGgi7T+o4Cwtazh6/VNlHX+QkGeUAgWzdV9j3ldmtcC
- RaXx2mqsjenw==
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.73,439,1583222400"; d="scan'208";a="468589474"
-Received: from orsmsx107.amr.corp.intel.com ([10.22.240.5])
- by fmsmga006.fm.intel.com with ESMTP; 26 May 2020 20:27:48 -0700
-Received: from orsmsx123.amr.corp.intel.com (10.22.240.116) by
- ORSMSX107.amr.corp.intel.com (10.22.240.5) with Microsoft SMTP Server (TLS)
- id 14.3.439.0; Tue, 26 May 2020 20:27:47 -0700
-Received: from ORSEDG001.ED.cps.intel.com (10.7.248.4) by
- ORSMSX123.amr.corp.intel.com (10.22.240.116) with Microsoft SMTP Server (TLS)
- id 14.3.439.0; Tue, 26 May 2020 20:27:47 -0700
-Received: from NAM10-BN7-obe.outbound.protection.outlook.com (104.47.70.109)
- by edgegateway.intel.com (134.134.137.100) with Microsoft SMTP Server (TLS)
- id 14.3.439.0; Tue, 26 May 2020 20:27:47 -0700
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=DDlFA7ocN5WViwSbRG9px/zsQAIJNeQ00lxGBDnJNiG2B2ZOCNy/nRSjMpGxrpptvmWzFgjMZpzvhRzdQkDWsVoNqlt1SwWUeHpj/BpMDnHo/BJ9lj2FfIK3swEHmx3OAjtXthHUab4TfMR7+6H/iALY8WGqx2YFP37rfgGEyBFN6QkOm0t5J/IeLZsWt997cxQv3QOTBM3MrSyucEhKGyn2aL4n0H30sBRanCnWvJuN51BYdLjjXvCNyFISM9eDMttymH7BZojgxff+JgDoxva3D3gs/tIm0P4ndmTD3zvpX/Akbs6Js4XfciXuePKyk4NioZuUbBup4HRAv1f/7g==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com; 
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=PuCP09GFIpCbXzVrIAS8QLGUXrK+6QhkOXgsTwLQnFY=;
- b=j1SA97FYKoy94o0lFUu2LyX8XvV1gDZzyJQxnYqRE3oyWZWX519wW8WDDwLWJNEsnSSUo1bkZEx1VH4A6MFe8CwV9Br0KB1LPX5J21ZTEQkcGcCFDVAsuoJHJXWGF6Wqw9EsweUXogkk0L1vSbstp8KLKvtP9zJ9Nj9FvUK5kyP7VqCizTQlC6RYJreccDr7gk+EoUHFehKUzuSShMYxKGTTI/4VE39mcz1S6n6hpZYYokMPLGJ2s28Iv/iE35SRBF2Ka4ADQrLJKlzT7ZIFO8/g3GN31dH23MqM9PPBXZPK3xkyRoaMjNEI1LUuMvP81kwoaWXP7wjVYH1kZYWAcg==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=intel.com; dmarc=pass action=none header.from=intel.com;
- dkim=pass header.d=intel.com; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=intel.onmicrosoft.com; 
- s=selector2-intel-onmicrosoft-com;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=PuCP09GFIpCbXzVrIAS8QLGUXrK+6QhkOXgsTwLQnFY=;
- b=t7OR6TuTEjVekaw2P3SxSyTLh86XL3PTEIEuZQnNh7vNlb9r3HMvrAkhC+ln9Rq3ObIm5C2W8KMbG/qSycUDIK0UIY73YAJd+20NXuMeJ1Z6MVf50vYMW5itCbeiZ8Y7wKtKgfZqfIQdRfnuBHTgMbbrY4I7YlQuVilWp+iVUP8=
-Received: from MWHPR11MB1645.namprd11.prod.outlook.com (2603:10b6:301:b::12)
- by MWHPR11MB1277.namprd11.prod.outlook.com (2603:10b6:300:29::22) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.3021.23; Wed, 27 May
- 2020 03:27:45 +0000
-Received: from MWHPR11MB1645.namprd11.prod.outlook.com
- ([fe80::b441:f6bd:703b:ba41]) by MWHPR11MB1645.namprd11.prod.outlook.com
- ([fe80::b441:f6bd:703b:ba41%2]) with mapi id 15.20.3021.029; Wed, 27 May 2020
- 03:27:45 +0000
-From: "Tian, Kevin" <kevin.tian@intel.com>
-To: Xiang Zheng <zhengxiang9@huawei.com>, Jean-Philippe Brucker
- <jean-philippe@linaro.org>
-Subject: RE: [RFC] Use SMMU HTTU for DMA dirty page tracking
-Thread-Topic: [RFC] Use SMMU HTTU for DMA dirty page tracking
-Thread-Index: AQHWMFylSKWbJMD/rEatnfJX129kWai4sCAAgAKbIaA=
-Date: Wed, 27 May 2020 03:27:45 +0000
-Message-ID: <MWHPR11MB16454475DA1FF417CEF5A32B8CB10@MWHPR11MB1645.namprd11.prod.outlook.com>
-References: <b926ec0b-fe87-0792-c41d-acad56c656a4@huawei.com>
- <20200522171452.GC3453945@myrica>
- <e68c1158-8573-a477-42ce-48cee510c3ce@huawei.com>
-In-Reply-To: <e68c1158-8573-a477-42ce-48cee510c3ce@huawei.com>
-Accept-Language: en-US
-Content-Language: en-US
-X-MS-Has-Attach: 
-X-MS-TNEF-Correlator: 
-dlp-version: 11.2.0.6
-dlp-product: dlpe-windows
-dlp-reaction: no-action
-authentication-results: huawei.com; dkim=none (message not signed)
- header.d=none;huawei.com; dmarc=none action=none header.from=intel.com;
-x-originating-ip: [192.55.52.201]
-x-ms-publictraffictype: Email
-x-ms-office365-filtering-correlation-id: dfe24859-021e-40fa-eeb6-08d801edec16
-x-ms-traffictypediagnostic: MWHPR11MB1277:
-x-ld-processed: 46c98d88-e344-4ed4-8496-4ed7712e255d,ExtAddr
-x-ms-exchange-transport-forked: True
-x-microsoft-antispam-prvs: <MWHPR11MB12779AEB5FBA459A61D5A9288CB10@MWHPR11MB1277.namprd11.prod.outlook.com>
-x-ms-oob-tlc-oobclassifiers: OLM:8273;
-x-forefront-prvs: 04163EF38A
-x-ms-exchange-senderadcheck: 1
-x-microsoft-antispam: BCL:0;
-x-microsoft-antispam-message-info: k+S344j/6Y/72khmcvXATyNtL37jYgE9l7Z7/B8IzB7pTbvJNtBzF5oXe4etrrJcfssBoocWzFTkpoY43hClJ9b84h542zKq+5dcT1OjiHAK+4fbfD3e1OQnxO5lffXY6DeIMpjmQRSB/2rlqjMPQ5RmJO3/G9ZOoRKNkhQxMXdAlaI3FxM85AEQOEfv6ZnmTz5ej0cXm0qFZZSuv/hdxzphrttShbUtvpTr7TdMWg6taxQIYkGkTNwiv4KX5x3XTsQMo67fJE/vjNyZo3Wclpo/oVz7j/jU8dHtKp6HIjhX0i0MBYNrBXKkMecbs2yNXH8SQ6POg0byzh0UXjt5QHROF1ojidRm3EqoWmOa7i4BCF7R4++AaNh1J51SVKfhr90UtCW2T2kF+TomzAKf37IeBa5FEaCc5Xw4HUndwJNIm9FEtifd8bb3AJz0PA154AvKAG8Fz4KE8fXhV1GMAA==
-x-forefront-antispam-report: CIP:255.255.255.255; CTRY:; LANG:en; SCL:1; SRV:;
- IPV:NLI; SFV:NSPM; H:MWHPR11MB1645.namprd11.prod.outlook.com; PTR:; CAT:NONE;
- SFTY:;
- SFS:(396003)(39860400002)(136003)(366004)(346002)(376002)(26005)(55016002)(186003)(966005)(64756008)(478600001)(7416002)(7696005)(86362001)(53546011)(66556008)(83380400001)(8936002)(66946007)(66476007)(33656002)(76116006)(66446008)(2906002)(6506007)(316002)(9686003)(54906003)(4326008)(110136005)(5660300002)(8676002)(71200400001)(52536014)(14143004);
- DIR:OUT; SFP:1102; 
-x-ms-exchange-antispam-messagedata: Bxk2QFZQFa9dN2KwthZztJJA2csJscwbhPS1E4ZB1L5f77NAfOw9uh03+0KP/EmPsom+/3XfobQWqCzWwlEt0lht+YT03gwOVlQ6VaRsYwdE/XxYUfiKFXWaV+U6F0mJI6MgU3bG13fU8KxCMrSFmRQ3nSARh45gSszGg4Oc0oHDn2l7gDXSus2eVUspMnjHziCe+Mo4Mygpy8geryJLqY19RwKjGVURGq27MfwN9jYkZfNdu//qIkmkUow5KzXHcjKG7e4bo6VHJ0TiEK3Y0LBN8g6kgwqp4YDBNDrTNRM8v34iFOp4GIEp0Hfhjz5qkngSJuT7IWfNv7uZIVkAmwSOLXlMb64yada+3PfwQkWG3fGqMzCk8GC5V95KMdx96PKbGwlk5W07jHpUJRBerX+Mrh+VSygTKWePLLC5GVnOSiAvN8V6ZBEeHZZcTovg/OJ4DOyxt2X4PjHG8jo0LDJjeDck5SkO5KHCpfEVRlqZqfV6hV86juJ7NL8j8Hw9
-MIME-Version: 1.0
-X-MS-Exchange-CrossTenant-Network-Message-Id: dfe24859-021e-40fa-eeb6-08d801edec16
-X-MS-Exchange-CrossTenant-originalarrivaltime: 27 May 2020 03:27:45.1458 (UTC)
-X-MS-Exchange-CrossTenant-fromentityheader: Hosted
-X-MS-Exchange-CrossTenant-id: 46c98d88-e344-4ed4-8496-4ed7712e255d
-X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
-X-MS-Exchange-CrossTenant-userprincipalname: SN1tHEQ5CKrYDxp+LsStR/LsEPTO9An5e5+UZzZ6VB0xQwObPjRTsl4VL0ETqcl1Cbdv+wVk1rjAT29btCKErw==
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: MWHPR11MB1277
-X-OriginatorOrg: intel.com
-Cc: "Zhao, Yan Y" <yan.y.zhao@intel.com>,
- Suzuki K Poulose <suzuki.poulose@arm.com>, "maz@kernel.org" <maz@kernel.org>,
- "iommu@lists.linux-foundation.org" <iommu@lists.linux-foundation.org>,
- Kirti Wankhede <kwankhede@nvidia.com>,
- "alex.williamson@redhat.com" <alex.williamson@redhat.com>,
- James Morse <james.morse@arm.com>,
- "linux-arm-kernel@lists.infradead.org" <linux-arm-kernel@lists.infradead.org>,
- "prime.zeng@hisilicon.com" <prime.zeng@hisilicon.com>,
- Wang Haibin <wanghaibin.wang@huawei.com>, Will Deacon <will@kernel.org>,
- "kvmarm@lists.cs.columbia.edu" <kvmarm@lists.cs.columbia.edu>,
- "julien.thierry.kdev@gmail.com" <julien.thierry.kdev@gmail.com>
+ with ESMTP id 8gryNfcGpDbl for <iommu@lists.linux-foundation.org>;
+ Wed, 27 May 2020 06:25:04 +0000 (UTC)
+X-Greylist: from auto-whitelisted by SQLgrey-1.7.6
+Received: from mail27.static.mailgun.info (mail27.static.mailgun.info
+ [104.130.122.27])
+ by whitealder.osuosl.org (Postfix) with ESMTPS id 7B22087475
+ for <iommu@lists.linux-foundation.org>; Wed, 27 May 2020 06:25:04 +0000 (UTC)
+DKIM-Signature: a=rsa-sha256; v=1; c=relaxed/relaxed; d=mg.codeaurora.org;
+ q=dns/txt; 
+ s=smtp; t=1590560704; h=Message-Id: Date: Subject: Cc: To: From:
+ Sender; bh=jh63g7zVfWyaLq4vPu9kEFHYtKDWPkdQ7ls9thvyg1Y=;
+ b=tSDe5jZky4rAreP/5oS0idzpqlBt4ReN66xKVAUgFmuLRH4Yd/6PMKzPPVRqEbhneONH7OYV
+ DYiutjoQNxRB/4rt2igdzjji3b80N6PL4gRWGvSKr6Rq3TQJadPEv4lIGp0dXnRwcUhoV+i5
+ HD6oB8YoA0wqQdl6OKQRblrOeCw=
+X-Mailgun-Sending-Ip: 104.130.122.27
+X-Mailgun-Sid: WyI3NDkwMCIsICJpb21tdUBsaXN0cy5saW51eC1mb3VuZGF0aW9uLm9yZyIsICJiZTllNGEiXQ==
+Received: from smtp.codeaurora.org
+ (ec2-35-166-182-171.us-west-2.compute.amazonaws.com [35.166.182.171]) by
+ smtp-out-n02.prod.us-east-1.postgun.com with SMTP id
+ 5ece07bf76fccbb4c8503b6a (version=TLS1.2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256); Wed, 27 May 2020 06:25:03
+ GMT
+Received: by smtp.codeaurora.org (Postfix, from userid 1001)
+ id 82486C433C6; Wed, 27 May 2020 06:25:02 +0000 (UTC)
+Received: from vjitta-linux.qualcomm.com
+ (blr-c-bdr-fw-01_GlobalNAT_AllZones-Outside.qualcomm.com [103.229.19.19])
+ (using TLSv1.2 with cipher ECDHE-RSA-AES128-SHA256 (128/128 bits))
+ (No client certificate requested) (Authenticated sender: vjitta)
+ by smtp.codeaurora.org (Postfix) with ESMTPSA id 03CC2C433C9;
+ Wed, 27 May 2020 06:24:59 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.3.2 smtp.codeaurora.org 03CC2C433C9
+Authentication-Results: aws-us-west-2-caf-mail-1.web.codeaurora.org;
+ dmarc=none (p=none dis=none) header.from=codeaurora.org
+Authentication-Results: aws-us-west-2-caf-mail-1.web.codeaurora.org;
+ spf=none smtp.mailfrom=vjitta@codeaurora.org
+From: vjitta@codeaurora.org
+To: joro@8bytes.org, iommu@lists.linux-foundation.org,
+ linux-kernel@vger.kernel.org
+Subject: [PATCH] iommu/iova: Free global iova rcache on iova alloc failure
+Date: Wed, 27 May 2020 11:54:39 +0530
+Message-Id: <1590560679-11927-1-git-send-email-vjitta@codeaurora.org>
+X-Mailer: git-send-email 1.9.1
+Cc: vjitta@codeaurora.org, vinmenon@codeaurora.org, kernel-team@android.com
 X-BeenThere: iommu@lists.linux-foundation.org
 X-Mailman-Version: 2.1.15
 Precedence: list
@@ -163,102 +96,93 @@ List-Post: <mailto:iommu@lists.linux-foundation.org>
 List-Help: <mailto:iommu-request@lists.linux-foundation.org?subject=help>
 List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
  <mailto:iommu-request@lists.linux-foundation.org?subject=subscribe>
+MIME-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
 Errors-To: iommu-bounces@lists.linux-foundation.org
 Sender: "iommu" <iommu-bounces@lists.linux-foundation.org>
 
-> From: Xiang Zheng
-> Sent: Monday, May 25, 2020 7:34 PM
-> 
-> [+cc Kirti, Yan, Alex]
-> 
-> On 2020/5/23 1:14, Jean-Philippe Brucker wrote:
-> > Hi,
-> >
-> > On Tue, May 19, 2020 at 05:42:55PM +0800, Xiang Zheng wrote:
-> >> Hi all,
-> >>
-> >> Is there any plan for enabling SMMU HTTU?
-> >
-> > Not outside of SVA, as far as I know.
-> >
-> 
-> >> I have seen the patch locates in the SVA series patch, which adds
-> >> support for HTTU:
-> >>     https://www.spinics.net/lists/arm-kernel/msg798694.html
-> >>
-> >> HTTU reduces the number of access faults on SMMU fault queue
-> >> (permission faults also benifit from it).
-> >>
-> >> Besides reducing the faults, HTTU also helps to track dirty pages for
-> >> device DMA. Is it feasible to utilize HTTU to get dirty pages on device
-> >> DMA during VFIO live migration?
-> >
-> > As you know there is a VFIO interface for this under discussion:
-> > https://lore.kernel.org/kvm/1589781397-28368-1-git-send-email-
-> kwankhede@nvidia.com/
-> > It doesn't implement an internal API to communicate with the IOMMU
-> driver
-> > about dirty pages.
+From: Vijayanand Jitta <vjitta@codeaurora.org>
 
-We plan to add such API later, e.g. to utilize A/D bit in VT-d 2nd-level 
-page tables (Rev 3.0). 
+When ever an iova alloc request fails we free the iova
+ranges present in the percpu iova rcaches and then retry
+but the global iova rcache is not freed as a result we
+could still see iova alloc failure even after retry as
+global rcache is still holding the iova's which can cause
+fragmentation. So, free the global iova rcache as well
+and then go for the retry.
 
-> 
-> >
-> >> If SMMU can track dirty pages, devices are not required to implement
-> >> additional dirty pages tracking to support VFIO live migration.
-> >
-> > It seems feasible, though tracking it in the device might be more
-> > efficient. I might have misunderstood but I think for live migration of
-> > the Intel NIC they trap guest accesses to the device and introspect its
-> > state to figure out which pages it is accessing.
+Signed-off-by: Vijayanand Jitta <vjitta@codeaurora.org>
+---
+ drivers/iommu/iova.c | 22 ++++++++++++++++++++++
+ include/linux/iova.h |  6 ++++++
+ 2 files changed, 28 insertions(+)
 
-Does HTTU implement A/D-like mechanism in SMMU page tables, or just
-report dirty pages in a log buffer? Either way tracking dirty pages in IOMMU
-side is generic thus doesn't require device-specific tweak like in Intel NIC.
-
-Thanks
-kevin
-
-> >
-> > With HTTU I suppose (without much knowledge about live migration) that
-> > you'd need several new interfaces to the IOMMU drivers:
-> >
-> > * A way for VFIO to query HTTU support in the SMMU. There are some
-> >   discussions about communicating more IOMMU capabilities through VFIO
-> but
-> >   no implementation yet. When HTTU isn't supported the DIRTY_PAGES
-> bitmap
-> >   would report all pages as they do now.
-> >
-> > * VFIO_IOMMU_DIRTY_PAGES_FLAG_START/STOP would clear the dirty bit
-> >   for all VFIO mappings (which is going to take some time). There is a
-> >   walker in io-pgtable for iova_to_phys() which could be extended. I
-> >   suppose it's also possible to atomically switch the HA and HD bits in
-> >   context descriptors.
-> 
-> Maybe we need not switch HA and HD bits, just turn on them all the time?
-> 
-> >
-> > * VFIO_IOMMU_DIRTY_PAGES_FLAG_GET_BITMAP would query the dirty
-> bit for all
-> >   VFIO mappings.
-> >
-> 
-> I think we need to consider the case of IOMMU dirty pages logging. We want
-> to test Kirti's VFIO migration patches combined with SMMU HTTU, any
-> suggestions?
-> 
-> --
-> Thanks,
-> Xiang
-> 
-> _______________________________________________
-> iommu mailing list
-> iommu@lists.linux-foundation.org
-> https://lists.linuxfoundation.org/mailman/listinfo/iommu
+diff --git a/drivers/iommu/iova.c b/drivers/iommu/iova.c
+index 0e6a953..5ae0328 100644
+--- a/drivers/iommu/iova.c
++++ b/drivers/iommu/iova.c
+@@ -431,6 +431,7 @@ struct iova *find_iova(struct iova_domain *iovad, unsigned long pfn)
+ 		flush_rcache = false;
+ 		for_each_online_cpu(cpu)
+ 			free_cpu_cached_iovas(cpu, iovad);
++		free_global_cached_iovas(iovad);
+ 		goto retry;
+ 	}
+ 
+@@ -1044,5 +1045,26 @@ void free_cpu_cached_iovas(unsigned int cpu, struct iova_domain *iovad)
+ 	}
+ }
+ 
++/*
++ * free all the IOVA ranges of global cache
++ */
++void free_global_cached_iovas(struct iova_domain *iovad)
++{
++	struct iova_rcache *rcache;
++	int i, j;
++
++	for (i = 0; i < IOVA_RANGE_CACHE_MAX_SIZE; ++i) {
++		rcache = &iovad->rcaches[i];
++		spin_lock(&rcache->lock);
++		for (j = 0; j < rcache->depot_size; ++j) {
++			iova_magazine_free_pfns(rcache->depot[j], iovad);
++			iova_magazine_free(rcache->depot[j]);
++			rcache->depot[j] = NULL;
++		}
++		rcache->depot_size = 0;
++		spin_unlock(&rcache->lock);
++	}
++}
++
+ MODULE_AUTHOR("Anil S Keshavamurthy <anil.s.keshavamurthy@intel.com>");
+ MODULE_LICENSE("GPL");
+diff --git a/include/linux/iova.h b/include/linux/iova.h
+index a0637ab..a905726 100644
+--- a/include/linux/iova.h
++++ b/include/linux/iova.h
+@@ -163,6 +163,7 @@ int init_iova_flush_queue(struct iova_domain *iovad,
+ struct iova *split_and_remove_iova(struct iova_domain *iovad,
+ 	struct iova *iova, unsigned long pfn_lo, unsigned long pfn_hi);
+ void free_cpu_cached_iovas(unsigned int cpu, struct iova_domain *iovad);
++void free_global_cached_iovas(struct iova_domain *iovad);
+ #else
+ static inline int iova_cache_get(void)
+ {
+@@ -270,6 +271,11 @@ static inline void free_cpu_cached_iovas(unsigned int cpu,
+ 					 struct iova_domain *iovad)
+ {
+ }
++
++static inline void free_global_cached_iovas(struct iova_domain *iovad)
++{
++}
++
+ #endif
+ 
+ #endif
+-- 
+QUALCOMM INDIA, on behalf of Qualcomm Innovation Center, Inc. is a member of Code Aurora Forum, hosted by The Linux Foundation
 _______________________________________________
 iommu mailing list
 iommu@lists.linux-foundation.org
