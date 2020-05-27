@@ -2,72 +2,80 @@ Return-Path: <SRS0=MQAj=7J=lists.linux-foundation.org=iommu-bounces@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-8.2 required=3.0 tests=HEADER_FROM_DIFFERENT_DOMAINS,
-	INCLUDES_PATCH,MAILING_LIST_MULTI,SIGNED_OFF_BY,SPF_HELO_NONE,SPF_PASS,
-	URIBL_BLOCKED,USER_AGENT_SANE_1 autolearn=unavailable autolearn_force=no
-	version=3.4.0
+X-Spam-Status: No, score=-0.8 required=3.0 tests=DKIM_INVALID,DKIM_SIGNED,
+	MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED autolearn=no
+	autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id A2B0BC433DF
-	for <iommu@archiver.kernel.org>; Wed, 27 May 2020 17:30:27 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 0BAB1C433DF
+	for <iommu@archiver.kernel.org>; Wed, 27 May 2020 18:18:49 +0000 (UTC)
 Received: from silver.osuosl.org (smtp3.osuosl.org [140.211.166.136])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by mail.kernel.org (Postfix) with ESMTPS id 420E32075A
-	for <iommu@archiver.kernel.org>; Wed, 27 May 2020 17:30:27 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 420E32075A
-Authentication-Results: mail.kernel.org; dmarc=none (p=none dis=none) header.from=arm.com
+	by mail.kernel.org (Postfix) with ESMTPS id E01D62084C
+	for <iommu@archiver.kernel.org>; Wed, 27 May 2020 18:18:47 +0000 (UTC)
+Authentication-Results: mail.kernel.org;
+	dkim=fail reason="signature verification failed" (1024-bit key) header.d=kernel.org header.i=@kernel.org header.b="nIx2hX8l"
+DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org E01D62084C
+Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=kernel.org
 Authentication-Results: mail.kernel.org; spf=pass smtp.mailfrom=iommu-bounces@lists.linux-foundation.org
 Received: from localhost (localhost [127.0.0.1])
-	by silver.osuosl.org (Postfix) with ESMTP id E7F66251E1;
-	Wed, 27 May 2020 17:30:26 +0000 (UTC)
+	by silver.osuosl.org (Postfix) with ESMTP id 8340220503;
+	Wed, 27 May 2020 18:18:47 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
 Received: from silver.osuosl.org ([127.0.0.1])
 	by localhost (.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
-	with ESMTP id lPHBIUtvbMDu; Wed, 27 May 2020 17:30:25 +0000 (UTC)
+	with ESMTP id PAro7882jtuc; Wed, 27 May 2020 18:18:46 +0000 (UTC)
 Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [140.211.9.56])
-	by silver.osuosl.org (Postfix) with ESMTP id D9EC424CEB;
-	Wed, 27 May 2020 17:30:24 +0000 (UTC)
+	by silver.osuosl.org (Postfix) with ESMTP id B680F2000F;
+	Wed, 27 May 2020 18:18:46 +0000 (UTC)
 Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
-	by lists.linuxfoundation.org (Postfix) with ESMTP id BA02AC088D;
-	Wed, 27 May 2020 17:30:24 +0000 (UTC)
-Received: from silver.osuosl.org (smtp3.osuosl.org [140.211.166.136])
- by lists.linuxfoundation.org (Postfix) with ESMTP id 71673C016F
- for <iommu@lists.linux-foundation.org>; Wed, 27 May 2020 17:30:22 +0000 (UTC)
+	by lists.linuxfoundation.org (Postfix) with ESMTP id 9A4EBC0881;
+	Wed, 27 May 2020 18:18:46 +0000 (UTC)
+Received: from hemlock.osuosl.org (smtp2.osuosl.org [140.211.166.133])
+ by lists.linuxfoundation.org (Postfix) with ESMTP id 04572C016F
+ for <iommu@lists.linux-foundation.org>; Wed, 27 May 2020 18:18:46 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
- by silver.osuosl.org (Postfix) with ESMTP id 58CE524D71
- for <iommu@lists.linux-foundation.org>; Wed, 27 May 2020 17:30:22 +0000 (UTC)
+ by hemlock.osuosl.org (Postfix) with ESMTP id F2FFF88A13
+ for <iommu@lists.linux-foundation.org>; Wed, 27 May 2020 18:18:45 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from silver.osuosl.org ([127.0.0.1])
+Received: from hemlock.osuosl.org ([127.0.0.1])
  by localhost (.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
- with ESMTP id 8-vb1raSYXaG for <iommu@lists.linux-foundation.org>;
- Wed, 27 May 2020 17:30:20 +0000 (UTC)
+ with ESMTP id 8UwucI3nOyry for <iommu@lists.linux-foundation.org>;
+ Wed, 27 May 2020 18:18:44 +0000 (UTC)
 X-Greylist: domain auto-whitelisted by SQLgrey-1.7.6
-Received: from foss.arm.com (foss.arm.com [217.140.110.172])
- by silver.osuosl.org (Postfix) with ESMTP id A083B24CEB
- for <iommu@lists.linux-foundation.org>; Wed, 27 May 2020 17:30:20 +0000 (UTC)
-Received: from usa-sjc-imap-foss1.foss.arm.com (unknown [10.121.207.14])
- by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id F0DCB31B;
- Wed, 27 May 2020 10:30:19 -0700 (PDT)
-Received: from [10.57.2.168] (unknown [10.57.2.168])
- by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPSA id 0D2B73F305;
- Wed, 27 May 2020 10:30:17 -0700 (PDT)
-Subject: Re: [RFC PATCH] iommu/arm-smmu: Add module parameter to set msi iova
- address
-To: Srinath Mannam <srinath.mannam@broadcom.com>,
- Will Deacon <will@kernel.org>, Joerg Roedel <joro@8bytes.org>
-References: <1590595398-4217-1-git-send-email-srinath.mannam@broadcom.com>
-From: Robin Murphy <robin.murphy@arm.com>
-Message-ID: <f9b221cf-1c7f-9f95-133b-dca65197b6c2@arm.com>
-Date: Wed, 27 May 2020 18:30:15 +0100
-User-Agent: Mozilla/5.0 (Windows NT 10.0; rv:68.0) Gecko/20100101
- Thunderbird/68.8.0
+Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
+ by hemlock.osuosl.org (Postfix) with ESMTPS id DF28C889EC
+ for <iommu@lists.linux-foundation.org>; Wed, 27 May 2020 18:18:44 +0000 (UTC)
+Received: from localhost (mobile-166-175-190-200.mycingular.net
+ [166.175.190.200])
+ (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+ (No client certificate requested)
+ by mail.kernel.org (Postfix) with ESMTPSA id 3CF692075A;
+ Wed, 27 May 2020 18:18:44 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+ s=default; t=1590603524;
+ bh=IlJRE+s/Xn0kFANnhdpCDcIhPKRLpygy8ad6xlPlHjQ=;
+ h=Date:From:To:Cc:Subject:In-Reply-To:From;
+ b=nIx2hX8lM30uXBDTL7TuhND9kQ3G+qZ++mUq5WECUp59CfqdUpYK43QoUK7AXlVPf
+ KxTUevqFBycL9TlKq7SmWveEDn1K/rg1pDaaEGJos75PWipKFqulr3bGwuDJBHuVi1
+ 7/+Jn7myhnHFa+KsZWLZ+HqvliJJB2ISAncHJDyU=
+Date: Wed, 27 May 2020 13:18:42 -0500
+From: Bjorn Helgaas <helgaas@kernel.org>
+To: Zhangfei Gao <zhangfei.gao@linaro.org>
+Subject: Re: [PATCH 0/2] Introduce PCI_FIXUP_IOMMU
+Message-ID: <20200527181842.GA256680@bjorn-Precision-5520>
 MIME-Version: 1.0
-In-Reply-To: <1590595398-4217-1-git-send-email-srinath.mannam@broadcom.com>
-Content-Language: en-GB
-Cc: Jean-Philippe Brucker <jean-philippe@linaro.org>,
- iommu@lists.linux-foundation.org, linux-kernel@vger.kernel.org,
- Alex Williamson <alex.williamson@redhat.com>,
- bcm-kernel-feedback-list@broadcom.com, linux-arm-kernel@lists.infradead.org
+Content-Disposition: inline
+In-Reply-To: <1590493749-13823-1-git-send-email-zhangfei.gao@linaro.org>
+Cc: jean-philippe <jean-philippe@linaro.org>,
+ Herbert Xu <herbert@gondor.apana.org.au>, Arnd Bergmann <arnd@arndb.de>,
+ linux-pci@vger.kernel.org, Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+ Hanjun Guo <guohanjun@huawei.com>, "Rafael J. Wysocki" <rjw@rjwysocki.net>,
+ linux-kernel@vger.kernel.org, iommu@lists.linux-foundation.org,
+ linux-acpi@vger.kernel.org, linux-crypto@vger.kernel.org,
+ Sudeep Holla <sudeep.holla@arm.com>, Bjorn Helgaas <bhelgaas@google.com>,
+ kenneth-lee-2012@foxmail.com, linux-arm-kernel@lists.infradead.org,
+ Len Brown <lenb@kernel.org>
 X-BeenThere: iommu@lists.linux-foundation.org
 X-Mailman-Version: 2.1.15
 Precedence: list
@@ -80,71 +88,61 @@ List-Post: <mailto:iommu@lists.linux-foundation.org>
 List-Help: <mailto:iommu-request@lists.linux-foundation.org?subject=help>
 List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
  <mailto:iommu-request@lists.linux-foundation.org?subject=subscribe>
+Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
-Content-Type: text/plain; charset="us-ascii"; Format="flowed"
 Errors-To: iommu-bounces@lists.linux-foundation.org
 Sender: "iommu" <iommu-bounces@lists.linux-foundation.org>
 
-On 2020-05-27 17:03, Srinath Mannam wrote:
-> This patch gives the provision to change default value of MSI IOVA base
-> to platform's suitable IOVA using module parameter. The present
-> hardcoded MSI IOVA base may not be the accessible IOVA ranges of platform.
+On Tue, May 26, 2020 at 07:49:07PM +0800, Zhangfei Gao wrote:
+> Some platform devices appear as PCI but are actually on the AMBA bus,
+> and they need fixup in drivers/pci/quirks.c handling iommu_fwnode.
+> Here introducing PCI_FIXUP_IOMMU, which is called after iommu_fwnode
+> is allocated, instead of reusing PCI_FIXUP_FINAL since it will slow
+> down iommu probing as all devices in fixup final list will be
+> reprocessed, suggested by Joerg, [1]
 
-That in itself doesn't seem entirely unreasonable; IIRC the current 
-address is just an arbitrary choice to fit nicely into Qemu's memory 
-map, and there was always the possibility that it wouldn't suit everything.
+Is this slowdown significant?  We already iterate over every device
+when applying PCI_FIXUP_FINAL quirks, so if we used the existing
+PCI_FIXUP_FINAL, we wouldn't be adding a new loop.  We would only be
+adding two more iterations to the loop in pci_do_fixups() that tries
+to match quirks against the current device.  I doubt that would be a
+measurable slowdown.
 
-> Since commit aadad097cd46 ("iommu/dma: Reserve IOVA for PCIe inaccessible
-> DMA address"), inaccessible IOVA address ranges parsed from dma-ranges
-> property are reserved.
-
-That, however, doesn't seem to fit here; iommu-dma maps MSI doorbells 
-dynamically, so they aren't affected by reserved regions any more than 
-regular DMA pages are. In fact, it explicitly ignores the software MSI 
-region, since as the comment says, it *is* the software that manages those.
-
-The MSI_IOVA_BASE region exists for VFIO, precisely because in that case 
-the kernel *doesn't* control the address space, but still needs some way 
-to steal a bit of it for MSIs that the guest doesn't necessarily know 
-about, and give userspace a fighting chance of knowing what it's taken. 
-I think at the time we discussed the idea of adding something to the 
-VFIO uapi such that userspace could move this around if it wanted or 
-needed to, but decided we could live without that initially. Perhaps now 
-the time has come?
-
-Robin.
-
-> If any platform has the limitaion to access default MSI IOVA, then it can
-> be changed using "arm-smmu.msi_iova_base=0xa0000000" command line argument.
+> For example:
+> Hisilicon platform device need fixup in
+> drivers/pci/quirks.c handling fwspec->can_stall, which is introduced in [2]
 > 
-> Signed-off-by: Srinath Mannam <srinath.mannam@broadcom.com>
-> ---
->   drivers/iommu/arm-smmu.c | 5 ++++-
->   1 file changed, 4 insertions(+), 1 deletion(-)
+> +static void quirk_huawei_pcie_sva(struct pci_dev *pdev)
+> +{
+> +    struct iommu_fwspec *fwspec;
+> +
+> +    pdev->eetlp_prefix_path = 1;
+> +    fwspec = dev_iommu_fwspec_get(&pdev->dev);
+> +    if (fwspec)
+> +        fwspec->can_stall = 1;
+> +}
+> +
+> +DECLARE_PCI_FIXUP_IOMMU(PCI_VENDOR_ID_HUAWEI, 0xa250, quirk_huawei_pcie_sva);
+> +DECLARE_PCI_iFIXUP_IOMMU(PCI_VENDOR_ID_HUAWEI, 0xa251, quirk_huawei_pcie_sva); 
 > 
-> diff --git a/drivers/iommu/arm-smmu.c b/drivers/iommu/arm-smmu.c
-> index 4f1a350..5e59c9d 100644
-> --- a/drivers/iommu/arm-smmu.c
-> +++ b/drivers/iommu/arm-smmu.c
-> @@ -72,6 +72,9 @@ static bool disable_bypass =
->   module_param(disable_bypass, bool, S_IRUGO);
->   MODULE_PARM_DESC(disable_bypass,
->   	"Disable bypass streams such that incoming transactions from devices that are not attached to an iommu domain will report an abort back to the device and will not be allowed to pass through the SMMU.");
-> +static unsigned long msi_iova_base = MSI_IOVA_BASE;
-> +module_param(msi_iova_base, ulong, S_IRUGO);
-> +MODULE_PARM_DESC(msi_iova_base, "msi iova base address.");
->   
->   struct arm_smmu_s2cr {
->   	struct iommu_group		*group;
-> @@ -1566,7 +1569,7 @@ static void arm_smmu_get_resv_regions(struct device *dev,
->   	struct iommu_resv_region *region;
->   	int prot = IOMMU_WRITE | IOMMU_NOEXEC | IOMMU_MMIO;
->   
-> -	region = iommu_alloc_resv_region(MSI_IOVA_BASE, MSI_IOVA_LENGTH,
-> +	region = iommu_alloc_resv_region(msi_iova_base, MSI_IOVA_LENGTH,
->   					 prot, IOMMU_RESV_SW_MSI);
->   	if (!region)
->   		return;
+> [1] https://www.spinics.net/lists/iommu/msg44591.html
+> [2] https://www.spinics.net/lists/linux-pci/msg94559.html
+
+If you reference these in the commit logs, please use lore.kernel.org
+links instead of spinics.
+
+> Zhangfei Gao (2):
+>   PCI: Introduce PCI_FIXUP_IOMMU
+>   iommu: calling pci_fixup_iommu in iommu_fwspec_init
+> 
+>  drivers/iommu/iommu.c             | 4 ++++
+>  drivers/pci/quirks.c              | 7 +++++++
+>  include/asm-generic/vmlinux.lds.h | 3 +++
+>  include/linux/pci.h               | 8 ++++++++
+>  4 files changed, 22 insertions(+)
+> 
+> -- 
+> 2.7.4
 > 
 _______________________________________________
 iommu mailing list
