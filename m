@@ -2,55 +2,56 @@ Return-Path: <SRS0=MQAj=7J=lists.linux-foundation.org=iommu-bounces@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-9.7 required=3.0 tests=HEADER_FROM_DIFFERENT_DOMAINS,
-	INCLUDES_PATCH,MAILING_LIST_MULTI,SIGNED_OFF_BY,SPF_HELO_NONE,SPF_PASS,
-	URIBL_BLOCKED,USER_AGENT_GIT autolearn=ham autolearn_force=no version=3.4.0
+X-Spam-Status: No, score=-14.7 required=3.0
+	tests=HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_PATCH,MAILING_LIST_MULTI,
+	MENTIONS_GIT_HOSTING,SIGNED_OFF_BY,SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED,
+	USER_AGENT_GIT autolearn=ham autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 0FF89C433E3
-	for <iommu@archiver.kernel.org>; Wed, 27 May 2020 11:53:33 +0000 (UTC)
-Received: from fraxinus.osuosl.org (smtp4.osuosl.org [140.211.166.137])
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 22B7EC433E5
+	for <iommu@archiver.kernel.org>; Wed, 27 May 2020 11:53:34 +0000 (UTC)
+Received: from hemlock.osuosl.org (smtp2.osuosl.org [140.211.166.133])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by mail.kernel.org (Postfix) with ESMTPS id E19AB207D8
-	for <iommu@archiver.kernel.org>; Wed, 27 May 2020 11:53:32 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org E19AB207D8
+	by mail.kernel.org (Postfix) with ESMTPS id 01732208DB
+	for <iommu@archiver.kernel.org>; Wed, 27 May 2020 11:53:33 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 01732208DB
 Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=8bytes.org
 Authentication-Results: mail.kernel.org; spf=pass smtp.mailfrom=iommu-bounces@lists.linux-foundation.org
 Received: from localhost (localhost [127.0.0.1])
-	by fraxinus.osuosl.org (Postfix) with ESMTP id B9DE986D36;
-	Wed, 27 May 2020 11:53:32 +0000 (UTC)
+	by hemlock.osuosl.org (Postfix) with ESMTP id 75E2E8878B;
+	Wed, 27 May 2020 11:53:33 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from fraxinus.osuosl.org ([127.0.0.1])
+Received: from hemlock.osuosl.org ([127.0.0.1])
 	by localhost (.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
-	with ESMTP id 4SnmDa-hs5zn; Wed, 27 May 2020 11:53:32 +0000 (UTC)
+	with ESMTP id 4nPKkPSyTkY0; Wed, 27 May 2020 11:53:31 +0000 (UTC)
 Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [140.211.9.56])
-	by fraxinus.osuosl.org (Postfix) with ESMTP id 10F3D86D22;
-	Wed, 27 May 2020 11:53:32 +0000 (UTC)
-Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
-	by lists.linuxfoundation.org (Postfix) with ESMTP id F1787C0891;
+	by hemlock.osuosl.org (Postfix) with ESMTP id D5FCB88738;
 	Wed, 27 May 2020 11:53:31 +0000 (UTC)
-Received: from fraxinus.osuosl.org (smtp4.osuosl.org [140.211.166.137])
- by lists.linuxfoundation.org (Postfix) with ESMTP id 36204C016F
- for <iommu@lists.linux-foundation.org>; Wed, 27 May 2020 11:53:30 +0000 (UTC)
+Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
+	by lists.linuxfoundation.org (Postfix) with ESMTP id B5FBCC0891;
+	Wed, 27 May 2020 11:53:31 +0000 (UTC)
+Received: from silver.osuosl.org (smtp3.osuosl.org [140.211.166.136])
+ by lists.linuxfoundation.org (Postfix) with ESMTP id EBAACC016F
+ for <iommu@lists.linux-foundation.org>; Wed, 27 May 2020 11:53:29 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
- by fraxinus.osuosl.org (Postfix) with ESMTP id 333E986D15
- for <iommu@lists.linux-foundation.org>; Wed, 27 May 2020 11:53:30 +0000 (UTC)
+ by silver.osuosl.org (Postfix) with ESMTP id A3A802322B
+ for <iommu@lists.linux-foundation.org>; Wed, 27 May 2020 11:53:29 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from fraxinus.osuosl.org ([127.0.0.1])
+Received: from silver.osuosl.org ([127.0.0.1])
  by localhost (.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
- with ESMTP id gieMK2baMUX1 for <iommu@lists.linux-foundation.org>;
- Wed, 27 May 2020 11:53:29 +0000 (UTC)
+ with ESMTP id kP+p1RK1YpFr for <iommu@lists.linux-foundation.org>;
+ Wed, 27 May 2020 11:53:27 +0000 (UTC)
 X-Greylist: from auto-whitelisted by SQLgrey-1.7.6
 Received: from theia.8bytes.org (8bytes.org [81.169.241.247])
- by fraxinus.osuosl.org (Postfix) with ESMTPS id 7A32186D04
- for <iommu@lists.linux-foundation.org>; Wed, 27 May 2020 11:53:29 +0000 (UTC)
+ by silver.osuosl.org (Postfix) with ESMTPS id 9F8232045E
+ for <iommu@lists.linux-foundation.org>; Wed, 27 May 2020 11:53:27 +0000 (UTC)
 Received: by theia.8bytes.org (Postfix, from userid 1000)
- id 2D471476; Wed, 27 May 2020 13:53:24 +0200 (CEST)
+ id 5564145; Wed, 27 May 2020 13:53:23 +0200 (CEST)
 From: Joerg Roedel <joro@8bytes.org>
 To: Joerg Roedel <joro@8bytes.org>
-Subject: [PATCH 06/10] iommu/amd: Consolidate domain allocation/freeing
-Date: Wed, 27 May 2020 13:53:09 +0200
-Message-Id: <20200527115313.7426-7-joro@8bytes.org>
+Subject: [PATCH 01/10] iommu/amd: Move AMD IOMMU driver to a subdirectory
+Date: Wed, 27 May 2020 13:53:04 +0200
+Message-Id: <20200527115313.7426-2-joro@8bytes.org>
 X-Mailer: git-send-email 2.17.1
 In-Reply-To: <20200527115313.7426-1-joro@8bytes.org>
 References: <20200527115313.7426-1-joro@8bytes.org>
@@ -76,168 +77,118 @@ Sender: "iommu" <iommu-bounces@lists.linux-foundation.org>
 
 From: Joerg Roedel <jroedel@suse.de>
 
-Merge the allocation code paths of DMA and UNMANAGED domains and
-remove code duplication.
+The driver consists of five C files and three header files by now.
+Move them to their own subdirectory to not clutter to iommu top-level
+directory with them.
 
 Signed-off-by: Joerg Roedel <jroedel@suse.de>
 ---
- drivers/iommu/amd/iommu.c | 116 +++++++++-----------------------------
- 1 file changed, 27 insertions(+), 89 deletions(-)
+ MAINTAINERS                                          | 2 +-
+ drivers/iommu/Makefile                               | 6 +++---
+ drivers/iommu/{ => amd}/amd_iommu.h                  | 0
+ drivers/iommu/{ => amd}/amd_iommu_proto.h            | 0
+ drivers/iommu/{ => amd}/amd_iommu_types.h            | 0
+ drivers/iommu/{amd_iommu_debugfs.c => amd/debugfs.c} | 0
+ drivers/iommu/{amd_iommu_init.c => amd/init.c}       | 2 +-
+ drivers/iommu/{amd_iommu.c => amd/iommu.c}           | 2 +-
+ drivers/iommu/{amd_iommu_v2.c => amd/iommu_v2.c}     | 0
+ drivers/iommu/{amd_iommu_quirks.c => amd/quirks.c}   | 0
+ 10 files changed, 6 insertions(+), 6 deletions(-)
+ rename drivers/iommu/{ => amd}/amd_iommu.h (100%)
+ rename drivers/iommu/{ => amd}/amd_iommu_proto.h (100%)
+ rename drivers/iommu/{ => amd}/amd_iommu_types.h (100%)
+ rename drivers/iommu/{amd_iommu_debugfs.c => amd/debugfs.c} (100%)
+ rename drivers/iommu/{amd_iommu_init.c => amd/init.c} (99%)
+ rename drivers/iommu/{amd_iommu.c => amd/iommu.c} (99%)
+ rename drivers/iommu/{amd_iommu_v2.c => amd/iommu_v2.c} (100%)
+ rename drivers/iommu/{amd_iommu_quirks.c => amd/quirks.c} (100%)
 
-diff --git a/drivers/iommu/amd/iommu.c b/drivers/iommu/amd/iommu.c
-index 5282ff6b8ea0..9e0737932e0c 100644
---- a/drivers/iommu/amd/iommu.c
-+++ b/drivers/iommu/amd/iommu.c
-@@ -101,7 +101,6 @@ struct iommu_cmd {
- struct kmem_cache *amd_iommu_irq_cache;
+diff --git a/MAINTAINERS b/MAINTAINERS
+index 50659d76976b..dd59ec6676d9 100644
+--- a/MAINTAINERS
++++ b/MAINTAINERS
+@@ -876,7 +876,7 @@ M:	Joerg Roedel <joro@8bytes.org>
+ L:	iommu@lists.linux-foundation.org
+ S:	Maintained
+ T:	git git://git.kernel.org/pub/scm/linux/kernel/git/joro/iommu.git
+-F:	drivers/iommu/amd_iommu*.[ch]
++F:	drivers/iommu/amd/
+ F:	include/linux/amd-iommu.h
  
- static void update_domain(struct protection_domain *domain);
--static int protection_domain_init(struct protection_domain *domain, int mode);
- static void detach_device(struct device *dev);
- static void update_and_flush_device_table(struct protection_domain *domain,
- 					  struct domain_pgtable *pgtable);
-@@ -1818,58 +1817,6 @@ static void free_gcr3_table(struct protection_domain *domain)
- 	free_page((unsigned long)domain->gcr3_tbl);
- }
+ AMD KFD
+diff --git a/drivers/iommu/Makefile b/drivers/iommu/Makefile
+index 57cf4ba5e27c..3af7e374b0cb 100644
+--- a/drivers/iommu/Makefile
++++ b/drivers/iommu/Makefile
+@@ -11,9 +11,9 @@ obj-$(CONFIG_IOASID) += ioasid.o
+ obj-$(CONFIG_IOMMU_IOVA) += iova.o
+ obj-$(CONFIG_OF_IOMMU)	+= of_iommu.o
+ obj-$(CONFIG_MSM_IOMMU) += msm_iommu.o
+-obj-$(CONFIG_AMD_IOMMU) += amd_iommu.o amd_iommu_init.o amd_iommu_quirks.o
+-obj-$(CONFIG_AMD_IOMMU_DEBUGFS) += amd_iommu_debugfs.o
+-obj-$(CONFIG_AMD_IOMMU_V2) += amd_iommu_v2.o
++obj-$(CONFIG_AMD_IOMMU) += amd/iommu.o amd/init.o amd/quirks.o
++obj-$(CONFIG_AMD_IOMMU_DEBUGFS) += amd/debugfs.o
++obj-$(CONFIG_AMD_IOMMU_V2) += amd/iommu_v2.o
+ obj-$(CONFIG_ARM_SMMU) += arm_smmu.o
+ arm_smmu-objs += arm-smmu.o arm-smmu-impl.o arm-smmu-qcom.o
+ obj-$(CONFIG_ARM_SMMU_V3) += arm-smmu-v3.o
+diff --git a/drivers/iommu/amd_iommu.h b/drivers/iommu/amd/amd_iommu.h
+similarity index 100%
+rename from drivers/iommu/amd_iommu.h
+rename to drivers/iommu/amd/amd_iommu.h
+diff --git a/drivers/iommu/amd_iommu_proto.h b/drivers/iommu/amd/amd_iommu_proto.h
+similarity index 100%
+rename from drivers/iommu/amd_iommu_proto.h
+rename to drivers/iommu/amd/amd_iommu_proto.h
+diff --git a/drivers/iommu/amd_iommu_types.h b/drivers/iommu/amd/amd_iommu_types.h
+similarity index 100%
+rename from drivers/iommu/amd_iommu_types.h
+rename to drivers/iommu/amd/amd_iommu_types.h
+diff --git a/drivers/iommu/amd_iommu_debugfs.c b/drivers/iommu/amd/debugfs.c
+similarity index 100%
+rename from drivers/iommu/amd_iommu_debugfs.c
+rename to drivers/iommu/amd/debugfs.c
+diff --git a/drivers/iommu/amd_iommu_init.c b/drivers/iommu/amd/init.c
+similarity index 99%
+rename from drivers/iommu/amd_iommu_init.c
+rename to drivers/iommu/amd/init.c
+index 5b81fd16f5fa..fda80fd1d9a6 100644
+--- a/drivers/iommu/amd_iommu_init.c
++++ b/drivers/iommu/amd/init.c
+@@ -35,7 +35,7 @@
+ #include "amd_iommu.h"
+ #include "amd_iommu_proto.h"
+ #include "amd_iommu_types.h"
+-#include "irq_remapping.h"
++#include "../irq_remapping.h"
  
--/*
-- * Free a domain, only used if something went wrong in the
-- * allocation path and we need to free an already allocated page table
-- */
--static void dma_ops_domain_free(struct protection_domain *domain)
--{
--	struct domain_pgtable pgtable;
--
--	if (!domain)
--		return;
--
--	iommu_put_dma_cookie(&domain->domain);
--
--	amd_iommu_domain_get_pgtable(domain, &pgtable);
--	atomic64_set(&domain->pt_root, 0);
--	free_pagetable(&pgtable);
--
--	if (domain->id)
--		domain_id_free(domain->id);
--
--	kfree(domain);
--}
--
--/*
-- * Allocates a new protection domain usable for the dma_ops functions.
-- * It also initializes the page table and the address allocator data
-- * structures required for the dma_ops interface
-- */
--static struct protection_domain *dma_ops_domain_alloc(void)
--{
--	struct protection_domain *domain;
--
--	domain = kzalloc(sizeof(struct protection_domain), GFP_KERNEL);
--	if (!domain)
--		return NULL;
--
--	if (protection_domain_init(domain, DEFAULT_PGTABLE_LEVEL))
--		goto free_domain;
--
--	domain->flags = PD_DMA_OPS_MASK;
--
--	if (iommu_get_dma_cookie(&domain->domain) == -ENOMEM)
--		goto free_domain;
--
--	return domain;
--
--free_domain:
--	dma_ops_domain_free(domain);
--
--	return NULL;
--}
--
  /*
-  * little helper function to check whether a given protection domain is a
-  * dma_ops domain
-@@ -2447,36 +2394,32 @@ static struct protection_domain *protection_domain_alloc(int mode)
+  * definitions for the ACPI scanning code
+diff --git a/drivers/iommu/amd_iommu.c b/drivers/iommu/amd/iommu.c
+similarity index 99%
+rename from drivers/iommu/amd_iommu.c
+rename to drivers/iommu/amd/iommu.c
+index 1b36c40d0712..39155f550f18 100644
+--- a/drivers/iommu/amd_iommu.c
++++ b/drivers/iommu/amd/iommu.c
+@@ -45,7 +45,7 @@
  
- static struct iommu_domain *amd_iommu_domain_alloc(unsigned type)
- {
--	struct protection_domain *pdomain;
--
--	switch (type) {
--	case IOMMU_DOMAIN_UNMANAGED:
--		pdomain = protection_domain_alloc(DEFAULT_PGTABLE_LEVEL);
--		if (!pdomain)
--			return NULL;
-+	struct protection_domain *domain;
-+	int mode = DEFAULT_PGTABLE_LEVEL;
+ #include "amd_iommu_proto.h"
+ #include "amd_iommu_types.h"
+-#include "irq_remapping.h"
++#include "../irq_remapping.h"
  
--		pdomain->domain.geometry.aperture_start = 0;
--		pdomain->domain.geometry.aperture_end   = ~0ULL;
--		pdomain->domain.geometry.force_aperture = true;
-+	if (type == IOMMU_DOMAIN_IDENTITY)
-+		mode = PAGE_MODE_NONE;
+ #define CMD_SET_TYPE(cmd, t) ((cmd)->data[1] |= ((t) << 28))
  
--		break;
--	case IOMMU_DOMAIN_DMA:
--		pdomain = dma_ops_domain_alloc();
--		if (!pdomain) {
--			pr_err("Failed to allocate\n");
--			return NULL;
--		}
--		break;
--	case IOMMU_DOMAIN_IDENTITY:
--		pdomain = protection_domain_alloc(PAGE_MODE_NONE);
--		if (!pdomain)
--			return NULL;
--		break;
--	default:
-+	domain = protection_domain_alloc(mode);
-+	if (!domain)
- 		return NULL;
-+
-+	domain->domain.geometry.aperture_start = 0;
-+	domain->domain.geometry.aperture_end   = ~0ULL;
-+	domain->domain.geometry.force_aperture = true;
-+
-+	if (type == IOMMU_DOMAIN_DMA) {
-+		if (iommu_get_dma_cookie(&domain->domain) == -ENOMEM)
-+			goto free_domain;
-+		domain->flags = PD_DMA_OPS_MASK;
- 	}
- 
--	return &pdomain->domain;
-+	return &domain->domain;
-+
-+free_domain:
-+	protection_domain_free(domain);
-+
-+	return NULL;
- }
- 
- static void amd_iommu_domain_free(struct iommu_domain *dom)
-@@ -2493,18 +2436,13 @@ static void amd_iommu_domain_free(struct iommu_domain *dom)
- 	if (!dom)
- 		return;
- 
--	switch (dom->type) {
--	case IOMMU_DOMAIN_DMA:
--		/* Now release the domain */
--		dma_ops_domain_free(domain);
--		break;
--	default:
--		if (domain->flags & PD_IOMMUV2_MASK)
--			free_gcr3_table(domain);
-+	if (dom->type == IOMMU_DOMAIN_DMA)
-+		iommu_put_dma_cookie(&domain->domain);
- 
--		protection_domain_free(domain);
--		break;
--	}
-+	if (domain->flags & PD_IOMMUV2_MASK)
-+		free_gcr3_table(domain);
-+
-+	protection_domain_free(domain);
- }
- 
- static void amd_iommu_detach_device(struct iommu_domain *dom,
+diff --git a/drivers/iommu/amd_iommu_v2.c b/drivers/iommu/amd/iommu_v2.c
+similarity index 100%
+rename from drivers/iommu/amd_iommu_v2.c
+rename to drivers/iommu/amd/iommu_v2.c
+diff --git a/drivers/iommu/amd_iommu_quirks.c b/drivers/iommu/amd/quirks.c
+similarity index 100%
+rename from drivers/iommu/amd_iommu_quirks.c
+rename to drivers/iommu/amd/quirks.c
 -- 
 2.17.1
 
