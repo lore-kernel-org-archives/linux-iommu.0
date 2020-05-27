@@ -2,106 +2,89 @@ Return-Path: <SRS0=MQAj=7J=lists.linux-foundation.org=iommu-bounces@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-6.5 required=3.0 tests=DKIM_INVALID,DKIM_SIGNED,
+X-Spam-Status: No, score=-9.5 required=3.0 tests=DKIM_INVALID,DKIM_SIGNED,
 	HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_PATCH,MAILING_LIST_MULTI,SIGNED_OFF_BY,
-	SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED autolearn=unavailable autolearn_force=no
-	version=3.4.0
+	SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED,USER_AGENT_GIT autolearn=ham
+	autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 19A8BC433E0
-	for <iommu@archiver.kernel.org>; Wed, 27 May 2020 15:43:42 +0000 (UTC)
-Received: from fraxinus.osuosl.org (smtp4.osuosl.org [140.211.166.137])
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 60CF0C433E0
+	for <iommu@archiver.kernel.org>; Wed, 27 May 2020 16:05:04 +0000 (UTC)
+Received: from whitealder.osuosl.org (smtp1.osuosl.org [140.211.166.138])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by mail.kernel.org (Postfix) with ESMTPS id 8FF4020776
-	for <iommu@archiver.kernel.org>; Wed, 27 May 2020 15:43:41 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTPS id D3FE120873
+	for <iommu@archiver.kernel.org>; Wed, 27 May 2020 16:05:03 +0000 (UTC)
 Authentication-Results: mail.kernel.org;
-	dkim=fail reason="signature verification failed" (1024-bit key) header.d=broadcom.com header.i=@broadcom.com header.b="HXvK70+S"
-DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 8FF4020776
+	dkim=fail reason="signature verification failed" (1024-bit key) header.d=broadcom.com header.i=@broadcom.com header.b="B2e2R9PE"
+DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org D3FE120873
 Authentication-Results: mail.kernel.org; dmarc=none (p=none dis=none) header.from=lists.linux-foundation.org
 Authentication-Results: mail.kernel.org; spf=pass smtp.mailfrom=iommu-bounces@lists.linux-foundation.org
 Received: from localhost (localhost [127.0.0.1])
-	by fraxinus.osuosl.org (Postfix) with ESMTP id 4E9DE86B9E;
-	Wed, 27 May 2020 15:43:41 +0000 (UTC)
+	by whitealder.osuosl.org (Postfix) with ESMTP id 8322788052;
+	Wed, 27 May 2020 16:05:03 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from fraxinus.osuosl.org ([127.0.0.1])
+Received: from whitealder.osuosl.org ([127.0.0.1])
 	by localhost (.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
-	with ESMTP id gkF5DS6Oq8Hf; Wed, 27 May 2020 15:43:39 +0000 (UTC)
+	with ESMTP id zPGuGYGdkVpu; Wed, 27 May 2020 16:05:00 +0000 (UTC)
 Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [140.211.9.56])
-	by fraxinus.osuosl.org (Postfix) with ESMTP id 3536C86BB2;
-	Wed, 27 May 2020 15:43:39 +0000 (UTC)
+	by whitealder.osuosl.org (Postfix) with ESMTP id 0150787FEE;
+	Wed, 27 May 2020 16:03:38 +0000 (UTC)
 Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
-	by lists.linuxfoundation.org (Postfix) with ESMTP id 1E8A1C088D;
-	Wed, 27 May 2020 15:43:39 +0000 (UTC)
+	by lists.linuxfoundation.org (Postfix) with ESMTP id E61E9C0890;
+	Wed, 27 May 2020 16:03:38 +0000 (UTC)
 Received: from hemlock.osuosl.org (smtp2.osuosl.org [140.211.166.133])
- by lists.linuxfoundation.org (Postfix) with ESMTP id 6F4EDC016F
- for <iommu@lists.linux-foundation.org>; Wed, 27 May 2020 15:43:38 +0000 (UTC)
+ by lists.linuxfoundation.org (Postfix) with ESMTP id C70FDC0881
+ for <iommu@lists.linux-foundation.org>; Wed, 27 May 2020 16:03:36 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
- by hemlock.osuosl.org (Postfix) with ESMTP id 53D718887F
- for <iommu@lists.linux-foundation.org>; Wed, 27 May 2020 15:43:38 +0000 (UTC)
+ by hemlock.osuosl.org (Postfix) with ESMTP id B2F3888874
+ for <iommu@lists.linux-foundation.org>; Wed, 27 May 2020 16:03:36 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
 Received: from hemlock.osuosl.org ([127.0.0.1])
  by localhost (.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
- with ESMTP id oehaf3G4mj+z for <iommu@lists.linux-foundation.org>;
- Wed, 27 May 2020 15:43:37 +0000 (UTC)
+ with ESMTP id ztLEpOBRS3ST for <iommu@lists.linux-foundation.org>;
+ Wed, 27 May 2020 16:03:35 +0000 (UTC)
 X-Greylist: domain auto-whitelisted by SQLgrey-1.7.6
-Received: from mail-wm1-f66.google.com (mail-wm1-f66.google.com
- [209.85.128.66])
- by hemlock.osuosl.org (Postfix) with ESMTPS id D2BC788874
- for <iommu@lists.linux-foundation.org>; Wed, 27 May 2020 15:43:36 +0000 (UTC)
-Received: by mail-wm1-f66.google.com with SMTP id j198so2546083wmj.0
- for <iommu@lists.linux-foundation.org>; Wed, 27 May 2020 08:43:36 -0700 (PDT)
+Received: from mail-wr1-f65.google.com (mail-wr1-f65.google.com
+ [209.85.221.65])
+ by hemlock.osuosl.org (Postfix) with ESMTPS id 9836188644
+ for <iommu@lists.linux-foundation.org>; Wed, 27 May 2020 16:03:35 +0000 (UTC)
+Received: by mail-wr1-f65.google.com with SMTP id j10so8954112wrw.8
+ for <iommu@lists.linux-foundation.org>; Wed, 27 May 2020 09:03:35 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=broadcom.com; s=google;
- h=mime-version:references:in-reply-to:from:date:message-id:subject:to
- :cc; bh=eoyYbWgFhmQcujUgzDxRv/5lkOL0gZDM5FMYIUL/NoI=;
- b=HXvK70+SEe3dPGu0OfaujPU3pz++uI8Cm0J0bnvEZ29kWwrtfDkgEdGTjYCWcW7qux
- N8LlDSusbErmoWZE/rWi9Zy+t42wZYWP945UFqHZdv1VxGKEkvdi2MD3Oeilo4IRWmcK
- jOu5rI6eOCh0yZvJnZami0udw8i4PQZECThZg=
+ h=from:to:cc:subject:date:message-id;
+ bh=KFKU2FIEXjR2LVGipQU8OJxGYrMEcKfupZbFBx9PZZY=;
+ b=B2e2R9PE8ZAp1sDLI7S8lrsjRfkvo6x+EJYJrJz0c/qJQagKVvvmzFan3qz6GVfd6w
+ ZKbl/Y4xcQche/y9+bbZ5lOKaV7q9ddkacdSC40vxtQbuTw+sN+TPTU7MPDWmrXxy9ax
+ 3iBMFvXs8pOm6kAt7e6x61xsyeX0RxXmUKZn4=
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
  d=1e100.net; s=20161025;
- h=x-gm-message-state:mime-version:references:in-reply-to:from:date
- :message-id:subject:to:cc;
- bh=eoyYbWgFhmQcujUgzDxRv/5lkOL0gZDM5FMYIUL/NoI=;
- b=g55agFrBP8j4slyD0Ut/B1yZZbY+AauPSkz18DYPrtWbapoIPATVBh+kH9m5Mc9pvV
- WQxcfARVAfZl2Y8fgDyuYYIicAedNp7u8UMh76mDDVAMgGoaitUSZxDERo9C/meMaz4H
- X5N49dKmweLNcu3tR8ovqUZa7xvl46N6ueMLRLuWNyKDM0mpQK/fjRrSHBAQM2UVwUGB
- m0F/Ec8DeXIugqLiKcaqUW6WRGXuUQnAO87PAmKw3oHIF4HZN82IVPOxSj06vbaBwfQH
- EmE5IZwQYianmQIIv7TYr21HSbmMQZv58aGLr8wX1I2xyaZ3DkDIgPtGvaouz/891YZA
- DNsA==
-X-Gm-Message-State: AOAM533GKvNGRHYSpiy3n/UuYDmIf3OqZ6tnpXOuzGC7tQYiVLXLpHny
- BndG63+UaKPwweHQZa+E3tKlBZldz7izKj4UdMaY3A==
-X-Google-Smtp-Source: ABdhPJxa2xACzyAmcafrDLjxnD50NVBhvJUJVveGqxRtOEkbrZnvInx2L0crG0HOLg6emjEvl6+2AxtXBT7zx7wCpbU=
-X-Received: by 2002:a1c:7305:: with SMTP id d5mr5059443wmb.85.1590594215097;
- Wed, 27 May 2020 08:43:35 -0700 (PDT)
-MIME-Version: 1.0
-References: <20200526191303.1492-1-james.quinlan@broadcom.com>
- <20200526191303.1492-10-james.quinlan@broadcom.com>
- <59a0b4e1454a8ef4d3e4ebaf55dcbf3dcd2d73a2.camel@suse.de>
-In-Reply-To: <59a0b4e1454a8ef4d3e4ebaf55dcbf3dcd2d73a2.camel@suse.de>
-Date: Wed, 27 May 2020 11:43:23 -0400
-Message-ID: <CA+-6iNyOKvY-xNfXqDRa5_nJVJuqGKA-oe-ejNuJHUBt6ORu0A@mail.gmail.com>
-Subject: Re: [PATCH v2 09/14] device core: Add ability to handle multiple dma
- offsets
-To: Nicolas Saenz Julienne <nsaenzjulienne@suse.de>
-Cc: "open list:USB SUBSYSTEM" <linux-usb@vger.kernel.org>,
- "open list:PCI NATIVE HOST BRIDGE AND ENDPOINT DRIVERS"
- <linux-pci@vger.kernel.org>, Heikki Krogerus <heikki.krogerus@linux.intel.com>,
- Srinivas Kandagatla <srinivas.kandagatla@linaro.org>,
- Frank Rowand <frowand.list@gmail.com>, Christoph Hellwig <hch@lst.de>,
- Saravana Kannan <saravanak@google.com>,
- "Rafael J. Wysocki" <rafael.j.wysocki@intel.com>,
- "maintainer:BROADCOM BCM7XXX ARM ARCHITECTURE"
- <bcm-kernel-feedback-list@broadcom.com>,
- Alan Stern <stern@rowland.harvard.edu>,
- "open list:OPEN FIRMWARE AND FLATTENED DEVICE TREE"
- <devicetree@vger.kernel.org>, Corey Minyard <minyard@acm.org>,
- Suzuki K Poulose <suzuki.poulose@arm.com>, Rob Herring <robh+dt@kernel.org>,
- Dan Williams <dan.j.williams@intel.com>,
- Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
- Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
- Oliver Neukum <oneukum@suse.com>, open list <linux-kernel@vger.kernel.org>,
- Wolfram Sang <wsa@kernel.org>,
- "open list:DMA MAPPING HELPERS" <iommu@lists.linux-foundation.org>,
- Robin Murphy <robin.murphy@arm.com>
+ h=x-gm-message-state:from:to:cc:subject:date:message-id;
+ bh=KFKU2FIEXjR2LVGipQU8OJxGYrMEcKfupZbFBx9PZZY=;
+ b=Aq4SoprxKpTQZfADi39G4VDUYdYRCEBxe6vMwWcfRkvcBIEMFtdhBsnHYHf3bmSSqv
+ G6W4uc8DpVJ90HBNCDeTY2NIK+hSOdW3HqWOB5qDMqcTcu2AQtskSgp2uSr2BMnI0KFx
+ 3t/mLvpUB+1e+6YK/UJqoO5KYQdWIxpb8eR6ssi/9vdAeV5vsZYrqwgsTOhrdT7oukFo
+ XXga8LDE43vFi2HLsp+wXcmeDgEx2GGkShtwFu3/OVoorw2qk8d/97+9vliD2RUBIFki
+ dQFVdE/iVvfU7ff4uQl56wRJhJ1RIZjtsU0kBUYeUGuMDWVeS0XtfjbMl9ySMfxe8DyR
+ mXtQ==
+X-Gm-Message-State: AOAM531h4kFmpcgxcGEXORCR9U2MUPAi5rbbTYe/8j5EiRt244qVJEUI
+ GnOVgr+e65s6jcRr/IuzQmdAWg==
+X-Google-Smtp-Source: ABdhPJy6zYyWagZxKoXwDNe6/zG4VwLJq8RxTRFygqpQIc/E1CTTwd97wcehZx5+4rvjGpKll243Ug==
+X-Received: by 2002:adf:ee47:: with SMTP id w7mr19715593wro.171.1590595413899; 
+ Wed, 27 May 2020 09:03:33 -0700 (PDT)
+Received: from mannams-OptiPlex-7010.dhcp.broadcom.net ([192.19.234.250])
+ by smtp.gmail.com with ESMTPSA id t185sm3166536wmt.28.2020.05.27.09.03.29
+ (version=TLS1_2 cipher=ECDHE-ECDSA-AES128-GCM-SHA256 bits=128/128);
+ Wed, 27 May 2020 09:03:33 -0700 (PDT)
+To: Will Deacon <will@kernel.org>, Robin Murphy <robin.murphy@arm.com>,
+ Joerg Roedel <joro@8bytes.org>
+Subject: [RFC PATCH] iommu/arm-smmu: Add module parameter to set msi iova
+ address
+Date: Wed, 27 May 2020 21:33:18 +0530
+Message-Id: <1590595398-4217-1-git-send-email-srinath.mannam@broadcom.com>
+X-Mailer: git-send-email 2.7.4
+Cc: Srinath Mannam <srinath.mannam@broadcom.com>,
+ iommu@lists.linux-foundation.org, bcm-kernel-feedback-list@broadcom.com,
+ linux-kernel@vger.kernel.org, linux-arm-kernel@lists.infradead.org
 X-BeenThere: iommu@lists.linux-foundation.org
 X-Mailman-Version: 2.1.15
 Precedence: list
@@ -114,191 +97,56 @@ List-Post: <mailto:iommu@lists.linux-foundation.org>
 List-Help: <mailto:iommu-request@lists.linux-foundation.org?subject=help>
 List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
  <mailto:iommu-request@lists.linux-foundation.org?subject=subscribe>
-From: Jim Quinlan via iommu <iommu@lists.linux-foundation.org>
-Reply-To: Jim Quinlan <james.quinlan@broadcom.com>
+From: Srinath Mannam via iommu <iommu@lists.linux-foundation.org>
+Reply-To: Srinath Mannam <srinath.mannam@broadcom.com>
+MIME-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
 Errors-To: iommu-bounces@lists.linux-foundation.org
 Sender: "iommu" <iommu-bounces@lists.linux-foundation.org>
 
-Hi Nicolas,
+This patch gives the provision to change default value of MSI IOVA base
+to platform's suitable IOVA using module parameter. The present
+hardcoded MSI IOVA base may not be the accessible IOVA ranges of platform.
 
-On Wed, May 27, 2020 at 11:00 AM Nicolas Saenz Julienne
-<nsaenzjulienne@suse.de> wrote:
->
-> Hi Jim,
-> one thing comes to mind, there is a small test suite in drivers/of/unittest.c
-> (specifically of_unittest_pci_dma_ranges()) you could extend it to include your
-> use cases.
-Sure, will check out.
->
-> On Tue, 2020-05-26 at 15:12 -0400, Jim Quinlan wrote:
-> > The new field in struct device 'dma_pfn_offset_map' is used to facilitate
-> > the use of multiple pfn offsets between cpu addrs and dma addrs.  It is
-> > similar to 'dma_pfn_offset' except that the offset chosen depends on the
-> > cpu or dma address involved.
-> >
-> > Signed-off-by: Jim Quinlan <james.quinlan@broadcom.com>
-> > ---
-> >  drivers/of/address.c        | 65 +++++++++++++++++++++++++++++++++++--
-> >  drivers/usb/core/message.c  |  3 ++
-> >  drivers/usb/core/usb.c      |  3 ++
-> >  include/linux/device.h      | 10 +++++-
-> >  include/linux/dma-direct.h  | 10 ++++--
-> >  include/linux/dma-mapping.h | 46 ++++++++++++++++++++++++++
-> >  kernel/dma/Kconfig          | 13 ++++++++
-> >  7 files changed, 144 insertions(+), 6 deletions(-)
-> >
->
-> [...]
->
-> > @@ -977,10 +1020,19 @@ int of_dma_get_range(struct device *dev, struct
-> > device_node *np, u64 *dma_addr,
-> >               pr_debug("dma_addr(%llx) cpu_addr(%llx) size(%llx)\n",
-> >                        range.bus_addr, range.cpu_addr, range.size);
-> >
-> > +             num_ranges++;
-> >               if (dma_offset && range.cpu_addr - range.bus_addr != dma_offset)
-> > {
-> > -                     pr_warn("Can't handle multiple dma-ranges with different
-> > offsets on node(%pOF)\n", node);
-> > -                     /* Don't error out as we'd break some existing DTs */
-> > -                     continue;
-> > +                     if (!IS_ENABLED(CONFIG_DMA_PFN_OFFSET_MAP)) {
-> > +                             pr_warn("Can't handle multiple dma-ranges with
-> > different offsets on node(%pOF)\n", node);
-> > +                             pr_warn("Perhaps set DMA_PFN_OFFSET_MAP=y?\n");
-> > +                             /*
-> > +                              * Don't error out as we'd break some existing
-> > +                              * DTs that are using configs w/o
-> > +                              * CONFIG_DMA_PFN_OFFSET_MAP set.
-> > +                              */
-> > +                             continue;
->
-> dev->bus_dma_limit is set in of_dma_configure(), this function's caller, based
-> on dma_start's value (set after this continue). So you'd be effectively setting
-> the dev->bus_dma_limit to whatever we get from the first dma-range.
-I'm not seeing that at all.  On the  evaluation of each dma-range,
-dma_start and dma_end are re-evaluated to be the lowest and highest
-bus values of the  dma-ranges seen so far.  After all dma-ranges are
-examined,  dev->bus_dma_limit being set to the highest.  In fact, the
-current code -- ie before my commits -- already does this for multiple
-dma-ranges as long as the cpu-bus offset is the same in the
-dma-ranges.
->
-> This can be troublesome depending on how the dma-ranges are setup, for example
-> if the first dma-range doesn't include the CMA area, in arm64 generally set as
-> high as possible in ZONE_DMA32, that would render it useless for
-> dma/{direct/swiotlb}. Again depending on the bus_dma_limit value, if smaller
-> than ZONE_DMA you'd be unable to allocate any DMA memory.
->
-> IMO, a solution to this calls for a revamp of dma-direct's dma_capable(): match
-> the target DMA memory area with each dma-range we have to see if it fits.
->
-> > +                     }
-> > +                     dma_multi_pfn_offset = true;
-> >               }
-> >               dma_offset = range.cpu_addr - range.bus_addr;
-> >
-> > @@ -991,6 +1043,13 @@ int of_dma_get_range(struct device *dev, struct
-> > device_node *np, u64 *dma_addr,
-> >                       dma_end = range.bus_addr + range.size;
-> >       }
-> >
-> > +     if (dma_multi_pfn_offset) {
-> > +             dma_offset = 0;
-> > +             ret = attach_dma_pfn_offset_map(dev, node, num_ranges);
-> > +             if (ret)
-> > +                     return ret;
-> > +     }
-> > +
-> >       if (dma_start >= dma_end) {
-> >               ret = -EINVAL;
-> >               pr_debug("Invalid DMA ranges configuration on node(%pOF)\n",
-> > diff --git a/drivers/usb/core/message.c b/drivers/usb/core/message.c
-> > index 6197938dcc2d..aaa3e58f5eb4 100644
-> > --- a/drivers/usb/core/message.c
-> > +++ b/drivers/usb/core/message.c
-> > @@ -1960,6 +1960,9 @@ int usb_set_configuration(struct usb_device *dev, int
-> > configuration)
-> >                */
-> >               intf->dev.dma_mask = dev->dev.dma_mask;
-> >               intf->dev.dma_pfn_offset = dev->dev.dma_pfn_offset;
-> > +#ifdef CONFIG_DMA_PFN_OFFSET_MAP
-> > +             intf->dev.dma_pfn_offset_map = dev->dev.dma_pfn_offset_map;
-> > +#endif
->
-> Thanks for looking at this, that said, I see more instances of drivers changing
-> dma_pfn_offset outside of the core code. Why not doing this there too?
->
-> Also, are we 100% sure that dev->dev.dma_pfn_offset isn't going to be freed
-> before we're done using intf->dev? Maybe it's safer to copy the ranges?
->
-> >               INIT_WORK(&intf->reset_ws, __usb_queue_reset_device);
-> >               intf->minor = -1;
-> >               device_initialize(&intf->dev);
-> > diff --git a/drivers/usb/core/usb.c b/drivers/usb/core/usb.c
-> > index f16c26dc079d..d2ed4d90e56e 100644
-> > --- a/drivers/usb/core/usb.c
-> > +++ b/drivers/usb/core/usb.c
-> > @@ -612,6 +612,9 @@ struct usb_device *usb_alloc_dev(struct usb_device
-> > *parent,
-> >        */
-> >       dev->dev.dma_mask = bus->sysdev->dma_mask;
-> >       dev->dev.dma_pfn_offset = bus->sysdev->dma_pfn_offset;
-> > +#ifdef CONFIG_DMA_PFN_OFFSET_MAP
-> > +     dev->dev.dma_pfn_offset_map = bus->sysdev->dma_pfn_offset_map;
-> > +#endif
-> >       set_dev_node(&dev->dev, dev_to_node(bus->sysdev));
-> >       dev->state = USB_STATE_ATTACHED;
-> >       dev->lpm_disable_count = 1;
-> > diff --git a/include/linux/device.h b/include/linux/device.h
-> > index ac8e37cd716a..67a240ad4fc5 100644
-> > --- a/include/linux/device.h
-> > +++ b/include/linux/device.h
-> > @@ -493,6 +493,8 @@ struct dev_links_info {
-> >   * @bus_dma_limit: Limit of an upstream bridge or bus which imposes a smaller
-> >   *           DMA limit than the device itself supports.
-> >   * @dma_pfn_offset: offset of DMA memory range relatively of RAM
-> > + * @dma_pfn_offset_map:      Like dma_pfn_offset but used when there are
-> > multiple
-> > + *           pfn offsets for multiple dma-ranges.
-> >   * @dma_parms:       A low level driver may set these to teach IOMMU code
-> > about
-> >   *           segment limitations.
-> >   * @dma_pools:       Dma pools (if dma'ble device).
-> > @@ -578,7 +580,13 @@ struct device {
-> >                                            allocations such descriptors. */
-> >       u64             bus_dma_limit;  /* upstream dma constraint */
-> >       unsigned long   dma_pfn_offset;
-> > -
-> > +#ifdef CONFIG_DMA_PFN_OFFSET_MAP
-> > +     const struct dma_pfn_offset_region *dma_pfn_offset_map;
-> > +                                     /* Like dma_pfn_offset, but for
-> > +                                      * the unlikely case of multiple
-> > +                                      * offsets. If non-null, dma_pfn_offset
-> > +                                      * will be set to 0. */
-> > +#endif
->
-> I'm still sad this doesn't fully replace dma_pfn_offset & bus_dma_limit. I feel
-> the extra logic involved in incorporating this as default isn't going to be
-> noticeable as far as performance is concerned to single dma-range users, and
-> it'd make for a nicer DMA code. Also you'd force everyone to test their changes
-> on the multi dma-ranges code path, as opposed to having this disabled 99.9% of
-> the time (hence broken every so often).
-Good point.
->
-> Note that I sympathize with the amount of work involved on improving that, so
-> better wait to hear what more knowledgeable people have to say about this :)
-Yes, I agree.  I want to avoid coding and testing one solution only to
-have a different reviewer NAK it.
+Since commit aadad097cd46 ("iommu/dma: Reserve IOVA for PCIe inaccessible
+DMA address"), inaccessible IOVA address ranges parsed from dma-ranges
+property are reserved.
 
-Many thanks,
-Jim
->
-> Regards,
-> Nicolas
->
+If any platform has the limitaion to access default MSI IOVA, then it can
+be changed using "arm-smmu.msi_iova_base=0xa0000000" command line argument.
+
+Signed-off-by: Srinath Mannam <srinath.mannam@broadcom.com>
+---
+ drivers/iommu/arm-smmu.c | 5 ++++-
+ 1 file changed, 4 insertions(+), 1 deletion(-)
+
+diff --git a/drivers/iommu/arm-smmu.c b/drivers/iommu/arm-smmu.c
+index 4f1a350..5e59c9d 100644
+--- a/drivers/iommu/arm-smmu.c
++++ b/drivers/iommu/arm-smmu.c
+@@ -72,6 +72,9 @@ static bool disable_bypass =
+ module_param(disable_bypass, bool, S_IRUGO);
+ MODULE_PARM_DESC(disable_bypass,
+ 	"Disable bypass streams such that incoming transactions from devices that are not attached to an iommu domain will report an abort back to the device and will not be allowed to pass through the SMMU.");
++static unsigned long msi_iova_base = MSI_IOVA_BASE;
++module_param(msi_iova_base, ulong, S_IRUGO);
++MODULE_PARM_DESC(msi_iova_base, "msi iova base address.");
+ 
+ struct arm_smmu_s2cr {
+ 	struct iommu_group		*group;
+@@ -1566,7 +1569,7 @@ static void arm_smmu_get_resv_regions(struct device *dev,
+ 	struct iommu_resv_region *region;
+ 	int prot = IOMMU_WRITE | IOMMU_NOEXEC | IOMMU_MMIO;
+ 
+-	region = iommu_alloc_resv_region(MSI_IOVA_BASE, MSI_IOVA_LENGTH,
++	region = iommu_alloc_resv_region(msi_iova_base, MSI_IOVA_LENGTH,
+ 					 prot, IOMMU_RESV_SW_MSI);
+ 	if (!region)
+ 		return;
+-- 
+2.7.4
+
 _______________________________________________
 iommu mailing list
 iommu@lists.linux-foundation.org
