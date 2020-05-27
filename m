@@ -2,85 +2,72 @@ Return-Path: <SRS0=MQAj=7J=lists.linux-foundation.org=iommu-bounces@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-3.7 required=3.0 tests=HEADER_FROM_DIFFERENT_DOMAINS,
-	MAILING_LIST_MULTI,SIGNED_OFF_BY,SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED
-	autolearn=no autolearn_force=no version=3.4.0
+X-Spam-Status: No, score=-8.2 required=3.0 tests=HEADER_FROM_DIFFERENT_DOMAINS,
+	INCLUDES_PATCH,MAILING_LIST_MULTI,SIGNED_OFF_BY,SPF_HELO_NONE,SPF_PASS,
+	URIBL_BLOCKED,USER_AGENT_SANE_1 autolearn=unavailable autolearn_force=no
+	version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id B9301C433E1
-	for <iommu@archiver.kernel.org>; Wed, 27 May 2020 17:01:54 +0000 (UTC)
-Received: from whitealder.osuosl.org (smtp1.osuosl.org [140.211.166.138])
+	by smtp.lore.kernel.org (Postfix) with ESMTP id A2B0BC433DF
+	for <iommu@archiver.kernel.org>; Wed, 27 May 2020 17:30:27 +0000 (UTC)
+Received: from silver.osuosl.org (smtp3.osuosl.org [140.211.166.136])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by mail.kernel.org (Postfix) with ESMTPS id 658B32071A
-	for <iommu@archiver.kernel.org>; Wed, 27 May 2020 17:01:54 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 658B32071A
-Authentication-Results: mail.kernel.org; dmarc=none (p=none dis=none) header.from=suse.de
+	by mail.kernel.org (Postfix) with ESMTPS id 420E32075A
+	for <iommu@archiver.kernel.org>; Wed, 27 May 2020 17:30:27 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 420E32075A
+Authentication-Results: mail.kernel.org; dmarc=none (p=none dis=none) header.from=arm.com
 Authentication-Results: mail.kernel.org; spf=pass smtp.mailfrom=iommu-bounces@lists.linux-foundation.org
 Received: from localhost (localhost [127.0.0.1])
-	by whitealder.osuosl.org (Postfix) with ESMTP id 2DFFA88011;
-	Wed, 27 May 2020 17:01:54 +0000 (UTC)
+	by silver.osuosl.org (Postfix) with ESMTP id E7F66251E1;
+	Wed, 27 May 2020 17:30:26 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from whitealder.osuosl.org ([127.0.0.1])
+Received: from silver.osuosl.org ([127.0.0.1])
 	by localhost (.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
-	with ESMTP id fabFNlMBFp9X; Wed, 27 May 2020 17:01:52 +0000 (UTC)
+	with ESMTP id lPHBIUtvbMDu; Wed, 27 May 2020 17:30:25 +0000 (UTC)
 Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [140.211.9.56])
-	by whitealder.osuosl.org (Postfix) with ESMTP id 9AA518800A;
-	Wed, 27 May 2020 17:01:52 +0000 (UTC)
+	by silver.osuosl.org (Postfix) with ESMTP id D9EC424CEB;
+	Wed, 27 May 2020 17:30:24 +0000 (UTC)
 Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
-	by lists.linuxfoundation.org (Postfix) with ESMTP id 6F88AC0881;
-	Wed, 27 May 2020 17:01:52 +0000 (UTC)
-Received: from hemlock.osuosl.org (smtp2.osuosl.org [140.211.166.133])
- by lists.linuxfoundation.org (Postfix) with ESMTP id C8AE1C016F
- for <iommu@lists.linux-foundation.org>; Wed, 27 May 2020 17:01:50 +0000 (UTC)
+	by lists.linuxfoundation.org (Postfix) with ESMTP id BA02AC088D;
+	Wed, 27 May 2020 17:30:24 +0000 (UTC)
+Received: from silver.osuosl.org (smtp3.osuosl.org [140.211.166.136])
+ by lists.linuxfoundation.org (Postfix) with ESMTP id 71673C016F
+ for <iommu@lists.linux-foundation.org>; Wed, 27 May 2020 17:30:22 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
- by hemlock.osuosl.org (Postfix) with ESMTP id AD1B787E9C
- for <iommu@lists.linux-foundation.org>; Wed, 27 May 2020 17:01:50 +0000 (UTC)
+ by silver.osuosl.org (Postfix) with ESMTP id 58CE524D71
+ for <iommu@lists.linux-foundation.org>; Wed, 27 May 2020 17:30:22 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from hemlock.osuosl.org ([127.0.0.1])
+Received: from silver.osuosl.org ([127.0.0.1])
  by localhost (.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
- with ESMTP id DsJd9NJ3CXKr for <iommu@lists.linux-foundation.org>;
- Wed, 27 May 2020 17:01:49 +0000 (UTC)
+ with ESMTP id 8-vb1raSYXaG for <iommu@lists.linux-foundation.org>;
+ Wed, 27 May 2020 17:30:20 +0000 (UTC)
 X-Greylist: domain auto-whitelisted by SQLgrey-1.7.6
-Received: from mx2.suse.de (mx2.suse.de [195.135.220.15])
- by hemlock.osuosl.org (Postfix) with ESMTPS id 9510987E68
- for <iommu@lists.linux-foundation.org>; Wed, 27 May 2020 17:01:49 +0000 (UTC)
-X-Virus-Scanned: by amavisd-new at test-mx.suse.de
-Received: from relay2.suse.de (unknown [195.135.220.254])
- by mx2.suse.de (Postfix) with ESMTP id 6A074AC61;
- Wed, 27 May 2020 17:01:49 +0000 (UTC)
-Message-ID: <c48ede24790b2e402ca47640ae9f1ea2a5b27530.camel@suse.de>
-Subject: Re: [PATCH v2 09/14] device core: Add ability to handle multiple
- dma offsets
-From: Nicolas Saenz Julienne <nsaenzjulienne@suse.de>
-To: Jim Quinlan <james.quinlan@broadcom.com>
-Date: Wed, 27 May 2020 19:01:43 +0200
-In-Reply-To: <CA+-6iNyOKvY-xNfXqDRa5_nJVJuqGKA-oe-ejNuJHUBt6ORu0A@mail.gmail.com>
-References: <20200526191303.1492-1-james.quinlan@broadcom.com>
- <20200526191303.1492-10-james.quinlan@broadcom.com>
- <59a0b4e1454a8ef4d3e4ebaf55dcbf3dcd2d73a2.camel@suse.de>
- <CA+-6iNyOKvY-xNfXqDRa5_nJVJuqGKA-oe-ejNuJHUBt6ORu0A@mail.gmail.com>
-User-Agent: Evolution 3.36.2 
+Received: from foss.arm.com (foss.arm.com [217.140.110.172])
+ by silver.osuosl.org (Postfix) with ESMTP id A083B24CEB
+ for <iommu@lists.linux-foundation.org>; Wed, 27 May 2020 17:30:20 +0000 (UTC)
+Received: from usa-sjc-imap-foss1.foss.arm.com (unknown [10.121.207.14])
+ by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id F0DCB31B;
+ Wed, 27 May 2020 10:30:19 -0700 (PDT)
+Received: from [10.57.2.168] (unknown [10.57.2.168])
+ by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPSA id 0D2B73F305;
+ Wed, 27 May 2020 10:30:17 -0700 (PDT)
+Subject: Re: [RFC PATCH] iommu/arm-smmu: Add module parameter to set msi iova
+ address
+To: Srinath Mannam <srinath.mannam@broadcom.com>,
+ Will Deacon <will@kernel.org>, Joerg Roedel <joro@8bytes.org>
+References: <1590595398-4217-1-git-send-email-srinath.mannam@broadcom.com>
+From: Robin Murphy <robin.murphy@arm.com>
+Message-ID: <f9b221cf-1c7f-9f95-133b-dca65197b6c2@arm.com>
+Date: Wed, 27 May 2020 18:30:15 +0100
+User-Agent: Mozilla/5.0 (Windows NT 10.0; rv:68.0) Gecko/20100101
+ Thunderbird/68.8.0
 MIME-Version: 1.0
-Cc: "open list:USB SUBSYSTEM" <linux-usb@vger.kernel.org>,
- "open list:PCI NATIVE HOST BRIDGE AND ENDPOINT DRIVERS"
- <linux-pci@vger.kernel.org>, Heikki Krogerus <heikki.krogerus@linux.intel.com>,
- Srinivas Kandagatla <srinivas.kandagatla@linaro.org>,
- Frank Rowand <frowand.list@gmail.com>, Christoph Hellwig <hch@lst.de>,
- Saravana Kannan <saravanak@google.com>, "Rafael J.
- Wysocki" <rafael.j.wysocki@intel.com>,
- "maintainer:BROADCOM BCM7XXX ARM ARCHITECTURE"
- <bcm-kernel-feedback-list@broadcom.com>,
- Alan Stern <stern@rowland.harvard.edu>,
- "open list:OPEN FIRMWARE AND FLATTENED DEVICE
- TREE" <devicetree@vger.kernel.org>, Corey Minyard <minyard@acm.org>,
- Suzuki K Poulose <suzuki.poulose@arm.com>, Rob Herring <robh+dt@kernel.org>,
- Dan Williams <dan.j.williams@intel.com>,
- Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
- Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
- Oliver Neukum <oneukum@suse.com>, open list <linux-kernel@vger.kernel.org>,
- Wolfram Sang <wsa@kernel.org>,
- "open list:DMA MAPPING HELPERS" <iommu@lists.linux-foundation.org>,
- Robin Murphy <robin.murphy@arm.com>
+In-Reply-To: <1590595398-4217-1-git-send-email-srinath.mannam@broadcom.com>
+Content-Language: en-GB
+Cc: Jean-Philippe Brucker <jean-philippe@linaro.org>,
+ iommu@lists.linux-foundation.org, linux-kernel@vger.kernel.org,
+ Alex Williamson <alex.williamson@redhat.com>,
+ bcm-kernel-feedback-list@broadcom.com, linux-arm-kernel@lists.infradead.org
 X-BeenThere: iommu@lists.linux-foundation.org
 X-Mailman-Version: 2.1.15
 Precedence: list
@@ -93,147 +80,73 @@ List-Post: <mailto:iommu@lists.linux-foundation.org>
 List-Help: <mailto:iommu-request@lists.linux-foundation.org?subject=help>
 List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
  <mailto:iommu-request@lists.linux-foundation.org?subject=subscribe>
-Content-Type: multipart/mixed; boundary="===============1975762228464738699=="
+Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset="us-ascii"; Format="flowed"
 Errors-To: iommu-bounces@lists.linux-foundation.org
 Sender: "iommu" <iommu-bounces@lists.linux-foundation.org>
 
+On 2020-05-27 17:03, Srinath Mannam wrote:
+> This patch gives the provision to change default value of MSI IOVA base
+> to platform's suitable IOVA using module parameter. The present
+> hardcoded MSI IOVA base may not be the accessible IOVA ranges of platform.
 
---===============1975762228464738699==
-Content-Type: multipart/signed; micalg="pgp-sha256";
-	protocol="application/pgp-signature"; boundary="=-zRgqKyYp8CMyrh28/srG"
+That in itself doesn't seem entirely unreasonable; IIRC the current 
+address is just an arbitrary choice to fit nicely into Qemu's memory 
+map, and there was always the possibility that it wouldn't suit everything.
 
+> Since commit aadad097cd46 ("iommu/dma: Reserve IOVA for PCIe inaccessible
+> DMA address"), inaccessible IOVA address ranges parsed from dma-ranges
+> property are reserved.
 
---=-zRgqKyYp8CMyrh28/srG
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
+That, however, doesn't seem to fit here; iommu-dma maps MSI doorbells 
+dynamically, so they aren't affected by reserved regions any more than 
+regular DMA pages are. In fact, it explicitly ignores the software MSI 
+region, since as the comment says, it *is* the software that manages those.
 
-Hi Jim,
+The MSI_IOVA_BASE region exists for VFIO, precisely because in that case 
+the kernel *doesn't* control the address space, but still needs some way 
+to steal a bit of it for MSIs that the guest doesn't necessarily know 
+about, and give userspace a fighting chance of knowing what it's taken. 
+I think at the time we discussed the idea of adding something to the 
+VFIO uapi such that userspace could move this around if it wanted or 
+needed to, but decided we could live without that initially. Perhaps now 
+the time has come?
 
-On Wed, 2020-05-27 at 11:43 -0400, Jim Quinlan wrote:
-> Hi Nicolas,
->=20
-> On Wed, May 27, 2020 at 11:00 AM Nicolas Saenz Julienne
-> <nsaenzjulienne@suse.de> wrote:
-> > Hi Jim,
-> > one thing comes to mind, there is a small test suite in
-> > drivers/of/unittest.c
-> > (specifically of_unittest_pci_dma_ranges()) you could extend it to incl=
-ude
-> > your
-> > use cases.
-> Sure, will check out.
-> > On Tue, 2020-05-26 at 15:12 -0400, Jim Quinlan wrote:
-> > > The new field in struct device 'dma_pfn_offset_map' is used to facili=
-tate
-> > > the use of multiple pfn offsets between cpu addrs and dma addrs.  It =
-is
-> > > similar to 'dma_pfn_offset' except that the offset chosen depends on =
-the
-> > > cpu or dma address involved.
-> > >=20
-> > > Signed-off-by: Jim Quinlan <james.quinlan@broadcom.com>
-> > > ---
-> > >  drivers/of/address.c        | 65 +++++++++++++++++++++++++++++++++++=
---
-> > >  drivers/usb/core/message.c  |  3 ++
-> > >  drivers/usb/core/usb.c      |  3 ++
-> > >  include/linux/device.h      | 10 +++++-
-> > >  include/linux/dma-direct.h  | 10 ++++--
-> > >  include/linux/dma-mapping.h | 46 ++++++++++++++++++++++++++
-> > >  kernel/dma/Kconfig          | 13 ++++++++
-> > >  7 files changed, 144 insertions(+), 6 deletions(-)
-> > >=20
-> >=20
-> > [...]
-> >=20
-> > > @@ -977,10 +1020,19 @@ int of_dma_get_range(struct device *dev, struc=
-t
-> > > device_node *np, u64 *dma_addr,
-> > >               pr_debug("dma_addr(%llx) cpu_addr(%llx) size(%llx)\n",
-> > >                        range.bus_addr, range.cpu_addr, range.size);
-> > >=20
-> > > +             num_ranges++;
-> > >               if (dma_offset && range.cpu_addr - range.bus_addr !=3D
-> > > dma_offset)
-> > > {
-> > > -                     pr_warn("Can't handle multiple dma-ranges with
-> > > different
-> > > offsets on node(%pOF)\n", node);
-> > > -                     /* Don't error out as we'd break some existing =
-DTs
-> > > */
-> > > -                     continue;
-> > > +                     if (!IS_ENABLED(CONFIG_DMA_PFN_OFFSET_MAP)) {
-> > > +                             pr_warn("Can't handle multiple dma-rang=
-es
-> > > with
-> > > different offsets on node(%pOF)\n", node);
-> > > +                             pr_warn("Perhaps set
-> > > DMA_PFN_OFFSET_MAP=3Dy?\n");
-> > > +                             /*
-> > > +                              * Don't error out as we'd break some
-> > > existing
-> > > +                              * DTs that are using configs w/o
-> > > +                              * CONFIG_DMA_PFN_OFFSET_MAP set.
-> > > +                              */
-> > > +                             continue;
-> >=20
-> > dev->bus_dma_limit is set in of_dma_configure(), this function's caller=
-,
-> > based
-> > on dma_start's value (set after this continue). So you'd be effectively
-> > setting
-> > the dev->bus_dma_limit to whatever we get from the first dma-range.
-> I'm not seeing that at all.  On the  evaluation of each dma-range,
-> dma_start and dma_end are re-evaluated to be the lowest and highest
-> bus values of the  dma-ranges seen so far.  After all dma-ranges are
-> examined,  dev->bus_dma_limit being set to the highest.  In fact, the
-> current code -- ie before my commits -- already does this for multiple
-> dma-ranges as long as the cpu-bus offset is the same in the
-> dma-ranges.
+Robin.
 
-Sorry I got carried away, you're right.
-
-So I understand there is an underlaying assumption that the non DMAble memo=
-ry
-space will always sit on top of the bus memory space, as intertwined as it
-might be, so as to every phys_to_dma() call on non DMAble memory to fall ab=
-ove
-bus_dma_limit.
-
-Regards,
-Nicolas
-
-
---=-zRgqKyYp8CMyrh28/srG
-Content-Type: application/pgp-signature; name="signature.asc"
-Content-Description: This is a digitally signed message part
-Content-Transfer-Encoding: 7bit
-
------BEGIN PGP SIGNATURE-----
-
-iQEzBAABCAAdFiEErOkkGDHCg2EbPcGjlfZmHno8x/4FAl7OnPcACgkQlfZmHno8
-x/5FYQf9Hyg6r4xe2AQsd6Jy/LEHz47hHSEfbk6Zmqu1XLp6EQsPOCHEFLoCjExf
-aDe7lcONaDgfY45AEZOwP+W3gdL76lKuD+PIv1UP2M61toc9CkJ2MdOyzpcx+081
-g9rs8iR4JyZuGdPrIoF7gmRFQFuV54dNROs0cKTRe1BmErORF5We0IEaqhhOJ4iF
-DNKjYglQ/w2zskqEMsiN89kDjUpmWWvolH9SDIzoBYmfIfBQzQbsyiNpA0Chq9ul
-hWJwJq6uwXczXpwqWSDIoZX/DruOl5fAVLU/GZxdw7Yn3MJ5dtkDza3yRdg303JZ
-ejwGur84LCjY8lJnXEIz+VfX0wboSA==
-=CgTI
------END PGP SIGNATURE-----
-
---=-zRgqKyYp8CMyrh28/srG--
-
-
---===============1975762228464738699==
-Content-Type: text/plain; charset="us-ascii"
-MIME-Version: 1.0
-Content-Transfer-Encoding: 7bit
-Content-Disposition: inline
-
+> If any platform has the limitaion to access default MSI IOVA, then it can
+> be changed using "arm-smmu.msi_iova_base=0xa0000000" command line argument.
+> 
+> Signed-off-by: Srinath Mannam <srinath.mannam@broadcom.com>
+> ---
+>   drivers/iommu/arm-smmu.c | 5 ++++-
+>   1 file changed, 4 insertions(+), 1 deletion(-)
+> 
+> diff --git a/drivers/iommu/arm-smmu.c b/drivers/iommu/arm-smmu.c
+> index 4f1a350..5e59c9d 100644
+> --- a/drivers/iommu/arm-smmu.c
+> +++ b/drivers/iommu/arm-smmu.c
+> @@ -72,6 +72,9 @@ static bool disable_bypass =
+>   module_param(disable_bypass, bool, S_IRUGO);
+>   MODULE_PARM_DESC(disable_bypass,
+>   	"Disable bypass streams such that incoming transactions from devices that are not attached to an iommu domain will report an abort back to the device and will not be allowed to pass through the SMMU.");
+> +static unsigned long msi_iova_base = MSI_IOVA_BASE;
+> +module_param(msi_iova_base, ulong, S_IRUGO);
+> +MODULE_PARM_DESC(msi_iova_base, "msi iova base address.");
+>   
+>   struct arm_smmu_s2cr {
+>   	struct iommu_group		*group;
+> @@ -1566,7 +1569,7 @@ static void arm_smmu_get_resv_regions(struct device *dev,
+>   	struct iommu_resv_region *region;
+>   	int prot = IOMMU_WRITE | IOMMU_NOEXEC | IOMMU_MMIO;
+>   
+> -	region = iommu_alloc_resv_region(MSI_IOVA_BASE, MSI_IOVA_LENGTH,
+> +	region = iommu_alloc_resv_region(msi_iova_base, MSI_IOVA_LENGTH,
+>   					 prot, IOMMU_RESV_SW_MSI);
+>   	if (!region)
+>   		return;
+> 
 _______________________________________________
 iommu mailing list
 iommu@lists.linux-foundation.org
 https://lists.linuxfoundation.org/mailman/listinfo/iommu
---===============1975762228464738699==--
-
