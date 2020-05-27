@@ -2,94 +2,80 @@ Return-Path: <SRS0=MQAj=7J=lists.linux-foundation.org=iommu-bounces@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-0.6 required=3.0 tests=DKIM_INVALID,DKIM_SIGNED,
-	HEADER_FROM_DIFFERENT_DOMAINS,MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS
+X-Spam-Status: No, score=-2.3 required=3.0 tests=DKIM_INVALID,DKIM_SIGNED,
+	MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED,USER_AGENT_SANE_1
 	autolearn=no autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 45402C433DF
-	for <iommu@archiver.kernel.org>; Wed, 27 May 2020 10:10:57 +0000 (UTC)
-Received: from hemlock.osuosl.org (smtp2.osuosl.org [140.211.166.133])
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 54A42C433DF
+	for <iommu@archiver.kernel.org>; Wed, 27 May 2020 11:03:57 +0000 (UTC)
+Received: from whitealder.osuosl.org (smtp1.osuosl.org [140.211.166.138])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by mail.kernel.org (Postfix) with ESMTPS id F2D5E207D3
-	for <iommu@archiver.kernel.org>; Wed, 27 May 2020 10:10:56 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTPS id 17C33208B8
+	for <iommu@archiver.kernel.org>; Wed, 27 May 2020 11:03:57 +0000 (UTC)
 Authentication-Results: mail.kernel.org;
-	dkim=fail reason="signature verification failed" (2048-bit key) header.d=linaro.org header.i=@linaro.org header.b="koBIRYoq"
-DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org F2D5E207D3
-Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=linaro.org
+	dkim=fail reason="signature verification failed" (1024-bit key) header.d=kernel.org header.i=@kernel.org header.b="NbfNZeW+"
+DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 17C33208B8
+Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=kernel.org
 Authentication-Results: mail.kernel.org; spf=pass smtp.mailfrom=iommu-bounces@lists.linux-foundation.org
 Received: from localhost (localhost [127.0.0.1])
-	by hemlock.osuosl.org (Postfix) with ESMTP id C843888525;
-	Wed, 27 May 2020 10:10:56 +0000 (UTC)
+	by whitealder.osuosl.org (Postfix) with ESMTP id 560E987DF2;
+	Wed, 27 May 2020 11:03:56 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from hemlock.osuosl.org ([127.0.0.1])
+Received: from whitealder.osuosl.org ([127.0.0.1])
 	by localhost (.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
-	with ESMTP id 6sEzyBeEIGXb; Wed, 27 May 2020 10:10:54 +0000 (UTC)
+	with ESMTP id lI0pXG+2pkCo; Wed, 27 May 2020 11:03:55 +0000 (UTC)
 Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [140.211.9.56])
-	by hemlock.osuosl.org (Postfix) with ESMTP id 0D44E884F0;
-	Wed, 27 May 2020 10:10:54 +0000 (UTC)
+	by whitealder.osuosl.org (Postfix) with ESMTP id 3E98987DEB;
+	Wed, 27 May 2020 11:03:55 +0000 (UTC)
 Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
-	by lists.linuxfoundation.org (Postfix) with ESMTP id DD0ADC0881;
-	Wed, 27 May 2020 10:10:53 +0000 (UTC)
+	by lists.linuxfoundation.org (Postfix) with ESMTP id 10670C0881;
+	Wed, 27 May 2020 11:03:55 +0000 (UTC)
 Received: from silver.osuosl.org (smtp3.osuosl.org [140.211.166.136])
- by lists.linuxfoundation.org (Postfix) with ESMTP id 0D929C016F
- for <iommu@lists.linux-foundation.org>; Wed, 27 May 2020 10:10:53 +0000 (UTC)
+ by lists.linuxfoundation.org (Postfix) with ESMTP id 29682C016F
+ for <iommu@lists.linux-foundation.org>; Wed, 27 May 2020 11:03:53 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
- by silver.osuosl.org (Postfix) with ESMTP id DAF1A204A7
- for <iommu@lists.linux-foundation.org>; Wed, 27 May 2020 10:10:52 +0000 (UTC)
+ by silver.osuosl.org (Postfix) with ESMTP id 0163A204A2
+ for <iommu@lists.linux-foundation.org>; Wed, 27 May 2020 11:03:53 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
 Received: from silver.osuosl.org ([127.0.0.1])
  by localhost (.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
- with ESMTP id BGccA8b4q1K7 for <iommu@lists.linux-foundation.org>;
- Wed, 27 May 2020 10:10:51 +0000 (UTC)
+ with ESMTP id lxEv-HygJ495 for <iommu@lists.linux-foundation.org>;
+ Wed, 27 May 2020 11:03:49 +0000 (UTC)
 X-Greylist: domain auto-whitelisted by SQLgrey-1.7.6
-Received: from mail-wm1-f67.google.com (mail-wm1-f67.google.com
- [209.85.128.67])
- by silver.osuosl.org (Postfix) with ESMTPS id 8D4A820466
- for <iommu@lists.linux-foundation.org>; Wed, 27 May 2020 10:10:51 +0000 (UTC)
-Received: by mail-wm1-f67.google.com with SMTP id u188so2460756wmu.1
- for <iommu@lists.linux-foundation.org>; Wed, 27 May 2020 03:10:51 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linaro.org; s=google;
- h=date:from:to:cc:subject:message-id:references:mime-version
- :content-disposition:in-reply-to;
- bh=Qd8hzfMUkbpvDYlLRKp/0UsF9Qc7Mjic4CNEGESMZAo=;
- b=koBIRYoqG8UiAGIstbeLL+sUozySWCuEHjV2crt4qDcFK32C5//bStc8EHN8DHv1SQ
- xQwKdIr2u8sYxIhZ5/zR9kGAaTqWsfLdbI4QmS7roKlsjCb5gL2sHXLzdC3QSKaeawvZ
- xyXg1O5Lm5n1/rHderxLhmIoVmiEVyguGf34KLr8SvGsN0cXr5zEabOALsubgQ+DjwWK
- wRit+r9DN8htPn/XrgbPfnlrZv0kc3P0fxQ/8AwQgJhhwZFzHyopT/8ZaTnXTvDmV4li
- scUHIJiTURISbezierI7XvgG+RL5+/0R1cUdUHm5SnzD/pjQZhn/lg3inAaeTl28y+9Y
- xpYw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
- d=1e100.net; s=20161025;
- h=x-gm-message-state:date:from:to:cc:subject:message-id:references
- :mime-version:content-disposition:in-reply-to;
- bh=Qd8hzfMUkbpvDYlLRKp/0UsF9Qc7Mjic4CNEGESMZAo=;
- b=oxo0M7GpuhNDRsOOHOSqZF9djPq8mFLHaSjwWsfJOxxEwozoU6QcO2xOia0gA2tGUa
- lKQh8BkXeEptzltGlVjXbhXngb4Tn6ZBpHMCNGZlw21HpvgNECR2sOyRyYg2emqu6gZY
- RbNKR6K3YZUsqKyBnwvqlOX8CpkmaqihoG5rwwtMHHW4Dm7GIivJ5m7oCFTynK/YhGYV
- bP8qD+l3lRIUgCjKFCS8s7+oCccjBVDajej2JhQNPrbk1sXEKm33HJe65RC+phmZnLqq
- ZW+qdJH5KZjpKkEXhrYzUUdoAwiqKFi5OK0r2x7l22LcmmugAHHOpssJLMhfDpIHQwlF
- 4OFg==
-X-Gm-Message-State: AOAM532ByrgmxXqLAu+E/BdtauZSaNlN8ghRkybQj69WNEWuP5UPnL6q
- +dRsRE2Q+R9n7TvGSwnGY/3ta6g3NMc=
-X-Google-Smtp-Source: ABdhPJwKD6l8ueThFeLOnGF6f9gwoYB0sKBu5kQd0bSHy0nZvN4gaPANHlZbXiVo4dm3weBoMRpb/g==
-X-Received: by 2002:a1c:9613:: with SMTP id y19mr3418198wmd.135.1590574249685; 
- Wed, 27 May 2020 03:10:49 -0700 (PDT)
-Received: from myrica ([2001:171b:226e:c200:c43b:ef78:d083:b355])
- by smtp.gmail.com with ESMTPSA id h196sm2351200wme.22.2020.05.27.03.10.48
- (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
- Wed, 27 May 2020 03:10:48 -0700 (PDT)
-Date: Wed, 27 May 2020 12:10:38 +0200
-From: Jean-Philippe Brucker <jean-philippe@linaro.org>
-To: iommu@lists.linux-foundation.org, linux-accelerators@lists.ozlabs.org
-Subject: Re: [PATCH v2 0/2] iommu: Remove iommu_sva_ops::mm_exit()
-Message-ID: <20200527101038.GD265288@myrica>
-References: <20200423125329.782066-1-jean-philippe@linaro.org>
+Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
+ by silver.osuosl.org (Postfix) with ESMTPS id 87E8E2042A
+ for <iommu@lists.linux-foundation.org>; Wed, 27 May 2020 11:03:49 +0000 (UTC)
+Received: from willie-the-truck (236.31.169.217.in-addr.arpa [217.169.31.236])
+ (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256
+ bits)) (No client certificate requested)
+ by mail.kernel.org (Postfix) with ESMTPSA id B215620888;
+ Wed, 27 May 2020 11:03:47 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+ s=default; t=1590577429;
+ bh=/5q5E35lU26NZlVnSFPENEc5BsWu8IjTiBALwIZ+uzs=;
+ h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+ b=NbfNZeW+B0WTiDGlfacsC6E9Wr035a/Lzp1aENZVzeT/hupGv9jVz+/Z5dhwCjfuC
+ ch5GYgNGK1XTPaZR4oZfyz+rAlw8WVBuD+1QzCKSDYyxp5PcxeEJcrGjF04zxdzFnj
+ lR1wIthcC/zwvgE5kOC9uxpFWZYTs0A7lQAEEQW4=
+Date: Wed, 27 May 2020 12:03:44 +0100
+From: Will Deacon <will@kernel.org>
+To: John Stultz <john.stultz@linaro.org>
+Subject: Re: [RFC 0/2] iommu: arm-smmu: Add support for early direct mappings
+Message-ID: <20200527110343.GD11111@willie-the-truck>
+References: <20191209150748.2471814-1-thierry.reding@gmail.com>
+ <20200228025700.GA856087@builder>
+ <20200514193249.GE279327@builder.lan>
+ <CALAqxLVmomdKJCwh=e-PX+8-seDX0RXA81FzmG4sEyJmbXBh9A@mail.gmail.com>
 MIME-Version: 1.0
 Content-Disposition: inline
-In-Reply-To: <20200423125329.782066-1-jean-philippe@linaro.org>
-Cc: arnd@arndb.de, gregkh@linuxfoundation.org, jgg@ziepe.ca,
- zhangfei.gao@linaro.org
+In-Reply-To: <CALAqxLVmomdKJCwh=e-PX+8-seDX0RXA81FzmG4sEyJmbXBh9A@mail.gmail.com>
+User-Agent: Mutt/1.10.1 (2018-07-13)
+Cc: linux-arm-msm <linux-arm-msm@vger.kernel.org>,
+ Bjorn Andersson <bjorn.andersson@linaro.org>, iommu@lists.linux-foundation.org,
+ Thierry Reding <thierry.reding@gmail.com>, linux-tegra@vger.kernel.org,
+ Robin Murphy <robin.murphy@arm.com>,
+ linux-arm-kernel <linux-arm-kernel@lists.infradead.org>
 X-BeenThere: iommu@lists.linux-foundation.org
 X-Mailman-Version: 2.1.15
 Precedence: list
@@ -107,47 +93,77 @@ Content-Transfer-Encoding: 7bit
 Errors-To: iommu-bounces@lists.linux-foundation.org
 Sender: "iommu" <iommu-bounces@lists.linux-foundation.org>
 
-Hi Joerg,
+Hi John, Bjorn,
 
-I was wondering if you could take these two patches for v5.8. The API
-change is a precursor for the SVA support in SMMUv3, and the VT-d
-implementation of the SVA API (queued for 5.8) doesn't implement
-iommu_sva_ops.
+On Tue, May 26, 2020 at 01:34:45PM -0700, John Stultz wrote:
+> On Thu, May 14, 2020 at 12:34 PM <bjorn.andersson@linaro.org> wrote:
+> >
+> > On Thu 27 Feb 18:57 PST 2020, Bjorn Andersson wrote:
+> >
+> > Rob, Will, we're reaching the point where upstream has enough
+> > functionality that this is becoming a critical issue for us.
+> >
+> > E.g. Lenovo Yoga C630 is lacking this and a single dts patch to boot
+> > mainline with display, GPU, WiFi and audio working and the story is
+> > similar on several devboards.
+> >
+> > As previously described, the only thing I want is the stream mapping
+> > related to the display controller in place, either with the CB with
+> > translation disabled or possibly with a way to specify the framebuffer
+> > region (although this turns out to mess things up in the display
+> > driver...)
+> >
+> > I did pick this up again recently and concluded that by omitting the
+> > streams for the USB controllers causes an instability issue seen on one
+> > of the controller to disappear. So I would prefer if we somehow could
+> > have a mechanism to only pick the display streams and the context
+> > allocation for this.
+> >
+> >
+> > Can you please share some pointers/insights/wishes for how we can
+> > conclude on this subject?
+> 
+> Ping? I just wanted to follow up on this discussion as this small
+> series is crucial for booting mainline on the Dragonboard 845c
+> devboard. It would be really valuable to be able to get some solution
+> upstream so we can test mainline w/o adding additional patches.
 
-Thanks,
-Jean
+Sorry, it's been insanely busy recently and I haven't had a chance to think
+about this on top of everything else. We're also carrying a hack in Android
+for you :)
 
-On Thu, Apr 23, 2020 at 02:53:27PM +0200, Jean-Philippe Brucker wrote:
-> The IOMMU SVA API currently requires device drivers to implement an
-> mm_exit() callback, which stops device jobs that do DMA. This function
-> is called in the release() MMU notifier, when an address space that is
-> shared with a device exits.
+> The rest of the db845c series has been moving forward smoothly, but
+> this set seems to be very stuck with no visible progress since Dec.
 > 
-> It has been noted several time during discussions about SVA that
-> cancelling DMA jobs can be slow and complex, and doing it in the
-> release() notifier might cause synchronization issues. Device drivers
-> must in any case call unbind() to remove their bond, after stopping DMA
-> from a more favorable context (release of a file descriptor).
-> 
-> Patch 1 removes the mm_exit() callback from the uacce module, and patch
-> 2 removes it from the IOMMU API. Since v1 [1] I fixed the uacce unbind
-> reported by Zhangfei and added details in the commit message of patch 2.
+> Are there any pointers for what folks would prefer to see?
 
-[1] https://lore.kernel.org/linux-iommu/20200408140427.212807-1-jean-philippe@linaro.org/
+I've had a chat with Robin about this. Originally, I was hoping that
+people would all work together towards an idyllic future where firmware
+would be able to describe arbitrary pre-existing mappings for devices,
+irrespective of the IOMMU through which they master and Linux could
+inherit this configuration. However, that hasn't materialised (there was
+supposed to be an IORT update, but I don't know what happened to that)
+and, in actual fact, the problem that you have on db845 is /far/ more
+restricted than the general problem.
 
-> Jean-Philippe Brucker (2):
->   uacce: Remove mm_exit() op
->   iommu: Remove iommu_sva_ops::mm_exit()
-> 
->  include/linux/iommu.h      |  30 -------
->  include/linux/uacce.h      |  34 ++------
->  drivers/iommu/iommu.c      |  11 ---
->  drivers/misc/uacce/uacce.c | 172 +++++++++----------------------------
->  4 files changed, 51 insertions(+), 196 deletions(-)
-> 
-> -- 
-> 2.26.0
-> 
+Could you please try hacking something along the following lines and see
+how you get on? You may need my for-joerg/arm-smmu/updates branch for
+all the pieces:
+
+  1. Use the ->cfg_probe() callback to reserve the SMR/S2CRs you need
+     "pinning" and configure for bypass.
+
+  2. Use the ->def_domain_type() callback to return IOMMU_DOMAIN_IDENTITY
+     for the display controller
+
+I /think/ that's sufficient, but note that it differs from the current
+approach because we don't end up reserving a CB -- bypass is configured
+in the S2CR instead. Some invalidation might therefore be needed in
+->cfg_probe() after unhooking the CB.
+
+Thanks, and please yell if you run into problems with this approach.
+
+Will
 _______________________________________________
 iommu mailing list
 iommu@lists.linux-foundation.org
