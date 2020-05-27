@@ -2,96 +2,99 @@ Return-Path: <SRS0=MQAj=7J=lists.linux-foundation.org=iommu-bounces@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-0.5 required=3.0 tests=DKIM_INVALID,DKIM_SIGNED,
-	HEADER_FROM_DIFFERENT_DOMAINS,MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS,
-	URIBL_BLOCKED autolearn=no autolearn_force=no version=3.4.0
+X-Spam-Status: No, score=-0.7 required=3.0 tests=HEADER_FROM_DIFFERENT_DOMAINS,
+	MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED autolearn=no
+	autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 7026FC433DF
-	for <iommu@archiver.kernel.org>; Wed, 27 May 2020 09:39:09 +0000 (UTC)
-Received: from hemlock.osuosl.org (smtp2.osuosl.org [140.211.166.133])
+	by smtp.lore.kernel.org (Postfix) with ESMTP id AF569C433E0
+	for <iommu@archiver.kernel.org>; Wed, 27 May 2020 09:54:14 +0000 (UTC)
+Received: from silver.osuosl.org (smtp3.osuosl.org [140.211.166.136])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by mail.kernel.org (Postfix) with ESMTPS id 35EFA207E8
-	for <iommu@archiver.kernel.org>; Wed, 27 May 2020 09:39:09 +0000 (UTC)
-Authentication-Results: mail.kernel.org;
-	dkim=fail reason="signature verification failed" (2048-bit key) header.d=linaro.org header.i=@linaro.org header.b="WXjQEVV8"
-DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 35EFA207E8
-Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=linaro.org
+	by mail.kernel.org (Postfix) with ESMTPS id 7F61E20B80
+	for <iommu@archiver.kernel.org>; Wed, 27 May 2020 09:54:14 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 7F61E20B80
+Authentication-Results: mail.kernel.org; dmarc=none (p=none dis=none) header.from=arndb.de
 Authentication-Results: mail.kernel.org; spf=pass smtp.mailfrom=iommu-bounces@lists.linux-foundation.org
 Received: from localhost (localhost [127.0.0.1])
-	by hemlock.osuosl.org (Postfix) with ESMTP id 20A8887E6E;
-	Wed, 27 May 2020 09:39:09 +0000 (UTC)
+	by silver.osuosl.org (Postfix) with ESMTP id 55BD620520;
+	Wed, 27 May 2020 09:54:14 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from hemlock.osuosl.org ([127.0.0.1])
+Received: from silver.osuosl.org ([127.0.0.1])
 	by localhost (.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
-	with ESMTP id vgNSNRWspEh9; Wed, 27 May 2020 09:39:08 +0000 (UTC)
+	with ESMTP id QJVttYD-GnVR; Wed, 27 May 2020 09:54:11 +0000 (UTC)
 Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [140.211.9.56])
-	by hemlock.osuosl.org (Postfix) with ESMTP id 8CF3887FB5;
-	Wed, 27 May 2020 09:39:08 +0000 (UTC)
+	by silver.osuosl.org (Postfix) with ESMTP id 7DFA4235AE;
+	Wed, 27 May 2020 09:54:11 +0000 (UTC)
 Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
-	by lists.linuxfoundation.org (Postfix) with ESMTP id 64C88C088D;
-	Wed, 27 May 2020 09:39:08 +0000 (UTC)
-Received: from fraxinus.osuosl.org (smtp4.osuosl.org [140.211.166.137])
- by lists.linuxfoundation.org (Postfix) with ESMTP id 4424FC016F
- for <iommu@lists.linux-foundation.org>; Wed, 27 May 2020 09:39:06 +0000 (UTC)
+	by lists.linuxfoundation.org (Postfix) with ESMTP id 67F57C088D;
+	Wed, 27 May 2020 09:54:11 +0000 (UTC)
+Received: from whitealder.osuosl.org (smtp1.osuosl.org [140.211.166.138])
+ by lists.linuxfoundation.org (Postfix) with ESMTP id 62A82C016F
+ for <iommu@lists.linux-foundation.org>; Wed, 27 May 2020 09:54:10 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
- by fraxinus.osuosl.org (Postfix) with ESMTP id 2CA9086C2D
- for <iommu@lists.linux-foundation.org>; Wed, 27 May 2020 09:39:06 +0000 (UTC)
+ by whitealder.osuosl.org (Postfix) with ESMTP id 50CA785E12
+ for <iommu@lists.linux-foundation.org>; Wed, 27 May 2020 09:54:10 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from fraxinus.osuosl.org ([127.0.0.1])
+Received: from whitealder.osuosl.org ([127.0.0.1])
  by localhost (.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
- with ESMTP id mN0YJylSGvrU for <iommu@lists.linux-foundation.org>;
- Wed, 27 May 2020 09:39:05 +0000 (UTC)
-X-Greylist: domain auto-whitelisted by SQLgrey-1.7.6
-Received: from mail-wm1-f66.google.com (mail-wm1-f66.google.com
- [209.85.128.66])
- by fraxinus.osuosl.org (Postfix) with ESMTPS id 4525E86C15
- for <iommu@lists.linux-foundation.org>; Wed, 27 May 2020 09:39:05 +0000 (UTC)
-Received: by mail-wm1-f66.google.com with SMTP id r15so2347386wmh.5
- for <iommu@lists.linux-foundation.org>; Wed, 27 May 2020 02:39:05 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linaro.org; s=google;
- h=date:from:to:cc:subject:message-id:references:mime-version
- :content-disposition:in-reply-to;
- bh=ma4u4XMWVxhpm3lD4oFGEfaNlly6DyjC8Gxwotb9TKs=;
- b=WXjQEVV83bRPYCR6LgwSP7gKE0qWLHR4Mnqw7P8noGQQ24OMhB75T8jRtIYlWMpWHY
- MySHznY6zRSBwHKVYmHsysbE+174PlXCVINNqJQjYg/72BEdEN0K/YKDNyN2QBDIuFxt
- R0Oq37rjAYoXARsBmbhgrlZSfqvOCc9gdGAOg9wpUOynvLbCDDIhxm3cCxh1xAWM53Kj
- /qMG3/aahORuZGKeMGZO2hruY7t1qM0Ejp5rLqR+i+9f80Efp9dXuIIn0b0rnCOeFxCi
- Q4RCOaOgvO5K4/5OBdHDdj2Yo2pvfTSwcO3cdr45feco2zONM3j9uMw4Ntt8RCKXreoL
- IzCA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
- d=1e100.net; s=20161025;
- h=x-gm-message-state:date:from:to:cc:subject:message-id:references
- :mime-version:content-disposition:in-reply-to;
- bh=ma4u4XMWVxhpm3lD4oFGEfaNlly6DyjC8Gxwotb9TKs=;
- b=D0/V1i71mEIUSXEWwbP8/oawQ4kOkmd6Z2Inamq3HshqAH+1DCNDgRQXa3ElSW45oY
- nNSKAE9CUQm3wxDb1KrFPliyXa0f9OuM3+IZkGt9eqMi/RQbfabqgJBcPf523pdjGyxs
- TnoIQWTg8ZlTaavgzwky1wAU9SJ4VQz/YXDAtgE6UH41UvgZ6jnPZD9PbGCtT5tT7w5s
- Fnj3umMpfLnVK0h94MVKC1RCMo2SGIBlDAnrbZ9QDM81n+PQObGtwKLkPv0lIRs2RtXQ
- fo60Vacxmfxn3mm07NNtuSiVYvMa2QS7RwcZoj0h4Rx5Y/bMvxmqAcpO9SlpPLr4pITe
- pWgg==
-X-Gm-Message-State: AOAM531XEVl9kwuxM3IKJCko/lCE7VJ7y4lXJtFF7ZTAbpDoZ2U8OVGO
- u7d6n66gXLgzXzngmUCetejr1Q==
-X-Google-Smtp-Source: ABdhPJwRHl1VsOw+wNkIidN7cnKb04trFlt4YsFqaYnPmLrEQw89lrhHnt4yDc5lSDmieVnQqqyCXA==
-X-Received: by 2002:a1c:b354:: with SMTP id c81mr3432193wmf.136.1590572343528; 
- Wed, 27 May 2020 02:39:03 -0700 (PDT)
-Received: from myrica ([2001:171b:226e:c200:c43b:ef78:d083:b355])
- by smtp.gmail.com with ESMTPSA id h20sm2275362wma.6.2020.05.27.02.39.02
- (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
- Wed, 27 May 2020 02:39:03 -0700 (PDT)
-Date: Wed, 27 May 2020 11:38:52 +0200
-From: Jean-Philippe Brucker <jean-philippe@linaro.org>
-To: linux-pci@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
- iommu@lists.linux-foundation.org, joro@8bytes.org, bhelgaas@google.com
-Subject: Re: [PATCH v2 0/4] PCI, iommu: Factor 'untrusted' check for ATS
- enablement
-Message-ID: <20200527093852.GC265288@myrica>
-References: <20200520152201.3309416-1-jean-philippe@linaro.org>
+ with ESMTP id OYUGTdSwRJql for <iommu@lists.linux-foundation.org>;
+ Wed, 27 May 2020 09:54:09 +0000 (UTC)
+X-Greylist: from auto-whitelisted by SQLgrey-1.7.6
+Received: from mout.kundenserver.de (mout.kundenserver.de [212.227.126.133])
+ by whitealder.osuosl.org (Postfix) with ESMTPS id 471A8862A0
+ for <iommu@lists.linux-foundation.org>; Wed, 27 May 2020 09:54:08 +0000 (UTC)
+Received: from mail-qv1-f50.google.com ([209.85.219.50]) by
+ mrelayeu.kundenserver.de (mreue009 [212.227.15.129]) with ESMTPSA (Nemesis)
+ id 1MHG4W-1jr1tl1z5E-00DGkz for <iommu@lists.linux-foundation.org>; Wed, 27
+ May 2020 11:54:05 +0200
+Received: by mail-qv1-f50.google.com with SMTP id x13so10864975qvr.2
+ for <iommu@lists.linux-foundation.org>; Wed, 27 May 2020 02:54:05 -0700 (PDT)
+X-Gm-Message-State: AOAM531u7qBXqCVnJ5cL4lg6KbpI0wNUNpI53uMr1dUPcxQCyobpRsbT
+ 3H0jPYPmE/N82Db1C2iO5foEx8XpiGg9ewqWFQY=
+X-Google-Smtp-Source: ABdhPJwFY+9e2QwGxBuOVJhyvZzHkmdup67C33Hon0tX+xYCanXD6siiWNyzzW3vpc4K6tTqx9WsMyOJzXh6HoLxoPA=
+X-Received: by 2002:a05:6214:370:: with SMTP id
+ t16mr24222212qvu.197.1590573244279; 
+ Wed, 27 May 2020 02:54:04 -0700 (PDT)
 MIME-Version: 1.0
-Content-Disposition: inline
-In-Reply-To: <20200520152201.3309416-1-jean-philippe@linaro.org>
-Cc: ashok.raj@intel.com, will@kernel.org, hch@infradead.org,
- alex.williamson@redhat.com, robin.murphy@arm.com, dwmw2@infradead.org
+References: <1590493749-13823-1-git-send-email-zhangfei.gao@linaro.org>
+ <20200527090007.GA179718@kroah.com>
+In-Reply-To: <20200527090007.GA179718@kroah.com>
+From: Arnd Bergmann <arnd@arndb.de>
+Date: Wed, 27 May 2020 11:53:48 +0200
+X-Gmail-Original-Message-ID: <CAK8P3a35fjXt1F2hJygup5gWfjPHZTuU+VD69K5uzrNhhgu0Pw@mail.gmail.com>
+Message-ID: <CAK8P3a35fjXt1F2hJygup5gWfjPHZTuU+VD69K5uzrNhhgu0Pw@mail.gmail.com>
+Subject: Re: [PATCH 0/2] Introduce PCI_FIXUP_IOMMU
+To: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+X-Provags-ID: V03:K1:QxLc/zCbVCpw8RMWREpXOoIyenLxCpL6rBZc/2F+MDGW/D8TwRb
+ CxeJAH+wbSplwPXjpke0QxWxVmgKACedzCtPPT7ednao1qOWYh2d+G7Z41KIAqvl8t+sShv
+ I3yrD+ZsuzfHfL69aPSFXMIIabWoQ9CuwkCBcbsqXXIvieT+GXryOXreBzoREyCyOQJu/pM
+ okJsCexo8U698gWHEUelA==
+X-UI-Out-Filterresults: notjunk:1;V03:K0:bN7CDiG+lOk=:KlAzdMJn8PpxmJK4hQOELp
+ Lbcut4tRFmHBWEmauCRW1N4vfWkH190uPnfoIi9z62187/agjKMRJDn5sbuKVqrmrSUpmsFcG
+ pUYv53nJeIsENhY3E/pSqdBghB5eyoQ0nBS5P9POZ3i9fYBg/x7cgCV7N1XcMUwe8X6Sa8TaA
+ +aqrPQ0+Hmm9XQWB7an/QiFcKNwebt4H7/Ld0RxxGTih4n9Q1JC6z1eczoxtnW233NwBOCggo
+ 0RTv1TXx+ukybiGCsH8KqEZqt3T5y1fzhqFHCpwC1sSo5OxAeNx+qg4caZ0sL2n/hZhnyv51J
+ vcPaiyrn9+XTXjjsgLjHYRebwCSiNLXkRPFR5BrMd9Ot8M2PNicS/SUEWPlSmrgu9m7XO8YlT
+ xyk7g4mD9TFyHAKdPWc2YNwUv9p9k9uAxD0HGRRRKhYZenZw5E2+U5Nn2O8kAWNPJx3gadoov
+ ZRurmXcYo1026gBtPEqjMAzuY/6Q4yyfB9tujWScnzefcQQ+kYzCTGu7y/zlezknvYihJxhIb
+ XBcCJlpwmB/3wR0fDmJHl9X94a/tafb1UZhX7bgX3wd3vz2B4g/NhmAX5BWA4e3qTK9uFNcP0
+ k5KfkNACwSt6IdVUb8iAHAcjDL6h9g7dgNWodNRt+dvIGxPiVQetzTfJfy4GNNjRU1IWYsdSe
+ MeDLlEgYvTTXWKi6DHdweVypinYUQKxIvF4iSA7tGezaueICIrsRqEQCkcmq/7j2VEH4CM225
+ Phbgm2052kh6CsILaVlVR5y+44i1Lsvj+8RZuWGlBi8YhM9qyEUA+pDruZJ0pKNGwPKxDBpDU
+ 9K+6En/161s76XjNOhdFCdLNSvSC6ln2q9sFz8uJR5/330HoCA=
+Cc: jean-philippe <jean-philippe@linaro.org>,
+ Herbert Xu <herbert@gondor.apana.org.au>,
+ linux-pci <linux-pci@vger.kernel.org>, Hanjun Guo <guohanjun@huawei.com>,
+ "Rafael J. Wysocki" <rjw@rjwysocki.net>,
+ "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
+ "open list:IOMMU DRIVERS" <iommu@lists.linux-foundation.org>,
+ kenneth-lee-2012@foxmail.com,
+ ACPI Devel Maling List <linux-acpi@vger.kernel.org>,
+ "open list:HARDWARE RANDOM NUMBER GENERATOR CORE"
+ <linux-crypto@vger.kernel.org>, Sudeep Holla <sudeep.holla@arm.com>,
+ Bjorn Helgaas <bhelgaas@google.com>, Zhangfei Gao <zhangfei.gao@linaro.org>,
+ Linux ARM <linux-arm-kernel@lists.infradead.org>, Len Brown <lenb@kernel.org>
 X-BeenThere: iommu@lists.linux-foundation.org
 X-Mailman-Version: 2.1.15
 Precedence: list
@@ -109,42 +112,28 @@ Content-Transfer-Encoding: 7bit
 Errors-To: iommu-bounces@lists.linux-foundation.org
 Sender: "iommu" <iommu-bounces@lists.linux-foundation.org>
 
-Hi Joerg, Bjorn,
+On Wed, May 27, 2020 at 11:00 AM Greg Kroah-Hartman
+<gregkh@linuxfoundation.org> wrote:
+>
+> On Tue, May 26, 2020 at 07:49:07PM +0800, Zhangfei Gao wrote:
+> > Some platform devices appear as PCI but are actually on the AMBA bus,
+>
+> Why would these devices not just show up on the AMBA bus and use all of
+> that logic instead of being a PCI device and having to go through odd
+> fixes like this?
 
-On Wed, May 20, 2020 at 05:21:59PM +0200, Jean-Philippe Brucker wrote:
-> IOMMU drivers currently check themselves if a device is untrusted
-> (plugged into an external-facing port) before enabling ATS. Move the
-> check to drivers/pci. The only functional change should be to the AMD
-> IOMMU driver. With this change all IOMMU drivers block 'Translated' PCIe
-> transactions and Translation Requests from untrusted devices.
+There is a general move to having hardware be discoverable even with
+ARM processors. Having on-chip devices be discoverable using PCI config
+space is how x86 SoCs usually do it, and that is generally a good thing
+as it means we don't need to describe them in DT
 
-This seems ready for v5.8. I guess it could go through the IOMMU tree
-since there are a little more IOMMU changes?
+I guess as the hardware designers are still learning about it, this is not
+always done correctly. In general, we can also describe PCI devices on
+DT and do fixups during the probing there, but I suspect that won't work
+as easily using ACPI probing, so the fixup is keyed off the hardware ID,
+again as is common for x86 on-chip devices.
 
-Thanks,
-Jean
-> 
-> Since v1 [1] I added tags, addressed comments on patches 1 and 3, and
-> fixed a regression in patch 3.
-> 
-> [1] https://lore.kernel.org/linux-iommu/20200515104359.1178606-1-jean-philippe@linaro.org/
-> 
-> Jean-Philippe Brucker (4):
->   PCI/ATS: Only enable ATS for trusted devices
->   iommu/amd: Use pci_ats_supported()
->   iommu/arm-smmu-v3: Use pci_ats_supported()
->   iommu/vt-d: Use pci_ats_supported()
-> 
->  include/linux/pci-ats.h     |  3 +++
->  drivers/iommu/amd_iommu.c   | 12 ++++--------
->  drivers/iommu/arm-smmu-v3.c | 20 +++++++-------------
->  drivers/iommu/intel-iommu.c |  9 +++------
->  drivers/pci/ats.c           | 18 +++++++++++++++++-
->  5 files changed, 34 insertions(+), 28 deletions(-)
-> 
-> -- 
-> 2.26.2
-> 
+      Arnd
 _______________________________________________
 iommu mailing list
 iommu@lists.linux-foundation.org
