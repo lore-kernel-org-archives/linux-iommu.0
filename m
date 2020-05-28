@@ -2,73 +2,75 @@ Return-Path: <SRS0=4TkS=7K=lists.linux-foundation.org=iommu-bounces@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-8.2 required=3.0 tests=HEADER_FROM_DIFFERENT_DOMAINS,
-	INCLUDES_PATCH,MAILING_LIST_MULTI,SIGNED_OFF_BY,SPF_HELO_NONE,SPF_PASS,
-	URIBL_BLOCKED,USER_AGENT_SANE_1 autolearn=ham autolearn_force=no version=3.4.0
+X-Spam-Status: No, score=-5.2 required=3.0 tests=HEADER_FROM_DIFFERENT_DOMAINS,
+	MAILING_LIST_MULTI,SIGNED_OFF_BY,SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED,
+	USER_AGENT_SANE_1 autolearn=ham autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id E81A7C433E1
-	for <iommu@archiver.kernel.org>; Thu, 28 May 2020 07:02:23 +0000 (UTC)
-Received: from whitealder.osuosl.org (smtp1.osuosl.org [140.211.166.138])
+	by smtp.lore.kernel.org (Postfix) with ESMTP id A4CCAC433E0
+	for <iommu@archiver.kernel.org>; Thu, 28 May 2020 07:15:02 +0000 (UTC)
+Received: from hemlock.osuosl.org (smtp2.osuosl.org [140.211.166.133])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by mail.kernel.org (Postfix) with ESMTPS id C70ED20899
-	for <iommu@archiver.kernel.org>; Thu, 28 May 2020 07:02:23 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org C70ED20899
+	by mail.kernel.org (Postfix) with ESMTPS id 3B34A207D3
+	for <iommu@archiver.kernel.org>; Thu, 28 May 2020 07:15:01 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 3B34A207D3
 Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=linux.intel.com
 Authentication-Results: mail.kernel.org; spf=pass smtp.mailfrom=iommu-bounces@lists.linux-foundation.org
 Received: from localhost (localhost [127.0.0.1])
-	by whitealder.osuosl.org (Postfix) with ESMTP id 9CF1887F07;
-	Thu, 28 May 2020 07:02:23 +0000 (UTC)
+	by hemlock.osuosl.org (Postfix) with ESMTP id D8E0788870;
+	Thu, 28 May 2020 07:15:01 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from whitealder.osuosl.org ([127.0.0.1])
+Received: from hemlock.osuosl.org ([127.0.0.1])
 	by localhost (.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
-	with ESMTP id JkpZiDwJNgcW; Thu, 28 May 2020 07:02:22 +0000 (UTC)
+	with ESMTP id AWbYbU5d1-nw; Thu, 28 May 2020 07:15:01 +0000 (UTC)
 Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [140.211.9.56])
-	by whitealder.osuosl.org (Postfix) with ESMTP id C834487E2B;
-	Thu, 28 May 2020 07:02:22 +0000 (UTC)
+	by hemlock.osuosl.org (Postfix) with ESMTP id 3C02E8886C;
+	Thu, 28 May 2020 07:15:01 +0000 (UTC)
 Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
-	by lists.linuxfoundation.org (Postfix) with ESMTP id B86CEC07FF;
-	Thu, 28 May 2020 07:02:22 +0000 (UTC)
-Received: from fraxinus.osuosl.org (smtp4.osuosl.org [140.211.166.137])
- by lists.linuxfoundation.org (Postfix) with ESMTP id 7F31BC016F
- for <iommu@lists.linux-foundation.org>; Thu, 28 May 2020 07:02:21 +0000 (UTC)
+	by lists.linuxfoundation.org (Postfix) with ESMTP id 188B8C0895;
+	Thu, 28 May 2020 07:15:01 +0000 (UTC)
+Received: from hemlock.osuosl.org (smtp2.osuosl.org [140.211.166.133])
+ by lists.linuxfoundation.org (Postfix) with ESMTP id BD7F2C016F
+ for <iommu@lists.linux-foundation.org>; Thu, 28 May 2020 07:14:59 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
- by fraxinus.osuosl.org (Postfix) with ESMTP id 6D7CE86E04
- for <iommu@lists.linux-foundation.org>; Thu, 28 May 2020 07:02:21 +0000 (UTC)
+ by hemlock.osuosl.org (Postfix) with ESMTP id BA10688870
+ for <iommu@lists.linux-foundation.org>; Thu, 28 May 2020 07:14:59 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from fraxinus.osuosl.org ([127.0.0.1])
+Received: from hemlock.osuosl.org ([127.0.0.1])
  by localhost (.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
- with ESMTP id uB0_CN1rWOkQ for <iommu@lists.linux-foundation.org>;
- Thu, 28 May 2020 07:02:21 +0000 (UTC)
+ with ESMTP id lPPWEv9UUU00 for <iommu@lists.linux-foundation.org>;
+ Thu, 28 May 2020 07:14:59 +0000 (UTC)
 X-Greylist: domain auto-whitelisted by SQLgrey-1.7.6
-Received: from mga18.intel.com (mga18.intel.com [134.134.136.126])
- by fraxinus.osuosl.org (Postfix) with ESMTPS id D3C9986DF8
- for <iommu@lists.linux-foundation.org>; Thu, 28 May 2020 07:02:20 +0000 (UTC)
-IronPort-SDR: AJZeBm+bbkRQt6AxujO9c4S/LIyyaAF6bALieED0idaSESP9Nh6ULfExwdT6MH8b04lABMo3QI
- F4TbU/YJsQuQ==
+Received: from mga14.intel.com (mga14.intel.com [192.55.52.115])
+ by hemlock.osuosl.org (Postfix) with ESMTPS id 41FAE8886C
+ for <iommu@lists.linux-foundation.org>; Thu, 28 May 2020 07:14:59 +0000 (UTC)
+IronPort-SDR: bz6QO0S3Gy42i/iSJdoEzId6dwEzP1uIopeKZmTiSdTwXAKuVF7EuSe9FpBEnTbTO1xPgn2KTl
+ ANKDWe16+UyQ==
 X-Amp-Result: SKIPPED(no attachment in message)
 X-Amp-File-Uploaded: False
 Received: from orsmga005.jf.intel.com ([10.7.209.41])
- by orsmga106.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384;
- 28 May 2020 00:02:20 -0700
-IronPort-SDR: qZ8B6ItD35NidF6MB+sge5PnxSUDRGtBKhVxFvGTgB9/+ES3McGrWsQYatYsq8+dk5MESuqRJf
- 2GC48z3wIa1w==
+ by fmsmga103.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384;
+ 28 May 2020 00:14:58 -0700
+IronPort-SDR: iQKMIY9FYMhJzjvuXKfBJnke/aonbJBD0wTMyrY0H5ucO+pQBfNmMjUfqONvHJtWUESPWecEcH
+ v4PgGBXtREHw==
 X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.73,443,1583222400"; d="scan'208";a="442845633"
+X-IronPort-AV: E=Sophos;i="5.73,443,1583222400"; d="scan'208";a="442848653"
 Received: from blu2-mobl3.ccr.corp.intel.com (HELO [10.255.30.232])
  ([10.255.30.232])
- by orsmga005.jf.intel.com with ESMTP; 28 May 2020 00:02:17 -0700
-Subject: Re: [PATCH v1 3/3] iommu/vt-d: Remove real DMA lookup in find_domain
+ by orsmga005.jf.intel.com with ESMTP; 28 May 2020 00:14:56 -0700
+Subject: Re: [PATCH v1 2/3] iommu/vt-d: Allocate domain info for real DMA
+ sub-devices
 To: Jon Derrick <jonathan.derrick@intel.com>, iommu@lists.linux-foundation.org
 References: <20200527165617.297470-1-jonathan.derrick@intel.com>
- <20200527165617.297470-4-jonathan.derrick@intel.com>
+ <20200527165617.297470-3-jonathan.derrick@intel.com>
+ <fd4b5313-efd0-90bf-5841-80a97ce5f652@linux.intel.com>
 From: Lu Baolu <baolu.lu@linux.intel.com>
-Message-ID: <6e94b90c-f849-d206-0b0e-f1c8253ac939@linux.intel.com>
-Date: Thu, 28 May 2020 15:02:17 +0800
+Message-ID: <39342c83-8484-5a42-f16e-fe3cda67c809@linux.intel.com>
+Date: Thu, 28 May 2020 15:14:55 +0800
 User-Agent: Mozilla/5.0 (Windows NT 10.0; WOW64; rv:68.0) Gecko/20100101
  Thunderbird/68.8.1
 MIME-Version: 1.0
-In-Reply-To: <20200527165617.297470-4-jonathan.derrick@intel.com>
+In-Reply-To: <fd4b5313-efd0-90bf-5841-80a97ce5f652@linux.intel.com>
 Content-Language: en-US
 Cc: Ashok Raj <ashok.raj@intel.com>, linux-pci@vger.kernel.org
 X-BeenThere: iommu@lists.linux-foundation.org
@@ -88,40 +90,27 @@ Content-Type: text/plain; charset="us-ascii"; Format="flowed"
 Errors-To: iommu-bounces@lists.linux-foundation.org
 Sender: "iommu" <iommu-bounces@lists.linux-foundation.org>
 
-On 2020/5/28 0:56, Jon Derrick wrote:
-> By removing the real DMA indirection in find_domain(), we can allow
-> sub-devices of a real DMA device to have their own valid
-> device_domain_info. The dmar lookup and context entry removal paths have
-> been fixed to account for sub-devices.
+On 2020/5/28 15:01, Lu Baolu wrote:
+> On 2020/5/28 0:56, Jon Derrick wrote:
+>> Sub-devices of a real DMA device might exist on a separate segment than
+>> the real DMA device and its IOMMU. These devices should still have a
+>> valid device_domain_info, but the current dma alias model won't
+>> allocate info for the subdevice.
+>>
+>> This patch adds a segment member to struct device_domain_info and uses
+>> the sub-device's BDF so that these sub-devices won't alias to other
+>> devices.
+>>
+>> Signed-off-by: Jon Derrick <jonathan.derrick@intel.com>
 > 
-> Fixes: 2b0140c69637 ("iommu/vt-d: Use pci_real_dma_dev() for mapping")
-> Bugzilla: https://bugzilla.kernel.org/show_bug.cgi?id=207575
-> Signed-off-by: Jon Derrick <jonathan.derrick@intel.com>
+> Acked-by: Lu Baolu <baolu.lu@linux.intel.com>
 
-Acked-by: Lu Baolu <baolu.lu@linux.intel.com>
+And a fix tag, so that it could be picked up for v5.6+ stable kernel.
+
+Fixes: 2b0140c69637e ("iommu/vt-d: Use pci_real_dma_dev() for mapping")
 
 Best regards,
 baolu
-
-> ---
->   drivers/iommu/intel-iommu.c | 3 ---
->   1 file changed, 3 deletions(-)
-> 
-> diff --git a/drivers/iommu/intel-iommu.c b/drivers/iommu/intel-iommu.c
-> index 6d39b9b..5767882 100644
-> --- a/drivers/iommu/intel-iommu.c
-> +++ b/drivers/iommu/intel-iommu.c
-> @@ -2436,9 +2436,6 @@ struct dmar_domain *find_domain(struct device *dev)
->   	if (unlikely(attach_deferred(dev) || iommu_dummy(dev)))
->   		return NULL;
->   
-> -	if (dev_is_pci(dev))
-> -		dev = &pci_real_dma_dev(to_pci_dev(dev))->dev;
-> -
->   	/* No lock here, assumes no domain exit in normal case */
->   	info = get_domain_info(dev);
->   	if (likely(info))
-> 
 _______________________________________________
 iommu mailing list
 iommu@lists.linux-foundation.org
