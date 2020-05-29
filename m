@@ -2,129 +2,105 @@ Return-Path: <SRS0=ta7q=7L=lists.linux-foundation.org=iommu-bounces@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-8.2 required=3.0 tests=HEADER_FROM_DIFFERENT_DOMAINS,
-	INCLUDES_PATCH,MAILING_LIST_MULTI,MSGID_FROM_MTA_HEADER,SIGNED_OFF_BY,
-	SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED,USER_AGENT_SANE_1 autolearn=ham
-	autolearn_force=no version=3.4.0
+X-Spam-Status: No, score=-6.8 required=3.0 tests=DKIM_INVALID,DKIM_SIGNED,
+	INCLUDES_PATCH,MAILING_LIST_MULTI,SIGNED_OFF_BY,SPF_HELO_NONE,SPF_PASS,
+	URIBL_BLOCKED autolearn=ham autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 45A5BC433DF
-	for <iommu@archiver.kernel.org>; Fri, 29 May 2020 16:37:06 +0000 (UTC)
-Received: from silver.osuosl.org (smtp3.osuosl.org [140.211.166.136])
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 31E7EC433E0
+	for <iommu@archiver.kernel.org>; Fri, 29 May 2020 17:35:16 +0000 (UTC)
+Received: from whitealder.osuosl.org (smtp1.osuosl.org [140.211.166.138])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by mail.kernel.org (Postfix) with ESMTPS id F09CB2077D
-	for <iommu@archiver.kernel.org>; Fri, 29 May 2020 16:37:05 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org F09CB2077D
-Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=forcepoint.com
+	by mail.kernel.org (Postfix) with ESMTPS id CDC012065F
+	for <iommu@archiver.kernel.org>; Fri, 29 May 2020 17:35:15 +0000 (UTC)
+Authentication-Results: mail.kernel.org;
+	dkim=fail reason="signature verification failed" (1024-bit key) header.d=kernel.org header.i=@kernel.org header.b="FC3K04+o"
+DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org CDC012065F
+Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=kernel.org
 Authentication-Results: mail.kernel.org; spf=pass smtp.mailfrom=iommu-bounces@lists.linux-foundation.org
 Received: from localhost (localhost [127.0.0.1])
-	by silver.osuosl.org (Postfix) with ESMTP id AAE0C2612E;
-	Fri, 29 May 2020 16:37:05 +0000 (UTC)
+	by whitealder.osuosl.org (Postfix) with ESMTP id ACD268849F;
+	Fri, 29 May 2020 17:35:15 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from silver.osuosl.org ([127.0.0.1])
+Received: from whitealder.osuosl.org ([127.0.0.1])
 	by localhost (.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
-	with ESMTP id UKmrlYQz3mGo; Fri, 29 May 2020 16:37:03 +0000 (UTC)
+	with ESMTP id c+VVKAVfe4BK; Fri, 29 May 2020 17:35:14 +0000 (UTC)
 Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [140.211.9.56])
-	by silver.osuosl.org (Postfix) with ESMTP id 61ABC20390;
-	Fri, 29 May 2020 16:37:03 +0000 (UTC)
+	by whitealder.osuosl.org (Postfix) with ESMTP id ABA94883FD;
+	Fri, 29 May 2020 17:35:14 +0000 (UTC)
 Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
-	by lists.linuxfoundation.org (Postfix) with ESMTP id 4B98EC088A;
-	Fri, 29 May 2020 16:37:03 +0000 (UTC)
+	by lists.linuxfoundation.org (Postfix) with ESMTP id 7A1EDC07FF;
+	Fri, 29 May 2020 17:35:14 +0000 (UTC)
 Received: from whitealder.osuosl.org (smtp1.osuosl.org [140.211.166.138])
- by lists.linuxfoundation.org (Postfix) with ESMTP id 991F8C016F
- for <iommu@lists.linux-foundation.org>; Fri, 29 May 2020 16:14:47 +0000 (UTC)
+ by lists.linuxfoundation.org (Postfix) with ESMTP id CE386C016F
+ for <iommu@lists.linux-foundation.org>; Fri, 29 May 2020 17:35:13 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
- by whitealder.osuosl.org (Postfix) with ESMTP id 889D787F69
- for <iommu@lists.linux-foundation.org>; Fri, 29 May 2020 16:14:47 +0000 (UTC)
+ by whitealder.osuosl.org (Postfix) with ESMTP id B9C5B8843E
+ for <iommu@lists.linux-foundation.org>; Fri, 29 May 2020 17:35:13 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
 Received: from whitealder.osuosl.org ([127.0.0.1])
  by localhost (.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
- with ESMTP id uZFNdMi0RrTE for <iommu@lists.linux-foundation.org>;
- Fri, 29 May 2020 16:14:46 +0000 (UTC)
-X-Greylist: delayed 00:15:04 by SQLgrey-1.7.6
-Received: from esg-sm.forcepoint.com (esg-sm2.forcepoint.com [204.15.67.172])
- by whitealder.osuosl.org (Postfix) with ESMTPS id 79E97884BB
- for <iommu@lists.linux-foundation.org>; Fri, 29 May 2020 16:14:46 +0000 (UTC)
-Received: from webmailgov.forcepoint.com (unknown [172.29.172.3])
- by Forcepoint Email with ESMTPS id 963EF3D1C99204C673BE;
- Fri, 29 May 2020 08:59:39 -0700 (PDT)
-Received: from SRCA019EXCH1A.tcs-sec.com (172.29.172.2) by
- SRCA019EXCH1B.tcs-sec.com (172.29.172.3) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.1466.3; Fri, 29 May 2020 08:59:48 -0700
-Received: from USG02-BN3-obe.outbound.protection.office365.us (23.103.199.152)
- by SRCA019EXCH1A.tcs-sec.com (172.29.172.2) with Microsoft SMTP
- Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.1466.3
- via Frontend Transport; Fri, 29 May 2020 08:59:48 -0700
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector5401; d=microsoft.com; cv=none;
- b=hveCcgUrIrftNXV43mu6lM/1ihQxDRdfNSE5waHwuS6MmmNR8UYaQ/GduM/tdqdkKh/1ctQOmoF9QCS1oZsqiKU+o73aIHnxi9CHdta3ufa8hH0+QcS9N5ptnd4M4zXvR4GSQERSlGrQHu8vAsfFW/e9d/p/Q92hbE5rBm9Uc+vYG8H7ymSiHBJ8qVsDL49/vHig6nD5URll9lEHJbFg8yKrsq0rKQUoV1/9QwwaKJ++ypAdvi0a9CAkJ9VEaKTs+zsbxsPBWFGRIfP5l5xx1qVZCB7QiBmlJHQbGWQyMMRN4UPMntocTSLDE1qBHFpEdZ3U3/ddxetWmjWrk0V0Bw==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com; 
- s=arcselector5401;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=q+eY/y64gj11U/Ml03JCaLC4Fqc8jcWYTLg+K8HGtKA=;
- b=tjpO215Kn4niHyZZNuwAzdqQk4ef9BxjVLfBgruh+gWZXg83ck7lVw4ADy9F4zv1XtfrGhz1XUwgZAdxEn4wAO5gBdxBhok0aZriHheZ7KixFR1j7bDwIaM9nsGRSvZds4/pwCupDS1rCl/7tbDYO2o1q9hBtPEgnOS8jV2fsglHwU/Ch1MQ5KXlF9gAXBIHLSDUXdIyDk5gFLpI3FZikzih8N5MggPKSZ7Od4kDfa2PAFPkvKqewTKv6fJZ4pqf7NB53gWARIz4GiiK8hVzwjL3WdExw3i2ulBoOtO76ZIXlpOYt8AhbizgwsfoeLTTFeTdVThTw+VY5zksk8DRTA==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=forcepointgov.com; dmarc=pass action=none
- header.from=forcepointgov.com; dkim=pass header.d=forcepointgov.com; arc=none
-Authentication-Results: forcepoint.com; dkim=none (message not signed)
- header.d=none;forcepoint.com; dmarc=none action=none
- header.from=forcepointgov.com;
-Received: from DM3P110MB0538.NAMP110.PROD.OUTLOOK.COM (2001:489a:200:414::9)
- by DM3P110MB0441.NAMP110.PROD.OUTLOOK.COM (2001:489a:200:412::18) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.3021.32; Fri, 29 May
- 2020 15:59:35 +0000
-Received: from DM3P110MB0538.NAMP110.PROD.OUTLOOK.COM
- ([fe80::c08b:22f5:bb8a:a1d3]) by DM3P110MB0538.NAMP110.PROD.OUTLOOK.COM
- ([fe80::c08b:22f5:bb8a:a1d3%7]) with mapi id 15.20.3000.039; Fri, 29 May 2020
- 15:59:35 +0000
-Subject: Re: Re: [PATCH] PCI: Relax ACS requirement for Intel RCiEP devices.
-To: Ashok Raj <ashok.raj@intel.com>
-References: <1590699462-7131-1-git-send-email-ashok.raj@intel.com>
- <20200528153826.257a0145@x1.home>
-From: Darrel Goeddel <dgoeddel@forcepoint.com>
-Message-ID: <842370df-0ec3-fc81-f734-33078f2ccc4c@forcepointgov.com>
-Date: Fri, 29 May 2020 10:59:32 -0500
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101
- Thunderbird/68.7.0
-In-Reply-To: <20200528153826.257a0145@x1.home>
-Content-Language: en-US
-X-ClientProxiedBy: CY1P110CA0056.NAMP110.PROD.OUTLOOK.COM
- (2001:489a:200:400::26) To DM3P110MB0538.NAMP110.PROD.OUTLOOK.COM
- (2001:489a:200:414::9)
+ with ESMTP id 7mOE4Q4Atftj for <iommu@lists.linux-foundation.org>;
+ Fri, 29 May 2020 17:35:12 +0000 (UTC)
+X-Greylist: domain auto-whitelisted by SQLgrey-1.7.6
+Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
+ by whitealder.osuosl.org (Postfix) with ESMTPS id 853FA883FD
+ for <iommu@lists.linux-foundation.org>; Fri, 29 May 2020 17:35:12 +0000 (UTC)
+Received: from mail-oi1-f176.google.com (mail-oi1-f176.google.com
+ [209.85.167.176])
+ (using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+ (No client certificate requested)
+ by mail.kernel.org (Postfix) with ESMTPSA id 26BF821534
+ for <iommu@lists.linux-foundation.org>; Fri, 29 May 2020 17:35:12 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+ s=default; t=1590773712;
+ bh=N+Un+BXPNCdwo4xJnKmNvAMc7B65G5dDUl6XlFJhboc=;
+ h=References:In-Reply-To:From:Date:Subject:To:Cc:From;
+ b=FC3K04+o4kotI0QdMdPXhWg/NrGqfBDvkybMPFFYhcROjhXFdhvHa2g/UMuaRQqe4
+ 0PXK7cz+RH1eDoNP8QxNY3rNcgGsseJCELbyZgsSzVIjNfuk4dHvCtCGqflCylK4jK
+ 2TJzKOFI4NdHk0vFqSZFwojvCm1olXIh9bODbUlM=
+Received: by mail-oi1-f176.google.com with SMTP id i22so3251325oik.10
+ for <iommu@lists.linux-foundation.org>; Fri, 29 May 2020 10:35:12 -0700 (PDT)
+X-Gm-Message-State: AOAM5308tkOA2VyQGxajIG2+q7T7uwYgh81JuZmRCyfsvZGX0uAefRVx
+ WQwx5ua9qUoFMkZR+in8Fc/arDrlUWFa1tfLFA==
+X-Google-Smtp-Source: ABdhPJy67vCAsYB4Fd3qNuQ9AC0QhkVo349CUBfpkVbINCPQGDe2HpNRSlbYDZ1gs0sw/NCjOOh6RfVzTBK35dFAoUo=
+X-Received: by 2002:a05:6808:7cb:: with SMTP id
+ f11mr6993653oij.152.1590773711249; 
+ Fri, 29 May 2020 10:35:11 -0700 (PDT)
 MIME-Version: 1.0
-X-MS-Exchange-MessageSentRepresentingType: 1
-Received: from dgoeddel-pc.champ.us.fdo (192.241.53.215) by
- CY1P110CA0056.NAMP110.PROD.OUTLOOK.COM (2001:489a:200:400::26) with Microsoft
- SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.20.3000.39 via Frontend Transport; Fri, 29 May 2020 15:59:34 +0000
-X-Originating-IP: [192.241.53.215]
-X-MS-PublicTrafficType: Email
-X-MS-Office365-Filtering-Correlation-Id: dfc0dfce-e0b8-4f0b-0937-08d803e94871
-X-MS-TrafficTypeDiagnostic: DM3P110MB0441:
-X-Microsoft-Antispam-PRVS: <DM3P110MB044131CB6483A21D60ABD2C8DA8F0@DM3P110MB0441.NAMP110.PROD.OUTLOOK.COM>
-X-MS-Oob-TLC-OOBClassifiers: OLM:9508;
-X-Forefront-PRVS: 04180B6720
-X-MS-Exchange-SenderADCheck: 1
-X-Microsoft-Antispam: BCL:0;
-X-Forefront-Antispam-Report: CIP:255.255.255.255; CTRY:; LANG:en; SCL:1; SRV:;
- IPV:NLI; SFV:NSPM; H:DM3P110MB0538.NAMP110.PROD.OUTLOOK.COM; PTR:; CAT:NONE;
- SFTY:;
- SFS:(366004)(66946007)(66476007)(66556008)(54906003)(5660300002)(4326008)(83380400001)(16526019)(186003)(498600001)(53546011)(26005)(7416002)(2906002)(52116002)(31686004)(8936002)(6916009)(6486002)(2616005)(6512007)(8676002)(31696002)(956004)(86362001)(36756003)(6506007)(43740500002)(16060500001);
- DIR:OUT; SFP:1101; 
-X-MS-Exchange-CrossTenant-Network-Message-Id: dfc0dfce-e0b8-4f0b-0937-08d803e94871
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 29 May 2020 15:59:35.2335 (UTC)
-X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
-X-MS-Exchange-CrossTenant-Id: c1def8d1-d468-417f-bc2c-0c2734eaec23
-X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: DM3P110MB0441
-X-Mailman-Approved-At: Fri, 29 May 2020 16:37:01 +0000
-Cc: Darrel Goeddel <DGoeddel@forcepoint.com>, linux-pci@vger.kernel.org,
- iommu@lists.linux-foundation.org, linux-kernel@vger.kernel.org,
- Alex Williamson <alex.williamson@redhat.com>, Mark
- Scott <mscott@forcepoint.com>, Romil Sharma <rsharma@forcepoint.com>,
- Bjorn Helgaas <bhelgaas@google.com>
+References: <20200526191303.1492-1-james.quinlan@broadcom.com>
+ <20200526191303.1492-10-james.quinlan@broadcom.com>
+ <59a0b4e1454a8ef4d3e4ebaf55dcbf3dcd2d73a2.camel@suse.de>
+ <CA+-6iNyOKvY-xNfXqDRa5_nJVJuqGKA-oe-ejNuJHUBt6ORu0A@mail.gmail.com>
+In-Reply-To: <CA+-6iNyOKvY-xNfXqDRa5_nJVJuqGKA-oe-ejNuJHUBt6ORu0A@mail.gmail.com>
+From: Rob Herring <robh+dt@kernel.org>
+Date: Fri, 29 May 2020 11:34:59 -0600
+X-Gmail-Original-Message-ID: <CAL_JsqJsxxC6msUXBCa9naitMLfOcVZauk44gPJNGGe3iXRzsA@mail.gmail.com>
+Message-ID: <CAL_JsqJsxxC6msUXBCa9naitMLfOcVZauk44gPJNGGe3iXRzsA@mail.gmail.com>
+Subject: Re: [PATCH v2 09/14] device core: Add ability to handle multiple dma
+ offsets
+To: Jim Quinlan <james.quinlan@broadcom.com>
+Cc: "open list:USB SUBSYSTEM" <linux-usb@vger.kernel.org>,
+ "open list:PCI NATIVE HOST BRIDGE AND ENDPOINT DRIVERS"
+ <linux-pci@vger.kernel.org>, Heikki Krogerus <heikki.krogerus@linux.intel.com>,
+ Srinivas Kandagatla <srinivas.kandagatla@linaro.org>,
+ Frank Rowand <frowand.list@gmail.com>, Christoph Hellwig <hch@lst.de>,
+ Saravana Kannan <saravanak@google.com>,
+ "Rafael J. Wysocki" <rafael.j.wysocki@intel.com>,
+ "maintainer:BROADCOM BCM7XXX ARM ARCHITECTURE"
+ <bcm-kernel-feedback-list@broadcom.com>,
+ Alan Stern <stern@rowland.harvard.edu>,
+ "open list:OPEN FIRMWARE AND FLATTENED DEVICE TREE"
+ <devicetree@vger.kernel.org>, Corey Minyard <minyard@acm.org>,
+ Suzuki K Poulose <suzuki.poulose@arm.com>,
+ Dan Williams <dan.j.williams@intel.com>,
+ Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
+ Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+ Oliver Neukum <oneukum@suse.com>, open list <linux-kernel@vger.kernel.org>,
+ Wolfram Sang <wsa@kernel.org>,
+ "open list:DMA MAPPING HELPERS" <iommu@lists.linux-foundation.org>,
+ Robin Murphy <robin.murphy@arm.com>,
+ Nicolas Saenz Julienne <nsaenzjulienne@suse.de>
 X-BeenThere: iommu@lists.linux-foundation.org
 X-Mailman-Version: 2.1.15
 Precedence: list
@@ -137,100 +113,191 @@ List-Post: <mailto:iommu@lists.linux-foundation.org>
 List-Help: <mailto:iommu-request@lists.linux-foundation.org?subject=help>
 List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
  <mailto:iommu-request@lists.linux-foundation.org?subject=subscribe>
-Content-Transfer-Encoding: base64
-Content-Type: text/plain; charset="utf-8"; Format="flowed"
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: 7bit
 Errors-To: iommu-bounces@lists.linux-foundation.org
 Sender: "iommu" <iommu-bounces@lists.linux-foundation.org>
 
-T24gNS8yOC8yMCA0OjM4IFBNLCBBbGV4IFdpbGxpYW1zb24gd3JvdGU6Cj4gT24gVGh1LCAyOCBN
-YXkgMjAyMCAxMzo1Nzo0MiAtMDcwMAo+IEFzaG9rIFJhaiA8YXNob2sucmFqQGludGVsLmNvbT4g
-d3JvdGU6Cj4gCj4+IEFsbCBJbnRlbCBwbGF0Zm9ybXMgZ3VhcmFudGVlIHRoYXQgYWxsIHJvb3Qg
-Y29tcGxleCBpbXBsZW1lbnRhdGlvbnMKPj4gbXVzdCBzZW5kIHRyYW5zYWN0aW9ucyB1cCB0byBJ
-T01NVSBmb3IgYWRkcmVzcyB0cmFuc2xhdGlvbnMuIEhlbmNlIGZvcgo+PiBSQ2lFUCBkZXZpY2Vz
-IHRoYXQgYXJlIFZlbmRvciBJRCBJbnRlbCwgY2FuIGNsYWltIGV4Y2VwdGlvbiBmb3IgbGFjayBv
-Zgo+PiBBQ1Mgc3VwcG9ydC4KPj4KPj4KPj4gMy4xNiBSb290LUNvbXBsZXggUGVlciB0byBQZWVy
-IENvbnNpZGVyYXRpb25zCj4+IFdoZW4gRE1BIHJlbWFwcGluZyBpcyBlbmFibGVkLCBwZWVyLXRv
-LXBlZXIgcmVxdWVzdHMgdGhyb3VnaCB0aGUKPj4gUm9vdC1Db21wbGV4IG11c3QgYmUgaGFuZGxl
-ZAo+PiBhcyBmb2xsb3dzOgo+PiDigKIgVGhlIGlucHV0IGFkZHJlc3MgaW4gdGhlIHJlcXVlc3Qg
-aXMgdHJhbnNsYXRlZCAodGhyb3VnaCBmaXJzdC1sZXZlbCwKPj4gICAgc2Vjb25kLWxldmVsIG9y
-IG5lc3RlZCB0cmFuc2xhdGlvbikgdG8gYSBob3N0IHBoeXNpY2FsIGFkZHJlc3MgKEhQQSkuCj4+
-ICAgIFRoZSBhZGRyZXNzIGRlY29kaW5nIGZvciBwZWVyIGFkZHJlc3NlcyBtdXN0IGJlIGRvbmUg
-b25seSBvbiB0aGUKPj4gICAgdHJhbnNsYXRlZCBIUEEuIEhhcmR3YXJlIGltcGxlbWVudGF0aW9u
-cyBhcmUgZnJlZSB0byBmdXJ0aGVyIGxpbWl0Cj4+ICAgIHBlZXItdG8tcGVlciBhY2Nlc3NlcyB0
-byBzcGVjaWZpYyBob3N0IHBoeXNpY2FsIGFkZHJlc3MgcmVnaW9ucwo+PiAgICAob3IgdG8gY29t
-cGxldGVseSBkaXNhbGxvdyBwZWVyLWZvcndhcmRpbmcgb2YgdHJhbnNsYXRlZCByZXF1ZXN0cyku
-Cj4+IOKAoiBTaW5jZSBhZGRyZXNzIHRyYW5zbGF0aW9uIGNoYW5nZXMgdGhlIGNvbnRlbnRzIChh
-ZGRyZXNzIGZpZWxkKSBvZgo+PiAgICB0aGUgUENJIEV4cHJlc3MgVHJhbnNhY3Rpb24gTGF5ZXIg
-UGFja2V0IChUTFApLCBmb3IgUENJIEV4cHJlc3MKPj4gICAgcGVlci10by1wZWVyIHJlcXVlc3Rz
-IHdpdGggRUNSQywgdGhlIFJvb3QtQ29tcGxleCBoYXJkd2FyZSBtdXN0IHVzZQo+PiAgICB0aGUg
-bmV3IEVDUkMgKHJlLWNvbXB1dGVkIHdpdGggdGhlIHRyYW5zbGF0ZWQgYWRkcmVzcykgaWYgaXQK
-Pj4gICAgZGVjaWRlcyB0byBmb3J3YXJkIHRoZSBUTFAgYXMgYSBwZWVyIHJlcXVlc3QuCj4+IOKA
-oiBSb290LXBvcnRzLCBhbmQgbXVsdGktZnVuY3Rpb24gcm9vdC1jb21wbGV4IGludGVncmF0ZWQg
-ZW5kcG9pbnRzLCBtYXkKPj4gICAgc3VwcG9ydCBhZGRpdGlvbmFsIHBlZXJ0by1wZWVyIGNvbnRy
-b2wgZmVhdHVyZXMgYnkgc3VwcG9ydGluZyBQQ0kgRXhwcmVzcwo+PiAgICBBY2Nlc3MgQ29udHJv
-bCBTZXJ2aWNlcyAoQUNTKSBjYXBhYmlsaXR5LiBSZWZlciB0byBBQ1MgY2FwYWJpbGl0eSBpbgo+
-PiAgICBQQ0kgRXhwcmVzcyBzcGVjaWZpY2F0aW9ucyBmb3IgZGV0YWlscy4KPj4KPj4gU2luY2Ug
-TGludXggZGlkbid0IGdpdmUgc3BlY2lhbCB0cmVhdG1lbnQgdG8gYWxsb3cgdGhpcyBleGNlcHRp
-b24sIGNlcnRhaW4KPj4gUkNpRVAgTUZEIGRldmljZXMgYXJlIGdldHRpbmcgZ3JvdXBlZCBpbiBh
-IHNpbmdsZSBpb21tdSBncm91cC4gVGhpcwo+PiBkb2Vzbid0IHBlcm1pdCBhIHNpbmdsZSBkZXZp
-Y2UgdG8gYmUgYXNzaWduZWQgdG8gYSBndWVzdCBmb3IgaW5zdGFuY2UuCj4+Cj4+IEluIG9uZSB2
-ZW5kb3Igc3lzdGVtOiBEZXZpY2UgMTQueCB3ZXJlIGdyb3VwZWQgaW4gYSBzaW5nbGUgSU9NTVUg
-Z3JvdXAuCj4+Cj4+IC9zeXMva2VybmVsL2lvbW11X2dyb3Vwcy81L2RldmljZXMvMDAwMDowMDox
-NC4wCj4+IC9zeXMva2VybmVsL2lvbW11X2dyb3Vwcy81L2RldmljZXMvMDAwMDowMDoxNC4yCj4+
-IC9zeXMva2VybmVsL2lvbW11X2dyb3Vwcy81L2RldmljZXMvMDAwMDowMDoxNC4zCj4+Cj4+IEFm
-dGVyIHRoZSBwYXRjaDoKPj4gL3N5cy9rZXJuZWwvaW9tbXVfZ3JvdXBzLzUvZGV2aWNlcy8wMDAw
-OjAwOjE0LjAKPj4gL3N5cy9rZXJuZWwvaW9tbXVfZ3JvdXBzLzUvZGV2aWNlcy8wMDAwOjAwOjE0
-LjIKPj4gL3N5cy9rZXJuZWwvaW9tbXVfZ3JvdXBzLzYvZGV2aWNlcy8wMDAwOjAwOjE0LjMgPDw8
-IG5ldyBncm91cAo+Pgo+PiAxNC4wIGFuZCAxNC4yIGFyZSBpbnRlZ3JhdGVkIGRldmljZXMsIGJ1
-dCBsZWdhY3kgZW5kIHBvaW50cy4KPj4gV2hlcmVhcyAxNC4zIHdhcyBhIFBDSWUgY29tcGxpYW50
-IFJDaUVQLgo+Pgo+PiAwMDoxNC4zIE5ldHdvcmsgY29udHJvbGxlcjogSW50ZWwgQ29ycG9yYXRp
-b24gRGV2aWNlIDlkZjAgKHJldiAzMCkKPj4gQ2FwYWJpbGl0aWVzOiBbNDBdIEV4cHJlc3MgKHYy
-KSBSb290IENvbXBsZXggSW50ZWdyYXRlZCBFbmRwb2ludCwgTVNJIDAwCj4+Cj4+IFRoaXMgcGVy
-bWl0cyBhc3NpZ25pbmcgdGhpcyBkZXZpY2UgdG8gYSBndWVzdCBWTS4KPj4KPj4gRml4ZXM6IGYw
-OTZjMDYxZjU1MiAoImlvbW11OiBSZXdvcmsgaW9tbXVfZ3JvdXBfZ2V0X2Zvcl9wY2lfZGV2KCki
-KQo+IAo+IEkgZG9uJ3QgcmVhbGx5IHVuZGVyc3RhbmQgdGhpcyBGaXhlcyB0YWcuICBUaGlzIHNl
-ZW1zIGxpa2UgYSBmZWF0dXJlLAo+IG5vdCBhIGZpeC4gIElmIHlvdSB3YW50IGl0IGluIHN0YWJs
-ZSByZWxlYXNlcyBhcyBhIGZlYXR1cmUsIHJlcXVlc3QgaXQKPiB2aWEgQ2M6IHN0YWJsZUB2Z2Vy
-Lmtlcm5lbC5vcmcuICBJJ2QgZHJvcCB0aGF0IHRhZywgdGhhdCdzIG15IG5pdC4KPiBPdGhlcndp
-c2U6Cj4gCj4gUmV2aWV3ZWQtYnk6IEFsZXggV2lsbGlhbXNvbiA8YWxleC53aWxsaWFtc29uQHJl
-ZGhhdC5jb20+CgpJIGhhdmUgdGVzdGVkIHRoaXMgcGF0Y2ggd2l0aCA1LjYuMTQgYXMgd2VsbCBh
-cyBhIHNsaWdodGx5IG1vZGlmaWVkCnZlcnNpb24gKHdpdGhvdXQgcGNpX2Fjc19jdHJsX2VuYWJs
-ZWQoKSkgaW4gYSAzLjEwIGVudGVycHJpc2UgbGludXgKa2VybmVsLgoKVGVzdGVkLWJ5OiBEYXJy
-ZWwgR29lZGRlbCA8ZGdvZWRkZWxAZm9yY2Vwb2ludC5jb20+Cgo+PiBTaWduZWQtb2ZmLWJ5OiBB
-c2hvayBSYWogPGFzaG9rLnJhakBpbnRlbC5jb20+Cj4+IFRvOiBKb2VyZyBSb2VkZWwgPGpvcm9A
-OGJ5dGVzLm9yZz4KPj4gVG86IEJqb3JuIEhlbGdhYXMgPGJoZWxnYWFzQGdvb2dsZS5jb20+Cj4+
-IENjOiBsaW51eC1rZXJuZWxAdmdlci5rZXJuZWwub3JnCj4+IENjOiBpb21tdUBsaXN0cy5saW51
-eC1mb3VuZGF0aW9uLm9yZwo+PiBDYzogTHUgQmFvbHUgPGJhb2x1Lmx1QGxpbnV4LmludGVsLmNv
-bT4KPj4gQ2M6IEFsZXggV2lsbGlhbXNvbiA8YWxleC53aWxsaWFtc29uQHJlZGhhdC5jb20+Cj4+
-IENjOiBEYXJyZWwgR29lZGRlbCA8REdvZWRkZWxAZm9yY2Vwb2ludC5jb20+Cj4+IENjOiBNYXJr
-IFNjb3R0IDxtc2NvdHRAZm9yY2Vwb2ludC5jb20+LAo+PiBDYzogUm9taWwgU2hhcm1hIDxyc2hh
-cm1hQGZvcmNlcG9pbnQuY29tPgo+PiBDYzogQXNob2sgUmFqIDxhc2hvay5yYWpAaW50ZWwuY29t
-Pgo+PiAtLS0KPj4gdjI6IE1vdmVkIGZ1bmN0aW9uYWxpdHkgZnJvbSBpb21tdSB0byBwY2kgcXVp
-cmtzIC0gQWxleCBXaWxsaWFtc29uCj4+Cj4+ICAgZHJpdmVycy9wY2kvcXVpcmtzLmMgfCAxNSAr
-KysrKysrKysrKysrKysKPj4gICAxIGZpbGUgY2hhbmdlZCwgMTUgaW5zZXJ0aW9ucygrKQo+Pgo+
-PiBkaWZmIC0tZ2l0IGEvZHJpdmVycy9wY2kvcXVpcmtzLmMgYi9kcml2ZXJzL3BjaS9xdWlya3Mu
-Ywo+PiBpbmRleCAyOGM5YTI0MDljNTAuLjYzMzczY2EwYTNmZSAxMDA2NDQKPj4gLS0tIGEvZHJp
-dmVycy9wY2kvcXVpcmtzLmMKPj4gKysrIGIvZHJpdmVycy9wY2kvcXVpcmtzLmMKPj4gQEAgLTQ2
-ODIsNiArNDY4MiwyMCBAQCBzdGF0aWMgaW50IHBjaV9xdWlya19tZl9lbmRwb2ludF9hY3Moc3Ry
-dWN0IHBjaV9kZXYgKmRldiwgdTE2IGFjc19mbGFncykKPj4gICAJCVBDSV9BQ1NfQ1IgfCBQQ0lf
-QUNTX1VGIHwgUENJX0FDU19EVCk7Cj4+ICAgfQo+PiAgIAo+PiArc3RhdGljIGludCBwY2lfcXVp
-cmtfcmNpZXBfYWNzKHN0cnVjdCBwY2lfZGV2ICpkZXYsIHUxNiBhY3NfZmxhZ3MpCj4+ICt7Cj4+
-ICsJLyoKPj4gKwkgKiBSQ2lFUCdzIGFyZSByZXF1aXJlZCB0byBhbGxvdyBwMnAgb25seSBvbiB0
-cmFuc2xhdGVkIGFkZHJlc3Nlcy4KPj4gKwkgKiBSZWZlciB0byBJbnRlbCBWVC1kIHNwZWNpZmlj
-YXRpb24gU2VjdGlvbiAzLjE2IFJvb3QtQ29tcGxleCBQZWVyCj4+ICsJICogdG8gUGVlciBDb25z
-aWRlcmF0aW9ucwo+PiArCSAqLwo+PiArCWlmIChwY2lfcGNpZV90eXBlKGRldikgIT0gUENJX0VY
-UF9UWVBFX1JDX0VORCkKPj4gKwkJcmV0dXJuIC1FTk9UVFk7Cj4+ICsKPj4gKwlyZXR1cm4gcGNp
-X2Fjc19jdHJsX2VuYWJsZWQoYWNzX2ZsYWdzLAo+PiArCQlQQ0lfQUNTX1NWIHwgUENJX0FDU19S
-UiB8IFBDSV9BQ1NfQ1IgfCBQQ0lfQUNTX1VGKTsKPj4gK30KPj4gKwo+PiAgIHN0YXRpYyBpbnQg
-cGNpX3F1aXJrX2JyY21fYWNzKHN0cnVjdCBwY2lfZGV2ICpkZXYsIHUxNiBhY3NfZmxhZ3MpCj4+
-ICAgewo+PiAgIAkvKgo+PiBAQCAtNDc2NCw2ICs0Nzc4LDcgQEAgc3RhdGljIGNvbnN0IHN0cnVj
-dCBwY2lfZGV2X2Fjc19lbmFibGVkIHsKPj4gICAJLyogSTIxOSAqLwo+PiAgIAl7IFBDSV9WRU5E
-T1JfSURfSU5URUwsIDB4MTViNywgcGNpX3F1aXJrX21mX2VuZHBvaW50X2FjcyB9LAo+PiAgIAl7
-IFBDSV9WRU5ET1JfSURfSU5URUwsIDB4MTViOCwgcGNpX3F1aXJrX21mX2VuZHBvaW50X2FjcyB9
-LAo+PiArCXsgUENJX1ZFTkRPUl9JRF9JTlRFTCwgUENJX0FOWV9JRCwgcGNpX3F1aXJrX3JjaWVw
-X2FjcyB9LAo+PiAgIAkvKiBRQ09NIFFERjJ4eHggcm9vdCBwb3J0cyAqLwo+PiAgIAl7IFBDSV9W
-RU5ET1JfSURfUUNPTSwgMHgwNDAwLCBwY2lfcXVpcmtfcWNvbV9ycF9hY3MgfSwKPj4gICAJeyBQ
-Q0lfVkVORE9SX0lEX1FDT00sIDB4MDQwMSwgcGNpX3F1aXJrX3Fjb21fcnBfYWNzIH0sCj4gCgpf
-X19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fXwppb21tdSBtYWls
-aW5nIGxpc3QKaW9tbXVAbGlzdHMubGludXgtZm91bmRhdGlvbi5vcmcKaHR0cHM6Ly9saXN0cy5s
-aW51eGZvdW5kYXRpb24ub3JnL21haWxtYW4vbGlzdGluZm8vaW9tbXU=
+On Wed, May 27, 2020 at 9:43 AM Jim Quinlan <james.quinlan@broadcom.com> wrote:
+>
+> Hi Nicolas,
+>
+> On Wed, May 27, 2020 at 11:00 AM Nicolas Saenz Julienne
+> <nsaenzjulienne@suse.de> wrote:
+> >
+> > Hi Jim,
+> > one thing comes to mind, there is a small test suite in drivers/of/unittest.c
+> > (specifically of_unittest_pci_dma_ranges()) you could extend it to include your
+> > use cases.
+> Sure, will check out.
+> >
+> > On Tue, 2020-05-26 at 15:12 -0400, Jim Quinlan wrote:
+> > > The new field in struct device 'dma_pfn_offset_map' is used to facilitate
+> > > the use of multiple pfn offsets between cpu addrs and dma addrs.  It is
+> > > similar to 'dma_pfn_offset' except that the offset chosen depends on the
+> > > cpu or dma address involved.
+> > >
+> > > Signed-off-by: Jim Quinlan <james.quinlan@broadcom.com>
+> > > ---
+> > >  drivers/of/address.c        | 65 +++++++++++++++++++++++++++++++++++--
+> > >  drivers/usb/core/message.c  |  3 ++
+> > >  drivers/usb/core/usb.c      |  3 ++
+> > >  include/linux/device.h      | 10 +++++-
+> > >  include/linux/dma-direct.h  | 10 ++++--
+> > >  include/linux/dma-mapping.h | 46 ++++++++++++++++++++++++++
+> > >  kernel/dma/Kconfig          | 13 ++++++++
+> > >  7 files changed, 144 insertions(+), 6 deletions(-)
+> > >
+> >
+> > [...]
+> >
+> > > @@ -977,10 +1020,19 @@ int of_dma_get_range(struct device *dev, struct
+> > > device_node *np, u64 *dma_addr,
+> > >               pr_debug("dma_addr(%llx) cpu_addr(%llx) size(%llx)\n",
+> > >                        range.bus_addr, range.cpu_addr, range.size);
+> > >
+> > > +             num_ranges++;
+> > >               if (dma_offset && range.cpu_addr - range.bus_addr != dma_offset)
+> > > {
+> > > -                     pr_warn("Can't handle multiple dma-ranges with different
+> > > offsets on node(%pOF)\n", node);
+> > > -                     /* Don't error out as we'd break some existing DTs */
+> > > -                     continue;
+> > > +                     if (!IS_ENABLED(CONFIG_DMA_PFN_OFFSET_MAP)) {
+> > > +                             pr_warn("Can't handle multiple dma-ranges with
+> > > different offsets on node(%pOF)\n", node);
+> > > +                             pr_warn("Perhaps set DMA_PFN_OFFSET_MAP=y?\n");
+> > > +                             /*
+> > > +                              * Don't error out as we'd break some existing
+> > > +                              * DTs that are using configs w/o
+> > > +                              * CONFIG_DMA_PFN_OFFSET_MAP set.
+> > > +                              */
+> > > +                             continue;
+> >
+> > dev->bus_dma_limit is set in of_dma_configure(), this function's caller, based
+> > on dma_start's value (set after this continue). So you'd be effectively setting
+> > the dev->bus_dma_limit to whatever we get from the first dma-range.
+> I'm not seeing that at all.  On the  evaluation of each dma-range,
+> dma_start and dma_end are re-evaluated to be the lowest and highest
+> bus values of the  dma-ranges seen so far.  After all dma-ranges are
+> examined,  dev->bus_dma_limit being set to the highest.  In fact, the
+> current code -- ie before my commits -- already does this for multiple
+> dma-ranges as long as the cpu-bus offset is the same in the
+> dma-ranges.
+> >
+> > This can be troublesome depending on how the dma-ranges are setup, for example
+> > if the first dma-range doesn't include the CMA area, in arm64 generally set as
+> > high as possible in ZONE_DMA32, that would render it useless for
+> > dma/{direct/swiotlb}. Again depending on the bus_dma_limit value, if smaller
+> > than ZONE_DMA you'd be unable to allocate any DMA memory.
+> >
+> > IMO, a solution to this calls for a revamp of dma-direct's dma_capable(): match
+> > the target DMA memory area with each dma-range we have to see if it fits.
+> >
+> > > +                     }
+> > > +                     dma_multi_pfn_offset = true;
+> > >               }
+> > >               dma_offset = range.cpu_addr - range.bus_addr;
+> > >
+> > > @@ -991,6 +1043,13 @@ int of_dma_get_range(struct device *dev, struct
+> > > device_node *np, u64 *dma_addr,
+> > >                       dma_end = range.bus_addr + range.size;
+> > >       }
+> > >
+> > > +     if (dma_multi_pfn_offset) {
+> > > +             dma_offset = 0;
+> > > +             ret = attach_dma_pfn_offset_map(dev, node, num_ranges);
+> > > +             if (ret)
+> > > +                     return ret;
+> > > +     }
+> > > +
+> > >       if (dma_start >= dma_end) {
+> > >               ret = -EINVAL;
+> > >               pr_debug("Invalid DMA ranges configuration on node(%pOF)\n",
+> > > diff --git a/drivers/usb/core/message.c b/drivers/usb/core/message.c
+> > > index 6197938dcc2d..aaa3e58f5eb4 100644
+> > > --- a/drivers/usb/core/message.c
+> > > +++ b/drivers/usb/core/message.c
+> > > @@ -1960,6 +1960,9 @@ int usb_set_configuration(struct usb_device *dev, int
+> > > configuration)
+> > >                */
+> > >               intf->dev.dma_mask = dev->dev.dma_mask;
+> > >               intf->dev.dma_pfn_offset = dev->dev.dma_pfn_offset;
+> > > +#ifdef CONFIG_DMA_PFN_OFFSET_MAP
+> > > +             intf->dev.dma_pfn_offset_map = dev->dev.dma_pfn_offset_map;
+> > > +#endif
+> >
+> > Thanks for looking at this, that said, I see more instances of drivers changing
+> > dma_pfn_offset outside of the core code. Why not doing this there too?
+> >
+> > Also, are we 100% sure that dev->dev.dma_pfn_offset isn't going to be freed
+> > before we're done using intf->dev? Maybe it's safer to copy the ranges?
+> >
+> > >               INIT_WORK(&intf->reset_ws, __usb_queue_reset_device);
+> > >               intf->minor = -1;
+> > >               device_initialize(&intf->dev);
+> > > diff --git a/drivers/usb/core/usb.c b/drivers/usb/core/usb.c
+> > > index f16c26dc079d..d2ed4d90e56e 100644
+> > > --- a/drivers/usb/core/usb.c
+> > > +++ b/drivers/usb/core/usb.c
+> > > @@ -612,6 +612,9 @@ struct usb_device *usb_alloc_dev(struct usb_device
+> > > *parent,
+> > >        */
+> > >       dev->dev.dma_mask = bus->sysdev->dma_mask;
+> > >       dev->dev.dma_pfn_offset = bus->sysdev->dma_pfn_offset;
+> > > +#ifdef CONFIG_DMA_PFN_OFFSET_MAP
+> > > +     dev->dev.dma_pfn_offset_map = bus->sysdev->dma_pfn_offset_map;
+> > > +#endif
+> > >       set_dev_node(&dev->dev, dev_to_node(bus->sysdev));
+> > >       dev->state = USB_STATE_ATTACHED;
+> > >       dev->lpm_disable_count = 1;
+> > > diff --git a/include/linux/device.h b/include/linux/device.h
+> > > index ac8e37cd716a..67a240ad4fc5 100644
+> > > --- a/include/linux/device.h
+> > > +++ b/include/linux/device.h
+> > > @@ -493,6 +493,8 @@ struct dev_links_info {
+> > >   * @bus_dma_limit: Limit of an upstream bridge or bus which imposes a smaller
+> > >   *           DMA limit than the device itself supports.
+> > >   * @dma_pfn_offset: offset of DMA memory range relatively of RAM
+> > > + * @dma_pfn_offset_map:      Like dma_pfn_offset but used when there are
+> > > multiple
+> > > + *           pfn offsets for multiple dma-ranges.
+> > >   * @dma_parms:       A low level driver may set these to teach IOMMU code
+> > > about
+> > >   *           segment limitations.
+> > >   * @dma_pools:       Dma pools (if dma'ble device).
+> > > @@ -578,7 +580,13 @@ struct device {
+> > >                                            allocations such descriptors. */
+> > >       u64             bus_dma_limit;  /* upstream dma constraint */
+> > >       unsigned long   dma_pfn_offset;
+> > > -
+> > > +#ifdef CONFIG_DMA_PFN_OFFSET_MAP
+> > > +     const struct dma_pfn_offset_region *dma_pfn_offset_map;
+> > > +                                     /* Like dma_pfn_offset, but for
+> > > +                                      * the unlikely case of multiple
+> > > +                                      * offsets. If non-null, dma_pfn_offset
+> > > +                                      * will be set to 0. */
+> > > +#endif
+> >
+> > I'm still sad this doesn't fully replace dma_pfn_offset & bus_dma_limit. I feel
+> > the extra logic involved in incorporating this as default isn't going to be
+> > noticeable as far as performance is concerned to single dma-range users, and
+> > it'd make for a nicer DMA code. Also you'd force everyone to test their changes
+> > on the multi dma-ranges code path, as opposed to having this disabled 99.9% of
+> > the time (hence broken every so often).
+> Good point.
+
++1
+
+> > Note that I sympathize with the amount of work involved on improving that, so
+> > better wait to hear what more knowledgeable people have to say about this :)
+> Yes, I agree.  I want to avoid coding and testing one solution only to
+> have a different reviewer NAK it.
+
+It's a pretty safe bet that everyone will prefer one code path over 2.
+
+Rob
+_______________________________________________
+iommu mailing list
+iommu@lists.linux-foundation.org
+https://lists.linuxfoundation.org/mailman/listinfo/iommu
