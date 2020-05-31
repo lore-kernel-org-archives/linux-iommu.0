@@ -2,66 +2,88 @@ Return-Path: <SRS0=mWFx=7O=lists.linux-foundation.org=iommu-bounces@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-8.2 required=3.0 tests=HEADER_FROM_DIFFERENT_DOMAINS,
-	INCLUDES_PATCH,MAILING_LIST_MULTI,SIGNED_OFF_BY,SPF_HELO_NONE,SPF_PASS,
-	URIBL_BLOCKED,USER_AGENT_SANE_1 autolearn=ham autolearn_force=no version=3.4.0
+X-Spam-Status: No, score=-0.3 required=3.0 tests=DKIM_ADSP_CUSTOM_MED,
+	DKIM_INVALID,DKIM_SIGNED,FREEMAIL_FORGED_FROMDOMAIN,FREEMAIL_FROM,
+	HEADER_FROM_DIFFERENT_DOMAINS,MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS
+	autolearn=no autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id E0658C433DF
-	for <iommu@archiver.kernel.org>; Mon,  1 Jun 2020 02:48:10 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 534B7C433E0
+	for <iommu@archiver.kernel.org>; Mon,  1 Jun 2020 04:34:00 +0000 (UTC)
 Received: from silver.osuosl.org (smtp3.osuosl.org [140.211.166.136])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by mail.kernel.org (Postfix) with ESMTPS id 42E15207D5
-	for <iommu@archiver.kernel.org>; Mon,  1 Jun 2020 02:48:10 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 42E15207D5
-Authentication-Results: mail.kernel.org; dmarc=none (p=none dis=none) header.from=molgen.mpg.de
+	by mail.kernel.org (Postfix) with ESMTPS id EBC37206C3
+	for <iommu@archiver.kernel.org>; Mon,  1 Jun 2020 04:33:59 +0000 (UTC)
+Authentication-Results: mail.kernel.org;
+	dkim=fail reason="signature verification failed" (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="WsUhc7s6"
+DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org EBC37206C3
+Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=gmail.com
 Authentication-Results: mail.kernel.org; spf=pass smtp.mailfrom=iommu-bounces@lists.linux-foundation.org
 Received: from localhost (localhost [127.0.0.1])
-	by silver.osuosl.org (Postfix) with ESMTP id DCF9120343;
-	Mon,  1 Jun 2020 02:48:09 +0000 (UTC)
+	by silver.osuosl.org (Postfix) with ESMTP id 8FCAD20497;
+	Mon,  1 Jun 2020 04:33:59 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
 Received: from silver.osuosl.org ([127.0.0.1])
 	by localhost (.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
-	with ESMTP id Xhgaaz0tIuD0; Mon,  1 Jun 2020 02:48:08 +0000 (UTC)
+	with ESMTP id n5+9fyhVFVRB; Mon,  1 Jun 2020 04:33:57 +0000 (UTC)
 Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [140.211.9.56])
-	by silver.osuosl.org (Postfix) with ESMTP id 8B6C520336;
-	Mon,  1 Jun 2020 02:48:08 +0000 (UTC)
+	by silver.osuosl.org (Postfix) with ESMTP id 3005F2037E;
+	Mon,  1 Jun 2020 04:33:57 +0000 (UTC)
 Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
-	by lists.linuxfoundation.org (Postfix) with ESMTP id 6E6CCC088C;
-	Mon,  1 Jun 2020 02:48:08 +0000 (UTC)
-Received: from hemlock.osuosl.org (smtp2.osuosl.org [140.211.166.133])
- by lists.linuxfoundation.org (Postfix) with ESMTP id AF471C0176
- for <iommu@lists.linux-foundation.org>; Mon,  1 Jun 2020 02:48:06 +0000 (UTC)
+	by lists.linuxfoundation.org (Postfix) with ESMTP id EC578C0178;
+	Mon,  1 Jun 2020 04:33:56 +0000 (UTC)
+Received: from whitealder.osuosl.org (smtp1.osuosl.org [140.211.166.138])
+ by lists.linuxfoundation.org (Postfix) with ESMTP id A3F43C0176
+ for <iommu@lists.linux-foundation.org>; Sun, 31 May 2020 23:47:30 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
- by hemlock.osuosl.org (Postfix) with ESMTP id 96FBC87A43
- for <iommu@lists.linux-foundation.org>; Mon,  1 Jun 2020 02:48:06 +0000 (UTC)
+ by whitealder.osuosl.org (Postfix) with ESMTP id 8B91086977
+ for <iommu@lists.linux-foundation.org>; Sun, 31 May 2020 23:47:30 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from hemlock.osuosl.org ([127.0.0.1])
+Received: from whitealder.osuosl.org ([127.0.0.1])
  by localhost (.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
- with ESMTP id nVDvJEJ-Qyxi for <iommu@lists.linux-foundation.org>;
- Mon,  1 Jun 2020 02:48:05 +0000 (UTC)
-X-Greylist: from auto-whitelisted by SQLgrey-1.7.6
-Received: from mx1.molgen.mpg.de (mx3.molgen.mpg.de [141.14.17.11])
- by hemlock.osuosl.org (Postfix) with ESMTPS id C300387A12
- for <iommu@lists.linux-foundation.org>; Mon,  1 Jun 2020 02:48:04 +0000 (UTC)
-Received: from [192.168.178.35] (unknown [94.134.88.9])
- (using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
- (No client certificate requested) (Authenticated sender: pmenzel)
- by mx.molgen.mpg.de (Postfix) with ESMTPSA id BF0D82002EE14;
- Mon,  1 Jun 2020 04:48:01 +0200 (CEST)
-Subject: Re: [PATCH] iommu/amd: Fix event counter availability check
-To: Alexander Monakov <amonakov@ispras.ru>, linux-kernel@vger.kernel.org
-References: <20200529200738.1923-1-amonakov@ispras.ru>
- <alpine.LNX.2.20.13.2005311014450.16067@monopod.intra.ispras.ru>
-From: Paul Menzel <pmenzel@molgen.mpg.de>
-Message-ID: <1b2652e9-903e-c02f-8393-2775ae60f0b4@molgen.mpg.de>
-Date: Mon, 1 Jun 2020 04:48:01 +0200
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101
- Thunderbird/68.8.1
+ with ESMTP id 2WaMPFsD7fNq for <iommu@lists.linux-foundation.org>;
+ Sun, 31 May 2020 23:47:29 +0000 (UTC)
+X-Greylist: domain auto-whitelisted by SQLgrey-1.7.6
+Received: from mail-qt1-f196.google.com (mail-qt1-f196.google.com
+ [209.85.160.196])
+ by whitealder.osuosl.org (Postfix) with ESMTPS id 419DD86974
+ for <iommu@lists.linux-foundation.org>; Sun, 31 May 2020 23:47:29 +0000 (UTC)
+Received: by mail-qt1-f196.google.com with SMTP id k22so6433831qtm.6
+ for <iommu@lists.linux-foundation.org>; Sun, 31 May 2020 16:47:29 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=gmail.com; s=20161025;
+ h=mime-version:from:date:message-id:subject:to;
+ bh=dHkNB29IroypU9npEenFoEQZGKmg3uiqvWsxQnbV8wk=;
+ b=WsUhc7s61uP5GJWAmtE9IgjeSFw01KWfEZNKzLwRm2B+35Pi7yB0XWFL+dpvnnYGBS
+ 8xbJ+O02bUo6cqcR1+GTsfhJywiVrTq5wMFS1ksq+GADlzCjulqih6tG84m9KWoik24d
+ vxZRojLQOWG5MB1j2GTQwCGJ+FKzLNxMtVHL9zWJtrKhGPPuoaNj8cz05x+exOR6Mztn
+ HanaTpYxpG81QmBXdwzr+mAha8W1nntelB9ivtby3WGZABLsTo6jkb0GT2qyV2LcGJkk
+ fATtJJiu5wiHF09qUwQO/tdEoPNfVMqIEKjeYt6EO3qICE0gzpEOVqIwi+gYsTL3frke
+ snrw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+ d=1e100.net; s=20161025;
+ h=x-gm-message-state:mime-version:from:date:message-id:subject:to;
+ bh=dHkNB29IroypU9npEenFoEQZGKmg3uiqvWsxQnbV8wk=;
+ b=Z7bMS6ISkepO9qzc3DPZi58WmoUg4S6C7fMmDf7ctob3FBd/53/aLUxT34rVJGJWgi
+ jB0CnEKhAfjKAC23uoyIqGVTAZysFB3Z5GjCgpbJlDGz2r1Tty1D199SG1cZ9EGqW+tW
+ PUnyF1X2IPBcXGFhksz15cKUOzSKXWIwoomISu7AASerzf7HVcYxga7Y2M4hlIlzZIdJ
+ szyCA48uBrOvXjKdXxe+sUQoUYN62OROSmzQYpKp2ZpPuPg3v6wNnFNWeJBtrg3CwUT7
+ aFHNHez7NbNaJtck7uwSybTNUeYcWjHxal6moLH9vEzAmMLY3HrGVKrXx+X8smK6sgCG
+ krxQ==
+X-Gm-Message-State: AOAM531+egYRMG5H5bzbdC4Dy+0s1eT9KynZ5/YrMqu0KQIlAAM81SSc
+ 1rwTOtSPBJpe5U3BSALi23RbhRBnC+2864dDxVI=
+X-Google-Smtp-Source: ABdhPJzuqKbX8YD8xGmTwDocTOqymPR1nik/6If1N7+exU//MdtoHiq5tAd8dACIFETYfvNV3k/tbPPfqlRzUsVHaFI=
+X-Received: by 2002:ac8:750a:: with SMTP id u10mr19212217qtq.103.1590968848048; 
+ Sun, 31 May 2020 16:47:28 -0700 (PDT)
 MIME-Version: 1.0
-In-Reply-To: <alpine.LNX.2.20.13.2005311014450.16067@monopod.intra.ispras.ru>
-Content-Language: en-US
-Cc: iommu@lists.linux-foundation.org, Shuah Khan <skhan@linuxfoundation.org>
+From: Vincent Pelletier <plr.vincent@gmail.com>
+Date: Mon, 1 Jun 2020 08:47:17 +0900
+Message-ID: <CAF78GY0KH84QvFqbvetgGKVxBgm5761HojRSfj_Ch+pCS_urCA@mail.gmail.com>
+Subject: DMAR errors on Wildcat Point-LP xHCI (Lenovo T450s)
+To: USB list <linux-usb@vger.kernel.org>, iommu@lists.linux-foundation.org, 
+ David Woodhouse <dwmw2@infradead.org>, Mathias Nyman <mathias.nyman@intel.com>,
+ Henrique de Moraes Holschuh <ibm-acpi@hmh.eng.br>,
+ ibm-acpi-devel@lists.sourceforge.net, platform-driver-x86@vger.kernel.org
+X-Mailman-Approved-At: Mon, 01 Jun 2020 04:33:56 +0000
 X-BeenThere: iommu@lists.linux-foundation.org
 X-Mailman-Version: 2.1.15
 Precedence: list
@@ -74,62 +96,223 @@ List-Post: <mailto:iommu@lists.linux-foundation.org>
 List-Help: <mailto:iommu-request@lists.linux-foundation.org?subject=help>
 List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
  <mailto:iommu-request@lists.linux-foundation.org?subject=subscribe>
-Content-Transfer-Encoding: base64
-Content-Type: text/plain; charset="utf-8"; Format="flowed"
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: 7bit
 Errors-To: iommu-bounces@lists.linux-foundation.org
 Sender: "iommu" <iommu-bounces@lists.linux-foundation.org>
 
-RGVhciBBbGV4YW5kZXIsCgoKVGhhbmsgeW91IHZlcnkgbXVjaCBmb3IgdGhlIHBhdGNoLgoKCkFt
-IDMxLjA1LjIwIHVtIDA5OjIyIHNjaHJpZWIgQWxleGFuZGVyIE1vbmFrb3Y6Cgo+IEFkZGluZyBT
-aHVhaCBLaGFuIHRvIENjOiBJJ3ZlIG5vdGljZWQgeW91J3ZlIHNlZW4gdGhpcyBpc3N1ZSBvbiBS
-eXplbiAyNDAwR0U7Cj4gY2FuIHlvdSBoYXZlIGEgbG9vayBhdCB0aGUgcGF0Y2g/IFdvdWxkIGJl
-IG5pY2UgdG8ga25vdyBpZiBpdCBmaXhlcyB0aGUKPiBwcm9ibGVtIGZvciB5b3UgdG9vLgoKPiBP
-biBGcmksIDI5IE1heSAyMDIwLCBBbGV4YW5kZXIgTW9uYWtvdiB3cm90ZToKPiAKPj4gVGhlIGRy
-aXZlciBwZXJmb3JtcyBhbiBleHRyYSBjaGVjayBpZiB0aGUgSU9NTVUncyBjYXBhYmlsaXRpZXMg
-YWR2ZXJ0aXNlCj4+IHByZXNlbmNlIG9mIHBlcmZvcm1hbmNlIGNvdW50ZXJzOiBpdCB2ZXJpZmll
-cyB0aGF0IGNvdW50ZXJzIGFyZSB3cml0YWJsZQo+PiBieSB3cml0aW5nIGEgaGFyZC1jb2RlZCB2
-YWx1ZSB0byBhIGNvdW50ZXIgYW5kIHRlc3RpbmcgdGhhdCByZWFkaW5nIHRoYXQKPj4gY291bnRl
-ciBnaXZlcyBiYWNrIHRoZSBzYW1lIHZhbHVlLgo+Pgo+PiBVbmZvcnR1bmF0ZWx5IGl0IGRvZXMg
-c28gcXVpdGUgZWFybHksIGV2ZW4gYmVmb3JlIHBjaV9lbmFibGVfZGV2aWNlIGlzCj4+IGNhbGxl
-ZCBmb3IgdGhlIElPTU1VLCBpLmUuIHdoZW4gYWNjZXNzaW5nIGl0cyBNTUlPIHNwYWNlIGlzIG5v
-dAo+PiBndWFyYW50ZWVkIHRvIHdvcmsuIE9uIFJ5emVuIDQ1MDBVIENQVSwgdGhpcyBhY3R1YWxs
-eSBicmVha3MgdGhlIHRlc3Q6Cj4+IHRoZSBkcml2ZXIgYXNzdW1lcyB0aGUgY291bnRlcnMgYXJl
-IG5vdCB3cml0YWJsZSwgYW5kIGRpc2FibGVzIHRoZQo+PiBmdW5jdGlvbmFsaXR5Lgo+Pgo+PiBN
-b3ZpbmcgaW5pdF9pb21tdV9wZXJmX2N0ciBqdXN0IGFmdGVyIGlvbW11X2ZsdXNoX2FsbF9jYWNo
-ZXMgcmVzb2x2ZXMKPj4gdGhlIGlzc3VlLiBUaGlzIGlzIHRoZSBlYXJsaWVzdCBwb2ludCBpbiBh
-bWRfaW9tbXVfaW5pdF9wY2kgd2hlcmUgdGhlCj4+IGNhbGwgc3VjY2VlZHMgb24gbXkgbGFwdG9w
-Lgo+Pgo+PiBTaWduZWQtb2ZmLWJ5OiBBbGV4YW5kZXIgTW9uYWtvdiA8YW1vbmFrb3ZAaXNwcmFz
-LnJ1Pgo+PiBDYzogSm9lcmcgUm9lZGVsIDxqb3JvQDhieXRlcy5vcmc+Cj4+IENjOiBTdXJhdmVl
-IFN1dGhpa3VscGFuaXQgPHN1cmF2ZWUuc3V0aGlrdWxwYW5pdEBhbWQuY29tPgo+PiBDYzogaW9t
-bXVAbGlzdHMubGludXgtZm91bmRhdGlvbi5vcmcKPj4gLS0tCj4+Cj4+IFBTLiBJJ20gc2VlaW5n
-IGFub3RoZXIgaGljY3VwIHdpdGggSU9NTVUgcHJvYmluZyBvbiBteSBzeXN0ZW06Cj4+IHBjaSAw
-MDAwOjAwOjAwLjI6IGNhbid0IGRlcml2ZSByb3V0aW5nIGZvciBQQ0kgSU5UIEEKPj4gcGNpIDAw
-MDA6MDA6MDAuMjogUENJIElOVCBBOiBub3QgY29ubmVjdGVkCj4+Cj4+IEhvcGVmdWxseSBJIGNh
-biBmaWd1cmUgaXQgb3V0LCBidXQgSSdkIGFwcHJlY2lhdGUgaGludHMuCgpJIGd1ZXNzIGl04oCZ
-cyBhIGZpcm13YXJlIGJ1ZywgYnV0IEkgY29udGFjdGVkIHRoZSBsaW51eC1wY2kgZm9sa3MgWzFd
-LgoKPj4gICBkcml2ZXJzL2lvbW11L2FtZF9pb21tdV9pbml0LmMgfCA2ICsrKy0tLQo+PiAgIDEg
-ZmlsZSBjaGFuZ2VkLCAzIGluc2VydGlvbnMoKyksIDMgZGVsZXRpb25zKC0pCj4+Cj4+IGRpZmYg
-LS1naXQgYS9kcml2ZXJzL2lvbW11L2FtZF9pb21tdV9pbml0LmMgYi9kcml2ZXJzL2lvbW11L2Ft
-ZF9pb21tdV9pbml0LmMKPj4gaW5kZXggNWI4MWZkMTZmNWZhLi4xYjdlYzZiNmEyODIgMTAwNjQ0
-Cj4+IC0tLSBhL2RyaXZlcnMvaW9tbXUvYW1kX2lvbW11X2luaXQuYwo+PiArKysgYi9kcml2ZXJz
-L2lvbW11L2FtZF9pb21tdV9pbml0LmMKPj4gQEAgLTE3ODgsOCArMTc4OCw2IEBAIHN0YXRpYyBp
-bnQgX19pbml0IGlvbW11X2luaXRfcGNpKHN0cnVjdCBhbWRfaW9tbXUgKmlvbW11KQo+PiAgIAlp
-ZiAoaW9tbXUtPmNhcCAmICgxVUwgPDwgSU9NTVVfQ0FQX05QQ0FDSEUpKQo+PiAgIAkJYW1kX2lv
-bW11X25wX2NhY2hlID0gdHJ1ZTsKPj4gICAKPj4gLQlpbml0X2lvbW11X3BlcmZfY3RyKGlvbW11
-KTsKPj4gLQo+PiAgIAlpZiAoaXNfcmQ4OTBfaW9tbXUoaW9tbXUtPmRldikpIHsKPj4gICAJCWlu
-dCBpLCBqOwo+PiAgIAo+PiBAQCAtMTg5MSw4ICsxODg5LDEwIEBAIHN0YXRpYyBpbnQgX19pbml0
-IGFtZF9pb21tdV9pbml0X3BjaSh2b2lkKQo+PiAgIAo+PiAgIAlpbml0X2RldmljZV90YWJsZV9k
-bWEoKTsKPj4gICAKPj4gLQlmb3JfZWFjaF9pb21tdShpb21tdSkKPj4gKwlmb3JfZWFjaF9pb21t
-dShpb21tdSkgewo+PiAgIAkJaW9tbXVfZmx1c2hfYWxsX2NhY2hlcyhpb21tdSk7Cj4+ICsJCWlu
-aXRfaW9tbXVfcGVyZl9jdHIoaW9tbXUpOwo+PiArCX0KPj4gICAKPj4gICAJaWYgKCFyZXQpCj4+
-ICAgCQlwcmludF9pb21tdV9pbmZvKCk7Cj4+Cj4+IGJhc2UtY29tbWl0OiA3NWNhZjMxMGQxNmNj
-NWUyZjg1MWMwNDhjZDU5N2Y1NDM3MDEzMzY4CgpUaGFuayB5b3UgdmVyeSBtdWNoIGZvciBmaXhp
-bmcgdGhpcyBpc3N1ZSwgd2hpY2ggaXMgYWxtb3N0IHR3byB5ZWFycyBvbGQgCmZvciBtZS4KClRl
-c3RlZC1ieTogUGF1bCBNZW56ZWwgPHBtZW56ZWxAbW9sZ2VuLm1wZy5kZT4KTVNJIE1TSSBNUy03
-QTM3L0IzNTBNIE1PUlRBUiB3aXRoIEFNRCBSeXplbiAzIDIyMDBHCkxpbms6IGh0dHBzOi8vbG9y
-ZS5rZXJuZWwub3JnL2xpbnV4LWlvbW11LzIwMTgwNzI3MTAyNzEwLkdBNjczOEA4Ynl0ZXMub3Jn
-LwoKCktpbmQgcmVnYXJkcywKClBhdWwKCgpbMV06IApodHRwczovL2xvcmUua2VybmVsLm9yZy9s
-aW51eC1wY2kvODU3OWJkMTQtZTM2OS0xMTQxLTkxN2ItMjA0ZDIwY2ZmNTI4QG1vbGdlbi5tcGcu
-ZGUvCl9fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fCmlvbW11
-IG1haWxpbmcgbGlzdAppb21tdUBsaXN0cy5saW51eC1mb3VuZGF0aW9uLm9yZwpodHRwczovL2xp
-c3RzLmxpbnV4Zm91bmRhdGlvbi5vcmcvbWFpbG1hbi9saXN0aW5mby9pb21tdQ==
+Hello,
+
+Trying to use a built-in USB device I rarely use (Sierra EM7345 LTE
+modem), I ran into issues from the modem flapping (getting removed
+from USB bus before LTE network registration is visible) up to all
+devices on the bus being "disconnected" (xhci giving up, in my
+understanding, with only the root hubs listed by lsusb).
+Checking the syslog, I find this:
+
+May 30 17:35:46 localhost kernel: [  278.999480] DMAR: DRHD: handling
+fault status reg 3
+May 30 17:35:46 localhost kernel: [  278.999485] DMAR: [DMA Read]
+Request device [00:16.7] PASID ffffffff fault addr 9cdff000 [fault
+reason 02] Present bit in context entry is clear
+May 30 17:35:46 localhost kernel: [  278.999488] DMAR: DRHD: handling
+fault status reg 3
+May 30 17:35:46 localhost kernel: [  278.999490] DMAR: [DMA Read]
+Request device [00:16.7] PASID ffffffff fault addr 9cdff000 [fault
+reason 02] Present bit in context entry is clear
+May 30 17:35:46 localhost kernel: [  279.001076] DMAR: DRHD: handling
+fault status reg 2
+May 30 17:35:46 localhost kernel: [  279.001078] DMAR: [DMA Write]
+Request device [00:16.7] PASID ffffffff fault addr 9cdff000 [fault
+reason 02] Present bit in context entry is clear
+May 30 17:35:46 localhost kernel: [  279.001120] DMAR: DRHD: handling
+fault status reg 2
+May 30 17:35:47 localhost kernel: [  280.738192] usb 2-4: USB
+disconnect, device number 10
+May 30 17:35:47 localhost kernel: [  280.738224] cdc_mbim 2-4:1.0: Tx
+URB error: -19
+May 30 17:35:47 localhost kernel: [  280.738303] cdc_mbim 2-4:1.0
+wwan0: unregister 'cdc_mbim' usb-0000:00:14.0-4, CDC MBIM
+May 30 17:35:47 localhost ModemManager[736]: <info>  (net/wwan0):
+released by device '/sys/devices/pci0000:00/0000:00:14.0/usb2/2-4'
+May 30 17:35:47 localhost ModemManager[736]: [/dev/cdc-wdm0]
+unexpected port hangup!
+May 30 17:35:47 localhost ModemManager[736]: [/dev/cdc-wdm0] channel destroyed
+May 30 17:35:47 localhost ModemManager[736]: <info>  Connection to
+mbim-proxy for /dev/cdc-wdm0 lost, reprobing
+May 30 17:35:47 localhost ModemManager[736]: <info>  [device
+/sys/devices/pci0000:00/0000:00:14.0/usb2/2-4] creating modem with
+plugin 'Sierra' and '2' ports
+May 30 17:35:47 localhost ModemManager[736]: <warn>  Could not
+recreate modem for device
+'/sys/devices/pci0000:00/0000:00:14.0/usb2/2-4': Failed to find a net
+port in the MBIM modem
+May 30 17:35:47 localhost ModemManager[736]: <info>
+(usbmisc/cdc-wdm0): released by device
+'/sys/devices/pci0000:00/0000:00:14.0/usb2/2-4'
+May 30 17:35:47 localhost ModemManager[736]: <info>  (tty/ttyACM0):
+released by device '/sys/devices/pci0000:00/0000:00:14.0/usb2/2-4'
+May 30 17:35:48 localhost kernel: [  281.202173] usb 2-4: new
+high-speed USB device number 11 using xhci_hcd
+May 30 17:35:48 localhost kernel: [  281.224037] usb 2-4: New USB
+device found, idVendor=8087, idProduct=0716, bcdDevice= 0.00
+May 30 17:35:48 localhost kernel: [  281.224043] usb 2-4: New USB
+device strings: Mfr=0, Product=0, SerialNumber=0
+May 30 17:35:48 localhost kernel: [  281.225646] usb_serial_simple
+2-4:1.0: flashloader converter detected
+May 30 17:35:48 localhost kernel: [  281.225891] usb 2-4: flashloader
+converter now attached to ttyUSB0
+
+which makes me suspect a missing IOMMU mapping in ACPI for the xhci
+controller. In this case, the xhci could recover and re-enumerated the
+device fairly quickly.
+Booting with "intel_iommu=off" makes the LTE modem work at least far
+enough that it gets registered to network (can send/receive SMS). I
+have not tried data communication (no data plan on current SIM).
+I have noticed for a while that this machine had a tendency to lose
+all USB devices more often than I enable the LTE modem, so it seems
+the modem just make this issue more likely, and is not their direct
+cause.
+
+This is on a 5.6.7 (Debian Sid 5.6.0-1-amd64, version from which
+pasted logs are extracted), and reproduced with 5.6.14 (Debian Sid
+5.6.0-2-amd64).
+The USB issues have been happening for a long time, and I use this
+modem rarely enough that I would not notice a new issue before several
+kernel versions.
+The modem usually worked "well enough" but always has had a bit of
+flapping, sometimes working after one or two suspend/resume cycles,
+and until now I did not feel the need to investigate more (I assumed a
+less-than-optimal modem/modem driver).
+This time it never ended up working after several suspend/resume
+cycles and reboots. So I do not believe it is a localised regression,
+but a bad situation getting just nudged over the edge.
+
+$ lspci
+00:00.0 Host bridge: Intel Corporation Broadwell-U Host Bridge -OPI (rev 09)
+00:02.0 VGA compatible controller: Intel Corporation HD Graphics 5500 (rev 09)
+00:03.0 Audio device: Intel Corporation Broadwell-U Audio Controller (rev 09)
+00:14.0 USB controller: Intel Corporation Wildcat Point-LP USB xHCI
+Controller (rev 03)
+00:16.0 Communication controller: Intel Corporation Wildcat Point-LP
+MEI Controller #1 (rev 03)
+00:19.0 Ethernet controller: Intel Corporation Ethernet Connection (3)
+I218-V (rev 03)
+00:1b.0 Audio device: Intel Corporation Wildcat Point-LP High
+Definition Audio Controller (rev 03)
+00:1c.0 PCI bridge: Intel Corporation Wildcat Point-LP PCI Express
+Root Port #6 (rev e3)
+00:1c.1 PCI bridge: Intel Corporation Wildcat Point-LP PCI Express
+Root Port #3 (rev e3)
+00:1d.0 USB controller: Intel Corporation Wildcat Point-LP USB EHCI
+Controller (rev 03)
+00:1f.0 ISA bridge: Intel Corporation Wildcat Point-LP LPC Controller (rev 03)
+00:1f.2 SATA controller: Intel Corporation Wildcat Point-LP SATA
+Controller [AHCI Mode] (rev 03)
+00:1f.3 SMBus: Intel Corporation Wildcat Point-LP SMBus Controller (rev 03)
+00:1f.6 Signal processing controller: Intel Corporation Wildcat
+Point-LP Thermal Management Controller (rev 03)
+02:00.0 Unassigned class [ff00]: Realtek Semiconductor Co., Ltd.
+RTS5227 PCI Express Card Reader (rev 01)
+03:00.0 Network controller: Intel Corporation Wireless 7265 (rev 59)
+$ lsusb
+Bus 001 Device 002: ID 8087:8001 Intel Corp.
+Bus 001 Device 001: ID 1d6b:0002 Linux Foundation 2.0 root hub
+Bus 003 Device 001: ID 1d6b:0003 Linux Foundation 3.0 root hub
+Bus 002 Device 006: ID 04f2:b449 Chicony Electronics Co., Ltd Integrated Camera
+Bus 002 Device 017: ID 8087:0a2a Intel Corp.
+Bus 002 Device 004: ID 138a:0017 Validity Sensors, Inc. VFS 5011
+fingerprint sensor
+Bus 002 Device 003: ID 058f:9540 Alcor Micro Corp. AU9540 Smartcard Reader
+Bus 002 Device 016: ID 1199:a001 Sierra Wireless, Inc. Sierra Wireless
+EM7345 4G LTE
+Bus 002 Device 001: ID 1d6b:0002 Linux Foundation 2.0 root hub
+
+Early boot messages are unhappy with firmware (1.37 is the latest
+available version to date):
+May 30 17:32:17 localhost kernel: [    0.168626] DMAR: Host address width 39
+May 30 17:32:17 localhost kernel: [    0.168629] DMAR: DRHD base:
+0x000000fed90000 flags: 0x0
+May 30 17:32:17 localhost kernel: [    0.168640] DMAR: dmar0:
+reg_base_addr fed90000 ver 1:0 cap 1c0000c40660462 ecap 7e1ff0505e
+May 30 17:32:17 localhost kernel: [    0.168643] DMAR: DRHD base:
+0x000000fed91000 flags: 0x1
+May 30 17:32:17 localhost kernel: [    0.168651] DMAR: dmar1:
+reg_base_addr fed91000 ver 1:0 cap d2008c20660462 ecap f010da
+May 30 17:32:17 localhost kernel: [    0.168653] DMAR: RMRR base:
+0x0000009c0f1000 end: 0x0000009c107fff
+May 30 17:32:17 localhost kernel: [    0.168655] DMAR: RMRR base:
+0x0000009d800000 end: 0x0000009fffffff
+May 30 17:32:17 localhost kernel: [    0.168658] DMAR: [Firmware Bug]:
+No firmware reserved region can cover this RMRR
+[0x000000009d800000-0x000000009fffffff], contact BIOS vendor for fixes
+May 30 17:32:17 localhost kernel: [    0.168671] DMAR: [Firmware Bug]:
+Your BIOS is broken; bad RMRR [0x000000009d800000-0x000000009fffffff]
+May 30 17:32:17 localhost kernel: [    0.168671] BIOS vendor: LENOVO;
+Ver: JBET73WW (1.37 ); Product Version: ThinkPad T450s
+May 30 17:32:17 localhost kernel: [    0.168675] DMAR-IR: IOAPIC id 2
+under DRHD base  0xfed91000 IOMMU 1
+May 30 17:32:17 localhost kernel: [    0.168677] DMAR-IR: HPET id 0
+under DRHD base 0xfed91000
+May 30 17:32:17 localhost kernel: [    0.168679] DMAR-IR: x2apic is
+disabled because BIOS sets x2apic opt out bit.
+May 30 17:32:17 localhost kernel: [    0.168680] DMAR-IR: Use
+'intremap=no_x2apic_optout' to override the BIOS setting.
+May 30 17:32:17 localhost kernel: [    0.169608] DMAR-IR: Enabled IRQ
+remapping in xapic mode
+[...]
+May 30 17:32:17 localhost kernel: [    0.890456] pci 0000:00:02.0:
+DMAR: Disabling IOMMU for graphics on this chipset
+[...]
+May 30 17:32:17 localhost kernel: [    2.574095] DMAR: No ATSR found
+May 30 17:32:17 localhost kernel: [    2.574207] DMAR: dmar1: Using
+Queued invalidation
+May 30 17:32:17 localhost kernel: [    2.574608] pci 0000:00:00.0:
+Adding to iommu group 0
+May 30 17:32:17 localhost kernel: [    2.574760] pci 0000:00:03.0:
+Adding to iommu group 1
+May 30 17:32:17 localhost kernel: [    2.575002] pci 0000:00:14.0:
+Adding to iommu group 2
+May 30 17:32:17 localhost kernel: [    2.575170] pci 0000:00:16.0:
+Adding to iommu group 3
+May 30 17:32:17 localhost kernel: [    2.575339] pci 0000:00:19.0:
+Adding to iommu group 4
+May 30 17:32:17 localhost kernel: [    2.575489] pci 0000:00:1b.0:
+Adding to iommu group 5
+May 30 17:32:17 localhost kernel: [    2.575652] pci 0000:00:1c.0:
+Adding to iommu group 6
+May 30 17:32:17 localhost kernel: [    2.575818] pci 0000:00:1c.1:
+Adding to iommu group 7
+May 30 17:32:17 localhost kernel: [    2.576035] pci 0000:00:1d.0:
+Adding to iommu group 8
+May 30 17:32:17 localhost kernel: [    2.580374] pci 0000:00:1f.0:
+Adding to iommu group 9
+May 30 17:32:17 localhost kernel: [    2.580411] pci 0000:00:1f.2:
+Adding to iommu group 9
+May 30 17:32:17 localhost kernel: [    2.580436] pci 0000:00:1f.3:
+Adding to iommu group 9
+May 30 17:32:17 localhost kernel: [    2.580461] pci 0000:00:1f.6:
+Adding to iommu group 9
+May 30 17:32:17 localhost kernel: [    2.580628] pci 0000:02:00.0:
+Adding to iommu group 10
+May 30 17:32:17 localhost kernel: [    2.581050] pci 0000:03:00.0:
+Adding to iommu group 11
+May 30 17:32:17 localhost kernel: [    2.581056] DMAR: Intel(R)
+Virtualization Technology for Directed I/O
+
+I am not sure what could fix this issue, hence the many recipients for
+this email:
+- An xhci module issue (should check/define extra IOMMU mappings, warn
+about them missing, or maybe be able to more reliably recover) ?
+- A new IOMMU quirk (workaround bad firmware) ?
+- A new thinkpad_acpi quirk (workaround bad firmware) ?
+Or somewhere else that I did not think of ? Hopefully it will not
+require a Lenovo BIOS fix, as this is an aging model.
+
+Regards,
+-- 
+Vincent Pelletier
+_______________________________________________
+iommu mailing list
+iommu@lists.linux-foundation.org
+https://lists.linuxfoundation.org/mailman/listinfo/iommu
