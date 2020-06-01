@@ -6,55 +6,56 @@ X-Spam-Status: No, score=-9.8 required=3.0 tests=HEADER_FROM_DIFFERENT_DOMAINS,
 	INCLUDES_PATCH,MAILING_LIST_MULTI,SIGNED_OFF_BY,SPF_HELO_NONE,SPF_PASS,
 	URIBL_BLOCKED,USER_AGENT_GIT autolearn=ham autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 1F3DFC433E0
-	for <iommu@archiver.kernel.org>; Mon,  1 Jun 2020 11:54:54 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id BFE10C433E2
+	for <iommu@archiver.kernel.org>; Mon,  1 Jun 2020 11:54:56 +0000 (UTC)
 Received: from fraxinus.osuosl.org (smtp4.osuosl.org [140.211.166.137])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by mail.kernel.org (Postfix) with ESMTPS id F3A5D20738
-	for <iommu@archiver.kernel.org>; Mon,  1 Jun 2020 11:54:53 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org F3A5D20738
+	by mail.kernel.org (Postfix) with ESMTPS id 9E34220738
+	for <iommu@archiver.kernel.org>; Mon,  1 Jun 2020 11:54:56 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 9E34220738
 Authentication-Results: mail.kernel.org; dmarc=none (p=none dis=none) header.from=huawei.com
 Authentication-Results: mail.kernel.org; spf=pass smtp.mailfrom=iommu-bounces@lists.linux-foundation.org
 Received: from localhost (localhost [127.0.0.1])
-	by fraxinus.osuosl.org (Postfix) with ESMTP id E44EA86470;
-	Mon,  1 Jun 2020 11:54:53 +0000 (UTC)
+	by fraxinus.osuosl.org (Postfix) with ESMTP id 8067C86470;
+	Mon,  1 Jun 2020 11:54:56 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
 Received: from fraxinus.osuosl.org ([127.0.0.1])
 	by localhost (.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
-	with ESMTP id Gd4Ko_B9Je_P; Mon,  1 Jun 2020 11:54:53 +0000 (UTC)
+	with ESMTP id OwBVZNc_ocEz; Mon,  1 Jun 2020 11:54:55 +0000 (UTC)
 Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [140.211.9.56])
-	by fraxinus.osuosl.org (Postfix) with ESMTP id 7860786444;
-	Mon,  1 Jun 2020 11:54:53 +0000 (UTC)
+	by fraxinus.osuosl.org (Postfix) with ESMTP id B7C5986444;
+	Mon,  1 Jun 2020 11:54:55 +0000 (UTC)
 Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
-	by lists.linuxfoundation.org (Postfix) with ESMTP id 71697C0178;
-	Mon,  1 Jun 2020 11:54:53 +0000 (UTC)
-Received: from fraxinus.osuosl.org (smtp4.osuosl.org [140.211.166.137])
- by lists.linuxfoundation.org (Postfix) with ESMTP id 87268C0176
- for <iommu@lists.linux-foundation.org>; Mon,  1 Jun 2020 11:54:51 +0000 (UTC)
+	by lists.linuxfoundation.org (Postfix) with ESMTP id A6076C0178;
+	Mon,  1 Jun 2020 11:54:55 +0000 (UTC)
+Received: from whitealder.osuosl.org (smtp1.osuosl.org [140.211.166.138])
+ by lists.linuxfoundation.org (Postfix) with ESMTP id D2EC2C0176
+ for <iommu@lists.linux-foundation.org>; Mon,  1 Jun 2020 11:54:53 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
- by fraxinus.osuosl.org (Postfix) with ESMTP id 83F5A86444
- for <iommu@lists.linux-foundation.org>; Mon,  1 Jun 2020 11:54:51 +0000 (UTC)
+ by whitealder.osuosl.org (Postfix) with ESMTP id C260E87D55
+ for <iommu@lists.linux-foundation.org>; Mon,  1 Jun 2020 11:54:53 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from fraxinus.osuosl.org ([127.0.0.1])
+Received: from whitealder.osuosl.org ([127.0.0.1])
  by localhost (.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
- with ESMTP id 9sLBQ3HkiWNH for <iommu@lists.linux-foundation.org>;
- Mon,  1 Jun 2020 11:54:50 +0000 (UTC)
+ with ESMTP id AlR76PcxgNDV for <iommu@lists.linux-foundation.org>;
+ Mon,  1 Jun 2020 11:54:52 +0000 (UTC)
 X-Greylist: domain auto-whitelisted by SQLgrey-1.7.6
 Received: from huawei.com (szxga06-in.huawei.com [45.249.212.32])
- by fraxinus.osuosl.org (Postfix) with ESMTPS id AB7E286449
- for <iommu@lists.linux-foundation.org>; Mon,  1 Jun 2020 11:54:50 +0000 (UTC)
+ by whitealder.osuosl.org (Postfix) with ESMTPS id 5E4D187D45
+ for <iommu@lists.linux-foundation.org>; Mon,  1 Jun 2020 11:54:52 +0000 (UTC)
 Received: from DGGEMS411-HUB.china.huawei.com (unknown [172.30.72.59])
- by Forcepoint Email with ESMTP id 5C1D6AE3451ABF32B2F5;
+ by Forcepoint Email with ESMTP id 54D2BCBCB725E06F887B;
  Mon,  1 Jun 2020 19:54:48 +0800 (CST)
 Received: from localhost.localdomain (10.69.192.58) by
  DGGEMS411-HUB.china.huawei.com (10.3.19.211) with Microsoft SMTP Server id
- 14.3.487.0; Mon, 1 Jun 2020 19:54:37 +0800
+ 14.3.487.0; Mon, 1 Jun 2020 19:54:38 +0800
 From: John Garry <john.garry@huawei.com>
 To: <will@kernel.org>, <robin.murphy@arm.com>
-Subject: [PATCH RFC 1/2] iommu/arm-smmu-v3: Calculate bits for prod and owner
-Date: Mon, 1 Jun 2020 19:50:47 +0800
-Message-ID: <1591012248-37956-2-git-send-email-john.garry@huawei.com>
+Subject: [PATCH RFC 2/2] iommu/arm-smmu-v3: Remove cmpxchg() in
+ arm_smmu_cmdq_issue_cmdlist()
+Date: Mon, 1 Jun 2020 19:50:48 +0800
+Message-ID: <1591012248-37956-3-git-send-email-john.garry@huawei.com>
 X-Mailer: git-send-email 2.8.1
 In-Reply-To: <1591012248-37956-1-git-send-email-john.garry@huawei.com>
 References: <1591012248-37956-1-git-send-email-john.garry@huawei.com>
@@ -80,90 +81,141 @@ Content-Transfer-Encoding: 7bit
 Errors-To: iommu-bounces@lists.linux-foundation.org
 Sender: "iommu" <iommu-bounces@lists.linux-foundation.org>
 
-Since the arm_smmu_ll_queue.prod will be for counting the "owner" value
-and also HW prod pointer, calculate how many bits are available for and
-used by each.
+It has been shown that the cmpxchg() for finding space in the cmdq can
+be a bottleneck:
+- For more CPUs contenting the cmdq, cmpxchg() will fail more often.
+- Since the software-maintained cons pointer is updated on the same 64b
+  memory region, the chance of cmpxchg() failure increases again.
 
-This is based on the number of possible CPUs in the system. And we require
-that each CPU can issue a minimum of 2 commands per batch - 1 x CMD_SYNC
-and at least 1 x other.
-
-Ignoring limits of HW max_n_shift and HW cmdq memory allocation, approx 16K
-is the max supported CPUs. For this, max_n_shift would be 15.
+The cmpxchg() is removed as part of 2 related changes:
+- If a CMD_SYNC is always issued for a batch, the cmdq can - in theory -
+  never fill, since we always wait for a CMD_SYNC to be consumed. We must
+  issue the CMD_SYNC so that a CPU will be always limited to issuing
+  max_cmd_per_batch commands. Generally for DMA unmap ops, a CMD_SYNC
+  is always issued anyway.
+  As such, the cmdq locking is removed, and we only longer maintain cons
+  in software (this needs to be revised for !MSI support).
+- Update prod and cmdq owner in a single operation. For this, we count the
+  prod and owner in separate regions in arm_smmu_ll_queue.prod.
+  As with simple binary counting, once the prod+wrap fields overflow, they
+  will zero. They will overflow into "owner" region, but this is ok as we
+  have accounted for the extra value.
+  As for the "owner", we now count this value, instead of setting a flag.
+  Similar to before, once the owner has finished gathering, it will clear
+  this mask. As such, a CPU declares itself as the "owner" when it reads
+  zero for this field. This zeroing will also clear possible overflow in
+  wrap+prod region.
 
 Signed-off-by: John Garry <john.garry@huawei.com>
 ---
- drivers/iommu/arm-smmu-v3.c | 34 +++++++++++++++++++++++++++++++++-
- 1 file changed, 33 insertions(+), 1 deletion(-)
+ drivers/iommu/arm-smmu-v3.c | 58 +++++++++++----------------------------------
+ 1 file changed, 14 insertions(+), 44 deletions(-)
 
 diff --git a/drivers/iommu/arm-smmu-v3.c b/drivers/iommu/arm-smmu-v3.c
-index 82508730feb7..e607ab5a4cbd 100644
+index e607ab5a4cbd..d6c7d82f9cf8 100644
 --- a/drivers/iommu/arm-smmu-v3.c
 +++ b/drivers/iommu/arm-smmu-v3.c
-@@ -530,6 +530,8 @@ struct arm_smmu_ll_queue {
- 		u8			__pad[SMP_CACHE_BYTES];
- 	} ____cacheline_aligned_in_smp;
- 	u32				max_n_shift;
-+	u32				max_cmd_per_batch;
-+	u32				owner_count_shift;
- };
- 
- struct arm_smmu_queue {
-@@ -1512,7 +1514,10 @@ static void arm_smmu_cmdq_batch_add(struct arm_smmu_device *smmu,
- 				    struct arm_smmu_cmdq_batch *cmds,
- 				    struct arm_smmu_cmdq_ent *cmd)
+@@ -1375,7 +1375,7 @@ static int arm_smmu_cmdq_issue_cmdlist(struct arm_smmu_device *smmu,
+ 				       u64 *cmds, int n, bool sync)
  {
--	if (cmds->num == CMDQ_BATCH_ENTRIES) {
-+	struct arm_smmu_cmdq *q = &smmu->cmdq;
-+	struct arm_smmu_ll_queue *llq = &q->q.llq;
+ 	u64 cmd_sync[CMDQ_ENT_DWORDS];
+-	u32 prod;
++	u32 prod, prodx;
+ 	unsigned long flags;
+ 	bool owner;
+ 	struct arm_smmu_cmdq *cmdq = &smmu->cmdq;
+@@ -1383,33 +1383,21 @@ static int arm_smmu_cmdq_issue_cmdlist(struct arm_smmu_device *smmu,
+ 		.max_n_shift = cmdq->q.llq.max_n_shift,
+ 	}, head = llq;
+ 	int ret = 0;
++	u32 owner_val = 1 << cmdq->q.llq.owner_count_shift;
++	u32 prod_mask = GENMASK(cmdq->q.llq.max_n_shift, 0);
++	u32 owner_mask = GENMASK(30, cmdq->q.llq.owner_count_shift);
 +
-+	if (cmds->num == llq->max_cmd_per_batch) {
- 		arm_smmu_cmdq_issue_cmdlist(smmu, cmds->cmds, cmds->num, false);
- 		cmds->num = 0;
++	/* always issue a CMD_SYNC TODO: fixup callers for this */
++	sync = true;
+ 
+ 	/* 1. Allocate some space in the queue */
+ 	local_irq_save(flags);
+-	llq.val = READ_ONCE(cmdq->q.llq.val);
+-	do {
+-		u64 old;
+-
+-		while (!queue_has_space(&llq, n + sync)) {
+-			local_irq_restore(flags);
+-			if (arm_smmu_cmdq_poll_until_not_full(smmu, &llq))
+-				dev_err_ratelimited(smmu->dev, "CMDQ timeout\n");
+-			local_irq_save(flags);
+-		}
+ 
+-		head.cons = llq.cons;
+-		head.prod = queue_inc_prod_n(&llq, n + sync) |
+-					     CMDQ_PROD_OWNED_FLAG;
++	prodx = atomic_fetch_add(n + sync + owner_val, &cmdq->q.llq.atomic.prod);
+ 
+-		old = cmpxchg_relaxed(&cmdq->q.llq.val, llq.val, head.val);
+-		if (old == llq.val)
+-			break;
+-
+-		llq.val = old;
+-	} while (1);
+-	owner = !(llq.prod & CMDQ_PROD_OWNED_FLAG);
+-	head.prod &= ~CMDQ_PROD_OWNED_FLAG;
+-	llq.prod &= ~CMDQ_PROD_OWNED_FLAG;
++	owner = !(prodx & owner_mask);
++	llq.prod = prod_mask & prodx;
++	head.prod = queue_inc_prod_n(&llq, n + sync);
+ 
+ 	/*
+ 	 * 2. Write our commands into the queue As with simple binary counting, once the prod+wrap fields overflow, they
+  will zero. They will overflow into "owner" region, but this is ok as we
+  have accounted for the extra value.
+@@ -1420,14 +1408,6 @@ static int arm_smmu_cmdq_issue_cmdlist(struct arm_smmu_device *smmu,
+ 		prod = queue_inc_prod_n(&llq, n);
+ 		arm_smmu_cmdq_build_sync_cmd(cmd_sync, smmu, prod);
+ 		queue_write(Q_ENT(&cmdq->q, prod), cmd_sync, CMDQ_ENT_DWORDS);
+-
+-		/*
+-		 * In order to determine completion of our CMD_SYNC, we must
+-		 * ensure that the queue can't wrap twice without us noticing.
+-		 * We achieve that by taking the cmdq lock as shared before
+-		 * marking our slot as valid.
+-		 */
+-		arm_smmu_cmdq_shared_lock(cmdq);
  	}
-@@ -3156,8 +3161,24 @@ static int arm_smmu_init_one_queue(struct arm_smmu_device *smmu,
- 				   unsigned long cons_off,
- 				   size_t dwords, const char *name)
- {
-+	int cpus = num_possible_cpus();
- 	size_t qsz;
  
-+	/*
-+	 * We can get the number of bits required for owner counting by
-+	 * log2(nr possible cpus) + 1, but we have to take into account that he
-+	 * wrap+prod could overflow before the owner zeroes, so add 1
-+	 * more (to cpus) for bits_for_cmdq_owner calculation.
-+	 */
-+	int bits_for_cmdq_owner = ilog2(cpus + 1) + 1;
-+	/* 1-bit for overflow, 1-bit for wrap */
-+	int bits_available_for_prod = 32 - 2 - bits_for_cmdq_owner;
-+	int entries_for_prod;
-+
-+	if (bits_available_for_prod < 1) /* this would be insane - how many CPUs? */
-+		return -ENOMEM;
-+
-+	q->llq.max_n_shift = min_t(int, q->llq.max_n_shift, bits_available_for_prod);
- 	do {
- 		qsz = ((1 << q->llq.max_n_shift) * dwords) << 3;
- 		q->base = dmam_alloc_coherent(smmu->dev, qsz, &q->base_dma,
-@@ -3167,6 +3188,17 @@ static int arm_smmu_init_one_queue(struct arm_smmu_device *smmu,
+ 	/* 3. Mark our slots as valid, ensuring commands are visible first */
+@@ -1439,11 +1419,10 @@ static int arm_smmu_cmdq_issue_cmdlist(struct arm_smmu_device *smmu,
+ 		/* a. Wait for previous owner to finish */
+ 		atomic_cond_read_relaxed(&cmdq->owner_prod, VAL == llq.prod);
  
- 		q->llq.max_n_shift--;
- 	} while (1);
-+	entries_for_prod = 1 << q->llq.max_n_shift;
-+
-+	/*
-+	 * We need at least 2 commands in a batch (1 x CMD_SYNC and 1 x whatever else).
-+	 * Assuming orig max_n_shift >= 17, this would mean ~16K CPUs max.
-+	 */
-+	if (entries_for_prod < 2 * cpus)
-+		return -ENOMEM;
-+
-+	q->llq.max_cmd_per_batch = min_t(u32, entries_for_prod / cpus, CMDQ_BATCH_ENTRIES);
-+	q->llq.owner_count_shift = q->llq.max_n_shift + 1;
+-		/* b. Stop gathering work by clearing the owned flag */
+-		prod = atomic_fetch_andnot_relaxed(CMDQ_PROD_OWNED_FLAG,
++		/* b. Stop gathering work by clearing the owned mask */
++		prod = atomic_fetch_andnot_relaxed(owner_mask,
+ 						   &cmdq->q.llq.atomic.prod);
+-		prod &= ~CMDQ_PROD_OWNED_FLAG;
+-
++		prod &= prod_mask;
+ 		/*
+ 		 * c. Wait for any gathered work to be written to the queue.
+ 		 * Note that we read our own entries so that we have the control
+@@ -1476,15 +1455,6 @@ static int arm_smmu_cmdq_issue_cmdlist(struct arm_smmu_device *smmu,
+ 					    readl_relaxed(cmdq->q.prod_reg),
+ 					    readl_relaxed(cmdq->q.cons_reg));
+ 		}
+-
+-		/*
+-		 * Try to unlock the cmq lock. This will fail if we're the last
+-		 * reader, in which case we can safely update cmdq->q.llq.cons
+-		 */
+-		if (!arm_smmu_cmdq_shared_tryunlock(cmdq)) {
+-			WRITE_ONCE(cmdq->q.llq.cons, llq.cons);
+-			arm_smmu_cmdq_shared_unlock(cmdq);
+-		}
+ 	}
  
- 	if (!q->base) {
- 		dev_err(smmu->dev,
+ 	local_irq_restore(flags);
 -- 
 2.16.4
 
