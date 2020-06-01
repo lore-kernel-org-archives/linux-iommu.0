@@ -2,78 +2,76 @@ Return-Path: <SRS0=mWFx=7O=lists.linux-foundation.org=iommu-bounces@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-6.8 required=3.0 tests=HEADER_FROM_DIFFERENT_DOMAINS,
-	INCLUDES_PATCH,MAILING_LIST_MULTI,SIGNED_OFF_BY,SPF_HELO_NONE,SPF_PASS,
-	URIBL_BLOCKED autolearn=ham autolearn_force=no version=3.4.0
+X-Spam-Status: No, score=-6.8 required=3.0 tests=DKIM_INVALID,DKIM_SIGNED,
+	INCLUDES_PATCH,MAILING_LIST_MULTI,SIGNED_OFF_BY,SPF_HELO_NONE,SPF_PASS
+	autolearn=ham autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 45738C433E0
-	for <iommu@archiver.kernel.org>; Mon,  1 Jun 2020 20:43:33 +0000 (UTC)
-Received: from silver.osuosl.org (smtp3.osuosl.org [140.211.166.136])
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 448F9C433E1
+	for <iommu@archiver.kernel.org>; Mon,  1 Jun 2020 21:25:28 +0000 (UTC)
+Received: from hemlock.osuosl.org (smtp2.osuosl.org [140.211.166.133])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by mail.kernel.org (Postfix) with ESMTPS id 1B3022076B
-	for <iommu@archiver.kernel.org>; Mon,  1 Jun 2020 20:43:31 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 1B3022076B
-Authentication-Results: mail.kernel.org; dmarc=none (p=none dis=none) header.from=hisilicon.com
+	by mail.kernel.org (Postfix) with ESMTPS id E1D87206E2
+	for <iommu@archiver.kernel.org>; Mon,  1 Jun 2020 21:25:27 +0000 (UTC)
+Authentication-Results: mail.kernel.org;
+	dkim=fail reason="signature verification failed" (1024-bit key) header.d=kernel.org header.i=@kernel.org header.b="Tfnv5ezJ"
+DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org E1D87206E2
+Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=kernel.org
 Authentication-Results: mail.kernel.org; spf=pass smtp.mailfrom=iommu-bounces@lists.linux-foundation.org
 Received: from localhost (localhost [127.0.0.1])
-	by silver.osuosl.org (Postfix) with ESMTP id D678220554;
-	Mon,  1 Jun 2020 20:43:30 +0000 (UTC)
+	by hemlock.osuosl.org (Postfix) with ESMTP id BC13E87D05;
+	Mon,  1 Jun 2020 21:25:27 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from silver.osuosl.org ([127.0.0.1])
+Received: from hemlock.osuosl.org ([127.0.0.1])
 	by localhost (.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
-	with ESMTP id HRKfSkMJqUIS; Mon,  1 Jun 2020 20:43:29 +0000 (UTC)
+	with ESMTP id ofDmapH3ipyl; Mon,  1 Jun 2020 21:25:27 +0000 (UTC)
 Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [140.211.9.56])
-	by silver.osuosl.org (Postfix) with ESMTP id 73FB020518;
-	Mon,  1 Jun 2020 20:43:29 +0000 (UTC)
+	by hemlock.osuosl.org (Postfix) with ESMTP id F13DD87CD4;
+	Mon,  1 Jun 2020 21:25:26 +0000 (UTC)
 Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
-	by lists.linuxfoundation.org (Postfix) with ESMTP id 588A8C0178;
-	Mon,  1 Jun 2020 20:43:29 +0000 (UTC)
-Received: from whitealder.osuosl.org (smtp1.osuosl.org [140.211.166.138])
- by lists.linuxfoundation.org (Postfix) with ESMTP id 72EDAC0176
- for <iommu@lists.linux-foundation.org>; Mon,  1 Jun 2020 20:43:28 +0000 (UTC)
+	by lists.linuxfoundation.org (Postfix) with ESMTP id E2E92C088C;
+	Mon,  1 Jun 2020 21:25:26 +0000 (UTC)
+Received: from fraxinus.osuosl.org (smtp4.osuosl.org [140.211.166.137])
+ by lists.linuxfoundation.org (Postfix) with ESMTP id 51D62C0176
+ for <iommu@lists.linux-foundation.org>; Mon,  1 Jun 2020 21:25:25 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
- by whitealder.osuosl.org (Postfix) with ESMTP id 6E43986D78
- for <iommu@lists.linux-foundation.org>; Mon,  1 Jun 2020 20:43:28 +0000 (UTC)
+ by fraxinus.osuosl.org (Postfix) with ESMTP id 38EF084559
+ for <iommu@lists.linux-foundation.org>; Mon,  1 Jun 2020 21:25:25 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from whitealder.osuosl.org ([127.0.0.1])
+Received: from fraxinus.osuosl.org ([127.0.0.1])
  by localhost (.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
- with ESMTP id jTCJaMe7IFXu for <iommu@lists.linux-foundation.org>;
- Mon,  1 Jun 2020 20:43:26 +0000 (UTC)
+ with ESMTP id GfS-8K1SxeYZ for <iommu@lists.linux-foundation.org>;
+ Mon,  1 Jun 2020 21:25:23 +0000 (UTC)
 X-Greylist: domain auto-whitelisted by SQLgrey-1.7.6
-Received: from huawei.com (szxga03-in.huawei.com [45.249.212.189])
- by whitealder.osuosl.org (Postfix) with ESMTPS id 5E5E686BAF
- for <iommu@lists.linux-foundation.org>; Mon,  1 Jun 2020 20:43:26 +0000 (UTC)
-Received: from dggemi406-hub.china.huawei.com (unknown [172.30.72.55])
- by Forcepoint Email with ESMTP id 4198766B57FCA23C5AD2;
- Tue,  2 Jun 2020 04:43:23 +0800 (CST)
-Received: from DGGEMI525-MBS.china.huawei.com ([169.254.6.10]) by
- dggemi406-hub.china.huawei.com ([10.3.17.144]) with mapi id 14.03.0487.000;
- Tue, 2 Jun 2020 04:43:15 +0800
-From: "Song Bao Hua (Barry Song)" <song.bao.hua@hisilicon.com>
-To: Robin Murphy <robin.murphy@arm.com>, "will@kernel.org" <will@kernel.org>, 
- "hch@lst.de" <hch@lst.de>, "m.szyprowski@samsung.com"
- <m.szyprowski@samsung.com>, "iommu@lists.linux-foundation.org"
- <iommu@lists.linux-foundation.org>
-Subject: RE: [PATCH] iommu/arm-smmu-v3: expose numa_node attribute to users
- in sysfs
-Thread-Topic: [PATCH] iommu/arm-smmu-v3: expose numa_node attribute to users
- in sysfs
-Thread-Index: AQHWNmL+BAaoTPaXd0CO3TAe6c7BnKjDOhgAgAD/rYA=
-Date: Mon, 1 Jun 2020 20:43:14 +0000
-Message-ID: <B926444035E5E2439431908E3842AFD24D83EB@DGGEMI525-MBS.china.huawei.com>
-References: <20200530091505.56664-1-song.bao.hua@hisilicon.com>
- <4e902884-7ac3-9e79-ec01-f56f2fc5ebad@arm.com>
-In-Reply-To: <4e902884-7ac3-9e79-ec01-f56f2fc5ebad@arm.com>
-Accept-Language: en-GB, en-US
-Content-Language: en-US
-X-MS-Has-Attach: 
-X-MS-TNEF-Correlator: 
-x-originating-ip: [10.126.202.97]
+Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
+ by fraxinus.osuosl.org (Postfix) with ESMTPS id 0186D84547
+ for <iommu@lists.linux-foundation.org>; Mon,  1 Jun 2020 21:25:22 +0000 (UTC)
+Received: from localhost (mobile-166-175-190-200.mycingular.net
+ [166.175.190.200])
+ (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+ (No client certificate requested)
+ by mail.kernel.org (Postfix) with ESMTPSA id 80095206E2;
+ Mon,  1 Jun 2020 21:25:21 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+ s=default; t=1591046721;
+ bh=8Qt9e+XiD+FUR7h1k2mvt1mhtQNAprWB2mByevBZk2U=;
+ h=Date:From:To:Cc:Subject:In-Reply-To:From;
+ b=Tfnv5ezJEYhLG3oubFQtNlNFDM77YpLtWpiK17A5c0idmWA0mdy6adF/ky3z8yezb
+ 8VvAj0fYHRPVM1uO6EGqVvCNwlE4uemfr8zUQf+2srN1kYRkSwQUWbVu/rvP/xJHQy
+ MOgFpUic5ewR3UBpiwKZLLng4DXpV+RPrUWYTQLM=
+Date: Mon, 1 Jun 2020 16:25:19 -0500
+From: Bjorn Helgaas <helgaas@kernel.org>
+To: Ashok Raj <ashok.raj@intel.com>
+Subject: Re: [PATCH] PCI: Relax ACS requirement for Intel RCiEP devices.
+Message-ID: <20200601212519.GA758937@bjorn-Precision-5520>
 MIME-Version: 1.0
-X-CFilter-Loop: Reflected
-Cc: Linuxarm <linuxarm@huawei.com>, "linux-arm-kernel@lists.infradead.org"
- <linux-arm-kernel@lists.infradead.org>
+Content-Disposition: inline
+In-Reply-To: <1590699462-7131-1-git-send-email-ashok.raj@intel.com>
+Cc: Alex Williamson <alex.williamson@redhat.com>,
+ Darrel Goeddel <DGoeddel@forcepoint.com>, linux-pci@vger.kernel.org,
+ linux-kernel@vger.kernel.org, iommu@lists.linux-foundation.org,
+ Mark Scott <mscott@forcepoint.com>, Romil Sharma <rsharma@forcepoint.com>,
+ Bjorn Helgaas <bhelgaas@google.com>
 X-BeenThere: iommu@lists.linux-foundation.org
 X-Mailman-Version: 2.1.15
 Precedence: list
@@ -86,153 +84,96 @@ List-Post: <mailto:iommu@lists.linux-foundation.org>
 List-Help: <mailto:iommu-request@lists.linux-foundation.org?subject=help>
 List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
  <mailto:iommu-request@lists.linux-foundation.org?subject=subscribe>
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: base64
 Errors-To: iommu-bounces@lists.linux-foundation.org
 Sender: "iommu" <iommu-bounces@lists.linux-foundation.org>
 
-
-
-> -----Original Message-----
-> From: Robin Murphy [mailto:robin.murphy@arm.com]
-> Sent: Tuesday, June 2, 2020 1:14 AM
-> To: Song Bao Hua (Barry Song) <song.bao.hua@hisilicon.com>; will@kernel.org;
-> hch@lst.de; m.szyprowski@samsung.com; iommu@lists.linux-foundation.org
-> Cc: Linuxarm <linuxarm@huawei.com>; linux-arm-kernel@lists.infradead.org
-> Subject: Re: [PATCH] iommu/arm-smmu-v3: expose numa_node attribute to
-> users in sysfs
-> 
-> On 2020-05-30 10:15, Barry Song wrote:
-> > As tests show the latency of dma_unmap can increase dramatically while
-> > calling them cross NUMA nodes, especially cross CPU packages, eg.
-> > 300ns vs 800ns while waiting for the completion of CMD_SYNC in an
-> > empty command queue. The large latency causing by remote node will
-> > in turn make contention of the command queue more serious, and enlarge
-> > the latency of DMA users within local NUMA nodes.
-> >
-> > Users might intend to enforce NUMA locality with the consideration of
-> > the position of SMMU. The patch provides minor benefit by presenting
-> > this information to users directly, as they might want to know it without
-> > checking hardware spec at all.
-> 
-> Hmm, given that dev-to_node() is a standard driver model thing, is there
-> not already some generic device property that can expose it - and if
-> not, should there be? Presumably if userspace cares enough to want to
-> know whereabouts in the system an IOMMU is, it probably also cares where
-> the actual endpoint devices are too.
-> 
-> At the very least, it doesn't seem right for it to be specific to one
-> single IOMMU driver.
-
-Right now pci devices have generally got the numa_node in sysfs by drivers/pci/pci-sysfs.c
-
-static ssize_t numa_node_store(struct device *dev,
-                               struct device_attribute *attr, const char *buf,
-                               size_t count)
-{
-        ...
-
-        add_taint(TAINT_FIRMWARE_WORKAROUND, LOCKDEP_STILL_OK);
-        pci_alert(pdev, FW_BUG "Overriding NUMA node to %d.  Contact your vendor for updates.",
-                  node);
-
-        dev->numa_node = node;
-        return count;
-}
-
-static ssize_t numa_node_show(struct device *dev, struct device_attribute *attr,
-                              char *buf)
-{
-        return sprintf(buf, "%d\n", dev->numa_node);
-}
-static DEVICE_ATTR_RW(numa_node);
-
-for other devices who care about numa information, the specific drivers are doing that, for example:
-
-drivers/dax/bus.c:      if (a == &dev_attr_numa_node.attr && !IS_ENABLED(CONFIG_NUMA))
-drivers/dax/bus.c:      &dev_attr_numa_node.attr,
-drivers/dma/idxd/sysfs.c:       &dev_attr_numa_node.attr,
-drivers/hv/vmbus_drv.c: &dev_attr_numa_node.attr,
-drivers/nvdimm/bus.c:   &dev_attr_numa_node.attr,
-drivers/nvme/host/core.c:       &dev_attr_numa_node.attr,
-
-smmu is usually a platform device, we can actually expose numa_node for platform_device, or globally expose numa_node
-for general "device" if people don't opposite.
-
-Barry
-
-> 
-> Robin.
-> 
-> > Signed-off-by: Barry Song <song.bao.hua@hisilicon.com>
-> > ---
-> >   drivers/iommu/arm-smmu-v3.c | 40
-> ++++++++++++++++++++++++++++++++++++-
-> >   1 file changed, 39 insertions(+), 1 deletion(-)
-> >
-> > diff --git a/drivers/iommu/arm-smmu-v3.c b/drivers/iommu/arm-smmu-v3.c
-> > index 82508730feb7..754c4d59498b 100644
-> > --- a/drivers/iommu/arm-smmu-v3.c
-> > +++ b/drivers/iommu/arm-smmu-v3.c
-> > @@ -4021,6 +4021,44 @@ err_reset_pci_ops: __maybe_unused;
-> >   	return err;
-> >   }
-> >
-> > +static ssize_t numa_node_show(struct device *dev,
-> > +		struct device_attribute *attr, char *buf)
-> > +{
-> > +	return sprintf(buf, "%d\n", dev_to_node(dev));
-> > +}
-> > +static DEVICE_ATTR_RO(numa_node);
-> > +
-> > +static umode_t arm_smmu_numa_attr_visible(struct kobject *kobj, struct
-> attribute *a,
-> > +		int n)
-> > +{
-> > +	struct device *dev = container_of(kobj, typeof(*dev), kobj);
-> > +
-> > +	if (!IS_ENABLED(CONFIG_NUMA))
-> > +		return 0;
-> > +
-> > +	if (a == &dev_attr_numa_node.attr &&
-> > +			dev_to_node(dev) == NUMA_NO_NODE)
-> > +		return 0;
-> > +
-> > +	return a->mode;
-> > +}
-> > +
-> > +static struct attribute *arm_smmu_dev_attrs[] = {
-> > +	&dev_attr_numa_node.attr,
-> > +	NULL
-> > +};
-> > +
-> > +static struct attribute_group arm_smmu_dev_attrs_group = {
-> > +	.attrs          = arm_smmu_dev_attrs,
-> > +	.is_visible     = arm_smmu_numa_attr_visible,
-> > +};
-> > +
-> > +
-> > +static const struct attribute_group *arm_smmu_dev_attrs_groups[] = {
-> > +	&arm_smmu_dev_attrs_group,
-> > +	NULL,
-> > +};
-> > +
-> >   static int arm_smmu_device_probe(struct platform_device *pdev)
-> >   {
-> >   	int irq, ret;
-> > @@ -4097,7 +4135,7 @@ static int arm_smmu_device_probe(struct
-> platform_device *pdev)
-> >   		return ret;
-> >
-> >   	/* And we're up. Go go go! */
-> > -	ret = iommu_device_sysfs_add(&smmu->iommu, dev, NULL,
-> > +	ret = iommu_device_sysfs_add(&smmu->iommu, dev,
-> arm_smmu_dev_attrs_groups,
-> >   				     "smmu3.%pa", &ioaddr);
-> >   	if (ret)
-> >   		return ret;
-> >
-_______________________________________________
-iommu mailing list
-iommu@lists.linux-foundation.org
-https://lists.linuxfoundation.org/mailman/listinfo/iommu
+T24gVGh1LCBNYXkgMjgsIDIwMjAgYXQgMDE6NTc6NDJQTSAtMDcwMCwgQXNob2sgUmFqIHdyb3Rl
+Ogo+IEFsbCBJbnRlbCBwbGF0Zm9ybXMgZ3VhcmFudGVlIHRoYXQgYWxsIHJvb3QgY29tcGxleCBp
+bXBsZW1lbnRhdGlvbnMKPiBtdXN0IHNlbmQgdHJhbnNhY3Rpb25zIHVwIHRvIElPTU1VIGZvciBh
+ZGRyZXNzIHRyYW5zbGF0aW9ucy4gSGVuY2UgZm9yCj4gUkNpRVAgZGV2aWNlcyB0aGF0IGFyZSBW
+ZW5kb3IgSUQgSW50ZWwsIGNhbiBjbGFpbSBleGNlcHRpb24gZm9yIGxhY2sgb2YKPiBBQ1Mgc3Vw
+cG9ydC4KPiAKPiAKPiAzLjE2IFJvb3QtQ29tcGxleCBQZWVyIHRvIFBlZXIgQ29uc2lkZXJhdGlv
+bnMKPiBXaGVuIERNQSByZW1hcHBpbmcgaXMgZW5hYmxlZCwgcGVlci10by1wZWVyIHJlcXVlc3Rz
+IHRocm91Z2ggdGhlCj4gUm9vdC1Db21wbGV4IG11c3QgYmUgaGFuZGxlZAo+IGFzIGZvbGxvd3M6
+Cj4g4oCiIFRoZSBpbnB1dCBhZGRyZXNzIGluIHRoZSByZXF1ZXN0IGlzIHRyYW5zbGF0ZWQgKHRo
+cm91Z2ggZmlyc3QtbGV2ZWwsCj4gICBzZWNvbmQtbGV2ZWwgb3IgbmVzdGVkIHRyYW5zbGF0aW9u
+KSB0byBhIGhvc3QgcGh5c2ljYWwgYWRkcmVzcyAoSFBBKS4KPiAgIFRoZSBhZGRyZXNzIGRlY29k
+aW5nIGZvciBwZWVyIGFkZHJlc3NlcyBtdXN0IGJlIGRvbmUgb25seSBvbiB0aGUKPiAgIHRyYW5z
+bGF0ZWQgSFBBLiBIYXJkd2FyZSBpbXBsZW1lbnRhdGlvbnMgYXJlIGZyZWUgdG8gZnVydGhlciBs
+aW1pdAo+ICAgcGVlci10by1wZWVyIGFjY2Vzc2VzIHRvIHNwZWNpZmljIGhvc3QgcGh5c2ljYWwg
+YWRkcmVzcyByZWdpb25zCj4gICAob3IgdG8gY29tcGxldGVseSBkaXNhbGxvdyBwZWVyLWZvcndh
+cmRpbmcgb2YgdHJhbnNsYXRlZCByZXF1ZXN0cykuCj4g4oCiIFNpbmNlIGFkZHJlc3MgdHJhbnNs
+YXRpb24gY2hhbmdlcyB0aGUgY29udGVudHMgKGFkZHJlc3MgZmllbGQpIG9mCj4gICB0aGUgUENJ
+IEV4cHJlc3MgVHJhbnNhY3Rpb24gTGF5ZXIgUGFja2V0IChUTFApLCBmb3IgUENJIEV4cHJlc3MK
+PiAgIHBlZXItdG8tcGVlciByZXF1ZXN0cyB3aXRoIEVDUkMsIHRoZSBSb290LUNvbXBsZXggaGFy
+ZHdhcmUgbXVzdCB1c2UKPiAgIHRoZSBuZXcgRUNSQyAocmUtY29tcHV0ZWQgd2l0aCB0aGUgdHJh
+bnNsYXRlZCBhZGRyZXNzKSBpZiBpdAo+ICAgZGVjaWRlcyB0byBmb3J3YXJkIHRoZSBUTFAgYXMg
+YSBwZWVyIHJlcXVlc3QuCj4g4oCiIFJvb3QtcG9ydHMsIGFuZCBtdWx0aS1mdW5jdGlvbiByb290
+LWNvbXBsZXggaW50ZWdyYXRlZCBlbmRwb2ludHMsIG1heQo+ICAgc3VwcG9ydCBhZGRpdGlvbmFs
+IHBlZXJ0by1wZWVyIGNvbnRyb2wgZmVhdHVyZXMgYnkgc3VwcG9ydGluZyBQQ0kgRXhwcmVzcwo+
+ICAgQWNjZXNzIENvbnRyb2wgU2VydmljZXMgKEFDUykgY2FwYWJpbGl0eS4gUmVmZXIgdG8gQUNT
+IGNhcGFiaWxpdHkgaW4KPiAgIFBDSSBFeHByZXNzIHNwZWNpZmljYXRpb25zIGZvciBkZXRhaWxz
+Lgo+IAo+IFNpbmNlIExpbnV4IGRpZG4ndCBnaXZlIHNwZWNpYWwgdHJlYXRtZW50IHRvIGFsbG93
+IHRoaXMgZXhjZXB0aW9uLCBjZXJ0YWluCj4gUkNpRVAgTUZEIGRldmljZXMgYXJlIGdldHRpbmcg
+Z3JvdXBlZCBpbiBhIHNpbmdsZSBpb21tdSBncm91cC4gVGhpcwo+IGRvZXNuJ3QgcGVybWl0IGEg
+c2luZ2xlIGRldmljZSB0byBiZSBhc3NpZ25lZCB0byBhIGd1ZXN0IGZvciBpbnN0YW5jZS4KPiAK
+PiBJbiBvbmUgdmVuZG9yIHN5c3RlbTogRGV2aWNlIDE0Lnggd2VyZSBncm91cGVkIGluIGEgc2lu
+Z2xlIElPTU1VIGdyb3VwLgo+IAo+IC9zeXMva2VybmVsL2lvbW11X2dyb3Vwcy81L2RldmljZXMv
+MDAwMDowMDoxNC4wCj4gL3N5cy9rZXJuZWwvaW9tbXVfZ3JvdXBzLzUvZGV2aWNlcy8wMDAwOjAw
+OjE0LjIKPiAvc3lzL2tlcm5lbC9pb21tdV9ncm91cHMvNS9kZXZpY2VzLzAwMDA6MDA6MTQuMwo+
+IAo+IEFmdGVyIHRoZSBwYXRjaDoKPiAvc3lzL2tlcm5lbC9pb21tdV9ncm91cHMvNS9kZXZpY2Vz
+LzAwMDA6MDA6MTQuMAo+IC9zeXMva2VybmVsL2lvbW11X2dyb3Vwcy81L2RldmljZXMvMDAwMDow
+MDoxNC4yCj4gL3N5cy9rZXJuZWwvaW9tbXVfZ3JvdXBzLzYvZGV2aWNlcy8wMDAwOjAwOjE0LjMg
+PDw8IG5ldyBncm91cAo+IAo+IDE0LjAgYW5kIDE0LjIgYXJlIGludGVncmF0ZWQgZGV2aWNlcywg
+YnV0IGxlZ2FjeSBlbmQgcG9pbnRzLgo+IFdoZXJlYXMgMTQuMyB3YXMgYSBQQ0llIGNvbXBsaWFu
+dCBSQ2lFUC4KPiAKPiAwMDoxNC4zIE5ldHdvcmsgY29udHJvbGxlcjogSW50ZWwgQ29ycG9yYXRp
+b24gRGV2aWNlIDlkZjAgKHJldiAzMCkKPiBDYXBhYmlsaXRpZXM6IFs0MF0gRXhwcmVzcyAodjIp
+IFJvb3QgQ29tcGxleCBJbnRlZ3JhdGVkIEVuZHBvaW50LCBNU0kgMDAKPiAKPiBUaGlzIHBlcm1p
+dHMgYXNzaWduaW5nIHRoaXMgZGV2aWNlIHRvIGEgZ3Vlc3QgVk0uCj4gCj4gRml4ZXM6IGYwOTZj
+MDYxZjU1MiAoImlvbW11OiBSZXdvcmsgaW9tbXVfZ3JvdXBfZ2V0X2Zvcl9wY2lfZGV2KCkiKQo+
+IFNpZ25lZC1vZmYtYnk6IEFzaG9rIFJhaiA8YXNob2sucmFqQGludGVsLmNvbT4KPiBUbzogSm9l
+cmcgUm9lZGVsIDxqb3JvQDhieXRlcy5vcmc+Cj4gVG86IEJqb3JuIEhlbGdhYXMgPGJoZWxnYWFz
+QGdvb2dsZS5jb20+Cj4gQ2M6IGxpbnV4LWtlcm5lbEB2Z2VyLmtlcm5lbC5vcmcKPiBDYzogaW9t
+bXVAbGlzdHMubGludXgtZm91bmRhdGlvbi5vcmcKPiBDYzogTHUgQmFvbHUgPGJhb2x1Lmx1QGxp
+bnV4LmludGVsLmNvbT4KPiBDYzogQWxleCBXaWxsaWFtc29uIDxhbGV4LndpbGxpYW1zb25AcmVk
+aGF0LmNvbT4KPiBDYzogRGFycmVsIEdvZWRkZWwgPERHb2VkZGVsQGZvcmNlcG9pbnQuY29tPgo+
+IENjOiBNYXJrIFNjb3R0IDxtc2NvdHRAZm9yY2Vwb2ludC5jb20+LAo+IENjOiBSb21pbCBTaGFy
+bWEgPHJzaGFybWFAZm9yY2Vwb2ludC5jb20+Cj4gQ2M6IEFzaG9rIFJhaiA8YXNob2sucmFqQGlu
+dGVsLmNvbT4KClRlbnRhdGl2ZWx5IGFwcGxpZWQgdG8gcGNpL3ZpcnR1YWxpemF0aW9uIGZvciB2
+NS44LCB0aGFua3MhCgpUaGUgc3BlYyBzYXlzIHRoaXMgaGFuZGxpbmcgbXVzdCBhcHBseSAid2hl
+biBETUEgcmVtYXBwaW5nIGlzCmVuYWJsZWQiLiAgVGhlIHBhdGNoIGRvZXMgbm90IGNoZWNrIHdo
+ZXRoZXIgRE1BIHJlbWFwcGluZyBpcyBlbmFibGVkLgoKSXMgdGhlcmUgYW55IGNhc2Ugd2hlcmUg
+RE1BIHJlbWFwcGluZyBpcyAqbm90KiBlbmFibGVkLCBhbmQgd2UgcmVseSBvbgp0aGlzIHBhdGNo
+IHRvIHRlbGwgdXMgd2hldGhlciB0aGUgZGV2aWNlIGlzIGlzb2xhdGVkPyAgSXQgc291bmRzIGxp
+a2UKaXQgbWF5IGdpdmUgdGhlIHdyb25nIGFuc3dlciBpbiBzdWNoIGEgY2FzZT8KCkNhbiB5b3Ug
+Y29uZmlybSB0aGF0IEkgZG9uJ3QgbmVlZCB0byB3b3JyeSBhYm91dCB0aGlzPyAgCgo+IC0tLQo+
+IHYyOiBNb3ZlZCBmdW5jdGlvbmFsaXR5IGZyb20gaW9tbXUgdG8gcGNpIHF1aXJrcyAtIEFsZXgg
+V2lsbGlhbXNvbgo+IAo+ICBkcml2ZXJzL3BjaS9xdWlya3MuYyB8IDE1ICsrKysrKysrKysrKysr
+Kwo+ICAxIGZpbGUgY2hhbmdlZCwgMTUgaW5zZXJ0aW9ucygrKQo+IAo+IGRpZmYgLS1naXQgYS9k
+cml2ZXJzL3BjaS9xdWlya3MuYyBiL2RyaXZlcnMvcGNpL3F1aXJrcy5jCj4gaW5kZXggMjhjOWEy
+NDA5YzUwLi42MzM3M2NhMGEzZmUgMTAwNjQ0Cj4gLS0tIGEvZHJpdmVycy9wY2kvcXVpcmtzLmMK
+PiArKysgYi9kcml2ZXJzL3BjaS9xdWlya3MuYwo+IEBAIC00NjgyLDYgKzQ2ODIsMjAgQEAgc3Rh
+dGljIGludCBwY2lfcXVpcmtfbWZfZW5kcG9pbnRfYWNzKHN0cnVjdCBwY2lfZGV2ICpkZXYsIHUx
+NiBhY3NfZmxhZ3MpCj4gIAkJUENJX0FDU19DUiB8IFBDSV9BQ1NfVUYgfCBQQ0lfQUNTX0RUKTsK
+PiAgfQo+ICAKPiArc3RhdGljIGludCBwY2lfcXVpcmtfcmNpZXBfYWNzKHN0cnVjdCBwY2lfZGV2
+ICpkZXYsIHUxNiBhY3NfZmxhZ3MpCj4gK3sKPiArCS8qCj4gKwkgKiBSQ2lFUCdzIGFyZSByZXF1
+aXJlZCB0byBhbGxvdyBwMnAgb25seSBvbiB0cmFuc2xhdGVkIGFkZHJlc3Nlcy4KPiArCSAqIFJl
+ZmVyIHRvIEludGVsIFZULWQgc3BlY2lmaWNhdGlvbiBTZWN0aW9uIDMuMTYgUm9vdC1Db21wbGV4
+IFBlZXIKPiArCSAqIHRvIFBlZXIgQ29uc2lkZXJhdGlvbnMKPiArCSAqLwo+ICsJaWYgKHBjaV9w
+Y2llX3R5cGUoZGV2KSAhPSBQQ0lfRVhQX1RZUEVfUkNfRU5EKQo+ICsJCXJldHVybiAtRU5PVFRZ
+Owo+ICsKPiArCXJldHVybiBwY2lfYWNzX2N0cmxfZW5hYmxlZChhY3NfZmxhZ3MsCj4gKwkJUENJ
+X0FDU19TViB8IFBDSV9BQ1NfUlIgfCBQQ0lfQUNTX0NSIHwgUENJX0FDU19VRik7Cj4gK30KPiAr
+Cj4gIHN0YXRpYyBpbnQgcGNpX3F1aXJrX2JyY21fYWNzKHN0cnVjdCBwY2lfZGV2ICpkZXYsIHUx
+NiBhY3NfZmxhZ3MpCj4gIHsKPiAgCS8qCj4gQEAgLTQ3NjQsNiArNDc3OCw3IEBAIHN0YXRpYyBj
+b25zdCBzdHJ1Y3QgcGNpX2Rldl9hY3NfZW5hYmxlZCB7Cj4gIAkvKiBJMjE5ICovCj4gIAl7IFBD
+SV9WRU5ET1JfSURfSU5URUwsIDB4MTViNywgcGNpX3F1aXJrX21mX2VuZHBvaW50X2FjcyB9LAo+
+ICAJeyBQQ0lfVkVORE9SX0lEX0lOVEVMLCAweDE1YjgsIHBjaV9xdWlya19tZl9lbmRwb2ludF9h
+Y3MgfSwKPiArCXsgUENJX1ZFTkRPUl9JRF9JTlRFTCwgUENJX0FOWV9JRCwgcGNpX3F1aXJrX3Jj
+aWVwX2FjcyB9LAo+ICAJLyogUUNPTSBRREYyeHh4IHJvb3QgcG9ydHMgKi8KPiAgCXsgUENJX1ZF
+TkRPUl9JRF9RQ09NLCAweDA0MDAsIHBjaV9xdWlya19xY29tX3JwX2FjcyB9LAo+ICAJeyBQQ0lf
+VkVORE9SX0lEX1FDT00sIDB4MDQwMSwgcGNpX3F1aXJrX3Fjb21fcnBfYWNzIH0sCj4gLS0gCj4g
+Mi43LjQKPiAKX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX18K
+aW9tbXUgbWFpbGluZyBsaXN0CmlvbW11QGxpc3RzLmxpbnV4LWZvdW5kYXRpb24ub3JnCmh0dHBz
+Oi8vbGlzdHMubGludXhmb3VuZGF0aW9uLm9yZy9tYWlsbWFuL2xpc3RpbmZvL2lvbW11
