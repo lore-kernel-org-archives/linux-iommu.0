@@ -2,64 +2,80 @@ Return-Path: <SRS0=mWFx=7O=lists.linux-foundation.org=iommu-bounces@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-5.3 required=3.0 tests=HEADER_FROM_DIFFERENT_DOMAINS,
-	INCLUDES_PATCH,MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS,USER_AGENT_SANE_1
-	autolearn=ham autolearn_force=no version=3.4.0
+X-Spam-Status: No, score=-0.8 required=3.0 tests=DKIM_INVALID,DKIM_SIGNED,
+	MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED autolearn=no
+	autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id BCA2BC433DF
-	for <iommu@archiver.kernel.org>; Mon,  1 Jun 2020 16:09:41 +0000 (UTC)
-Received: from whitealder.osuosl.org (smtp1.osuosl.org [140.211.166.138])
+	by smtp.lore.kernel.org (Postfix) with ESMTP id C62F6C433E1
+	for <iommu@archiver.kernel.org>; Mon,  1 Jun 2020 17:41:09 +0000 (UTC)
+Received: from hemlock.osuosl.org (smtp2.osuosl.org [140.211.166.133])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by mail.kernel.org (Postfix) with ESMTPS id 8A3A620776
-	for <iommu@archiver.kernel.org>; Mon,  1 Jun 2020 16:09:41 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 8A3A620776
-Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=ispras.ru
+	by mail.kernel.org (Postfix) with ESMTPS id 6B6C120734
+	for <iommu@archiver.kernel.org>; Mon,  1 Jun 2020 17:41:09 +0000 (UTC)
+Authentication-Results: mail.kernel.org;
+	dkim=fail reason="signature verification failed" (1024-bit key) header.d=kernel.org header.i=@kernel.org header.b="PBS/XvI5"
+DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 6B6C120734
+Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=kernel.org
 Authentication-Results: mail.kernel.org; spf=pass smtp.mailfrom=iommu-bounces@lists.linux-foundation.org
 Received: from localhost (localhost [127.0.0.1])
-	by whitealder.osuosl.org (Postfix) with ESMTP id 5847C86235;
-	Mon,  1 Jun 2020 16:09:41 +0000 (UTC)
+	by hemlock.osuosl.org (Postfix) with ESMTP id 2FFD287DF3;
+	Mon,  1 Jun 2020 17:41:09 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from whitealder.osuosl.org ([127.0.0.1])
+Received: from hemlock.osuosl.org ([127.0.0.1])
 	by localhost (.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
-	with ESMTP id QCl67E1LL9vC; Mon,  1 Jun 2020 16:09:37 +0000 (UTC)
+	with ESMTP id ftr5B8OQhAEo; Mon,  1 Jun 2020 17:41:08 +0000 (UTC)
 Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [140.211.9.56])
-	by whitealder.osuosl.org (Postfix) with ESMTP id 3E38E85C9E;
-	Mon,  1 Jun 2020 16:09:37 +0000 (UTC)
+	by hemlock.osuosl.org (Postfix) with ESMTP id ADCEF87D8B;
+	Mon,  1 Jun 2020 17:41:08 +0000 (UTC)
 Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
-	by lists.linuxfoundation.org (Postfix) with ESMTP id 23FB6C0178;
-	Mon,  1 Jun 2020 16:09:37 +0000 (UTC)
+	by lists.linuxfoundation.org (Postfix) with ESMTP id 9F019C088C;
+	Mon,  1 Jun 2020 17:41:08 +0000 (UTC)
 Received: from whitealder.osuosl.org (smtp1.osuosl.org [140.211.166.138])
- by lists.linuxfoundation.org (Postfix) with ESMTP id 9E1D6C0176
- for <iommu@lists.linux-foundation.org>; Mon,  1 Jun 2020 16:09:35 +0000 (UTC)
+ by lists.linuxfoundation.org (Postfix) with ESMTP id 66E04C0176
+ for <iommu@lists.linux-foundation.org>; Mon,  1 Jun 2020 17:41:07 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
- by whitealder.osuosl.org (Postfix) with ESMTP id 8C13D84BCF
- for <iommu@lists.linux-foundation.org>; Mon,  1 Jun 2020 16:09:35 +0000 (UTC)
+ by whitealder.osuosl.org (Postfix) with ESMTP id 50C8B86439
+ for <iommu@lists.linux-foundation.org>; Mon,  1 Jun 2020 17:41:07 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
 Received: from whitealder.osuosl.org ([127.0.0.1])
  by localhost (.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
- with ESMTP id cEiXOea2L16L for <iommu@lists.linux-foundation.org>;
- Mon,  1 Jun 2020 16:09:34 +0000 (UTC)
+ with ESMTP id 9RHyn+jmOaXE for <iommu@lists.linux-foundation.org>;
+ Mon,  1 Jun 2020 17:41:06 +0000 (UTC)
 X-Greylist: domain auto-whitelisted by SQLgrey-1.7.6
-Received: from smtp.ispras.ru (winnie.ispras.ru [83.149.199.91])
- by whitealder.osuosl.org (Postfix) with ESMTP id F2D1084BC1
- for <iommu@lists.linux-foundation.org>; Mon,  1 Jun 2020 16:09:33 +0000 (UTC)
-Received: from monopod.intra.ispras.ru (monopod.intra.ispras.ru [10.10.3.121])
- by smtp.ispras.ru (Postfix) with ESMTP id 3A87A203BF;
- Mon,  1 Jun 2020 19:09:29 +0300 (MSK)
-Date: Mon, 1 Jun 2020 19:09:29 +0300 (MSK)
-From: Alexander Monakov <amonakov@ispras.ru>
-To: Suravee Suthikulpanit <suravee.suthikulpanit@amd.com>
-Subject: Re: [PATCH] iommu/amd: Fix event counter availability check
-In-Reply-To: <dba1e37a-1ed7-ef7f-7252-2ebd1d6bde8c@amd.com>
-Message-ID: <alpine.LNX.2.20.13.2006011903210.16067@monopod.intra.ispras.ru>
-References: <20200529200738.1923-1-amonakov@ispras.ru>
- <56761139-f794-39b1-4dfa-dfc05fbe5f60@amd.com>
- <alpine.LNX.2.20.13.2006011132530.16067@monopod.intra.ispras.ru>
- <dba1e37a-1ed7-ef7f-7252-2ebd1d6bde8c@amd.com>
-User-Agent: Alpine 2.20.13 (LNX 116 2015-12-14)
+Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
+ by whitealder.osuosl.org (Postfix) with ESMTPS id D9DE686429
+ for <iommu@lists.linux-foundation.org>; Mon,  1 Jun 2020 17:41:06 +0000 (UTC)
+Received: from localhost (mobile-166-175-190-200.mycingular.net
+ [166.175.190.200])
+ (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+ (No client certificate requested)
+ by mail.kernel.org (Postfix) with ESMTPSA id 48FEF206A4;
+ Mon,  1 Jun 2020 17:41:06 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+ s=default; t=1591033266;
+ bh=egFH6RgQ4a+4kLCfGrEDkjv5v4bJblqDQOjodPikqEM=;
+ h=Date:From:To:Cc:Subject:In-Reply-To:From;
+ b=PBS/XvI5mPBJhMQPW3QR/267YghZh8VBNHFVIA3y76nvmv7wSAOnIG8ZofBmrwL3W
+ hjX/e/kbh6hI/0SHMT/KsCJ3IYwK/78zwY6ZY8W6ZDDtNYI4kfbVVgq5NF84Mj/Dz5
+ u9OiYWmcq6uvLgae6Udy20G6q8HsslAkBraLQcZo=
+Date: Mon, 1 Jun 2020 12:41:04 -0500
+From: Bjorn Helgaas <helgaas@kernel.org>
+To: Joerg Roedel <joro@8bytes.org>
+Subject: Re: [PATCH 0/2] Introduce PCI_FIXUP_IOMMU
+Message-ID: <20200601174104.GA734973@bjorn-Precision-5520>
 MIME-Version: 1.0
-Cc: linux-kernel@vger.kernel.org, iommu@lists.linux-foundation.org
+Content-Disposition: inline
+In-Reply-To: <20200528073344.GO5221@8bytes.org>
+Cc: jean-philippe <jean-philippe@linaro.org>,
+ Herbert Xu <herbert@gondor.apana.org.au>, Arnd Bergmann <arnd@arndb.de>,
+ linux-pci@vger.kernel.org, Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+ Hanjun Guo <guohanjun@huawei.com>, "Rafael J. Wysocki" <rjw@rjwysocki.net>,
+ linux-kernel@vger.kernel.org, iommu@lists.linux-foundation.org,
+ kenneth-lee-2012@foxmail.com, linux-acpi@vger.kernel.org,
+ linux-crypto@vger.kernel.org, Sudeep Holla <sudeep.holla@arm.com>,
+ Bjorn Helgaas <bhelgaas@google.com>, Zhangfei Gao <zhangfei.gao@linaro.org>,
+ linux-arm-kernel@lists.infradead.org, Len Brown <lenb@kernel.org>
 X-BeenThere: iommu@lists.linux-foundation.org
 X-Mailman-Version: 2.1.15
 Precedence: list
@@ -77,31 +93,34 @@ Content-Transfer-Encoding: 7bit
 Errors-To: iommu-bounces@lists.linux-foundation.org
 Sender: "iommu" <iommu-bounces@lists.linux-foundation.org>
 
-> Instead of blindly moving the code around to a spot that would just work,
-> I am trying to understand what might be required here. In this case,
-> the init_device_table_dma()should not be needed. I suspect it's the IOMMU
-> invalidate all command that's also needed here.
+On Thu, May 28, 2020 at 09:33:44AM +0200, Joerg Roedel wrote:
+> On Wed, May 27, 2020 at 01:18:42PM -0500, Bjorn Helgaas wrote:
+> > Is this slowdown significant?  We already iterate over every device
+> > when applying PCI_FIXUP_FINAL quirks, so if we used the existing
+> > PCI_FIXUP_FINAL, we wouldn't be adding a new loop.  We would only be
+> > adding two more iterations to the loop in pci_do_fixups() that tries
+> > to match quirks against the current device.  I doubt that would be a
+> > measurable slowdown.
 > 
-> I'm also checking with the HW and BIOS team. Meanwhile, could you please give
-> the following change a try:
+> I don't know how significant it is, but I remember people complaining
+> about adding new PCI quirks because it takes too long for them to run
+> them all. That was in the discussion about the quirk disabling ATS on
+> AMD Stoney systems.
+> 
+> So it probably depends on how many PCI devices are in the system whether
+> it causes any measureable slowdown.
 
-Yes, this also fixes the problem for me.
-Alexander
+I found this [1] from Paul Menzel, which was a slowdown caused by
+quirk_usb_early_handoff().  I think the real problem is individual
+quirks that take a long time.
 
-> 
-> diff --git a/drivers/iommu/amd_iommu_init.c b/drivers/iommu/amd_iommu_init.c
-> index 5b81fd16f5fa..b07458cc1b0b 100644
-> --- a/drivers/iommu/amd_iommu_init.c
-> +++ b/drivers/iommu/amd_iommu_init.c
-> @@ -1875,6 +1875,8 @@ static int __init amd_iommu_init_pci(void)
->                 ret = iommu_init_pci(iommu);
->                 if (ret)
->                         break;
-> +               iommu_flush_all_caches(iommu);
-> +               init_iommu_perf_ctr(iommu);
->         }
-> 
->         /*
+The PCI_FIXUP_IOMMU things we're talking about should be fast, and of
+course, they're only run for matching devices anyway.  So I'd rather
+keep them as PCI_FIXUP_FINAL than add a whole new phase.
+
+Bjorn
+
+[1] https://lore.kernel.org/linux-pci/b1533fd5-1fae-7256-9597-36d3d5de9d2a@molgen.mpg.de/
 _______________________________________________
 iommu mailing list
 iommu@lists.linux-foundation.org
