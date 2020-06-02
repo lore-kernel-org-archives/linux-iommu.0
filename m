@@ -2,95 +2,72 @@ Return-Path: <SRS0=royy=7P=lists.linux-foundation.org=iommu-bounces@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-5.8 required=3.0 tests=HEADER_FROM_DIFFERENT_DOMAINS,
-	MAILING_LIST_MULTI,MENTIONS_GIT_HOSTING,SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED
-	autolearn=unavailable autolearn_force=no version=3.4.0
+X-Spam-Status: No, score=-2.2 required=3.0 tests=HEADER_FROM_DIFFERENT_DOMAINS,
+	MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED,USER_AGENT_SANE_1
+	autolearn=no autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 43EF7C433DF
-	for <iommu@archiver.kernel.org>; Tue,  2 Jun 2020 12:12:42 +0000 (UTC)
-Received: from silver.osuosl.org (smtp3.osuosl.org [140.211.166.136])
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 9C9CAC433E0
+	for <iommu@archiver.kernel.org>; Tue,  2 Jun 2020 13:07:21 +0000 (UTC)
+Received: from whitealder.osuosl.org (smtp1.osuosl.org [140.211.166.138])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by mail.kernel.org (Postfix) with ESMTPS id 155BE205CB
-	for <iommu@archiver.kernel.org>; Tue,  2 Jun 2020 12:12:42 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 155BE205CB
-Authentication-Results: mail.kernel.org; dmarc=none (p=none dis=none) header.from=huawei.com
+	by mail.kernel.org (Postfix) with ESMTPS id 6EE4E207ED
+	for <iommu@archiver.kernel.org>; Tue,  2 Jun 2020 13:07:21 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 6EE4E207ED
+Authentication-Results: mail.kernel.org; dmarc=none (p=none dis=none) header.from=arm.com
 Authentication-Results: mail.kernel.org; spf=pass smtp.mailfrom=iommu-bounces@lists.linux-foundation.org
 Received: from localhost (localhost [127.0.0.1])
-	by silver.osuosl.org (Postfix) with ESMTP id D7EF920500;
-	Tue,  2 Jun 2020 12:12:41 +0000 (UTC)
+	by whitealder.osuosl.org (Postfix) with ESMTP id 37896876DB;
+	Tue,  2 Jun 2020 13:07:21 +0000 (UTC)
+X-Virus-Scanned: amavisd-new at osuosl.org
+Received: from whitealder.osuosl.org ([127.0.0.1])
+	by localhost (.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
+	with ESMTP id 354utsGf9IkT; Tue,  2 Jun 2020 13:07:20 +0000 (UTC)
+Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [140.211.9.56])
+	by whitealder.osuosl.org (Postfix) with ESMTP id 3EF3586D67;
+	Tue,  2 Jun 2020 13:07:20 +0000 (UTC)
+Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
+	by lists.linuxfoundation.org (Postfix) with ESMTP id 32ADBC0178;
+	Tue,  2 Jun 2020 13:07:20 +0000 (UTC)
+Received: from silver.osuosl.org (smtp3.osuosl.org [140.211.166.136])
+ by lists.linuxfoundation.org (Postfix) with ESMTP id 6B227C016E
+ for <iommu@lists.linux-foundation.org>; Tue,  2 Jun 2020 13:07:18 +0000 (UTC)
+Received: from localhost (localhost [127.0.0.1])
+ by silver.osuosl.org (Postfix) with ESMTP id 549A3203FE
+ for <iommu@lists.linux-foundation.org>; Tue,  2 Jun 2020 13:07:18 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
 Received: from silver.osuosl.org ([127.0.0.1])
-	by localhost (.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
-	with ESMTP id isf9XUCdPgVK; Tue,  2 Jun 2020 12:12:37 +0000 (UTC)
-Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [140.211.9.56])
-	by silver.osuosl.org (Postfix) with ESMTP id 90E3F204E2;
-	Tue,  2 Jun 2020 12:12:37 +0000 (UTC)
-Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
-	by lists.linuxfoundation.org (Postfix) with ESMTP id 7E41AC0178;
-	Tue,  2 Jun 2020 12:12:37 +0000 (UTC)
-Received: from hemlock.osuosl.org (smtp2.osuosl.org [140.211.166.133])
- by lists.linuxfoundation.org (Postfix) with ESMTP id 05D56C016E
- for <iommu@lists.linux-foundation.org>; Tue,  2 Jun 2020 12:12:36 +0000 (UTC)
-Received: from localhost (localhost [127.0.0.1])
- by hemlock.osuosl.org (Postfix) with ESMTP id E7E5887A6E
- for <iommu@lists.linux-foundation.org>; Tue,  2 Jun 2020 12:12:35 +0000 (UTC)
-X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from hemlock.osuosl.org ([127.0.0.1])
  by localhost (.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
- with ESMTP id sUmwgRcUvWz6 for <iommu@lists.linux-foundation.org>;
- Tue,  2 Jun 2020 12:12:34 +0000 (UTC)
+ with ESMTP id ueIYeXUsaiih for <iommu@lists.linux-foundation.org>;
+ Tue,  2 Jun 2020 13:07:16 +0000 (UTC)
 X-Greylist: domain auto-whitelisted by SQLgrey-1.7.6
-Received: from huawei.com (lhrrgout.huawei.com [185.176.76.210])
- by hemlock.osuosl.org (Postfix) with ESMTPS id 4CD1D87934
- for <iommu@lists.linux-foundation.org>; Tue,  2 Jun 2020 12:12:34 +0000 (UTC)
-Received: from lhreml721-chm.china.huawei.com (unknown [172.18.7.107])
- by Forcepoint Email with ESMTP id 3829E36D873DF3B208A8;
- Tue,  2 Jun 2020 13:12:31 +0100 (IST)
-Received: from lhreml710-chm.china.huawei.com (10.201.108.61) by
- lhreml721-chm.china.huawei.com (10.201.108.72) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.1913.5; Tue, 2 Jun 2020 13:12:31 +0100
-Received: from lhreml710-chm.china.huawei.com ([169.254.81.184]) by
- lhreml710-chm.china.huawei.com ([169.254.81.184]) with mapi id
- 15.01.1913.007; Tue, 2 Jun 2020 13:12:31 +0100
-From: Shameerali Kolothum Thodi <shameerali.kolothum.thodi@huawei.com>
-To: Jean-Philippe Brucker <jean-philippe@linaro.org>
-Subject: RE: [PATCH v7 21/24] iommu/arm-smmu-v3: Add stall support for
- platform devices
-Thread-Topic: [PATCH v7 21/24] iommu/arm-smmu-v3: Add stall support for
- platform devices
-Thread-Index: AQHWLgezl67to0Fq/kugWrIzT8tlbajDuzCQgAFbKgCAABJrcIAAETqAgAAUUMA=
-Date: Tue, 2 Jun 2020 12:12:30 +0000
-Message-ID: <c165fe41230f49baba991f1a416a4739@huawei.com>
-References: <20200519175502.2504091-1-jean-philippe@linaro.org>
- <20200519175502.2504091-22-jean-philippe@linaro.org>
- <4741b6c45d1a43b69041ecb5ce0be0d5@huawei.com>
- <20200602093836.GA1029680@myrica>
- <1517c4d97b5849e6b6d32e7d7ed35289@huawei.com>
- <20200602114611.GB1029680@myrica>
-In-Reply-To: <20200602114611.GB1029680@myrica>
-Accept-Language: en-GB, en-US
-Content-Language: en-US
-X-MS-Has-Attach: 
-X-MS-TNEF-Correlator: 
-x-originating-ip: [10.47.94.73]
+Received: from foss.arm.com (foss.arm.com [217.140.110.172])
+ by silver.osuosl.org (Postfix) with ESMTP id 6A1D2204B4
+ for <iommu@lists.linux-foundation.org>; Tue,  2 Jun 2020 13:07:16 +0000 (UTC)
+Received: from usa-sjc-imap-foss1.foss.arm.com (unknown [10.121.207.14])
+ by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id A7A811FB;
+ Tue,  2 Jun 2020 06:07:15 -0700 (PDT)
+Received: from [10.57.10.95] (unknown [10.57.10.95])
+ by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPSA id 1BE473F305;
+ Tue,  2 Jun 2020 06:07:13 -0700 (PDT)
+Subject: Re: [PATCH] iommu/dma: limit iova free size to unmmaped iova
+To: guptap@codeaurora.org
+References: <20200521113004.12438-1-guptap@codeaurora.org>
+ <7aaa8dcc-6a47-f256-431d-2a1b034b4076@arm.com>
+ <90662ef3123dbf2e93f9718ee5cc14a7@codeaurora.org>
+ <2d873ab9-ebb9-3c2d-f129-55a036ab47d0@arm.com>
+ <4ba082d3bb965524157704ea1ffb1ff4@codeaurora.org>
+From: Robin Murphy <robin.murphy@arm.com>
+Message-ID: <9b5f8501-6e6e-0cd2-7f98-7cfea13051d7@arm.com>
+Date: Tue, 2 Jun 2020 14:07:12 +0100
+User-Agent: Mozilla/5.0 (Windows NT 10.0; rv:68.0) Gecko/20100101
+ Thunderbird/68.8.0
 MIME-Version: 1.0
-X-CFilter-Loop: Reflected
-Cc: "devicetree@vger.kernel.org" <devicetree@vger.kernel.org>,
- "kevin.tian@intel.com" <kevin.tian@intel.com>,
- "will@kernel.org" <will@kernel.org>,
- "fenghua.yu@intel.com" <fenghua.yu@intel.com>,
- "linux-pci@vger.kernel.org" <linux-pci@vger.kernel.org>,
- "felix.kuehling@amd.com" <felix.kuehling@amd.com>,
- "hch@infradead.org" <hch@infradead.org>, "jgg@ziepe.ca" <jgg@ziepe.ca>,
- "iommu@lists.linux-foundation.org" <iommu@lists.linux-foundation.org>,
- "linux-mm@kvack.org" <linux-mm@kvack.org>,
- "catalin.marinas@arm.com" <catalin.marinas@arm.com>,
- "zhangfei.gao@linaro.org" <zhangfei.gao@linaro.org>,
- "robin.murphy@arm.com" <robin.murphy@arm.com>,
- "christian.koenig@amd.com" <christian.koenig@amd.com>,
- "linux-arm-kernel@lists.infradead.org" <linux-arm-kernel@lists.infradead.org>
+In-Reply-To: <4ba082d3bb965524157704ea1ffb1ff4@codeaurora.org>
+Content-Language: en-GB
+Cc: mhocko@suse.com, owner-linux-mm@kvack.org, linux-kernel@vger.kernel.org,
+ stable@vger.kernel.org, linux-mm@kvack.org, iommu@lists.linux-foundation.org,
+ Andrew Morton <akpm@linux-foundation.org>
 X-BeenThere: iommu@lists.linux-foundation.org
 X-Mailman-Version: 2.1.15
 Precedence: list
@@ -103,217 +80,84 @@ List-Post: <mailto:iommu@lists.linux-foundation.org>
 List-Help: <mailto:iommu-request@lists.linux-foundation.org?subject=help>
 List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
  <mailto:iommu-request@lists.linux-foundation.org?subject=subscribe>
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: 7bit
+Content-Transfer-Encoding: base64
+Content-Type: text/plain; charset="utf-8"; Format="flowed"
 Errors-To: iommu-bounces@lists.linux-foundation.org
 Sender: "iommu" <iommu-bounces@lists.linux-foundation.org>
 
-
-
-> -----Original Message-----
-> From: linux-arm-kernel [mailto:linux-arm-kernel-bounces@lists.infradead.org]
-> On Behalf Of Jean-Philippe Brucker
-> Sent: 02 June 2020 12:46
-> To: Shameerali Kolothum Thodi <shameerali.kolothum.thodi@huawei.com>
-> Cc: devicetree@vger.kernel.org; kevin.tian@intel.com; fenghua.yu@intel.com;
-> linux-pci@vger.kernel.org; felix.kuehling@amd.com; robin.murphy@arm.com;
-> christian.koenig@amd.com; hch@infradead.org; jgg@ziepe.ca;
-> iommu@lists.linux-foundation.org; catalin.marinas@arm.com;
-> zhangfei.gao@linaro.org; will@kernel.org; linux-mm@kvack.org;
-> linux-arm-kernel@lists.infradead.org
-> Subject: Re: [PATCH v7 21/24] iommu/arm-smmu-v3: Add stall support for
-> platform devices
-> 
-> On Tue, Jun 02, 2020 at 10:31:29AM +0000, Shameerali Kolothum Thodi wrote:
-> > Hi Jean,
-> >
-> > > -----Original Message-----
-> > > From: linux-arm-kernel
-> > > [mailto:linux-arm-kernel-bounces@lists.infradead.org]
-> > > On Behalf Of Jean-Philippe Brucker
-> > > Sent: 02 June 2020 10:39
-> > > To: Shameerali Kolothum Thodi <shameerali.kolothum.thodi@huawei.com>
-> > > Cc: devicetree@vger.kernel.org; kevin.tian@intel.com;
-> > > will@kernel.org; fenghua.yu@intel.com; jgg@ziepe.ca;
-> > > linux-pci@vger.kernel.org; felix.kuehling@amd.com;
-> > > hch@infradead.org; linux-mm@kvack.org;
-> > > iommu@lists.linux-foundation.org; catalin.marinas@arm.com;
-> > > zhangfei.gao@linaro.org; robin.murphy@arm.com;
-> > > christian.koenig@amd.com; linux-arm-kernel@lists.infradead.org
-> > > Subject: Re: [PATCH v7 21/24] iommu/arm-smmu-v3: Add stall support
-> > > for platform devices
-> > >
-> > > Hi Shameer,
-> > >
-> > > On Mon, Jun 01, 2020 at 12:42:15PM +0000, Shameerali Kolothum Thodi
-> > > wrote:
-> > > > >  /* IRQ and event handlers */
-> > > > > +static int arm_smmu_handle_evt(struct arm_smmu_device *smmu,
-> > > > > +u64
-> > > > > +*evt) {
-> > > > > +	int ret;
-> > > > > +	u32 perm = 0;
-> > > > > +	struct arm_smmu_master *master;
-> > > > > +	bool ssid_valid = evt[0] & EVTQ_0_SSV;
-> > > > > +	u8 type = FIELD_GET(EVTQ_0_ID, evt[0]);
-> > > > > +	u32 sid = FIELD_GET(EVTQ_0_SID, evt[0]);
-> > > > > +	struct iommu_fault_event fault_evt = { };
-> > > > > +	struct iommu_fault *flt = &fault_evt.fault;
-> > > > > +
-> > > > > +	/* Stage-2 is always pinned at the moment */
-> > > > > +	if (evt[1] & EVTQ_1_S2)
-> > > > > +		return -EFAULT;
-> > > > > +
-> > > > > +	master = arm_smmu_find_master(smmu, sid);
-> > > > > +	if (!master)
-> > > > > +		return -EINVAL;
-> > > > > +
-> > > > > +	if (evt[1] & EVTQ_1_READ)
-> > > > > +		perm |= IOMMU_FAULT_PERM_READ;
-> > > > > +	else
-> > > > > +		perm |= IOMMU_FAULT_PERM_WRITE;
-> > > > > +
-> > > > > +	if (evt[1] & EVTQ_1_EXEC)
-> > > > > +		perm |= IOMMU_FAULT_PERM_EXEC;
-> > > > > +
-> > > > > +	if (evt[1] & EVTQ_1_PRIV)
-> > > > > +		perm |= IOMMU_FAULT_PERM_PRIV;
-> > > > > +
-> > > > > +	if (evt[1] & EVTQ_1_STALL) {
-> > > > > +		flt->type = IOMMU_FAULT_PAGE_REQ;
-> > > > > +		flt->prm = (struct iommu_fault_page_request) {
-> > > > > +			.flags = IOMMU_FAULT_PAGE_REQUEST_LAST_PAGE,
-> > > > > +			.pasid = FIELD_GET(EVTQ_0_SSID, evt[0]),
-> > > > > +			.grpid = FIELD_GET(EVTQ_1_STAG, evt[1]),
-> > > > > +			.perm = perm,
-> > > > > +			.addr = FIELD_GET(EVTQ_2_ADDR, evt[2]),
-> > > > > +		};
-> > > > > +
-> > > >
-> > > > > +		if (ssid_valid)
-> > > > > +			flt->prm.flags |=
-> > > IOMMU_FAULT_PAGE_REQUEST_PASID_VALID;
-> > > >
-> > > > Do we need to set this for STALL mode only support? I had an issue
-> > > > with this being set on a vSVA POC based on our D06 zip
-> > > > device(which is a "fake " pci dev that supports STALL mode but no
-> > > > PRI). The issue is, CMDQ_OP_RESUME doesn't have any ssid or SSV
-> > > > params and works on sid
-> > > and stag only.
-> > >
-> > > I don't understand the problem, arm_smmu_page_response() doesn't set
-> > > SSID or SSV when sending a CMDQ_OP_RESUME. Could you detail the flow
-> > > of a stall event and RESUME command in your prototype?  Are you
-> > > getting issues with the host driver or the guest driver?
-> >
-> > The issue is on the host side iommu_page_response(). The flow is
-> > something like below.
-> >
-> > Stall: Host:-
-> >
-> > arm_smmu_handle_evt()
-> >   iommu_report_device_fault()
-> >     vfio_pci_iommu_dev_fault_handler()
-> >
-> > Stall: Qemu:-
-> >
-> > vfio_dma_fault_notifier_handler()
-> >   inject_faults()
-> >     smmuv3_inject_faults()
-> >
-> > Stall: Guest:-
-> >
-> > arm_smmu_handle_evt()
-> >   iommu_report_device_fault()
-> >     iommu_queue_iopf
-> >   ...
-> >   iopf_handle_group()
-> >     iopf_handle_single()
-> >       handle_mm_fault()
-> >         iopf_complete()
-> >            iommu_page_response()
-> >              arm_smmu_page_response()
-> >                arm_smmu_cmdq_issue_cmd(CMDQ_OP_RESUME)
-> >
-> > Resume: Qemu:-
-> >
-> > smmuv3_cmdq_consume(SMMU_CMD_RESUME)
-> >   smmuv3_notify_page_resp()
-> >     vfio:ioctl(page_response)  --> struct iommu_page_response is filled
-> >                              with only version, grpid and code.
-> >
-> > Resume: Host:-
-> >   ioctl(page_response)
-> >     iommu_page_response()  --> fails as the pending req has PASID_VALID
-> flag
-> >                              set and it checks for a match.
-> 
-> I believe the fix needs to be here. It's also wrong for PRI since not all PCIe
-> endpoint require a PASID in the page response. Could you try the attached
-> patch?
-
-Going through the patch, yes, that will definitely fix the issue. But isn't it better if
-the request itself indicate whether it expects a response msg with a valid pasid or
-not? The response msg can come from userspace as well(vSVA) and if for some reason
-doesn't set it for a req that expects pasid then it should be an error, right? In the temp
-fix I had, I introduced another flag to indicate the endpoint has PRI support or not and
-used that to verify the pasid requirement. But for the PRI case you mentioned 
-above, not sure it is easy to get that information or not. May be I am complicating things
-here :)
-
-Thanks,
-Shameer
-
-> Thanks,
-> Jean
-> 
-> >       arm_smmu_page_response()
-> >
-> > Hope the above is clear.
-> >
-> > > We do need to forward the SSV flag all the way to the guest driver,
-> > > so the guest can find the faulting address space using the SSID.
-> > > Once the guest handled the fault, then we don't send the SSID back
-> > > to the host as part of the RESUME command.
-> >
-> > True, the guest requires SSV flag to handle the page fault. But, as
-> > shown in the flow above, the issue is on the host side
-> > iommu_page_response() where it searches for a matching pending req
-> > based on pasid. Not sure we can bypass that and call
-> > arm_smmu_page_response() directly but then have to delete the pending req
-> from the list as well.
-> >
-> > Please let me know if there is a better way to handle the host side
-> > page response.
-> >
-> > Thanks,
-> > Shameer
-> >
-> > > Thanks,
-> > > Jean
-> > >
-> > > > Hence, it is difficult for
-> > > > Qemu SMMUv3 to populate this fields while preparing a page
-> > > > response. I can see that this flag is being checked in
-> > > > iopf_handle_single() (patch
-> > > > 04/24) as well. For POC, I used a temp fix[1] to work around this.
-> > > > Please let
-> > > me know your thoughts.
-> > > >
-> > > > Thanks,
-> > > > Shameer
-> > > >
-> > > > 1.
-> > > > https://github.com/hisilicon/kernel-dev/commit/99ff96146e924055f38
-> > > > d97a
-> > > > 5897e4becfa378d15
-> > > >
-> > >
-> > > _______________________________________________
-> > > linux-arm-kernel mailing list
-> > > linux-arm-kernel@lists.infradead.org
-> > > http://lists.infradead.org/mailman/listinfo/linux-arm-kernel
-_______________________________________________
-iommu mailing list
-iommu@lists.linux-foundation.org
-https://lists.linuxfoundation.org/mailman/listinfo/iommu
+T24gMjAyMC0wNS0yNiAwODoxOSwgZ3VwdGFwQGNvZGVhdXJvcmEub3JnIHdyb3RlOgo+IE9uIDIw
+MjAtMDUtMjIgMTQ6NTQsIFJvYmluIE11cnBoeSB3cm90ZToKPj4gT24gMjAyMC0wNS0yMiAwNzoy
+NSwgZ3VwdGFwQGNvZGVhdXJvcmEub3JnIHdyb3RlOgo+Pj4gT24gMjAyMC0wNS0yMiAwMTo0Niwg
+Um9iaW4gTXVycGh5IHdyb3RlOgo+Pj4+IE9uIDIwMjAtMDUtMjEgMTI6MzAsIFByYWthc2ggR3Vw
+dGEgd3JvdGU6Cj4+PiBJIGFncmVlLCB3ZSBzaG91bGRuJ3QgYmUgZnJlZWluZyB0aGUgcGFydGlh
+bCBpb3ZhLiBJbnN0ZWFkIGp1c3QgbWFraW5nCj4+PiBzdXJlIGlmIHVubWFwIHdhcyBzdWNjZXNz
+ZnVsIHNob3VsZCBiZSBzdWZmaWNpZW50IGJlZm9yZSBmcmVlaW5nIAo+Pj4gaW92YS4gU28gY2hh
+bmdlCj4+PiBjYW4gaW5zdGVhZCBiZSBzb21ldGhpbmcgbGlrZSB0aGlzOgo+Pj4KPj4+IC3CoMKg
+wqAgaW9tbXVfZG1hX2ZyZWVfaW92YShjb29raWUsIGRtYV9hZGRyLCBzaXplKTsKPj4+ICvCoMKg
+wqAgaWYgKHVubWFwcGVkKQo+Pj4gK8KgwqDCoMKgwqDCoMKgIGlvbW11X2RtYV9mcmVlX2lvdmEo
+Y29va2llLCBkbWFfYWRkciwgc2l6ZSk7Cj4+Pgo+Pj4+IFRCSCBteSBndXQgZmVlbGluZyBoZXJl
+IGlzIHRoYXQgeW91J3JlIHJlYWxseSBqdXN0IHRyeWluZyB0byB0cmVhdCBhCj4+Pj4gc3ltcHRv
+bSBvZiBhbm90aGVyIGJ1ZyBlbHNld2hlcmUsIG5hbWVseSBzb21lIGRyaXZlciBjYWxsaW5nCj4+
+Pj4gZG1hX3VubWFwXyogb3IgZG1hX2ZyZWVfKiB3aXRoIHRoZSB3cm9uZyBhZGRyZXNzIG9yIHNp
+emUgaW4gdGhlIGZpcnN0Cj4+Pj4gcGxhY2UuCj4+Pj4KPj4+IFRoaXMgY29uZGl0aW9uIHdvdWxk
+IGFyaXNlIG9ubHkgaWYgZHJpdmVyIGNhbGxpbmcgZG1hX3VubWFwL2ZyZWVfKiAKPj4+IHdpdGgg
+MAo+Pj4gaW92YV9wZm4uIFRoaXMgd2lsbCBiZSBmbGFnZ2VkIHdpdGggYSB3YXJuaW5nIGR1cmlu
+ZyB1bm1hcCBidXQgd2lsbCAKPj4+IHRyaWdnZXIKPj4+IHBhbmljIGxhdGVyIG9uIHdoaWxlIGRv
+aW5nIHVucmVsYXRlZCBkbWFfbWFwL3VubWFwXyouIElmIHVubWFwcGVkIGhhcyAKPj4+IGFscmVh
+ZHkKPj4+IGZhaWxlZCBmb3IgaW52YWxpZCBpb3ZhLCB0aGVyZSBpcyBubyByZWFzb24gd2Ugc2hv
+dWxkIGNvbnNpZGVyIHRoaXMgCj4+PiBhcyB2YWxpZAo+Pj4gaW92YSBhbmQgZnJlZS4gVGhpcyBw
+YXJ0IHNob3VsZCBiZSBmaXhlZC4KPj4KPj4gSSBkaXNhZ3JlZS4gSW4gZ2VuZXJhbCwgaWYgZHJp
+dmVycyBjYWxsIHRoZSBETUEgQVBJIGluY29ycmVjdGx5IGl0IGlzCj4+IGxpYWJsZSB0byBsZWFk
+IHRvIGRhdGEgbG9zcywgbWVtb3J5IGNvcnJ1cHRpb24sIGFuZCB2YXJpb3VzIG90aGVyCj4+IHVu
+cGxlYXNhbnQgbWlzYmVoYXZpb3VyIC0gaXQgaXMgbm90IHRoZSBETUEgbGF5ZXIncyBqb2IgdG8g
+YXR0ZW1wdCB0bwo+PiBwYXBlciBvdmVyIGRyaXZlciBidWdzLgo+Pgo+PiBUaGVyZSAqaXMqIGFu
+IGFyZ3VtZW50IGZvciBkb3duZ3JhZGluZyB0aGUgQlVHX09OKCkgaW4KPj4gaW92YV9tYWdhemlu
+ZV9mcmVlX3BmbnMoKSB0byBhIFdBUk5fT04oKSwgc2luY2UgZnJhbmtseSBpdCBpc24ndCBhCj4+
+IHN1ZmZpY2llbnRseSBzZXJpb3VzIGNvbmRpdGlvbiB0byBqdXN0aWZ5IGtpbGxpbmcgdGhlIHdo
+b2xlIG1hY2hpbmUKPj4gaW1tZWRpYXRlbHksIGJ1dCBOQUsgdG8gYm9kZ2luZyB0aGUgaW9tbXUt
+ZG1hIG1pZC1sYXllciB0byAiZml4IiB0aGF0Lgo+PiBBIHNlcmlvdXMgYnVnIGFscmVhZHkgaGFw
+cGVuZWQgZWxzZXdoZXJlLCBzbyB0cnlpbmcgdG8gaGlkZSB0aGUKPj4gZmFsbG91dCByZWFsbHkg
+ZG9lc24ndCBoZWxwIGFueW9uZS4KPj4KPiBTb3JyeSBmb3IgZGVsYXllZCByZXNwb25zZSwgaXQg
+d2FzIGEgbG9uZyB3ZWVrZW5kLgo+IEkgYWdyZWUgdGhhdCBpbnZhbGlkIERNQSBBUEkgY2FsbCBj
+YW4gcmVzdWx0IGluIHVuZXhwZWN0ZWQgaXNzdWVzIGFuZCAKPiBjbGllbnQKPiBzaG91bGQgZml4
+IGl0LCBidXQgdGhlbiB0aGUgcHJlc2VudCBiZWhhdmlvciBtYWtlcyBpdCBkaWZmaWN1bHQgdG8g
+Y2F0Y2ggCj4gY2FzZXMKPiB3aGVuIGRyaXZlciBpcyBtYWtpbmcgd3JvbmcgRE1BIEFQSSBjYWxs
+cy4gV2hlbiBpbnZhbGlkIGlvdmEgcGZuIGlzIAo+IHBhc3NlZCBpdAo+IGRvZXNuJ3QgZmFpbCB0
+aGVuIGFuZCB0aGVyZSwgdGhvdWdoIERNQSBsYXllciBpcyBhd2FyZSBvZiBpb3ZhIGJlaW5nIAo+
+IGludmFsaWQuIEl0Cj4gZmFpbHMgbXVjaCBhZnRlciB0aGF0IGluIHRoZSBjb250ZXh0IG9mIGFu
+IHZhbGlkIG1hcC91bm1hcCwgd2l0aCBCVUdfT04oKS4KPiAKPiBEb3duZ3JhZGluZyBCVUdfT04o
+KSB0byBXQVJOX09OKCkgaW4gaW92YV9tYWdhemluZV9mcmVlX3BmbnMoKSB3aWxsIG5vdCAKPiBo
+ZWxwCj4gbXVjaCBhcyBpbnZhbGlkIGlvdmEgd2lsbCBjYXVzZSBOVUxMIHBvaW50ZXIgZGVyZWZl
+cmVuY2UuCgpPYnZpb3VzbHkgSSBkaWRuJ3QgbWVhbiBhIGxpdGVyYWwgcy9CVUcvV0FSTi8gc3Vi
+c3RpdHV0aW9uIC0gc29tZSAKYWRkaXRpb25hbCBjb250cm9sIGZsb3cgdG8gYWN0dWFsbHkgaGFu
+ZGxlIHRoZSBlcnJvciBjYXNlIHdhcyBpbXBsaWVkLgoKSSdsbCB3cml0ZSB1cCB0aGUgcGF0Y2gg
+bXlzZWxmLCBzaW5jZSBpdCdzIGVhc2llciB0aGFuIGZ1cnRoZXIgZGViYXRpbmcuCgo+IEkgc2Vl
+IG5vIHJlYXNvbiB3aHkgRE1BIGxheWVyIHdhbnRzIHRvIGZyZWUgYW4gaW92YSBmb3Igd2hpY2gg
+dW5tYXBwZWQgCj4gZmFpbGVkLgo+IElNSE8gcXVldWluZyBhbiBpbnZhbGlkIGlvdmEgKHdoaWNo
+IGFscmVhZHkgZmFpbGVkIHVubWFwKSB0byByY2FjaGUgd2hpY2gKPiBldmVudHVhbGx5IGdvaW5n
+IHRvIGNyYXNoIHRoZSBzeXN0ZW0gbG9va3MgbGlrZSBpb21tdS1kbWEgbGF5ZXIgaXNzdWUuCgpX
+aGF0IGlmIHRoZSB1bm1hcCBmYWlscyBiZWNhdXNlIHRoZSBhZGRyZXNzIHJhbmdlIGlzIGFscmVh
+ZHkgZW50aXJlbHkgCnVubWFwcGVkPyBGcmVlaW5nIHRoZSBJT1ZBIChvciBhdCBsZWFzdCBhdHRl
+bXB0aW5nIHRvKSB3b3VsZCBiZSAKbG9naWNhbGx5IGFwcHJvcHJpYXRlIGluIHRoYXQgY2FzZS4g
+SW4gZmFjdCBzb21lIElPTU1VIGRyaXZlcnMgbWlnaHQgbm90IApldmVuIGNvbnNpZGVyIHRoYXQg
+YSBmYWlsdXJlLCBzbyB0aGUgRE1BIGxheWVyIG1heSBub3QgZXZlbiBiZSBhd2FyZSAKdGhhdCBp
+dCdzIGJlZW4gaGFuZGVkIGEgYm9ndXMgdW5hbGxvY2F0ZWQgYWRkcmVzcy4KClRoZSBwb2ludCBp
+cyB0aGF0IHVubWFwcGluZyAqZG9lc24ndCogZmFpbCB1bmRlciBub3JtYWwgYW5kIGNvcnJlY3Qg
+Cm9wZXJhdGlvbiwgc28gdGhlIERNQSBsYXllciBzaG91bGQgbm90IGV4cGVjdCB0byBoYXZlIHRv
+IGhhbmRsZSBpdC4gRXZlbiAKaWYgaXQgZG9lcyBoYXBwZW4sIHRoYXQncyBhIGhpZ2hseSBleGNl
+cHRpb25hbCBjYXNlIHRoYXQgdGhlIERNQSBsYXllciAKY2Fubm90IHJlY292ZXIgZnJvbSBieSBp
+dHNlbGY7IGF0IGJlc3QgaXQgY2FuIGp1c3QgcHVzaCB0aGUgcHJvYmxlbSAKZWxzZXdoZXJlLiBJ
+dCdzIHByZXR0eSBoYXJkIHRvIGp1c3RpZnkgZG9pbmcgZXh0cmEgd29yayB0byBzaW1wbHkgbW92
+ZSAKYW4gZXhjZXB0aW9uYWwgcHJvYmxlbSBhcm91bmQgd2l0aG91dCByZWFsbHkgYWRkcmVzc2lu
+ZyBpdC4KCkFuZCBpbiB0aGlzIHBhcnRpY3VsYXIgY2FzZSwgcGVyc29uYWxseSBJIHdvdWxkICpt
+dWNoKiByYXRoZXIgc2VlIAp3YXJuaW5ncyBzcGV3aW5nIGZyb20gYm90aCB0aGUgcGFnZXRhYmxl
+IGFuZCBJT1ZBIGNvZGUgYXMgZWFybHkgYXMgCnBvc3NpYmxlIHRvIGNsZWFybHkgaW5kaWNhdGUg
+dGhhdCB0aGUgRE1BIGxheWVyIGl0c2VsZiBoYXMgYmVlbiB0aHJvd24gCm91dCBvZiBzeW5jLCB0
+aGFuIGp1c3QgaGF2ZSB3YXJuaW5ncyB0aGF0IG1pZ2h0IHJlcHJlc2VudCBzb21lIG90aGVyIApz
+b3VyY2Ugb2YgcGFnZXRhYmxlIGNvcnJ1cHRpb24gKG9yIGF0IHdvcnN0LCBkZXBlbmRpbmcgb24g
+dGhlIHBhZ2V0YWJsZSAKY29kZSwgbm8gd2FybmluZ3MgYXQgYWxsIGFuZCBvbmx5IGhhdmUgZG1h
+X21hcF8qKCkgY2FsbHMgcXVpZXRseSBzdGFydCAKZmFpbGluZyBtdWNoLCBtdWNoIGxhdGVyIGR1
+ZSB0byBhbGwgdGhlIElPVkEgc3BhY2UgaGF2aW5nIGJlZW4gbGVha2VkIGJ5IApiYWQgdW5tYXBz
+KS4KClJvYmluLgpfX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19f
+Xwppb21tdSBtYWlsaW5nIGxpc3QKaW9tbXVAbGlzdHMubGludXgtZm91bmRhdGlvbi5vcmcKaHR0
+cHM6Ly9saXN0cy5saW51eGZvdW5kYXRpb24ub3JnL21haWxtYW4vbGlzdGluZm8vaW9tbXU=
