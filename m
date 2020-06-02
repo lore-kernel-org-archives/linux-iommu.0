@@ -4,67 +4,67 @@ X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 X-Spam-Level: 
 X-Spam-Status: No, score=-6.6 required=3.0 tests=DKIM_INVALID,DKIM_SIGNED,
 	HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_PATCH,MAILING_LIST_MULTI,SIGNED_OFF_BY,
-	SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED autolearn=unavailable autolearn_force=no
+	SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED autolearn=ham autolearn_force=no
 	version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 94685C433E1
-	for <iommu@archiver.kernel.org>; Tue,  2 Jun 2020 04:23:48 +0000 (UTC)
-Received: from whitealder.osuosl.org (smtp1.osuosl.org [140.211.166.138])
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 5CD10C433E3
+	for <iommu@archiver.kernel.org>; Tue,  2 Jun 2020 04:24:12 +0000 (UTC)
+Received: from silver.osuosl.org (smtp3.osuosl.org [140.211.166.136])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by mail.kernel.org (Postfix) with ESMTPS id 4640820738
-	for <iommu@archiver.kernel.org>; Tue,  2 Jun 2020 04:23:48 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTPS id 2F81920738
+	for <iommu@archiver.kernel.org>; Tue,  2 Jun 2020 04:24:11 +0000 (UTC)
 Authentication-Results: mail.kernel.org;
-	dkim=fail reason="signature verification failed" (1024-bit key) header.d=kernel.org header.i=@kernel.org header.b="V45ZYtoL"
-DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 4640820738
+	dkim=fail reason="signature verification failed" (1024-bit key) header.d=kernel.org header.i=@kernel.org header.b="2mCrwM+O"
+DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 2F81920738
 Authentication-Results: mail.kernel.org; dmarc=none (p=none dis=none) header.from=linuxfoundation.org
 Authentication-Results: mail.kernel.org; spf=pass smtp.mailfrom=iommu-bounces@lists.linux-foundation.org
 Received: from localhost (localhost [127.0.0.1])
-	by whitealder.osuosl.org (Postfix) with ESMTP id 0563687595;
-	Tue,  2 Jun 2020 04:23:48 +0000 (UTC)
+	by silver.osuosl.org (Postfix) with ESMTP id B743D204AE;
+	Tue,  2 Jun 2020 04:24:11 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from whitealder.osuosl.org ([127.0.0.1])
+Received: from silver.osuosl.org ([127.0.0.1])
 	by localhost (.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
-	with ESMTP id sx52DVuKGxxH; Tue,  2 Jun 2020 04:23:47 +0000 (UTC)
+	with ESMTP id Vh-nlFRQgOdt; Tue,  2 Jun 2020 04:24:10 +0000 (UTC)
 Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [140.211.9.56])
-	by whitealder.osuosl.org (Postfix) with ESMTP id 5AC96860D1;
-	Tue,  2 Jun 2020 04:23:47 +0000 (UTC)
+	by silver.osuosl.org (Postfix) with ESMTP id 88B401FF98;
+	Tue,  2 Jun 2020 04:24:10 +0000 (UTC)
 Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
-	by lists.linuxfoundation.org (Postfix) with ESMTP id 43A3AC0178;
-	Tue,  2 Jun 2020 04:23:47 +0000 (UTC)
-Received: from fraxinus.osuosl.org (smtp4.osuosl.org [140.211.166.137])
- by lists.linuxfoundation.org (Postfix) with ESMTP id 23605C0176
- for <iommu@lists.linux-foundation.org>; Tue,  2 Jun 2020 04:23:46 +0000 (UTC)
+	by lists.linuxfoundation.org (Postfix) with ESMTP id 75574C0178;
+	Tue,  2 Jun 2020 04:24:10 +0000 (UTC)
+Received: from hemlock.osuosl.org (smtp2.osuosl.org [140.211.166.133])
+ by lists.linuxfoundation.org (Postfix) with ESMTP id A06ACC0176
+ for <iommu@lists.linux-foundation.org>; Tue,  2 Jun 2020 04:24:09 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
- by fraxinus.osuosl.org (Postfix) with ESMTP id 0F54885E6E
- for <iommu@lists.linux-foundation.org>; Tue,  2 Jun 2020 04:23:46 +0000 (UTC)
+ by hemlock.osuosl.org (Postfix) with ESMTP id 8E52287C70
+ for <iommu@lists.linux-foundation.org>; Tue,  2 Jun 2020 04:24:09 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from fraxinus.osuosl.org ([127.0.0.1])
+Received: from hemlock.osuosl.org ([127.0.0.1])
  by localhost (.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
- with ESMTP id SzqYu1EzJtww for <iommu@lists.linux-foundation.org>;
- Tue,  2 Jun 2020 04:23:45 +0000 (UTC)
+ with ESMTP id D0fnh794kXnd for <iommu@lists.linux-foundation.org>;
+ Tue,  2 Jun 2020 04:24:09 +0000 (UTC)
 X-Greylist: from auto-whitelisted by SQLgrey-1.7.6
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
- by fraxinus.osuosl.org (Postfix) with ESMTPS id 7E48285817
- for <iommu@lists.linux-foundation.org>; Tue,  2 Jun 2020 04:23:45 +0000 (UTC)
+ by hemlock.osuosl.org (Postfix) with ESMTPS id 2044B87697
+ for <iommu@lists.linux-foundation.org>; Tue,  2 Jun 2020 04:24:09 +0000 (UTC)
 Received: from localhost (83-86-89-107.cable.dynamic.v4.ziggo.nl
  [83.86.89.107])
  (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
  (No client certificate requested)
- by mail.kernel.org (Postfix) with ESMTPSA id 99144206C3;
- Tue,  2 Jun 2020 04:23:44 +0000 (UTC)
+ by mail.kernel.org (Postfix) with ESMTPSA id 51BA2206C3;
+ Tue,  2 Jun 2020 04:24:08 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
- s=default; t=1591071825;
- bh=KForfwzUUC3Tk8fGSUSDwVHsxPKPlXtsHIFrysGM4iY=;
+ s=default; t=1591071849;
+ bh=sgwt4wu4ovM7Au/m6y7eibwKEZOw6hctJEhJzRNy5qA=;
  h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
- b=V45ZYtoL70LH0+jjtU6K2Pm6h5EN5dcw3LAqGkCFEUvGLepwp/RzbDsv1tm9nbE8X
- IKfw5CNMxoDntLxKInDAvmDaDJ9slDOOgr5WQi4LT/HYwuAb815pAredk+uHwsM3gx
- Wz/hBz4BIW9vvksL95NAPm/tvL3WM12JokdvE9Lo=
-Date: Tue, 2 Jun 2020 06:23:40 +0200
+ b=2mCrwM+OCoJJbKpsOl7IzXvXzqSIQvvzFDvcgtE/h+tT1HxckMVCL8VlHx2bSKnFx
+ qsZrZBk4RHyOzcOhWU8mvrbQCoOr6y7DjO19yKjTjIUYtAoedpIqKfRCx0SoSyLXoO
+ 7lFEOomn5NuR+TYks3LHPF5hQVc9Iq/BWxQkloLg=
+Date: Tue, 2 Jun 2020 06:24:06 +0200
 From: Greg KH <gregkh@linuxfoundation.org>
 To: Barry Song <song.bao.hua@hisilicon.com>
 Subject: Re: [PATCH] driver core: platform: expose numa_node to users in sysfs
-Message-ID: <20200602042340.GA2130884@kroah.com>
+Message-ID: <20200602042406.GB2130884@kroah.com>
 References: <20200602030139.73012-1-song.bao.hua@hisilicon.com>
 MIME-Version: 1.0
 Content-Disposition: inline
@@ -147,15 +147,8 @@ On Tue, Jun 02, 2020 at 03:01:39PM +1200, Barry Song wrote:
 >  static int platform_uevent(struct device *dev, struct kobj_uevent_env *env)
 >  {
 
-Platform devices are NUMA?  That's crazy, and feels like a total abuse
-of platform devices and drivers that really should belong on a "real"
-bus.
+Also you forgot a new entry in Documentation/ABI/ :(
 
-What drivers in the kernel today have this issue?
-
-thanks,
-
-greg k-h
 _______________________________________________
 iommu mailing list
 iommu@lists.linux-foundation.org
