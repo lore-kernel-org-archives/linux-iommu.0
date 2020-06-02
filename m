@@ -2,140 +2,90 @@ Return-Path: <SRS0=royy=7P=lists.linux-foundation.org=iommu-bounces@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-3.5 required=3.0 tests=DKIM_INVALID,DKIM_SIGNED,
-	HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_PATCH,MAILING_LIST_MULTI,SPF_HELO_NONE,
-	SPF_PASS,URIBL_BLOCKED autolearn=no autolearn_force=no version=3.4.0
+X-Spam-Status: No, score=-9.6 required=3.0 tests=DKIM_INVALID,DKIM_SIGNED,
+	HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_PATCH,MAILING_LIST_MULTI,SIGNED_OFF_BY,
+	SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED,USER_AGENT_GIT autolearn=unavailable
+	autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 559C6C433DF
-	for <iommu@archiver.kernel.org>; Tue,  2 Jun 2020 16:38:21 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id CD295C433E0
+	for <iommu@archiver.kernel.org>; Tue,  2 Jun 2020 18:49:32 +0000 (UTC)
 Received: from silver.osuosl.org (smtp3.osuosl.org [140.211.166.136])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by mail.kernel.org (Postfix) with ESMTPS id 14731206C3
-	for <iommu@archiver.kernel.org>; Tue,  2 Jun 2020 16:38:20 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTPS id 448F52072F
+	for <iommu@archiver.kernel.org>; Tue,  2 Jun 2020 18:49:32 +0000 (UTC)
 Authentication-Results: mail.kernel.org;
-	dkim=fail reason="signature verification failed" (1024-bit key) header.d=redhat.com header.i=@redhat.com header.b="ReaM5w19"
-DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 14731206C3
-Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=redhat.com
+	dkim=fail reason="signature verification failed" (2048-bit key) header.d=google.com header.i=@google.com header.b="SOcja528"
+DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 448F52072F
+Authentication-Results: mail.kernel.org; dmarc=none (p=none dis=none) header.from=lists.linux-foundation.org
 Authentication-Results: mail.kernel.org; spf=pass smtp.mailfrom=iommu-bounces@lists.linux-foundation.org
 Received: from localhost (localhost [127.0.0.1])
-	by silver.osuosl.org (Postfix) with ESMTP id 9E8F4204D7;
-	Tue,  2 Jun 2020 16:38:20 +0000 (UTC)
+	by silver.osuosl.org (Postfix) with ESMTP id D7765227F8;
+	Tue,  2 Jun 2020 18:49:31 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
 Received: from silver.osuosl.org ([127.0.0.1])
 	by localhost (.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
-	with ESMTP id DgTawyox4ATx; Tue,  2 Jun 2020 16:38:20 +0000 (UTC)
+	with ESMTP id gSvwD1+Uv6QG; Tue,  2 Jun 2020 18:49:30 +0000 (UTC)
 Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [140.211.9.56])
-	by silver.osuosl.org (Postfix) with ESMTP id 1347B20773;
-	Tue,  2 Jun 2020 16:38:20 +0000 (UTC)
+	by silver.osuosl.org (Postfix) with ESMTP id 3681A2278E;
+	Tue,  2 Jun 2020 18:49:30 +0000 (UTC)
 Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
-	by lists.linuxfoundation.org (Postfix) with ESMTP id 03CE7C0865;
-	Tue,  2 Jun 2020 16:38:20 +0000 (UTC)
-Received: from fraxinus.osuosl.org (smtp4.osuosl.org [140.211.166.137])
- by lists.linuxfoundation.org (Postfix) with ESMTP id 853E8C016E
- for <iommu@lists.linux-foundation.org>; Tue,  2 Jun 2020 16:38:18 +0000 (UTC)
+	by lists.linuxfoundation.org (Postfix) with ESMTP id 2575EC0865;
+	Tue,  2 Jun 2020 18:49:30 +0000 (UTC)
+Received: from hemlock.osuosl.org (smtp2.osuosl.org [140.211.166.133])
+ by lists.linuxfoundation.org (Postfix) with ESMTP id 11BE0C016E
+ for <iommu@lists.linux-foundation.org>; Tue,  2 Jun 2020 18:49:29 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
- by fraxinus.osuosl.org (Postfix) with ESMTP id 79DFE867C6
- for <iommu@lists.linux-foundation.org>; Tue,  2 Jun 2020 16:38:18 +0000 (UTC)
+ by hemlock.osuosl.org (Postfix) with ESMTP id 0D01787B60
+ for <iommu@lists.linux-foundation.org>; Tue,  2 Jun 2020 18:49:29 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from fraxinus.osuosl.org ([127.0.0.1])
+Received: from hemlock.osuosl.org ([127.0.0.1])
  by localhost (.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
- with ESMTP id R4x9TozZ3nlf for <iommu@lists.linux-foundation.org>;
- Tue,  2 Jun 2020 16:38:17 +0000 (UTC)
-X-Greylist: domain auto-whitelisted by SQLgrey-1.7.6
-Received: from us-smtp-delivery-1.mimecast.com (us-smtp-2.mimecast.com
- [207.211.31.81])
- by fraxinus.osuosl.org (Postfix) with ESMTPS id 854378658A
- for <iommu@lists.linux-foundation.org>; Tue,  2 Jun 2020 16:38:17 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
- s=mimecast20190719; t=1591115896;
- h=from:from:reply-to:reply-to:subject:subject:date:date:
- message-id:message-id:to:to:cc:cc:mime-version:mime-version:
- content-type:content-type:in-reply-to:in-reply-to:  references:references;
- bh=hHqD35umcQO2huEjb9WL/Ckh3jB+GYgIq0lk1r/iSMI=;
- b=ReaM5w19lpFOo9+RfsXq7dFeZ9bWvhu14kG2nAWplJp0ePFumtaL4uls9p1uPD6u/j3VBa
- vh6+j4NPJujFXrqqkiiaCLBFCnCcGmZ5Ltgprb00h8L31BJ8WLg15qHR8OU5zwECz5WUm9
- /pLgzynC4eaUES6YKgX5jfe3cMBhDYg=
-Received: from mail-qt1-f197.google.com (mail-qt1-f197.google.com
- [209.85.160.197]) (Using TLS) by relay.mimecast.com with ESMTP id
- us-mta-493-uyxsbk3yNX68ETXwhfGbwA-1; Tue, 02 Jun 2020 12:38:10 -0400
-X-MC-Unique: uyxsbk3yNX68ETXwhfGbwA-1
-Received: by mail-qt1-f197.google.com with SMTP id y25so14527039qtb.6
- for <iommu@lists.linux-foundation.org>; Tue, 02 Jun 2020 09:38:10 -0700 (PDT)
+ with ESMTP id RTtqX4mlQk0z for <iommu@lists.linux-foundation.org>;
+ Tue,  2 Jun 2020 18:49:28 +0000 (UTC)
+X-Greylist: delayed 00:07:49 by SQLgrey-1.7.6
+Received: from mail-yb1-f201.google.com (mail-yb1-f201.google.com
+ [209.85.219.201])
+ by hemlock.osuosl.org (Postfix) with ESMTPS id 5EFB887B5B
+ for <iommu@lists.linux-foundation.org>; Tue,  2 Jun 2020 18:49:28 +0000 (UTC)
+Received: by mail-yb1-f201.google.com with SMTP id u6so18469953ybo.18
+ for <iommu@lists.linux-foundation.org>; Tue, 02 Jun 2020 11:49:28 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=google.com; s=20161025;
+ h=date:message-id:mime-version:subject:from:to:cc;
+ bh=8tpv364uuoi5MEZfjTVmpI+b4taGRM4u8bQyj2pnBh4=;
+ b=SOcja528ER/iTI2CrS98AHZhtT0sh74Df7GwIHRhAXIZCMLzeHsm+NOtlMuRMDQZ6x
+ 6hZOXLkrhV70Ou5JOEP+OHc6ERc0icCN6IKVYkf3ju6LMJls+zT1a/p24k8T0BLO109F
+ k9kQU8UBno4rcsBxDFoMbosDTDLkmr+EJzJ3bta+cIFHwLy7avzrxODzrwf6AThuk0K7
+ LNqiVoEm3tWJ3IoBuWitZFxHXHwY3bwx4JQlI80R2TieckjWrVF15cA+XaBP+DPnge+M
+ 0exYfssplAHJL0+eBQE0unWoxqw9ZMEtxQTS3qUZ9tLl1Xz/44i2Ef7PdMx+H9KbAzro
+ 2J+w==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
  d=1e100.net; s=20161025;
- h=x-gm-message-state:date:from:to:cc:subject:message-id:reply-to
- :mail-followup-to:references:mime-version:content-disposition
- :in-reply-to;
- bh=hHqD35umcQO2huEjb9WL/Ckh3jB+GYgIq0lk1r/iSMI=;
- b=bV63gU6dBIhc1BLqxR9gjrhf0sO3eBu8QilB8eXWrVMuKRQtQwbbIaParq1xKRVw4a
- 39VMKk5GZLzBHnm83yOJgDIJ+7JRYTkouwYCNdhyaejP6H1S3Du1Ep8sXAf70ucaW5zl
- 1GjaGDkNDNTObYD1DqaEiSdtNasf3+/lj5bFgrErdlGlUf90uaR5+oSJOwsV9p72xmcR
- oy8gc0pcjMl4virdV9/S7hC0Rl55GpVvl/OUZ9ieLSk1VN9jYW3xh8d+2JRtHiN/5OLh
- WK5suVmjWtd09UWsNCCDrWAXsM2gYrjrC0++MD3M5rhYW6upmNVgeYUSJ9AL/8QjLHdo
- /Opg==
-X-Gm-Message-State: AOAM533M4qT+gNfKaSr8J4UjFRWDnwLzYrKCaNZpdnEI1NfZhjGXLbTS
- JuyIbemGmXz7kJvduEKXoMuByxEpRbFdyZBZ7V5lJHgT6St1fWYukOCH2aU3zHOgW7NjiQD8Rxs
- SY3zY8sx+Tqu8tgG209b0034KHqRhZA==
-X-Received: by 2002:a37:e205:: with SMTP id g5mr26245746qki.451.1591115889883; 
- Tue, 02 Jun 2020 09:38:09 -0700 (PDT)
-X-Google-Smtp-Source: ABdhPJxEHwB8sZ6GJqYFOX4Dc4L1exr5Cive5nf+jzBOew3IuxjQdOjd9lAvq/gnZam2w9pqVYc4MQ==
-X-Received: by 2002:a37:e205:: with SMTP id g5mr26245713qki.451.1591115889616; 
- Tue, 02 Jun 2020 09:38:09 -0700 (PDT)
-Received: from localhost (ip70-163-223-149.ph.ph.cox.net. [70.163.223.149])
- by smtp.gmail.com with ESMTPSA id 70sm2863201qkk.10.2020.06.02.09.38.08
- (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
- Tue, 02 Jun 2020 09:38:08 -0700 (PDT)
-Date: Tue, 2 Jun 2020 09:38:06 -0700
-From: Jerry Snitselaar <jsnitsel@redhat.com>
-To: Joerg Roedel <joro@8bytes.org>
-Subject: Re: [PATCH v2 00/33] iommu: Move iommu_group setup to IOMMU core code
-Message-ID: <20200602163806.o5dpj2tpemwdzyiw@cantor>
-Mail-Followup-To: Joerg Roedel <joro@8bytes.org>,
- Lu Baolu <baolu.lu@linux.intel.com>, Will Deacon <will@kernel.org>,
- Robin Murphy <robin.murphy@arm.com>,
- Marek Szyprowski <m.szyprowski@samsung.com>,
- Kukjin Kim <kgene@kernel.org>,
- Krzysztof Kozlowski <krzk@kernel.org>,
- David Woodhouse <dwmw2@infradead.org>,
- Andy Gross <agross@kernel.org>,
- Bjorn Andersson <bjorn.andersson@linaro.org>,
- Matthias Brugger <matthias.bgg@gmail.com>,
- Rob Clark <robdclark@gmail.com>, Heiko Stuebner <heiko@sntech.de>,
- Gerald Schaefer <gerald.schaefer@de.ibm.com>,
- Thierry Reding <thierry.reding@gmail.com>,
- Jonathan Hunter <jonathanh@nvidia.com>,
- Jean-Philippe Brucker <jean-philippe@linaro.org>,
- linux-s390@vger.kernel.org, linux-samsung-soc@vger.kernel.org,
- linux-arm-msm@vger.kernel.org, linux-kernel@vger.kernel.org,
- virtualization@lists.linux-foundation.org,
- linux-rockchip@lists.infradead.org,
- iommu@lists.linux-foundation.org,
- linux-mediatek@lists.infradead.org, linux-tegra@vger.kernel.org
-References: <20200414131542.25608-1-joro@8bytes.org>
- <20200529221623.qc6twmpzryh7nkvb@cantor>
- <20200601104240.7f5xhz7gooqhaq4n@cantor>
- <47711845-98ee-95b8-aa95-423a36ed9741@linux.intel.com>
- <20200602000236.j4m3jvluzdhjngdc@cantor>
- <20200602142312.GJ14598@8bytes.org>
-MIME-Version: 1.0
-In-Reply-To: <20200602142312.GJ14598@8bytes.org>
-X-Mimecast-Spam-Score: 0
-X-Mimecast-Originator: redhat.com
-Content-Disposition: inline
-Cc: Heiko Stuebner <heiko@sntech.de>, virtualization@lists.linux-foundation.org,
- linux-tegra@vger.kernel.org, Thierry Reding <thierry.reding@gmail.com>,
- Will Deacon <will@kernel.org>,
- Jean-Philippe Brucker <jean-philippe@linaro.org>,
- linux-samsung-soc@vger.kernel.org, iommu@lists.linux-foundation.org,
- Krzysztof Kozlowski <krzk@kernel.org>, Jonathan Hunter <jonathanh@nvidia.com>,
- linux-rockchip@lists.infradead.org, Andy Gross <agross@kernel.org>,
- linux-s390@vger.kernel.org, linux-arm-msm@vger.kernel.org,
- linux-mediatek@lists.infradead.org, Matthias Brugger <matthias.bgg@gmail.com>,
- Bjorn Andersson <bjorn.andersson@linaro.org>,
- Gerald Schaefer <gerald.schaefer@de.ibm.com>,
- David Woodhouse <dwmw2@infradead.org>, linux-kernel@vger.kernel.org,
- Kukjin Kim <kgene@kernel.org>, Robin Murphy <robin.murphy@arm.com>
+ h=x-gm-message-state:date:message-id:mime-version:subject:from:to:cc;
+ bh=8tpv364uuoi5MEZfjTVmpI+b4taGRM4u8bQyj2pnBh4=;
+ b=PfM80ZBBEkq/81682UTsPdMv96nJTa3P7U9xmkQrTUnFkXkchAHYzI+kJ6zwC4pzay
+ aFV5Nugj1BdSPoFtrFBRx7GwlzvgejthLn2JrrqmMxWNwxASfEQUyr3sj5n1eiAwtvLY
+ bKZV4FaRNrT2k+eTTbmYiK2O8chjVG2HOvVvfUIzaHpIUKajZiCYeArfOo9DJDBHrg4L
+ nFCltIGlUlJjB98TemypVYsf/w3pNekplBbDu+Xtw/pa2d6FKbicC7anvfczQi6/ynxY
+ wofe2fcVkbwaYPNdFCGt+XlzERwkzDriyR+80maILgpbdDZ1eTesta5HtnNer12MTCyI
+ whHg==
+X-Gm-Message-State: AOAM530k8PBO+YuXIfsY1W8FHL5F8ZmswsPAYKmfXFpmb/iHuae0mR5X
+ Yj6op58eoVrFSFuTrsRCs63XPIjsPUZz
+X-Google-Smtp-Source: ABdhPJyhb8sVgjMH1V+zDqj3cCk0pEWzt3uIaVGtWHCpt+IVA/OQmIcUX6iRC8BXRiQLzMJHvueq2dHh2VLz
+X-Received: by 2002:a5b:785:: with SMTP id b5mr21343779ybq.96.1591123297999;
+ Tue, 02 Jun 2020 11:41:37 -0700 (PDT)
+Date: Tue,  2 Jun 2020 11:41:33 -0700
+Message-Id: <20200602184133.75525-1-rajatja@google.com>
+Mime-Version: 1.0
+X-Mailer: git-send-email 2.27.0.rc2.251.g90737beb825-goog
+Subject: [PATCH v2] iommu/vt-d: Don't apply gfx quirks to untrusted devices
+To: David Woodhouse <dwmw2@infradead.org>, Lu Baolu <baolu.lu@linux.intel.com>,
+ Joerg Roedel <joro@8bytes.org>, iommu@lists.linux-foundation.org, 
+ linux-kernel@vger.kernel.org, Mika Westerberg <mika.westerberg@intel.com>, 
+ Ashok Raj <ashok.raj@intel.com>, lalithambika.krishnakumar@intel.com
+Cc: tbroch@google.com, rajatxjain@gmail.com, pmalani@google.com,
+ mnissler@google.com, bleung@google.com, Rajat Jain <rajatja@google.com>,
+ zsm@google.com, levinale@google.com
 X-BeenThere: iommu@lists.linux-foundation.org
 X-Mailman-Version: 2.1.15
 Precedence: list
@@ -148,56 +98,108 @@ List-Post: <mailto:iommu@lists.linux-foundation.org>
 List-Help: <mailto:iommu-request@lists.linux-foundation.org?subject=help>
 List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
  <mailto:iommu-request@lists.linux-foundation.org?subject=subscribe>
-Reply-To: Jerry Snitselaar <jsnitsel@redhat.com>
+From: Rajat Jain via iommu <iommu@lists.linux-foundation.org>
+Reply-To: Rajat Jain <rajatja@google.com>
+Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
-Content-Type: text/plain; charset="us-ascii"; Format="flowed"
 Errors-To: iommu-bounces@lists.linux-foundation.org
 Sender: "iommu" <iommu-bounces@lists.linux-foundation.org>
 
-On Tue Jun 02 20, Joerg Roedel wrote:
->Hi Jerry,
->
->On Mon, Jun 01, 2020 at 05:02:36PM -0700, Jerry Snitselaar wrote:
->>
->> Yeah, that will solve the panic.
->>
->
->If you still see the kdump faults, can you please try with the attached
->diff? I was not able to reproduce them in my setup.
->
->Regards,
->
->	Joerg
->
+Currently, an external malicious PCI device can masquerade the VID:PID
+of faulty gfx devices, and thus apply iommu quirks to effectively
+disable the IOMMU restrictions for itself.
 
-I have another hp proliant server now, and reproduced. I will have the
-patch below tested shortly. Minor change, I switched group->domain to
-domain since group isn't an argument, and *data being passed in comes
-from group->domain anyways.
+Thus we need to ensure that the device we are applying quirks to, is
+indeed an internal trusted device.
 
->diff --git a/drivers/iommu/iommu.c b/drivers/iommu/iommu.c
->index b5ea203f6c68..5a6d509f72b6 100644
->--- a/drivers/iommu/iommu.c
->+++ b/drivers/iommu/iommu.c
->@@ -1680,8 +1680,12 @@ static void probe_alloc_default_domain(struct bus_type *bus,
-> static int iommu_group_do_dma_attach(struct device *dev, void *data)
-> {
-> 	struct iommu_domain *domain = data;
->+	int ret = 0;
->
->-	return __iommu_attach_device(domain, dev);
->+	if (!iommu_is_attach_deferred(group->domain, dev))
->+		ret = __iommu_attach_device(group->domain, dev);
->+
->+	return ret;
-> }
->
-> static int __iommu_group_dma_attach(struct iommu_group *group)
->_______________________________________________
->iommu mailing list
->iommu@lists.linux-foundation.org
->https://lists.linuxfoundation.org/mailman/listinfo/iommu
->
+Signed-off-by: Rajat Jain <rajatja@google.com>
+Acked-by: Lu Baolu <baolu.lu@linux.intel.com>
+---
+V2: - Change the warning print strings.
+    - Add Lu Baolu's acknowledgement.
+
+ drivers/iommu/intel-iommu.c | 38 +++++++++++++++++++++++++++++++++++++
+ 1 file changed, 38 insertions(+)
+
+diff --git a/drivers/iommu/intel-iommu.c b/drivers/iommu/intel-iommu.c
+index ef0a5246700e5..fdfbea4ff8cb3 100644
+--- a/drivers/iommu/intel-iommu.c
++++ b/drivers/iommu/intel-iommu.c
+@@ -6214,6 +6214,13 @@ const struct iommu_ops intel_iommu_ops = {
+ 
+ static void quirk_iommu_igfx(struct pci_dev *dev)
+ {
++	if (dev->untrusted) {
++		pci_warn(dev,
++			 "Skipping IOMMU quirk %s() for potentially untrusted device\n",
++			 __func__);
++		return;
++	}
++
+ 	pci_info(dev, "Disabling IOMMU for graphics on this chipset\n");
+ 	dmar_map_gfx = 0;
+ }
+@@ -6255,6 +6262,13 @@ DECLARE_PCI_FIXUP_HEADER(PCI_VENDOR_ID_INTEL, 0x163D, quirk_iommu_igfx);
+ 
+ static void quirk_iommu_rwbf(struct pci_dev *dev)
+ {
++	if (dev->untrusted) {
++		pci_warn(dev,
++			 "Skipping IOMMU quirk %s() for potentially untrusted device\n",
++			 __func__);
++		return;
++	}
++
+ 	/*
+ 	 * Mobile 4 Series Chipset neglects to set RWBF capability,
+ 	 * but needs it. Same seems to hold for the desktop versions.
+@@ -6285,6 +6299,13 @@ static void quirk_calpella_no_shadow_gtt(struct pci_dev *dev)
+ {
+ 	unsigned short ggc;
+ 
++	if (dev->untrusted) {
++		pci_warn(dev,
++			 "Skipping IOMMU quirk %s() for potentially untrusted device\n",
++			 __func__);
++		return;
++	}
++
+ 	if (pci_read_config_word(dev, GGC, &ggc))
+ 		return;
+ 
+@@ -6318,6 +6339,15 @@ static void __init check_tylersburg_isoch(void)
+ 	pdev = pci_get_device(PCI_VENDOR_ID_INTEL, 0x3a3e, NULL);
+ 	if (!pdev)
+ 		return;
++
++	if (pdev->untrusted) {
++		pci_warn(pdev,
++			 "Skipping IOMMU quirk %s() for potentially untrusted device\n",
++			 __func__);
++		pci_dev_put(pdev);
++		return;
++	}
++
+ 	pci_dev_put(pdev);
+ 
+ 	/* System Management Registers. Might be hidden, in which case
+@@ -6327,6 +6357,14 @@ static void __init check_tylersburg_isoch(void)
+ 	if (!pdev)
+ 		return;
+ 
++	if (pdev->untrusted) {
++		pci_warn(pdev,
++			 "Skipping IOMMU quirk %s() for potentially untrusted device\n",
++			 __func__);
++		pci_dev_put(pdev);
++		return;
++	}
++
+ 	if (pci_read_config_dword(pdev, 0x188, &vtisochctrl)) {
+ 		pci_dev_put(pdev);
+ 		return;
+-- 
+2.27.0.rc2.251.g90737beb825-goog
 
 _______________________________________________
 iommu mailing list
