@@ -6,88 +6,109 @@ X-Spam-Status: No, score=-0.6 required=3.0 tests=DKIM_INVALID,DKIM_SIGNED,
 	HEADER_FROM_DIFFERENT_DOMAINS,MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS,
 	URIBL_BLOCKED autolearn=no autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 1218BC433E0
-	for <iommu@archiver.kernel.org>; Wed,  3 Jun 2020 07:37:26 +0000 (UTC)
-Received: from whitealder.osuosl.org (smtp1.osuosl.org [140.211.166.138])
+	by smtp.lore.kernel.org (Postfix) with ESMTP id ED7B3C433E2
+	for <iommu@archiver.kernel.org>; Wed,  3 Jun 2020 07:39:07 +0000 (UTC)
+Received: from hemlock.osuosl.org (smtp2.osuosl.org [140.211.166.133])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by mail.kernel.org (Postfix) with ESMTPS id A327D2074B
-	for <iommu@archiver.kernel.org>; Wed,  3 Jun 2020 07:37:25 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTPS id BE45F2077D
+	for <iommu@archiver.kernel.org>; Wed,  3 Jun 2020 07:39:07 +0000 (UTC)
 Authentication-Results: mail.kernel.org;
-	dkim=fail reason="signature verification failed" (1024-bit key) header.d=mg.codeaurora.org header.i=@mg.codeaurora.org header.b="Ea0BvGOX"
-DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org A327D2074B
-Authentication-Results: mail.kernel.org; dmarc=none (p=none dis=none) header.from=codeaurora.org
+	dkim=fail reason="signature verification failed" (2048-bit key) header.d=linaro.org header.i=@linaro.org header.b="BaA7HqoJ"
+DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org BE45F2077D
+Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=linaro.org
 Authentication-Results: mail.kernel.org; spf=pass smtp.mailfrom=iommu-bounces@lists.linux-foundation.org
 Received: from localhost (localhost [127.0.0.1])
-	by whitealder.osuosl.org (Postfix) with ESMTP id 615A287FB6;
-	Wed,  3 Jun 2020 07:37:25 +0000 (UTC)
+	by hemlock.osuosl.org (Postfix) with ESMTP id 8DCDA879A7;
+	Wed,  3 Jun 2020 07:39:07 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from whitealder.osuosl.org ([127.0.0.1])
+Received: from hemlock.osuosl.org ([127.0.0.1])
 	by localhost (.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
-	with ESMTP id NvHhdC3ram1Z; Wed,  3 Jun 2020 07:37:24 +0000 (UTC)
+	with ESMTP id wE8ut5oRJRmu; Wed,  3 Jun 2020 07:39:06 +0000 (UTC)
 Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [140.211.9.56])
-	by whitealder.osuosl.org (Postfix) with ESMTP id 93EA785044;
-	Wed,  3 Jun 2020 07:37:24 +0000 (UTC)
+	by hemlock.osuosl.org (Postfix) with ESMTP id EA03E87874;
+	Wed,  3 Jun 2020 07:39:06 +0000 (UTC)
 Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
-	by lists.linuxfoundation.org (Postfix) with ESMTP id 7787EC0888;
-	Wed,  3 Jun 2020 07:37:24 +0000 (UTC)
+	by lists.linuxfoundation.org (Postfix) with ESMTP id CA2F6C0888;
+	Wed,  3 Jun 2020 07:39:06 +0000 (UTC)
 Received: from silver.osuosl.org (smtp3.osuosl.org [140.211.166.136])
- by lists.linuxfoundation.org (Postfix) with ESMTP id AE009C016E
- for <iommu@lists.linux-foundation.org>; Wed,  3 Jun 2020 07:37:22 +0000 (UTC)
+ by lists.linuxfoundation.org (Postfix) with ESMTP id 743E0C016E
+ for <iommu@lists.linux-foundation.org>; Wed,  3 Jun 2020 07:39:05 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
- by silver.osuosl.org (Postfix) with ESMTP id A27982044F
- for <iommu@lists.linux-foundation.org>; Wed,  3 Jun 2020 07:37:22 +0000 (UTC)
+ by silver.osuosl.org (Postfix) with ESMTP id 6B9B020489
+ for <iommu@lists.linux-foundation.org>; Wed,  3 Jun 2020 07:39:05 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
 Received: from silver.osuosl.org ([127.0.0.1])
  by localhost (.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
- with ESMTP id IkIr10ZnRpB0 for <iommu@lists.linux-foundation.org>;
- Wed,  3 Jun 2020 07:37:21 +0000 (UTC)
-X-Greylist: from auto-whitelisted by SQLgrey-1.7.6
-Received: from mail27.static.mailgun.info (mail27.static.mailgun.info
- [104.130.122.27])
- by silver.osuosl.org (Postfix) with ESMTPS id 281A4203FE
- for <iommu@lists.linux-foundation.org>; Wed,  3 Jun 2020 07:37:18 +0000 (UTC)
-DKIM-Signature: a=rsa-sha256; v=1; c=relaxed/relaxed; d=mg.codeaurora.org;
- q=dns/txt; 
- s=smtp; t=1591169841; h=Message-ID: References: In-Reply-To: Subject:
- Cc: To: From: Date: Content-Transfer-Encoding: Content-Type:
- MIME-Version: Sender; bh=aJvFtRy1el1NP+Z5+87GQ+m2nk+T28gjost9JU7AaP0=;
- b=Ea0BvGOXeOoJebfUPZGumI/9V0/07jxC8ZWrfUx8h5zrS8uUEKq2W5sWUFOjdmZA3KePqb3b
- sF2HT76dKIwY4F7ml16I6DBKgDZr5EBSrfFX4hrWAz9mam8+6aR4LntxS6ub9vpu0NT52+aW
- nyoR3POV6uF5QVWR0d4WILscgcI=
-X-Mailgun-Sending-Ip: 104.130.122.27
-X-Mailgun-Sid: WyI3NDkwMCIsICJpb21tdUBsaXN0cy5saW51eC1mb3VuZGF0aW9uLm9yZyIsICJiZTllNGEiXQ==
-Received: from smtp.codeaurora.org
- (ec2-35-166-182-171.us-west-2.compute.amazonaws.com [35.166.182.171]) by
- smtp-out-n09.prod.us-east-1.postgun.com with SMTP id
- 5ed753262dd9e15ae3ab143e (version=TLS1.2,
- cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256); Wed, 03 Jun 2020 07:37:10
- GMT
-Received: by smtp.codeaurora.org (Postfix, from userid 1001)
- id 9A19AC43391; Wed,  3 Jun 2020 07:37:09 +0000 (UTC)
-Received: from mail.codeaurora.org (localhost.localdomain [127.0.0.1])
- (using TLSv1 with cipher ECDHE-RSA-AES256-SHA (256/256 bits))
- (No client certificate requested) (Authenticated sender: guptap)
- by smtp.codeaurora.org (Postfix) with ESMTPSA id D600BC433CA;
- Wed,  3 Jun 2020 07:37:08 +0000 (UTC)
+ with ESMTP id gjwzi2ufmb+5 for <iommu@lists.linux-foundation.org>;
+ Wed,  3 Jun 2020 07:39:03 +0000 (UTC)
+X-Greylist: domain auto-whitelisted by SQLgrey-1.7.6
+Received: from mail-wm1-f66.google.com (mail-wm1-f66.google.com
+ [209.85.128.66])
+ by silver.osuosl.org (Postfix) with ESMTPS id 73AD7203FE
+ for <iommu@lists.linux-foundation.org>; Wed,  3 Jun 2020 07:39:03 +0000 (UTC)
+Received: by mail-wm1-f66.google.com with SMTP id j198so3888445wmj.0
+ for <iommu@lists.linux-foundation.org>; Wed, 03 Jun 2020 00:39:03 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linaro.org; s=google;
+ h=date:from:to:cc:subject:message-id:references:mime-version
+ :content-disposition:in-reply-to;
+ bh=hLQ9Ov0eKr85gKa7olFwe6f0SlVLYGl5nrVG5b+LzPg=;
+ b=BaA7HqoJAJJh2tIRtyNtCnJJ+ARabjO7t5qWHkwfey6v8O/bYqibUoJb7g2lNYfNoZ
+ ifRC05Pi1fFsLS0xec3/ZwWH5HsiqKmSLEV1fLmRpATey18HMYDmWin9n3Lkz4IawUOQ
+ xlEYpZp5UmMhs18ikzeusxNZVkL8Zx3ToEbKvsz7PW6G3ARdQwBq0YY+pC+k6oMkgPG9
+ WS33Jb4rH9VdYT1yaXMb7+k5Kf1kqlPXl8+BOa8wlHnCW3navM5sN6dA2DpyHeZobAy9
+ jaGeJhzWEgaTqAFNlLtfzmz/6tmkY5sIGP7K7i1KqYqmIFqvLzdVzqj+ASM+V0Ps5U09
+ v7mw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+ d=1e100.net; s=20161025;
+ h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+ :mime-version:content-disposition:in-reply-to;
+ bh=hLQ9Ov0eKr85gKa7olFwe6f0SlVLYGl5nrVG5b+LzPg=;
+ b=fOranFZnC73KHvr339J2uK3JcBtm40SzKZXi2f0zUzgTKt116T16UL2pr+Fyx+gWCs
+ +yPMxk80udHygfzlDnFs7t9J54nbbOfyP1D6Ehy9GUg8gwFCFWbQxh0y2uWfRMt0l5oi
+ pzuuUWZBh/ANVMx3tU/yLJxz4rJZgxkRwopQLBteucwvYVjxyU80fEX4klFiO15H+fHC
+ Q5XM7hBUMDepnklxr/c/NMa8tMd5fnG2m++cB8MABAM+3OR7vrIzlXwKkCen29Ru9eYz
+ PkpNvJwvQ1UHH8WmRaqvXDCEUf76IFjBQ9FfGNIOKxhaLQXHIku3QLFEe3KEIyeZ5xjf
+ gGIw==
+X-Gm-Message-State: AOAM530tLfIhUkvl0HeFO7FW4lk2EuWbOKpq5LK9v3nxjOliEO/8gUfP
+ seRoDb0GUbbbMjvhK8FPrsUDnA==
+X-Google-Smtp-Source: ABdhPJx2CVWTxoCwkjfPm8H6OgQs2Q+1IKumvn68jhcLFzJkSHw/NXJvs00yy3+6Xok2VEhmklRBbQ==
+X-Received: by 2002:a1c:5a0b:: with SMTP id o11mr7245089wmb.74.1591169941832; 
+ Wed, 03 Jun 2020 00:39:01 -0700 (PDT)
+Received: from myrica ([2001:171b:226e:c200:c43b:ef78:d083:b355])
+ by smtp.gmail.com with ESMTPSA id t129sm1796108wmf.41.2020.06.03.00.39.00
+ (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+ Wed, 03 Jun 2020 00:39:01 -0700 (PDT)
+Date: Wed, 3 Jun 2020 09:38:51 +0200
+From: Jean-Philippe Brucker <jean-philippe@linaro.org>
+To: Shameerali Kolothum Thodi <shameerali.kolothum.thodi@huawei.com>
+Subject: Re: [PATCH v7 21/24] iommu/arm-smmu-v3: Add stall support for
+ platform devices
+Message-ID: <20200603073851.GA3198@myrica>
+References: <20200519175502.2504091-1-jean-philippe@linaro.org>
+ <20200519175502.2504091-22-jean-philippe@linaro.org>
+ <4741b6c45d1a43b69041ecb5ce0be0d5@huawei.com>
+ <20200602093836.GA1029680@myrica>
+ <1517c4d97b5849e6b6d32e7d7ed35289@huawei.com>
+ <20200602114611.GB1029680@myrica>
+ <c165fe41230f49baba991f1a416a4739@huawei.com>
 MIME-Version: 1.0
-Date: Wed, 03 Jun 2020 13:07:08 +0530
-From: guptap@codeaurora.org
-To: Robin Murphy <robin.murphy@arm.com>
-Subject: Re: [PATCH] iommu/dma: limit iova free size to unmmaped iova
-In-Reply-To: <9b5f8501-6e6e-0cd2-7f98-7cfea13051d7@arm.com>
-References: <20200521113004.12438-1-guptap@codeaurora.org>
- <7aaa8dcc-6a47-f256-431d-2a1b034b4076@arm.com>
- <90662ef3123dbf2e93f9718ee5cc14a7@codeaurora.org>
- <2d873ab9-ebb9-3c2d-f129-55a036ab47d0@arm.com>
- <4ba082d3bb965524157704ea1ffb1ff4@codeaurora.org>
- <9b5f8501-6e6e-0cd2-7f98-7cfea13051d7@arm.com>
-Message-ID: <4b6a864674a9231b3ac35e5ce0c7292f@codeaurora.org>
-X-Sender: guptap@codeaurora.org
-User-Agent: Roundcube Webmail/1.3.9
-Cc: mhocko@suse.com, owner-linux-mm@kvack.org, linux-kernel@vger.kernel.org,
- stable@vger.kernel.org, linux-mm@kvack.org, iommu@lists.linux-foundation.org,
- Andrew Morton <akpm@linux-foundation.org>
+Content-Disposition: inline
+In-Reply-To: <c165fe41230f49baba991f1a416a4739@huawei.com>
+Cc: "devicetree@vger.kernel.org" <devicetree@vger.kernel.org>,
+ "kevin.tian@intel.com" <kevin.tian@intel.com>,
+ "will@kernel.org" <will@kernel.org>,
+ "fenghua.yu@intel.com" <fenghua.yu@intel.com>,
+ "linux-pci@vger.kernel.org" <linux-pci@vger.kernel.org>,
+ "felix.kuehling@amd.com" <felix.kuehling@amd.com>,
+ "hch@infradead.org" <hch@infradead.org>, "jgg@ziepe.ca" <jgg@ziepe.ca>,
+ "iommu@lists.linux-foundation.org" <iommu@lists.linux-foundation.org>,
+ "linux-mm@kvack.org" <linux-mm@kvack.org>,
+ "catalin.marinas@arm.com" <catalin.marinas@arm.com>,
+ "zhangfei.gao@linaro.org" <zhangfei.gao@linaro.org>,
+ "robin.murphy@arm.com" <robin.murphy@arm.com>,
+ "christian.koenig@amd.com" <christian.koenig@amd.com>,
+ "linux-arm-kernel@lists.infradead.org" <linux-arm-kernel@lists.infradead.org>
 X-BeenThere: iommu@lists.linux-foundation.org
 X-Mailman-Version: 2.1.15
 Precedence: list
@@ -100,110 +121,91 @@ List-Post: <mailto:iommu@lists.linux-foundation.org>
 List-Help: <mailto:iommu-request@lists.linux-foundation.org?subject=help>
 List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
  <mailto:iommu-request@lists.linux-foundation.org?subject=subscribe>
+Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
-Content-Type: text/plain; charset="us-ascii"; Format="flowed"
 Errors-To: iommu-bounces@lists.linux-foundation.org
 Sender: "iommu" <iommu-bounces@lists.linux-foundation.org>
 
-On 2020-06-02 18:37, Robin Murphy wrote:
-> On 2020-05-26 08:19, guptap@codeaurora.org wrote:
->> On 2020-05-22 14:54, Robin Murphy wrote:
->>> On 2020-05-22 07:25, guptap@codeaurora.org wrote:
->>>> On 2020-05-22 01:46, Robin Murphy wrote:
->>>>> On 2020-05-21 12:30, Prakash Gupta wrote:
->> Sorry for delayed response, it was a long weekend.
->> I agree that invalid DMA API call can result in unexpected issues and 
->> client
->> should fix it, but then the present behavior makes it difficult to 
->> catch cases
->> when driver is making wrong DMA API calls. When invalid iova pfn is 
->> passed it
->> doesn't fail then and there, though DMA layer is aware of iova being 
->> invalid. It
->> fails much after that in the context of an valid map/unmap, with 
->> BUG_ON().
->> 
->> Downgrading BUG_ON() to WARN_ON() in iova_magazine_free_pfns() will 
->> not help
->> much as invalid iova will cause NULL pointer dereference.
+On Tue, Jun 02, 2020 at 12:12:30PM +0000, Shameerali Kolothum Thodi wrote:
+> > > > > > +		if (ssid_valid)
+> > > > > > +			flt->prm.flags |=
+> > > > IOMMU_FAULT_PAGE_REQUEST_PASID_VALID;
+> > > > >
+> > > > > Do we need to set this for STALL mode only support? I had an issue
+> > > > > with this being set on a vSVA POC based on our D06 zip
+> > > > > device(which is a "fake " pci dev that supports STALL mode but no
+> > > > > PRI). The issue is, CMDQ_OP_RESUME doesn't have any ssid or SSV
+> > > > > params and works on sid
+> > > > and stag only.
+> > > >
+> > > > I don't understand the problem, arm_smmu_page_response() doesn't set
+> > > > SSID or SSV when sending a CMDQ_OP_RESUME. Could you detail the flow
+> > > > of a stall event and RESUME command in your prototype?  Are you
+> > > > getting issues with the host driver or the guest driver?
+> > >
+> > > The issue is on the host side iommu_page_response(). The flow is
+> > > something like below.
+> > >
+> > > Stall: Host:-
+> > >
+> > > arm_smmu_handle_evt()
+> > >   iommu_report_device_fault()
+> > >     vfio_pci_iommu_dev_fault_handler()
+> > >
+> > > Stall: Qemu:-
+> > >
+> > > vfio_dma_fault_notifier_handler()
+> > >   inject_faults()
+> > >     smmuv3_inject_faults()
+> > >
+> > > Stall: Guest:-
+> > >
+> > > arm_smmu_handle_evt()
+> > >   iommu_report_device_fault()
+> > >     iommu_queue_iopf
+> > >   ...
+> > >   iopf_handle_group()
+> > >     iopf_handle_single()
+> > >       handle_mm_fault()
+> > >         iopf_complete()
+> > >            iommu_page_response()
+> > >              arm_smmu_page_response()
+> > >                arm_smmu_cmdq_issue_cmd(CMDQ_OP_RESUME)
+> > >
+> > > Resume: Qemu:-
+> > >
+> > > smmuv3_cmdq_consume(SMMU_CMD_RESUME)
+> > >   smmuv3_notify_page_resp()
+> > >     vfio:ioctl(page_response)  --> struct iommu_page_response is filled
+> > >                              with only version, grpid and code.
+> > >
+> > > Resume: Host:-
+> > >   ioctl(page_response)
+> > >     iommu_page_response()  --> fails as the pending req has PASID_VALID
+> > flag
+> > >                              set and it checks for a match.
+> > 
+> > I believe the fix needs to be here. It's also wrong for PRI since not all PCIe
+> > endpoint require a PASID in the page response. Could you try the attached
+> > patch?
 > 
-> Obviously I didn't mean a literal s/BUG/WARN/ substitution - some
-> additional control flow to actually handle the error case was implied.
-> 
-> I'll write up the patch myself, since it's easier than further 
-> debating.
-> 
+> Going through the patch, yes, that will definitely fix the issue. But isn't it better if
+> the request itself indicate whether it expects a response msg with a valid pasid or
+> not? The response msg can come from userspace as well(vSVA) and if for some reason
+> doesn't set it for a req that expects pasid then it should be an error, right? In the temp
+> fix I had, I introduced another flag to indicate the endpoint has PRI support or not and
+> used that to verify the pasid requirement. But for the PRI case you mentioned 
+> above, not sure it is easy to get that information or not. May be I am complicating things
+> here :)
 
-I think it will address the issue I am facing as well. I will wait for 
-your patch.
-
->> I see no reason why DMA layer wants to free an iova for which unmapped 
->> failed.
->> IMHO queuing an invalid iova (which already failed unmap) to rcache 
->> which
->> eventually going to crash the system looks like iommu-dma layer issue.
-> 
-> What if the unmap fails because the address range is already entirely
-> unmapped? Freeing the IOVA (or at least attempting to) would be
-> logically appropriate in that case. In fact some IOMMU drivers might
-> not even consider that a failure, so the DMA layer may not even be
-> aware that it's been handed a bogus unallocated address.
-> 
-> The point is that unmapping *doesn't* fail under normal and correct
-> operation, so the DMA layer should not expect to have to handle it.
-> Even if it does happen, that's a highly exceptional case that the DMA
-> layer cannot recover from by itself; at best it can just push the
-> problem elsewhere. It's pretty hard to justify doing extra work to
-> simply move an exceptional problem around without really addressing
-> it.
-> 
-
-iommu_unmap() expects that all areas within unmap size are mapped. 
-infact It
-abandons further unmap if it find any chunk not mapped.  So if an IOMMU
-implementation is not returning failure for already unmapped area,
-then it's prone to issue where DMA API reuse the IOVA, which is already 
-mapped.
-
-In this case where iommu implementation returns error for already 
-unmapped area,
-currently there is no way to distinguish an unmap failure due to range 
-already
-unmapped or say while partially unmapping a section map, memory 
-allocation fails
-and thus unmap returns failure.
-In second case, we will free the iova even with mapping present. And 
-subsequent
-dma mapping will keep on failing if it uses this freed iova. For managed 
-iova
-both unmap/map should be done with dma APIs, it should be safe to expect 
-if a
-range is unmapped with DMA APIs corresponding iova is also freed, so 
-there
-shouldn't be a real need to free iova where unmap fails due to range 
-already
-entirely unmapped.
-
-> And in this particular case, personally I would *much* rather see
-> warnings spewing from both the pagetable and IOVA code as early as
-> possible to clearly indicate that the DMA layer itself has been thrown
-> out of sync, than just have warnings that might represent some other
-> source of pagetable corruption (or at worst, depending on the
-> pagetable code, no warnings at all and only have dma_map_*() calls
-> quietly start failing much, much later due to all the IOVA space
-> having been leaked by bad unmaps).
-> 
-
-I am not sure how useful is this freed iova if corresponding mappings 
-are not
-unmapped. We won't be able to use those iova. The subsequent iommu_map 
-will fail
-if using this freed iova. So it's important to ensure we only free iova 
-which is
-unmapped successfully.
+No you're right, we shouldn't send back malformed responses to the SMMU. I
+suppose we can store a flag "PASID required" in the fault and check that
+against the response. If we have to discard the guest's response, then we
+can either fake a response (abort the stall) right away, or wait for the
+response timeout to kick, which will do the same.
 
 Thanks,
-Prakash
+Jean
 _______________________________________________
 iommu mailing list
 iommu@lists.linux-foundation.org
