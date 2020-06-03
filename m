@@ -6,106 +6,88 @@ X-Spam-Status: No, score=-0.6 required=3.0 tests=DKIM_INVALID,DKIM_SIGNED,
 	HEADER_FROM_DIFFERENT_DOMAINS,MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS,
 	URIBL_BLOCKED autolearn=no autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 49F99C433E0
-	for <iommu@archiver.kernel.org>; Wed,  3 Jun 2020 07:25:13 +0000 (UTC)
-Received: from silver.osuosl.org (smtp3.osuosl.org [140.211.166.136])
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 1218BC433E0
+	for <iommu@archiver.kernel.org>; Wed,  3 Jun 2020 07:37:26 +0000 (UTC)
+Received: from whitealder.osuosl.org (smtp1.osuosl.org [140.211.166.138])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by mail.kernel.org (Postfix) with ESMTPS id 120D6207DA
-	for <iommu@archiver.kernel.org>; Wed,  3 Jun 2020 07:25:12 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTPS id A327D2074B
+	for <iommu@archiver.kernel.org>; Wed,  3 Jun 2020 07:37:25 +0000 (UTC)
 Authentication-Results: mail.kernel.org;
-	dkim=fail reason="signature verification failed" (1024-bit key) header.d=redhat.com header.i=@redhat.com header.b="X7itCp34"
-DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 120D6207DA
-Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=redhat.com
+	dkim=fail reason="signature verification failed" (1024-bit key) header.d=mg.codeaurora.org header.i=@mg.codeaurora.org header.b="Ea0BvGOX"
+DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org A327D2074B
+Authentication-Results: mail.kernel.org; dmarc=none (p=none dis=none) header.from=codeaurora.org
 Authentication-Results: mail.kernel.org; spf=pass smtp.mailfrom=iommu-bounces@lists.linux-foundation.org
 Received: from localhost (localhost [127.0.0.1])
-	by silver.osuosl.org (Postfix) with ESMTP id B7353203F5;
-	Wed,  3 Jun 2020 07:25:12 +0000 (UTC)
-X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from silver.osuosl.org ([127.0.0.1])
-	by localhost (.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
-	with ESMTP id rDKf+riNRmUx; Wed,  3 Jun 2020 07:25:11 +0000 (UTC)
-Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [140.211.9.56])
-	by silver.osuosl.org (Postfix) with ESMTP id 9D9FE20111;
-	Wed,  3 Jun 2020 07:25:11 +0000 (UTC)
-Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
-	by lists.linuxfoundation.org (Postfix) with ESMTP id 7FC8AC0888;
-	Wed,  3 Jun 2020 07:25:11 +0000 (UTC)
-Received: from whitealder.osuosl.org (smtp1.osuosl.org [140.211.166.138])
- by lists.linuxfoundation.org (Postfix) with ESMTP id 24BC2C016E
- for <iommu@lists.linux-foundation.org>; Wed,  3 Jun 2020 07:25:10 +0000 (UTC)
-Received: from localhost (localhost [127.0.0.1])
- by whitealder.osuosl.org (Postfix) with ESMTP id 0BF8487EEE
- for <iommu@lists.linux-foundation.org>; Wed,  3 Jun 2020 07:25:10 +0000 (UTC)
+	by whitealder.osuosl.org (Postfix) with ESMTP id 615A287FB6;
+	Wed,  3 Jun 2020 07:37:25 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
 Received: from whitealder.osuosl.org ([127.0.0.1])
+	by localhost (.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
+	with ESMTP id NvHhdC3ram1Z; Wed,  3 Jun 2020 07:37:24 +0000 (UTC)
+Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [140.211.9.56])
+	by whitealder.osuosl.org (Postfix) with ESMTP id 93EA785044;
+	Wed,  3 Jun 2020 07:37:24 +0000 (UTC)
+Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
+	by lists.linuxfoundation.org (Postfix) with ESMTP id 7787EC0888;
+	Wed,  3 Jun 2020 07:37:24 +0000 (UTC)
+Received: from silver.osuosl.org (smtp3.osuosl.org [140.211.166.136])
+ by lists.linuxfoundation.org (Postfix) with ESMTP id AE009C016E
+ for <iommu@lists.linux-foundation.org>; Wed,  3 Jun 2020 07:37:22 +0000 (UTC)
+Received: from localhost (localhost [127.0.0.1])
+ by silver.osuosl.org (Postfix) with ESMTP id A27982044F
+ for <iommu@lists.linux-foundation.org>; Wed,  3 Jun 2020 07:37:22 +0000 (UTC)
+X-Virus-Scanned: amavisd-new at osuosl.org
+Received: from silver.osuosl.org ([127.0.0.1])
  by localhost (.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
- with ESMTP id mPIP+0W99wdy for <iommu@lists.linux-foundation.org>;
- Wed,  3 Jun 2020 07:25:09 +0000 (UTC)
-X-Greylist: domain auto-whitelisted by SQLgrey-1.7.6
-Received: from us-smtp-delivery-1.mimecast.com (us-smtp-1.mimecast.com
- [207.211.31.81])
- by whitealder.osuosl.org (Postfix) with ESMTPS id 1982087D91
- for <iommu@lists.linux-foundation.org>; Wed,  3 Jun 2020 07:25:08 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
- s=mimecast20190719; t=1591169107;
- h=from:from:reply-to:reply-to:subject:subject:date:date:
- message-id:message-id:to:to:cc:cc:mime-version:mime-version:
- content-type:content-type:in-reply-to:in-reply-to:  references:references;
- bh=EC+d+WxemCljULP9SuuqZspKAfF5v0XLd3cIFL/Shds=;
- b=X7itCp34Ge6LXUJNBmHsmqtRwvADycY4lnvLWLtzU26FYpZUWs0FS63kfLCXQqRSUlae8x
- zII4MSEJku2s85dxvqHk/zOPtPcudUDIZe7bk04p99SzCGXZXJDiIXI7pfgC9ng+wDUjRU
- G4s3Z0HGEvaAcrxQUl2KePYBOuUN8Sw=
-Received: from mail-qv1-f72.google.com (mail-qv1-f72.google.com
- [209.85.219.72]) (Using TLS) by relay.mimecast.com with ESMTP id
- us-mta-93-YixV0GQ0OQKtYOba0c7khw-1; Wed, 03 Jun 2020 03:25:06 -0400
-X-MC-Unique: YixV0GQ0OQKtYOba0c7khw-1
-Received: by mail-qv1-f72.google.com with SMTP id z7so861170qve.0
- for <iommu@lists.linux-foundation.org>; Wed, 03 Jun 2020 00:25:06 -0700 (PDT)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
- d=1e100.net; s=20161025;
- h=x-gm-message-state:date:from:to:cc:subject:message-id:reply-to
- :mail-followup-to:references:mime-version:content-disposition
- :in-reply-to;
- bh=EC+d+WxemCljULP9SuuqZspKAfF5v0XLd3cIFL/Shds=;
- b=bfAEVQn42BACR7QjEgCAAix9SrMYnsp+scItPffgaJ/1JFeou8wcclMjPuBS9cI//w
- hephuIrXSrWTUt6c9t5LdhQcRevdiykuqTQHsuZ2ezXN+c+qHhTDD1JdOtgGcoO5RPkG
- KtAurQqepnIDkSElRMLnm6BnooEDHo6QsyW/u+gKwt4hiVOfFhCt9RJBq+mV7ZjXnQSl
- RUtJxgHmEXd4EFQK8fAGLs2/aWVSQZ+YvN6NcnTJf2nyUICtjWdp208DEk7YDw+3xLUJ
- SAIKeTVoXq+bMusmoD0rrDH1wrE/qFRoQKBDX+YTGaf45gtsPcby5KGEea+9+uZLdueZ
- bluw==
-X-Gm-Message-State: AOAM530E3LNtjhGqpIEuAmjQMswAp1txtwMKYxiUwRknRG4OiELhPJ3L
- FQihUhFepO1oSOdlxdUg/gaCkLPbrhA9N8WFGWevaIF7hXfDRelOXFeTvDiJ4fDzxu5XvzsjiCf
- 7ME+w+x/izTVw7Z57d5K2zJonfg22+g==
-X-Received: by 2002:a37:850:: with SMTP id 77mr28134177qki.498.1591169105757; 
- Wed, 03 Jun 2020 00:25:05 -0700 (PDT)
-X-Google-Smtp-Source: ABdhPJwywfiXv11HyflkYogvBZqV6/H9CCZ3oOPBIMwdCxiPWdRcaBtK8tl9oN/O7TAcINZHy9dowA==
-X-Received: by 2002:a37:850:: with SMTP id 77mr28134171qki.498.1591169105494; 
- Wed, 03 Jun 2020 00:25:05 -0700 (PDT)
-Received: from localhost (ip70-163-223-149.ph.ph.cox.net. [70.163.223.149])
- by smtp.gmail.com with ESMTPSA id 80sm910052qkl.116.2020.06.03.00.25.04
- (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
- Wed, 03 Jun 2020 00:25:04 -0700 (PDT)
-Date: Wed, 3 Jun 2020 00:25:03 -0700
-From: Jerry Snitselaar <jsnitsel@redhat.com>
-To: Joerg Roedel <joro@8bytes.org>
-Subject: Re: [PATCH 0/2] iommu: Move Intel and AMD drivers into their own
- subdirectory
-Message-ID: <20200603072503.j5iffuoxkdryg7qa@cantor>
-Mail-Followup-To: Joerg Roedel <joro@8bytes.org>,
- David Woodhouse <dwmw2@infradead.org>,
- Lu Baolu <baolu.lu@linux.intel.com>,
- Suravee Suthikulpanit <suravee.suthikulpanit@amd.com>,
- Qian Cai <cai@lca.pw>, iommu@lists.linux-foundation.org,
- linux-kernel@vger.kernel.org
-References: <20200602092616.24638-1-joro@8bytes.org>
+ with ESMTP id IkIr10ZnRpB0 for <iommu@lists.linux-foundation.org>;
+ Wed,  3 Jun 2020 07:37:21 +0000 (UTC)
+X-Greylist: from auto-whitelisted by SQLgrey-1.7.6
+Received: from mail27.static.mailgun.info (mail27.static.mailgun.info
+ [104.130.122.27])
+ by silver.osuosl.org (Postfix) with ESMTPS id 281A4203FE
+ for <iommu@lists.linux-foundation.org>; Wed,  3 Jun 2020 07:37:18 +0000 (UTC)
+DKIM-Signature: a=rsa-sha256; v=1; c=relaxed/relaxed; d=mg.codeaurora.org;
+ q=dns/txt; 
+ s=smtp; t=1591169841; h=Message-ID: References: In-Reply-To: Subject:
+ Cc: To: From: Date: Content-Transfer-Encoding: Content-Type:
+ MIME-Version: Sender; bh=aJvFtRy1el1NP+Z5+87GQ+m2nk+T28gjost9JU7AaP0=;
+ b=Ea0BvGOXeOoJebfUPZGumI/9V0/07jxC8ZWrfUx8h5zrS8uUEKq2W5sWUFOjdmZA3KePqb3b
+ sF2HT76dKIwY4F7ml16I6DBKgDZr5EBSrfFX4hrWAz9mam8+6aR4LntxS6ub9vpu0NT52+aW
+ nyoR3POV6uF5QVWR0d4WILscgcI=
+X-Mailgun-Sending-Ip: 104.130.122.27
+X-Mailgun-Sid: WyI3NDkwMCIsICJpb21tdUBsaXN0cy5saW51eC1mb3VuZGF0aW9uLm9yZyIsICJiZTllNGEiXQ==
+Received: from smtp.codeaurora.org
+ (ec2-35-166-182-171.us-west-2.compute.amazonaws.com [35.166.182.171]) by
+ smtp-out-n09.prod.us-east-1.postgun.com with SMTP id
+ 5ed753262dd9e15ae3ab143e (version=TLS1.2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256); Wed, 03 Jun 2020 07:37:10
+ GMT
+Received: by smtp.codeaurora.org (Postfix, from userid 1001)
+ id 9A19AC43391; Wed,  3 Jun 2020 07:37:09 +0000 (UTC)
+Received: from mail.codeaurora.org (localhost.localdomain [127.0.0.1])
+ (using TLSv1 with cipher ECDHE-RSA-AES256-SHA (256/256 bits))
+ (No client certificate requested) (Authenticated sender: guptap)
+ by smtp.codeaurora.org (Postfix) with ESMTPSA id D600BC433CA;
+ Wed,  3 Jun 2020 07:37:08 +0000 (UTC)
 MIME-Version: 1.0
-In-Reply-To: <20200602092616.24638-1-joro@8bytes.org>
-X-Mimecast-Spam-Score: 0
-X-Mimecast-Originator: redhat.com
-Content-Disposition: inline
-Cc: linux-kernel@vger.kernel.org, iommu@lists.linux-foundation.org,
- David Woodhouse <dwmw2@infradead.org>
+Date: Wed, 03 Jun 2020 13:07:08 +0530
+From: guptap@codeaurora.org
+To: Robin Murphy <robin.murphy@arm.com>
+Subject: Re: [PATCH] iommu/dma: limit iova free size to unmmaped iova
+In-Reply-To: <9b5f8501-6e6e-0cd2-7f98-7cfea13051d7@arm.com>
+References: <20200521113004.12438-1-guptap@codeaurora.org>
+ <7aaa8dcc-6a47-f256-431d-2a1b034b4076@arm.com>
+ <90662ef3123dbf2e93f9718ee5cc14a7@codeaurora.org>
+ <2d873ab9-ebb9-3c2d-f129-55a036ab47d0@arm.com>
+ <4ba082d3bb965524157704ea1ffb1ff4@codeaurora.org>
+ <9b5f8501-6e6e-0cd2-7f98-7cfea13051d7@arm.com>
+Message-ID: <4b6a864674a9231b3ac35e5ce0c7292f@codeaurora.org>
+X-Sender: guptap@codeaurora.org
+User-Agent: Roundcube Webmail/1.3.9
+Cc: mhocko@suse.com, owner-linux-mm@kvack.org, linux-kernel@vger.kernel.org,
+ stable@vger.kernel.org, linux-mm@kvack.org, iommu@lists.linux-foundation.org,
+ Andrew Morton <akpm@linux-foundation.org>
 X-BeenThere: iommu@lists.linux-foundation.org
 X-Mailman-Version: 2.1.15
 Precedence: list
@@ -118,66 +100,110 @@ List-Post: <mailto:iommu@lists.linux-foundation.org>
 List-Help: <mailto:iommu-request@lists.linux-foundation.org?subject=help>
 List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
  <mailto:iommu-request@lists.linux-foundation.org?subject=subscribe>
-Reply-To: Jerry Snitselaar <jsnitsel@redhat.com>
 Content-Transfer-Encoding: 7bit
 Content-Type: text/plain; charset="us-ascii"; Format="flowed"
 Errors-To: iommu-bounces@lists.linux-foundation.org
 Sender: "iommu" <iommu-bounces@lists.linux-foundation.org>
 
-On Tue Jun 02 20, Joerg Roedel wrote:
->Hi,
->
->two small patches to move the Intel and AMD IOMMU drivers into their own
->subdirectory under drivers/iommu/ to make the file structure a bit less
->cluttered.
->
->Regards,
->
->	Joerg
->
->Joerg Roedel (2):
->  iommu/amd: Move AMD IOMMU driver into subdirectory
->  iommu/vt-d: Move Intel IOMMU driver into subdirectory
->
-> drivers/iommu/Makefile                         | 18 +++++++++---------
-> drivers/iommu/{ => amd}/amd_iommu.h            |  0
-> drivers/iommu/{ => amd}/amd_iommu_types.h      |  0
-> .../{amd_iommu_debugfs.c => amd/debugfs.c}     |  0
-> drivers/iommu/{amd_iommu_init.c => amd/init.c} |  2 +-
-> drivers/iommu/{amd_iommu.c => amd/iommu.c}     |  2 +-
-> .../iommu/{amd_iommu_v2.c => amd/iommu_v2.c}   |  0
-> .../iommu/{amd_iommu_quirks.c => amd/quirks.c} |  0
-> .../{intel-iommu-debugfs.c => intel/debugfs.c} |  0
-> drivers/iommu/{ => intel}/dmar.c               |  2 +-
-> drivers/iommu/{ => intel}/intel-pasid.h        |  0
-> drivers/iommu/{intel-iommu.c => intel/iommu.c} |  2 +-
-> .../irq_remapping.c}                           |  2 +-
-> drivers/iommu/{intel-pasid.c => intel/pasid.c} |  0
-> drivers/iommu/{intel-svm.c => intel/svm.c}     |  0
-> drivers/iommu/{intel-trace.c => intel/trace.c} |  0
-> 16 files changed, 14 insertions(+), 14 deletions(-)
-> rename drivers/iommu/{ => amd}/amd_iommu.h (100%)
-> rename drivers/iommu/{ => amd}/amd_iommu_types.h (100%)
-> rename drivers/iommu/{amd_iommu_debugfs.c => amd/debugfs.c} (100%)
-> rename drivers/iommu/{amd_iommu_init.c => amd/init.c} (99%)
-> rename drivers/iommu/{amd_iommu.c => amd/iommu.c} (99%)
-> rename drivers/iommu/{amd_iommu_v2.c => amd/iommu_v2.c} (100%)
-> rename drivers/iommu/{amd_iommu_quirks.c => amd/quirks.c} (100%)
-> rename drivers/iommu/{intel-iommu-debugfs.c => intel/debugfs.c} (100%)
-> rename drivers/iommu/{ => intel}/dmar.c (99%)
-> rename drivers/iommu/{ => intel}/intel-pasid.h (100%)
-> rename drivers/iommu/{intel-iommu.c => intel/iommu.c} (99%)
-> rename drivers/iommu/{intel_irq_remapping.c => intel/irq_remapping.c} (99%)
-> rename drivers/iommu/{intel-pasid.c => intel/pasid.c} (100%)
-> rename drivers/iommu/{intel-svm.c => intel/svm.c} (100%)
-> rename drivers/iommu/{intel-trace.c => intel/trace.c} (100%)
->
->-- 
->2.17.1
->
+On 2020-06-02 18:37, Robin Murphy wrote:
+> On 2020-05-26 08:19, guptap@codeaurora.org wrote:
+>> On 2020-05-22 14:54, Robin Murphy wrote:
+>>> On 2020-05-22 07:25, guptap@codeaurora.org wrote:
+>>>> On 2020-05-22 01:46, Robin Murphy wrote:
+>>>>> On 2020-05-21 12:30, Prakash Gupta wrote:
+>> Sorry for delayed response, it was a long weekend.
+>> I agree that invalid DMA API call can result in unexpected issues and 
+>> client
+>> should fix it, but then the present behavior makes it difficult to 
+>> catch cases
+>> when driver is making wrong DMA API calls. When invalid iova pfn is 
+>> passed it
+>> doesn't fail then and there, though DMA layer is aware of iova being 
+>> invalid. It
+>> fails much after that in the context of an valid map/unmap, with 
+>> BUG_ON().
+>> 
+>> Downgrading BUG_ON() to WARN_ON() in iova_magazine_free_pfns() will 
+>> not help
+>> much as invalid iova will cause NULL pointer dereference.
+> 
+> Obviously I didn't mean a literal s/BUG/WARN/ substitution - some
+> additional control flow to actually handle the error case was implied.
+> 
+> I'll write up the patch myself, since it's easier than further 
+> debating.
+> 
 
-Reviewed-by: Jerry Snitselaar <jsnitsel@redhat.com>
+I think it will address the issue I am facing as well. I will wait for 
+your patch.
 
+>> I see no reason why DMA layer wants to free an iova for which unmapped 
+>> failed.
+>> IMHO queuing an invalid iova (which already failed unmap) to rcache 
+>> which
+>> eventually going to crash the system looks like iommu-dma layer issue.
+> 
+> What if the unmap fails because the address range is already entirely
+> unmapped? Freeing the IOVA (or at least attempting to) would be
+> logically appropriate in that case. In fact some IOMMU drivers might
+> not even consider that a failure, so the DMA layer may not even be
+> aware that it's been handed a bogus unallocated address.
+> 
+> The point is that unmapping *doesn't* fail under normal and correct
+> operation, so the DMA layer should not expect to have to handle it.
+> Even if it does happen, that's a highly exceptional case that the DMA
+> layer cannot recover from by itself; at best it can just push the
+> problem elsewhere. It's pretty hard to justify doing extra work to
+> simply move an exceptional problem around without really addressing
+> it.
+> 
+
+iommu_unmap() expects that all areas within unmap size are mapped. 
+infact It
+abandons further unmap if it find any chunk not mapped.  So if an IOMMU
+implementation is not returning failure for already unmapped area,
+then it's prone to issue where DMA API reuse the IOVA, which is already 
+mapped.
+
+In this case where iommu implementation returns error for already 
+unmapped area,
+currently there is no way to distinguish an unmap failure due to range 
+already
+unmapped or say while partially unmapping a section map, memory 
+allocation fails
+and thus unmap returns failure.
+In second case, we will free the iova even with mapping present. And 
+subsequent
+dma mapping will keep on failing if it uses this freed iova. For managed 
+iova
+both unmap/map should be done with dma APIs, it should be safe to expect 
+if a
+range is unmapped with DMA APIs corresponding iova is also freed, so 
+there
+shouldn't be a real need to free iova where unmap fails due to range 
+already
+entirely unmapped.
+
+> And in this particular case, personally I would *much* rather see
+> warnings spewing from both the pagetable and IOVA code as early as
+> possible to clearly indicate that the DMA layer itself has been thrown
+> out of sync, than just have warnings that might represent some other
+> source of pagetable corruption (or at worst, depending on the
+> pagetable code, no warnings at all and only have dma_map_*() calls
+> quietly start failing much, much later due to all the IOVA space
+> having been leaked by bad unmaps).
+> 
+
+I am not sure how useful is this freed iova if corresponding mappings 
+are not
+unmapped. We won't be able to use those iova. The subsequent iommu_map 
+will fail
+if using this freed iova. So it's important to ensure we only free iova 
+which is
+unmapped successfully.
+
+Thanks,
+Prakash
 _______________________________________________
 iommu mailing list
 iommu@lists.linux-foundation.org
