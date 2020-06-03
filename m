@@ -2,155 +2,183 @@ Return-Path: <SRS0=U3VV=7Q=lists.linux-foundation.org=iommu-bounces@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-6.5 required=3.0 tests=DKIM_INVALID,DKIM_SIGNED,
-	HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_PATCH,MAILING_LIST_MULTI,
-	MSGID_FROM_MTA_HEADER,SIGNED_OFF_BY,SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED
-	autolearn=ham autolearn_force=no version=3.4.0
+X-Spam-Status: No, score=-2.0 required=3.0 tests=DKIM_INVALID,DKIM_SIGNED,
+	HEADER_FROM_DIFFERENT_DOMAINS,MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS,
+	URIBL_BLOCKED,USER_AGENT_SANE_1 autolearn=no autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 2933CC433DF
-	for <iommu@archiver.kernel.org>; Wed,  3 Jun 2020 03:55:59 +0000 (UTC)
-Received: from whitealder.osuosl.org (smtp1.osuosl.org [140.211.166.138])
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 69485C433E0
+	for <iommu@archiver.kernel.org>; Wed,  3 Jun 2020 04:13:42 +0000 (UTC)
+Received: from fraxinus.osuosl.org (smtp4.osuosl.org [140.211.166.137])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by mail.kernel.org (Postfix) with ESMTPS id 8D6E420674
-	for <iommu@archiver.kernel.org>; Wed,  3 Jun 2020 03:55:58 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTPS id 584E1206E2
+	for <iommu@archiver.kernel.org>; Wed,  3 Jun 2020 04:13:41 +0000 (UTC)
 Authentication-Results: mail.kernel.org;
-	dkim=fail reason="signature verification failed" (1024-bit key) header.d=fb.com header.i=@fb.com header.b="Od6033S8";
-	dkim=fail reason="signature verification failed" (1024-bit key) header.d=fb.onmicrosoft.com header.i=@fb.onmicrosoft.com header.b="Mh7Cw6/w"
-DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 8D6E420674
-Authentication-Results: mail.kernel.org; dmarc=none (p=none dis=none) header.from=lists.linux-foundation.org
+	dkim=fail reason="signature verification failed" (2048-bit key) header.d=ozlabs-ru.20150623.gappssmtp.com header.i=@ozlabs-ru.20150623.gappssmtp.com header.b="0GIfDYJu"
+DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 584E1206E2
+Authentication-Results: mail.kernel.org; dmarc=none (p=none dis=none) header.from=ozlabs.ru
 Authentication-Results: mail.kernel.org; spf=pass smtp.mailfrom=iommu-bounces@lists.linux-foundation.org
 Received: from localhost (localhost [127.0.0.1])
-	by whitealder.osuosl.org (Postfix) with ESMTP id 4470A87DC5;
-	Wed,  3 Jun 2020 03:55:58 +0000 (UTC)
+	by fraxinus.osuosl.org (Postfix) with ESMTP id 16F1F8693D;
+	Wed,  3 Jun 2020 04:13:41 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from whitealder.osuosl.org ([127.0.0.1])
+Received: from fraxinus.osuosl.org ([127.0.0.1])
 	by localhost (.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
-	with ESMTP id 2WxfGda5KYxx; Wed,  3 Jun 2020 03:55:57 +0000 (UTC)
+	with ESMTP id AMN1Jhu_0r4x; Wed,  3 Jun 2020 04:13:40 +0000 (UTC)
 Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [140.211.9.56])
-	by whitealder.osuosl.org (Postfix) with ESMTP id 83C1887D5A;
-	Wed,  3 Jun 2020 03:55:57 +0000 (UTC)
+	by fraxinus.osuosl.org (Postfix) with ESMTP id 8EF698691A;
+	Wed,  3 Jun 2020 04:13:40 +0000 (UTC)
 Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
-	by lists.linuxfoundation.org (Postfix) with ESMTP id 737CAC0178;
-	Wed,  3 Jun 2020 03:55:57 +0000 (UTC)
-Received: from whitealder.osuosl.org (smtp1.osuosl.org [140.211.166.138])
- by lists.linuxfoundation.org (Postfix) with ESMTP id DD4DBC016E
- for <iommu@lists.linux-foundation.org>; Wed,  3 Jun 2020 03:24:14 +0000 (UTC)
+	by lists.linuxfoundation.org (Postfix) with ESMTP id 6D41EC0178;
+	Wed,  3 Jun 2020 04:13:40 +0000 (UTC)
+Received: from fraxinus.osuosl.org (smtp4.osuosl.org [140.211.166.137])
+ by lists.linuxfoundation.org (Postfix) with ESMTP id 720D5C016E
+ for <iommu@lists.linux-foundation.org>; Wed,  3 Jun 2020 04:13:38 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
- by whitealder.osuosl.org (Postfix) with ESMTP id BEC8086354
- for <iommu@lists.linux-foundation.org>; Wed,  3 Jun 2020 03:24:14 +0000 (UTC)
+ by fraxinus.osuosl.org (Postfix) with ESMTP id 6667D8692B
+ for <iommu@lists.linux-foundation.org>; Wed,  3 Jun 2020 04:13:38 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from whitealder.osuosl.org ([127.0.0.1])
+Received: from fraxinus.osuosl.org ([127.0.0.1])
  by localhost (.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
- with ESMTP id kdSIxRwuhYQp for <iommu@lists.linux-foundation.org>;
- Wed,  3 Jun 2020 03:24:13 +0000 (UTC)
-X-Greylist: domain auto-whitelisted by SQLgrey-1.7.6
-Received: from mx0a-00082601.pphosted.com (mx0b-00082601.pphosted.com
- [67.231.153.30])
- by whitealder.osuosl.org (Postfix) with ESMTPS id 9B37386294
- for <iommu@lists.linux-foundation.org>; Wed,  3 Jun 2020 03:24:13 +0000 (UTC)
-Received: from pps.filterd (m0001303.ppops.net [127.0.0.1])
- by m0001303.ppops.net (8.16.0.42/8.16.0.42) with SMTP id 0533DnYY010998;
- Tue, 2 Jun 2020 20:22:25 -0700
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=fb.com;
- h=date : from : to : cc :
- subject : message-id : references : content-type : in-reply-to :
- mime-version; s=facebook; bh=zbGG/PNuS0Ddo/tqnRwkl7V0MeS0ved7nGwtiiC1XYI=;
- b=Od6033S81ZztH9Pgvx9m7MxU+QUwhEaxN4nGzRqN5R+LlonE/VmQ+TDp8gzxBOPrlIwb
- DfL6Y0QcZ96QLqAQD3MDWi43gQmklfmltL36SER2wKchNGHbq4/0fbv6DcZntHIJ+gf+
- fWyqRTrfg7hCEqtoLAbPbh8l3lqAoN9INYY= 
-Received: from mail.thefacebook.com ([163.114.132.120])
- by m0001303.ppops.net with ESMTP id 31bk5npkxu-11
- (version=TLSv1.2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128 verify=NOT);
- Tue, 02 Jun 2020 20:22:25 -0700
-Received: from NAM10-MW2-obe.outbound.protection.outlook.com (100.104.98.9) by
- o365-in.thefacebook.com (100.104.94.230) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.1979.3; Tue, 2 Jun 2020 20:22:23 -0700
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=GnncRHK093QtCvHEGBXRZGjSsP84I5mrCkKqf3IBWUOfUidGIyAWSU/nXO316jyfDkfarFIvj/23lsH0DZR6FIe7ayd2XfbinlA/t57aTcQMrDM1i5Y3DYK0JKX97xslHFpEMYxsd3ZeU99nGwA7s7lXJJe8Mr7CjhDAwlquKnhOcr8L1h0FlSPBXFlAbpXtWddiydAoai0Fcb7Ko7KCD3lytKDvcNJQn5Bzw0GRYLQ2gxnD8ujWOpgPTzvmdmjKurKkIGtax2WUWO0JeKMeR4DwHzvDQxZyASr9EBa1VHpN2AcJVWYhYktZPKc96oPwqq0/Ng/n3grumq5dyFUqig==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com; 
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=zbGG/PNuS0Ddo/tqnRwkl7V0MeS0ved7nGwtiiC1XYI=;
- b=KxeYYxxmX0WS0YVL/jJES2Wfj2xTH8sHGcOxN+JNoeTEEzTRbzedKdARzqB/+BswmizdDMK4I4rX3KxdElI7DeSgOAB6CzLex+ObF14uRUR2tA4CUstzcKudUFExcrn5svk3ZokIMsA6gIDqH70XebaiUTLDEVngrDsOgUOwsXWwM3kN2pw/J9SDA29v6cvb390K+Dgkiqf2MyYwss31r5vLPbKp7SHE6XN3aHG+FNZfUUagNyMoQtIN9gujj88zR4OJWnKau3vn7HMvuWosBVcvZBrlcbAB+WzUEUFqXbzfM0yFOfmERts9mStkxrEnppDLlSBTBVPQlBnBkjH8tQ==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=fb.com; dmarc=pass action=none header.from=fb.com; dkim=pass
- header.d=fb.com; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=fb.onmicrosoft.com;
- s=selector2-fb-onmicrosoft-com;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=zbGG/PNuS0Ddo/tqnRwkl7V0MeS0ved7nGwtiiC1XYI=;
- b=Mh7Cw6/w8aUadl3LtSK4zz7M/7+xasDG1EXTDnM1gLn0egDtkhKu0ljPqJW9MymSa6vkmq2lD891tnr9NoBmKhoWW/JBZeIjyazBfI1z37TpfVYNzpla2Hyjm4Ib9osrBBLZMMRVqwV8fjHoY0Tnu0tL0YAQgLPdTrEgjIBhMBY=
-Authentication-Results: hisilicon.com; dkim=none (message not signed)
- header.d=none;hisilicon.com; dmarc=none action=none header.from=fb.com;
-Received: from BYAPR15MB4136.namprd15.prod.outlook.com (2603:10b6:a03:96::24)
- by BYAPR15MB2775.namprd15.prod.outlook.com (2603:10b6:a03:15a::12)
- with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.3045.22; Wed, 3 Jun
- 2020 03:22:22 +0000
-Received: from BYAPR15MB4136.namprd15.prod.outlook.com
- ([fe80::48e3:c159:703d:a2f1]) by BYAPR15MB4136.namprd15.prod.outlook.com
- ([fe80::48e3:c159:703d:a2f1%5]) with mapi id 15.20.3066.018; Wed, 3 Jun 2020
- 03:22:22 +0000
-Date: Tue, 2 Jun 2020 20:22:19 -0700
-To: Barry Song <song.bao.hua@hisilicon.com>
-Subject: Re: [PATCH 2/3] arm64: mm: reserve hugetlb CMA after numa_init
-Message-ID: <20200603032219.GA548147@carbon.lan>
-References: <20200603024231.61748-1-song.bao.hua@hisilicon.com>
- <20200603024231.61748-3-song.bao.hua@hisilicon.com>
-Content-Disposition: inline
-In-Reply-To: <20200603024231.61748-3-song.bao.hua@hisilicon.com>
-X-ClientProxiedBy: BY5PR17CA0019.namprd17.prod.outlook.com
- (2603:10b6:a03:1b8::32) To BYAPR15MB4136.namprd15.prod.outlook.com
- (2603:10b6:a03:96::24)
+ with ESMTP id en-ioPqkAXpa for <iommu@lists.linux-foundation.org>;
+ Wed,  3 Jun 2020 04:13:37 +0000 (UTC)
+X-Greylist: from auto-whitelisted by SQLgrey-1.7.6
+Received: from mail-pg1-f195.google.com (mail-pg1-f195.google.com
+ [209.85.215.195])
+ by fraxinus.osuosl.org (Postfix) with ESMTPS id 1C2838691A
+ for <iommu@lists.linux-foundation.org>; Wed,  3 Jun 2020 04:13:36 +0000 (UTC)
+Received: by mail-pg1-f195.google.com with SMTP id u5so849390pgn.5
+ for <iommu@lists.linux-foundation.org>; Tue, 02 Jun 2020 21:13:36 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+ d=ozlabs-ru.20150623.gappssmtp.com; s=20150623;
+ h=subject:to:cc:references:from:autocrypt:message-id:date:user-agent
+ :mime-version:in-reply-to:content-language:content-transfer-encoding;
+ bh=8EI4OAEKoGntLt5U48AD1ncRE6C+EW6yUePVytLhGOA=;
+ b=0GIfDYJu79CU9iGdBWKBfqQoT5Mr8ufMEigFhivqv2dR/NJddP92TwQAfG6/Yjh7nj
+ chkT3aviwMgJGLS7qQtp4OWXeMs2hvdlYfXnZ+bKtEHfQbAA8M5yi6kjYmDrNzHP3S0c
+ dc16MqSztsTTWATreX3xADLEflzkJ7QIxkCXy62zyM9aTsq+yXMqj6SHtwk/eaQmvMEr
+ ce5TCDjc0kcfxy5JzK1Afv5lxOlW5qlE3qmMVUeQr3PqtQDVrIpCQ3eOnI4x4pgH/iLu
+ JrJksE3O5utK1s5tBPPzXx5elmt+6/L2u9bOr/ZZaJ8s0WZvsZFZ8xcKTPACHnWivHDj
+ dDIw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+ d=1e100.net; s=20161025;
+ h=x-gm-message-state:subject:to:cc:references:from:autocrypt
+ :message-id:date:user-agent:mime-version:in-reply-to
+ :content-language:content-transfer-encoding;
+ bh=8EI4OAEKoGntLt5U48AD1ncRE6C+EW6yUePVytLhGOA=;
+ b=EElNU0EeF1uV+yAAHtGOwwyWpYpDp/3vdZ+W9v2T0GbltwhA+eH5DjYIN+x27IZwSI
+ SGsgL8TKDmS4V3z8FzdwFU7KxPT57BOLIiLMiP6RGYWhm+xvzW3nN4KnD7kfKfh0IyZc
+ sCU0bw5qTerPvR3gvt8cX9LhS42H9Tq1CurfEYhxw3/lTeM0ERESS2VGNstEHojlSFuw
+ +Deh4jIK+d3Pq1z9RxbFPtyU+SbZIPrz2koNWvYdpYBMfnTH0ZJsfq76lvRFkokdIDjP
+ kARE0uLegibLSEdgovvLDBas2UE2IY6L7+NjNxdwTiwFbp5MWtK2RCs3mwd2A8d9bFCq
+ AuJw==
+X-Gm-Message-State: AOAM53248ZKUBacSRNWA49Lh0m1Az90mXDddq3CR8AC6s+029JXDTixx
+ xV/Zccdw/xkqgMntWm6Wt4WpYQ==
+X-Google-Smtp-Source: ABdhPJwbFTUQgC4PFs80/lTcuwctbv2R44UBN3CDf1Lw+WIw67rRVnNibgbHI9K50/Ab69k/lR0Q3A==
+X-Received: by 2002:a17:90a:c246:: with SMTP id
+ d6mr3159483pjx.60.1591157616340; 
+ Tue, 02 Jun 2020 21:13:36 -0700 (PDT)
+Received: from [192.168.10.94] (124-171-83-152.dyn.iinet.net.au.
+ [124.171.83.152])
+ by smtp.gmail.com with ESMTPSA id i21sm404549pgn.20.2020.06.02.21.13.31
+ (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+ Tue, 02 Jun 2020 21:13:35 -0700 (PDT)
+Subject: Re: [PATCH 1/4] dma-mapping: move the remaining DMA API calls out of
+ line
+To: Christoph Hellwig <hch@lst.de>
+References: <20200414122506.438134-1-hch@lst.de>
+ <20200414122506.438134-2-hch@lst.de>
+ <c2572d30-f03c-450d-e257-3a8673b42d44@ozlabs.ru>
+ <20200415061859.GA32392@lst.de>
+ <5139e8e1-6389-3387-dc39-6983b08ff28d@ozlabs.ru>
+ <20200417075852.GA20049@lst.de>
+ <70296d53-3504-2645-4b16-0eb73b0cd0d9@ozlabs.ru>
+ <20200509081946.GA21834@lst.de>
+From: Alexey Kardashevskiy <aik@ozlabs.ru>
+Autocrypt: addr=aik@ozlabs.ru; keydata=
+ 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
+Message-ID: <95c46afb-bb40-3cb3-bf32-3e510fcd474d@ozlabs.ru>
+Date: Wed, 3 Jun 2020 14:13:29 +1000
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101
+ Thunderbird/68.8.0
 MIME-Version: 1.0
-X-MS-Exchange-MessageSentRepresentingType: 1
-Received: from carbon.lan (2620:10d:c090:400::5:7f8a) by
- BY5PR17CA0019.namprd17.prod.outlook.com (2603:10b6:a03:1b8::32) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.3066.18 via Frontend
- Transport; Wed, 3 Jun 2020 03:22:22 +0000
-X-Originating-IP: [2620:10d:c090:400::5:7f8a]
-X-MS-PublicTrafficType: Email
-X-MS-Office365-Filtering-Correlation-Id: 90224910-3e4a-410c-b069-08d8076d5497
-X-MS-TrafficTypeDiagnostic: BYAPR15MB2775:
-X-Microsoft-Antispam-PRVS: <BYAPR15MB277541654E5DD80938CE9889BE880@BYAPR15MB2775.namprd15.prod.outlook.com>
-X-FB-Source: Internal
-X-MS-Oob-TLC-OOBClassifiers: OLM:8273;
-X-Forefront-PRVS: 04238CD941
-X-MS-Exchange-SenderADCheck: 1
-X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info: 0CqFG0KZk9EzO+Rc8DAadWRgnNb0cSxDO6ofkgxAq3ywLey46ZJ3kbpDvrf3al9ex/ITfUdGc3wcwnbJhSLX4TKuNIgkpLJXSRrnlwVdqBK61CyNLxgD/OyVqCJ766W8IgHloElbVt2wo7Pyk9mcVjRgVyyvTsdACHRSgJXm9aggseYfLhjmnIyMhSkthu4tsqIDFvmyPMI9AWgCWzljKYBkp1SVh7WvecegVjm3fkIz5d6R3886pwCnF6f1V2oy9bCOf4ZwRDoEV/n5ujfnGBUmJf4YX2M1bUgGdNySSHXY28TCc5MSzu9CMfTyDOODh0rXoTV+qyidEkmRouPILR3RLV+QSv9V9d1FjIaFmgvnVACDjzTuWSDNxgiCmf9V
-X-Forefront-Antispam-Report: CIP:255.255.255.255; CTRY:; LANG:en; SCL:1; SRV:;
- IPV:NLI; SFV:NSPM; H:BYAPR15MB4136.namprd15.prod.outlook.com; PTR:; CAT:NONE;
- SFTY:;
- SFS:(39860400002)(136003)(396003)(366004)(346002)(376002)(6666004)(1076003)(83380400001)(8936002)(8676002)(8886007)(6916009)(2906002)(7416002)(6506007)(9686003)(4326008)(36756003)(66476007)(86362001)(66556008)(66946007)(5660300002)(16526019)(316002)(52116002)(7696005)(478600001)(33656002)(55016002)(186003)(27376004);
- DIR:OUT; SFP:1102; 
-X-MS-Exchange-AntiSpam-MessageData: qUA8nK+yjOLwiXVD4fCKV9HDpuTLpEEhCz1MwTamxJ3C2IwkqSXK4gi23VxsOEWFdCCDo0NLYvwIVoagDcqNTNTQcwDx36E057rsiQnW/AfYaIAKvKqeepKem3Vks00uWt6TuYZdvgdNh1/1Vi1P9FkLTVCxYmjeG8xFrAATpyX91cN5a+2sCD3vEaMHMeTMA28Xkr9A0O1PT3nyLrTefanfUQNwMGf20w10VRmVLfUPT302Iwhcp++T1RbZH9XhRiVz6x6enst1Y+r1rm9tf23gDZzJ1SsdaGQvi/zQPXf00hfXoGSs2HcRg+Z59+JgukMZu7D37UyR4Dpd5qG3WRBWUdFDFXpca5BzXUjaZfZvrP0fCJM8TrdpLmqZHqNKrWPLS8g6MCfY9/hoRoSdRuz62kdVRL3V0lFXdssoLoYNheVZFxPwjJbJDCvoXt7tgfalo5kpFuOztdnOZTF1cPzV+4nP0q73wuCXGime/h+gW9HHkyPrsJS16+vCbkTeN9Rx9fpyqf0SRmquZUp8Nw==
-X-MS-Exchange-CrossTenant-Network-Message-Id: 90224910-3e4a-410c-b069-08d8076d5497
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 03 Jun 2020 03:22:22.7500 (UTC)
-X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
-X-MS-Exchange-CrossTenant-Id: 8ae927fe-1255-47a7-a2af-5f3a069daaa2
-X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: PMiiHkMubMoC9AeGv/pnWpAgPyGWf0mRZ+4lDn8WaOd0zhwQM9uuuPMmHlC0HtEK
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: BYAPR15MB2775
-X-OriginatorOrg: fb.com
-X-Proofpoint-Virus-Version: vendor=fsecure engine=2.50.10434:6.0.216, 18.0.687
- definitions=2020-06-02_15:2020-06-02,
- 2020-06-02 signatures=0
-X-Proofpoint-Spam-Details: rule=fb_default_notspam policy=fb_default score=0
- spamscore=0
- impostorscore=0 clxscore=1011 malwarescore=0 suspectscore=1
- mlxlogscore=999 cotscore=-2147483648 phishscore=0 mlxscore=0
- priorityscore=1501 bulkscore=0 adultscore=0 lowpriorityscore=0
- classifier=spam adjust=0 reason=mlx scancount=1 engine=8.12.0-2004280000
- definitions=main-2006030025
-X-FB-Internal: deliver
-X-Mailman-Approved-At: Wed, 03 Jun 2020 03:55:56 +0000
-Cc: catalin.marinas@arm.com, linux-kernel@vger.kernel.org, linuxarm@huawei.com,
- iommu@lists.linux-foundation.org, prime.zeng@hisilicon.com,
- robin.murphy@arm.com, hch@lst.de, linux-arm-kernel@lists.infradead.org
+In-Reply-To: <20200509081946.GA21834@lst.de>
+Content-Language: en-US
+Cc: Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+ linuxppc-dev@lists.ozlabs.org, linux-kernel@vger.kernel.org,
+ iommu@lists.linux-foundation.org, Michael Ellerman <mpe@ellerman.id.au>,
+ Robin Murphy <robin.murphy@arm.com>
 X-BeenThere: iommu@lists.linux-foundation.org
 X-Mailman-Version: 2.1.15
 Precedence: list
@@ -163,60 +191,47 @@ List-Post: <mailto:iommu@lists.linux-foundation.org>
 List-Help: <mailto:iommu-request@lists.linux-foundation.org?subject=help>
 List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
  <mailto:iommu-request@lists.linux-foundation.org?subject=subscribe>
-From: Roman Gushchin via iommu <iommu@lists.linux-foundation.org>
-Reply-To: Roman Gushchin <guro@fb.com>
 Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
 Errors-To: iommu-bounces@lists.linux-foundation.org
 Sender: "iommu" <iommu-bounces@lists.linux-foundation.org>
 
-On Wed, Jun 03, 2020 at 02:42:30PM +1200, Barry Song wrote:
-> hugetlb_cma_reserve() is called at the wrong place. numa_init has not been
-> done yet. so all reserved memory will be located at node0.
-> 
-> Cc: Roman Gushchin <guro@fb.com>
-> Signed-off-by: Barry Song <song.bao.hua@hisilicon.com>
 
-Acked-by: Roman Gushchin <guro@fb.com>
 
-Thanks!
+On 09/05/2020 18:19, Christoph Hellwig wrote:
+> On Tue, May 05, 2020 at 02:18:37PM +1000, Alexey Kardashevskiy wrote:
+>>
+>>
+>> On 17/04/2020 17:58, Christoph Hellwig wrote:
+>>> On Wed, Apr 15, 2020 at 09:21:37PM +1000, Alexey Kardashevskiy wrote:
+>>>> And the fact they were exported leaves possibility that there is a
+>>>> driver somewhere relying on these symbols or distro kernel won't build
+>>>> because the symbol disappeared from exports (I do not know what KABI
+>>>> guarantees or if mainline kernel cares).
+>>>
+>>> We absolutely do not care.  In fact for abuses of APIs that drivers
+>>> should not use we almost care to make them private and break people
+>>> abusing them.
+>>
+>> ok :)
+>>
+>>>> I do not care in particular but
+>>>> some might, a line separated with empty lines in the commit log would do.
+>>>
+>>> I'll add a blurb for the next version.
+>>
+>>
+>> Has it gone anywhere? Thanks,
+> 
+> I've been hoping for the sg_buf helpers to land first, as they need
+> backporting and would conflict.  Do you urgently need the series?
 
-> ---
->  arch/arm64/mm/init.c | 10 +++++-----
->  1 file changed, 5 insertions(+), 5 deletions(-)
-> 
-> diff --git a/arch/arm64/mm/init.c b/arch/arm64/mm/init.c
-> index e42727e3568e..8f0e70ebb49d 100644
-> --- a/arch/arm64/mm/init.c
-> +++ b/arch/arm64/mm/init.c
-> @@ -458,11 +458,6 @@ void __init arm64_memblock_init(void)
->  	high_memory = __va(memblock_end_of_DRAM() - 1) + 1;
->  
->  	dma_contiguous_reserve(arm64_dma32_phys_limit);
-> -
-> -#ifdef CONFIG_ARM64_4K_PAGES
-> -	hugetlb_cma_reserve(PUD_SHIFT - PAGE_SHIFT);
-> -#endif
-> -
->  }
->  
->  void __init bootmem_init(void)
-> @@ -478,6 +473,11 @@ void __init bootmem_init(void)
->  	min_low_pfn = min;
->  
->  	arm64_numa_init();
-> +
-> +#ifdef CONFIG_ARM64_4K_PAGES
-> +	hugetlb_cma_reserve(PUD_SHIFT - PAGE_SHIFT);
-> +#endif
-> +
->  	/*
->  	 * Sparsemem tries to allocate bootmem in memory_present(), so must be
->  	 * done after the fixed reservations.
-> -- 
-> 2.23.0
-> 
-> 
+Any progress with sg_buf helpers stuff? Thanks,
+
+
+
+-- 
+Alexey
 _______________________________________________
 iommu mailing list
 iommu@lists.linux-foundation.org
