@@ -2,113 +2,105 @@ Return-Path: <SRS0=U3VV=7Q=lists.linux-foundation.org=iommu-bounces@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-0.6 required=3.0 tests=DKIM_INVALID,DKIM_SIGNED,
+X-Spam-Status: No, score=-1.8 required=3.0 tests=DKIM_ADSP_CUSTOM_MED,
+	DKIM_INVALID,DKIM_SIGNED,FREEMAIL_FORGED_FROMDOMAIN,FREEMAIL_FROM,
 	HEADER_FROM_DIFFERENT_DOMAINS,MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS,
-	URIBL_BLOCKED autolearn=no autolearn_force=no version=3.4.0
+	URIBL_BLOCKED,USER_AGENT_SANE_1 autolearn=no autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id ED7B3C433E2
-	for <iommu@archiver.kernel.org>; Wed,  3 Jun 2020 07:39:07 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 45B34C433E2
+	for <iommu@archiver.kernel.org>; Wed,  3 Jun 2020 10:24:55 +0000 (UTC)
 Received: from hemlock.osuosl.org (smtp2.osuosl.org [140.211.166.133])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by mail.kernel.org (Postfix) with ESMTPS id BE45F2077D
-	for <iommu@archiver.kernel.org>; Wed,  3 Jun 2020 07:39:07 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTPS id 10E9720734
+	for <iommu@archiver.kernel.org>; Wed,  3 Jun 2020 10:24:55 +0000 (UTC)
 Authentication-Results: mail.kernel.org;
-	dkim=fail reason="signature verification failed" (2048-bit key) header.d=linaro.org header.i=@linaro.org header.b="BaA7HqoJ"
-DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org BE45F2077D
-Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=linaro.org
+	dkim=fail reason="signature verification failed" (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="cyIbH34l"
+DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 10E9720734
+Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=gmail.com
 Authentication-Results: mail.kernel.org; spf=pass smtp.mailfrom=iommu-bounces@lists.linux-foundation.org
 Received: from localhost (localhost [127.0.0.1])
-	by hemlock.osuosl.org (Postfix) with ESMTP id 8DCDA879A7;
-	Wed,  3 Jun 2020 07:39:07 +0000 (UTC)
+	by hemlock.osuosl.org (Postfix) with ESMTP id EDF6A885AE;
+	Wed,  3 Jun 2020 10:24:54 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
 Received: from hemlock.osuosl.org ([127.0.0.1])
 	by localhost (.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
-	with ESMTP id wE8ut5oRJRmu; Wed,  3 Jun 2020 07:39:06 +0000 (UTC)
+	with ESMTP id 7YjddBvYC7x5; Wed,  3 Jun 2020 10:24:54 +0000 (UTC)
 Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [140.211.9.56])
-	by hemlock.osuosl.org (Postfix) with ESMTP id EA03E87874;
-	Wed,  3 Jun 2020 07:39:06 +0000 (UTC)
+	by hemlock.osuosl.org (Postfix) with ESMTP id 0E46B88534;
+	Wed,  3 Jun 2020 10:24:54 +0000 (UTC)
 Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
-	by lists.linuxfoundation.org (Postfix) with ESMTP id CA2F6C0888;
-	Wed,  3 Jun 2020 07:39:06 +0000 (UTC)
-Received: from silver.osuosl.org (smtp3.osuosl.org [140.211.166.136])
- by lists.linuxfoundation.org (Postfix) with ESMTP id 743E0C016E
- for <iommu@lists.linux-foundation.org>; Wed,  3 Jun 2020 07:39:05 +0000 (UTC)
+	by lists.linuxfoundation.org (Postfix) with ESMTP id F37E5C0178;
+	Wed,  3 Jun 2020 10:24:53 +0000 (UTC)
+Received: from hemlock.osuosl.org (smtp2.osuosl.org [140.211.166.133])
+ by lists.linuxfoundation.org (Postfix) with ESMTP id 0CE4AC016E
+ for <iommu@lists.linux-foundation.org>; Wed,  3 Jun 2020 10:24:52 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
- by silver.osuosl.org (Postfix) with ESMTP id 6B9B020489
- for <iommu@lists.linux-foundation.org>; Wed,  3 Jun 2020 07:39:05 +0000 (UTC)
+ by hemlock.osuosl.org (Postfix) with ESMTP id EEBB88858D
+ for <iommu@lists.linux-foundation.org>; Wed,  3 Jun 2020 10:24:51 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from silver.osuosl.org ([127.0.0.1])
+Received: from hemlock.osuosl.org ([127.0.0.1])
  by localhost (.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
- with ESMTP id gjwzi2ufmb+5 for <iommu@lists.linux-foundation.org>;
- Wed,  3 Jun 2020 07:39:03 +0000 (UTC)
+ with ESMTP id W+5SkssYs3eV for <iommu@lists.linux-foundation.org>;
+ Wed,  3 Jun 2020 10:24:51 +0000 (UTC)
 X-Greylist: domain auto-whitelisted by SQLgrey-1.7.6
-Received: from mail-wm1-f66.google.com (mail-wm1-f66.google.com
- [209.85.128.66])
- by silver.osuosl.org (Postfix) with ESMTPS id 73AD7203FE
- for <iommu@lists.linux-foundation.org>; Wed,  3 Jun 2020 07:39:03 +0000 (UTC)
-Received: by mail-wm1-f66.google.com with SMTP id j198so3888445wmj.0
- for <iommu@lists.linux-foundation.org>; Wed, 03 Jun 2020 00:39:03 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linaro.org; s=google;
+Received: from mail-ej1-f66.google.com (mail-ej1-f66.google.com
+ [209.85.218.66])
+ by hemlock.osuosl.org (Postfix) with ESMTPS id BC41688534
+ for <iommu@lists.linux-foundation.org>; Wed,  3 Jun 2020 10:24:50 +0000 (UTC)
+Received: by mail-ej1-f66.google.com with SMTP id z5so1597354ejb.3
+ for <iommu@lists.linux-foundation.org>; Wed, 03 Jun 2020 03:24:50 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=gmail.com; s=20161025;
  h=date:from:to:cc:subject:message-id:references:mime-version
- :content-disposition:in-reply-to;
- bh=hLQ9Ov0eKr85gKa7olFwe6f0SlVLYGl5nrVG5b+LzPg=;
- b=BaA7HqoJAJJh2tIRtyNtCnJJ+ARabjO7t5qWHkwfey6v8O/bYqibUoJb7g2lNYfNoZ
- ifRC05Pi1fFsLS0xec3/ZwWH5HsiqKmSLEV1fLmRpATey18HMYDmWin9n3Lkz4IawUOQ
- xlEYpZp5UmMhs18ikzeusxNZVkL8Zx3ToEbKvsz7PW6G3ARdQwBq0YY+pC+k6oMkgPG9
- WS33Jb4rH9VdYT1yaXMb7+k5Kf1kqlPXl8+BOa8wlHnCW3navM5sN6dA2DpyHeZobAy9
- jaGeJhzWEgaTqAFNlLtfzmz/6tmkY5sIGP7K7i1KqYqmIFqvLzdVzqj+ASM+V0Ps5U09
- v7mw==
+ :content-disposition:in-reply-to:user-agent;
+ bh=mHuuilN5PeoLnfQ2P8d9476VX/JV13yz7q3OCUc4CrU=;
+ b=cyIbH34l3hLBPdQEjpMDJ81LWALNHKWcwH1dqOWfbTjbHdQRXQKI0nyoqrqrkeOO4D
+ bHRli8mV8sDqVuoZqxwIvA7WIdoTvgf+5Lu0AU2wzD74biEZ8AbYFnHik2ED0Eh4FND2
+ E2ztNVkwOzVY1ktXxrIvQVF+Yq5lJj0e5ypFNOK1LC6Z3UwXgzvV/xsP0eL20M4bAyK0
+ l5k8WMmdY6hVyuzq3/HqzGsZVps7072x9dRkL4mQUV/wsSjSLxiS5Y5lsydEd3CyZ0nB
+ qJ5am8CRPOjKSMVU6bKrgqo7RYpjIOlAEPXUaxh9u6FNlQHS8GsvD2qdJbYhtB76uHw8
+ NLSg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
  d=1e100.net; s=20161025;
  h=x-gm-message-state:date:from:to:cc:subject:message-id:references
- :mime-version:content-disposition:in-reply-to;
- bh=hLQ9Ov0eKr85gKa7olFwe6f0SlVLYGl5nrVG5b+LzPg=;
- b=fOranFZnC73KHvr339J2uK3JcBtm40SzKZXi2f0zUzgTKt116T16UL2pr+Fyx+gWCs
- +yPMxk80udHygfzlDnFs7t9J54nbbOfyP1D6Ehy9GUg8gwFCFWbQxh0y2uWfRMt0l5oi
- pzuuUWZBh/ANVMx3tU/yLJxz4rJZgxkRwopQLBteucwvYVjxyU80fEX4klFiO15H+fHC
- Q5XM7hBUMDepnklxr/c/NMa8tMd5fnG2m++cB8MABAM+3OR7vrIzlXwKkCen29Ru9eYz
- PkpNvJwvQ1UHH8WmRaqvXDCEUf76IFjBQ9FfGNIOKxhaLQXHIku3QLFEe3KEIyeZ5xjf
- gGIw==
-X-Gm-Message-State: AOAM530tLfIhUkvl0HeFO7FW4lk2EuWbOKpq5LK9v3nxjOliEO/8gUfP
- seRoDb0GUbbbMjvhK8FPrsUDnA==
-X-Google-Smtp-Source: ABdhPJx2CVWTxoCwkjfPm8H6OgQs2Q+1IKumvn68jhcLFzJkSHw/NXJvs00yy3+6Xok2VEhmklRBbQ==
-X-Received: by 2002:a1c:5a0b:: with SMTP id o11mr7245089wmb.74.1591169941832; 
- Wed, 03 Jun 2020 00:39:01 -0700 (PDT)
-Received: from myrica ([2001:171b:226e:c200:c43b:ef78:d083:b355])
- by smtp.gmail.com with ESMTPSA id t129sm1796108wmf.41.2020.06.03.00.39.00
+ :mime-version:content-disposition:in-reply-to:user-agent;
+ bh=mHuuilN5PeoLnfQ2P8d9476VX/JV13yz7q3OCUc4CrU=;
+ b=fZ50qEX1EtOdSR9aRye+YYu/I6E9+F8BQh3Vu4M+5vQCFV+aL8BPiXynFQc1P9esde
+ +bFg9nx/KO4OWfFSC2h/jPRuBo+Qf9VHV99zy+9KTmi599LzIyWFmEkWlnzTfCfEPuKU
+ S6icD8qyXew+mKGiGktms9uHVU+94g0YLDCEXhDN0CU1pGNJs55HRKxcVQ5w6XWMrtp7
+ OMqr3ttofg/JJchDvFLQRrzkH6G0PlsbUAltBq19n9cvHFG6LndpD4P0k8oMkImVWHbm
+ tBD5ysimmG37uTYUIhrqE+dcUPB6OFdVVbEt+v38xaGuqUjem/3G1mwnT+O861gXldZ6
+ hopw==
+X-Gm-Message-State: AOAM5316M6Af4kMGjW+YvLlWUeXxXSrQ1V/M7EnOZDwjr57yypg51OE/
+ BdXDkY6YzkR6JhrE1Q8rREg=
+X-Google-Smtp-Source: ABdhPJz6sO9c9wCaOw1iZZFLjWWiVLQ6C/10yybaHF7w8NpT9T3jfsYHGIRfWbAc+ss8xTGep0C+0A==
+X-Received: by 2002:a17:906:480f:: with SMTP id
+ w15mr6169857ejq.430.1591179888922; 
+ Wed, 03 Jun 2020 03:24:48 -0700 (PDT)
+Received: from localhost (pd9e51079.dip0.t-ipconnect.de. [217.229.16.121])
+ by smtp.gmail.com with ESMTPSA id m23sm967855edr.86.2020.06.03.03.24.47
  (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
- Wed, 03 Jun 2020 00:39:01 -0700 (PDT)
-Date: Wed, 3 Jun 2020 09:38:51 +0200
-From: Jean-Philippe Brucker <jean-philippe@linaro.org>
-To: Shameerali Kolothum Thodi <shameerali.kolothum.thodi@huawei.com>
-Subject: Re: [PATCH v7 21/24] iommu/arm-smmu-v3: Add stall support for
- platform devices
-Message-ID: <20200603073851.GA3198@myrica>
-References: <20200519175502.2504091-1-jean-philippe@linaro.org>
- <20200519175502.2504091-22-jean-philippe@linaro.org>
- <4741b6c45d1a43b69041ecb5ce0be0d5@huawei.com>
- <20200602093836.GA1029680@myrica>
- <1517c4d97b5849e6b6d32e7d7ed35289@huawei.com>
- <20200602114611.GB1029680@myrica>
- <c165fe41230f49baba991f1a416a4739@huawei.com>
+ Wed, 03 Jun 2020 03:24:47 -0700 (PDT)
+Date: Wed, 3 Jun 2020 12:24:46 +0200
+From: Thierry Reding <thierry.reding@gmail.com>
+To: Bjorn Andersson <bjorn.andersson@linaro.org>
+Subject: Re: [RFC 0/2] iommu: arm-smmu: Add support for early direct mappings
+Message-ID: <20200603102446.GA3478467@ulmo>
+References: <20191209150748.2471814-1-thierry.reding@gmail.com>
+ <20200228025700.GA856087@builder>
+ <20200514193249.GE279327@builder.lan>
+ <CALAqxLVmomdKJCwh=e-PX+8-seDX0RXA81FzmG4sEyJmbXBh9A@mail.gmail.com>
+ <20200527110343.GD11111@willie-the-truck>
+ <20200602110216.GA3354422@ulmo>
+ <20200602193249.GC1799770@builder.lan>
 MIME-Version: 1.0
-Content-Disposition: inline
-In-Reply-To: <c165fe41230f49baba991f1a416a4739@huawei.com>
-Cc: "devicetree@vger.kernel.org" <devicetree@vger.kernel.org>,
- "kevin.tian@intel.com" <kevin.tian@intel.com>,
- "will@kernel.org" <will@kernel.org>,
- "fenghua.yu@intel.com" <fenghua.yu@intel.com>,
- "linux-pci@vger.kernel.org" <linux-pci@vger.kernel.org>,
- "felix.kuehling@amd.com" <felix.kuehling@amd.com>,
- "hch@infradead.org" <hch@infradead.org>, "jgg@ziepe.ca" <jgg@ziepe.ca>,
- "iommu@lists.linux-foundation.org" <iommu@lists.linux-foundation.org>,
- "linux-mm@kvack.org" <linux-mm@kvack.org>,
- "catalin.marinas@arm.com" <catalin.marinas@arm.com>,
- "zhangfei.gao@linaro.org" <zhangfei.gao@linaro.org>,
- "robin.murphy@arm.com" <robin.murphy@arm.com>,
- "christian.koenig@amd.com" <christian.koenig@amd.com>,
- "linux-arm-kernel@lists.infradead.org" <linux-arm-kernel@lists.infradead.org>
+In-Reply-To: <20200602193249.GC1799770@builder.lan>
+User-Agent: Mutt/1.13.1 (2019-12-14)
+Cc: linux-arm-msm <linux-arm-msm@vger.kernel.org>,
+ Robin Murphy <robin.murphy@arm.com>, iommu@lists.linux-foundation.org,
+ John Stultz <john.stultz@linaro.org>, linux-tegra@vger.kernel.org,
+ Will Deacon <will@kernel.org>,
+ linux-arm-kernel <linux-arm-kernel@lists.infradead.org>
 X-BeenThere: iommu@lists.linux-foundation.org
 X-Mailman-Version: 2.1.15
 Precedence: list
@@ -121,92 +113,207 @@ List-Post: <mailto:iommu@lists.linux-foundation.org>
 List-Help: <mailto:iommu-request@lists.linux-foundation.org?subject=help>
 List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
  <mailto:iommu-request@lists.linux-foundation.org?subject=subscribe>
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: 7bit
+Content-Type: multipart/mixed; boundary="===============2235379621133914062=="
 Errors-To: iommu-bounces@lists.linux-foundation.org
 Sender: "iommu" <iommu-bounces@lists.linux-foundation.org>
 
-On Tue, Jun 02, 2020 at 12:12:30PM +0000, Shameerali Kolothum Thodi wrote:
-> > > > > > +		if (ssid_valid)
-> > > > > > +			flt->prm.flags |=
-> > > > IOMMU_FAULT_PAGE_REQUEST_PASID_VALID;
+
+--===============2235379621133914062==
+Content-Type: multipart/signed; micalg=pgp-sha256;
+	protocol="application/pgp-signature"; boundary="Q68bSM7Ycu6FN28Q"
+Content-Disposition: inline
+
+
+--Q68bSM7Ycu6FN28Q
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+Content-Transfer-Encoding: quoted-printable
+
+On Tue, Jun 02, 2020 at 12:32:49PM -0700, Bjorn Andersson wrote:
+> On Tue 02 Jun 04:02 PDT 2020, Thierry Reding wrote:
+>=20
+> > On Wed, May 27, 2020 at 12:03:44PM +0100, Will Deacon wrote:
+> > > Hi John, Bjorn,
+> > >=20
+> > > On Tue, May 26, 2020 at 01:34:45PM -0700, John Stultz wrote:
+> > > > On Thu, May 14, 2020 at 12:34 PM <bjorn.andersson@linaro.org> wrote:
 > > > > >
-> > > > > Do we need to set this for STALL mode only support? I had an issue
-> > > > > with this being set on a vSVA POC based on our D06 zip
-> > > > > device(which is a "fake " pci dev that supports STALL mode but no
-> > > > > PRI). The issue is, CMDQ_OP_RESUME doesn't have any ssid or SSV
-> > > > > params and works on sid
-> > > > and stag only.
-> > > >
-> > > > I don't understand the problem, arm_smmu_page_response() doesn't set
-> > > > SSID or SSV when sending a CMDQ_OP_RESUME. Could you detail the flow
-> > > > of a stall event and RESUME command in your prototype?  Are you
-> > > > getting issues with the host driver or the guest driver?
-> > >
-> > > The issue is on the host side iommu_page_response(). The flow is
-> > > something like below.
-> > >
-> > > Stall: Host:-
-> > >
-> > > arm_smmu_handle_evt()
-> > >   iommu_report_device_fault()
-> > >     vfio_pci_iommu_dev_fault_handler()
-> > >
-> > > Stall: Qemu:-
-> > >
-> > > vfio_dma_fault_notifier_handler()
-> > >   inject_faults()
-> > >     smmuv3_inject_faults()
-> > >
-> > > Stall: Guest:-
-> > >
-> > > arm_smmu_handle_evt()
-> > >   iommu_report_device_fault()
-> > >     iommu_queue_iopf
-> > >   ...
-> > >   iopf_handle_group()
-> > >     iopf_handle_single()
-> > >       handle_mm_fault()
-> > >         iopf_complete()
-> > >            iommu_page_response()
-> > >              arm_smmu_page_response()
-> > >                arm_smmu_cmdq_issue_cmd(CMDQ_OP_RESUME)
-> > >
-> > > Resume: Qemu:-
-> > >
-> > > smmuv3_cmdq_consume(SMMU_CMD_RESUME)
-> > >   smmuv3_notify_page_resp()
-> > >     vfio:ioctl(page_response)  --> struct iommu_page_response is filled
-> > >                              with only version, grpid and code.
-> > >
-> > > Resume: Host:-
-> > >   ioctl(page_response)
-> > >     iommu_page_response()  --> fails as the pending req has PASID_VALID
-> > flag
-> > >                              set and it checks for a match.
-> > 
-> > I believe the fix needs to be here. It's also wrong for PRI since not all PCIe
-> > endpoint require a PASID in the page response. Could you try the attached
-> > patch?
-> 
-> Going through the patch, yes, that will definitely fix the issue. But isn't it better if
-> the request itself indicate whether it expects a response msg with a valid pasid or
-> not? The response msg can come from userspace as well(vSVA) and if for some reason
-> doesn't set it for a req that expects pasid then it should be an error, right? In the temp
-> fix I had, I introduced another flag to indicate the endpoint has PRI support or not and
-> used that to verify the pasid requirement. But for the PRI case you mentioned 
-> above, not sure it is easy to get that information or not. May be I am complicating things
-> here :)
+> > > > > On Thu 27 Feb 18:57 PST 2020, Bjorn Andersson wrote:
+> > > > >
+> > > > > Rob, Will, we're reaching the point where upstream has enough
+> > > > > functionality that this is becoming a critical issue for us.
+> > > > >
+> > > > > E.g. Lenovo Yoga C630 is lacking this and a single dts patch to b=
+oot
+> > > > > mainline with display, GPU, WiFi and audio working and the story =
+is
+> > > > > similar on several devboards.
+> > > > >
+> > > > > As previously described, the only thing I want is the stream mapp=
+ing
+> > > > > related to the display controller in place, either with the CB wi=
+th
+> > > > > translation disabled or possibly with a way to specify the frameb=
+uffer
+> > > > > region (although this turns out to mess things up in the display
+> > > > > driver...)
+> > > > >
+> > > > > I did pick this up again recently and concluded that by omitting =
+the
+> > > > > streams for the USB controllers causes an instability issue seen =
+on one
+> > > > > of the controller to disappear. So I would prefer if we somehow c=
+ould
+> > > > > have a mechanism to only pick the display streams and the context
+> > > > > allocation for this.
+> > > > >
+> > > > >
+> > > > > Can you please share some pointers/insights/wishes for how we can
+> > > > > conclude on this subject?
+> > > >=20
+> > > > Ping? I just wanted to follow up on this discussion as this small
+> > > > series is crucial for booting mainline on the Dragonboard 845c
+> > > > devboard. It would be really valuable to be able to get some soluti=
+on
+> > > > upstream so we can test mainline w/o adding additional patches.
+> > >=20
+> > > Sorry, it's been insanely busy recently and I haven't had a chance to=
+ think
+> > > about this on top of everything else. We're also carrying a hack in A=
+ndroid
+> > > for you :)
+> > >=20
+> > > > The rest of the db845c series has been moving forward smoothly, but
+> > > > this set seems to be very stuck with no visible progress since Dec.
+> > > >=20
+> > > > Are there any pointers for what folks would prefer to see?
+> > >=20
+> > > I've had a chat with Robin about this. Originally, I was hoping that
+> > > people would all work together towards an idyllic future where firmwa=
+re
+> > > would be able to describe arbitrary pre-existing mappings for devices,
+> > > irrespective of the IOMMU through which they master and Linux could
+> > > inherit this configuration. However, that hasn't materialised (there =
+was
+> > > supposed to be an IORT update, but I don't know what happened to that)
+> > > and, in actual fact, the problem that you have on db845 is /far/ more
+> > > restricted than the general problem.
+> >=20
+> > It doesn't sound to me like implementing platform-specific workarounds
+> > is a good long-term solution (especially since, according to Bjorn, they
+> > aren't as trivial to implement as it sounds). And we already have all
+> > the infrastructure in place to implement what you describe, so I don't
+> > see why we shouldn't do that. This patchset uses standard device tree
+> > bindings that were designed for exactly this kind of use-case.
+> >=20
+>=20
+> I think my results would imply that we would have to end up with (at
+> least) some special case of your proposal (i.e. we need a context bank
+> allocated).
 
-No you're right, we shouldn't send back malformed responses to the SMMU. I
-suppose we can store a flag "PASID required" in the fault and check that
-against the response. If we have to discard the guest's response, then we
-can either fake a response (abort the stall) right away, or wait for the
-response timeout to kick, which will do the same.
+I wasn't talking about implementation details, but rather about the
+surrounding infrastructure. It seemed like Will was suggesting that
+there's no way of conveying what memory regions to direct-map from
+the firmware to the kernel. But that really isn't the problem here,
+is it? What we're really looking for is how to take what we have in
+device tree and use it in the ARM SMMU driver to create an early
+mapping that will stay in place until a device has been properly
+attached to the IOMMU domain.
 
-Thanks,
-Jean
+> > So at least for device-tree based boot firmware can already describe
+> > these pre-existing mappings. If something standard materializes for ACPI
+> > eventually I'm sure we can find ways to integrate that into whatever we
+> > come up with now for DT.
+> >=20
+> > I think between Bjorn, John, Laurentiu and myself there's pretty broad
+> > consensus (correct me if I'm wrong, guys) that solving this via reserved
+> > memory regions is a good solution that works. So I think what's really
+> > missing is feedback on whether the changes proposed here or Laurentiu's
+> > updated proposal[0] are acceptable, and if not, what the preference is
+> > for getting something equivalent upstream.
+> >=20
+>=20
+> As described in my reply to your proposal, the one problem I ran into
+> was that I haven't figured out how to reliably "move" my display streams
+> from one mapping entry to another.
+>=20
+> With the current scheme I see that their will either be gaps in time
+> with no mapping for my display, or multiple mappings.
+
+I think you would inevitably end up with two mappings for a transitional
+period while you prepare the final mapping that you want to switch to.
+
+> The other thing I noticed in your proposal was that I have a whole bunch
+> of DT nodes with both iommus and memory-region properties that I really
+> don't care to set up mappings for, but I've not finalized my thoughts on
+> this causing actual problems...
+
+Can you be more specific? It'd be useful to understand all of the
+existing uses of reserved memory regions in order to make sure we
+accomodate all of them.
+
+I'd be surprised, though, if setting up mappings for any of these
+regions would actually cause breakage. If a device tree node has a
+memory-region property it means that this memory region is eventually
+going to be used by the device and if the device tree node also has an
+iommus property it means that it's meant to use the IOMMU for
+translating memory accesses. It's therefore very likely that the memory
+region will need to be mapped. Whether it needs to be a direct mapping
+or not might be worth having a discussion about.
+
+> > Just to highlight: the IOMMU framework already provides infrastructure
+> > to create direct mappings (via iommu_get_resv_regions(), called from
+> > iommu_create_device_direct_mappings()). I have patches that make use of
+> > this on Tegra210 and earlier where a non-ARM SMMU is used and where the
+> > IOMMU driver enables translations (and doesn't fault by default) only at
+> > device attachment time. That works perfectly using reserved-memory
+> > regions. Perhaps that infrastructure could be extended to cover the
+> > kinds of early mappings that we're discussing here. On the other hand it
+> > might be a bit premature at this point because the ARM SMMU is the only
+> > device that currently needs this, as far as I can tell.
+> >=20
+>=20
+> For Qualcomm we got patches picked up for 5.8 that will cause the
+> display controller to be attached with direct mapping, so I think all
+> missing now is the lack of stream mappings between arm-smmu probe and
+> display driver probe...
+
+Can you point me at those patches? I'd like to look at them and see if
+they match what I have planned for Tegra or if we can somehow converge
+on a common scheme.
+
+Thierry
+
+--Q68bSM7Ycu6FN28Q
+Content-Type: application/pgp-signature; name="signature.asc"
+
+-----BEGIN PGP SIGNATURE-----
+
+iQIzBAABCAAdFiEEiOrDCAFJzPfAjcif3SOs138+s6EFAl7XemsACgkQ3SOs138+
+s6FWZRAAoSuPu0jtfyFXzjuxfpxQzuTdqjCht0ISIMPA5WI1CBAvCHwLLxo5FS0z
+BPlOun2m9CGKwkAIxUF6UQxs4Do5VR0pS5PHEKkPdm21gJT993B3ZMXA2mNxsmti
+MOUwoTB3UKlVHiNjMCGpxHGRhf+1Kwhw21pBAK65Tq0HVbuZNGtH3wm6+YTJhn4R
+g7gZiV3u/Ecbp/4BW7oda3JJVgis2oiZpp0UuT6eNoWxj5cG4ERFXF2p8m+PLC4n
+guGOFRvU30Gu/kel2H5/YKZARUUuzn9raUZBuXR1X7JgW+jlZYy0bx5WGW4VWkKH
+ub7XyfenTZmtdaAznYQd2MqJSPJRvP6DZRIggUDU8IDHIpnYt9Ob/Hh5krfuwfRY
+c5tUZLAmJYHPbGWTQhoIAF3lYP2sNSuRxcyOe2HeRsNxeGQcpr1em8fOBiewhpMW
+klLGCq6WA9K5F4iJ8H3DlIex8M1dMSbnScp3kOEXA1Hl8jGqAbehUL1F+uh5Wuet
+MyfyIzOIqkFDzd1R4+o/u8IxNkZ/CbprZo62Jcck8WJ/6RkqQJV9w19lDXc7dX2S
+azyKgi024YcJlL8Y74GKhJ+1dR1WP8SzGx1VNxdlmPiqJOCfe4OXSHLk28PG3cpo
+0jDlClbWcpdRPTfUKNthZ3k1+uHR60QQ/2EloiEClvTQKzTABVM=
+=vUM4
+-----END PGP SIGNATURE-----
+
+--Q68bSM7Ycu6FN28Q--
+
+--===============2235379621133914062==
+Content-Type: text/plain; charset="us-ascii"
+MIME-Version: 1.0
+Content-Transfer-Encoding: 7bit
+Content-Disposition: inline
+
 _______________________________________________
 iommu mailing list
 iommu@lists.linux-foundation.org
 https://lists.linuxfoundation.org/mailman/listinfo/iommu
+--===============2235379621133914062==--
