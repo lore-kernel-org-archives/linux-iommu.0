@@ -2,111 +2,83 @@ Return-Path: <SRS0=ytjs=7R=lists.linux-foundation.org=iommu-bounces@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-0.6 required=3.0 tests=DKIM_INVALID,DKIM_SIGNED,
-	HEADER_FROM_DIFFERENT_DOMAINS,MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS,
-	URIBL_BLOCKED autolearn=no autolearn_force=no version=3.4.0
+X-Spam-Status: No, score=-6.5 required=3.0 tests=DKIM_INVALID,DKIM_SIGNED,
+	HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_PATCH,MAILING_LIST_MULTI,SIGNED_OFF_BY,
+	SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED autolearn=ham autolearn_force=no
+	version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id DD1BFC433E0
-	for <iommu@archiver.kernel.org>; Thu,  4 Jun 2020 00:33:36 +0000 (UTC)
-Received: from fraxinus.osuosl.org (smtp4.osuosl.org [140.211.166.137])
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 43EC6C433DF
+	for <iommu@archiver.kernel.org>; Thu,  4 Jun 2020 07:31:56 +0000 (UTC)
+Received: from whitealder.osuosl.org (smtp1.osuosl.org [140.211.166.138])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by mail.kernel.org (Postfix) with ESMTPS id 60D0E207D0
-	for <iommu@archiver.kernel.org>; Thu,  4 Jun 2020 00:33:35 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTPS id 080FD20663
+	for <iommu@archiver.kernel.org>; Thu,  4 Jun 2020 07:31:55 +0000 (UTC)
 Authentication-Results: mail.kernel.org;
-	dkim=fail reason="signature verification failed" (1024-bit key) header.d=redhat.com header.i=@redhat.com header.b="bP8zHXM6"
-DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 60D0E207D0
+	dkim=fail reason="signature verification failed" (1024-bit key) header.d=redhat.com header.i=@redhat.com header.b="XY/MGP0x"
+DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 080FD20663
 Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=redhat.com
 Authentication-Results: mail.kernel.org; spf=pass smtp.mailfrom=iommu-bounces@lists.linux-foundation.org
 Received: from localhost (localhost [127.0.0.1])
-	by fraxinus.osuosl.org (Postfix) with ESMTP id B848E86DEC;
-	Thu,  4 Jun 2020 00:33:35 +0000 (UTC)
+	by whitealder.osuosl.org (Postfix) with ESMTP id C83D687C16;
+	Thu,  4 Jun 2020 07:31:55 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from fraxinus.osuosl.org ([127.0.0.1])
+Received: from whitealder.osuosl.org ([127.0.0.1])
 	by localhost (.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
-	with ESMTP id ps9LxZ434y7M; Thu,  4 Jun 2020 00:33:35 +0000 (UTC)
+	with ESMTP id Ue2gxi1aAFXx; Thu,  4 Jun 2020 07:31:54 +0000 (UTC)
 Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [140.211.9.56])
-	by fraxinus.osuosl.org (Postfix) with ESMTP id 3E38286DE1;
-	Thu,  4 Jun 2020 00:33:35 +0000 (UTC)
+	by whitealder.osuosl.org (Postfix) with ESMTP id 2677887B61;
+	Thu,  4 Jun 2020 07:31:54 +0000 (UTC)
 Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
-	by lists.linuxfoundation.org (Postfix) with ESMTP id 33352C0178;
-	Thu,  4 Jun 2020 00:33:35 +0000 (UTC)
-Received: from fraxinus.osuosl.org (smtp4.osuosl.org [140.211.166.137])
- by lists.linuxfoundation.org (Postfix) with ESMTP id 418F1C016E
- for <iommu@lists.linux-foundation.org>; Thu,  4 Jun 2020 00:33:34 +0000 (UTC)
+	by lists.linuxfoundation.org (Postfix) with ESMTP id 157A0C0881;
+	Thu,  4 Jun 2020 07:31:54 +0000 (UTC)
+Received: from whitealder.osuosl.org (smtp1.osuosl.org [140.211.166.138])
+ by lists.linuxfoundation.org (Postfix) with ESMTP id 5EBA2C016E
+ for <iommu@lists.linux-foundation.org>; Thu,  4 Jun 2020 07:31:53 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
- by fraxinus.osuosl.org (Postfix) with ESMTP id 2CDD086DE4
- for <iommu@lists.linux-foundation.org>; Thu,  4 Jun 2020 00:33:34 +0000 (UTC)
+ by whitealder.osuosl.org (Postfix) with ESMTP id 5213887C16
+ for <iommu@lists.linux-foundation.org>; Thu,  4 Jun 2020 07:31:53 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from fraxinus.osuosl.org ([127.0.0.1])
+Received: from whitealder.osuosl.org ([127.0.0.1])
  by localhost (.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
- with ESMTP id P4JIjmzdUhYJ for <iommu@lists.linux-foundation.org>;
- Thu,  4 Jun 2020 00:33:33 +0000 (UTC)
+ with ESMTP id pUPWKKFWNWmx for <iommu@lists.linux-foundation.org>;
+ Thu,  4 Jun 2020 07:31:48 +0000 (UTC)
 X-Greylist: domain auto-whitelisted by SQLgrey-1.7.6
-Received: from us-smtp-1.mimecast.com (us-smtp-delivery-1.mimecast.com
- [207.211.31.120])
- by fraxinus.osuosl.org (Postfix) with ESMTPS id 87D9186DE1
- for <iommu@lists.linux-foundation.org>; Thu,  4 Jun 2020 00:33:33 +0000 (UTC)
+Received: from us-smtp-delivery-1.mimecast.com (us-smtp-1.mimecast.com
+ [205.139.110.61])
+ by whitealder.osuosl.org (Postfix) with ESMTPS id A843E87B61
+ for <iommu@lists.linux-foundation.org>; Thu,  4 Jun 2020 07:31:48 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
- s=mimecast20190719; t=1591230812;
- h=from:from:reply-to:reply-to:subject:subject:date:date:
- message-id:message-id:to:to:cc:cc:mime-version:mime-version:
- content-type:content-type:in-reply-to:in-reply-to:  references:references;
- bh=z0GcSxT2WNBSxlfmkg95uPwf3ZGL3Q7ykUANj5zGO7w=;
- b=bP8zHXM6BebnlMYBLbVjv6tYBEKzZiDbNmsFoYEDjLRfofs/7fagZmjTJuo0ZWhSb/cFgN
- T9u+g6E8fR/5gk3lvtMQ2xdiw05o+nrJcC8WiVV5suBPzC7redpSwBynPHSij2sjLGW4OT
- bSx4t3bEVvbjXp7K4JEVF6IAsKCI1fM=
-Received: from mail-qk1-f198.google.com (mail-qk1-f198.google.com
- [209.85.222.198]) (Using TLS) by relay.mimecast.com with ESMTP id
- us-mta-89-w9SSv3v5OS6WWeTCvI_Jeg-1; Wed, 03 Jun 2020 20:33:30 -0400
-X-MC-Unique: w9SSv3v5OS6WWeTCvI_Jeg-1
-Received: by mail-qk1-f198.google.com with SMTP id x68so3179919qkd.1
- for <iommu@lists.linux-foundation.org>; Wed, 03 Jun 2020 17:33:30 -0700 (PDT)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
- d=1e100.net; s=20161025;
- h=x-gm-message-state:date:from:to:cc:subject:message-id:reply-to
- :mail-followup-to:references:mime-version:content-disposition
- :in-reply-to;
- bh=z0GcSxT2WNBSxlfmkg95uPwf3ZGL3Q7ykUANj5zGO7w=;
- b=FWFl7ZGlQsFfzqSYAItUcRGxRaD4keaz7bITZAx/TBmZb2xF2Zw0Qdl8jWtwoSAEJg
- p0BOBe1Xu/wPRWRAfGAhMcZnoUVpkKbJwQk5tWGsj4Iw/TTA6XYqCVQEoF2fVNNy+nac
- R17PyvnQO/4Jfz0bQqxRsxymJk9NKH7ZU3j7cVvhnvrq6/UxMQh5ZvXvjsDxr5elO45H
- Cad/yJjLKwW5GdVYKXf9rpGBP7bJhHBbZiK29AxxpiTAMakLoF1vyLY+gyQ3erdEdxUN
- M9mepR9KxQ+2izbMKw/RM8M6gFqGgq26BHbEN/7M/eXxPvqm6LDmoEUDQMnle43C/4nY
- kQWg==
-X-Gm-Message-State: AOAM531JAFnoqtQCJrPq7futigjp0jEy8WT1bXUgNQPNoIl0/Boe/fr/
- XeKgGC41Nd/iqcWSrH4MPYcw8qXYI4+VgzGHjI35lqi4ADGWg8Zz2ImGxMCmkdqmR1OdhvR0C3Y
- ob0YEVFD74IVOGk5s6aI3fXF3pqrEuA==
-X-Received: by 2002:ac8:339b:: with SMTP id c27mr2001843qtb.210.1591230810244; 
- Wed, 03 Jun 2020 17:33:30 -0700 (PDT)
-X-Google-Smtp-Source: ABdhPJzLAqtZLyXW1qmZCBVVBSMCAd/hiQhcdwBWw2XvC2mofMUKO2j+DxwewPxvUEt5AscwPHRMyQ==
-X-Received: by 2002:ac8:339b:: with SMTP id c27mr2001822qtb.210.1591230809949; 
- Wed, 03 Jun 2020 17:33:29 -0700 (PDT)
-Received: from localhost (ip70-163-223-149.ph.ph.cox.net. [70.163.223.149])
- by smtp.gmail.com with ESMTPSA id 5sm2725501qko.14.2020.06.03.17.33.28
- (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
- Wed, 03 Jun 2020 17:33:28 -0700 (PDT)
-Date: Wed, 3 Jun 2020 17:33:27 -0700
+ s=mimecast20190719; t=1591255907;
+ h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+ to:to:cc:cc:mime-version:mime-version:
+ content-transfer-encoding:content-transfer-encoding;
+ bh=ScSOSv2NtMOfy/k7kNuH62249T1/AmnJUmlOdYJpg9M=;
+ b=XY/MGP0xDTzKnmsh8orfkQCDBpZyFPrEdWbY4FD5qpjbUiRG0JGPx4g2I9f99ktS8C516J
+ eLgCEhnkFnn6BHpKOJ0MoBpGXuJsMS2vMmfeszhrEeB90sjyq48JmzFTDjfmx8TSiwDSN5
+ 8Dwc4D39d5EPgxy6x2fSjNnEdMHMoIs=
+Received: from mimecast-mx01.redhat.com (mimecast-mx01.redhat.com
+ [209.132.183.4]) (Using TLS) by relay.mimecast.com with ESMTP id
+ us-mta-382-nCNyXAvDNe6LobAjFOmQpg-1; Thu, 04 Jun 2020 03:31:45 -0400
+X-MC-Unique: nCNyXAvDNe6LobAjFOmQpg-1
+Received: from smtp.corp.redhat.com (int-mx08.intmail.prod.int.phx2.redhat.com
+ [10.5.11.23])
+ (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
+ (No client certificate requested)
+ by mimecast-mx01.redhat.com (Postfix) with ESMTPS id 53FA119057A1;
+ Thu,  4 Jun 2020 07:31:44 +0000 (UTC)
+Received: from cantor.redhat.com (ovpn-113-227.phx2.redhat.com [10.3.113.227])
+ by smtp.corp.redhat.com (Postfix) with ESMTP id 8DC9C2DE74;
+ Thu,  4 Jun 2020 07:31:43 +0000 (UTC)
 From: Jerry Snitselaar <jsnitsel@redhat.com>
-To: Lu Baolu <baolu.lu@linux.intel.com>
-Subject: Re: [PATCH 0/2] iommu: Move Intel and AMD drivers into their own
- subdirectory
-Message-ID: <20200604003327.hk7w7i5qs7z3z2w3@cantor>
-Mail-Followup-To: Lu Baolu <baolu.lu@linux.intel.com>,
- Joerg Roedel <joro@8bytes.org>,
- David Woodhouse <dwmw2@infradead.org>,
- Suravee Suthikulpanit <suravee.suthikulpanit@amd.com>,
- Qian Cai <cai@lca.pw>, iommu@lists.linux-foundation.org,
- linux-kernel@vger.kernel.org
-References: <20200602092616.24638-1-joro@8bytes.org>
- <148834f4-849e-acf1-c347-e25093aac518@linux.intel.com>
+To: linux-kernel@vger.kernel.org
+Subject: [PATCH] iommu: Don't attach deferred device in
+ iommu_group_do_dma_attach
+Date: Thu,  4 Jun 2020 00:31:42 -0700
+Message-Id: <20200604073142.74701-1-jsnitsel@redhat.com>
 MIME-Version: 1.0
-In-Reply-To: <148834f4-849e-acf1-c347-e25093aac518@linux.intel.com>
-X-Mimecast-Spam-Score: 0
-X-Mimecast-Originator: redhat.com
-Content-Disposition: inline
-Cc: linux-kernel@vger.kernel.org, iommu@lists.linux-foundation.org,
- David Woodhouse <dwmw2@infradead.org>
+X-Scanned-By: MIMEDefang 2.84 on 10.5.11.23
+Cc: iommu@lists.linux-foundation.org, Joerg Roedel <jroedel@suse.de>
 X-BeenThere: iommu@lists.linux-foundation.org
 X-Mailman-Version: 2.1.15
 Precedence: list
@@ -119,74 +91,45 @@ List-Post: <mailto:iommu@lists.linux-foundation.org>
 List-Help: <mailto:iommu-request@lists.linux-foundation.org?subject=help>
 List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
  <mailto:iommu-request@lists.linux-foundation.org?subject=subscribe>
-Reply-To: Jerry Snitselaar <jsnitsel@redhat.com>
+Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
-Content-Type: text/plain; charset="us-ascii"; Format="flowed"
 Errors-To: iommu-bounces@lists.linux-foundation.org
 Sender: "iommu" <iommu-bounces@lists.linux-foundation.org>
 
-On Thu Jun 04 20, Lu Baolu wrote:
->Hi Joerg,
->
->On 6/2/20 5:26 PM, Joerg Roedel wrote:
->>Hi,
->>
->>two small patches to move the Intel and AMD IOMMU drivers into their own
->>subdirectory under drivers/iommu/ to make the file structure a bit less
->>cluttered.
->>
->
->Does the MAINTAINERS file need to update?
->
->Best regards,
->baolu
->
+Attaching a deferred device should be delayed until dma api is called.
 
-Yes, that should be updated to point at the new directories. Good catch.
+Cc: iommu@lists.linux-foundation.org
+Suggested-by: Joerg Roedel <jroedel@suse.de>
+Signed-off-by: Jerry Snitselaar <jsnitsel@redhat.com>
+---
+If you already have thrown a patch together, then ignore this. Also
+feel free to swap out the signed-off-by with your's since
+this is more your patch than mine. You can put a reviewed-by
+and tested-by instead for me.
 
+ drivers/iommu/iommu.c | 6 +++++-
+ 1 file changed, 5 insertions(+), 1 deletion(-)
 
->>Regards,
->>
->>	Joerg
->>
->>Joerg Roedel (2):
->>   iommu/amd: Move AMD IOMMU driver into subdirectory
->>   iommu/vt-d: Move Intel IOMMU driver into subdirectory
->>
->>  drivers/iommu/Makefile                         | 18 +++++++++---------
->>  drivers/iommu/{ => amd}/amd_iommu.h            |  0
->>  drivers/iommu/{ => amd}/amd_iommu_types.h      |  0
->>  .../{amd_iommu_debugfs.c => amd/debugfs.c}     |  0
->>  drivers/iommu/{amd_iommu_init.c => amd/init.c} |  2 +-
->>  drivers/iommu/{amd_iommu.c => amd/iommu.c}     |  2 +-
->>  .../iommu/{amd_iommu_v2.c => amd/iommu_v2.c}   |  0
->>  .../iommu/{amd_iommu_quirks.c => amd/quirks.c} |  0
->>  .../{intel-iommu-debugfs.c => intel/debugfs.c} |  0
->>  drivers/iommu/{ => intel}/dmar.c               |  2 +-
->>  drivers/iommu/{ => intel}/intel-pasid.h        |  0
->>  drivers/iommu/{intel-iommu.c => intel/iommu.c} |  2 +-
->>  .../irq_remapping.c}                           |  2 +-
->>  drivers/iommu/{intel-pasid.c => intel/pasid.c} |  0
->>  drivers/iommu/{intel-svm.c => intel/svm.c}     |  0
->>  drivers/iommu/{intel-trace.c => intel/trace.c} |  0
->>  16 files changed, 14 insertions(+), 14 deletions(-)
->>  rename drivers/iommu/{ => amd}/amd_iommu.h (100%)
->>  rename drivers/iommu/{ => amd}/amd_iommu_types.h (100%)
->>  rename drivers/iommu/{amd_iommu_debugfs.c => amd/debugfs.c} (100%)
->>  rename drivers/iommu/{amd_iommu_init.c => amd/init.c} (99%)
->>  rename drivers/iommu/{amd_iommu.c => amd/iommu.c} (99%)
->>  rename drivers/iommu/{amd_iommu_v2.c => amd/iommu_v2.c} (100%)
->>  rename drivers/iommu/{amd_iommu_quirks.c => amd/quirks.c} (100%)
->>  rename drivers/iommu/{intel-iommu-debugfs.c => intel/debugfs.c} (100%)
->>  rename drivers/iommu/{ => intel}/dmar.c (99%)
->>  rename drivers/iommu/{ => intel}/intel-pasid.h (100%)
->>  rename drivers/iommu/{intel-iommu.c => intel/iommu.c} (99%)
->>  rename drivers/iommu/{intel_irq_remapping.c => intel/irq_remapping.c} (99%)
->>  rename drivers/iommu/{intel-pasid.c => intel/pasid.c} (100%)
->>  rename drivers/iommu/{intel-svm.c => intel/svm.c} (100%)
->>  rename drivers/iommu/{intel-trace.c => intel/trace.c} (100%)
->>
->
+diff --git a/drivers/iommu/iommu.c b/drivers/iommu/iommu.c
+index b5ea203f6c68..d43120eb1dc5 100644
+--- a/drivers/iommu/iommu.c
++++ b/drivers/iommu/iommu.c
+@@ -1680,8 +1680,12 @@ static void probe_alloc_default_domain(struct bus_type *bus,
+ static int iommu_group_do_dma_attach(struct device *dev, void *data)
+ {
+ 	struct iommu_domain *domain = data;
++	int ret = 0;
+ 
+-	return __iommu_attach_device(domain, dev);
++	if (!iommu_is_attach_deferred(domain, dev))
++		ret = __iommu_attach_device(domain, dev);
++
++	return ret;
+ }
+ 
+ static int __iommu_group_dma_attach(struct iommu_group *group)
+-- 
+2.24.0
 
 _______________________________________________
 iommu mailing list
