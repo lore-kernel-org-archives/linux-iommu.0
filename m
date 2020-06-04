@@ -2,78 +2,120 @@ Return-Path: <SRS0=ytjs=7R=lists.linux-foundation.org=iommu-bounces@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-8.2 required=3.0 tests=HEADER_FROM_DIFFERENT_DOMAINS,
-	INCLUDES_PATCH,MAILING_LIST_MULTI,SIGNED_OFF_BY,SPF_HELO_NONE,SPF_PASS,
-	URIBL_BLOCKED,USER_AGENT_SANE_1 autolearn=unavailable autolearn_force=no
+X-Spam-Status: No, score=-0.8 required=3.0 tests=HEADER_FROM_DIFFERENT_DOMAINS,
+	MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS autolearn=no autolearn_force=no
 	version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 72D3BC433E0
-	for <iommu@archiver.kernel.org>; Thu,  4 Jun 2020 14:50:01 +0000 (UTC)
-Received: from hemlock.osuosl.org (smtp2.osuosl.org [140.211.166.133])
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 3E221C433DF
+	for <iommu@archiver.kernel.org>; Thu,  4 Jun 2020 15:05:57 +0000 (UTC)
+Received: from fraxinus.osuosl.org (smtp4.osuosl.org [140.211.166.137])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by mail.kernel.org (Postfix) with ESMTPS id 4007720663
-	for <iommu@archiver.kernel.org>; Thu,  4 Jun 2020 14:50:01 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 4007720663
-Authentication-Results: mail.kernel.org; dmarc=none (p=none dis=none) header.from=arm.com
+	by mail.kernel.org (Postfix) with ESMTPS id 08E81206DC
+	for <iommu@archiver.kernel.org>; Thu,  4 Jun 2020 15:05:56 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 08E81206DC
+Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=linux.intel.com
 Authentication-Results: mail.kernel.org; spf=pass smtp.mailfrom=iommu-bounces@lists.linux-foundation.org
 Received: from localhost (localhost [127.0.0.1])
-	by hemlock.osuosl.org (Postfix) with ESMTP id 04FE188842;
-	Thu,  4 Jun 2020 14:50:01 +0000 (UTC)
+	by fraxinus.osuosl.org (Postfix) with ESMTP id C00A086C82;
+	Thu,  4 Jun 2020 15:05:56 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from hemlock.osuosl.org ([127.0.0.1])
+Received: from fraxinus.osuosl.org ([127.0.0.1])
 	by localhost (.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
-	with ESMTP id 9uc-v-uts9mB; Thu,  4 Jun 2020 14:50:00 +0000 (UTC)
+	with ESMTP id R5kBb63ocQGb; Thu,  4 Jun 2020 15:05:56 +0000 (UTC)
 Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [140.211.9.56])
-	by hemlock.osuosl.org (Postfix) with ESMTP id 502FC88787;
-	Thu,  4 Jun 2020 14:50:00 +0000 (UTC)
+	by fraxinus.osuosl.org (Postfix) with ESMTP id 16C3386C2F;
+	Thu,  4 Jun 2020 15:05:56 +0000 (UTC)
 Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
-	by lists.linuxfoundation.org (Postfix) with ESMTP id 3C131C0888;
-	Thu,  4 Jun 2020 14:50:00 +0000 (UTC)
+	by lists.linuxfoundation.org (Postfix) with ESMTP id 06B08C0881;
+	Thu,  4 Jun 2020 15:05:56 +0000 (UTC)
 Received: from whitealder.osuosl.org (smtp1.osuosl.org [140.211.166.138])
- by lists.linuxfoundation.org (Postfix) with ESMTP id 1F17CC016E
- for <iommu@lists.linux-foundation.org>; Thu,  4 Jun 2020 14:49:59 +0000 (UTC)
+ by lists.linuxfoundation.org (Postfix) with ESMTP id CAE5AC016E
+ for <iommu@lists.linux-foundation.org>; Thu,  4 Jun 2020 15:05:54 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
- by whitealder.osuosl.org (Postfix) with ESMTP id 0B79987D69
- for <iommu@lists.linux-foundation.org>; Thu,  4 Jun 2020 14:49:59 +0000 (UTC)
+ by whitealder.osuosl.org (Postfix) with ESMTP id C5EA9881D9
+ for <iommu@lists.linux-foundation.org>; Thu,  4 Jun 2020 15:05:54 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
 Received: from whitealder.osuosl.org ([127.0.0.1])
  by localhost (.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
- with ESMTP id OFrplMBLlia2 for <iommu@lists.linux-foundation.org>;
- Thu,  4 Jun 2020 14:49:57 +0000 (UTC)
+ with ESMTP id E67f2y4Otd7P for <iommu@lists.linux-foundation.org>;
+ Thu,  4 Jun 2020 15:05:54 +0000 (UTC)
 X-Greylist: domain auto-whitelisted by SQLgrey-1.7.6
-Received: from foss.arm.com (foss.arm.com [217.140.110.172])
- by whitealder.osuosl.org (Postfix) with ESMTP id CF1AC87D86
- for <iommu@lists.linux-foundation.org>; Thu,  4 Jun 2020 14:49:57 +0000 (UTC)
-Received: from usa-sjc-imap-foss1.foss.arm.com (unknown [10.121.207.14])
- by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id 1C5B62B;
- Thu,  4 Jun 2020 07:49:57 -0700 (PDT)
-Received: from e121166-lin.cambridge.arm.com (e121166-lin.cambridge.arm.com
- [10.1.196.255])
- by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPSA id 9ECCE3F305;
- Thu,  4 Jun 2020 07:49:54 -0700 (PDT)
-Date: Thu, 4 Jun 2020 15:49:52 +0100
-From: Lorenzo Pieralisi <lorenzo.pieralisi@arm.com>
-To: Rob Herring <robh+dt@kernel.org>
-Subject: Re: [PATCH 07/12] of/device: Add input id to of_dma_configure()
-Message-ID: <20200604144952.GB476@e121166-lin.cambridge.arm.com>
-References: <20200521130008.8266-1-lorenzo.pieralisi@arm.com>
- <20200521130008.8266-8-lorenzo.pieralisi@arm.com>
- <CAL_JsqJw3wyiUrbd1AekwDc5+uqhHi9BwoB-rYpypUEGNgzCtw@mail.gmail.com>
+Received: from mga05.intel.com (mga05.intel.com [192.55.52.43])
+ by whitealder.osuosl.org (Postfix) with ESMTPS id ED60D881E1
+ for <iommu@lists.linux-foundation.org>; Thu,  4 Jun 2020 15:05:53 +0000 (UTC)
+IronPort-SDR: DX00KU/699M3LdlgvAjpljHLbo3LFmfl9jv9CNIDVFqUxT1g+lWITX30BcheWlO3bJflm8NSBI
+ nBgxiXxn0GlQ==
+X-Amp-Result: SKIPPED(no attachment in message)
+X-Amp-File-Uploaded: False
+Received: from fmsmga007.fm.intel.com ([10.253.24.52])
+ by fmsmga105.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384;
+ 04 Jun 2020 08:05:53 -0700
+IronPort-SDR: HRM8jDe7P+G5Zgjy1TnzJJucuXEQ6HMKMi2ROvIfC1Ge6bv3mBEk82cX2giJaqO78Bj1A8U/4M
+ iiy7oSN/LwuQ==
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="5.73,472,1583222400"; d="scan'208";a="257754021"
+Received: from smile.fi.intel.com (HELO smile) ([10.237.68.40])
+ by fmsmga007.fm.intel.com with ESMTP; 04 Jun 2020 08:05:40 -0700
+Received: from andy by smile with local (Exim 4.93)
+ (envelope-from <andriy.shevchenko@linux.intel.com>)
+ id 1jgrR1-00ArEa-5g; Thu, 04 Jun 2020 18:05:35 +0300
+Date: Thu, 4 Jun 2020 18:05:35 +0300
+From: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
+To: Jim Quinlan <james.quinlan@broadcom.com>
+Subject: Re: [PATCH v3 09/13] device core: Introduce multiple dma pfn offsets
+Message-ID: <20200604150535.GB2428291@smile.fi.intel.com>
+References: <20200603192058.35296-1-james.quinlan@broadcom.com>
+ <20200603192058.35296-10-james.quinlan@broadcom.com>
+ <09c451e24f62e226e1ceaa0fe5d0a81109cace74.camel@suse.de>
+ <CA+-6iNz1-1wOurKoOJzhbVL0_YP7dbmp0wy1GWkLW_61yhRXyA@mail.gmail.com>
 MIME-Version: 1.0
 Content-Disposition: inline
-In-Reply-To: <CAL_JsqJw3wyiUrbd1AekwDc5+uqhHi9BwoB-rYpypUEGNgzCtw@mail.gmail.com>
-User-Agent: Mutt/1.9.4 (2018-02-28)
-Cc: devicetree@vger.kernel.org, Catalin Marinas <catalin.marinas@arm.com>,
- Will Deacon <will@kernel.org>, Diana Craciun <diana.craciun@oss.nxp.com>,
- PCI <linux-pci@vger.kernel.org>, Sudeep Holla <sudeep.holla@arm.com>,
- "Rafael J. Wysocki" <rjw@rjwysocki.net>,
- Makarand Pawagi <makarand.pawagi@nxp.com>, linux-acpi@vger.kernel.org,
- Linux IOMMU <iommu@lists.linux-foundation.org>, Marc Zyngier <maz@kernel.org>,
- Hanjun Guo <guohanjun@huawei.com>, Bjorn Helgaas <bhelgaas@google.com>,
+In-Reply-To: <CA+-6iNz1-1wOurKoOJzhbVL0_YP7dbmp0wy1GWkLW_61yhRXyA@mail.gmail.com>
+Organization: Intel Finland Oy - BIC 0357606-4 - Westendinkatu 7, 02160 Espoo
+Cc: Ulf Hansson <ulf.hansson@linaro.org>, Rich Felker <dalias@libc.org>,
+ "open list:SUPERH" <linux-sh@vger.kernel.org>, David Airlie <airlied@linux.ie>,
+ "open list:PCI NATIVE HOST BRIDGE AND ENDPOINT DRIVERS"
+ <linux-pci@vger.kernel.org>, Hanjun Guo <guohanjun@huawei.com>,
+ "open list:REMOTE PROCESSOR \(REMOTEPROC\) SUBSYSTEM"
+ <linux-remoteproc@vger.kernel.org>,
+ "open list:DRM DRIVERS FOR ALLWINNER A10" <dri-devel@lists.freedesktop.org>,
+ Bjorn Andersson <bjorn.andersson@linaro.org>,
+ Julien Grall <julien.grall@arm.com>, "H. Peter Anvin" <hpa@zytor.com>,
+ Will Deacon <will@kernel.org>, Christoph Hellwig <hch@lst.de>,
+ "open list:STAGING SUBSYSTEM" <devel@driverdev.osuosl.org>,
+ Wolfram Sang <wsa@kernel.org>, Yoshinori Sato <ysato@users.sourceforge.jp>,
+ Frank Rowand <frowand.list@gmail.com>,
+ "maintainer:X86 ARCHITECTURE \(32-BIT AND 64-BIT\)" <x86@kernel.org>,
+ Russell King <linux@armlinux.org.uk>,
+ "open list:ACPI FOR ARM64 \(ACPI/arm64\)" <linux-acpi@vger.kernel.org>,
+ Chen-Yu Tsai <wens@csie.org>, Ingo Molnar <mingo@redhat.com>,
+ "maintainer:BROADCOM BCM7XXX ARM ARCHITECTURE"
+ <bcm-kernel-feedback-list@broadcom.com>,
+ Alan Stern <stern@rowland.harvard.edu>,
+ David Kershner <david.kershner@unisys.com>, Len Brown <lenb@kernel.org>,
+ Ohad Ben-Cohen <ohad@wizery.com>,
+ "open list:OPEN FIRMWARE AND FLATTENED DEVICE TREE"
+ <devicetree@vger.kernel.org>, Arnd Bergmann <arnd@arndb.de>,
+ Suzuki K Poulose <suzuki.poulose@arm.com>,
+ Dan Williams <dan.j.williams@intel.com>, Maxime Ripard <mripard@kernel.org>,
+ Rob Herring <robh+dt@kernel.org>, Borislav Petkov <bp@alien8.de>,
+ Yong Deng <yong.deng@magewell.com>, Santosh Shilimkar <ssantosh@kernel.org>,
+ Bjorn Helgaas <bhelgaas@google.com>, Thomas Gleixner <tglx@linutronix.de>,
+ Mauro Carvalho Chehab <mchehab@kernel.org>,
+ "moderated list:ARM PORT" <linux-arm-kernel@lists.infradead.org>,
+ Saravana Kannan <saravanak@google.com>,
+ Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+ Oliver Neukum <oneukum@suse.com>, "Rafael J. Wysocki" <rjw@rjwysocki.net>,
+ open list <linux-kernel@vger.kernel.org>,
+ Paul Kocialkowski <paul.kocialkowski@bootlin.com>,
+ "open list:IOMMU DRIVERS" <iommu@lists.linux-foundation.org>,
+ Mark Brown <broonie@kernel.org>, Stefano Stabellini <sstabellini@kernel.org>,
+ Daniel Vetter <daniel@ffwll.ch>, Sudeep Holla <sudeep.holla@arm.com>,
+ "open list:ALLWINNER A10 CSI DRIVER" <linux-media@vger.kernel.org>,
  Robin Murphy <robin.murphy@arm.com>,
- "moderated list:ARM/FREESCALE IMX / MXC ARM ARCHITECTURE"
- <linux-arm-kernel@lists.infradead.org>
+ "open list:USB SUBSYSTEM" <linux-usb@vger.kernel.org>,
+ Nicolas Saenz Julienne <nsaenzjulienne@suse.de>
 X-BeenThere: iommu@lists.linux-foundation.org
 X-Mailman-Version: 2.1.15
 Precedence: list
@@ -91,75 +133,39 @@ Content-Transfer-Encoding: 7bit
 Errors-To: iommu-bounces@lists.linux-foundation.org
 Sender: "iommu" <iommu-bounces@lists.linux-foundation.org>
 
-On Thu, May 21, 2020 at 05:02:20PM -0600, Rob Herring wrote:
-> On Thu, May 21, 2020 at 7:00 AM Lorenzo Pieralisi
-> <lorenzo.pieralisi@arm.com> wrote:
-> >
-> > Devices sitting on proprietary busses have a device ID space that
-> > is owned by the respective bus and related firmware bindings. In order
-> > to let the generic OF layer handle the input translations to
-> > an IOMMU id, for such busses the current of_dma_configure() interface
-> > should be extended in order to allow the bus layer to provide the
-> > device input id parameter - that is retrieved/assigned in bus
-> > specific code and firmware.
-> >
-> > Augment of_dma_configure() to add an optional input_id parameter,
-> > leaving current functionality unchanged.
-> >
-> > Signed-off-by: Lorenzo Pieralisi <lorenzo.pieralisi@arm.com>
-> > Cc: Rob Herring <robh+dt@kernel.org>
-> > Cc: Robin Murphy <robin.murphy@arm.com>
-> > Cc: Joerg Roedel <joro@8bytes.org>
-> > Cc: Laurentiu Tudor <laurentiu.tudor@nxp.com>
-> > ---
-> >  drivers/bus/fsl-mc/fsl-mc-bus.c |  4 ++-
-> >  drivers/iommu/of_iommu.c        | 53 +++++++++++++++++++++------------
-> >  drivers/of/device.c             |  8 +++--
-> >  include/linux/of_device.h       | 16 ++++++++--
-> >  include/linux/of_iommu.h        |  6 ++--
-> >  5 files changed, 60 insertions(+), 27 deletions(-)
-> >
-> > diff --git a/drivers/bus/fsl-mc/fsl-mc-bus.c b/drivers/bus/fsl-mc/fsl-mc-bus.c
-> > index 40526da5c6a6..8ead3f0238f2 100644
-> > --- a/drivers/bus/fsl-mc/fsl-mc-bus.c
-> > +++ b/drivers/bus/fsl-mc/fsl-mc-bus.c
-> > @@ -118,11 +118,13 @@ static int fsl_mc_bus_uevent(struct device *dev, struct kobj_uevent_env *env)
-> >  static int fsl_mc_dma_configure(struct device *dev)
-> >  {
-> >         struct device *dma_dev = dev;
-> > +       struct fsl_mc_device *mc_dev = to_fsl_mc_device(dev);
-> > +       u32 input_id = mc_dev->icid;
-> >
-> >         while (dev_is_fsl_mc(dma_dev))
-> >                 dma_dev = dma_dev->parent;
-> >
-> > -       return of_dma_configure(dev, dma_dev->of_node, 0);
-> > +       return of_dma_configure_id(dev, dma_dev->of_node, 0, &input_id);
-> >  }
-> >
-> >  static ssize_t modalias_show(struct device *dev, struct device_attribute *attr,
-> > diff --git a/drivers/iommu/of_iommu.c b/drivers/iommu/of_iommu.c
-> > index ad96b87137d6..4516d5bf6cc9 100644
-> > --- a/drivers/iommu/of_iommu.c
-> > +++ b/drivers/iommu/of_iommu.c
-> > @@ -139,25 +139,53 @@ static int of_pci_iommu_init(struct pci_dev *pdev, u16 alias, void *data)
-> >         return err;
-> >  }
-> >
-> > -static int of_fsl_mc_iommu_init(struct fsl_mc_device *mc_dev,
-> > -                               struct device_node *master_np)
-> > +static int of_iommu_configure_dev_id(struct device_node *master_np,
-> > +                                    struct device *dev,
-> > +                                    const u32 *id)
-> 
-> Should have read this patch before #6. I guess you could still make
-> of_pci_iommu_init() call
-> of_iommu_configure_dev_id.
+On Thu, Jun 04, 2020 at 10:35:12AM -0400, Jim Quinlan wrote:
+> On Thu, Jun 4, 2020 at 9:53 AM Nicolas Saenz Julienne
+> <nsaenzjulienne@suse.de> wrote:
+> > On Wed, 2020-06-03 at 15:20 -0400, Jim Quinlan wrote:
 
-Yes that makes sense, I will update it.
+...
 
-Thanks,
-Lorenzo
+> > > +     phys = virt_to_phys(ret);
+> > > +     pfn =  phys >> PAGE_SHIFT;
+> >
+> > nit: not sure it really pays off to have a pfn variable here.
+> Did it for readability; the compiler's optimization should take care
+> of any extra variables.  But I can switch if you insist.
+
+One side note: please, try to get familiar with existing helpers in the kernel.
+For example, above line is like
+
+	pfn = PFN_DOWN(phys);
+
+...
+
+> > > +     if (!WARN_ON(!dev) && dev->dma_pfn_offset_map)
+
+> > > +             *dma_handle -= PFN_PHYS(
+> > > +                     dma_pfn_offset_from_phys_addr(dev, phys));
+
+Don't do such indentation, esp. we have now 100! :-)
+
+-- 
+With Best Regards,
+Andy Shevchenko
+
+
 _______________________________________________
 iommu mailing list
 iommu@lists.linux-foundation.org
