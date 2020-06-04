@@ -7,85 +7,86 @@ X-Spam-Status: No, score=-9.6 required=3.0 tests=DKIM_INVALID,DKIM_SIGNED,
 	SPF_HELO_NONE,SPF_PASS,USER_AGENT_GIT autolearn=ham autolearn_force=no
 	version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id EF6A3C433E1
-	for <iommu@archiver.kernel.org>; Thu,  4 Jun 2020 20:39:22 +0000 (UTC)
-Received: from silver.osuosl.org (smtp3.osuosl.org [140.211.166.136])
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 06A45C433E0
+	for <iommu@archiver.kernel.org>; Thu,  4 Jun 2020 20:57:30 +0000 (UTC)
+Received: from hemlock.osuosl.org (smtp2.osuosl.org [140.211.166.133])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by mail.kernel.org (Postfix) with ESMTPS id 8D459207D0
-	for <iommu@archiver.kernel.org>; Thu,  4 Jun 2020 20:39:22 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTPS id 9DB0C2077D
+	for <iommu@archiver.kernel.org>; Thu,  4 Jun 2020 20:57:29 +0000 (UTC)
 Authentication-Results: mail.kernel.org;
-	dkim=fail reason="signature verification failed" (1024-bit key) header.d=mg.codeaurora.org header.i=@mg.codeaurora.org header.b="TUXuL3Am"
-DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 8D459207D0
+	dkim=fail reason="signature verification failed" (1024-bit key) header.d=mg.codeaurora.org header.i=@mg.codeaurora.org header.b="JMWiwKpD"
+DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 9DB0C2077D
 Authentication-Results: mail.kernel.org; dmarc=none (p=none dis=none) header.from=codeaurora.org
 Authentication-Results: mail.kernel.org; spf=pass smtp.mailfrom=iommu-bounces@lists.linux-foundation.org
 Received: from localhost (localhost [127.0.0.1])
-	by silver.osuosl.org (Postfix) with ESMTP id CAE3125014;
-	Thu,  4 Jun 2020 20:39:21 +0000 (UTC)
+	by hemlock.osuosl.org (Postfix) with ESMTP id 71171889CE;
+	Thu,  4 Jun 2020 20:57:29 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from silver.osuosl.org ([127.0.0.1])
+Received: from hemlock.osuosl.org ([127.0.0.1])
 	by localhost (.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
-	with ESMTP id AousfsTtKpB9; Thu,  4 Jun 2020 20:39:20 +0000 (UTC)
+	with ESMTP id TVWxhklDUEtT; Thu,  4 Jun 2020 20:57:28 +0000 (UTC)
 Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [140.211.9.56])
-	by silver.osuosl.org (Postfix) with ESMTP id DAAA2220EF;
-	Thu,  4 Jun 2020 20:39:20 +0000 (UTC)
+	by hemlock.osuosl.org (Postfix) with ESMTP id D1AD6889C8;
+	Thu,  4 Jun 2020 20:57:28 +0000 (UTC)
 Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
-	by lists.linuxfoundation.org (Postfix) with ESMTP id CBE77C0888;
-	Thu,  4 Jun 2020 20:39:20 +0000 (UTC)
-Received: from whitealder.osuosl.org (smtp1.osuosl.org [140.211.166.138])
- by lists.linuxfoundation.org (Postfix) with ESMTP id 99F57C016E
- for <iommu@lists.linux-foundation.org>; Thu,  4 Jun 2020 20:39:19 +0000 (UTC)
+	by lists.linuxfoundation.org (Postfix) with ESMTP id B432FC0888;
+	Thu,  4 Jun 2020 20:57:28 +0000 (UTC)
+Received: from fraxinus.osuosl.org (smtp4.osuosl.org [140.211.166.137])
+ by lists.linuxfoundation.org (Postfix) with ESMTP id E7040C016E
+ for <iommu@lists.linux-foundation.org>; Thu,  4 Jun 2020 20:57:27 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
- by whitealder.osuosl.org (Postfix) with ESMTP id 87E13863D0
- for <iommu@lists.linux-foundation.org>; Thu,  4 Jun 2020 20:39:19 +0000 (UTC)
+ by fraxinus.osuosl.org (Postfix) with ESMTP id CF415871D7
+ for <iommu@lists.linux-foundation.org>; Thu,  4 Jun 2020 20:57:27 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from whitealder.osuosl.org ([127.0.0.1])
+Received: from fraxinus.osuosl.org ([127.0.0.1])
  by localhost (.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
- with ESMTP id g3CvKhxk0ozU for <iommu@lists.linux-foundation.org>;
- Thu,  4 Jun 2020 20:39:19 +0000 (UTC)
+ with ESMTP id YFbPl1p9wAWc for <iommu@lists.linux-foundation.org>;
+ Thu,  4 Jun 2020 20:57:27 +0000 (UTC)
 X-Greylist: from auto-whitelisted by SQLgrey-1.7.6
-Received: from mail27.static.mailgun.info (mail27.static.mailgun.info
- [104.130.122.27])
- by whitealder.osuosl.org (Postfix) with ESMTPS id 3AA81863A3
- for <iommu@lists.linux-foundation.org>; Thu,  4 Jun 2020 20:39:15 +0000 (UTC)
+Received: from m43-7.mailgun.net (m43-7.mailgun.net [69.72.43.7])
+ by fraxinus.osuosl.org (Postfix) with ESMTPS id 372A8871CF
+ for <iommu@lists.linux-foundation.org>; Thu,  4 Jun 2020 20:57:25 +0000 (UTC)
 DKIM-Signature: a=rsa-sha256; v=1; c=relaxed/relaxed; d=mg.codeaurora.org;
  q=dns/txt; 
- s=smtp; t=1591303159; h=Message-Id: Date: Subject: Cc: To: From:
- Sender; bh=1lvc/rtJTGg1ms49oe99E5caOYOwoBK6dQq3fFKin0E=;
- b=TUXuL3AmRD7ae4shmo4XdjvfYwh1MFSMPxbv3SykHct19oWPuEzz6Hiup8uDUbCEuFHMtBHg
- nEFM6Dvikio87fGEnvHxobQfmHpBPqGF5E8XF6jA34ZsqNgeW7BgetO8Il3e2IP1zQUCeABV
- biag+cOqF7WyQSkF1ABdwf0/SVU=
-X-Mailgun-Sending-Ip: 104.130.122.27
+ s=smtp; t=1591304247; h=References: In-Reply-To: Message-Id: Date:
+ Subject: Cc: To: From: Sender;
+ bh=IrKa62qGqk3M+KdsTYYQGvTxyZtl6tNd2zDtInHmPF4=;
+ b=JMWiwKpDbxx5omme5YDHt7pFUPC0ayW49hPaI8Ww8s/fk9fVSBHUXeBtV0e3+C6NkztEoaxR
+ 9XKRALNBKFGT1K2wLGmupkfeJQrichdy+0H+7wvwXH+Uddee1LhyNvD5Xlm78QengjhVWswK
+ 9ny4iWdLpeootRC+JuHpaq8u84o=
+X-Mailgun-Sending-Ip: 69.72.43.7
 X-Mailgun-Sid: WyI3NDkwMCIsICJpb21tdUBsaXN0cy5saW51eC1mb3VuZGF0aW9uLm9yZyIsICJiZTllNGEiXQ==
 Received: from smtp.codeaurora.org
  (ec2-35-166-182-171.us-west-2.compute.amazonaws.com [35.166.182.171]) by
- smtp-out-n14.prod.us-east-1.postgun.com with SMTP id
- 5ed95befc0031c71c24ba624 (version=TLS1.2,
- cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256); Thu, 04 Jun 2020 20:39:11
+ smtp-out-n09.prod.us-east-1.postgun.com with SMTP id
+ 5ed96031ea0dfa490e8080bb (version=TLS1.2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256); Thu, 04 Jun 2020 20:57:21
  GMT
 Received: by smtp.codeaurora.org (Postfix, from userid 1001)
- id 94949C433CA; Thu,  4 Jun 2020 20:39:10 +0000 (UTC)
+ id 88795C433B1; Thu,  4 Jun 2020 20:57:20 +0000 (UTC)
 Received: from jordan-laptop.qualcomm.com (Global_NAT1.qualcomm.com
  [129.46.96.20])
  (using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
  (No client certificate requested) (Authenticated sender: jcrouse)
- by smtp.codeaurora.org (Postfix) with ESMTPSA id 1002FC433C6;
- Thu,  4 Jun 2020 20:39:08 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.3.2 smtp.codeaurora.org 1002FC433C6
+ by smtp.codeaurora.org (Postfix) with ESMTPSA id 1F1C9C4344B;
+ Thu,  4 Jun 2020 20:57:17 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.3.2 smtp.codeaurora.org 1F1C9C4344B
 Authentication-Results: aws-us-west-2-caf-mail-1.web.codeaurora.org;
  dmarc=none (p=none dis=none) header.from=codeaurora.org
 Authentication-Results: aws-us-west-2-caf-mail-1.web.codeaurora.org;
  spf=none smtp.mailfrom=jcrouse@codeaurora.org
 From: Jordan Crouse <jcrouse@codeaurora.org>
 To: linux-arm-msm@vger.kernel.org
-Subject: [PATCH v2] iommu/arm-smmu: Mark qcom_smmu_client_of_match as possibly
- unused
-Date: Thu,  4 Jun 2020 14:39:04 -0600
-Message-Id: <20200604203905.31964-1-jcrouse@codeaurora.org>
+Subject: [PATCH v7 2/6] iommu/arm-smmu: Add support for split pagetables
+Date: Thu,  4 Jun 2020 14:57:06 -0600
+Message-Id: <20200604205710.3167-3-jcrouse@codeaurora.org>
 X-Mailer: git-send-email 2.17.1
-Cc: Robin Murphy <robin.murphy@arm.com>, linux-kernel@vger.kernel.org,
- iommu@lists.linux-foundation.org, Will Deacon <will@kernel.org>,
- linux-arm-kernel@lists.infradead.org
+In-Reply-To: <20200604205710.3167-1-jcrouse@codeaurora.org>
+References: <20200604205710.3167-1-jcrouse@codeaurora.org>
+Cc: Will Deacon <will@kernel.org>, freedreno@lists.freedesktop.org,
+ linux-kernel@vger.kernel.org, iommu@lists.linux-foundation.org,
+ Robin Murphy <robin.murphy@arm.com>, linux-arm-kernel@lists.infradead.org
 X-BeenThere: iommu@lists.linux-foundation.org
 X-Mailman-Version: 2.1.15
 Precedence: list
@@ -104,32 +105,103 @@ Content-Transfer-Encoding: 7bit
 Errors-To: iommu-bounces@lists.linux-foundation.org
 Sender: "iommu" <iommu-bounces@lists.linux-foundation.org>
 
-When CONFIG_OF=n of_match_device() gets pre-processed out of existence
-leaving qcom-smmu_client_of_match unused. Mark it as possibly unused to
-keep the compiler from warning in that case.
+Enable TTBR1 for a context bank if IO_PGTABLE_QUIRK_ARM_TTBR1 is selected
+by the io-pgtable configuration.
 
-Fixes: 0e764a01015d ("iommu/arm-smmu: Allow client devices to select direct mapping")
-Reported-by: kbuild test robot <lkp@intel.com>
-Acked-by: Will Deacon <will@kernel.org>
 Signed-off-by: Jordan Crouse <jcrouse@codeaurora.org>
 ---
 
- drivers/iommu/arm-smmu-qcom.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+ drivers/iommu/arm-smmu.c | 21 ++++++++++++++++-----
+ drivers/iommu/arm-smmu.h | 25 +++++++++++++++++++------
+ 2 files changed, 35 insertions(+), 11 deletions(-)
 
-diff --git a/drivers/iommu/arm-smmu-qcom.c b/drivers/iommu/arm-smmu-qcom.c
-index cf01d0215a39..be4318044f96 100644
---- a/drivers/iommu/arm-smmu-qcom.c
-+++ b/drivers/iommu/arm-smmu-qcom.c
-@@ -12,7 +12,7 @@ struct qcom_smmu {
- 	struct arm_smmu_device smmu;
- };
+diff --git a/drivers/iommu/arm-smmu.c b/drivers/iommu/arm-smmu.c
+index 8a3a6c8c887a..048de2681670 100644
+--- a/drivers/iommu/arm-smmu.c
++++ b/drivers/iommu/arm-smmu.c
+@@ -555,11 +555,15 @@ static void arm_smmu_init_context_bank(struct arm_smmu_domain *smmu_domain,
+ 			cb->ttbr[0] = pgtbl_cfg->arm_v7s_cfg.ttbr;
+ 			cb->ttbr[1] = 0;
+ 		} else {
+-			cb->ttbr[0] = pgtbl_cfg->arm_lpae_s1_cfg.ttbr;
+-			cb->ttbr[0] |= FIELD_PREP(ARM_SMMU_TTBRn_ASID,
+-						  cfg->asid);
++			cb->ttbr[0] = FIELD_PREP(ARM_SMMU_TTBRn_ASID,
++				cfg->asid);
+ 			cb->ttbr[1] = FIELD_PREP(ARM_SMMU_TTBRn_ASID,
+-						 cfg->asid);
++				cfg->asid);
++
++			if (pgtbl_cfg->quirks & IO_PGTABLE_QUIRK_ARM_TTBR1)
++				cb->ttbr[1] |= pgtbl_cfg->arm_lpae_s1_cfg.ttbr;
++			else
++				cb->ttbr[0] |= pgtbl_cfg->arm_lpae_s1_cfg.ttbr;
+ 		}
+ 	} else {
+ 		cb->ttbr[0] = pgtbl_cfg->arm_lpae_s2_cfg.vttbr;
+@@ -824,7 +828,14 @@ static int arm_smmu_init_domain_context(struct iommu_domain *domain,
  
--static const struct of_device_id qcom_smmu_client_of_match[] = {
-+static const struct of_device_id qcom_smmu_client_of_match[] __maybe_unused = {
- 	{ .compatible = "qcom,adreno" },
- 	{ .compatible = "qcom,mdp4" },
- 	{ .compatible = "qcom,mdss" },
+ 	/* Update the domain's page sizes to reflect the page table format */
+ 	domain->pgsize_bitmap = pgtbl_cfg.pgsize_bitmap;
+-	domain->geometry.aperture_end = (1UL << ias) - 1;
++
++	if (pgtbl_cfg.quirks & IO_PGTABLE_QUIRK_ARM_TTBR1) {
++		domain->geometry.aperture_start = ~0UL << ias;
++		domain->geometry.aperture_end = ~0UL;
++	} else {
++		domain->geometry.aperture_end = (1UL << ias) - 1;
++	}
++
+ 	domain->geometry.force_aperture = true;
+ 
+ 	/* Initialise the context bank with our page table cfg */
+diff --git a/drivers/iommu/arm-smmu.h b/drivers/iommu/arm-smmu.h
+index 38b041530a4f..5f2de20e883b 100644
+--- a/drivers/iommu/arm-smmu.h
++++ b/drivers/iommu/arm-smmu.h
+@@ -168,10 +168,12 @@ enum arm_smmu_cbar_type {
+ #define ARM_SMMU_CB_TCR			0x30
+ #define ARM_SMMU_TCR_EAE		BIT(31)
+ #define ARM_SMMU_TCR_EPD1		BIT(23)
++#define ARM_SMMU_TCR_A1			BIT(22)
+ #define ARM_SMMU_TCR_TG0		GENMASK(15, 14)
+ #define ARM_SMMU_TCR_SH0		GENMASK(13, 12)
+ #define ARM_SMMU_TCR_ORGN0		GENMASK(11, 10)
+ #define ARM_SMMU_TCR_IRGN0		GENMASK(9, 8)
++#define ARM_SMMU_TCR_EPD0		BIT(7)
+ #define ARM_SMMU_TCR_T0SZ		GENMASK(5, 0)
+ 
+ #define ARM_SMMU_VTCR_RES1		BIT(31)
+@@ -347,12 +349,23 @@ struct arm_smmu_domain {
+ 
+ static inline u32 arm_smmu_lpae_tcr(struct io_pgtable_cfg *cfg)
+ {
+-	return ARM_SMMU_TCR_EPD1 |
+-	       FIELD_PREP(ARM_SMMU_TCR_TG0, cfg->arm_lpae_s1_cfg.tcr.tg) |
+-	       FIELD_PREP(ARM_SMMU_TCR_SH0, cfg->arm_lpae_s1_cfg.tcr.sh) |
+-	       FIELD_PREP(ARM_SMMU_TCR_ORGN0, cfg->arm_lpae_s1_cfg.tcr.orgn) |
+-	       FIELD_PREP(ARM_SMMU_TCR_IRGN0, cfg->arm_lpae_s1_cfg.tcr.irgn) |
+-	       FIELD_PREP(ARM_SMMU_TCR_T0SZ, cfg->arm_lpae_s1_cfg.tcr.tsz);
++	u32 tcr = FIELD_PREP(ARM_SMMU_TCR_TG0, cfg->arm_lpae_s1_cfg.tcr.tg) |
++		FIELD_PREP(ARM_SMMU_TCR_SH0, cfg->arm_lpae_s1_cfg.tcr.sh) |
++		FIELD_PREP(ARM_SMMU_TCR_ORGN0, cfg->arm_lpae_s1_cfg.tcr.orgn) |
++		FIELD_PREP(ARM_SMMU_TCR_IRGN0, cfg->arm_lpae_s1_cfg.tcr.irgn) |
++		FIELD_PREP(ARM_SMMU_TCR_T0SZ, cfg->arm_lpae_s1_cfg.tcr.tsz);
++
++       /*
++	* When TTBR1 is selected shift the TCR fields by 16 bits and disable
++	* translation in TTBR0
++	*/
++	if (cfg->quirks & IO_PGTABLE_QUIRK_ARM_TTBR1) {
++		tcr = (tcr << 16) & ~ARM_SMMU_TCR_A1;
++		tcr |= ARM_SMMU_TCR_EPD0;
++	} else
++		tcr |= ARM_SMMU_TCR_EPD1;
++
++	return tcr;
+ }
+ 
+ static inline u32 arm_smmu_lpae_tcr2(struct io_pgtable_cfg *cfg)
 -- 
 2.17.1
 
