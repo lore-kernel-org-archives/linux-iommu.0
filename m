@@ -2,84 +2,145 @@ Return-Path: <SRS0=ytjs=7R=lists.linux-foundation.org=iommu-bounces@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-8.0 required=3.0 tests=DKIM_INVALID,DKIM_SIGNED,
-	HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_PATCH,MAILING_LIST_MULTI,SIGNED_OFF_BY,
-	SPF_HELO_NONE,SPF_PASS,UNPARSEABLE_RELAY,URIBL_BLOCKED,USER_AGENT_SANE_2
-	autolearn=ham autolearn_force=no version=3.4.0
+X-Spam-Status: No, score=-5.0 required=3.0 tests=DKIM_INVALID,DKIM_SIGNED,
+	HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_PATCH,MAILING_LIST_MULTI,SPF_HELO_NONE,
+	SPF_PASS,UNPARSEABLE_RELAY,URIBL_BLOCKED,USER_AGENT_SANE_1
+	autolearn=unavailable autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 70986C433E0
-	for <iommu@archiver.kernel.org>; Thu,  4 Jun 2020 09:49:44 +0000 (UTC)
-Received: from silver.osuosl.org (smtp3.osuosl.org [140.211.166.136])
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 6E14DC433E1
+	for <iommu@archiver.kernel.org>; Thu,  4 Jun 2020 11:06:42 +0000 (UTC)
+Received: from fraxinus.osuosl.org (smtp4.osuosl.org [140.211.166.137])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by mail.kernel.org (Postfix) with ESMTPS id 3AEF3206C3
-	for <iommu@archiver.kernel.org>; Thu,  4 Jun 2020 09:49:44 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTPS id 33018206A2
+	for <iommu@archiver.kernel.org>; Thu,  4 Jun 2020 11:06:42 +0000 (UTC)
 Authentication-Results: mail.kernel.org;
-	dkim=fail reason="signature verification failed" (1024-bit key) header.d=mediatek.com header.i=@mediatek.com header.b="l5cznZQy"
-DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 3AEF3206C3
-Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=mediatek.com
+	dkim=fail reason="signature verification failed" (2048-bit key) header.d=oracle.com header.i=@oracle.com header.b="BZk1ybsv"
+DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 33018206A2
+Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=oracle.com
 Authentication-Results: mail.kernel.org; spf=pass smtp.mailfrom=iommu-bounces@lists.linux-foundation.org
 Received: from localhost (localhost [127.0.0.1])
-	by silver.osuosl.org (Postfix) with ESMTP id 080D123B88;
-	Thu,  4 Jun 2020 09:49:44 +0000 (UTC)
+	by fraxinus.osuosl.org (Postfix) with ESMTP id 093FD86B1F;
+	Thu,  4 Jun 2020 11:06:42 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from silver.osuosl.org ([127.0.0.1])
+Received: from fraxinus.osuosl.org ([127.0.0.1])
 	by localhost (.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
-	with ESMTP id nUQA-8ibuiKs; Thu,  4 Jun 2020 09:49:43 +0000 (UTC)
+	with ESMTP id Hk9p3UPrlTDX; Thu,  4 Jun 2020 11:06:41 +0000 (UTC)
 Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [140.211.9.56])
-	by silver.osuosl.org (Postfix) with ESMTP id 08F32203CF;
-	Thu,  4 Jun 2020 09:49:43 +0000 (UTC)
+	by fraxinus.osuosl.org (Postfix) with ESMTP id C979186A42;
+	Thu,  4 Jun 2020 11:06:40 +0000 (UTC)
 Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
-	by lists.linuxfoundation.org (Postfix) with ESMTP id E9A26C0881;
-	Thu,  4 Jun 2020 09:49:42 +0000 (UTC)
-Received: from whitealder.osuosl.org (smtp1.osuosl.org [140.211.166.138])
- by lists.linuxfoundation.org (Postfix) with ESMTP id 8C0EBC016E
- for <iommu@lists.linux-foundation.org>; Thu,  4 Jun 2020 09:49:41 +0000 (UTC)
+	by lists.linuxfoundation.org (Postfix) with ESMTP id 9B319C0888;
+	Thu,  4 Jun 2020 11:06:40 +0000 (UTC)
+Received: from hemlock.osuosl.org (smtp2.osuosl.org [140.211.166.133])
+ by lists.linuxfoundation.org (Postfix) with ESMTP id BAFAAC016E
+ for <iommu@lists.linux-foundation.org>; Thu,  4 Jun 2020 11:06:39 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
- by whitealder.osuosl.org (Postfix) with ESMTP id 7A0148796B
- for <iommu@lists.linux-foundation.org>; Thu,  4 Jun 2020 09:49:41 +0000 (UTC)
+ by hemlock.osuosl.org (Postfix) with ESMTP id A6C18886B6
+ for <iommu@lists.linux-foundation.org>; Thu,  4 Jun 2020 11:06:39 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from whitealder.osuosl.org ([127.0.0.1])
+Received: from hemlock.osuosl.org ([127.0.0.1])
  by localhost (.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
- with ESMTP id 33LU4x9J1tm8 for <iommu@lists.linux-foundation.org>;
- Thu,  4 Jun 2020 09:49:40 +0000 (UTC)
+ with ESMTP id 7WAu8myS3OI7 for <iommu@lists.linux-foundation.org>;
+ Thu,  4 Jun 2020 11:06:39 +0000 (UTC)
 X-Greylist: domain auto-whitelisted by SQLgrey-1.7.6
-Received: from mailgw01.mediatek.com (unknown [210.61.82.183])
- by whitealder.osuosl.org (Postfix) with ESMTP id 0962087968
- for <iommu@lists.linux-foundation.org>; Thu,  4 Jun 2020 09:49:39 +0000 (UTC)
-X-UUID: 579acaf2148b49c6b7566c730229f003-20200604
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=mediatek.com;
- s=dk; 
- h=Content-Transfer-Encoding:MIME-Version:Content-Type:References:In-Reply-To:Date:CC:To:From:Subject:Message-ID;
- bh=lBI82O8bEEPgYlNHvOkibX3qdLSsdkxzL1E3PQQA8b0=; 
- b=l5cznZQyeF0t8PUXtBPHL8pk3AnSmztorPMyyTSrjhlLqv1+LiJ4TE/ssnITNp2aCsHzYTShTvLxmFL0OjobwAJ8z1zHj8Y1J53i/m96VhNfj5XrWfF2BAQKrUi1kO3GNsTfxg+SvQTp5toCtYcObnVp8pue0TxUoz4GFTToRcM=;
-X-UUID: 579acaf2148b49c6b7566c730229f003-20200604
-Received: from mtkcas11.mediatek.inc [(172.21.101.40)] by mailgw01.mediatek.com
- (envelope-from <miles.chen@mediatek.com>)
- (Cellopoint E-mail Firewall v4.1.10 Build 0809 with TLS)
- with ESMTP id 1162007422; Thu, 04 Jun 2020 17:49:35 +0800
-Received: from mtkcas08.mediatek.inc (172.21.101.126) by
- mtkmbs02n2.mediatek.inc (172.21.101.101) with Microsoft SMTP Server (TLS) id
- 15.0.1497.2; Thu, 4 Jun 2020 17:49:32 +0800
-Received: from [172.21.77.33] (172.21.77.33) by mtkcas08.mediatek.inc
- (172.21.101.73) with Microsoft SMTP Server id 15.0.1497.2 via Frontend
- Transport; Thu, 4 Jun 2020 17:49:32 +0800
-Message-ID: <1591264174.12661.17.camel@mtkswgap22>
-Subject: Re: [PATCH] iommu/mediatek: Use totalram_pages to setup enable_4GB
-From: Miles Chen <miles.chen@mediatek.com>
-To: David Hildenbrand <david@redhat.com>
-Date: Thu, 4 Jun 2020 17:49:34 +0800
-In-Reply-To: <55820901-430b-14c4-9426-7a4991ca0eed@redhat.com>
-References: <20200604080120.2628-1-miles.chen@mediatek.com>
- <55820901-430b-14c4-9426-7a4991ca0eed@redhat.com>
-X-Mailer: Evolution 3.2.3-0ubuntu6 
+Received: from aserp2120.oracle.com (aserp2120.oracle.com [141.146.126.78])
+ by hemlock.osuosl.org (Postfix) with ESMTPS id E9F1688613
+ for <iommu@lists.linux-foundation.org>; Thu,  4 Jun 2020 11:06:38 +0000 (UTC)
+Received: from pps.filterd (aserp2120.oracle.com [127.0.0.1])
+ by aserp2120.oracle.com (8.16.0.42/8.16.0.42) with SMTP id 054B2Wbt048434;
+ Thu, 4 Jun 2020 11:05:50 GMT
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=oracle.com;
+ h=date : from : to : cc
+ : subject : message-id : references : mime-version : content-type :
+ in-reply-to; s=corp-2020-01-29;
+ bh=4RO7Xefwz2W19qFTEWX/FwDp9Pn7/hDI6Vo3GbQ0CHw=;
+ b=BZk1ybsvNLTvYo2DQYRFC3lHTXpBcrbcCK3KUNW4uhzqEmb63kpA0BJNGTr1XJoXWVzy
+ 47oJRnzV8uezdi2hottXpDrm/PvgIokjcdrWlR8NtYzBMdOwtGM7crgkFweOmU8DcPtm
+ dad9etzRvx9cEkL6vdRFN/crRWnOXi6po9dZyO84H7v4IzNIG69slY9XW7THskfj7bMn
+ 5OhDtSs205OME8L5I3iE0kGeyXsjAPmhU/L7sNIJlz93WVGfRrkojjZfl4OKcWYisLQ2
+ 3fYpH84ScdroRpxGAUKNZu6hWqHzYFrQOJLomtItZ2z78ZoSilpTZJPB5k0tphYobIol nw== 
+Received: from aserp3030.oracle.com (aserp3030.oracle.com [141.146.126.71])
+ by aserp2120.oracle.com with ESMTP id 31evap11xk-1
+ (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=FAIL);
+ Thu, 04 Jun 2020 11:05:50 +0000
+Received: from pps.filterd (aserp3030.oracle.com [127.0.0.1])
+ by aserp3030.oracle.com (8.16.0.42/8.16.0.42) with SMTP id 054AxXU3143958;
+ Thu, 4 Jun 2020 11:05:49 GMT
+Received: from aserv0122.oracle.com (aserv0122.oracle.com [141.146.126.236])
+ by aserp3030.oracle.com with ESMTP id 31ej107v9p-1
+ (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
+ Thu, 04 Jun 2020 11:05:49 +0000
+Received: from abhmp0016.oracle.com (abhmp0016.oracle.com [141.146.116.22])
+ by aserv0122.oracle.com (8.14.4/8.14.4) with ESMTP id 054B5M5d015957;
+ Thu, 4 Jun 2020 11:05:22 GMT
+Received: from kadam (/41.57.98.10) by default (Oracle Beehive Gateway v4.0)
+ with ESMTP ; Thu, 04 Jun 2020 04:05:22 -0700
+Date: Thu, 4 Jun 2020 14:04:55 +0300
+From: Dan Carpenter <dan.carpenter@oracle.com>
+To: Jim Quinlan <james.quinlan@broadcom.com>
+Subject: Re: [PATCH v3 09/13] device core: Introduce multiple dma pfn offsets
+Message-ID: <20200604110455.GO30374@kadam>
+References: <20200603192058.35296-1-james.quinlan@broadcom.com>
+ <20200603192058.35296-10-james.quinlan@broadcom.com>
 MIME-Version: 1.0
-X-TM-SNTS-SMTP: AE948E482C29CD5898F27E00F7D8367EA04E36796E3DBBED3FBA94C5849F28092000:8
-X-MTK: N
-Cc: wsd_upstream@mediatek.com, linux-kernel@vger.kernel.org,
- Chao Hao <chao.hao@mediatek.com>, iommu@lists.linux-foundation.org,
- linux-mediatek@lists.infradead.org, Matthias Brugger <matthias.bgg@gmail.com>,
- yingjoe.chen@mediatek.com, linux-arm-kernel@lists.infradead.org
+Content-Disposition: inline
+In-Reply-To: <20200603192058.35296-10-james.quinlan@broadcom.com>
+User-Agent: Mutt/1.9.4 (2018-02-28)
+X-Proofpoint-Virus-Version: vendor=nai engine=6000 definitions=9641
+ signatures=668686
+X-Proofpoint-Spam-Details: rule=notspam policy=default score=0 mlxscore=0
+ bulkscore=0 suspectscore=0
+ spamscore=0 mlxlogscore=999 phishscore=0 malwarescore=0 adultscore=0
+ classifier=spam adjust=0 reason=mlx scancount=1 engine=8.12.0-2004280000
+ definitions=main-2006040075
+X-Proofpoint-Virus-Version: vendor=nai engine=6000 definitions=9641
+ signatures=668686
+X-Proofpoint-Spam-Details: rule=notspam policy=default score=0 spamscore=0
+ adultscore=0
+ impostorscore=0 bulkscore=0 lowpriorityscore=0 malwarescore=0
+ priorityscore=1501 clxscore=1011 phishscore=0 mlxlogscore=999 mlxscore=0
+ suspectscore=0 cotscore=-2147483648 classifier=spam adjust=0 reason=mlx
+ scancount=1 engine=8.12.0-2004280000 definitions=main-2006040075
+Cc: Ulf Hansson <ulf.hansson@linaro.org>, Rich Felker <dalias@libc.org>,
+ "open list:SUPERH" <linux-sh@vger.kernel.org>, David Airlie <airlied@linux.ie>,
+ linux-pci@vger.kernel.org, Hanjun Guo <guohanjun@huawei.com>,
+ "open list:REMOTE PROCESSOR REMOTEPROC SUBSYSTEM"
+ <linux-remoteproc@vger.kernel.org>,
+ "open list:DRM DRIVERS FOR ALLWINNER A10" <dri-devel@lists.freedesktop.org>,
+ Bjorn Andersson <bjorn.andersson@linaro.org>,
+ Julien Grall <julien.grall@arm.com>, "H. Peter Anvin" <hpa@zytor.com>,
+ Frank Rowand <frowand.list@gmail.com>, Christoph Hellwig <hch@lst.de>,
+ "open list:STAGING SUBSYSTEM" <devel@driverdev.osuosl.org>,
+ Paul Kocialkowski <paul.kocialkowski@bootlin.com>,
+ Yoshinori Sato <ysato@users.sourceforge.jp>, Will Deacon <will@kernel.org>,
+ "maintainer:X86 ARCHITECTURE 32-BIT AND 64-BIT" <x86@kernel.org>,
+ Russell King <linux@armlinux.org.uk>,
+ "open list:ACPI FOR ARM64 ACPI/arm64" <linux-acpi@vger.kernel.org>,
+ Chen-Yu Tsai <wens@csie.org>, Ingo Molnar <mingo@redhat.com>,
+ bcm-kernel-feedback-list@broadcom.com, Alan Stern <stern@rowland.harvard.edu>,
+ Len Brown <lenb@kernel.org>, Ohad Ben-Cohen <ohad@wizery.com>,
+ "open list:OPEN FIRMWARE AND FLATTENED DEVICE TREE"
+ <devicetree@vger.kernel.org>, Arnd Bergmann <arnd@arndb.de>,
+ Suzuki K Poulose <suzuki.poulose@arm.com>,
+ Mauro Carvalho Chehab <mchehab@kernel.org>, Maxime Ripard <mripard@kernel.org>,
+ Rob Herring <robh+dt@kernel.org>, Borislav Petkov <bp@alien8.de>,
+ Yong Deng <yong.deng@magewell.com>, Santosh Shilimkar <ssantosh@kernel.org>,
+ Bjorn Helgaas <bhelgaas@google.com>, Dan Williams <dan.j.williams@intel.com>,
+ Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
+ "moderated list:ARM PORT" <linux-arm-kernel@lists.infradead.org>,
+ Saravana Kannan <saravanak@google.com>,
+ Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+ Oliver Neukum <oneukum@suse.com>, "Rafael J. Wysocki" <rjw@rjwysocki.net>,
+ open list <linux-kernel@vger.kernel.org>, Wolfram Sang <wsa@kernel.org>,
+ "open list:IOMMU DRIVERS" <iommu@lists.linux-foundation.org>,
+ Mark Brown <broonie@kernel.org>, Thomas Gleixner <tglx@linutronix.de>,
+ Stefano Stabellini <sstabellini@kernel.org>, Daniel Vetter <daniel@ffwll.ch>,
+ Sudeep Holla <sudeep.holla@arm.com>,
+ "open list:ALLWINNER A10 CSI DRIVER" <linux-media@vger.kernel.org>,
+ Robin Murphy <robin.murphy@arm.com>,
+ "open list:USB SUBSYSTEM" <linux-usb@vger.kernel.org>,
+ Nicolas Saenz Julienne <nsaenzjulienne@suse.de>
 X-BeenThere: iommu@lists.linux-foundation.org
 X-Mailman-Version: 2.1.15
 Precedence: list
@@ -97,82 +158,172 @@ Content-Transfer-Encoding: 7bit
 Errors-To: iommu-bounces@lists.linux-foundation.org
 Sender: "iommu" <iommu-bounces@lists.linux-foundation.org>
 
-On Thu, 2020-06-04 at 10:25 +0200, David Hildenbrand wrote:
-> On 04.06.20 10:01, Miles Chen wrote:
-> > To build this driver as a kernel module, we cannot use
-> > the unexported symbol "max_pfn" to setup enable_4GB.
-> > 
-> > Use totalram_pages() instead to setup enable_4GB.
-> > 
-> > Suggested-by: Mike Rapoport <rppt@linux.ibm.com>
-> > Signed-off-by: Miles Chen <miles.chen@mediatek.com>
-> > Cc: David Hildenbrand <david@redhat.com>
-> > Cc: Yong Wu <yong.wu@mediatek.com>
-> > Cc: Chao Hao <chao.hao@mediatek.com>
-> > ---
-> >  drivers/iommu/mtk_iommu.c | 5 ++---
-> >  1 file changed, 2 insertions(+), 3 deletions(-)
-> > 
-> > diff --git a/drivers/iommu/mtk_iommu.c b/drivers/iommu/mtk_iommu.c
-> > index 5f4d6df59cf6..c2798a6e0e38 100644
-> > --- a/drivers/iommu/mtk_iommu.c
-> > +++ b/drivers/iommu/mtk_iommu.c
-> > @@ -3,7 +3,6 @@
-> >   * Copyright (c) 2015-2016 MediaTek Inc.
-> >   * Author: Yong Wu <yong.wu@mediatek.com>
-> >   */
-> > -#include <linux/memblock.h>
-> >  #include <linux/bug.h>
-> >  #include <linux/clk.h>
-> >  #include <linux/component.h>
-> > @@ -626,8 +625,8 @@ static int mtk_iommu_probe(struct platform_device *pdev)
-> >  		return -ENOMEM;
-> >  	data->protect_base = ALIGN(virt_to_phys(protect), MTK_PROTECT_PA_ALIGN);
-> >  
-> > -	/* Whether the current dram is over 4GB */
-> > -	data->enable_4GB = !!(max_pfn > (BIT_ULL(32) >> PAGE_SHIFT));
-> > +	/* Whether the current dram is over 4GB, note: DRAM start at 1GB  */
-> > +	data->enable_4GB = !!(totalram_pages() > ((SZ_2G + SZ_1G) >> PAGE_SHIFT));
-> 
-> A similar thing seems to be done by
-> drivers/media/platform/mtk-vpu/mtk_vpu.c:
-> 	vpu->enable_4GB = !!(totalram_pages() > (SZ_2G >> PAGE_SHIFT));
-> 
-> I do wonder if some weird memory hotplug setups might give you false
-> negatives.
-> 
-> E.g., start a VM with 1GB and hotplug 1GB - it will be hotplugged on
-> x86-64 above 4GB, turning max_pfn into 5GB. totalram_pages() should
-> return something < 2GB.
-> 
-> Same can happen when you have a VM and use ballooning to fake-unplug
-> memory, making totalram_pages() return something < 4GB, but leaving
-> usable pfns >= 4GB
+On Wed, Jun 03, 2020 at 03:20:41PM -0400, Jim Quinlan wrote:
+> @@ -786,7 +787,7 @@ static int sun4i_backend_bind(struct device *dev, struct device *master,
+>  	const struct sun4i_backend_quirks *quirks;
+>  	struct resource *res;
+>  	void __iomem *regs;
+> -	int i, ret;
+> +	int i, ret = 0;
 
-Yes. Yingjoe also told me that this patch is not correct.
+No need for this.
 
-Thanks for pointing this out. totalram_pages() does not work 
-for some cases:
+>  
+>  	backend = devm_kzalloc(dev, sizeof(*backend), GFP_KERNEL);
+>  	if (!backend)
+> @@ -812,7 +813,9 @@ static int sun4i_backend_bind(struct device *dev, struct device *master,
+>  		 * on our device since the RAM mapping is at 0 for the DMA bus,
+>  		 * unlike the CPU.
+>  		 */
+> -		drm->dev->dma_pfn_offset = PHYS_PFN_OFFSET;
+> +		ret = attach_uniform_dma_pfn_offset(dev, PHYS_PFN_OFFSET);
+> +		if (ret)
+> +			return ret;
+>  	}
+>  
+>  	backend->engine.node = dev->of_node;
+> diff --git a/drivers/iommu/io-pgtable-arm.c b/drivers/iommu/io-pgtable-arm.c
+> index 04fbd4bf0ff9..e9cc1c2d47cd 100644
+> --- a/drivers/iommu/io-pgtable-arm.c
+> +++ b/drivers/iommu/io-pgtable-arm.c
+> @@ -754,7 +754,7 @@ arm_lpae_alloc_pgtable(struct io_pgtable_cfg *cfg)
+>  	if (cfg->oas > ARM_LPAE_MAX_ADDR_BITS)
+>  		return NULL;
+>  
+> -	if (!selftest_running && cfg->iommu_dev->dma_pfn_offset) {
+> +	if (!selftest_running && cfg->iommu_dev->dma_pfn_offset_map) {
+>  		dev_err(cfg->iommu_dev, "Cannot accommodate DMA offset for IOMMU page tables\n");
+>  		return NULL;
+>  	}
+> diff --git a/drivers/media/platform/sunxi/sun4i-csi/sun4i_csi.c b/drivers/media/platform/sunxi/sun4i-csi/sun4i_csi.c
+> index eff34ded6305..7212da5e1076 100644
+> --- a/drivers/media/platform/sunxi/sun4i-csi/sun4i_csi.c
+> +++ b/drivers/media/platform/sunxi/sun4i-csi/sun4i_csi.c
+> @@ -7,6 +7,7 @@
+>   */
+>  
+>  #include <linux/clk.h>
+> +#include <linux/dma-mapping.h>
+>  #include <linux/interrupt.h>
+>  #include <linux/module.h>
+>  #include <linux/mutex.h>
+> @@ -183,7 +184,9 @@ static int sun4i_csi_probe(struct platform_device *pdev)
+>  			return ret;
+>  	} else {
+>  #ifdef PHYS_PFN_OFFSET
+> -		csi->dev->dma_pfn_offset = PHYS_PFN_OFFSET;
+> +		ret = attach_uniform_dma_pfn_offset(dev, PHYS_PFN_OFFSET);
+> +		if (ret)
+> +			return ret;
+>  #endif
+>  	}
+>  
+> diff --git a/drivers/media/platform/sunxi/sun6i-csi/sun6i_csi.c b/drivers/media/platform/sunxi/sun6i-csi/sun6i_csi.c
+> index 055eb0b8e396..2d66d415b6c3 100644
+> --- a/drivers/media/platform/sunxi/sun6i-csi/sun6i_csi.c
+> +++ b/drivers/media/platform/sunxi/sun6i-csi/sun6i_csi.c
+> @@ -898,7 +898,10 @@ static int sun6i_csi_probe(struct platform_device *pdev)
+>  
+>  	sdev->dev = &pdev->dev;
+>  	/* The DMA bus has the memory mapped at 0 */
+> -	sdev->dev->dma_pfn_offset = PHYS_OFFSET >> PAGE_SHIFT;
+> +	ret = attach_uniform_dma_pfn_offset(sdev->dev,
+> +					    PHYS_OFFSET >> PAGE_SHIFT);
+> +	if (ret)
+> +		return ret;
+>  
+>  	ret = sun6i_csi_resource_request(sdev, pdev);
+>  	if (ret)
+> diff --git a/drivers/of/address.c b/drivers/of/address.c
+> index 96d8cfb14a60..c89333b0a5fb 100644
+> --- a/drivers/of/address.c
+> +++ b/drivers/of/address.c
+> @@ -918,6 +918,70 @@ void __iomem *of_io_request_and_map(struct device_node *np, int index,
+>  }
+>  EXPORT_SYMBOL(of_io_request_and_map);
+>  
+> +static int attach_dma_pfn_offset_map(struct device *dev,
+> +				     struct device_node *node, int num_ranges)
+> +{
+> +	struct of_range_parser parser;
+> +	struct of_range range;
+> +	struct dma_pfn_offset_region *r;
+> +
+> +	r = devm_kcalloc(dev, num_ranges + 1,
+> +			 sizeof(struct dma_pfn_offset_region), GFP_KERNEL);
+> +	if (!r)
+> +		return -ENOMEM;
+> +	dev->dma_pfn_offset_map = r;
+> +	of_dma_range_parser_init(&parser, node);
+> +
+> +	/*
+> +	 * Record all info for DMA ranges array.  We could
+> +	 * just use the of_range struct, but if we did that it
+> +	 * would require more calculations for phys_to_dma and
+> +	 * dma_to_phys conversions.
+> +	 */
+> +	for_each_of_range(&parser, &range) {
+> +		r->cpu_start = range.cpu_addr;
+> +		r->cpu_end = r->cpu_start + range.size - 1;
+> +		r->dma_start = range.bus_addr;
+> +		r->dma_end = r->dma_start + range.size - 1;
+> +		r->pfn_offset = PFN_DOWN(range.cpu_addr)
+> +			- PFN_DOWN(range.bus_addr);
+> +		r++;
+> +	}
+> +	return 0;
+> +}
+> +
+> +
+> +
+> +/**
+> + * attach_dma_pfn_offset - Assign scalar offset for all addresses.
+> + * @dev:	device pointer; only needed for a corner case.
+> + * @dma_pfn_offset:	offset to apply when converting from phys addr
+      ^^^^^^^^^^^^^^^
+This parameter name does not match.
 
-e.g., DRAM start @0x4000_0000 and DRAM size is 0x1_0000_0000 but we
-reserve large amount of memory, which makes totalram_pages() < 3GB but
-it is possible to allocate a pfn >= 4GB.
+> + *			to dma addr and vice versa.
+> + *
+> + * It returns -ENOMEM if out of memory, otherwise 0.
 
-I will discuss this internally.
+It can also return -ENODEV.  Why are we passing NULL dev pointers to
+all these functions anyway?
 
-Miles
-> .
-> 
-> but
-> ... I don't know if I understood what "enable_4GB" needs/implies
-> ... I don't know if this is applicable to VMs
->  at all (on real HW such
->     memory hotplug setups should not exist)
-> ... I don't know how this code would react to memory hotplug, so if the
->     condition changes after the driver loaded and enable_4GB would
->     suddenly apply. Again, most probably not relevant on real HW, only
->     for VMs.
-> 
+> + */
+> +int attach_uniform_dma_pfn_offset(struct device *dev, unsigned long pfn_offset)
+> +{
+> +	struct dma_pfn_offset_region *r;
+> +
+> +	if (!dev)
+> +		return -ENODEV;
+> +
+> +	if (!pfn_offset)
+> +		return 0;
+> +
+> +	r = devm_kcalloc(dev, 1, sizeof(struct dma_pfn_offset_region),
+> +			 GFP_KERNEL);
+
+Use:	r = devm_kzalloc(dev, sizeof(*r), GFP_KERNEL);
+
+
+> +	if (!r)
+> +		return -ENOMEM;
+> +
+> +	r->uniform_offset = true;
+> +	r->pfn_offset = pfn_offset;
+> +
+> +	return 0;
+> +}
+
+This function doesn't seem to do anything useful.  Is part of it
+missing?
+
+> +EXPORT_SYMBOL_GPL(attach_uniform_dma_pfn_offset);
+> +
+
+regards,
+dan carpenter
 
 _______________________________________________
 iommu mailing list
