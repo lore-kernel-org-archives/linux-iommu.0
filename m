@@ -2,73 +2,83 @@ Return-Path: <SRS0=1g3H=7S=lists.linux-foundation.org=iommu-bounces@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-9.8 required=3.0 tests=HEADER_FROM_DIFFERENT_DOMAINS,
-	INCLUDES_PATCH,MAILING_LIST_MULTI,SIGNED_OFF_BY,SPF_HELO_NONE,SPF_PASS,
-	URIBL_BLOCKED,USER_AGENT_GIT autolearn=ham autolearn_force=no version=3.4.0
+X-Spam-Status: No, score=-5.8 required=3.0 tests=HEADER_FROM_DIFFERENT_DOMAINS,
+	MAILING_LIST_MULTI,MENTIONS_GIT_HOSTING,SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED
+	autolearn=unavailable autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 79A25C433E0
-	for <iommu@archiver.kernel.org>; Fri,  5 Jun 2020 01:35:40 +0000 (UTC)
-Received: from silver.osuosl.org (smtp3.osuosl.org [140.211.166.136])
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 3657AC433E0
+	for <iommu@archiver.kernel.org>; Fri,  5 Jun 2020 06:04:55 +0000 (UTC)
+Received: from fraxinus.osuosl.org (smtp4.osuosl.org [140.211.166.137])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by mail.kernel.org (Postfix) with ESMTPS id 54CA720663
-	for <iommu@archiver.kernel.org>; Fri,  5 Jun 2020 01:35:40 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 54CA720663
-Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=intel.com
+	by mail.kernel.org (Postfix) with ESMTPS id E277B207D5
+	for <iommu@archiver.kernel.org>; Fri,  5 Jun 2020 06:04:54 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org E277B207D5
+Authentication-Results: mail.kernel.org; dmarc=none (p=none dis=none) header.from=hisilicon.com
 Authentication-Results: mail.kernel.org; spf=pass smtp.mailfrom=iommu-bounces@lists.linux-foundation.org
 Received: from localhost (localhost [127.0.0.1])
-	by silver.osuosl.org (Postfix) with ESMTP id D8BF220467;
-	Fri,  5 Jun 2020 01:35:39 +0000 (UTC)
+	by fraxinus.osuosl.org (Postfix) with ESMTP id A434186EB4;
+	Fri,  5 Jun 2020 06:04:54 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from silver.osuosl.org ([127.0.0.1])
+Received: from fraxinus.osuosl.org ([127.0.0.1])
 	by localhost (.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
-	with ESMTP id PA3w4kipSiQT; Fri,  5 Jun 2020 01:35:32 +0000 (UTC)
+	with ESMTP id vFYeQuSw1gH8; Fri,  5 Jun 2020 06:04:51 +0000 (UTC)
 Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [140.211.9.56])
-	by silver.osuosl.org (Postfix) with ESMTP id 55CB2203F9;
-	Fri,  5 Jun 2020 01:35:32 +0000 (UTC)
+	by fraxinus.osuosl.org (Postfix) with ESMTP id A8B1786EA2;
+	Fri,  5 Jun 2020 06:04:51 +0000 (UTC)
 Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
-	by lists.linuxfoundation.org (Postfix) with ESMTP id 4077DC0894;
-	Fri,  5 Jun 2020 01:35:32 +0000 (UTC)
-Received: from whitealder.osuosl.org (smtp1.osuosl.org [140.211.166.138])
- by lists.linuxfoundation.org (Postfix) with ESMTP id 633A7C016E
- for <iommu@lists.linux-foundation.org>; Fri,  5 Jun 2020 01:35:31 +0000 (UTC)
+	by lists.linuxfoundation.org (Postfix) with ESMTP id 91FFAC0888;
+	Fri,  5 Jun 2020 06:04:51 +0000 (UTC)
+Received: from hemlock.osuosl.org (smtp2.osuosl.org [140.211.166.133])
+ by lists.linuxfoundation.org (Postfix) with ESMTP id 7B6DAC016E
+ for <iommu@lists.linux-foundation.org>; Fri,  5 Jun 2020 06:04:50 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
- by whitealder.osuosl.org (Postfix) with ESMTP id 5F99487C25
- for <iommu@lists.linux-foundation.org>; Fri,  5 Jun 2020 01:35:31 +0000 (UTC)
+ by hemlock.osuosl.org (Postfix) with ESMTP id 4C8B988778
+ for <iommu@lists.linux-foundation.org>; Fri,  5 Jun 2020 06:04:50 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from whitealder.osuosl.org ([127.0.0.1])
+Received: from hemlock.osuosl.org ([127.0.0.1])
  by localhost (.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
- with ESMTP id chOXFuNZjfW8 for <iommu@lists.linux-foundation.org>;
- Fri,  5 Jun 2020 01:35:29 +0000 (UTC)
+ with ESMTP id BPCKZXwMH8Qz for <iommu@lists.linux-foundation.org>;
+ Fri,  5 Jun 2020 06:04:46 +0000 (UTC)
 X-Greylist: domain auto-whitelisted by SQLgrey-1.7.6
-Received: from mga01.intel.com (mga01.intel.com [192.55.52.88])
- by whitealder.osuosl.org (Postfix) with ESMTPS id C49C987C16
- for <iommu@lists.linux-foundation.org>; Fri,  5 Jun 2020 01:35:29 +0000 (UTC)
-IronPort-SDR: gWhXypA3lAqPkFnaKz0DlN7lwouw+RPgV+9qeFapFITyBYOaZuyoqk8c09tAb+3zfgi9DSutUT
- d6WlqfZRKa2A==
-X-Amp-Result: SKIPPED(no attachment in message)
-X-Amp-File-Uploaded: False
-Received: from fmsmga008.fm.intel.com ([10.253.24.58])
- by fmsmga101.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384;
- 04 Jun 2020 18:35:19 -0700
-IronPort-SDR: UtxhWyfCz+BvdGDsEmQqPbRP6tsexp+D4sPR8i+JcqqOTmfy529qytwANViNHtkqIz8JqyjrHz
- 0yv+WA/zYtjw==
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.73,474,1583222400"; d="scan'208";a="259050530"
-Received: from sai-dev-mach.sc.intel.com ([143.183.140.153])
- by fmsmga008.fm.intel.com with ESMTP; 04 Jun 2020 18:35:20 -0700
-From: Sai Praneeth Prakhya <sai.praneeth.prakhya@intel.com>
-To: iommu@lists.linux-foundation.org
-Subject: [PATCH V4 1/3] iommu: Add support to change default domain of an
- iommu group
-Date: Thu,  4 Jun 2020 18:32:06 -0700
-Message-Id: <3d7f5cf067437593e681751108860ea692bb10b1.1591290586.git.sai.praneeth.prakhya@intel.com>
-X-Mailer: git-send-email 2.19.1
-In-Reply-To: <cover.1591290586.git.sai.praneeth.prakhya@intel.com>
-References: <cover.1591290586.git.sai.praneeth.prakhya@intel.com>
+Received: from huawei.com (szxga01-in.huawei.com [45.249.212.187])
+ by hemlock.osuosl.org (Postfix) with ESMTPS id 60A2685A58
+ for <iommu@lists.linux-foundation.org>; Fri,  5 Jun 2020 06:04:46 +0000 (UTC)
+Received: from dggemi402-hub.china.huawei.com (unknown [172.30.72.56])
+ by Forcepoint Email with ESMTP id 3647AF0A6493C43752CF;
+ Fri,  5 Jun 2020 14:04:42 +0800 (CST)
+Received: from DGGEMI525-MBS.china.huawei.com ([169.254.6.10]) by
+ dggemi402-hub.china.huawei.com ([10.3.17.135]) with mapi id 14.03.0487.000;
+ Fri, 5 Jun 2020 14:04:32 +0800
+From: "Song Bao Hua (Barry Song)" <song.bao.hua@hisilicon.com>
+To: Dan Carpenter <dan.carpenter@oracle.com>, "kbuild@lists.01.org"
+ <kbuild@lists.01.org>, "hch@lst.de" <hch@lst.de>, "m.szyprowski@samsung.com"
+ <m.szyprowski@samsung.com>, "robin.murphy@arm.com" <robin.murphy@arm.com>,
+ "catalin.marinas@arm.com" <catalin.marinas@arm.com>
+Subject: RE: [PATCH 1/3] dma-direct: provide the ability to reserve per-numa
+ CMA
+Thread-Topic: [PATCH 1/3] dma-direct: provide the ability to reserve
+ per-numa CMA
+Thread-Index: AQHWOVDkjt//8Ixq2UKuAS4YcS/rw6jH0AqAgAG65oA=
+Date: Fri, 5 Jun 2020 06:04:31 +0000
+Message-ID: <B926444035E5E2439431908E3842AFD24E0011@DGGEMI525-MBS.china.huawei.com>
+References: <20200603024231.61748-2-song.bao.hua@hisilicon.com>
+ <20200604113631.GP30374@kadam>
+In-Reply-To: <20200604113631.GP30374@kadam>
+Accept-Language: en-GB, en-US
+Content-Language: en-US
+X-MS-Has-Attach: 
+X-MS-TNEF-Correlator: 
+x-originating-ip: [10.126.201.128]
 MIME-Version: 1.0
-Cc: Ashok Raj <ashok.raj@intel.com>, Will Deacon <will.deacon@arm.com>,
- Robin Murphy <robin.murphy@arm.com>, Christoph Hellwig <hch@lst.de>
+X-CFilter-Loop: Reflected
+Cc: "kbuild-all@lists.01.org" <kbuild-all@lists.01.org>,
+ "lkp@intel.com" <lkp@intel.com>,
+ "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
+ Linuxarm <linuxarm@huawei.com>,
+ "iommu@lists.linux-foundation.org" <iommu@lists.linux-foundation.org>,
+ "linux-arm-kernel@lists.infradead.org" <linux-arm-kernel@lists.infradead.org>,
+ Dan Carpenter <error27@gmail.com>
 X-BeenThere: iommu@lists.linux-foundation.org
 X-Mailman-Version: 2.1.15
 Precedence: list
@@ -86,295 +96,101 @@ Content-Transfer-Encoding: 7bit
 Errors-To: iommu-bounces@lists.linux-foundation.org
 Sender: "iommu" <iommu-bounces@lists.linux-foundation.org>
 
-Presently, the default domain of an iommu group is allocated during boot
-time and it cannot be changed later. So, the device would typically be
-either in identity (also known as pass_through) mode or the device would be
-in DMA mode as long as the machine is up and running. There is no way to
-change the default domain type dynamically i.e. after booting, a device
-cannot switch between identity mode and DMA mode.
 
-But, assume a use case wherein the user trusts the device and believes that
-the OS is secure enough and hence wants *only* this device to bypass IOMMU
-(so that it could be high performing) whereas all the other devices to go
-through IOMMU (so that the system is protected). Presently, this use case
-is not supported. It will be helpful if there is some way to change the
-default domain of an iommu group dynamically. Hence, add such support.
 
-A privileged user could request the kernel to change the default domain
-type of a iommu group by writing to
-"/sys/kernel/iommu_groups/<grp_id>/type" file. Presently, only three values
-are supported
-1. identity: all the DMA transactions from the device in this group are
-             *not* translated by the iommu
-2. DMA: all the DMA transactions from the device in this group are
-        translated by the iommu
-3. auto: change to the type the device was booted with
+> -----Original Message-----
+> From: Dan Carpenter [mailto:dan.carpenter@oracle.com]
+> Sent: Thursday, June 4, 2020 11:37 PM
+> To: kbuild@lists.01.org; Song Bao Hua (Barry Song)
+> <song.bao.hua@hisilicon.com>; hch@lst.de; m.szyprowski@samsung.com;
+> robin.murphy@arm.com; catalin.marinas@arm.com
+> Cc: lkp@intel.com; Dan Carpenter <error27@gmail.com>;
+> kbuild-all@lists.01.org; iommu@lists.linux-foundation.org;
+> linux-arm-kernel@lists.infradead.org; linux-kernel@vger.kernel.org; Linuxarm
+> <linuxarm@huawei.com>; Jonathan Cameron
+> <jonathan.cameron@huawei.com>; John Garry <john.garry@huawei.com>
+> Subject: Re: [PATCH 1/3] dma-direct: provide the ability to reserve per-numa
+> CMA
+> 
+> Hi Barry,
+> 
+> url:
+> https://github.com/0day-ci/linux/commits/Barry-Song/support-per-numa-CM
+> A-for-ARM-server/20200603-104821
+> base:   https://git.kernel.org/pub/scm/linux/kernel/git/arm64/linux.git
+> for-next/core
+> config: x86_64-randconfig-m001-20200603 (attached as .config)
+> compiler: gcc-9 (Debian 9.3.0-13) 9.3.0
+> 
+> If you fix the issue, kindly add following tag as appropriate
+> Reported-by: kernel test robot <lkp@intel.com>
+> Reported-by: Dan Carpenter <dan.carpenter@oracle.com>
 
-Note:
-1. Default domain of an iommu group with two or more devices cannot be
-   changed.
-2. The device in the iommu group shouldn't be bound to any driver.
-3. The device shouldn't be assigned to user for direct access.
-4. The vendor iommu driver is required to add def_domain_type() callback.
-   The change request will fail if the request type conflicts with that
-   returned from the callback.
+Dan, thanks! Good catch!
+as this patch has not been in mainline yet, is it correct to add these "reported-by" in patch v2?
 
-Please see "Documentation/ABI/testing/sysfs-kernel-iommu_groups" for more
-information.
+Barry
 
-Cc: Christoph Hellwig <hch@lst.de>
-Cc: Joerg Roedel <joro@8bytes.org>
-Cc: Ashok Raj <ashok.raj@intel.com>
-Cc: Will Deacon <will.deacon@arm.com>
-Cc: Lu Baolu <baolu.lu@linux.intel.com>
-Cc: Sohil Mehta <sohil.mehta@intel.com>
-Cc: Robin Murphy <robin.murphy@arm.com>
-Cc: Jacob Pan <jacob.jun.pan@linux.intel.com>
-Signed-off-by: Sai Praneeth Prakhya <sai.praneeth.prakhya@intel.com>
----
- drivers/iommu/iommu.c | 215 +++++++++++++++++++++++++++++++++++++++++-
- 1 file changed, 214 insertions(+), 1 deletion(-)
-
-diff --git a/drivers/iommu/iommu.c b/drivers/iommu/iommu.c
-index d43120eb1dc5..b023f06f12d6 100644
---- a/drivers/iommu/iommu.c
-+++ b/drivers/iommu/iommu.c
-@@ -93,6 +93,8 @@ static void __iommu_detach_group(struct iommu_domain *domain,
- static int iommu_create_device_direct_mappings(struct iommu_group *group,
- 					       struct device *dev);
- static struct iommu_group *iommu_group_get_for_dev(struct device *dev);
-+static ssize_t iommu_group_store_type(struct iommu_group *group,
-+				      const char *buf, size_t count);
- 
- #define IOMMU_GROUP_ATTR(_name, _mode, _show, _store)		\
- struct iommu_group_attribute iommu_group_attr_##_name =		\
-@@ -525,7 +527,8 @@ static IOMMU_GROUP_ATTR(name, S_IRUGO, iommu_group_show_name, NULL);
- static IOMMU_GROUP_ATTR(reserved_regions, 0444,
- 			iommu_group_show_resv_regions, NULL);
- 
--static IOMMU_GROUP_ATTR(type, 0444, iommu_group_show_type, NULL);
-+static IOMMU_GROUP_ATTR(type, 0644, iommu_group_show_type,
-+			iommu_group_store_type);
- 
- static void iommu_group_release(struct kobject *kobj)
- {
-@@ -2838,3 +2841,213 @@ int iommu_sva_get_pasid(struct iommu_sva *handle)
- 	return ops->sva_get_pasid(handle);
- }
- EXPORT_SYMBOL_GPL(iommu_sva_get_pasid);
-+
-+/*
-+ * Changes the default domain of an iommu group
-+ *
-+ * @group: The group for which the default domain should be changed
-+ * @type: The type of the new default domain that gets associated with the group
-+ *
-+ * Returns 0 on success and error code on failure
-+ *
-+ * Note:
-+ * 1. Presently, this function is called only when user requests to change the
-+ *    group's default domain type through /sys/kernel/iommu_groups/<grp_id>/type
-+ *    Please take a closer look if intended to use for other purposes.
-+ */
-+static int iommu_change_dev_def_domain(struct iommu_group *group, int type)
-+{
-+	struct iommu_domain *prev_dom;
-+	struct group_device *grp_dev;
-+	const struct iommu_ops *ops;
-+	int ret, dev_def_dom;
-+	struct device *dev;
-+
-+	if (!group)
-+		return -EINVAL;
-+
-+	mutex_lock(&group->mutex);
-+
-+	if (group->default_domain != group->domain) {
-+		pr_err_ratelimited("Group assigned to user level for direct access\n");
-+		ret = -EBUSY;
-+		goto out;
-+	}
-+
-+	/*
-+	 * iommu group wasn't locked while acquiring device lock in
-+	 * iommu_group_store_type(). So, make sure that the device count hasn't
-+	 * changed while acquiring device lock.
-+	 *
-+	 * Changing default domain of an iommu group with two or more devices
-+	 * isn't supported because there could be a potential deadlock. Consider
-+	 * the following scenario. T1 is trying to acquire device locks of all
-+	 * the devices in the group and before it could acquire all of them,
-+	 * there could be another thread T2 (from different sub-system and use
-+	 * case) that has already acquired some of the device locks and might be
-+	 * waiting for T1 to release other device locks.
-+	 */
-+	if (iommu_group_device_count(group) != 1) {
-+		pr_err_ratelimited("Cannot change default domain of a group with two or more devices\n");
-+		ret = -EINVAL;
-+		goto out;
-+	}
-+
-+	/* Since group has only one device */
-+	list_for_each_entry(grp_dev, &group->devices, list)
-+		dev = grp_dev->dev;
-+
-+	prev_dom = group->default_domain;
-+	if (!prev_dom || !prev_dom->ops || !prev_dom->ops->def_domain_type) {
-+		pr_err_ratelimited("'def_domain_type' call back isn't registered\n");
-+		ret = -EINVAL;
-+		goto out;
-+	}
-+
-+	ops = prev_dom->ops;
-+	dev_def_dom = ops->def_domain_type(dev);
-+
-+	/* Check if user requested domain is supported by the device or not */
-+	if (!type) {
-+		/*
-+		 * If the user hasn't requested any specific type of domain and
-+		 * if the device supports both the domains, then default to the
-+		 * domain the device was booted with
-+		 */
-+		type = dev_def_dom ?: iommu_def_domain_type;
-+	} else if (dev_def_dom && type != dev_def_dom) {
-+		pr_err_ratelimited("Device cannot be in %s domain\n",
-+				   iommu_domain_type_str(type));
-+		ret = -EINVAL;
-+		goto out;
-+	}
-+
-+	/*
-+	 * Switch to a new domain only if the requested domain type is different
-+	 * from the existing default domain type
-+	 */
-+	if (prev_dom->type == type) {
-+		ret = 0;
-+		goto out;
-+	}
-+
-+	/* Sets group->default_domain to the newly allocated domain */
-+	ret = iommu_group_alloc_default_domain(dev->bus, group, type);
-+	if (ret)
-+		goto out;
-+
-+	ret = __iommu_attach_device(group->default_domain, dev);
-+	if (ret)
-+		goto free_new_domain;
-+
-+	group->domain = group->default_domain;
-+
-+	ret = iommu_create_device_direct_mappings(group, dev);
-+	if (ret)
-+		goto free_new_domain;
-+
-+	/*
-+	 * Release the mutex here because ops->probe_finalize() call-back of
-+	 * some vendor IOMMU drivers calls arm_iommu_attach_device() which
-+	 * in-turn might call back into IOMMU core code, where it tries to take
-+	 * group->mutex, resulting in a deadlock.
-+	 */
-+	mutex_unlock(&group->mutex);
-+
-+	/* Make sure dma_ops is appropriatley set */
-+	iommu_group_do_probe_finalize(dev, group->default_domain);
-+	iommu_domain_free(prev_dom);
-+	return 0;
-+
-+free_new_domain:
-+	iommu_domain_free(group->default_domain);
-+	group->default_domain = prev_dom;
-+	group->domain = prev_dom;
-+
-+out:
-+	mutex_unlock(&group->mutex);
-+
-+	return ret;
-+}
-+
-+static ssize_t iommu_group_store_type(struct iommu_group *group,
-+				      const char *buf, size_t count)
-+{
-+	struct group_device *grp_dev;
-+	struct device *dev;
-+	int ret, req_type;
-+
-+	if (!capable(CAP_SYS_ADMIN) || !capable(CAP_SYS_RAWIO))
-+		return -EACCES;
-+
-+	if (WARN_ON(!group))
-+		return -EINVAL;
-+
-+	if (sysfs_streq(buf, "identity"))
-+		req_type = IOMMU_DOMAIN_IDENTITY;
-+	else if (sysfs_streq(buf, "DMA"))
-+		req_type = IOMMU_DOMAIN_DMA;
-+	else if (sysfs_streq(buf, "auto"))
-+		req_type = 0;
-+	else
-+		return -EINVAL;
-+
-+	/*
-+	 * Lock/Unlock the group mutex here before device lock to
-+	 * 1. Make sure that the iommu group has only one device (this is a
-+	 *    prerequisite for step 2)
-+	 * 2. Get struct *dev which is needed to lock device
-+	 */
-+	mutex_lock(&group->mutex);
-+	if (iommu_group_device_count(group) != 1) {
-+		mutex_unlock(&group->mutex);
-+		pr_err_ratelimited("Cannot change default domain of a group with two or more devices\n");
-+		return -EINVAL;
-+	}
-+
-+	/* Since group has only one device */
-+	list_for_each_entry(grp_dev, &group->devices, list)
-+		dev = grp_dev->dev;
-+
-+	/*
-+	 * Don't hold the group mutex because taking group mutex first and then
-+	 * the device lock could potentially cause a deadlock as below. Assume
-+	 * two threads T1 and T2. T1 is trying to change default domain of an
-+	 * iommu group and T2 is trying to hot unplug a device or release [1] VF
-+	 * of a PCIe device which is in the same iommu group. T1 takes group
-+	 * mutex and before it could take device lock assume T2 has taken device
-+	 * lock and is yet to take group mutex. Now, both the threads will be
-+	 * waiting for the other thread to release lock. Below, lock order was
-+	 * suggested.
-+	 * device_lock(dev);
-+	 *	mutex_lock(&group->mutex);
-+	 *		iommu_change_dev_def_domain();
-+	 *	mutex_unlock(&group->mutex);
-+	 * device_unlock(dev);
-+	 *
-+	 * [1] Typical device release path
-+	 * device_lock() from device/driver core code
-+	 *  -> bus_notifier()
-+	 *   -> iommu_bus_notifier()
-+	 *    -> iommu_release_device()
-+	 *     -> ops->release_device() vendor driver calls back iommu core code
-+	 *      -> mutex_lock() from iommu core code
-+	 */
-+	mutex_unlock(&group->mutex);
-+
-+	/* Check if the device in the group still has a driver bound to it */
-+	device_lock(dev);
-+	if (device_is_bound(dev)) {
-+		pr_err_ratelimited("Device is still bound to driver\n");
-+		ret = -EBUSY;
-+		goto out;
-+	}
-+
-+	ret = iommu_change_dev_def_domain(group, req_type);
-+	ret = ret ?: count;
-+
-+out:
-+	device_unlock(dev);
-+
-+	return ret;
-+}
--- 
-2.19.1
-
+> 
+> smatch warnings:
+> kernel/dma/contiguous.c:274 dma_alloc_contiguous() warn: variable
+> dereferenced before check 'dev' (see line 272)
+> 
+> #
+> https://github.com/0day-ci/linux/commit/adb919e972c1cac3d8b11905d525
+> 8d23d3aac6a4
+> git remote add linux-review https://github.com/0day-ci/linux git remote
+> update linux-review git checkout
+> adb919e972c1cac3d8b11905d5258d23d3aac6a4
+> vim +/dev +274 kernel/dma/contiguous.c
+> 
+> b1d2dc009dece4 kernel/dma/contiguous.c       Nicolin Chen
+> 2019-05-23  267  struct page *dma_alloc_contiguous(struct device *dev,
+> size_t size, gfp_t gfp)
+> b1d2dc009dece4 kernel/dma/contiguous.c       Nicolin Chen
+> 2019-05-23  268  {
+> 90ae409f9eb3bc kernel/dma/contiguous.c       Christoph Hellwig
+> 2019-08-20  269  	size_t count = size >> PAGE_SHIFT;
+> b1d2dc009dece4 kernel/dma/contiguous.c       Nicolin Chen
+> 2019-05-23  270  	struct page *page = NULL;
+> bd2e75633c8012 kernel/dma/contiguous.c       Nicolin Chen
+> 2019-05-23  271  	struct cma *cma = NULL;
+> adb919e972c1ca kernel/dma/contiguous.c       Barry Song
+> 2020-06-03 @272  	int nid = dev_to_node(dev);
+> 
+> ^^^ Dereferenced inside function.
+> 
+> bd2e75633c8012 kernel/dma/contiguous.c       Nicolin Chen
+> 2019-05-23  273
+> bd2e75633c8012 kernel/dma/contiguous.c       Nicolin Chen
+> 2019-05-23 @274  	if (dev && dev->cma_area)
+> 
+> ^^^ Too late.
+> 
+> bd2e75633c8012 kernel/dma/contiguous.c       Nicolin Chen
+> 2019-05-23  275  		cma = dev->cma_area;
+> adb919e972c1ca kernel/dma/contiguous.c       Barry Song
+> 2020-06-03  276  	else if ((nid != NUMA_NO_NODE) &&
+> dma_contiguous_pernuma_area[nid]
+> adb919e972c1ca kernel/dma/contiguous.c       Barry Song
+> 2020-06-03  277  		&& !(gfp & (GFP_DMA | GFP_DMA32)))
+> adb919e972c1ca kernel/dma/contiguous.c       Barry Song
+> 2020-06-03  278  		cma = dma_contiguous_pernuma_area[nid];
+> bd2e75633c8012 kernel/dma/contiguous.c       Nicolin Chen
+> 2019-05-23  279  	else if (count > 1)
+> bd2e75633c8012 kernel/dma/contiguous.c       Nicolin Chen
+> 2019-05-23  280  		cma = dma_contiguous_default_area;
+> b1d2dc009dece4 kernel/dma/contiguous.c       Nicolin Chen
+> 2019-05-23  281
+> b1d2dc009dece4 kernel/dma/contiguous.c       Nicolin Chen
+> 2019-05-23  282  	/* CMA can be used only in the context which permits
+> sleeping */
+> b1d2dc009dece4 kernel/dma/contiguous.c       Nicolin Chen
+> 2019-05-23  283  	if (cma && gfpflags_allow_blocking(gfp)) {
+> 
+> ---
+> 0-DAY CI Kernel Test Service, Intel Corporation
+> https://lists.01.org/hyperkitty/list/kbuild-all@lists.01.org
 _______________________________________________
 iommu mailing list
 iommu@lists.linux-foundation.org
