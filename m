@@ -1,98 +1,74 @@
-Return-Path: <SRS0=ytjs=7R=lists.linux-foundation.org=iommu-bounces@kernel.org>
+Return-Path: <SRS0=1g3H=7S=lists.linux-foundation.org=iommu-bounces@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-9.6 required=3.0 tests=DKIM_INVALID,DKIM_SIGNED,
-	HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_PATCH,MAILING_LIST_MULTI,SIGNED_OFF_BY,
-	SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED,USER_AGENT_GIT autolearn=ham
-	autolearn_force=no version=3.4.0
+X-Spam-Status: No, score=-9.8 required=3.0 tests=HEADER_FROM_DIFFERENT_DOMAINS,
+	INCLUDES_PATCH,MAILING_LIST_MULTI,SIGNED_OFF_BY,SPF_HELO_NONE,SPF_PASS,
+	URIBL_BLOCKED,USER_AGENT_GIT autolearn=ham autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id C4386C433E0
-	for <iommu@archiver.kernel.org>; Thu,  4 Jun 2020 23:44:26 +0000 (UTC)
-Received: from whitealder.osuosl.org (smtp1.osuosl.org [140.211.166.138])
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 01737C433E0
+	for <iommu@archiver.kernel.org>; Fri,  5 Jun 2020 01:35:34 +0000 (UTC)
+Received: from hemlock.osuosl.org (smtp2.osuosl.org [140.211.166.133])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by mail.kernel.org (Postfix) with ESMTPS id 983EC207DA
-	for <iommu@archiver.kernel.org>; Thu,  4 Jun 2020 23:44:26 +0000 (UTC)
-Authentication-Results: mail.kernel.org;
-	dkim=fail reason="signature verification failed" (2048-bit key) header.d=nvidia.com header.i=@nvidia.com header.b="I8hehESM"
-DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 983EC207DA
-Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=nvidia.com
+	by mail.kernel.org (Postfix) with ESMTPS id 991BE20663
+	for <iommu@archiver.kernel.org>; Fri,  5 Jun 2020 01:35:33 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 991BE20663
+Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=intel.com
 Authentication-Results: mail.kernel.org; spf=pass smtp.mailfrom=iommu-bounces@lists.linux-foundation.org
 Received: from localhost (localhost [127.0.0.1])
-	by whitealder.osuosl.org (Postfix) with ESMTP id 795B587DE4;
-	Thu,  4 Jun 2020 23:44:26 +0000 (UTC)
+	by hemlock.osuosl.org (Postfix) with ESMTP id 4B737888D9;
+	Fri,  5 Jun 2020 01:35:33 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from whitealder.osuosl.org ([127.0.0.1])
+Received: from hemlock.osuosl.org ([127.0.0.1])
 	by localhost (.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
-	with ESMTP id qtRLkPNlHUE2; Thu,  4 Jun 2020 23:44:26 +0000 (UTC)
+	with ESMTP id HGA6zf3c-jai; Fri,  5 Jun 2020 01:35:32 +0000 (UTC)
 Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [140.211.9.56])
-	by whitealder.osuosl.org (Postfix) with ESMTP id 03D1487D5D;
-	Thu,  4 Jun 2020 23:44:26 +0000 (UTC)
+	by hemlock.osuosl.org (Postfix) with ESMTP id 389AB88778;
+	Fri,  5 Jun 2020 01:35:32 +0000 (UTC)
 Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
-	by lists.linuxfoundation.org (Postfix) with ESMTP id D99A6C0881;
-	Thu,  4 Jun 2020 23:44:25 +0000 (UTC)
+	by lists.linuxfoundation.org (Postfix) with ESMTP id 13708C0891;
+	Fri,  5 Jun 2020 01:35:32 +0000 (UTC)
 Received: from silver.osuosl.org (smtp3.osuosl.org [140.211.166.136])
- by lists.linuxfoundation.org (Postfix) with ESMTP id B0653C016E
- for <iommu@lists.linux-foundation.org>; Thu,  4 Jun 2020 23:44:24 +0000 (UTC)
+ by lists.linuxfoundation.org (Postfix) with ESMTP id EBAB1C016E
+ for <iommu@lists.linux-foundation.org>; Fri,  5 Jun 2020 01:35:30 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
- by silver.osuosl.org (Postfix) with ESMTP id 98D0825343
- for <iommu@lists.linux-foundation.org>; Thu,  4 Jun 2020 23:44:24 +0000 (UTC)
+ by silver.osuosl.org (Postfix) with ESMTP id D5EF920410
+ for <iommu@lists.linux-foundation.org>; Fri,  5 Jun 2020 01:35:30 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
 Received: from silver.osuosl.org ([127.0.0.1])
  by localhost (.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
- with ESMTP id apQLBm11R9y0 for <iommu@lists.linux-foundation.org>;
- Thu,  4 Jun 2020 23:44:23 +0000 (UTC)
+ with ESMTP id HVg6aBcV2YOV for <iommu@lists.linux-foundation.org>;
+ Fri,  5 Jun 2020 01:35:29 +0000 (UTC)
 X-Greylist: domain auto-whitelisted by SQLgrey-1.7.6
-Received: from hqnvemgate25.nvidia.com (hqnvemgate25.nvidia.com
- [216.228.121.64])
- by silver.osuosl.org (Postfix) with ESMTPS id 8CCF3251C1
- for <iommu@lists.linux-foundation.org>; Thu,  4 Jun 2020 23:44:22 +0000 (UTC)
-Received: from hqpgpgate101.nvidia.com (Not Verified[216.228.121.13]) by
- hqnvemgate25.nvidia.com (using TLS: TLSv1.2, DES-CBC3-SHA)
- id <B5ed986fd0000>; Thu, 04 Jun 2020 16:42:54 -0700
-Received: from hqmail.nvidia.com ([172.20.161.6])
- by hqpgpgate101.nvidia.com (PGP Universal service);
- Thu, 04 Jun 2020 16:44:22 -0700
-X-PGP-Universal: processed;
- by hqpgpgate101.nvidia.com on Thu, 04 Jun 2020 16:44:22 -0700
-Received: from HQMAIL105.nvidia.com (172.20.187.12) by HQMAIL107.nvidia.com
- (172.20.187.13) with Microsoft SMTP Server (TLS) id 15.0.1473.3; Thu, 4 Jun
- 2020 23:44:13 +0000
-Received: from rnnvemgw01.nvidia.com (10.128.109.123) by HQMAIL105.nvidia.com
- (172.20.187.12) with Microsoft SMTP Server (TLS) id 15.0.1473.3 via
- Frontend Transport; Thu, 4 Jun 2020 23:44:13 +0000
-Received: from vdumpa-ubuntu.nvidia.com (Not Verified[172.17.173.140]) by
- rnnvemgw01.nvidia.com with Trustwave SEG (v7, 5, 8, 10121)
- id <B5ed9874c0001>; Thu, 04 Jun 2020 16:44:13 -0700
-From: Krishna Reddy <vdumpa@nvidia.com>
-To: 
-Subject: [PATCH v6 4/4] iommu/arm-smmu-nvidia: fix the warning reported by
- kbuild test robot
-Date: Thu, 4 Jun 2020 16:44:14 -0700
-Message-ID: <20200604234414.21912-5-vdumpa@nvidia.com>
-X-Mailer: git-send-email 2.26.2
-In-Reply-To: <20200604234414.21912-1-vdumpa@nvidia.com>
-References: <20200604234414.21912-1-vdumpa@nvidia.com>
+Received: from mga01.intel.com (mga01.intel.com [192.55.52.88])
+ by silver.osuosl.org (Postfix) with ESMTPS id 784D5203F6
+ for <iommu@lists.linux-foundation.org>; Fri,  5 Jun 2020 01:35:29 +0000 (UTC)
+IronPort-SDR: fqPIES3+dlTG1224LhgnVsPzs5JEMlHsS0cfOziaG2wk40vZIDndwNs+EfnrAVWseZ2oKRoHsk
+ BFOa3Ztfnj4A==
+X-Amp-Result: SKIPPED(no attachment in message)
+X-Amp-File-Uploaded: False
+Received: from fmsmga008.fm.intel.com ([10.253.24.58])
+ by fmsmga101.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384;
+ 04 Jun 2020 18:35:21 -0700
+IronPort-SDR: +F59LkpZqkxQZwNjckRijeLkPnr+BpGvxzXQu92fnOxj9PisDcNRi17YTB0GZDrcYRKW9Nj331
+ Ta650kqKWlkw==
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="5.73,474,1583222400"; d="scan'208";a="259050537"
+Received: from sai-dev-mach.sc.intel.com ([143.183.140.153])
+ by fmsmga008.fm.intel.com with ESMTP; 04 Jun 2020 18:35:22 -0700
+From: Sai Praneeth Prakhya <sai.praneeth.prakhya@intel.com>
+To: iommu@lists.linux-foundation.org
+Subject: [PATCH V4 3/3] iommu: Document usage of
+ "/sys/kernel/iommu_groups/<grp_id>/type" file
+Date: Thu,  4 Jun 2020 18:32:08 -0700
+Message-Id: <24102f22824b26cf4fa6ec1c84d176110b21c574.1591290586.git.sai.praneeth.prakhya@intel.com>
+X-Mailer: git-send-email 2.19.1
+In-Reply-To: <cover.1591290586.git.sai.praneeth.prakhya@intel.com>
+References: <cover.1591290586.git.sai.praneeth.prakhya@intel.com>
 MIME-Version: 1.0
-X-NVConfidentiality: public
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=nvidia.com; s=n1;
- t=1591314174; bh=2ofUV6N4w8MVqMXhL27SWFuQR3WHDuZrVd5MUpa+Yso=;
- h=X-PGP-Universal:From:To:CC:Subject:Date:Message-ID:X-Mailer:
- In-Reply-To:References:MIME-Version:X-NVConfidentiality:
- Content-Transfer-Encoding:Content-Type;
- b=I8hehESMwvZR2f+fZE445YwxDRNXgLctdd8NHKLZ2A7c3EDVSuTTi0FTk/Z5qdyHU
- CG1nkGlM4Yacr5TIDNltsyxdaPp0IrJRSa+FN/AUX9ksGCDnIlFQ9+tro99Dwmk+ZI
- 5IdPA6SDWXL4cAuDDLvfs7HfmDmiPlNAUextWo0FDNUW5VdI/YPj2TQeSqWM3oLwVn
- aoWOupD2+Yn/nLhUYCoOQcvXqJ47LWYSM+Ht8N6CLn/ebhiF+sFGhZgo7XRAhJ18cf
- IbJuH/61fiMVLueQm1hJxiuvdAmeIjTbIvtM9+M4RnGPR0SMbVr34ce8Flq+9sC76P
- TRcVafU8b7/HA==
-Cc: snikam@nvidia.com, mperttunen@nvidia.com, kbuild test robot <lkp@intel.com>,
- bhuntsman@nvidia.com, will@kernel.org, linux-kernel@vger.kernel.org,
- praithatha@nvidia.com, talho@nvidia.com, iommu@lists.linux-foundation.org,
- nicolinc@nvidia.com, linux-tegra@vger.kernel.org, yhsu@nvidia.com,
- treding@nvidia.com, robin.murphy@arm.com, linux-arm-kernel@lists.infradead.org,
- bbiswas@nvidia.com
+Cc: Ashok Raj <ashok.raj@intel.com>, Will Deacon <will.deacon@arm.com>,
+ Robin Murphy <robin.murphy@arm.com>, Christoph Hellwig <hch@lst.de>
 X-BeenThere: iommu@lists.linux-foundation.org
 X-Mailman-Version: 2.1.15
 Precedence: list
@@ -110,30 +86,63 @@ Content-Transfer-Encoding: 7bit
 Errors-To: iommu-bounces@lists.linux-foundation.org
 Sender: "iommu" <iommu-bounces@lists.linux-foundation.org>
 
->> drivers/iommu/arm-smmu-nvidia.c:151:33: sparse: sparse: cast removes
->> address space '<asn:2>' of expression
+The default domain type of an iommu group can be changed by writing to
+"/sys/kernel/iommu_groups/<grp_id>/type" file. Hence, document it's usage
+and more importantly spell out its limitations.
 
-Reported-by: kbuild test robot <lkp@intel.com>
-Signed-off-by: Krishna Reddy <vdumpa@nvidia.com>
+Cc: Christoph Hellwig <hch@lst.de>
+Cc: Joerg Roedel <joro@8bytes.org>
+Cc: Ashok Raj <ashok.raj@intel.com>
+Cc: Will Deacon <will.deacon@arm.com>
+Cc: Lu Baolu <baolu.lu@linux.intel.com>
+Cc: Sohil Mehta <sohil.mehta@intel.com>
+Cc: Robin Murphy <robin.murphy@arm.com>
+Cc: Jacob Pan <jacob.jun.pan@linux.intel.com>
+Signed-off-by: Sai Praneeth Prakhya <sai.praneeth.prakhya@intel.com>
 ---
- drivers/iommu/arm-smmu-nvidia.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+ .../ABI/testing/sysfs-kernel-iommu_groups     | 30 +++++++++++++++++++
+ 1 file changed, 30 insertions(+)
 
-diff --git a/drivers/iommu/arm-smmu-nvidia.c b/drivers/iommu/arm-smmu-nvidia.c
-index 5999b6a770992..6348d8dc17fc2 100644
---- a/drivers/iommu/arm-smmu-nvidia.c
-+++ b/drivers/iommu/arm-smmu-nvidia.c
-@@ -248,7 +248,7 @@ struct arm_smmu_device *nvidia_smmu_impl_init(struct arm_smmu_device *smmu)
- 			break;
- 		nsmmu->bases[i] = devm_ioremap_resource(dev, res);
- 		if (IS_ERR(nsmmu->bases[i]))
--			return (struct arm_smmu_device *)nsmmu->bases[i];
-+			return ERR_CAST(nsmmu->bases[i]);
- 		nsmmu->num_inst++;
- 	}
- 
+diff --git a/Documentation/ABI/testing/sysfs-kernel-iommu_groups b/Documentation/ABI/testing/sysfs-kernel-iommu_groups
+index 017f5bc3920c..a498daffeb0c 100644
+--- a/Documentation/ABI/testing/sysfs-kernel-iommu_groups
++++ b/Documentation/ABI/testing/sysfs-kernel-iommu_groups
+@@ -33,3 +33,33 @@ Description:    In case an RMRR is used only by graphics or USB devices
+ 		it is now exposed as "direct-relaxable" instead of "direct".
+ 		In device assignment use case, for instance, those RMRR
+ 		are considered to be relaxable and safe.
++
++What:		/sys/kernel/iommu_groups/<grp_id>/type
++Date:		June 2020
++KernelVersion:	v5.8
++Contact:	Sai Praneeth Prakhya <sai.praneeth.prakhya@intel.com>
++Description:	Let the user know the type of default domain in use by iommu
++		for this group. A privileged user could request kernel to change
++		the group type by writing to this file. Presently, only three
++		types are supported
++		1. DMA: All the DMA transactions from the device in this group
++			are translated by the iommu.
++		2. identity: All the DMA transactions from the device in this
++			     group are *not* translated by the iommu.
++		3. auto: Change to the type the device was booted with. When the
++			 user reads the file he would never see "auto". This is
++			 just a write only value.
++		Note:
++		-----
++		A group type could be modified only when
++		1. The group has *only* one device
++		2. The device in the group is not bound to any device driver.
++		   So, the user must first unbind the appropriate driver and
++		   then change the default domain type.
++		Caution:
++		--------
++		Unbinding a device driver will take away the driver's control
++		over the device and if done on devices that host root file
++		system could lead to catastrophic effects (the user might
++		need to reboot the machine to get it to normal state). So, it's
++		expected that the user understands what he is doing.
 -- 
-2.26.2
+2.19.1
 
 _______________________________________________
 iommu mailing list
