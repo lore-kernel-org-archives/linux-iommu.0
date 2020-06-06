@@ -1,81 +1,85 @@
-Return-Path: <SRS0=1g3H=7S=lists.linux-foundation.org=iommu-bounces@kernel.org>
+Return-Path: <SRS0=ipMx=7T=lists.linux-foundation.org=iommu-bounces@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-0.8 required=3.0 tests=DKIM_INVALID,DKIM_SIGNED,
-	MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED autolearn=no
-	autolearn_force=no version=3.4.0
+X-Spam-Status: No, score=-7.2 required=3.0 tests=HEADER_FROM_DIFFERENT_DOMAINS,
+	MAILING_LIST_MULTI,MENTIONS_GIT_HOSTING,SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED,
+	USER_AGENT_SANE_1 autolearn=unavailable autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 537ACC433DF
-	for <iommu@archiver.kernel.org>; Fri,  5 Jun 2020 23:19:17 +0000 (UTC)
-Received: from whitealder.osuosl.org (smtp1.osuosl.org [140.211.166.138])
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 2DA4EC433DF
+	for <iommu@archiver.kernel.org>; Sat,  6 Jun 2020 03:47:50 +0000 (UTC)
+Received: from fraxinus.osuosl.org (smtp4.osuosl.org [140.211.166.137])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by mail.kernel.org (Postfix) with ESMTPS id 240B1207D5
-	for <iommu@archiver.kernel.org>; Fri,  5 Jun 2020 23:19:16 +0000 (UTC)
-Authentication-Results: mail.kernel.org;
-	dkim=fail reason="signature verification failed" (1024-bit key) header.d=kernel.org header.i=@kernel.org header.b="cWVCuuhZ"
-DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 240B1207D5
-Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=kernel.org
+	by mail.kernel.org (Postfix) with ESMTPS id E741D20656
+	for <iommu@archiver.kernel.org>; Sat,  6 Jun 2020 03:47:49 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org E741D20656
+Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=intel.com
 Authentication-Results: mail.kernel.org; spf=pass smtp.mailfrom=iommu-bounces@lists.linux-foundation.org
 Received: from localhost (localhost [127.0.0.1])
-	by whitealder.osuosl.org (Postfix) with ESMTP id EFCF386D81;
-	Fri,  5 Jun 2020 23:19:15 +0000 (UTC)
+	by fraxinus.osuosl.org (Postfix) with ESMTP id B2D6A87215;
+	Sat,  6 Jun 2020 03:47:49 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from whitealder.osuosl.org ([127.0.0.1])
+Received: from fraxinus.osuosl.org ([127.0.0.1])
 	by localhost (.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
-	with ESMTP id m+vdD6jF4SXK; Fri,  5 Jun 2020 23:19:15 +0000 (UTC)
+	with ESMTP id jr05kCTn37T0; Sat,  6 Jun 2020 03:47:49 +0000 (UTC)
 Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [140.211.9.56])
-	by whitealder.osuosl.org (Postfix) with ESMTP id 456738683A;
-	Fri,  5 Jun 2020 23:19:15 +0000 (UTC)
+	by fraxinus.osuosl.org (Postfix) with ESMTP id 2A2CB87201;
+	Sat,  6 Jun 2020 03:47:49 +0000 (UTC)
 Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
-	by lists.linuxfoundation.org (Postfix) with ESMTP id 2A59AC0888;
-	Fri,  5 Jun 2020 23:19:15 +0000 (UTC)
-Received: from silver.osuosl.org (smtp3.osuosl.org [140.211.166.136])
- by lists.linuxfoundation.org (Postfix) with ESMTP id E1D07C016E
- for <iommu@lists.linux-foundation.org>; Fri,  5 Jun 2020 23:19:13 +0000 (UTC)
+	by lists.linuxfoundation.org (Postfix) with ESMTP id 0DC3BC0888;
+	Sat,  6 Jun 2020 03:47:49 +0000 (UTC)
+Received: from fraxinus.osuosl.org (smtp4.osuosl.org [140.211.166.137])
+ by lists.linuxfoundation.org (Postfix) with ESMTP id 35AEAC016E
+ for <iommu@lists.linux-foundation.org>; Sat,  6 Jun 2020 03:47:48 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
- by silver.osuosl.org (Postfix) with ESMTP id AC65525AB8
- for <iommu@lists.linux-foundation.org>; Fri,  5 Jun 2020 23:19:13 +0000 (UTC)
+ by fraxinus.osuosl.org (Postfix) with ESMTP id 2A55887215
+ for <iommu@lists.linux-foundation.org>; Sat,  6 Jun 2020 03:47:48 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from silver.osuosl.org ([127.0.0.1])
+Received: from fraxinus.osuosl.org ([127.0.0.1])
  by localhost (.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
- with ESMTP id ur5IizjfeQwH for <iommu@lists.linux-foundation.org>;
- Fri,  5 Jun 2020 23:19:12 +0000 (UTC)
+ with ESMTP id 5nNno1r62BIJ for <iommu@lists.linux-foundation.org>;
+ Sat,  6 Jun 2020 03:47:47 +0000 (UTC)
 X-Greylist: domain auto-whitelisted by SQLgrey-1.7.6
-Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
- by silver.osuosl.org (Postfix) with ESMTPS id A8ADF258C4
- for <iommu@lists.linux-foundation.org>; Fri,  5 Jun 2020 23:19:12 +0000 (UTC)
-Received: from localhost (mobile-166-175-190-200.mycingular.net
- [166.175.190.200])
- (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
- (No client certificate requested)
- by mail.kernel.org (Postfix) with ESMTPSA id B1CC7207D0;
- Fri,  5 Jun 2020 23:19:11 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
- s=default; t=1591399152;
- bh=pxsClvnIPBaS8ODkk62CMx4DJx6gcP1jIo9ANMgure4=;
- h=Date:From:To:Cc:Subject:In-Reply-To:From;
- b=cWVCuuhZEXopJ/fy8/HaCu7gj+qdiUHK7yyWdnF7I+g00606Q27D/lHhs2F+KUUbI
- qPalWOJ7gwNYAzD0Zb2lhQotEE4HBkdYrzhA669gi2oRrAkyKg2JRbaRxC86n+xjd9
- CZzarVVqj34lwCRUNnhR0Wkc6VA4FmF+zD+p5VbA=
-Date: Fri, 5 Jun 2020 18:19:09 -0500
-From: Bjorn Helgaas <helgaas@kernel.org>
-To: Zhangfei Gao <zhangfei.gao@linaro.org>
-Subject: Re: [PATCH 0/2] Introduce PCI_FIXUP_IOMMU
-Message-ID: <20200605231909.GA1155454@bjorn-Precision-5520>
+Received: from mga04.intel.com (mga04.intel.com [192.55.52.120])
+ by fraxinus.osuosl.org (Postfix) with ESMTPS id 1A22387201
+ for <iommu@lists.linux-foundation.org>; Sat,  6 Jun 2020 03:47:46 +0000 (UTC)
+IronPort-SDR: /+rwhPBFYeJSFYZlkSvLRhOX0NvUzInoxfDQ6wr/4ntyrxOSKa1e/ole0rmSYt6pTC0mkJrxrZ
+ Ln+sfRY+6pfQ==
+X-Amp-Result: SKIPPED(no attachment in message)
+X-Amp-File-Uploaded: False
+Received: from orsmga002.jf.intel.com ([10.7.209.21])
+ by fmsmga104.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384;
+ 05 Jun 2020 20:47:45 -0700
+IronPort-SDR: doFUxYktMjT+9Frop2VWFJ+ZWLisjHACPXrUod+jj8Xgaxgn+uxK0KBDx7WxpnM44pJGmFiBTX
+ CUa8FImuX1pw==
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="5.73,478,1583222400"; d="scan'208";a="287935558"
+Received: from pl-dbox.sh.intel.com (HELO intel.com) ([10.239.159.39])
+ by orsmga002.jf.intel.com with ESMTP; 05 Jun 2020 20:47:41 -0700
+Date: Sat, 6 Jun 2020 11:46:55 +0800
+From: Philip Li <philip.li@intel.com>
+To: Dan Carpenter <dan.carpenter@oracle.com>
+Subject: Re: [kbuild-all] Re: [PATCH 1/3] dma-direct: provide the ability to
+ reserve per-numa CMA
+Message-ID: <20200606034655.GH2459@intel.com>
+References: <20200603024231.61748-2-song.bao.hua@hisilicon.com>
+ <20200604113631.GP30374@kadam>
+ <B926444035E5E2439431908E3842AFD24E0011@DGGEMI525-MBS.china.huawei.com>
+ <20200605085751.GQ30374@kadam>
 MIME-Version: 1.0
 Content-Disposition: inline
-In-Reply-To: <779f4044-cf6a-b0d3-916f-0274450c07d3@linaro.org>
-Cc: jean-philippe <jean-philippe@linaro.org>,
- Herbert Xu <herbert@gondor.apana.org.au>, Arnd Bergmann <arnd@arndb.de>,
- linux-pci@vger.kernel.org, Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
- Hanjun Guo <guohanjun@huawei.com>, "Rafael J. Wysocki" <rjw@rjwysocki.net>,
- linux-kernel@vger.kernel.org, iommu@lists.linux-foundation.org,
- linux-acpi@vger.kernel.org, linux-crypto@vger.kernel.org,
- Sudeep Holla <sudeep.holla@arm.com>, Bjorn Helgaas <bhelgaas@google.com>,
- kenneth-lee-2012@foxmail.com, linux-arm-kernel@lists.infradead.org,
- Len Brown <lenb@kernel.org>
+In-Reply-To: <20200605085751.GQ30374@kadam>
+User-Agent: Mutt/1.10.1 (2018-07-13)
+Cc: Dan Carpenter <error27@gmail.com>, "lkp@intel.com" <lkp@intel.com>,
+ "catalin.marinas@arm.com" <catalin.marinas@arm.com>,
+ "kbuild@lists.01.org" <kbuild@lists.01.org>,
+ "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
+ Linuxarm <linuxarm@huawei.com>,
+ "iommu@lists.linux-foundation.org" <iommu@lists.linux-foundation.org>,
+ "kbuild-all@lists.01.org" <kbuild-all@lists.01.org>,
+ "robin.murphy@arm.com" <robin.murphy@arm.com>, "hch@lst.de" <hch@lst.de>,
+ "linux-arm-kernel@lists.infradead.org" <linux-arm-kernel@lists.infradead.org>
 X-BeenThere: iommu@lists.linux-foundation.org
 X-Mailman-Version: 2.1.15
 Precedence: list
@@ -88,53 +92,59 @@ List-Post: <mailto:iommu@lists.linux-foundation.org>
 List-Help: <mailto:iommu-request@lists.linux-foundation.org?subject=help>
 List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
  <mailto:iommu-request@lists.linux-foundation.org?subject=subscribe>
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: base64
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: 7bit
 Errors-To: iommu-bounces@lists.linux-foundation.org
 Sender: "iommu" <iommu-bounces@lists.linux-foundation.org>
 
-T24gVGh1LCBKdW4gMDQsIDIwMjAgYXQgMDk6MzM6MDdQTSArMDgwMCwgWmhhbmdmZWkgR2FvIHdy
-b3RlOgo+IE9uIDIwMjAvNi8yIOS4iuWNiDE6NDEsIEJqb3JuIEhlbGdhYXMgd3JvdGU6Cj4gPiBP
-biBUaHUsIE1heSAyOCwgMjAyMCBhdCAwOTozMzo0NEFNICswMjAwLCBKb2VyZyBSb2VkZWwgd3Jv
-dGU6Cj4gPiA+IE9uIFdlZCwgTWF5IDI3LCAyMDIwIGF0IDAxOjE4OjQyUE0gLTA1MDAsIEJqb3Ju
-IEhlbGdhYXMgd3JvdGU6Cj4gPiA+ID4gSXMgdGhpcyBzbG93ZG93biBzaWduaWZpY2FudD8gIFdl
-IGFscmVhZHkgaXRlcmF0ZSBvdmVyIGV2ZXJ5IGRldmljZQo+ID4gPiA+IHdoZW4gYXBwbHlpbmcg
-UENJX0ZJWFVQX0ZJTkFMIHF1aXJrcywgc28gaWYgd2UgdXNlZCB0aGUgZXhpc3RpbmcKPiA+ID4g
-PiBQQ0lfRklYVVBfRklOQUwsIHdlIHdvdWxkbid0IGJlIGFkZGluZyBhIG5ldyBsb29wLiAgV2Ug
-d291bGQgb25seSBiZQo+ID4gPiA+IGFkZGluZyB0d28gbW9yZSBpdGVyYXRpb25zIHRvIHRoZSBs
-b29wIGluIHBjaV9kb19maXh1cHMoKSB0aGF0IHRyaWVzCj4gPiA+ID4gdG8gbWF0Y2ggcXVpcmtz
-IGFnYWluc3QgdGhlIGN1cnJlbnQgZGV2aWNlLiAgSSBkb3VidCB0aGF0IHdvdWxkIGJlIGEKPiA+
-ID4gPiBtZWFzdXJhYmxlIHNsb3dkb3duLgo+ID4gPiBJIGRvbid0IGtub3cgaG93IHNpZ25pZmlj
-YW50IGl0IGlzLCBidXQgSSByZW1lbWJlciBwZW9wbGUgY29tcGxhaW5pbmcKPiA+ID4gYWJvdXQg
-YWRkaW5nIG5ldyBQQ0kgcXVpcmtzIGJlY2F1c2UgaXQgdGFrZXMgdG9vIGxvbmcgZm9yIHRoZW0g
-dG8gcnVuCj4gPiA+IHRoZW0gYWxsLiBUaGF0IHdhcyBpbiB0aGUgZGlzY3Vzc2lvbiBhYm91dCB0
-aGUgcXVpcmsgZGlzYWJsaW5nIEFUUyBvbgo+ID4gPiBBTUQgU3RvbmV5IHN5c3RlbXMuCj4gPiA+
-IAo+ID4gPiBTbyBpdCBwcm9iYWJseSBkZXBlbmRzIG9uIGhvdyBtYW55IFBDSSBkZXZpY2VzIGFy
-ZSBpbiB0aGUgc3lzdGVtIHdoZXRoZXIKPiA+ID4gaXQgY2F1c2VzIGFueSBtZWFzdXJlYWJsZSBz
-bG93ZG93bi4KPiA+IEkgZm91bmQgdGhpcyBbMV0gZnJvbSBQYXVsIE1lbnplbCwgd2hpY2ggd2Fz
-IGEgc2xvd2Rvd24gY2F1c2VkIGJ5Cj4gPiBxdWlya191c2JfZWFybHlfaGFuZG9mZigpLiAgSSB0
-aGluayB0aGUgcmVhbCBwcm9ibGVtIGlzIGluZGl2aWR1YWwKPiA+IHF1aXJrcyB0aGF0IHRha2Ug
-YSBsb25nIHRpbWUuCj4gPiAKPiA+IFRoZSBQQ0lfRklYVVBfSU9NTVUgdGhpbmdzIHdlJ3JlIHRh
-bGtpbmcgYWJvdXQgc2hvdWxkIGJlIGZhc3QsIGFuZCBvZgo+ID4gY291cnNlLCB0aGV5J3JlIG9u
-bHkgcnVuIGZvciBtYXRjaGluZyBkZXZpY2VzIGFueXdheS4gIFNvIEknZCByYXRoZXIKPiA+IGtl
-ZXAgdGhlbSBhcyBQQ0lfRklYVVBfRklOQUwgdGhhbiBhZGQgYSB3aG9sZSBuZXcgcGhhc2UuCj4g
-PiAKPiBUaGFua3MgQmpvcm4gZm9yIHRha2luZyB0aW1lIGZvciB0aGlzLgo+IElmIHNvLCBpdCB3
-b3VsZCBiZSBtdWNoIHNpbXBsZXIuCj4gCj4gKysrIGIvZHJpdmVycy9pb21tdS9pb21tdS5jCj4g
-QEAgLTI0MTgsNiArMjQxOCwxMCBAQCBpbnQgaW9tbXVfZndzcGVjX2luaXQoc3RydWN0IGRldmlj
-ZSAqZGV2LCBzdHJ1Y3QKPiBmd25vZGVfaGFuZGxlICppb21tdV9md25vZGUsCj4gwqDCoMKgwqDC
-oMKgwqAgZndzcGVjLT5pb21tdV9md25vZGUgPSBpb21tdV9md25vZGU7Cj4gwqDCoMKgwqDCoMKg
-wqAgZndzcGVjLT5vcHMgPSBvcHM7Cj4gwqDCoMKgwqDCoMKgwqAgZGV2X2lvbW11X2Z3c3BlY19z
-ZXQoZGV2LCBmd3NwZWMpOwo+ICsKPiArwqDCoMKgwqDCoMKgIGlmIChkZXZfaXNfcGNpKGRldikp
-Cj4gK8KgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqAgcGNpX2ZpeHVwX2RldmljZShwY2lfZml4
-dXBfZmluYWwsIHRvX3BjaV9kZXYoZGV2KSk7Cj4gKwo+IAo+IFRoZW4gcGNpX2ZpeHVwX2ZpbmFs
-IHdpbGwgYmUgY2FsbGVkIHR3aWNlLCB0aGUgZmlyc3QgaW4gcGNpX2J1c19hZGRfZGV2aWNlLgo+
-IEhlcmUgaW4gaW9tbXVfZndzcGVjX2luaXQgaXMgdGhlIHNlY29uZCB0aW1lLCBzcGVjaWZpY2Fs
-bHkgZm9yIGlvbW11X2Z3c3BlYy4KPiBXaWxsIHNlbmQgdGhpcyB3aGVuIDUuOC1yYzEgaXMgb3Bl
-bi4KCldhaXQsIHRoaXMgd2hvbGUgZml4dXAgYXBwcm9hY2ggc2VlbXMgd3JvbmcgdG8gbWUuICBO
-byBtYXR0ZXIgaG93IHlvdQpkbyB0aGUgZml4dXAsIGl0J3Mgc3RpbGwgYSBmaXh1cCwgd2hpY2gg
-bWVhbnMgaXQgcmVxdWlyZXMgb25nb2luZwptYWludGVuYW5jZS4gIFN1cmVseSB3ZSBkb24ndCB3
-YW50IHRvIGhhdmUgdG8gYWRkIHRoZSBWZW5kb3IvRGV2aWNlIElECmZvciBldmVyeSBuZXcgQU1C
-QSBkZXZpY2UgdGhhdCBjb21lcyBhbG9uZywgZG8gd2U/CgpCam9ybgpfX19fX19fX19fX19fX19f
-X19fX19fX19fX19fX19fX19fX19fX19fX19fX19fXwppb21tdSBtYWlsaW5nIGxpc3QKaW9tbXVA
-bGlzdHMubGludXgtZm91bmRhdGlvbi5vcmcKaHR0cHM6Ly9saXN0cy5saW51eGZvdW5kYXRpb24u
-b3JnL21haWxtYW4vbGlzdGluZm8vaW9tbXU=
+On Fri, Jun 05, 2020 at 11:57:51AM +0300, Dan Carpenter wrote:
+> On Fri, Jun 05, 2020 at 06:04:31AM +0000, Song Bao Hua (Barry Song) wrote:
+> > 
+> > 
+> > > -----Original Message-----
+> > > From: Dan Carpenter [mailto:dan.carpenter@oracle.com]
+> > > Sent: Thursday, June 4, 2020 11:37 PM
+> > > To: kbuild@lists.01.org; Song Bao Hua (Barry Song)
+> > > <song.bao.hua@hisilicon.com>; hch@lst.de; m.szyprowski@samsung.com;
+> > > robin.murphy@arm.com; catalin.marinas@arm.com
+> > > Cc: lkp@intel.com; Dan Carpenter <error27@gmail.com>;
+> > > kbuild-all@lists.01.org; iommu@lists.linux-foundation.org;
+> > > linux-arm-kernel@lists.infradead.org; linux-kernel@vger.kernel.org; Linuxarm
+> > > <linuxarm@huawei.com>; Jonathan Cameron
+> > > <jonathan.cameron@huawei.com>; John Garry <john.garry@huawei.com>
+> > > Subject: Re: [PATCH 1/3] dma-direct: provide the ability to reserve per-numa
+> > > CMA
+> > > 
+> > > Hi Barry,
+> > > 
+> > > url:
+> > > https://github.com/0day-ci/linux/commits/Barry-Song/support-per-numa-CM
+> > > A-for-ARM-server/20200603-104821
+> > > base:   https://git.kernel.org/pub/scm/linux/kernel/git/arm64/linux.git
+> > > for-next/core
+> > > config: x86_64-randconfig-m001-20200603 (attached as .config)
+> > > compiler: gcc-9 (Debian 9.3.0-13) 9.3.0
+> > > 
+> > > If you fix the issue, kindly add following tag as appropriate
+> > > Reported-by: kernel test robot <lkp@intel.com>
+> > > Reported-by: Dan Carpenter <dan.carpenter@oracle.com>
+> > 
+> > Dan, thanks! Good catch!
+> > as this patch has not been in mainline yet, is it correct to add these "reported-by" in patch v2?
+Hi Barry, we provides the suggestion here, but you may decide
+to add or not as appropriate for your situation. For the
+patch still under development, it is not that necessary to add i think.
+
+> 
+> These are just an automated email from the zero day bot.  I look over
+> the Smatch warnings and then forward them on.
+> 
+> regards,
+> dan carpenter
+> _______________________________________________
+> kbuild-all mailing list -- kbuild-all@lists.01.org
+> To unsubscribe send an email to kbuild-all-leave@lists.01.org
+_______________________________________________
+iommu mailing list
+iommu@lists.linux-foundation.org
+https://lists.linuxfoundation.org/mailman/listinfo/iommu
