@@ -2,126 +2,59 @@ Return-Path: <SRS0=28v9=7V=lists.linux-foundation.org=iommu-bounces@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-0.5 required=3.0 tests=DKIM_INVALID,DKIM_SIGNED,
-	HEADER_FROM_DIFFERENT_DOMAINS,MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS,
-	URIBL_BLOCKED autolearn=no autolearn_force=no version=3.4.0
+X-Spam-Status: No, score=-12.2 required=3.0
+	tests=HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_PULL_REQUEST,MAILING_LIST_MULTI,
+	MENTIONS_GIT_HOSTING,SPF_HELO_NONE,SPF_PASS,USER_AGENT_SANE_1 autolearn=ham
+	autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id A7A66C433DF
-	for <iommu@archiver.kernel.org>; Mon,  8 Jun 2020 15:49:10 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 610A5C433DF
+	for <iommu@archiver.kernel.org>; Mon,  8 Jun 2020 16:05:19 +0000 (UTC)
 Received: from hemlock.osuosl.org (smtp2.osuosl.org [140.211.166.133])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by mail.kernel.org (Postfix) with ESMTPS id 6499D206C3
-	for <iommu@archiver.kernel.org>; Mon,  8 Jun 2020 15:49:10 +0000 (UTC)
-Authentication-Results: mail.kernel.org;
-	dkim=fail reason="signature verification failed" (1024-bit key) header.d=broadcom.com header.i=@broadcom.com header.b="XPgpdZtM"
-DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 6499D206C3
-Authentication-Results: mail.kernel.org; dmarc=none (p=none dis=none) header.from=lists.linux-foundation.org
+	by mail.kernel.org (Postfix) with ESMTPS id 183AD2063A
+	for <iommu@archiver.kernel.org>; Mon,  8 Jun 2020 16:05:18 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 183AD2063A
+Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=8bytes.org
 Authentication-Results: mail.kernel.org; spf=pass smtp.mailfrom=iommu-bounces@lists.linux-foundation.org
 Received: from localhost (localhost [127.0.0.1])
-	by hemlock.osuosl.org (Postfix) with ESMTP id 39E66881CC;
-	Mon,  8 Jun 2020 15:49:10 +0000 (UTC)
+	by hemlock.osuosl.org (Postfix) with ESMTP id E2A9B87B92;
+	Mon,  8 Jun 2020 16:05:18 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
 Received: from hemlock.osuosl.org ([127.0.0.1])
 	by localhost (.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
-	with ESMTP id 7nwEwXGRH7Vo; Mon,  8 Jun 2020 15:49:09 +0000 (UTC)
+	with ESMTP id GJWYtY8pwiIq; Mon,  8 Jun 2020 16:05:16 +0000 (UTC)
 Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [140.211.9.56])
-	by hemlock.osuosl.org (Postfix) with ESMTP id 1FDC3881A4;
-	Mon,  8 Jun 2020 15:49:09 +0000 (UTC)
+	by hemlock.osuosl.org (Postfix) with ESMTP id 0C68987B84;
+	Mon,  8 Jun 2020 16:05:16 +0000 (UTC)
 Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
-	by lists.linuxfoundation.org (Postfix) with ESMTP id 02DC5C0863;
-	Mon,  8 Jun 2020 15:49:09 +0000 (UTC)
-Received: from silver.osuosl.org (smtp3.osuosl.org [140.211.166.136])
- by lists.linuxfoundation.org (Postfix) with ESMTP id D8595C016F
- for <iommu@lists.linux-foundation.org>; Mon,  8 Jun 2020 15:49:07 +0000 (UTC)
+	by lists.linuxfoundation.org (Postfix) with ESMTP id D80BAC0863;
+	Mon,  8 Jun 2020 16:05:15 +0000 (UTC)
+Received: from fraxinus.osuosl.org (smtp4.osuosl.org [140.211.166.137])
+ by lists.linuxfoundation.org (Postfix) with ESMTP id 3BF46C016F
+ for <iommu@lists.linux-foundation.org>; Mon,  8 Jun 2020 16:05:14 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
- by silver.osuosl.org (Postfix) with ESMTP id BE48D2152A
- for <iommu@lists.linux-foundation.org>; Mon,  8 Jun 2020 15:49:07 +0000 (UTC)
+ by fraxinus.osuosl.org (Postfix) with ESMTP id 3803D86101
+ for <iommu@lists.linux-foundation.org>; Mon,  8 Jun 2020 16:05:14 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from silver.osuosl.org ([127.0.0.1])
+Received: from fraxinus.osuosl.org ([127.0.0.1])
  by localhost (.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
- with ESMTP id 7iV6FkmvCavh for <iommu@lists.linux-foundation.org>;
- Mon,  8 Jun 2020 15:49:05 +0000 (UTC)
-X-Greylist: domain auto-whitelisted by SQLgrey-1.7.6
-Received: from mail-wm1-f66.google.com (mail-wm1-f66.google.com
- [209.85.128.66])
- by silver.osuosl.org (Postfix) with ESMTPS id B133C207A1
- for <iommu@lists.linux-foundation.org>; Mon,  8 Jun 2020 15:49:04 +0000 (UTC)
-Received: by mail-wm1-f66.google.com with SMTP id f185so2623wmf.3
- for <iommu@lists.linux-foundation.org>; Mon, 08 Jun 2020 08:49:04 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=broadcom.com; s=google;
- h=mime-version:references:in-reply-to:from:date:message-id:subject:to
- :cc; bh=3Zatdh65W3aH6MhJdNTH/AWqzt1N9QOAuNbG/kKQoQk=;
- b=XPgpdZtMZfiMPg5da4wdaof5iSzhA/ZVCghQbqTrDuqbo6ZHBkJ+6hzW6Rtuswt2th
- CucS7L68rAc9A2OMX3t2hThgLQkSf86045BbVp0BSipvykLwZzc3TREpeZqGeurMVBb8
- 4aYqZctCI+0ceRS4poPN+NvTaALqxbr51DJqY=
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
- d=1e100.net; s=20161025;
- h=x-gm-message-state:mime-version:references:in-reply-to:from:date
- :message-id:subject:to:cc;
- bh=3Zatdh65W3aH6MhJdNTH/AWqzt1N9QOAuNbG/kKQoQk=;
- b=h3vXAON60TPWBbCu7yuKNVKtsDxr4nKGu1TEFNa6yiTkkZFRwuhszgXT+4LHgGm6b/
- jzvO4g4chCMVbHc+WTBMpPiYV1BAvV+f26IJVPWmvT5hfMg/YoFW0lBaJWopCMNlfJc/
- g+bA3WYynKK0ni/PnlU/H5nuqqlAetjvwlKarZBKNwEmyIlbh2k2PISawZWUS/nDwvMa
- g9weZtGAHSuxSkJmHZJ7SnZqm/En2yPTY/R6DwAOQHoM8uZDMLjjswnAAMROH69T1NeX
- cVIGrDXlX8xWmX88aW4V8CMUUyH8lEZmIFvHsmspI2ImYxu73W4FhegiWFdNZliRpV9c
- FG3g==
-X-Gm-Message-State: AOAM532ynV3yiD8rzLlGrhEarXFI/Oykz6lXRjPSdPTXqTwuIP2lIf3A
- krcMctbfbw+GhTJ+EYTVv3EMDppOO0ADa+g8ky4Amw==
-X-Google-Smtp-Source: ABdhPJwc8WgkB5baQneSP3O56E527r0CcFTd8E6eqmfIQH4X1bWsduigHTlQQV7Hic/QVkEEt7XICj+d1DgqVMzgDVk=
-X-Received: by 2002:a7b:c44a:: with SMTP id l10mr19134wmi.92.1591631342886;
- Mon, 08 Jun 2020 08:49:02 -0700 (PDT)
+ with ESMTP id r6Ml1HPzulHU for <iommu@lists.linux-foundation.org>;
+ Mon,  8 Jun 2020 16:05:12 +0000 (UTC)
+X-Greylist: from auto-whitelisted by SQLgrey-1.7.6
+Received: from theia.8bytes.org (8bytes.org [81.169.241.247])
+ by fraxinus.osuosl.org (Postfix) with ESMTPS id F35AF861F4
+ for <iommu@lists.linux-foundation.org>; Mon,  8 Jun 2020 16:05:11 +0000 (UTC)
+Received: by theia.8bytes.org (Postfix, from userid 1000)
+ id 3BC213D5; Mon,  8 Jun 2020 18:05:09 +0200 (CEST)
+Date: Mon, 8 Jun 2020 18:05:07 +0200
+From: Joerg Roedel <joro@8bytes.org>
+To: Linus Torvalds <torvalds@linux-foundation.org>
+Subject: [git pull] IOMMU Updates for Linux v5.8
+Message-ID: <20200608160502.GA4491@8bytes.org>
 MIME-Version: 1.0
-References: <20200605212706.7361-1-james.quinlan@broadcom.com>
- <20200605212706.7361-9-james.quinlan@broadcom.com>
- <20200607164950.GX2428291@smile.fi.intel.com>
-In-Reply-To: <20200607164950.GX2428291@smile.fi.intel.com>
-Date: Mon, 8 Jun 2020 11:48:51 -0400
-Message-ID: <CA+-6iNyL12Z+igSrWnsmTzrwzyyeDtSK-9ULiZe0MwM5LO5bjQ@mail.gmail.com>
-Subject: Re: [PATCH v4 08/12] device core: Introduce multiple dma pfn offsets
-To: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
-Cc: Ulf Hansson <ulf.hansson@linaro.org>, Rich Felker <dalias@libc.org>,
- "open list:SUPERH" <linux-sh@vger.kernel.org>, David Airlie <airlied@linux.ie>,
- "open list:PCI NATIVE HOST BRIDGE AND ENDPOINT DRIVERS"
- <linux-pci@vger.kernel.org>, Hanjun Guo <guohanjun@huawei.com>,
- "open list:REMOTE PROCESSOR \(REMOTEPROC\) SUBSYSTEM"
- <linux-remoteproc@vger.kernel.org>,
- "open list:DRM DRIVERS FOR ALLWINNER A10" <dri-devel@lists.freedesktop.org>,
- Bjorn Andersson <bjorn.andersson@linaro.org>,
- Julien Grall <julien.grall@arm.com>, "H. Peter Anvin" <hpa@zytor.com>,
- Will Deacon <will@kernel.org>, Christoph Hellwig <hch@lst.de>,
- "open list:STAGING SUBSYSTEM" <devel@driverdev.osuosl.org>,
- Wolfram Sang <wsa@kernel.org>, Yoshinori Sato <ysato@users.sourceforge.jp>,
- Frank Rowand <frowand.list@gmail.com>,
- "maintainer:X86 ARCHITECTURE \(32-BIT AND 64-BIT\)" <x86@kernel.org>,
- Russell King <linux@armlinux.org.uk>,
- "open list:ACPI FOR ARM64 \(ACPI/arm64\)" <linux-acpi@vger.kernel.org>,
- Chen-Yu Tsai <wens@csie.org>, Ingo Molnar <mingo@redhat.com>,
- "maintainer:BROADCOM BCM7XXX ARM ARCHITECTURE"
- <bcm-kernel-feedback-list@broadcom.com>,
- Alan Stern <stern@rowland.harvard.edu>, Len Brown <lenb@kernel.org>,
- Ohad Ben-Cohen <ohad@wizery.com>,
- "open list:OPEN FIRMWARE AND FLATTENED DEVICE TREE"
- <devicetree@vger.kernel.org>, Arnd Bergmann <arnd@arndb.de>,
- Suzuki K Poulose <suzuki.poulose@arm.com>,
- Dan Williams <dan.j.williams@intel.com>, Maxime Ripard <mripard@kernel.org>,
- Rob Herring <robh+dt@kernel.org>, Borislav Petkov <bp@alien8.de>,
- Yong Deng <yong.deng@magewell.com>, Santosh Shilimkar <ssantosh@kernel.org>,
- Bjorn Helgaas <bhelgaas@google.com>, Thomas Gleixner <tglx@linutronix.de>,
- Mauro Carvalho Chehab <mchehab@kernel.org>,
- "moderated list:ARM PORT" <linux-arm-kernel@lists.infradead.org>,
- Saravana Kannan <saravanak@google.com>,
- Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
- Oliver Neukum <oneukum@suse.com>, "Rafael J. Wysocki" <rjw@rjwysocki.net>,
- open list <linux-kernel@vger.kernel.org>,
- Paul Kocialkowski <paul.kocialkowski@bootlin.com>,
- "open list:IOMMU DRIVERS" <iommu@lists.linux-foundation.org>,
- Mark Brown <broonie@kernel.org>, Stefano Stabellini <sstabellini@kernel.org>,
- Daniel Vetter <daniel@ffwll.ch>, Sudeep Holla <sudeep.holla@arm.com>,
- "open list:ALLWINNER A10 CSI DRIVER" <linux-media@vger.kernel.org>,
- Robin Murphy <robin.murphy@arm.com>,
- "open list:USB SUBSYSTEM" <linux-usb@vger.kernel.org>,
- Nicolas Saenz Julienne <nsaenzjulienne@suse.de>
+User-Agent: Mutt/1.10.1 (2018-07-13)
+Cc: iommu@lists.linux-foundation.org, linux-kernel@vger.kernel.org
 X-BeenThere: iommu@lists.linux-foundation.org
 X-Mailman-Version: 2.1.15
 Precedence: list
@@ -134,94 +67,346 @@ List-Post: <mailto:iommu@lists.linux-foundation.org>
 List-Help: <mailto:iommu-request@lists.linux-foundation.org?subject=help>
 List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
  <mailto:iommu-request@lists.linux-foundation.org?subject=subscribe>
-From: Jim Quinlan via iommu <iommu@lists.linux-foundation.org>
-Reply-To: Jim Quinlan <james.quinlan@broadcom.com>
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: 7bit
+Content-Type: multipart/mixed; boundary="===============1154420933636883114=="
 Errors-To: iommu-bounces@lists.linux-foundation.org
 Sender: "iommu" <iommu-bounces@lists.linux-foundation.org>
 
-Hi Andy,
 
-On Sun, Jun 7, 2020 at 12:500f9bfe0fb8840b268af1bbcc51f1cd440514e PM
-Andy Shevchenko <andriy.shevchenko@linux.intel.com> wrote:
->
-> On Fri, Jun 05, 2020 at 05:26:48PM -0400, Jim Quinlan wrote:
-> > The new field in struct device 'dma_pfn_offset_map' is used to facilitate
-> > the use of single or multiple pfn offsets between cpu addrs and dma addrs.
-> > It subsumes the role of dev->dma_pfn_offset -- a uniform offset.
-> >
-> > The function of_dma_get_range() has been modified to take two additional
-> > arguments: the "map", which is an array that holds the information
-> > regarding the pfn offset regions, and map_size, which is the size in bytes
-> > of the map array.
-> >
-> > of_dma_configure() is the typical manner to set pfn offsets but there are a
-> > number of ad hoc assignments to dev->dma_pfn_offset in the kernel driver
-> > code.  These cases now invoke the function
-> > dma_attach_uniform_pfn_offset(dev, pfn_offset).
->
-> ...
->
-> > +             int ret = dma_attach_uniform_pfn_offset
-> > +                             (dev, keystone_dma_pfn_offset);
->
-> It's strange indentation. Have you configured your editor correctly?
-> Seems to me as fit on one line.
-I'm using emacs with the c-style set to linux.  I may have some custom
-tweaks; I'll check into it.  But I think I can fix most of your
-objections by using the max_line_length of 100.
+--===============1154420933636883114==
+Content-Type: multipart/signed; micalg=pgp-sha256;
+	protocol="application/pgp-signature"; boundary="G4iJoqBmSsgzjUCe"
+Content-Disposition: inline
 
->
-> > +             dev_err(dev, "set dma_pfn_offset%08lx%s\n",
-> > +                     dev->dma_pfn_offset, ret ? " failed" : "");
->
-> ...
->
-> > +     *map_size = (num_ranges + 1) * sizeof(**map);
-> > +     r = kzalloc(*map_size, GFP_KERNEL);
->
-> kcalloc()
-Since I have to calculate the size anyway I thought kzalloc was fine.
-I'll switch.
->
-> > +     if (!r)
-> > +             return -ENOMEM;
->
-> ...
->
-> > +             r->pfn_offset = PFN_DOWN(range.cpu_addr)
-> > +                     - PFN_DOWN(range.bus_addr);
->
-> Ditto (indentation).
->
-> ...
->
->
-> > +             unsigned long dma_pfn_offset
-> > +                     = dma_pfn_offset_from_phys_addr(dev, paddr);
->
-> Ditto.
->
-> ...
->
-> > +             unsigned long dma_pfn_offset
-> > +                     = dma_pfn_offset_from_dma_addr(dev, dev_addr);
->
-> Ditto.
->
-> Check entire your series for a such, please!
 
-Will do,
-Thanks
-Jim Quinlan
->
-> --
-> With Best Regards,
-> Andy Shevchenko
->
->
+--G4iJoqBmSsgzjUCe
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+
+Hi Linus,
+
+The following changes since commit 3d77e6a8804abcc0504c904bd6e5cdf3a5cf8162:
+
+  Linux 5.7 (2020-05-31 16:49:15 -0700)
+
+are available in the Git repository at:
+
+  git://git.kernel.org/pub/scm/linux/kernel/git/joro/iommu.git tags/iommu-updates-v5.8
+
+for you to fetch changes up to 431275afdc7155415254aef4bd3816a1b8a2ead0:
+
+  iommu: Check for deferred attach in iommu_group_do_dma_attach() (2020-06-04 11:38:17 +0200)
+
+----------------------------------------------------------------
+IOMMU Updates for Linux v5.8
+
+Including:
+
+	- A big part of this is a change in how devices get connected to
+	  IOMMUs in the core code. It contains the change from the old
+	  add_device()/remove_device() to the new
+	  probe_device()/release_device() call-backs. As a result
+	  functionality that was previously in the IOMMU drivers has
+	  been moved to the IOMMU core code, including IOMMU group
+	  allocation for each device.
+	  The reason for this change was to get more robust allocation
+	  of default domains for the iommu groups.
+	  A couple of fixes were necessary after this was merged into
+	  the IOMMU tree, but there are no known bugs left. The last fix
+	  is applied on-top of the merge commit for the topic branches.
+
+	- Removal of the driver private domain handling in the Intel
+	  VT-d driver. This was fragile code and I am glad it is gone
+	  now.
+
+	- More Intel VT-d updates from Lu Baolu:
+
+		- Nested Shared Virtual Addressing (SVA) support to the
+		  Intel VT-d driver
+
+		- Replacement of the Intel SVM interfaces to the common
+		  IOMMU SVA API
+
+		- SVA Page Request draining support
+
+	- ARM-SMMU Updates from Will:
+
+		- Avoid mapping reserved MMIO space on SMMUv3, so that
+		  it can be claimed by the PMU driver
+
+		- Use xarray to manage ASIDs on SMMUv3
+
+		- Reword confusing shutdown message
+
+		- DT compatible string updates
+
+		- Allow implementations to override the default domain
+		  type
+
+	- A new IOMMU driver for the Allwinner Sun50i platform
+
+	- Support for ATS gets disabled for untrusted devices (like
+	  Thunderbolt devices). This includes a PCI patch, acked by
+	  Bjorn.
+
+	- Some cleanups to the AMD IOMMU driver to make more use of
+	  IOMMU core features.
+
+	- Unification of some printk formats in the Intel and AMD IOMMU
+	  drivers and in the IOVA code.
+
+	- Updates for DT bindings
+
+	- A number of smaller fixes and cleanups.
+
+----------------------------------------------------------------
+Andre Przywara (1):
+      dt-bindings: arm-smmu: Allow mmu-400, smmu-v1 compatible
+
+Andy Shevchenko (3):
+      iommu/iova: Unify format of the printed messages
+      iommu/vt-d: Unify format of the printed messages
+      iommu/amd: Unify format of the printed messages
+
+Arnd Bergmann (1):
+      iommu/renesas: Fix unused-function warning
+
+Chen Zhou (1):
+      iommu/arm-smmu-v3: remove set but not used variable 'smmu'
+
+Jacob Pan (10):
+      iommu/vt-d: Move domain helper to header
+      iommu/vt-d: Use a helper function to skip agaw for SL
+      iommu/vt-d: Add nested translation helper function
+      iommu/vt-d: Add bind guest PASID support
+      iommu/vt-d: Support flushing more translation cache types
+      iommu/vt-d: Add svm/sva invalidate function
+      iommu/vt-d: Add custom allocator for IOASID
+      iommu/vt-d: Report SVA feature with generic flag
+      iommu/vt-d: Replace intel SVM APIs with generic SVA APIs
+      iommu/vt-d: Fix compile warning
+
+Jean-Philippe Brucker (8):
+      iommu/arm-smmu-v3: Don't reserve implementation defined register space
+      iommu/arm-smmu-v3: Manage ASIDs with xarray
+      PCI/ATS: Only enable ATS for trusted devices
+      iommu/amd: Use pci_ats_supported()
+      iommu/arm-smmu-v3: Use pci_ats_supported()
+      iommu/vt-d: Use pci_ats_supported()
+      uacce: Remove mm_exit() op
+      iommu: Remove iommu_sva_ops::mm_exit()
+
+Joerg Roedel (50):
+      iommu: Move default domain allocation to separate function
+      iommu/amd: Implement iommu_ops->def_domain_type call-back
+      iommu/vt-d: Wire up iommu_ops->def_domain_type
+      iommu/amd: Remove dma_mask check from check_device()
+      iommu/amd: Return -ENODEV in add_device when device is not handled by IOMMU
+      iommu: Add probe_device() and release_device() call-backs
+      iommu: Move default domain allocation to iommu_probe_device()
+      iommu: Keep a list of allocated groups in __iommu_probe_device()
+      iommu: Move new probe_device path to separate function
+      iommu: Split off default domain allocation from group assignment
+      iommu: Move iommu_group_create_direct_mappings() out of iommu_group_add_device()
+      iommu: Export bus_iommu_probe() and make is safe for re-probing
+      iommu/amd: Remove dev_data->passthrough
+      iommu/amd: Convert to probe/release_device() call-backs
+      iommu/vt-d: Convert to probe/release_device() call-backs
+      iommu/arm-smmu: Convert to probe/release_device() call-backs
+      iommu/pamu: Convert to probe/release_device() call-backs
+      iommu/s390: Convert to probe/release_device() call-backs
+      iommu/virtio: Convert to probe/release_device() call-backs
+      iommu/msm: Convert to probe/release_device() call-backs
+      iommu/mediatek: Convert to probe/release_device() call-backs
+      iommu/mediatek-v1 Convert to probe/release_device() call-backs
+      iommu/qcom: Convert to probe/release_device() call-backs
+      iommu/rockchip: Convert to probe/release_device() call-backs
+      iommu/tegra: Convert to probe/release_device() call-backs
+      iommu/renesas: Convert to probe/release_device() call-backs
+      iommu/omap: Remove orphan_dev tracking
+      iommu/omap: Convert to probe/release_device() call-backs
+      iommu/exynos: Use first SYSMMU in controllers list for IOMMU core
+      iommu/exynos: Convert to probe/release_device() call-backs
+      iommu: Remove add_device()/remove_device() code-paths
+      iommu: Move more initialization to __iommu_probe_device()
+      iommu: Unexport iommu_group_get_for_dev()
+      Merge tag 'v5.7-rc4' into core
+      iommu/sun50i: Fix compile warnings
+      iommu/sun50i: Use __GFP_ZERO instead of memset()
+      iommu: Don't call .probe_finalize() under group->mutex
+      iommu: Don't take group reference in iommu_alloc_default_domain()
+      Merge tag 'v5.7-rc7' into x86/amd
+      iommu/amd: Unexport get_dev_data()
+      iommu/amd: Let free_pagetable() not rely on domain->pt_root
+      iommu/amd: Allocate page-table in protection_domain_init()
+      iommu/amd: Free page-table in protection_domain_free()
+      iommu/amd: Consolidate domain allocation/freeing
+      iommu/amd: Remove PD_DMA_OPS_MASK
+      iommu/amd: Merge private header files
+      iommu/amd: Store dev_data as device iommu private data
+      iommu/amd: Remove redundant devid checks
+      Merge branches 'arm/msm', 'arm/allwinner', 'arm/smmu', 'x86/vt-d', 'hyper-v', 'core' and 'x86/amd' into next
+      iommu: Check for deferred attach in iommu_group_do_dma_attach()
+
+Jon Derrick (3):
+      iommu/vt-d: Only clear real DMA device's context entries
+      iommu/vt-d: Allocate domain info for real DMA sub-devices
+      iommu/vt-d: Remove real DMA lookup in find_domain
+
+Jordan Crouse (1):
+      iommu/arm-smmu: Allow client devices to select direct mapping
+
+Lu Baolu (12):
+      iommu/vt-d: Allow 32bit devices to uses DMA domain
+      iommu/vt-d: Allow PCI sub-hierarchy to use DMA domain
+      iommu/vt-d: Apply per-device dma_ops
+      iommu/vt-d: Enlightened PASID allocation
+      iommu/vt-d: Add get_domain_info() helper
+      iommu/vt-d: Multiple descriptors per qi_submit_sync()
+      iommu/vt-d: debugfs: Add support to show inv queue internals
+      iommu/vt-d: Disable non-recoverable fault processing before unbind
+      iommu/vt-d: Add page request draining support
+      iommu/vt-d: Remove redundant IOTLB flush
+      iommu/vt-d: Remove duplicated check in intel_svm_bind_mm()
+      iommu/vt-d: Fix pointer cast warnings on 32 bit
+
+Maxime Ripard (2):
+      dt-bindings: iommu: Add Allwinner H6 IOMMU bindings
+      iommu: Add Allwinner H6 IOMMU driver
+
+Qian Cai (2):
+      iommu/amd: Fix variable "iommu" set but not used
+      iommu/vt-d: fix a GCC warning
+
+Rikard Falkeborn (2):
+      iommu/hyper-v: Constify hyperv_ir_domain_ops
+      iommu/sun50i: Constify sun50i_iommu_ops
+
+Sai Prakash Ranjan (3):
+      iommu/arm-smmu: Make remove callback message more informative
+      iommu: arm-smmu-impl: Convert to a generic reset implementation
+      iommu/arm-smmu: Implement iommu_ops->def_domain_type call-back
+
+Sai Praneeth Prakhya (2):
+      iommu: Add def_domain_type() callback in iommu_ops
+      iommu: Remove functions that support private domain
+
+Samuel Zou (1):
+      iommu/msm: Make msm_iommu_lock static
+
+Sibi Sankar (3):
+      dt-bindings: remoteproc: qcom: Add iommus property
+      arm64: dts: qcom: sdm845-cheza: Add iommus property
+      iommu/arm-smmu-qcom: Request direct mapping for modem device
+
+Tero Kristo via iommu (2):
+      iommu/omap: Add check for iommu group when no IOMMU in use
+      iommu/omap: Add registration for DT fwnode pointer
+
+Thierry Reding (1):
+      iommu: Do not probe devices on IOMMU-less busses
+
+Tom Murphy (1):
+      iommu/vt-d: Remove IOVA handling code from the non-dma_ops path
+
+Wei Yongjun (1):
+      iommu/sun50i: Fix return value check in sun50i_iommu_probe()
+
+Yong Wu (2):
+      iommu/mediatek-v1: Add def_domain_type
+      iommu/mediatek-v1: Fix a build warning for a unused variable 'data'
+
+ .../bindings/iommu/allwinner,sun50i-h6-iommu.yaml  |   61 ++
+ .../devicetree/bindings/iommu/arm,smmu.yaml        |    4 +-
+ .../devicetree/bindings/remoteproc/qcom,q6v5.txt   |    3 +
+ arch/arm64/boot/dts/qcom/sdm845-cheza.dtsi         |    5 +
+ drivers/iommu/Kconfig                              |    9 +
+ drivers/iommu/Makefile                             |    1 +
+ drivers/iommu/amd_iommu.c                          |  369 +++----
+ drivers/iommu/amd_iommu.h                          |   96 +-
+ drivers/iommu/amd_iommu_debugfs.c                  |    5 +-
+ drivers/iommu/amd_iommu_init.c                     |    4 +-
+ drivers/iommu/amd_iommu_proto.h                    |   96 --
+ drivers/iommu/amd_iommu_types.h                    |    9 +-
+ drivers/iommu/amd_iommu_v2.c                       |   14 +-
+ drivers/iommu/arm-smmu-impl.c                      |    8 +-
+ drivers/iommu/arm-smmu-qcom.c                      |   37 +-
+ drivers/iommu/arm-smmu-v3.c                        |  122 +--
+ drivers/iommu/arm-smmu.c                           |   53 +-
+ drivers/iommu/arm-smmu.h                           |    1 +
+ drivers/iommu/dmar.c                               |   99 +-
+ drivers/iommu/exynos-iommu.c                       |   24 +-
+ drivers/iommu/fsl_pamu_domain.c                    |   22 +-
+ drivers/iommu/hyperv-iommu.c                       |    2 +-
+ drivers/iommu/intel-iommu-debugfs.c                |   62 ++
+ drivers/iommu/intel-iommu.c                        |  952 ++++++++----------
+ drivers/iommu/intel-pasid.c                        |  309 +++++-
+ drivers/iommu/intel-pasid.h                        |   27 +-
+ drivers/iommu/intel-svm.c                          |  448 +++++++--
+ drivers/iommu/intel_irq_remapping.c                |    2 +-
+ drivers/iommu/iommu.c                              |  470 ++++++---
+ drivers/iommu/iova.c                               |    6 +-
+ drivers/iommu/ipmmu-vmsa.c                         |   59 +-
+ drivers/iommu/msm_iommu.c                          |   36 +-
+ drivers/iommu/mtk_iommu.c                          |   24 +-
+ drivers/iommu/mtk_iommu_v1.c                       |   68 +-
+ drivers/iommu/omap-iommu.c                         |  103 +-
+ drivers/iommu/qcom_iommu.c                         |   24 +-
+ drivers/iommu/rockchip-iommu.c                     |   26 +-
+ drivers/iommu/s390-iommu.c                         |   22 +-
+ drivers/iommu/sun50i-iommu.c                       | 1023 ++++++++++++++++++++
+ drivers/iommu/tegra-gart.c                         |   24 +-
+ drivers/iommu/tegra-smmu.c                         |   31 +-
+ drivers/iommu/virtio-iommu.c                       |   41 +-
+ drivers/misc/uacce/uacce.c                         |  172 +---
+ drivers/pci/ats.c                                  |   18 +-
+ include/linux/intel-iommu.h                        |   82 +-
+ include/linux/intel-svm.h                          |   94 +-
+ include/linux/iommu.h                              |   63 +-
+ include/linux/pci-ats.h                            |    3 +
+ include/linux/uacce.h                              |   34 +-
+ include/uapi/linux/iommu.h                         |    5 +
+ 50 files changed, 3345 insertions(+), 1927 deletions(-)
+ create mode 100644 Documentation/devicetree/bindings/iommu/allwinner,sun50i-h6-iommu.yaml
+ delete mode 100644 drivers/iommu/amd_iommu_proto.h
+ create mode 100644 drivers/iommu/sun50i-iommu.c
+
+Please pull.
+
+Thanks,
+
+	Joerg
+
+--G4iJoqBmSsgzjUCe
+Content-Type: application/pgp-signature; name="signature.asc"
+Content-Description: Digital signature
+
+-----BEGIN PGP SIGNATURE-----
+
+iQIzBAEBCAAdFiEEr9jSbILcajRFYWYyK/BELZcBGuMFAl7eYa4ACgkQK/BELZcB
+GuMJ3BAAq64NLMM+Q/arBlmr/L/EjGywMiX2etocW/bhapS22do+lctsXDfUqTxc
+BKcFXJrBzaobZN3On55YSrmIpG3wCdRdXS2XP0oRYbvqMqrTJI2XTUo70GtMgrIg
+jOmi+TTpE+OEfY2hwSPAlFLd5lG4CguLHch/08x65HoV/j1whekGTjpt66o55XxQ
+4JAApE0IrwFGTNmjri0zYFGVK3JX6p6pzgzTM18uZ4mueDZVfEN7pbwg6UalXoFd
+SbQiGUfEKm4zR2WYLUCMaF4kMyg/CXUeu5rSS14kuLkzJLbPCnCW3VEbxVXVlRjN
+oQlVOiNrohr3ViLDm1+XNoMLQyu7TOrZj9XkxwtvlLaG4cMmOejSAbXJ84sNWcv2
+fV/cBy4cl1hqOjHdtiBQIsTZEuuhbDFjcKBN0p963f1m8I2yuGrKUx1M1ynNOn8C
+mYiZgohMzE4oPdb2xI+U6XHgHQikCqM61jPOLHyOsOSNHrPbhTmBnY9tW/3FoiiH
+u7CbTBfMJfB8ZPMs+8DWnMiPxkNcbmdvUXDX/u40Z4xzvwfrPQiSJHvhn8Ci5Wbu
+QqeCd2E9RtjWKyx0FA4TDhDADgO//jex4IcON8BuZzb14pXHWsjTXhXl6i09TW5B
+fT+MLONx1arbgn7BU/U4IYl5LyND48qQed1hXLR6oae+QE7++DM=
+=GyJw
+-----END PGP SIGNATURE-----
+
+--G4iJoqBmSsgzjUCe--
+
+--===============1154420933636883114==
+Content-Type: text/plain; charset="us-ascii"
+MIME-Version: 1.0
+Content-Transfer-Encoding: 7bit
+Content-Disposition: inline
+
 _______________________________________________
 iommu mailing list
 iommu@lists.linux-foundation.org
 https://lists.linuxfoundation.org/mailman/listinfo/iommu
+--===============1154420933636883114==--
