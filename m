@@ -2,59 +2,80 @@ Return-Path: <SRS0=28v9=7V=lists.linux-foundation.org=iommu-bounces@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-12.2 required=3.0
-	tests=HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_PULL_REQUEST,MAILING_LIST_MULTI,
-	MENTIONS_GIT_HOSTING,SPF_HELO_NONE,SPF_PASS,USER_AGENT_SANE_1 autolearn=ham
-	autolearn_force=no version=3.4.0
+X-Spam-Status: No, score=-0.8 required=3.0 tests=DKIM_INVALID,DKIM_SIGNED,
+	MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS autolearn=no autolearn_force=no
+	version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 610A5C433DF
-	for <iommu@archiver.kernel.org>; Mon,  8 Jun 2020 16:05:19 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 4DD25C433E2
+	for <iommu@archiver.kernel.org>; Mon,  8 Jun 2020 16:41:58 +0000 (UTC)
 Received: from hemlock.osuosl.org (smtp2.osuosl.org [140.211.166.133])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by mail.kernel.org (Postfix) with ESMTPS id 183AD2063A
-	for <iommu@archiver.kernel.org>; Mon,  8 Jun 2020 16:05:18 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 183AD2063A
-Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=8bytes.org
+	by mail.kernel.org (Postfix) with ESMTPS id 1508020774
+	for <iommu@archiver.kernel.org>; Mon,  8 Jun 2020 16:41:57 +0000 (UTC)
+Authentication-Results: mail.kernel.org;
+	dkim=fail reason="signature verification failed" (1024-bit key) header.d=kernel.org header.i=@kernel.org header.b="vcbz31UJ"
+DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 1508020774
+Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=kernel.org
 Authentication-Results: mail.kernel.org; spf=pass smtp.mailfrom=iommu-bounces@lists.linux-foundation.org
 Received: from localhost (localhost [127.0.0.1])
-	by hemlock.osuosl.org (Postfix) with ESMTP id E2A9B87B92;
-	Mon,  8 Jun 2020 16:05:18 +0000 (UTC)
+	by hemlock.osuosl.org (Postfix) with ESMTP id C324486F21;
+	Mon,  8 Jun 2020 16:41:57 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
 Received: from hemlock.osuosl.org ([127.0.0.1])
 	by localhost (.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
-	with ESMTP id GJWYtY8pwiIq; Mon,  8 Jun 2020 16:05:16 +0000 (UTC)
+	with ESMTP id uoTR6saAss7Z; Mon,  8 Jun 2020 16:41:57 +0000 (UTC)
 Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [140.211.9.56])
-	by hemlock.osuosl.org (Postfix) with ESMTP id 0C68987B84;
-	Mon,  8 Jun 2020 16:05:16 +0000 (UTC)
+	by hemlock.osuosl.org (Postfix) with ESMTP id 31B60870DF;
+	Mon,  8 Jun 2020 16:41:57 +0000 (UTC)
 Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
-	by lists.linuxfoundation.org (Postfix) with ESMTP id D80BAC0863;
-	Mon,  8 Jun 2020 16:05:15 +0000 (UTC)
+	by lists.linuxfoundation.org (Postfix) with ESMTP id 0FFEEC07FF;
+	Mon,  8 Jun 2020 16:41:57 +0000 (UTC)
 Received: from fraxinus.osuosl.org (smtp4.osuosl.org [140.211.166.137])
- by lists.linuxfoundation.org (Postfix) with ESMTP id 3BF46C016F
- for <iommu@lists.linux-foundation.org>; Mon,  8 Jun 2020 16:05:14 +0000 (UTC)
+ by lists.linuxfoundation.org (Postfix) with ESMTP id DC86EC016F
+ for <iommu@lists.linux-foundation.org>; Mon,  8 Jun 2020 16:41:55 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
- by fraxinus.osuosl.org (Postfix) with ESMTP id 3803D86101
- for <iommu@lists.linux-foundation.org>; Mon,  8 Jun 2020 16:05:14 +0000 (UTC)
+ by fraxinus.osuosl.org (Postfix) with ESMTP id CBA4B86130
+ for <iommu@lists.linux-foundation.org>; Mon,  8 Jun 2020 16:41:55 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
 Received: from fraxinus.osuosl.org ([127.0.0.1])
  by localhost (.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
- with ESMTP id r6Ml1HPzulHU for <iommu@lists.linux-foundation.org>;
- Mon,  8 Jun 2020 16:05:12 +0000 (UTC)
-X-Greylist: from auto-whitelisted by SQLgrey-1.7.6
-Received: from theia.8bytes.org (8bytes.org [81.169.241.247])
- by fraxinus.osuosl.org (Postfix) with ESMTPS id F35AF861F4
- for <iommu@lists.linux-foundation.org>; Mon,  8 Jun 2020 16:05:11 +0000 (UTC)
-Received: by theia.8bytes.org (Postfix, from userid 1000)
- id 3BC213D5; Mon,  8 Jun 2020 18:05:09 +0200 (CEST)
-Date: Mon, 8 Jun 2020 18:05:07 +0200
-From: Joerg Roedel <joro@8bytes.org>
-To: Linus Torvalds <torvalds@linux-foundation.org>
-Subject: [git pull] IOMMU Updates for Linux v5.8
-Message-ID: <20200608160502.GA4491@8bytes.org>
+ with ESMTP id 4gn5xQNZpzFN for <iommu@lists.linux-foundation.org>;
+ Mon,  8 Jun 2020 16:41:55 +0000 (UTC)
+X-Greylist: domain auto-whitelisted by SQLgrey-1.7.6
+Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
+ by fraxinus.osuosl.org (Postfix) with ESMTPS id 45335860F9
+ for <iommu@lists.linux-foundation.org>; Mon,  8 Jun 2020 16:41:55 +0000 (UTC)
+Received: from localhost (mobile-166-175-190-200.mycingular.net
+ [166.175.190.200])
+ (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+ (No client certificate requested)
+ by mail.kernel.org (Postfix) with ESMTPSA id 94E0D206A4;
+ Mon,  8 Jun 2020 16:41:54 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+ s=default; t=1591634515;
+ bh=9+wSpwKeMW/wdGvPemQJqQQABIsLkQPW2K8a1nmcHm0=;
+ h=Date:From:To:Cc:Subject:In-Reply-To:From;
+ b=vcbz31UJVkE9u265rOeW3ymi3j4Td/cEnamY/yY9ERI7XDF6hwJNBbYLuVspo03w5
+ +nCy5Z6r28j/PRn+D0ikGuvRbXbN8X1Cx89vEnnUVpdAtfUfJ5pVag/p6J2pakmzHc
+ k/V+AhP42zscGFN8csMJ506cA5x/mPmtM2EEkY74=
+Date: Mon, 8 Jun 2020 11:41:48 -0500
+From: Bjorn Helgaas <helgaas@kernel.org>
+To: Zhangfei Gao <zhangfei.gao@linaro.org>
+Subject: Re: [PATCH 0/2] Introduce PCI_FIXUP_IOMMU
+Message-ID: <20200608164148.GA1394249@bjorn-Precision-5520>
 MIME-Version: 1.0
-User-Agent: Mutt/1.10.1 (2018-07-13)
-Cc: iommu@lists.linux-foundation.org, linux-kernel@vger.kernel.org
+Content-Disposition: inline
+In-Reply-To: <be91b0f0-c685-789d-6868-1c8ebd62b770@linaro.org>
+Cc: jean-philippe <jean-philippe@linaro.org>,
+ Herbert Xu <herbert@gondor.apana.org.au>, Arnd Bergmann <arnd@arndb.de>,
+ linux-pci@vger.kernel.org, Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+ Hanjun Guo <guohanjun@huawei.com>, "Rafael J. Wysocki" <rjw@rjwysocki.net>,
+ linux-kernel@vger.kernel.org, iommu@lists.linux-foundation.org,
+ linux-acpi@vger.kernel.org, linux-crypto@vger.kernel.org,
+ Sudeep Holla <sudeep.holla@arm.com>, Bjorn Helgaas <bhelgaas@google.com>,
+ kenneth-lee-2012@foxmail.com, linux-arm-kernel@lists.infradead.org,
+ Len Brown <lenb@kernel.org>
 X-BeenThere: iommu@lists.linux-foundation.org
 X-Mailman-Version: 2.1.15
 Precedence: list
@@ -67,346 +88,70 @@ List-Post: <mailto:iommu@lists.linux-foundation.org>
 List-Help: <mailto:iommu-request@lists.linux-foundation.org?subject=help>
 List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
  <mailto:iommu-request@lists.linux-foundation.org?subject=subscribe>
-Content-Type: multipart/mixed; boundary="===============1154420933636883114=="
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: base64
 Errors-To: iommu-bounces@lists.linux-foundation.org
 Sender: "iommu" <iommu-bounces@lists.linux-foundation.org>
 
-
---===============1154420933636883114==
-Content-Type: multipart/signed; micalg=pgp-sha256;
-	protocol="application/pgp-signature"; boundary="G4iJoqBmSsgzjUCe"
-Content-Disposition: inline
-
-
---G4iJoqBmSsgzjUCe
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-
-Hi Linus,
-
-The following changes since commit 3d77e6a8804abcc0504c904bd6e5cdf3a5cf8162:
-
-  Linux 5.7 (2020-05-31 16:49:15 -0700)
-
-are available in the Git repository at:
-
-  git://git.kernel.org/pub/scm/linux/kernel/git/joro/iommu.git tags/iommu-updates-v5.8
-
-for you to fetch changes up to 431275afdc7155415254aef4bd3816a1b8a2ead0:
-
-  iommu: Check for deferred attach in iommu_group_do_dma_attach() (2020-06-04 11:38:17 +0200)
-
-----------------------------------------------------------------
-IOMMU Updates for Linux v5.8
-
-Including:
-
-	- A big part of this is a change in how devices get connected to
-	  IOMMUs in the core code. It contains the change from the old
-	  add_device()/remove_device() to the new
-	  probe_device()/release_device() call-backs. As a result
-	  functionality that was previously in the IOMMU drivers has
-	  been moved to the IOMMU core code, including IOMMU group
-	  allocation for each device.
-	  The reason for this change was to get more robust allocation
-	  of default domains for the iommu groups.
-	  A couple of fixes were necessary after this was merged into
-	  the IOMMU tree, but there are no known bugs left. The last fix
-	  is applied on-top of the merge commit for the topic branches.
-
-	- Removal of the driver private domain handling in the Intel
-	  VT-d driver. This was fragile code and I am glad it is gone
-	  now.
-
-	- More Intel VT-d updates from Lu Baolu:
-
-		- Nested Shared Virtual Addressing (SVA) support to the
-		  Intel VT-d driver
-
-		- Replacement of the Intel SVM interfaces to the common
-		  IOMMU SVA API
-
-		- SVA Page Request draining support
-
-	- ARM-SMMU Updates from Will:
-
-		- Avoid mapping reserved MMIO space on SMMUv3, so that
-		  it can be claimed by the PMU driver
-
-		- Use xarray to manage ASIDs on SMMUv3
-
-		- Reword confusing shutdown message
-
-		- DT compatible string updates
-
-		- Allow implementations to override the default domain
-		  type
-
-	- A new IOMMU driver for the Allwinner Sun50i platform
-
-	- Support for ATS gets disabled for untrusted devices (like
-	  Thunderbolt devices). This includes a PCI patch, acked by
-	  Bjorn.
-
-	- Some cleanups to the AMD IOMMU driver to make more use of
-	  IOMMU core features.
-
-	- Unification of some printk formats in the Intel and AMD IOMMU
-	  drivers and in the IOVA code.
-
-	- Updates for DT bindings
-
-	- A number of smaller fixes and cleanups.
-
-----------------------------------------------------------------
-Andre Przywara (1):
-      dt-bindings: arm-smmu: Allow mmu-400, smmu-v1 compatible
-
-Andy Shevchenko (3):
-      iommu/iova: Unify format of the printed messages
-      iommu/vt-d: Unify format of the printed messages
-      iommu/amd: Unify format of the printed messages
-
-Arnd Bergmann (1):
-      iommu/renesas: Fix unused-function warning
-
-Chen Zhou (1):
-      iommu/arm-smmu-v3: remove set but not used variable 'smmu'
-
-Jacob Pan (10):
-      iommu/vt-d: Move domain helper to header
-      iommu/vt-d: Use a helper function to skip agaw for SL
-      iommu/vt-d: Add nested translation helper function
-      iommu/vt-d: Add bind guest PASID support
-      iommu/vt-d: Support flushing more translation cache types
-      iommu/vt-d: Add svm/sva invalidate function
-      iommu/vt-d: Add custom allocator for IOASID
-      iommu/vt-d: Report SVA feature with generic flag
-      iommu/vt-d: Replace intel SVM APIs with generic SVA APIs
-      iommu/vt-d: Fix compile warning
-
-Jean-Philippe Brucker (8):
-      iommu/arm-smmu-v3: Don't reserve implementation defined register space
-      iommu/arm-smmu-v3: Manage ASIDs with xarray
-      PCI/ATS: Only enable ATS for trusted devices
-      iommu/amd: Use pci_ats_supported()
-      iommu/arm-smmu-v3: Use pci_ats_supported()
-      iommu/vt-d: Use pci_ats_supported()
-      uacce: Remove mm_exit() op
-      iommu: Remove iommu_sva_ops::mm_exit()
-
-Joerg Roedel (50):
-      iommu: Move default domain allocation to separate function
-      iommu/amd: Implement iommu_ops->def_domain_type call-back
-      iommu/vt-d: Wire up iommu_ops->def_domain_type
-      iommu/amd: Remove dma_mask check from check_device()
-      iommu/amd: Return -ENODEV in add_device when device is not handled by IOMMU
-      iommu: Add probe_device() and release_device() call-backs
-      iommu: Move default domain allocation to iommu_probe_device()
-      iommu: Keep a list of allocated groups in __iommu_probe_device()
-      iommu: Move new probe_device path to separate function
-      iommu: Split off default domain allocation from group assignment
-      iommu: Move iommu_group_create_direct_mappings() out of iommu_group_add_device()
-      iommu: Export bus_iommu_probe() and make is safe for re-probing
-      iommu/amd: Remove dev_data->passthrough
-      iommu/amd: Convert to probe/release_device() call-backs
-      iommu/vt-d: Convert to probe/release_device() call-backs
-      iommu/arm-smmu: Convert to probe/release_device() call-backs
-      iommu/pamu: Convert to probe/release_device() call-backs
-      iommu/s390: Convert to probe/release_device() call-backs
-      iommu/virtio: Convert to probe/release_device() call-backs
-      iommu/msm: Convert to probe/release_device() call-backs
-      iommu/mediatek: Convert to probe/release_device() call-backs
-      iommu/mediatek-v1 Convert to probe/release_device() call-backs
-      iommu/qcom: Convert to probe/release_device() call-backs
-      iommu/rockchip: Convert to probe/release_device() call-backs
-      iommu/tegra: Convert to probe/release_device() call-backs
-      iommu/renesas: Convert to probe/release_device() call-backs
-      iommu/omap: Remove orphan_dev tracking
-      iommu/omap: Convert to probe/release_device() call-backs
-      iommu/exynos: Use first SYSMMU in controllers list for IOMMU core
-      iommu/exynos: Convert to probe/release_device() call-backs
-      iommu: Remove add_device()/remove_device() code-paths
-      iommu: Move more initialization to __iommu_probe_device()
-      iommu: Unexport iommu_group_get_for_dev()
-      Merge tag 'v5.7-rc4' into core
-      iommu/sun50i: Fix compile warnings
-      iommu/sun50i: Use __GFP_ZERO instead of memset()
-      iommu: Don't call .probe_finalize() under group->mutex
-      iommu: Don't take group reference in iommu_alloc_default_domain()
-      Merge tag 'v5.7-rc7' into x86/amd
-      iommu/amd: Unexport get_dev_data()
-      iommu/amd: Let free_pagetable() not rely on domain->pt_root
-      iommu/amd: Allocate page-table in protection_domain_init()
-      iommu/amd: Free page-table in protection_domain_free()
-      iommu/amd: Consolidate domain allocation/freeing
-      iommu/amd: Remove PD_DMA_OPS_MASK
-      iommu/amd: Merge private header files
-      iommu/amd: Store dev_data as device iommu private data
-      iommu/amd: Remove redundant devid checks
-      Merge branches 'arm/msm', 'arm/allwinner', 'arm/smmu', 'x86/vt-d', 'hyper-v', 'core' and 'x86/amd' into next
-      iommu: Check for deferred attach in iommu_group_do_dma_attach()
-
-Jon Derrick (3):
-      iommu/vt-d: Only clear real DMA device's context entries
-      iommu/vt-d: Allocate domain info for real DMA sub-devices
-      iommu/vt-d: Remove real DMA lookup in find_domain
-
-Jordan Crouse (1):
-      iommu/arm-smmu: Allow client devices to select direct mapping
-
-Lu Baolu (12):
-      iommu/vt-d: Allow 32bit devices to uses DMA domain
-      iommu/vt-d: Allow PCI sub-hierarchy to use DMA domain
-      iommu/vt-d: Apply per-device dma_ops
-      iommu/vt-d: Enlightened PASID allocation
-      iommu/vt-d: Add get_domain_info() helper
-      iommu/vt-d: Multiple descriptors per qi_submit_sync()
-      iommu/vt-d: debugfs: Add support to show inv queue internals
-      iommu/vt-d: Disable non-recoverable fault processing before unbind
-      iommu/vt-d: Add page request draining support
-      iommu/vt-d: Remove redundant IOTLB flush
-      iommu/vt-d: Remove duplicated check in intel_svm_bind_mm()
-      iommu/vt-d: Fix pointer cast warnings on 32 bit
-
-Maxime Ripard (2):
-      dt-bindings: iommu: Add Allwinner H6 IOMMU bindings
-      iommu: Add Allwinner H6 IOMMU driver
-
-Qian Cai (2):
-      iommu/amd: Fix variable "iommu" set but not used
-      iommu/vt-d: fix a GCC warning
-
-Rikard Falkeborn (2):
-      iommu/hyper-v: Constify hyperv_ir_domain_ops
-      iommu/sun50i: Constify sun50i_iommu_ops
-
-Sai Prakash Ranjan (3):
-      iommu/arm-smmu: Make remove callback message more informative
-      iommu: arm-smmu-impl: Convert to a generic reset implementation
-      iommu/arm-smmu: Implement iommu_ops->def_domain_type call-back
-
-Sai Praneeth Prakhya (2):
-      iommu: Add def_domain_type() callback in iommu_ops
-      iommu: Remove functions that support private domain
-
-Samuel Zou (1):
-      iommu/msm: Make msm_iommu_lock static
-
-Sibi Sankar (3):
-      dt-bindings: remoteproc: qcom: Add iommus property
-      arm64: dts: qcom: sdm845-cheza: Add iommus property
-      iommu/arm-smmu-qcom: Request direct mapping for modem device
-
-Tero Kristo via iommu (2):
-      iommu/omap: Add check for iommu group when no IOMMU in use
-      iommu/omap: Add registration for DT fwnode pointer
-
-Thierry Reding (1):
-      iommu: Do not probe devices on IOMMU-less busses
-
-Tom Murphy (1):
-      iommu/vt-d: Remove IOVA handling code from the non-dma_ops path
-
-Wei Yongjun (1):
-      iommu/sun50i: Fix return value check in sun50i_iommu_probe()
-
-Yong Wu (2):
-      iommu/mediatek-v1: Add def_domain_type
-      iommu/mediatek-v1: Fix a build warning for a unused variable 'data'
-
- .../bindings/iommu/allwinner,sun50i-h6-iommu.yaml  |   61 ++
- .../devicetree/bindings/iommu/arm,smmu.yaml        |    4 +-
- .../devicetree/bindings/remoteproc/qcom,q6v5.txt   |    3 +
- arch/arm64/boot/dts/qcom/sdm845-cheza.dtsi         |    5 +
- drivers/iommu/Kconfig                              |    9 +
- drivers/iommu/Makefile                             |    1 +
- drivers/iommu/amd_iommu.c                          |  369 +++----
- drivers/iommu/amd_iommu.h                          |   96 +-
- drivers/iommu/amd_iommu_debugfs.c                  |    5 +-
- drivers/iommu/amd_iommu_init.c                     |    4 +-
- drivers/iommu/amd_iommu_proto.h                    |   96 --
- drivers/iommu/amd_iommu_types.h                    |    9 +-
- drivers/iommu/amd_iommu_v2.c                       |   14 +-
- drivers/iommu/arm-smmu-impl.c                      |    8 +-
- drivers/iommu/arm-smmu-qcom.c                      |   37 +-
- drivers/iommu/arm-smmu-v3.c                        |  122 +--
- drivers/iommu/arm-smmu.c                           |   53 +-
- drivers/iommu/arm-smmu.h                           |    1 +
- drivers/iommu/dmar.c                               |   99 +-
- drivers/iommu/exynos-iommu.c                       |   24 +-
- drivers/iommu/fsl_pamu_domain.c                    |   22 +-
- drivers/iommu/hyperv-iommu.c                       |    2 +-
- drivers/iommu/intel-iommu-debugfs.c                |   62 ++
- drivers/iommu/intel-iommu.c                        |  952 ++++++++----------
- drivers/iommu/intel-pasid.c                        |  309 +++++-
- drivers/iommu/intel-pasid.h                        |   27 +-
- drivers/iommu/intel-svm.c                          |  448 +++++++--
- drivers/iommu/intel_irq_remapping.c                |    2 +-
- drivers/iommu/iommu.c                              |  470 ++++++---
- drivers/iommu/iova.c                               |    6 +-
- drivers/iommu/ipmmu-vmsa.c                         |   59 +-
- drivers/iommu/msm_iommu.c                          |   36 +-
- drivers/iommu/mtk_iommu.c                          |   24 +-
- drivers/iommu/mtk_iommu_v1.c                       |   68 +-
- drivers/iommu/omap-iommu.c                         |  103 +-
- drivers/iommu/qcom_iommu.c                         |   24 +-
- drivers/iommu/rockchip-iommu.c                     |   26 +-
- drivers/iommu/s390-iommu.c                         |   22 +-
- drivers/iommu/sun50i-iommu.c                       | 1023 ++++++++++++++++++++
- drivers/iommu/tegra-gart.c                         |   24 +-
- drivers/iommu/tegra-smmu.c                         |   31 +-
- drivers/iommu/virtio-iommu.c                       |   41 +-
- drivers/misc/uacce/uacce.c                         |  172 +---
- drivers/pci/ats.c                                  |   18 +-
- include/linux/intel-iommu.h                        |   82 +-
- include/linux/intel-svm.h                          |   94 +-
- include/linux/iommu.h                              |   63 +-
- include/linux/pci-ats.h                            |    3 +
- include/linux/uacce.h                              |   34 +-
- include/uapi/linux/iommu.h                         |    5 +
- 50 files changed, 3345 insertions(+), 1927 deletions(-)
- create mode 100644 Documentation/devicetree/bindings/iommu/allwinner,sun50i-h6-iommu.yaml
- delete mode 100644 drivers/iommu/amd_iommu_proto.h
- create mode 100644 drivers/iommu/sun50i-iommu.c
-
-Please pull.
-
-Thanks,
-
-	Joerg
-
---G4iJoqBmSsgzjUCe
-Content-Type: application/pgp-signature; name="signature.asc"
-Content-Description: Digital signature
-
------BEGIN PGP SIGNATURE-----
-
-iQIzBAEBCAAdFiEEr9jSbILcajRFYWYyK/BELZcBGuMFAl7eYa4ACgkQK/BELZcB
-GuMJ3BAAq64NLMM+Q/arBlmr/L/EjGywMiX2etocW/bhapS22do+lctsXDfUqTxc
-BKcFXJrBzaobZN3On55YSrmIpG3wCdRdXS2XP0oRYbvqMqrTJI2XTUo70GtMgrIg
-jOmi+TTpE+OEfY2hwSPAlFLd5lG4CguLHch/08x65HoV/j1whekGTjpt66o55XxQ
-4JAApE0IrwFGTNmjri0zYFGVK3JX6p6pzgzTM18uZ4mueDZVfEN7pbwg6UalXoFd
-SbQiGUfEKm4zR2WYLUCMaF4kMyg/CXUeu5rSS14kuLkzJLbPCnCW3VEbxVXVlRjN
-oQlVOiNrohr3ViLDm1+XNoMLQyu7TOrZj9XkxwtvlLaG4cMmOejSAbXJ84sNWcv2
-fV/cBy4cl1hqOjHdtiBQIsTZEuuhbDFjcKBN0p963f1m8I2yuGrKUx1M1ynNOn8C
-mYiZgohMzE4oPdb2xI+U6XHgHQikCqM61jPOLHyOsOSNHrPbhTmBnY9tW/3FoiiH
-u7CbTBfMJfB8ZPMs+8DWnMiPxkNcbmdvUXDX/u40Z4xzvwfrPQiSJHvhn8Ci5Wbu
-QqeCd2E9RtjWKyx0FA4TDhDADgO//jex4IcON8BuZzb14pXHWsjTXhXl6i09TW5B
-fT+MLONx1arbgn7BU/U4IYl5LyND48qQed1hXLR6oae+QE7++DM=
-=GyJw
------END PGP SIGNATURE-----
-
---G4iJoqBmSsgzjUCe--
-
---===============1154420933636883114==
-Content-Type: text/plain; charset="us-ascii"
-MIME-Version: 1.0
-Content-Transfer-Encoding: 7bit
-Content-Disposition: inline
-
-_______________________________________________
-iommu mailing list
-iommu@lists.linux-foundation.org
-https://lists.linuxfoundation.org/mailman/listinfo/iommu
---===============1154420933636883114==--
+T24gTW9uLCBKdW4gMDgsIDIwMjAgYXQgMTA6NTQ6MTVBTSArMDgwMCwgWmhhbmdmZWkgR2FvIHdy
+b3RlOgo+IE9uIDIwMjAvNi82IOS4iuWNiDc6MTksIEJqb3JuIEhlbGdhYXMgd3JvdGU6Cj4gPiBP
+biBUaHUsIEp1biAwNCwgMjAyMCBhdCAwOTozMzowN1BNICswODAwLCBaaGFuZ2ZlaSBHYW8gd3Jv
+dGU6Cj4gPiA+IE9uIDIwMjAvNi8yIOS4iuWNiDE6NDEsIEJqb3JuIEhlbGdhYXMgd3JvdGU6Cj4g
+PiA+ID4gT24gVGh1LCBNYXkgMjgsIDIwMjAgYXQgMDk6MzM6NDRBTSArMDIwMCwgSm9lcmcgUm9l
+ZGVsIHdyb3RlOgo+ID4gPiA+ID4gT24gV2VkLCBNYXkgMjcsIDIwMjAgYXQgMDE6MTg6NDJQTSAt
+MDUwMCwgQmpvcm4gSGVsZ2FhcyB3cm90ZToKPiA+ID4gPiA+ID4gSXMgdGhpcyBzbG93ZG93biBz
+aWduaWZpY2FudD8gIFdlIGFscmVhZHkgaXRlcmF0ZSBvdmVyIGV2ZXJ5IGRldmljZQo+ID4gPiA+
+ID4gPiB3aGVuIGFwcGx5aW5nIFBDSV9GSVhVUF9GSU5BTCBxdWlya3MsIHNvIGlmIHdlIHVzZWQg
+dGhlIGV4aXN0aW5nCj4gPiA+ID4gPiA+IFBDSV9GSVhVUF9GSU5BTCwgd2Ugd291bGRuJ3QgYmUg
+YWRkaW5nIGEgbmV3IGxvb3AuICBXZSB3b3VsZCBvbmx5IGJlCj4gPiA+ID4gPiA+IGFkZGluZyB0
+d28gbW9yZSBpdGVyYXRpb25zIHRvIHRoZSBsb29wIGluIHBjaV9kb19maXh1cHMoKSB0aGF0IHRy
+aWVzCj4gPiA+ID4gPiA+IHRvIG1hdGNoIHF1aXJrcyBhZ2FpbnN0IHRoZSBjdXJyZW50IGRldmlj
+ZS4gIEkgZG91YnQgdGhhdCB3b3VsZCBiZSBhCj4gPiA+ID4gPiA+IG1lYXN1cmFibGUgc2xvd2Rv
+d24uCj4gPiA+ID4gPiBJIGRvbid0IGtub3cgaG93IHNpZ25pZmljYW50IGl0IGlzLCBidXQgSSBy
+ZW1lbWJlciBwZW9wbGUgY29tcGxhaW5pbmcKPiA+ID4gPiA+IGFib3V0IGFkZGluZyBuZXcgUENJ
+IHF1aXJrcyBiZWNhdXNlIGl0IHRha2VzIHRvbyBsb25nIGZvciB0aGVtIHRvIHJ1bgo+ID4gPiA+
+ID4gdGhlbSBhbGwuIFRoYXQgd2FzIGluIHRoZSBkaXNjdXNzaW9uIGFib3V0IHRoZSBxdWlyayBk
+aXNhYmxpbmcgQVRTIG9uCj4gPiA+ID4gPiBBTUQgU3RvbmV5IHN5c3RlbXMuCj4gPiA+ID4gPiAK
+PiA+ID4gPiA+IFNvIGl0IHByb2JhYmx5IGRlcGVuZHMgb24gaG93IG1hbnkgUENJIGRldmljZXMg
+YXJlIGluIHRoZSBzeXN0ZW0gd2hldGhlcgo+ID4gPiA+ID4gaXQgY2F1c2VzIGFueSBtZWFzdXJl
+YWJsZSBzbG93ZG93bi4KPiA+ID4gPiBJIGZvdW5kIHRoaXMgWzFdIGZyb20gUGF1bCBNZW56ZWws
+IHdoaWNoIHdhcyBhIHNsb3dkb3duIGNhdXNlZCBieQo+ID4gPiA+IHF1aXJrX3VzYl9lYXJseV9o
+YW5kb2ZmKCkuICBJIHRoaW5rIHRoZSByZWFsIHByb2JsZW0gaXMgaW5kaXZpZHVhbAo+ID4gPiA+
+IHF1aXJrcyB0aGF0IHRha2UgYSBsb25nIHRpbWUuCj4gPiA+ID4gCj4gPiA+ID4gVGhlIFBDSV9G
+SVhVUF9JT01NVSB0aGluZ3Mgd2UncmUgdGFsa2luZyBhYm91dCBzaG91bGQgYmUgZmFzdCwgYW5k
+IG9mCj4gPiA+ID4gY291cnNlLCB0aGV5J3JlIG9ubHkgcnVuIGZvciBtYXRjaGluZyBkZXZpY2Vz
+IGFueXdheS4gIFNvIEknZCByYXRoZXIKPiA+ID4gPiBrZWVwIHRoZW0gYXMgUENJX0ZJWFVQX0ZJ
+TkFMIHRoYW4gYWRkIGEgd2hvbGUgbmV3IHBoYXNlLgo+ID4gPiA+IAo+ID4gPiBUaGFua3MgQmpv
+cm4gZm9yIHRha2luZyB0aW1lIGZvciB0aGlzLgo+ID4gPiBJZiBzbywgaXQgd291bGQgYmUgbXVj
+aCBzaW1wbGVyLgo+ID4gPiAKPiA+ID4gKysrIGIvZHJpdmVycy9pb21tdS9pb21tdS5jCj4gPiA+
+IEBAIC0yNDE4LDYgKzI0MTgsMTAgQEAgaW50IGlvbW11X2Z3c3BlY19pbml0KHN0cnVjdCBkZXZp
+Y2UgKmRldiwgc3RydWN0Cj4gPiA+IGZ3bm9kZV9oYW5kbGUgKmlvbW11X2Z3bm9kZSwKPiA+ID4g
+IMKgwqDCoMKgwqDCoMKgIGZ3c3BlYy0+aW9tbXVfZndub2RlID0gaW9tbXVfZndub2RlOwo+ID4g
+PiAgwqDCoMKgwqDCoMKgwqAgZndzcGVjLT5vcHMgPSBvcHM7Cj4gPiA+ICDCoMKgwqDCoMKgwqDC
+oCBkZXZfaW9tbXVfZndzcGVjX3NldChkZXYsIGZ3c3BlYyk7Cj4gPiA+ICsKPiA+ID4gK8KgwqDC
+oMKgwqDCoCBpZiAoZGV2X2lzX3BjaShkZXYpKQo+ID4gPiArwqDCoMKgwqDCoMKgwqDCoMKgwqDC
+oMKgwqDCoCBwY2lfZml4dXBfZGV2aWNlKHBjaV9maXh1cF9maW5hbCwgdG9fcGNpX2RldihkZXYp
+KTsKPiA+ID4gKwo+ID4gPiAKPiA+ID4gVGhlbiBwY2lfZml4dXBfZmluYWwgd2lsbCBiZSBjYWxs
+ZWQgdHdpY2UsIHRoZSBmaXJzdCBpbiBwY2lfYnVzX2FkZF9kZXZpY2UuCj4gPiA+IEhlcmUgaW4g
+aW9tbXVfZndzcGVjX2luaXQgaXMgdGhlIHNlY29uZCB0aW1lLCBzcGVjaWZpY2FsbHkgZm9yIGlv
+bW11X2Z3c3BlYy4KPiA+ID4gV2lsbCBzZW5kIHRoaXMgd2hlbiA1LjgtcmMxIGlzIG9wZW4uCj4g
+Pgo+ID4gV2FpdCwgdGhpcyB3aG9sZSBmaXh1cCBhcHByb2FjaCBzZWVtcyB3cm9uZyB0byBtZS4g
+IE5vIG1hdHRlciBob3cgeW91Cj4gPiBkbyB0aGUgZml4dXAsIGl0J3Mgc3RpbGwgYSBmaXh1cCwg
+d2hpY2ggbWVhbnMgaXQgcmVxdWlyZXMgb25nb2luZwo+ID4gbWFpbnRlbmFuY2UuICBTdXJlbHkg
+d2UgZG9uJ3Qgd2FudCB0byBoYXZlIHRvIGFkZCB0aGUgVmVuZG9yL0RldmljZSBJRAo+ID4gZm9y
+IGV2ZXJ5IG5ldyBBTUJBIGRldmljZSB0aGF0IGNvbWVzIGFsb25nLCBkbyB3ZT8KPiA+IAo+IEhl
+cmUgdGhlIGZha2UgcGNpIGRldmljZSBoYXMgc3RhbmRhcmQgUENJIGNmZyBzcGFjZSwgYnV0IHBo
+eXNpY2FsCj4gaW1wbGVtZW50YXRpb24gaXMgYmFzZSBvbiBBTUJBCj4gVGhleSBjYW4gcHJvdmlk
+ZSBwYXNpZCBmZWF0dXJlLgo+IEhvd2V2ZXIsCj4gMSwgZG9lcyBub3Qgc3VwcG9ydCB0bHAgc2lu
+Y2UgdGhleSBhcmUgbm90IHJlYWwgcGNpIGRldmljZXMuCj4gMi4gZG9lcyBub3Qgc3VwcG9ydCBw
+cmksIGluc3RlYWQgc3VwcG9ydCBzdGFsbCAocHJvdmlkZWQgYnkgc21tdSkKPiBBbmQgc3RhbGwg
+aXMgbm90IGEgcGNpIGZlYXR1cmUsIHNvIGl0IGlzIG5vdCBkZXNjcmliZWQgaW4gc3RydWN0IHBj
+aV9kZXYsCj4gYnV0IGluIHN0cnVjdCBpb21tdV9md3NwZWMuCj4gU28gd2UgdXNlIHRoaXMgZml4
+dXAgdG8gdGVsbCBwY2kgc3lzdGVtIHRoYXQgdGhlIGRldmljZXMgY2FuIHN1cHBvcnQgc3RhbGws
+Cj4gYW5kIGhlcmVieSBzdXBwb3J0IHBhc2lkLgoKVGhpcyBkaWQgbm90IGFuc3dlciBteSBxdWVz
+dGlvbi4gIEFyZSB5b3UgcHJvcG9zaW5nIHRoYXQgd2UgdXBkYXRlIGEKcXVpcmsgZXZlcnkgdGlt
+ZSBhIG5ldyBBTUJBIGRldmljZSBpcyByZWxlYXNlZD8gIEkgZG9uJ3QgdGhpbmsgdGhhdAp3b3Vs
+ZCBiZSBhIGdvb2QgbW9kZWwuCl9fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19f
+X19fX19fX19fCmlvbW11IG1haWxpbmcgbGlzdAppb21tdUBsaXN0cy5saW51eC1mb3VuZGF0aW9u
+Lm9yZwpodHRwczovL2xpc3RzLmxpbnV4Zm91bmRhdGlvbi5vcmcvbWFpbG1hbi9saXN0aW5mby9p
+b21tdQ==
