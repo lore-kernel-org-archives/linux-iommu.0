@@ -2,78 +2,78 @@ Return-Path: <SRS0=28v9=7V=lists.linux-foundation.org=iommu-bounces@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-9.8 required=3.0 tests=DKIM_INVALID,DKIM_SIGNED,
+X-Spam-Status: No, score=-8.1 required=3.0 tests=DKIM_INVALID,DKIM_SIGNED,
 	INCLUDES_PATCH,MAILING_LIST_MULTI,SIGNED_OFF_BY,SPF_HELO_NONE,SPF_PASS,
-	USER_AGENT_GIT autolearn=unavailable autolearn_force=no version=3.4.0
+	URIBL_BLACK,USER_AGENT_GIT autolearn=ham autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 58DB2C433E1
-	for <iommu@archiver.kernel.org>; Mon,  8 Jun 2020 23:14:16 +0000 (UTC)
-Received: from hemlock.osuosl.org (smtp2.osuosl.org [140.211.166.133])
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 8DFA8C433E0
+	for <iommu@archiver.kernel.org>; Mon,  8 Jun 2020 23:14:45 +0000 (UTC)
+Received: from whitealder.osuosl.org (smtp1.osuosl.org [140.211.166.138])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by mail.kernel.org (Postfix) with ESMTPS id 30F0C21534
-	for <iommu@archiver.kernel.org>; Mon,  8 Jun 2020 23:14:16 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTPS id 65EB820C09
+	for <iommu@archiver.kernel.org>; Mon,  8 Jun 2020 23:14:45 +0000 (UTC)
 Authentication-Results: mail.kernel.org;
-	dkim=fail reason="signature verification failed" (1024-bit key) header.d=kernel.org header.i=@kernel.org header.b="E94fj7Py"
-DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 30F0C21534
+	dkim=fail reason="signature verification failed" (1024-bit key) header.d=kernel.org header.i=@kernel.org header.b="wzB7TxfK"
+DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 65EB820C09
 Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=kernel.org
 Authentication-Results: mail.kernel.org; spf=pass smtp.mailfrom=iommu-bounces@lists.linux-foundation.org
 Received: from localhost (localhost [127.0.0.1])
-	by hemlock.osuosl.org (Postfix) with ESMTP id 16FC688390;
-	Mon,  8 Jun 2020 23:14:16 +0000 (UTC)
+	by whitealder.osuosl.org (Postfix) with ESMTP id 4722E87799;
+	Mon,  8 Jun 2020 23:14:45 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from hemlock.osuosl.org ([127.0.0.1])
+Received: from whitealder.osuosl.org ([127.0.0.1])
 	by localhost (.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
-	with ESMTP id JILGfZ2lhYNo; Mon,  8 Jun 2020 23:14:15 +0000 (UTC)
+	with ESMTP id RGMbllSPGW7L; Mon,  8 Jun 2020 23:14:44 +0000 (UTC)
 Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [140.211.9.56])
-	by hemlock.osuosl.org (Postfix) with ESMTP id 7213087B21;
-	Mon,  8 Jun 2020 23:14:15 +0000 (UTC)
+	by whitealder.osuosl.org (Postfix) with ESMTP id D18E981AE4;
+	Mon,  8 Jun 2020 23:14:44 +0000 (UTC)
 Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
-	by lists.linuxfoundation.org (Postfix) with ESMTP id 5805FC0863;
-	Mon,  8 Jun 2020 23:14:15 +0000 (UTC)
-Received: from fraxinus.osuosl.org (smtp4.osuosl.org [140.211.166.137])
- by lists.linuxfoundation.org (Postfix) with ESMTP id 80172C016F
- for <iommu@lists.linux-foundation.org>; Mon,  8 Jun 2020 23:14:13 +0000 (UTC)
+	by lists.linuxfoundation.org (Postfix) with ESMTP id B8E7BC0863;
+	Mon,  8 Jun 2020 23:14:44 +0000 (UTC)
+Received: from silver.osuosl.org (smtp3.osuosl.org [140.211.166.136])
+ by lists.linuxfoundation.org (Postfix) with ESMTP id 2A6C7C016F
+ for <iommu@lists.linux-foundation.org>; Mon,  8 Jun 2020 23:14:44 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
- by fraxinus.osuosl.org (Postfix) with ESMTP id 7C739860C6
- for <iommu@lists.linux-foundation.org>; Mon,  8 Jun 2020 23:14:13 +0000 (UTC)
+ by silver.osuosl.org (Postfix) with ESMTP id 256F6221F0
+ for <iommu@lists.linux-foundation.org>; Mon,  8 Jun 2020 23:14:44 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from fraxinus.osuosl.org ([127.0.0.1])
+Received: from silver.osuosl.org ([127.0.0.1])
  by localhost (.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
- with ESMTP id 934DySr2Nivc for <iommu@lists.linux-foundation.org>;
- Mon,  8 Jun 2020 23:14:12 +0000 (UTC)
+ with ESMTP id UuTbD9SIsqvy for <iommu@lists.linux-foundation.org>;
+ Mon,  8 Jun 2020 23:14:43 +0000 (UTC)
 X-Greylist: domain auto-whitelisted by SQLgrey-1.7.6
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
- by fraxinus.osuosl.org (Postfix) with ESMTPS id C9E4185F29
- for <iommu@lists.linux-foundation.org>; Mon,  8 Jun 2020 23:14:12 +0000 (UTC)
+ by silver.osuosl.org (Postfix) with ESMTPS id 71FCC21509
+ for <iommu@lists.linux-foundation.org>; Mon,  8 Jun 2020 23:14:43 +0000 (UTC)
 Received: from sasha-vm.mshome.net (c-73-47-72-35.hsd1.nh.comcast.net
  [73.47.72.35])
  (using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
  (No client certificate requested)
- by mail.kernel.org (Postfix) with ESMTPSA id CEE5620897;
- Mon,  8 Jun 2020 23:14:11 +0000 (UTC)
+ by mail.kernel.org (Postfix) with ESMTPSA id 9FFED21556;
+ Mon,  8 Jun 2020 23:14:42 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
- s=default; t=1591658052;
- bh=0HjfYSIkLk0Y7awquE8hNPrliWoskkrQ8QBRYMPuFlY=;
+ s=default; t=1591658083;
+ bh=WPj0jjv6Ts+fStz7KcOL0WNWp4wINcRRJV6yd0QuEiA=;
  h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
- b=E94fj7PyyGCeFYEA1BYZT046bEiXrYqfsHje/CwoH/u6Du3xt9TO1FzVDDon3AA57
- 3f+wuvIAiN1aFPN+lQqA9rB/84P4JT2lH7jk4hxAEgI9dctYRdTB6fJahI4Gd/uy+B
- WVjTRBugKktD7HrvuyDpq/3ec3YX8b4q+HE8rGhg=
+ b=wzB7TxfKI9MloeHyVgxEH04y/ygCU7MEYTa5EYDiik3afwLlHKvV2cAW16hPduKOd
+ uMD76W7oLHlhFDzjFm9AEsfR9CNXnNtqIfd2tzP4Y5ceBEIkgdfI+szIBhP4T5OYWw
+ +MEwEagakI2rg6Ca22DEPX/q2VY/Pc5ophOYKPWY=
 From: Sasha Levin <sashal@kernel.org>
 To: linux-kernel@vger.kernel.org,
 	stable@vger.kernel.org
-Subject: [PATCH AUTOSEL 5.6 100/606] iommu: Fix deferred domain attachment
-Date: Mon,  8 Jun 2020 19:03:45 -0400
-Message-Id: <20200608231211.3363633-100-sashal@kernel.org>
+Subject: [PATCH AUTOSEL 5.6 127/606] iommu/amd: Do not loop forever when
+ trying to increase address space
+Date: Mon,  8 Jun 2020 19:04:12 -0400
+Message-Id: <20200608231211.3363633-127-sashal@kernel.org>
 X-Mailer: git-send-email 2.25.1
 In-Reply-To: <20200608231211.3363633-1-sashal@kernel.org>
 References: <20200608231211.3363633-1-sashal@kernel.org>
 MIME-Version: 1.0
 X-stable: review
 X-Patchwork-Hint: Ignore
-Cc: Sasha Levin <sashal@kernel.org>, Joerg Roedel <jroedel@suse.de>,
- Tom Murphy <murphyt7@tcd.ie>, iommu@lists.linux-foundation.org,
- Robin Murphy <robin.murphy@arm.com>
+Cc: Sasha Levin <sashal@kernel.org>, iommu@lists.linux-foundation.org,
+ Joerg Roedel <jroedel@suse.de>
 X-BeenThere: iommu@lists.linux-foundation.org
 X-Mailman-Version: 2.1.15
 Precedence: list
@@ -93,86 +93,46 @@ Sender: "iommu" <iommu-bounces@lists.linux-foundation.org>
 
 From: Joerg Roedel <jroedel@suse.de>
 
-[ Upstream commit bd421264ed307dd296eab036851221b225071a32 ]
+[ Upstream commit 5b8a9a047b6cad361405c7900c1e1cdd378c4589 ]
 
-The IOMMU core code has support for deferring the attachment of a domain
-to a device. This is needed in kdump kernels where the new domain must
-not be attached to a device before the device driver takes it over.
+When increase_address_space() fails to allocate memory, alloc_pte()
+will call it again until it succeeds. Do not loop forever while trying
+to increase the address space and just return an error instead.
 
-When the AMD IOMMU driver got converted to use the dma-iommu
-implementation, the deferred attaching got lost. The code in
-dma-iommu.c has support for deferred attaching, but it calls into
-iommu_attach_device() to actually do it. But iommu_attach_device()
-will check if the device should be deferred in it code-path and do
-nothing, breaking deferred attachment.
-
-Move the is_deferred_attach() check out of the attach_device path and
-into iommu_group_add_device() to make deferred attaching work from the
-dma-iommu code.
-
-Fixes: 795bbbb9b6f8 ("iommu/dma-iommu: Handle deferred devices")
-Reported-by: Jerry Snitselaar <jsnitsel@redhat.com>
-Suggested-by: Robin Murphy <robin.murphy@arm.com>
 Signed-off-by: Joerg Roedel <jroedel@suse.de>
-Tested-by: Jerry Snitselaar <jsnitsel@redhat.com>
-Cc: Jerry Snitselaar <jsnitsel@redhat.com>
-Cc: Tom Murphy <murphyt7@tcd.ie>
-Cc: Robin Murphy <robin.murphy@arm.com>
-Link: https://lore.kernel.org/r/20200519130340.14564-1-joro@8bytes.org
+Tested-by: Qian Cai <cai@lca.pw>
+Link: https://lore.kernel.org/r/20200504125413.16798-3-joro@8bytes.org
+Signed-off-by: Joerg Roedel <jroedel@suse.de>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/iommu/iommu.c | 17 +++++++++++------
- 1 file changed, 11 insertions(+), 6 deletions(-)
+ drivers/iommu/amd_iommu.c | 13 ++++++++++++-
+ 1 file changed, 12 insertions(+), 1 deletion(-)
 
-diff --git a/drivers/iommu/iommu.c b/drivers/iommu/iommu.c
-index 8d2477941fd9..22b28076d48e 100644
---- a/drivers/iommu/iommu.c
-+++ b/drivers/iommu/iommu.c
-@@ -692,6 +692,15 @@ static int iommu_group_create_direct_mappings(struct iommu_group *group,
- 	return ret;
- }
+diff --git a/drivers/iommu/amd_iommu.c b/drivers/iommu/amd_iommu.c
+index 1d8634250afc..18c995a16d80 100644
+--- a/drivers/iommu/amd_iommu.c
++++ b/drivers/iommu/amd_iommu.c
+@@ -1500,8 +1500,19 @@ static u64 *alloc_pte(struct protection_domain *domain,
+ 	amd_iommu_domain_get_pgtable(domain, &pgtable);
  
-+static bool iommu_is_attach_deferred(struct iommu_domain *domain,
-+				     struct device *dev)
-+{
-+	if (domain->ops->is_attach_deferred)
-+		return domain->ops->is_attach_deferred(domain, dev);
+ 	while (address > PM_LEVEL_SIZE(pgtable.mode)) {
+-		*updated = increase_address_space(domain, address, gfp) || *updated;
++		bool upd = increase_address_space(domain, address, gfp);
 +
-+	return false;
-+}
++		/* Read new values to check if update was successful */
+ 		amd_iommu_domain_get_pgtable(domain, &pgtable);
 +
- /**
-  * iommu_group_add_device - add a device to an iommu group
-  * @group: the group into which to add the device (reference should be held)
-@@ -746,7 +755,7 @@ int iommu_group_add_device(struct iommu_group *group, struct device *dev)
++		/*
++		 * Return an error if there is no memory to update the
++		 * page-table.
++		 */
++		if (!upd && (address > PM_LEVEL_SIZE(pgtable.mode)))
++			return NULL;
++
++		*updated = *updated || upd;
+ 	}
  
- 	mutex_lock(&group->mutex);
- 	list_add_tail(&device->list, &group->devices);
--	if (group->domain)
-+	if (group->domain  && !iommu_is_attach_deferred(group->domain, dev))
- 		ret = __iommu_attach_device(group->domain, dev);
- 	mutex_unlock(&group->mutex);
- 	if (ret)
-@@ -1652,9 +1661,6 @@ static int __iommu_attach_device(struct iommu_domain *domain,
- 				 struct device *dev)
- {
- 	int ret;
--	if ((domain->ops->is_attach_deferred != NULL) &&
--	    domain->ops->is_attach_deferred(domain, dev))
--		return 0;
  
- 	if (unlikely(domain->ops->attach_dev == NULL))
- 		return -ENODEV;
-@@ -1726,8 +1732,7 @@ EXPORT_SYMBOL_GPL(iommu_sva_unbind_gpasid);
- static void __iommu_detach_device(struct iommu_domain *domain,
- 				  struct device *dev)
- {
--	if ((domain->ops->is_attach_deferred != NULL) &&
--	    domain->ops->is_attach_deferred(domain, dev))
-+	if (iommu_is_attach_deferred(domain, dev))
- 		return;
- 
- 	if (unlikely(domain->ops->detach_dev == NULL))
 -- 
 2.25.1
 
