@@ -7,90 +7,83 @@ X-Spam-Status: No, score=-9.5 required=3.0 tests=DKIM_INVALID,DKIM_SIGNED,
 	SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED,USER_AGENT_GIT autolearn=unavailable
 	autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 7768AC433E2
-	for <iommu@archiver.kernel.org>; Thu, 11 Jun 2020 22:29:50 +0000 (UTC)
-Received: from fraxinus.osuosl.org (smtp4.osuosl.org [140.211.166.137])
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 0DE60C433DF
+	for <iommu@archiver.kernel.org>; Thu, 11 Jun 2020 22:37:16 +0000 (UTC)
+Received: from whitealder.osuosl.org (smtp1.osuosl.org [140.211.166.138])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by mail.kernel.org (Postfix) with ESMTPS id 462E12073E
-	for <iommu@archiver.kernel.org>; Thu, 11 Jun 2020 22:29:50 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTPS id 9941C206D7
+	for <iommu@archiver.kernel.org>; Thu, 11 Jun 2020 22:37:15 +0000 (UTC)
 Authentication-Results: mail.kernel.org;
-	dkim=fail reason="signature verification failed" (1024-bit key) header.d=mg.codeaurora.org header.i=@mg.codeaurora.org header.b="BMfI72NR"
-DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 462E12073E
+	dkim=fail reason="signature verification failed" (1024-bit key) header.d=mg.codeaurora.org header.i=@mg.codeaurora.org header.b="Dtbn4YRJ"
+DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 9941C206D7
 Authentication-Results: mail.kernel.org; dmarc=none (p=none dis=none) header.from=codeaurora.org
 Authentication-Results: mail.kernel.org; spf=pass smtp.mailfrom=iommu-bounces@lists.linux-foundation.org
 Received: from localhost (localhost [127.0.0.1])
-	by fraxinus.osuosl.org (Postfix) with ESMTP id 2145E86C45;
-	Thu, 11 Jun 2020 22:29:50 +0000 (UTC)
+	by whitealder.osuosl.org (Postfix) with ESMTP id 56B2C88652;
+	Thu, 11 Jun 2020 22:37:15 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from fraxinus.osuosl.org ([127.0.0.1])
+Received: from whitealder.osuosl.org ([127.0.0.1])
 	by localhost (.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
-	with ESMTP id u5AgIGePPmLe; Thu, 11 Jun 2020 22:29:49 +0000 (UTC)
+	with ESMTP id 7El0X9zN80Uz; Thu, 11 Jun 2020 22:37:14 +0000 (UTC)
 Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [140.211.9.56])
-	by fraxinus.osuosl.org (Postfix) with ESMTP id 96CC586C7A;
-	Thu, 11 Jun 2020 22:29:49 +0000 (UTC)
+	by whitealder.osuosl.org (Postfix) with ESMTP id 98001885FA;
+	Thu, 11 Jun 2020 22:37:14 +0000 (UTC)
 Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
-	by lists.linuxfoundation.org (Postfix) with ESMTP id 85EFDC0178;
-	Thu, 11 Jun 2020 22:29:49 +0000 (UTC)
+	by lists.linuxfoundation.org (Postfix) with ESMTP id 78CD6C0178;
+	Thu, 11 Jun 2020 22:37:14 +0000 (UTC)
 Received: from fraxinus.osuosl.org (smtp4.osuosl.org [140.211.166.137])
- by lists.linuxfoundation.org (Postfix) with ESMTP id A6606C016F
- for <iommu@lists.linux-foundation.org>; Thu, 11 Jun 2020 22:29:48 +0000 (UTC)
+ by lists.linuxfoundation.org (Postfix) with ESMTP id 04E29C016F
+ for <iommu@lists.linux-foundation.org>; Thu, 11 Jun 2020 22:37:13 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
- by fraxinus.osuosl.org (Postfix) with ESMTP id 9458F8782F
- for <iommu@lists.linux-foundation.org>; Thu, 11 Jun 2020 22:29:48 +0000 (UTC)
+ by fraxinus.osuosl.org (Postfix) with ESMTP id E120C876FC
+ for <iommu@lists.linux-foundation.org>; Thu, 11 Jun 2020 22:37:12 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
 Received: from fraxinus.osuosl.org ([127.0.0.1])
  by localhost (.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
- with ESMTP id 24FT-USg5IA4 for <iommu@lists.linux-foundation.org>;
- Thu, 11 Jun 2020 22:29:48 +0000 (UTC)
+ with ESMTP id ptBSNzdQZKYK for <iommu@lists.linux-foundation.org>;
+ Thu, 11 Jun 2020 22:37:12 +0000 (UTC)
 X-Greylist: from auto-whitelisted by SQLgrey-1.7.6
-Received: from mail27.static.mailgun.info (mail27.static.mailgun.info
- [104.130.122.27])
- by fraxinus.osuosl.org (Postfix) with ESMTPS id A7A1186C7A
- for <iommu@lists.linux-foundation.org>; Thu, 11 Jun 2020 22:29:46 +0000 (UTC)
+Received: from m43-7.mailgun.net (m43-7.mailgun.net [69.72.43.7])
+ by fraxinus.osuosl.org (Postfix) with ESMTPS id 718E98767C
+ for <iommu@lists.linux-foundation.org>; Thu, 11 Jun 2020 22:37:09 +0000 (UTC)
 DKIM-Signature: a=rsa-sha256; v=1; c=relaxed/relaxed; d=mg.codeaurora.org;
  q=dns/txt; 
- s=smtp; t=1591914587; h=References: In-Reply-To: Message-Id: Date:
- Subject: Cc: To: From: Sender;
- bh=x2sbopYwhAhqWzhkL2gJb7C/8Z4Cdne+lnb2l3UB1Og=;
- b=BMfI72NR2Brma+Hwpgwc9A3m066IlcnANO4m95wXgg/VnvE4LFSx91pVkXZycxPPf6lC0ii9
- 75x09rlBovw9ZfCIdCA2aENTAQEbx+m+lrC9Im1Mw1z48kurQSXlQNlTpXIscgx9xnx+gGU/
- MXouv2jWiR3AF4vUu5mkrB+23yg=
-X-Mailgun-Sending-Ip: 104.130.122.27
+ s=smtp; t=1591915032; h=Message-Id: Date: Subject: Cc: To: From:
+ Sender; bh=6xUaMfKJXxXcIBGJIgKiTLhHa7NBz100vUpvyY8Yq5A=;
+ b=Dtbn4YRJAv1aXA6Yl+QVDFsYDOYfY2umuht+TAUEloBO2K0LyZdmVl6Zb3nbCxNvdtgQjXwW
+ af0Gzku4E436aoMYVmz3sGqFJ8fiyPBt/zBRTbivahuJIjXKypZajF3LM+cvg8q1lol3BFHE
+ HdSLxpTFkmLQtsK+BXLMpHpIINg=
+X-Mailgun-Sending-Ip: 69.72.43.7
 X-Mailgun-Sid: WyI3NDkwMCIsICJpb21tdUBsaXN0cy5saW51eC1mb3VuZGF0aW9uLm9yZyIsICJiZTllNGEiXQ==
 Received: from smtp.codeaurora.org
  (ec2-35-166-182-171.us-west-2.compute.amazonaws.com [35.166.182.171]) by
- smtp-out-n05.prod.us-east-1.postgun.com with SMTP id
- 5ee2b054c76a4e7a2ab45dd9 (version=TLS1.2,
- cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256); Thu, 11 Jun 2020 22:29:40
+ smtp-out-n01.prod.us-east-1.postgun.com with SMTP id
+ 5ee2b2108fe116ddd99d1173 (version=TLS1.2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256); Thu, 11 Jun 2020 22:37:04
  GMT
 Received: by smtp.codeaurora.org (Postfix, from userid 1001)
- id 724EEC433A0; Thu, 11 Jun 2020 22:29:38 +0000 (UTC)
+ id 7CA9EC43395; Thu, 11 Jun 2020 22:37:03 +0000 (UTC)
 Received: from jordan-laptop.qualcomm.com (Global_NAT1.qualcomm.com
  [129.46.96.20])
  (using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
  (No client certificate requested) (Authenticated sender: jcrouse)
- by smtp.codeaurora.org (Postfix) with ESMTPSA id 0863BC43391;
- Thu, 11 Jun 2020 22:29:33 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.3.2 smtp.codeaurora.org 0863BC43391
+ by smtp.codeaurora.org (Postfix) with ESMTPSA id B01C4C433C8;
+ Thu, 11 Jun 2020 22:37:01 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.3.2 smtp.codeaurora.org B01C4C433C8
 Authentication-Results: aws-us-west-2-caf-mail-1.web.codeaurora.org;
  dmarc=none (p=none dis=none) header.from=codeaurora.org
 Authentication-Results: aws-us-west-2-caf-mail-1.web.codeaurora.org;
  spf=none smtp.mailfrom=jcrouse@codeaurora.org
 From: Jordan Crouse <jcrouse@codeaurora.org>
 To: linux-arm-msm@vger.kernel.org
-Subject: [PATCH 6/6] drm/msm/a6xx: Add support for per-instance pagetables
-Date: Thu, 11 Jun 2020 16:29:21 -0600
-Message-Id: <20200611222921.464-7-jcrouse@codeaurora.org>
+Subject: [PATCH] iommu/arm-smmu: Add a init_context_bank implementation hook
+Date: Thu, 11 Jun 2020 16:36:56 -0600
+Message-Id: <20200611223656.4724-1-jcrouse@codeaurora.org>
 X-Mailer: git-send-email 2.17.1
-In-Reply-To: <20200611222921.464-1-jcrouse@codeaurora.org>
-References: <20200611222921.464-1-jcrouse@codeaurora.org>
-Cc: Jonathan Marek <jonathan@marek.ca>, David Airlie <airlied@linux.ie>,
- Sean Paul <sean@poorly.run>, Sharat Masetty <smasetty@codeaurora.org>,
- Akhil P Oommen <akhilpo@codeaurora.org>, dri-devel@lists.freedesktop.org,
- linux-kernel@vger.kernel.org, Eric Anholt <eric@anholt.net>,
- iommu@lists.linux-foundation.org, Daniel Vetter <daniel@ffwll.ch>,
- freedreno@lists.freedesktop.org
+Cc: freedreno@lists.freedesktop.org, Robin Murphy <robin.murphy@arm.com>,
+ linux-kernel@vger.kernel.org, iommu@lists.linux-foundation.org,
+ Will Deacon <will@kernel.org>, linux-arm-kernel@lists.infradead.org
 X-BeenThere: iommu@lists.linux-foundation.org
 X-Mailman-Version: 2.1.15
 Precedence: list
@@ -109,130 +102,145 @@ Content-Transfer-Encoding: 7bit
 Errors-To: iommu-bounces@lists.linux-foundation.org
 Sender: "iommu" <iommu-bounces@lists.linux-foundation.org>
 
-Add support for using per-instance pagetables if all the dependencies are
-available.
+Add a new implementation hook to allow the implementation specific code
+to tweek the context bank configuration just before it gets written.
+The first user will be the Adreno GPU implementation to turn on
+SCTLR.HUPCF to ensure that a page fault doesn't terminating pending
+transactions. Doing so could hang the GPU if one of the terminated
+transactions is a CP read.
+
+This depends on the arm-smmu adreno SMMU implementation [1].
+
+[1] https://patchwork.kernel.org/patch/11600943/
 
 Signed-off-by: Jordan Crouse <jcrouse@codeaurora.org>
 ---
 
- drivers/gpu/drm/msm/adreno/a6xx_gpu.c | 69 ++++++++++++++++++++++++++-
- drivers/gpu/drm/msm/msm_ringbuffer.h  |  1 +
- 2 files changed, 69 insertions(+), 1 deletion(-)
+ drivers/iommu/arm-smmu-qcom.c | 13 +++++++++++++
+ drivers/iommu/arm-smmu.c      | 28 +++++++++++++---------------
+ drivers/iommu/arm-smmu.h      | 11 +++++++++++
+ 3 files changed, 37 insertions(+), 15 deletions(-)
 
-diff --git a/drivers/gpu/drm/msm/adreno/a6xx_gpu.c b/drivers/gpu/drm/msm/adreno/a6xx_gpu.c
-index a1589e040c57..5e82b85d4d55 100644
---- a/drivers/gpu/drm/msm/adreno/a6xx_gpu.c
-+++ b/drivers/gpu/drm/msm/adreno/a6xx_gpu.c
-@@ -79,6 +79,58 @@ static void get_stats_counter(struct msm_ringbuffer *ring, u32 counter,
- 	OUT_RING(ring, upper_32_bits(iova));
+diff --git a/drivers/iommu/arm-smmu-qcom.c b/drivers/iommu/arm-smmu-qcom.c
+index 6d0ab4865fc7..e5c6345da6fc 100644
+--- a/drivers/iommu/arm-smmu-qcom.c
++++ b/drivers/iommu/arm-smmu-qcom.c
+@@ -17,6 +17,18 @@ static bool qcom_adreno_smmu_is_gpu_device(struct arm_smmu_domain *smmu_domain)
+ 	return of_device_is_compatible(smmu_domain->dev.of_node, "qcom,adreno");
  }
  
-+static void a6xx_set_pagetable(struct msm_gpu *gpu, struct msm_ringbuffer *ring,
-+		struct msm_file_private *ctx)
++static void qcom_adreno_smmu_init_context_bank(struct arm_smmu_domain *smmu_domain,
++		struct arm_smmu_cb *cb)
 +{
-+	phys_addr_t ttbr;
-+	u32 asid;
-+
-+	if (msm_iommu_pagetable_params(ctx->aspace->mmu, &ttbr, &asid))
-+		return;
-+
-+	OUT_PKT7(ring, CP_SET_PROTECTED_MODE, 1);
-+	OUT_RING(ring, 0);
-+
-+	/* Turn on APIV mode to access critical regions */
-+	OUT_PKT4(ring, REG_A6XX_CP_MISC_CNTL, 1);
-+	OUT_RING(ring, 1);
-+
-+	/* Make sure the ME is synchronized before staring the update */
-+	OUT_PKT7(ring, CP_WAIT_FOR_ME, 0);
-+
-+	/* Execute the table update */
-+	OUT_PKT7(ring, CP_SMMU_TABLE_UPDATE, 4);
-+	OUT_RING(ring, lower_32_bits(ttbr));
-+	OUT_RING(ring, (((u64) asid) << 48) | upper_32_bits(ttbr));
-+	/* CONTEXTIDR is currently unused */
-+	OUT_RING(ring, 0);
-+	/* CONTEXTBANK is currently unused */
-+	OUT_RING(ring, 0);
-+
 +	/*
-+	 * Write the new TTBR0 to the memstore. This is good for debugging.
++	 * On the GPU device we want to process subsequent transactions after a
++	 * fault to keep the GPU from hanging
 +	 */
-+	OUT_PKT7(ring, CP_MEM_WRITE, 4);
-+	OUT_RING(ring, lower_32_bits(rbmemptr(ring, ttbr0)));
-+	OUT_RING(ring, upper_32_bits(rbmemptr(ring, ttbr0)));
-+	OUT_RING(ring, lower_32_bits(ttbr));
-+	OUT_RING(ring, (((u64) asid) << 48) | upper_32_bits(ttbr));
 +
-+	/* Invalidate the draw state so we start off fresh */
-+	OUT_PKT7(ring, CP_SET_DRAW_STATE, 3);
-+	OUT_RING(ring, 0x40000);
-+	OUT_RING(ring, 1);
-+	OUT_RING(ring, 0);
-+
-+	/* Turn off APRIV */
-+	OUT_PKT4(ring, REG_A6XX_CP_MISC_CNTL, 1);
-+	OUT_RING(ring, 0);
-+
-+	/* Turn off protected mode */
-+	OUT_PKT7(ring, CP_SET_PROTECTED_MODE, 1);
-+	OUT_RING(ring, 1);
++	if (qcom_adreno_smmu_is_gpu_device(smmu_domain))
++		cb->sctlr |= ARM_SMMU_SCTLR_HUPCF;
 +}
 +
- static void a6xx_submit(struct msm_gpu *gpu, struct msm_gem_submit *submit,
- 	struct msm_file_private *ctx)
+ static int qcom_adreno_smmu_init_context(struct arm_smmu_domain *smmu_domain,
+ 		struct io_pgtable_cfg *pgtbl_cfg)
  {
-@@ -89,6 +141,8 @@ static void a6xx_submit(struct msm_gpu *gpu, struct msm_gem_submit *submit,
- 	struct msm_ringbuffer *ring = submit->ring;
- 	unsigned int i;
+@@ -92,6 +104,7 @@ static const struct arm_smmu_impl qcom_adreno_smmu_impl = {
+ 	.init_context = qcom_adreno_smmu_init_context,
+ 	.def_domain_type = qcom_smmu_def_domain_type,
+ 	.reset = qcom_smmu500_reset,
++	.init_context_bank = qcom_adreno_smmu_init_context_bank,
+ };
  
-+	a6xx_set_pagetable(gpu, ring, ctx);
+ 
+diff --git a/drivers/iommu/arm-smmu.c b/drivers/iommu/arm-smmu.c
+index a06cbcaec247..f0f201ece3a0 100644
+--- a/drivers/iommu/arm-smmu.c
++++ b/drivers/iommu/arm-smmu.c
+@@ -86,13 +86,6 @@ struct arm_smmu_smr {
+ 	bool				valid;
+ };
+ 
+-struct arm_smmu_cb {
+-	u64				ttbr[2];
+-	u32				tcr[2];
+-	u32				mair[2];
+-	struct arm_smmu_cfg		*cfg;
+-};
+-
+ struct arm_smmu_master_cfg {
+ 	struct arm_smmu_device		*smmu;
+ 	s16				smendx[];
+@@ -579,6 +572,18 @@ static void arm_smmu_init_context_bank(struct arm_smmu_domain *smmu_domain,
+ 			cb->mair[1] = pgtbl_cfg->arm_lpae_s1_cfg.mair >> 32;
+ 		}
+ 	}
 +
- 	get_stats_counter(ring, REG_A6XX_RBBM_PERFCTR_CP_0_LO,
- 		rbmemptr_stats(ring, index, cpcycles_start));
- 
-@@ -872,6 +926,18 @@ static unsigned long a6xx_gpu_busy(struct msm_gpu *gpu)
- 	return (unsigned long)busy_time;
++	cb->sctlr = ARM_SMMU_SCTLR_CFIE | ARM_SMMU_SCTLR_CFRE | ARM_SMMU_SCTLR_AFE |
++		ARM_SMMU_SCTLR_TRE | ARM_SMMU_SCTLR_M;
++
++	if (stage1)
++		cb->sctlr |= ARM_SMMU_SCTLR_S1_ASIDPNE;
++	if (IS_ENABLED(CONFIG_CPU_BIG_ENDIAN))
++		cb->sctlr |= ARM_SMMU_SCTLR_E;
++
++	/* Give the implementation a chance to adjust the configuration */
++	if (smmu_domain->smmu->impl && smmu_domain->smmu->impl->init_context_bank)
++		smmu_domain->smmu->impl->init_context_bank(smmu_domain, cb);
  }
  
-+struct msm_gem_address_space *a6xx_address_space_instance(struct msm_gpu *gpu)
-+{
-+	struct msm_mmu *mmu;
-+
-+	mmu = msm_iommu_pagetable_create(gpu->aspace->mmu);
-+	if (IS_ERR(mmu))
-+		return msm_gem_address_space_get(gpu->aspace);
-+
-+	return msm_gem_address_space_create(mmu,
-+		"gpu", 0x100000000ULL, 0x1ffffffffULL);
-+}
-+
- static const struct adreno_gpu_funcs funcs = {
- 	.base = {
- 		.get_param = adreno_get_param,
-@@ -893,8 +959,9 @@ static const struct adreno_gpu_funcs funcs = {
- #if defined(CONFIG_DRM_MSM_GPU_STATE)
- 		.gpu_state_get = a6xx_gpu_state_get,
- 		.gpu_state_put = a6xx_gpu_state_put,
--		.create_address_space = adreno_iommu_create_address_space,
- #endif
-+		.create_address_space = adreno_iommu_create_address_space,
-+		.address_space_instance = a6xx_address_space_instance,
- 	},
- 	.get_timestamp = a6xx_get_timestamp,
- };
-diff --git a/drivers/gpu/drm/msm/msm_ringbuffer.h b/drivers/gpu/drm/msm/msm_ringbuffer.h
-index 7764373d0ed2..0987d6bf848c 100644
---- a/drivers/gpu/drm/msm/msm_ringbuffer.h
-+++ b/drivers/gpu/drm/msm/msm_ringbuffer.h
-@@ -31,6 +31,7 @@ struct msm_rbmemptrs {
- 	volatile uint32_t fence;
+ static void arm_smmu_write_context_bank(struct arm_smmu_device *smmu, int idx)
+@@ -657,14 +662,7 @@ static void arm_smmu_write_context_bank(struct arm_smmu_device *smmu, int idx)
+ 	}
  
- 	volatile struct msm_gpu_submit_stats stats[MSM_GPU_SUBMIT_STATS_COUNT];
-+	volatile u64 ttbr0;
+ 	/* SCTLR */
+-	reg = ARM_SMMU_SCTLR_CFIE | ARM_SMMU_SCTLR_CFRE | ARM_SMMU_SCTLR_AFE |
+-	      ARM_SMMU_SCTLR_TRE | ARM_SMMU_SCTLR_M;
+-	if (stage1)
+-		reg |= ARM_SMMU_SCTLR_S1_ASIDPNE;
+-	if (IS_ENABLED(CONFIG_CPU_BIG_ENDIAN))
+-		reg |= ARM_SMMU_SCTLR_E;
+-
+-	arm_smmu_cb_write(smmu, idx, ARM_SMMU_CB_SCTLR, reg);
++	arm_smmu_cb_write(smmu, idx, ARM_SMMU_CB_SCTLR, cb->sctlr);
+ }
+ 
+ /*
+diff --git a/drivers/iommu/arm-smmu.h b/drivers/iommu/arm-smmu.h
+index 79d441024043..9b539820997b 100644
+--- a/drivers/iommu/arm-smmu.h
++++ b/drivers/iommu/arm-smmu.h
+@@ -142,6 +142,7 @@ enum arm_smmu_cbar_type {
+ 
+ #define ARM_SMMU_CB_SCTLR		0x0
+ #define ARM_SMMU_SCTLR_S1_ASIDPNE	BIT(12)
++#define ARM_SMMU_SCTLR_HUPCF		BIT(8)
+ #define ARM_SMMU_SCTLR_CFCFG		BIT(7)
+ #define ARM_SMMU_SCTLR_CFIE		BIT(6)
+ #define ARM_SMMU_SCTLR_CFRE		BIT(5)
+@@ -349,6 +350,14 @@ struct arm_smmu_domain {
+ 	bool				aux;
  };
  
- struct msm_ringbuffer {
++struct arm_smmu_cb {
++	u64			ttbr[2];
++	u32			tcr[2];
++	u32			mair[2];
++	u32			sctlr;
++	struct arm_smmu_cfg	*cfg;
++};
++
+ static inline u32 arm_smmu_lpae_tcr(struct io_pgtable_cfg *cfg)
+ {
+ 	u32 tcr = FIELD_PREP(ARM_SMMU_TCR_TG0, cfg->arm_lpae_s1_cfg.tcr.tg) |
+@@ -403,6 +412,8 @@ struct arm_smmu_impl {
+ 	void (*tlb_sync)(struct arm_smmu_device *smmu, int page, int sync,
+ 			 int status);
+ 	int (*def_domain_type)(struct device *dev);
++	void (*init_context_bank)(struct arm_smmu_domain *smmu_domain,
++			struct arm_smmu_cb *cb);
+ };
+ 
+ static inline void __iomem *arm_smmu_page(struct arm_smmu_device *smmu, int n)
 -- 
 2.17.1
 
