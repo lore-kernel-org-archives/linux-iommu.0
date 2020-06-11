@@ -2,92 +2,95 @@ Return-Path: <SRS0=H3NW=7Y=lists.linux-foundation.org=iommu-bounces@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-6.5 required=3.0 tests=DKIM_INVALID,DKIM_SIGNED,
-	HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_PATCH,MAILING_LIST_MULTI,SIGNED_OFF_BY,
-	SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED autolearn=unavailable autolearn_force=no
-	version=3.4.0
+X-Spam-Status: No, score=-2.0 required=3.0 tests=DKIM_INVALID,DKIM_SIGNED,
+	HEADER_FROM_DIFFERENT_DOMAINS,MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS,
+	URIBL_BLOCKED,USER_AGENT_SANE_1 autolearn=no autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 513C9C433E1
-	for <iommu@archiver.kernel.org>; Thu, 11 Jun 2020 17:08:34 +0000 (UTC)
-Received: from hemlock.osuosl.org (smtp2.osuosl.org [140.211.166.133])
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 3C405C433E0
+	for <iommu@archiver.kernel.org>; Thu, 11 Jun 2020 19:20:34 +0000 (UTC)
+Received: from silver.osuosl.org (smtp3.osuosl.org [140.211.166.136])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by mail.kernel.org (Postfix) with ESMTPS id EA3FC206C3
-	for <iommu@archiver.kernel.org>; Thu, 11 Jun 2020 17:08:33 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTPS id 95EBB206C3
+	for <iommu@archiver.kernel.org>; Thu, 11 Jun 2020 19:20:33 +0000 (UTC)
 Authentication-Results: mail.kernel.org;
-	dkim=fail reason="signature verification failed" (1024-bit key) header.d=redhat.com header.i=@redhat.com header.b="a18lQYN5"
-DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org EA3FC206C3
-Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=redhat.com
+	dkim=fail reason="signature verification failed" (2048-bit key) header.d=google.com header.i=@google.com header.b="cLhqFJsu"
+DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 95EBB206C3
+Authentication-Results: mail.kernel.org; dmarc=none (p=none dis=none) header.from=lists.linux-foundation.org
 Authentication-Results: mail.kernel.org; spf=pass smtp.mailfrom=iommu-bounces@lists.linux-foundation.org
 Received: from localhost (localhost [127.0.0.1])
-	by hemlock.osuosl.org (Postfix) with ESMTP id 8F694896C1;
-	Thu, 11 Jun 2020 17:08:33 +0000 (UTC)
+	by silver.osuosl.org (Postfix) with ESMTP id 2CFAC2041F;
+	Thu, 11 Jun 2020 19:20:33 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from hemlock.osuosl.org ([127.0.0.1])
+Received: from silver.osuosl.org ([127.0.0.1])
 	by localhost (.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
-	with ESMTP id iV-9YDLgiW56; Thu, 11 Jun 2020 17:08:32 +0000 (UTC)
+	with ESMTP id Xis4CcocribC; Thu, 11 Jun 2020 19:20:31 +0000 (UTC)
 Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [140.211.9.56])
-	by hemlock.osuosl.org (Postfix) with ESMTP id 5E730896A6;
-	Thu, 11 Jun 2020 17:08:32 +0000 (UTC)
+	by silver.osuosl.org (Postfix) with ESMTP id 28987203FB;
+	Thu, 11 Jun 2020 19:20:31 +0000 (UTC)
 Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
-	by lists.linuxfoundation.org (Postfix) with ESMTP id 421FBC0865;
-	Thu, 11 Jun 2020 17:08:32 +0000 (UTC)
+	by lists.linuxfoundation.org (Postfix) with ESMTP id 07D57C0865;
+	Thu, 11 Jun 2020 19:20:31 +0000 (UTC)
 Received: from whitealder.osuosl.org (smtp1.osuosl.org [140.211.166.138])
- by lists.linuxfoundation.org (Postfix) with ESMTP id 84840C016F
- for <iommu@lists.linux-foundation.org>; Thu, 11 Jun 2020 17:08:30 +0000 (UTC)
+ by lists.linuxfoundation.org (Postfix) with ESMTP id 1F1F7C016F
+ for <iommu@lists.linux-foundation.org>; Thu, 11 Jun 2020 19:20:29 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
- by whitealder.osuosl.org (Postfix) with ESMTP id 7569288873
- for <iommu@lists.linux-foundation.org>; Thu, 11 Jun 2020 17:08:30 +0000 (UTC)
+ by whitealder.osuosl.org (Postfix) with ESMTP id 060CC880C2
+ for <iommu@lists.linux-foundation.org>; Thu, 11 Jun 2020 19:20:29 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
 Received: from whitealder.osuosl.org ([127.0.0.1])
  by localhost (.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
- with ESMTP id vgii7pPgFq1L for <iommu@lists.linux-foundation.org>;
- Thu, 11 Jun 2020 17:08:29 +0000 (UTC)
+ with ESMTP id K213W80XOHvY for <iommu@lists.linux-foundation.org>;
+ Thu, 11 Jun 2020 19:20:27 +0000 (UTC)
 X-Greylist: domain auto-whitelisted by SQLgrey-1.7.6
-Received: from us-smtp-1.mimecast.com (us-smtp-delivery-1.mimecast.com
- [205.139.110.120])
- by whitealder.osuosl.org (Postfix) with ESMTPS id E33E98886C
- for <iommu@lists.linux-foundation.org>; Thu, 11 Jun 2020 17:08:28 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
- s=mimecast20190719; t=1591895307;
- h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
- to:to:cc:cc:mime-version:mime-version:content-type:content-type:
- content-transfer-encoding:content-transfer-encoding:
- in-reply-to:in-reply-to:references:references;
- bh=bWnBZHCzZtimvuxaZaPnyP5RcPnmsmA1z03ttfGTAFA=;
- b=a18lQYN5t9oUtYRwI37bxpGGWuAhpmpbVi+MsExXl1oKJW5BOHv023b74IFVsZefh6N0Xb
- nzGNTGilTxNrb/3QquVVupV44RR3eNSRx7c4rhznb5lNd2ZTKRREY+tHrZ94TbrJTQ58fU
- hxs6QfAbl/4jFUuLnwjCPgp0bVG0afs=
-Received: from mimecast-mx01.redhat.com (mimecast-mx01.redhat.com
- [209.132.183.4]) (Using TLS) by relay.mimecast.com with ESMTP id
- us-mta-302-_iTT8PLmNeGVtV0p0Dz3_A-1; Thu, 11 Jun 2020 13:08:23 -0400
-X-MC-Unique: _iTT8PLmNeGVtV0p0Dz3_A-1
-Received: from smtp.corp.redhat.com (int-mx07.intmail.prod.int.phx2.redhat.com
- [10.5.11.22])
- (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
- (No client certificate requested)
- by mimecast-mx01.redhat.com (Postfix) with ESMTPS id 25A49107ACCD;
- Thu, 11 Jun 2020 17:08:21 +0000 (UTC)
-Received: from x1.home (ovpn-112-195.phx2.redhat.com [10.3.112.195])
- by smtp.corp.redhat.com (Postfix) with ESMTP id 4A4D310013D0;
- Thu, 11 Jun 2020 17:08:17 +0000 (UTC)
-Date: Thu, 11 Jun 2020 11:08:16 -0600
-From: Alex Williamson <alex.williamson@redhat.com>
-To: Jacob Pan <jacob.jun.pan@linux.intel.com>
-Subject: Re: [PATCH v2 3/3] iommu/vt-d: Sanity check uapi argsz filled by users
-Message-ID: <20200611110816.4cea7204@x1.home>
-In-Reply-To: <1591848735-12447-4-git-send-email-jacob.jun.pan@linux.intel.com>
-References: <1591848735-12447-1-git-send-email-jacob.jun.pan@linux.intel.com>
- <1591848735-12447-4-git-send-email-jacob.jun.pan@linux.intel.com>
-Organization: Red Hat
+Received: from mail-pl1-f194.google.com (mail-pl1-f194.google.com
+ [209.85.214.194])
+ by whitealder.osuosl.org (Postfix) with ESMTPS id D84A2878BE
+ for <iommu@lists.linux-foundation.org>; Thu, 11 Jun 2020 19:20:27 +0000 (UTC)
+Received: by mail-pl1-f194.google.com with SMTP id v24so2691147plo.6
+ for <iommu@lists.linux-foundation.org>; Thu, 11 Jun 2020 12:20:27 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=google.com; s=20161025;
+ h=date:from:to:cc:subject:message-id:user-agent:mime-version;
+ bh=vs8zuDzvjHdETDEcGTy3L+gn3DFxvZBwvmNgqN4PsP8=;
+ b=cLhqFJsu1N/2ngljNE1bZa8+nfqnzZi/4WMjB13VYRrKiXxxh9TnKyU3rnpTIuEqso
+ LrbP0J0WrIybuzHP4Hy9ob/t/lIMe7AAn2rdgO23DyfahHsHhNNFLgXadYJV1JPpHAZn
+ NZo8AWG6yiXW9qWaUFsMOIfIwugr8kjyEJp6RNFql5qP25/9l/K1VZmqeFLH99dd+VIf
+ 4FNfqf9Q5nQcyO2ezmSMHoC3IuvOiUyCZKDO5ZkKXq08No6Buqb/VdHc2FXM9B37sb+g
+ whOTRTL/rvO/vAqmYaglbc8vp1f1CmqUKu1wvN5iEBvg7lfiFI4+oss2G7quLINrYGl9
+ i8Xw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+ d=1e100.net; s=20161025;
+ h=x-gm-message-state:date:from:to:cc:subject:message-id:user-agent
+ :mime-version;
+ bh=vs8zuDzvjHdETDEcGTy3L+gn3DFxvZBwvmNgqN4PsP8=;
+ b=Zaiq9hbAH9bS65+YXQufLdi5/2epgq4qTBkMxtlvnrjytCb86YslHki68LyUZmMZyH
+ ZTSnwyBOvMtonLwnFvzy0z+OhG8kxUKSwqxy2ZLi/v4Ul0rpzXZYJsxaZvisSTmXlVKv
+ Asv7nMX7VJVZlg57kdBqXUQKL+10p/sZhoo+MoQzdC10YK+V45C4Br0tBeOFp6wwzX+M
+ DuGSOpiDL1X1owCSpK0Q+q2CGqD806bW618/KXpyUflNJlCuNEya/HOsY1Ff3eTWJVqK
+ hAmXuN8gu9oc7VGRfRKMXzOjXAbcT8goRWZR3FNjX8Xn6u9Hu9cYDg2eJ3usLoE/u+ll
+ LRuA==
+X-Gm-Message-State: AOAM533ZMc5V0riSv9cv34xFw+hvimp2YAk02Kjs3aM+tAk76zNAruKp
+ TljQF1b8kC7QicCfbSDF1zlWyQ==
+X-Google-Smtp-Source: ABdhPJzytk0KYlXV5rOWpFspxq0MH757orr/tBcyS6r2KR2i5RmbUoahzpSj7DOXXQ6kmIJR2nWXhA==
+X-Received: by 2002:a17:90a:e801:: with SMTP id
+ i1mr9154849pjy.79.1591903227192; 
+ Thu, 11 Jun 2020 12:20:27 -0700 (PDT)
+Received: from [2620:15c:17:3:3a5:23a7:5e32:4598]
+ ([2620:15c:17:3:3a5:23a7:5e32:4598])
+ by smtp.gmail.com with ESMTPSA id f29sm3470376pgf.63.2020.06.11.12.20.26
+ (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+ Thu, 11 Jun 2020 12:20:26 -0700 (PDT)
+Date: Thu, 11 Jun 2020 12:20:25 -0700 (PDT)
+X-X-Sender: rientjes@chino.kir.corp.google.com
+To: Christoph Hellwig <hch@lst.de>
+Subject: [patch for-5.8 0/4] dma-direct: dma_direct_alloc_pages() fixes for
+ AMD SEV
+Message-ID: <alpine.DEB.2.22.394.2006111218200.153880@chino.kir.corp.google.com>
+User-Agent: Alpine 2.22 (DEB 394 2020-01-19)
 MIME-Version: 1.0
-X-Scanned-By: MIMEDefang 2.84 on 10.5.11.22
-Cc: "Tian, Kevin" <kevin.tian@intel.com>, Raj Ashok <ashok.raj@intel.com>,
- Jonathan Corbet <corbet@lwn.net>,
- Jean-Philippe Brucker <jean-philippe@linaro.com>,
- LKML <linux-kernel@vger.kernel.org>, Christoph
- Hellwig <hch@infradead.org>, iommu@lists.linux-foundation.org,
- David Woodhouse <dwmw2@infradead.org>
+Cc: Thomas Lendacky <thomas.lendacky@amd.com>,
+ Brijesh Singh <brijesh.singh@amd.com>, linux-kernel@vger.kernel.org,
+ iommu@lists.linux-foundation.org, Robin Murphy <robin.murphy@arm.com>
 X-BeenThere: iommu@lists.linux-foundation.org
 X-Mailman-Version: 2.1.15
 Precedence: list
@@ -100,111 +103,21 @@ List-Post: <mailto:iommu@lists.linux-foundation.org>
 List-Help: <mailto:iommu-request@lists.linux-foundation.org?subject=help>
 List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
  <mailto:iommu-request@lists.linux-foundation.org?subject=subscribe>
+From: David Rientjes via iommu <iommu@lists.linux-foundation.org>
+Reply-To: David Rientjes <rientjes@google.com>
 Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
 Errors-To: iommu-bounces@lists.linux-foundation.org
 Sender: "iommu" <iommu-bounces@lists.linux-foundation.org>
 
-On Wed, 10 Jun 2020 21:12:15 -0700
-Jacob Pan <jacob.jun.pan@linux.intel.com> wrote:
+While debugging recently reported issues concerning DMA allocation
+practices when CONFIG_AMD_MEM_ENCRYPT is enabled, some curiosities arose
+when looking at dma_direct_alloc_pages() behavior.
 
-> IOMMU UAPI data has an argsz field which is filled by user. As the data
-> structures expands, argsz may change. As the UAPI data are shared among
-> different architectures, extensions of UAPI data could be a result of
-> one architecture which has no impact on another. Therefore, these argsz
-> santity checks are performed in the model specific IOMMU drivers. This
-> patch adds sanity checks in the VT-d to ensure argsz passed by userspace
-> matches feature flags and other contents.
-> 
-> Signed-off-by: Jacob Pan <jacob.jun.pan@linux.intel.com>
-> ---
->  drivers/iommu/intel-iommu.c | 16 ++++++++++++++++
->  drivers/iommu/intel-svm.c   | 12 ++++++++++++
->  2 files changed, 28 insertions(+)
-> 
-> diff --git a/drivers/iommu/intel-iommu.c b/drivers/iommu/intel-iommu.c
-> index 27ebf4b9faef..c98b5109684b 100644
-> --- a/drivers/iommu/intel-iommu.c
-> +++ b/drivers/iommu/intel-iommu.c
-> @@ -5365,6 +5365,7 @@ intel_iommu_sva_invalidate(struct iommu_domain *domain, struct device *dev,
->  	struct device_domain_info *info;
->  	struct intel_iommu *iommu;
->  	unsigned long flags;
-> +	unsigned long minsz;
->  	int cache_type;
->  	u8 bus, devfn;
->  	u16 did, sid;
-> @@ -5385,6 +5386,21 @@ intel_iommu_sva_invalidate(struct iommu_domain *domain, struct device *dev,
->  	if (!(dmar_domain->flags & DOMAIN_FLAG_NESTING_MODE))
->  		return -EINVAL;
->  
-> +	minsz = offsetofend(struct iommu_cache_invalidate_info, padding);
-
-Would it still be better to look for the end of the last field that's
-actually used to avoid the code churn and oversights if/when the padding
-field does get used and renamed?
-
-Per my comment on patch 1/, this also seems like where the device
-specific IOMMU driver should also have the responsibility of receiving
-a __user pointer to do the copy_from_user() here.  vfio can't know
-which flags require which fields to make a UAPI with acceptable
-compatibility guarantees otherwise.
-
-> +	if (inv_info->argsz < minsz)
-> +		return -EINVAL;
-> +
-> +	/* Sanity check user filled invalidation dat sizes */
-> +	if (inv_info->granularity == IOMMU_INV_GRANU_ADDR &&
-> +		inv_info->argsz != offsetofend(struct iommu_cache_invalidate_info,
-> +					addr_info))
-> +		return -EINVAL;
-> +
-> +	if (inv_info->granularity == IOMMU_INV_GRANU_PASID &&
-> +		inv_info->argsz != offsetofend(struct iommu_cache_invalidate_info,
-> +					pasid_info))
-> +		return -EINVAL;
-> +
->  	spin_lock_irqsave(&device_domain_lock, flags);
->  	spin_lock(&iommu->lock);
->  	info = get_domain_info(dev);
-> diff --git a/drivers/iommu/intel-svm.c b/drivers/iommu/intel-svm.c
-> index 35b43fe819ed..64dc2c66dfff 100644
-> --- a/drivers/iommu/intel-svm.c
-> +++ b/drivers/iommu/intel-svm.c
-> @@ -235,15 +235,27 @@ int intel_svm_bind_gpasid(struct iommu_domain *domain, struct device *dev,
->  	struct dmar_domain *dmar_domain;
->  	struct intel_svm_dev *sdev;
->  	struct intel_svm *svm;
-> +	unsigned long minsz;
->  	int ret = 0;
->  
->  	if (WARN_ON(!iommu) || !data)
->  		return -EINVAL;
->  
-> +	/*
-> +	 * We mandate that no size change in IOMMU UAPI data before the
-> +	 * variable size union at the end.
-> +	 */
-> +	minsz = offsetofend(struct iommu_gpasid_bind_data, padding);
-
-Same.  Thanks,
-
-Alex
-
-> +	if (data->argsz < minsz)
-> +		return -EINVAL;
-> +
->  	if (data->version != IOMMU_GPASID_BIND_VERSION_1 ||
->  	    data->format != IOMMU_PASID_FORMAT_INTEL_VTD)
->  		return -EINVAL;
->  
-> +	if (data->argsz != offsetofend(struct iommu_gpasid_bind_data, vtd))
-> +		return -EINVAL;
-> +
->  	if (!dev_is_pci(dev))
->  		return -ENOTSUPP;
->  
-
+Fix these up.  These are likely all stable material, so proposing for 5.8.
+---
+ kernel/dma/direct.c | 42 ++++++++++++++++++++++++++++++++----------
+ 1 file changed, 32 insertions(+), 10 deletions(-)
 _______________________________________________
 iommu mailing list
 iommu@lists.linux-foundation.org
