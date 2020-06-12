@@ -6,66 +6,66 @@ X-Spam-Status: No, score=-8.2 required=3.0 tests=HEADER_FROM_DIFFERENT_DOMAINS,
 	INCLUDES_PATCH,MAILING_LIST_MULTI,SIGNED_OFF_BY,SPF_HELO_NONE,SPF_PASS,
 	URIBL_BLOCKED,USER_AGENT_SANE_2 autolearn=ham autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 98F6AC433DF
-	for <iommu@archiver.kernel.org>; Fri, 12 Jun 2020 21:59:23 +0000 (UTC)
-Received: from silver.osuosl.org (smtp3.osuosl.org [140.211.166.136])
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 68953C433DF
+	for <iommu@archiver.kernel.org>; Fri, 12 Jun 2020 22:47:11 +0000 (UTC)
+Received: from fraxinus.osuosl.org (smtp4.osuosl.org [140.211.166.137])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by mail.kernel.org (Postfix) with ESMTPS id 2C5E9206DC
-	for <iommu@archiver.kernel.org>; Fri, 12 Jun 2020 21:59:22 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 2C5E9206DC
+	by mail.kernel.org (Postfix) with ESMTPS id 3EC26206DC
+	for <iommu@archiver.kernel.org>; Fri, 12 Jun 2020 22:47:10 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 3EC26206DC
 Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=linux.intel.com
 Authentication-Results: mail.kernel.org; spf=pass smtp.mailfrom=iommu-bounces@lists.linux-foundation.org
 Received: from localhost (localhost [127.0.0.1])
-	by silver.osuosl.org (Postfix) with ESMTP id CE97F27B9E;
-	Fri, 12 Jun 2020 21:59:22 +0000 (UTC)
+	by fraxinus.osuosl.org (Postfix) with ESMTP id EDDC78761F;
+	Fri, 12 Jun 2020 22:47:09 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from silver.osuosl.org ([127.0.0.1])
+Received: from fraxinus.osuosl.org ([127.0.0.1])
 	by localhost (.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
-	with ESMTP id EaShZNgmHc2O; Fri, 12 Jun 2020 21:59:20 +0000 (UTC)
+	with ESMTP id MqOZ7AE-jvRM; Fri, 12 Jun 2020 22:47:08 +0000 (UTC)
 Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [140.211.9.56])
-	by silver.osuosl.org (Postfix) with ESMTP id 9F7F12765E;
-	Fri, 12 Jun 2020 21:59:20 +0000 (UTC)
+	by fraxinus.osuosl.org (Postfix) with ESMTP id B003285233;
+	Fri, 12 Jun 2020 22:47:08 +0000 (UTC)
 Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
-	by lists.linuxfoundation.org (Postfix) with ESMTP id 9052CC0178;
-	Fri, 12 Jun 2020 21:59:20 +0000 (UTC)
-Received: from whitealder.osuosl.org (smtp1.osuosl.org [140.211.166.138])
- by lists.linuxfoundation.org (Postfix) with ESMTP id 1061EC016F
- for <iommu@lists.linux-foundation.org>; Fri, 12 Jun 2020 21:59:19 +0000 (UTC)
+	by lists.linuxfoundation.org (Postfix) with ESMTP id 94BA7C0881;
+	Fri, 12 Jun 2020 22:47:08 +0000 (UTC)
+Received: from hemlock.osuosl.org (smtp2.osuosl.org [140.211.166.133])
+ by lists.linuxfoundation.org (Postfix) with ESMTP id C2418C016F
+ for <iommu@lists.linux-foundation.org>; Fri, 12 Jun 2020 22:47:07 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
- by whitealder.osuosl.org (Postfix) with ESMTP id 0ACB987D0C
- for <iommu@lists.linux-foundation.org>; Fri, 12 Jun 2020 21:59:19 +0000 (UTC)
+ by hemlock.osuosl.org (Postfix) with ESMTP id BB84F899F8
+ for <iommu@lists.linux-foundation.org>; Fri, 12 Jun 2020 22:47:07 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from whitealder.osuosl.org ([127.0.0.1])
+Received: from hemlock.osuosl.org ([127.0.0.1])
  by localhost (.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
- with ESMTP id bkRs+gOAscd9 for <iommu@lists.linux-foundation.org>;
- Fri, 12 Jun 2020 21:59:17 +0000 (UTC)
+ with ESMTP id AiT6kqbp1do0 for <iommu@lists.linux-foundation.org>;
+ Fri, 12 Jun 2020 22:47:04 +0000 (UTC)
 X-Greylist: domain auto-whitelisted by SQLgrey-1.7.6
-Received: from mga04.intel.com (mga04.intel.com [192.55.52.120])
- by whitealder.osuosl.org (Postfix) with ESMTPS id CCB1A87C5C
- for <iommu@lists.linux-foundation.org>; Fri, 12 Jun 2020 21:59:17 +0000 (UTC)
-IronPort-SDR: 8bgG3LbNrJz+0oaP9eezKvjjIQdN7+Hr0O9Cp6HUbhopxHJaQXwufY18zvW7JkAB9KQgGIrOWL
- wiPcW12t7XCA==
+Received: from mga01.intel.com (mga01.intel.com [192.55.52.88])
+ by hemlock.osuosl.org (Postfix) with ESMTPS id D3C56899E6
+ for <iommu@lists.linux-foundation.org>; Fri, 12 Jun 2020 22:47:04 +0000 (UTC)
+IronPort-SDR: inUc7S0qU7JapeTJ9WfKrZ/MthYWafBC8KkuTG+OVRnXxO/1I5HoOvKaatzXIYT36rtA9VMWT+
+ pB5YxLxWNuUg==
 X-Amp-Result: SKIPPED(no attachment in message)
 X-Amp-File-Uploaded: False
-Received: from orsmga005.jf.intel.com ([10.7.209.41])
- by fmsmga104.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384;
- 12 Jun 2020 14:59:17 -0700
-IronPort-SDR: gusreVWzHQC+n625cUhNZ9nA/GkGjFO7cDyD0K8O3d9FyQ+NoMtQwwk3VAzdPq4k0QyzRr7KUJ
- ypFhG7xUuyuQ==
+Received: from orsmga008.jf.intel.com ([10.7.209.65])
+ by fmsmga101.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384;
+ 12 Jun 2020 15:47:04 -0700
+IronPort-SDR: k+Sv+vE8M5SEUlX77jfVaRUdEVYmyUVRpPkmkCvc0Tqt7i5OyTbE2UlJIQTFwW4f6Tj4dX80BD
+ REiS3oR5qjkQ==
 X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.73,504,1583222400"; d="scan'208";a="448450007"
+X-IronPort-AV: E=Sophos;i="5.73,504,1583222400"; d="scan'208";a="307377267"
 Received: from jacob-builder.jf.intel.com (HELO jacob-builder) ([10.7.199.155])
- by orsmga005.jf.intel.com with ESMTP; 12 Jun 2020 14:59:17 -0700
-Date: Fri, 12 Jun 2020 15:05:42 -0700
+ by orsmga008.jf.intel.com with ESMTP; 12 Jun 2020 15:47:03 -0700
+Date: Fri, 12 Jun 2020 15:53:29 -0700
 From: Jacob Pan <jacob.jun.pan@linux.intel.com>
-To: Lu Baolu <baolu.lu@linux.intel.com>
+To: Jonathan Cameron <Jonathan.Cameron@Huawei.com>
 Subject: Re: [PATCH v2 1/3] docs: IOMMU user API
-Message-ID: <20200612150542.4bce2ff0@jacob-builder>
-In-Reply-To: <e9f468ba-5e25-96ad-cb6d-06addee22a02@linux.intel.com>
+Message-ID: <20200612155329.1e7dd882@jacob-builder>
+In-Reply-To: <20200611103032.00005cb8@Huawei.com>
 References: <1591848735-12447-1-git-send-email-jacob.jun.pan@linux.intel.com>
  <1591848735-12447-2-git-send-email-jacob.jun.pan@linux.intel.com>
- <e9f468ba-5e25-96ad-cb6d-06addee22a02@linux.intel.com>
+ <20200611103032.00005cb8@Huawei.com>
 Organization: OTC
 X-Mailer: Claws Mail 3.13.2 (GTK+ 2.24.30; x86_64-pc-linux-gnu)
 MIME-Version: 1.0
@@ -92,12 +92,14 @@ Content-Transfer-Encoding: 7bit
 Errors-To: iommu-bounces@lists.linux-foundation.org
 Sender: "iommu" <iommu-bounces@lists.linux-foundation.org>
 
-On Thu, 11 Jun 2020 14:33:08 +0800
-Lu Baolu <baolu.lu@linux.intel.com> wrote:
+Hi Jon,
 
-> Hi Jacob,
+On Thu, 11 Jun 2020 10:30:32 +0100
+Jonathan Cameron <Jonathan.Cameron@Huawei.com> wrote:
+
+> On Wed, 10 Jun 2020 21:12:13 -0700
+> Jacob Pan <jacob.jun.pan@linux.intel.com> wrote:
 > 
-> On 2020/6/11 12:12, Jacob Pan wrote:
 > > IOMMU UAPI is newly introduced to support communications between
 > > guest virtual IOMMU and host IOMMU. There has been lots of
 > > discussions on how it should work with VFIO UAPI and userspace in
@@ -105,14 +107,24 @@ Lu Baolu <baolu.lu@linux.intel.com> wrote:
 > > 
 > > This document is indended to clarify the UAPI design and usage. The
 > > mechenics of how future extensions should be achieved are also
-> > covered in this documentation.
+> > covered  
+> 
+> mechanics 
+> 
+will fix,
+
+> > in this documentation.
 > > 
 > > Signed-off-by: Liu Yi L <yi.l.liu@intel.com>
-> > Signed-off-by: Jacob Pan <jacob.jun.pan@linux.intel.com>
+> > Signed-off-by: Jacob Pan <jacob.jun.pan@linux.intel.com>  
+> Mostly seems sensible.  A few comments / queries inline.
+> 
+> Jonathan
+> 
 > > ---
-> >   Documentation/userspace-api/iommu.rst | 210
+> >  Documentation/userspace-api/iommu.rst | 210
 > > ++++++++++++++++++++++++++++++++++ 1 file changed, 210 insertions(+)
-> >   create mode 100644 Documentation/userspace-api/iommu.rst
+> >  create mode 100644 Documentation/userspace-api/iommu.rst
 > > 
 > > diff --git a/Documentation/userspace-api/iommu.rst
 > > b/Documentation/userspace-api/iommu.rst new file mode 100644
@@ -133,7 +145,13 @@ Lu Baolu <baolu.lu@linux.intel.com> wrote:
 > > +with user space directly.
 > > +
 > > +The primary use cases are guest Shared Virtual Address (SVA) and
-> > +guest IO virtual address (IOVA), wherein virtual IOMMU (vIOMMU) is
+> > +guest IO virtual address (IOVA), wherein virtual IOMMU (vIOMMU)
+> > is  
+> 
+> wherein _a_ virtual IOMMU 
+right,
+
+> 
 > > +required to communicate with the physical IOMMU in the host.
 > > +
 > > +.. contents:: :local:
@@ -202,20 +220,70 @@ Lu Baolu <baolu.lu@linux.intel.com> wrote:
 > > vIOMMU-pIOMMU +communications. Without the upfront compatibility
 > > checking, future +faults are difficult to report even in normal
 > > conditions. For example, +TLB invalidations should always succeed
-> > from vIOMMU's +perspective. There is no architectural way to report
-> > back to the vIOMMU +if the UAPI data is incompatible. For this
-> > reason the following IOMMU +UAPIs cannot fail:
+> > from vIOMMU's +perspective.   
+> 
+> This statement has me concerned.  If a TLB invalidation fails, but
+> is reported to the guest as successful do we have possible breaking
+> of iommu isolation guarantees?
+> 
+Good point. we should never report success if TLB invalidation fails.
+Perhaps reword as:
+"For example, TLB invalidations should always succeed. There is no
+architectural way to report back to the vIOMMU if the UAPI data is
+incompatible. If that happens, in order to protect IOMMU iosolation
+guarantee, we have to resort to not giving completion status. This
+may result in VM hang."
+
+
+> If you get a TLB invalidation not happening, for some reason, that's
+> a critical fault, isolate the device using the IOMMU or kill the VM.
+> 
+> I'd reword it as "TLB invalidations should always succeed."
+> 
+yes.
+
+> As you mention, we should never get to this state anyway!
+> 
+> > There is no architectural way to report back to the vIOMMU
+> > +if the UAPI data is incompatible. For this reason the following
+> > IOMMU +UAPIs cannot fail:
 > > +
 > > +1. Free PASID
 > > +2. Unbind guest PASID
 > > +3. Unbind guest PASID table (SMMU)
 > > +4. Cache invalidate
-> > +5. Page response
+> > +5. Page response  
+> 
+> Of these, page response is a bit different.  Shouldn't be a problem to
+> occasionally say a page response was handled when it wasn't (or it
+> was but has gone away again before the response reached the
+> hardware).  In high load environments that happens anyway sometimes. 
+> 
+> The others are all cases where any failure at all is fatal to the
+> guest continuing to use the hardware.
+> 
+You are right, PRS fail is expected in that guest could be scheduled
+out for a long time. host IOMMU driver has tracking and timeout which
+will respond back to the device to avoid device hang.
+
+I will remove Page Response from the list.
+
+Here from UAPI compatibility checking perspective, I meant if PRS data
+is not compatible, all page responses could fail, difficult to handle.
+
+
 > > +
 > > +User applications such as QEMU is expected to import kernel UAPI
 > > +headers. Only backward compatibility is supported. For example, an
 > > +older QEMU (with older kernel header) can run on newer kernel.
-> > Newer +QEMU (with new kernel header) may fail on older kernel.
+> > Newer +QEMU (with new kernel header) may fail on older kernel.  
+> 
+> I'd define fail a bit tighter here.  I presume refuse to initialize?
+> 
+agreed. also with Alex's input, we should still support new header on
+old kernel as long as only old features are used. So this could be 
+"refuse to initialize if new fields/flags are used on the older kernel"
+
 > > +
 > > +IOMMU vendor driver should report the below features to IOMMU UAPI
 > > +consumers (e.g. via VFIO).
@@ -256,7 +324,14 @@ Lu Baolu <baolu.lu@linux.intel.com> wrote:
 > > +	__u32 argsz;
 > > +	__u32 flags;
 > > +	__u8  data[];
-> > +  }
+> > +  }  
+> 
+> That final bracket needs to be indented one more space.
+> Make sure you check the output of this file as there are a few of
+> these.
+> 
+will do. thanks
+
 > > +
 > > +Here data[] contains the IOMMU UAPI data structures.
 > > +
@@ -292,20 +367,7 @@ Lu Baolu <baolu.lu@linux.intel.com> wrote:
 > > +
 > > + 1        /* Minsz must include IOMMU UAPI "argsz" of __u32 */
 > > + 2        minsz = offsetofend(struct vfio_iommu_type1_bind, flags)
-> > +  
-> 
-> Where is the vfio_iommu_type1_bind definition? I haven't found it in
-> both this series and current code.
-> 
-It is not in this set. it meant to be an example that follows the
-pattern of wrapping iommu uapi data inside vfio uapi.
-struct {
-	__u32 argsz;
-	__u32 flags;
-	__u8  data[]; 
-}
-I will include the bits in the example to make it more clear.
-
+> > +
 > > +                              sizeof(u32);
 > > + 3        copy_from_user(&vfio_bind, (void __user *)arg, minsz);
 > > + 4
@@ -313,7 +375,12 @@ I will include the bits in the example to make it more clear.
 > > + 6        if (vfio_bind.argsz < minsz)
 > > + 7                return -EINVAL;
 > > + 8
-> > + 9        /* VFIO flags must be included in minsz */
+> > + 9        /* VFIO flags must be included in minsz */  
+> 
+> Nice to keep indentation across change in line number length.
+> 
+will do
+
 > > + 10        switch (vfio_bind.flags) {
 > > + 11        case VFIO_IOMMU_BIND_GUEST_PGTBL:
 > > + 12                /*
@@ -338,63 +405,30 @@ I will include the bits in the example to make it more clear.
 > > bytes.
 > > + 28                */
 > > + 29                memset(iommu_bind + iommu_argsz, 0, data_size -
-> > + 30                       iommu_argsz;  
-> 
-> Where is iommu_bind definition? I am assuming that it's
-> 
-> 	struct iommu_gpasid_bind_data iommu_bind;
-> 
-> You need to cast it to (void *) to avoid pointer overflow.
-> 
-> 	memset((void *)&iommu_bind + iommu_argsz, 0, ...);
-> 
-> By the way, right parenthesis is missed.
-> 
-good point, i will include more realistic code example.
-
+> > + 30                       iommu_argsz;
 > > + 31
 > > + 32                iommu_sva_bind_gpasid(domain, dev,
-> > iommu_bind_data);  
-> 
-> Where is the iommu_bind_data definition?
-> 
-that is the iommu_bind, meant to be pseudo code but should be
-consistent.
-
-
+> > iommu_bind_data);
 > > + 33                break;
 > > +
 > > +
 > > +Case #1 & 2 are supported per backward compatibility rule.
 > > +
-> > +Case #3 will fail with -E2BIG at line #20. Case
+> > +Case #3 will fail with -E2BIG at line #20. Case  
+> 
+> Is that always the case?  As we have multiple structures in a union
+> it's possible that a given architecture might expand without changing
+> the union size. So this might not detect a UAPI change.
+> 
+not always, if expand without size change, there must be a new flag.
+the flag will guide the processing of the new union member.
+
 > > +
 > > +Case #4 may result in other error processed by IOMMU vendor
 > > driver. However, +the damage shall not exceed the scope of the
-> > offending user. 
+> > offending user.  
 > 
-> The above description is not clear. People are hard to find the right
-> description of each case.
 > 
-You are right, it is not clear. I meant for the four scenarios listed
-above. I will use the same word "cases" to reference and create a
-subsection title for reference.
-
-"
-Compatibility Checking
-----------------------
-VFIO has to handle the following cases:
-
-1. User and kernel has exact size match
-2. An older user with older kernel header (smaller UAPI size)
-   running on a newer kernel (larger UAPI size)
-3. A newer user with newer kernel header (larger UAPI size) running
-   on a older kernel.
-4. A malicious/misbehaving user pass illegal/invalid size but within
-   range. The data may contain garbage.
-"
-> Best regards,
-> baolu
 
 [Jacob Pan]
 _______________________________________________
