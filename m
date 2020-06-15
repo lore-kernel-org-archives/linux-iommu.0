@@ -2,77 +2,77 @@ Return-Path: <SRS0=8EFN=74=lists.linux-foundation.org=iommu-bounces@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-0.5 required=3.0 tests=DKIM_INVALID,DKIM_SIGNED,
-	HEADER_FROM_DIFFERENT_DOMAINS,MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS,
-	URIBL_BLOCKED autolearn=no autolearn_force=no version=3.4.0
+X-Spam-Status: No, score=-0.6 required=3.0 tests=DKIM_INVALID,DKIM_SIGNED,
+	HEADER_FROM_DIFFERENT_DOMAINS,MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS
+	autolearn=no autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 4BC57C433DF
-	for <iommu@archiver.kernel.org>; Mon, 15 Jun 2020 07:53:42 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 3DE37C433DF
+	for <iommu@archiver.kernel.org>; Mon, 15 Jun 2020 07:57:12 +0000 (UTC)
 Received: from whitealder.osuosl.org (smtp1.osuosl.org [140.211.166.138])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by mail.kernel.org (Postfix) with ESMTPS id 171872067B
-	for <iommu@archiver.kernel.org>; Mon, 15 Jun 2020 07:53:42 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTPS id 0675B2067B
+	for <iommu@archiver.kernel.org>; Mon, 15 Jun 2020 07:57:11 +0000 (UTC)
 Authentication-Results: mail.kernel.org;
-	dkim=fail reason="signature verification failed" (2048-bit key) header.d=infradead.org header.i=@infradead.org header.b="AlyICsaS"
-DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 171872067B
+	dkim=fail reason="signature verification failed" (2048-bit key) header.d=infradead.org header.i=@infradead.org header.b="oczihRk4"
+DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 0675B2067B
 Authentication-Results: mail.kernel.org; dmarc=none (p=none dis=none) header.from=infradead.org
 Authentication-Results: mail.kernel.org; spf=pass smtp.mailfrom=iommu-bounces@lists.linux-foundation.org
 Received: from localhost (localhost [127.0.0.1])
-	by whitealder.osuosl.org (Postfix) with ESMTP id 02DB78844A;
-	Mon, 15 Jun 2020 07:53:42 +0000 (UTC)
+	by whitealder.osuosl.org (Postfix) with ESMTP id C8A3D883DE;
+	Mon, 15 Jun 2020 07:57:11 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
 Received: from whitealder.osuosl.org ([127.0.0.1])
 	by localhost (.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
-	with ESMTP id CoBalPicV5Sf; Mon, 15 Jun 2020 07:53:41 +0000 (UTC)
+	with ESMTP id YGnpGvOEQNI9; Mon, 15 Jun 2020 07:57:11 +0000 (UTC)
 Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [140.211.9.56])
-	by whitealder.osuosl.org (Postfix) with ESMTP id 738E288395;
-	Mon, 15 Jun 2020 07:53:41 +0000 (UTC)
+	by whitealder.osuosl.org (Postfix) with ESMTP id 15C0887CD7;
+	Mon, 15 Jun 2020 07:57:11 +0000 (UTC)
 Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
-	by lists.linuxfoundation.org (Postfix) with ESMTP id 5A87DC0890;
-	Mon, 15 Jun 2020 07:53:41 +0000 (UTC)
-Received: from silver.osuosl.org (smtp3.osuosl.org [140.211.166.136])
- by lists.linuxfoundation.org (Postfix) with ESMTP id 259F8C016E
- for <iommu@lists.linux-foundation.org>; Mon, 15 Jun 2020 07:53:37 +0000 (UTC)
+	by lists.linuxfoundation.org (Postfix) with ESMTP id DEDF6C0890;
+	Mon, 15 Jun 2020 07:57:10 +0000 (UTC)
+Received: from fraxinus.osuosl.org (smtp4.osuosl.org [140.211.166.137])
+ by lists.linuxfoundation.org (Postfix) with ESMTP id 5C579C016E
+ for <iommu@lists.linux-foundation.org>; Mon, 15 Jun 2020 07:57:09 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
- by silver.osuosl.org (Postfix) with ESMTP id 0AD992077C
- for <iommu@lists.linux-foundation.org>; Mon, 15 Jun 2020 07:53:37 +0000 (UTC)
+ by fraxinus.osuosl.org (Postfix) with ESMTP id 4A2B286F69
+ for <iommu@lists.linux-foundation.org>; Mon, 15 Jun 2020 07:57:09 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from silver.osuosl.org ([127.0.0.1])
+Received: from fraxinus.osuosl.org ([127.0.0.1])
  by localhost (.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
- with ESMTP id Y3TEZ0u4U1Qp for <iommu@lists.linux-foundation.org>;
- Mon, 15 Jun 2020 07:53:36 +0000 (UTC)
+ with ESMTP id Q8qYe3LoIWmw for <iommu@lists.linux-foundation.org>;
+ Mon, 15 Jun 2020 07:57:07 +0000 (UTC)
 X-Greylist: domain auto-whitelisted by SQLgrey-1.7.6
 Received: from merlin.infradead.org (merlin.infradead.org [205.233.59.134])
- by silver.osuosl.org (Postfix) with ESMTPS id 3788A20404
- for <iommu@lists.linux-foundation.org>; Mon, 15 Jun 2020 07:53:36 +0000 (UTC)
+ by fraxinus.osuosl.org (Postfix) with ESMTPS id 4A0E4870F4
+ for <iommu@lists.linux-foundation.org>; Mon, 15 Jun 2020 07:57:07 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
  d=infradead.org; s=merlin.20170209; h=In-Reply-To:Content-Type:MIME-Version:
  References:Message-ID:Subject:Cc:To:From:Date:Sender:Reply-To:
  Content-Transfer-Encoding:Content-ID:Content-Description;
- bh=NFpMfrG9hSicO32ZjKxBqJx63rGzA3U+MKaGGKR/+vs=; b=AlyICsaSytn6UKQYHxgxKALtpV
- davZqqhBuoT/RALUO6rpXUvSYemJAE7crjXLyGQz3wbtvJTFfNaoi1Rglp6dVg2CZH9x4sLqemnu+
- JklbibNrlyLTx/g+gc6cJqZ8uENDkmFIgntMBecpf7QJUgDOcc4+Tj7zectWHzIWlHd3EuG7t814g
- +HYj3pC5QDAkoOzs/dcpjIJjYIHYvoTsSP0JEPJ1TUnTQ4+WpbTcVnJyVT/SF1TFsWwxusgVOJ9RB
- tHGz1xreZFmg2kBRIxtz3nKYW7EGfKHYpY+Xt6vG7x6b7wJGzxfsH3whAUU2bWyLmRByvFylgrVdv
- DZNY7+/g==;
+ bh=IulpOX2ZXgYia0hOJz1PbMFRWrf1LR01eti82WL5/mk=; b=oczihRk4Bm3qcABlCzOnJf+2OJ
+ 0XEBNhA69dQZfOVFjforrMajTMyU6oALzgTuDvb2GeMeG2T1r+tILte4kFI4uUu5taSMg3ym3qIXB
+ /+SpsF9m/yFWIopT3APyh4HKoysD8lYUyRyOuZnjn6W8bh4lVl3p2NODhfXAJewux95NkSmBkzxEO
+ RTgAZ+9Lvii0nNQJWkcQs7m3PJAYCZAAspLWgGZASo7fVIJQ8JP5TfSUCjCBOg204HN+5bc9ES9Xj
+ +db4VuKfq1mznnM24NsJLQ4Z4kVaIXAZWi3u8V9+2eWuWqt6f5a7Pm9z7n/TEczt4pSpBO1v1vZes
+ dhhuLDvA==;
 Received: from j217100.upc-j.chello.nl ([24.132.217.100]
  helo=noisy.programming.kicks-ass.net)
  by merlin.infradead.org with esmtpsa (Exim 4.92.3 #3 (Red Hat Linux))
- id 1jkjvi-0005ii-KF; Mon, 15 Jun 2020 07:53:18 +0000
+ id 1jkjz8-0005nK-Rt; Mon, 15 Jun 2020 07:56:51 +0000
 Received: from hirez.programming.kicks-ass.net
  (hirez.programming.kicks-ass.net [192.168.1.225])
  (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
  (Client did not present a certificate)
- by noisy.programming.kicks-ass.net (Postfix) with ESMTPS id 28ED530604B;
- Mon, 15 Jun 2020 09:53:13 +0200 (CEST)
+ by noisy.programming.kicks-ass.net (Postfix) with ESMTPS id 2D9D6301A32;
+ Mon, 15 Jun 2020 09:56:49 +0200 (CEST)
 Received: by hirez.programming.kicks-ass.net (Postfix, from userid 1000)
- id 107F021059BE3; Mon, 15 Jun 2020 09:53:13 +0200 (CEST)
-Date: Mon, 15 Jun 2020 09:53:13 +0200
+ id 1903521059BE1; Mon, 15 Jun 2020 09:56:49 +0200 (CEST)
+Date: Mon, 15 Jun 2020 09:56:49 +0200
 From: Peter Zijlstra <peterz@infradead.org>
 To: Fenghua Yu <fenghua.yu@intel.com>
 Subject: Re: [PATCH v2 12/12] x86/traps: Fix up invalid PASID
-Message-ID: <20200615075313.GJ2497@hirez.programming.kicks-ass.net>
+Message-ID: <20200615075649.GK2497@hirez.programming.kicks-ass.net>
 References: <1592008893-9388-1-git-send-email-fenghua.yu@intel.com>
  <1592008893-9388-13-git-send-email-fenghua.yu@intel.com>
 MIME-Version: 1.0
@@ -107,24 +107,59 @@ Errors-To: iommu-bounces@lists.linux-foundation.org
 Sender: "iommu" <iommu-bounces@lists.linux-foundation.org>
 
 On Fri, Jun 12, 2020 at 05:41:33PM -0700, Fenghua Yu wrote:
-> @@ -447,6 +458,18 @@ dotraplinkage void do_general_protection(struct pt_regs *regs, long error_code)
->  	int ret;
->  
->  	RCU_LOCKDEP_WARN(!rcu_is_watching(), "entry code didn't wake RCU");
+> +/*
+> + * Apply some heuristics to see if the #GP fault was caused by a thread
+> + * that hasn't had the IA32_PASID MSR initialized.  If it looks like that
+> + * is the problem, try initializing the IA32_PASID MSR. If the heuristic
+> + * guesses incorrectly, take one more #GP fault.
+
+How is that going to help? Aren't we then going to run this same
+heuristic again and again and again?
+
+> + */
+> +bool __fixup_pasid_exception(void)
+> +{
+> +	u64 pasid_msr;
+> +	unsigned int pasid;
 > +
 > +	/*
-> +	 * Perform the check for a user mode PASID exception before enable
-> +	 * interrupts. Doing this here ensures that the PASID MSR can be simply
-> +	 * accessed because the contents are known to be still associated
-> +	 * with the current process.
+> +	 * This function is called only when this #GP was triggered from user
+> +	 * space. So the mm cannot be NULL.
 > +	 */
-> +	if (user_mode(regs) && fixup_pasid_exception()) {
-> +		cond_local_irq_enable(regs);
-> +		return;
+> +	pasid = current->mm->pasid;
+> +	/* If the mm doesn't have a valid PASID, then can't help. */
+> +	if (invalid_pasid(pasid))
+> +		return false;
+> +
+> +	/*
+> +	 * Since IRQ is disabled now, the current task still owns the FPU on
 
-OK, so we're done with the exception, lets enable interrupts?
+That's just weird and confusing. What you want to say is that you rely
+on the exception disabling the interrupt.
 
-> +	}
+> +	 * this CPU and the PASID MSR can be directly accessed.
+> +	 *
+> +	 * If the MSR has a valid PASID, the #GP must be for some other reason.
+> +	 *
+> +	 * If rdmsr() is really a performance issue, a TIF_ flag may be
+> +	 * added to check if the thread has a valid PASID instead of rdmsr().
+
+I don't understand any of this. Nobody except us writes to this MSR, we
+should bloody well know what's in it. What gives?
+
+> +	 */
+> +	rdmsrl(MSR_IA32_PASID, pasid_msr);
+> +	if (pasid_msr & MSR_IA32_PASID_VALID)
+> +		return false;
+> +
+> +	/* Fix up the MSR if the MSR doesn't have a valid PASID. */
+> +	wrmsrl(MSR_IA32_PASID, pasid | MSR_IA32_PASID_VALID);
+> +
+> +	return true;
+> +}
+> -- 
+> 2.19.1
+> 
 _______________________________________________
 iommu mailing list
 iommu@lists.linux-foundation.org
