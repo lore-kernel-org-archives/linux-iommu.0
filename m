@@ -2,98 +2,151 @@ Return-Path: <SRS0=8EFN=74=lists.linux-foundation.org=iommu-bounces@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-0.3 required=3.0 tests=DKIM_ADSP_CUSTOM_MED,
-	DKIM_INVALID,DKIM_SIGNED,FREEMAIL_FORGED_FROMDOMAIN,FREEMAIL_FROM,
+X-Spam-Status: No, score=-0.6 required=3.0 tests=DKIM_INVALID,DKIM_SIGNED,
 	HEADER_FROM_DIFFERENT_DOMAINS,MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS
 	autolearn=no autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 060C1C433E0
-	for <iommu@archiver.kernel.org>; Mon, 15 Jun 2020 11:06:26 +0000 (UTC)
-Received: from hemlock.osuosl.org (smtp2.osuosl.org [140.211.166.133])
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 17FE6C433E1
+	for <iommu@archiver.kernel.org>; Mon, 15 Jun 2020 12:39:48 +0000 (UTC)
+Received: from silver.osuosl.org (smtp3.osuosl.org [140.211.166.136])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by mail.kernel.org (Postfix) with ESMTPS id CF5BF20707
-	for <iommu@archiver.kernel.org>; Mon, 15 Jun 2020 11:06:25 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTPS id C22A6206D7
+	for <iommu@archiver.kernel.org>; Mon, 15 Jun 2020 12:39:47 +0000 (UTC)
 Authentication-Results: mail.kernel.org;
-	dkim=fail reason="signature verification failed" (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="QO0pRvC2"
-DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org CF5BF20707
-Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=gmail.com
+	dkim=fail reason="signature verification failed" (1024-bit key) header.d=intel.onmicrosoft.com header.i=@intel.onmicrosoft.com header.b="wMNF/zrh"
+DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org C22A6206D7
+Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=intel.com
 Authentication-Results: mail.kernel.org; spf=pass smtp.mailfrom=iommu-bounces@lists.linux-foundation.org
 Received: from localhost (localhost [127.0.0.1])
-	by hemlock.osuosl.org (Postfix) with ESMTP id 530D2884D7;
-	Mon, 15 Jun 2020 11:06:25 +0000 (UTC)
+	by silver.osuosl.org (Postfix) with ESMTP id 906E124FFE;
+	Mon, 15 Jun 2020 12:39:47 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from hemlock.osuosl.org ([127.0.0.1])
+Received: from silver.osuosl.org ([127.0.0.1])
 	by localhost (.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
-	with ESMTP id I1kZ4EvdWXfC; Mon, 15 Jun 2020 11:06:24 +0000 (UTC)
+	with ESMTP id fe8OXIIIR7Ty; Mon, 15 Jun 2020 12:39:46 +0000 (UTC)
 Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [140.211.9.56])
-	by hemlock.osuosl.org (Postfix) with ESMTP id A9BAB884BB;
-	Mon, 15 Jun 2020 11:06:23 +0000 (UTC)
+	by silver.osuosl.org (Postfix) with ESMTP id 88C6224E7D;
+	Mon, 15 Jun 2020 12:39:46 +0000 (UTC)
 Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
-	by lists.linuxfoundation.org (Postfix) with ESMTP id 8F261C0892;
-	Mon, 15 Jun 2020 11:06:23 +0000 (UTC)
-Received: from fraxinus.osuosl.org (smtp4.osuosl.org [140.211.166.137])
- by lists.linuxfoundation.org (Postfix) with ESMTP id 548F2C016E
- for <iommu@lists.linux-foundation.org>; Mon, 15 Jun 2020 10:02:20 +0000 (UTC)
+	by lists.linuxfoundation.org (Postfix) with ESMTP id 75B9AC0888;
+	Mon, 15 Jun 2020 12:39:46 +0000 (UTC)
+Received: from whitealder.osuosl.org (smtp1.osuosl.org [140.211.166.138])
+ by lists.linuxfoundation.org (Postfix) with ESMTP id DD2BBC016E
+ for <iommu@lists.linux-foundation.org>; Mon, 15 Jun 2020 12:39:44 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
- by fraxinus.osuosl.org (Postfix) with ESMTP id 392D186D5B
- for <iommu@lists.linux-foundation.org>; Mon, 15 Jun 2020 10:02:20 +0000 (UTC)
+ by whitealder.osuosl.org (Postfix) with ESMTP id CB72087605
+ for <iommu@lists.linux-foundation.org>; Mon, 15 Jun 2020 12:39:44 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from fraxinus.osuosl.org ([127.0.0.1])
+Received: from whitealder.osuosl.org ([127.0.0.1])
  by localhost (.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
- with ESMTP id LS0h89oBkYHE for <iommu@lists.linux-foundation.org>;
- Mon, 15 Jun 2020 10:02:19 +0000 (UTC)
+ with ESMTP id WfEt7p-MP1Tp for <iommu@lists.linux-foundation.org>;
+ Mon, 15 Jun 2020 12:39:44 +0000 (UTC)
 X-Greylist: domain auto-whitelisted by SQLgrey-1.7.6
-Received: from mail-wm1-f65.google.com (mail-wm1-f65.google.com
- [209.85.128.65])
- by fraxinus.osuosl.org (Postfix) with ESMTPS id CA18A8073A
- for <iommu@lists.linux-foundation.org>; Mon, 15 Jun 2020 10:02:18 +0000 (UTC)
-Received: by mail-wm1-f65.google.com with SMTP id d128so14182561wmc.1
- for <iommu@lists.linux-foundation.org>; Mon, 15 Jun 2020 03:02:18 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=gmail.com; s=20161025;
- h=date:from:to:cc:subject:message-id:references:mime-version
- :content-disposition:in-reply-to;
- bh=08GcNeJgDJiHZoSCn55z5bT9ubYArPoNshimIgtmrxI=;
- b=QO0pRvC2qVcMaJQ1lTSuk7HXw4jnlqpbEwCy2b7HVqADTf/GNIv4YdnBzNHVw3OIKF
- MLsXLdpHZPMdBG6PfwTT0SFTybZXh835oquCUm3jZWE6QH0/QhDucD7SUl35TWO6e/rV
- mmbDpBoam0NEmYWiatJfvtqstG0WOrOLAIH5oAcUkSU/pJWz7lFjNjSE6NaolLfr3pbG
- 87EkcDfgVc4XMUYzKZcUKGUSK3xEZ2eKA8JHRXDWTW65Imb84jXh5XDbArdXBC4p9Hao
- i5lZNcj3+1DHaWTnpmE+rPhIg6sTXyGn2hnHJ5UgC+BicdM4b25DZUULNrvk6pERMvfR
- UcbA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
- d=1e100.net; s=20161025;
- h=x-gm-message-state:date:from:to:cc:subject:message-id:references
- :mime-version:content-disposition:in-reply-to;
- bh=08GcNeJgDJiHZoSCn55z5bT9ubYArPoNshimIgtmrxI=;
- b=nRfJcv7crXyzp560xb1lpPbZV9ptLMzaFP/XzFPI1dtCqgEZjFSr07odNOS+KZ9srF
- bnkXY8mDsACdjNWXuMJ4jC++TMnf6C+ETWJ5Yl+H1RPlMwprXMjJgC+bM43ux0CWCn9l
- EocZbDYnm8gfo4T0lUi7ftYdS6ehubNUCEVQ5VuV4BF8iTHvtQ0M19EnCAVtNJOpa68W
- sN8Etv327A8m9HlosfkVBTCgTKIOYuDdlY6vNMGHblZhqbTPkpN+EWzHvryrC4z2Io5j
- i0FbVK87/2tzkpkJWH1bMFy0L74mBe0IiMqBkLZoeZGlfkUqAQry/19d1bn3gBCJzzNM
- /CNg==
-X-Gm-Message-State: AOAM530EtdxOFET9tQjr7enkC1BDFLPQxzl3/MzbQAwOPXNqQ+kM8oNc
- BrYtZDVrLkgL14n6JDcEOko=
-X-Google-Smtp-Source: ABdhPJzWSdHeJZNPFXdicH+0DDwzdE3V7acyxzPD+oe7DXfRReDP+5v+LccZQloVMXDtKOAvZKdHbg==
-X-Received: by 2002:a1c:dc44:: with SMTP id t65mr13176902wmg.128.1592215337114; 
- Mon, 15 Jun 2020 03:02:17 -0700 (PDT)
-Received: from localhost ([51.15.41.238])
- by smtp.gmail.com with ESMTPSA id k17sm23995217wrl.54.2020.06.15.03.02.15
- (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
- Mon, 15 Jun 2020 03:02:16 -0700 (PDT)
-Date: Mon, 15 Jun 2020 11:02:14 +0100
-From: Stefan Hajnoczi <stefanha@gmail.com>
-To: Liu Yi L <yi.l.liu@intel.com>
-Subject: Re: [PATCH v2 00/15] vfio: expose virtual Shared Virtual Addressing
+Received: from mga02.intel.com (mga02.intel.com [134.134.136.20])
+ by whitealder.osuosl.org (Postfix) with ESMTPS id DDBCB880E4
+ for <iommu@lists.linux-foundation.org>; Mon, 15 Jun 2020 12:39:43 +0000 (UTC)
+IronPort-SDR: 4Tuns8ziCfjccmNvM6czLnwjEOpl0igPRkDRUBjcAJMKh15UQjD9wZmEfl4CaZdB2fxATz6y3G
+ B/G7xk1wiQqA==
+X-Amp-Result: SKIPPED(no attachment in message)
+X-Amp-File-Uploaded: False
+Received: from orsmga003.jf.intel.com ([10.7.209.27])
+ by orsmga101.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384;
+ 15 Jun 2020 05:39:43 -0700
+IronPort-SDR: 8ahugOWleSOYmag3ktHAHwVFudD2Qb+R/UDNDLaTsEdzs/y+bxrX1SYbYZPW6y38fbZBw74TSF
+ /DQ9WB1kkjNw==
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="5.73,514,1583222400"; d="scan'208";a="272756106"
+Received: from orsmsx110.amr.corp.intel.com ([10.22.240.8])
+ by orsmga003.jf.intel.com with ESMTP; 15 Jun 2020 05:39:43 -0700
+Received: from orsmsx126.amr.corp.intel.com (10.22.240.126) by
+ ORSMSX110.amr.corp.intel.com (10.22.240.8) with Microsoft SMTP Server (TLS)
+ id 14.3.439.0; Mon, 15 Jun 2020 05:39:42 -0700
+Received: from ORSEDG002.ED.cps.intel.com (10.7.248.5) by
+ ORSMSX126.amr.corp.intel.com (10.22.240.126) with Microsoft SMTP Server (TLS)
+ id 14.3.439.0; Mon, 15 Jun 2020 05:39:42 -0700
+Received: from NAM11-BN8-obe.outbound.protection.outlook.com (104.47.58.176)
+ by edgegateway.intel.com (134.134.137.101) with Microsoft SMTP Server (TLS)
+ id 14.3.439.0; Mon, 15 Jun 2020 05:39:42 -0700
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=bWfIyMD0WRsyBsTjdwsIsHseavtgW1u9kvscDIi2jSTs4UfDFLLCc6v+zEYE0rxhaPcrYpOeA+FwIcHLlGDHXHfyyOqueELJUsVefjITwZv+jE/HZjCT6ZmggKTPb/pkbntTJivp0lSS7PIfAWg/FN7JMmpnlWWZbs3sROVh5Po8qcumadOOVm2JFD1qpxkNXP8vQcZWplea+3SiKwdMYIPgil7F2D9fzZwalGd3EAm7VqhFwdnXGKTY5qhwND5Gl/NRhbxhv7jaoWGMsag1ve+2xjjt0EX630AuFMnEwjaGBz8fJlhdCqXn1Q4fO/+B6yDq+NiaBm+t4ahH88aPCg==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com; 
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=VLMsGXSVuuIs8wyR0zgMnsIv3XiMpvn0ABsrm5aWcko=;
+ b=UchB8s2qCVKZKo31BCyk2C9R8A9GnAlK5L+NZdxRyBt/Zq5CQWXsVWN0V4CdRKqVGR1c/S6wXtCZ9mFEK8jXX2lYAMiRBOmOYgdWigQwfCXAREuZHP5subg6PSodHlrU+HvK7r09mNcCfDnZEeFrcKRANgRqxaC/quj0eOGlbNOBq07xhHzQpimP1ilvyqq0CQIly/OSy6j3p7p59XlzujL1n5c5iP7q2a6Jn+yEyO6fdjEUWTJYj/Tea/zMUX9TyyyhFq2r7zTRD3cwaC0XPnvh8VakDr71nNYk2XwSpxD7ZXDqecZoP0Hs/YESbsS2A3HG9TTPgqfIZKvd/R4hGg==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=intel.com; dmarc=pass action=none header.from=intel.com;
+ dkim=pass header.d=intel.com; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=intel.onmicrosoft.com; 
+ s=selector2-intel-onmicrosoft-com;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=VLMsGXSVuuIs8wyR0zgMnsIv3XiMpvn0ABsrm5aWcko=;
+ b=wMNF/zrh1Ri0Zd1js+0RzcqyJwBv7zVxWBxfGy403Sr6CqfGPg4U3HNSnWD340tkcvPZzCYva1y6bJQYRGLriDCgihtLq2qXT+/4qK5AWbTTiYwwqQLwQFtqdcBGT61CfXT1Sic9Eh9bKNs3s4aKIKBhL3aPShXsb1y9p4W5v78=
+Received: from DM5PR11MB1435.namprd11.prod.outlook.com (2603:10b6:4:7::18) by
+ DM6PR11MB4074.namprd11.prod.outlook.com (2603:10b6:5:5::11) with
+ Microsoft
+ SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.20.3088.25; Mon, 15 Jun 2020 12:39:40 +0000
+Received: from DM5PR11MB1435.namprd11.prod.outlook.com
+ ([fe80::2c3d:98d9:4e81:c86c]) by DM5PR11MB1435.namprd11.prod.outlook.com
+ ([fe80::2c3d:98d9:4e81:c86c%6]) with mapi id 15.20.3088.029; Mon, 15 Jun 2020
+ 12:39:40 +0000
+From: "Liu, Yi L" <yi.l.liu@intel.com>
+To: Stefan Hajnoczi <stefanha@gmail.com>
+Subject: RE: [PATCH v2 00/15] vfio: expose virtual Shared Virtual Addressing
  to VMs
-Message-ID: <20200615100214.GC1491454@stefanha-x1.localdomain>
+Thread-Topic: [PATCH v2 00/15] vfio: expose virtual Shared Virtual Addressing
+ to VMs
+Thread-Index: AQHWP+kpbV8I76mMTUKWVPLrPDAapajZeEMAgAAfcNA=
+Date: Mon, 15 Jun 2020 12:39:40 +0000
+Message-ID: <DM5PR11MB143598745517132685DF1D09C39C0@DM5PR11MB1435.namprd11.prod.outlook.com>
 References: <1591877734-66527-1-git-send-email-yi.l.liu@intel.com>
+ <20200615100214.GC1491454@stefanha-x1.localdomain>
+In-Reply-To: <20200615100214.GC1491454@stefanha-x1.localdomain>
+Accept-Language: en-US
+Content-Language: en-US
+X-MS-Has-Attach: 
+X-MS-TNEF-Correlator: 
+dlp-reaction: no-action
+dlp-version: 11.2.0.6
+dlp-product: dlpe-windows
+authentication-results: gmail.com; dkim=none (message not signed)
+ header.d=none;gmail.com; dmarc=none action=none header.from=intel.com;
+x-originating-ip: [192.55.46.36]
+x-ms-publictraffictype: Email
+x-ms-office365-filtering-correlation-id: bf702bf7-20e5-427b-7d29-08d811292c3b
+x-ms-traffictypediagnostic: DM6PR11MB4074:
+x-ld-processed: 46c98d88-e344-4ed4-8496-4ed7712e255d,ExtAddr
+x-ms-exchange-transport-forked: True
+x-microsoft-antispam-prvs: <DM6PR11MB407410D7FAE5D94425A214EDC39C0@DM6PR11MB4074.namprd11.prod.outlook.com>
+x-ms-oob-tlc-oobclassifiers: OLM:9508;
+x-forefront-prvs: 04359FAD81
+x-ms-exchange-senderadcheck: 1
+x-microsoft-antispam: BCL:0;
+x-microsoft-antispam-message-info: sUf/16cEknD97CZe6yl79mNm3tIQyEF+72C74VWW/KVC8Uwtl8FWVpgSYaWp49gzPdggh0v98fgPylZFouRdZQHYKlMH+MM+dcPmBN+UmMG1bcQLca3O2CxthhgeIwaGvIXLy8RXRTi3vZSd+TT4AOS5aOqnFw2gD7hHz8j/hLttrp04qHcJOZISAU15FUSSH32+optBwhVOjg7KTeYDWguFtcNm/69/bGW9S8wTKyu42llRKfGRgnx4eVk233ZDbVdscVwPeMkvMNzeHlRuDpB393Y/eX6Ax4PNOgy/VZfM1uxb7QA/vBMhaAAd9dtSuleYSmpWSc82VOJZJjKaGQ==
+x-forefront-antispam-report: CIP:255.255.255.255; CTRY:; LANG:en; SCL:1; SRV:;
+ IPV:NLI; SFV:NSPM; H:DM5PR11MB1435.namprd11.prod.outlook.com; PTR:; CAT:NONE;
+ SFTY:;
+ SFS:(39860400002)(396003)(346002)(136003)(376002)(366004)(6916009)(2906002)(478600001)(5660300002)(52536014)(186003)(54906003)(4326008)(26005)(55016002)(86362001)(9686003)(8676002)(66946007)(6506007)(7416002)(316002)(76116006)(64756008)(83380400001)(33656002)(7696005)(66476007)(66556008)(71200400001)(66446008)(8936002);
+ DIR:OUT; SFP:1102; 
+x-ms-exchange-antispam-messagedata: 6xNPYBeB+GqOkXGm++XB97Y+8Ldj4bHtlbeaPUX9ISmXXwrkz1FQTEfuWChhc9HOTQYLcgfFIBThQj+ZHuQD2J2zQJYUBgTbz6Mvnoz+Cvb3NPNW4P7nTRct+L4NnwBfcJMwxNRLWMhdAL7oKBIoG7NI5/DnifRYzIELF3vxwS2RkDCEIxxCy3ofDybuqY+leVTMHIuS7HOz5UKd1BfQMfdKZ7uyBpirbRNHHWWTEgiBeS7IR8mw0LxPRIV20YxP8NRquFY2uPc4rmy93FUqtR0A2e64+6Jlts2PNO02znWxZElfLqTWUpVHlBt7pZDiV1gdkbQqFVBi4LPA1jjvQehVVTlDarIlnG5eb8mqCjB/8FkBUgDFlhmvbIZ5PBN0OKaAZahyz3mOuGIT+eH32umFCCbt73cZsw72h65T8lXxn54nym7iJPTE6XXhIDaXrqn9NwzMRWWRHhz3teKkF3vNqbXBrnFMYaJmW4IARgE=
 MIME-Version: 1.0
-In-Reply-To: <1591877734-66527-1-git-send-email-yi.l.liu@intel.com>
-X-Mailman-Approved-At: Mon, 15 Jun 2020 11:06:21 +0000
-Cc: jean-philippe@linaro.org, kevin.tian@intel.com, ashok.raj@intel.com,
- kvm@vger.kernel.org, yi.y.sun@intel.com, linux-kernel@vger.kernel.org,
- alex.williamson@redhat.com, iommu@lists.linux-foundation.org, hao.wu@intel.com,
- jun.j.tian@intel.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: bf702bf7-20e5-427b-7d29-08d811292c3b
+X-MS-Exchange-CrossTenant-originalarrivaltime: 15 Jun 2020 12:39:40.5083 (UTC)
+X-MS-Exchange-CrossTenant-fromentityheader: Hosted
+X-MS-Exchange-CrossTenant-id: 46c98d88-e344-4ed4-8496-4ed7712e255d
+X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
+X-MS-Exchange-CrossTenant-userprincipalname: eXNwWJyb3uiLr296M02ZBSYUG4b46MNJZ71VMaQfZ+A73KnT1M8ix4aUWrKYwERiNpIsxRSTl6JX6YEWtJ7EZA==
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: DM6PR11MB4074
+X-OriginatorOrg: intel.com
+Cc: "jean-philippe@linaro.org" <jean-philippe@linaro.org>, "Tian,
+ Kevin" <kevin.tian@intel.com>, "Raj, Ashok" <ashok.raj@intel.com>,
+ "kvm@vger.kernel.org" <kvm@vger.kernel.org>, "Sun, Yi Y" <yi.y.sun@intel.com>,
+ "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
+ "alex.williamson@redhat.com" <alex.williamson@redhat.com>,
+ "iommu@lists.linux-foundation.org" <iommu@lists.linux-foundation.org>, "Wu,
+ Hao" <hao.wu@intel.com>, "Tian, Jun J" <jun.j.tian@intel.com>
 X-BeenThere: iommu@lists.linux-foundation.org
 X-Mailman-Version: 2.1.15
 Precedence: list
@@ -106,105 +159,91 @@ List-Post: <mailto:iommu@lists.linux-foundation.org>
 List-Help: <mailto:iommu-request@lists.linux-foundation.org?subject=help>
 List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
  <mailto:iommu-request@lists.linux-foundation.org?subject=subscribe>
-Content-Type: multipart/mixed; boundary="===============8610393235283134005=="
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: 7bit
 Errors-To: iommu-bounces@lists.linux-foundation.org
 Sender: "iommu" <iommu-bounces@lists.linux-foundation.org>
 
+> From: Stefan Hajnoczi <stefanha@gmail.com>
+> Sent: Monday, June 15, 2020 6:02 PM
+> 
+> On Thu, Jun 11, 2020 at 05:15:19AM -0700, Liu Yi L wrote:
+> > Shared Virtual Addressing (SVA), a.k.a, Shared Virtual Memory (SVM) on
+> > Intel platforms allows address space sharing between device DMA and
+> > applications. SVA can reduce programming complexity and enhance security.
+> >
+> > This VFIO series is intended to expose SVA usage to VMs. i.e. Sharing
+> > guest application address space with passthru devices. This is called
+> > vSVA in this series. The whole vSVA enabling requires QEMU/VFIO/IOMMU
+> > changes. For IOMMU and QEMU changes, they are in separate series (listed
+> > in the "Related series").
+> >
+> > The high-level architecture for SVA virtualization is as below, the key
+> > design of vSVA support is to utilize the dual-stage IOMMU translation (
+> > also known as IOMMU nesting translation) capability in host IOMMU.
+> >
+> >
+> >     .-------------.  .---------------------------.
+> >     |   vIOMMU    |  | Guest process CR3, FL only|
+> >     |             |  '---------------------------'
+> >     .----------------/
+> >     | PASID Entry |--- PASID cache flush -
+> >     '-------------'                       |
+> >     |             |                       V
+> >     |             |                CR3 in GPA
+> >     '-------------'
+> > Guest
+> > ------| Shadow |--------------------------|--------
+> >       v        v                          v
+> > Host
+> >     .-------------.  .----------------------.
+> >     |   pIOMMU    |  | Bind FL for GVA-GPA  |
+> >     |             |  '----------------------'
+> >     .----------------/  |
+> >     | PASID Entry |     V (Nested xlate)
+> >     '----------------\.------------------------------.
+> >     |             |   |SL for GPA-HPA, default domain|
+> >     |             |   '------------------------------'
+> >     '-------------'
+> > Where:
+> >  - FL = First level/stage one page tables
+> >  - SL = Second level/stage two page tables
+> 
+> Hi,
+> Looks like an interesting feature!
 
---===============8610393235283134005==
-Content-Type: multipart/signed; micalg=pgp-sha256;
-	protocol="application/pgp-signature"; boundary="E13BgyNx05feLLmH"
-Content-Disposition: inline
+thanks for the interest. Stefan :-)
 
+> To check I understand this feature: can applications now pass virtual
+> addresses to devices instead of translating to IOVAs?
 
---E13BgyNx05feLLmH
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-Content-Transfer-Encoding: quoted-printable
+yes, application could pass virtual addresses to device directly. As
+long as the virtual address is mapped in cpu page table, then IOMMU
+would get it translated to physical address.
 
-On Thu, Jun 11, 2020 at 05:15:19AM -0700, Liu Yi L wrote:
-> Shared Virtual Addressing (SVA), a.k.a, Shared Virtual Memory (SVM) on
-> Intel platforms allows address space sharing between device DMA and
-> applications. SVA can reduce programming complexity and enhance security.
->=20
-> This VFIO series is intended to expose SVA usage to VMs. i.e. Sharing
-> guest application address space with passthru devices. This is called
-> vSVA in this series. The whole vSVA enabling requires QEMU/VFIO/IOMMU
-> changes. For IOMMU and QEMU changes, they are in separate series (listed
-> in the "Related series").
->=20
-> The high-level architecture for SVA virtualization is as below, the key
-> design of vSVA support is to utilize the dual-stage IOMMU translation (
-> also known as IOMMU nesting translation) capability in host IOMMU.
->=20
->=20
->     .-------------.  .---------------------------.
->     |   vIOMMU    |  | Guest process CR3, FL only|
->     |             |  '---------------------------'
->     .----------------/
->     | PASID Entry |--- PASID cache flush -
->     '-------------'                       |
->     |             |                       V
->     |             |                CR3 in GPA
->     '-------------'
-> Guest
-> ------| Shadow |--------------------------|--------
->       v        v                          v
-> Host
->     .-------------.  .----------------------.
->     |   pIOMMU    |  | Bind FL for GVA-GPA  |
->     |             |  '----------------------'
->     .----------------/  |
->     | PASID Entry |     V (Nested xlate)
->     '----------------\.------------------------------.
->     |             |   |SL for GPA-HPA, default domain|
->     |             |   '------------------------------'
->     '-------------'
-> Where:
->  - FL =3D First level/stage one page tables
->  - SL =3D Second level/stage two page tables
+> If yes, can guest applications restrict the vSVA address space so the
+> device only has access to certain regions?
 
-Hi,
-Looks like an interesting feature!
+do you mean restrict the access of certain virtual address regions of
+guest application ? or certain guest memory? :-)
 
-To check I understand this feature: can applications now pass virtual
-addresses to devices instead of translating to IOVAs?
+> On one hand replacing IOVA translation with virtual addresses simplifies
+> the application programming model, but does it give up isolation if the
+> device can now access all application memory?
 
-If yes, can guest applications restrict the vSVA address space so the
-device only has access to certain regions?
+yeah, you are right, SVA simplifies application programming model. And
+today, we do allow access all application memory by SVA. this is also
+another benefit of SVA. e.g. say an accelerator gets a copy of data from
+a buffer written by cpu. If there is some other data which is directed
+by a pointer (a virtual address) within the data got from memory, accelerator
+could do another DMA to fetch it without cpu's involvement.
 
-On one hand replacing IOVA translation with virtual addresses simplifies
-the application programming model, but does it give up isolation if the
-device can now access all application memory?
+Regards,
+Yi Liu
 
-Thanks,
-Stefan
-
---E13BgyNx05feLLmH
-Content-Type: application/pgp-signature; name="signature.asc"
-
------BEGIN PGP SIGNATURE-----
-
-iQEzBAEBCAAdFiEEhpWov9P5fNqsNXdanKSrs4Grc8gFAl7nRyYACgkQnKSrs4Gr
-c8it8gf/TeJTtf8ILMVekJJKiE/LzXVWGX/dqeYBMEp9fhU6QYQIgieaQ9coR+zu
-2Rk66LdmgfNDct0Yd9JsUgcBzggYCE4EXUQq2gX5+43O6KkbMKPZq9XWG3c1lorL
-dcghm6bL66QtyXtTuirc4PLDyXHQXrSFE1XyCqb1LI4ZJ06ixoayWLvG1Y+OhaE6
-QsTzNbo5RhADYG+l5U40nTXoQu4sr/7oPK3fBT5BI8/iTGgVnb43tHBTLtxxMPXS
-h8S8N0eJpXdfudpdp7YMUu9crttpDcTvtWIRQm2gLVpF+t95Dh1RKtntiKPfNTzz
-dlmLpMC5acu6JEAimAswW5t7IYqzfQ==
-=zQiU
------END PGP SIGNATURE-----
-
---E13BgyNx05feLLmH--
-
---===============8610393235283134005==
-Content-Type: text/plain; charset="us-ascii"
-MIME-Version: 1.0
-Content-Transfer-Encoding: 7bit
-Content-Disposition: inline
-
+> Thanks,
+> Stefan
 _______________________________________________
 iommu mailing list
 iommu@lists.linux-foundation.org
 https://lists.linuxfoundation.org/mailman/listinfo/iommu
---===============8610393235283134005==--
