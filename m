@@ -2,143 +2,66 @@ Return-Path: <SRS0=8EFN=74=lists.linux-foundation.org=iommu-bounces@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-3.8 required=3.0 tests=DKIM_INVALID,DKIM_SIGNED,
-	MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED,USER_AGENT_GIT
-	autolearn=no autolearn_force=no version=3.4.0
+X-Spam-Status: No, score=-8.2 required=3.0 tests=HEADER_FROM_DIFFERENT_DOMAINS,
+	INCLUDES_PATCH,MAILING_LIST_MULTI,SIGNED_OFF_BY,SPF_HELO_NONE,SPF_PASS,
+	URIBL_BLOCKED,USER_AGENT_SANE_1 autolearn=ham autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 788BCC433E5
-	for <iommu@archiver.kernel.org>; Mon, 15 Jun 2020 06:47:19 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id DDE9FC433DF
+	for <iommu@archiver.kernel.org>; Mon, 15 Jun 2020 06:55:05 +0000 (UTC)
 Received: from hemlock.osuosl.org (smtp2.osuosl.org [140.211.166.133])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by mail.kernel.org (Postfix) with ESMTPS id 49EFD207FF
-	for <iommu@archiver.kernel.org>; Mon, 15 Jun 2020 06:47:19 +0000 (UTC)
-Authentication-Results: mail.kernel.org;
-	dkim=fail reason="signature verification failed" (1024-bit key) header.d=kernel.org header.i=@kernel.org header.b="fkfERACX"
-DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 49EFD207FF
-Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=kernel.org
+	by mail.kernel.org (Postfix) with ESMTPS id A4D032068E
+	for <iommu@archiver.kernel.org>; Mon, 15 Jun 2020 06:55:05 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org A4D032068E
+Authentication-Results: mail.kernel.org; dmarc=none (p=none dis=none) header.from=lst.de
 Authentication-Results: mail.kernel.org; spf=pass smtp.mailfrom=iommu-bounces@lists.linux-foundation.org
 Received: from localhost (localhost [127.0.0.1])
-	by hemlock.osuosl.org (Postfix) with ESMTP id 26686884E7;
-	Mon, 15 Jun 2020 06:47:19 +0000 (UTC)
+	by hemlock.osuosl.org (Postfix) with ESMTP id 73BBC888E4;
+	Mon, 15 Jun 2020 06:55:05 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
 Received: from hemlock.osuosl.org ([127.0.0.1])
 	by localhost (.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
-	with ESMTP id wDrEmNCeI1TC; Mon, 15 Jun 2020 06:47:18 +0000 (UTC)
+	with ESMTP id yNu9YK5S5u68; Mon, 15 Jun 2020 06:55:04 +0000 (UTC)
 Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [140.211.9.56])
-	by hemlock.osuosl.org (Postfix) with ESMTP id 60543883CC;
-	Mon, 15 Jun 2020 06:47:18 +0000 (UTC)
+	by hemlock.osuosl.org (Postfix) with ESMTP id 754ED8878B;
+	Mon, 15 Jun 2020 06:55:04 +0000 (UTC)
 Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
-	by lists.linuxfoundation.org (Postfix) with ESMTP id 5784EC0888;
-	Mon, 15 Jun 2020 06:47:18 +0000 (UTC)
-Received: from hemlock.osuosl.org (smtp2.osuosl.org [140.211.166.133])
- by lists.linuxfoundation.org (Postfix) with ESMTP id B4C95C016E
- for <iommu@lists.linux-foundation.org>; Mon, 15 Jun 2020 06:47:16 +0000 (UTC)
+	by lists.linuxfoundation.org (Postfix) with ESMTP id 57732C0888;
+	Mon, 15 Jun 2020 06:55:04 +0000 (UTC)
+Received: from silver.osuosl.org (smtp3.osuosl.org [140.211.166.136])
+ by lists.linuxfoundation.org (Postfix) with ESMTP id 58879C016E
+ for <iommu@lists.linux-foundation.org>; Mon, 15 Jun 2020 06:55:02 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
- by hemlock.osuosl.org (Postfix) with ESMTP id A1FD088411
- for <iommu@lists.linux-foundation.org>; Mon, 15 Jun 2020 06:47:16 +0000 (UTC)
+ by silver.osuosl.org (Postfix) with ESMTP id 47320226E9
+ for <iommu@lists.linux-foundation.org>; Mon, 15 Jun 2020 06:55:02 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from hemlock.osuosl.org ([127.0.0.1])
+Received: from silver.osuosl.org ([127.0.0.1])
  by localhost (.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
- with ESMTP id LK1Ff4Uba2yW for <iommu@lists.linux-foundation.org>;
- Mon, 15 Jun 2020 06:47:15 +0000 (UTC)
-X-Greylist: domain auto-whitelisted by SQLgrey-1.7.6
-Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
- by hemlock.osuosl.org (Postfix) with ESMTPS id CF7A5883CB
- for <iommu@lists.linux-foundation.org>; Mon, 15 Jun 2020 06:47:15 +0000 (UTC)
-Received: from mail.kernel.org (ip5f5ad5c5.dynamic.kabel-deutschland.de
- [95.90.213.197])
- (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
- (No client certificate requested)
- by mail.kernel.org (Postfix) with ESMTPSA id 73B0120739;
- Mon, 15 Jun 2020 06:47:15 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
- s=default; t=1592203635;
- bh=GF2Otkk8GeL8AnPZYKuZzCwG9PVKg5Z7DVVHgebQ7f0=;
- h=From:To:Cc:Subject:Date:From;
- b=fkfERACX/KYWbqRV8t7NVva9Lz8x+VqHnC1VM5w/C1EyVHebhNifzo3dQ171xOJrK
- ObPfrHwHwEruPskgn2YnHQnGtDn4XjWbifORQiGr9U4Hg5yLGrpHKAr1xeGQuJNFXe
- zUj9yUXIVup3rTuDe9+3oIQlqZcYnzoQlAjH9YrI=
-Received: from mchehab by mail.kernel.org with local (Exim 4.93)
- (envelope-from <mchehab@kernel.org>)
- id 1jkith-009nlx-C3; Mon, 15 Jun 2020 08:47:09 +0200
-From: Mauro Carvalho Chehab <mchehab+huawei@kernel.org>
-To: Linux Doc Mailing List <linux-doc@vger.kernel.org>
-Subject: [PATCH 00/29] Documentation fixes
-Date: Mon, 15 Jun 2020 08:46:39 +0200
-Message-Id: <cover.1592203542.git.mchehab+huawei@kernel.org>
-X-Mailer: git-send-email 2.26.2
+ with ESMTP id P-WYTKJeucyi for <iommu@lists.linux-foundation.org>;
+ Mon, 15 Jun 2020 06:55:00 +0000 (UTC)
+X-Greylist: from auto-whitelisted by SQLgrey-1.7.6
+Received: from verein.lst.de (verein.lst.de [213.95.11.211])
+ by silver.osuosl.org (Postfix) with ESMTPS id 5F7E0220D0
+ for <iommu@lists.linux-foundation.org>; Mon, 15 Jun 2020 06:55:00 +0000 (UTC)
+Received: by verein.lst.de (Postfix, from userid 2407)
+ id 82E9968B02; Mon, 15 Jun 2020 08:54:55 +0200 (CEST)
+Date: Mon, 15 Jun 2020 08:54:55 +0200
+From: Christoph Hellwig <hch@lst.de>
+To: David Rientjes <rientjes@google.com>
+Subject: Re: [patch for-5.8 1/4] dma-direct: always align allocation size
+ in dma_direct_alloc_pages()
+Message-ID: <20200615065455.GA21248@lst.de>
+References: <alpine.DEB.2.22.394.2006111218200.153880@chino.kir.corp.google.com>
+ <alpine.DEB.2.22.394.2006111218570.153880@chino.kir.corp.google.com>
 MIME-Version: 1.0
-Cc: =?UTF-8?q?Heiko=20St=C3=BCbner?= <heiko@sntech.de>,
- Geert Uytterhoeven <geert+renesas@glider.be>,
- Catalin Marinas <catalin.marinas@arm.com>,
- Linus Walleij <linus.walleij@linaro.org>, dri-devel@lists.freedesktop.org,
- Paul Mackerras <paulus@samba.org>, Christoph Hellwig <hch@lst.de>,
- linux-arch@vger.kernel.org, Mike Snitzer <snitzer@redhat.com>,
- Bartosz Golaszewski <bgolaszewski@baylibre.com>,
- Michael Ellerman <mpe@ellerman.id.au>, kasan-dev@googlegroups.com,
- Ingo Molnar <mingo@redhat.com>, Alan Stern <stern@rowland.harvard.edu>,
- NXP Linux Team <linux-imx@nxp.com>,
- Benjamin Herrenschmidt <benh@kernel.crashing.org>,
- Boqun Feng <boqun.feng@gmail.com>, Nicholas Piggin <npiggin@gmail.com>,
- Alexander Viro <viro@zeniv.linux.org.uk>, Thomas Gleixner <tglx@linutronix.de>,
- Greg Kroah-Hartman <gregkh@linuxfoundation.org>, linux-kernel@vger.kernel.org,
- linux-spi@vger.kernel.org, Pengutronix Kernel Team <kernel@pengutronix.de>,
- linux-fsdevel@vger.kernel.org, Andrew Morton <akpm@linux-foundation.org>,
- alsa-devel@alsa-project.org, linux-ia64@vger.kernel.org,
- David Airlie <airlied@linux.ie>,
- "James E.J. Bottomley" <James.Bottomley@HansenPartnership.com>,
- Eric Dumazet <edumazet@google.com>, keyrings@vger.kernel.org,
- Shuah Khan <shuah@kernel.org>, Alasdair Kergon <agk@redhat.com>,
- Daniel Kiss <daniel.kiss@arm.com>, Stephen Rothwell <sfr@canb.auug.org.au>,
- Fabio Estevam <festevam@gmail.com>, Helge Deller <deller@gmx.de>,
- linux-rockchip@lists.infradead.org, linux-media@vger.kernel.org,
- Andrea Parri <parri.andrea@gmail.com>, linux-arm-msm@vger.kernel.org,
- Sean Wang <sean.wang@mediatek.com>, linux-gpio@vger.kernel.org,
- Bjorn Helgaas <bhelgaas@google.com>, Jaegeuk Kim <jaegeuk@kernel.org>,
- linux-arm-kernel@lists.infradead.org,
- =?UTF-8?q?Niklas=20S=C3=B6derlund?= <niklas.soderlund+renesas@ragnatech.se>,
- Tony Luck <tony.luck@intel.com>, dm-devel@redhat.com,
- Alexey Gladkov <gladkov.alexey@gmail.com>,
- Arnaud Pouliquen <arnaud.pouliquen@st.com>, Sandy Huang <hjc@rock-chips.com>,
- linux-f2fs-devel@lists.sourceforge.net, linux-renesas-soc@vger.kernel.org,
- "Eric W. Biederman" <ebiederm@xmission.com>,
- Mike Kravetz <mike.kravetz@oracle.com>, linux-pci@vger.kernel.org,
- Akira Yokosawa <akiyks@gmail.com>, Lai Jiangshan <jiangshanlai@gmail.com>,
- Jarkko Sakkinen <jarkko.sakkinen@linux.intel.com>,
- Dave Hansen <dave.hansen@intel.com>, linux-kselftest@vger.kernel.org,
- Joel Fernandes <joel@joelfernandes.org>,
- Sukadev Bhattiprolu <sukadev@linux.ibm.com>, Will Deacon <will@kernel.org>,
- Florian Fainelli <f.fainelli@gmail.com>, Jonathan Corbet <corbet@lwn.net>,
- Haren Myneni <haren@linux.ibm.com>,
- Gerald Schaefer <gerald.schaefer@de.ibm.com>,
- Federico Vaga <federico.vaga@vaga.pv.it>, Jade Alglave <j.alglave@ucl.ac.uk>,
- Alexey Dobriyan <adobriyan@gmail.com>, Fenghua Yu <fenghua.yu@intel.com>,
- Marco Elver <elver@google.com>, Kees Cook <keescook@chromium.org>,
- Josh Triplett <josh@joshtriplett.org>, Steven Rostedt <rostedt@goodmis.org>,
- rcu@vger.kernel.org, Mark Brown <broonie@kernel.org>,
- Mathieu Desnoyers <mathieu.desnoyers@efficios.com>,
- Luc Maranget <luc.maranget@inria.fr>,
- Thomas Bogendoerfer <tsbogend@alpha.franken.de>, linux-parisc@vger.kernel.org,
- Jeff Layton <jlayton@kernel.org>, Liam Girdwood <lgirdwood@gmail.com>,
- iommu@lists.linux-foundation.org, netdev@vger.kernel.org,
- Shawn Guo <shawnguo@kernel.org>, "David S. Miller" <davem@davemloft.net>,
- Jan Kara <jack@suse.cz>, "Peter Zijlstra \(Intel\)" <peterz@infradead.org>,
- Bjorn Andersson <bjorn.andersson@linaro.org>,
- David Howells <dhowells@redhat.com>, linux-mm@kvack.org,
- Sandipan Das <sandipan@linux.ibm.com>, "H. Peter Anvin" <hpa@zytor.com>,
- Mauro Carvalho Chehab <mchehab+huawei@kernel.org>, x86@kernel.org,
- Russell King <linux@armlinux.org.uk>, Andy Gross <agross@kernel.org>,
- Jakub Kicinski <kuba@kernel.org>, Sascha Hauer <s.hauer@pengutronix.de>,
- devicetree@vger.kernel.org, Philipp Zabel <p.zabel@pengutronix.de>,
- "Paul E. McKenney" <paulmck@kernel.org>, Daniel Lustig <dlustig@nvidia.com>,
- Chao Yu <chao@kernel.org>, Lubomir Rintel <lkundrak@v3.sk>,
- Rob Herring <robh+dt@kernel.org>, linux-mediatek@lists.infradead.org,
- Matthias Brugger <matthias.bgg@gmail.com>, Dmitry Vyukov <dvyukov@google.com>,
- Robin Murphy <robin.murphy@arm.com>, Akira Shimahara <akira215corp@gmail.com>,
- linux-mips@vger.kernel.org, linux-bluetooth@vger.kernel.org,
- Daniel Vetter <daniel@ffwll.ch>, Borislav Petkov <bp@alien8.de>,
- linuxppc-dev@lists.ozlabs.org
+Content-Disposition: inline
+In-Reply-To: <alpine.DEB.2.22.394.2006111218570.153880@chino.kir.corp.google.com>
+User-Agent: Mutt/1.5.17 (2007-11-01)
+Cc: Thomas Lendacky <thomas.lendacky@amd.com>,
+ Brijesh Singh <brijesh.singh@amd.com>, linux-kernel@vger.kernel.org,
+ iommu@lists.linux-foundation.org, Robin Murphy <robin.murphy@arm.com>,
+ Christoph Hellwig <hch@lst.de>
 X-BeenThere: iommu@lists.linux-foundation.org
 X-Mailman-Version: 2.1.15
 Precedence: list
@@ -156,111 +79,39 @@ Content-Transfer-Encoding: 7bit
 Errors-To: iommu-bounces@lists.linux-foundation.org
 Sender: "iommu" <iommu-bounces@lists.linux-foundation.org>
 
-Hi Jon,
+On Thu, Jun 11, 2020 at 12:20:28PM -0700, David Rientjes wrote:
+> dma_alloc_contiguous() does size >> PAGE_SHIFT and set_memory_decrypted()
+> works at page granularity.  It's necessary to page align the allocation
+> size in dma_direct_alloc_pages() for consistent behavior.
+> 
+> This also fixes an issue when arch_dma_prep_coherent() is called on an
+> unaligned allocation size for dma_alloc_need_uncached() when
+> CONFIG_DMA_DIRECT_REMAP is disabled but CONFIG_ARCH_HAS_DMA_SET_UNCACHED
+> is enabled.
+> 
+> Cc: stable@vger.kernel.org
+> Signed-off-by: David Rientjes <rientjes@google.com>
+> ---
+>  kernel/dma/direct.c | 17 ++++++++++-------
+>  1 file changed, 10 insertions(+), 7 deletions(-)
+> 
+> diff --git a/kernel/dma/direct.c b/kernel/dma/direct.c
+> --- a/kernel/dma/direct.c
+> +++ b/kernel/dma/direct.c
+> @@ -112,11 +112,12 @@ static inline bool dma_should_free_from_pool(struct device *dev,
+>  struct page *__dma_direct_alloc_pages(struct device *dev, size_t size,
+>  		gfp_t gfp, unsigned long attrs)
+>  {
+> -	size_t alloc_size = PAGE_ALIGN(size);
+>  	int node = dev_to_node(dev);
+>  	struct page *page = NULL;
+>  	u64 phys_limit;
+>  
+> +	VM_BUG_ON(!PAGE_ALIGNED(size));
 
-That's a bunch of files I have to be applied on the top of v5.8-rc1 fixing
-documentation warnings. I already removed some duplicated stuff.
-
-Regards,
-Mauro
-
-Mauro Carvalho Chehab (29):
-  mm: vmalloc.c: remove a kernel-doc annotation from a removed parameter
-  net: dev: add a missing kernel-doc annotation
-  net: netdevice.h: add a description for napi_defer_hard_irqs
-  scripts/kernel-doc: parse __ETHTOOL_DECLARE_LINK_MODE_MASK
-  net: pylink.h: add kernel-doc descriptions for new fields at
-    phylink_config
-  scripts/kernel-doc: handle function pointer prototypes
-  fs: fs.h: fix a kernel-doc parameter description
-  gpio: driver.h: fix kernel-doc markup
-  kcsan: fix a kernel-doc warning
-  rcu: fix some kernel-doc warnings
-  fs: docs: f2fs.rst: fix a broken table
-  dt: update a reference for reneases pcar file renamed to yaml
-  dt: fix broken links due to txt->yaml renames
-  dt: Fix broken references to renamed docs
-  dt: fix reference to olpc,xo1.75-ec.txt
-  selftests/vm/keys: fix a broken reference at protection_keys.c
-  docs: hugetlbpage.rst: fix some warnings
-  docs: powerpc: fix some issues at vas-api.rst
-  docs: driver-model: remove a duplicated markup at driver.rst
-  docs: watch_queue.rst: supress some Sphinx warnings and move to
-    core-api
-  docs: device-mapper: add dm-ebs.rst to an index file
-  docs: it_IT: add two missing references
-  docs: ABI: fix a typo when pointing to w1-generic.rst
-  docs: fs: locking.rst: fix a broken table
-  docs: add bus-virt-phys-mapping.txt to core-api
-  docs: fix references for DMA*.txt files
-  docs: dt: minor adjustments at writing-schema.rst
-  docs: fs: proc.rst: fix a warning due to a merge conflict
-  docs: fs: proc.rst: convert a new chapter to ReST
-
- .../ABI/testing/sysfs-driver-w1_therm         |   2 +-
- Documentation/PCI/pci.rst                     |   6 +-
- .../admin-guide/device-mapper/index.rst       |   1 +
- Documentation/admin-guide/mm/hugetlbpage.rst  |  25 ++-
- Documentation/block/biodoc.rst                |   2 +-
- .../bus-virt-phys-mapping.rst}                |   2 +-
- Documentation/core-api/dma-api.rst            |   6 +-
- Documentation/core-api/dma-isa-lpc.rst        |   2 +-
- Documentation/core-api/index.rst              |   2 +
- Documentation/{ => core-api}/watch_queue.rst  |  34 ++--
- .../bindings/arm/freescale/fsl,scu.txt        |   2 +-
- .../bindings/display/bridge/sii902x.txt       |   2 +-
- .../bindings/display/imx/fsl-imx-drm.txt      |   4 +-
- .../devicetree/bindings/display/imx/ldb.txt   |   4 +-
- .../display/rockchip/rockchip-drm.yaml        |   2 +-
- .../bindings/misc/olpc,xo1.75-ec.txt          |   2 +-
- .../bindings/net/mediatek-bluetooth.txt       |   2 +-
- .../bindings/pinctrl/renesas,pfc-pinctrl.txt  |   2 +-
- .../bindings/sound/audio-graph-card.txt       |   2 +-
- .../bindings/sound/st,sti-asoc-card.txt       |   2 +-
- .../bindings/spi/qcom,spi-geni-qcom.txt       |   2 +-
- Documentation/devicetree/writing-schema.rst   |   9 +-
- .../driver-api/driver-model/driver.rst        |   2 -
- Documentation/driver-api/usb/dma.rst          |   6 +-
- Documentation/filesystems/f2fs.rst            | 150 ++++++++++++------
- Documentation/filesystems/locking.rst         |   6 +-
- Documentation/filesystems/proc.rst            |  46 +++---
- Documentation/memory-barriers.txt             |   6 +-
- Documentation/mips/ingenic-tcu.rst            |   2 +-
- Documentation/powerpc/vas-api.rst             |  23 ++-
- Documentation/security/keys/core.rst          |   2 +-
- .../it_IT/process/management-style.rst        |   2 +
- .../it_IT/process/submitting-patches.rst      |   2 +
- .../translations/ko_KR/memory-barriers.txt    |   6 +-
- MAINTAINERS                                   |   8 +-
- arch/ia64/hp/common/sba_iommu.c               |  12 +-
- arch/parisc/kernel/pci-dma.c                  |   2 +-
- arch/x86/include/asm/dma-mapping.h            |   4 +-
- arch/x86/kernel/amd_gart_64.c                 |   2 +-
- drivers/parisc/sba_iommu.c                    |  14 +-
- include/linux/dma-mapping.h                   |   2 +-
- include/linux/fs.h                            |   2 +-
- include/linux/gpio/driver.h                   |   2 +-
- include/linux/kcsan-checks.h                  |  10 +-
- include/linux/netdevice.h                     |   2 +
- include/linux/phylink.h                       |   4 +
- include/linux/rculist.h                       |   2 +-
- include/linux/watch_queue.h                   |   2 +-
- include/media/videobuf-dma-sg.h               |   2 +-
- init/Kconfig                                  |   2 +-
- kernel/dma/debug.c                            |   2 +-
- kernel/watch_queue.c                          |   2 +-
- mm/vmalloc.c                                  |   1 -
- net/core/dev.c                                |   1 +
- scripts/kernel-doc                            |   7 +
- tools/testing/selftests/vm/protection_keys.c  |   2 +-
- 56 files changed, 282 insertions(+), 175 deletions(-)
- rename Documentation/{bus-virt-phys-mapping.txt => core-api/bus-virt-phys-mapping.rst} (99%)
- rename Documentation/{ => core-api}/watch_queue.rst (94%)
-
--- 
-2.26.2
-
-
+This really should be a WARN_ON_ONCE, but I've fixed this up before
+applying.  I've also added a prep patch to mark __dma_direct_alloc_pages
+static as part of auditing for other callers.
 _______________________________________________
 iommu mailing list
 iommu@lists.linux-foundation.org
