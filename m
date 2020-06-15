@@ -6,67 +6,68 @@ X-Spam-Status: No, score=-2.2 required=3.0 tests=HEADER_FROM_DIFFERENT_DOMAINS,
 	MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS,USER_AGENT_SANE_1 autolearn=no
 	autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 14079C433DF
-	for <iommu@archiver.kernel.org>; Mon, 15 Jun 2020 14:53:51 +0000 (UTC)
-Received: from whitealder.osuosl.org (smtp1.osuosl.org [140.211.166.138])
+	by smtp.lore.kernel.org (Postfix) with ESMTP id AF1B2C433E2
+	for <iommu@archiver.kernel.org>; Mon, 15 Jun 2020 15:49:00 +0000 (UTC)
+Received: from silver.osuosl.org (smtp3.osuosl.org [140.211.166.136])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by mail.kernel.org (Postfix) with ESMTPS id DAF0620644
-	for <iommu@archiver.kernel.org>; Mon, 15 Jun 2020 14:53:50 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org DAF0620644
+	by mail.kernel.org (Postfix) with ESMTPS id 7D423207DA
+	for <iommu@archiver.kernel.org>; Mon, 15 Jun 2020 15:49:00 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 7D423207DA
 Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=intel.com
 Authentication-Results: mail.kernel.org; spf=pass smtp.mailfrom=iommu-bounces@lists.linux-foundation.org
 Received: from localhost (localhost [127.0.0.1])
-	by whitealder.osuosl.org (Postfix) with ESMTP id ABA1787F6A;
-	Mon, 15 Jun 2020 14:53:50 +0000 (UTC)
+	by silver.osuosl.org (Postfix) with ESMTP id 3B18324B59;
+	Mon, 15 Jun 2020 15:49:00 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from whitealder.osuosl.org ([127.0.0.1])
+Received: from silver.osuosl.org ([127.0.0.1])
 	by localhost (.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
-	with ESMTP id l14ekjpfDOXj; Mon, 15 Jun 2020 14:53:49 +0000 (UTC)
+	with ESMTP id 8nsZa84NFmkz; Mon, 15 Jun 2020 15:48:59 +0000 (UTC)
 Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [140.211.9.56])
-	by whitealder.osuosl.org (Postfix) with ESMTP id D8E0687F0A;
-	Mon, 15 Jun 2020 14:53:49 +0000 (UTC)
+	by silver.osuosl.org (Postfix) with ESMTP id 2EE3C20519;
+	Mon, 15 Jun 2020 15:48:59 +0000 (UTC)
 Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
-	by lists.linuxfoundation.org (Postfix) with ESMTP id C115EC0888;
-	Mon, 15 Jun 2020 14:53:49 +0000 (UTC)
-Received: from hemlock.osuosl.org (smtp2.osuosl.org [140.211.166.133])
- by lists.linuxfoundation.org (Postfix) with ESMTP id 20A27C016E
- for <iommu@lists.linux-foundation.org>; Mon, 15 Jun 2020 14:53:48 +0000 (UTC)
+	by lists.linuxfoundation.org (Postfix) with ESMTP id 09C0AC0890;
+	Mon, 15 Jun 2020 15:48:59 +0000 (UTC)
+Received: from fraxinus.osuosl.org (smtp4.osuosl.org [140.211.166.137])
+ by lists.linuxfoundation.org (Postfix) with ESMTP id D21B5C016E
+ for <iommu@lists.linux-foundation.org>; Mon, 15 Jun 2020 15:48:56 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
- by hemlock.osuosl.org (Postfix) with ESMTP id 0F3D188734
- for <iommu@lists.linux-foundation.org>; Mon, 15 Jun 2020 14:53:48 +0000 (UTC)
+ by fraxinus.osuosl.org (Postfix) with ESMTP id B9DF886E47
+ for <iommu@lists.linux-foundation.org>; Mon, 15 Jun 2020 15:48:56 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from hemlock.osuosl.org ([127.0.0.1])
+Received: from fraxinus.osuosl.org ([127.0.0.1])
  by localhost (.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
- with ESMTP id vTpHeKEIjWXQ for <iommu@lists.linux-foundation.org>;
- Mon, 15 Jun 2020 14:53:47 +0000 (UTC)
+ with ESMTP id bvk3iQ5cVwAj for <iommu@lists.linux-foundation.org>;
+ Mon, 15 Jun 2020 15:48:55 +0000 (UTC)
 X-Greylist: domain auto-whitelisted by SQLgrey-1.7.6
-Received: from mga01.intel.com (mga01.intel.com [192.55.52.88])
- by hemlock.osuosl.org (Postfix) with ESMTPS id 6628F8872E
- for <iommu@lists.linux-foundation.org>; Mon, 15 Jun 2020 14:53:47 +0000 (UTC)
-IronPort-SDR: RWbWOYECXBiivwCnuQ2NsARtqf7CF5SZthV/PiPRYMuqrdmpsmHd1P2U3bZ/bFCYdySyZpuqRU
- sWV2XuwNbIog==
+Received: from mga07.intel.com (mga07.intel.com [134.134.136.100])
+ by fraxinus.osuosl.org (Postfix) with ESMTPS id A8D4986DC9
+ for <iommu@lists.linux-foundation.org>; Mon, 15 Jun 2020 15:48:55 +0000 (UTC)
+IronPort-SDR: 6hOX5eUPnY6JO4LJIRAFOie8GUQqmwQcLH+iaLHoRP54O17WyQShvR3fSVaVHWqGgie2OBxE5b
+ 8/SvFoLusdIw==
 X-Amp-Result: SKIPPED(no attachment in message)
 X-Amp-File-Uploaded: False
 Received: from fmsmga001.fm.intel.com ([10.253.24.23])
- by fmsmga101.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384;
- 15 Jun 2020 07:53:46 -0700
-IronPort-SDR: hBkuUtQL8+lhTWXLYi651EBCBrGOEnQVfzIuldPKgK9Hg1HqC5sQmkx3kq2cejv4s2HjL2N4xD
- LCQ6U6PgIXpQ==
+ by orsmga105.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384;
+ 15 Jun 2020 08:48:54 -0700
+IronPort-SDR: gkkYVgcY8xV06BkKjnJOGSlBzFZYve2j2awE0FGSSUIvIj3XiwAj5QsvMoP3GPr1BbNqj0sBuD
+ XicWuOj61BNg==
 X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.73,514,1583222400"; d="scan'208";a="382567032"
+X-IronPort-AV: E=Sophos;i="5.73,515,1583222400"; d="scan'208";a="382581571"
 Received: from romley-ivt3.sc.intel.com ([172.25.110.60])
- by fmsmga001.fm.intel.com with ESMTP; 15 Jun 2020 07:53:46 -0700
-Date: Mon, 15 Jun 2020 07:53:46 -0700
+ by fmsmga001.fm.intel.com with ESMTP; 15 Jun 2020 08:48:54 -0700
+Date: Mon, 15 Jun 2020 08:48:54 -0700
 From: Fenghua Yu <fenghua.yu@intel.com>
 To: Peter Zijlstra <peterz@infradead.org>
-Subject: Re: [PATCH v2 00/12] x86: tag application address space for devices
-Message-ID: <20200615145345.GA13792@romley-ivt3.sc.intel.com>
+Subject: Re: [PATCH v2 12/12] x86/traps: Fix up invalid PASID
+Message-ID: <20200615154854.GB13792@romley-ivt3.sc.intel.com>
 References: <1592008893-9388-1-git-send-email-fenghua.yu@intel.com>
- <20200615075202.GI2497@hirez.programming.kicks-ass.net>
+ <1592008893-9388-13-git-send-email-fenghua.yu@intel.com>
+ <20200615075649.GK2497@hirez.programming.kicks-ass.net>
 MIME-Version: 1.0
 Content-Disposition: inline
-In-Reply-To: <20200615075202.GI2497@hirez.programming.kicks-ass.net>
+In-Reply-To: <20200615075649.GK2497@hirez.programming.kicks-ass.net>
 User-Agent: Mutt/1.5.23 (2014-03-12)
 Cc: Dave Hansen <dave.hansen@intel.com>, H Peter Anvin <hpa@zytor.com>,
  Dave Jiang <dave.jiang@intel.com>, Ashok Raj <ashok.raj@intel.com>,
@@ -97,29 +98,84 @@ Errors-To: iommu-bounces@lists.linux-foundation.org
 Sender: "iommu" <iommu-bounces@lists.linux-foundation.org>
 
 Hi, Peter,
-On Mon, Jun 15, 2020 at 09:52:02AM +0200, Peter Zijlstra wrote:
-> On Fri, Jun 12, 2020 at 05:41:21PM -0700, Fenghua Yu wrote:
+On Mon, Jun 15, 2020 at 09:56:49AM +0200, Peter Zijlstra wrote:
+> On Fri, Jun 12, 2020 at 05:41:33PM -0700, Fenghua Yu wrote:
+> > +/*
+> > + * Apply some heuristics to see if the #GP fault was caused by a thread
+> > + * that hasn't had the IA32_PASID MSR initialized.  If it looks like that
+> > + * is the problem, try initializing the IA32_PASID MSR. If the heuristic
+> > + * guesses incorrectly, take one more #GP fault.
 > 
-> > This series only provides simple and basic support for ENQCMD and the MSR:
-> > 1. Clean up type definitions (patch 1-3). These patches can be in a
-> >    separate series.
-> >    - Define "pasid" as "unsigned int" consistently (patch 1 and 2).
-> >    - Define "flags" as "unsigned int"
-> > 2. Explain different various technical terms used in the series (patch 4).
-> > 3. Enumerate support for ENQCMD in the processor (patch 5).
-> > 4. Handle FPU PASID state and the MSR during context switch (patches 6-7).
-> > 5. Define "pasid" in mm_struct (patch 8).
-> > 5. Clear PASID state for new mm and forked and cloned thread (patch 9-10).
-> > 6. Allocate and free PASID for a process (patch 11).
-> > 7. Fix up the PASID MSR in #GP handler when one thread in a process
-> >    executes ENQCMD for the first time (patches 12).
-> 
-> If this is per mm, should not switch_mm() update the MSR ? I'm not
-> seeing that, nor do I see it explained why not.
+> How is that going to help? Aren't we then going to run this same
+> heuristic again and again and again?
 
-PASID value is per mm and all threads in a process have the same PASID
-value in the MSR. However, the MSR is per thread and is context switched
-by XSAVES/XRSTROS in patches 6-7.
+The heuristic always initializes the MSR with the per mm PASID IIF the
+mm has a valid PASID but the MSR doesn't have one. This heuristic usually
+happens only once on the first #GP in a thread.
+
+If the next #GP still comes in, the heuristic finds out the MSR already
+has a valid PASID and thus will not fixup the MSR any more. The fixup()
+returns "false" and lets others to handle the #GP.
+
+So the heuristic will be executed once (at most) and won't be executed
+again and again.
+
+> 
+> > + */
+> > +bool __fixup_pasid_exception(void)
+> > +{
+> > +	u64 pasid_msr;
+> > +	unsigned int pasid;
+> > +
+> > +	/*
+> > +	 * This function is called only when this #GP was triggered from user
+> > +	 * space. So the mm cannot be NULL.
+> > +	 */
+> > +	pasid = current->mm->pasid;
+> > +	/* If the mm doesn't have a valid PASID, then can't help. */
+> > +	if (invalid_pasid(pasid))
+> > +		return false;
+> > +
+> > +	/*
+> > +	 * Since IRQ is disabled now, the current task still owns the FPU on
+> 
+> That's just weird and confusing. What you want to say is that you rely
+> on the exception disabling the interrupt.
+
+I checked SDM again. You are right. #GP can be interrupted by machine check
+or other interrupts. So I cannot assume the current task still owns the FPU.
+Instead of directly rdmsr() and wrmsr(), I will add helpers that can access
+either the MSR on the processor or the PASID state in the memory.
+
+> 
+> > +	 * this CPU and the PASID MSR can be directly accessed.
+> > +	 *
+> > +	 * If the MSR has a valid PASID, the #GP must be for some other reason.
+> > +	 *
+> > +	 * If rdmsr() is really a performance issue, a TIF_ flag may be
+> > +	 * added to check if the thread has a valid PASID instead of rdmsr().
+> 
+> I don't understand any of this. Nobody except us writes to this MSR, we
+> should bloody well know what's in it. What gives?
+
+Patch 4 describes how to manage the MSR and patch 7 describes the format
+of the MSR (20-bit PASID value and bit 31 is valid bit).
+
+Are they sufficient to help? Or do you mean something else?
+
+> > +	 */
+> > +	rdmsrl(MSR_IA32_PASID, pasid_msr);
+> > +	if (pasid_msr & MSR_IA32_PASID_VALID)
+> > +		return false;
+> > +
+> > +	/* Fix up the MSR if the MSR doesn't have a valid PASID. */
+> > +	wrmsrl(MSR_IA32_PASID, pasid | MSR_IA32_PASID_VALID);
+> > +
+> > +	return true;
+> > +}
+> > -- 
+> > 2.19.1
+> > 
 
 Thanks.
 
