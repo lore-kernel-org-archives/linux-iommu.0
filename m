@@ -7,82 +7,81 @@ X-Spam-Status: No, score=-9.5 required=3.0 tests=DKIM_INVALID,DKIM_SIGNED,
 	SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED,USER_AGENT_GIT autolearn=ham
 	autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id E1D12C433E0
-	for <iommu@archiver.kernel.org>; Tue, 16 Jun 2020 01:17:58 +0000 (UTC)
-Received: from fraxinus.osuosl.org (smtp4.osuosl.org [140.211.166.137])
+	by smtp.lore.kernel.org (Postfix) with ESMTP id DE2C8C433E3
+	for <iommu@archiver.kernel.org>; Tue, 16 Jun 2020 01:18:00 +0000 (UTC)
+Received: from whitealder.osuosl.org (smtp1.osuosl.org [140.211.166.138])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by mail.kernel.org (Postfix) with ESMTPS id BACFE2074D
-	for <iommu@archiver.kernel.org>; Tue, 16 Jun 2020 01:17:58 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTPS id B6C65206F7
+	for <iommu@archiver.kernel.org>; Tue, 16 Jun 2020 01:18:00 +0000 (UTC)
 Authentication-Results: mail.kernel.org;
-	dkim=fail reason="signature verification failed" (2048-bit key) header.d=google.com header.i=@google.com header.b="K64yw4Ua"
-DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org BACFE2074D
+	dkim=fail reason="signature verification failed" (2048-bit key) header.d=google.com header.i=@google.com header.b="vzILdiTc"
+DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org B6C65206F7
 Authentication-Results: mail.kernel.org; dmarc=none (p=none dis=none) header.from=lists.linux-foundation.org
 Authentication-Results: mail.kernel.org; spf=pass smtp.mailfrom=iommu-bounces@lists.linux-foundation.org
 Received: from localhost (localhost [127.0.0.1])
-	by fraxinus.osuosl.org (Postfix) with ESMTP id 9B549872CF;
-	Tue, 16 Jun 2020 01:17:58 +0000 (UTC)
+	by whitealder.osuosl.org (Postfix) with ESMTP id A6E9187E6E;
+	Tue, 16 Jun 2020 01:18:00 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from fraxinus.osuosl.org ([127.0.0.1])
+Received: from whitealder.osuosl.org ([127.0.0.1])
 	by localhost (.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
-	with ESMTP id 5VInMyfmhb2H; Tue, 16 Jun 2020 01:17:58 +0000 (UTC)
+	with ESMTP id 2TTThepGK36O; Tue, 16 Jun 2020 01:18:00 +0000 (UTC)
 Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [140.211.9.56])
-	by fraxinus.osuosl.org (Postfix) with ESMTP id 29B7086A54;
-	Tue, 16 Jun 2020 01:17:58 +0000 (UTC)
+	by whitealder.osuosl.org (Postfix) with ESMTP id 476CF87D51;
+	Tue, 16 Jun 2020 01:18:00 +0000 (UTC)
 Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
-	by lists.linuxfoundation.org (Postfix) with ESMTP id 1668BC0890;
-	Tue, 16 Jun 2020 01:17:58 +0000 (UTC)
-Received: from silver.osuosl.org (smtp3.osuosl.org [140.211.166.136])
- by lists.linuxfoundation.org (Postfix) with ESMTP id 09D41C016E
- for <iommu@lists.linux-foundation.org>; Tue, 16 Jun 2020 01:17:56 +0000 (UTC)
+	by lists.linuxfoundation.org (Postfix) with ESMTP id 40641C0890;
+	Tue, 16 Jun 2020 01:18:00 +0000 (UTC)
+Received: from hemlock.osuosl.org (smtp2.osuosl.org [140.211.166.133])
+ by lists.linuxfoundation.org (Postfix) with ESMTP id 49643C0890
+ for <iommu@lists.linux-foundation.org>; Tue, 16 Jun 2020 01:17:58 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
- by silver.osuosl.org (Postfix) with ESMTP id E931325A0F
- for <iommu@lists.linux-foundation.org>; Tue, 16 Jun 2020 01:17:55 +0000 (UTC)
+ by hemlock.osuosl.org (Postfix) with ESMTP id 3563888BCD
+ for <iommu@lists.linux-foundation.org>; Tue, 16 Jun 2020 01:17:58 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from silver.osuosl.org ([127.0.0.1])
+Received: from hemlock.osuosl.org ([127.0.0.1])
  by localhost (.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
- with ESMTP id hcqEag+RPeuT for <iommu@lists.linux-foundation.org>;
- Tue, 16 Jun 2020 01:17:54 +0000 (UTC)
+ with ESMTP id OhbkMx-N5tEB for <iommu@lists.linux-foundation.org>;
+ Tue, 16 Jun 2020 01:17:57 +0000 (UTC)
 X-Greylist: domain auto-whitelisted by SQLgrey-1.7.6
-Received: from mail-qv1-f74.google.com (mail-qv1-f74.google.com
- [209.85.219.74])
- by silver.osuosl.org (Postfix) with ESMTPS id 5BE1325A5E
- for <iommu@lists.linux-foundation.org>; Tue, 16 Jun 2020 01:17:54 +0000 (UTC)
-Received: by mail-qv1-f74.google.com with SMTP id ba13so14391442qvb.15
- for <iommu@lists.linux-foundation.org>; Mon, 15 Jun 2020 18:17:54 -0700 (PDT)
+Received: from mail-yb1-f201.google.com (mail-yb1-f201.google.com
+ [209.85.219.201])
+ by hemlock.osuosl.org (Postfix) with ESMTPS id 469C288ACE
+ for <iommu@lists.linux-foundation.org>; Tue, 16 Jun 2020 01:17:57 +0000 (UTC)
+Received: by mail-yb1-f201.google.com with SMTP id c3so22832604ybi.3
+ for <iommu@lists.linux-foundation.org>; Mon, 15 Jun 2020 18:17:57 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=google.com; s=20161025;
  h=date:in-reply-to:message-id:mime-version:references:subject:from:to
- :cc; bh=/xX6nZw43qnrS5POTejrGqQ7NU/q6i+TSuGWkPxARP8=;
- b=K64yw4UaVuSTB06zM70ynWO3Qe34OlpnWZDFtQx+XohI9pGel76JaZtLQSBoWSuTVn
- iUzYet0x27iuRTb1k2C8psq+ocK+eUc+lbqn/lM4DjoyK8Lwthh6he1ErlgUVUwd2DYt
- +Ye+ql9uWjMbbc98okBddDJZZSEPasbtsclPT6fSyzC2cMfQoctWhwgA1EprQkRAaKW3
- kZpng1WUzZbMtCYVB9VeNUn8PkNpzWWpfDFshQHOc4eQsm4yRF+loPV3Fp3xPvwnmEqr
- I9MkdliB1IiEzSTXoV4J1n+HUh2x8Vc310feGGYXQTOVnGd2k9zdRqFaiLC6Nf2wojul
- zk3w==
+ :cc; bh=kh7TdnSzjMmv55tOoFOguM4fQKcmXvzqJelRJT/2fHA=;
+ b=vzILdiTcV8zGZvfxPJjrCDkaIiDK8KCwgVW5sP5e/czfC9CFBD+4ikfLr1nNZiLCG4
+ yExyajLI5z2tPj5jVUXTZlmBhGBcd6BGVc1XxIDjdNS3taX9qDYcvZx28CMqEi9ygJgA
+ MWL6ea5rsIGkxxLvlq7vvECQtGR9tvELA1ucICg5NNO8B8aWbqA2h64ZsHzjXsnB1YQW
+ 4b2MdI3q0G8zF3rBfgke02muupsh2/pTPE8RoaCWeIK9EoWZZ89jLrd6Hi0IDaGyOVQO
+ vuDTYNL7FXPLpo9k/VkK76GyxrbKc0NHqjiyuMipoIOah7pHfFDxwNZAF35HnrttIiGX
+ Sfow==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
  d=1e100.net; s=20161025;
  h=x-gm-message-state:date:in-reply-to:message-id:mime-version
  :references:subject:from:to:cc;
- bh=/xX6nZw43qnrS5POTejrGqQ7NU/q6i+TSuGWkPxARP8=;
- b=UIpBmmXF3oCXneRwezKpIMpkBuR9xQk7oS2TzlThvOGSLhhwlF4ek2/+hdDpYBsE0p
- +lc6kkf8EElPyckcpOQiq1lJ7RXgnGqKZT+3RXUoXsPdYBIl8Ygz7fefD+HFdlOaXy5Y
- ewAaGf/5UvzM435JalQ2Z3uiy46n93DwzK7NMWUxaTRG9wVzq55225rAVHPyrfkTU36t
- OXEqj02o6jlgQyuLr0GjWmO452V+0VVg5T8HKoQtgzcw7lb+++gkFw8+nkPt0dHM0wh7
- gRtcO1PUKVT5bVPExW2Tjg8pBmWPXkM6wUZOh+mX28KCmYeUi8k/OyGxMMXM3JDubZCr
- VX5w==
-X-Gm-Message-State: AOAM531M2HDb5fKMVK+hSuBkHviEzc+alO1rFQ/W97hE6FW9wIKAuRbO
- +R1w/0rXlJPjKbWK2/LZcy4OB3ZwPaM3
-X-Google-Smtp-Source: ABdhPJx/VShp5rkGDpPUGAg/FhXNCRybPGhdLZkWV0hxwM8Gk42L1iKKJC5+PkUN237Ww8vlTPH4HPEgQvLG
-X-Received: by 2002:ad4:4374:: with SMTP id u20mr548678qvt.144.1592270273220; 
- Mon, 15 Jun 2020 18:17:53 -0700 (PDT)
-Date: Mon, 15 Jun 2020 18:17:41 -0700
+ bh=kh7TdnSzjMmv55tOoFOguM4fQKcmXvzqJelRJT/2fHA=;
+ b=MtVdnorpUbsd+G4sPkFE1G2QP15kleM9XR9m3aA3VH1suAF0GWl8tvyKQFHpOX0LLI
+ TEhSJgcwvIFl5gxjI4Id8TS8jGovAXeWRgRRZIeMK6xlzW1hJCr2UpS0ZhQPSbcxS+Rw
+ gplui/C8/n2g+S8sVWFENWQgJoq6se7BJiXLG+zZOKwypEXYX+mbe2UB/6ZHDiHu4cGJ
+ ELgskX3yi4KNr9ILwhqtYKA0/mZf/x2Y5Cc7BAVqprE5QvU7OwV2WxyImRUvZ+BxJEOA
+ CLTTyxhEYuxJanIM2mKndeDlfLJUBsOfyAJjrZ6cyXJ8hBnjpGgZr3LbCtffqZGzEPc3
+ LJlA==
+X-Gm-Message-State: AOAM531D/tmdXe6xNfxSIpud+JifywMUZW/U5jcpcb+/S1VFA7Tp0qyq
+ uCidI2myyZUp8qIV1eDX2qwYHmHmI9oW
+X-Google-Smtp-Source: ABdhPJxAth06oSMz+frpUoX8kGWlQJ8aihUMBynZvrDOTpUM1ErZyuW821epnFDUXXRGd/C8nOzICVaMXji/
+X-Received: by 2002:a25:9746:: with SMTP id h6mr429416ybo.409.1592270276282;
+ Mon, 15 Jun 2020 18:17:56 -0700 (PDT)
+Date: Mon, 15 Jun 2020 18:17:42 -0700
 In-Reply-To: <20200616011742.138975-1-rajatja@google.com>
-Message-Id: <20200616011742.138975-3-rajatja@google.com>
+Message-Id: <20200616011742.138975-4-rajatja@google.com>
 Mime-Version: 1.0
 References: <20200616011742.138975-1-rajatja@google.com>
 X-Mailer: git-send-email 2.27.0.290.gba653c62da-goog
-Subject: [PATCH 3/4] pci: acs: Enable PCI_ACS_TB for untrusted/external-facing
- devices
+Subject: [PATCH 4/4] pci: export untrusted attribute in sysfs
 To: David Woodhouse <dwmw2@infradead.org>, Lu Baolu <baolu.lu@linux.intel.com>,
  Joerg Roedel <joro@8bytes.org>, Bjorn Helgaas <bhelgaas@google.com>, 
  "Rafael J. Wysocki" <rjw@rjwysocki.net>, Len Brown <lenb@kernel.org>,
@@ -122,61 +121,36 @@ Content-Transfer-Encoding: 7bit
 Errors-To: iommu-bounces@lists.linux-foundation.org
 Sender: "iommu" <iommu-bounces@lists.linux-foundation.org>
 
-When enabling ACS, currently the bit "translation blocking" was
-not getting changed at all. Set it to disable translation blocking
-too for all external facing or untrusted devices. This is OK
-because ATS is only allowed on internal devces.
+This is needed to allow the userspace to determine when an untrusted
+device has been added, and thus allowing it to bind the driver manually
+to it, if it so wishes. This is being done as part of the approach
+discussed at https://lkml.org/lkml/2020/6/9/1331
 
 Signed-off-by: Rajat Jain <rajatja@google.com>
 ---
- drivers/pci/pci.c    |  4 ++++
- drivers/pci/quirks.c | 11 +++++++++++
- 2 files changed, 15 insertions(+)
+ drivers/pci/pci-sysfs.c | 2 ++
+ 1 file changed, 2 insertions(+)
 
-diff --git a/drivers/pci/pci.c b/drivers/pci/pci.c
-index d2ff987585855..79853b52658a2 100644
---- a/drivers/pci/pci.c
-+++ b/drivers/pci/pci.c
-@@ -3330,6 +3330,10 @@ static void pci_std_enable_acs(struct pci_dev *dev)
- 	/* Upstream Forwarding */
- 	ctrl |= (cap & PCI_ACS_UF);
+diff --git a/drivers/pci/pci-sysfs.c b/drivers/pci/pci-sysfs.c
+index 6d78df981d41a..574e9c613ba26 100644
+--- a/drivers/pci/pci-sysfs.c
++++ b/drivers/pci/pci-sysfs.c
+@@ -50,6 +50,7 @@ pci_config_attr(subsystem_device, "0x%04x\n");
+ pci_config_attr(revision, "0x%02x\n");
+ pci_config_attr(class, "0x%06x\n");
+ pci_config_attr(irq, "%u\n");
++pci_config_attr(untrusted, "%u\n");
  
-+	if (dev->external_facing || dev->untrusted)
-+		/* Translation Blocking */
-+		ctrl |= (cap & PCI_ACS_TB);
-+
- 	pci_write_config_word(dev, pos + PCI_ACS_CTRL, ctrl);
- }
+ static ssize_t broken_parity_status_show(struct device *dev,
+ 					 struct device_attribute *attr,
+@@ -608,6 +609,7 @@ static struct attribute *pci_dev_attrs[] = {
+ #endif
+ 	&dev_attr_driver_override.attr,
+ 	&dev_attr_ari_enabled.attr,
++	&dev_attr_untrusted.attr,
+ 	NULL,
+ };
  
-diff --git a/drivers/pci/quirks.c b/drivers/pci/quirks.c
-index b341628e47527..6294adeac4049 100644
---- a/drivers/pci/quirks.c
-+++ b/drivers/pci/quirks.c
-@@ -4934,6 +4934,13 @@ static void pci_quirk_enable_intel_rp_mpc_acs(struct pci_dev *dev)
- 	}
- }
- 
-+/*
-+ * Currently this quirk does the equivalent of
-+ * PCI_ACS_RR | PCI_ACS_CR | PCI_ACS_UF | PCI_ACS_SV
-+ *
-+ * Currently missing, it also needs to do equivalent of PCI_ACS_TB,
-+ * if dev->external_facing || dev->untrusted
-+ */
- static int pci_quirk_enable_intel_pch_acs(struct pci_dev *dev)
- {
- 	if (!pci_quirk_intel_pch_acs_match(dev))
-@@ -4973,6 +4980,10 @@ static int pci_quirk_enable_intel_spt_pch_acs(struct pci_dev *dev)
- 	ctrl |= (cap & PCI_ACS_CR);
- 	ctrl |= (cap & PCI_ACS_UF);
- 
-+	if (dev->external_facing || dev->untrusted)
-+		/* Translation Blocking */
-+		ctrl |= (cap & PCI_ACS_TB);
-+
- 	pci_write_config_dword(dev, pos + INTEL_SPT_ACS_CTRL, ctrl);
- 
- 	pci_info(dev, "Intel SPT PCH root port ACS workaround enabled\n");
 -- 
 2.27.0.290.gba653c62da-goog
 
