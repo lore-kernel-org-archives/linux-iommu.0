@@ -2,69 +2,100 @@ Return-Path: <SRS0=6LHv=75=lists.linux-foundation.org=iommu-bounces@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-9.7 required=3.0 tests=HEADER_FROM_DIFFERENT_DOMAINS,
-	INCLUDES_PATCH,MAILING_LIST_MULTI,SIGNED_OFF_BY,SPF_HELO_NONE,SPF_PASS,
-	URIBL_BLOCKED,USER_AGENT_GIT autolearn=ham autolearn_force=no version=3.4.0
+X-Spam-Status: No, score=-8.1 required=3.0 tests=DKIM_INVALID,DKIM_SIGNED,
+	HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_PATCH,MAILING_LIST_MULTI,SIGNED_OFF_BY,
+	SPF_HELO_NONE,SPF_PASS,USER_AGENT_SANE_1 autolearn=unavailable
+	autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 9AE6BC433E0
-	for <iommu@archiver.kernel.org>; Tue, 16 Jun 2020 14:04:17 +0000 (UTC)
-Received: from hemlock.osuosl.org (smtp2.osuosl.org [140.211.166.133])
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 8924AC433E1
+	for <iommu@archiver.kernel.org>; Tue, 16 Jun 2020 14:10:40 +0000 (UTC)
+Received: from whitealder.osuosl.org (smtp1.osuosl.org [140.211.166.138])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by mail.kernel.org (Postfix) with ESMTPS id 7BE2120739
-	for <iommu@archiver.kernel.org>; Tue, 16 Jun 2020 14:04:17 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 7BE2120739
-Authentication-Results: mail.kernel.org; dmarc=none (p=none dis=none) header.from=huawei.com
+	by mail.kernel.org (Postfix) with ESMTPS id 507A6206F1
+	for <iommu@archiver.kernel.org>; Tue, 16 Jun 2020 14:10:40 +0000 (UTC)
+Authentication-Results: mail.kernel.org;
+	dkim=fail reason="signature verification failed" (1024-bit key) header.d=mg.codeaurora.org header.i=@mg.codeaurora.org header.b="ea8pnMq9"
+DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 507A6206F1
+Authentication-Results: mail.kernel.org; dmarc=none (p=none dis=none) header.from=codeaurora.org
 Authentication-Results: mail.kernel.org; spf=pass smtp.mailfrom=iommu-bounces@lists.linux-foundation.org
 Received: from localhost (localhost [127.0.0.1])
-	by hemlock.osuosl.org (Postfix) with ESMTP id 52E3C89455;
-	Tue, 16 Jun 2020 14:04:17 +0000 (UTC)
+	by whitealder.osuosl.org (Postfix) with ESMTP id 23F0D890B3;
+	Tue, 16 Jun 2020 14:10:40 +0000 (UTC)
+X-Virus-Scanned: amavisd-new at osuosl.org
+Received: from whitealder.osuosl.org ([127.0.0.1])
+	by localhost (.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
+	with ESMTP id rVRww3GXRbXx; Tue, 16 Jun 2020 14:10:39 +0000 (UTC)
+Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [140.211.9.56])
+	by whitealder.osuosl.org (Postfix) with ESMTP id 672A6881EC;
+	Tue, 16 Jun 2020 14:10:39 +0000 (UTC)
+Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
+	by lists.linuxfoundation.org (Postfix) with ESMTP id 45FD6C07FF;
+	Tue, 16 Jun 2020 14:10:39 +0000 (UTC)
+Received: from hemlock.osuosl.org (smtp2.osuosl.org [140.211.166.133])
+ by lists.linuxfoundation.org (Postfix) with ESMTP id 8D83BC016E
+ for <iommu@lists.linux-foundation.org>; Tue, 16 Jun 2020 11:30:17 +0000 (UTC)
+Received: from localhost (localhost [127.0.0.1])
+ by hemlock.osuosl.org (Postfix) with ESMTP id 7BC7C88550
+ for <iommu@lists.linux-foundation.org>; Tue, 16 Jun 2020 11:30:17 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
 Received: from hemlock.osuosl.org ([127.0.0.1])
-	by localhost (.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
-	with ESMTP id Ekn2t1pj1Fx7; Tue, 16 Jun 2020 14:04:15 +0000 (UTC)
-Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [140.211.9.56])
-	by hemlock.osuosl.org (Postfix) with ESMTP id 6D54989357;
-	Tue, 16 Jun 2020 14:04:15 +0000 (UTC)
-Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
-	by lists.linuxfoundation.org (Postfix) with ESMTP id 51903C0888;
-	Tue, 16 Jun 2020 14:04:15 +0000 (UTC)
-Received: from silver.osuosl.org (smtp3.osuosl.org [140.211.166.136])
- by lists.linuxfoundation.org (Postfix) with ESMTP id A4580C016E
- for <iommu@lists.linux-foundation.org>; Tue, 16 Jun 2020 14:04:14 +0000 (UTC)
-Received: from localhost (localhost [127.0.0.1])
- by silver.osuosl.org (Postfix) with ESMTP id 7E43926202
- for <iommu@lists.linux-foundation.org>; Tue, 16 Jun 2020 14:04:14 +0000 (UTC)
-X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from silver.osuosl.org ([127.0.0.1])
  by localhost (.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
- with ESMTP id xGC22itxXR86 for <iommu@lists.linux-foundation.org>;
- Tue, 16 Jun 2020 14:04:13 +0000 (UTC)
-X-Greylist: domain auto-whitelisted by SQLgrey-1.7.6
-Received: from huawei.com (szxga06-in.huawei.com [45.249.212.32])
- by silver.osuosl.org (Postfix) with ESMTPS id A929920417
- for <iommu@lists.linux-foundation.org>; Tue, 16 Jun 2020 14:04:12 +0000 (UTC)
-Received: from DGGEMS410-HUB.china.huawei.com (unknown [172.30.72.58])
- by Forcepoint Email with ESMTP id 99BA45AC549A2D2B9715;
- Tue, 16 Jun 2020 22:04:02 +0800 (CST)
-Received: from localhost.localdomain (10.69.192.58) by
- DGGEMS410-HUB.china.huawei.com (10.3.19.210) with Microsoft SMTP Server id
- 14.3.487.0; Tue, 16 Jun 2020 22:03:52 +0800
-From: John Garry <john.garry@huawei.com>
-To: <will@kernel.org>, <robin.murphy@arm.com>
-Subject: [PATCH RFC v2 4/4] iommu/arm-smmu-v3: Remove cmpxchg() in
- arm_smmu_cmdq_issue_cmdlist()
-Date: Tue, 16 Jun 2020 21:59:53 +0800
-Message-ID: <1592315993-164290-5-git-send-email-john.garry@huawei.com>
-X-Mailer: git-send-email 2.8.1
-In-Reply-To: <1592315993-164290-1-git-send-email-john.garry@huawei.com>
-References: <1592315993-164290-1-git-send-email-john.garry@huawei.com>
+ with ESMTP id ijZTj5NArtk9 for <iommu@lists.linux-foundation.org>;
+ Tue, 16 Jun 2020 11:30:15 +0000 (UTC)
+X-Greylist: from auto-whitelisted by SQLgrey-1.7.6
+Received: from m43-7.mailgun.net (m43-7.mailgun.net [69.72.43.7])
+ by hemlock.osuosl.org (Postfix) with ESMTPS id 0801B88548
+ for <iommu@lists.linux-foundation.org>; Tue, 16 Jun 2020 11:30:13 +0000 (UTC)
+DKIM-Signature: a=rsa-sha256; v=1; c=relaxed/relaxed; d=mg.codeaurora.org;
+ q=dns/txt; 
+ s=smtp; t=1592307015; h=Content-Transfer-Encoding: Content-Type:
+ In-Reply-To: MIME-Version: Date: Message-ID: From: References: Cc: To:
+ Subject: Sender; bh=RTLcSYYKGCznp62vlVdfOr6g6s60R3IwkNGZ7WpqjjY=;
+ b=ea8pnMq9Tz/nYTJfja3Ct7bUNA7NfxfbAxrPKxiAfEKRTciQ8Jfjn19JDZPctG1eUGtoL8zW
+ ckKSRY0kaZBHgoToa/S03fRnnJl2/fYx3DWS2khqYBeaNsUWOhXU28tTmJDZ0PhPBUsiv8lN
+ 8TxJpE7qXpAl2/X0l4LLWamiEVg=
+X-Mailgun-Sending-Ip: 69.72.43.7
+X-Mailgun-Sid: WyI3NDkwMCIsICJpb21tdUBsaXN0cy5saW51eC1mb3VuZGF0aW9uLm9yZyIsICJiZTllNGEiXQ==
+Received: from smtp.codeaurora.org
+ (ec2-35-166-182-171.us-west-2.compute.amazonaws.com [35.166.182.171]) by
+ smtp-out-n14.prod.us-east-1.postgun.com with SMTP id
+ 5ee8ad43c76a4e7a2a5f0e88 (version=TLS1.2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256); Tue, 16 Jun 2020 11:30:11
+ GMT
+Received: by smtp.codeaurora.org (Postfix, from userid 1001)
+ id 63A66C433AD; Tue, 16 Jun 2020 11:30:10 +0000 (UTC)
+Received: from [192.168.43.129] (unknown [106.222.0.113])
+ (using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+ (No client certificate requested) (Authenticated sender: mkshah)
+ by smtp.codeaurora.org (Postfix) with ESMTPSA id 3A225C433C9;
+ Tue, 16 Jun 2020 11:30:01 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.3.2 smtp.codeaurora.org 3A225C433C9
+Authentication-Results: aws-us-west-2-caf-mail-1.web.codeaurora.org;
+ dmarc=none (p=none dis=none) header.from=codeaurora.org
+Authentication-Results: aws-us-west-2-caf-mail-1.web.codeaurora.org;
+ spf=none smtp.mailfrom=mkshah@codeaurora.org
+Subject: Re: [RFC][PATCH 3/5] irqchip: Allow QCOM_PDC to be loadable as a
+ perment module
+To: John Stultz <john.stultz@linaro.org>, lkml <linux-kernel@vger.kernel.org>
+References: <20200616061338.109499-1-john.stultz@linaro.org>
+ <20200616061338.109499-4-john.stultz@linaro.org>
+From: Maulik Shah <mkshah@codeaurora.org>
+Message-ID: <55e5982a-1e73-7013-e02d-5d1d30815fba@codeaurora.org>
+Date: Tue, 16 Jun 2020 16:59:58 +0530
+User-Agent: Mozilla/5.0 (Windows NT 10.0; WOW64; rv:68.0) Gecko/20100101
+ Thunderbird/68.9.0
 MIME-Version: 1.0
-X-Originating-IP: [10.69.192.58]
-X-CFilter-Loop: Reflected
-Cc: trivial@kernel.org, maz@kernel.org, linuxarm@huawei.com,
- linux-kernel@vger.kernel.org, iommu@lists.linux-foundation.org,
- linux-arm-kernel@lists.infradead.org
+In-Reply-To: <20200616061338.109499-4-john.stultz@linaro.org>
+Content-Language: en-GB
+X-Mailman-Approved-At: Tue, 16 Jun 2020 14:10:37 +0000
+Cc: Jason Cooper <jason@lakedaemon.net>, Saravana Kannan <saravanak@google.com>,
+ Marc Zyngier <maz@kernel.org>, Lina Iyer <ilina@codeaurora.org>,
+ Bjorn Andersson <bjorn.andersson@linaro.org>, linux-gpio@vger.kernel.org,
+ iommu@lists.linux-foundation.org, Andy Gross <agross@kernel.org>,
+ Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+ Thomas Gleixner <tglx@linutronix.de>, Linus Walleij <linus.walleij@linaro.org>,
+ linux-arm-msm@vger.kernel.org, Todd Kjos <tkjos@google.com>
 X-BeenThere: iommu@lists.linux-foundation.org
 X-Mailman-Version: 2.1.15
 Precedence: list
@@ -77,244 +108,117 @@ List-Post: <mailto:iommu@lists.linux-foundation.org>
 List-Help: <mailto:iommu-request@lists.linux-foundation.org?subject=help>
 List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
  <mailto:iommu-request@lists.linux-foundation.org?subject=subscribe>
-Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset="us-ascii"; Format="flowed"
 Errors-To: iommu-bounces@lists.linux-foundation.org
 Sender: "iommu" <iommu-bounces@lists.linux-foundation.org>
 
-It has been shown that the cmpxchg() for finding space in the cmdq can
-be a real bottleneck:
-- for more CPUs contending the cmdq, the cmpxchg() will fail more often
-- since the software-maintained cons pointer is updated on the same 64b
-  memory region, the chance of cmpxchg() failure increases again
+Hi,
 
-The cmpxchg() is removed as part of 2 related changes:
+On 6/16/2020 11:43 AM, John Stultz wrote:
+> Allows qcom-pdc driver to be loaded as a permenent module
 
-- Update prod and cmdq owner in a single atomic add operation. For this, we
-  count the prod and owner in separate regions in prod memory.
+typo: permanent
 
-  As with simple binary counting, once the prod+wrap fields overflow, they
-  will zero. They should never overflow into "owner" region, and we zero
-  the non-owner, prod region for each owner. This maintains the prod
-  pointer.
+> Also, due to the fact that IRQCHIP_DECLARE becomes a no-op when
+> building as a module, we have to add the platform driver hooks
+> explicitly.
+>
+> Thanks to Saravana for his help on pointing out the
+> IRQCHIP_DECLARE issue and guidance on a solution.
+>
+> Cc: Andy Gross <agross@kernel.org>
+> Cc: Bjorn Andersson <bjorn.andersson@linaro.org>
+> Cc: Joerg Roedel <joro@8bytes.org>
+> Cc: Thomas Gleixner <tglx@linutronix.de>
+> Cc: Jason Cooper <jason@lakedaemon.net>
+> Cc: Marc Zyngier <maz@kernel.org>
+> Cc: Linus Walleij <linus.walleij@linaro.org>
+> Cc: Lina Iyer <ilina@codeaurora.org>
+> Cc: Saravana Kannan <saravanak@google.com>
+> Cc: Todd Kjos <tkjos@google.com>
+> Cc: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+> Cc: linux-arm-msm@vger.kernel.org
+> Cc: iommu@lists.linux-foundation.org
+> Cc: linux-gpio@vger.kernel.org
+> Signed-off-by: John Stultz <john.stultz@linaro.org>
+> ---
+>   drivers/irqchip/Kconfig    |  2 +-
+>   drivers/irqchip/qcom-pdc.c | 30 ++++++++++++++++++++++++++++++
+>   2 files changed, 31 insertions(+), 1 deletion(-)
+>
+> diff --git a/drivers/irqchip/Kconfig b/drivers/irqchip/Kconfig
+> index 29fead208cad..12765bed08f9 100644
+> --- a/drivers/irqchip/Kconfig
+> +++ b/drivers/irqchip/Kconfig
+> @@ -425,7 +425,7 @@ config GOLDFISH_PIC
+>            for Goldfish based virtual platforms.
+>   
+>   config QCOM_PDC
+> -	bool "QCOM PDC"
+> +	tristate "QCOM PDC"
+>   	depends on ARCH_QCOM
+>   	select IRQ_DOMAIN_HIERARCHY
+>   	help
+> diff --git a/drivers/irqchip/qcom-pdc.c b/drivers/irqchip/qcom-pdc.c
+> index 6ae9e1f0819d..98d74160afcd 100644
+> --- a/drivers/irqchip/qcom-pdc.c
+> +++ b/drivers/irqchip/qcom-pdc.c
+> @@ -11,7 +11,9 @@
+>   #include <linux/irqdomain.h>
+>   #include <linux/io.h>
+>   #include <linux/kernel.h>
+> +#include <linux/module.h>
+>   #include <linux/of.h>
+> +#include <linux/of_irq.h>
+please move this include in order after of_device.h
+>   #include <linux/of_address.h>
+>   #include <linux/of_device.h>
+>   #include <linux/soc/qcom/irq.h>
+> @@ -430,4 +432,32 @@ static int qcom_pdc_init(struct device_node *node, struct device_node *parent)
+>   	return ret;
+>   }
+>   
+> +#ifdef MODULE
+> +static int qcom_pdc_probe(struct platform_device *pdev)
+> +{
+> +	struct device_node *np = pdev->dev.of_node;
+> +	struct device_node *parent = of_irq_find_parent(np);
+> +
+> +	return qcom_pdc_init(np, parent);
+> +}
+> +
+> +static const struct of_device_id qcom_pdc_match_table[] = {
+> +	{ .compatible = "qcom,pdc" },
+> +	{}
+> +};
+> +MODULE_DEVICE_TABLE(of, qcom_pdc_match_table);
+> +
+> +static struct platform_driver qcom_pdc_driver = {
+> +	.probe = qcom_pdc_probe,
+> +	.driver = {
+> +		.name = "qcom-pdc",
+> +		.of_match_table = qcom_pdc_match_table,
 
-  As for the "owner", we now count this value, instead of setting a flag.
-  Similar to before, once the owner has finished gathering, it will clear
-  a mask. As such, a CPU declares itself as the "owner" when it reads zero
-  for this region. This zeroing will also clear possible overflow in
-  wrap+prod region, above.
+can you please set .suppress_bind_attrs = true,
 
-  The owner is now responsible for cmdq locking to avoid possible deadlock.
-  The owner will lock the cmdq for all non-owers it has gathered when they
-  have space in the queue and have written their entries.
+This is to prevent bind/unbind using sysfs. Once irqchip driver module 
+is loaded, it shouldn't get unbind at runtime.
 
-- Check for space in the cmdq after the prod pointer has been assigned.
+Thanks,
+Maulik
+> +	},
+> +};
+> +module_platform_driver(qcom_pdc_driver);
+> +#else
+>   IRQCHIP_DECLARE(qcom_pdc, "qcom,pdc", qcom_pdc_init);
+> +#endif
+> +
+> +MODULE_DESCRIPTION("Qualcomm Technologies, Inc. Power Domain Controller");
+> +MODULE_LICENSE("GPL v2");
 
-  We don't bother checking for space in the cmdq before assigning the prod
-  pointer, as this would be racy.
-
-  So since the prod pointer is updated unconditionally, it would be common
-  for no space to be available in the cmdq when prod is assigned - that
-  is, according the software-maintained prod and cons pointer. So now
-  it must be ensured that the entries are not yet written and not until
-  there is space.
-
-  How the prod pointer is maintained also leads to a strange condition
-  where the prod pointer can wrap past the cons pointer. We can detect this
-  condition, and report no space here. However, a prod pointer progressed
-  twice past the cons pointer cannot be detected. But it can be ensured that
-  this that this scenario does not occur, as we limit the amount of
-  commands any CPU can issue at any given time, such that we cannot
-  progress prod pointer further.
-
-Signed-off-by: John Garry <john.garry@huawei.com>
----
- drivers/iommu/arm-smmu-v3.c | 102 +++++++++++++++++++++---------------
- 1 file changed, 61 insertions(+), 41 deletions(-)
-
-diff --git a/drivers/iommu/arm-smmu-v3.c b/drivers/iommu/arm-smmu-v3.c
-index 36648163364c..fd42a98f501f 100644
---- a/drivers/iommu/arm-smmu-v3.c
-+++ b/drivers/iommu/arm-smmu-v3.c
-@@ -772,10 +772,19 @@ static bool queue_has_space(struct arm_smmu_ll_queue *q, u32 n)
- 	prod = Q_IDX(q, q->prod);
- 	cons = Q_IDX(q, q->cons);
- 
--	if (Q_WRP(q, q->prod) == Q_WRP(q, q->cons))
-+	if (Q_WRP(q, q->prod) == Q_WRP(q, q->cons)) {
-+		/* check if we have wrapped twice, meaning definitely no space */
-+		if (cons > prod)
-+			return false;
-+
- 		space = (1 << q->max_n_shift) - (prod - cons);
--	else
-+	} else {
-+		/* similar check to above */
-+		if (prod > cons)
-+			return false;
-+
- 		space = cons - prod;
-+	}
- 
- 	return space >= n;
- }
-@@ -1073,7 +1082,7 @@ static void arm_smmu_cmdq_skip_err(struct arm_smmu_device *smmu)
-  *   fails if the caller appears to be the last lock holder (yes, this is
-  *   racy). All successful UNLOCK routines have RELEASE semantics.
-  */
--static void arm_smmu_cmdq_shared_lock(struct arm_smmu_cmdq *cmdq)
-+static void arm_smmu_cmdq_shared_lock(struct arm_smmu_cmdq *cmdq, int count)
- {
- 	int val;
- 
-@@ -1083,12 +1092,12 @@ static void arm_smmu_cmdq_shared_lock(struct arm_smmu_cmdq *cmdq)
- 	 * to INT_MIN so these increments won't hurt as the value will remain
- 	 * negative.
- 	 */
--	if (atomic_fetch_inc_relaxed(&cmdq->lock) >= 0)
-+	if (atomic_fetch_add_relaxed(count, &cmdq->lock) >= 0)
- 		return;
- 
- 	do {
- 		val = atomic_cond_read_relaxed(&cmdq->lock, VAL >= 0);
--	} while (atomic_cmpxchg_relaxed(&cmdq->lock, val, val + 1) != val);
-+	} while (atomic_cmpxchg_relaxed(&cmdq->lock, val, val + count) != val);
- }
- 
- static void arm_smmu_cmdq_shared_unlock(struct arm_smmu_cmdq *cmdq)
-@@ -1374,8 +1383,10 @@ static void arm_smmu_cmdq_write_entries(struct arm_smmu_cmdq *cmdq, u64 *cmds,
-  *   insert their own list of commands then all of the commands from one
-  *   CPU will appear before any of the commands from the other CPU.
-  *
-- * - A CMD_SYNC is always inserted, ensuring that any CPU does not issue
-- *   more than the permitted amount commands at once.
-+ * - A CMD_SYNC is always inserted, which ensures we limit the prod pointer
-+ *   for when the cmdq is full, such that we don't wrap more than twice.
-+ *   It also makes it easy for the owner to know by how many to increment the
-+ *   cmdq lock.
-  */
- static int arm_smmu_cmdq_issue_cmdlist(struct arm_smmu_device *smmu,
- 				       u64 *cmds, int n)
-@@ -1388,39 +1399,38 @@ static int arm_smmu_cmdq_issue_cmdlist(struct arm_smmu_device *smmu,
- 	struct arm_smmu_cmdq *cmdq = &smmu->cmdq;
- 	struct arm_smmu_ll_queue llq = {
- 		.max_n_shift = cmdq->q.llq.max_n_shift,
--	}, head = llq;
-+	}, head = llq, space = llq;
-+	u32 owner_val = 1 << cmdq->q.llq.owner_count_shift;
-+	u32 prod_mask = GENMASK(cmdq->q.llq.max_n_shift, 0);
-+	u32 owner_mask = GENMASK(30, cmdq->q.llq.owner_count_shift);
- 	int ret = 0;
- 
- 	/* 1. Allocate some space in the queue */
- 	local_irq_save(flags);
--	llq.val = READ_ONCE(cmdq->q.llq.val);
--	do {
--		u64 old;
- 
--		while (!queue_has_space(&llq, n + sync)) {
--			local_irq_restore(flags);
--			if (arm_smmu_cmdq_poll_until_not_full(smmu, &llq))
--				dev_err_ratelimited(smmu->dev, "CMDQ timeout\n");
--			local_irq_save(flags);
--		}
-+	prod = atomic_fetch_add(n + sync + owner_val,
-+				&cmdq->q.llq.atomic.prod);
- 
--		head.cons = llq.cons;
--		head.prod = queue_inc_prod_n(&llq, n + sync) |
--					     CMDQ_PROD_OWNED_FLAG;
-+	owner = !(prod & owner_mask);
-+	llq.prod = prod_mask & prod;
-+	head.prod = queue_inc_prod_n(&llq, n + sync);
- 
--		old = cmpxchg_relaxed(&cmdq->q.llq.val, llq.val, head.val);
--		if (old == llq.val)
--			break;
-+	/*
-+	 * Ensure it's safe to write the entries. For this, we need to ensure
-+	 * that there is space in the queue from our prod pointer.
-+	 */
-+	space.cons = READ_ONCE(cmdq->q.llq.cons);
-+	space.prod = llq.prod;
-+	while (!queue_has_space(&space, n + sync)) {
-+		if (arm_smmu_cmdq_poll_until_not_full(smmu, &space))
-+			dev_err_ratelimited(smmu->dev, "CMDQ timeout\n");
- 
--		llq.val = old;
--	} while (1);
--	owner = !(llq.prod & CMDQ_PROD_OWNED_FLAG);
--	head.prod &= ~CMDQ_PROD_OWNED_FLAG;
--	llq.prod &= ~CMDQ_PROD_OWNED_FLAG;
-+		space.prod = llq.prod;
-+	}
- 
- 	/*
- 	 * 2. Write our commands into the queue
--	 * Dependency ordering from the cmpxchg() loop above.
-+	 * Dependency ordering from the space-checking while loop, above.
- 	 */
- 	arm_smmu_cmdq_write_entries(cmdq, cmds, llq.prod, n);
- 
-@@ -1428,27 +1438,24 @@ static int arm_smmu_cmdq_issue_cmdlist(struct arm_smmu_device *smmu,
- 	arm_smmu_cmdq_build_sync_cmd(cmd_sync, smmu, prod);
- 	queue_write(Q_ENT(&cmdq->q, prod), cmd_sync, CMDQ_ENT_DWORDS);
- 
--	/*
--	 * In order to determine completion of our CMD_SYNC, we must
--	 * ensure that the queue can't wrap twice without us noticing.
--	 * We achieve that by taking the cmdq lock as shared before
--	 * marking our slot as valid.
--	 */
--	arm_smmu_cmdq_shared_lock(cmdq);
--
- 	/* 3. Mark our slots as valid, ensuring commands are visible first */
- 	dma_wmb();
- 	arm_smmu_cmdq_set_valid_map(cmdq, llq.prod, head.prod);
- 
- 	/* 4. If we are the owner, take control of the SMMU hardware */
- 	if (owner) {
-+		int owner_count;
-+		u32 prod_tmp;
-+
- 		/* a. Wait for previous owner to finish */
- 		atomic_cond_read_relaxed(&cmdq->owner_prod, VAL == llq.prod);
- 
--		/* b. Stop gathering work by clearing the owned flag */
--		prod = atomic_fetch_andnot_relaxed(CMDQ_PROD_OWNED_FLAG,
--						   &cmdq->q.llq.atomic.prod);
--		prod &= ~CMDQ_PROD_OWNED_FLAG;
-+		/* b. Stop gathering work by clearing the owned mask */
-+		prod_tmp = atomic_fetch_andnot_relaxed(~prod_mask,
-+						       &cmdq->q.llq.atomic.prod);
-+		prod = prod_tmp & prod_mask;
-+		owner_count = prod_tmp & owner_mask;
-+		owner_count >>= cmdq->q.llq.owner_count_shift;
- 
- 		/*
- 		 * c. Wait for any gathered work to be written to the queue.
-@@ -1457,6 +1464,19 @@ static int arm_smmu_cmdq_issue_cmdlist(struct arm_smmu_device *smmu,
- 		 */
- 		arm_smmu_cmdq_poll_valid_map(cmdq, llq.prod, prod);
- 
-+		/*
-+		 * In order to determine completion of the CMD_SYNCs, we must
-+		 * ensure that the queue can't wrap twice without us noticing.
-+		 * We achieve that by taking the cmdq lock as shared before
-+		 * progressing the prod pointer.
-+		 * The owner does this for all the non-owners it has gathered.
-+		 * Otherwise, some non-owner(s) may lock the cmdq, blocking
-+		 * cons being updating. This could be when the cmdq has just
-+		 * become full. In this case, other sibling non-owners could be
-+		 * blocked from progressing, leading to deadlock.
-+		 */
-+		arm_smmu_cmdq_shared_lock(cmdq, owner_count);
-+
- 		/*
- 		 * d. Advance the hardware prod pointer
- 		 * Control dependency ordering from the entries becoming valid.
 -- 
-2.26.2
+QUALCOMM INDIA, on behalf of Qualcomm Innovation Center, Inc. is a member of Code Aurora Forum, hosted by The Linux Foundation
 
 _______________________________________________
 iommu mailing list
