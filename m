@@ -2,101 +2,106 @@ Return-Path: <SRS0=6LHv=75=lists.linux-foundation.org=iommu-bounces@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-6.5 required=3.0 tests=DKIM_INVALID,DKIM_SIGNED,
-	HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_PATCH,MAILING_LIST_MULTI,SIGNED_OFF_BY,
-	SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED autolearn=unavailable autolearn_force=no
-	version=3.4.0
+X-Spam-Status: No, score=-0.5 required=3.0 tests=DKIM_INVALID,DKIM_SIGNED,
+	HEADER_FROM_DIFFERENT_DOMAINS,MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS,
+	URIBL_BLOCKED autolearn=no autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id A0B59C433E0
-	for <iommu@archiver.kernel.org>; Tue, 16 Jun 2020 17:05:43 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 83292C433DF
+	for <iommu@archiver.kernel.org>; Tue, 16 Jun 2020 19:56:31 +0000 (UTC)
 Received: from silver.osuosl.org (smtp3.osuosl.org [140.211.166.136])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by mail.kernel.org (Postfix) with ESMTPS id 36CE420882
-	for <iommu@archiver.kernel.org>; Tue, 16 Jun 2020 17:05:43 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTPS id F052B207C4
+	for <iommu@archiver.kernel.org>; Tue, 16 Jun 2020 19:56:30 +0000 (UTC)
 Authentication-Results: mail.kernel.org;
-	dkim=fail reason="signature verification failed" (1024-bit key) header.d=mg.codeaurora.org header.i=@mg.codeaurora.org header.b="FkOCg3jr"
-DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 36CE420882
-Authentication-Results: mail.kernel.org; dmarc=none (p=none dis=none) header.from=codeaurora.org
+	dkim=fail reason="signature verification failed" (2048-bit key) header.d=google.com header.i=@google.com header.b="QOMab6ZB"
+DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org F052B207C4
+Authentication-Results: mail.kernel.org; dmarc=none (p=none dis=none) header.from=lists.linux-foundation.org
 Authentication-Results: mail.kernel.org; spf=pass smtp.mailfrom=iommu-bounces@lists.linux-foundation.org
 Received: from localhost (localhost [127.0.0.1])
-	by silver.osuosl.org (Postfix) with ESMTP id CB37D2667D;
-	Tue, 16 Jun 2020 17:05:42 +0000 (UTC)
+	by silver.osuosl.org (Postfix) with ESMTP id 8F8E625067;
+	Tue, 16 Jun 2020 19:56:30 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
 Received: from silver.osuosl.org ([127.0.0.1])
 	by localhost (.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
-	with ESMTP id 821ROuuxDKbI; Tue, 16 Jun 2020 17:05:41 +0000 (UTC)
+	with ESMTP id EWGCfOhzoUAy; Tue, 16 Jun 2020 19:56:29 +0000 (UTC)
 Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [140.211.9.56])
-	by silver.osuosl.org (Postfix) with ESMTP id F0FF42660E;
-	Tue, 16 Jun 2020 17:05:40 +0000 (UTC)
+	by silver.osuosl.org (Postfix) with ESMTP id 4832A2045C;
+	Tue, 16 Jun 2020 19:56:29 +0000 (UTC)
 Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
-	by lists.linuxfoundation.org (Postfix) with ESMTP id D614CC07FF;
-	Tue, 16 Jun 2020 17:05:40 +0000 (UTC)
+	by lists.linuxfoundation.org (Postfix) with ESMTP id 2864EC0888;
+	Tue, 16 Jun 2020 19:56:29 +0000 (UTC)
 Received: from fraxinus.osuosl.org (smtp4.osuosl.org [140.211.166.137])
- by lists.linuxfoundation.org (Postfix) with ESMTP id 1576AC016E
- for <iommu@lists.linux-foundation.org>; Tue, 16 Jun 2020 16:08:34 +0000 (UTC)
+ by lists.linuxfoundation.org (Postfix) with ESMTP id AC798C016E
+ for <iommu@lists.linux-foundation.org>; Tue, 16 Jun 2020 19:56:27 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
- by fraxinus.osuosl.org (Postfix) with ESMTP id F252C87973
- for <iommu@lists.linux-foundation.org>; Tue, 16 Jun 2020 16:08:33 +0000 (UTC)
+ by fraxinus.osuosl.org (Postfix) with ESMTP id 9AC6F87926
+ for <iommu@lists.linux-foundation.org>; Tue, 16 Jun 2020 19:56:27 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
 Received: from fraxinus.osuosl.org ([127.0.0.1])
  by localhost (.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
- with ESMTP id czi_0AP8TpOl for <iommu@lists.linux-foundation.org>;
- Tue, 16 Jun 2020 16:08:33 +0000 (UTC)
-X-Greylist: from auto-whitelisted by SQLgrey-1.7.6
-Received: from mail29.static.mailgun.info (mail29.static.mailgun.info
- [104.130.122.29])
- by fraxinus.osuosl.org (Postfix) with ESMTPS id E3B5C864D0
- for <iommu@lists.linux-foundation.org>; Tue, 16 Jun 2020 16:08:27 +0000 (UTC)
-DKIM-Signature: a=rsa-sha256; v=1; c=relaxed/relaxed; d=mg.codeaurora.org;
- q=dns/txt; 
- s=smtp; t=1592323713; h=In-Reply-To: Content-Type: MIME-Version:
- References: Message-ID: Subject: Cc: To: From: Date: Sender;
- bh=MD92WfPRgR/jkFLJAG2o5YhCjEHFWsLDGTiEaMXk+O4=;
- b=FkOCg3jrSoeEwwXkjdDSYpYEXJqQ5jRWYeY57st2azLsMsgFzpk1yeygtEotOCcgB3o1pnW4
- H37EJUyfXBkd6FL/Mqb8VinjtH43qj4Ffju599sXmviTfM7ypt2PDuiY7GMp7pvOVMdOCLfL
- +PpO5BeAArou7ABtRXy84sQR0jk=
-X-Mailgun-Sending-Ip: 104.130.122.29
-X-Mailgun-Sid: WyI3NDkwMCIsICJpb21tdUBsaXN0cy5saW51eC1mb3VuZGF0aW9uLm9yZyIsICJiZTllNGEiXQ==
-Received: from smtp.codeaurora.org
- (ec2-35-166-182-171.us-west-2.compute.amazonaws.com [35.166.182.171]) by
- smtp-out-n13.prod.us-east-1.postgun.com with SMTP id
- 5ee8ee75356bcc26ab0ffc16 (version=TLS1.2,
- cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256); Tue, 16 Jun 2020 16:08:21
- GMT
-Received: by smtp.codeaurora.org (Postfix, from userid 1001)
- id D5CECC4339C; Tue, 16 Jun 2020 16:08:20 +0000 (UTC)
-Received: from localhost (i-global254.qualcomm.com [199.106.103.254])
- (using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
- (No client certificate requested) (Authenticated sender: ilina)
- by smtp.codeaurora.org (Postfix) with ESMTPSA id 2594BC433CA;
- Tue, 16 Jun 2020 16:08:19 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.3.2 smtp.codeaurora.org 2594BC433CA
-Authentication-Results: aws-us-west-2-caf-mail-1.web.codeaurora.org;
- dmarc=none (p=none dis=none) header.from=codeaurora.org
-Authentication-Results: aws-us-west-2-caf-mail-1.web.codeaurora.org;
- spf=none smtp.mailfrom=ilina@codeaurora.org
-Date: Tue, 16 Jun 2020 10:08:18 -0600
-From: Lina Iyer <ilina@codeaurora.org>
-To: Maulik Shah <mkshah@codeaurora.org>
-Subject: Re: [RFC][PATCH 3/5] irqchip: Allow QCOM_PDC to be loadable as a
- perment module
-Message-ID: <20200616160818.GD12942@codeaurora.org>
-References: <20200616061338.109499-1-john.stultz@linaro.org>
- <20200616061338.109499-4-john.stultz@linaro.org>
- <55e5982a-1e73-7013-e02d-5d1d30815fba@codeaurora.org>
+ with ESMTP id vFb70S5wtorO for <iommu@lists.linux-foundation.org>;
+ Tue, 16 Jun 2020 19:56:27 +0000 (UTC)
+X-Greylist: delayed 00:28:10 by SQLgrey-1.7.6
+Received: from mail-lj1-f196.google.com (mail-lj1-f196.google.com
+ [209.85.208.196])
+ by fraxinus.osuosl.org (Postfix) with ESMTPS id B984B84553
+ for <iommu@lists.linux-foundation.org>; Tue, 16 Jun 2020 19:56:26 +0000 (UTC)
+Received: by mail-lj1-f196.google.com with SMTP id 9so25117899ljc.8
+ for <iommu@lists.linux-foundation.org>; Tue, 16 Jun 2020 12:56:26 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=google.com; s=20161025;
+ h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+ :cc; bh=G+QuAOUfD+yaHMOx7JS6V2Ec/laXvrlFy0R9vzQGqF4=;
+ b=QOMab6ZBai8eX39llL4QAiuIVWOQ0kfvL9ywteJNjgzhCzjyOqdlLEs34RuWRfNLLY
+ UBmJ+sjmxHSY9KClbzPYRcmHfIbDr3RgcQIUrbh/HgB4x65p5TjwXtES2J8FIy5PzqLb
+ qNhgVYP39gDxMPl9bQhhUq4S3zMv9UfF/pmETt8VJF4G41Qcz/1zK2PnlCpJF0fz/S6h
+ PxHy+BSAWFuylkqNZeMw7xFvJ8qR/7v1dKWfEPia1fKfpNNvfy691K7fCJ3W9iR5AH/V
+ gFeKsPsrdm5Ge3TmLS1y0qxW2m4XjgJOTWFoy9c831CRjVEIM34ATLROHfUGg4Z8jDHa
+ f9Hw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+ d=1e100.net; s=20161025;
+ h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+ :message-id:subject:to:cc;
+ bh=G+QuAOUfD+yaHMOx7JS6V2Ec/laXvrlFy0R9vzQGqF4=;
+ b=j0Ffn7TbPeQXWr0kBHX+PbQrPssM3MpGOydXYsAP/kTuugI0yQSEvcDjTcuCTv4J2u
+ DEBycjerXDkbDN28KvElRPh/S8R2I/j8fuMcxPDSarKixkZ9sLNVX9Kv84L/idSer/8a
+ lI4OIOK6bd1cL/O0gi3RdEtoF99kZOvW4M1qq+LNX8c/XashGOMUvppUcVeosquhZOse
+ q1ixBdm2iy1GFLhDX7dovGWnXE7cSFWnaaHFwitWLwZ4DAAOG/rZWFAdL2TigrPLTvF6
+ /uHnTY9mbeZfrmjnYE3MgbjiZqgRWfpio/BjLtx2yqBRIqm1bKh9ibI9P4SPV6LkLSZk
+ 9Y2Q==
+X-Gm-Message-State: AOAM530XB407/puiHX5Ysh4qq4GbtnDUWka7zTUWisPbrHBX7ASeBc8L
+ 4+spc7CmNqg4cXQtdJ8Ft3tJQIQKEgGkfr/4glaLgsM1
+X-Google-Smtp-Source: ABdhPJx83rVoJ1GBvQYrxBN8PD8VfhKiX7Lt1xY67EOoosPeSf9MmyLDKhdSIeUD5mQ+yLl+8Gvp2zP5Y6zZkNEG/uk=
+X-Received: by 2002:a2e:908f:: with SMTP id l15mr1993656ljg.307.1592335693925; 
+ Tue, 16 Jun 2020 12:28:13 -0700 (PDT)
 MIME-Version: 1.0
-Content-Disposition: inline
-In-Reply-To: <55e5982a-1e73-7013-e02d-5d1d30815fba@codeaurora.org>
-X-Mailman-Approved-At: Tue, 16 Jun 2020 17:05:39 +0000
-Cc: Jason Cooper <jason@lakedaemon.net>, Saravana Kannan <saravanak@google.com>,
- Marc Zyngier <maz@kernel.org>, lkml <linux-kernel@vger.kernel.org>,
- Bjorn Andersson <bjorn.andersson@linaro.org>, linux-gpio@vger.kernel.org,
- iommu@lists.linux-foundation.org, Andy Gross <agross@kernel.org>,
- John Stultz <john.stultz@linaro.org>,
+References: <20200616011742.138975-1-rajatja@google.com>
+ <20200616011742.138975-4-rajatja@google.com>
+ <20200616073249.GB30385@infradead.org>
+In-Reply-To: <20200616073249.GB30385@infradead.org>
+Date: Tue, 16 Jun 2020 12:27:35 -0700
+Message-ID: <CACK8Z6ELaM8KxbwPor=BUquWN7pALQmmHu5geSOc71P3KoJ1QA@mail.gmail.com>
+Subject: Re: [PATCH 4/4] pci: export untrusted attribute in sysfs
+To: Christoph Hellwig <hch@infradead.org>
+Cc: Todd Broch <tbroch@google.com>, linux-pci <linux-pci@vger.kernel.org>,
+ "Krishnakumar, Lalithambika" <lalithambika.krishnakumar@intel.com>,
+ Diego Rivas <diegorivas@google.com>,
+ Jean-Philippe Brucker <jean-philippe@linaro.org>,
+ Furquan Shaikh <furquan@google.com>, Raj Ashok <ashok.raj@intel.com>,
+ linux-acpi@vger.kernel.org, Christian Kellner <christian@kellner.me>,
+ Mattias Nissler <mnissler@google.com>, Jesse Barnes <jsbarnes@google.com>,
+ Len Brown <lenb@kernel.org>, Rajat Jain <rajatxjain@gmail.com>,
+ Prashant Malani <pmalani@google.com>, Aaron Durbin <adurbin@google.com>,
+ Alex Williamson <alex.williamson@redhat.com>,
+ Bjorn Helgaas <bhelgaas@google.com>,
+ Mika Westerberg <mika.westerberg@linux.intel.com>,
+ Bernie Keany <bernie.keany@intel.com>, Duncan Laurie <dlaurie@google.com>,
  Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
- Thomas Gleixner <tglx@linutronix.de>, Linus Walleij <linus.walleij@linaro.org>,
- linux-arm-msm@vger.kernel.org, Todd Kjos <tkjos@google.com>
+ "Rafael J. Wysocki" <rjw@rjwysocki.net>,
+ Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
+ iommu@lists.linux-foundation.org, Oliver O'Halloran <oohall@gmail.com>,
+ Benson Leung <bleung@google.com>, David Woodhouse <dwmw2@infradead.org>,
+ Alex Levin <levinale@google.com>
 X-BeenThere: iommu@lists.linux-foundation.org
 X-Mailman-Version: 2.1.15
 Precedence: list
@@ -109,119 +114,45 @@ List-Post: <mailto:iommu@lists.linux-foundation.org>
 List-Help: <mailto:iommu-request@lists.linux-foundation.org?subject=help>
 List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
  <mailto:iommu-request@lists.linux-foundation.org?subject=subscribe>
+From: Rajat Jain via iommu <iommu@lists.linux-foundation.org>
+Reply-To: Rajat Jain <rajatja@google.com>
+Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
-Content-Type: text/plain; charset="us-ascii"; Format="flowed"
 Errors-To: iommu-bounces@lists.linux-foundation.org
 Sender: "iommu" <iommu-bounces@lists.linux-foundation.org>
 
-On Tue, Jun 16 2020 at 05:30 -0600, Maulik Shah wrote:
->Hi,
+On Tue, Jun 16, 2020 at 12:32 AM Christoph Hellwig <hch@infradead.org> wrote:
 >
->On 6/16/2020 11:43 AM, John Stultz wrote:
->>Allows qcom-pdc driver to be loaded as a permenent module
+> On Mon, Jun 15, 2020 at 06:17:42PM -0700, Rajat Jain via iommu wrote:
+> > This is needed to allow the userspace to determine when an untrusted
+> > device has been added, and thus allowing it to bind the driver manually
+> > to it, if it so wishes. This is being done as part of the approach
+> > discussed at https://lkml.org/lkml/2020/6/9/1331
 >
->typo: permanent
->
->>Also, due to the fact that IRQCHIP_DECLARE becomes a no-op when
->>building as a module, we have to add the platform driver hooks
->>explicitly.
->>
->>Thanks to Saravana for his help on pointing out the
->>IRQCHIP_DECLARE issue and guidance on a solution.
->>
->>Cc: Andy Gross <agross@kernel.org>
->>Cc: Bjorn Andersson <bjorn.andersson@linaro.org>
->>Cc: Joerg Roedel <joro@8bytes.org>
->>Cc: Thomas Gleixner <tglx@linutronix.de>
->>Cc: Jason Cooper <jason@lakedaemon.net>
->>Cc: Marc Zyngier <maz@kernel.org>
->>Cc: Linus Walleij <linus.walleij@linaro.org>
->>Cc: Lina Iyer <ilina@codeaurora.org>
->>Cc: Saravana Kannan <saravanak@google.com>
->>Cc: Todd Kjos <tkjos@google.com>
->>Cc: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
->>Cc: linux-arm-msm@vger.kernel.org
->>Cc: iommu@lists.linux-foundation.org
->>Cc: linux-gpio@vger.kernel.org
->>Signed-off-by: John Stultz <john.stultz@linaro.org>
->>---
->>  drivers/irqchip/Kconfig    |  2 +-
->>  drivers/irqchip/qcom-pdc.c | 30 ++++++++++++++++++++++++++++++
->>  2 files changed, 31 insertions(+), 1 deletion(-)
->>
->>diff --git a/drivers/irqchip/Kconfig b/drivers/irqchip/Kconfig
->>index 29fead208cad..12765bed08f9 100644
->>--- a/drivers/irqchip/Kconfig
->>+++ b/drivers/irqchip/Kconfig
->>@@ -425,7 +425,7 @@ config GOLDFISH_PIC
->>           for Goldfish based virtual platforms.
->>  config QCOM_PDC
->>-	bool "QCOM PDC"
->>+	tristate "QCOM PDC"
->>  	depends on ARCH_QCOM
->>  	select IRQ_DOMAIN_HIERARCHY
->>  	help
->>diff --git a/drivers/irqchip/qcom-pdc.c b/drivers/irqchip/qcom-pdc.c
->>index 6ae9e1f0819d..98d74160afcd 100644
->>--- a/drivers/irqchip/qcom-pdc.c
->>+++ b/drivers/irqchip/qcom-pdc.c
->>@@ -11,7 +11,9 @@
->>  #include <linux/irqdomain.h>
->>  #include <linux/io.h>
->>  #include <linux/kernel.h>
->>+#include <linux/module.h>
->>  #include <linux/of.h>
->>+#include <linux/of_irq.h>
->please move this include in order after of_device.h
->>  #include <linux/of_address.h>
->>  #include <linux/of_device.h>
->>  #include <linux/soc/qcom/irq.h>
->>@@ -430,4 +432,32 @@ static int qcom_pdc_init(struct device_node *node, struct device_node *parent)
->>  	return ret;
->>  }
->>+#ifdef MODULE
->>+static int qcom_pdc_probe(struct platform_device *pdev)
->>+{
->>+	struct device_node *np = pdev->dev.of_node;
->>+	struct device_node *parent = of_irq_find_parent(np);
->>+
->>+	return qcom_pdc_init(np, parent);
->>+}
->>+
->>+static const struct of_device_id qcom_pdc_match_table[] = {
->>+	{ .compatible = "qcom,pdc" },
->>+	{}
->>+};
->>+MODULE_DEVICE_TABLE(of, qcom_pdc_match_table);
->>+
->>+static struct platform_driver qcom_pdc_driver = {
->>+	.probe = qcom_pdc_probe,
->>+	.driver = {
->>+		.name = "qcom-pdc",
->>+		.of_match_table = qcom_pdc_match_table,
->
->can you please set .suppress_bind_attrs = true,
->
->This is to prevent bind/unbind using sysfs. Once irqchip driver module 
->is loaded, it shouldn't get unbind at runtime.
->
-That is a good point. We probably should do that to RPMH RSC driver as well.
+> Please move the attribute to struct device instead of further
+> entrenching it in PCIe.
 
->Thanks,
->Maulik
->>+	},
->>+};
->>+module_platform_driver(qcom_pdc_driver);
->>+#else
->>  IRQCHIP_DECLARE(qcom_pdc, "qcom,pdc", qcom_pdc_init);
->>+#endif
->>+
->>+MODULE_DESCRIPTION("Qualcomm Technologies, Inc. Power Domain Controller");
->>+MODULE_LICENSE("GPL v2");
->
->-- 
->QUALCOMM INDIA, on behalf of Qualcomm Innovation Center, Inc. is a member of Code Aurora Forum, hosted by The Linux Foundation
->
+Need clarification. The flag "untrusted" is currently a part of
+pci_dev struct, and is populated within the PCI subsystem.
+
+1) Is your suggestion to move this flag as well as the attribute to
+device core (in "struct device")? This would allow other buses to
+populate/use this flag if they want. By default it'll be set to 0 for
+all devices (PCI subsystem will populate it based on platform info,
+like it does today).
+
+OR
+
+2) Are you suggesting to keep the "untrusted" flag within PCI, but
+attach the sysfs attribute to the base device? (&pci_dev->dev)?
+
+Thanks,
+
+Rajat
+
+>  I'm starting to grow tired of saying this
+> every other week while you guys are all moving into the entirely
+> wrong direction.
 _______________________________________________
 iommu mailing list
 iommu@lists.linux-foundation.org
