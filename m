@@ -7,96 +7,96 @@ X-Spam-Status: No, score=-0.3 required=3.0 tests=DKIM_ADSP_CUSTOM_MED,
 	HEADER_FROM_DIFFERENT_DOMAINS,MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS,
 	URIBL_BLOCKED autolearn=no autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 0F256C433DF
-	for <iommu@archiver.kernel.org>; Tue, 16 Jun 2020 15:34:48 +0000 (UTC)
-Received: from silver.osuosl.org (smtp3.osuosl.org [140.211.166.136])
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 95C5AC433DF
+	for <iommu@archiver.kernel.org>; Tue, 16 Jun 2020 15:49:36 +0000 (UTC)
+Received: from hemlock.osuosl.org (smtp2.osuosl.org [140.211.166.133])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by mail.kernel.org (Postfix) with ESMTPS id AA253208B3
-	for <iommu@archiver.kernel.org>; Tue, 16 Jun 2020 15:34:47 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTPS id 51E8D21473
+	for <iommu@archiver.kernel.org>; Tue, 16 Jun 2020 15:49:36 +0000 (UTC)
 Authentication-Results: mail.kernel.org;
-	dkim=fail reason="signature verification failed" (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="cVYrNLNB"
-DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org AA253208B3
+	dkim=fail reason="signature verification failed" (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="EgiFdnxT"
+DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 51E8D21473
 Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=gmail.com
 Authentication-Results: mail.kernel.org; spf=pass smtp.mailfrom=iommu-bounces@lists.linux-foundation.org
 Received: from localhost (localhost [127.0.0.1])
-	by silver.osuosl.org (Postfix) with ESMTP id 636752634A;
-	Tue, 16 Jun 2020 15:34:47 +0000 (UTC)
-X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from silver.osuosl.org ([127.0.0.1])
-	by localhost (.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
-	with ESMTP id ZtBzmxzcjs3r; Tue, 16 Jun 2020 15:34:45 +0000 (UTC)
-Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [140.211.9.56])
-	by silver.osuosl.org (Postfix) with ESMTP id 9445726282;
-	Tue, 16 Jun 2020 15:34:45 +0000 (UTC)
-Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
-	by lists.linuxfoundation.org (Postfix) with ESMTP id 4DF25C0888;
-	Tue, 16 Jun 2020 15:34:45 +0000 (UTC)
-Received: from hemlock.osuosl.org (smtp2.osuosl.org [140.211.166.133])
- by lists.linuxfoundation.org (Postfix) with ESMTP id 60538C016E
- for <iommu@lists.linux-foundation.org>; Tue, 16 Jun 2020 15:34:44 +0000 (UTC)
-Received: from localhost (localhost [127.0.0.1])
- by hemlock.osuosl.org (Postfix) with ESMTP id 4E99389498
- for <iommu@lists.linux-foundation.org>; Tue, 16 Jun 2020 15:34:44 +0000 (UTC)
+	by hemlock.osuosl.org (Postfix) with ESMTP id 0C399894C1;
+	Tue, 16 Jun 2020 15:49:36 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
 Received: from hemlock.osuosl.org ([127.0.0.1])
+	by localhost (.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
+	with ESMTP id 0hPnKIyP943o; Tue, 16 Jun 2020 15:49:35 +0000 (UTC)
+Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [140.211.9.56])
+	by hemlock.osuosl.org (Postfix) with ESMTP id 743BB894BE;
+	Tue, 16 Jun 2020 15:49:35 +0000 (UTC)
+Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
+	by lists.linuxfoundation.org (Postfix) with ESMTP id 6E44FC0888;
+	Tue, 16 Jun 2020 15:49:35 +0000 (UTC)
+Received: from whitealder.osuosl.org (smtp1.osuosl.org [140.211.166.138])
+ by lists.linuxfoundation.org (Postfix) with ESMTP id 33969C016E
+ for <iommu@lists.linux-foundation.org>; Tue, 16 Jun 2020 15:49:34 +0000 (UTC)
+Received: from localhost (localhost [127.0.0.1])
+ by whitealder.osuosl.org (Postfix) with ESMTP id 2FA5388554
+ for <iommu@lists.linux-foundation.org>; Tue, 16 Jun 2020 15:49:34 +0000 (UTC)
+X-Virus-Scanned: amavisd-new at osuosl.org
+Received: from whitealder.osuosl.org ([127.0.0.1])
  by localhost (.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
- with ESMTP id 99vcPVZ6I33s for <iommu@lists.linux-foundation.org>;
- Tue, 16 Jun 2020 15:34:43 +0000 (UTC)
+ with ESMTP id fhKfr3BVPgUn for <iommu@lists.linux-foundation.org>;
+ Tue, 16 Jun 2020 15:49:33 +0000 (UTC)
 X-Greylist: domain auto-whitelisted by SQLgrey-1.7.6
-Received: from mail-wr1-f66.google.com (mail-wr1-f66.google.com
- [209.85.221.66])
- by hemlock.osuosl.org (Postfix) with ESMTPS id 6501E88B26
- for <iommu@lists.linux-foundation.org>; Tue, 16 Jun 2020 15:34:43 +0000 (UTC)
-Received: by mail-wr1-f66.google.com with SMTP id j10so21241039wrw.8
- for <iommu@lists.linux-foundation.org>; Tue, 16 Jun 2020 08:34:43 -0700 (PDT)
+Received: from mail-wr1-f67.google.com (mail-wr1-f67.google.com
+ [209.85.221.67])
+ by whitealder.osuosl.org (Postfix) with ESMTPS id 25486884AB
+ for <iommu@lists.linux-foundation.org>; Tue, 16 Jun 2020 15:49:33 +0000 (UTC)
+Received: by mail-wr1-f67.google.com with SMTP id t18so21314663wru.6
+ for <iommu@lists.linux-foundation.org>; Tue, 16 Jun 2020 08:49:33 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=gmail.com; s=20161025;
  h=date:from:to:cc:subject:message-id:references:mime-version
  :content-disposition:in-reply-to;
- bh=heeKT585/GdJnkdDzmupKcXSMWfb3JfA/9n//HJB8KI=;
- b=cVYrNLNBPz0x7FpNz+U7hpChITwYsvE8DuKNm4jFWi++FFsx9Oy5FGkGG7EMAeixt5
- U3WtXC/XYWsXL42lruWiNAMIaRDKlzVff8qoSZ6PoHK8XWLzziskLvOWnmeVBWIZHREj
- CLvmtD80NhJ1D3CeNego+GCMSfHpbodVfLy68PkArxZaBkTttH9eFkxIviYNo08PweY8
- sS3ZAV6yrqnkiOElaGZ4qLNldl23QnU4OchQd0QTff25M+gljt2uNkwy5AgCTYni49N3
- NPLLKrZrawdCqgE+FotClWohXnwxarw70eHiR7UTtByQZ6/I8ry/BGO43Iok3f9zc6iT
- ZDfg==
+ bh=5DdpumczYer1vzyYLEBjn6HNhUmet7Q95lmH6nZR+oA=;
+ b=EgiFdnxTeJY8cjznp6PQXqvoiOqDIzX5Mu+fGi9ZJUX+5sY9Uq2jcVuL0batMqbDI1
+ o8Xu+jBcSc3ETlLA5o0LHy88Akoz9OzZqHJszjVUmR2V9Mbmxjbs4l7xJgTDicnCcQeH
+ 6gQ2+2Q1+cxDgafp07cueNU47muxQs5tbiMsLF2CrEvN5HtVSw1ITaA8WiAQ1o5vOO+A
+ CtoXHJdHuZvWoIlAszBkT2K7gRkl9AwVHI86EVB/sgy4tUu8iSIFHS1MsC/3V+yz5Nzm
+ n6U1RRqhogNORJ1iFN4FVwsJ+QhE4d5mwq3YjdeXkIXM3lC6uaMoXS31SDuhuNmVGfe2
+ u2dA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
  d=1e100.net; s=20161025;
  h=x-gm-message-state:date:from:to:cc:subject:message-id:references
  :mime-version:content-disposition:in-reply-to;
- bh=heeKT585/GdJnkdDzmupKcXSMWfb3JfA/9n//HJB8KI=;
- b=FNRGpSaRvrzPU4C0dFqjSXwf9A9oFNyyo7/ShsMQit4RFUPBh1iiwf5Rnotn7RLJxY
- RnVjWIlPjQ2MVG/TJr3ffvlB2uKiPfUPLPVh/c6LfDBAVdwUjRVX1YyGzCb8Vawp5m8u
- Fj5WQFG/aczNQApAPGO/OP/a8qdGFDOv0JvJpaOPMx+LhtL0LFqLJVHVqwBSEJ7/CvSl
- lPljxAhBcQmMPL1GKymcGR6Yo3GDDbDZTDuYrSaqNCq/ZdIWDb2ZDCpu6AlGfeXk3YAe
- 4CiYMYrdHKEehnCetwf67j51X+Aqy8uLY1oVFHDjN38Ob0plBPMPM2JVLd914DMZgKdi
- 2bqQ==
-X-Gm-Message-State: AOAM531ngGnEBHp6QctLg761Wab78F6cGoVsYdFDiVsy3s6NcWRRswp+
- Uqzp45JGvJaNLP0YGg5Ui+A=
-X-Google-Smtp-Source: ABdhPJw/GEtHnCh8n9ATBH9qJvvqoxLPRCt8puQyiC7D6fMHA7H4jA6wx0SyNiBrwSUDVP8LvdB0DQ==
-X-Received: by 2002:adf:e692:: with SMTP id r18mr3503560wrm.192.1592321681879; 
- Tue, 16 Jun 2020 08:34:41 -0700 (PDT)
+ bh=5DdpumczYer1vzyYLEBjn6HNhUmet7Q95lmH6nZR+oA=;
+ b=UC6NzfV33jiJ9IBo/t6HfhYRbjhmVKiU+FGycKnQxKlRJcpK50QTysyLgL8ooi55ot
+ INk0jJ/uyyEU/xC0nXxaMTUXKiBc8OjbBZDMfzG/QQ1h0Ilq2iF0lzG7ajDqI9lmv5T0
+ lGFEGSx1J4re8TIdS60VkVeR7+vZA6T5bQP0Y0momaoczFLw+mGDkn6Vog1zi0ImPEIN
+ mbIBE1YlvEi0bvj3BVvP6Y60VVpyLRYulPz2c4lzLddxi8KVraWp4jYZ4Xh4IBe/xtbB
+ HagK9/dGEZqu1WXFPqfrPErgeIeBYWdvjCdU0+27gc4uqM1+wjsHho+xmtapE1iSXQ3t
+ wS9Q==
+X-Gm-Message-State: AOAM530svk1yNk4UdMnfbrXRe/fQfkMuzegznG4HopxRBNKzxCTlVHH6
+ hUIytyRe5+1ATpoiPFSm9Os=
+X-Google-Smtp-Source: ABdhPJwV7EoNU1H3o082LpYH1XlfkrVKA4HXT5i+T2TIXgDIWRTkvvImYhC/z6iTop1auSEsn/oH8g==
+X-Received: by 2002:adf:f882:: with SMTP id u2mr3978022wrp.40.1592322571413;
+ Tue, 16 Jun 2020 08:49:31 -0700 (PDT)
 Received: from localhost ([51.15.41.238])
- by smtp.gmail.com with ESMTPSA id j4sm4815947wma.7.2020.06.16.08.34.40
+ by smtp.gmail.com with ESMTPSA id w10sm29855176wrp.16.2020.06.16.08.49.29
  (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
- Tue, 16 Jun 2020 08:34:41 -0700 (PDT)
-Date: Tue, 16 Jun 2020 16:34:39 +0100
+ Tue, 16 Jun 2020 08:49:30 -0700 (PDT)
+Date: Tue, 16 Jun 2020 16:49:28 +0100
 From: Stefan Hajnoczi <stefanha@gmail.com>
-To: "Liu, Yi L" <yi.l.liu@intel.com>
+To: "Tian, Kevin" <kevin.tian@intel.com>
 Subject: Re: [PATCH v2 00/15] vfio: expose virtual Shared Virtual Addressing
  to VMs
-Message-ID: <20200616153439.GE1491454@stefanha-x1.localdomain>
+Message-ID: <20200616154928.GF1491454@stefanha-x1.localdomain>
 References: <1591877734-66527-1-git-send-email-yi.l.liu@intel.com>
  <20200615100214.GC1491454@stefanha-x1.localdomain>
- <DM5PR11MB143598745517132685DF1D09C39C0@DM5PR11MB1435.namprd11.prod.outlook.com>
+ <MWHPR11MB16451F1E4748DF97D6A1DDD48C9D0@MWHPR11MB1645.namprd11.prod.outlook.com>
 MIME-Version: 1.0
-In-Reply-To: <DM5PR11MB143598745517132685DF1D09C39C0@DM5PR11MB1435.namprd11.prod.outlook.com>
-Cc: "jean-philippe@linaro.org" <jean-philippe@linaro.org>, "Tian,
- Kevin" <kevin.tian@intel.com>, "Raj, Ashok" <ashok.raj@intel.com>,
- "kvm@vger.kernel.org" <kvm@vger.kernel.org>, "Sun, Yi Y" <yi.y.sun@intel.com>,
+In-Reply-To: <MWHPR11MB16451F1E4748DF97D6A1DDD48C9D0@MWHPR11MB1645.namprd11.prod.outlook.com>
+Cc: "jean-philippe@linaro.org" <jean-philippe@linaro.org>, "Raj,
+ Ashok" <ashok.raj@intel.com>, "kvm@vger.kernel.org" <kvm@vger.kernel.org>,
+ "iommu@lists.linux-foundation.org" <iommu@lists.linux-foundation.org>, "Sun,
+ Yi Y" <yi.y.sun@intel.com>,
  "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
- "alex.williamson@redhat.com" <alex.williamson@redhat.com>,
- "iommu@lists.linux-foundation.org" <iommu@lists.linux-foundation.org>, "Wu,
+ "alex.williamson@redhat.com" <alex.williamson@redhat.com>, "Wu,
  Hao" <hao.wu@intel.com>, "Tian, Jun J" <jun.j.tian@intel.com>
 X-BeenThere: iommu@lists.linux-foundation.org
 X-Mailman-Version: 2.1.15
@@ -110,31 +110,31 @@ List-Post: <mailto:iommu@lists.linux-foundation.org>
 List-Help: <mailto:iommu-request@lists.linux-foundation.org?subject=help>
 List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
  <mailto:iommu-request@lists.linux-foundation.org?subject=subscribe>
-Content-Type: multipart/mixed; boundary="===============3685681966406027765=="
+Content-Type: multipart/mixed; boundary="===============3108081689410052509=="
 Errors-To: iommu-bounces@lists.linux-foundation.org
 Sender: "iommu" <iommu-bounces@lists.linux-foundation.org>
 
 
---===============3685681966406027765==
+--===============3108081689410052509==
 Content-Type: multipart/signed; micalg=pgp-sha256;
-	protocol="application/pgp-signature"; boundary="TD8GDToEDw0WLGOL"
+	protocol="application/pgp-signature"; boundary="Wb5NtZlyOqqy58h0"
 Content-Disposition: inline
 
 
---TD8GDToEDw0WLGOL
+--Wb5NtZlyOqqy58h0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
 Content-Transfer-Encoding: quoted-printable
 
-On Mon, Jun 15, 2020 at 12:39:40PM +0000, Liu, Yi L wrote:
+On Tue, Jun 16, 2020 at 02:26:38AM +0000, Tian, Kevin wrote:
 > > From: Stefan Hajnoczi <stefanha@gmail.com>
 > > Sent: Monday, June 15, 2020 6:02 PM
 > >=20
 > > On Thu, Jun 11, 2020 at 05:15:19AM -0700, Liu Yi L wrote:
 > > > Shared Virtual Addressing (SVA), a.k.a, Shared Virtual Memory (SVM) on
 > > > Intel platforms allows address space sharing between device DMA and
-> > > applications. SVA can reduce programming complexity and enhance secur=
-ity.
+> > > applications. SVA can reduce programming complexity and enhance
+> > security.
 > > >
 > > > This VFIO series is intended to expose SVA usage to VMs. i.e. Sharing
 > > > guest application address space with passthru devices. This is called
@@ -178,48 +178,59 @@ ey
 > >=20
 > > Hi,
 > > Looks like an interesting feature!
->=20
-> thanks for the interest. Stefan :-)
->=20
+> >=20
 > > To check I understand this feature: can applications now pass virtual
 > > addresses to devices instead of translating to IOVAs?
->=20
-> yes, application could pass virtual addresses to device directly. As
-> long as the virtual address is mapped in cpu page table, then IOMMU
-> would get it translated to physical address.
->=20
+> >=20
 > > If yes, can guest applications restrict the vSVA address space so the
 > > device only has access to certain regions?
+> >=20
+> > On one hand replacing IOVA translation with virtual addresses simplifies
+> > the application programming model, but does it give up isolation if the
+> > device can now access all application memory?
+> >=20
 >=20
-> do you mean restrict the access of certain virtual address regions of
-> guest application ? or certain guest memory? :-)
+> with SVA each application is allocated with a unique PASID to tag its
+> virtual address space. The device that claims SVA support must guarantee=
+=20
+> that one application can only program the device to access its own virtual
+> address space (i.e. all DMAs triggered by this application are tagged with
+> the application's PASID, and are translated by IOMMU's PASID-granular
+> page table). So, isolation is not sacrificed in SVA.
 
-Your reply below answered my question. I was wondering if applications
-can protect parts of their virtual memory space that should not be
-accessed by the device. It makes sense that there is a trade-off to
-simplify the programming model and performance might also be better if
-the application doesn't need to DMA map/unmap buffers frequently.
+Isolation between applications is preserved but there is no isolation
+between the device and the application itself. The application needs to
+trust the device.
+
+Examples:
+
+1. The device can snoop secret data from readable pages in the
+   application's virtual memory space.
+
+2. The device can gain arbitrary execution on the CPU by overwriting
+   control flow addresses (e.g. function pointers, stack return
+   addresses) in writable pages.
 
 Stefan
 
---TD8GDToEDw0WLGOL
+--Wb5NtZlyOqqy58h0
 Content-Type: application/pgp-signature; name="signature.asc"
 
 -----BEGIN PGP SIGNATURE-----
 
-iQEzBAEBCAAdFiEEhpWov9P5fNqsNXdanKSrs4Grc8gFAl7o5o8ACgkQnKSrs4Gr
-c8g6Tgf/Van2m7eceyvVRw03HdeF1bB30zQNxTLZWlAYDwU8aW2VTupF58Qp/21A
-SqcR20C9LsPofsXKrbhWfK+6FVu/HxqQTR2cNtRLGE6/lSMB892d4YC/wEgMPWyb
-h+bHpwTOxse5/ywwglCtapKMgTpLdtvFWXGRAF5/g4BLM19dEji5JoSZf1oQEIT6
-g8aCbxYoaD9GyE7HpYazYL1xPawp67YQNIp833WVsNky/9F/b9qnJxsg9QcVVJyq
-2wcW/9L18xKbM2lEBHgIkJp/6tumX0x02wn5E+TsLj5l1X5FxMC5VDqUY4dovBvu
-yzWMCyrcU+JnPV6o2VOhBqNiZf4SZQ==
-=jhcy
+iQEzBAEBCAAdFiEEhpWov9P5fNqsNXdanKSrs4Grc8gFAl7o6ggACgkQnKSrs4Gr
+c8i4Dwf+Ja8+o4M38hy+I+mda6ZTLNogJhW1RTV2lBBk35XwDmYv+WqLnD/PrUNA
+NSu0+o9RXtM9lj0HS1KkRvJGpFs1Q/YtBH1p8vlpxXjyCglRIJdw2uAVejCPUxip
+Oez+BhKteh3v0betTZYyQsgAog/HcMU+0mZRGx2O1c9dcyz2+qq5xyKSO5OBjpd4
+mcV4DNabPK85TNquyyU3Di88H1A4VdGuDmKOoU5rER7W07c0nfbPgU+V/CEB1Fww
+LZ7G8QRQydGuZRyBROl9VhYI6YjMeKs8YxIDoJddQQOycSOgUZJxAZazPe9h4G78
+VlimM2C+wn7w/KXE5mbKg9CjbMkh7g==
+=cjRe
 -----END PGP SIGNATURE-----
 
---TD8GDToEDw0WLGOL--
+--Wb5NtZlyOqqy58h0--
 
---===============3685681966406027765==
+--===============3108081689410052509==
 Content-Type: text/plain; charset="us-ascii"
 MIME-Version: 1.0
 Content-Transfer-Encoding: 7bit
@@ -229,4 +240,4 @@ _______________________________________________
 iommu mailing list
 iommu@lists.linux-foundation.org
 https://lists.linuxfoundation.org/mailman/listinfo/iommu
---===============3685681966406027765==--
+--===============3108081689410052509==--
