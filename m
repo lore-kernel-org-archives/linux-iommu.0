@@ -2,90 +2,86 @@ Return-Path: <SRS0=6LHv=75=lists.linux-foundation.org=iommu-bounces@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-6.5 required=3.0 tests=DKIM_INVALID,DKIM_SIGNED,
+X-Spam-Status: No, score=-8.0 required=3.0 tests=DKIM_INVALID,DKIM_SIGNED,
 	HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_PATCH,MAILING_LIST_MULTI,SIGNED_OFF_BY,
-	SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED autolearn=ham autolearn_force=no
-	version=3.4.0
+	SPF_HELO_NONE,SPF_PASS,UNPARSEABLE_RELAY,URIBL_BLOCKED,USER_AGENT_SANE_2
+	autolearn=ham autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 6C084C433DF
-	for <iommu@archiver.kernel.org>; Tue, 16 Jun 2020 05:57:57 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 06125C433DF
+	for <iommu@archiver.kernel.org>; Tue, 16 Jun 2020 06:10:42 +0000 (UTC)
 Received: from silver.osuosl.org (smtp3.osuosl.org [140.211.166.136])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by mail.kernel.org (Postfix) with ESMTPS id F022C20810
-	for <iommu@archiver.kernel.org>; Tue, 16 Jun 2020 05:57:56 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTPS id 9B48C2074D
+	for <iommu@archiver.kernel.org>; Tue, 16 Jun 2020 06:10:41 +0000 (UTC)
 Authentication-Results: mail.kernel.org;
-	dkim=fail reason="signature verification failed" (1024-bit key) header.d=kernel.org header.i=@kernel.org header.b="S36qoPg4"
-DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org F022C20810
-Authentication-Results: mail.kernel.org; dmarc=none (p=none dis=none) header.from=linuxfoundation.org
+	dkim=fail reason="signature verification failed" (1024-bit key) header.d=mediatek.com header.i=@mediatek.com header.b="X0s6uLih"
+DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 9B48C2074D
+Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=mediatek.com
 Authentication-Results: mail.kernel.org; spf=pass smtp.mailfrom=iommu-bounces@lists.linux-foundation.org
 Received: from localhost (localhost [127.0.0.1])
-	by silver.osuosl.org (Postfix) with ESMTP id 7DECE25CF1;
-	Tue, 16 Jun 2020 05:57:56 +0000 (UTC)
+	by silver.osuosl.org (Postfix) with ESMTP id 3B23025D1D;
+	Tue, 16 Jun 2020 06:10:41 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
 Received: from silver.osuosl.org ([127.0.0.1])
 	by localhost (.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
-	with ESMTP id OLLyVwn6AiLg; Tue, 16 Jun 2020 05:57:55 +0000 (UTC)
+	with ESMTP id I3uV7ZCFC+Xe; Tue, 16 Jun 2020 06:10:39 +0000 (UTC)
 Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [140.211.9.56])
-	by silver.osuosl.org (Postfix) with ESMTP id F0C7F258C4;
-	Tue, 16 Jun 2020 05:57:54 +0000 (UTC)
+	by silver.osuosl.org (Postfix) with ESMTP id A383E25A3A;
+	Tue, 16 Jun 2020 06:10:39 +0000 (UTC)
 Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
-	by lists.linuxfoundation.org (Postfix) with ESMTP id E2D86C0890;
-	Tue, 16 Jun 2020 05:57:54 +0000 (UTC)
-Received: from fraxinus.osuosl.org (smtp4.osuosl.org [140.211.166.137])
- by lists.linuxfoundation.org (Postfix) with ESMTP id A664CC016E
- for <iommu@lists.linux-foundation.org>; Tue, 16 Jun 2020 05:57:53 +0000 (UTC)
+	by lists.linuxfoundation.org (Postfix) with ESMTP id 7BA74C0888;
+	Tue, 16 Jun 2020 06:10:39 +0000 (UTC)
+Received: from whitealder.osuosl.org (smtp1.osuosl.org [140.211.166.138])
+ by lists.linuxfoundation.org (Postfix) with ESMTP id 62537C016E
+ for <iommu@lists.linux-foundation.org>; Tue, 16 Jun 2020 06:10:38 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
- by fraxinus.osuosl.org (Postfix) with ESMTP id 8E7F38767C
- for <iommu@lists.linux-foundation.org>; Tue, 16 Jun 2020 05:57:53 +0000 (UTC)
+ by whitealder.osuosl.org (Postfix) with ESMTP id 46FB98941D
+ for <iommu@lists.linux-foundation.org>; Tue, 16 Jun 2020 06:10:38 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from fraxinus.osuosl.org ([127.0.0.1])
+Received: from whitealder.osuosl.org ([127.0.0.1])
  by localhost (.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
- with ESMTP id ydOuCJfDV6h0 for <iommu@lists.linux-foundation.org>;
- Tue, 16 Jun 2020 05:57:53 +0000 (UTC)
-X-Greylist: from auto-whitelisted by SQLgrey-1.7.6
-Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
- by fraxinus.osuosl.org (Postfix) with ESMTPS id 1BCF68746D
- for <iommu@lists.linux-foundation.org>; Tue, 16 Jun 2020 05:57:53 +0000 (UTC)
-Received: from localhost (83-86-89-107.cable.dynamic.v4.ziggo.nl
- [83.86.89.107])
- (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
- (No client certificate requested)
- by mail.kernel.org (Postfix) with ESMTPSA id 3A1D0207E8;
- Tue, 16 Jun 2020 05:57:51 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
- s=default; t=1592287072;
- bh=UPondy/gLEeob42yBMK75A90hWsNm0WoAX0fhd+BKsM=;
- h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
- b=S36qoPg4Ccn1IlxtXBdfEqDkL77xw4EqbBxGpo52DJANn0SxLDqRTHMbS3hI2z64i
- gx7ZOTC+hdupxlw6FnQvel2n2QzH+BKpYDlHLVgIOucAL9T4Ubcx8KhDkWOI91R6tN
- WE6LiBCvTOoxwxm2yf564ty4NrQdJBWrQbwX0YgY=
-Date: Tue, 16 Jun 2020 07:57:47 +0200
-From: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-To: Rajat Jain <rajatja@google.com>
-Subject: Re: [PATCH 4/4] pci: export untrusted attribute in sysfs
-Message-ID: <20200616055747.GA2047@kroah.com>
-References: <20200616011742.138975-1-rajatja@google.com>
- <20200616011742.138975-4-rajatja@google.com>
+ with ESMTP id asvx9rvj8MTL for <iommu@lists.linux-foundation.org>;
+ Tue, 16 Jun 2020 06:10:37 +0000 (UTC)
+X-Greylist: domain auto-whitelisted by SQLgrey-1.7.6
+Received: from mailgw01.mediatek.com (unknown [210.61.82.183])
+ by whitealder.osuosl.org (Postfix) with ESMTP id CADDA88FE0
+ for <iommu@lists.linux-foundation.org>; Tue, 16 Jun 2020 06:10:36 +0000 (UTC)
+X-UUID: 1626b7beed3549a1b48b01ff9235c2d0-20200616
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=mediatek.com;
+ s=dk; 
+ h=Content-Transfer-Encoding:MIME-Version:Content-Type:References:In-Reply-To:Date:CC:To:From:Subject:Message-ID;
+ bh=o0aNLsq8928JAJ6+k5VSSOBMViWOoytBxgKCL5V42kA=; 
+ b=X0s6uLihh9WJQAq/QIZNlCXHitKpRwdbPhnw+XF6brmzFjactGUBFSdTz53YEy3L3qchs5zE86v0IbjeH3h+t3Ly+/p92p9gxq+5yt37Y6249a1bxQxBk1VsP/LpQiE1Q6ErPQM54xRpKxC0JYJZ15Bdx6/c91S5+70LK+zMR1w=;
+X-UUID: 1626b7beed3549a1b48b01ff9235c2d0-20200616
+Received: from mtkcas11.mediatek.inc [(172.21.101.40)] by mailgw01.mediatek.com
+ (envelope-from <chao.hao@mediatek.com>)
+ (Cellopoint E-mail Firewall v4.1.10 Build 0809 with TLS)
+ with ESMTP id 1405085909; Tue, 16 Jun 2020 14:10:31 +0800
+Received: from MTKCAS06.mediatek.inc (172.21.101.30) by
+ mtkmbs01n1.mediatek.inc (172.21.101.68) with Microsoft SMTP Server (TLS) id
+ 15.0.1497.2; Tue, 16 Jun 2020 14:10:26 +0800
+Received: from [10.15.20.246] (10.15.20.246) by MTKCAS06.mediatek.inc
+ (172.21.101.73) with Microsoft SMTP Server id 15.0.1497.2 via Frontend
+ Transport; Tue, 16 Jun 2020 14:10:28 +0800
+Message-ID: <1592287811.29899.3.camel@mbjsdccf07>
+Subject: Re: [PATCH v3 3/7] iommu/mediatek: Disable STANDARD_AXI_MODE in
+ MISC_CTRL
+From: chao hao <Chao.Hao@mediatek.com>
+To: Yong Wu <yong.wu@mediatek.com>
+Date: Tue, 16 Jun 2020 14:10:11 +0800
+In-Reply-To: <1590387275.13912.7.camel@mhfsdcap03>
+References: <20200509083654.5178-1-chao.hao@mediatek.com>
+ <20200509083654.5178-4-chao.hao@mediatek.com>
+ <1590387275.13912.7.camel@mhfsdcap03>
+X-Mailer: Evolution 3.10.4-0ubuntu2 
 MIME-Version: 1.0
-Content-Disposition: inline
-In-Reply-To: <20200616011742.138975-4-rajatja@google.com>
-Cc: Todd Broch <tbroch@google.com>, linux-pci@vger.kernel.org,
- lalithambika.krishnakumar@intel.com, Diego Rivas <diegorivas@google.com>,
- Jean-Philippe Brucker <jean-philippe@linaro.org>,
- Furquan Shaikh <furquan@google.com>, Raj Ashok <ashok.raj@intel.com>,
- linux-acpi@vger.kernel.org, Christian Kellner <christian@kellner.me>,
- Mattias Nissler <mnissler@google.com>, Jesse Barnes <jsbarnes@google.com>,
- Len Brown <lenb@kernel.org>, Rajat Jain <rajatxjain@gmail.com>,
- Prashant Malani <pmalani@google.com>, Aaron Durbin <adurbin@google.com>,
- Alex Williamson <alex.williamson@redhat.com>,
- Bjorn Helgaas <bhelgaas@google.com>,
- Mika Westerberg <mika.westerberg@linux.intel.com>,
- Bernie Keany <bernie.keany@intel.com>, Duncan Laurie <dlaurie@google.com>,
- "Rafael J. Wysocki" <rjw@rjwysocki.net>, linux-kernel@vger.kernel.org,
- iommu@lists.linux-foundation.org, oohall@gmail.com,
- Benson Leung <bleung@google.com>, David Woodhouse <dwmw2@infradead.org>,
- Alex Levin <levinale@google.com>
+X-MTK: N
+Cc: devicetree@vger.kernel.org, FY Yang <fy.yang@mediatek.com>,
+ wsd_upstream@mediatek.com, linux-kernel@vger.kernel.org,
+ iommu@lists.linux-foundation.org, Rob Herring <robh+dt@kernel.org>,
+ linux-mediatek@lists.infradead.org, Matthias Brugger <matthias.bgg@gmail.com>,
+ Jun Yan <jun.yan@mediatek.com>, linux-arm-kernel@lists.infradead.org
 X-BeenThere: iommu@lists.linux-foundation.org
 X-Mailman-Version: 2.1.15
 Precedence: list
@@ -103,42 +99,78 @@ Content-Transfer-Encoding: 7bit
 Errors-To: iommu-bounces@lists.linux-foundation.org
 Sender: "iommu" <iommu-bounces@lists.linux-foundation.org>
 
-On Mon, Jun 15, 2020 at 06:17:42PM -0700, Rajat Jain wrote:
-> This is needed to allow the userspace to determine when an untrusted
-> device has been added, and thus allowing it to bind the driver manually
-> to it, if it so wishes. This is being done as part of the approach
-> discussed at https://lkml.org/lkml/2020/6/9/1331
+On Mon, 2020-05-25 at 14:14 +0800, Yong Wu wrote:
+> On Sat, 2020-05-09 at 16:36 +0800, Chao Hao wrote:
+> > In order to improve performance, we always disable STANDARD_AXI_MODE in
+> > MISC_CTRL.
+> > 
+> > Signed-off-by: Chao Hao <chao.hao@mediatek.com>
+> > ---
+> >  drivers/iommu/mtk_iommu.c | 8 +++++++-
+> >  drivers/iommu/mtk_iommu.h | 1 +
+> >  2 files changed, 8 insertions(+), 1 deletion(-)
+> > 
+> > diff --git a/drivers/iommu/mtk_iommu.c b/drivers/iommu/mtk_iommu.c
+> > index e7e7c7695ed1..9ede327a418d 100644
+> > --- a/drivers/iommu/mtk_iommu.c
+> > +++ b/drivers/iommu/mtk_iommu.c
+> > @@ -42,6 +42,8 @@
+> >  #define F_INVLD_EN1				BIT(1)
+> >  
+> >  #define REG_MMU_MISC_CTRL			0x048
+> > +#define F_MMU_STANDARD_AXI_MODE_BIT		(BIT(3) | BIT(19))
+> > +
+> >  #define REG_MMU_DCM_DIS				0x050
+> >  
+> >  #define REG_MMU_CTRL_REG			0x110
+> > @@ -585,7 +587,11 @@ static int mtk_iommu_hw_init(const struct mtk_iommu_data *data)
+> >  	}
+> >  	writel_relaxed(0, data->base + REG_MMU_DCM_DIS);
+> >  
+> > -	if (data->plat_data->reset_axi) {
+> > +	if (data->plat_data->has_misc_ctrl) {
+> > +		regval = readl_relaxed(data->base + REG_MMU_MISC_CTRL);
+> > +		regval &= ~F_MMU_STANDARD_AXI_MODE_BIT;
+> > +		writel_relaxed(regval, data->base + REG_MMU_MISC_CTRL);
+> > +	} else if (data->plat_data->reset_axi) {
+> >  		/* The register is called STANDARD_AXI_MODE in this case */
+> >  		writel_relaxed(0, data->base + REG_MMU_MISC_CTRL);
+> >  	}
 > 
-> Signed-off-by: Rajat Jain <rajatja@google.com>
-> ---
->  drivers/pci/pci-sysfs.c | 2 ++
->  1 file changed, 2 insertions(+)
 > 
-> diff --git a/drivers/pci/pci-sysfs.c b/drivers/pci/pci-sysfs.c
-> index 6d78df981d41a..574e9c613ba26 100644
-> --- a/drivers/pci/pci-sysfs.c
-> +++ b/drivers/pci/pci-sysfs.c
-> @@ -50,6 +50,7 @@ pci_config_attr(subsystem_device, "0x%04x\n");
->  pci_config_attr(revision, "0x%02x\n");
->  pci_config_attr(class, "0x%06x\n");
->  pci_config_attr(irq, "%u\n");
-> +pci_config_attr(untrusted, "%u\n");
->  
->  static ssize_t broken_parity_status_show(struct device *dev,
->  					 struct device_attribute *attr,
-> @@ -608,6 +609,7 @@ static struct attribute *pci_dev_attrs[] = {
->  #endif
->  	&dev_attr_driver_override.attr,
->  	&dev_attr_ari_enabled.attr,
-> +	&dev_attr_untrusted.attr,
->  	NULL,
->  };
+> 0x48 is either STANDARD_AXI_MODE or MISC_CTRL.
+> 
+> Thus, 
+> 
+> if (data->plat_data->reset_axi) {
+>    xxx
+> } else {  /* MISC_CTRL */
+>    xxx
+> }
+> 
+> No need add "has_misc_ctrl".
 
-You also need a Documentation/ABI/ update for this new file.
+Thanks for you comment.
+Only mm_iommu/m4u needs to set MISC_CTRL register and apu_iommu don't
+need to set it. So I think we need to use has_misc_ctrl to distinguish
+it.
 
-thanks,
+> 
+> > diff --git a/drivers/iommu/mtk_iommu.h b/drivers/iommu/mtk_iommu.h
+> > index 1b6ea839b92c..d711ac630037 100644
+> > --- a/drivers/iommu/mtk_iommu.h
+> > +++ b/drivers/iommu/mtk_iommu.h
+> > @@ -40,6 +40,7 @@ struct mtk_iommu_plat_data {
+> >  
+> >  	/* HW will use the EMI clock if there isn't the "bclk". */
+> >  	bool                has_bclk;
+> > +	bool		    has_misc_ctrl;
+> >  	bool                has_vld_pa_rng;
+> >  	bool                reset_axi;
+> >  	unsigned char       larbid_remap[MTK_LARB_NR_MAX];
+> 
+> 
 
-greg k-h
 _______________________________________________
 iommu mailing list
 iommu@lists.linux-foundation.org
