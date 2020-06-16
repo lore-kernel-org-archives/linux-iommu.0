@@ -2,83 +2,101 @@ Return-Path: <SRS0=6LHv=75=lists.linux-foundation.org=iommu-bounces@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-2.2 required=3.0 tests=HEADER_FROM_DIFFERENT_DOMAINS,
-	MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS,USER_AGENT_SANE_1 autolearn=no
-	autolearn_force=no version=3.4.0
+X-Spam-Status: No, score=-6.5 required=3.0 tests=DKIM_INVALID,DKIM_SIGNED,
+	HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_PATCH,MAILING_LIST_MULTI,SIGNED_OFF_BY,
+	SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED autolearn=unavailable autolearn_force=no
+	version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 3AD29C433DF
-	for <iommu@archiver.kernel.org>; Tue, 16 Jun 2020 17:00:33 +0000 (UTC)
-Received: from fraxinus.osuosl.org (smtp4.osuosl.org [140.211.166.137])
+	by smtp.lore.kernel.org (Postfix) with ESMTP id A0B59C433E0
+	for <iommu@archiver.kernel.org>; Tue, 16 Jun 2020 17:05:43 +0000 (UTC)
+Received: from silver.osuosl.org (smtp3.osuosl.org [140.211.166.136])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by mail.kernel.org (Postfix) with ESMTPS id B01E720663
-	for <iommu@archiver.kernel.org>; Tue, 16 Jun 2020 17:00:32 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org B01E720663
-Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=intel.com
+	by mail.kernel.org (Postfix) with ESMTPS id 36CE420882
+	for <iommu@archiver.kernel.org>; Tue, 16 Jun 2020 17:05:43 +0000 (UTC)
+Authentication-Results: mail.kernel.org;
+	dkim=fail reason="signature verification failed" (1024-bit key) header.d=mg.codeaurora.org header.i=@mg.codeaurora.org header.b="FkOCg3jr"
+DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 36CE420882
+Authentication-Results: mail.kernel.org; dmarc=none (p=none dis=none) header.from=codeaurora.org
 Authentication-Results: mail.kernel.org; spf=pass smtp.mailfrom=iommu-bounces@lists.linux-foundation.org
 Received: from localhost (localhost [127.0.0.1])
-	by fraxinus.osuosl.org (Postfix) with ESMTP id 8AF50878B9;
-	Tue, 16 Jun 2020 17:00:32 +0000 (UTC)
+	by silver.osuosl.org (Postfix) with ESMTP id CB37D2667D;
+	Tue, 16 Jun 2020 17:05:42 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from fraxinus.osuosl.org ([127.0.0.1])
+Received: from silver.osuosl.org ([127.0.0.1])
 	by localhost (.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
-	with ESMTP id 5Nmz855g5DXe; Tue, 16 Jun 2020 17:00:31 +0000 (UTC)
+	with ESMTP id 821ROuuxDKbI; Tue, 16 Jun 2020 17:05:41 +0000 (UTC)
 Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [140.211.9.56])
-	by fraxinus.osuosl.org (Postfix) with ESMTP id EAB9E87895;
-	Tue, 16 Jun 2020 17:00:31 +0000 (UTC)
+	by silver.osuosl.org (Postfix) with ESMTP id F0FF42660E;
+	Tue, 16 Jun 2020 17:05:40 +0000 (UTC)
 Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
-	by lists.linuxfoundation.org (Postfix) with ESMTP id D84C7C07FF;
-	Tue, 16 Jun 2020 17:00:31 +0000 (UTC)
+	by lists.linuxfoundation.org (Postfix) with ESMTP id D614CC07FF;
+	Tue, 16 Jun 2020 17:05:40 +0000 (UTC)
 Received: from fraxinus.osuosl.org (smtp4.osuosl.org [140.211.166.137])
- by lists.linuxfoundation.org (Postfix) with ESMTP id 37DA7C016E
- for <iommu@lists.linux-foundation.org>; Tue, 16 Jun 2020 17:00:30 +0000 (UTC)
+ by lists.linuxfoundation.org (Postfix) with ESMTP id 1576AC016E
+ for <iommu@lists.linux-foundation.org>; Tue, 16 Jun 2020 16:08:34 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
- by fraxinus.osuosl.org (Postfix) with ESMTP id 33564878A7
- for <iommu@lists.linux-foundation.org>; Tue, 16 Jun 2020 17:00:30 +0000 (UTC)
+ by fraxinus.osuosl.org (Postfix) with ESMTP id F252C87973
+ for <iommu@lists.linux-foundation.org>; Tue, 16 Jun 2020 16:08:33 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
 Received: from fraxinus.osuosl.org ([127.0.0.1])
  by localhost (.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
- with ESMTP id h0jsdgUOf_ja for <iommu@lists.linux-foundation.org>;
- Tue, 16 Jun 2020 17:00:29 +0000 (UTC)
-X-Greylist: domain auto-whitelisted by SQLgrey-1.7.6
-Received: from mga05.intel.com (mga05.intel.com [192.55.52.43])
- by fraxinus.osuosl.org (Postfix) with ESMTPS id 5BAF887895
- for <iommu@lists.linux-foundation.org>; Tue, 16 Jun 2020 17:00:29 +0000 (UTC)
-IronPort-SDR: KxaWE7CdHXhII5lM0Dtvn3QpwvZB9KKnTh3vjMWX9wBAOv8viSWWv7O5s7QW5KWMZXyxI75BbX
- EkzRY2C8VfNQ==
-X-Amp-Result: SKIPPED(no attachment in message)
-X-Amp-File-Uploaded: False
-Received: from orsmga003.jf.intel.com ([10.7.209.27])
- by fmsmga105.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384;
- 16 Jun 2020 10:00:17 -0700
-IronPort-SDR: shXlJDB6Aa2I7qVQkpqzSISC/9/CbPOu9n9L7Pl4JZVPZQbC2aORL/Zi3VEf3kIBSNnoifV9z0
- o0yzMkUEcJDQ==
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.73,518,1583222400"; d="scan'208";a="273217899"
-Received: from otc-nc-03.jf.intel.com (HELO otc-nc-03) ([10.54.39.25])
- by orsmga003.jf.intel.com with ESMTP; 16 Jun 2020 10:00:16 -0700
-Date: Tue, 16 Jun 2020 10:00:16 -0700
-From: "Raj, Ashok" <ashok.raj@intel.com>
-To: Stefan Hajnoczi <stefanha@gmail.com>
-Subject: Re: [PATCH v2 00/15] vfio: expose virtual Shared Virtual Addressing
- to VMs
-Message-ID: <20200616170016.GC34820@otc-nc-03>
-References: <1591877734-66527-1-git-send-email-yi.l.liu@intel.com>
- <20200615100214.GC1491454@stefanha-x1.localdomain>
- <MWHPR11MB16451F1E4748DF97D6A1DDD48C9D0@MWHPR11MB1645.namprd11.prod.outlook.com>
- <20200616154928.GF1491454@stefanha-x1.localdomain>
+ with ESMTP id czi_0AP8TpOl for <iommu@lists.linux-foundation.org>;
+ Tue, 16 Jun 2020 16:08:33 +0000 (UTC)
+X-Greylist: from auto-whitelisted by SQLgrey-1.7.6
+Received: from mail29.static.mailgun.info (mail29.static.mailgun.info
+ [104.130.122.29])
+ by fraxinus.osuosl.org (Postfix) with ESMTPS id E3B5C864D0
+ for <iommu@lists.linux-foundation.org>; Tue, 16 Jun 2020 16:08:27 +0000 (UTC)
+DKIM-Signature: a=rsa-sha256; v=1; c=relaxed/relaxed; d=mg.codeaurora.org;
+ q=dns/txt; 
+ s=smtp; t=1592323713; h=In-Reply-To: Content-Type: MIME-Version:
+ References: Message-ID: Subject: Cc: To: From: Date: Sender;
+ bh=MD92WfPRgR/jkFLJAG2o5YhCjEHFWsLDGTiEaMXk+O4=;
+ b=FkOCg3jrSoeEwwXkjdDSYpYEXJqQ5jRWYeY57st2azLsMsgFzpk1yeygtEotOCcgB3o1pnW4
+ H37EJUyfXBkd6FL/Mqb8VinjtH43qj4Ffju599sXmviTfM7ypt2PDuiY7GMp7pvOVMdOCLfL
+ +PpO5BeAArou7ABtRXy84sQR0jk=
+X-Mailgun-Sending-Ip: 104.130.122.29
+X-Mailgun-Sid: WyI3NDkwMCIsICJpb21tdUBsaXN0cy5saW51eC1mb3VuZGF0aW9uLm9yZyIsICJiZTllNGEiXQ==
+Received: from smtp.codeaurora.org
+ (ec2-35-166-182-171.us-west-2.compute.amazonaws.com [35.166.182.171]) by
+ smtp-out-n13.prod.us-east-1.postgun.com with SMTP id
+ 5ee8ee75356bcc26ab0ffc16 (version=TLS1.2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256); Tue, 16 Jun 2020 16:08:21
+ GMT
+Received: by smtp.codeaurora.org (Postfix, from userid 1001)
+ id D5CECC4339C; Tue, 16 Jun 2020 16:08:20 +0000 (UTC)
+Received: from localhost (i-global254.qualcomm.com [199.106.103.254])
+ (using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+ (No client certificate requested) (Authenticated sender: ilina)
+ by smtp.codeaurora.org (Postfix) with ESMTPSA id 2594BC433CA;
+ Tue, 16 Jun 2020 16:08:19 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.3.2 smtp.codeaurora.org 2594BC433CA
+Authentication-Results: aws-us-west-2-caf-mail-1.web.codeaurora.org;
+ dmarc=none (p=none dis=none) header.from=codeaurora.org
+Authentication-Results: aws-us-west-2-caf-mail-1.web.codeaurora.org;
+ spf=none smtp.mailfrom=ilina@codeaurora.org
+Date: Tue, 16 Jun 2020 10:08:18 -0600
+From: Lina Iyer <ilina@codeaurora.org>
+To: Maulik Shah <mkshah@codeaurora.org>
+Subject: Re: [RFC][PATCH 3/5] irqchip: Allow QCOM_PDC to be loadable as a
+ perment module
+Message-ID: <20200616160818.GD12942@codeaurora.org>
+References: <20200616061338.109499-1-john.stultz@linaro.org>
+ <20200616061338.109499-4-john.stultz@linaro.org>
+ <55e5982a-1e73-7013-e02d-5d1d30815fba@codeaurora.org>
 MIME-Version: 1.0
 Content-Disposition: inline
-In-Reply-To: <20200616154928.GF1491454@stefanha-x1.localdomain>
-User-Agent: Mutt/1.5.24 (2015-08-30)
-Cc: "jean-philippe@linaro.org" <jean-philippe@linaro.org>, "Tian,
- Kevin" <kevin.tian@intel.com>, Ashok Raj <ashok.raj@intel.com>,
- "kvm@vger.kernel.org" <kvm@vger.kernel.org>,
- "iommu@lists.linux-foundation.org" <iommu@lists.linux-foundation.org>, "Sun,
- Yi Y" <yi.y.sun@intel.com>,
- "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
- "alex.williamson@redhat.com" <alex.williamson@redhat.com>, "Wu,
- Hao" <hao.wu@intel.com>, "Tian, Jun J" <jun.j.tian@intel.com>
+In-Reply-To: <55e5982a-1e73-7013-e02d-5d1d30815fba@codeaurora.org>
+X-Mailman-Approved-At: Tue, 16 Jun 2020 17:05:39 +0000
+Cc: Jason Cooper <jason@lakedaemon.net>, Saravana Kannan <saravanak@google.com>,
+ Marc Zyngier <maz@kernel.org>, lkml <linux-kernel@vger.kernel.org>,
+ Bjorn Andersson <bjorn.andersson@linaro.org>, linux-gpio@vger.kernel.org,
+ iommu@lists.linux-foundation.org, Andy Gross <agross@kernel.org>,
+ John Stultz <john.stultz@linaro.org>,
+ Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+ Thomas Gleixner <tglx@linutronix.de>, Linus Walleij <linus.walleij@linaro.org>,
+ linux-arm-msm@vger.kernel.org, Todd Kjos <tkjos@google.com>
 X-BeenThere: iommu@lists.linux-foundation.org
 X-Mailman-Version: 2.1.15
 Precedence: list
@@ -91,114 +109,119 @@ List-Post: <mailto:iommu@lists.linux-foundation.org>
 List-Help: <mailto:iommu-request@lists.linux-foundation.org?subject=help>
 List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
  <mailto:iommu-request@lists.linux-foundation.org?subject=subscribe>
-Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset="us-ascii"; Format="flowed"
 Errors-To: iommu-bounces@lists.linux-foundation.org
 Sender: "iommu" <iommu-bounces@lists.linux-foundation.org>
 
-On Tue, Jun 16, 2020 at 04:49:28PM +0100, Stefan Hajnoczi wrote:
-> On Tue, Jun 16, 2020 at 02:26:38AM +0000, Tian, Kevin wrote:
-> > > From: Stefan Hajnoczi <stefanha@gmail.com>
-> > > Sent: Monday, June 15, 2020 6:02 PM
-> > > 
-> > > On Thu, Jun 11, 2020 at 05:15:19AM -0700, Liu Yi L wrote:
-> > > > Shared Virtual Addressing (SVA), a.k.a, Shared Virtual Memory (SVM) on
-> > > > Intel platforms allows address space sharing between device DMA and
-> > > > applications. SVA can reduce programming complexity and enhance
-> > > security.
-> > > >
-> > > > This VFIO series is intended to expose SVA usage to VMs. i.e. Sharing
-> > > > guest application address space with passthru devices. This is called
-> > > > vSVA in this series. The whole vSVA enabling requires QEMU/VFIO/IOMMU
-> > > > changes. For IOMMU and QEMU changes, they are in separate series (listed
-> > > > in the "Related series").
-> > > >
-> > > > The high-level architecture for SVA virtualization is as below, the key
-> > > > design of vSVA support is to utilize the dual-stage IOMMU translation (
-> > > > also known as IOMMU nesting translation) capability in host IOMMU.
-> > > >
-> > > >
-> > > >     .-------------.  .---------------------------.
-> > > >     |   vIOMMU    |  | Guest process CR3, FL only|
-> > > >     |             |  '---------------------------'
-> > > >     .----------------/
-> > > >     | PASID Entry |--- PASID cache flush -
-> > > >     '-------------'                       |
-> > > >     |             |                       V
-> > > >     |             |                CR3 in GPA
-> > > >     '-------------'
-> > > > Guest
-> > > > ------| Shadow |--------------------------|--------
-> > > >       v        v                          v
-> > > > Host
-> > > >     .-------------.  .----------------------.
-> > > >     |   pIOMMU    |  | Bind FL for GVA-GPA  |
-> > > >     |             |  '----------------------'
-> > > >     .----------------/  |
-> > > >     | PASID Entry |     V (Nested xlate)
-> > > >     '----------------\.------------------------------.
-> > > >     |             |   |SL for GPA-HPA, default domain|
-> > > >     |             |   '------------------------------'
-> > > >     '-------------'
-> > > > Where:
-> > > >  - FL = First level/stage one page tables
-> > > >  - SL = Second level/stage two page tables
-> > > 
-> > > Hi,
-> > > Looks like an interesting feature!
-> > > 
-> > > To check I understand this feature: can applications now pass virtual
-> > > addresses to devices instead of translating to IOVAs?
-> > > 
-> > > If yes, can guest applications restrict the vSVA address space so the
-> > > device only has access to certain regions?
-> > > 
-> > > On one hand replacing IOVA translation with virtual addresses simplifies
-> > > the application programming model, but does it give up isolation if the
-> > > device can now access all application memory?
-> > > 
-> > 
-> > with SVA each application is allocated with a unique PASID to tag its
-> > virtual address space. The device that claims SVA support must guarantee 
-> > that one application can only program the device to access its own virtual
-> > address space (i.e. all DMAs triggered by this application are tagged with
-> > the application's PASID, and are translated by IOMMU's PASID-granular
-> > page table). So, isolation is not sacrificed in SVA.
-> 
-> Isolation between applications is preserved but there is no isolation
-> between the device and the application itself. The application needs to
-> trust the device.
+On Tue, Jun 16 2020 at 05:30 -0600, Maulik Shah wrote:
+>Hi,
+>
+>On 6/16/2020 11:43 AM, John Stultz wrote:
+>>Allows qcom-pdc driver to be loaded as a permenent module
+>
+>typo: permanent
+>
+>>Also, due to the fact that IRQCHIP_DECLARE becomes a no-op when
+>>building as a module, we have to add the platform driver hooks
+>>explicitly.
+>>
+>>Thanks to Saravana for his help on pointing out the
+>>IRQCHIP_DECLARE issue and guidance on a solution.
+>>
+>>Cc: Andy Gross <agross@kernel.org>
+>>Cc: Bjorn Andersson <bjorn.andersson@linaro.org>
+>>Cc: Joerg Roedel <joro@8bytes.org>
+>>Cc: Thomas Gleixner <tglx@linutronix.de>
+>>Cc: Jason Cooper <jason@lakedaemon.net>
+>>Cc: Marc Zyngier <maz@kernel.org>
+>>Cc: Linus Walleij <linus.walleij@linaro.org>
+>>Cc: Lina Iyer <ilina@codeaurora.org>
+>>Cc: Saravana Kannan <saravanak@google.com>
+>>Cc: Todd Kjos <tkjos@google.com>
+>>Cc: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+>>Cc: linux-arm-msm@vger.kernel.org
+>>Cc: iommu@lists.linux-foundation.org
+>>Cc: linux-gpio@vger.kernel.org
+>>Signed-off-by: John Stultz <john.stultz@linaro.org>
+>>---
+>>  drivers/irqchip/Kconfig    |  2 +-
+>>  drivers/irqchip/qcom-pdc.c | 30 ++++++++++++++++++++++++++++++
+>>  2 files changed, 31 insertions(+), 1 deletion(-)
+>>
+>>diff --git a/drivers/irqchip/Kconfig b/drivers/irqchip/Kconfig
+>>index 29fead208cad..12765bed08f9 100644
+>>--- a/drivers/irqchip/Kconfig
+>>+++ b/drivers/irqchip/Kconfig
+>>@@ -425,7 +425,7 @@ config GOLDFISH_PIC
+>>           for Goldfish based virtual platforms.
+>>  config QCOM_PDC
+>>-	bool "QCOM PDC"
+>>+	tristate "QCOM PDC"
+>>  	depends on ARCH_QCOM
+>>  	select IRQ_DOMAIN_HIERARCHY
+>>  	help
+>>diff --git a/drivers/irqchip/qcom-pdc.c b/drivers/irqchip/qcom-pdc.c
+>>index 6ae9e1f0819d..98d74160afcd 100644
+>>--- a/drivers/irqchip/qcom-pdc.c
+>>+++ b/drivers/irqchip/qcom-pdc.c
+>>@@ -11,7 +11,9 @@
+>>  #include <linux/irqdomain.h>
+>>  #include <linux/io.h>
+>>  #include <linux/kernel.h>
+>>+#include <linux/module.h>
+>>  #include <linux/of.h>
+>>+#include <linux/of_irq.h>
+>please move this include in order after of_device.h
+>>  #include <linux/of_address.h>
+>>  #include <linux/of_device.h>
+>>  #include <linux/soc/qcom/irq.h>
+>>@@ -430,4 +432,32 @@ static int qcom_pdc_init(struct device_node *node, struct device_node *parent)
+>>  	return ret;
+>>  }
+>>+#ifdef MODULE
+>>+static int qcom_pdc_probe(struct platform_device *pdev)
+>>+{
+>>+	struct device_node *np = pdev->dev.of_node;
+>>+	struct device_node *parent = of_irq_find_parent(np);
+>>+
+>>+	return qcom_pdc_init(np, parent);
+>>+}
+>>+
+>>+static const struct of_device_id qcom_pdc_match_table[] = {
+>>+	{ .compatible = "qcom,pdc" },
+>>+	{}
+>>+};
+>>+MODULE_DEVICE_TABLE(of, qcom_pdc_match_table);
+>>+
+>>+static struct platform_driver qcom_pdc_driver = {
+>>+	.probe = qcom_pdc_probe,
+>>+	.driver = {
+>>+		.name = "qcom-pdc",
+>>+		.of_match_table = qcom_pdc_match_table,
+>
+>can you please set .suppress_bind_attrs = true,
+>
+>This is to prevent bind/unbind using sysfs. Once irqchip driver module 
+>is loaded, it shouldn't get unbind at runtime.
+>
+That is a good point. We probably should do that to RPMH RSC driver as well.
 
-Right. With all convenience comes security trust. With SVA there is an
-expectation that the device has the required security boundaries properly
-implemented. FWIW, what is our guarantee today that VF's are secure from
-one another or even its own PF? They can also generate transactions with
-any of its peer id's and there is nothing an IOMMU can do today. Other than
-rely on ACS. Even BusMaster enable can be ignored and devices (malicious
-or otherwise) can generate after the BM=0. With SVM you get the benefits of
-
-* Not having to register regions
-* Don't need to pin application space for DMA.
-
-> 
-> Examples:
-> 
-> 1. The device can snoop secret data from readable pages in the
->    application's virtual memory space.
-
-Aren't there other security technologies that can address this?
-
-> 
-> 2. The device can gain arbitrary execution on the CPU by overwriting
->    control flow addresses (e.g. function pointers, stack return
->    addresses) in writable pages.
-
-I suppose technology like CET might be able to guard. The general
-expectation is code pages and anything that needs to be protected should be
-mapped nor writable.
-
-Cheers,
-Ashok
+>Thanks,
+>Maulik
+>>+	},
+>>+};
+>>+module_platform_driver(qcom_pdc_driver);
+>>+#else
+>>  IRQCHIP_DECLARE(qcom_pdc, "qcom,pdc", qcom_pdc_init);
+>>+#endif
+>>+
+>>+MODULE_DESCRIPTION("Qualcomm Technologies, Inc. Power Domain Controller");
+>>+MODULE_LICENSE("GPL v2");
+>
+>-- 
+>QUALCOMM INDIA, on behalf of Qualcomm Innovation Center, Inc. is a member of Code Aurora Forum, hosted by The Linux Foundation
+>
 _______________________________________________
 iommu mailing list
 iommu@lists.linux-foundation.org
