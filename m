@@ -6,57 +6,57 @@ X-Spam-Status: No, score=-9.7 required=3.0 tests=HEADER_FROM_DIFFERENT_DOMAINS,
 	INCLUDES_PATCH,MAILING_LIST_MULTI,SIGNED_OFF_BY,SPF_HELO_NONE,SPF_PASS,
 	URIBL_BLOCKED,USER_AGENT_GIT autolearn=ham autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 8480FC433E4
-	for <iommu@archiver.kernel.org>; Wed, 17 Jun 2020 18:24:34 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id C4D94C433E1
+	for <iommu@archiver.kernel.org>; Wed, 17 Jun 2020 18:24:36 +0000 (UTC)
 Received: from silver.osuosl.org (smtp3.osuosl.org [140.211.166.136])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by mail.kernel.org (Postfix) with ESMTPS id 66740217BA
-	for <iommu@archiver.kernel.org>; Wed, 17 Jun 2020 18:24:34 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 66740217BA
+	by mail.kernel.org (Postfix) with ESMTPS id A6B05217BA
+	for <iommu@archiver.kernel.org>; Wed, 17 Jun 2020 18:24:36 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org A6B05217BA
 Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=intel.com
 Authentication-Results: mail.kernel.org; spf=pass smtp.mailfrom=iommu-bounces@lists.linux-foundation.org
 Received: from localhost (localhost [127.0.0.1])
-	by silver.osuosl.org (Postfix) with ESMTP id 44B7622001;
-	Wed, 17 Jun 2020 18:24:34 +0000 (UTC)
+	by silver.osuosl.org (Postfix) with ESMTP id 810C621549;
+	Wed, 17 Jun 2020 18:24:36 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
 Received: from silver.osuosl.org ([127.0.0.1])
 	by localhost (.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
-	with ESMTP id 7PUaLsrciQdT; Wed, 17 Jun 2020 18:24:27 +0000 (UTC)
+	with ESMTP id EvgRV3vDvIoT; Wed, 17 Jun 2020 18:24:29 +0000 (UTC)
 Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [140.211.9.56])
-	by silver.osuosl.org (Postfix) with ESMTP id 9D25B220C4;
+	by silver.osuosl.org (Postfix) with ESMTP id C7D9622177;
 	Wed, 17 Jun 2020 18:24:21 +0000 (UTC)
 Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
-	by lists.linuxfoundation.org (Postfix) with ESMTP id 888A6C08A0;
+	by lists.linuxfoundation.org (Postfix) with ESMTP id B229DC0892;
 	Wed, 17 Jun 2020 18:24:21 +0000 (UTC)
 Received: from fraxinus.osuosl.org (smtp4.osuosl.org [140.211.166.137])
- by lists.linuxfoundation.org (Postfix) with ESMTP id D8B95C0892
- for <iommu@lists.linux-foundation.org>; Wed, 17 Jun 2020 18:24:18 +0000 (UTC)
+ by lists.linuxfoundation.org (Postfix) with ESMTP id 4289EC016E
+ for <iommu@lists.linux-foundation.org>; Wed, 17 Jun 2020 18:24:19 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
- by fraxinus.osuosl.org (Postfix) with ESMTP id D2ECC8757C
- for <iommu@lists.linux-foundation.org>; Wed, 17 Jun 2020 18:24:18 +0000 (UTC)
+ by fraxinus.osuosl.org (Postfix) with ESMTP id 1E68C8757C
+ for <iommu@lists.linux-foundation.org>; Wed, 17 Jun 2020 18:24:19 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
 Received: from fraxinus.osuosl.org ([127.0.0.1])
  by localhost (.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
- with ESMTP id 9FqugltB1CEp for <iommu@lists.linux-foundation.org>;
- Wed, 17 Jun 2020 18:24:18 +0000 (UTC)
+ with ESMTP id phwtayiJhW9X for <iommu@lists.linux-foundation.org>;
+ Wed, 17 Jun 2020 18:24:17 +0000 (UTC)
 X-Greylist: domain auto-whitelisted by SQLgrey-1.7.6
 Received: from mga05.intel.com (mga05.intel.com [192.55.52.43])
- by fraxinus.osuosl.org (Postfix) with ESMTPS id 6342A87599
- for <iommu@lists.linux-foundation.org>; Wed, 17 Jun 2020 18:24:18 +0000 (UTC)
-IronPort-SDR: IQQAVUAw/49noe0JS1YvVX8HHqdN5lO3Gs8moczDayKT1kaN/EPGKcuyXzlXKQsYrOoCYDCsov
- mjuqE5CsQqLw==
+ by fraxinus.osuosl.org (Postfix) with ESMTPS id 7E1AC875C0
+ for <iommu@lists.linux-foundation.org>; Wed, 17 Jun 2020 18:24:17 +0000 (UTC)
+IronPort-SDR: JXun5T2ZirEj8HSV/gxdI7SnWjzEjqBDsZ9U4V6TjuJfMmt0+a3IQa1fTr5SC97s/uqFDv3lfs
+ gpyt2ASUZ/gw==
 X-Amp-Result: SKIPPED(no attachment in message)
 X-Amp-File-Uploaded: False
 Received: from orsmga008.jf.intel.com ([10.7.209.65])
  by fmsmga105.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384;
- 17 Jun 2020 11:24:18 -0700
-IronPort-SDR: 0d4uNX9SxATFl4aKKA1MsXOcH1o7CefhZKQKMY2G/mV2uIljTNy+RP93NfyHME6e45tCUw1RNb
- SnX0SJuCC1NQ==
+ 17 Jun 2020 11:24:17 -0700
+IronPort-SDR: ApHMan8Gbbrd/5wl5AoMhoLs5wz3Zf7SVm84PLn/uhWYRo+xdGWfQ0JkLDSoM2h5ppjcFgcJhi
+ bXNG5wyXJzXg==
 X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.73,523,1583222400"; d="scan'208";a="308874184"
+X-IronPort-AV: E=Sophos;i="5.73,523,1583222400"; d="scan'208";a="308874175"
 Received: from romley-ivt3.sc.intel.com ([172.25.110.60])
- by orsmga008.jf.intel.com with ESMTP; 17 Jun 2020 11:24:17 -0700
+ by orsmga008.jf.intel.com with ESMTP; 17 Jun 2020 11:24:16 -0700
 From: Fenghua Yu <fenghua.yu@intel.com>
 To: "Thomas Gleixner" <tglx@linutronix.de>, "Ingo Molnar" <mingo@redhat.com>,
  "Borislav Petkov" <bp@alien8.de>, "Peter Zijlstra" <peterz@infradead.org>,
@@ -68,10 +68,9 @@ To: "Thomas Gleixner" <tglx@linutronix.de>, "Ingo Molnar" <mingo@redhat.com>,
  "Jacob Jun Pan" <jacob.jun.pan@intel.com>,
  "Dave Jiang" <dave.jiang@intel.com>, "Sohil Mehta" <sohil.mehta@intel.com>,
  "Ravi V Shankar" <ravi.v.shankar@intel.com>
-Subject: [PATCH v3 10/13] x86/process: Clear PASID state for a newly
- forked/cloned thread
-Date: Wed, 17 Jun 2020 11:23:50 -0700
-Message-Id: <1592418233-17762-11-git-send-email-fenghua.yu@intel.com>
+Subject: [PATCH v3 08/13] mm: Define pasid in mm
+Date: Wed, 17 Jun 2020 11:23:48 -0700
+Message-Id: <1592418233-17762-9-git-send-email-fenghua.yu@intel.com>
 X-Mailer: git-send-email 2.5.0
 In-Reply-To: <1592418233-17762-1-git-send-email-fenghua.yu@intel.com>
 References: <1592418233-17762-1-git-send-email-fenghua.yu@intel.com>
@@ -95,63 +94,45 @@ Content-Transfer-Encoding: 7bit
 Errors-To: iommu-bounces@lists.linux-foundation.org
 Sender: "iommu" <iommu-bounces@lists.linux-foundation.org>
 
-The PASID state has to be cleared on forks, since the child has a
-different address space. The PASID is also cleared for thread clone. While
-it would be correct to inherit the PASID in this case, it is unknown
-whether the new task will use ENQCMD. Giving it the PASID "just in case"
-would have the downside of increased context switch overhead to setting
-the PASID MSR.
+PASID is shared by all threads in a process. So the logical place to keep
+track of it is in the "mm". Both ARM and X86 need to use the PASID in the
+"mm".
 
-Since #GP faults have to be handled on any threads that were created before
-the PASID was assigned to the mm of the process, newly created threads
-might as well be treated in a consistent way.
-
-Suggested-by: Thomas Gleixner <tglx@linutronix.de>
+Suggested-by: Christoph Hellwig <hch@infradeed.org>
 Signed-off-by: Fenghua Yu <fenghua.yu@intel.com>
 Reviewed-by: Tony Luck <tony.luck@intel.com>
 ---
+v3:
+- Change CONFIG_PCI_PASID to CONFIG_IOMMU_SUPPORT because non-PCI device
+  can have PASID in ARM (Jean)
+
 v2:
-- Modify init_task_pasid().
+- This new patch moves "pasid" from x86 specific mm_context_t to generic
+  struct mm_struct per Christopher's comment: https://lore.kernel.org/linux-iommu/20200414170252.714402-1-jean-philippe@linaro.org/T/#mb57110ffe1aaa24750eeea4f93b611f0d1913911
+- Jean-Philippe Brucker released a virtually same patch. I still put this
+  patch in the series for better review. The upstream kernel only needs one
+  of the two patches eventually.
+https://lore.kernel.org/linux-iommu/20200519175502.2504091-2-jean-philippe@linaro.org/
+- Change CONFIG_IOASID to CONFIG_PCI_PASID (Ashok)
 
- arch/x86/kernel/process.c | 18 ++++++++++++++++++
- 1 file changed, 18 insertions(+)
+ include/linux/mm_types.h | 4 ++++
+ 1 file changed, 4 insertions(+)
 
-diff --git a/arch/x86/kernel/process.c b/arch/x86/kernel/process.c
-index f362ce0d5ac0..1b1492e337a6 100644
---- a/arch/x86/kernel/process.c
-+++ b/arch/x86/kernel/process.c
-@@ -121,6 +121,21 @@ static int set_new_tls(struct task_struct *p, unsigned long tls)
- 		return do_set_thread_area_64(p, ARCH_SET_FS, tls);
- }
- 
-+/* Initialize the PASID state for the forked/cloned thread. */
-+static void init_task_pasid(struct task_struct *task)
-+{
-+	struct ia32_pasid_state *ppasid;
-+
-+	/*
-+	 * Initialize the PASID state so that the PASID MSR will be
-+	 * initialized to its initial state (0) by XRSTORS when the task is
-+	 * scheduled for the first time.
-+	 */
-+	ppasid = get_xsave_addr(&task->thread.fpu.state.xsave, XFEATURE_PASID);
-+	if (ppasid)
-+		ppasid->pasid = INIT_PASID;
-+}
-+
- int copy_thread_tls(unsigned long clone_flags, unsigned long sp,
- 		    unsigned long arg, struct task_struct *p, unsigned long tls)
- {
-@@ -174,6 +189,9 @@ int copy_thread_tls(unsigned long clone_flags, unsigned long sp,
- 	task_user_gs(p) = get_user_gs(current_pt_regs());
+diff --git a/include/linux/mm_types.h b/include/linux/mm_types.h
+index 64ede5f150dc..1ad0e54ebbba 100644
+--- a/include/linux/mm_types.h
++++ b/include/linux/mm_types.h
+@@ -538,6 +538,10 @@ struct mm_struct {
+ 		atomic_long_t hugetlb_usage;
  #endif
- 
-+	if (static_cpu_has(X86_FEATURE_ENQCMD))
-+		init_task_pasid(p);
+ 		struct work_struct async_put_work;
 +
- 	/* Set a new TLS for the child thread? */
- 	if (clone_flags & CLONE_SETTLS)
- 		ret = set_new_tls(p, tls);
++#ifdef CONFIG_IOMMU_SUPPORT
++		unsigned int pasid;
++#endif
+ 	} __randomize_layout;
+ 
+ 	/*
 -- 
 2.19.1
 
