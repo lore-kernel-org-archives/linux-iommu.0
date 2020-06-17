@@ -2,89 +2,108 @@ Return-Path: <SRS0=yzgR=76=lists.linux-foundation.org=iommu-bounces@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-6.5 required=3.0 tests=DKIM_INVALID,DKIM_SIGNED,
-	HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_PATCH,MAILING_LIST_MULTI,SIGNED_OFF_BY,
-	SPF_HELO_NONE,SPF_PASS autolearn=ham autolearn_force=no version=3.4.0
+X-Spam-Status: No, score=-0.6 required=3.0 tests=DKIM_INVALID,DKIM_SIGNED,
+	HEADER_FROM_DIFFERENT_DOMAINS,MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS
+	autolearn=no autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 6DDF3C433DF
-	for <iommu@archiver.kernel.org>; Wed, 17 Jun 2020 20:06:49 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 80EE4C433E0
+	for <iommu@archiver.kernel.org>; Wed, 17 Jun 2020 20:16:23 +0000 (UTC)
 Received: from hemlock.osuosl.org (smtp2.osuosl.org [140.211.166.133])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by mail.kernel.org (Postfix) with ESMTPS id 1FF8E207E8
-	for <iommu@archiver.kernel.org>; Wed, 17 Jun 2020 20:06:49 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTPS id 11F502186A
+	for <iommu@archiver.kernel.org>; Wed, 17 Jun 2020 20:16:22 +0000 (UTC)
 Authentication-Results: mail.kernel.org;
-	dkim=fail reason="signature verification failed" (1024-bit key) header.d=redhat.com header.i=@redhat.com header.b="FQtORX6F"
-DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 1FF8E207E8
-Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=redhat.com
+	dkim=fail reason="signature verification failed" (2048-bit key) header.d=anholt-net.20150623.gappssmtp.com header.i=@anholt-net.20150623.gappssmtp.com header.b="RcjQboxp"
+DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 11F502186A
+Authentication-Results: mail.kernel.org; dmarc=none (p=none dis=none) header.from=anholt.net
 Authentication-Results: mail.kernel.org; spf=pass smtp.mailfrom=iommu-bounces@lists.linux-foundation.org
 Received: from localhost (localhost [127.0.0.1])
-	by hemlock.osuosl.org (Postfix) with ESMTP id E8C10883B8;
-	Wed, 17 Jun 2020 20:06:48 +0000 (UTC)
+	by hemlock.osuosl.org (Postfix) with ESMTP id CC03387D7B;
+	Wed, 17 Jun 2020 20:16:22 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
 Received: from hemlock.osuosl.org ([127.0.0.1])
 	by localhost (.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
-	with ESMTP id cMtdM+bO9+IF; Wed, 17 Jun 2020 20:06:47 +0000 (UTC)
+	with ESMTP id zQzoMllKiImT; Wed, 17 Jun 2020 20:16:22 +0000 (UTC)
 Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [140.211.9.56])
-	by hemlock.osuosl.org (Postfix) with ESMTP id E75CC882EC;
-	Wed, 17 Jun 2020 20:06:47 +0000 (UTC)
+	by hemlock.osuosl.org (Postfix) with ESMTP id 0CC7387C10;
+	Wed, 17 Jun 2020 20:16:22 +0000 (UTC)
 Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
-	by lists.linuxfoundation.org (Postfix) with ESMTP id CFA54C0863;
-	Wed, 17 Jun 2020 20:06:47 +0000 (UTC)
+	by lists.linuxfoundation.org (Postfix) with ESMTP id 0066CC0863;
+	Wed, 17 Jun 2020 20:16:22 +0000 (UTC)
 Received: from whitealder.osuosl.org (smtp1.osuosl.org [140.211.166.138])
- by lists.linuxfoundation.org (Postfix) with ESMTP id D222AC016E
- for <iommu@lists.linux-foundation.org>; Wed, 17 Jun 2020 20:06:46 +0000 (UTC)
+ by lists.linuxfoundation.org (Postfix) with ESMTP id 3A951C016E
+ for <iommu@lists.linux-foundation.org>; Wed, 17 Jun 2020 20:16:21 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
- by whitealder.osuosl.org (Postfix) with ESMTP id B77AA86499
- for <iommu@lists.linux-foundation.org>; Wed, 17 Jun 2020 20:06:46 +0000 (UTC)
+ by whitealder.osuosl.org (Postfix) with ESMTP id 2900B87D69
+ for <iommu@lists.linux-foundation.org>; Wed, 17 Jun 2020 20:16:21 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
 Received: from whitealder.osuosl.org ([127.0.0.1])
  by localhost (.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
- with ESMTP id sxQVlHCrBg-6 for <iommu@lists.linux-foundation.org>;
- Wed, 17 Jun 2020 20:06:45 +0000 (UTC)
-X-Greylist: domain auto-whitelisted by SQLgrey-1.7.6
-Received: from us-smtp-1.mimecast.com (us-smtp-delivery-1.mimecast.com
- [207.211.31.120])
- by whitealder.osuosl.org (Postfix) with ESMTPS id 536C78647A
- for <iommu@lists.linux-foundation.org>; Wed, 17 Jun 2020 20:06:45 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
- s=mimecast20190719; t=1592424404;
- h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
- to:to:cc:cc:mime-version:mime-version:content-type:content-type:
- content-transfer-encoding:content-transfer-encoding:
- in-reply-to:in-reply-to:references:references;
- bh=GEoYywPDJJsgnVH9snN7OvPklZRdXEjF2dzezH+M7Zg=;
- b=FQtORX6F0Wta19ZVRRxNocIavZ8Li7a1Mllf7vcqRmUxTxL6WoZkmL4KFA5SbX6jKz6Hd1
- pcVIEqvQrkpPFpF/VzWDIf3g6W5GYOkkXbd+uD1LTnYF1/HNaKQYF3tk4zSNsOjfu6g4QZ
- QWTSQ1nO9yeOwjTkB70Xa8uz73tQDiw=
-Received: from mimecast-mx01.redhat.com (mimecast-mx01.redhat.com
- [209.132.183.4]) (Using TLS) by relay.mimecast.com with ESMTP id
- us-mta-175-8NzEK0ciPnCYu5DD11qpEA-1; Wed, 17 Jun 2020 16:06:42 -0400
-X-MC-Unique: 8NzEK0ciPnCYu5DD11qpEA-1
-Received: from smtp.corp.redhat.com (int-mx05.intmail.prod.int.phx2.redhat.com
- [10.5.11.15])
- (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
- (No client certificate requested)
- by mimecast-mx01.redhat.com (Postfix) with ESMTPS id 020A9108BD17;
- Wed, 17 Jun 2020 20:06:41 +0000 (UTC)
-Received: from x1.home (ovpn-112-195.phx2.redhat.com [10.3.112.195])
- by smtp.corp.redhat.com (Postfix) with ESMTP id 3F0BB7890A;
- Wed, 17 Jun 2020 20:06:40 +0000 (UTC)
-Date: Wed, 17 Jun 2020 14:06:39 -0600
-From: Alex Williamson <alex.williamson@redhat.com>
-To: Lu Baolu <baolu.lu@linux.intel.com>
-Subject: [Regression] Re: [PATCH 18/18] iommu/vt-d: Remove IOVA handling
- code from the non-dma_ops path
-Message-ID: <20200617140639.7ed58926@x1.home>
-In-Reply-To: <20200516062101.29541-19-baolu.lu@linux.intel.com>
-References: <20200516062101.29541-1-baolu.lu@linux.intel.com>
- <20200516062101.29541-19-baolu.lu@linux.intel.com>
-Organization: Red Hat
+ with ESMTP id EdDA8x3+4L5V for <iommu@lists.linux-foundation.org>;
+ Wed, 17 Jun 2020 20:16:20 +0000 (UTC)
+X-Greylist: from auto-whitelisted by SQLgrey-1.7.6
+Received: from mail-lj1-f194.google.com (mail-lj1-f194.google.com
+ [209.85.208.194])
+ by whitealder.osuosl.org (Postfix) with ESMTPS id CFC0387C50
+ for <iommu@lists.linux-foundation.org>; Wed, 17 Jun 2020 20:16:19 +0000 (UTC)
+Received: by mail-lj1-f194.google.com with SMTP id s1so4532915ljo.0
+ for <iommu@lists.linux-foundation.org>; Wed, 17 Jun 2020 13:16:19 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+ d=anholt-net.20150623.gappssmtp.com; s=20150623;
+ h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+ :cc; bh=llMR4XP929ZlX0ktOlskzBn+oIEoOfRqB8eqQjrjFOM=;
+ b=RcjQboxpASiHG7fxPLYiYz5Qsa067b/Y7vl562EyU/eKD/7YLcsaUuCfIdUTFBIHmw
+ wHu1OwrDlNQHnWt4Ew9oNmuKIrDMqXCfolYHnFGrjkmeyGXdLquSjo3gFjVUR1nfQq/i
+ ZK6t1/zTyaUNnP5hURPNXEeotoLQhdR6NJOnbSNL2A0LapL/0QmmidRZK86i5GdxS0L9
+ jP1ZHgwGyeRQrZuUnxjyUCHcPXBBM3N5+LS4Ao9rF9K25pqmqaMxUzIWODCR9fG0TcDO
+ bi+9IEPa45OkrbM3kjub8tE3MWQeGbESE0rN8pj6AZO0BV4H+yNG5Einj+yC97ghVEgl
+ z+nw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+ d=1e100.net; s=20161025;
+ h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+ :message-id:subject:to:cc;
+ bh=llMR4XP929ZlX0ktOlskzBn+oIEoOfRqB8eqQjrjFOM=;
+ b=KNIl95Tg8vbzViJfRCLWs4Vp+fYkjhPu9M67MSWrxCqy8UPZarADCv6XqlQ8w5Tqor
+ TqMuThqjFWXkO6fOmhM1Zkf5UVHiuxxqYX131Q8BYlcZW7qxrOYFVpPQIBMK8zV8pjfM
+ lhJ2ETWleHgSbcIn7n8jy+d5hoys7/jxev4dxkPJR8u9BVtnE7w1Pg0EMBQ+lRfiUTrI
+ 2kvOBEQEh+kC0Be97EKmiB84SZfMo3WEX+XGSyBpLudfd1O8b2W8E1so7GU9z33YExRY
+ ul4vqbFhcBwg9+ETRSqYsJwAZa3UHleDOG2P5xXlVKs+lofztNtxbwaknoOp6EfHwNRh
+ pmxg==
+X-Gm-Message-State: AOAM531oLFna2swPgG4yRt9UFp9PLFBnKWKyjuBszdhrB/5EKVRDn2Ox
+ OvZo6k9MZD44Hlpy/ZpRQMuuSzGkVsRw9vMNGnB1iw==
+X-Google-Smtp-Source: ABdhPJwSuKXzvk5zn5fk4tSXh655bmsbFyqQJkONPwl29Qe0rVGDqzm/i/OqfAbWrrePE2TK2xM+/wTuvOvXd6Q6bW8=
+X-Received: by 2002:a2e:9147:: with SMTP id q7mr513712ljg.430.1592424977772;
+ Wed, 17 Jun 2020 13:16:17 -0700 (PDT)
 MIME-Version: 1.0
-X-Scanned-By: MIMEDefang 2.79 on 10.5.11.15
-X-Mimecast-Spam-Score: 0
-X-Mimecast-Originator: redhat.com
-Cc: iommu@lists.linux-foundation.org, Tom Murphy <murphyt7@tcd.ie>
+References: <20200409233350.6343-1-jcrouse@codeaurora.org>
+ <20200409233350.6343-5-jcrouse@codeaurora.org>
+In-Reply-To: <20200409233350.6343-5-jcrouse@codeaurora.org>
+From: Eric Anholt <eric@anholt.net>
+Date: Wed, 17 Jun 2020 13:16:06 -0700
+Message-ID: <CADaigPWJDEwPZyUyEO9H3=+zzdEX=h+gSa-w1ppNpM9ryY0LZA@mail.gmail.com>
+Subject: Re: [PATCH v6 4/5] drm/msm: Refactor address space initialization
+To: Jordan Crouse <jcrouse@codeaurora.org>
+Cc: Jeffrey Hugo <jeffrey.l.hugo@gmail.com>, David Airlie <airlied@linux.ie>,
+ Akhil P Oommen <akhilpo@codeaurora.org>,
+ DRI Development <dri-devel@lists.freedesktop.org>,
+ Bjorn Andersson <bjorn.andersson@linaro.org>,
+ AngeloGioacchino Del Regno <kholk11@gmail.com>, will@kernel.org,
+ Wen Yang <wen.yang99@zte.com.cn>, Sam Ravnborg <sam@ravnborg.org>,
+ Ben Dooks <ben.dooks@codethink.co.uk>,
+ Linux ARM <linux-arm-kernel@lists.infradead.org>,
+ Brian Masney <masneyb@onstation.org>, linux-arm-msm@vger.kernel.org,
+ Sharat Masetty <smasetty@codeaurora.org>, Robin Murphy <robin.murphy@arm.com>,
+ Alexios Zavras <alexios.zavras@intel.com>,
+ Thomas Gleixner <tglx@linutronix.de>, Sean Paul <sean@poorly.run>,
+ Allison Randal <allison@lohutok.net>,
+ Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+ LKML <linux-kernel@vger.kernel.org>, zhengbin <zhengbin13@huawei.com>,
+ iommu@lists.linux-foundation.org, tongtiangen <tongtiangen@huawei.com>,
+ Thomas Zimmermann <tzimmermann@suse.de>,
+ Drew Davenport <ddavenport@chromium.org>,
+ Wambui Karuga <wambui.karugax@gmail.com>, freedreno@lists.freedesktop.org,
+ Georgi Djakov <georgi.djakov@linaro.org>
 X-BeenThere: iommu@lists.linux-foundation.org
 X-Mailman-Version: 2.1.15
 Precedence: list
@@ -102,246 +121,57 @@ Content-Transfer-Encoding: 7bit
 Errors-To: iommu-bounces@lists.linux-foundation.org
 Sender: "iommu" <iommu-bounces@lists.linux-foundation.org>
 
-On Sat, 16 May 2020 14:21:01 +0800
-Lu Baolu <baolu.lu@linux.intel.com> wrote:
+On Thu, Apr 9, 2020 at 4:34 PM Jordan Crouse <jcrouse@codeaurora.org> wrote:
+>
+> Refactor how address space initialization works. Instead of having the
+> address space function create the MMU object (and thus require separate but
+> equal functions for gpummu and iommu) use a single function and pass the
+> MMU struct in. Make the generic code cleaner by using target specific
+> functions to create the address space so a2xx can do its own thing in its
+> own space.  For all the other targets use a generic helper to initialize
+> IOMMU but leave the door open for newer targets to use customization
+> if they need it.
 
-> From: Tom Murphy <murphyt7@tcd.ie>
-> 
-> There's no need for the non-dma_ops path to keep track of IOVAs. The
-> whole point of the non-dma_ops path is that it allows the IOVAs to be
-> handled separately. The IOVA handling code removed in this patch is
-> pointless.
-> 
-> Signed-off-by: Tom Murphy <murphyt7@tcd.ie>
-> Signed-off-by: Lu Baolu <baolu.lu@linux.intel.com>
-> ---
->  drivers/iommu/intel-iommu.c | 95 +++++++++++++------------------------
->  1 file changed, 32 insertions(+), 63 deletions(-)
+I'm seeing regressions in dEQP-VK.memory.allocation.random.* on cheza
+after this commit.   The symptom is that large allocations fail with
+-ENOSPC from MSM_GEM_INFO(IOVA).
 
-This commit results in a massive increase in memory use from the VT-d
-code.  I have a 16GB system where I reserve 7168 2MB hugespages for VM
-usage (14GB), leaving the host with 2GB.  I can no longer even boot the
-host in this configuration.  Bisecting to this commit, I find that
-reverting this change shows the following memory usage difference
-immediately after boot (no hugepages, nosmp, single user,
-intel_iommu=on iommu=pt):
+Possibly relevant change from having stuffed some debug info in:
 
-@e70b081c6f37:
-             total        used        free      shared  buff/cache   available
-Mem:       16090860     2219372    13673044        1040      198444    13602664
-Swap:       2097148           0     2097148
+before:
+[    3.791436] [drm:msm_gem_address_space_create] *ERROR* msmgem
+address space create: 0x1000000 + 0xfeffffff
+[    3.801672] platform 506a000.gmu: Adding to iommu group 6
+[    3.807359] [drm:msm_gem_address_space_create] *ERROR* msmgem
+address space create: 0x0 + 0x7fffffff
+[    3.817140] msm ae00000.mdss: bound 5000000.gpu (ops a3xx_ops)
+[    3.823212] msm_dpu ae01000.mdp: [drm:msm_ioremap] *ERROR* failed
+to get memory resource: vbif_nrt
+[    3.832429] msm_dpu ae01000.mdp: [drm:msm_ioremap] *ERROR* failed
+to get memory resource: regdma
+[    3.841478] [drm:dpu_kms_hw_init:878] dpu hardware revision:0x40000000
+[    3.848193] [drm:msm_gem_address_space_create] *ERROR* msmgem
+address space create: 0x1000 + 0xffffefff
 
-reverting e70b081c6f37:
-              total        used        free      shared  buff/cache   available
-Mem:       16090852      101648    15789156        1040      200048    15719572
-Swap:       2097148           0     2097148
+after:
 
-More than 2GB of additional memory used!  There's also a notable stall
-during bootup for this allocation:
+[    3.798707] [drm:msm_gem_address_space_create] *ERROR* msmgem
+address space create: 0x1000000 + 0xfffffff
+[    3.808731] platform 506a000.gmu: Adding to iommu group 6
+[    3.814440] [drm:msm_gem_address_space_create] *ERROR* msmgem
+address space create: 0x0 + 0x7fffffff
+[    3.820494] hub 2-1:1.0: USB hub found
+[    3.824108] msm ae00000.mdss: bound 5000000.gpu (ops a3xx_ops)
+[    3.828554] hub 2-1:1.0: 4 ports detected
+[    3.833756] msm_dpu ae01000.mdp: [drm:msm_ioremap] *ERROR* failed
+to get memory resource: vbif_nrt
+[    3.847038] msm_dpu ae01000.mdp: [drm:msm_ioremap] *ERROR* failed
+to get memory resource: regdma
+[    3.856095] [drm:dpu_kms_hw_init:878] dpu hardware revision:0x40000000
+[    3.862840] [drm:msm_gem_address_space_create] *ERROR* msmgem
+address space create: 0x1000 + 0xfffffff
 
-[    9.703360] DMAR: No ATSR found
-[    9.709768] DMAR: dmar0: Using Queued invalidation
-[    9.719370] DMAR: dmar1: Using Queued invalidation
-
-### 4+ seconds! ###
-
-[   14.076387] pci 0000:00:00.0: Adding to iommu group 0
-[   14.086515] pci 0000:00:01.0: Adding to iommu group 1
-[   14.096635] pci 0000:00:02.0: Adding to iommu group 2
-
-Thanks,
-
-Alex
-
-> diff --git a/drivers/iommu/intel-iommu.c b/drivers/iommu/intel-iommu.c
-> index 3c5cc3424e90..f75d7d9c231f 100644
-> --- a/drivers/iommu/intel-iommu.c
-> +++ b/drivers/iommu/intel-iommu.c
-> @@ -1892,11 +1892,6 @@ static int dmar_init_reserved_ranges(void)
->  	return 0;
->  }
->  
-> -static void domain_reserve_special_ranges(struct dmar_domain *domain)
-> -{
-> -	copy_reserved_iova(&reserved_iova_list, &domain->iovad);
-> -}
-> -
->  static inline int guestwidth_to_adjustwidth(int gaw)
->  {
->  	int agaw;
-> @@ -1918,7 +1913,8 @@ static void domain_exit(struct dmar_domain *domain)
->  	domain_remove_dev_info(domain);
->  
->  	/* destroy iovas */
-> -	put_iova_domain(&domain->iovad);
-> +	if (domain->domain.type == IOMMU_DOMAIN_DMA)
-> +		put_iova_domain(&domain->iovad);
->  
->  	if (domain->pgd) {
->  		struct page *freelist;
-> @@ -2627,19 +2623,9 @@ static struct dmar_domain *dmar_insert_one_dev_info(struct intel_iommu *iommu,
->  }
->  
->  static int iommu_domain_identity_map(struct dmar_domain *domain,
-> -				     unsigned long long start,
-> -				     unsigned long long end)
-> +				     unsigned long first_vpfn,
-> +				     unsigned long last_vpfn)
->  {
-> -	unsigned long first_vpfn = start >> VTD_PAGE_SHIFT;
-> -	unsigned long last_vpfn = end >> VTD_PAGE_SHIFT;
-> -
-> -	if (!reserve_iova(&domain->iovad, dma_to_mm_pfn(first_vpfn),
-> -			  dma_to_mm_pfn(last_vpfn))) {
-> -		pr_err("Reserving iova failed\n");
-> -		return -ENOMEM;
-> -	}
-> -
-> -	pr_debug("Mapping reserved region %llx-%llx\n", start, end);
->  	/*
->  	 * RMRR range might have overlap with physical memory range,
->  	 * clear it first
-> @@ -2677,7 +2663,8 @@ static int __init si_domain_init(int hw)
->  
->  		for_each_mem_pfn_range(i, nid, &start_pfn, &end_pfn, NULL) {
->  			ret = iommu_domain_identity_map(si_domain,
-> -					PFN_PHYS(start_pfn), PFN_PHYS(end_pfn));
-> +					mm_to_dma_pfn(start_pfn),
-> +					mm_to_dma_pfn(end_pfn));
->  			if (ret)
->  				return ret;
->  		}
-> @@ -4547,58 +4534,37 @@ static int intel_iommu_memory_notifier(struct notifier_block *nb,
->  				       unsigned long val, void *v)
->  {
->  	struct memory_notify *mhp = v;
-> -	unsigned long long start, end;
-> -	unsigned long start_vpfn, last_vpfn;
-> +	unsigned long start_vpfn = mm_to_dma_pfn(mhp->start_pfn);
-> +	unsigned long last_vpfn = mm_to_dma_pfn(mhp->start_pfn +
-> +			mhp->nr_pages - 1);
->  
->  	switch (val) {
->  	case MEM_GOING_ONLINE:
-> -		start = mhp->start_pfn << PAGE_SHIFT;
-> -		end = ((mhp->start_pfn + mhp->nr_pages) << PAGE_SHIFT) - 1;
-> -		if (iommu_domain_identity_map(si_domain, start, end)) {
-> -			pr_warn("Failed to build identity map for [%llx-%llx]\n",
-> -				start, end);
-> +		if (iommu_domain_identity_map(si_domain,
-> +					      start_vpfn, last_vpfn)) {
-> +			pr_warn("Failed to build identity map for [%lx-%lx]\n",
-> +				start_vpfn, last_vpfn);
->  			return NOTIFY_BAD;
->  		}
->  		break;
->  
->  	case MEM_OFFLINE:
->  	case MEM_CANCEL_ONLINE:
-> -		start_vpfn = mm_to_dma_pfn(mhp->start_pfn);
-> -		last_vpfn = mm_to_dma_pfn(mhp->start_pfn + mhp->nr_pages - 1);
-> -		while (start_vpfn <= last_vpfn) {
-> -			struct iova *iova;
-> +		{
->  			struct dmar_drhd_unit *drhd;
->  			struct intel_iommu *iommu;
->  			struct page *freelist;
->  
-> -			iova = find_iova(&si_domain->iovad, start_vpfn);
-> -			if (iova == NULL) {
-> -				pr_debug("Failed get IOVA for PFN %lx\n",
-> -					 start_vpfn);
-> -				break;
-> -			}
-> -
-> -			iova = split_and_remove_iova(&si_domain->iovad, iova,
-> -						     start_vpfn, last_vpfn);
-> -			if (iova == NULL) {
-> -				pr_warn("Failed to split IOVA PFN [%lx-%lx]\n",
-> -					start_vpfn, last_vpfn);
-> -				return NOTIFY_BAD;
-> -			}
-> -
-> -			freelist = domain_unmap(si_domain, iova->pfn_lo,
-> -					       iova->pfn_hi);
-> +			freelist = domain_unmap(si_domain,
-> +						start_vpfn, last_vpfn);
->  
->  			rcu_read_lock();
->  			for_each_active_iommu(iommu, drhd)
->  				iommu_flush_iotlb_psi(iommu, si_domain,
-> -					iova->pfn_lo, iova_size(iova),
-> +					start_vpfn, mhp->nr_pages,
->  					!freelist, 0);
->  			rcu_read_unlock();
->  			dma_free_pagelist(freelist);
-> -
-> -			start_vpfn = iova->pfn_hi + 1;
-> -			free_iova_mem(iova);
->  		}
->  		break;
->  	}
-> @@ -4626,8 +4592,9 @@ static void free_all_cpu_cached_iovas(unsigned int cpu)
->  		for (did = 0; did < cap_ndoms(iommu->cap); did++) {
->  			domain = get_iommu_domain(iommu, (u16)did);
->  
-> -			if (!domain)
-> +			if (!domain || domain->domain.type != IOMMU_DOMAIN_DMA)
->  				continue;
-> +
->  			free_cpu_cached_iovas(cpu, &domain->iovad);
->  		}
->  	}
-> @@ -5037,9 +5004,6 @@ static int md_domain_init(struct dmar_domain *domain, int guest_width)
->  {
->  	int adjust_width;
->  
-> -	init_iova_domain(&domain->iovad, VTD_PAGE_SIZE, IOVA_START_PFN);
-> -	domain_reserve_special_ranges(domain);
-> -
->  	/* calculate AGAW */
->  	domain->gaw = guest_width;
->  	adjust_width = guestwidth_to_adjustwidth(guest_width);
-> @@ -5058,11 +5022,21 @@ static int md_domain_init(struct dmar_domain *domain, int guest_width)
->  	return 0;
->  }
->  
-> +static void intel_init_iova_domain(struct dmar_domain *dmar_domain)
-> +{
-> +	init_iova_domain(&dmar_domain->iovad, VTD_PAGE_SIZE, IOVA_START_PFN);
-> +	copy_reserved_iova(&reserved_iova_list, &dmar_domain->iovad);
-> +
-> +	if (!intel_iommu_strict &&
-> +	    init_iova_flush_queue(&dmar_domain->iovad,
-> +				  iommu_flush_iova, iova_entry_free))
-> +		pr_info("iova flush queue initialization failed\n");
-> +}
-> +
->  static struct iommu_domain *intel_iommu_domain_alloc(unsigned type)
->  {
->  	struct dmar_domain *dmar_domain;
->  	struct iommu_domain *domain;
-> -	int ret;
->  
->  	switch (type) {
->  	case IOMMU_DOMAIN_DMA:
-> @@ -5079,13 +5053,8 @@ static struct iommu_domain *intel_iommu_domain_alloc(unsigned type)
->  			return NULL;
->  		}
->  
-> -		if (!intel_iommu_strict && type == IOMMU_DOMAIN_DMA) {
-> -			ret = init_iova_flush_queue(&dmar_domain->iovad,
-> -						    iommu_flush_iova,
-> -						    iova_entry_free);
-> -			if (ret)
-> -				pr_info("iova flush queue initialization failed\n");
-> -		}
-> +		if (type == IOMMU_DOMAIN_DMA)
-> +			intel_init_iova_domain(dmar_domain);
->  
->  		domain_update_iommu_cap(dmar_domain);
->  
-
+256MB for GMU address space?
 _______________________________________________
 iommu mailing list
 iommu@lists.linux-foundation.org
