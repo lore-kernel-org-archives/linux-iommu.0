@@ -8,86 +8,85 @@ X-Spam-Status: No, score=-7.8 required=3.0 tests=DKIM_ADSP_CUSTOM_MED,
 	SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED,USER_AGENT_SANE_1 autolearn=unavailable
 	autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 6747EC433DF
-	for <iommu@archiver.kernel.org>; Wed, 17 Jun 2020 09:04:09 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 21396C433E0
+	for <iommu@archiver.kernel.org>; Wed, 17 Jun 2020 09:09:21 +0000 (UTC)
 Received: from whitealder.osuosl.org (smtp1.osuosl.org [140.211.166.138])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by mail.kernel.org (Postfix) with ESMTPS id 1CC1320B1F
-	for <iommu@archiver.kernel.org>; Wed, 17 Jun 2020 09:04:09 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTPS id DBADE212CC
+	for <iommu@archiver.kernel.org>; Wed, 17 Jun 2020 09:09:20 +0000 (UTC)
 Authentication-Results: mail.kernel.org;
-	dkim=fail reason="signature verification failed" (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="ESdAjIOB"
-DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 1CC1320B1F
+	dkim=fail reason="signature verification failed" (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="kcQtj99p"
+DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org DBADE212CC
 Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=gmail.com
 Authentication-Results: mail.kernel.org; spf=pass smtp.mailfrom=iommu-bounces@lists.linux-foundation.org
 Received: from localhost (localhost [127.0.0.1])
-	by whitealder.osuosl.org (Postfix) with ESMTP id E6D7288693;
-	Wed, 17 Jun 2020 09:04:08 +0000 (UTC)
+	by whitealder.osuosl.org (Postfix) with ESMTP id B0147876F9;
+	Wed, 17 Jun 2020 09:09:20 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
 Received: from whitealder.osuosl.org ([127.0.0.1])
 	by localhost (.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
-	with ESMTP id y2+5B92m8YVR; Wed, 17 Jun 2020 09:04:08 +0000 (UTC)
+	with ESMTP id uBJ44NwmPHRl; Wed, 17 Jun 2020 09:09:18 +0000 (UTC)
 Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [140.211.9.56])
-	by whitealder.osuosl.org (Postfix) with ESMTP id 099A088683;
-	Wed, 17 Jun 2020 09:04:08 +0000 (UTC)
+	by whitealder.osuosl.org (Postfix) with ESMTP id AB7C487686;
+	Wed, 17 Jun 2020 09:09:18 +0000 (UTC)
 Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
-	by lists.linuxfoundation.org (Postfix) with ESMTP id C52B8C0863;
-	Wed, 17 Jun 2020 09:04:07 +0000 (UTC)
-Received: from fraxinus.osuosl.org (smtp4.osuosl.org [140.211.166.137])
- by lists.linuxfoundation.org (Postfix) with ESMTP id 6B78EC016E
- for <iommu@lists.linux-foundation.org>; Wed, 17 Jun 2020 09:04:07 +0000 (UTC)
+	by lists.linuxfoundation.org (Postfix) with ESMTP id 9F7C9C0863;
+	Wed, 17 Jun 2020 09:09:18 +0000 (UTC)
+Received: from hemlock.osuosl.org (smtp2.osuosl.org [140.211.166.133])
+ by lists.linuxfoundation.org (Postfix) with ESMTP id 82997C016E
+ for <iommu@lists.linux-foundation.org>; Wed, 17 Jun 2020 09:09:17 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
- by fraxinus.osuosl.org (Postfix) with ESMTP id 67454878D8
- for <iommu@lists.linux-foundation.org>; Wed, 17 Jun 2020 09:04:07 +0000 (UTC)
+ by hemlock.osuosl.org (Postfix) with ESMTP id 6D55389271
+ for <iommu@lists.linux-foundation.org>; Wed, 17 Jun 2020 09:09:17 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from fraxinus.osuosl.org ([127.0.0.1])
+Received: from hemlock.osuosl.org ([127.0.0.1])
  by localhost (.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
- with ESMTP id xdPophbRxQcT for <iommu@lists.linux-foundation.org>;
- Wed, 17 Jun 2020 09:04:04 +0000 (UTC)
+ with ESMTP id XGDfEG+0f4is for <iommu@lists.linux-foundation.org>;
+ Wed, 17 Jun 2020 09:09:16 +0000 (UTC)
 X-Greylist: domain auto-whitelisted by SQLgrey-1.7.6
-Received: from mail-wm1-f66.google.com (mail-wm1-f66.google.com
- [209.85.128.66])
- by fraxinus.osuosl.org (Postfix) with ESMTPS id A1F20878BA
- for <iommu@lists.linux-foundation.org>; Wed, 17 Jun 2020 09:04:03 +0000 (UTC)
-Received: by mail-wm1-f66.google.com with SMTP id r15so1143092wmh.5
- for <iommu@lists.linux-foundation.org>; Wed, 17 Jun 2020 02:04:03 -0700 (PDT)
+Received: from mail-wm1-f68.google.com (mail-wm1-f68.google.com
+ [209.85.128.68])
+ by hemlock.osuosl.org (Postfix) with ESMTPS id 2725E8918B
+ for <iommu@lists.linux-foundation.org>; Wed, 17 Jun 2020 09:09:16 +0000 (UTC)
+Received: by mail-wm1-f68.google.com with SMTP id d128so1172906wmc.1
+ for <iommu@lists.linux-foundation.org>; Wed, 17 Jun 2020 02:09:16 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=gmail.com; s=20161025;
  h=subject:to:cc:references:from:autocrypt:message-id:date:user-agent
  :mime-version:in-reply-to:content-language:content-transfer-encoding;
- bh=rJIFL4nYHz+nuHsym8E29RS/7TlZdHbF85nLu23tEkU=;
- b=ESdAjIOBu4gyGkreZ4Lw7JA3Yj3BidAccsFYL/KgbGEGjNVo7xgGCVrKAc/enXnE05
- ivdfsGJqeiv5IJw8DjI1LhGScVzFetDnM548zed22vkUT4JF7CoCSeiKetC0lXdG/3Tn
- BFjS12cbpfEkc9N9R1jgflsa9TPDq0rDwYdpNeb1jIjCAeiXbauUEa6mA/oEe3bWbxDi
- E18KFkIeDAa7Pcl81TYcAdYFBLdrfqnailFCxIOvoO5RDXoGt+YPWynIp82B9GX+/1TI
- WPD4bwwejJqlZpzut6JMycNNbamLiFl8v6fA3+4cBRuPPixRXs9LBh8LqbDONpfdmo8N
- irzg==
+ bh=uMSOx0yXZqitbI4EA4+8qEegvLLFbpBxcQUD2ZznNJU=;
+ b=kcQtj99p1hhCKKH4Bf8X3daskyTX3r/AxRI3VTHeQ89tsYc/LA3hJWbU+UVR1E1dGO
+ mmyF8T4pFsHLGiOuMLIvLxeg5V088yFrTLtGn8WAhxc5Dw3Z+Zn2QMLLVSoNnUYMhnTl
+ V28j2XSBLrtLIdMCJ1LrH8vSLBlUUxa/G64pLcoRq+D/RROMtDF6eJplen/R4uxi867Q
+ c+XTXpc5k9tJ8PtYMw8lGF+vqLDcCc5J+JxuzOKNIJPStbXimDNgOlCwJXyT+uyY29oW
+ 9hBZWYAi0jKt++j9JB1f1+CWF3EzQ/5o/3NXH4Adqm58xCcKA5fc+4WGbNulkadY6IMo
+ RrQQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
  d=1e100.net; s=20161025;
  h=x-gm-message-state:subject:to:cc:references:from:autocrypt
  :message-id:date:user-agent:mime-version:in-reply-to
  :content-language:content-transfer-encoding;
- bh=rJIFL4nYHz+nuHsym8E29RS/7TlZdHbF85nLu23tEkU=;
- b=BC5ZIjQvoPbT6+7uwmNhneWqSawG51/m5q1LV/8hKhaGLdwRE7wUmX7qUED5k6rTpY
- KFMJPi+RRvkUB1+TBpjiBMdyVdKFA4yLoaOSe72Vdbv7p/aVSltB4bjJY3d5F5Pjtiqx
- dcsWq9lzHQrtGy6Jr7Hfgty0oA/WBbB0RWTz3e2KNabsOGDp9QYQU9tfd04g+KYRz45+
- HdxQY92M7XJmpjxlSWgeIdQ1uFqvfm60VdA0uRWQhSF7FyJ0Mb4CJ0YwDOsAOEktsqf9
- IeAkzE5WgMjwN3XUXycRO9+Zn3cc4pzZSIZq3FNTjjKKjh158RKUSO5B1/gfLV+KcKcf
- 09XA==
-X-Gm-Message-State: AOAM532NDftRfvXLDMTlmap89hiaEMevv/UwA2JmHk+szCfl+q/Bskd1
- jD7wJBPWh3dZcRJANQQgyO8=
-X-Google-Smtp-Source: ABdhPJyQ0NfX9fIWlnJ8Qhwa1Ds8G+kc+0Um1ojNVtwg4l4F2kzffpe1C7bxGF0GSvzeipLMvqLXNA==
-X-Received: by 2002:a1c:44c3:: with SMTP id r186mr7281150wma.67.1592384641997; 
- Wed, 17 Jun 2020 02:04:01 -0700 (PDT)
+ bh=uMSOx0yXZqitbI4EA4+8qEegvLLFbpBxcQUD2ZznNJU=;
+ b=OTI02k/zh1q1bdBbhTgzLSHtmEYr6tRn1yE/qcIRyxemSk+6gaHyFY8aNzBrnN8Y+7
+ bvKD9ukU4t42TJplbblglrEQITaLOcpIpAcMj07yytce++PUgYoktF895SEfDtsXgPLn
+ LAqh6EUGwrlQiY71wshurFFpQPbImrZuRKuQ92xfcOWwlWrvUjyCa1CT2NxaLVFaFN5O
+ misM/j+f1RtzLJ81NSVewzozbz5witYmENZLeHbXrhfmVRv2hdc7q2sSnF4er8qMek9K
+ CW3nhCEmhtqQ/k4LQ4d2bU2MsqfnP5t1dZdst50ByctuEMONPdnazHQundxFYEcOaJfI
+ agKQ==
+X-Gm-Message-State: AOAM530pkkvHLQz25iQ1tAEj6ltUnYccOM5Hq8FlJsGv946ZRWalmiz5
+ panMSbNesZzERnmnfDDt63k=
+X-Google-Smtp-Source: ABdhPJwfbfTaSvdYKVov5UP00YWEnOog2TJ3RBfl4ScIqNG4NwjmiaYSeLV90wP53nkqmQnaj5Xx1Q==
+X-Received: by 2002:a7b:c937:: with SMTP id h23mr7278034wml.113.1592384954463; 
+ Wed, 17 Jun 2020 02:09:14 -0700 (PDT)
 Received: from ziggy.stardust ([213.195.114.138])
- by smtp.gmail.com with ESMTPSA id c68sm7340760wmd.12.2020.06.17.02.04.00
+ by smtp.gmail.com with ESMTPSA id r14sm4374358wrx.42.2020.06.17.02.09.13
  (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
- Wed, 17 Jun 2020 02:04:01 -0700 (PDT)
-Subject: Re: [PATCH v4 2/7] iommu/mediatek: Rename the register
- STANDARD_AXI_MODE(0x48) to MISC_CTRL
+ Wed, 17 Jun 2020 02:09:13 -0700 (PDT)
+Subject: Re: [PATCH v4 4/7] iommu/mediatek: Move inv_sel_reg into the plat_data
 To: Chao Hao <chao.hao@mediatek.com>, Joerg Roedel <joro@8bytes.org>,
  Rob Herring <robh+dt@kernel.org>
 References: <20200617030029.4082-1-chao.hao@mediatek.com>
- <20200617030029.4082-3-chao.hao@mediatek.com>
+ <20200617030029.4082-5-chao.hao@mediatek.com>
 From: Matthias Brugger <matthias.bgg@gmail.com>
 Autocrypt: addr=matthias.bgg@gmail.com; prefer-encrypt=mutual; keydata=
  mQINBFP1zgUBEAC21D6hk7//0kOmsUrE3eZ55kjc9DmFPKIz6l4NggqwQjBNRHIMh04BbCMY
@@ -163,12 +162,12 @@ Autocrypt: addr=matthias.bgg@gmail.com; prefer-encrypt=mutual; keydata=
  jzi+DzD9cvj2K6eD5j5kcKJJQactXqfJvF1Eb+OnxlB1BCLE8D1rNkPO5O742Mq3MgDmq19l
  +abzEL6QDAAxn9md8KwrA3RtucNh87cHlDXfUBKa7SRvBjTczDg+HEPNk2u3hrz1j3l2rliQ
  y1UfYx7Vk/TrdwUIJgKS8QAr8Lw9WuvY2hSqL9vEjx8VAkPWNWPwrQ==
-Message-ID: <c5028adb-b520-c9ee-8e53-3f1aea297316@gmail.com>
-Date: Wed, 17 Jun 2020 11:04:00 +0200
+Message-ID: <c18e7d76-4bd0-51ff-999e-01afd2fa14dc@gmail.com>
+Date: Wed, 17 Jun 2020 11:09:12 +0200
 User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101
  Thunderbird/68.9.0
 MIME-Version: 1.0
-In-Reply-To: <20200617030029.4082-3-chao.hao@mediatek.com>
+In-Reply-To: <20200617030029.4082-5-chao.hao@mediatek.com>
 Content-Language: en-US
 Cc: devicetree@vger.kernel.org, FY Yang <fy.yang@mediatek.com>,
  wsd_upstream@mediatek.com, linux-kernel@vger.kernel.org,
@@ -194,82 +193,101 @@ Sender: "iommu" <iommu-bounces@lists.linux-foundation.org>
 
 
 On 17/06/2020 05:00, Chao Hao wrote:
-> For iommu offset=0x48 register, only the previous mt8173/mt8183 use the
-> name STANDARD_AXI_MODE, all the latest SoC extend the register more
-> feature by different bits, for example: axi_mode, in_order_en, coherent_en
-> and so on. So rename REG_MMU_MISC_CTRL may be more proper.
+> For mt6779, MMU_INV_SEL register's offset is changed from
+> 0x38 to 0x2c, so we can put inv_sel_reg in the plat_data to
+> use it.
+> In addition, we renamed it to REG_MMU_INV_SEL_GEN1 and use it
+> before mt6779.
 > 
-> This patch only rename the register name, no functional change.
+> Change since v3:
+> 1. Fix coding style
 > 
+> Cc: Yong Wu <yong.wu@mediatek.com>
 > Signed-off-by: Chao Hao <chao.hao@mediatek.com>
-> Reviewed-by: Yong Wu <yong.wu@mediatek.com>
 
-Reviewed-by: Matthias Brugger <matthias.bgg@gmail.com>
+Reviewed-by: Mattias Brugger <matthias.bgg@gmail.com>
 
 > ---
->  drivers/iommu/mtk_iommu.c | 14 +++++++-------
->  drivers/iommu/mtk_iommu.h |  2 +-
->  2 files changed, 8 insertions(+), 8 deletions(-)
+>  drivers/iommu/mtk_iommu.c | 19 +++++++++++--------
+>  drivers/iommu/mtk_iommu.h |  1 +
+>  2 files changed, 12 insertions(+), 8 deletions(-)
 > 
 > diff --git a/drivers/iommu/mtk_iommu.c b/drivers/iommu/mtk_iommu.c
-> index 2be96f1cdbd2..88d3df5b91c2 100644
+> index 239d2cdbbc9f..f23919feba4e 100644
 > --- a/drivers/iommu/mtk_iommu.c
 > +++ b/drivers/iommu/mtk_iommu.c
-> @@ -41,7 +41,7 @@
+> @@ -37,7 +37,7 @@
+>  #define REG_MMU_INVLD_START_A			0x024
+>  #define REG_MMU_INVLD_END_A			0x028
+>  
+> -#define REG_MMU_INV_SEL				0x038
+> +#define REG_MMU_INV_SEL_GEN1			0x038
 >  #define F_INVLD_EN0				BIT(0)
 >  #define F_INVLD_EN1				BIT(1)
 >  
-> -#define REG_MMU_STANDARD_AXI_MODE		0x048
-> +#define REG_MMU_MISC_CTRL			0x048
->  #define REG_MMU_DCM_DIS				0x050
+> @@ -168,7 +168,7 @@ static void mtk_iommu_tlb_flush_all(void *cookie)
 >  
->  #define REG_MMU_CTRL_REG			0x110
-> @@ -573,8 +573,10 @@ static int mtk_iommu_hw_init(const struct mtk_iommu_data *data)
+>  	for_each_m4u(data) {
+>  		writel_relaxed(F_INVLD_EN1 | F_INVLD_EN0,
+> -			       data->base + REG_MMU_INV_SEL);
+> +			       data->base + data->plat_data->inv_sel_reg);
+>  		writel_relaxed(F_ALL_INVLD, data->base + REG_MMU_INVALIDATE);
+>  		wmb(); /* Make sure the tlb flush all done */
 >  	}
->  	writel_relaxed(0, data->base + REG_MMU_DCM_DIS);
+> @@ -185,7 +185,7 @@ static void mtk_iommu_tlb_flush_range_sync(unsigned long iova, size_t size,
+>  	for_each_m4u(data) {
+>  		spin_lock_irqsave(&data->tlb_lock, flags);
+>  		writel_relaxed(F_INVLD_EN1 | F_INVLD_EN0,
+> -			       data->base + REG_MMU_INV_SEL);
+> +			       data->base + data->plat_data->inv_sel_reg);
 >  
-> -	if (data->plat_data->reset_axi)
-> -		writel_relaxed(0, data->base + REG_MMU_STANDARD_AXI_MODE);
-> +	if (data->plat_data->reset_axi) {
-> +		/* The register is called STANDARD_AXI_MODE in this case */
-> +		writel_relaxed(0, data->base + REG_MMU_MISC_CTRL);
-> +	}
+>  		writel_relaxed(iova, data->base + REG_MMU_INVLD_START_A);
+>  		writel_relaxed(iova + size - 1,
+> @@ -773,11 +773,12 @@ static const struct dev_pm_ops mtk_iommu_pm_ops = {
+>  };
 >  
->  	if (devm_request_irq(data->dev, data->irq, mtk_iommu_isr, 0,
->  			     dev_name(data->dev), (void *)data)) {
-> @@ -718,8 +720,7 @@ static int __maybe_unused mtk_iommu_suspend(struct device *dev)
->  	struct mtk_iommu_suspend_reg *reg = &data->reg;
->  	void __iomem *base = data->base;
+>  static const struct mtk_iommu_plat_data mt2712_data = {
+> -	.m4u_plat     = M4U_MT2712,
+> -	.has_4gb_mode = true,
+> -	.has_bclk     = true,
+> -	.has_vld_pa_rng   = true,
+> -	.larbid_remap = {0, 1, 2, 3, 4, 5, 6, 7, 8, 9},
+> +	.m4u_plat       = M4U_MT2712,
+> +	.has_4gb_mode   = true,
+> +	.has_bclk       = true,
+> +	.has_vld_pa_rng = true,
+> +	.inv_sel_reg    = REG_MMU_INV_SEL_GEN1,
+> +	.larbid_remap   = {0, 1, 2, 3, 4, 5, 6, 7, 8, 9},
+>  };
 >  
-> -	reg->standard_axi_mode = readl_relaxed(base +
-> -					       REG_MMU_STANDARD_AXI_MODE);
-> +	reg->misc_ctrl = readl_relaxed(base + REG_MMU_MISC_CTRL);
->  	reg->dcm_dis = readl_relaxed(base + REG_MMU_DCM_DIS);
->  	reg->ctrl_reg = readl_relaxed(base + REG_MMU_CTRL_REG);
->  	reg->int_control0 = readl_relaxed(base + REG_MMU_INT_CONTROL0);
-> @@ -743,8 +744,7 @@ static int __maybe_unused mtk_iommu_resume(struct device *dev)
->  		dev_err(data->dev, "Failed to enable clk(%d) in resume\n", ret);
->  		return ret;
->  	}
-> -	writel_relaxed(reg->standard_axi_mode,
-> -		       base + REG_MMU_STANDARD_AXI_MODE);
-> +	writel_relaxed(reg->misc_ctrl, base + REG_MMU_MISC_CTRL);
->  	writel_relaxed(reg->dcm_dis, base + REG_MMU_DCM_DIS);
->  	writel_relaxed(reg->ctrl_reg, base + REG_MMU_CTRL_REG);
->  	writel_relaxed(reg->int_control0, base + REG_MMU_INT_CONTROL0);
+>  static const struct mtk_iommu_plat_data mt8173_data = {
+> @@ -785,12 +786,14 @@ static const struct mtk_iommu_plat_data mt8173_data = {
+>  	.has_4gb_mode = true,
+>  	.has_bclk     = true,
+>  	.reset_axi    = true,
+> +	.inv_sel_reg  = REG_MMU_INV_SEL_GEN1,
+>  	.larbid_remap = {0, 1, 2, 3, 4, 5}, /* Linear mapping. */
+>  };
+>  
+>  static const struct mtk_iommu_plat_data mt8183_data = {
+>  	.m4u_plat     = M4U_MT8183,
+>  	.reset_axi    = true,
+> +	.inv_sel_reg  = REG_MMU_INV_SEL_GEN1,
+>  	.larbid_remap = {0, 4, 5, 6, 7, 2, 3, 1},
+>  };
+>  
 > diff --git a/drivers/iommu/mtk_iommu.h b/drivers/iommu/mtk_iommu.h
-> index ea949a324e33..1b6ea839b92c 100644
+> index d711ac630037..afd7a2de5c1e 100644
 > --- a/drivers/iommu/mtk_iommu.h
 > +++ b/drivers/iommu/mtk_iommu.h
-> @@ -18,7 +18,7 @@
->  #include <soc/mediatek/smi.h>
+> @@ -43,6 +43,7 @@ struct mtk_iommu_plat_data {
+>  	bool		    has_misc_ctrl;
+>  	bool                has_vld_pa_rng;
+>  	bool                reset_axi;
+> +	u32                 inv_sel_reg;
+>  	unsigned char       larbid_remap[MTK_LARB_NR_MAX];
+>  };
 >  
->  struct mtk_iommu_suspend_reg {
-> -	u32				standard_axi_mode;
-> +	u32				misc_ctrl;
->  	u32				dcm_dis;
->  	u32				ctrl_reg;
->  	u32				int_control0;
 > 
 _______________________________________________
 iommu mailing list
