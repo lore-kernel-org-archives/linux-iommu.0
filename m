@@ -1,91 +1,84 @@
-Return-Path: <SRS0=6LHv=75=lists.linux-foundation.org=iommu-bounces@kernel.org>
+Return-Path: <SRS0=yzgR=76=lists.linux-foundation.org=iommu-bounces@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-8.2 required=3.0 tests=HEADER_FROM_DIFFERENT_DOMAINS,
-	INCLUDES_PATCH,MAILING_LIST_MULTI,SIGNED_OFF_BY,SPF_HELO_NONE,SPF_PASS,
-	URIBL_BLOCKED,USER_AGENT_SANE_1 autolearn=ham autolearn_force=no version=3.4.0
+X-Spam-Status: No, score=-8.8 required=3.0 tests=DKIM_INVALID,DKIM_SIGNED,
+	HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_PATCH,MAILING_LIST_MULTI,SIGNED_OFF_BY,
+	SPF_HELO_NONE,SPF_PASS,UNPARSEABLE_RELAY,UPPERCASE_50_75,URIBL_BLOCKED,
+	USER_AGENT_GIT autolearn=ham autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 4837AC433DF
-	for <iommu@archiver.kernel.org>; Tue, 16 Jun 2020 23:23:51 +0000 (UTC)
-Received: from hemlock.osuosl.org (smtp2.osuosl.org [140.211.166.133])
+	by smtp.lore.kernel.org (Postfix) with ESMTP id E5201C433DF
+	for <iommu@archiver.kernel.org>; Wed, 17 Jun 2020 03:01:12 +0000 (UTC)
+Received: from whitealder.osuosl.org (smtp1.osuosl.org [140.211.166.138])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by mail.kernel.org (Postfix) with ESMTPS id 20ADE2085B
-	for <iommu@archiver.kernel.org>; Tue, 16 Jun 2020 23:23:49 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 20ADE2085B
-Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=intel.com
+	by mail.kernel.org (Postfix) with ESMTPS id E07DF2073E
+	for <iommu@archiver.kernel.org>; Wed, 17 Jun 2020 03:01:10 +0000 (UTC)
+Authentication-Results: mail.kernel.org;
+	dkim=fail reason="signature verification failed" (1024-bit key) header.d=mediatek.com header.i=@mediatek.com header.b="F2cAUtRY"
+DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org E07DF2073E
+Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=mediatek.com
 Authentication-Results: mail.kernel.org; spf=pass smtp.mailfrom=iommu-bounces@lists.linux-foundation.org
 Received: from localhost (localhost [127.0.0.1])
-	by hemlock.osuosl.org (Postfix) with ESMTP id CB4C189589;
-	Tue, 16 Jun 2020 23:23:49 +0000 (UTC)
+	by whitealder.osuosl.org (Postfix) with ESMTP id 834F1895FC;
+	Wed, 17 Jun 2020 03:01:10 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from hemlock.osuosl.org ([127.0.0.1])
+Received: from whitealder.osuosl.org ([127.0.0.1])
 	by localhost (.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
-	with ESMTP id 9N9v5V01Sjzr; Tue, 16 Jun 2020 23:23:49 +0000 (UTC)
+	with ESMTP id sulRQgd9XP9m; Wed, 17 Jun 2020 03:01:07 +0000 (UTC)
 Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [140.211.9.56])
-	by hemlock.osuosl.org (Postfix) with ESMTP id 463E189549;
-	Tue, 16 Jun 2020 23:23:49 +0000 (UTC)
+	by whitealder.osuosl.org (Postfix) with ESMTP id C7609895DD;
+	Wed, 17 Jun 2020 03:01:07 +0000 (UTC)
 Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
-	by lists.linuxfoundation.org (Postfix) with ESMTP id 2E8FEC0888;
-	Tue, 16 Jun 2020 23:23:49 +0000 (UTC)
-Received: from hemlock.osuosl.org (smtp2.osuosl.org [140.211.166.133])
- by lists.linuxfoundation.org (Postfix) with ESMTP id 568E3C016E
- for <iommu@lists.linux-foundation.org>; Tue, 16 Jun 2020 23:23:48 +0000 (UTC)
+	by lists.linuxfoundation.org (Postfix) with ESMTP id AA585C07FF;
+	Wed, 17 Jun 2020 03:01:07 +0000 (UTC)
+Received: from whitealder.osuosl.org (smtp1.osuosl.org [140.211.166.138])
+ by lists.linuxfoundation.org (Postfix) with ESMTP id B0931C016E
+ for <iommu@lists.linux-foundation.org>; Wed, 17 Jun 2020 03:01:06 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
- by hemlock.osuosl.org (Postfix) with ESMTP id 3D87189551
- for <iommu@lists.linux-foundation.org>; Tue, 16 Jun 2020 23:23:48 +0000 (UTC)
+ by whitealder.osuosl.org (Postfix) with ESMTP id 9B3C3895F9
+ for <iommu@lists.linux-foundation.org>; Wed, 17 Jun 2020 03:01:06 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from hemlock.osuosl.org ([127.0.0.1])
+Received: from whitealder.osuosl.org ([127.0.0.1])
  by localhost (.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
- with ESMTP id 8cPE-SQlp7la for <iommu@lists.linux-foundation.org>;
- Tue, 16 Jun 2020 23:23:47 +0000 (UTC)
+ with ESMTP id jSwGKuA6Cfzf for <iommu@lists.linux-foundation.org>;
+ Wed, 17 Jun 2020 03:01:04 +0000 (UTC)
 X-Greylist: domain auto-whitelisted by SQLgrey-1.7.6
-Received: from mga11.intel.com (mga11.intel.com [192.55.52.93])
- by hemlock.osuosl.org (Postfix) with ESMTPS id 8C0AF89549
- for <iommu@lists.linux-foundation.org>; Tue, 16 Jun 2020 23:23:47 +0000 (UTC)
-IronPort-SDR: Nd4u/bRgQK1ERcYh4DZx4qbBnvNk7snueLT8pXcz0Uh+Wj2aj98UeQnesFwg5IEWrc2OcU3hsb
- VD0sg4aLe/UA==
-X-Amp-Result: SKIPPED(no attachment in message)
-X-Amp-File-Uploaded: False
-Received: from fmsmga001.fm.intel.com ([10.253.24.23])
- by fmsmga102.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384;
- 16 Jun 2020 16:23:46 -0700
-IronPort-SDR: PUdSL9s9aHkzES9vhHisJzVKu+uTZCb7Oi6VKOJd77E027eK2Hl4S07EMQa0cGcGT0pSq7Rw33
- qrXIWSr0CLkA==
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.73,520,1583222400"; d="scan'208";a="383022347"
-Received: from romley-ivt3.sc.intel.com ([172.25.110.60])
- by fmsmga001.fm.intel.com with ESMTP; 16 Jun 2020 16:23:46 -0700
-Date: Tue, 16 Jun 2020 16:23:46 -0700
-From: Fenghua Yu <fenghua.yu@intel.com>
-To: Peter Zijlstra <peterz@infradead.org>
-Subject: Re: [PATCH v2 12/12] x86/traps: Fix up invalid PASID
-Message-ID: <20200616232345.GC15763@romley-ivt3.sc.intel.com>
-References: <1592008893-9388-1-git-send-email-fenghua.yu@intel.com>
- <1592008893-9388-13-git-send-email-fenghua.yu@intel.com>
- <20200615075649.GK2497@hirez.programming.kicks-ass.net>
- <20200615154854.GB13792@romley-ivt3.sc.intel.com>
- <20200615160357.GA2531@hirez.programming.kicks-ass.net>
- <20200615181259.GC13792@romley-ivt3.sc.intel.com>
- <20200615183116.GD2531@hirez.programming.kicks-ass.net>
- <20200615185529.GD13792@romley-ivt3.sc.intel.com>
- <20200615190928.GJ2531@hirez.programming.kicks-ass.net>
+Received: from mailgw01.mediatek.com (unknown [210.61.82.183])
+ by whitealder.osuosl.org (Postfix) with ESMTP id 34807895F1
+ for <iommu@lists.linux-foundation.org>; Wed, 17 Jun 2020 03:01:04 +0000 (UTC)
+X-UUID: 7eb84c49c9d54fb2a5b8cf390a0761b4-20200617
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=mediatek.com;
+ s=dk; 
+ h=Content-Transfer-Encoding:Content-Type:MIME-Version:References:In-Reply-To:Message-ID:Date:Subject:CC:To:From;
+ bh=uAg2++jay26UB72gUcfyb480NViM/1g2zNGnOc4qDes=; 
+ b=F2cAUtRYAy4WpgoKF0X5DuCzXZmn8qIUgaaBjVYNDEZdZM+oFAGMdFMDc0MCux/OHYChrnpfcVw2ezqlQiAnHwo58bl2Bga3XQMEhFtPnjrKK+0Hy2UtmC6nrdQZyHKlPvEmiPRkEoegnV4OZhYBEcJA8hWUWATNcBSigykHjBo=;
+X-UUID: 7eb84c49c9d54fb2a5b8cf390a0761b4-20200617
+Received: from mtkcas10.mediatek.inc [(172.21.101.39)] by mailgw01.mediatek.com
+ (envelope-from <chao.hao@mediatek.com>)
+ (Cellopoint E-mail Firewall v4.1.10 Build 0809 with TLS)
+ with ESMTP id 827254089; Wed, 17 Jun 2020 11:00:59 +0800
+Received: from MTKCAS06.mediatek.inc (172.21.101.30) by
+ mtkmbs01n1.mediatek.inc (172.21.101.68) with Microsoft SMTP Server (TLS) id
+ 15.0.1497.2; Wed, 17 Jun 2020 11:00:56 +0800
+Received: from localhost.localdomain (10.15.20.246) by MTKCAS06.mediatek.inc
+ (172.21.101.73) with Microsoft SMTP Server id 15.0.1497.2 via Frontend
+ Transport; Wed, 17 Jun 2020 11:00:50 +0800
+From: Chao Hao <chao.hao@mediatek.com>
+To: Joerg Roedel <joro@8bytes.org>, Rob Herring <robh+dt@kernel.org>, Matthias
+ Brugger <matthias.bgg@gmail.com>
+Subject: [PATCH v4 1/7] dt-bindings: mediatek: Add bindings for MT6779
+Date: Wed, 17 Jun 2020 11:00:23 +0800
+Message-ID: <20200617030029.4082-2-chao.hao@mediatek.com>
+X-Mailer: git-send-email 2.18.0
+In-Reply-To: <20200617030029.4082-1-chao.hao@mediatek.com>
+References: <20200617030029.4082-1-chao.hao@mediatek.com>
 MIME-Version: 1.0
-Content-Disposition: inline
-In-Reply-To: <20200615190928.GJ2531@hirez.programming.kicks-ass.net>
-User-Agent: Mutt/1.5.23 (2014-03-12)
-Cc: Dave Hansen <dave.hansen@intel.com>, H Peter Anvin <hpa@zytor.com>,
- Dave Jiang <dave.jiang@intel.com>, Ashok Raj <ashok.raj@intel.com>,
- x86 <x86@kernel.org>, amd-gfx <amd-gfx@lists.freedesktop.org>,
- Ingo Molnar <mingo@redhat.com>, Ravi V Shankar <ravi.v.shankar@intel.com>,
- Yu-cheng Yu <yu-cheng.yu@intel.com>, Andrew Donnellan <ajd@linux.ibm.com>,
- Borislav Petkov <bp@alien8.de>, Thomas Gleixner <tglx@linutronix.de>,
- Tony Luck <tony.luck@intel.com>, linuxppc-dev <linuxppc-dev@lists.ozlabs.org>,
- Felix Kuehling <Felix.Kuehling@amd.com>,
- linux-kernel <linux-kernel@vger.kernel.org>, iommu@lists.linux-foundation.org,
- Jacob Jun Pan <jacob.jun.pan@intel.com>,
- Frederic Barrat <fbarrat@linux.ibm.com>, David Woodhouse <dwmw2@infradead.org>
+X-MTK: N
+Cc: devicetree@vger.kernel.org, FY Yang <fy.yang@mediatek.com>,
+ wsd_upstream@mediatek.com, linux-kernel@vger.kernel.org,
+ Chao Hao <chao.hao@mediatek.com>, iommu@lists.linux-foundation.org,
+ linux-mediatek@lists.infradead.org, linux-arm-kernel@lists.infradead.org
 X-BeenThere: iommu@lists.linux-foundation.org
 X-Mailman-Version: 2.1.15
 Precedence: list
@@ -103,54 +96,283 @@ Content-Transfer-Encoding: 7bit
 Errors-To: iommu-bounces@lists.linux-foundation.org
 Sender: "iommu" <iommu-bounces@lists.linux-foundation.org>
 
-Hi, Peter,
+This patch adds description for MT6779 IOMMU.
 
-On Mon, Jun 15, 2020 at 09:09:28PM +0200, Peter Zijlstra wrote:
-> On Mon, Jun 15, 2020 at 11:55:29AM -0700, Fenghua Yu wrote:
-> 
-> > Or do you suggest to add a random new flag in struct thread_info instead
-> > of a TIF flag?
-> 
-> Why thread_info? What's wrong with something simple like the below. It
-> takes a bit from the 'strictly current' flags word.
-> 
-> 
-> diff --git a/include/linux/sched.h b/include/linux/sched.h
-> index b62e6aaf28f0..fca830b97055 100644
-> --- a/include/linux/sched.h
-> +++ b/include/linux/sched.h
-> @@ -801,6 +801,9 @@ struct task_struct {
->  	/* Stalled due to lack of memory */
->  	unsigned			in_memstall:1;
->  #endif
-> +#ifdef CONFIG_PCI_PASID
-> +	unsigned			has_valid_pasid:1;
-> +#endif
->  
->  	unsigned long			atomic_flags; /* Flags requiring atomic access. */
->  
-> diff --git a/kernel/fork.c b/kernel/fork.c
-> index 142b23645d82..10b3891be99e 100644
-> --- a/kernel/fork.c
-> +++ b/kernel/fork.c
-> @@ -955,6 +955,10 @@ static struct task_struct *dup_task_struct(struct task_struct *orig, int node)
->  	tsk->use_memdelay = 0;
->  #endif
->  
-> +#ifdef CONFIG_PCI_PASID
-> +	tsk->has_valid_pasid = 0;
-> +#endif
-> +
->  #ifdef CONFIG_MEMCG
->  	tsk->active_memcg = NULL;
->  #endif
+MT6779 has two iommus, they are mm_iommu and apu_iommu which
+both use ARM Short-Descriptor translation format.
 
-Can I add "Signed-off-by: Peter Zijlstra <peterz@infradead.org>"
-to this patch? I will send this patch in the next version of the series.
+In addition, mm_iommu and apu_iommu are two independent HW instance
+, we need to set them separately.
 
-Thanks.
+The MT6779 IOMMU hardware diagram is as below, it is only a brief
+diagram about iommu, it don't focus on the part of smi_larb, so
+I don't describe the smi_larb detailedly.
 
--Fenghua
+			     EMI
+			      |
+	   --------------------------------------
+	   |					|
+        MM_IOMMU                            APU_IOMMU
+	   |					|
+       SMI_COMMOM-----------		     APU_BUS
+          |		   |			|
+    SMI_LARB(0~11)         |	                |
+	  |		   |			|
+	  |		   |		   --------------
+	  |		   |		   |	 |	|
+   Multimedia engine	  CCU		  VPU   MDLA   EMDA
+
+All the connections are hardware fixed, software can not adjust it.
+
+Change since v2:
+1. Delete unused definition, ex: M4U_LARB12_ID, M4U_LARB13_ID, CCU, VPU, MDLA, EDMA
+
+Change since v1:
+1. Delete M4U_PORT_UNKNOWN define because of not use it.
+2. Correct coding format: ex: /*larb3-VENC*/ --> /* larb3-VENC */
+
+Signed-off-by: Chao Hao <chao.hao@mediatek.com>
+Reviewed-by: Rob Herring <robh+dt@kernel.org>
+---
+ .../bindings/iommu/mediatek,iommu.txt         |   2 +
+ include/dt-bindings/memory/mt6779-larb-port.h | 206 ++++++++++++++++++
+ 2 files changed, 208 insertions(+)
+ create mode 100644 include/dt-bindings/memory/mt6779-larb-port.h
+
+diff --git a/Documentation/devicetree/bindings/iommu/mediatek,iommu.txt b/Documentation/devicetree/bindings/iommu/mediatek,iommu.txt
+index ce59a505f5a4..c1ccd8582eb2 100644
+--- a/Documentation/devicetree/bindings/iommu/mediatek,iommu.txt
++++ b/Documentation/devicetree/bindings/iommu/mediatek,iommu.txt
+@@ -58,6 +58,7 @@ Required properties:
+ - compatible : must be one of the following string:
+ 	"mediatek,mt2701-m4u" for mt2701 which uses generation one m4u HW.
+ 	"mediatek,mt2712-m4u" for mt2712 which uses generation two m4u HW.
++	"mediatek,mt6779-m4u" for mt6779 which uses generation two m4u HW.
+ 	"mediatek,mt7623-m4u", "mediatek,mt2701-m4u" for mt7623 which uses
+ 						     generation one m4u HW.
+ 	"mediatek,mt8173-m4u" for mt8173 which uses generation two m4u HW.
+@@ -78,6 +79,7 @@ Required properties:
+ 	Specifies the mtk_m4u_id as defined in
+ 	dt-binding/memory/mt2701-larb-port.h for mt2701, mt7623
+ 	dt-binding/memory/mt2712-larb-port.h for mt2712,
++	dt-binding/memory/mt6779-larb-port.h for mt6779,
+ 	dt-binding/memory/mt8173-larb-port.h for mt8173, and
+ 	dt-binding/memory/mt8183-larb-port.h for mt8183.
+ 
+diff --git a/include/dt-bindings/memory/mt6779-larb-port.h b/include/dt-bindings/memory/mt6779-larb-port.h
+new file mode 100644
+index 000000000000..2ad0899fbf2f
+--- /dev/null
++++ b/include/dt-bindings/memory/mt6779-larb-port.h
+@@ -0,0 +1,206 @@
++/* SPDX-License-Identifier: GPL-2.0 */
++/*
++ * Copyright (c) 2019 MediaTek Inc.
++ * Author: Chao Hao <chao.hao@mediatek.com>
++ */
++
++#ifndef _DTS_IOMMU_PORT_MT6779_H_
++#define _DTS_IOMMU_PORT_MT6779_H_
++
++#define MTK_M4U_ID(larb, port)		 (((larb) << 5) | (port))
++
++#define M4U_LARB0_ID			 0
++#define M4U_LARB1_ID			 1
++#define M4U_LARB2_ID			 2
++#define M4U_LARB3_ID			 3
++#define M4U_LARB4_ID			 4
++#define M4U_LARB5_ID			 5
++#define M4U_LARB6_ID			 6
++#define M4U_LARB7_ID			 7
++#define M4U_LARB8_ID			 8
++#define M4U_LARB9_ID			 9
++#define M4U_LARB10_ID			 10
++#define M4U_LARB11_ID			 11
++
++/* larb0 */
++#define M4U_PORT_DISP_POSTMASK0		 MTK_M4U_ID(M4U_LARB0_ID, 0)
++#define M4U_PORT_DISP_OVL0_HDR		 MTK_M4U_ID(M4U_LARB0_ID, 1)
++#define M4U_PORT_DISP_OVL1_HDR		 MTK_M4U_ID(M4U_LARB0_ID, 2)
++#define M4U_PORT_DISP_OVL0		 MTK_M4U_ID(M4U_LARB0_ID, 3)
++#define M4U_PORT_DISP_OVL1		 MTK_M4U_ID(M4U_LARB0_ID, 4)
++#define M4U_PORT_DISP_PVRIC0		 MTK_M4U_ID(M4U_LARB0_ID, 5)
++#define M4U_PORT_DISP_RDMA0		 MTK_M4U_ID(M4U_LARB0_ID, 6)
++#define M4U_PORT_DISP_WDMA0		 MTK_M4U_ID(M4U_LARB0_ID, 7)
++#define M4U_PORT_DISP_FAKE0		 MTK_M4U_ID(M4U_LARB0_ID, 8)
++
++/* larb1 */
++#define M4U_PORT_DISP_OVL0_2L_HDR	 MTK_M4U_ID(M4U_LARB1_ID, 0)
++#define M4U_PORT_DISP_OVL1_2L_HDR	 MTK_M4U_ID(M4U_LARB1_ID, 1)
++#define M4U_PORT_DISP_OVL0_2L		 MTK_M4U_ID(M4U_LARB1_ID, 2)
++#define M4U_PORT_DISP_OVL1_2L		 MTK_M4U_ID(M4U_LARB1_ID, 3)
++#define M4U_PORT_DISP_RDMA1		 MTK_M4U_ID(M4U_LARB1_ID, 4)
++#define M4U_PORT_MDP_PVRIC0		 MTK_M4U_ID(M4U_LARB1_ID, 5)
++#define M4U_PORT_MDP_PVRIC1		 MTK_M4U_ID(M4U_LARB1_ID, 6)
++#define M4U_PORT_MDP_RDMA0		 MTK_M4U_ID(M4U_LARB1_ID, 7)
++#define M4U_PORT_MDP_RDMA1		 MTK_M4U_ID(M4U_LARB1_ID, 8)
++#define M4U_PORT_MDP_WROT0_R		 MTK_M4U_ID(M4U_LARB1_ID, 9)
++#define M4U_PORT_MDP_WROT0_W		 MTK_M4U_ID(M4U_LARB1_ID, 10)
++#define M4U_PORT_MDP_WROT1_R		 MTK_M4U_ID(M4U_LARB1_ID, 11)
++#define M4U_PORT_MDP_WROT1_W		 MTK_M4U_ID(M4U_LARB1_ID, 12)
++#define M4U_PORT_DISP_FAKE1		 MTK_M4U_ID(M4U_LARB1_ID, 13)
++
++/* larb2-VDEC */
++#define M4U_PORT_HW_VDEC_MC_EXT          MTK_M4U_ID(M4U_LARB2_ID, 0)
++#define M4U_PORT_HW_VDEC_UFO_EXT         MTK_M4U_ID(M4U_LARB2_ID, 1)
++#define M4U_PORT_HW_VDEC_PP_EXT          MTK_M4U_ID(M4U_LARB2_ID, 2)
++#define M4U_PORT_HW_VDEC_PRED_RD_EXT     MTK_M4U_ID(M4U_LARB2_ID, 3)
++#define M4U_PORT_HW_VDEC_PRED_WR_EXT     MTK_M4U_ID(M4U_LARB2_ID, 4)
++#define M4U_PORT_HW_VDEC_PPWRAP_EXT      MTK_M4U_ID(M4U_LARB2_ID, 5)
++#define M4U_PORT_HW_VDEC_TILE_EXT        MTK_M4U_ID(M4U_LARB2_ID, 6)
++#define M4U_PORT_HW_VDEC_VLD_EXT         MTK_M4U_ID(M4U_LARB2_ID, 7)
++#define M4U_PORT_HW_VDEC_VLD2_EXT        MTK_M4U_ID(M4U_LARB2_ID, 8)
++#define M4U_PORT_HW_VDEC_AVC_MV_EXT      MTK_M4U_ID(M4U_LARB2_ID, 9)
++#define M4U_PORT_HW_VDEC_UFO_ENC_EXT     MTK_M4U_ID(M4U_LARB2_ID, 10)
++#define M4U_PORT_HW_VDEC_RG_CTRL_DMA_EXT MTK_M4U_ID(M4U_LARB2_ID, 11)
++
++/* larb3-VENC */
++#define M4U_PORT_VENC_RCPU		 MTK_M4U_ID(M4U_LARB3_ID, 0)
++#define M4U_PORT_VENC_REC		 MTK_M4U_ID(M4U_LARB3_ID, 1)
++#define M4U_PORT_VENC_BSDMA		 MTK_M4U_ID(M4U_LARB3_ID, 2)
++#define M4U_PORT_VENC_SV_COMV		 MTK_M4U_ID(M4U_LARB3_ID, 3)
++#define M4U_PORT_VENC_RD_COMV		 MTK_M4U_ID(M4U_LARB3_ID, 4)
++#define M4U_PORT_VENC_NBM_RDMA		 MTK_M4U_ID(M4U_LARB3_ID, 5)
++#define M4U_PORT_VENC_NBM_RDMA_LITE	 MTK_M4U_ID(M4U_LARB3_ID, 6)
++#define M4U_PORT_JPGENC_Y_RDMA		 MTK_M4U_ID(M4U_LARB3_ID, 7)
++#define M4U_PORT_JPGENC_C_RDMA		 MTK_M4U_ID(M4U_LARB3_ID, 8)
++#define M4U_PORT_JPGENC_Q_TABLE		 MTK_M4U_ID(M4U_LARB3_ID, 9)
++#define M4U_PORT_JPGENC_BSDMA		 MTK_M4U_ID(M4U_LARB3_ID, 10)
++#define M4U_PORT_JPGDEC_WDMA		 MTK_M4U_ID(M4U_LARB3_ID, 11)
++#define M4U_PORT_JPGDEC_BSDMA		 MTK_M4U_ID(M4U_LARB3_ID, 12)
++#define M4U_PORT_VENC_NBM_WDMA		 MTK_M4U_ID(M4U_LARB3_ID, 13)
++#define M4U_PORT_VENC_NBM_WDMA_LITE	 MTK_M4U_ID(M4U_LARB3_ID, 14)
++#define M4U_PORT_VENC_CUR_LUMA		 MTK_M4U_ID(M4U_LARB3_ID, 15)
++#define M4U_PORT_VENC_CUR_CHROMA	 MTK_M4U_ID(M4U_LARB3_ID, 16)
++#define M4U_PORT_VENC_REF_LUMA		 MTK_M4U_ID(M4U_LARB3_ID, 17)
++#define M4U_PORT_VENC_REF_CHROMA	 MTK_M4U_ID(M4U_LARB3_ID, 18)
++
++/* larb4-dummy */
++
++/* larb5-IMG */
++#define M4U_PORT_IMGI_D1		 MTK_M4U_ID(M4U_LARB5_ID, 0)
++#define M4U_PORT_IMGBI_D1		 MTK_M4U_ID(M4U_LARB5_ID, 1)
++#define M4U_PORT_DMGI_D1		 MTK_M4U_ID(M4U_LARB5_ID, 2)
++#define M4U_PORT_DEPI_D1		 MTK_M4U_ID(M4U_LARB5_ID, 3)
++#define M4U_PORT_LCEI_D1		 MTK_M4U_ID(M4U_LARB5_ID, 4)
++#define M4U_PORT_SMTI_D1		 MTK_M4U_ID(M4U_LARB5_ID, 5)
++#define M4U_PORT_SMTO_D2		 MTK_M4U_ID(M4U_LARB5_ID, 6)
++#define M4U_PORT_SMTO_D1		 MTK_M4U_ID(M4U_LARB5_ID, 7)
++#define M4U_PORT_CRZO_D1		 MTK_M4U_ID(M4U_LARB5_ID, 8)
++#define M4U_PORT_IMG3O_D1		 MTK_M4U_ID(M4U_LARB5_ID, 9)
++#define M4U_PORT_VIPI_D1		 MTK_M4U_ID(M4U_LARB5_ID, 10)
++#define M4U_PORT_WPE_RDMA1		 MTK_M4U_ID(M4U_LARB5_ID, 11)
++#define M4U_PORT_WPE_RDMA0		 MTK_M4U_ID(M4U_LARB5_ID, 12)
++#define M4U_PORT_WPE_WDMA		 MTK_M4U_ID(M4U_LARB5_ID, 13)
++#define M4U_PORT_TIMGO_D1		 MTK_M4U_ID(M4U_LARB5_ID, 14)
++#define M4U_PORT_MFB_RDMA0		 MTK_M4U_ID(M4U_LARB5_ID, 15)
++#define M4U_PORT_MFB_RDMA1		 MTK_M4U_ID(M4U_LARB5_ID, 16)
++#define M4U_PORT_MFB_RDMA2		 MTK_M4U_ID(M4U_LARB5_ID, 17)
++#define M4U_PORT_MFB_RDMA3		 MTK_M4U_ID(M4U_LARB5_ID, 18)
++#define M4U_PORT_MFB_WDMA		 MTK_M4U_ID(M4U_LARB5_ID, 19)
++#define M4U_PORT_RESERVE1		 MTK_M4U_ID(M4U_LARB5_ID, 20)
++#define M4U_PORT_RESERVE2		 MTK_M4U_ID(M4U_LARB5_ID, 21)
++#define M4U_PORT_RESERVE3		 MTK_M4U_ID(M4U_LARB5_ID, 22)
++#define M4U_PORT_RESERVE4		 MTK_M4U_ID(M4U_LARB5_ID, 23)
++#define M4U_PORT_RESERVE5		 MTK_M4U_ID(M4U_LARB5_ID, 24)
++#define M4U_PORT_RESERVE6		 MTK_M4U_ID(M4U_LARB5_ID, 25)
++
++/* larb6-IMG-VPU */
++#define M4U_PORT_IMG_IPUO		 MTK_M4U_ID(M4U_LARB6_ID, 0)
++#define M4U_PORT_IMG_IPU3O		 MTK_M4U_ID(M4U_LARB6_ID, 1)
++#define M4U_PORT_IMG_IPUI		 MTK_M4U_ID(M4U_LARB6_ID, 2)
++
++/* larb7-DVS */
++#define M4U_PORT_DVS_RDMA		 MTK_M4U_ID(M4U_LARB7_ID, 0)
++#define M4U_PORT_DVS_WDMA		 MTK_M4U_ID(M4U_LARB7_ID, 1)
++#define M4U_PORT_DVP_RDMA		 MTK_M4U_ID(M4U_LARB7_ID, 2)
++#define M4U_PORT_DVP_WDMA		 MTK_M4U_ID(M4U_LARB7_ID, 3)
++
++/* larb8-IPESYS */
++#define M4U_PORT_FDVT_RDA		 MTK_M4U_ID(M4U_LARB8_ID, 0)
++#define M4U_PORT_FDVT_RDB		 MTK_M4U_ID(M4U_LARB8_ID, 1)
++#define M4U_PORT_FDVT_WRA		 MTK_M4U_ID(M4U_LARB8_ID, 2)
++#define M4U_PORT_FDVT_WRB		 MTK_M4U_ID(M4U_LARB8_ID, 3)
++#define M4U_PORT_FE_RD0			 MTK_M4U_ID(M4U_LARB8_ID, 4)
++#define M4U_PORT_FE_RD1			 MTK_M4U_ID(M4U_LARB8_ID, 5)
++#define M4U_PORT_FE_WR0			 MTK_M4U_ID(M4U_LARB8_ID, 6)
++#define M4U_PORT_FE_WR1			 MTK_M4U_ID(M4U_LARB8_ID, 7)
++#define M4U_PORT_RSC_RDMA0		 MTK_M4U_ID(M4U_LARB8_ID, 8)
++#define M4U_PORT_RSC_WDMA		 MTK_M4U_ID(M4U_LARB8_ID, 9)
++
++/* larb9-CAM */
++#define M4U_PORT_CAM_IMGO_R1_C		 MTK_M4U_ID(M4U_LARB9_ID, 0)
++#define M4U_PORT_CAM_RRZO_R1_C		 MTK_M4U_ID(M4U_LARB9_ID, 1)
++#define M4U_PORT_CAM_LSCI_R1_C		 MTK_M4U_ID(M4U_LARB9_ID, 2)
++#define M4U_PORT_CAM_BPCI_R1_C		 MTK_M4U_ID(M4U_LARB9_ID, 3)
++#define M4U_PORT_CAM_YUVO_R1_C		 MTK_M4U_ID(M4U_LARB9_ID, 4)
++#define M4U_PORT_CAM_UFDI_R2_C		 MTK_M4U_ID(M4U_LARB9_ID, 5)
++#define M4U_PORT_CAM_RAWI_R2_C		 MTK_M4U_ID(M4U_LARB9_ID, 6)
++#define M4U_PORT_CAM_RAWI_R5_C		 MTK_M4U_ID(M4U_LARB9_ID, 7)
++#define M4U_PORT_CAM_CAMSV_1		 MTK_M4U_ID(M4U_LARB9_ID, 8)
++#define M4U_PORT_CAM_CAMSV_2		 MTK_M4U_ID(M4U_LARB9_ID, 9)
++#define M4U_PORT_CAM_CAMSV_3		 MTK_M4U_ID(M4U_LARB9_ID, 10)
++#define M4U_PORT_CAM_CAMSV_4		 MTK_M4U_ID(M4U_LARB9_ID, 11)
++#define M4U_PORT_CAM_CAMSV_5		 MTK_M4U_ID(M4U_LARB9_ID, 12)
++#define M4U_PORT_CAM_CAMSV_6		 MTK_M4U_ID(M4U_LARB9_ID, 13)
++#define M4U_PORT_CAM_AAO_R1_C		 MTK_M4U_ID(M4U_LARB9_ID, 14)
++#define M4U_PORT_CAM_AFO_R1_C		 MTK_M4U_ID(M4U_LARB9_ID, 15)
++#define M4U_PORT_CAM_FLKO_R1_C		 MTK_M4U_ID(M4U_LARB9_ID, 16)
++#define M4U_PORT_CAM_LCESO_R1_C		 MTK_M4U_ID(M4U_LARB9_ID, 17)
++#define M4U_PORT_CAM_CRZO_R1_C		 MTK_M4U_ID(M4U_LARB9_ID, 18)
++#define M4U_PORT_CAM_LTMSO_R1_C		 MTK_M4U_ID(M4U_LARB9_ID, 19)
++#define M4U_PORT_CAM_RSSO_R1_C		 MTK_M4U_ID(M4U_LARB9_ID, 20)
++#define M4U_PORT_CAM_CCUI		 MTK_M4U_ID(M4U_LARB9_ID, 21)
++#define M4U_PORT_CAM_CCUO		 MTK_M4U_ID(M4U_LARB9_ID, 22)
++#define M4U_PORT_CAM_FAKE		 MTK_M4U_ID(M4U_LARB9_ID, 23)
++
++/* larb10-CAM_A */
++#define M4U_PORT_CAM_IMGO_R1_A		 MTK_M4U_ID(M4U_LARB10_ID, 0)
++#define M4U_PORT_CAM_RRZO_R1_A		 MTK_M4U_ID(M4U_LARB10_ID, 1)
++#define M4U_PORT_CAM_LSCI_R1_A		 MTK_M4U_ID(M4U_LARB10_ID, 2)
++#define M4U_PORT_CAM_BPCI_R1_A		 MTK_M4U_ID(M4U_LARB10_ID, 3)
++#define M4U_PORT_CAM_YUVO_R1_A		 MTK_M4U_ID(M4U_LARB10_ID, 4)
++#define M4U_PORT_CAM_UFDI_R2_A		 MTK_M4U_ID(M4U_LARB10_ID, 5)
++#define M4U_PORT_CAM_RAWI_R2_A		 MTK_M4U_ID(M4U_LARB10_ID, 6)
++#define M4U_PORT_CAM_RAWI_R5_A		 MTK_M4U_ID(M4U_LARB10_ID, 7)
++#define M4U_PORT_CAM_IMGO_R1_B		 MTK_M4U_ID(M4U_LARB10_ID, 8)
++#define M4U_PORT_CAM_RRZO_R1_B		 MTK_M4U_ID(M4U_LARB10_ID, 9)
++#define M4U_PORT_CAM_LSCI_R1_B		 MTK_M4U_ID(M4U_LARB10_ID, 10)
++#define M4U_PORT_CAM_BPCI_R1_B		 MTK_M4U_ID(M4U_LARB10_ID, 11)
++#define M4U_PORT_CAM_YUVO_R1_B		 MTK_M4U_ID(M4U_LARB10_ID, 12)
++#define M4U_PORT_CAM_UFDI_R2_B		 MTK_M4U_ID(M4U_LARB10_ID, 13)
++#define M4U_PORT_CAM_RAWI_R2_B		 MTK_M4U_ID(M4U_LARB10_ID, 14)
++#define M4U_PORT_CAM_RAWI_R5_B		 MTK_M4U_ID(M4U_LARB10_ID, 15)
++#define M4U_PORT_CAM_CAMSV_0		 MTK_M4U_ID(M4U_LARB10_ID, 16)
++#define M4U_PORT_CAM_AAO_R1_A		 MTK_M4U_ID(M4U_LARB10_ID, 17)
++#define M4U_PORT_CAM_AFO_R1_A		 MTK_M4U_ID(M4U_LARB10_ID, 18)
++#define M4U_PORT_CAM_FLKO_R1_A		 MTK_M4U_ID(M4U_LARB10_ID, 19)
++#define M4U_PORT_CAM_LCESO_R1_A		 MTK_M4U_ID(M4U_LARB10_ID, 20)
++#define M4U_PORT_CAM_CRZO_R1_A		 MTK_M4U_ID(M4U_LARB10_ID, 21)
++#define M4U_PORT_CAM_AAO_R1_B		 MTK_M4U_ID(M4U_LARB10_ID, 22)
++#define M4U_PORT_CAM_AFO_R1_B		 MTK_M4U_ID(M4U_LARB10_ID, 23)
++#define M4U_PORT_CAM_FLKO_R1_B		 MTK_M4U_ID(M4U_LARB10_ID, 24)
++#define M4U_PORT_CAM_LCESO_R1_B		 MTK_M4U_ID(M4U_LARB10_ID, 25)
++#define M4U_PORT_CAM_CRZO_R1_B		 MTK_M4U_ID(M4U_LARB10_ID, 26)
++#define M4U_PORT_CAM_LTMSO_R1_A		 MTK_M4U_ID(M4U_LARB10_ID, 27)
++#define M4U_PORT_CAM_RSSO_R1_A		 MTK_M4U_ID(M4U_LARB10_ID, 28)
++#define M4U_PORT_CAM_LTMSO_R1_B		 MTK_M4U_ID(M4U_LARB10_ID, 29)
++#define M4U_PORT_CAM_RSSO_R1_B		 MTK_M4U_ID(M4U_LARB10_ID, 30)
++
++/* larb11-CAM-VPU */
++#define M4U_PORT_CAM_IPUO		 MTK_M4U_ID(M4U_LARB11_ID, 0)
++#define M4U_PORT_CAM_IPU2O		 MTK_M4U_ID(M4U_LARB11_ID, 1)
++#define M4U_PORT_CAM_IPU3O		 MTK_M4U_ID(M4U_LARB11_ID, 2)
++#define M4U_PORT_CAM_IPUI		 MTK_M4U_ID(M4U_LARB11_ID, 3)
++#define M4U_PORT_CAM_IPU2I		 MTK_M4U_ID(M4U_LARB11_ID, 4)
++
++#endif
+-- 
+2.18.0
 _______________________________________________
 iommu mailing list
 iommu@lists.linux-foundation.org
