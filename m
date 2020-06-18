@@ -7,87 +7,87 @@ X-Spam-Status: No, score=-9.5 required=3.0 tests=DKIM_INVALID,DKIM_SIGNED,
 	SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED,USER_AGENT_GIT autolearn=ham
 	autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 36A7CC433E0
-	for <iommu@archiver.kernel.org>; Thu, 18 Jun 2020 15:52:46 +0000 (UTC)
-Received: from hemlock.osuosl.org (smtp2.osuosl.org [140.211.166.133])
+	by smtp.lore.kernel.org (Postfix) with ESMTP id A72E4C433E3
+	for <iommu@archiver.kernel.org>; Thu, 18 Jun 2020 15:52:50 +0000 (UTC)
+Received: from fraxinus.osuosl.org (smtp4.osuosl.org [140.211.166.137])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by mail.kernel.org (Postfix) with ESMTPS id 0AEF92075E
-	for <iommu@archiver.kernel.org>; Thu, 18 Jun 2020 15:52:45 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTPS id 7D68D2075E
+	for <iommu@archiver.kernel.org>; Thu, 18 Jun 2020 15:52:50 +0000 (UTC)
 Authentication-Results: mail.kernel.org;
-	dkim=fail reason="signature verification failed" (2048-bit key) header.d=linaro.org header.i=@linaro.org header.b="Eds4e2o9"
-DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 0AEF92075E
+	dkim=fail reason="signature verification failed" (2048-bit key) header.d=linaro.org header.i=@linaro.org header.b="sROLygHw"
+DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 7D68D2075E
 Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=linaro.org
 Authentication-Results: mail.kernel.org; spf=pass smtp.mailfrom=iommu-bounces@lists.linux-foundation.org
 Received: from localhost (localhost [127.0.0.1])
-	by hemlock.osuosl.org (Postfix) with ESMTP id BCFFC8940E;
-	Thu, 18 Jun 2020 15:52:45 +0000 (UTC)
+	by fraxinus.osuosl.org (Postfix) with ESMTP id 4DB4987C1B;
+	Thu, 18 Jun 2020 15:52:50 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from hemlock.osuosl.org ([127.0.0.1])
+Received: from fraxinus.osuosl.org ([127.0.0.1])
 	by localhost (.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
-	with ESMTP id 0G85y6sqfF5Z; Thu, 18 Jun 2020 15:52:45 +0000 (UTC)
+	with ESMTP id khDivDG7XzPK; Thu, 18 Jun 2020 15:52:49 +0000 (UTC)
 Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [140.211.9.56])
-	by hemlock.osuosl.org (Postfix) with ESMTP id 2D07F89438;
-	Thu, 18 Jun 2020 15:52:45 +0000 (UTC)
+	by fraxinus.osuosl.org (Postfix) with ESMTP id A264A87C0B;
+	Thu, 18 Jun 2020 15:52:49 +0000 (UTC)
 Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
-	by lists.linuxfoundation.org (Postfix) with ESMTP id 1A23CC088C;
-	Thu, 18 Jun 2020 15:52:45 +0000 (UTC)
-Received: from whitealder.osuosl.org (smtp1.osuosl.org [140.211.166.138])
- by lists.linuxfoundation.org (Postfix) with ESMTP id 0D4EAC016E
- for <iommu@lists.linux-foundation.org>; Thu, 18 Jun 2020 15:52:44 +0000 (UTC)
+	by lists.linuxfoundation.org (Postfix) with ESMTP id 72E01C089E;
+	Thu, 18 Jun 2020 15:52:49 +0000 (UTC)
+Received: from silver.osuosl.org (smtp3.osuosl.org [140.211.166.136])
+ by lists.linuxfoundation.org (Postfix) with ESMTP id 149FDC016E
+ for <iommu@lists.linux-foundation.org>; Thu, 18 Jun 2020 15:52:48 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
- by whitealder.osuosl.org (Postfix) with ESMTP id DF97D888D5
- for <iommu@lists.linux-foundation.org>; Thu, 18 Jun 2020 15:52:43 +0000 (UTC)
+ by silver.osuosl.org (Postfix) with ESMTP id ECE3B20521
+ for <iommu@lists.linux-foundation.org>; Thu, 18 Jun 2020 15:52:47 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from whitealder.osuosl.org ([127.0.0.1])
+Received: from silver.osuosl.org ([127.0.0.1])
  by localhost (.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
- with ESMTP id pC45I7AbbCRG for <iommu@lists.linux-foundation.org>;
- Thu, 18 Jun 2020 15:52:43 +0000 (UTC)
+ with ESMTP id ymbQEhi3puhM for <iommu@lists.linux-foundation.org>;
+ Thu, 18 Jun 2020 15:52:44 +0000 (UTC)
 X-Greylist: domain auto-whitelisted by SQLgrey-1.7.6
 Received: from mail-ej1-f67.google.com (mail-ej1-f67.google.com
  [209.85.218.67])
- by whitealder.osuosl.org (Postfix) with ESMTPS id C7844888D3
- for <iommu@lists.linux-foundation.org>; Thu, 18 Jun 2020 15:52:42 +0000 (UTC)
-Received: by mail-ej1-f67.google.com with SMTP id l27so6977978ejc.1
- for <iommu@lists.linux-foundation.org>; Thu, 18 Jun 2020 08:52:42 -0700 (PDT)
+ by silver.osuosl.org (Postfix) with ESMTPS id 844E520552
+ for <iommu@lists.linux-foundation.org>; Thu, 18 Jun 2020 15:52:44 +0000 (UTC)
+Received: by mail-ej1-f67.google.com with SMTP id o15so6904073ejm.12
+ for <iommu@lists.linux-foundation.org>; Thu, 18 Jun 2020 08:52:44 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linaro.org; s=google;
  h=from:to:cc:subject:date:message-id:in-reply-to:references
  :mime-version:content-transfer-encoding;
- bh=gANJ9nXJh01yt9NJy6mJRUbndSE80vIrxk0QteKIq3c=;
- b=Eds4e2o9/aTlytifgQchMEkJmVJnHukU0ovaep4b99cT1h6zth+zUqp366TT6K7ePX
- HiZEqi5WIama9YvlIAens9d1oSuRcu30EdLiupH19lT8Hmm2muD9gKIAMgXLTT8oZzjY
- MoyoHHPnrcr8cOojysoVY47yfdgPaVRYmZmo+khdV4Ej00BOefC8o/w6f/PYTJyS6JMS
- IE97PCTm2L9rvU65hRt0iESOfgfc1BzLFCJZHQEDWvQTL3BUfPf06ylKZClOTGVvHCHR
- HxJDIw/+s/Qhsbwm5tathG8DD43vy8bx/z/kb1lxFBK35YaCkkejan7zgAl8K15t3TWZ
- HQ7w==
+ bh=RIXfyWsdCSmhkCPoxdMwgb5HoQjrgnKhMBMykTzupqQ=;
+ b=sROLygHw732kSPKgqm1mAJj8riM2WWL2GR/3RO14UTzqzDo+ON4NJHm/mIDeC2LCl4
+ +RP9frVhkxIRCUhwMIcnsdOC7S0WnA2G6KfJuTe/Je028x/UMJrQov9nesMCYthhJ/lP
+ pJ1rzJVPXLe1HLn7VCsYhkZNAAQANsfO/2H3NkbXt6L2YJO5UoWuzfUlEG0dlXco6I1Q
+ 0c6m2NjRQFUEJEYSQQaKlU23EX57kMW88YOG6S0iyWbgDwJGGwXBOOO7jnrsWYGC/4O9
+ KIfikh5Y7YxEg+ObMIpjzN59DZNakYHrfmJokgjdphmsjh21ggon+8JPNKuNaBofykdO
+ FZOQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
  d=1e100.net; s=20161025;
  h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
  :references:mime-version:content-transfer-encoding;
- bh=gANJ9nXJh01yt9NJy6mJRUbndSE80vIrxk0QteKIq3c=;
- b=EwoLkMZ2ukdgU14Pf/tj4D+G6xi3ILDAAAoSI5elBKPK9Zap6H3crd298kVUvuXcc3
- V8dpkveUdVVJBOFpgw2jbGIuvzN/CIAcc5mEihe9Tz3xOFlQk+bM+huRFXQsKVxb0rbq
- juRrclKOfjR0b+Whc5LSiKoUBexNJcHqTYMdscG6BuxPaNRDNI0KPbt9VTJqgQ/hxymk
- h3p0yPB7xPtkPC/akCmtRjCdrTUB68uzBE7RqopYmBzl18+0a8wiSw1JQ/ln4SaY2OSp
- FgtSrRksqliJAsbcR+u32/hrVL7akQtTcZPqfSCm5q9zMROAS1ILVYfz3iJD4dfEIIOc
- qm9A==
-X-Gm-Message-State: AOAM533IBLUkkM77qRL09rWp1xnKS1OpX0itVOa90f+g0H8cEifWhSFw
- AQGPCEYqao/nzAxyCNYpTEbl2iZStREGFw==
-X-Google-Smtp-Source: ABdhPJwyzOwFmlJDohdbHbSJOb408dno2oi+63HZld2Ti01+pRXVJHbN4UECF6xp5+TKBsOTjUOPvw==
-X-Received: by 2002:a17:906:68c5:: with SMTP id
- y5mr4450793ejr.436.1592495560894; 
- Thu, 18 Jun 2020 08:52:40 -0700 (PDT)
+ bh=RIXfyWsdCSmhkCPoxdMwgb5HoQjrgnKhMBMykTzupqQ=;
+ b=IeTQYrlFOwIS/RF8Ujz36e9B1QaQtXfU2eBiFZY9+hA+Uj3g+cVjtzoDLxo9mxhHPr
+ K9wARrIeW2EiDzh63P8dRWGGYFY19CRkOh6KletPig/LVfVelONFBbFY0ggs7pnNT1Mz
+ GpB6D01LC3tx+/E8KZQZ50ExjWvp4lhvuCNgY/SHIwph2kh6cA4r3TX9RNvTQkPON7ce
+ a5LYPcBn8GpxscYLDqBYX6Oy/qvRAucD60GvaW/sHdccQHEwjKzXWCeI4klJVlhtVa/7
+ cdTFnwK3h1iFfMngqFomWtNJFOC7sickaoyIgOxFFKV8+jKKJovSZqw3GS/PsJlHqT0H
+ GmSg==
+X-Gm-Message-State: AOAM532PVAgwLRCnRgDXkj5+7uwL39EcYyOv/Qi28YyZ10ezfnhI5wBB
+ FL1A9hc0gdzTPwVTeml7amAn5RxLADKKhw==
+X-Google-Smtp-Source: ABdhPJxBNDhV30ThfSe9ibwBo1JFl7QA4iTqkJCsARWmrputOq3YDJfzAm2LRPiQdaBFKF1afEsQww==
+X-Received: by 2002:a17:906:1f4f:: with SMTP id
+ d15mr4481967ejk.206.1592495562342; 
+ Thu, 18 Jun 2020 08:52:42 -0700 (PDT)
 Received: from localhost.localdomain
  ([2001:1715:4e26:a7e0:116c:c27a:3e7f:5eaf])
- by smtp.gmail.com with ESMTPSA id 63sm2402267edy.8.2020.06.18.08.52.39
+ by smtp.gmail.com with ESMTPSA id 63sm2402267edy.8.2020.06.18.08.52.41
  (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
- Thu, 18 Jun 2020 08:52:40 -0700 (PDT)
+ Thu, 18 Jun 2020 08:52:41 -0700 (PDT)
 From: Jean-Philippe Brucker <jean-philippe@linaro.org>
 To: iommu@lists.linux-foundation.org, linux-arm-kernel@lists.infradead.org,
  linux-mm@kvack.org
-Subject: [PATCH v8 02/12] iommu/ioasid: Add ioasid references
-Date: Thu, 18 Jun 2020 17:51:15 +0200
-Message-Id: <20200618155125.1548969-3-jean-philippe@linaro.org>
+Subject: [PATCH v8 03/12] iommu/sva: Add PASID helpers
+Date: Thu, 18 Jun 2020 17:51:16 +0200
+Message-Id: <20200618155125.1548969-4-jean-philippe@linaro.org>
 X-Mailer: git-send-email 2.27.0
 In-Reply-To: <20200618155125.1548969-1-jean-philippe@linaro.org>
 References: <20200618155125.1548969-1-jean-philippe@linaro.org>
@@ -112,193 +112,159 @@ Content-Transfer-Encoding: 7bit
 Errors-To: iommu-bounces@lists.linux-foundation.org
 Sender: "iommu" <iommu-bounces@lists.linux-foundation.org>
 
-Let IOASID users take references to existing ioasids with ioasid_get().
-ioasid_put() drops a reference and only frees the ioasid when its
-reference number is zero. It returns true if the ioasid was freed.
-For drivers that don't call ioasid_get(), ioasid_put() is the same as
-ioasid_free().
+Let IOMMU drivers allocate a single PASID per mm. Store the mm in the
+IOASID set to allow refcounting and searching mm by PASID, when handling
+an I/O page fault.
 
-Reviewed-by: Lu Baolu <baolu.lu@linux.intel.com>
 Signed-off-by: Jean-Philippe Brucker <jean-philippe@linaro.org>
 ---
- include/linux/ioasid.h      | 10 ++++++++--
- drivers/iommu/intel/iommu.c |  4 ++--
- drivers/iommu/intel/svm.c   |  6 +++---
- drivers/iommu/ioasid.c      | 38 +++++++++++++++++++++++++++++++++----
- 4 files changed, 47 insertions(+), 11 deletions(-)
+v7->v8: rename to IOMMU_SVA_LIB (Lu Baolu)
+---
+ drivers/iommu/Kconfig         |  5 +++
+ drivers/iommu/Makefile        |  1 +
+ drivers/iommu/iommu-sva-lib.h | 15 +++++++
+ drivers/iommu/iommu-sva-lib.c | 85 +++++++++++++++++++++++++++++++++++
+ 4 files changed, 106 insertions(+)
+ create mode 100644 drivers/iommu/iommu-sva-lib.h
+ create mode 100644 drivers/iommu/iommu-sva-lib.c
 
-diff --git a/include/linux/ioasid.h b/include/linux/ioasid.h
-index 6f000d7a0ddcd..e9dacd4b9f6bb 100644
---- a/include/linux/ioasid.h
-+++ b/include/linux/ioasid.h
-@@ -34,7 +34,8 @@ struct ioasid_allocator_ops {
- #if IS_ENABLED(CONFIG_IOASID)
- ioasid_t ioasid_alloc(struct ioasid_set *set, ioasid_t min, ioasid_t max,
- 		      void *private);
--void ioasid_free(ioasid_t ioasid);
-+void ioasid_get(ioasid_t ioasid);
-+bool ioasid_put(ioasid_t ioasid);
- void *ioasid_find(struct ioasid_set *set, ioasid_t ioasid,
- 		  bool (*getter)(void *));
- int ioasid_register_allocator(struct ioasid_allocator_ops *allocator);
-@@ -48,10 +49,15 @@ static inline ioasid_t ioasid_alloc(struct ioasid_set *set, ioasid_t min,
- 	return INVALID_IOASID;
- }
+diff --git a/drivers/iommu/Kconfig b/drivers/iommu/Kconfig
+index b510f67dfa499..74a10e7a8d082 100644
+--- a/drivers/iommu/Kconfig
++++ b/drivers/iommu/Kconfig
+@@ -102,6 +102,11 @@ config IOMMU_DMA
+ 	select IRQ_MSI_IOMMU
+ 	select NEED_SG_DMA_LENGTH
  
--static inline void ioasid_free(ioasid_t ioasid)
-+static inline void ioasid_get(ioasid_t ioasid)
- {
- }
- 
-+static inline bool ioasid_put(ioasid_t ioasid)
-+{
-+	return false;
-+}
++# Shared Virtual Addressing library
++config IOMMU_SVA_LIB
++	bool
++	select IOASID
 +
- static inline void *ioasid_find(struct ioasid_set *set, ioasid_t ioasid,
- 				bool (*getter)(void *))
- {
-diff --git a/drivers/iommu/intel/iommu.c b/drivers/iommu/intel/iommu.c
-index 9129663a7406b..a5840b8ef14b7 100644
---- a/drivers/iommu/intel/iommu.c
-+++ b/drivers/iommu/intel/iommu.c
-@@ -5131,7 +5131,7 @@ static void auxiliary_unlink_device(struct dmar_domain *domain,
- 	domain->auxd_refcnt--;
- 
- 	if (!domain->auxd_refcnt && domain->default_pasid > 0)
--		ioasid_free(domain->default_pasid);
-+		ioasid_put(domain->default_pasid);
- }
- 
- static int aux_domain_add_dev(struct dmar_domain *domain,
-@@ -5193,7 +5193,7 @@ static int aux_domain_add_dev(struct dmar_domain *domain,
- 	spin_unlock(&iommu->lock);
- 	spin_unlock_irqrestore(&device_domain_lock, flags);
- 	if (!domain->auxd_refcnt && domain->default_pasid > 0)
--		ioasid_free(domain->default_pasid);
-+		ioasid_put(domain->default_pasid);
- 
- 	return ret;
- }
-diff --git a/drivers/iommu/intel/svm.c b/drivers/iommu/intel/svm.c
-index 6c87c807a0abb..b078a697c42e8 100644
---- a/drivers/iommu/intel/svm.c
-+++ b/drivers/iommu/intel/svm.c
-@@ -546,7 +546,7 @@ intel_svm_bind_mm(struct device *dev, int flags, struct svm_dev_ops *ops,
- 		if (mm) {
- 			ret = mmu_notifier_register(&svm->notifier, mm);
- 			if (ret) {
--				ioasid_free(svm->pasid);
-+				ioasid_put(svm->pasid);
- 				kfree(svm);
- 				kfree(sdev);
- 				goto out;
-@@ -564,7 +564,7 @@ intel_svm_bind_mm(struct device *dev, int flags, struct svm_dev_ops *ops,
- 		if (ret) {
- 			if (mm)
- 				mmu_notifier_unregister(&svm->notifier, mm);
--			ioasid_free(svm->pasid);
-+			ioasid_put(svm->pasid);
- 			kfree(svm);
- 			kfree(sdev);
- 			goto out;
-@@ -639,7 +639,7 @@ static int intel_svm_unbind_mm(struct device *dev, int pasid)
- 			kfree_rcu(sdev, rcu);
- 
- 			if (list_empty(&svm->devs)) {
--				ioasid_free(svm->pasid);
-+				ioasid_put(svm->pasid);
- 				if (svm->mm)
- 					mmu_notifier_unregister(&svm->notifier, svm->mm);
- 				list_del(&svm->list);
-diff --git a/drivers/iommu/ioasid.c b/drivers/iommu/ioasid.c
-index 0f8dd377aada3..50ee27bbd04ec 100644
---- a/drivers/iommu/ioasid.c
-+++ b/drivers/iommu/ioasid.c
-@@ -2,7 +2,7 @@
- /*
-  * I/O Address Space ID allocator. There is one global IOASID space, split into
-  * subsets. Users create a subset with DECLARE_IOASID_SET, then allocate and
-- * free IOASIDs with ioasid_alloc and ioasid_free.
-+ * free IOASIDs with ioasid_alloc and ioasid_put.
-  */
- #include <linux/ioasid.h>
- #include <linux/module.h>
-@@ -15,6 +15,7 @@ struct ioasid_data {
- 	struct ioasid_set *set;
- 	void *private;
- 	struct rcu_head rcu;
-+	refcount_t refs;
- };
- 
- /*
-@@ -314,6 +315,7 @@ ioasid_t ioasid_alloc(struct ioasid_set *set, ioasid_t min, ioasid_t max,
- 
- 	data->set = set;
- 	data->private = private;
-+	refcount_set(&data->refs, 1);
- 
- 	/*
- 	 * Custom allocator needs allocator data to perform platform specific
-@@ -346,11 +348,34 @@ ioasid_t ioasid_alloc(struct ioasid_set *set, ioasid_t min, ioasid_t max,
- EXPORT_SYMBOL_GPL(ioasid_alloc);
- 
- /**
-- * ioasid_free - Free an IOASID
-+ * ioasid_get - obtain a reference to the IOASID
+ config FSL_PAMU
+ 	bool "Freescale IOMMU support"
+ 	depends on PCI
+diff --git a/drivers/iommu/Makefile b/drivers/iommu/Makefile
+index 342190196dfb0..0fe5a7f9bc69c 100644
+--- a/drivers/iommu/Makefile
++++ b/drivers/iommu/Makefile
+@@ -38,3 +38,4 @@ obj-$(CONFIG_S390_IOMMU) += s390-iommu.o
+ obj-$(CONFIG_QCOM_IOMMU) += qcom_iommu.o
+ obj-$(CONFIG_HYPERV_IOMMU) += hyperv-iommu.o
+ obj-$(CONFIG_VIRTIO_IOMMU) += virtio-iommu.o
++obj-$(CONFIG_IOMMU_SVA_LIB) += iommu-sva-lib.o
+diff --git a/drivers/iommu/iommu-sva-lib.h b/drivers/iommu/iommu-sva-lib.h
+new file mode 100644
+index 0000000000000..b40990aef3fde
+--- /dev/null
++++ b/drivers/iommu/iommu-sva-lib.h
+@@ -0,0 +1,15 @@
++/* SPDX-License-Identifier: GPL-2.0 */
++/*
++ * SVA library for IOMMU drivers
 + */
-+void ioasid_get(ioasid_t ioasid)
-+{
-+	struct ioasid_data *ioasid_data;
++#ifndef _IOMMU_SVA_LIB_H
++#define _IOMMU_SVA_LIB_H
 +
-+	spin_lock(&ioasid_allocator_lock);
-+	ioasid_data = xa_load(&active_allocator->xa, ioasid);
-+	if (ioasid_data)
-+		refcount_inc(&ioasid_data->refs);
-+	else
-+		WARN_ON(1);
-+	spin_unlock(&ioasid_allocator_lock);
-+}
-+EXPORT_SYMBOL_GPL(ioasid_get);
++#include <linux/ioasid.h>
++#include <linux/mm_types.h>
++
++int iommu_sva_alloc_pasid(struct mm_struct *mm, ioasid_t min, ioasid_t max);
++void iommu_sva_free_pasid(struct mm_struct *mm);
++struct mm_struct *iommu_sva_find(ioasid_t pasid);
++
++#endif /* _IOMMU_SVA_LIB_H */
+diff --git a/drivers/iommu/iommu-sva-lib.c b/drivers/iommu/iommu-sva-lib.c
+new file mode 100644
+index 0000000000000..db7e6c104d6b0
+--- /dev/null
++++ b/drivers/iommu/iommu-sva-lib.c
+@@ -0,0 +1,85 @@
++// SPDX-License-Identifier: GPL-2.0
++/*
++ * Helpers for IOMMU drivers implementing SVA
++ */
++#include <linux/mutex.h>
++#include <linux/sched/mm.h>
++
++#include "iommu-sva-lib.h"
++
++static DEFINE_MUTEX(iommu_sva_lock);
++static DECLARE_IOASID_SET(iommu_sva_pasid);
 +
 +/**
-+ * ioasid_put - Release a reference to an ioasid
-  * @ioasid: the ID to remove
++ * iommu_sva_alloc_pasid - Allocate a PASID for the mm
++ * @mm: the mm
++ * @min: minimum PASID value (inclusive)
++ * @max: maximum PASID value (inclusive)
 + *
-+ * Put a reference to the IOASID, free it when the number of references drops to
-+ * zero.
++ * Try to allocate a PASID for this mm, or take a reference to the existing one
++ * provided it fits within the [min, max] range. On success the PASID is
++ * available in mm->pasid, and must be released with iommu_sva_free_pasid().
 + *
-+ * Return: %true if the IOASID was freed, %false otherwise.
-  */
--void ioasid_free(ioasid_t ioasid)
-+bool ioasid_put(ioasid_t ioasid)
- {
-+	bool free = false;
- 	struct ioasid_data *ioasid_data;
- 
- 	spin_lock(&ioasid_allocator_lock);
-@@ -360,6 +385,10 @@ void ioasid_free(ioasid_t ioasid)
- 		goto exit_unlock;
- 	}
- 
-+	free = refcount_dec_and_test(&ioasid_data->refs);
-+	if (!free)
-+		goto exit_unlock;
++ * Returns 0 on success and < 0 on error.
++ */
++int iommu_sva_alloc_pasid(struct mm_struct *mm, ioasid_t min, ioasid_t max)
++{
++	int ret = 0;
++	ioasid_t pasid;
 +
- 	active_allocator->ops->free(ioasid, active_allocator->ops->pdata);
- 	/* Custom allocator needs additional steps to free the xa element */
- 	if (active_allocator->flags & IOASID_ALLOCATOR_CUSTOM) {
-@@ -369,8 +398,9 @@ void ioasid_free(ioasid_t ioasid)
- 
- exit_unlock:
- 	spin_unlock(&ioasid_allocator_lock);
-+	return free;
- }
--EXPORT_SYMBOL_GPL(ioasid_free);
-+EXPORT_SYMBOL_GPL(ioasid_put);
- 
- /**
-  * ioasid_find - Find IOASID data
++	if (min == INVALID_IOASID || max == INVALID_IOASID ||
++	    min == 0 || max < min)
++		return -EINVAL;
++
++	mutex_lock(&iommu_sva_lock);
++	if (mm->pasid) {
++		if (mm->pasid >= min && mm->pasid <= max)
++			ioasid_get(mm->pasid);
++		else
++			ret = -EOVERFLOW;
++	} else {
++		pasid = ioasid_alloc(&iommu_sva_pasid, min, max, mm);
++		if (pasid == INVALID_IOASID)
++			ret = -ENOMEM;
++		else
++			mm->pasid = pasid;
++	}
++	mutex_unlock(&iommu_sva_lock);
++	return ret;
++}
++EXPORT_SYMBOL_GPL(iommu_sva_alloc_pasid);
++
++/**
++ * iommu_sva_free_pasid - Release the mm's PASID
++ * @mm: the mm.
++ *
++ * Drop one reference to a PASID allocated with iommu_sva_alloc_pasid()
++ */
++void iommu_sva_free_pasid(struct mm_struct *mm)
++{
++	mutex_lock(&iommu_sva_lock);
++	if (ioasid_put(mm->pasid))
++		mm->pasid = 0;
++	mutex_unlock(&iommu_sva_lock);
++}
++EXPORT_SYMBOL_GPL(iommu_sva_free_pasid);
++
++/* ioasid wants a void * argument */
++static bool __mmget_not_zero(void *mm)
++{
++	return mmget_not_zero(mm);
++}
++
++/**
++ * iommu_sva_find() - Find mm associated to the given PASID
++ * @pasid: Process Address Space ID assigned to the mm
++ *
++ * On success a reference to the mm is taken, and must be released with mmput().
++ *
++ * Returns the mm corresponding to this PASID, or an error if not found.
++ */
++struct mm_struct *iommu_sva_find(ioasid_t pasid)
++{
++	return ioasid_find(&iommu_sva_pasid, pasid, __mmget_not_zero);
++}
++EXPORT_SYMBOL_GPL(iommu_sva_find);
 -- 
 2.27.0
 
