@@ -2,85 +2,81 @@ Return-Path: <SRS0=cSHS=77=lists.linux-foundation.org=iommu-bounces@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-0.5 required=3.0 tests=DKIM_INVALID,DKIM_SIGNED,
-	HEADER_FROM_DIFFERENT_DOMAINS,MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS,
-	URIBL_BLOCKED autolearn=no autolearn_force=no version=3.4.0
+X-Spam-Status: No, score=-3.7 required=3.0 tests=HEADER_FROM_DIFFERENT_DOMAINS,
+	MAILING_LIST_MULTI,SIGNED_OFF_BY,SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED
+	autolearn=no autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 9781CC433E0
-	for <iommu@archiver.kernel.org>; Thu, 18 Jun 2020 07:12:29 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id B1559C433E0
+	for <iommu@archiver.kernel.org>; Thu, 18 Jun 2020 07:39:29 +0000 (UTC)
 Received: from hemlock.osuosl.org (smtp2.osuosl.org [140.211.166.133])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by mail.kernel.org (Postfix) with ESMTPS id 33AD521532
-	for <iommu@archiver.kernel.org>; Thu, 18 Jun 2020 07:12:29 +0000 (UTC)
-Authentication-Results: mail.kernel.org;
-	dkim=fail reason="signature verification failed" (2048-bit key) header.d=infradead.org header.i=@infradead.org header.b="bdT4Jipg"
-DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 33AD521532
-Authentication-Results: mail.kernel.org; dmarc=none (p=none dis=none) header.from=infradead.org
+	by mail.kernel.org (Postfix) with ESMTPS id 65E67206D7
+	for <iommu@archiver.kernel.org>; Thu, 18 Jun 2020 07:39:29 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 65E67206D7
+Authentication-Results: mail.kernel.org; dmarc=none (p=none dis=none) header.from=linux-m68k.org
 Authentication-Results: mail.kernel.org; spf=pass smtp.mailfrom=iommu-bounces@lists.linux-foundation.org
 Received: from localhost (localhost [127.0.0.1])
-	by hemlock.osuosl.org (Postfix) with ESMTP id E5B9688543;
-	Thu, 18 Jun 2020 07:12:28 +0000 (UTC)
+	by hemlock.osuosl.org (Postfix) with ESMTP id 315B588583;
+	Thu, 18 Jun 2020 07:39:29 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
 Received: from hemlock.osuosl.org ([127.0.0.1])
 	by localhost (.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
-	with ESMTP id ik3352fVVKka; Thu, 18 Jun 2020 07:12:28 +0000 (UTC)
+	with ESMTP id 4AkWpcnqBWsa; Thu, 18 Jun 2020 07:39:27 +0000 (UTC)
 Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [140.211.9.56])
-	by hemlock.osuosl.org (Postfix) with ESMTP id 4CAA0884E1;
-	Thu, 18 Jun 2020 07:12:28 +0000 (UTC)
+	by hemlock.osuosl.org (Postfix) with ESMTP id 83B7B8857C;
+	Thu, 18 Jun 2020 07:39:27 +0000 (UTC)
 Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
-	by lists.linuxfoundation.org (Postfix) with ESMTP id 3B552C0863;
-	Thu, 18 Jun 2020 07:12:28 +0000 (UTC)
-Received: from fraxinus.osuosl.org (smtp4.osuosl.org [140.211.166.137])
- by lists.linuxfoundation.org (Postfix) with ESMTP id DF4E6C016E
- for <iommu@lists.linux-foundation.org>; Thu, 18 Jun 2020 07:12:21 +0000 (UTC)
+	by lists.linuxfoundation.org (Postfix) with ESMTP id 61E02C07FF;
+	Thu, 18 Jun 2020 07:39:27 +0000 (UTC)
+Received: from silver.osuosl.org (smtp3.osuosl.org [140.211.166.136])
+ by lists.linuxfoundation.org (Postfix) with ESMTP id 865BFC016E
+ for <iommu@lists.linux-foundation.org>; Thu, 18 Jun 2020 07:39:25 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
- by fraxinus.osuosl.org (Postfix) with ESMTP id C6B968536C
- for <iommu@lists.linux-foundation.org>; Thu, 18 Jun 2020 07:12:21 +0000 (UTC)
+ by silver.osuosl.org (Postfix) with ESMTP id 6D2C520113
+ for <iommu@lists.linux-foundation.org>; Thu, 18 Jun 2020 07:39:25 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from fraxinus.osuosl.org ([127.0.0.1])
+Received: from silver.osuosl.org ([127.0.0.1])
  by localhost (.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
- with ESMTP id ZseM0hhGko91 for <iommu@lists.linux-foundation.org>;
- Thu, 18 Jun 2020 07:12:20 +0000 (UTC)
-X-Greylist: from auto-whitelisted by SQLgrey-1.7.6
-Received: from bombadil.infradead.org (bombadil.infradead.org
- [198.137.202.133])
- by fraxinus.osuosl.org (Postfix) with ESMTPS id 905758392B
- for <iommu@lists.linux-foundation.org>; Thu, 18 Jun 2020 07:12:20 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
- d=infradead.org; s=bombadil.20170209; h=In-Reply-To:Content-Type:MIME-Version
- :References:Message-ID:Subject:Cc:To:From:Date:Sender:Reply-To:
- Content-Transfer-Encoding:Content-ID:Content-Description;
- bh=fOQMFX0QqLMTbV6VegdwBRvYgy6RQf+xn1lfJSvvlA8=; b=bdT4JipgnI08pFeV28vEL5pwh3
- aeUMEBhHWrawbflbmfy53u1UsZZp/tQz3aCqNUdBdqJhyKXdXHx98w4s3PnETcR6ExGhJFakiGhFP
- P2Lw9ScRH9Fo+fIgPjKjS1IqE3P7F7WRRKDmEKHloIs56H2A3DrhHndw9u2JmYSIitqzCDxe+vfJa
- HQFNxoqz2X1bfWSuTTmyqqtRMLIV8fE0LFBLXunJupzuBaTFsblnfVzW4OpVkxelkjVX6/KSIg7FZ
- ME37a1Be3X8DZuWlFzvKVrY8WQgJecfbq5KKG4ey53hcKpjNDyXBE5jkXxeeXm9xPzFp5DRl9FpwP
- 5wqIuoSg==;
-Received: from hch by bombadil.infradead.org with local (Exim 4.92.3 #3 (Red
- Hat Linux)) id 1jloiU-0002mN-Nu; Thu, 18 Jun 2020 07:12:06 +0000
-Date: Thu, 18 Jun 2020 00:12:06 -0700
-From: Christoph Hellwig <hch@infradead.org>
-To: Fenghua Yu <fenghua.yu@intel.com>
-Subject: Re: [PATCH v3 01/13] iommu: Change type of pasid to unsigned int
-Message-ID: <20200618071206.GA7294@infradead.org>
-References: <1592418233-17762-1-git-send-email-fenghua.yu@intel.com>
- <1592418233-17762-2-git-send-email-fenghua.yu@intel.com>
+ with ESMTP id n-F5GleFwDRS for <iommu@lists.linux-foundation.org>;
+ Thu, 18 Jun 2020 07:39:24 +0000 (UTC)
+X-Greylist: domain auto-whitelisted by SQLgrey-1.7.6
+Received: from mail-oi1-f195.google.com (mail-oi1-f195.google.com
+ [209.85.167.195])
+ by silver.osuosl.org (Postfix) with ESMTPS id 42D4F20011
+ for <iommu@lists.linux-foundation.org>; Thu, 18 Jun 2020 07:39:24 +0000 (UTC)
+Received: by mail-oi1-f195.google.com with SMTP id i74so4259660oib.0
+ for <iommu@lists.linux-foundation.org>; Thu, 18 Jun 2020 00:39:24 -0700 (PDT)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+ d=1e100.net; s=20161025;
+ h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+ :message-id:subject:to:cc;
+ bh=JPQ/PH3aH+rlKhf78bS3JYd7KhJYAAclpBwrav1LP0c=;
+ b=Nw34fW/Btxb6WFWBAQv5axzFGXqodFoAybJqrs4Do+POCRY20Hjmp03+Hd64tFTnVs
+ YRUDZFit6Cg4PqLXLDnVsMM03lbGYkgb2rj/pi1RFNLqkLqBBmFe6kdXj/ZmrUPpd/TJ
+ Oy54l5cEEXs9uW86dc9wHRhXaZ9IlXx+7zKCEl3VdeJxH1sYx7owjyrSU2XA64RP8rNf
+ 03/77RcJ/cH7lMN2K6ZQr3imgi0Js9w66XDhQIGMOgGIAraFjqt4i2h9rJQOIlCguxvo
+ jidT4FdAC/YgZ0FLysvaxrA24qWdG5eyFDHYcGSgngjRYnKK/zUT5Ckni6a39l74x3A6
+ g25Q==
+X-Gm-Message-State: AOAM533uweBP8fr1oRvgYZDfX6lTyywRPo7sayILwZxz49jQ3izwEgcP
+ EXZiuvoFvlljGOUVwjsJIakDo1rrEAAYyGTnfSs=
+X-Google-Smtp-Source: ABdhPJy4yUnPGoDLOCCQPH7S491o6IyHC9WENjbj4u6y5OalCmoE+8y/bCOTmagHYhARE+BM4ZATmE0eAZ6ulNI3An4=
+X-Received: by 2002:aca:849:: with SMTP id 70mr1816387oii.153.1592465963424;
+ Thu, 18 Jun 2020 00:39:23 -0700 (PDT)
 MIME-Version: 1.0
-Content-Disposition: inline
-In-Reply-To: <1592418233-17762-2-git-send-email-fenghua.yu@intel.com>
-X-SRS-Rewrite: SMTP reverse-path rewritten from <hch@infradead.org> by
- bombadil.infradead.org. See http://www.infradead.org/rpr.html
-Cc: Jean-Philippe Brucker <jean-philippe@linaro.org>,
- Tony Luck <tony.luck@intel.com>, Dave Jiang <dave.jiang@intel.com>,
- Ashok Raj <ashok.raj@intel.com>, Ravi V Shankar <ravi.v.shankar@intel.com>,
- Peter Zijlstra <peterz@infradead.org>, x86 <x86@kernel.org>,
- linux-kernel <linux-kernel@vger.kernel.org>,
- Dave Hansen <dave.hansen@intel.com>, iommu@lists.linux-foundation.org,
- Ingo Molnar <mingo@redhat.com>, Borislav Petkov <bp@alien8.de>,
- Jacob Jun Pan <jacob.jun.pan@intel.com>, H Peter Anvin <hpa@zytor.com>,
- Christoph Hellwig <hch@infradeed.org>, Thomas Gleixner <tglx@linutronix.de>,
- David Woodhouse <dwmw2@infradead.org>
+References: <1591873830-10128-1-git-send-email-yoshihiro.shimoda.uh@renesas.com>
+ <1591873830-10128-2-git-send-email-yoshihiro.shimoda.uh@renesas.com>
+In-Reply-To: <1591873830-10128-2-git-send-email-yoshihiro.shimoda.uh@renesas.com>
+From: Geert Uytterhoeven <geert@linux-m68k.org>
+Date: Thu, 18 Jun 2020 09:39:12 +0200
+Message-ID: <CAMuHMdUnwgYhVo0jjRcHrmnOFi3Dokdu6cL26=mQ7DudS5+QZw@mail.gmail.com>
+Subject: Re: [PATCH 1/2] dt-bindings: iommu: renesas,
+ ipmmu-vmsa: add r8a77961 support
+To: Yoshihiro Shimoda <yoshihiro.shimoda.uh@renesas.com>
+Cc: Linux-Renesas <linux-renesas-soc@vger.kernel.org>,
+ "open list:OPEN FIRMWARE AND FLATTENED DEVICE TREE BINDINGS"
+ <devicetree@vger.kernel.org>, Rob Herring <robh+dt@kernel.org>,
+ Linux IOMMU <iommu@lists.linux-foundation.org>
 X-BeenThere: iommu@lists.linux-foundation.org
 X-Mailman-Version: 2.1.15
 Precedence: list
@@ -98,13 +94,24 @@ Content-Transfer-Encoding: 7bit
 Errors-To: iommu-bounces@lists.linux-foundation.org
 Sender: "iommu" <iommu-bounces@lists.linux-foundation.org>
 
-On Wed, Jun 17, 2020 at 11:23:41AM -0700, Fenghua Yu wrote:
-> PASID is defined as a few different types in iommu including "int",
-> "u32", and "unsigned int". To be consistent and to match with ioasid's
-> type, define PASID and its variations (e.g. max PASID) as "unsigned int".
+On Thu, Jun 11, 2020 at 1:11 PM Yoshihiro Shimoda
+<yoshihiro.shimoda.uh@renesas.com> wrote:
+> Add support for r8a77961 (R-Car M3-W+).
+>
+> Signed-off-by: Yoshihiro Shimoda <yoshihiro.shimoda.uh@renesas.com>
 
-Wouldn't u32 be a little more explicit (besides being shorter and
-matching the uapi definitions)?
+Reviewed-by: Geert Uytterhoeven <geert+renesas@glider.be>
+
+Gr{oetje,eeting}s,
+
+                        Geert
+
+-- 
+Geert Uytterhoeven -- There's lots of Linux beyond ia32 -- geert@linux-m68k.org
+
+In personal conversations with technical people, I call myself a hacker. But
+when I'm talking to journalists I just say "programmer" or something like that.
+                                -- Linus Torvalds
 _______________________________________________
 iommu mailing list
 iommu@lists.linux-foundation.org
