@@ -6,83 +6,84 @@ X-Spam-Status: No, score=-7.2 required=3.0 tests=HEADER_FROM_DIFFERENT_DOMAINS,
 	MAILING_LIST_MULTI,MENTIONS_GIT_HOSTING,SPF_HELO_NONE,SPF_PASS,
 	USER_AGENT_SANE_1 autolearn=unavailable autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 77627C433DF
-	for <iommu@archiver.kernel.org>; Thu, 18 Jun 2020 22:28:21 +0000 (UTC)
-Received: from silver.osuosl.org (smtp3.osuosl.org [140.211.166.136])
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 2B5F2C433DF
+	for <iommu@archiver.kernel.org>; Thu, 18 Jun 2020 23:39:39 +0000 (UTC)
+Received: from hemlock.osuosl.org (smtp2.osuosl.org [140.211.166.133])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by mail.kernel.org (Postfix) with ESMTPS id 3F59020885
-	for <iommu@archiver.kernel.org>; Thu, 18 Jun 2020 22:28:19 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 3F59020885
+	by mail.kernel.org (Postfix) with ESMTPS id B6A7E206FA
+	for <iommu@archiver.kernel.org>; Thu, 18 Jun 2020 23:39:37 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org B6A7E206FA
 Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=intel.com
 Authentication-Results: mail.kernel.org; spf=pass smtp.mailfrom=iommu-bounces@lists.linux-foundation.org
 Received: from localhost (localhost [127.0.0.1])
-	by silver.osuosl.org (Postfix) with ESMTP id A677C23120;
-	Thu, 18 Jun 2020 22:28:19 +0000 (UTC)
+	by hemlock.osuosl.org (Postfix) with ESMTP id ABC2F896E6;
+	Thu, 18 Jun 2020 23:39:37 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from silver.osuosl.org ([127.0.0.1])
+Received: from hemlock.osuosl.org ([127.0.0.1])
 	by localhost (.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
-	with ESMTP id r8gwNQTuIhX2; Thu, 18 Jun 2020 22:28:17 +0000 (UTC)
+	with ESMTP id RiyVfbTv0oUN; Thu, 18 Jun 2020 23:39:36 +0000 (UTC)
 Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [140.211.9.56])
-	by silver.osuosl.org (Postfix) with ESMTP id 8022F20770;
-	Thu, 18 Jun 2020 22:28:17 +0000 (UTC)
+	by hemlock.osuosl.org (Postfix) with ESMTP id 77BF0896C9;
+	Thu, 18 Jun 2020 23:39:36 +0000 (UTC)
 Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
-	by lists.linuxfoundation.org (Postfix) with ESMTP id 59129C07FF;
-	Thu, 18 Jun 2020 22:28:17 +0000 (UTC)
-Received: from silver.osuosl.org (smtp3.osuosl.org [140.211.166.136])
- by lists.linuxfoundation.org (Postfix) with ESMTP id C9E15C016E
- for <iommu@lists.linux-foundation.org>; Thu, 18 Jun 2020 22:28:15 +0000 (UTC)
+	by lists.linuxfoundation.org (Postfix) with ESMTP id 6C01FC088C;
+	Thu, 18 Jun 2020 23:39:36 +0000 (UTC)
+Received: from hemlock.osuosl.org (smtp2.osuosl.org [140.211.166.133])
+ by lists.linuxfoundation.org (Postfix) with ESMTP id 2A080C016E
+ for <iommu@lists.linux-foundation.org>; Thu, 18 Jun 2020 23:39:35 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
- by silver.osuosl.org (Postfix) with ESMTP id 9A2B92079D
- for <iommu@lists.linux-foundation.org>; Thu, 18 Jun 2020 22:28:15 +0000 (UTC)
+ by hemlock.osuosl.org (Postfix) with ESMTP id 1A9FD896CE
+ for <iommu@lists.linux-foundation.org>; Thu, 18 Jun 2020 23:39:35 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from silver.osuosl.org ([127.0.0.1])
+Received: from hemlock.osuosl.org ([127.0.0.1])
  by localhost (.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
- with ESMTP id 2Lplbthj1UmG for <iommu@lists.linux-foundation.org>;
- Thu, 18 Jun 2020 22:28:13 +0000 (UTC)
+ with ESMTP id zzSHu3Yqx3hE for <iommu@lists.linux-foundation.org>;
+ Thu, 18 Jun 2020 23:39:33 +0000 (UTC)
 X-Greylist: domain auto-whitelisted by SQLgrey-1.7.6
-Received: from mga12.intel.com (mga12.intel.com [192.55.52.136])
- by silver.osuosl.org (Postfix) with ESMTPS id 366AE20770
- for <iommu@lists.linux-foundation.org>; Thu, 18 Jun 2020 22:28:13 +0000 (UTC)
-IronPort-SDR: eL+C1El9LD9qSWHk4rghsadFAVCBD3AHGsCFCTLPFB2UhMTuFs25EImzczOgahwzzhPoZccMhO
- nDXl+cMrREdg==
-X-IronPort-AV: E=McAfee;i="6000,8403,9656"; a="122498000"
+Received: from mga05.intel.com (mga05.intel.com [192.55.52.43])
+ by hemlock.osuosl.org (Postfix) with ESMTPS id A215F896C9
+ for <iommu@lists.linux-foundation.org>; Thu, 18 Jun 2020 23:39:33 +0000 (UTC)
+IronPort-SDR: Nbw9Hsasx6p4VuZbrGoJFT0Np1bXJ1KvCK77p4Hr+wvBZ4YqaSwe5/e2TuQgjl5N5p310PBJh3
+ bkFOO/E61s1A==
+X-IronPort-AV: E=McAfee;i="6000,8403,9656"; a="227478759"
 X-IronPort-AV: E=Sophos;i="5.75,253,1589266800"; 
- d="gz'50?scan'50,208,50";a="122498000"
+ d="gz'50?scan'50,208,50";a="227478759"
 X-Amp-Result: UNKNOWN
 X-Amp-Original-Verdict: FILE UNKNOWN
 X-Amp-File-Uploaded: False
-Received: from fmsmga004.fm.intel.com ([10.253.24.48])
- by fmsmga106.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384;
- 18 Jun 2020 15:28:12 -0700
-IronPort-SDR: ZJMoOdBPu3FkAtoWu3iO0wYXZaz+lVvyfxLONugrEvgviqs4SkB4/1Td4qZzXELW+3n1MC28GD
- pDPN80MWdIUQ==
+Received: from fmsmga005.fm.intel.com ([10.253.24.32])
+ by fmsmga105.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384;
+ 18 Jun 2020 16:39:32 -0700
+IronPort-SDR: YuW/hixVAWAgYYR5XGx4iZzXWWgWF1LfgTbimY33hPfBHK5ab+i5VISGbBJGlrR0h+UA43OJFT
+ /yJTCkaEYsYQ==
 X-ExtLoop1: 1
 X-IronPort-AV: E=Sophos;i="5.75,253,1589266800"; 
- d="gz'50?scan'50,208,50";a="299851184"
+ d="gz'50?scan'50,208,50";a="477427625"
 Received: from lkp-server02.sh.intel.com (HELO 5ce11009e457) ([10.239.97.151])
- by fmsmga004.fm.intel.com with ESMTP; 18 Jun 2020 15:28:08 -0700
+ by fmsmga005.fm.intel.com with ESMTP; 18 Jun 2020 16:39:28 -0700
 Received: from kbuild by 5ce11009e457 with local (Exim 4.92)
  (envelope-from <lkp@intel.com>)
- id 1jm30x-0000Rb-JY; Thu, 18 Jun 2020 22:28:07 +0000
-Date: Fri, 19 Jun 2020 06:28:01 +0800
+ id 1jm47z-0000SN-Ht; Thu, 18 Jun 2020 23:39:27 +0000
+Date: Fri, 19 Jun 2020 07:39:19 +0800
 From: kernel test robot <lkp@intel.com>
 To: Marek Szyprowski <m.szyprowski@samsung.com>,
  dri-devel@lists.freedesktop.org, iommu@lists.linux-foundation.org,
  linaro-mm-sig@lists.linaro.org, linux-kernel@vger.kernel.org
-Subject: Re: [PATCH v6 21/36] drm: v3d: fix common struct sg_table related
+Subject: Re: [PATCH v6 32/36] rapidio: fix common struct sg_table related
  issues
-Message-ID: <202006190616.hTg6ZD7D%lkp@intel.com>
-References: <20200618153956.29558-22-m.szyprowski@samsung.com>
+Message-ID: <202006190751.ig6njyK8%lkp@intel.com>
+References: <20200618153956.29558-33-m.szyprowski@samsung.com>
 MIME-Version: 1.0
-Content-Type: multipart/mixed; boundary="8t9RHnE3ZwKMSgU+"
+Content-Type: multipart/mixed; boundary="7AUc2qLy4jB3hD7Z"
 Content-Disposition: inline
-In-Reply-To: <20200618153956.29558-22-m.szyprowski@samsung.com>
+In-Reply-To: <20200618153956.29558-33-m.szyprowski@samsung.com>
 User-Agent: Mutt/1.10.1 (2018-07-13)
 Cc: kbuild-all@lists.01.org,
  Bartlomiej Zolnierkiewicz <b.zolnierkie@samsung.com>,
- David Airlie <airlied@linux.ie>, Robin Murphy <robin.murphy@arm.com>,
- Christoph Hellwig <hch@lst.de>, linux-arm-kernel@lists.infradead.org
+ David Airlie <airlied@linux.ie>, Alexandre Bounine <alex.bou9@gmail.com>,
+ Matt Porter <mporter@kernel.crashing.org>, Robin Murphy <robin.murphy@arm.com>,
+ Christoph Hellwig <hch@lst.de>
 X-BeenThere: iommu@lists.linux-foundation.org
 X-Mailman-Version: 2.1.15
 Precedence: list
@@ -99,16 +100,16 @@ Errors-To: iommu-bounces@lists.linux-foundation.org
 Sender: "iommu" <iommu-bounces@lists.linux-foundation.org>
 
 
---8t9RHnE3ZwKMSgU+
+--7AUc2qLy4jB3hD7Z
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
 
 Hi Marek,
 
-I love your patch! Perhaps something to improve:
+I love your patch! Yet something to improve:
 
-[auto build test WARNING on next-20200618]
-[also build test WARNING on v5.8-rc1]
+[auto build test ERROR on next-20200618]
+[also build test ERROR on v5.8-rc1]
 [cannot apply to linuxtv-media/master staging/staging-testing drm-exynos/exynos-drm-next drm-intel/for-linux-next linus/master v5.8-rc1 v5.7 v5.7-rc7]
 [If your patch is applied to the wrong git tree, kindly drop us a note.
 And when submitting patch, we suggest to use  as documented in
@@ -127,70 +128,177 @@ reproduce (this is a W=1 build):
 If you fix the issue, kindly add following tag as appropriate
 Reported-by: kernel test robot <lkp@intel.com>
 
-All warnings (new ones prefixed by >>, old ones prefixed by <<):
+All errors (new ones prefixed by >>):
 
-In file included from include/linux/kernel.h:11,
-from include/linux/delay.h:22,
-from drivers/gpu/drm/v3d/v3d_drv.h:4,
-from drivers/gpu/drm/v3d/v3d_mmu.c:21:
-drivers/gpu/drm/v3d/v3d_mmu.c: In function 'v3d_mmu_insert_ptes':
-include/linux/compiler.h:339:38: error: call to '__compiletime_assert_254' declared with attribute error: BUILD_BUG_ON failed: V3D_MMU_PAGE_SHIFT != PAGE_SIZE
-339 |  _compiletime_assert(condition, msg, __compiletime_assert_, __COUNTER__)
-|                                      ^
-include/linux/compiler.h:320:4: note: in definition of macro '__compiletime_assert'
-320 |    prefix ## suffix();             |    ^~~~~~
-include/linux/compiler.h:339:2: note: in expansion of macro '_compiletime_assert'
-339 |  _compiletime_assert(condition, msg, __compiletime_assert_, __COUNTER__)
-|  ^~~~~~~~~~~~~~~~~~~
-include/linux/build_bug.h:39:37: note: in expansion of macro 'compiletime_assert'
-39 | #define BUILD_BUG_ON_MSG(cond, msg) compiletime_assert(!(cond), msg)
-|                                     ^~~~~~~~~~~~~~~~~~
-include/linux/build_bug.h:50:2: note: in expansion of macro 'BUILD_BUG_ON_MSG'
-50 |  BUILD_BUG_ON_MSG(condition, "BUILD_BUG_ON failed: " #condition)
-|  ^~~~~~~~~~~~~~~~
->> drivers/gpu/drm/v3d/v3d_mmu.c:100:3: note: in expansion of macro 'BUILD_BUG_ON'
-100 |   BUILD_BUG_ON(V3D_MMU_PAGE_SHIFT != PAGE_SIZE);
-|   ^~~~~~~~~~~~
+   In file included from include/linux/dma-mapping.h:11,
+                    from drivers/gpu/drm/amd/amdgpu/amdgpu_vram_mgr.c:25:
+   drivers/gpu/drm/amd/amdgpu/amdgpu_vram_mgr.c: In function 'amdgpu_vram_mgr_alloc_sgt':
+>> include/linux/scatterlist.h:158:17: error: '*sgt' is a pointer; did you mean to use '->'?
+     158 |  for_each_sg(sgt->sgl, sg, sgt->orig_nents, i)
+         |                 ^~
+   include/linux/scatterlist.h:152:22: note: in definition of macro 'for_each_sg'
+     152 |  for (__i = 0, sg = (sglist); __i < (nr); __i++, sg = sg_next(sg))
+         |                      ^~~~~~
+   drivers/gpu/drm/amd/amdgpu/amdgpu_vram_mgr.c:480:2: note: in expansion of macro 'for_each_sgtable_sg'
+     480 |  for_each_sgtable_sg(*sgt, sg, i)
+         |  ^~~~~~~~~~~~~~~~~~~
+   include/linux/scatterlist.h:158:31: error: '*sgt' is a pointer; did you mean to use '->'?
+     158 |  for_each_sg(sgt->sgl, sg, sgt->orig_nents, i)
+         |                               ^~
+   include/linux/scatterlist.h:152:38: note: in definition of macro 'for_each_sg'
+     152 |  for (__i = 0, sg = (sglist); __i < (nr); __i++, sg = sg_next(sg))
+         |                                      ^~
+   drivers/gpu/drm/amd/amdgpu/amdgpu_vram_mgr.c:480:2: note: in expansion of macro 'for_each_sgtable_sg'
+     480 |  for_each_sgtable_sg(*sgt, sg, i)
+         |  ^~~~~~~~~~~~~~~~~~~
+>> include/linux/scatterlist.h:158:17: error: '*sgt' is a pointer; did you mean to use '->'?
+     158 |  for_each_sg(sgt->sgl, sg, sgt->orig_nents, i)
+         |                 ^~
+   include/linux/scatterlist.h:152:22: note: in definition of macro 'for_each_sg'
+     152 |  for (__i = 0, sg = (sglist); __i < (nr); __i++, sg = sg_next(sg))
+         |                      ^~~~~~
+   drivers/gpu/drm/amd/amdgpu/amdgpu_vram_mgr.c:484:2: note: in expansion of macro 'for_each_sgtable_sg'
+     484 |  for_each_sgtable_sg(*sgt, sg, i) {
+         |  ^~~~~~~~~~~~~~~~~~~
+   include/linux/scatterlist.h:158:31: error: '*sgt' is a pointer; did you mean to use '->'?
+     158 |  for_each_sg(sgt->sgl, sg, sgt->orig_nents, i)
+         |                               ^~
+   include/linux/scatterlist.h:152:38: note: in definition of macro 'for_each_sg'
+     152 |  for (__i = 0, sg = (sglist); __i < (nr); __i++, sg = sg_next(sg))
+         |                                      ^~
+   drivers/gpu/drm/amd/amdgpu/amdgpu_vram_mgr.c:484:2: note: in expansion of macro 'for_each_sgtable_sg'
+     484 |  for_each_sgtable_sg(*sgt, sg, i) {
+         |  ^~~~~~~~~~~~~~~~~~~
+>> include/linux/scatterlist.h:158:17: error: '*sgt' is a pointer; did you mean to use '->'?
+     158 |  for_each_sg(sgt->sgl, sg, sgt->orig_nents, i)
+         |                 ^~
+   include/linux/scatterlist.h:152:22: note: in definition of macro 'for_each_sg'
+     152 |  for (__i = 0, sg = (sglist); __i < (nr); __i++, sg = sg_next(sg))
+         |                      ^~~~~~
+   drivers/gpu/drm/amd/amdgpu/amdgpu_vram_mgr.c:504:2: note: in expansion of macro 'for_each_sgtable_sg'
+     504 |  for_each_sgtable_sg(*sgt, sg, i) {
+         |  ^~~~~~~~~~~~~~~~~~~
+   include/linux/scatterlist.h:158:31: error: '*sgt' is a pointer; did you mean to use '->'?
+     158 |  for_each_sg(sgt->sgl, sg, sgt->orig_nents, i)
+         |                               ^~
+   include/linux/scatterlist.h:152:38: note: in definition of macro 'for_each_sg'
+     152 |  for (__i = 0, sg = (sglist); __i < (nr); __i++, sg = sg_next(sg))
+         |                                      ^~
+   drivers/gpu/drm/amd/amdgpu/amdgpu_vram_mgr.c:504:2: note: in expansion of macro 'for_each_sgtable_sg'
+     504 |  for_each_sgtable_sg(*sgt, sg, i) {
+         |  ^~~~~~~~~~~~~~~~~~~
+   In file included from drivers/gpu/drm/amd/amdgpu/amdgpu_vram_mgr.c:26:
+   At top level:
+   drivers/gpu/drm/amd/amdgpu/amdgpu.h:190:18: warning: 'sched_policy' defined but not used [-Wunused-const-variable=]
+     190 | static const int sched_policy = KFD_SCHED_POLICY_HWS;
+         |                  ^~~~~~~~~~~~
+   In file included from drivers/gpu/drm/amd/amdgpu/../display/dc/dc_types.h:33,
+                    from drivers/gpu/drm/amd/amdgpu/../display/dc/dm_services_types.h:30,
+                    from drivers/gpu/drm/amd/amdgpu/../include/dm_pp_interface.h:26,
+                    from drivers/gpu/drm/amd/amdgpu/amdgpu.h:65,
+                    from drivers/gpu/drm/amd/amdgpu/amdgpu_vram_mgr.c:26:
+   drivers/gpu/drm/amd/amdgpu/../display/include/fixed31_32.h:76:32: warning: 'dc_fixpt_ln2_div_2' defined but not used [-Wunused-const-variable=]
+      76 | static const struct fixed31_32 dc_fixpt_ln2_div_2 = { 1488522236LL };
+         |                                ^~~~~~~~~~~~~~~~~~
+   drivers/gpu/drm/amd/amdgpu/../display/include/fixed31_32.h:75:32: warning: 'dc_fixpt_ln2' defined but not used [-Wunused-const-variable=]
+      75 | static const struct fixed31_32 dc_fixpt_ln2 = { 2977044471LL };
+         |                                ^~~~~~~~~~~~
+   drivers/gpu/drm/amd/amdgpu/../display/include/fixed31_32.h:74:32: warning: 'dc_fixpt_e' defined but not used [-Wunused-const-variable=]
+      74 | static const struct fixed31_32 dc_fixpt_e = { 11674931555LL };
+         |                                ^~~~~~~~~~
+   drivers/gpu/drm/amd/amdgpu/../display/include/fixed31_32.h:73:32: warning: 'dc_fixpt_two_pi' defined but not used [-Wunused-const-variable=]
+      73 | static const struct fixed31_32 dc_fixpt_two_pi = { 26986075409LL };
+         |                                ^~~~~~~~~~~~~~~
+   drivers/gpu/drm/amd/amdgpu/../display/include/fixed31_32.h:72:32: warning: 'dc_fixpt_pi' defined but not used [-Wunused-const-variable=]
+      72 | static const struct fixed31_32 dc_fixpt_pi = { 13493037705LL };
+         |                                ^~~~~~~~~~~
+   drivers/gpu/drm/amd/amdgpu/../display/include/fixed31_32.h:67:32: warning: 'dc_fixpt_zero' defined but not used [-Wunused-const-variable=]
+      67 | static const struct fixed31_32 dc_fixpt_zero = { 0 };
+         |                                ^~~~~~~~~~~~~
+--
+   In file included from include/linux/kernel.h:11,
+                    from include/linux/delay.h:22,
+                    from drivers/gpu/drm/v3d/v3d_drv.h:4,
+                    from drivers/gpu/drm/v3d/v3d_mmu.c:21:
+   drivers/gpu/drm/v3d/v3d_mmu.c: In function 'v3d_mmu_insert_ptes':
+>> include/linux/compiler.h:339:38: error: call to '__compiletime_assert_254' declared with attribute error: BUILD_BUG_ON failed: V3D_MMU_PAGE_SHIFT != PAGE_SIZE
+     339 |  _compiletime_assert(condition, msg, __compiletime_assert_, __COUNTER__)
+         |                                      ^
+   include/linux/compiler.h:320:4: note: in definition of macro '__compiletime_assert'
+     320 |    prefix ## suffix();    \
+         |    ^~~~~~
+   include/linux/compiler.h:339:2: note: in expansion of macro '_compiletime_assert'
+     339 |  _compiletime_assert(condition, msg, __compiletime_assert_, __COUNTER__)
+         |  ^~~~~~~~~~~~~~~~~~~
+   include/linux/build_bug.h:39:37: note: in expansion of macro 'compiletime_assert'
+      39 | #define BUILD_BUG_ON_MSG(cond, msg) compiletime_assert(!(cond), msg)
+         |                                     ^~~~~~~~~~~~~~~~~~
+   include/linux/build_bug.h:50:2: note: in expansion of macro 'BUILD_BUG_ON_MSG'
+      50 |  BUILD_BUG_ON_MSG(condition, "BUILD_BUG_ON failed: " #condition)
+         |  ^~~~~~~~~~~~~~~~
+   drivers/gpu/drm/v3d/v3d_mmu.c:100:3: note: in expansion of macro 'BUILD_BUG_ON'
+     100 |   BUILD_BUG_ON(V3D_MMU_PAGE_SHIFT != PAGE_SIZE);
+         |   ^~~~~~~~~~~~
+--
+   drivers/rapidio/devices/rio_mport_cdev.c: In function 'dma_req_free':
+>> drivers/rapidio/devices/rio_mport_cdev.c:576:48: error: incompatible type for argument 2 of 'dma_unmap_sgtable'
+     576 |  dma_unmap_sgtable(req->dmach->device->dev, req->sgt, req->dir, 0);
+         |                                             ~~~^~~~~
+         |                                                |
+         |                                                struct sg_table
+   In file included from drivers/rapidio/devices/rio_mport_cdev.c:32:
+   include/linux/dma-mapping.h:651:75: note: expected 'struct sg_table *' but argument is of type 'struct sg_table'
+     651 | static inline void dma_unmap_sgtable(struct device *dev, struct sg_table *sgt,
+         |                                                          ~~~~~~~~~~~~~~~~~^~~
+   drivers/rapidio/devices/rio_mport_cdev.c: In function 'rio_dma_transfer':
+>> drivers/rapidio/devices/rio_mport_cdev.c:932:46: error: incompatible type for argument 2 of 'dma_map_sgtable'
+     932 |  ret = dma_map_sgtable(chan->device->dev, req->sgt, dir, 0);
+         |                                           ~~~^~~~~
+         |                                              |
+         |                                              struct sg_table
+   In file included from drivers/rapidio/devices/rio_mport_cdev.c:32:
+   include/linux/dma-mapping.h:628:72: note: expected 'struct sg_table *' but argument is of type 'struct sg_table'
+     628 | static inline int dma_map_sgtable(struct device *dev, struct sg_table *sgt,
+         |                                                       ~~~~~~~~~~~~~~~~~^~~
 
-vim +/BUILD_BUG_ON +100 drivers/gpu/drm/v3d/v3d_mmu.c
+vim +/dma_unmap_sgtable +576 drivers/rapidio/devices/rio_mport_cdev.c
 
-    86	
-    87	void v3d_mmu_insert_ptes(struct v3d_bo *bo)
-    88	{
-    89		struct drm_gem_shmem_object *shmem_obj = &bo->base;
-    90		struct v3d_dev *v3d = to_v3d_dev(shmem_obj->base.dev);
-    91		u32 page = bo->node.start;
-    92		u32 page_prot = V3D_PTE_WRITEABLE | V3D_PTE_VALID;
-    93		struct sg_dma_page_iter dma_iter;
-    94	
-    95		for_each_sgtable_dma_page(shmem_obj->sgt, &dma_iter, 0) {
-    96			dma_addr_t dma_addr = sg_page_iter_dma_address(&dma_iter);
-    97			u32 page_address = dma_addr >> V3D_MMU_PAGE_SHIFT;
-    98			u32 pte = page_prot | page_address;
-    99	
- > 100			BUILD_BUG_ON(V3D_MMU_PAGE_SHIFT != PAGE_SIZE);
-   101			BUG_ON(page_address + 1 >= BIT(24));
-   102			v3d->pt[page++] = pte;
-   103		}
-   104	
-   105		WARN_ON_ONCE(page - bo->node.start !=
-   106			     shmem_obj->base.size >> V3D_MMU_PAGE_SHIFT);
-   107	
-   108		if (v3d_mmu_flush_all(v3d))
-   109			dev_err(v3d->drm.dev, "MMU flush timeout\n");
-   110	}
-   111	
+   569	
+   570	static void dma_req_free(struct kref *ref)
+   571	{
+   572		struct mport_dma_req *req = container_of(ref, struct mport_dma_req,
+   573				refcount);
+   574		struct mport_cdev_priv *priv = req->priv;
+   575	
+ > 576		dma_unmap_sgtable(req->dmach->device->dev, req->sgt, req->dir, 0);
+   577		sg_free_table(&req->sgt);
+   578		if (req->page_list) {
+   579			unpin_user_pages(req->page_list, req->nr_pages);
+   580			kfree(req->page_list);
+   581		}
+   582	
+   583		if (req->map) {
+   584			mutex_lock(&req->map->md->buf_mutex);
+   585			kref_put(&req->map->ref, mport_release_mapping);
+   586			mutex_unlock(&req->map->md->buf_mutex);
+   587		}
+   588	
+   589		kref_put(&priv->dma_ref, mport_release_dma);
+   590	
+   591		kfree(req);
+   592	}
+   593	
 
 ---
 0-DAY CI Kernel Test Service, Intel Corporation
 https://lists.01.org/hyperkitty/list/kbuild-all@lists.01.org
 
---8t9RHnE3ZwKMSgU+
+--7AUc2qLy4jB3hD7Z
 Content-Type: application/gzip
 Content-Disposition: attachment; filename=".config.gz"
 Content-Transfer-Encoding: base64
 
-H4sICHzk614AAy5jb25maWcAlFxJc9w4sr73r6iQLzOH9mhzPfd7oQNIglXoIgkaAGvRhVGW
+H4sICLXw614AAy5jb25maWcAlFxJc9w4sr73r6iQLzOH9mhzPfd7oQNIglXoIgkaAGvRhVGW
 y7aiZUkhlWbG8+tfJrhhI8vTlzbzS2yJRG5A6d1v72bk7fj0Y3+8v9s/PPycfTs8Hl72x8OX
 2df7h8P/zRI+K7ia0YSp98Cc3T++/fsf+4fn7/vZh/cf35///nJ3MVsdXh4PD7P46fHr/bc3
 aH7/9Pjbu99iXqRsUcdxvaZCMl7Uim7VzZlu/vsDdvX7t7u72d8Wcfz32R/vr96fnxmNmKwB
@@ -1398,7 +1506,7 @@ c6AtIoxcF1XaXaJJ176Tk50mnB3b36oksxeoKoHcVWqDaS3Of5rhYt7smwti/okXSRYICJ/H
 eNDwsnfFYVubMSpqkTNfw4SjAEhl7Ohi4DwKau59qVJmXObj25DMX6O/NZwk/w9BZLJT/y8E
 AA==
 
---8t9RHnE3ZwKMSgU+
+--7AUc2qLy4jB3hD7Z
 Content-Type: text/plain; charset="us-ascii"
 MIME-Version: 1.0
 Content-Transfer-Encoding: 7bit
@@ -1408,4 +1516,4 @@ _______________________________________________
 iommu mailing list
 iommu@lists.linux-foundation.org
 https://lists.linuxfoundation.org/mailman/listinfo/iommu
---8t9RHnE3ZwKMSgU+--
+--7AUc2qLy4jB3hD7Z--
