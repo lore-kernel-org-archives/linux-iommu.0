@@ -2,80 +2,77 @@ Return-Path: <SRS0=cSHS=77=lists.linux-foundation.org=iommu-bounces@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-9.8 required=3.0 tests=DKIM_INVALID,DKIM_SIGNED,
+X-Spam-Status: No, score=-8.2 required=3.0 tests=HEADER_FROM_DIFFERENT_DOMAINS,
 	INCLUDES_PATCH,MAILING_LIST_MULTI,SIGNED_OFF_BY,SPF_HELO_NONE,SPF_PASS,
-	URIBL_BLOCKED,USER_AGENT_GIT autolearn=ham autolearn_force=no version=3.4.0
+	URIBL_BLOCKED,USER_AGENT_SANE_1 autolearn=ham autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 318B6C433E1
-	for <iommu@archiver.kernel.org>; Thu, 18 Jun 2020 01:13:07 +0000 (UTC)
-Received: from silver.osuosl.org (smtp3.osuosl.org [140.211.166.136])
+	by smtp.lore.kernel.org (Postfix) with ESMTP id F3858C433E0
+	for <iommu@archiver.kernel.org>; Thu, 18 Jun 2020 01:57:05 +0000 (UTC)
+Received: from fraxinus.osuosl.org (smtp4.osuosl.org [140.211.166.137])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by mail.kernel.org (Postfix) with ESMTPS id C50EC20EDD
-	for <iommu@archiver.kernel.org>; Thu, 18 Jun 2020 01:13:06 +0000 (UTC)
-Authentication-Results: mail.kernel.org;
-	dkim=fail reason="signature verification failed" (1024-bit key) header.d=kernel.org header.i=@kernel.org header.b="iomfH5F2"
-DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org C50EC20EDD
-Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=kernel.org
+	by mail.kernel.org (Postfix) with ESMTPS id C7DB821924
+	for <iommu@archiver.kernel.org>; Thu, 18 Jun 2020 01:57:04 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org C7DB821924
+Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=linux.intel.com
 Authentication-Results: mail.kernel.org; spf=pass smtp.mailfrom=iommu-bounces@lists.linux-foundation.org
 Received: from localhost (localhost [127.0.0.1])
-	by silver.osuosl.org (Postfix) with ESMTP id A09EE20421;
-	Thu, 18 Jun 2020 01:13:06 +0000 (UTC)
+	by fraxinus.osuosl.org (Postfix) with ESMTP id 87B348741F;
+	Thu, 18 Jun 2020 01:57:04 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from silver.osuosl.org ([127.0.0.1])
+Received: from fraxinus.osuosl.org ([127.0.0.1])
 	by localhost (.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
-	with ESMTP id rkQeHa9hcjYA; Thu, 18 Jun 2020 01:13:05 +0000 (UTC)
+	with ESMTP id u7IZ0hG7BmL1; Thu, 18 Jun 2020 01:57:03 +0000 (UTC)
 Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [140.211.9.56])
-	by silver.osuosl.org (Postfix) with ESMTP id 5E3C5203BE;
-	Thu, 18 Jun 2020 01:13:05 +0000 (UTC)
+	by fraxinus.osuosl.org (Postfix) with ESMTP id CCBE7873E7;
+	Thu, 18 Jun 2020 01:57:03 +0000 (UTC)
 Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
-	by lists.linuxfoundation.org (Postfix) with ESMTP id 538E0C07FF;
-	Thu, 18 Jun 2020 01:13:05 +0000 (UTC)
-Received: from silver.osuosl.org (smtp3.osuosl.org [140.211.166.136])
- by lists.linuxfoundation.org (Postfix) with ESMTP id 3BD7DC016E
- for <iommu@lists.linux-foundation.org>; Thu, 18 Jun 2020 01:13:04 +0000 (UTC)
+	by lists.linuxfoundation.org (Postfix) with ESMTP id B8B76C07FF;
+	Thu, 18 Jun 2020 01:57:03 +0000 (UTC)
+Received: from hemlock.osuosl.org (smtp2.osuosl.org [140.211.166.133])
+ by lists.linuxfoundation.org (Postfix) with ESMTP id 5EA2EC016E
+ for <iommu@lists.linux-foundation.org>; Thu, 18 Jun 2020 01:57:02 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
- by silver.osuosl.org (Postfix) with ESMTP id 1C90A203E1
- for <iommu@lists.linux-foundation.org>; Thu, 18 Jun 2020 01:13:04 +0000 (UTC)
+ by hemlock.osuosl.org (Postfix) with ESMTP id 46C9C883B8
+ for <iommu@lists.linux-foundation.org>; Thu, 18 Jun 2020 01:57:02 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from silver.osuosl.org ([127.0.0.1])
+Received: from hemlock.osuosl.org ([127.0.0.1])
  by localhost (.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
- with ESMTP id jV0Xe+j2dLWe for <iommu@lists.linux-foundation.org>;
- Thu, 18 Jun 2020 01:13:03 +0000 (UTC)
+ with ESMTP id C1AdGPrqSgAL for <iommu@lists.linux-foundation.org>;
+ Thu, 18 Jun 2020 01:57:01 +0000 (UTC)
 X-Greylist: domain auto-whitelisted by SQLgrey-1.7.6
-Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
- by silver.osuosl.org (Postfix) with ESMTPS id 384FF203BE
- for <iommu@lists.linux-foundation.org>; Thu, 18 Jun 2020 01:13:03 +0000 (UTC)
-Received: from sasha-vm.mshome.net (c-73-47-72-35.hsd1.nh.comcast.net
- [73.47.72.35])
- (using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
- (No client certificate requested)
- by mail.kernel.org (Postfix) with ESMTPSA id 4E4E5214DB;
- Thu, 18 Jun 2020 01:13:01 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
- s=default; t=1592442782;
- bh=ogNUmHb4ecHAb3xp0gFwbZJRDxgJbUk5Zy0HwUo3QbM=;
- h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
- b=iomfH5F2e1MPXSIL4LniY2fzXvlFgV9CjbLYokI+7d0Zle+cUGZMnlbRSgZLYctW5
- gUnNj+Nl1CHvljDckwDNQdZ/1jvYj9C2bTb8UcPmShXG87SGa6TMicPyCUIFXxROYD
- 7G9juesyDK2VyOvhvdphGbM6yOod/jUQQa6CTdT8=
-From: Sasha Levin <sashal@kernel.org>
-To: linux-kernel@vger.kernel.org,
-	stable@vger.kernel.org
-Subject: [PATCH AUTOSEL 5.7 227/388] iommu/arm-smmu-v3: Don't reserve
- implementation defined register space
-Date: Wed, 17 Jun 2020 21:05:24 -0400
-Message-Id: <20200618010805.600873-227-sashal@kernel.org>
-X-Mailer: git-send-email 2.25.1
-In-Reply-To: <20200618010805.600873-1-sashal@kernel.org>
-References: <20200618010805.600873-1-sashal@kernel.org>
+Received: from mga18.intel.com (mga18.intel.com [134.134.136.126])
+ by hemlock.osuosl.org (Postfix) with ESMTPS id 4F47C88390
+ for <iommu@lists.linux-foundation.org>; Thu, 18 Jun 2020 01:57:01 +0000 (UTC)
+IronPort-SDR: /R1tVHzzWg2EDb0+ik79jPi3sKUXxkvkAklMR4czClYseSlKeLjQ0cO3J6pSf4LBzkUH3t1JR9
+ GNW8Ry19MVcw==
+X-Amp-Result: SKIPPED(no attachment in message)
+X-Amp-File-Uploaded: False
+Received: from fmsmga004.fm.intel.com ([10.253.24.48])
+ by orsmga106.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384;
+ 17 Jun 2020 18:57:00 -0700
+IronPort-SDR: dOpFRBMkm9tZhetjrah4RZrdbrBrTQ1DENH+RqmmXVZMNECe8uXb9mIAE2qN+jizYMbeNJ/pzy
+ eF0FnERsZUXw==
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="5.73,524,1583222400"; d="scan'208";a="299500534"
+Received: from allen-box.sh.intel.com (HELO [10.239.159.139])
+ ([10.239.159.139])
+ by fmsmga004.fm.intel.com with ESMTP; 17 Jun 2020 18:56:58 -0700
+Subject: Re: [Regression] Re: [PATCH 18/18] iommu/vt-d: Remove IOVA handling
+ code from the non-dma_ops path
+To: Alex Williamson <alex.williamson@redhat.com>
+References: <20200516062101.29541-1-baolu.lu@linux.intel.com>
+ <20200516062101.29541-19-baolu.lu@linux.intel.com>
+ <20200617140639.7ed58926@x1.home>
+From: Lu Baolu <baolu.lu@linux.intel.com>
+Message-ID: <4548c140-c0db-8e17-d3a7-7dfc5f5ca576@linux.intel.com>
+Date: Thu, 18 Jun 2020 09:52:56 +0800
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101
+ Thunderbird/68.8.0
 MIME-Version: 1.0
-X-stable: review
-X-Patchwork-Hint: Ignore
-Cc: Sasha Levin <sashal@kernel.org>,
- Jean-Philippe Brucker <jean-philippe@linaro.org>,
- Will Deacon <will@kernel.org>, iommu@lists.linux-foundation.org,
- Robin Murphy <robin.murphy@arm.com>, linux-arm-kernel@lists.infradead.org
+In-Reply-To: <20200617140639.7ed58926@x1.home>
+Content-Language: en-US
+Cc: iommu@lists.linux-foundation.org, Tom Murphy <murphyt7@tcd.ie>
 X-BeenThere: iommu@lists.linux-foundation.org
 X-Mailman-Version: 2.1.15
 Precedence: list
@@ -88,115 +85,83 @@ List-Post: <mailto:iommu@lists.linux-foundation.org>
 List-Help: <mailto:iommu-request@lists.linux-foundation.org?subject=help>
 List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
  <mailto:iommu-request@lists.linux-foundation.org?subject=subscribe>
-Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset="us-ascii"; Format="flowed"
 Errors-To: iommu-bounces@lists.linux-foundation.org
 Sender: "iommu" <iommu-bounces@lists.linux-foundation.org>
 
-From: Jean-Philippe Brucker <jean-philippe@linaro.org>
+Hi Alex,
 
-[ Upstream commit 52f3fab0067d6fa9e99c1b7f63265dd48ca76046 ]
+Thanks for the report.
 
-Some SMMUv3 implementation embed the Perf Monitor Group Registers (PMCG)
-inside the first 64kB region of the SMMU. Since PMCG are managed by a
-separate driver, this layout causes resource reservation conflicts
-during boot.
+On 6/18/20 4:06 AM, Alex Williamson wrote:
+> On Sat, 16 May 2020 14:21:01 +0800
+> Lu Baolu<baolu.lu@linux.intel.com>  wrote:
+> 
+>> From: Tom Murphy<murphyt7@tcd.ie>
+>>
+>> There's no need for the non-dma_ops path to keep track of IOVAs. The
+>> whole point of the non-dma_ops path is that it allows the IOVAs to be
+>> handled separately. The IOVA handling code removed in this patch is
+>> pointless.
+>>
+>> Signed-off-by: Tom Murphy<murphyt7@tcd.ie>
+>> Signed-off-by: Lu Baolu<baolu.lu@linux.intel.com>
+>> ---
+>>   drivers/iommu/intel-iommu.c | 95 +++++++++++++------------------------
+>>   1 file changed, 32 insertions(+), 63 deletions(-)
+> This commit results in a massive increase in memory use from the VT-d
+> code.  I have a 16GB system where I reserve 7168 2MB hugespages for VM
+> usage (14GB), leaving the host with 2GB.  I can no longer even boot the
+> host in this configuration.  Bisecting to this commit, I find that
+> reverting this change shows the following memory usage difference
+> immediately after boot (no hugepages, nosmp, single user,
+> intel_iommu=on iommu=pt):
+> 
+> @e70b081c6f37:
+>               total        used        free      shared  buff/cache   available
+> Mem:       16090860     2219372    13673044        1040      198444    13602664
+> Swap:       2097148           0     2097148
+> 
+> reverting e70b081c6f37:
+>                total        used        free      shared  buff/cache   available
+> Mem:       16090852      101648    15789156        1040      200048    15719572
+> Swap:       2097148           0     2097148
+> 
+> More than 2GB of additional memory used!  There's also a notable stall
+> during bootup for this allocation:
+> 
+> [    9.703360] DMAR: No ATSR found
+> [    9.709768] DMAR: dmar0: Using Queued invalidation
+> [    9.719370] DMAR: dmar1: Using Queued invalidation
+> 
+> ### 4+ seconds! ###
+> 
+> [   14.076387] pci 0000:00:00.0: Adding to iommu group 0
+> [   14.086515] pci 0000:00:01.0: Adding to iommu group 1
+> [   14.096635] pci 0000:00:02.0: Adding to iommu group 2
 
-To avoid this conflict, don't reserve the MMIO regions that are
-implementation defined. Although devm_ioremap_resource() still works on
-full pages under the hood, this way we benefit from resource conflict
-checks.
+Can you please try below changes?
 
-Fixes: 7d839b4b9e00 ("perf/smmuv3: Add arm64 smmuv3 pmu driver")
-Signed-off-by: Jean-Philippe Brucker <jean-philippe@linaro.org>
-Reviewed-by: Robin Murphy <robin.murphy@arm.com>
-Link: https://lore.kernel.org/r/20200513110255.597203-1-jean-philippe@linaro.org
-Signed-off-by: Will Deacon <will@kernel.org>
-Signed-off-by: Sasha Levin <sashal@kernel.org>
----
- drivers/iommu/arm-smmu-v3.c | 35 +++++++++++++++++++++++++++++++----
- 1 file changed, 31 insertions(+), 4 deletions(-)
+diff --git a/drivers/iommu/intel/iommu.c b/drivers/iommu/intel/iommu.c
+index 887f184b900d..7eb29167e8f9 100644
+--- a/drivers/iommu/intel/iommu.c
++++ b/drivers/iommu/intel/iommu.c
+@@ -2705,7 +2705,9 @@ static int __init si_domain_init(int hw)
+                                     end >> agaw_to_width(si_domain->agaw)))
+                                 continue;
 
-diff --git a/drivers/iommu/arm-smmu-v3.c b/drivers/iommu/arm-smmu-v3.c
-index 82508730feb7..af21d24a09e8 100644
---- a/drivers/iommu/arm-smmu-v3.c
-+++ b/drivers/iommu/arm-smmu-v3.c
-@@ -171,6 +171,8 @@
- #define ARM_SMMU_PRIQ_IRQ_CFG1		0xd8
- #define ARM_SMMU_PRIQ_IRQ_CFG2		0xdc
- 
-+#define ARM_SMMU_REG_SZ			0xe00
-+
- /* Common MSI config fields */
- #define MSI_CFG0_ADDR_MASK		GENMASK_ULL(51, 2)
- #define MSI_CFG2_SH			GENMASK(5, 4)
-@@ -628,6 +630,7 @@ struct arm_smmu_strtab_cfg {
- struct arm_smmu_device {
- 	struct device			*dev;
- 	void __iomem			*base;
-+	void __iomem			*page1;
- 
- #define ARM_SMMU_FEAT_2_LVL_STRTAB	(1 << 0)
- #define ARM_SMMU_FEAT_2_LVL_CDTAB	(1 << 1)
-@@ -733,9 +736,8 @@ static struct arm_smmu_option_prop arm_smmu_options[] = {
- static inline void __iomem *arm_smmu_page1_fixup(unsigned long offset,
- 						 struct arm_smmu_device *smmu)
- {
--	if ((offset > SZ_64K) &&
--	    (smmu->options & ARM_SMMU_OPT_PAGE0_REGS_ONLY))
--		offset -= SZ_64K;
-+	if (offset > SZ_64K)
-+		return smmu->page1 + offset - SZ_64K;
- 
- 	return smmu->base + offset;
- }
-@@ -4021,6 +4023,18 @@ err_reset_pci_ops: __maybe_unused;
- 	return err;
- }
- 
-+static void __iomem *arm_smmu_ioremap(struct device *dev, resource_size_t start,
-+				      resource_size_t size)
-+{
-+	struct resource res = {
-+		.flags = IORESOURCE_MEM,
-+		.start = start,
-+		.end = start + size - 1,
-+	};
-+
-+	return devm_ioremap_resource(dev, &res);
-+}
-+
- static int arm_smmu_device_probe(struct platform_device *pdev)
- {
- 	int irq, ret;
-@@ -4056,10 +4070,23 @@ static int arm_smmu_device_probe(struct platform_device *pdev)
- 	}
- 	ioaddr = res->start;
- 
--	smmu->base = devm_ioremap_resource(dev, res);
-+	/*
-+	 * Don't map the IMPLEMENTATION DEFINED regions, since they may contain
-+	 * the PMCG registers which are reserved by the PMU driver.
-+	 */
-+	smmu->base = arm_smmu_ioremap(dev, ioaddr, ARM_SMMU_REG_SZ);
- 	if (IS_ERR(smmu->base))
- 		return PTR_ERR(smmu->base);
- 
-+	if (arm_smmu_resource_size(smmu) > SZ_64K) {
-+		smmu->page1 = arm_smmu_ioremap(dev, ioaddr + SZ_64K,
-+					       ARM_SMMU_REG_SZ);
-+		if (IS_ERR(smmu->page1))
-+			return PTR_ERR(smmu->page1);
-+	} else {
-+		smmu->page1 = smmu->base;
-+	}
-+
- 	/* Interrupt lines */
- 
- 	irq = platform_get_irq_byname_optional(pdev, "combined");
--- 
-2.25.1
+-                       ret = iommu_domain_identity_map(si_domain, 
+start, end);
++                       ret = iommu_domain_identity_map(si_domain,
++                                       mm_to_dma_pfn(start >> PAGE_SHIFT),
++                                       mm_to_dma_pfn(end >> PAGE_SHIFT));
+                         if (ret)
+                                 return ret;
+                 }
 
+Best regards,
+baolu
 _______________________________________________
 iommu mailing list
 iommu@lists.linux-foundation.org
