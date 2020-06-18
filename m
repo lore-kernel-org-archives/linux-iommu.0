@@ -2,118 +2,140 @@ Return-Path: <SRS0=cSHS=77=lists.linux-foundation.org=iommu-bounces@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-0.3 required=3.0 tests=DKIM_ADSP_CUSTOM_MED,
-	DKIM_INVALID,DKIM_SIGNED,FREEMAIL_FORGED_FROMDOMAIN,FREEMAIL_FROM,
-	HEADER_FROM_DIFFERENT_DOMAINS,MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS,
-	URIBL_BLOCKED autolearn=no autolearn_force=no version=3.4.0
+X-Spam-Status: No, score=-9.5 required=3.0 tests=DKIM_INVALID,DKIM_SIGNED,
+	HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_PATCH,MAILING_LIST_MULTI,SIGNED_OFF_BY,
+	SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED,USER_AGENT_GIT autolearn=ham
+	autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 1B3ADC433E1
-	for <iommu@archiver.kernel.org>; Thu, 18 Jun 2020 15:39:43 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id A3E31C433E1
+	for <iommu@archiver.kernel.org>; Thu, 18 Jun 2020 15:40:21 +0000 (UTC)
 Received: from hemlock.osuosl.org (smtp2.osuosl.org [140.211.166.133])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by mail.kernel.org (Postfix) with ESMTPS id CE58420890
-	for <iommu@archiver.kernel.org>; Thu, 18 Jun 2020 15:39:42 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTPS id 78D94206FA
+	for <iommu@archiver.kernel.org>; Thu, 18 Jun 2020 15:40:21 +0000 (UTC)
 Authentication-Results: mail.kernel.org;
-	dkim=fail reason="signature verification failed" (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="nOpCbbD6"
-DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org CE58420890
-Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=gmail.com
+	dkim=fail reason="signature verification failed" (1024-bit key) header.d=samsung.com header.i=@samsung.com header.b="HJvgMEe+"
+DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 78D94206FA
+Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=samsung.com
 Authentication-Results: mail.kernel.org; spf=pass smtp.mailfrom=iommu-bounces@lists.linux-foundation.org
 Received: from localhost (localhost [127.0.0.1])
-	by hemlock.osuosl.org (Postfix) with ESMTP id 787B389438;
-	Thu, 18 Jun 2020 15:39:42 +0000 (UTC)
+	by hemlock.osuosl.org (Postfix) with ESMTP id 636338946D;
+	Thu, 18 Jun 2020 15:40:21 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
 Received: from hemlock.osuosl.org ([127.0.0.1])
 	by localhost (.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
-	with ESMTP id HBebUoHWFCGN; Thu, 18 Jun 2020 15:39:42 +0000 (UTC)
+	with ESMTP id BrKpgCEGN9eS; Thu, 18 Jun 2020 15:40:20 +0000 (UTC)
 Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [140.211.9.56])
-	by hemlock.osuosl.org (Postfix) with ESMTP id F386F892A2;
-	Thu, 18 Jun 2020 15:39:41 +0000 (UTC)
+	by hemlock.osuosl.org (Postfix) with ESMTP id 40572891C8;
+	Thu, 18 Jun 2020 15:40:20 +0000 (UTC)
 Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
-	by lists.linuxfoundation.org (Postfix) with ESMTP id D3782C088C;
-	Thu, 18 Jun 2020 15:39:41 +0000 (UTC)
-Received: from silver.osuosl.org (smtp3.osuosl.org [140.211.166.136])
- by lists.linuxfoundation.org (Postfix) with ESMTP id B2992C016E
- for <iommu@lists.linux-foundation.org>; Thu, 18 Jun 2020 15:39:39 +0000 (UTC)
+	by lists.linuxfoundation.org (Postfix) with ESMTP id 29E6AC089E;
+	Thu, 18 Jun 2020 15:40:20 +0000 (UTC)
+Received: from whitealder.osuosl.org (smtp1.osuosl.org [140.211.166.138])
+ by lists.linuxfoundation.org (Postfix) with ESMTP id 97F15C016E
+ for <iommu@lists.linux-foundation.org>; Thu, 18 Jun 2020 15:40:19 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
- by silver.osuosl.org (Postfix) with ESMTP id 7D6D120502
- for <iommu@lists.linux-foundation.org>; Thu, 18 Jun 2020 15:39:39 +0000 (UTC)
+ by whitealder.osuosl.org (Postfix) with ESMTP id 9390188893
+ for <iommu@lists.linux-foundation.org>; Thu, 18 Jun 2020 15:40:19 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from silver.osuosl.org ([127.0.0.1])
+Received: from whitealder.osuosl.org ([127.0.0.1])
  by localhost (.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
- with ESMTP id mXpYLrqlr8eO for <iommu@lists.linux-foundation.org>;
- Thu, 18 Jun 2020 15:39:38 +0000 (UTC)
-X-Greylist: domain auto-whitelisted by SQLgrey-1.7.6
-Received: from mail-pj1-f67.google.com (mail-pj1-f67.google.com
- [209.85.216.67])
- by silver.osuosl.org (Postfix) with ESMTPS id 9F0AB204C1
- for <iommu@lists.linux-foundation.org>; Thu, 18 Jun 2020 15:39:38 +0000 (UTC)
-Received: by mail-pj1-f67.google.com with SMTP id jz3so2716345pjb.0
- for <iommu@lists.linux-foundation.org>; Thu, 18 Jun 2020 08:39:38 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=gmail.com; s=20161025;
- h=mime-version:references:in-reply-to:from:date:message-id:subject:to
- :cc; bh=GZJ6zrh+Y1Vsbn8ruHOrvITbkoXuvzfrfxu58pe7Zzk=;
- b=nOpCbbD6xUCyUz1YyRFpYFHK9LWD7cjvIZxDiH+RHDIqnZOql6/HyXntIMdZRBmh6W
- qpWKCdPmcmhXmDldMKpyNVRtvcF65untSTh7b5p1WI9usEorDqyqWi+2CMlzv8bzHvnL
- dqwHRgzMvBKGZNXW3AWDlFOGQE2zB0mmd0nG8fJ7sq2Mbb/5W1+6ARarXpTXZ/T5Z7Fh
- NNczurvr+OGHWixUQ43EDkmzuyUQu7NgUxXcjGQunTlZxsMEkwffmiWHpAJiBmVQMQ+O
- PL8u/pNkmfjNg6/x1GGhte/FJXNgJRRoFUgl+zVauVs2zGcOpfx5XpLN7dEWqdjkSM8K
- B3SQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
- d=1e100.net; s=20161025;
- h=x-gm-message-state:mime-version:references:in-reply-to:from:date
- :message-id:subject:to:cc;
- bh=GZJ6zrh+Y1Vsbn8ruHOrvITbkoXuvzfrfxu58pe7Zzk=;
- b=XVEqUQ1CQB7Ndhwt2odlr4wXZLLDSqAWMhNd1dxzThVas2DWK9o9Ad9pMPRGq5FYUf
- JEAGpSXMN5VaoA6JxMZ/oB2N1ptBdLbtGjDIIApDEG2NvPPoxjx/Y4lj5M10YPOaNAkX
- RAIOuflpfkd2zTm5FcVwFzVD89OlhgJhMKTF8mHpg4rLpYt+2KRv/hsNTdivARICGDnq
- zbMth3ui3vXAXlhIvmxH75NU8dwct1aXVgWIVClP3tzng2SPKAHNkuY4XBKoUDbHJs45
- slsN5jaqS/U1LfkP54BiTb/ULABfiFR8OCJw6sXAAwQTrIJuCbWeKVs9Jyq18ypAv+li
- 45/g==
-X-Gm-Message-State: AOAM533iFPQL6AKJruVR56QW9zSjCxOaemOv41VJ+5w4hbfo8QOmeHS7
- auRXM3+9QvjVaX4GSJKS9xaHw85zfrVnuzMg1do=
-X-Google-Smtp-Source: ABdhPJxoaHYDZlEj8QJ3QkP/ek5K5pisD5wHKUkE1aXeH10OjnRC6dr0cGbGHcW/Er3YFyoGris7X1yJzT3Uyu0wy+o=
-X-Received: by 2002:a17:90a:ac05:: with SMTP id
- o5mr5004682pjq.228.1592494778159; 
- Thu, 18 Jun 2020 08:39:38 -0700 (PDT)
-MIME-Version: 1.0
-References: <20200616011742.138975-1-rajatja@google.com>
- <20200616011742.138975-4-rajatja@google.com>
- <20200616073249.GB30385@infradead.org>
- <CACK8Z6ELaM8KxbwPor=BUquWN7pALQmmHu5geSOc71P3KoJ1QA@mail.gmail.com>
- <20200617073100.GA14424@infradead.org>
- <CACK8Z6FecYkAYQh4sm4RbAQ1iwb9gexqgY9ExD9BH2p-5Usj=g@mail.gmail.com>
- <CAHp75Vc6eA33cyAQH-m+yixTuHqiobg6fo7nzbbb-J6vN6qFcA@mail.gmail.com>
- <20200618083646.GA1066967@kroah.com>
- <CAHp75Vf71f2s6yipHJ4Ys1oe1v7L4PiqBCEbo0uBcG7Wpcs5dQ@mail.gmail.com>
- <CACK8Z6F2Ssj=EqhR2DZ114ETgQ-3PhzVi2rm2xxenCNOVH=60g@mail.gmail.com>
-In-Reply-To: <CACK8Z6F2Ssj=EqhR2DZ114ETgQ-3PhzVi2rm2xxenCNOVH=60g@mail.gmail.com>
-From: Andy Shevchenko <andy.shevchenko@gmail.com>
-Date: Thu, 18 Jun 2020 18:39:25 +0300
-Message-ID: <CAHp75Vf_gheXBZh-Mm7ME_eVWc5gPcwY98oCH1-QD920mK7gZw@mail.gmail.com>
-Subject: Re: [PATCH 4/4] pci: export untrusted attribute in sysfs
-To: Rajat Jain <rajatja@google.com>
-Cc: Todd Broch <tbroch@google.com>, linux-pci <linux-pci@vger.kernel.org>,
- "Krishnakumar, Lalithambika" <lalithambika.krishnakumar@intel.com>,
- Diego Rivas <diegorivas@google.com>,
- Jean-Philippe Brucker <jean-philippe@linaro.org>,
- Furquan Shaikh <furquan@google.com>, Raj Ashok <ashok.raj@intel.com>,
- Christoph Hellwig <hch@infradead.org>,
- ACPI Devel Maling List <linux-acpi@vger.kernel.org>,
- Christian Kellner <christian@kellner.me>,
- Mattias Nissler <mnissler@google.com>, Jesse Barnes <jsbarnes@google.com>,
- Len Brown <lenb@kernel.org>, Rajat Jain <rajatxjain@gmail.com>,
- Prashant Malani <pmalani@google.com>, Aaron Durbin <adurbin@google.com>,
- Alex Williamson <alex.williamson@redhat.com>,
- Bjorn Helgaas <bhelgaas@google.com>,
- Mika Westerberg <mika.westerberg@linux.intel.com>,
- Bernie Keany <bernie.keany@intel.com>, Duncan Laurie <dlaurie@google.com>,
- Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
- "Rafael J. Wysocki" <rjw@rjwysocki.net>,
- Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
- iommu@lists.linux-foundation.org, Oliver O'Halloran <oohall@gmail.com>,
- Benson Leung <bleung@google.com>, David Woodhouse <dwmw2@infradead.org>,
- Alex Levin <levinale@google.com>
+ with ESMTP id C0PbUyUrTu7e for <iommu@lists.linux-foundation.org>;
+ Thu, 18 Jun 2020 15:40:18 +0000 (UTC)
+X-Greylist: from auto-whitelisted by SQLgrey-1.7.6
+Received: from mailout2.w1.samsung.com (mailout2.w1.samsung.com
+ [210.118.77.12])
+ by whitealder.osuosl.org (Postfix) with ESMTPS id DE78488882
+ for <iommu@lists.linux-foundation.org>; Thu, 18 Jun 2020 15:40:17 +0000 (UTC)
+Received: from eucas1p1.samsung.com (unknown [182.198.249.206])
+ by mailout2.w1.samsung.com (KnoxPortal) with ESMTP id
+ 20200618154016euoutp02fb52a94a5a951ce195e9b82b7ef9d560~ZrZkT--2c1314813148euoutp02u
+ for <iommu@lists.linux-foundation.org>; Thu, 18 Jun 2020 15:40:16 +0000 (GMT)
+DKIM-Filter: OpenDKIM Filter v2.11.0 mailout2.w1.samsung.com
+ 20200618154016euoutp02fb52a94a5a951ce195e9b82b7ef9d560~ZrZkT--2c1314813148euoutp02u
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=samsung.com;
+ s=mail20170921; t=1592494816;
+ bh=KtcJ7mUCfO5coq+hG5Q2lEPwFhhsRvjofjL64dIr2yg=;
+ h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
+ b=HJvgMEe++9OJvfsrFv3W8YHyUI+jUl2+VZRebnad+k+g/lL7meUVjXewvjx4kaRtd
+ iugSwhZ415Na0Q3UCD/AEEjt5V+vLAk4fR1x5xZPvFXfwmG2Zwmv2hoeqAxXLO4m52
+ Zom0ZMko7Lg+8S54c29UeG2i7tl2xE8HrbJ4Pmcg=
+Received: from eusmges2new.samsung.com (unknown [203.254.199.244]) by
+ eucas1p2.samsung.com (KnoxPortal) with ESMTP id
+ 20200618154015eucas1p2086f7bc0fc19e4b43be669a34c4aec8e~ZrZjyd5Jv2945829458eucas1p2h;
+ Thu, 18 Jun 2020 15:40:15 +0000 (GMT)
+Received: from eucas1p2.samsung.com ( [182.198.249.207]) by
+ eusmges2new.samsung.com (EUCPMTA) with SMTP id 3B.CE.60679.FDA8BEE5; Thu, 18
+ Jun 2020 16:40:15 +0100 (BST)
+Received: from eusmtrp2.samsung.com (unknown [182.198.249.139]) by
+ eucas1p2.samsung.com (KnoxPortal) with ESMTPA id
+ 20200618154015eucas1p24598496fde5e7ae9039095f3cd6677b1~ZrZjgd-gf2924929249eucas1p2-;
+ Thu, 18 Jun 2020 15:40:15 +0000 (GMT)
+Received: from eusmgms1.samsung.com (unknown [182.198.249.179]) by
+ eusmtrp2.samsung.com (KnoxPortal) with ESMTP id
+ 20200618154015eusmtrp2bed1856be0855e9d4de0e8f555bc97c1~ZrZjfyct80399203992eusmtrp2Q;
+ Thu, 18 Jun 2020 15:40:15 +0000 (GMT)
+X-AuditID: cbfec7f4-0e5ff7000001ed07-1a-5eeb8adfa1d1
+Received: from eusmtip1.samsung.com ( [203.254.199.221]) by
+ eusmgms1.samsung.com (EUCPMTA) with SMTP id A0.EE.08375.FDA8BEE5; Thu, 18
+ Jun 2020 16:40:15 +0100 (BST)
+Received: from AMDC2765.digital.local (unknown [106.120.51.73]) by
+ eusmtip1.samsung.com (KnoxPortal) with ESMTPA id
+ 20200618154014eusmtip1a58607d1e016a1160c461a136f152a0f~ZrZi3UCgB0709107091eusmtip1o;
+ Thu, 18 Jun 2020 15:40:14 +0000 (GMT)
+From: Marek Szyprowski <m.szyprowski@samsung.com>
+To: dri-devel@lists.freedesktop.org, iommu@lists.linux-foundation.org,
+ linaro-mm-sig@lists.linaro.org, linux-kernel@vger.kernel.org
+Subject: [PATCH v6 02/36] drm: prime: use sgtable iterators in
+ drm_prime_sg_to_page_addr_arrays()
+Date: Thu, 18 Jun 2020 17:39:23 +0200
+Message-Id: <20200618153956.29558-3-m.szyprowski@samsung.com>
+X-Mailer: git-send-email 2.17.1
+In-Reply-To: <20200618153956.29558-1-m.szyprowski@samsung.com>
+X-Brightmail-Tracker: H4sIAAAAAAAAA0WSWUwTURiFczsLA9IyFCIXFIhNJAqRxSUZREEMD/OgUYIvkIhWGJYIhbTs
+ JopiCRRQkAeJabAQEC1LoaxSUEqqlTRS2QwCggQXEKUQlgQUlHYQ377zn/Pn3Py5BMLXYS5E
+ vCiFEYuECQLcBm17vW48MiWbj/Q1FnhQRf19HKqpTIVRf9pKEGp41YRTz2pfcSjFywBqZXia
+ Q6ln3mPUUKccp+p1H62oiqVWlMrNf4JR2sXPGNXyowQ7w6PryusA3b2mQGm1Mh+n29c+YXR5
+ Xyg9VaDn0M1Vt+jxrRmELh2tAbTmQzZO32tRArrZcINeVrtd5EbYnIpmEuLTGLFP4FWbuJau
+ bk6y0SFDPqvDssGEnQwQBCSPw44lngzYEHzyKYB5k3McVqwAaLz/HmXFMoAmpVlYWzZUOTkY
+ a9QA2FE5iO6uSKXrlhRO+kHZTxluZkdSCuCbIltzCCEVCFxfzgVmw4GMgvIZk4VR8iAs/GW0
+ MJc8Daun+xG2zh3WNvZY2JoMhAa91FINyTErONYq3wmFwEZDKc6yA/yub7FieT/88/wxh13I
+ AXC6v96KFYUADt0pA2wqAE70b+DmeyDkYajq9GHHwVCq0iHsmXhw9Ke9eYxs44O2hztjLszL
+ 5bNpD/hI37Bbq303uPM0GjaoqnbOVQLgSIUCFAP3R//LFAAogROTKkmMZSRHRUy6t0SYKEkV
+ xXpHJSWqwfbfMmzpVzpA5+9rvYAkgMCWO3tpPpKPCdMkmYm9ABKIwJF79q0hks+NFmZmMeKk
+ K+LUBEbSC/YRqMCJe6xy7jKfjBWmMNcZJpkR/3M5hLVLNlDfxU76e2Xdc3YNCjRqwiNOCMLs
+ Dt2vFjkmO4Uf0DYrN3jiAvqb9DSpdeEVt+8xed78shysGRietL09kBdo0mx15XvZp4849+S6
+ yZtCFhY2+85d4PvqQpuH9m6uxmhinF9sOfmFfXUbdj2XUbfYm4/E+QT1cMej4vzLzwud0VYB
+ KokT+nkiYonwL/2M9b1XAwAA
+X-Brightmail-Tracker: H4sIAAAAAAAAA+NgFlrGIsWRmVeSWpSXmKPExsVy+t/xu7r3u17HGWzfLWLRe+4kk8XGGetZ
+ Lf5vm8hsceXrezaLlauPMlks2G9t8eXKQyaLTY+vsVpc3jWHzWLtkbvsFgs/bmWxaOtcxmpx
+ 8MMTVostbyayOvB5rJm3htFj77cFLB6bVnWyeWz/9oDVY97JQI/73ceZPDYvqfe4/e8xs8fk
+ G8sZPXbfbGDz6NuyitFj8+lqj8+b5AJ4o/RsivJLS1IVMvKLS2yVog0tjPQMLS30jEws9QyN
+ zWOtjEyV9O1sUlJzMstSi/TtEvQytuzZy1RwXrhizosjrA2Md/i7GDk5JARMJNY3N7N2MXJx
+ CAksZZRY/GcBE0RCRuLktAZWCFtY4s+1LjaIok+MEr1fG8ESbAKGEl1vIRIiAp2MEtO6P7KD
+ OMwCK5glXu2bywJSJSyQKHHy1nZ2EJtFQFWi5/d5RhCbV8BWYunDc8wQK+QlVm84AGZzCthJ
+ nD7eCrZBCKjm+Yc2tgmMfAsYGVYxiqSWFuem5xYb6hUn5haX5qXrJefnbmIExtG2Yz8372C8
+ tDH4EKMAB6MSD++LkNdxQqyJZcWVuYcYJTiYlUR4nc6ejhPiTUmsrEotyo8vKs1JLT7EaAp0
+ 1ERmKdHkfGCM55XEG5oamltYGpobmxubWSiJ83YIHIwREkhPLEnNTk0tSC2C6WPi4JRqYLSf
+ /sS7/UZJ29WKbBGTr27r/9ycyLD+E3v99CtNsy5eFNH/3lFqdFKiYLrsvtZFrHu3XuPR9XDb
+ bXGqT/WKtPT2tS6K+67cXWm56XRwtmC85PNP4da9fv3s0xz2nug6LK65sLFcSZzr1Zwy9mKt
+ 448emoXPFd97vPCZb3vNLvM3f37dWzaBK0eJpTgj0VCLuag4EQBAyFVduQIAAA==
+X-CMS-MailID: 20200618154015eucas1p24598496fde5e7ae9039095f3cd6677b1
+X-Msg-Generator: CA
+X-RootMTR: 20200618154015eucas1p24598496fde5e7ae9039095f3cd6677b1
+X-EPHeader: CA
+CMS-TYPE: 201P
+X-CMS-RootMailID: 20200618154015eucas1p24598496fde5e7ae9039095f3cd6677b1
+References: <20200618153956.29558-1-m.szyprowski@samsung.com>
+ <CGME20200618154015eucas1p24598496fde5e7ae9039095f3cd6677b1@eucas1p2.samsung.com>
+Cc: Thomas Zimmermann <tzimmermann@suse.de>,
+ Bartlomiej Zolnierkiewicz <b.zolnierkie@samsung.com>,
+ David Airlie <airlied@linux.ie>,
+ Maarten Lankhorst <maarten.lankhorst@linux.intel.com>,
+ Maxime Ripard <mripard@kernel.org>, Daniel Vetter <daniel@ffwll.ch>,
+ Robin Murphy <robin.murphy@arm.com>, Christoph Hellwig <hch@lst.de>,
+ linux-arm-kernel@lists.infradead.org
 X-BeenThere: iommu@lists.linux-foundation.org
 X-Mailman-Version: 2.1.15
 Precedence: list
@@ -126,47 +148,91 @@ List-Post: <mailto:iommu@lists.linux-foundation.org>
 List-Help: <mailto:iommu-request@lists.linux-foundation.org?subject=help>
 List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
  <mailto:iommu-request@lists.linux-foundation.org?subject=subscribe>
+MIME-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
 Errors-To: iommu-bounces@lists.linux-foundation.org
 Sender: "iommu" <iommu-bounces@lists.linux-foundation.org>
 
-On Thu, Jun 18, 2020 at 6:04 PM Rajat Jain <rajatja@google.com> wrote:
-> On Thu, Jun 18, 2020 at 2:14 AM Andy Shevchenko
-> <andy.shevchenko@gmail.com> wrote:
+Replace the current hand-crafted code for extracting pages and DMA
+addresses from the given scatterlist by the much more robust
+code based on the generic scatterlist iterators and recently
+introduced sg_table-based wrappers. The resulting code is simple and
+easy to understand, so the comment describing the old code is no
+longer needed.
 
-...
+Signed-off-by: Marek Szyprowski <m.szyprowski@samsung.com>
+---
+ drivers/gpu/drm/drm_prime.c | 47 +++++++++++--------------------------
+ 1 file changed, 14 insertions(+), 33 deletions(-)
 
-> To clarify, the attribute exposed by the firmware today is
-> "ExternalFacingPort" and "external-facing" respectively:
->
-> 617654aae50e ("PCI / ACPI: Identify untrusted PCI devices")
-> 9cb30a71ac45d("PCI: OF: Support "external-facing" property")
->
-> The kernel flag was named "untrusted" though, hence the assumption
-> that "external=untrusted" is currently baked into the kernel today.
-> IMHO, using "external" would fix that (The assumption can thus be
-> contained in the IOMMU drivers) and at the same time allow more use of
-> this attribute.
-
-That discussion had been held, IIRC, during introduction of the
-untrusted member in struct pci_dev...
-
-> > > Trust is different, yes, don't get the two mixed up please.  That should
-> > > be a different sysfs attribute for obvious reasons.
-> >
-> > Yes, as a bottom line that's what I meant as well.
->
-> So what is the consensus here? I don't have a strong opinion - but it
-> seemed to me Greg is saying "external" and Andy is saying "untrusted"?
-
-...and a conclusion has been made as you may see. So, I would highly
-recommend to speak to the author(s) of the patch that introduced /
-adopted 'untrusted' member.
-
+diff --git a/drivers/gpu/drm/drm_prime.c b/drivers/gpu/drm/drm_prime.c
+index 0784969894c1..22953ee1e2ba 100644
+--- a/drivers/gpu/drm/drm_prime.c
++++ b/drivers/gpu/drm/drm_prime.c
+@@ -985,45 +985,26 @@ EXPORT_SYMBOL(drm_gem_prime_import);
+ int drm_prime_sg_to_page_addr_arrays(struct sg_table *sgt, struct page **pages,
+ 				     dma_addr_t *addrs, int max_entries)
+ {
+-	unsigned count;
+-	struct scatterlist *sg;
+-	struct page *page;
+-	u32 page_len, page_index;
+-	dma_addr_t addr;
+-	u32 dma_len, dma_index;
++	struct sg_dma_page_iter dma_iter;
++	struct sg_page_iter page_iter;
++	struct page **p = pages;
++	dma_addr_t *a = addrs;
+ 
+-	/*
+-	 * Scatterlist elements contains both pages and DMA addresses, but
+-	 * one shoud not assume 1:1 relation between them. The sg->length is
+-	 * the size of the physical memory chunk described by the sg->page,
+-	 * while sg_dma_len(sg) is the size of the DMA (IO virtual) chunk
+-	 * described by the sg_dma_address(sg).
+-	 */
+-	page_index = 0;
+-	dma_index = 0;
+-	for_each_sg(sgt->sgl, sg, sgt->nents, count) {
+-		page_len = sg->length;
+-		page = sg_page(sg);
+-		dma_len = sg_dma_len(sg);
+-		addr = sg_dma_address(sg);
+-
+-		while (pages && page_len > 0) {
+-			if (WARN_ON(page_index >= max_entries))
++	if (pages) {
++		for_each_sgtable_page(sgt, &page_iter, 0) {
++			if (p - pages >= max_entries)
+ 				return -1;
+-			pages[page_index] = page;
+-			page++;
+-			page_len -= PAGE_SIZE;
+-			page_index++;
++			*p++ = sg_page_iter_page(&page_iter);
+ 		}
+-		while (addrs && dma_len > 0) {
+-			if (WARN_ON(dma_index >= max_entries))
++	}
++	if (addrs) {
++		for_each_sgtable_dma_page(sgt, &dma_iter, 0) {
++			if (a - addrs >= max_entries)
+ 				return -1;
+-			addrs[dma_index] = addr;
+-			addr += PAGE_SIZE;
+-			dma_len -= PAGE_SIZE;
+-			dma_index++;
++			*a++ = sg_page_iter_dma_address(&dma_iter);
+ 		}
+ 	}
++
+ 	return 0;
+ }
+ EXPORT_SYMBOL(drm_prime_sg_to_page_addr_arrays);
 -- 
-With Best Regards,
-Andy Shevchenko
+2.17.1
+
 _______________________________________________
 iommu mailing list
 iommu@lists.linux-foundation.org
