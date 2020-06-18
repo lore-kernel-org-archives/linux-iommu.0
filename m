@@ -2,115 +2,92 @@ Return-Path: <SRS0=cSHS=77=lists.linux-foundation.org=iommu-bounces@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-0.3 required=3.0 tests=DKIM_ADSP_CUSTOM_MED,
-	DKIM_INVALID,DKIM_SIGNED,FREEMAIL_FORGED_FROMDOMAIN,FREEMAIL_FROM,
-	HEADER_FROM_DIFFERENT_DOMAINS,MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS,
-	URIBL_BLOCKED autolearn=no autolearn_force=no version=3.4.0
+X-Spam-Status: No, score=-8.0 required=3.0 tests=DKIM_INVALID,DKIM_SIGNED,
+	HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_PATCH,MAILING_LIST_MULTI,SIGNED_OFF_BY,
+	SPF_HELO_NONE,SPF_PASS,UNPARSEABLE_RELAY,URIBL_BLOCKED,USER_AGENT_SANE_2
+	autolearn=ham autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 11A1CC433E0
-	for <iommu@archiver.kernel.org>; Thu, 18 Jun 2020 09:14:58 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id C4C4DC433E0
+	for <iommu@archiver.kernel.org>; Thu, 18 Jun 2020 09:34:54 +0000 (UTC)
 Received: from fraxinus.osuosl.org (smtp4.osuosl.org [140.211.166.137])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by mail.kernel.org (Postfix) with ESMTPS id CD83B21924
-	for <iommu@archiver.kernel.org>; Thu, 18 Jun 2020 09:14:57 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTPS id 8F4B821BE5
+	for <iommu@archiver.kernel.org>; Thu, 18 Jun 2020 09:34:54 +0000 (UTC)
 Authentication-Results: mail.kernel.org;
-	dkim=fail reason="signature verification failed" (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="WUiFmMiz"
-DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org CD83B21924
-Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=gmail.com
+	dkim=fail reason="signature verification failed" (1024-bit key) header.d=mediatek.com header.i=@mediatek.com header.b="MHeeNIj+"
+DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 8F4B821BE5
+Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=mediatek.com
 Authentication-Results: mail.kernel.org; spf=pass smtp.mailfrom=iommu-bounces@lists.linux-foundation.org
 Received: from localhost (localhost [127.0.0.1])
-	by fraxinus.osuosl.org (Postfix) with ESMTP id A747286FB2;
-	Thu, 18 Jun 2020 09:14:57 +0000 (UTC)
+	by fraxinus.osuosl.org (Postfix) with ESMTP id 7D2C7871A7;
+	Thu, 18 Jun 2020 09:34:54 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
 Received: from fraxinus.osuosl.org ([127.0.0.1])
 	by localhost (.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
-	with ESMTP id B2Zyq2oVW19F; Thu, 18 Jun 2020 09:14:56 +0000 (UTC)
+	with ESMTP id 4dEoL_2MUTTB; Thu, 18 Jun 2020 09:34:53 +0000 (UTC)
 Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [140.211.9.56])
-	by fraxinus.osuosl.org (Postfix) with ESMTP id B3CA586D47;
-	Thu, 18 Jun 2020 09:14:56 +0000 (UTC)
+	by fraxinus.osuosl.org (Postfix) with ESMTP id 6551F8715A;
+	Thu, 18 Jun 2020 09:34:53 +0000 (UTC)
 Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
-	by lists.linuxfoundation.org (Postfix) with ESMTP id 85ED3C088C;
-	Thu, 18 Jun 2020 09:14:56 +0000 (UTC)
-Received: from silver.osuosl.org (smtp3.osuosl.org [140.211.166.136])
- by lists.linuxfoundation.org (Postfix) with ESMTP id 2D928C016E
- for <iommu@lists.linux-foundation.org>; Thu, 18 Jun 2020 09:14:55 +0000 (UTC)
+	by lists.linuxfoundation.org (Postfix) with ESMTP id 59202C088C;
+	Thu, 18 Jun 2020 09:34:53 +0000 (UTC)
+Received: from whitealder.osuosl.org (smtp1.osuosl.org [140.211.166.138])
+ by lists.linuxfoundation.org (Postfix) with ESMTP id C2301C016E
+ for <iommu@lists.linux-foundation.org>; Thu, 18 Jun 2020 09:34:51 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
- by silver.osuosl.org (Postfix) with ESMTP id 1271720418
- for <iommu@lists.linux-foundation.org>; Thu, 18 Jun 2020 09:14:55 +0000 (UTC)
+ by whitealder.osuosl.org (Postfix) with ESMTP id BE25E88380
+ for <iommu@lists.linux-foundation.org>; Thu, 18 Jun 2020 09:34:51 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from silver.osuosl.org ([127.0.0.1])
+Received: from whitealder.osuosl.org ([127.0.0.1])
  by localhost (.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
- with ESMTP id MDh6gklYvati for <iommu@lists.linux-foundation.org>;
- Thu, 18 Jun 2020 09:14:54 +0000 (UTC)
-X-Greylist: domain auto-whitelisted by SQLgrey-1.7.6
-Received: from mail-pj1-f67.google.com (mail-pj1-f67.google.com
- [209.85.216.67])
- by silver.osuosl.org (Postfix) with ESMTPS id 626B62002F
- for <iommu@lists.linux-foundation.org>; Thu, 18 Jun 2020 09:14:54 +0000 (UTC)
-Received: by mail-pj1-f67.google.com with SMTP id d6so2387051pjs.3
- for <iommu@lists.linux-foundation.org>; Thu, 18 Jun 2020 02:14:54 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=gmail.com; s=20161025;
- h=mime-version:references:in-reply-to:from:date:message-id:subject:to
- :cc; bh=z8nLtniSUTwDDfd3xamrlaMHNc2J6LLLxRRAmrLugfc=;
- b=WUiFmMizj/e43QF9f4A66+T2uWZtKintH+n9ALWbkqK9xh+j7F8ZiQgw9pxlheUeGH
- t3Oi01AlXPbcpdZ0puHr4Khua7Rh8QX/l/Da8aBvz2upfYTo+WDUJYpUx6nvti10A9RY
- pPFrour+Wkan5hwTVsHSegYeG3TD1ki5Qcqy46mKt9GV25ybvb7aDLlMDYc59xXSfSph
- nje/NsQPFrHQp/aKc4YOKpgdQ2kn5OolMEBD3obDZvJeCKYMLfyVSeS0DUTaLDRh9l2J
- dvTzSlFKPYnuDUGIqjOTZlVjJXNth4e7FCH2uT2N7yUUzoYRlaY858tGJ2yCw8HNco+Q
- nuqw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
- d=1e100.net; s=20161025;
- h=x-gm-message-state:mime-version:references:in-reply-to:from:date
- :message-id:subject:to:cc;
- bh=z8nLtniSUTwDDfd3xamrlaMHNc2J6LLLxRRAmrLugfc=;
- b=l7g9kohNYI5UmJU4sz4Rhvh/LSuGnOnNZ6qNcAqcttUZnBBUEdf72wh4bBw0IqsJnv
- Osm3puK3/4hZT+3BW6Y7NMZx3dKQFkWsxrWwgZe6Xf/xLylcy/kqbIT4Dy5yjArtyj0k
- iP8Wv6oQCYmbKbQt/5CiyflGF+3Q1NuKG1sTm9eJyJdpkMTtwMK4BeBjcZ0UBkTcvuQv
- pPhqF+0HbI2E1U2d/sEGno8UQTn4+JnFHK0+nb6AoYJVOXvZGBlc0pxbf6vP2hpQwPj/
- 4Tqs3jNR40M0BNfV7A7r4JCEmqIf/9Y+LsEnlOOw+1rVviHCfEPzmdvotjWdu0yY3jbg
- rrDg==
-X-Gm-Message-State: AOAM533qhQvFHzb2EJLLxo0sgzdfmXFCNt0EN99tSsPIT1ink2qdLZi/
- CR1ZR70FAskpNirHA68sliqozxbIfUSAgmINb+Y=
-X-Google-Smtp-Source: ABdhPJy19VeWbUl1qm2WmtP0kQGdDEXszOr6FW5/f3pi9L1oha0kncME731SjRkGY9uycpokgvt/SCosojgEDUDVq64=
-X-Received: by 2002:a17:90a:220f:: with SMTP id
- c15mr3418248pje.129.1592471693834; 
- Thu, 18 Jun 2020 02:14:53 -0700 (PDT)
+ with ESMTP id F2-d6QGJ4tU8 for <iommu@lists.linux-foundation.org>;
+ Thu, 18 Jun 2020 09:34:51 +0000 (UTC)
+X-Greylist: from auto-whitelisted by SQLgrey-1.7.6
+Received: from mailgw01.mediatek.com (unknown [1.203.163.78])
+ by whitealder.osuosl.org (Postfix) with ESMTP id 7708F87BFE
+ for <iommu@lists.linux-foundation.org>; Thu, 18 Jun 2020 09:34:49 +0000 (UTC)
+X-UUID: 855350d237af447598937a20df6f1057-20200618
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=mediatek.com;
+ s=dk; 
+ h=Content-Transfer-Encoding:MIME-Version:Content-Type:References:In-Reply-To:Date:CC:To:From:Subject:Message-ID;
+ bh=fazQeAs8inAvGwYcQXqBGXqOlhYwCeTQdth0t/3tLpc=; 
+ b=MHeeNIj++emO1PxnCKYQiheDFmpZ4QBACfg0h4/OsDUonE38uDizhI+ibfWfeYHrZWzdKmqjA4pspetmXciZRh0aMpC3nZVDYa6Z/T8lj5eJdfJoht83VIS8lU3VV4mz8emEXDFGXanQq7R5q4LS8CnMUfrDFmNHFsNV7hCie9k=;
+X-UUID: 855350d237af447598937a20df6f1057-20200618
+Received: from mtkcas32.mediatek.inc [(172.27.4.253)] by mailgw01.mediatek.com
+ (envelope-from <yong.wu@mediatek.com>)
+ (mailgw01.mediatek.com ESMTP with TLS)
+ with ESMTP id 1739908511; Thu, 18 Jun 2020 17:34:39 +0800
+Received: from MTKCAS32.mediatek.inc (172.27.4.184) by MTKMBS31N1.mediatek.inc
+ (172.27.4.69) with Microsoft SMTP Server (TLS) id 15.0.1497.2;
+ Thu, 18 Jun 2020 17:34:36 +0800
+Received: from [10.17.3.153] (10.17.3.153) by MTKCAS32.mediatek.inc
+ (172.27.4.170) with Microsoft SMTP Server id 15.0.1497.2 via Frontend
+ Transport; Thu, 18 Jun 2020 17:34:33 +0800
+Message-ID: <1592472725.20080.12.camel@mhfsdcap03>
+Subject: Re: [PATCH v4 06/17] media: mtk-jpeg: Get rid of mtk_smi_larb_get/put
+From: Yong Wu <yong.wu@mediatek.com>
+To: Matthias Brugger <matthias.bgg@gmail.com>, Rick Chang
+ <rick.chang@mediatek.com>
+Date: Thu, 18 Jun 2020 17:32:05 +0800
+In-Reply-To: <1590826218-23653-7-git-send-email-yong.wu@mediatek.com>
+References: <1590826218-23653-1-git-send-email-yong.wu@mediatek.com>
+ <1590826218-23653-7-git-send-email-yong.wu@mediatek.com>
+X-Mailer: Evolution 3.10.4-0ubuntu2 
 MIME-Version: 1.0
-References: <20200616011742.138975-1-rajatja@google.com>
- <20200616011742.138975-4-rajatja@google.com>
- <20200616073249.GB30385@infradead.org>
- <CACK8Z6ELaM8KxbwPor=BUquWN7pALQmmHu5geSOc71P3KoJ1QA@mail.gmail.com>
- <20200617073100.GA14424@infradead.org>
- <CACK8Z6FecYkAYQh4sm4RbAQ1iwb9gexqgY9ExD9BH2p-5Usj=g@mail.gmail.com>
- <CAHp75Vc6eA33cyAQH-m+yixTuHqiobg6fo7nzbbb-J6vN6qFcA@mail.gmail.com>
- <20200618083646.GA1066967@kroah.com>
-In-Reply-To: <20200618083646.GA1066967@kroah.com>
-From: Andy Shevchenko <andy.shevchenko@gmail.com>
-Date: Thu, 18 Jun 2020 12:14:41 +0300
-Message-ID: <CAHp75Vf71f2s6yipHJ4Ys1oe1v7L4PiqBCEbo0uBcG7Wpcs5dQ@mail.gmail.com>
-Subject: Re: [PATCH 4/4] pci: export untrusted attribute in sysfs
-To: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-Cc: Todd Broch <tbroch@google.com>, linux-pci <linux-pci@vger.kernel.org>,
- "Krishnakumar, Lalithambika" <lalithambika.krishnakumar@intel.com>,
- Diego Rivas <diegorivas@google.com>, Rajat Jain <rajatja@google.com>,
- Jean-Philippe Brucker <jean-philippe@linaro.org>,
- Furquan Shaikh <furquan@google.com>, Raj Ashok <ashok.raj@intel.com>,
- Christoph Hellwig <hch@infradead.org>,
- ACPI Devel Maling List <linux-acpi@vger.kernel.org>,
- Christian Kellner <christian@kellner.me>,
- Mattias Nissler <mnissler@google.com>, Jesse Barnes <jsbarnes@google.com>,
- Len Brown <lenb@kernel.org>, Rajat Jain <rajatxjain@gmail.com>,
- Prashant Malani <pmalani@google.com>, Aaron Durbin <adurbin@google.com>,
- Alex Williamson <alex.williamson@redhat.com>,
- Bjorn Helgaas <bhelgaas@google.com>,
- Mika Westerberg <mika.westerberg@linux.intel.com>,
- Bernie Keany <bernie.keany@intel.com>, Duncan Laurie <dlaurie@google.com>,
- "Rafael J. Wysocki" <rjw@rjwysocki.net>,
- Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
- iommu@lists.linux-foundation.org, Oliver O'Halloran <oohall@gmail.com>,
- Benson Leung <bleung@google.com>, David Woodhouse <dwmw2@infradead.org>,
- Alex Levin <levinale@google.com>
+X-TM-SNTS-SMTP: EAA0222707355DB3D9C41720DD63D68CCECEA4A8CC20861737BF3012552CC6C52000:8
+X-MTK: N
+Cc: xia.jiang@mediatek.com, Will Deacon <will.deacon@arm.com>,
+ youlin.pei@mediatek.com, Nicolas Boichat <drinkcat@chromium.org>,
+ Rick Chang <rick.chang@mediatek.com>, Evan
+ Green <evgreen@chromium.org>, eizan@chromium.org, Matthias
+ Kaehlcke <mka@chromium.org>, devicetree@vger.kernel.org, cui.zhang@mediatek.com,
+ Tomasz Figa <tfiga@google.com>, Rob Herring <robh+dt@kernel.org>,
+ linux-mediatek@lists.infradead.org, ming-fan.chen@mediatek.com,
+ linux-arm-kernel@lists.infradead.org, anan.sun@mediatek.com,
+ acourbot@chromium.org, srv_heupstream@mediatek.com,
+ linux-kernel@vger.kernel.org, chao.hao@mediatek.com,
+ iommu@lists.linux-foundation.org, Robin Murphy <robin.murphy@arm.com>
 X-BeenThere: iommu@lists.linux-foundation.org
 X-Mailman-Version: 2.1.15
 Precedence: list
@@ -128,48 +105,96 @@ Content-Transfer-Encoding: 7bit
 Errors-To: iommu-bounces@lists.linux-foundation.org
 Sender: "iommu" <iommu-bounces@lists.linux-foundation.org>
 
-On Thu, Jun 18, 2020 at 11:36 AM Greg Kroah-Hartman
-<gregkh@linuxfoundation.org> wrote:
->
-> On Thu, Jun 18, 2020 at 11:12:56AM +0300, Andy Shevchenko wrote:
-> > On Wed, Jun 17, 2020 at 10:56 PM Rajat Jain <rajatja@google.com> wrote:
-> > > On Wed, Jun 17, 2020 at 12:31 AM Christoph Hellwig <hch@infradead.org> wrote:
-> >
-> > ...
-> >
-> > > (and likely call it "external" instead of "untrusted".
-> >
-> > Which is not okay. 'External' to what? 'untrusted' has been carefully
-> > chosen by the meaning of it.
-> > What external does mean for M.2. WWAN card in my laptop? It's in ACPI
-> > tables, but I can replace it.
->
-> Then your ACPI tables should show this, there is an attribute for it,
-> right?
++ Rick
 
-There is a _PLD() method, but it's for the USB devices (or optional
-for others, I don't remember by heart). So, most of the ACPI tables,
-alas, don't show this.
+On Sat, 2020-05-30 at 16:10 +0800, Yong Wu wrote:
+> MediaTek IOMMU has already added device_link between the consumer
+> and smi-larb device. If the jpg device call the pm_runtime_get_sync,
+> the smi-larb's pm_runtime_get_sync also be called automatically.
+> 
+> CC: Rick Chang <rick.chang@mediatek.com>
+> Signed-off-by: Yong Wu <yong.wu@mediatek.com>
+> Reviewed-by: Evan Green <evgreen@chromium.org>
+> ---
+>  drivers/media/platform/mtk-jpeg/mtk_jpeg_core.c | 22 ----------------------
+>  drivers/media/platform/mtk-jpeg/mtk_jpeg_core.h |  2 --
+>  2 files changed, 24 deletions(-)
+> 
+> diff --git a/drivers/media/platform/mtk-jpeg/mtk_jpeg_core.c b/drivers/media/platform/mtk-jpeg/mtk_jpeg_core.c
+> index f82a81a..21fba6f 100644
+> --- a/drivers/media/platform/mtk-jpeg/mtk_jpeg_core.c
+> +++ b/drivers/media/platform/mtk-jpeg/mtk_jpeg_core.c
+> @@ -21,7 +21,6 @@
+>  #include <media/v4l2-ioctl.h>
+>  #include <media/videobuf2-core.h>
+>  #include <media/videobuf2-dma-contig.h>
+> -#include <soc/mediatek/smi.h>
+>  
+>  #include "mtk_jpeg_hw.h"
+>  #include "mtk_jpeg_core.h"
+> @@ -893,11 +892,6 @@ static int mtk_jpeg_queue_init(void *priv, struct vb2_queue *src_vq,
+>  
+>  static void mtk_jpeg_clk_on(struct mtk_jpeg_dev *jpeg)
+>  {
+> -	int ret;
+> -
+> -	ret = mtk_smi_larb_get(jpeg->larb);
+> -	if (ret)
+> -		dev_err(jpeg->dev, "mtk_smi_larb_get larbvdec fail %d\n", ret);
+>  	clk_prepare_enable(jpeg->clk_jdec_smi);
+>  	clk_prepare_enable(jpeg->clk_jdec);
+>  }
+> @@ -906,7 +900,6 @@ static void mtk_jpeg_clk_off(struct mtk_jpeg_dev *jpeg)
+>  {
+>  	clk_disable_unprepare(jpeg->clk_jdec);
+>  	clk_disable_unprepare(jpeg->clk_jdec_smi);
+> -	mtk_smi_larb_put(jpeg->larb);
+>  }
+>  
+>  static irqreturn_t mtk_jpeg_dec_irq(int irq, void *priv)
+> @@ -1051,21 +1044,6 @@ static int mtk_jpeg_release(struct file *file)
+>  
+>  static int mtk_jpeg_clk_init(struct mtk_jpeg_dev *jpeg)
+>  {
+> -	struct device_node *node;
+> -	struct platform_device *pdev;
+> -
+> -	node = of_parse_phandle(jpeg->dev->of_node, "mediatek,larb", 0);
+> -	if (!node)
+> -		return -EINVAL;
+> -	pdev = of_find_device_by_node(node);
+> -	if (WARN_ON(!pdev)) {
+> -		of_node_put(node);
+> -		return -EINVAL;
+> -	}
+> -	of_node_put(node);
+> -
+> -	jpeg->larb = &pdev->dev;
+> -
+>  	jpeg->clk_jdec = devm_clk_get(jpeg->dev, "jpgdec");
+>  	if (IS_ERR(jpeg->clk_jdec))
+>  		return PTR_ERR(jpeg->clk_jdec);
+> diff --git a/drivers/media/platform/mtk-jpeg/mtk_jpeg_core.h b/drivers/media/platform/mtk-jpeg/mtk_jpeg_core.h
+> index 999bd14..8579494 100644
+> --- a/drivers/media/platform/mtk-jpeg/mtk_jpeg_core.h
+> +++ b/drivers/media/platform/mtk-jpeg/mtk_jpeg_core.h
+> @@ -47,7 +47,6 @@ enum mtk_jpeg_ctx_state {
+>   * @dec_reg_base:	JPEG registers mapping
+>   * @clk_jdec:		JPEG hw working clock
+>   * @clk_jdec_smi:	JPEG SMI bus clock
+> - * @larb:		SMI device
+>   */
+>  struct mtk_jpeg_dev {
+>  	struct mutex		lock;
+> @@ -61,7 +60,6 @@ struct mtk_jpeg_dev {
+>  	void __iomem		*dec_reg_base;
+>  	struct clk		*clk_jdec;
+>  	struct clk		*clk_jdec_smi;
+> -	struct device		*larb;
+>  };
+>  
+>  /**
 
-> > This is only one example. Or if firmware of some device is altered,
-> > and it's internal (whatever it means) is it trusted or not?
->
-> That is what people are using policy for today, if you object to this,
-> please bring it up to those developers :)
-
-> > So, please leave it as is (I mean name).
->
-> firmware today exports this attribute, why do you not want userspace to
-> also know it?
->
-> Trust is different, yes, don't get the two mixed up please.  That should
-> be a different sysfs attribute for obvious reasons.
-
-Yes, as a bottom line that's what I meant as well.
-
--- 
-With Best Regards,
-Andy Shevchenko
 _______________________________________________
 iommu mailing list
 iommu@lists.linux-foundation.org
