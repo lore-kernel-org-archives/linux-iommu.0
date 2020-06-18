@@ -2,86 +2,118 @@ Return-Path: <SRS0=cSHS=77=lists.linux-foundation.org=iommu-bounces@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-2.2 required=3.0 tests=HEADER_FROM_DIFFERENT_DOMAINS,
-	MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED,USER_AGENT_SANE_1
-	autolearn=no autolearn_force=no version=3.4.0
+X-Spam-Status: No, score=-0.3 required=3.0 tests=DKIM_ADSP_CUSTOM_MED,
+	DKIM_INVALID,DKIM_SIGNED,FREEMAIL_FORGED_FROMDOMAIN,FREEMAIL_FROM,
+	HEADER_FROM_DIFFERENT_DOMAINS,MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS,
+	URIBL_BLOCKED autolearn=no autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 560A8C433DF
-	for <iommu@archiver.kernel.org>; Thu, 18 Jun 2020 15:37:52 +0000 (UTC)
-Received: from whitealder.osuosl.org (smtp1.osuosl.org [140.211.166.138])
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 1B3ADC433E1
+	for <iommu@archiver.kernel.org>; Thu, 18 Jun 2020 15:39:43 +0000 (UTC)
+Received: from hemlock.osuosl.org (smtp2.osuosl.org [140.211.166.133])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by mail.kernel.org (Postfix) with ESMTPS id 09296206FA
-	for <iommu@archiver.kernel.org>; Thu, 18 Jun 2020 15:37:51 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 09296206FA
-Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=intel.com
+	by mail.kernel.org (Postfix) with ESMTPS id CE58420890
+	for <iommu@archiver.kernel.org>; Thu, 18 Jun 2020 15:39:42 +0000 (UTC)
+Authentication-Results: mail.kernel.org;
+	dkim=fail reason="signature verification failed" (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="nOpCbbD6"
+DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org CE58420890
+Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=gmail.com
 Authentication-Results: mail.kernel.org; spf=pass smtp.mailfrom=iommu-bounces@lists.linux-foundation.org
 Received: from localhost (localhost [127.0.0.1])
-	by whitealder.osuosl.org (Postfix) with ESMTP id B1E2F88743;
-	Thu, 18 Jun 2020 15:37:51 +0000 (UTC)
+	by hemlock.osuosl.org (Postfix) with ESMTP id 787B389438;
+	Thu, 18 Jun 2020 15:39:42 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from whitealder.osuosl.org ([127.0.0.1])
+Received: from hemlock.osuosl.org ([127.0.0.1])
 	by localhost (.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
-	with ESMTP id p9jSQ93c6dRI; Thu, 18 Jun 2020 15:37:50 +0000 (UTC)
+	with ESMTP id HBebUoHWFCGN; Thu, 18 Jun 2020 15:39:42 +0000 (UTC)
 Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [140.211.9.56])
-	by whitealder.osuosl.org (Postfix) with ESMTP id 8919A88700;
-	Thu, 18 Jun 2020 15:37:50 +0000 (UTC)
+	by hemlock.osuosl.org (Postfix) with ESMTP id F386F892A2;
+	Thu, 18 Jun 2020 15:39:41 +0000 (UTC)
 Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
-	by lists.linuxfoundation.org (Postfix) with ESMTP id 7B646C088C;
-	Thu, 18 Jun 2020 15:37:50 +0000 (UTC)
-Received: from whitealder.osuosl.org (smtp1.osuosl.org [140.211.166.138])
- by lists.linuxfoundation.org (Postfix) with ESMTP id 73C70C016E
- for <iommu@lists.linux-foundation.org>; Thu, 18 Jun 2020 15:37:49 +0000 (UTC)
+	by lists.linuxfoundation.org (Postfix) with ESMTP id D3782C088C;
+	Thu, 18 Jun 2020 15:39:41 +0000 (UTC)
+Received: from silver.osuosl.org (smtp3.osuosl.org [140.211.166.136])
+ by lists.linuxfoundation.org (Postfix) with ESMTP id B2992C016E
+ for <iommu@lists.linux-foundation.org>; Thu, 18 Jun 2020 15:39:39 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
- by whitealder.osuosl.org (Postfix) with ESMTP id 58D7C88743
- for <iommu@lists.linux-foundation.org>; Thu, 18 Jun 2020 15:37:49 +0000 (UTC)
+ by silver.osuosl.org (Postfix) with ESMTP id 7D6D120502
+ for <iommu@lists.linux-foundation.org>; Thu, 18 Jun 2020 15:39:39 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from whitealder.osuosl.org ([127.0.0.1])
+Received: from silver.osuosl.org ([127.0.0.1])
  by localhost (.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
- with ESMTP id JBZHv-xE3hsj for <iommu@lists.linux-foundation.org>;
- Thu, 18 Jun 2020 15:37:48 +0000 (UTC)
+ with ESMTP id mXpYLrqlr8eO for <iommu@lists.linux-foundation.org>;
+ Thu, 18 Jun 2020 15:39:38 +0000 (UTC)
 X-Greylist: domain auto-whitelisted by SQLgrey-1.7.6
-Received: from mga18.intel.com (mga18.intel.com [134.134.136.126])
- by whitealder.osuosl.org (Postfix) with ESMTPS id A283888700
- for <iommu@lists.linux-foundation.org>; Thu, 18 Jun 2020 15:37:48 +0000 (UTC)
-IronPort-SDR: sWj0NA3jTTXQgYPB/ghVYSFXKn3r8Szi7z/Lryox4JL/y+6YdD1DZtfuRBc5JBljHJAE38CGeC
- 4TTCeVUU3m+A==
-X-IronPort-AV: E=McAfee;i="6000,8403,9656"; a="129979309"
-X-IronPort-AV: E=Sophos;i="5.75,251,1589266800"; d="scan'208";a="129979309"
-X-Amp-Result: SKIPPED(no attachment in message)
-X-Amp-File-Uploaded: False
-Received: from orsmga002.jf.intel.com ([10.7.209.21])
- by orsmga106.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384;
- 18 Jun 2020 08:37:47 -0700
-IronPort-SDR: CzS5MoOz9LW2W8ufcf7VltJ40EwQvdPZ9f1UIByPKyXcF7fjAaxqMgTRiN1ED9CIyfAtjpBrfb
- JU43hSx3nDnA==
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.75,251,1589266800"; d="scan'208";a="291807299"
-Received: from romley-ivt3.sc.intel.com ([172.25.110.60])
- by orsmga002.jf.intel.com with ESMTP; 18 Jun 2020 08:37:47 -0700
-Date: Thu, 18 Jun 2020 08:37:47 -0700
-From: Fenghua Yu <fenghua.yu@intel.com>
-To: Frederic Barrat <fbarrat@linux.ibm.com>
-Subject: Re: [PATCH v2 02/12] ocxl: Change type of pasid to unsigned int
-Message-ID: <20200618153747.GE15763@romley-ivt3.sc.intel.com>
-References: <1592008893-9388-1-git-send-email-fenghua.yu@intel.com>
- <1592008893-9388-3-git-send-email-fenghua.yu@intel.com>
- <972dc2cb-9643-53af-b11d-ebb56d96053d@linux.ibm.com>
+Received: from mail-pj1-f67.google.com (mail-pj1-f67.google.com
+ [209.85.216.67])
+ by silver.osuosl.org (Postfix) with ESMTPS id 9F0AB204C1
+ for <iommu@lists.linux-foundation.org>; Thu, 18 Jun 2020 15:39:38 +0000 (UTC)
+Received: by mail-pj1-f67.google.com with SMTP id jz3so2716345pjb.0
+ for <iommu@lists.linux-foundation.org>; Thu, 18 Jun 2020 08:39:38 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=gmail.com; s=20161025;
+ h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+ :cc; bh=GZJ6zrh+Y1Vsbn8ruHOrvITbkoXuvzfrfxu58pe7Zzk=;
+ b=nOpCbbD6xUCyUz1YyRFpYFHK9LWD7cjvIZxDiH+RHDIqnZOql6/HyXntIMdZRBmh6W
+ qpWKCdPmcmhXmDldMKpyNVRtvcF65untSTh7b5p1WI9usEorDqyqWi+2CMlzv8bzHvnL
+ dqwHRgzMvBKGZNXW3AWDlFOGQE2zB0mmd0nG8fJ7sq2Mbb/5W1+6ARarXpTXZ/T5Z7Fh
+ NNczurvr+OGHWixUQ43EDkmzuyUQu7NgUxXcjGQunTlZxsMEkwffmiWHpAJiBmVQMQ+O
+ PL8u/pNkmfjNg6/x1GGhte/FJXNgJRRoFUgl+zVauVs2zGcOpfx5XpLN7dEWqdjkSM8K
+ B3SQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+ d=1e100.net; s=20161025;
+ h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+ :message-id:subject:to:cc;
+ bh=GZJ6zrh+Y1Vsbn8ruHOrvITbkoXuvzfrfxu58pe7Zzk=;
+ b=XVEqUQ1CQB7Ndhwt2odlr4wXZLLDSqAWMhNd1dxzThVas2DWK9o9Ad9pMPRGq5FYUf
+ JEAGpSXMN5VaoA6JxMZ/oB2N1ptBdLbtGjDIIApDEG2NvPPoxjx/Y4lj5M10YPOaNAkX
+ RAIOuflpfkd2zTm5FcVwFzVD89OlhgJhMKTF8mHpg4rLpYt+2KRv/hsNTdivARICGDnq
+ zbMth3ui3vXAXlhIvmxH75NU8dwct1aXVgWIVClP3tzng2SPKAHNkuY4XBKoUDbHJs45
+ slsN5jaqS/U1LfkP54BiTb/ULABfiFR8OCJw6sXAAwQTrIJuCbWeKVs9Jyq18ypAv+li
+ 45/g==
+X-Gm-Message-State: AOAM533iFPQL6AKJruVR56QW9zSjCxOaemOv41VJ+5w4hbfo8QOmeHS7
+ auRXM3+9QvjVaX4GSJKS9xaHw85zfrVnuzMg1do=
+X-Google-Smtp-Source: ABdhPJxoaHYDZlEj8QJ3QkP/ek5K5pisD5wHKUkE1aXeH10OjnRC6dr0cGbGHcW/Er3YFyoGris7X1yJzT3Uyu0wy+o=
+X-Received: by 2002:a17:90a:ac05:: with SMTP id
+ o5mr5004682pjq.228.1592494778159; 
+ Thu, 18 Jun 2020 08:39:38 -0700 (PDT)
 MIME-Version: 1.0
-Content-Disposition: inline
-In-Reply-To: <972dc2cb-9643-53af-b11d-ebb56d96053d@linux.ibm.com>
-User-Agent: Mutt/1.5.23 (2014-03-12)
-Cc: Dave Hansen <dave.hansen@intel.com>, H Peter Anvin <hpa@zytor.com>,
- Dave Jiang <dave.jiang@intel.com>, Ashok Raj <ashok.raj@intel.com>,
- x86 <x86@kernel.org>, amd-gfx <amd-gfx@lists.freedesktop.org>,
- Ingo Molnar <mingo@redhat.com>, Ravi V Shankar <ravi.v.shankar@intel.com>,
- Yu-cheng Yu <yu-cheng.yu@intel.com>, Andrew Donnellan <ajd@linux.ibm.com>,
- Borislav Petkov <bp@alien8.de>, Thomas Gleixner <tglx@linutronix.de>,
- Tony Luck <tony.luck@intel.com>, David Woodhouse <dwmw2@infradead.org>,
- Felix Kuehling <Felix.Kuehling@amd.com>,
- linux-kernel <linux-kernel@vger.kernel.org>, iommu@lists.linux-foundation.org,
- Jacob Jun Pan <jacob.jun.pan@intel.com>,
- linuxppc-dev <linuxppc-dev@lists.ozlabs.org>
+References: <20200616011742.138975-1-rajatja@google.com>
+ <20200616011742.138975-4-rajatja@google.com>
+ <20200616073249.GB30385@infradead.org>
+ <CACK8Z6ELaM8KxbwPor=BUquWN7pALQmmHu5geSOc71P3KoJ1QA@mail.gmail.com>
+ <20200617073100.GA14424@infradead.org>
+ <CACK8Z6FecYkAYQh4sm4RbAQ1iwb9gexqgY9ExD9BH2p-5Usj=g@mail.gmail.com>
+ <CAHp75Vc6eA33cyAQH-m+yixTuHqiobg6fo7nzbbb-J6vN6qFcA@mail.gmail.com>
+ <20200618083646.GA1066967@kroah.com>
+ <CAHp75Vf71f2s6yipHJ4Ys1oe1v7L4PiqBCEbo0uBcG7Wpcs5dQ@mail.gmail.com>
+ <CACK8Z6F2Ssj=EqhR2DZ114ETgQ-3PhzVi2rm2xxenCNOVH=60g@mail.gmail.com>
+In-Reply-To: <CACK8Z6F2Ssj=EqhR2DZ114ETgQ-3PhzVi2rm2xxenCNOVH=60g@mail.gmail.com>
+From: Andy Shevchenko <andy.shevchenko@gmail.com>
+Date: Thu, 18 Jun 2020 18:39:25 +0300
+Message-ID: <CAHp75Vf_gheXBZh-Mm7ME_eVWc5gPcwY98oCH1-QD920mK7gZw@mail.gmail.com>
+Subject: Re: [PATCH 4/4] pci: export untrusted attribute in sysfs
+To: Rajat Jain <rajatja@google.com>
+Cc: Todd Broch <tbroch@google.com>, linux-pci <linux-pci@vger.kernel.org>,
+ "Krishnakumar, Lalithambika" <lalithambika.krishnakumar@intel.com>,
+ Diego Rivas <diegorivas@google.com>,
+ Jean-Philippe Brucker <jean-philippe@linaro.org>,
+ Furquan Shaikh <furquan@google.com>, Raj Ashok <ashok.raj@intel.com>,
+ Christoph Hellwig <hch@infradead.org>,
+ ACPI Devel Maling List <linux-acpi@vger.kernel.org>,
+ Christian Kellner <christian@kellner.me>,
+ Mattias Nissler <mnissler@google.com>, Jesse Barnes <jsbarnes@google.com>,
+ Len Brown <lenb@kernel.org>, Rajat Jain <rajatxjain@gmail.com>,
+ Prashant Malani <pmalani@google.com>, Aaron Durbin <adurbin@google.com>,
+ Alex Williamson <alex.williamson@redhat.com>,
+ Bjorn Helgaas <bhelgaas@google.com>,
+ Mika Westerberg <mika.westerberg@linux.intel.com>,
+ Bernie Keany <bernie.keany@intel.com>, Duncan Laurie <dlaurie@google.com>,
+ Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+ "Rafael J. Wysocki" <rjw@rjwysocki.net>,
+ Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
+ iommu@lists.linux-foundation.org, Oliver O'Halloran <oohall@gmail.com>,
+ Benson Leung <bleung@google.com>, David Woodhouse <dwmw2@infradead.org>,
+ Alex Levin <levinale@google.com>
 X-BeenThere: iommu@lists.linux-foundation.org
 X-Mailman-Version: 2.1.15
 Precedence: list
@@ -94,47 +126,47 @@ List-Post: <mailto:iommu@lists.linux-foundation.org>
 List-Help: <mailto:iommu-request@lists.linux-foundation.org?subject=help>
 List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
  <mailto:iommu-request@lists.linux-foundation.org?subject=subscribe>
-Content-Type: text/plain; charset="iso-8859-1"
-Content-Transfer-Encoding: quoted-printable
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: 7bit
 Errors-To: iommu-bounces@lists.linux-foundation.org
 Sender: "iommu" <iommu-bounces@lists.linux-foundation.org>
 
-Hi, Frederic,
+On Thu, Jun 18, 2020 at 6:04 PM Rajat Jain <rajatja@google.com> wrote:
+> On Thu, Jun 18, 2020 at 2:14 AM Andy Shevchenko
+> <andy.shevchenko@gmail.com> wrote:
 
-On Thu, Jun 18, 2020 at 10:05:19AM +0200, Frederic Barrat wrote:
-> =
+...
 
-> =
+> To clarify, the attribute exposed by the firmware today is
+> "ExternalFacingPort" and "external-facing" respectively:
+>
+> 617654aae50e ("PCI / ACPI: Identify untrusted PCI devices")
+> 9cb30a71ac45d("PCI: OF: Support "external-facing" property")
+>
+> The kernel flag was named "untrusted" though, hence the assumption
+> that "external=untrusted" is currently baked into the kernel today.
+> IMHO, using "external" would fix that (The assumption can thus be
+> contained in the IOMMU drivers) and at the same time allow more use of
+> this attribute.
 
-> Le 13/06/2020 =E0 02:41, Fenghua Yu a =E9crit=A0:
-> >PASID is defined as "int" although it's a 20-bit value and shouldn't be
-> >negative int. To be consistent with type defined in iommu, define PASID
-> >as "unsigned int".
-> =
+That discussion had been held, IIRC, during introduction of the
+untrusted member in struct pci_dev...
 
-> =
+> > > Trust is different, yes, don't get the two mixed up please.  That should
+> > > be a different sysfs attribute for obvious reasons.
+> >
+> > Yes, as a bottom line that's what I meant as well.
+>
+> So what is the consensus here? I don't have a strong opinion - but it
+> seemed to me Greg is saying "external" and Andy is saying "untrusted"?
 
-> It looks like this patch was considered because of the use of 'pasid' in
-> variable or function names. The ocxl driver only makes sense on powerpc a=
-nd
-> shouldn't compile on anything else, so it's probably useless in the conte=
-xt
-> of that series.
-> The pasid here is defined by the opencapi specification
-> (https://opencapi.org), it is borrowed from the PCI world and you could
-> argue it could be an unsigned int. But then I think the patch doesn't go =
-far
-> enough. But considering it's not used on x86, I think this patch can be
-> dropped.
+...and a conclusion has been made as you may see. So, I would highly
+recommend to speak to the author(s) of the patch that introduced /
+adopted 'untrusted' member.
 
-The first 3 patches clean up pasid and flag defitions to prepare for
-following patches.
-
-If you think this patch can be dropped, we will drop it.
-
-Thanks.
-
--Fenghua
+-- 
+With Best Regards,
+Andy Shevchenko
 _______________________________________________
 iommu mailing list
 iommu@lists.linux-foundation.org
