@@ -2,137 +2,86 @@ Return-Path: <SRS0=CQHw=AA=lists.linux-foundation.org=iommu-bounces@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-9.5 required=3.0 tests=DKIM_INVALID,DKIM_SIGNED,
+X-Spam-Status: No, score=-8.0 required=3.0 tests=DKIM_INVALID,DKIM_SIGNED,
 	HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_PATCH,MAILING_LIST_MULTI,SIGNED_OFF_BY,
-	SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED,USER_AGENT_GIT autolearn=unavailable
+	SPF_HELO_NONE,SPF_PASS,UNPARSEABLE_RELAY,USER_AGENT_SANE_2 autolearn=ham
 	autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 2FACCC433E1
-	for <iommu@archiver.kernel.org>; Fri, 19 Jun 2020 10:37:43 +0000 (UTC)
-Received: from silver.osuosl.org (smtp3.osuosl.org [140.211.166.136])
+	by smtp.lore.kernel.org (Postfix) with ESMTP id B6417C433E0
+	for <iommu@archiver.kernel.org>; Fri, 19 Jun 2020 10:51:03 +0000 (UTC)
+Received: from fraxinus.osuosl.org (smtp4.osuosl.org [140.211.166.137])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by mail.kernel.org (Postfix) with ESMTPS id 04761208D5
-	for <iommu@archiver.kernel.org>; Fri, 19 Jun 2020 10:37:42 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTPS id 786102078D
+	for <iommu@archiver.kernel.org>; Fri, 19 Jun 2020 10:51:03 +0000 (UTC)
 Authentication-Results: mail.kernel.org;
-	dkim=fail reason="signature verification failed" (1024-bit key) header.d=samsung.com header.i=@samsung.com header.b="fPglaMcp"
-DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 04761208D5
-Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=samsung.com
+	dkim=fail reason="signature verification failed" (1024-bit key) header.d=mediatek.com header.i=@mediatek.com header.b="u41T8bgv"
+DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 786102078D
+Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=mediatek.com
 Authentication-Results: mail.kernel.org; spf=pass smtp.mailfrom=iommu-bounces@lists.linux-foundation.org
 Received: from localhost (localhost [127.0.0.1])
-	by silver.osuosl.org (Postfix) with ESMTP id CF25C26F28;
-	Fri, 19 Jun 2020 10:37:42 +0000 (UTC)
+	by fraxinus.osuosl.org (Postfix) with ESMTP id 44309876A0;
+	Fri, 19 Jun 2020 10:51:03 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from silver.osuosl.org ([127.0.0.1])
+Received: from fraxinus.osuosl.org ([127.0.0.1])
 	by localhost (.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
-	with ESMTP id QCiiH0e3AABR; Fri, 19 Jun 2020 10:37:38 +0000 (UTC)
+	with ESMTP id AhlKlq0KQuOm; Fri, 19 Jun 2020 10:51:02 +0000 (UTC)
 Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [140.211.9.56])
-	by silver.osuosl.org (Postfix) with ESMTP id 979F420462;
-	Fri, 19 Jun 2020 10:37:24 +0000 (UTC)
+	by fraxinus.osuosl.org (Postfix) with ESMTP id 21B4C86E85;
+	Fri, 19 Jun 2020 10:51:02 +0000 (UTC)
 Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
-	by lists.linuxfoundation.org (Postfix) with ESMTP id 82E83C0865;
-	Fri, 19 Jun 2020 10:37:24 +0000 (UTC)
-Received: from silver.osuosl.org (smtp3.osuosl.org [140.211.166.136])
- by lists.linuxfoundation.org (Postfix) with ESMTP id 23F8BC016E
- for <iommu@lists.linux-foundation.org>; Fri, 19 Jun 2020 10:37:22 +0000 (UTC)
+	by lists.linuxfoundation.org (Postfix) with ESMTP id 1431FC0865;
+	Fri, 19 Jun 2020 10:51:02 +0000 (UTC)
+Received: from whitealder.osuosl.org (smtp1.osuosl.org [140.211.166.138])
+ by lists.linuxfoundation.org (Postfix) with ESMTP id DB89BC016E
+ for <iommu@lists.linux-foundation.org>; Fri, 19 Jun 2020 10:51:00 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
- by silver.osuosl.org (Postfix) with ESMTP id EFDB727DC2
- for <iommu@lists.linux-foundation.org>; Fri, 19 Jun 2020 10:37:21 +0000 (UTC)
+ by whitealder.osuosl.org (Postfix) with ESMTP id D09DE88E29
+ for <iommu@lists.linux-foundation.org>; Fri, 19 Jun 2020 10:51:00 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from silver.osuosl.org ([127.0.0.1])
+Received: from whitealder.osuosl.org ([127.0.0.1])
  by localhost (.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
- with ESMTP id 97AS157ZWJ+J for <iommu@lists.linux-foundation.org>;
- Fri, 19 Jun 2020 10:37:13 +0000 (UTC)
-X-Greylist: from auto-whitelisted by SQLgrey-1.7.6
-Received: from mailout1.w1.samsung.com (mailout1.w1.samsung.com
- [210.118.77.11])
- by silver.osuosl.org (Postfix) with ESMTPS id A697626F28
- for <iommu@lists.linux-foundation.org>; Fri, 19 Jun 2020 10:37:10 +0000 (UTC)
-Received: from eucas1p1.samsung.com (unknown [182.198.249.206])
- by mailout1.w1.samsung.com (KnoxPortal) with ESMTP id
- 20200619103708euoutp010ebd5e5ac8fbbb38a5f3670e2fcab153~Z66MTEnFq1836418364euoutp01m
- for <iommu@lists.linux-foundation.org>; Fri, 19 Jun 2020 10:37:08 +0000 (GMT)
-DKIM-Filter: OpenDKIM Filter v2.11.0 mailout1.w1.samsung.com
- 20200619103708euoutp010ebd5e5ac8fbbb38a5f3670e2fcab153~Z66MTEnFq1836418364euoutp01m
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=samsung.com;
- s=mail20170921; t=1592563028;
- bh=uyLNNIvv2MacHWbC1kIyq87V6/1Lwqz4qF9sgZlX0go=;
- h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
- b=fPglaMcpD1iqvVMRrPccRA8g+OUkJHEssvfUzTUdjVG99+1N2kqDpmEWpnTUEYyFE
- CItD+Km3Y6SKqwr+9eKJ0OU0KfL5elUyU9pK9PsT4fva8cFo0BGsSFv6DdbGoRuSj2
- 2yCtdZSFYyhol0knRC11f0DKmz/ERYXUX2xhpNqg=
-Received: from eusmges2new.samsung.com (unknown [203.254.199.244]) by
- eucas1p2.samsung.com (KnoxPortal) with ESMTP id
- 20200619103708eucas1p20bd7695ba9ab15e3512198e8a5ef4598~Z66L2FkqX3081430814eucas1p2v;
- Fri, 19 Jun 2020 10:37:08 +0000 (GMT)
-Received: from eucas1p2.samsung.com ( [182.198.249.207]) by
- eusmges2new.samsung.com (EUCPMTA) with SMTP id 98.9D.05997.4559CEE5; Fri, 19
- Jun 2020 11:37:08 +0100 (BST)
-Received: from eusmtrp1.samsung.com (unknown [182.198.249.138]) by
- eucas1p2.samsung.com (KnoxPortal) with ESMTPA id
- 20200619103708eucas1p2207ebc9373b820797675b91060a2a597~Z66LitD-v3081530815eucas1p2f;
- Fri, 19 Jun 2020 10:37:08 +0000 (GMT)
-Received: from eusmgms2.samsung.com (unknown [182.198.249.180]) by
- eusmtrp1.samsung.com (KnoxPortal) with ESMTP id
- 20200619103707eusmtrp138cd5bb658fd293d222a7d24344a0b3f~Z66LeRRGf0949709497eusmtrp1c;
- Fri, 19 Jun 2020 10:37:07 +0000 (GMT)
-X-AuditID: cbfec7f4-65dff7000000176d-f5-5eec95547b8f
-Received: from eusmtip2.samsung.com ( [203.254.199.222]) by
- eusmgms2.samsung.com (EUCPMTA) with SMTP id C0.1B.06017.3559CEE5; Fri, 19
- Jun 2020 11:37:07 +0100 (BST)
-Received: from AMDC2765.digital.local (unknown [106.120.51.73]) by
- eusmtip2.samsung.com (KnoxPortal) with ESMTPA id
- 20200619103707eusmtip27f073bab198a77cbcf9cf6569ae6a75b~Z66K0OCoz0302303023eusmtip2S;
- Fri, 19 Jun 2020 10:37:07 +0000 (GMT)
-From: Marek Szyprowski <m.szyprowski@samsung.com>
-To: dri-devel@lists.freedesktop.org, iommu@lists.linux-foundation.org,
- linaro-mm-sig@lists.linaro.org, linux-kernel@vger.kernel.org
-Subject: [PATCH v7 22/36] drm: virtio: fix common struct sg_table related
- issues
-Date: Fri, 19 Jun 2020 12:36:22 +0200
-Message-Id: <20200619103636.11974-23-m.szyprowski@samsung.com>
-X-Mailer: git-send-email 2.17.1
-In-Reply-To: <20200619103636.11974-1-m.szyprowski@samsung.com>
-X-Brightmail-Tracker: H4sIAAAAAAAAA+NgFtrGKsWRmVeSWpSXmKPExsWy7djP87ohU9/EGXSdE7boPXeSyWLjjPWs
- Fv+3TWS2uPL1PZvFytVHmSwW7Le2eHbrJLPFlysPmSw2Pb7GanF51xw2i7VH7rJbHPzwhNVi
- +dl5bA68HmvmrWH02PttAYvH9m8PWD3udx9n8ti8pN7j9r/HzB6Tbyxn9Nh9s4HN4/2+q2we
- fVtWMXp83iQXwB3FZZOSmpNZllqkb5fAlXFjchtbwTP1inVLHrM3MF5Q6GLk5JAQMJFY+/c3
- SxcjF4eQwApGieZV35khnC+MEmfuNTB2MXIAOZ8ZJS4rwTSc/L0FqmY5o0TXgrWMcA13bm1g
- BKliEzCU6HrbxQZiiwi0Mkqc6OUBKWIWeMEk0fZ3M1iRsECQxL71R5lBbBYBVYnjx/rAbF4B
- O4mtD/awQqyTl1i94QBYnBMo/rrlICvIIAmBY+wSx2eeYoEocpHYde4QlC0s8er4FnYIW0bi
- 9OQeFoiGZkaJh+fWskM4PUD/NM1ghKiylrhz7hcbyKPMApoS63fpQ4QdJV6962YBCUsI8Enc
- eCsIEmYGMidtm84MEeaV6GgTgqhWk5h1fB3c2oMXLjFD2B4S53b9YIOE0ERGiS1Xf7FPYJSf
- hbBsASPjKkbx1NLi3PTUYqO81HK94sTc4tK8dL3k/NxNjMDUdPrf8S87GHf9STrEKMDBqMTD
- +yLkdZwQa2JZcWXuIUYJDmYlEV6ns6fjhHhTEiurUovy44tKc1KLDzFKc7AoifMaL3oZKySQ
- nliSmp2aWpBaBJNl4uCUamA0Mbw7Q0+Ap+2LskKM/sGIuwey3+5YmyCU7Pb+4vxq5ej/Du31
- KQ9bpP4+OarZ9G36RW/+7OLrCx12+97+HRrYePmm2iaZGe/0VZRXVLek/hT880q858dv0Ufc
- WZv2Xpbjv7tg6lzz7nIGnbCfzf7ibufOePFmHm7gm1z6+r7e0nvWx9av3jZHiaU4I9FQi7mo
- OBEA7hm+ukkDAAA=
-X-Brightmail-Tracker: H4sIAAAAAAAAA+NgFprBIsWRmVeSWpSXmKPExsVy+t/xe7rBU9/EGXx4ZW7Re+4kk8XGGetZ
- Lf5vm8hsceXrezaLlauPMlks2G9t8ezWSWaLL1ceMllsenyN1eLyrjlsFmuP3GW3OPjhCavF
- 8rPz2Bx4PdbMW8PosffbAhaP7d8esHrc7z7O5LF5Sb3H7X+PmT0m31jO6LH7ZgObx/t9V9k8
- +rasYvT4vEkugDtKz6Yov7QkVSEjv7jEVina0MJIz9DSQs/IxFLP0Ng81srIVEnfziYlNSez
- LLVI3y5BL+PG5Da2gmfqFeuWPGZvYLyg0MXIySEhYCJx8vcWZhBbSGApo8SUpRIQcRmJk9Ma
- WCFsYYk/17rYuhi5gGo+MUqs/juVBSTBJmAo0fUWIiEi0MkoMa37IzuIwyzwgUni399/bCBV
- wgIBEhuf32MCsVkEVCWOH+sDW8crYCex9cEeqBXyEqs3HACLcwLFX7ccZIU4yVZi+YL3zBMY
- +RYwMqxiFEktLc5Nzy020itOzC0uzUvXS87P3cQIjJVtx35u2cHY9S74EKMAB6MSD++LkNdx
- QqyJZcWVuYcYJTiYlUR4nc6ejhPiTUmsrEotyo8vKs1JLT7EaAp01ERmKdHkfGAc55XEG5oa
- mltYGpobmxubWSiJ83YIHIwREkhPLEnNTk0tSC2C6WPi4JRqYLThv1RzMELvbONxvuuWm/5I
- 7H8z9c/e3mKrRjbFrYWn439WHKzfdlRk8/nVT95lzXwmMuEiq9+dzRbMqxh25K7Wy9rwRrVR
- +4DzMaZQj9XVz+50By5UNNj5IGPTo0vCxwU+WpSFzdPx6r1mdVLo0Ld8s1+sYsfP1LnxeeYq
- Klk/6vjDZvuxL1yJpTgj0VCLuag4EQCZ6W+rqwIAAA==
-X-CMS-MailID: 20200619103708eucas1p2207ebc9373b820797675b91060a2a597
-X-Msg-Generator: CA
-X-RootMTR: 20200619103708eucas1p2207ebc9373b820797675b91060a2a597
-X-EPHeader: CA
-CMS-TYPE: 201P
-X-CMS-RootMailID: 20200619103708eucas1p2207ebc9373b820797675b91060a2a597
-References: <20200619103636.11974-1-m.szyprowski@samsung.com>
- <CGME20200619103708eucas1p2207ebc9373b820797675b91060a2a597@eucas1p2.samsung.com>
-Cc: Bartlomiej Zolnierkiewicz <b.zolnierkie@samsung.com>,
- David Airlie <airlied@linux.ie>, virtualization@lists.linux-foundation.org,
- Gerd Hoffmann <kraxel@redhat.com>, Daniel Vetter <daniel@ffwll.ch>,
- Robin Murphy <robin.murphy@arm.com>, Christoph Hellwig <hch@lst.de>,
+ with ESMTP id Nr1I3CcqNXcc for <iommu@lists.linux-foundation.org>;
+ Fri, 19 Jun 2020 10:50:59 +0000 (UTC)
+X-Greylist: domain auto-whitelisted by SQLgrey-1.7.6
+Received: from mailgw01.mediatek.com (unknown [210.61.82.183])
+ by whitealder.osuosl.org (Postfix) with ESMTP id 91DB288AAD
+ for <iommu@lists.linux-foundation.org>; Fri, 19 Jun 2020 10:50:58 +0000 (UTC)
+X-UUID: d4a0e3d3c90c4db28257144de8e7b092-20200619
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=mediatek.com;
+ s=dk; 
+ h=Content-Transfer-Encoding:MIME-Version:Content-Type:References:In-Reply-To:Date:CC:To:From:Subject:Message-ID;
+ bh=gLyZez7zoj9lEggZKjZhObz4KPttckUsAiOpo+MoMv8=; 
+ b=u41T8bgvRxbYNhF5iQVVk9FXc6UvS0j/TVxf9jjgfTYUEvIpqYxdi9DtRJYFc4mruH/tkp3pffkU4VdX+ea5yNlDI85BUHBsrAU9SJLoKwbK46/wJVgOP27516TZimen906NIWrPxSePZCMT0lIr/b4ndjoABmnWnlSW7RXMzM4=;
+X-UUID: d4a0e3d3c90c4db28257144de8e7b092-20200619
+Received: from mtkcas06.mediatek.inc [(172.21.101.30)] by mailgw01.mediatek.com
+ (envelope-from <chao.hao@mediatek.com>)
+ (Cellopoint E-mail Firewall v4.1.10 Build 0809 with TLS)
+ with ESMTP id 1334683904; Fri, 19 Jun 2020 18:50:53 +0800
+Received: from mtkcas08.mediatek.inc (172.21.101.126) by
+ mtkmbs01n1.mediatek.inc (172.21.101.68) with Microsoft SMTP Server (TLS) id
+ 15.0.1497.2; Fri, 19 Jun 2020 18:50:50 +0800
+Received: from [10.15.20.246] (10.15.20.246) by mtkcas08.mediatek.inc
+ (172.21.101.73) with Microsoft SMTP Server id 15.0.1497.2 via Frontend
+ Transport; Fri, 19 Jun 2020 18:50:49 +0800
+Message-ID: <1592563824.5692.1.camel@mbjsdccf07>
+Subject: Re: [PATCH v4 7/7] iommu/mediatek: Add mt6779 basic support
+From: chao hao <Chao.Hao@mediatek.com>
+To: Matthias Brugger <matthias.bgg@gmail.com>
+Date: Fri, 19 Jun 2020 18:50:24 +0800
+In-Reply-To: <9618cc95-99ac-63d0-f502-335e38819842@gmail.com>
+References: <20200617030029.4082-1-chao.hao@mediatek.com>
+ <20200617030029.4082-8-chao.hao@mediatek.com>
+ <64f63ccc-92a4-191c-3566-de00c9e04ca2@gmail.com>
+ <1592481247.12647.9.camel@mbjsdccf07>
+ <9618cc95-99ac-63d0-f502-335e38819842@gmail.com>
+X-Mailer: Evolution 3.10.4-0ubuntu2 
+MIME-Version: 1.0
+X-MTK: N
+Cc: devicetree@vger.kernel.org, FY Yang <fy.yang@mediatek.com>,
+ wsd_upstream@mediatek.com, linux-kernel@vger.kernel.org,
+ Chao Hao <chao.hao@mediatek.com>, iommu@lists.linux-foundation.org,
+ Rob Herring <robh+dt@kernel.org>, linux-mediatek@lists.infradead.org,
  linux-arm-kernel@lists.infradead.org
 X-BeenThere: iommu@lists.linux-foundation.org
 X-Mailman-Version: 2.1.15
@@ -146,144 +95,153 @@ List-Post: <mailto:iommu@lists.linux-foundation.org>
 List-Help: <mailto:iommu-request@lists.linux-foundation.org?subject=help>
 List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
  <mailto:iommu-request@lists.linux-foundation.org?subject=subscribe>
-MIME-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
 Errors-To: iommu-bounces@lists.linux-foundation.org
 Sender: "iommu" <iommu-bounces@lists.linux-foundation.org>
 
-The Documentation/DMA-API-HOWTO.txt states that the dma_map_sg() function
-returns the number of the created entries in the DMA address space.
-However the subsequent calls to the dma_sync_sg_for_{device,cpu}() and
-dma_unmap_sg must be called with the original number of the entries
-passed to the dma_map_sg().
+On Thu, 2020-06-18 at 18:00 +0200, Matthias Brugger wrote:
+> 
+> On 18/06/2020 13:54, chao hao wrote:
+> > On Wed, 2020-06-17 at 11:33 +0200, Matthias Brugger wrote:
+> >>
+> >> On 17/06/2020 05:00, Chao Hao wrote:
+> >>> 1. Start from mt6779, INVLDT_SEL move to offset=0x2c, so we add
+> >>>    REG_MMU_INV_SEL_GEN2 definition and mt6779 uses it.
+> >>> 2. Change PROTECT_PA_ALIGN from 128 byte to 256 byte.
+> >>> 3. For REG_MMU_CTRL_REG register, we only need to change bit[2:0],
+> >>>    others bits keep default value, ex: enable victim tlb.
+> >>> 4. Add mt6779_data to support mm_iommu HW init.
+> >>>
+> >>> Change since v3:
+> >>> 1. When setting MMU_CTRL_REG, we don't need to include mt8173.
+> >>>
+> >>> Cc: Yong Wu <yong.wu@mediatek.com>
+> >>> Signed-off-by: Chao Hao <chao.hao@mediatek.com>
+> >>> ---
+> >>>  drivers/iommu/mtk_iommu.c | 20 ++++++++++++++++++--
+> >>>  drivers/iommu/mtk_iommu.h |  1 +
+> >>>  2 files changed, 19 insertions(+), 2 deletions(-)
+> >>>
+> >>> diff --git a/drivers/iommu/mtk_iommu.c b/drivers/iommu/mtk_iommu.c
+> >>> index c706bca6487e..def2e996683f 100644
+> >>> --- a/drivers/iommu/mtk_iommu.c
+> >>> +++ b/drivers/iommu/mtk_iommu.c
+> >>> @@ -37,6 +37,11 @@
+> >>>  #define REG_MMU_INVLD_START_A			0x024
+> >>>  #define REG_MMU_INVLD_END_A			0x028
+> >>>  
+> >>> +/* In latest Coda, MMU_INV_SEL's offset is changed to 0x02c.
+> >>> + * So we named offset = 0x02c to "REG_MMU_INV_SEL_GEN2"
+> >>> + * and offset = 0x038 to "REG_MMU_INV_SEL_GEN1".
+> >>> + */
+> >>
+> >> Please delete the comment, this should be understandable from the git history
+> > 
+> > ok, thanks
+> > 
+> >>
+> >>> +#define REG_MMU_INV_SEL_GEN2			0x02c
+> >>>  #define REG_MMU_INV_SEL_GEN1			0x038
+> >>>  #define F_INVLD_EN0				BIT(0)
+> >>>  #define F_INVLD_EN1				BIT(1)
+> >>> @@ -98,7 +103,7 @@
+> >>>  #define F_MMU_INT_ID_LARB_ID(a)			(((a) >> 7) & 0x7)
+> >>>  #define F_MMU_INT_ID_PORT_ID(a)			(((a) >> 2) & 0x1f)
+> >>>  
+> >>> -#define MTK_PROTECT_PA_ALIGN			128
+> >>> +#define MTK_PROTECT_PA_ALIGN			256
+> >>
+> >> Do we need 512 bytes for all gen2 IOMMUs?
+> >> I'm not sure if we should add this in plat_data or if we should just bump up the
+> >> value for all SoCs.
+> >> In both cases this should be a separate patch.
+> >>
+> > From mt6779, MTK_PROTECT_PA_ALIGN is extend to 256 bytes and don't be
+> > changed for a long time from our HW designer comment. The legacy iommu
+> > also can use it, mabye it doesn't set it by platform.
+> > 
+> 
+> Ok then just bump it to 256 in a new patch. Thanks for clarification.
 
-struct sg_table is a common structure used for describing a non-contiguous
-memory buffer, used commonly in the DRM and graphics subsystems. It
-consists of a scatterlist with memory pages and DMA addresses (sgl entry),
-as well as the number of scatterlist entries: CPU pages (orig_nents entry)
-and DMA mapped pages (nents entry).
+  Ok, thanks
 
-It turned out that it was a common mistake to misuse nents and orig_nents
-entries, calling DMA-mapping functions with a wrong number of entries or
-ignoring the number of mapped entries returned by the dma_map_sg()
-function.
+> > 
+> >>>  
+> >>>  /*
+> >>>   * Get the local arbiter ID and the portid within the larb arbiter
+> >>> @@ -543,11 +548,12 @@ static int mtk_iommu_hw_init(const struct mtk_iommu_data *data)
+> >>>  		return ret;
+> >>>  	}
+> >>>  
+> >>> +	regval = readl_relaxed(data->base + REG_MMU_CTRL_REG);
+> >>>  	if (data->plat_data->m4u_plat == M4U_MT8173)
+> >>>  		regval = F_MMU_PREFETCH_RT_REPLACE_MOD |
+> >>>  			 F_MMU_TF_PROT_TO_PROGRAM_ADDR_MT8173;
+> >>>  	else
+> >>> -		regval = F_MMU_TF_PROT_TO_PROGRAM_ADDR;
+> >>> +		regval |= F_MMU_TF_PROT_TO_PROGRAM_ADDR;
+> >>
+> >> Why do we change this, is it that the bootloader for mt6779 set some values in
+> >> the register we have to keep? In this case I think we should update the regval
+> >> accordingly.
+> > 
+> > For REG_MMU_CTRL_REG, bit[12] represents victim_tlb_en feature and
+> > victim_tlb is enable defaultly(bit[12]=1),but if we use "regval =
+> > F_MMU_TF_PROT_TO_PROGRAM_ADDR", victim_tlb will disable, it will drop
+> > iommu performace for mt6779
+> > 
+> 
+> Got it. Please put that in a separate patch then.
+> 
+  Ok, thanks
 
-To avoid such issues, lets use a common dma-mapping wrappers operating
-directly on the struct sg_table objects and use scatterlist page
-iterators where possible. This, almost always, hides references to the
-nents and orig_nents entries, making the code robust, easier to follow
-and copy/paste safe.
-
-Signed-off-by: Marek Szyprowski <m.szyprowski@samsung.com>
-Acked-by: Gerd Hoffmann <kraxel@redhat.com>
----
- drivers/gpu/drm/virtio/virtgpu_object.c | 36 ++++++++++++++-----------
- drivers/gpu/drm/virtio/virtgpu_vq.c     | 12 ++++-----
- 2 files changed, 26 insertions(+), 22 deletions(-)
-
-diff --git a/drivers/gpu/drm/virtio/virtgpu_object.c b/drivers/gpu/drm/virtio/virtgpu_object.c
-index 346cef5ce251..c3b9e3cf786e 100644
---- a/drivers/gpu/drm/virtio/virtgpu_object.c
-+++ b/drivers/gpu/drm/virtio/virtgpu_object.c
-@@ -72,9 +72,8 @@ void virtio_gpu_cleanup_object(struct virtio_gpu_object *bo)
- 
- 		if (shmem->pages) {
- 			if (shmem->mapped) {
--				dma_unmap_sg(vgdev->vdev->dev.parent,
--					     shmem->pages->sgl, shmem->mapped,
--					     DMA_TO_DEVICE);
-+				dma_unmap_sgtable(vgdev->vdev->dev.parent,
-+					     shmem->pages, DMA_TO_DEVICE, 0);
- 				shmem->mapped = 0;
- 			}
- 
-@@ -157,13 +156,13 @@ static int virtio_gpu_object_shmem_init(struct virtio_gpu_device *vgdev,
- 	}
- 
- 	if (use_dma_api) {
--		shmem->mapped = dma_map_sg(vgdev->vdev->dev.parent,
--					   shmem->pages->sgl,
--					   shmem->pages->nents,
--					   DMA_TO_DEVICE);
--		*nents = shmem->mapped;
-+		ret = dma_map_sgtable(vgdev->vdev->dev.parent,
-+				      shmem->pages, DMA_TO_DEVICE, 0);
-+		if (ret)
-+			return ret;
-+		*nents = shmem->mapped = shmem->pages->nents;
- 	} else {
--		*nents = shmem->pages->nents;
-+		*nents = shmem->pages->orig_nents;
- 	}
- 
- 	*ents = kmalloc_array(*nents, sizeof(struct virtio_gpu_mem_entry),
-@@ -173,13 +172,20 @@ static int virtio_gpu_object_shmem_init(struct virtio_gpu_device *vgdev,
- 		return -ENOMEM;
- 	}
- 
--	for_each_sg(shmem->pages->sgl, sg, *nents, si) {
--		(*ents)[si].addr = cpu_to_le64(use_dma_api
--					       ? sg_dma_address(sg)
--					       : sg_phys(sg));
--		(*ents)[si].length = cpu_to_le32(sg->length);
--		(*ents)[si].padding = 0;
-+	if (use_dma_api) {
-+		for_each_sgtable_dma_sg(shmem->pages, sg, si) {
-+			(*ents)[si].addr = cpu_to_le64(sg_dma_address(sg));
-+			(*ents)[si].length = cpu_to_le32(sg_dma_len(sg));
-+			(*ents)[si].padding = 0;
-+		}
-+	} else {
-+		for_each_sgtable_sg(shmem->pages, sg, si) {
-+			(*ents)[si].addr = cpu_to_le64(sg_phys(sg));
-+			(*ents)[si].length = cpu_to_le32(sg->length);
-+			(*ents)[si].padding = 0;
-+		}
- 	}
-+
- 	return 0;
- }
- 
-diff --git a/drivers/gpu/drm/virtio/virtgpu_vq.c b/drivers/gpu/drm/virtio/virtgpu_vq.c
-index 9e663a5d9952..e5765db85c20 100644
---- a/drivers/gpu/drm/virtio/virtgpu_vq.c
-+++ b/drivers/gpu/drm/virtio/virtgpu_vq.c
-@@ -302,7 +302,7 @@ static struct sg_table *vmalloc_to_sgt(char *data, uint32_t size, int *sg_ents)
- 		return NULL;
- 	}
- 
--	for_each_sg(sgt->sgl, sg, *sg_ents, i) {
-+	for_each_sgtable_sg(sgt, sg, i) {
- 		pg = vmalloc_to_page(data);
- 		if (!pg) {
- 			sg_free_table(sgt);
-@@ -603,9 +603,8 @@ void virtio_gpu_cmd_transfer_to_host_2d(struct virtio_gpu_device *vgdev,
- 	struct virtio_gpu_object_shmem *shmem = to_virtio_gpu_shmem(bo);
- 
- 	if (use_dma_api)
--		dma_sync_sg_for_device(vgdev->vdev->dev.parent,
--				       shmem->pages->sgl, shmem->pages->nents,
--				       DMA_TO_DEVICE);
-+		dma_sync_sgtable_for_device(vgdev->vdev->dev.parent,
-+					    shmem->pages, DMA_TO_DEVICE);
- 
- 	cmd_p = virtio_gpu_alloc_cmd(vgdev, &vbuf, sizeof(*cmd_p));
- 	memset(cmd_p, 0, sizeof(*cmd_p));
-@@ -1019,9 +1018,8 @@ void virtio_gpu_cmd_transfer_to_host_3d(struct virtio_gpu_device *vgdev,
- 	struct virtio_gpu_object_shmem *shmem = to_virtio_gpu_shmem(bo);
- 
- 	if (use_dma_api)
--		dma_sync_sg_for_device(vgdev->vdev->dev.parent,
--				       shmem->pages->sgl, shmem->pages->nents,
--				       DMA_TO_DEVICE);
-+		dma_sync_sgtable_for_device(vgdev->vdev->dev.parent,
-+					    shmem->pages, DMA_TO_DEVICE);
- 
- 	cmd_p = virtio_gpu_alloc_cmd(vgdev, &vbuf, sizeof(*cmd_p));
- 	memset(cmd_p, 0, sizeof(*cmd_p));
--- 
-2.17.1
+> Regards,
+> Matthias
+> 
+> > 
+> >>
+> >>>  	writel_relaxed(regval, data->base + REG_MMU_CTRL_REG);
+> >>>  
+> >>>  	regval = F_L2_MULIT_HIT_EN |
+> >>> @@ -797,6 +803,15 @@ static const struct mtk_iommu_plat_data mt2712_data = {
+> >>>  	.larbid_remap   = {{0}, {1}, {2}, {3}, {4}, {5}, {6}, {7}},
+> >>>  };
+> >>>  
+> >>> +static const struct mtk_iommu_plat_data mt6779_data = {
+> >>> +	.m4u_plat      = M4U_MT6779,
+> >>> +	.has_sub_comm  = true,
+> >>> +	.has_wr_len    = true,
+> >>> +	.has_misc_ctrl = true,
+> >>> +	.inv_sel_reg   = REG_MMU_INV_SEL_GEN2,
+> >>> +	.larbid_remap  = {{0}, {1}, {2}, {3}, {5}, {7, 8}, {10}, {9}},
+> >>> +};
+> >>> +
+> >>>  static const struct mtk_iommu_plat_data mt8173_data = {
+> >>>  	.m4u_plat     = M4U_MT8173,
+> >>>  	.has_4gb_mode = true,
+> >>> @@ -815,6 +830,7 @@ static const struct mtk_iommu_plat_data mt8183_data = {
+> >>>  
+> >>>  static const struct of_device_id mtk_iommu_of_ids[] = {
+> >>>  	{ .compatible = "mediatek,mt2712-m4u", .data = &mt2712_data},
+> >>> +	{ .compatible = "mediatek,mt6779-m4u", .data = &mt6779_data},
+> >>>  	{ .compatible = "mediatek,mt8173-m4u", .data = &mt8173_data},
+> >>>  	{ .compatible = "mediatek,mt8183-m4u", .data = &mt8183_data},
+> >>>  	{}
+> >>> diff --git a/drivers/iommu/mtk_iommu.h b/drivers/iommu/mtk_iommu.h
+> >>> index 9971cedd72ea..fb79e710c8d9 100644
+> >>> --- a/drivers/iommu/mtk_iommu.h
+> >>> +++ b/drivers/iommu/mtk_iommu.h
+> >>> @@ -31,6 +31,7 @@ struct mtk_iommu_suspend_reg {
+> >>>  enum mtk_iommu_plat {
+> >>>  	M4U_MT2701,
+> >>>  	M4U_MT2712,
+> >>> +	M4U_MT6779,
+> >>>  	M4U_MT8173,
+> >>>  	M4U_MT8183,
+> >>>  };
+> >>>
+> > 
 
 _______________________________________________
 iommu mailing list
