@@ -1,109 +1,102 @@
 Return-Path: <SRS0=bNYQ=AE=lists.linux-foundation.org=iommu-bounces@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
-X-Spam-Level: 
-X-Spam-Status: No, score=-0.8 required=3.0 tests=DKIM_INVALID,DKIM_SIGNED,
-	HEADER_FROM_DIFFERENT_DOMAINS,MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS,
-	URIBL_BLOCKED autolearn=no autolearn_force=no version=3.4.0
+X-Spam-Level: **
+X-Spam-Status: No, score=2.2 required=3.0 tests=DKIM_ADSP_CUSTOM_MED,
+	DKIM_INVALID,DKIM_SIGNED,FREEMAIL_FORGED_FROMDOMAIN,FREEMAIL_FROM,
+	HEADER_FROM_DIFFERENT_DOMAINS,HTML_MESSAGE,MAILING_LIST_MULTI,SPF_HELO_NONE,
+	SPF_PASS,URIBL_BLOCKED autolearn=no autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 50335C433E0
-	for <iommu@archiver.kernel.org>; Tue, 23 Jun 2020 13:38:54 +0000 (UTC)
-Received: from hemlock.osuosl.org (smtp2.osuosl.org [140.211.166.133])
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 91B0AC433E0
+	for <iommu@archiver.kernel.org>; Tue, 23 Jun 2020 13:57:32 +0000 (UTC)
+Received: from whitealder.osuosl.org (smtp1.osuosl.org [140.211.166.138])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by mail.kernel.org (Postfix) with ESMTPS id 162F02070E
-	for <iommu@archiver.kernel.org>; Tue, 23 Jun 2020 13:38:53 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTPS id 525A320720
+	for <iommu@archiver.kernel.org>; Tue, 23 Jun 2020 13:57:32 +0000 (UTC)
 Authentication-Results: mail.kernel.org;
-	dkim=fail reason="signature verification failed" (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="E9Sv+v8I"
-DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 162F02070E
-Authentication-Results: mail.kernel.org; dmarc=none (p=none dis=none) header.from=darnok.org
+	dkim=fail reason="signature verification failed" (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="Jb6FQdzP"
+DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 525A320720
+Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=gmail.com
 Authentication-Results: mail.kernel.org; spf=pass smtp.mailfrom=iommu-bounces@lists.linux-foundation.org
 Received: from localhost (localhost [127.0.0.1])
-	by hemlock.osuosl.org (Postfix) with ESMTP id 7952589523;
-	Tue, 23 Jun 2020 13:38:53 +0000 (UTC)
+	by whitealder.osuosl.org (Postfix) with ESMTP id 156958863F;
+	Tue, 23 Jun 2020 13:57:32 +0000 (UTC)
+X-Virus-Scanned: amavisd-new at osuosl.org
+Received: from whitealder.osuosl.org ([127.0.0.1])
+	by localhost (.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
+	with ESMTP id zXCH4Napigw2; Tue, 23 Jun 2020 13:57:31 +0000 (UTC)
+Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [140.211.9.56])
+	by whitealder.osuosl.org (Postfix) with ESMTP id 3BEEC8860D;
+	Tue, 23 Jun 2020 13:57:31 +0000 (UTC)
+Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
+	by lists.linuxfoundation.org (Postfix) with ESMTP id 238A8C0890;
+	Tue, 23 Jun 2020 13:57:31 +0000 (UTC)
+Received: from hemlock.osuosl.org (smtp2.osuosl.org [140.211.166.133])
+ by lists.linuxfoundation.org (Postfix) with ESMTP id 885AAC016F
+ for <iommu@lists.linux-foundation.org>; Tue, 23 Jun 2020 13:57:29 +0000 (UTC)
+Received: from localhost (localhost [127.0.0.1])
+ by hemlock.osuosl.org (Postfix) with ESMTP id 7726789290
+ for <iommu@lists.linux-foundation.org>; Tue, 23 Jun 2020 13:57:29 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
 Received: from hemlock.osuosl.org ([127.0.0.1])
-	by localhost (.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
-	with ESMTP id S6UeeYHVJJZc; Tue, 23 Jun 2020 13:38:52 +0000 (UTC)
-Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [140.211.9.56])
-	by hemlock.osuosl.org (Postfix) with ESMTP id ADD7B891E0;
-	Tue, 23 Jun 2020 13:38:52 +0000 (UTC)
-Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
-	by lists.linuxfoundation.org (Postfix) with ESMTP id 94528C016F;
-	Tue, 23 Jun 2020 13:38:52 +0000 (UTC)
-Received: from fraxinus.osuosl.org (smtp4.osuosl.org [140.211.166.137])
- by lists.linuxfoundation.org (Postfix) with ESMTP id C78FAC016F
- for <iommu@lists.linux-foundation.org>; Tue, 23 Jun 2020 13:38:50 +0000 (UTC)
-Received: from localhost (localhost [127.0.0.1])
- by fraxinus.osuosl.org (Postfix) with ESMTP id B0ADB872E2
- for <iommu@lists.linux-foundation.org>; Tue, 23 Jun 2020 13:38:50 +0000 (UTC)
-X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from fraxinus.osuosl.org ([127.0.0.1])
  by localhost (.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
- with ESMTP id EMvuJvg6U0qH for <iommu@lists.linux-foundation.org>;
- Tue, 23 Jun 2020 13:38:48 +0000 (UTC)
+ with ESMTP id nm25De+h2rXX for <iommu@lists.linux-foundation.org>;
+ Tue, 23 Jun 2020 13:57:28 +0000 (UTC)
 X-Greylist: domain auto-whitelisted by SQLgrey-1.7.6
-Received: from mail-qt1-f195.google.com (mail-qt1-f195.google.com
- [209.85.160.195])
- by fraxinus.osuosl.org (Postfix) with ESMTPS id D033C871A7
- for <iommu@lists.linux-foundation.org>; Tue, 23 Jun 2020 13:38:47 +0000 (UTC)
-Received: by mail-qt1-f195.google.com with SMTP id z1so15353718qtn.2
- for <iommu@lists.linux-foundation.org>; Tue, 23 Jun 2020 06:38:47 -0700 (PDT)
+Received: from mail-ot1-f66.google.com (mail-ot1-f66.google.com
+ [209.85.210.66])
+ by hemlock.osuosl.org (Postfix) with ESMTPS id 76CAA88D24
+ for <iommu@lists.linux-foundation.org>; Tue, 23 Jun 2020 13:57:28 +0000 (UTC)
+Received: by mail-ot1-f66.google.com with SMTP id n6so16688814otl.0
+ for <iommu@lists.linux-foundation.org>; Tue, 23 Jun 2020 06:57:28 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=gmail.com; s=20161025;
- h=sender:date:from:to:cc:subject:message-id:references:mime-version
- :content-disposition:in-reply-to;
- bh=hZmoB3j6DMmt6J2mPH0zlRMcgJD8yUGmY1ZGf6OliPo=;
- b=E9Sv+v8Id+h0X9CkTgDTZeQ/N1BAkcrMcXheSVFiYV0JhQBmxIbF99ZIbSJOTYD61I
- //f7BROxzrmu+mY9dpl9gy5E/9jYOUdgocHE8cQJiOMU0QuRNmc5YUstbOt0n7Hk1Qtt
- qc5sozHfWB3/8mzEJyjE2eK4AafdgIfgToy0T/Q35AKSa3RU4eDNr/hfY9+ZZkq+r2Lr
- BaBrFXygRrSWTyfhArnj/KY1HRjRK2NesrEUmCMy0LDam5VHC8SE4jBxr80HgCkbqmMV
- yRlGlLGfrIbYb76AOHGdcOPEKzuS0PZaIGlTPM6s0T34HYdU1WZopJvAiGXthDtUcevJ
- cPZw==
+ h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+ :cc; bh=MyZ+D4WjGVXIEhx6Ud4JlAkQ9ClE2+No4ak5dsgnsyk=;
+ b=Jb6FQdzP6MRo8nqWmBhEDpmioudCjpw655DD7PXjBvifVgQA4jTFjwdDigvWRBBLL/
+ w5K+S7gEa/oVJGWTY+9qOllwHzqh8Md8rjF7QXcFK+qePWncJhCBL/GbTy1aWvtb/kwj
+ EKeZkUv5ywb+Jw9MfwabliM8MLM8n4vhENIXf6QSU+ws9WrOfg3Pq6+nEI/Mi9nIc9n0
+ pXh8ckvVGSSpnMLPnJm/ZD6mM/4rPH3ko1z1s7V4sP+hhhCF3s2mNAxWMk8/hVG0Exh0
+ kgpR8gWccWxEocUG1kNjJ/TgrWj6Rb9ZgwC6l2sMcyyYy/t2j7V0PoVLmvtltDqOTCrc
+ HeSQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
  d=1e100.net; s=20161025;
- h=x-gm-message-state:sender:date:from:to:cc:subject:message-id
- :references:mime-version:content-disposition:in-reply-to;
- bh=hZmoB3j6DMmt6J2mPH0zlRMcgJD8yUGmY1ZGf6OliPo=;
- b=JeqKDLHOKcAkrwH5vhG4UURKqwf+oKtuONAztyBXecbY7Dkrspb6yqjXR7VyLIf7Ro
- 8C7+P7lfoLvFxBX8EfuicnRxdObISIEFdShLzyFiERVydO9wS5T6ZIN5NbOnOJVOMnfL
- lSNfZjxriAZ7lnOZOcgmczYhGQ/j/7C6GATzGQJJzbp+55oMKQsQOBWsjN8EeiDrUEGv
- opsINV9vesjTDfBg+cYN+X1YA12gSPM8Be/TgKTva7ChMNezVrkA75v/QwXoO3+yhrTs
- x52YGOUaInn5gDoV22KN0utyMDnE+XBST7yH7n63cDeU92m2OfFRFu8jigaoRyUAygrk
- BFbw==
-X-Gm-Message-State: AOAM533fsMt5VT8HSCsTJy6b2RLG4T+QWpIMt+lHhESqtorpO9BdllGj
- HqQ3b35UAGSrMWqhA4AaLvw=
-X-Google-Smtp-Source: ABdhPJywdDQwzAmCJ4nVioSFtV7n1s6yuqNZ7h4NTBZRX4HyiV5jQz5+VspX89nnr1X/XxKFPabWcQ==
-X-Received: by 2002:aed:2462:: with SMTP id s31mr22334051qtc.188.1592919526753; 
- Tue, 23 Jun 2020 06:38:46 -0700 (PDT)
-Received: from localhost.localdomain
- (209-6-208-110.s8556.c3-0.smr-cbr2.sbo-smr.ma.cable.rcncustomer.com.
- [209.6.208.110])
- by smtp.gmail.com with ESMTPSA id d2sm577625qti.62.2020.06.23.06.38.44
- (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
- Tue, 23 Jun 2020 06:38:45 -0700 (PDT)
-Date: Tue, 23 Jun 2020 09:38:43 -0400
-From: Konrad Rzeszutek Wilk <konrad@darnok.org>
-To: Ashish Kalra <ashish.kalra@amd.com>
-Subject: Re: [PATCH v2] swiotlb: Adjust SWIOTBL bounce buffer size for SEV
- guests.
-Message-ID: <20200623133843.GA5499@localhost.localdomain>
-References: <20191209231346.5602-1-Ashish.Kalra@amd.com>
- <20191220015245.GA7010@localhost.localdomain>
- <20200121200947.GA24884@ashkalra_ubuntu_server>
- <20200121205403.GC75374@Konrads-MacBook-Pro.local>
- <20200124230008.GA1565@ashkalra_ubuntu_server>
- <20200204193500.GA15564@ashkalra_ubuntu_server>
- <20200303170353.GC31627@char.us.oracle.com>
- <20200330222551.GA22743@ashkalra_ubuntu_server>
- <20200427185318.GA8253@ashkalra_ubuntu_server>
+ h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+ :message-id:subject:to:cc;
+ bh=MyZ+D4WjGVXIEhx6Ud4JlAkQ9ClE2+No4ak5dsgnsyk=;
+ b=aShB788W0drsPVHCAi8+HL0JkS7yDnIXOPikcL/WYAaX86/Fq5mQLpsTxYarXCNwwt
+ JVNMAombEyHtAOHZEZVi+NtSp7dtkwUEF9MUREnRKiHHaAsZeIqDMfbEL0dEuNuTHNwJ
+ t5fkCYKu8F96Sdrn85haLJMJiLTT9qU89Dp26tQhq+DefwlQjuqk8rLzFFYx64JXSelN
+ GbgH5Ynog/oqYRFQMgJNf1/NdsQneYuZsdKggcbEMwcDJBgU5zHuhcLrn0RnxbY1HHxG
+ iU/VEQaKW7UKf4CV40I4iYo7NCGp4YVmWYK+/tmftai/ZgFkdnjhqeaO9B28M97JDcBz
+ dW2g==
+X-Gm-Message-State: AOAM533l+qxMluZJv8cs9bYEcjSeX3hMn1sXpj34YxDGs62k9yr77wf+
+ xW7qmY9294Snn9AmLj/CCEIUz7ybN+z7mtDsx5A=
+X-Google-Smtp-Source: ABdhPJw/X4xsmWK4i7mZ4d3Xl8oR1+ANKCGAZVW3l8wF9bUhUFARtjvTpiiW1h32A3zgAEJVVi2UPqakB0AepdLLBTc=
+X-Received: by 2002:a9d:4507:: with SMTP id w7mr18092308ote.335.1592920647723; 
+ Tue, 23 Jun 2020 06:57:27 -0700 (PDT)
 MIME-Version: 1.0
-Content-Disposition: inline
-In-Reply-To: <20200427185318.GA8253@ashkalra_ubuntu_server>
-Cc: Thomas.Lendacky@amd.com, brijesh.singh@amd.com, dave.hansen@linux-intel.com,
- Konrad Rzeszutek Wilk <konrad.wilk@oracle.com>, peterz@infradead.org,
- x86@kernel.org, linux-kernel@vger.kernel.org, iommu@lists.linux-foundation.org,
- mingo@redhat.com, bp@alien8.de, luto@kernel.org, hpa@zytor.com,
- tglx@linutronix.de, hch@lst.de
+References: <1592846920-45338-5-git-send-email-john.garry@huawei.com>
+ <202006230905.3HpPgtSC%lkp@intel.com>
+ <5ba2e240-b324-d316-c00c-38c03ee49baa@huawei.com>
+ <CADRDgG4=uD3Ni6r7D3kHdSo=ketaXKGririHfFvPYq4qz8KjfQ@mail.gmail.com>
+ <ee2d7a1e-3e22-f25a-ced9-82ccced28f8c@huawei.com>
+In-Reply-To: <ee2d7a1e-3e22-f25a-ced9-82ccced28f8c@huawei.com>
+From: Rikard Falkeborn <rikard.falkeborn@gmail.com>
+Date: Tue, 23 Jun 2020 15:55:31 +0200
+Message-ID: <CADRDgG5pOstGK=fm8s3Be_v8+vc-EyRYmpiMsTCeK-rMk2ZRQQ@mail.gmail.com>
+Subject: Re: [PATCH 4/4] iommu/arm-smmu-v3: Remove cmpxchg() in
+ arm_smmu_cmdq_issue_cmdlist()
+To: John Garry <john.garry@huawei.com>
+Cc: "trivial@kernel.org" <trivial@kernel.org>,
+ kernel test robot <lkp@intel.com>, will@kernel.org,
+ "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
+ Linuxarm <linuxarm@huawei.com>,
+ "iommu@lists.linux-foundation.org" <iommu@lists.linux-foundation.org>,
+ "maz@kernel.org" <maz@kernel.org>,
+ "kbuild-all@lists.01.org" <kbuild-all@lists.01.org>,
+ "robin.murphy@arm.com" <robin.murphy@arm.com>,
+ "linux-arm-kernel@lists.infradead.org" <linux-arm-kernel@lists.infradead.org>
 X-BeenThere: iommu@lists.linux-foundation.org
 X-Mailman-Version: 2.1.15
 Precedence: list
@@ -116,142 +109,162 @@ List-Post: <mailto:iommu@lists.linux-foundation.org>
 List-Help: <mailto:iommu-request@lists.linux-foundation.org?subject=help>
 List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
  <mailto:iommu-request@lists.linux-foundation.org?subject=subscribe>
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: 7bit
+Content-Type: multipart/mixed; boundary="===============5233520383455172446=="
 Errors-To: iommu-bounces@lists.linux-foundation.org
 Sender: "iommu" <iommu-bounces@lists.linux-foundation.org>
 
-On Mon, Apr 27, 2020 at 06:53:18PM +0000, Ashish Kalra wrote:
-> Hello Konrad,
-> 
-> On Mon, Mar 30, 2020 at 10:25:51PM +0000, Ashish Kalra wrote:
-> > Hello Konrad,
-> > 
-> > On Tue, Mar 03, 2020 at 12:03:53PM -0500, Konrad Rzeszutek Wilk wrote:
-> > > On Tue, Feb 04, 2020 at 07:35:00PM +0000, Ashish Kalra wrote:
-> > > > Hello Konrad,
-> > > > 
-> > > > Looking fwd. to your feedback regarding support of other memory
-> > > > encryption architectures such as Power, S390, etc.
-> > > > 
-> > > > Thanks,
-> > > > Ashish
-> > > > 
-> > > > On Fri, Jan 24, 2020 at 11:00:08PM +0000, Ashish Kalra wrote:
-> > > > > On Tue, Jan 21, 2020 at 03:54:03PM -0500, Konrad Rzeszutek Wilk wrote:
-> > > > > > > 
-> > > > > > > Additional memory calculations based on # of PCI devices and
-> > > > > > > their memory ranges will make it more complicated with so
-> > > > > > > many other permutations and combinations to explore, it is
-> > > > > > > essential to keep this patch as simple as possible by 
-> > > > > > > adjusting the bounce buffer size simply by determining it
-> > > > > > > from the amount of provisioned guest memory.
-> > > > > >> 
-> > > > > >> Please rework the patch to:
-> > > > > >> 
-> > > > > >>  - Use a log solution instead of the multiplication.
-> > > > > >>    Feel free to cap it at a sensible value.
-> > > > > 
-> > > > > Ok.
-> > > > > 
-> > > > > >> 
-> > > > > >>  - Also the code depends on SWIOTLB calling in to the
-> > > > > >>    adjust_swiotlb_default_size which looks wrong.
-> > > > > >> 
-> > > > > >>    You should not adjust io_tlb_nslabs from swiotlb_size_or_default.
-> > > > > 
-> > > > > >>    That function's purpose is to report a value.
-> > > > > >> 
-> > > > > >>  - Make io_tlb_nslabs be visible outside of the SWIOTLB code.
-> > > > > >> 
-> > > > > >>  - Can you utilize the IOMMU_INIT APIs and have your own detect which would
-> > > > > >>    modify the io_tlb_nslabs (and set swiotbl=1?).
-> > > > > 
-> > > > > This seems to be a nice option, but then IOMMU_INIT APIs are
-> > > > > x86-specific and this swiotlb buffer size adjustment is also needed
-> > > > > for other memory encryption architectures like Power, S390, etc.
-> > > 
-> > > Oh dear. That I hadn't considered.
-> > > > > 
-> > > > > >> 
-> > > > > >>    Actually you seem to be piggybacking on pci_swiotlb_detect_4gb - so
-> > > > > >>    perhaps add in this code ? Albeit it really should be in it's own
-> > > > > >>    file, not in arch/x86/kernel/pci-swiotlb.c
-> > > > > 
-> > > > > Actually, we piggyback on pci_swiotlb_detect_override which sets
-> > > > > swiotlb=1 as x86_64_start_kernel() and invocation of sme_early_init()
-> > > > > forces swiotlb on, but again this is all x86 architecture specific.
-> > > 
-> > > Then it looks like the best bet is to do it from within swiotlb_init?
-> > > We really can't do it from swiotlb_size_or_default - that function
-> > > should just return a value and nothing else.
-> > > 
-> > 
-> > Actually, we need to do it in swiotlb_size_or_default() as this gets called by
-> > reserve_crashkernel_low() in arch/x86/kernel/setup.c and used to
-> > reserve low crashkernel memory. If we adjust swiotlb size later in
-> > swiotlb_init() which gets called later than reserve_crashkernel_low(),
-> > then any swiotlb size changes/expansion will conflict/overlap with the
-> > low memory reserved for crashkernel.
-> > 
-> and will also potentially cause SWIOTLB buffer allocation failures.
-> 
-> Do you have any feedback, comments on the above ?
+--===============5233520383455172446==
+Content-Type: multipart/alternative; boundary="0000000000005cef7005a8c0bd30"
 
+--0000000000005cef7005a8c0bd30
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
 
-The init boot chain looks like this:
+Den tis 23 juni 2020 12:21John Garry <john.garry@huawei.com> skrev:
 
-initmem_init
-	pci_iommu_alloc
-		-> pci_swiotlb_detect_4gb
-		-> swiotlb_init
+> On 23/06/2020 10:35, Rikard Falkeborn wrote:
+> >
+> >     I'd say that GENMASK_INPUT_CHECK() should be able to handle a l=3D0=
+ and
+> >     h=3Dunsigned value, so I doubt this warn.
+> >
+> >     Using GENMASK((int)cmdq->q.llq.max_n_shift, 0) resolves it, but it
+> >     looks
+> >     like GENMASK_INPUT_CHECK() could be improved.
+> >
+> >
+> > Indeed it could, it is fixed in -next.
+>
+> ok, thanks for the pointer, but I still see this on today's -next with
+> this patch:
+>
+> make W=3D1 drivers/iommu/arm-smmu-v3.o
+>
+>
+Oh, ok thanks for reporting. I guess different gcc versions have different
+behaviour. I guess we'll have to change the comparison to (!((h) =3D=3D (l)=
+ ||
+(h) > (l))) instead (not sure I got all parenthesis and logic correct but
+you get the idea).
 
-reserve_crashkernel
-	reserve_crashkernel_low
-		-> swiotlb_size_or_default
-		..
+I'm travelling and wont have time to look at this until next week though.
 
-
-(rootfs code):
-	pci_iommu_init
-		-> a bunch of the other IOMMU late_init code gets called..
-		->  pci_swiotlb_late_init 
-
-I have to say I am lost to how your patch fixes "If we adjust swiolb
-size later .. then any swiotlb size .. will overlap with the low memory
-reserved for crashkernel"?
-
-Or are you saying that 'reserve_crashkernel_low' is the _culprit_ and it
-is the one changing the size? And hence it modifying the swiotlb size
-will fix this problem? Aka _before_ all the other IOMMU get their hand
-on it?
-
-If so why not create an
-IOMMU_INIT(crashkernel_adjust_swiotlb,pci_swiotlb_detect_override,
-NULL, NULL);
-
-And crashkernel_adjust_swiotlb would change the size of swiotlb buffer
-if conditions are found to require it.
-
-You also may want to put a #define DEBUG in arch/x86/kernel/pci-iommu_table.c
-to check out whether the tree structure of IOMMU entries is correct.
+Rikard
 
 
 
-But still I am lost - if say the AMD one does decide for unknown reason
-to expand the SWIOTLB you are still stuck with the 'overlap with
-the low memory reserved' or so.
+In file included from ./include/linux/bits.h:23:0,
+>                  from ./include/linux/ioport.h:15,
+>                  from ./include/linux/acpi.h:12,
+>                  from drivers/iommu/arm-smmu-v3.c:12:
+> drivers/iommu/arm-smmu-v3.c: In function =E2=80=98arm_smmu_cmdq_issue_cmd=
+list=E2=80=99:
+> ./include/linux/bits.h:27:7: warning: comparison of unsigned expression
+> < 0 is always false [-Wtype-limits]
+>    (l) > (h), 0)))
+>        ^
+> ./include/linux/build_bug.h:16:62: note: in definition of macro
+> =E2=80=98BUILD_BUG_ON_ZERO=E2=80=99
+> #define BUILD_BUG_ON_ZERO(e) ((int)(sizeof(struct { int:(-!!(e)); })))
+>                                                               ^
+> ./include/linux/bits.h:40:3: note: in expansion of macro
+> =E2=80=98GENMASK_INPUT_CHECK=E2=80=99
+>   (GENMASK_INPUT_CHECK(h, l) + __GENMASK(h, l))
+>    ^~~~~~~~~~~~~~~~~~~
+> drivers/iommu/arm-smmu-v3.c:1404:18: note: in expansion of macro =E2=80=
+=98GENMASK=E2=80=99
+>   u32 prod_mask =3D GENMASK(cmdq->q.llq.max_n_shift, 0);
+>
+> That's gcc 7.5.0 .
+>
+> Cheers,
+> John
+>
+>
 
-Perhaps add a late_init that gets called as the last one to validate
-this ? And maybe if the swiotlb gets turned off you also take proper
-steps?
+--0000000000005cef7005a8c0bd30
+Content-Type: text/html; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
 
-> As such i feel, this patch is complete otherwise and can be included as
-> it is. 
-> 
-> Thanks,
-> Ashish
+<div dir=3D"auto"><div><br><br><div class=3D"gmail_quote"><div dir=3D"ltr" =
+class=3D"gmail_attr">Den tis 23 juni 2020 12:21John Garry &lt;<a href=3D"ma=
+ilto:john.garry@huawei.com">john.garry@huawei.com</a>&gt; skrev:<br></div><=
+blockquote class=3D"gmail_quote" style=3D"margin:0 0 0 .8ex;border-left:1px=
+ #ccc solid;padding-left:1ex">On 23/06/2020 10:35, Rikard Falkeborn wrote:<=
+br>
+&gt; <br>
+&gt;=C2=A0 =C2=A0 =C2=A0I&#39;d say that GENMASK_INPUT_CHECK() should be ab=
+le to handle a l=3D0 and<br>
+&gt;=C2=A0 =C2=A0 =C2=A0h=3Dunsigned value, so I doubt this warn.<br>
+&gt; <br>
+&gt;=C2=A0 =C2=A0 =C2=A0Using GENMASK((int)cmdq-&gt;q.llq.max_n_shift, 0) r=
+esolves it, but it<br>
+&gt;=C2=A0 =C2=A0 =C2=A0looks<br>
+&gt;=C2=A0 =C2=A0 =C2=A0like GENMASK_INPUT_CHECK() could be improved.<br>
+&gt; <br>
+&gt; <br>
+&gt; Indeed it could, it is fixed in -next.<br>
+<br>
+ok, thanks for the pointer, but I still see this on today&#39;s -next with =
+<br>
+this patch:<br>
+<br>
+make W=3D1 drivers/iommu/arm-smmu-v3.o<br><br></blockquote></div></div><div=
+ dir=3D"auto"><br></div><div dir=3D"auto">Oh, ok thanks for reporting. I gu=
+ess different gcc versions have different behaviour. I guess we&#39;ll have=
+ to change the comparison to (!((h) =3D=3D (l) || (h) &gt; (l))) instead (n=
+ot sure I got all parenthesis and logic correct but you get the idea).</div=
+><div dir=3D"auto"><br></div><div dir=3D"auto">I&#39;m travelling and wont =
+have time to look at this until next week though.</div><div dir=3D"auto"><b=
+r></div><div dir=3D"auto">Rikard</div><div dir=3D"auto"><br></div><div dir=
+=3D"auto"><br></div><div dir=3D"auto"><br></div><div dir=3D"auto"></div><di=
+v dir=3D"auto"><div class=3D"gmail_quote"><blockquote class=3D"gmail_quote"=
+ style=3D"margin:0 0 0 .8ex;border-left:1px #ccc solid;padding-left:1ex">In=
+ file included from ./include/linux/bits.h:23:0,<br>
+=C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0from ./includ=
+e/linux/ioport.h:15,<br>
+=C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0from ./includ=
+e/linux/acpi.h:12,<br>
+=C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0from drivers/=
+iommu/arm-smmu-v3.c:12:<br>
+drivers/iommu/arm-smmu-v3.c: In function =E2=80=98arm_smmu_cmdq_issue_cmdli=
+st=E2=80=99:<br>
+./include/linux/bits.h:27:7: warning: comparison of unsigned expression <br=
+>
+&lt; 0 is always false [-Wtype-limits]<br>
+=C2=A0 =C2=A0(l) &gt; (h), 0)))<br>
+=C2=A0 =C2=A0 =C2=A0 =C2=A0^<br>
+./include/linux/build_bug.h:16:62: note: in definition of macro <br>
+=E2=80=98BUILD_BUG_ON_ZERO=E2=80=99<br>
+#define BUILD_BUG_ON_ZERO(e) ((int)(sizeof(struct { int:(-!!(e)); })))<br>
+=C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=
+=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =
+=C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 ^<br>
+./include/linux/bits.h:40:3: note: in expansion of macro <br>
+=E2=80=98GENMASK_INPUT_CHECK=E2=80=99<br>
+=C2=A0 (GENMASK_INPUT_CHECK(h, l) + __GENMASK(h, l))<br>
+=C2=A0 =C2=A0^~~~~~~~~~~~~~~~~~~<br>
+drivers/iommu/arm-smmu-v3.c:1404:18: note: in expansion of macro =E2=80=98G=
+ENMASK=E2=80=99<br>
+=C2=A0 u32 prod_mask =3D GENMASK(cmdq-&gt;q.llq.max_n_shift, 0);<br>
+<br>
+That&#39;s gcc 7.5.0 .<br>
+<br>
+Cheers,<br>
+John<br>
+<br>
+</blockquote></div></div></div>
+
+--0000000000005cef7005a8c0bd30--
+
+--===============5233520383455172446==
+Content-Type: text/plain; charset="us-ascii"
+MIME-Version: 1.0
+Content-Transfer-Encoding: 7bit
+Content-Disposition: inline
+
 _______________________________________________
 iommu mailing list
 iommu@lists.linux-foundation.org
 https://lists.linuxfoundation.org/mailman/listinfo/iommu
+--===============5233520383455172446==--
