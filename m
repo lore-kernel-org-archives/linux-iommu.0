@@ -7,66 +7,66 @@ X-Spam-Status: No, score=-10.0 required=3.0
 	SIGNED_OFF_BY,SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED,USER_AGENT_GIT
 	autolearn=ham autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 18FA4C433E2
-	for <iommu@archiver.kernel.org>; Tue, 23 Jun 2020 15:36:57 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 5E42CC433E3
+	for <iommu@archiver.kernel.org>; Tue, 23 Jun 2020 15:36:58 +0000 (UTC)
 Received: from silver.osuosl.org (smtp3.osuosl.org [140.211.166.136])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by mail.kernel.org (Postfix) with ESMTPS id ED0E020723
-	for <iommu@archiver.kernel.org>; Tue, 23 Jun 2020 15:36:56 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org ED0E020723
+	by mail.kernel.org (Postfix) with ESMTPS id 363E520723
+	for <iommu@archiver.kernel.org>; Tue, 23 Jun 2020 15:36:58 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 363E520723
 Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=linux.intel.com
 Authentication-Results: mail.kernel.org; spf=pass smtp.mailfrom=iommu-bounces@lists.linux-foundation.org
 Received: from localhost (localhost [127.0.0.1])
-	by silver.osuosl.org (Postfix) with ESMTP id CB51326426;
-	Tue, 23 Jun 2020 15:36:56 +0000 (UTC)
+	by silver.osuosl.org (Postfix) with ESMTP id 17A132DF70;
+	Tue, 23 Jun 2020 15:36:58 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
 Received: from silver.osuosl.org ([127.0.0.1])
 	by localhost (.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
-	with ESMTP id LYmWYj+78wTa; Tue, 23 Jun 2020 15:36:54 +0000 (UTC)
+	with ESMTP id tZH2D-Z5uM2p; Tue, 23 Jun 2020 15:36:57 +0000 (UTC)
 Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [140.211.9.56])
-	by silver.osuosl.org (Postfix) with ESMTP id 1C85E2DF59;
-	Tue, 23 Jun 2020 15:36:52 +0000 (UTC)
+	by silver.osuosl.org (Postfix) with ESMTP id 6988A2DF38;
+	Tue, 23 Jun 2020 15:36:57 +0000 (UTC)
 Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
-	by lists.linuxfoundation.org (Postfix) with ESMTP id 0458FC0894;
-	Tue, 23 Jun 2020 15:36:52 +0000 (UTC)
+	by lists.linuxfoundation.org (Postfix) with ESMTP id 642A0C0890;
+	Tue, 23 Jun 2020 15:36:57 +0000 (UTC)
 Received: from whitealder.osuosl.org (smtp1.osuosl.org [140.211.166.138])
- by lists.linuxfoundation.org (Postfix) with ESMTP id F3C45C0894
- for <iommu@lists.linux-foundation.org>; Tue, 23 Jun 2020 15:36:50 +0000 (UTC)
+ by lists.linuxfoundation.org (Postfix) with ESMTP id 01C1DC08A0
+ for <iommu@lists.linux-foundation.org>; Tue, 23 Jun 2020 15:36:52 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
- by whitealder.osuosl.org (Postfix) with ESMTP id E1DFF886FB
- for <iommu@lists.linux-foundation.org>; Tue, 23 Jun 2020 15:36:50 +0000 (UTC)
+ by whitealder.osuosl.org (Postfix) with ESMTP id F10CD88EE6
+ for <iommu@lists.linux-foundation.org>; Tue, 23 Jun 2020 15:36:51 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
 Received: from whitealder.osuosl.org ([127.0.0.1])
  by localhost (.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
- with ESMTP id uBI1WsNegAoD for <iommu@lists.linux-foundation.org>;
- Tue, 23 Jun 2020 15:36:48 +0000 (UTC)
+ with ESMTP id F-VrbF8tvFQ7 for <iommu@lists.linux-foundation.org>;
+ Tue, 23 Jun 2020 15:36:47 +0000 (UTC)
 X-Greylist: domain auto-whitelisted by SQLgrey-1.7.6
 Received: from mga06.intel.com (mga06.intel.com [134.134.136.31])
- by whitealder.osuosl.org (Postfix) with ESMTPS id 0ED6388EB0
- for <iommu@lists.linux-foundation.org>; Tue, 23 Jun 2020 15:36:48 +0000 (UTC)
-IronPort-SDR: yx2HFSGtJPquoERdFdZmVwlBOuDKVNeF6c9Y2eVEZu98KfLlqNRNxJiDz6qHE+tEkf5KH1JQYF
- oTYBb41daepA==
-X-IronPort-AV: E=McAfee;i="6000,8403,9661"; a="205614474"
-X-IronPort-AV: E=Sophos;i="5.75,271,1589266800"; d="scan'208";a="205614474"
+ by whitealder.osuosl.org (Postfix) with ESMTPS id 9627688AAD
+ for <iommu@lists.linux-foundation.org>; Tue, 23 Jun 2020 15:36:47 +0000 (UTC)
+IronPort-SDR: FiJ7ixQ3uo70Jlq05ZaQg2MmPJ4z2EOBnkDzwwjPTcipV7/9+oRICtegtaprsmwEQsgVmvcf6m
+ vYZp/e3gOeow==
+X-IronPort-AV: E=McAfee;i="6000,8403,9661"; a="205614471"
+X-IronPort-AV: E=Sophos;i="5.75,271,1589266800"; d="scan'208";a="205614471"
 X-Amp-Result: SKIPPED(no attachment in message)
 X-Amp-File-Uploaded: False
 Received: from orsmga005.jf.intel.com ([10.7.209.41])
  by orsmga104.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384;
- 23 Jun 2020 08:36:47 -0700
-IronPort-SDR: k2apAaKBivgIXhj59rCh2jS9rqqNdo0TAlnaXzkRyb9C2CZXZE2XkooeqFUGchm0YlK838Uvi3
- ANKMnrr8jXew==
+ 23 Jun 2020 08:36:46 -0700
+IronPort-SDR: +hbisiQslEs/36IruHjE6KVvPmgk2+NAun3vHui2SdWtNDZ+vq6MTsrqAGC1zUewmiuMfSiIsf
+ Ls/W5XCRRU9g==
 X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.75,271,1589266800"; d="scan'208";a="452262645"
+X-IronPort-AV: E=Sophos;i="5.75,271,1589266800"; d="scan'208";a="452262630"
 Received: from jacob-builder.jf.intel.com ([10.7.199.155])
- by orsmga005.jf.intel.com with ESMTP; 23 Jun 2020 08:36:47 -0700
+ by orsmga005.jf.intel.com with ESMTP; 23 Jun 2020 08:36:46 -0700
 From: Jacob Pan <jacob.jun.pan@linux.intel.com>
 To: iommu@lists.linux-foundation.org, LKML <linux-kernel@vger.kernel.org>,
  "Lu Baolu" <baolu.lu@linux.intel.com>, Joerg Roedel <joro@8bytes.org>,
  David Woodhouse <dwmw2@infradead.org>
-Subject: [PATCH 6/7] iommu/vt-d: Warn on out-of-range invalidation address
-Date: Tue, 23 Jun 2020 08:43:15 -0700
-Message-Id: <1592926996-47914-7-git-send-email-jacob.jun.pan@linux.intel.com>
+Subject: [PATCH 1/7] iommu/vt-d: Enforce PASID devTLB field mask
+Date: Tue, 23 Jun 2020 08:43:10 -0700
+Message-Id: <1592926996-47914-2-git-send-email-jacob.jun.pan@linux.intel.com>
 X-Mailer: git-send-email 2.7.4
 In-Reply-To: <1592926996-47914-1-git-send-email-jacob.jun.pan@linux.intel.com>
 References: <1592926996-47914-1-git-send-email-jacob.jun.pan@linux.intel.com>
@@ -89,39 +89,31 @@ Content-Transfer-Encoding: 7bit
 Errors-To: iommu-bounces@lists.linux-foundation.org
 Sender: "iommu" <iommu-bounces@lists.linux-foundation.org>
 
-For guest requested IOTLB invalidation, address and mask are provided as
-part of the invalidation data. VT-d HW silently ignores any address bits
-below the mask. SW shall also allow such case but give warning if
-address does not align with the mask. This patch relax the fault
-handling from error to warning and proceed with invalidation request
-with the given mask.
+From: Liu Yi L <yi.l.liu@intel.com>
 
+Set proper masks to avoid invalid input spillover to reserved bits.
+
+Signed-off-by: Liu Yi L <yi.l.liu@intel.com>
 Signed-off-by: Jacob Pan <jacob.jun.pan@linux.intel.com>
 ---
- drivers/iommu/intel/iommu.c | 7 +++----
- 1 file changed, 3 insertions(+), 4 deletions(-)
+ include/linux/intel-iommu.h | 4 ++--
+ 1 file changed, 2 insertions(+), 2 deletions(-)
 
-diff --git a/drivers/iommu/intel/iommu.c b/drivers/iommu/intel/iommu.c
-index 5ea5732d5ec4..50fc62413a35 100644
---- a/drivers/iommu/intel/iommu.c
-+++ b/drivers/iommu/intel/iommu.c
-@@ -5439,13 +5439,12 @@ intel_iommu_sva_invalidate(struct iommu_domain *domain, struct device *dev,
+diff --git a/include/linux/intel-iommu.h b/include/linux/intel-iommu.h
+index 4100bd224f5c..729386ca8122 100644
+--- a/include/linux/intel-iommu.h
++++ b/include/linux/intel-iommu.h
+@@ -380,8 +380,8 @@ enum {
  
- 		switch (BIT(cache_type)) {
- 		case IOMMU_CACHE_INV_TYPE_IOTLB:
-+			/* HW will ignore LSB bits based on address mask */
- 			if (inv_info->granularity == IOMMU_INV_GRANU_ADDR &&
- 			    size &&
- 			    (inv_info->addr_info.addr & ((BIT(VTD_PAGE_SHIFT + size)) - 1))) {
--				pr_err_ratelimited("Address out of range, 0x%llx, size order %llu\n",
--						   inv_info->addr_info.addr, size);
--				ret = -ERANGE;
--				goto out_unlock;
-+				WARN_ONCE(1, "Address out of range, 0x%llx, size order %llu\n",
-+					  inv_info->addr_info.addr, size);
- 			}
- 
- 			/*
+ #define QI_DEV_EIOTLB_ADDR(a)	((u64)(a) & VTD_PAGE_MASK)
+ #define QI_DEV_EIOTLB_SIZE	(((u64)1) << 11)
+-#define QI_DEV_EIOTLB_GLOB(g)	((u64)g)
+-#define QI_DEV_EIOTLB_PASID(p)	(((u64)p) << 32)
++#define QI_DEV_EIOTLB_GLOB(g)	((u64)(g) & 0x1)
++#define QI_DEV_EIOTLB_PASID(p)	((u64)((p) & 0xfffff) << 32)
+ #define QI_DEV_EIOTLB_SID(sid)	((u64)((sid) & 0xffff) << 16)
+ #define QI_DEV_EIOTLB_QDEP(qd)	((u64)((qd) & 0x1f) << 4)
+ #define QI_DEV_EIOTLB_PFSID(pfsid) (((u64)(pfsid & 0xf) << 12) | \
 -- 
 2.7.4
 
