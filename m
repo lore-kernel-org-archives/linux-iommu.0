@@ -2,160 +2,104 @@ Return-Path: <SRS0=bNYQ=AE=lists.linux-foundation.org=iommu-bounces@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-6.8 required=3.0 tests=DKIM_INVALID,DKIM_SIGNED,
-	HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_PATCH,MAILING_LIST_MULTI,SIGNED_OFF_BY,
-	SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED autolearn=ham autolearn_force=no
-	version=3.4.0
+X-Spam-Status: No, score=-3.8 required=3.0 tests=DKIM_INVALID,DKIM_SIGNED,
+	MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED,USER_AGENT_GIT
+	autolearn=no autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 06C71C433E1
-	for <iommu@archiver.kernel.org>; Tue, 23 Jun 2020 06:44:04 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 75836C433DF
+	for <iommu@archiver.kernel.org>; Tue, 23 Jun 2020 07:09:20 +0000 (UTC)
 Received: from hemlock.osuosl.org (smtp2.osuosl.org [140.211.166.133])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by mail.kernel.org (Postfix) with ESMTPS id 6DDF32072E
-	for <iommu@archiver.kernel.org>; Tue, 23 Jun 2020 06:44:03 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTPS id 208CC20738
+	for <iommu@archiver.kernel.org>; Tue, 23 Jun 2020 07:09:20 +0000 (UTC)
 Authentication-Results: mail.kernel.org;
-	dkim=fail reason="signature verification failed" (1024-bit key) header.d=intel.onmicrosoft.com header.i=@intel.onmicrosoft.com header.b="UVJ9/QPk"
-DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 6DDF32072E
-Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=intel.com
+	dkim=fail reason="signature verification failed" (1024-bit key) header.d=kernel.org header.i=@kernel.org header.b="KWgMqyKu"
+DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 208CC20738
+Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=kernel.org
 Authentication-Results: mail.kernel.org; spf=pass smtp.mailfrom=iommu-bounces@lists.linux-foundation.org
 Received: from localhost (localhost [127.0.0.1])
-	by hemlock.osuosl.org (Postfix) with ESMTP id 30F6F8948A;
-	Tue, 23 Jun 2020 06:44:03 +0000 (UTC)
+	by hemlock.osuosl.org (Postfix) with ESMTP id F17D9894F2;
+	Tue, 23 Jun 2020 07:09:19 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
 Received: from hemlock.osuosl.org ([127.0.0.1])
 	by localhost (.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
-	with ESMTP id YAUNXZPBPDg3; Tue, 23 Jun 2020 06:44:02 +0000 (UTC)
+	with ESMTP id ki4jekCGsCcj; Tue, 23 Jun 2020 07:09:19 +0000 (UTC)
 Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [140.211.9.56])
-	by hemlock.osuosl.org (Postfix) with ESMTP id 23D7589456;
-	Tue, 23 Jun 2020 06:44:02 +0000 (UTC)
+	by hemlock.osuosl.org (Postfix) with ESMTP id 5C4BC894F0;
+	Tue, 23 Jun 2020 07:09:19 +0000 (UTC)
 Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
-	by lists.linuxfoundation.org (Postfix) with ESMTP id 1250EC088F;
-	Tue, 23 Jun 2020 06:44:02 +0000 (UTC)
-Received: from whitealder.osuosl.org (smtp1.osuosl.org [140.211.166.138])
- by lists.linuxfoundation.org (Postfix) with ESMTP id ACD9EC016F
- for <iommu@lists.linux-foundation.org>; Tue, 23 Jun 2020 06:44:00 +0000 (UTC)
+	by lists.linuxfoundation.org (Postfix) with ESMTP id 42A50C08A2;
+	Tue, 23 Jun 2020 07:09:19 +0000 (UTC)
+Received: from silver.osuosl.org (smtp3.osuosl.org [140.211.166.136])
+ by lists.linuxfoundation.org (Postfix) with ESMTP id 2F9BDC016F
+ for <iommu@lists.linux-foundation.org>; Tue, 23 Jun 2020 07:09:18 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
- by whitealder.osuosl.org (Postfix) with ESMTP id 9309188AE9
- for <iommu@lists.linux-foundation.org>; Tue, 23 Jun 2020 06:44:00 +0000 (UTC)
+ by silver.osuosl.org (Postfix) with ESMTP id 268702D61E
+ for <iommu@lists.linux-foundation.org>; Tue, 23 Jun 2020 07:09:18 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from whitealder.osuosl.org ([127.0.0.1])
+Received: from silver.osuosl.org ([127.0.0.1])
  by localhost (.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
- with ESMTP id zeQhAv5xAaMZ for <iommu@lists.linux-foundation.org>;
- Tue, 23 Jun 2020 06:43:59 +0000 (UTC)
+ with ESMTP id vWLUJbRosnBH for <iommu@lists.linux-foundation.org>;
+ Tue, 23 Jun 2020 07:09:17 +0000 (UTC)
 X-Greylist: domain auto-whitelisted by SQLgrey-1.7.6
-Received: from mga18.intel.com (mga18.intel.com [134.134.136.126])
- by whitealder.osuosl.org (Postfix) with ESMTPS id 0519388ACF
- for <iommu@lists.linux-foundation.org>; Tue, 23 Jun 2020 06:43:58 +0000 (UTC)
-IronPort-SDR: ynEu2g+KfNfqMTNU0c68DYMiweMx7MI7MxAmSifAVrA4Z7AZwC5TzZwq11c25eSG1JUZMc/iRt
- cXpQmE3dVfrQ==
-X-IronPort-AV: E=McAfee;i="6000,8403,9660"; a="131392281"
-X-IronPort-AV: E=Sophos;i="5.75,270,1589266800"; d="scan'208";a="131392281"
-X-Amp-Result: SKIPPED(no attachment in message)
-X-Amp-File-Uploaded: False
-Received: from orsmga005.jf.intel.com ([10.7.209.41])
- by orsmga106.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384;
- 22 Jun 2020 23:43:57 -0700
-IronPort-SDR: gRyOhPTSYh3q8zWeBbY+U921fRQR9fqVt4htZy6NbsKmJMCeRQ7Nhoy5UNQYLHmF/0gtiKjSLR
- dJXNQjnUJ1Yg==
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.75,270,1589266800"; d="scan'208";a="452112000"
-Received: from orsmsx106.amr.corp.intel.com ([10.22.225.133])
- by orsmga005.jf.intel.com with ESMTP; 22 Jun 2020 23:43:57 -0700
-Received: from orsmsx607.amr.corp.intel.com (10.22.229.20) by
- ORSMSX106.amr.corp.intel.com (10.22.225.133) with Microsoft SMTP Server (TLS)
- id 14.3.439.0; Mon, 22 Jun 2020 23:43:57 -0700
-Received: from orsmsx611.amr.corp.intel.com (10.22.229.24) by
- ORSMSX607.amr.corp.intel.com (10.22.229.20) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.1713.5; Mon, 22 Jun 2020 23:43:57 -0700
-Received: from ORSEDG002.ED.cps.intel.com (10.7.248.5) by
- orsmsx611.amr.corp.intel.com (10.22.229.24) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256) id 15.1.1713.5
- via Frontend Transport; Mon, 22 Jun 2020 23:43:57 -0700
-Received: from NAM12-DM6-obe.outbound.protection.outlook.com (104.47.59.177)
- by edgegateway.intel.com (134.134.137.101) with Microsoft SMTP Server (TLS)
- id 14.3.439.0; Mon, 22 Jun 2020 23:43:57 -0700
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=nP8TBDz1Uu6ygKRNFv/0qLfLsHYj9Nxi/CCwp+GbEYfC7m0xWSFPFvt3FEVGtDWUzo2z3s8FNFjQWPHM8xL5S042TAYerZqzuw4Phy8H7QnEiY0PBl3BSoiKR50WC8Ve5S2fglfBHwt51Qmb9RxrRvhsHhB4jLzsmgBgALq0Xhz6GmbbRnKzwDAQDhU7ZpozkWkX+zGAvUkNGAAlyDpakRb19z7Q95+ssT7VoudWKpuWur/3rXlIeqbS3aQHZHrwKq4WzmEuj2PRP+N6+S9sjyZO1/PdCNZ/UoeVfYNVvrV1a/I00I0cR/wRgJ7qPLTXZaISwH54wDTYSMWQRAqO8g==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com; 
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=GZed6e6lLPqftRY0AmBrf0V0x+yCfEMnEYvTMTsNQ40=;
- b=NrXOgFhMBGLzyFp+vqTeRXqa0TY2b8Z7ZnGto8Ufb9t1uwPRW9a5Z/89uLCHUbmiEcfhNfDbk+OiUsMsoAs6Oku/dsPwDY3paQOJBTfY/Ugd94Z6mIyJ7G8Pq0PVqWOGKvqAO632njMwB3ssfm3NpQxBeGa6tz8VlnJcLgpuSFAR8QWzOcethm8wHE3DwqPFMSI5e61MgUr5l6ejV3buhrqz5H0HU//1FbD1uWEjqTxruatymHPreOvL+S3zgtjmPMzfsEx9qtPAQocCAKrKSZWps6/SO/mkr64XCAwIeFzIJeLEW8ZZvKm7CTEoMNHESA+Z2STue/vH6a+DTFYBCw==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=intel.com; dmarc=pass action=none header.from=intel.com;
- dkim=pass header.d=intel.com; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=intel.onmicrosoft.com; 
- s=selector2-intel-onmicrosoft-com;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=GZed6e6lLPqftRY0AmBrf0V0x+yCfEMnEYvTMTsNQ40=;
- b=UVJ9/QPkWpz5r14PzASX+h1OhQ7nebc36PwNBxKCSB/HF/vet0P4e8jW98YDDoEYSd8XWY1pFK47e16dv4srINGBN3hdiDxjKxK9htHm/YozXbiCcCkKdznnjfzSYs6i4pkkphTB7YT3d/QZ+nAs2XrefEfxwxDgrSadVt3NxHE=
-Received: from DM5PR11MB1435.namprd11.prod.outlook.com (2603:10b6:4:7::18) by
- DM5PR1101MB2265.namprd11.prod.outlook.com (2603:10b6:4:50::7) with
- Microsoft
- SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.20.3109.22; Tue, 23 Jun 2020 06:43:55 +0000
-Received: from DM5PR11MB1435.namprd11.prod.outlook.com
- ([fe80::2c3d:98d9:4e81:c86c]) by DM5PR11MB1435.namprd11.prod.outlook.com
- ([fe80::2c3d:98d9:4e81:c86c%6]) with mapi id 15.20.3109.027; Tue, 23 Jun 2020
- 06:43:55 +0000
-From: "Liu, Yi L" <yi.l.liu@intel.com>
-To: Stefan Hajnoczi <stefanha@gmail.com>
-Subject: RE: [PATCH v2 14/15] vfio: Document dual stage control
-Thread-Topic: [PATCH v2 14/15] vfio: Document dual stage control
-Thread-Index: AQHWP+klJ2WDrhzcJUGl5z7dUgTydqjZcnYAgALkw9CACFCUAIABK3hA
-Date: Tue, 23 Jun 2020 06:43:54 +0000
-Message-ID: <DM5PR11MB1435B5A1D25A245AD5E3B6D3C3940@DM5PR11MB1435.namprd11.prod.outlook.com>
-References: <1591877734-66527-1-git-send-email-yi.l.liu@intel.com>
- <1591877734-66527-15-git-send-email-yi.l.liu@intel.com>
- <20200615094128.GB1491454@stefanha-x1.localdomain>
- <DM5PR11MB1435C484283BDCD75F19EDB5C39A0@DM5PR11MB1435.namprd11.prod.outlook.com>
- <20200622125114.GC15683@stefanha-x1.localdomain>
-In-Reply-To: <20200622125114.GC15683@stefanha-x1.localdomain>
-Accept-Language: en-US
-Content-Language: en-US
-X-MS-Has-Attach: 
-X-MS-TNEF-Correlator: 
-dlp-reaction: no-action
-dlp-version: 11.2.0.6
-dlp-product: dlpe-windows
-authentication-results: gmail.com; dkim=none (message not signed)
- header.d=none;gmail.com; dmarc=none action=none header.from=intel.com;
-x-originating-ip: [192.198.147.218]
-x-ms-publictraffictype: Email
-x-ms-office365-filtering-correlation-id: 7eb49aa1-328b-4a79-10a3-08d81740cca7
-x-ms-traffictypediagnostic: DM5PR1101MB2265:
-x-ld-processed: 46c98d88-e344-4ed4-8496-4ed7712e255d,ExtAddr
-x-ms-exchange-transport-forked: True
-x-microsoft-antispam-prvs: <DM5PR1101MB2265B1C1335A17691D2A8F39C3940@DM5PR1101MB2265.namprd11.prod.outlook.com>
-x-ms-oob-tlc-oobclassifiers: OLM:2449;
-x-forefront-prvs: 04433051BF
-x-ms-exchange-senderadcheck: 1
-x-microsoft-antispam: BCL:0;
-x-microsoft-antispam-message-info: p5zwf0+TCX1gLLQ45aLgZPtOgWPTnSWV9P8MeU6DjYH5E45azjBgqoF37yjhaNFv/I00xcNY94CPSHO+hvsMYWT/lDJWtBDCgGYa2MJ+qNOyKgVJqzFxycgWyDYt1v/mlMTY1lK6Q6shZ9U272NLwZhe/LnhH0adgxyvQklIbe94i1eq8ZVZVBGtVPE41yWKjE7E5mej7bU13yH08NJKpnIuLq9uR7J+oY+TQ4jCtbgXYlViJ8wF5dAlsjTT7GvdksOOECGUCbLd8evkwV+ighFlS9v3xIEnPSRFWt8FalXAqHPr/XnCfiJ8CMqRA34NIUf439cl6/JfwRrzBINHCl8Q8yBYAW9BVE4mcI+cbJ/3Trbe/9fmdjsojIX4J4H9sZBJHaolcvs88xiwdiLHqg==
-x-forefront-antispam-report: CIP:255.255.255.255; CTRY:; LANG:en; SCL:1; SRV:;
- IPV:NLI; SFV:NSPM; H:DM5PR11MB1435.namprd11.prod.outlook.com; PTR:; CAT:NONE;
- SFTY:;
- SFS:(4636009)(396003)(39860400002)(346002)(366004)(376002)(136003)(83380400001)(2906002)(6916009)(8676002)(52536014)(478600001)(5660300002)(71200400001)(966005)(7696005)(6506007)(76116006)(64756008)(7416002)(26005)(66556008)(66476007)(66946007)(54906003)(186003)(316002)(33656002)(4326008)(8936002)(86362001)(55016002)(66446008)(9686003);
- DIR:OUT; SFP:1102; 
-x-ms-exchange-antispam-messagedata: cCfq0L/wGTLlCgiraBieapfe2xZMMFs6RhpN9u3GNmdscIbzn2eKih6U+7pBra1oOF9TERgKQF5Z28x2aZ1wH/s0CiCM6XFU8Mirt0emExY+5PX2AXTy/QZj8AE1DkQpmQLA6bFrEE6LfhSNpVWO5qF5c/U5l31JcGM1tEdyre/qsVi/5nv3G4Sfwsy0aB8lDhyKdbv3SWQuUgtPT9EiO3Ou4rNEcX9eGFITx/tZaeR9QOeSZXVLzMFAKLv73G8d/owYvAseuN9Id48gjEbd06r6vSty68mGe9+yUw6g+kmUqEfnITdjhW2AodyWFvqsrDPg3rzuZ2x0feD4c2PStw/JhyfYFDylItU3oNMKqJ5JKr73MbBayMzUBNeFRYPJmiwvU45cvcPbK82Pi52P9e7nLlLUQkKG0pDSCFY6WzswuAtguUBRT/1aNUqG46VMYgHJozGmdsJB1YVfA8f6v0yOt/kJIxTZ0NpZPjpdxun4c85iPN76ddCCDHBZ77uL
+Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
+ by silver.osuosl.org (Postfix) with ESMTPS id 102792035D
+ for <iommu@lists.linux-foundation.org>; Tue, 23 Jun 2020 07:09:17 +0000 (UTC)
+Received: from mail.kernel.org (unknown [95.90.213.197])
+ (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+ (No client certificate requested)
+ by mail.kernel.org (Postfix) with ESMTPSA id 7EB142083B;
+ Tue, 23 Jun 2020 07:09:16 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+ s=default; t=1592896156;
+ bh=DtczuADBn02KNsKn1zVUGW/fHxjVGsLwEaVwTv2OO34=;
+ h=From:To:Cc:Subject:Date:From;
+ b=KWgMqyKu9lNxDusflmUU8a73weNV3oAx3KrcZnO4Y/lhfevMn1bMNCpUhSxBeEyyz
+ pcn/hN/y/PImTIDe4xsgCUs6ENSQ7w680agTfK7sz218NqZd4wR1zbXl+csUuAuOTY
+ COVy/oxbMdnsaSGsHyNVCdTR4ngUEXje5YAadfc4=
+Received: from mchehab by mail.kernel.org with local (Exim 4.93)
+ (envelope-from <mchehab@kernel.org>)
+ id 1jnd3Q-003qib-Tq; Tue, 23 Jun 2020 09:09:12 +0200
+From: Mauro Carvalho Chehab <mchehab+huawei@kernel.org>
+To: Linux Doc Mailing List <linux-doc@vger.kernel.org>
+Subject: [PATCH v2 00/15] Documentation fixes
+Date: Tue, 23 Jun 2020 09:08:56 +0200
+Message-Id: <cover.1592895969.git.mchehab+huawei@kernel.org>
+X-Mailer: git-send-email 2.26.2
 MIME-Version: 1.0
-X-MS-Exchange-CrossTenant-Network-Message-Id: 7eb49aa1-328b-4a79-10a3-08d81740cca7
-X-MS-Exchange-CrossTenant-originalarrivaltime: 23 Jun 2020 06:43:55.0412 (UTC)
-X-MS-Exchange-CrossTenant-fromentityheader: Hosted
-X-MS-Exchange-CrossTenant-id: 46c98d88-e344-4ed4-8496-4ed7712e255d
-X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
-X-MS-Exchange-CrossTenant-userprincipalname: Gn1TSR9n1QJ8Qh/eXK1wZOryIg5NuBqgjS3SJXj7QKRwv0D37Y7RL9utydwHDtf39xo01oF3/tju2ivvkI9M8A==
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: DM5PR1101MB2265
-X-OriginatorOrg: intel.com
-Cc: "jean-philippe@linaro.org" <jean-philippe@linaro.org>, "Tian,
- Kevin" <kevin.tian@intel.com>, "Raj, Ashok" <ashok.raj@intel.com>,
- "kvm@vger.kernel.org" <kvm@vger.kernel.org>, "Sun, Yi Y" <yi.y.sun@intel.com>,
- "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
- "alex.williamson@redhat.com" <alex.williamson@redhat.com>,
- "iommu@lists.linux-foundation.org" <iommu@lists.linux-foundation.org>, "Wu,
- Hao" <hao.wu@intel.com>, "Tian, Jun J" <jun.j.tian@intel.com>
+Cc: linux-ia64@vger.kernel.org,
+ "Peter Zijlstra \(Intel\)" <peterz@infradead.org>,
+ Benjamin Herrenschmidt <benh@kernel.crashing.org>,
+ Michael Ellerman <mpe@ellerman.id.au>, Ram Pai <linuxram@us.ibm.com>,
+ "James E.J. Bottomley" <James.Bottomley@HansenPartnership.com>,
+ linux-mm@kvack.org, Eric Dumazet <edumazet@google.com>, netdev@vger.kernel.org,
+ Paul Mackerras <paulus@samba.org>, Sandipan Das <sandipan@linux.ibm.com>,
+ linux-kselftest@vger.kernel.org, "H. Peter Anvin" <hpa@zytor.com>,
+ Jan Kara <jack@suse.cz>, Sukadev Bhattiprolu <sukadev@linux.ibm.com>,
+ Shuah Khan <shuah@kernel.org>, Christoph Hellwig <hch@lst.de>,
+ Stephen Rothwell <sfr@canb.auug.org.au>,
+ Florian Fainelli <f.fainelli@gmail.com>, Jonathan Corbet <corbet@lwn.net>,
+ Mauro Carvalho Chehab <mchehab+huawei@kernel.org>,
+ Will Deacon <will@kernel.org>, Helge Deller <deller@gmx.de>, x86@kernel.org,
+ Haren Myneni <haren@linux.ibm.com>, Russell King <linux@armlinux.org.uk>,
+ kasan-dev@googlegroups.com, Ingo Molnar <mingo@redhat.com>,
+ Gerald Schaefer <gerald.schaefer@de.ibm.com>, linux-pci@vger.kernel.org,
+ Jakub Kicinski <kuba@kernel.org>, Alexey Dobriyan <adobriyan@gmail.com>,
+ linux-media@vger.kernel.org, Fenghua Yu <fenghua.yu@intel.com>,
+ Marco Elver <elver@google.com>, Kees Cook <keescook@chromium.org>,
+ Robin Murphy <robin.murphy@arm.com>, Borislav Petkov <bp@alien8.de>,
+ Alexander Viro <viro@zeniv.linux.org.uk>, Bjorn Helgaas <bhelgaas@google.com>,
+ Thomas Gleixner <tglx@linutronix.de>, Dmitry Vyukov <dvyukov@google.com>,
+ Tony Luck <tony.luck@intel.com>, linux-parisc@vger.kernel.org,
+ Dave Hansen <dave.hansen@intel.com>, Alexey Gladkov <gladkov.alexey@gmail.com>,
+ Akira Shimahara <akira215corp@gmail.com>, Jeff Layton <jlayton@kernel.org>,
+ linux-kernel@vger.kernel.org, iommu@lists.linux-foundation.org,
+ "Eric W. Biederman" <ebiederm@xmission.com>,
+ Greg Kroah-Hartman <gregkh@linuxfoundation.org>, linux-fsdevel@vger.kernel.org,
+ Andrew Morton <akpm@linux-foundation.org>, linuxppc-dev@lists.ozlabs.org,
+ "David S. Miller" <davem@davemloft.net>,
+ Mike Kravetz <mike.kravetz@oracle.com>
 X-BeenThere: iommu@lists.linux-foundation.org
 X-Mailman-Version: 2.1.15
 Precedence: list
@@ -173,149 +117,76 @@ Content-Transfer-Encoding: 7bit
 Errors-To: iommu-bounces@lists.linux-foundation.org
 Sender: "iommu" <iommu-bounces@lists.linux-foundation.org>
 
-> From: Stefan Hajnoczi <stefanha@gmail.com>
-> Sent: Monday, June 22, 2020 8:51 PM
-> 
-> On Wed, Jun 17, 2020 at 06:27:27AM +0000, Liu, Yi L wrote:
-> > > From: Stefan Hajnoczi <stefanha@gmail.com>
-> > > Sent: Monday, June 15, 2020 5:41 PM
-> > > On Thu, Jun 11, 2020 at 05:15:33AM -0700, Liu Yi L wrote:
-> > >
-> > > > From: Eric Auger <eric.auger@redhat.com>
-> > > >
-> > > > The VFIO API was enhanced to support nested stage control: a bunch of
-> > > > new iotcls and usage guideline.
-> > > >
-> > > > Let's document the process to follow to set up nested mode.
-> > > >
-> > > > Cc: Kevin Tian <kevin.tian@intel.com>
-> > > > CC: Jacob Pan <jacob.jun.pan@linux.intel.com>
-> > > > Cc: Alex Williamson <alex.williamson@redhat.com>
-> > > > Cc: Eric Auger <eric.auger@redhat.com>
-> > > > Cc: Jean-Philippe Brucker <jean-philippe@linaro.org>
-> > > > Cc: Joerg Roedel <joro@8bytes.org>
-> > > > Cc: Lu Baolu <baolu.lu@linux.intel.com>
-> > > > Signed-off-by: Eric Auger <eric.auger@redhat.com>
-> > > > Signed-off-by: Liu Yi L <yi.l.liu@intel.com>
-> > > > ---
-> > > > v1 -> v2:
-> > > > *) new in v2, compared with Eric's original version, pasid table bind
-> > > >    and fault reporting is removed as this series doesn't cover them.
-> > > >    Original version from Eric.
-> > > >    https://lkml.org/lkml/2020/3/20/700
-> > > >
-> > > >  Documentation/driver-api/vfio.rst | 64
-> > > > +++++++++++++++++++++++++++++++++++++++
-> > > >  1 file changed, 64 insertions(+)
-> > > >
-> > > > diff --git a/Documentation/driver-api/vfio.rst
-> > > > b/Documentation/driver-api/vfio.rst
-> > > > index f1a4d3c..06224bd 100644
-> > > > --- a/Documentation/driver-api/vfio.rst
-> > > > +++ b/Documentation/driver-api/vfio.rst
-> > > > @@ -239,6 +239,70 @@ group and can access them as follows::
-> > > >  	/* Gratuitous device reset and go... */
-> > > >  	ioctl(device, VFIO_DEVICE_RESET);
-> > > >
-> > > > +IOMMU Dual Stage Control
-> > > > +------------------------
-> > > > +
-> > > > +Some IOMMUs support 2 stages/levels of translation. Stage corresponds
-> > > > +to the ARM terminology while level corresponds to Intel's VTD terminology.
-> > > > +In the following text we use either without distinction.
-> > > > +
-> > > > +This is useful when the guest is exposed with a virtual IOMMU and
-> > > > +some devices are assigned to the guest through VFIO. Then the guest
-> > > > +OS can use stage 1 (GIOVA -> GPA or GVA->GPA), while the hypervisor
-> > > > +uses stage 2 for VM isolation (GPA -> HPA).
-> > > > +
-> > > > +Under dual stage translation, the guest gets ownership of the stage 1
-> > > > +page tables and also owns stage 1 configuration structures. The
-> > > > +hypervisor owns the root configuration structure (for security
-> > > > +reason), including stage 2 configuration. This works as long
-> > > > +configuration structures and page table
-> > >
-> > > s/as long configuration/as long as configuration/
-> >
-> > got it.
-> >
-> > >
-> > > > +format are compatible between the virtual IOMMU and the physical IOMMU.
-> > >
-> > > s/format/formats/
-> >
-> > I see.
-> >
-> > > > +
-> > > > +Assuming the HW supports it, this nested mode is selected by choosing
-> > > > +the VFIO_TYPE1_NESTING_IOMMU type through:
-> > > > +
-> > > > +    ioctl(container, VFIO_SET_IOMMU, VFIO_TYPE1_NESTING_IOMMU);
-> > > > +
-> > > > +This forces the hypervisor to use the stage 2, leaving stage 1
-> > > > +available for guest usage. The guest stage 1 format depends on IOMMU
-> > > > +vendor, and it is the same with the nesting configuration method.
-> > > > +User space should check the format and configuration method after
-> > > > +setting nesting type by
-> > > > +using:
-> > > > +
-> > > > +    ioctl(container->fd, VFIO_IOMMU_GET_INFO, &nesting_info);
-> > > > +
-> > > > +Details can be found in Documentation/userspace-api/iommu.rst. For
-> > > > +Intel VT-d, each stage 1 page table is bound to host by:
-> > > > +
-> > > > +    nesting_op->flags = VFIO_IOMMU_NESTING_OP_BIND_PGTBL;
-> > > > +    memcpy(&nesting_op->data, &bind_data, sizeof(bind_data));
-> > > > +    ioctl(container->fd, VFIO_IOMMU_NESTING_OP, nesting_op);
-> > > > +
-> > > > +As mentioned above, guest OS may use stage 1 for GIOVA->GPA or GVA->GPA.
-> > > > +GVA->GPA page tables are available when PASID (Process Address Space
-> > > > +GVA->ID)
-> > > > +is exposed to guest. e.g. guest with PASID-capable devices assigned.
-> > > > +For such page table binding, the bind_data should include PASID info,
-> > > > +which is allocated by guest itself or by host. This depends on
-> > > > +hardware vendor e.g. Intel VT-d requires to allocate PASID from host.
-> > > > +This requirement is available by VFIO_IOMMU_GET_INFO. User space
-> > > > +could allocate PASID from host by:
-> > > > +
-> > > > +    req.flags = VFIO_IOMMU_ALLOC_PASID;
-> > > > +    ioctl(container, VFIO_IOMMU_PASID_REQUEST, &req);
-> > >
-> > > It is not clear how the userspace application determines whether PASIDs must be
-> > > allocated from the host via VFIO_IOMMU_PASID_REQUEST or if the guest itself
-> can
-> > > allocate PASIDs. The text mentions VFIO_IOMMU_GET_INFO but what exactly
-> > > should the userspace application check?
-> >
-> > For VT-d, spec 3.0 introduced Virtual Cmd interface for PASID allocation,
-> > guest request PASID from host if it detects the interface. Application
-> > should check the IOMMU_NESTING_FEAT_SYSWIDE_PASID setting in the below
-> > info reported by VFIO_IOMMU_GET_INFO. And virtual VT-d should not report
-> > SVA related capabilities to guest if  SYSWIDE_PASID is not supported by
-> > kernel.
-> >
-> > +struct iommu_nesting_info {
-> > +	__u32	size;
-> > +	__u32	format;
-> > +	__u32	features;
-> > +#define IOMMU_NESTING_FEAT_SYSWIDE_PASID	(1 << 0)
-> > +#define IOMMU_NESTING_FEAT_BIND_PGTBL		(1 << 1)
-> > +#define IOMMU_NESTING_FEAT_CACHE_INVLD		(1 << 2)
-> > +	__u32	flags;
-> > +	__u8	data[];
-> > +};
-> > https://lore.kernel.org/linux-iommu/1591877734-66527-3-git-send-email-
-> yi.l.liu@intel.com/
-> 
-> I see. Is it possible to add this information into this patch or at
-> least a reference so readers know where to find out exactly how to do
-> this?
+Hi Jon,
 
-oh, yes. this would help a lot. will add it.
+As requested, this is a rebase of a previous series posted on Jan, 15.
+
+Since then, several patches got merged via other trees or became
+obsolete. There were also 2 patches before that fits better at the
+ReST conversion patchset. So, I'll be sending it on another patch
+series together with the remaining ReST conversions.
+
+I also added reviews/acks received.
+
+So, the series reduced from 29 to 15 patches.
+
+Let's hope b4 would be able to properly handle this one.
 
 Regards,
-Yi Liu
-> Stefan
+Mauro
+
+Mauro Carvalho Chehab (15):
+  mm: vmalloc.c: remove a kernel-doc annotation from a removed parameter
+  net: dev: add a missing kernel-doc annotation
+  net: netdevice.h: add a description for napi_defer_hard_irqs
+  scripts/kernel-doc: parse __ETHTOOL_DECLARE_LINK_MODE_MASK
+  net: pylink.h: add kernel-doc descriptions for new fields at
+    phylink_config
+  scripts/kernel-doc: handle function pointer prototypes
+  fs: fs.h: fix a kernel-doc parameter description
+  kcsan: fix a kernel-doc warning
+  selftests/vm/keys: fix a broken reference at protection_keys.c
+  docs: hugetlbpage.rst: fix some warnings
+  docs: powerpc: fix some issues at vas-api.rst
+  docs: driver-model: remove a duplicated markup at driver.rst
+  docs: ABI: fix a typo when pointing to w1-generic.rst
+  docs: fix references for DMA*.txt files
+  docs: fs: proc.rst: convert a new chapter to ReST
+
+ .../ABI/testing/sysfs-driver-w1_therm         |  2 +-
+ Documentation/PCI/pci.rst                     |  6 +--
+ Documentation/admin-guide/mm/hugetlbpage.rst  | 23 +++++++---
+ Documentation/block/biodoc.rst                |  2 +-
+ Documentation/bus-virt-phys-mapping.txt       |  2 +-
+ Documentation/core-api/dma-api.rst            |  6 +--
+ Documentation/core-api/dma-isa-lpc.rst        |  2 +-
+ .../driver-api/driver-model/driver.rst        |  2 -
+ Documentation/driver-api/usb/dma.rst          |  6 +--
+ Documentation/filesystems/proc.rst            | 44 +++++++++----------
+ Documentation/powerpc/vas-api.rst             | 23 +++++++---
+ .../translations/ko_KR/memory-barriers.txt    |  6 +--
+ arch/ia64/hp/common/sba_iommu.c               | 12 ++---
+ arch/parisc/kernel/pci-dma.c                  |  2 +-
+ arch/x86/include/asm/dma-mapping.h            |  4 +-
+ arch/x86/kernel/amd_gart_64.c                 |  2 +-
+ drivers/parisc/sba_iommu.c                    | 14 +++---
+ include/linux/dma-mapping.h                   |  2 +-
+ include/linux/fs.h                            |  2 +-
+ include/linux/kcsan-checks.h                  | 10 +++--
+ include/linux/netdevice.h                     |  2 +
+ include/linux/phylink.h                       |  4 ++
+ include/media/videobuf-dma-sg.h               |  2 +-
+ kernel/dma/debug.c                            |  2 +-
+ mm/vmalloc.c                                  |  1 -
+ net/core/dev.c                                |  1 +
+ scripts/kernel-doc                            |  7 +++
+ tools/testing/selftests/vm/protection_keys.c  |  2 +-
+ 28 files changed, 114 insertions(+), 79 deletions(-)
+
+-- 
+2.26.2
+
+
 _______________________________________________
 iommu mailing list
 iommu@lists.linux-foundation.org
