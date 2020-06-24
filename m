@@ -2,70 +2,70 @@ Return-Path: <SRS0=9F5p=AF=lists.linux-foundation.org=iommu-bounces@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-6.5 required=3.0 tests=HEADER_FROM_DIFFERENT_DOMAINS,
+X-Spam-Status: No, score=-7.2 required=3.0 tests=HEADER_FROM_DIFFERENT_DOMAINS,
 	INCLUDES_PATCH,MAILING_LIST_MULTI,SIGNED_OFF_BY,SPF_HELO_NONE,SPF_PASS,
-	URIBL_BLOCKED,URI_WP_DIRINDEX,USER_AGENT_GIT autolearn=ham autolearn_force=no
-	version=3.4.0
+	UNWANTED_LANGUAGE_BODY,URIBL_BLOCKED,USER_AGENT_GIT autolearn=ham
+	autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id AF772C433DF
+	by smtp.lore.kernel.org (Postfix) with ESMTP id B9553C433E4
 	for <iommu@archiver.kernel.org>; Wed, 24 Jun 2020 08:49:01 +0000 (UTC)
 Received: from hemlock.osuosl.org (smtp2.osuosl.org [140.211.166.133])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by mail.kernel.org (Postfix) with ESMTPS id 5DFD02088E
+	by mail.kernel.org (Postfix) with ESMTPS id 96B3420B1F
 	for <iommu@archiver.kernel.org>; Wed, 24 Jun 2020 08:49:01 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 5DFD02088E
+DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 96B3420B1F
 Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=intel.com
 Authentication-Results: mail.kernel.org; spf=pass smtp.mailfrom=iommu-bounces@lists.linux-foundation.org
 Received: from localhost (localhost [127.0.0.1])
-	by hemlock.osuosl.org (Postfix) with ESMTP id 0A91D891AF;
+	by hemlock.osuosl.org (Postfix) with ESMTP id 742F5892A0;
 	Wed, 24 Jun 2020 08:49:01 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
 Received: from hemlock.osuosl.org ([127.0.0.1])
 	by localhost (.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
-	with ESMTP id ATzm916UYvZD; Wed, 24 Jun 2020 08:49:00 +0000 (UTC)
+	with ESMTP id GgKIy-gj8rxY; Wed, 24 Jun 2020 08:49:00 +0000 (UTC)
 Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [140.211.9.56])
-	by hemlock.osuosl.org (Postfix) with ESMTP id 4A65588889;
+	by hemlock.osuosl.org (Postfix) with ESMTP id 6EADB888B6;
 	Wed, 24 Jun 2020 08:49:00 +0000 (UTC)
 Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
-	by lists.linuxfoundation.org (Postfix) with ESMTP id 2784DC0894;
+	by lists.linuxfoundation.org (Postfix) with ESMTP id 5EA1CC0893;
 	Wed, 24 Jun 2020 08:49:00 +0000 (UTC)
 Received: from fraxinus.osuosl.org (smtp4.osuosl.org [140.211.166.137])
- by lists.linuxfoundation.org (Postfix) with ESMTP id C9BE2C016F
- for <iommu@lists.linux-foundation.org>; Wed, 24 Jun 2020 08:48:58 +0000 (UTC)
+ by lists.linuxfoundation.org (Postfix) with ESMTP id 21AF4C016F
+ for <iommu@lists.linux-foundation.org>; Wed, 24 Jun 2020 08:48:59 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
- by fraxinus.osuosl.org (Postfix) with ESMTP id B9A55872CE
- for <iommu@lists.linux-foundation.org>; Wed, 24 Jun 2020 08:48:58 +0000 (UTC)
+ by fraxinus.osuosl.org (Postfix) with ESMTP id 1012E8719A
+ for <iommu@lists.linux-foundation.org>; Wed, 24 Jun 2020 08:48:59 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
 Received: from fraxinus.osuosl.org ([127.0.0.1])
  by localhost (.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
- with ESMTP id qtZo3HPrUi3e for <iommu@lists.linux-foundation.org>;
+ with ESMTP id LDLzHFDX5T4x for <iommu@lists.linux-foundation.org>;
  Wed, 24 Jun 2020 08:48:58 +0000 (UTC)
 X-Greylist: domain auto-whitelisted by SQLgrey-1.7.6
 Received: from mga18.intel.com (mga18.intel.com [134.134.136.126])
- by fraxinus.osuosl.org (Postfix) with ESMTPS id C6AAC8719A
- for <iommu@lists.linux-foundation.org>; Wed, 24 Jun 2020 08:48:57 +0000 (UTC)
-IronPort-SDR: aoegLpx21an1Extk4Ffwm5xoK8ny10ciniyKk3XEq75ccTEMx580u35oakBsg646nqoW2w1NY4
- cQo6/NnofhfQ==
-X-IronPort-AV: E=McAfee;i="6000,8403,9661"; a="131815143"
-X-IronPort-AV: E=Sophos;i="5.75,274,1589266800"; d="scan'208";a="131815143"
+ by fraxinus.osuosl.org (Postfix) with ESMTPS id 15F4A871EC
+ for <iommu@lists.linux-foundation.org>; Wed, 24 Jun 2020 08:48:58 +0000 (UTC)
+IronPort-SDR: wky68WVv1FSr2+O3uf7pmmFx3ZLWbiCgERCIL360AFkA4obHHivS0O4cpy4PN86xKaDd3ZmjYw
+ URdV8OXvE/BQ==
+X-IronPort-AV: E=McAfee;i="6000,8403,9661"; a="131815145"
+X-IronPort-AV: E=Sophos;i="5.75,274,1589266800"; d="scan'208";a="131815145"
 X-Amp-Result: SKIPPED(no attachment in message)
 X-Amp-File-Uploaded: False
 Received: from orsmga003.jf.intel.com ([10.7.209.27])
  by orsmga106.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384;
  24 Jun 2020 01:48:57 -0700
-IronPort-SDR: THVJXCEkFHZnO1tmq2+rljLU7NZo52RLORfu12BgWwchCSjBKNX/3VBUhd1P+aXw6WSzoAr1Zp
- o3g7OVZO80gQ==
+IronPort-SDR: P+2ooJdc8y2i6peOdRCmA1aCnjyRXqRY0Kpqn2cbWKpyBr12xultIKfWxKmzcdYIA9paOfjLoD
+ bU6HrPn/svjg==
 X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.75,274,1589266800"; d="scan'208";a="275624524"
+X-IronPort-AV: E=Sophos;i="5.75,274,1589266800"; d="scan'208";a="275624531"
 Received: from jacob-builder.jf.intel.com ([10.7.199.155])
  by orsmga003.jf.intel.com with ESMTP; 24 Jun 2020 01:48:56 -0700
 From: Liu Yi L <yi.l.liu@intel.com>
 To: alex.williamson@redhat.com, eric.auger@redhat.com,
  baolu.lu@linux.intel.com, joro@8bytes.org
-Subject: [PATCH v3 11/14] vfio/type1: Add vSVA support for IOMMU-backed mdevs
-Date: Wed, 24 Jun 2020 01:55:24 -0700
-Message-Id: <1592988927-48009-12-git-send-email-yi.l.liu@intel.com>
+Subject: [PATCH v3 14/14] iommu/vt-d: Support reporting nesting capability info
+Date: Wed, 24 Jun 2020 01:55:27 -0700
+Message-Id: <1592988927-48009-15-git-send-email-yi.l.liu@intel.com>
 X-Mailer: git-send-email 2.7.4
 In-Reply-To: <1592988927-48009-1-git-send-email-yi.l.liu@intel.com>
 References: <1592988927-48009-1-git-send-email-yi.l.liu@intel.com>
@@ -90,117 +90,155 @@ Content-Transfer-Encoding: 7bit
 Errors-To: iommu-bounces@lists.linux-foundation.org
 Sender: "iommu" <iommu-bounces@lists.linux-foundation.org>
 
-Recent years, mediated device pass-through framework (e.g. vfio-mdev)
-is used to achieve flexible device sharing across domains (e.g. VMs).
-Also there are hardware assisted mediated pass-through solutions from
-platform vendors. e.g. Intel VT-d scalable mode which supports Intel
-Scalable I/O Virtualization technology. Such mdevs are called IOMMU-
-backed mdevs as there are IOMMU enforced DMA isolation for such mdevs.
-In kernel, IOMMU-backed mdevs are exposed to IOMMU layer by aux-domain
-concept, which means mdevs are protected by an iommu domain which is
-auxiliary to the domain that the kernel driver primarily uses for DMA
-API. Details can be found in the KVM presentation as below:
-
-https://events19.linuxfoundation.org/wp-content/uploads/2017/12/\
-Hardware-Assisted-Mediated-Pass-Through-with-VFIO-Kevin-Tian-Intel.pdf
-
-This patch extends NESTING_IOMMU ops to IOMMU-backed mdev devices. The
-main requirement is to use the auxiliary domain associated with mdev.
-
 Cc: Kevin Tian <kevin.tian@intel.com>
 CC: Jacob Pan <jacob.jun.pan@linux.intel.com>
-CC: Jun Tian <jun.j.tian@intel.com>
 Cc: Alex Williamson <alex.williamson@redhat.com>
 Cc: Eric Auger <eric.auger@redhat.com>
 Cc: Jean-Philippe Brucker <jean-philippe@linaro.org>
 Cc: Joerg Roedel <joro@8bytes.org>
 Cc: Lu Baolu <baolu.lu@linux.intel.com>
 Signed-off-by: Liu Yi L <yi.l.liu@intel.com>
+Signed-off-by: Jacob Pan <jacob.jun.pan@linux.intel.com>
 ---
-v1 -> v2:
-*) check the iommu_device to ensure the handling mdev is IOMMU-backed
+v2 -> v3:
+*) remove cap/ecap_mask in iommu_nesting_info.
 ---
- drivers/vfio/vfio_iommu_type1.c | 40 ++++++++++++++++++++++++++++++++++++----
- 1 file changed, 36 insertions(+), 4 deletions(-)
+ drivers/iommu/intel/iommu.c | 79 +++++++++++++++++++++++++++++++++++++++++++--
+ include/linux/intel-iommu.h | 16 +++++++++
+ 2 files changed, 93 insertions(+), 2 deletions(-)
 
-diff --git a/drivers/vfio/vfio_iommu_type1.c b/drivers/vfio/vfio_iommu_type1.c
-index 4c21300..e1a794c 100644
---- a/drivers/vfio/vfio_iommu_type1.c
-+++ b/drivers/vfio/vfio_iommu_type1.c
-@@ -2378,20 +2378,41 @@ static int vfio_iommu_resv_refresh(struct vfio_iommu *iommu,
+diff --git a/drivers/iommu/intel/iommu.c b/drivers/iommu/intel/iommu.c
+index b50395e..5f36894 100644
+--- a/drivers/iommu/intel/iommu.c
++++ b/drivers/iommu/intel/iommu.c
+@@ -5651,12 +5651,16 @@ static inline bool iommu_pasid_support(void)
+ static inline bool nested_mode_support(void)
+ {
+ 	struct dmar_drhd_unit *drhd;
+-	struct intel_iommu *iommu;
++	struct intel_iommu *iommu, *prev = NULL;
+ 	bool ret = true;
+ 
+ 	rcu_read_lock();
+ 	for_each_active_iommu(iommu, drhd) {
+-		if (!sm_supported(iommu) || !ecap_nest(iommu->ecap)) {
++		if (!prev)
++			prev = iommu;
++		if (!sm_supported(iommu) || !ecap_nest(iommu->ecap) ||
++		    (VTD_CAP_MASK & (iommu->cap ^ prev->cap)) ||
++		    (VTD_ECAP_MASK & (iommu->ecap ^ prev->ecap))) {
+ 			ret = false;
+ 			break;
+ 		}
+@@ -6065,11 +6069,82 @@ intel_iommu_domain_set_attr(struct iommu_domain *domain,
  	return ret;
  }
  
-+static struct device *vfio_get_iommu_device(struct vfio_group *group,
-+					    struct device *dev)
++static int intel_iommu_get_nesting_info(struct iommu_domain *domain,
++					struct iommu_nesting_info *info)
 +{
-+	if (group->mdev_group)
-+		return vfio_mdev_get_iommu_device(dev);
-+	else
-+		return dev;
++	struct dmar_domain *dmar_domain = to_dmar_domain(domain);
++	u64 cap = VTD_CAP_MASK, ecap = VTD_ECAP_MASK;
++	struct device_domain_info *domain_info;
++	struct iommu_nesting_info_vtd vtd;
++	unsigned long flags;
++	u32 size;
++
++	if ((domain->type != IOMMU_DOMAIN_UNMANAGED) ||
++	    !(dmar_domain->flags & DOMAIN_FLAG_NESTING_MODE))
++		return -ENODEV;
++
++	if (!info)
++		return -EINVAL;
++
++	size = sizeof(struct iommu_nesting_info) +
++		sizeof(struct iommu_nesting_info_vtd);
++	/*
++	 * if provided buffer size is not equal to the size, should
++	 * return 0 and also the expected buffer size to caller.
++	 */
++	if (info->size != size) {
++		info->size = size;
++		return 0;
++	}
++
++	spin_lock_irqsave(&device_domain_lock, flags);
++	/*
++	 * arbitrary select the first domain_info as all nesting
++	 * related capabilities should be consistent across iommu
++	 * units.
++	 */
++	domain_info = list_first_entry(&dmar_domain->devices,
++				      struct device_domain_info, link);
++	cap &= domain_info->iommu->cap;
++	ecap &= domain_info->iommu->ecap;
++	spin_unlock_irqrestore(&device_domain_lock, flags);
++
++	info->format = IOMMU_PASID_FORMAT_INTEL_VTD;
++	info->features = IOMMU_NESTING_FEAT_SYSWIDE_PASID |
++			 IOMMU_NESTING_FEAT_BIND_PGTBL |
++			 IOMMU_NESTING_FEAT_CACHE_INVLD;
++	vtd.flags = 0;
++	vtd.addr_width = dmar_domain->gaw;
++	vtd.pasid_bits = ilog2(intel_pasid_max_id);
++	vtd.cap_reg = cap;
++	vtd.ecap_reg = ecap;
++
++	memcpy(info->data, &vtd, sizeof(vtd));
++	return 0;
 +}
 +
- static int vfio_dev_bind_gpasid_fn(struct device *dev, void *data)
- {
- 	struct domain_capsule *dc = (struct domain_capsule *)data;
- 	unsigned long arg = *(unsigned long *) dc->data;
-+	struct device *iommu_device;
++static int intel_iommu_domain_get_attr(struct iommu_domain *domain,
++				       enum iommu_attr attr, void *data)
++{
++	switch (attr) {
++	case DOMAIN_ATTR_NESTING:
++	{
++		struct iommu_nesting_info *info =
++				(struct iommu_nesting_info *) data;
 +
-+	iommu_device = vfio_get_iommu_device(dc->group, dev);
-+	if (!iommu_device)
-+		return -EINVAL;
- 
--	return iommu_sva_bind_gpasid(dc->domain, dev, (void __user *) arg);
-+	return iommu_sva_bind_gpasid(dc->domain, iommu_device,
-+				     (void __user *) arg);
- }
- 
- static int vfio_dev_unbind_gpasid_fn(struct device *dev, void *data)
- {
- 	struct domain_capsule *dc = (struct domain_capsule *)data;
- 	unsigned long arg = *(unsigned long *) dc->data;
-+	struct device *iommu_device;
- 
--	iommu_sva_unbind_gpasid(dc->domain, dev, (void __user *) arg);
-+	iommu_device = vfio_get_iommu_device(dc->group, dev);
-+	if (!iommu_device)
-+		return -EINVAL;
++		return intel_iommu_get_nesting_info(domain, info);
++	}
++	default:
++		return -ENODEV;
++	}
++}
 +
-+	iommu_sva_unbind_gpasid(dc->domain, iommu_device,
-+				(void __user *) arg);
- 	return 0;
- }
+ const struct iommu_ops intel_iommu_ops = {
+ 	.capable		= intel_iommu_capable,
+ 	.domain_alloc		= intel_iommu_domain_alloc,
+ 	.domain_free		= intel_iommu_domain_free,
+ 	.domain_set_attr	= intel_iommu_domain_set_attr,
++	.domain_get_attr	= intel_iommu_domain_get_attr,
+ 	.attach_dev		= intel_iommu_attach_device,
+ 	.detach_dev		= intel_iommu_detach_device,
+ 	.aux_attach_dev		= intel_iommu_aux_attach_device,
+diff --git a/include/linux/intel-iommu.h b/include/linux/intel-iommu.h
+index a6f8f41..a76cd45 100644
+--- a/include/linux/intel-iommu.h
++++ b/include/linux/intel-iommu.h
+@@ -196,6 +196,22 @@
+ #define ecap_max_handle_mask(e) ((e >> 20) & 0xf)
+ #define ecap_sc_support(e)	((e >> 7) & 0x1) /* Snooping Control */
  
-@@ -2400,8 +2421,13 @@ static int __vfio_dev_unbind_gpasid_fn(struct device *dev, void *data)
- 	struct domain_capsule *dc = (struct domain_capsule *)data;
- 	struct iommu_gpasid_bind_data *unbind_data =
- 				(struct iommu_gpasid_bind_data *) dc->data;
-+	struct device *iommu_device;
++/* Nesting Support Capability Alignment */
++#define VTD_CAP_FL1GP		(1ULL << 56)
++#define VTD_CAP_FL5LP		(1ULL << 60)
++#define VTD_ECAP_PRS		(1ULL << 29)
++#define VTD_ECAP_ERS		(1ULL << 30)
++#define VTD_ECAP_SRS		(1ULL << 31)
++#define VTD_ECAP_EAFS		(1ULL << 34)
++#define VTD_ECAP_PASID		(1ULL << 40)
 +
-+	iommu_device = vfio_get_iommu_device(dc->group, dev);
-+	if (!iommu_device)
-+		return -EINVAL;
- 
--	__iommu_sva_unbind_gpasid(dc->domain, dev, unbind_data);
-+	__iommu_sva_unbind_gpasid(dc->domain, iommu_device, unbind_data);
- 	return 0;
- }
- 
-@@ -3084,8 +3110,14 @@ static int vfio_dev_cache_invalidate_fn(struct device *dev, void *data)
- {
- 	struct domain_capsule *dc = (struct domain_capsule *)data;
- 	unsigned long arg = *(unsigned long *) dc->data;
-+	struct device *iommu_device;
++/* Only capabilities marked in below MASKs are reported */
++#define VTD_CAP_MASK		(VTD_CAP_FL1GP | VTD_CAP_FL5LP)
 +
-+	iommu_device = vfio_get_iommu_device(dc->group, dev);
-+	if (!iommu_device)
-+		return -EINVAL;
- 
--	iommu_cache_invalidate(dc->domain, dev, (void __user *) arg);
-+	iommu_cache_invalidate(dc->domain, iommu_device,
-+				(void __user *) arg);
- 	return 0;
- }
++#define VTD_ECAP_MASK		(VTD_ECAP_PRS | VTD_ECAP_ERS | \
++				 VTD_ECAP_SRS | VTD_ECAP_EAFS | \
++				 VTD_ECAP_PASID)
++
+ /* Virtual command interface capability */
+ #define vccap_pasid(v)		(((v) & DMA_VCS_PAS)) /* PASID allocation */
  
 -- 
 2.7.4
