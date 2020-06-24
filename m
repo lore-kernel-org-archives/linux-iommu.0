@@ -2,88 +2,82 @@ Return-Path: <SRS0=9F5p=AF=lists.linux-foundation.org=iommu-bounces@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-5.3 required=3.0 tests=DKIM_INVALID,DKIM_SIGNED,
-	HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_PATCH,MAILING_LIST_MULTI,SPF_HELO_NONE,
-	SPF_PASS,UNPARSEABLE_RELAY,URIBL_BLOCKED,USER_AGENT_SANE_2 autolearn=ham
-	autolearn_force=no version=3.4.0
+X-Spam-Status: No, score=-8.5 required=3.0 tests=HEADER_FROM_DIFFERENT_DOMAINS,
+	INCLUDES_PATCH,MAILING_LIST_MULTI,SIGNED_OFF_BY,SPF_HELO_NONE,SPF_PASS,
+	URIBL_BLOCKED,USER_AGENT_SANE_1 autolearn=ham autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 4B783C433DF
-	for <iommu@archiver.kernel.org>; Wed, 24 Jun 2020 06:40:45 +0000 (UTC)
-Received: from hemlock.osuosl.org (smtp2.osuosl.org [140.211.166.133])
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 819E0C433E1
+	for <iommu@archiver.kernel.org>; Wed, 24 Jun 2020 06:54:59 +0000 (UTC)
+Received: from whitealder.osuosl.org (smtp1.osuosl.org [140.211.166.138])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by mail.kernel.org (Postfix) with ESMTPS id 07ABB206FA
-	for <iommu@archiver.kernel.org>; Wed, 24 Jun 2020 06:40:44 +0000 (UTC)
-Authentication-Results: mail.kernel.org;
-	dkim=fail reason="signature verification failed" (1024-bit key) header.d=mediatek.com header.i=@mediatek.com header.b="pYOAFoAu"
-DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 07ABB206FA
-Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=mediatek.com
+	by mail.kernel.org (Postfix) with ESMTPS id 31EB72072E
+	for <iommu@archiver.kernel.org>; Wed, 24 Jun 2020 06:54:59 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 31EB72072E
+Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=linux.intel.com
 Authentication-Results: mail.kernel.org; spf=pass smtp.mailfrom=iommu-bounces@lists.linux-foundation.org
 Received: from localhost (localhost [127.0.0.1])
-	by hemlock.osuosl.org (Postfix) with ESMTP id 9E91E8887C;
-	Wed, 24 Jun 2020 06:40:44 +0000 (UTC)
+	by whitealder.osuosl.org (Postfix) with ESMTP id E503887D39;
+	Wed, 24 Jun 2020 06:54:58 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from hemlock.osuosl.org ([127.0.0.1])
+Received: from whitealder.osuosl.org ([127.0.0.1])
 	by localhost (.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
-	with ESMTP id fhMBQBqfSTFT; Wed, 24 Jun 2020 06:40:44 +0000 (UTC)
+	with ESMTP id hXAJRCDgDU7X; Wed, 24 Jun 2020 06:54:57 +0000 (UTC)
 Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [140.211.9.56])
-	by hemlock.osuosl.org (Postfix) with ESMTP id 15B71887B9;
-	Wed, 24 Jun 2020 06:40:44 +0000 (UTC)
+	by whitealder.osuosl.org (Postfix) with ESMTP id D2FE987BE0;
+	Wed, 24 Jun 2020 06:54:57 +0000 (UTC)
 Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
-	by lists.linuxfoundation.org (Postfix) with ESMTP id EC296C088E;
-	Wed, 24 Jun 2020 06:40:43 +0000 (UTC)
+	by lists.linuxfoundation.org (Postfix) with ESMTP id B64C0C0888;
+	Wed, 24 Jun 2020 06:54:57 +0000 (UTC)
 Received: from whitealder.osuosl.org (smtp1.osuosl.org [140.211.166.138])
- by lists.linuxfoundation.org (Postfix) with ESMTP id 0A6C8C016F
- for <iommu@lists.linux-foundation.org>; Wed, 24 Jun 2020 06:40:43 +0000 (UTC)
+ by lists.linuxfoundation.org (Postfix) with ESMTP id 0DE70C016F
+ for <iommu@lists.linux-foundation.org>; Wed, 24 Jun 2020 06:54:56 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
- by whitealder.osuosl.org (Postfix) with ESMTP id E4E9988305
- for <iommu@lists.linux-foundation.org>; Wed, 24 Jun 2020 06:40:42 +0000 (UTC)
+ by whitealder.osuosl.org (Postfix) with ESMTP id E97EE87D25
+ for <iommu@lists.linux-foundation.org>; Wed, 24 Jun 2020 06:54:55 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
 Received: from whitealder.osuosl.org ([127.0.0.1])
  by localhost (.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
- with ESMTP id mBoy1GzxQ0RY for <iommu@lists.linux-foundation.org>;
- Wed, 24 Jun 2020 06:40:42 +0000 (UTC)
+ with ESMTP id LoIYIwb-SmLd for <iommu@lists.linux-foundation.org>;
+ Wed, 24 Jun 2020 06:54:54 +0000 (UTC)
 X-Greylist: domain auto-whitelisted by SQLgrey-1.7.6
-Received: from mailgw01.mediatek.com (unknown [210.61.82.183])
- by whitealder.osuosl.org (Postfix) with ESMTP id 0F2C0882CB
- for <iommu@lists.linux-foundation.org>; Wed, 24 Jun 2020 06:40:41 +0000 (UTC)
-X-UUID: 4480b2ca7b054f65b6670c72e877b5e1-20200624
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=mediatek.com;
- s=dk; 
- h=Content-Transfer-Encoding:MIME-Version:Content-Type:References:In-Reply-To:Date:CC:To:From:Subject:Message-ID;
- bh=C01wP7O41EMQ3vJzTY+vMBOf3dw7xo6jocNHUFkcK60=; 
- b=pYOAFoAuAPMKJOUpuxG+ASLryj8g+nVmFgn2Rg/9Mfvm7FwXtiScWEMX4Aeh062CDT4daPemOheV2tCJ7IcreiAbc3WpayoYeQxw+r3sFQ5318KBye2ride6ZpeZLVvqYTpP2lQcoXZ98ZiwioXD01Rx7/K13LjTrsZVOfp4o3w=;
-X-UUID: 4480b2ca7b054f65b6670c72e877b5e1-20200624
-Received: from mtkcas08.mediatek.inc [(172.21.101.126)] by
- mailgw01.mediatek.com (envelope-from <chao.hao@mediatek.com>)
- (Cellopoint E-mail Firewall v4.1.10 Build 0809 with TLS)
- with ESMTP id 32306068; Wed, 24 Jun 2020 14:40:39 +0800
-Received: from mtkcas08.mediatek.inc (172.21.101.126) by
- mtkmbs01n2.mediatek.inc (172.21.101.79) with Microsoft SMTP Server (TLS) id
- 15.0.1497.2; Wed, 24 Jun 2020 14:40:35 +0800
-Received: from [10.15.20.246] (10.15.20.246) by mtkcas08.mediatek.inc
- (172.21.101.73) with Microsoft SMTP Server id 15.0.1497.2 via Frontend
- Transport; Wed, 24 Jun 2020 14:40:34 +0800
-Message-ID: <1592980794.24677.4.camel@mbjsdccf07>
-Subject: Re: [PATCH v4 3/7] iommu/mediatek: Set MISC_CTRL register
-From: chao hao <Chao.Hao@mediatek.com>
-To: Yong Wu <yong.wu@mediatek.com>
-Date: Wed, 24 Jun 2020 14:39:54 +0800
-In-Reply-To: <1592618616.3951.12.camel@mhfsdcap03>
-References: <20200617030029.4082-1-chao.hao@mediatek.com>
- <20200617030029.4082-4-chao.hao@mediatek.com>
- <aaf422f5-2ac8-252d-a064-0c1246e09acc@gmail.com>
- <1592480963.12647.5.camel@mbjsdccf07> <1592618616.3951.12.camel@mhfsdcap03>
-X-Mailer: Evolution 3.10.4-0ubuntu2 
+Received: from mga14.intel.com (mga14.intel.com [192.55.52.115])
+ by whitealder.osuosl.org (Postfix) with ESMTPS id C218987BE0
+ for <iommu@lists.linux-foundation.org>; Wed, 24 Jun 2020 06:54:54 +0000 (UTC)
+IronPort-SDR: B2uemUaP6ra/+asg5NSbzAQigE1V8XvmH8rDe4uav+RQOPUdm4pVe5Q4f6n0J8S3zc9mm1tZlJ
+ qIrJ+UnW0jtQ==
+X-IronPort-AV: E=McAfee;i="6000,8403,9661"; a="143458881"
+X-IronPort-AV: E=Sophos;i="5.75,274,1589266800"; d="scan'208";a="143458881"
+X-Amp-Result: SKIPPED(no attachment in message)
+X-Amp-File-Uploaded: False
+Received: from orsmga004.jf.intel.com ([10.7.209.38])
+ by fmsmga103.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384;
+ 23 Jun 2020 23:54:54 -0700
+IronPort-SDR: pA3PTVMILCzC6XLeHyCYohah+2CFAn8+IEkWI2O7GjGT8tAuYipPYbAtjuNA87abS/nCEiKTel
+ vGKOK9jGZU3w==
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="5.75,274,1589266800"; d="scan'208";a="423273922"
+Received: from msaix-mobl2.ccr.corp.intel.com (HELO [10.255.28.245])
+ ([10.255.28.245])
+ by orsmga004.jf.intel.com with ESMTP; 23 Jun 2020 23:54:50 -0700
+Subject: Re: [PATCH v3 4/5] iommu/uapi: Handle data and argsz filled by users
+To: Jacob Pan <jacob.jun.pan@linux.intel.com>,
+ iommu@lists.linux-foundation.org, LKML <linux-kernel@vger.kernel.org>,
+ Joerg Roedel <joro@8bytes.org>, Alex Williamson <alex.williamson@redhat.com>
+References: <1592931837-58223-1-git-send-email-jacob.jun.pan@linux.intel.com>
+ <1592931837-58223-5-git-send-email-jacob.jun.pan@linux.intel.com>
+From: Lu Baolu <baolu.lu@linux.intel.com>
+Message-ID: <84491857-4a7e-e669-3cf5-615b010930e4@linux.intel.com>
+Date: Wed, 24 Jun 2020 14:54:49 +0800
+User-Agent: Mozilla/5.0 (Windows NT 10.0; WOW64; rv:68.0) Gecko/20100101
+ Thunderbird/68.9.0
 MIME-Version: 1.0
-X-TM-SNTS-SMTP: F70B4854FFD7F8C1D58622D9F607A9A3ED68DABFF7765DD65D58A3DE4CB487062000:8
-X-MTK: N
-Cc: devicetree@vger.kernel.org, FY Yang <fy.yang@mediatek.com>,
- wsd_upstream@mediatek.com, linux-kernel@vger.kernel.org,
- Chao Hao <chao.hao@mediatek.com>, iommu@lists.linux-foundation.org,
- Rob Herring <robh+dt@kernel.org>, linux-mediatek@lists.infradead.org,
- Matthias Brugger <matthias.bgg@gmail.com>,
- linux-arm-kernel@lists.infradead.org
+In-Reply-To: <1592931837-58223-5-git-send-email-jacob.jun.pan@linux.intel.com>
+Content-Language: en-US
+Cc: "Tian, Kevin" <kevin.tian@intel.com>, Raj Ashok <ashok.raj@intel.com>,
+ Jonathan Corbet <corbet@lwn.net>,
+ Jean-Philippe Brucker <jean-philippe@linaro.com>,
+ Christoph Hellwig <hch@infradead.org>, David Woodhouse <dwmw2@infradead.org>
 X-BeenThere: iommu@lists.linux-foundation.org
 X-Mailman-Version: 2.1.15
 Precedence: list
@@ -96,100 +90,202 @@ List-Post: <mailto:iommu@lists.linux-foundation.org>
 List-Help: <mailto:iommu-request@lists.linux-foundation.org?subject=help>
 List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
  <mailto:iommu-request@lists.linux-foundation.org?subject=subscribe>
-Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset="us-ascii"; Format="flowed"
 Errors-To: iommu-bounces@lists.linux-foundation.org
 Sender: "iommu" <iommu-bounces@lists.linux-foundation.org>
 
-On Sat, 2020-06-20 at 10:03 +0800, Yong Wu wrote:
-> Hi Chao,
-> 
-> On Thu, 2020-06-18 at 19:49 +0800, chao hao wrote: 
-> > On Wed, 2020-06-17 at 11:34 +0200, Matthias Brugger wrote:
-> 
-> [snip]
-> 
-> > > >  
-> > > >  #define REG_MMU_MISC_CTRL			0x048
-> > > > +#define F_MMU_IN_ORDER_WR_EN			(BIT(1) | BIT(17))
-> > > > +#define F_MMU_STANDARD_AXI_MODE_BIT		(BIT(3) | BIT(19))
-> > > > +
-> > > >  #define REG_MMU_DCM_DIS				0x050
-> > > >  
-> > > >  #define REG_MMU_CTRL_REG			0x110
-> > > > @@ -578,6 +581,14 @@ static int mtk_iommu_hw_init(const struct mtk_iommu_data *data)
-> > > >  		writel_relaxed(0, data->base + REG_MMU_MISC_CTRL);
-> > > >  	}
-> > > >  
-> > > > +	if (data->plat_data->has_misc_ctrl) {
-> > > 
-> > > That's confusing. We renamed the register to misc_ctrl, but it's present in all
-> > > SoCs. We should find a better name for this flag to describe what the hardware
-> > > supports.
-> > > 
-> > 
-> > ok, thanks for you advice, I will rename it in next version.
-> > ex:has_perf_req(has performance requirement)
-> > 
-> > 
-> > > Regards,
-> > > Matthias
-> > > 
-> > > > +		/* For mm_iommu, it can improve performance by the setting */
-> > > > +		regval = readl_relaxed(data->base + REG_MMU_MISC_CTRL);
-> > > > +		regval &= ~F_MMU_STANDARD_AXI_MODE_BIT;
-> > > > +		regval &= ~F_MMU_IN_ORDER_WR_EN;
-> 
-> Note: mt2712 also is MISC_CTRL register, but it don't use this
-> in_order setting.
-> 
-> As commented in v3. 0x48 is either STANDARD_AXI_MODE or MISC_CTRL
-> register. No need two flags(reset_axi/has_xx) for it.
-> 
-> something like:
-> 
-> regval = readl_relaxed(data->base + REG_MMU_MISC_CTRL);
-> if (reset_axi) {
-> regval = 0;
-> } else {   /* MISC_CTRL */
-> if (!apu[1])
-> regval &= ~F_MMU_STANDARD_AXI_MODE_BIT;
-> if (out_order_en)
-> regval &= ~F_MMU_IN_ORDER_WR_EN;
-> }
-> writel_relaxed(regval, data->base + REG_MMU_MISC_CTRL);
-> 
-> 
-> [1] Your current patch doesn't support apu-iommu, thus, add it when
-> necessary.
+Hi Jacob,
 
-ok, the patchset don't need to "if (!apu[1])", I will fix it in next
-version. thanks
+On 2020/6/24 1:03, Jacob Pan wrote:
+> IOMMU UAPI data has a user filled argsz field which indicates the data
+> length comes with the API call. User data is not trusted, argsz must be
+> validated based on the current kernel data size, mandatory data size,
+> and feature flags.
+> 
+> User data may also be extended, results in possible argsz increase.
+> Backward compatibility is ensured based on size and flags checking.
+> Details are documented in Documentation/userspace-api/iommu.rst
+> 
+> This patch adds sanity checks in both IOMMU layer and vendor code, where
+> VT-d is the only user for now.
+> 
+> Signed-off-by: Liu Yi L <yi.l.liu@intel.com>
+> Signed-off-by: Jacob Pan <jacob.jun.pan@linux.intel.com>
+> ---
+>   drivers/iommu/intel/svm.c |  3 ++
+>   drivers/iommu/iommu.c     | 96 ++++++++++++++++++++++++++++++++++++++++++++---
+>   include/linux/iommu.h     |  7 ++--
+>   3 files changed, 98 insertions(+), 8 deletions(-)
+> 
+> diff --git a/drivers/iommu/intel/svm.c b/drivers/iommu/intel/svm.c
+> index 713b3a218483..237db56878c0 100644
+> --- a/drivers/iommu/intel/svm.c
+> +++ b/drivers/iommu/intel/svm.c
+> @@ -244,6 +244,9 @@ int intel_svm_bind_gpasid(struct iommu_domain *domain, struct device *dev,
+>   	    data->format != IOMMU_PASID_FORMAT_INTEL_VTD)
+>   		return -EINVAL;
+>   
+> +	if (data->argsz != offsetofend(struct iommu_gpasid_bind_data, vendor.vtd))
+> +		return -EINVAL;
 
+Need to do size check in intel_iommu_sva_invalidate() as well?
 
-> > > > +		writel_relaxed(regval, data->base + REG_MMU_MISC_CTRL);
-> > > > +	}
-> > > > +
-> > > >  	if (devm_request_irq(data->dev, data->irq, mtk_iommu_isr, 0,
-> > > >  			     dev_name(data->dev), (void *)data)) {
-> > > >  		writel_relaxed(0, data->base + REG_MMU_PT_BASE_ADDR);
-> > > > diff --git a/drivers/iommu/mtk_iommu.h b/drivers/iommu/mtk_iommu.h
-> > > > index 1b6ea839b92c..d711ac630037 100644
-> > > > --- a/drivers/iommu/mtk_iommu.h
-> > > > +++ b/drivers/iommu/mtk_iommu.h
-> > > > @@ -40,6 +40,7 @@ struct mtk_iommu_plat_data {
-> > > >  
-> > > >  	/* HW will use the EMI clock if there isn't the "bclk". */
-> > > >  	bool                has_bclk;
-> > > > +	bool		    has_misc_ctrl;
-> > > >  	bool                has_vld_pa_rng;
-> > > >  	bool                reset_axi;
-> > > >  	unsigned char       larbid_remap[MTK_LARB_NR_MAX];
-> > > > 
-> > 
-> > 
+> +
+>   	if (!dev_is_pci(dev))
+>   		return -ENOTSUPP;
+>   
+> diff --git a/drivers/iommu/iommu.c b/drivers/iommu/iommu.c
+> index d43120eb1dc5..4a025c429b41 100644
+> --- a/drivers/iommu/iommu.c
+> +++ b/drivers/iommu/iommu.c
+> @@ -1951,22 +1951,108 @@ int iommu_attach_device(struct iommu_domain *domain, struct device *dev)
+>   EXPORT_SYMBOL_GPL(iommu_attach_device);
+>   
+>   int iommu_cache_invalidate(struct iommu_domain *domain, struct device *dev,
+> -			   struct iommu_cache_invalidate_info *inv_info)
+> +			void __user *uinfo)
+
+Nit: keep it aligned.
+
+>   {
+> +	struct iommu_cache_invalidate_info inv_info;
+> +	unsigned long minsz, maxsz;
+> +
+>   	if (unlikely(!domain->ops->cache_invalidate))
+>   		return -ENODEV;
+>   
+> -	return domain->ops->cache_invalidate(domain, dev, inv_info);
+> +	/* Current kernel data size is the max to be copied from user */
+> +	maxsz = sizeof(struct iommu_cache_invalidate_info);
+> +	memset((void *)&inv_info, 0, maxsz);
+> +
+> +	/*
+> +	 * No new spaces can be added before the variable sized union, the
+> +	 * minimum size is the offset to the union.
+> +	 */
+> +	minsz = offsetof(struct iommu_cache_invalidate_info, granu);
+> +
+> +	/* Copy minsz from user to get flags and argsz */
+> +	if (copy_from_user(&inv_info, uinfo, minsz))
+> +		return -EFAULT;
+> +
+> +	/* Fields before variable size union is mandatory */
+> +	if (inv_info.argsz < minsz)
+> +		return -EINVAL;
+> +	/*
+> +	 * User might be using a newer UAPI header, we shall let IOMMU vendor
+> +	 * driver decide on what size it needs. Since the UAPI data extension
+> +	 * can be vendor specific, larger argsz could be the result of extension
+> +	 * for one vendor but it should not affect another vendor.
+> +	 */
+> +	/*
+> +	 * User might be using a newer UAPI header which has a larger data
+> +	 * size, we shall support the existing flags within the current
+> +	 * size.
+> +	 */
+> +	if (inv_info.argsz > maxsz)
+> +		inv_info.argsz = maxsz;
+> +
+> +	/* Checking the exact argsz based on generic flags */
+> +	if (inv_info.granularity == IOMMU_INV_GRANU_ADDR &&
+> +		inv_info.argsz != offsetofend(struct iommu_cache_invalidate_info,
+> +					granu.addr_info))
+> +		return -EINVAL;
+> +
+> +	if (inv_info.granularity == IOMMU_INV_GRANU_PASID &&
+> +		inv_info.argsz != offsetofend(struct iommu_cache_invalidate_info,
+> +					granu.pasid_info))
+> +		return -EINVAL;
+> +
+> +	/* Copy the remaining user data _after_ minsz */
+> +	if (copy_from_user((void *)&inv_info + minsz, uinfo + minsz,
+> +				inv_info.argsz - minsz))
+> +		return -EFAULT;
+> +
+> +	return domain->ops->cache_invalidate(domain, dev, &inv_info);
+>   }
+>   EXPORT_SYMBOL_GPL(iommu_cache_invalidate);
+>   
+> -int iommu_sva_bind_gpasid(struct iommu_domain *domain,
+> -			   struct device *dev, struct iommu_gpasid_bind_data *data)
+> +int iommu_sva_bind_gpasid(struct iommu_domain *domain, struct device *dev,
+> +						void __user *udata)
+>   {
+> +
+> +	struct iommu_gpasid_bind_data data;
+> +	unsigned long minsz, maxsz;
+> +
+>   	if (unlikely(!domain->ops->sva_bind_gpasid))
+>   		return -ENODEV;
+>   
+> -	return domain->ops->sva_bind_gpasid(domain, dev, data);
+> +	/* Current kernel data size is the max to be copied from user */
+> +	maxsz = sizeof(struct iommu_gpasid_bind_data);
+> +	memset((void *)&data, 0, maxsz);
+> +
+> +	/*
+> +	 * No new spaces can be added before the variable sized union, the
+> +	 * minimum size is the offset to the union.
+> +	 */
+> +	minsz = offsetof(struct iommu_gpasid_bind_data, vendor);
+> +
+> +	/* Copy minsz from user to get flags and argsz */
+> +	if (copy_from_user(&data, udata, minsz))
+> +		return -EFAULT;
+> +
+> +	/* Fields before variable size union is mandatory */
+> +	if (data.argsz < minsz)
+> +		return -EINVAL;
+> +	/*
+> +	 * User might be using a newer UAPI header, we shall let IOMMU vendor
+> +	 * driver decide on what size it needs. Since the guest PASID bind data
+> +	 * can be vendor specific, larger argsz could be the result of extension
+> +	 * for one vendor but it should not affect another vendor.
+> +	 */
+> +	if (data.argsz > maxsz)
+> +		data.argsz = maxsz;
+> +
+> +	/* Copy the remaining user data _after_ minsz */
+> +	if (copy_from_user((void *)&data + minsz, udata + minsz,
+> +				data.argsz - minsz))
+> +		return -EFAULT;
+> +
+> +
+> +	return domain->ops->sva_bind_gpasid(domain, dev, &data);
+>   }
+>   EXPORT_SYMBOL_GPL(iommu_sva_bind_gpasid);
+>   
+> diff --git a/include/linux/iommu.h b/include/linux/iommu.h
+> index 5f0b7859d2eb..a688fea42ae5 100644
+> --- a/include/linux/iommu.h
+> +++ b/include/linux/iommu.h
+> @@ -432,9 +432,10 @@ extern void iommu_detach_device(struct iommu_domain *domain,
+>   				struct device *dev);
+>   extern int iommu_cache_invalidate(struct iommu_domain *domain,
+>   				  struct device *dev,
+> -				  struct iommu_cache_invalidate_info *inv_info);
+> +				  void __user *uinfo);
+> +
+>   extern int iommu_sva_bind_gpasid(struct iommu_domain *domain,
+> -		struct device *dev, struct iommu_gpasid_bind_data *data);
+> +				struct device *dev, void __user *udata);
+>   extern int iommu_sva_unbind_gpasid(struct iommu_domain *domain,
+>   				struct device *dev, ioasid_t pasid);
+>   extern struct iommu_domain *iommu_get_domain_for_dev(struct device *dev);
+> @@ -1062,7 +1063,7 @@ iommu_cache_invalidate(struct iommu_domain *domain,
+>   	return -ENODEV;
+>   }
+>   static inline int iommu_sva_bind_gpasid(struct iommu_domain *domain,
+> -				struct device *dev, struct iommu_gpasid_bind_data *data)
+> +				struct device *dev, void __user *udata)
+>   {
+>   	return -ENODEV;
+>   }
 > 
 
+Best regards,
+baolu
 _______________________________________________
 iommu mailing list
 iommu@lists.linux-foundation.org
