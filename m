@@ -2,66 +2,83 @@ Return-Path: <SRS0=9F5p=AF=lists.linux-foundation.org=iommu-bounces@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-5.5 required=3.0 tests=HEADER_FROM_DIFFERENT_DOMAINS,
-	INCLUDES_PATCH,MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED,
+X-Spam-Status: No, score=-8.5 required=3.0 tests=HEADER_FROM_DIFFERENT_DOMAINS,
+	INCLUDES_PATCH,MAILING_LIST_MULTI,SIGNED_OFF_BY,SPF_HELO_NONE,SPF_PASS,
 	USER_AGENT_SANE_1 autolearn=unavailable autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 442F9C433DF
-	for <iommu@archiver.kernel.org>; Wed, 24 Jun 2020 07:38:27 +0000 (UTC)
-Received: from whitealder.osuosl.org (smtp1.osuosl.org [140.211.166.138])
+	by smtp.lore.kernel.org (Postfix) with ESMTP id DAA7EC433E0
+	for <iommu@archiver.kernel.org>; Wed, 24 Jun 2020 07:55:55 +0000 (UTC)
+Received: from hemlock.osuosl.org (smtp2.osuosl.org [140.211.166.133])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by mail.kernel.org (Postfix) with ESMTPS id 15EEB206E2
-	for <iommu@archiver.kernel.org>; Wed, 24 Jun 2020 07:38:26 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 15EEB206E2
-Authentication-Results: mail.kernel.org; dmarc=none (p=none dis=none) header.from=lst.de
+	by mail.kernel.org (Postfix) with ESMTPS id A6A752085B
+	for <iommu@archiver.kernel.org>; Wed, 24 Jun 2020 07:55:55 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org A6A752085B
+Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=linux.intel.com
 Authentication-Results: mail.kernel.org; spf=pass smtp.mailfrom=iommu-bounces@lists.linux-foundation.org
 Received: from localhost (localhost [127.0.0.1])
-	by whitealder.osuosl.org (Postfix) with ESMTP id DF84F88166;
-	Wed, 24 Jun 2020 07:38:26 +0000 (UTC)
+	by hemlock.osuosl.org (Postfix) with ESMTP id 79FB688C50;
+	Wed, 24 Jun 2020 07:55:55 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from whitealder.osuosl.org ([127.0.0.1])
+Received: from hemlock.osuosl.org ([127.0.0.1])
 	by localhost (.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
-	with ESMTP id p6Bggp0bvxOW; Wed, 24 Jun 2020 07:38:25 +0000 (UTC)
+	with ESMTP id 36lfjruojjpN; Wed, 24 Jun 2020 07:55:54 +0000 (UTC)
 Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [140.211.9.56])
-	by whitealder.osuosl.org (Postfix) with ESMTP id B4C458815C;
-	Wed, 24 Jun 2020 07:38:25 +0000 (UTC)
+	by hemlock.osuosl.org (Postfix) with ESMTP id B5645887B9;
+	Wed, 24 Jun 2020 07:55:54 +0000 (UTC)
 Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
-	by lists.linuxfoundation.org (Postfix) with ESMTP id 92FA5C088E;
-	Wed, 24 Jun 2020 07:38:25 +0000 (UTC)
+	by lists.linuxfoundation.org (Postfix) with ESMTP id 9CDC8C088E;
+	Wed, 24 Jun 2020 07:55:54 +0000 (UTC)
 Received: from hemlock.osuosl.org (smtp2.osuosl.org [140.211.166.133])
- by lists.linuxfoundation.org (Postfix) with ESMTP id CE8CAC016F
- for <iommu@lists.linux-foundation.org>; Wed, 24 Jun 2020 07:38:23 +0000 (UTC)
+ by lists.linuxfoundation.org (Postfix) with ESMTP id C9018C016F
+ for <iommu@lists.linux-foundation.org>; Wed, 24 Jun 2020 07:55:53 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
- by hemlock.osuosl.org (Postfix) with ESMTP id B4BAE88D7C
- for <iommu@lists.linux-foundation.org>; Wed, 24 Jun 2020 07:38:23 +0000 (UTC)
+ by hemlock.osuosl.org (Postfix) with ESMTP id BCD71887D4
+ for <iommu@lists.linux-foundation.org>; Wed, 24 Jun 2020 07:55:53 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
 Received: from hemlock.osuosl.org ([127.0.0.1])
  by localhost (.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
- with ESMTP id L3O7snwe88ic for <iommu@lists.linux-foundation.org>;
- Wed, 24 Jun 2020 07:38:22 +0000 (UTC)
-X-Greylist: from auto-whitelisted by SQLgrey-1.7.6
-Received: from verein.lst.de (verein.lst.de [213.95.11.211])
- by hemlock.osuosl.org (Postfix) with ESMTPS id D348088BC3
- for <iommu@lists.linux-foundation.org>; Wed, 24 Jun 2020 07:38:21 +0000 (UTC)
-Received: by verein.lst.de (Postfix, from userid 2407)
- id BB98368B02; Wed, 24 Jun 2020 09:38:16 +0200 (CEST)
-Date: Wed, 24 Jun 2020 09:38:15 +0200
-From: Christoph Hellwig <hch@lst.de>
-To: Guenter Roeck <linux@roeck-us.net>
-Subject: Re: [PATCH v2] dma-pool: Fix too large DMA pools on medium systems
-Message-ID: <20200624073815.GE18609@lst.de>
-References: <20200608132217.29945-1-geert@linux-m68k.org>
- <20200620200936.GA106151@roeck-us.net>
+ with ESMTP id ZtQDpjR9n7hC for <iommu@lists.linux-foundation.org>;
+ Wed, 24 Jun 2020 07:55:52 +0000 (UTC)
+X-Greylist: domain auto-whitelisted by SQLgrey-1.7.6
+Received: from mga09.intel.com (mga09.intel.com [134.134.136.24])
+ by hemlock.osuosl.org (Postfix) with ESMTPS id 19A6F887B9
+ for <iommu@lists.linux-foundation.org>; Wed, 24 Jun 2020 07:55:52 +0000 (UTC)
+IronPort-SDR: cknZbAqgUfNpry5Me7ww2JSBKf6m9mnrOr3XzrDP3u1mZWxGZL2pPM7dqS6Hd/RYFL02FHhQxa
+ 2dzd71USnjHg==
+X-IronPort-AV: E=McAfee;i="6000,8403,9661"; a="145878287"
+X-IronPort-AV: E=Sophos;i="5.75,274,1589266800"; d="scan'208";a="145878287"
+X-Amp-Result: SKIPPED(no attachment in message)
+X-Amp-File-Uploaded: False
+Received: from orsmga004.jf.intel.com ([10.7.209.38])
+ by orsmga102.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384;
+ 24 Jun 2020 00:55:47 -0700
+IronPort-SDR: EcsNTZj/jqa9+tFSh3YHnRBwDnuKdmMgIeF1hhHnglpSR7g3cvh81UKgRbqdDtMS7wnEk1zsPV
+ uPq3JRxKRduA==
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="5.75,274,1589266800"; d="scan'208";a="423287831"
+Received: from blu2-mobl3.ccr.corp.intel.com (HELO [10.255.28.245])
+ ([10.255.28.245])
+ by orsmga004.jf.intel.com with ESMTP; 24 Jun 2020 00:55:41 -0700
+Subject: Re: [PATCH v3 5/5] iommu/uapi: Support both kernel and user unbind
+ guest PASID
+To: Jacob Pan <jacob.jun.pan@linux.intel.com>,
+ iommu@lists.linux-foundation.org, LKML <linux-kernel@vger.kernel.org>,
+ Joerg Roedel <joro@8bytes.org>, Alex Williamson <alex.williamson@redhat.com>
+References: <1592931837-58223-1-git-send-email-jacob.jun.pan@linux.intel.com>
+ <1592931837-58223-6-git-send-email-jacob.jun.pan@linux.intel.com>
+From: Lu Baolu <baolu.lu@linux.intel.com>
+Message-ID: <878d1db7-c8aa-0244-5be2-fef07f118f30@linux.intel.com>
+Date: Wed, 24 Jun 2020 15:55:41 +0800
+User-Agent: Mozilla/5.0 (Windows NT 10.0; WOW64; rv:68.0) Gecko/20100101
+ Thunderbird/68.9.0
 MIME-Version: 1.0
-Content-Disposition: inline
-In-Reply-To: <20200620200936.GA106151@roeck-us.net>
-User-Agent: Mutt/1.5.17 (2007-11-01)
-Cc: linux-kernel@vger.kernel.org, iommu@lists.linux-foundation.org,
- Geert Uytterhoeven <geert@linux-m68k.org>,
- David Rientjes <rientjes@google.com>,
- Christophe JAILLET <christophe.jaillet@wanadoo.fr>,
- Robin Murphy <robin.murphy@arm.com>, Christoph Hellwig <hch@lst.de>
+In-Reply-To: <1592931837-58223-6-git-send-email-jacob.jun.pan@linux.intel.com>
+Content-Language: en-US
+Cc: "Tian, Kevin" <kevin.tian@intel.com>, Raj Ashok <ashok.raj@intel.com>,
+ Jonathan Corbet <corbet@lwn.net>,
+ Jean-Philippe Brucker <jean-philippe@linaro.com>,
+ Christoph Hellwig <hch@infradead.org>, David Woodhouse <dwmw2@infradead.org>
 X-BeenThere: iommu@lists.linux-foundation.org
 X-Mailman-Version: 2.1.15
 Precedence: list
@@ -74,119 +91,190 @@ List-Post: <mailto:iommu@lists.linux-foundation.org>
 List-Help: <mailto:iommu-request@lists.linux-foundation.org?subject=help>
 List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
  <mailto:iommu-request@lists.linux-foundation.org?subject=subscribe>
-Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset="us-ascii"; Format="flowed"
 Errors-To: iommu-bounces@lists.linux-foundation.org
 Sender: "iommu" <iommu-bounces@lists.linux-foundation.org>
 
-Hi Guenter,
+Hi Jacob,
 
-can you try the patch below?  This just converts the huge allocations
-in mptbase to use GFP_KERNEL.  Christophe (added to Cc) actually has
-a scripted conversion for the rest that he hasn't posted yet, so I'll
-aim for the minimal version here.
+On 2020/6/24 1:03, Jacob Pan wrote:
+> Guest SVA unbind data can come from either kernel and user space, if a
 
+either kernel or user space
 
-diff --git a/drivers/message/fusion/mptbase.c b/drivers/message/fusion/mptbase.c
-index 68aea22f2b8978..5216487db4fbea 100644
---- a/drivers/message/fusion/mptbase.c
-+++ b/drivers/message/fusion/mptbase.c
-@@ -1324,13 +1324,13 @@ mpt_host_page_alloc(MPT_ADAPTER *ioc, pIOCInit_t ioc_init)
- 			return 0; /* fw doesn't need any host buffers */
- 
- 		/* spin till we get enough memory */
--		while(host_page_buffer_sz > 0) {
--
--			if((ioc->HostPageBuffer = pci_alloc_consistent(
--			    ioc->pcidev,
--			    host_page_buffer_sz,
--			    &ioc->HostPageBuffer_dma)) != NULL) {
--
-+		while (host_page_buffer_sz > 0) {
-+			ioc->HostPageBuffer =
-+				dma_alloc_coherent(&ioc->pcidev->dev,
-+						host_page_buffer_sz,
-+						&ioc->HostPageBuffer_dma,
-+						GFP_KERNEL);
-+			if (ioc->HostPageBuffer) {
- 				dinitprintk(ioc, printk(MYIOC_s_DEBUG_FMT
- 				    "host_page_buffer @ %p, dma @ %x, sz=%d bytes\n",
- 				    ioc->name, ioc->HostPageBuffer,
-@@ -2741,8 +2741,8 @@ mpt_adapter_disable(MPT_ADAPTER *ioc)
- 		sz = ioc->alloc_sz;
- 		dexitprintk(ioc, printk(MYIOC_s_INFO_FMT "free  @ %p, sz=%d bytes\n",
- 		    ioc->name, ioc->alloc, ioc->alloc_sz));
--		pci_free_consistent(ioc->pcidev, sz,
--				ioc->alloc, ioc->alloc_dma);
-+		dma_free_coherent(&ioc->pcidev->dev, sz, ioc->alloc,
-+				ioc->alloc_dma);
- 		ioc->reply_frames = NULL;
- 		ioc->req_frames = NULL;
- 		ioc->alloc = NULL;
-@@ -2751,8 +2751,8 @@ mpt_adapter_disable(MPT_ADAPTER *ioc)
- 
- 	if (ioc->sense_buf_pool != NULL) {
- 		sz = (ioc->req_depth * MPT_SENSE_BUFFER_ALLOC);
--		pci_free_consistent(ioc->pcidev, sz,
--				ioc->sense_buf_pool, ioc->sense_buf_pool_dma);
-+		dma_free_coherent(&ioc->pcidev->dev, sz, ioc->sense_buf_pool,
-+				ioc->sense_buf_pool_dma);
- 		ioc->sense_buf_pool = NULL;
- 		ioc->alloc_total -= sz;
- 	}
-@@ -2802,7 +2802,7 @@ mpt_adapter_disable(MPT_ADAPTER *ioc)
- 			"HostPageBuffer free  @ %p, sz=%d bytes\n",
- 			ioc->name, ioc->HostPageBuffer,
- 			ioc->HostPageBuffer_sz));
--		pci_free_consistent(ioc->pcidev, ioc->HostPageBuffer_sz,
-+		dma_free_coherent(&ioc->pcidev->dev, ioc->HostPageBuffer_sz,
- 		    ioc->HostPageBuffer, ioc->HostPageBuffer_dma);
- 		ioc->HostPageBuffer = NULL;
- 		ioc->HostPageBuffer_sz = 0;
-@@ -4497,7 +4497,8 @@ PrimeIocFifos(MPT_ADAPTER *ioc)
- 			 	ioc->name, sz, sz, num_chain));
- 
- 		total_size += sz;
--		mem = pci_alloc_consistent(ioc->pcidev, total_size, &alloc_dma);
-+		mem = dma_alloc_coherent(&ioc->pcidev->dev, total_size,
-+				&alloc_dma, GFP_KERNEL);
- 		if (mem == NULL) {
- 			printk(MYIOC_s_ERR_FMT "Unable to allocate Reply, Request, Chain Buffers!\n",
- 				ioc->name);
-@@ -4574,8 +4575,8 @@ PrimeIocFifos(MPT_ADAPTER *ioc)
- 		spin_unlock_irqrestore(&ioc->FreeQlock, flags);
- 
- 		sz = (ioc->req_depth * MPT_SENSE_BUFFER_ALLOC);
--		ioc->sense_buf_pool =
--			pci_alloc_consistent(ioc->pcidev, sz, &ioc->sense_buf_pool_dma);
-+		ioc->sense_buf_pool = dma_alloc_coherent(&ioc->pcidev->dev, sz,
-+				&ioc->sense_buf_pool_dma, GFP_KERNEL);
- 		if (ioc->sense_buf_pool == NULL) {
- 			printk(MYIOC_s_ERR_FMT "Unable to allocate Sense Buffers!\n",
- 				ioc->name);
-@@ -4613,18 +4614,16 @@ PrimeIocFifos(MPT_ADAPTER *ioc)
- 
- 	if (ioc->alloc != NULL) {
- 		sz = ioc->alloc_sz;
--		pci_free_consistent(ioc->pcidev,
--				sz,
--				ioc->alloc, ioc->alloc_dma);
-+		dma_free_coherent(&ioc->pcidev->dev, sz, ioc->alloc,
-+				ioc->alloc_dma);
- 		ioc->reply_frames = NULL;
- 		ioc->req_frames = NULL;
- 		ioc->alloc_total -= sz;
- 	}
- 	if (ioc->sense_buf_pool != NULL) {
- 		sz = (ioc->req_depth * MPT_SENSE_BUFFER_ALLOC);
--		pci_free_consistent(ioc->pcidev,
--				sz,
--				ioc->sense_buf_pool, ioc->sense_buf_pool_dma);
-+		dma_free_coherent(&ioc->pcidev->dev, sz, ioc->sense_buf_pool,
-+				ioc->sense_buf_pool_dma);
- 		ioc->sense_buf_pool = NULL;
- 	}
- 
+> user pointer is passed in, IOMMU driver must copy from data from user.
+
+copy data from user
+
+> If the unbind data is assembled in kernel, data can be trusted and
+> directly used. This patch creates a wrapper for unbind gpasid such that
+> user pointer can be parsed and sanitized before calling into the kernel
+> unbind function. Common user data copy code also consolidated.
+> 
+> Signed-off-by: Liu Yi L <yi.l.liu@intel.com>
+> Signed-off-by: Jacob Pan <jacob.jun.pan@linux.intel.com>
+> ---
+>   drivers/iommu/iommu.c | 70 ++++++++++++++++++++++++++++++++++++++-------------
+>   include/linux/iommu.h | 13 ++++++++--
+>   2 files changed, 64 insertions(+), 19 deletions(-)
+> 
+> diff --git a/drivers/iommu/iommu.c b/drivers/iommu/iommu.c
+> index 4a025c429b41..595527e4c6b7 100644
+> --- a/drivers/iommu/iommu.c
+> +++ b/drivers/iommu/iommu.c
+> @@ -2010,19 +2010,15 @@ int iommu_cache_invalidate(struct iommu_domain *domain, struct device *dev,
+>   }
+>   EXPORT_SYMBOL_GPL(iommu_cache_invalidate);
+>   
+> -int iommu_sva_bind_gpasid(struct iommu_domain *domain, struct device *dev,
+> -						void __user *udata)
+> -{
+>   
+> -	struct iommu_gpasid_bind_data data;
+> +static int iommu_sva_prepare_bind_data(void __user *udata, bool bind,
+> +				       struct iommu_gpasid_bind_data *data)
+> +{
+>   	unsigned long minsz, maxsz;
+>   
+> -	if (unlikely(!domain->ops->sva_bind_gpasid))
+> -		return -ENODEV;
+> -
+>   	/* Current kernel data size is the max to be copied from user */
+>   	maxsz = sizeof(struct iommu_gpasid_bind_data);
+> -	memset((void *)&data, 0, maxsz);
+> +	memset((void *)data, 0, maxsz);
+>   
+>   	/*
+>   	 * No new spaces can be added before the variable sized union, the
+> @@ -2031,11 +2027,11 @@ int iommu_sva_bind_gpasid(struct iommu_domain *domain, struct device *dev,
+>   	minsz = offsetof(struct iommu_gpasid_bind_data, vendor);
+>   
+>   	/* Copy minsz from user to get flags and argsz */
+> -	if (copy_from_user(&data, udata, minsz))
+> +	if (copy_from_user(data, udata, minsz))
+>   		return -EFAULT;
+>   
+>   	/* Fields before variable size union is mandatory */
+> -	if (data.argsz < minsz)
+> +	if (data->argsz < minsz)
+>   		return -EINVAL;
+>   	/*
+>   	 * User might be using a newer UAPI header, we shall let IOMMU vendor
+> @@ -2043,26 +2039,66 @@ int iommu_sva_bind_gpasid(struct iommu_domain *domain, struct device *dev,
+>   	 * can be vendor specific, larger argsz could be the result of extension
+>   	 * for one vendor but it should not affect another vendor.
+>   	 */
+> -	if (data.argsz > maxsz)
+> -		data.argsz = maxsz;
+> +	if (data->argsz > maxsz)
+> +		data->argsz = maxsz;
+> +
+> +	/*
+> +	 * For unbind, we don't need any extra data, host PASID is included in
+> +	 * the minsz and that is all we need.
+> +	 */
+> +	if (!bind)
+> +		return 0;
+>   
+>   	/* Copy the remaining user data _after_ minsz */
+> -	if (copy_from_user((void *)&data + minsz, udata + minsz,
+> -				data.argsz - minsz))
+> +	if (copy_from_user((void *)data + minsz, udata + minsz,
+> +				data->argsz - minsz))
+>   		return -EFAULT;
+>   
+> +	return 0;
+> +}
+> +
+> +int iommu_sva_bind_gpasid(struct iommu_domain *domain, struct device *dev,
+> +						void __user *udata)
+> +{
+> +
+> +	struct iommu_gpasid_bind_data data;
+> +	int ret;
+> +
+> +	if (unlikely(!domain->ops->sva_bind_gpasid))
+> +		return -ENODEV;
+> +
+> +	ret = iommu_sva_prepare_bind_data(udata, true, &data);
+> +	if (ret)
+> +		return ret;
+>   
+>   	return domain->ops->sva_bind_gpasid(domain, dev, &data);
+>   }
+>   EXPORT_SYMBOL_GPL(iommu_sva_bind_gpasid);
+>   
+> -int iommu_sva_unbind_gpasid(struct iommu_domain *domain, struct device *dev,
+> -			     ioasid_t pasid)
+> +int __iommu_sva_unbind_gpasid(struct iommu_domain *domain, struct device *dev,
+> +			struct iommu_gpasid_bind_data *data)
+>   {
+>   	if (unlikely(!domain->ops->sva_unbind_gpasid))
+>   		return -ENODEV;
+>   
+> -	return domain->ops->sva_unbind_gpasid(dev, pasid);
+> +	return domain->ops->sva_unbind_gpasid(dev, data->hpasid);
+How about passing @data to the vendor iommu driver as well?
+
+> +}
+> +EXPORT_SYMBOL_GPL(__iommu_sva_unbind_gpasid);
+> +
+> +int iommu_sva_unbind_gpasid(struct iommu_domain *domain, struct device *dev,
+> +			void __user *udata)
+
+Keep it aligned.
+
+> +{
+> +	struct iommu_gpasid_bind_data data;
+> +	int ret;
+> +
+> +	if (unlikely(!domain->ops->sva_bind_gpasid))
+> +		return -ENODEV;
+> +
+> +	ret = iommu_sva_prepare_bind_data(udata, false, &data);
+> +	if (ret)
+> +		return ret;
+> +
+> +	return __iommu_sva_unbind_gpasid(domain, dev, &data);
+>   }
+>   EXPORT_SYMBOL_GPL(iommu_sva_unbind_gpasid);
+>   
+> diff --git a/include/linux/iommu.h b/include/linux/iommu.h
+> index a688fea42ae5..2567c33dc4e8 100644
+> --- a/include/linux/iommu.h
+> +++ b/include/linux/iommu.h
+> @@ -437,7 +437,9 @@ extern int iommu_cache_invalidate(struct iommu_domain *domain,
+>   extern int iommu_sva_bind_gpasid(struct iommu_domain *domain,
+>   				struct device *dev, void __user *udata);
+>   extern int iommu_sva_unbind_gpasid(struct iommu_domain *domain,
+> -				struct device *dev, ioasid_t pasid);
+> +				struct device *dev, void __user *udata);
+> +extern int __iommu_sva_unbind_gpasid(struct iommu_domain *domain,
+> +				struct device *dev, struct iommu_gpasid_bind_data *data);
+>   extern struct iommu_domain *iommu_get_domain_for_dev(struct device *dev);
+>   extern struct iommu_domain *iommu_get_dma_domain(struct device *dev);
+>   extern int iommu_map(struct iommu_domain *domain, unsigned long iova,
+> @@ -1069,7 +1071,14 @@ static inline int iommu_sva_bind_gpasid(struct iommu_domain *domain,
+>   }
+>   
+>   static inline int iommu_sva_unbind_gpasid(struct iommu_domain *domain,
+> -					   struct device *dev, int pasid)
+> +					   struct device *dev, void __user *udata)
+> +{
+> +	return -ENODEV;
+> +}
+> +
+> +static inline int __iommu_sva_unbind_gpasid(struct iommu_domain *domain,
+> +					struct device *dev,
+> +					struct iommu_gpasid_bind_data *data)
+>   {
+>   	return -ENODEV;
+>   }
+> 
+
+Best regards,
+baolu
 _______________________________________________
 iommu mailing list
 iommu@lists.linux-foundation.org
