@@ -2,56 +2,56 @@ Return-Path: <SRS0=A59K=AG=lists.linux-foundation.org=iommu-bounces@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-10.0 required=3.0
-	tests=HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_PATCH,MAILING_LIST_MULTI,
-	SIGNED_OFF_BY,SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED,USER_AGENT_GIT
-	autolearn=ham autolearn_force=no version=3.4.0
+X-Spam-Status: No, score=-7.2 required=3.0 tests=HEADER_FROM_DIFFERENT_DOMAINS,
+	INCLUDES_PATCH,MAILING_LIST_MULTI,SIGNED_OFF_BY,SPF_HELO_NONE,SPF_PASS,
+	UNWANTED_LANGUAGE_BODY,URIBL_BLOCKED,USER_AGENT_GIT autolearn=ham
+	autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 3AB8EC433DF
-	for <iommu@archiver.kernel.org>; Thu, 25 Jun 2020 13:08:53 +0000 (UTC)
-Received: from silver.osuosl.org (smtp3.osuosl.org [140.211.166.136])
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 4ADBAC433E1
+	for <iommu@archiver.kernel.org>; Thu, 25 Jun 2020 13:08:54 +0000 (UTC)
+Received: from whitealder.osuosl.org (smtp1.osuosl.org [140.211.166.138])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by mail.kernel.org (Postfix) with ESMTPS id 1660220702
-	for <iommu@archiver.kernel.org>; Thu, 25 Jun 2020 13:08:53 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 1660220702
+	by mail.kernel.org (Postfix) with ESMTPS id 0A83820709
+	for <iommu@archiver.kernel.org>; Thu, 25 Jun 2020 13:08:54 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 0A83820709
 Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=8bytes.org
 Authentication-Results: mail.kernel.org; spf=pass smtp.mailfrom=iommu-bounces@lists.linux-foundation.org
 Received: from localhost (localhost [127.0.0.1])
-	by silver.osuosl.org (Postfix) with ESMTP id ECC7A23143;
-	Thu, 25 Jun 2020 13:08:52 +0000 (UTC)
+	by whitealder.osuosl.org (Postfix) with ESMTP id A9D9C87D05;
+	Thu, 25 Jun 2020 13:08:53 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from silver.osuosl.org ([127.0.0.1])
+Received: from whitealder.osuosl.org ([127.0.0.1])
 	by localhost (.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
-	with ESMTP id 4mF8DO3swTc8; Thu, 25 Jun 2020 13:08:49 +0000 (UTC)
+	with ESMTP id SCubDce6qn6t; Thu, 25 Jun 2020 13:08:49 +0000 (UTC)
 Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [140.211.9.56])
-	by silver.osuosl.org (Postfix) with ESMTP id D24D3231A1;
+	by whitealder.osuosl.org (Postfix) with ESMTP id 72BE387CB1;
 	Thu, 25 Jun 2020 13:08:49 +0000 (UTC)
 Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
-	by lists.linuxfoundation.org (Postfix) with ESMTP id C8175C08A5;
+	by lists.linuxfoundation.org (Postfix) with ESMTP id 5FC57C0893;
 	Thu, 25 Jun 2020 13:08:49 +0000 (UTC)
-Received: from fraxinus.osuosl.org (smtp4.osuosl.org [140.211.166.137])
- by lists.linuxfoundation.org (Postfix) with ESMTP id BED95C016F
- for <iommu@lists.linux-foundation.org>; Thu, 25 Jun 2020 13:08:46 +0000 (UTC)
+Received: from silver.osuosl.org (smtp3.osuosl.org [140.211.166.136])
+ by lists.linuxfoundation.org (Postfix) with ESMTP id D5628C016F
+ for <iommu@lists.linux-foundation.org>; Thu, 25 Jun 2020 13:08:45 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
- by fraxinus.osuosl.org (Postfix) with ESMTP id BC0928578B
- for <iommu@lists.linux-foundation.org>; Thu, 25 Jun 2020 13:08:46 +0000 (UTC)
+ by silver.osuosl.org (Postfix) with ESMTP id B2570231A1
+ for <iommu@lists.linux-foundation.org>; Thu, 25 Jun 2020 13:08:45 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from fraxinus.osuosl.org ([127.0.0.1])
+Received: from silver.osuosl.org ([127.0.0.1])
  by localhost (.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
- with ESMTP id 8je7RUFIeCac for <iommu@lists.linux-foundation.org>;
- Thu, 25 Jun 2020 13:08:46 +0000 (UTC)
+ with ESMTP id 2yBlBvbeaQ1l for <iommu@lists.linux-foundation.org>;
+ Thu, 25 Jun 2020 13:08:43 +0000 (UTC)
 X-Greylist: from auto-whitelisted by SQLgrey-1.7.6
 Received: from theia.8bytes.org (8bytes.org [81.169.241.247])
- by fraxinus.osuosl.org (Postfix) with ESMTPS id 44866854D7
- for <iommu@lists.linux-foundation.org>; Thu, 25 Jun 2020 13:08:46 +0000 (UTC)
+ by silver.osuosl.org (Postfix) with ESMTPS id B7093230FE
+ for <iommu@lists.linux-foundation.org>; Thu, 25 Jun 2020 13:08:43 +0000 (UTC)
 Received: by theia.8bytes.org (Postfix, from userid 1000)
- id F0D5B5DF; Thu, 25 Jun 2020 15:08:39 +0200 (CEST)
+ id B92BC44A; Thu, 25 Jun 2020 15:08:38 +0200 (CEST)
 From: Joerg Roedel <joro@8bytes.org>
 To: iommu@lists.linux-foundation.org
-Subject: [PATCH 11/13] arm: Remove dev->archdata.iommu pointer
-Date: Thu, 25 Jun 2020 15:08:34 +0200
-Message-Id: <20200625130836.1916-12-joro@8bytes.org>
+Subject: [PATCH 05/13] iommu/rockchip: Use dev_iommu_priv_get/set()
+Date: Thu, 25 Jun 2020 15:08:28 +0200
+Message-Id: <20200625130836.1916-6-joro@8bytes.org>
 X-Mailer: git-send-email 2.17.1
 In-Reply-To: <20200625130836.1916-1-joro@8bytes.org>
 References: <20200625130836.1916-1-joro@8bytes.org>
@@ -90,28 +90,54 @@ Sender: "iommu" <iommu-bounces@lists.linux-foundation.org>
 
 From: Joerg Roedel <jroedel@suse.de>
 
-There are no users left, all drivers have been converted to use the
-per-device private pointer offered by IOMMU core.
+Remove the use of dev->archdata.iommu and use the private per-device
+pointer provided by IOMMU core code instead.
 
 Signed-off-by: Joerg Roedel <jroedel@suse.de>
 ---
- arch/arm/include/asm/device.h | 3 ---
- 1 file changed, 3 deletions(-)
+ drivers/iommu/rockchip-iommu.c | 8 ++++----
+ 1 file changed, 4 insertions(+), 4 deletions(-)
 
-diff --git a/arch/arm/include/asm/device.h b/arch/arm/include/asm/device.h
-index c675bc0d5aa8..be666f58bf7a 100644
---- a/arch/arm/include/asm/device.h
-+++ b/arch/arm/include/asm/device.h
-@@ -9,9 +9,6 @@ struct dev_archdata {
- #ifdef CONFIG_DMABOUNCE
- 	struct dmabounce_device_info *dmabounce;
- #endif
--#ifdef CONFIG_IOMMU_API
--	void *iommu; /* private IOMMU data */
--#endif
- #ifdef CONFIG_ARM_DMA_USE_IOMMU
- 	struct dma_iommu_mapping	*mapping;
- #endif
+diff --git a/drivers/iommu/rockchip-iommu.c b/drivers/iommu/rockchip-iommu.c
+index d25c2486ca07..e5d86b7177de 100644
+--- a/drivers/iommu/rockchip-iommu.c
++++ b/drivers/iommu/rockchip-iommu.c
+@@ -836,7 +836,7 @@ static size_t rk_iommu_unmap(struct iommu_domain *domain, unsigned long _iova,
+ 
+ static struct rk_iommu *rk_iommu_from_dev(struct device *dev)
+ {
+-	struct rk_iommudata *data = dev->archdata.iommu;
++	struct rk_iommudata *data = dev_iommu_priv_get(dev);
+ 
+ 	return data ? data->iommu : NULL;
+ }
+@@ -1059,7 +1059,7 @@ static struct iommu_device *rk_iommu_probe_device(struct device *dev)
+ 	struct rk_iommudata *data;
+ 	struct rk_iommu *iommu;
+ 
+-	data = dev->archdata.iommu;
++	data = dev_iommu_priv_get(dev);
+ 	if (!data)
+ 		return ERR_PTR(-ENODEV);
+ 
+@@ -1073,7 +1073,7 @@ static struct iommu_device *rk_iommu_probe_device(struct device *dev)
+ 
+ static void rk_iommu_release_device(struct device *dev)
+ {
+-	struct rk_iommudata *data = dev->archdata.iommu;
++	struct rk_iommudata *data = dev_iommu_priv_get(dev);
+ 
+ 	device_link_del(data->link);
+ }
+@@ -1100,7 +1100,7 @@ static int rk_iommu_of_xlate(struct device *dev,
+ 	iommu_dev = of_find_device_by_node(args->np);
+ 
+ 	data->iommu = platform_get_drvdata(iommu_dev);
+-	dev->archdata.iommu = data;
++	dev_iommu_priv_set(dev, data);
+ 
+ 	platform_device_put(iommu_dev);
+ 
 -- 
 2.27.0
 
