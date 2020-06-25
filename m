@@ -7,51 +7,51 @@ X-Spam-Status: No, score=-10.0 required=3.0
 	SIGNED_OFF_BY,SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED,USER_AGENT_GIT
 	autolearn=ham autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id A6DDBC433E2
+	by smtp.lore.kernel.org (Postfix) with ESMTP id CABB9C433E3
 	for <iommu@archiver.kernel.org>; Thu, 25 Jun 2020 13:08:54 +0000 (UTC)
 Received: from whitealder.osuosl.org (smtp1.osuosl.org [140.211.166.138])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by mail.kernel.org (Postfix) with ESMTPS id 6B55920709
+	by mail.kernel.org (Postfix) with ESMTPS id 89D6220724
 	for <iommu@archiver.kernel.org>; Thu, 25 Jun 2020 13:08:54 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 6B55920709
+DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 89D6220724
 Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=8bytes.org
 Authentication-Results: mail.kernel.org; spf=pass smtp.mailfrom=iommu-bounces@lists.linux-foundation.org
 Received: from localhost (localhost [127.0.0.1])
-	by whitealder.osuosl.org (Postfix) with ESMTP id 2A2DD87C17;
+	by whitealder.osuosl.org (Postfix) with ESMTP id 62A7D87C0D;
 	Thu, 25 Jun 2020 13:08:54 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
 Received: from whitealder.osuosl.org ([127.0.0.1])
 	by localhost (.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
-	with ESMTP id d4+serbWnaH5; Thu, 25 Jun 2020 13:08:50 +0000 (UTC)
+	with ESMTP id Du+VBgDWNdHy; Thu, 25 Jun 2020 13:08:52 +0000 (UTC)
 Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [140.211.9.56])
-	by whitealder.osuosl.org (Postfix) with ESMTP id 0DBF887C5A;
+	by whitealder.osuosl.org (Postfix) with ESMTP id 8F01287CDC;
 	Thu, 25 Jun 2020 13:08:50 +0000 (UTC)
 Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
-	by lists.linuxfoundation.org (Postfix) with ESMTP id 079CAC0893;
+	by lists.linuxfoundation.org (Postfix) with ESMTP id 72839C08A6;
 	Thu, 25 Jun 2020 13:08:50 +0000 (UTC)
-Received: from fraxinus.osuosl.org (smtp4.osuosl.org [140.211.166.137])
- by lists.linuxfoundation.org (Postfix) with ESMTP id E9317C016F
- for <iommu@lists.linux-foundation.org>; Thu, 25 Jun 2020 13:08:46 +0000 (UTC)
+Received: from silver.osuosl.org (smtp3.osuosl.org [140.211.166.136])
+ by lists.linuxfoundation.org (Postfix) with ESMTP id 134ADC016F
+ for <iommu@lists.linux-foundation.org>; Thu, 25 Jun 2020 13:08:48 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
- by fraxinus.osuosl.org (Postfix) with ESMTP id D864F854D7
- for <iommu@lists.linux-foundation.org>; Thu, 25 Jun 2020 13:08:46 +0000 (UTC)
+ by silver.osuosl.org (Postfix) with ESMTP id 0CF752313D
+ for <iommu@lists.linux-foundation.org>; Thu, 25 Jun 2020 13:08:48 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from fraxinus.osuosl.org ([127.0.0.1])
+Received: from silver.osuosl.org ([127.0.0.1])
  by localhost (.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
- with ESMTP id OjZr-_0bZq8m for <iommu@lists.linux-foundation.org>;
- Thu, 25 Jun 2020 13:08:46 +0000 (UTC)
+ with ESMTP id hQgHESLUKgCs for <iommu@lists.linux-foundation.org>;
+ Thu, 25 Jun 2020 13:08:44 +0000 (UTC)
 X-Greylist: from auto-whitelisted by SQLgrey-1.7.6
 Received: from theia.8bytes.org (8bytes.org [81.169.241.247])
- by fraxinus.osuosl.org (Postfix) with ESMTPS id 61FC585751
- for <iommu@lists.linux-foundation.org>; Thu, 25 Jun 2020 13:08:46 +0000 (UTC)
+ by silver.osuosl.org (Postfix) with ESMTPS id 7C12123115
+ for <iommu@lists.linux-foundation.org>; Thu, 25 Jun 2020 13:08:44 +0000 (UTC)
 Received: by theia.8bytes.org (Postfix, from userid 1000)
- id 5861E60E; Thu, 25 Jun 2020 15:08:40 +0200 (CEST)
+ id 5E1104CB; Thu, 25 Jun 2020 15:08:39 +0200 (CEST)
 From: Joerg Roedel <joro@8bytes.org>
 To: iommu@lists.linux-foundation.org
-Subject: [PATCH 13/13] powerpc/dma: Remove dev->archdata.iommu_domain
-Date: Thu, 25 Jun 2020 15:08:36 +0200
-Message-Id: <20200625130836.1916-14-joro@8bytes.org>
+Subject: [PATCH 08/13] iommu/mediatek: Do no use dev->archdata.iommu
+Date: Thu, 25 Jun 2020 15:08:31 +0200
+Message-Id: <20200625130836.1916-9-joro@8bytes.org>
 X-Mailer: git-send-email 2.17.1
 In-Reply-To: <20200625130836.1916-1-joro@8bytes.org>
 References: <20200625130836.1916-1-joro@8bytes.org>
@@ -90,27 +90,78 @@ Sender: "iommu" <iommu-bounces@lists.linux-foundation.org>
 
 From: Joerg Roedel <jroedel@suse.de>
 
-There are no users left, so remove the pointer and save some memory.
+The iommu private pointer is already used in the Mediatek IOMMU v1
+driver, so move the dma_iommu_mapping pointer into 'struct
+mtk_iommu_data' and do not use dev->archdata.iommu anymore.
 
 Signed-off-by: Joerg Roedel <jroedel@suse.de>
 ---
- arch/powerpc/include/asm/device.h | 3 ---
- 1 file changed, 3 deletions(-)
+ drivers/iommu/mtk_iommu.h    |  2 ++
+ drivers/iommu/mtk_iommu_v1.c | 10 ++++------
+ 2 files changed, 6 insertions(+), 6 deletions(-)
 
-diff --git a/arch/powerpc/include/asm/device.h b/arch/powerpc/include/asm/device.h
-index 266542769e4b..1bc595213338 100644
---- a/arch/powerpc/include/asm/device.h
-+++ b/arch/powerpc/include/asm/device.h
-@@ -34,9 +34,6 @@ struct dev_archdata {
- 	struct iommu_table	*iommu_table_base;
- #endif
+diff --git a/drivers/iommu/mtk_iommu.h b/drivers/iommu/mtk_iommu.h
+index ea949a324e33..1682406e98dc 100644
+--- a/drivers/iommu/mtk_iommu.h
++++ b/drivers/iommu/mtk_iommu.h
+@@ -62,6 +62,8 @@ struct mtk_iommu_data {
+ 	struct iommu_device		iommu;
+ 	const struct mtk_iommu_plat_data *plat_data;
  
--#ifdef CONFIG_IOMMU_API
--	void			*iommu_domain;
--#endif
- #ifdef CONFIG_PPC64
- 	struct pci_dn		*pci_data;
- #endif
++	struct dma_iommu_mapping	*mapping; /* For mtk_iommu_v1.c */
++
+ 	struct list_head		list;
+ 	struct mtk_smi_larb_iommu	larb_imu[MTK_LARB_NR_MAX];
+ };
+diff --git a/drivers/iommu/mtk_iommu_v1.c b/drivers/iommu/mtk_iommu_v1.c
+index c9d79cff4d17..82ddfe9170d4 100644
+--- a/drivers/iommu/mtk_iommu_v1.c
++++ b/drivers/iommu/mtk_iommu_v1.c
+@@ -269,7 +269,7 @@ static int mtk_iommu_attach_device(struct iommu_domain *domain,
+ 	int ret;
+ 
+ 	/* Only allow the domain created internally. */
+-	mtk_mapping = data->dev->archdata.iommu;
++	mtk_mapping = data->mapping;
+ 	if (mtk_mapping->domain != domain)
+ 		return 0;
+ 
+@@ -369,7 +369,6 @@ static int mtk_iommu_create_mapping(struct device *dev,
+ 	struct mtk_iommu_data *data;
+ 	struct platform_device *m4updev;
+ 	struct dma_iommu_mapping *mtk_mapping;
+-	struct device *m4udev;
+ 	int ret;
+ 
+ 	if (args->args_count != 1) {
+@@ -401,8 +400,7 @@ static int mtk_iommu_create_mapping(struct device *dev,
+ 		return ret;
+ 
+ 	data = dev_iommu_priv_get(dev);
+-	m4udev = data->dev;
+-	mtk_mapping = m4udev->archdata.iommu;
++	mtk_mapping = data->mapping;
+ 	if (!mtk_mapping) {
+ 		/* MTK iommu support 4GB iova address space. */
+ 		mtk_mapping = arm_iommu_create_mapping(&platform_bus_type,
+@@ -410,7 +408,7 @@ static int mtk_iommu_create_mapping(struct device *dev,
+ 		if (IS_ERR(mtk_mapping))
+ 			return PTR_ERR(mtk_mapping);
+ 
+-		m4udev->archdata.iommu = mtk_mapping;
++		data->mapping = mtk_mapping;
+ 	}
+ 
+ 	return 0;
+@@ -459,7 +457,7 @@ static void mtk_iommu_probe_finalize(struct device *dev)
+ 	int err;
+ 
+ 	data        = dev_iommu_priv_get(dev);
+-	mtk_mapping = data->dev->archdata.iommu;
++	mtk_mapping = data->mapping;
+ 
+ 	err = arm_iommu_attach_device(dev, mtk_mapping);
+ 	if (err)
 -- 
 2.27.0
 
