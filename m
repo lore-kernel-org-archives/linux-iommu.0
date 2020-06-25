@@ -2,64 +2,64 @@ Return-Path: <SRS0=A59K=AG=lists.linux-foundation.org=iommu-bounces@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-7.2 required=3.0 tests=HEADER_FROM_DIFFERENT_DOMAINS,
-	INCLUDES_PATCH,MAILING_LIST_MULTI,SIGNED_OFF_BY,SPF_HELO_NONE,SPF_PASS,
-	UNWANTED_LANGUAGE_BODY,URIBL_BLOCKED,USER_AGENT_GIT autolearn=ham
-	autolearn_force=no version=3.4.0
+X-Spam-Status: No, score=-10.0 required=3.0
+	tests=HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_PATCH,MAILING_LIST_MULTI,
+	SIGNED_OFF_BY,SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED,USER_AGENT_GIT
+	autolearn=ham autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 19F19C433E2
+	by smtp.lore.kernel.org (Postfix) with ESMTP id DA687C433E1
 	for <iommu@archiver.kernel.org>; Thu, 25 Jun 2020 20:18:45 +0000 (UTC)
-Received: from hemlock.osuosl.org (smtp2.osuosl.org [140.211.166.133])
+Received: from whitealder.osuosl.org (smtp1.osuosl.org [140.211.166.138])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by mail.kernel.org (Postfix) with ESMTPS id EC7702084D
-	for <iommu@archiver.kernel.org>; Thu, 25 Jun 2020 20:18:44 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org EC7702084D
+	by mail.kernel.org (Postfix) with ESMTPS id B6A082084D
+	for <iommu@archiver.kernel.org>; Thu, 25 Jun 2020 20:18:45 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org B6A082084D
 Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=intel.com
 Authentication-Results: mail.kernel.org; spf=pass smtp.mailfrom=iommu-bounces@lists.linux-foundation.org
 Received: from localhost (localhost [127.0.0.1])
-	by hemlock.osuosl.org (Postfix) with ESMTP id C5BBA89272;
-	Thu, 25 Jun 2020 20:18:44 +0000 (UTC)
+	by whitealder.osuosl.org (Postfix) with ESMTP id 8711188248;
+	Thu, 25 Jun 2020 20:18:45 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from hemlock.osuosl.org ([127.0.0.1])
+Received: from whitealder.osuosl.org ([127.0.0.1])
 	by localhost (.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
-	with ESMTP id 6UN8guI8I3tY; Thu, 25 Jun 2020 20:18:43 +0000 (UTC)
+	with ESMTP id 7GOPvrbpSVlm; Thu, 25 Jun 2020 20:18:41 +0000 (UTC)
 Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [140.211.9.56])
-	by hemlock.osuosl.org (Postfix) with ESMTP id F2E7789292;
-	Thu, 25 Jun 2020 20:18:42 +0000 (UTC)
+	by whitealder.osuosl.org (Postfix) with ESMTP id D2714881E9;
+	Thu, 25 Jun 2020 20:18:41 +0000 (UTC)
 Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
-	by lists.linuxfoundation.org (Postfix) with ESMTP id E07B4C0893;
-	Thu, 25 Jun 2020 20:18:42 +0000 (UTC)
+	by lists.linuxfoundation.org (Postfix) with ESMTP id C54F6C08A7;
+	Thu, 25 Jun 2020 20:18:41 +0000 (UTC)
 Received: from whitealder.osuosl.org (smtp1.osuosl.org [140.211.166.138])
- by lists.linuxfoundation.org (Postfix) with ESMTP id 8FCD7C016F
- for <iommu@lists.linux-foundation.org>; Thu, 25 Jun 2020 20:18:41 +0000 (UTC)
+ by lists.linuxfoundation.org (Postfix) with ESMTP id 0ABCCC016F
+ for <iommu@lists.linux-foundation.org>; Thu, 25 Jun 2020 20:18:39 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
- by whitealder.osuosl.org (Postfix) with ESMTP id 7E3D9881B3
- for <iommu@lists.linux-foundation.org>; Thu, 25 Jun 2020 20:18:41 +0000 (UTC)
+ by whitealder.osuosl.org (Postfix) with ESMTP id 04139881A6
+ for <iommu@lists.linux-foundation.org>; Thu, 25 Jun 2020 20:18:39 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
 Received: from whitealder.osuosl.org ([127.0.0.1])
  by localhost (.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
- with ESMTP id uAqMgPGsgrLh for <iommu@lists.linux-foundation.org>;
- Thu, 25 Jun 2020 20:18:40 +0000 (UTC)
+ with ESMTP id mXprF6GmFgG5 for <iommu@lists.linux-foundation.org>;
+ Thu, 25 Jun 2020 20:18:38 +0000 (UTC)
 X-Greylist: domain auto-whitelisted by SQLgrey-1.7.6
 Received: from mga09.intel.com (mga09.intel.com [134.134.136.24])
- by whitealder.osuosl.org (Postfix) with ESMTPS id 74E58881A6
- for <iommu@lists.linux-foundation.org>; Thu, 25 Jun 2020 20:18:40 +0000 (UTC)
-IronPort-SDR: bitkZvYqVHLMWMBScjBFjPxVv/KEoYc3K5KohjHuuDiZ2YJG/WO5uX/iPxNGIlL7qPYzroPeR7
- /GuGWCjzlLbQ==
-X-IronPort-AV: E=McAfee;i="6000,8403,9663"; a="146566754"
-X-IronPort-AV: E=Sophos;i="5.75,280,1589266800"; d="scan'208";a="146566754"
+ by whitealder.osuosl.org (Postfix) with ESMTPS id 20D52881B7
+ for <iommu@lists.linux-foundation.org>; Thu, 25 Jun 2020 20:18:38 +0000 (UTC)
+IronPort-SDR: 8sAvXdyGXdJbNLvcFPsqEgJFcMjjeHaKleNNX6Nmh7jAoSzfQ7IafSmBqSBP3UpT90Vl3z6ztV
+ x9+mo6sLxyyw==
+X-IronPort-AV: E=McAfee;i="6000,8403,9663"; a="146566735"
+X-IronPort-AV: E=Sophos;i="5.75,280,1589266800"; d="scan'208";a="146566735"
 X-Amp-Result: SKIPPED(no attachment in message)
 X-Amp-File-Uploaded: False
 Received: from orsmga005.jf.intel.com ([10.7.209.41])
  by orsmga102.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384;
- 25 Jun 2020 13:18:40 -0700
-IronPort-SDR: hguf0MI+TInOK/uV/QbxRQ1hKalWrvpl2SYCI2mUSC18YpqyS0oh64dVKHK4o11nnZoP2pIext
- 1tZ03oLjL2Uw==
+ 25 Jun 2020 13:18:38 -0700
+IronPort-SDR: ib/jGCML+XCjcJM6Go+108tJoF30jWAIcbqg8d2qcL9VqjsIegCcAIi4BJMF3OQ/oQgpbQhjUL
+ hg2JxnQHi32w==
 X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.75,280,1589266800"; d="scan'208";a="453132242"
+X-IronPort-AV: E=Sophos;i="5.75,280,1589266800"; d="scan'208";a="453132227"
 Received: from romley-ivt3.sc.intel.com ([172.25.110.60])
- by orsmga005.jf.intel.com with ESMTP; 25 Jun 2020 13:18:39 -0700
+ by orsmga005.jf.intel.com with ESMTP; 25 Jun 2020 13:18:37 -0700
 From: Fenghua Yu <fenghua.yu@intel.com>
 To: "Thomas Gleixner" <tglx@linutronix.de>, "Joerg Roedel" <joro@8bytes.org>,
  "Ingo Molnar" <mingo@redhat.com>, "Borislav Petkov" <bp@alien8.de>,
@@ -72,9 +72,10 @@ To: "Thomas Gleixner" <tglx@linutronix.de>, "Joerg Roedel" <joro@8bytes.org>,
  "Jacob Jun Pan" <jacob.jun.pan@intel.com>,
  "Dave Jiang" <dave.jiang@intel.com>, "Sohil Mehta" <sohil.mehta@intel.com>,
  "Ravi V Shankar" <ravi.v.shankar@intel.com>
-Subject: [PATCH v4 08/12] fork: Clear PASID for new mm
-Date: Thu, 25 Jun 2020 13:17:18 -0700
-Message-Id: <1593116242-31507-9-git-send-email-fenghua.yu@intel.com>
+Subject: [PATCH v4 04/12] x86/cpufeatures: Enumerate ENQCMD and ENQCMDS
+ instructions
+Date: Thu, 25 Jun 2020 13:17:14 -0700
+Message-Id: <1593116242-31507-5-git-send-email-fenghua.yu@intel.com>
 X-Mailer: git-send-email 2.5.0
 In-Reply-To: <1593116242-31507-1-git-send-email-fenghua.yu@intel.com>
 References: <1593116242-31507-1-git-send-email-fenghua.yu@intel.com>
@@ -98,58 +99,49 @@ Content-Transfer-Encoding: 7bit
 Errors-To: iommu-bounces@lists.linux-foundation.org
 Sender: "iommu" <iommu-bounces@lists.linux-foundation.org>
 
-When a new mm is created, its PASID should be cleared, i.e. the PASID is
-initialized to its init state 0 on both ARM and X86.
+Work submission instruction comes in two flavors. ENQCMD can be called
+both in ring 3 and ring 0 and always uses the contents of PASID MSR when
+shipping the command to the device. ENQCMDS allows a kernel driver to
+submit commands on behalf of a user process. The driver supplies the
+PASID value in ENQCMDS. There isn't any usage of ENQCMD in the kernel
+as of now.
+
+The CPU feature flag is shown as "enqcmd" in /proc/cpuinfo.
 
 Signed-off-by: Fenghua Yu <fenghua.yu@intel.com>
 Reviewed-by: Tony Luck <tony.luck@intel.com>
 ---
 v2:
-- Add this patch to initialize PASID value for a new mm.
+- Re-write commit message (Thomas)
 
- include/linux/mm_types.h | 2 ++
- kernel/fork.c            | 8 ++++++++
- 2 files changed, 10 insertions(+)
+ arch/x86/include/asm/cpufeatures.h | 1 +
+ arch/x86/kernel/cpu/cpuid-deps.c   | 1 +
+ 2 files changed, 2 insertions(+)
 
-diff --git a/include/linux/mm_types.h b/include/linux/mm_types.h
-index d61285cfe027..d60d2ec10881 100644
---- a/include/linux/mm_types.h
-+++ b/include/linux/mm_types.h
-@@ -22,6 +22,8 @@
- #endif
- #define AT_VECTOR_SIZE (2*(AT_VECTOR_SIZE_ARCH + AT_VECTOR_SIZE_BASE + 1))
+diff --git a/arch/x86/include/asm/cpufeatures.h b/arch/x86/include/asm/cpufeatures.h
+index 02dabc9e77b0..4469618c410f 100644
+--- a/arch/x86/include/asm/cpufeatures.h
++++ b/arch/x86/include/asm/cpufeatures.h
+@@ -351,6 +351,7 @@
+ #define X86_FEATURE_CLDEMOTE		(16*32+25) /* CLDEMOTE instruction */
+ #define X86_FEATURE_MOVDIRI		(16*32+27) /* MOVDIRI instruction */
+ #define X86_FEATURE_MOVDIR64B		(16*32+28) /* MOVDIR64B instruction */
++#define X86_FEATURE_ENQCMD		(16*32+29) /* ENQCMD and ENQCMDS instructions */
  
-+/* Initial PASID value is 0. */
-+#define INIT_PASID	0
+ /* AMD-defined CPU features, CPUID level 0x80000007 (EBX), word 17 */
+ #define X86_FEATURE_OVERFLOW_RECOV	(17*32+ 0) /* MCA overflow recovery support */
+diff --git a/arch/x86/kernel/cpu/cpuid-deps.c b/arch/x86/kernel/cpu/cpuid-deps.c
+index 3cbe24ca80ab..3a02707c1f4d 100644
+--- a/arch/x86/kernel/cpu/cpuid-deps.c
++++ b/arch/x86/kernel/cpu/cpuid-deps.c
+@@ -69,6 +69,7 @@ static const struct cpuid_dep cpuid_deps[] = {
+ 	{ X86_FEATURE_CQM_MBM_TOTAL,		X86_FEATURE_CQM_LLC   },
+ 	{ X86_FEATURE_CQM_MBM_LOCAL,		X86_FEATURE_CQM_LLC   },
+ 	{ X86_FEATURE_AVX512_BF16,		X86_FEATURE_AVX512VL  },
++	{ X86_FEATURE_ENQCMD,			X86_FEATURE_XSAVES    },
+ 	{}
+ };
  
- struct address_space;
- struct mem_cgroup;
-diff --git a/kernel/fork.c b/kernel/fork.c
-index 142b23645d82..43b5f112604d 100644
---- a/kernel/fork.c
-+++ b/kernel/fork.c
-@@ -1007,6 +1007,13 @@ static void mm_init_owner(struct mm_struct *mm, struct task_struct *p)
- #endif
- }
- 
-+static void mm_init_pasid(struct mm_struct *mm)
-+{
-+#ifdef CONFIG_IOMMU_SUPPORT
-+	mm->pasid = INIT_PASID;
-+#endif
-+}
-+
- static void mm_init_uprobes_state(struct mm_struct *mm)
- {
- #ifdef CONFIG_UPROBES
-@@ -1035,6 +1042,7 @@ static struct mm_struct *mm_init(struct mm_struct *mm, struct task_struct *p,
- 	mm_init_cpumask(mm);
- 	mm_init_aio(mm);
- 	mm_init_owner(mm, p);
-+	mm_init_pasid(mm);
- 	RCU_INIT_POINTER(mm->exe_file, NULL);
- 	mmu_notifier_subscriptions_init(mm);
- 	init_tlb_flush_pending(mm);
 -- 
 2.19.1
 
