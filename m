@@ -7,51 +7,51 @@ X-Spam-Status: No, score=-7.2 required=3.0 tests=HEADER_FROM_DIFFERENT_DOMAINS,
 	UNWANTED_LANGUAGE_BODY,URIBL_BLOCKED,USER_AGENT_GIT autolearn=ham
 	autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 0072FC433E3
+	by smtp.lore.kernel.org (Postfix) with ESMTP id D5221C433E0
 	for <iommu@archiver.kernel.org>; Thu, 25 Jun 2020 13:08:48 +0000 (UTC)
 Received: from whitealder.osuosl.org (smtp1.osuosl.org [140.211.166.138])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by mail.kernel.org (Postfix) with ESMTPS id D3D5320823
-	for <iommu@archiver.kernel.org>; Thu, 25 Jun 2020 13:08:47 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org D3D5320823
+	by mail.kernel.org (Postfix) with ESMTPS id B5B1C20EDD
+	for <iommu@archiver.kernel.org>; Thu, 25 Jun 2020 13:08:48 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org B5B1C20EDD
 Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=8bytes.org
 Authentication-Results: mail.kernel.org; spf=pass smtp.mailfrom=iommu-bounces@lists.linux-foundation.org
 Received: from localhost (localhost [127.0.0.1])
-	by whitealder.osuosl.org (Postfix) with ESMTP id B3B8C87998;
-	Thu, 25 Jun 2020 13:08:47 +0000 (UTC)
+	by whitealder.osuosl.org (Postfix) with ESMTP id 8D0CE879E9;
+	Thu, 25 Jun 2020 13:08:48 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
 Received: from whitealder.osuosl.org ([127.0.0.1])
 	by localhost (.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
-	with ESMTP id Z+W0T7fww+27; Thu, 25 Jun 2020 13:08:46 +0000 (UTC)
+	with ESMTP id r7YW9MAr5I+X; Thu, 25 Jun 2020 13:08:46 +0000 (UTC)
 Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [140.211.9.56])
-	by whitealder.osuosl.org (Postfix) with ESMTP id 5B34A87C49;
+	by whitealder.osuosl.org (Postfix) with ESMTP id A8D2C87C0D;
 	Thu, 25 Jun 2020 13:08:45 +0000 (UTC)
 Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
-	by lists.linuxfoundation.org (Postfix) with ESMTP id 3AE72C08A7;
+	by lists.linuxfoundation.org (Postfix) with ESMTP id 85672C08A5;
 	Thu, 25 Jun 2020 13:08:45 +0000 (UTC)
-Received: from fraxinus.osuosl.org (smtp4.osuosl.org [140.211.166.137])
- by lists.linuxfoundation.org (Postfix) with ESMTP id 6C39DC016F
+Received: from silver.osuosl.org (smtp3.osuosl.org [140.211.166.136])
+ by lists.linuxfoundation.org (Postfix) with ESMTP id 97FFDC016F
  for <iommu@lists.linux-foundation.org>; Thu, 25 Jun 2020 13:08:44 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
- by fraxinus.osuosl.org (Postfix) with ESMTP id 5B753854D7
+ by silver.osuosl.org (Postfix) with ESMTP id 83A3F2313B
  for <iommu@lists.linux-foundation.org>; Thu, 25 Jun 2020 13:08:44 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from fraxinus.osuosl.org ([127.0.0.1])
+Received: from silver.osuosl.org ([127.0.0.1])
  by localhost (.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
- with ESMTP id PQrOSBoCrXFn for <iommu@lists.linux-foundation.org>;
+ with ESMTP id 56aSTx9Bp5MR for <iommu@lists.linux-foundation.org>;
  Thu, 25 Jun 2020 13:08:43 +0000 (UTC)
 X-Greylist: from auto-whitelisted by SQLgrey-1.7.6
 Received: from theia.8bytes.org (8bytes.org [81.169.241.247])
- by fraxinus.osuosl.org (Postfix) with ESMTPS id B85278565B
+ by silver.osuosl.org (Postfix) with ESMTPS id 0BA69230BD
  for <iommu@lists.linux-foundation.org>; Thu, 25 Jun 2020 13:08:43 +0000 (UTC)
 Received: by theia.8bytes.org (Postfix, from userid 1000)
- id 0044846A; Thu, 25 Jun 2020 15:08:38 +0200 (CEST)
+ id 5B68B3FA; Thu, 25 Jun 2020 15:08:38 +0200 (CEST)
 From: Joerg Roedel <joro@8bytes.org>
 To: iommu@lists.linux-foundation.org
-Subject: [PATCH 06/13] iommu/tegra: Use dev_iommu_priv_get/set()
-Date: Thu, 25 Jun 2020 15:08:29 +0200
-Message-Id: <20200625130836.1916-7-joro@8bytes.org>
+Subject: [PATCH 03/13] iommu/msm: Use dev_iommu_priv_get/set()
+Date: Thu, 25 Jun 2020 15:08:26 +0200
+Message-Id: <20200625130836.1916-4-joro@8bytes.org>
 X-Mailer: git-send-email 2.17.1
 In-Reply-To: <20200625130836.1916-1-joro@8bytes.org>
 References: <20200625130836.1916-1-joro@8bytes.org>
@@ -95,76 +95,30 @@ pointer provided by IOMMU core code instead.
 
 Signed-off-by: Joerg Roedel <jroedel@suse.de>
 ---
- drivers/iommu/tegra-gart.c | 8 ++++----
- drivers/iommu/tegra-smmu.c | 8 ++++----
- 2 files changed, 8 insertions(+), 8 deletions(-)
+ drivers/iommu/msm_iommu.c | 4 ++--
+ 1 file changed, 2 insertions(+), 2 deletions(-)
 
-diff --git a/drivers/iommu/tegra-gart.c b/drivers/iommu/tegra-gart.c
-index 5fbdff6ff41a..fac720273889 100644
---- a/drivers/iommu/tegra-gart.c
-+++ b/drivers/iommu/tegra-gart.c
-@@ -113,8 +113,8 @@ static int gart_iommu_attach_dev(struct iommu_domain *domain,
+diff --git a/drivers/iommu/msm_iommu.c b/drivers/iommu/msm_iommu.c
+index 3d8a63555c25..f773cc85f311 100644
+--- a/drivers/iommu/msm_iommu.c
++++ b/drivers/iommu/msm_iommu.c
+@@ -593,14 +593,14 @@ static void insert_iommu_master(struct device *dev,
+ 				struct msm_iommu_dev **iommu,
+ 				struct of_phandle_args *spec)
+ {
+-	struct msm_iommu_ctx_dev *master = dev->archdata.iommu;
++	struct msm_iommu_ctx_dev *master = dev_iommu_priv_get(dev);
+ 	int sid;
  
- 	if (gart->active_domain && gart->active_domain != domain) {
- 		ret = -EBUSY;
--	} else if (dev->archdata.iommu != domain) {
--		dev->archdata.iommu = domain;
-+	} else if (dev_iommu_priv_get(dev) != domain) {
-+		dev_iommu_priv_set(dev, domain);
- 		gart->active_domain = domain;
- 		gart->active_devices++;
+ 	if (list_empty(&(*iommu)->ctx_list)) {
+ 		master = kzalloc(sizeof(*master), GFP_ATOMIC);
+ 		master->of_node = dev->of_node;
+ 		list_add(&master->list, &(*iommu)->ctx_list);
+-		dev->archdata.iommu = master;
++		dev_iommu_priv_set(dev, master);
  	}
-@@ -131,8 +131,8 @@ static void gart_iommu_detach_dev(struct iommu_domain *domain,
  
- 	spin_lock(&gart->dom_lock);
- 
--	if (dev->archdata.iommu == domain) {
--		dev->archdata.iommu = NULL;
-+	if (dev_iommu_priv_get(dev) == domain) {
-+		dev_iommu_priv_set(dev, NULL);
- 
- 		if (--gart->active_devices == 0)
- 			gart->active_domain = NULL;
-diff --git a/drivers/iommu/tegra-smmu.c b/drivers/iommu/tegra-smmu.c
-index 7426b7666e2b..124c8848ab7e 100644
---- a/drivers/iommu/tegra-smmu.c
-+++ b/drivers/iommu/tegra-smmu.c
-@@ -465,7 +465,7 @@ static void tegra_smmu_as_unprepare(struct tegra_smmu *smmu,
- static int tegra_smmu_attach_dev(struct iommu_domain *domain,
- 				 struct device *dev)
- {
--	struct tegra_smmu *smmu = dev->archdata.iommu;
-+	struct tegra_smmu *smmu = dev_iommu_priv_get(dev);
- 	struct tegra_smmu_as *as = to_smmu_as(domain);
- 	struct device_node *np = dev->of_node;
- 	struct of_phandle_args args;
-@@ -780,7 +780,7 @@ static struct iommu_device *tegra_smmu_probe_device(struct device *dev)
- 			 * supported by the Linux kernel, so abort after the
- 			 * first match.
- 			 */
--			dev->archdata.iommu = smmu;
-+			dev_iommu_priv_set(dev, smmu);
- 
- 			break;
- 		}
-@@ -797,7 +797,7 @@ static struct iommu_device *tegra_smmu_probe_device(struct device *dev)
- 
- static void tegra_smmu_release_device(struct device *dev)
- {
--	dev->archdata.iommu = NULL;
-+	dev_iommu_priv_set(dev, NULL);
- }
- 
- static const struct tegra_smmu_group_soc *
-@@ -856,7 +856,7 @@ static struct iommu_group *tegra_smmu_group_get(struct tegra_smmu *smmu,
- static struct iommu_group *tegra_smmu_device_group(struct device *dev)
- {
- 	struct iommu_fwspec *fwspec = dev_iommu_fwspec_get(dev);
--	struct tegra_smmu *smmu = dev->archdata.iommu;
-+	struct tegra_smmu *smmu = dev_iommu_priv_get(dev);
- 	struct iommu_group *group;
- 
- 	group = tegra_smmu_group_get(smmu, fwspec->ids[0]);
+ 	for (sid = 0; sid < master->num_mids; sid++)
 -- 
 2.27.0
 
