@@ -7,51 +7,51 @@ X-Spam-Status: No, score=-10.0 required=3.0
 	SIGNED_OFF_BY,SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED,USER_AGENT_GIT
 	autolearn=ham autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 4D559C433E4
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 3AB8EC433DF
 	for <iommu@archiver.kernel.org>; Thu, 25 Jun 2020 13:08:53 +0000 (UTC)
 Received: from silver.osuosl.org (smtp3.osuosl.org [140.211.166.136])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by mail.kernel.org (Postfix) with ESMTPS id 23FA42072E
+	by mail.kernel.org (Postfix) with ESMTPS id 1660220702
 	for <iommu@archiver.kernel.org>; Thu, 25 Jun 2020 13:08:53 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 23FA42072E
+DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 1660220702
 Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=8bytes.org
 Authentication-Results: mail.kernel.org; spf=pass smtp.mailfrom=iommu-bounces@lists.linux-foundation.org
 Received: from localhost (localhost [127.0.0.1])
-	by silver.osuosl.org (Postfix) with ESMTP id 16F0A231A1;
-	Thu, 25 Jun 2020 13:08:53 +0000 (UTC)
+	by silver.osuosl.org (Postfix) with ESMTP id ECC7A23143;
+	Thu, 25 Jun 2020 13:08:52 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
 Received: from silver.osuosl.org ([127.0.0.1])
 	by localhost (.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
-	with ESMTP id sA6gj16dkrU6; Thu, 25 Jun 2020 13:08:50 +0000 (UTC)
+	with ESMTP id 4mF8DO3swTc8; Thu, 25 Jun 2020 13:08:49 +0000 (UTC)
 Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [140.211.9.56])
-	by silver.osuosl.org (Postfix) with ESMTP id 4FC43231F2;
-	Thu, 25 Jun 2020 13:08:50 +0000 (UTC)
+	by silver.osuosl.org (Postfix) with ESMTP id D24D3231A1;
+	Thu, 25 Jun 2020 13:08:49 +0000 (UTC)
 Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
-	by lists.linuxfoundation.org (Postfix) with ESMTP id 3C363C0893;
-	Thu, 25 Jun 2020 13:08:50 +0000 (UTC)
-Received: from silver.osuosl.org (smtp3.osuosl.org [140.211.166.136])
- by lists.linuxfoundation.org (Postfix) with ESMTP id 1BA92C016F
- for <iommu@lists.linux-foundation.org>; Thu, 25 Jun 2020 13:08:47 +0000 (UTC)
+	by lists.linuxfoundation.org (Postfix) with ESMTP id C8175C08A5;
+	Thu, 25 Jun 2020 13:08:49 +0000 (UTC)
+Received: from fraxinus.osuosl.org (smtp4.osuosl.org [140.211.166.137])
+ by lists.linuxfoundation.org (Postfix) with ESMTP id BED95C016F
+ for <iommu@lists.linux-foundation.org>; Thu, 25 Jun 2020 13:08:46 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
- by silver.osuosl.org (Postfix) with ESMTP id 09A4723119
- for <iommu@lists.linux-foundation.org>; Thu, 25 Jun 2020 13:08:47 +0000 (UTC)
+ by fraxinus.osuosl.org (Postfix) with ESMTP id BC0928578B
+ for <iommu@lists.linux-foundation.org>; Thu, 25 Jun 2020 13:08:46 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from silver.osuosl.org ([127.0.0.1])
+Received: from fraxinus.osuosl.org ([127.0.0.1])
  by localhost (.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
- with ESMTP id bHOGa9srCzdM for <iommu@lists.linux-foundation.org>;
- Thu, 25 Jun 2020 13:08:45 +0000 (UTC)
+ with ESMTP id 8je7RUFIeCac for <iommu@lists.linux-foundation.org>;
+ Thu, 25 Jun 2020 13:08:46 +0000 (UTC)
 X-Greylist: from auto-whitelisted by SQLgrey-1.7.6
 Received: from theia.8bytes.org (8bytes.org [81.169.241.247])
- by silver.osuosl.org (Postfix) with ESMTPS id 6BE532313D
- for <iommu@lists.linux-foundation.org>; Thu, 25 Jun 2020 13:08:45 +0000 (UTC)
+ by fraxinus.osuosl.org (Postfix) with ESMTPS id 44866854D7
+ for <iommu@lists.linux-foundation.org>; Thu, 25 Jun 2020 13:08:46 +0000 (UTC)
 Received: by theia.8bytes.org (Postfix, from userid 1000)
- id 93AF64DE; Thu, 25 Jun 2020 15:08:39 +0200 (CEST)
+ id F0D5B5DF; Thu, 25 Jun 2020 15:08:39 +0200 (CEST)
 From: Joerg Roedel <joro@8bytes.org>
 To: iommu@lists.linux-foundation.org
-Subject: [PATCH 09/13] x86: Remove dev->archdata.iommu pointer
-Date: Thu, 25 Jun 2020 15:08:32 +0200
-Message-Id: <20200625130836.1916-10-joro@8bytes.org>
+Subject: [PATCH 11/13] arm: Remove dev->archdata.iommu pointer
+Date: Thu, 25 Jun 2020 15:08:34 +0200
+Message-Id: <20200625130836.1916-12-joro@8bytes.org>
 X-Mailer: git-send-email 2.17.1
 In-Reply-To: <20200625130836.1916-1-joro@8bytes.org>
 References: <20200625130836.1916-1-joro@8bytes.org>
@@ -95,23 +95,23 @@ per-device private pointer offered by IOMMU core.
 
 Signed-off-by: Joerg Roedel <jroedel@suse.de>
 ---
- arch/x86/include/asm/device.h | 3 ---
+ arch/arm/include/asm/device.h | 3 ---
  1 file changed, 3 deletions(-)
 
-diff --git a/arch/x86/include/asm/device.h b/arch/x86/include/asm/device.h
-index 49bd6cf3eec9..7c0a52ca2f4d 100644
---- a/arch/x86/include/asm/device.h
-+++ b/arch/x86/include/asm/device.h
-@@ -3,9 +3,6 @@
- #define _ASM_X86_DEVICE_H
- 
- struct dev_archdata {
+diff --git a/arch/arm/include/asm/device.h b/arch/arm/include/asm/device.h
+index c675bc0d5aa8..be666f58bf7a 100644
+--- a/arch/arm/include/asm/device.h
++++ b/arch/arm/include/asm/device.h
+@@ -9,9 +9,6 @@ struct dev_archdata {
+ #ifdef CONFIG_DMABOUNCE
+ 	struct dmabounce_device_info *dmabounce;
+ #endif
 -#ifdef CONFIG_IOMMU_API
--	void *iommu; /* hook for IOMMU specific extension */
+-	void *iommu; /* private IOMMU data */
 -#endif
- };
- 
- struct pdev_archdata {
+ #ifdef CONFIG_ARM_DMA_USE_IOMMU
+ 	struct dma_iommu_mapping	*mapping;
+ #endif
 -- 
 2.27.0
 
