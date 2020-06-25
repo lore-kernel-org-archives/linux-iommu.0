@@ -2,83 +2,71 @@ Return-Path: <SRS0=A59K=AG=lists.linux-foundation.org=iommu-bounces@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-2.5 required=3.0 tests=HEADER_FROM_DIFFERENT_DOMAINS,
-	MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED,USER_AGENT_SANE_1
+X-Spam-Status: No, score=-4.0 required=3.0 tests=HEADER_FROM_DIFFERENT_DOMAINS,
+	MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED,USER_AGENT_GIT
 	autolearn=no autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 69F1FC433E0
-	for <iommu@archiver.kernel.org>; Thu, 25 Jun 2020 12:59:13 +0000 (UTC)
-Received: from silver.osuosl.org (smtp3.osuosl.org [140.211.166.136])
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 5810AC433E0
+	for <iommu@archiver.kernel.org>; Thu, 25 Jun 2020 13:08:46 +0000 (UTC)
+Received: from whitealder.osuosl.org (smtp1.osuosl.org [140.211.166.138])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by mail.kernel.org (Postfix) with ESMTPS id 406BB206C3
-	for <iommu@archiver.kernel.org>; Thu, 25 Jun 2020 12:59:13 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 406BB206C3
-Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=linux.intel.com
+	by mail.kernel.org (Postfix) with ESMTPS id 2CDC220823
+	for <iommu@archiver.kernel.org>; Thu, 25 Jun 2020 13:08:46 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 2CDC220823
+Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=8bytes.org
 Authentication-Results: mail.kernel.org; spf=pass smtp.mailfrom=iommu-bounces@lists.linux-foundation.org
 Received: from localhost (localhost [127.0.0.1])
-	by silver.osuosl.org (Postfix) with ESMTP id 016EC230BD;
-	Thu, 25 Jun 2020 12:59:13 +0000 (UTC)
+	by whitealder.osuosl.org (Postfix) with ESMTP id EF3A787C4E;
+	Thu, 25 Jun 2020 13:08:45 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from silver.osuosl.org ([127.0.0.1])
+Received: from whitealder.osuosl.org ([127.0.0.1])
 	by localhost (.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
-	with ESMTP id VlN1N9vy7PsZ; Thu, 25 Jun 2020 12:59:12 +0000 (UTC)
+	with ESMTP id ozMiuoyC0blW; Thu, 25 Jun 2020 13:08:44 +0000 (UTC)
 Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [140.211.9.56])
-	by silver.osuosl.org (Postfix) with ESMTP id 1065022D10;
-	Thu, 25 Jun 2020 12:59:12 +0000 (UTC)
+	by whitealder.osuosl.org (Postfix) with ESMTP id E291C87998;
+	Thu, 25 Jun 2020 13:08:44 +0000 (UTC)
 Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
-	by lists.linuxfoundation.org (Postfix) with ESMTP id EE282C088E;
-	Thu, 25 Jun 2020 12:59:11 +0000 (UTC)
+	by lists.linuxfoundation.org (Postfix) with ESMTP id CD089C088E;
+	Thu, 25 Jun 2020 13:08:44 +0000 (UTC)
 Received: from hemlock.osuosl.org (smtp2.osuosl.org [140.211.166.133])
- by lists.linuxfoundation.org (Postfix) with ESMTP id 2BC7DC016F
- for <iommu@lists.linux-foundation.org>; Thu, 25 Jun 2020 12:59:11 +0000 (UTC)
+ by lists.linuxfoundation.org (Postfix) with ESMTP id 3A170C016F
+ for <iommu@lists.linux-foundation.org>; Thu, 25 Jun 2020 13:08:43 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
- by hemlock.osuosl.org (Postfix) with ESMTP id 129D288713
- for <iommu@lists.linux-foundation.org>; Thu, 25 Jun 2020 12:59:11 +0000 (UTC)
+ by hemlock.osuosl.org (Postfix) with ESMTP id 27A20884A0
+ for <iommu@lists.linux-foundation.org>; Thu, 25 Jun 2020 13:08:43 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
 Received: from hemlock.osuosl.org ([127.0.0.1])
  by localhost (.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
- with ESMTP id 9tVCijo6TYrI for <iommu@lists.linux-foundation.org>;
- Thu, 25 Jun 2020 12:59:10 +0000 (UTC)
-X-Greylist: domain auto-whitelisted by SQLgrey-1.7.6
-Received: from mga01.intel.com (mga01.intel.com [192.55.52.88])
- by hemlock.osuosl.org (Postfix) with ESMTPS id 5E40C886A8
- for <iommu@lists.linux-foundation.org>; Thu, 25 Jun 2020 12:59:10 +0000 (UTC)
-IronPort-SDR: 1OQ+hMOn4HBAnW+ssLWgvmYM6Aa+J7JjCC14eY+ttCr7m2oMqWbBbtrVbLMLD1KUHhGNSwOGT4
- 01Q2gU2Fs62g==
-X-IronPort-AV: E=McAfee;i="6000,8403,9662"; a="162956441"
-X-IronPort-AV: E=Sophos;i="5.75,279,1589266800"; d="scan'208";a="162956441"
-X-Amp-Result: SKIPPED(no attachment in message)
-X-Amp-File-Uploaded: False
-Received: from fmsmga007.fm.intel.com ([10.253.24.52])
- by fmsmga101.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384;
- 25 Jun 2020 05:59:10 -0700
-IronPort-SDR: i6Ys0T4ZOGQuhdpYBW4th9+MHEGWasefrCfEyP583mQ83surcbs8r/lE9QXtG4LHsDnzCDnO2D
- g00PWCTwU2WQ==
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.75,279,1589266800"; d="scan'208";a="263915035"
-Received: from blu2-mobl3.ccr.corp.intel.com (HELO [10.255.28.52])
- ([10.255.28.52])
- by fmsmga007.fm.intel.com with ESMTP; 25 Jun 2020 05:59:07 -0700
-Subject: Re: [PATCH v3 5/5] iommu/uapi: Support both kernel and user unbind
- guest PASID
-To: Jacob Pan <jacob.jun.pan@linux.intel.com>,
- iommu@lists.linux-foundation.org, LKML <linux-kernel@vger.kernel.org>,
- Joerg Roedel <joro@8bytes.org>, Alex Williamson <alex.williamson@redhat.com>
-References: <1592931837-58223-1-git-send-email-jacob.jun.pan@linux.intel.com>
- <1592931837-58223-6-git-send-email-jacob.jun.pan@linux.intel.com>
-From: Lu Baolu <baolu.lu@linux.intel.com>
-Message-ID: <8d9d5692-b603-19eb-3f69-c18cfef7b450@linux.intel.com>
-Date: Thu, 25 Jun 2020 20:59:06 +0800
-User-Agent: Mozilla/5.0 (Windows NT 10.0; WOW64; rv:68.0) Gecko/20100101
- Thunderbird/68.9.0
-MIME-Version: 1.0
-In-Reply-To: <1592931837-58223-6-git-send-email-jacob.jun.pan@linux.intel.com>
-Content-Language: en-US
-Cc: "Tian, Kevin" <kevin.tian@intel.com>, Raj Ashok <ashok.raj@intel.com>,
- Jonathan Corbet <corbet@lwn.net>,
- Jean-Philippe Brucker <jean-philippe@linaro.com>,
- Christoph Hellwig <hch@infradead.org>, David Woodhouse <dwmw2@infradead.org>
+ with ESMTP id y0-ALbSTMMDs for <iommu@lists.linux-foundation.org>;
+ Thu, 25 Jun 2020 13:08:41 +0000 (UTC)
+X-Greylist: from auto-whitelisted by SQLgrey-1.7.6
+Received: from theia.8bytes.org (8bytes.org [81.169.241.247])
+ by hemlock.osuosl.org (Postfix) with ESMTPS id A610788461
+ for <iommu@lists.linux-foundation.org>; Thu, 25 Jun 2020 13:08:41 +0000 (UTC)
+Received: by theia.8bytes.org (Postfix, from userid 1000)
+ id F104136D; Thu, 25 Jun 2020 15:08:37 +0200 (CEST)
+From: Joerg Roedel <joro@8bytes.org>
+To: iommu@lists.linux-foundation.org
+Subject: [PATCH 00/13] iommu: Remove usage of dev->archdata.iommu
+Date: Thu, 25 Jun 2020 15:08:23 +0200
+Message-Id: <20200625130836.1916-1-joro@8bytes.org>
+X-Mailer: git-send-email 2.17.1
+Cc: linux-ia64@vger.kernel.org, Heiko Stuebner <heiko@sntech.de>,
+ David Airlie <airlied@linux.ie>,
+ Benjamin Herrenschmidt <benh@kernel.crashing.org>,
+ Joonas Lahtinen <joonas.lahtinen@linux.intel.com>,
+ Thierry Reding <thierry.reding@gmail.com>, Paul Mackerras <paulus@samba.org>,
+ Will Deacon <will@kernel.org>, Michael Ellerman <mpe@ellerman.id.au>,
+ x86@kernel.org, Russell King <linux@armlinux.org.uk>,
+ Catalin Marinas <catalin.marinas@arm.com>, Fenghua Yu <fenghua.yu@intel.com>,
+ Joerg Roedel <jroedel@suse.de>, intel-gfx@lists.freedesktop.org,
+ Jani Nikula <jani.nikula@linux.intel.com>,
+ Rodrigo Vivi <rodrigo.vivi@intel.com>,
+ Matthias Brugger <matthias.bgg@gmail.com>,
+ linux-arm-kernel@lists.infradead.org, Tony Luck <tony.luck@intel.com>,
+ linuxppc-dev@lists.ozlabs.org, linux-kernel@vger.kernel.org,
+ Daniel Vetter <daniel@ffwll.ch>, David Woodhouse <dwmw2@infradead.org>
 X-BeenThere: iommu@lists.linux-foundation.org
 X-Mailman-Version: 2.1.15
 Precedence: list
@@ -91,30 +79,78 @@ List-Post: <mailto:iommu@lists.linux-foundation.org>
 List-Help: <mailto:iommu-request@lists.linux-foundation.org?subject=help>
 List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
  <mailto:iommu-request@lists.linux-foundation.org?subject=subscribe>
+MIME-Version: 1.0
+Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
-Content-Type: text/plain; charset="us-ascii"; Format="flowed"
 Errors-To: iommu-bounces@lists.linux-foundation.org
 Sender: "iommu" <iommu-bounces@lists.linux-foundation.org>
 
-Hi Jacob,
+From: Joerg Roedel <jroedel@suse.de>
 
-On 2020/6/24 1:03, Jacob Pan wrote:
-> +int __iommu_sva_unbind_gpasid(struct iommu_domain *domain, struct device *dev,
-> +			struct iommu_gpasid_bind_data *data)
->   {
->   	if (unlikely(!domain->ops->sva_unbind_gpasid))
->   		return -ENODEV;
->   
-> -	return domain->ops->sva_unbind_gpasid(dev, pasid);
-> +	return domain->ops->sva_unbind_gpasid(dev, data->hpasid);
-> +}
-> +EXPORT_SYMBOL_GPL(__iommu_sva_unbind_gpasid);
+Hi,
 
-__iommu_sva_unbind_gpasid() looks more like an internal only helper. How
-about something like iommu_sva_kunbind_gpasid()?
+here is a patch-set to remove the usage of dev->archdata.iommu from
+the IOMMU code in the kernel and replace its uses by the iommu per-device
+private data field. The changes also remove the field entirely from
+the architectures which no longer need it.
 
-Best regards,
-baolu
+On PowerPC the field is called dev->archdata.iommu_domain and was only
+used by the PAMU IOMMU driver. It gets removed as well.
+
+The patches have been runtime tested on Intel VT-d and compile tested
+with allyesconfig for:
+
+	* x86 (32 and 64 bit)
+	* arm and arm64
+	* ia64 (only drivers/ because build failed for me in
+	        arch/ia64)
+	* PPC64
+
+Besides that the changes also survived my IOMMU tree compile tests.
+
+Please review.
+
+Regards,
+
+	Joerg
+
+Joerg Roedel (13):
+  iommu/exynos: Use dev_iommu_priv_get/set()
+  iommu/vt-d: Use dev_iommu_priv_get/set()
+  iommu/msm: Use dev_iommu_priv_get/set()
+  iommu/omap: Use dev_iommu_priv_get/set()
+  iommu/rockchip: Use dev_iommu_priv_get/set()
+  iommu/tegra: Use dev_iommu_priv_get/set()
+  iommu/pamu: Use dev_iommu_priv_get/set()
+  iommu/mediatek: Do no use dev->archdata.iommu
+  x86: Remove dev->archdata.iommu pointer
+  ia64: Remove dev->archdata.iommu pointer
+  arm: Remove dev->archdata.iommu pointer
+  arm64: Remove dev->archdata.iommu pointer
+  powerpc/dma: Remove dev->archdata.iommu_domain
+
+ arch/arm/include/asm/device.h                 |  3 ---
+ arch/arm64/include/asm/device.h               |  3 ---
+ arch/ia64/include/asm/device.h                |  3 ---
+ arch/powerpc/include/asm/device.h             |  3 ---
+ arch/x86/include/asm/device.h                 |  3 ---
+ .../gpu/drm/i915/selftests/mock_gem_device.c  | 10 ++++++++--
+ drivers/iommu/exynos-iommu.c                  | 20 +++++++++----------
+ drivers/iommu/fsl_pamu_domain.c               |  8 ++++----
+ drivers/iommu/intel/iommu.c                   | 18 ++++++++---------
+ drivers/iommu/msm_iommu.c                     |  4 ++--
+ drivers/iommu/mtk_iommu.h                     |  2 ++
+ drivers/iommu/mtk_iommu_v1.c                  | 10 ++++------
+ drivers/iommu/omap-iommu.c                    | 20 +++++++++----------
+ drivers/iommu/rockchip-iommu.c                |  8 ++++----
+ drivers/iommu/tegra-gart.c                    |  8 ++++----
+ drivers/iommu/tegra-smmu.c                    |  8 ++++----
+ .../media/platform/s5p-mfc/s5p_mfc_iommu.h    |  4 +++-
+ 17 files changed, 64 insertions(+), 71 deletions(-)
+
+-- 
+2.27.0
+
 _______________________________________________
 iommu mailing list
 iommu@lists.linux-foundation.org
