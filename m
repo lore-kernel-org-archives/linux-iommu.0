@@ -2,97 +2,83 @@ Return-Path: <SRS0=A59K=AG=lists.linux-foundation.org=iommu-bounces@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-6.8 required=3.0 tests=DKIM_INVALID,DKIM_SIGNED,
-	HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_PATCH,MAILING_LIST_MULTI,SIGNED_OFF_BY,
-	SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED autolearn=unavailable autolearn_force=no
-	version=3.4.0
+X-Spam-Status: No, score=-5.3 required=3.0 tests=DKIM_INVALID,DKIM_SIGNED,
+	MAILING_LIST_MULTI,SIGNED_OFF_BY,SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED,
+	USER_AGENT_SANE_1 autolearn=ham autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 798F0C433DF
-	for <iommu@archiver.kernel.org>; Thu, 25 Jun 2020 15:37:34 +0000 (UTC)
-Received: from silver.osuosl.org (smtp3.osuosl.org [140.211.166.136])
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 14F6DC433DF
+	for <iommu@archiver.kernel.org>; Thu, 25 Jun 2020 17:31:31 +0000 (UTC)
+Received: from fraxinus.osuosl.org (smtp4.osuosl.org [140.211.166.137])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by mail.kernel.org (Postfix) with ESMTPS id 413DA207D8
-	for <iommu@archiver.kernel.org>; Thu, 25 Jun 2020 15:37:34 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTPS id CB4E720791
+	for <iommu@archiver.kernel.org>; Thu, 25 Jun 2020 17:31:30 +0000 (UTC)
 Authentication-Results: mail.kernel.org;
-	dkim=fail reason="signature verification failed" (2048-bit key) header.d=lca.pw header.i=@lca.pw header.b="lGOS3DQQ"
-DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 413DA207D8
-Authentication-Results: mail.kernel.org; dmarc=none (p=none dis=none) header.from=lca.pw
+	dkim=fail reason="signature verification failed" (1024-bit key) header.d=kernel.org header.i=@kernel.org header.b="KNaQ/3jj"
+DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org CB4E720791
+Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=kernel.org
 Authentication-Results: mail.kernel.org; spf=pass smtp.mailfrom=iommu-bounces@lists.linux-foundation.org
 Received: from localhost (localhost [127.0.0.1])
-	by silver.osuosl.org (Postfix) with ESMTP id 2A6882324E;
-	Thu, 25 Jun 2020 15:37:34 +0000 (UTC)
+	by fraxinus.osuosl.org (Postfix) with ESMTP id ABC0286A6C;
+	Thu, 25 Jun 2020 17:31:30 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from silver.osuosl.org ([127.0.0.1])
+Received: from fraxinus.osuosl.org ([127.0.0.1])
 	by localhost (.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
-	with ESMTP id CK1jagnBYluS; Thu, 25 Jun 2020 15:37:33 +0000 (UTC)
+	with ESMTP id FViCKSBi8SuM; Thu, 25 Jun 2020 17:31:30 +0000 (UTC)
 Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [140.211.9.56])
-	by silver.osuosl.org (Postfix) with ESMTP id 5DCAE2313B;
-	Thu, 25 Jun 2020 15:37:33 +0000 (UTC)
+	by fraxinus.osuosl.org (Postfix) with ESMTP id F307186A14;
+	Thu, 25 Jun 2020 17:31:29 +0000 (UTC)
 Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
-	by lists.linuxfoundation.org (Postfix) with ESMTP id 4392DC0863;
-	Thu, 25 Jun 2020 15:37:33 +0000 (UTC)
+	by lists.linuxfoundation.org (Postfix) with ESMTP id E3A5EC0863;
+	Thu, 25 Jun 2020 17:31:29 +0000 (UTC)
 Received: from fraxinus.osuosl.org (smtp4.osuosl.org [140.211.166.137])
- by lists.linuxfoundation.org (Postfix) with ESMTP id C8F89C016F
- for <iommu@lists.linux-foundation.org>; Thu, 25 Jun 2020 15:37:31 +0000 (UTC)
+ by lists.linuxfoundation.org (Postfix) with ESMTP id 7D58FC016F;
+ Thu, 25 Jun 2020 17:31:29 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
- by fraxinus.osuosl.org (Postfix) with ESMTP id B4BBA85C1D
- for <iommu@lists.linux-foundation.org>; Thu, 25 Jun 2020 15:37:31 +0000 (UTC)
+ by fraxinus.osuosl.org (Postfix) with ESMTP id 6C39C86A4A;
+ Thu, 25 Jun 2020 17:31:29 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
 Received: from fraxinus.osuosl.org ([127.0.0.1])
  by localhost (.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
- with ESMTP id vjWxJC-bofh7 for <iommu@lists.linux-foundation.org>;
- Thu, 25 Jun 2020 15:37:30 +0000 (UTC)
-X-Greylist: from auto-whitelisted by SQLgrey-1.7.6
-Received: from mail-qv1-f65.google.com (mail-qv1-f65.google.com
- [209.85.219.65])
- by fraxinus.osuosl.org (Postfix) with ESMTPS id 383E485BE4
- for <iommu@lists.linux-foundation.org>; Thu, 25 Jun 2020 15:37:30 +0000 (UTC)
-Received: by mail-qv1-f65.google.com with SMTP id u8so2946383qvj.12
- for <iommu@lists.linux-foundation.org>; Thu, 25 Jun 2020 08:37:30 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=lca.pw; s=google;
- h=date:from:to:cc:subject:message-id:references:mime-version
- :content-disposition:in-reply-to;
- bh=M1cqSae7hNdYiqu+8k8gfItdpEDoX+sntlR/dwIK8h4=;
- b=lGOS3DQQ3dYsGxX5k6MlJyG0pAimjSFQZB1QmrFink0pbh6Xswfk9L8lV8cOs0RHKk
- +UF3pQffKHrTqtKWnZnlAllzISwdXv2nka21K3BDPku0gDkmfXEDYX+s6eDosHZUWSJt
- ME00OvnosHt+mNuFPMs0cFvYUbNreW0H1egdo4IIZBdBik0BIFGifcrlL2xj/zqh1wFU
- 1SSPCZSd6jvIskLmbvQYlALJNRtQYU5K+w0rYR58iXyUJFB7+7cuQMiPpkmTo45IldMm
- btoVaoJSJXGAu5zOMmtUJoYm0uoDBHjqbOlLnHdhkDV2VPa2grdqOG/IbLeg+7ZVetHB
- XMEQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
- d=1e100.net; s=20161025;
- h=x-gm-message-state:date:from:to:cc:subject:message-id:references
- :mime-version:content-disposition:in-reply-to;
- bh=M1cqSae7hNdYiqu+8k8gfItdpEDoX+sntlR/dwIK8h4=;
- b=PgSPELHtXMZtzC7sBO7OqSN92QLbpytJgp3Kz8H6IA5nlHdWp5FKqjQJTfnpd7+O6n
- Mw5+EkZ1CDjGTk70tbOwrYKh8hiC980VnzAEOdp0xVvlODlSvT4IMWJBYpeYtaYZ6Ggy
- rzLLLMmh8usf1br9VHICJ7aizaohb2RpydJNsryabPnruR2NCnki2RtnL84v/LW55Axy
- 9fj/AObNdmoj97GPPOD6ecrQmv8Z6KhE55mMmYqlCoYLTJPOd5aiS9ZcJkPhKY60G7wd
- uhxkCxSTIAGY7/dUv+u6GzFhVeftEgsrrTOqGS6ppr7MhiKm6onz5SqTln6F7yZa3rLO
- 4DBQ==
-X-Gm-Message-State: AOAM5334DgeHs03H3tFupn1pA9E3jfr2SzU2MiHh6GommhzeizIcTlQ8
- OxQ/l5D/9N/sww4TGCEqy307Hw==
-X-Google-Smtp-Source: ABdhPJwO/z3GqRdyLg4iaSC+qFfkcj7Jq1dkbV+B31fWZ2JKLNRWKszSnyC3Ab7uyP1yeR9AoP4b3A==
-X-Received: by 2002:a0c:b5d8:: with SMTP id o24mr1205025qvf.214.1593099449041; 
- Thu, 25 Jun 2020 08:37:29 -0700 (PDT)
-Received: from lca.pw (pool-71-184-117-43.bstnma.fios.verizon.net.
- [71.184.117.43])
- by smtp.gmail.com with ESMTPSA id l127sm5920459qkc.117.2020.06.25.08.37.27
- (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
- Thu, 25 Jun 2020 08:37:28 -0700 (PDT)
-Date: Thu, 25 Jun 2020 11:37:20 -0400
-From: Qian Cai <cai@lca.pw>
-To: Joerg Roedel <joro@8bytes.org>
-Subject: Re: [PATCH 2/2] iommu/amd: Use 'unsigned long' for domain->pt_root
-Message-ID: <20200625153720.GA1127@lca.pw>
-References: <20200625145227.4159-1-joro@8bytes.org>
- <20200625145227.4159-3-joro@8bytes.org>
+ with ESMTP id 1PX-zVkpmX9c; Thu, 25 Jun 2020 17:31:28 +0000 (UTC)
+X-Greylist: domain auto-whitelisted by SQLgrey-1.7.6
+X-Greylist: domain auto-whitelisted by SQLgrey-1.7.6
+Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
+ by fraxinus.osuosl.org (Postfix) with ESMTPS id C2F4A86A14;
+ Thu, 25 Jun 2020 17:31:28 +0000 (UTC)
+Received: from localhost (c-67-164-102-47.hsd1.ca.comcast.net [67.164.102.47])
+ (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256
+ bits)) (No client certificate requested)
+ by mail.kernel.org (Postfix) with ESMTPSA id 0FEDB20789;
+ Thu, 25 Jun 2020 17:31:28 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+ s=default; t=1593106288;
+ bh=WhqBDPdOBNk4Nn0nlm/U/FBDprV3efhSWtdS+mTEZhI=;
+ h=Date:From:To:cc:Subject:In-Reply-To:References:From;
+ b=KNaQ/3jj9TpuSnPt+fOmTGLlW7zN97Hc5nMeEhGWFn3RY4Vu5yOi/rL1784qarDyK
+ p9hWwTE8sLerEFX9rM+jYpsgztP56cS6phku8LqLBrkd8JcN8KNPpoVQD+Ru6HllCU
+ KTeOrcYXJqrOnQ00srcPg/hv/0Q/e8ghv8knwqvk=
+Date: Thu, 25 Jun 2020 10:31:27 -0700 (PDT)
+From: Stefano Stabellini <sstabellini@kernel.org>
+X-X-Sender: sstabellini@sstabellini-ThinkPad-T480s
+To: "Michael S. Tsirkin" <mst@redhat.com>
+Subject: Re: [PATCH] xen: introduce xen_vring_use_dma
+In-Reply-To: <20200624181026-mutt-send-email-mst@kernel.org>
+Message-ID: <alpine.DEB.2.21.2006251014230.8121@sstabellini-ThinkPad-T480s>
+References: <20200624091732.23944-1-peng.fan@nxp.com>
+ <20200624050355-mutt-send-email-mst@kernel.org>
+ <alpine.DEB.2.21.2006241047010.8121@sstabellini-ThinkPad-T480s>
+ <20200624163940-mutt-send-email-mst@kernel.org>
+ <alpine.DEB.2.21.2006241351430.8121@sstabellini-ThinkPad-T480s>
+ <20200624181026-mutt-send-email-mst@kernel.org>
+User-Agent: Alpine 2.21 (DEB 202 2017-01-01)
 MIME-Version: 1.0
-Content-Disposition: inline
-In-Reply-To: <20200625145227.4159-3-joro@8bytes.org>
-Cc: iommu@lists.linux-foundation.org, Joerg Roedel <jroedel@suse.de>,
- linux-kernel@vger.kernel.org
+Cc: jgross@suse.com, Peng Fan <peng.fan@nxp.com>,
+ Stefano Stabellini <sstabellini@kernel.org>, konrad.wilk@oracle.com,
+ jasowang@redhat.com, x86@kernel.org, linux-kernel@vger.kernel.org,
+ virtualization@lists.linux-foundation.org, iommu@lists.linux-foundation.org,
+ linux-imx@nxp.com, xen-devel@lists.xenproject.org, boris.ostrovsky@oracle.com,
+ linux-arm-kernel@lists.infradead.org
 X-BeenThere: iommu@lists.linux-foundation.org
 X-Mailman-Version: 2.1.15
 Precedence: list
@@ -110,76 +96,121 @@ Content-Transfer-Encoding: 7bit
 Errors-To: iommu-bounces@lists.linux-foundation.org
 Sender: "iommu" <iommu-bounces@lists.linux-foundation.org>
 
-On Thu, Jun 25, 2020 at 04:52:27PM +0200, Joerg Roedel wrote:
-> From: Joerg Roedel <jroedel@suse.de>
+On Wed, 24 Jun 2020, Michael S. Tsirkin wrote:
+> On Wed, Jun 24, 2020 at 02:53:54PM -0700, Stefano Stabellini wrote:
+> > On Wed, 24 Jun 2020, Michael S. Tsirkin wrote:
+> > > On Wed, Jun 24, 2020 at 10:59:47AM -0700, Stefano Stabellini wrote:
+> > > > On Wed, 24 Jun 2020, Michael S. Tsirkin wrote:
+> > > > > On Wed, Jun 24, 2020 at 05:17:32PM +0800, Peng Fan wrote:
+> > > > > > Export xen_swiotlb for all platforms using xen swiotlb
+> > > > > > 
+> > > > > > Use xen_swiotlb to determine when vring should use dma APIs to map the
+> > > > > > ring: when xen_swiotlb is enabled the dma API is required. When it is
+> > > > > > disabled, it is not required.
+> > > > > > 
+> > > > > > Signed-off-by: Peng Fan <peng.fan@nxp.com>
+> > > > > 
+> > > > > Isn't there some way to use VIRTIO_F_IOMMU_PLATFORM for this?
+> > > > > Xen was there first, but everyone else is using that now.
+> > > > 
+> > > > Unfortunately it is complicated and it is not related to
+> > > > VIRTIO_F_IOMMU_PLATFORM :-(
+> > > > 
+> > > > 
+> > > > The Xen subsystem in Linux uses dma_ops via swiotlb_xen to translate
+> > > > foreign mappings (memory coming from other VMs) to physical addresses.
+> > > > On x86, it also uses dma_ops to translate Linux's idea of a physical
+> > > > address into a real physical address (this is unneeded on ARM.)
+> > > > 
+> > > > 
+> > > > So regardless of VIRTIO_F_IOMMU_PLATFORM, dma_ops should be used on Xen/x86
+> > > > always and on Xen/ARM if Linux is Dom0 (because it has foreign
+> > > > mappings.) That is why we have the if (xen_domain) return true; in
+> > > > vring_use_dma_api.
+> > > 
+> > > VIRTIO_F_IOMMU_PLATFORM makes guest always use DMA ops.
+> > > 
+> > > Xen hack predates VIRTIO_F_IOMMU_PLATFORM so it *also*
+> > > forces DMA ops even if VIRTIO_F_IOMMU_PLATFORM is clear.
+> > >
+> > > Unfortunately as a result Xen never got around to
+> > > properly setting VIRTIO_F_IOMMU_PLATFORM.
+> > 
+> > I don't think VIRTIO_F_IOMMU_PLATFORM would be correct for this because
+> > the usage of swiotlb_xen is not a property of virtio,
 > 
-> Using atomic64_t can be quite expensive, so use unsigned long instead.
-> This is safe because the write becomes visible atomically.
 > 
-> Signed-off-by: Joerg Roedel <jroedel@suse.de>
-> ---
->  drivers/iommu/amd/amd_iommu_types.h |  2 +-
->  drivers/iommu/amd/iommu.c           | 10 ++++++++--
->  2 files changed, 9 insertions(+), 3 deletions(-)
+> Basically any device without VIRTIO_F_ACCESS_PLATFORM
+> (that is it's name in latest virtio spec, VIRTIO_F_IOMMU_PLATFORM is
+> what linux calls it) is declared as "special, don't follow normal rules
+> for access".
 > 
-> diff --git a/drivers/iommu/amd/amd_iommu_types.h b/drivers/iommu/amd/amd_iommu_types.h
-> index 30a5d412255a..f6f102282dda 100644
-> --- a/drivers/iommu/amd/amd_iommu_types.h
-> +++ b/drivers/iommu/amd/amd_iommu_types.h
-> @@ -468,7 +468,7 @@ struct protection_domain {
->  				       iommu core code */
->  	spinlock_t lock;	/* mostly used to lock the page table*/
->  	u16 id;			/* the domain id written to the device table */
-> -	atomic64_t pt_root;	/* pgtable root and pgtable mode */
-> +	unsigned long pt_root;	/* pgtable root and pgtable mode */
->  	int glx;		/* Number of levels for GCR3 table */
->  	u64 *gcr3_tbl;		/* Guest CR3 table */
->  	unsigned long flags;	/* flags to find out type of domain */
-> diff --git a/drivers/iommu/amd/iommu.c b/drivers/iommu/amd/iommu.c
-> index 5286ddcfc2f9..b0e1dc58244e 100644
-> --- a/drivers/iommu/amd/iommu.c
-> +++ b/drivers/iommu/amd/iommu.c
-> @@ -156,7 +156,7 @@ static struct protection_domain *to_pdomain(struct iommu_domain *dom)
->  static void amd_iommu_domain_get_pgtable(struct protection_domain *domain,
->  					 struct domain_pgtable *pgtable)
->  {
-> -	u64 pt_root = atomic64_read(&domain->pt_root);
-> +	unsigned long pt_root = domain->pt_root;
+> So yes swiotlb_xen is not a property of virtio, but what *is* a property
+> of virtio is that it's not special, just a regular device from DMA POV.
 
-The pt_root might be reload later in case of register pressure where the
-compiler decides to not store it as a stack variable, so it needs
-smp_rmb() here to match to the smp_wmb() in
-amd_iommu_domain_set_pt_root() to make the load visiable to all CPUs.
+I am trying to understand what you meant but I think I am missing
+something.
 
-Then, smp_rmb/wmb() wouldn't be able to deal with data races, so it
-needs,
+Are you saying that modern virtio should always have
+VIRTIO_F_ACCESS_PLATFORM, hence use normal dma_ops as any other devices?
 
-unsigned long pt_root = READ_ONCE(domain->pt_root);
+If that is the case, how is it possible that virtio breaks on ARM using
+the default dma_ops? The breakage is not Xen related (except that Xen
+turns dma_ops on). The original message from Peng was:
 
->  
->  	pgtable->root = (u64 *)(pt_root & PAGE_MASK);
->  	pgtable->mode = pt_root & 7; /* lowest 3 bits encode pgtable mode */
-> @@ -164,7 +164,13 @@ static void amd_iommu_domain_get_pgtable(struct protection_domain *domain,
->  
->  static void amd_iommu_domain_set_pt_root(struct protection_domain *domain, u64 root)
->  {
-> -	atomic64_set(&domain->pt_root, root);
-> +	domain->pt_root = root;
+  vring_map_one_sg -> vring_use_dma_api
+                   -> dma_map_page
+  		       -> __swiotlb_map_page
+  		                ->swiotlb_map_page
+  				->__dma_map_area(phys_to_virt(dma_to_phys(dev, dev_addr)), size, dir);
+  However we are using per device dma area for rpmsg, phys_to_virt
+  could not return a correct virtual address for virtual address in
+  vmalloc area. Then kernel panic.
 
-WRITE_ONCE(domain->pt_root, root);
+I must be missing something. Maybe it is because it has to do with RPMesg?
+ 
 
-> +
-> +	/*
-> +	 * The new value needs to be gobally visible in case pt_root gets
-> +	 * cleared, so that the page-table can be safely freed.
-> +	 */
-> +	smp_wmb();
->  }
->  
->  static void amd_iommu_domain_clr_pt_root(struct protection_domain *domain)
-> -- 
-> 2.27.0
+> > > > You might have noticed that I missed one possible case above: Xen/ARM
+> > > > DomU :-)
+> > > > 
+> > > > Xen/ARM domUs don't need swiotlb_xen, it is not even initialized. So if
+> > > > (xen_domain) return true; would give the wrong answer in that case.
+> > > > Linux would end up calling the "normal" dma_ops, not swiotlb-xen, and
+> > > > the "normal" dma_ops fail.
+> > > > 
+> > > > 
+> > > > The solution I suggested was to make the check in vring_use_dma_api more
+> > > > flexible by returning true if the swiotlb_xen is supposed to be used,
+> > > > not in general for all Xen domains, because that is what the check was
+> > > > really meant to do.
+> > > 
+> > > Why not fix DMA ops so they DTRT (nop) on Xen/ARM DomU? What is wrong with that?
+> > 
+> > swiotlb-xen is not used on Xen/ARM DomU, the default dma_ops are the
+> > ones that are used. So you are saying, why don't we fix the default
+> > dma_ops to work with virtio?
+> > 
+> > It is bad that the default dma_ops crash with virtio, so yes I think it
+> > would be good to fix that. However, even if we fixed that, the if
+> > (xen_domain()) check in vring_use_dma_api is still a problem.
 > 
+> Why is it a problem? It just makes virtio use DMA API.
+> If that in turn works, problem solved.
+
+You are correct in the sense that it would work. However I do think it
+is wrong for vring_use_dma_api to enable dma_ops/swiotlb-xen for Xen/ARM
+DomUs that don't need it. There are many different types of Xen guests,
+Xen x86 is drastically different from Xen ARM, it seems wrong to treat
+them the same way.
+
+
+
+Anyway, re-reading the last messages of the original thread [1], it
+looks like Peng had a clear idea on how to fix the general issue. Peng,
+what happened with that?
+
+
+[1] https://lore.kernel.org/patchwork/patch/1033801/#1222404
 _______________________________________________
 iommu mailing list
 iommu@lists.linux-foundation.org
