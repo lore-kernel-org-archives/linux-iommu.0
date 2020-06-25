@@ -7,86 +7,86 @@ X-Spam-Status: No, score=-9.8 required=3.0 tests=DKIM_INVALID,DKIM_SIGNED,
 	SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED,USER_AGENT_GIT autolearn=ham
 	autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 4DCB9C433E1
-	for <iommu@archiver.kernel.org>; Thu, 25 Jun 2020 00:10:53 +0000 (UTC)
-Received: from fraxinus.osuosl.org (smtp4.osuosl.org [140.211.166.137])
+	by smtp.lore.kernel.org (Postfix) with ESMTP id D0229C433E1
+	for <iommu@archiver.kernel.org>; Thu, 25 Jun 2020 00:10:55 +0000 (UTC)
+Received: from whitealder.osuosl.org (smtp1.osuosl.org [140.211.166.138])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by mail.kernel.org (Postfix) with ESMTPS id 1F48620706
-	for <iommu@archiver.kernel.org>; Thu, 25 Jun 2020 00:10:53 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTPS id A24802078D
+	for <iommu@archiver.kernel.org>; Thu, 25 Jun 2020 00:10:55 +0000 (UTC)
 Authentication-Results: mail.kernel.org;
-	dkim=fail reason="signature verification failed" (2048-bit key) header.d=linaro.org header.i=@linaro.org header.b="HAlI1u32"
-DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 1F48620706
+	dkim=fail reason="signature verification failed" (2048-bit key) header.d=linaro.org header.i=@linaro.org header.b="Wq1vjX8Y"
+DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org A24802078D
 Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=linaro.org
 Authentication-Results: mail.kernel.org; spf=pass smtp.mailfrom=iommu-bounces@lists.linux-foundation.org
 Received: from localhost (localhost [127.0.0.1])
-	by fraxinus.osuosl.org (Postfix) with ESMTP id EE5B486B62;
-	Thu, 25 Jun 2020 00:10:52 +0000 (UTC)
+	by whitealder.osuosl.org (Postfix) with ESMTP id 8504C87A87;
+	Thu, 25 Jun 2020 00:10:55 +0000 (UTC)
+X-Virus-Scanned: amavisd-new at osuosl.org
+Received: from whitealder.osuosl.org ([127.0.0.1])
+	by localhost (.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
+	with ESMTP id mtjM+bRiC+Cx; Thu, 25 Jun 2020 00:10:54 +0000 (UTC)
+Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [140.211.9.56])
+	by whitealder.osuosl.org (Postfix) with ESMTP id 34AFA8796B;
+	Thu, 25 Jun 2020 00:10:54 +0000 (UTC)
+Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
+	by lists.linuxfoundation.org (Postfix) with ESMTP id 2183FC0888;
+	Thu, 25 Jun 2020 00:10:54 +0000 (UTC)
+Received: from fraxinus.osuosl.org (smtp4.osuosl.org [140.211.166.137])
+ by lists.linuxfoundation.org (Postfix) with ESMTP id 4172EC016F
+ for <iommu@lists.linux-foundation.org>; Thu, 25 Jun 2020 00:10:53 +0000 (UTC)
+Received: from localhost (localhost [127.0.0.1])
+ by fraxinus.osuosl.org (Postfix) with ESMTP id 04C6086B46
+ for <iommu@lists.linux-foundation.org>; Thu, 25 Jun 2020 00:10:53 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
 Received: from fraxinus.osuosl.org ([127.0.0.1])
-	by localhost (.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
-	with ESMTP id 7i5_VPvLC0Nf; Thu, 25 Jun 2020 00:10:51 +0000 (UTC)
-Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [140.211.9.56])
-	by fraxinus.osuosl.org (Postfix) with ESMTP id 0935C86B46;
-	Thu, 25 Jun 2020 00:10:51 +0000 (UTC)
-Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
-	by lists.linuxfoundation.org (Postfix) with ESMTP id E3821C0888;
-	Thu, 25 Jun 2020 00:10:50 +0000 (UTC)
-Received: from hemlock.osuosl.org (smtp2.osuosl.org [140.211.166.133])
- by lists.linuxfoundation.org (Postfix) with ESMTP id 8BA73C016F
- for <iommu@lists.linux-foundation.org>; Thu, 25 Jun 2020 00:10:47 +0000 (UTC)
-Received: from localhost (localhost [127.0.0.1])
- by hemlock.osuosl.org (Postfix) with ESMTP id 7B5AF886C4
- for <iommu@lists.linux-foundation.org>; Thu, 25 Jun 2020 00:10:47 +0000 (UTC)
-X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from hemlock.osuosl.org ([127.0.0.1])
  by localhost (.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
- with ESMTP id izFg59ZD09Nx for <iommu@lists.linux-foundation.org>;
- Thu, 25 Jun 2020 00:10:46 +0000 (UTC)
+ with ESMTP id OUXF4y1OpQQI for <iommu@lists.linux-foundation.org>;
+ Thu, 25 Jun 2020 00:10:49 +0000 (UTC)
 X-Greylist: domain auto-whitelisted by SQLgrey-1.7.6
-Received: from mail-pl1-f193.google.com (mail-pl1-f193.google.com
- [209.85.214.193])
- by hemlock.osuosl.org (Postfix) with ESMTPS id B4100886B6
- for <iommu@lists.linux-foundation.org>; Thu, 25 Jun 2020 00:10:46 +0000 (UTC)
-Received: by mail-pl1-f193.google.com with SMTP id x8so1010967plm.10
- for <iommu@lists.linux-foundation.org>; Wed, 24 Jun 2020 17:10:46 -0700 (PDT)
+Received: from mail-pl1-f195.google.com (mail-pl1-f195.google.com
+ [209.85.214.195])
+ by fraxinus.osuosl.org (Postfix) with ESMTPS id 3746386277
+ for <iommu@lists.linux-foundation.org>; Thu, 25 Jun 2020 00:10:49 +0000 (UTC)
+Received: by mail-pl1-f195.google.com with SMTP id bh7so1897718plb.11
+ for <iommu@lists.linux-foundation.org>; Wed, 24 Jun 2020 17:10:49 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linaro.org; s=google;
  h=from:to:cc:subject:date:message-id:in-reply-to:references;
- bh=+LAKpRiBafd2oOjp/6TfYpZhYF0M8uCnrw227kRHd7U=;
- b=HAlI1u32UitdJLPZdVwEahciwS3ZTB6W+Ys4ec6296HJhVkA4/UXBs25d9AQ+OnJp5
- FP+ahCS3vHw/A1Zixz+Z8l54n8cr+EbLkrbQdselXivq7UG6o3/nTNH9TfuKRZVvEDsJ
- ofl9wVPBBA6nbueD3tW+G8ob3X7lEsPQ1H6Q+ve46dM/XR0/tfXKtcaezay7Xz9G0n7v
- URLpDKtNy6XhKPddMkq2OxknBGWDnel78c7gqfwSTY2o1Gzvi5Owk8HJbpT+y3fBPXvR
- +mgKFgPxG1Ptvh4tLpk/H9kouGfX+/EM2oVuzATRTKR9rYV6C1scXP36jU2P1tL7OnpJ
- vkTQ==
+ bh=wKxZHWXThmdwG5TzsbBZbCq86w+CMX62l9gqbYlj/xg=;
+ b=Wq1vjX8Y/9dYjZiuQcJ/ZNMbmUtYy8AxZ80Pa21oizdUuFir8VgnsZkQ4JhrcyPmm0
+ vpB1kJaBnDcSr4z+vVCDEi/xdpGSDfY2oN2Sv42lvFml0MA+hDu2koaaGs7CJjsGy05O
+ neBXQAKmdtn7YajytCTGGIzlnEieKevNdZR7lyTIfVwfjoQo8EwqhYaWNbI8z7k2xU3O
+ 11GE2N7eZCz3Gv+Umj6kPnno9rxkCOzHbcEXglxNWsk1Zb5QqbFSn8tY+yphAYXKfZFb
+ rnjZip4jEQSuKMBGp5rsP5lyHIV0HwVUtEIYX3s2bNb3jdPmAnzl4bE9rcAyyrjmqbdO
+ nwqQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
  d=1e100.net; s=20161025;
  h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
  :references;
- bh=+LAKpRiBafd2oOjp/6TfYpZhYF0M8uCnrw227kRHd7U=;
- b=gjjwbNs7bF9AVLKG9yIzMw6PkC1kY+OuV36lf5tprk3Kc5gIDMQplkj97grev8Uh43
- gpoR2lF5WsY78TmCkoti26S/jC0PKcMNKe8tox5/+cfyEiztb+bXARtipqMqI04bFnNH
- IMfNocKI1fom8/DZrEKzhjiUGM/XnwJn0Xv+0UsPxttbhQz/c+T9Fz02kPm5NUorIrAv
- MBNuhegQ1KvfDDmfXXhF4xpj4ulT4fxPtxJPIvivuSo0b09wh1SP/xtVS74uHw74Oy9S
- JCPXu9C7oftTwxcOW0Cc5eqfAtBsu0Bru8m9B98NTsmPJz/RQdESexWue5+HHw6eg6BN
- bxag==
-X-Gm-Message-State: AOAM533S0a92waaKDuKMRD7rG83IRBXy0V9PvxXoTHpWeFILpwxvPb0X
- tSRCI9TRAmNiDQXotG+7T2Ku2Q==
-X-Google-Smtp-Source: ABdhPJwidESwyZghUA8phlmnKseTB1UOw0TCgrn0ehnZTRkv2moQtUQaHy71nTZcExOkP0oXzBdcaQ==
-X-Received: by 2002:a17:902:9303:: with SMTP id
- bc3mr3763473plb.56.1593043846320; 
- Wed, 24 Jun 2020 17:10:46 -0700 (PDT)
+ bh=wKxZHWXThmdwG5TzsbBZbCq86w+CMX62l9gqbYlj/xg=;
+ b=mRWDXRMY+1k3cpc5WHPa2iWoqsZgp1ebMf9yHmI/+moPrEA4l1Y8louktcgaJRPdrP
+ l9RU3QnFrNYQNmJM2aHx/PP0cf8+Vtj7HWHQ1O0zynzjUSCaVF5VIf96/nwBMuMo53Xd
+ ubAVI5+glybzsFfMhEkCaUlElszcdBjU6xDF+Ks+GPr7jW4AwU/5Ep+txUF8iJtA7IJx
+ pZAgw2xp10hgtGGvicNzwr6XIFiFnpbAKygAew6SR90oClkyE/CYXYWn0udnFBBjOhIR
+ c/8ZK9bEl91I+oqikWVN62LFjsv+0rxbEhW/4po22nfnT9RZkJcC+ZNayEhoPKQqlnGp
+ tEqA==
+X-Gm-Message-State: AOAM532qrJVhB6WCxbEqOok4j2vqubM53hJkM84cXmaoOehNwJz0Lr01
+ i0b/Ww2WVEjrQrWy78VHyMjYWQ==
+X-Google-Smtp-Source: ABdhPJymIBmCwAQtljjPiaUT73HauLgg3YsTyCkmm4i7eIzCr2/sbSrfulZFdAJs6Z5kNNgnbO6iQg==
+X-Received: by 2002:a17:90a:f996:: with SMTP id
+ cq22mr387159pjb.208.1593043848732; 
+ Wed, 24 Jun 2020 17:10:48 -0700 (PDT)
 Received: from localhost.localdomain ([2601:1c2:680:1319:692:26ff:feda:3a81])
  by smtp.gmail.com with ESMTPSA id
- n19sm17458671pgb.0.2020.06.24.17.10.45
+ n19sm17458671pgb.0.2020.06.24.17.10.47
  (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
- Wed, 24 Jun 2020 17:10:45 -0700 (PDT)
+ Wed, 24 Jun 2020 17:10:48 -0700 (PDT)
 From: John Stultz <john.stultz@linaro.org>
 To: lkml <linux-kernel@vger.kernel.org>
-Subject: [PATCH v2 2/5] irq: irqchip: Export irq_chip_retrigger_hierarchy and
- irq_chip_set_vcpu_affinity_parent
-Date: Thu, 25 Jun 2020 00:10:36 +0000
-Message-Id: <20200625001039.56174-3-john.stultz@linaro.org>
+Subject: [PATCH v2 4/5] pinctrl: qcom: Allow pinctrl-msm code to be loadable
+ as a module
+Date: Thu, 25 Jun 2020 00:10:38 +0000
+Message-Id: <20200625001039.56174-5-john.stultz@linaro.org>
 X-Mailer: git-send-email 2.17.1
 In-Reply-To: <20200625001039.56174-1-john.stultz@linaro.org>
 References: <20200625001039.56174-1-john.stultz@linaro.org>
@@ -116,9 +116,13 @@ Content-Transfer-Encoding: 7bit
 Errors-To: iommu-bounces@lists.linux-foundation.org
 Sender: "iommu" <iommu-bounces@lists.linux-foundation.org>
 
-Add EXPORT_SYMBOL_GPL entries for irq_chip_retrigger_hierarchy()
-and irq_chip_set_vcpu_affinity_parent() so that we can allow
-drivers like the qcom-pdc driver to be loadable as a module.
+Tweaks to allow pinctrl-msm code to be loadable as a module.
+This is needed in order to support having the qcom-scm driver,
+which pinctrl-msm calls into, configured as a module.
+
+This requires that we tweak Kconfigs selecting PINCTRL_MSM to
+also depend on QCOM_SCM || QCOM_SCM=n so that we match the
+module setting of QCOM_SCM.
 
 Cc: Andy Gross <agross@kernel.org>
 Cc: Bjorn Andersson <bjorn.andersson@linaro.org>
@@ -137,30 +141,214 @@ Cc: iommu@lists.linux-foundation.org
 Cc: linux-gpio@vger.kernel.org
 Signed-off-by: John Stultz <john.stultz@linaro.org>
 ---
- kernel/irq/chip.c | 3 ++-
- 1 file changed, 2 insertions(+), 1 deletion(-)
+v2:
+* Module description and whitespace fixes suggested by Bjorn
+* Added QCOM_SCM || QCOM_SCM=n bits on Kconfigs selecting
+  PINCTRL_MSM. Reported by both Todd and Bjorn.
+---
+ drivers/pinctrl/qcom/Kconfig       | 24 +++++++++++++++++++++++-
+ drivers/pinctrl/qcom/pinctrl-msm.c |  2 ++
+ 2 files changed, 25 insertions(+), 1 deletion(-)
 
-diff --git a/kernel/irq/chip.c b/kernel/irq/chip.c
-index 41e7e37a0928..ba6ce66d7ed6 100644
---- a/kernel/irq/chip.c
-+++ b/kernel/irq/chip.c
-@@ -1478,6 +1478,7 @@ int irq_chip_retrigger_hierarchy(struct irq_data *data)
+diff --git a/drivers/pinctrl/qcom/Kconfig b/drivers/pinctrl/qcom/Kconfig
+index ff1ee159dca2..11228ae3d826 100644
+--- a/drivers/pinctrl/qcom/Kconfig
++++ b/drivers/pinctrl/qcom/Kconfig
+@@ -2,7 +2,7 @@
+ if (ARCH_QCOM || COMPILE_TEST)
  
- 	return 0;
+ config PINCTRL_MSM
+-	bool
++	tristate
+ 	select PINMUX
+ 	select PINCONF
+ 	select GENERIC_PINCONF
+@@ -11,6 +11,7 @@ config PINCTRL_MSM
+ config PINCTRL_APQ8064
+ 	tristate "Qualcomm APQ8064 pin controller driver"
+ 	depends on GPIOLIB && OF
++	depends on QCOM_SCM || !QCOM_SCM
+ 	select PINCTRL_MSM
+ 	help
+ 	  This is the pinctrl, pinmux, pinconf and gpiolib driver for the
+@@ -19,6 +20,7 @@ config PINCTRL_APQ8064
+ config PINCTRL_APQ8084
+ 	tristate "Qualcomm APQ8084 pin controller driver"
+ 	depends on GPIOLIB && OF
++	depends on QCOM_SCM || !QCOM_SCM
+ 	select PINCTRL_MSM
+ 	help
+ 	  This is the pinctrl, pinmux, pinconf and gpiolib driver for the
+@@ -27,6 +29,7 @@ config PINCTRL_APQ8084
+ config PINCTRL_IPQ4019
+ 	tristate "Qualcomm IPQ4019 pin controller driver"
+ 	depends on GPIOLIB && OF
++	depends on QCOM_SCM || !QCOM_SCM
+ 	select PINCTRL_MSM
+ 	help
+ 	  This is the pinctrl, pinmux, pinconf and gpiolib driver for the
+@@ -35,6 +38,7 @@ config PINCTRL_IPQ4019
+ config PINCTRL_IPQ8064
+ 	tristate "Qualcomm IPQ8064 pin controller driver"
+ 	depends on GPIOLIB && OF
++	depends on QCOM_SCM || !QCOM_SCM
+ 	select PINCTRL_MSM
+ 	help
+ 	  This is the pinctrl, pinmux, pinconf and gpiolib driver for the
+@@ -43,6 +47,7 @@ config PINCTRL_IPQ8064
+ config PINCTRL_IPQ8074
+ 	tristate "Qualcomm Technologies, Inc. IPQ8074 pin controller driver"
+ 	depends on GPIOLIB && OF
++	depends on QCOM_SCM || !QCOM_SCM
+ 	select PINCTRL_MSM
+ 	help
+ 	  This is the pinctrl, pinmux, pinconf and gpiolib driver for
+@@ -53,6 +58,7 @@ config PINCTRL_IPQ8074
+ config PINCTRL_IPQ6018
+ 	tristate "Qualcomm Technologies, Inc. IPQ6018 pin controller driver"
+ 	depends on GPIOLIB && OF
++	depends on QCOM_SCM || !QCOM_SCM
+ 	select PINCTRL_MSM
+ 	help
+ 	  This is the pinctrl, pinmux, pinconf and gpiolib driver for
+@@ -63,6 +69,7 @@ config PINCTRL_IPQ6018
+ config PINCTRL_MSM8660
+ 	tristate "Qualcomm 8660 pin controller driver"
+ 	depends on GPIOLIB && OF
++	depends on QCOM_SCM || !QCOM_SCM
+ 	select PINCTRL_MSM
+ 	help
+ 	  This is the pinctrl, pinmux, pinconf and gpiolib driver for the
+@@ -71,6 +78,7 @@ config PINCTRL_MSM8660
+ config PINCTRL_MSM8960
+ 	tristate "Qualcomm 8960 pin controller driver"
+ 	depends on GPIOLIB && OF
++	depends on QCOM_SCM || !QCOM_SCM
+ 	select PINCTRL_MSM
+ 	help
+ 	  This is the pinctrl, pinmux, pinconf and gpiolib driver for the
+@@ -79,6 +87,7 @@ config PINCTRL_MSM8960
+ config PINCTRL_MDM9615
+ 	tristate "Qualcomm 9615 pin controller driver"
+ 	depends on GPIOLIB && OF
++	depends on QCOM_SCM || !QCOM_SCM
+ 	select PINCTRL_MSM
+ 	help
+ 	  This is the pinctrl, pinmux, pinconf and gpiolib driver for the
+@@ -87,6 +96,7 @@ config PINCTRL_MDM9615
+ config PINCTRL_MSM8X74
+ 	tristate "Qualcomm 8x74 pin controller driver"
+ 	depends on GPIOLIB && OF
++	depends on QCOM_SCM || !QCOM_SCM
+ 	select PINCTRL_MSM
+ 	help
+ 	  This is the pinctrl, pinmux, pinconf and gpiolib driver for the
+@@ -95,6 +105,7 @@ config PINCTRL_MSM8X74
+ config PINCTRL_MSM8916
+ 	tristate "Qualcomm 8916 pin controller driver"
+ 	depends on GPIOLIB && OF
++	depends on QCOM_SCM || !QCOM_SCM
+ 	select PINCTRL_MSM
+ 	help
+ 	  This is the pinctrl, pinmux, pinconf and gpiolib driver for the
+@@ -103,6 +114,7 @@ config PINCTRL_MSM8916
+ config PINCTRL_MSM8976
+ 	tristate "Qualcomm 8976 pin controller driver"
+ 	depends on GPIOLIB && OF
++	depends on QCOM_SCM || !QCOM_SCM
+ 	select PINCTRL_MSM
+ 	help
+ 	  This is the pinctrl, pinmux, pinconf and gpiolib driver for the
+@@ -113,6 +125,7 @@ config PINCTRL_MSM8976
+ config PINCTRL_MSM8994
+ 	tristate "Qualcomm 8994 pin controller driver"
+ 	depends on GPIOLIB && OF
++	depends on QCOM_SCM || !QCOM_SCM
+ 	select PINCTRL_MSM
+ 	help
+ 	  This is the pinctrl, pinmux, pinconf and gpiolib driver for the
+@@ -122,6 +135,7 @@ config PINCTRL_MSM8994
+ config PINCTRL_MSM8996
+ 	tristate "Qualcomm MSM8996 pin controller driver"
+ 	depends on GPIOLIB && OF
++	depends on QCOM_SCM || !QCOM_SCM
+ 	select PINCTRL_MSM
+ 	help
+ 	  This is the pinctrl, pinmux, pinconf and gpiolib driver for the
+@@ -130,6 +144,7 @@ config PINCTRL_MSM8996
+ config PINCTRL_MSM8998
+ 	tristate "Qualcomm MSM8998 pin controller driver"
+ 	depends on GPIOLIB && OF
++	depends on QCOM_SCM || !QCOM_SCM
+ 	select PINCTRL_MSM
+ 	help
+ 	  This is the pinctrl, pinmux, pinconf and gpiolib driver for the
+@@ -138,6 +153,7 @@ config PINCTRL_MSM8998
+ config PINCTRL_QCS404
+ 	tristate "Qualcomm QCS404 pin controller driver"
+ 	depends on GPIOLIB && OF
++	depends on QCOM_SCM || !QCOM_SCM
+ 	select PINCTRL_MSM
+ 	help
+ 	  This is the pinctrl, pinmux, pinconf and gpiolib driver for the
+@@ -146,6 +162,7 @@ config PINCTRL_QCS404
+ config PINCTRL_QDF2XXX
+ 	tristate "Qualcomm Technologies QDF2xxx pin controller driver"
+ 	depends on GPIOLIB && ACPI
++	depends on QCOM_SCM || !QCOM_SCM
+ 	select PINCTRL_MSM
+ 	help
+ 	  This is the GPIO driver for the TLMM block found on the
+@@ -183,6 +200,7 @@ config PINCTRL_QCOM_SSBI_PMIC
+ config PINCTRL_SC7180
+ 	tristate "Qualcomm Technologies Inc SC7180 pin controller driver"
+ 	depends on GPIOLIB && OF
++	depends on QCOM_SCM || !QCOM_SCM
+ 	select PINCTRL_MSM
+ 	help
+ 	  This is the pinctrl, pinmux, pinconf and gpiolib driver for the
+@@ -192,6 +210,7 @@ config PINCTRL_SC7180
+ config PINCTRL_SDM660
+ 	tristate "Qualcomm Technologies Inc SDM660 pin controller driver"
+ 	depends on GPIOLIB && OF
++	depends on QCOM_SCM || !QCOM_SCM
+ 	select PINCTRL_MSM
+ 	help
+ 	 This is the pinctrl, pinmux, pinconf and gpiolib driver for the
+@@ -201,6 +220,7 @@ config PINCTRL_SDM660
+ config PINCTRL_SDM845
+ 	tristate "Qualcomm Technologies Inc SDM845 pin controller driver"
+ 	depends on GPIOLIB && (OF || ACPI)
++	depends on QCOM_SCM || !QCOM_SCM
+ 	select PINCTRL_MSM
+ 	help
+ 	 This is the pinctrl, pinmux, pinconf and gpiolib driver for the
+@@ -210,6 +230,7 @@ config PINCTRL_SDM845
+ config PINCTRL_SM8150
+ 	tristate "Qualcomm Technologies Inc SM8150 pin controller driver"
+ 	depends on GPIOLIB && OF
++	depends on QCOM_SCM || !QCOM_SCM
+ 	select PINCTRL_MSM
+ 	help
+ 	 This is the pinctrl, pinmux, pinconf and gpiolib driver for the
+@@ -219,6 +240,7 @@ config PINCTRL_SM8150
+ config PINCTRL_SM8250
+ 	tristate "Qualcomm Technologies Inc SM8250 pin controller driver"
+ 	depends on GPIOLIB && OF
++	depends on QCOM_SCM || !QCOM_SCM
+ 	select PINCTRL_MSM
+ 	help
+ 	  This is the pinctrl, pinmux, pinconf and gpiolib driver for the
+diff --git a/drivers/pinctrl/qcom/pinctrl-msm.c b/drivers/pinctrl/qcom/pinctrl-msm.c
+index 83b7d64bc4c1..e8e3ba8207af 100644
+--- a/drivers/pinctrl/qcom/pinctrl-msm.c
++++ b/drivers/pinctrl/qcom/pinctrl-msm.c
+@@ -1355,3 +1355,5 @@ int msm_pinctrl_remove(struct platform_device *pdev)
  }
-+EXPORT_SYMBOL_GPL(irq_chip_retrigger_hierarchy);
+ EXPORT_SYMBOL(msm_pinctrl_remove);
  
- /**
-  * irq_chip_set_vcpu_affinity_parent - Set vcpu affinity on the parent interrupt
-@@ -1492,7 +1493,7 @@ int irq_chip_set_vcpu_affinity_parent(struct irq_data *data, void *vcpu_info)
- 
- 	return -ENOSYS;
- }
--
-+EXPORT_SYMBOL_GPL(irq_chip_set_vcpu_affinity_parent);
- /**
-  * irq_chip_set_wake_parent - Set/reset wake-up on the parent interrupt
-  * @data:	Pointer to interrupt specific data
++MODULE_DESCRIPTION("Qualcomm Technologies, Inc. TLMM driver");
++MODULE_LICENSE("GPL v2");
 -- 
 2.17.1
 
