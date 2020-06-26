@@ -2,84 +2,81 @@ Return-Path: <SRS0=GrUw=AH=lists.linux-foundation.org=iommu-bounces@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-7.0 required=3.0 tests=HEADER_FROM_DIFFERENT_DOMAINS,
-	INCLUDES_PATCH,MAILING_LIST_MULTI,SIGNED_OFF_BY,SPF_HELO_NONE,SPF_PASS,
-	URIBL_BLOCKED autolearn=ham autolearn_force=no version=3.4.0
+X-Spam-Status: No, score=-5.5 required=3.0 tests=HEADER_FROM_DIFFERENT_DOMAINS,
+	INCLUDES_PATCH,MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED,
+	USER_AGENT_SANE_1 autolearn=ham autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 4069DC433E0
-	for <iommu@archiver.kernel.org>; Fri, 26 Jun 2020 12:02:14 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id C9828C433DF
+	for <iommu@archiver.kernel.org>; Fri, 26 Jun 2020 12:27:56 +0000 (UTC)
 Received: from fraxinus.osuosl.org (smtp4.osuosl.org [140.211.166.137])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by mail.kernel.org (Postfix) with ESMTPS id 0CB9A2078D
-	for <iommu@archiver.kernel.org>; Fri, 26 Jun 2020 12:02:13 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 0CB9A2078D
-Authentication-Results: mail.kernel.org; dmarc=none (p=none dis=none) header.from=hisilicon.com
+	by mail.kernel.org (Postfix) with ESMTPS id 9C20D2081A
+	for <iommu@archiver.kernel.org>; Fri, 26 Jun 2020 12:27:56 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 9C20D2081A
+Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=intel.com
 Authentication-Results: mail.kernel.org; spf=pass smtp.mailfrom=iommu-bounces@lists.linux-foundation.org
 Received: from localhost (localhost [127.0.0.1])
-	by fraxinus.osuosl.org (Postfix) with ESMTP id DCB5E8655C;
-	Fri, 26 Jun 2020 12:02:13 +0000 (UTC)
+	by fraxinus.osuosl.org (Postfix) with ESMTP id 754D485EB8;
+	Fri, 26 Jun 2020 12:27:56 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
 Received: from fraxinus.osuosl.org ([127.0.0.1])
 	by localhost (.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
-	with ESMTP id 3aMt4ql9gZQF; Fri, 26 Jun 2020 12:02:12 +0000 (UTC)
+	with ESMTP id VZGTLvlVlcCi; Fri, 26 Jun 2020 12:27:55 +0000 (UTC)
 Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [140.211.9.56])
-	by fraxinus.osuosl.org (Postfix) with ESMTP id 8470B861A1;
-	Fri, 26 Jun 2020 12:02:12 +0000 (UTC)
+	by fraxinus.osuosl.org (Postfix) with ESMTP id B96D385BD0;
+	Fri, 26 Jun 2020 12:27:55 +0000 (UTC)
 Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
-	by lists.linuxfoundation.org (Postfix) with ESMTP id 53E4AC088C;
-	Fri, 26 Jun 2020 12:02:12 +0000 (UTC)
-Received: from fraxinus.osuosl.org (smtp4.osuosl.org [140.211.166.137])
- by lists.linuxfoundation.org (Postfix) with ESMTP id 4CA51C016F
- for <iommu@lists.linux-foundation.org>; Fri, 26 Jun 2020 12:02:11 +0000 (UTC)
+	by lists.linuxfoundation.org (Postfix) with ESMTP id 98466C0863;
+	Fri, 26 Jun 2020 12:27:55 +0000 (UTC)
+Received: from silver.osuosl.org (smtp3.osuosl.org [140.211.166.136])
+ by lists.linuxfoundation.org (Postfix) with ESMTP id 97751C016F
+ for <iommu@lists.linux-foundation.org>; Fri, 26 Jun 2020 12:22:48 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
- by fraxinus.osuosl.org (Postfix) with ESMTP id 4667586311
- for <iommu@lists.linux-foundation.org>; Fri, 26 Jun 2020 12:02:11 +0000 (UTC)
+ by silver.osuosl.org (Postfix) with ESMTP id 7F21D2353A
+ for <iommu@lists.linux-foundation.org>; Fri, 26 Jun 2020 12:22:48 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from fraxinus.osuosl.org ([127.0.0.1])
+Received: from silver.osuosl.org ([127.0.0.1])
  by localhost (.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
- with ESMTP id YtMB8RUGi512 for <iommu@lists.linux-foundation.org>;
- Fri, 26 Jun 2020 12:02:09 +0000 (UTC)
+ with ESMTP id PCPdToW0BvG8 for <iommu@lists.linux-foundation.org>;
+ Fri, 26 Jun 2020 12:22:47 +0000 (UTC)
 X-Greylist: domain auto-whitelisted by SQLgrey-1.7.6
-Received: from huawei.com (szxga03-in.huawei.com [45.249.212.189])
- by fraxinus.osuosl.org (Postfix) with ESMTPS id B1E2B861A1
- for <iommu@lists.linux-foundation.org>; Fri, 26 Jun 2020 12:02:08 +0000 (UTC)
-Received: from dggemi406-hub.china.huawei.com (unknown [172.30.72.56])
- by Forcepoint Email with ESMTP id 9667551DE239E30D0C96;
- Fri, 26 Jun 2020 20:01:56 +0800 (CST)
-Received: from DGGEMI525-MBS.china.huawei.com ([169.254.6.126]) by
- dggemi406-hub.china.huawei.com ([10.3.17.144]) with mapi id 14.03.0487.000;
- Fri, 26 Jun 2020 20:01:45 +0800
-From: "Song Bao Hua (Barry Song)" <song.bao.hua@hisilicon.com>
-To: Robin Murphy <robin.murphy@arm.com>, "hch@lst.de" <hch@lst.de>,
- "m.szyprowski@samsung.com" <m.szyprowski@samsung.com>, "will@kernel.org"
- <will@kernel.org>, "ganapatrao.kulkarni@cavium.com"
- <ganapatrao.kulkarni@cavium.com>, "catalin.marinas@arm.com"
- <catalin.marinas@arm.com>
-Subject: RE: [PATCH v2 1/2] dma-direct: provide the ability to reserve
- per-numa CMA
-Thread-Topic: [PATCH v2 1/2] dma-direct: provide the ability to reserve
- per-numa CMA
-Thread-Index: AQHWSsSY8LnVWNMYkEmWpaJ1pqQoDKjoptmAgAIP9AA=
-Date: Fri, 26 Jun 2020 12:01:45 +0000
-Message-ID: <B926444035E5E2439431908E3842AFD2524A84@DGGEMI525-MBS.china.huawei.com>
-References: <20200625074330.13668-1-song.bao.hua@hisilicon.com>
- <20200625074330.13668-2-song.bao.hua@hisilicon.com>
- <11672f20-6011-1a70-8def-fc662f52d50f@arm.com>
-In-Reply-To: <11672f20-6011-1a70-8def-fc662f52d50f@arm.com>
-Accept-Language: en-GB, en-US
-Content-Language: en-US
-X-MS-Has-Attach: 
-X-MS-TNEF-Correlator: 
-x-originating-ip: [10.126.201.204]
+Received: from mga02.intel.com (mga02.intel.com [134.134.136.20])
+ by silver.osuosl.org (Postfix) with ESMTPS id 0F41222E96
+ for <iommu@lists.linux-foundation.org>; Fri, 26 Jun 2020 12:22:46 +0000 (UTC)
+IronPort-SDR: apHpdmHCLDL1d5pkcPqSzGniI6nyF38i1s44JQVx/lCFGolm6iDiyXIvALRnrG7uVsJp6X42Mk
+ 77KVwQ0CA/HA==
+X-IronPort-AV: E=McAfee;i="6000,8403,9663"; a="133684245"
+X-IronPort-AV: E=Sophos;i="5.75,283,1589266800"; d="scan'208";a="133684245"
+X-Amp-Result: SKIPPED(no attachment in message)
+X-Amp-File-Uploaded: False
+Received: from orsmga007.jf.intel.com ([10.7.209.58])
+ by orsmga101.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384;
+ 26 Jun 2020 05:22:46 -0700
+IronPort-SDR: F5eHo2m2CFQpkNJaLvMJixEf0mOWgyXmWSFNR0ssn6jmoARey1jsvDfPfsk2m3B9/kk+8TIjqL
+ 8AK8eNcG2bhA==
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="5.75,283,1589266800"; d="scan'208";a="301047902"
+Received: from swallace-mobl2.ger.corp.intel.com (HELO
+ btopel-mobl.ger.intel.com) ([10.252.52.84])
+ by orsmga007.jf.intel.com with ESMTP; 26 Jun 2020 05:22:42 -0700
+Subject: Re: the XSK buffer pool needs be to reverted
+To: Christoph Hellwig <hch@lst.de>, "David S. Miller" <davem@davemloft.net>,
+ netdev@vger.kernel.org, Konrad Rzeszutek Wilk <konrad.wilk@oracle.com>,
+ iommu@lists.linux-foundation.org, linux-kernel@vger.kernel.org,
+ bpf <bpf@vger.kernel.org>
+References: <20200626074725.GA21790@lst.de>
+From: =?UTF-8?B?QmrDtnJuIFTDtnBlbA==?= <bjorn.topel@intel.com>
+Message-ID: <f1512c3e-79eb-ba75-6f38-ca09795973c1@intel.com>
+Date: Fri, 26 Jun 2020 14:22:41 +0200
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101
+ Thunderbird/68.8.0
 MIME-Version: 1.0
-X-CFilter-Loop: Reflected
-Cc: Steve Capper <steve.capper@arm.com>, Linuxarm <linuxarm@huawei.com>,
- "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
- "iommu@lists.linux-foundation.org" <iommu@lists.linux-foundation.org>,
- "linux-arm-kernel@lists.infradead.org" <linux-arm-kernel@lists.infradead.org>,
- Andrew Morton <akpm@linux-foundation.org>, Mike Rapoport <rppt@linux.ibm.com>,
- Nicolas Saenz Julienne <nsaenzjulienne@suse.de>
+In-Reply-To: <20200626074725.GA21790@lst.de>
+Content-Language: en-US
+X-Mailman-Approved-At: Fri, 26 Jun 2020 12:27:55 +0000
+Cc: Maxim Mikityanskiy <maximmi@mellanox.com>, "Karlsson,
+ Magnus" <magnus.karlsson@intel.com>
 X-BeenThere: iommu@lists.linux-foundation.org
 X-Mailman-Version: 2.1.15
 Precedence: list
@@ -92,409 +89,102 @@ List-Post: <mailto:iommu@lists.linux-foundation.org>
 List-Help: <mailto:iommu-request@lists.linux-foundation.org?subject=help>
 List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
  <mailto:iommu-request@lists.linux-foundation.org?subject=subscribe>
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: 7bit
+Content-Transfer-Encoding: base64
+Content-Type: text/plain; charset="utf-8"; Format="flowed"
 Errors-To: iommu-bounces@lists.linux-foundation.org
 Sender: "iommu" <iommu-bounces@lists.linux-foundation.org>
 
-
-
-> -----Original Message-----
-> From: linux-kernel-owner@vger.kernel.org
-> [mailto:linux-kernel-owner@vger.kernel.org] On Behalf Of Robin Murphy
-> Sent: Thursday, June 25, 2020 11:11 PM
-> To: Song Bao Hua (Barry Song) <song.bao.hua@hisilicon.com>; hch@lst.de;
-> m.szyprowski@samsung.com; will@kernel.org;
-> ganapatrao.kulkarni@cavium.com; catalin.marinas@arm.com
-> Cc: iommu@lists.linux-foundation.org; Linuxarm <linuxarm@huawei.com>;
-> linux-arm-kernel@lists.infradead.org; linux-kernel@vger.kernel.org; Jonathan
-> Cameron <jonathan.cameron@huawei.com>; Nicolas Saenz Julienne
-> <nsaenzjulienne@suse.de>; Steve Capper <steve.capper@arm.com>; Andrew
-> Morton <akpm@linux-foundation.org>; Mike Rapoport <rppt@linux.ibm.com>
-> Subject: Re: [PATCH v2 1/2] dma-direct: provide the ability to reserve
-> per-numa CMA
-> 
-> On 2020-06-25 08:43, Barry Song wrote:
-> > This is useful for at least two scenarios:
-> > 1. ARM64 smmu will get memory from local numa node, it can save its
-> > command queues and page tables locally. Tests show it can decrease
-> > dma_unmap latency at lot. For example, without this patch, smmu on
-> > node2 will get memory from node0 by calling dma_alloc_coherent(),
-> > typically, it has to wait for more than 560ns for the completion of
-> > CMD_SYNC in an empty command queue; with this patch, it needs 240ns
-> > only.
-> > 2. when we set iommu passthrough, drivers will get memory from CMA,
-> > local memory means much less latency.
-> >
-> > Cc: Jonathan Cameron <Jonathan.Cameron@huawei.com>
-> > Cc: Christoph Hellwig <hch@lst.de>
-> > Cc: Marek Szyprowski <m.szyprowski@samsung.com>
-> > Cc: Will Deacon <will@kernel.org>
-> > Cc: Robin Murphy <robin.murphy@arm.com>
-> > Cc: Ganapatrao Kulkarni <ganapatrao.kulkarni@cavium.com>
-> > Cc: Catalin Marinas <catalin.marinas@arm.com>
-> > Cc: Nicolas Saenz Julienne <nsaenzjulienne@suse.de>
-> > Cc: Steve Capper <steve.capper@arm.com>
-> > Cc: Andrew Morton <akpm@linux-foundation.org>
-> > Cc: Mike Rapoport <rppt@linux.ibm.com>
-> > Signed-off-by: Barry Song <song.bao.hua@hisilicon.com>
-> > ---
-> >   include/linux/dma-contiguous.h |  4 ++
-> >   kernel/dma/Kconfig             | 10 ++++
-> >   kernel/dma/contiguous.c        | 99
-> ++++++++++++++++++++++++++++++----
-> >   3 files changed, 104 insertions(+), 9 deletions(-)
-> >
-> > diff --git a/include/linux/dma-contiguous.h
-> b/include/linux/dma-contiguous.h
-> > index 03f8e98e3bcc..278a80a40456 100644
-> > --- a/include/linux/dma-contiguous.h
-> > +++ b/include/linux/dma-contiguous.h
-> > @@ -79,6 +79,8 @@ static inline void dma_contiguous_set_default(struct
-> cma *cma)
-> >
-> >   void dma_contiguous_reserve(phys_addr_t addr_limit);
-> >
-> > +void dma_pernuma_cma_reserve(void);
-> > +
-> >   int __init dma_contiguous_reserve_area(phys_addr_t size, phys_addr_t
-> base,
-> >   				       phys_addr_t limit, struct cma **res_cma,
-> >   				       bool fixed);
-> > @@ -128,6 +130,8 @@ static inline void dma_contiguous_set_default(struct
-> cma *cma) { }
-> >
-> >   static inline void dma_contiguous_reserve(phys_addr_t limit) { }
-> >
-> > +static inline void dma_pernuma_cma_reserve(void) { }
-> > +
-> >   static inline int dma_contiguous_reserve_area(phys_addr_t size,
-> phys_addr_t base,
-> >   				       phys_addr_t limit, struct cma **res_cma,
-> >   				       bool fixed)
-> > diff --git a/kernel/dma/Kconfig b/kernel/dma/Kconfig
-> > index d006668c0027..aeb976b1d21c 100644
-> > --- a/kernel/dma/Kconfig
-> > +++ b/kernel/dma/Kconfig
-> > @@ -104,6 +104,16 @@ config DMA_CMA
-> >   if  DMA_CMA
-> >   comment "Default contiguous memory area size:"
-> >
-> > +config CMA_PERNUMA_SIZE_MBYTES
-> > +	int "Size in Mega Bytes for per-numa CMA areas"
-> > +	depends on NUMA
-> > +	default 16 if ARM64
-> > +	default 0
-> > +	help
-> > +	  Defines the size (in MiB) of the per-numa memory area for Contiguous
-> > +	  Memory Allocator. Every numa node will get a separate CMA with this
-> > +	  size. If the size of 0 is selected, per-numa CMA is disabled.
-> > +
-> 
-> I think this needs to be cleverer than just a static config option.
-> Pretty much everything else CMA-related is runtime-configurable to some
-> degree, and doing any per-node setup when booting on a single-node
-> system would be wasted effort.
-
-I agree some dynamic configuration should be supported to set the size of cma.
-It could be a kernel parameter bootargs, or leverage an existing parameter.
-
-For a system with NUMA enabled, but with only one node or actually non-numa, 
-the current dma_pernuma_cma_reserve() won't do anything:
-
-void __init dma_pernuma_cma_reserve(void)
-{
-	int nid;
-
-	if (!pernuma_size_bytes || nr_online_nodes <= 1)
-		return;
-}
-
-> 
-> Since this is conceptually very similar to the existing hugetlb_cma
-> implementation I'm also wondering about inconsistency with respect to
-> specifying per-node vs. total sizes.
-
-For hugetlbcma, pernuma cma size is: total_size/the number of nodes
-It is quite simple.
-
-But for DMA, node0's CMA might support address limitation for old
-devices which allocate memory by GFP_DMA(32).
-
-> 
-> Another thought, though, is that systems large enough to have multiple
-> NUMA nodes tend not to be short on memory, so it might not be
-> unreasonable to base this all on whatever size the default area is
-> given, and simply have a binary on/off switch to control the per-node
-> aspect.
-
-I don't mind applying the default size to all NUMA nodes as generally a server
-has larger memory than embedded system.
-One issue is that the default global CMA is on node0, and if the code applies the default size to
-every node, the default cma is better to also as node0's pernuma cma too. Otherwise, there
-would be two CMA with same size on node0. 
-
-So the code can bypass node0 while creating per-numa CMA.
-
-On the other hand, only CMA on node0 support address limitation for old devices
-as its memory is in low physical address.
-That is probably why the cma of node0 still need to be handled separately.
-
-So node0's CMA will be both default global CMA and per-NUMA CMA of node0.
-
-> 
-> >   config CMA_SIZE_MBYTES
-> >   	int "Size in Mega Bytes"
-> >   	depends on !CMA_SIZE_SEL_PERCENTAGE
-> > diff --git a/kernel/dma/contiguous.c b/kernel/dma/contiguous.c
-> > index 15bc5026c485..bcbd53aead93 100644
-> > --- a/kernel/dma/contiguous.c
-> > +++ b/kernel/dma/contiguous.c
-> > @@ -30,7 +30,14 @@
-> >   #define CMA_SIZE_MBYTES 0
-> >   #endif
-> >
-> > +#ifdef CONFIG_CMA_PERNUMA_SIZE_MBYTES
-> > +#define CMA_SIZE_PERNUMA_MBYTES
-> CONFIG_CMA_PERNUMA_SIZE_MBYTES
-> > +#else
-> > +#define CMA_SIZE_PERNUMA_MBYTES 0
-> > +#endif
-> > +
-> >   struct cma *dma_contiguous_default_area;
-> > +static struct cma *dma_contiguous_pernuma_area[MAX_NUMNODES];
-> >
-> >   /*
-> >    * Default global CMA area size can be defined in kernel's .config.
-> > @@ -44,6 +51,8 @@ struct cma *dma_contiguous_default_area;
-> >    */
-> >   static const phys_addr_t size_bytes __initconst =
-> >   	(phys_addr_t)CMA_SIZE_MBYTES * SZ_1M;
-> > +static const phys_addr_t pernuma_size_bytes __initconst =
-> > +	(phys_addr_t)CMA_SIZE_PERNUMA_MBYTES * SZ_1M;
-> >   static phys_addr_t  size_cmdline __initdata = -1;
-> >   static phys_addr_t base_cmdline __initdata;
-> >   static phys_addr_t limit_cmdline __initdata;
-> > @@ -96,6 +105,33 @@ static inline __maybe_unused phys_addr_t
-> cma_early_percent_memory(void)
-> >
-> >   #endif
-> >
-> > +void __init dma_pernuma_cma_reserve(void)
-> > +{
-> > +	int nid;
-> > +
-> > +	if (!pernuma_size_bytes || nr_online_nodes <= 1)
-> > +		return;
-> > +
-> > +	for_each_node_state(nid, N_ONLINE) {
-> 
-> Do we need/want notifiers to handle currently-offline nodes coming
-> online later (I'm not sure off-hand how NUMA interacts with stuff like
-> "maxcpus=n")?
-
-I had a try.
-
-For example, if the hardware has 4 numa nodes and each one has 24 CPUs.
-
-Setting maxcpus=20 will result in:
-
-4 numa nodes are all online after arm64_numa_init() ;
-CPU0-19 is online;
-CPU20-95 is offline;
-
-$cat /sys/devices/system/cpu/cpu0/online 
-1
-
-$cat /sys/devices/system/cpu/cpu24/online 
-0
-
-$cat /sys/devices/system/cpu/cpu50/online 
-0
-
-But the printk still print 4 here:
-
---- a/arch/arm64/mm/init.c                                                                                                                                 
-+++ b/arch/arm64/mm/init.c                                                                                                                                 
-@@ -420,6 +420,8 @@ void __init bootmem_init(void)
-
-        arm64_numa_init();                                                                                                                                 
-
-+       printk("%s nr_online_node :%d\n", __func__, nr_online_nodes);
-+
-        /*                                                                                                                                                 
-         * must be done after arm64_numa_init() which calls numa_init() to                                                                                 
-         * initialize node_online_map that gets used in hugetlb_cma_reserve()    
-
-> 
-> > +		int ret;
-> > +		char name[20];
-> > +
-> > +		snprintf(name, sizeof(name), "pernuma%d", nid);
-> > +		ret = cma_declare_contiguous_nid(0, pernuma_size_bytes, 0, 0,
-> > +						 0, false, name,
-> > +						 &dma_contiguous_pernuma_area[nid],
-> > +						 nid);
-> > +		if (ret) {
-> > +			pr_warn("%s: reservation failed: err %d, node %d", __func__,
-> > +				ret, nid);
-> > +			continue;
-> > +		}
-> > +
-> > +		pr_debug("%s: reserved %llu MiB on node %d\n", __func__,
-> > +			(unsigned long long)pernuma_size_bytes / SZ_1M, nid);
-> > +	}
-> > +}
-> > +
-> >   /**
-> >    * dma_contiguous_reserve() - reserve area(s) for contiguous memory
-> handling
-> >    * @limit: End address of the reserved memory (optional, 0 for any).
-> > @@ -222,22 +258,31 @@ bool dma_release_from_contiguous(struct device
-> *dev, struct page *pages,
-> >    * @gfp:   Allocation flags.
-> >    *
-> >    * This function allocates contiguous memory buffer for specified device.
-> It
-> > - * tries to use device specific contiguous memory area if available, or the
-> > - * default global one.
-> > + * tries to use device specific contiguous memory area if available, or it
-> > + * tries to use per-numa cma, if the allocation fails, it will fallback to
-> > + * try default global one.
-> >    *
-> > - * Note that it byapss one-page size of allocations from the global area as
-> > - * the addresses within one page are always contiguous, so there is no need
-> > - * to waste CMA pages for that kind; it also helps reduce fragmentations.
-> > + * Note that it bypass one-page size of allocations from the per-numa and
-> > + * global area as the addresses within one page are always contiguous, so
-> > + * there is no need to waste CMA pages for that kind; it also helps reduce
-> > + * fragmentations.
-> >    */
-> >   struct page *dma_alloc_contiguous(struct device *dev, size_t size, gfp_t
-> gfp)
-> >   {
-> >   	size_t count = size >> PAGE_SHIFT;
-> >   	struct page *page = NULL;
-> >   	struct cma *cma = NULL;
-> > +	int nid = dev ? dev_to_node(dev) : NUMA_NO_NODE;
-> 
-> dev should never be NULL here (the existing check below could be cleaned
-> up if we're refactoring anyway).
-
-It was not done in v1. But kernel test robot reported issue like 
-
-"smatch warnings:
-kernel/dma/contiguous.c:274 dma_alloc_contiguous() warn: variable dereferenced before \
-check 'dev' (see line 272)"
-
-https://marc.info/?l=linux-arm-kernel&m=159127076208780&w=2
-
-> 
-> > +	bool alloc_from_pernuma = false;
-> >
-> >   	if (dev && dev->cma_area)
-> >   		cma = dev->cma_area;
-> > -	else if (count > 1)
-> > +	else if ((nid != NUMA_NO_NODE) &&
-> dma_contiguous_pernuma_area[nid]
-> > +		&& !(gfp & (GFP_DMA | GFP_DMA32))
-> > +		&& (count > 1)) {
-> > +		cma = dma_contiguous_pernuma_area[nid];
-> > +		alloc_from_pernuma = true;
-> > +	} else if (count > 1)
-> 
-> Well this is a big ugly mess... I'd suggest restructuring the whole
-> function to bail out immediately if (count == 1 && !dev->cma_area), then
-> try the per-device, per-node and default areas in turn until something
-> works.
-
-Agreed
-
-> 
-> >   		cma = dma_contiguous_default_area;
-> >
-> >   	/* CMA can be used only in the context which permits sleeping */
-> > @@ -246,6 +291,11 @@ struct page *dma_alloc_contiguous(struct device
-> *dev, size_t size, gfp_t gfp)
-> >   		size_t cma_align = min_t(size_t, align, CONFIG_CMA_ALIGNMENT);
-> >
-> >   		page = cma_alloc(cma, count, cma_align, gfp & __GFP_NOWARN);
-> > +
-> > +		/* fall back to default cma if failed in per-numa cma */
-> > +		if (!page && alloc_from_pernuma)
-> > +			page = cma_alloc(dma_contiguous_default_area, count,
-> > +				cma_align, gfp & __GFP_NOWARN);
-> >   	}
-> >
-> >   	return page;
-> > @@ -264,9 +314,40 @@ struct page *dma_alloc_contiguous(struct device
-> *dev, size_t size, gfp_t gfp)
-> >    */
-> >   void dma_free_contiguous(struct device *dev, struct page *page, size_t
-> size)
-> >   {
-> > -	if (!cma_release(dev_get_cma_area(dev), page,
-> > -			 PAGE_ALIGN(size) >> PAGE_SHIFT))
-> > -		__free_pages(page, get_order(size));
-> > +	/* if dev has its own cma, free page from there */
-> > +	if (dev && dev->cma_area) {
-> 
-> Again, no new redundant NULL checks please.
-
-Kernel test robot might report issue.
-
-> 
-> > +		if (cma_release(dev->cma_area, page, PAGE_ALIGN(size) >>
-> PAGE_SHIFT))
-> > +			return;
-> > +	} else {
-> > +		/*
-> > +		 * otherwise, page is from either per-numa cma or default cma
-> > +		 */
-> > +		int nid = dev ? dev_to_node(dev) : NUMA_NO_NODE;
-> > +
-> > +		if (nid != NUMA_NO_NODE) {
-> > +			int i;
-> > +
-> > +			/*
-> > +			 * Literally we only need to call cma_release() on pernuma cma
-> of
-> > +			 * node nid, howerver, a corner case is that users might write
-> > +			 * /sys/devices/pci-x/numa_node to change node to
-> workaround firmware
-> > +			 * bug, so it might allocate memory from nodeA CMA, but free
-> from nodeB
-> > +			 * CMA.
-> > +			 */
-> 
-> Why bother with this dance at all? You have the page, so you can't not
-> know where it is. Just use page_to_nid() like hugetlb_cma does.
-
-Cool.
-
-> 
-> Robin.
-> 
-> > +			for (i = 0; i < MAX_NUMNODES; i++) {
-> > +				if (cma_release(dma_contiguous_pernuma_area[i], page,
-> > +							PAGE_ALIGN(size) >> PAGE_SHIFT))
-> > +					return;
-> > +			}
-> > +		}
-> > +
-> > +		if (cma_release(dma_contiguous_default_area, page,
-> > +					PAGE_ALIGN(size) >> PAGE_SHIFT))
-> > +			return;
-> > +	}
-> > +
-> > +	/* not in any cma, free from buddy */
-> > +	__free_pages(page, get_order(size));
-> >   }
-
-Thanks
-Barry
-
-_______________________________________________
-iommu mailing list
-iommu@lists.linux-foundation.org
-https://lists.linuxfoundation.org/mailman/listinfo/iommu
+T24gMjAyMC0wNi0yNiAwOTo0NywgQ2hyaXN0b3BoIEhlbGx3aWcgd3JvdGU6Cj4gSGkgQmrDtnJu
+LAo+IAo+IHlvdSBhZGRpdGlvbiBvZiB0aGUgeHNrX2J1ZmZfcG9vbC5jIEFQSXMgaW4gY29tbWl0
+IDJiNDM0NzBhZGQ4Ywo+ICgieHNrOiBJbnRyb2R1Y2UgQUZfWERQIGJ1ZmZlciBhbGxvY2F0aW9u
+IEFQSSIpIGlzIHVuZm9ydHVuYXRlbHkgcmF0aGVyCj4gYnJva2VuIGJ5IG1ha2luZyBsb3RzIG9m
+IGFzc3VtcHRpb25zIGFuZCBwb2tpbmcgaW50byBkbWEtZGlyZWN0IGFuZAo+IHN3aW90bGIgaW50
+ZXJuYWxzIHRoYXQgYXJlIG9mIG5vIGJ1c2luZXNzIHRvIG91dHNpZGUgdXNlcnMgYW5kIGNsZWFy
+bHkKPiBtYXJrZWQgYXMgc3VjaC4gICBJJ2QgYmUgZ2xhZCB0byB3b3JrIHdpdGggeW91ciBkb2lu
+ZyBzb21ldGhpbmcgcHJvcGVyCj4gZm9yIHBvb2xzLCBidXQgdGhhdCBuZWVkcyBwcm9wZXIgQVBJ
+cyBhbmQgcHJvYmFibHkgbGl2ZSBpbiB0aGUgZG1hCj4gbWFwcGluZyBjb3JlLCBidXQgZm9yIHRo
+YXQgeW91J2QgYWN0dWFsbHkgbmVlZCB0byBjb250YWN0IHRoZSByZWxldmFudAo+IG1haW50YWlu
+ZXJzIGJlZm9yZSBwb2tpbmcgaW50byBpbnRlcm5hbHMuCj4KCkNocmlzdG9waCwKClRoYW5rcyBm
+b3IgY2xhcmlmeWluZyB0aGF0LiBMZXQncyB3b3JrIG9uIGEgc29sdXRpb24gdGhhdCBjYW4gcmVz
+aWRlIGluCnRoZSBkbWEgbWFwcGluZyBjb3JlLgoKPiBUaGUgY29tbWl0IHNlZW1zIHRvIGhhdmUg
+YSBsb25nIGRvdmUgdGFpbCBvZiBjb21taXRzIGRlcGVuZGluZyBvbiBpdAo+IGRlc3BpdGUgb25s
+eSBiZWluZyBhIG1vbnRoIG9sZCwgc28gbWF5YmUgeW91IGNhbiBkbyB0aGUgcmV2ZXJ0IGZvciBu
+b3c/Cj4KClJldmVydGluZyB0aGUgd2hvbGUgc2VyaWVzIHNvdW5kcyBhIGJpdCB0b28gbXVjaC4g
+TGV0J3MgZm9jdXMgb24gdGhlCnBhcnQgdGhhdCBicmVha3MgdGhlIGRtYSBhcGkgYWJzdHJhY3Rp
+b24uIEknbSBhc3N1bWluZyB0aGF0IHlvdSdyZQpyZWZlcnJpbmcgdG8gdGhlCgogICBzdGF0aWMg
+Ym9vbCB4cF9jaGVja19jaGVhcF9kbWEoc3RydWN0IHhza19idWZmX3Bvb2wgKnBvb2wpCgpmdW5j
+dGlvbiAoYW5kIHJlbGF0ZWQgZnVuY3Rpb25zIGNhbGxlZCBmcm9tIHRoYXQpPwoKPiBOb3RlIHRo
+YXQgdGhpcyBpcyBzb21ld2hhdCB1cmdlbnQsIGFzIHZhcmlvdXMgb2YgdGhlIEFQSXMgdGhhdCB0
+aGUgY29kZQo+IGlzIGFidXNpbmcgYXJlIHNsYXRlZCB0byBnbyBhd2F5IGZvciBMaW51eCA1Ljks
+IHNvIHRoaXMgYWRkaXRpb24gY29tZXMKPiBhdCBhIHJlYWxseSBiYWQgdGltZS4KPiAKClVuZGVy
+c3Rvb2QuIFdkeXQgYWJvdXQgc29tZXRoaW5nIGluIHRoZSBsaW5lcyBvZiB0aGUgZGlmZiBiZWxv
+dz8gSXQncwpidWlsZCB0ZXN0ZWQgb25seSwgYnV0IHJlbW92ZXMgYWxsIG5vbi1kbWEgQVBJIHVz
+YWdlICgicG9raW5nCmludGVybmFscyIpLiBXb3VsZCB0aGF0IGJlIGEgd2F5IGZvcndhcmQsIGFu
+ZCB0aGVuIGFzIGEgbmV4dCBzdGVwIHdvcmsKb24gYSBzb2x1dGlvbiB0aGF0IHdvdWxkIGdpdmUg
+c2ltaWxhciBiZW5lZml0cywgYnV0IHNvbWV0aGluZyB0aGF0IHdvdWxkCmxpdmUgaW4gdGhlIGRt
+YSBtYXBwaW5nIGNvcmU/CgpkaWZmIC0tZ2l0IGEvaW5jbHVkZS9uZXQveHNrX2J1ZmZfcG9vbC5o
+IGIvaW5jbHVkZS9uZXQveHNrX2J1ZmZfcG9vbC5oCmluZGV4IGE0ZmYyMjY1MDVjOS4uMDAzYjE3
+MmNlMGQyIDEwMDY0NAotLS0gYS9pbmNsdWRlL25ldC94c2tfYnVmZl9wb29sLmgKKysrIGIvaW5j
+bHVkZS9uZXQveHNrX2J1ZmZfcG9vbC5oCkBAIC00MCw3ICs0MCw2IEBAIHN0cnVjdCB4c2tfYnVm
+Zl9wb29sIHsKICAJdTMyIGhlYWRyb29tOwogIAl1MzIgY2h1bmtfc2l6ZTsKICAJdTMyIGZyYW1l
+X2xlbjsKLQlib29sIGNoZWFwX2RtYTsKICAJYm9vbCB1bmFsaWduZWQ7CiAgCXZvaWQgKmFkZHJz
+OwogIAlzdHJ1Y3QgZGV2aWNlICpkZXY7CkBAIC04MCw5ICs3OSw2IEBAIHN0YXRpYyBpbmxpbmUg
+ZG1hX2FkZHJfdCB4cF9nZXRfZnJhbWVfZG1hKHN0cnVjdCAKeGRwX2J1ZmZfeHNrICp4c2tiKQog
+IHZvaWQgeHBfZG1hX3N5bmNfZm9yX2NwdV9zbG93KHN0cnVjdCB4ZHBfYnVmZl94c2sgKnhza2Ip
+OwogIHN0YXRpYyBpbmxpbmUgdm9pZCB4cF9kbWFfc3luY19mb3JfY3B1KHN0cnVjdCB4ZHBfYnVm
+Zl94c2sgKnhza2IpCiAgewotCWlmICh4c2tiLT5wb29sLT5jaGVhcF9kbWEpCi0JCXJldHVybjsK
+LQogIAl4cF9kbWFfc3luY19mb3JfY3B1X3Nsb3coeHNrYik7CiAgfQoKQEAgLTkxLDkgKzg3LDYg
+QEAgdm9pZCB4cF9kbWFfc3luY19mb3JfZGV2aWNlX3Nsb3coc3RydWN0IHhza19idWZmX3Bvb2wg
+Cipwb29sLCBkbWFfYWRkcl90IGRtYSwKICBzdGF0aWMgaW5saW5lIHZvaWQgeHBfZG1hX3N5bmNf
+Zm9yX2RldmljZShzdHJ1Y3QgeHNrX2J1ZmZfcG9vbCAqcG9vbCwKICAJCQkJCSAgZG1hX2FkZHJf
+dCBkbWEsIHNpemVfdCBzaXplKQogIHsKLQlpZiAocG9vbC0+Y2hlYXBfZG1hKQotCQlyZXR1cm47
+Ci0KICAJeHBfZG1hX3N5bmNfZm9yX2RldmljZV9zbG93KHBvb2wsIGRtYSwgc2l6ZSk7CiAgfQoK
+ZGlmZiAtLWdpdCBhL25ldC94ZHAveHNrX2J1ZmZfcG9vbC5jIGIvbmV0L3hkcC94c2tfYnVmZl9w
+b29sLmMKaW5kZXggNTQwZWQ3NWU0NDgyLi41NzE0ZjM3MTEzODEgMTAwNjQ0Ci0tLSBhL25ldC94
+ZHAveHNrX2J1ZmZfcG9vbC5jCisrKyBiL25ldC94ZHAveHNrX2J1ZmZfcG9vbC5jCkBAIC0yLDkg
+KzIsNiBAQAoKICAjaW5jbHVkZSA8bmV0L3hza19idWZmX3Bvb2wuaD4KICAjaW5jbHVkZSA8bmV0
+L3hkcF9zb2NrLmg+Ci0jaW5jbHVkZSA8bGludXgvZG1hLWRpcmVjdC5oPgotI2luY2x1ZGUgPGxp
+bnV4L2RtYS1ub25jb2hlcmVudC5oPgotI2luY2x1ZGUgPGxpbnV4L3N3aW90bGIuaD4KCiAgI2lu
+Y2x1ZGUgInhza19xdWV1ZS5oIgoKQEAgLTU1LDcgKzUyLDYgQEAgc3RydWN0IHhza19idWZmX3Bv
+b2wgKnhwX2NyZWF0ZShzdHJ1Y3QgcGFnZSAqKnBhZ2VzLCAKdTMyIG5yX3BhZ2VzLCB1MzIgY2h1
+bmtzLAogIAlwb29sLT5mcmVlX2hlYWRzX2NudCA9IGNodW5rczsKICAJcG9vbC0+aGVhZHJvb20g
+PSBoZWFkcm9vbTsKICAJcG9vbC0+Y2h1bmtfc2l6ZSA9IGNodW5rX3NpemU7Ci0JcG9vbC0+Y2hl
+YXBfZG1hID0gdHJ1ZTsKICAJcG9vbC0+dW5hbGlnbmVkID0gdW5hbGlnbmVkOwogIAlwb29sLT5m
+cmFtZV9sZW4gPSBjaHVua19zaXplIC0gaGVhZHJvb20gLSBYRFBfUEFDS0VUX0hFQURST09NOwog
+IAlJTklUX0xJU1RfSEVBRCgmcG9vbC0+ZnJlZV9saXN0KTsKQEAgLTEyNSw0OCArMTIxLDYgQEAg
+c3RhdGljIHZvaWQgeHBfY2hlY2tfZG1hX2NvbnRpZ3VpdHkoc3RydWN0IAp4c2tfYnVmZl9wb29s
+ICpwb29sKQogIAl9CiAgfQoKLXN0YXRpYyBib29sIF9fbWF5YmVfdW51c2VkIHhwX2NoZWNrX3N3
+aW90bGJfZG1hKHN0cnVjdCB4c2tfYnVmZl9wb29sICpwb29sKQotewotI2lmIGRlZmluZWQoQ09O
+RklHX1NXSU9UTEIpCi0JcGh5c19hZGRyX3QgcGFkZHI7Ci0JdTMyIGk7Ci0KLQlmb3IgKGkgPSAw
+OyBpIDwgcG9vbC0+ZG1hX3BhZ2VzX2NudDsgaSsrKSB7Ci0JCXBhZGRyID0gZG1hX3RvX3BoeXMo
+cG9vbC0+ZGV2LCBwb29sLT5kbWFfcGFnZXNbaV0pOwotCQlpZiAoaXNfc3dpb3RsYl9idWZmZXIo
+cGFkZHIpKQotCQkJcmV0dXJuIGZhbHNlOwotCX0KLSNlbmRpZgotCXJldHVybiB0cnVlOwotfQot
+Ci1zdGF0aWMgYm9vbCB4cF9jaGVja19jaGVhcF9kbWEoc3RydWN0IHhza19idWZmX3Bvb2wgKnBv
+b2wpCi17Ci0jaWYgZGVmaW5lZChDT05GSUdfSEFTX0RNQSkKLQljb25zdCBzdHJ1Y3QgZG1hX21h
+cF9vcHMgKm9wcyA9IGdldF9kbWFfb3BzKHBvb2wtPmRldik7Ci0KLQlpZiAob3BzKSB7Ci0JCXJl
+dHVybiAhb3BzLT5zeW5jX3NpbmdsZV9mb3JfY3B1ICYmCi0JCQkhb3BzLT5zeW5jX3NpbmdsZV9m
+b3JfZGV2aWNlOwotCX0KLQotCWlmICghZG1hX2lzX2RpcmVjdChvcHMpKQotCQlyZXR1cm4gZmFs
+c2U7Ci0KLQlpZiAoIXhwX2NoZWNrX3N3aW90bGJfZG1hKHBvb2wpKQotCQlyZXR1cm4gZmFsc2U7
+Ci0KLQlpZiAoIWRldl9pc19kbWFfY29oZXJlbnQocG9vbC0+ZGV2KSkgewotI2lmIGRlZmluZWQo
+Q09ORklHX0FSQ0hfSEFTX1NZTkNfRE1BX0ZPUl9DUFUpIHx8CQlcCi0JZGVmaW5lZChDT05GSUdf
+QVJDSF9IQVNfU1lOQ19ETUFfRk9SX0NQVV9BTEwpIHx8CVwKLQlkZWZpbmVkKENPTkZJR19BUkNI
+X0hBU19TWU5DX0RNQV9GT1JfREVWSUNFKQotCQlyZXR1cm4gZmFsc2U7Ci0jZW5kaWYKLQl9Ci0j
+ZW5kaWYKLQlyZXR1cm4gdHJ1ZTsKLX0KLQogIGludCB4cF9kbWFfbWFwKHN0cnVjdCB4c2tfYnVm
+Zl9wb29sICpwb29sLCBzdHJ1Y3QgZGV2aWNlICpkZXYsCiAgCSAgICAgICB1bnNpZ25lZCBsb25n
+IGF0dHJzLCBzdHJ1Y3QgcGFnZSAqKnBhZ2VzLCB1MzIgbnJfcGFnZXMpCiAgewpAQCAtMTk1LDcg
+KzE0OSw2IEBAIGludCB4cF9kbWFfbWFwKHN0cnVjdCB4c2tfYnVmZl9wb29sICpwb29sLCBzdHJ1
+Y3QgCmRldmljZSAqZGV2LAogIAkJeHBfY2hlY2tfZG1hX2NvbnRpZ3VpdHkocG9vbCk7CgogIAlw
+b29sLT5kZXYgPSBkZXY7Ci0JcG9vbC0+Y2hlYXBfZG1hID0geHBfY2hlY2tfY2hlYXBfZG1hKHBv
+b2wpOwogIAlyZXR1cm4gMDsKICB9CiAgRVhQT1JUX1NZTUJPTCh4cF9kbWFfbWFwKTsKQEAgLTI4
+MCwxMSArMjMzLDkgQEAgc3RydWN0IHhkcF9idWZmICp4cF9hbGxvYyhzdHJ1Y3QgeHNrX2J1ZmZf
+cG9vbCAqcG9vbCkKICAJeHNrYi0+eGRwLmRhdGEgPSB4c2tiLT54ZHAuZGF0YV9oYXJkX3N0YXJ0
+ICsgWERQX1BBQ0tFVF9IRUFEUk9PTTsKICAJeHNrYi0+eGRwLmRhdGFfbWV0YSA9IHhza2ItPnhk
+cC5kYXRhOwoKLQlpZiAoIXBvb2wtPmNoZWFwX2RtYSkgewotCQlkbWFfc3luY19zaW5nbGVfcmFu
+Z2VfZm9yX2RldmljZShwb29sLT5kZXYsIHhza2ItPmRtYSwgMCwKLQkJCQkJCSBwb29sLT5mcmFt
+ZV9sZW4sCi0JCQkJCQkgRE1BX0JJRElSRUNUSU9OQUwpOwotCX0KKwlkbWFfc3luY19zaW5nbGVf
+cmFuZ2VfZm9yX2RldmljZShwb29sLT5kZXYsIHhza2ItPmRtYSwgMCwKKwkJCQkJIHBvb2wtPmZy
+YW1lX2xlbiwKKwkJCQkJIERNQV9CSURJUkVDVElPTkFMKTsKICAJcmV0dXJuICZ4c2tiLT54ZHA7
+CiAgfQogIEVYUE9SVF9TWU1CT0woeHBfYWxsb2MpOwpfX19fX19fX19fX19fX19fX19fX19fX19f
+X19fX19fX19fX19fX19fX19fX19fXwppb21tdSBtYWlsaW5nIGxpc3QKaW9tbXVAbGlzdHMubGlu
+dXgtZm91bmRhdGlvbi5vcmcKaHR0cHM6Ly9saXN0cy5saW51eGZvdW5kYXRpb24ub3JnL21haWxt
+YW4vbGlzdGluZm8vaW9tbXU=
