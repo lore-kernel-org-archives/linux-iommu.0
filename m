@@ -2,94 +2,94 @@ Return-Path: <SRS0=GrUw=AH=lists.linux-foundation.org=iommu-bounces@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-9.8 required=3.0 tests=DKIM_INVALID,DKIM_SIGNED,
-	HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_PATCH,MAILING_LIST_MULTI,SIGNED_OFF_BY,
-	SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED,USER_AGENT_GIT autolearn=ham
-	autolearn_force=no version=3.4.0
+X-Spam-Status: No, score=-3.8 required=3.0 tests=DKIM_INVALID,DKIM_SIGNED,
+	HEADER_FROM_DIFFERENT_DOMAINS,MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS,
+	URIBL_BLOCKED,USER_AGENT_GIT autolearn=no autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 68C35C433E2
-	for <iommu@archiver.kernel.org>; Fri, 26 Jun 2020 20:04:47 +0000 (UTC)
-Received: from hemlock.osuosl.org (smtp2.osuosl.org [140.211.166.133])
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 7B834C433E0
+	for <iommu@archiver.kernel.org>; Fri, 26 Jun 2020 20:04:49 +0000 (UTC)
+Received: from fraxinus.osuosl.org (smtp4.osuosl.org [140.211.166.137])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by mail.kernel.org (Postfix) with ESMTPS id 38A3120720
-	for <iommu@archiver.kernel.org>; Fri, 26 Jun 2020 20:04:47 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTPS id 535E7214DB
+	for <iommu@archiver.kernel.org>; Fri, 26 Jun 2020 20:04:49 +0000 (UTC)
 Authentication-Results: mail.kernel.org;
-	dkim=fail reason="signature verification failed" (1024-bit key) header.d=mg.codeaurora.org header.i=@mg.codeaurora.org header.b="h8oceMwa"
-DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 38A3120720
+	dkim=fail reason="signature verification failed" (1024-bit key) header.d=mg.codeaurora.org header.i=@mg.codeaurora.org header.b="h5UwJVLC"
+DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 535E7214DB
 Authentication-Results: mail.kernel.org; dmarc=none (p=none dis=none) header.from=codeaurora.org
 Authentication-Results: mail.kernel.org; spf=pass smtp.mailfrom=iommu-bounces@lists.linux-foundation.org
 Received: from localhost (localhost [127.0.0.1])
-	by hemlock.osuosl.org (Postfix) with ESMTP id 2244088885;
-	Fri, 26 Jun 2020 20:04:47 +0000 (UTC)
+	by fraxinus.osuosl.org (Postfix) with ESMTP id 314FD86C26;
+	Fri, 26 Jun 2020 20:04:49 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from hemlock.osuosl.org ([127.0.0.1])
+Received: from fraxinus.osuosl.org ([127.0.0.1])
 	by localhost (.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
-	with ESMTP id easp1D9+fTLk; Fri, 26 Jun 2020 20:04:46 +0000 (UTC)
+	with ESMTP id kib5oW_0VdSQ; Fri, 26 Jun 2020 20:04:48 +0000 (UTC)
 Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [140.211.9.56])
-	by hemlock.osuosl.org (Postfix) with ESMTP id 9C95A88808;
-	Fri, 26 Jun 2020 20:04:46 +0000 (UTC)
+	by fraxinus.osuosl.org (Postfix) with ESMTP id BDC3786C1E;
+	Fri, 26 Jun 2020 20:04:48 +0000 (UTC)
 Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
-	by lists.linuxfoundation.org (Postfix) with ESMTP id 82751C088C;
-	Fri, 26 Jun 2020 20:04:46 +0000 (UTC)
+	by lists.linuxfoundation.org (Postfix) with ESMTP id B6E4AC088C;
+	Fri, 26 Jun 2020 20:04:48 +0000 (UTC)
 Received: from whitealder.osuosl.org (smtp1.osuosl.org [140.211.166.138])
- by lists.linuxfoundation.org (Postfix) with ESMTP id D5EABC016F
- for <iommu@lists.linux-foundation.org>; Fri, 26 Jun 2020 20:04:45 +0000 (UTC)
+ by lists.linuxfoundation.org (Postfix) with ESMTP id 9B5F6C0895
+ for <iommu@lists.linux-foundation.org>; Fri, 26 Jun 2020 20:04:46 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
- by whitealder.osuosl.org (Postfix) with ESMTP id BFAF787CEC
- for <iommu@lists.linux-foundation.org>; Fri, 26 Jun 2020 20:04:45 +0000 (UTC)
+ by whitealder.osuosl.org (Postfix) with ESMTP id 86B9587CB6
+ for <iommu@lists.linux-foundation.org>; Fri, 26 Jun 2020 20:04:46 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
 Received: from whitealder.osuosl.org ([127.0.0.1])
  by localhost (.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
- with ESMTP id XVAoSDvHtELr for <iommu@lists.linux-foundation.org>;
- Fri, 26 Jun 2020 20:04:44 +0000 (UTC)
+ with ESMTP id 2fmkCV72kBUO for <iommu@lists.linux-foundation.org>;
+ Fri, 26 Jun 2020 20:04:42 +0000 (UTC)
 X-Greylist: from auto-whitelisted by SQLgrey-1.7.6
-Received: from mail29.static.mailgun.info (mail29.static.mailgun.info
- [104.130.122.29])
- by whitealder.osuosl.org (Postfix) with ESMTPS id DA7C887CB6
- for <iommu@lists.linux-foundation.org>; Fri, 26 Jun 2020 20:04:40 +0000 (UTC)
+Received: from m43-7.mailgun.net (m43-7.mailgun.net [69.72.43.7])
+ by whitealder.osuosl.org (Postfix) with ESMTPS id 4FDEC8789B
+ for <iommu@lists.linux-foundation.org>; Fri, 26 Jun 2020 20:04:38 +0000 (UTC)
 DKIM-Signature: a=rsa-sha256; v=1; c=relaxed/relaxed; d=mg.codeaurora.org;
  q=dns/txt; 
- s=smtp; t=1593201884; h=References: In-Reply-To: Message-Id: Date:
- Subject: Cc: To: From: Sender;
- bh=w7L9q0FJyrGR9ubHX5bPA568m/fho6YvIBGV3F8A+Ko=;
- b=h8oceMwaJDcBv0Bx4NVtGQIN2rFud8gw9HoSpbw2ZbWrkJJWj8hHKCxtX6/cabd748/z1wIr
- g143fVBxXB/cHQvu0bhgJhoDVAnweB4J7g3Wux/vOMMKDltJEt5NdVc7IrVUtyhX0wlpYWGQ
- tV8G7YnqdTBYbuUQlbvTXUnlE8k=
-X-Mailgun-Sending-Ip: 104.130.122.29
+ s=smtp; t=1593201882; h=Message-Id: Date: Subject: Cc: To: From:
+ Sender; bh=Y52DfZmPsADiviryLIjbB10Q7p9PKIz9PJgeiGWZpfo=;
+ b=h5UwJVLCyiBH8EuZ8eqwwJor/7qMmCvdvCJiwmwM7XIliZ5C6HKv2DHpDC67DcEG+eE67Tlz
+ gA74Zj+9aOnancg4SU3C/gVA/lHw7A8PujJ043SS9fROJULSIGDPf+CAhaFIlUZ0ozSE+58f
+ fx79FOiSpU1u1H9TAZebBiIjD4s=
+X-Mailgun-Sending-Ip: 69.72.43.7
 X-Mailgun-Sid: WyI3NDkwMCIsICJpb21tdUBsaXN0cy5saW51eC1mb3VuZGF0aW9uLm9yZyIsICJiZTllNGEiXQ==
 Received: from smtp.codeaurora.org
  (ec2-35-166-182-171.us-west-2.compute.amazonaws.com [35.166.182.171]) by
- smtp-out-n08.prod.us-east-1.postgun.com with SMTP id
- 5ef654ccc4bb4f886d84e2de (version=TLS1.2,
- cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256); Fri, 26 Jun 2020 20:04:28
+ smtp-out-n04.prod.us-east-1.postgun.com with SMTP id
+ 5ef654c7a6e154319f63e8e0 (version=TLS1.2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256); Fri, 26 Jun 2020 20:04:23
  GMT
 Received: by smtp.codeaurora.org (Postfix, from userid 1001)
- id 4F7FDC433BA; Fri, 26 Jun 2020 20:04:27 +0000 (UTC)
+ id 60C3DC4345B; Fri, 26 Jun 2020 20:04:22 +0000 (UTC)
 Received: from jordan-laptop.qualcomm.com (Global_NAT1.qualcomm.com
  [129.46.96.20])
  (using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
  (No client certificate requested) (Authenticated sender: jcrouse)
- by smtp.codeaurora.org (Postfix) with ESMTPSA id A88A6C433C8;
- Fri, 26 Jun 2020 20:04:25 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.3.2 smtp.codeaurora.org A88A6C433C8
+ by smtp.codeaurora.org (Postfix) with ESMTPSA id B0451C433C6;
+ Fri, 26 Jun 2020 20:04:17 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.3.2 smtp.codeaurora.org B0451C433C6
 Authentication-Results: aws-us-west-2-caf-mail-1.web.codeaurora.org;
  dmarc=none (p=none dis=none) header.from=codeaurora.org
 Authentication-Results: aws-us-west-2-caf-mail-1.web.codeaurora.org;
  spf=none smtp.mailfrom=jcrouse@codeaurora.org
 From: Jordan Crouse <jcrouse@codeaurora.org>
 To: linux-arm-msm@vger.kernel.org
-Subject: [PATCH v2 3/6] iommu/arm-smmu: Add a domain attribute to pass the
- pagetable config
-Date: Fri, 26 Jun 2020 14:04:11 -0600
-Message-Id: <20200626200414.14382-4-jcrouse@codeaurora.org>
+Subject: [PATCH v2 0/6] iommu-arm-smmu: Add auxiliary domains and per-instance
+ pagetables
+Date: Fri, 26 Jun 2020 14:04:08 -0600
+Message-Id: <20200626200414.14382-1-jcrouse@codeaurora.org>
 X-Mailer: git-send-email 2.17.1
-In-Reply-To: <20200626200414.14382-1-jcrouse@codeaurora.org>
-References: <20200626200414.14382-1-jcrouse@codeaurora.org>
-Cc: Will Deacon <will@kernel.org>, Robin Murphy <robin.murphy@arm.com>,
- linux-kernel@vger.kernel.org, iommu@lists.linux-foundation.org,
- John Stultz <john.stultz@linaro.org>, freedreno@lists.freedesktop.org,
- linux-arm-kernel@lists.infradead.org
+Cc: Sean Paul <sean@poorly.run>, Joerg Roedel <jroedel@suse.de>,
+ Jonathan Marek <jonathan@marek.ca>, David Airlie <airlied@linux.ie>,
+ Robin Murphy <robin.murphy@arm.com>, Will Deacon <will@kernel.org>,
+ Akhil P Oommen <akhilpo@codeaurora.org>, dri-devel@lists.freedesktop.org,
+ linux-kernel@vger.kernel.org, Eric Anholt <eric@anholt.net>,
+ iommu@lists.linux-foundation.org, John Stultz <john.stultz@linaro.org>,
+ linux-arm-kernel@lists.infradead.org, Daniel Vetter <daniel@ffwll.ch>,
+ freedreno@lists.freedesktop.org, Sharat Masetty <smasetty@codeaurora.org>,
+ Emil Velikov <emil.velikov@collabora.com>
 X-BeenThere: iommu@lists.linux-foundation.org
 X-Mailman-Version: 2.1.15
 Precedence: list
@@ -108,53 +108,52 @@ Content-Transfer-Encoding: 7bit
 Errors-To: iommu-bounces@lists.linux-foundation.org
 Sender: "iommu" <iommu-bounces@lists.linux-foundation.org>
 
-The Adreno GPU has the capacity to manage its own pagetables and switch
-them dynamically from the hardware. Add a domain attribute for arm-smmu-v2
-to get the default pagetable configuration so that the GPU driver can match
-the format for its own pagetables.
 
-Signed-off-by: Jordan Crouse <jcrouse@codeaurora.org>
----
+This is a new refresh of support for auxiliary domains for arm-smmu-v2
+and per-instance pagetables for drm/msm. The big change here from past
+efforts is that outside of creating a single aux-domain to enable TTBR0
+all of the per-instance pagetables are created and managed exclusively
+in drm/msm without involving the arm-smmu driver. This fits in with the
+suggested model of letting the GPU hardware do what it needs and leave the
+arm-smmu driver blissfully unaware.
 
- drivers/iommu/arm-smmu.c | 12 ++++++++++++
- include/linux/iommu.h    |  1 +
- 2 files changed, 13 insertions(+)
+Almost. In order to set up the io-pgtable properly in drm/msm we need to
+query the pagetable configuration from the current active domain and we need to
+rely on the iommu API to flush TLBs after a unmap. In the future we can optimize
+this in the drm/msm driver to track the state of the TLBs but for now the big
+hammer lets us get off the ground.
 
-diff --git a/drivers/iommu/arm-smmu.c b/drivers/iommu/arm-smmu.c
-index ce6d654301bf..4bd247dfd703 100644
---- a/drivers/iommu/arm-smmu.c
-+++ b/drivers/iommu/arm-smmu.c
-@@ -1714,6 +1714,18 @@ static int arm_smmu_domain_get_attr(struct iommu_domain *domain,
- 		case DOMAIN_ATTR_NESTING:
- 			*(int *)data = (smmu_domain->stage == ARM_SMMU_DOMAIN_NESTED);
- 			return 0;
-+		case DOMAIN_ATTR_PGTABLE_CFG: {
-+			struct io_pgtable *pgtable;
-+			struct io_pgtable_cfg *dest = data;
-+
-+			if (!smmu_domain->pgtbl_ops)
-+				return -ENODEV;
-+
-+			pgtable = io_pgtable_ops_to_pgtable(smmu_domain->pgtbl_ops);
-+
-+			memcpy(dest, &pgtable->cfg, sizeof(*dest));
-+			return 0;
-+		}
- 		default:
- 			return -ENODEV;
- 		}
-diff --git a/include/linux/iommu.h b/include/linux/iommu.h
-index 5f0b7859d2eb..2388117641f1 100644
---- a/include/linux/iommu.h
-+++ b/include/linux/iommu.h
-@@ -124,6 +124,7 @@ enum iommu_attr {
- 	DOMAIN_ATTR_FSL_PAMUV1,
- 	DOMAIN_ATTR_NESTING,	/* two stages of translation */
- 	DOMAIN_ATTR_DMA_USE_FLUSH_QUEUE,
-+	DOMAIN_ATTR_PGTABLE_CFG,
- 	DOMAIN_ATTR_MAX,
- };
- 
+This series is built on the split pagetable support [1].
+
+[1] https://patchwork.kernel.org/patch/11628543/
+
+v2: Remove unneeded cruft in the a6xx page switch sequence
+
+Jordan Crouse (6):
+  iommu/arm-smmu: Add auxiliary domain support for arm-smmuv2
+  iommu/io-pgtable: Allow a pgtable implementation to skip TLB
+    operations
+  iommu/arm-smmu: Add a domain attribute to pass the pagetable config
+  drm/msm: Add support to create a local pagetable
+  drm/msm: Add support for address space instances
+  drm/msm/a6xx: Add support for per-instance pagetables
+
+ drivers/gpu/drm/msm/adreno/a6xx_gpu.c |  43 +++++
+ drivers/gpu/drm/msm/msm_drv.c         |  15 +-
+ drivers/gpu/drm/msm/msm_drv.h         |   4 +
+ drivers/gpu/drm/msm/msm_gem_vma.c     |   9 +
+ drivers/gpu/drm/msm/msm_gpu.c         |  17 ++
+ drivers/gpu/drm/msm/msm_gpu.h         |   5 +
+ drivers/gpu/drm/msm/msm_gpummu.c      |   2 +-
+ drivers/gpu/drm/msm/msm_iommu.c       | 180 +++++++++++++++++++-
+ drivers/gpu/drm/msm/msm_mmu.h         |  16 +-
+ drivers/gpu/drm/msm/msm_ringbuffer.h  |   1 +
+ drivers/iommu/arm-smmu.c              | 231 ++++++++++++++++++++++++--
+ drivers/iommu/arm-smmu.h              |   1 +
+ include/linux/io-pgtable.h            |  11 +-
+ include/linux/iommu.h                 |   1 +
+ 14 files changed, 507 insertions(+), 29 deletions(-)
+
 -- 
 2.17.1
 
