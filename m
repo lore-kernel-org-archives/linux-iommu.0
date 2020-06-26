@@ -2,101 +2,64 @@ Return-Path: <SRS0=GrUw=AH=lists.linux-foundation.org=iommu-bounces@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-3.8 required=3.0 tests=DKIM_INVALID,DKIM_SIGNED,
-	HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_PATCH,MAILING_LIST_MULTI,SPF_HELO_NONE,
-	SPF_PASS autolearn=no autolearn_force=no version=3.4.0
+X-Spam-Status: No, score=-2.5 required=3.0 tests=HEADER_FROM_DIFFERENT_DOMAINS,
+	MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS,USER_AGENT_SANE_1 autolearn=no
+	autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 2C8A8C433DF
-	for <iommu@archiver.kernel.org>; Fri, 26 Jun 2020 07:48:01 +0000 (UTC)
-Received: from whitealder.osuosl.org (smtp1.osuosl.org [140.211.166.138])
+	by smtp.lore.kernel.org (Postfix) with ESMTP id F21A7C433DF
+	for <iommu@archiver.kernel.org>; Fri, 26 Jun 2020 08:05:49 +0000 (UTC)
+Received: from fraxinus.osuosl.org (smtp4.osuosl.org [140.211.166.137])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by mail.kernel.org (Postfix) with ESMTPS id EF18F20775
-	for <iommu@archiver.kernel.org>; Fri, 26 Jun 2020 07:48:00 +0000 (UTC)
-Authentication-Results: mail.kernel.org;
-	dkim=fail reason="signature verification failed" (1024-bit key) header.d=chromium.org header.i=@chromium.org header.b="JuHGdSRc"
-DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org EF18F20775
-Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=chromium.org
+	by mail.kernel.org (Postfix) with ESMTPS id BFA3B2076E
+	for <iommu@archiver.kernel.org>; Fri, 26 Jun 2020 08:05:49 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org BFA3B2076E
+Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=8bytes.org
 Authentication-Results: mail.kernel.org; spf=pass smtp.mailfrom=iommu-bounces@lists.linux-foundation.org
 Received: from localhost (localhost [127.0.0.1])
-	by whitealder.osuosl.org (Postfix) with ESMTP id BF92687C13;
-	Fri, 26 Jun 2020 07:48:00 +0000 (UTC)
-X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from whitealder.osuosl.org ([127.0.0.1])
-	by localhost (.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
-	with ESMTP id a1nAfXSwHCI2; Fri, 26 Jun 2020 07:48:00 +0000 (UTC)
-Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [140.211.9.56])
-	by whitealder.osuosl.org (Postfix) with ESMTP id 16BBA879E9;
-	Fri, 26 Jun 2020 07:48:00 +0000 (UTC)
-Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
-	by lists.linuxfoundation.org (Postfix) with ESMTP id 02F05C088C;
-	Fri, 26 Jun 2020 07:48:00 +0000 (UTC)
-Received: from fraxinus.osuosl.org (smtp4.osuosl.org [140.211.166.137])
- by lists.linuxfoundation.org (Postfix) with ESMTP id 69D85C016F
- for <iommu@lists.linux-foundation.org>; Fri, 26 Jun 2020 07:47:59 +0000 (UTC)
-Received: from localhost (localhost [127.0.0.1])
- by fraxinus.osuosl.org (Postfix) with ESMTP id 5955F86A27
- for <iommu@lists.linux-foundation.org>; Fri, 26 Jun 2020 07:47:59 +0000 (UTC)
+	by fraxinus.osuosl.org (Postfix) with ESMTP id 745E9864D6;
+	Fri, 26 Jun 2020 08:05:49 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
 Received: from fraxinus.osuosl.org ([127.0.0.1])
+	by localhost (.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
+	with ESMTP id zCoNOEBJY-ng; Fri, 26 Jun 2020 08:05:47 +0000 (UTC)
+Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [140.211.9.56])
+	by fraxinus.osuosl.org (Postfix) with ESMTP id 88A3186447;
+	Fri, 26 Jun 2020 08:05:47 +0000 (UTC)
+Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
+	by lists.linuxfoundation.org (Postfix) with ESMTP id 73DDCC088C;
+	Fri, 26 Jun 2020 08:05:47 +0000 (UTC)
+Received: from whitealder.osuosl.org (smtp1.osuosl.org [140.211.166.138])
+ by lists.linuxfoundation.org (Postfix) with ESMTP id 311B2C016F
+ for <iommu@lists.linux-foundation.org>; Fri, 26 Jun 2020 08:05:46 +0000 (UTC)
+Received: from localhost (localhost [127.0.0.1])
+ by whitealder.osuosl.org (Postfix) with ESMTP id 29EDA87678
+ for <iommu@lists.linux-foundation.org>; Fri, 26 Jun 2020 08:05:46 +0000 (UTC)
+X-Virus-Scanned: amavisd-new at osuosl.org
+Received: from whitealder.osuosl.org ([127.0.0.1])
  by localhost (.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
- with ESMTP id nm8NZuHVshxa for <iommu@lists.linux-foundation.org>;
- Fri, 26 Jun 2020 07:47:58 +0000 (UTC)
-X-Greylist: domain auto-whitelisted by SQLgrey-1.7.6
-Received: from mail-oi1-f196.google.com (mail-oi1-f196.google.com
- [209.85.167.196])
- by fraxinus.osuosl.org (Postfix) with ESMTPS id C5DED8698F
- for <iommu@lists.linux-foundation.org>; Fri, 26 Jun 2020 07:47:58 +0000 (UTC)
-Received: by mail-oi1-f196.google.com with SMTP id h17so7331781oie.3
- for <iommu@lists.linux-foundation.org>; Fri, 26 Jun 2020 00:47:58 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=chromium.org; s=google;
- h=mime-version:content-transfer-encoding:in-reply-to:references
- :subject:from:cc:to:date:message-id:user-agent;
- bh=OJIUC4k1mJAJPg8NhZJ50NxPEO+zBVx140Q/CxvWNvw=;
- b=JuHGdSRcBQGE3Lde78F313PsAZcPMsnhx/4TiHSLZEfd0kKmZO8VUORbl2ywLlLNYP
- SybuYbIXipyAqOoCEFVzfX+cyu1u//qdxZmUFkk1BZIbhZiDVvkT+r3ys2yo80bHbGon
- SsdxDCae+9fy02JYCpW6exl43BLdPHw76Jn1k=
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
- d=1e100.net; s=20161025;
- h=x-gm-message-state:mime-version:content-transfer-encoding
- :in-reply-to:references:subject:from:cc:to:date:message-id
- :user-agent;
- bh=OJIUC4k1mJAJPg8NhZJ50NxPEO+zBVx140Q/CxvWNvw=;
- b=LShfuIjL9Msx/yDoQbd/dM4cudaSXUfZLEAZaIUJhaySx20BMbGUg2x8YX8EaFQ8nd
- I3p4cVNrOV/cEvIGTLSY8cTv2TriYmpP1vhsCwQJYel8FycCab9ww8bXWSKA39NM6xKg
- 9i10yUQTwidh1yMcSsBc+8v3xj3nIgGtTq33D9LyauO9m5bNpLoNysC2Q9SzhL44pBhC
- TD9hFQvqPzG/f61AGYK8tP9VcCHRAZIlivOFdDtxUffSASATkz255S4xx2Nc+zDAOaEa
- 3L+wLl9HLPNMYh/A7pErf8ZYk/ZQqOjXjHnQSgxtZ4pF0A5QxFFoPzL6AdvGv189ojdN
- oKCw==
-X-Gm-Message-State: AOAM531ylb3rerKOlO63KspDKx/1+/ZmaBScikUKEVFFHD8GpYN9Y7lz
- UK4MBPbmSWU7ULroqcSzidueKxocvac=
-X-Google-Smtp-Source: ABdhPJxJiBdKBJCg9hkKXPvaAZ1SMFSV7dxt8ZkrJwCH6KsPe6VyOeT252b+sGAmU5335uuNU45W2w==
-X-Received: by 2002:a17:90a:1546:: with SMTP id
- y6mr2153667pja.92.1593157376534; 
- Fri, 26 Jun 2020 00:42:56 -0700 (PDT)
-Received: from chromium.org ([2620:15c:202:1:fa53:7765:582b:82b9])
- by smtp.gmail.com with ESMTPSA id jz23sm10479542pjb.2.2020.06.26.00.42.55
- (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
- Fri, 26 Jun 2020 00:42:56 -0700 (PDT)
+ with ESMTP id l5BYFDD67YnJ for <iommu@lists.linux-foundation.org>;
+ Fri, 26 Jun 2020 08:05:45 +0000 (UTC)
+X-Greylist: from auto-whitelisted by SQLgrey-1.7.6
+Received: from theia.8bytes.org (8bytes.org [81.169.241.247])
+ by whitealder.osuosl.org (Postfix) with ESMTPS id DB91A875D4
+ for <iommu@lists.linux-foundation.org>; Fri, 26 Jun 2020 08:05:44 +0000 (UTC)
+Received: by theia.8bytes.org (Postfix, from userid 1000)
+ id DBB1F3FA; Fri, 26 Jun 2020 10:05:41 +0200 (CEST)
+Date: Fri, 26 Jun 2020 10:05:40 +0200
+From: Joerg Roedel <joro@8bytes.org>
+To: Qian Cai <cai@lca.pw>
+Subject: Re: [PATCH 2/2] iommu/amd: Use 'unsigned long' for domain->pt_root
+Message-ID: <20200626080539.GP3701@8bytes.org>
+References: <20200625145227.4159-1-joro@8bytes.org>
+ <20200625145227.4159-3-joro@8bytes.org>
+ <20200625153720.GA1127@lca.pw>
 MIME-Version: 1.0
-In-Reply-To: <20200625001039.56174-4-john.stultz@linaro.org>
-References: <20200625001039.56174-1-john.stultz@linaro.org>
- <20200625001039.56174-4-john.stultz@linaro.org>
-Subject: Re: [PATCH v2 3/5] irqchip: Allow QCOM_PDC to be loadable as a
- permanent module
-From: Stephen Boyd <swboyd@chromium.org>
-To: John Stultz <john.stultz@linaro.org>, lkml <linux-kernel@vger.kernel.org>
-Date: Fri, 26 Jun 2020 00:42:55 -0700
-Message-ID: <159315737502.62212.16093934831673347066@swboyd.mtv.corp.google.com>
-User-Agent: alot/0.9
-Cc: Maulik Shah <mkshah@codeaurora.org>, Jason Cooper <jason@lakedaemon.net>,
- Saravana Kannan <saravanak@google.com>, Marc Zyngier <maz@kernel.org>,
- Lina Iyer <ilina@codeaurora.org>, Bjorn Andersson <bjorn.andersson@linaro.org>,
- linux-gpio@vger.kernel.org, iommu@lists.linux-foundation.org,
- Andy Gross <agross@kernel.org>, John Stultz <john.stultz@linaro.org>,
- Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
- Thomas Gleixner <tglx@linutronix.de>, Linus Walleij <linus.walleij@linaro.org>,
- linux-arm-msm@vger.kernel.org, Todd Kjos <tkjos@google.com>
+Content-Disposition: inline
+In-Reply-To: <20200625153720.GA1127@lca.pw>
+User-Agent: Mutt/1.10.1 (2018-07-13)
+Cc: iommu@lists.linux-foundation.org, Joerg Roedel <jroedel@suse.de>,
+ linux-kernel@vger.kernel.org
 X-BeenThere: iommu@lists.linux-foundation.org
 X-Mailman-Version: 2.1.15
 Precedence: list
@@ -114,49 +77,43 @@ Content-Transfer-Encoding: 7bit
 Errors-To: iommu-bounces@lists.linux-foundation.org
 Sender: "iommu" <iommu-bounces@lists.linux-foundation.org>
 
-Quoting John Stultz (2020-06-24 17:10:37)
-> diff --git a/drivers/irqchip/qcom-pdc.c b/drivers/irqchip/qcom-pdc.c
-> index 6ae9e1f0819d..3fee8b655da1 100644
-> --- a/drivers/irqchip/qcom-pdc.c
-> +++ b/drivers/irqchip/qcom-pdc.c
-> @@ -430,4 +432,33 @@ static int qcom_pdc_init(struct device_node *node, struct device_node *parent)
->         return ret;
->  }
->  
-> +#ifdef MODULE
-> +static int qcom_pdc_probe(struct platform_device *pdev)
-> +{
-> +       struct device_node *np = pdev->dev.of_node;
-> +       struct device_node *parent = of_irq_find_parent(np);
-> +
-> +       return qcom_pdc_init(np, parent);
-> +}
-> +
-> +static const struct of_device_id qcom_pdc_match_table[] = {
-> +       { .compatible = "qcom,pdc" },
-> +       {}
-> +};
-> +MODULE_DEVICE_TABLE(of, qcom_pdc_match_table);
-> +
-> +static struct platform_driver qcom_pdc_driver = {
-> +       .probe = qcom_pdc_probe,
-> +       .driver = {
-> +               .name = "qcom-pdc",
-> +               .of_match_table = qcom_pdc_match_table,
-> +               .suppress_bind_attrs = true,
-> +       },
-> +};
-> +module_platform_driver(qcom_pdc_driver);
-> +#else
->  IRQCHIP_DECLARE(qcom_pdc, "qcom,pdc", qcom_pdc_init);
+Hi Qian,
 
-Is there any reason to use IRQCHIP_DECLARE if this can work as a
-platform device driver?
+On Thu, Jun 25, 2020 at 11:37:20AM -0400, Qian Cai wrote:
+> On Thu, Jun 25, 2020 at 04:52:27PM +0200, Joerg Roedel wrote:
+> > -	u64 pt_root = atomic64_read(&domain->pt_root);
+> > +	unsigned long pt_root = domain->pt_root;
+> 
+> The pt_root might be reload later in case of register pressure where the
+> compiler decides to not store it as a stack variable, so it needs
+> smp_rmb() here to match to the smp_wmb() in
+> amd_iommu_domain_set_pt_root() to make the load visiable to all CPUs.
+> 
+> Then, smp_rmb/wmb() wouldn't be able to deal with data races, so it
+> needs,
+> 
+> unsigned long pt_root = READ_ONCE(domain->pt_root);
+> 
+> >  
+> >  	pgtable->root = (u64 *)(pt_root & PAGE_MASK);
+> >  	pgtable->mode = pt_root & 7; /* lowest 3 bits encode pgtable mode */
+> > @@ -164,7 +164,13 @@ static void amd_iommu_domain_get_pgtable(struct protection_domain *domain,
+> >  
+> >  static void amd_iommu_domain_set_pt_root(struct protection_domain *domain, u64 root)
+> >  {
+> > -	atomic64_set(&domain->pt_root, root);
+> > +	domain->pt_root = root;
+> 
+> WRITE_ONCE(domain->pt_root, root);
 
-> +#endif
-> +
-> +MODULE_DESCRIPTION("Qualcomm Technologies, Inc. Power Domain Controller");
-> +MODULE_LICENSE("GPL v2");
+Thanks for your review. I addressed your comments and will send an
+updated version shortly.
+
+
+Regards,
+
+	Joerg
+
 _______________________________________________
 iommu mailing list
 iommu@lists.linux-foundation.org
