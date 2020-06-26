@@ -2,60 +2,112 @@ Return-Path: <SRS0=GrUw=AH=lists.linux-foundation.org=iommu-bounces@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-12.5 required=3.0
-	tests=HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_PULL_REQUEST,MAILING_LIST_MULTI,
-	MENTIONS_GIT_HOSTING,SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED,USER_AGENT_SANE_1
-	autolearn=ham autolearn_force=no version=3.4.0
+X-Spam-Status: No, score=-3.8 required=3.0 tests=DKIM_INVALID,DKIM_SIGNED,
+	HEADER_FROM_DIFFERENT_DOMAINS,MAILING_LIST_MULTI,SIGNED_OFF_BY,SPF_HELO_NONE,
+	SPF_PASS autolearn=no autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id B5EBDC433DF
-	for <iommu@archiver.kernel.org>; Fri, 26 Jun 2020 14:47:13 +0000 (UTC)
-Received: from silver.osuosl.org (smtp3.osuosl.org [140.211.166.136])
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 7A531C433E1
+	for <iommu@archiver.kernel.org>; Fri, 26 Jun 2020 15:32:55 +0000 (UTC)
+Received: from fraxinus.osuosl.org (smtp4.osuosl.org [140.211.166.137])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by mail.kernel.org (Postfix) with ESMTPS id 5F78320768
-	for <iommu@archiver.kernel.org>; Fri, 26 Jun 2020 14:47:13 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 5F78320768
-Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=8bytes.org
+	by mail.kernel.org (Postfix) with ESMTPS id 3DD5A2080C
+	for <iommu@archiver.kernel.org>; Fri, 26 Jun 2020 15:32:55 +0000 (UTC)
+Authentication-Results: mail.kernel.org;
+	dkim=fail reason="signature verification failed" (1024-bit key) header.d=redhat.com header.i=@redhat.com header.b="EhvtUapI"
+DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 3DD5A2080C
+Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=redhat.com
 Authentication-Results: mail.kernel.org; spf=pass smtp.mailfrom=iommu-bounces@lists.linux-foundation.org
 Received: from localhost (localhost [127.0.0.1])
-	by silver.osuosl.org (Postfix) with ESMTP id 1425C2012F;
-	Fri, 26 Jun 2020 14:47:13 +0000 (UTC)
+	by fraxinus.osuosl.org (Postfix) with ESMTP id F1FC685B4D;
+	Fri, 26 Jun 2020 15:32:54 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from silver.osuosl.org ([127.0.0.1])
+Received: from fraxinus.osuosl.org ([127.0.0.1])
 	by localhost (.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
-	with ESMTP id 87uaI+Tg2yCP; Fri, 26 Jun 2020 14:47:09 +0000 (UTC)
+	with ESMTP id dMQh9gLFBiNI; Fri, 26 Jun 2020 15:32:53 +0000 (UTC)
 Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [140.211.9.56])
-	by silver.osuosl.org (Postfix) with ESMTP id 24034232A7;
-	Fri, 26 Jun 2020 14:47:09 +0000 (UTC)
+	by fraxinus.osuosl.org (Postfix) with ESMTP id E9E4385EC2;
+	Fri, 26 Jun 2020 15:32:53 +0000 (UTC)
 Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
-	by lists.linuxfoundation.org (Postfix) with ESMTP id 16542C0863;
-	Fri, 26 Jun 2020 14:47:09 +0000 (UTC)
-Received: from whitealder.osuosl.org (smtp1.osuosl.org [140.211.166.138])
- by lists.linuxfoundation.org (Postfix) with ESMTP id 03B14C016F
- for <iommu@lists.linux-foundation.org>; Fri, 26 Jun 2020 14:47:07 +0000 (UTC)
+	by lists.linuxfoundation.org (Postfix) with ESMTP id A3054C088C;
+	Fri, 26 Jun 2020 15:32:53 +0000 (UTC)
+Received: from hemlock.osuosl.org (smtp2.osuosl.org [140.211.166.133])
+ by lists.linuxfoundation.org (Postfix) with ESMTP id 25056C016F
+ for <iommu@lists.linux-foundation.org>; Fri, 26 Jun 2020 15:32:52 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
- by whitealder.osuosl.org (Postfix) with ESMTP id DF39487698
- for <iommu@lists.linux-foundation.org>; Fri, 26 Jun 2020 14:47:07 +0000 (UTC)
+ by hemlock.osuosl.org (Postfix) with ESMTP id 1C4E988378
+ for <iommu@lists.linux-foundation.org>; Fri, 26 Jun 2020 15:32:52 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from whitealder.osuosl.org ([127.0.0.1])
+Received: from hemlock.osuosl.org ([127.0.0.1])
  by localhost (.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
- with ESMTP id 3-bUwPwPekkw for <iommu@lists.linux-foundation.org>;
- Fri, 26 Jun 2020 14:47:05 +0000 (UTC)
-X-Greylist: from auto-whitelisted by SQLgrey-1.7.6
-Received: from theia.8bytes.org (8bytes.org [81.169.241.247])
- by whitealder.osuosl.org (Postfix) with ESMTPS id 8085587C6F
- for <iommu@lists.linux-foundation.org>; Fri, 26 Jun 2020 14:47:05 +0000 (UTC)
-Received: by theia.8bytes.org (Postfix, from userid 1000)
- id 5E1352A7; Fri, 26 Jun 2020 16:47:02 +0200 (CEST)
-Date: Fri, 26 Jun 2020 16:47:01 +0200
-From: Joerg Roedel <joro@8bytes.org>
-To: Linus Torvalds <torvalds@linux-foundation.org>
-Subject: [git pull] IOMMU Fixes for Linux v5.8-rc2
-Message-ID: <20200626144655.GA20234@8bytes.org>
+ with ESMTP id jZnJ6v-Q1k6r for <iommu@lists.linux-foundation.org>;
+ Fri, 26 Jun 2020 15:32:51 +0000 (UTC)
+X-Greylist: domain auto-whitelisted by SQLgrey-1.7.6
+Received: from us-smtp-delivery-1.mimecast.com (us-smtp-1.mimecast.com
+ [205.139.110.61])
+ by hemlock.osuosl.org (Postfix) with ESMTPS id DD6BC882F6
+ for <iommu@lists.linux-foundation.org>; Fri, 26 Jun 2020 15:32:50 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+ s=mimecast20190719; t=1593185569;
+ h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+ to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+ in-reply-to:in-reply-to:references:references;
+ bh=RTWe4soL1srkDL8PEEfq928W6GWa5t1pS8aCmfU8LHE=;
+ b=EhvtUapIFt7i7WtEm4zKlZwJ66ueRYL1HMDLqFUD9sCUzdEz453LpX/JHmCvWlcOlbTJBb
+ qL4QXTgytDesLZR0cZG0KW9uHvFJgN2VJXt+WVGn9+6naCBi7RqtzJPYIOsUSJwSDPcESW
+ 35/6v9AYCcTuBtRVQ4RtJxVnLay6uv4=
+Received: from mail-wm1-f69.google.com (mail-wm1-f69.google.com
+ [209.85.128.69]) (Using TLS) by relay.mimecast.com with ESMTP id
+ us-mta-240-6Oz2BfymOxucgN_ZIuBeAA-1; Fri, 26 Jun 2020 11:32:47 -0400
+X-MC-Unique: 6Oz2BfymOxucgN_ZIuBeAA-1
+Received: by mail-wm1-f69.google.com with SMTP id z11so11369895wmg.5
+ for <iommu@lists.linux-foundation.org>; Fri, 26 Jun 2020 08:32:47 -0700 (PDT)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+ d=1e100.net; s=20161025;
+ h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+ :mime-version:content-disposition:in-reply-to;
+ bh=RTWe4soL1srkDL8PEEfq928W6GWa5t1pS8aCmfU8LHE=;
+ b=ZUbxmNuT2LkPjUiG36ylopLUw4Gsg6zw6Yjb1J85ZfJROG9FbQPE04kQEjTykOdcMC
+ F252854YfNneCrAk4Et5v8gl9Q/xcPlEhGRTTJYiHQYVnBtMJ5F/0S9wYZKq4lsRTWqW
+ eEWqco6E613zDecWK2DYP4i5NHr/ijYOb496dwPl67ATr6XUwZWpkG1PQui3w2gQBNNM
+ z/EvmXVYTHqqv0DY1n0/8/zzMGvIEHn/4nDGwlN8FtB+OUMYGRr5TDKwYCPspVXtEWW5
+ fPN0UgwS89Bdy6UOitrNXFDScwe6y1R+FvFd27fpOScvhyc/RGTngTCEfZAWwnB7Redk
+ slxg==
+X-Gm-Message-State: AOAM530XXkoed1GZI2pbRqDK4UeLBoNdYCDZ2OHOp2dVpE/yhBxVk42O
+ mRpJ40xd7ofy8o17liPXN3e4LvNQxQubF+Oa7/wqg4OwFlbaRZjwhOEoOHlM+WUpLebrku0BWJ3
+ i7xnGSKtu5vpdPHA0gjeG6bASxX6WrA==
+X-Received: by 2002:a5d:55cb:: with SMTP id i11mr4167956wrw.28.1593185566631; 
+ Fri, 26 Jun 2020 08:32:46 -0700 (PDT)
+X-Google-Smtp-Source: ABdhPJzKcm6jtqvubhG72TQoDWqW1duiFh/JDhCCKL54qZ+AftyQ9QDCAEubqgx6Fkb+6w/6lcA4Aw==
+X-Received: by 2002:a5d:55cb:: with SMTP id i11mr4167932wrw.28.1593185566346; 
+ Fri, 26 Jun 2020 08:32:46 -0700 (PDT)
+Received: from redhat.com (bzq-79-182-31-92.red.bezeqint.net. [79.182.31.92])
+ by smtp.gmail.com with ESMTPSA id
+ 65sm18427582wma.48.2020.06.26.08.32.43
+ (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+ Fri, 26 Jun 2020 08:32:45 -0700 (PDT)
+Date: Fri, 26 Jun 2020 11:32:41 -0400
+From: "Michael S. Tsirkin" <mst@redhat.com>
+To: Stefano Stabellini <sstabellini@kernel.org>
+Subject: Re: [PATCH] xen: introduce xen_vring_use_dma
+Message-ID: <20200626110629-mutt-send-email-mst@kernel.org>
+References: <20200624091732.23944-1-peng.fan@nxp.com>
+ <20200624050355-mutt-send-email-mst@kernel.org>
+ <alpine.DEB.2.21.2006241047010.8121@sstabellini-ThinkPad-T480s>
+ <20200624163940-mutt-send-email-mst@kernel.org>
+ <alpine.DEB.2.21.2006241351430.8121@sstabellini-ThinkPad-T480s>
+ <20200624181026-mutt-send-email-mst@kernel.org>
+ <alpine.DEB.2.21.2006251014230.8121@sstabellini-ThinkPad-T480s>
 MIME-Version: 1.0
+In-Reply-To: <alpine.DEB.2.21.2006251014230.8121@sstabellini-ThinkPad-T480s>
+X-Mimecast-Spam-Score: 0
+X-Mimecast-Originator: redhat.com
 Content-Disposition: inline
-User-Agent: Mutt/1.10.1 (2018-07-13)
-Cc: iommu@lists.linux-foundation.org, linux-kernel@vger.kernel.org
+Cc: jgross@suse.com, Peng Fan <peng.fan@nxp.com>, konrad.wilk@oracle.com,
+ jasowang@redhat.com, x86@kernel.org, linux-kernel@vger.kernel.org,
+ virtualization@lists.linux-foundation.org, iommu@lists.linux-foundation.org,
+ linux-imx@nxp.com, xen-devel@lists.xenproject.org, boris.ostrovsky@oracle.com,
+ linux-arm-kernel@lists.infradead.org
 X-BeenThere: iommu@lists.linux-foundation.org
 X-Mailman-Version: 2.1.15
 Precedence: list
@@ -73,62 +125,138 @@ Content-Transfer-Encoding: 7bit
 Errors-To: iommu-bounces@lists.linux-foundation.org
 Sender: "iommu" <iommu-bounces@lists.linux-foundation.org>
 
-Hi Linus,
+On Thu, Jun 25, 2020 at 10:31:27AM -0700, Stefano Stabellini wrote:
+> On Wed, 24 Jun 2020, Michael S. Tsirkin wrote:
+> > On Wed, Jun 24, 2020 at 02:53:54PM -0700, Stefano Stabellini wrote:
+> > > On Wed, 24 Jun 2020, Michael S. Tsirkin wrote:
+> > > > On Wed, Jun 24, 2020 at 10:59:47AM -0700, Stefano Stabellini wrote:
+> > > > > On Wed, 24 Jun 2020, Michael S. Tsirkin wrote:
+> > > > > > On Wed, Jun 24, 2020 at 05:17:32PM +0800, Peng Fan wrote:
+> > > > > > > Export xen_swiotlb for all platforms using xen swiotlb
+> > > > > > > 
+> > > > > > > Use xen_swiotlb to determine when vring should use dma APIs to map the
+> > > > > > > ring: when xen_swiotlb is enabled the dma API is required. When it is
+> > > > > > > disabled, it is not required.
+> > > > > > > 
+> > > > > > > Signed-off-by: Peng Fan <peng.fan@nxp.com>
+> > > > > > 
+> > > > > > Isn't there some way to use VIRTIO_F_IOMMU_PLATFORM for this?
+> > > > > > Xen was there first, but everyone else is using that now.
+> > > > > 
+> > > > > Unfortunately it is complicated and it is not related to
+> > > > > VIRTIO_F_IOMMU_PLATFORM :-(
+> > > > > 
+> > > > > 
+> > > > > The Xen subsystem in Linux uses dma_ops via swiotlb_xen to translate
+> > > > > foreign mappings (memory coming from other VMs) to physical addresses.
+> > > > > On x86, it also uses dma_ops to translate Linux's idea of a physical
+> > > > > address into a real physical address (this is unneeded on ARM.)
+> > > > > 
+> > > > > 
+> > > > > So regardless of VIRTIO_F_IOMMU_PLATFORM, dma_ops should be used on Xen/x86
+> > > > > always and on Xen/ARM if Linux is Dom0 (because it has foreign
+> > > > > mappings.) That is why we have the if (xen_domain) return true; in
+> > > > > vring_use_dma_api.
+> > > > 
+> > > > VIRTIO_F_IOMMU_PLATFORM makes guest always use DMA ops.
+> > > > 
+> > > > Xen hack predates VIRTIO_F_IOMMU_PLATFORM so it *also*
+> > > > forces DMA ops even if VIRTIO_F_IOMMU_PLATFORM is clear.
+> > > >
+> > > > Unfortunately as a result Xen never got around to
+> > > > properly setting VIRTIO_F_IOMMU_PLATFORM.
+> > > 
+> > > I don't think VIRTIO_F_IOMMU_PLATFORM would be correct for this because
+> > > the usage of swiotlb_xen is not a property of virtio,
+> > 
+> > 
+> > Basically any device without VIRTIO_F_ACCESS_PLATFORM
+> > (that is it's name in latest virtio spec, VIRTIO_F_IOMMU_PLATFORM is
+> > what linux calls it) is declared as "special, don't follow normal rules
+> > for access".
+> > 
+> > So yes swiotlb_xen is not a property of virtio, but what *is* a property
+> > of virtio is that it's not special, just a regular device from DMA POV.
+> 
+> I am trying to understand what you meant but I think I am missing
+> something.
+> 
+> Are you saying that modern virtio should always have
+> VIRTIO_F_ACCESS_PLATFORM, hence use normal dma_ops as any other devices?
 
-The following changes since commit 48778464bb7d346b47157d21ffde2af6b2d39110:
+I am saying it's a safe default. Clear VIRTIO_F_ACCESS_PLATFORM if you
+have some special needs e.g. you are very sure it's ok to bypass DMA
+ops, or you need to support a legacy guest (produced in the window
+between virtio 1 support in 2014 and support for
+VIRTIO_F_ACCESS_PLATFORM in 2016).
 
-  Linux 5.8-rc2 (2020-06-21 15:45:29 -0700)
 
-are available in the Git repository at:
+> If that is the case, how is it possible that virtio breaks on ARM using
+> the default dma_ops? The breakage is not Xen related (except that Xen
+> turns dma_ops on). The original message from Peng was:
+> 
+>   vring_map_one_sg -> vring_use_dma_api
+>                    -> dma_map_page
+>   		       -> __swiotlb_map_page
+>   		                ->swiotlb_map_page
+>   				->__dma_map_area(phys_to_virt(dma_to_phys(dev, dev_addr)), size, dir);
+>   However we are using per device dma area for rpmsg, phys_to_virt
+>   could not return a correct virtual address for virtual address in
+>   vmalloc area. Then kernel panic.
+> 
+> I must be missing something. Maybe it is because it has to do with RPMesg?
 
-  git://git.kernel.org/pub/scm/linux/kernel/git/joro/iommu.git tags/iommu-fixes-v5.8-rc2
+I think it's an RPMesg bug, yes.
 
-for you to fetch changes up to 48f0bcfb7aad2c6eb4c1e66476b58475aa14393e:
+> 
+> > > > > You might have noticed that I missed one possible case above: Xen/ARM
+> > > > > DomU :-)
+> > > > > 
+> > > > > Xen/ARM domUs don't need swiotlb_xen, it is not even initialized. So if
+> > > > > (xen_domain) return true; would give the wrong answer in that case.
+> > > > > Linux would end up calling the "normal" dma_ops, not swiotlb-xen, and
+> > > > > the "normal" dma_ops fail.
+> > > > > 
+> > > > > 
+> > > > > The solution I suggested was to make the check in vring_use_dma_api more
+> > > > > flexible by returning true if the swiotlb_xen is supposed to be used,
+> > > > > not in general for all Xen domains, because that is what the check was
+> > > > > really meant to do.
+> > > > 
+> > > > Why not fix DMA ops so they DTRT (nop) on Xen/ARM DomU? What is wrong with that?
+> > > 
+> > > swiotlb-xen is not used on Xen/ARM DomU, the default dma_ops are the
+> > > ones that are used. So you are saying, why don't we fix the default
+> > > dma_ops to work with virtio?
+> > > 
+> > > It is bad that the default dma_ops crash with virtio, so yes I think it
+> > > would be good to fix that. However, even if we fixed that, the if
+> > > (xen_domain()) check in vring_use_dma_api is still a problem.
+> > 
+> > Why is it a problem? It just makes virtio use DMA API.
+> > If that in turn works, problem solved.
+> 
+> You are correct in the sense that it would work. However I do think it
+> is wrong for vring_use_dma_api to enable dma_ops/swiotlb-xen for Xen/ARM
+> DomUs that don't need it. There are many different types of Xen guests,
+> Xen x86 is drastically different from Xen ARM, it seems wrong to treat
+> them the same way.
 
-  iommu/vt-d: Fix misuse of iommu_domain_identity_map() (2020-06-23 10:08:32 +0200)
+I could imagine some future Xen hosts setting a flag somewhere in the
+platform capability saying "no xen specific flag, rely on
+"VIRTIO_F_ACCESS_PLATFORM". Then you set that accordingly in QEMU.
+How about that?
 
-----------------------------------------------------------------
-IOMMU Fixes for Linux v5.8-rc2:
 
-A couple of Intel VT-d fixes:
+> 
+> 
+> Anyway, re-reading the last messages of the original thread [1], it
+> looks like Peng had a clear idea on how to fix the general issue. Peng,
+> what happened with that?
+> 
+> 
+> [1] https://lore.kernel.org/patchwork/patch/1033801/#1222404
 
-	- Make Intel SVM code 64bit only. The code uses pgd_t* and the
-	  IOMMU only supports long-mode page-table formats, so its
-	  broken on 32bit anyway.
-
-	- Make sure GFX quirks in for Intel VT-d are not applied to
-	  untrusted devices. Those devices might gain full memory access
-	  otherwise.
-
-	- Identity mapping setup fix.
-
-	- Fix ACS enabling when Intel IOMMU is off and untrusted devices
-	  are detected.
-
-	- Two smaller fixes for coherency and IO page-table setup
-
-----------------------------------------------------------------
-Lu Baolu (5):
-      iommu/vt-d: Make Intel SVM code 64-bit only
-      iommu/vt-d: Set U/S bit in first level page table by default
-      iommu/vt-d: Enable PCI ACS for platform opt in hint
-      iommu/vt-d: Update scalable mode paging structure coherency
-      iommu/vt-d: Fix misuse of iommu_domain_identity_map()
-
-Rajat Jain (1):
-      iommu/vt-d: Don't apply gfx quirks to untrusted devices
-
- drivers/iommu/Kconfig       |  2 +-
- drivers/iommu/intel/dmar.c  |  3 ++-
- drivers/iommu/intel/iommu.c | 59 +++++++++++++++++++++++++++++++++++++++------
- include/linux/intel-iommu.h |  1 +
- 4 files changed, 56 insertions(+), 9 deletions(-)
-
-Please pull.
-
-Thanks,
-
-	Joerg
 _______________________________________________
 iommu mailing list
 iommu@lists.linux-foundation.org
