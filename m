@@ -7,69 +7,66 @@ X-Spam-Status: No, score=-10.0 required=3.0
 	SIGNED_OFF_BY,SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED,USER_AGENT_GIT
 	autolearn=unavailable autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 5A3E5C433E2
-	for <iommu@archiver.kernel.org>; Sat, 27 Jun 2020 03:19:54 +0000 (UTC)
-Received: from whitealder.osuosl.org (smtp1.osuosl.org [140.211.166.138])
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 07E69C433E3
+	for <iommu@archiver.kernel.org>; Sat, 27 Jun 2020 03:19:55 +0000 (UTC)
+Received: from fraxinus.osuosl.org (smtp4.osuosl.org [140.211.166.137])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by mail.kernel.org (Postfix) with ESMTPS id 2A80720675
+	by mail.kernel.org (Postfix) with ESMTPS id D9F732081A
 	for <iommu@archiver.kernel.org>; Sat, 27 Jun 2020 03:19:54 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 2A80720675
+DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org D9F732081A
 Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=linux.intel.com
 Authentication-Results: mail.kernel.org; spf=pass smtp.mailfrom=iommu-bounces@lists.linux-foundation.org
 Received: from localhost (localhost [127.0.0.1])
-	by whitealder.osuosl.org (Postfix) with ESMTP id EFDF388278;
-	Sat, 27 Jun 2020 03:19:53 +0000 (UTC)
+	by fraxinus.osuosl.org (Postfix) with ESMTP id B2DBA86C2F;
+	Sat, 27 Jun 2020 03:19:54 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from whitealder.osuosl.org ([127.0.0.1])
+Received: from fraxinus.osuosl.org ([127.0.0.1])
 	by localhost (.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
-	with ESMTP id hpVZofkV4Ljt; Sat, 27 Jun 2020 03:19:53 +0000 (UTC)
+	with ESMTP id Mv2YcWqKg-22; Sat, 27 Jun 2020 03:19:52 +0000 (UTC)
 Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [140.211.9.56])
-	by whitealder.osuosl.org (Postfix) with ESMTP id 3BDA888270;
-	Sat, 27 Jun 2020 03:19:53 +0000 (UTC)
+	by fraxinus.osuosl.org (Postfix) with ESMTP id 0A9DF86AD0;
+	Sat, 27 Jun 2020 03:19:52 +0000 (UTC)
 Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
-	by lists.linuxfoundation.org (Postfix) with ESMTP id 28100C088C;
-	Sat, 27 Jun 2020 03:19:53 +0000 (UTC)
+	by lists.linuxfoundation.org (Postfix) with ESMTP id EFC6FC088C;
+	Sat, 27 Jun 2020 03:19:51 +0000 (UTC)
 Received: from hemlock.osuosl.org (smtp2.osuosl.org [140.211.166.133])
- by lists.linuxfoundation.org (Postfix) with ESMTP id EB03BC016F
+ by lists.linuxfoundation.org (Postfix) with ESMTP id 11B5AC016F
  for <iommu@lists.linux-foundation.org>; Sat, 27 Jun 2020 03:19:50 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
- by hemlock.osuosl.org (Postfix) with ESMTP id DA8E0882A1
- for <iommu@lists.linux-foundation.org>; Sat, 27 Jun 2020 03:19:50 +0000 (UTC)
+ by hemlock.osuosl.org (Postfix) with ESMTP id EDAD9882A1
+ for <iommu@lists.linux-foundation.org>; Sat, 27 Jun 2020 03:19:49 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
 Received: from hemlock.osuosl.org ([127.0.0.1])
  by localhost (.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
- with ESMTP id JXjLZ7w8Ev7e for <iommu@lists.linux-foundation.org>;
- Sat, 27 Jun 2020 03:19:50 +0000 (UTC)
+ with ESMTP id 7x0ulVLUWNzX for <iommu@lists.linux-foundation.org>;
+ Sat, 27 Jun 2020 03:19:48 +0000 (UTC)
 X-Greylist: domain auto-whitelisted by SQLgrey-1.7.6
 Received: from mga11.intel.com (mga11.intel.com [192.55.52.93])
- by hemlock.osuosl.org (Postfix) with ESMTPS id 5CF408829A
- for <iommu@lists.linux-foundation.org>; Sat, 27 Jun 2020 03:19:50 +0000 (UTC)
-IronPort-SDR: arcRiemtZY+I5EqiO63kStOOeoKacJ5mAuuV1+RDnfjkWzDxvODDWW7GLUqwGFgdvJZTYsbdVV
- 1P7N5bpheWUw==
-X-IronPort-AV: E=McAfee;i="6000,8403,9664"; a="143799291"
-X-IronPort-AV: E=Sophos;i="5.75,286,1589266800"; d="scan'208";a="143799291"
+ by hemlock.osuosl.org (Postfix) with ESMTPS id BF3E38829A
+ for <iommu@lists.linux-foundation.org>; Sat, 27 Jun 2020 03:19:48 +0000 (UTC)
+IronPort-SDR: CW5jlbgFd1+/CGUOmyZT5nst06eCb7Um7HdLLNvOacQZ6G+LoqLxetgPFTdVYjn1LPtZCvtQ2l
+ UywlfVtm7muA==
+X-IronPort-AV: E=McAfee;i="6000,8403,9664"; a="143799264"
+X-IronPort-AV: E=Sophos;i="5.75,286,1589266800"; d="scan'208";a="143799264"
 X-Amp-Result: SKIPPED(no attachment in message)
 X-Amp-File-Uploaded: False
 Received: from fmsmga004.fm.intel.com ([10.253.24.48])
  by fmsmga102.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384;
- 26 Jun 2020 20:19:50 -0700
-IronPort-SDR: 0E5d9pkgpFPRPa4yVX8lXuv/vsuhWX6VqXWOQVY/cxH2FDKdDT6F/nBQVxfQY0fxYBz5zeYwGq
- splzo1hyqcMA==
+ 26 Jun 2020 20:19:47 -0700
+IronPort-SDR: qY7Jeb0gjAhCYKqtByIdcIK5OQ+iplSWB3X3cDvSESt7Dti7Yy0tRrjx9TsUe4kK0esTBPdZ6f
+ m+bf/00U1rBw==
 X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.75,286,1589266800"; d="scan'208";a="302510433"
+X-IronPort-AV: E=Sophos;i="5.75,286,1589266800"; d="scan'208";a="302510424"
 Received: from allen-box.sh.intel.com ([10.239.159.139])
- by fmsmga004.fm.intel.com with ESMTP; 26 Jun 2020 20:19:47 -0700
+ by fmsmga004.fm.intel.com with ESMTP; 26 Jun 2020 20:19:45 -0700
 From: Lu Baolu <baolu.lu@linux.intel.com>
 To: Joerg Roedel <joro@8bytes.org>,
  Alex Williamson <alex.williamson@redhat.com>
-Subject: [PATCH 2/2] vfio/type1: Update group->domain after aux attach and
- detach
-Date: Sat, 27 Jun 2020 11:15:32 +0800
-Message-Id: <20200627031532.28046-2-baolu.lu@linux.intel.com>
+Subject: [PATCH 1/2] iommu: Add iommu_group_get/set_domain()
+Date: Sat, 27 Jun 2020 11:15:31 +0800
+Message-Id: <20200627031532.28046-1-baolu.lu@linux.intel.com>
 X-Mailer: git-send-email 2.17.1
-In-Reply-To: <20200627031532.28046-1-baolu.lu@linux.intel.com>
-References: <20200627031532.28046-1-baolu.lu@linux.intel.com>
 Cc: Kevin Tian <kevin.tian@intel.com>, Dave Jiang <dave.jiang@intel.com>,
  Ashok Raj <ashok.raj@intel.com>, kvm@vger.kernel.org,
  Cornelia Huck <cohuck@redhat.com>, linux-kernel@vger.kernel.org,
@@ -92,74 +89,112 @@ Content-Transfer-Encoding: 7bit
 Errors-To: iommu-bounces@lists.linux-foundation.org
 Sender: "iommu" <iommu-bounces@lists.linux-foundation.org>
 
-Update group->domain whenever an aux-domain is attached to or detached
-from a mediated device. Without this change, iommu_get_domain_for_dev()
-will be broken for mdev devices.
+The hardware assistant vfio mediated device is a use case of iommu
+aux-domain. The interactions between vfio/mdev and iommu during mdev
+creation and passthr are:
+
+- Create a group for mdev with iommu_group_alloc();
+- Add the device to the group with
+        group = iommu_group_alloc();
+        if (IS_ERR(group))
+                return PTR_ERR(group);
+
+        ret = iommu_group_add_device(group, &mdev->dev);
+        if (!ret)
+                dev_info(&mdev->dev, "MDEV: group_id = %d\n",
+                         iommu_group_id(group));
+- Allocate an aux-domain
+	iommu_domain_alloc()
+- Attach the aux-domain to the physical device from which the mdev is
+  created.
+	iommu_aux_attach_device()
+
+In the whole process, an iommu group was allocated for the mdev and an
+iommu domain was attached to the group, but the group->domain leaves
+NULL. As the result, iommu_get_domain_for_dev() doesn't work anymore.
+
+This adds iommu_group_get/set_domain() so that group->domain could be
+managed whenever a domain is attached or detached through the aux-domain
+api's.
 
 Fixes: 7bd50f0cd2fd5 ("vfio/type1: Add domain at(de)taching group helpers")
 Signed-off-by: Lu Baolu <baolu.lu@linux.intel.com>
 ---
- drivers/vfio/vfio_iommu_type1.c | 37 ++++++++++++++++++++++++++++-----
- 1 file changed, 32 insertions(+), 5 deletions(-)
+ drivers/iommu/iommu.c | 28 ++++++++++++++++++++++++++++
+ include/linux/iommu.h | 14 ++++++++++++++
+ 2 files changed, 42 insertions(+)
 
-diff --git a/drivers/vfio/vfio_iommu_type1.c b/drivers/vfio/vfio_iommu_type1.c
-index 5e556ac9102a..e0d8802ce0c9 100644
---- a/drivers/vfio/vfio_iommu_type1.c
-+++ b/drivers/vfio/vfio_iommu_type1.c
-@@ -1634,10 +1634,28 @@ static int vfio_mdev_attach_domain(struct device *dev, void *data)
+diff --git a/drivers/iommu/iommu.c b/drivers/iommu/iommu.c
+index d43120eb1dc5..e2b665303d70 100644
+--- a/drivers/iommu/iommu.c
++++ b/drivers/iommu/iommu.c
+@@ -715,6 +715,34 @@ int iommu_group_set_name(struct iommu_group *group, const char *name)
+ }
+ EXPORT_SYMBOL_GPL(iommu_group_set_name);
  
- 	iommu_device = vfio_mdev_get_iommu_device(dev);
- 	if (iommu_device) {
--		if (iommu_dev_feature_enabled(iommu_device, IOMMU_DEV_FEAT_AUX))
--			return iommu_aux_attach_device(domain, iommu_device);
--		else
-+		if (iommu_dev_feature_enabled(iommu_device,
-+					      IOMMU_DEV_FEAT_AUX)) {
-+			struct iommu_group *group = iommu_group_get(dev);
-+			int ret;
++/**
++ * iommu_group_get_domain - get domain of a group
++ * @group: the group
++ *
++ * This is called to get the domain of a group.
++ */
++struct iommu_domain *iommu_group_get_domain(struct iommu_group *group)
++{
++	return group->domain;
++}
++EXPORT_SYMBOL_GPL(iommu_group_get_domain);
 +
-+			if (!group)
-+				return -EINVAL;
++/**
++ * iommu_group_set_domain - set domain for a group
++ * @group: the group
++ * @domain: iommu domain
++ *
++ * This is called to set the domain for a group. In aux-domain case, a domain
++ * might attach or detach to an iommu group through the aux-domain apis, but
++ * the group->domain doesn't get a chance to be updated there.
++ */
++void iommu_group_set_domain(struct iommu_group *group,
++			    struct iommu_domain *domain)
++{
++	group->domain = domain;
++}
++EXPORT_SYMBOL_GPL(iommu_group_set_domain);
 +
-+			if (iommu_group_get_domain(group)) {
-+				iommu_group_put(group);
-+				return -EBUSY;
-+			}
-+
-+			ret = iommu_aux_attach_device(domain, iommu_device);
-+			if (!ret)
-+				iommu_group_set_domain(group, domain);
-+
-+			iommu_group_put(group);
-+			return ret;
-+		} else {
- 			return iommu_attach_device(domain, iommu_device);
-+		}
- 	}
+ static int iommu_create_device_direct_mappings(struct iommu_group *group,
+ 					       struct device *dev)
+ {
+diff --git a/include/linux/iommu.h b/include/linux/iommu.h
+index 5f0b7859d2eb..ff88d548a870 100644
+--- a/include/linux/iommu.h
++++ b/include/linux/iommu.h
+@@ -496,6 +496,9 @@ extern void iommu_group_set_iommudata(struct iommu_group *group,
+ 				      void *iommu_data,
+ 				      void (*release)(void *iommu_data));
+ extern int iommu_group_set_name(struct iommu_group *group, const char *name);
++extern struct iommu_domain *iommu_group_get_domain(struct iommu_group *group);
++extern void iommu_group_set_domain(struct iommu_group *group,
++				   struct iommu_domain *domain);
+ extern int iommu_group_add_device(struct iommu_group *group,
+ 				  struct device *dev);
+ extern void iommu_group_remove_device(struct device *dev);
+@@ -840,6 +843,17 @@ static inline int iommu_group_set_name(struct iommu_group *group,
+ 	return -ENODEV;
+ }
  
- 	return -EINVAL;
-@@ -1650,10 +1668,19 @@ static int vfio_mdev_detach_domain(struct device *dev, void *data)
- 
- 	iommu_device = vfio_mdev_get_iommu_device(dev);
- 	if (iommu_device) {
--		if (iommu_dev_feature_enabled(iommu_device, IOMMU_DEV_FEAT_AUX))
-+		if (iommu_dev_feature_enabled(iommu_device,
-+					      IOMMU_DEV_FEAT_AUX)) {
-+			struct iommu_group *group;
++static inline
++struct iommu_domain *iommu_group_get_domain(struct iommu_group *group)
++{
++	return NULL;
++}
 +
- 			iommu_aux_detach_device(domain, iommu_device);
--		else
-+			group = iommu_group_get(dev);
-+			if (group) {
-+				iommu_group_set_domain(group, NULL);
-+				iommu_group_put(group);
-+			}
-+		} else {
- 			iommu_detach_device(domain, iommu_device);
-+		}
- 	}
- 
- 	return 0;
++static inline void iommu_group_set_domain(struct iommu_group *group,
++					  struct iommu_domain *domain)
++{
++}
++
+ static inline int iommu_group_add_device(struct iommu_group *group,
+ 					 struct device *dev)
+ {
 -- 
 2.17.1
 
