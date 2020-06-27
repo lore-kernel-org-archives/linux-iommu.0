@@ -8,95 +8,97 @@ X-Spam-Status: No, score=-6.8 required=3.0 tests=DKIM_ADSP_CUSTOM_MED,
 	SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED autolearn=unavailable autolearn_force=no
 	version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id AC1F4C433DF
-	for <iommu@archiver.kernel.org>; Sat, 27 Jun 2020 17:09:51 +0000 (UTC)
-Received: from fraxinus.osuosl.org (smtp4.osuosl.org [140.211.166.137])
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 94CA6C433E0
+	for <iommu@archiver.kernel.org>; Sat, 27 Jun 2020 19:55:46 +0000 (UTC)
+Received: from silver.osuosl.org (smtp3.osuosl.org [140.211.166.136])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by mail.kernel.org (Postfix) with ESMTPS id 73CAF206E9
-	for <iommu@archiver.kernel.org>; Sat, 27 Jun 2020 17:09:51 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTPS id 5DC242071A
+	for <iommu@archiver.kernel.org>; Sat, 27 Jun 2020 19:55:46 +0000 (UTC)
 Authentication-Results: mail.kernel.org;
-	dkim=fail reason="signature verification failed" (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="pX4PYXsp"
-DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 73CAF206E9
+	dkim=fail reason="signature verification failed" (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="ADOMlQVg"
+DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 5DC242071A
 Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=gmail.com
 Authentication-Results: mail.kernel.org; spf=pass smtp.mailfrom=iommu-bounces@lists.linux-foundation.org
 Received: from localhost (localhost [127.0.0.1])
-	by fraxinus.osuosl.org (Postfix) with ESMTP id 314C886C2E;
-	Sat, 27 Jun 2020 17:09:51 +0000 (UTC)
+	by silver.osuosl.org (Postfix) with ESMTP id 248832153D;
+	Sat, 27 Jun 2020 19:55:46 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from fraxinus.osuosl.org ([127.0.0.1])
+Received: from silver.osuosl.org ([127.0.0.1])
 	by localhost (.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
-	with ESMTP id OGzYC2dASTTm; Sat, 27 Jun 2020 17:09:49 +0000 (UTC)
+	with ESMTP id UrYnjkmcte8U; Sat, 27 Jun 2020 19:55:44 +0000 (UTC)
 Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [140.211.9.56])
-	by fraxinus.osuosl.org (Postfix) with ESMTP id EA23486A97;
-	Sat, 27 Jun 2020 17:09:49 +0000 (UTC)
+	by silver.osuosl.org (Postfix) with ESMTP id 9362221544;
+	Sat, 27 Jun 2020 19:55:44 +0000 (UTC)
 Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
-	by lists.linuxfoundation.org (Postfix) with ESMTP id DBD4BC0863;
-	Sat, 27 Jun 2020 17:09:49 +0000 (UTC)
-Received: from hemlock.osuosl.org (smtp2.osuosl.org [140.211.166.133])
- by lists.linuxfoundation.org (Postfix) with ESMTP id BDF8AC016F
- for <iommu@lists.linux-foundation.org>; Sat, 27 Jun 2020 17:09:48 +0000 (UTC)
+	by lists.linuxfoundation.org (Postfix) with ESMTP id 7DE4EC0863;
+	Sat, 27 Jun 2020 19:55:44 +0000 (UTC)
+Received: from silver.osuosl.org (smtp3.osuosl.org [140.211.166.136])
+ by lists.linuxfoundation.org (Postfix) with ESMTP id E42DCC016F
+ for <iommu@lists.linux-foundation.org>; Sat, 27 Jun 2020 19:55:43 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
- by hemlock.osuosl.org (Postfix) with ESMTP id A513C88345
- for <iommu@lists.linux-foundation.org>; Sat, 27 Jun 2020 17:09:48 +0000 (UTC)
+ by silver.osuosl.org (Postfix) with ESMTP id 8F8F221544
+ for <iommu@lists.linux-foundation.org>; Sat, 27 Jun 2020 19:55:43 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from hemlock.osuosl.org ([127.0.0.1])
+Received: from silver.osuosl.org ([127.0.0.1])
  by localhost (.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
- with ESMTP id 6ctGVD6FMxIu for <iommu@lists.linux-foundation.org>;
- Sat, 27 Jun 2020 17:09:47 +0000 (UTC)
+ with ESMTP id S+50tOXb3muR for <iommu@lists.linux-foundation.org>;
+ Sat, 27 Jun 2020 19:55:42 +0000 (UTC)
 X-Greylist: domain auto-whitelisted by SQLgrey-1.7.6
-Received: from mail-ed1-f66.google.com (mail-ed1-f66.google.com
- [209.85.208.66])
- by hemlock.osuosl.org (Postfix) with ESMTPS id 334878832C
- for <iommu@lists.linux-foundation.org>; Sat, 27 Jun 2020 17:09:47 +0000 (UTC)
-Received: by mail-ed1-f66.google.com with SMTP id b15so9288736edy.7
- for <iommu@lists.linux-foundation.org>; Sat, 27 Jun 2020 10:09:47 -0700 (PDT)
+Received: from mail-ej1-f65.google.com (mail-ej1-f65.google.com
+ [209.85.218.65])
+ by silver.osuosl.org (Postfix) with ESMTPS id 1855D2153D
+ for <iommu@lists.linux-foundation.org>; Sat, 27 Jun 2020 19:55:42 +0000 (UTC)
+Received: by mail-ej1-f65.google.com with SMTP id dp18so12471175ejc.8
+ for <iommu@lists.linux-foundation.org>; Sat, 27 Jun 2020 12:55:41 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=gmail.com; s=20161025;
  h=mime-version:references:in-reply-to:from:date:message-id:subject:to
- :cc; bh=Z0GB5ATaLVK7sa/BJElOVWK3jMO1+UU+ndSjuuUCcDQ=;
- b=pX4PYXsppnxXZN7ARLZ6bjdBU2pMX3kilpUbKpoWOtgZKWmf8/wMcA6r45s1eT1j+3
- Q0iC3VRsfVa6m5TFuXkLsfNfbH9XuunFjREtlhltY1yfCePuN2HUKqqK7cx8gCb7k+Al
- 0q8vyljKd8lDzL5L5eutyvNDkKPGTwn2dhIWcyhYmGZmee0URrqMAiqyeCwcUHskwVLL
- ShUToGP2iVq74Wdb3/W1JIidW/eKcuLPorOeGfIHZrYi+lh09k97F7DpvelDii5kGBKX
- 2PtY+YcVCOyJwWNspB6hQobVqqKQXI077a/UZtWNIcSw7YEZcu4j5qbwzTYZWXm9sfIb
- qMKg==
+ :cc; bh=QOPfoXRxkPWp2u0z5mv5D29mlE3sBKTSjg6aVVNHMmI=;
+ b=ADOMlQVgmyn0JbKIm7nurXpb8KAlP8vwxxcUdXLQDZaEWBo6nqINqhDqQzbDVtcuGu
+ dcG4BcF6ktIIdoYhiVl5rZR9ZZxfZeXAJ90oi/HD374aYjhBBXXP2XESpFGCQLGWqHg9
+ 4I7qe4sQPaxIiQCiotoKnAwJT7aDVwt+rPgHcQcZFt9yz+Q+3MeZsYxzD3hmtCAlj+Lt
+ bzhja5CD1NZpdVH1wtlZY0s6GYPUr5PxaR4DrE0PREvMK6OGxgkPE5oXcjdEdl7UjCWO
+ 6PUAXoefoiHafUucYJhqJyEPgRGt4xiipf82dkDZpQspI4KGFpZSEitw43zE1Mhzm6al
+ NYrg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
  d=1e100.net; s=20161025;
  h=x-gm-message-state:mime-version:references:in-reply-to:from:date
  :message-id:subject:to:cc;
- bh=Z0GB5ATaLVK7sa/BJElOVWK3jMO1+UU+ndSjuuUCcDQ=;
- b=FsiD9GWkgINqkDVoRpMG+S9tpjQo71MwnvBremtLg/Ef4fdJNR+lAh3DkHyPQkQYck
- WnQjtxsONYMYPOE6qJPAgFoAbNKx9K0Kci/LAihn83X9AEGyKQEjvJ2JgMozxXvwf3Zy
- lJktjqeph2VG0EtEMvx+bU03Wuo9PAQ9bcAeTQjUin+RAxDy97cG9gkwLmTVO1UeYQCb
- fgeAD8TdSJfd+zZUq9ey1uO95bVknr+xXRSMxjrajG/ErbcsG+fv2Ybtx9pKosrj63LN
- wGLW8mL3104CaymRowvltHX4XN4kSSLtZOfzYGDLRHBGpiIRKjmBDmfD9YelGi/V/j7P
- qOJA==
-X-Gm-Message-State: AOAM5312LNIExSFuq0dxOJZ4Er12QHZCBaq5erDn7l5DVZwCXGek7ztI
- DANdI7vRSc1g48r9QV8+sMUVo/az3ASD45fztx0=
-X-Google-Smtp-Source: ABdhPJwuv8UKuJB24fZa+J6oFLwClzsveXOv9mXx9mOerBaR5o787gw6Sa0+gP5ZKeJAif51Vmu6nLs4OdCSklFPULE=
-X-Received: by 2002:a05:6402:1512:: with SMTP id
- f18mr9553573edw.101.1593277785336; 
- Sat, 27 Jun 2020 10:09:45 -0700 (PDT)
+ bh=QOPfoXRxkPWp2u0z5mv5D29mlE3sBKTSjg6aVVNHMmI=;
+ b=UA+VfqSGc+WqpASLmYNMRUF/M4O7rvWcZRp0CB5/FKDI9BN7pn8w3qJmuyMI/qpGwW
+ nBRTLeONr/FTTNEmOTVlv+yFOb2qOfHyUgA739x4fC/lAlloBy1oqB0f64ebOYZvpdMq
+ yxqWf5iPkT2rdBm3b+vhipw2S11lPFzBRsKpZ2DLCQx/RbObHgkw13EuaEHZVIV5QeDv
+ DGaUQr+YF/eaT/8l2CCfttD/xck3MyZwmpZ1O5ulI3oa43h+mu82IdawV6Xy8oiTC7Zm
+ Lc3vqvg30Ktu7nNXjOaXzIQSs3hI8szdpTyqPByk6doSLXy2Zw9ea5ts5SPyI7PgFGd7
+ ucJQ==
+X-Gm-Message-State: AOAM532qVk/PBjusFzSpxq/IsU+LK/qfXxLOuQ7wYqNjyyd9Ox6LLpXb
+ wJgsCFDpjBdZ2ePqxOyDsmK9ZayJl5IKHyKpkS4=
+X-Google-Smtp-Source: ABdhPJyr67bO1u4l0SujwKghbBcBSRSMmsE0uuFjMfuxxLWVEf5xomeGYdDv+Tk2qeoHV4EBherSjl1CPzPASNo+sb4=
+X-Received: by 2002:a17:906:494a:: with SMTP id
+ f10mr8135393ejt.428.1593287740217; 
+ Sat, 27 Jun 2020 12:55:40 -0700 (PDT)
 MIME-Version: 1.0
-References: <20200626200042.13713-1-jcrouse@codeaurora.org>
- <20200626200042.13713-7-jcrouse@codeaurora.org>
-In-Reply-To: <20200626200042.13713-7-jcrouse@codeaurora.org>
+References: <20200626200414.14382-1-jcrouse@codeaurora.org>
+ <20200626200414.14382-7-jcrouse@codeaurora.org>
+In-Reply-To: <20200626200414.14382-7-jcrouse@codeaurora.org>
 From: Rob Clark <robdclark@gmail.com>
-Date: Sat, 27 Jun 2020 10:10:14 -0700
-Message-ID: <CAF6AEGuNSAYNMG6CH6VMuyjiz5dfRoLWQ9OAFxPJrFmBrHe+Wg@mail.gmail.com>
-Subject: Re: [Freedreno] [PATCH v9 6/7] drm/msm: Set the global virtual
- address range from the IOMMU domain
+Date: Sat, 27 Jun 2020 12:56:09 -0700
+Message-ID: <CAF6AEGvFPtiFcBg5j3An5piPWy3Sg3=-o2k8Xzzf6anzVi9_ZA@mail.gmail.com>
+Subject: Re: [PATCH v2 6/6] drm/msm/a6xx: Add support for per-instance
+ pagetables
 To: Jordan Crouse <jcrouse@codeaurora.org>
-Cc: freedreno <freedreno@lists.freedesktop.org>,
+Cc: Sean Paul <sean@poorly.run>, Jonathan Marek <jonathan@marek.ca>,
  David Airlie <airlied@linux.ie>, linux-arm-msm <linux-arm-msm@vger.kernel.org>,
- Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
+ Sharat Masetty <smasetty@codeaurora.org>,
+ Akhil P Oommen <akhilpo@codeaurora.org>,
  dri-devel <dri-devel@lists.freedesktop.org>,
- Bjorn Andersson <bjorn.andersson@linaro.org>, Takashi Iwai <tiwai@suse.de>,
+ Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
+ Eric Anholt <eric@anholt.net>,
  "list@263.net:IOMMU DRIVERS <iommu@lists.linux-foundation.org>,
  Joerg Roedel <joro@8bytes.org>, " <iommu@lists.linux-foundation.org>,
  John Stultz <john.stultz@linaro.org>, Daniel Vetter <daniel@ffwll.ch>,
- Shawn Guo <shawn.guo@linaro.org>, Sean Paul <sean@poorly.run>,
- Brian Masney <masneyb@onstation.org>
+ freedreno <freedreno@lists.freedesktop.org>,
+ Emil Velikov <emil.velikov@collabora.com>
 X-BeenThere: iommu@lists.linux-foundation.org
 X-Mailman-Version: 2.1.15
 Precedence: list
@@ -114,89 +116,118 @@ Content-Transfer-Encoding: 7bit
 Errors-To: iommu-bounces@lists.linux-foundation.org
 Sender: "iommu" <iommu-bounces@lists.linux-foundation.org>
 
-On Fri, Jun 26, 2020 at 1:01 PM Jordan Crouse <jcrouse@codeaurora.org> wrote:
+On Fri, Jun 26, 2020 at 1:04 PM Jordan Crouse <jcrouse@codeaurora.org> wrote:
 >
-> Use the aperture settings from the IOMMU domain to set up the virtual
-> address range for the GPU. This allows us to transparently deal with
-> IOMMU side features (like split pagetables).
+> Add support for using per-instance pagetables if all the dependencies are
+> available.
 >
 > Signed-off-by: Jordan Crouse <jcrouse@codeaurora.org>
 > ---
 >
->  drivers/gpu/drm/msm/adreno/adreno_gpu.c | 13 +++++++++++--
->  drivers/gpu/drm/msm/msm_iommu.c         |  7 +++++++
->  2 files changed, 18 insertions(+), 2 deletions(-)
+>  drivers/gpu/drm/msm/adreno/a6xx_gpu.c | 43 +++++++++++++++++++++++++++
+>  drivers/gpu/drm/msm/msm_ringbuffer.h  |  1 +
+>  2 files changed, 44 insertions(+)
 >
-> diff --git a/drivers/gpu/drm/msm/adreno/adreno_gpu.c b/drivers/gpu/drm/msm/adreno/adreno_gpu.c
-> index 5db06b590943..3e717c1ebb7f 100644
-> --- a/drivers/gpu/drm/msm/adreno/adreno_gpu.c
-> +++ b/drivers/gpu/drm/msm/adreno/adreno_gpu.c
-> @@ -192,9 +192,18 @@ adreno_iommu_create_address_space(struct msm_gpu *gpu,
->         struct iommu_domain *iommu = iommu_domain_alloc(&platform_bus_type);
->         struct msm_mmu *mmu = msm_iommu_new(&pdev->dev, iommu);
->         struct msm_gem_address_space *aspace;
-> +       u64 start, size;
+> diff --git a/drivers/gpu/drm/msm/adreno/a6xx_gpu.c b/drivers/gpu/drm/msm/adreno/a6xx_gpu.c
+> index aa53f47b7e8b..95ed2ceac121 100644
+> --- a/drivers/gpu/drm/msm/adreno/a6xx_gpu.c
+> +++ b/drivers/gpu/drm/msm/adreno/a6xx_gpu.c
+> @@ -79,6 +79,34 @@ static void get_stats_counter(struct msm_ringbuffer *ring, u32 counter,
+>         OUT_RING(ring, upper_32_bits(iova));
+>  }
 >
-> -       aspace = msm_gem_address_space_create(mmu, "gpu", SZ_16M,
-> -               0xffffffff - SZ_16M);
-> +       /*
-> +        * Use the aperture start or SZ_16M, whichever is greater. This will
-> +        * ensure that we align with the allocated pagetable range while still
-> +        * allowing room in the lower 32 bits for GMEM and whatnot
-> +        */
-> +       start = max_t(u64, SZ_16M, iommu->geometry.aperture_start);
-> +       size = iommu->geometry.aperture_end - start + 1;
+> +static void a6xx_set_pagetable(struct msm_gpu *gpu, struct msm_ringbuffer *ring,
+> +               struct msm_file_private *ctx)
+> +{
+> +       phys_addr_t ttbr;
+> +       u32 asid;
 > +
-> +       aspace = msm_gem_address_space_create(mmu, "gpu",
-> +               start & GENMASK(48, 0), size);
+> +       if (msm_iommu_pagetable_params(ctx->aspace->mmu, &ttbr, &asid))
+> +               return;
+> +
+> +       /* Execute the table update */
+> +       OUT_PKT7(ring, CP_SMMU_TABLE_UPDATE, 4);
+> +       OUT_RING(ring, lower_32_bits(ttbr));
+> +       OUT_RING(ring, (((u64) asid) << 48) | upper_32_bits(ttbr));
+> +       /* CONTEXTIDR is currently unused */
+> +       OUT_RING(ring, 0);
+> +       /* CONTEXTBANK is currently unused */
+> +       OUT_RING(ring, 0);
+> +
+> +       /*
+> +        * Write the new TTBR0 to the memstore. This is good for debugging.
+> +        */
+> +       OUT_PKT7(ring, CP_MEM_WRITE, 4);
+> +       OUT_RING(ring, lower_32_bits(rbmemptr(ring, ttbr0)));
+> +       OUT_RING(ring, upper_32_bits(rbmemptr(ring, ttbr0)));
+> +       OUT_RING(ring, lower_32_bits(ttbr));
+> +       OUT_RING(ring, (((u64) asid) << 48) | upper_32_bits(ttbr));
+> +}
+> +
+>  static void a6xx_submit(struct msm_gpu *gpu, struct msm_gem_submit *submit,
+>         struct msm_file_private *ctx)
+>  {
+> @@ -89,6 +117,8 @@ static void a6xx_submit(struct msm_gpu *gpu, struct msm_gem_submit *submit,
+>         struct msm_ringbuffer *ring = submit->ring;
+>         unsigned int i;
+>
+> +       a6xx_set_pagetable(gpu, ring, ctx);
+> +
+>         get_stats_counter(ring, REG_A6XX_RBBM_PERFCTR_CP_0_LO,
+>                 rbmemptr_stats(ring, index, cpcycles_start));
+>
+> @@ -872,6 +902,18 @@ static unsigned long a6xx_gpu_busy(struct msm_gpu *gpu)
+>         return (unsigned long)busy_time;
+>  }
+>
+> +struct msm_gem_address_space *a6xx_address_space_instance(struct msm_gpu *gpu)
+> +{
+> +       struct msm_mmu *mmu;
+> +
+> +       mmu = msm_iommu_pagetable_create(gpu->aspace->mmu);
+> +       if (IS_ERR(mmu))
+> +               return msm_gem_address_space_get(gpu->aspace);
+> +
+> +       return msm_gem_address_space_create(mmu,
+> +               "gpu", 0x100000000ULL, 0x1ffffffffULL);
+> +}
+> +
+>  static const struct adreno_gpu_funcs funcs = {
+>         .base = {
+>                 .get_param = adreno_get_param,
+> @@ -895,6 +937,7 @@ static const struct adreno_gpu_funcs funcs = {
+>                 .gpu_state_put = a6xx_gpu_state_put,
+>  #endif
+>                 .create_address_space = adreno_iommu_create_address_space,
+> +               .address_space_instance = a6xx_address_space_instance,
 
-hmm, I kinda think this isn't going to play well for the 32b gpus
-(pre-a5xx).. possibly we should add address space size to 'struct
-adreno_info'?
+Hmm, maybe instead of .address_space_instance, something like
+.create_context_address_space?
 
-Or I guess it is always going to be the same for all devices within a
-generation?  So it could just be passed in to adreno_gpu_init()
-
-Hopefully that makes things smoother if we someday had more than 48bits..
+Since like .create_address_space, it is creating an address space..
+the difference is that it is a per context/process aspace..
 
 BR,
 -R
 
+>         },
+>         .get_timestamp = a6xx_get_timestamp,
+>  };
+> diff --git a/drivers/gpu/drm/msm/msm_ringbuffer.h b/drivers/gpu/drm/msm/msm_ringbuffer.h
+> index 7764373d0ed2..0987d6bf848c 100644
+> --- a/drivers/gpu/drm/msm/msm_ringbuffer.h
+> +++ b/drivers/gpu/drm/msm/msm_ringbuffer.h
+> @@ -31,6 +31,7 @@ struct msm_rbmemptrs {
+>         volatile uint32_t fence;
 >
->         if (IS_ERR(aspace) && !IS_ERR(mmu))
->                 mmu->funcs->destroy(mmu);
-> diff --git a/drivers/gpu/drm/msm/msm_iommu.c b/drivers/gpu/drm/msm/msm_iommu.c
-> index 3a381a9674c9..1b6635504069 100644
-> --- a/drivers/gpu/drm/msm/msm_iommu.c
-> +++ b/drivers/gpu/drm/msm/msm_iommu.c
-> @@ -36,6 +36,10 @@ static int msm_iommu_map(struct msm_mmu *mmu, uint64_t iova,
->         struct msm_iommu *iommu = to_msm_iommu(mmu);
->         size_t ret;
+>         volatile struct msm_gpu_submit_stats stats[MSM_GPU_SUBMIT_STATS_COUNT];
+> +       volatile u64 ttbr0;
+>  };
 >
-> +       /* The arm-smmu driver expects the addresses to be sign extended */
-> +       if (iova & BIT_ULL(48))
-> +               iova |= GENMASK_ULL(63, 49);
-> +
->         ret = iommu_map_sg(iommu->domain, iova, sgt->sgl, sgt->nents, prot);
->         WARN_ON(!ret);
->
-> @@ -46,6 +50,9 @@ static int msm_iommu_unmap(struct msm_mmu *mmu, uint64_t iova, size_t len)
->  {
->         struct msm_iommu *iommu = to_msm_iommu(mmu);
->
-> +       if (iova & BIT_ULL(48))
-> +               iova |= GENMASK_ULL(63, 49);
-> +
->         iommu_unmap(iommu->domain, iova, len);
->
->         return 0;
+>  struct msm_ringbuffer {
 > --
 > 2.17.1
 >
-> _______________________________________________
-> Freedreno mailing list
-> Freedreno@lists.freedesktop.org
-> https://lists.freedesktop.org/mailman/listinfo/freedreno
 _______________________________________________
 iommu mailing list
 iommu@lists.linux-foundation.org
