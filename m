@@ -1,75 +1,72 @@
-Return-Path: <SRS0=8AL1=AI=lists.linux-foundation.org=iommu-bounces@kernel.org>
+Return-Path: <SRS0=DkpR=AJ=lists.linux-foundation.org=iommu-bounces@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-5.8 required=3.0 tests=DKIM_INVALID,DKIM_SIGNED,
-	MAILING_LIST_MULTI,MENTIONS_GIT_HOSTING,SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED
-	autolearn=ham autolearn_force=no version=3.4.0
+X-Spam-Status: No, score=-4.0 required=3.0 tests=HEADER_FROM_DIFFERENT_DOMAINS,
+	MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS,USER_AGENT_GIT autolearn=no
+	autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 3DC66C433E0
-	for <iommu@archiver.kernel.org>; Sat, 27 Jun 2020 20:25:17 +0000 (UTC)
-Received: from whitealder.osuosl.org (smtp1.osuosl.org [140.211.166.138])
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 2F804C433E0
+	for <iommu@archiver.kernel.org>; Sun, 28 Jun 2020 00:37:58 +0000 (UTC)
+Received: from silver.osuosl.org (smtp3.osuosl.org [140.211.166.136])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by mail.kernel.org (Postfix) with ESMTPS id 0805920679
-	for <iommu@archiver.kernel.org>; Sat, 27 Jun 2020 20:25:16 +0000 (UTC)
-Authentication-Results: mail.kernel.org;
-	dkim=fail reason="signature verification failed" (1024-bit key) header.d=kernel.org header.i=@kernel.org header.b="EasVfYhX"
-DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 0805920679
-Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=kernel.org
+	by mail.kernel.org (Postfix) with ESMTPS id EE07F2076E
+	for <iommu@archiver.kernel.org>; Sun, 28 Jun 2020 00:37:57 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org EE07F2076E
+Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=linux.intel.com
 Authentication-Results: mail.kernel.org; spf=pass smtp.mailfrom=iommu-bounces@lists.linux-foundation.org
 Received: from localhost (localhost [127.0.0.1])
-	by whitealder.osuosl.org (Postfix) with ESMTP id C4DBD876FE;
-	Sat, 27 Jun 2020 20:25:16 +0000 (UTC)
+	by silver.osuosl.org (Postfix) with ESMTP id 791182048C;
+	Sun, 28 Jun 2020 00:37:57 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from whitealder.osuosl.org ([127.0.0.1])
+Received: from silver.osuosl.org ([127.0.0.1])
 	by localhost (.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
-	with ESMTP id ODogokEdkJEr; Sat, 27 Jun 2020 20:25:16 +0000 (UTC)
+	with ESMTP id OKOaIYH2nGDQ; Sun, 28 Jun 2020 00:37:56 +0000 (UTC)
 Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [140.211.9.56])
-	by whitealder.osuosl.org (Postfix) with ESMTP id 2120E86DC5;
-	Sat, 27 Jun 2020 20:25:16 +0000 (UTC)
+	by silver.osuosl.org (Postfix) with ESMTP id 6DC8B2043B;
+	Sun, 28 Jun 2020 00:37:56 +0000 (UTC)
 Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
-	by lists.linuxfoundation.org (Postfix) with ESMTP id EABF6C0865;
-	Sat, 27 Jun 2020 20:25:15 +0000 (UTC)
+	by lists.linuxfoundation.org (Postfix) with ESMTP id 5CDD2C0865;
+	Sun, 28 Jun 2020 00:37:56 +0000 (UTC)
 Received: from fraxinus.osuosl.org (smtp4.osuosl.org [140.211.166.137])
- by lists.linuxfoundation.org (Postfix) with ESMTP id 2A324C016F
- for <iommu@lists.linux-foundation.org>; Sat, 27 Jun 2020 20:25:14 +0000 (UTC)
+ by lists.linuxfoundation.org (Postfix) with ESMTP id 87A81C016F
+ for <iommu@lists.linux-foundation.org>; Sun, 28 Jun 2020 00:37:54 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
- by fraxinus.osuosl.org (Postfix) with ESMTP id 10A5C86E97
- for <iommu@lists.linux-foundation.org>; Sat, 27 Jun 2020 20:25:14 +0000 (UTC)
+ by fraxinus.osuosl.org (Postfix) with ESMTP id 7A44B860DE
+ for <iommu@lists.linux-foundation.org>; Sun, 28 Jun 2020 00:37:54 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
 Received: from fraxinus.osuosl.org ([127.0.0.1])
  by localhost (.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
- with ESMTP id QbDKDE3klRxx for <iommu@lists.linux-foundation.org>;
- Sat, 27 Jun 2020 20:25:13 +0000 (UTC)
+ with ESMTP id KOHnd88JGbbc for <iommu@lists.linux-foundation.org>;
+ Sun, 28 Jun 2020 00:37:54 +0000 (UTC)
 X-Greylist: domain auto-whitelisted by SQLgrey-1.7.6
-Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
- by fraxinus.osuosl.org (Postfix) with ESMTPS id 8EA6386ABB
- for <iommu@lists.linux-foundation.org>; Sat, 27 Jun 2020 20:25:13 +0000 (UTC)
-Subject: Re: [GIT PULL] dma-mapping fixes for 5.8
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
- s=default; t=1593289513;
- bh=9J040E0WnnbQGma5xN3YBHaW/r21PdJwI/TPcLGUJ0k=;
- h=From:In-Reply-To:References:Date:To:Cc:From;
- b=EasVfYhXqGsLNA/0DLHWXBkODWqVUoRomVJK3r61hPPMbNxBlLF/J6YrljHyc0cWm
- gofyPVLAFXvKmELbnHZmTKRxovKAgICDCfY/beCVnQyxUcLrCMKbjXhpqXg1Fc98en
- 6xgtwDd4DvuK3oDHZZtw/O4+xoLdq8b45ZrA0r6E=
-From: pr-tracker-bot@kernel.org
-In-Reply-To: <20200627074902.GA2447682@infradead.org>
-References: <20200627074902.GA2447682@infradead.org>
-X-PR-Tracked-List-Id: <linux-kernel.vger.kernel.org>
-X-PR-Tracked-Message-Id: <20200627074902.GA2447682@infradead.org>
-X-PR-Tracked-Remote: git://git.infradead.org/users/hch/dma-mapping.git
- tags/dma-mapping-5.8-4
-X-PR-Tracked-Commit-Id: 8e36baf97b252cdcafa53589e8227cbb1e85f0b0
-X-PR-Merge-Tree: torvalds/linux.git
-X-PR-Merge-Refname: refs/heads/master
-X-PR-Merge-Commit-Id: f05baa066d0f6a38f0624c28008fb2f53cd00e17
-Message-Id: <159328951331.11719.13949831114777019739.pr-tracker-bot@kernel.org>
-Date: Sat, 27 Jun 2020 20:25:13 +0000
-To: Christoph Hellwig <hch@infradead.org>
-Cc: iommu@lists.linux-foundation.org,
- Linus Torvalds <torvalds@linux-foundation.org>, linux-kernel@vger.kernel.org
+Received: from mga14.intel.com (mga14.intel.com [192.55.52.115])
+ by fraxinus.osuosl.org (Postfix) with ESMTPS id DC38F860C1
+ for <iommu@lists.linux-foundation.org>; Sun, 28 Jun 2020 00:37:53 +0000 (UTC)
+IronPort-SDR: vFJcH6p5RKTx19mQhHKkZACaKLad0xPC0k+/4hGBfSEtwPVMj8cAiWSnAhpZb4YWLXYT0Ufy36
+ x9HIaFsWcL5Q==
+X-IronPort-AV: E=McAfee;i="6000,8403,9665"; a="144805151"
+X-IronPort-AV: E=Sophos;i="5.75,289,1589266800"; d="scan'208";a="144805151"
+X-Amp-Result: SKIPPED(no attachment in message)
+X-Amp-File-Uploaded: False
+Received: from fmsmga004.fm.intel.com ([10.253.24.48])
+ by fmsmga103.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384;
+ 27 Jun 2020 17:37:52 -0700
+IronPort-SDR: j6OM7XnrZ+9iuGMNOEj3FL6aaSkLAEzzuZQGB7FREz9MHFJskQrH1gleXce3tHXRPqXLS1Nrfb
+ flyp96BmTt1w==
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="5.75,289,1589266800"; d="scan'208";a="302695000"
+Received: from allen-box.sh.intel.com ([10.239.159.139])
+ by fmsmga004.fm.intel.com with ESMTP; 27 Jun 2020 17:37:50 -0700
+From: Lu Baolu <baolu.lu@linux.intel.com>
+To: iommu@lists.linux-foundation.org
+Subject: [PATCH 0/4] iommu/vt-d: Add prq report and response support
+Date: Sun, 28 Jun 2020 08:33:28 +0800
+Message-Id: <20200628003332.5720-1-baolu.lu@linux.intel.com>
+X-Mailer: git-send-email 2.17.1
+Cc: Kevin Tian <kevin.tian@intel.com>, Ashok Raj <ashok.raj@intel.com>,
+ linux-kernel@vger.kernel.org
 X-BeenThere: iommu@lists.linux-foundation.org
 X-Mailman-Version: 2.1.15
 Precedence: list
@@ -88,18 +85,35 @@ Content-Transfer-Encoding: 7bit
 Errors-To: iommu-bounces@lists.linux-foundation.org
 Sender: "iommu" <iommu-bounces@lists.linux-foundation.org>
 
-The pull request you sent on Sat, 27 Jun 2020 09:49:02 +0200:
+Hi,
 
-> git://git.infradead.org/users/hch/dma-mapping.git tags/dma-mapping-5.8-4
+This series adds page request event reporting and response support to
+the Intel IOMMU driver. This is necessary when the page requests must
+be processed by any component other than the vendor IOMMU driver. For
+example, when a guest page table was bound to a PASID through the
+iommu_ops->sva_bind_gpasid() api, the page requests should be routed to
+the guest, and after the page is served, the device should be responded
+with the result.
 
-has been merged into torvalds/linux.git:
-https://git.kernel.org/torvalds/c/f05baa066d0f6a38f0624c28008fb2f53cd00e17
+Your review comments are very appreciated.
 
-Thank you!
+Best regards,
+baolu
+
+Lu Baolu (4):
+  iommu/vt-d: Refactor device_to_iommu() helper
+  iommu/vt-d: Add a helper to get svm and sdev for pasid
+  iommu/vt-d: Report page request faults for guest SVA
+  iommu/vt-d: Add page response ops support
+
+ drivers/iommu/intel/iommu.c |  56 +++----
+ drivers/iommu/intel/svm.c   | 285 ++++++++++++++++++++++++++++--------
+ include/linux/intel-iommu.h |   6 +-
+ 3 files changed, 246 insertions(+), 101 deletions(-)
 
 -- 
-Deet-doot-dot, I am a bot.
-https://korg.wiki.kernel.org/userdoc/prtracker
+2.17.1
+
 _______________________________________________
 iommu mailing list
 iommu@lists.linux-foundation.org
