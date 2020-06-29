@@ -2,83 +2,96 @@ Return-Path: <SRS0=qe9F=AK=lists.linux-foundation.org=iommu-bounces@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-3.8 required=3.0 tests=DKIM_INVALID,DKIM_SIGNED,
-	HEADER_FROM_DIFFERENT_DOMAINS,MAILING_LIST_MULTI,SIGNED_OFF_BY,SPF_HELO_NONE,
-	SPF_PASS,URIBL_BLOCKED autolearn=no autolearn_force=no version=3.4.0
+X-Spam-Status: No, score=-0.8 required=3.0 tests=DKIM_INVALID,DKIM_SIGNED,
+	HEADER_FROM_DIFFERENT_DOMAINS,MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS,
+	URIBL_BLOCKED autolearn=no autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id E20C5C433E0
-	for <iommu@archiver.kernel.org>; Mon, 29 Jun 2020 06:25:49 +0000 (UTC)
-Received: from fraxinus.osuosl.org (smtp4.osuosl.org [140.211.166.137])
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 5C6AFC433DF
+	for <iommu@archiver.kernel.org>; Mon, 29 Jun 2020 06:33:54 +0000 (UTC)
+Received: from whitealder.osuosl.org (smtp1.osuosl.org [140.211.166.138])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by mail.kernel.org (Postfix) with ESMTPS id AB5E623132
-	for <iommu@archiver.kernel.org>; Mon, 29 Jun 2020 06:25:49 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTPS id 1C1EC23132
+	for <iommu@archiver.kernel.org>; Mon, 29 Jun 2020 06:33:54 +0000 (UTC)
 Authentication-Results: mail.kernel.org;
-	dkim=fail reason="signature verification failed" (1024-bit key) header.d=nxp.com header.i=@nxp.com header.b="L1zcjV0C"
-DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org AB5E623132
-Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=nxp.com
+	dkim=fail reason="signature verification failed" (1024-bit key) header.d=redhat.com header.i=@redhat.com header.b="RvTva7yv"
+DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 1C1EC23132
+Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=redhat.com
 Authentication-Results: mail.kernel.org; spf=pass smtp.mailfrom=iommu-bounces@lists.linux-foundation.org
 Received: from localhost (localhost [127.0.0.1])
-	by fraxinus.osuosl.org (Postfix) with ESMTP id 6B08486AD0;
-	Mon, 29 Jun 2020 06:25:49 +0000 (UTC)
+	by whitealder.osuosl.org (Postfix) with ESMTP id C40F9887E9;
+	Mon, 29 Jun 2020 06:33:53 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from fraxinus.osuosl.org ([127.0.0.1])
+Received: from whitealder.osuosl.org ([127.0.0.1])
 	by localhost (.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
-	with ESMTP id xqo7KuoDIlke; Mon, 29 Jun 2020 06:25:48 +0000 (UTC)
+	with ESMTP id USBc6cLe1yKM; Mon, 29 Jun 2020 06:33:52 +0000 (UTC)
 Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [140.211.9.56])
-	by fraxinus.osuosl.org (Postfix) with ESMTP id 9222485F7C;
-	Mon, 29 Jun 2020 06:25:48 +0000 (UTC)
+	by whitealder.osuosl.org (Postfix) with ESMTP id CF220886E0;
+	Mon, 29 Jun 2020 06:33:52 +0000 (UTC)
 Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
-	by lists.linuxfoundation.org (Postfix) with ESMTP id 7714AC0865;
-	Mon, 29 Jun 2020 06:25:48 +0000 (UTC)
-Received: from fraxinus.osuosl.org (smtp4.osuosl.org [140.211.166.137])
- by lists.linuxfoundation.org (Postfix) with ESMTP id 5B3A5C016E;
- Mon, 29 Jun 2020 06:25:47 +0000 (UTC)
+	by lists.linuxfoundation.org (Postfix) with ESMTP id AD532C0865;
+	Mon, 29 Jun 2020 06:33:52 +0000 (UTC)
+Received: from hemlock.osuosl.org (smtp2.osuosl.org [140.211.166.133])
+ by lists.linuxfoundation.org (Postfix) with ESMTP id DFA7CC016E
+ for <iommu@lists.linux-foundation.org>; Mon, 29 Jun 2020 06:33:50 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
- by fraxinus.osuosl.org (Postfix) with ESMTP id 4FFC38688F;
- Mon, 29 Jun 2020 06:25:47 +0000 (UTC)
+ by hemlock.osuosl.org (Postfix) with ESMTP id C011F892A5
+ for <iommu@lists.linux-foundation.org>; Mon, 29 Jun 2020 06:33:50 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from fraxinus.osuosl.org ([127.0.0.1])
+Received: from hemlock.osuosl.org ([127.0.0.1])
  by localhost (.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
- with ESMTP id kbicJvoMM3k6; Mon, 29 Jun 2020 06:25:45 +0000 (UTC)
+ with ESMTP id 95zOpZcIYWYV for <iommu@lists.linux-foundation.org>;
+ Mon, 29 Jun 2020 06:33:50 +0000 (UTC)
 X-Greylist: domain auto-whitelisted by SQLgrey-1.7.6
-X-Greylist: domain auto-whitelisted by SQLgrey-1.7.6
-Received: from EUR04-DB3-obe.outbound.protection.outlook.com
- (mail-eopbgr60084.outbound.protection.outlook.com [40.107.6.84])
- by fraxinus.osuosl.org (Postfix) with ESMTPS id 6B06F85F7C;
- Mon, 29 Jun 2020 06:25:45 +0000 (UTC)
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=Ffb0tryf3+WMusuxriFspTuyCD0jR5nujp/rzdzc6JR92rJsWlAVE8I313MSQBTprU4nobwvSXgu8vR4rC/9MeFgvPh//pXnseXz3XbJJeHjIQvsLIahqtiVa8KEaN9fHGnvZSy0Qr2bIC0t8RsRIlKBpkSTaXkMpmqT4lBXcrwyiy3yRA56Fu5tl5PlYR3gujgCm468frMy1aWF1CvKp2yVN54FRB03txEI8SJjwDXXSKDDSXjfCX+wrBVk/Q/ZEKZ4SrwGQolzsfMcR1OnB2Har2Lpfb/Ija4WBx086MLPPMNYBJ7IIQGt86NYaNEcT872f7hEX+HmJhFpUXIotg==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com; 
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=ZVinsJJnviT21i7XI0KnA6+56MrUkVoRCxqh0lP/y9s=;
- b=hhaBE5XukKYUuZPClQoZo29++2XadgB3N0uZbP+RCVP7EAwcu+hbgCHnj3aXOesCe+pkNU7XRSV8Ou/voG/N+htBPj3/yP+oH2Yaopp9jCu5sfSbGNirApS0dBqcGjopmO6lqSmhxcAPk4la3xmEWlDpfcoKaVM1sIcSBLhitZ8EooVWcd8K5aJ2K7WUjGESlCyvEBgwabFwCl32r9iD+JQ8DLt6kQGyiRPbQcvFmL+M9zrsuF4/j0tG2aVNLogbhNBb8oQA1iD08zMf505DtilMBXEcq6hEj/dCBKYAiRfxkVVUkn/3qlyRE8tn5V0wigeEriicm7ltAw0eBkVfLw==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=nxp.com; dmarc=pass action=none header.from=nxp.com; dkim=pass
- header.d=nxp.com; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=nxp.com; s=selector2; 
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=ZVinsJJnviT21i7XI0KnA6+56MrUkVoRCxqh0lP/y9s=;
- b=L1zcjV0CGehZeD7cB6ZqeDkIn8Wkfl30zMXdjW2xafn6zwlvwrzgTksmnOEBJzLvcWyZ6S5jRwc2qF+4dQcok7dMBsqvuQZeQcu1Nq4ClyFRoPBTAzyYPCluwfjmtoQeVQDqjbDH5VaFL36TLFhMmuaD6uecdAr6PLacwaycXQs=
-Received: from DB6PR0402MB2760.eurprd04.prod.outlook.com (2603:10a6:4:a1::14)
- by DB8PR04MB6715.eurprd04.prod.outlook.com (2603:10a6:10:10d::14)
- with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.3131.24; Mon, 29 Jun
- 2020 06:25:41 +0000
-Received: from DB6PR0402MB2760.eurprd04.prod.outlook.com
- ([fe80::2d36:b569:17c:7701]) by DB6PR0402MB2760.eurprd04.prod.outlook.com
- ([fe80::2d36:b569:17c:7701%4]) with mapi id 15.20.3131.026; Mon, 29 Jun 2020
- 06:25:41 +0000
-From: Peng Fan <peng.fan@nxp.com>
-To: "Michael S. Tsirkin" <mst@redhat.com>
-Subject: RE: [PATCH] xen: introduce xen_vring_use_dma
-Thread-Topic: [PATCH] xen: introduce xen_vring_use_dma
-Thread-Index: AQHWSgTusARd8c8cRkWwDit233DtZajneYoAgACU6oCAAC7QAIAAEpoAgAAGSwCAAUK2gIABcSaAgAPk6cCAADgrAIAAAH5w
-Date: Mon, 29 Jun 2020 06:25:41 +0000
-Message-ID: <DB6PR0402MB27602AB2A9A242D79343CE48886E0@DB6PR0402MB2760.eurprd04.prod.outlook.com>
-References: <20200624091732.23944-1-peng.fan@nxp.com>
- <20200624050355-mutt-send-email-mst@kernel.org>
+Received: from us-smtp-1.mimecast.com (us-smtp-delivery-1.mimecast.com
+ [207.211.31.120])
+ by hemlock.osuosl.org (Postfix) with ESMTPS id 26C33892A4
+ for <iommu@lists.linux-foundation.org>; Mon, 29 Jun 2020 06:33:50 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+ s=mimecast20190719; t=1593412428;
+ h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+ to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+ in-reply-to:in-reply-to:references:references;
+ bh=Iiom3LNVi9ET0XgfPNiU1I3DflByt3ZNInrS8hmdp2U=;
+ b=RvTva7yvWQJRqvtjLrnc/EM+idCCJEHhG9hgfioileljWjAEPy856c65mhWJCfuOmXs9e9
+ OGXr2wScFqvevQWvWrrh5xDvzlgKdMnIO/IQPEkBgNn2g9yq2yG8tMvII9ABOJLEUQn9jv
+ HbblSDoldsoqs73nUBpU7Aoazs5mAQE=
+Received: from mail-wm1-f69.google.com (mail-wm1-f69.google.com
+ [209.85.128.69]) (Using TLS) by relay.mimecast.com with ESMTP id
+ us-mta-49-q7KImB1-Pr-FeMlDeoyszg-1; Mon, 29 Jun 2020 02:33:44 -0400
+X-MC-Unique: q7KImB1-Pr-FeMlDeoyszg-1
+Received: by mail-wm1-f69.google.com with SMTP id o138so16785308wme.4
+ for <iommu@lists.linux-foundation.org>; Sun, 28 Jun 2020 23:33:44 -0700 (PDT)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+ d=1e100.net; s=20161025;
+ h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+ :mime-version:content-disposition:in-reply-to;
+ bh=Iiom3LNVi9ET0XgfPNiU1I3DflByt3ZNInrS8hmdp2U=;
+ b=Fhl6dKJVMpSD5SHf7NmJmEyuHkvgY7z0f0dAMWEw5D62tKD+yY7+3wEIEByPyj6nPY
+ 4iCrMkp4rudpda3+eu848ACXBcUku7IziWjl+R+jJxVRXUllzNb9cCOjduB8xEt6G0LQ
+ VfJ/5xxbb8pikDn4E3J0UZ0JOE8x5F/daIpO4ATznJwnN2bIS5UEX647aWHUu0guHLXz
+ 92C8DLFkhAEtjD+JDEuHBhkuhVd8UMhXBpY6kuc4QDcaqimRALmgd1Q2lBqr7MW/UBvz
+ 3X4YqVC8/312ZoTiRZVup6Rzy6nd3FKyQ3hGl5SP0LuH2SjaZ8SIXurbDtbWXjxKO78w
+ wFqA==
+X-Gm-Message-State: AOAM531hT0O42mvmQbKQCNGsm+iJV3cKGoh0C6Ys9YHYN12winMdf59j
+ iODxHYgIPzGL91qQ5rUBxibE6TDQuMm9F2ZGBcQMpD9se68A0I/X99no/rLNqsL7SogXjgm4v22
+ URd6GK0MCfE55Hcq9AvRHeQviuHCuQg==
+X-Received: by 2002:adf:8067:: with SMTP id 94mr14821912wrk.427.1593412423743; 
+ Sun, 28 Jun 2020 23:33:43 -0700 (PDT)
+X-Google-Smtp-Source: ABdhPJxfYJ1M6jIB+Bt9+iuqmCS+1/JuHYbah8AxWL9RwY6izIKRHTcVkotYUsuHjo+DZqHXAwCswQ==
+X-Received: by 2002:adf:8067:: with SMTP id 94mr14821888wrk.427.1593412423531; 
+ Sun, 28 Jun 2020 23:33:43 -0700 (PDT)
+Received: from redhat.com (bzq-79-182-31-92.red.bezeqint.net. [79.182.31.92])
+ by smtp.gmail.com with ESMTPSA id
+ s8sm41059111wru.38.2020.06.28.23.33.41
+ (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+ Sun, 28 Jun 2020 23:33:42 -0700 (PDT)
+Date: Mon, 29 Jun 2020 02:33:39 -0400
+From: "Michael S. Tsirkin" <mst@redhat.com>
+To: Peng Fan <peng.fan@nxp.com>
+Subject: Re: [PATCH] xen: introduce xen_vring_use_dma
+Message-ID: <20200629023225-mutt-send-email-mst@kernel.org>
+References: <20200624050355-mutt-send-email-mst@kernel.org>
  <alpine.DEB.2.21.2006241047010.8121@sstabellini-ThinkPad-T480s>
  <20200624163940-mutt-send-email-mst@kernel.org>
  <alpine.DEB.2.21.2006241351430.8121@sstabellini-ThinkPad-T480s>
@@ -87,42 +100,14 @@ References: <20200624091732.23944-1-peng.fan@nxp.com>
  <20200626110629-mutt-send-email-mst@kernel.org>
  <DB6PR0402MB27601CA74B85DA5A9F5E5DD6886E0@DB6PR0402MB2760.eurprd04.prod.outlook.com>
  <20200629022124-mutt-send-email-mst@kernel.org>
-In-Reply-To: <20200629022124-mutt-send-email-mst@kernel.org>
-Accept-Language: en-US
-Content-Language: en-US
-X-MS-Has-Attach: 
-X-MS-TNEF-Correlator: 
-authentication-results: redhat.com; dkim=none (message not signed)
- header.d=none;redhat.com; dmarc=none action=none header.from=nxp.com;
-x-originating-ip: [119.31.174.71]
-x-ms-publictraffictype: Email
-x-ms-office365-filtering-ht: Tenant
-x-ms-office365-filtering-correlation-id: a5e1c4cb-0c5f-447d-9984-08d81bf53f1b
-x-ms-traffictypediagnostic: DB8PR04MB6715:
-x-ms-exchange-transport-forked: True
-x-microsoft-antispam-prvs: <DB8PR04MB67159207B33C95FEA00FE33F886E0@DB8PR04MB6715.eurprd04.prod.outlook.com>
-x-ms-oob-tlc-oobclassifiers: OLM:9508;
-x-forefront-prvs: 044968D9E1
-x-ms-exchange-senderadcheck: 1
-x-microsoft-antispam: BCL:0;
-x-microsoft-antispam-message-info: ZcomgzT8z0TV8AdfcgQXBFI1wdcxYJJGw2fCPEYYV2HF5Asq2udSyAxCqG2x424rMSoSB19NYDH2/cltuOnvwJewUKeUap9q6OxMr5rpTs8qTvM0LWCCHaMxslX2x5Kw4P7LsAUS1MV7Kq4NCH8IeoHXVqZKXLZibUu8OQX77pe7RD8Uehe92lYOxg0IIjmPTpaHPU0xUSv/747T7V1t3n1n48YZVipEAlJ36w5LfLqcdQ+tM+iQSH4ToueQp8TeBuAY6VX0Q58g6J0FYF2UT9WNDIgd/mcTxuqk9BIhCZLzlEi3VhJVXiwxs91dLexhPfI0y1+TDhStDySFnLh6ldmQZIVSnILpem5NP3bMP+iYGcSEJHYXGraspfUuTcmgpiGqfDQUzCt4h/o1602WSQ==
-x-forefront-antispam-report: CIP:255.255.255.255; CTRY:; LANG:en; SCL:1; SRV:;
- IPV:NLI; SFV:NSPM; H:DB6PR0402MB2760.eurprd04.prod.outlook.com; PTR:; CAT:NONE;
- SFTY:;
- SFS:(4636009)(39860400002)(136003)(346002)(376002)(396003)(366004)(6916009)(186003)(86362001)(9686003)(76116006)(66446008)(45080400002)(7696005)(55016002)(5660300002)(66946007)(26005)(83380400001)(71200400001)(66476007)(66556008)(64756008)(33656002)(7416002)(52536014)(4326008)(6506007)(54906003)(478600001)(44832011)(8676002)(316002)(966005)(8936002)(2906002);
- DIR:OUT; SFP:1101; 
-x-ms-exchange-antispam-messagedata: yAnM0ejSbejlrSnR31b9U9qBdkL0+lYs1XiRprTYLdv0aTF4h/fK7BMlL9j5/Efdh2jIQq3P9IpIsXCvMJ2nZp+QjeRsYQm1Vi/g0bWtsGrlC3mbi/7RplbNGBRgqLxfttNrsnazacGBy45PpLP3jDu0ITIVyZpFgmxR9zw17h9ODKv0sZaBHTyCbDQFt089cdMTCluY+rur3KLU5ty7nI5NdQGto4tY2Dm2oF8USaJ6t4OF7YAV14XQTV+CudulV3zH9eqWt3wcc/hymm1fdv8dvk37aNah9MbPftxJ3VGKSXDRLYm9jStQZqeUX2riVQHl8UGnTJ7DGJf7NAr7RPRjlBJvG7/F8Ty57bgrPoIR6Ll9jJIp+nvIt8VTBbHf0wF8y6qy/ahygmI8ZyXSTe1b1nScNRKRQcKU08ce8oglUa3Zte1r/wHFyA33zb/H9JbBjaOotRYHXU476nK0MAbxPyhdWD/HfkU3sQuzjtH5XhTNtJJYQGeDjUZzm5OK
+ <DB6PR0402MB27602AB2A9A242D79343CE48886E0@DB6PR0402MB2760.eurprd04.prod.outlook.com>
 MIME-Version: 1.0
-X-OriginatorOrg: nxp.com
-X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-AuthSource: DB6PR0402MB2760.eurprd04.prod.outlook.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: a5e1c4cb-0c5f-447d-9984-08d81bf53f1b
-X-MS-Exchange-CrossTenant-originalarrivaltime: 29 Jun 2020 06:25:41.1516 (UTC)
-X-MS-Exchange-CrossTenant-fromentityheader: Hosted
-X-MS-Exchange-CrossTenant-id: 686ea1d3-bc2b-4c6f-a92c-d99c5c301635
-X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
-X-MS-Exchange-CrossTenant-userprincipalname: Jlca2JAB/hh8X/P93HXsVW0tsA8+sgSQYIkgLQ2VlEVRDYpq8IaCerlyTe74kscdoLfBrQC2fq3z4lL2GPh/QQ==
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: DB8PR04MB6715
+In-Reply-To: <DB6PR0402MB27602AB2A9A242D79343CE48886E0@DB6PR0402MB2760.eurprd04.prod.outlook.com>
+Authentication-Results: relay.mimecast.com;
+ auth=pass smtp.auth=CUSA124A263 smtp.mailfrom=mst@redhat.com
+X-Mimecast-Spam-Score: 0
+X-Mimecast-Originator: redhat.com
+Content-Disposition: inline
 Cc: "jgross@suse.com" <jgross@suse.com>,
  Stefano Stabellini <sstabellini@kernel.org>,
  "konrad.wilk@oracle.com" <konrad.wilk@oracle.com>,
@@ -152,207 +137,29 @@ Content-Transfer-Encoding: 7bit
 Errors-To: iommu-bounces@lists.linux-foundation.org
 Sender: "iommu" <iommu-bounces@lists.linux-foundation.org>
 
-> Subject: Re: [PATCH] xen: introduce xen_vring_use_dma
+On Mon, Jun 29, 2020 at 06:25:41AM +0000, Peng Fan wrote:
+> > > > > Anyway, re-reading the last messages of the original thread [1],
+> > > > > it looks like Peng had a clear idea on how to fix the general issue.
+> > > > > Peng, what happened with that?
+> > >
+> > > We shrinked the rpmsg reserved area to workaround the issue.
+> > > So still use the dma apis in rpmsg.
+> > >
+> > > But here I am going to address domu android trusty issue using virtio.
+> > 
+> > My suggestion is to first of all fix DMA API so it works properly.
 > 
-> On Mon, Jun 29, 2020 at 03:05:19AM +0000, Peng Fan wrote:
-> > > Subject: Re: [PATCH] xen: introduce xen_vring_use_dma
-> > >
-> > > On Thu, Jun 25, 2020 at 10:31:27AM -0700, Stefano Stabellini wrote:
-> > > > On Wed, 24 Jun 2020, Michael S. Tsirkin wrote:
-> > > > > On Wed, Jun 24, 2020 at 02:53:54PM -0700, Stefano Stabellini wrote:
-> > > > > > On Wed, 24 Jun 2020, Michael S. Tsirkin wrote:
-> > > > > > > On Wed, Jun 24, 2020 at 10:59:47AM -0700, Stefano Stabellini
-> wrote:
-> > > > > > > > On Wed, 24 Jun 2020, Michael S. Tsirkin wrote:
-> > > > > > > > > On Wed, Jun 24, 2020 at 05:17:32PM +0800, Peng Fan wrote:
-> > > > > > > > > > Export xen_swiotlb for all platforms using xen swiotlb
-> > > > > > > > > >
-> > > > > > > > > > Use xen_swiotlb to determine when vring should use dma
-> > > > > > > > > > APIs to map the
-> > > > > > > > > > ring: when xen_swiotlb is enabled the dma API is required.
-> > > > > > > > > > When it is disabled, it is not required.
-> > > > > > > > > >
-> > > > > > > > > > Signed-off-by: Peng Fan <peng.fan@nxp.com>
-> > > > > > > > >
-> > > > > > > > > Isn't there some way to use VIRTIO_F_IOMMU_PLATFORM for
-> > > this?
-> > > > > > > > > Xen was there first, but everyone else is using that now.
-> > > > > > > >
-> > > > > > > > Unfortunately it is complicated and it is not related to
-> > > > > > > > VIRTIO_F_IOMMU_PLATFORM :-(
-> > > > > > > >
-> > > > > > > >
-> > > > > > > > The Xen subsystem in Linux uses dma_ops via swiotlb_xen to
-> > > > > > > > translate foreign mappings (memory coming from other VMs)
-> > > > > > > > to
-> > > physical addresses.
-> > > > > > > > On x86, it also uses dma_ops to translate Linux's idea of
-> > > > > > > > a physical address into a real physical address (this is
-> > > > > > > > unneeded on ARM.)
-> > > > > > > >
-> > > > > > > >
-> > > > > > > > So regardless of VIRTIO_F_IOMMU_PLATFORM, dma_ops should
-> > > > > > > > be used on Xen/x86 always and on Xen/ARM if Linux is Dom0
-> > > > > > > > (because it has foreign
-> > > > > > > > mappings.) That is why we have the if (xen_domain) return
-> > > > > > > > true; in vring_use_dma_api.
-> > > > > > >
-> > > > > > > VIRTIO_F_IOMMU_PLATFORM makes guest always use DMA ops.
-> > > > > > >
-> > > > > > > Xen hack predates VIRTIO_F_IOMMU_PLATFORM so it *also*
-> > > > > > > forces DMA ops even if VIRTIO_F_IOMMU_PLATFORM is clear.
-> > > > > > >
-> > > > > > > Unfortunately as a result Xen never got around to properly
-> > > > > > > setting VIRTIO_F_IOMMU_PLATFORM.
-> > > > > >
-> > > > > > I don't think VIRTIO_F_IOMMU_PLATFORM would be correct for
-> > > > > > this because the usage of swiotlb_xen is not a property of
-> > > > > > virtio,
-> > > > >
-> > > > >
-> > > > > Basically any device without VIRTIO_F_ACCESS_PLATFORM (that is
-> > > > > it's name in latest virtio spec, VIRTIO_F_IOMMU_PLATFORM is what
-> > > > > linux calls it) is declared as "special, don't follow normal
-> > > > > rules for access".
-> > > > >
-> > > > > So yes swiotlb_xen is not a property of virtio, but what *is* a
-> > > > > property of virtio is that it's not special, just a regular
-> > > > > device from DMA
-> > > POV.
-> > > >
-> > > > I am trying to understand what you meant but I think I am missing
-> > > > something.
-> > > >
-> > > > Are you saying that modern virtio should always have
-> > > > VIRTIO_F_ACCESS_PLATFORM, hence use normal dma_ops as any other
-> > > devices?
-> > >
-> > > I am saying it's a safe default. Clear VIRTIO_F_ACCESS_PLATFORM if
-> > > you have some special needs e.g. you are very sure it's ok to bypass
-> > > DMA ops, or you need to support a legacy guest (produced in the
-> > > window between virtio 1 support in 2014 and support for
-> VIRTIO_F_ACCESS_PLATFORM in 2016).
-> > >
-> > >
-> > > > If that is the case, how is it possible that virtio breaks on ARM
-> > > > using the default dma_ops? The breakage is not Xen related (except
-> > > > that Xen turns dma_ops on). The original message from Peng was:
-> > > >
-> > > >   vring_map_one_sg -> vring_use_dma_api
-> > > >                    -> dma_map_page
-> > > >   		       -> __swiotlb_map_page
-> > > >   		                ->swiotlb_map_page
-> > > >   				->__dma_map_area(phys_to_virt(dma_to_phys(dev,
-> > > dev_addr)), size, dir);
-> > > >   However we are using per device dma area for rpmsg, phys_to_virt
-> > > >   could not return a correct virtual address for virtual address in
-> > > >   vmalloc area. Then kernel panic.
-> > > >
-> > > > I must be missing something. Maybe it is because it has to do with
-> RPMesg?
-> > >
-> > > I think it's an RPMesg bug, yes
-> >
-> > rpmsg bug is another issue, it should not use dma_alloc_coherent for
-> > reserved area, and use vmalloc_to_page.
-> >
-> > Anyway here using dma api will also trigger issue.
-> >
-> > >
-> > > >
-> > > > > > > > You might have noticed that I missed one possible case above:
-> > > > > > > > Xen/ARM DomU :-)
-> > > > > > > >
-> > > > > > > > Xen/ARM domUs don't need swiotlb_xen, it is not even
-> > > > > > > > initialized. So if
-> > > > > > > > (xen_domain) return true; would give the wrong answer in that
-> case.
-> > > > > > > > Linux would end up calling the "normal" dma_ops, not
-> > > > > > > > swiotlb-xen, and the "normal" dma_ops fail.
-> > > > > > > >
-> > > > > > > >
-> > > > > > > > The solution I suggested was to make the check in
-> > > > > > > > vring_use_dma_api more flexible by returning true if the
-> > > > > > > > swiotlb_xen is supposed to be used, not in general for all
-> > > > > > > > Xen domains, because that is what the check was really meant to
-> do.
-> > > > > > >
-> > > > > > > Why not fix DMA ops so they DTRT (nop) on Xen/ARM DomU?
-> What
-> > > > > > > is
-> > > wrong with that?
-> > > > > >
-> > > > > > swiotlb-xen is not used on Xen/ARM DomU, the default dma_ops
-> > > > > > are the ones that are used. So you are saying, why don't we
-> > > > > > fix the default dma_ops to work with virtio?
-> > > > > >
-> > > > > > It is bad that the default dma_ops crash with virtio, so yes I
-> > > > > > think it would be good to fix that. However, even if we fixed
-> > > > > > that, the if
-> > > > > > (xen_domain()) check in vring_use_dma_api is still a problem.
-> > > > >
-> > > > > Why is it a problem? It just makes virtio use DMA API.
-> > > > > If that in turn works, problem solved.
-> > > >
-> > > > You are correct in the sense that it would work. However I do
-> > > > think it is wrong for vring_use_dma_api to enable
-> > > > dma_ops/swiotlb-xen for Xen/ARM DomUs that don't need it. There
-> > > > are many different types of Xen guests, Xen x86 is drastically
-> > > > different from Xen ARM, it seems wrong to treat them the same way.
-> > >
-> > > I could imagine some future Xen hosts setting a flag somewhere in
-> > > the platform capability saying "no xen specific flag, rely on
-> > > "VIRTIO_F_ACCESS_PLATFORM". Then you set that accordingly in QEMU.
-> > > How about that?
-> > >
-> >
-> > Michael, Stefano,
-> >
-> > So what's your suggestion here, that we could avoid similar issue for
-> > virtio drivers in ARM DomU?
-> >
-> > Thanks,
-> > Peng.
-> >
-> > >
-> > > >
-> > > >
-> > > > Anyway, re-reading the last messages of the original thread [1],
-> > > > it looks like Peng had a clear idea on how to fix the general issue.
-> > > > Peng, what happened with that?
-> >
-> > We shrinked the rpmsg reserved area to workaround the issue.
-> > So still use the dma apis in rpmsg.
-> >
-> > But here I am going to address domu android trusty issue using virtio.
+> Could you please elaborate more details?
 > 
-> My suggestion is to first of all fix DMA API so it works properly.
-
-Could you please elaborate more details?
-
-You mean the DMA API usage of rpmsg? Or xen domu dma_ops?
-
-Thanks,
-Peng. 
-
+> You mean the DMA API usage of rpmsg? Or xen domu dma_ops?
 > 
-> > > >
-> > > >
-> > > > [1]
-> > > > https://eur01.safelinks.protection.outlook.com/?url=https%3A%2F%2F
-> > > > lore
-> > > > .kernel.org%2Fpatchwork%2Fpatch%2F1033801%2F%231222404&amp;
-> dat
-> > > a=02%7C0
-> > > >
-> > >
-> 1%7Cpeng.fan%40nxp.com%7C08ba48d3b3d54e775a8108d819e62fd0%7C68
-> > > 6ea1d3bc
-> > > >
-> > >
-> 2b4c6fa92cd99c5c301635%7C0%7C0%7C637287823721994475&amp;sdata
-> > > =Cw4FHWrH
-> > > > uVKBCn3%2BKS2VM7cWuGoTI6R7SHJrJSLY5Io%3D&amp;reserved=0
+> Thanks,
+> Peng. 
+
+Not 100% sure but I think xen dma ops.
+
+-- 
+MST
 
 _______________________________________________
 iommu mailing list
