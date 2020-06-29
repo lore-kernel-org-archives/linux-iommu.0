@@ -2,101 +2,84 @@ Return-Path: <SRS0=qe9F=AK=lists.linux-foundation.org=iommu-bounces@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-9.8 required=3.0 tests=DKIM_INVALID,DKIM_SIGNED,
-	HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_PATCH,MAILING_LIST_MULTI,SIGNED_OFF_BY,
-	SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED,USER_AGENT_GIT autolearn=ham
-	autolearn_force=no version=3.4.0
+X-Spam-Status: No, score=-2.5 required=3.0 tests=HEADER_FROM_DIFFERENT_DOMAINS,
+	MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED,USER_AGENT_SANE_1
+	autolearn=no autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 3B716C433E0
-	for <iommu@archiver.kernel.org>; Mon, 29 Jun 2020 15:54:33 +0000 (UTC)
-Received: from fraxinus.osuosl.org (smtp4.osuosl.org [140.211.166.137])
+	by smtp.lore.kernel.org (Postfix) with ESMTP id F08E3C433E0
+	for <iommu@archiver.kernel.org>; Mon, 29 Jun 2020 16:23:38 +0000 (UTC)
+Received: from silver.osuosl.org (smtp3.osuosl.org [140.211.166.136])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by mail.kernel.org (Postfix) with ESMTPS id 1152C25512
-	for <iommu@archiver.kernel.org>; Mon, 29 Jun 2020 15:54:32 +0000 (UTC)
-Authentication-Results: mail.kernel.org;
-	dkim=fail reason="signature verification failed" (1024-bit key) header.d=mg.codeaurora.org header.i=@mg.codeaurora.org header.b="oXe6yANI"
-DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 1152C25512
-Authentication-Results: mail.kernel.org; dmarc=none (p=none dis=none) header.from=codeaurora.org
+	by mail.kernel.org (Postfix) with ESMTPS id C11D32558F
+	for <iommu@archiver.kernel.org>; Mon, 29 Jun 2020 16:23:38 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org C11D32558F
+Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=intel.com
 Authentication-Results: mail.kernel.org; spf=pass smtp.mailfrom=iommu-bounces@lists.linux-foundation.org
 Received: from localhost (localhost [127.0.0.1])
-	by fraxinus.osuosl.org (Postfix) with ESMTP id E1CD087613;
-	Mon, 29 Jun 2020 15:54:32 +0000 (UTC)
+	by silver.osuosl.org (Postfix) with ESMTP id 9700322658;
+	Mon, 29 Jun 2020 16:23:38 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from fraxinus.osuosl.org ([127.0.0.1])
+Received: from silver.osuosl.org ([127.0.0.1])
 	by localhost (.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
-	with ESMTP id Q8hfVfVMYn-5; Mon, 29 Jun 2020 15:54:32 +0000 (UTC)
+	with ESMTP id P6aWrXZDGxOo; Mon, 29 Jun 2020 16:23:37 +0000 (UTC)
 Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [140.211.9.56])
-	by fraxinus.osuosl.org (Postfix) with ESMTP id 281FE86D77;
-	Mon, 29 Jun 2020 15:54:32 +0000 (UTC)
+	by silver.osuosl.org (Postfix) with ESMTP id C9F7B20425;
+	Mon, 29 Jun 2020 16:23:37 +0000 (UTC)
 Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
-	by lists.linuxfoundation.org (Postfix) with ESMTP id 22721C07FF;
-	Mon, 29 Jun 2020 15:54:32 +0000 (UTC)
-Received: from hemlock.osuosl.org (smtp2.osuosl.org [140.211.166.133])
- by lists.linuxfoundation.org (Postfix) with ESMTP id 17EE7C016E
- for <iommu@lists.linux-foundation.org>; Mon, 29 Jun 2020 15:54:31 +0000 (UTC)
+	by lists.linuxfoundation.org (Postfix) with ESMTP id B26A5C0865;
+	Mon, 29 Jun 2020 16:23:37 +0000 (UTC)
+Received: from whitealder.osuosl.org (smtp1.osuosl.org [140.211.166.138])
+ by lists.linuxfoundation.org (Postfix) with ESMTP id EAA88C016E
+ for <iommu@lists.linux-foundation.org>; Mon, 29 Jun 2020 16:23:35 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
- by hemlock.osuosl.org (Postfix) with ESMTP id 0788189290
- for <iommu@lists.linux-foundation.org>; Mon, 29 Jun 2020 15:54:31 +0000 (UTC)
+ by whitealder.osuosl.org (Postfix) with ESMTP id D9AD7887D1
+ for <iommu@lists.linux-foundation.org>; Mon, 29 Jun 2020 16:23:35 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from hemlock.osuosl.org ([127.0.0.1])
+Received: from whitealder.osuosl.org ([127.0.0.1])
  by localhost (.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
- with ESMTP id cvZAkZOq-Xu3 for <iommu@lists.linux-foundation.org>;
- Mon, 29 Jun 2020 15:54:30 +0000 (UTC)
-X-Greylist: from auto-whitelisted by SQLgrey-1.7.6
-Received: from m43-7.mailgun.net (m43-7.mailgun.net [69.72.43.7])
- by hemlock.osuosl.org (Postfix) with ESMTPS id 2741C89299
- for <iommu@lists.linux-foundation.org>; Mon, 29 Jun 2020 15:54:27 +0000 (UTC)
-DKIM-Signature: a=rsa-sha256; v=1; c=relaxed/relaxed; d=mg.codeaurora.org;
- q=dns/txt; 
- s=smtp; t=1593446070; h=Content-Transfer-Encoding: MIME-Version:
- References: In-Reply-To: Message-Id: Date: Subject: Cc: To: From:
- Sender; bh=nyhr+wKTuGHf9WtPCncyW6maFY7e62s62XEcHJ0A5CE=;
- b=oXe6yANIFBNXQSslQMVY2xv9uZ7DwmV0Dd+CfyyMuU76OTs2u7Vyn05VWxcD7vXF/jrXxf0K
- PEDFJRKN/gNj9mr4E1gbfNcfWsaXDE+bHWnLMyss5qmweKMA6Uw0Ce+6bp+dRnfnV3cYZtY3
- tdKAoxepsSzwrQzl5D4iqH0QxF8=
-X-Mailgun-Sending-Ip: 69.72.43.7
-X-Mailgun-Sid: WyI3NDkwMCIsICJpb21tdUBsaXN0cy5saW51eC1mb3VuZGF0aW9uLm9yZyIsICJiZTllNGEiXQ==
-Received: from smtp.codeaurora.org
- (ec2-35-166-182-171.us-west-2.compute.amazonaws.com [35.166.182.171]) by
- smtp-out-n08.prod.us-east-1.postgun.com with SMTP id
- 5efa0eaca3d8a447435fe994 (version=TLS1.2,
- cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256); Mon, 29 Jun 2020 15:54:20
- GMT
-Received: by smtp.codeaurora.org (Postfix, from userid 1001)
- id 04366C4344A; Mon, 29 Jun 2020 15:54:18 +0000 (UTC)
-Received: from blr-ubuntu-253.qualcomm.com
- (blr-bdr-fw-01_GlobalNAT_AllZones-Outside.qualcomm.com [103.229.18.19])
- (using TLSv1.2 with cipher ECDHE-RSA-AES128-SHA256 (128/128 bits))
- (No client certificate requested)
- (Authenticated sender: saiprakash.ranjan)
- by smtp.codeaurora.org (Postfix) with ESMTPSA id 80E20C433CB;
- Mon, 29 Jun 2020 15:54:11 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.3.2 smtp.codeaurora.org 80E20C433CB
-Authentication-Results: aws-us-west-2-caf-mail-1.web.codeaurora.org;
- dmarc=none (p=none dis=none) header.from=codeaurora.org
-Authentication-Results: aws-us-west-2-caf-mail-1.web.codeaurora.org; spf=none
- smtp.mailfrom=saiprakash.ranjan@codeaurora.org
-From: Sai Prakash Ranjan <saiprakash.ranjan@codeaurora.org>
-To: Robin Murphy <robin.murphy@arm.com>, Will Deacon <will@kernel.org>,
- Joerg Roedel <joro@8bytes.org>, Jordan Crouse <jcrouse@codeaurora.org>,
- Rob Clark <robdclark@gmail.com>
-Subject: [PATCHv3 7/7] drm/msm/a6xx: Add support for using system cache(LLC)
-Date: Mon, 29 Jun 2020 21:22:50 +0530
-Message-Id: <449a6544b10f0035d191ac52283198343187c153.1593344120.git.saiprakash.ranjan@codeaurora.org>
-X-Mailer: git-send-email 2.27.0
-In-Reply-To: <cover.1593344119.git.saiprakash.ranjan@codeaurora.org>
-References: <cover.1593344119.git.saiprakash.ranjan@codeaurora.org>
+ with ESMTP id UfZ2baJueKjU for <iommu@lists.linux-foundation.org>;
+ Mon, 29 Jun 2020 16:23:35 +0000 (UTC)
+X-Greylist: domain auto-whitelisted by SQLgrey-1.7.6
+Received: from mga11.intel.com (mga11.intel.com [192.55.52.93])
+ by whitealder.osuosl.org (Postfix) with ESMTPS id 5EDB7887A5
+ for <iommu@lists.linux-foundation.org>; Mon, 29 Jun 2020 16:23:35 +0000 (UTC)
+IronPort-SDR: pYmzjX9xfXSNVrDzJQ6McwiKAnUzd6ZgfmW3dVGxzsFHTCvMoYpDtDiHYsuoUGTKb1QZq8dN9R
+ vkO2iDdBWczg==
+X-IronPort-AV: E=McAfee;i="6000,8403,9666"; a="144187165"
+X-IronPort-AV: E=Sophos;i="5.75,295,1589266800"; d="scan'208";a="144187165"
+X-Amp-Result: SKIPPED(no attachment in message)
+X-Amp-File-Uploaded: False
+Received: from fmsmga002.fm.intel.com ([10.253.24.26])
+ by fmsmga102.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384;
+ 29 Jun 2020 09:23:35 -0700
+IronPort-SDR: ew6c6XfsnDZieu6Kj7KBL7Ukg7p0HAZg9LfTg3/OJyk7NWtYn8Fhv36+W/Fj20mUDTdHWxEjGm
+ SNR0uj/5R7IA==
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="5.75,295,1589266800"; d="scan'208";a="313096285"
+Received: from unknown (HELO btopel-mobl.ger.intel.com) ([10.252.54.90])
+ by fmsmga002.fm.intel.com with ESMTP; 29 Jun 2020 09:23:32 -0700
+Subject: Re: [PATCH net] xsk: remove cheap_dma optimization
+To: Daniel Borkmann <daniel@iogearbox.net>, Christoph Hellwig <hch@lst.de>
+References: <20200626134358.90122-1-bjorn.topel@gmail.com>
+ <c60dfb5a-2bf3-20bd-74b3-6b5e215f73f8@iogearbox.net>
+ <20200627070406.GB11854@lst.de>
+ <88d27e1b-dbda-301c-64ba-2391092e3236@intel.com>
+ <e879bcc8-5f7d-b1b3-9b66-1032dec6245d@iogearbox.net>
+ <81aec200-c1a0-6d57-e3b6-26dad30790b8@intel.com>
+ <903c646c-dc74-a15c-eb33-e1b67bc7da0d@iogearbox.net>
+From: =?UTF-8?B?QmrDtnJuIFTDtnBlbA==?= <bjorn.topel@intel.com>
+Message-ID: <fa7ffbe4-f863-7dd9-f833-4054a2baa149@intel.com>
+Date: Mon, 29 Jun 2020 18:23:31 +0200
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101
+ Thunderbird/68.8.0
 MIME-Version: 1.0
-Cc: freedreno@lists.freedesktop.org, David Airlie <airlied@linux.ie>,
- linux-arm-msm@vger.kernel.org, Sharat Masetty <smasetty@codeaurora.org>,
- linux-kernel@vger.kernel.org, dri-devel@lists.freedesktop.org,
- Akhil P Oommen <akhilpo@codeaurora.org>, iommu@lists.linux-foundation.org,
- Matthias Kaehlcke <mka@chromium.org>,
- "Kristian H . Kristensen" <hoegsberg@google.com>,
- Daniel Vetter <daniel@ffwll.ch>, Stephen Boyd <swboyd@chromium.org>,
- Sean Paul <sean@poorly.run>, linux-arm-kernel@lists.infradead.org,
- Emil Velikov <emil.velikov@collabora.com>
+In-Reply-To: <903c646c-dc74-a15c-eb33-e1b67bc7da0d@iogearbox.net>
+Content-Language: en-US
+Cc: maximmi@mellanox.com, konrad.wilk@oracle.com, jonathan.lemon@gmail.com,
+ linux-kernel@vger.kernel.org, iommu@lists.linux-foundation.org,
+ netdev@vger.kernel.org, bpf@vger.kernel.org, davem@davemloft.net,
+ magnus.karlsson@intel.com
 X-BeenThere: iommu@lists.linux-foundation.org
 X-Mailman-Version: 2.1.15
 Precedence: list
@@ -109,264 +92,18 @@ List-Post: <mailto:iommu@lists.linux-foundation.org>
 List-Help: <mailto:iommu-request@lists.linux-foundation.org?subject=help>
 List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
  <mailto:iommu-request@lists.linux-foundation.org?subject=subscribe>
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: 7bit
+Content-Transfer-Encoding: base64
+Content-Type: text/plain; charset="utf-8"; Format="flowed"
 Errors-To: iommu-bounces@lists.linux-foundation.org
 Sender: "iommu" <iommu-bounces@lists.linux-foundation.org>
 
-From: Sharat Masetty <smasetty@codeaurora.org>
-
-The last level system cache can be partitioned to 32 different
-slices of which GPU has two slices preallocated. One slice is
-used for caching GPU buffers and the other slice is used for
-caching the GPU SMMU pagetables. This talks to the core system
-cache driver to acquire the slice handles, configure the SCID's
-to those slices and activates and deactivates the slices upon
-GPU power collapse and restore.
-
-Some support from the IOMMU driver is also needed to make use
-of the system cache. IOMMU_SYS_CACHE_ONLY is a buffer protection
-flag which enables caching GPU data buffers in the system cache
-with memory attributes such as outer cacheable, read-allocate,
-write-allocate for buffers. The GPU then has the ability to
-override a few cacheability parameters which it does to override
-write-allocate to write-no-allocate as the GPU hardware does not
-benefit much from it.
-
-Similarly DOMAIN_ATTR_SYS_CACHE is another domain level attribute
-used by the IOMMU driver to set the right attributes to cache the
-hardware pagetables into the system cache.
-
-Signed-off-by: Sharat Masetty <smasetty@codeaurora.org>
-(sai: fix to set attr before device attach to IOMMU and rebase)
-Signed-off-by: Sai Prakash Ranjan <saiprakash.ranjan@codeaurora.org>
----
- drivers/gpu/drm/msm/adreno/a6xx_gpu.c   | 82 +++++++++++++++++++++++++
- drivers/gpu/drm/msm/adreno/a6xx_gpu.h   |  3 +
- drivers/gpu/drm/msm/adreno/adreno_gpu.c | 23 ++++++-
- drivers/gpu/drm/msm/msm_iommu.c         |  3 +
- drivers/gpu/drm/msm/msm_mmu.h           |  4 ++
- 5 files changed, 114 insertions(+), 1 deletion(-)
-
-diff --git a/drivers/gpu/drm/msm/adreno/a6xx_gpu.c b/drivers/gpu/drm/msm/adreno/a6xx_gpu.c
-index 6bee70853ea8..c33cd2a588e6 100644
---- a/drivers/gpu/drm/msm/adreno/a6xx_gpu.c
-+++ b/drivers/gpu/drm/msm/adreno/a6xx_gpu.c
-@@ -9,6 +9,8 @@
- #include "a6xx_gmu.xml.h"
- 
- #include <linux/devfreq.h>
-+#include <linux/bitfield.h>
-+#include <linux/soc/qcom/llcc-qcom.h>
- 
- #define GPU_PAS_ID 13
- 
-@@ -808,6 +810,79 @@ static const u32 a6xx_register_offsets[REG_ADRENO_REGISTER_MAX] = {
- 	REG_ADRENO_DEFINE(REG_ADRENO_CP_RB_CNTL, REG_A6XX_CP_RB_CNTL),
- };
- 
-+static void a6xx_llc_rmw(struct a6xx_gpu *a6xx_gpu, u32 reg, u32 mask, u32 or)
-+{
-+	return msm_rmw(a6xx_gpu->llc_mmio + (reg << 2), mask, or);
-+}
-+
-+static void a6xx_llc_write(struct a6xx_gpu *a6xx_gpu, u32 reg, u32 value)
-+{
-+	return msm_writel(value, a6xx_gpu->llc_mmio + (reg << 2));
-+}
-+
-+static void a6xx_llc_deactivate(struct a6xx_gpu *a6xx_gpu)
-+{
-+	llcc_slice_deactivate(a6xx_gpu->llc_slice);
-+	llcc_slice_deactivate(a6xx_gpu->htw_llc_slice);
-+}
-+
-+static void a6xx_llc_activate(struct a6xx_gpu *a6xx_gpu)
-+{
-+	u32 cntl1_regval = 0;
-+
-+	if (IS_ERR(a6xx_gpu->llc_mmio))
-+		return;
-+
-+	if (!llcc_slice_activate(a6xx_gpu->llc_slice)) {
-+		u32 gpu_scid = llcc_get_slice_id(a6xx_gpu->llc_slice);
-+
-+		gpu_scid &= 0x1f;
-+		cntl1_regval = (gpu_scid << 0) | (gpu_scid << 5) | (gpu_scid << 10) |
-+			       (gpu_scid << 15) | (gpu_scid << 20);
-+	}
-+
-+	if (!llcc_slice_activate(a6xx_gpu->htw_llc_slice)) {
-+		u32 gpuhtw_scid = llcc_get_slice_id(a6xx_gpu->htw_llc_slice);
-+
-+		gpuhtw_scid &= 0x1f;
-+		cntl1_regval |= FIELD_PREP(GENMASK(29, 25), gpuhtw_scid);
-+	}
-+
-+	if (cntl1_regval) {
-+		/*
-+		 * Program the slice IDs for the various GPU blocks and GPU MMU
-+		 * pagetables
-+		 */
-+		a6xx_llc_write(a6xx_gpu, REG_A6XX_CX_MISC_SYSTEM_CACHE_CNTL_1, cntl1_regval);
-+
-+		/*
-+		 * Program cacheability overrides to not allocate cache lines on
-+		 * a write miss
-+		 */
-+		a6xx_llc_rmw(a6xx_gpu, REG_A6XX_CX_MISC_SYSTEM_CACHE_CNTL_0, 0xF, 0x03);
-+	}
-+}
-+
-+static void a6xx_llc_slices_destroy(struct a6xx_gpu *a6xx_gpu)
-+{
-+	llcc_slice_putd(a6xx_gpu->llc_slice);
-+	llcc_slice_putd(a6xx_gpu->htw_llc_slice);
-+}
-+
-+static void a6xx_llc_slices_init(struct platform_device *pdev,
-+		struct a6xx_gpu *a6xx_gpu)
-+{
-+	a6xx_gpu->llc_mmio = msm_ioremap(pdev, "cx_mem", "gpu_cx");
-+	if (IS_ERR(a6xx_gpu->llc_mmio))
-+		return;
-+
-+	a6xx_gpu->llc_slice = llcc_slice_getd(LLCC_GPU);
-+	a6xx_gpu->htw_llc_slice = llcc_slice_getd(LLCC_GPUHTW);
-+
-+	if (IS_ERR(a6xx_gpu->llc_slice) && IS_ERR(a6xx_gpu->htw_llc_slice))
-+		a6xx_gpu->llc_mmio = ERR_PTR(-EINVAL);
-+}
-+
- static int a6xx_pm_resume(struct msm_gpu *gpu)
- {
- 	struct adreno_gpu *adreno_gpu = to_adreno_gpu(gpu);
-@@ -822,6 +897,8 @@ static int a6xx_pm_resume(struct msm_gpu *gpu)
- 
- 	msm_gpu_resume_devfreq(gpu);
- 
-+	a6xx_llc_activate(a6xx_gpu);
-+
- 	return 0;
- }
- 
-@@ -830,6 +907,8 @@ static int a6xx_pm_suspend(struct msm_gpu *gpu)
- 	struct adreno_gpu *adreno_gpu = to_adreno_gpu(gpu);
- 	struct a6xx_gpu *a6xx_gpu = to_a6xx_gpu(adreno_gpu);
- 
-+	a6xx_llc_deactivate(a6xx_gpu);
-+
- 	devfreq_suspend_device(gpu->devfreq.devfreq);
- 
- 	return a6xx_gmu_stop(a6xx_gpu);
-@@ -868,6 +947,7 @@ static void a6xx_destroy(struct msm_gpu *gpu)
- 		drm_gem_object_put_unlocked(a6xx_gpu->sqe_bo);
- 	}
- 
-+	a6xx_llc_slices_destroy(a6xx_gpu);
- 	a6xx_gmu_remove(a6xx_gpu);
- 
- 	adreno_gpu_cleanup(adreno_gpu);
-@@ -962,6 +1042,8 @@ struct msm_gpu *a6xx_gpu_init(struct drm_device *dev)
- 	adreno_gpu->registers = NULL;
- 	adreno_gpu->reg_offsets = a6xx_register_offsets;
- 
-+	a6xx_llc_slices_init(pdev, a6xx_gpu);
-+
- 	ret = adreno_gpu_init(dev, pdev, adreno_gpu, &funcs, 1);
- 	if (ret) {
- 		a6xx_destroy(&(a6xx_gpu->base.base));
-diff --git a/drivers/gpu/drm/msm/adreno/a6xx_gpu.h b/drivers/gpu/drm/msm/adreno/a6xx_gpu.h
-index 7239b8b60939..90043448fab1 100644
---- a/drivers/gpu/drm/msm/adreno/a6xx_gpu.h
-+++ b/drivers/gpu/drm/msm/adreno/a6xx_gpu.h
-@@ -21,6 +21,9 @@ struct a6xx_gpu {
- 	struct msm_ringbuffer *cur_ring;
- 
- 	struct a6xx_gmu gmu;
-+	void __iomem *llc_mmio;
-+	void *llc_slice;
-+	void *htw_llc_slice;
- };
- 
- #define to_a6xx_gpu(x) container_of(x, struct a6xx_gpu, base)
-diff --git a/drivers/gpu/drm/msm/adreno/adreno_gpu.c b/drivers/gpu/drm/msm/adreno/adreno_gpu.c
-index 3e717c1ebb7f..4666d2df8e65 100644
---- a/drivers/gpu/drm/msm/adreno/adreno_gpu.c
-+++ b/drivers/gpu/drm/msm/adreno/adreno_gpu.c
-@@ -190,10 +190,31 @@ adreno_iommu_create_address_space(struct msm_gpu *gpu,
- 		struct platform_device *pdev)
- {
- 	struct iommu_domain *iommu = iommu_domain_alloc(&platform_bus_type);
--	struct msm_mmu *mmu = msm_iommu_new(&pdev->dev, iommu);
-+	struct adreno_gpu *adreno_gpu = to_adreno_gpu(gpu);
-+	struct a6xx_gpu *a6xx_gpu = to_a6xx_gpu(adreno_gpu);
- 	struct msm_gem_address_space *aspace;
-+	struct msm_mmu *mmu;
- 	u64 start, size;
- 
-+	/*
-+	 * This allows GPU to set the bus attributes required to use system
-+	 * cache on behalf of the iommu page table walker.
-+	 */
-+	if (!IS_ERR(a6xx_gpu->htw_llc_slice)) {
-+		int gpu_htw_llc = 1;
-+
-+		iommu_domain_set_attr(iommu, DOMAIN_ATTR_SYS_CACHE, &gpu_htw_llc);
-+	}
-+
-+	mmu = msm_iommu_new(&pdev->dev, iommu);
-+	if (IS_ERR(mmu)) {
-+		iommu_domain_free(iommu);
-+		return ERR_CAST(mmu);
-+	}
-+
-+	if (!IS_ERR(a6xx_gpu->llc_slice))
-+		mmu->features |= MMU_FEATURE_USE_SYSTEM_CACHE;
-+
- 	/*
- 	 * Use the aperture start or SZ_16M, whichever is greater. This will
- 	 * ensure that we align with the allocated pagetable range while still
-diff --git a/drivers/gpu/drm/msm/msm_iommu.c b/drivers/gpu/drm/msm/msm_iommu.c
-index f455c597f76d..bd1d58229cc2 100644
---- a/drivers/gpu/drm/msm/msm_iommu.c
-+++ b/drivers/gpu/drm/msm/msm_iommu.c
-@@ -218,6 +218,9 @@ static int msm_iommu_map(struct msm_mmu *mmu, uint64_t iova,
- 		iova |= GENMASK_ULL(63, 49);
- 
- 
-+	if (mmu->features & MMU_FEATURE_USE_SYSTEM_CACHE)
-+		prot |= IOMMU_SYS_CACHE_ONLY;
-+
- 	ret = iommu_map_sg(iommu->domain, iova, sgt->sgl, sgt->nents, prot);
- 	WARN_ON(!ret);
- 
-diff --git a/drivers/gpu/drm/msm/msm_mmu.h b/drivers/gpu/drm/msm/msm_mmu.h
-index 61ade89d9e48..90965241e567 100644
---- a/drivers/gpu/drm/msm/msm_mmu.h
-+++ b/drivers/gpu/drm/msm/msm_mmu.h
-@@ -23,12 +23,16 @@ enum msm_mmu_type {
- 	MSM_MMU_IOMMU_PAGETABLE,
- };
- 
-+/* MMU features */
-+#define MMU_FEATURE_USE_SYSTEM_CACHE	BIT(0)
-+
- struct msm_mmu {
- 	const struct msm_mmu_funcs *funcs;
- 	struct device *dev;
- 	int (*handler)(void *arg, unsigned long iova, int flags);
- 	void *arg;
- 	enum msm_mmu_type type;
-+	u32 features;
- };
- 
- static inline void msm_mmu_init(struct msm_mmu *mmu, struct device *dev,
--- 
-QUALCOMM INDIA, on behalf of Qualcomm Innovation Center, Inc. is a member
-of Code Aurora Forum, hosted by The Linux Foundation
-
-_______________________________________________
-iommu mailing list
-iommu@lists.linux-foundation.org
-https://lists.linuxfoundation.org/mailman/listinfo/iommu
+Ck9uIDIwMjAtMDYtMjkgMTc6MTgsIERhbmllbCBCb3JrbWFubiB3cm90ZToKPiBOaWNlLCB0b3Nz
+ZWQgZnJvbSBicGYgdHJlZSB0aGVuISAoTG9va3MgbGlrZSBpdCBkaWRuJ3QgbGFuZCBvbiB0aGUg
+YnBmIAo+IGxpc3QgeWV0LAo+IGJ1dCBzZWVtcyBvdGhlciBtYWlscyBhcmUgY3VycmVudGx5IHN0
+dWNrIGFzIHdlbGwgb24gdmdlci4gSSBwcmVzdW1lIGl0IAo+IHdpbGwgYmUKPiByb3V0ZWQgdG8g
+TGludXMgdmlhIENocmlzdG9waD8pCgpUaGFua3MhCgpDaHJpc3RvcGggKGFjY29yZGluZyB0byB0
+aGUgb3RoZXIgbWFpbCkgd2FzIE9LIHRha2luZyB0aGUgc2VyaWVzIHZpYSAKeW91ciBicGYsIERh
+dmUncyBuZXQsIG9yIGhpcyBkbWEtbWFwcGluZyB0cmVlLgoKCkJqw7ZybgpfX19fX19fX19fX19f
+X19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fXwppb21tdSBtYWlsaW5nIGxpc3QKaW9t
+bXVAbGlzdHMubGludXgtZm91bmRhdGlvbi5vcmcKaHR0cHM6Ly9saXN0cy5saW51eGZvdW5kYXRp
+b24ub3JnL21haWxtYW4vbGlzdGluZm8vaW9tbXU=
