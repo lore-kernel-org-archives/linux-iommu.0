@@ -2,68 +2,103 @@ Return-Path: <SRS0=qe9F=AK=lists.linux-foundation.org=iommu-bounces@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-2.5 required=3.0 tests=HEADER_FROM_DIFFERENT_DOMAINS,
-	MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS,USER_AGENT_SANE_1 autolearn=no
-	autolearn_force=no version=3.4.0
+X-Spam-Status: No, score=-3.8 required=3.0 tests=DKIM_INVALID,DKIM_SIGNED,
+	HEADER_FROM_DIFFERENT_DOMAINS,MAILING_LIST_MULTI,SIGNED_OFF_BY,SPF_HELO_NONE,
+	SPF_PASS,URIBL_BLOCKED autolearn=no autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 8D870C433E0
-	for <iommu@archiver.kernel.org>; Mon, 29 Jun 2020 13:15:25 +0000 (UTC)
-Received: from silver.osuosl.org (smtp3.osuosl.org [140.211.166.136])
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 33145C433DF
+	for <iommu@archiver.kernel.org>; Mon, 29 Jun 2020 13:27:11 +0000 (UTC)
+Received: from fraxinus.osuosl.org (smtp4.osuosl.org [140.211.166.137])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by mail.kernel.org (Postfix) with ESMTPS id 5A29523D56
-	for <iommu@archiver.kernel.org>; Mon, 29 Jun 2020 13:15:25 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 5A29523D56
-Authentication-Results: mail.kernel.org; dmarc=none (p=none dis=none) header.from=arm.com
+	by mail.kernel.org (Postfix) with ESMTPS id 97D2F23D97
+	for <iommu@archiver.kernel.org>; Mon, 29 Jun 2020 13:27:10 +0000 (UTC)
+Authentication-Results: mail.kernel.org;
+	dkim=fail reason="signature verification failed" (2048-bit key) header.d=cerno.tech header.i=@cerno.tech header.b="mXRRbfVP";
+	dkim=fail reason="signature verification failed" (2048-bit key) header.d=messagingengine.com header.i=@messagingengine.com header.b="JiDM2YHP"
+DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 97D2F23D97
+Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=cerno.tech
 Authentication-Results: mail.kernel.org; spf=pass smtp.mailfrom=iommu-bounces@lists.linux-foundation.org
 Received: from localhost (localhost [127.0.0.1])
-	by silver.osuosl.org (Postfix) with ESMTP id 2CA5C2042C;
-	Mon, 29 Jun 2020 13:15:25 +0000 (UTC)
+	by fraxinus.osuosl.org (Postfix) with ESMTP id 2D56C87569;
+	Mon, 29 Jun 2020 13:27:10 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from silver.osuosl.org ([127.0.0.1])
+Received: from fraxinus.osuosl.org ([127.0.0.1])
 	by localhost (.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
-	with ESMTP id WKQ+2K+Gyyyo; Mon, 29 Jun 2020 13:15:23 +0000 (UTC)
+	with ESMTP id GwyMWIDY7wAK; Mon, 29 Jun 2020 13:27:07 +0000 (UTC)
 Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [140.211.9.56])
-	by silver.osuosl.org (Postfix) with ESMTP id 9A9BE204FB;
-	Mon, 29 Jun 2020 13:15:23 +0000 (UTC)
+	by fraxinus.osuosl.org (Postfix) with ESMTP id 831FF869D1;
+	Mon, 29 Jun 2020 13:27:07 +0000 (UTC)
 Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
-	by lists.linuxfoundation.org (Postfix) with ESMTP id 7F80DC07FF;
-	Mon, 29 Jun 2020 13:15:23 +0000 (UTC)
-Received: from silver.osuosl.org (smtp3.osuosl.org [140.211.166.136])
- by lists.linuxfoundation.org (Postfix) with ESMTP id 5BF75C016E
- for <iommu@lists.linux-foundation.org>; Mon, 29 Jun 2020 13:15:22 +0000 (UTC)
+	by lists.linuxfoundation.org (Postfix) with ESMTP id 68E68C07FF;
+	Mon, 29 Jun 2020 13:27:07 +0000 (UTC)
+Received: from fraxinus.osuosl.org (smtp4.osuosl.org [140.211.166.137])
+ by lists.linuxfoundation.org (Postfix) with ESMTP id 7D3E2C016E
+ for <iommu@lists.linux-foundation.org>; Mon, 29 Jun 2020 13:27:05 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
- by silver.osuosl.org (Postfix) with ESMTP id 33E90204FB
- for <iommu@lists.linux-foundation.org>; Mon, 29 Jun 2020 13:15:22 +0000 (UTC)
+ by fraxinus.osuosl.org (Postfix) with ESMTP id 6CB5487559
+ for <iommu@lists.linux-foundation.org>; Mon, 29 Jun 2020 13:27:05 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from silver.osuosl.org ([127.0.0.1])
+Received: from fraxinus.osuosl.org ([127.0.0.1])
  by localhost (.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
- with ESMTP id BgaRx3-tq5b6 for <iommu@lists.linux-foundation.org>;
- Mon, 29 Jun 2020 13:15:20 +0000 (UTC)
-X-Greylist: domain auto-whitelisted by SQLgrey-1.7.6
-Received: from foss.arm.com (foss.arm.com [217.140.110.172])
- by silver.osuosl.org (Postfix) with ESMTP id 895E92042C
- for <iommu@lists.linux-foundation.org>; Mon, 29 Jun 2020 13:15:20 +0000 (UTC)
-Received: from usa-sjc-imap-foss1.foss.arm.com (unknown [10.121.207.14])
- by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id DE9CA14F6;
- Mon, 29 Jun 2020 06:15:19 -0700 (PDT)
-Received: from [10.57.21.32] (unknown [10.57.21.32])
- by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPSA id 1043F3F73C;
- Mon, 29 Jun 2020 06:15:18 -0700 (PDT)
-Subject: Re: the XSK buffer pool needs be to reverted
-To: Christoph Hellwig <hch@lst.de>, Jonathan Lemon <jonathan.lemon@gmail.com>
-References: <20200626074725.GA21790@lst.de>
- <20200626205412.xfe4lywdbmh3kmri@bsd-mbp> <20200627070236.GA11854@lst.de>
-From: Robin Murphy <robin.murphy@arm.com>
-Message-ID: <e43ab7b9-22f5-75c3-c9e6-f1eb18d57148@arm.com>
-Date: Mon, 29 Jun 2020 14:15:16 +0100
-User-Agent: Mozilla/5.0 (Windows NT 10.0; rv:68.0) Gecko/20100101
- Thunderbird/68.9.0
+ with ESMTP id YDcZb-SEui40 for <iommu@lists.linux-foundation.org>;
+ Mon, 29 Jun 2020 13:27:04 +0000 (UTC)
+X-Greylist: from auto-whitelisted by SQLgrey-1.7.6
+Received: from out4-smtp.messagingengine.com (out4-smtp.messagingengine.com
+ [66.111.4.28])
+ by fraxinus.osuosl.org (Postfix) with ESMTPS id 373BD869D1
+ for <iommu@lists.linux-foundation.org>; Mon, 29 Jun 2020 13:27:03 +0000 (UTC)
+Received: from compute4.internal (compute4.nyi.internal [10.202.2.44])
+ by mailout.nyi.internal (Postfix) with ESMTP id E3ECF5C00D3;
+ Mon, 29 Jun 2020 09:27:02 -0400 (EDT)
+Received: from mailfrontend1 ([10.202.2.162])
+ by compute4.internal (MEProxy); Mon, 29 Jun 2020 09:27:02 -0400
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=cerno.tech; h=
+ date:from:to:cc:subject:message-id:references:mime-version
+ :content-type:in-reply-to; s=fm3; bh=JpiETwDZ/SAflAAJFgDp4FBg1pZ
+ pP5xS6lyjUSfpKCM=; b=mXRRbfVPgfG6UPXp/PSzKJMBzfyjzsl1E/7lyo5a3gM
+ 9Cge2GRb9lDgs1kvu9QUnD5zMEAk50D+o3Dz/RYf823HuITyl2SD6M5mqGJgvWNc
+ o1DHLyzKoKgSZJTUqsMGT7GI/A6baxRB5Kh0TJgXydX2agP/hYV74Adp+0f8Bx9X
+ 4OWOLbSK1Dkwef0W1j8RNCam018fu8QBRaea8CUFHF60Snqn740cn2LdKaRsUVnb
+ PeJU5B266/SwyxLZ8L1vrCoB165XsYMg4BGvlvXCsF6Urim6SXsBQDWghKck1U/6
+ eiTtWyReAbSY+f0ZJw6Ghgc7Wkt7q+kCS6UASuCNlDg==
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=
+ messagingengine.com; h=cc:content-type:date:from:in-reply-to
+ :message-id:mime-version:references:subject:to:x-me-proxy
+ :x-me-proxy:x-me-sender:x-me-sender:x-sasl-enc; s=fm3; bh=JpiETw
+ DZ/SAflAAJFgDp4FBg1pZpP5xS6lyjUSfpKCM=; b=JiDM2YHPZhJvZBxwhPP024
+ aKmfMURylJFOkccBcL+q9vj+SXy0Evq7N25IywsKCzIYUHcz8gpZOMl++jUWhpU6
+ zp0+gQjFNV8O4i4iAn/UZAYNcJN9oUGoKduYA479RqzWzLCCCje0orJiJOtaC8NM
+ k1rT+n0nuZyz5hujpZsPR04VTXwa+HyqAY01mhHSSocPRLJO25uJ4X34mdxgOUNV
+ hreUs4zsGH16nEuchYNsY5ScQnkqiKUjY7fxwbzlMgNs5DtdHdnvwx1fhyHFw5QC
+ WJPWI5KinuhCKrPH0eCVROihF8YBDz6fv6IU+z/zT39CiG/8Tk2KpRZTwXJhrVTg
+ ==
+X-ME-Sender: <xms:Juz5XuE4l6QSEmDlfJ9AvbfBgIk02Prg-ilcCIwJZhXYadez6pF8Ig>
+X-ME-Proxy-Cause: gggruggvucftvghtrhhoucdtuddrgeduhedrudelkedgieehucetufdoteggodetrfdotf
+ fvucfrrhhofhhilhgvmecuhfgrshhtofgrihhlpdfqfgfvpdfurfetoffkrfgpnffqhgen
+ uceurghilhhouhhtmecufedttdenucesvcftvggtihhpihgvnhhtshculddquddttddmne
+ cujfgurhepfffhvffukfhfgggtuggjsehgtderredttddvnecuhfhrohhmpeforgigihhm
+ vgcutfhiphgrrhguuceomhgrgihimhgvsegtvghrnhhordhtvggthheqnecuggftrfgrth
+ htvghrnhepleekgeehhfdutdeljefgleejffehfffgieejhffgueefhfdtveetgeehieeh
+ gedunecukfhppeeltddrkeelrdeikedrjeeinecuvehluhhsthgvrhfuihiivgeptdenuc
+ frrghrrghmpehmrghilhhfrhhomhepmhgrgihimhgvsegtvghrnhhordhtvggthh
+X-ME-Proxy: <xmx:Juz5XvV538Y4-dH1cRmxotMtkaQwuH05ywz1yFow3UEOXy4Vswm_fw>
+ <xmx:Juz5XoJj9U8sljPLdaVdWpfy9zRwxhL1HDr_B4wECbYa_REcNOORTA>
+ <xmx:Juz5XoGWnT9dNZWrIqynMyfRugD9fbrG5znCVlOdhnELAzJ-dY-LsA>
+ <xmx:Juz5Xteuhv-OXifqHbVUMdKUdfk-96lZMLTejeBsEnJiZVurIx-9wg>
+Received: from localhost (lfbn-tou-1-1502-76.w90-89.abo.wanadoo.fr
+ [90.89.68.76])
+ by mail.messagingengine.com (Postfix) with ESMTPA id 12707328005D;
+ Mon, 29 Jun 2020 09:27:01 -0400 (EDT)
+Date: Mon, 29 Jun 2020 15:27:00 +0200
+From: Maxime Ripard <maxime@cerno.tech>
+To: Geert Uytterhoeven <geert@linux-m68k.org>
+Subject: Re: [PATCH] iommu: SUN50I_IOMMU should depend on HAS_DMA
+Message-ID: <20200629132700.qtchohqyb4vslfhz@gilmour.lan>
+References: <20200629121146.24011-1-geert@linux-m68k.org>
 MIME-Version: 1.0
-In-Reply-To: <20200627070236.GA11854@lst.de>
-Content-Language: en-GB
-Cc: netdev@vger.kernel.org, iommu@lists.linux-foundation.org,
- =?UTF-8?B?QmrDtnJuIFTDtnBlbA==?= <bjorn.topel@intel.com>
+In-Reply-To: <20200629121146.24011-1-geert@linux-m68k.org>
+Cc: iommu@lists.linux-foundation.org, linux-kernel@vger.kernel.org
 X-BeenThere: iommu@lists.linux-foundation.org
 X-Mailman-Version: 2.1.15
 Precedence: list
@@ -76,69 +111,61 @@ List-Post: <mailto:iommu@lists.linux-foundation.org>
 List-Help: <mailto:iommu-request@lists.linux-foundation.org?subject=help>
 List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
  <mailto:iommu-request@lists.linux-foundation.org?subject=subscribe>
-Content-Transfer-Encoding: 7bit
-Content-Type: text/plain; charset="us-ascii"; Format="flowed"
+Content-Type: multipart/mixed; boundary="===============3148025472001605732=="
 Errors-To: iommu-bounces@lists.linux-foundation.org
 Sender: "iommu" <iommu-bounces@lists.linux-foundation.org>
 
-On 2020-06-27 08:02, Christoph Hellwig wrote:
-> On Fri, Jun 26, 2020 at 01:54:12PM -0700, Jonathan Lemon wrote:
->> On Fri, Jun 26, 2020 at 09:47:25AM +0200, Christoph Hellwig wrote:
->>>
->>> Note that this is somewhat urgent, as various of the APIs that the code
->>> is abusing are slated to go away for Linux 5.9, so this addition comes
->>> at a really bad time.
->>
->> Could you elaborate on what is upcoming here?
-> 
-> Moving all these calls out of line, and adding a bypass flag to avoid
-> the indirect function call for IOMMUs in direct mapped mode.
-> 
->> Also, on a semi-related note, are there limitations on how many pages
->> can be left mapped by the iommu?  Some of the page pool work involves
->> leaving the pages mapped instead of constantly mapping/unmapping them.
-> 
-> There are, but I think for all modern IOMMUs they are so big that they
-> don't matter.  Maintaines of the individual IOMMU drivers might know
-> more.
 
-Right - I don't know too much about older and more esoteric stuff like 
-POWER TCE, but for modern pagetable-based stuff like Intel VT-d, AMD-Vi, 
-and Arm SMMU, the only "limits" are such that legitimate DMA API use 
-should never get anywhere near them (you'd run out of RAM for actual 
-buffers long beforehand). The most vaguely-realistic concern might be a 
-pathological system topology where some old 32-bit PCI device doesn't 
-have ACS isolation from your high-performance NIC such that they have to 
-share an address space, where the NIC might happen to steal all the low 
-addresses and prevent the soundcard or whatever from being able to map a 
-usable buffer.
+--===============3148025472001605732==
+Content-Type: multipart/signed; micalg=pgp-sha256;
+	protocol="application/pgp-signature"; boundary="srp6bnpiqzimzunw"
+Content-Disposition: inline
 
-With an IOMMU, you typically really *want* to keep a full working set's 
-worth of pages mapped, since dma_map/unmap are expensive while dma_sync 
-is somewhere between relatively cheap and free. With no IOMMU it makes 
-no real difference from the DMA API perspective since map/unmap are 
-effectively no more than the equivalent sync operations anyway (I'm 
-assuming we're not talking about the kind of constrained hardware that 
-might need SWIOTLB).
 
->> On a heavily loaded box with iommu enabled, it seems that quite often
->> there is contention on the iova_lock.  Are there known issues in this
->> area?
-> 
-> I'll have to defer to the IOMMU maintainers, and for that you'll need
-> to say what code you are using.  Current mainlaine doesn't even have
-> an iova_lock anywhere.
+--srp6bnpiqzimzunw
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+Content-Transfer-Encoding: quoted-printable
 
-Again I can't speak for non-mainstream stuff outside drivers/iommu, but 
-it's been over 4 years now since merging the initial scalability work 
-for the generic IOVA allocator there that focused on minimising lock 
-contention, and it's had considerable evaluation and tweaking since. But 
-if we can achieve the goal of efficiently recycling mapped buffers then 
-we shouldn't need to go anywhere near IOVA allocation either way except 
-when expanding the pool.
+On Mon, Jun 29, 2020 at 02:11:46PM +0200, Geert Uytterhoeven wrote:
+> If NO_DMA=3Dy (e.g. Sun-3 all{mod,yes}-config):
+>=20
+>     drivers/iommu/dma-iommu.o: In function `iommu_dma_mmap':
+>     dma-iommu.c:(.text+0x92e): undefined reference to `dma_pgprot'
+>=20
+> IOMMU_DMA must not be selected, unless HAS_DMA=3Dy.
+>=20
+> Hence fix this by making SUN50I_IOMMU depend on HAS_DMA.
+>=20
+> Fixes: 4100b8c229b32835 ("iommu: Add Allwinner H6 IOMMU driver")
+> Signed-off-by: Geert Uytterhoeven <geert@linux-m68k.org>
 
-Robin.
+Acked-by: Maxime Ripard <mripard@kernel.org>
+
+Thanks!
+Maxime
+
+--srp6bnpiqzimzunw
+Content-Type: application/pgp-signature; name="signature.asc"
+
+-----BEGIN PGP SIGNATURE-----
+
+iHUEABYIAB0WIQRcEzekXsqa64kGDp7j7w1vZxhRxQUCXvnsJAAKCRDj7w1vZxhR
+xT08AQD0Cz/X0wU0i8MZumEsV0zYZgHgFem+MQvh7UEfUWFx6QEAwPl3iEuK5fAo
+DgSiPvd7gsJK7PToEsd3T2mB9YYqzQE=
+=WyeQ
+-----END PGP SIGNATURE-----
+
+--srp6bnpiqzimzunw--
+
+--===============3148025472001605732==
+Content-Type: text/plain; charset="us-ascii"
+MIME-Version: 1.0
+Content-Transfer-Encoding: 7bit
+Content-Disposition: inline
+
 _______________________________________________
 iommu mailing list
 iommu@lists.linux-foundation.org
 https://lists.linuxfoundation.org/mailman/listinfo/iommu
+--===============3148025472001605732==--
