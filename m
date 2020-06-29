@@ -2,122 +2,82 @@ Return-Path: <SRS0=qe9F=AK=lists.linux-foundation.org=iommu-bounces@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-8.3 required=3.0 tests=DKIM_INVALID,DKIM_SIGNED,
-	HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_PATCH,MAILING_LIST_MULTI,SIGNED_OFF_BY,
-	SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED,USER_AGENT_SANE_1 autolearn=unavailable
-	autolearn_force=no version=3.4.0
+X-Spam-Status: No, score=-2.5 required=3.0 tests=HEADER_FROM_DIFFERENT_DOMAINS,
+	MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED,USER_AGENT_SANE_1
+	autolearn=no autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id C3E9BC433E0
-	for <iommu@archiver.kernel.org>; Mon, 29 Jun 2020 14:57:19 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id E7DFAC433E0
+	for <iommu@archiver.kernel.org>; Mon, 29 Jun 2020 15:11:49 +0000 (UTC)
 Received: from silver.osuosl.org (smtp3.osuosl.org [140.211.166.136])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by mail.kernel.org (Postfix) with ESMTPS id 93E5823E55
-	for <iommu@archiver.kernel.org>; Mon, 29 Jun 2020 14:57:19 +0000 (UTC)
-Authentication-Results: mail.kernel.org;
-	dkim=fail reason="signature verification failed" (1024-bit key) header.d=mg.codeaurora.org header.i=@mg.codeaurora.org header.b="F7lwTmEk"
-DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 93E5823E55
-Authentication-Results: mail.kernel.org; dmarc=none (p=none dis=none) header.from=codeaurora.org
+	by mail.kernel.org (Postfix) with ESMTPS id B7D2E23E54
+	for <iommu@archiver.kernel.org>; Mon, 29 Jun 2020 15:11:49 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org B7D2E23E54
+Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=intel.com
 Authentication-Results: mail.kernel.org; spf=pass smtp.mailfrom=iommu-bounces@lists.linux-foundation.org
 Received: from localhost (localhost [127.0.0.1])
-	by silver.osuosl.org (Postfix) with ESMTP id 6C9782283A;
-	Mon, 29 Jun 2020 14:57:19 +0000 (UTC)
+	by silver.osuosl.org (Postfix) with ESMTP id 9508C2286C;
+	Mon, 29 Jun 2020 15:11:49 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
 Received: from silver.osuosl.org ([127.0.0.1])
 	by localhost (.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
-	with ESMTP id 7WuolGJdHxfT; Mon, 29 Jun 2020 14:57:15 +0000 (UTC)
+	with ESMTP id h5hkk4Ehcxzx; Mon, 29 Jun 2020 15:11:43 +0000 (UTC)
 Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [140.211.9.56])
-	by silver.osuosl.org (Postfix) with ESMTP id DA3C720035;
-	Mon, 29 Jun 2020 14:57:14 +0000 (UTC)
+	by silver.osuosl.org (Postfix) with ESMTP id 8C57D2284F;
+	Mon, 29 Jun 2020 15:11:43 +0000 (UTC)
 Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
-	by lists.linuxfoundation.org (Postfix) with ESMTP id BD1E6C0892;
-	Mon, 29 Jun 2020 14:57:14 +0000 (UTC)
-Received: from hemlock.osuosl.org (smtp2.osuosl.org [140.211.166.133])
- by lists.linuxfoundation.org (Postfix) with ESMTP id 09F7AC0865
- for <iommu@lists.linux-foundation.org>; Mon, 29 Jun 2020 14:57:14 +0000 (UTC)
+	by lists.linuxfoundation.org (Postfix) with ESMTP id 555BAC0865;
+	Mon, 29 Jun 2020 15:11:43 +0000 (UTC)
+Received: from whitealder.osuosl.org (smtp1.osuosl.org [140.211.166.138])
+ by lists.linuxfoundation.org (Postfix) with ESMTP id B3397C016E
+ for <iommu@lists.linux-foundation.org>; Mon, 29 Jun 2020 15:11:41 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
- by hemlock.osuosl.org (Postfix) with ESMTP id EB506893D0
- for <iommu@lists.linux-foundation.org>; Mon, 29 Jun 2020 14:57:13 +0000 (UTC)
+ by whitealder.osuosl.org (Postfix) with ESMTP id 9E90D88783
+ for <iommu@lists.linux-foundation.org>; Mon, 29 Jun 2020 15:11:41 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from hemlock.osuosl.org ([127.0.0.1])
+Received: from whitealder.osuosl.org ([127.0.0.1])
  by localhost (.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
- with ESMTP id wcRefBpcw2MX for <iommu@lists.linux-foundation.org>;
- Mon, 29 Jun 2020 14:57:13 +0000 (UTC)
-X-Greylist: from auto-whitelisted by SQLgrey-1.7.6
-Received: from mail29.static.mailgun.info (mail29.static.mailgun.info
- [104.130.122.29])
- by hemlock.osuosl.org (Postfix) with ESMTPS id 95C09893DA
- for <iommu@lists.linux-foundation.org>; Mon, 29 Jun 2020 14:57:10 +0000 (UTC)
-DKIM-Signature: a=rsa-sha256; v=1; c=relaxed/relaxed; d=mg.codeaurora.org;
- q=dns/txt; 
- s=smtp; t=1593442633; h=In-Reply-To: Content-Type: MIME-Version:
- References: Message-ID: Subject: Cc: To: From: Date: Sender;
- bh=tNiuQ+4uhjgZPnPAVe1RZE3rFmZ//xK6MB4wZLBlQDU=;
- b=F7lwTmEkx/9ziCTaNlkQ2nkpJtV4ELcyyAVw3R+a4jxtwVMDDeJa1Q7h7eBHqdDfHipIkAsQ
- 2YQ4GswtymnTPrqTjKDvEKBZ5ku29kZbLSPeQnm4XMOZSg+7MUMtRQhLDblrg/feDvPa2Uqv
- GmLWWOCf9egl3ylPGIREfHmNuFE=
-X-Mailgun-Sending-Ip: 104.130.122.29
-X-Mailgun-Sid: WyI3NDkwMCIsICJpb21tdUBsaXN0cy5saW51eC1mb3VuZGF0aW9uLm9yZyIsICJiZTllNGEiXQ==
-Received: from smtp.codeaurora.org
- (ec2-35-166-182-171.us-west-2.compute.amazonaws.com [35.166.182.171]) by
- smtp-out-n13.prod.us-east-1.postgun.com with SMTP id
- 5efa0139c4bb4f886d8e9bec (version=TLS1.2,
- cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256); Mon, 29 Jun 2020 14:56:57
- GMT
-Received: by smtp.codeaurora.org (Postfix, from userid 1001)
- id 093D0C433AD; Mon, 29 Jun 2020 14:56:55 +0000 (UTC)
-Received: from jcrouse1-lnx.qualcomm.com (i-global254.qualcomm.com
- [199.106.103.254])
- (using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
- (No client certificate requested) (Authenticated sender: jcrouse)
- by smtp.codeaurora.org (Postfix) with ESMTPSA id 6D5F8C433C8;
- Mon, 29 Jun 2020 14:56:53 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.3.2 smtp.codeaurora.org 6D5F8C433C8
-Authentication-Results: aws-us-west-2-caf-mail-1.web.codeaurora.org;
- dmarc=none (p=none dis=none) header.from=codeaurora.org
-Authentication-Results: aws-us-west-2-caf-mail-1.web.codeaurora.org;
- spf=none smtp.mailfrom=jcrouse@codeaurora.org
-Date: Mon, 29 Jun 2020 08:56:50 -0600
-From: Jordan Crouse <jcrouse@codeaurora.org>
-To: Rob Clark <robdclark@gmail.com>
-Subject: Re: [Freedreno] [PATCH v2 6/6] drm/msm/a6xx: Add support for
- per-instance pagetables
-Message-ID: <20200629145650.GC25740@jcrouse1-lnx.qualcomm.com>
-Mail-Followup-To: Rob Clark <robdclark@gmail.com>, Sean Paul <sean@poorly.run>,
- Sai Prakash Ranjan <saiprakash.ranjan@codeaurora.org>,
- Jonathan Marek <jonathan@marek.ca>, David Airlie <airlied@linux.ie>,
- linux-arm-msm <linux-arm-msm@vger.kernel.org>,
- Sharat Masetty <smasetty@codeaurora.org>,
- Akhil P Oommen <akhilpo@codeaurora.org>,
- dri-devel <dri-devel@lists.freedesktop.org>,
- Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
- Eric Anholt <eric@anholt.net>,
- "list@263.net:IOMMU DRIVERS <iommu@lists.linux-foundation.org>,
- Joerg Roedel <joro@8bytes.org>, " <iommu@lists.linux-foundation.org>, 
- John Stultz <john.stultz@linaro.org>,
- Daniel Vetter <daniel@ffwll.ch>,
- freedreno <freedreno@lists.freedesktop.org>,
- Emil Velikov <emil.velikov@collabora.com>
-References: <20200626200414.14382-1-jcrouse@codeaurora.org>
- <20200626200414.14382-7-jcrouse@codeaurora.org>
- <CAF6AEGvFPtiFcBg5j3An5piPWy3Sg3=-o2k8Xzzf6anzVi9_ZA@mail.gmail.com>
- <CAF6AEGtOcA1V33KgaYKjn=FBk9_q4u8fF5Tgoyq7Y3vUp2pKjg@mail.gmail.com>
+ with ESMTP id b3gKiCo5XSBI for <iommu@lists.linux-foundation.org>;
+ Mon, 29 Jun 2020 15:11:39 +0000 (UTC)
+X-Greylist: domain auto-whitelisted by SQLgrey-1.7.6
+Received: from mga09.intel.com (mga09.intel.com [134.134.136.24])
+ by whitealder.osuosl.org (Postfix) with ESMTPS id CFEBD888CE
+ for <iommu@lists.linux-foundation.org>; Mon, 29 Jun 2020 15:10:47 +0000 (UTC)
+IronPort-SDR: /FrJsXulYSMSOE41TVFgY0rVaB21vq095No4UHhJhHE/3TZXodu2GQM27OS7CTmbYtQjKFkRyv
+ gThYHLDAWMsw==
+X-IronPort-AV: E=McAfee;i="6000,8403,9666"; a="147536781"
+X-IronPort-AV: E=Sophos;i="5.75,295,1589266800"; d="scan'208";a="147536781"
+X-Amp-Result: SKIPPED(no attachment in message)
+X-Amp-File-Uploaded: False
+Received: from fmsmga002.fm.intel.com ([10.253.24.26])
+ by orsmga102.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384;
+ 29 Jun 2020 08:10:46 -0700
+IronPort-SDR: mw6GdldLIMHUg1p42ZqiigUai0KEvZPO4JmOhxUKKwkLU1eWIPjoi4leEGe+trp6TiAwM03dva
+ 0x/VdwNad0nA==
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="5.75,295,1589266800"; d="scan'208";a="313073307"
+Received: from unknown (HELO btopel-mobl.ger.intel.com) ([10.252.54.90])
+ by fmsmga002.fm.intel.com with ESMTP; 29 Jun 2020 08:10:43 -0700
+Subject: Re: [PATCH net] xsk: remove cheap_dma optimization
+To: Daniel Borkmann <daniel@iogearbox.net>, Christoph Hellwig <hch@lst.de>
+References: <20200626134358.90122-1-bjorn.topel@gmail.com>
+ <c60dfb5a-2bf3-20bd-74b3-6b5e215f73f8@iogearbox.net>
+ <20200627070406.GB11854@lst.de>
+ <88d27e1b-dbda-301c-64ba-2391092e3236@intel.com>
+ <e879bcc8-5f7d-b1b3-9b66-1032dec6245d@iogearbox.net>
+From: =?UTF-8?B?QmrDtnJuIFTDtnBlbA==?= <bjorn.topel@intel.com>
+Message-ID: <81aec200-c1a0-6d57-e3b6-26dad30790b8@intel.com>
+Date: Mon, 29 Jun 2020 17:10:42 +0200
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101
+ Thunderbird/68.8.0
 MIME-Version: 1.0
-Content-Disposition: inline
-In-Reply-To: <CAF6AEGtOcA1V33KgaYKjn=FBk9_q4u8fF5Tgoyq7Y3vUp2pKjg@mail.gmail.com>
-User-Agent: Mutt/1.5.24 (2015-08-30)
-Cc: freedreno <freedreno@lists.freedesktop.org>,
- Jonathan Marek <jonathan@marek.ca>, David Airlie <airlied@linux.ie>,
- linux-arm-msm <linux-arm-msm@vger.kernel.org>,
- Sharat Masetty <smasetty@codeaurora.org>,
- Akhil P Oommen <akhilpo@codeaurora.org>,
- dri-devel <dri-devel@lists.freedesktop.org>,
- Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
- Eric Anholt <eric@anholt.net>,
- "list@263.net:IOMMU DRIVERS <iommu@lists.linux-foundation.org>,
- Joerg Roedel <joro@8bytes.org>, " <iommu@lists.linux-foundation.org>,
- John Stultz <john.stultz@linaro.org>, Daniel Vetter <daniel@ffwll.ch>,
- Sean Paul <sean@poorly.run>, Emil Velikov <emil.velikov@collabora.com>
+In-Reply-To: <e879bcc8-5f7d-b1b3-9b66-1032dec6245d@iogearbox.net>
+Content-Language: en-US
+Cc: maximmi@mellanox.com, konrad.wilk@oracle.com, jonathan.lemon@gmail.com,
+ linux-kernel@vger.kernel.org, iommu@lists.linux-foundation.org,
+ netdev@vger.kernel.org, bpf@vger.kernel.org, davem@davemloft.net,
+ magnus.karlsson@intel.com
 X-BeenThere: iommu@lists.linux-foundation.org
 X-Mailman-Version: 2.1.15
 Precedence: list
@@ -130,155 +90,17 @@ List-Post: <mailto:iommu@lists.linux-foundation.org>
 List-Help: <mailto:iommu-request@lists.linux-foundation.org?subject=help>
 List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
  <mailto:iommu-request@lists.linux-foundation.org?subject=subscribe>
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: 7bit
+Content-Transfer-Encoding: base64
+Content-Type: text/plain; charset="utf-8"; Format="flowed"
 Errors-To: iommu-bounces@lists.linux-foundation.org
 Sender: "iommu" <iommu-bounces@lists.linux-foundation.org>
 
-On Sat, Jun 27, 2020 at 01:11:14PM -0700, Rob Clark wrote:
-> On Sat, Jun 27, 2020 at 12:56 PM Rob Clark <robdclark@gmail.com> wrote:
-> >
-> > On Fri, Jun 26, 2020 at 1:04 PM Jordan Crouse <jcrouse@codeaurora.org> wrote:
-> > >
-> > > Add support for using per-instance pagetables if all the dependencies are
-> > > available.
-> > >
-> > > Signed-off-by: Jordan Crouse <jcrouse@codeaurora.org>
-> > > ---
-> > >
-> > >  drivers/gpu/drm/msm/adreno/a6xx_gpu.c | 43 +++++++++++++++++++++++++++
-> > >  drivers/gpu/drm/msm/msm_ringbuffer.h  |  1 +
-> > >  2 files changed, 44 insertions(+)
-> > >
-> > > diff --git a/drivers/gpu/drm/msm/adreno/a6xx_gpu.c b/drivers/gpu/drm/msm/adreno/a6xx_gpu.c
-> > > index aa53f47b7e8b..95ed2ceac121 100644
-> > > --- a/drivers/gpu/drm/msm/adreno/a6xx_gpu.c
-> > > +++ b/drivers/gpu/drm/msm/adreno/a6xx_gpu.c
-> > > @@ -79,6 +79,34 @@ static void get_stats_counter(struct msm_ringbuffer *ring, u32 counter,
-> > >         OUT_RING(ring, upper_32_bits(iova));
-> > >  }
-> > >
-> > > +static void a6xx_set_pagetable(struct msm_gpu *gpu, struct msm_ringbuffer *ring,
-> > > +               struct msm_file_private *ctx)
-> > > +{
-> > > +       phys_addr_t ttbr;
-> > > +       u32 asid;
-> > > +
-> > > +       if (msm_iommu_pagetable_params(ctx->aspace->mmu, &ttbr, &asid))
-> > > +               return;
-> > > +
-> > > +       /* Execute the table update */
-> > > +       OUT_PKT7(ring, CP_SMMU_TABLE_UPDATE, 4);
-> > > +       OUT_RING(ring, lower_32_bits(ttbr));
-> > > +       OUT_RING(ring, (((u64) asid) << 48) | upper_32_bits(ttbr));
-> > > +       /* CONTEXTIDR is currently unused */
-> > > +       OUT_RING(ring, 0);
-> > > +       /* CONTEXTBANK is currently unused */
-> > > +       OUT_RING(ring, 0);
-> > > +
-> > > +       /*
-> > > +        * Write the new TTBR0 to the memstore. This is good for debugging.
-> > > +        */
-> > > +       OUT_PKT7(ring, CP_MEM_WRITE, 4);
-> > > +       OUT_RING(ring, lower_32_bits(rbmemptr(ring, ttbr0)));
-> > > +       OUT_RING(ring, upper_32_bits(rbmemptr(ring, ttbr0)));
-> > > +       OUT_RING(ring, lower_32_bits(ttbr));
-> > > +       OUT_RING(ring, (((u64) asid) << 48) | upper_32_bits(ttbr));
-> > > +}
-> > > +
-> > >  static void a6xx_submit(struct msm_gpu *gpu, struct msm_gem_submit *submit,
-> > >         struct msm_file_private *ctx)
-> > >  {
-> > > @@ -89,6 +117,8 @@ static void a6xx_submit(struct msm_gpu *gpu, struct msm_gem_submit *submit,
-> > >         struct msm_ringbuffer *ring = submit->ring;
-> > >         unsigned int i;
-> > >
-> > > +       a6xx_set_pagetable(gpu, ring, ctx);
-> > > +
-> > >         get_stats_counter(ring, REG_A6XX_RBBM_PERFCTR_CP_0_LO,
-> > >                 rbmemptr_stats(ring, index, cpcycles_start));
-> > >
-> > > @@ -872,6 +902,18 @@ static unsigned long a6xx_gpu_busy(struct msm_gpu *gpu)
-> > >         return (unsigned long)busy_time;
-> > >  }
-> > >
-> > > +struct msm_gem_address_space *a6xx_address_space_instance(struct msm_gpu *gpu)
-> > > +{
-> > > +       struct msm_mmu *mmu;
-> > > +
-> > > +       mmu = msm_iommu_pagetable_create(gpu->aspace->mmu);
-> > > +       if (IS_ERR(mmu))
-> > > +               return msm_gem_address_space_get(gpu->aspace);
-> > > +
-> > > +       return msm_gem_address_space_create(mmu,
-> > > +               "gpu", 0x100000000ULL, 0x1ffffffffULL);
-> > > +}
-> > > +
-> > >  static const struct adreno_gpu_funcs funcs = {
-> > >         .base = {
-> > >                 .get_param = adreno_get_param,
-> > > @@ -895,6 +937,7 @@ static const struct adreno_gpu_funcs funcs = {
-> > >                 .gpu_state_put = a6xx_gpu_state_put,
-> > >  #endif
-> > >                 .create_address_space = adreno_iommu_create_address_space,
-> > > +               .address_space_instance = a6xx_address_space_instance,
-> >
-> > Hmm, maybe instead of .address_space_instance, something like
-> > .create_context_address_space?
-> >
-> > Since like .create_address_space, it is creating an address space..
-> > the difference is that it is a per context/process aspace..
-> >
-
-This is a good suggestion. I'm always open to changing function names.
-
-> 
-> 
-> or maybe just .create_pgtable and return the 'struct msm_mmu' (which
-> is itself starting to become less of a great name)..
-> 
-> The only other thing a6xx_address_space_instance() adds is knowing
-> where the split is between the kernel and user pgtables, and I suppose
-> that isn't a thing that would really be changing between gens?
-
-In theory the split is determined by the hardware but its been the same for all
-a5xx/a6xx targets.
-
-Jordan
-
-> BR,
-> -R
-> 
-> > BR,
-> > -R
-> >
-> > >         },
-> > >         .get_timestamp = a6xx_get_timestamp,
-> > >  };
-> > > diff --git a/drivers/gpu/drm/msm/msm_ringbuffer.h b/drivers/gpu/drm/msm/msm_ringbuffer.h
-> > > index 7764373d0ed2..0987d6bf848c 100644
-> > > --- a/drivers/gpu/drm/msm/msm_ringbuffer.h
-> > > +++ b/drivers/gpu/drm/msm/msm_ringbuffer.h
-> > > @@ -31,6 +31,7 @@ struct msm_rbmemptrs {
-> > >         volatile uint32_t fence;
-> > >
-> > >         volatile struct msm_gpu_submit_stats stats[MSM_GPU_SUBMIT_STATS_COUNT];
-> > > +       volatile u64 ttbr0;
-> > >  };
-> > >
-> > >  struct msm_ringbuffer {
-> > > --
-> > > 2.17.1
-> > >
-> _______________________________________________
-> Freedreno mailing list
-> Freedreno@lists.freedesktop.org
-> https://lists.freedesktop.org/mailman/listinfo/freedreno
-
--- 
-The Qualcomm Innovation Center, Inc. is a member of Code Aurora Forum,
-a Linux Foundation Collaborative Project
-_______________________________________________
-iommu mailing list
-iommu@lists.linux-foundation.org
-https://lists.linuxfoundation.org/mailman/listinfo/iommu
+T24gMjAyMC0wNi0yOSAxNTo1MiwgRGFuaWVsIEJvcmttYW5uIHdyb3RlOgo+IAo+IE9rLCBmYWly
+IGVub3VnaCwgcGxlYXNlIHdvcmsgd2l0aCBETUEgZm9sa3MgdG8gZ2V0IHRoaXMgcHJvcGVybHkg
+Cj4gaW50ZWdyYXRlZCBhbmQKPiByZXN0b3JlZCB0aGVuLiBBcHBsaWVkLCB0aGFua3MhCgpEYW5p
+ZWwsIHlvdSB3ZXJlIHRvbyBxdWljayEgUGxlYXNlIHJldmVydCB0aGlzIG9uZTsgQ2hyaXN0b3Bo
+IGp1c3QgCnN1Ym1pdHRlZCBhIDQtcGF0Y2gtc2VyaWVzIHRoYXQgYWRkcmVzc2VzIGJvdGggdGhl
+IERNQSBBUEksIGFuZCB0aGUgcGVyZiAKcmVncmVzc2lvbiEKCgpCasO2cm4KX19fX19fX19fX19f
+X19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX18KaW9tbXUgbWFpbGluZyBsaXN0Cmlv
+bW11QGxpc3RzLmxpbnV4LWZvdW5kYXRpb24ub3JnCmh0dHBzOi8vbGlzdHMubGludXhmb3VuZGF0
+aW9uLm9yZy9tYWlsbWFuL2xpc3RpbmZvL2lvbW11
