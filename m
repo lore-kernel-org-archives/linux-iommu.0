@@ -7,110 +7,110 @@ X-Spam-Status: No, score=-6.8 required=3.0 tests=DKIM_INVALID,DKIM_SIGNED,
 	SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED autolearn=ham autolearn_force=no
 	version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 8CFCCC433DF
-	for <iommu@archiver.kernel.org>; Tue, 30 Jun 2020 06:01:22 +0000 (UTC)
-Received: from hemlock.osuosl.org (smtp2.osuosl.org [140.211.166.133])
+	by smtp.lore.kernel.org (Postfix) with ESMTP id B7592C433E0
+	for <iommu@archiver.kernel.org>; Tue, 30 Jun 2020 06:19:23 +0000 (UTC)
+Received: from whitealder.osuosl.org (smtp1.osuosl.org [140.211.166.138])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by mail.kernel.org (Postfix) with ESMTPS id 407AE2067D
-	for <iommu@archiver.kernel.org>; Tue, 30 Jun 2020 06:01:22 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTPS id 8979C20759
+	for <iommu@archiver.kernel.org>; Tue, 30 Jun 2020 06:19:23 +0000 (UTC)
 Authentication-Results: mail.kernel.org;
-	dkim=fail reason="signature verification failed" (1024-bit key) header.d=intel.onmicrosoft.com header.i=@intel.onmicrosoft.com header.b="Oq8hWvq5"
-DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 407AE2067D
+	dkim=fail reason="signature verification failed" (1024-bit key) header.d=intel.onmicrosoft.com header.i=@intel.onmicrosoft.com header.b="DoFjdvYP"
+DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 8979C20759
 Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=intel.com
 Authentication-Results: mail.kernel.org; spf=pass smtp.mailfrom=iommu-bounces@lists.linux-foundation.org
 Received: from localhost (localhost [127.0.0.1])
-	by hemlock.osuosl.org (Postfix) with ESMTP id 06A6C87DD4;
-	Tue, 30 Jun 2020 06:01:22 +0000 (UTC)
+	by whitealder.osuosl.org (Postfix) with ESMTP id 45220878A5;
+	Tue, 30 Jun 2020 06:19:23 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from hemlock.osuosl.org ([127.0.0.1])
+Received: from whitealder.osuosl.org ([127.0.0.1])
 	by localhost (.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
-	with ESMTP id Xi6KO7C+HZiW; Tue, 30 Jun 2020 06:01:21 +0000 (UTC)
+	with ESMTP id qXcIXmg05qgT; Tue, 30 Jun 2020 06:19:22 +0000 (UTC)
 Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [140.211.9.56])
-	by hemlock.osuosl.org (Postfix) with ESMTP id 4845187933;
-	Tue, 30 Jun 2020 06:01:21 +0000 (UTC)
+	by whitealder.osuosl.org (Postfix) with ESMTP id 92437876D5;
+	Tue, 30 Jun 2020 06:19:22 +0000 (UTC)
 Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
-	by lists.linuxfoundation.org (Postfix) with ESMTP id 24594C07FF;
-	Tue, 30 Jun 2020 06:01:21 +0000 (UTC)
-Received: from hemlock.osuosl.org (smtp2.osuosl.org [140.211.166.133])
- by lists.linuxfoundation.org (Postfix) with ESMTP id 74779C016E
- for <iommu@lists.linux-foundation.org>; Tue, 30 Jun 2020 06:01:19 +0000 (UTC)
+	by lists.linuxfoundation.org (Postfix) with ESMTP id 83E3AC0865;
+	Tue, 30 Jun 2020 06:19:22 +0000 (UTC)
+Received: from whitealder.osuosl.org (smtp1.osuosl.org [140.211.166.138])
+ by lists.linuxfoundation.org (Postfix) with ESMTP id B1303C016E
+ for <iommu@lists.linux-foundation.org>; Tue, 30 Jun 2020 06:19:21 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
- by hemlock.osuosl.org (Postfix) with ESMTP id 6895287D6E
- for <iommu@lists.linux-foundation.org>; Tue, 30 Jun 2020 06:01:19 +0000 (UTC)
+ by whitealder.osuosl.org (Postfix) with ESMTP id 9ACD3878A5
+ for <iommu@lists.linux-foundation.org>; Tue, 30 Jun 2020 06:19:21 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from hemlock.osuosl.org ([127.0.0.1])
+Received: from whitealder.osuosl.org ([127.0.0.1])
  by localhost (.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
- with ESMTP id b5sDk2aZOW65 for <iommu@lists.linux-foundation.org>;
- Tue, 30 Jun 2020 06:01:18 +0000 (UTC)
+ with ESMTP id W6xHG513PHA8 for <iommu@lists.linux-foundation.org>;
+ Tue, 30 Jun 2020 06:19:20 +0000 (UTC)
 X-Greylist: domain auto-whitelisted by SQLgrey-1.7.6
-Received: from mga02.intel.com (mga02.intel.com [134.134.136.20])
- by hemlock.osuosl.org (Postfix) with ESMTPS id 30AB187933
- for <iommu@lists.linux-foundation.org>; Tue, 30 Jun 2020 06:01:18 +0000 (UTC)
-IronPort-SDR: JC+ERAtiBu5t5FdYcokvkH7C6gB7REnmsvamMIsIyXqCEpQS8MtAm4mSj9UsBREG1njNQGB0wD
- 0l/zSMBsJDoA==
-X-IronPort-AV: E=McAfee;i="6000,8403,9666"; a="134453578"
-X-IronPort-AV: E=Sophos;i="5.75,296,1589266800"; d="scan'208";a="134453578"
+Received: from mga07.intel.com (mga07.intel.com [134.134.136.100])
+ by whitealder.osuosl.org (Postfix) with ESMTPS id 65370876D5
+ for <iommu@lists.linux-foundation.org>; Tue, 30 Jun 2020 06:19:20 +0000 (UTC)
+IronPort-SDR: I64JetkaBlqw88Jv8YbIfLtFtprLzyaqP+1sWHdpLBHNtViWd3+DmDMyFU8ZM7nqMMq6m0dkb1
+ k1zo3ElYTlog==
+X-IronPort-AV: E=McAfee;i="6000,8403,9666"; a="211221317"
+X-IronPort-AV: E=Sophos;i="5.75,296,1589266800"; d="scan'208";a="211221317"
 X-Amp-Result: SKIPPED(no attachment in message)
 X-Amp-File-Uploaded: False
-Received: from orsmga004.jf.intel.com ([10.7.209.38])
- by orsmga101.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384;
- 29 Jun 2020 23:01:17 -0700
-IronPort-SDR: SVNmju1c9IGo8ZcnwAKfIv0fsHfXc1TExlQGMpGbiIWFGaFaqCPIfnxABo8DhKfYxgKM7voBIr
- HfEmsPqALAIg==
+Received: from orsmga007.jf.intel.com ([10.7.209.58])
+ by orsmga105.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384;
+ 29 Jun 2020 23:19:19 -0700
+IronPort-SDR: CT19O4v1OL7Iblc6mBTE/llx+WDf06v7LUIj/kfAYdP7YvS7rRQQ7A+u1UxvlEyZSOhepqEpA+
+ lMrsCjeCwvNQ==
 X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.75,296,1589266800"; d="scan'208";a="425084854"
-Received: from fmsmsx108.amr.corp.intel.com ([10.18.124.206])
- by orsmga004.jf.intel.com with ESMTP; 29 Jun 2020 23:01:17 -0700
-Received: from fmsmsx603.amr.corp.intel.com (10.18.126.83) by
- FMSMSX108.amr.corp.intel.com (10.18.124.206) with Microsoft SMTP Server (TLS)
- id 14.3.439.0; Mon, 29 Jun 2020 23:01:17 -0700
-Received: from fmsmsx604.amr.corp.intel.com (10.18.126.84) by
- fmsmsx603.amr.corp.intel.com (10.18.126.83) with Microsoft SMTP Server
+X-IronPort-AV: E=Sophos;i="5.75,296,1589266800"; d="scan'208";a="321296709"
+Received: from orsmsx109.amr.corp.intel.com ([10.22.240.7])
+ by orsmga007.jf.intel.com with ESMTP; 29 Jun 2020 23:19:19 -0700
+Received: from orsmsx607.amr.corp.intel.com (10.22.229.20) by
+ ORSMSX109.amr.corp.intel.com (10.22.240.7) with Microsoft SMTP Server (TLS)
+ id 14.3.439.0; Mon, 29 Jun 2020 23:19:19 -0700
+Received: from orsmsx606.amr.corp.intel.com (10.22.229.19) by
+ ORSMSX607.amr.corp.intel.com (10.22.229.20) with Microsoft SMTP Server
  (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.1713.5; Mon, 29 Jun 2020 23:01:16 -0700
-Received: from FMSEDG001.ED.cps.intel.com (10.1.192.133) by
- fmsmsx604.amr.corp.intel.com (10.18.126.84) with Microsoft SMTP Server
+ 15.1.1713.5; Mon, 29 Jun 2020 23:19:18 -0700
+Received: from ORSEDG002.ED.cps.intel.com (10.7.248.5) by
+ orsmsx606.amr.corp.intel.com (10.22.229.19) with Microsoft SMTP Server
  (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256) id 15.1.1713.5
- via Frontend Transport; Mon, 29 Jun 2020 23:01:16 -0700
-Received: from NAM12-BN8-obe.outbound.protection.outlook.com (104.47.55.176)
- by edgegateway.intel.com (192.55.55.68) with Microsoft SMTP Server (TLS) id
- 14.3.439.0; Mon, 29 Jun 2020 23:01:15 -0700
+ via Frontend Transport; Mon, 29 Jun 2020 23:19:18 -0700
+Received: from NAM02-CY1-obe.outbound.protection.outlook.com (104.47.37.58) by
+ edgegateway.intel.com (134.134.137.101) with Microsoft SMTP Server
+ (TLS) id 14.3.439.0; Mon, 29 Jun 2020 23:19:18 -0700
 ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=lDoUAJe5Y+uBZ4d7mu8rxabocUZM2DbOk8WfvdFFxt55oa5n+4dYyzskCRXXDO/aPKPqoHWNNoBAyDJxoUwdXx4kqNSdn1C5kt9jyWoi9cVhq/BTzJgM+8mNlDphsZEzAowPxFEj6YR5PevVotIFCoELmsvfnM0InFL0FYLs3ZfIGSz3P08cv/Gzy9e5D/0uCb1lJW5mwSvSTVAuVVGaz65N+hG5ahjHqugtCkqq1G68dXsGbbfhZW0hcT8uUqiUeOkSqTgljadwy17JjQapmOnklUiAlPSvDZj/npUMqZdyvpif73ZTspeqQAoCUG/5f48XN5SbgxUzNBcnkrbwYg==
+ b=Xo0GUM0eAg1c8tHrsNe6b6jH2PYSj/mod1Q1micr2UKHSKvAQg9cROpscNRcxSScRrEKkm9i7Kmo2QpVfHfXhQt/Mk+J6kpK9wbUe04xlLRKDNLVD2qKK85WrUlB2ti4Ap9aZ7fzzMuuey8Djd602JGv0yhQLeI5m3z2Q2AAGCZS+RIUnVVOBG2x/hk2epSvYNdat+6fSJ/jEVO7zRqWATVD++eHlxEjZzUG/i2hWuYH+iFf0oY4gvUKRyZv37MutUvu/xUUB1OKTuSXja3PdBP9gE1v6jpTkE7GBXwKIwr+xJqqi/019wQyKrJ6Fxm2eODd0JUrRNkM7zw4Bu0sPg==
 ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com; 
  s=arcselector9901;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=mXwDTbDVal80iOHXg4ln/4vivgxK8YWUDQEJs+uaEEo=;
- b=IpHdGBP/cNiq4vCnxleM7RMRcrHFH+XguTy1u/WOGPEEkDzeYt014kfV0zb+SBD8zQkkusHmJICriKZgCr6qJAxX/HNjAWzZ9MoLUEo9z12vK9abYkxD+T/dcUzKmX7tMcizug99AWiP1oe+xnZOCJygFUu0pGdMGZtJP3f99P5Y23KIun66KGyg0INvZxsX2kVMZxrDj+G3l2Y5fJVjBft/ktLAGXxLBkNGOyHttvkrQGiJF2+UFCqxCh25k7D+nVbMJLHIvLgLjHwdBsI5jR1603AZT94Meap+CEv0I4hMWY5uMeQ/57R6IVNi1vbyrj6iiDhU0q8Up1m8qRu7ew==
+ bh=wPzkxpZvpkmcxQqaY8si4eDaz2UV32JluTs2xxrC//M=;
+ b=GtfFDcbI8e5h6bJb6EiXnCMXUKqW1duG/+Qb1aO21YjWbOE55B7MH28FgPEzWblX0kk1WHp6tXyS4Ks4shKq8mEjw8YHboUx9Tasw29qikGVeHrS9clUm0sPzY9DWvSq52MVYqlICmMSY4UugOmXidcoqE8gayfQxibTwR8TQPocRjQYMqW5TTGx5xw/Ispu0BJx75STNr4ajLPm/PxQkc0fknqO7GPY3uQP39CDZDYdfQx78h+Qq1fOr+X6JlfMBwrs9tmFvevEkxRGR9YWGOpIJJAhGmuFvIfE6zPI8c47pAmv9dCNlmlVduu7R5w2Eee8UiF/NW15bq3wxE21og==
 ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
  smtp.mailfrom=intel.com; dmarc=pass action=none header.from=intel.com;
  dkim=pass header.d=intel.com; arc=none
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=intel.onmicrosoft.com; 
  s=selector2-intel-onmicrosoft-com;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=mXwDTbDVal80iOHXg4ln/4vivgxK8YWUDQEJs+uaEEo=;
- b=Oq8hWvq5uFXLkyzpj+NfPVQDyXY/IiPP+ERNqG8LxuzR0/DlccFfVqI8+q7w8oLfTQfQoOduPPsfiLcbYS6wTYzNJh9483Q9Tw4jnqqRkkrRLsdRrRGrj1psK5sDkn+vrXYB2SCIkN9yebryjaY04PAI2ORpucEf7+GTMsbno9I=
+ bh=wPzkxpZvpkmcxQqaY8si4eDaz2UV32JluTs2xxrC//M=;
+ b=DoFjdvYP8jUAiZjEswMdMOo0bROBJHOyhCzdpK5S5hO0NA3gDSsbzb5e+Ey+HM/6G53CmhVhMlZhu9Pxwl4NychLumfaBbw2UeeypgBXkSh4o9ZHU+xplmguhYEF5lGKhVYlPysuOroVztwbwWaraTgdRLmL1kQJmL7l5qPTBq4=
 Received: from MWHPR11MB1645.namprd11.prod.outlook.com (2603:10b6:301:b::12)
- by MWHPR11MB1600.namprd11.prod.outlook.com (2603:10b6:301:b::14) with
+ by MWHPR11MB0063.namprd11.prod.outlook.com (2603:10b6:301:6c::19) with
  Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.3131.23; Tue, 30 Jun
- 2020 06:01:13 +0000
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.3131.25; Tue, 30 Jun
+ 2020 06:19:16 +0000
 Received: from MWHPR11MB1645.namprd11.prod.outlook.com
  ([fe80::9864:e0cb:af36:6feb]) by MWHPR11MB1645.namprd11.prod.outlook.com
  ([fe80::9864:e0cb:af36:6feb%5]) with mapi id 15.20.3131.027; Tue, 30 Jun 2020
- 06:01:13 +0000
+ 06:19:16 +0000
 From: "Tian, Kevin" <kevin.tian@intel.com>
 To: Lu Baolu <baolu.lu@linux.intel.com>, "iommu@lists.linux-foundation.org"
  <iommu@lists.linux-foundation.org>
-Subject: RE: [PATCH 3/4] iommu/vt-d: Report page request faults for guest SVA
-Thread-Topic: [PATCH 3/4] iommu/vt-d: Report page request faults for guest SVA
-Thread-Index: AQHWTORmc6i/ZJuiBUa22CGtnx99Najwq+Cg
-Date: Tue, 30 Jun 2020 06:01:13 +0000
-Message-ID: <MWHPR11MB16450BD48B3EF42A8E82E5698C6F0@MWHPR11MB1645.namprd11.prod.outlook.com>
+Subject: RE: [PATCH 4/4] iommu/vt-d: Add page response ops support
+Thread-Topic: [PATCH 4/4] iommu/vt-d: Add page response ops support
+Thread-Index: AQHWTORpzKVpnGuNLU6RQJAsChsNEKjwsO+A
+Date: Tue, 30 Jun 2020 06:19:16 +0000
+Message-ID: <MWHPR11MB1645B92B81D6A1F7EDAC24848C6F0@MWHPR11MB1645.namprd11.prod.outlook.com>
 References: <20200628003332.5720-1-baolu.lu@linux.intel.com>
- <20200628003332.5720-4-baolu.lu@linux.intel.com>
-In-Reply-To: <20200628003332.5720-4-baolu.lu@linux.intel.com>
+ <20200628003332.5720-5-baolu.lu@linux.intel.com>
+In-Reply-To: <20200628003332.5720-5-baolu.lu@linux.intel.com>
 Accept-Language: en-US
 Content-Language: en-US
 X-MS-Has-Attach: 
@@ -122,32 +122,32 @@ authentication-results: linux.intel.com; dkim=none (message not signed)
  header.d=none;linux.intel.com; dmarc=none action=none header.from=intel.com;
 x-originating-ip: [192.198.147.207]
 x-ms-publictraffictype: Email
-x-ms-office365-filtering-correlation-id: 4fa150f1-4311-4896-1fef-08d81cbafe89
-x-ms-traffictypediagnostic: MWHPR11MB1600:
+x-ms-office365-filtering-correlation-id: 1b0cd7fc-8c52-4ffa-1224-08d81cbd8426
+x-ms-traffictypediagnostic: MWHPR11MB0063:
 x-ld-processed: 46c98d88-e344-4ed4-8496-4ed7712e255d,ExtAddr
 x-ms-exchange-transport-forked: True
-x-microsoft-antispam-prvs: <MWHPR11MB1600567CC31794F270411F6C8C6F0@MWHPR11MB1600.namprd11.prod.outlook.com>
-x-ms-oob-tlc-oobclassifiers: OLM:9508;
+x-microsoft-antispam-prvs: <MWHPR11MB0063D9651F2FC9B143701FC98C6F0@MWHPR11MB0063.namprd11.prod.outlook.com>
+x-ms-oob-tlc-oobclassifiers: OLM:5236;
 x-forefront-prvs: 0450A714CB
 x-ms-exchange-senderadcheck: 1
 x-microsoft-antispam: BCL:0;
-x-microsoft-antispam-message-info: n7a4oJyBgGKglN7ZHVUTXJ8VK6UnbPrPcz4aVlH6rfe08uou0kkaWnBL/KoseCD2EkZzT3CgL/coXNWzXXoDB0fEXdSGdFUO7eNGrUdo238T+497QIJNpf1INIxDz4zxQaiWHrpDFT+07c+ToP//jWzbaIdW34EM+CJmzP/TMXEUvMau+avLEnr24nFtRHwAPY6Q4mX3NmSEi0WLwMDJ3abnvX2kDIDNj+sajQWIIjiPIE4orx8arrbv7ZPwVlEU9VUvoNTP3SE/t1TXQEOYmQyBkR6SHwawfxAvEwhu1EAOK08iepWwwYSMb1GHtQL118UJYMpKwNO5waZ5sE9BpQ==
+x-microsoft-antispam-message-info: nuqKF5WOqABcTolvtMfaH5/SoTCpHWYBGNvIpUIpFxXv4xXOo8vwQWB3l8yix4zVVVeF3yeg/nuRMQ9CEjxuISwJlYVA/h118Ea7j4LLBEqoBwirOfqdEYSUK6dvL3iJ3HoimFM3RkpRT4m64osfX2RnIWpljZQrwf5j4/8aPpEHYJQVim5VwWEJCxFNj60mRuAyBBrsV3kwXXflPJLqsieS3bnM0DxwKH5J+BUVmyaYGK3qu8TJqaTL5ZOY3ss0K9n6braPdQiwxBvsJ6lBZhyHpkAbgTN6zQJjPxC2B8XS9HIiGWCqwQIj/oyKAuaiRSGxeZyPbSEAgMC0lanuNA==
 x-forefront-antispam-report: CIP:255.255.255.255; CTRY:; LANG:en; SCL:1; SRV:;
  IPV:NLI; SFV:NSPM; H:MWHPR11MB1645.namprd11.prod.outlook.com; PTR:; CAT:NONE;
  SFTY:;
- SFS:(4636009)(376002)(136003)(346002)(39860400002)(366004)(396003)(186003)(76116006)(54906003)(8936002)(66946007)(4326008)(66446008)(5660300002)(86362001)(71200400001)(110136005)(52536014)(66476007)(33656002)(2906002)(64756008)(66556008)(8676002)(83380400001)(9686003)(26005)(55016002)(316002)(478600001)(7696005)(6506007);
+ SFS:(4636009)(396003)(39860400002)(366004)(136003)(376002)(346002)(186003)(86362001)(8676002)(6506007)(66556008)(26005)(76116006)(2906002)(66446008)(64756008)(66476007)(83380400001)(9686003)(66946007)(7696005)(55016002)(8936002)(478600001)(110136005)(316002)(33656002)(71200400001)(4326008)(5660300002)(52536014)(54906003);
  DIR:OUT; SFP:1102; 
-x-ms-exchange-antispam-messagedata: 2hitLfJYjVw9AT88psEqmmXTu3ahjZVb341Akqj9rA/1VagxrJklVm4fq8HRSno6XtDgqYkBPv1iVaQaV8IV/MFAOmo96bYkUW9Mj6vNYGj+CxyXZG39Q9E9miixEe4R2cv3wKnG99ONzTEvsc54j8LeH4qJ9+tQl1DRlBAA2cU67DTuBUfI1llnKcjP2V2vCymNuQnD8edSH9pVMRhRFsBVGeGvhmO9aBeQ0MLO7R1JuhX5nHAhSIWDq6wNL4wGZ2EDaFfXpfnoh6lz/tqqOnK218qOyhbcCwTRsW3ItRg+P3uER8KCRJIEbvd/TlxhBk0n2pgk0qPishc8S5EG6Wdbe2LBRYoiUojvUomiwcEiDxDNJTQaDqGxH3DnJU923gGkPDjhBYlAYkaJd/uk18xSaMEu68T0S6o9T513onoTVsX+HMQAxc7kFIU4L7GbUbgxvRC3SA0thefw2edPE1fGTTOahMiv4xytxFnPn8RmusFXcFJ7xfE4qRlHyb9s
+x-ms-exchange-antispam-messagedata: 3RKaPkYfeGCnOPKHo2n6E27XSyKL/2lCCUMdY7hkyaVZEmJdvJkRzLMBBskx9TYXqwosMcF19KUzVDJZCp6KPQghEw8+tlxqAWDHMjYQTn1ZsJ9wasCyq0aCgNkPt9G5INHAv4rCV72qVpQzm2v9lIPOWrV2LVLNm1LsokYfzxya+UXX2y1zRl3drkPYJxfefvKB2PZEuGnYapBAaCe+oEZD8IDmhwpm8RTNXh4Ga3VgsXVNopObRWgoqexGbs61ueuHxIz/5W+MuDusjAea5omwgsHd0/xhrN2tEg1ITiNLDQh/K5qr7fvMG599IEjXOeWr6Yx1LCG3KZpn7QOyq8ZPMjj0VObVxfvKRTtL0Af503UdvZqCWKeK3HFJkvdRDXDtSJ57H5TMS0+wnxRsE2btCDNwHybEshPiYSEoeTS5ocR9Q1FDw3Zwy3/Fwwpr2DT9b51nrfj/4JmlGxj0mthn/7KcmdIeR1m/JbrXas/Njn/8+ftAVKmtPQDztTTD
 MIME-Version: 1.0
 X-MS-Exchange-CrossTenant-AuthAs: Internal
 X-MS-Exchange-CrossTenant-AuthSource: MWHPR11MB1645.namprd11.prod.outlook.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: 4fa150f1-4311-4896-1fef-08d81cbafe89
-X-MS-Exchange-CrossTenant-originalarrivaltime: 30 Jun 2020 06:01:13.0670 (UTC)
+X-MS-Exchange-CrossTenant-Network-Message-Id: 1b0cd7fc-8c52-4ffa-1224-08d81cbd8426
+X-MS-Exchange-CrossTenant-originalarrivaltime: 30 Jun 2020 06:19:16.2380 (UTC)
 X-MS-Exchange-CrossTenant-fromentityheader: Hosted
 X-MS-Exchange-CrossTenant-id: 46c98d88-e344-4ed4-8496-4ed7712e255d
 X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
-X-MS-Exchange-CrossTenant-userprincipalname: BZY3w6tIYtY9lpJXZt8f39/9h4h4YPEF+o6B5m2BexQ+7kUKe2BUvxWBLUlagdOAwFIwc1Xh7D77ZwLeLHNFSg==
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: MWHPR11MB1600
+X-MS-Exchange-CrossTenant-userprincipalname: KsOqGwiQiTGCZM3GnoVt7NyJy36iiIYfSWvqmYgaaIQ8bR+ITdWF9A+BBw7aGyIipohtt+4+OLQyJfgK4MJaVQ==
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: MWHPR11MB0063
 X-OriginatorOrg: intel.com
 Cc: "Raj, Ashok" <ashok.raj@intel.com>,
  "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>
@@ -171,15 +171,11 @@ Sender: "iommu" <iommu-bounces@lists.linux-foundation.org>
 > From: Lu Baolu <baolu.lu@linux.intel.com>
 > Sent: Sunday, June 28, 2020 8:34 AM
 > 
-> A pasid might be bound to a page table from a VM guest via the iommu
-> ops.sva_bind_gpasid. In this case, when a DMA page fault is detected
-> on the physical IOMMU, we need to inject the page fault request into
-> the guest. After the guest completes handling the page fault, a page
-> response need to be sent back via the iommu ops.page_response().
-> 
-> This adds support to report a page request fault. Any external module
-> which is interested in handling this fault should regiester a notifier
-> callback.
+> After a page request is handled, software must response the device which
+> raised the page request with the handling result. This is done through
+> the iommu ops.page_response if the request was reported to outside of
+> vendor iommu driver through iommu_report_device_fault(). This adds the
+> VT-d implementation of page_response ops.
 > 
 > Co-developed-by: Jacob Pan <jacob.jun.pan@linux.intel.com>
 > Signed-off-by: Jacob Pan <jacob.jun.pan@linux.intel.com>
@@ -187,166 +183,142 @@ Sender: "iommu" <iommu-bounces@lists.linux-foundation.org>
 > Signed-off-by: Liu Yi L <yi.l.liu@intel.com>
 > Signed-off-by: Lu Baolu <baolu.lu@linux.intel.com>
 > ---
->  drivers/iommu/intel/svm.c | 83
-> +++++++++++++++++++++++++++++++++++++--
->  1 file changed, 80 insertions(+), 3 deletions(-)
+>  drivers/iommu/intel/iommu.c |  1 +
+>  drivers/iommu/intel/svm.c   | 73
+> +++++++++++++++++++++++++++++++++++++
+>  include/linux/intel-iommu.h |  3 ++
+>  3 files changed, 77 insertions(+)
+> 
+> diff --git a/drivers/iommu/intel/iommu.c b/drivers/iommu/intel/iommu.c
+> index de17952ed133..7eb29167e8f9 100644
+> --- a/drivers/iommu/intel/iommu.c
+> +++ b/drivers/iommu/intel/iommu.c
+> @@ -6057,6 +6057,7 @@ const struct iommu_ops intel_iommu_ops = {
+>  	.sva_bind		= intel_svm_bind,
+>  	.sva_unbind		= intel_svm_unbind,
+>  	.sva_get_pasid		= intel_svm_get_pasid,
+> +	.page_response		= intel_svm_page_response,
+>  #endif
+>  };
 > 
 > diff --git a/drivers/iommu/intel/svm.c b/drivers/iommu/intel/svm.c
-> index c23167877b2b..4800bb6f8794 100644
+> index 4800bb6f8794..003ea9579632 100644
 > --- a/drivers/iommu/intel/svm.c
 > +++ b/drivers/iommu/intel/svm.c
-> @@ -815,6 +815,69 @@ static void intel_svm_drain_prq(struct device *dev,
-> int pasid)
->  	}
->  }
+> @@ -1092,3 +1092,76 @@ int intel_svm_get_pasid(struct iommu_sva *sva)
 > 
-> +static int prq_to_iommu_prot(struct page_req_dsc *req)
+>  	return pasid;
+>  }
+> +
+> +int intel_svm_page_response(struct device *dev,
+> +			    struct iommu_fault_event *evt,
+> +			    struct iommu_page_response *msg)
 > +{
-> +	int prot = 0;
-> +
-> +	if (req->rd_req)
-> +		prot |= IOMMU_FAULT_PERM_READ;
-> +	if (req->wr_req)
-> +		prot |= IOMMU_FAULT_PERM_WRITE;
-> +	if (req->exe_req)
-> +		prot |= IOMMU_FAULT_PERM_EXEC;
-> +	if (req->pm_req)
-> +		prot |= IOMMU_FAULT_PERM_PRIV;
-> +
-> +	return prot;
-> +}
-> +
-> +static int
-> +intel_svm_prq_report(struct intel_iommu *iommu, struct page_req_dsc
-> *desc)
-> +{
-> +	struct iommu_fault_event event;
-> +	struct pci_dev *pdev;
+> +	struct iommu_fault_page_request *prm;
+> +	struct intel_svm_dev *sdev;
+> +	struct intel_iommu *iommu;
+> +	struct intel_svm *svm;
+> +	bool private_present;
+> +	bool pasid_present;
+> +	bool last_page;
 > +	u8 bus, devfn;
 > +	int ret = 0;
+> +	u16 sid;
 > +
-> +	memset(&event, 0, sizeof(struct iommu_fault_event));
-> +	bus = PCI_BUS_NUM(desc->rid);
-> +	devfn = desc->rid & 0xff;
-> +	pdev = pci_get_domain_bus_and_slot(iommu->segment, bus, devfn);
-
-Is this step necessary? dev can be passed in (based on sdev), and more
-importantly iommu_report_device_fault already handles the ref counting
-e.g. get_device(dev) when fault handler is valid...
-
-> +
-> +	if (!pdev) {
-> +		pr_err("No PCI device found for PRQ [%02x:%02x.%d]\n",
-> +		       bus, PCI_SLOT(devfn), PCI_FUNC(devfn));
+> +	if (!dev || !dev_is_pci(dev))
 > +		return -ENODEV;
-> +	}
 > +
-> +	/* Fill in event data for device specific processing */
-> +	event.fault.type = IOMMU_FAULT_PAGE_REQ;
-> +	event.fault.prm.addr = desc->addr;
-> +	event.fault.prm.pasid = desc->pasid;
-> +	event.fault.prm.grpid = desc->prg_index;
-> +	event.fault.prm.perm = prq_to_iommu_prot(desc);
+> +	iommu = device_to_iommu(dev, &bus, &devfn);
+> +	if (!iommu)
+> +		return -ENODEV;
+
+move to the place when iommu is referenced. This place is too early.
+
+> +
+> +	if (!msg || !evt)
+> +		return -EINVAL;
+> +
+> +	mutex_lock(&pasid_mutex);
+> +
+> +	prm = &evt->fault.prm;
+> +	sid = PCI_DEVID(bus, devfn);
+> +	pasid_present = prm->flags &
+> IOMMU_FAULT_PAGE_REQUEST_PASID_VALID;
+> +	private_present = prm->flags &
+> IOMMU_FAULT_PAGE_REQUEST_PRIV_DATA;
+> +	last_page = prm->flags &
+> IOMMU_FAULT_PAGE_REQUEST_LAST_PAGE;
+> +
+> +	if (pasid_present) {
+> +		/* VT-d supports devices with full 20 bit PASIDs only */
+> +		if (pci_max_pasids(to_pci_dev(dev)) != PASID_MAX) {
+> +			ret = -EINVAL;
+> +			goto out;
+> +		}
+
+shouldn't we check prm->pasid here? Above is more reasonable to be
+checked when page request is reported.
+
+> +
+> +		ret = pasid_to_svm_sdev(dev, prm->pasid, &svm, &sdev);
+> +		if (ret || !sdev)
+
+if sdev==NULL, suppose an error (-ENODEV) should be returned here?
+
+> +			goto out;
+> +	}
 > +
 > +	/*
-> +	 * Set last page in group bit if private data is present,
-> +	 * page response is required as it does for LPIG.
-> +	 */
-> +	if (desc->lpig)
-> +		event.fault.prm.flags |=
-> IOMMU_FAULT_PAGE_REQUEST_LAST_PAGE;
-> +	if (desc->pasid_present)
-> +		event.fault.prm.flags |=
-> IOMMU_FAULT_PAGE_REQUEST_PASID_VALID;
-> +	if (desc->priv_data_present) {
-> +		event.fault.prm.flags |=
-> IOMMU_FAULT_PAGE_REQUEST_LAST_PAGE;
+> +	 * Per VT-d spec. v3.0 ch7.7, system software must respond
+> +	 * with page group response if private data is present (PDP)
+> +	 * or last page in group (LPIG) bit is set. This is an
+> +	 * additional VT-d feature beyond PCI ATS spec.
 
-why setting lpig under this condition? 
-
-> +		event.fault.prm.flags |=
-> IOMMU_FAULT_PAGE_REQUEST_PRIV_DATA;
-> +		memcpy(event.fault.prm.private_data, desc->priv_data,
-> +		       sizeof(desc->priv_data));
-> +	}
-> +
-> +	ret = iommu_report_device_fault(&pdev->dev, &event);
-> +	pci_dev_put(pdev);
-> +
-> +	return ret;
-> +}
-> +
->  static irqreturn_t prq_event_thread(int irq, void *d)
->  {
->  	struct intel_iommu *iommu = d;
-> @@ -874,6 +937,19 @@ static irqreturn_t prq_event_thread(int irq, void *d)
->  		if (!is_canonical_address(address))
->  			goto bad_req;
-> 
-> +		/*
-> +		 * If prq is to be handled outside iommu driver via receiver of
-> +		 * the fault notifiers, we skip the page response here.
-> +		 */
-> +		if (svm->flags & SVM_FLAG_GUEST_MODE) {
-> +			int res = intel_svm_prq_report(iommu, req);
-> +
-> +			if (!res)
-> +				goto prq_advance;
-> +			else
-> +				goto bad_req;
-> +		}
-> +
-
-I noted in bad_req there is another reporting logic:
-
-                if (sdev && sdev->ops && sdev->ops->fault_cb) {
-                        int rwxp = (req->rd_req << 3) | (req->wr_req << 2) |
-                                (req->exe_req << 1) | (req->pm_req);
-                        sdev->ops->fault_cb(sdev->dev, req->pasid, req->addr,
-                                            req->priv_data, rwxp, result);
-                }
-
-It was introduced in the 1st version of svm.c. It might be unrelated to
-this patch, but I wonder whether that one should be replaced with 
-iommu_report_device_fault too?
+feature->requirement
 
 Thanks
 Kevin
 
->  		/* If the mm is already defunct, don't handle faults. */
->  		if (!mmget_not_zero(svm->mm))
->  			goto bad_req;
-> @@ -892,10 +968,10 @@ static irqreturn_t prq_event_thread(int irq, void *d)
->  			goto invalid;
+> +	 */
+> +	if (last_page || private_present) {
+> +		struct qi_desc desc;
+> +
+> +		desc.qw0 = QI_PGRP_PASID(prm->pasid) | QI_PGRP_DID(sid)
+> |
+> +				QI_PGRP_PASID_P(pasid_present) |
+> +				QI_PGRP_PDP(private_present) |
+> +				QI_PGRP_RESP_CODE(msg->code) |
+> +				QI_PGRP_RESP_TYPE;
+> +		desc.qw1 = QI_PGRP_IDX(prm->grpid) |
+> QI_PGRP_LPIG(last_page);
+> +		desc.qw2 = 0;
+> +		desc.qw3 = 0;
+> +		if (private_present)
+> +			memcpy(&desc.qw2, prm->private_data,
+> +			       sizeof(prm->private_data));
+> +
+> +		qi_submit_sync(iommu, &desc, 1, 0);
+> +	}
+> +out:
+> +	mutex_unlock(&pasid_mutex);
+> +	return ret;
+> +}
+> diff --git a/include/linux/intel-iommu.h b/include/linux/intel-iommu.h
+> index fc2cfc3db6e1..bf6009a344f5 100644
+> --- a/include/linux/intel-iommu.h
+> +++ b/include/linux/intel-iommu.h
+> @@ -741,6 +741,9 @@ struct iommu_sva *intel_svm_bind(struct device
+> *dev, struct mm_struct *mm,
+>  				 void *drvdata);
+>  void intel_svm_unbind(struct iommu_sva *handle);
+>  int intel_svm_get_pasid(struct iommu_sva *handle);
+> +int intel_svm_page_response(struct device *dev, struct iommu_fault_event
+> *evt,
+> +			    struct iommu_page_response *msg);
+> +
+>  struct svm_dev_ops;
 > 
->  		result = QI_RESP_SUCCESS;
-> -	invalid:
-> +invalid:
->  		mmap_read_unlock(svm->mm);
->  		mmput(svm->mm);
-> -	bad_req:
-> +bad_req:
->  		/* Accounting for major/minor faults? */
->  		rcu_read_lock();
->  		list_for_each_entry_rcu(sdev, &svm->devs, list) {
-> @@ -920,7 +996,7 @@ static irqreturn_t prq_event_thread(int irq, void *d)
->  		   and these can be NULL. Do not use them below this point!
-> */
->  		sdev = NULL;
->  		svm = NULL;
-> -	no_pasid:
-> +no_pasid:
->  		if (req->lpig || req->priv_data_present) {
->  			/*
->  			 * Per VT-d spec. v3.0 ch7.7, system software must
-> @@ -945,6 +1021,7 @@ static irqreturn_t prq_event_thread(int irq, void *d)
->  			resp.qw3 = 0;
->  			qi_submit_sync(iommu, &resp, 1, 0);
->  		}
-> +prq_advance:
->  		head = (head + sizeof(*req)) & PRQ_RING_MASK;
->  	}
-> 
+>  struct intel_svm_dev {
 > --
 > 2.17.1
 
