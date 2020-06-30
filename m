@@ -2,103 +2,80 @@ Return-Path: <SRS0=0Jez=AL=lists.linux-foundation.org=iommu-bounces@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-2.3 required=3.0 tests=DKIM_INVALID,DKIM_SIGNED,
-	HEADER_FROM_DIFFERENT_DOMAINS,MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS,
-	USER_AGENT_SANE_1 autolearn=no autolearn_force=no version=3.4.0
+X-Spam-Status: No, score=-2.5 required=3.0 tests=HEADER_FROM_DIFFERENT_DOMAINS,
+	MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED,USER_AGENT_SANE_1
+	autolearn=no autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 2E55BC433DF
-	for <iommu@archiver.kernel.org>; Tue, 30 Jun 2020 10:23:43 +0000 (UTC)
-Received: from fraxinus.osuosl.org (smtp4.osuosl.org [140.211.166.137])
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 16519C433E2
+	for <iommu@archiver.kernel.org>; Tue, 30 Jun 2020 10:25:09 +0000 (UTC)
+Received: from silver.osuosl.org (smtp3.osuosl.org [140.211.166.136])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by mail.kernel.org (Postfix) with ESMTPS id E56B720771
-	for <iommu@archiver.kernel.org>; Tue, 30 Jun 2020 10:23:42 +0000 (UTC)
-Authentication-Results: mail.kernel.org;
-	dkim=fail reason="signature verification failed" (2048-bit key) header.d=nvidia.com header.i=@nvidia.com header.b="jA+vkX9k"
-DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org E56B720771
-Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=nvidia.com
+	by mail.kernel.org (Postfix) with ESMTPS id DF49720771
+	for <iommu@archiver.kernel.org>; Tue, 30 Jun 2020 10:25:08 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org DF49720771
+Authentication-Results: mail.kernel.org; dmarc=none (p=none dis=none) header.from=arm.com
 Authentication-Results: mail.kernel.org; spf=pass smtp.mailfrom=iommu-bounces@lists.linux-foundation.org
 Received: from localhost (localhost [127.0.0.1])
-	by fraxinus.osuosl.org (Postfix) with ESMTP id C4E9885F53;
-	Tue, 30 Jun 2020 10:23:42 +0000 (UTC)
+	by silver.osuosl.org (Postfix) with ESMTP id 999C122836;
+	Tue, 30 Jun 2020 10:25:08 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from fraxinus.osuosl.org ([127.0.0.1])
+Received: from silver.osuosl.org ([127.0.0.1])
 	by localhost (.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
-	with ESMTP id fsgrTyl_A40K; Tue, 30 Jun 2020 10:23:41 +0000 (UTC)
+	with ESMTP id 7ATF4agBCx5C; Tue, 30 Jun 2020 10:25:06 +0000 (UTC)
 Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [140.211.9.56])
-	by fraxinus.osuosl.org (Postfix) with ESMTP id A6A7485D59;
-	Tue, 30 Jun 2020 10:23:41 +0000 (UTC)
+	by silver.osuosl.org (Postfix) with ESMTP id DE9D02284C;
+	Tue, 30 Jun 2020 10:25:05 +0000 (UTC)
 Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
-	by lists.linuxfoundation.org (Postfix) with ESMTP id 772E1C088F;
-	Tue, 30 Jun 2020 10:23:41 +0000 (UTC)
+	by lists.linuxfoundation.org (Postfix) with ESMTP id CAFC0C088F;
+	Tue, 30 Jun 2020 10:25:05 +0000 (UTC)
 Received: from whitealder.osuosl.org (smtp1.osuosl.org [140.211.166.138])
- by lists.linuxfoundation.org (Postfix) with ESMTP id 16FC6C016E
- for <iommu@lists.linux-foundation.org>; Tue, 30 Jun 2020 10:23:40 +0000 (UTC)
+ by lists.linuxfoundation.org (Postfix) with ESMTP id 86E91C016E
+ for <iommu@lists.linux-foundation.org>; Tue, 30 Jun 2020 10:25:04 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
- by whitealder.osuosl.org (Postfix) with ESMTP id 08E3787D9D
- for <iommu@lists.linux-foundation.org>; Tue, 30 Jun 2020 10:23:40 +0000 (UTC)
+ by whitealder.osuosl.org (Postfix) with ESMTP id 7523F87D9D
+ for <iommu@lists.linux-foundation.org>; Tue, 30 Jun 2020 10:25:04 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
 Received: from whitealder.osuosl.org ([127.0.0.1])
  by localhost (.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
- with ESMTP id GU3ZE8nTnAAC for <iommu@lists.linux-foundation.org>;
- Tue, 30 Jun 2020 10:23:39 +0000 (UTC)
+ with ESMTP id ViURGX4RjGWs for <iommu@lists.linux-foundation.org>;
+ Tue, 30 Jun 2020 10:25:03 +0000 (UTC)
 X-Greylist: domain auto-whitelisted by SQLgrey-1.7.6
-Received: from hqnvemgate24.nvidia.com (hqnvemgate24.nvidia.com
- [216.228.121.143])
- by whitealder.osuosl.org (Postfix) with ESMTPS id 4871E87EAE
- for <iommu@lists.linux-foundation.org>; Tue, 30 Jun 2020 10:23:39 +0000 (UTC)
-Received: from hqpgpgate101.nvidia.com (Not Verified[216.228.121.13]) by
- hqnvemgate24.nvidia.com (using TLS: TLSv1.2, DES-CBC3-SHA)
- id <B5efb12480000>; Tue, 30 Jun 2020 03:22:00 -0700
-Received: from hqmail.nvidia.com ([172.20.161.6])
- by hqpgpgate101.nvidia.com (PGP Universal service);
- Tue, 30 Jun 2020 03:23:38 -0700
-X-PGP-Universal: processed;
- by hqpgpgate101.nvidia.com on Tue, 30 Jun 2020 03:23:38 -0700
-Received: from [10.26.75.203] (10.124.1.5) by HQMAIL107.nvidia.com
- (172.20.187.13) with Microsoft SMTP Server (TLS) id 15.0.1473.3; Tue, 30 Jun
- 2020 10:23:32 +0000
-Subject: Re: [PATCH v7 1/3] iommu/arm-smmu: add NVIDIA implementation for dual
- ARM MMU-500 usage
-To: Krishna Reddy <vdumpa@nvidia.com>, Nicolin Chen <nicoleotsuka@gmail.com>
-References: <20200629022838.29628-1-vdumpa@nvidia.com>
- <20200629022838.29628-2-vdumpa@nvidia.com>
- <20200629215124.GD27967@Asurada-Nvidia>
- <BYAPR12MB2822B08564C7BD7212DCCEFEB36E0@BYAPR12MB2822.namprd12.prod.outlook.com>
-From: Jon Hunter <jonathanh@nvidia.com>
-Message-ID: <b353b3f0-ee7f-f777-4d38-c595bc990564@nvidia.com>
-Date: Tue, 30 Jun 2020 11:23:30 +0100
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101
- Thunderbird/68.8.0
+Received: from foss.arm.com (foss.arm.com [217.140.110.172])
+ by whitealder.osuosl.org (Postfix) with ESMTP id 3253187722
+ for <iommu@lists.linux-foundation.org>; Tue, 30 Jun 2020 10:25:03 +0000 (UTC)
+Received: from usa-sjc-imap-foss1.foss.arm.com (unknown [10.121.207.14])
+ by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id 9943C31B;
+ Tue, 30 Jun 2020 03:25:02 -0700 (PDT)
+Received: from e121166-lin.cambridge.arm.com (e121166-lin.cambridge.arm.com
+ [10.1.196.255])
+ by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPSA id 66CC53F68F;
+ Tue, 30 Jun 2020 03:25:00 -0700 (PDT)
+Date: Tue, 30 Jun 2020 11:24:54 +0100
+From: Lorenzo Pieralisi <lorenzo.pieralisi@arm.com>
+To: Hanjun Guo <guohanjun@huawei.com>
+Subject: Re: [PATCH v2 01/12] ACPI/IORT: Make iort_match_node_callback walk
+ the ACPI namespace for NC
+Message-ID: <20200630102454.GA17556@e121166-lin.cambridge.arm.com>
+References: <20200521130008.8266-1-lorenzo.pieralisi@arm.com>
+ <20200619082013.13661-1-lorenzo.pieralisi@arm.com>
+ <20200619082013.13661-2-lorenzo.pieralisi@arm.com>
+ <718cae1f-2f33-f6d9-f278-157300b73116@huawei.com>
+ <20200629090551.GA28873@e121166-lin.cambridge.arm.com>
+ <765078e7-b3ec-af5d-0405-7834ba0f120a@huawei.com>
 MIME-Version: 1.0
-In-Reply-To: <BYAPR12MB2822B08564C7BD7212DCCEFEB36E0@BYAPR12MB2822.namprd12.prod.outlook.com>
-X-Originating-IP: [10.124.1.5]
-X-ClientProxiedBy: HQMAIL111.nvidia.com (172.20.187.18) To
- HQMAIL107.nvidia.com (172.20.187.13)
-Content-Language: en-US
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=nvidia.com; s=n1;
- t=1593512520; bh=hkVxLnq+dTBVptclOzrR1XDgzm1j91MigMWg/9IR+sc=;
- h=X-PGP-Universal:Subject:To:CC:References:From:Message-ID:Date:
- User-Agent:MIME-Version:In-Reply-To:X-Originating-IP:
- X-ClientProxiedBy:Content-Type:Content-Language:
- Content-Transfer-Encoding;
- b=jA+vkX9kGnJEYI414bhfejJlRZyrp5UzqC6J9cHezgBJHVXgkVVbxPzIw79ZCr1K2
- 6NZM9rRZKisYQQmtP/17qWiYcfKSVBi1wt2agXRKs8zUczB2EJ+0Tqau/X1zH+pU+h
- 9Jots5TvvQKE56CJvFZ6oEXf/L3ymPqIyvZcW86B7r4WSnl/BxaGzjl2IvNgtGRAKR
- kOCIwVbtWSDZkBqBlCNZocVhLWZI74uX19qdBLXiRr1XnzLjYF5SEp4Svosg9eWR2d
- q4bm+tZt15jQ1MldQCrAc4ibAr/k5xETp9f/+7dJd8rYOdcN36mM0s+7c/7q1KgPvr
- NXTHy46YcCPDg==
-Cc: Sachin Nikam <Snikam@nvidia.com>, Mikko Perttunen <mperttunen@nvidia.com>,
- Bryan Huntsman <bhuntsman@nvidia.com>, "will@kernel.org" <will@kernel.org>,
- "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
- Pritesh Raithatha <praithatha@nvidia.com>, Timo Alho <talho@nvidia.com>,
- "iommu@lists.linux-foundation.org" <iommu@lists.linux-foundation.org>,
- Nicolin Chen <nicolinc@nvidia.com>,
- "linux-tegra@vger.kernel.org" <linux-tegra@vger.kernel.org>, Yu-Huan
- Hsu <YHsu@nvidia.com>, Thierry Reding <treding@nvidia.com>,
- "robin.murphy@arm.com" <robin.murphy@arm.com>,
- "linux-arm-kernel@lists.infradead.org" <linux-arm-kernel@lists.infradead.org>,
- Bitan Biswas <bbiswas@nvidia.com>
+Content-Disposition: inline
+In-Reply-To: <765078e7-b3ec-af5d-0405-7834ba0f120a@huawei.com>
+User-Agent: Mutt/1.9.4 (2018-02-28)
+Cc: devicetree@vger.kernel.org, Marc Zyngier <maz@kernel.org>,
+ Makarand Pawagi <makarand.pawagi@nxp.com>, linux-pci@vger.kernel.org,
+ Catalin Marinas <catalin.marinas@arm.com>,
+ Diana Craciun <diana.craciun@oss.nxp.com>,
+ "Rafael J. Wysocki" <rjw@rjwysocki.net>, Robin Murphy <robin.murphy@arm.com>,
+ linux-acpi@vger.kernel.org, iommu@lists.linux-foundation.org,
+ Rob Herring <robh+dt@kernel.org>, Sudeep Holla <sudeep.holla@arm.com>,
+ Bjorn Helgaas <bhelgaas@google.com>, Will Deacon <will@kernel.org>,
+ linux-arm-kernel@lists.infradead.org
 X-BeenThere: iommu@lists.linux-foundation.org
 X-Mailman-Version: 2.1.15
 Precedence: list
@@ -116,29 +93,66 @@ Content-Transfer-Encoding: 7bit
 Errors-To: iommu-bounces@lists.linux-foundation.org
 Sender: "iommu" <iommu-bounces@lists.linux-foundation.org>
 
+On Tue, Jun 30, 2020 at 11:06:41AM +0800, Hanjun Guo wrote:
 
-On 29/06/2020 23:49, Krishna Reddy wrote:
->>> +     if (!nvidia_smmu->bases[0])
->>> +             nvidia_smmu->bases[0] = smmu->base;
->>> +
->>> +     return nvidia_smmu->bases[inst] + (page << smmu->pgshift); }
+[...]
+
+> > For devices that aren't described in the DSDT - IORT translations
+> > are determined by their ACPI parent device. Do you see/Have you
+> > found any issue with this approach ?
 > 
->> Not critical -- just a nit: why not put the bases[0] in init()?
+> The spec says "Describes the IO relationships between devices
+> represented in the ACPI namespace.", and in section 3.1.1.3 Named
+> component node, it says:
+
+PCI devices aren't necessarily described in the ACPI namespace and we
+still use IORT to describe them - through the RC node.
+
+> "Named component nodes are used to describe devices that are also
+> included in the Differentiated System Description Table (DSDT). See
+> [ACPI]."
 > 
-> smmu->base is not available during nvidia_smmu_impl_init() call. It is set afterwards in arm-smmu.c.
-> It can't be avoided without changing the devm_ioremap() and impl_init() call order in arm-smmu.c.
+> So from my understanding, the IORT spec for now, can only do ID
+> translations for devices in the DSDT.
 
+I think you can read this multiple ways but this patch does not
+change this concept. What changes, is applying parent's node IORT
+mapping to child nodes with no associated DSDT nodes, it is the
+same thing we do with PCI and the _DMA method - we could update
+the wording in the specs if that clarifies but I don't think this
+deliberately disregards the specifications.
 
-Why don't we move the call to devm_ioremap_resource() to before
-arm_smmu_impl_init() in arm_smmu_device_probe()? From a quick look I
-don't see why we cannot do this and seems better than what we are
-currently doing which is quite confusing and hard to understand.
+> > > For a platform device, if I use its parent's full path name for
+> > > its named component entry, then it will match, but this will violate
+> > > the IORT spec.
+> > 
+> > Can you elaborate on this please I don't get the point you
+> > are making.
+> 
+> For example, device A is not described in DSDT so can't represent
+> as a NC node in IORT. Device B can be described in DSDT and it
+> is the parent of device A, so device B can be represented in IORT
+> with memory access properties and node flags with Substream width
+> and Stall supported info.
+> 
+> When we trying to translate device A's ID, we reuse all the memory
+> access properties and node flags from its parent (device B), but
+> will it the same?
 
-Jon
+I assume so why wouldn't it be ? Why would be describe them in
+a parent-child relationship if that's not how the system looks like
+in HW ?
 
+Do you have a specific example in mind that we should be aware of ?
 
--- 
-nvpublic
+> So the IORT spec don't support this, at least it's pretty vague
+> I think.
+
+I think that's a matter of wording, it can be updated if it needs be,
+reach out if you see any issue with the current approach please.
+
+Thanks,
+Lorenzo
 _______________________________________________
 iommu mailing list
 iommu@lists.linux-foundation.org
