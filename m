@@ -4,89 +4,89 @@ X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 X-Spam-Level: 
 X-Spam-Status: No, score=-9.8 required=3.0 tests=DKIM_INVALID,DKIM_SIGNED,
 	HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_PATCH,MAILING_LIST_MULTI,SIGNED_OFF_BY,
-	SPF_HELO_NONE,SPF_PASS,USER_AGENT_GIT autolearn=ham autolearn_force=no
-	version=3.4.0
+	SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED,USER_AGENT_GIT autolearn=ham
+	autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id B42E4C433E2
-	for <iommu@archiver.kernel.org>; Tue, 30 Jun 2020 23:59:19 +0000 (UTC)
-Received: from whitealder.osuosl.org (smtp1.osuosl.org [140.211.166.138])
+	by smtp.lore.kernel.org (Postfix) with ESMTP id BAB3EC433DF
+	for <iommu@archiver.kernel.org>; Tue, 30 Jun 2020 23:59:21 +0000 (UTC)
+Received: from hemlock.osuosl.org (smtp2.osuosl.org [140.211.166.133])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by mail.kernel.org (Postfix) with ESMTPS id 8854020780
-	for <iommu@archiver.kernel.org>; Tue, 30 Jun 2020 23:59:19 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTPS id 8AD4B20780
+	for <iommu@archiver.kernel.org>; Tue, 30 Jun 2020 23:59:21 +0000 (UTC)
 Authentication-Results: mail.kernel.org;
-	dkim=fail reason="signature verification failed" (2048-bit key) header.d=nvidia.com header.i=@nvidia.com header.b="PP456qCv"
-DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 8854020780
+	dkim=fail reason="signature verification failed" (2048-bit key) header.d=nvidia.com header.i=@nvidia.com header.b="TnWnFpc8"
+DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 8AD4B20780
 Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=nvidia.com
 Authentication-Results: mail.kernel.org; spf=pass smtp.mailfrom=iommu-bounces@lists.linux-foundation.org
 Received: from localhost (localhost [127.0.0.1])
-	by whitealder.osuosl.org (Postfix) with ESMTP id 690778784C;
-	Tue, 30 Jun 2020 23:59:19 +0000 (UTC)
-X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from whitealder.osuosl.org ([127.0.0.1])
-	by localhost (.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
-	with ESMTP id 6JRGABkbob7y; Tue, 30 Jun 2020 23:59:19 +0000 (UTC)
-Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [140.211.9.56])
-	by whitealder.osuosl.org (Postfix) with ESMTP id 0D4B087834;
-	Tue, 30 Jun 2020 23:59:19 +0000 (UTC)
-Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
-	by lists.linuxfoundation.org (Postfix) with ESMTP id 07F85C0865;
-	Tue, 30 Jun 2020 23:59:19 +0000 (UTC)
-Received: from hemlock.osuosl.org (smtp2.osuosl.org [140.211.166.133])
- by lists.linuxfoundation.org (Postfix) with ESMTP id 932C4C016E
- for <iommu@lists.linux-foundation.org>; Tue, 30 Jun 2020 23:59:17 +0000 (UTC)
-Received: from localhost (localhost [127.0.0.1])
- by hemlock.osuosl.org (Postfix) with ESMTP id 826D8887B5
- for <iommu@lists.linux-foundation.org>; Tue, 30 Jun 2020 23:59:17 +0000 (UTC)
+	by hemlock.osuosl.org (Postfix) with ESMTP id 7A2D6889D5;
+	Tue, 30 Jun 2020 23:59:21 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
 Received: from hemlock.osuosl.org ([127.0.0.1])
+	by localhost (.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
+	with ESMTP id zxzZGPwALWPs; Tue, 30 Jun 2020 23:59:20 +0000 (UTC)
+Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [140.211.9.56])
+	by hemlock.osuosl.org (Postfix) with ESMTP id 94E5088AA9;
+	Tue, 30 Jun 2020 23:59:19 +0000 (UTC)
+Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
+	by lists.linuxfoundation.org (Postfix) with ESMTP id 81BC5C08A6;
+	Tue, 30 Jun 2020 23:59:19 +0000 (UTC)
+Received: from silver.osuosl.org (smtp3.osuosl.org [140.211.166.136])
+ by lists.linuxfoundation.org (Postfix) with ESMTP id 5CF32C0865
+ for <iommu@lists.linux-foundation.org>; Tue, 30 Jun 2020 23:59:18 +0000 (UTC)
+Received: from localhost (localhost [127.0.0.1])
+ by silver.osuosl.org (Postfix) with ESMTP id 5966623E65
+ for <iommu@lists.linux-foundation.org>; Tue, 30 Jun 2020 23:59:18 +0000 (UTC)
+X-Virus-Scanned: amavisd-new at osuosl.org
+Received: from silver.osuosl.org ([127.0.0.1])
  by localhost (.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
- with ESMTP id 8ELtYz+s-pEr for <iommu@lists.linux-foundation.org>;
+ with ESMTP id cJ1fSw5UxddI for <iommu@lists.linux-foundation.org>;
  Tue, 30 Jun 2020 23:59:17 +0000 (UTC)
 X-Greylist: domain auto-whitelisted by SQLgrey-1.7.6
 Received: from hqnvemgate26.nvidia.com (hqnvemgate26.nvidia.com
  [216.228.121.65])
- by hemlock.osuosl.org (Postfix) with ESMTPS id 107FF8879D
+ by silver.osuosl.org (Postfix) with ESMTPS id 8A2AF231C8
  for <iommu@lists.linux-foundation.org>; Tue, 30 Jun 2020 23:59:17 +0000 (UTC)
-Received: from hqpgpgate101.nvidia.com (Not Verified[216.228.121.13]) by
+Received: from hqpgpgate102.nvidia.com (Not Verified[216.228.121.13]) by
  hqnvemgate26.nvidia.com (using TLS: TLSv1.2, DES-CBC3-SHA)
- id <B5efbd1c70001>; Tue, 30 Jun 2020 16:59:03 -0700
+ id <B5efbd1c80000>; Tue, 30 Jun 2020 16:59:04 -0700
 Received: from hqmail.nvidia.com ([172.20.161.6])
- by hqpgpgate101.nvidia.com (PGP Universal service);
- Tue, 30 Jun 2020 16:59:16 -0700
+ by hqpgpgate102.nvidia.com (PGP Universal service);
+ Tue, 30 Jun 2020 16:59:17 -0700
 X-PGP-Universal: processed;
- by hqpgpgate101.nvidia.com on Tue, 30 Jun 2020 16:59:16 -0700
-Received: from HQMAIL109.nvidia.com (172.20.187.15) by HQMAIL107.nvidia.com
- (172.20.187.13) with Microsoft SMTP Server (TLS) id 15.0.1473.3; Tue, 30 Jun
+ by hqpgpgate102.nvidia.com on Tue, 30 Jun 2020 16:59:17 -0700
+Received: from HQMAIL105.nvidia.com (172.20.187.12) by HQMAIL109.nvidia.com
+ (172.20.187.15) with Microsoft SMTP Server (TLS) id 15.0.1473.3; Tue, 30 Jun
  2020 23:59:11 +0000
-Received: from hqnvemgw03.nvidia.com (10.124.88.68) by HQMAIL109.nvidia.com
- (172.20.187.15) with Microsoft SMTP Server (TLS) id 15.0.1473.3 via Frontend
+Received: from hqnvemgw03.nvidia.com (10.124.88.68) by HQMAIL105.nvidia.com
+ (172.20.187.12) with Microsoft SMTP Server (TLS) id 15.0.1473.3 via Frontend
  Transport; Tue, 30 Jun 2020 23:59:11 +0000
 Received: from vdumpa-ubuntu.nvidia.com (Not Verified[172.17.173.140]) by
  hqnvemgw03.nvidia.com with Trustwave SEG (v7, 5, 8, 10121)
- id <B5efbd1cf0007>; Tue, 30 Jun 2020 16:59:11 -0700
+ id <B5efbd1cf000d>; Tue, 30 Jun 2020 16:59:11 -0700
 From: Krishna Reddy <vdumpa@nvidia.com>
 To: <joro@8bytes.org>, <will@kernel.org>, <robin.murphy@arm.com>,
  <robh+dt@kernel.org>, <treding@nvidia.com>, <jonathanh@nvidia.com>
-Subject: [PATCH v9 1/4] iommu/arm-smmu: move TLB timeout and spin count macros
-Date: Tue, 30 Jun 2020 16:57:49 -0700
-Message-ID: <20200630235752.8737-2-vdumpa@nvidia.com>
+Subject: [PATCH v9 3/4] dt-bindings: arm-smmu: add binding for Tegra194 SMMU
+Date: Tue, 30 Jun 2020 16:57:51 -0700
+Message-ID: <20200630235752.8737-4-vdumpa@nvidia.com>
 X-Mailer: git-send-email 2.26.2
 In-Reply-To: <20200630235752.8737-1-vdumpa@nvidia.com>
 References: <20200630235752.8737-1-vdumpa@nvidia.com>
 MIME-Version: 1.0
 X-NVConfidentiality: public
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=nvidia.com; s=n1;
- t=1593561543; bh=wmP8aEJrSuDbPANLVhp+EMx58hwLpDh00JZdQDiNzyI=;
+ t=1593561544; bh=lsO6WUFTxN9lFHEUuLsqfufII7AoweScei4UwHkFK5w=;
  h=X-PGP-Universal:From:To:CC:Subject:Date:Message-ID:X-Mailer:
  In-Reply-To:References:MIME-Version:X-NVConfidentiality:
  Content-Transfer-Encoding:Content-Type;
- b=PP456qCveo+JyKZ6hK3+Igrag5/IXQnIgtjTKb971wTGHg4i7b+Z8N+hsfcncbA3L
- QQU28XlFpSNr0SOfYAl9csul1/ZWV5bzdC63GisqbyL4+ff0ziA4puQDO6H2wcPPHY
- EQnTtiMYb1QTPiZ5Ll8Xjq3ZNBbVwvZiL429HxCWqUyoGwFdrhJbCaV3pY4+i2vfKA
- U8HtsOZsidlipphE0USUs/fzPUKdUqSq97rsjaQZ3hHNi9h5FJrqKBYvm9W+QgAuTR
- AcxdJRiQ0FZZif+XjlxwiBI+l2mAbqt9vNGrvovMR25cQEAn2eXj9DAW1XbeQlA5tw
- nX6HuRM+znKxA==
+ b=TnWnFpc8Kt9V+RVBMkd/q3st6w5H4OAtjALEAv3sDIlcWsAuf+4k8Oa/GHUSr3ueQ
+ jwBmrE/xQK/crO3xs/aGtol/oTbyv3lHrZi8Uw7xmAnOM0jYq9FgVXcfVCXnlTHVP+
+ LGUHMgsOzlEtE69Sej6tah0GlNRMq87ymabKBDtOrzCvbxCsdFy5lRQ6AC2yD3NE4j
+ h1HFtIReklGGjrtsUGp0XSe8DitHfCXO+8VkLAkrVB0xcsRxinJBH9E/Y8FsYCgFgj
+ 32ozZUpaCNYivXW2QB4UHVzU5hN4qPx3rsO3kBt4IGEdP6ta7feuwxrfm0KS41Wlja
+ 7PoVkI07PdGBg==
 Cc: snikam@nvidia.com, devicetree@vger.kernel.org, nicoleotsuka@gmail.com,
  mperttunen@nvidia.com, bhuntsman@nvidia.com, yhsu@nvidia.com,
  linux-kernel@vger.kernel.org, talho@nvidia.com,
@@ -110,42 +110,50 @@ Content-Transfer-Encoding: 7bit
 Errors-To: iommu-bounces@lists.linux-foundation.org
 Sender: "iommu" <iommu-bounces@lists.linux-foundation.org>
 
-Move TLB timeout and spin count macros to header file to
-allow using the same values from vendor specific implementations.
+Add binding for NVIDIA's Tegra194 SoC SMMU topology that is based
+on ARM MMU-500.
 
 Signed-off-by: Krishna Reddy <vdumpa@nvidia.com>
 ---
- drivers/iommu/arm-smmu.c | 3 ---
- drivers/iommu/arm-smmu.h | 2 ++
- 2 files changed, 2 insertions(+), 3 deletions(-)
+ .../devicetree/bindings/iommu/arm,smmu.yaml    | 18 ++++++++++++++++++
+ 1 file changed, 18 insertions(+)
 
-diff --git a/drivers/iommu/arm-smmu.c b/drivers/iommu/arm-smmu.c
-index 243bc4cb2705b..d2054178df357 100644
---- a/drivers/iommu/arm-smmu.c
-+++ b/drivers/iommu/arm-smmu.c
-@@ -52,9 +52,6 @@
-  */
- #define QCOM_DUMMY_VAL -1
+diff --git a/Documentation/devicetree/bindings/iommu/arm,smmu.yaml b/Documentation/devicetree/bindings/iommu/arm,smmu.yaml
+index d7ceb4c34423b..662c46e16f07d 100644
+--- a/Documentation/devicetree/bindings/iommu/arm,smmu.yaml
++++ b/Documentation/devicetree/bindings/iommu/arm,smmu.yaml
+@@ -38,6 +38,11 @@ properties:
+               - qcom,sc7180-smmu-500
+               - qcom,sdm845-smmu-500
+           - const: arm,mmu-500
++      - description: NVIDIA SoCs that use more than one "arm,mmu-500"
++        items:
++          - enum:
++              - nvidia,tegra194-smmu
++          - const: arm,mmu-500
+       - items:
+           - const: arm,mmu-500
+           - const: arm,smmu-v2
+@@ -138,6 +143,19 @@ required:
  
--#define TLB_LOOP_TIMEOUT		1000000	/* 1s! */
--#define TLB_SPIN_COUNT			10
--
- #define MSI_IOVA_BASE			0x8000000
- #define MSI_IOVA_LENGTH			0x100000
+ additionalProperties: false
  
-diff --git a/drivers/iommu/arm-smmu.h b/drivers/iommu/arm-smmu.h
-index d172c024be618..c7d0122a7c6ca 100644
---- a/drivers/iommu/arm-smmu.h
-+++ b/drivers/iommu/arm-smmu.h
-@@ -236,6 +236,8 @@ enum arm_smmu_cbar_type {
- /* Maximum number of context banks per SMMU */
- #define ARM_SMMU_MAX_CBS		128
- 
-+#define TLB_LOOP_TIMEOUT		1000000	/* 1s! */
-+#define TLB_SPIN_COUNT			10
- 
- /* Shared driver definitions */
- enum arm_smmu_arch_version {
++allOf:
++  - if:
++      properties:
++        compatible:
++          contains:
++            enum:
++              - nvidia,tegra194-smmu
++    then:
++      properties:
++        reg:
++          minItems: 2
++          maxItems: 3
++
+ examples:
+   - |+
+     /* SMMU with stream matching or stream indexing */
 -- 
 2.26.2
 
