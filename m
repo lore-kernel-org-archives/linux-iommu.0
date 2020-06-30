@@ -7,83 +7,82 @@ X-Spam-Status: No, score=-9.8 required=3.0 tests=DKIM_INVALID,DKIM_SIGNED,
 	SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED,USER_AGENT_GIT autolearn=unavailable
 	autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 05650C433DF
-	for <iommu@archiver.kernel.org>; Tue, 30 Jun 2020 05:51:00 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 4FCEEC433E0
+	for <iommu@archiver.kernel.org>; Tue, 30 Jun 2020 05:54:40 +0000 (UTC)
 Received: from whitealder.osuosl.org (smtp1.osuosl.org [140.211.166.138])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by mail.kernel.org (Postfix) with ESMTPS id A9023206E9
-	for <iommu@archiver.kernel.org>; Tue, 30 Jun 2020 05:50:59 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTPS id 10049206E9
+	for <iommu@archiver.kernel.org>; Tue, 30 Jun 2020 05:54:39 +0000 (UTC)
 Authentication-Results: mail.kernel.org;
-	dkim=fail reason="signature verification failed" (2048-bit key) header.d=google.com header.i=@google.com header.b="qKfJwCm7"
-DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org A9023206E9
+	dkim=fail reason="signature verification failed" (2048-bit key) header.d=google.com header.i=@google.com header.b="pUFDPhuB"
+DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 10049206E9
 Authentication-Results: mail.kernel.org; dmarc=none (p=none dis=none) header.from=lists.linux-foundation.org
 Authentication-Results: mail.kernel.org; spf=pass smtp.mailfrom=iommu-bounces@lists.linux-foundation.org
 Received: from localhost (localhost [127.0.0.1])
-	by whitealder.osuosl.org (Postfix) with ESMTP id 6164687CBE;
-	Tue, 30 Jun 2020 05:50:59 +0000 (UTC)
+	by whitealder.osuosl.org (Postfix) with ESMTP id C20FC8793D;
+	Tue, 30 Jun 2020 05:54:39 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
 Received: from whitealder.osuosl.org ([127.0.0.1])
 	by localhost (.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
-	with ESMTP id ZJmkcUZcRENZ; Tue, 30 Jun 2020 05:50:58 +0000 (UTC)
+	with ESMTP id u+lc8PuZXcGk; Tue, 30 Jun 2020 05:54:38 +0000 (UTC)
 Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [140.211.9.56])
-	by whitealder.osuosl.org (Postfix) with ESMTP id 8370887CA3;
-	Tue, 30 Jun 2020 05:50:58 +0000 (UTC)
+	by whitealder.osuosl.org (Postfix) with ESMTP id 31B70878BC;
+	Tue, 30 Jun 2020 05:54:38 +0000 (UTC)
 Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
-	by lists.linuxfoundation.org (Postfix) with ESMTP id 4EF55C07FF;
-	Tue, 30 Jun 2020 05:50:58 +0000 (UTC)
-Received: from silver.osuosl.org (smtp3.osuosl.org [140.211.166.136])
- by lists.linuxfoundation.org (Postfix) with ESMTP id 4A363C016E
- for <iommu@lists.linux-foundation.org>; Tue, 30 Jun 2020 05:50:56 +0000 (UTC)
+	by lists.linuxfoundation.org (Postfix) with ESMTP id E8A4AC07FF;
+	Tue, 30 Jun 2020 05:54:37 +0000 (UTC)
+Received: from hemlock.osuosl.org (smtp2.osuosl.org [140.211.166.133])
+ by lists.linuxfoundation.org (Postfix) with ESMTP id C3530C016E
+ for <iommu@lists.linux-foundation.org>; Tue, 30 Jun 2020 05:54:36 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
- by silver.osuosl.org (Postfix) with ESMTP id 1F36420377
- for <iommu@lists.linux-foundation.org>; Tue, 30 Jun 2020 05:50:56 +0000 (UTC)
+ by hemlock.osuosl.org (Postfix) with ESMTP id B1907883B0
+ for <iommu@lists.linux-foundation.org>; Tue, 30 Jun 2020 05:54:36 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from silver.osuosl.org ([127.0.0.1])
+Received: from hemlock.osuosl.org ([127.0.0.1])
  by localhost (.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
- with ESMTP id BsZ3uyyHJ8V7 for <iommu@lists.linux-foundation.org>;
- Tue, 30 Jun 2020 05:50:55 +0000 (UTC)
-X-Greylist: delayed 00:54:08 by SQLgrey-1.7.6
-Received: from mail-oo1-f74.google.com (mail-oo1-f74.google.com
- [209.85.161.74])
- by silver.osuosl.org (Postfix) with ESMTPS id E024D20357
- for <iommu@lists.linux-foundation.org>; Tue, 30 Jun 2020 05:50:54 +0000 (UTC)
-Received: by mail-oo1-f74.google.com with SMTP id f20so770471oot.7
- for <iommu@lists.linux-foundation.org>; Mon, 29 Jun 2020 22:50:54 -0700 (PDT)
+ with ESMTP id rSicYj4L3dQJ for <iommu@lists.linux-foundation.org>;
+ Tue, 30 Jun 2020 05:54:35 +0000 (UTC)
+X-Greylist: delayed 00:56:45 by SQLgrey-1.7.6
+Received: from mail-pf1-f202.google.com (mail-pf1-f202.google.com
+ [209.85.210.202])
+ by hemlock.osuosl.org (Postfix) with ESMTPS id 803FC8839E
+ for <iommu@lists.linux-foundation.org>; Tue, 30 Jun 2020 05:54:35 +0000 (UTC)
+Received: by mail-pf1-f202.google.com with SMTP id d10so7496208pfn.21
+ for <iommu@lists.linux-foundation.org>; Mon, 29 Jun 2020 22:54:35 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=google.com; s=20161025;
  h=date:in-reply-to:message-id:mime-version:references:subject:from:to
- :cc; bh=4vDncP2teZqEXBfb800/aEh0NO8oHsdmcXXXRRGWulY=;
- b=qKfJwCm7AT0BlfktAUmwXkHFpGx7Oh79bjH+pxC9SFGuzzGtOsIQxWs5Yj5phY/cqR
- 45gYinm4T35G4tjqFwkV9aSr7wWQxsY1P4wUDPVSLq7L144QzVPw9Je6ohlEDpSLC9nm
- Uqd6Gb5/YhRsTodxBhPYntMsn2Gfo/0bCSgfjk2MiN5Cc3Bivrb2skYwEKddwTq9qSSj
- 31cbZbHQz15k9yatl1muDzJiSkFI+87X7Xa5iBSnZami9myyuYwEW/ifoFJAh5sMur4H
- zysOT+Xrvm66HaayFqV0f6nbFP2WrzQBAb4HBOufuAhGFqxcrqI+6IeKEiNqG8A/jaLj
- KggQ==
+ :cc; bh=LmsPf5jTSure7oX6gJRaMQO8tovJK9Co8tSqz8HCgCs=;
+ b=pUFDPhuB/v2g/yvpNhhyyJ30IsV514WJIVZPfX5DchICNB/3GB3lrCK6wRqtA9Kdv1
+ KirdW6N6jhQU3OKtY9lACnobzV8sB8+2CkYIz1YnW+Loh1i2w3neTw5UWwOXfihNQ1ff
+ nA+KP13GeFBnWQp2ys6B8/qyELYdICgAPBmgVsWtLeEcU29Kws4iqqXBD7tOtSkYZdyu
+ urkBWk/wQDdyOy2xwdLQOSVBFa0eV3POZYDjntsphRtU0JA474jLJpe4ICxh6YiBV06Q
+ SQKxby71IyV7+sKNgl0upW0Pkq2p65CVWwppw1WE7mzrU9PiekhEdfP7SJASalXvti76
+ 5afw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
  d=1e100.net; s=20161025;
  h=x-gm-message-state:date:in-reply-to:message-id:mime-version
  :references:subject:from:to:cc;
- bh=4vDncP2teZqEXBfb800/aEh0NO8oHsdmcXXXRRGWulY=;
- b=M1/WDZ3S3d880qVDtjMzB16JJRo70owQQVaWdsvD/v5t6PvLsWGKIfTnDrT+XgOacF
- YaJ5Yt+svQXV4f8i50gU6wrGcwclTfhwB53oFfK5hXkNDY9aL4Bo1OJ/+JeWWTyxIWMV
- eys2a3QP9QJQrwIVcOyba34oreOCJoPjb2XahQpbJD8TwqCiIe0bHKks06VQo8u9dTqw
- 597LU67xD6QEecAaS23JVUYVuFNSM2ouGH1MgU0Ja140mKHX+/IuBq2SN82yVbKId/g+
- rhRaYGHF59dPj87TsqcBgnINBEcX2i9faMy/6bDQLivy2qmoLQgu0LdkHCn12Ln1+zn6
- jScA==
-X-Gm-Message-State: AOAM53048FGH55K4830FKeQFh8Gal9reszzfT8JsfuhQcEaURKDbIP9V
- I1tbPZqNIvzqNh8ud+qBWgn2xQJ3dNBl
-X-Google-Smtp-Source: ABdhPJy7/9qcpqbednFkmBX9y9QX6DThdAm5Y+t91G8xTDRUtBBKWkL0VbqPTiirQl0bhQoYHnqP79Ft+Iel
-X-Received: by 2002:a17:90a:304:: with SMTP id
- 4mr20033768pje.219.1593492601508; 
- Mon, 29 Jun 2020 21:50:01 -0700 (PDT)
-Date: Mon, 29 Jun 2020 21:49:43 -0700
+ bh=LmsPf5jTSure7oX6gJRaMQO8tovJK9Co8tSqz8HCgCs=;
+ b=mMPloYyEQD3KPjrVDAdSoz/yXGML2N6EF8sxcrZxzPuqGGLwq3do8oUgifl3/c3cLt
+ /qChsl/DXcsbDkHatYa/Bc1dbrZ693fXgS+O4DSyKjwbw/U+qD88C5YytkddheMV0bPZ
+ LOYZxI36gXmrB3zdUT8JU8Rlx+l6EukX9+XyctjiRkvOJmw47vvXxCV8S5WgudOA9tD+
+ aEs8snh2O8YsVz3AVVXK7T/GuI4UaSzDksKgEWM+AVQZ/zHVR40W7vzINBVA7zL8e085
+ w9I1nzd4MCUahKM7parHR4m6D99+kaXgY7soziyQtQXa5Mv9r/8j93xtxUUYMKYQq78G
+ 5Plw==
+X-Gm-Message-State: AOAM533rDZ17UdnT0WEWJusHim0nJCzWhrGTcG6r7ykDsU2+7B0eHTiW
+ 0T2mkFGkfN1Gr7/ui85o0x1JCnZKa419
+X-Google-Smtp-Source: ABdhPJy6mFvmXqDrITIrdGqh6QYCNW4V7diNoS4nldl3h9MgHWUBDraMbYOO32BHpWqaZ1XfnXNP7f0yffta
+X-Received: by 2002:a0c:83c4:: with SMTP id k62mr4468584qva.19.1593492597294; 
+ Mon, 29 Jun 2020 21:49:57 -0700 (PDT)
+Date: Mon, 29 Jun 2020 21:49:41 -0700
 In-Reply-To: <20200630044943.3425049-1-rajatja@google.com>
-Message-Id: <20200630044943.3425049-8-rajatja@google.com>
+Message-Id: <20200630044943.3425049-6-rajatja@google.com>
 Mime-Version: 1.0
 References: <20200630044943.3425049-1-rajatja@google.com>
 X-Mailer: git-send-email 2.27.0.212.ge8ba1cc988-goog
-Subject: [PATCH v2 7/7] PCI: Add parameter to disable attaching external
- devices
+Subject: [PATCH v2 5/7] driver core: Add device location to "struct device"
+ and expose it in sysfs
 To: David Woodhouse <dwmw2@infradead.org>, Lu Baolu <baolu.lu@linux.intel.com>,
  Joerg Roedel <joro@8bytes.org>, Bjorn Helgaas <bhelgaas@google.com>, 
  "Rafael J. Wysocki" <rjw@rjwysocki.net>, Len Brown <lenb@kernel.org>,
@@ -126,93 +125,194 @@ Content-Transfer-Encoding: 7bit
 Errors-To: iommu-bounces@lists.linux-foundation.org
 Sender: "iommu" <iommu-bounces@lists.linux-foundation.org>
 
-Introduce a PCI parameter that disables the automatic attachment of
-external devices to their drivers.
+Add a new (optional) field to denote the physical location of a device
+in the system, and expose it in sysfs. This was discussed here:
+https://lore.kernel.org/linux-acpi/20200618184621.GA446639@kroah.com/
 
-This is needed to allow an admin to control which drivers he wants to
-allow on external ports. For more context, see threads at:
-https://lore.kernel.org/linux-pci/20200609210400.GA1461839@bjorn-Precision-5520/
-https://lore.kernel.org/linux-pci/CACK8Z6H-DZQYBMqtU5_H5TTwwn35Q7Yysm9a7Wj0twfQP8QBzA@mail.gmail.com/
-
-drivers_autoprobe can only be disabled after userspace comes up. So
-any external devices that were plugged in before boot may still bind
-to drivers before userspace gets a chance to clear drivers_autoprobe.
-Another problem is that even with drivers_autoprobe=0, the hot-added
-PCI devices are bound to drivers because PCI explicitly calls
-device_attach() asking driver core to find and attach a driver. This
-patch helps with both of these problems.
+(The primary choice for attribute name i.e. "location" is already
+exposed as an ABI elsewhere, so settled for "site"). Individual buses
+that want to support this new attribute can opt-in by setting a flag in
+bus_type, and then populating the location of device while enumerating
+it.
 
 Signed-off-by: Rajat Jain <rajatja@google.com>
 ---
-v2: Use the newly introduced dev_is_external() from device core
-    commit log elaborated
+v2: (Initial version)
 
- drivers/pci/bus.c | 11 ++++++++---
- drivers/pci/pci.c |  9 +++++++++
- drivers/pci/pci.h |  1 +
- 3 files changed, 18 insertions(+), 3 deletions(-)
+ drivers/base/core.c        | 35 +++++++++++++++++++++++++++++++
+ include/linux/device.h     | 42 ++++++++++++++++++++++++++++++++++++++
+ include/linux/device/bus.h |  8 ++++++++
+ 3 files changed, 85 insertions(+)
 
-diff --git a/drivers/pci/bus.c b/drivers/pci/bus.c
-index 3cef835b375fd..c11725bccffb0 100644
---- a/drivers/pci/bus.c
-+++ b/drivers/pci/bus.c
-@@ -321,9 +321,14 @@ void pci_bus_add_device(struct pci_dev *dev)
- 	pci_bridge_d3_update(dev);
- 
- 	dev->match_driver = true;
--	retval = device_attach(&dev->dev);
--	if (retval < 0 && retval != -EPROBE_DEFER)
--		pci_warn(dev, "device attach failed (%d)\n", retval);
-+
-+	if (pci_dont_attach_external_devs && dev_is_external(&dev->dev)) {
-+		pci_info(dev, "not attaching external device\n");
-+	} else {
-+		retval = device_attach(&dev->dev);
-+		if (retval < 0 && retval != -EPROBE_DEFER)
-+			pci_warn(dev, "device attach failed (%d)\n", retval);
-+	}
- 
- 	pci_dev_assign_added(dev, true);
+diff --git a/drivers/base/core.c b/drivers/base/core.c
+index 67d39a90b45c7..14c815526b7fa 100644
+--- a/drivers/base/core.c
++++ b/drivers/base/core.c
+@@ -1778,6 +1778,32 @@ static ssize_t online_store(struct device *dev, struct device_attribute *attr,
  }
-diff --git a/drivers/pci/pci.c b/drivers/pci/pci.c
-index 35f25ac39167b..3ebcfa8b33178 100644
---- a/drivers/pci/pci.c
-+++ b/drivers/pci/pci.c
-@@ -128,6 +128,13 @@ static bool pcie_ats_disabled;
- /* If set, the PCI config space of each device is printed during boot. */
- bool pci_early_dump;
+ static DEVICE_ATTR_RW(online);
  
-+/*
-+ * If set, the devices behind external-facing bridges (as marked by firmware)
-+ * shall not be attached automatically. Userspace will need to attach them
-+ * manually: echo <pci device>  > /sys/bus/pci/drivers/<driver>/bind
-+ */
-+bool pci_dont_attach_external_devs;
++static ssize_t site_show(struct device *dev, struct device_attribute *attr,
++			 char *buf)
++{
++	const char *site;
 +
- bool pci_ats_disabled(void)
++	device_lock(dev);
++	switch (dev->site) {
++	case SITE_INTERNAL:
++		site = "INTERNAL";
++		break;
++	case SITE_EXTENDED:
++		site = "EXTENDED";
++		break;
++	case SITE_EXTERNAL:
++		site = "EXTERNAL";
++		break;
++	case SITE_UNKNOWN:
++	default:
++		site = "UNKNOWN";
++		break;
++	}
++	device_unlock(dev);
++	return sprintf(buf, "%s\n", site);
++}
++static DEVICE_ATTR_RO(site);
++
+ int device_add_groups(struct device *dev, const struct attribute_group **groups)
  {
- 	return pcie_ats_disabled;
-@@ -6539,6 +6546,8 @@ static int __init pci_setup(char *str)
- 				pci_add_flags(PCI_SCAN_ALL_PCIE_DEVS);
- 			} else if (!strncmp(str, "disable_acs_redir=", 18)) {
- 				disable_acs_redir_param = str + 18;
-+			} else if (!strcmp(str, "dont_attach_external_devs")) {
-+				pci_dont_attach_external_devs = true;
- 			} else {
- 				pr_err("PCI: Unknown option `%s'\n", str);
- 			}
-diff --git a/drivers/pci/pci.h b/drivers/pci/pci.h
-index 12fb79fbe29d3..875fecb9b2612 100644
---- a/drivers/pci/pci.h
-+++ b/drivers/pci/pci.h
-@@ -13,6 +13,7 @@
+ 	return sysfs_create_groups(&dev->kobj, groups);
+@@ -1949,8 +1975,16 @@ static int device_add_attrs(struct device *dev)
+ 			goto err_remove_dev_groups;
+ 	}
  
- extern const unsigned char pcie_link_speed[];
- extern bool pci_early_dump;
-+extern bool pci_dont_attach_external_devs;
++	if (bus_supports_site(dev->bus)) {
++		error = device_create_file(dev, &dev_attr_site);
++		if (error)
++			goto err_remove_dev_attr_online;
++	}
++
+ 	return 0;
  
- bool pcie_cap_has_lnkctl(const struct pci_dev *dev);
- bool pcie_cap_has_rtctl(const struct pci_dev *dev);
++ err_remove_dev_attr_online:
++	device_remove_file(dev, &dev_attr_online);
+  err_remove_dev_groups:
+ 	device_remove_groups(dev, dev->groups);
+  err_remove_type_groups:
+@@ -1968,6 +2002,7 @@ static void device_remove_attrs(struct device *dev)
+ 	struct class *class = dev->class;
+ 	const struct device_type *type = dev->type;
+ 
++	device_remove_file(dev, &dev_attr_site);
+ 	device_remove_file(dev, &dev_attr_online);
+ 	device_remove_groups(dev, dev->groups);
+ 
+diff --git a/include/linux/device.h b/include/linux/device.h
+index 15460a5ac024a..a4143735ae712 100644
+--- a/include/linux/device.h
++++ b/include/linux/device.h
+@@ -428,6 +428,31 @@ enum dl_dev_state {
+ 	DL_DEV_UNBINDING,
+ };
+ 
++/**
++ * enum device_site - Physical location of the device in the system.
++ * The semantics of values depend on subsystem / bus:
++ *
++ * @SITE_UNKNOWN:  Location is Unknown (default)
++ *
++ * @SITE_INTERNAL: Device is internal to the system, and cannot be (easily)
++ *                 removed. E.g. SoC internal devices, onboard soldered
++ *                 devices, internal M.2 cards (that cannot be removed
++ *                 without opening the chassis).
++ * @SITE_EXTENDED: Device sits an extension of the system. E.g. devices
++ *                 on external PCIe trays, docking stations etc. These
++ *                 devices may be removable, but are generally housed
++ *                 internally on an extension board, so they are removed
++ *                 only when that whole extension board is removed.
++ * @SITE_EXTERNAL: Devices truly external to the system (i.e. plugged on
++ *                 an external port) that may be removed or added frequently.
++ */
++enum device_site {
++	SITE_UNKNOWN = 0,
++	SITE_INTERNAL,
++	SITE_EXTENDED,
++	SITE_EXTERNAL,
++};
++
+ /**
+  * struct dev_links_info - Device data related to device links.
+  * @suppliers: List of links to supplier devices.
+@@ -513,6 +538,7 @@ struct dev_links_info {
+  * 		device (i.e. the bus driver that discovered the device).
+  * @iommu_group: IOMMU group the device belongs to.
+  * @iommu:	Per device generic IOMMU runtime data
++ * @site:	Physical location of the device w.r.t. the system
+  *
+  * @offline_disabled: If set, the device is permanently online.
+  * @offline:	Set after successful invocation of bus type's .offline().
+@@ -613,6 +639,8 @@ struct device {
+ 	struct iommu_group	*iommu_group;
+ 	struct dev_iommu	*iommu;
+ 
++	enum device_site	site;	/* Device physical location */
++
+ 	bool			offline_disabled:1;
+ 	bool			offline:1;
+ 	bool			of_node_reused:1;
+@@ -806,6 +834,20 @@ static inline bool dev_has_sync_state(struct device *dev)
+ 	return false;
+ }
+ 
++static inline int dev_set_site(struct device *dev, enum device_site site)
++{
++	if (site < SITE_UNKNOWN || site > SITE_EXTERNAL)
++		return -EINVAL;
++
++	dev->site = site;
++	return 0;
++}
++
++static inline bool dev_is_external(struct device *dev)
++{
++	return dev->site == SITE_EXTERNAL;
++}
++
+ /*
+  * High level routines for use by the bus drivers
+  */
+diff --git a/include/linux/device/bus.h b/include/linux/device/bus.h
+index 1ea5e1d1545bd..e1079772e45af 100644
+--- a/include/linux/device/bus.h
++++ b/include/linux/device/bus.h
+@@ -69,6 +69,8 @@ struct fwnode_handle;
+  * @lock_key:	Lock class key for use by the lock validator
+  * @need_parent_lock:	When probing or removing a device on this bus, the
+  *			device core should lock the device's parent.
++ * @supports_site:	Bus can differentiate between internal/external devices
++ *			and thus supports the device "site" attribute.
+  *
+  * A bus is a channel between the processor and one or more devices. For the
+  * purposes of the device model, all devices are connected via a bus, even if
+@@ -112,6 +114,7 @@ struct bus_type {
+ 	struct lock_class_key lock_key;
+ 
+ 	bool need_parent_lock;
++	bool supports_site;
+ };
+ 
+ extern int __must_check bus_register(struct bus_type *bus);
+@@ -246,6 +249,11 @@ bus_find_device_by_acpi_dev(struct bus_type *bus, const void *adev)
+ }
+ #endif
+ 
++static inline bool bus_supports_site(struct bus_type *bus)
++{
++	return bus && bus->supports_site;
++}
++
+ struct device *subsys_find_device_by_id(struct bus_type *bus, unsigned int id,
+ 					struct device *hint);
+ int bus_for_each_drv(struct bus_type *bus, struct device_driver *start,
 -- 
 2.27.0.212.ge8ba1cc988-goog
 
