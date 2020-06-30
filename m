@@ -2,63 +2,65 @@ Return-Path: <SRS0=0Jez=AL=lists.linux-foundation.org=iommu-bounces@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-8.5 required=3.0 tests=HEADER_FROM_DIFFERENT_DOMAINS,
-	INCLUDES_PATCH,MAILING_LIST_MULTI,SIGNED_OFF_BY,SPF_HELO_NONE,SPF_PASS,
-	URIBL_BLOCKED,USER_AGENT_SANE_1 autolearn=ham autolearn_force=no version=3.4.0
+X-Spam-Status: No, score=-5.5 required=3.0 tests=HEADER_FROM_DIFFERENT_DOMAINS,
+	MAILING_LIST_MULTI,SIGNED_OFF_BY,SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED,
+	USER_AGENT_SANE_1 autolearn=ham autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 64DDCC433E0
-	for <iommu@archiver.kernel.org>; Tue, 30 Jun 2020 09:30:48 +0000 (UTC)
-Received: from fraxinus.osuosl.org (smtp4.osuosl.org [140.211.166.137])
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 6D729C433E1
+	for <iommu@archiver.kernel.org>; Tue, 30 Jun 2020 09:33:31 +0000 (UTC)
+Received: from silver.osuosl.org (smtp3.osuosl.org [140.211.166.136])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by mail.kernel.org (Postfix) with ESMTPS id 2EE0F2073E
-	for <iommu@archiver.kernel.org>; Tue, 30 Jun 2020 09:30:48 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 2EE0F2073E
+	by mail.kernel.org (Postfix) with ESMTPS id 3FC742073E
+	for <iommu@archiver.kernel.org>; Tue, 30 Jun 2020 09:33:31 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 3FC742073E
 Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=8bytes.org
 Authentication-Results: mail.kernel.org; spf=pass smtp.mailfrom=iommu-bounces@lists.linux-foundation.org
 Received: from localhost (localhost [127.0.0.1])
-	by fraxinus.osuosl.org (Postfix) with ESMTP id EC20786EBA;
-	Tue, 30 Jun 2020 09:30:47 +0000 (UTC)
+	by silver.osuosl.org (Postfix) with ESMTP id 0C56D2202C;
+	Tue, 30 Jun 2020 09:33:31 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from fraxinus.osuosl.org ([127.0.0.1])
+Received: from silver.osuosl.org ([127.0.0.1])
 	by localhost (.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
-	with ESMTP id 0rnEm40URmP4; Tue, 30 Jun 2020 09:30:47 +0000 (UTC)
+	with ESMTP id YWifHAt3v9CJ; Tue, 30 Jun 2020 09:33:30 +0000 (UTC)
 Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [140.211.9.56])
-	by fraxinus.osuosl.org (Postfix) with ESMTP id 78C0586EA1;
-	Tue, 30 Jun 2020 09:30:47 +0000 (UTC)
+	by silver.osuosl.org (Postfix) with ESMTP id 160992035D;
+	Tue, 30 Jun 2020 09:33:30 +0000 (UTC)
 Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
-	by lists.linuxfoundation.org (Postfix) with ESMTP id 6756BC0865;
-	Tue, 30 Jun 2020 09:30:47 +0000 (UTC)
-Received: from whitealder.osuosl.org (smtp1.osuosl.org [140.211.166.138])
- by lists.linuxfoundation.org (Postfix) with ESMTP id A9C01C016E
- for <iommu@lists.linux-foundation.org>; Tue, 30 Jun 2020 09:30:45 +0000 (UTC)
+	by lists.linuxfoundation.org (Postfix) with ESMTP id E3086C0865;
+	Tue, 30 Jun 2020 09:33:29 +0000 (UTC)
+Received: from silver.osuosl.org (smtp3.osuosl.org [140.211.166.136])
+ by lists.linuxfoundation.org (Postfix) with ESMTP id C2EDCC016E
+ for <iommu@lists.linux-foundation.org>; Tue, 30 Jun 2020 09:33:28 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
- by whitealder.osuosl.org (Postfix) with ESMTP id 97E7387D5C
- for <iommu@lists.linux-foundation.org>; Tue, 30 Jun 2020 09:30:45 +0000 (UTC)
+ by silver.osuosl.org (Postfix) with ESMTP id A352C215DF
+ for <iommu@lists.linux-foundation.org>; Tue, 30 Jun 2020 09:33:28 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from whitealder.osuosl.org ([127.0.0.1])
+Received: from silver.osuosl.org ([127.0.0.1])
  by localhost (.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
- with ESMTP id d0mHe5st+4zr for <iommu@lists.linux-foundation.org>;
- Tue, 30 Jun 2020 09:30:44 +0000 (UTC)
+ with ESMTP id hQSANSn6VByE for <iommu@lists.linux-foundation.org>;
+ Tue, 30 Jun 2020 09:33:27 +0000 (UTC)
 X-Greylist: from auto-whitelisted by SQLgrey-1.7.6
 Received: from theia.8bytes.org (8bytes.org [81.169.241.247])
- by whitealder.osuosl.org (Postfix) with ESMTPS id 3BB7F87C42
- for <iommu@lists.linux-foundation.org>; Tue, 30 Jun 2020 09:30:44 +0000 (UTC)
+ by silver.osuosl.org (Postfix) with ESMTPS id 899322035D
+ for <iommu@lists.linux-foundation.org>; Tue, 30 Jun 2020 09:33:27 +0000 (UTC)
 Received: by theia.8bytes.org (Postfix, from userid 1000)
- id 2EEDB26B; Tue, 30 Jun 2020 11:30:41 +0200 (CEST)
-Date: Tue, 30 Jun 2020 11:30:39 +0200
+ id 1479826B; Tue, 30 Jun 2020 11:33:26 +0200 (CEST)
+Date: Tue, 30 Jun 2020 11:33:24 +0200
 From: Joerg Roedel <joro@8bytes.org>
-To: Sebastian Ott <sebott@amazon.de>
-Subject: Re: [PATCH 3/3] iommu/amd: Actually enforce geometry aperture
-Message-ID: <20200630093039.GC28824@8bytes.org>
-References: <20200605145655.13639-1-sebott@amazon.de>
- <20200605145655.13639-4-sebott@amazon.de>
+To: Joe Perches <joe@perches.com>
+Subject: Re: [Possible PATCH] iommu/qcom: Change CONFIG_BIG_ENDIAN to
+ CONFIG_CPU_BIG_ENDIAN
+Message-ID: <20200630093324.GD28824@8bytes.org>
+References: <5a663096b489b86472fe3bfbd5138c411d669bad.camel@perches.com>
 MIME-Version: 1.0
 Content-Disposition: inline
-In-Reply-To: <20200605145655.13639-4-sebott@amazon.de>
+In-Reply-To: <5a663096b489b86472fe3bfbd5138c411d669bad.camel@perches.com>
 User-Agent: Mutt/1.10.1 (2018-07-13)
-Cc: Benjamin Serebrin <serebrin@amazon.com>, Filippo Sironi <sironi@amazon.de>,
- iommu@lists.linux-foundation.org
+Cc: linux-arm-msm@vger.kernel.org, iommu@lists.linux-foundation.org,
+ linux-kernel <linux-kernel@vger.kernel.org>, Andy Gross <agross@kernel.org>,
+ Andrew Morton <akpm@linux-foundation.org>,
+ Bjorn Andersson <bjorn.andersson@linaro.org>
 X-BeenThere: iommu@lists.linux-foundation.org
 X-Mailman-Version: 2.1.15
 Precedence: list
@@ -76,40 +78,22 @@ Content-Transfer-Encoding: 7bit
 Errors-To: iommu-bounces@lists.linux-foundation.org
 Sender: "iommu" <iommu-bounces@lists.linux-foundation.org>
 
-Hi Sebastian,
-
-On Fri, Jun 05, 2020 at 04:56:55PM +0200, Sebastian Ott wrote:
-> Add a check to enforce that I/O virtual addresses picked by iommu API
-> users stay within the domains geometry aperture.
+On Sat, Jun 06, 2020 at 12:16:17PM -0700, Joe Perches wrote:
+> CONFIG_BIG_ENDIAN does not exist as a Kconfig symbol.
 > 
-> Signed-off-by: Sebastian Ott <sebott@amazon.de>
+> Signed-off-by: Joe Perches <joe@perches.com>
 > ---
->  drivers/iommu/amd_iommu.c | 5 +++++
->  1 file changed, 5 insertions(+)
 > 
-> diff --git a/drivers/iommu/amd_iommu.c b/drivers/iommu/amd_iommu.c
-> index d2e79e27778e..6485e2081706 100644
-> --- a/drivers/iommu/amd_iommu.c
-> +++ b/drivers/iommu/amd_iommu.c
-> @@ -2618,6 +2618,11 @@ static int amd_iommu_map(struct iommu_domain *dom, unsigned long iova,
->  	if (pgtable.mode == PAGE_MODE_NONE)
->  		return -EINVAL;
->  
-> +	if (dom->geometry.force_aperture &&
-> +	    (iova < dom->geometry.aperture_start ||
-> +	     iova + page_size - 1 > dom->geometry.aperture_end))
-> +		return -EINVAL;
-> +
->  	if (iommu_prot & IOMMU_READ)
->  		prot |= IOMMU_PROT_IR;
->  	if (iommu_prot & IOMMU_WRITE)
+> I don't have the hardware, so I can't tell if this is a
+> correct change, but it is a logical one.
+> 
+> Found by a test script that looks for IS_ENABLED(FOO)
+> where FOO must also exist in Kconfig files.
+> 
+>  drivers/iommu/qcom_iommu.c | 2 +-
+>  1 file changed, 1 insertion(+), 1 deletion(-)
 
-This patch need also make iommu_setup_dma_ops() aware of the aperture
-limits.
-
-Regards,
-
-	Joerg
+Applied, thanks.
 _______________________________________________
 iommu mailing list
 iommu@lists.linux-foundation.org
