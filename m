@@ -7,66 +7,66 @@ X-Spam-Status: No, score=-10.0 required=3.0
 	SIGNED_OFF_BY,SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED,USER_AGENT_GIT
 	autolearn=ham autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id B7997C433E1
+	by smtp.lore.kernel.org (Postfix) with ESMTP id F1A0AC433E3
 	for <iommu@archiver.kernel.org>; Tue, 30 Jun 2020 21:01:15 +0000 (UTC)
 Received: from hemlock.osuosl.org (smtp2.osuosl.org [140.211.166.133])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by mail.kernel.org (Postfix) with ESMTPS id 92AB52074D
+	by mail.kernel.org (Postfix) with ESMTPS id CF30F2074D
 	for <iommu@archiver.kernel.org>; Tue, 30 Jun 2020 21:01:15 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 92AB52074D
+DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org CF30F2074D
 Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=linux.intel.com
 Authentication-Results: mail.kernel.org; spf=pass smtp.mailfrom=iommu-bounces@lists.linux-foundation.org
 Received: from localhost (localhost [127.0.0.1])
-	by hemlock.osuosl.org (Postfix) with ESMTP id 60867884ED;
+	by hemlock.osuosl.org (Postfix) with ESMTP id 9DEE1884F3;
 	Tue, 30 Jun 2020 21:01:15 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
 Received: from hemlock.osuosl.org ([127.0.0.1])
 	by localhost (.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
-	with ESMTP id 17cx2IY9qn2k; Tue, 30 Jun 2020 21:01:13 +0000 (UTC)
+	with ESMTP id h8JxLFAp6KQD; Tue, 30 Jun 2020 21:01:14 +0000 (UTC)
 Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [140.211.9.56])
-	by hemlock.osuosl.org (Postfix) with ESMTP id B1778883DC;
+	by hemlock.osuosl.org (Postfix) with ESMTP id D718388523;
 	Tue, 30 Jun 2020 21:01:13 +0000 (UTC)
 Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
-	by lists.linuxfoundation.org (Postfix) with ESMTP id 8FCABC08A6;
+	by lists.linuxfoundation.org (Postfix) with ESMTP id C4BC6C08A6;
 	Tue, 30 Jun 2020 21:01:13 +0000 (UTC)
 Received: from whitealder.osuosl.org (smtp1.osuosl.org [140.211.166.138])
- by lists.linuxfoundation.org (Postfix) with ESMTP id 75F95C0894
- for <iommu@lists.linux-foundation.org>; Tue, 30 Jun 2020 21:01:11 +0000 (UTC)
+ by lists.linuxfoundation.org (Postfix) with ESMTP id 0CECFC016E
+ for <iommu@lists.linux-foundation.org>; Tue, 30 Jun 2020 21:01:12 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
- by whitealder.osuosl.org (Postfix) with ESMTP id 5C0678809D
+ by whitealder.osuosl.org (Postfix) with ESMTP id EAB2388100
  for <iommu@lists.linux-foundation.org>; Tue, 30 Jun 2020 21:01:11 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
 Received: from whitealder.osuosl.org ([127.0.0.1])
  by localhost (.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
- with ESMTP id lMceKEHuEJHu for <iommu@lists.linux-foundation.org>;
- Tue, 30 Jun 2020 21:01:08 +0000 (UTC)
+ with ESMTP id XPQvG5QhwWh2 for <iommu@lists.linux-foundation.org>;
+ Tue, 30 Jun 2020 21:01:07 +0000 (UTC)
 X-Greylist: domain auto-whitelisted by SQLgrey-1.7.6
 Received: from mga03.intel.com (mga03.intel.com [134.134.136.65])
- by whitealder.osuosl.org (Postfix) with ESMTPS id CAA1286569
+ by whitealder.osuosl.org (Postfix) with ESMTPS id 58E6F880B4
  for <iommu@lists.linux-foundation.org>; Tue, 30 Jun 2020 21:01:07 +0000 (UTC)
-IronPort-SDR: xYWFl/8aoIijSeyUcIrDOlS/TT0fIBos3yhtaDPJPr6aN2xIsTFhujixChxVpKHy/VK2cA5VDr
- wGG4L+dbaljQ==
-X-IronPort-AV: E=McAfee;i="6000,8403,9668"; a="146382047"
-X-IronPort-AV: E=Sophos;i="5.75,298,1589266800"; d="scan'208";a="146382047"
+IronPort-SDR: mnBDf0asIrn/5OXakKiUpIKREM0USnOh5GdIyIY/aFOhHnu7oom4Jb/Jv5rBepOGuDAqgTbkGq
+ u6fiVNpbTcWw==
+X-IronPort-AV: E=McAfee;i="6000,8403,9668"; a="146382048"
+X-IronPort-AV: E=Sophos;i="5.75,298,1589266800"; d="scan'208";a="146382048"
 X-Amp-Result: SKIPPED(no attachment in message)
 X-Amp-File-Uploaded: False
 Received: from orsmga004.jf.intel.com ([10.7.209.38])
  by orsmga103.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384;
  30 Jun 2020 14:01:05 -0700
-IronPort-SDR: MIWwdf6O5TXGxxxyWM56abduEscxzDTm2BxsDHsWk5E/tgLmIcRBFSFm5gswxP/d9JiiDDT4GY
- RYdGuRLuSeuQ==
+IronPort-SDR: QYazdPkTsSZ38qgUSh34Kc7AKKgQbj8nXQDjTXbRQy+JBGS+W3/tLkTEXlQB1bPw5PkTsAiSIw
+ yiC2G4d6IZHQ==
 X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.75,298,1589266800"; d="scan'208";a="425337237"
+X-IronPort-AV: E=Sophos;i="5.75,298,1589266800"; d="scan'208";a="425337235"
 Received: from jacob-builder.jf.intel.com ([10.7.199.155])
  by orsmga004.jf.intel.com with ESMTP; 30 Jun 2020 14:01:05 -0700
 From: Jacob Pan <jacob.jun.pan@linux.intel.com>
 To: iommu@lists.linux-foundation.org, LKML <linux-kernel@vger.kernel.org>,
  "Lu Baolu" <baolu.lu@linux.intel.com>, Joerg Roedel <joro@8bytes.org>,
  David Woodhouse <dwmw2@infradead.org>
-Subject: [PATCH v2 6/7] iommu/vt-d: Warn on out-of-range invalidation address
-Date: Tue, 30 Jun 2020 14:07:37 -0700
-Message-Id: <1593551258-39854-7-git-send-email-jacob.jun.pan@linux.intel.com>
+Subject: [PATCH v2 4/7] iommu/vt-d: Handle non-page aligned address
+Date: Tue, 30 Jun 2020 14:07:35 -0700
+Message-Id: <1593551258-39854-5-git-send-email-jacob.jun.pan@linux.intel.com>
 X-Mailer: git-send-email 2.7.4
 In-Reply-To: <1593551258-39854-1-git-send-email-jacob.jun.pan@linux.intel.com>
 References: <1593551258-39854-1-git-send-email-jacob.jun.pan@linux.intel.com>
@@ -89,39 +89,53 @@ Content-Transfer-Encoding: 7bit
 Errors-To: iommu-bounces@lists.linux-foundation.org
 Sender: "iommu" <iommu-bounces@lists.linux-foundation.org>
 
-For guest requested IOTLB invalidation, address and mask are provided as
-part of the invalidation data. VT-d HW silently ignores any address bits
-below the mask. SW shall also allow such case but give warning if
-address does not align with the mask. This patch relax the fault
-handling from error to warning and proceed with invalidation request
-with the given mask.
+From: Liu Yi L <yi.l.liu@intel.com>
 
+Address information for device TLB invalidation comes from userspace
+when device is directly assigned to a guest with vIOMMU support.
+VT-d requires page aligned address. This patch checks and enforce
+address to be page aligned, otherwise reserved bits can be set in the
+invalidation descriptor. Unrecoverable fault will be reported due to
+non-zero value in the reserved bits.
+
+Signed-off-by: Liu Yi L <yi.l.liu@intel.com>
 Signed-off-by: Jacob Pan <jacob.jun.pan@linux.intel.com>
 ---
- drivers/iommu/intel/iommu.c | 7 +++----
- 1 file changed, 3 insertions(+), 4 deletions(-)
+ drivers/iommu/intel/dmar.c | 20 ++++++++++++++++++--
+ 1 file changed, 18 insertions(+), 2 deletions(-)
 
-diff --git a/drivers/iommu/intel/iommu.c b/drivers/iommu/intel/iommu.c
-index 6a0c62c7395c..88e75be5ea76 100644
---- a/drivers/iommu/intel/iommu.c
-+++ b/drivers/iommu/intel/iommu.c
-@@ -5439,13 +5439,12 @@ intel_iommu_sva_invalidate(struct iommu_domain *domain, struct device *dev,
+diff --git a/drivers/iommu/intel/dmar.c b/drivers/iommu/intel/dmar.c
+index d9f973fa1190..3899f3161071 100644
+--- a/drivers/iommu/intel/dmar.c
++++ b/drivers/iommu/intel/dmar.c
+@@ -1455,9 +1455,25 @@ void qi_flush_dev_iotlb_pasid(struct intel_iommu *iommu, u16 sid, u16 pfsid,
+ 	 * Max Invs Pending (MIP) is set to 0 for now until we have DIT in
+ 	 * ECAP.
+ 	 */
+-	desc.qw1 |= addr & ~mask;
+-	if (size_order)
++	if (addr & ~VTD_PAGE_MASK)
++		pr_warn_ratelimited("Invalidate non-page aligned address %llx\n", addr);
++
++	/* Take page address */
++	desc.qw1 |= QI_DEV_EIOTLB_ADDR(addr);
++
++	if (size_order) {
++		/*
++		 * Existing 0s in address below size_order may be the least
++		 * significant bit, we must set them to 1s to avoid having
++		 * smaller size than desired.
++		 */
++		desc.qw1 |= GENMASK_ULL(size_order + VTD_PAGE_SHIFT,
++					VTD_PAGE_SHIFT);
++		/* Clear size_order bit to indicate size */
++		desc.qw1 &= ~mask;
++		/* Set the S bit to indicate flushing more than 1 page */
+ 		desc.qw1 |= QI_DEV_EIOTLB_SIZE;
++	}
  
- 		switch (BIT(cache_type)) {
- 		case IOMMU_CACHE_INV_TYPE_IOTLB:
-+			/* HW will ignore LSB bits based on address mask */
- 			if (inv_info->granularity == IOMMU_INV_GRANU_ADDR &&
- 			    size &&
- 			    (inv_info->addr_info.addr & ((BIT(VTD_PAGE_SHIFT + size)) - 1))) {
--				pr_err_ratelimited("Address out of range, 0x%llx, size order %llu\n",
--						   inv_info->addr_info.addr, size);
--				ret = -ERANGE;
--				goto out_unlock;
-+				WARN_ONCE(1, "Address out of range, 0x%llx, size order %llu\n",
-+					  inv_info->addr_info.addr, size);
- 			}
- 
- 			/*
+ 	qi_submit_sync(iommu, &desc, 1, 0);
+ }
 -- 
 2.7.4
 
