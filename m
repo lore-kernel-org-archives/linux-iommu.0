@@ -2,69 +2,93 @@ Return-Path: <SRS0=0Jez=AL=lists.linux-foundation.org=iommu-bounces@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-8.5 required=3.0 tests=HEADER_FROM_DIFFERENT_DOMAINS,
-	INCLUDES_PATCH,MAILING_LIST_MULTI,SIGNED_OFF_BY,SPF_HELO_NONE,SPF_PASS,
-	URIBL_BLOCKED,USER_AGENT_SANE_1 autolearn=unavailable autolearn_force=no
+X-Spam-Status: No, score=-5.3 required=3.0 tests=DKIM_INVALID,DKIM_SIGNED,
+	HEADER_FROM_DIFFERENT_DOMAINS,MAILING_LIST_MULTI,SIGNED_OFF_BY,SPF_HELO_NONE,
+	SPF_PASS,URIBL_BLOCKED,USER_AGENT_SANE_1 autolearn=ham autolearn_force=no
 	version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 64D92C433E1
-	for <iommu@archiver.kernel.org>; Tue, 30 Jun 2020 14:53:24 +0000 (UTC)
-Received: from whitealder.osuosl.org (smtp1.osuosl.org [140.211.166.138])
+	by smtp.lore.kernel.org (Postfix) with ESMTP id B09FFC433E1
+	for <iommu@archiver.kernel.org>; Tue, 30 Jun 2020 15:17:58 +0000 (UTC)
+Received: from hemlock.osuosl.org (smtp2.osuosl.org [140.211.166.133])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by mail.kernel.org (Postfix) with ESMTPS id 33BCE20675
-	for <iommu@archiver.kernel.org>; Tue, 30 Jun 2020 14:53:24 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 33BCE20675
-Authentication-Results: mail.kernel.org; dmarc=none (p=none dis=none) header.from=arm.com
+	by mail.kernel.org (Postfix) with ESMTPS id 7A03C2073E
+	for <iommu@archiver.kernel.org>; Tue, 30 Jun 2020 15:17:58 +0000 (UTC)
+Authentication-Results: mail.kernel.org;
+	dkim=fail reason="signature verification failed" (2048-bit key) header.d=nvidia.com header.i=@nvidia.com header.b="q9Bxtrvg"
+DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 7A03C2073E
+Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=nvidia.com
 Authentication-Results: mail.kernel.org; spf=pass smtp.mailfrom=iommu-bounces@lists.linux-foundation.org
 Received: from localhost (localhost [127.0.0.1])
-	by whitealder.osuosl.org (Postfix) with ESMTP id 09B1A8772F;
-	Tue, 30 Jun 2020 14:53:24 +0000 (UTC)
+	by hemlock.osuosl.org (Postfix) with ESMTP id 4DD0D885E2;
+	Tue, 30 Jun 2020 15:17:58 +0000 (UTC)
+X-Virus-Scanned: amavisd-new at osuosl.org
+Received: from hemlock.osuosl.org ([127.0.0.1])
+	by localhost (.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
+	with ESMTP id PJcK2QxwptO4; Tue, 30 Jun 2020 15:17:57 +0000 (UTC)
+Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [140.211.9.56])
+	by hemlock.osuosl.org (Postfix) with ESMTP id 4B42D885D2;
+	Tue, 30 Jun 2020 15:17:57 +0000 (UTC)
+Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
+	by lists.linuxfoundation.org (Postfix) with ESMTP id 20882C0865;
+	Tue, 30 Jun 2020 15:17:57 +0000 (UTC)
+Received: from whitealder.osuosl.org (smtp1.osuosl.org [140.211.166.138])
+ by lists.linuxfoundation.org (Postfix) with ESMTP id AB2B3C016E
+ for <iommu@lists.linux-foundation.org>; Tue, 30 Jun 2020 15:17:55 +0000 (UTC)
+Received: from localhost (localhost [127.0.0.1])
+ by whitealder.osuosl.org (Postfix) with ESMTP id A133C87CAE
+ for <iommu@lists.linux-foundation.org>; Tue, 30 Jun 2020 15:17:55 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
 Received: from whitealder.osuosl.org ([127.0.0.1])
-	by localhost (.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
-	with ESMTP id V76IBQZPJ5Nh; Tue, 30 Jun 2020 14:53:22 +0000 (UTC)
-Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [140.211.9.56])
-	by whitealder.osuosl.org (Postfix) with ESMTP id 8442D87736;
-	Tue, 30 Jun 2020 14:53:22 +0000 (UTC)
-Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
-	by lists.linuxfoundation.org (Postfix) with ESMTP id 74065C088F;
-	Tue, 30 Jun 2020 14:53:22 +0000 (UTC)
-Received: from silver.osuosl.org (smtp3.osuosl.org [140.211.166.136])
- by lists.linuxfoundation.org (Postfix) with ESMTP id 9CF34C016E
- for <iommu@lists.linux-foundation.org>; Tue, 30 Jun 2020 14:53:21 +0000 (UTC)
-Received: from localhost (localhost [127.0.0.1])
- by silver.osuosl.org (Postfix) with ESMTP id 860EC22DA4
- for <iommu@lists.linux-foundation.org>; Tue, 30 Jun 2020 14:53:21 +0000 (UTC)
-X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from silver.osuosl.org ([127.0.0.1])
  by localhost (.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
- with ESMTP id mgA7kWoe8zud for <iommu@lists.linux-foundation.org>;
- Tue, 30 Jun 2020 14:53:19 +0000 (UTC)
+ with ESMTP id Ogej+vf8wpjK for <iommu@lists.linux-foundation.org>;
+ Tue, 30 Jun 2020 15:17:54 +0000 (UTC)
 X-Greylist: domain auto-whitelisted by SQLgrey-1.7.6
-Received: from foss.arm.com (foss.arm.com [217.140.110.172])
- by silver.osuosl.org (Postfix) with ESMTP id 2BDA822CCE
- for <iommu@lists.linux-foundation.org>; Tue, 30 Jun 2020 14:53:19 +0000 (UTC)
-Received: from usa-sjc-imap-foss1.foss.arm.com (unknown [10.121.207.14])
- by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id 6CF6030E;
- Tue, 30 Jun 2020 07:53:18 -0700 (PDT)
-Received: from [10.57.21.32] (unknown [10.57.21.32])
- by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPSA id 2F8DD3F71E;
- Tue, 30 Jun 2020 07:53:13 -0700 (PDT)
+Received: from hqnvemgate25.nvidia.com (hqnvemgate25.nvidia.com
+ [216.228.121.64])
+ by whitealder.osuosl.org (Postfix) with ESMTPS id D3F3E87ACE
+ for <iommu@lists.linux-foundation.org>; Tue, 30 Jun 2020 15:17:54 +0000 (UTC)
+Received: from hqpgpgate101.nvidia.com (Not Verified[216.228.121.13]) by
+ hqnvemgate25.nvidia.com (using TLS: TLSv1.2, DES-CBC3-SHA)
+ id <B5efb57700000>; Tue, 30 Jun 2020 08:17:04 -0700
+Received: from hqmail.nvidia.com ([172.20.161.6])
+ by hqpgpgate101.nvidia.com (PGP Universal service);
+ Tue, 30 Jun 2020 08:17:54 -0700
+X-PGP-Universal: processed;
+ by hqpgpgate101.nvidia.com on Tue, 30 Jun 2020 08:17:54 -0700
+Received: from [10.26.75.203] (10.124.1.5) by HQMAIL107.nvidia.com
+ (172.20.187.13) with Microsoft SMTP Server (TLS) id 15.0.1473.3; Tue, 30 Jun
+ 2020 15:17:47 +0000
 Subject: Re: [PATCH v8 1/3] iommu/arm-smmu: add NVIDIA implementation for dual
  ARM MMU-500 usage
-To: Jon Hunter <jonathanh@nvidia.com>, Krishna Reddy <vdumpa@nvidia.com>
+To: Robin Murphy <robin.murphy@arm.com>, Krishna Reddy <vdumpa@nvidia.com>
 References: <20200630001051.12350-1-vdumpa@nvidia.com>
  <20200630001051.12350-2-vdumpa@nvidia.com>
  <53bfa5c8-c32d-6fa3-df60-a18ab33ca1c2@nvidia.com>
-From: Robin Murphy <robin.murphy@arm.com>
-Message-ID: <d59b7220-168c-419f-db16-194307e11065@arm.com>
-Date: Tue, 30 Jun 2020 15:53:11 +0100
-User-Agent: Mozilla/5.0 (Windows NT 10.0; rv:68.0) Gecko/20100101
- Thunderbird/68.9.0
+ <d59b7220-168c-419f-db16-194307e11065@arm.com>
+From: Jon Hunter <jonathanh@nvidia.com>
+Message-ID: <a9d6b11b-d904-153a-6363-6e3a8f62e03f@nvidia.com>
+Date: Tue, 30 Jun 2020 16:17:44 +0100
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101
+ Thunderbird/68.8.0
 MIME-Version: 1.0
-In-Reply-To: <53bfa5c8-c32d-6fa3-df60-a18ab33ca1c2@nvidia.com>
-Content-Language: en-GB
+In-Reply-To: <d59b7220-168c-419f-db16-194307e11065@arm.com>
+X-Originating-IP: [10.124.1.5]
+X-ClientProxiedBy: HQMAIL111.nvidia.com (172.20.187.18) To
+ HQMAIL107.nvidia.com (172.20.187.13)
+Content-Language: en-US
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=nvidia.com; s=n1;
+ t=1593530224; bh=91KsOAnm+BDzvr6bvaKraTo/wHSaB0sGjCjoXk18ABA=;
+ h=X-PGP-Universal:Subject:To:CC:References:From:Message-ID:Date:
+ User-Agent:MIME-Version:In-Reply-To:X-Originating-IP:
+ X-ClientProxiedBy:Content-Type:Content-Language:
+ Content-Transfer-Encoding;
+ b=q9BxtrvgjxBZFZAUIswW2E+r9jYacMdtRAXU31UzobonciMILCOiTgOrglSBJWXOC
+ Nw3Ld3OJhRkalYzLHH6M6kaQEDByt/jtTjFRrLnlErsAZMdnejdtXGLw1KUiIWGYpb
+ xAYw9H68xASCHxw1KB8ySRZZPWT/UC0ykO89X7KdmPhuSFwModgBnGKcX3mANhq4cA
+ 1jUaHUwaV277q2HZRs76LVNMDr7HqpnG3uB5TjwjQR+mgZW16EGe8bO4ySAU87ovHL
+ KC7amklSwvERe8WmBdhZcfamoWB3m75rZDrJSuvtt9Sh3dSz214FWxGsEZkOkFxGhS
+ u+d/2ZM3DBT1A==
 Cc: talho@nvidia.com, treding@nvidia.com, bhuntsman@nvidia.com,
  linux-kernel@vger.kernel.org, iommu@lists.linux-foundation.org,
  mperttunen@nvidia.com, nicoleotsuka@gmail.com, snikam@nvidia.com,
@@ -83,376 +107,84 @@ List-Post: <mailto:iommu@lists.linux-foundation.org>
 List-Help: <mailto:iommu-request@lists.linux-foundation.org?subject=help>
 List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
  <mailto:iommu-request@lists.linux-foundation.org?subject=subscribe>
-Content-Transfer-Encoding: 7bit
-Content-Type: text/plain; charset="us-ascii"; Format="flowed"
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: base64
 Errors-To: iommu-bounces@lists.linux-foundation.org
 Sender: "iommu" <iommu-bounces@lists.linux-foundation.org>
 
-On 2020-06-30 09:19, Jon Hunter wrote:
-> 
-> On 30/06/2020 01:10, Krishna Reddy wrote:
->> NVIDIA's Tegra194 SoC uses two ARM MMU-500s together to interleave
->> IOVA accesses across them.
->> Add NVIDIA implementation for dual ARM MMU-500s and add new compatible
->> string for Tegra194 SoC SMMU topology.
-> 
-> There is no description here of the 3rd SMMU that you mention below.
-> I think that we should describe the full picture here.
->   
->> Signed-off-by: Krishna Reddy <vdumpa@nvidia.com>
->> ---
->>   MAINTAINERS                     |   2 +
->>   drivers/iommu/Makefile          |   2 +-
->>   drivers/iommu/arm-smmu-impl.c   |   3 +
->>   drivers/iommu/arm-smmu-nvidia.c | 196 ++++++++++++++++++++++++++++++++
->>   drivers/iommu/arm-smmu.h        |   1 +
->>   5 files changed, 203 insertions(+), 1 deletion(-)
->>   create mode 100644 drivers/iommu/arm-smmu-nvidia.c
->>
->> diff --git a/MAINTAINERS b/MAINTAINERS
->> index 7b5ffd646c6b9..64c37dbdd4426 100644
->> --- a/MAINTAINERS
->> +++ b/MAINTAINERS
->> @@ -16808,8 +16808,10 @@ F:	drivers/i2c/busses/i2c-tegra.c
->>   
->>   TEGRA IOMMU DRIVERS
->>   M:	Thierry Reding <thierry.reding@gmail.com>
->> +R:	Krishna Reddy <vdumpa@nvidia.com>
->>   L:	linux-tegra@vger.kernel.org
->>   S:	Supported
->> +F:	drivers/iommu/arm-smmu-nvidia.c
->>   F:	drivers/iommu/tegra*
->>   
->>   TEGRA KBC DRIVER
->> diff --git a/drivers/iommu/Makefile b/drivers/iommu/Makefile
->> index 342190196dfb0..2b8203db73ec3 100644
->> --- a/drivers/iommu/Makefile
->> +++ b/drivers/iommu/Makefile
->> @@ -15,7 +15,7 @@ obj-$(CONFIG_AMD_IOMMU) += amd/iommu.o amd/init.o amd/quirks.o
->>   obj-$(CONFIG_AMD_IOMMU_DEBUGFS) += amd/debugfs.o
->>   obj-$(CONFIG_AMD_IOMMU_V2) += amd/iommu_v2.o
->>   obj-$(CONFIG_ARM_SMMU) += arm_smmu.o
->> -arm_smmu-objs += arm-smmu.o arm-smmu-impl.o arm-smmu-qcom.o
->> +arm_smmu-objs += arm-smmu.o arm-smmu-impl.o arm-smmu-nvidia.o arm-smmu-qcom.o
->>   obj-$(CONFIG_ARM_SMMU_V3) += arm-smmu-v3.o
->>   obj-$(CONFIG_DMAR_TABLE) += intel/dmar.o
->>   obj-$(CONFIG_INTEL_IOMMU) += intel/iommu.o intel/pasid.o
->> diff --git a/drivers/iommu/arm-smmu-impl.c b/drivers/iommu/arm-smmu-impl.c
->> index c75b9d957b702..70f7318017617 100644
->> --- a/drivers/iommu/arm-smmu-impl.c
->> +++ b/drivers/iommu/arm-smmu-impl.c
->> @@ -171,6 +171,9 @@ struct arm_smmu_device *arm_smmu_impl_init(struct arm_smmu_device *smmu)
->>   	if (of_property_read_bool(np, "calxeda,smmu-secure-config-access"))
->>   		smmu->impl = &calxeda_impl;
->>   
->> +	if (of_device_is_compatible(smmu->dev->of_node, "nvidia,tegra194-smmu"))
-
-Nit: please use "np" like all the surrounding code does.
-
->> +		return nvidia_smmu_impl_init(smmu);
->> +
->>   	if (of_device_is_compatible(np, "qcom,sdm845-smmu-500") ||
->>   	    of_device_is_compatible(np, "qcom,sc7180-smmu-500"))
->>   		return qcom_smmu_impl_init(smmu);
->> diff --git a/drivers/iommu/arm-smmu-nvidia.c b/drivers/iommu/arm-smmu-nvidia.c
->> new file mode 100644
->> index 0000000000000..1124f0ac1823a
->> --- /dev/null
->> +++ b/drivers/iommu/arm-smmu-nvidia.c
->> @@ -0,0 +1,196 @@
->> +// SPDX-License-Identifier: GPL-2.0-only
->> +// NVIDIA ARM SMMU v2 implementation quirks
->> +// Copyright (C) 2019-2020 NVIDIA CORPORATION.  All rights reserved.
->> +
->> +#include <linux/bitfield.h>
->> +#include <linux/delay.h>
->> +#include <linux/of.h>
->> +#include <linux/platform_device.h>
->> +#include <linux/slab.h>
->> +
->> +#include "arm-smmu.h"
->> +
->> +/*
->> + * Tegra194 has three ARM MMU-500 Instances.
->> + * Two of them are used together for interleaved IOVA accesses and
->> + * used by non-isochronous HW devices for SMMU translations.
->> + * Third one is used for SMMU translations from isochronous HW devices.
->> + * It is possible to use this implementation to program either
->> + * all three or two of the instances identically as desired through
->> + * DT node.
->> + *
->> + * Programming all the three instances identically comes with redundant TLB
->> + * invalidations as all three never need to be TLB invalidated for a HW device.
->> + *
->> + * When Linux kernel supports multiple SMMU devices, the SMMU device used for
->> + * isochornous HW devices should be added as a separate ARM MMU-500 device
->> + * in DT and be programmed independently for efficient TLB invalidates.
-
-I don't understand the "When" there - the driver has always supported 
-multiple independent SMMUs, and it's not something that could be 
-configured out or otherwise disabled. Plus I really don't see why you 
-would ever want to force unrelated SMMUs to be programmed together - 
-beyond the TLB thing mentioned it would also waste precious context bank 
-resources and might lead to weird device grouping via false stream ID 
-aliasing, with no obvious upside at all.
-
->> + */
->> +#define MAX_SMMU_INSTANCES 3
->> +
->> +#define TLB_LOOP_TIMEOUT_IN_US		1000000	/* 1s! */
->> +#define TLB_SPIN_COUNT			10
->> +
->> +struct nvidia_smmu {
->> +	struct arm_smmu_device	smmu;
->> +	unsigned int		num_inst;
->> +	void __iomem		*bases[MAX_SMMU_INSTANCES];
->> +};
->> +
->> +static inline struct nvidia_smmu *to_nvidia_smmu(struct arm_smmu_device *smmu)
->> +{
->> +	return container_of(smmu, struct nvidia_smmu, smmu);
->> +}
->> +
->> +static inline void __iomem *nvidia_smmu_page(struct arm_smmu_device *smmu,
->> +			       unsigned int inst, int page)
-> 
-> If you run checkpatch --strict on these you will get a lot of ...
-> 
-> CHECK: Alignment should match open parenthesis
-> #116: FILE: drivers/iommu/arm-smmu-nvidia.c:46:
-> +static inline void __iomem *nvidia_smmu_page(struct arm_smmu_device *smmu,
-> +			       unsigned int inst, int page)
-> 
-> We should fix these.
-> 
->> +{
->> +	struct nvidia_smmu *nvidia_smmu = to_nvidia_smmu(smmu);
->> +
->> +	if (!nvidia_smmu->bases[0])
->> +		nvidia_smmu->bases[0] = smmu->base;
->> +
->> +	return nvidia_smmu->bases[inst] + (page << smmu->pgshift);
->> +}
->> +
->> +static u32 nvidia_smmu_read_reg(struct arm_smmu_device *smmu,
->> +			      int page, int offset)
->> +{
->> +	void __iomem *reg = nvidia_smmu_page(smmu, 0, page) + offset;
->> +
->> +	return readl_relaxed(reg);
->> +}
->> +
->> +static void nvidia_smmu_write_reg(struct arm_smmu_device *smmu,
->> +			    int page, int offset, u32 val)
->> +{
->> +	unsigned int i;
->> +	struct nvidia_smmu *nvidia_smmu = to_nvidia_smmu(smmu);
->> +
->> +	for (i = 0; i < nvidia_smmu->num_inst; i++) {
->> +		void __iomem *reg = nvidia_smmu_page(smmu, i, page) + offset;
-> 
-> Personally, I would declare 'reg' outside of the loop as I feel it will make
-> the code cleaner and easier to read.
-> 
->> +
->> +		writel_relaxed(val, reg);
->> +	}
->> +}
->> +
->> +static u64 nvidia_smmu_read_reg64(struct arm_smmu_device *smmu,
->> +				int page, int offset)
->> +{
->> +	void __iomem *reg = nvidia_smmu_page(smmu, 0, page) + offset;
->> +
->> +	return readq_relaxed(reg);
->> +}
->> +
->> +static void nvidia_smmu_write_reg64(struct arm_smmu_device *smmu,
->> +				  int page, int offset, u64 val)
->> +{
->> +	unsigned int i;
->> +	struct nvidia_smmu *nvidia_smmu = to_nvidia_smmu(smmu);
->> +
->> +	for (i = 0; i < nvidia_smmu->num_inst; i++) {
->> +		void __iomem *reg = nvidia_smmu_page(smmu, i, page) + offset;
->> +
->> +		writeq_relaxed(val, reg);
->> +	}
->> +}
->> +
->> +static void nvidia_smmu_tlb_sync(struct arm_smmu_device *smmu, int page,
->> +			   int sync, int status)
->> +{
->> +	unsigned int delay;
->> +
->> +	arm_smmu_writel(smmu, page, sync, 0);
->> +
->> +	for (delay = 1; delay < TLB_LOOP_TIMEOUT_IN_US; delay *= 2) {
-> 
-> So we are doubling the delay every time? Is this better than just using
-> the same on each loop?
-
-This is the same logic as the main driver (see 8513c8930069) - the sync 
-is expected to complete relatively quickly, hence why we have the inner 
-spin loop to avoid the delay entirely in the typical case, and the 
-longer it's taking, the more likely it is that something's wrong and it 
-will never complete anyway. Realistically, a heavily loaded SMMU at a 
-modest clock rate might take us through a couple of iterations of the 
-outer loop, but beyond that we're pretty much just killing time until we 
-declare it wedged and give up, and by then there's not much point in 
-burning power frantically hamering on the interconnect.
-
-> 
->> +		unsigned int spin_cnt;
->> +
->> +		for (spin_cnt = TLB_SPIN_COUNT; spin_cnt > 0; spin_cnt--) {
->> +			u32 val = 0;
->> +			unsigned int i;
->> +			struct nvidia_smmu *nvidia_smmu = to_nvidia_smmu(smmu);
-> 
-> Why not do this once at the beginning of the function?
-> 
->> +
->> +			for (i = 0; i < nvidia_smmu->num_inst; i++) {
->> +				void __iomem *reg =
->> +					nvidia_smmu_page(smmu, i, page) + status;
->> +
->> +				val |= readl_relaxed(reg);
->> +			}
->> +
->> +			if (!(val & ARM_SMMU_sTLBGSTATUS_GSACTIVE))
->> +				return;
->> +
->> +			cpu_relax();
->> +		}
->> +
->> +		udelay(delay);
->> +	}
->> +
->> +	dev_err_ratelimited(smmu->dev,
->> +			    "TLB sync timed out -- SMMU may be deadlocked\n");
->> +}
->> +
->> +static int nvidia_smmu_reset(struct arm_smmu_device *smmu)
->> +{
->> +	unsigned int i;
->> +
->> +	for (i = 0; i < to_nvidia_smmu(smmu)->num_inst; i++) {
->> +		u32 val;
->> +		void __iomem *reg = nvidia_smmu_page(smmu, i, ARM_SMMU_GR0) +
->> +				    ARM_SMMU_GR0_sGFSR;
-> 
-> I feel that declaring variables here clutters the code.
->   
->> +
->> +		/* clear global FSR */
->> +		val = readl_relaxed(reg);
->> +		writel_relaxed(val, reg);
->> +	}
->> +
->> +	return 0;
->> +}
->> +
->> +static const struct arm_smmu_impl nvidia_smmu_impl = {
->> +	.read_reg = nvidia_smmu_read_reg,
->> +	.write_reg = nvidia_smmu_write_reg,
->> +	.read_reg64 = nvidia_smmu_read_reg64,
->> +	.write_reg64 = nvidia_smmu_write_reg64,
->> +	.reset = nvidia_smmu_reset,
->> +	.tlb_sync = nvidia_smmu_tlb_sync,
->> +};
->> +
->> +struct arm_smmu_device *nvidia_smmu_impl_init(struct arm_smmu_device *smmu)
->> +{
->> +	unsigned int i;
->> +	struct nvidia_smmu *nvidia_smmu;
->> +	struct platform_device *pdev = to_platform_device(smmu->dev);
->> +
->> +	nvidia_smmu = devm_kzalloc(smmu->dev, sizeof(*nvidia_smmu), GFP_KERNEL);
->> +	if (!nvidia_smmu)
->> +		return ERR_PTR(-ENOMEM);
->> +
->> +	nvidia_smmu->smmu = *smmu;
->> +	/* Instance 0 is ioremapped by arm-smmu.c after this function returns */
->> +	nvidia_smmu->num_inst = 1;
->> +
->> +	for (i = 1; i < MAX_SMMU_INSTANCES; i++) {
->> +		struct resource *res;
->> +
->> +		res = platform_get_resource(pdev, IORESOURCE_MEM, i);
->> +		if (!res)
->> +			break;
->> +
->> +		nvidia_smmu->bases[i] = devm_ioremap_resource(smmu->dev, res);
->> +		if (IS_ERR(nvidia_smmu->bases[i]))
->> +			return ERR_CAST(nvidia_smmu->bases[i]);
->> +
->> +		nvidia_smmu->num_inst++;
->> +	}
->> +
->> +	nvidia_smmu->smmu.impl = &nvidia_smmu_impl;
->> +	/*
->> +	 * Free the arm_smmu_device struct allocated in arm-smmu.c.
->> +	 * Once this function returns, arm-smmu.c would use arm_smmu_device
->> +	 * allocated as part of nvidia_smmu struct.
->> +	 */
->> +	devm_kfree(smmu->dev, smmu);
-> 
-> Why don't we just store the pointer of the smmu struct passed to this function
-> in the nvidia_smmu struct and then we do not need to free this here. In other
-> words make ...
-> 
->   struct nvidia_smmu {
-> 	struct arm_smmu_device	*smmu;
-> 	unsigned int		num_inst;
-> 	void __iomem		*bases[MAX_SMMU_INSTANCES];
->   };
-> 
-> This seems more appropriate, than copying the struct and freeing memory
-> allocated else-where.
-
-But then how do you get back to struct nvidia_smmu given just a pointer 
-to struct arm_smmu_device?
-
-I'll admit my quickly-hacked-up design for post-hoc subclassing isn't 
-the prettiest, but in fairness it was only ever intended for a couple of 
-exceptional cases. I guess it would be equally possible to wrap struct 
-arm_smmu_impl, and container_of() back to the private data from 
-smmu->impl itself, which avoids the minor weirdness of reassigning the 
-smmu pointer in the middle of probing, but then you'd have to store the 
-function pointers in writeable memory, which in principle might make the 
-integrity folks pull a sad face.
-
-The aim was to avoid the non-architectural stuff cluttering up the main 
-driver as far as possible, which is why I preferred a subclassing 
-approach over cramming more random pointers into struct arm_smmu_device. 
-Not to say it can't be changed if you've got a really solid idea for an 
-alternative...
-
-Robin.
-
->   
->> +
->> +	return &nvidia_smmu->smmu;
->> +}
->> diff --git a/drivers/iommu/arm-smmu.h b/drivers/iommu/arm-smmu.h
->> index d172c024be618..8cf1511ed9874 100644
->> --- a/drivers/iommu/arm-smmu.h
->> +++ b/drivers/iommu/arm-smmu.h
->> @@ -450,6 +450,7 @@ static inline void arm_smmu_writeq(struct arm_smmu_device *smmu, int page,
->>   	arm_smmu_writeq((s), ARM_SMMU_CB((s), (n)), (o), (v))
->>   
->>   struct arm_smmu_device *arm_smmu_impl_init(struct arm_smmu_device *smmu);
->> +struct arm_smmu_device *nvidia_smmu_impl_init(struct arm_smmu_device *smmu);
->>   struct arm_smmu_device *qcom_smmu_impl_init(struct arm_smmu_device *smmu);
->>   
->>   int arm_mmu500_reset(struct arm_smmu_device *smmu);
->>
-> 
-> Cheers
-> Jon
-> 
-_______________________________________________
-iommu mailing list
-iommu@lists.linux-foundation.org
-https://lists.linuxfoundation.org/mailman/listinfo/iommu
+Ck9uIDMwLzA2LzIwMjAgMTU6NTMsIFJvYmluIE11cnBoeSB3cm90ZToKPiBPbiAyMDIwLTA2LTMw
+IDA5OjE5LCBKb24gSHVudGVyIHdyb3RlOgo+Pgo+PiBPbiAzMC8wNi8yMDIwIDAxOjEwLCBLcmlz
+aG5hIFJlZGR5IHdyb3RlOgo+Pj4gTlZJRElBJ3MgVGVncmExOTQgU29DIHVzZXMgdHdvIEFSTSBN
+TVUtNTAwcyB0b2dldGhlciB0byBpbnRlcmxlYXZlCj4+PiBJT1ZBIGFjY2Vzc2VzIGFjcm9zcyB0
+aGVtLgo+Pj4gQWRkIE5WSURJQSBpbXBsZW1lbnRhdGlvbiBmb3IgZHVhbCBBUk0gTU1VLTUwMHMg
+YW5kIGFkZCBuZXcgY29tcGF0aWJsZQo+Pj4gc3RyaW5nIGZvciBUZWdyYTE5NCBTb0MgU01NVSB0
+b3BvbG9neS4KPj4KPj4gVGhlcmUgaXMgbm8gZGVzY3JpcHRpb24gaGVyZSBvZiB0aGUgM3JkIFNN
+TVUgdGhhdCB5b3UgbWVudGlvbiBiZWxvdy4KPj4gSSB0aGluayB0aGF0IHdlIHNob3VsZCBkZXNj
+cmliZSB0aGUgZnVsbCBwaWN0dXJlIGhlcmUuCj4+IMKgCj4+PiBTaWduZWQtb2ZmLWJ5OiBLcmlz
+aG5hIFJlZGR5IDx2ZHVtcGFAbnZpZGlhLmNvbT4KCi4uLgoKPj4+ICtzdGF0aWMgdm9pZCBudmlk
+aWFfc21tdV90bGJfc3luYyhzdHJ1Y3QgYXJtX3NtbXVfZGV2aWNlICpzbW11LCBpbnQKPj4+IHBh
+Z2UsCj4+PiArwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoCBpbnQgc3luYywgaW50IHN0YXR1
+cykKPj4+ICt7Cj4+PiArwqDCoMKgIHVuc2lnbmVkIGludCBkZWxheTsKPj4+ICsKPj4+ICvCoMKg
+wqAgYXJtX3NtbXVfd3JpdGVsKHNtbXUsIHBhZ2UsIHN5bmMsIDApOwo+Pj4gKwo+Pj4gK8KgwqDC
+oCBmb3IgKGRlbGF5ID0gMTsgZGVsYXkgPCBUTEJfTE9PUF9USU1FT1VUX0lOX1VTOyBkZWxheSAq
+PSAyKSB7Cj4+Cj4+IFNvIHdlIGFyZSBkb3VibGluZyB0aGUgZGVsYXkgZXZlcnkgdGltZT8gSXMg
+dGhpcyBiZXR0ZXIgdGhhbiBqdXN0IHVzaW5nCj4+IHRoZSBzYW1lIG9uIGVhY2ggbG9vcD8KPiAK
+PiBUaGlzIGlzIHRoZSBzYW1lIGxvZ2ljIGFzIHRoZSBtYWluIGRyaXZlciAoc2VlIDg1MTNjODkz
+MDA2OSkgLSB0aGUgc3luYwo+IGlzIGV4cGVjdGVkIHRvIGNvbXBsZXRlIHJlbGF0aXZlbHkgcXVp
+Y2tseSwgaGVuY2Ugd2h5IHdlIGhhdmUgdGhlIGlubmVyCj4gc3BpbiBsb29wIHRvIGF2b2lkIHRo
+ZSBkZWxheSBlbnRpcmVseSBpbiB0aGUgdHlwaWNhbCBjYXNlLCBhbmQgdGhlCj4gbG9uZ2VyIGl0
+J3MgdGFraW5nLCB0aGUgbW9yZSBsaWtlbHkgaXQgaXMgdGhhdCBzb21ldGhpbmcncyB3cm9uZyBh
+bmQgaXQKPiB3aWxsIG5ldmVyIGNvbXBsZXRlIGFueXdheS4gUmVhbGlzdGljYWxseSwgYSBoZWF2
+aWx5IGxvYWRlZCBTTU1VIGF0IGEKPiBtb2Rlc3QgY2xvY2sgcmF0ZSBtaWdodCB0YWtlIHVzIHRo
+cm91Z2ggYSBjb3VwbGUgb2YgaXRlcmF0aW9ucyBvZiB0aGUKPiBvdXRlciBsb29wLCBidXQgYmV5
+b25kIHRoYXQgd2UncmUgcHJldHR5IG11Y2gganVzdCBraWxsaW5nIHRpbWUgdW50aWwgd2UKPiBk
+ZWNsYXJlIGl0IHdlZGdlZCBhbmQgZ2l2ZSB1cCwgYW5kIGJ5IHRoZW4gdGhlcmUncyBub3QgbXVj
+aCBwb2ludCBpbgo+IGJ1cm5pbmcgcG93ZXIgZnJhbnRpY2FsbHkgaGFtZXJpbmcgb24gdGhlIGlu
+dGVyY29ubmVjdC4KCkFoIE9LLiBUaGVuIG1heWJlIHdlIHNob3VsZCBtb3ZlIHRoZSBkZWZpbml0
+aW9ucyBmb3IgVExCX0xPT1BfVElNRU9VVAphbmQgVExCX1NQSU5fQ09VTlQgaW50byB0aGUgYXJt
+LXNtbXUuaCBzbyB0aGF0IHdlIGNhbiB1c2UgdGhlbSBkaXJlY3RseQppbiB0aGlzIGZpbGUgaW5z
+dGVhZCBvZiByZWRlZmluaW5nIHRoZW0uIFRoZW4gaXQgbWF5YmUgY2xlYXIgdGhhdCB0aGVzZQph
+cmUgcGFydCBvZiB0aGUgbWFpbiBkcml2ZXIuCgogPj4+ICtzdHJ1Y3QgYXJtX3NtbXVfZGV2aWNl
+ICpudmlkaWFfc21tdV9pbXBsX2luaXQoc3RydWN0IGFybV9zbW11X2RldmljZQo+Pj4gKnNtbXUp
+Cj4+PiArewo+Pj4gK8KgwqDCoCB1bnNpZ25lZCBpbnQgaTsKPj4+ICvCoMKgwqAgc3RydWN0IG52
+aWRpYV9zbW11ICpudmlkaWFfc21tdTsKPj4+ICvCoMKgwqAgc3RydWN0IHBsYXRmb3JtX2Rldmlj
+ZSAqcGRldiA9IHRvX3BsYXRmb3JtX2RldmljZShzbW11LT5kZXYpOwo+Pj4gKwo+Pj4gK8KgwqDC
+oCBudmlkaWFfc21tdSA9IGRldm1fa3phbGxvYyhzbW11LT5kZXYsIHNpemVvZigqbnZpZGlhX3Nt
+bXUpLAo+Pj4gR0ZQX0tFUk5FTCk7Cj4+PiArwqDCoMKgIGlmICghbnZpZGlhX3NtbXUpCj4+PiAr
+wqDCoMKgwqDCoMKgwqAgcmV0dXJuIEVSUl9QVFIoLUVOT01FTSk7Cj4+PiArCj4+PiArwqDCoMKg
+IG52aWRpYV9zbW11LT5zbW11ID0gKnNtbXU7Cj4+PiArwqDCoMKgIC8qIEluc3RhbmNlIDAgaXMg
+aW9yZW1hcHBlZCBieSBhcm0tc21tdS5jIGFmdGVyIHRoaXMgZnVuY3Rpb24KPj4+IHJldHVybnMg
+Ki8KPj4+ICvCoMKgwqAgbnZpZGlhX3NtbXUtPm51bV9pbnN0ID0gMTsKPj4+ICsKPj4+ICvCoMKg
+wqAgZm9yIChpID0gMTsgaSA8IE1BWF9TTU1VX0lOU1RBTkNFUzsgaSsrKSB7Cj4+PiArwqDCoMKg
+wqDCoMKgwqAgc3RydWN0IHJlc291cmNlICpyZXM7Cj4+PiArCj4+PiArwqDCoMKgwqDCoMKgwqAg
+cmVzID0gcGxhdGZvcm1fZ2V0X3Jlc291cmNlKHBkZXYsIElPUkVTT1VSQ0VfTUVNLCBpKTsKPj4+
+ICvCoMKgwqDCoMKgwqDCoCBpZiAoIXJlcykKPj4+ICvCoMKgwqDCoMKgwqDCoMKgwqDCoMKgIGJy
+ZWFrOwo+Pj4gKwo+Pj4gK8KgwqDCoMKgwqDCoMKgIG52aWRpYV9zbW11LT5iYXNlc1tpXSA9IGRl
+dm1faW9yZW1hcF9yZXNvdXJjZShzbW11LT5kZXYsIHJlcyk7Cj4+PiArwqDCoMKgwqDCoMKgwqAg
+aWYgKElTX0VSUihudmlkaWFfc21tdS0+YmFzZXNbaV0pKQo+Pj4gK8KgwqDCoMKgwqDCoMKgwqDC
+oMKgwqAgcmV0dXJuIEVSUl9DQVNUKG52aWRpYV9zbW11LT5iYXNlc1tpXSk7Cj4+PiArCj4+PiAr
+wqDCoMKgwqDCoMKgwqAgbnZpZGlhX3NtbXUtPm51bV9pbnN0Kys7Cj4+PiArwqDCoMKgIH0KPj4+
+ICsKPj4+ICvCoMKgwqAgbnZpZGlhX3NtbXUtPnNtbXUuaW1wbCA9ICZudmlkaWFfc21tdV9pbXBs
+Owo+Pj4gK8KgwqDCoCAvKgo+Pj4gK8KgwqDCoMKgICogRnJlZSB0aGUgYXJtX3NtbXVfZGV2aWNl
+IHN0cnVjdCBhbGxvY2F0ZWQgaW4gYXJtLXNtbXUuYy4KPj4+ICvCoMKgwqDCoCAqIE9uY2UgdGhp
+cyBmdW5jdGlvbiByZXR1cm5zLCBhcm0tc21tdS5jIHdvdWxkIHVzZSBhcm1fc21tdV9kZXZpY2UK
+Pj4+ICvCoMKgwqDCoCAqIGFsbG9jYXRlZCBhcyBwYXJ0IG9mIG52aWRpYV9zbW11IHN0cnVjdC4K
+Pj4+ICvCoMKgwqDCoCAqLwo+Pj4gK8KgwqDCoCBkZXZtX2tmcmVlKHNtbXUtPmRldiwgc21tdSk7
+Cj4+Cj4+IFdoeSBkb24ndCB3ZSBqdXN0IHN0b3JlIHRoZSBwb2ludGVyIG9mIHRoZSBzbW11IHN0
+cnVjdCBwYXNzZWQgdG8gdGhpcwo+PiBmdW5jdGlvbgo+PiBpbiB0aGUgbnZpZGlhX3NtbXUgc3Ry
+dWN0IGFuZCB0aGVuIHdlIGRvIG5vdCBuZWVkIHRvIGZyZWUgdGhpcyBoZXJlLgo+PiBJbiBvdGhl
+cgo+PiB3b3JkcyBtYWtlIC4uLgo+Pgo+PiDCoCBzdHJ1Y3QgbnZpZGlhX3NtbXUgewo+PiDCoMKg
+wqDCoHN0cnVjdCBhcm1fc21tdV9kZXZpY2XCoMKgwqAgKnNtbXU7Cj4+IMKgwqDCoMKgdW5zaWdu
+ZWQgaW50wqDCoMKgwqDCoMKgwqAgbnVtX2luc3Q7Cj4+IMKgwqDCoMKgdm9pZCBfX2lvbWVtwqDC
+oMKgwqDCoMKgwqAgKmJhc2VzW01BWF9TTU1VX0lOU1RBTkNFU107Cj4+IMKgIH07Cj4+Cj4+IFRo
+aXMgc2VlbXMgbW9yZSBhcHByb3ByaWF0ZSwgdGhhbiBjb3B5aW5nIHRoZSBzdHJ1Y3QgYW5kIGZy
+ZWVpbmcgbWVtb3J5Cj4+IGFsbG9jYXRlZCBlbHNlLXdoZXJlLgo+IAo+IEJ1dCB0aGVuIGhvdyBk
+byB5b3UgZ2V0IGJhY2sgdG8gc3RydWN0IG52aWRpYV9zbW11IGdpdmVuIGp1c3QgYSBwb2ludGVy
+Cj4gdG8gc3RydWN0IGFybV9zbW11X2RldmljZT8KCkFoIHllcyBvZiBjb3Vyc2UgdGhhdCBpcyB3
+aGF0IEkgd2FzIG1pc3NpbmcuIEkgd29uZGVyZWQgd2hhdCB3YXMgZ29pbmcKb24gaGVyZS4gU28g
+SSB0aGluayB3ZSBzaG91bGQgYWRkIGEgbmljZSBjb21tZW50IGluIHRoZSBhYm92ZSBmdW5jdGlv
+bgpvZiB3aHkgd2UgYXJlIGNvcHlpbmcgdGhpcyBhbmQgY2Fubm90IHNpbXBseSBzdG9yZSB0aGUg
+cG9pbnRlci4KCkNoZWVycwpKb24KCi0tIApudnB1YmxpYwpfX19fX19fX19fX19fX19fX19fX19f
+X19fX19fX19fX19fX19fX19fX19fX19fXwppb21tdSBtYWlsaW5nIGxpc3QKaW9tbXVAbGlzdHMu
+bGludXgtZm91bmRhdGlvbi5vcmcKaHR0cHM6Ly9saXN0cy5saW51eGZvdW5kYXRpb24ub3JnL21h
+aWxtYW4vbGlzdGluZm8vaW9tbXU=
