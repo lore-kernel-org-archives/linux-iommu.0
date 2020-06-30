@@ -2,87 +2,90 @@ Return-Path: <SRS0=0Jez=AL=lists.linux-foundation.org=iommu-bounces@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-3.8 required=3.0 tests=DKIM_INVALID,DKIM_SIGNED,
-	HEADER_FROM_DIFFERENT_DOMAINS,MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS,
-	USER_AGENT_GIT autolearn=no autolearn_force=no version=3.4.0
+X-Spam-Status: No, score=-9.8 required=3.0 tests=DKIM_INVALID,DKIM_SIGNED,
+	HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_PATCH,MAILING_LIST_MULTI,SIGNED_OFF_BY,
+	SPF_HELO_NONE,SPF_PASS,USER_AGENT_GIT autolearn=ham autolearn_force=no
+	version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 71A14C433DF
-	for <iommu@archiver.kernel.org>; Tue, 30 Jun 2020 22:47:09 +0000 (UTC)
-Received: from whitealder.osuosl.org (smtp1.osuosl.org [140.211.166.138])
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 4EDEFC433E0
+	for <iommu@archiver.kernel.org>; Tue, 30 Jun 2020 22:47:11 +0000 (UTC)
+Received: from fraxinus.osuosl.org (smtp4.osuosl.org [140.211.166.137])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by mail.kernel.org (Postfix) with ESMTPS id 2AE1D2073E
-	for <iommu@archiver.kernel.org>; Tue, 30 Jun 2020 22:47:09 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTPS id 1AEE52073E
+	for <iommu@archiver.kernel.org>; Tue, 30 Jun 2020 22:47:10 +0000 (UTC)
 Authentication-Results: mail.kernel.org;
-	dkim=fail reason="signature verification failed" (1024-bit key) header.d=amazon.de header.i=@amazon.de header.b="bnaUo6no"
-DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 2AE1D2073E
+	dkim=fail reason="signature verification failed" (1024-bit key) header.d=amazon.de header.i=@amazon.de header.b="eC928qcg"
+DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 1AEE52073E
 Authentication-Results: mail.kernel.org; dmarc=none (p=none dis=none) header.from=lists.linux-foundation.org
 Authentication-Results: mail.kernel.org; spf=pass smtp.mailfrom=iommu-bounces@lists.linux-foundation.org
 Received: from localhost (localhost [127.0.0.1])
-	by whitealder.osuosl.org (Postfix) with ESMTP id E687088748;
-	Tue, 30 Jun 2020 22:47:08 +0000 (UTC)
+	by fraxinus.osuosl.org (Postfix) with ESMTP id DFDA687513;
+	Tue, 30 Jun 2020 22:47:10 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from whitealder.osuosl.org ([127.0.0.1])
+Received: from fraxinus.osuosl.org ([127.0.0.1])
 	by localhost (.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
-	with ESMTP id 4IdQu4gH2Ots; Tue, 30 Jun 2020 22:47:08 +0000 (UTC)
+	with ESMTP id F_ERkRP3dR_g; Tue, 30 Jun 2020 22:47:10 +0000 (UTC)
 Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [140.211.9.56])
-	by whitealder.osuosl.org (Postfix) with ESMTP id 4F44188725;
-	Tue, 30 Jun 2020 22:47:08 +0000 (UTC)
+	by fraxinus.osuosl.org (Postfix) with ESMTP id 8497A871CC;
+	Tue, 30 Jun 2020 22:47:10 +0000 (UTC)
 Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
-	by lists.linuxfoundation.org (Postfix) with ESMTP id 3150EC088F;
-	Tue, 30 Jun 2020 22:47:08 +0000 (UTC)
+	by lists.linuxfoundation.org (Postfix) with ESMTP id 72204C088F;
+	Tue, 30 Jun 2020 22:47:10 +0000 (UTC)
 Received: from whitealder.osuosl.org (smtp1.osuosl.org [140.211.166.138])
- by lists.linuxfoundation.org (Postfix) with ESMTP id 50718C016E
- for <iommu@lists.linux-foundation.org>; Tue, 30 Jun 2020 22:47:06 +0000 (UTC)
+ by lists.linuxfoundation.org (Postfix) with ESMTP id 754C6C088F
+ for <iommu@lists.linux-foundation.org>; Tue, 30 Jun 2020 22:47:08 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
- by whitealder.osuosl.org (Postfix) with ESMTP id 46136886F8
- for <iommu@lists.linux-foundation.org>; Tue, 30 Jun 2020 22:47:06 +0000 (UTC)
+ by whitealder.osuosl.org (Postfix) with ESMTP id 570358870F
+ for <iommu@lists.linux-foundation.org>; Tue, 30 Jun 2020 22:47:08 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
 Received: from whitealder.osuosl.org ([127.0.0.1])
  by localhost (.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
- with ESMTP id GP0teNObupXU for <iommu@lists.linux-foundation.org>;
- Tue, 30 Jun 2020 22:47:05 +0000 (UTC)
+ with ESMTP id 5x4rF8er2RcR for <iommu@lists.linux-foundation.org>;
+ Tue, 30 Jun 2020 22:47:07 +0000 (UTC)
 X-Greylist: whitelisted by SQLgrey-1.7.6
 Received: from smtp-fw-33001.amazon.com (smtp-fw-33001.amazon.com
  [207.171.190.10])
- by whitealder.osuosl.org (Postfix) with ESMTPS id ACAB2886E9
- for <iommu@lists.linux-foundation.org>; Tue, 30 Jun 2020 22:47:05 +0000 (UTC)
+ by whitealder.osuosl.org (Postfix) with ESMTPS id D5699886F8
+ for <iommu@lists.linux-foundation.org>; Tue, 30 Jun 2020 22:47:07 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
  d=amazon.de; i=@amazon.de; q=dns/txt; s=amazon201209;
- t=1593557225; x=1625093225;
+ t=1593557228; x=1625093228;
  h=from:to:cc:subject:date:message-id:in-reply-to:
  references:mime-version;
- bh=0Do7vUmgoy54v+IiKTJI+r7k90ygbB1/pii95TT6L7M=;
- b=bnaUo6noB1S2L56AbF8HBebxgfY5ct3UfOQuP6OgtC3k6xb5P9aBRVfE
- TiP2d0ExEln+vkEFfgGAYoRUnqLhrPKTh7i2Mh0nbGYtowoYKy4Gpznp9
- 9r72zw03wVXP5XVtEfSfGGKjCMs3U6ksc7CbSmc+CVw103Yxo1APwtbXT 8=;
-IronPort-SDR: YrWocArTXcR+dXxKI8kJuJWP5Bw9SOgjHZZtZwk25S75rhlPrNUSEputA4u6XUZGrHgAlxwdWi
- JrMseJO3DzAQ==
-X-IronPort-AV: E=Sophos;i="5.75,298,1589241600"; d="scan'208";a="55152157"
+ bh=yWUVsaQGu8AxMX5V9rX3pqDDyhKPiJEhtXyC84tfZP8=;
+ b=eC928qcgOZzfPxt7jo8k529UBUV/rVxVf+w0LFF1znxmWWBp0TvtsImd
+ wW2cR2tg8G/48+MSSWK8PrJ5z9y9stxZ9/P3bHC+gfJHgmcdIHbeo11F9
+ mP8o1ZD2BZiGt3QxA7K14/Al+NavhuUA5PVg0Xvz/MlAlSSo1X+ddRpgl s=;
+IronPort-SDR: M5spqCwsMeuc7ceYEm2aWWIrNkWcACyklJrkEc62c7xTj0nsMDx15l2I0GFpkQW2c0bnm60oUH
+ MDoZtPFPtHYw==
+X-IronPort-AV: E=Sophos;i="5.75,298,1589241600"; d="scan'208";a="55152162"
 Received: from sea32-co-svc-lb4-vlan3.sea.corp.amazon.com (HELO
- email-inbound-relay-2b-a7fdc47a.us-west-2.amazon.com) ([10.47.23.38])
+ email-inbound-relay-2a-538b0bfb.us-west-2.amazon.com) ([10.47.23.38])
  by smtp-border-fw-out-33001.sea14.amazon.com with ESMTP;
- 30 Jun 2020 22:47:05 +0000
+ 30 Jun 2020 22:47:07 +0000
 Received: from EX13MTAUWA001.ant.amazon.com
- (pdx4-ws-svc-p6-lb7-vlan2.pdx.amazon.com [10.170.41.162])
- by email-inbound-relay-2b-a7fdc47a.us-west-2.amazon.com (Postfix) with ESMTPS
- id C5B0BC07EE; Tue, 30 Jun 2020 22:47:04 +0000 (UTC)
-Received: from EX13D29UWA004.ant.amazon.com (10.43.160.33) by
+ (pdx4-ws-svc-p6-lb7-vlan3.pdx.amazon.com [10.170.41.166])
+ by email-inbound-relay-2a-538b0bfb.us-west-2.amazon.com (Postfix) with ESMTPS
+ id 8A9A5A1EE3; Tue, 30 Jun 2020 22:47:07 +0000 (UTC)
+Received: from EX13D29UWA002.ant.amazon.com (10.43.160.63) by
  EX13MTAUWA001.ant.amazon.com (10.43.160.118) with Microsoft SMTP Server (TLS)
- id 15.0.1497.2; Tue, 30 Jun 2020 22:47:03 +0000
+ id 15.0.1497.2; Tue, 30 Jun 2020 22:47:06 +0000
 Received: from EX13MTAUWA001.ant.amazon.com (10.43.160.58) by
- EX13D29UWA004.ant.amazon.com (10.43.160.33) with Microsoft SMTP Server (TLS)
- id 15.0.1497.2; Tue, 30 Jun 2020 22:47:03 +0000
+ EX13D29UWA002.ant.amazon.com (10.43.160.63) with Microsoft SMTP Server (TLS)
+ id 15.0.1497.2; Tue, 30 Jun 2020 22:47:06 +0000
 Received: from uc7682112f22859.ant.amazon.com (10.1.213.20) by
  mail-relay.amazon.com (10.43.160.118) with Microsoft SMTP Server id
- 15.0.1497.2 via Frontend Transport; Tue, 30 Jun 2020 22:47:01 +0000
+ 15.0.1497.2 via Frontend Transport; Tue, 30 Jun 2020 22:47:05 +0000
 To: Joerg Roedel <joro@8bytes.org>, <iommu@lists.linux-foundation.org>
-Subject: [PATCH v2 0/3] iommu/amd: I/O VA address limits
-Date: Wed, 1 Jul 2020 00:46:31 +0200
-Message-ID: <20200630224634.319-1-sebott@amazon.de>
+Subject: [PATCH v2 2/3] iommu/amd: Restrict aperture for domains to conform
+ with IVRS
+Date: Wed, 1 Jul 2020 00:46:33 +0200
+Message-ID: <20200630224634.319-3-sebott@amazon.de>
 X-Mailer: git-send-email 2.17.1
-In-Reply-To: <20200630093039.GC28824@8bytes.org>
+In-Reply-To: <20200630224634.319-1-sebott@amazon.de>
 References: <20200630093039.GC28824@8bytes.org>
+ <20200630224634.319-1-sebott@amazon.de>
 MIME-Version: 1.0
 Cc: Benjamin Serebrin <serebrin@amazon.com>, Filippo Sironi <sironi@amazon.de>,
  Sebastian Ott <sebott@amazon.de>
@@ -106,24 +109,33 @@ Errors-To: iommu-bounces@lists.linux-foundation.org
 Sender: "iommu" <iommu-bounces@lists.linux-foundation.org>
 
 The IVRS ACPI table specifies maximum address sizes for I/O virtual
-addresses that can be handled by the IOMMUs in the system. Parse that
-data from the IVRS header to provide aperture information for DMA
-mappings and users of the iommu API.
+addresses. When allocating new protection domains that perform
+translation, propagate these limits as the domain's geometry / aperture.
 
-Changes for V2:
- - use limits in iommu_setup_dma_ops()
- - rebased to current upstream
+Based on prior work by Marius Hillenbrand.
 
-Sebastian Ott (3):
-  iommu/amd: Parse supported address sizes from IVRS
-  iommu/amd: Restrict aperture for domains to conform with IVRS
-  iommu/amd: Actually enforce geometry aperture
+Signed-off-by: Sebastian Ott <sebott@amazon.de>
+Cc: Benjamin Serebrin <serebrin@amazon.com>
+Cc: Filippo Sironi <sironi@amazon.de>
 
- drivers/iommu/amd/amd_iommu_types.h |  3 +++
- drivers/iommu/amd/init.c            | 26 ++++++++++++++++++++++++++
- drivers/iommu/amd/iommu.c           | 12 ++++++++++--
- 3 files changed, 39 insertions(+), 2 deletions(-)
+CR: https://code.amazon.com/reviews/CR-26408353
+---
+ drivers/iommu/amd/iommu.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
+diff --git a/drivers/iommu/amd/iommu.c b/drivers/iommu/amd/iommu.c
+index acab35220d98..b3f79820fd6d 100644
+--- a/drivers/iommu/amd/iommu.c
++++ b/drivers/iommu/amd/iommu.c
+@@ -2382,7 +2382,7 @@ static struct iommu_domain *amd_iommu_domain_alloc(unsigned type)
+ 		return NULL;
+ 
+ 	domain->domain.geometry.aperture_start = 0;
+-	domain->domain.geometry.aperture_end   = ~0ULL;
++	domain->domain.geometry.aperture_end   = amd_iommu_max_va;
+ 	domain->domain.geometry.force_aperture = true;
+ 
+ 	if (type == IOMMU_DOMAIN_DMA &&
 -- 
 2.17.1
 
