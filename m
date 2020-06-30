@@ -2,62 +2,137 @@ Return-Path: <SRS0=0Jez=AL=lists.linux-foundation.org=iommu-bounces@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-5.5 required=3.0 tests=HEADER_FROM_DIFFERENT_DOMAINS,
-	MAILING_LIST_MULTI,SIGNED_OFF_BY,SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED,
-	USER_AGENT_SANE_1 autolearn=ham autolearn_force=no version=3.4.0
+X-Spam-Status: No, score=-9.8 required=3.0 tests=DKIM_INVALID,DKIM_SIGNED,
+	HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_PATCH,MAILING_LIST_MULTI,SIGNED_OFF_BY,
+	SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED,USER_AGENT_GIT autolearn=unavailable
+	autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 11EC4C433DF
-	for <iommu@archiver.kernel.org>; Tue, 30 Jun 2020 08:43:02 +0000 (UTC)
-Received: from hemlock.osuosl.org (smtp2.osuosl.org [140.211.166.133])
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 5E67AC433DF
+	for <iommu@archiver.kernel.org>; Tue, 30 Jun 2020 08:44:54 +0000 (UTC)
+Received: from silver.osuosl.org (smtp3.osuosl.org [140.211.166.136])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by mail.kernel.org (Postfix) with ESMTPS id D70A220768
-	for <iommu@archiver.kernel.org>; Tue, 30 Jun 2020 08:43:01 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org D70A220768
-Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=8bytes.org
+	by mail.kernel.org (Postfix) with ESMTPS id 2DA9D206BE
+	for <iommu@archiver.kernel.org>; Tue, 30 Jun 2020 08:44:54 +0000 (UTC)
+Authentication-Results: mail.kernel.org;
+	dkim=fail reason="signature verification failed" (1024-bit key) header.d=samsung.com header.i=@samsung.com header.b="RRrOjFfB"
+DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 2DA9D206BE
+Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=samsung.com
 Authentication-Results: mail.kernel.org; spf=pass smtp.mailfrom=iommu-bounces@lists.linux-foundation.org
 Received: from localhost (localhost [127.0.0.1])
-	by hemlock.osuosl.org (Postfix) with ESMTP id 9336A8835C;
-	Tue, 30 Jun 2020 08:43:01 +0000 (UTC)
+	by silver.osuosl.org (Postfix) with ESMTP id F01A02154B;
+	Tue, 30 Jun 2020 08:44:53 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from hemlock.osuosl.org ([127.0.0.1])
+Received: from silver.osuosl.org ([127.0.0.1])
 	by localhost (.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
-	with ESMTP id jfhxEFfbF035; Tue, 30 Jun 2020 08:42:59 +0000 (UTC)
+	with ESMTP id e1aSzsKK+ivc; Tue, 30 Jun 2020 08:44:52 +0000 (UTC)
 Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [140.211.9.56])
-	by hemlock.osuosl.org (Postfix) with ESMTP id 9844588359;
-	Tue, 30 Jun 2020 08:42:59 +0000 (UTC)
+	by silver.osuosl.org (Postfix) with ESMTP id 65C8E20554;
+	Tue, 30 Jun 2020 08:44:52 +0000 (UTC)
 Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
-	by lists.linuxfoundation.org (Postfix) with ESMTP id 6EBFAC088F;
-	Tue, 30 Jun 2020 08:42:59 +0000 (UTC)
-Received: from hemlock.osuosl.org (smtp2.osuosl.org [140.211.166.133])
- by lists.linuxfoundation.org (Postfix) with ESMTP id 55700C016E
- for <iommu@lists.linux-foundation.org>; Tue, 30 Jun 2020 08:42:58 +0000 (UTC)
+	by lists.linuxfoundation.org (Postfix) with ESMTP id 5345BC088F;
+	Tue, 30 Jun 2020 08:44:52 +0000 (UTC)
+Received: from fraxinus.osuosl.org (smtp4.osuosl.org [140.211.166.137])
+ by lists.linuxfoundation.org (Postfix) with ESMTP id 68B1DC016E
+ for <iommu@lists.linux-foundation.org>; Tue, 30 Jun 2020 08:44:50 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
- by hemlock.osuosl.org (Postfix) with ESMTP id 444988835C
- for <iommu@lists.linux-foundation.org>; Tue, 30 Jun 2020 08:42:58 +0000 (UTC)
+ by fraxinus.osuosl.org (Postfix) with ESMTP id 5814F86914
+ for <iommu@lists.linux-foundation.org>; Tue, 30 Jun 2020 08:44:50 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from hemlock.osuosl.org ([127.0.0.1])
+Received: from fraxinus.osuosl.org ([127.0.0.1])
  by localhost (.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
- with ESMTP id U2pZovGTexjY for <iommu@lists.linux-foundation.org>;
- Tue, 30 Jun 2020 08:42:56 +0000 (UTC)
+ with ESMTP id ZGIWJkGMdTtA for <iommu@lists.linux-foundation.org>;
+ Tue, 30 Jun 2020 08:44:48 +0000 (UTC)
 X-Greylist: from auto-whitelisted by SQLgrey-1.7.6
-Received: from theia.8bytes.org (8bytes.org [81.169.241.247])
- by hemlock.osuosl.org (Postfix) with ESMTPS id 968AA88359
- for <iommu@lists.linux-foundation.org>; Tue, 30 Jun 2020 08:42:56 +0000 (UTC)
-Received: by theia.8bytes.org (Postfix, from userid 1000)
- id E504F26B; Tue, 30 Jun 2020 10:42:52 +0200 (CEST)
-Date: Tue, 30 Jun 2020 10:42:51 +0200
-From: Joerg Roedel <joro@8bytes.org>
-To: Robin Murphy <robin.murphy@arm.com>
-Subject: Re: [PATCH] iommu/iova: Don't BUG on invalid PFNs
-Message-ID: <20200630084251.GA28824@8bytes.org>
-References: <acbd2d092b42738a03a21b417ce64e27f8c91c86.1591103298.git.robin.murphy@arm.com>
-MIME-Version: 1.0
-Content-Disposition: inline
-In-Reply-To: <acbd2d092b42738a03a21b417ce64e27f8c91c86.1591103298.git.robin.murphy@arm.com>
-User-Agent: Mutt/1.10.1 (2018-07-13)
-Cc: iommu@lists.linux-foundation.org, linux-kernel@vger.kernel.org,
- Prakash Gupta <guptap@codeaurora.org>
+Received: from mailout1.w1.samsung.com (mailout1.w1.samsung.com
+ [210.118.77.11])
+ by fraxinus.osuosl.org (Postfix) with ESMTPS id A19E78691E
+ for <iommu@lists.linux-foundation.org>; Tue, 30 Jun 2020 08:44:48 +0000 (UTC)
+Received: from eucas1p2.samsung.com (unknown [182.198.249.207])
+ by mailout1.w1.samsung.com (KnoxPortal) with ESMTP id
+ 20200630084446euoutp01252c86789cd2c769b3217c1c3bb84b67~dReN8z7zU3195831958euoutp01I
+ for <iommu@lists.linux-foundation.org>; Tue, 30 Jun 2020 08:44:46 +0000 (GMT)
+DKIM-Filter: OpenDKIM Filter v2.11.0 mailout1.w1.samsung.com
+ 20200630084446euoutp01252c86789cd2c769b3217c1c3bb84b67~dReN8z7zU3195831958euoutp01I
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=samsung.com;
+ s=mail20170921; t=1593506686;
+ bh=lXmtVvOi3m7BClTCphUvb9QrD/BPO3J1D0W3H9sRRl8=;
+ h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
+ b=RRrOjFfBh4VNzuEdaoyc+Eh9Ohxna44hidUV2nA4gjBEE6cMIO7ARANbq9g0UEJUG
+ 4NeoS245VVYwV6Z8Rost0jDJDYGU7Osv5jxjcgzhHNcrrAv/wrXWTVkFb4wOYxxxRA
+ cgLY6odOKxb3N/CS5UVyAnJ/XKTLUr5M879TO4XA=
+Received: from eusmges3new.samsung.com (unknown [203.254.199.245]) by
+ eucas1p1.samsung.com (KnoxPortal) with ESMTP id
+ 20200630084446eucas1p13b09fade29608137f68bae8f0b60e780~dReNjgNmy1186511865eucas1p1M;
+ Tue, 30 Jun 2020 08:44:46 +0000 (GMT)
+Received: from eucas1p1.samsung.com ( [182.198.249.206]) by
+ eusmges3new.samsung.com (EUCPMTA) with SMTP id F5.A6.06318.E7BFAFE5; Tue, 30
+ Jun 2020 09:44:46 +0100 (BST)
+Received: from eusmtrp1.samsung.com (unknown [182.198.249.138]) by
+ eucas1p1.samsung.com (KnoxPortal) with ESMTPA id
+ 20200630084445eucas1p1e85857b5d046648578f1447f8ba521a5~dReNOvCZB1180111801eucas1p1G;
+ Tue, 30 Jun 2020 08:44:45 +0000 (GMT)
+Received: from eusmgms1.samsung.com (unknown [182.198.249.179]) by
+ eusmtrp1.samsung.com (KnoxPortal) with ESMTP id
+ 20200630084445eusmtrp1c40012032f3073b4340ec8d12cbfa4d4~dReNN-2SD2091120911eusmtrp1D;
+ Tue, 30 Jun 2020 08:44:45 +0000 (GMT)
+X-AuditID: cbfec7f5-38bff700000018ae-ed-5efafb7eab0e
+Received: from eusmtip1.samsung.com ( [203.254.199.221]) by
+ eusmgms1.samsung.com (EUCPMTA) with SMTP id E3.D3.06314.D7BFAFE5; Tue, 30
+ Jun 2020 09:44:45 +0100 (BST)
+Received: from AMDC2765.digital.local (unknown [106.120.51.73]) by
+ eusmtip1.samsung.com (KnoxPortal) with ESMTPA id
+ 20200630084445eusmtip16232b756e66744d9f85ca187702d2593~dReMjdeol2968129681eusmtip1f;
+ Tue, 30 Jun 2020 08:44:44 +0000 (GMT)
+From: Marek Szyprowski <m.szyprowski@samsung.com>
+To: dri-devel@lists.freedesktop.org, iommu@lists.linux-foundation.org,
+ linaro-mm-sig@lists.linaro.org, linux-kernel@vger.kernel.org
+Subject: [PATCH v8] rapidio: fix common struct sg_table related issues
+Date: Tue, 30 Jun 2020 10:44:31 +0200
+Message-Id: <20200630084431.4935-1-m.szyprowski@samsung.com>
+X-Mailer: git-send-email 2.17.1
+In-Reply-To: <20200619103636.11974-34-m.szyprowski@samsung.com>
+X-Brightmail-Tracker: H4sIAAAAAAAAA0WSe0hTURzHObvb3XU4u03Ng4+EQWFKmlh0U0uTiAsF1R9BBU1XXlRyU3bV
+ VKQ0zWrNd5JK1FJRc75SW6mYabqpoyVqOi3fvVz5CF/4yHJes/++33M+39/38ONgiKCBY4uF
+ SCMomVQcKkR5bLVmWb//xuqK6MDkAEKk6DtYxHipASGe51RyiD/qDIToXZhBiWeqNhahbPIi
+ 5nvHWET1RB+H6Kl/hBLlrUNcIvv9EkI0z37m+PLJssdlgGxcVLLJurwhLqn4mcQhXy6OcsiR
+ +1oWWVN4k/y4PoGQWYZiQDYMxKNkam0pIOeqd581v8TzDqRCQ6IomduxAF7wh6Y1VviLXdHy
+ 1Dw0HjQK5MAMg/hBWDlewpYDHibASwAcvqMEjJkHUJM9zWXMHID91aXov0h+h3qLKgawoN/I
+ 2Y7EFxewTBSKu0P5lHwzYYXfBrA9xdykEXyaBVvnnE3aEj8JB5ebNhk2vgeOzwxvaj7uDZ9M
+ r3GZNkeoqnqDmLQZ7gMzM9YRUxnE9VyYPzS+YbANcwJO1kQzvCU0amu3svZQl6VgM3wigGP6
+ ci5jFAD23MoBDOUFP+lXUNMgBN8HK+vdmOPjMLehhcvMt4CGqZ3M+y1gpvrhVi0f3k3e2uNe
+ mKet2K5t7upGGE3CX20jKLOfTAC7nhah6cAx73+ZEoBSYENF0pIgivaQUtddabGEjpQGuV4N
+ k1SDjS+lW9cuvAKv1660ABwDQnN+gH5ZJOCIo+gYSQuAGCK04vu904kE/EBxTCwlC/OXRYZS
+ dAuww9hCG75H/uRlAR4kjqCuUVQ4Jft3y8LMbOPBhcOn3EYRqiSwL4fuq5NeDB8csOt8G8HL
+ /VqUMKIROR3lTf5O8PRbLbT2UqzGWel2dB9Z+nY6XWWMMyjKYkHSalpIiFPjg0RD6pduewea
+ 31eVpkn2O9de3O7bnj9RpP2RZFSdz6lZ/45X+M/6HOp0cfGxVnuKNEtdDmdUKfdqhGw6WOzu
+ jMho8V+6eyNKTgMAAA==
+X-Brightmail-Tracker: H4sIAAAAAAAAA+NgFprHIsWRmVeSWpSXmKPExsVy+t/xu7q1v3/FGbQd1rDoPXeSyeLRqhvM
+ FhtnrGe1+L9tIrPFla/v2SxWrj7KZLFgv7XFlysPmSw2Pb7GanF51xw2i7VH7rJbTD3/ndni
+ 4IcnrA68HmvmrWH02PttAYvHzll32T163rSwemz/9oDV4373cSaPzUvqPW7/e8zsMfnGckaP
+ 3Tcb2Dz6tqxi9Pi8SS6AJ0rPpii/tCRVISO/uMRWKdrQwkjP0NJCz8jEUs/Q2DzWyshUSd/O
+ JiU1J7MstUjfLkEv4+r+P0wFW8UquvpmsTUw7hXqYuTkkBAwkVh0chtjFyMXh5DAUkaJh1tn
+ M0IkZCROTmtghbCFJf5c62KDKPrEKPFu0UWwBJuAoUTXW4iEiEAno8S07o/sIA6zwDcmiUlL
+ b7GBVAkLuEnc+rkfzGYRUJV49P4emM0rYCMx/90fdogV8hKrNxxgBrE5BewlJk38B2YLCdhJ
+ 3JmznmkCI98CRoZVjCKppcW56bnFhnrFibnFpXnpesn5uZsYgXGz7djPzTsYL20MPsQowMGo
+ xMObcO5nnBBrYllxZe4hRgkOZiURXqezp+OEeFMSK6tSi/Lji0pzUosPMZoCHTWRWUo0OR8Y
+ 03kl8YamhuYWlobmxubGZhZK4rwdAgdjhATSE0tSs1NTC1KLYPqYODilGhhDDnTNtLxxcdEW
+ ibK2H7sl9vN7h52b1xP+wPkBt8W5A+k3Xi67fWl22J11G9RWxu+ftKT8UJzG3Xtrc96fj73O
+ Lbbik6DwOuGrU5rlPbsKbB12u+q0hqRduFU+Q77z2Y0XXut2ybosfJBTsSfpgOst5usp+/mD
+ w77PX2nw19w6K+kW22bHxSnFSizFGYmGWsxFxYkA1yBJGLECAAA=
+X-CMS-MailID: 20200630084445eucas1p1e85857b5d046648578f1447f8ba521a5
+X-Msg-Generator: CA
+X-RootMTR: 20200630084445eucas1p1e85857b5d046648578f1447f8ba521a5
+X-EPHeader: CA
+CMS-TYPE: 201P
+X-CMS-RootMailID: 20200630084445eucas1p1e85857b5d046648578f1447f8ba521a5
+References: <20200619103636.11974-34-m.szyprowski@samsung.com>
+ <CGME20200630084445eucas1p1e85857b5d046648578f1447f8ba521a5@eucas1p1.samsung.com>
+Cc: Bartlomiej Zolnierkiewicz <b.zolnierkie@samsung.com>,
+ David Airlie <airlied@linux.ie>, Alexandre Bounine <alex.bou9@gmail.com>,
+ Daniel Vetter <daniel@ffwll.ch>, Matt Porter <mporter@kernel.crashing.org>,
+ Robin Murphy <robin.murphy@arm.com>, Christoph Hellwig <hch@lst.de>,
+ linux-arm-kernel@lists.infradead.org
 X-BeenThere: iommu@lists.linux-foundation.org
 X-Mailman-Version: 2.1.15
 Precedence: list
@@ -70,32 +145,86 @@ List-Post: <mailto:iommu@lists.linux-foundation.org>
 List-Help: <mailto:iommu-request@lists.linux-foundation.org?subject=help>
 List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
  <mailto:iommu-request@lists.linux-foundation.org?subject=subscribe>
+MIME-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
 Errors-To: iommu-bounces@lists.linux-foundation.org
 Sender: "iommu" <iommu-bounces@lists.linux-foundation.org>
 
-On Tue, Jun 02, 2020 at 02:08:18PM +0100, Robin Murphy wrote:
-> Unlike the other instances which represent a complete loss of
-> consistency within the rcache mechanism itself, or a fundamental
-> and obvious misconfiguration by an IOMMU driver, the BUG_ON() in
-> iova_magazine_free_pfns() can be provoked at more or less any time
-> in a "spooky action-at-a-distance" manner by any old device driver
-> passing nonsense to dma_unmap_*() which then propagates through to
-> queue_iova().
-> 
-> Not only is this well outside the IOVA layer's control, it's also
-> nowhere near fatal enough to justify panicking anyway - all that
-> really achieves is to make debugging the offending driver more
-> difficult. Let's simply WARN and otherwise ignore bogus PFNs.
-> 
-> Reported-by: Prakash Gupta <guptap@codeaurora.org>
-> Signed-off-by: Robin Murphy <robin.murphy@arm.com>
-> ---
->  drivers/iommu/iova.c | 4 +++-
->  1 file changed, 3 insertions(+), 1 deletion(-)
+The Documentation/DMA-API-HOWTO.txt states that the dma_map_sg() function
+returns the number of the created entries in the DMA address space.
+However the subsequent calls to the dma_sync_sg_for_{device,cpu}() and
+dma_unmap_sg must be called with the original number of the entries
+passed to the dma_map_sg().
 
-Applied without stable tag, thanks.
+struct sg_table is a common structure used for describing a non-contiguous
+memory buffer, used commonly in the DRM and graphics subsystems. It
+consists of a scatterlist with memory pages and DMA addresses (sgl entry),
+as well as the number of scatterlist entries: CPU pages (orig_nents entry)
+and DMA mapped pages (nents entry).
+
+It turned out that it was a common mistake to misuse nents and orig_nents
+entries, calling DMA-mapping functions with a wrong number of entries or
+ignoring the number of mapped entries returned by the dma_map_sg()
+function.
+
+To avoid such issues, lets use a common dma-mapping wrappers operating
+directly on the struct sg_table objects and use scatterlist page
+iterators where possible. This, almost always, hides references to the
+nents and orig_nents entries, making the code robust, easier to follow
+and copy/paste safe.
+
+Signed-off-by: Marek Szyprowski <m.szyprowski@samsung.com>
+---
+v8: fixed issues pointed by kbuilt test robot (use of uninitialized
+    variable)
+---
+ drivers/rapidio/devices/rio_mport_cdev.c | 11 ++++-------
+ 1 file changed, 4 insertions(+), 7 deletions(-)
+
+diff --git a/drivers/rapidio/devices/rio_mport_cdev.c b/drivers/rapidio/devices/rio_mport_cdev.c
+index 3abbba8c2b5b..351c08b886ec 100644
+--- a/drivers/rapidio/devices/rio_mport_cdev.c
++++ b/drivers/rapidio/devices/rio_mport_cdev.c
+@@ -573,8 +573,7 @@ static void dma_req_free(struct kref *ref)
+ 			refcount);
+ 	struct mport_cdev_priv *priv = req->priv;
+ 
+-	dma_unmap_sg(req->dmach->device->dev,
+-		     req->sgt.sgl, req->sgt.nents, req->dir);
++	dma_unmap_sgtable(req->dmach->device->dev, &req->sgt, req->dir, 0);
+ 	sg_free_table(&req->sgt);
+ 	if (req->page_list) {
+ 		unpin_user_pages(req->page_list, req->nr_pages);
+@@ -814,7 +813,6 @@ rio_dma_transfer(struct file *filp, u32 transfer_mode,
+ 	struct mport_dev *md = priv->md;
+ 	struct dma_chan *chan;
+ 	int ret;
+-	int nents;
+ 
+ 	if (xfer->length == 0)
+ 		return -EINVAL;
+@@ -930,15 +928,14 @@ rio_dma_transfer(struct file *filp, u32 transfer_mode,
+ 				xfer->offset, xfer->length);
+ 	}
+ 
+-	nents = dma_map_sg(chan->device->dev,
+-			   req->sgt.sgl, req->sgt.nents, dir);
+-	if (nents == 0) {
++	ret = dma_map_sgtable(chan->device->dev, &req->sgt, dir, 0);
++	if (ret) {
+ 		rmcd_error("Failed to map SG list");
+ 		ret = -EFAULT;
+ 		goto err_pg;
+ 	}
+ 
+-	ret = do_dma_request(req, xfer, sync, nents);
++	ret = do_dma_request(req, xfer, sync, req->sgt.nents);
+ 
+ 	if (ret >= 0) {
+ 		if (sync == RIO_TRANSFER_ASYNC)
+-- 
+2.17.1
 
 _______________________________________________
 iommu mailing list
