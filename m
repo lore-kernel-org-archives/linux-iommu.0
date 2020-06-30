@@ -2,79 +2,138 @@ Return-Path: <SRS0=0Jez=AL=lists.linux-foundation.org=iommu-bounces@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-2.5 required=3.0 tests=HEADER_FROM_DIFFERENT_DOMAINS,
-	MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED,USER_AGENT_SANE_1
-	autolearn=no autolearn_force=no version=3.4.0
+X-Spam-Status: No, score=-9.8 required=3.0 tests=DKIM_INVALID,DKIM_SIGNED,
+	HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_PATCH,MAILING_LIST_MULTI,SIGNED_OFF_BY,
+	SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED,USER_AGENT_GIT autolearn=unavailable
+	autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 16519C433E2
-	for <iommu@archiver.kernel.org>; Tue, 30 Jun 2020 10:25:09 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 345E5C433E0
+	for <iommu@archiver.kernel.org>; Tue, 30 Jun 2020 10:45:38 +0000 (UTC)
 Received: from silver.osuosl.org (smtp3.osuosl.org [140.211.166.136])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by mail.kernel.org (Postfix) with ESMTPS id DF49720771
-	for <iommu@archiver.kernel.org>; Tue, 30 Jun 2020 10:25:08 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org DF49720771
-Authentication-Results: mail.kernel.org; dmarc=none (p=none dis=none) header.from=arm.com
+	by mail.kernel.org (Postfix) with ESMTPS id ED94E207F5
+	for <iommu@archiver.kernel.org>; Tue, 30 Jun 2020 10:45:37 +0000 (UTC)
+Authentication-Results: mail.kernel.org;
+	dkim=fail reason="signature verification failed" (1024-bit key) header.d=samsung.com header.i=@samsung.com header.b="jcyDzxcZ"
+DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org ED94E207F5
+Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=samsung.com
 Authentication-Results: mail.kernel.org; spf=pass smtp.mailfrom=iommu-bounces@lists.linux-foundation.org
 Received: from localhost (localhost [127.0.0.1])
-	by silver.osuosl.org (Postfix) with ESMTP id 999C122836;
-	Tue, 30 Jun 2020 10:25:08 +0000 (UTC)
+	by silver.osuosl.org (Postfix) with ESMTP id 8894722803;
+	Tue, 30 Jun 2020 10:45:37 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
 Received: from silver.osuosl.org ([127.0.0.1])
 	by localhost (.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
-	with ESMTP id 7ATF4agBCx5C; Tue, 30 Jun 2020 10:25:06 +0000 (UTC)
+	with ESMTP id KP6ES3EPK2ej; Tue, 30 Jun 2020 10:45:35 +0000 (UTC)
 Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [140.211.9.56])
-	by silver.osuosl.org (Postfix) with ESMTP id DE9D02284C;
-	Tue, 30 Jun 2020 10:25:05 +0000 (UTC)
+	by silver.osuosl.org (Postfix) with ESMTP id 114DE22001;
+	Tue, 30 Jun 2020 10:45:35 +0000 (UTC)
 Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
-	by lists.linuxfoundation.org (Postfix) with ESMTP id CAFC0C088F;
-	Tue, 30 Jun 2020 10:25:05 +0000 (UTC)
-Received: from whitealder.osuosl.org (smtp1.osuosl.org [140.211.166.138])
- by lists.linuxfoundation.org (Postfix) with ESMTP id 86E91C016E
- for <iommu@lists.linux-foundation.org>; Tue, 30 Jun 2020 10:25:04 +0000 (UTC)
+	by lists.linuxfoundation.org (Postfix) with ESMTP id 03381C088F;
+	Tue, 30 Jun 2020 10:45:35 +0000 (UTC)
+Received: from fraxinus.osuosl.org (smtp4.osuosl.org [140.211.166.137])
+ by lists.linuxfoundation.org (Postfix) with ESMTP id 91C51C016E
+ for <iommu@lists.linux-foundation.org>; Tue, 30 Jun 2020 10:45:33 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
- by whitealder.osuosl.org (Postfix) with ESMTP id 7523F87D9D
- for <iommu@lists.linux-foundation.org>; Tue, 30 Jun 2020 10:25:04 +0000 (UTC)
+ by fraxinus.osuosl.org (Postfix) with ESMTP id 778DD86935
+ for <iommu@lists.linux-foundation.org>; Tue, 30 Jun 2020 10:45:33 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from whitealder.osuosl.org ([127.0.0.1])
+Received: from fraxinus.osuosl.org ([127.0.0.1])
  by localhost (.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
- with ESMTP id ViURGX4RjGWs for <iommu@lists.linux-foundation.org>;
- Tue, 30 Jun 2020 10:25:03 +0000 (UTC)
-X-Greylist: domain auto-whitelisted by SQLgrey-1.7.6
-Received: from foss.arm.com (foss.arm.com [217.140.110.172])
- by whitealder.osuosl.org (Postfix) with ESMTP id 3253187722
- for <iommu@lists.linux-foundation.org>; Tue, 30 Jun 2020 10:25:03 +0000 (UTC)
-Received: from usa-sjc-imap-foss1.foss.arm.com (unknown [10.121.207.14])
- by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id 9943C31B;
- Tue, 30 Jun 2020 03:25:02 -0700 (PDT)
-Received: from e121166-lin.cambridge.arm.com (e121166-lin.cambridge.arm.com
- [10.1.196.255])
- by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPSA id 66CC53F68F;
- Tue, 30 Jun 2020 03:25:00 -0700 (PDT)
-Date: Tue, 30 Jun 2020 11:24:54 +0100
-From: Lorenzo Pieralisi <lorenzo.pieralisi@arm.com>
-To: Hanjun Guo <guohanjun@huawei.com>
-Subject: Re: [PATCH v2 01/12] ACPI/IORT: Make iort_match_node_callback walk
- the ACPI namespace for NC
-Message-ID: <20200630102454.GA17556@e121166-lin.cambridge.arm.com>
-References: <20200521130008.8266-1-lorenzo.pieralisi@arm.com>
- <20200619082013.13661-1-lorenzo.pieralisi@arm.com>
- <20200619082013.13661-2-lorenzo.pieralisi@arm.com>
- <718cae1f-2f33-f6d9-f278-157300b73116@huawei.com>
- <20200629090551.GA28873@e121166-lin.cambridge.arm.com>
- <765078e7-b3ec-af5d-0405-7834ba0f120a@huawei.com>
-MIME-Version: 1.0
-Content-Disposition: inline
-In-Reply-To: <765078e7-b3ec-af5d-0405-7834ba0f120a@huawei.com>
-User-Agent: Mutt/1.9.4 (2018-02-28)
-Cc: devicetree@vger.kernel.org, Marc Zyngier <maz@kernel.org>,
- Makarand Pawagi <makarand.pawagi@nxp.com>, linux-pci@vger.kernel.org,
- Catalin Marinas <catalin.marinas@arm.com>,
- Diana Craciun <diana.craciun@oss.nxp.com>,
- "Rafael J. Wysocki" <rjw@rjwysocki.net>, Robin Murphy <robin.murphy@arm.com>,
- linux-acpi@vger.kernel.org, iommu@lists.linux-foundation.org,
- Rob Herring <robh+dt@kernel.org>, Sudeep Holla <sudeep.holla@arm.com>,
- Bjorn Helgaas <bhelgaas@google.com>, Will Deacon <will@kernel.org>,
+ with ESMTP id 0w1hVEsW8QQ1 for <iommu@lists.linux-foundation.org>;
+ Tue, 30 Jun 2020 10:45:31 +0000 (UTC)
+X-Greylist: from auto-whitelisted by SQLgrey-1.7.6
+Received: from mailout2.w1.samsung.com (mailout2.w1.samsung.com
+ [210.118.77.12])
+ by fraxinus.osuosl.org (Postfix) with ESMTPS id 4BAD086542
+ for <iommu@lists.linux-foundation.org>; Tue, 30 Jun 2020 10:45:31 +0000 (UTC)
+Received: from eucas1p1.samsung.com (unknown [182.198.249.206])
+ by mailout2.w1.samsung.com (KnoxPortal) with ESMTP id
+ 20200630104528euoutp02e1ece6167cc46bdc62e9c8f8579dbf39~dTHmyRiWm2346123461euoutp02C
+ for <iommu@lists.linux-foundation.org>; Tue, 30 Jun 2020 10:45:28 +0000 (GMT)
+DKIM-Filter: OpenDKIM Filter v2.11.0 mailout2.w1.samsung.com
+ 20200630104528euoutp02e1ece6167cc46bdc62e9c8f8579dbf39~dTHmyRiWm2346123461euoutp02C
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=samsung.com;
+ s=mail20170921; t=1593513928;
+ bh=cUETLd6FpqukuPDtMtJDa7WFMzO/MRWL/MsyCM3reGw=;
+ h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
+ b=jcyDzxcZqX6Kz58nq7U9P0whzCloDqOZrHA3Mb59IMPMG+Gidh5yQ7s+fKWVOYMq4
+ /8Y1JTyc6OGcH5KhMAI9aZJzO1bPRcJXAAMZkYE1isQIiXxNtVm4mvcr85HDxslm4c
+ L7eXXYHD0FZByQN8v3uGz4vX+Ke/uLwrP3v7NH94=
+Received: from eusmges2new.samsung.com (unknown [203.254.199.244]) by
+ eucas1p2.samsung.com (KnoxPortal) with ESMTP id
+ 20200630104528eucas1p2f23d2b731b639f6643fe42e2cfc862df~dTHmSR8mB0978009780eucas1p2_;
+ Tue, 30 Jun 2020 10:45:28 +0000 (GMT)
+Received: from eucas1p1.samsung.com ( [182.198.249.206]) by
+ eusmges2new.samsung.com (EUCPMTA) with SMTP id F6.B5.05997.8C71BFE5; Tue, 30
+ Jun 2020 11:45:28 +0100 (BST)
+Received: from eusmtrp2.samsung.com (unknown [182.198.249.139]) by
+ eucas1p1.samsung.com (KnoxPortal) with ESMTPA id
+ 20200630104527eucas1p13f19c24ff053556fb1fa7dc72be14c77~dTHl3UM0R2539025390eucas1p1I;
+ Tue, 30 Jun 2020 10:45:27 +0000 (GMT)
+Received: from eusmgms2.samsung.com (unknown [182.198.249.180]) by
+ eusmtrp2.samsung.com (KnoxPortal) with ESMTP id
+ 20200630104527eusmtrp252206fb5da44e6f0c16456efe5ac71a5~dTHl2icNj3252132521eusmtrp2N;
+ Tue, 30 Jun 2020 10:45:27 +0000 (GMT)
+X-AuditID: cbfec7f4-677ff7000000176d-7e-5efb17c8f27f
+Received: from eusmtip1.samsung.com ( [203.254.199.221]) by
+ eusmgms2.samsung.com (EUCPMTA) with SMTP id CB.86.06017.7C71BFE5; Tue, 30
+ Jun 2020 11:45:27 +0100 (BST)
+Received: from AMDC2765.digital.local (unknown [106.120.51.73]) by
+ eusmtip1.samsung.com (KnoxPortal) with ESMTPA id
+ 20200630104525eusmtip12cf2edfda9c5b2cebe27f89dc948a33e~dTHjlTP4F1804318043eusmtip1H;
+ Tue, 30 Jun 2020 10:45:25 +0000 (GMT)
+From: Marek Szyprowski <m.szyprowski@samsung.com>
+To: dri-devel@lists.freedesktop.org, iommu@lists.linux-foundation.org,
+ linaro-mm-sig@lists.linaro.org, linux-kernel@vger.kernel.org
+Subject: [PATCH v8] videobuf2: use sgtable-based scatterlist wrappers
+Date: Tue, 30 Jun 2020 12:45:16 +0200
+Message-Id: <20200630104516.32731-1-m.szyprowski@samsung.com>
+X-Mailer: git-send-email 2.17.1
+In-Reply-To: <20200619103636.11974-37-m.szyprowski@samsung.com>
+X-Brightmail-Tracker: H4sIAAAAAAAAA0WSa0hTYRjHec85Ozuaq9O0fNFIGGYoeOlCHdDUIuEQfbAPQQQtl55UdKt2
+ UjPDJClqal4rNSkpS9PmZbWZ11TUzcR1M1F03rYPZYnGvGsuj0fr2+/5P7+XPzy8BCruFLgQ
+ 0YqrjFIhi5Xg9piuc9HobXBelvrNZQmoDGMXQtXkVwkomy4bpXpnp3DqVUUHQn0uMGFU8Xt/
+ aqZ3DKE05j4B9bW+CKfSq7UCSt1uElIvNSsIlTe5KKRapy2C4G306yevAd00V4zRmvJ7OF07
+ NyqgR9L0CP2m5CY9uGpG6dz+UkA3DKTgtHnpB07ff1sOaKtmN/1h1ioMFZ21D4hgYqPjGaVv
+ YJh9VEvdovByRei1wT+HU8DnYypgR0DyINRafuEqYE+IyTIAM+fzERUg1oYZAOudOEdMWgEc
+ 0F3Y9LuWPm74pQDO501h/LDmf+pIwTkLJ/dB1aRqnZ3I2wAaMhw4CSWrULgwnAu4hSMZAnsn
+ MhGOMXIPrCtqwLhmEXkE9tUgfJsbrKhuQTm2I4Pgi5aG9TJIjgvhqNaC8dJxWLI6ivPsCCf0
+ b4U874K2uqcI/yAVwDGjWsgP6QB+vZUPeMsfDhmXcK4ZJT1hVb0vHx+FjZZmlIshuRX2T27n
+ YnQNc3SPNmIRvHtHzNsesFBf+a+29dMXlGcaWkuXAX/FHAArh7yygFvh/65iAMqBMxPHyiMZ
+ dr+CSfBhZXI2ThHpE35JrgFrv6t7VT/zDtSvXGgDJAEkDqIw46JULJDFs4nyNgAJVOIkOtbT
+ LRWLImSJ1xnlpfPKuFiGbQOuBCZxFh149uOcmIyUXWViGOYyo9zcIoSdSwqAZZ5nTth+m0d/
+ +omD+9w99qoXKrwLdn3xmg5vyA32HE+K2a4ZSZJqrdmppm+pQUO2sbSpB40G0xWiNliYafOt
+ ybRtKXK923OyOUF9b35pZ/uh4RGJ2VdtCOuKik+/WOo+HrCjPZl5bjGFJ6exITeahlcDc0+1
+ iAKnHj80fM8+LcHYKNk+L1TJyv4CUL5aYVkDAAA=
+X-Brightmail-Tracker: H4sIAAAAAAAAA+NgFlrNIsWRmVeSWpSXmKPExsVy+t/xu7rHxX/HGXRP0bLoPXeSyWLjjPWs
+ Fv+3TWS2uPL1PZvFytVHmSwuzrzLYrFgv7XFlysPmSw2Pb7GanF51xw2i54NW1kt1h65y26x
+ bNMfJospb3+yWxz88ITVgd9jzbw1jB57vy1g8di0qpPNY/u3B6we97uPM3lsXlLvcfvfY2aP
+ yTeWM3rsvtnA5vH410s2j74tqxg9Pm+S8zj19TN7AG+Unk1RfmlJqkJGfnGJrVK0oYWRnqGl
+ hZ6RiaWeobF5rJWRqZK+nU1Kak5mWWqRvl2CXsaBnT/ZC1YHVNz+a97AeNGpi5GTQ0LAROLk
+ r/NsXYxcHEICSxklNj1/wAaRkJE4Oa2BFcIWlvhzrQuq6BOjxNIfK1lAEmwChhJdbyESIgKd
+ jBLTuj+ygzjMAjuZJSZeb2EGqRIWcJW48qqfCcRmEVCV2DlnN1A3BwevgK3EtY1MEBvkJVZv
+ OABWzilgL7H0wG6wBUICdhKfdpxknMDIt4CRYRWjSGppcW56brGRXnFibnFpXrpecn7uJkZg
+ RG079nPLDsaud8GHGAU4GJV4eBPO/YwTYk0sK67MPcQowcGsJMLrdPZ0nBBvSmJlVWpRfnxR
+ aU5q8SFGU6CbJjJLiSbnA6M9ryTe0NTQ3MLS0NzY3NjMQkmct0PgYIyQQHpiSWp2ampBahFM
+ HxMHp1QDo9ZB/Rvfj0+OOH9hVkSm+w8G79LyN0H7OvvnrmELel0aqtp2sXjHFy3z1XvniG5r
+ XWgg02l2zl0/8HzbgYuVMUWzL+lOTm+8e8csqmP/jYLDj+fGvbrdtHH2n7ouv/2nxeXa94cn
+ LVuX5MEn/6P2SeW+x2nWYTpdh9/u/fauw8pRv6tq6fs6BSWW4oxEQy3mouJEAPQegDS+AgAA
+X-CMS-MailID: 20200630104527eucas1p13f19c24ff053556fb1fa7dc72be14c77
+X-Msg-Generator: CA
+X-RootMTR: 20200630104527eucas1p13f19c24ff053556fb1fa7dc72be14c77
+X-EPHeader: CA
+CMS-TYPE: 201P
+X-CMS-RootMailID: 20200630104527eucas1p13f19c24ff053556fb1fa7dc72be14c77
+References: <20200619103636.11974-37-m.szyprowski@samsung.com>
+ <CGME20200630104527eucas1p13f19c24ff053556fb1fa7dc72be14c77@eucas1p1.samsung.com>
+Cc: Pawel Osciak <pawel@osciak.com>,
+ Bartlomiej Zolnierkiewicz <b.zolnierkie@samsung.com>,
+ David Airlie <airlied@linux.ie>, linux-media@vger.kernel.org,
+ Daniel Vetter <daniel@ffwll.ch>, Hans Verkuil <hverkuil-cisco@xs4all.nl>,
+ Mauro Carvalho Chehab <mchehab@kernel.org>,
+ Robin Murphy <robin.murphy@arm.com>, Christoph Hellwig <hch@lst.de>,
  linux-arm-kernel@lists.infradead.org
 X-BeenThere: iommu@lists.linux-foundation.org
 X-Mailman-Version: 2.1.15
@@ -88,71 +147,272 @@ List-Post: <mailto:iommu@lists.linux-foundation.org>
 List-Help: <mailto:iommu-request@lists.linux-foundation.org?subject=help>
 List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
  <mailto:iommu-request@lists.linux-foundation.org?subject=subscribe>
+MIME-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
 Errors-To: iommu-bounces@lists.linux-foundation.org
 Sender: "iommu" <iommu-bounces@lists.linux-foundation.org>
 
-On Tue, Jun 30, 2020 at 11:06:41AM +0800, Hanjun Guo wrote:
+Use recently introduced common wrappers operating directly on the struct
+sg_table objects and scatterlist page iterators to make the code a bit
+more compact, robust, easier to follow and copy/paste safe.
 
-[...]
+No functional change, because the code already properly did all the
+scaterlist related calls.
 
-> > For devices that aren't described in the DSDT - IORT translations
-> > are determined by their ACPI parent device. Do you see/Have you
-> > found any issue with this approach ?
-> 
-> The spec says "Describes the IO relationships between devices
-> represented in the ACPI namespace.", and in section 3.1.1.3 Named
-> component node, it says:
+Signed-off-by: Marek Szyprowski <m.szyprowski@samsung.com>
+---
+v8:
+- rebased after recent changes in the code
+---
+ .../common/videobuf2/videobuf2-dma-contig.c   | 34 ++++++++-----------
+ .../media/common/videobuf2/videobuf2-dma-sg.c | 32 +++++++----------
+ .../common/videobuf2/videobuf2-vmalloc.c      | 12 +++----
+ 3 files changed, 31 insertions(+), 47 deletions(-)
 
-PCI devices aren't necessarily described in the ACPI namespace and we
-still use IORT to describe them - through the RC node.
+diff --git a/drivers/media/common/videobuf2/videobuf2-dma-contig.c b/drivers/media/common/videobuf2/videobuf2-dma-contig.c
+index ec3446cc45b8..1b242d844dde 100644
+--- a/drivers/media/common/videobuf2/videobuf2-dma-contig.c
++++ b/drivers/media/common/videobuf2/videobuf2-dma-contig.c
+@@ -58,10 +58,10 @@ static unsigned long vb2_dc_get_contiguous_size(struct sg_table *sgt)
+ 	unsigned int i;
+ 	unsigned long size = 0;
+ 
+-	for_each_sg(sgt->sgl, s, sgt->nents, i) {
++	for_each_sgtable_dma_sg(sgt, s, i) {
+ 		if (sg_dma_address(s) != expected)
+ 			break;
+-		expected = sg_dma_address(s) + sg_dma_len(s);
++		expected += sg_dma_len(s);
+ 		size += sg_dma_len(s);
+ 	}
+ 	return size;
+@@ -103,8 +103,7 @@ static void vb2_dc_prepare(void *buf_priv)
+ 	if (!sgt)
+ 		return;
+ 
+-	dma_sync_sg_for_device(buf->dev, sgt->sgl, sgt->orig_nents,
+-			       buf->dma_dir);
++	dma_sync_sgtable_for_device(buf->dev, sgt, buf->dma_dir);
+ }
+ 
+ static void vb2_dc_finish(void *buf_priv)
+@@ -115,7 +114,7 @@ static void vb2_dc_finish(void *buf_priv)
+ 	if (!sgt)
+ 		return;
+ 
+-	dma_sync_sg_for_cpu(buf->dev, sgt->sgl, sgt->orig_nents, buf->dma_dir);
++	dma_sync_sgtable_for_cpu(buf->dev, sgt, buf->dma_dir);
+ }
+ 
+ /*********************************************/
+@@ -275,8 +274,8 @@ static void vb2_dc_dmabuf_ops_detach(struct dma_buf *dbuf,
+ 		 * memory locations do not require any explicit cache
+ 		 * maintenance prior or after being used by the device.
+ 		 */
+-		dma_unmap_sg_attrs(db_attach->dev, sgt->sgl, sgt->orig_nents,
+-				   attach->dma_dir, DMA_ATTR_SKIP_CPU_SYNC);
++		dma_unmap_sgtable(db_attach->dev, sgt, attach->dma_dir,
++				  DMA_ATTR_SKIP_CPU_SYNC);
+ 	sg_free_table(sgt);
+ 	kfree(attach);
+ 	db_attach->priv = NULL;
+@@ -301,8 +300,8 @@ static struct sg_table *vb2_dc_dmabuf_ops_map(
+ 
+ 	/* release any previous cache */
+ 	if (attach->dma_dir != DMA_NONE) {
+-		dma_unmap_sg_attrs(db_attach->dev, sgt->sgl, sgt->orig_nents,
+-				   attach->dma_dir, DMA_ATTR_SKIP_CPU_SYNC);
++		dma_unmap_sgtable(db_attach->dev, sgt, attach->dma_dir,
++				  DMA_ATTR_SKIP_CPU_SYNC);
+ 		attach->dma_dir = DMA_NONE;
+ 	}
+ 
+@@ -310,9 +309,8 @@ static struct sg_table *vb2_dc_dmabuf_ops_map(
+ 	 * mapping to the client with new direction, no cache sync
+ 	 * required see comment in vb2_dc_dmabuf_ops_detach()
+ 	 */
+-	sgt->nents = dma_map_sg_attrs(db_attach->dev, sgt->sgl, sgt->orig_nents,
+-				      dma_dir, DMA_ATTR_SKIP_CPU_SYNC);
+-	if (!sgt->nents) {
++	if (dma_map_sgtable(db_attach->dev, sgt, dma_dir,
++			    DMA_ATTR_SKIP_CPU_SYNC)) {
+ 		pr_err("failed to map scatterlist\n");
+ 		mutex_unlock(lock);
+ 		return ERR_PTR(-EIO);
+@@ -455,8 +453,8 @@ static void vb2_dc_put_userptr(void *buf_priv)
+ 		 * No need to sync to CPU, it's already synced to the CPU
+ 		 * since the finish() memop will have been called before this.
+ 		 */
+-		dma_unmap_sg_attrs(buf->dev, sgt->sgl, sgt->orig_nents,
+-				   buf->dma_dir, DMA_ATTR_SKIP_CPU_SYNC);
++		dma_unmap_sgtable(buf->dev, sgt, buf->dma_dir,
++				  DMA_ATTR_SKIP_CPU_SYNC);
+ 		pages = frame_vector_pages(buf->vec);
+ 		/* sgt should exist only if vector contains pages... */
+ 		BUG_ON(IS_ERR(pages));
+@@ -553,9 +551,8 @@ static void *vb2_dc_get_userptr(struct device *dev, unsigned long vaddr,
+ 	 * No need to sync to the device, this will happen later when the
+ 	 * prepare() memop is called.
+ 	 */
+-	sgt->nents = dma_map_sg_attrs(buf->dev, sgt->sgl, sgt->orig_nents,
+-				      buf->dma_dir, DMA_ATTR_SKIP_CPU_SYNC);
+-	if (sgt->nents <= 0) {
++	if (dma_map_sgtable(buf->dev, sgt, buf->dma_dir,
++			    DMA_ATTR_SKIP_CPU_SYNC)) {
+ 		pr_err("failed to map scatterlist\n");
+ 		ret = -EIO;
+ 		goto fail_sgt_init;
+@@ -577,8 +574,7 @@ static void *vb2_dc_get_userptr(struct device *dev, unsigned long vaddr,
+ 	return buf;
+ 
+ fail_map_sg:
+-	dma_unmap_sg_attrs(buf->dev, sgt->sgl, sgt->orig_nents,
+-			   buf->dma_dir, DMA_ATTR_SKIP_CPU_SYNC);
++	dma_unmap_sgtable(buf->dev, sgt, buf->dma_dir, DMA_ATTR_SKIP_CPU_SYNC);
+ 
+ fail_sgt_init:
+ 	sg_free_table(sgt);
+diff --git a/drivers/media/common/videobuf2/videobuf2-dma-sg.c b/drivers/media/common/videobuf2/videobuf2-dma-sg.c
+index 0a40e00f0d7e..0dd3b19025e0 100644
+--- a/drivers/media/common/videobuf2/videobuf2-dma-sg.c
++++ b/drivers/media/common/videobuf2/videobuf2-dma-sg.c
+@@ -148,9 +148,8 @@ static void *vb2_dma_sg_alloc(struct device *dev, unsigned long dma_attrs,
+ 	 * No need to sync to the device, this will happen later when the
+ 	 * prepare() memop is called.
+ 	 */
+-	sgt->nents = dma_map_sg_attrs(buf->dev, sgt->sgl, sgt->orig_nents,
+-				      buf->dma_dir, DMA_ATTR_SKIP_CPU_SYNC);
+-	if (!sgt->nents)
++	if (dma_map_sgtable(buf->dev, sgt, buf->dma_dir,
++			    DMA_ATTR_SKIP_CPU_SYNC))
+ 		goto fail_map;
+ 
+ 	buf->handler.refcount = &buf->refcount;
+@@ -186,8 +185,8 @@ static void vb2_dma_sg_put(void *buf_priv)
+ 	if (refcount_dec_and_test(&buf->refcount)) {
+ 		dprintk(1, "%s: Freeing buffer of %d pages\n", __func__,
+ 			buf->num_pages);
+-		dma_unmap_sg_attrs(buf->dev, sgt->sgl, sgt->orig_nents,
+-				   buf->dma_dir, DMA_ATTR_SKIP_CPU_SYNC);
++		dma_unmap_sgtable(buf->dev, sgt, buf->dma_dir,
++				  DMA_ATTR_SKIP_CPU_SYNC);
+ 		if (buf->vaddr)
+ 			vm_unmap_ram(buf->vaddr, buf->num_pages);
+ 		sg_free_table(buf->dma_sgt);
+@@ -204,8 +203,7 @@ static void vb2_dma_sg_prepare(void *buf_priv)
+ 	struct vb2_dma_sg_buf *buf = buf_priv;
+ 	struct sg_table *sgt = buf->dma_sgt;
+ 
+-	dma_sync_sg_for_device(buf->dev, sgt->sgl, sgt->orig_nents,
+-			       buf->dma_dir);
++	dma_sync_sgtable_for_device(buf->dev, sgt, buf->dma_dir);
+ }
+ 
+ static void vb2_dma_sg_finish(void *buf_priv)
+@@ -213,7 +211,7 @@ static void vb2_dma_sg_finish(void *buf_priv)
+ 	struct vb2_dma_sg_buf *buf = buf_priv;
+ 	struct sg_table *sgt = buf->dma_sgt;
+ 
+-	dma_sync_sg_for_cpu(buf->dev, sgt->sgl, sgt->orig_nents, buf->dma_dir);
++	dma_sync_sgtable_for_cpu(buf->dev, sgt, buf->dma_dir);
+ }
+ 
+ static void *vb2_dma_sg_get_userptr(struct device *dev, unsigned long vaddr,
+@@ -256,9 +254,8 @@ static void *vb2_dma_sg_get_userptr(struct device *dev, unsigned long vaddr,
+ 	 * No need to sync to the device, this will happen later when the
+ 	 * prepare() memop is called.
+ 	 */
+-	sgt->nents = dma_map_sg_attrs(buf->dev, sgt->sgl, sgt->orig_nents,
+-				      buf->dma_dir, DMA_ATTR_SKIP_CPU_SYNC);
+-	if (!sgt->nents)
++	if (dma_map_sgtable(buf->dev, sgt, buf->dma_dir,
++			    DMA_ATTR_SKIP_CPU_SYNC))
+ 		goto userptr_fail_map;
+ 
+ 	return buf;
+@@ -284,8 +281,7 @@ static void vb2_dma_sg_put_userptr(void *buf_priv)
+ 
+ 	dprintk(1, "%s: Releasing userspace buffer of %d pages\n",
+ 	       __func__, buf->num_pages);
+-	dma_unmap_sg_attrs(buf->dev, sgt->sgl, sgt->orig_nents, buf->dma_dir,
+-			   DMA_ATTR_SKIP_CPU_SYNC);
++	dma_unmap_sgtable(buf->dev, sgt, buf->dma_dir, DMA_ATTR_SKIP_CPU_SYNC);
+ 	if (buf->vaddr)
+ 		vm_unmap_ram(buf->vaddr, buf->num_pages);
+ 	sg_free_table(buf->dma_sgt);
+@@ -408,8 +404,7 @@ static void vb2_dma_sg_dmabuf_ops_detach(struct dma_buf *dbuf,
+ 
+ 	/* release the scatterlist cache */
+ 	if (attach->dma_dir != DMA_NONE)
+-		dma_unmap_sg(db_attach->dev, sgt->sgl, sgt->orig_nents,
+-			attach->dma_dir);
++		dma_unmap_sgtable(db_attach->dev, sgt, attach->dma_dir, 0);
+ 	sg_free_table(sgt);
+ 	kfree(attach);
+ 	db_attach->priv = NULL;
+@@ -434,15 +429,12 @@ static struct sg_table *vb2_dma_sg_dmabuf_ops_map(
+ 
+ 	/* release any previous cache */
+ 	if (attach->dma_dir != DMA_NONE) {
+-		dma_unmap_sg(db_attach->dev, sgt->sgl, sgt->orig_nents,
+-			attach->dma_dir);
++		dma_unmap_sgtable(db_attach->dev, sgt, attach->dma_dir, 0);
+ 		attach->dma_dir = DMA_NONE;
+ 	}
+ 
+ 	/* mapping to the client with new direction */
+-	sgt->nents = dma_map_sg(db_attach->dev, sgt->sgl, sgt->orig_nents,
+-				dma_dir);
+-	if (!sgt->nents) {
++	if (dma_map_sgtable(db_attach->dev, sgt, dma_dir, 0)) {
+ 		pr_err("failed to map scatterlist\n");
+ 		mutex_unlock(lock);
+ 		return ERR_PTR(-EIO);
+diff --git a/drivers/media/common/videobuf2/videobuf2-vmalloc.c b/drivers/media/common/videobuf2/videobuf2-vmalloc.c
+index c66fda4a65e4..bf5ac63a5742 100644
+--- a/drivers/media/common/videobuf2/videobuf2-vmalloc.c
++++ b/drivers/media/common/videobuf2/videobuf2-vmalloc.c
+@@ -229,7 +229,7 @@ static int vb2_vmalloc_dmabuf_ops_attach(struct dma_buf *dbuf,
+ 		kfree(attach);
+ 		return ret;
+ 	}
+-	for_each_sg(sgt->sgl, sg, sgt->nents, i) {
++	for_each_sgtable_sg(sgt, sg, i) {
+ 		struct page *page = vmalloc_to_page(vaddr);
+ 
+ 		if (!page) {
+@@ -259,8 +259,7 @@ static void vb2_vmalloc_dmabuf_ops_detach(struct dma_buf *dbuf,
+ 
+ 	/* release the scatterlist cache */
+ 	if (attach->dma_dir != DMA_NONE)
+-		dma_unmap_sg(db_attach->dev, sgt->sgl, sgt->orig_nents,
+-			attach->dma_dir);
++		dma_unmap_sgtable(db_attach->dev, sgt, attach->dma_dir, 0);
+ 	sg_free_table(sgt);
+ 	kfree(attach);
+ 	db_attach->priv = NULL;
+@@ -285,15 +284,12 @@ static struct sg_table *vb2_vmalloc_dmabuf_ops_map(
+ 
+ 	/* release any previous cache */
+ 	if (attach->dma_dir != DMA_NONE) {
+-		dma_unmap_sg(db_attach->dev, sgt->sgl, sgt->orig_nents,
+-			attach->dma_dir);
++		dma_unmap_sgtable(db_attach->dev, sgt, attach->dma_dir, 0);
+ 		attach->dma_dir = DMA_NONE;
+ 	}
+ 
+ 	/* mapping to the client with new direction */
+-	sgt->nents = dma_map_sg(db_attach->dev, sgt->sgl, sgt->orig_nents,
+-				dma_dir);
+-	if (!sgt->nents) {
++	if (dma_map_sgtable(db_attach->dev, sgt, dma_dir, 0)) {
+ 		pr_err("failed to map scatterlist\n");
+ 		mutex_unlock(lock);
+ 		return ERR_PTR(-EIO);
+-- 
+2.17.1
 
-> "Named component nodes are used to describe devices that are also
-> included in the Differentiated System Description Table (DSDT). See
-> [ACPI]."
-> 
-> So from my understanding, the IORT spec for now, can only do ID
-> translations for devices in the DSDT.
-
-I think you can read this multiple ways but this patch does not
-change this concept. What changes, is applying parent's node IORT
-mapping to child nodes with no associated DSDT nodes, it is the
-same thing we do with PCI and the _DMA method - we could update
-the wording in the specs if that clarifies but I don't think this
-deliberately disregards the specifications.
-
-> > > For a platform device, if I use its parent's full path name for
-> > > its named component entry, then it will match, but this will violate
-> > > the IORT spec.
-> > 
-> > Can you elaborate on this please I don't get the point you
-> > are making.
-> 
-> For example, device A is not described in DSDT so can't represent
-> as a NC node in IORT. Device B can be described in DSDT and it
-> is the parent of device A, so device B can be represented in IORT
-> with memory access properties and node flags with Substream width
-> and Stall supported info.
-> 
-> When we trying to translate device A's ID, we reuse all the memory
-> access properties and node flags from its parent (device B), but
-> will it the same?
-
-I assume so why wouldn't it be ? Why would be describe them in
-a parent-child relationship if that's not how the system looks like
-in HW ?
-
-Do you have a specific example in mind that we should be aware of ?
-
-> So the IORT spec don't support this, at least it's pretty vague
-> I think.
-
-I think that's a matter of wording, it can be updated if it needs be,
-reach out if you see any issue with the current approach please.
-
-Thanks,
-Lorenzo
 _______________________________________________
 iommu mailing list
 iommu@lists.linux-foundation.org
