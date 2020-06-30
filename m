@@ -6,78 +6,65 @@ X-Spam-Status: No, score=-2.5 required=3.0 tests=HEADER_FROM_DIFFERENT_DOMAINS,
 	MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED,USER_AGENT_SANE_1
 	autolearn=no autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 66467C433E0
-	for <iommu@archiver.kernel.org>; Tue, 30 Jun 2020 10:46:48 +0000 (UTC)
-Received: from hemlock.osuosl.org (smtp2.osuosl.org [140.211.166.133])
+	by smtp.lore.kernel.org (Postfix) with ESMTP id EE7F4C433E1
+	for <iommu@archiver.kernel.org>; Tue, 30 Jun 2020 10:49:40 +0000 (UTC)
+Received: from silver.osuosl.org (smtp3.osuosl.org [140.211.166.136])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by mail.kernel.org (Postfix) with ESMTPS id 3AAE52065F
-	for <iommu@archiver.kernel.org>; Tue, 30 Jun 2020 10:46:48 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 3AAE52065F
+	by mail.kernel.org (Postfix) with ESMTPS id C27D72065F
+	for <iommu@archiver.kernel.org>; Tue, 30 Jun 2020 10:49:40 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org C27D72065F
 Authentication-Results: mail.kernel.org; dmarc=none (p=none dis=none) header.from=arm.com
 Authentication-Results: mail.kernel.org; spf=pass smtp.mailfrom=iommu-bounces@lists.linux-foundation.org
 Received: from localhost (localhost [127.0.0.1])
-	by hemlock.osuosl.org (Postfix) with ESMTP id 0F3C5881C8;
-	Tue, 30 Jun 2020 10:46:48 +0000 (UTC)
+	by silver.osuosl.org (Postfix) with ESMTP id 8D5F62156E;
+	Tue, 30 Jun 2020 10:49:40 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from hemlock.osuosl.org ([127.0.0.1])
+Received: from silver.osuosl.org ([127.0.0.1])
 	by localhost (.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
-	with ESMTP id 1Jl-7XRv12Jf; Tue, 30 Jun 2020 10:46:47 +0000 (UTC)
+	with ESMTP id 3d1fH4g0yuNJ; Tue, 30 Jun 2020 10:49:23 +0000 (UTC)
 Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [140.211.9.56])
-	by hemlock.osuosl.org (Postfix) with ESMTP id 647C488180;
-	Tue, 30 Jun 2020 10:46:47 +0000 (UTC)
+	by silver.osuosl.org (Postfix) with ESMTP id DB24A2107F;
+	Tue, 30 Jun 2020 10:49:23 +0000 (UTC)
 Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
-	by lists.linuxfoundation.org (Postfix) with ESMTP id 4CECCC088F;
-	Tue, 30 Jun 2020 10:46:47 +0000 (UTC)
+	by lists.linuxfoundation.org (Postfix) with ESMTP id B8D9EC088F;
+	Tue, 30 Jun 2020 10:49:23 +0000 (UTC)
 Received: from whitealder.osuosl.org (smtp1.osuosl.org [140.211.166.138])
- by lists.linuxfoundation.org (Postfix) with ESMTP id 6B422C016E
- for <iommu@lists.linux-foundation.org>; Tue, 30 Jun 2020 10:46:45 +0000 (UTC)
+ by lists.linuxfoundation.org (Postfix) with ESMTP id 4FFB0C016E
+ for <iommu@lists.linux-foundation.org>; Tue, 30 Jun 2020 10:49:22 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
- by whitealder.osuosl.org (Postfix) with ESMTP id 58D6587CAE
- for <iommu@lists.linux-foundation.org>; Tue, 30 Jun 2020 10:46:45 +0000 (UTC)
+ by whitealder.osuosl.org (Postfix) with ESMTP id 4C2E586786
+ for <iommu@lists.linux-foundation.org>; Tue, 30 Jun 2020 10:49:22 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
 Received: from whitealder.osuosl.org ([127.0.0.1])
  by localhost (.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
- with ESMTP id z0lbrV15394N for <iommu@lists.linux-foundation.org>;
- Tue, 30 Jun 2020 10:46:44 +0000 (UTC)
+ with ESMTP id OWF9pbYr2TW9 for <iommu@lists.linux-foundation.org>;
+ Tue, 30 Jun 2020 10:49:21 +0000 (UTC)
 X-Greylist: domain auto-whitelisted by SQLgrey-1.7.6
 Received: from foss.arm.com (foss.arm.com [217.140.110.172])
- by whitealder.osuosl.org (Postfix) with ESMTP id 812CF87C0A
- for <iommu@lists.linux-foundation.org>; Tue, 30 Jun 2020 10:46:44 +0000 (UTC)
+ by whitealder.osuosl.org (Postfix) with ESMTP id 7622C8675F
+ for <iommu@lists.linux-foundation.org>; Tue, 30 Jun 2020 10:49:21 +0000 (UTC)
 Received: from usa-sjc-imap-foss1.foss.arm.com (unknown [10.121.207.14])
- by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id D59BF30E;
- Tue, 30 Jun 2020 03:46:43 -0700 (PDT)
+ by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id 14FF330E;
+ Tue, 30 Jun 2020 03:49:21 -0700 (PDT)
 Received: from [10.57.21.32] (unknown [10.57.21.32])
- by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPSA id 06D153F68F;
- Tue, 30 Jun 2020 03:46:40 -0700 (PDT)
-Subject: Re: [PATCH v7 1/3] iommu/arm-smmu: add NVIDIA implementation for dual
- ARM MMU-500 usage
-To: Jon Hunter <jonathanh@nvidia.com>, Krishna Reddy <vdumpa@nvidia.com>,
- Nicolin Chen <nicoleotsuka@gmail.com>
-References: <20200629022838.29628-1-vdumpa@nvidia.com>
- <20200629022838.29628-2-vdumpa@nvidia.com>
- <20200629215124.GD27967@Asurada-Nvidia>
- <BYAPR12MB2822B08564C7BD7212DCCEFEB36E0@BYAPR12MB2822.namprd12.prod.outlook.com>
- <b353b3f0-ee7f-f777-4d38-c595bc990564@nvidia.com>
+ by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPSA id 0A7B33F68F;
+ Tue, 30 Jun 2020 03:49:19 -0700 (PDT)
+Subject: Re: [PATCH] iommu: SUN50I_IOMMU should depend on HAS_DMA
+To: Joerg Roedel <joro@8bytes.org>
+References: <20200629121146.24011-1-geert@linux-m68k.org>
+ <c2047394-ea6e-3bc3-4bf0-a732237dbeca@arm.com>
+ <20200630100947.GL28824@8bytes.org>
 From: Robin Murphy <robin.murphy@arm.com>
-Message-ID: <be484deb-efc9-72cd-f83f-e11713539023@arm.com>
-Date: Tue, 30 Jun 2020 11:46:39 +0100
+Message-ID: <e66478ff-1df0-8f3a-b164-76a430eca58b@arm.com>
+Date: Tue, 30 Jun 2020 11:49:06 +0100
 User-Agent: Mozilla/5.0 (Windows NT 10.0; rv:68.0) Gecko/20100101
  Thunderbird/68.9.0
 MIME-Version: 1.0
-In-Reply-To: <b353b3f0-ee7f-f777-4d38-c595bc990564@nvidia.com>
+In-Reply-To: <20200630100947.GL28824@8bytes.org>
 Content-Language: en-GB
-Cc: Sachin Nikam <Snikam@nvidia.com>, Mikko Perttunen <mperttunen@nvidia.com>,
- Bryan Huntsman <bhuntsman@nvidia.com>,
- "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
- Pritesh Raithatha <praithatha@nvidia.com>, Timo Alho <talho@nvidia.com>,
- "iommu@lists.linux-foundation.org" <iommu@lists.linux-foundation.org>,
- Nicolin Chen <nicolinc@nvidia.com>,
- "linux-tegra@vger.kernel.org" <linux-tegra@vger.kernel.org>,
- Yu-Huan Hsu <YHsu@nvidia.com>, Thierry Reding <treding@nvidia.com>,
- "will@kernel.org" <will@kernel.org>,
- "linux-arm-kernel@lists.infradead.org" <linux-arm-kernel@lists.infradead.org>,
- Bitan Biswas <bbiswas@nvidia.com>
+Cc: iommu@lists.linux-foundation.org, Geert Uytterhoeven <geert@linux-m68k.org>,
+ Maxime Ripard <maxime@cerno.tech>, linux-kernel@vger.kernel.org
 X-BeenThere: iommu@lists.linux-foundation.org
 X-Mailman-Version: 2.1.15
 Precedence: list
@@ -95,32 +82,24 @@ Content-Type: text/plain; charset="us-ascii"; Format="flowed"
 Errors-To: iommu-bounces@lists.linux-foundation.org
 Sender: "iommu" <iommu-bounces@lists.linux-foundation.org>
 
-On 2020-06-30 11:23, Jon Hunter wrote:
-> 
-> On 29/06/2020 23:49, Krishna Reddy wrote:
->>>> +     if (!nvidia_smmu->bases[0])
->>>> +             nvidia_smmu->bases[0] = smmu->base;
->>>> +
->>>> +     return nvidia_smmu->bases[inst] + (page << smmu->pgshift); }
+On 2020-06-30 11:09, Joerg Roedel wrote:
+> On Mon, Jun 29, 2020 at 05:29:36PM +0100, Robin Murphy wrote:
+>> On 2020-06-29 13:11, Geert Uytterhoeven wrote:
+>>> If NO_DMA=y (e.g. Sun-3 all{mod,yes}-config):
+>>>
+>>>       drivers/iommu/dma-iommu.o: In function `iommu_dma_mmap':
+>>>       dma-iommu.c:(.text+0x92e): undefined reference to `dma_pgprot'
+>>>
+>>> IOMMU_DMA must not be selected, unless HAS_DMA=y.
 >>
->>> Not critical -- just a nit: why not put the bases[0] in init()?
->>
->> smmu->base is not available during nvidia_smmu_impl_init() call. It is set afterwards in arm-smmu.c.
->> It can't be avoided without changing the devm_ioremap() and impl_init() call order in arm-smmu.c.
+>> Wait, no, IOMMU_DMA should not be selected by drivers at all - it's for arch
+>> code to choose.
 > 
-> 
-> Why don't we move the call to devm_ioremap_resource() to before
-> arm_smmu_impl_init() in arm_smmu_device_probe()? From a quick look I
-> don't see why we cannot do this and seems better than what we are
-> currently doing which is quite confusing and hard to understand.
+> Okay, but that is a different fix, right? I queued this patch for v5.8
+> for now.
 
-Yeah, I don't see any problem with adding a patch to do that. 
-impl_init() does need to happen before generic probe starts touching any 
-registers, but it wouldn't have any business overriding the platform 
-resources or anything that would affect the ioremap itself. Plus it's 
-reasonable that some theoretical future impl_init() might want to check 
-registers for, say, a particular hardware revision, so having 
-smmmu->base mapped and valid at that point would be no bad thing.
+If the driver didn't select IOMMU_DMA (completely unnecessarily, I might 
+add), there wouldn't be any problem to fix in the first place ;)
 
 Robin.
 _______________________________________________
