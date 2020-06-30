@@ -7,81 +7,82 @@ X-Spam-Status: No, score=-8.3 required=3.0 tests=DKIM_INVALID,DKIM_SIGNED,
 	SPF_HELO_NONE,SPF_PASS,UNPARSEABLE_RELAY,URIBL_BLOCKED,USER_AGENT_SANE_2
 	autolearn=ham autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 7D8F3C433E2
-	for <iommu@archiver.kernel.org>; Tue, 30 Jun 2020 10:54:38 +0000 (UTC)
-Received: from fraxinus.osuosl.org (smtp4.osuosl.org [140.211.166.137])
+	by smtp.lore.kernel.org (Postfix) with ESMTP id DC626C433E0
+	for <iommu@archiver.kernel.org>; Tue, 30 Jun 2020 10:57:16 +0000 (UTC)
+Received: from silver.osuosl.org (smtp3.osuosl.org [140.211.166.136])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by mail.kernel.org (Postfix) with ESMTPS id 45AAD2073E
-	for <iommu@archiver.kernel.org>; Tue, 30 Jun 2020 10:54:37 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTPS id A5CEC207E8
+	for <iommu@archiver.kernel.org>; Tue, 30 Jun 2020 10:57:16 +0000 (UTC)
 Authentication-Results: mail.kernel.org;
-	dkim=fail reason="signature verification failed" (1024-bit key) header.d=mediatek.com header.i=@mediatek.com header.b="W9mu+44/"
-DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 45AAD2073E
+	dkim=fail reason="signature verification failed" (1024-bit key) header.d=mediatek.com header.i=@mediatek.com header.b="GwdTNCVD"
+DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org A5CEC207E8
 Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=mediatek.com
 Authentication-Results: mail.kernel.org; spf=pass smtp.mailfrom=iommu-bounces@lists.linux-foundation.org
 Received: from localhost (localhost [127.0.0.1])
-	by fraxinus.osuosl.org (Postfix) with ESMTP id D6DA086D6E;
-	Tue, 30 Jun 2020 10:54:37 +0000 (UTC)
+	by silver.osuosl.org (Postfix) with ESMTP id 77B072202C;
+	Tue, 30 Jun 2020 10:57:16 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from fraxinus.osuosl.org ([127.0.0.1])
+Received: from silver.osuosl.org ([127.0.0.1])
 	by localhost (.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
-	with ESMTP id oTO-P4-r1zh2; Tue, 30 Jun 2020 10:54:36 +0000 (UTC)
+	with ESMTP id iQ1ItxnhF5cW; Tue, 30 Jun 2020 10:57:15 +0000 (UTC)
 Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [140.211.9.56])
-	by fraxinus.osuosl.org (Postfix) with ESMTP id 0E949868AF;
-	Tue, 30 Jun 2020 10:54:36 +0000 (UTC)
+	by silver.osuosl.org (Postfix) with ESMTP id 624102107F;
+	Tue, 30 Jun 2020 10:57:15 +0000 (UTC)
 Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
-	by lists.linuxfoundation.org (Postfix) with ESMTP id CCF27C088F;
-	Tue, 30 Jun 2020 10:54:35 +0000 (UTC)
-Received: from whitealder.osuosl.org (smtp1.osuosl.org [140.211.166.138])
- by lists.linuxfoundation.org (Postfix) with ESMTP id 0A068C016E
- for <iommu@lists.linux-foundation.org>; Tue, 30 Jun 2020 10:54:34 +0000 (UTC)
+	by lists.linuxfoundation.org (Postfix) with ESMTP id 54A2EC088F;
+	Tue, 30 Jun 2020 10:57:15 +0000 (UTC)
+Received: from hemlock.osuosl.org (smtp2.osuosl.org [140.211.166.133])
+ by lists.linuxfoundation.org (Postfix) with ESMTP id 4044AC016E
+ for <iommu@lists.linux-foundation.org>; Tue, 30 Jun 2020 10:57:14 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
- by whitealder.osuosl.org (Postfix) with ESMTP id F18EB8787F
- for <iommu@lists.linux-foundation.org>; Tue, 30 Jun 2020 10:54:33 +0000 (UTC)
+ by hemlock.osuosl.org (Postfix) with ESMTP id 28CEE8841A
+ for <iommu@lists.linux-foundation.org>; Tue, 30 Jun 2020 10:57:14 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from whitealder.osuosl.org ([127.0.0.1])
+Received: from hemlock.osuosl.org ([127.0.0.1])
  by localhost (.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
- with ESMTP id enGaCYEUDx0K for <iommu@lists.linux-foundation.org>;
- Tue, 30 Jun 2020 10:54:33 +0000 (UTC)
-X-Greylist: domain auto-whitelisted by SQLgrey-1.7.6
-Received: from mailgw02.mediatek.com (unknown [210.61.82.184])
- by whitealder.osuosl.org (Postfix) with ESMTP id 9F6F287C0A
- for <iommu@lists.linux-foundation.org>; Tue, 30 Jun 2020 10:54:32 +0000 (UTC)
-X-UUID: 8652aa4974ec431eb1bd83e81af4e9d5-20200630
+ with ESMTP id Q0gRuQfPTxTz for <iommu@lists.linux-foundation.org>;
+ Tue, 30 Jun 2020 10:57:13 +0000 (UTC)
+X-Greylist: from auto-whitelisted by SQLgrey-1.7.6
+Received: from mailgw01.mediatek.com (unknown [1.203.163.78])
+ by hemlock.osuosl.org (Postfix) with ESMTP id 1056C8833E
+ for <iommu@lists.linux-foundation.org>; Tue, 30 Jun 2020 10:57:11 +0000 (UTC)
+X-UUID: 6fbe4a790cc44e3facaeb035874a41e4-20200630
 DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=mediatek.com;
  s=dk; 
  h=Content-Transfer-Encoding:MIME-Version:Content-Type:References:In-Reply-To:Date:CC:To:From:Subject:Message-ID;
- bh=1frGonLY1z6bSq/H3kT64qvgesRuR+pzmBbHCLpti1k=; 
- b=W9mu+44/QT8bk5uDWHK6tphZBC7tG5n/0s/UHdqvnnuKhI1DUkiq1zr7VrTU5GWDCtxRXEZ5P3t4KKC2zyWsIq60TBWONiIppfF5N/XfBLSIsurpv3akPiUZqApzNdtvxxGtN16GT9BoKim+JBIs4LrJsFcFLUV2QhHakTqB7Gs=;
-X-UUID: 8652aa4974ec431eb1bd83e81af4e9d5-20200630
-Received: from mtkcas08.mediatek.inc [(172.21.101.126)] by
- mailgw02.mediatek.com (envelope-from <chao.hao@mediatek.com>)
- (Cellopoint E-mail Firewall v4.1.10 Build 0809 with TLS)
- with ESMTP id 704726967; Tue, 30 Jun 2020 18:54:27 +0800
-Received: from mtkcas08.mediatek.inc (172.21.101.126) by
- mtkmbs01n2.mediatek.inc (172.21.101.79) with Microsoft SMTP Server (TLS) id
- 15.0.1497.2; Tue, 30 Jun 2020 18:54:17 +0800
-Received: from [10.15.20.246] (10.15.20.246) by mtkcas08.mediatek.inc
- (172.21.101.73) with Microsoft SMTP Server id 15.0.1497.2 via Frontend
- Transport; Tue, 30 Jun 2020 18:54:16 +0800
-Message-ID: <1593514398.2581.7.camel@mbjsdccf07>
-Subject: Re: [PATCH v5 04/10] iommu/mediatek: Setting MISC_CTRL register
-From: chao hao <Chao.Hao@mediatek.com>
-To: Matthias Brugger <matthias.bgg@gmail.com>
-Date: Tue, 30 Jun 2020 18:53:18 +0800
-In-Reply-To: <0e9ceba8-0cc4-44a1-148c-1c9a6b3844ce@gmail.com>
+ bh=dyBf/FOqBOKM8w25J19ReW9jhDIjCt4TCH41lbsQigU=; 
+ b=GwdTNCVDrzvcWIsIQhFKt0D9lvK8U3eiFw+ANGTRuHBpRYpPcxYalBKe/PE6vSMNQvFEh6vf6HCX+1seZHoXJtidGk1nhzgkWD8pkBq33VVNqRzW+JLJmk4MhEb84XHa5HPEEbM2KzE5+KOqVA9A0s9k81T19um+ZAK4mbuVhfQ=;
+X-UUID: 6fbe4a790cc44e3facaeb035874a41e4-20200630
+Received: from mtkcas32.mediatek.inc [(172.27.4.253)] by mailgw01.mediatek.com
+ (envelope-from <yong.wu@mediatek.com>)
+ (mailgw01.mediatek.com ESMTP with TLS)
+ with ESMTP id 640312049; Tue, 30 Jun 2020 18:57:03 +0800
+Received: from MTKCAS36.mediatek.inc (172.27.4.186) by MTKMBS32N2.mediatek.inc
+ (172.27.4.72) with Microsoft SMTP Server (TLS) id 15.0.1497.2;
+ Tue, 30 Jun 2020 18:57:01 +0800
+Received: from [10.17.3.153] (10.17.3.153) by MTKCAS36.mediatek.inc
+ (172.27.4.170) with Microsoft SMTP Server id 15.0.1497.2 via Frontend
+ Transport; Tue, 30 Jun 2020 18:56:58 +0800
+Message-ID: <1593514600.24171.26.camel@mhfsdcap03>
+Subject: Re: [PATCH v5 03/10] iommu/mediatek: Modify the usage of
+ mtk_iommu_plat_data structure
+From: Yong Wu <yong.wu@mediatek.com>
+To: Chao Hao <chao.hao@mediatek.com>
+Date: Tue, 30 Jun 2020 18:56:40 +0800
+In-Reply-To: <20200629071310.1557-4-chao.hao@mediatek.com>
 References: <20200629071310.1557-1-chao.hao@mediatek.com>
- <20200629071310.1557-5-chao.hao@mediatek.com>
- <0e9ceba8-0cc4-44a1-148c-1c9a6b3844ce@gmail.com>
+ <20200629071310.1557-4-chao.hao@mediatek.com>
 X-Mailer: Evolution 3.10.4-0ubuntu2 
 MIME-Version: 1.0
-X-TM-SNTS-SMTP: BAF6CEB1E06926B691EB2968E120FA304DAE48B58E1A3A76D8C81A49D6E53EB22000:8
+X-TM-SNTS-SMTP: E569C367CB152C27234DE089D55991412047532CEA7DCF42A63DDE8E08E5260F2000:8
 X-MTK: N
 Cc: devicetree@vger.kernel.org, FY Yang <fy.yang@mediatek.com>,
  wsd_upstream@mediatek.com, linux-kernel@vger.kernel.org,
- Evan Green <evgreen@chromium.org>, Chao Hao <chao.hao@mediatek.com>,
- iommu@lists.linux-foundation.org, Rob Herring <robh+dt@kernel.org>,
- linux-mediatek@lists.infradead.org, linux-arm-kernel@lists.infradead.org
+ Evan Green <evgreen@chromium.org>, iommu@lists.linux-foundation.org,
+ Rob Herring <robh+dt@kernel.org>, linux-mediatek@lists.infradead.org,
+ Matthias Brugger <matthias.bgg@gmail.com>,
+ linux-arm-kernel@lists.infradead.org
 X-BeenThere: iommu@lists.linux-foundation.org
 X-Mailman-Version: 2.1.15
 Precedence: list
@@ -99,109 +100,98 @@ Content-Transfer-Encoding: 7bit
 Errors-To: iommu-bounces@lists.linux-foundation.org
 Sender: "iommu" <iommu-bounces@lists.linux-foundation.org>
 
-On Mon, 2020-06-29 at 11:28 +0200, Matthias Brugger wrote:
-> 
-> On 29/06/2020 09:13, Chao Hao wrote:
-> > Add F_MMU_IN_ORDER_WR_EN and F_MMU_STANDARD_AXI_MODE_BIT definition
-> > in MISC_CTRL register.
-> > F_MMU_STANDARD_AXI_MODE_BIT:
-> >   If we set F_MMU_STANDARD_AXI_MODE_BIT(bit[3][19] = 0, not follow
-> > standard AXI protocol), iommu will send urgent read command firstly
-> > compare with normal read command to improve performance.
-> 
-> Can you please help me to understand the phrase. Sorry I'm not a AXI specialist.
-> Does this mean that you will send a 'urgent read command' which is not described
-> in the specifications instead of a normal read command?
+Hi Chao,
 
-ok.
-iommu sends read command to next bus_node normally(we can name it to
-cmd1), when cmd1 isn't handled by next bus_node, iommu has a urgent read
-command is needed to be sent(we can name it to cmd2), iommu will send
-cmd2 and replace cmd1. So cmd2 is handled by next bus_node firstly and
-cmd2 will be handled secondly.
-But for standard AXI protocol, it will ignore the priority of read
-command and only be handled in order. So cmd2 is handled by next
-bus_node after cmd1 is done.
+This is also ok for me. Only two format nitpick.
 
+On Mon, 2020-06-29 at 15:13 +0800, Chao Hao wrote:
+> Given the fact that we are adding more and more plat_data bool values,
+> it would make sense to use a u32 flags register and add the appropriate
+> macro definitions to set and check for a flag present.
+> No functional change.
 > 
-> > F_MMU_IN_ORDER_WR_EN:
-> >   If we set F_MMU_IN_ORDER_WR_EN(bit[1][17] = 0, out-of-order write), iommu
-> > will re-order write command and send more higher priority write command
-> > instead of sending write command in order. The feature be controlled
-> > by OUT_ORDER_EN macro definition.
-> > 
-> > Cc: Matthias Brugger <matthias.bgg@gmail.com>
-> > Suggested-by: Yong Wu <yong.wu@mediatek.com>
-> > Signed-off-by: Chao Hao <chao.hao@mediatek.com>
-> > ---
-> >  drivers/iommu/mtk_iommu.c | 12 +++++++++++-
-> >  drivers/iommu/mtk_iommu.h |  1 +
-> >  2 files changed, 12 insertions(+), 1 deletion(-)
-> > 
-> > diff --git a/drivers/iommu/mtk_iommu.c b/drivers/iommu/mtk_iommu.c
-> > index 8f81df6cbe51..67b46b5d83d9 100644
-> > --- a/drivers/iommu/mtk_iommu.c
-> > +++ b/drivers/iommu/mtk_iommu.c
-> > @@ -42,6 +42,9 @@
-> >  #define F_INVLD_EN1				BIT(1)
-> >  
-> >  #define REG_MMU_MISC_CTRL			0x048
-> > +#define F_MMU_IN_ORDER_WR_EN			(BIT(1) | BIT(17))
-> > +#define F_MMU_STANDARD_AXI_MODE_BIT		(BIT(3) | BIT(19))
-> 
-> Wouldn't it make more sense to name it F_MMU_STANDARD_AXI_MODE_EN?
-ok, you are right.
-1'b1: follow standard axi protocol
+> Suggested-by: Matthias Brugger <matthias.bgg@gmail.com>
+> Signed-off-by: Chao Hao <chao.hao@mediatek.com>
+> ---
 
-> 
-> > +
-> >  #define REG_MMU_DCM_DIS				0x050
-> >  
-> >  #define REG_MMU_CTRL_REG			0x110
-> > @@ -574,10 +577,17 @@ static int mtk_iommu_hw_init(const struct mtk_iommu_data *data)
-> >  	}
-> >  	writel_relaxed(0, data->base + REG_MMU_DCM_DIS);
-> >  
-> > +	regval = readl_relaxed(data->base + REG_MMU_MISC_CTRL);
-> 
-> We only need to read regval in the else branch.
+[snip]
 
-ok, I got it. thanks
+>  static const struct mtk_iommu_plat_data mt2712_data = {
+>  	.m4u_plat     = M4U_MT2712,
+> -	.has_4gb_mode = true,
+> -	.has_bclk     = true,
+> -	.has_vld_pa_rng   = true,
+> +	.flags        = HAS_4GB_MODE |
+> +			HAS_BCLK |
+> +			HAS_VLD_PA_RNG,
 
-> 
-> >  	if (MTK_IOMMU_HAS_FLAG(data->plat_data, RESET_AXI)) {
-> >  		/* The register is called STANDARD_AXI_MODE in this case */
-> > -		writel_relaxed(0, data->base + REG_MMU_MISC_CTRL);
-> > +		regval = 0;
-> > +	} else {
-> > +		/* For mm_iommu, it can improve performance by the setting */
-> > +		regval &= ~F_MMU_STANDARD_AXI_MODE_BIT;
-> > +		if (MTK_IOMMU_HAS_FLAG(data->plat_data, OUT_ORDER_EN))
-> > +			regval &= ~F_MMU_IN_ORDER_WR_EN;
-> >  	}
-> > +	writel_relaxed(regval, data->base + REG_MMU_MISC_CTRL);
-> >  
-> >  	if (devm_request_irq(data->dev, data->irq, mtk_iommu_isr, 0,
-> >  			     dev_name(data->dev), (void *)data)) {
-> > diff --git a/drivers/iommu/mtk_iommu.h b/drivers/iommu/mtk_iommu.h
-> > index 7cc39f729263..4b780b651ef4 100644
-> > --- a/drivers/iommu/mtk_iommu.h
-> > +++ b/drivers/iommu/mtk_iommu.h
-> > @@ -22,6 +22,7 @@
-> >  #define HAS_BCLK			BIT(1)
-> >  #define HAS_VLD_PA_RNG			BIT(2)
-> >  #define RESET_AXI			BIT(3)
-> > +#define OUT_ORDER_EN			BIT(4)
-> 
-> Maybe something like OUT_ORDER_WR_EN, to make clear that it's about the the
-> write path.
-> 
-ok, thanks for your advice.
+short enough. we can put it in one line?
 
-> >  
-> >  #define MTK_IOMMU_HAS_FLAG(pdata, _x) \
-> >  		((((pdata)->flags) & (_x)) == (_x))
-> > 
+>  	.larbid_remap = {0, 1, 2, 3, 4, 5, 6, 7, 8, 9},
+>  };
+>  
+>  static const struct mtk_iommu_plat_data mt8173_data = {
+>  	.m4u_plat     = M4U_MT8173,
+> -	.has_4gb_mode = true,
+> -	.has_bclk     = true,
+> -	.reset_axi    = true,
+> +	.flags	      = HAS_4GB_MODE |
+> +			HAS_BCLK |
+> +			RESET_AXI,
+>  	.larbid_remap = {0, 1, 2, 3, 4, 5}, /* Linear mapping. */
+>  };
+>  
+>  static const struct mtk_iommu_plat_data mt8183_data = {
+>  	.m4u_plat     = M4U_MT8183,
+> -	.reset_axi    = true,
+> +	.flags        = RESET_AXI,
+>  	.larbid_remap = {0, 4, 5, 6, 7, 2, 3, 1},
+>  };
+>  
+> diff --git a/drivers/iommu/mtk_iommu.h b/drivers/iommu/mtk_iommu.h
+> index 1b6ea839b92c..7cc39f729263 100644
+> --- a/drivers/iommu/mtk_iommu.h
+> +++ b/drivers/iommu/mtk_iommu.h
+> @@ -17,6 +17,15 @@
+>  #include <linux/spinlock.h>
+>  #include <soc/mediatek/smi.h>
+>  
+> +#define HAS_4GB_MODE			BIT(0)
+> +/* HW will use the EMI clock if there isn't the "bclk". */
+> +#define HAS_BCLK			BIT(1)
+> +#define HAS_VLD_PA_RNG			BIT(2)
+> +#define RESET_AXI			BIT(3)
+> +
+> +#define MTK_IOMMU_HAS_FLAG(pdata, _x) \
+> +		((((pdata)->flags) & (_x)) == (_x))
+
+If these definitions are not used in mtk_iommu_v1.c(also no this plan),
+then we can put them in the mtk_iommu.c.
+
+
+BTW, the patch title "modify the usage of mtk_iommu_plat_data structure"
+isn't so clear, we could write what the detailed modification is.
+something like:
+iommu/mediatek: Use a u32 flags to describe different HW features
+
+> +
+>  struct mtk_iommu_suspend_reg {
+>  	u32				misc_ctrl;
+>  	u32				dcm_dis;
+> @@ -36,12 +45,7 @@ enum mtk_iommu_plat {
+>  
+>  struct mtk_iommu_plat_data {
+>  	enum mtk_iommu_plat m4u_plat;
+> -	bool                has_4gb_mode;
+> -
+> -	/* HW will use the EMI clock if there isn't the "bclk". */
+> -	bool                has_bclk;
+> -	bool                has_vld_pa_rng;
+> -	bool                reset_axi;
+> +	u32                 flags;
+>  	unsigned char       larbid_remap[MTK_LARB_NR_MAX];
+>  };
+>  
 
 _______________________________________________
 iommu mailing list
