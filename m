@@ -2,109 +2,108 @@ Return-Path: <SRS0=0Jez=AL=lists.linux-foundation.org=iommu-bounces@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-6.8 required=3.0 tests=DKIM_INVALID,DKIM_SIGNED,
-	HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_PATCH,MAILING_LIST_MULTI,SIGNED_OFF_BY,
-	SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED autolearn=unavailable autolearn_force=no
-	version=3.4.0
+X-Spam-Status: No, score=-2.3 required=3.0 tests=DKIM_INVALID,DKIM_SIGNED,
+	HEADER_FROM_DIFFERENT_DOMAINS,MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS,
+	USER_AGENT_SANE_1 autolearn=no autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 2766BC433E1
-	for <iommu@archiver.kernel.org>; Tue, 30 Jun 2020 17:44:18 +0000 (UTC)
-Received: from whitealder.osuosl.org (smtp1.osuosl.org [140.211.166.138])
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 75681C433DF
+	for <iommu@archiver.kernel.org>; Tue, 30 Jun 2020 19:03:17 +0000 (UTC)
+Received: from fraxinus.osuosl.org (smtp4.osuosl.org [140.211.166.137])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by mail.kernel.org (Postfix) with ESMTPS id EB4B520775
-	for <iommu@archiver.kernel.org>; Tue, 30 Jun 2020 17:44:17 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTPS id 2BF4C2067D
+	for <iommu@archiver.kernel.org>; Tue, 30 Jun 2020 19:03:16 +0000 (UTC)
 Authentication-Results: mail.kernel.org;
-	dkim=fail reason="signature verification failed" (2048-bit key) header.d=google.com header.i=@google.com header.b="AIvFwiVm"
-DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org EB4B520775
-Authentication-Results: mail.kernel.org; dmarc=none (p=none dis=none) header.from=lists.linux-foundation.org
+	dkim=fail reason="signature verification failed" (2048-bit key) header.d=nvidia.com header.i=@nvidia.com header.b="oygIkTzD"
+DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 2BF4C2067D
+Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=nvidia.com
 Authentication-Results: mail.kernel.org; spf=pass smtp.mailfrom=iommu-bounces@lists.linux-foundation.org
 Received: from localhost (localhost [127.0.0.1])
-	by whitealder.osuosl.org (Postfix) with ESMTP id C2D7187EF9;
-	Tue, 30 Jun 2020 17:44:17 +0000 (UTC)
+	by fraxinus.osuosl.org (Postfix) with ESMTP id C4C418755A;
+	Tue, 30 Jun 2020 19:03:16 +0000 (UTC)
+X-Virus-Scanned: amavisd-new at osuosl.org
+Received: from fraxinus.osuosl.org ([127.0.0.1])
+	by localhost (.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
+	with ESMTP id sLa0aGAltkt5; Tue, 30 Jun 2020 19:03:16 +0000 (UTC)
+Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [140.211.9.56])
+	by fraxinus.osuosl.org (Postfix) with ESMTP id 4A8818713F;
+	Tue, 30 Jun 2020 19:03:16 +0000 (UTC)
+Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
+	by lists.linuxfoundation.org (Postfix) with ESMTP id 3166BC088F;
+	Tue, 30 Jun 2020 19:03:16 +0000 (UTC)
+Received: from whitealder.osuosl.org (smtp1.osuosl.org [140.211.166.138])
+ by lists.linuxfoundation.org (Postfix) with ESMTP id 979C0C016E
+ for <iommu@lists.linux-foundation.org>; Tue, 30 Jun 2020 19:03:15 +0000 (UTC)
+Received: from localhost (localhost [127.0.0.1])
+ by whitealder.osuosl.org (Postfix) with ESMTP id 7E2D487D46
+ for <iommu@lists.linux-foundation.org>; Tue, 30 Jun 2020 19:03:15 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
 Received: from whitealder.osuosl.org ([127.0.0.1])
-	by localhost (.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
-	with ESMTP id lEyDa20BRJy1; Tue, 30 Jun 2020 17:44:16 +0000 (UTC)
-Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [140.211.9.56])
-	by whitealder.osuosl.org (Postfix) with ESMTP id C6B5B87EB5;
-	Tue, 30 Jun 2020 17:44:16 +0000 (UTC)
-Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
-	by lists.linuxfoundation.org (Postfix) with ESMTP id A3A42C0865;
-	Tue, 30 Jun 2020 17:44:16 +0000 (UTC)
-Received: from silver.osuosl.org (smtp3.osuosl.org [140.211.166.136])
- by lists.linuxfoundation.org (Postfix) with ESMTP id CAF83C016E
- for <iommu@lists.linux-foundation.org>; Tue, 30 Jun 2020 17:44:15 +0000 (UTC)
-Received: from localhost (localhost [127.0.0.1])
- by silver.osuosl.org (Postfix) with ESMTP id C256B22849
- for <iommu@lists.linux-foundation.org>; Tue, 30 Jun 2020 17:44:15 +0000 (UTC)
-X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from silver.osuosl.org ([127.0.0.1])
  by localhost (.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
- with ESMTP id GR57Kq6As34C for <iommu@lists.linux-foundation.org>;
- Tue, 30 Jun 2020 17:44:14 +0000 (UTC)
+ with ESMTP id npToww4FXomd for <iommu@lists.linux-foundation.org>;
+ Tue, 30 Jun 2020 19:03:14 +0000 (UTC)
 X-Greylist: domain auto-whitelisted by SQLgrey-1.7.6
-Received: from mail-ot1-f65.google.com (mail-ot1-f65.google.com
- [209.85.210.65])
- by silver.osuosl.org (Postfix) with ESMTPS id 71D4D2281E
- for <iommu@lists.linux-foundation.org>; Tue, 30 Jun 2020 17:44:14 +0000 (UTC)
-Received: by mail-ot1-f65.google.com with SMTP id t18so6292369otq.5
- for <iommu@lists.linux-foundation.org>; Tue, 30 Jun 2020 10:44:14 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=google.com; s=20161025;
- h=mime-version:references:in-reply-to:from:date:message-id:subject:to
- :cc; bh=pvrPSyad64a06y3emmBaHBraeMnCfgt6QtYJn+H41Ho=;
- b=AIvFwiVmHfWa0dr/Zj/nl3/Gf+Dd7lJR5y4sPWVHQ6irUWAzRxeWoOb/p2Glgrk5x7
- TDEjkGmBqHJFS3FeMsKSUuM+D3gUcPWXfX8izqzDYuu0i5RlpD4ZYEGNnt5HD5TFGK/4
- +VZg7MDSEIbgEZSrQtROVsWPTIRaGegwbqGtn6aYm7ZDVsTuiNa6Vz1uvzRXOMzrKN6M
- vrZA71ayaPMxJ7T9dyamhd8XLmDYQA3mCTowCoZLR+iNzAZTh88X+FxrewQAkskd6ncd
- EOt1xr66NGeLzGOPzxdLzf+Wr/iHl7eww9QdEkZ4ZlS5fCywYXwwCJ9aTWMyMziBOyS6
- r9rA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
- d=1e100.net; s=20161025;
- h=x-gm-message-state:mime-version:references:in-reply-to:from:date
- :message-id:subject:to:cc;
- bh=pvrPSyad64a06y3emmBaHBraeMnCfgt6QtYJn+H41Ho=;
- b=AGDo/KAChaG/V1aG7G+GCpUmfXOIqPXTVCKEEZPwHnKAaUbMQDFTv8vsrfB3HocsGG
- bsTNQ++tWolHhWIjM8qHUWM4KYNF2WvICUZY96zCJ0e8NFhfZh/a093CZKzKJOEKqpGR
- 5wWCUVMkYzumkGE9JWooJQ1OjT+ozDQbKoR7Zdwp1PRaO1jKIAbOGNDtyBfKZTTpaZ+a
- 09xSocOW7PHNERAyGtVosqOK2JDuP+Mvw4rlgrIc/nYe53Vz5XJ27A6CuksY3iYX9ahB
- RGsDzaX7cyXLZn+PlszpNfQZaz6LxP+qwknTrDSO2sEiYVyq/dAugDLyKSPBr/M4G7ur
- c88g==
-X-Gm-Message-State: AOAM533pKvTKKIPcjNFAMlBfSOHqoJbm930cphm4LshWWU40s8+K7HIE
- b9vtF7e8wsg7vrg5MBJbECH7SIOVIjl9R9Ln3sJZjA==
-X-Google-Smtp-Source: ABdhPJxvmOdBgLv+Am0qzfX+NxBE+/4lC8/0GP2QXouYO+Xni8icBayVXFLmI+l2lGzBS6ZBGHtQIVdLNxB8n7tHCR8=
-X-Received: by 2002:a9d:8ea:: with SMTP id 97mr11889961otf.231.1593539053111; 
- Tue, 30 Jun 2020 10:44:13 -0700 (PDT)
+Received: from hqnvemgate25.nvidia.com (hqnvemgate25.nvidia.com
+ [216.228.121.64])
+ by whitealder.osuosl.org (Postfix) with ESMTPS id D5BC487895
+ for <iommu@lists.linux-foundation.org>; Tue, 30 Jun 2020 19:03:14 +0000 (UTC)
+Received: from hqpgpgate101.nvidia.com (Not Verified[216.228.121.13]) by
+ hqnvemgate25.nvidia.com (using TLS: TLSv1.2, DES-CBC3-SHA)
+ id <B5efb8c400000>; Tue, 30 Jun 2020 12:02:24 -0700
+Received: from hqmail.nvidia.com ([172.20.161.6])
+ by hqpgpgate101.nvidia.com (PGP Universal service);
+ Tue, 30 Jun 2020 12:03:14 -0700
+X-PGP-Universal: processed;
+ by hqpgpgate101.nvidia.com on Tue, 30 Jun 2020 12:03:14 -0700
+Received: from [10.26.75.203] (10.124.1.5) by HQMAIL107.nvidia.com
+ (172.20.187.13) with Microsoft SMTP Server (TLS) id 15.0.1473.3; Tue, 30 Jun
+ 2020 19:03:07 +0000
+Subject: Re: [PATCH v8 1/3] iommu/arm-smmu: add NVIDIA implementation for dual
+ ARM MMU-500 usage
+To: Krishna Reddy <vdumpa@nvidia.com>
+References: <20200630001051.12350-1-vdumpa@nvidia.com>
+ <20200630001051.12350-2-vdumpa@nvidia.com>
+ <e6da9661-4e62-6e34-ac21-63ff993ca8bc@nvidia.com>
+ <BYAPR12MB282210677459B8D62623C642B36F0@BYAPR12MB2822.namprd12.prod.outlook.com>
+ <4037efc7-fbed-e8cf-dac7-212c65014e4e@nvidia.com>
+ <eb0ffc7e-f41b-d17c-6a90-049335098cd2@nvidia.com>
+ <BYAPR12MB2822B43B0218F6E55C97451BB36F0@BYAPR12MB2822.namprd12.prod.outlook.com>
+From: Jon Hunter <jonathanh@nvidia.com>
+Message-ID: <64ffa84f-a8cf-ae81-6306-b5d8b1ff0618@nvidia.com>
+Date: Tue, 30 Jun 2020 20:03:04 +0100
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101
+ Thunderbird/68.8.0
 MIME-Version: 1.0
-References: <20200630044943.3425049-1-rajatja@google.com>
- <20200630044943.3425049-6-rajatja@google.com>
-In-Reply-To: <20200630044943.3425049-6-rajatja@google.com>
-Date: Tue, 30 Jun 2020 10:43:37 -0700
-Message-ID: <CAGETcx9hgV70DVdbOvCF+tO4b-6+1JzN1_OmPmnWjj9qJhB_dw@mail.gmail.com>
-Subject: Re: [PATCH v2 5/7] driver core: Add device location to "struct
- device" and expose it in sysfs
-To: Rajat Jain <rajatja@google.com>
-Cc: Todd Broch <tbroch@google.com>, Linux PCI <linux-pci@vger.kernel.org>,
- lalithambika.krishnakumar@intel.com,
- Heikki Krogerus <heikki.krogerus@linux.intel.com>,
- Diego Rivas <diegorivas@google.com>,
- Jean-Philippe Brucker <jean-philippe@linaro.org>,
- Furquan Shaikh <furquan@google.com>, Raj Ashok <ashok.raj@intel.com>,
- ACPI Devel Maling List <linux-acpi@vger.kernel.org>,
- Christian Kellner <christian@kellner.me>,
- Mattias Nissler <mnissler@google.com>, Jesse Barnes <jsbarnes@google.com>,
- Len Brown <lenb@kernel.org>, Rajat Jain <rajatxjain@gmail.com>,
- Prashant Malani <pmalani@google.com>,
- Suzuki K Poulose <suzuki.poulose@arm.com>, Aaron Durbin <adurbin@google.com>,
- Alex Williamson <alex.williamson@redhat.com>,
- Bjorn Helgaas <bhelgaas@google.com>,
- Mika Westerberg <mika.westerberg@linux.intel.com>,
- Bernie Keany <bernie.keany@intel.com>, Duncan Laurie <dlaurie@google.com>,
- Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
- "Rafael J. Wysocki" <rjw@rjwysocki.net>, LKML <linux-kernel@vger.kernel.org>,
- iommu@lists.linux-foundation.org, Arnd Bergmann <arnd@arndb.de>,
- oohall@gmail.com, Benson Leung <bleung@google.com>,
- David Woodhouse <dwmw2@infradead.org>, Alex Levin <levinale@google.com>
+In-Reply-To: <BYAPR12MB2822B43B0218F6E55C97451BB36F0@BYAPR12MB2822.namprd12.prod.outlook.com>
+X-Originating-IP: [10.124.1.5]
+X-ClientProxiedBy: HQMAIL111.nvidia.com (172.20.187.18) To
+ HQMAIL107.nvidia.com (172.20.187.13)
+Content-Language: en-US
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=nvidia.com; s=n1;
+ t=1593543744; bh=NSo37Qb0oL3TJClVwPMiygr0t+oa9JglD9JeIRV3gD0=;
+ h=X-PGP-Universal:Subject:To:CC:References:From:Message-ID:Date:
+ User-Agent:MIME-Version:In-Reply-To:X-Originating-IP:
+ X-ClientProxiedBy:Content-Type:Content-Language:
+ Content-Transfer-Encoding;
+ b=oygIkTzDFvzDTGmAiQUZwCNND//8nYEOd9JcPxruivrWwg5BWUi2yTMgqfW2Iq0N0
+ IR49MR/Eb2tRVzIXK9Mr9i8kpHyfDI4BohtIayTOdAFHUXKa8k5j2J6cx/xmwHdWf1
+ hBGMXWvkc/LBrRjZVqPpl47R0zaT1G+6kwgU6EZyjFX8TE4KMbrA/39DZzZjzIMIo4
+ ORQztpInF2vPs0KPzR1r0/mSYpqI5SFOLTqkj2IsURh/qhOlRXoWJ3e/HEMrj8A4jF
+ uofGKmGbN4yRh+AfpwVDaRxJaJWdiPEY1SAkPaEjvj5VNYSw8Ojh1MAcHAAauhy4dt
+ m6kv/m96gFH9w==
+Cc: Sachin Nikam <Snikam@nvidia.com>,
+ "nicoleotsuka@gmail.com" <nicoleotsuka@gmail.com>,
+ Mikko Perttunen <mperttunen@nvidia.com>, Bryan Huntsman <bhuntsman@nvidia.com>,
+ "will@kernel.org" <will@kernel.org>,
+ "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
+ Pritesh Raithatha <praithatha@nvidia.com>, Timo Alho <talho@nvidia.com>,
+ "iommu@lists.linux-foundation.org" <iommu@lists.linux-foundation.org>,
+ Nicolin Chen <nicolinc@nvidia.com>,
+ "linux-tegra@vger.kernel.org" <linux-tegra@vger.kernel.org>, Yu-Huan
+ Hsu <YHsu@nvidia.com>, Thierry Reding <treding@nvidia.com>,
+ "robin.murphy@arm.com" <robin.murphy@arm.com>,
+ "linux-arm-kernel@lists.infradead.org" <linux-arm-kernel@lists.infradead.org>,
+ Bitan Biswas <bbiswas@nvidia.com>
 X-BeenThere: iommu@lists.linux-foundation.org
 X-Mailman-Version: 2.1.15
 Precedence: list
@@ -117,124 +116,41 @@ List-Post: <mailto:iommu@lists.linux-foundation.org>
 List-Help: <mailto:iommu-request@lists.linux-foundation.org?subject=help>
 List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
  <mailto:iommu-request@lists.linux-foundation.org?subject=subscribe>
-From: Saravana Kannan via iommu <iommu@lists.linux-foundation.org>
-Reply-To: Saravana Kannan <saravanak@google.com>
 Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
 Errors-To: iommu-bounces@lists.linux-foundation.org
 Sender: "iommu" <iommu-bounces@lists.linux-foundation.org>
 
-On Mon, Jun 29, 2020 at 9:49 PM Rajat Jain <rajatja@google.com> wrote:
->
-> Add a new (optional) field to denote the physical location of a device
-> in the system, and expose it in sysfs. This was discussed here:
-> https://lore.kernel.org/linux-acpi/20200618184621.GA446639@kroah.com/
->
-> (The primary choice for attribute name i.e. "location" is already
-> exposed as an ABI elsewhere, so settled for "site"). Individual buses
-> that want to support this new attribute can opt-in by setting a flag in
-> bus_type, and then populating the location of device while enumerating
-> it.
->
-> Signed-off-by: Rajat Jain <rajatja@google.com>
-> ---
-> v2: (Initial version)
->
->  drivers/base/core.c        | 35 +++++++++++++++++++++++++++++++
->  include/linux/device.h     | 42 ++++++++++++++++++++++++++++++++++++++
->  include/linux/device/bus.h |  8 ++++++++
->  3 files changed, 85 insertions(+)
->
 
-<snip> I'm not CC'ed in 4/7, so just replying
+On 30/06/2020 18:16, Krishna Reddy wrote:
+>> OK, well I see what you are saying, but if we intended to support all 3 for Tegra194, then we should ensure all 3 are initialised correctly.
+> 
+> The driver intend to support up to 3 instances. It doesn't really mandate that all three instances be present in same DT node.
+> Each mmio aperture in "reg" property is an instance here. reg = <inst0_base, size>, <inst1_base, size>, <inst2_base, size>;
+> The reg can have all three or less and driver just configures based on reg and it works fine.
 
-> diff --git a/include/linux/device.h b/include/linux/device.h
-> index 15460a5ac024a..a4143735ae712 100644
-> --- a/include/linux/device.h
-> +++ b/include/linux/device.h
-> @@ -428,6 +428,31 @@ enum dl_dev_state {
->         DL_DEV_UNBINDING,
->  };
->
-> +/**
-> + * enum device_site - Physical location of the device in the system.
-> + * The semantics of values depend on subsystem / bus:
-> + *
-> + * @SITE_UNKNOWN:  Location is Unknown (default)
-> + *
-> + * @SITE_INTERNAL: Device is internal to the system, and cannot be (easily)
-> + *                 removed. E.g. SoC internal devices, onboard soldered
-> + *                 devices, internal M.2 cards (that cannot be removed
-> + *                 without opening the chassis).
-> + * @SITE_EXTENDED: Device sits an extension of the system. E.g. devices
-> + *                 on external PCIe trays, docking stations etc. These
-> + *                 devices may be removable, but are generally housed
-> + *                 internally on an extension board, so they are removed
-> + *                 only when that whole extension board is removed.
-> + * @SITE_EXTERNAL: Devices truly external to the system (i.e. plugged on
-> + *                 an external port) that may be removed or added frequently.
-> + */
-> +enum device_site {
-> +       SITE_UNKNOWN = 0,
-> +       SITE_INTERNAL,
-> +       SITE_EXTENDED,
-> +       SITE_EXTERNAL,
-> +};
-> +
->  /**
->   * struct dev_links_info - Device data related to device links.
->   * @suppliers: List of links to supplier devices.
-> @@ -513,6 +538,7 @@ struct dev_links_info {
->   *             device (i.e. the bus driver that discovered the device).
->   * @iommu_group: IOMMU group the device belongs to.
->   * @iommu:     Per device generic IOMMU runtime data
-> + * @site:      Physical location of the device w.r.t. the system
->   *
->   * @offline_disabled: If set, the device is permanently online.
->   * @offline:   Set after successful invocation of bus type's .offline().
-> @@ -613,6 +639,8 @@ struct device {
->         struct iommu_group      *iommu_group;
->         struct dev_iommu        *iommu;
->
-> +       enum device_site        site;   /* Device physical location */
-> +
->         bool                    offline_disabled:1;
->         bool                    offline:1;
->         bool                    of_node_reused:1;
-> @@ -806,6 +834,20 @@ static inline bool dev_has_sync_state(struct device *dev)
->         return false;
->  }
->
-> +static inline int dev_set_site(struct device *dev, enum device_site site)
-> +{
-> +       if (site < SITE_UNKNOWN || site > SITE_EXTERNAL)
-> +               return -EINVAL;
-> +
-> +       dev->site = site;
-> +       return 0;
-> +}
-> +
-> +static inline bool dev_is_external(struct device *dev)
-> +{
-> +       return dev->site == SITE_EXTERNAL;
-> +}
+So it sounds like we need at least 2 SMMUs (for non-iso and iso) but we
+have up to 3 (for Tegra194). So the question is do we have a use-case
+where we only use 2 and not 3? If not, then it still seems that we
+should require that all 3 are present.
 
-I'm not CC'ed in the rest of the patches in this series, so just
-responding here. I see you use this function in patch 6/7 to decide if
-the PCI device is trusted. Anything other than EXTERNAL is being
-treated as trusted. I'd argue that anything that's not internal should
-be distrusted. For example, I can have a hacked up laptop dock that I
-can share with you when you visit my home/office and now you are
-trusting it when you shouldn't be.
+The other problem I see here is that currently the arm-smmu binding
+defines the 'reg' with a 'maxItems' of 1, whereas we have 3. I believe
+that this will get caught by the 'dt_binding_check' when we try to
+populate the binding.
 
-Also, "UNKNOWN" is treated as trusted in patch 6/7. I'm guessing this
-is because some of the devices might not have the info in their
-firmware? At which point, this feature isn't even protecting all the
-PCI ports properly? This adds to Greg point that this should be a
-userspace policy so that it can override whatever is wrong/missing in
-the firmware.
+>> It would be better to query the number of SMMUs populated in device-tree and then ensure that all are initialised correctly.
+> 
+> Getting the IORESOURCE_MEM is the way to count the instances driver need to support.  
+> In a way, It is already querying through IORESOURCE_MEM here. 
 
--Saravana
+Yes I was wondering that. I think we just need to decide if the 3rd SMMU
+is optional or not. The DT binding should detail and min and max supported.	
+
+Jon
+
+-- 
+nvpublic
 _______________________________________________
 iommu mailing list
 iommu@lists.linux-foundation.org
