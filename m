@@ -2,106 +2,72 @@ Return-Path: <SRS0=0Jez=AL=lists.linux-foundation.org=iommu-bounces@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-2.3 required=3.0 tests=DKIM_INVALID,DKIM_SIGNED,
-	HEADER_FROM_DIFFERENT_DOMAINS,MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS,
-	URIBL_BLOCKED,USER_AGENT_SANE_1 autolearn=no autolearn_force=no version=3.4.0
+X-Spam-Status: No, score=-2.5 required=3.0 tests=HEADER_FROM_DIFFERENT_DOMAINS,
+	MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED,USER_AGENT_SANE_1
+	autolearn=no autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id D082FC433E1
-	for <iommu@archiver.kernel.org>; Tue, 30 Jun 2020 16:44:33 +0000 (UTC)
-Received: from hemlock.osuosl.org (smtp2.osuosl.org [140.211.166.133])
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 20AE3C433DF
+	for <iommu@archiver.kernel.org>; Tue, 30 Jun 2020 16:51:41 +0000 (UTC)
+Received: from fraxinus.osuosl.org (smtp4.osuosl.org [140.211.166.137])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by mail.kernel.org (Postfix) with ESMTPS id 998A0206B6
-	for <iommu@archiver.kernel.org>; Tue, 30 Jun 2020 16:44:33 +0000 (UTC)
-Authentication-Results: mail.kernel.org;
-	dkim=fail reason="signature verification failed" (2048-bit key) header.d=nvidia.com header.i=@nvidia.com header.b="RpzzfzIx"
-DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 998A0206B6
-Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=nvidia.com
+	by mail.kernel.org (Postfix) with ESMTPS id E381320722
+	for <iommu@archiver.kernel.org>; Tue, 30 Jun 2020 16:51:40 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org E381320722
+Authentication-Results: mail.kernel.org; dmarc=none (p=none dis=none) header.from=arm.com
 Authentication-Results: mail.kernel.org; spf=pass smtp.mailfrom=iommu-bounces@lists.linux-foundation.org
 Received: from localhost (localhost [127.0.0.1])
-	by hemlock.osuosl.org (Postfix) with ESMTP id 698CB88579;
-	Tue, 30 Jun 2020 16:44:33 +0000 (UTC)
+	by fraxinus.osuosl.org (Postfix) with ESMTP id A3DEA86781;
+	Tue, 30 Jun 2020 16:51:40 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from hemlock.osuosl.org ([127.0.0.1])
+Received: from fraxinus.osuosl.org ([127.0.0.1])
 	by localhost (.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
-	with ESMTP id mKbCQUlTz39T; Tue, 30 Jun 2020 16:44:32 +0000 (UTC)
+	with ESMTP id g4gQbMfdYGvu; Tue, 30 Jun 2020 16:51:38 +0000 (UTC)
 Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [140.211.9.56])
-	by hemlock.osuosl.org (Postfix) with ESMTP id DAAC4884BB;
-	Tue, 30 Jun 2020 16:44:32 +0000 (UTC)
+	by fraxinus.osuosl.org (Postfix) with ESMTP id E5FC28671E;
+	Tue, 30 Jun 2020 16:51:38 +0000 (UTC)
 Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
-	by lists.linuxfoundation.org (Postfix) with ESMTP id B7FB7C088F;
-	Tue, 30 Jun 2020 16:44:32 +0000 (UTC)
+	by lists.linuxfoundation.org (Postfix) with ESMTP id D8ABBC088F;
+	Tue, 30 Jun 2020 16:51:38 +0000 (UTC)
 Received: from whitealder.osuosl.org (smtp1.osuosl.org [140.211.166.138])
- by lists.linuxfoundation.org (Postfix) with ESMTP id B0515C016E
- for <iommu@lists.linux-foundation.org>; Tue, 30 Jun 2020 16:44:31 +0000 (UTC)
+ by lists.linuxfoundation.org (Postfix) with ESMTP id C420FC016E
+ for <iommu@lists.linux-foundation.org>; Tue, 30 Jun 2020 16:51:36 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
- by whitealder.osuosl.org (Postfix) with ESMTP id A4EEB87847
- for <iommu@lists.linux-foundation.org>; Tue, 30 Jun 2020 16:44:31 +0000 (UTC)
+ by whitealder.osuosl.org (Postfix) with ESMTP id B2C1987BAE
+ for <iommu@lists.linux-foundation.org>; Tue, 30 Jun 2020 16:51:36 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
 Received: from whitealder.osuosl.org ([127.0.0.1])
  by localhost (.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
- with ESMTP id KPAEdbtME5RG for <iommu@lists.linux-foundation.org>;
- Tue, 30 Jun 2020 16:44:30 +0000 (UTC)
+ with ESMTP id WgHegkJj4rFk for <iommu@lists.linux-foundation.org>;
+ Tue, 30 Jun 2020 16:51:34 +0000 (UTC)
 X-Greylist: domain auto-whitelisted by SQLgrey-1.7.6
-Received: from hqnvemgate25.nvidia.com (hqnvemgate25.nvidia.com
- [216.228.121.64])
- by whitealder.osuosl.org (Postfix) with ESMTPS id DBAE887842
- for <iommu@lists.linux-foundation.org>; Tue, 30 Jun 2020 16:44:30 +0000 (UTC)
-Received: from hqpgpgate102.nvidia.com (Not Verified[216.228.121.13]) by
- hqnvemgate25.nvidia.com (using TLS: TLSv1.2, DES-CBC3-SHA)
- id <B5efb6bbc0002>; Tue, 30 Jun 2020 09:43:40 -0700
-Received: from hqmail.nvidia.com ([172.20.161.6])
- by hqpgpgate102.nvidia.com (PGP Universal service);
- Tue, 30 Jun 2020 09:44:30 -0700
-X-PGP-Universal: processed;
- by hqpgpgate102.nvidia.com on Tue, 30 Jun 2020 09:44:30 -0700
-Received: from [10.26.75.203] (10.124.1.5) by HQMAIL107.nvidia.com
- (172.20.187.13) with Microsoft SMTP Server (TLS) id 15.0.1473.3; Tue, 30 Jun
- 2020 16:44:25 +0000
-Subject: Re: [PATCH v8 1/3] iommu/arm-smmu: add NVIDIA implementation for dual
- ARM MMU-500 usage
-From: Jon Hunter <jonathanh@nvidia.com>
-To: Krishna Reddy <vdumpa@nvidia.com>
-References: <20200630001051.12350-1-vdumpa@nvidia.com>
- <20200630001051.12350-2-vdumpa@nvidia.com>
- <e6da9661-4e62-6e34-ac21-63ff993ca8bc@nvidia.com>
- <BYAPR12MB282210677459B8D62623C642B36F0@BYAPR12MB2822.namprd12.prod.outlook.com>
- <4037efc7-fbed-e8cf-dac7-212c65014e4e@nvidia.com>
-Message-ID: <eb0ffc7e-f41b-d17c-6a90-049335098cd2@nvidia.com>
-Date: Tue, 30 Jun 2020 17:44:23 +0100
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101
- Thunderbird/68.8.0
+Received: from foss.arm.com (foss.arm.com [217.140.110.172])
+ by whitealder.osuosl.org (Postfix) with ESMTP id 30D2B87904
+ for <iommu@lists.linux-foundation.org>; Tue, 30 Jun 2020 16:51:34 +0000 (UTC)
+Received: from usa-sjc-imap-foss1.foss.arm.com (unknown [10.121.207.14])
+ by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id 7189330E;
+ Tue, 30 Jun 2020 09:51:33 -0700 (PDT)
+Received: from [10.57.21.32] (unknown [10.57.21.32])
+ by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPSA id 68BCD3F68F;
+ Tue, 30 Jun 2020 09:51:30 -0700 (PDT)
+Subject: Re: [PATCH 1/2] iommu: Add iommu_group_get/set_domain()
+To: Lu Baolu <baolu.lu@linux.intel.com>, Joerg Roedel <joro@8bytes.org>,
+ Alex Williamson <alex.williamson@redhat.com>
+References: <20200627031532.28046-1-baolu.lu@linux.intel.com>
+ <acc0a8fd-bd23-fc34-aecc-67796ab216e7@arm.com>
+ <5dc1cece-6111-9b56-d04c-9553d592675b@linux.intel.com>
+From: Robin Murphy <robin.murphy@arm.com>
+Message-ID: <48dd9f1e-c18b-77b7-650a-c35ecbb69f2b@arm.com>
+Date: Tue, 30 Jun 2020 17:51:29 +0100
+User-Agent: Mozilla/5.0 (Windows NT 10.0; rv:68.0) Gecko/20100101
+ Thunderbird/68.9.0
 MIME-Version: 1.0
-In-Reply-To: <4037efc7-fbed-e8cf-dac7-212c65014e4e@nvidia.com>
-X-Originating-IP: [10.124.1.5]
-X-ClientProxiedBy: HQMAIL111.nvidia.com (172.20.187.18) To
- HQMAIL107.nvidia.com (172.20.187.13)
-Content-Language: en-US
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=nvidia.com; s=n1;
- t=1593535420; bh=wfS2EeHQkmlhZY5U4/UFUr69ArCFndTN9ROhcFPEI1M=;
- h=X-PGP-Universal:Subject:From:To:CC:References:Message-ID:Date:
- User-Agent:MIME-Version:In-Reply-To:X-Originating-IP:
- X-ClientProxiedBy:Content-Type:Content-Language:
- Content-Transfer-Encoding;
- b=RpzzfzIx5Pvr8kBRvnnxiXZncwQ9u01wYvBZU7qtc0WldUlzAiBfBsBypPux7uaZ7
- Mq2kKQhObMQz4+2w6EMvtTBA2Ze5CTHbAPKzP1ViLUXqbGrxMWtiCASh0ZReWsE5Ml
- KQJdovzVUgyfbtAeQd4TtYuX+9pIP9FMdQcRi1nuCwpLbEIzI583GI2XPALg8/8drf
- zGPquwH0ymfoL/FVTw2J3LhGOh+oMmQ2OGDookibXrLDT6YEKcRBUVw+lhkyqeGSto
- KkUNRaHAYsNB+kcYkssfiGLkwASZSzb9ID3DyV+xlku+sYrTx0K5DXc+wjxbrnqIP5
- iaVGNwznKEgSw==
-Cc: Sachin Nikam <Snikam@nvidia.com>,
- "nicoleotsuka@gmail.com" <nicoleotsuka@gmail.com>,
- Mikko Perttunen <mperttunen@nvidia.com>, Bryan Huntsman <bhuntsman@nvidia.com>,
- "will@kernel.org" <will@kernel.org>,
- "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
- Pritesh Raithatha <praithatha@nvidia.com>, Timo Alho <talho@nvidia.com>,
- "iommu@lists.linux-foundation.org" <iommu@lists.linux-foundation.org>,
- Nicolin Chen <nicolinc@nvidia.com>,
- "linux-tegra@vger.kernel.org" <linux-tegra@vger.kernel.org>, Yu-Huan
- Hsu <YHsu@nvidia.com>, Thierry Reding <treding@nvidia.com>,
- "robin.murphy@arm.com" <robin.murphy@arm.com>,
- "linux-arm-kernel@lists.infradead.org" <linux-arm-kernel@lists.infradead.org>,
- Bitan Biswas <bbiswas@nvidia.com>
+In-Reply-To: <5dc1cece-6111-9b56-d04c-9553d592675b@linux.intel.com>
+Content-Language: en-GB
+Cc: Kevin Tian <kevin.tian@intel.com>, Dave Jiang <dave.jiang@intel.com>,
+ Ashok Raj <ashok.raj@intel.com>, kvm@vger.kernel.org,
+ Cornelia Huck <cohuck@redhat.com>, linux-kernel@vger.kernel.org,
+ iommu@lists.linux-foundation.org
 X-BeenThere: iommu@lists.linux-foundation.org
 X-Mailman-Version: 2.1.15
 Precedence: list
@@ -114,51 +80,122 @@ List-Post: <mailto:iommu@lists.linux-foundation.org>
 List-Help: <mailto:iommu-request@lists.linux-foundation.org?subject=help>
 List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
  <mailto:iommu-request@lists.linux-foundation.org?subject=subscribe>
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: 7bit
+Content-Transfer-Encoding: base64
+Content-Type: text/plain; charset="utf-8"; Format="flowed"
 Errors-To: iommu-bounces@lists.linux-foundation.org
 Sender: "iommu" <iommu-bounces@lists.linux-foundation.org>
 
-
-On 30/06/2020 17:32, Jon Hunter wrote:
-> On 30/06/2020 17:23, Krishna Reddy wrote:
->>>> +struct arm_smmu_device *nvidia_smmu_impl_init(struct arm_smmu_device 
->>>> +*smmu) {
->>>> +	unsigned int i;
->> ....
->>>> +	for (i = 1; i < MAX_SMMU_INSTANCES; i++) {
->>>> +		struct resource *res;
->>>> +
->>>> +		res = platform_get_resource(pdev, IORESOURCE_MEM, i);
->>>> +		if (!res)
->>>> +			break;
->>
->>> Currently this driver is only supported for Tegra194 which I understand has 3 SMMUs. Therefore, I don't feel that we should fail silently here, I think it is better to return an error if all 3 cannot be initialised.
->>
->> Initialization of all the three SMMU instances is not necessary here.
-> 
-> That is not what I am saying.
-> 
->> The driver can work with all the possible number of instances 1, 2 and 3 based on the DT config though it doesn't make much sense to use it with 1 instance.
->> There is no silent failure here from driver point of view. If there is misconfig in DT, SMMU faults would catch issues.
-> 
-> I disagree and you should return a proper error here.
-
-OK, well I see what you are saying, but if we intended to support all 3
-for Tegra194, then we should ensure all 3 are initialised correctly.
-
-My concern here is testing, because when things break in upstream I am
-usually the one that tracks it down. Not having clear warning/error
-messages when something is not initialised as expected makes it harder.
-
-It would be better to query the number of SMMUs populated in device-tree
-and then ensure that all are initialised correctly.
-
-Jon
-
--- 
-nvpublic
-_______________________________________________
-iommu mailing list
-iommu@lists.linux-foundation.org
-https://lists.linuxfoundation.org/mailman/listinfo/iommu
+T24gMjAyMC0wNi0zMCAwMjowMywgTHUgQmFvbHUgd3JvdGU6Cj4gSGkgUm9iaW4sCj4gCj4gT24g
+Ni8yOS8yMCA3OjU2IFBNLCBSb2JpbiBNdXJwaHkgd3JvdGU6Cj4+IE9uIDIwMjAtMDYtMjcgMDQ6
+MTUsIEx1IEJhb2x1IHdyb3RlOgo+Pj4gVGhlIGhhcmR3YXJlIGFzc2lzdGFudCB2ZmlvIG1lZGlh
+dGVkIGRldmljZSBpcyBhIHVzZSBjYXNlIG9mIGlvbW11Cj4+PiBhdXgtZG9tYWluLiBUaGUgaW50
+ZXJhY3Rpb25zIGJldHdlZW4gdmZpby9tZGV2IGFuZCBpb21tdSBkdXJpbmcgbWRldgo+Pj4gY3Jl
+YXRpb24gYW5kIHBhc3N0aHIgYXJlOgo+Pj4KPj4+IC0gQ3JlYXRlIGEgZ3JvdXAgZm9yIG1kZXYg
+d2l0aCBpb21tdV9ncm91cF9hbGxvYygpOwo+Pj4gLSBBZGQgdGhlIGRldmljZSB0byB0aGUgZ3Jv
+dXAgd2l0aAo+Pj4gwqDCoMKgwqDCoMKgwqDCoCBncm91cCA9IGlvbW11X2dyb3VwX2FsbG9jKCk7
+Cj4+PiDCoMKgwqDCoMKgwqDCoMKgIGlmIChJU19FUlIoZ3JvdXApKQo+Pj4gwqDCoMKgwqDCoMKg
+wqDCoMKgwqDCoMKgwqDCoMKgwqAgcmV0dXJuIFBUUl9FUlIoZ3JvdXApOwo+Pj4KPj4+IMKgwqDC
+oMKgwqDCoMKgwqAgcmV0ID0gaW9tbXVfZ3JvdXBfYWRkX2RldmljZShncm91cCwgJm1kZXYtPmRl
+dik7Cj4+PiDCoMKgwqDCoMKgwqDCoMKgIGlmICghcmV0KQo+Pj4gwqDCoMKgwqDCoMKgwqDCoMKg
+wqDCoMKgwqDCoMKgwqAgZGV2X2luZm8oJm1kZXYtPmRldiwgIk1ERVY6IGdyb3VwX2lkID0gJWRc
+biIsCj4+PiDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDC
+oCBpb21tdV9ncm91cF9pZChncm91cCkpOwo+Pj4gLSBBbGxvY2F0ZSBhbiBhdXgtZG9tYWluCj4+
+PiDCoMKgwqDCoGlvbW11X2RvbWFpbl9hbGxvYygpCj4+PiAtIEF0dGFjaCB0aGUgYXV4LWRvbWFp
+biB0byB0aGUgcGh5c2ljYWwgZGV2aWNlIGZyb20gd2hpY2ggdGhlIG1kZXYgaXMKPj4+IMKgwqAg
+Y3JlYXRlZC4KPj4+IMKgwqDCoMKgaW9tbXVfYXV4X2F0dGFjaF9kZXZpY2UoKQo+Pj4KPj4+IElu
+IHRoZSB3aG9sZSBwcm9jZXNzLCBhbiBpb21tdSBncm91cCB3YXMgYWxsb2NhdGVkIGZvciB0aGUg
+bWRldiBhbmQgYW4KPj4+IGlvbW11IGRvbWFpbiB3YXMgYXR0YWNoZWQgdG8gdGhlIGdyb3VwLCBi
+dXQgdGhlIGdyb3VwLT5kb21haW4gbGVhdmVzCj4+PiBOVUxMLiBBcyB0aGUgcmVzdWx0LCBpb21t
+dV9nZXRfZG9tYWluX2Zvcl9kZXYoKSBkb2Vzbid0IHdvcmsgYW55bW9yZS4KPj4+Cj4+PiBUaGlz
+IGFkZHMgaW9tbXVfZ3JvdXBfZ2V0L3NldF9kb21haW4oKSBzbyB0aGF0IGdyb3VwLT5kb21haW4g
+Y291bGQgYmUKPj4+IG1hbmFnZWQgd2hlbmV2ZXIgYSBkb21haW4gaXMgYXR0YWNoZWQgb3IgZGV0
+YWNoZWQgdGhyb3VnaCB0aGUgYXV4LWRvbWFpbgo+Pj4gYXBpJ3MuCj4+Cj4+IExldHRpbmcgZXh0
+ZXJuYWwgY2FsbGVycyBwb2tlIGFyb3VuZCBkaXJlY3RseSBpbiB0aGUgaW50ZXJuYWxzIG9mIAo+
+PiBpb21tdV9ncm91cCBkb2Vzbid0IGxvb2sgcmlnaHQgdG8gbWUuCj4gCj4gVW5mb3J0dW5hdGVs
+eSwgaXQgc2VlbXMgdGhhdCB0aGUgdmlmbyBpb21tdSBhYnN0cmFjdGlvbiBpcyBkZWVwbHkgYm91
+bmQKPiB0byB0aGUgSU9NTVUgc3Vic3lzdGVtLiBXZSBjYW4gZWFzaWx5IGZpbmQgb3RoZXIgZXhh
+bXBsZXM6Cj4gCj4gaW9tbXVfZ3JvdXBfZ2V0L3NldF9pb21tdWRhdGEoKQo+IGlvbW11X2dyb3Vw
+X2dldC9zZXRfbmFtZSgpCj4gLi4uCgpTdXJlLCBidXQgdGhvc2UgYXJlIHdheXMgZm9yIHVzZXJz
+IG9mIGEgZ3JvdXAgdG8gYXR0YWNoIHVzZWZ1bCAKaW5mb3JtYXRpb24gb2YgdGhlaXIgb3duIHRv
+IGl0LCB0aGF0IGRvZXNuJ3QgbWF0dGVyIHRvIHRoZSBJT01NVSAKc3Vic3lzdGVtIGl0c2VsZi4g
+VGhlIGludGVyZmFjZSB5b3UndmUgcHJvcG9zZWQgZ2l2ZXMgY2FsbGVycyByaWNoIG5ldyAKb3Bw
+b3J0dW5pdGllcyB0byBmdW5kYW1lbnRhbGx5IGJyZWFrIGNvcnJlY3Qgb3BlcmF0aW9uIG9mIHRo
+ZSBBUEk6CgoJZG9tID0gaW9tbXVfZG9tYWluX2FsbG9jKCk7Cglpb21tdV9hdHRhY2hfZ3JvdXAo
+ZG9tLCBncnApOwoJLi4uCglpb21tdV9ncm91cF9zZXRfZG9tYWluKGdycCwgTlVMTCk7CgkvLyBv
+b3BzLCBsZWFrZWQgYW5kIGNhbid0IGV2ZXIgZGV0YWNoIHByb3Blcmx5IG5vdwoKb3IgcGVyaGFw
+czoKCglncnAgPSBpb21tdV9ncm91cF9hbGxvYygpOwoJaW9tbXVfZ3JvdXBfYWRkX2RldmljZShn
+cnAsIGRldik7Cglpb21tdV9ncm91cF9zZXRfZG9tYWluKGdycCwgZG9tKTsKCS4uLgoJaW9tbXVf
+ZGV0YWNoX2dyb3VwKGRvbSwgZ3JwKTsKCS8vIG9vcHMsIElPTU1VIGRyaXZlciBtaWdodCBub3Qg
+aGFuZGxlIHRoaXMKCj4+IElmIGEgcmVndWxhciBkZXZpY2UgaXMgYXR0YWNoZWQgdG8gb25lIG9y
+IG1vcmUgYXV4IGRvbWFpbnMgZm9yIFBBU0lEIAo+PiB1c2UsIGlvbW11X2dldF9kb21haW5fZm9y
+X2RldigpIGlzIHN0aWxsIGdvaW5nIHRvIHJldHVybiB0aGUgcHJpbWFyeSAKPj4gZG9tYWluLCBz
+byB3aHkgc2hvdWxkIGl0IGJlIGV4cGVjdGVkIHRvIGJlaGF2ZSBkaWZmZXJlbnRseSBmb3IgbWVk
+aWF0ZWQKPiAKPiBVbmxpa2UgdGhlIG5vcm1hbCBkZXZpY2UgYXR0YWNoLCB3ZSB3aWxsIGVuY291
+bnRlciB0d28gZGV2aWNlcyB3aGVuIGl0Cj4gY29tZXMgdG8gYXV4LWRvbWFpbi4KPiAKPiAtIFBh
+cmVudCBwaHlzaWNhbCBkZXZpY2UgLSB0aGlzIG1pZ2h0IGJlLCBmb3IgZXhhbXBsZSwgYSBQQ0ll
+IGRldmljZQo+IHdpdGggUEFTSUQgZmVhdHVyZSBzdXBwb3J0LCBoZW5jZSBpdCBpcyBhYmxlIHRv
+IHRhZyBhbiB1bmlxdWUgUEFTSUQKPiBmb3IgRE1BIHRyYW5zZmVycyBvcmlnaW5hdGVkIGZyb20g
+aXRzIHN1YnNldC4gVGhlIGRldmljZSBkcml2ZXIgaGVuY2UKPiBpcyBhYmxlIHRvIHdyYXBwZXIg
+dGhpcyBzdWJzZXQgaW50byBhbiBpc29sYXRlZDoKPiAKPiAtIE1lZGlhdGVkIGRldmljZSAtIGEg
+ZmFrZSBkZXZpY2UgY3JlYXRlZCBieSB0aGUgZGV2aWNlIGRyaXZlciBtZW50aW9uZWQKPiBhYm92
+ZS4KPiAKPiBZZXMuIEFsbCB5b3UgbWVudGlvbmVkIGFyZSByaWdodCBmb3IgdGhlIHBhcmVudCBk
+ZXZpY2UuIEJ1dCBmb3IgbWVkaWF0ZWQKPiBkZXZpY2UsIGlvbW11X2dldF9kb21haW5fZm9yX2Rl
+digpIGRvZXNuJ3Qgd29yayBldmVuIGl0IGhhcyBhbiB2YWxpZAo+IGlvbW11X2dyb3VwIGFuZCBp
+b21tdV9kb21haW4uCj4gCj4gaW9tbXVfZ2V0X2RvbWFpbl9mb3JfZGV2KCkgaXMgYSBuZWNlc3Nh
+cnkgaW50ZXJmYWNlIGZvciBkZXZpY2UgZHJpdmVycwo+IHdoaWNoIHdhbnQgdG8gc3VwcG9ydCBh
+dXgtZG9tYWluLiBGb3IgZXhhbXBsZSwKCk9ubHkgaWYgdGhleSB3YW50IHRvIGZvbGxvdyB0aGlz
+IHZlcnkgc3BlY2lmaWMgbm90aW9uIG9mIHVzaW5nIG1hZGUtdXAgCmRldmljZXMgYW5kIGdyb3Vw
+cyB0byByZXByZXNlbnQgYXV4IGF0dGFjaG1lbnRzLiBFdmVuIGlmIGEgZHJpdmVyIAptYW5hZ2lu
+ZyBpdHMgb3duIGF1eCBkb21haW5zIGVudGlyZWx5IHByaXZhdGVseSBkb2VzIGNyZWF0ZSBjaGls
+ZCAKZGV2aWNlcyBmb3IgdGhlbSwgaXQncyBub3QgbGlrZSBpdCBjYW4ndCBrZWVwIGl0cyBkb21h
+aW4gcG9pbnRlcnMgaW4gCmRydmRhdGEgaWYgaXQgd2FudHMgdG8gOykKCkxldCdzIG5vdCBjb25m
+bGF0ZSB0aGUgY3VycmVudCBpbXBsZW1lbnRhdGlvbiBvZiB2ZmlvX21kZXYgd2l0aCB0aGUgCmdl
+bmVyYWwgY29uY2VwdHMgaW52b2x2ZWQgaGVyZS4KCj4gIMKgwqDCoMKgwqDCoMKgwqDCoCBzdHJ1
+Y3QgaW9tbXVfZG9tYWluICpkb21haW47Cj4gIMKgwqDCoMKgwqDCoMKgwqDCoCBzdHJ1Y3QgZGV2
+aWNlICpkZXYgPSBtZGV2X2RldihtZGV2KTsKPiAgwqDCoMKgwqDCoCB1bnNpZ25lZCBsb25nIHBh
+c2lkOwo+IAo+ICDCoMKgwqDCoMKgwqDCoMKgwqAgZG9tYWluID0gaW9tbXVfZ2V0X2RvbWFpbl9m
+b3JfZGV2KGRldik7Cj4gIMKgwqDCoMKgwqDCoMKgwqDCoCBpZiAoIWRvbWFpbikKPiAgwqDCoMKg
+wqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoCByZXR1cm4gLUVOT0RFVjsKPiAKPiAgwqDCoMKg
+wqDCoMKgwqDCoMKgIHBhc2lkID0gaW9tbXVfYXV4X2dldF9wYXNpZChkb21haW4sIGRldi0+cGFy
+ZW50KTsKPiAgwqDCoMKgwqDCoCBpZiAocGFzaWQgPT0gSU9BU0lEX0lOVkFMSUQpCj4gIMKgwqDC
+oMKgwqDCoMKgwqDCoCByZXR1cm4gLUVJTlZBTDsKPiAKPiAgwqDCoMKgwqDCoCAvKiBQcm9ncmFt
+IHRoZSBkZXZpY2UgY29udGV4dCB3aXRoIHRoZSBQQVNJRCB2YWx1ZSAqLwo+ICDCoMKgwqDCoMKg
+IC4uLi4KPiAKPiBXaXRob3V0IHRoaXMgZml4LCBpb21tdV9nZXRfZG9tYWluX2Zvcl9kZXYoKSBh
+bHdheXMgcmV0dXJucyBOVUxMIGFuZCB0aGUKPiBkZXZpY2UgZHJpdmVyIGhhcyBubyBtZWFucyB0
+byBzdXBwb3J0IGF1eC1kb21haW4uCgpTbyBlaXRoZXIgdGhlIElPTU1VIEFQSSBpdHNlbGYgaXMg
+bWlzc2luZyB0aGUgYWJpbGl0eSB0byBkbyB0aGUgcmlnaHQgCnRoaW5nIGludGVybmFsbHksIG9y
+IHRoZSBtZGV2IGxheWVyIGlzbid0IHVzaW5nIGl0IGFwcHJvcHJpYXRlbHkuIEVpdGhlciAKd2F5
+LCBzaW1wbHkgcHVuY2hpbmcgaG9sZXMgaW4gdGhlIEFQSSBmb3IgbWRldiB0byBoYWNrIGFyb3Vu
+ZCBpdHMgb3duIAptZXNzIGRvZXNuJ3Qgc2VlbSBsaWtlIHRoZSBiZXN0IHRoaW5nIHRvIGRvLgoK
+VGhlIGluaXRpYWwgaW1wcmVzc2lvbiBJIGdvdCB3YXMgdGhhdCBpdCdzIGltcGxpY2l0bHkgYXNz
+dW1lZCBoZXJlIHRoYXQgCnRoZSBtZGV2IGl0c2VsZiBpcyBhdHRhY2hlZCB0byBleGFjdGx5IG9u
+ZSBhdXggZG9tYWluIGFuZCBub3RoaW5nIGVsc2UsIAphdCB3aGljaCBwb2ludCBJIHdvdWxkIHdv
+bmRlciB3aHkgaXQncyB1c2luZyBhdXggYXQgYWxsLCBidXQgYXJlIHlvdSAKc2F5aW5nIHRoYXQg
+aW4gZmFjdCBubyBhdHRhY2ggaGFwcGVucyB3aXRoIHRoZSBtZGV2IGdyb3VwIGVpdGhlciB3YXks
+IApvbmx5IHRvIHRoZSBwYXJlbnQgZGV2aWNlPwoKSSdsbCBhZG1pdCBJJ20gbm90IGh1Z2VseSBm
+YW1pbGlhciB3aXRoIGFueSBvZiB0aGlzLCBidXQgaXQgc2VlbXMgdG8gbWUgCnRoYXQgdGhlIGxv
+Z2ljYWwgZmxvdyBzaG91bGQgYmU6CgoJLSBhbGxvY2F0ZSBkb21haW4KCS0gYXR0YWNoIGFzIGF1
+eCB0byBwYXJlbnQKCS0gcmV0cmlldmUgYXV4IGRvbWFpbiBQQVNJRAoJLSBjcmVhdGUgbWRldiBj
+aGlsZCBiYXNlZCBvbiBQQVNJRAoJLSBhdHRhY2ggbWRldiB0byBkb21haW4gKG5vcm1hbGx5KQoK
+T2YgY291cnNlIHRoYXQgbWlnaHQgcmVxdWlyZSBnaXZpbmcgdGhlIElPTU1VIEFQSSBhIHByb3Bl
+ciBmaXJzdC1jbGFzcyAKbm90aW9uIG9mIG1lZGlhdGVkIGRldmljZXMsIHN1Y2ggdGhhdCBpdCBr
+bm93cyB0aGUgbWRldiByZXByZXNlbnRzIHRoZSAKUEFTSUQsIGFuZCBjYW4gcmVjb2duaXNlIHRo
+ZSBtZGV2IGF0dGFjaCBpcyBlcXVpdmFsZW50IHRvIHRoZSBlYXJsaWVyIApwYXJlbnQgYXV4IGF0
+dGFjaCBzbyBub3QganVzdCBibGluZGx5IGhhbmQgaXQgZG93biB0byBhbiBJT01NVSBkcml2ZXIg
+CnRoYXQncyBuZXZlciBoZWFyZCBvZiB0aGlzIG5ldyBkZXZpY2UgYmVmb3JlLiBPciBwZXJoYXBz
+IHRoZSBJT01NVSAKZHJpdmVycyBkbyB0aGVpciBvd24gYm9va2tlZXBpbmcgZm9yIHRoZSBtZGV2
+IGJ1cywgc3VjaCB0aGF0IHRoZXkgZG8gCmhhbmRsZSB0aGUgYXR0YWNoIGNhbGwsIGFuZCBqdXN0
+IHZhbGlkYXRlIGl0IGludGVybmFsbHkgYmFzZWQgb24gdGhlIAphc3NvY2lhdGVkIHBhcmVudCBk
+ZXZpY2UgYW5kIFBBU0lELiBFaXRoZXIgd2F5LCB0aGUgaW5zaWRlIG1haW50YWlucyAKc2VsZi1j
+b25zaXN0ZW5jeSBhbmQgZnJvbSB0aGUgb3V0c2lkZSBpdCBsb29rcyBsaWtlIHN0YW5kYXJkIEFQ
+SSB1c2FnZSAKd2l0aG91dCBuYXN0eSBoYWNrcy4KCkknbSBwcmV0dHkgc3VyZSBJJ3ZlIGhlYXJk
+IHN1Z2dlc3Rpb25zIG9mIHVzaW5nIG1lZGlhdGVkIGRldmljZXMgYmV5b25kIApWRklPIChlLmcu
+IHdpdGhpbiB0aGUga2VybmVsIGl0c2VsZiksIHNvIGNoYW5jZXMgYXJlIHRoaXMgaXMgYSBkaXJl
+Y3Rpb24gCnRoYXQgd2UnbGwgaGF2ZSB0byB0YWtlIGF0IHNvbWUgcG9pbnQgYW55d2F5LgoKQW5k
+LCB0aGF0IHNhaWQsIGV2ZW4gaWYgcGVvcGxlIGRvIHdhbnQgYW4gaW1tZWRpYXRlIHF1aWNrIGZp
+eCByZWdhcmRsZXNzIApvZiB0ZWNobmljYWwgZGVidCwgSSdkIHN0aWxsIGJlIGEgbG90IGhhcHBp
+ZXIgdG8gc2VlIAppb21tdV9ncm91cF9zZXRfZG9tYWluKCkgbGlnaHRseSByZXNwdW4gYXMgaW9t
+bXVfYXR0YWNoX21kZXYoKSA7KQoKUm9iaW4uCl9fX19fX19fX19fX19fX19fX19fX19fX19fX19f
+X19fX19fX19fX19fX19fX19fCmlvbW11IG1haWxpbmcgbGlzdAppb21tdUBsaXN0cy5saW51eC1m
+b3VuZGF0aW9uLm9yZwpodHRwczovL2xpc3RzLmxpbnV4Zm91bmRhdGlvbi5vcmcvbWFpbG1hbi9s
+aXN0aW5mby9pb21tdQ==
