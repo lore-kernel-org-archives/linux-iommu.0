@@ -2,126 +2,97 @@ Return-Path: <SRS0=0Jez=AL=lists.linux-foundation.org=iommu-bounces@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-9.8 required=3.0 tests=DKIM_INVALID,DKIM_SIGNED,
+X-Spam-Status: No, score=-8.3 required=3.0 tests=DKIM_INVALID,DKIM_SIGNED,
 	HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_PATCH,MAILING_LIST_MULTI,SIGNED_OFF_BY,
-	SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED,USER_AGENT_GIT autolearn=unavailable
+	SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED,USER_AGENT_SANE_1 autolearn=ham
 	autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 06F66C433E1
-	for <iommu@archiver.kernel.org>; Tue, 30 Jun 2020 08:18:12 +0000 (UTC)
-Received: from hemlock.osuosl.org (smtp2.osuosl.org [140.211.166.133])
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 046B3C433E0
+	for <iommu@archiver.kernel.org>; Tue, 30 Jun 2020 08:19:31 +0000 (UTC)
+Received: from fraxinus.osuosl.org (smtp4.osuosl.org [140.211.166.137])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by mail.kernel.org (Postfix) with ESMTPS id C6DB520759
-	for <iommu@archiver.kernel.org>; Tue, 30 Jun 2020 08:18:11 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTPS id C556220759
+	for <iommu@archiver.kernel.org>; Tue, 30 Jun 2020 08:19:30 +0000 (UTC)
 Authentication-Results: mail.kernel.org;
-	dkim=fail reason="signature verification failed" (1024-bit key) header.d=samsung.com header.i=@samsung.com header.b="MOk2lX2w"
-DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org C6DB520759
-Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=samsung.com
+	dkim=fail reason="signature verification failed" (2048-bit key) header.d=nvidia.com header.i=@nvidia.com header.b="n3HvGgxT"
+DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org C556220759
+Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=nvidia.com
 Authentication-Results: mail.kernel.org; spf=pass smtp.mailfrom=iommu-bounces@lists.linux-foundation.org
 Received: from localhost (localhost [127.0.0.1])
-	by hemlock.osuosl.org (Postfix) with ESMTP id 931578841A;
-	Tue, 30 Jun 2020 08:18:11 +0000 (UTC)
-X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from hemlock.osuosl.org ([127.0.0.1])
-	by localhost (.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
-	with ESMTP id 5znxKhpTXzbA; Tue, 30 Jun 2020 08:18:11 +0000 (UTC)
-Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [140.211.9.56])
-	by hemlock.osuosl.org (Postfix) with ESMTP id 0D1518831E;
-	Tue, 30 Jun 2020 08:18:11 +0000 (UTC)
-Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
-	by lists.linuxfoundation.org (Postfix) with ESMTP id E0944C088F;
-	Tue, 30 Jun 2020 08:18:10 +0000 (UTC)
-Received: from fraxinus.osuosl.org (smtp4.osuosl.org [140.211.166.137])
- by lists.linuxfoundation.org (Postfix) with ESMTP id 3D01FC016E
- for <iommu@lists.linux-foundation.org>; Tue, 30 Jun 2020 08:18:09 +0000 (UTC)
-Received: from localhost (localhost [127.0.0.1])
- by fraxinus.osuosl.org (Postfix) with ESMTP id 2B04C860E6
- for <iommu@lists.linux-foundation.org>; Tue, 30 Jun 2020 08:18:09 +0000 (UTC)
+	by fraxinus.osuosl.org (Postfix) with ESMTP id 9577A85F77;
+	Tue, 30 Jun 2020 08:19:30 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
 Received: from fraxinus.osuosl.org ([127.0.0.1])
+	by localhost (.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
+	with ESMTP id GPNYDj8be1fH; Tue, 30 Jun 2020 08:19:29 +0000 (UTC)
+Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [140.211.9.56])
+	by fraxinus.osuosl.org (Postfix) with ESMTP id 88892859C1;
+	Tue, 30 Jun 2020 08:19:29 +0000 (UTC)
+Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
+	by lists.linuxfoundation.org (Postfix) with ESMTP id 6D687C088F;
+	Tue, 30 Jun 2020 08:19:29 +0000 (UTC)
+Received: from whitealder.osuosl.org (smtp1.osuosl.org [140.211.166.138])
+ by lists.linuxfoundation.org (Postfix) with ESMTP id 01DACC016E
+ for <iommu@lists.linux-foundation.org>; Tue, 30 Jun 2020 08:19:28 +0000 (UTC)
+Received: from localhost (localhost [127.0.0.1])
+ by whitealder.osuosl.org (Postfix) with ESMTP id E43B586354
+ for <iommu@lists.linux-foundation.org>; Tue, 30 Jun 2020 08:19:27 +0000 (UTC)
+X-Virus-Scanned: amavisd-new at osuosl.org
+Received: from whitealder.osuosl.org ([127.0.0.1])
  by localhost (.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
- with ESMTP id Yb92o87PqC_b for <iommu@lists.linux-foundation.org>;
- Tue, 30 Jun 2020 08:18:08 +0000 (UTC)
-X-Greylist: from auto-whitelisted by SQLgrey-1.7.6
-Received: from mailout2.w1.samsung.com (mailout2.w1.samsung.com
- [210.118.77.12])
- by fraxinus.osuosl.org (Postfix) with ESMTPS id 799CA85F7E
- for <iommu@lists.linux-foundation.org>; Tue, 30 Jun 2020 08:18:08 +0000 (UTC)
-Received: from eucas1p2.samsung.com (unknown [182.198.249.207])
- by mailout2.w1.samsung.com (KnoxPortal) with ESMTP id
- 20200630081806euoutp028ebece3bc3857da5ac13cd52290ae30b~dRG8B-vgt2015920159euoutp02q
- for <iommu@lists.linux-foundation.org>; Tue, 30 Jun 2020 08:18:06 +0000 (GMT)
-DKIM-Filter: OpenDKIM Filter v2.11.0 mailout2.w1.samsung.com
- 20200630081806euoutp028ebece3bc3857da5ac13cd52290ae30b~dRG8B-vgt2015920159euoutp02q
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=samsung.com;
- s=mail20170921; t=1593505086;
- bh=RWG/PR/gBUqd8f+OZR74giIFbhfefll6k6y1Sbjhgps=;
- h=From:To:Cc:Subject:Date:References:From;
- b=MOk2lX2wgtOq1GMB2CN33JB4b59W3TGL7xDSdyqBCAaGzIo79jknsWyFOK78IMWLJ
- 6rkmAjENkkFdQSU6FVzvwpRH6Kdm2upVemhamR6Z1EX6DOeFcY5FD2fjDRuD6CHpuD
- DIQmPVrUUH6xwPCvw3reYD2aNvMHLlgOXWdKtYAg=
-Received: from eusmges1new.samsung.com (unknown [203.254.199.242]) by
- eucas1p1.samsung.com (KnoxPortal) with ESMTP id
- 20200630081806eucas1p1ad6ce83af09e1a83a003d6f711376f14~dRG7yb_1m2671126711eucas1p1x;
- Tue, 30 Jun 2020 08:18:06 +0000 (GMT)
-Received: from eucas1p1.samsung.com ( [182.198.249.206]) by
- eusmges1new.samsung.com (EUCPMTA) with SMTP id 31.CF.06456.E35FAFE5; Tue, 30
- Jun 2020 09:18:06 +0100 (BST)
-Received: from eusmtrp1.samsung.com (unknown [182.198.249.138]) by
- eucas1p2.samsung.com (KnoxPortal) with ESMTPA id
- 20200630081806eucas1p2a9a0ecae69dfe3306092aff30e21cb5c~dRG7iYQ4Y1608216082eucas1p2z;
- Tue, 30 Jun 2020 08:18:06 +0000 (GMT)
-Received: from eusmgms2.samsung.com (unknown [182.198.249.180]) by
- eusmtrp1.samsung.com (KnoxPortal) with ESMTP id
- 20200630081806eusmtrp106d065c6596320eab0f44e0df896ab41~dRG7hysVX0327103271eusmtrp10;
- Tue, 30 Jun 2020 08:18:06 +0000 (GMT)
-X-AuditID: cbfec7f2-809ff70000001938-68-5efaf53e2d35
-Received: from eusmtip2.samsung.com ( [203.254.199.222]) by
- eusmgms2.samsung.com (EUCPMTA) with SMTP id FE.9C.06017.E35FAFE5; Tue, 30
- Jun 2020 09:18:06 +0100 (BST)
-Received: from AMDC2765.digital.local (unknown [106.120.51.73]) by
- eusmtip2.samsung.com (KnoxPortal) with ESMTPA id
- 20200630081805eusmtip29437a87f9578340dd994fc55bba24247~dRG7LSvNX2950629506eusmtip2W;
- Tue, 30 Jun 2020 08:18:05 +0000 (GMT)
-From: Marek Szyprowski <m.szyprowski@samsung.com>
-To: iommu@lists.linux-foundation.org, linux-kernel@vger.kernel.org
-Subject: [PATCH] iommu: move sg_table wrapper out of CONFIG_IOMMU_SUPPORT
-Date: Tue, 30 Jun 2020 10:17:56 +0200
-Message-Id: <20200630081756.18526-1-m.szyprowski@samsung.com>
-X-Mailer: git-send-email 2.17.1
-X-Brightmail-Tracker: H4sIAAAAAAAAA0VRa0hTYRjm2znbzkarr83yTcNqqZiQNjIYzaSsYP3JhEBKvKw8qOmm7Khl
- QUjJzGkhmWRqIhYpyua8ME2LckkLV2POSwaVXaEClTTz7vJ41P49V56X76MI6QjpQ6Xqsmi9
- TpMuF4hJ68tZ596Iqbn4fV0Ptimby5v4yppnKmVhpUWo7O+sEihNPR+Eh/nqb93VPHXpcB1S
- 32prQOrJFr9T5FlxeBKdnppD60MjEsUpg9ZFYeZ72aXplgGUh6zYiEQU4DD4vjQjNCIxJcX1
- COo6engc+YNgyOXic2QSgan9C3+t4u4z8FgsxXUI5qo3rTfGfpeRrCHACjCOGgVGRFFeOBL6
- 7+1kMwQuQOCZbl3JyPAJ8Aw5hSwmcQCUdzUSLJbgQ+B8MU9wYzug0fKcYMuAnwigd75p1TgG
- 3dUzAg7L4Je9Tcjh7eAoLSa5wnUEn50mIUeKEfRfK0dcSgXvnXMr5xF4DzR1hnLyERh7/RCx
- MuCNMDy6mZWJZXjbepfgZAncMEi5dCBU2M3rs90u9+ppaugqquRzDxQHr3rv8EqQX8X/rRqE
- GpA3nc1ok2lGoaMvhjAaLZOtSw45n6FtQcvf7liyT3SgKfc5G8IUkm+QJDpn46V8TQ6Tq7Uh
- oAi5lyTyjSNeKknS5F6m9RkJ+ux0mrEhX4qUe0v21/6Mk+JkTRadRtOZtH7N5VEinzxkEXuK
- owa2OvpUMa2dDfeT3OKrjwNa/Quf7p7oM7THKBYE796KgkTOg+bJMhx9RvI1P9jQeGDQWkpr
- Psaelh2PqhzflUnUtqlIO+EZCLsgD3/kuRL7wzVV4ttxc6TZlD9bn1CUu7A4Pn2yx2JbqArC
- W8zRfz8VBJT4H00LNFvlJJOiUQQTekbzD/kjcn3yAgAA
-X-Brightmail-Tracker: H4sIAAAAAAAAA+NgFtrGLMWRmVeSWpSXmKPExsVy+t/xe7p2X3/FGSy8zG6xccZ6VosF+60t
- OmdvYLe4vGsOm8XaI3fZHVg9nhycx+Qx+cZyRo++LasYPT5vkgtgidKzKcovLUlVyMgvLrFV
- ija0MNIztLTQMzKx1DM0No+1MjJV0rezSUnNySxLLdK3S9DLuLrtL3vBHeGK75uuMDYwbhPo
- YuTkkBAwkbh0sY2pi5GLQ0hgKaNE278WZoiEjMTJaQ2sELawxJ9rXWwQRZ8YJZben8kIkmAT
- MJToeguS4OQQEXCR+LB5JdgkZoFORomJM3aDTRIW8JT4f+0cO4jNIqAqMWP3arA4r4CtxLnD
- v6G2yUus3nCAeQIjzwJGhlWMIqmlxbnpucVGesWJucWleel6yfm5mxiBYbbt2M8tOxi73gUf
- YhTgYFTi4U049zNOiDWxrLgy9xCjBAezkgiv09nTcUK8KYmVValF+fFFpTmpxYcYTYGWT2SW
- Ek3OB8ZAXkm8oamhuYWlobmxubGZhZI4b4fAwRghgfTEktTs1NSC1CKYPiYOTqkGxmsNla8Z
- /bLuMxcql81t+PvDUCSv/2ZZtRS7yNpK2z+Tg6yCvh0Uejrd3JijfM6qebL11h4HhI7te7hK
- R7RP+X2l4jaXt+6huvOW3bojzx6QL7Sotyd8qx3fksK22HXfJx0ROp+2tm/Ghnd6f65u5TDx
- +W9r9XZijY5eyrXXvCu+WJl++qBqrMRSnJFoqMVcVJwIAEe7axhJAgAA
-X-CMS-MailID: 20200630081806eucas1p2a9a0ecae69dfe3306092aff30e21cb5c
-X-Msg-Generator: CA
-X-RootMTR: 20200630081806eucas1p2a9a0ecae69dfe3306092aff30e21cb5c
-X-EPHeader: CA
-CMS-TYPE: 201P
-X-CMS-RootMailID: 20200630081806eucas1p2a9a0ecae69dfe3306092aff30e21cb5c
-References: <CGME20200630081806eucas1p2a9a0ecae69dfe3306092aff30e21cb5c@eucas1p2.samsung.com>
-Cc: Bartlomiej Zolnierkiewicz <b.zolnierkie@samsung.com>
+ with ESMTP id QZqpjO4aCJnJ for <iommu@lists.linux-foundation.org>;
+ Tue, 30 Jun 2020 08:19:26 +0000 (UTC)
+X-Greylist: domain auto-whitelisted by SQLgrey-1.7.6
+Received: from hqnvemgate26.nvidia.com (hqnvemgate26.nvidia.com
+ [216.228.121.65])
+ by whitealder.osuosl.org (Postfix) with ESMTPS id 81704865D3
+ for <iommu@lists.linux-foundation.org>; Tue, 30 Jun 2020 08:19:26 +0000 (UTC)
+Received: from hqpgpgate101.nvidia.com (Not Verified[216.228.121.13]) by
+ hqnvemgate26.nvidia.com (using TLS: TLSv1.2, DES-CBC3-SHA)
+ id <B5efaf5810000>; Tue, 30 Jun 2020 01:19:13 -0700
+Received: from hqmail.nvidia.com ([172.20.161.6])
+ by hqpgpgate101.nvidia.com (PGP Universal service);
+ Tue, 30 Jun 2020 01:19:26 -0700
+X-PGP-Universal: processed;
+ by hqpgpgate101.nvidia.com on Tue, 30 Jun 2020 01:19:26 -0700
+Received: from [10.26.75.203] (10.124.1.5) by HQMAIL107.nvidia.com
+ (172.20.187.13) with Microsoft SMTP Server (TLS) id 15.0.1473.3; Tue, 30 Jun
+ 2020 08:19:17 +0000
+Subject: Re: [PATCH v8 1/3] iommu/arm-smmu: add NVIDIA implementation for dual
+ ARM MMU-500 usage
+To: Krishna Reddy <vdumpa@nvidia.com>
+References: <20200630001051.12350-1-vdumpa@nvidia.com>
+ <20200630001051.12350-2-vdumpa@nvidia.com>
+From: Jon Hunter <jonathanh@nvidia.com>
+Message-ID: <53bfa5c8-c32d-6fa3-df60-a18ab33ca1c2@nvidia.com>
+Date: Tue, 30 Jun 2020 09:19:15 +0100
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101
+ Thunderbird/68.8.0
+MIME-Version: 1.0
+In-Reply-To: <20200630001051.12350-2-vdumpa@nvidia.com>
+X-Originating-IP: [10.124.1.5]
+X-ClientProxiedBy: HQMAIL111.nvidia.com (172.20.187.18) To
+ HQMAIL107.nvidia.com (172.20.187.13)
+Content-Language: en-US
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=nvidia.com; s=n1;
+ t=1593505153; bh=eI2tv3wTofqv6YlCkNI6JW/hkggCc4NSMZWlVcFoYcc=;
+ h=X-PGP-Universal:Subject:To:CC:References:From:Message-ID:Date:
+ User-Agent:MIME-Version:In-Reply-To:X-Originating-IP:
+ X-ClientProxiedBy:Content-Type:Content-Language:
+ Content-Transfer-Encoding;
+ b=n3HvGgxTNxjzNxFkMcJYuzsKY7AhGEioDH7DyV5nNPjti+3gb3iacyjWkpcBK7NLW
+ XElM1CDSEmkL6UkeOp2lJw7k4WOCcKMzd/oEOcazYEK9PXne3qsNt61BQunweG+nZ3
+ +VOiPIQZgM5IlvDF8NbFKGmwrZVejxrF4gfHxlJY5decjKIqIcKEfY9ae3rV/kaTIv
+ 2Sckt/DHYrM6DzGKm0YQo6XDRh0IIlocwB0KNDiyJpwU6ze8c9upZYTT9PuNlIpJrN
+ 9VJnd4suIBXS3T8D0OBrkwMnCMeiPKXn7/oCotx/fSDnbVJZaZuuATVujoRNfwjx7e
+ tEI1LJmzX/e/Q==
+Cc: snikam@nvidia.com, nicoleotsuka@gmail.com, mperttunen@nvidia.com,
+ bhuntsman@nvidia.com, will@kernel.org, linux-kernel@vger.kernel.org,
+ praithatha@nvidia.com, talho@nvidia.com, iommu@lists.linux-foundation.org,
+ nicolinc@nvidia.com, linux-tegra@vger.kernel.org, yhsu@nvidia.com,
+ treding@nvidia.com, robin.murphy@arm.com, linux-arm-kernel@lists.infradead.org,
+ bbiswas@nvidia.com
 X-BeenThere: iommu@lists.linux-foundation.org
 X-Mailman-Version: 2.1.15
 Precedence: list
@@ -134,74 +105,332 @@ List-Post: <mailto:iommu@lists.linux-foundation.org>
 List-Help: <mailto:iommu-request@lists.linux-foundation.org?subject=help>
 List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
  <mailto:iommu-request@lists.linux-foundation.org?subject=subscribe>
-MIME-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
 Errors-To: iommu-bounces@lists.linux-foundation.org
 Sender: "iommu" <iommu-bounces@lists.linux-foundation.org>
 
-Move the recently added sg_table wrapper out of CONFIG_IOMMU_SUPPORT to
-let the client code copile also when IOMMU support is disabled.
 
-Fixes: 48530d9fab0d ("iommu: add generic helper for mapping sgtable objects")
-Signed-off-by: Marek Szyprowski <m.szyprowski@samsung.com>
----
- include/linux/iommu.h | 32 ++++++++++++++++----------------
- 1 file changed, 16 insertions(+), 16 deletions(-)
+On 30/06/2020 01:10, Krishna Reddy wrote:
+> NVIDIA's Tegra194 SoC uses two ARM MMU-500s together to interleave
+> IOVA accesses across them.
+> Add NVIDIA implementation for dual ARM MMU-500s and add new compatible
+> string for Tegra194 SoC SMMU topology.
 
-diff --git a/include/linux/iommu.h b/include/linux/iommu.h
-index 5f0b7859d2eb..5657d4fef9f2 100644
---- a/include/linux/iommu.h
-+++ b/include/linux/iommu.h
-@@ -457,22 +457,6 @@ extern phys_addr_t iommu_iova_to_phys(struct iommu_domain *domain, dma_addr_t io
- extern void iommu_set_fault_handler(struct iommu_domain *domain,
- 			iommu_fault_handler_t handler, void *token);
+There is no description here of the 3rd SMMU that you mention below.
+I think that we should describe the full picture here.
  
--/**
-- * iommu_map_sgtable - Map the given buffer to the IOMMU domain
-- * @domain:	The IOMMU domain to perform the mapping
-- * @iova:	The start address to map the buffer
-- * @sgt:	The sg_table object describing the buffer
-- * @prot:	IOMMU protection bits
-- *
-- * Creates a mapping at @iova for the buffer described by a scatterlist
-- * stored in the given sg_table object in the provided IOMMU domain.
-- */
--static inline size_t iommu_map_sgtable(struct iommu_domain *domain,
--			unsigned long iova, struct sg_table *sgt, int prot)
--{
--	return iommu_map_sg(domain, iova, sgt->sgl, sgt->orig_nents, prot);
--}
--
- extern void iommu_get_resv_regions(struct device *dev, struct list_head *list);
- extern void iommu_put_resv_regions(struct device *dev, struct list_head *list);
- extern void generic_iommu_put_resv_regions(struct device *dev,
-@@ -1079,6 +1063,22 @@ static inline struct iommu_fwspec *dev_iommu_fwspec_get(struct device *dev)
- }
- #endif /* CONFIG_IOMMU_API */
+> Signed-off-by: Krishna Reddy <vdumpa@nvidia.com>
+> ---
+>  MAINTAINERS                     |   2 +
+>  drivers/iommu/Makefile          |   2 +-
+>  drivers/iommu/arm-smmu-impl.c   |   3 +
+>  drivers/iommu/arm-smmu-nvidia.c | 196 ++++++++++++++++++++++++++++++++
+>  drivers/iommu/arm-smmu.h        |   1 +
+>  5 files changed, 203 insertions(+), 1 deletion(-)
+>  create mode 100644 drivers/iommu/arm-smmu-nvidia.c
+> 
+> diff --git a/MAINTAINERS b/MAINTAINERS
+> index 7b5ffd646c6b9..64c37dbdd4426 100644
+> --- a/MAINTAINERS
+> +++ b/MAINTAINERS
+> @@ -16808,8 +16808,10 @@ F:	drivers/i2c/busses/i2c-tegra.c
+>  
+>  TEGRA IOMMU DRIVERS
+>  M:	Thierry Reding <thierry.reding@gmail.com>
+> +R:	Krishna Reddy <vdumpa@nvidia.com>
+>  L:	linux-tegra@vger.kernel.org
+>  S:	Supported
+> +F:	drivers/iommu/arm-smmu-nvidia.c
+>  F:	drivers/iommu/tegra*
+>  
+>  TEGRA KBC DRIVER
+> diff --git a/drivers/iommu/Makefile b/drivers/iommu/Makefile
+> index 342190196dfb0..2b8203db73ec3 100644
+> --- a/drivers/iommu/Makefile
+> +++ b/drivers/iommu/Makefile
+> @@ -15,7 +15,7 @@ obj-$(CONFIG_AMD_IOMMU) += amd/iommu.o amd/init.o amd/quirks.o
+>  obj-$(CONFIG_AMD_IOMMU_DEBUGFS) += amd/debugfs.o
+>  obj-$(CONFIG_AMD_IOMMU_V2) += amd/iommu_v2.o
+>  obj-$(CONFIG_ARM_SMMU) += arm_smmu.o
+> -arm_smmu-objs += arm-smmu.o arm-smmu-impl.o arm-smmu-qcom.o
+> +arm_smmu-objs += arm-smmu.o arm-smmu-impl.o arm-smmu-nvidia.o arm-smmu-qcom.o
+>  obj-$(CONFIG_ARM_SMMU_V3) += arm-smmu-v3.o
+>  obj-$(CONFIG_DMAR_TABLE) += intel/dmar.o
+>  obj-$(CONFIG_INTEL_IOMMU) += intel/iommu.o intel/pasid.o
+> diff --git a/drivers/iommu/arm-smmu-impl.c b/drivers/iommu/arm-smmu-impl.c
+> index c75b9d957b702..70f7318017617 100644
+> --- a/drivers/iommu/arm-smmu-impl.c
+> +++ b/drivers/iommu/arm-smmu-impl.c
+> @@ -171,6 +171,9 @@ struct arm_smmu_device *arm_smmu_impl_init(struct arm_smmu_device *smmu)
+>  	if (of_property_read_bool(np, "calxeda,smmu-secure-config-access"))
+>  		smmu->impl = &calxeda_impl;
+>  
+> +	if (of_device_is_compatible(smmu->dev->of_node, "nvidia,tegra194-smmu"))
+> +		return nvidia_smmu_impl_init(smmu);
+> +
+>  	if (of_device_is_compatible(np, "qcom,sdm845-smmu-500") ||
+>  	    of_device_is_compatible(np, "qcom,sc7180-smmu-500"))
+>  		return qcom_smmu_impl_init(smmu);
+> diff --git a/drivers/iommu/arm-smmu-nvidia.c b/drivers/iommu/arm-smmu-nvidia.c
+> new file mode 100644
+> index 0000000000000..1124f0ac1823a
+> --- /dev/null
+> +++ b/drivers/iommu/arm-smmu-nvidia.c
+> @@ -0,0 +1,196 @@
+> +// SPDX-License-Identifier: GPL-2.0-only
+> +// NVIDIA ARM SMMU v2 implementation quirks
+> +// Copyright (C) 2019-2020 NVIDIA CORPORATION.  All rights reserved.
+> +
+> +#include <linux/bitfield.h>
+> +#include <linux/delay.h>
+> +#include <linux/of.h>
+> +#include <linux/platform_device.h>
+> +#include <linux/slab.h>
+> +
+> +#include "arm-smmu.h"
+> +
+> +/*
+> + * Tegra194 has three ARM MMU-500 Instances.
+> + * Two of them are used together for interleaved IOVA accesses and
+> + * used by non-isochronous HW devices for SMMU translations.
+> + * Third one is used for SMMU translations from isochronous HW devices.
+> + * It is possible to use this implementation to program either
+> + * all three or two of the instances identically as desired through
+> + * DT node.
+> + *
+> + * Programming all the three instances identically comes with redundant TLB
+> + * invalidations as all three never need to be TLB invalidated for a HW device.
+> + *
+> + * When Linux kernel supports multiple SMMU devices, the SMMU device used for
+> + * isochornous HW devices should be added as a separate ARM MMU-500 device
+> + * in DT and be programmed independently for efficient TLB invalidates.
+> + */
+> +#define MAX_SMMU_INSTANCES 3
+> +
+> +#define TLB_LOOP_TIMEOUT_IN_US		1000000	/* 1s! */
+> +#define TLB_SPIN_COUNT			10
+> +
+> +struct nvidia_smmu {
+> +	struct arm_smmu_device	smmu;
+> +	unsigned int		num_inst;
+> +	void __iomem		*bases[MAX_SMMU_INSTANCES];
+> +};
+> +
+> +static inline struct nvidia_smmu *to_nvidia_smmu(struct arm_smmu_device *smmu)
+> +{
+> +	return container_of(smmu, struct nvidia_smmu, smmu);
+> +}
+> +
+> +static inline void __iomem *nvidia_smmu_page(struct arm_smmu_device *smmu,
+> +			       unsigned int inst, int page)
+
+If you run checkpatch --strict on these you will get a lot of ...
+
+CHECK: Alignment should match open parenthesis
+#116: FILE: drivers/iommu/arm-smmu-nvidia.c:46:
++static inline void __iomem *nvidia_smmu_page(struct arm_smmu_device *smmu,
++			       unsigned int inst, int page)
+
+We should fix these.
+
+> +{
+> +	struct nvidia_smmu *nvidia_smmu = to_nvidia_smmu(smmu);
+> +
+> +	if (!nvidia_smmu->bases[0])
+> +		nvidia_smmu->bases[0] = smmu->base;
+> +
+> +	return nvidia_smmu->bases[inst] + (page << smmu->pgshift);
+> +}
+> +
+> +static u32 nvidia_smmu_read_reg(struct arm_smmu_device *smmu,
+> +			      int page, int offset)
+> +{
+> +	void __iomem *reg = nvidia_smmu_page(smmu, 0, page) + offset;
+> +
+> +	return readl_relaxed(reg);
+> +}
+> +
+> +static void nvidia_smmu_write_reg(struct arm_smmu_device *smmu,
+> +			    int page, int offset, u32 val)
+> +{
+> +	unsigned int i;
+> +	struct nvidia_smmu *nvidia_smmu = to_nvidia_smmu(smmu);
+> +
+> +	for (i = 0; i < nvidia_smmu->num_inst; i++) {
+> +		void __iomem *reg = nvidia_smmu_page(smmu, i, page) + offset;
+
+Personally, I would declare 'reg' outside of the loop as I feel it will make
+the code cleaner and easier to read.
+
+> +
+> +		writel_relaxed(val, reg);
+> +	}
+> +}
+> +
+> +static u64 nvidia_smmu_read_reg64(struct arm_smmu_device *smmu,
+> +				int page, int offset)
+> +{
+> +	void __iomem *reg = nvidia_smmu_page(smmu, 0, page) + offset;
+> +
+> +	return readq_relaxed(reg);
+> +}
+> +
+> +static void nvidia_smmu_write_reg64(struct arm_smmu_device *smmu,
+> +				  int page, int offset, u64 val)
+> +{
+> +	unsigned int i;
+> +	struct nvidia_smmu *nvidia_smmu = to_nvidia_smmu(smmu);
+> +
+> +	for (i = 0; i < nvidia_smmu->num_inst; i++) {
+> +		void __iomem *reg = nvidia_smmu_page(smmu, i, page) + offset;
+> +
+> +		writeq_relaxed(val, reg);
+> +	}
+> +}
+> +
+> +static void nvidia_smmu_tlb_sync(struct arm_smmu_device *smmu, int page,
+> +			   int sync, int status)
+> +{
+> +	unsigned int delay;
+> +
+> +	arm_smmu_writel(smmu, page, sync, 0);
+> +
+> +	for (delay = 1; delay < TLB_LOOP_TIMEOUT_IN_US; delay *= 2) {
+
+So we are doubling the delay every time? Is this better than just using
+the same on each loop? 
+
+> +		unsigned int spin_cnt;
+> +
+> +		for (spin_cnt = TLB_SPIN_COUNT; spin_cnt > 0; spin_cnt--) {
+> +			u32 val = 0;
+> +			unsigned int i;
+> +			struct nvidia_smmu *nvidia_smmu = to_nvidia_smmu(smmu);
+
+Why not do this once at the beginning of the function? 
+
+> +
+> +			for (i = 0; i < nvidia_smmu->num_inst; i++) {
+> +				void __iomem *reg =
+> +					nvidia_smmu_page(smmu, i, page) + status;
+> +
+> +				val |= readl_relaxed(reg);
+> +			}
+> +
+> +			if (!(val & ARM_SMMU_sTLBGSTATUS_GSACTIVE))
+> +				return;
+> +
+> +			cpu_relax();
+> +		}
+> +
+> +		udelay(delay);
+> +	}
+> +
+> +	dev_err_ratelimited(smmu->dev,
+> +			    "TLB sync timed out -- SMMU may be deadlocked\n");
+> +}
+> +
+> +static int nvidia_smmu_reset(struct arm_smmu_device *smmu)
+> +{
+> +	unsigned int i;
+> +
+> +	for (i = 0; i < to_nvidia_smmu(smmu)->num_inst; i++) {
+> +		u32 val;
+> +		void __iomem *reg = nvidia_smmu_page(smmu, i, ARM_SMMU_GR0) +
+> +				    ARM_SMMU_GR0_sGFSR;
+
+I feel that declaring variables here clutters the code.
  
-+/**
-+ * iommu_map_sgtable - Map the given buffer to the IOMMU domain
-+ * @domain:	The IOMMU domain to perform the mapping
-+ * @iova:	The start address to map the buffer
-+ * @sgt:	The sg_table object describing the buffer
-+ * @prot:	IOMMU protection bits
-+ *
-+ * Creates a mapping at @iova for the buffer described by a scatterlist
-+ * stored in the given sg_table object in the provided IOMMU domain.
-+ */
-+static inline size_t iommu_map_sgtable(struct iommu_domain *domain,
-+			unsigned long iova, struct sg_table *sgt, int prot)
-+{
-+	return iommu_map_sg(domain, iova, sgt->sgl, sgt->orig_nents, prot);
-+}
-+
- #ifdef CONFIG_IOMMU_DEBUGFS
- extern	struct dentry *iommu_debugfs_dir;
- void iommu_debugfs_setup(void);
+> +
+> +		/* clear global FSR */
+> +		val = readl_relaxed(reg);
+> +		writel_relaxed(val, reg);
+> +	}
+> +
+> +	return 0;
+> +}
+> +
+> +static const struct arm_smmu_impl nvidia_smmu_impl = {
+> +	.read_reg = nvidia_smmu_read_reg,
+> +	.write_reg = nvidia_smmu_write_reg,
+> +	.read_reg64 = nvidia_smmu_read_reg64,
+> +	.write_reg64 = nvidia_smmu_write_reg64,
+> +	.reset = nvidia_smmu_reset,
+> +	.tlb_sync = nvidia_smmu_tlb_sync,
+> +};
+> +
+> +struct arm_smmu_device *nvidia_smmu_impl_init(struct arm_smmu_device *smmu)
+> +{
+> +	unsigned int i;
+> +	struct nvidia_smmu *nvidia_smmu;
+> +	struct platform_device *pdev = to_platform_device(smmu->dev);
+> +
+> +	nvidia_smmu = devm_kzalloc(smmu->dev, sizeof(*nvidia_smmu), GFP_KERNEL);
+> +	if (!nvidia_smmu)
+> +		return ERR_PTR(-ENOMEM);
+> +
+> +	nvidia_smmu->smmu = *smmu;
+> +	/* Instance 0 is ioremapped by arm-smmu.c after this function returns */
+> +	nvidia_smmu->num_inst = 1;
+> +
+> +	for (i = 1; i < MAX_SMMU_INSTANCES; i++) {
+> +		struct resource *res;
+> +
+> +		res = platform_get_resource(pdev, IORESOURCE_MEM, i);
+> +		if (!res)
+> +			break;
+> +
+> +		nvidia_smmu->bases[i] = devm_ioremap_resource(smmu->dev, res);
+> +		if (IS_ERR(nvidia_smmu->bases[i]))
+> +			return ERR_CAST(nvidia_smmu->bases[i]);
+> +
+> +		nvidia_smmu->num_inst++;
+> +	}
+> +
+> +	nvidia_smmu->smmu.impl = &nvidia_smmu_impl;
+> +	/*
+> +	 * Free the arm_smmu_device struct allocated in arm-smmu.c.
+> +	 * Once this function returns, arm-smmu.c would use arm_smmu_device
+> +	 * allocated as part of nvidia_smmu struct.
+> +	 */
+> +	devm_kfree(smmu->dev, smmu);
+
+Why don't we just store the pointer of the smmu struct passed to this function
+in the nvidia_smmu struct and then we do not need to free this here. In other
+words make ...
+
+ struct nvidia_smmu {
+	struct arm_smmu_device	*smmu;
+	unsigned int		num_inst;
+	void __iomem		*bases[MAX_SMMU_INSTANCES];
+ };  
+
+This seems more appropriate, than copying the struct and freeing memory
+allocated else-where.
+ 
+> +
+> +	return &nvidia_smmu->smmu;
+> +}
+> diff --git a/drivers/iommu/arm-smmu.h b/drivers/iommu/arm-smmu.h
+> index d172c024be618..8cf1511ed9874 100644
+> --- a/drivers/iommu/arm-smmu.h
+> +++ b/drivers/iommu/arm-smmu.h
+> @@ -450,6 +450,7 @@ static inline void arm_smmu_writeq(struct arm_smmu_device *smmu, int page,
+>  	arm_smmu_writeq((s), ARM_SMMU_CB((s), (n)), (o), (v))
+>  
+>  struct arm_smmu_device *arm_smmu_impl_init(struct arm_smmu_device *smmu);
+> +struct arm_smmu_device *nvidia_smmu_impl_init(struct arm_smmu_device *smmu);
+>  struct arm_smmu_device *qcom_smmu_impl_init(struct arm_smmu_device *smmu);
+>  
+>  int arm_mmu500_reset(struct arm_smmu_device *smmu);
+> 
+
+Cheers
+Jon
+
 -- 
-2.17.1
-
+nvpublic
 _______________________________________________
 iommu mailing list
 iommu@lists.linux-foundation.org
