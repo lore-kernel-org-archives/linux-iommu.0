@@ -2,71 +2,95 @@ Return-Path: <SRS0=cxdO=AM=lists.linux-foundation.org=iommu-bounces@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-2.5 required=3.0 tests=HEADER_FROM_DIFFERENT_DOMAINS,
-	MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED,USER_AGENT_SANE_1
-	autolearn=no autolearn_force=no version=3.4.0
+X-Spam-Status: No, score=-0.8 required=3.0 tests=DKIM_INVALID,DKIM_SIGNED,
+	HEADER_FROM_DIFFERENT_DOMAINS,MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS,
+	URIBL_BLOCKED autolearn=no autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 4A8C3C433E0
-	for <iommu@archiver.kernel.org>; Wed,  1 Jul 2020 09:46:48 +0000 (UTC)
-Received: from fraxinus.osuosl.org (smtp4.osuosl.org [140.211.166.137])
+	by smtp.lore.kernel.org (Postfix) with ESMTP id A98F6C433E0
+	for <iommu@archiver.kernel.org>; Wed,  1 Jul 2020 10:11:14 +0000 (UTC)
+Received: from silver.osuosl.org (smtp3.osuosl.org [140.211.166.136])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by mail.kernel.org (Postfix) with ESMTPS id 1C7DB2067D
-	for <iommu@archiver.kernel.org>; Wed,  1 Jul 2020 09:46:47 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 1C7DB2067D
-Authentication-Results: mail.kernel.org; dmarc=none (p=none dis=none) header.from=arm.com
+	by mail.kernel.org (Postfix) with ESMTPS id 6FDEA20722
+	for <iommu@archiver.kernel.org>; Wed,  1 Jul 2020 10:11:14 +0000 (UTC)
+Authentication-Results: mail.kernel.org;
+	dkim=fail reason="signature verification failed" (1024-bit key) header.d=mg.codeaurora.org header.i=@mg.codeaurora.org header.b="eMlITMYb"
+DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 6FDEA20722
+Authentication-Results: mail.kernel.org; dmarc=none (p=none dis=none) header.from=codeaurora.org
 Authentication-Results: mail.kernel.org; spf=pass smtp.mailfrom=iommu-bounces@lists.linux-foundation.org
 Received: from localhost (localhost [127.0.0.1])
-	by fraxinus.osuosl.org (Postfix) with ESMTP id CED7D895E6;
-	Wed,  1 Jul 2020 09:46:47 +0000 (UTC)
-X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from fraxinus.osuosl.org ([127.0.0.1])
-	by localhost (.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
-	with ESMTP id Bwnd-L2lLz-o; Wed,  1 Jul 2020 09:46:46 +0000 (UTC)
-Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [140.211.9.56])
-	by fraxinus.osuosl.org (Postfix) with ESMTP id 492B8895BC;
-	Wed,  1 Jul 2020 09:46:46 +0000 (UTC)
-Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
-	by lists.linuxfoundation.org (Postfix) with ESMTP id 2D25DC0890;
-	Wed,  1 Jul 2020 09:46:46 +0000 (UTC)
-Received: from silver.osuosl.org (smtp3.osuosl.org [140.211.166.136])
- by lists.linuxfoundation.org (Postfix) with ESMTP id AAD5AC0733
- for <iommu@lists.linux-foundation.org>; Wed,  1 Jul 2020 09:46:45 +0000 (UTC)
-Received: from localhost (localhost [127.0.0.1])
- by silver.osuosl.org (Postfix) with ESMTP id 9269C3025B
- for <iommu@lists.linux-foundation.org>; Wed,  1 Jul 2020 09:46:45 +0000 (UTC)
+	by silver.osuosl.org (Postfix) with ESMTP id D64AE30184;
+	Wed,  1 Jul 2020 10:11:13 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
 Received: from silver.osuosl.org ([127.0.0.1])
+	by localhost (.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
+	with ESMTP id m8iJaDsHgH18; Wed,  1 Jul 2020 10:11:13 +0000 (UTC)
+Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [140.211.9.56])
+	by silver.osuosl.org (Postfix) with ESMTP id E2D012FD39;
+	Wed,  1 Jul 2020 10:11:12 +0000 (UTC)
+Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
+	by lists.linuxfoundation.org (Postfix) with ESMTP id D2B9FC0865;
+	Wed,  1 Jul 2020 10:11:12 +0000 (UTC)
+Received: from fraxinus.osuosl.org (smtp4.osuosl.org [140.211.166.137])
+ by lists.linuxfoundation.org (Postfix) with ESMTP id 5873CC0733
+ for <iommu@lists.linux-foundation.org>; Wed,  1 Jul 2020 10:11:11 +0000 (UTC)
+Received: from localhost (localhost [127.0.0.1])
+ by fraxinus.osuosl.org (Postfix) with ESMTP id 47063892A5
+ for <iommu@lists.linux-foundation.org>; Wed,  1 Jul 2020 10:11:11 +0000 (UTC)
+X-Virus-Scanned: amavisd-new at osuosl.org
+Received: from fraxinus.osuosl.org ([127.0.0.1])
  by localhost (.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
- with ESMTP id NlymH1Z74FdX for <iommu@lists.linux-foundation.org>;
- Wed,  1 Jul 2020 09:46:44 +0000 (UTC)
-X-Greylist: domain auto-whitelisted by SQLgrey-1.7.6
-Received: from foss.arm.com (foss.arm.com [217.140.110.172])
- by silver.osuosl.org (Postfix) with ESMTP id D321C30258
- for <iommu@lists.linux-foundation.org>; Wed,  1 Jul 2020 09:46:43 +0000 (UTC)
-Received: from usa-sjc-imap-foss1.foss.arm.com (unknown [10.121.207.14])
- by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id 2CA5231B;
- Wed,  1 Jul 2020 02:46:43 -0700 (PDT)
-Received: from [10.57.21.32] (unknown [10.57.21.32])
- by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPSA id 1E66D3F68F;
- Wed,  1 Jul 2020 02:46:41 -0700 (PDT)
-Subject: Re: the XSK buffer pool needs be to reverted
-To: Jonathan Lemon <jonathan.lemon@gmail.com>
-References: <20200626074725.GA21790@lst.de>
- <20200626205412.xfe4lywdbmh3kmri@bsd-mbp> <20200627070236.GA11854@lst.de>
- <e43ab7b9-22f5-75c3-c9e6-f1eb18d57148@arm.com>
- <20200630190832.vvirrpkmyev2inlh@bsd-mbp.dhcp.thefacebook.com>
-From: Robin Murphy <robin.murphy@arm.com>
-Message-ID: <d47d08a1-fb9f-d02a-a4a2-fe5fbe0d3b52@arm.com>
-Date: Wed, 1 Jul 2020 10:46:40 +0100
-User-Agent: Mozilla/5.0 (Windows NT 10.0; rv:68.0) Gecko/20100101
- Thunderbird/68.9.0
+ with ESMTP id MkUd-9zxmefM for <iommu@lists.linux-foundation.org>;
+ Wed,  1 Jul 2020 10:11:10 +0000 (UTC)
+X-Greylist: from auto-whitelisted by SQLgrey-1.7.6
+Received: from mail29.static.mailgun.info (mail29.static.mailgun.info
+ [104.130.122.29])
+ by fraxinus.osuosl.org (Postfix) with ESMTPS id 5A68189268
+ for <iommu@lists.linux-foundation.org>; Wed,  1 Jul 2020 10:11:08 +0000 (UTC)
+DKIM-Signature: a=rsa-sha256; v=1; c=relaxed/relaxed; d=mg.codeaurora.org;
+ q=dns/txt; 
+ s=smtp; t=1593598269; h=Message-ID: References: In-Reply-To: Subject:
+ Cc: To: From: Date: Content-Transfer-Encoding: Content-Type:
+ MIME-Version: Sender; bh=amiqoJGPjX9RNHOLVHTe5Q2mOjhh5iGIl3d/MtXJOIs=;
+ b=eMlITMYbIFjHc7uoLmqiaaIzwggBXoKl4ccpyP3RTxYD2CFB3gD+M4YudExvhBUFiAE3Pg5J
+ V78yr3ycugDqTP4jFib7gLnTrTMPVDWSD5ZA5/0uLGBIEYRDnlc4GzlicgiddKv75mfOtSDY
+ PjIxtZxUijeqghlTqKKuvqGCpJY=
+X-Mailgun-Sending-Ip: 104.130.122.29
+X-Mailgun-Sid: WyI3NDkwMCIsICJpb21tdUBsaXN0cy5saW51eC1mb3VuZGF0aW9uLm9yZyIsICJiZTllNGEiXQ==
+Received: from smtp.codeaurora.org
+ (ec2-35-166-182-171.us-west-2.compute.amazonaws.com [35.166.182.171]) by
+ smtp-out-n09.prod.us-west-2.postgun.com with SMTP id
+ 5efc61394c9690533a499e35 (version=TLS1.2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256); Wed, 01 Jul 2020 10:11:05
+ GMT
+Received: by smtp.codeaurora.org (Postfix, from userid 1001)
+ id 22B97C433CB; Wed,  1 Jul 2020 10:11:05 +0000 (UTC)
+Received: from mail.codeaurora.org (localhost.localdomain [127.0.0.1])
+ (using TLSv1 with cipher ECDHE-RSA-AES256-SHA (256/256 bits))
+ (No client certificate requested)
+ (Authenticated sender: saiprakash.ranjan)
+ by smtp.codeaurora.org (Postfix) with ESMTPSA id B6F35C433C8;
+ Wed,  1 Jul 2020 10:11:03 +0000 (UTC)
 MIME-Version: 1.0
-In-Reply-To: <20200630190832.vvirrpkmyev2inlh@bsd-mbp.dhcp.thefacebook.com>
-Content-Language: en-GB
-Cc: netdev@vger.kernel.org, iommu@lists.linux-foundation.org,
- =?UTF-8?B?QmrDtnJuIFTDtnBlbA==?= <bjorn.topel@intel.com>,
- Christoph Hellwig <hch@lst.de>
+Date: Wed, 01 Jul 2020 15:41:03 +0530
+From: Sai Prakash Ranjan <saiprakash.ranjan@codeaurora.org>
+To: Robin Murphy <robin.murphy@arm.com>, Jordan Crouse
+ <jcrouse@codeaurora.org>, Will Deacon <will@kernel.org>
+Subject: Re: [PATCH v9 0/7] iommu/arm-smmu: Enable split pagetable support
+In-Reply-To: <20200626200042.13713-1-jcrouse@codeaurora.org>
+References: <20200626200042.13713-1-jcrouse@codeaurora.org>
+Message-ID: <bdc2a4348230f430138d320e49e188c0@codeaurora.org>
+X-Sender: saiprakash.ranjan@codeaurora.org
+User-Agent: Roundcube Webmail/1.3.9
+Cc: Sean Paul <sean@poorly.run>, devicetree@vger.kernel.org,
+ linux-kernel@vger.kernel.org, David Airlie <airlied@linux.ie>,
+ linux-arm-msm@vger.kernel.org, Rob Herring <robh+dt@kernel.org>,
+ Bjorn Andersson <bjorn.andersson@linaro.org>, Takashi Iwai <tiwai@suse.de>,
+ iommu@lists.linux-foundation.org, Andy Gross <agross@kernel.org>,
+ John Stultz <john.stultz@linaro.org>, dri-devel@lists.freedesktop.org,
+ Daniel Vetter <daniel@ffwll.ch>, Shawn Guo <shawn.guo@linaro.org>,
+ freedreno@lists.freedesktop.org, linux-arm-msm-owner@vger.kernel.org,
+ linux-arm-kernel@lists.infradead.org, Brian Masney <masneyb@onstation.org>
 X-BeenThere: iommu@lists.linux-foundation.org
 X-Mailman-Version: 2.1.15
 Precedence: list
@@ -84,208 +108,90 @@ Content-Type: text/plain; charset="us-ascii"; Format="flowed"
 Errors-To: iommu-bounces@lists.linux-foundation.org
 Sender: "iommu" <iommu-bounces@lists.linux-foundation.org>
 
-On 2020-06-30 20:08, Jonathan Lemon wrote:
-> On Mon, Jun 29, 2020 at 02:15:16PM +0100, Robin Murphy wrote:
->> On 2020-06-27 08:02, Christoph Hellwig wrote:
->>> On Fri, Jun 26, 2020 at 01:54:12PM -0700, Jonathan Lemon wrote:
->>>> On Fri, Jun 26, 2020 at 09:47:25AM +0200, Christoph Hellwig wrote:
->>>>>
->>>>> Note that this is somewhat urgent, as various of the APIs that the code
->>>>> is abusing are slated to go away for Linux 5.9, so this addition comes
->>>>> at a really bad time.
->>>>
->>>> Could you elaborate on what is upcoming here?
->>>
->>> Moving all these calls out of line, and adding a bypass flag to avoid
->>> the indirect function call for IOMMUs in direct mapped mode.
->>>
->>>> Also, on a semi-related note, are there limitations on how many pages
->>>> can be left mapped by the iommu?  Some of the page pool work involves
->>>> leaving the pages mapped instead of constantly mapping/unmapping them.
->>>
->>> There are, but I think for all modern IOMMUs they are so big that they
->>> don't matter.  Maintaines of the individual IOMMU drivers might know
->>> more.
->>
->> Right - I don't know too much about older and more esoteric stuff like POWER
->> TCE, but for modern pagetable-based stuff like Intel VT-d, AMD-Vi, and Arm
->> SMMU, the only "limits" are such that legitimate DMA API use should never
->> get anywhere near them (you'd run out of RAM for actual buffers long
->> beforehand). The most vaguely-realistic concern might be a pathological
->> system topology where some old 32-bit PCI device doesn't have ACS isolation
->> from your high-performance NIC such that they have to share an address
->> space, where the NIC might happen to steal all the low addresses and prevent
->> the soundcard or whatever from being able to map a usable buffer.
->>
->> With an IOMMU, you typically really *want* to keep a full working set's
->> worth of pages mapped, since dma_map/unmap are expensive while dma_sync is
->> somewhere between relatively cheap and free. With no IOMMU it makes no real
->> difference from the DMA API perspective since map/unmap are effectively no
->> more than the equivalent sync operations anyway (I'm assuming we're not
->> talking about the kind of constrained hardware that might need SWIOTLB).
->>
->>>> On a heavily loaded box with iommu enabled, it seems that quite often
->>>> there is contention on the iova_lock.  Are there known issues in this
->>>> area?
->>>
->>> I'll have to defer to the IOMMU maintainers, and for that you'll need
->>> to say what code you are using.  Current mainlaine doesn't even have
->>> an iova_lock anywhere.
->>
->> Again I can't speak for non-mainstream stuff outside drivers/iommu, but it's
->> been over 4 years now since merging the initial scalability work for the
->> generic IOVA allocator there that focused on minimising lock contention, and
->> it's had considerable evaluation and tweaking since. But if we can achieve
->> the goal of efficiently recycling mapped buffers then we shouldn't need to
->> go anywhere near IOVA allocation either way except when expanding the pool.
-> 
-> 
-> I'm running a set of patches which uses the page pool to try and keep
-> all the RX buffers mapped as the skb goes up the stack, returning the
-> pages to the pool when the skb is freed.
-> 
-> On a dual-socket 12-core Intel machine (48 processors), and 256G of
-> memory, when iommu is enabled, I see the following from 'perf top -U',
-> as the hottest function being run:
-> 
-> -   43.42%  worker      [k] queued_spin_lock_slowpath
->     - 43.42% queued_spin_lock_slowpath
->        - 41.69% _raw_spin_lock_irqsave
->           + 41.39% alloc_iova
->           + 0.28% iova_magazine_free_pfns
->        + 1.07% lock_sock_nested
-> 
-> Which likely is heavy contention on the iovad->iova_rbtree_lock.
-> (This is on a 5.6 based system, BTW).  More scripts and data are below.
-> Is there a way to reduce the contention here?
+Hi Will, Robin,
 
-Hmm, how big are your DMA mappings? If you're still hitting the rbtree a 
-lot, that most likely implies that either you're making giant IOVA 
-allocations that are too big to be cached, or you're allocating/freeing 
-IOVAs in a pathological pattern that defeats the whole magazine cache 
-mechanism (It's optimised for relatively-balanced allocation and freeing 
-of sizes up order 6). On a further hunch, does the 
-"intel_iommu=forcedac" option make any difference at all?
+On 2020-06-27 01:30, Jordan Crouse wrote:
+> Another iteration of the split-pagetable support for arm-smmu and the 
+> Adreno GPU
+> SMMU. After email discussions [1] we opted to make a arm-smmu 
+> implementation for
+> specifically for the Adreno GPU and use that to enable split pagetable 
+> support
+> and later other implementation specific bits that we need.
+> 
+> On the hardware side this is very close to the same code from before 
+> [2] only
+> the TTBR1 quirk is turned on by the implementation and not a domain 
+> attribute.
+> In drm/msm we use the returned size of the aperture as a clue to let us 
+> know
+> which virtual address space we should use for global memory objects.
+> 
+> There are two open items that you should be aware of. First, in the
+> implementation specific code we have to check the compatible string of 
+> the
+> device so that we only enable TTBR1 for the GPU (SID 0) and not the GMU 
+> (SID 4).
+> I went back and forth trying to decide if I wanted to use the 
+> compatible string
+> or the SID as the filter and settled on the compatible string but I 
+> could be
+> talked out of it.
+> 
+> The other open item is that in drm/msm the hardware only uses 49 bits 
+> of the
+> address space but arm-smmu expects the address to be sign extended all 
+> the way
+> to 64 bits. This isn't a problem normally unless you look at the 
+> hardware
+> registers that contain a IOVA and then the upper bits will be zero. I 
+> opted to
+> restrict the internal drm/msm IOVA range to only 49 bits and then sign 
+> extend
+> right before calling iommu_map / iommu_unmap. This is a bit wonky but I 
+> thought
+> that matching the hardware would be less confusing when debugging a 
+> hang.
+> 
+> v9: Fix bot-detected merge conflict
+> v7: Add attached device to smmu_domain to pass to implementation 
+> specific
+> functions
+> 
+> [1] 
+> https://lists.linuxfoundation.org/pipermail/iommu/2020-May/044537.html
+> [2] https://patchwork.kernel.org/patch/11482591/
+> 
+> 
+> Jordan Crouse (7):
+>   iommu/arm-smmu: Pass io-pgtable config to implementation specific
+>     function
+>   iommu/arm-smmu: Add support for split pagetables
+>   dt-bindings: arm-smmu: Add compatible string for Adreno GPU SMMU
+>   iommu/arm-smmu: Add a pointer to the attached device to smmu_domain
+>   iommu/arm-smmu: Add implementation for the adreno GPU SMMU
+>   drm/msm: Set the global virtual address range from the IOMMU domain
+>   arm: dts: qcom: sm845: Set the compatible string for the GPU SMMU
+> 
+>  .../devicetree/bindings/iommu/arm,smmu.yaml   |  4 ++
+>  arch/arm64/boot/dts/qcom/sdm845.dtsi          |  2 +-
+>  drivers/gpu/drm/msm/adreno/adreno_gpu.c       | 13 +++++-
+>  drivers/gpu/drm/msm/msm_iommu.c               |  7 +++
+>  drivers/iommu/arm-smmu-impl.c                 |  6 ++-
+>  drivers/iommu/arm-smmu-qcom.c                 | 45 ++++++++++++++++++-
+>  drivers/iommu/arm-smmu.c                      | 38 +++++++++++-----
+>  drivers/iommu/arm-smmu.h                      | 30 ++++++++++---
+>  8 files changed, 120 insertions(+), 25 deletions(-)
 
-Either way if this persists after some initial warm-up period, it 
-further implies that the page pool is not doing its job properly (or at 
-least in the way I would have expected). The alloc_iova() call is part 
-of the dma_map_*() overhead, and if the aim is to keep pages mapped then 
-that should only be called relatively infrequently. The optimal 
-behaviour would be to dma_map() new clean pages as they are added to the 
-pool, use dma_sync() when they are claimed and returned by the driver, 
-and only dma_unmap() if they're actually freed back to the page 
-allocator. And if you're still seeing a lot of dma_map/unmap time after 
-that, then the pool itself is churning pages and clearly needs its 
-size/thresholds tuning.
+Any chance reviewing this?
 
-Robin.
+Thanks,
+Sai
 
-> 
-> 
-> 
-> The following quick and dirty [and possibly wrong] .bpf script was used
-> to try and find the time spent in __alloc_and_insert_iova_range():
-> 
-> kprobe:alloc_iova_fast
-> {
->          @fast = count();
-> }
-> 
-> kprobe:alloc_iova
-> {
->          @iova_start[tid] = nsecs;
->          @iova = count();
-> }
-> 
-> kretprobe:alloc_iova / @iova_start[tid] /
-> {
->          @alloc_h = hist(nsecs - @iova_start[tid] - @mem_delta[tid]);
->          delete(@iova_start[tid]);
->          delete(@mem_delta[tid]);
-> }
-> 
-> kprobe:alloc_iova_mem / @iova_start[tid] /
-> {
->          @mem_start[tid] = nsecs;
-> }
-> 
-> kretprobe:alloc_iova_mem / @mem_start[tid] /
-> {
->          @mem_delta[tid] = nsecs - @mem_start[tid];
->          delete(@mem_start[tid]);
-> }
-> 
-> kprobe:iova_insert_rbtree / @iova_start[tid] /
-> {
->          @rb_start[tid] = nsecs;
->          @rbtree = count();
-> }
-> 
-> kretprobe:iova_insert_rbtree / @rb_start[tid] /
-> {
->          @insert_h = hist(nsecs - @rb_start[tid]);
->          delete(@rb_start[tid]);
-> }
-> 
-> interval:s:2
-> {
->          print(@fast);
->          print(@iova);
->          print(@rbtree);
->          print(@alloc_h);
->          print(@insert_h);
->          printf("--------\n");
-> }
-> 
-> I see the following results.
-> 
-> @fast: 1989223
-> @iova: 725269
-> @rbtree: 689306
-> 
-> @alloc_h:
-> [64, 128)              2 |                                                    |
-> [128, 256)           118 |                                                    |
-> [256, 512)           983 |                                                    |
-> [512, 1K)           3816 |@@                                                  |
-> [1K, 2K)           10557 |@@@@@@                                              |
-> [2K, 4K)           19540 |@@@@@@@@@@@@                                        |
-> [4K, 8K)           31294 |@@@@@@@@@@@@@@@@@@@                                 |
-> [8K, 16K)          38112 |@@@@@@@@@@@@@@@@@@@@@@@                             |
-> [16K, 32K)         46948 |@@@@@@@@@@@@@@@@@@@@@@@@@@@@                        |
-> [32K, 64K)         69728 |@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@         |
-> [64K, 128K)        83797 |@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@ |
-> [128K, 256K)       84317 |@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@|
-> [256K, 512K)       82962 |@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@ |
-> [512K, 1M)         72751 |@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@        |
-> [1M, 2M)           49191 |@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@                      |
-> [2M, 4M)           26591 |@@@@@@@@@@@@@@@@                                    |
-> [4M, 8M)           15559 |@@@@@@@@@                                           |
-> [8M, 16M)          12283 |@@@@@@@                                             |
-> [16M, 32M)         18266 |@@@@@@@@@@@                                         |
-> [32M, 64M)         22539 |@@@@@@@@@@@@@                                       |
-> [64M, 128M)         3005 |@                                                   |
-> [128M, 256M)          41 |                                                    |
-> [256M, 512M)           0 |                                                    |
-> [512M, 1G)             0 |                                                    |
-> [1G, 2G)               0 |                                                    |
-> [2G, 4G)             101 |                                                    |
-> 
-> @insert_h:
-> [128, 256)          2380 |                                                    |
-> [256, 512)         70043 |@@@@@@@@                                            |
-> [512, 1K)         431263 |@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@|
-> [1K, 2K)          182804 |@@@@@@@@@@@@@@@@@@@@@@                              |
-> [2K, 4K)            2742 |                                                    |
-> [4K, 8K)              43 |                                                    |
-> [8K, 16K)             25 |                                                    |
-> [16K, 32K)             0 |                                                    |
-> [32K, 64K)             0 |                                                    |
-> [64K, 128K)            0 |                                                    |
-> [128K, 256K)           6 |                                                    |
-> 
-> 
+-- 
+QUALCOMM INDIA, on behalf of Qualcomm Innovation Center, Inc. is a 
+member
+of Code Aurora Forum, hosted by The Linux Foundation
 _______________________________________________
 iommu mailing list
 iommu@lists.linux-foundation.org
