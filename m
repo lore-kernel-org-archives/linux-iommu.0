@@ -2,118 +2,102 @@ Return-Path: <SRS0=cxdO=AM=lists.linux-foundation.org=iommu-bounces@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-0.8 required=3.0 tests=DKIM_INVALID,DKIM_SIGNED,
+X-Spam-Status: No, score=-3.8 required=3.0 tests=DKIM_INVALID,DKIM_SIGNED,
 	HEADER_FROM_DIFFERENT_DOMAINS,MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS,
-	URIBL_BLOCKED autolearn=no autolearn_force=no version=3.4.0
+	USER_AGENT_GIT autolearn=no autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 21848C433DF
-	for <iommu@archiver.kernel.org>; Wed,  1 Jul 2020 20:47:48 +0000 (UTC)
-Received: from silver.osuosl.org (smtp3.osuosl.org [140.211.166.136])
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 8EE5EC433E1
+	for <iommu@archiver.kernel.org>; Wed,  1 Jul 2020 21:22:12 +0000 (UTC)
+Received: from fraxinus.osuosl.org (smtp4.osuosl.org [140.211.166.137])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by mail.kernel.org (Postfix) with ESMTPS id DB4F720853
-	for <iommu@archiver.kernel.org>; Wed,  1 Jul 2020 20:47:47 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTPS id 55CD420853
+	for <iommu@archiver.kernel.org>; Wed,  1 Jul 2020 21:22:12 +0000 (UTC)
 Authentication-Results: mail.kernel.org;
-	dkim=fail reason="signature verification failed" (1024-bit key) header.d=redhat.com header.i=@redhat.com header.b="EcVf4PX8"
-DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org DB4F720853
-Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=redhat.com
+	dkim=fail reason="signature verification failed" (1024-bit key) header.d=broadcom.com header.i=@broadcom.com header.b="rWmjvfLu"
+DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 55CD420853
+Authentication-Results: mail.kernel.org; dmarc=none (p=none dis=none) header.from=lists.linux-foundation.org
 Authentication-Results: mail.kernel.org; spf=pass smtp.mailfrom=iommu-bounces@lists.linux-foundation.org
 Received: from localhost (localhost [127.0.0.1])
-	by silver.osuosl.org (Postfix) with ESMTP id 9139D303CD;
-	Wed,  1 Jul 2020 20:47:47 +0000 (UTC)
+	by fraxinus.osuosl.org (Postfix) with ESMTP id 21A8089642;
+	Wed,  1 Jul 2020 21:22:12 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from silver.osuosl.org ([127.0.0.1])
+Received: from fraxinus.osuosl.org ([127.0.0.1])
 	by localhost (.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
-	with ESMTP id CJDGIIFCx8Og; Wed,  1 Jul 2020 20:47:46 +0000 (UTC)
+	with ESMTP id W_TOaAzQKvsb; Wed,  1 Jul 2020 21:22:11 +0000 (UTC)
 Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [140.211.9.56])
-	by silver.osuosl.org (Postfix) with ESMTP id 3E1A3266BD;
-	Wed,  1 Jul 2020 20:47:46 +0000 (UTC)
+	by fraxinus.osuosl.org (Postfix) with ESMTP id 3170D894CE;
+	Wed,  1 Jul 2020 21:22:11 +0000 (UTC)
 Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
-	by lists.linuxfoundation.org (Postfix) with ESMTP id 2A3BBC0865;
-	Wed,  1 Jul 2020 20:47:46 +0000 (UTC)
-Received: from silver.osuosl.org (smtp3.osuosl.org [140.211.166.136])
- by lists.linuxfoundation.org (Postfix) with ESMTP id 68F6AC0733
- for <iommu@lists.linux-foundation.org>; Wed,  1 Jul 2020 20:47:45 +0000 (UTC)
+	by lists.linuxfoundation.org (Postfix) with ESMTP id 21E1DC0890;
+	Wed,  1 Jul 2020 21:22:11 +0000 (UTC)
+Received: from hemlock.osuosl.org (smtp2.osuosl.org [140.211.166.133])
+ by lists.linuxfoundation.org (Postfix) with ESMTP id 0E4B4C0733
+ for <iommu@lists.linux-foundation.org>; Wed,  1 Jul 2020 21:22:10 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
- by silver.osuosl.org (Postfix) with ESMTP id 2DFC0265F1
- for <iommu@lists.linux-foundation.org>; Wed,  1 Jul 2020 20:47:45 +0000 (UTC)
+ by hemlock.osuosl.org (Postfix) with ESMTP id EE2D18A888
+ for <iommu@lists.linux-foundation.org>; Wed,  1 Jul 2020 21:22:09 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from silver.osuosl.org ([127.0.0.1])
+Received: from hemlock.osuosl.org ([127.0.0.1])
  by localhost (.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
- with ESMTP id kPoPx8EHWXDD for <iommu@lists.linux-foundation.org>;
- Wed,  1 Jul 2020 20:47:42 +0000 (UTC)
+ with ESMTP id WrlLgT4d0CmK for <iommu@lists.linux-foundation.org>;
+ Wed,  1 Jul 2020 21:22:09 +0000 (UTC)
 X-Greylist: domain auto-whitelisted by SQLgrey-1.7.6
-Received: from us-smtp-1.mimecast.com (us-smtp-delivery-1.mimecast.com
- [207.211.31.120])
- by silver.osuosl.org (Postfix) with ESMTPS id F2330265B2
- for <iommu@lists.linux-foundation.org>; Wed,  1 Jul 2020 20:47:41 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
- s=mimecast20190719; t=1593636460;
- h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
- to:to:cc:cc:mime-version:mime-version:content-type:content-type:
- in-reply-to:in-reply-to:references:references;
- bh=MbiyraTJ4trv3FWb4qCBJhr5R70RrnDBw9rQbrUZ784=;
- b=EcVf4PX8QJc0r25MhOFc1NxheBhBUF1n0HSsBUvQv5AZvGQn7BVcYnSZtAgYS5zabfLcvo
- TSYXJ2zuZB8j8vLi/1/tS9SFRm4DqJvyWJMEQFi6mKTQVgM6W1TWKrG4toyamZ/qIcEgNv
- NE0r4vhyahqydk8cPhj3MIy0oIze7dQ=
-Received: from mail-wm1-f72.google.com (mail-wm1-f72.google.com
- [209.85.128.72]) (Using TLS) by relay.mimecast.com with ESMTP id
- us-mta-457-UUDMozEVO4KAsAfewibyqw-1; Wed, 01 Jul 2020 16:47:36 -0400
-X-MC-Unique: UUDMozEVO4KAsAfewibyqw-1
-Received: by mail-wm1-f72.google.com with SMTP id t145so25259037wmt.2
- for <iommu@lists.linux-foundation.org>; Wed, 01 Jul 2020 13:47:36 -0700 (PDT)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
- d=1e100.net; s=20161025;
- h=x-gm-message-state:date:from:to:cc:subject:message-id:references
- :mime-version:content-disposition:in-reply-to;
- bh=MbiyraTJ4trv3FWb4qCBJhr5R70RrnDBw9rQbrUZ784=;
- b=szxReFg+20TYT9ZPUBZhnpz+ax4FXFLHNOSP0QGAnSsVunie1SQOi29F4N+pA8ASVL
- xVMgamBc4i8B7XULSNSiG2p+KskV+Xq/Pwm34xZYCQeYzNr/khot14oBqbItuGO3JQsP
- fQpIBqEtLrBiv6l46jiFHwhpq3PUqgL4uZrxe60rCT2B8LaiOcBigrDCEm9o3B1RAKQA
- qxgeQOkkZ+I10dTZFeKJ67hguddmcAoLNVrHM810CKLQJVwN5apLcB2xVnlV0EE+x36r
- RW5KPX8EtnT3rQYrCCfMSmZ9ZM/P1Hms58cG0Hv4/Qrnvi2mdNQ1FhHZQlHxmK4uBwZ+
- BRtA==
-X-Gm-Message-State: AOAM532ZEfbPUIqn0mVdMJpuz9c1h0Os1pIcsLQlHt1kTb9c/CGHSRrd
- /sE21ZTRSazTNM8u4DuIiyghKVjEssaLh+xwGu1YIrXm6MNrLgKuCly3CrXfI97xz5s+Ae8g0vZ
- gzLf01uWDyWRm938m4nQE/MibYID+Fw==
-X-Received: by 2002:adf:ed47:: with SMTP id u7mr30433380wro.201.1593636455541; 
- Wed, 01 Jul 2020 13:47:35 -0700 (PDT)
-X-Google-Smtp-Source: ABdhPJzi4/QeFIvFvIhW8MFrahcm+NHf1Nr8du8L4WlMn+iG6s23576AuHveqgE2W9yZnAvkgrNyJg==
-X-Received: by 2002:adf:ed47:: with SMTP id u7mr30433344wro.201.1593636455219; 
- Wed, 01 Jul 2020 13:47:35 -0700 (PDT)
-Received: from redhat.com (bzq-79-182-31-92.red.bezeqint.net. [79.182.31.92])
- by smtp.gmail.com with ESMTPSA id
- h2sm8337653wrw.62.2020.07.01.13.47.31
- (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
- Wed, 01 Jul 2020 13:47:32 -0700 (PDT)
-Date: Wed, 1 Jul 2020 16:47:29 -0400
-From: "Michael S. Tsirkin" <mst@redhat.com>
-To: Stefano Stabellini <sstabellini@kernel.org>
-Subject: Re: [PATCH] xen: introduce xen_vring_use_dma
-Message-ID: <20200701164501-mutt-send-email-mst@kernel.org>
-References: <20200624050355-mutt-send-email-mst@kernel.org>
- <alpine.DEB.2.21.2006241047010.8121@sstabellini-ThinkPad-T480s>
- <20200624163940-mutt-send-email-mst@kernel.org>
- <alpine.DEB.2.21.2006241351430.8121@sstabellini-ThinkPad-T480s>
- <20200624181026-mutt-send-email-mst@kernel.org>
- <alpine.DEB.2.21.2006251014230.8121@sstabellini-ThinkPad-T480s>
- <20200626110629-mutt-send-email-mst@kernel.org>
- <alpine.DEB.2.21.2006291621300.8121@sstabellini-ThinkPad-T480s>
- <20200701133456.GA23888@infradead.org>
- <alpine.DEB.2.21.2007011020320.8121@sstabellini-ThinkPad-T480s>
-MIME-Version: 1.0
-In-Reply-To: <alpine.DEB.2.21.2007011020320.8121@sstabellini-ThinkPad-T480s>
-Authentication-Results: relay.mimecast.com;
- auth=pass smtp.auth=CUSA124A263 smtp.mailfrom=mst@redhat.com
-X-Mimecast-Spam-Score: 0
-X-Mimecast-Originator: redhat.com
-Content-Disposition: inline
-Cc: jgross@suse.com, Peng Fan <peng.fan@nxp.com>, konrad.wilk@oracle.com,
- jasowang@redhat.com, x86@kernel.org, linux-kernel@vger.kernel.org,
- virtualization@lists.linux-foundation.org,
- Christoph Hellwig <hch@infradead.org>, iommu@lists.linux-foundation.org,
- linux-imx@nxp.com, xen-devel@lists.xenproject.org, boris.ostrovsky@oracle.com,
- linux-arm-kernel@lists.infradead.org
+Received: from rnd-relay.smtp.broadcom.com (rnd-relay.smtp.broadcom.com
+ [192.19.229.170])
+ by hemlock.osuosl.org (Postfix) with ESMTPS id EB7668A86D
+ for <iommu@lists.linux-foundation.org>; Wed,  1 Jul 2020 21:22:08 +0000 (UTC)
+Received: from mail-irv-17.broadcom.com (mail-irv-17.lvn.broadcom.net
+ [10.75.242.48])
+ by rnd-relay.smtp.broadcom.com (Postfix) with ESMTP id 8CF3430C0B2;
+ Wed,  1 Jul 2020 14:22:06 -0700 (PDT)
+DKIM-Filter: OpenDKIM Filter v2.10.3 rnd-relay.smtp.broadcom.com 8CF3430C0B2
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=broadcom.com;
+ s=dkimrelay; t=1593638526;
+ bh=nhrK2RlYox51CSLhX6kAW8Tc5Nzfqg2aOArAqXmjQoM=;
+ h=From:To:Cc:Subject:Date:From;
+ b=rWmjvfLu2xdb5dBCSs2msmprlhJNkn8S5dVXenLzoHn34v3NkIG4LvR1NxJ8E4Yt0
+ GN0HE+FLpkmBfHttGAJUwKJJ5ofv2/RLGYZPDEwjVpSlvsq/WvDaLJfkA3eE8TTfFY
+ 8fJtetnFJI2FqIGNf1NYqtVhOTROC88YoDWRlbEc=
+Received: from stbsrv-and-01.and.broadcom.net (stbsrv-and-01.and.broadcom.net
+ [10.28.16.211])
+ by mail-irv-17.broadcom.com (Postfix) with ESMTP id 57535140096;
+ Wed,  1 Jul 2020 14:22:00 -0700 (PDT)
+To: linux-pci@vger.kernel.org, Nicolas Saenz Julienne <nsaenzjulienne@suse.de>,
+ bcm-kernel-feedback-list@broadcom.com, james.quinlan@broadcom.com
+Subject: [PATCH v6 00/12] PCI: brcmstb: enable PCIe for STB chips
+Date: Wed,  1 Jul 2020 17:21:30 -0400
+Message-Id: <20200701212155.37830-1-james.quinlan@broadcom.com>
+X-Mailer: git-send-email 2.17.1
+Cc: Ulf Hansson <ulf.hansson@linaro.org>,
+ Heikki Krogerus <heikki.krogerus@linux.intel.com>,
+ "open list:SUPERH" <linux-sh@vger.kernel.org>,
+ "open list:REMOTE PROCESSOR REMOTEPROC SUBSYSTEM"
+ <linux-remoteproc@vger.kernel.org>,
+ "open list:DRM DRIVERS FOR ALLWINNER A10" <dri-devel@lists.freedesktop.org>,
+ "open list:LIBATA SUBSYSTEM Serial and Parallel ATA drivers"
+ <linux-ide@vger.kernel.org>, Julien Grall <julien.grall@arm.com>,
+ "H. Peter Anvin" <hpa@zytor.com>,
+ "open list:STAGING SUBSYSTEM" <devel@driverdev.osuosl.org>,
+ Rob Herring <robh@kernel.org>, Florian Fainelli <f.fainelli@gmail.com>,
+ Saravana Kannan <saravanak@google.com>,
+ "Rafael J. Wysocki" <rafael.j.wysocki@intel.com>,
+ "open list:ACPI FOR ARM64 ACPI/arm64" <linux-acpi@vger.kernel.org>,
+ Alan Stern <stern@rowland.harvard.edu>,
+ "open list:ALLWINNER A10 CSI DRIVER" <linux-media@vger.kernel.org>,
+ "open list:OPEN FIRMWARE AND FLATTENED DEVICE TREE"
+ <devicetree@vger.kernel.org>, Arnd Bergmann <arnd@arndb.de>,
+ Oliver Neukum <oneukum@suse.com>, Hans de Goede <hdegoede@redhat.com>,
+ Stefano Stabellini <sstabellini@kernel.org>,
+ "moderated list:BROADCOM BCM2711/BCM2835 ARM ARCHITECTURE"
+ <linux-rpi-kernel@lists.infradead.org>,
+ Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
+ "moderated list:ARM PORT" <linux-arm-kernel@lists.infradead.org>,
+ Jens Axboe <axboe@kernel.dk>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+ "open list:USB SUBSYSTEM" <linux-usb@vger.kernel.org>,
+ open list <linux-kernel@vger.kernel.org>,
+ "open list:IOMMU DRIVERS" <iommu@lists.linux-foundation.org>,
+ Robin Murphy <robin.murphy@arm.com>, Suzuki K Poulose <suzuki.poulose@arm.com>
 X-BeenThere: iommu@lists.linux-foundation.org
 X-Mailman-Version: 2.1.15
 Precedence: list
@@ -126,72 +110,191 @@ List-Post: <mailto:iommu@lists.linux-foundation.org>
 List-Help: <mailto:iommu-request@lists.linux-foundation.org?subject=help>
 List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
  <mailto:iommu-request@lists.linux-foundation.org?subject=subscribe>
+From: Jim Quinlan via iommu <iommu@lists.linux-foundation.org>
+Reply-To: Jim Quinlan <james.quinlan@broadcom.com>
+MIME-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
 Errors-To: iommu-bounces@lists.linux-foundation.org
 Sender: "iommu" <iommu-bounces@lists.linux-foundation.org>
 
-On Wed, Jul 01, 2020 at 10:34:53AM -0700, Stefano Stabellini wrote:
-> On Wed, 1 Jul 2020, Christoph Hellwig wrote:
-> > On Mon, Jun 29, 2020 at 04:46:09PM -0700, Stefano Stabellini wrote:
-> > > > I could imagine some future Xen hosts setting a flag somewhere in the
-> > > > platform capability saying "no xen specific flag, rely on
-> > > > "VIRTIO_F_ACCESS_PLATFORM". Then you set that accordingly in QEMU.
-> > > > How about that?
-> > > 
-> > > Yes, that would be fine and there is no problem implementing something
-> > > like that when we get virtio support in Xen. Today there are still no
-> > > virtio interfaces provided by Xen to ARM guests (no virtio-block/net,
-> > > etc.)
-> > > 
-> > > In fact, in both cases we are discussing virtio is *not* provided by
-> > > Xen; it is a firmware interface to something entirely different:
-> > > 
-> > > 1) virtio is used to talk to a remote AMP processor (RPMesg)
-> > > 2) virtio is used to talk to a secure-world firmware/OS (Trusty)
-> > >
-> > > VIRTIO_F_ACCESS_PLATFORM is not set by Xen in these cases but by RPMesg
-> > > and by Trusty respectively. I don't know if Trusty should or should not
-> > > set VIRTIO_F_ACCESS_PLATFORM, but I think Linux should still work
-> > > without issues.
-> > > 
-> > 
-> > Any virtio implementation that is not in control of the memory map
-> > (aka not the hypervisor) absolutely must set VIRTIO_F_ACCESS_PLATFORM,
-> > else it is completely broken.
-> 
-> Lots of broken virtio implementations out there it would seem :-(
+Patchset Summary:
+  Enhance a PCIe host controller driver.  Because of its unusual design
+  we are foced to change dev->dma_pfn_offset into a more general role
+  allowing multiple offsets.  See the 'v1' notes below for more info.
 
-Not really, most of virtio implementations are in full control of
-memory, being part of the hypervisor.
+v6:
+  Commit "device core: Introduce DMA range map":
+  -- of_dma_get_range() now takes a single argument and returns either
+     NULL, a valid map, or an ERR_PTR. (Robin)
+  -- offsets are no longer a PFN value but an actual address. (Robin)
+  -- the bus_dma_region struct stores the range size instead of
+     the cpu_end and pci_end values. (Robin)
+  -- devices that were setting a single offset with no boundaries
+     have been modified to have boundaries; in a few places
+     where this informatino was unavilable a /* FIXME: ... */
+     comment was added. (Robin)
+  -- dma_attach_offset_range() can be called when an offset
+     map already exists; if it's range is already present
+     nothing is done and success is returned. (Robin)
+  All commits:
+  -- Man name/style/corrections/etc changed (Bjorn)
+  -- rebase to Torvalds master
 
-> 
-> > > The xen_domain() check in Linux makes it so that vring_use_dma_api
-> > > returns the opposite value on native Linux compared to Linux as Xen/ARM
-> > > DomU by "accident". By "accident" because there is no architectural
-> > > reason why Linux Xen/ARM DomU should behave differently compared to
-> > > native Linux in this regard.
-> > > 
-> > > I hope that now it is clearer why I think the if (xen_domain()) check
-> > > needs to be improved anyway, even if we fix generic dma_ops with virtio
-> > > interfaces missing VIRTIO_F_ACCESS_PLATFORM.
-> > 
-> > IMHO that Xen quirk should never have been added in this form..
-> 
-> Would you be in favor of a more flexible check along the lines of the
-> one proposed in the patch that started this thread:
-> 
->     if (xen_vring_use_dma())
->             return true;
-> 
-> 
-> xen_vring_use_dma would be implemented so that it returns true when
-> xen_swiotlb is required and false otherwise.
+v5:
+  Commit "device core: Introduce multiple dma pfn offsets"
+  -- in of/address.c: "map_size = 0" => "*map_size = 0"
+  -- use kcalloc instead of kzalloc (AndyS)
+  -- use PHYS_ADDR_MAX instead of "~(phys_addr_t)0"
+  Commit "PCI: brcmstb: Set internal memory viewport sizes"
+  -- now gives error on missing dma-ranges property.
+  Commit "dt-bindings: PCI: Add bindings for more Brcmstb chips"
+  -- removed "Allof:" from brcm,scb-sizes definition (RobH)
+  All Commits:
+  -- indentation style, use max chars 100 (AndyS)
+  -- rebased to torvalds master
 
-I'll need to think about it. Sounds reasonable on the surface ...
+v4:
+  Commit "device core: Introduce multiple dma pfn offsets"
+  -- of_dma_get_range() does not take a dev param but instead
+     takes two "out" params: map and map_size.  We do this so
+     that the code that parses dma-ranges is separate from
+     the code that modifies 'dev'.   (Nicolas)
+  -- the separate case of having a single pfn offset has
+     been removed and is now processed by going through the
+     map array. (Nicolas)
+  -- move attach_uniform_dma_pfn_offset() from of/address.c to
+     dma/mapping.c so that it does not depend on CONFIG_OF. (Nicolas)
+  -- devm_kcalloc => devm_kzalloc (DanC)
+  -- add/fix assignment to dev->dma_pfn_offset_map for func
+     attach_uniform_dma_pfn_offset() (DanC, Nicolas)
+  -- s/struct dma_pfn_offset_region/struct bus_dma_region/ (Nicolas)
+  -- s/attach_uniform_dma_pfn_offset/dma_attach_uniform_pfn_offset/
+  -- s/attach_dma_pfn_offset_map/dma_attach_pfn_offset_map/
+  -- More use of PFN_{PHYS,DOWN,UP}. (AndyS)
+  Commit "of: Include a dev param in of_dma_get_range()"
+  -- this commit was sqaushed with "device core: Introduce ..."
+
+v3:
+  Commit "device core: Introduce multiple dma pfn offsets"
+  Commit "arm: dma-mapping: Invoke dma offset func if needed"
+  -- The above two commits have been squashed.  More importantly,
+     the code has been modified so that the functionality for
+     multiple pfn offsets subsumes the use of dev->dma_pfn_offset.
+     In fact, dma_pfn_offset is removed and supplanted by
+     dma_pfn_offset_map, which is a pointer to an array.  The
+     more common case of a uniform offset is now handled as
+     a map with a single entry, while cases requiring multiple
+     pfn offsets use a map with multiple entries.  Code paths
+     that used to do this:
+
+         dev->dma_pfn_offset = mydrivers_pfn_offset;
+
+     have been changed to do this:
+
+         attach_uniform_dma_pfn_offset(dev, pfn_offset);
+
+  Commit "dt-bindings: PCI: Add bindings for more Brcmstb chips"
+  -- Add if/then clause for required props: resets, reset-names (RobH)
+  -- Change compatible list from const to enum (RobH)
+  -- Change list of u32-tuples to u64 (RobH)
+
+  Commit "of: Include a dev param in of_dma_get_range()"
+  -- modify of/unittests.c to add NULL param in of_dma_get_range() call.
+
+  Commit "device core: Add ability to handle multiple dma offsets"
+  -- align comment in device.h (AndyS).
+  -- s/cpu_beg/cpu_start/ and s/dma_beg/dma_start/ in struct
+     dma_pfn_offset_region (AndyS).
+
+v2:
+Commit: "device core: Add ability to handle multiple dma offsets"
+  o Added helper func attach_dma_pfn_offset_map() in address.c (Chistoph)
+  o Helpers funcs added to __phys_to_dma() & __dma_to_phys() (Christoph)
+  o Added warning when multiple offsets are needed and !DMA_PFN_OFFSET_MAP
+  o dev->dma_pfn_map => dev->dma_pfn_offset_map
+  o s/frm/from/ for dma_pfn_offset_frm_{phys,dma}_addr() (Christoph)
+  o In device.h: s/const void */const struct dma_pfn_offset_region */
+  o removed 'unlikely' from unlikely(dev->dma_pfn_offset_map) since
+    guarded by CONFIG_DMA_PFN_OFFSET_MAP (Christoph)
+  o Since dev->dma_pfn_offset is copied in usb/core/{usb,message}.c, now
+    dev->dma_pfn_offset_map is copied as well.
+  o Merged two of the DMA commits into one (Christoph).
+
+Commit "arm: dma-mapping: Invoke dma offset func if needed":
+  o Use helper functions instead of #if CONFIG_DMA_PFN_OFFSET
+
+Other commits' changes:
+  o Removed need for carrying of_id var in priv (Nicolas)
+  o Commit message rewordings (Bjorn)
+  o Commit log messages filled to 75 chars (Bjorn)
+  o devm_reset_control_get_shared())
+    => devm_reset_control_get_optional_shared (Philipp)
+  o Add call to reset_control_assert() in PCIe remove routines (Philipp)
+
+v1:
+This patchset expands the usefulness of the Broadcom Settop Box PCIe
+controller by building upon the PCIe driver used currently by the
+Raspbery Pi.  Other forms of this patchset were submitted by me years
+ago and not accepted; the major sticking point was the code required
+for the DMA remapping needed for the PCIe driver to work [1].
+
+There have been many changes to the DMA and OF subsystems since that
+time, making a cleaner and less intrusive patchset possible.  This
+patchset implements a generalization of "dev->dma_pfn_offset", except
+that instead of a single scalar offset it provides for multiple
+offsets via a function which depends upon the "dma-ranges" property of
+the PCIe host controller.  This is required for proper functionality
+of the BrcmSTB PCIe controller and possibly some other devices.
+
+[1] https://lore.kernel.org/linux-arm-kernel/1516058925-46522-5-git-send-email-jim2101024@gmail.com/
+
+
+Jim Quinlan (12):
+  PCI: brcmstb: PCIE_BRCMSTB depends on ARCH_BRCMSTB
+  ata: ahci_brcm: Fix use of BCM7216 reset controller
+  dt-bindings: PCI: Add bindings for more Brcmstb chips
+  PCI: brcmstb: Add bcm7278 register info
+  PCI: brcmstb: Add suspend and resume pm_ops
+  PCI: brcmstb: Add bcm7278 PERST# support
+  PCI: brcmstb: Add control of rescal reset
+  device core: Introduce DMA range map, supplanting dma_pfn_offset
+  PCI: brcmstb: Set additional internal memory DMA viewport sizes
+  PCI: brcmstb: Accommodate MSI for older chips
+  PCI: brcmstb: Set bus max burst size by chip type
+  PCI: brcmstb: Add bcm7211, bcm7216, bcm7445, bcm7278 to match list
+
+ .../bindings/pci/brcm,stb-pcie.yaml           |  56 ++-
+ arch/arm/include/asm/dma-mapping.h            |   9 +-
+ arch/arm/mach-keystone/keystone.c             |  17 +-
+ arch/sh/drivers/pci/pcie-sh7786.c             |   9 +-
+ arch/sh/kernel/dma-coherent.c                 |  14 +-
+ arch/x86/pci/sta2x11-fixup.c                  |   7 +-
+ drivers/acpi/arm64/iort.c                     |   5 +-
+ drivers/ata/ahci_brcm.c                       |  11 +-
+ drivers/gpu/drm/sun4i/sun4i_backend.c         |   7 +-
+ drivers/iommu/io-pgtable-arm.c                |   2 +-
+ .../platform/sunxi/sun4i-csi/sun4i_csi.c      |   6 +-
+ .../platform/sunxi/sun6i-csi/sun6i_csi.c      |   5 +-
+ drivers/of/address.c                          |  95 ++--
+ drivers/of/device.c                           |  50 ++-
+ drivers/of/of_private.h                       |   9 +-
+ drivers/of/unittest.c                         |  35 +-
+ drivers/pci/controller/Kconfig                |   3 +-
+ drivers/pci/controller/pcie-brcmstb.c         | 408 +++++++++++++++---
+ drivers/remoteproc/remoteproc_core.c          |   2 +-
+ .../staging/media/sunxi/cedrus/cedrus_hw.c    |   8 +-
+ drivers/usb/core/message.c                    |   4 +-
+ drivers/usb/core/usb.c                        |   2 +-
+ include/linux/device.h                        |   4 +-
+ include/linux/dma-direct.h                    |  10 +-
+ include/linux/dma-mapping.h                   |  37 ++
+ kernel/dma/coherent.c                         |  11 +-
+ kernel/dma/mapping.c                          |  53 +++
+ 27 files changed, 684 insertions(+), 195 deletions(-)
 
 -- 
-MST
+2.17.1
 
 _______________________________________________
 iommu mailing list
