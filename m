@@ -2,81 +2,91 @@ Return-Path: <SRS0=cxdO=AM=lists.linux-foundation.org=iommu-bounces@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-8.5 required=3.0 tests=HEADER_FROM_DIFFERENT_DOMAINS,
-	INCLUDES_PATCH,MAILING_LIST_MULTI,SIGNED_OFF_BY,SPF_HELO_NONE,SPF_PASS,
-	URIBL_BLOCKED,USER_AGENT_SANE_1 autolearn=unavailable autolearn_force=no
-	version=3.4.0
+X-Spam-Status: No, score=-1.0 required=3.0 tests=HEADER_FROM_DIFFERENT_DOMAINS,
+	MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED autolearn=no
+	autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 49F6EC433E1
-	for <iommu@archiver.kernel.org>; Wed,  1 Jul 2020 02:48:40 +0000 (UTC)
-Received: from whitealder.osuosl.org (smtp1.osuosl.org [140.211.166.138])
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 751EAC433DF
+	for <iommu@archiver.kernel.org>; Wed,  1 Jul 2020 03:04:34 +0000 (UTC)
+Received: from silver.osuosl.org (smtp3.osuosl.org [140.211.166.136])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by mail.kernel.org (Postfix) with ESMTPS id 243A7206EB
-	for <iommu@archiver.kernel.org>; Wed,  1 Jul 2020 02:48:39 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 243A7206EB
-Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=linux.intel.com
+	by mail.kernel.org (Postfix) with ESMTPS id 30CF9206B6
+	for <iommu@archiver.kernel.org>; Wed,  1 Jul 2020 03:04:34 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 30CF9206B6
+Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=intel.com
 Authentication-Results: mail.kernel.org; spf=pass smtp.mailfrom=iommu-bounces@lists.linux-foundation.org
 Received: from localhost (localhost [127.0.0.1])
-	by whitealder.osuosl.org (Postfix) with ESMTP id CFAC288B74;
-	Wed,  1 Jul 2020 02:48:39 +0000 (UTC)
-X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from whitealder.osuosl.org ([127.0.0.1])
-	by localhost (.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
-	with ESMTP id y2PNfylrBoV5; Wed,  1 Jul 2020 02:48:38 +0000 (UTC)
-Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [140.211.9.56])
-	by whitealder.osuosl.org (Postfix) with ESMTP id A8CE488B2A;
-	Wed,  1 Jul 2020 02:48:38 +0000 (UTC)
-Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
-	by lists.linuxfoundation.org (Postfix) with ESMTP id 8876EC088F;
-	Wed,  1 Jul 2020 02:48:38 +0000 (UTC)
-Received: from silver.osuosl.org (smtp3.osuosl.org [140.211.166.136])
- by lists.linuxfoundation.org (Postfix) with ESMTP id 3A903C016E
- for <iommu@lists.linux-foundation.org>; Wed,  1 Jul 2020 02:48:37 +0000 (UTC)
-Received: from localhost (localhost [127.0.0.1])
- by silver.osuosl.org (Postfix) with ESMTP id 27F0C25F6B
- for <iommu@lists.linux-foundation.org>; Wed,  1 Jul 2020 02:48:37 +0000 (UTC)
+	by silver.osuosl.org (Postfix) with ESMTP id A320B25CBB;
+	Wed,  1 Jul 2020 03:04:33 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
 Received: from silver.osuosl.org ([127.0.0.1])
+	by localhost (.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
+	with ESMTP id bchUkAnpNUnL; Wed,  1 Jul 2020 03:04:30 +0000 (UTC)
+Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [140.211.9.56])
+	by silver.osuosl.org (Postfix) with ESMTP id 601CD2544B;
+	Wed,  1 Jul 2020 03:04:30 +0000 (UTC)
+Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
+	by lists.linuxfoundation.org (Postfix) with ESMTP id 42E56C088F;
+	Wed,  1 Jul 2020 03:04:30 +0000 (UTC)
+Received: from hemlock.osuosl.org (smtp2.osuosl.org [140.211.166.133])
+ by lists.linuxfoundation.org (Postfix) with ESMTP id 5D8A8C016E
+ for <iommu@lists.linux-foundation.org>; Wed,  1 Jul 2020 03:04:29 +0000 (UTC)
+Received: from localhost (localhost [127.0.0.1])
+ by hemlock.osuosl.org (Postfix) with ESMTP id 4C097889D4
+ for <iommu@lists.linux-foundation.org>; Wed,  1 Jul 2020 03:04:29 +0000 (UTC)
+X-Virus-Scanned: amavisd-new at osuosl.org
+Received: from hemlock.osuosl.org ([127.0.0.1])
  by localhost (.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
- with ESMTP id WPMt4pznyszR for <iommu@lists.linux-foundation.org>;
- Wed,  1 Jul 2020 02:48:35 +0000 (UTC)
+ with ESMTP id PwVM+O3fg2Jm for <iommu@lists.linux-foundation.org>;
+ Wed,  1 Jul 2020 03:04:28 +0000 (UTC)
 X-Greylist: domain auto-whitelisted by SQLgrey-1.7.6
-Received: from mga18.intel.com (mga18.intel.com [134.134.136.126])
- by silver.osuosl.org (Postfix) with ESMTPS id A918B207EF
- for <iommu@lists.linux-foundation.org>; Wed,  1 Jul 2020 02:48:35 +0000 (UTC)
-IronPort-SDR: tD5sNdrSjT4IzDrQA2M5urSprHtYZNl/ZnofDnknc85KzMLvyjz8GsXF4P2m2bldfyrruj9iw3
- /azlSnnhZTdg==
-X-IronPort-AV: E=McAfee;i="6000,8403,9668"; a="133907347"
-X-IronPort-AV: E=Sophos;i="5.75,298,1589266800"; d="scan'208";a="133907347"
+Received: from mga06.intel.com (mga06.intel.com [134.134.136.31])
+ by hemlock.osuosl.org (Postfix) with ESMTPS id 1933388AD8
+ for <iommu@lists.linux-foundation.org>; Wed,  1 Jul 2020 03:04:28 +0000 (UTC)
+IronPort-SDR: XuP74u1/l5BfZDK3ihEvl9yjlvLptH9SsO2G5ckbdAEAbTdk/VnzQaMsKWQurmx24qN91jxq96
+ sQoAal8iYhQg==
+X-IronPort-AV: E=McAfee;i="6000,8403,9668"; a="207964808"
+X-IronPort-AV: E=Sophos;i="5.75,298,1589266800"; d="scan'208";a="207964808"
 X-Amp-Result: SKIPPED(no attachment in message)
 X-Amp-File-Uploaded: False
-Received: from orsmga002.jf.intel.com ([10.7.209.21])
- by orsmga106.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384;
- 30 Jun 2020 19:48:34 -0700
-IronPort-SDR: ZqRl8Eli7g9xOCZspJgGaUXH7TtPL43fJdA9ke8V+r/KER1ppSGrCmvPTitUSk0Pgaq/tge/YT
- fyY1GgGBnmJg==
+Received: from fmsmga008.fm.intel.com ([10.253.24.58])
+ by orsmga104.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384;
+ 30 Jun 2020 20:04:26 -0700
+IronPort-SDR: QtsvfEy9ysQT+p/717wpwDWZ6bRKI8eyVmQihmji50NiMzU/dqJ03vyyGGNsBYmplH3yYDHTPQ
+ viTu9oEDU0lQ==
 X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.75,298,1589266800"; d="scan'208";a="295409057"
-Received: from allen-box.sh.intel.com (HELO [10.239.159.139])
- ([10.239.159.139])
- by orsmga002.jf.intel.com with ESMTP; 30 Jun 2020 19:48:31 -0700
-Subject: Re: [PATCH 4/4] iommu/vt-d: Add page response ops support
-To: "Tian, Kevin" <kevin.tian@intel.com>,
- "iommu@lists.linux-foundation.org" <iommu@lists.linux-foundation.org>
-References: <20200628003332.5720-1-baolu.lu@linux.intel.com>
- <20200628003332.5720-5-baolu.lu@linux.intel.com>
- <MWHPR11MB1645B92B81D6A1F7EDAC24848C6F0@MWHPR11MB1645.namprd11.prod.outlook.com>
-From: Lu Baolu <baolu.lu@linux.intel.com>
-Message-ID: <57d6ced7-943e-a93b-8f6d-11516e9f07b2@linux.intel.com>
-Date: Wed, 1 Jul 2020 10:44:08 +0800
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101
- Thunderbird/68.8.0
-MIME-Version: 1.0
-In-Reply-To: <MWHPR11MB1645B92B81D6A1F7EDAC24848C6F0@MWHPR11MB1645.namprd11.prod.outlook.com>
+X-IronPort-AV: E=Sophos;i="5.75,298,1589266800"; d="scan'208";a="266639598"
+Received: from orsmsx110.amr.corp.intel.com ([10.22.240.8])
+ by fmsmga008.fm.intel.com with ESMTP; 30 Jun 2020 20:04:25 -0700
+Received: from orsmsx114.amr.corp.intel.com ([169.254.8.167]) by
+ ORSMSX110.amr.corp.intel.com ([169.254.10.232]) with mapi id 14.03.0439.000;
+ Tue, 30 Jun 2020 20:04:25 -0700
+From: "Prakhya, Sai Praneeth" <sai.praneeth.prakhya@intel.com>
+To: Joerg Roedel <joro@8bytes.org>
+Subject: RE: [PATCH V4 1/3] iommu: Add support to change default domain of
+ an iommu group
+Thread-Topic: [PATCH V4 1/3] iommu: Add support to change default domain of
+ an iommu group
+Thread-Index: AQHWOtmTukvBBP3jY0KXbmuvXXR7xajxfcqAgACfu2A=
+Date: Wed, 1 Jul 2020 03:04:24 +0000
+Message-ID: <FFF73D592F13FD46B8700F0A279B802F573D8042@ORSMSX114.amr.corp.intel.com>
+References: <cover.1591290586.git.sai.praneeth.prakhya@intel.com>
+ <3d7f5cf067437593e681751108860ea692bb10b1.1591290586.git.sai.praneeth.prakhya@intel.com>
+ <20200630091601.GB28824@8bytes.org>
+In-Reply-To: <20200630091601.GB28824@8bytes.org>
+Accept-Language: en-US
 Content-Language: en-US
-Cc: "Raj, Ashok" <ashok.raj@intel.com>,
- "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>
+X-MS-Has-Attach: 
+X-MS-TNEF-Correlator: 
+dlp-product: dlpe-windows
+dlp-version: 11.2.0.6
+dlp-reaction: no-action
+x-originating-ip: [10.22.254.139]
+MIME-Version: 1.0
+Cc: "Raj, Ashok" <ashok.raj@intel.com>, Will Deacon <will.deacon@arm.com>,
+ "iommu@lists.linux-foundation.org" <iommu@lists.linux-foundation.org>,
+ Robin Murphy <robin.murphy@arm.com>, Christoph Hellwig <hch@lst.de>
 X-BeenThere: iommu@lists.linux-foundation.org
 X-Mailman-Version: 2.1.15
 Precedence: list
@@ -89,185 +99,189 @@ List-Post: <mailto:iommu@lists.linux-foundation.org>
 List-Help: <mailto:iommu-request@lists.linux-foundation.org?subject=help>
 List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
  <mailto:iommu-request@lists.linux-foundation.org?subject=subscribe>
+Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
-Content-Type: text/plain; charset="us-ascii"; Format="flowed"
 Errors-To: iommu-bounces@lists.linux-foundation.org
 Sender: "iommu" <iommu-bounces@lists.linux-foundation.org>
 
-Hi Kevin,
+Hi Joerg,
 
-On 6/30/20 2:19 PM, Tian, Kevin wrote:
->> From: Lu Baolu <baolu.lu@linux.intel.com>
->> Sent: Sunday, June 28, 2020 8:34 AM
->>
->> After a page request is handled, software must response the device which
->> raised the page request with the handling result. This is done through
->> the iommu ops.page_response if the request was reported to outside of
->> vendor iommu driver through iommu_report_device_fault(). This adds the
->> VT-d implementation of page_response ops.
->>
->> Co-developed-by: Jacob Pan <jacob.jun.pan@linux.intel.com>
->> Signed-off-by: Jacob Pan <jacob.jun.pan@linux.intel.com>
->> Co-developed-by: Liu Yi L <yi.l.liu@intel.com>
->> Signed-off-by: Liu Yi L <yi.l.liu@intel.com>
->> Signed-off-by: Lu Baolu <baolu.lu@linux.intel.com>
->> ---
->>   drivers/iommu/intel/iommu.c |  1 +
->>   drivers/iommu/intel/svm.c   | 73
->> +++++++++++++++++++++++++++++++++++++
->>   include/linux/intel-iommu.h |  3 ++
->>   3 files changed, 77 insertions(+)
->>
->> diff --git a/drivers/iommu/intel/iommu.c b/drivers/iommu/intel/iommu.c
->> index de17952ed133..7eb29167e8f9 100644
->> --- a/drivers/iommu/intel/iommu.c
->> +++ b/drivers/iommu/intel/iommu.c
->> @@ -6057,6 +6057,7 @@ const struct iommu_ops intel_iommu_ops = {
->>   	.sva_bind		= intel_svm_bind,
->>   	.sva_unbind		= intel_svm_unbind,
->>   	.sva_get_pasid		= intel_svm_get_pasid,
->> +	.page_response		= intel_svm_page_response,
->>   #endif
->>   };
->>
->> diff --git a/drivers/iommu/intel/svm.c b/drivers/iommu/intel/svm.c
->> index 4800bb6f8794..003ea9579632 100644
->> --- a/drivers/iommu/intel/svm.c
->> +++ b/drivers/iommu/intel/svm.c
->> @@ -1092,3 +1092,76 @@ int intel_svm_get_pasid(struct iommu_sva *sva)
->>
->>   	return pasid;
->>   }
->> +
->> +int intel_svm_page_response(struct device *dev,
->> +			    struct iommu_fault_event *evt,
->> +			    struct iommu_page_response *msg)
->> +{
->> +	struct iommu_fault_page_request *prm;
->> +	struct intel_svm_dev *sdev;
->> +	struct intel_iommu *iommu;
->> +	struct intel_svm *svm;
->> +	bool private_present;
->> +	bool pasid_present;
->> +	bool last_page;
->> +	u8 bus, devfn;
->> +	int ret = 0;
->> +	u16 sid;
->> +
->> +	if (!dev || !dev_is_pci(dev))
->> +		return -ENODEV;
->> +
->> +	iommu = device_to_iommu(dev, &bus, &devfn);
->> +	if (!iommu)
->> +		return -ENODEV;
+> -----Original Message-----
+> From: Joerg Roedel <joro@8bytes.org>
+> Sent: Tuesday, June 30, 2020 2:16 AM
+> To: Prakhya, Sai Praneeth <sai.praneeth.prakhya@intel.com>
+> Cc: iommu@lists.linux-foundation.org; Christoph Hellwig <hch@lst.de>; Raj,
+> Ashok <ashok.raj@intel.com>; Will Deacon <will.deacon@arm.com>; Lu Baolu
+> <baolu.lu@linux.intel.com>; Mehta, Sohil <sohil.mehta@intel.com>; Robin
+> Murphy <robin.murphy@arm.com>; Jacob Pan <jacob.jun.pan@linux.intel.com>
+> Subject: Re: [PATCH V4 1/3] iommu: Add support to change default domain of
+> an iommu group
 > 
-> move to the place when iommu is referenced. This place is too early.
-
-I took this as a sanity check. If the device has no iommu backed, we
-should consider it as an invalid input.
-
+> On Thu, Jun 04, 2020 at 06:32:06PM -0700, Sai Praneeth Prakhya wrote:
+> > +static int iommu_change_dev_def_domain(struct iommu_group *group, int
+> > +type) {
+> > +	struct iommu_domain *prev_dom;
+> > +	struct group_device *grp_dev;
+> > +	const struct iommu_ops *ops;
+> > +	int ret, dev_def_dom;
+> > +	struct device *dev;
+> > +
+> > +	if (!group)
+> > +		return -EINVAL;
+> > +
+> > +	mutex_lock(&group->mutex);
+> > +
+> > +	if (group->default_domain != group->domain) {
+> > +		pr_err_ratelimited("Group assigned to user level for direct
+> > +access\n");
 > 
->> +
->> +	if (!msg || !evt)
->> +		return -EINVAL;
->> +
->> +	mutex_lock(&pasid_mutex);
->> +
->> +	prm = &evt->fault.prm;
->> +	sid = PCI_DEVID(bus, devfn);
->> +	pasid_present = prm->flags &
->> IOMMU_FAULT_PAGE_REQUEST_PASID_VALID;
->> +	private_present = prm->flags &
->> IOMMU_FAULT_PAGE_REQUEST_PRIV_DATA;
->> +	last_page = prm->flags &
->> IOMMU_FAULT_PAGE_REQUEST_LAST_PAGE;
->> +
->> +	if (pasid_present) {
->> +		/* VT-d supports devices with full 20 bit PASIDs only */
->> +		if (pci_max_pasids(to_pci_dev(dev)) != PASID_MAX) {
->> +			ret = -EINVAL;
->> +			goto out;
->> +		}
-> 
-> shouldn't we check prm->pasid here? Above is more reasonable to be
-> checked when page request is reported.
+> Make this message: "Group not assigned to default domain\n".
 
-Yes. I will check the pasid in both places.
+Sure! I will change it
 
+> > +		ret = -EBUSY;
+> > +		goto out;
+> > +	}
+> > +
+> > +	/*
+> > +	 * iommu group wasn't locked while acquiring device lock in
+> > +	 * iommu_group_store_type(). So, make sure that the device count
+> hasn't
+> > +	 * changed while acquiring device lock.
+> > +	 *
+> > +	 * Changing default domain of an iommu group with two or more
+> devices
+> > +	 * isn't supported because there could be a potential deadlock. Consider
+> > +	 * the following scenario. T1 is trying to acquire device locks of all
+> > +	 * the devices in the group and before it could acquire all of them,
+> > +	 * there could be another thread T2 (from different sub-system and use
+> > +	 * case) that has already acquired some of the device locks and might be
+> > +	 * waiting for T1 to release other device locks.
+> > +	 */
+> > +	if (iommu_group_device_count(group) != 1) {
+> > +		pr_err_ratelimited("Cannot change default domain of a group
+> with
+> > +two or more devices\n");
 > 
->> +
->> +		ret = pasid_to_svm_sdev(dev, prm->pasid, &svm, &sdev);
->> +		if (ret || !sdev)
-> 
-> if sdev==NULL, suppose an error (-ENODEV) should be returned here?
+> "Can not change default domain: Group has more than one device\n"
 
-Yes. Good catch. I should return an error if sdev==NULL.
+Ok.. make sense. I will change this.
 
+> > +		ret = -EINVAL;
+> > +		goto out;
+> > +	}
+> > +
+> > +	/* Since group has only one device */
+> > +	list_for_each_entry(grp_dev, &group->devices, list)
+> > +		dev = grp_dev->dev;
+> > +
+> > +	prev_dom = group->default_domain;
+> > +	if (!prev_dom || !prev_dom->ops || !prev_dom->ops-
+> >def_domain_type) {
+> > +		pr_err_ratelimited("'def_domain_type' call back isn't
+> > +registered\n");
 > 
->> +			goto out;
->> +	}
->> +
->> +	/*
->> +	 * Per VT-d spec. v3.0 ch7.7, system software must respond
->> +	 * with page group response if private data is present (PDP)
->> +	 * or last page in group (LPIG) bit is set. This is an
->> +	 * additional VT-d feature beyond PCI ATS spec.
-> 
-> feature->requirement
+> This message isn't needed.
 
-Agreed.
+Ok. I will remove it.
 
+> > +	ret = __iommu_attach_device(group->default_domain, dev);
+> > +	if (ret)
+> > +		goto free_new_domain;
+> > +
+> > +	group->domain = group->default_domain;
+> > +
+> > +	ret = iommu_create_device_direct_mappings(group, dev);
+> > +	if (ret)
+> > +		goto free_new_domain;
 > 
-> Thanks
-> Kevin
+> You need to create the direct mappings before you attach the device to the new
+> domain. Otherwise there might be a short time-window where RMRR regions
+> are not mapped.
 
-Best regards,
-baolu
+Ok.. makes sense. I will change this accordingly.
 
+> > +static ssize_t iommu_group_store_type(struct iommu_group *group,
+> > +				      const char *buf, size_t count) {
+> > +	struct group_device *grp_dev;
+> > +	struct device *dev;
+> > +	int ret, req_type;
+> > +
+> > +	if (!capable(CAP_SYS_ADMIN) || !capable(CAP_SYS_RAWIO))
+> > +		return -EACCES;
+> > +
+> > +	if (WARN_ON(!group))
+> > +		return -EINVAL;
+> > +
+> > +	if (sysfs_streq(buf, "identity"))
+> > +		req_type = IOMMU_DOMAIN_IDENTITY;
+> > +	else if (sysfs_streq(buf, "DMA"))
+> > +		req_type = IOMMU_DOMAIN_DMA;
+> > +	else if (sysfs_streq(buf, "auto"))
+> > +		req_type = 0;
+> > +	else
+> > +		return -EINVAL;
+> > +
+> > +	/*
+> > +	 * Lock/Unlock the group mutex here before device lock to
+> > +	 * 1. Make sure that the iommu group has only one device (this is a
+> > +	 *    prerequisite for step 2)
+> > +	 * 2. Get struct *dev which is needed to lock device
+> > +	 */
+> > +	mutex_lock(&group->mutex);
+> > +	if (iommu_group_device_count(group) != 1) {
+> > +		mutex_unlock(&group->mutex);
+> > +		pr_err_ratelimited("Cannot change default domain of a group
+> with two or more devices\n");
+> > +		return -EINVAL;
+> > +	}
+> > +
+> > +	/* Since group has only one device */
+> > +	list_for_each_entry(grp_dev, &group->devices, list)
+> > +		dev = grp_dev->dev;
 > 
->> +	 */
->> +	if (last_page || private_present) {
->> +		struct qi_desc desc;
->> +
->> +		desc.qw0 = QI_PGRP_PASID(prm->pasid) | QI_PGRP_DID(sid)
->> |
->> +				QI_PGRP_PASID_P(pasid_present) |
->> +				QI_PGRP_PDP(private_present) |
->> +				QI_PGRP_RESP_CODE(msg->code) |
->> +				QI_PGRP_RESP_TYPE;
->> +		desc.qw1 = QI_PGRP_IDX(prm->grpid) |
->> QI_PGRP_LPIG(last_page);
->> +		desc.qw2 = 0;
->> +		desc.qw3 = 0;
->> +		if (private_present)
->> +			memcpy(&desc.qw2, prm->private_data,
->> +			       sizeof(prm->private_data));
->> +
->> +		qi_submit_sync(iommu, &desc, 1, 0);
->> +	}
->> +out:
->> +	mutex_unlock(&pasid_mutex);
->> +	return ret;
->> +}
->> diff --git a/include/linux/intel-iommu.h b/include/linux/intel-iommu.h
->> index fc2cfc3db6e1..bf6009a344f5 100644
->> --- a/include/linux/intel-iommu.h
->> +++ b/include/linux/intel-iommu.h
->> @@ -741,6 +741,9 @@ struct iommu_sva *intel_svm_bind(struct device
->> *dev, struct mm_struct *mm,
->>   				 void *drvdata);
->>   void intel_svm_unbind(struct iommu_sva *handle);
->>   int intel_svm_get_pasid(struct iommu_sva *handle);
->> +int intel_svm_page_response(struct device *dev, struct iommu_fault_event
->> *evt,
->> +			    struct iommu_page_response *msg);
->> +
->>   struct svm_dev_ops;
->>
->>   struct intel_svm_dev {
->> --
->> 2.17.1
-> 
+> Please use list_first_entry().
+
+Ok.
+
+> You also need to take a reference with get_device() and then drop the
+> group->mutex.
+
+Sure! I will change it.
+
+> After device_lock() you need to verify that the device is still in the same group
+> and that the group has still only one device in it.
+
+Presently, iommu_change_dev_def_domain() checks if the iommu group still has
+only one device or not. Hence, checking if iommu group has one device or not is done
+twice, once before taking device_lock() and the other, after taking device_lock().
+
+I agree that the code isn't checking if the iommu group still has the _same_ device or not.
+One way, I could think of doing it is by storing "dev" temporarily and checking for it.
+Do you think that's ok? Or would you rather suggest something else?
+
+> Then you can call down to
+> iommu_change_dev_def_domain() which does not need to take the group-
+> mutex by itself.
+
+The reason for taking iommu_group->mutex in the beginning of
+iommu_change_dev_def_domain() is that the function
+
+1. Checks if the group is being directly used by user level drivers
+(i.e. if (group->default_domain != group->domain))
+
+2. Uses iommu_ops
+(prev_dom = group->default_domain;
+if (!prev_dom || !prev_dom->ops || !prev_dom->ops->def_domain_type))
+
+3. Sets iomu_group->domain to iommu_group->default_domain
+
+I wanted to make sure that iommu_group->domain and
+iommu_group->default_domain aren't changed by some other thread
+while this thread is working on it. So, please let me know if I misunderstood something.
+
+Regards,
+Sai
 _______________________________________________
 iommu mailing list
 iommu@lists.linux-foundation.org
