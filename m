@@ -2,83 +2,105 @@ Return-Path: <SRS0=cxdO=AM=lists.linux-foundation.org=iommu-bounces@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-2.5 required=3.0 tests=HEADER_FROM_DIFFERENT_DOMAINS,
-	MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED,USER_AGENT_SANE_1
-	autolearn=no autolearn_force=no version=3.4.0
+X-Spam-Status: No, score=-0.8 required=3.0 tests=DKIM_INVALID,DKIM_SIGNED,
+	HEADER_FROM_DIFFERENT_DOMAINS,MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS,
+	URIBL_BLOCKED autolearn=no autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id AE4A9C433E0
-	for <iommu@archiver.kernel.org>; Wed,  1 Jul 2020 07:32:37 +0000 (UTC)
-Received: from hemlock.osuosl.org (smtp2.osuosl.org [140.211.166.133])
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 4C2BDC433E0
+	for <iommu@archiver.kernel.org>; Wed,  1 Jul 2020 08:13:14 +0000 (UTC)
+Received: from whitealder.osuosl.org (smtp1.osuosl.org [140.211.166.138])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by mail.kernel.org (Postfix) with ESMTPS id 6D16C206A1
-	for <iommu@archiver.kernel.org>; Wed,  1 Jul 2020 07:32:37 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 6D16C206A1
-Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=linux.intel.com
+	by mail.kernel.org (Postfix) with ESMTPS id 0A11F206A1
+	for <iommu@archiver.kernel.org>; Wed,  1 Jul 2020 08:13:13 +0000 (UTC)
+Authentication-Results: mail.kernel.org;
+	dkim=fail reason="signature verification failed" (2048-bit key) header.d=linaro.org header.i=@linaro.org header.b="pLKbZZQz"
+DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 0A11F206A1
+Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=linaro.org
 Authentication-Results: mail.kernel.org; spf=pass smtp.mailfrom=iommu-bounces@lists.linux-foundation.org
 Received: from localhost (localhost [127.0.0.1])
-	by hemlock.osuosl.org (Postfix) with ESMTP id 2BBF88ABCF;
-	Wed,  1 Jul 2020 07:32:37 +0000 (UTC)
+	by whitealder.osuosl.org (Postfix) with ESMTP id B49E58C3B6;
+	Wed,  1 Jul 2020 08:13:13 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from hemlock.osuosl.org ([127.0.0.1])
+Received: from whitealder.osuosl.org ([127.0.0.1])
 	by localhost (.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
-	with ESMTP id 8ugmd6cyFpik; Wed,  1 Jul 2020 07:32:36 +0000 (UTC)
+	with ESMTP id B2RUqA8kOyE2; Wed,  1 Jul 2020 08:13:12 +0000 (UTC)
 Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [140.211.9.56])
-	by hemlock.osuosl.org (Postfix) with ESMTP id 2E92B8ABCD;
-	Wed,  1 Jul 2020 07:32:36 +0000 (UTC)
+	by whitealder.osuosl.org (Postfix) with ESMTP id CF0CE87D60;
+	Wed,  1 Jul 2020 08:13:12 +0000 (UTC)
 Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
-	by lists.linuxfoundation.org (Postfix) with ESMTP id 08C49C0890;
-	Wed,  1 Jul 2020 07:32:36 +0000 (UTC)
-Received: from silver.osuosl.org (smtp3.osuosl.org [140.211.166.136])
- by lists.linuxfoundation.org (Postfix) with ESMTP id 89756C0733
- for <iommu@lists.linux-foundation.org>; Wed,  1 Jul 2020 07:32:34 +0000 (UTC)
+	by lists.linuxfoundation.org (Postfix) with ESMTP id B3169C0865;
+	Wed,  1 Jul 2020 08:13:12 +0000 (UTC)
+Received: from whitealder.osuosl.org (smtp1.osuosl.org [140.211.166.138])
+ by lists.linuxfoundation.org (Postfix) with ESMTP id 63C7BC0733
+ for <iommu@lists.linux-foundation.org>; Wed,  1 Jul 2020 08:13:11 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
- by silver.osuosl.org (Postfix) with ESMTP id 6C38D20011
- for <iommu@lists.linux-foundation.org>; Wed,  1 Jul 2020 07:32:34 +0000 (UTC)
+ by whitealder.osuosl.org (Postfix) with ESMTP id 531108C39F
+ for <iommu@lists.linux-foundation.org>; Wed,  1 Jul 2020 08:13:11 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from silver.osuosl.org ([127.0.0.1])
+Received: from whitealder.osuosl.org ([127.0.0.1])
  by localhost (.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
- with ESMTP id bWPZQ5Tm4V9T for <iommu@lists.linux-foundation.org>;
- Wed,  1 Jul 2020 07:32:32 +0000 (UTC)
+ with ESMTP id icHhnieX4-sa for <iommu@lists.linux-foundation.org>;
+ Wed,  1 Jul 2020 08:13:10 +0000 (UTC)
 X-Greylist: domain auto-whitelisted by SQLgrey-1.7.6
-Received: from mga14.intel.com (mga14.intel.com [192.55.52.115])
- by silver.osuosl.org (Postfix) with ESMTPS id D14441FE49
- for <iommu@lists.linux-foundation.org>; Wed,  1 Jul 2020 07:32:31 +0000 (UTC)
-IronPort-SDR: n+MR4eFhv1l3Xc1C98KWS6WMpV1yPes9WKCo2lhp5YVLf5Zfku5AQHG29jpDyqQhez7hntDSvv
- 0h9MB0nSZhqw==
-X-IronPort-AV: E=McAfee;i="6000,8403,9668"; a="145577145"
-X-IronPort-AV: E=Sophos;i="5.75,299,1589266800"; d="scan'208";a="145577145"
-X-Amp-Result: SKIPPED(no attachment in message)
-X-Amp-File-Uploaded: False
-Received: from orsmga003.jf.intel.com ([10.7.209.27])
- by fmsmga103.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384;
- 01 Jul 2020 00:32:30 -0700
-IronPort-SDR: rY7m5Sdzq9E4NKlQ9G3cljrbnk0qrUh/K0wzgG8CpFgIeiOlgJ2oo+NY9+vsI0ztmajo5WTPJJ
- tPhwgQOXsX2g==
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.75,299,1589266800"; d="scan'208";a="277685135"
-Received: from blu2-mobl3.ccr.corp.intel.com (HELO [10.255.30.5])
- ([10.255.30.5])
- by orsmga003.jf.intel.com with ESMTP; 01 Jul 2020 00:32:24 -0700
-Subject: Re: [PATCH 1/2] iommu: Add iommu_group_get/set_domain()
-To: Robin Murphy <robin.murphy@arm.com>, Joerg Roedel <joro@8bytes.org>,
- Alex Williamson <alex.williamson@redhat.com>
-References: <20200627031532.28046-1-baolu.lu@linux.intel.com>
- <acc0a8fd-bd23-fc34-aecc-67796ab216e7@arm.com>
- <5dc1cece-6111-9b56-d04c-9553d592675b@linux.intel.com>
- <48dd9f1e-c18b-77b7-650a-c35ecbb69f2b@arm.com>
-From: Lu Baolu <baolu.lu@linux.intel.com>
-Message-ID: <c38784ad-9dba-0840-3a61-e2c21e781f1e@linux.intel.com>
-Date: Wed, 1 Jul 2020 15:32:22 +0800
-User-Agent: Mozilla/5.0 (Windows NT 10.0; WOW64; rv:68.0) Gecko/20100101
- Thunderbird/68.9.0
+Received: from mail-vk1-f193.google.com (mail-vk1-f193.google.com
+ [209.85.221.193])
+ by whitealder.osuosl.org (Postfix) with ESMTPS id 3780887D60
+ for <iommu@lists.linux-foundation.org>; Wed,  1 Jul 2020 08:13:10 +0000 (UTC)
+Received: by mail-vk1-f193.google.com with SMTP id c11so162719vkn.11
+ for <iommu@lists.linux-foundation.org>; Wed, 01 Jul 2020 01:13:10 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linaro.org; s=google;
+ h=date:from:to:cc:subject:message-id:references:mime-version
+ :content-disposition:in-reply-to;
+ bh=mMc4j54dN6DGlrcAqYRepJM/zjg8dpWwhkXIc71CpRM=;
+ b=pLKbZZQz699m9ep5n7JNbNAW4iGjn2GzhIMO1VK8z6xG7jJZllkF9eJQxZvqQakG+r
+ cCvgzmQKi/fxXwLUEdpmpejSjMhUUICNjC/7HeBymyCTd7XOTB2BjQA5sUy5z8/Axb3P
+ +66uKaLYAMCpL+/uPEEQpxqBngQCJ/p7fYumOT0oj4XzuUIIVkhtycpIInKz6c/yR9XD
+ dzqT6OpazBf171fl16G0U02U9b4oMTQE8i3BvOVdYq3zAl0pSsouU8kYG8KdQ7+VZKxw
+ k+nLQMyo4LLaiQsKdxK2TLGqSm2ZPtP1R9JH93n8ROP10RGmsHqj/c/b7g03l9oAcYiK
+ ZXQg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+ d=1e100.net; s=20161025;
+ h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+ :mime-version:content-disposition:in-reply-to;
+ bh=mMc4j54dN6DGlrcAqYRepJM/zjg8dpWwhkXIc71CpRM=;
+ b=WlL5NcyZ5PCbGzo9HO4kfCE2t2raR9eQYolSk4W1ja2Ok0icH4sy2sOijvEod1gGJ+
+ tPulg814gSM4C/sMhuZ23fw6jBcZxfUQaUVD0uf6M8KL1wTec2GPkAqUlEU120HSGVgN
+ QKxp9IEhFbp/8CRxxqVCSRxh6xulkwmrLvnklC4N+r/YxynHd/y0TvY//Mfi6A8F3T3A
+ rCl5KHoGx4f8M3sWm1Dh5bqDZ6Wa83WnITHrGVlygmj3McmaTXYx8rBYRjfXmtOxvYuu
+ pHy4syoKSbeJhiDwk8Ndv5NECttmDdBAAAkz19k4AMwmmOMvGREMVlN8UETGwMW1gxIL
+ Ye0A==
+X-Gm-Message-State: AOAM530ziO1Rj3Beb9ICadjePj2DBHH3jIuD4WblFLBCaooSOERTZ+ts
+ 5crGv+ijDXBRvRQzKM0mfOZeX7ISEzk=
+X-Google-Smtp-Source: ABdhPJyg3Qti0THsh6aqjIZZdBzHaPEk786n7W2tpFF3WMt35frdw7VtGVYf8BCKUT6IxdM9ULX4SQ==
+X-Received: by 2002:a17:902:8c8a:: with SMTP id
+ t10mr18544088plo.153.1593589401062; 
+ Wed, 01 Jul 2020 00:43:21 -0700 (PDT)
+Received: from builder.lan (104-188-17-28.lightspeed.sndgca.sbcglobal.net.
+ [104.188.17.28])
+ by smtp.gmail.com with ESMTPSA id 25sm4804965pfi.7.2020.07.01.00.43.19
+ (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+ Wed, 01 Jul 2020 00:43:20 -0700 (PDT)
+Date: Wed, 1 Jul 2020 00:40:50 -0700
+From: Bjorn Andersson <bjorn.andersson@linaro.org>
+To: Robin Murphy <robin.murphy@arm.com>, Jordan Crouse <jcrouse@codeaurora.org>
+Subject: Re: [RFC 0/2] iommu: arm-smmu: Add support for early direct mappings
+Message-ID: <20200701074050.GO388985@builder.lan>
+References: <20191209150748.2471814-1-thierry.reding@gmail.com>
+ <20200228025700.GA856087@builder>
+ <20200514193249.GE279327@builder.lan>
+ <CALAqxLVmomdKJCwh=e-PX+8-seDX0RXA81FzmG4sEyJmbXBh9A@mail.gmail.com>
+ <20200527110343.GD11111@willie-the-truck>
+ <20200602063210.GT11847@yoga>
+ <a1f9ee83-66cd-1f04-3e78-3281b3cafd07@arm.com>
 MIME-Version: 1.0
-In-Reply-To: <48dd9f1e-c18b-77b7-650a-c35ecbb69f2b@arm.com>
-Content-Language: en-US
-Cc: Kevin Tian <kevin.tian@intel.com>, Dave Jiang <dave.jiang@intel.com>,
- Ashok Raj <ashok.raj@intel.com>, kvm@vger.kernel.org,
- Cornelia Huck <cohuck@redhat.com>, linux-kernel@vger.kernel.org,
- iommu@lists.linux-foundation.org
+Content-Disposition: inline
+In-Reply-To: <a1f9ee83-66cd-1f04-3e78-3281b3cafd07@arm.com>
+Cc: linux-arm-msm <linux-arm-msm@vger.kernel.org>,
+ iommu@lists.linux-foundation.org, Thierry Reding <thierry.reding@gmail.com>,
+ John Stultz <john.stultz@linaro.org>, linux-tegra@vger.kernel.org,
+ Will Deacon <will@kernel.org>,
+ linux-arm-kernel <linux-arm-kernel@lists.infradead.org>
 X-BeenThere: iommu@lists.linux-foundation.org
 X-Mailman-Version: 2.1.15
 Precedence: list
@@ -91,140 +113,153 @@ List-Post: <mailto:iommu@lists.linux-foundation.org>
 List-Help: <mailto:iommu-request@lists.linux-foundation.org?subject=help>
 List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
  <mailto:iommu-request@lists.linux-foundation.org?subject=subscribe>
-Content-Transfer-Encoding: base64
-Content-Type: text/plain; charset="utf-8"; Format="flowed"
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: 7bit
 Errors-To: iommu-bounces@lists.linux-foundation.org
 Sender: "iommu" <iommu-bounces@lists.linux-foundation.org>
 
-SGkgUm9iaW4sCgpPbiAyMDIwLzcvMSAwOjUxLCBSb2JpbiBNdXJwaHkgd3JvdGU6Cj4gT24gMjAy
-MC0wNi0zMCAwMjowMywgTHUgQmFvbHUgd3JvdGU6Cj4+IEhpIFJvYmluLAo+Pgo+PiBPbiA2LzI5
-LzIwIDc6NTYgUE0sIFJvYmluIE11cnBoeSB3cm90ZToKPj4+IE9uIDIwMjAtMDYtMjcgMDQ6MTUs
-IEx1IEJhb2x1IHdyb3RlOgo+Pj4+IFRoZSBoYXJkd2FyZSBhc3Npc3RhbnQgdmZpbyBtZWRpYXRl
-ZCBkZXZpY2UgaXMgYSB1c2UgY2FzZSBvZiBpb21tdQo+Pj4+IGF1eC1kb21haW4uIFRoZSBpbnRl
-cmFjdGlvbnMgYmV0d2VlbiB2ZmlvL21kZXYgYW5kIGlvbW11IGR1cmluZyBtZGV2Cj4+Pj4gY3Jl
-YXRpb24gYW5kIHBhc3N0aHIgYXJlOgo+Pj4+Cj4+Pj4gLSBDcmVhdGUgYSBncm91cCBmb3IgbWRl
-diB3aXRoIGlvbW11X2dyb3VwX2FsbG9jKCk7Cj4+Pj4gLSBBZGQgdGhlIGRldmljZSB0byB0aGUg
-Z3JvdXAgd2l0aAo+Pj4+IMKgwqDCoMKgwqDCoMKgwqAgZ3JvdXAgPSBpb21tdV9ncm91cF9hbGxv
-YygpOwo+Pj4+IMKgwqDCoMKgwqDCoMKgwqAgaWYgKElTX0VSUihncm91cCkpCj4+Pj4gwqDCoMKg
-wqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqAgcmV0dXJuIFBUUl9FUlIoZ3JvdXApOwo+Pj4+Cj4+
-Pj4gwqDCoMKgwqDCoMKgwqDCoCByZXQgPSBpb21tdV9ncm91cF9hZGRfZGV2aWNlKGdyb3VwLCAm
-bWRldi0+ZGV2KTsKPj4+PiDCoMKgwqDCoMKgwqDCoMKgIGlmICghcmV0KQo+Pj4+IMKgwqDCoMKg
-wqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgIGRldl9pbmZvKCZtZGV2LT5kZXYsICJNREVWOiBncm91
-cF9pZCA9ICVkXG4iLAo+Pj4+IMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKg
-wqDCoMKgwqDCoMKgIGlvbW11X2dyb3VwX2lkKGdyb3VwKSk7Cj4+Pj4gLSBBbGxvY2F0ZSBhbiBh
-dXgtZG9tYWluCj4+Pj4gwqDCoMKgwqBpb21tdV9kb21haW5fYWxsb2MoKQo+Pj4+IC0gQXR0YWNo
-IHRoZSBhdXgtZG9tYWluIHRvIHRoZSBwaHlzaWNhbCBkZXZpY2UgZnJvbSB3aGljaCB0aGUgbWRl
-diBpcwo+Pj4+IMKgwqAgY3JlYXRlZC4KPj4+PiDCoMKgwqDCoGlvbW11X2F1eF9hdHRhY2hfZGV2
-aWNlKCkKPj4+Pgo+Pj4+IEluIHRoZSB3aG9sZSBwcm9jZXNzLCBhbiBpb21tdSBncm91cCB3YXMg
-YWxsb2NhdGVkIGZvciB0aGUgbWRldiBhbmQgYW4KPj4+PiBpb21tdSBkb21haW4gd2FzIGF0dGFj
-aGVkIHRvIHRoZSBncm91cCwgYnV0IHRoZSBncm91cC0+ZG9tYWluIGxlYXZlcwo+Pj4+IE5VTEwu
-IEFzIHRoZSByZXN1bHQsIGlvbW11X2dldF9kb21haW5fZm9yX2RldigpIGRvZXNuJ3Qgd29yayBh
-bnltb3JlLgo+Pj4+Cj4+Pj4gVGhpcyBhZGRzIGlvbW11X2dyb3VwX2dldC9zZXRfZG9tYWluKCkg
-c28gdGhhdCBncm91cC0+ZG9tYWluIGNvdWxkIGJlCj4+Pj4gbWFuYWdlZCB3aGVuZXZlciBhIGRv
-bWFpbiBpcyBhdHRhY2hlZCBvciBkZXRhY2hlZCB0aHJvdWdoIHRoZSAKPj4+PiBhdXgtZG9tYWlu
-Cj4+Pj4gYXBpJ3MuCj4+Pgo+Pj4gTGV0dGluZyBleHRlcm5hbCBjYWxsZXJzIHBva2UgYXJvdW5k
-IGRpcmVjdGx5IGluIHRoZSBpbnRlcm5hbHMgb2YgCj4+PiBpb21tdV9ncm91cCBkb2Vzbid0IGxv
-b2sgcmlnaHQgdG8gbWUuCj4+Cj4+IFVuZm9ydHVuYXRlbHksIGl0IHNlZW1zIHRoYXQgdGhlIHZp
-Zm8gaW9tbXUgYWJzdHJhY3Rpb24gaXMgZGVlcGx5IGJvdW5kCj4+IHRvIHRoZSBJT01NVSBzdWJz
-eXN0ZW0uIFdlIGNhbiBlYXNpbHkgZmluZCBvdGhlciBleGFtcGxlczoKPj4KPj4gaW9tbXVfZ3Jv
-dXBfZ2V0L3NldF9pb21tdWRhdGEoKQo+PiBpb21tdV9ncm91cF9nZXQvc2V0X25hbWUoKQo+PiAu
-Li4KPiAKPiBTdXJlLCBidXQgdGhvc2UgYXJlIHdheXMgZm9yIHVzZXJzIG9mIGEgZ3JvdXAgdG8g
-YXR0YWNoIHVzZWZ1bCAKPiBpbmZvcm1hdGlvbiBvZiB0aGVpciBvd24gdG8gaXQsIHRoYXQgZG9l
-c24ndCBtYXR0ZXIgdG8gdGhlIElPTU1VIAo+IHN1YnN5c3RlbSBpdHNlbGYuIFRoZSBpbnRlcmZh
-Y2UgeW91J3ZlIHByb3Bvc2VkIGdpdmVzIGNhbGxlcnMgcmljaCBuZXcgCj4gb3Bwb3J0dW5pdGll
-cyB0byBmdW5kYW1lbnRhbGx5IGJyZWFrIGNvcnJlY3Qgb3BlcmF0aW9uIG9mIHRoZSBBUEk6Cj4g
-Cj4gIMKgwqDCoMKgZG9tID0gaW9tbXVfZG9tYWluX2FsbG9jKCk7Cj4gIMKgwqDCoMKgaW9tbXVf
-YXR0YWNoX2dyb3VwKGRvbSwgZ3JwKTsKPiAgwqDCoMKgwqAuLi4KPiAgwqDCoMKgwqBpb21tdV9n
-cm91cF9zZXRfZG9tYWluKGdycCwgTlVMTCk7Cj4gIMKgwqDCoMKgLy8gb29wcywgbGVha2VkIGFu
-ZCBjYW4ndCBldmVyIGRldGFjaCBwcm9wZXJseSBub3cKPiAKPiBvciBwZXJoYXBzOgo+IAo+ICDC
-oMKgwqDCoGdycCA9IGlvbW11X2dyb3VwX2FsbG9jKCk7Cj4gIMKgwqDCoMKgaW9tbXVfZ3JvdXBf
-YWRkX2RldmljZShncnAsIGRldik7Cj4gIMKgwqDCoMKgaW9tbXVfZ3JvdXBfc2V0X2RvbWFpbihn
-cnAsIGRvbSk7Cj4gIMKgwqDCoMKgLi4uCj4gIMKgwqDCoMKgaW9tbXVfZGV0YWNoX2dyb3VwKGRv
-bSwgZ3JwKTsKPiAgwqDCoMKgwqAvLyBvb3BzLCBJT01NVSBkcml2ZXIgbWlnaHQgbm90IGhhbmRs
-ZSB0aGlzCj4gCj4+PiBJZiBhIHJlZ3VsYXIgZGV2aWNlIGlzIGF0dGFjaGVkIHRvIG9uZSBvciBt
-b3JlIGF1eCBkb21haW5zIGZvciBQQVNJRCAKPj4+IHVzZSwgaW9tbXVfZ2V0X2RvbWFpbl9mb3Jf
-ZGV2KCkgaXMgc3RpbGwgZ29pbmcgdG8gcmV0dXJuIHRoZSBwcmltYXJ5IAo+Pj4gZG9tYWluLCBz
-byB3aHkgc2hvdWxkIGl0IGJlIGV4cGVjdGVkIHRvIGJlaGF2ZSBkaWZmZXJlbnRseSBmb3IgbWVk
-aWF0ZWQKPj4KPj4gVW5saWtlIHRoZSBub3JtYWwgZGV2aWNlIGF0dGFjaCwgd2Ugd2lsbCBlbmNv
-dW50ZXIgdHdvIGRldmljZXMgd2hlbiBpdAo+PiBjb21lcyB0byBhdXgtZG9tYWluLgo+Pgo+PiAt
-IFBhcmVudCBwaHlzaWNhbCBkZXZpY2UgLSB0aGlzIG1pZ2h0IGJlLCBmb3IgZXhhbXBsZSwgYSBQ
-Q0llIGRldmljZQo+PiB3aXRoIFBBU0lEIGZlYXR1cmUgc3VwcG9ydCwgaGVuY2UgaXQgaXMgYWJs
-ZSB0byB0YWcgYW4gdW5pcXVlIFBBU0lECj4+IGZvciBETUEgdHJhbnNmZXJzIG9yaWdpbmF0ZWQg
-ZnJvbSBpdHMgc3Vic2V0LiBUaGUgZGV2aWNlIGRyaXZlciBoZW5jZQo+PiBpcyBhYmxlIHRvIHdy
-YXBwZXIgdGhpcyBzdWJzZXQgaW50byBhbiBpc29sYXRlZDoKPj4KPj4gLSBNZWRpYXRlZCBkZXZp
-Y2UgLSBhIGZha2UgZGV2aWNlIGNyZWF0ZWQgYnkgdGhlIGRldmljZSBkcml2ZXIgbWVudGlvbmVk
-Cj4+IGFib3ZlLgo+Pgo+PiBZZXMuIEFsbCB5b3UgbWVudGlvbmVkIGFyZSByaWdodCBmb3IgdGhl
-IHBhcmVudCBkZXZpY2UuIEJ1dCBmb3IgbWVkaWF0ZWQKPj4gZGV2aWNlLCBpb21tdV9nZXRfZG9t
-YWluX2Zvcl9kZXYoKSBkb2Vzbid0IHdvcmsgZXZlbiBpdCBoYXMgYW4gdmFsaWQKPj4gaW9tbXVf
-Z3JvdXAgYW5kIGlvbW11X2RvbWFpbi4KPj4KPj4gaW9tbXVfZ2V0X2RvbWFpbl9mb3JfZGV2KCkg
-aXMgYSBuZWNlc3NhcnkgaW50ZXJmYWNlIGZvciBkZXZpY2UgZHJpdmVycwo+PiB3aGljaCB3YW50
-IHRvIHN1cHBvcnQgYXV4LWRvbWFpbi4gRm9yIGV4YW1wbGUsCj4gCj4gT25seSBpZiB0aGV5IHdh
-bnQgdG8gZm9sbG93IHRoaXMgdmVyeSBzcGVjaWZpYyBub3Rpb24gb2YgdXNpbmcgbWFkZS11cCAK
-PiBkZXZpY2VzIGFuZCBncm91cHMgdG8gcmVwcmVzZW50IGF1eCBhdHRhY2htZW50cy4gRXZlbiBp
-ZiBhIGRyaXZlciAKPiBtYW5hZ2luZyBpdHMgb3duIGF1eCBkb21haW5zIGVudGlyZWx5IHByaXZh
-dGVseSBkb2VzIGNyZWF0ZSBjaGlsZCAKPiBkZXZpY2VzIGZvciB0aGVtLCBpdCdzIG5vdCBsaWtl
-IGl0IGNhbid0IGtlZXAgaXRzIGRvbWFpbiBwb2ludGVycyBpbiAKPiBkcnZkYXRhIGlmIGl0IHdh
-bnRzIHRvIDspCj4gCj4gTGV0J3Mgbm90IGNvbmZsYXRlIHRoZSBjdXJyZW50IGltcGxlbWVudGF0
-aW9uIG9mIHZmaW9fbWRldiB3aXRoIHRoZSAKPiBnZW5lcmFsIGNvbmNlcHRzIGludm9sdmVkIGhl
-cmUuCj4gCj4+IMKgwqDCoMKgwqDCoMKgwqDCoMKgIHN0cnVjdCBpb21tdV9kb21haW4gKmRvbWFp
-bjsKPj4gwqDCoMKgwqDCoMKgwqDCoMKgwqAgc3RydWN0IGRldmljZSAqZGV2ID0gbWRldl9kZXYo
-bWRldik7Cj4+IMKgwqDCoMKgwqDCoCB1bnNpZ25lZCBsb25nIHBhc2lkOwo+Pgo+PiDCoMKgwqDC
-oMKgwqDCoMKgwqDCoCBkb21haW4gPSBpb21tdV9nZXRfZG9tYWluX2Zvcl9kZXYoZGV2KTsKPj4g
-wqDCoMKgwqDCoMKgwqDCoMKgwqAgaWYgKCFkb21haW4pCj4+IMKgwqDCoMKgwqDCoMKgwqDCoMKg
-wqDCoMKgwqDCoMKgwqDCoCByZXR1cm4gLUVOT0RFVjsKPj4KPj4gwqDCoMKgwqDCoMKgwqDCoMKg
-wqAgcGFzaWQgPSBpb21tdV9hdXhfZ2V0X3Bhc2lkKGRvbWFpbiwgZGV2LT5wYXJlbnQpOwo+PiDC
-oMKgwqDCoMKgwqAgaWYgKHBhc2lkID09IElPQVNJRF9JTlZBTElEKQo+PiDCoMKgwqDCoMKgwqDC
-oMKgwqDCoCByZXR1cm4gLUVJTlZBTDsKPj4KPj4gwqDCoMKgwqDCoMKgIC8qIFByb2dyYW0gdGhl
-IGRldmljZSBjb250ZXh0IHdpdGggdGhlIFBBU0lEIHZhbHVlICovCj4+IMKgwqDCoMKgwqDCoCAu
-Li4uCj4+Cj4+IFdpdGhvdXQgdGhpcyBmaXgsIGlvbW11X2dldF9kb21haW5fZm9yX2RldigpIGFs
-d2F5cyByZXR1cm5zIE5VTEwgYW5kIHRoZQo+PiBkZXZpY2UgZHJpdmVyIGhhcyBubyBtZWFucyB0
-byBzdXBwb3J0IGF1eC1kb21haW4uCj4gCj4gU28gZWl0aGVyIHRoZSBJT01NVSBBUEkgaXRzZWxm
-IGlzIG1pc3NpbmcgdGhlIGFiaWxpdHkgdG8gZG8gdGhlIHJpZ2h0IAo+IHRoaW5nIGludGVybmFs
-bHksIG9yIHRoZSBtZGV2IGxheWVyIGlzbid0IHVzaW5nIGl0IGFwcHJvcHJpYXRlbHkuIEVpdGhl
-ciAKPiB3YXksIHNpbXBseSBwdW5jaGluZyBob2xlcyBpbiB0aGUgQVBJIGZvciBtZGV2IHRvIGhh
-Y2sgYXJvdW5kIGl0cyBvd24gCj4gbWVzcyBkb2Vzbid0IHNlZW0gbGlrZSB0aGUgYmVzdCB0aGlu
-ZyB0byBkby4KPiAKPiBUaGUgaW5pdGlhbCBpbXByZXNzaW9uIEkgZ290IHdhcyB0aGF0IGl0J3Mg
-aW1wbGljaXRseSBhc3N1bWVkIGhlcmUgdGhhdCAKPiB0aGUgbWRldiBpdHNlbGYgaXMgYXR0YWNo
-ZWQgdG8gZXhhY3RseSBvbmUgYXV4IGRvbWFpbiBhbmQgbm90aGluZyBlbHNlLCAKPiBhdCB3aGlj
-aCBwb2ludCBJIHdvdWxkIHdvbmRlciB3aHkgaXQncyB1c2luZyBhdXggYXQgYWxsLCBidXQgYXJl
-IHlvdSAKPiBzYXlpbmcgdGhhdCBpbiBmYWN0IG5vIGF0dGFjaCBoYXBwZW5zIHdpdGggdGhlIG1k
-ZXYgZ3JvdXAgZWl0aGVyIHdheSwgCj4gb25seSB0byB0aGUgcGFyZW50IGRldmljZT8KPiAKPiBJ
-J2xsIGFkbWl0IEknbSBub3QgaHVnZWx5IGZhbWlsaWFyIHdpdGggYW55IG9mIHRoaXMsIGJ1dCBp
-dCBzZWVtcyB0byBtZSAKPiB0aGF0IHRoZSBsb2dpY2FsIGZsb3cgc2hvdWxkIGJlOgo+IAo+ICDC
-oMKgwqDCoC0gYWxsb2NhdGUgZG9tYWluCj4gIMKgwqDCoMKgLSBhdHRhY2ggYXMgYXV4IHRvIHBh
-cmVudAo+ICDCoMKgwqDCoC0gcmV0cmlldmUgYXV4IGRvbWFpbiBQQVNJRAo+ICDCoMKgwqDCoC0g
-Y3JlYXRlIG1kZXYgY2hpbGQgYmFzZWQgb24gUEFTSUQKPiAgwqDCoMKgwqAtIGF0dGFjaCBtZGV2
-IHRvIGRvbWFpbiAobm9ybWFsbHkpCj4gCj4gT2YgY291cnNlIHRoYXQgbWlnaHQgcmVxdWlyZSBn
-aXZpbmcgdGhlIElPTU1VIEFQSSBhIHByb3BlciBmaXJzdC1jbGFzcyAKPiBub3Rpb24gb2YgbWVk
-aWF0ZWQgZGV2aWNlcywgc3VjaCB0aGF0IGl0IGtub3dzIHRoZSBtZGV2IHJlcHJlc2VudHMgdGhl
-IAo+IFBBU0lELCBhbmQgY2FuIHJlY29nbmlzZSB0aGUgbWRldiBhdHRhY2ggaXMgZXF1aXZhbGVu
-dCB0byB0aGUgZWFybGllciAKPiBwYXJlbnQgYXV4IGF0dGFjaCBzbyBub3QganVzdCBibGluZGx5
-IGhhbmQgaXQgZG93biB0byBhbiBJT01NVSBkcml2ZXIgCj4gdGhhdCdzIG5ldmVyIGhlYXJkIG9m
-IHRoaXMgbmV3IGRldmljZSBiZWZvcmUuIE9yIHBlcmhhcHMgdGhlIElPTU1VIAo+IGRyaXZlcnMg
-ZG8gdGhlaXIgb3duIGJvb2trZWVwaW5nIGZvciB0aGUgbWRldiBidXMsIHN1Y2ggdGhhdCB0aGV5
-IGRvIAo+IGhhbmRsZSB0aGUgYXR0YWNoIGNhbGwsIGFuZCBqdXN0IHZhbGlkYXRlIGl0IGludGVy
-bmFsbHkgYmFzZWQgb24gdGhlIAo+IGFzc29jaWF0ZWQgcGFyZW50IGRldmljZSBhbmQgUEFTSUQu
-IEVpdGhlciB3YXksIHRoZSBpbnNpZGUgbWFpbnRhaW5zIAo+IHNlbGYtY29uc2lzdGVuY3kgYW5k
-IGZyb20gdGhlIG91dHNpZGUgaXQgbG9va3MgbGlrZSBzdGFuZGFyZCBBUEkgdXNhZ2UgCj4gd2l0
-aG91dCBuYXN0eSBoYWNrcy4KPiAKPiBJJ20gcHJldHR5IHN1cmUgSSd2ZSBoZWFyZCBzdWdnZXN0
-aW9ucyBvZiB1c2luZyBtZWRpYXRlZCBkZXZpY2VzIGJleW9uZCAKPiBWRklPIChlLmcuIHdpdGhp
-biB0aGUga2VybmVsIGl0c2VsZiksIHNvIGNoYW5jZXMgYXJlIHRoaXMgaXMgYSBkaXJlY3Rpb24g
-Cj4gdGhhdCB3ZSdsbCBoYXZlIHRvIHRha2UgYXQgc29tZSBwb2ludCBhbnl3YXkuCj4gCj4gQW5k
-LCB0aGF0IHNhaWQsIGV2ZW4gaWYgcGVvcGxlIGRvIHdhbnQgYW4gaW1tZWRpYXRlIHF1aWNrIGZp
-eCByZWdhcmRsZXNzIAo+IG9mIHRlY2huaWNhbCBkZWJ0LCBJJ2Qgc3RpbGwgYmUgYSBsb3QgaGFw
-cGllciB0byBzZWUgCj4gaW9tbXVfZ3JvdXBfc2V0X2RvbWFpbigpIGxpZ2h0bHkgcmVzcHVuIGFz
-IGlvbW11X2F0dGFjaF9tZGV2KCkgOykKCkdldCB5b3VyIHBvaW50IGFuZCBJIGFncmVlIHdpdGgg
-eW91ciBjb25jZXJucy4KClRvIG1haW50YWluIHRoZSByZWxhdGlvbnNoaXAgYmV0d2VlbiBtZGV2
-J3MgaW9tbXVfZ3JvdXAgYW5kCmlvbW11X2RvbWFpbiwgaG93IGFib3V0IGV4dGVuZGluZyBiZWxv
-dyBleGlzdGluZyBhdXhfYXR0YWNoIGFwaQoKaW50IGlvbW11X2F1eF9hdHRhY2hfZGV2aWNlKHN0
-cnVjdCBpb21tdV9kb21haW4gKmRvbWFpbiwKCQkJICAgIHN0cnVjdCBkZXZpY2UgKmRldikKCmJ5
-IGFkZGluZyB0aGUgbWRldidzIGlvbW11X2dyb3VwPwoKaW50IGlvbW11X2F1eF9hdHRhY2hfZGV2
-aWNlKHN0cnVjdCBpb21tdV9kb21haW4gKmRvbWFpbiwKCQkJICAgIHN0cnVjdCBkZXZpY2UgKmRl
-diwKCQkJICAgIHN0cnVjdCBpb21tdV9ncm91cCAqZ3JvdXApCgpBbmQsIGluIGlvbW11X2F1eF9h
-dHRhY2hfZGV2aWNlKCksIHdlIHJlcXVpcmUsCiAgLSBAZ3JvdXAgb25seSBoYXMgYSBzaW5nbGUg
-ZGV2aWNlOwogIC0gQGdyb3VwIGhhc24ndCBiZWVuIGF0dGFjaGVkIGJ5IGFueSBkZXZpY2VzOwog
-IC0gU2V0IHRoZSBAZG9tYWluIHRvIEBncm91cAoKSnVzdCBsaWtlIHdoYXQgd2UndmUgZG9uZSBp
-biBpb21tdV9hdHRhY2hfZGV2aWNlKCkuCgpBbnkgdGhvdWdodHM/CgpCZXN0IHJlZ2FyZHMsCmJh
-b2x1Cl9fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fCmlvbW11
-IG1haWxpbmcgbGlzdAppb21tdUBsaXN0cy5saW51eC1mb3VuZGF0aW9uLm9yZwpodHRwczovL2xp
-c3RzLmxpbnV4Zm91bmRhdGlvbi5vcmcvbWFpbG1hbi9saXN0aW5mby9pb21tdQ==
+On Wed 03 Jun 04:00 PDT 2020, Robin Murphy wrote:
+
+> On 2020-06-02 07:32, Bjorn Andersson wrote:
+> > On Wed 27 May 04:03 PDT 2020, Will Deacon wrote:
+> > 
+> > > Hi John, Bjorn,
+> > > 
+> > > On Tue, May 26, 2020 at 01:34:45PM -0700, John Stultz wrote:
+> > > > On Thu, May 14, 2020 at 12:34 PM <bjorn.andersson@linaro.org> wrote:
+> > > > > 
+> > > > > On Thu 27 Feb 18:57 PST 2020, Bjorn Andersson wrote:
+> > > > > 
+> > > > > Rob, Will, we're reaching the point where upstream has enough
+> > > > > functionality that this is becoming a critical issue for us.
+> > > > > 
+> > > > > E.g. Lenovo Yoga C630 is lacking this and a single dts patch to boot
+> > > > > mainline with display, GPU, WiFi and audio working and the story is
+> > > > > similar on several devboards.
+> > > > > 
+> > > > > As previously described, the only thing I want is the stream mapping
+> > > > > related to the display controller in place, either with the CB with
+> > > > > translation disabled or possibly with a way to specify the framebuffer
+> > > > > region (although this turns out to mess things up in the display
+> > > > > driver...)
+> > > > > 
+> > > > > I did pick this up again recently and concluded that by omitting the
+> > > > > streams for the USB controllers causes an instability issue seen on one
+> > > > > of the controller to disappear. So I would prefer if we somehow could
+> > > > > have a mechanism to only pick the display streams and the context
+> > > > > allocation for this.
+> > > > > 
+> > > > > 
+> > > > > Can you please share some pointers/insights/wishes for how we can
+> > > > > conclude on this subject?
+> > > > 
+> > > > Ping? I just wanted to follow up on this discussion as this small
+> > > > series is crucial for booting mainline on the Dragonboard 845c
+> > > > devboard. It would be really valuable to be able to get some solution
+> > > > upstream so we can test mainline w/o adding additional patches.
+> > > 
+> > > Sorry, it's been insanely busy recently and I haven't had a chance to think
+> > > about this on top of everything else. We're also carrying a hack in Android
+> > > for you :)
+> > > 
+> > 
+> > Thanks for taking the time to get back to us on this!
+> > 
+> > > > The rest of the db845c series has been moving forward smoothly, but
+> > > > this set seems to be very stuck with no visible progress since Dec.
+> > > > 
+> > > > Are there any pointers for what folks would prefer to see?
+> > > 
+> > > I've had a chat with Robin about this. Originally, I was hoping that
+> > > people would all work together towards an idyllic future where firmware
+> > > would be able to describe arbitrary pre-existing mappings for devices,
+> > > irrespective of the IOMMU through which they master and Linux could
+> > > inherit this configuration. However, that hasn't materialised (there was
+> > > supposed to be an IORT update, but I don't know what happened to that)
+> > > and, in actual fact, the problem that you have on db845 is /far/ more
+> > > restricted than the general problem.
+> > > 
+> > > Could you please try hacking something along the following lines and see
+> > > how you get on? You may need my for-joerg/arm-smmu/updates branch for
+> > > all the pieces:
+> > > 
+> > >    1. Use the ->cfg_probe() callback to reserve the SMR/S2CRs you need
+> > >       "pinning" and configure for bypass.
+> > > 
+> > >    2. Use the ->def_domain_type() callback to return IOMMU_DOMAIN_IDENTITY
+> > >       for the display controller
+> > > 
+> > > I /think/ that's sufficient, but note that it differs from the current
+> > > approach because we don't end up reserving a CB -- bypass is configured
+> > > in the S2CR instead. Some invalidation might therefore be needed in
+> > > ->cfg_probe() after unhooking the CB.
+> > > 
+> > > Thanks, and please yell if you run into problems with this approach.
+> > > 
+> > 
+> > This sounded straight forward and cleaner, so I implemented it...
+> > 
+> > Unfortunately the hypervisor is playing tricks on me when writing to
+> > S2CR registers:
+> > - TRANS writes lands as requested
+> > - BYPASS writes ends up in the register as requested, with type FAULT
+> > - FAULT writes are ignored
+> > 
+> > In other words, the Qualcomm firmware prevents us from relying on
+> > marking the relevant streams as BYPASS type.
+> 
+> Sigh...
+
+I agree.
+
+> at that point I'm inclined to suggest we give up and stop trying to
+> drive these things with arm-smmu. The XZR thing was bad enough, but if
+> they're not even going to pretend to implement the architecture correctly
+> then I'm not massively keen to continue tying the architectural driver in
+> further knots if innocent things like CONFIG_IOMMU_DEFAULT_PASSTHROUGH are
+> going to unexpectedly and catastrophically fail. We have qcom-iommu for
+> hypervisor-mediated SMMUs, and this new hypervisor behaviour sounds to me
+> more like "qcom-iommu++" with reassignable stream-to-context mappings,
+> rather than a proper Arm SMMU emulation.
+> 
+
+I've been going through over and over, hoping to perhaps be able to
+evolve qcom_iommu into a qcom-iommu++, but afaict the new hypervisor is
+different enough that this isn't feasible. In particular, the platforms
+using qcom_iommu relies entirely on the hypervisor to configure stream
+mapping etc - and we can't even read most of the registers.
+
+On the other hand I agree with you that we're messing around quite a bit
+with the arm-smmu driver, and I'm uncertain where we are on supporting
+the various GPU features, so I'm adding Jordan to the thread.
+
+So, afaict we have the options of either shoehorning this too into the
+arm-smmu driver or we essentially fork arm-smmu.c to create a
+qcom-smmu.c.
+
+While I don't fancy the code duplication, it would allow us to revert
+the Qualcomm quirks from arm-smmu and would unblock a number of
+activities that we have depending on getting the SMMU enabled on various
+platforms.
+
+
+NB. As mentioned briefly before, "this" means: for a given compatible,
+search SMR for a specific stream mapping and ensure it remains after
+initialization and make sure the associated context bank is "allocated".
+
+> > Instead Qualcomm seems to implement "bypass" by setting up stream
+> > mapping, of TRANS type, pointing to a context bank without
+> > ARM_SMMU_SCTLR_M set.
+> 
+> ...which arm-smmu specifically does not do because it's a silly waste of
+> resources - typically context banks are even scarcer than S2CRs.
+> 
+
+Agreed.
+
+Thanks,
+Bjorn
+_______________________________________________
+iommu mailing list
+iommu@lists.linux-foundation.org
+https://lists.linuxfoundation.org/mailman/listinfo/iommu
