@@ -1,99 +1,110 @@
-Return-Path: <SRS0=0Jez=AL=lists.linux-foundation.org=iommu-bounces@kernel.org>
+Return-Path: <SRS0=cxdO=AM=lists.linux-foundation.org=iommu-bounces@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-9.8 required=3.0 tests=DKIM_INVALID,DKIM_SIGNED,
-	HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_PATCH,MAILING_LIST_MULTI,SIGNED_OFF_BY,
-	SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED,USER_AGENT_GIT autolearn=ham
-	autolearn_force=no version=3.4.0
+X-Spam-Status: No, score=-5.8 required=3.0 tests=DKIM_INVALID,DKIM_SIGNED,
+	HEADER_FROM_DIFFERENT_DOMAINS,MAILING_LIST_MULTI,MENTIONS_GIT_HOSTING,
+	SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED autolearn=unavailable autolearn_force=no
+	version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id EF48CC433E5
-	for <iommu@archiver.kernel.org>; Tue, 30 Jun 2020 23:59:22 +0000 (UTC)
-Received: from hemlock.osuosl.org (smtp2.osuosl.org [140.211.166.133])
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 5BD55C433E0
+	for <iommu@archiver.kernel.org>; Wed,  1 Jul 2020 00:40:35 +0000 (UTC)
+Received: from whitealder.osuosl.org (smtp1.osuosl.org [140.211.166.138])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by mail.kernel.org (Postfix) with ESMTPS id C4C4F206DA
-	for <iommu@archiver.kernel.org>; Tue, 30 Jun 2020 23:59:22 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTPS id 285BB2073E
+	for <iommu@archiver.kernel.org>; Wed,  1 Jul 2020 00:40:34 +0000 (UTC)
 Authentication-Results: mail.kernel.org;
-	dkim=fail reason="signature verification failed" (2048-bit key) header.d=nvidia.com header.i=@nvidia.com header.b="kS4KkyDk"
-DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org C4C4F206DA
-Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=nvidia.com
+	dkim=fail reason="signature verification failed" (2048-bit key) header.d=lca.pw header.i=@lca.pw header.b="UMvPnSOf"
+DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 285BB2073E
+Authentication-Results: mail.kernel.org; dmarc=none (p=none dis=none) header.from=lca.pw
 Authentication-Results: mail.kernel.org; spf=pass smtp.mailfrom=iommu-bounces@lists.linux-foundation.org
 Received: from localhost (localhost [127.0.0.1])
-	by hemlock.osuosl.org (Postfix) with ESMTP id 66DA288A4E;
-	Tue, 30 Jun 2020 23:59:22 +0000 (UTC)
+	by whitealder.osuosl.org (Postfix) with ESMTP id DA8BA87C12;
+	Wed,  1 Jul 2020 00:40:34 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from hemlock.osuosl.org ([127.0.0.1])
+Received: from whitealder.osuosl.org ([127.0.0.1])
 	by localhost (.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
-	with ESMTP id q0u7gB6Xd3FU; Tue, 30 Jun 2020 23:59:20 +0000 (UTC)
+	with ESMTP id s0owwXa5tZ-u; Wed,  1 Jul 2020 00:40:32 +0000 (UTC)
 Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [140.211.9.56])
-	by hemlock.osuosl.org (Postfix) with ESMTP id 6F0FC88A41;
-	Tue, 30 Jun 2020 23:59:19 +0000 (UTC)
+	by whitealder.osuosl.org (Postfix) with ESMTP id 9CE90864D8;
+	Wed,  1 Jul 2020 00:40:32 +0000 (UTC)
 Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
-	by lists.linuxfoundation.org (Postfix) with ESMTP id 5AC68C0892;
-	Tue, 30 Jun 2020 23:59:19 +0000 (UTC)
-Received: from hemlock.osuosl.org (smtp2.osuosl.org [140.211.166.133])
- by lists.linuxfoundation.org (Postfix) with ESMTP id 47527C016E
- for <iommu@lists.linux-foundation.org>; Tue, 30 Jun 2020 23:59:18 +0000 (UTC)
+	by lists.linuxfoundation.org (Postfix) with ESMTP id 8D164C088F;
+	Wed,  1 Jul 2020 00:40:32 +0000 (UTC)
+Received: from fraxinus.osuosl.org (smtp4.osuosl.org [140.211.166.137])
+ by lists.linuxfoundation.org (Postfix) with ESMTP id 0B55EC016E
+ for <iommu@lists.linux-foundation.org>; Wed,  1 Jul 2020 00:40:31 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
- by hemlock.osuosl.org (Postfix) with ESMTP id 36E558879D
- for <iommu@lists.linux-foundation.org>; Tue, 30 Jun 2020 23:59:18 +0000 (UTC)
+ by fraxinus.osuosl.org (Postfix) with ESMTP id EADFF8706E
+ for <iommu@lists.linux-foundation.org>; Wed,  1 Jul 2020 00:40:30 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from hemlock.osuosl.org ([127.0.0.1])
+Received: from fraxinus.osuosl.org ([127.0.0.1])
  by localhost (.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
- with ESMTP id vnK+byQS9T3j for <iommu@lists.linux-foundation.org>;
- Tue, 30 Jun 2020 23:59:17 +0000 (UTC)
-X-Greylist: domain auto-whitelisted by SQLgrey-1.7.6
-Received: from hqnvemgate25.nvidia.com (hqnvemgate25.nvidia.com
- [216.228.121.64])
- by hemlock.osuosl.org (Postfix) with ESMTPS id 569C3887AE
- for <iommu@lists.linux-foundation.org>; Tue, 30 Jun 2020 23:59:17 +0000 (UTC)
-Received: from hqpgpgate101.nvidia.com (Not Verified[216.228.121.13]) by
- hqnvemgate25.nvidia.com (using TLS: TLSv1.2, DES-CBC3-SHA)
- id <B5efbd1a30001>; Tue, 30 Jun 2020 16:58:27 -0700
-Received: from hqmail.nvidia.com ([172.20.161.6])
- by hqpgpgate101.nvidia.com (PGP Universal service);
- Tue, 30 Jun 2020 16:59:16 -0700
-X-PGP-Universal: processed;
- by hqpgpgate101.nvidia.com on Tue, 30 Jun 2020 16:59:16 -0700
-Received: from HQMAIL109.nvidia.com (172.20.187.15) by HQMAIL111.nvidia.com
- (172.20.187.18) with Microsoft SMTP Server (TLS) id 15.0.1473.3; Tue, 30 Jun
- 2020 23:59:11 +0000
-Received: from hqnvemgw03.nvidia.com (10.124.88.68) by HQMAIL109.nvidia.com
- (172.20.187.15) with Microsoft SMTP Server (TLS) id 15.0.1473.3 via Frontend
- Transport; Tue, 30 Jun 2020 23:59:11 +0000
-Received: from vdumpa-ubuntu.nvidia.com (Not Verified[172.17.173.140]) by
- hqnvemgw03.nvidia.com with Trustwave SEG (v7, 5, 8, 10121)
- id <B5efbd1cf0009>; Tue, 30 Jun 2020 16:59:11 -0700
-From: Krishna Reddy <vdumpa@nvidia.com>
-To: <joro@8bytes.org>, <will@kernel.org>, <robin.murphy@arm.com>,
- <robh+dt@kernel.org>, <treding@nvidia.com>, <jonathanh@nvidia.com>
-Subject: [PATCH v9 2/4] iommu/arm-smmu: add NVIDIA implementation for ARM
- MMU-500 usage
-Date: Tue, 30 Jun 2020 16:57:50 -0700
-Message-ID: <20200630235752.8737-3-vdumpa@nvidia.com>
-X-Mailer: git-send-email 2.26.2
-In-Reply-To: <20200630235752.8737-1-vdumpa@nvidia.com>
-References: <20200630235752.8737-1-vdumpa@nvidia.com>
+ with ESMTP id NsmCS0wt9n1P for <iommu@lists.linux-foundation.org>;
+ Wed,  1 Jul 2020 00:40:29 +0000 (UTC)
+X-Greylist: from auto-whitelisted by SQLgrey-1.7.6
+Received: from mail-qt1-f194.google.com (mail-qt1-f194.google.com
+ [209.85.160.194])
+ by fraxinus.osuosl.org (Postfix) with ESMTPS id 8E1888701F
+ for <iommu@lists.linux-foundation.org>; Wed,  1 Jul 2020 00:40:29 +0000 (UTC)
+Received: by mail-qt1-f194.google.com with SMTP id x62so17174672qtd.3
+ for <iommu@lists.linux-foundation.org>; Tue, 30 Jun 2020 17:40:29 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=lca.pw; s=google;
+ h=date:from:to:cc:subject:message-id:references:mime-version
+ :content-disposition:in-reply-to;
+ bh=EpYeFSv2hUhAOTMZUAlI4eJYzACEPDVz/YPnN7nLgms=;
+ b=UMvPnSOf52UXOi6pjL3ZvkSlsm2b9MDeu3tw1Ed1K8gXMR5YuUUqOGVZoRRZfbg9Mj
+ PLfo60YD6i214QebR41JVrwmDFvO19N8Kzz52R/boUapQVYFI/Hqmi+MQ39JtgKCVuhK
+ NhaqpeG31oUyIJKxwWBijxjo4rgRc+j7vUzcvKnJORgTIX9NmIW8FeSmvqEtYY8DpyYf
+ NbwlNb6lyWjUJCMNEFr7VMEvkvKZKoLk1eyzbTSAIaND9DKWjKbswBaukQil5gARP39b
+ UocbS/Y9+uvE2BABvK3Pf7SObIctPGQ+SIuHWqxXoARp35RPPDgjaKSN2QGPaOMr1Nu2
+ x0Hg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+ d=1e100.net; s=20161025;
+ h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+ :mime-version:content-disposition:in-reply-to;
+ bh=EpYeFSv2hUhAOTMZUAlI4eJYzACEPDVz/YPnN7nLgms=;
+ b=X3YmYW0xT15C/pNk+JRFq4vDZ2QSeUqaMzI3T3+JHUfFlkMywrkSN7LNZbndSqahyt
+ hwOybuxjSU1FUF0st8iGxmUQ1D5nOdtBLXZ5NOcofMEiAFxsKourCJ0w9y5SsDuprtyk
+ r9OPruz6MH4PKDLobj456TYZ6eDxzYjrqy3exzFc3tzrBXurw4jJ2Rdc+sYFjlV33I/i
+ WoWx9ViXQWt1+EjfnrHWJcrBNUpNGF9EfSIR+Awi1gbH5Ha0jJvzrfzypM3LZ0QqIOph
+ 5rrkbNYFRqm4u1dkRgMNsZ3dKpPsDjWS8vPBADyg9j5zJE0n2blcVcgT3WssIDEJwjaf
+ rzUA==
+X-Gm-Message-State: AOAM532E7NXf20WMJV1YCsrrDg8NTQpVN6Hn6t5jdqmSM3my9TA024GY
+ zvtTPfGC+f5uvfohhFLtfe6/xA==
+X-Google-Smtp-Source: ABdhPJyXfMrs8+GLSAGg3NbFwYmI9O7CdJG3Yhc9RTBX2CW/NUUI3avZ+oYjHWxFV5f356rMaVqbmg==
+X-Received: by 2002:ac8:2f7b:: with SMTP id k56mr22963939qta.239.1593564028380; 
+ Tue, 30 Jun 2020 17:40:28 -0700 (PDT)
+Received: from lca.pw (pool-71-184-117-43.bstnma.fios.verizon.net.
+ [71.184.117.43])
+ by smtp.gmail.com with ESMTPSA id x4sm3683664qkl.130.2020.06.30.17.40.26
+ (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+ Tue, 30 Jun 2020 17:40:27 -0700 (PDT)
+Date: Tue, 30 Jun 2020 20:40:20 -0400
+From: Qian Cai <cai@lca.pw>
+To: Joerg Roedel <joro@8bytes.org>
+Subject: Re: [PATCH v3 00/34] iommu: Move iommu_group setup to IOMMU core code
+Message-ID: <20200701004020.GA6221@lca.pw>
+References: <20200429133712.31431-1-joro@8bytes.org>
 MIME-Version: 1.0
-X-NVConfidentiality: public
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=nvidia.com; s=n1;
- t=1593561507; bh=fMqx6uZVex3BcgP7NxAT863LjXlo1WwRHL0dSMqyUQ8=;
- h=X-PGP-Universal:From:To:CC:Subject:Date:Message-ID:X-Mailer:
- In-Reply-To:References:MIME-Version:X-NVConfidentiality:
- Content-Transfer-Encoding:Content-Type;
- b=kS4KkyDkha0v3IMDjF6hHyuaUeF1F70MmQUw4rABTb/sjfqK/C0BrXjmY1ML9Lcgw
- O1cLxr0N/yPTlqEmDNzX/RdDYCAWNcfD38OOlFX0bphY3l1E5OKK6G1rrNwnI5ZoT7
- ya3A4OnaWOPJcrkiy/G+i8XMjOIhngxxRXTVaFiBXph2AW2c0wjxlLc9An9s+k5kNf
- xKbM52CRvLm05+Iae8XQ13dDfuqPO+PRPG+zM1PpubCqBPXwUUz2cipijLacyd2yf8
- RjnapOVpJAIMmB/EvpOZoUTfTimQRe2XZpqwKxfxr9oGInrqlNUI3WGB5++HJWTtdq
- ucl4WELawO9gg==
-Cc: snikam@nvidia.com, devicetree@vger.kernel.org, nicoleotsuka@gmail.com,
- mperttunen@nvidia.com, bhuntsman@nvidia.com, yhsu@nvidia.com,
- linux-kernel@vger.kernel.org, talho@nvidia.com,
- iommu@lists.linux-foundation.org, nicolinc@nvidia.com,
- linux-tegra@vger.kernel.org, praithatha@nvidia.com,
- linux-arm-kernel@lists.infradead.org, bbiswas@nvidia.com
+Content-Disposition: inline
+In-Reply-To: <20200429133712.31431-1-joro@8bytes.org>
+Cc: Heiko Stuebner <heiko@sntech.de>,
+ Bjorn Andersson <bjorn.andersson@linaro.org>, linux-tegra@vger.kernel.org,
+ Thierry Reding <thierry.reding@gmail.com>, Daniel Drake <drake@endlessm.com>,
+ Will Deacon <will@kernel.org>,
+ Jean-Philippe Brucker <jean-philippe@linaro.org>,
+ linux-samsung-soc@vger.kernel.org, iommu@lists.linux-foundation.org,
+ Krzysztof Kozlowski <krzk@kernel.org>, Jonathan Hunter <jonathanh@nvidia.com>,
+ linux-rockchip@lists.infradead.org, Andy Gross <agross@kernel.org>,
+ jonathan.derrick@intel.com, linux-s390@vger.kernel.org,
+ linux-arm-msm@vger.kernel.org, linux-mediatek@lists.infradead.org,
+ Matthias Brugger <matthias.bgg@gmail.com>,
+ virtualization@lists.linux-foundation.org,
+ Gerald Schaefer <gerald.schaefer@de.ibm.com>,
+ David Woodhouse <dwmw2@infradead.org>, linux-kernel@vger.kernel.org,
+ Kukjin Kim <kgene@kernel.org>, Robin Murphy <robin.murphy@arm.com>
 X-BeenThere: iommu@lists.linux-foundation.org
 X-Mailman-Version: 2.1.15
 Precedence: list
@@ -111,295 +122,266 @@ Content-Transfer-Encoding: 7bit
 Errors-To: iommu-bounces@lists.linux-foundation.org
 Sender: "iommu" <iommu-bounces@lists.linux-foundation.org>
 
-NVIDIA's Tegra194 SoC has three ARM MMU-500 instances.
-It uses two of ARM MMU-500s together to interleave IOVA accesses
-across them and must be programmed identically.
-The third SMMU instance is used as a regular ARM MMU-500 and it
-can either be programmed independently or identical to other
-two ARM MMU-500s.
+On Wed, Apr 29, 2020 at 03:36:38PM +0200, Joerg Roedel wrote:
+> Hi,
+> 
+> here is the third version of this patch-set. Older versions can be found
+> here:
+> 
+> 	v1: https://lore.kernel.org/lkml/20200407183742.4344-1-joro@8bytes.org/
+> 	    (Has some more introductory text)
+> 
+> 	v2: https://lore.kernel.org/lkml/20200414131542.25608-1-joro@8bytes.org/
+> 
+> Changes v2 -> v3:
+> 
+> 	* Rebased v5.7-rc3
+> 
+> 	* Added a missing iommu_group_put() as reported by Lu Baolu.
+> 
+> 	* Added a patch to consolidate more initialization work in
+> 	  __iommu_probe_device(), fixing a bug where no 'struct
+> 	  device_iommu' was allocated in the hotplug path.
+> 
+> There is also a git-branch available with these patches applied:
+> 
+> 	https://git.kernel.org/pub/scm/linux/kernel/git/joro/linux.git/log/?h=iommu-probe-device-v3
+> 
+> Please review. If there are no objections I plan to put these patches
+> into the IOMMU tree early next week.
 
-This implementation supports programming two or three ARM MMU-500s
-identically as per DT config.
+Looks like this patchset introduced an use-after-free on arm-smmu-v3.
 
-Signed-off-by: Krishna Reddy <vdumpa@nvidia.com>
----
- MAINTAINERS                     |   2 +
- drivers/iommu/Makefile          |   2 +-
- drivers/iommu/arm-smmu-impl.c   |   3 +
- drivers/iommu/arm-smmu-nvidia.c | 206 ++++++++++++++++++++++++++++++++
- drivers/iommu/arm-smmu.h        |   1 +
- 5 files changed, 213 insertions(+), 1 deletion(-)
- create mode 100644 drivers/iommu/arm-smmu-nvidia.c
+Reproduced using mlx5,
 
-diff --git a/MAINTAINERS b/MAINTAINERS
-index 7b5ffd646c6b9..64c37dbdd4426 100644
---- a/MAINTAINERS
-+++ b/MAINTAINERS
-@@ -16808,8 +16808,10 @@ F:	drivers/i2c/busses/i2c-tegra.c
- 
- TEGRA IOMMU DRIVERS
- M:	Thierry Reding <thierry.reding@gmail.com>
-+R:	Krishna Reddy <vdumpa@nvidia.com>
- L:	linux-tegra@vger.kernel.org
- S:	Supported
-+F:	drivers/iommu/arm-smmu-nvidia.c
- F:	drivers/iommu/tegra*
- 
- TEGRA KBC DRIVER
-diff --git a/drivers/iommu/Makefile b/drivers/iommu/Makefile
-index 342190196dfb0..2b8203db73ec3 100644
---- a/drivers/iommu/Makefile
-+++ b/drivers/iommu/Makefile
-@@ -15,7 +15,7 @@ obj-$(CONFIG_AMD_IOMMU) += amd/iommu.o amd/init.o amd/quirks.o
- obj-$(CONFIG_AMD_IOMMU_DEBUGFS) += amd/debugfs.o
- obj-$(CONFIG_AMD_IOMMU_V2) += amd/iommu_v2.o
- obj-$(CONFIG_ARM_SMMU) += arm_smmu.o
--arm_smmu-objs += arm-smmu.o arm-smmu-impl.o arm-smmu-qcom.o
-+arm_smmu-objs += arm-smmu.o arm-smmu-impl.o arm-smmu-nvidia.o arm-smmu-qcom.o
- obj-$(CONFIG_ARM_SMMU_V3) += arm-smmu-v3.o
- obj-$(CONFIG_DMAR_TABLE) += intel/dmar.o
- obj-$(CONFIG_INTEL_IOMMU) += intel/iommu.o intel/pasid.o
-diff --git a/drivers/iommu/arm-smmu-impl.c b/drivers/iommu/arm-smmu-impl.c
-index c75b9d957b702..f15571d05474e 100644
---- a/drivers/iommu/arm-smmu-impl.c
-+++ b/drivers/iommu/arm-smmu-impl.c
-@@ -171,6 +171,9 @@ struct arm_smmu_device *arm_smmu_impl_init(struct arm_smmu_device *smmu)
- 	if (of_property_read_bool(np, "calxeda,smmu-secure-config-access"))
- 		smmu->impl = &calxeda_impl;
- 
-+	if (of_device_is_compatible(np, "nvidia,tegra194-smmu"))
-+		return nvidia_smmu_impl_init(smmu);
-+
- 	if (of_device_is_compatible(np, "qcom,sdm845-smmu-500") ||
- 	    of_device_is_compatible(np, "qcom,sc7180-smmu-500"))
- 		return qcom_smmu_impl_init(smmu);
-diff --git a/drivers/iommu/arm-smmu-nvidia.c b/drivers/iommu/arm-smmu-nvidia.c
-new file mode 100644
-index 0000000000000..5c874912e1c1a
---- /dev/null
-+++ b/drivers/iommu/arm-smmu-nvidia.c
-@@ -0,0 +1,206 @@
-+// SPDX-License-Identifier: GPL-2.0-only
-+// NVIDIA ARM SMMU v2 implementation quirks
-+// Copyright (C) 2019-2020 NVIDIA CORPORATION.  All rights reserved.
-+
-+#include <linux/bitfield.h>
-+#include <linux/delay.h>
-+#include <linux/of.h>
-+#include <linux/platform_device.h>
-+#include <linux/slab.h>
-+
-+#include "arm-smmu.h"
-+
-+/*
-+ * Tegra194 has three ARM MMU-500 Instances.
-+ * Two of them are used together for interleaved IOVA accesses and
-+ * used by non-isochronous HW devices for SMMU translations.
-+ * Third one is used for SMMU translations from isochronous HW devices.
-+ * It is possible to use this implementation to program either
-+ * all three or two of the instances identically as desired through
-+ * DT node.
-+ *
-+ * Programming all the three instances identically comes with redundant TLB
-+ * invalidations as all three never need to be TLB invalidated for a HW device.
-+ *
-+ * When Linux kernel supports multiple SMMU devices, the SMMU device used for
-+ * isochornous HW devices should be added as a separate ARM MMU-500 device
-+ * in DT and be programmed independently for efficient TLB invalidates.
-+ */
-+#define MAX_SMMU_INSTANCES 3
-+
-+struct nvidia_smmu {
-+	struct arm_smmu_device	smmu;
-+	unsigned int		num_inst;
-+	void __iomem		*bases[MAX_SMMU_INSTANCES];
-+};
-+
-+static inline struct nvidia_smmu *to_nvidia_smmu(struct arm_smmu_device *smmu)
-+{
-+	return container_of(smmu, struct nvidia_smmu, smmu);
-+}
-+
-+static inline void __iomem *nvidia_smmu_page(struct arm_smmu_device *smmu,
-+					     unsigned int inst, int page)
-+{
-+	struct nvidia_smmu *nvidia_smmu = to_nvidia_smmu(smmu);
-+
-+	if (!nvidia_smmu->bases[0])
-+		nvidia_smmu->bases[0] = smmu->base;
-+
-+	return nvidia_smmu->bases[inst] + (page << smmu->pgshift);
-+}
-+
-+static u32 nvidia_smmu_read_reg(struct arm_smmu_device *smmu,
-+				int page, int offset)
-+{
-+	void __iomem *reg = nvidia_smmu_page(smmu, 0, page) + offset;
-+
-+	return readl_relaxed(reg);
-+}
-+
-+static void nvidia_smmu_write_reg(struct arm_smmu_device *smmu,
-+				  int page, int offset, u32 val)
-+{
-+	unsigned int i;
-+	struct nvidia_smmu *nvidia_smmu = to_nvidia_smmu(smmu);
-+
-+	for (i = 0; i < nvidia_smmu->num_inst; i++) {
-+		void __iomem *reg = nvidia_smmu_page(smmu, i, page) + offset;
-+
-+		writel_relaxed(val, reg);
-+	}
-+}
-+
-+static u64 nvidia_smmu_read_reg64(struct arm_smmu_device *smmu,
-+				  int page, int offset)
-+{
-+	void __iomem *reg = nvidia_smmu_page(smmu, 0, page) + offset;
-+
-+	return readq_relaxed(reg);
-+}
-+
-+static void nvidia_smmu_write_reg64(struct arm_smmu_device *smmu,
-+				    int page, int offset, u64 val)
-+{
-+	unsigned int i;
-+	struct nvidia_smmu *nvidia_smmu = to_nvidia_smmu(smmu);
-+
-+	for (i = 0; i < nvidia_smmu->num_inst; i++) {
-+		void __iomem *reg = nvidia_smmu_page(smmu, i, page) + offset;
-+
-+		writeq_relaxed(val, reg);
-+	}
-+}
-+
-+static void nvidia_smmu_tlb_sync(struct arm_smmu_device *smmu, int page,
-+				 int sync, int status)
-+{
-+	unsigned int delay;
-+	struct nvidia_smmu *nvidia_smmu = to_nvidia_smmu(smmu);
-+
-+	arm_smmu_writel(smmu, page, sync, 0);
-+
-+	for (delay = 1; delay < TLB_LOOP_TIMEOUT; delay *= 2) {
-+		unsigned int spin_cnt;
-+
-+		for (spin_cnt = TLB_SPIN_COUNT; spin_cnt > 0; spin_cnt--) {
-+			u32 val = 0;
-+			unsigned int i;
-+
-+			for (i = 0; i < nvidia_smmu->num_inst; i++) {
-+				void __iomem *reg =
-+					nvidia_smmu_page(smmu, i, page) + status;
-+
-+				val |= readl_relaxed(reg);
-+			}
-+
-+			if (!(val & ARM_SMMU_sTLBGSTATUS_GSACTIVE))
-+				return;
-+
-+			cpu_relax();
-+		}
-+
-+		udelay(delay);
-+	}
-+
-+	dev_err_ratelimited(smmu->dev,
-+			    "TLB sync timed out -- SMMU may be deadlocked\n");
-+}
-+
-+static int nvidia_smmu_reset(struct arm_smmu_device *smmu)
-+{
-+	unsigned int i;
-+
-+	for (i = 0; i < to_nvidia_smmu(smmu)->num_inst; i++) {
-+		u32 val;
-+		void __iomem *reg = nvidia_smmu_page(smmu, i, ARM_SMMU_GR0) +
-+				    ARM_SMMU_GR0_sGFSR;
-+
-+		/* clear global FSR */
-+		val = readl_relaxed(reg);
-+		writel_relaxed(val, reg);
-+	}
-+
-+	return 0;
-+}
-+
-+static const struct arm_smmu_impl nvidia_smmu_impl = {
-+	.read_reg = nvidia_smmu_read_reg,
-+	.write_reg = nvidia_smmu_write_reg,
-+	.read_reg64 = nvidia_smmu_read_reg64,
-+	.write_reg64 = nvidia_smmu_write_reg64,
-+	.reset = nvidia_smmu_reset,
-+	.tlb_sync = nvidia_smmu_tlb_sync,
-+};
-+
-+struct arm_smmu_device *nvidia_smmu_impl_init(struct arm_smmu_device *smmu)
-+{
-+	struct resource *res;
-+	struct device *dev = smmu->dev;
-+	struct nvidia_smmu *nvidia_smmu;
-+	struct platform_device *pdev = to_platform_device(dev);
-+
-+	nvidia_smmu = devm_kzalloc(dev, sizeof(*nvidia_smmu), GFP_KERNEL);
-+	if (!nvidia_smmu)
-+		return ERR_PTR(-ENOMEM);
-+
-+	/*
-+	 * Copy the data from arm_smmu_device struct allocated in arm-smmu.c.
-+	 * The memory for the arm_smmu_device struct from arm-smmu.c is freed
-+	 * subsequently.
-+	 */
-+	nvidia_smmu->smmu = *smmu;
-+	/* Instance 0 is ioremapped by arm-smmu.c after this function returns */
-+	nvidia_smmu->num_inst = 1;
-+
-+	res = platform_get_resource(pdev, IORESOURCE_MEM, 1);
-+	/* Minimum two SMMU instances are expected. */
-+	if (!res)
-+		return ERR_PTR(-ENODEV);
-+
-+	nvidia_smmu->bases[1] = devm_ioremap_resource(dev, res);
-+	if (IS_ERR(nvidia_smmu->bases[1]))
-+		return ERR_CAST(nvidia_smmu->bases[1]);
-+
-+	nvidia_smmu->num_inst++;
-+
-+	/* 3rd SMMU instance is Optional. */
-+	res = platform_get_resource(pdev, IORESOURCE_MEM, 2);
-+	if (res) {
-+		nvidia_smmu->bases[2] = devm_ioremap_resource(dev, res);
-+		if (IS_ERR(nvidia_smmu->bases[2]))
-+			return ERR_CAST(nvidia_smmu->bases[2]);
-+
-+		nvidia_smmu->num_inst++;
-+	}
-+
-+	nvidia_smmu->smmu.impl = &nvidia_smmu_impl;
-+	/*
-+	 * Free the arm_smmu_device struct allocated in arm-smmu.c.
-+	 * Once this function returns, arm-smmu.c would use arm_smmu_device
-+	 * allocated as part of nvidia_smmu struct.
-+	 */
-+	devm_kfree(dev, smmu);
-+
-+	return &nvidia_smmu->smmu;
-+}
-diff --git a/drivers/iommu/arm-smmu.h b/drivers/iommu/arm-smmu.h
-index c7d0122a7c6ca..fad63efa1a72d 100644
---- a/drivers/iommu/arm-smmu.h
-+++ b/drivers/iommu/arm-smmu.h
-@@ -452,6 +452,7 @@ static inline void arm_smmu_writeq(struct arm_smmu_device *smmu, int page,
- 	arm_smmu_writeq((s), ARM_SMMU_CB((s), (n)), (o), (v))
- 
- struct arm_smmu_device *arm_smmu_impl_init(struct arm_smmu_device *smmu);
-+struct arm_smmu_device *nvidia_smmu_impl_init(struct arm_smmu_device *smmu);
- struct arm_smmu_device *qcom_smmu_impl_init(struct arm_smmu_device *smmu);
- 
- int arm_mmu500_reset(struct arm_smmu_device *smmu);
--- 
-2.26.2
+# echo 1 > /sys/class/net/enp11s0f1np1/device/sriov_numvfs
+# echo 0 > /sys/class/net/enp11s0f1np1/device/sriov_numvfs 
 
+The .config,
+https://github.com/cailca/linux-mm/blob/master/arm64.config
+
+Looking at the free stack,
+
+iommu_release_device->iommu_group_remove_device
+
+was introduced in 07/34 ("iommu: Add probe_device() and release_device()
+call-backs").
+
+[ 9426.724641][ T3356] pci 0000:0b:01.2: Removing from iommu group 3
+[ 9426.731347][ T3356] ==================================================================
+[ 9426.739263][ T3356] BUG: KASAN: use-after-free in __lock_acquire+0x3458/0x4440
+__lock_acquire at kernel/locking/lockdep.c:4250
+[ 9426.746477][ T3356] Read of size 8 at addr ffff0089df1a6f68 by task bash/3356
+[ 9426.753601][ T3356]
+[ 9426.755782][ T3356] CPU: 5 PID: 3356 Comm: bash Not tainted 5.8.0-rc3-next-20200630 #2
+[ 9426.763687][ T3356] Hardware name: HPE Apollo 70             /C01_APACHE_MB         , BIOS L50_5.13_1.11 06/18/2019
+[ 9426.774111][ T3356] Call trace:
+[ 9426.777245][ T3356]  dump_backtrace+0x0/0x398
+[ 9426.781593][ T3356]  show_stack+0x14/0x20
+[ 9426.785596][ T3356]  dump_stack+0x140/0x1b8
+[ 9426.789772][ T3356]  print_address_description.isra.12+0x54/0x4a8
+[ 9426.795855][ T3356]  kasan_report+0x134/0x1b8
+[ 9426.800203][ T3356]  __asan_report_load8_noabort+0x2c/0x50
+[ 9426.805679][ T3356]  __lock_acquire+0x3458/0x4440
+[ 9426.810373][ T3356]  lock_acquire+0x204/0xf10
+[ 9426.814722][ T3356]  _raw_spin_lock_irqsave+0xf8/0x180
+[ 9426.819853][ T3356]  arm_smmu_detach_dev+0xd8/0x4a0
+arm_smmu_detach_dev at drivers/iommu/arm-smmu-v3.c:2776
+[ 9426.824721][ T3356]  arm_smmu_release_device+0xb4/0x1c8
+arm_smmu_disable_pasid at drivers/iommu/arm-smmu-v3.c:2754
+(inlined by) arm_smmu_release_device at drivers/iommu/arm-smmu-v3.c:3000
+[ 9426.829937][ T3356]  iommu_release_device+0xc0/0x178
+iommu_release_device at drivers/iommu/iommu.c:302
+[ 9426.834892][ T3356]  iommu_bus_notifier+0x118/0x160
+[ 9426.839762][ T3356]  notifier_call_chain+0xa4/0x128
+[ 9426.844630][ T3356]  __blocking_notifier_call_chain+0x70/0xa8
+[ 9426.850367][ T3356]  blocking_notifier_call_chain+0x14/0x20
+[ 9426.855929][ T3356]  device_del+0x618/0xa00
+[ 9426.860105][ T3356]  pci_remove_bus_device+0x108/0x2d8
+[ 9426.865233][ T3356]  pci_stop_and_remove_bus_device+0x1c/0x28
+[ 9426.870972][ T3356]  pci_iov_remove_virtfn+0x228/0x368
+[ 9426.876100][ T3356]  sriov_disable+0x8c/0x348
+[ 9426.880447][ T3356]  pci_disable_sriov+0x5c/0x70
+[ 9426.885117][ T3356]  mlx5_core_sriov_configure+0xd8/0x260 [mlx5_core]
+[ 9426.891549][ T3356]  sriov_numvfs_store+0x240/0x318
+[ 9426.896417][ T3356]  dev_attr_store+0x38/0x68
+[ 9426.900766][ T3356]  sysfs_kf_write+0xdc/0x128
+[ 9426.905200][ T3356]  kernfs_fop_write+0x23c/0x448
+[ 9426.909897][ T3356]  __vfs_write+0x54/0xe8
+[ 9426.913984][ T3356]  vfs_write+0x124/0x3f0
+[ 9426.918070][ T3356]  ksys_write+0xe8/0x1b8
+[ 9426.922157][ T3356]  __arm64_sys_write+0x68/0x98
+[ 9426.926766][ T3356]  do_el0_svc+0x124/0x220
+[ 9426.930941][ T3356]  el0_sync_handler+0x260/0x408
+[ 9426.935634][ T3356]  el0_sync+0x140/0x180
+[ 9426.939633][ T3356]
+[ 9426.941810][ T3356] Allocated by task 3356:
+[ 9426.945985][ T3356]  save_stack+0x24/0x50
+[ 9426.949986][ T3356]  __kasan_kmalloc.isra.13+0xc4/0xe0
+[ 9426.955114][ T3356]  kasan_kmalloc+0xc/0x18
+[ 9426.959288][ T3356]  kmem_cache_alloc_trace+0x1ec/0x318
+[ 9426.964503][ T3356]  arm_smmu_domain_alloc+0x54/0x148
+[ 9426.969545][ T3356]  iommu_group_alloc_default_domain+0xc0/0x440
+[ 9426.975541][ T3356]  iommu_probe_device+0x1c0/0x308
+[ 9426.980409][ T3356]  iort_iommu_configure+0x434/0x518
+[ 9426.985452][ T3356]  acpi_dma_configure+0xf0/0x128
+[ 9426.990235][ T3356]  pci_dma_configure+0x114/0x160
+[ 9426.995017][ T3356]  really_probe+0x124/0x6d8
+[ 9426.999364][ T3356]  driver_probe_device+0xc4/0x180
+[ 9427.004232][ T3356]  __device_attach_driver+0x184/0x1e8
+[ 9427.009447][ T3356]  bus_for_each_drv+0x114/0x1a0
+[ 9427.014142][ T3356]  __device_attach+0x19c/0x2a8
+[ 9427.018749][ T3356]  device_attach+0x10/0x18
+[ 9427.023009][ T3356]  pci_bus_add_device+0x70/0xf8
+[ 9427.027704][ T3356]  pci_iov_add_virtfn+0x7b4/0xb40
+[ 9427.032571][ T3356]  sriov_enable+0x5c8/0xc30
+[ 9427.036918][ T3356]  pci_enable_sriov+0x64/0x80
+[ 9427.041485][ T3356]  mlx5_core_sriov_configure+0x58/0x260 [mlx5_core]
+[ 9427.047917][ T3356]  sriov_numvfs_store+0x1c0/0x318
+[ 9427.052784][ T3356]  dev_attr_store+0x38/0x68
+[ 9427.057131][ T3356]  sysfs_kf_write+0xdc/0x128
+[ 9427.061565][ T3356]  kernfs_fop_write+0x23c/0x448
+[ 9427.066260][ T3356]  __vfs_write+0x54/0xe8
+[ 9427.070346][ T3356]  vfs_write+0x124/0x3f0
+[ 9427.074433][ T3356]  ksys_write+0xe8/0x1b8
+[ 9427.078519][ T3356]  __arm64_sys_write+0x68/0x98
+[ 9427.083127][ T3356]  do_el0_svc+0x124/0x220
+[ 9427.087300][ T3356]  el0_sync_handler+0x260/0x408
+[ 9427.091994][ T3356]  el0_sync+0x140/0x180
+[ 9427.095992][ T3356]
+[ 9427.098168][ T3356] Freed by task 3356:
+[ 9427.101995][ T3356]  save_stack+0x24/0x50
+[ 9427.105996][ T3356]  __kasan_slab_free+0x124/0x198
+[ 9427.110777][ T3356]  kasan_slab_free+0x10/0x18
+[ 9427.115210][ T3356]  slab_free_freelist_hook+0x110/0x298
+[ 9427.120512][ T3356]  kfree+0x128/0x668
+[ 9427.124252][ T3356]  arm_smmu_domain_free+0xf4/0x1a0
+[ 9427.129206][ T3356]  iommu_group_release+0xec/0x160
+[ 9427.134074][ T3356]  kobject_put+0xf4/0x238
+[ 9427.138247][ T3356]  kobject_del+0x110/0x190
+[ 9427.142507][ T3356]  kobject_put+0x1e4/0x238
+[ 9427.146767][ T3356]  iommu_group_remove_device+0x394/0x938
+[ 9427.152242][ T3356]  iommu_release_device+0x9c/0x178
+iommu_release_device at drivers/iommu/iommu.c:300
+[ 9427.157196][ T3356]  iommu_bus_notifier+0x118/0x160
+[ 9427.162065][ T3356]  notifier_call_chain+0xa4/0x128
+[ 9427.166934][ T3356]  __blocking_notifier_call_chain+0x70/0xa8
+[ 9427.172670][ T3356]  blocking_notifier_call_chain+0x14/0x20
+[ 9427.178233][ T3356]  device_del+0x618/0xa00
+[ 9427.182406][ T3356]  pci_remove_bus_device+0x108/0x2d8
+[ 9427.187535][ T3356]  pci_stop_and_remove_bus_device+0x1c/0x28
+[ 9427.193271][ T3356]  pci_iov_remove_virtfn+0x228/0x368
+[ 9427.198399][ T3356]  sriov_disable+0x8c/0x348
+[ 9427.202746][ T3356]  pci_disable_sriov+0x5c/0x70
+[ 9427.207398][ T3356]  mlx5_core_sriov_configure+0xd8/0x260 [mlx5_core]
+[ 9427.213830][ T3356]  sriov_numvfs_store+0x240/0x318
+[ 9427.218698][ T3356]  dev_attr_store+0x38/0x68
+[ 9427.223045][ T3356]  sysfs_kf_write+0xdc/0x128
+[ 9427.227478][ T3356]  kernfs_fop_write+0x23c/0x448
+[ 9427.232173][ T3356]  __vfs_write+0x54/0xe8
+[ 9427.236259][ T3356]  vfs_write+0x124/0x3f0
+[ 9427.240346][ T3356]  ksys_write+0xe8/0x1b8
+[ 9427.244433][ T3356]  __arm64_sys_write+0x68/0x98
+[ 9427.249041][ T3356]  do_el0_svc+0x124/0x220
+[ 9427.253215][ T3356]  el0_sync_handler+0x260/0x408
+[ 9427.257908][ T3356]  el0_sync+0x140/0x180
+[ 9427.261907][ T3356]
+[ 9427.264084][ T3356] The buggy address belongs to the object at ffff0089df1a6e00
+[ 9427.264084][ T3356]  which belongs to the cache kmalloc-512 of size 512
+[ 9427.277980][ T3356] The buggy address is located 360 bytes inside of
+[ 9427.277980][ T3356]  512-byte region [ffff0089df1a6e00, ffff0089df1a7000)
+[ 9427.291094][ T3356] The buggy address belongs to the page:
+[ 9427.296571][ T3356] page:ffffffe02257c680 refcount:1 mapcount:0 mapping:0000000000000000 index:0xffff0089df1a1400
+[ 9427.306823][ T3356] flags: 0x7ffff800000200(slab)
+[ 9427.311520][ T3356] raw: 007ffff800000200 ffffffe02246b8c8 ffffffe02257ff88 ffff000000320680
+[ 9427.319949][ T3356] raw: ffff0089df1a1400 00000000002a000e 00000001ffffffff ffff0089df1a5001
+[ 9427.328374][ T3356] page dumped because: kasan: bad access detected
+[ 9427.334630][ T3356] page->mem_cgroup:ffff0089df1a5001
+[ 9427.339670][ T3356]
+[ 9427.341846][ T3356] Memory state around the buggy address:
+[ 9427.347322][ T3356]  ffff0089df1a6e00: fb fb fb fb fb fb fb fb fb fb fb fb fb fb fb fb
+[ 9427.355228][ T3356]  ffff0089df1a6e80: fb fb fb fb fb fb fb fb fb fb fb fb fb fb fb fb
+[ 9427.363133][ T3356] >ffff0089df1a6f00: fb fb fb fb fb fb fb fb fb fb fb fb fb fb fb fb
+[ 9427.371038][ T3356]                                                           ^
+[ 9427.378337][ T3356]  ffff0089df1a6f80: fb fb fb fb fb fb fb fb fb fb fb fb fb fb fb fb
+[ 9427.386242][ T3356]  ffff0089df1a7000: fc fc fc fc fc fc fc fc fc fc fc fc fc fc fc fc
+[ 9427.394146][ T3356] ==================================================================
+[ 9427.402052][ T3356] Disabling lock debugging due to kernel taint
+
+> 
+> Thanks,
+> 
+> 	Joerg
+> 
+> Joerg Roedel (33):
+>   iommu: Move default domain allocation to separate function
+>   iommu/amd: Implement iommu_ops->def_domain_type call-back
+>   iommu/vt-d: Wire up iommu_ops->def_domain_type
+>   iommu/amd: Remove dma_mask check from check_device()
+>   iommu/amd: Return -ENODEV in add_device when device is not handled by
+>     IOMMU
+>   iommu: Add probe_device() and release_device() call-backs
+>   iommu: Move default domain allocation to iommu_probe_device()
+>   iommu: Keep a list of allocated groups in __iommu_probe_device()
+>   iommu: Move new probe_device path to separate function
+>   iommu: Split off default domain allocation from group assignment
+>   iommu: Move iommu_group_create_direct_mappings() out of
+>     iommu_group_add_device()
+>   iommu: Export bus_iommu_probe() and make is safe for re-probing
+>   iommu/amd: Remove dev_data->passthrough
+>   iommu/amd: Convert to probe/release_device() call-backs
+>   iommu/vt-d: Convert to probe/release_device() call-backs
+>   iommu/arm-smmu: Convert to probe/release_device() call-backs
+>   iommu/pamu: Convert to probe/release_device() call-backs
+>   iommu/s390: Convert to probe/release_device() call-backs
+>   iommu/virtio: Convert to probe/release_device() call-backs
+>   iommu/msm: Convert to probe/release_device() call-backs
+>   iommu/mediatek: Convert to probe/release_device() call-backs
+>   iommu/mediatek-v1 Convert to probe/release_device() call-backs
+>   iommu/qcom: Convert to probe/release_device() call-backs
+>   iommu/rockchip: Convert to probe/release_device() call-backs
+>   iommu/tegra: Convert to probe/release_device() call-backs
+>   iommu/renesas: Convert to probe/release_device() call-backs
+>   iommu/omap: Remove orphan_dev tracking
+>   iommu/omap: Convert to probe/release_device() call-backs
+>   iommu/exynos: Use first SYSMMU in controllers list for IOMMU core
+>   iommu/exynos: Convert to probe/release_device() call-backs
+>   iommu: Remove add_device()/remove_device() code-paths
+>   iommu: Move more initialization to __iommu_probe_device()
+>   iommu: Unexport iommu_group_get_for_dev()
+> 
+> Sai Praneeth Prakhya (1):
+>   iommu: Add def_domain_type() callback in iommu_ops
+> 
+>  drivers/iommu/amd_iommu.c       |  97 ++++----
+>  drivers/iommu/amd_iommu_types.h |   1 -
+>  drivers/iommu/arm-smmu-v3.c     |  38 +---
+>  drivers/iommu/arm-smmu.c        |  39 ++--
+>  drivers/iommu/exynos-iommu.c    |  24 +-
+>  drivers/iommu/fsl_pamu_domain.c |  22 +-
+>  drivers/iommu/intel-iommu.c     |  68 +-----
+>  drivers/iommu/iommu.c           | 387 +++++++++++++++++++++++++-------
+>  drivers/iommu/ipmmu-vmsa.c      |  60 ++---
+>  drivers/iommu/msm_iommu.c       |  34 +--
+>  drivers/iommu/mtk_iommu.c       |  24 +-
+>  drivers/iommu/mtk_iommu_v1.c    |  50 ++---
+>  drivers/iommu/omap-iommu.c      |  99 ++------
+>  drivers/iommu/qcom_iommu.c      |  24 +-
+>  drivers/iommu/rockchip-iommu.c  |  26 +--
+>  drivers/iommu/s390-iommu.c      |  22 +-
+>  drivers/iommu/tegra-gart.c      |  24 +-
+>  drivers/iommu/tegra-smmu.c      |  31 +--
+>  drivers/iommu/virtio-iommu.c    |  41 +---
+>  include/linux/iommu.h           |  21 +-
+>  20 files changed, 531 insertions(+), 601 deletions(-)
+> 
+> -- 
+> 2.17.1
+> 
+> _______________________________________________
+> iommu mailing list
+> iommu@lists.linux-foundation.org
+> https://lists.linuxfoundation.org/mailman/listinfo/iommu
 _______________________________________________
 iommu mailing list
 iommu@lists.linux-foundation.org
