@@ -2,75 +2,82 @@ Return-Path: <SRS0=cxdO=AM=lists.linux-foundation.org=iommu-bounces@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-10.0 required=3.0
-	tests=HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_PATCH,MAILING_LIST_MULTI,
-	SIGNED_OFF_BY,SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED,USER_AGENT_GIT
-	autolearn=ham autolearn_force=no version=3.4.0
+X-Spam-Status: No, score=-2.5 required=3.0 tests=HEADER_FROM_DIFFERENT_DOMAINS,
+	MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS,USER_AGENT_SANE_1 autolearn=no
+	autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 12896C433E0
-	for <iommu@archiver.kernel.org>; Wed,  1 Jul 2020 15:27:31 +0000 (UTC)
-Received: from silver.osuosl.org (smtp3.osuosl.org [140.211.166.136])
+	by smtp.lore.kernel.org (Postfix) with ESMTP id A5105C433E0
+	for <iommu@archiver.kernel.org>; Wed,  1 Jul 2020 16:12:45 +0000 (UTC)
+Received: from hemlock.osuosl.org (smtp2.osuosl.org [140.211.166.133])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by mail.kernel.org (Postfix) with ESMTPS id EDFD2207F5
-	for <iommu@archiver.kernel.org>; Wed,  1 Jul 2020 15:27:30 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org EDFD2207F5
-Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=linux.intel.com
+	by mail.kernel.org (Postfix) with ESMTPS id 76DF0207FB
+	for <iommu@archiver.kernel.org>; Wed,  1 Jul 2020 16:12:45 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 76DF0207FB
+Authentication-Results: mail.kernel.org; dmarc=none (p=none dis=none) header.from=arm.com
 Authentication-Results: mail.kernel.org; spf=pass smtp.mailfrom=iommu-bounces@lists.linux-foundation.org
 Received: from localhost (localhost [127.0.0.1])
-	by silver.osuosl.org (Postfix) with ESMTP id C4C412E52E;
-	Wed,  1 Jul 2020 15:27:30 +0000 (UTC)
+	by hemlock.osuosl.org (Postfix) with ESMTP id 4A6408A7C5;
+	Wed,  1 Jul 2020 16:12:45 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from silver.osuosl.org ([127.0.0.1])
+Received: from hemlock.osuosl.org ([127.0.0.1])
 	by localhost (.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
-	with ESMTP id pdswcB3n1oB7; Wed,  1 Jul 2020 15:27:28 +0000 (UTC)
+	with ESMTP id 3JCSQGQIJF8j; Wed,  1 Jul 2020 16:12:44 +0000 (UTC)
 Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [140.211.9.56])
-	by silver.osuosl.org (Postfix) with ESMTP id 3535F2E2F8;
-	Wed,  1 Jul 2020 15:27:28 +0000 (UTC)
+	by hemlock.osuosl.org (Postfix) with ESMTP id 727C08A763;
+	Wed,  1 Jul 2020 16:12:44 +0000 (UTC)
 Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
-	by lists.linuxfoundation.org (Postfix) with ESMTP id 20C10C0890;
-	Wed,  1 Jul 2020 15:27:28 +0000 (UTC)
-Received: from fraxinus.osuosl.org (smtp4.osuosl.org [140.211.166.137])
- by lists.linuxfoundation.org (Postfix) with ESMTP id DD206C0890
- for <iommu@lists.linux-foundation.org>; Wed,  1 Jul 2020 15:27:24 +0000 (UTC)
+	by lists.linuxfoundation.org (Postfix) with ESMTP id 50333C0865;
+	Wed,  1 Jul 2020 16:12:44 +0000 (UTC)
+Received: from hemlock.osuosl.org (smtp2.osuosl.org [140.211.166.133])
+ by lists.linuxfoundation.org (Postfix) with ESMTP id 2F5B0C0733
+ for <iommu@lists.linux-foundation.org>; Wed,  1 Jul 2020 16:12:43 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
- by fraxinus.osuosl.org (Postfix) with ESMTP id C892789283
- for <iommu@lists.linux-foundation.org>; Wed,  1 Jul 2020 15:27:24 +0000 (UTC)
+ by hemlock.osuosl.org (Postfix) with ESMTP id 13C018A7C5
+ for <iommu@lists.linux-foundation.org>; Wed,  1 Jul 2020 16:12:43 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from fraxinus.osuosl.org ([127.0.0.1])
+Received: from hemlock.osuosl.org ([127.0.0.1])
  by localhost (.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
- with ESMTP id LukGb9CXtoda for <iommu@lists.linux-foundation.org>;
- Wed,  1 Jul 2020 15:27:24 +0000 (UTC)
+ with ESMTP id H7k6OEVViRCC for <iommu@lists.linux-foundation.org>;
+ Wed,  1 Jul 2020 16:12:41 +0000 (UTC)
 X-Greylist: domain auto-whitelisted by SQLgrey-1.7.6
-Received: from mga17.intel.com (mga17.intel.com [192.55.52.151])
- by fraxinus.osuosl.org (Postfix) with ESMTPS id 2B9D489292
- for <iommu@lists.linux-foundation.org>; Wed,  1 Jul 2020 15:27:24 +0000 (UTC)
-IronPort-SDR: sfT7+F1r7UaXE0Lni3NU/C1s7PhUlN8xkWgoG5GAyfnXmjBxmCIDugOlnPIk3fz9VSE/GtBDpK
- EYWThlr1IadA==
-X-IronPort-AV: E=McAfee;i="6000,8403,9668"; a="126699729"
-X-IronPort-AV: E=Sophos;i="5.75,300,1589266800"; d="scan'208";a="126699729"
-X-Amp-Result: SKIPPED(no attachment in message)
-X-Amp-File-Uploaded: False
-Received: from orsmga002.jf.intel.com ([10.7.209.21])
- by fmsmga107.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384;
- 01 Jul 2020 08:27:23 -0700
-IronPort-SDR: btFBBtRUEX+vHGqsy/EMYLn4PZ9C6iB7F/OQDO2ETyrDoFqHxBFwPaib5XKujzPdHVDuYGPHhD
- +J2hJBUNDAgA==
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.75,300,1589266800"; d="scan'208";a="295591653"
-Received: from jacob-builder.jf.intel.com ([10.7.199.155])
- by orsmga002.jf.intel.com with ESMTP; 01 Jul 2020 08:27:22 -0700
-From: Jacob Pan <jacob.jun.pan@linux.intel.com>
-To: iommu@lists.linux-foundation.org, LKML <linux-kernel@vger.kernel.org>,
- "Lu Baolu" <baolu.lu@linux.intel.com>, Joerg Roedel <joro@8bytes.org>,
- David Woodhouse <dwmw2@infradead.org>
-Subject: [PATCH v3 5/7] iommu/vt-d: Fix devTLB flush for vSVA
-Date: Wed,  1 Jul 2020 08:33:54 -0700
-Message-Id: <1593617636-79385-6-git-send-email-jacob.jun.pan@linux.intel.com>
-X-Mailer: git-send-email 2.7.4
-In-Reply-To: <1593617636-79385-1-git-send-email-jacob.jun.pan@linux.intel.com>
-References: <1593617636-79385-1-git-send-email-jacob.jun.pan@linux.intel.com>
-Cc: "Tian, Kevin" <kevin.tian@intel.com>, Raj Ashok <ashok.raj@intel.com>
+Received: from foss.arm.com (foss.arm.com [217.140.110.172])
+ by hemlock.osuosl.org (Postfix) with ESMTP id 0C5858A763
+ for <iommu@lists.linux-foundation.org>; Wed,  1 Jul 2020 16:12:40 +0000 (UTC)
+Received: from usa-sjc-imap-foss1.foss.arm.com (unknown [10.121.207.14])
+ by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id 713D631B;
+ Wed,  1 Jul 2020 09:12:40 -0700 (PDT)
+Received: from [10.57.21.32] (unknown [10.57.21.32])
+ by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPSA id 297AB3F68F;
+ Wed,  1 Jul 2020 09:12:37 -0700 (PDT)
+Subject: Re: [PATCH v2 01/12] ACPI/IORT: Make iort_match_node_callback walk
+ the ACPI namespace for NC
+To: Hanjun Guo <guohanjun@huawei.com>,
+ Lorenzo Pieralisi <lorenzo.pieralisi@arm.com>
+References: <20200521130008.8266-1-lorenzo.pieralisi@arm.com>
+ <20200619082013.13661-1-lorenzo.pieralisi@arm.com>
+ <20200619082013.13661-2-lorenzo.pieralisi@arm.com>
+ <718cae1f-2f33-f6d9-f278-157300b73116@huawei.com>
+ <20200629090551.GA28873@e121166-lin.cambridge.arm.com>
+ <765078e7-b3ec-af5d-0405-7834ba0f120a@huawei.com>
+ <20200630102454.GA17556@e121166-lin.cambridge.arm.com>
+ <4817d766-0437-5356-a0b9-97b111d4cae2@huawei.com>
+From: Robin Murphy <robin.murphy@arm.com>
+Message-ID: <952a6720-f401-1441-5548-5b40cfc76d3a@arm.com>
+Date: Wed, 1 Jul 2020 17:12:35 +0100
+User-Agent: Mozilla/5.0 (Windows NT 10.0; rv:68.0) Gecko/20100101
+ Thunderbird/68.9.0
+MIME-Version: 1.0
+In-Reply-To: <4817d766-0437-5356-a0b9-97b111d4cae2@huawei.com>
+Content-Language: en-GB
+Cc: devicetree@vger.kernel.org, Marc Zyngier <maz@kernel.org>,
+ linux-pci@vger.kernel.org, Catalin Marinas <catalin.marinas@arm.com>,
+ Diana Craciun <diana.craciun@oss.nxp.com>,
+ "Rafael J. Wysocki" <rjw@rjwysocki.net>,
+ Makarand Pawagi <makarand.pawagi@nxp.com>, linux-acpi@vger.kernel.org,
+ iommu@lists.linux-foundation.org, Rob Herring <robh+dt@kernel.org>,
+ Sudeep Holla <sudeep.holla@arm.com>, Bjorn Helgaas <bhelgaas@google.com>,
+ Will Deacon <will@kernel.org>, linux-arm-kernel@lists.infradead.org
 X-BeenThere: iommu@lists.linux-foundation.org
 X-Mailman-Version: 2.1.15
 Precedence: list
@@ -83,104 +90,103 @@ List-Post: <mailto:iommu@lists.linux-foundation.org>
 List-Help: <mailto:iommu-request@lists.linux-foundation.org?subject=help>
 List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
  <mailto:iommu-request@lists.linux-foundation.org?subject=subscribe>
-MIME-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset="us-ascii"; Format="flowed"
 Errors-To: iommu-bounces@lists.linux-foundation.org
 Sender: "iommu" <iommu-bounces@lists.linux-foundation.org>
 
-From: Liu Yi L <yi.l.liu@intel.com>
+On 2020-06-30 14:04, Hanjun Guo wrote:
+> On 2020/6/30 18:24, Lorenzo Pieralisi wrote:
+>> On Tue, Jun 30, 2020 at 11:06:41AM +0800, Hanjun Guo wrote:
+>>
+>> [...]
+>>
+>>>> For devices that aren't described in the DSDT - IORT translations
+>>>> are determined by their ACPI parent device. Do you see/Have you
+>>>> found any issue with this approach ?
+>>>
+>>> The spec says "Describes the IO relationships between devices
+>>> represented in the ACPI namespace.", and in section 3.1.1.3 Named
+>>> component node, it says:
+>>
+>> PCI devices aren't necessarily described in the ACPI namespace and we
+>> still use IORT to describe them - through the RC node.
+>>
+>>> "Named component nodes are used to describe devices that are also
+>>> included in the Differentiated System Description Table (DSDT). See
+>>> [ACPI]."
+>>>
+>>> So from my understanding, the IORT spec for now, can only do ID
+>>> translations for devices in the DSDT.
+>>
+>> I think you can read this multiple ways but this patch does not
+>> change this concept. What changes, is applying parent's node IORT
+>> mapping to child nodes with no associated DSDT nodes, it is the
+>> same thing we do with PCI and the _DMA method - we could update
+>> the wording in the specs if that clarifies but I don't think this
+>> deliberately disregards the specifications.
+> 
+> I agree, but it's better to update the wording of the spec.
+> 
+>>
+>>>>> For a platform device, if I use its parent's full path name for
+>>>>> its named component entry, then it will match, but this will violate
+>>>>> the IORT spec.
+>>>>
+>>>> Can you elaborate on this please I don't get the point you
+>>>> are making.
+>>>
+>>> For example, device A is not described in DSDT so can't represent
+>>> as a NC node in IORT. Device B can be described in DSDT and it
+>>> is the parent of device A, so device B can be represented in IORT
+>>> with memory access properties and node flags with Substream width
+>>> and Stall supported info.
+>>>
+>>> When we trying to translate device A's ID, we reuse all the memory
+>>> access properties and node flags from its parent (device B), but
+>>> will it the same?
+>>
+>> I assume so why wouldn't it be ? Why would be describe them in
+>> a parent-child relationship if that's not how the system looks like
+>> in HW ?
+> 
+> The point I'm making is that I'm not sure all the memory access and
+> stall properties are the same for the parent and the device itself.
 
-For guest SVA usage, in order to optimize for less VMEXIT, guest request
-of IOTLB flush also includes device TLB.
+Is that even a valid case though? The principal thing we want to 
+accommodate here is when device B *is* the one accessing memory, either 
+because it is a bridge with device A sat behind it, or because device A 
+is actually just some logical function or subset of physical device B.
 
-On the host side, IOMMU driver performs IOTLB and implicit devTLB
-invalidation. When PASID-selective granularity is requested by the guest
-we need to derive the equivalent address range for devTLB instead of
-using the address information in the UAPI data. The reason for that is, unlike
-IOTLB flush, devTLB flush does not support PASID-selective granularity.
-This is to say, we need to set the following in the PASID based devTLB
-invalidation descriptor:
-- entire 64 bit range in address ~(0x1 << 63)
-- S bit = 1 (VT-d CH 6.5.2.6).
+If the topology is such that device A is a completely independent device 
+with its own path to memory such that it could have different 
+properties, I would expect that it *should* be described in DSDT, and I 
+can't easily think of a good reason why it wouldn't be. I'm also 
+struggling to imagine how it might even have an ID that had to be 
+interpreted in the context of device B if it wasn't one of the cases 
+above :/
 
-Without this fix, device TLB flush range is not set properly for PASID
-selective granularity. This patch also merged devTLB flush code for both
-implicit and explicit cases.
+I don't doubt that people could - or maybe even have - come up with crap 
+DSDT bindings that don't represent the hardware sufficiently accurately, 
+but I'm not sure that should be IORT's problem...
 
-Fixes: 6ee1b77ba3ac ("iommu/vt-d: Add svm/sva invalidate function")
-Acked-by: Lu Baolu <baolu.lu@linux.intel.com>
-Signed-off-by: Liu Yi L <yi.l.liu@intel.com>
-Signed-off-by: Jacob Pan <jacob.jun.pan@linux.intel.com>
----
- drivers/iommu/intel/iommu.c | 28 ++++++++++++++++++----------
- 1 file changed, 18 insertions(+), 10 deletions(-)
+Robin.
 
-diff --git a/drivers/iommu/intel/iommu.c b/drivers/iommu/intel/iommu.c
-index 96340da57075..6a0c62c7395c 100644
---- a/drivers/iommu/intel/iommu.c
-+++ b/drivers/iommu/intel/iommu.c
-@@ -5408,7 +5408,7 @@ intel_iommu_sva_invalidate(struct iommu_domain *domain, struct device *dev,
- 	sid = PCI_DEVID(bus, devfn);
- 
- 	/* Size is only valid in address selective invalidation */
--	if (inv_info->granularity != IOMMU_INV_GRANU_PASID)
-+	if (inv_info->granularity == IOMMU_INV_GRANU_ADDR)
- 		size = to_vtd_size(inv_info->addr_info.granule_size,
- 				   inv_info->addr_info.nb_granules);
- 
-@@ -5417,6 +5417,7 @@ intel_iommu_sva_invalidate(struct iommu_domain *domain, struct device *dev,
- 			 IOMMU_CACHE_INV_TYPE_NR) {
- 		int granu = 0;
- 		u64 pasid = 0;
-+		u64 addr = 0;
- 
- 		granu = to_vtd_granularity(cache_type, inv_info->granularity);
- 		if (granu == -EINVAL) {
-@@ -5456,24 +5457,31 @@ intel_iommu_sva_invalidate(struct iommu_domain *domain, struct device *dev,
- 					(granu == QI_GRAN_NONG_PASID) ? -1 : 1 << size,
- 					inv_info->addr_info.flags & IOMMU_INV_ADDR_FLAGS_LEAF);
- 
-+			if (!info->ats_enabled)
-+				break;
- 			/*
- 			 * Always flush device IOTLB if ATS is enabled. vIOMMU
- 			 * in the guest may assume IOTLB flush is inclusive,
- 			 * which is more efficient.
- 			 */
--			if (info->ats_enabled)
--				qi_flush_dev_iotlb_pasid(iommu, sid,
--						info->pfsid, pasid,
--						info->ats_qdep,
--						inv_info->addr_info.addr,
--						size);
--			break;
-+			fallthrough;
- 		case IOMMU_CACHE_INV_TYPE_DEV_IOTLB:
-+			/*
-+			 * There is no PASID selective flush for device TLB, so
-+			 * the equivalent of that is we set the size to be the
-+			 * entire range of 64 bit. User only provides PASID info
-+			 * without address info. So we set addr to 0.
-+			 */
-+			if (inv_info->granularity == IOMMU_INV_GRANU_PASID) {
-+				size = 64 - VTD_PAGE_SHIFT;
-+				addr = 0;
-+			} else if (inv_info->granularity == IOMMU_INV_GRANU_ADDR)
-+				addr = inv_info->addr_info.addr;
-+
- 			if (info->ats_enabled)
- 				qi_flush_dev_iotlb_pasid(iommu, sid,
- 						info->pfsid, pasid,
--						info->ats_qdep,
--						inv_info->addr_info.addr,
-+						info->ats_qdep, addr,
- 						size);
- 			else
- 				pr_warn_ratelimited("Passdown device IOTLB flush w/o ATS!\n");
--- 
-2.7.4
-
+>> Do you have a specific example in mind that we should be aware of ?
+>>
+>>> So the IORT spec don't support this, at least it's pretty vague
+>>> I think.
+>>
+>> I think that's a matter of wording, it can be updated if it needs be,
+>> reach out if you see any issue with the current approach please.
+> 
+> If the all the properties for parent and device itself are the same,
+> I have no strong opinion for this patch, but it's better to update
+> the wording of the spec as well.
+> 
+> Thanks
+> Hanjun
+> 
 _______________________________________________
 iommu mailing list
 iommu@lists.linux-foundation.org
