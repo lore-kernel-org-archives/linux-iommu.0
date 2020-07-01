@@ -2,78 +2,84 @@ Return-Path: <SRS0=cxdO=AM=lists.linux-foundation.org=iommu-bounces@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-8.5 required=3.0 tests=HEADER_FROM_DIFFERENT_DOMAINS,
-	INCLUDES_PATCH,MAILING_LIST_MULTI,SIGNED_OFF_BY,SPF_HELO_NONE,SPF_PASS,
-	URIBL_BLOCKED,USER_AGENT_SANE_1 autolearn=ham autolearn_force=no version=3.4.0
+X-Spam-Status: No, score=-8.3 required=3.0 tests=DKIM_INVALID,DKIM_SIGNED,
+	HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_PATCH,MAILING_LIST_MULTI,SIGNED_OFF_BY,
+	SPF_HELO_NONE,SPF_PASS,UNPARSEABLE_RELAY,URIBL_BLOCKED,USER_AGENT_SANE_2
+	autolearn=ham autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 31855C433E0
-	for <iommu@archiver.kernel.org>; Wed,  1 Jul 2020 01:54:25 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id C9003C433E0
+	for <iommu@archiver.kernel.org>; Wed,  1 Jul 2020 02:18:37 +0000 (UTC)
 Received: from silver.osuosl.org (smtp3.osuosl.org [140.211.166.136])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by mail.kernel.org (Postfix) with ESMTPS id 0131320771
-	for <iommu@archiver.kernel.org>; Wed,  1 Jul 2020 01:54:24 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 0131320771
-Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=linux.intel.com
+	by mail.kernel.org (Postfix) with ESMTPS id 880BD2078B
+	for <iommu@archiver.kernel.org>; Wed,  1 Jul 2020 02:18:37 +0000 (UTC)
+Authentication-Results: mail.kernel.org;
+	dkim=fail reason="signature verification failed" (1024-bit key) header.d=mediatek.com header.i=@mediatek.com header.b="PUWLhYJn"
+DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 880BD2078B
+Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=mediatek.com
 Authentication-Results: mail.kernel.org; spf=pass smtp.mailfrom=iommu-bounces@lists.linux-foundation.org
 Received: from localhost (localhost [127.0.0.1])
-	by silver.osuosl.org (Postfix) with ESMTP id A12CE250E3;
-	Wed,  1 Jul 2020 01:54:24 +0000 (UTC)
+	by silver.osuosl.org (Postfix) with ESMTP id 2EB8E24BB3;
+	Wed,  1 Jul 2020 02:18:37 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
 Received: from silver.osuosl.org ([127.0.0.1])
 	by localhost (.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
-	with ESMTP id 8edJfhkWAmaR; Wed,  1 Jul 2020 01:54:21 +0000 (UTC)
+	with ESMTP id 0PziAtir-t7r; Wed,  1 Jul 2020 02:18:35 +0000 (UTC)
 Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [140.211.9.56])
-	by silver.osuosl.org (Postfix) with ESMTP id BD0AF23109;
-	Wed,  1 Jul 2020 01:54:21 +0000 (UTC)
+	by silver.osuosl.org (Postfix) with ESMTP id D733A2201C;
+	Wed,  1 Jul 2020 02:18:35 +0000 (UTC)
 Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
-	by lists.linuxfoundation.org (Postfix) with ESMTP id A3EFBC0865;
-	Wed,  1 Jul 2020 01:54:21 +0000 (UTC)
+	by lists.linuxfoundation.org (Postfix) with ESMTP id C8E7EC088F;
+	Wed,  1 Jul 2020 02:18:35 +0000 (UTC)
 Received: from hemlock.osuosl.org (smtp2.osuosl.org [140.211.166.133])
- by lists.linuxfoundation.org (Postfix) with ESMTP id 6D170C016E
- for <iommu@lists.linux-foundation.org>; Wed,  1 Jul 2020 01:54:20 +0000 (UTC)
+ by lists.linuxfoundation.org (Postfix) with ESMTP id 893E8C016E
+ for <iommu@lists.linux-foundation.org>; Wed,  1 Jul 2020 02:18:34 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
- by hemlock.osuosl.org (Postfix) with ESMTP id 62B8F88D55
- for <iommu@lists.linux-foundation.org>; Wed,  1 Jul 2020 01:54:20 +0000 (UTC)
+ by hemlock.osuosl.org (Postfix) with ESMTP id 7E00F88DFE
+ for <iommu@lists.linux-foundation.org>; Wed,  1 Jul 2020 02:18:34 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
 Received: from hemlock.osuosl.org ([127.0.0.1])
  by localhost (.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
- with ESMTP id rPS1sNON5hdj for <iommu@lists.linux-foundation.org>;
- Wed,  1 Jul 2020 01:54:19 +0000 (UTC)
-X-Greylist: domain auto-whitelisted by SQLgrey-1.7.6
-Received: from mga06.intel.com (mga06.intel.com [134.134.136.31])
- by hemlock.osuosl.org (Postfix) with ESMTPS id 483BD88CE4
- for <iommu@lists.linux-foundation.org>; Wed,  1 Jul 2020 01:54:19 +0000 (UTC)
-IronPort-SDR: GFmyvNTOtESW3jDAWUCUEbR5v8jCMcjtlSnnNp+6VuXLYSuIw5yHCtZjQZ7ixD84lUJuqrkSjE
- Begu4cnjWkZQ==
-X-IronPort-AV: E=McAfee;i="6000,8403,9668"; a="207953980"
-X-IronPort-AV: E=Sophos;i="5.75,298,1589266800"; d="scan'208";a="207953980"
-X-Amp-Result: SKIPPED(no attachment in message)
-X-Amp-File-Uploaded: False
-Received: from fmsmga007.fm.intel.com ([10.253.24.52])
- by orsmga104.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384;
- 30 Jun 2020 18:54:18 -0700
-IronPort-SDR: uI1fcK2/LQWkscXrgGT+Nt1FH4qrKclVdwTneeaHmiUZPdGTv7zwjbsgzQ9SLskK6AQ4/nitpd
- cdCoIcMHYeXQ==
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.75,298,1589266800"; d="scan'208";a="265269594"
-Received: from allen-box.sh.intel.com (HELO [10.239.159.139])
- ([10.239.159.139])
- by fmsmga007.fm.intel.com with ESMTP; 30 Jun 2020 18:54:16 -0700
-Subject: Re: [PATCH v2 1/2] iommu/vt-d: Move Kconfig and Makefile bits down
- into intel directory
-To: Jerry Snitselaar <jsnitsel@redhat.com>, linux-kernel@vger.kernel.org,
- iommu@lists.linux-foundation.org
-References: <20200630200636.48600-1-jsnitsel@redhat.com>
- <20200630200636.48600-2-jsnitsel@redhat.com>
-From: Lu Baolu <baolu.lu@linux.intel.com>
-Message-ID: <67b765e4-5285-a706-f32a-f5e1bc78c306@linux.intel.com>
-Date: Wed, 1 Jul 2020 09:49:54 +0800
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101
- Thunderbird/68.8.0
+ with ESMTP id WLnJ4qP+46GA for <iommu@lists.linux-foundation.org>;
+ Wed,  1 Jul 2020 02:18:33 +0000 (UTC)
+X-Greylist: from auto-whitelisted by SQLgrey-1.7.6
+Received: from mailgw02.mediatek.com (unknown [1.203.163.81])
+ by hemlock.osuosl.org (Postfix) with ESMTP id 549B788DDA
+ for <iommu@lists.linux-foundation.org>; Wed,  1 Jul 2020 02:18:32 +0000 (UTC)
+X-UUID: b0382c5dc1d646658ae7674625c12f39-20200701
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=mediatek.com;
+ s=dk; 
+ h=Content-Transfer-Encoding:MIME-Version:Content-Type:References:In-Reply-To:Date:CC:To:From:Subject:Message-ID;
+ bh=DcY8OQCD9Qm2ySPaa/SLgUyczR+AJ+WptOzp9lGgZhw=; 
+ b=PUWLhYJnGHCJl/9g6VyPlszSVCfUbB8XU38bFoDZFp7qrET349sHjz70PVznqSPr9C38gYzmXed+J0aigogGer/4Js5gvtaL1zi2jCtKlniF8Zrsq4gKj4tLBS8DJDUXJuTBrz2CetqHTcgayTqWByUQPoJ9JBXWQPJR88GBJOA=;
+X-UUID: b0382c5dc1d646658ae7674625c12f39-20200701
+Received: from mtkcas32.mediatek.inc [(172.27.4.253)] by mailgw02.mediatek.com
+ (envelope-from <yong.wu@mediatek.com>)
+ (mailgw01.mediatek.com ESMTP with TLS)
+ with ESMTP id 1049815080; Wed, 01 Jul 2020 10:18:19 +0800
+Received: from MTKCAS32.mediatek.inc (172.27.4.184) by MTKMBS32N2.mediatek.inc
+ (172.27.4.72) with Microsoft SMTP Server (TLS) id 15.0.1497.2;
+ Wed, 1 Jul 2020 10:18:14 +0800
+Received: from [10.17.3.153] (10.17.3.153) by MTKCAS32.mediatek.inc
+ (172.27.4.170) with Microsoft SMTP Server id 15.0.1497.2 via Frontend
+ Transport; Wed, 1 Jul 2020 10:18:12 +0800
+Message-ID: <1593569872.32037.6.camel@mhfsdcap03>
+Subject: Re: [PATCH v5 02/10] iommu/mediatek: Rename the register
+ STANDARD_AXI_MODE(0x48) to MISC_CTRL
+From: Yong Wu <yong.wu@mediatek.com>
+To: Chao Hao <chao.hao@mediatek.com>
+Date: Wed, 1 Jul 2020 10:17:52 +0800
+In-Reply-To: <20200629071310.1557-3-chao.hao@mediatek.com>
+References: <20200629071310.1557-1-chao.hao@mediatek.com>
+ <20200629071310.1557-3-chao.hao@mediatek.com>
+X-Mailer: Evolution 3.10.4-0ubuntu2 
 MIME-Version: 1.0
-In-Reply-To: <20200630200636.48600-2-jsnitsel@redhat.com>
-Content-Language: en-US
+X-TM-SNTS-SMTP: 71933EE4DC99580A780AB184F067753C98B859006AD047915C8496CEE95F99B82000:8
+X-MTK: N
+Cc: FY Yang <fy.yang@mediatek.com>, wsd_upstream@mediatek.com,
+ iommu@lists.linux-foundation.org, linux-mediatek@lists.infradead.org,
+ Matthias Brugger <matthias.bgg@gmail.com>
 X-BeenThere: iommu@lists.linux-foundation.org
 X-Mailman-Version: 2.1.15
 Precedence: list
@@ -86,263 +92,57 @@ List-Post: <mailto:iommu@lists.linux-foundation.org>
 List-Help: <mailto:iommu-request@lists.linux-foundation.org?subject=help>
 List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
  <mailto:iommu-request@lists.linux-foundation.org?subject=subscribe>
+Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
-Content-Type: text/plain; charset="us-ascii"; Format="flowed"
 Errors-To: iommu-bounces@lists.linux-foundation.org
 Sender: "iommu" <iommu-bounces@lists.linux-foundation.org>
 
-Hi Jerry,
-
-On 7/1/20 4:06 AM, Jerry Snitselaar wrote:
-> Move Intel Kconfig and Makefile bits down into intel directory
-> with the rest of the Intel specific files.
+On Mon, 2020-06-29 at 15:13 +0800, Chao Hao wrote:
+> For iommu offset=0x48 register, only the previous mt8173/mt8183 use the
+> name STANDARD_AXI_MODE, all the latest SoC extend the register more
+> feature by different bits, for example: axi_mode, in_order_en, coherent_en
+> and so on. So rename REG_MMU_MISC_CTRL may be more proper.
 > 
-> Cc: Joerg Roedel <joro@8bytes.org>
-> Cc: Lu Baolu <baolu.lu@linux.intel.com>
-
-Reviewed-by: Lu Baolu <baolu.lu@linux.intel.com>
-
-Best regards,
-baolu
-
-> Signed-off-by: Jerry Snitselaar <jsnitsel@redhat.com>
+> This patch only rename the register name, no functional change.
+> 
+> Signed-off-by: Chao Hao <chao.hao@mediatek.com>
+> Reviewed-by: Yong Wu <yong.wu@mediatek.com>
+> Reviewed-by: Matthias Brugger <matthias.bgg@gmail.com>
 > ---
->   drivers/iommu/Kconfig        | 86 +-----------------------------------
->   drivers/iommu/Makefile       |  8 +---
->   drivers/iommu/intel/Kconfig  | 86 ++++++++++++++++++++++++++++++++++++
->   drivers/iommu/intel/Makefile |  7 +++
->   4 files changed, 96 insertions(+), 91 deletions(-)
->   create mode 100644 drivers/iommu/intel/Kconfig
->   create mode 100644 drivers/iommu/intel/Makefile
-> 
-> diff --git a/drivers/iommu/Kconfig b/drivers/iommu/Kconfig
-> index 6dc49ed8377a..281cd6bd0fe0 100644
-> --- a/drivers/iommu/Kconfig
-> +++ b/drivers/iommu/Kconfig
-> @@ -176,91 +176,7 @@ config AMD_IOMMU_DEBUGFS
->   	  This option is -NOT- intended for production environments, and should
->   	  not generally be enabled.
->   
-> -# Intel IOMMU support
-> -config DMAR_TABLE
-> -	bool
-> -
-> -config INTEL_IOMMU
-> -	bool "Support for Intel IOMMU using DMA Remapping Devices"
-> -	depends on PCI_MSI && ACPI && (X86 || IA64)
-> -	select IOMMU_API
-> -	select IOMMU_IOVA
-> -	select NEED_DMA_MAP_STATE
-> -	select DMAR_TABLE
-> -	select SWIOTLB
-> -	select IOASID
-> -	help
-> -	  DMA remapping (DMAR) devices support enables independent address
-> -	  translations for Direct Memory Access (DMA) from devices.
-> -	  These DMA remapping devices are reported via ACPI tables
-> -	  and include PCI device scope covered by these DMA
-> -	  remapping devices.
-> -
-> -config INTEL_IOMMU_DEBUGFS
-> -	bool "Export Intel IOMMU internals in Debugfs"
-> -	depends on INTEL_IOMMU && IOMMU_DEBUGFS
-> -	help
-> -	  !!!WARNING!!!
-> -
-> -	  DO NOT ENABLE THIS OPTION UNLESS YOU REALLY KNOW WHAT YOU ARE DOING!!!
-> -
-> -	  Expose Intel IOMMU internals in Debugfs.
-> -
-> -	  This option is -NOT- intended for production environments, and should
-> -	  only be enabled for debugging Intel IOMMU.
-> -
-> -config INTEL_IOMMU_SVM
-> -	bool "Support for Shared Virtual Memory with Intel IOMMU"
-> -	depends on INTEL_IOMMU && X86_64
-> -	select PCI_PASID
-> -	select PCI_PRI
-> -	select MMU_NOTIFIER
-> -	select IOASID
-> -	help
-> -	  Shared Virtual Memory (SVM) provides a facility for devices
-> -	  to access DMA resources through process address space by
-> -	  means of a Process Address Space ID (PASID).
-> -
-> -config INTEL_IOMMU_DEFAULT_ON
-> -	def_bool y
-> -	prompt "Enable Intel DMA Remapping Devices by default"
-> -	depends on INTEL_IOMMU
-> -	help
-> -	  Selecting this option will enable a DMAR device at boot time if
-> -	  one is found. If this option is not selected, DMAR support can
-> -	  be enabled by passing intel_iommu=on to the kernel.
-> -
-> -config INTEL_IOMMU_BROKEN_GFX_WA
-> -	bool "Workaround broken graphics drivers (going away soon)"
-> -	depends on INTEL_IOMMU && BROKEN && X86
-> -	help
-> -	  Current Graphics drivers tend to use physical address
-> -	  for DMA and avoid using DMA APIs. Setting this config
-> -	  option permits the IOMMU driver to set a unity map for
-> -	  all the OS-visible memory. Hence the driver can continue
-> -	  to use physical addresses for DMA, at least until this
-> -	  option is removed in the 2.6.32 kernel.
-> -
-> -config INTEL_IOMMU_FLOPPY_WA
-> -	def_bool y
-> -	depends on INTEL_IOMMU && X86
-> -	help
-> -	  Floppy disk drivers are known to bypass DMA API calls
-> -	  thereby failing to work when IOMMU is enabled. This
-> -	  workaround will setup a 1:1 mapping for the first
-> -	  16MiB to make floppy (an ISA device) work.
-> -
-> -config INTEL_IOMMU_SCALABLE_MODE_DEFAULT_ON
-> -	bool "Enable Intel IOMMU scalable mode by default"
-> -	depends on INTEL_IOMMU
-> -	help
-> -	  Selecting this option will enable by default the scalable mode if
-> -	  hardware presents the capability. The scalable mode is defined in
-> -	  VT-d 3.0. The scalable mode capability could be checked by reading
-> -	  /sys/devices/virtual/iommu/dmar*/intel-iommu/ecap. If this option
-> -	  is not selected, scalable mode support could also be enabled by
-> -	  passing intel_iommu=sm_on to the kernel. If not sure, please use
-> -	  the default value.
-> +source "drivers/iommu/intel/Kconfig"
->   
->   config IRQ_REMAP
->   	bool "Support for Interrupt Remapping"
-> diff --git a/drivers/iommu/Makefile b/drivers/iommu/Makefile
-> index 342190196dfb..71dd2f382e78 100644
-> --- a/drivers/iommu/Makefile
-> +++ b/drivers/iommu/Makefile
-> @@ -1,4 +1,5 @@
->   # SPDX-License-Identifier: GPL-2.0
-> +obj-y += intel/
->   obj-$(CONFIG_IOMMU_API) += iommu.o
->   obj-$(CONFIG_IOMMU_API) += iommu-traces.o
->   obj-$(CONFIG_IOMMU_API) += iommu-sysfs.o
-> @@ -17,13 +18,8 @@ obj-$(CONFIG_AMD_IOMMU_V2) += amd/iommu_v2.o
->   obj-$(CONFIG_ARM_SMMU) += arm_smmu.o
->   arm_smmu-objs += arm-smmu.o arm-smmu-impl.o arm-smmu-qcom.o
->   obj-$(CONFIG_ARM_SMMU_V3) += arm-smmu-v3.o
-> -obj-$(CONFIG_DMAR_TABLE) += intel/dmar.o
-> -obj-$(CONFIG_INTEL_IOMMU) += intel/iommu.o intel/pasid.o
-> -obj-$(CONFIG_INTEL_IOMMU) += intel/trace.o
-> -obj-$(CONFIG_INTEL_IOMMU_DEBUGFS) += intel/debugfs.o
-> -obj-$(CONFIG_INTEL_IOMMU_SVM) += intel/svm.o
->   obj-$(CONFIG_IPMMU_VMSA) += ipmmu-vmsa.o
-> -obj-$(CONFIG_IRQ_REMAP) += intel/irq_remapping.o irq_remapping.o
-> +obj-$(CONFIG_IRQ_REMAP) += irq_remapping.o
->   obj-$(CONFIG_MTK_IOMMU) += mtk_iommu.o
->   obj-$(CONFIG_MTK_IOMMU_V1) += mtk_iommu_v1.o
->   obj-$(CONFIG_OMAP_IOMMU) += omap-iommu.o
-> diff --git a/drivers/iommu/intel/Kconfig b/drivers/iommu/intel/Kconfig
-> new file mode 100644
-> index 000000000000..877beec9d987
-> --- /dev/null
-> +++ b/drivers/iommu/intel/Kconfig
-> @@ -0,0 +1,86 @@
-> +# SPDX-License-Identifier: GPL-2.0-only
-> +# Intel IOMMU support
-> +config DMAR_TABLE
-> +	bool
-> +
-> +config INTEL_IOMMU
-> +	bool "Support for Intel IOMMU using DMA Remapping Devices"
-> +	depends on PCI_MSI && ACPI && (X86 || IA64)
-> +	select IOMMU_API
-> +	select IOMMU_IOVA
-> +	select NEED_DMA_MAP_STATE
-> +	select DMAR_TABLE
-> +	select SWIOTLB
-> +	select IOASID
-> +	help
-> +	  DMA remapping (DMAR) devices support enables independent address
-> +	  translations for Direct Memory Access (DMA) from devices.
-> +	  These DMA remapping devices are reported via ACPI tables
-> +	  and include PCI device scope covered by these DMA
-> +	  remapping devices.
-> +
-> +config INTEL_IOMMU_DEBUGFS
-> +	bool "Export Intel IOMMU internals in Debugfs"
-> +	depends on INTEL_IOMMU && IOMMU_DEBUGFS
-> +	help
-> +	  !!!WARNING!!!
-> +
-> +	  DO NOT ENABLE THIS OPTION UNLESS YOU REALLY KNOW WHAT YOU ARE DOING!!!
-> +
-> +	  Expose Intel IOMMU internals in Debugfs.
-> +
-> +	  This option is -NOT- intended for production environments, and should
-> +	  only be enabled for debugging Intel IOMMU.
-> +
-> +config INTEL_IOMMU_SVM
-> +	bool "Support for Shared Virtual Memory with Intel IOMMU"
-> +	depends on INTEL_IOMMU && X86_64
-> +	select PCI_PASID
-> +	select PCI_PRI
-> +	select MMU_NOTIFIER
-> +	select IOASID
-> +	help
-> +	  Shared Virtual Memory (SVM) provides a facility for devices
-> +	  to access DMA resources through process address space by
-> +	  means of a Process Address Space ID (PASID).
-> +
-> +config INTEL_IOMMU_DEFAULT_ON
-> +	def_bool y
-> +	prompt "Enable Intel DMA Remapping Devices by default"
-> +	depends on INTEL_IOMMU
-> +	help
-> +	  Selecting this option will enable a DMAR device at boot time if
-> +	  one is found. If this option is not selected, DMAR support can
-> +	  be enabled by passing intel_iommu=on to the kernel.
-> +
-> +config INTEL_IOMMU_BROKEN_GFX_WA
-> +	bool "Workaround broken graphics drivers (going away soon)"
-> +	depends on INTEL_IOMMU && BROKEN && X86
-> +	help
-> +	  Current Graphics drivers tend to use physical address
-> +	  for DMA and avoid using DMA APIs. Setting this config
-> +	  option permits the IOMMU driver to set a unity map for
-> +	  all the OS-visible memory. Hence the driver can continue
-> +	  to use physical addresses for DMA, at least until this
-> +	  option is removed in the 2.6.32 kernel.
-> +
-> +config INTEL_IOMMU_FLOPPY_WA
-> +	def_bool y
-> +	depends on INTEL_IOMMU && X86
-> +	help
-> +	  Floppy disk drivers are known to bypass DMA API calls
-> +	  thereby failing to work when IOMMU is enabled. This
-> +	  workaround will setup a 1:1 mapping for the first
-> +	  16MiB to make floppy (an ISA device) work.
-> +
-> +config INTEL_IOMMU_SCALABLE_MODE_DEFAULT_ON
-> +	bool "Enable Intel IOMMU scalable mode by default"
-> +	depends on INTEL_IOMMU
-> +	help
-> +	  Selecting this option will enable by default the scalable mode if
-> +	  hardware presents the capability. The scalable mode is defined in
-> +	  VT-d 3.0. The scalable mode capability could be checked by reading
-> +	  /sys/devices/virtual/iommu/dmar*/intel-iommu/ecap. If this option
-> +	  is not selected, scalable mode support could also be enabled by
-> +	  passing intel_iommu=sm_on to the kernel. If not sure, please use
-> +	  the default value.
-> diff --git a/drivers/iommu/intel/Makefile b/drivers/iommu/intel/Makefile
-> new file mode 100644
-> index 000000000000..fb8e1e8c8029
-> --- /dev/null
-> +++ b/drivers/iommu/intel/Makefile
-> @@ -0,0 +1,7 @@
-> +# SPDX-License-Identifier: GPL-2.0
-> +obj-$(CONFIG_DMAR_TABLE) += dmar.o
-> +obj-$(CONFIG_INTEL_IOMMU) += iommu.o pasid.o
-> +obj-$(CONFIG_INTEL_IOMMU) += trace.o
-> +obj-$(CONFIG_INTEL_IOMMU_DEBUGFS) += debugfs.o
-> +obj-$(CONFIG_INTEL_IOMMU_SVM) += svm.o
-> +obj-$(CONFIG_IRQ_REMAP) += irq_remapping.o
-> 
+>  drivers/iommu/mtk_iommu.c | 14 +++++++-------
+>  drivers/iommu/mtk_iommu.h |  2 +-
+>  2 files changed, 8 insertions(+), 8 deletions(-)
+
+...
+
+> diff --git a/drivers/iommu/mtk_iommu.h b/drivers/iommu/mtk_iommu.h
+> index ea949a324e33..1b6ea839b92c 100644
+> --- a/drivers/iommu/mtk_iommu.h
+> +++ b/drivers/iommu/mtk_iommu.h
+> @@ -18,7 +18,7 @@
+>  #include <soc/mediatek/smi.h>
+>  
+>  struct mtk_iommu_suspend_reg {
+> -	u32				standard_axi_mode;
+> +	u32				misc_ctrl;
+
+Here will cause build fail for v1:
+
+drivers/iommu/mtk_iommu_v1.c:675:20: error: 'struct
+mtk_iommu_suspend_reg' has no member named 'standard_axi_mode'
+  writel_relaxed(reg->standard_axi_mode,
+                    ^
+
+We could change something like:
+
+union {
+	u32	standard_axi_mode; /* only for v1 */
+	u32	misc_ctrl;         /* only for v2 */
+};
+
+>  	u32				dcm_dis;
+>  	u32				ctrl_reg;
+>  	u32				int_control0;
 _______________________________________________
 iommu mailing list
 iommu@lists.linux-foundation.org
