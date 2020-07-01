@@ -7,66 +7,66 @@ X-Spam-Status: No, score=-10.0 required=3.0
 	SIGNED_OFF_BY,SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED,USER_AGENT_GIT
 	autolearn=ham autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 4CD13C433E3
-	for <iommu@archiver.kernel.org>; Wed,  1 Jul 2020 15:27:29 +0000 (UTC)
-Received: from hemlock.osuosl.org (smtp2.osuosl.org [140.211.166.133])
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 0FC3DC433E1
+	for <iommu@archiver.kernel.org>; Wed,  1 Jul 2020 15:27:30 +0000 (UTC)
+Received: from fraxinus.osuosl.org (smtp4.osuosl.org [140.211.166.137])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by mail.kernel.org (Postfix) with ESMTPS id 3275520899
-	for <iommu@archiver.kernel.org>; Wed,  1 Jul 2020 15:27:28 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 3275520899
+	by mail.kernel.org (Postfix) with ESMTPS id EB04C20760
+	for <iommu@archiver.kernel.org>; Wed,  1 Jul 2020 15:27:29 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org EB04C20760
 Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=linux.intel.com
 Authentication-Results: mail.kernel.org; spf=pass smtp.mailfrom=iommu-bounces@lists.linux-foundation.org
 Received: from localhost (localhost [127.0.0.1])
-	by hemlock.osuosl.org (Postfix) with ESMTP id D533F8AA62;
-	Wed,  1 Jul 2020 15:27:28 +0000 (UTC)
+	by fraxinus.osuosl.org (Postfix) with ESMTP id BB163892B8;
+	Wed,  1 Jul 2020 15:27:29 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from hemlock.osuosl.org ([127.0.0.1])
+Received: from fraxinus.osuosl.org ([127.0.0.1])
 	by localhost (.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
-	with ESMTP id WgGmVKiPLAG0; Wed,  1 Jul 2020 15:27:28 +0000 (UTC)
+	with ESMTP id tswcsqUsm-Mp; Wed,  1 Jul 2020 15:27:29 +0000 (UTC)
 Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [140.211.9.56])
-	by hemlock.osuosl.org (Postfix) with ESMTP id 4C4838AA17;
+	by fraxinus.osuosl.org (Postfix) with ESMTP id 7EAD8892C7;
 	Wed,  1 Jul 2020 15:27:28 +0000 (UTC)
 Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
-	by lists.linuxfoundation.org (Postfix) with ESMTP id 46A14C08A5;
+	by lists.linuxfoundation.org (Postfix) with ESMTP id 6AF3BC0890;
 	Wed,  1 Jul 2020 15:27:28 +0000 (UTC)
-Received: from silver.osuosl.org (smtp3.osuosl.org [140.211.166.136])
- by lists.linuxfoundation.org (Postfix) with ESMTP id B5A68C08A2
+Received: from fraxinus.osuosl.org (smtp4.osuosl.org [140.211.166.137])
+ by lists.linuxfoundation.org (Postfix) with ESMTP id D8D8AC0890
  for <iommu@lists.linux-foundation.org>; Wed,  1 Jul 2020 15:27:25 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
- by silver.osuosl.org (Postfix) with ESMTP id 8421C2E95A
+ by fraxinus.osuosl.org (Postfix) with ESMTP id D18DA8929F
  for <iommu@lists.linux-foundation.org>; Wed,  1 Jul 2020 15:27:25 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from silver.osuosl.org ([127.0.0.1])
+Received: from fraxinus.osuosl.org ([127.0.0.1])
  by localhost (.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
- with ESMTP id nz8DtR5lvObM for <iommu@lists.linux-foundation.org>;
+ with ESMTP id i32uFgWqWFz9 for <iommu@lists.linux-foundation.org>;
  Wed,  1 Jul 2020 15:27:24 +0000 (UTC)
 X-Greylist: domain auto-whitelisted by SQLgrey-1.7.6
 Received: from mga17.intel.com (mga17.intel.com [192.55.52.151])
- by silver.osuosl.org (Postfix) with ESMTPS id 1A76D267F7
- for <iommu@lists.linux-foundation.org>; Wed,  1 Jul 2020 15:27:24 +0000 (UTC)
-IronPort-SDR: 4ySoHomYhkFDXWIC8LTQrMWgd/YL1M7qMRyOA93gaQaPyhWgh7HmB1iRHNEP4/NrMUgwsI2yqb
- 1lSKuDXcmh2g==
-X-IronPort-AV: E=McAfee;i="6000,8403,9668"; a="126699726"
-X-IronPort-AV: E=Sophos;i="5.75,300,1589266800"; d="scan'208";a="126699726"
+ by fraxinus.osuosl.org (Postfix) with ESMTPS id EFC5E89289
+ for <iommu@lists.linux-foundation.org>; Wed,  1 Jul 2020 15:27:23 +0000 (UTC)
+IronPort-SDR: i/E7gdc1FLYI7kFfo9x2VSmR8IB/KUKz/HgfzFE0H4qkkKJ5YfdJJ8QjL4FUWRMC0NWzZwGhJf
+ Iay47XPYIiQQ==
+X-IronPort-AV: E=McAfee;i="6000,8403,9668"; a="126699724"
+X-IronPort-AV: E=Sophos;i="5.75,300,1589266800"; d="scan'208";a="126699724"
 X-Amp-Result: SKIPPED(no attachment in message)
 X-Amp-File-Uploaded: False
 Received: from orsmga002.jf.intel.com ([10.7.209.21])
  by fmsmga107.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384;
  01 Jul 2020 08:27:23 -0700
-IronPort-SDR: o3kPELFdh3tJaTgju06GQE4B3xyVAEGLqog6K3SnGHeZ0Qz4vdr0fO1PKiAf9yDUcu4NYJJNHY
- d5+1AbHcsYKQ==
+IronPort-SDR: GxdWpZ0Y0N+xwpRynhx+NrXdSsENAkVY3eb84chB8hIF7ZSPq6sX5tk1chxg1x/GIet7ja0GFh
+ ExjsjVwOhy/w==
 X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.75,300,1589266800"; d="scan'208";a="295591658"
+X-IronPort-AV: E=Sophos;i="5.75,300,1589266800"; d="scan'208";a="295591650"
 Received: from jacob-builder.jf.intel.com ([10.7.199.155])
  by orsmga002.jf.intel.com with ESMTP; 01 Jul 2020 08:27:22 -0700
 From: Jacob Pan <jacob.jun.pan@linux.intel.com>
 To: iommu@lists.linux-foundation.org, LKML <linux-kernel@vger.kernel.org>,
  "Lu Baolu" <baolu.lu@linux.intel.com>, Joerg Roedel <joro@8bytes.org>,
  David Woodhouse <dwmw2@infradead.org>
-Subject: [PATCH v3 7/7] iommu/vt-d: Disable multiple GPASID-dev bind
-Date: Wed,  1 Jul 2020 08:33:56 -0700
-Message-Id: <1593617636-79385-8-git-send-email-jacob.jun.pan@linux.intel.com>
+Subject: [PATCH v3 4/7] iommu/vt-d: Handle non-page aligned address
+Date: Wed,  1 Jul 2020 08:33:53 -0700
+Message-Id: <1593617636-79385-5-git-send-email-jacob.jun.pan@linux.intel.com>
 X-Mailer: git-send-email 2.7.4
 In-Reply-To: <1593617636-79385-1-git-send-email-jacob.jun.pan@linux.intel.com>
 References: <1593617636-79385-1-git-send-email-jacob.jun.pan@linux.intel.com>
@@ -89,70 +89,58 @@ Content-Transfer-Encoding: 7bit
 Errors-To: iommu-bounces@lists.linux-foundation.org
 Sender: "iommu" <iommu-bounces@lists.linux-foundation.org>
 
-For the unlikely use case where multiple aux domains from the same pdev
-are attached to a single guest and then bound to a single process
-(thus same PASID) within that guest, we cannot easily support this case
-by refcounting the number of users. As there is only one SL page table
-per PASID while we have multiple aux domains thus multiple SL page tables
-for the same PASID.
+From: Liu Yi L <yi.l.liu@intel.com>
 
-Extra unbinding guest PASID can happen due to race between normal and
-exception cases. Termination of one aux domain may affect others unless
-we actively track and switch aux domains to ensure the validity of SL
-page tables and TLB states in the shared PASID entry.
+Address information for device TLB invalidation comes from userspace
+when device is directly assigned to a guest with vIOMMU support.
+VT-d requires page aligned address. This patch checks and enforce
+address to be page aligned, otherwise reserved bits can be set in the
+invalidation descriptor. Unrecoverable fault will be reported due to
+non-zero value in the reserved bits.
 
-Support for sharing second level PGDs across domains can reduce the
-complexity but this is not available due to the limitations on VFIO
-container architecture. We can revisit this decision once sharing PGDs
-are available.
-
-Overall, the complexity and potential glitch do not warrant this unlikely
-use case thereby removed by this patch.
-
-Fixes: 56722a4398a30 ("iommu/vt-d: Add bind guest PASID support")
+Fixes: 61a06a16e36d8 ("iommu/vt-d: Support flushing more translation
+cache types")
 Acked-by: Lu Baolu <baolu.lu@linux.intel.com>
-Cc: Kevin Tian <kevin.tian@intel.com>
-Cc: Lu Baolu <baolu.lu@linux.intel.com>
 Signed-off-by: Liu Yi L <yi.l.liu@intel.com>
 Signed-off-by: Jacob Pan <jacob.jun.pan@linux.intel.com>
----
- drivers/iommu/intel/svm.c | 22 +++++++++-------------
- 1 file changed, 9 insertions(+), 13 deletions(-)
 
-diff --git a/drivers/iommu/intel/svm.c b/drivers/iommu/intel/svm.c
-index 6c87c807a0ab..d386853121a2 100644
---- a/drivers/iommu/intel/svm.c
-+++ b/drivers/iommu/intel/svm.c
-@@ -277,20 +277,16 @@ int intel_svm_bind_gpasid(struct iommu_domain *domain, struct device *dev,
- 			goto out;
- 		}
- 
+Signed-off-by: Jacob Pan <jacob.jun.pan@linux.intel.com>
+---
+ drivers/iommu/intel/dmar.c | 20 ++++++++++++++++++--
+ 1 file changed, 18 insertions(+), 2 deletions(-)
+
+diff --git a/drivers/iommu/intel/dmar.c b/drivers/iommu/intel/dmar.c
+index d9f973fa1190..3899f3161071 100644
+--- a/drivers/iommu/intel/dmar.c
++++ b/drivers/iommu/intel/dmar.c
+@@ -1455,9 +1455,25 @@ void qi_flush_dev_iotlb_pasid(struct intel_iommu *iommu, u16 sid, u16 pfsid,
+ 	 * Max Invs Pending (MIP) is set to 0 for now until we have DIT in
+ 	 * ECAP.
+ 	 */
+-	desc.qw1 |= addr & ~mask;
+-	if (size_order)
++	if (addr & ~VTD_PAGE_MASK)
++		pr_warn_ratelimited("Invalidate non-page aligned address %llx\n", addr);
++
++	/* Take page address */
++	desc.qw1 |= QI_DEV_EIOTLB_ADDR(addr);
++
++	if (size_order) {
 +		/*
-+		 * Do not allow multiple bindings of the same device-PASID since
-+		 * there is only one SL page tables per PASID. We may revisit
-+		 * once sharing PGD across domains are supported.
++		 * Existing 0s in address below size_order may be the least
++		 * significant bit, we must set them to 1s to avoid having
++		 * smaller size than desired.
 +		 */
- 		for_each_svm_dev(sdev, svm, dev) {
--			/*
--			 * For devices with aux domains, we should allow
--			 * multiple bind calls with the same PASID and pdev.
--			 */
--			if (iommu_dev_feature_enabled(dev,
--						      IOMMU_DEV_FEAT_AUX)) {
--				sdev->users++;
--			} else {
--				dev_warn_ratelimited(dev,
--						     "Already bound with PASID %u\n",
--						     svm->pasid);
--				ret = -EBUSY;
--			}
-+			dev_warn_ratelimited(dev,
-+					     "Already bound with PASID %u\n",
-+					     svm->pasid);
-+			ret = -EBUSY;
- 			goto out;
- 		}
- 	} else {
++		desc.qw1 |= GENMASK_ULL(size_order + VTD_PAGE_SHIFT,
++					VTD_PAGE_SHIFT);
++		/* Clear size_order bit to indicate size */
++		desc.qw1 &= ~mask;
++		/* Set the S bit to indicate flushing more than 1 page */
+ 		desc.qw1 |= QI_DEV_EIOTLB_SIZE;
++	}
+ 
+ 	qi_submit_sync(iommu, &desc, 1, 0);
+ }
 -- 
 2.7.4
 
