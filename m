@@ -2,144 +2,90 @@ Return-Path: <SRS0=8rqH=AN=lists.linux-foundation.org=iommu-bounces@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-0.8 required=3.0 tests=DKIM_INVALID,DKIM_SIGNED,
-	HEADER_FROM_DIFFERENT_DOMAINS,MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS,
-	URIBL_BLOCKED autolearn=no autolearn_force=no version=3.4.0
+X-Spam-Status: No, score=-6.8 required=3.0 tests=DKIM_INVALID,DKIM_SIGNED,
+	HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_PATCH,MAILING_LIST_MULTI,SIGNED_OFF_BY,
+	SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED autolearn=unavailable autolearn_force=no
+	version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id A9585C433E1
-	for <iommu@archiver.kernel.org>; Thu,  2 Jul 2020 16:30:51 +0000 (UTC)
-Received: from fraxinus.osuosl.org (smtp4.osuosl.org [140.211.166.137])
+	by smtp.lore.kernel.org (Postfix) with ESMTP id ED305C433DF
+	for <iommu@archiver.kernel.org>; Thu,  2 Jul 2020 17:55:24 +0000 (UTC)
+Received: from hemlock.osuosl.org (smtp2.osuosl.org [140.211.166.133])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by mail.kernel.org (Postfix) with ESMTPS id 7EFF020760
-	for <iommu@archiver.kernel.org>; Thu,  2 Jul 2020 16:30:51 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTPS id B8A7E20737
+	for <iommu@archiver.kernel.org>; Thu,  2 Jul 2020 17:55:24 +0000 (UTC)
 Authentication-Results: mail.kernel.org;
-	dkim=fail reason="signature verification failed" (1024-bit key) header.d=amdcloud.onmicrosoft.com header.i=@amdcloud.onmicrosoft.com header.b="loyfcdst"
-DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 7EFF020760
-Authentication-Results: mail.kernel.org; dmarc=none (p=none dis=none) header.from=amd.com
+	dkim=fail reason="signature verification failed" (1024-bit key) header.d=redhat.com header.i=@redhat.com header.b="esmb2hZl"
+DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org B8A7E20737
+Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=redhat.com
 Authentication-Results: mail.kernel.org; spf=pass smtp.mailfrom=iommu-bounces@lists.linux-foundation.org
 Received: from localhost (localhost [127.0.0.1])
-	by fraxinus.osuosl.org (Postfix) with ESMTP id 5CD9688FE9;
-	Thu,  2 Jul 2020 16:30:51 +0000 (UTC)
-X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from fraxinus.osuosl.org ([127.0.0.1])
-	by localhost (.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
-	with ESMTP id FGDeMJzISPaO; Thu,  2 Jul 2020 16:30:50 +0000 (UTC)
-Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [140.211.9.56])
-	by fraxinus.osuosl.org (Postfix) with ESMTP id 70897882DD;
-	Thu,  2 Jul 2020 16:30:50 +0000 (UTC)
-Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
-	by lists.linuxfoundation.org (Postfix) with ESMTP id 5C4CFC0890;
-	Thu,  2 Jul 2020 16:30:50 +0000 (UTC)
-Received: from hemlock.osuosl.org (smtp2.osuosl.org [140.211.166.133])
- by lists.linuxfoundation.org (Postfix) with ESMTP id 1749AC0733
- for <iommu@lists.linux-foundation.org>; Thu,  2 Jul 2020 16:30:49 +0000 (UTC)
-Received: from localhost (localhost [127.0.0.1])
- by hemlock.osuosl.org (Postfix) with ESMTP id 053368A475
- for <iommu@lists.linux-foundation.org>; Thu,  2 Jul 2020 16:30:49 +0000 (UTC)
+	by hemlock.osuosl.org (Postfix) with ESMTP id 75A918A5D6;
+	Thu,  2 Jul 2020 17:55:24 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
 Received: from hemlock.osuosl.org ([127.0.0.1])
+	by localhost (.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
+	with ESMTP id ELGOrNMNOgzX; Thu,  2 Jul 2020 17:55:11 +0000 (UTC)
+Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [140.211.9.56])
+	by hemlock.osuosl.org (Postfix) with ESMTP id 0DBD28A5DF;
+	Thu,  2 Jul 2020 17:55:11 +0000 (UTC)
+Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
+	by lists.linuxfoundation.org (Postfix) with ESMTP id EA62CC0888;
+	Thu,  2 Jul 2020 17:55:10 +0000 (UTC)
+Received: from silver.osuosl.org (smtp3.osuosl.org [140.211.166.136])
+ by lists.linuxfoundation.org (Postfix) with ESMTP id E9912C0733
+ for <iommu@lists.linux-foundation.org>; Thu,  2 Jul 2020 17:55:08 +0000 (UTC)
+Received: from localhost (localhost [127.0.0.1])
+ by silver.osuosl.org (Postfix) with ESMTP id B71D722850
+ for <iommu@lists.linux-foundation.org>; Thu,  2 Jul 2020 17:55:08 +0000 (UTC)
+X-Virus-Scanned: amavisd-new at osuosl.org
+Received: from silver.osuosl.org ([127.0.0.1])
  by localhost (.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
- with ESMTP id GTiqIaVmLEtE for <iommu@lists.linux-foundation.org>;
- Thu,  2 Jul 2020 16:30:47 +0000 (UTC)
+ with ESMTP id 0FIeR8Sp9Vpb for <iommu@lists.linux-foundation.org>;
+ Thu,  2 Jul 2020 17:55:07 +0000 (UTC)
 X-Greylist: domain auto-whitelisted by SQLgrey-1.7.6
-Received: from NAM11-BN8-obe.outbound.protection.outlook.com
- (mail-bn8nam11on2052.outbound.protection.outlook.com [40.107.236.52])
- by hemlock.osuosl.org (Postfix) with ESMTPS id 9C89C8A2D9
- for <iommu@lists.linux-foundation.org>; Thu,  2 Jul 2020 16:30:47 +0000 (UTC)
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=cQBEkblqroD1XXFXcwKy4YyPVi+QO/FHBKYDQHvwJfoA2Um5znKSC7UXYRTkcCLeNrK+PrKOwCVtySEqLZFT4JCVZI5U032zB2LzmoFabGI4ZT2kP+NUZSHE6FFRXlV2VBBrweFlO0fwNme9jSNLtVtiq6HaKu50wVsVNISnhpT4v7DR8iywcH5oiy8iySxwAhFVzmokORMJsaQZX0QdNLXbDUifS/iGJSxES2GH41+jTvZb/HUhr71TDrDcPJAXXH0CQXLqk3Fu/d4FKQ/G3uSlbrBNGWshEmZT+AZJvFqAQvjtLz7UdbWaM8Twyc/7yBSHLQKtppfGhhgFK0d6Iw==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com; 
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=9cil52EFTTwv0/zYTChIp5zXC4T/s8NuzjCfQeqiTBY=;
- b=b6llHUW80arch6zDRfQxR92FtzKoAsckyEUNZUfuprkElKiC1VeeGLcbSZJ6ighW4MucJcpJMLy0YzjgeLRkbSBnnzWg5Dqpc4T1jTFR25mIOzcJmbgE2gf8jM5K+LGUrAZY3OnTqcCKPWEaDMODVs2aANWeMH31w9YSJ1Ihz8VwMmY71RPH9ccNBXfO7JkCHm2xb16OAmDjy22VMS5WfRCmXi5DUwxCgD6aLOyencgxhn7k2BydfjrZdbnJnqGwfPoGl7pP9nYB7HtDVP/6BHB60LNIg+vfX0YiGX4lA+7aMVtTYLA0EFZPz9DDjuRZ7IEwsVGbwAhkLbw/GBzuLQ==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=amd.com; dmarc=pass action=none header.from=amd.com; dkim=pass
- header.d=amd.com; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
- d=amdcloud.onmicrosoft.com; s=selector2-amdcloud-onmicrosoft-com;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=9cil52EFTTwv0/zYTChIp5zXC4T/s8NuzjCfQeqiTBY=;
- b=loyfcdstXasUTQFb4kFI7f6XbjfHcFHTZ7K8iUSb5mAjw2o9F2/AciE9K6YDuEjVNNYpSvew2do7+/+s9vpJi+qkqV2Cp4RxZ8+x4MUtONxZZWClHJ+5HRbascDPEaFYs8ojF4L9H9qDrb1ZrFKpUDiVVFohkNnQKkRXMHGF3WA=
-Received: from MN2PR12MB4488.namprd12.prod.outlook.com (2603:10b6:208:24e::19)
- by BL0PR12MB2466.namprd12.prod.outlook.com (2603:10b6:207:4e::13)
- with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.3153.20; Thu, 2 Jul
- 2020 16:30:44 +0000
-Received: from MN2PR12MB4488.namprd12.prod.outlook.com
- ([fe80::313c:e4d2:7dd2:2d72]) by MN2PR12MB4488.namprd12.prod.outlook.com
- ([fe80::313c:e4d2:7dd2:2d72%5]) with mapi id 15.20.3153.027; Thu, 2 Jul 2020
- 16:30:44 +0000
-From: "Deucher, Alexander" <Alexander.Deucher@amd.com>
-To: Kai-Heng Feng <kai.heng.feng@canonical.com>, Joerg Roedel
- <jroedel@suse.de>, "Suthikulpanit, Suravee" <Suravee.Suthikulpanit@amd.com>
-Subject: RE: [BUG] "Pre-boot DMA Protection" makes AMDGPU stop working
-Thread-Topic: [BUG] "Pre-boot DMA Protection" makes AMDGPU stop working
-Thread-Index: AQHWUGjxeTZverwQ6kmRoYr5I/0L+qj0epvw
-Date: Thu, 2 Jul 2020 16:30:44 +0000
-Message-ID: <MN2PR12MB448836EAEA1ECA6E821B8371F76D0@MN2PR12MB4488.namprd12.prod.outlook.com>
-References: <546DB0FA-FDEB-4FD1-93CD-AA5474B5F0DD@canonical.com>
-In-Reply-To: <546DB0FA-FDEB-4FD1-93CD-AA5474B5F0DD@canonical.com>
-Accept-Language: en-US
-Content-Language: en-US
-X-MS-Has-Attach: 
-X-MS-TNEF-Correlator: 
-msip_labels: MSIP_Label_0d814d60-469d-470c-8cb0-58434e2bf457_Enabled=true;
- MSIP_Label_0d814d60-469d-470c-8cb0-58434e2bf457_SetDate=2020-07-02T16:30:31Z; 
- MSIP_Label_0d814d60-469d-470c-8cb0-58434e2bf457_Method=Privileged;
- MSIP_Label_0d814d60-469d-470c-8cb0-58434e2bf457_Name=Public_0;
- MSIP_Label_0d814d60-469d-470c-8cb0-58434e2bf457_SiteId=3dd8961f-e488-4e60-8e11-a82d994e183d;
- MSIP_Label_0d814d60-469d-470c-8cb0-58434e2bf457_ActionId=e9fd7d3d-5e4d-4a0b-8491-00004b81c784;
- MSIP_Label_0d814d60-469d-470c-8cb0-58434e2bf457_ContentBits=1
-msip_label_76546daa-41b6-470c-bb85-f6f40f044d7f_enabled: true
-msip_label_76546daa-41b6-470c-bb85-f6f40f044d7f_setdate: 2020-07-02T16:30:16Z
-msip_label_76546daa-41b6-470c-bb85-f6f40f044d7f_method: Standard
-msip_label_76546daa-41b6-470c-bb85-f6f40f044d7f_name: Internal Use Only -
- Unrestricted
-msip_label_76546daa-41b6-470c-bb85-f6f40f044d7f_siteid: 3dd8961f-e488-4e60-8e11-a82d994e183d
-msip_label_76546daa-41b6-470c-bb85-f6f40f044d7f_actionid: b7da02f8-d16a-4cfa-a54d-00003fc8024b
-msip_label_76546daa-41b6-470c-bb85-f6f40f044d7f_contentbits: 0
-msip_label_0d814d60-469d-470c-8cb0-58434e2bf457_enabled: true
-msip_label_0d814d60-469d-470c-8cb0-58434e2bf457_setdate: 2020-07-02T16:30:41Z
-msip_label_0d814d60-469d-470c-8cb0-58434e2bf457_method: Privileged
-msip_label_0d814d60-469d-470c-8cb0-58434e2bf457_name: Public_0
-msip_label_0d814d60-469d-470c-8cb0-58434e2bf457_siteid: 3dd8961f-e488-4e60-8e11-a82d994e183d
-msip_label_0d814d60-469d-470c-8cb0-58434e2bf457_actionid: 7cdad949-d3b4-458a-bae0-00002d62403b
-msip_label_0d814d60-469d-470c-8cb0-58434e2bf457_contentbits: 0
-authentication-results: canonical.com; dkim=none (message not signed)
- header.d=none;canonical.com; dmarc=none action=none header.from=amd.com;
-x-originating-ip: [71.219.66.138]
-x-ms-publictraffictype: Email
-x-ms-office365-filtering-ht: Tenant
-x-ms-office365-filtering-correlation-id: fc033e6a-607f-4b38-20e4-08d81ea544d4
-x-ms-traffictypediagnostic: BL0PR12MB2466:
-x-ms-exchange-transport-forked: True
-x-microsoft-antispam-prvs: <BL0PR12MB24664589C282D0807F158EABF76D0@BL0PR12MB2466.namprd12.prod.outlook.com>
-x-ms-oob-tlc-oobclassifiers: OLM:4714;
-x-forefront-prvs: 0452022BE1
-x-ms-exchange-senderadcheck: 1
-x-microsoft-antispam: BCL:0;
-x-microsoft-antispam-message-info: zOB/BbU0ZeXXoaru/uCxSBQVX6NUWSPzeYl7Z1Ig0CePc4W5TLwqIHXaD0AEpmqLQCKZIQTda3n9iP3LJJ/vKLyWKvAqzuSsbcR1vdk4F9+1qgGagBXpjs3QNmJo3F+EbcRJsMg/PetaeYxhPa90ZSv0JtFRJGA+hLaw7pzTX5ppEecMCU0nt4KGwd10ddCU/PEAc6Cy8iP+57SLtZvHtAq7rhSNmFWU4ti6O33K4EGzybjELcupAgxY6RSGRBN7Py4CtTkValhLJPPysbAWnTsl6b+S8DRWBVQkMk4Ly+hVgPGSUzVO0qeap735rg01rJYHjz15i72k60U+z1YkKy7xZZyJmNdFWvGgMgMjcSOSqMKU2XYI8jsR6o+lU32wBZh4bU9FE53CmKtrz9bGeg==
-x-forefront-antispam-report: CIP:255.255.255.255; CTRY:; LANG:en; SCL:1; SRV:;
- IPV:NLI; SFV:NSPM; H:MN2PR12MB4488.namprd12.prod.outlook.com; PTR:; CAT:NONE;
- SFTY:;
- SFS:(4636009)(39860400002)(346002)(376002)(366004)(136003)(396003)(83380400001)(26005)(186003)(6636002)(4326008)(53546011)(6506007)(8676002)(7696005)(9686003)(83080400001)(5660300002)(55016002)(66556008)(66476007)(64756008)(76116006)(66946007)(66446008)(86362001)(45080400002)(52536014)(8936002)(966005)(33656002)(316002)(478600001)(54906003)(110136005)(2906002)(71200400001);
- DIR:OUT; SFP:1101; 
-x-ms-exchange-antispam-messagedata: 8Ej4LWy3J6yhALO9XKKYOY4NWTuhSXdzcEjb3ZbHBNLFQQD9iC4B45q1FQlvmK4qcNpPcTpjsduZa8dPgj29caHe/jgwDE6bRv/il7zCSJ2TEkIcxGQyqOhe3bVdEQ4EkDf4YFGk4kMnHrSZh8oHDT7vuTqgTkkdgb/WxzSdkd7B8LPffg+pN6VRpvQ1MY405wTVD4DglP/0/ZzCOeyzaGNRwA2ORJzhP7uVITUIUaI1sqplt/Azufu4H+CyqylmLd/DUNydMBcHkdD9SB+RjB7TCu4mMOAapvMNChmIw9sYuUuUapMt4bn3SI4ZlffFW8PIZSpiQCGiUP5TlBOe9hoSU0dZVZaGN9YEK6EHjKW9dobJesSKw4DLoU6iQiRRW1BLXj6rUf+0haiQx+DtN9Y3A4Xzf1a5jF9dfZ+BtBBfELjDoViXhr84Mhu+BvrROZfKNuFwLq4Y6kGLQsCjJpfrsxnim9TFvZVaLxd7n/s=
+Received: from us-smtp-1.mimecast.com (us-smtp-delivery-1.mimecast.com
+ [207.211.31.120])
+ by silver.osuosl.org (Postfix) with ESMTPS id 2497422846
+ for <iommu@lists.linux-foundation.org>; Thu,  2 Jul 2020 17:55:07 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+ s=mimecast20190719; t=1593712505;
+ h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+ to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+ content-transfer-encoding:content-transfer-encoding:
+ in-reply-to:in-reply-to:references:references;
+ bh=A7QTdTMTUaPeS9uufDmmu78eQSwCA8n+MLasIB1vQ58=;
+ b=esmb2hZlBTy4G9SAO0K6ca+UxBJDHL5XoUQGD31IQltKUu1dPq2dj8O1CoMfFhxI7eNYZC
+ OfGyGemGygCtWDdp2MEXS7uHBk+FLkwWuvPrHa/1bcLjH90gIGCQfh0n469fIs3//LVMm/
+ Sw7h6cR5XSDBV4aANwmjH5mS2vL/En0=
+Received: from mimecast-mx01.redhat.com (mimecast-mx01.redhat.com
+ [209.132.183.4]) (Using TLS) by relay.mimecast.com with ESMTP id
+ us-mta-225-dln7jSl0PfmDf3E1d450jA-1; Thu, 02 Jul 2020 13:55:04 -0400
+X-MC-Unique: dln7jSl0PfmDf3E1d450jA-1
+Received: from smtp.corp.redhat.com (int-mx03.intmail.prod.int.phx2.redhat.com
+ [10.5.11.13])
+ (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
+ (No client certificate requested)
+ by mimecast-mx01.redhat.com (Postfix) with ESMTPS id 1088B1005513;
+ Thu,  2 Jul 2020 17:55:02 +0000 (UTC)
+Received: from x1.home (ovpn-112-156.phx2.redhat.com [10.3.112.156])
+ by smtp.corp.redhat.com (Postfix) with ESMTP id 0C96779255;
+ Thu,  2 Jul 2020 17:54:54 +0000 (UTC)
+Date: Thu, 2 Jul 2020 11:54:54 -0600
+From: Alex Williamson <alex.williamson@redhat.com>
+To: Liu Yi L <yi.l.liu@intel.com>
+Subject: Re: [PATCH v3 02/14] iommu: Report domain nesting info
+Message-ID: <20200702115454.058bd198@x1.home>
+In-Reply-To: <1592988927-48009-3-git-send-email-yi.l.liu@intel.com>
+References: <1592988927-48009-1-git-send-email-yi.l.liu@intel.com>
+ <1592988927-48009-3-git-send-email-yi.l.liu@intel.com>
+Organization: Red Hat
 MIME-Version: 1.0
-X-OriginatorOrg: amd.com
-X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-AuthSource: MN2PR12MB4488.namprd12.prod.outlook.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: fc033e6a-607f-4b38-20e4-08d81ea544d4
-X-MS-Exchange-CrossTenant-originalarrivaltime: 02 Jul 2020 16:30:44.4810 (UTC)
-X-MS-Exchange-CrossTenant-fromentityheader: Hosted
-X-MS-Exchange-CrossTenant-id: 3dd8961f-e488-4e60-8e11-a82d994e183d
-X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
-X-MS-Exchange-CrossTenant-userprincipalname: 9X5oBgo1tl/NJzdCBXVkKoF3LvZpaLU+tsWat2mED92ogjtXcy+NBaDZsJGYWbLmi2g8mn9K2GhJ0MCYCqJohw==
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: BL0PR12MB2466
-Cc: "iommu@lists.linux-foundation.org" <iommu@lists.linux-foundation.org>,
- open list <linux-kernel@vger.kernel.org>
+X-Scanned-By: MIMEDefang 2.79 on 10.5.11.13
+Cc: jean-philippe@linaro.org, kevin.tian@intel.com, ashok.raj@intel.com,
+ kvm@vger.kernel.org, iommu@lists.linux-foundation.org,
+ linux-kernel@vger.kernel.org, yi.y.sun@intel.com, hao.wu@intel.com,
+ jun.j.tian@intel.com
 X-BeenThere: iommu@lists.linux-foundation.org
 X-Mailman-Version: 2.1.15
 Precedence: list
@@ -157,44 +103,209 @@ Content-Transfer-Encoding: 7bit
 Errors-To: iommu-bounces@lists.linux-foundation.org
 Sender: "iommu" <iommu-bounces@lists.linux-foundation.org>
 
-[AMD Public Use]
+On Wed, 24 Jun 2020 01:55:15 -0700
+Liu Yi L <yi.l.liu@intel.com> wrote:
 
-> -----Original Message-----
-> From: Kai-Heng Feng <kai.heng.feng@canonical.com>
-> Sent: Thursday, July 2, 2020 8:04 AM
-> To: Joerg Roedel <jroedel@suse.de>
-> Cc: Deucher, Alexander <Alexander.Deucher@amd.com>;
-> iommu@lists.linux-foundation.org; open list <linux-kernel@vger.kernel.org>
-> Subject: [BUG] "Pre-boot DMA Protection" makes AMDGPU stop working
+> IOMMUs that support nesting translation needs report the capability info
+> to userspace, e.g. the format of first level/stage paging structures.
 > 
-> Hi,
+> This patch reports nesting info by DOMAIN_ATTR_NESTING. Caller can get
+> nesting info after setting DOMAIN_ATTR_NESTING.
 > 
-> A more detailed bug report can be found at [1].
+> v2 -> v3:
+> *) remvoe cap/ecap_mask in iommu_nesting_info.
+> *) reuse DOMAIN_ATTR_NESTING to get nesting info.
+> *) return an empty iommu_nesting_info for SMMU drivers per Jean'
+>    suggestion.
 > 
-> I have a AMD Renoir system that can't enter graphical session because there
-> are many IOMMU splat.
+> Cc: Kevin Tian <kevin.tian@intel.com>
+> CC: Jacob Pan <jacob.jun.pan@linux.intel.com>
+> Cc: Alex Williamson <alex.williamson@redhat.com>
+> Cc: Eric Auger <eric.auger@redhat.com>
+> Cc: Jean-Philippe Brucker <jean-philippe@linaro.org>
+> Cc: Joerg Roedel <joro@8bytes.org>
+> Cc: Lu Baolu <baolu.lu@linux.intel.com>
+> Signed-off-by: Liu Yi L <yi.l.liu@intel.com>
+> Signed-off-by: Jacob Pan <jacob.jun.pan@linux.intel.com>
+> ---
+>  drivers/iommu/arm-smmu-v3.c | 29 ++++++++++++++++++++--
+>  drivers/iommu/arm-smmu.c    | 29 ++++++++++++++++++++--
+>  include/uapi/linux/iommu.h  | 59 +++++++++++++++++++++++++++++++++++++++++++++
+>  3 files changed, 113 insertions(+), 4 deletions(-)
 > 
-> Alex suggested to disable "Pre-boot DMA Protection", I can confirm once it's
-> disabled, AMDGPU starts working with IOMMU enabled.
-> So raise the issue here because I have no knowledge on how to reset the
-> IOMMU.
+> diff --git a/drivers/iommu/arm-smmu-v3.c b/drivers/iommu/arm-smmu-v3.c
+> index f578677..0c45d4d 100644
+> --- a/drivers/iommu/arm-smmu-v3.c
+> +++ b/drivers/iommu/arm-smmu-v3.c
+> @@ -3019,6 +3019,32 @@ static struct iommu_group *arm_smmu_device_group(struct device *dev)
+>  	return group;
+>  }
+>  
+> +static int arm_smmu_domain_nesting_info(struct arm_smmu_domain *smmu_domain,
+> +					void *data)
+> +{
+> +	struct iommu_nesting_info *info = (struct iommu_nesting_info *) data;
+> +	u32 size;
+> +
+> +	if (!info || smmu_domain->stage != ARM_SMMU_DOMAIN_NESTED)
+> +		return -ENODEV;
+> +
+> +	size = sizeof(struct iommu_nesting_info);
+> +
+> +	/*
+> +	 * if provided buffer size is not equal to the size, should
+> +	 * return 0 and also the expected buffer size to caller.
+> +	 */
+> +	if (info->size != size) {
+> +		info->size = size;
+> +		return 0;
+> +	}
+> +
+> +	/* report an empty iommu_nesting_info for now */
+> +	memset(info, 0x0, size);
+> +	info->size = size;
+> +	return 0;
+> +}
+> +
+>  static int arm_smmu_domain_get_attr(struct iommu_domain *domain,
+>  				    enum iommu_attr attr, void *data)
+>  {
+> @@ -3028,8 +3054,7 @@ static int arm_smmu_domain_get_attr(struct iommu_domain *domain,
+>  	case IOMMU_DOMAIN_UNMANAGED:
+>  		switch (attr) {
+>  		case DOMAIN_ATTR_NESTING:
+> -			*(int *)data = (smmu_domain->stage == ARM_SMMU_DOMAIN_NESTED);
+> -			return 0;
+> +			return arm_smmu_domain_nesting_info(smmu_domain, data);
+>  		default:
+>  			return -ENODEV;
+>  		}
+> diff --git a/drivers/iommu/arm-smmu.c b/drivers/iommu/arm-smmu.c
+> index 243bc4c..908607d 100644
+> --- a/drivers/iommu/arm-smmu.c
+> +++ b/drivers/iommu/arm-smmu.c
+> @@ -1506,6 +1506,32 @@ static struct iommu_group *arm_smmu_device_group(struct device *dev)
+>  	return group;
+>  }
+>  
+> +static int arm_smmu_domain_nesting_info(struct arm_smmu_domain *smmu_domain,
+> +					void *data)
+> +{
+> +	struct iommu_nesting_info *info = (struct iommu_nesting_info *) data;
+> +	u32 size;
+> +
+> +	if (!info || smmu_domain->stage != ARM_SMMU_DOMAIN_NESTED)
+> +		return -ENODEV;
+> +
+> +	size = sizeof(struct iommu_nesting_info);
+> +
+> +	/*
+> +	 * if provided buffer size is not equal to the size, should
+> +	 * return 0 and also the expected buffer size to caller.
+> +	 */
+> +	if (info->size != size) {
+> +		info->size = size;
+> +		return 0;
+> +	}
+> +
+> +	/* report an empty iommu_nesting_info for now */
+> +	memset(info, 0x0, size);
+> +	info->size = size;
+> +	return 0;
+> +}
+> +
+>  static int arm_smmu_domain_get_attr(struct iommu_domain *domain,
+>  				    enum iommu_attr attr, void *data)
+>  {
+> @@ -1515,8 +1541,7 @@ static int arm_smmu_domain_get_attr(struct iommu_domain *domain,
+>  	case IOMMU_DOMAIN_UNMANAGED:
+>  		switch (attr) {
+>  		case DOMAIN_ATTR_NESTING:
+> -			*(int *)data = (smmu_domain->stage == ARM_SMMU_DOMAIN_NESTED);
+> -			return 0;
+> +			return arm_smmu_domain_nesting_info(smmu_domain, data);
+>  		default:
+>  			return -ENODEV;
+>  		}
+> diff --git a/include/uapi/linux/iommu.h b/include/uapi/linux/iommu.h
+> index 1afc661..898c99a 100644
+> --- a/include/uapi/linux/iommu.h
+> +++ b/include/uapi/linux/iommu.h
+> @@ -332,4 +332,63 @@ struct iommu_gpasid_bind_data {
+>  	} vendor;
+>  };
+>  
+> +/*
+> + * struct iommu_nesting_info - Information for nesting-capable IOMMU.
+> + *				user space should check it before using
+> + *				nesting capability.
+> + *
+> + * @size:	size of the whole structure
+> + * @format:	PASID table entry format, the same definition with
+> + *		@format of struct iommu_gpasid_bind_data.
+> + * @features:	supported nesting features.
+> + * @flags:	currently reserved for future extension.
+> + * @data:	vendor specific cap info.
+> + *
+> + * +---------------+----------------------------------------------------+
+> + * | feature       |  Notes                                             |
+> + * +===============+====================================================+
+> + * | SYSWIDE_PASID |  Kernel manages PASID in system wide, PASIDs used  |
+> + * |               |  in the system should be allocated by host kernel  |
+> + * +---------------+----------------------------------------------------+
+> + * | BIND_PGTBL    |  bind page tables to host PASID, the PASID could   |
+> + * |               |  either be a host PASID passed in bind request or  |
+> + * |               |  default PASIDs (e.g. default PASID of aux-domain) |
+> + * +---------------+----------------------------------------------------+
+> + * | CACHE_INVLD   |  mandatory feature for nesting capable IOMMU       |
+> + * +---------------+----------------------------------------------------+
 
-+ Suravee
+Agree with the previous comments on these descriptions and Kevin's
+suggestions.
 
-This is part of MS's Secure Core initiative.  We are investigating how to properly handle this properly on Linux.  Stay tuned.
+> + *
+> + */
+> +struct iommu_nesting_info {
+> +	__u32	size;
+> +	__u32	format;
+> +	__u32	features;
+> +#define IOMMU_NESTING_FEAT_SYSWIDE_PASID	(1 << 0)
+> +#define IOMMU_NESTING_FEAT_BIND_PGTBL		(1 << 1)
+> +#define IOMMU_NESTING_FEAT_CACHE_INVLD		(1 << 2)
+> +	__u32	flags;
+> +	__u8	data[];
+
+How does the user determine which vendor structure is provided in
+data[]?  Thanks,
 
 Alex
 
-> 
-> [1]
-> https://nam11.safelinks.protection.outlook.com/?url=https%3A%2F%2Fgitla
-> b.freedesktop.org%2Fdrm%2Famd%2F-
-> %2Fissues%2F1204&amp;data=02%7C01%7Calexander.deucher%40amd.com
-> %7C60746a6fecf04a5e570908d81e8011c6%7C3dd8961fe4884e608e11a82d994
-> e183d%7C0%7C0%7C637292882713301680&amp;sdata=r6cj19Vc8N0%2FSmsb
-> CAJva%2BabMD2b5r2lvPLIxZSacoY%3D&amp;reserved=0
-> 
-> Kai-Heng
+> +};
+> +
+> +/*
+> + * struct iommu_nesting_info_vtd - Intel VT-d specific nesting info
+> + *
+> + *
+> + * @flags:	VT-d specific flags. Currently reserved for future
+> + *		extension.
+> + * @addr_width:	The output addr width of first level/stage translation
+> + * @pasid_bits:	Maximum supported PASID bits, 0 represents no PASID
+> + *		support.
+> + * @cap_reg:	Describe basic capabilities as defined in VT-d capability
+> + *		register.
+> + * @ecap_reg:	Describe the extended capabilities as defined in VT-d
+> + *		extended capability register.
+> + */
+> +struct iommu_nesting_info_vtd {
+> +	__u32	flags;
+> +	__u16	addr_width;
+> +	__u16	pasid_bits;
+> +	__u64	cap_reg;
+> +	__u64	ecap_reg;
+> +};
+> +
+>  #endif /* _UAPI_IOMMU_H */
+
 _______________________________________________
 iommu mailing list
 iommu@lists.linux-foundation.org
