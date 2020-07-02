@@ -2,85 +2,119 @@ Return-Path: <SRS0=8rqH=AN=lists.linux-foundation.org=iommu-bounces@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-2.5 required=3.0 tests=HEADER_FROM_DIFFERENT_DOMAINS,
-	MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED,USER_AGENT_SANE_1
-	autolearn=no autolearn_force=no version=3.4.0
+X-Spam-Status: No, score=-0.6 required=3.0 tests=DKIM_ADSP_CUSTOM_MED,
+	DKIM_INVALID,DKIM_SIGNED,FREEMAIL_FORGED_FROMDOMAIN,FREEMAIL_FROM,
+	HEADER_FROM_DIFFERENT_DOMAINS,MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS,
+	URIBL_BLOCKED autolearn=no autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id C7213C433E0
-	for <iommu@archiver.kernel.org>; Thu,  2 Jul 2020 02:40:52 +0000 (UTC)
-Received: from whitealder.osuosl.org (smtp1.osuosl.org [140.211.166.138])
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 402DCC433E1
+	for <iommu@archiver.kernel.org>; Thu,  2 Jul 2020 05:23:40 +0000 (UTC)
+Received: from silver.osuosl.org (smtp3.osuosl.org [140.211.166.136])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by mail.kernel.org (Postfix) with ESMTPS id 95DF42083E
-	for <iommu@archiver.kernel.org>; Thu,  2 Jul 2020 02:40:52 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 95DF42083E
-Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=linux.intel.com
+	by mail.kernel.org (Postfix) with ESMTPS id 0C813207D4
+	for <iommu@archiver.kernel.org>; Thu,  2 Jul 2020 05:23:39 +0000 (UTC)
+Authentication-Results: mail.kernel.org;
+	dkim=fail reason="signature verification failed" (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="qYB6Nf4T"
+DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 0C813207D4
+Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=gmail.com
 Authentication-Results: mail.kernel.org; spf=pass smtp.mailfrom=iommu-bounces@lists.linux-foundation.org
 Received: from localhost (localhost [127.0.0.1])
-	by whitealder.osuosl.org (Postfix) with ESMTP id 6BD9C8AB95;
-	Thu,  2 Jul 2020 02:40:52 +0000 (UTC)
+	by silver.osuosl.org (Postfix) with ESMTP id 0EA2526046;
+	Thu,  2 Jul 2020 05:23:39 +0000 (UTC)
+X-Virus-Scanned: amavisd-new at osuosl.org
+Received: from silver.osuosl.org ([127.0.0.1])
+	by localhost (.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
+	with ESMTP id d9Cdts961M6Q; Thu,  2 Jul 2020 05:23:37 +0000 (UTC)
+Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [140.211.9.56])
+	by silver.osuosl.org (Postfix) with ESMTP id A5B4A204BE;
+	Thu,  2 Jul 2020 05:23:37 +0000 (UTC)
+Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
+	by lists.linuxfoundation.org (Postfix) with ESMTP id 96436C0890;
+	Thu,  2 Jul 2020 05:23:37 +0000 (UTC)
+Received: from whitealder.osuosl.org (smtp1.osuosl.org [140.211.166.138])
+ by lists.linuxfoundation.org (Postfix) with ESMTP id 232BCC0733
+ for <iommu@lists.linux-foundation.org>; Thu,  2 Jul 2020 05:23:37 +0000 (UTC)
+Received: from localhost (localhost [127.0.0.1])
+ by whitealder.osuosl.org (Postfix) with ESMTP id 16C3D8B165
+ for <iommu@lists.linux-foundation.org>; Thu,  2 Jul 2020 05:23:37 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
 Received: from whitealder.osuosl.org ([127.0.0.1])
-	by localhost (.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
-	with ESMTP id QBQaiC1dcCKQ; Thu,  2 Jul 2020 02:40:51 +0000 (UTC)
-Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [140.211.9.56])
-	by whitealder.osuosl.org (Postfix) with ESMTP id 40AA88AB7B;
-	Thu,  2 Jul 2020 02:40:51 +0000 (UTC)
-Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
-	by lists.linuxfoundation.org (Postfix) with ESMTP id 1D1A5C0865;
-	Thu,  2 Jul 2020 02:40:51 +0000 (UTC)
-Received: from fraxinus.osuosl.org (smtp4.osuosl.org [140.211.166.137])
- by lists.linuxfoundation.org (Postfix) with ESMTP id 99248C0733
- for <iommu@lists.linux-foundation.org>; Thu,  2 Jul 2020 02:40:49 +0000 (UTC)
-Received: from localhost (localhost [127.0.0.1])
- by fraxinus.osuosl.org (Postfix) with ESMTP id 86D9289333
- for <iommu@lists.linux-foundation.org>; Thu,  2 Jul 2020 02:40:49 +0000 (UTC)
-X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from fraxinus.osuosl.org ([127.0.0.1])
  by localhost (.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
- with ESMTP id midryaKRoDyh for <iommu@lists.linux-foundation.org>;
- Thu,  2 Jul 2020 02:40:48 +0000 (UTC)
+ with ESMTP id dZp5Dc7iYX+1 for <iommu@lists.linux-foundation.org>;
+ Thu,  2 Jul 2020 05:23:35 +0000 (UTC)
 X-Greylist: domain auto-whitelisted by SQLgrey-1.7.6
-Received: from mga04.intel.com (mga04.intel.com [192.55.52.120])
- by fraxinus.osuosl.org (Postfix) with ESMTPS id 7E8B489321
- for <iommu@lists.linux-foundation.org>; Thu,  2 Jul 2020 02:40:48 +0000 (UTC)
-IronPort-SDR: hWDmQs/R+ERXPDv743Bo4pQGQUYRctKfiUEH0U4W6Zt+61GPaxT3/NcrnDad8MeZx5KjaB7TzH
- NrCehQevSMJw==
-X-IronPort-AV: E=McAfee;i="6000,8403,9669"; a="144292313"
-X-IronPort-AV: E=Sophos;i="5.75,302,1589266800"; d="scan'208";a="144292313"
-X-Amp-Result: SKIPPED(no attachment in message)
-X-Amp-File-Uploaded: False
-Received: from fmsmga004.fm.intel.com ([10.253.24.48])
- by fmsmga104.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384;
- 01 Jul 2020 19:40:48 -0700
-IronPort-SDR: 3rWF4o7dj0Ks55pw/e1j1+Rko8fpP3l2gbGQ7Q1uLw7AYQbvftMP/JPf6pEccmeDYQLmXVdYJS
- KZSN34a2rj8Q==
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.75,302,1589266800"; d="scan'208";a="304080014"
-Received: from allen-box.sh.intel.com (HELO [10.239.159.139])
- ([10.239.159.139])
- by fmsmga004.fm.intel.com with ESMTP; 01 Jul 2020 19:40:45 -0700
-Subject: Re: [PATCH 1/2] iommu: Add iommu_group_get/set_domain()
-To: Robin Murphy <robin.murphy@arm.com>, Joerg Roedel <joro@8bytes.org>,
- Alex Williamson <alex.williamson@redhat.com>
-References: <20200627031532.28046-1-baolu.lu@linux.intel.com>
- <acc0a8fd-bd23-fc34-aecc-67796ab216e7@arm.com>
- <5dc1cece-6111-9b56-d04c-9553d592675b@linux.intel.com>
- <48dd9f1e-c18b-77b7-650a-c35ecbb69f2b@arm.com>
- <c38784ad-9dba-0840-3a61-e2c21e781f1e@linux.intel.com>
- <ffbb405b-5617-5659-3fc1-302c530aceef@arm.com>
-From: Lu Baolu <baolu.lu@linux.intel.com>
-Message-ID: <5f3ad162-647c-1295-880b-6b104807ba9a@linux.intel.com>
-Date: Thu, 2 Jul 2020 10:36:21 +0800
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101
- Thunderbird/68.8.0
+Received: from mail-il1-f196.google.com (mail-il1-f196.google.com
+ [209.85.166.196])
+ by whitealder.osuosl.org (Postfix) with ESMTPS id 96CB28B163
+ for <iommu@lists.linux-foundation.org>; Thu,  2 Jul 2020 05:23:35 +0000 (UTC)
+Received: by mail-il1-f196.google.com with SMTP id a11so14885701ilk.0
+ for <iommu@lists.linux-foundation.org>; Wed, 01 Jul 2020 22:23:35 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=gmail.com; s=20161025;
+ h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+ :cc; bh=MrIiq6DPHqBGLcGy4awQj5Lf7ocfuRcVU3QA0UqcMzc=;
+ b=qYB6Nf4TEwfw/GwxgXjBmvXkwehh+YVaetDdp7hkclhIPnapQdTMsKhe2ZwJ2ruUF8
+ e1lgYhAEKSLmH2ZKQDZEg3h2CgunA+w/9jPoC4+QR0+zUfDov7bkT49g9mb0S2WJrMgH
+ 6hXpgV27P+AfqHwMVph6aZfvyHyfx4x6COiw+youi4BeqYymDTT4oIZbd0TcNwFUvnZ0
+ pqG3gqbAk2iDlnAHAAr4ekxxGTSdKrUPqkRDjwvfqzIYOkI6MNYL8DYniIUcqQsn/OvC
+ ScSKZ6NYQ9APjTDmidzRCEM0JeEE81VozY/ncio88zD4UlheNeC8yUVwjG/OEqNsoWpP
+ C+ZQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+ d=1e100.net; s=20161025;
+ h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+ :message-id:subject:to:cc;
+ bh=MrIiq6DPHqBGLcGy4awQj5Lf7ocfuRcVU3QA0UqcMzc=;
+ b=AlJbB2GP12P7DL2KUu2bZCvoNkQNkG9wQdhxPhwmHEXTy3cWcsA/Nq1+hBFytsoqGJ
+ zEXYq+3yNZAs3te7HfVikxz/qCS7aQrHw6hFamMpi9W1rny5HphgbrsVnfTSoBJGXOLV
+ 9fKdIlesV3I/zbPQah2uHmwrIy/5CQwPhm1nf3uxdiOYnJc8I7w1olYPwM1ONQqejIxy
+ IJznQoan/kkhxLwJTRfYT7Jr4tRpeLrU7IU3tZNaafG2kTOdndKOqWC8L/E6EWAD6w7d
+ AD4Uf0RtsnEfXKTBajuOqXtHCOUAloyAHH/JMZQdniBmfTza19Msa7FeBNr7Dct2E5oG
+ b5CQ==
+X-Gm-Message-State: AOAM533Q36b3EAP1KrhhMoHMudBnu/T0j7iT53w2crBNuAX0lnor5KhE
+ uIAkax1lkSyh5dN6JXjUuUFMMgDllfCAKvLRIJc=
+X-Google-Smtp-Source: ABdhPJw1rNERV+43T1aSgz1QcWNkBext9nRtzr4Mfiuwrwrl5VMOvx7jOqK/T1tAqNHO9QFkol8bTJx2cfW5MW0tzEM=
+X-Received: by 2002:a92:9a97:: with SMTP id c23mr9634019ill.258.1593667414618; 
+ Wed, 01 Jul 2020 22:23:34 -0700 (PDT)
 MIME-Version: 1.0
-In-Reply-To: <ffbb405b-5617-5659-3fc1-302c530aceef@arm.com>
-Content-Language: en-US
-Cc: Kevin Tian <kevin.tian@intel.com>, Dave Jiang <dave.jiang@intel.com>,
- Ashok Raj <ashok.raj@intel.com>, kvm@vger.kernel.org,
- Cornelia Huck <cohuck@redhat.com>, linux-kernel@vger.kernel.org,
- iommu@lists.linux-foundation.org
+References: <20200630044943.3425049-1-rajatja@google.com>
+ <20200630044943.3425049-6-rajatja@google.com>
+ <20200630104948.GC856968@kuha.fi.intel.com>
+ <20200630125216.GA1109228@kroah.com>
+ <CAJZ5v0iYFKrouQx_b7afPnz7ohjWOKKDhdHj_3HObKYV_rRhiw@mail.gmail.com>
+ <20200630153816.GD1785141@kroah.com>
+ <CAJZ5v0jUx-RVhJRDngkOXx-3szFJDOgCJs2yuGKFyo2f1qZAwA@mail.gmail.com>
+ <20200630170012.GB1894898@kroah.com>
+ <CACK8Z6Fcrb8PtmbUJLn8RgiGnC8eqTC9GjsgjPmQgU212WPU0Q@mail.gmail.com>
+In-Reply-To: <CACK8Z6Fcrb8PtmbUJLn8RgiGnC8eqTC9GjsgjPmQgU212WPU0Q@mail.gmail.com>
+From: "Oliver O'Halloran" <oohall@gmail.com>
+Date: Thu, 2 Jul 2020 15:23:23 +1000
+Message-ID: <CAOSf1CEZ82iXhYnig0UScS+oRRaxHzSCge9LbA1hW3NaQAiSxQ@mail.gmail.com>
+Subject: Re: [PATCH v2 5/7] driver core: Add device location to "struct
+ device" and expose it in sysfs
+To: Rajat Jain <rajatja@google.com>
+Cc: Heikki Krogerus <heikki.krogerus@linux.intel.com>,
+ "Rafael J. Wysocki" <rafael@kernel.org>, Linux PCI <linux-pci@vger.kernel.org>,
+ "Krishnakumar, Lalithambika" <lalithambika.krishnakumar@intel.com>,
+ Todd Broch <tbroch@google.com>, Diego Rivas <diegorivas@google.com>,
+ Jean-Philippe Brucker <jean-philippe@linaro.org>,
+ Furquan Shaikh <furquan@google.com>, Raj Ashok <ashok.raj@intel.com>,
+ Saravana Kannan <saravanak@google.com>,
+ ACPI Devel Maling List <linux-acpi@vger.kernel.org>,
+ Christian Kellner <christian@kellner.me>,
+ Mattias Nissler <mnissler@google.com>, Jesse Barnes <jsbarnes@google.com>,
+ Len Brown <lenb@kernel.org>, Rajat Jain <rajatxjain@gmail.com>,
+ Prashant Malani <pmalani@google.com>,
+ Suzuki K Poulose <suzuki.poulose@arm.com>, Aaron Durbin <adurbin@google.com>,
+ Alex Williamson <alex.williamson@redhat.com>,
+ Bjorn Helgaas <bhelgaas@google.com>,
+ Mika Westerberg <mika.westerberg@linux.intel.com>,
+ Bernie Keany <bernie.keany@intel.com>, Duncan Laurie <dlaurie@google.com>,
+ Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+ "Rafael J. Wysocki" <rjw@rjwysocki.net>,
+ Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
+ "open list:AMD IOMMU \(AMD-VI\)" <iommu@lists.linux-foundation.org>,
+ Arnd Bergmann <arnd@arndb.de>, Benson Leung <bleung@google.com>,
+ David Woodhouse <dwmw2@infradead.org>, Alex Levin <levinale@google.com>
 X-BeenThere: iommu@lists.linux-foundation.org
 X-Mailman-Version: 2.1.15
 Precedence: list
@@ -93,182 +127,167 @@ List-Post: <mailto:iommu@lists.linux-foundation.org>
 List-Help: <mailto:iommu-request@lists.linux-foundation.org?subject=help>
 List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
  <mailto:iommu-request@lists.linux-foundation.org?subject=subscribe>
-Content-Transfer-Encoding: base64
-Content-Type: text/plain; charset="utf-8"; Format="flowed"
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: 7bit
 Errors-To: iommu-bounces@lists.linux-foundation.org
 Sender: "iommu" <iommu-bounces@lists.linux-foundation.org>
 
-SGkgUm9iaW4sCgpPbiA3LzEvMjAgODoxOCBQTSwgUm9iaW4gTXVycGh5IHdyb3RlOgo+IE9uIDIw
-MjAtMDctMDEgMDg6MzIsIEx1IEJhb2x1IHdyb3RlOgo+PiBIaSBSb2JpbiwKPj4KPj4gT24gMjAy
-MC83LzEgMDo1MSwgUm9iaW4gTXVycGh5IHdyb3RlOgo+Pj4gT24gMjAyMC0wNi0zMCAwMjowMywg
-THUgQmFvbHUgd3JvdGU6Cj4+Pj4gSGkgUm9iaW4sCj4+Pj4KPj4+PiBPbiA2LzI5LzIwIDc6NTYg
-UE0sIFJvYmluIE11cnBoeSB3cm90ZToKPj4+Pj4gT24gMjAyMC0wNi0yNyAwNDoxNSwgTHUgQmFv
-bHUgd3JvdGU6Cj4+Pj4+PiBUaGUgaGFyZHdhcmUgYXNzaXN0YW50IHZmaW8gbWVkaWF0ZWQgZGV2
-aWNlIGlzIGEgdXNlIGNhc2Ugb2YgaW9tbXUKPj4+Pj4+IGF1eC1kb21haW4uIFRoZSBpbnRlcmFj
-dGlvbnMgYmV0d2VlbiB2ZmlvL21kZXYgYW5kIGlvbW11IGR1cmluZyBtZGV2Cj4+Pj4+PiBjcmVh
-dGlvbiBhbmQgcGFzc3RociBhcmU6Cj4+Pj4+Pgo+Pj4+Pj4gLSBDcmVhdGUgYSBncm91cCBmb3Ig
-bWRldiB3aXRoIGlvbW11X2dyb3VwX2FsbG9jKCk7Cj4+Pj4+PiAtIEFkZCB0aGUgZGV2aWNlIHRv
-IHRoZSBncm91cCB3aXRoCj4+Pj4+PiDCoMKgwqDCoMKgwqDCoMKgIGdyb3VwID0gaW9tbXVfZ3Jv
-dXBfYWxsb2MoKTsKPj4+Pj4+IMKgwqDCoMKgwqDCoMKgwqAgaWYgKElTX0VSUihncm91cCkpCj4+
-Pj4+PiDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoCByZXR1cm4gUFRSX0VSUihncm91
-cCk7Cj4+Pj4+Pgo+Pj4+Pj4gwqDCoMKgwqDCoMKgwqDCoCByZXQgPSBpb21tdV9ncm91cF9hZGRf
-ZGV2aWNlKGdyb3VwLCAmbWRldi0+ZGV2KTsKPj4+Pj4+IMKgwqDCoMKgwqDCoMKgwqAgaWYgKCFy
-ZXQpCj4+Pj4+PiDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoCBkZXZfaW5mbygmbWRl
-di0+ZGV2LCAiTURFVjogZ3JvdXBfaWQgPSAlZFxuIiwKPj4+Pj4+IMKgwqDCoMKgwqDCoMKgwqDC
-oMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgIGlvbW11X2dyb3VwX2lkKGdyb3VwKSk7
-Cj4+Pj4+PiAtIEFsbG9jYXRlIGFuIGF1eC1kb21haW4KPj4+Pj4+IMKgwqDCoMKgaW9tbXVfZG9t
-YWluX2FsbG9jKCkKPj4+Pj4+IC0gQXR0YWNoIHRoZSBhdXgtZG9tYWluIHRvIHRoZSBwaHlzaWNh
-bCBkZXZpY2UgZnJvbSB3aGljaCB0aGUgbWRldiBpcwo+Pj4+Pj4gwqDCoCBjcmVhdGVkLgo+Pj4+
-Pj4gwqDCoMKgwqBpb21tdV9hdXhfYXR0YWNoX2RldmljZSgpCj4+Pj4+Pgo+Pj4+Pj4gSW4gdGhl
-IHdob2xlIHByb2Nlc3MsIGFuIGlvbW11IGdyb3VwIHdhcyBhbGxvY2F0ZWQgZm9yIHRoZSBtZGV2
-IAo+Pj4+Pj4gYW5kIGFuCj4+Pj4+PiBpb21tdSBkb21haW4gd2FzIGF0dGFjaGVkIHRvIHRoZSBn
-cm91cCwgYnV0IHRoZSBncm91cC0+ZG9tYWluIGxlYXZlcwo+Pj4+Pj4gTlVMTC4gQXMgdGhlIHJl
-c3VsdCwgaW9tbXVfZ2V0X2RvbWFpbl9mb3JfZGV2KCkgZG9lc24ndCB3b3JrIGFueW1vcmUuCj4+
-Pj4+Pgo+Pj4+Pj4gVGhpcyBhZGRzIGlvbW11X2dyb3VwX2dldC9zZXRfZG9tYWluKCkgc28gdGhh
-dCBncm91cC0+ZG9tYWluIGNvdWxkIGJlCj4+Pj4+PiBtYW5hZ2VkIHdoZW5ldmVyIGEgZG9tYWlu
-IGlzIGF0dGFjaGVkIG9yIGRldGFjaGVkIHRocm91Z2ggdGhlIAo+Pj4+Pj4gYXV4LWRvbWFpbgo+
-Pj4+Pj4gYXBpJ3MuCj4+Pj4+Cj4+Pj4+IExldHRpbmcgZXh0ZXJuYWwgY2FsbGVycyBwb2tlIGFy
-b3VuZCBkaXJlY3RseSBpbiB0aGUgaW50ZXJuYWxzIG9mIAo+Pj4+PiBpb21tdV9ncm91cCBkb2Vz
-bid0IGxvb2sgcmlnaHQgdG8gbWUuCj4+Pj4KPj4+PiBVbmZvcnR1bmF0ZWx5LCBpdCBzZWVtcyB0
-aGF0IHRoZSB2aWZvIGlvbW11IGFic3RyYWN0aW9uIGlzIGRlZXBseSBib3VuZAo+Pj4+IHRvIHRo
-ZSBJT01NVSBzdWJzeXN0ZW0uIFdlIGNhbiBlYXNpbHkgZmluZCBvdGhlciBleGFtcGxlczoKPj4+
-Pgo+Pj4+IGlvbW11X2dyb3VwX2dldC9zZXRfaW9tbXVkYXRhKCkKPj4+PiBpb21tdV9ncm91cF9n
-ZXQvc2V0X25hbWUoKQo+Pj4+IC4uLgo+Pj4KPj4+IFN1cmUsIGJ1dCB0aG9zZSBhcmUgd2F5cyBm
-b3IgdXNlcnMgb2YgYSBncm91cCB0byBhdHRhY2ggdXNlZnVsIAo+Pj4gaW5mb3JtYXRpb24gb2Yg
-dGhlaXIgb3duIHRvIGl0LCB0aGF0IGRvZXNuJ3QgbWF0dGVyIHRvIHRoZSBJT01NVSAKPj4+IHN1
-YnN5c3RlbSBpdHNlbGYuIFRoZSBpbnRlcmZhY2UgeW91J3ZlIHByb3Bvc2VkIGdpdmVzIGNhbGxl
-cnMgcmljaCAKPj4+IG5ldyBvcHBvcnR1bml0aWVzIHRvIGZ1bmRhbWVudGFsbHkgYnJlYWsgY29y
-cmVjdCBvcGVyYXRpb24gb2YgdGhlIEFQSToKPj4+Cj4+PiDCoMKgwqDCoMKgZG9tID0gaW9tbXVf
-ZG9tYWluX2FsbG9jKCk7Cj4+PiDCoMKgwqDCoMKgaW9tbXVfYXR0YWNoX2dyb3VwKGRvbSwgZ3Jw
-KTsKPj4+IMKgwqDCoMKgwqAuLi4KPj4+IMKgwqDCoMKgwqBpb21tdV9ncm91cF9zZXRfZG9tYWlu
-KGdycCwgTlVMTCk7Cj4+PiDCoMKgwqDCoMKgLy8gb29wcywgbGVha2VkIGFuZCBjYW4ndCBldmVy
-IGRldGFjaCBwcm9wZXJseSBub3cKPj4+Cj4+PiBvciBwZXJoYXBzOgo+Pj4KPj4+IMKgwqDCoMKg
-wqBncnAgPSBpb21tdV9ncm91cF9hbGxvYygpOwo+Pj4gwqDCoMKgwqDCoGlvbW11X2dyb3VwX2Fk
-ZF9kZXZpY2UoZ3JwLCBkZXYpOwo+Pj4gwqDCoMKgwqDCoGlvbW11X2dyb3VwX3NldF9kb21haW4o
-Z3JwLCBkb20pOwo+Pj4gwqDCoMKgwqDCoC4uLgo+Pj4gwqDCoMKgwqDCoGlvbW11X2RldGFjaF9n
-cm91cChkb20sIGdycCk7Cj4+PiDCoMKgwqDCoMKgLy8gb29wcywgSU9NTVUgZHJpdmVyIG1pZ2h0
-IG5vdCBoYW5kbGUgdGhpcwo+Pj4KPj4+Pj4gSWYgYSByZWd1bGFyIGRldmljZSBpcyBhdHRhY2hl
-ZCB0byBvbmUgb3IgbW9yZSBhdXggZG9tYWlucyBmb3IgCj4+Pj4+IFBBU0lEIHVzZSwgaW9tbXVf
-Z2V0X2RvbWFpbl9mb3JfZGV2KCkgaXMgc3RpbGwgZ29pbmcgdG8gcmV0dXJuIHRoZSAKPj4+Pj4g
-cHJpbWFyeSBkb21haW4sIHNvIHdoeSBzaG91bGQgaXQgYmUgZXhwZWN0ZWQgdG8gYmVoYXZlIGRp
-ZmZlcmVudGx5IAo+Pj4+PiBmb3IgbWVkaWF0ZWQKPj4+Pgo+Pj4+IFVubGlrZSB0aGUgbm9ybWFs
-IGRldmljZSBhdHRhY2gsIHdlIHdpbGwgZW5jb3VudGVyIHR3byBkZXZpY2VzIHdoZW4gaXQKPj4+
-PiBjb21lcyB0byBhdXgtZG9tYWluLgo+Pj4+Cj4+Pj4gLSBQYXJlbnQgcGh5c2ljYWwgZGV2aWNl
-IC0gdGhpcyBtaWdodCBiZSwgZm9yIGV4YW1wbGUsIGEgUENJZSBkZXZpY2UKPj4+PiB3aXRoIFBB
-U0lEIGZlYXR1cmUgc3VwcG9ydCwgaGVuY2UgaXQgaXMgYWJsZSB0byB0YWcgYW4gdW5pcXVlIFBB
-U0lECj4+Pj4gZm9yIERNQSB0cmFuc2ZlcnMgb3JpZ2luYXRlZCBmcm9tIGl0cyBzdWJzZXQuIFRo
-ZSBkZXZpY2UgZHJpdmVyIGhlbmNlCj4+Pj4gaXMgYWJsZSB0byB3cmFwcGVyIHRoaXMgc3Vic2V0
-IGludG8gYW4gaXNvbGF0ZWQ6Cj4+Pj4KPj4+PiAtIE1lZGlhdGVkIGRldmljZSAtIGEgZmFrZSBk
-ZXZpY2UgY3JlYXRlZCBieSB0aGUgZGV2aWNlIGRyaXZlciAKPj4+PiBtZW50aW9uZWQKPj4+PiBh
-Ym92ZS4KPj4+Pgo+Pj4+IFllcy4gQWxsIHlvdSBtZW50aW9uZWQgYXJlIHJpZ2h0IGZvciB0aGUg
-cGFyZW50IGRldmljZS4gQnV0IGZvciAKPj4+PiBtZWRpYXRlZAo+Pj4+IGRldmljZSwgaW9tbXVf
-Z2V0X2RvbWFpbl9mb3JfZGV2KCkgZG9lc24ndCB3b3JrIGV2ZW4gaXQgaGFzIGFuIHZhbGlkCj4+
-Pj4gaW9tbXVfZ3JvdXAgYW5kIGlvbW11X2RvbWFpbi4KPj4+Pgo+Pj4+IGlvbW11X2dldF9kb21h
-aW5fZm9yX2RldigpIGlzIGEgbmVjZXNzYXJ5IGludGVyZmFjZSBmb3IgZGV2aWNlIGRyaXZlcnMK
-Pj4+PiB3aGljaCB3YW50IHRvIHN1cHBvcnQgYXV4LWRvbWFpbi4gRm9yIGV4YW1wbGUsCj4+Pgo+
-Pj4gT25seSBpZiB0aGV5IHdhbnQgdG8gZm9sbG93IHRoaXMgdmVyeSBzcGVjaWZpYyBub3Rpb24g
-b2YgdXNpbmcgCj4+PiBtYWRlLXVwIGRldmljZXMgYW5kIGdyb3VwcyB0byByZXByZXNlbnQgYXV4
-IGF0dGFjaG1lbnRzLiBFdmVuIGlmIGEgCj4+PiBkcml2ZXIgbWFuYWdpbmcgaXRzIG93biBhdXgg
-ZG9tYWlucyBlbnRpcmVseSBwcml2YXRlbHkgZG9lcyBjcmVhdGUgCj4+PiBjaGlsZCBkZXZpY2Vz
-IGZvciB0aGVtLCBpdCdzIG5vdCBsaWtlIGl0IGNhbid0IGtlZXAgaXRzIGRvbWFpbiAKPj4+IHBv
-aW50ZXJzIGluIGRydmRhdGEgaWYgaXQgd2FudHMgdG8gOykKPj4+Cj4+PiBMZXQncyBub3QgY29u
-ZmxhdGUgdGhlIGN1cnJlbnQgaW1wbGVtZW50YXRpb24gb2YgdmZpb19tZGV2IHdpdGggdGhlIAo+
-Pj4gZ2VuZXJhbCBjb25jZXB0cyBpbnZvbHZlZCBoZXJlLgo+Pj4KPj4+PiDCoMKgwqDCoMKgwqDC
-oMKgwqDCoCBzdHJ1Y3QgaW9tbXVfZG9tYWluICpkb21haW47Cj4+Pj4gwqDCoMKgwqDCoMKgwqDC
-oMKgwqAgc3RydWN0IGRldmljZSAqZGV2ID0gbWRldl9kZXYobWRldik7Cj4+Pj4gwqDCoMKgwqDC
-oMKgIHVuc2lnbmVkIGxvbmcgcGFzaWQ7Cj4+Pj4KPj4+PiDCoMKgwqDCoMKgwqDCoMKgwqDCoCBk
-b21haW4gPSBpb21tdV9nZXRfZG9tYWluX2Zvcl9kZXYoZGV2KTsKPj4+PiDCoMKgwqDCoMKgwqDC
-oMKgwqDCoCBpZiAoIWRvbWFpbikKPj4+PiDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDC
-oMKgwqAgcmV0dXJuIC1FTk9ERVY7Cj4+Pj4KPj4+PiDCoMKgwqDCoMKgwqDCoMKgwqDCoCBwYXNp
-ZCA9IGlvbW11X2F1eF9nZXRfcGFzaWQoZG9tYWluLCBkZXYtPnBhcmVudCk7Cj4+Pj4gwqDCoMKg
-wqDCoMKgIGlmIChwYXNpZCA9PSBJT0FTSURfSU5WQUxJRCkKPj4+PiDCoMKgwqDCoMKgwqDCoMKg
-wqDCoCByZXR1cm4gLUVJTlZBTDsKPj4+Pgo+Pj4+IMKgwqDCoMKgwqDCoCAvKiBQcm9ncmFtIHRo
-ZSBkZXZpY2UgY29udGV4dCB3aXRoIHRoZSBQQVNJRCB2YWx1ZSAqLwo+Pj4+IMKgwqDCoMKgwqDC
-oCAuLi4uCj4+Pj4KPj4+PiBXaXRob3V0IHRoaXMgZml4LCBpb21tdV9nZXRfZG9tYWluX2Zvcl9k
-ZXYoKSBhbHdheXMgcmV0dXJucyBOVUxMIGFuZCAKPj4+PiB0aGUKPj4+PiBkZXZpY2UgZHJpdmVy
-IGhhcyBubyBtZWFucyB0byBzdXBwb3J0IGF1eC1kb21haW4uCj4+Pgo+Pj4gU28gZWl0aGVyIHRo
-ZSBJT01NVSBBUEkgaXRzZWxmIGlzIG1pc3NpbmcgdGhlIGFiaWxpdHkgdG8gZG8gdGhlIHJpZ2h0
-IAo+Pj4gdGhpbmcgaW50ZXJuYWxseSwgb3IgdGhlIG1kZXYgbGF5ZXIgaXNuJ3QgdXNpbmcgaXQg
-YXBwcm9wcmlhdGVseS4gCj4+PiBFaXRoZXIgd2F5LCBzaW1wbHkgcHVuY2hpbmcgaG9sZXMgaW4g
-dGhlIEFQSSBmb3IgbWRldiB0byBoYWNrIGFyb3VuZCAKPj4+IGl0cyBvd24gbWVzcyBkb2Vzbid0
-IHNlZW0gbGlrZSB0aGUgYmVzdCB0aGluZyB0byBkby4KPj4+Cj4+PiBUaGUgaW5pdGlhbCBpbXBy
-ZXNzaW9uIEkgZ290IHdhcyB0aGF0IGl0J3MgaW1wbGljaXRseSBhc3N1bWVkIGhlcmUgCj4+PiB0
-aGF0IHRoZSBtZGV2IGl0c2VsZiBpcyBhdHRhY2hlZCB0byBleGFjdGx5IG9uZSBhdXggZG9tYWlu
-IGFuZCAKPj4+IG5vdGhpbmcgZWxzZSwgYXQgd2hpY2ggcG9pbnQgSSB3b3VsZCB3b25kZXIgd2h5
-IGl0J3MgdXNpbmcgYXV4IGF0IAo+Pj4gYWxsLCBidXQgYXJlIHlvdSBzYXlpbmcgdGhhdCBpbiBm
-YWN0IG5vIGF0dGFjaCBoYXBwZW5zIHdpdGggdGhlIG1kZXYgCj4+PiBncm91cCBlaXRoZXIgd2F5
-LCBvbmx5IHRvIHRoZSBwYXJlbnQgZGV2aWNlPwo+Pj4KPj4+IEknbGwgYWRtaXQgSSdtIG5vdCBo
-dWdlbHkgZmFtaWxpYXIgd2l0aCBhbnkgb2YgdGhpcywgYnV0IGl0IHNlZW1zIHRvIAo+Pj4gbWUg
-dGhhdCB0aGUgbG9naWNhbCBmbG93IHNob3VsZCBiZToKPj4+Cj4+PiDCoMKgwqDCoMKgLSBhbGxv
-Y2F0ZSBkb21haW4KPj4+IMKgwqDCoMKgwqAtIGF0dGFjaCBhcyBhdXggdG8gcGFyZW50Cj4+PiDC
-oMKgwqDCoMKgLSByZXRyaWV2ZSBhdXggZG9tYWluIFBBU0lECj4+PiDCoMKgwqDCoMKgLSBjcmVh
-dGUgbWRldiBjaGlsZCBiYXNlZCBvbiBQQVNJRAo+Pj4gwqDCoMKgwqDCoC0gYXR0YWNoIG1kZXYg
-dG8gZG9tYWluIChub3JtYWxseSkKPj4+Cj4+PiBPZiBjb3Vyc2UgdGhhdCBtaWdodCByZXF1aXJl
-IGdpdmluZyB0aGUgSU9NTVUgQVBJIGEgcHJvcGVyIAo+Pj4gZmlyc3QtY2xhc3Mgbm90aW9uIG9m
-IG1lZGlhdGVkIGRldmljZXMsIHN1Y2ggdGhhdCBpdCBrbm93cyB0aGUgbWRldiAKPj4+IHJlcHJl
-c2VudHMgdGhlIFBBU0lELCBhbmQgY2FuIHJlY29nbmlzZSB0aGUgbWRldiBhdHRhY2ggaXMgZXF1
-aXZhbGVudCAKPj4+IHRvIHRoZSBlYXJsaWVyIHBhcmVudCBhdXggYXR0YWNoIHNvIG5vdCBqdXN0
-IGJsaW5kbHkgaGFuZCBpdCBkb3duIHRvIAo+Pj4gYW4gSU9NTVUgZHJpdmVyIHRoYXQncyBuZXZl
-ciBoZWFyZCBvZiB0aGlzIG5ldyBkZXZpY2UgYmVmb3JlLiBPciAKPj4+IHBlcmhhcHMgdGhlIElP
-TU1VIGRyaXZlcnMgZG8gdGhlaXIgb3duIGJvb2trZWVwaW5nIGZvciB0aGUgbWRldiBidXMsIAo+
-Pj4gc3VjaCB0aGF0IHRoZXkgZG8gaGFuZGxlIHRoZSBhdHRhY2ggY2FsbCwgYW5kIGp1c3QgdmFs
-aWRhdGUgaXQgCj4+PiBpbnRlcm5hbGx5IGJhc2VkIG9uIHRoZSBhc3NvY2lhdGVkIHBhcmVudCBk
-ZXZpY2UgYW5kIFBBU0lELiBFaXRoZXIgCj4+PiB3YXksIHRoZSBpbnNpZGUgbWFpbnRhaW5zIHNl
-bGYtY29uc2lzdGVuY3kgYW5kIGZyb20gdGhlIG91dHNpZGUgaXQgCj4+PiBsb29rcyBsaWtlIHN0
-YW5kYXJkIEFQSSB1c2FnZSB3aXRob3V0IG5hc3R5IGhhY2tzLgo+Pj4KPj4+IEknbSBwcmV0dHkg
-c3VyZSBJJ3ZlIGhlYXJkIHN1Z2dlc3Rpb25zIG9mIHVzaW5nIG1lZGlhdGVkIGRldmljZXMgCj4+
-PiBiZXlvbmQgVkZJTyAoZS5nLiB3aXRoaW4gdGhlIGtlcm5lbCBpdHNlbGYpLCBzbyBjaGFuY2Vz
-IGFyZSB0aGlzIGlzIGEgCj4+PiBkaXJlY3Rpb24gdGhhdCB3ZSdsbCBoYXZlIHRvIHRha2UgYXQg
-c29tZSBwb2ludCBhbnl3YXkuCj4+Pgo+Pj4gQW5kLCB0aGF0IHNhaWQsIGV2ZW4gaWYgcGVvcGxl
-IGRvIHdhbnQgYW4gaW1tZWRpYXRlIHF1aWNrIGZpeCAKPj4+IHJlZ2FyZGxlc3Mgb2YgdGVjaG5p
-Y2FsIGRlYnQsIEknZCBzdGlsbCBiZSBhIGxvdCBoYXBwaWVyIHRvIHNlZSAKPj4+IGlvbW11X2dy
-b3VwX3NldF9kb21haW4oKSBsaWdodGx5IHJlc3B1biBhcyBpb21tdV9hdHRhY2hfbWRldigpIDsp
-Cj4+Cj4+IEdldCB5b3VyIHBvaW50IGFuZCBJIGFncmVlIHdpdGggeW91ciBjb25jZXJucy4KPj4K
-Pj4gVG8gbWFpbnRhaW4gdGhlIHJlbGF0aW9uc2hpcCBiZXR3ZWVuIG1kZXYncyBpb21tdV9ncm91
-cCBhbmQKPj4gaW9tbXVfZG9tYWluLCBob3cgYWJvdXQgZXh0ZW5kaW5nIGJlbG93IGV4aXN0aW5n
-IGF1eF9hdHRhY2ggYXBpCj4+Cj4+IGludCBpb21tdV9hdXhfYXR0YWNoX2RldmljZShzdHJ1Y3Qg
-aW9tbXVfZG9tYWluICpkb21haW4sCj4+IMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKg
-IHN0cnVjdCBkZXZpY2UgKmRldikKPj4KPj4gYnkgYWRkaW5nIHRoZSBtZGV2J3MgaW9tbXVfZ3Jv
-dXA/Cj4+Cj4+IGludCBpb21tdV9hdXhfYXR0YWNoX2RldmljZShzdHJ1Y3QgaW9tbXVfZG9tYWlu
-ICpkb21haW4sCj4+IMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgIHN0cnVjdCBkZXZp
-Y2UgKmRldiwKPj4gwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqAgc3RydWN0IGlvbW11
-X2dyb3VwICpncm91cCkKPj4KPj4gQW5kLCBpbiBpb21tdV9hdXhfYXR0YWNoX2RldmljZSgpLCB3
-ZSByZXF1aXJlLAo+PiDCoMKgLSBAZ3JvdXAgb25seSBoYXMgYSBzaW5nbGUgZGV2aWNlOwo+PiDC
-oMKgLSBAZ3JvdXAgaGFzbid0IGJlZW4gYXR0YWNoZWQgYnkgYW55IGRldmljZXM7Cj4+IMKgwqAt
-IFNldCB0aGUgQGRvbWFpbiB0byBAZ3JvdXAKPj4KPj4gSnVzdCBsaWtlIHdoYXQgd2UndmUgZG9u
-ZSBpbiBpb21tdV9hdHRhY2hfZGV2aWNlKCkuCj4+Cj4+IEFueSB0aG91Z2h0cz8KPiAKPiBSYXRo
-ZXIgdGhhbiBwYXNzIGEgYmFyZSBpb21tdV9ncm91cCB3aXRoIGltcGxpY2l0IHJlc3RyaWN0aW9u
-cywgaXQgbWlnaHQgCj4gYmUgbmVhdGVyIHRvIGp1c3QgcGFzcyBhbiBtZGV2X2RldmljZSwgc28g
-dGhhdCB0aGUgSU9NTVUgY29yZSBjYW4gYWxzbyAKPiB0YWtlIGNhcmUgb2YgYWxsb2NhdGluZyBh
-bmQgc2V0dGluZyB1cCB0aGUgZ3JvdXAuIFRoZW4gd2UgZmxhZyB0aGUgZ3JvdXAgCj4gaW50ZXJu
-YWxseSBhcyBhIHNwZWNpYWwgIm1kZXYgZ3JvdXAiIHN1Y2ggdGhhdCB3ZSBjYW4gcHJldmVudCBj
-YWxsZXJzIAo+IGZyb20gc3Vic2VxdWVudGx5IHRyeWluZyB0byBhZGQvcmVtb3ZlIGRldmljZXMg
-b3IgYXR0YWNoL2RldGFjaCBpdHMgCj4gZG9tYWluIGRpcmVjdGx5LiBUaGF0IHNlZW1zIGxpa2Ug
-aXQgd291bGQgbWFrZSBhIHByZXR0eSBzdHJhaWdodGZvcndhcmQgCj4gYW5kIHJvYnVzdCBBUEkg
-ZXh0ZW5zaW9uLCBhcyBsb25nIGFzIHRoZSBtZGV2IGFyZ3VtZW50IGhlcmUgaXMgb3B0aW9uYWwg
-Cj4gc28gdGhhdCBTVkEgYW5kIG90aGVyIGF1eCB1c2VycyBkb24ndCBoYXZlIHRvIGNhcmUuIE90
-aGVyIHRoYW4gdGhlIAo+IHNsaWdodGx5IGRpZmZlcmVudCBvcmRlcmluZyB3aGVyZSBjYWxsZXIg
-d291bGQgaGF2ZSB0byBhbGxvY2F0ZSB0aGUgbWRldiAKPiBmaXJzdCwgdGhlbiBmaW5pc2ggaXQn
-cyBQQVNJRC1iYXNlZCBjb25maWd1cmF0aW9uIGFmdGVyd2FyZHMsIEkgZ3Vlc3MgCj4gaXQncyBu
-b3QgZmFyIG9mZiB3aGF0IEkgd2FzIHRoaW5raW5nIHllc3RlcmRheSA6KQoKSXQgbG9va3MgZ29v
-ZCB0byBtZSBpZiB3ZSBwYXNzIGFuICpvcHRpb25hbCogbWFkZS11cCBkZXZpY2UgaW5zdGVhZCBv
-Zgppb21tdV9ncm91cC4gQnV0IGl0IHNlZW1zIHRoYXQgdmZpby9tZGV2IGFzc3VtZXMgYW4gaW9t
-bXVfZ3JvdXAgZmlyc3QKYW5kIHRoZW4gYXR0YWNoZXMgZG9tYWlucyB0byB0aGUgZ3JvdXBzLiBI
-ZW5jZSwgaXQncyBoYXJkIHRvIG1vdmUgdGhlCmdyb3VwIGFsbG9jYXRpb24gYW5kIHNldHRpbmcg
-dXAgaW50byB0aGUgYXR0YWNoIGludGVyZmFjZS4KCkFzIHByb3Bvc2VkLCB0aGUgbmV3IGlvbW11
-X2F1eF9hdHRhY2hfZGV2aWNlKCkgbWlnaHQgbG9vayBsaWtlIHRoaXM6CgppbnQgaW9tbXVfYXV4
-X2F0dGFjaF9kZXZpY2Uoc3RydWN0IGlvbW11X2RvbWFpbiAqZG9tYWluLAogICAgICAgICAgICAg
-ICAgICAgICAgICAgICAgIHN0cnVjdCBkZXZpY2UgKnBoeXNfZGV2LAogICAgICAgICAgICAgICAg
-ICAgICAgICAgICAgIHN0cnVjdCBkZXZpY2UgKmRldikKCndoZXJlLAoKQHBoeXNfZGV2OiBUaGUg
-cGh5c2ljYWwgZGV2aWNlIHdoaWNoIHN1cHBvcnRzIElPTU1VX0RFVl9GRUFUX0FVWDsKQGRldjog
-YSBtYWRlLXVwIGRldmljZSB3aGljaCBwcmVzZW50cyB0aGUgc3Vic2V0IHJlc291cmNlcyBiaW5k
-aW5nIHRvCiAgICAgICB0aGUgYXV4LWRvbWFpbi4gQW4gZXhhbXBsZSB1c2UgY2FzZSBpcyB2Zmlv
-L21kZXYuIEZvciBjYXNlcyB3aGVyZQogICAgICAgbm8gbWFkZS11cCBkZXZpY2VzIGFyZSB1c2Vk
-LCBwYXNzIE5VTEwgaW5zdGVhZC4KCldpdGggQGRldiBwYXNzZWQsIHdlIGNhbiByZXF1aXJlCgot
-IHNpbmdsZSBkZXZpY2UgaW4gZ3JvdXA7Ci0gbm8gcHJldmlvdXMgYXR0YWNoaW5nOwotIHNldCB1
-cCBpbnRlcm5hbCBsb2dpc3RpY3MgYmV0d2VlbiBncm91cCBhbmQgZG9tYWluOwoKVGhlIGlvbW11
-X2F1eF9kZXRhY2hfZGV2aWNlKCkgbmVlZHMgdGhlIGVxdWl2YWxlbnQgZXh0ZW5zaW9ucy4KCkJl
-c3QgcmVnYXJkcywKYmFvbHUKX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19f
-X19fX19fX18KaW9tbXUgbWFpbGluZyBsaXN0CmlvbW11QGxpc3RzLmxpbnV4LWZvdW5kYXRpb24u
-b3JnCmh0dHBzOi8vbGlzdHMubGludXhmb3VuZGF0aW9uLm9yZy9tYWlsbWFuL2xpc3RpbmZvL2lv
-bW11
+On Thu, Jul 2, 2020 at 4:07 AM Rajat Jain <rajatja@google.com> wrote:
+>
+> *snip*
+>
+> > > I guess it would make sense to have an attribute for user space to
+> > > write to in order to make the kernel reject device plug-in events
+> > > coming from a given port or connector, but the kernel has no reliable
+> > > means to determine *which* ports or connectors are "safe", and even if
+> > > there was a way for it to do that, it still may not agree with user
+> > > space on which ports or connectors should be regarded as "safe".
+> >
+> > Again, we have been doing this for USB devices for a very long time, PCI
+> > shouldn't be any different.  Why people keep ignoring working solutions
+> > is beyond me, there's nothing "special" about PCI devices here for this
+> > type of "worry" or reasoning to try to create new solutions.
+> >
+> > So, again, I ask, go do what USB does, and to do that, take the logic
+> > out of the USB core, make it bus-agnositic, and _THEN_ add it to the PCI
+> > code. Why the original submitter keeps ignoring my request to do this
+> > is beyond me, I guess they like making patches that will get rejected :(
+>
+> IMHO I'm actually trying to precisely do what I think was the
+> conclusion of our discussion, and then some changes because of the
+> further feedback I received on those patches. Let's take a step back
+> and please allow me to explain how I got here (my apologies but this
+> spans a couple of threads, and I"m trying to tie them all together
+> here):
+
+The previous thread had some suggestions, but no real conclusions.
+That's probably why we're still arguing about it...
+
+> GOAL: To allow user space to control what (PCI) drivers he wants to
+> allow on external (thunderbolt) ports. There was a lot of debate about
+> the need for such a policy at
+> https://lore.kernel.org/linux-pci/CACK8Z6GR7-wseug=TtVyRarVZX_ao2geoLDNBwjtB+5Y7VWNEQ@mail.gmail.com/
+> with the final conclusion that it should be OK to implement such a
+> policy in userspace, as long as the policy is not implemented in the
+> kernel. The kernel only needs to expose bits & info that is needed by
+> the userspace to implement such a policy, and it can be used in
+> conjunction with "drivers_autoprobe" to implement this policy:
+> --------------------------------------------------------------------
+> ....
+> That's an odd thing, but sure, if you want to write up such a policy for
+> your systems, great.  But that policy does not belong in the kernel, it
+> belongs in userspace.
+> ....
+> --------------------------------------------------------------------
+> 1) The post https://lore.kernel.org/linux-pci/20200609210400.GA1461839@bjorn-Precision-5520/
+> lists out the approach that was agreed on. Replicating it here:
+> -----------------------------------------------------------------------
+>   - Expose the PCI pdev->untrusted bit in sysfs.  We don't expose this
+>     today, but doing so would be trivial.  I think I would prefer a
+>     sysfs name like "external" so it's more descriptive and less of a
+>     judgment.
+>
+>     This comes from either the DT "external-facing" property or the
+>     ACPI "ExternalFacingPort" property.
+>
+>   - All devices present at boot are enumerated.  Any statically built
+>     drivers will bind to them before any userspace code runs.
+>
+>     If you want to keep statically built drivers from binding, you'd
+>     need to invent some mechanism so pci_driver_init() could clear
+>     drivers_autoprobe after registering pci_bus_type.
+>
+>   - Early userspace code prevents modular drivers from automatically
+>     binding to PCI devices:
+>
+>       echo 0 > /sys/bus/pci/drivers_autoprobe
+>
+>     This prevents modular drivers from binding to all devices, whether
+>     present at boot or hot-added.
+>
+>   - Userspace code uses the sysfs "bind" file to control which drivers
+>     are loaded and can bind to each device, e.g.,
+>
+>       echo 0000:02:00.0 > /sys/bus/pci/drivers/nvme/bind
+
+I think this is a reasonable suggestion. However, as Greg pointed out
+it's gratuitously different to what USB does for no real reason.
+
+> -----------------------------------------------------------------------
+> 2) As part of implementing the above agreed approach, when I exposed
+> PCI "untrusted" attribute to userspace, it ran into discussion that
+> concluded that instead of this, the device core should be enhanced
+> with a location attribute.
+> https://lore.kernel.org/linux-pci/20200618184621.GA446639@kroah.com/
+> -----------------------------------------------------------------------
+> ...
+> The attribute should be called something like "location" or something
+> like that (naming is hard), as you don't always know if something is
+> external or not (it could be internal, it could be unknown, it could be
+> internal to an external device that you trust (think PCI drawers for
+> "super" computers that are hot pluggable but yet really part of the
+> internal bus).
+> ....
+> "trust" has no direct relation to the location, except in a policy of
+> what you wish to do with that device, so as long as you keep them
+> separate that way, I am fine with it.
+> ...
+> -----------------------------------------------------------------------
+>
+> And hence this patch. I don't see an attribute in USB comparable to
+> this new attribute, except for the boolean "removable" may be. Are you
+> suggesting to pull that into the device core instead of adding this
+> "physical_location" attribute?
+
+He's suggesting you pull the "authorized" attribute into the driver
+core. That's the mechanism USB uses to block drivers binding unless
+userspace authorizes them. I don't see any reason why we can't re-use
+that sysfs interface for PCI devices since the problem being solved is
+fundamentally the same. The main question is what we should do as a
+default policy in the kernel. For USB the default comes from the
+"authorized_default" module param of usbcore:
+
+> /* authorized_default behaviour:
+>  * -1 is authorized for all devices except wireless (old behaviour)
+>  * 0 is unauthorized for all devices
+>  * 1 is authorized for all devices
+>  * 2 is authorized for internal devices
+>  */
+> #define USB_AUTHORIZE_WIRED   -1
+> #define USB_AUTHORIZE_NONE    0
+> #define USB_AUTHORIZE_ALL     1
+> #define USB_AUTHORIZE_INTERNAL        2
+>
+> static int authorized_default = USB_AUTHORIZE_WIRED;
+> module_param(authorized_default, int, S_IRUGO|S_IWUSR);
+
+So the default policy for USB is to authorize any wired USB device and
+we can optionally restrict that to just integrated devices. Sounding
+familiar?
+
+The internal / external status is still useful to know so we might
+want to make a sysfs attribute for that too. However, I'd like to
+point out that internal / external isn't the whole story. As I
+mentioned in the last thread if I have a BMC device I *really* don't
+want it to be authorized by default even though it's an internal
+device. Similarly, if I know all my internal cards support PCIe
+Component Authentication then I might choose not to trust any PCI
+devices unless they authenticate successfully.
+
+> 3) The one deviation from the agreed approach in (1) is
+> https://patchwork.kernel.org/patch/11633095/ . The reason is I
+> realized that contrary to what I earlier believed, we might not be
+> able to disable the PCI link to all external PCI devices at boot. So
+> external PCI devices may actually bind to drivers before userspace
+> comes up and does "echo 0 > /sys/bus/pci/drivers_autoprobe").
+
+Yep, that's a problem. If we want to provide a useful mechanism to
+userspace then the default behaviour of the kernel can't undermine
+that mechanism. If that means we need another kernel command line
+parameter then I guess we just have to live with it.
+
+Oliver
+_______________________________________________
+iommu mailing list
+iommu@lists.linux-foundation.org
+https://lists.linuxfoundation.org/mailman/listinfo/iommu
