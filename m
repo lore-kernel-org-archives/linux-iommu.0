@@ -6,69 +6,69 @@ X-Spam-Status: No, score=-9.8 required=3.0 tests=DKIM_INVALID,DKIM_SIGNED,
 	INCLUDES_PATCH,MAILING_LIST_MULTI,SIGNED_OFF_BY,SPF_HELO_NONE,SPF_PASS,
 	URIBL_BLOCKED,USER_AGENT_GIT autolearn=ham autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id C1A06C433E2
-	for <iommu@archiver.kernel.org>; Thu,  2 Jul 2020 01:23:38 +0000 (UTC)
-Received: from fraxinus.osuosl.org (smtp4.osuosl.org [140.211.166.137])
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 76458C433E0
+	for <iommu@archiver.kernel.org>; Thu,  2 Jul 2020 01:26:00 +0000 (UTC)
+Received: from silver.osuosl.org (smtp3.osuosl.org [140.211.166.136])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by mail.kernel.org (Postfix) with ESMTPS id 8B78420885
-	for <iommu@archiver.kernel.org>; Thu,  2 Jul 2020 01:23:38 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTPS id 40DE020748
+	for <iommu@archiver.kernel.org>; Thu,  2 Jul 2020 01:26:00 +0000 (UTC)
 Authentication-Results: mail.kernel.org;
-	dkim=fail reason="signature verification failed" (1024-bit key) header.d=kernel.org header.i=@kernel.org header.b="iTLgrp5a"
-DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 8B78420885
+	dkim=fail reason="signature verification failed" (1024-bit key) header.d=kernel.org header.i=@kernel.org header.b="0KBGq8gq"
+DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 40DE020748
 Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=kernel.org
 Authentication-Results: mail.kernel.org; spf=pass smtp.mailfrom=iommu-bounces@lists.linux-foundation.org
 Received: from localhost (localhost [127.0.0.1])
-	by fraxinus.osuosl.org (Postfix) with ESMTP id 71D8589342;
-	Thu,  2 Jul 2020 01:23:38 +0000 (UTC)
+	by silver.osuosl.org (Postfix) with ESMTP id EB5BD250BF;
+	Thu,  2 Jul 2020 01:25:59 +0000 (UTC)
+X-Virus-Scanned: amavisd-new at osuosl.org
+Received: from silver.osuosl.org ([127.0.0.1])
+	by localhost (.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
+	with ESMTP id U2p2YuqbiJaW; Thu,  2 Jul 2020 01:25:58 +0000 (UTC)
+Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [140.211.9.56])
+	by silver.osuosl.org (Postfix) with ESMTP id D83322474E;
+	Thu,  2 Jul 2020 01:25:58 +0000 (UTC)
+Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
+	by lists.linuxfoundation.org (Postfix) with ESMTP id C0BBCC0890;
+	Thu,  2 Jul 2020 01:25:58 +0000 (UTC)
+Received: from fraxinus.osuosl.org (smtp4.osuosl.org [140.211.166.137])
+ by lists.linuxfoundation.org (Postfix) with ESMTP id 23EDEC0733
+ for <iommu@lists.linux-foundation.org>; Thu,  2 Jul 2020 01:25:57 +0000 (UTC)
+Received: from localhost (localhost [127.0.0.1])
+ by fraxinus.osuosl.org (Postfix) with ESMTP id 0D5AA89319
+ for <iommu@lists.linux-foundation.org>; Thu,  2 Jul 2020 01:25:57 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
 Received: from fraxinus.osuosl.org ([127.0.0.1])
-	by localhost (.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
-	with ESMTP id kURI5gewHMCN; Thu,  2 Jul 2020 01:23:37 +0000 (UTC)
-Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [140.211.9.56])
-	by fraxinus.osuosl.org (Postfix) with ESMTP id 68D8889341;
-	Thu,  2 Jul 2020 01:23:37 +0000 (UTC)
-Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
-	by lists.linuxfoundation.org (Postfix) with ESMTP id 5D64AC0890;
-	Thu,  2 Jul 2020 01:23:37 +0000 (UTC)
-Received: from whitealder.osuosl.org (smtp1.osuosl.org [140.211.166.138])
- by lists.linuxfoundation.org (Postfix) with ESMTP id 3CCE6C0733
- for <iommu@lists.linux-foundation.org>; Thu,  2 Jul 2020 01:23:36 +0000 (UTC)
-Received: from localhost (localhost [127.0.0.1])
- by whitealder.osuosl.org (Postfix) with ESMTP id 38E568A942
- for <iommu@lists.linux-foundation.org>; Thu,  2 Jul 2020 01:23:36 +0000 (UTC)
-X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from whitealder.osuosl.org ([127.0.0.1])
  by localhost (.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
- with ESMTP id CmGdSQ6T+1Yt for <iommu@lists.linux-foundation.org>;
- Thu,  2 Jul 2020 01:23:35 +0000 (UTC)
+ with ESMTP id TvWikI1L_wzD for <iommu@lists.linux-foundation.org>;
+ Thu,  2 Jul 2020 01:25:56 +0000 (UTC)
 X-Greylist: domain auto-whitelisted by SQLgrey-1.7.6
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
- by whitealder.osuosl.org (Postfix) with ESMTPS id 85F0D8A722
- for <iommu@lists.linux-foundation.org>; Thu,  2 Jul 2020 01:23:35 +0000 (UTC)
+ by fraxinus.osuosl.org (Postfix) with ESMTPS id 7112289317
+ for <iommu@lists.linux-foundation.org>; Thu,  2 Jul 2020 01:25:56 +0000 (UTC)
 Received: from sasha-vm.mshome.net (c-73-47-72-35.hsd1.nh.comcast.net
  [73.47.72.35])
  (using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
  (No client certificate requested)
- by mail.kernel.org (Postfix) with ESMTPSA id 69EC42085B;
- Thu,  2 Jul 2020 01:23:34 +0000 (UTC)
+ by mail.kernel.org (Postfix) with ESMTPSA id 48CF820748;
+ Thu,  2 Jul 2020 01:25:55 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
- s=default; t=1593653015;
- bh=ibe6rDC+3EONaG/gxl39s6UPgR4hUHTl63PztKAWdqE=;
+ s=default; t=1593653156;
+ bh=b44jm7P6vI+Zkeiv9QWrWNQ5os3dfh9gfK08ciXU9CA=;
  h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
- b=iTLgrp5aPN4Ilg53I+byGii9URIKuYqtXcHAEUGGU0D5FOyGIptL5Hamqi+4E90h4
- Tj9GH8ao5v748d+sNoTik8Wa2ugVxIsVopTG71bb3YIeGszhgDa38CxCNi5Ox60rS0
- IpRweK3Imc4/gdwD2AsxDJiNKm7DDdeFwm35C8m4=
+ b=0KBGq8gq4fvW3te89WnQ0EaVBENOu6njvSWT8isUV85MuQQd+tnsM8aQM7KdrrE/+
+ TFMONJjxDCZZMNdqP0kaChJytxeDgKIa8LGKc9OVlmAZKAau+FbSKmiry/TX0y9V7Q
+ j0greQhXU5nNe5wJnr37k5GxGUfJI5kwzm4YT1aU=
 From: Sasha Levin <sashal@kernel.org>
 To: linux-kernel@vger.kernel.org,
 	stable@vger.kernel.org
-Subject: [PATCH AUTOSEL 5.7 32/53] iommu/vt-d: Don't apply gfx quirks to
+Subject: [PATCH AUTOSEL 5.4 25/40] iommu/vt-d: Don't apply gfx quirks to
  untrusted devices
-Date: Wed,  1 Jul 2020 21:21:41 -0400
-Message-Id: <20200702012202.2700645-32-sashal@kernel.org>
+Date: Wed,  1 Jul 2020 21:23:46 -0400
+Message-Id: <20200702012402.2701121-25-sashal@kernel.org>
 X-Mailer: git-send-email 2.25.1
-In-Reply-To: <20200702012202.2700645-1-sashal@kernel.org>
-References: <20200702012202.2700645-1-sashal@kernel.org>
+In-Reply-To: <20200702012402.2701121-1-sashal@kernel.org>
+References: <20200702012402.2701121-1-sashal@kernel.org>
 MIME-Version: 1.0
 X-stable: review
 X-Patchwork-Hint: Ignore
@@ -116,11 +116,11 @@ Signed-off-by: Sasha Levin <sashal@kernel.org>
  1 file changed, 37 insertions(+)
 
 diff --git a/drivers/iommu/intel-iommu.c b/drivers/iommu/intel-iommu.c
-index fde7aba49b746..a29ed14839c41 100644
+index 773ac2b0d6068..4e91036cf5636 100644
 --- a/drivers/iommu/intel-iommu.c
 +++ b/drivers/iommu/intel-iommu.c
-@@ -6200,6 +6200,23 @@ intel_iommu_domain_set_attr(struct iommu_domain *domain,
- 	return ret;
+@@ -5955,6 +5955,23 @@ static bool intel_iommu_is_attach_deferred(struct iommu_domain *domain,
+ 	return dev->archdata.iommu == DEFER_DEVICE_DOMAIN_INFO;
  }
  
 +/*
@@ -143,7 +143,7 @@ index fde7aba49b746..a29ed14839c41 100644
  const struct iommu_ops intel_iommu_ops = {
  	.capable		= intel_iommu_capable,
  	.domain_alloc		= intel_iommu_domain_alloc,
-@@ -6229,6 +6246,9 @@ const struct iommu_ops intel_iommu_ops = {
+@@ -5983,6 +6000,9 @@ const struct iommu_ops intel_iommu_ops = {
  
  static void quirk_iommu_igfx(struct pci_dev *dev)
  {
@@ -153,7 +153,7 @@ index fde7aba49b746..a29ed14839c41 100644
  	pci_info(dev, "Disabling IOMMU for graphics on this chipset\n");
  	dmar_map_gfx = 0;
  }
-@@ -6270,6 +6290,9 @@ DECLARE_PCI_FIXUP_HEADER(PCI_VENDOR_ID_INTEL, 0x163D, quirk_iommu_igfx);
+@@ -6024,6 +6044,9 @@ DECLARE_PCI_FIXUP_HEADER(PCI_VENDOR_ID_INTEL, 0x163D, quirk_iommu_igfx);
  
  static void quirk_iommu_rwbf(struct pci_dev *dev)
  {
@@ -163,7 +163,7 @@ index fde7aba49b746..a29ed14839c41 100644
  	/*
  	 * Mobile 4 Series Chipset neglects to set RWBF capability,
  	 * but needs it. Same seems to hold for the desktop versions.
-@@ -6300,6 +6323,9 @@ static void quirk_calpella_no_shadow_gtt(struct pci_dev *dev)
+@@ -6054,6 +6077,9 @@ static void quirk_calpella_no_shadow_gtt(struct pci_dev *dev)
  {
  	unsigned short ggc;
  
@@ -173,7 +173,7 @@ index fde7aba49b746..a29ed14839c41 100644
  	if (pci_read_config_word(dev, GGC, &ggc))
  		return;
  
-@@ -6333,6 +6359,12 @@ static void __init check_tylersburg_isoch(void)
+@@ -6087,6 +6113,12 @@ static void __init check_tylersburg_isoch(void)
  	pdev = pci_get_device(PCI_VENDOR_ID_INTEL, 0x3a3e, NULL);
  	if (!pdev)
  		return;
@@ -186,7 +186,7 @@ index fde7aba49b746..a29ed14839c41 100644
  	pci_dev_put(pdev);
  
  	/* System Management Registers. Might be hidden, in which case
-@@ -6342,6 +6374,11 @@ static void __init check_tylersburg_isoch(void)
+@@ -6096,6 +6128,11 @@ static void __init check_tylersburg_isoch(void)
  	if (!pdev)
  		return;
  
