@@ -2,77 +2,80 @@ Return-Path: <SRS0=r5As=AO=lists.linux-foundation.org=iommu-bounces@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-3.8 required=3.0 tests=DKIM_INVALID,DKIM_SIGNED,
-	HEADER_FROM_DIFFERENT_DOMAINS,MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS,
-	UNPARSEABLE_RELAY,URIBL_BLOCKED,USER_AGENT_GIT autolearn=no
-	autolearn_force=no version=3.4.0
+X-Spam-Status: No, score=-9.8 required=3.0 tests=DKIM_INVALID,DKIM_SIGNED,
+	HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_PATCH,MAILING_LIST_MULTI,SIGNED_OFF_BY,
+	SPF_HELO_NONE,SPF_PASS,UNPARSEABLE_RELAY,URIBL_BLOCKED,USER_AGENT_GIT
+	autolearn=ham autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id C7BD8C433E4
-	for <iommu@archiver.kernel.org>; Fri,  3 Jul 2020 04:42:52 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 9AF25C433E5
+	for <iommu@archiver.kernel.org>; Fri,  3 Jul 2020 04:42:53 +0000 (UTC)
 Received: from whitealder.osuosl.org (smtp1.osuosl.org [140.211.166.138])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by mail.kernel.org (Postfix) with ESMTPS id 92DA020772
-	for <iommu@archiver.kernel.org>; Fri,  3 Jul 2020 04:42:52 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTPS id 70F0420771
+	for <iommu@archiver.kernel.org>; Fri,  3 Jul 2020 04:42:53 +0000 (UTC)
 Authentication-Results: mail.kernel.org;
-	dkim=fail reason="signature verification failed" (1024-bit key) header.d=mediatek.com header.i=@mediatek.com header.b="ZjT78N6i"
-DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 92DA020772
+	dkim=fail reason="signature verification failed" (1024-bit key) header.d=mediatek.com header.i=@mediatek.com header.b="rPU9LFg6"
+DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 70F0420771
 Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=mediatek.com
 Authentication-Results: mail.kernel.org; spf=pass smtp.mailfrom=iommu-bounces@lists.linux-foundation.org
 Received: from localhost (localhost [127.0.0.1])
-	by whitealder.osuosl.org (Postfix) with ESMTP id 5991388CA6;
+	by whitealder.osuosl.org (Postfix) with ESMTP id EBCDF88C32;
 	Fri,  3 Jul 2020 04:42:52 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
 Received: from whitealder.osuosl.org ([127.0.0.1])
 	by localhost (.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
-	with ESMTP id qDtqDBqvtpcd; Fri,  3 Jul 2020 04:42:49 +0000 (UTC)
+	with ESMTP id a787HWtddY0d; Fri,  3 Jul 2020 04:42:52 +0000 (UTC)
 Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [140.211.9.56])
-	by whitealder.osuosl.org (Postfix) with ESMTP id A30BF88B74;
-	Fri,  3 Jul 2020 04:42:49 +0000 (UTC)
+	by whitealder.osuosl.org (Postfix) with ESMTP id 02D4F88C4A;
+	Fri,  3 Jul 2020 04:42:50 +0000 (UTC)
 Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
-	by lists.linuxfoundation.org (Postfix) with ESMTP id 8AE90C0890;
+	by lists.linuxfoundation.org (Postfix) with ESMTP id C395BC08A2;
 	Fri,  3 Jul 2020 04:42:49 +0000 (UTC)
 Received: from whitealder.osuosl.org (smtp1.osuosl.org [140.211.166.138])
- by lists.linuxfoundation.org (Postfix) with ESMTP id 557A5C0733
+ by lists.linuxfoundation.org (Postfix) with ESMTP id 7B22BC0733
  for <iommu@lists.linux-foundation.org>; Fri,  3 Jul 2020 04:42:47 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
- by whitealder.osuosl.org (Postfix) with ESMTP id 3448C88C3D
+ by whitealder.osuosl.org (Postfix) with ESMTP id 6AAD088B74
  for <iommu@lists.linux-foundation.org>; Fri,  3 Jul 2020 04:42:47 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
 Received: from whitealder.osuosl.org ([127.0.0.1])
  by localhost (.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
- with ESMTP id K3e97YWL83n8 for <iommu@lists.linux-foundation.org>;
- Fri,  3 Jul 2020 04:42:45 +0000 (UTC)
+ with ESMTP id 99-nqvfLfuO1 for <iommu@lists.linux-foundation.org>;
+ Fri,  3 Jul 2020 04:42:46 +0000 (UTC)
 X-Greylist: domain auto-whitelisted by SQLgrey-1.7.6
-Received: from mailgw02.mediatek.com (unknown [210.61.82.184])
- by whitealder.osuosl.org (Postfix) with ESMTP id C347188B74
- for <iommu@lists.linux-foundation.org>; Fri,  3 Jul 2020 04:42:44 +0000 (UTC)
-X-UUID: 45ba3959e2f342d1a181344edd2741a5-20200703
+Received: from mailgw01.mediatek.com (unknown [210.61.82.183])
+ by whitealder.osuosl.org (Postfix) with ESMTP id 6594988C32
+ for <iommu@lists.linux-foundation.org>; Fri,  3 Jul 2020 04:42:46 +0000 (UTC)
+X-UUID: c3bb80147f944205b9dd37f71fb34a60-20200703
 DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=mediatek.com;
  s=dk; 
- h=Content-Transfer-Encoding:Content-Type:MIME-Version:Message-ID:Date:Subject:CC:To:From;
- bh=fOIE/14eP5QaMvpr+A/0WJuqIjmfhZZCLzsc96MbxFk=; 
- b=ZjT78N6ixAU4ZbgDzhdJuF4w9u3mwOYxJboOCzv1EGJeF3ZqEJz1L0tiCU4EQ6cZyb0qt0KO7j2WJ+Nj6VxDZVEEioyHv2MAhT/Jiy7d5YZ9V8LwJIm1K+TTRctdi7tljk8yNmeYtD86fDc8r3uYwt0LEaeEOAxs0pIG4uwOQaI=;
-X-UUID: 45ba3959e2f342d1a181344edd2741a5-20200703
-Received: from mtkcas06.mediatek.inc [(172.21.101.30)] by mailgw02.mediatek.com
+ h=Content-Transfer-Encoding:Content-Type:MIME-Version:References:In-Reply-To:Message-ID:Date:Subject:CC:To:From;
+ bh=dx7uAL5Znm+LVgMZRYOyuq3Q8utOQ9QBHB/isvNyWXA=; 
+ b=rPU9LFg6zEMWzY3Ze1FBTLxhxgOAsBalpJXwcEmf8vsm60FH59mIA6xYlm8Yon3vYrEyxTC/s4i6TzpKSgXCFCY6VC3OKdmjJFwrNNRhnzMZrn5ETHZCqJSZf2t3MsvTFSpN3F2mRlsVy+p/bs5wQg2yZDw25z/OLF/0jkDw8gA=;
+X-UUID: c3bb80147f944205b9dd37f71fb34a60-20200703
+Received: from mtkcas07.mediatek.inc [(172.21.101.84)] by mailgw01.mediatek.com
  (envelope-from <chao.hao@mediatek.com>)
  (Cellopoint E-mail Firewall v4.1.10 Build 0809 with TLS)
- with ESMTP id 1942315213; Fri, 03 Jul 2020 12:42:42 +0800
+ with ESMTP id 1396366408; Fri, 03 Jul 2020 12:42:44 +0800
 Received: from mtkcas07.mediatek.inc (172.21.101.84) by
  mtkmbs01n2.mediatek.inc (172.21.101.79) with Microsoft SMTP Server (TLS) id
- 15.0.1497.2; Fri, 3 Jul 2020 12:42:37 +0800
+ 15.0.1497.2; Fri, 3 Jul 2020 12:42:40 +0800
 Received: from localhost.localdomain (10.15.20.246) by mtkcas07.mediatek.inc
  (172.21.101.73) with Microsoft SMTP Server id 15.0.1497.2 via Frontend
- Transport; Fri, 3 Jul 2020 12:42:33 +0800
+ Transport; Fri, 3 Jul 2020 12:42:36 +0800
 From: Chao Hao <chao.hao@mediatek.com>
 To: Joerg Roedel <joro@8bytes.org>, Rob Herring <robh+dt@kernel.org>, Matthias
  Brugger <matthias.bgg@gmail.com>
-Subject: [PATCH v6 00/10] MT6779 IOMMU SUPPORT
-Date: Fri, 3 Jul 2020 12:41:17 +0800
-Message-ID: <20200703044127.27438-1-chao.hao@mediatek.com>
+Subject: [PATCH v6 02/10] iommu/mediatek: Rename the register
+ STANDARD_AXI_MODE(0x48) to MISC_CTRL
+Date: Fri, 3 Jul 2020 12:41:19 +0800
+Message-ID: <20200703044127.27438-3-chao.hao@mediatek.com>
 X-Mailer: git-send-email 2.18.0
+In-Reply-To: <20200703044127.27438-1-chao.hao@mediatek.com>
+References: <20200703044127.27438-1-chao.hao@mediatek.com>
 MIME-Version: 1.0
-X-TM-SNTS-SMTP: E4EE501486CFE45934E76861F54A424896840F7B4C9AC2ECB55F96F8AE402C6E2000:8
+X-TM-SNTS-SMTP: 156077749534FC8A33E1151E8BBAE816F9853DDA26CCD020A260760924A8613A2000:8
 X-MTK: N
 Cc: devicetree@vger.kernel.org, FY Yang <fy.yang@mediatek.com>,
  wsd_upstream@mediatek.com, linux-kernel@vger.kernel.org,
@@ -96,89 +99,85 @@ Content-Transfer-Encoding: 7bit
 Errors-To: iommu-bounces@lists.linux-foundation.org
 Sender: "iommu" <iommu-bounces@lists.linux-foundation.org>
 
-This patchset adds mt6779 iommu support.
-mt6779 has two iommus, they are MM_IOMMU(M4U) and APU_IOMMU which used ARM Short-Descriptor translation format.
-The mt6779's MM_IOMMU-SMI and APU_IOMMU HW diagram is as below, it is only a brief diagram:
-                       EMI
-		        |
-     --------------------------------------
-     |                                    |
-  MM_IOMMU                            APU_IOMMU
-     |                                    |
- SMI_COMMOM-----------                 APU_BUS
-     |                |                   |
-  SMI_LARB(0~11)      |                   |
-     |                |                   |
-     |                |             --------------
-     |                |             |     |      |
-Multimedia engine    CCU           VPU   MDLA   EMDA
+For iommu offset=0x48 register, only the previous mt8173/mt8183 use the
+name STANDARD_AXI_MODE, all the latest SoC extend the register more
+feature by different bits, for example: axi_mode, in_order_en, coherent_en
+and so on. So rename REG_MMU_MISC_CTRL may be more proper.
 
-All the connections are hardware fixed, software can not adjust it.
-Compared with mt8183, SMI_BUS_ID width has changed from 10 to 12. SMI Larb number is described in bit[11:7],
-Port number is described in bit[6:2]. In addition, there are some registers has changed in mt6779, so we need
-to redefine and reuse them.
+This patch only rename the register name, no functional change.
 
-The patchset only used MM_IOMMU, so we only add MM_IOMMU basic function, such as smi_larb port definition, registers
-definition and hardware initialization.
-change notes:
+Signed-off-by: Chao Hao <chao.hao@mediatek.com>
+Reviewed-by: Yong Wu <yong.wu@mediatek.com>
+Reviewed-by: Matthias Brugger <matthias.bgg@gmail.com>
+---
+ drivers/iommu/mtk_iommu.c | 14 +++++++-------
+ drivers/iommu/mtk_iommu.h |  5 ++++-
+ 2 files changed, 11 insertions(+), 8 deletions(-)
 
- v6:
-  1. Fix build error for "PATCH v5 02/10".
-  2. Use more precise definitions and commit messages.
-
- v5:
-  1. Split "iommu/mediatek: Add mt6779 IOMMU basic support(patch v4)" to three patches(from PATCH v5 08/10 to PATCH v5 10/10).
-  2. Use macro definitions to replace bool values in mtk_iommu_plat_data structure
- http://lists.infradead.org/pipermail/linux-mediatek/2020-June/013586.html
-
- v4:
-  1. Rebase on v5.8-rc1.
-  2. Fix coding style.
-  3. Add F_MMU_IN_DRDER_WR_EN definition in MISC_CTRL to improve performance.
- https://lkml.org/lkml/2020/6/16/1741
-
- v3:
-  1. Rebase on v5.7-rc1.
-  2. Remove unused port definition,ex:APU and CCU port in mt6779-larb-port.h.
-  3. Remove "change single domain to multiple domain" part(from PATCH v2 09/19 to PATCH v2 19/19).
-  4. Redesign mt6779 basic part
-    (1)Add some register definition and reuse them.
-    (2)Redesign smi larb bus ID to analyze IOMMU translation fault.
-    (3)Only init MM_IOMMU and not use APU_IOMMU.
- http://lists.infradead.org/pipermail/linux-mediatek/2020-May/029811.html
-
- v2:
-  1. Rebase on v5.5-rc1.
-  2. Delete M4U_PORT_UNKNOWN define because of not use it.
-  3. Correct coding format.
-  4. Rename offset=0x48 register.
-  5. Split "iommu/mediatek: Add mt6779 IOMMU basic support(patch v1)" to several patches(patch v2).
- http://lists.infradead.org/pipermail/linux-mediatek/2020-January/026131.html
-
- v1:
- http://lists.infradead.org/pipermail/linux-mediatek/2019-November/024567.html
-
-Chao Hao (10):
-  dt-bindings: mediatek: Add bindings for MT6779
-  iommu/mediatek: Rename the register STANDARD_AXI_MODE(0x48) to MISC_CTRL
-  iommu/mediatek: Use a u32 flags to describe different HW features
-  iommu/mediatek: Setting MISC_CTRL register
-  iommu/mediatek: Move inv_sel_reg into the plat_data
-  iommu/mediatek: Add sub_comm id in translation fault
-  iommu/mediatek: Add REG_MMU_WR_LEN_CTRL register definition
-  iommu/mediatek: Extend protect pa alignment value
-  iommu/mediatek: Modify MMU_CTRL register setting
-  iommu/mediatek: Add mt6779 basic support
-
- .../bindings/iommu/mediatek,iommu.txt         |   2 +
- drivers/iommu/mtk_iommu.c                     | 110 +++++++---
- drivers/iommu/mtk_iommu.h                     |  20 +-
- include/dt-bindings/memory/mt6779-larb-port.h | 206 ++++++++++++++++++
- 4 files changed, 299 insertions(+), 39 deletions(-)
-
---
+diff --git a/drivers/iommu/mtk_iommu.c b/drivers/iommu/mtk_iommu.c
+index 2be96f1cdbd2..88d3df5b91c2 100644
+--- a/drivers/iommu/mtk_iommu.c
++++ b/drivers/iommu/mtk_iommu.c
+@@ -41,7 +41,7 @@
+ #define F_INVLD_EN0				BIT(0)
+ #define F_INVLD_EN1				BIT(1)
+ 
+-#define REG_MMU_STANDARD_AXI_MODE		0x048
++#define REG_MMU_MISC_CTRL			0x048
+ #define REG_MMU_DCM_DIS				0x050
+ 
+ #define REG_MMU_CTRL_REG			0x110
+@@ -573,8 +573,10 @@ static int mtk_iommu_hw_init(const struct mtk_iommu_data *data)
+ 	}
+ 	writel_relaxed(0, data->base + REG_MMU_DCM_DIS);
+ 
+-	if (data->plat_data->reset_axi)
+-		writel_relaxed(0, data->base + REG_MMU_STANDARD_AXI_MODE);
++	if (data->plat_data->reset_axi) {
++		/* The register is called STANDARD_AXI_MODE in this case */
++		writel_relaxed(0, data->base + REG_MMU_MISC_CTRL);
++	}
+ 
+ 	if (devm_request_irq(data->dev, data->irq, mtk_iommu_isr, 0,
+ 			     dev_name(data->dev), (void *)data)) {
+@@ -718,8 +720,7 @@ static int __maybe_unused mtk_iommu_suspend(struct device *dev)
+ 	struct mtk_iommu_suspend_reg *reg = &data->reg;
+ 	void __iomem *base = data->base;
+ 
+-	reg->standard_axi_mode = readl_relaxed(base +
+-					       REG_MMU_STANDARD_AXI_MODE);
++	reg->misc_ctrl = readl_relaxed(base + REG_MMU_MISC_CTRL);
+ 	reg->dcm_dis = readl_relaxed(base + REG_MMU_DCM_DIS);
+ 	reg->ctrl_reg = readl_relaxed(base + REG_MMU_CTRL_REG);
+ 	reg->int_control0 = readl_relaxed(base + REG_MMU_INT_CONTROL0);
+@@ -743,8 +744,7 @@ static int __maybe_unused mtk_iommu_resume(struct device *dev)
+ 		dev_err(data->dev, "Failed to enable clk(%d) in resume\n", ret);
+ 		return ret;
+ 	}
+-	writel_relaxed(reg->standard_axi_mode,
+-		       base + REG_MMU_STANDARD_AXI_MODE);
++	writel_relaxed(reg->misc_ctrl, base + REG_MMU_MISC_CTRL);
+ 	writel_relaxed(reg->dcm_dis, base + REG_MMU_DCM_DIS);
+ 	writel_relaxed(reg->ctrl_reg, base + REG_MMU_CTRL_REG);
+ 	writel_relaxed(reg->int_control0, base + REG_MMU_INT_CONTROL0);
+diff --git a/drivers/iommu/mtk_iommu.h b/drivers/iommu/mtk_iommu.h
+index ea949a324e33..7212e6fcf982 100644
+--- a/drivers/iommu/mtk_iommu.h
++++ b/drivers/iommu/mtk_iommu.h
+@@ -18,7 +18,10 @@
+ #include <soc/mediatek/smi.h>
+ 
+ struct mtk_iommu_suspend_reg {
+-	u32				standard_axi_mode;
++	union {
++		u32			standard_axi_mode;/* v1 */
++		u32			misc_ctrl;/* v2 */
++	};
+ 	u32				dcm_dis;
+ 	u32				ctrl_reg;
+ 	u32				int_control0;
+-- 
 2.18.0
-
 _______________________________________________
 iommu mailing list
 iommu@lists.linux-foundation.org
