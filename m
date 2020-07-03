@@ -2,90 +2,97 @@ Return-Path: <SRS0=r5As=AO=lists.linux-foundation.org=iommu-bounces@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-9.8 required=3.0 tests=DKIM_INVALID,DKIM_SIGNED,
-	HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_PATCH,MAILING_LIST_MULTI,SIGNED_OFF_BY,
-	SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED,USER_AGENT_GIT autolearn=ham
-	autolearn_force=no version=3.4.0
+X-Spam-Status: No, score=-3.8 required=3.0 tests=DKIM_INVALID,DKIM_SIGNED,
+	HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_PATCH,MAILING_LIST_MULTI,SPF_HELO_NONE,
+	SPF_PASS,URIBL_BLOCKED autolearn=no autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 17106C433DF
-	for <iommu@archiver.kernel.org>; Fri,  3 Jul 2020 14:17:57 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 32C38C433DF
+	for <iommu@archiver.kernel.org>; Fri,  3 Jul 2020 14:53:14 +0000 (UTC)
 Received: from silver.osuosl.org (smtp3.osuosl.org [140.211.166.136])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by mail.kernel.org (Postfix) with ESMTPS id D9A8B206BE
-	for <iommu@archiver.kernel.org>; Fri,  3 Jul 2020 14:17:56 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTPS id EDB88206A1
+	for <iommu@archiver.kernel.org>; Fri,  3 Jul 2020 14:53:13 +0000 (UTC)
 Authentication-Results: mail.kernel.org;
-	dkim=fail reason="signature verification failed" (1024-bit key) header.d=mg.codeaurora.org header.i=@mg.codeaurora.org header.b="VRtpKxgU"
-DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org D9A8B206BE
+	dkim=fail reason="signature verification failed" (1024-bit key) header.d=mg.codeaurora.org header.i=@mg.codeaurora.org header.b="ITdUT3mq"
+DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org EDB88206A1
 Authentication-Results: mail.kernel.org; dmarc=none (p=none dis=none) header.from=codeaurora.org
 Authentication-Results: mail.kernel.org; spf=pass smtp.mailfrom=iommu-bounces@lists.linux-foundation.org
 Received: from localhost (localhost [127.0.0.1])
-	by silver.osuosl.org (Postfix) with ESMTP id ADF6A21517;
-	Fri,  3 Jul 2020 14:17:56 +0000 (UTC)
+	by silver.osuosl.org (Postfix) with ESMTP id B21F92049F;
+	Fri,  3 Jul 2020 14:53:13 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
 Received: from silver.osuosl.org ([127.0.0.1])
 	by localhost (.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
-	with ESMTP id zoIf4qvq+UaD; Fri,  3 Jul 2020 14:17:55 +0000 (UTC)
+	with ESMTP id 5Y9e1ytSpJPu; Fri,  3 Jul 2020 14:53:13 +0000 (UTC)
 Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [140.211.9.56])
-	by silver.osuosl.org (Postfix) with ESMTP id BB174204D7;
-	Fri,  3 Jul 2020 14:17:55 +0000 (UTC)
+	by silver.osuosl.org (Postfix) with ESMTP id 288C020452;
+	Fri,  3 Jul 2020 14:53:13 +0000 (UTC)
 Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
-	by lists.linuxfoundation.org (Postfix) with ESMTP id A7C9DC0888;
-	Fri,  3 Jul 2020 14:17:55 +0000 (UTC)
-Received: from hemlock.osuosl.org (smtp2.osuosl.org [140.211.166.133])
- by lists.linuxfoundation.org (Postfix) with ESMTP id 3E82EC0733
- for <iommu@lists.linux-foundation.org>; Fri,  3 Jul 2020 14:17:55 +0000 (UTC)
+	by lists.linuxfoundation.org (Postfix) with ESMTP id 0D6BAC0888;
+	Fri,  3 Jul 2020 14:53:13 +0000 (UTC)
+Received: from silver.osuosl.org (smtp3.osuosl.org [140.211.166.136])
+ by lists.linuxfoundation.org (Postfix) with ESMTP id 9D9FEC0733
+ for <iommu@lists.linux-foundation.org>; Fri,  3 Jul 2020 14:53:12 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
- by hemlock.osuosl.org (Postfix) with ESMTP id 389CB89864
- for <iommu@lists.linux-foundation.org>; Fri,  3 Jul 2020 14:17:55 +0000 (UTC)
+ by silver.osuosl.org (Postfix) with ESMTP id 89A1C20456
+ for <iommu@lists.linux-foundation.org>; Fri,  3 Jul 2020 14:53:12 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from hemlock.osuosl.org ([127.0.0.1])
+Received: from silver.osuosl.org ([127.0.0.1])
  by localhost (.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
- with ESMTP id P+EnXFsnNXBU for <iommu@lists.linux-foundation.org>;
- Fri,  3 Jul 2020 14:17:54 +0000 (UTC)
+ with ESMTP id Jie318geb9hz for <iommu@lists.linux-foundation.org>;
+ Fri,  3 Jul 2020 14:53:11 +0000 (UTC)
 X-Greylist: from auto-whitelisted by SQLgrey-1.7.6
-Received: from m43-7.mailgun.net (m43-7.mailgun.net [69.72.43.7])
- by hemlock.osuosl.org (Postfix) with ESMTPS id AB0C489854
- for <iommu@lists.linux-foundation.org>; Fri,  3 Jul 2020 14:17:49 +0000 (UTC)
+Received: from mail29.static.mailgun.info (mail29.static.mailgun.info
+ [104.130.122.29])
+ by silver.osuosl.org (Postfix) with ESMTPS id 260FF20452
+ for <iommu@lists.linux-foundation.org>; Fri,  3 Jul 2020 14:53:11 +0000 (UTC)
 DKIM-Signature: a=rsa-sha256; v=1; c=relaxed/relaxed; d=mg.codeaurora.org;
  q=dns/txt; 
- s=smtp; t=1593785874; h=References: In-Reply-To: Message-Id: Date:
- Subject: Cc: To: From: Sender;
- bh=XI/M6Pcw+RwtbXFkwoRsxR1H4DU4dG64igoe60J1Q3o=;
- b=VRtpKxgU7gX9fOkDoTLNVLTfqZok1AM00C0++9fETiGUpzVZghMWUKLAoAnaDexTX1iFdXt8
- c+v4cAK7JDXyO0G0VndOW/QNd2gz+3/69gChfEE0lA7UURrd1nSd6fap/CjKm5u6xkcwyWvX
- YOR5Dc8EiakWIEudqCn3NF5efD0=
-X-Mailgun-Sending-Ip: 69.72.43.7
+ s=smtp; t=1593787991; h=Message-ID: References: In-Reply-To: Subject:
+ Cc: To: From: Date: Content-Transfer-Encoding: Content-Type:
+ MIME-Version: Sender; bh=qnO8dgt8kPgCd7OkCwm5OGmXgYl4ROSS5lJBIbWqa6I=;
+ b=ITdUT3mqTJcjd1G2V9lGPUYw2Dl5mwrdCCsTJISx0DA+XxgYH0mSt4NaLCcW+hppv3lRKXcH
+ xoDW8j3HAIG7FuQY24LVYzmgvixBsJvCVWJaZzk5BzR9eISpkejAwNr1NAOV0RfcYjzh8eq/
+ 7uQhKSBvqcHf8RYaeVih95y0fO4=
+X-Mailgun-Sending-Ip: 104.130.122.29
 X-Mailgun-Sid: WyI3NDkwMCIsICJpb21tdUBsaXN0cy5saW51eC1mb3VuZGF0aW9uLm9yZyIsICJiZTllNGEiXQ==
 Received: from smtp.codeaurora.org
  (ec2-35-166-182-171.us-west-2.compute.amazonaws.com [35.166.182.171]) by
- smtp-out-n06.prod.us-east-1.postgun.com with SMTP id
- 5eff3e0486de6ccd448d8cc8 (version=TLS1.2,
- cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256); Fri, 03 Jul 2020 14:17:40
+ smtp-out-n19.prod.us-east-1.postgun.com with SMTP id
+ 5eff4656356bcc26ab9908cd (version=TLS1.2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256); Fri, 03 Jul 2020 14:53:10
  GMT
 Received: by smtp.codeaurora.org (Postfix, from userid 1001)
- id 1F8D8C433CA; Fri,  3 Jul 2020 14:17:40 +0000 (UTC)
-Received: from vjitta-linux.qualcomm.com
- (blr-c-bdr-fw-01_GlobalNAT_AllZones-Outside.qualcomm.com [103.229.19.19])
- (using TLSv1.2 with cipher ECDHE-RSA-AES128-SHA256 (128/128 bits))
- (No client certificate requested) (Authenticated sender: vjitta)
- by smtp.codeaurora.org (Postfix) with ESMTPSA id E77C0C433C6;
- Fri,  3 Jul 2020 14:17:35 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.3.2 smtp.codeaurora.org E77C0C433C6
-Authentication-Results: aws-us-west-2-caf-mail-1.web.codeaurora.org;
- dmarc=none (p=none dis=none) header.from=codeaurora.org
-Authentication-Results: aws-us-west-2-caf-mail-1.web.codeaurora.org;
- spf=none smtp.mailfrom=vjitta@codeaurora.org
-From: vjitta@codeaurora.org
-To: joro@8bytes.org, iommu@lists.linux-foundation.org,
- linux-kernel@vger.kernel.org
-Subject: [PATCH 2/2] iommu/iova: Free global iova rcache on iova alloc failure
-Date: Fri,  3 Jul 2020 19:47:15 +0530
-Message-Id: <1593785835-27250-2-git-send-email-vjitta@codeaurora.org>
-X-Mailer: git-send-email 1.9.1
-In-Reply-To: <1593785835-27250-1-git-send-email-vjitta@codeaurora.org>
-References: <1593785835-27250-1-git-send-email-vjitta@codeaurora.org>
-Cc: vjitta@codeaurora.org, vinmenon@codeaurora.org, kernel-team@android.com
+ id 908DDC433B6; Fri,  3 Jul 2020 14:53:08 +0000 (UTC)
+Received: from mail.codeaurora.org (localhost.localdomain [127.0.0.1])
+ (using TLSv1 with cipher ECDHE-RSA-AES256-SHA (256/256 bits))
+ (No client certificate requested)
+ (Authenticated sender: saiprakash.ranjan)
+ by smtp.codeaurora.org (Postfix) with ESMTPSA id 99A3BC433C8;
+ Fri,  3 Jul 2020 14:53:07 +0000 (UTC)
+MIME-Version: 1.0
+Date: Fri, 03 Jul 2020 20:23:07 +0530
+From: Sai Prakash Ranjan <saiprakash.ranjan@codeaurora.org>
+To: Will Deacon <will@kernel.org>
+Subject: Re: [PATCHv3 7/7] drm/msm/a6xx: Add support for using system
+ cache(LLC)
+In-Reply-To: <20200703133732.GD18953@willie-the-truck>
+References: <cover.1593344119.git.saiprakash.ranjan@codeaurora.org>
+ <449a6544b10f0035d191ac52283198343187c153.1593344120.git.saiprakash.ranjan@codeaurora.org>
+ <20200703133732.GD18953@willie-the-truck>
+Message-ID: <ecfda7ca80f6d7b4ff3d89b8758f4dc9@codeaurora.org>
+X-Sender: saiprakash.ranjan@codeaurora.org
+User-Agent: Roundcube Webmail/1.3.9
+Cc: Sean Paul <sean@poorly.run>, freedreno@lists.freedesktop.org,
+ David Airlie <airlied@linux.ie>, linux-arm-msm@vger.kernel.org,
+ iommu@lists.linux-foundation.org, linux-kernel@vger.kernel.org,
+ Matthias Kaehlcke <mka@chromium.org>, Akhil P Oommen <akhilpo@codeaurora.org>,
+ dri-devel@lists.freedesktop.org, Daniel Vetter <daniel@ffwll.ch>,
+ "Kristian H . Kristensen" <hoegsberg@google.com>,
+ Stephen Boyd <swboyd@chromium.org>, Robin Murphy <robin.murphy@arm.com>,
+ Sharat Masetty <smasetty@codeaurora.org>, linux-arm-kernel@lists.infradead.org,
+ Emil Velikov <emil.velikov@collabora.com>
 X-BeenThere: iommu@lists.linux-foundation.org
 X-Mailman-Version: 2.1.15
 Precedence: list
@@ -98,97 +105,51 @@ List-Post: <mailto:iommu@lists.linux-foundation.org>
 List-Help: <mailto:iommu-request@lists.linux-foundation.org?subject=help>
 List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
  <mailto:iommu-request@lists.linux-foundation.org?subject=subscribe>
-MIME-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset="us-ascii"; Format="flowed"
 Errors-To: iommu-bounces@lists.linux-foundation.org
 Sender: "iommu" <iommu-bounces@lists.linux-foundation.org>
 
-From: Vijayanand Jitta <vjitta@codeaurora.org>
+Hi Will,
 
-When ever an iova alloc request fails we free the iova
-ranges present in the percpu iova rcaches and then retry
-but the global iova rcache is not freed as a result we could
-still see iova alloc failure even after retry as global
-rcache is holding the iova's which can cause fragmentation.
-So, free the global iova rcache as well and then go for the
-retry.
+On 2020-07-03 19:07, Will Deacon wrote:
+> On Mon, Jun 29, 2020 at 09:22:50PM +0530, Sai Prakash Ranjan wrote:
+>> diff --git a/drivers/gpu/drm/msm/msm_iommu.c 
+>> b/drivers/gpu/drm/msm/msm_iommu.c
+>> index f455c597f76d..bd1d58229cc2 100644
+>> --- a/drivers/gpu/drm/msm/msm_iommu.c
+>> +++ b/drivers/gpu/drm/msm/msm_iommu.c
+>> @@ -218,6 +218,9 @@ static int msm_iommu_map(struct msm_mmu *mmu, 
+>> uint64_t iova,
+>>  		iova |= GENMASK_ULL(63, 49);
+>> 
+>> 
+>> +	if (mmu->features & MMU_FEATURE_USE_SYSTEM_CACHE)
+>> +		prot |= IOMMU_SYS_CACHE_ONLY;
+> 
+> Given that I think this is the only user of IOMMU_SYS_CACHE_ONLY, then 
+> it
+> looks like it should actually be a property on the domain because we 
+> never
+> need to configure it on a per-mapping basis within a domain, and 
+> therefore
+> it shouldn't be exposed by the IOMMU API as a prot flag.
+> 
+> Do you agree?
+> 
 
-Change-Id: Ib8236dc88ba5516b73d4fbf6bf8e68bbf09bbad2
-Signed-off-by: Vijayanand Jitta <vjitta@codeaurora.org>
----
- drivers/iommu/iova.c | 23 +++++++++++++++++++++++
- include/linux/iova.h |  6 ++++++
- 2 files changed, 29 insertions(+)
+GPU being the only user is for now, but there are other clients which 
+can use this.
+Plus how do we set the memory attributes if we do not expose this as 
+prot flag?
 
-diff --git a/drivers/iommu/iova.c b/drivers/iommu/iova.c
-index 4e77116..5836c87 100644
---- a/drivers/iommu/iova.c
-+++ b/drivers/iommu/iova.c
-@@ -442,6 +442,7 @@ struct iova *find_iova(struct iova_domain *iovad, unsigned long pfn)
- 		flush_rcache = false;
- 		for_each_online_cpu(cpu)
- 			free_cpu_cached_iovas(cpu, iovad);
-+		free_global_cached_iovas(iovad);
- 		goto retry;
- 	}
- 
-@@ -1055,5 +1056,27 @@ void free_cpu_cached_iovas(unsigned int cpu, struct iova_domain *iovad)
- 	}
- }
- 
-+/*
-+ * free all the IOVA ranges of global cache
-+ */
-+void free_global_cached_iovas(struct iova_domain *iovad)
-+{
-+	struct iova_rcache *rcache;
-+	unsigned long flags;
-+	int i, j;
-+
-+	for (i = 0; i < IOVA_RANGE_CACHE_MAX_SIZE; ++i) {
-+		rcache = &iovad->rcaches[i];
-+		spin_lock_irqsave(&rcache->lock, flags);
-+		for (j = 0; j < rcache->depot_size; ++j) {
-+			iova_magazine_free_pfns(rcache->depot[j], iovad);
-+			iova_magazine_free(rcache->depot[j]);
-+			rcache->depot[j] = NULL;
-+		}
-+		rcache->depot_size = 0;
-+		spin_unlock_irqrestore(&rcache->lock, flags);
-+	}
-+}
-+
- MODULE_AUTHOR("Anil S Keshavamurthy <anil.s.keshavamurthy@intel.com>");
- MODULE_LICENSE("GPL");
-diff --git a/include/linux/iova.h b/include/linux/iova.h
-index a0637ab..a905726 100644
---- a/include/linux/iova.h
-+++ b/include/linux/iova.h
-@@ -163,6 +163,7 @@ int init_iova_flush_queue(struct iova_domain *iovad,
- struct iova *split_and_remove_iova(struct iova_domain *iovad,
- 	struct iova *iova, unsigned long pfn_lo, unsigned long pfn_hi);
- void free_cpu_cached_iovas(unsigned int cpu, struct iova_domain *iovad);
-+void free_global_cached_iovas(struct iova_domain *iovad);
- #else
- static inline int iova_cache_get(void)
- {
-@@ -270,6 +271,11 @@ static inline void free_cpu_cached_iovas(unsigned int cpu,
- 					 struct iova_domain *iovad)
- {
- }
-+
-+static inline void free_global_cached_iovas(struct iova_domain *iovad)
-+{
-+}
-+
- #endif
- 
- #endif
+Thanks,
+Sai
+
 -- 
-QUALCOMM INDIA, on behalf of Qualcomm Innovation Center, Inc. is a member of Code Aurora Forum, hosted by The Linux Foundation
-1.9.1
-
+QUALCOMM INDIA, on behalf of Qualcomm Innovation Center, Inc. is a 
+member
+of Code Aurora Forum, hosted by The Linux Foundation
 _______________________________________________
 iommu mailing list
 iommu@lists.linux-foundation.org
