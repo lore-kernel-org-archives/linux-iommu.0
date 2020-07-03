@@ -2,88 +2,160 @@ Return-Path: <SRS0=r5As=AO=lists.linux-foundation.org=iommu-bounces@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-8.3 required=3.0 tests=DKIM_INVALID,DKIM_SIGNED,
+X-Spam-Status: No, score=-4.0 required=3.0 tests=DKIM_INVALID,DKIM_SIGNED,
 	HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_PATCH,MAILING_LIST_MULTI,SIGNED_OFF_BY,
-	SPF_HELO_NONE,SPF_PASS,UNPARSEABLE_RELAY,URIBL_BLOCKED,USER_AGENT_SANE_2
-	autolearn=ham autolearn_force=no version=3.4.0
+	SPF_HELO_NONE,SPF_PASS,UNWANTED_LANGUAGE_BODY,URIBL_BLOCKED autolearn=ham
+	autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 1495EC433E2
-	for <iommu@archiver.kernel.org>; Fri,  3 Jul 2020 02:39:25 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 81DE3C433E0
+	for <iommu@archiver.kernel.org>; Fri,  3 Jul 2020 03:47:01 +0000 (UTC)
 Received: from fraxinus.osuosl.org (smtp4.osuosl.org [140.211.166.137])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by mail.kernel.org (Postfix) with ESMTPS id D8215207CD
-	for <iommu@archiver.kernel.org>; Fri,  3 Jul 2020 02:39:24 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTPS id 3831120674
+	for <iommu@archiver.kernel.org>; Fri,  3 Jul 2020 03:47:01 +0000 (UTC)
 Authentication-Results: mail.kernel.org;
-	dkim=fail reason="signature verification failed" (1024-bit key) header.d=mediatek.com header.i=@mediatek.com header.b="rU+Qxowk"
-DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org D8215207CD
-Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=mediatek.com
+	dkim=fail reason="signature verification failed" (1024-bit key) header.d=intel.onmicrosoft.com header.i=@intel.onmicrosoft.com header.b="cWy9qNEv"
+DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 3831120674
+Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=intel.com
 Authentication-Results: mail.kernel.org; spf=pass smtp.mailfrom=iommu-bounces@lists.linux-foundation.org
 Received: from localhost (localhost [127.0.0.1])
-	by fraxinus.osuosl.org (Postfix) with ESMTP id 90FA287ADD;
-	Fri,  3 Jul 2020 02:39:24 +0000 (UTC)
+	by fraxinus.osuosl.org (Postfix) with ESMTP id F209387C70;
+	Fri,  3 Jul 2020 03:47:00 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
 Received: from fraxinus.osuosl.org ([127.0.0.1])
 	by localhost (.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
-	with ESMTP id 0Ug3mV_JDV8W; Fri,  3 Jul 2020 02:39:23 +0000 (UTC)
+	with ESMTP id 1I3ZzC8yx0zb; Fri,  3 Jul 2020 03:46:59 +0000 (UTC)
 Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [140.211.9.56])
-	by fraxinus.osuosl.org (Postfix) with ESMTP id EEE838651D;
-	Fri,  3 Jul 2020 02:39:23 +0000 (UTC)
+	by fraxinus.osuosl.org (Postfix) with ESMTP id 8134187AC1;
+	Fri,  3 Jul 2020 03:46:59 +0000 (UTC)
 Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
-	by lists.linuxfoundation.org (Postfix) with ESMTP id D3AFDC0890;
-	Fri,  3 Jul 2020 02:39:23 +0000 (UTC)
-Received: from whitealder.osuosl.org (smtp1.osuosl.org [140.211.166.138])
- by lists.linuxfoundation.org (Postfix) with ESMTP id 3992BC0733
- for <iommu@lists.linux-foundation.org>; Fri,  3 Jul 2020 02:39:23 +0000 (UTC)
+	by lists.linuxfoundation.org (Postfix) with ESMTP id 62E4EC0888;
+	Fri,  3 Jul 2020 03:46:59 +0000 (UTC)
+Received: from silver.osuosl.org (smtp3.osuosl.org [140.211.166.136])
+ by lists.linuxfoundation.org (Postfix) with ESMTP id EE918C0733
+ for <iommu@lists.linux-foundation.org>; Fri,  3 Jul 2020 03:46:57 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
- by whitealder.osuosl.org (Postfix) with ESMTP id 2852787E92
- for <iommu@lists.linux-foundation.org>; Fri,  3 Jul 2020 02:39:23 +0000 (UTC)
+ by silver.osuosl.org (Postfix) with ESMTP id D753C25075
+ for <iommu@lists.linux-foundation.org>; Fri,  3 Jul 2020 03:46:57 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from whitealder.osuosl.org ([127.0.0.1])
+Received: from silver.osuosl.org ([127.0.0.1])
  by localhost (.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
- with ESMTP id CJxwvQokThdG for <iommu@lists.linux-foundation.org>;
- Fri,  3 Jul 2020 02:39:18 +0000 (UTC)
+ with ESMTP id 4Snb8KIIfaxM for <iommu@lists.linux-foundation.org>;
+ Fri,  3 Jul 2020 03:46:55 +0000 (UTC)
 X-Greylist: domain auto-whitelisted by SQLgrey-1.7.6
-Received: from mailgw02.mediatek.com (unknown [210.61.82.184])
- by whitealder.osuosl.org (Postfix) with ESMTP id 5A81C87E81
- for <iommu@lists.linux-foundation.org>; Fri,  3 Jul 2020 02:39:18 +0000 (UTC)
-X-UUID: 64a3eedf2d8f47b0872f0ccf7b813178-20200703
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=mediatek.com;
- s=dk; 
- h=Content-Transfer-Encoding:MIME-Version:Content-Type:References:In-Reply-To:Date:CC:To:From:Subject:Message-ID;
- bh=ubghZLeTNlicdHeDwlIOfrhXL375GKduXj/VbUzsdHM=; 
- b=rU+Qxowk3TNvO24jARAFD+TWLBTgDwEBgBXZ9wvMsf9Xh+LEkqpXi6+chqUa2OGMuJZey3YxnNxq7o1XY8YN4zjuL62B6DALbw2qLRh5OYwq/kwnijl7fo1wn1aPQA2XFM3IfwjjrCe5vxdvez9e7l4uDn74v/GMWyfN+uwCPMg=;
-X-UUID: 64a3eedf2d8f47b0872f0ccf7b813178-20200703
-Received: from mtkcas06.mediatek.inc [(172.21.101.30)] by mailgw02.mediatek.com
- (envelope-from <chao.hao@mediatek.com>)
- (Cellopoint E-mail Firewall v4.1.10 Build 0809 with TLS)
- with ESMTP id 901121176; Fri, 03 Jul 2020 10:39:16 +0800
-Received: from mtkcas08.mediatek.inc (172.21.101.126) by
- mtkmbs01n2.mediatek.inc (172.21.101.79) with Microsoft SMTP Server (TLS) id
- 15.0.1497.2; Fri, 3 Jul 2020 10:39:13 +0800
-Received: from [10.15.20.246] (10.15.20.246) by mtkcas08.mediatek.inc
- (172.21.101.73) with Microsoft SMTP Server id 15.0.1497.2 via Frontend
- Transport; Fri, 3 Jul 2020 10:39:13 +0800
-Message-ID: <1593743885.22738.2.camel@mbjsdccf07>
-Subject: Re: [PATCH v5 04/10] iommu/mediatek: Setting MISC_CTRL register
-From: chao hao <Chao.Hao@mediatek.com>
-To: Matthias Brugger <matthias.bgg@gmail.com>
-Date: Fri, 3 Jul 2020 10:38:05 +0800
-In-Reply-To: <b9a68cda-bb2e-c9f3-4e44-c201df06c396@gmail.com>
-References: <20200629071310.1557-1-chao.hao@mediatek.com>
- <20200629071310.1557-5-chao.hao@mediatek.com>
- <0e9ceba8-0cc4-44a1-148c-1c9a6b3844ce@gmail.com>
- <1593514398.2581.7.camel@mbjsdccf07>
- <b9a68cda-bb2e-c9f3-4e44-c201df06c396@gmail.com>
-X-Mailer: Evolution 3.10.4-0ubuntu2 
+Received: from mga01.intel.com (mga01.intel.com [192.55.52.88])
+ by silver.osuosl.org (Postfix) with ESMTPS id 3170A248A1
+ for <iommu@lists.linux-foundation.org>; Fri,  3 Jul 2020 03:46:55 +0000 (UTC)
+IronPort-SDR: pjaZdxLkUE+UvVWZTrLRoAtHhqKAq1rnz21R8769aAGff2pozi3Xk4+clkKigt1rSuQRpn3um0
+ aiqtLVLgXvVw==
+X-IronPort-AV: E=McAfee;i="6000,8403,9670"; a="165143644"
+X-IronPort-AV: E=Sophos;i="5.75,306,1589266800"; d="scan'208";a="165143644"
+X-Amp-Result: SKIPPED(no attachment in message)
+X-Amp-File-Uploaded: False
+Received: from fmsmga005.fm.intel.com ([10.253.24.32])
+ by fmsmga101.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384;
+ 02 Jul 2020 20:46:54 -0700
+IronPort-SDR: YZZ+R8sVe8k1qFj8KQNvZeXLdifIDr45Mu67IsR7LIMHy6bqcSEax7RDD7ChYIKSpsaSXrFO4Q
+ irZvrqPBEQnQ==
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="5.75,306,1589266800"; d="scan'208";a="482233378"
+Received: from orsmsx606.amr.corp.intel.com ([10.22.229.19])
+ by fmsmga005.fm.intel.com with ESMTP; 02 Jul 2020 20:46:54 -0700
+Received: from orsmsx606.amr.corp.intel.com (10.22.229.19) by
+ ORSMSX606.amr.corp.intel.com (10.22.229.19) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.1713.5; Thu, 2 Jul 2020 20:46:53 -0700
+Received: from orsmsx151.amr.corp.intel.com (10.22.226.38) by
+ orsmsx606.amr.corp.intel.com (10.22.229.19) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256) id 15.1.1713.5
+ via Frontend Transport; Thu, 2 Jul 2020 20:46:53 -0700
+Received: from ORSEDG002.ED.cps.intel.com (10.7.248.5) by
+ ORSMSX151.amr.corp.intel.com (10.22.226.38) with Microsoft SMTP Server (TLS)
+ id 14.3.439.0; Thu, 2 Jul 2020 20:46:53 -0700
+Received: from NAM12-MW2-obe.outbound.protection.outlook.com (104.47.66.41) by
+ edgegateway.intel.com (134.134.137.101) with Microsoft SMTP Server
+ (TLS) id 14.3.439.0; Thu, 2 Jul 2020 20:46:53 -0700
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=kShw9uER5ZK5H5m5CsFor6jUUBDVjwiwDSRBryvtgamDh7AjwZOBYMxOySxMkd+YyNnuGTF34NfCKm3b94S5gEijfPhiVxs3Dq8gSJL3fq0pVCrpN8WLZhXQ0zNgXgDUVqG0OLNHUeUi2E7r2fsX9SlhYqqAdRSPtu8XbNAAWeH88xDhvaoM5U5x/dFILBZKVWRT/pgROzh8qUqbeo5h4ZONHxvdLYJR+wn2OtEh0Dq/sZQrXrAFqQiSkrx4FWAUL6q5CHZtREdaOQYzz+cQRv2OvbBPY+hQ/YOlmWEvzK5bLhXwIvaSGK62xVK+Fv5BSe0OedikfNPvGM+rcmIVLw==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com; 
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=nGHYCZnqILqpEC0fZb3cPCOerWsct4PM7eKLNYBt8pk=;
+ b=h0MZRAjJA2r0RbeMa6VPHRASsZajLoZM1hwMEjCDiHKW/O8K6lLo5qcO3/0+HmRzMCI2F9Qhi/wu0KoKWzqqg/3HdRR9EHmyQTy+YUwujXXCeXwHTwPXlHKbJcQHM1bDgZ3TKyDQ7pVQArVC7+/tlQ8LDTLeEQDcKsbq8+6BDXE60Qg2pae4bC0qGWcYLQNpp1ZV+5uE5lpPqviAZaEBj2iwiYKGeQdb169CC8AJL8p3+heykBrYnpBHcHkdAGhpJxTrqcbekWBhM50v5q2G17V63pXsvFJp2AFjs1IiEs1lEyrdLBboD7fNSugnjTeYsqF0kg/loJ33ih7gjT32og==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=intel.com; dmarc=pass action=none header.from=intel.com;
+ dkim=pass header.d=intel.com; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=intel.onmicrosoft.com; 
+ s=selector2-intel-onmicrosoft-com;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=nGHYCZnqILqpEC0fZb3cPCOerWsct4PM7eKLNYBt8pk=;
+ b=cWy9qNEvjmrOm4wd4+E7fgmyL/9Ml9AQnctaUOC1bhWJjWD3STfUVy/XGwl75teU/WxNIhAFWB/G+2NqAet+pGOHb0NiILtJ0bCTJr+7ySVWMdkXKinOoeYOzb8P5AdyshZyICJ8q8Na9FFykNbsyq2f+Iz6x41MXmKxNpOlsmk=
+Received: from DM5PR11MB1435.namprd11.prod.outlook.com (2603:10b6:4:7::18) by
+ DM6PR11MB4076.namprd11.prod.outlook.com (2603:10b6:5:197::17) with
+ Microsoft
+ SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.20.3153.28; Fri, 3 Jul 2020 03:46:52 +0000
+Received: from DM5PR11MB1435.namprd11.prod.outlook.com
+ ([fe80::2c3d:98d9:4e81:c86c]) by DM5PR11MB1435.namprd11.prod.outlook.com
+ ([fe80::2c3d:98d9:4e81:c86c%6]) with mapi id 15.20.3131.033; Fri, 3 Jul 2020
+ 03:46:52 +0000
+From: "Liu, Yi L" <yi.l.liu@intel.com>
+To: Alex Williamson <alex.williamson@redhat.com>
+Subject: RE: [PATCH v3 01/14] vfio/type1: Refactor vfio_iommu_type1_ioctl()
+Thread-Topic: [PATCH v3 01/14] vfio/type1: Refactor vfio_iommu_type1_ioctl()
+Thread-Index: AQHWSgRP5alWmuhHv0+o228EmqQebKj02VaAgABmNOA=
+Date: Fri, 3 Jul 2020 03:46:51 +0000
+Message-ID: <DM5PR11MB143599F220FA4FCA5492B919C36A0@DM5PR11MB1435.namprd11.prod.outlook.com>
+References: <1592988927-48009-1-git-send-email-yi.l.liu@intel.com>
+ <1592988927-48009-2-git-send-email-yi.l.liu@intel.com>
+ <20200702152101.7eb1e77b@x1.home>
+In-Reply-To: <20200702152101.7eb1e77b@x1.home>
+Accept-Language: en-US
+Content-Language: en-US
+X-MS-Has-Attach: 
+X-MS-TNEF-Correlator: 
+dlp-reaction: no-action
+dlp-version: 11.2.0.6
+dlp-product: dlpe-windows
+authentication-results: redhat.com; dkim=none (message not signed)
+ header.d=none;redhat.com; dmarc=none action=none header.from=intel.com;
+x-originating-ip: [192.198.147.205]
+x-ms-publictraffictype: Email
+x-ms-office365-filtering-correlation-id: dbe28961-be32-49a5-b44c-08d81f03b8ec
+x-ms-traffictypediagnostic: DM6PR11MB4076:
+x-ld-processed: 46c98d88-e344-4ed4-8496-4ed7712e255d,ExtAddr
+x-ms-exchange-transport-forked: True
+x-microsoft-antispam-prvs: <DM6PR11MB4076EC25DA92C0A33EC812A7C36A0@DM6PR11MB4076.namprd11.prod.outlook.com>
+x-ms-oob-tlc-oobclassifiers: OLM:389;
+x-forefront-prvs: 045315E1EE
+x-ms-exchange-senderadcheck: 1
+x-microsoft-antispam: BCL:0;
+x-microsoft-antispam-message-info: GgWGPEzEk8s0ZJvLeTDwS9yCrh/+zNdKqbrKUj1CjYgsg8UiiqM+wAc2sDfLQeb5fW7jU06X9EFZxeRizA+czBEVHWxliUJepXPmmRxL5Zd98OdJEXW2zxalC0gTNc7Z+Xsn1YmSNFd1JtW2p8JYWMUgMVJ1rxecZtPorZQK53zsb+E95ibBpIKqBnYSTmsdTmH2wLZzQAUX6s+vM7XmYnz43bwCxfVy0WDcj2pOFz+ZKgQsVn4D+jgVw/G20HyLfTS6k+D2C42xQkAjK0TctKp+chZL5ej9XhYquqTI0DjX/e9h7KVim4tY8+CTis/IXfLPaCLUH4hgq1HGWJB36Q==
+x-forefront-antispam-report: CIP:255.255.255.255; CTRY:; LANG:en; SCL:1; SRV:;
+ IPV:NLI; SFV:NSPM; H:DM5PR11MB1435.namprd11.prod.outlook.com; PTR:; CAT:NONE;
+ SFTY:;
+ SFS:(4636009)(396003)(136003)(39860400002)(376002)(346002)(366004)(52536014)(7696005)(186003)(76116006)(2906002)(54906003)(86362001)(66476007)(5660300002)(316002)(66946007)(478600001)(33656002)(66446008)(64756008)(66556008)(6506007)(26005)(8676002)(53546011)(6916009)(30864003)(8936002)(83380400001)(7416002)(55016002)(71200400001)(9686003)(4326008);
+ DIR:OUT; SFP:1102; 
+x-ms-exchange-antispam-messagedata: Jd+cBkStUCfYjmt4vQ1AVLvc+P3XcbTzWzdLif1JZzzqqU2F105xJ7Vb07opwh/uVGILGuNilsr3GyrBUHMcinV1boZGky2HFREY4zmM+lKVhRxzmrOoKY5hb6UOydR15BHjxKJ8/mtGFHqc2UKv0ELNhEXd6GHFMpVxrQzruPE13wCI5jhhGGoqGnXxcwWKD6GMKq7jJNa4qgvw2OXoTrH5kKBBkfvLys7OsebRPNsLSY5X6uoDcIw9+aorqW24SZi2KBrY6JRcvbgEWlBVIeVDrfdZucpx/RtDnSqJweCGM0dKRRS6TECuzkMFWMImYLl2S/OXrE338Vl5288m2WOqMR9bP0RXqH+agy6FMLlvXuqVK96wluMYkxyrBLaNs10SbQyYsoZsy98uVQr0jUdIljlf/xB7kXNPZWk0t8ubpSKaHcm0naWQEAQ9mbtWT1lOnqVqUmAaR//FvoEfiYgmrVjBdggHT4NR3CGe95a8Q0x/Tt0uY+3t49ewMn/L
 MIME-Version: 1.0
-X-TM-SNTS-SMTP: 3EE8F4A8513308CBFB404D0FBB6A79928236E6EF658504C0F5CE61D2EE0CAC8E2000:8
-X-MTK: N
-Cc: devicetree@vger.kernel.org, FY Yang <fy.yang@mediatek.com>,
- wsd_upstream@mediatek.com, linux-kernel@vger.kernel.org,
- Evan Green <evgreen@chromium.org>, Chao Hao <chao.hao@mediatek.com>,
- iommu@lists.linux-foundation.org, Rob Herring <robh+dt@kernel.org>,
- linux-mediatek@lists.infradead.org, linux-arm-kernel@lists.infradead.org
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-AuthSource: DM5PR11MB1435.namprd11.prod.outlook.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: dbe28961-be32-49a5-b44c-08d81f03b8ec
+X-MS-Exchange-CrossTenant-originalarrivaltime: 03 Jul 2020 03:46:51.7160 (UTC)
+X-MS-Exchange-CrossTenant-fromentityheader: Hosted
+X-MS-Exchange-CrossTenant-id: 46c98d88-e344-4ed4-8496-4ed7712e255d
+X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
+X-MS-Exchange-CrossTenant-userprincipalname: Wlx0tm2plMU1YrTDkMpsfF5so7POcFYIr5gPgHaFDajyk96OZYl3lJyU4aPwtbyGdhLk67hNX+1mStOTJ92oQQ==
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: DM6PR11MB4076
+X-OriginatorOrg: intel.com
+Cc: "jean-philippe@linaro.org" <jean-philippe@linaro.org>, "Tian,
+ Kevin" <kevin.tian@intel.com>, "Raj, Ashok" <ashok.raj@intel.com>,
+ "kvm@vger.kernel.org" <kvm@vger.kernel.org>,
+ "iommu@lists.linux-foundation.org" <iommu@lists.linux-foundation.org>,
+ "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>, "Sun,
+ Yi Y" <yi.y.sun@intel.com>, "Wu, Hao" <hao.wu@intel.com>, "Tian,
+ Jun J" <jun.j.tian@intel.com>
 X-BeenThere: iommu@lists.linux-foundation.org
 X-Mailman-Version: 2.1.15
 Precedence: list
@@ -101,144 +173,510 @@ Content-Transfer-Encoding: 7bit
 Errors-To: iommu-bounces@lists.linux-foundation.org
 Sender: "iommu" <iommu-bounces@lists.linux-foundation.org>
 
-On Wed, 2020-07-01 at 16:58 +0200, Matthias Brugger wrote:
+> From: Alex Williamson <alex.williamson@redhat.com>
+> Sent: Friday, July 3, 2020 5:21 AM
+> To: Liu, Yi L <yi.l.liu@intel.com>
 > 
-> On 30/06/2020 12:53, chao hao wrote:
-> > On Mon, 2020-06-29 at 11:28 +0200, Matthias Brugger wrote:
-> >>
-> >> On 29/06/2020 09:13, Chao Hao wrote:
-> >>> Add F_MMU_IN_ORDER_WR_EN and F_MMU_STANDARD_AXI_MODE_BIT definition
-> >>> in MISC_CTRL register.
-> >>> F_MMU_STANDARD_AXI_MODE_BIT:
-> >>>   If we set F_MMU_STANDARD_AXI_MODE_BIT(bit[3][19] = 0, not follow
-> >>> standard AXI protocol), iommu will send urgent read command firstly
-> >>> compare with normal read command to improve performance.
-> >>
-> >> Can you please help me to understand the phrase. Sorry I'm not a AXI specialist.
-> >> Does this mean that you will send a 'urgent read command' which is not described
-> >> in the specifications instead of a normal read command?
-> > 
-> > ok.
-> > iommu sends read command to next bus_node normally(we can name it to
-> > cmd1), when cmd1 isn't handled by next bus_node, iommu has a urgent read
-> > command is needed to be sent(we can name it to cmd2), iommu will send
-> > cmd2 and replace cmd1. So cmd2 is handled by next bus_node firstly and
-> > cmd2 will be handled secondly.
-> > But for standard AXI protocol, it will ignore the priority of read
-> > command and only be handled in order. So cmd2 is handled by next
-> > bus_node after cmd1 is done.
-> > 
+> On Wed, 24 Jun 2020 01:55:14 -0700
+> Liu Yi L <yi.l.liu@intel.com> wrote:
 > 
-> Thanks. So I propose change this part of the commit message to something like:
-> F_MMU_STANDARD_AXI_MODE_BIT:
-> If we set F_MMU_STANDARD_AXI_MODE_EN_MASK (bit[3][19] = 0, not follow standard
-> AXI protocol), the iommu will priorize sending of urgent read command over a
-> normal read command. This improves the performance.
+> > This patch refactors the vfio_iommu_type1_ioctl() to use switch
+> > instead of if-else, and each cmd got a helper function.
+> >
+> > Cc: Kevin Tian <kevin.tian@intel.com>
+> > CC: Jacob Pan <jacob.jun.pan@linux.intel.com>
+> > Cc: Alex Williamson <alex.williamson@redhat.com>
+> > Cc: Eric Auger <eric.auger@redhat.com>
+> > Cc: Jean-Philippe Brucker <jean-philippe@linaro.org>
+> > Cc: Joerg Roedel <joro@8bytes.org>
+> > Cc: Lu Baolu <baolu.lu@linux.intel.com>
+> > Suggested-by: Christoph Hellwig <hch@infradead.org>
+> > Signed-off-by: Liu Yi L <yi.l.liu@intel.com>
+> > ---
+> >  drivers/vfio/vfio_iommu_type1.c | 392
+> > ++++++++++++++++++++++------------------
+> >  1 file changed, 213 insertions(+), 179 deletions(-)
 > 
-ok, thanks
+> I can go ahead and grab this one for my v5.9 next branch.  Thanks,
 
-> >>
-> >>> F_MMU_IN_ORDER_WR_EN:
-> >>>   If we set F_MMU_IN_ORDER_WR_EN(bit[1][17] = 0, out-of-order write), iommu
-> >>> will re-order write command and send more higher priority write command
-> >>> instead of sending write command in order. The feature be controlled
-> >>> by OUT_ORDER_EN macro definition.
-> 
-> F_MMU_IN_ORDER_WR_EN:
-> If we set F_MMU_IN_ORDER_WR_EN_MASK (bit[1][17] = 0, out-of-order write), the
-> iommu will re-order write commands and send the write command with higher
-> priority. Otherwise the sending of write commands will be done in order. The
-> feature is controlled by OUT_ORDER_WR_EN platform data flag.
-> 
-> 
-> >>>
-> >>> Cc: Matthias Brugger <matthias.bgg@gmail.com>
-> >>> Suggested-by: Yong Wu <yong.wu@mediatek.com>
-> >>> Signed-off-by: Chao Hao <chao.hao@mediatek.com>
-> >>> ---
-> >>>  drivers/iommu/mtk_iommu.c | 12 +++++++++++-
-> >>>  drivers/iommu/mtk_iommu.h |  1 +
-> >>>  2 files changed, 12 insertions(+), 1 deletion(-)
-> >>>
-> >>> diff --git a/drivers/iommu/mtk_iommu.c b/drivers/iommu/mtk_iommu.c
-> >>> index 8f81df6cbe51..67b46b5d83d9 100644
-> >>> --- a/drivers/iommu/mtk_iommu.c
-> >>> +++ b/drivers/iommu/mtk_iommu.c
-> >>> @@ -42,6 +42,9 @@
-> >>>  #define F_INVLD_EN1				BIT(1)
-> >>>  
-> >>>  #define REG_MMU_MISC_CTRL			0x048
-> >>> +#define F_MMU_IN_ORDER_WR_EN			(BIT(1) | BIT(17))
-> >>> +#define F_MMU_STANDARD_AXI_MODE_BIT		(BIT(3) | BIT(19))
-> >>
-> >> Wouldn't it make more sense to name it F_MMU_STANDARD_AXI_MODE_EN?
-> > ok, you are right.
-> > 1'b1: follow standard axi protocol
-> > 
-> 
-> What about
-> F_MMU_IN_ORDER_WR_EN_MASK
-> F_MMU_STANDARD_AXI_MODE_EN_MASK
-> 
-> Background is that we have to set/unset two bits to enable or disable the
-> feature, so it's a mask we have to apply to the register.
-> 
+thanks, that would be great help. I'll monitor your next branch on github.
 
-ok, thanks for your advice
+Regards,
+Yi Liu
 
-> Regards,
-> Matthias
+> Alex
 > 
-> >>
-> >>> +
-> >>>  #define REG_MMU_DCM_DIS				0x050
-> >>>  
-> >>>  #define REG_MMU_CTRL_REG			0x110
-> >>> @@ -574,10 +577,17 @@ static int mtk_iommu_hw_init(const struct mtk_iommu_data *data)
-> >>>  	}
-> >>>  	writel_relaxed(0, data->base + REG_MMU_DCM_DIS);
-> >>>  
-> >>> +	regval = readl_relaxed(data->base + REG_MMU_MISC_CTRL);
-> >>
-> >> We only need to read regval in the else branch.
-> > 
-> > ok, I got it. thanks
-> > 
-> >>
-> >>>  	if (MTK_IOMMU_HAS_FLAG(data->plat_data, RESET_AXI)) {
-> >>>  		/* The register is called STANDARD_AXI_MODE in this case */
-> >>> -		writel_relaxed(0, data->base + REG_MMU_MISC_CTRL);
-> >>> +		regval = 0;
-> >>> +	} else {
-> >>> +		/* For mm_iommu, it can improve performance by the setting */
-> >>> +		regval &= ~F_MMU_STANDARD_AXI_MODE_BIT;
-> >>> +		if (MTK_IOMMU_HAS_FLAG(data->plat_data, OUT_ORDER_EN))
-> >>> +			regval &= ~F_MMU_IN_ORDER_WR_EN;
-> >>>  	}
-> >>> +	writel_relaxed(regval, data->base + REG_MMU_MISC_CTRL);
-> >>>  
-> >>>  	if (devm_request_irq(data->dev, data->irq, mtk_iommu_isr, 0,
-> >>>  			     dev_name(data->dev), (void *)data)) {
-> >>> diff --git a/drivers/iommu/mtk_iommu.h b/drivers/iommu/mtk_iommu.h
-> >>> index 7cc39f729263..4b780b651ef4 100644
-> >>> --- a/drivers/iommu/mtk_iommu.h
-> >>> +++ b/drivers/iommu/mtk_iommu.h
-> >>> @@ -22,6 +22,7 @@
-> >>>  #define HAS_BCLK			BIT(1)
-> >>>  #define HAS_VLD_PA_RNG			BIT(2)
-> >>>  #define RESET_AXI			BIT(3)
-> >>> +#define OUT_ORDER_EN			BIT(4)
-> >>
-> >> Maybe something like OUT_ORDER_WR_EN, to make clear that it's about the the
-> >> write path.
-> >>
-> > ok, thanks for your advice.
-> > 
-> >>>  
-> >>>  #define MTK_IOMMU_HAS_FLAG(pdata, _x) \
-> >>>  		((((pdata)->flags) & (_x)) == (_x))
-> >>>
-> > 
+> > diff --git a/drivers/vfio/vfio_iommu_type1.c
+> > b/drivers/vfio/vfio_iommu_type1.c index 5e556ac..7accb59 100644
+> > --- a/drivers/vfio/vfio_iommu_type1.c
+> > +++ b/drivers/vfio/vfio_iommu_type1.c
+> > @@ -2453,6 +2453,23 @@ static int vfio_domains_have_iommu_cache(struct
+> vfio_iommu *iommu)
+> >  	return ret;
+> >  }
+> >
+> > +static int vfio_iommu_type1_check_extension(struct vfio_iommu *iommu,
+> > +					    unsigned long arg)
+> > +{
+> > +	switch (arg) {
+> > +	case VFIO_TYPE1_IOMMU:
+> > +	case VFIO_TYPE1v2_IOMMU:
+> > +	case VFIO_TYPE1_NESTING_IOMMU:
+> > +		return 1;
+> > +	case VFIO_DMA_CC_IOMMU:
+> > +		if (!iommu)
+> > +			return 0;
+> > +		return vfio_domains_have_iommu_cache(iommu);
+> > +	default:
+> > +		return 0;
+> > +	}
+> > +}
+> > +
+> >  static int vfio_iommu_iova_add_cap(struct vfio_info_cap *caps,
+> >  		 struct vfio_iommu_type1_info_cap_iova_range *cap_iovas,
+> >  		 size_t size)
+> > @@ -2529,238 +2546,255 @@ static int
+> vfio_iommu_migration_build_caps(struct vfio_iommu *iommu,
+> >  	return vfio_info_add_capability(caps, &cap_mig.header,
+> > sizeof(cap_mig));  }
+> >
+> > -static long vfio_iommu_type1_ioctl(void *iommu_data,
+> > -				   unsigned int cmd, unsigned long arg)
+> > +static int vfio_iommu_type1_get_info(struct vfio_iommu *iommu,
+> > +				     unsigned long arg)
+> >  {
+> > -	struct vfio_iommu *iommu = iommu_data;
+> > +	struct vfio_iommu_type1_info info;
+> >  	unsigned long minsz;
+> > +	struct vfio_info_cap caps = { .buf = NULL, .size = 0 };
+> > +	unsigned long capsz;
+> > +	int ret;
+> >
+> > -	if (cmd == VFIO_CHECK_EXTENSION) {
+> > -		switch (arg) {
+> > -		case VFIO_TYPE1_IOMMU:
+> > -		case VFIO_TYPE1v2_IOMMU:
+> > -		case VFIO_TYPE1_NESTING_IOMMU:
+> > -			return 1;
+> > -		case VFIO_DMA_CC_IOMMU:
+> > -			if (!iommu)
+> > -				return 0;
+> > -			return vfio_domains_have_iommu_cache(iommu);
+> > -		default:
+> > -			return 0;
+> > -		}
+> > -	} else if (cmd == VFIO_IOMMU_GET_INFO) {
+> > -		struct vfio_iommu_type1_info info;
+> > -		struct vfio_info_cap caps = { .buf = NULL, .size = 0 };
+> > -		unsigned long capsz;
+> > -		int ret;
+> > -
+> > -		minsz = offsetofend(struct vfio_iommu_type1_info,
+> iova_pgsizes);
+> > +	minsz = offsetofend(struct vfio_iommu_type1_info, iova_pgsizes);
+> >
+> > -		/* For backward compatibility, cannot require this */
+> > -		capsz = offsetofend(struct vfio_iommu_type1_info, cap_offset);
+> > +	/* For backward compatibility, cannot require this */
+> > +	capsz = offsetofend(struct vfio_iommu_type1_info, cap_offset);
+> >
+> > -		if (copy_from_user(&info, (void __user *)arg, minsz))
+> > -			return -EFAULT;
+> > +	if (copy_from_user(&info, (void __user *)arg, minsz))
+> > +		return -EFAULT;
+> >
+> > -		if (info.argsz < minsz)
+> > -			return -EINVAL;
+> > +	if (info.argsz < minsz)
+> > +		return -EINVAL;
+> >
+> > -		if (info.argsz >= capsz) {
+> > -			minsz = capsz;
+> > -			info.cap_offset = 0; /* output, no-recopy necessary */
+> > -		}
+> > +	if (info.argsz >= capsz) {
+> > +		minsz = capsz;
+> > +		info.cap_offset = 0; /* output, no-recopy necessary */
+> > +	}
+> >
+> > -		mutex_lock(&iommu->lock);
+> > -		info.flags = VFIO_IOMMU_INFO_PGSIZES;
+> > +	mutex_lock(&iommu->lock);
+> > +	info.flags = VFIO_IOMMU_INFO_PGSIZES;
+> >
+> > -		info.iova_pgsizes = iommu->pgsize_bitmap;
+> > +	info.iova_pgsizes = iommu->pgsize_bitmap;
+> >
+> > -		ret = vfio_iommu_migration_build_caps(iommu, &caps);
+> > +	ret = vfio_iommu_migration_build_caps(iommu, &caps);
+> >
+> > -		if (!ret)
+> > -			ret = vfio_iommu_iova_build_caps(iommu, &caps);
+> > +	if (!ret)
+> > +		ret = vfio_iommu_iova_build_caps(iommu, &caps);
+> >
+> > -		mutex_unlock(&iommu->lock);
+> > +	mutex_unlock(&iommu->lock);
+> >
+> > -		if (ret)
+> > -			return ret;
+> > +	if (ret)
+> > +		return ret;
+> >
+> > -		if (caps.size) {
+> > -			info.flags |= VFIO_IOMMU_INFO_CAPS;
+> > +	if (caps.size) {
+> > +		info.flags |= VFIO_IOMMU_INFO_CAPS;
+> >
+> > -			if (info.argsz < sizeof(info) + caps.size) {
+> > -				info.argsz = sizeof(info) + caps.size;
+> > -			} else {
+> > -				vfio_info_cap_shift(&caps, sizeof(info));
+> > -				if (copy_to_user((void __user *)arg +
+> > -						sizeof(info), caps.buf,
+> > -						caps.size)) {
+> > -					kfree(caps.buf);
+> > -					return -EFAULT;
+> > -				}
+> > -				info.cap_offset = sizeof(info);
+> > +		if (info.argsz < sizeof(info) + caps.size) {
+> > +			info.argsz = sizeof(info) + caps.size;
+> > +		} else {
+> > +			vfio_info_cap_shift(&caps, sizeof(info));
+> > +			if (copy_to_user((void __user *)arg +
+> > +					sizeof(info), caps.buf,
+> > +					caps.size)) {
+> > +				kfree(caps.buf);
+> > +				return -EFAULT;
+> >  			}
+> > -
+> > -			kfree(caps.buf);
+> > +			info.cap_offset = sizeof(info);
+> >  		}
+> >
+> > -		return copy_to_user((void __user *)arg, &info, minsz) ?
+> > -			-EFAULT : 0;
+> > +		kfree(caps.buf);
+> > +	}
+> >
+> > -	} else if (cmd == VFIO_IOMMU_MAP_DMA) {
+> > -		struct vfio_iommu_type1_dma_map map;
+> > -		uint32_t mask = VFIO_DMA_MAP_FLAG_READ |
+> > -				VFIO_DMA_MAP_FLAG_WRITE;
+> > +	return copy_to_user((void __user *)arg, &info, minsz) ?
+> > +			-EFAULT : 0;
+> > +}
+> >
+> > -		minsz = offsetofend(struct vfio_iommu_type1_dma_map, size);
+> > +static int vfio_iommu_type1_map_dma(struct vfio_iommu *iommu,
+> > +				    unsigned long arg)
+> > +{
+> > +	struct vfio_iommu_type1_dma_map map;
+> > +	unsigned long minsz;
+> > +	uint32_t mask = VFIO_DMA_MAP_FLAG_READ |
+> > +			VFIO_DMA_MAP_FLAG_WRITE;
+> >
+> > -		if (copy_from_user(&map, (void __user *)arg, minsz))
+> > -			return -EFAULT;
+> > +	minsz = offsetofend(struct vfio_iommu_type1_dma_map, size);
+> >
+> > -		if (map.argsz < minsz || map.flags & ~mask)
+> > -			return -EINVAL;
+> > +	if (copy_from_user(&map, (void __user *)arg, minsz))
+> > +		return -EFAULT;
+> >
+> > -		return vfio_dma_do_map(iommu, &map);
+> > +	if (map.argsz < minsz || map.flags & ~mask)
+> > +		return -EINVAL;
+> >
+> > -	} else if (cmd == VFIO_IOMMU_UNMAP_DMA) {
+> > -		struct vfio_iommu_type1_dma_unmap unmap;
+> > -		struct vfio_bitmap bitmap = { 0 };
+> > -		int ret;
+> > +	return vfio_dma_do_map(iommu, &map); }
+> >
+> > -		minsz = offsetofend(struct vfio_iommu_type1_dma_unmap,
+> size);
+> > +static int vfio_iommu_type1_unmap_dma(struct vfio_iommu *iommu,
+> > +				      unsigned long arg)
+> > +{
+> > +	struct vfio_iommu_type1_dma_unmap unmap;
+> > +	struct vfio_bitmap bitmap = { 0 };
+> > +	unsigned long minsz;
+> > +	long ret;
+> >
+> > -		if (copy_from_user(&unmap, (void __user *)arg, minsz))
+> > -			return -EFAULT;
+> > +	minsz = offsetofend(struct vfio_iommu_type1_dma_unmap, size);
+> >
+> > -		if (unmap.argsz < minsz ||
+> > -		    unmap.flags &
+> ~VFIO_DMA_UNMAP_FLAG_GET_DIRTY_BITMAP)
+> > -			return -EINVAL;
+> > +	if (copy_from_user(&unmap, (void __user *)arg, minsz))
+> > +		return -EFAULT;
+> >
+> > -		if (unmap.flags &
+> VFIO_DMA_UNMAP_FLAG_GET_DIRTY_BITMAP) {
+> > -			unsigned long pgshift;
+> > +	if (unmap.argsz < minsz ||
+> > +	    unmap.flags & ~VFIO_DMA_UNMAP_FLAG_GET_DIRTY_BITMAP)
+> > +		return -EINVAL;
+> >
+> > -			if (unmap.argsz < (minsz + sizeof(bitmap)))
+> > -				return -EINVAL;
+> > +	if (unmap.flags & VFIO_DMA_UNMAP_FLAG_GET_DIRTY_BITMAP) {
+> > +		unsigned long pgshift;
+> >
+> > -			if (copy_from_user(&bitmap,
+> > -					   (void __user *)(arg + minsz),
+> > -					   sizeof(bitmap)))
+> > -				return -EFAULT;
+> > +		if (unmap.argsz < (minsz + sizeof(bitmap)))
+> > +			return -EINVAL;
+> >
+> > -			if (!access_ok((void __user *)bitmap.data, bitmap.size))
+> > -				return -EINVAL;
+> > +		if (copy_from_user(&bitmap,
+> > +				   (void __user *)(arg + minsz),
+> > +				   sizeof(bitmap)))
+> > +			return -EFAULT;
+> >
+> > -			pgshift = __ffs(bitmap.pgsize);
+> > -			ret = verify_bitmap_size(unmap.size >> pgshift,
+> > -						 bitmap.size);
+> > -			if (ret)
+> > -				return ret;
+> > -		}
+> > +		if (!access_ok((void __user *)bitmap.data, bitmap.size))
+> > +			return -EINVAL;
+> >
+> > -		ret = vfio_dma_do_unmap(iommu, &unmap, &bitmap);
+> > +		pgshift = __ffs(bitmap.pgsize);
+> > +		ret = verify_bitmap_size(unmap.size >> pgshift,
+> > +					 bitmap.size);
+> >  		if (ret)
+> >  			return ret;
+> > +	}
+> > +
+> > +	ret = vfio_dma_do_unmap(iommu, &unmap, &bitmap);
+> > +	if (ret)
+> > +		return ret;
+> >
+> > -		return copy_to_user((void __user *)arg, &unmap, minsz) ?
+> > +	return copy_to_user((void __user *)arg, &unmap, minsz) ?
+> >  			-EFAULT : 0;
+> > -	} else if (cmd == VFIO_IOMMU_DIRTY_PAGES) {
+> > -		struct vfio_iommu_type1_dirty_bitmap dirty;
+> > -		uint32_t mask = VFIO_IOMMU_DIRTY_PAGES_FLAG_START |
+> > -				VFIO_IOMMU_DIRTY_PAGES_FLAG_STOP |
+> > -
+> 	VFIO_IOMMU_DIRTY_PAGES_FLAG_GET_BITMAP;
+> > -		int ret = 0;
+> > +}
+> >
+> > -		if (!iommu->v2)
+> > -			return -EACCES;
+> > +static int vfio_iommu_type1_dirty_pages(struct vfio_iommu *iommu,
+> > +					unsigned long arg)
+> > +{
+> > +	struct vfio_iommu_type1_dirty_bitmap dirty;
+> > +	uint32_t mask = VFIO_IOMMU_DIRTY_PAGES_FLAG_START |
+> > +			VFIO_IOMMU_DIRTY_PAGES_FLAG_STOP |
+> > +			VFIO_IOMMU_DIRTY_PAGES_FLAG_GET_BITMAP;
+> > +	unsigned long minsz;
+> > +	int ret = 0;
+> >
+> > -		minsz = offsetofend(struct vfio_iommu_type1_dirty_bitmap,
+> > -				    flags);
+> > +	if (!iommu->v2)
+> > +		return -EACCES;
+> >
+> > -		if (copy_from_user(&dirty, (void __user *)arg, minsz))
+> > -			return -EFAULT;
+> > +	minsz = offsetofend(struct vfio_iommu_type1_dirty_bitmap,
+> > +			    flags);
+> >
+> > -		if (dirty.argsz < minsz || dirty.flags & ~mask)
+> > -			return -EINVAL;
+> > +	if (copy_from_user(&dirty, (void __user *)arg, minsz))
+> > +		return -EFAULT;
+> > +
+> > +	if (dirty.argsz < minsz || dirty.flags & ~mask)
+> > +		return -EINVAL;
+> > +
+> > +	/* only one flag should be set at a time */
+> > +	if (__ffs(dirty.flags) != __fls(dirty.flags))
+> > +		return -EINVAL;
+> > +
+> > +	if (dirty.flags & VFIO_IOMMU_DIRTY_PAGES_FLAG_START) {
+> > +		size_t pgsize;
+> >
+> > -		/* only one flag should be set at a time */
+> > -		if (__ffs(dirty.flags) != __fls(dirty.flags))
+> > +		mutex_lock(&iommu->lock);
+> > +		pgsize = 1 << __ffs(iommu->pgsize_bitmap);
+> > +		if (!iommu->dirty_page_tracking) {
+> > +			ret = vfio_dma_bitmap_alloc_all(iommu, pgsize);
+> > +			if (!ret)
+> > +				iommu->dirty_page_tracking = true;
+> > +		}
+> > +		mutex_unlock(&iommu->lock);
+> > +		return ret;
+> > +	} else if (dirty.flags & VFIO_IOMMU_DIRTY_PAGES_FLAG_STOP) {
+> > +		mutex_lock(&iommu->lock);
+> > +		if (iommu->dirty_page_tracking) {
+> > +			iommu->dirty_page_tracking = false;
+> > +			vfio_dma_bitmap_free_all(iommu);
+> > +		}
+> > +		mutex_unlock(&iommu->lock);
+> > +		return 0;
+> > +	} else if (dirty.flags &
+> > +			 VFIO_IOMMU_DIRTY_PAGES_FLAG_GET_BITMAP) {
+> > +		struct vfio_iommu_type1_dirty_bitmap_get range;
+> > +		unsigned long pgshift;
+> > +		size_t data_size = dirty.argsz - minsz;
+> > +		size_t iommu_pgsize;
+> > +
+> > +		if (!data_size || data_size < sizeof(range))
+> >  			return -EINVAL;
+> >
+> > -		if (dirty.flags & VFIO_IOMMU_DIRTY_PAGES_FLAG_START) {
+> > -			size_t pgsize;
+> > +		if (copy_from_user(&range, (void __user *)(arg + minsz),
+> > +				   sizeof(range)))
+> > +			return -EFAULT;
+> >
+> > -			mutex_lock(&iommu->lock);
+> > -			pgsize = 1 << __ffs(iommu->pgsize_bitmap);
+> > -			if (!iommu->dirty_page_tracking) {
+> > -				ret = vfio_dma_bitmap_alloc_all(iommu, pgsize);
+> > -				if (!ret)
+> > -					iommu->dirty_page_tracking = true;
+> > -			}
+> > -			mutex_unlock(&iommu->lock);
+> > +		if (range.iova + range.size < range.iova)
+> > +			return -EINVAL;
+> > +		if (!access_ok((void __user *)range.bitmap.data,
+> > +			       range.bitmap.size))
+> > +			return -EINVAL;
+> > +
+> > +		pgshift = __ffs(range.bitmap.pgsize);
+> > +		ret = verify_bitmap_size(range.size >> pgshift,
+> > +					 range.bitmap.size);
+> > +		if (ret)
+> >  			return ret;
+> > -		} else if (dirty.flags & VFIO_IOMMU_DIRTY_PAGES_FLAG_STOP)
+> {
+> > -			mutex_lock(&iommu->lock);
+> > -			if (iommu->dirty_page_tracking) {
+> > -				iommu->dirty_page_tracking = false;
+> > -				vfio_dma_bitmap_free_all(iommu);
+> > -			}
+> > -			mutex_unlock(&iommu->lock);
+> > -			return 0;
+> > -		} else if (dirty.flags &
+> > -
+> VFIO_IOMMU_DIRTY_PAGES_FLAG_GET_BITMAP) {
+> > -			struct vfio_iommu_type1_dirty_bitmap_get range;
+> > -			unsigned long pgshift;
+> > -			size_t data_size = dirty.argsz - minsz;
+> > -			size_t iommu_pgsize;
+> > -
+> > -			if (!data_size || data_size < sizeof(range))
+> > -				return -EINVAL;
+> > -
+> > -			if (copy_from_user(&range, (void __user *)(arg + minsz),
+> > -					   sizeof(range)))
+> > -				return -EFAULT;
+> >
+> > -			if (range.iova + range.size < range.iova)
+> > -				return -EINVAL;
+> > -			if (!access_ok((void __user *)range.bitmap.data,
+> > -				       range.bitmap.size))
+> > -				return -EINVAL;
+> > +		mutex_lock(&iommu->lock);
+> >
+> > -			pgshift = __ffs(range.bitmap.pgsize);
+> > -			ret = verify_bitmap_size(range.size >> pgshift,
+> > -						 range.bitmap.size);
+> > -			if (ret)
+> > -				return ret;
+> > +		iommu_pgsize = (size_t)1 << __ffs(iommu->pgsize_bitmap);
+> >
+> > -			mutex_lock(&iommu->lock);
+> > +		/* allow only smallest supported pgsize */
+> > +		if (range.bitmap.pgsize != iommu_pgsize) {
+> > +			ret = -EINVAL;
+> > +			goto out_unlock;
+> > +		}
+> > +		if (range.iova & (iommu_pgsize - 1)) {
+> > +			ret = -EINVAL;
+> > +			goto out_unlock;
+> > +		}
+> > +		if (!range.size || range.size & (iommu_pgsize - 1)) {
+> > +			ret = -EINVAL;
+> > +			goto out_unlock;
+> > +		}
+> >
+> > -			iommu_pgsize = (size_t)1 << __ffs(iommu-
+> >pgsize_bitmap);
+> > +		if (iommu->dirty_page_tracking)
+> > +			ret = vfio_iova_dirty_bitmap(range.bitmap.data,
+> > +					iommu, range.iova, range.size,
+> > +					range.bitmap.pgsize);
+> > +		else
+> > +			ret = -EINVAL;
+> > +out_unlock:
+> > +		mutex_unlock(&iommu->lock);
+> >
+> > -			/* allow only smallest supported pgsize */
+> > -			if (range.bitmap.pgsize != iommu_pgsize) {
+> > -				ret = -EINVAL;
+> > -				goto out_unlock;
+> > -			}
+> > -			if (range.iova & (iommu_pgsize - 1)) {
+> > -				ret = -EINVAL;
+> > -				goto out_unlock;
+> > -			}
+> > -			if (!range.size || range.size & (iommu_pgsize - 1)) {
+> > -				ret = -EINVAL;
+> > -				goto out_unlock;
+> > -			}
+> > +		return ret;
+> > +	}
+> >
+> > -			if (iommu->dirty_page_tracking)
+> > -				ret = vfio_iova_dirty_bitmap(range.bitmap.data,
+> > -						iommu, range.iova, range.size,
+> > -						range.bitmap.pgsize);
+> > -			else
+> > -				ret = -EINVAL;
+> > -out_unlock:
+> > -			mutex_unlock(&iommu->lock);
+> > +	return -EINVAL;
+> > +}
+> >
+> > -			return ret;
+> > -		}
+> > +static long vfio_iommu_type1_ioctl(void *iommu_data,
+> > +				   unsigned int cmd, unsigned long arg) {
+> > +	struct vfio_iommu *iommu = iommu_data;
+> > +
+> > +	switch (cmd) {
+> > +	case VFIO_CHECK_EXTENSION:
+> > +		return vfio_iommu_type1_check_extension(iommu, arg);
+> > +	case VFIO_IOMMU_GET_INFO:
+> > +		return vfio_iommu_type1_get_info(iommu, arg);
+> > +	case VFIO_IOMMU_MAP_DMA:
+> > +		return vfio_iommu_type1_map_dma(iommu, arg);
+> > +	case VFIO_IOMMU_UNMAP_DMA:
+> > +		return vfio_iommu_type1_unmap_dma(iommu, arg);
+> > +	case VFIO_IOMMU_DIRTY_PAGES:
+> > +		return vfio_iommu_type1_dirty_pages(iommu, arg);
+> >  	}
+> >
+> >  	return -ENOTTY;
 
 _______________________________________________
 iommu mailing list
