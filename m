@@ -7,74 +7,74 @@ X-Spam-Status: No, score=-9.8 required=3.0 tests=DKIM_INVALID,DKIM_SIGNED,
 	SPF_HELO_NONE,SPF_PASS,UNPARSEABLE_RELAY,URIBL_BLOCKED,USER_AGENT_GIT
 	autolearn=ham autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 9968BC433E0
-	for <iommu@archiver.kernel.org>; Fri,  3 Jul 2020 04:42:59 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id D2C28C433E8
+	for <iommu@archiver.kernel.org>; Fri,  3 Jul 2020 04:43:01 +0000 (UTC)
 Received: from whitealder.osuosl.org (smtp1.osuosl.org [140.211.166.138])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by mail.kernel.org (Postfix) with ESMTPS id 6F2C320771
-	for <iommu@archiver.kernel.org>; Fri,  3 Jul 2020 04:42:59 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTPS id A8ACA20760
+	for <iommu@archiver.kernel.org>; Fri,  3 Jul 2020 04:43:01 +0000 (UTC)
 Authentication-Results: mail.kernel.org;
-	dkim=fail reason="signature verification failed" (1024-bit key) header.d=mediatek.com header.i=@mediatek.com header.b="G+m/hU6I"
-DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 6F2C320771
+	dkim=fail reason="signature verification failed" (1024-bit key) header.d=mediatek.com header.i=@mediatek.com header.b="UlOxZnl7"
+DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org A8ACA20760
 Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=mediatek.com
 Authentication-Results: mail.kernel.org; spf=pass smtp.mailfrom=iommu-bounces@lists.linux-foundation.org
 Received: from localhost (localhost [127.0.0.1])
-	by whitealder.osuosl.org (Postfix) with ESMTP id 63FFB88B74;
-	Fri,  3 Jul 2020 04:42:59 +0000 (UTC)
+	by whitealder.osuosl.org (Postfix) with ESMTP id 9B1C488C83;
+	Fri,  3 Jul 2020 04:43:01 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
 Received: from whitealder.osuosl.org ([127.0.0.1])
 	by localhost (.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
-	with ESMTP id B0iZqW0DVR7Q; Fri,  3 Jul 2020 04:42:58 +0000 (UTC)
+	with ESMTP id zRyo6kHxNrpz; Fri,  3 Jul 2020 04:43:01 +0000 (UTC)
 Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [140.211.9.56])
-	by whitealder.osuosl.org (Postfix) with ESMTP id C857588C32;
-	Fri,  3 Jul 2020 04:42:58 +0000 (UTC)
+	by whitealder.osuosl.org (Postfix) with ESMTP id 0D9A388C34;
+	Fri,  3 Jul 2020 04:43:01 +0000 (UTC)
 Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
-	by lists.linuxfoundation.org (Postfix) with ESMTP id C1B50C0890;
-	Fri,  3 Jul 2020 04:42:58 +0000 (UTC)
+	by lists.linuxfoundation.org (Postfix) with ESMTP id EB6CFC0890;
+	Fri,  3 Jul 2020 04:43:00 +0000 (UTC)
 Received: from whitealder.osuosl.org (smtp1.osuosl.org [140.211.166.138])
- by lists.linuxfoundation.org (Postfix) with ESMTP id 98D0EC0733
- for <iommu@lists.linux-foundation.org>; Fri,  3 Jul 2020 04:42:57 +0000 (UTC)
+ by lists.linuxfoundation.org (Postfix) with ESMTP id EB1DFC0733
+ for <iommu@lists.linux-foundation.org>; Fri,  3 Jul 2020 04:42:59 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
- by whitealder.osuosl.org (Postfix) with ESMTP id 87DFB88C9F
- for <iommu@lists.linux-foundation.org>; Fri,  3 Jul 2020 04:42:57 +0000 (UTC)
+ by whitealder.osuosl.org (Postfix) with ESMTP id D8C0C88C34
+ for <iommu@lists.linux-foundation.org>; Fri,  3 Jul 2020 04:42:59 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
 Received: from whitealder.osuosl.org ([127.0.0.1])
  by localhost (.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
- with ESMTP id o0fOX+wA-7zx for <iommu@lists.linux-foundation.org>;
- Fri,  3 Jul 2020 04:42:56 +0000 (UTC)
+ with ESMTP id WWzth2m+am9C for <iommu@lists.linux-foundation.org>;
+ Fri,  3 Jul 2020 04:42:59 +0000 (UTC)
 X-Greylist: domain auto-whitelisted by SQLgrey-1.7.6
 Received: from mailgw02.mediatek.com (unknown [210.61.82.184])
- by whitealder.osuosl.org (Postfix) with ESMTP id 32AFB88C9E
- for <iommu@lists.linux-foundation.org>; Fri,  3 Jul 2020 04:42:56 +0000 (UTC)
-X-UUID: 8e425e6817cb41be800d771f490ed058-20200703
+ by whitealder.osuosl.org (Postfix) with ESMTP id 311B688C83
+ for <iommu@lists.linux-foundation.org>; Fri,  3 Jul 2020 04:42:59 +0000 (UTC)
+X-UUID: 3352b89a9d9b46a4b666a3ee5f47ef98-20200703
 DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=mediatek.com;
  s=dk; 
  h=Content-Transfer-Encoding:Content-Type:MIME-Version:References:In-Reply-To:Message-ID:Date:Subject:CC:To:From;
- bh=lwngduU5KeolcyUE3ZQ2c8+CBfHyh2i0XZQNCVNBVjA=; 
- b=G+m/hU6IfKMEVz0D0XEGYlecUChNWi4KP2hbAF2NTBPtoXlz63JJfCRaqMBwI+V49LE0lsvm+TP1kTU0h6tuj3cQ47nm68KxLS2qqAoTSnu9gsSro9uJQJ+eigyMIL+UFn0a10wD/bRe8nulf+7OoL6zRdAXcDB2Q1OYMXmue94=;
-X-UUID: 8e425e6817cb41be800d771f490ed058-20200703
-Received: from mtkcas07.mediatek.inc [(172.21.101.84)] by mailgw02.mediatek.com
+ bh=XYZtbPuux1C4TIYKkjpGG7jbqpKAStOsqKUBvtJnzA4=; 
+ b=UlOxZnl7r0ibRCfbBbbMKJzH4dMZmAe5r+P33aGx2qYWw+Nd32E28teFaaZD1orjqdvLRzN6Pne+SOsIS2UGoGzAxp5OoXj37kKlj4p5k6UKOWTmntjHNELCXdIQ9MfpqiXuGk0Fu5oDzjWQcXEWxAnG0keHMk8ufw7Pdpdnjnc=;
+X-UUID: 3352b89a9d9b46a4b666a3ee5f47ef98-20200703
+Received: from mtkcas10.mediatek.inc [(172.21.101.39)] by mailgw02.mediatek.com
  (envelope-from <chao.hao@mediatek.com>)
  (Cellopoint E-mail Firewall v4.1.10 Build 0809 with TLS)
- with ESMTP id 1260532339; Fri, 03 Jul 2020 12:42:52 +0800
+ with ESMTP id 504613560; Fri, 03 Jul 2020 12:42:56 +0800
 Received: from mtkcas07.mediatek.inc (172.21.101.84) by
- mtkmbs01n1.mediatek.inc (172.21.101.68) with Microsoft SMTP Server (TLS) id
- 15.0.1497.2; Fri, 3 Jul 2020 12:42:49 +0800
+ mtkmbs01n2.mediatek.inc (172.21.101.79) with Microsoft SMTP Server (TLS) id
+ 15.0.1497.2; Fri, 3 Jul 2020 12:42:51 +0800
 Received: from localhost.localdomain (10.15.20.246) by mtkcas07.mediatek.inc
  (172.21.101.73) with Microsoft SMTP Server id 15.0.1497.2 via Frontend
- Transport; Fri, 3 Jul 2020 12:42:45 +0800
+ Transport; Fri, 3 Jul 2020 12:42:47 +0800
 From: Chao Hao <chao.hao@mediatek.com>
 To: Joerg Roedel <joro@8bytes.org>, Rob Herring <robh+dt@kernel.org>, Matthias
  Brugger <matthias.bgg@gmail.com>
-Subject: [PATCH v6 07/10] iommu/mediatek: Add REG_MMU_WR_LEN_CTRL register
- definition
-Date: Fri, 3 Jul 2020 12:41:24 +0800
-Message-ID: <20200703044127.27438-8-chao.hao@mediatek.com>
+Subject: [PATCH v6 08/10] iommu/mediatek: Extend protect pa alignment value
+Date: Fri, 3 Jul 2020 12:41:25 +0800
+Message-ID: <20200703044127.27438-9-chao.hao@mediatek.com>
 X-Mailer: git-send-email 2.18.0
 In-Reply-To: <20200703044127.27438-1-chao.hao@mediatek.com>
 References: <20200703044127.27438-1-chao.hao@mediatek.com>
 MIME-Version: 1.0
+X-TM-SNTS-SMTP: 038E0728C1CC9080D0465BC51087B52A7BFC42E938F21F99095E7E982F1C2A602000:8
 X-MTK: N
 Cc: devicetree@vger.kernel.org, FY Yang <fy.yang@mediatek.com>,
  wsd_upstream@mediatek.com, linux-kernel@vger.kernel.org,
@@ -98,84 +98,29 @@ Content-Transfer-Encoding: 7bit
 Errors-To: iommu-bounces@lists.linux-foundation.org
 Sender: "iommu" <iommu-bounces@lists.linux-foundation.org>
 
-Some platforms(ex: mt6779) need to improve performance by setting
-REG_MMU_WR_LEN_CTRL register. And we can use WR_THROT_EN macro to control
-whether we need to set the register. If the register uses default value,
-iommu will send command to EMI without restriction, when the number of
-commands become more and more, it will drop the EMI performance. So when
-more than ten_commands(default value) don't be handled for EMI, iommu will
-stop send command to EMI for keeping EMI's performace by enabling write
-throttling mechanism(bit[5][21]=0) in MMU_WR_LEN_CTRL register.
+Starting with mt6779, iommu needs to extend to 256 bytes from 128
+bytes which can send the max number of data for memory protection
+pa alignment. So we can use a separate patch to modify it.
 
-Cc: Matthias Brugger <matthias.bgg@gmail.com>
 Signed-off-by: Chao Hao <chao.hao@mediatek.com>
+Reviewed-by: Matthias Brugger <matthias.bgg@gmail.com>
 ---
- drivers/iommu/mtk_iommu.c | 11 +++++++++++
- drivers/iommu/mtk_iommu.h |  1 +
- 2 files changed, 12 insertions(+)
+ drivers/iommu/mtk_iommu.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
 diff --git a/drivers/iommu/mtk_iommu.c b/drivers/iommu/mtk_iommu.c
-index 0d96dcd8612b..5c8e141668fc 100644
+index 5c8e141668fc..e71003037ffa 100644
 --- a/drivers/iommu/mtk_iommu.c
 +++ b/drivers/iommu/mtk_iommu.c
-@@ -46,6 +46,8 @@
- #define F_MMU_STANDARD_AXI_MODE_MASK		(BIT(3) | BIT(19))
+@@ -98,7 +98,7 @@
+ #define F_MMU_INT_ID_LARB_ID(a)			(((a) >> 7) & 0x7)
+ #define F_MMU_INT_ID_PORT_ID(a)			(((a) >> 2) & 0x1f)
  
- #define REG_MMU_DCM_DIS				0x050
-+#define REG_MMU_WR_LEN_CTRL			0x054
-+#define F_MMU_WR_THROT_DIS_MASK			(BIT(5) | BIT(21))
+-#define MTK_PROTECT_PA_ALIGN			128
++#define MTK_PROTECT_PA_ALIGN			256
  
- #define REG_MMU_CTRL_REG			0x110
- #define F_MMU_TF_PROT_TO_PROGRAM_ADDR		(2 << 4)
-@@ -112,6 +114,7 @@
- #define RESET_AXI			BIT(3)
- #define OUT_ORDER_WR_EN			BIT(4)
- #define HAS_SUB_COMM			BIT(5)
-+#define WR_THROT_EN			BIT(6)
- 
- #define MTK_IOMMU_HAS_FLAG(pdata, _x) \
- 		((((pdata)->flags) & (_x)) == (_x))
-@@ -593,6 +596,12 @@ static int mtk_iommu_hw_init(const struct mtk_iommu_data *data)
- 		writel_relaxed(regval, data->base + REG_MMU_VLD_PA_RNG);
- 	}
- 	writel_relaxed(0, data->base + REG_MMU_DCM_DIS);
-+	if (MTK_IOMMU_HAS_FLAG(data->plat_data, WR_THROT_EN)) {
-+		/* write command throttling mode */
-+		regval = readl_relaxed(data->base + REG_MMU_WR_LEN_CTRL);
-+		regval &= ~F_MMU_WR_THROT_DIS_MASK;
-+		writel_relaxed(regval, data->base + REG_MMU_WR_LEN_CTRL);
-+	}
- 
- 	if (MTK_IOMMU_HAS_FLAG(data->plat_data, RESET_AXI)) {
- 		/* The register is called STANDARD_AXI_MODE in this case */
-@@ -747,6 +756,7 @@ static int __maybe_unused mtk_iommu_suspend(struct device *dev)
- 	struct mtk_iommu_suspend_reg *reg = &data->reg;
- 	void __iomem *base = data->base;
- 
-+	reg->wr_len_ctrl = readl_relaxed(base + REG_MMU_WR_LEN_CTRL);
- 	reg->misc_ctrl = readl_relaxed(base + REG_MMU_MISC_CTRL);
- 	reg->dcm_dis = readl_relaxed(base + REG_MMU_DCM_DIS);
- 	reg->ctrl_reg = readl_relaxed(base + REG_MMU_CTRL_REG);
-@@ -771,6 +781,7 @@ static int __maybe_unused mtk_iommu_resume(struct device *dev)
- 		dev_err(data->dev, "Failed to enable clk(%d) in resume\n", ret);
- 		return ret;
- 	}
-+	writel_relaxed(reg->wr_len_ctrl, base + REG_MMU_WR_LEN_CTRL);
- 	writel_relaxed(reg->misc_ctrl, base + REG_MMU_MISC_CTRL);
- 	writel_relaxed(reg->dcm_dis, base + REG_MMU_DCM_DIS);
- 	writel_relaxed(reg->ctrl_reg, base + REG_MMU_CTRL_REG);
-diff --git a/drivers/iommu/mtk_iommu.h b/drivers/iommu/mtk_iommu.h
-index 46d0d47b22e1..31edd05e2eb1 100644
---- a/drivers/iommu/mtk_iommu.h
-+++ b/drivers/iommu/mtk_iommu.h
-@@ -31,6 +31,7 @@ struct mtk_iommu_suspend_reg {
- 	u32				int_main_control;
- 	u32				ivrp_paddr;
- 	u32				vld_pa_rng;
-+	u32				wr_len_ctrl;
- };
- 
- enum mtk_iommu_plat {
+ /*
+  * Get the local arbiter ID and the portid within the larb arbiter
 -- 
 2.18.0
 _______________________________________________
