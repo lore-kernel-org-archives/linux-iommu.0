@@ -1,78 +1,72 @@
-Return-Path: <SRS0=UFel=AQ=lists.linux-foundation.org=iommu-bounces@kernel.org>
+Return-Path: <SRS0=S+y3=AR=lists.linux-foundation.org=iommu-bounces@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
 X-Spam-Status: No, score=-3.8 required=3.0 tests=HEADER_FROM_DIFFERENT_DOMAINS,
-	MAILING_LIST_MULTI,SIGNED_OFF_BY,SPF_HELO_NONE,SPF_PASS autolearn=no
+	MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS,USER_AGENT_GIT autolearn=no
 	autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 20EE1C433E0
-	for <iommu@archiver.kernel.org>; Sun,  5 Jul 2020 10:10:00 +0000 (UTC)
-Received: from silver.osuosl.org (smtp3.osuosl.org [140.211.166.136])
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 73F0EC433E0
+	for <iommu@archiver.kernel.org>; Mon,  6 Jul 2020 00:30:14 +0000 (UTC)
+Received: from hemlock.osuosl.org (smtp2.osuosl.org [140.211.166.133])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by mail.kernel.org (Postfix) with ESMTPS id DFA1120771
-	for <iommu@archiver.kernel.org>; Sun,  5 Jul 2020 10:09:59 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org DFA1120771
-Authentication-Results: mail.kernel.org; dmarc=none (p=none dis=none) header.from=hisilicon.com
+	by mail.kernel.org (Postfix) with ESMTPS id 3AA9720737
+	for <iommu@archiver.kernel.org>; Mon,  6 Jul 2020 00:30:14 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 3AA9720737
+Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=linux.intel.com
 Authentication-Results: mail.kernel.org; spf=pass smtp.mailfrom=iommu-bounces@lists.linux-foundation.org
 Received: from localhost (localhost [127.0.0.1])
-	by silver.osuosl.org (Postfix) with ESMTP id 9594E203A7;
-	Sun,  5 Jul 2020 10:09:59 +0000 (UTC)
+	by hemlock.osuosl.org (Postfix) with ESMTP id F381688B6E;
+	Mon,  6 Jul 2020 00:30:13 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from silver.osuosl.org ([127.0.0.1])
+Received: from hemlock.osuosl.org ([127.0.0.1])
 	by localhost (.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
-	with ESMTP id nhIGqnGHPCyw; Sun,  5 Jul 2020 10:09:57 +0000 (UTC)
+	with ESMTP id rWRZVyiHtQaZ; Mon,  6 Jul 2020 00:30:13 +0000 (UTC)
 Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [140.211.9.56])
-	by silver.osuosl.org (Postfix) with ESMTP id BF4312039E;
-	Sun,  5 Jul 2020 10:09:57 +0000 (UTC)
+	by hemlock.osuosl.org (Postfix) with ESMTP id 6376B88AD3;
+	Mon,  6 Jul 2020 00:30:13 +0000 (UTC)
 Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
-	by lists.linuxfoundation.org (Postfix) with ESMTP id 9F190C0893;
-	Sun,  5 Jul 2020 10:09:57 +0000 (UTC)
-Received: from whitealder.osuosl.org (smtp1.osuosl.org [140.211.166.138])
- by lists.linuxfoundation.org (Postfix) with ESMTP id 76456C016F
- for <iommu@lists.linux-foundation.org>; Sun,  5 Jul 2020 10:09:55 +0000 (UTC)
+	by lists.linuxfoundation.org (Postfix) with ESMTP id 43679C0893;
+	Mon,  6 Jul 2020 00:30:13 +0000 (UTC)
+Received: from hemlock.osuosl.org (smtp2.osuosl.org [140.211.166.133])
+ by lists.linuxfoundation.org (Postfix) with ESMTP id 718D5C016F
+ for <iommu@lists.linux-foundation.org>; Mon,  6 Jul 2020 00:30:11 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
- by whitealder.osuosl.org (Postfix) with ESMTP id 5EB5487CE1
- for <iommu@lists.linux-foundation.org>; Sun,  5 Jul 2020 10:09:55 +0000 (UTC)
+ by hemlock.osuosl.org (Postfix) with ESMTP id 5968F88B15
+ for <iommu@lists.linux-foundation.org>; Mon,  6 Jul 2020 00:30:11 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from whitealder.osuosl.org ([127.0.0.1])
+Received: from hemlock.osuosl.org ([127.0.0.1])
  by localhost (.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
- with ESMTP id fTcdK7or8bkq for <iommu@lists.linux-foundation.org>;
- Sun,  5 Jul 2020 10:09:53 +0000 (UTC)
+ with ESMTP id 0OszjeJtMwcc for <iommu@lists.linux-foundation.org>;
+ Mon,  6 Jul 2020 00:30:10 +0000 (UTC)
 X-Greylist: domain auto-whitelisted by SQLgrey-1.7.6
-Received: from huawei.com (szxga02-in.huawei.com [45.249.212.188])
- by whitealder.osuosl.org (Postfix) with ESMTPS id ADCB087CBE
- for <iommu@lists.linux-foundation.org>; Sun,  5 Jul 2020 10:09:53 +0000 (UTC)
-Received: from dggemi401-hub.china.huawei.com (unknown [172.30.72.55])
- by Forcepoint Email with ESMTP id C0F52D6565069815679D;
- Sun,  5 Jul 2020 18:09:47 +0800 (CST)
-Received: from DGGEMI525-MBS.china.huawei.com ([169.254.6.177]) by
- dggemi401-hub.china.huawei.com ([10.3.17.134]) with mapi id 14.03.0487.000;
- Sun, 5 Jul 2020 18:09:39 +0800
-From: "Song Bao Hua (Barry Song)" <song.bao.hua@hisilicon.com>
-To: Will Deacon <will@kernel.org>
-Subject: RE: [PATCH] iommu/arm-smmu-v3: allocate the memory of queues in
- local numa node
-Thread-Topic: [PATCH] iommu/arm-smmu-v3: allocate the memory of queues in
- local numa node
-Thread-Index: AQHWUVYT12xF5LOssku8nXPfXKnrbaj4wssA
-Date: Sun, 5 Jul 2020 10:09:38 +0000
-Message-ID: <B926444035E5E2439431908E3842AFD2555A44@DGGEMI525-MBS.china.huawei.com>
-References: <20200601113141.69488-1-song.bao.hua@hisilicon.com>
- <20200703162147.GB19780@willie-the-truck>
-In-Reply-To: <20200703162147.GB19780@willie-the-truck>
-Accept-Language: en-GB, en-US
-Content-Language: en-US
-X-MS-Has-Attach: 
-X-MS-TNEF-Correlator: 
-x-originating-ip: [10.126.202.129]
-MIME-Version: 1.0
-X-CFilter-Loop: Reflected
-Cc: Linuxarm <linuxarm@huawei.com>,
- "iommu@lists.linux-foundation.org" <iommu@lists.linux-foundation.org>,
- "robin.murphy@arm.com" <robin.murphy@arm.com>, "hch@lst.de" <hch@lst.de>,
- "linux-arm-kernel@lists.infradead.org" <linux-arm-kernel@lists.infradead.org>
+Received: from mga12.intel.com (mga12.intel.com [192.55.52.136])
+ by hemlock.osuosl.org (Postfix) with ESMTPS id B0A5C88AD3
+ for <iommu@lists.linux-foundation.org>; Mon,  6 Jul 2020 00:30:10 +0000 (UTC)
+IronPort-SDR: CbGmzhzYb4rBEXiBFuUxpv1GFsND7Mr+P+eoz7oBL3Galtrnj2Fz8h91QsYuPMng4WPMv8yqDi
+ zhcxk0APmzEg==
+X-IronPort-AV: E=McAfee;i="6000,8403,9673"; a="126935675"
+X-IronPort-AV: E=Sophos;i="5.75,318,1589266800"; d="scan'208";a="126935675"
+X-Amp-Result: SKIPPED(no attachment in message)
+X-Amp-File-Uploaded: False
+Received: from fmsmga007.fm.intel.com ([10.253.24.52])
+ by fmsmga106.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384;
+ 05 Jul 2020 17:30:10 -0700
+IronPort-SDR: Iics2lKfEiEEFtnVFe3qwfMztH0gnI+NifAvr9us7R8JwdBerX7Lw7q/YmSGTB542tYs22Xg/A
+ MOMBvnMoYjiA==
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="5.75,318,1589266800"; d="scan'208";a="266404912"
+Received: from allen-box.sh.intel.com ([10.239.159.139])
+ by fmsmga007.fm.intel.com with ESMTP; 05 Jul 2020 17:30:07 -0700
+From: Lu Baolu <baolu.lu@linux.intel.com>
+To: iommu@lists.linux-foundation.org
+Subject: [PATCH v2 0/4] iommu/vt-d: Add prq report and response support
+Date: Mon,  6 Jul 2020 08:25:31 +0800
+Message-Id: <20200706002535.9381-1-baolu.lu@linux.intel.com>
+X-Mailer: git-send-email 2.17.1
+Cc: Kevin Tian <kevin.tian@intel.com>, Ashok Raj <ashok.raj@intel.com>,
+ linux-kernel@vger.kernel.org
 X-BeenThere: iommu@lists.linux-foundation.org
 X-Mailman-Version: 2.1.15
 Precedence: list
@@ -85,78 +79,46 @@ List-Post: <mailto:iommu@lists.linux-foundation.org>
 List-Help: <mailto:iommu-request@lists.linux-foundation.org?subject=help>
 List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
  <mailto:iommu-request@lists.linux-foundation.org?subject=subscribe>
+MIME-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
 Errors-To: iommu-bounces@lists.linux-foundation.org
 Sender: "iommu" <iommu-bounces@lists.linux-foundation.org>
 
+Hi,
 
+This series adds page request event reporting and response support to
+the Intel IOMMU driver. This is necessary when the page requests must
+be processed by any component other than the vendor IOMMU driver. For
+example, when a guest page table was bound to a PASID through the
+iommu_ops->sva_bind_gpasid() api, the page requests should be routed to
+the guest, and after the page is served, the device should be responded
+with the result.
 
-> -----Original Message-----
-> From: Will Deacon [mailto:will@kernel.org]
-> Sent: Saturday, July 4, 2020 4:22 AM
-> To: Song Bao Hua (Barry Song) <song.bao.hua@hisilicon.com>
-> Cc: hch@lst.de; m.szyprowski@samsung.com; robin.murphy@arm.com;
-> linux-arm-kernel@lists.infradead.org; iommu@lists.linux-foundation.org;
-> Linuxarm <linuxarm@huawei.com>
-> Subject: Re: [PATCH] iommu/arm-smmu-v3: allocate the memory of queues in
-> local numa node
-> 
-> On Mon, Jun 01, 2020 at 11:31:41PM +1200, Barry Song wrote:
-> > dmam_alloc_coherent() will usually allocate memory from the default CMA.
-> For
-> > a common arm64 defconfig without reserved memory in device tree, there is
-> only
-> > one CMA close to address 0.
-> > dma_alloc_contiguous() will allocate memory without any idea of  NUMA
-> and smmu
-> > has no customized per-numa cma_area.
-> > struct page *dma_alloc_contiguous(struct device *dev, size_t size, gfp_t gfp)
-> > {
-> >         size_t count = size >> PAGE_SHIFT;
-> >         struct page *page = NULL;
-> >         struct cma *cma = NULL;
-> >
-> >         if (dev && dev->cma_area)
-> >                 cma = dev->cma_area;
-> >         else if (count > 1)
-> >                 cma = dma_contiguous_default_area;
-> >
-> > 	...
-> >         return page;
-> > }
-> >
-> > if there are N numa nodes, N-1 nodes will put command/evt queues etc in a
-> > remote node the default CMA belongs to,probably node 0. Tests show, after
-> > sending CMD_SYNC in an empty command queue,
-> > on Node2, without this patch, it takes 550ns to wait for the completion
-> > of CMD_SYNC; with this patch, it takes 250ns to wait for the completion
-> > of CMD_SYNC.
-> >
-> > Signed-off-by: Barry Song <song.bao.hua@hisilicon.com>
-> > ---
-> >  drivers/iommu/arm-smmu-v3.c | 63
-> ++++++++++++++++++++++++++++---------
-> >  1 file changed, 48 insertions(+), 15 deletions(-)
-> 
-> I would prefer that the coherent DMA allocator learned about NUMA, rather
-> than we bodge drivers to use the streaming API where it doesn't really
-> make sense.
-> 
-> I see that you've posted other patches to do that (thanks!), so I'll
-> disregard this series.
+Your review comments are very appreciated.
 
-Thanks for taking a look, Will. For sure I am using the per-numa cma patchset to
-replace this patch. So it is ok to ignore this one.
+Best regards,
+baolu
 
+Change log:
+v1->v2:
+  - v1 posted at https://lkml.org/lkml/2020/6/27/387
+  - Remove unnecessary pci_get_domain_bus_and_slot()
+  - Return error when sdev == NULL in intel_svm_page_response()
 
-> 
-> Cheers,
-> 
-> Will
+Lu Baolu (4):
+  iommu/vt-d: Refactor device_to_iommu() helper
+  iommu/vt-d: Add a helper to get svm and sdev for pasid
+  iommu/vt-d: Report page request faults for guest SVA
+  iommu/vt-d: Add page response ops support
 
-Thanks
-Barry
+ drivers/iommu/intel/iommu.c |  56 ++-----
+ drivers/iommu/intel/svm.c   | 302 +++++++++++++++++++++++++++---------
+ include/linux/intel-iommu.h |   6 +-
+ 3 files changed, 248 insertions(+), 116 deletions(-)
+
+-- 
+2.17.1
 
 _______________________________________________
 iommu mailing list
