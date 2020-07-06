@@ -7,83 +7,83 @@ X-Spam-Status: No, score=-6.5 required=3.0 tests=DKIM_INVALID,DKIM_SIGNED,
 	SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED autolearn=unavailable autolearn_force=no
 	version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 4D6D0C433DF
-	for <iommu@archiver.kernel.org>; Mon,  6 Jul 2020 22:32:31 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 0F255C433E0
+	for <iommu@archiver.kernel.org>; Mon,  6 Jul 2020 23:13:16 +0000 (UTC)
 Received: from hemlock.osuosl.org (smtp2.osuosl.org [140.211.166.133])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by mail.kernel.org (Postfix) with ESMTPS id 118DC206F5
-	for <iommu@archiver.kernel.org>; Mon,  6 Jul 2020 22:32:30 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTPS id CB3D4206E9
+	for <iommu@archiver.kernel.org>; Mon,  6 Jul 2020 23:13:15 +0000 (UTC)
 Authentication-Results: mail.kernel.org;
-	dkim=fail reason="signature verification failed" (2048-bit key) header.d=google.com header.i=@google.com header.b="PHUr0UIP"
-DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 118DC206F5
+	dkim=fail reason="signature verification failed" (2048-bit key) header.d=google.com header.i=@google.com header.b="l+Kck4QL"
+DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org CB3D4206E9
 Authentication-Results: mail.kernel.org; dmarc=none (p=none dis=none) header.from=lists.linux-foundation.org
 Authentication-Results: mail.kernel.org; spf=pass smtp.mailfrom=iommu-bounces@lists.linux-foundation.org
 Received: from localhost (localhost [127.0.0.1])
-	by hemlock.osuosl.org (Postfix) with ESMTP id D844D8945E;
-	Mon,  6 Jul 2020 22:32:30 +0000 (UTC)
+	by hemlock.osuosl.org (Postfix) with ESMTP id 8F914894D3;
+	Mon,  6 Jul 2020 23:13:15 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
 Received: from hemlock.osuosl.org ([127.0.0.1])
 	by localhost (.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
-	with ESMTP id MHPabO-+7Qce; Mon,  6 Jul 2020 22:32:29 +0000 (UTC)
+	with ESMTP id tgJZmhco5gWk; Mon,  6 Jul 2020 23:13:12 +0000 (UTC)
 Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [140.211.9.56])
-	by hemlock.osuosl.org (Postfix) with ESMTP id CF5958946E;
-	Mon,  6 Jul 2020 22:32:29 +0000 (UTC)
+	by hemlock.osuosl.org (Postfix) with ESMTP id DED8989497;
+	Mon,  6 Jul 2020 23:13:12 +0000 (UTC)
 Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
-	by lists.linuxfoundation.org (Postfix) with ESMTP id BCCD9C0891;
-	Mon,  6 Jul 2020 22:32:29 +0000 (UTC)
-Received: from silver.osuosl.org (smtp3.osuosl.org [140.211.166.136])
- by lists.linuxfoundation.org (Postfix) with ESMTP id 10501C016F
- for <iommu@lists.linux-foundation.org>; Mon,  6 Jul 2020 22:32:29 +0000 (UTC)
+	by lists.linuxfoundation.org (Postfix) with ESMTP id C157DC0893;
+	Mon,  6 Jul 2020 23:13:12 +0000 (UTC)
+Received: from fraxinus.osuosl.org (smtp4.osuosl.org [140.211.166.137])
+ by lists.linuxfoundation.org (Postfix) with ESMTP id 7EB72C016F
+ for <iommu@lists.linux-foundation.org>; Mon,  6 Jul 2020 23:13:11 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
- by silver.osuosl.org (Postfix) with ESMTP id ED71B262D2
- for <iommu@lists.linux-foundation.org>; Mon,  6 Jul 2020 22:32:28 +0000 (UTC)
+ by fraxinus.osuosl.org (Postfix) with ESMTP id 6D0CA87814
+ for <iommu@lists.linux-foundation.org>; Mon,  6 Jul 2020 23:13:11 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from silver.osuosl.org ([127.0.0.1])
+Received: from fraxinus.osuosl.org ([127.0.0.1])
  by localhost (.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
- with ESMTP id cjJJvGtlVA9y for <iommu@lists.linux-foundation.org>;
- Mon,  6 Jul 2020 22:32:27 +0000 (UTC)
+ with ESMTP id uUGUknniF28M for <iommu@lists.linux-foundation.org>;
+ Mon,  6 Jul 2020 23:13:10 +0000 (UTC)
 X-Greylist: domain auto-whitelisted by SQLgrey-1.7.6
-Received: from mail-lj1-f196.google.com (mail-lj1-f196.google.com
- [209.85.208.196])
- by silver.osuosl.org (Postfix) with ESMTPS id D85692625C
- for <iommu@lists.linux-foundation.org>; Mon,  6 Jul 2020 22:32:26 +0000 (UTC)
-Received: by mail-lj1-f196.google.com with SMTP id t25so42941884lji.12
- for <iommu@lists.linux-foundation.org>; Mon, 06 Jul 2020 15:32:26 -0700 (PDT)
+Received: from mail-lj1-f193.google.com (mail-lj1-f193.google.com
+ [209.85.208.193])
+ by fraxinus.osuosl.org (Postfix) with ESMTPS id 86C7787808
+ for <iommu@lists.linux-foundation.org>; Mon,  6 Jul 2020 23:13:10 +0000 (UTC)
+Received: by mail-lj1-f193.google.com with SMTP id d17so32927386ljl.3
+ for <iommu@lists.linux-foundation.org>; Mon, 06 Jul 2020 16:13:10 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=google.com; s=20161025;
  h=mime-version:references:in-reply-to:from:date:message-id:subject:to
- :cc; bh=7jWD5vHooiaDqnTbtnYwVQHOG6k2FU8e2JhUtfDscDY=;
- b=PHUr0UIPdkWgLSJepxSrub2FtIg2X2XWPcXgvp5CWfRhIf0zvVCVAlmLPDlfRGfjWV
- ZydzybHf4FhrtbyDwGy0pM3rTAg6xRmq5dFmZ/8/Q157z6DJlScHF92HL2p1Af2ThFwL
- X08QczssEp3vy1f0JcKXWpHtWn5TQeJewcttuw3P0jnnd/2viQRlDytRJSa0c0+KSrGw
- 5lLYlDaiK0VF79m0s+BT2kYwJ3RepZZe9PMNgm0Cc8o3TqLuUZz7zlYxxJpE78n5GkUC
- BkkmVbwVdsduUk9ax/y1RWZ2Lu0dk0zZDF/1Sp4oZSatL2vfgewmEsCuw8egv+yiBUps
- 7Lkw==
+ :cc; bh=SR19WDvOm+Jc/grBUK3DcAG61rsTa4WPLrkARxPZOAg=;
+ b=l+Kck4QLh/GjDatFbN1XEqM3Tz6lakJhs3E9J1XdsBwYLSppoM1PHrBrrsnb5/v4tJ
+ XrCDEAlLqxil2gTTmgd650zhncuLDENlO/0gQ/Y0lot0ofj1l6k0We1vcLPui5Eaq1nf
+ iZF6FzBFsxbC5H78jo0pWHQ53RAsKmA0Ieq6QuSmcaxBJaXPxDUXAymnSm1l5bXyziUN
+ E+k2/BSJGZ4dS3BsQdULyP/OQmSK4uXZTgrF/GtPuB6y8ObR8Hmqz1K86ft5+LQbtoy6
+ szM/3+oamdz2utop5yBaSYUpEFUNKElOpbs79VyOw5ciwTV0x4aUw9N4u7XXeXRT0hYa
+ w8MA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
  d=1e100.net; s=20161025;
  h=x-gm-message-state:mime-version:references:in-reply-to:from:date
  :message-id:subject:to:cc;
- bh=7jWD5vHooiaDqnTbtnYwVQHOG6k2FU8e2JhUtfDscDY=;
- b=crDncnm4FuL06efoA/12gzP2sT7IwrPPEGlHqRuYUp3G/aO7rkTp9cLOIcm1d1eAWR
- kubG1R3Bjg+xxn4/qCyfO9oHc7dyMLdy8Ps0sJbis8afp/Gvhq3/i8osR3p0WRhf8ova
- JrLp3odXBweiQj9s7DvNVysuNTa9ySefxZ9FdIrOF0pWUx3436flQfLZQyX356POcaC2
- jvbdWXmLWuZaDtzEG8mh0tLborKnUIYc2+NvyVE0/D1GD5LkMAgwhFGfXK78BbbRIyje
- p/+mPLChckmD18cv/DuFKf5pyHNXXhTHmmSijhrPH8U5j40DEscAmXUE9kWEL1qUKGq5
- /etw==
-X-Gm-Message-State: AOAM530c8N1sXdLfmoUvi10pH31daw4j1gigViJELKgf+LoZo8Sm74GJ
- HS4KW/e6MltX1KqAUeZ6aL5WS1gbY1uJvuPdsu/0Bg==
-X-Google-Smtp-Source: ABdhPJzB21KJ4LK/FE4YW6ebuBjyCZjP1YIA1Wom+fxwjuhACfVBKSC4uOygcHbB8iMIMSJngmUbQ633jaaJQ+KyCc0=
+ bh=SR19WDvOm+Jc/grBUK3DcAG61rsTa4WPLrkARxPZOAg=;
+ b=GGrW+4pDPVB7YOmAdubqzGlFqCWf+5cXycWoio72480GnMMzdwdQZeRHIe48eVVrMx
+ 0QMuA3EAcpfjBHoOASAf/IaMtWhYmWsXUd2PuxaqSa3iMIHQxWpVCHQEWi5hin/N3j78
+ r3VdooUV3ROqYVFnqIqnp8y6isWFOC7M6J367XyBcHY5jM5BDd6xs7huQpEJs4Zu5ZVx
+ yFrFjvPt9Fl7jveKFpJi9DMjN8iaWqFixlydvCx4b9veiXrZXp9PM+SDHgujObPdgEcq
+ v5JaRnmfWL+xyJGwTcoCCLkDrryckAtofeHczqQwyPIjTEV+ZEjeWYxC2T2hTb3pKBOj
+ GeyA==
+X-Gm-Message-State: AOAM5313dZUktIlWENgJAOLr7y4jhHuM7LMW/lKG+OtIMzB2ZuqD5RLy
+ 5+NAubW2hFjBAY4KkrXJu+5OE/RYg1toH0LIETwRnw==
+X-Google-Smtp-Source: ABdhPJxfpZUF/SiL6XakzrJYzR9zf4mbwwjNucTuoY4CEERAxdf2B8UbWftU6B65j4Lr/o8zaYhyCw9AyRNU1/YVzAk=
 X-Received: by 2002:a05:651c:550:: with SMTP id
- q16mr28254147ljp.188.1594074744364; 
- Mon, 06 Jul 2020 15:32:24 -0700 (PDT)
+ q16mr28313693ljp.188.1594077188285; 
+ Mon, 06 Jul 2020 16:13:08 -0700 (PDT)
 MIME-Version: 1.0
-References: <20200630044943.3425049-3-rajatja@google.com>
- <20200706163805.GA120024@bjorn-Precision-5520>
-In-Reply-To: <20200706163805.GA120024@bjorn-Precision-5520>
-Date: Mon, 6 Jul 2020 15:31:47 -0700
-Message-ID: <CACK8Z6FhWyZOJvkrPcHacyvJucGMupOpL=Jm8BpyO7wPrZ_DQA@mail.gmail.com>
-Subject: Re: [PATCH v2 2/7] PCI: Set "untrusted" flag for truly external
- devices only
+References: <20200630044943.3425049-4-rajatja@google.com>
+ <20200706164514.GA124720@bjorn-Precision-5520>
+In-Reply-To: <20200706164514.GA124720@bjorn-Precision-5520>
+Date: Mon, 6 Jul 2020 16:12:31 -0700
+Message-ID: <CACK8Z6EVgeTZLph4CWaztB1WavocMyN237FwDAZudtEa=_e3Cg@mail.gmail.com>
+Subject: Re: [PATCH v2 3/7] PCI/ACS: Enable PCI_ACS_TB for
+ untrusted/external-facing devices
 To: Bjorn Helgaas <helgaas@kernel.org>
 Cc: Todd Broch <tbroch@google.com>, linux-pci <linux-pci@vger.kernel.org>,
  "Krishnakumar, Lalithambika" <lalithambika.krishnakumar@intel.com>,
@@ -128,203 +128,73 @@ Content-Transfer-Encoding: 7bit
 Errors-To: iommu-bounces@lists.linux-foundation.org
 Sender: "iommu" <iommu-bounces@lists.linux-foundation.org>
 
-Hello,
-
-On Mon, Jul 6, 2020 at 9:38 AM Bjorn Helgaas <helgaas@kernel.org> wrote:
+On Mon, Jul 6, 2020 at 9:45 AM Bjorn Helgaas <helgaas@kernel.org> wrote:
 >
-> On Mon, Jun 29, 2020 at 09:49:38PM -0700, Rajat Jain wrote:
-> > The "ExternalFacing" devices (root ports) are still internal devices that
-> > sit on the internal system fabric and thus trusted. Currently they were
-> > being marked untrusted.
+> On Mon, Jun 29, 2020 at 09:49:39PM -0700, Rajat Jain wrote:
+> > When enabling ACS, enable translation blocking for external facing ports
+> > and untrusted devices.
 > >
-> > This patch uses the platform flag to identify the external facing devices
-> > and then use it to mark any downstream devices as "untrusted". The
-> > external-facing devices themselves are left as "trusted". This was
-> > discussed here: https://lkml.org/lkml/2020/6/10/1049
->
-> Use the imperative mood in the commit log, as you did for 1/7.  E.g.,
-> instead of "This patch uses ...", say "Use the platform flag ...".
-> That helps all the commit logs read nicely together.
->
-> I think this patch makes two changes that should be separated:
->
->   - Treat "external-facing" devices as internal.
->
->   - Look for the "external-facing" or "ExternalFacing" property on
->     Switch Downstream Ports as well as Root Ports.
->
 > > Signed-off-by: Rajat Jain <rajatja@google.com>
 > > ---
-> > v2: cosmetic changes in commit log
+> > v2: Commit log change
 > >
-> >  drivers/iommu/intel/iommu.c |  2 +-
-> >  drivers/pci/of.c            |  2 +-
-> >  drivers/pci/pci-acpi.c      | 13 +++++++------
-> >  drivers/pci/probe.c         |  2 +-
-> >  include/linux/pci.h         |  8 ++++++++
-> >  5 files changed, 18 insertions(+), 9 deletions(-)
+> >  drivers/pci/pci.c    |  4 ++++
+> >  drivers/pci/quirks.c | 11 +++++++++++
+> >  2 files changed, 15 insertions(+)
 > >
-> > diff --git a/drivers/iommu/intel/iommu.c b/drivers/iommu/intel/iommu.c
-> > index d759e7234e982..1ccb224f82496 100644
-> > --- a/drivers/iommu/intel/iommu.c
-> > +++ b/drivers/iommu/intel/iommu.c
-> > @@ -4743,7 +4743,7 @@ static inline bool has_untrusted_dev(void)
-> >       struct pci_dev *pdev = NULL;
+> > diff --git a/drivers/pci/pci.c b/drivers/pci/pci.c
+> > index d2ff987585855..79853b52658a2 100644
+> > --- a/drivers/pci/pci.c
+> > +++ b/drivers/pci/pci.c
+> > @@ -3330,6 +3330,10 @@ static void pci_std_enable_acs(struct pci_dev *dev)
+> >       /* Upstream Forwarding */
+> >       ctrl |= (cap & PCI_ACS_UF);
 > >
-> >       for_each_pci_dev(pdev)
-> > -             if (pdev->untrusted)
-> > +             if (pdev->untrusted || pdev->external_facing)
->
-> I think checking pdev->external_facing is enough for this case,
-> because it's impossible to have pdev->untrusted unless a parent has
-> pdev->external_facing.
-
-Agree.
-
->
-> IIUC, this usage is asking "might we ever have an external device?"
-> as opposed to the "pdev->untrusted" uses, which are asking "is *this*
-> device an external device?"
-
-Agree.
-
->
-> >                       return true;
+> > +     if (dev->external_facing || dev->untrusted)
+> > +             /* Translation Blocking */
+> > +             ctrl |= (cap & PCI_ACS_TB);
+> > +
+> >       pci_write_config_word(dev, pos + PCI_ACS_CTRL, ctrl);
+> >  }
 > >
-> >       return false;
-> > diff --git a/drivers/pci/of.c b/drivers/pci/of.c
-> > index 27839cd2459f6..22727fc9558df 100644
-> > --- a/drivers/pci/of.c
-> > +++ b/drivers/pci/of.c
-> > @@ -42,7 +42,7 @@ void pci_set_bus_of_node(struct pci_bus *bus)
-> >       } else {
-> >               node = of_node_get(bus->self->dev.of_node);
-> >               if (node && of_property_read_bool(node, "external-facing"))
-> > -                     bus->self->untrusted = true;
-> > +                     bus->self->external_facing = true;
+> > diff --git a/drivers/pci/quirks.c b/drivers/pci/quirks.c
+> > index b341628e47527..6294adeac4049 100644
+> > --- a/drivers/pci/quirks.c
+> > +++ b/drivers/pci/quirks.c
+> > @@ -4934,6 +4934,13 @@ static void pci_quirk_enable_intel_rp_mpc_acs(struct pci_dev *dev)
 > >       }
-> >
-> >       bus->dev.of_node = node;
-> > diff --git a/drivers/pci/pci-acpi.c b/drivers/pci/pci-acpi.c
-> > index 7224b1e5f2a83..492c07805caf8 100644
-> > --- a/drivers/pci/pci-acpi.c
-> > +++ b/drivers/pci/pci-acpi.c
-> > @@ -1213,22 +1213,23 @@ static void pci_acpi_optimize_delay(struct pci_dev *pdev,
-> >       ACPI_FREE(obj);
 > >  }
 > >
-> > -static void pci_acpi_set_untrusted(struct pci_dev *dev)
-> > +static void pci_acpi_set_external_facing(struct pci_dev *dev)
+> > +/*
+> > + * Currently this quirk does the equivalent of
+> > + * PCI_ACS_RR | PCI_ACS_CR | PCI_ACS_UF | PCI_ACS_SV
+> > + *
+> > + * Currently missing, it also needs to do equivalent of PCI_ACS_TB,
+> > + * if dev->external_facing || dev->untrusted
+>
+> I don't understand this comment.  Is this a "TODO"?  Is there
+> something more that needs to be done here?
+
+Yes. I'll mark it as a TODO to make it more clear.
+
+>
+> After a patch is applied, a comment should describe the code as it is.
+>
+> > + */
+> >  static int pci_quirk_enable_intel_pch_acs(struct pci_dev *dev)
 > >  {
-> >       u8 val;
+> >       if (!pci_quirk_intel_pch_acs_match(dev))
+> > @@ -4973,6 +4980,10 @@ static int pci_quirk_enable_intel_spt_pch_acs(struct pci_dev *dev)
+> >       ctrl |= (cap & PCI_ACS_CR);
+> >       ctrl |= (cap & PCI_ACS_UF);
 > >
-> > -     if (pci_pcie_type(dev) != PCI_EXP_TYPE_ROOT_PORT)
-> > +     if (pci_pcie_type(dev) != PCI_EXP_TYPE_ROOT_PORT &&
-> > +         pci_pcie_type(dev) != PCI_EXP_TYPE_DOWNSTREAM)
->
-> This looks like a change worthy of its own patch.  We used to look for
-> "ExternalFacingPort" only on Root Ports; now we'll also do it for
-> Switch Downstream Ports.
-
-Can do. (please see below)
-
->
-> Can you include DT and ACPI spec references if they exist?  I found
-> this mention:
-> https://docs.microsoft.com/en-us/windows-hardware/drivers/pci/dsd-for-pcie-root-ports
-> which actually says it should only be implemented for Root Ports.
-
-I actually have no references. It seems to me that the microsoft spec
-assumes that all external ports must be implemented on root ports, but
-I think it would be equally fair for systems with PCIe switches to
-implement one on one of their switch downstream ports. I don't have an
-immediate use of this anyway, so if you think this should rather wait
-unless someone really has this case, this can wait. Let me know.
-
->
-> It also mentions a "DmaProperty" that looks related.  Maybe Linux
-> should also pay attention to this?
-
-Interesting. Since this is not in use currently by the kernel as well
-as not exposed by (our) BIOS, I don't have an immediate use case for
-this. I'd like to defer this for later (as-the-need-arises).
-
->
-> If we do change this, should we use pcie_downstream_port(), which
-> includes PCI-to-PCIe bridges as well?
-
-Sure, can do that.
-
->
-> >               return;
-> >       if (device_property_read_u8(&dev->dev, "ExternalFacingPort", &val))
-> >               return;
+> > +     if (dev->external_facing || dev->untrusted)
+> > +             /* Translation Blocking */
+> > +             ctrl |= (cap & PCI_ACS_TB);
+> > +
+> >       pci_write_config_dword(dev, pos + INTEL_SPT_ACS_CTRL, ctrl);
 > >
-> >       /*
-> > -      * These root ports expose PCIe (including DMA) outside of the
-> > -      * system so make sure we treat them and everything behind as
-> > +      * These root/down ports expose PCIe (including DMA) outside of the
-> > +      * system so make sure we treat everything behind them as
-> >        * untrusted.
-> >        */
-> >       if (val)
-> > -             dev->untrusted = 1;
-> > +             dev->external_facing = 1;
-> >  }
-> >
-> >  static void pci_acpi_setup(struct device *dev)
-> > @@ -1240,7 +1241,7 @@ static void pci_acpi_setup(struct device *dev)
-> >               return;
-> >
-> >       pci_acpi_optimize_delay(pci_dev, adev->handle);
-> > -     pci_acpi_set_untrusted(pci_dev);
-> > +     pci_acpi_set_external_facing(pci_dev);
-> >       pci_acpi_add_edr_notifier(pci_dev);
-> >
-> >       pci_acpi_add_pm_notifier(adev, pci_dev);
-> > diff --git a/drivers/pci/probe.c b/drivers/pci/probe.c
-> > index 6d87066a5ecc5..8c40c00413e74 100644
-> > --- a/drivers/pci/probe.c
-> > +++ b/drivers/pci/probe.c
-> > @@ -1552,7 +1552,7 @@ static void set_pcie_untrusted(struct pci_dev *dev)
-> >        * untrusted as well.
-> >        */
-> >       parent = pci_upstream_bridge(dev);
-> > -     if (parent && parent->untrusted)
-> > +     if (parent && (parent->untrusted || parent->external_facing))
-> >               dev->untrusted = true;
-> >  }
-> >
-> > diff --git a/include/linux/pci.h b/include/linux/pci.h
-> > index a26be5332bba6..fe1bc603fda40 100644
-> > --- a/include/linux/pci.h
-> > +++ b/include/linux/pci.h
-> > @@ -432,6 +432,14 @@ struct pci_dev {
-> >        * mappings to make sure they cannot access arbitrary memory.
-> >        */
-> >       unsigned int    untrusted:1;
-> > +     /*
-> > +      * Devices are marked as external-facing using info from platform
-> > +      * (ACPI / devicetree). An external-facing device is still an internal
-> > +      * trusted device, but it faces external untrusted devices. Thus any
-> > +      * devices enumerated downstream an external-facing device is marked
-> > +      * as untrusted.
->
-> This comment has a subject/verb agreement problem.
-
-I assume you meant s/is/are/ in last sentence. Will do.
-
-Thanks,
-
-Rajat
-
-
->
-> > +      */
-> > +     unsigned int    external_facing:1;
-> >       unsigned int    broken_intx_masking:1;  /* INTx masking can't be used */
-> >       unsigned int    io_window_1k:1;         /* Intel bridge 1K I/O windows */
-> >       unsigned int    irq_managed:1;
+> >       pci_info(dev, "Intel SPT PCH root port ACS workaround enabled\n");
 > > --
 > > 2.27.0.212.ge8ba1cc988-goog
 > >
