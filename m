@@ -2,77 +2,93 @@ Return-Path: <SRS0=S+y3=AR=lists.linux-foundation.org=iommu-bounces@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-2.2 required=3.0 tests=HEADER_FROM_DIFFERENT_DOMAINS,
-	MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS,USER_AGENT_SANE_2 autolearn=no
+X-Spam-Status: No, score=-8.0 required=3.0 tests=DKIM_INVALID,DKIM_SIGNED,
+	HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_PATCH,MAILING_LIST_MULTI,SIGNED_OFF_BY,
+	SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED,USER_AGENT_SANE_1 autolearn=unavailable
 	autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id D8A8AC433E0
-	for <iommu@archiver.kernel.org>; Mon,  6 Jul 2020 08:28:18 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 04FBCC433E1
+	for <iommu@archiver.kernel.org>; Mon,  6 Jul 2020 09:34:44 +0000 (UTC)
 Received: from fraxinus.osuosl.org (smtp4.osuosl.org [140.211.166.137])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by mail.kernel.org (Postfix) with ESMTPS id A39FF20724
-	for <iommu@archiver.kernel.org>; Mon,  6 Jul 2020 08:28:18 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org A39FF20724
-Authentication-Results: mail.kernel.org; dmarc=none (p=none dis=none) header.from=Huawei.com
+	by mail.kernel.org (Postfix) with ESMTPS id BD5302074F
+	for <iommu@archiver.kernel.org>; Mon,  6 Jul 2020 09:34:43 +0000 (UTC)
+Authentication-Results: mail.kernel.org;
+	dkim=fail reason="signature verification failed" (1024-bit key) header.d=redhat.com header.i=@redhat.com header.b="cq0Nl5Xs"
+DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org BD5302074F
+Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=redhat.com
 Authentication-Results: mail.kernel.org; spf=pass smtp.mailfrom=iommu-bounces@lists.linux-foundation.org
 Received: from localhost (localhost [127.0.0.1])
-	by fraxinus.osuosl.org (Postfix) with ESMTP id 6E30086D0F;
-	Mon,  6 Jul 2020 08:28:18 +0000 (UTC)
+	by fraxinus.osuosl.org (Postfix) with ESMTP id 8B758862AB;
+	Mon,  6 Jul 2020 09:34:43 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
 Received: from fraxinus.osuosl.org ([127.0.0.1])
 	by localhost (.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
-	with ESMTP id mSlmiCLcXSXK; Mon,  6 Jul 2020 08:28:17 +0000 (UTC)
+	with ESMTP id NIUJoV2xSFKz; Mon,  6 Jul 2020 09:34:42 +0000 (UTC)
 Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [140.211.9.56])
-	by fraxinus.osuosl.org (Postfix) with ESMTP id BAF6786CE7;
-	Mon,  6 Jul 2020 08:28:17 +0000 (UTC)
+	by fraxinus.osuosl.org (Postfix) with ESMTP id E5B398204B;
+	Mon,  6 Jul 2020 09:34:42 +0000 (UTC)
 Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
-	by lists.linuxfoundation.org (Postfix) with ESMTP id 9EB6DC0893;
-	Mon,  6 Jul 2020 08:28:17 +0000 (UTC)
-Received: from fraxinus.osuosl.org (smtp4.osuosl.org [140.211.166.137])
- by lists.linuxfoundation.org (Postfix) with ESMTP id 3ED8AC016F
- for <iommu@lists.linux-foundation.org>; Mon,  6 Jul 2020 08:28:16 +0000 (UTC)
+	by lists.linuxfoundation.org (Postfix) with ESMTP id C30CCC0893;
+	Mon,  6 Jul 2020 09:34:42 +0000 (UTC)
+Received: from silver.osuosl.org (smtp3.osuosl.org [140.211.166.136])
+ by lists.linuxfoundation.org (Postfix) with ESMTP id 168CBC016F
+ for <iommu@lists.linux-foundation.org>; Mon,  6 Jul 2020 09:34:42 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
- by fraxinus.osuosl.org (Postfix) with ESMTP id 259CE864EC
- for <iommu@lists.linux-foundation.org>; Mon,  6 Jul 2020 08:27:59 +0000 (UTC)
+ by silver.osuosl.org (Postfix) with ESMTP id F32602036E
+ for <iommu@lists.linux-foundation.org>; Mon,  6 Jul 2020 09:34:41 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from fraxinus.osuosl.org ([127.0.0.1])
+Received: from silver.osuosl.org ([127.0.0.1])
  by localhost (.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
- with ESMTP id 6AdTLABJ0ZJ8 for <iommu@lists.linux-foundation.org>;
- Mon,  6 Jul 2020 08:27:57 +0000 (UTC)
+ with ESMTP id GP2zfn0LSKst for <iommu@lists.linux-foundation.org>;
+ Mon,  6 Jul 2020 09:34:40 +0000 (UTC)
 X-Greylist: domain auto-whitelisted by SQLgrey-1.7.6
-Received: from huawei.com (lhrrgout.huawei.com [185.176.76.210])
- by fraxinus.osuosl.org (Postfix) with ESMTPS id CAAE686456
- for <iommu@lists.linux-foundation.org>; Mon,  6 Jul 2020 08:27:57 +0000 (UTC)
-Received: from lhreml710-chm.china.huawei.com (unknown [172.18.7.107])
- by Forcepoint Email with ESMTP id 2B8676C15A69DC7537E0;
- Mon,  6 Jul 2020 09:27:55 +0100 (IST)
-Received: from localhost (10.52.123.111) by lhreml710-chm.china.huawei.com
- (10.201.108.61) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.1913.5; Mon, 6 Jul 2020
- 09:27:54 +0100
-Date: Mon, 6 Jul 2020 09:26:49 +0100
-From: Jonathan Cameron <Jonathan.Cameron@Huawei.com>
-To: "Song Bao Hua (Barry Song)" <song.bao.hua@hisilicon.com>
-Subject: Re: [PATCH] iommu/arm-smmu-v3: expose numa_node attribute to users
- in sysfs
-Message-ID: <20200706092649.0000676d@Huawei.com>
-In-Reply-To: <B926444035E5E2439431908E3842AFD25559F2@DGGEMI525-MBS.china.huawei.com>
-References: <20200530091505.56664-1-song.bao.hua@hisilicon.com>
- <20200703162137.GA19780@willie-the-truck>
- <B926444035E5E2439431908E3842AFD25559F2@DGGEMI525-MBS.china.huawei.com>
-Organization: Huawei Technologies Research and Development (UK) Ltd.
-X-Mailer: Claws Mail 3.17.4 (GTK+ 2.24.32; i686-w64-mingw32)
+Received: from us-smtp-1.mimecast.com (us-smtp-delivery-1.mimecast.com
+ [205.139.110.120])
+ by silver.osuosl.org (Postfix) with ESMTPS id 3B5C220029
+ for <iommu@lists.linux-foundation.org>; Mon,  6 Jul 2020 09:34:40 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+ s=mimecast20190719; t=1594028078;
+ h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+ to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+ content-transfer-encoding:content-transfer-encoding:
+ in-reply-to:in-reply-to:references:references;
+ bh=SXJx1qpbfVbAj/VWczfs0WOvGfiINR1HbPqQDklC3XA=;
+ b=cq0Nl5XsUIOwxCOCmSb+JDV9C7j8R2tpEPX0WECC1WUMyK/0HV/0t9fUCT7m0JL/mWl6cV
+ sQIRHStYHLuh73TUJrQ2l3OR5ycHWS/OEqdeYhD62IPneBnh2R3BNr/RiFnkiwZFyxgeiX
+ u+znDMBk718BzHP3IBEewxSQ7h1cUGY=
+Received: from mimecast-mx01.redhat.com (mimecast-mx01.redhat.com
+ [209.132.183.4]) (Using TLS) by relay.mimecast.com with ESMTP id
+ us-mta-46-Zdh8rqKPNx-qOLPflH5qHg-1; Mon, 06 Jul 2020 05:34:35 -0400
+X-MC-Unique: Zdh8rqKPNx-qOLPflH5qHg-1
+Received: from smtp.corp.redhat.com (int-mx04.intmail.prod.int.phx2.redhat.com
+ [10.5.11.14])
+ (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
+ (No client certificate requested)
+ by mimecast-mx01.redhat.com (Postfix) with ESMTPS id 69532107ACF3;
+ Mon,  6 Jul 2020 09:34:33 +0000 (UTC)
+Received: from [10.36.113.241] (ovpn-113-241.ams2.redhat.com [10.36.113.241])
+ by smtp.corp.redhat.com (Postfix) with ESMTPS id 766BF5D9D7;
+ Mon,  6 Jul 2020 09:34:24 +0000 (UTC)
+Subject: Re: [PATCH v4 02/15] iommu: Report domain nesting info
+To: Liu Yi L <yi.l.liu@intel.com>, alex.williamson@redhat.com,
+ baolu.lu@linux.intel.com, joro@8bytes.org
+References: <1593861989-35920-1-git-send-email-yi.l.liu@intel.com>
+ <1593861989-35920-3-git-send-email-yi.l.liu@intel.com>
+From: Auger Eric <eric.auger@redhat.com>
+Message-ID: <b9479f61-7f9e-e0ae-5125-ab15f59b1ece@redhat.com>
+Date: Mon, 6 Jul 2020 11:34:22 +0200
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101
+ Thunderbird/68.5.0
 MIME-Version: 1.0
-X-Originating-IP: [10.52.123.111]
-X-ClientProxiedBy: lhreml717-chm.china.huawei.com (10.201.108.68) To
- lhreml710-chm.china.huawei.com (10.201.108.61)
-X-CFilter-Loop: Reflected
-Cc: Will Deacon <will@kernel.org>, Linuxarm <linuxarm@huawei.com>,
- "iommu@lists.linux-foundation.org" <iommu@lists.linux-foundation.org>,
- Brice Goglin <Brice.Goglin@inria.fr>,
- "robin.murphy@arm.com" <robin.murphy@arm.com>, "hch@lst.de" <hch@lst.de>,
- "linux-arm-kernel@lists.infradead.org" <linux-arm-kernel@lists.infradead.org>
+In-Reply-To: <1593861989-35920-3-git-send-email-yi.l.liu@intel.com>
+Content-Language: en-US
+X-Scanned-By: MIMEDefang 2.79 on 10.5.11.14
+Cc: jean-philippe@linaro.org, kevin.tian@intel.com, ashok.raj@intel.com,
+ kvm@vger.kernel.org, stefanha@gmail.com, jun.j.tian@intel.com,
+ iommu@lists.linux-foundation.org, linux-kernel@vger.kernel.org,
+ yi.y.sun@intel.com, hao.wu@intel.com
 X-BeenThere: iommu@lists.linux-foundation.org
 X-Mailman-Version: 2.1.15
 Precedence: list
@@ -91,116 +107,139 @@ Errors-To: iommu-bounces@lists.linux-foundation.org
 Sender: "iommu" <iommu-bounces@lists.linux-foundation.org>
 
 
-+CC Brice.  
 
-On Sun, 5 Jul 2020 09:53:58 +0000
-"Song Bao Hua (Barry Song)" <song.bao.hua@hisilicon.com> wrote:
+On 7/4/20 1:26 PM, Liu Yi L wrote:
+> IOMMUs that support nesting translation needs report the capability info
+need to report
+> to userspace, e.g. the format of first level/stage paging structures.
+> 
+> This patch reports nesting info by DOMAIN_ATTR_NESTING. Caller can get
+> nesting info after setting DOMAIN_ATTR_NESTING.
+> 
+> Cc: Kevin Tian <kevin.tian@intel.com>
+> CC: Jacob Pan <jacob.jun.pan@linux.intel.com>
+> Cc: Alex Williamson <alex.williamson@redhat.com>
+> Cc: Eric Auger <eric.auger@redhat.com>
+> Cc: Jean-Philippe Brucker <jean-philippe@linaro.org>
+> Cc: Joerg Roedel <joro@8bytes.org>
+> Cc: Lu Baolu <baolu.lu@linux.intel.com>
+> Signed-off-by: Liu Yi L <yi.l.liu@intel.com>
+> Signed-off-by: Jacob Pan <jacob.jun.pan@linux.intel.com>
+> ---
+> v3 -> v4:
+> *) split the SMMU driver changes to be a separate patch
+> *) move the @addr_width and @pasid_bits from vendor specific
+>    part to generic part.
+> *) tweak the description for the @features field of struct
+>    iommu_nesting_info.
+> *) add description on the @data[] field of struct iommu_nesting_info
+> 
+> v2 -> v3:
+> *) remvoe cap/ecap_mask in iommu_nesting_info.
+> *) reuse DOMAIN_ATTR_NESTING to get nesting info.
+> *) return an empty iommu_nesting_info for SMMU drivers per Jean'
+>    suggestion.
+> ---
+>  include/uapi/linux/iommu.h | 78 ++++++++++++++++++++++++++++++++++++++++++++++
+>  1 file changed, 78 insertions(+)
+> 
+> diff --git a/include/uapi/linux/iommu.h b/include/uapi/linux/iommu.h
+> index 1afc661..1bfc032 100644
+> --- a/include/uapi/linux/iommu.h
+> +++ b/include/uapi/linux/iommu.h
+> @@ -332,4 +332,82 @@ struct iommu_gpasid_bind_data {
+>  	} vendor;
+>  };
+>  
+> +/*
+> + * struct iommu_nesting_info - Information for nesting-capable IOMMU.
+> + *				user space should check it before using
+> + *				nesting capability.
+alignment?
+> + *
+> + * @size:	size of the whole structure
+> + * @format:	PASID table entry format, the same definition with
+> + *		@format of struct iommu_gpasid_bind_data.
+the same definition as struct iommu_gpasid_bind_data @format?
+> + * @features:	supported nesting features.
+> + * @flags:	currently reserved for future extension.
+> + * @addr_width:	The output addr width of first level/stage translation
+> + * @pasid_bits:	Maximum supported PASID bits, 0 represents no PASID
+> + *		support.
+> + * @data:	vendor specific cap info. data[] structure type can be deduced
+> + *		from @format field.
+> + *
+> + * +===============+======================================================+
+> + * | feature       |  Notes                                               |
+> + * +===============+======================================================+
+> + * | SYSWIDE_PASID |  PASIDs are managed in system-wide, instead of per   |
+> + * |               |  device. When a device is assigned to userspace or   |
+> + * |               |  VM, proper uAPI (userspace driver framework uAPI,   |
+> + * |               |  e.g. VFIO) must be used to allocate/free PASIDs for |
+> + * |               |  the assigned device.                                |
+> + * +---------------+------------------------------------------------------+
+> + * | BIND_PGTBL    |  The owner of the first level/stage page table must  |
+> + * |               |  explicitly bind the page table to associated PASID  |
+> + * |               |  (either the one specified in bind request or the    |
+> + * |               |  default PASID of iommu domain), through userspace   |
+> + * |               |  driver framework uAPI (e.g. VFIO_IOMMU_NESTING_OP). |
+> + * +---------------+------------------------------------------------------+
+> + * | CACHE_INVLD   |  The owner of the first level/stage page table must  |
+> + * |               |  explicitly invalidate the IOMMU cache through uAPI  |
+> + * |               |  provided by userspace driver framework (e.g. VFIO)  |
+> + * |               |  according to vendor-specific requirement when       |
+> + * |               |  changing the page table.                            |
+> + * +---------------+------------------------------------------------------+
+Do you foresee cases where BIND_PGTBL and CACHE_INVLD shouldn't be
+exposed as features?
+> + *
+> + * @data[] types defined for @format:
+> + * +================================+=====================================+
+> + * | @format                        | @data[]                             |
+> + * +================================+=====================================+
+> + * | IOMMU_PASID_FORMAT_INTEL_VTD   | struct iommu_nesting_info_vtd       |
+> + * +--------------------------------+-------------------------------------+
+> + *
+> + */
+> +struct iommu_nesting_info {
+> +	__u32	size;
+> +	__u32	format;
+> +	__u32	features;
+> +#define IOMMU_NESTING_FEAT_SYSWIDE_PASID	(1 << 0)
+> +#define IOMMU_NESTING_FEAT_BIND_PGTBL		(1 << 1)
+> +#define IOMMU_NESTING_FEAT_CACHE_INVLD		(1 << 2)
+In other structs the values seem to be defined before the field
+> +	__u32	flags;
+> +	__u16	addr_width;
+> +	__u16	pasid_bits;
+> +	__u32	padding;
+> +	__u8	data[];
+> +};
+> +
+> +/*
+> + * struct iommu_nesting_info_vtd - Intel VT-d specific nesting info
+> + *
+spurious line
+> + *
+> + * @flags:	VT-d specific flags. Currently reserved for future
+> + *		extension.
+> + * @cap_reg:	Describe basic capabilities as defined in VT-d capability
+> + *		register.
+> + * @ecap_reg:	Describe the extended capabilities as defined in VT-d
+> + *		extended capability register.
+> + */
+> +struct iommu_nesting_info_vtd {
+> +	__u32	flags;
+> +	__u32	padding;
+> +	__u64	cap_reg;
+> +	__u64	ecap_reg;
+> +};
+> +
+>  #endif /* _UAPI_IOMMU_H */
+> 
+Thanks
 
-> > -----Original Message-----
-> > From: Will Deacon [mailto:will@kernel.org]
-> > Sent: Saturday, July 4, 2020 4:22 AM
-> > To: Song Bao Hua (Barry Song) <song.bao.hua@hisilicon.com>
-> > Cc: robin.murphy@arm.com; hch@lst.de; m.szyprowski@samsung.com;
-> > iommu@lists.linux-foundation.org; linux-arm-kernel@lists.infradead.org;
-> > Linuxarm <linuxarm@huawei.com>
-> > Subject: Re: [PATCH] iommu/arm-smmu-v3: expose numa_node attribute to
-> > users in sysfs
-> > 
-> > On Sat, May 30, 2020 at 09:15:05PM +1200, Barry Song wrote:  
-> > > As tests show the latency of dma_unmap can increase dramatically while
-> > > calling them cross NUMA nodes, especially cross CPU packages, eg.
-> > > 300ns vs 800ns while waiting for the completion of CMD_SYNC in an
-> > > empty command queue. The large latency causing by remote node will
-> > > in turn make contention of the command queue more serious, and enlarge
-> > > the latency of DMA users within local NUMA nodes.
-> > >
-> > > Users might intend to enforce NUMA locality with the consideration of
-> > > the position of SMMU. The patch provides minor benefit by presenting
-> > > this information to users directly, as they might want to know it without
-> > > checking hardware spec at all.  
-> > 
-> > I don't think that's a very good reason to expose things to userspace.
-> > I know sysfs shouldn't be treated as ABI, but the grim reality is that
-> > once somebody relies on this stuff then we can't change it, so I'd
-> > rather avoid exposing it unless it's absolutely necessary.  
-> 
-> Will, thanks for taking a look!
-> 
-> I am not sure if it is absolutely necessary, but it is useful to users. The whole story started
-> from some users who wanted to know the hardware topology very clear by reading some
-> sysfs node just like they are able to do that for pci devices. The intention is that users can
-> know hardware topology of various devices easily from linux since they maybe don't know
-> all the hardware details.
-> 
-> For pci devices, kernel has done that. And there are some other drivers out of pci
-> exposing numa_node as well. It seems it is hard to say it is absolutely necessary
-> for them too since sysfs shouldn't be treated as ABI. 
-Brice,
-
-Given hwloc is probably the most demanding user of topology information
-currently...
-
-How useful would this info be for hwloc and hwloc users?
-Sort of feels like it might be useful in some cases.
-
-The very brief description of what we have here is exposing the numa node
-of an IOMMU.  The discussion also diverted into whether it just makes sense
-to expose this for all platform devices or even do it at the device level.
-
-Jonathan
-
-
-> 
-> I got some input from Linux users who also wanted to know the numa node for
-> other devices which are not PCI, for example, platform devices. And I thought the
-> requirement is kind of reasonable. So I also had another patch to generally support
-> this kind of requirements, with the below patch, this smmu patch is not necessary
-> any more:
-> https://lkml.org/lkml/2020/6/18/1257
-> 
-> for platform device created by ARM ACPI/IORT and general acpi_create_platform_device()
-> drivers/acpi/scan.c:
-> static void acpi_default_enumeration(struct acpi_device *device)
-> {
-> 	...
-> 	if (!device->flags.enumeration_by_parent) {
-> 		acpi_create_platform_device(device, NULL);
-> 		acpi_device_set_enumerated(device);
-> 	}
-> }
-> 
-> struct platform_device *acpi_create_platform_device(struct acpi_device *adev,
-> 					struct property_entry *properties)
-> {
-> 	...
-> 
-> 	pdev = platform_device_register_full(&pdevinfo);
-> 	if (IS_ERR(pdev))
-> 		...
-> 	else {
-> 		set_dev_node(&pdev->dev, acpi_get_node(adev->handle));
-> 		...
-> 	}
-> 	...
-> }
-> numa_node is set for this kind of devices.
-> 
-> Anyway, just want to explain to you the background some people want to know the 
-> hardware topology from Linux in same simple way. And it seems it is a reasonable
-> requirement to me :-)
-> 
-> > 
-> > Thanks,
-> > 
-> > Will  
-> 
-> Thanks
-> barry
-> _______________________________________________
-> iommu mailing list
-> iommu@lists.linux-foundation.org
-> https://lists.linuxfoundation.org/mailman/listinfo/iommu
-
+Eric
 
 _______________________________________________
 iommu mailing list
