@@ -2,99 +2,93 @@ Return-Path: <SRS0=S+y3=AR=lists.linux-foundation.org=iommu-bounces@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-0.6 required=3.0 tests=DKIM_INVALID,DKIM_SIGNED,
-	HEADER_FROM_DIFFERENT_DOMAINS,MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS
-	autolearn=no autolearn_force=no version=3.4.0
+X-Spam-Status: No, score=-6.8 required=3.0 tests=DKIM_INVALID,DKIM_SIGNED,
+	INCLUDES_PATCH,MAILING_LIST_MULTI,SIGNED_OFF_BY,SPF_HELO_NONE,SPF_PASS
+	autolearn=unavailable autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 839F9C433DF
-	for <iommu@archiver.kernel.org>; Mon,  6 Jul 2020 16:08:12 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 94C95C433E1
+	for <iommu@archiver.kernel.org>; Mon,  6 Jul 2020 16:38:10 +0000 (UTC)
 Received: from whitealder.osuosl.org (smtp1.osuosl.org [140.211.166.138])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by mail.kernel.org (Postfix) with ESMTPS id 481ED20722
-	for <iommu@archiver.kernel.org>; Mon,  6 Jul 2020 16:08:12 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTPS id 5F830206DF
+	for <iommu@archiver.kernel.org>; Mon,  6 Jul 2020 16:38:10 +0000 (UTC)
 Authentication-Results: mail.kernel.org;
-	dkim=fail reason="signature verification failed" (2048-bit key) header.d=linaro.org header.i=@linaro.org header.b="vJES/+xz"
-DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 481ED20722
-Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=linaro.org
+	dkim=fail reason="signature verification failed" (1024-bit key) header.d=kernel.org header.i=@kernel.org header.b="gJeMrlVK"
+DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 5F830206DF
+Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=kernel.org
 Authentication-Results: mail.kernel.org; spf=pass smtp.mailfrom=iommu-bounces@lists.linux-foundation.org
 Received: from localhost (localhost [127.0.0.1])
-	by whitealder.osuosl.org (Postfix) with ESMTP id 17B8088B26;
-	Mon,  6 Jul 2020 16:08:12 +0000 (UTC)
+	by whitealder.osuosl.org (Postfix) with ESMTP id 2BFD088B61;
+	Mon,  6 Jul 2020 16:38:10 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
 Received: from whitealder.osuosl.org ([127.0.0.1])
 	by localhost (.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
-	with ESMTP id LUvxf8ph2flq; Mon,  6 Jul 2020 16:08:11 +0000 (UTC)
+	with ESMTP id B1tzkmzexrbo; Mon,  6 Jul 2020 16:38:09 +0000 (UTC)
 Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [140.211.9.56])
-	by whitealder.osuosl.org (Postfix) with ESMTP id A28F488B21;
-	Mon,  6 Jul 2020 16:08:11 +0000 (UTC)
+	by whitealder.osuosl.org (Postfix) with ESMTP id 5E19888B49;
+	Mon,  6 Jul 2020 16:38:09 +0000 (UTC)
 Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
-	by lists.linuxfoundation.org (Postfix) with ESMTP id 8F734C0891;
-	Mon,  6 Jul 2020 16:08:11 +0000 (UTC)
-Received: from whitealder.osuosl.org (smtp1.osuosl.org [140.211.166.138])
- by lists.linuxfoundation.org (Postfix) with ESMTP id 68C08C016F
- for <iommu@lists.linux-foundation.org>; Mon,  6 Jul 2020 16:08:10 +0000 (UTC)
+	by lists.linuxfoundation.org (Postfix) with ESMTP id 43B74C0891;
+	Mon,  6 Jul 2020 16:38:09 +0000 (UTC)
+Received: from hemlock.osuosl.org (smtp2.osuosl.org [140.211.166.133])
+ by lists.linuxfoundation.org (Postfix) with ESMTP id CE80BC016F
+ for <iommu@lists.linux-foundation.org>; Mon,  6 Jul 2020 16:38:07 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
- by whitealder.osuosl.org (Postfix) with ESMTP id 56FB588B26
- for <iommu@lists.linux-foundation.org>; Mon,  6 Jul 2020 16:08:10 +0000 (UTC)
+ by hemlock.osuosl.org (Postfix) with ESMTP id BA0FA89407
+ for <iommu@lists.linux-foundation.org>; Mon,  6 Jul 2020 16:38:07 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from whitealder.osuosl.org ([127.0.0.1])
+Received: from hemlock.osuosl.org ([127.0.0.1])
  by localhost (.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
- with ESMTP id O-Mgb7V7bcXQ for <iommu@lists.linux-foundation.org>;
- Mon,  6 Jul 2020 16:08:09 +0000 (UTC)
+ with ESMTP id KwfP-Mp4RnY8 for <iommu@lists.linux-foundation.org>;
+ Mon,  6 Jul 2020 16:38:06 +0000 (UTC)
 X-Greylist: domain auto-whitelisted by SQLgrey-1.7.6
-Received: from mail-ej1-f67.google.com (mail-ej1-f67.google.com
- [209.85.218.67])
- by whitealder.osuosl.org (Postfix) with ESMTPS id 6458B88B21
- for <iommu@lists.linux-foundation.org>; Mon,  6 Jul 2020 16:08:09 +0000 (UTC)
-Received: by mail-ej1-f67.google.com with SMTP id w16so43161110ejj.5
- for <iommu@lists.linux-foundation.org>; Mon, 06 Jul 2020 09:08:09 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linaro.org; s=google;
- h=date:from:to:cc:subject:message-id:references:mime-version
- :content-disposition:in-reply-to;
- bh=1xUXHKj/YS+LMXJkB0rL4tXNdCvgKAcEoLN/OkMmiNU=;
- b=vJES/+xzdUqwhhJUFgO089lN1T7eUjgt8TfB3iBwPvCtp++QgR0DlF4ZWoxXXJCCEG
- OADqA3qt+pPtLqUnSgvUuGh16D6h8P6Sbp13a00Wbr4VgWLrkrtf9HCImMl3ylMA+At2
- PGtlalmUUd7tJpP8pXe/EYHZsNdaTzPL9a9WB1xeNekiVS2MEeKYI/u475QRwZeovqhx
- qUaTrS49vBXHBVA0AQDzS0WEE5ZrPiSEFNwUyaDVajRB4s0ljWrFf3TcY8F9HVsx0v9P
- bnw7DfflCTjZyXq1dFBzxtK70MQgte2e2a7lhwgCjqBjOVVHEjGpcGK0MT0u7hkYoZ2X
- Zwkg==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
- d=1e100.net; s=20161025;
- h=x-gm-message-state:date:from:to:cc:subject:message-id:references
- :mime-version:content-disposition:in-reply-to;
- bh=1xUXHKj/YS+LMXJkB0rL4tXNdCvgKAcEoLN/OkMmiNU=;
- b=g/ZpqJraNX5SakGiAUks1Fzqrws5AUuBRvOWH6ssFqronOddf9wzTSAgrGshBwxywF
- aJhL4V8dc5GMMDNTTZEseJQw3F6Yu7GLKE6Z67E78bl0w/Pwr6pEPeH1fHM22GsIj6A3
- u8HZWLzZg8UAqpYNwndTOZD4lVDGLYn7lhrquwKKLFZYPLSvPZ1SLMxMyHC92X8ctLsS
- J1sKeFGEdykJYT1Kmmpby85nacTB5Gkb28YbzTo2IaTLKufVaQqecr3cfqNnfSiWtrM5
- lXFS4rJ2ephELC8FUsN9+L5mbRvWfDiCsGMqTWSqHFST+p+B/aa5VI6fJpjIDFRIrLGb
- kMAg==
-X-Gm-Message-State: AOAM533BG9LCqw4T8/15xq1m0v7EgV3WXWmVVgwMmqQA64LcQmZRDmNF
- 1DK9Pvbgb0Z4asz4JCSXwGljQg==
-X-Google-Smtp-Source: ABdhPJyqhjNzsIQVK3sx/+PbtHoTptnYcLcBiN/qpkKug5wTizE32WmmJkFDoGC2JkQANvNOR8AJMA==
-X-Received: by 2002:a17:906:7208:: with SMTP id
- m8mr45768067ejk.544.1594051687699; 
- Mon, 06 Jul 2020 09:08:07 -0700 (PDT)
-Received: from myrica ([2001:1715:4e26:a7e0:116c:c27a:3e7f:5eaf])
- by smtp.gmail.com with ESMTPSA id 23sm25955379edw.63.2020.07.06.09.08.06
- (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
- Mon, 06 Jul 2020 09:08:07 -0700 (PDT)
-Date: Mon, 6 Jul 2020 18:07:55 +0200
-From: Jean-Philippe Brucker <jean-philippe@linaro.org>
-To: Xiang Zheng <zhengxiang9@huawei.com>
-Subject: Re: [PATCH v8 08/12] iommu/arm-smmu-v3: Seize private ASID
-Message-ID: <20200706160755.GB3214@myrica>
-References: <20200618155125.1548969-1-jean-philippe@linaro.org>
- <20200618155125.1548969-9-jean-philippe@linaro.org>
- <c3ee2919-bec1-33ba-59f6-c3438e128ed5@huawei.com>
+Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
+ by hemlock.osuosl.org (Postfix) with ESMTPS id E35A389403
+ for <iommu@lists.linux-foundation.org>; Mon,  6 Jul 2020 16:38:06 +0000 (UTC)
+Received: from localhost (mobile-166-175-191-139.mycingular.net
+ [166.175.191.139])
+ (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+ (No client certificate requested)
+ by mail.kernel.org (Postfix) with ESMTPSA id 4DFCA206CD;
+ Mon,  6 Jul 2020 16:38:06 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+ s=default; t=1594053486;
+ bh=h5Wfn3HjIiXXhkf+M34R0UCWrLS9Ym2zaBVYF7o20HY=;
+ h=Date:From:To:Cc:Subject:In-Reply-To:From;
+ b=gJeMrlVKeXf1hw7Srvob2oOpPzBsNGaCeiFEJ+LQzaVKhYbrlKPmFkGdYmrfMFUwc
+ Ld3mkXuOJa9U4mWbnSYaf+Vq4Q5MicOSEBp9KH8DY8/98sorKBQfQISXTBGxc+khFT
+ 8Q+9AXK2ocdqROk8v2rot2AEd87cQF7DZzpa8u0k=
+Date: Mon, 6 Jul 2020 11:38:05 -0500
+From: Bjorn Helgaas <helgaas@kernel.org>
+To: Rajat Jain <rajatja@google.com>
+Subject: Re: [PATCH v2 2/7] PCI: Set "untrusted" flag for truly external
+ devices only
+Message-ID: <20200706163805.GA120024@bjorn-Precision-5520>
 MIME-Version: 1.0
 Content-Disposition: inline
-In-Reply-To: <c3ee2919-bec1-33ba-59f6-c3438e128ed5@huawei.com>
-Cc: fenghua.yu@intel.com, catalin.marinas@arm.com, robin.murphy@arm.com,
- hch@infradead.org, linux-mm@kvack.org, iommu@lists.linux-foundation.org,
- Wang Haibin <wanghaibin.wang@huawei.com>, zhangfei.gao@linaro.org,
- will@kernel.org, linux-arm-kernel@lists.infradead.org
+In-Reply-To: <20200630044943.3425049-3-rajatja@google.com>
+Cc: Todd Broch <tbroch@google.com>, linux-pci@vger.kernel.org,
+ lalithambika.krishnakumar@intel.com,
+ Heikki Krogerus <heikki.krogerus@linux.intel.com>,
+ Diego Rivas <diegorivas@google.com>,
+ Jean-Philippe Brucker <jean-philippe@linaro.org>,
+ Furquan Shaikh <furquan@google.com>, Raj Ashok <ashok.raj@intel.com>,
+ Saravana Kannan <saravanak@google.com>, linux-acpi@vger.kernel.org,
+ Christian Kellner <christian@kellner.me>,
+ Mattias Nissler <mnissler@google.com>, Jesse Barnes <jsbarnes@google.com>,
+ Len Brown <lenb@kernel.org>, Rajat Jain <rajatxjain@gmail.com>,
+ Prashant Malani <pmalani@google.com>,
+ Suzuki K Poulose <suzuki.poulose@arm.com>, Aaron Durbin <adurbin@google.com>,
+ Alex Williamson <alex.williamson@redhat.com>,
+ Bjorn Helgaas <bhelgaas@google.com>,
+ Mika Westerberg <mika.westerberg@linux.intel.com>,
+ Bernie Keany <bernie.keany@intel.com>, Duncan Laurie <dlaurie@google.com>,
+ Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+ "Rafael J. Wysocki" <rjw@rjwysocki.net>, linux-kernel@vger.kernel.org,
+ iommu@lists.linux-foundation.org, Arnd Bergmann <arnd@arndb.de>,
+ oohall@gmail.com, Benson Leung <bleung@google.com>,
+ David Woodhouse <dwmw2@infradead.org>, Alex Levin <levinale@google.com>
 X-BeenThere: iommu@lists.linux-foundation.org
 X-Mailman-Version: 2.1.15
 Precedence: list
@@ -112,34 +106,169 @@ Content-Transfer-Encoding: 7bit
 Errors-To: iommu-bounces@lists.linux-foundation.org
 Sender: "iommu" <iommu-bounces@lists.linux-foundation.org>
 
-Hi Xiang,
-
-On Mon, Jul 06, 2020 at 08:40:27PM +0800, Xiang Zheng wrote:
-> > @@ -1836,7 +1880,20 @@ static struct arm_smmu_ctx_desc *arm_smmu_alloc_shared_cd(struct mm_struct *mm)
-> >  
-> >  	arm_smmu_init_cd(cd);
-> >  
-> > +	/*
-> > +	 * Serialize against arm_smmu_domain_finalise_s1() and
-> > +	 * arm_smmu_domain_free() as we might need to replace the private ASID
-> > +	 * from an existing CD.
-> > +	 */
-> > +	mutex_lock(&asid_lock);
-> >  	old_cd = arm_smmu_share_asid(asid);
-> > +	if (!old_cd) {
-> > +		ret = xa_insert(&asid_xa, asid, cd, GFP_KERNEL);
+On Mon, Jun 29, 2020 at 09:49:38PM -0700, Rajat Jain wrote:
+> The "ExternalFacing" devices (root ports) are still internal devices that
+> sit on the internal system fabric and thus trusted. Currently they were
+> being marked untrusted.
 > 
-> Should we use "xa_store" here? If "asid" has already been used for private, old_cd would be NULL and
-> the entry indexed by "asid" in the asid_xa remains.
+> This patch uses the platform flag to identify the external facing devices
+> and then use it to mark any downstream devices as "untrusted". The
+> external-facing devices themselves are left as "trusted". This was
+> discussed here: https://lkml.org/lkml/2020/6/10/1049
 
-Great catch, that's a bug introduced in v7. arm_smmu_share_asid() would
-allocate a new asid for the private context but does not remove the old
-entry. For the fix I think it looks clearer if arm_smmu_share_asid()
-erases the old entry before returning.
+Use the imperative mood in the commit log, as you did for 1/7.  E.g.,
+instead of "This patch uses ...", say "Use the platform flag ...".
+That helps all the commit logs read nicely together.
 
-Thanks,
-Jean
+I think this patch makes two changes that should be separated:
 
+  - Treat "external-facing" devices as internal.
+
+  - Look for the "external-facing" or "ExternalFacing" property on
+    Switch Downstream Ports as well as Root Ports.
+
+> Signed-off-by: Rajat Jain <rajatja@google.com>
+> ---
+> v2: cosmetic changes in commit log
+> 
+>  drivers/iommu/intel/iommu.c |  2 +-
+>  drivers/pci/of.c            |  2 +-
+>  drivers/pci/pci-acpi.c      | 13 +++++++------
+>  drivers/pci/probe.c         |  2 +-
+>  include/linux/pci.h         |  8 ++++++++
+>  5 files changed, 18 insertions(+), 9 deletions(-)
+> 
+> diff --git a/drivers/iommu/intel/iommu.c b/drivers/iommu/intel/iommu.c
+> index d759e7234e982..1ccb224f82496 100644
+> --- a/drivers/iommu/intel/iommu.c
+> +++ b/drivers/iommu/intel/iommu.c
+> @@ -4743,7 +4743,7 @@ static inline bool has_untrusted_dev(void)
+>  	struct pci_dev *pdev = NULL;
+>  
+>  	for_each_pci_dev(pdev)
+> -		if (pdev->untrusted)
+> +		if (pdev->untrusted || pdev->external_facing)
+
+I think checking pdev->external_facing is enough for this case,
+because it's impossible to have pdev->untrusted unless a parent has
+pdev->external_facing.
+
+IIUC, this usage is asking "might we ever have an external device?"
+as opposed to the "pdev->untrusted" uses, which are asking "is *this*
+device an external device?"
+
+>  			return true;
+>  
+>  	return false;
+> diff --git a/drivers/pci/of.c b/drivers/pci/of.c
+> index 27839cd2459f6..22727fc9558df 100644
+> --- a/drivers/pci/of.c
+> +++ b/drivers/pci/of.c
+> @@ -42,7 +42,7 @@ void pci_set_bus_of_node(struct pci_bus *bus)
+>  	} else {
+>  		node = of_node_get(bus->self->dev.of_node);
+>  		if (node && of_property_read_bool(node, "external-facing"))
+> -			bus->self->untrusted = true;
+> +			bus->self->external_facing = true;
+>  	}
+>  
+>  	bus->dev.of_node = node;
+> diff --git a/drivers/pci/pci-acpi.c b/drivers/pci/pci-acpi.c
+> index 7224b1e5f2a83..492c07805caf8 100644
+> --- a/drivers/pci/pci-acpi.c
+> +++ b/drivers/pci/pci-acpi.c
+> @@ -1213,22 +1213,23 @@ static void pci_acpi_optimize_delay(struct pci_dev *pdev,
+>  	ACPI_FREE(obj);
+>  }
+>  
+> -static void pci_acpi_set_untrusted(struct pci_dev *dev)
+> +static void pci_acpi_set_external_facing(struct pci_dev *dev)
+>  {
+>  	u8 val;
+>  
+> -	if (pci_pcie_type(dev) != PCI_EXP_TYPE_ROOT_PORT)
+> +	if (pci_pcie_type(dev) != PCI_EXP_TYPE_ROOT_PORT &&
+> +	    pci_pcie_type(dev) != PCI_EXP_TYPE_DOWNSTREAM)
+
+This looks like a change worthy of its own patch.  We used to look for
+"ExternalFacingPort" only on Root Ports; now we'll also do it for
+Switch Downstream Ports.
+
+Can you include DT and ACPI spec references if they exist?  I found
+this mention:
+https://docs.microsoft.com/en-us/windows-hardware/drivers/pci/dsd-for-pcie-root-ports
+which actually says it should only be implemented for Root Ports.
+
+It also mentions a "DmaProperty" that looks related.  Maybe Linux
+should also pay attention to this?
+
+If we do change this, should we use pcie_downstream_port(), which
+includes PCI-to-PCIe bridges as well?
+
+>  		return;
+>  	if (device_property_read_u8(&dev->dev, "ExternalFacingPort", &val))
+>  		return;
+>  
+>  	/*
+> -	 * These root ports expose PCIe (including DMA) outside of the
+> -	 * system so make sure we treat them and everything behind as
+> +	 * These root/down ports expose PCIe (including DMA) outside of the
+> +	 * system so make sure we treat everything behind them as
+>  	 * untrusted.
+>  	 */
+>  	if (val)
+> -		dev->untrusted = 1;
+> +		dev->external_facing = 1;
+>  }
+>  
+>  static void pci_acpi_setup(struct device *dev)
+> @@ -1240,7 +1241,7 @@ static void pci_acpi_setup(struct device *dev)
+>  		return;
+>  
+>  	pci_acpi_optimize_delay(pci_dev, adev->handle);
+> -	pci_acpi_set_untrusted(pci_dev);
+> +	pci_acpi_set_external_facing(pci_dev);
+>  	pci_acpi_add_edr_notifier(pci_dev);
+>  
+>  	pci_acpi_add_pm_notifier(adev, pci_dev);
+> diff --git a/drivers/pci/probe.c b/drivers/pci/probe.c
+> index 6d87066a5ecc5..8c40c00413e74 100644
+> --- a/drivers/pci/probe.c
+> +++ b/drivers/pci/probe.c
+> @@ -1552,7 +1552,7 @@ static void set_pcie_untrusted(struct pci_dev *dev)
+>  	 * untrusted as well.
+>  	 */
+>  	parent = pci_upstream_bridge(dev);
+> -	if (parent && parent->untrusted)
+> +	if (parent && (parent->untrusted || parent->external_facing))
+>  		dev->untrusted = true;
+>  }
+>  
+> diff --git a/include/linux/pci.h b/include/linux/pci.h
+> index a26be5332bba6..fe1bc603fda40 100644
+> --- a/include/linux/pci.h
+> +++ b/include/linux/pci.h
+> @@ -432,6 +432,14 @@ struct pci_dev {
+>  	 * mappings to make sure they cannot access arbitrary memory.
+>  	 */
+>  	unsigned int	untrusted:1;
+> +	/*
+> +	 * Devices are marked as external-facing using info from platform
+> +	 * (ACPI / devicetree). An external-facing device is still an internal
+> +	 * trusted device, but it faces external untrusted devices. Thus any
+> +	 * devices enumerated downstream an external-facing device is marked
+> +	 * as untrusted.
+
+This comment has a subject/verb agreement problem.
+
+> +	 */
+> +	unsigned int	external_facing:1;
+>  	unsigned int	broken_intx_masking:1;	/* INTx masking can't be used */
+>  	unsigned int	io_window_1k:1;		/* Intel bridge 1K I/O windows */
+>  	unsigned int	irq_managed:1;
+> -- 
+> 2.27.0.212.ge8ba1cc988-goog
+> 
 _______________________________________________
 iommu mailing list
 iommu@lists.linux-foundation.org
