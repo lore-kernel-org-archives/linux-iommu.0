@@ -2,144 +2,154 @@ Return-Path: <SRS0=S+y3=AR=lists.linux-foundation.org=iommu-bounces@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-2.0 required=3.0 tests=DKIM_INVALID,DKIM_SIGNED,
-	FREEMAIL_FORGED_FROMDOMAIN,FREEMAIL_FROM,HEADER_FROM_DIFFERENT_DOMAINS,
-	MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS,USER_AGENT_SANE_1 autolearn=no
-	autolearn_force=no version=3.4.0
+X-Spam-Status: No, score=-6.5 required=3.0 tests=DKIM_INVALID,DKIM_SIGNED,
+	HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_PATCH,MAILING_LIST_MULTI,SIGNED_OFF_BY,
+	SPF_HELO_NONE,SPF_PASS autolearn=ham autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id A01B4C433E0
-	for <iommu@archiver.kernel.org>; Mon,  6 Jul 2020 11:32:54 +0000 (UTC)
-Received: from fraxinus.osuosl.org (smtp4.osuosl.org [140.211.166.137])
+	by smtp.lore.kernel.org (Postfix) with ESMTP id EA3EAC433E0
+	for <iommu@archiver.kernel.org>; Mon,  6 Jul 2020 12:21:31 +0000 (UTC)
+Received: from hemlock.osuosl.org (smtp2.osuosl.org [140.211.166.133])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by mail.kernel.org (Postfix) with ESMTPS id 418D92073E
-	for <iommu@archiver.kernel.org>; Mon,  6 Jul 2020 11:32:54 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTPS id 9AF98206E6
+	for <iommu@archiver.kernel.org>; Mon,  6 Jul 2020 12:21:31 +0000 (UTC)
 Authentication-Results: mail.kernel.org;
-	dkim=fail reason="signature verification failed" (1024-bit key) header.d=web.de header.i=@web.de header.b="GTrS6hLL"
-DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 418D92073E
-Authentication-Results: mail.kernel.org; dmarc=none (p=none dis=none) header.from=web.de
+	dkim=fail reason="signature verification failed" (1024-bit key) header.d=intel.onmicrosoft.com header.i=@intel.onmicrosoft.com header.b="u0QNXF3s"
+DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 9AF98206E6
+Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=intel.com
 Authentication-Results: mail.kernel.org; spf=pass smtp.mailfrom=iommu-bounces@lists.linux-foundation.org
 Received: from localhost (localhost [127.0.0.1])
-	by fraxinus.osuosl.org (Postfix) with ESMTP id 0ADA78737C;
-	Mon,  6 Jul 2020 11:32:54 +0000 (UTC)
+	by hemlock.osuosl.org (Postfix) with ESMTP id 74C0E88182;
+	Mon,  6 Jul 2020 12:21:31 +0000 (UTC)
+X-Virus-Scanned: amavisd-new at osuosl.org
+Received: from hemlock.osuosl.org ([127.0.0.1])
+	by localhost (.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
+	with ESMTP id bOLgpraZW+kK; Mon,  6 Jul 2020 12:21:30 +0000 (UTC)
+Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [140.211.9.56])
+	by hemlock.osuosl.org (Postfix) with ESMTP id 993C68806D;
+	Mon,  6 Jul 2020 12:21:30 +0000 (UTC)
+Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
+	by lists.linuxfoundation.org (Postfix) with ESMTP id 78371C0891;
+	Mon,  6 Jul 2020 12:21:30 +0000 (UTC)
+Received: from fraxinus.osuosl.org (smtp4.osuosl.org [140.211.166.137])
+ by lists.linuxfoundation.org (Postfix) with ESMTP id 2CC58C016F
+ for <iommu@lists.linux-foundation.org>; Mon,  6 Jul 2020 12:21:29 +0000 (UTC)
+Received: from localhost (localhost [127.0.0.1])
+ by fraxinus.osuosl.org (Postfix) with ESMTP id 14814875B6
+ for <iommu@lists.linux-foundation.org>; Mon,  6 Jul 2020 12:21:29 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
 Received: from fraxinus.osuosl.org ([127.0.0.1])
-	by localhost (.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
-	with ESMTP id zqrpdmPYiOOJ; Mon,  6 Jul 2020 11:32:53 +0000 (UTC)
-Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [140.211.9.56])
-	by fraxinus.osuosl.org (Postfix) with ESMTP id 44FA187344;
-	Mon,  6 Jul 2020 11:32:53 +0000 (UTC)
-Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
-	by lists.linuxfoundation.org (Postfix) with ESMTP id 2E309C0893;
-	Mon,  6 Jul 2020 11:32:53 +0000 (UTC)
-Received: from whitealder.osuosl.org (smtp1.osuosl.org [140.211.166.138])
- by lists.linuxfoundation.org (Postfix) with ESMTP id 6ABDFC016F
- for <iommu@lists.linux-foundation.org>; Mon,  6 Jul 2020 11:32:51 +0000 (UTC)
-Received: from localhost (localhost [127.0.0.1])
- by whitealder.osuosl.org (Postfix) with ESMTP id 616AE8847B
- for <iommu@lists.linux-foundation.org>; Mon,  6 Jul 2020 11:32:51 +0000 (UTC)
-X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from whitealder.osuosl.org ([127.0.0.1])
  by localhost (.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
- with ESMTP id LoGPU0zDBrup for <iommu@lists.linux-foundation.org>;
- Mon,  6 Jul 2020 11:32:50 +0000 (UTC)
+ with ESMTP id re3jAgq63fIE for <iommu@lists.linux-foundation.org>;
+ Mon,  6 Jul 2020 12:21:27 +0000 (UTC)
 X-Greylist: domain auto-whitelisted by SQLgrey-1.7.6
-Received: from mout.web.de (mout.web.de [212.227.17.12])
- by whitealder.osuosl.org (Postfix) with ESMTPS id E8BD58847A
- for <iommu@lists.linux-foundation.org>; Mon,  6 Jul 2020 11:32:49 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=web.de;
- s=dbaedf251592; t=1594035149;
- bh=gRpai35169NN0LWLbN07VQzDnRwm2ItrPh+MTVyFv7Y=;
- h=X-UI-Sender-Class:Subject:To:Cc:References:From:Date:In-Reply-To;
- b=GTrS6hLLgZgRYAh+ONOfLqYIpNsTtiM1Y7BcTCac7M9Rqu2I4ig6KPiepxZoqN2B5
- AB0JPcEwwARtLqYhlwRCyu5BcABLayhiFmb3JAdTlu4Nju7Qmk1kzmIk5WTKDXtU+P
- IAj4UZuhWAFlGEM1XM5UgjyiCxANOhDE0EE3i9OA=
-X-UI-Sender-Class: c548c8c5-30a9-4db5-a2e7-cb6cb037b8f9
-Received: from [192.168.1.2] ([2.244.113.119]) by smtp.web.de (mrweb103
- [213.165.67.124]) with ESMTPSA (Nemesis) id 0MLPRu-1jrr832wsM-000dOw; Mon, 06
- Jul 2020 13:32:29 +0200
-Subject: Re: [RFC PATCH] vfio: type1: fix kthread use case
-To: Hillf Danton <hdanton@sina.com>,
- Alex Williamson <alex.williamson@redhat.com>,
- iommu@lists.linux-foundation.org
-References: <20200706104915.11460-1-hdanton@sina.com>
-From: Markus Elfring <Markus.Elfring@web.de>
-Autocrypt: addr=Markus.Elfring@web.de; prefer-encrypt=mutual; keydata=
- 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 FEE=
-Message-ID: <83a37410-1740-1a50-9d2d-6ad7587b8532@web.de>
-Date: Mon, 6 Jul 2020 13:32:18 +0200
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101
- Thunderbird/68.9.0
+Received: from mga01.intel.com (mga01.intel.com [192.55.52.88])
+ by fraxinus.osuosl.org (Postfix) with ESMTPS id C445187474
+ for <iommu@lists.linux-foundation.org>; Mon,  6 Jul 2020 12:21:27 +0000 (UTC)
+IronPort-SDR: r/8LkzRdBZKgmNTqP2+1GxtFSEN0tcSRyI5/1UeeaiMfWuiC9p9fItlWm4jgNdohlDrhaWEpz1
+ w+LwjmeEBoVw==
+X-IronPort-AV: E=McAfee;i="6000,8403,9673"; a="165467751"
+X-IronPort-AV: E=Sophos;i="5.75,318,1589266800"; d="scan'208";a="165467751"
+X-Amp-Result: SKIPPED(no attachment in message)
+X-Amp-File-Uploaded: False
+Received: from orsmga002.jf.intel.com ([10.7.209.21])
+ by fmsmga101.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384;
+ 06 Jul 2020 05:21:27 -0700
+IronPort-SDR: fmipxoNdk+Xq8a1Kf8k8iLHO5fbzIUfIGz36fTc6c6KU8cqhj5WnyJNY67YSaXc3J/mf8YF9WE
+ 6XM9jZIWsuCw==
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="5.75,318,1589266800"; d="scan'208";a="296992510"
+Received: from fmsmsx108.amr.corp.intel.com ([10.18.124.206])
+ by orsmga002.jf.intel.com with ESMTP; 06 Jul 2020 05:21:26 -0700
+Received: from FMSEDG002.ED.cps.intel.com (10.1.192.134) by
+ FMSMSX108.amr.corp.intel.com (10.18.124.206) with Microsoft SMTP Server (TLS)
+ id 14.3.439.0; Mon, 6 Jul 2020 05:21:26 -0700
+Received: from NAM10-BN7-obe.outbound.protection.outlook.com (104.47.70.100)
+ by edgegateway.intel.com (192.55.55.69) with Microsoft SMTP Server (TLS) id
+ 14.3.439.0; Mon, 6 Jul 2020 05:21:00 -0700
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=Spj8j5QHw1JLmElSoP29h6ktP8m7jGWAxI0KL7f08eXs4NmQ0gPUJH2Fwi0L2Ox6Q3aKc2O8759OllLLKRfGjsN8o1f2g+TALammOPeDPjzsw8WCPBcBbhuzo1XWo5RtvUjIuMfyhHkzk6rxeRloMIZB2Zt3QO6sQ0wBHF7yJ/xbDcQ45J5dnXs49HORDW3sGoW39xdr3mRqtXaOvSMNFmmfdmNs3OYss2KR9Mom5V6k5iz6tekke+jqhz1aJNZ1yBpqqDnD0ozLD7c3Z9cgCesoYiMFzLKEF7amagWBmJ6+xrAnm4Y183AZotTFBwY8pfbMfozaG6q+Gt3hmgpp7Q==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com; 
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=BJeFqEUawpf62hVaj65b3Giw5ag2dvR2lOGJotoO0/Q=;
+ b=EBQ8lArzyJOUNoH1DLYPl1M/95Nnv8wK+yzOcrg/fUjLxvC0MDg1dVSmpBkr2+EELxRlRgruCAnjM0H/rd6qx9Su0DPHhb2tj5NEWFPAb9xi2CzrF9AOcBuNRc3M8BLTbLnR2cAOxH9GpvZJRB3CGNSng02XLKVb+jiOFo0Gw95m+EcaITAjB+4XunJHrx0IAocfCbXW9Tt9A9gqJ0SXx0ZvmeEc0z8dl5fZkgaU6KuCH2jpWyk+8ziJICwI9A+tZlZj1FKZuLHa8HYH7sxwy0PU8LICzzLY1/sG100JVn5oqCQOMYByJ+Hw2UOX0G0qGNSL6TcHnrGdyO1FJ7ialA==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=intel.com; dmarc=pass action=none header.from=intel.com;
+ dkim=pass header.d=intel.com; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=intel.onmicrosoft.com; 
+ s=selector2-intel-onmicrosoft-com;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=BJeFqEUawpf62hVaj65b3Giw5ag2dvR2lOGJotoO0/Q=;
+ b=u0QNXF3sr+77vMFIfeaxyvarotOh4ugOdGNL9tbqyJ3SnHfxL9Wky6IfShMjg0gguYQw3mfCQw5gzfYv7I5XaQZa3us41ot2I59WJOua++ZLI/hcG2d6gS2831PnkUvamicr6RTjNI1DFZCmaoow3dn/sfs+NeiVTuqyUigYYkI=
+Received: from DM5PR11MB1435.namprd11.prod.outlook.com (2603:10b6:4:7::18) by
+ DM5PR11MB2009.namprd11.prod.outlook.com (2603:10b6:3:15::17) with
+ Microsoft
+ SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.20.3153.27; Mon, 6 Jul 2020 12:20:26 +0000
+Received: from DM5PR11MB1435.namprd11.prod.outlook.com
+ ([fe80::9002:97a2:d8c0:8364]) by DM5PR11MB1435.namprd11.prod.outlook.com
+ ([fe80::9002:97a2:d8c0:8364%10]) with mapi id 15.20.3153.029; Mon, 6 Jul 2020
+ 12:20:26 +0000
+From: "Liu, Yi L" <yi.l.liu@intel.com>
+To: Auger Eric <eric.auger@redhat.com>, "alex.williamson@redhat.com"
+ <alex.williamson@redhat.com>, "baolu.lu@linux.intel.com"
+ <baolu.lu@linux.intel.com>, "joro@8bytes.org" <joro@8bytes.org>
+Subject: RE: [PATCH v4 02/15] iommu: Report domain nesting info
+Thread-Topic: [PATCH v4 02/15] iommu: Report domain nesting info
+Thread-Index: AQHWUfUZPmXy4q2mvk6wmPCF23Zkz6j6TVgAgAArcYA=
+Date: Mon, 6 Jul 2020 12:20:26 +0000
+Message-ID: <DM5PR11MB14352CBCB1966C0B9E418C7CC3690@DM5PR11MB1435.namprd11.prod.outlook.com>
+References: <1593861989-35920-1-git-send-email-yi.l.liu@intel.com>
+ <1593861989-35920-3-git-send-email-yi.l.liu@intel.com>
+ <b9479f61-7f9e-e0ae-5125-ab15f59b1ece@redhat.com>
+In-Reply-To: <b9479f61-7f9e-e0ae-5125-ab15f59b1ece@redhat.com>
+Accept-Language: en-US
+Content-Language: en-US
+X-MS-Has-Attach: 
+X-MS-TNEF-Correlator: 
+dlp-reaction: no-action
+dlp-version: 11.2.0.6
+dlp-product: dlpe-windows
+authentication-results: redhat.com; dkim=none (message not signed)
+ header.d=none;redhat.com; dmarc=none action=none header.from=intel.com;
+x-originating-ip: [192.198.147.207]
+x-ms-publictraffictype: Email
+x-ms-office365-filtering-correlation-id: f54fc402-e0a8-476e-c389-08d821a6f733
+x-ms-traffictypediagnostic: DM5PR11MB2009:
+x-ld-processed: 46c98d88-e344-4ed4-8496-4ed7712e255d,ExtAddr
+x-ms-exchange-transport-forked: True
+x-microsoft-antispam-prvs: <DM5PR11MB2009E71816A010378C908AE0C3690@DM5PR11MB2009.namprd11.prod.outlook.com>
+x-ms-oob-tlc-oobclassifiers: OLM:9508;
+x-forefront-prvs: 04569283F9
+x-ms-exchange-senderadcheck: 1
+x-microsoft-antispam: BCL:0;
+x-microsoft-antispam-message-info: xn/I0IrawQEYPv2g/8z4nxiV2CERDn7r9cb36/0iFqmBg3ckdjT4uarVyoT7fmULkq9E/YyCVzy2MVMWAOwzhMyrKk6odWOWnnM5Utyw0oSVYAr5Ots4Xo+tTj9jdyCP0rN51mLWiBYcFfUGbiaGQEUEJ3ekke/C2pkajK50d5r2bCvwXatfuQyhIeKy3y3TKA0jLlEZOiAmVWakogJWRIQSFRrAgHLuRo8Rd/9MRsdbMlajMuZ82houPIv7z0gb8XyHw7jHiHUdXjg37v9lg7SZVpKM6kyMRYKOB871wg3ZPb3qgt2OkoDVkX5Y4EFkf6UcgXNNQesSmQ0Xtu4sHg==
+x-forefront-antispam-report: CIP:255.255.255.255; CTRY:; LANG:en; SCL:1; SRV:;
+ IPV:NLI; SFV:NSPM; H:DM5PR11MB1435.namprd11.prod.outlook.com; PTR:; CAT:NONE;
+ SFTY:;
+ SFS:(4636009)(396003)(346002)(366004)(39860400002)(376002)(136003)(54906003)(33656002)(5660300002)(86362001)(52536014)(76116006)(478600001)(83380400001)(110136005)(7416002)(316002)(4326008)(186003)(7696005)(8936002)(71200400001)(8676002)(66476007)(66946007)(66556008)(64756008)(66446008)(26005)(55016002)(9686003)(2906002)(6506007)(53546011);
+ DIR:OUT; SFP:1102; 
+x-ms-exchange-antispam-messagedata: Ix293tchpAxIBm8yt7PJtbBdr2a5btxivflIsFjYlhSJRgky/T1PjntIyggT8gCwNlCNbdJcX2i1YUYbNPbGIahQyq3uaTnOrostbDlcG37pTpm2gJ4VLsbaefNVP7Dmy+FcVwxqGSLJ2Tg0jWOyqzvMAgZkWSH8ZIF6ddYZf4UynzKS4vEvtVJShEgxLeT4P+rjlz27rf/obu8mxypfX1CKhKdqiqnuBlO8mghtVimgildRRfzs5wS/w/Jbmv1yCZjO4fAC2CZjdo05m6fuwQ9rfE69ar2wjfEiT+CkDgZXPCTq4FU4UdZ5dyRUGUtOajtrAt047hRZit1Nszqdk8noewvJeDc3UwRp2i1dFtktCEkc/qRkHbiIv5zQyRv8JzVhdi18VflK2nz7W5zaXt6K6hO3qAW9wKQEzqCQF+KeNWpBdYSGo2WPxqJ3o8eEbdd5Tcuf7lKKul880NMWCSPZoHzXfa4oZzBhU1vGClq8tyB+X80LCE0eM6zF94NL
 MIME-Version: 1.0
-In-Reply-To: <20200706104915.11460-1-hdanton@sina.com>
-Content-Language: en-GB
-X-Provags-ID: V03:K1:82wdwGxFVFkq9HL6vEh1uDc5gfmhrZSMuSqbKOkJjQAbChF8zAB
- NpHAONVorfBhFLN22r3EziqV1MyAYAQp1UnFO4voh0FG0xMlw8UZiklpjBZQg+oA/U/J9Ub
- lZhUu0uQvqOB/Pge5WyIFf64HQBCwBgfugSvijbJ6d7iomwvx4Wml2kIoCqdk/Gj7JlYDC7
- dvrHLLNCkNOguGw3DJG2w==
-X-UI-Out-Filterresults: notjunk:1;V03:K0:ERWNugBg3AE=:/XqPtwfCrwddDWtUo+0Gjk
- l8VnKvoPgnjUgRWON5Chcacd44vS5L0g2O89j/gNS3uOxPVA72Cx1C2bkKXHAFntjML3MltgR
- zwMqDhPZ8KrrS33IPXgFCe9rMFhzDFhhHMsbg8+Nt4sO3INJksKcL5wEI79ZWuoFR7+zXY92z
- Y8yYbDyaQHME9YFfC5Ab2RWdiO/VE4EYuNcofrI5kTs4dAAW43F0gFdsrFks+1kon+kzKSsbv
- 5miVus9zVZqc32Uh70QbJ8hGCsrV9gzj5MiF9/CNv0KMrqK4vqwJ4NL5J8ev4Qr5ppgN/6VAo
- oQgb2wIlyIg8s6p2sgLrzEpMjm+jsddvcc5WR5tsIDyEv/qPpCkpRcoOLhteMKfT+lUHDV9ef
- CPAP6EIa5H89wBwPqbfrMF3ZpZnonOqVcaIl1+gf4ENCR6uIwGA4QtQIvE4ZuxD8r/t0it8fH
- 3q27uhuiGvDMHrJBgzT/Is7siJFKlk4/pvmDIkca4d9EjSVanK9rJzLirjans6k81N62dRQS3
- NCSMRgKzzgz6O6U2jYiQVhb3Bfm30u56dK1w9QjqdfXKkZeB2FULIqEi3ygG3nQ8fwafJ5uSb
- yTeYDlJ9htk/TDkXLCezGTewEfShq0ZQiQOQt8iFB4TeNueFvDhoBRKTkfICnbFFDenTq4Qo7
- cTA+lFBws15jvCzMSvoncWC51E4jc4hbqQgiSOlMoDOWHsHLrIjW75zTLLZyfOqHWPrqvIXNd
- g/tPFpVqHqLyeWCBIXLnyOqFg6d6iX77HpRgGJ0BI/kuNigsUOw06whuIfllDKzsvcL8RDimq
- 1AZNBPKSJieEPtkf+9iYAE4WWH2ngobllCaq1diouJX7f7nD1Y1vVGiZWW40F6GQoH0CfrAx/
- UHMi/hsqDW4KQyRIMQy4nuBbfhlEZnrWdp6ODSB34Nxq5S1MejlUYlvzomMVsKGUBFypnSM6t
- UsY/z/z3SuG53CAQm6424j6ch5Blcr31+Fm+YMV2KCEQbHeS+ICvujAzASWEnFxw8UmDY4zRI
- qm2Wu/nDEiWTE7gBJLaE5+6Vc489XL85exiCwZd3Fbitrz3J6NhOTaKKZNmzUDZQA2Hi7qUA/
- cjLyN2W7c6ko953K9xJRZdmkRiDKnduNySa+nmyM2evZykxrbGJwMsYau2wlXuTYVlXkSItWj
- WHs6wShOpGTMMOLA8QVRCLH8oM8H+/hHtkhLYE516wuF/8jzQgwM9wdczsV94P6hZZz75c1C4
- 4NHK04XhsmysXuIhs
-Cc: Kevin Tian <kevin.tian@intel.com>, Yan Zhao <yan.y.zhao@intel.com>,
- kernel-janitors@vger.kernel.org, linux-kernel@vger.kernel.org,
- Christoph Hellwig <hch@lst.de>
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-AuthSource: DM5PR11MB1435.namprd11.prod.outlook.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: f54fc402-e0a8-476e-c389-08d821a6f733
+X-MS-Exchange-CrossTenant-originalarrivaltime: 06 Jul 2020 12:20:26.7658 (UTC)
+X-MS-Exchange-CrossTenant-fromentityheader: Hosted
+X-MS-Exchange-CrossTenant-id: 46c98d88-e344-4ed4-8496-4ed7712e255d
+X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
+X-MS-Exchange-CrossTenant-userprincipalname: GMFu4wmdq5pchzoiLkxIsLVbm3kPZPGKkTxyqeOZlJwVjLfa80bE0/oeapxd/qsOwLhRMOn6n902/cWP1QT7uw==
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: DM5PR11MB2009
+X-OriginatorOrg: intel.com
+Cc: "jean-philippe@linaro.org" <jean-philippe@linaro.org>, "Tian,
+ Kevin" <kevin.tian@intel.com>, "Raj, Ashok" <ashok.raj@intel.com>,
+ "kvm@vger.kernel.org" <kvm@vger.kernel.org>,
+ "stefanha@gmail.com" <stefanha@gmail.com>, "Tian, 
+ Jun J" <jun.j.tian@intel.com>,
+ "iommu@lists.linux-foundation.org" <iommu@lists.linux-foundation.org>,
+ "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>, "Sun,
+ Yi Y" <yi.y.sun@intel.com>, "Wu, Hao" <hao.wu@intel.com>
 X-BeenThere: iommu@lists.linux-foundation.org
 X-Mailman-Version: 2.1.15
 Precedence: list
@@ -152,17 +162,187 @@ List-Post: <mailto:iommu@lists.linux-foundation.org>
 List-Help: <mailto:iommu-request@lists.linux-foundation.org?subject=help>
 List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
  <mailto:iommu-request@lists.linux-foundation.org?subject=subscribe>
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: base64
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: 7bit
 Errors-To: iommu-bounces@lists.linux-foundation.org
 Sender: "iommu" <iommu-bounces@lists.linux-foundation.org>
 
-4oCmCj4gKysrIGIvZHJpdmVycy92ZmlvL3ZmaW9faW9tbXVfdHlwZTEuYwo+IEBAIC0yNzk4LDcg
-KzI3OTgsOCBAQCBzdGF0aWMgaW50IHZmaW9faW9tbXVfdHlwZTFfZG1hX3J3X2NodW5rCuKApgo+
-IC0JYm9vbCBrdGhyZWFkID0gY3VycmVudC0+bW0gPT0gTlVMTDsKPiArCWJvb2wga3RocmVhZCA9
-IGN1cnJlbnQtPmZsYWdzICYgUEZfS1RIUkVBRDsKPiArCWJvb2wgdXNlX21tID0gY3VycmVudC0+
-bW0gPT0gTlVMTDsK4oCmCgpDYW4gaXQgYmUgaGVscGZ1bCB0byBjb252ZXJ0IGluaXRpYWxpc2F0
-aW9ucyBmb3IgdGhlc2UgdmFyaWFibGVzCmludG8gbGF0ZXIgYXNzaWdubWVudHM/CgpSZWdhcmRz
-LApNYXJrdXMKX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX18K
-aW9tbXUgbWFpbGluZyBsaXN0CmlvbW11QGxpc3RzLmxpbnV4LWZvdW5kYXRpb24ub3JnCmh0dHBz
-Oi8vbGlzdHMubGludXhmb3VuZGF0aW9uLm9yZy9tYWlsbWFuL2xpc3RpbmZvL2lvbW11
+Hi Eric,
+
+> From: Auger Eric <eric.auger@redhat.com>
+> Sent: Monday, July 6, 2020 5:34 PM
+> 
+> On 7/4/20 1:26 PM, Liu Yi L wrote:
+> > IOMMUs that support nesting translation needs report the capability info
+> need to report
+> > to userspace, e.g. the format of first level/stage paging structures.
+> >
+> > This patch reports nesting info by DOMAIN_ATTR_NESTING. Caller can get
+> > nesting info after setting DOMAIN_ATTR_NESTING.
+> >
+> > Cc: Kevin Tian <kevin.tian@intel.com>
+> > CC: Jacob Pan <jacob.jun.pan@linux.intel.com>
+> > Cc: Alex Williamson <alex.williamson@redhat.com>
+> > Cc: Eric Auger <eric.auger@redhat.com>
+> > Cc: Jean-Philippe Brucker <jean-philippe@linaro.org>
+> > Cc: Joerg Roedel <joro@8bytes.org>
+> > Cc: Lu Baolu <baolu.lu@linux.intel.com>
+> > Signed-off-by: Liu Yi L <yi.l.liu@intel.com>
+> > Signed-off-by: Jacob Pan <jacob.jun.pan@linux.intel.com>
+> > ---
+> > v3 -> v4:
+> > *) split the SMMU driver changes to be a separate patch
+> > *) move the @addr_width and @pasid_bits from vendor specific
+> >    part to generic part.
+> > *) tweak the description for the @features field of struct
+> >    iommu_nesting_info.
+> > *) add description on the @data[] field of struct iommu_nesting_info
+> >
+> > v2 -> v3:
+> > *) remvoe cap/ecap_mask in iommu_nesting_info.
+> > *) reuse DOMAIN_ATTR_NESTING to get nesting info.
+> > *) return an empty iommu_nesting_info for SMMU drivers per Jean'
+> >    suggestion.
+> > ---
+> >  include/uapi/linux/iommu.h | 78
+> ++++++++++++++++++++++++++++++++++++++++++++++
+> >  1 file changed, 78 insertions(+)
+> >
+> > diff --git a/include/uapi/linux/iommu.h b/include/uapi/linux/iommu.h
+> > index 1afc661..1bfc032 100644
+> > --- a/include/uapi/linux/iommu.h
+> > +++ b/include/uapi/linux/iommu.h
+> > @@ -332,4 +332,82 @@ struct iommu_gpasid_bind_data {
+> >  	} vendor;
+> >  };
+> >
+> > +/*
+> > + * struct iommu_nesting_info - Information for nesting-capable IOMMU.
+> > + *				user space should check it before using
+> > + *				nesting capability.
+> alignment?
+
+oh, yes, will do it.
+
+> > + *
+> > + * @size:	size of the whole structure
+> > + * @format:	PASID table entry format, the same definition with
+> > + *		@format of struct iommu_gpasid_bind_data.
+> the same definition as struct iommu_gpasid_bind_data @format?
+
+right. yours is much better.
+
+> > + * @features:	supported nesting features.
+> > + * @flags:	currently reserved for future extension.
+> > + * @addr_width:	The output addr width of first level/stage translation
+> > + * @pasid_bits:	Maximum supported PASID bits, 0 represents no PASID
+> > + *		support.
+> > + * @data:	vendor specific cap info. data[] structure type can be deduced
+> > + *		from @format field.
+> > + *
+> > + *
+> +===============+===================================================
+> ===+
+> > + * | feature       |  Notes                                               |
+> > + *
+> +===============+===================================================
+> ===+
+> > + * | SYSWIDE_PASID |  PASIDs are managed in system-wide, instead of per   |
+> > + * |               |  device. When a device is assigned to userspace or   |
+> > + * |               |  VM, proper uAPI (userspace driver framework uAPI,   |
+> > + * |               |  e.g. VFIO) must be used to allocate/free PASIDs for |
+> > + * |               |  the assigned device.                                |
+> > + * +---------------+------------------------------------------------------+
+> > + * | BIND_PGTBL    |  The owner of the first level/stage page table must  |
+> > + * |               |  explicitly bind the page table to associated PASID  |
+> > + * |               |  (either the one specified in bind request or the    |
+> > + * |               |  default PASID of iommu domain), through userspace   |
+> > + * |               |  driver framework uAPI (e.g. VFIO_IOMMU_NESTING_OP). |
+> > + * +---------------+------------------------------------------------------+
+> > + * | CACHE_INVLD   |  The owner of the first level/stage page table must  |
+> > + * |               |  explicitly invalidate the IOMMU cache through uAPI  |
+> > + * |               |  provided by userspace driver framework (e.g. VFIO)  |
+> > + * |               |  according to vendor-specific requirement when       |
+> > + * |               |  changing the page table.                            |
+> > + * +---------------+------------------------------------------------------+
+> Do you foresee cases where BIND_PGTBL and CACHE_INVLD shouldn't be
+> exposed as features?
+
+sorry, I didn't quite get it. could you explain a little bit more. :-)
+
+> > + *
+> > + * @data[] types defined for @format:
+> > + *
+> +================================+==================================
+> ===+
+> > + * | @format                        | @data[]                             |
+> > + *
+> +================================+==================================
+> ===+
+> > + * | IOMMU_PASID_FORMAT_INTEL_VTD   | struct iommu_nesting_info_vtd       |
+> > + * +--------------------------------+-------------------------------------+
+> > + *
+> > + */
+> > +struct iommu_nesting_info {
+> > +	__u32	size;
+> > +	__u32	format;
+> > +	__u32	features;
+> > +#define IOMMU_NESTING_FEAT_SYSWIDE_PASID	(1 << 0)
+> > +#define IOMMU_NESTING_FEAT_BIND_PGTBL		(1 << 1)
+> > +#define IOMMU_NESTING_FEAT_CACHE_INVLD		(1 << 2)
+> In other structs the values seem to be defined before the field
+
+not sure. :-) I mimics the below struct from uapi/vfio.h
+
+struct vfio_iommu_type1_dma_map {
+        __u32   argsz;
+        __u32   flags;
+#define VFIO_DMA_MAP_FLAG_READ (1 << 0)         /* readable from device */
+#define VFIO_DMA_MAP_FLAG_WRITE (1 << 1)        /* writable from device */
+        __u64   vaddr;                          /* Process virtual address */
+        __u64   iova;                           /* IO virtual address */
+        __u64   size;                           /* Size of mapping (bytes) */
+};
+
+> > +	__u32	flags;
+> > +	__u16	addr_width;
+> > +	__u16	pasid_bits;
+> > +	__u32	padding;
+> > +	__u8	data[];
+> > +};
+> > +
+> > +/*
+> > + * struct iommu_nesting_info_vtd - Intel VT-d specific nesting info
+> > + *
+> spurious line
+
+yes, will remove this line.
+
+Regards,
+Yi Liu
+
+> > + *
+> > + * @flags:	VT-d specific flags. Currently reserved for future
+> > + *		extension.
+> > + * @cap_reg:	Describe basic capabilities as defined in VT-d capability
+> > + *		register.
+> > + * @ecap_reg:	Describe the extended capabilities as defined in VT-d
+> > + *		extended capability register.
+> > + */
+> > +struct iommu_nesting_info_vtd {
+> > +	__u32	flags;
+> > +	__u32	padding;
+> > +	__u64	cap_reg;
+> > +	__u64	ecap_reg;
+> > +};
+> > +
+> >  #endif /* _UAPI_IOMMU_H */
+> >
+> Thanks
+> 
+> Eric
+
+_______________________________________________
+iommu mailing list
+iommu@lists.linux-foundation.org
+https://lists.linuxfoundation.org/mailman/listinfo/iommu
