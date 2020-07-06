@@ -2,157 +2,145 @@ Return-Path: <SRS0=S+y3=AR=lists.linux-foundation.org=iommu-bounces@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-6.5 required=3.0 tests=DKIM_INVALID,DKIM_SIGNED,
-	HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_PATCH,MAILING_LIST_MULTI,SIGNED_OFF_BY,
-	SPF_HELO_NONE,SPF_PASS autolearn=ham autolearn_force=no version=3.4.0
+X-Spam-Status: No, score=-2.0 required=3.0 tests=DKIM_INVALID,DKIM_SIGNED,
+	FREEMAIL_FORGED_FROMDOMAIN,FREEMAIL_FROM,HEADER_FROM_DIFFERENT_DOMAINS,
+	MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS,USER_AGENT_SANE_1 autolearn=no
+	autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 17C18C433DF
-	for <iommu@archiver.kernel.org>; Mon,  6 Jul 2020 13:26:25 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 9C24AC433E0
+	for <iommu@archiver.kernel.org>; Mon,  6 Jul 2020 13:34:50 +0000 (UTC)
 Received: from hemlock.osuosl.org (smtp2.osuosl.org [140.211.166.133])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by mail.kernel.org (Postfix) with ESMTPS id D8C48206F5
-	for <iommu@archiver.kernel.org>; Mon,  6 Jul 2020 13:26:24 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTPS id 5944E20702
+	for <iommu@archiver.kernel.org>; Mon,  6 Jul 2020 13:34:50 +0000 (UTC)
 Authentication-Results: mail.kernel.org;
-	dkim=fail reason="signature verification failed" (1024-bit key) header.d=intel.onmicrosoft.com header.i=@intel.onmicrosoft.com header.b="ONUCHVK2"
-DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org D8C48206F5
-Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=intel.com
+	dkim=fail reason="signature verification failed" (1024-bit key) header.d=web.de header.i=@web.de header.b="dykUl5Z/"
+DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 5944E20702
+Authentication-Results: mail.kernel.org; dmarc=none (p=none dis=none) header.from=web.de
 Authentication-Results: mail.kernel.org; spf=pass smtp.mailfrom=iommu-bounces@lists.linux-foundation.org
 Received: from localhost (localhost [127.0.0.1])
-	by hemlock.osuosl.org (Postfix) with ESMTP id B584388276;
-	Mon,  6 Jul 2020 13:26:23 +0000 (UTC)
+	by hemlock.osuosl.org (Postfix) with ESMTP id 8257088C7F;
+	Mon,  6 Jul 2020 13:34:49 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
 Received: from hemlock.osuosl.org ([127.0.0.1])
 	by localhost (.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
-	with ESMTP id 9nbfyQK-+ikf; Mon,  6 Jul 2020 13:26:22 +0000 (UTC)
+	with ESMTP id 9Yaazymtl0TJ; Mon,  6 Jul 2020 13:34:48 +0000 (UTC)
 Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [140.211.9.56])
-	by hemlock.osuosl.org (Postfix) with ESMTP id B31A288437;
-	Mon,  6 Jul 2020 13:26:22 +0000 (UTC)
+	by hemlock.osuosl.org (Postfix) with ESMTP id BC59A88C67;
+	Mon,  6 Jul 2020 13:34:48 +0000 (UTC)
 Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
-	by lists.linuxfoundation.org (Postfix) with ESMTP id 847CAC08A9;
-	Mon,  6 Jul 2020 13:26:22 +0000 (UTC)
-Received: from fraxinus.osuosl.org (smtp4.osuosl.org [140.211.166.137])
- by lists.linuxfoundation.org (Postfix) with ESMTP id 3B249C016F
- for <iommu@lists.linux-foundation.org>; Mon,  6 Jul 2020 13:26:21 +0000 (UTC)
+	by lists.linuxfoundation.org (Postfix) with ESMTP id 7CBF4C0893;
+	Mon,  6 Jul 2020 13:34:48 +0000 (UTC)
+Received: from silver.osuosl.org (smtp3.osuosl.org [140.211.166.136])
+ by lists.linuxfoundation.org (Postfix) with ESMTP id F35BDC016F
+ for <iommu@lists.linux-foundation.org>; Mon,  6 Jul 2020 13:34:47 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
- by fraxinus.osuosl.org (Postfix) with ESMTP id 2918886D15
- for <iommu@lists.linux-foundation.org>; Mon,  6 Jul 2020 13:26:21 +0000 (UTC)
+ by silver.osuosl.org (Postfix) with ESMTP id D6E2C25D82
+ for <iommu@lists.linux-foundation.org>; Mon,  6 Jul 2020 13:34:47 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from fraxinus.osuosl.org ([127.0.0.1])
+Received: from silver.osuosl.org ([127.0.0.1])
  by localhost (.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
- with ESMTP id ysSZlHdKcSXH for <iommu@lists.linux-foundation.org>;
- Mon,  6 Jul 2020 13:26:20 +0000 (UTC)
+ with ESMTP id LITY8LGcphKx for <iommu@lists.linux-foundation.org>;
+ Mon,  6 Jul 2020 13:34:46 +0000 (UTC)
 X-Greylist: domain auto-whitelisted by SQLgrey-1.7.6
-Received: from mga17.intel.com (mga17.intel.com [192.55.52.151])
- by fraxinus.osuosl.org (Postfix) with ESMTPS id DB01B86CA7
- for <iommu@lists.linux-foundation.org>; Mon,  6 Jul 2020 13:26:19 +0000 (UTC)
-IronPort-SDR: ehb54q9k76GjOmk4qAy4leaw7Y+eLCK2j8MRd/p74rD8zS9OGNCt5pFCx91PdoBcsPB4c0qxkj
- Nei4PpB/Qyyg==
-X-IronPort-AV: E=McAfee;i="6000,8403,9673"; a="127486037"
-X-IronPort-AV: E=Sophos;i="5.75,320,1589266800"; d="scan'208";a="127486037"
-X-Amp-Result: SKIPPED(no attachment in message)
-X-Amp-File-Uploaded: False
-Received: from fmsmga008.fm.intel.com ([10.253.24.58])
- by fmsmga107.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384;
- 06 Jul 2020 06:26:17 -0700
-IronPort-SDR: PlfddyEk1bL/1wHCJhz1LRBKWsyYCwQ7l52m67FgQYY0/Rj3i2N4KfhCTFrgsV+EWlRihxxeEp
- 24FJmg7fOuLw==
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.75,320,1589266800"; d="scan'208";a="267920016"
-Received: from orsmsx104.amr.corp.intel.com ([10.22.225.131])
- by fmsmga008.fm.intel.com with ESMTP; 06 Jul 2020 06:26:18 -0700
-Received: from ORSEDG001.ED.cps.intel.com (10.7.248.4) by
- ORSMSX104.amr.corp.intel.com (10.22.225.131) with Microsoft SMTP Server (TLS)
- id 14.3.439.0; Mon, 6 Jul 2020 06:26:17 -0700
-Received: from NAM12-BN8-obe.outbound.protection.outlook.com (104.47.55.171)
- by edgegateway.intel.com (134.134.137.100) with Microsoft SMTP Server (TLS)
- id 14.3.439.0; Mon, 6 Jul 2020 06:26:17 -0700
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=SU6KDqY+87PkfKNkMHAQm4DlfEGQ/AQGaMOt6K+rQd9eJRZMFNzNomq4DAtFdCLoTT4SnHzhtwlnguBOILKJHOx6uZzEfEonqOGB7+mpYGfyj8hmFh+KtzCOEv7/Ft0FEYUh+a8hd/nCyylqkhQ2HGucvUaTgIBJ+Oshahf22VwfiVuChTMTrnCBnmIJTh/m4BmmHWIWLyf4QFW1NZNskjydhW+4QFO50o+Kj6//ZivVHqGZr9Wu+kpfgYFqfpbK1v4+26py2IlpK/7RAC+ulj0Hd7JABMwwsh+BkXzeazgrTHnuH19JSuCucwfPFJ5/I1X0TLve0eKz7t4uJVLo7A==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com; 
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=xiOZxDh1JoZOfE0etzh0xWvjUMdIxADic7Q0TwX/UOw=;
- b=L7XbLMRr75N6drj54Tjy8gtCwLOMSYVs7DxGwMoUNWB6q80jgzAVhrNQh+WmciFaIHclz3rDHQTMnrS/cG1yRzpHGaGiPn3R3IuK5qrvNwuAKO9YqLyIzxYDmuwE4rY6kqDOFl3EsFmaKh6J91Eexph3mCFwX7Ur3/RV7lEFySk6GUEroFAyZX9FZT5DvQjey3craDI0GshPONC6cMtOpsSGv08/w7fhdYUi07Tuw0Y5MsAW/WuEJxX/LOYdfDIsQpWvceFJ9t2Lke7S3gEFbV0vI4nzBZ7n/6JUDhnvRwlDNcIKtugTS1S2vbm+CFCfVU4jz2slLQrf+2Rcj5YUXg==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=intel.com; dmarc=pass action=none header.from=intel.com;
- dkim=pass header.d=intel.com; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=intel.onmicrosoft.com; 
- s=selector2-intel-onmicrosoft-com;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=xiOZxDh1JoZOfE0etzh0xWvjUMdIxADic7Q0TwX/UOw=;
- b=ONUCHVK2ydL9CnM7LmE0bukz4V2vKQYMqetwucJp+wepJaM+5+SK6EDqs4rAJOOzg7oa2BztrSjum5OWM7D6T2zfqEL7QGrzXkS5eSma+8j5GSRXjQC9V4EtRbYS6uLy4NawlFkSxazyWvGKkdFlN091oNVeLoFYZ/UwgPqhe04=
-Received: from DM5PR11MB1435.namprd11.prod.outlook.com (2603:10b6:4:7::18) by
- DM6PR11MB3595.namprd11.prod.outlook.com (2603:10b6:5:142::16) with
- Microsoft
- SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.20.3153.23; Mon, 6 Jul 2020 13:26:15 +0000
-Received: from DM5PR11MB1435.namprd11.prod.outlook.com
- ([fe80::9002:97a2:d8c0:8364]) by DM5PR11MB1435.namprd11.prod.outlook.com
- ([fe80::9002:97a2:d8c0:8364%10]) with mapi id 15.20.3153.029; Mon, 6 Jul 2020
- 13:26:15 +0000
-From: "Liu, Yi L" <yi.l.liu@intel.com>
-To: Auger Eric <eric.auger@redhat.com>, "alex.williamson@redhat.com"
- <alex.williamson@redhat.com>, "baolu.lu@linux.intel.com"
- <baolu.lu@linux.intel.com>, "joro@8bytes.org" <joro@8bytes.org>
-Subject: RE: [PATCH v4 03/15] iommu/smmu: Report empty domain nesting info
-Thread-Topic: [PATCH v4 03/15] iommu/smmu: Report empty domain nesting info
-Thread-Index: AQHWUfUaPoulLLqnPkWWSyUjWN1VMaj6XtmAgAAiPXCAAAvZAIAAAMyg
-Date: Mon, 6 Jul 2020 13:26:15 +0000
-Message-ID: <DM5PR11MB143534C547D61ABAE5CCEDBFC3690@DM5PR11MB1435.namprd11.prod.outlook.com>
-References: <1593861989-35920-1-git-send-email-yi.l.liu@intel.com>
- <1593861989-35920-4-git-send-email-yi.l.liu@intel.com>
- <d791bad4-57b9-8e97-acbb-76b13e4154f8@redhat.com>
- <DM5PR11MB143543A04F5AF15EC7CBEC8BC3690@DM5PR11MB1435.namprd11.prod.outlook.com>
- <4d1a11b4-dcf3-b3a1-8802-3dd3ae97b3a4@redhat.com>
-In-Reply-To: <4d1a11b4-dcf3-b3a1-8802-3dd3ae97b3a4@redhat.com>
-Accept-Language: en-US
-Content-Language: en-US
-X-MS-Has-Attach: 
-X-MS-TNEF-Correlator: 
-dlp-reaction: no-action
-dlp-version: 11.2.0.6
-dlp-product: dlpe-windows
-authentication-results: redhat.com; dkim=none (message not signed)
- header.d=none;redhat.com; dmarc=none action=none header.from=intel.com;
-x-originating-ip: [192.198.147.207]
-x-ms-publictraffictype: Email
-x-ms-office365-filtering-correlation-id: ae76ee19-0f86-49d6-6c38-08d821b028ea
-x-ms-traffictypediagnostic: DM6PR11MB3595:
-x-ld-processed: 46c98d88-e344-4ed4-8496-4ed7712e255d,ExtAddr
-x-ms-exchange-transport-forked: True
-x-microsoft-antispam-prvs: <DM6PR11MB35952A0212EA2A28981B944CC3690@DM6PR11MB3595.namprd11.prod.outlook.com>
-x-ms-oob-tlc-oobclassifiers: OLM:6790;
-x-forefront-prvs: 04569283F9
-x-ms-exchange-senderadcheck: 1
-x-microsoft-antispam: BCL:0;
-x-microsoft-antispam-message-info: Lm3BKdRefNldk/Yo56RvZQrp3e8zXWvyQ0cv5WF6IRnSm7eF2eZorNjU3ClriCMjRGF+OLs9Ri9bDOaIj393DTQFwP+dE1ZdY4/mJBA6ythx/iJo82S+L5ItHIF/vIfXwoA5WZHwXBiuYWYM8u9Qc3+qRa34SFdkIWr5GKXwqC0FzYx1gv3wiZj7GJQ5wFrD5nnBqRhEQ0OE4HADQMDN7fWaJLe1qcInjm2tVdAQ2WXG5gL/PhljRLDsJdrPhT3V9w/uTUg03ayXKN7HzR2nndww2ekqdGg24AoK3m4BsCJXIgswuHSwBf2goQGUbr9hmO+XR4SnMhZN7D3QH+5dgd0Me9XOsWNL3n+Xi9D0wpyJbj52QggKVXmgxUw6J45sYiNl9YIsxELcO6+fmFH3Ow==
-x-forefront-antispam-report: CIP:255.255.255.255; CTRY:; LANG:en; SCL:1; SRV:;
- IPV:NLI; SFV:NSPM; H:DM5PR11MB1435.namprd11.prod.outlook.com; PTR:; CAT:NONE;
- SFTY:;
- SFS:(4636009)(136003)(396003)(366004)(376002)(39860400002)(346002)(54906003)(316002)(110136005)(8936002)(8676002)(66446008)(4326008)(66946007)(66556008)(53546011)(9686003)(2906002)(55016002)(66476007)(64756008)(6506007)(186003)(76116006)(7696005)(26005)(71200400001)(86362001)(52536014)(5660300002)(966005)(7416002)(478600001)(33656002)(83380400001);
- DIR:OUT; SFP:1102; 
-x-ms-exchange-antispam-messagedata: yjTuqapc8t76NZhlGFddGInBCqwfpturJlNcGBeNMGD97QmAbBQx47E/jrdUPZ0u9K7UH93mj2D2xTb25UL/5p43NVvbIWkINhP5G3sXx3jZL+X3Fga2ma0kdY/eALpXp0NvZUfhbP81esuoyl5YRluhtvNmI1gkzHg4lGzY25TqIG0zuv/9tPL4WCiFJXoH/a1hJpv+MsMOKfGrZiGqSEw/bW0WdoiJ6BYiu2DIgs/9JhHn7DKtiusrityFnyk3/sMhUzvN4E21lGGWq+FlCP2dQJRhhL7Kjui8OJsuyWHvC1C0rEs7/jwNBIbFKCOVoSMteTnRHVP0gH66RroRzgNw20lzrRzeARKjh9+y2TjYG5eSHNZdmKBrjuDspwQ8i7W1AN30cP636fvLAb0f7AnW1xO8cPjs2KeDP+ENK+Dc3cNfdO/+CQ44IE2X61b4JKD2j4w0EucRynG3CLlJ/fUddAA4aOtIDQJOkEzdLm3SL0dB0jKw2Au9c6HVJFx2
+Received: from mout.web.de (mout.web.de [212.227.17.11])
+ by silver.osuosl.org (Postfix) with ESMTPS id 1CBE425D52
+ for <iommu@lists.linux-foundation.org>; Mon,  6 Jul 2020 13:34:45 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=web.de;
+ s=dbaedf251592; t=1594042443;
+ bh=zyikPEHRSl6AfWnrIJsptm0zk3698RDADIrgUvP6JL4=;
+ h=X-UI-Sender-Class:Subject:To:Cc:References:From:Date:In-Reply-To;
+ b=dykUl5Z/jkWGSiBqMz4YjIFMzhj+0rJ2OaWEPiEAI/j5AfTD1SwZFV1ngl4I5f6DO
+ fijeLzd/p3DfhXKJkRQvhkv+isL05Ej0ziAXBthUrNufqYBB/WWo6wwmf1fWJTqATk
+ cYlILoX2ryhGkRtx0jITSpMnqpQpvbZEDDZTmaq0=
+X-UI-Sender-Class: c548c8c5-30a9-4db5-a2e7-cb6cb037b8f9
+Received: from [192.168.1.2] ([2.244.113.119]) by smtp.web.de (mrweb103
+ [213.165.67.124]) with ESMTPSA (Nemesis) id 0MDxCN-1k85vJ4AkJ-00HOMY; Mon, 06
+ Jul 2020 15:34:03 +0200
+Subject: Re: [RFC PATCH] vfio: type1: fix kthread use case
+To: Hillf Danton <hdanton@sina.com>,
+ Alex Williamson <alex.williamson@redhat.com>,
+ iommu@lists.linux-foundation.org
+References: <20200706104915.11460-1-hdanton@sina.com>
+ <20200706124241.4392-1-hdanton@sina.com>
+From: Markus Elfring <Markus.Elfring@web.de>
+Autocrypt: addr=Markus.Elfring@web.de; prefer-encrypt=mutual; keydata=
+ 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 FEE=
+Message-ID: <7ed25c44-bb51-2d8d-82d9-f11272f56424@web.de>
+Date: Mon, 6 Jul 2020 15:33:58 +0200
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101
+ Thunderbird/68.9.0
 MIME-Version: 1.0
-X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-AuthSource: DM5PR11MB1435.namprd11.prod.outlook.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: ae76ee19-0f86-49d6-6c38-08d821b028ea
-X-MS-Exchange-CrossTenant-originalarrivaltime: 06 Jul 2020 13:26:15.5868 (UTC)
-X-MS-Exchange-CrossTenant-fromentityheader: Hosted
-X-MS-Exchange-CrossTenant-id: 46c98d88-e344-4ed4-8496-4ed7712e255d
-X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
-X-MS-Exchange-CrossTenant-userprincipalname: vDO0/P7j/YI0lNflq0WHm0wdjOujg3+ayRp6j2I6ASy3BZmqbdXC3mII1xA5fRtfLo8L1+wHnkU65j4KCyTpRQ==
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: DM6PR11MB3595
-X-OriginatorOrg: intel.com
-Cc: "jean-philippe@linaro.org" <jean-philippe@linaro.org>, "Tian,
- Kevin" <kevin.tian@intel.com>, "Raj, Ashok" <ashok.raj@intel.com>,
- "kvm@vger.kernel.org" <kvm@vger.kernel.org>,
- "stefanha@gmail.com" <stefanha@gmail.com>, "Tian, 
- Jun J" <jun.j.tian@intel.com>,
- "iommu@lists.linux-foundation.org" <iommu@lists.linux-foundation.org>,
- "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>, "Sun,
- Yi Y" <yi.y.sun@intel.com>, Robin Murphy <robin.murphy@arm.com>,
- Will Deacon <will@kernel.org>, "Wu, Hao" <hao.wu@intel.com>
+In-Reply-To: <20200706124241.4392-1-hdanton@sina.com>
+Content-Language: en-GB
+X-Provags-ID: V03:K1:hQRlprojWG/gbX7gfH4IvEPq/yWggqojlOSRndeRHXRFyV6gflb
+ 3xWgaDC2zU027iUUZvbgo88UWGbzSIKD1b6S9AvXbVA8CeL2Azt1uZ6fGcKlDfKdy55quTE
+ cR+Mt+yHCVh8apr9KJGjIMgZJ81TahgojBeJcPw65TliQU1reY7BHvAV2cKvE9ISZVV9TD3
+ mmKhR5yHSmjdIY3H8yxjg==
+X-UI-Out-Filterresults: notjunk:1;V03:K0:Bc4I7rzFw7Y=:cNVHiMPx6Tz5XJ2v2Fet5L
+ WPSOVTbpBAx5uuo8/zhhlc01QKoJzuLXGC5tm7GTsqLsqF6Wt09RES/ga7QxdZFRnPt0aFAIz
+ 3zLqiQAp9V7FZSYx6pDzbhdT+j9Wqjr5NY0HvJsmQxaiKNAGvcdT9pSBjmWozz3G3extGph9I
+ BGpdf97jPf7BdR/w7t7l8KjaPMm9goumyruTzQAs+kLIUt1jhpxtLcRxOTO9oEZqC0gqDoyfb
+ 6s/fiYsSBXIX+8EKmroKYlI+JjAMxQfm5bZ/kcNck7EJuT5TBMT9L3RbBwiaxn5yDg9uXsrRe
+ N7/6G6A8QNsw+bbZHejh+b1aAaHA5boGwT1hEMnMj2zi0G1SS/vE55HF/UsIYdynSGdKe+ksL
+ +Jq73DwtM/9cbsrDHu/pW9WgI23InPXZqLaSGKBGBefhLOof//8shNiSnBhvmAltY5A06u1Z0
+ XuyCoTNig4322Y3ZI/zqNO1tWLlCsDXNjrZSLPvzYrVNMQ5I7XH89ODiYgZBUrfEFOCHaJCS2
+ thHyPSx1XF6w+zqUGXAMHJY/vGOh2a89sVrlsXIcvZm0MvEa4BaJ+1A175S51nkcxSdgdpx0s
+ IX0lY/CF/mpfQO1DifuCravqMPX6w/NV3nRPGG3dw3jUD9TDKrz2o67R7e7zZTBUOKtfnqvFy
+ EBqjodHKBN6PiWihbfekk+kgsu9j9olhWiRTCBC9FHGO004FfnqBcw6I0uUJvZVWP06USeqY/
+ d2RNleTGOxan7MtsOJZSeVWA6j8UC26b4Nrwz3Pl970LLoQmhsCkvn7T2GSKw0FhchAwx3FIG
+ S01GqDhvvW/c0Gi5GxGCifx75z0MTvpv2kJGda7EgmOnJkdC4Zc8zarKGicsgY8qZniU65+Dh
+ aVZUimK5ogOuWpOkaKvBPXb4xJr2f6J51lGDy5PzwqEpD8TDY4nynfvc2GRDTxtwYJazuwXov
+ H8qtq2wbzcBeA2k+mta2Wa2Pep6tuBf0SLArTxho3N/XireqaYZAEQUyTrsgj9h5zh6i4yEOg
+ sv+n1Em1NRa/BVDBQIrEhrc2UVI/qowXwI7ocjOeEHpklgX7k3fYyZOG2CZHenUJZIgd0qJcx
+ Jyl4p+DEu/ZA7y8NwFnSjz+ckFRw9QcyuWSSqQH2EFMhXW0hbHyu9g/GCUCzoLftX9gPHTHW4
+ 75ItyfO5X7Egz9+QRliWT6qhP5QXWHNHtS+4AQT/fSrmBNyCBT54B5wQhqNPTZz8eTMol0cLN
+ cGWL2wYTGPTO7DVuz8ES+C7IveaDdFdjxiYNqhw==
+Cc: Kevin Tian <kevin.tian@intel.com>, Yan Zhao <yan.y.zhao@intel.com>,
+ kernel-janitors@vger.kernel.org, linux-kernel@vger.kernel.org,
+ Christoph Hellwig <hch@lst.de>
 X-BeenThere: iommu@lists.linux-foundation.org
 X-Mailman-Version: 2.1.15
 Precedence: list
@@ -165,195 +153,25 @@ List-Post: <mailto:iommu@lists.linux-foundation.org>
 List-Help: <mailto:iommu-request@lists.linux-foundation.org?subject=help>
 List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
  <mailto:iommu-request@lists.linux-foundation.org?subject=subscribe>
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: base64
 Errors-To: iommu-bounces@lists.linux-foundation.org
 Sender: "iommu" <iommu-bounces@lists.linux-foundation.org>
 
-Hi Eric,
-
-> From: Auger Eric <eric.auger@redhat.com>
-> Sent: Monday, July 6, 2020 9:22 PM
-> 
-> Hi Yi,
-> 
-> On 7/6/20 2:46 PM, Liu, Yi L wrote:
-> > Hi Eric,
-> >
-> >> From: Auger Eric <eric.auger@redhat.com>
-> >>
-> >> Hi Yi,
-> >>
-> >> Please add a commit message: instead of returning a boolean for
-> >> DOMAIN_ATTR_NESTING, arm_smmu_domain_get_attr() returns a
-> >> iommu_nesting_info handle.
-> >
-> > will do. thanks for the suggestion.
-> >
-> >>
-> >> On 7/4/20 1:26 PM, Liu Yi L wrote:
-> >>> Cc: Will Deacon <will@kernel.org>
-> >>> Cc: Robin Murphy <robin.murphy@arm.com>
-> >>> Cc: Eric Auger <eric.auger@redhat.com>
-> >>> Cc: Jean-Philippe Brucker <jean-philippe@linaro.org>
-> >>> Suggested-by: Jean-Philippe Brucker <jean-philippe@linaro.org>
-> >>> Signed-off-by: Liu Yi L <yi.l.liu@intel.com>
-> >>> Signed-off-by: Jacob Pan <jacob.jun.pan@linux.intel.com>
-> >>> ---
-> >>>  drivers/iommu/arm-smmu-v3.c | 29 +++++++++++++++++++++++++++--
-> >>>  drivers/iommu/arm-smmu.c    | 29 +++++++++++++++++++++++++++--
-> >>>  2 files changed, 54 insertions(+), 4 deletions(-)
-> >>>
-> >>> diff --git a/drivers/iommu/arm-smmu-v3.c
-> >>> b/drivers/iommu/arm-smmu-v3.c index f578677..0c45d4d 100644
-> >>> --- a/drivers/iommu/arm-smmu-v3.c
-> >>> +++ b/drivers/iommu/arm-smmu-v3.c
-> >>> @@ -3019,6 +3019,32 @@ static struct iommu_group
-> >> *arm_smmu_device_group(struct device *dev)
-> >>>  	return group;
-> >>>  }
-> >>>
-> >>> +static int arm_smmu_domain_nesting_info(struct arm_smmu_domain
-> >> *smmu_domain,
-> >>> +					void *data)
-> >>> +{
-> >>> +	struct iommu_nesting_info *info = (struct iommu_nesting_info *) data;
-> >>> +	u32 size;
-> >>> +
-> >>> +	if (!info || smmu_domain->stage != ARM_SMMU_DOMAIN_NESTED)
-> >>> +		return -ENODEV;
-> >>> +
-> >>> +	size = sizeof(struct iommu_nesting_info);
-> >>> +
-> >>> +	/*
-> >>> +	 * if provided buffer size is not equal to the size, should
-> >>> +	 * return 0 and also the expected buffer size to caller.
-> >>> +	 */
-> >>> +	if (info->size != size) {
-> >> < size?
-> >
-> > < size may work as well. but I'd like the caller provide exact buffer
-> > size. not sure if it is demand in kernel. do you have any suggestion?
-> 
-> I just suggested that by analogy with the VFIO argsz
-
-I see. will change it.
-
-> 
-> >
-> >>> +		info->size = size;
-> >>> +		return 0;
-> >>> +	}
-> >>> +
-> >>> +	/* report an empty iommu_nesting_info for now */
-> >>> +	memset(info, 0x0, size);
-> >>> +	info->size = size;
-> >> For info, the current SMMU NESTED mode is not enabling any nesting.
-> >> It just forces the usage of the 2st stage instead of stage1 for single stage
-> translation.
-> >
-> > yep. The intention is as below:
-> >
-> > " However it requires changing the get_attr(NESTING) implementations
-> > in both SMMU drivers as a precursor of this series, to avoid breaking
-> > VFIO_TYPE1_NESTING_IOMMU on Arm. Since we haven't yet defined the
-> > nesting_info structs for SMMUv2 and v3, I suppose we could return an
-> > empty struct iommu_nesting_info for now?"
-> > https://lore.kernel.org/linux-iommu/20200617143909.GA886590@myrica/
-> >
-> > do you think any other needs to be done for now?
-> 
-> I understand this is a prerequisite. It was more as an information.
-> Returning a void struct is a bit weird but at the moment I don't have anything better.
-
-got you. do you think it is necessary to add your statement as a comment here?
-
-Regards,
-Yi Liu
-
-> Thanks
-> 
-> Eric
-> >
-> > Regards,
-> > Yi Liu
-> >
-> >> Thanks
-> >>
-> >> Eric
-> >>> +	return 0;
-> >>> +}
-> >>> +
-> >>>  static int arm_smmu_domain_get_attr(struct iommu_domain *domain,
-> >>>  				    enum iommu_attr attr, void *data)  { @@ -
-> >> 3028,8 +3054,7 @@
-> >>> static int arm_smmu_domain_get_attr(struct iommu_domain *domain,
-> >>>  	case IOMMU_DOMAIN_UNMANAGED:
-> >>>  		switch (attr) {
-> >>>  		case DOMAIN_ATTR_NESTING:
-> >>> -			*(int *)data = (smmu_domain->stage ==
-> >> ARM_SMMU_DOMAIN_NESTED);
-> >>> -			return 0;
-> >>> +			return arm_smmu_domain_nesting_info(smmu_domain,
-> >> data);
-> >>>  		default:
-> >>>  			return -ENODEV;
-> >>>  		}
-> >>> diff --git a/drivers/iommu/arm-smmu.c b/drivers/iommu/arm-smmu.c
-> >>> index 243bc4c..908607d 100644
-> >>> --- a/drivers/iommu/arm-smmu.c
-> >>> +++ b/drivers/iommu/arm-smmu.c
-> >>> @@ -1506,6 +1506,32 @@ static struct iommu_group
-> >> *arm_smmu_device_group(struct device *dev)
-> >>>  	return group;
-> >>>  }
-> >>>
-> >>> +static int arm_smmu_domain_nesting_info(struct arm_smmu_domain
-> >> *smmu_domain,
-> >>> +					void *data)
-> >>> +{
-> >>> +	struct iommu_nesting_info *info = (struct iommu_nesting_info *) data;
-> >>> +	u32 size;
-> >>> +
-> >>> +	if (!info || smmu_domain->stage != ARM_SMMU_DOMAIN_NESTED)
-> >>> +		return -ENODEV;
-> >>> +
-> >>> +	size = sizeof(struct iommu_nesting_info);
-> >>> +
-> >>> +	/*
-> >>> +	 * if provided buffer size is not equal to the size, should
-> >>> +	 * return 0 and also the expected buffer size to caller.
-> >>> +	 */
-> >>> +	if (info->size != size) {
-> >>> +		info->size = size;
-> >>> +		return 0;
-> >>> +	}
-> >>> +
-> >>> +	/* report an empty iommu_nesting_info for now */
-> >>> +	memset(info, 0x0, size);
-> >>> +	info->size = size;
-> >>> +	return 0;
-> >>> +}
-> >>> +
-> >>>  static int arm_smmu_domain_get_attr(struct iommu_domain *domain,
-> >>>  				    enum iommu_attr attr, void *data)  { @@ -
-> >> 1515,8 +1541,7 @@
-> >>> static int arm_smmu_domain_get_attr(struct iommu_domain *domain,
-> >>>  	case IOMMU_DOMAIN_UNMANAGED:
-> >>>  		switch (attr) {
-> >>>  		case DOMAIN_ATTR_NESTING:
-> >>> -			*(int *)data = (smmu_domain->stage ==
-> >> ARM_SMMU_DOMAIN_NESTED);
-> >>> -			return 0;
-> >>> +			return arm_smmu_domain_nesting_info(smmu_domain,
-> >> data);
-> >>>  		default:
-> >>>  			return -ENODEV;
-> >>>  		}
-> >>>
-> >
-
-_______________________________________________
-iommu mailing list
-iommu@lists.linux-foundation.org
-https://lists.linuxfoundation.org/mailman/listinfo/iommu
+Pj4gQ2FuIGl0IGJlIGhlbHBmdWwgdG8gY29udmVydCBpbml0aWFsaXNhdGlvbnMgZm9yIHRoZXNl
+IHZhcmlhYmxlcwo+PiBpbnRvIGxhdGVyIGFzc2lnbm1lbnRzPwo+Cj4gUGVyaGFwcy4gVGhlbiBp
+dCBsb29rcyBsaWtlIHRoZSBiZWxvdy4KCgrigKYKPiArKysgYi9kcml2ZXJzL3ZmaW8vdmZpb19p
+b21tdV90eXBlMS5jCj4gQEAgLTI3OTgsOSArMjc5OCwxMiBAQCBzdGF0aWMgaW50IHZmaW9faW9t
+bXVfdHlwZTFfZG1hX3J3X2NodW5rCuKApgo+IC0JYm9vbCBrdGhyZWFkID0gY3VycmVudC0+bW0g
+PT0gTlVMTDsKPiArCWJvb2wga3RocmVhZDsKPiArCWJvb2wgdXNlX21tOwoKSSB3b3VsZCBwcmVm
+ZXIgdGhlIGZvbGxvd2luZyB2YXJpYWJsZSBkZWNsYXJhdGlvbnMgdGhlbi4KCisJYm9vbCBrdGhy
+ZWFkLCB1c2VfbW07CgoKPiAgCXNpemVfdCBvZmZzZXQ7Cj4KPiArCWt0aHJlYWQgPSBjdXJyZW50
+LT5mbGFncyAmIFBGX0tUSFJFQUQ7Cj4gKwl1c2VfbW0gPSBjdXJyZW50LT5tbSA9PSBOVUxMOwoK
+SSBwcm9wb3NlIHRvIG1vdmUgc3VjaCBhc3NpZ25tZW50cyBkaXJlY3RseSBiZWZvcmUgdGhlIGNv
+cnJlc3BvbmRpbmcgY2hlY2suCgoK4oCmCj4gIAlpZiAoIW1tKQo+ICAJCXJldHVybiAtRVBFUk07
+CgoKKwlrdGhyZWFkID0gY3VycmVudC0+ZmxhZ3MgJiBQRl9LVEhSRUFEOworCXVzZV9tbSA9ICFj
+dXJyZW50LT5tbTsKCj4gLQlpZiAoa3RocmVhZCkKPiArCWlmIChrdGhyZWFkICYmIHVzZV9tbSkK
+PiAgCQlrdGhyZWFkX3VzZV9tbShtbSk7CuKApgoKUmVnYXJkcywKTWFya3VzCl9fX19fX19fX19f
+X19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fCmlvbW11IG1haWxpbmcgbGlzdApp
+b21tdUBsaXN0cy5saW51eC1mb3VuZGF0aW9uLm9yZwpodHRwczovL2xpc3RzLmxpbnV4Zm91bmRh
+dGlvbi5vcmcvbWFpbG1hbi9saXN0aW5mby9pb21tdQ==
