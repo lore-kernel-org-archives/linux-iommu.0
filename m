@@ -8,86 +8,87 @@ X-Spam-Status: No, score=-8.0 required=3.0 tests=DKIM_ADSP_CUSTOM_MED,
 	SPF_HELO_NONE,SPF_PASS,USER_AGENT_SANE_1 autolearn=unavailable
 	autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 325EEC433E0
-	for <iommu@archiver.kernel.org>; Mon,  6 Jul 2020 15:18:28 +0000 (UTC)
-Received: from silver.osuosl.org (smtp3.osuosl.org [140.211.166.136])
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 68E94C433DF
+	for <iommu@archiver.kernel.org>; Mon,  6 Jul 2020 15:20:12 +0000 (UTC)
+Received: from whitealder.osuosl.org (smtp1.osuosl.org [140.211.166.138])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by mail.kernel.org (Postfix) with ESMTPS id 0844720724
-	for <iommu@archiver.kernel.org>; Mon,  6 Jul 2020 15:18:27 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTPS id 3DCF420715
+	for <iommu@archiver.kernel.org>; Mon,  6 Jul 2020 15:20:12 +0000 (UTC)
 Authentication-Results: mail.kernel.org;
-	dkim=fail reason="signature verification failed" (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="mFcoKEfV"
-DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 0844720724
+	dkim=fail reason="signature verification failed" (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="urR+1hUO"
+DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 3DCF420715
 Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=gmail.com
 Authentication-Results: mail.kernel.org; spf=pass smtp.mailfrom=iommu-bounces@lists.linux-foundation.org
 Received: from localhost (localhost [127.0.0.1])
-	by silver.osuosl.org (Postfix) with ESMTP id BAA4A233A6;
-	Mon,  6 Jul 2020 15:18:27 +0000 (UTC)
+	by whitealder.osuosl.org (Postfix) with ESMTP id 13F4988A54;
+	Mon,  6 Jul 2020 15:20:12 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from silver.osuosl.org ([127.0.0.1])
+Received: from whitealder.osuosl.org ([127.0.0.1])
 	by localhost (.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
-	with ESMTP id THz1JlRH6QRD; Mon,  6 Jul 2020 15:18:27 +0000 (UTC)
+	with ESMTP id BwkGEP0oxPfo; Mon,  6 Jul 2020 15:20:10 +0000 (UTC)
 Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [140.211.9.56])
-	by silver.osuosl.org (Postfix) with ESMTP id 0E14E21507;
-	Mon,  6 Jul 2020 15:18:27 +0000 (UTC)
+	by whitealder.osuosl.org (Postfix) with ESMTP id 8054F872F8;
+	Mon,  6 Jul 2020 15:20:10 +0000 (UTC)
 Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
-	by lists.linuxfoundation.org (Postfix) with ESMTP id EE3B0C0893;
-	Mon,  6 Jul 2020 15:18:26 +0000 (UTC)
-Received: from hemlock.osuosl.org (smtp2.osuosl.org [140.211.166.133])
- by lists.linuxfoundation.org (Postfix) with ESMTP id 00677C016F
- for <iommu@lists.linux-foundation.org>; Mon,  6 Jul 2020 15:18:25 +0000 (UTC)
+	by lists.linuxfoundation.org (Postfix) with ESMTP id 4981BC0893;
+	Mon,  6 Jul 2020 15:20:10 +0000 (UTC)
+Received: from whitealder.osuosl.org (smtp1.osuosl.org [140.211.166.138])
+ by lists.linuxfoundation.org (Postfix) with ESMTP id 6F375C016F
+ for <iommu@lists.linux-foundation.org>; Mon,  6 Jul 2020 15:20:09 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
- by hemlock.osuosl.org (Postfix) with ESMTP id E1B1C8938C
- for <iommu@lists.linux-foundation.org>; Mon,  6 Jul 2020 15:18:25 +0000 (UTC)
+ by whitealder.osuosl.org (Postfix) with ESMTP id 5B756888F2
+ for <iommu@lists.linux-foundation.org>; Mon,  6 Jul 2020 15:20:09 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from hemlock.osuosl.org ([127.0.0.1])
+Received: from whitealder.osuosl.org ([127.0.0.1])
  by localhost (.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
- with ESMTP id nUf+q9WX2cbS for <iommu@lists.linux-foundation.org>;
- Mon,  6 Jul 2020 15:18:25 +0000 (UTC)
+ with ESMTP id w7FIoBL7GZ+Q for <iommu@lists.linux-foundation.org>;
+ Mon,  6 Jul 2020 15:20:08 +0000 (UTC)
 X-Greylist: domain auto-whitelisted by SQLgrey-1.7.6
-Received: from mail-wm1-f68.google.com (mail-wm1-f68.google.com
- [209.85.128.68])
- by hemlock.osuosl.org (Postfix) with ESMTPS id F32648929E
- for <iommu@lists.linux-foundation.org>; Mon,  6 Jul 2020 15:18:24 +0000 (UTC)
-Received: by mail-wm1-f68.google.com with SMTP id o8so39830640wmh.4
- for <iommu@lists.linux-foundation.org>; Mon, 06 Jul 2020 08:18:24 -0700 (PDT)
+Received: from mail-wm1-f66.google.com (mail-wm1-f66.google.com
+ [209.85.128.66])
+ by whitealder.osuosl.org (Postfix) with ESMTPS id 25F5F872F8
+ for <iommu@lists.linux-foundation.org>; Mon,  6 Jul 2020 15:20:08 +0000 (UTC)
+Received: by mail-wm1-f66.google.com with SMTP id g75so39835046wme.5
+ for <iommu@lists.linux-foundation.org>; Mon, 06 Jul 2020 08:20:08 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=gmail.com; s=20161025;
  h=subject:to:cc:references:from:autocrypt:message-id:date:user-agent
  :mime-version:in-reply-to:content-language:content-transfer-encoding;
- bh=xUAgregrDPNosTgk9CgFfbG/DfEV5828tP7Yai/WKH4=;
- b=mFcoKEfVvjF6OQgxtEVqhFmZl/kXnDLv+lCv1/amdjJT5be/YNTCE2rieOeeQ0cHmy
- MgtWju67TqgcCaSR6Hl+RUSJe4Zeep4k1Kex+uQRObFuPMpOi+b6PYi4BwNfZngW/f/H
- +kRMVRmqkJB83nWCLAZ/yXWShUjAus1WLaasAdzEm1H0zZ+lEA5oaCiHkFk52y+kioAH
- 4vDY/WJYdPS/m3q2hQL0oV4CvJWTrO4248B88cnx+jhY0IJYBnmSyn7q2gUxi2FE2ZRx
- x8GzvqFUMaQ2eMMKN36x3XxguZvjKoIt9RzJuaO/LyyEQPe61uCJSnaLstFN66+gM5rs
- I4QA==
+ bh=wWqFCWab5V+PgCc43vygNWCupQwOkfTJ/Ga2rPKOnQY=;
+ b=urR+1hUOUq6ElH5pG/gi/B4VoIJN5CyC1DDNfGpXl4l3cO8+JlCr23DIZ8RVmkDt1W
+ zrZPY/RW1ICxxzk9zwOebj8TCeMlXpVm7cr4/pTCXQUGvVnNa2e7QTjU2dBCjiMpuxvJ
+ pWoacpA3WRuQIETyV4qBNPfTbumR9l31NMs4mDzqcemqhDXB7HByjUvcS8ZKTyPk0nTG
+ uUlBhkLsRIfnsH45EvFaaf4OX8o6YR3ysraov3FBjB9RSw7FtZe+ANkJp0qTl6gEmtkk
+ o6+tpI7Txj9IQ9OC5AHfesN+q9aeP+gC4eOwW4YwyDxiY++dw48DjYv6yU3qR9EKLe0c
+ SGyw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
  d=1e100.net; s=20161025;
  h=x-gm-message-state:subject:to:cc:references:from:autocrypt
  :message-id:date:user-agent:mime-version:in-reply-to
  :content-language:content-transfer-encoding;
- bh=xUAgregrDPNosTgk9CgFfbG/DfEV5828tP7Yai/WKH4=;
- b=HdpwP5WcE+H1pWUL2VXYBZBlQvJLwoRQggm31lBMseQpumsktnz5DG8tDMEb+MG8EO
- NzUxSckRvjJHaiEsPggbFyAqvXWTDjxivwhKea1lQrCiMnTV5gKT1VKWHe/znaz9EZ4I
- VhUCPK/qBvH2ggFYBBI1vY/pnt9o5mjmCGmvlq3CkHt5aeAQ1Bq8QRWM0E3JO12g7H5c
- 7injFUPyQxFXxL1JCHmWU76pUcei9o2l5tp158Ec3NUZutvD736dC619Zd5J8vb36Un0
- 2413K1QquMLZcR0nLQiqq0//KPpiF4yu4X7y1gofa+ge7ZojMb974cRnOHhSylWkMI0B
- fraw==
-X-Gm-Message-State: AOAM5330TE7jrQtXi4tEEVzC9RfolCZ9PF6dTpmTJwf4jIhE+W2vwYi9
- WuegSWoY7IOgb+SIvu0atS0=
-X-Google-Smtp-Source: ABdhPJwLHEqZrEd8BItktloC+QMnUKECQXMoTdt2fHQXQgFNpaWCDWdxmI+3RgBX085/rTJ1PiRhdQ==
-X-Received: by 2002:a1c:544f:: with SMTP id p15mr48287759wmi.84.1594048703429; 
- Mon, 06 Jul 2020 08:18:23 -0700 (PDT)
+ bh=wWqFCWab5V+PgCc43vygNWCupQwOkfTJ/Ga2rPKOnQY=;
+ b=ZK9tVQJ0Aq1KDDd9yPK4NzY6YTDP/BWMsfD2eGH9B7drmKUxn4qMlqulPtUm1uP2id
+ MCXk4FcRb8MWRTYSQdaBEW96Yf6QrpbKGHADAxYOD6pHW34WQfZTpxKXar5QFDI+76YC
+ 1jT+L1y4rVoIZitC+HGN+2YTQDU7BCqTYu6zT/jGKPydecBrHYzwWLLaa6QqGRCPq9Ev
+ IgzW820JA5JkECAecyp3vba0FmWneKUx7g6povbH4o6bS1FjBV9Glb0LPh57mKNv7gsp
+ 1fV3m4OXgBEa2dPz3fc3xtBswL8i3hibFF5gzlok9KlluruJwtzzZCIAlOe78/COjeeM
+ z7qw==
+X-Gm-Message-State: AOAM533beNNljz0Bh1oPqQXGAP4Y5wdXpSbZvX+2XQ3Q5RzzGrWTcYYO
+ 2uDVmCYDcPkdSZVrECLNdS8=
+X-Google-Smtp-Source: ABdhPJz+P4pDt8LzP1vsKXAHFJVo/Gr58eHipMqAHZp2Q8uhOp8Bn3Fv37B3TrJ2uaDb8uqiK4TpbA==
+X-Received: by 2002:a1c:9cd4:: with SMTP id f203mr4125212wme.155.1594048806424; 
+ Mon, 06 Jul 2020 08:20:06 -0700 (PDT)
 Received: from ziggy.stardust (81.172.57.81.dyn.user.ono.com. [81.172.57.81])
  by smtp.gmail.com with ESMTPSA id
- o29sm26645243wra.5.2020.07.06.08.18.22
+ 26sm23775565wmj.25.2020.07.06.08.20.05
  (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
- Mon, 06 Jul 2020 08:18:22 -0700 (PDT)
-Subject: Re: [PATCH v6 04/10] iommu/mediatek: Setting MISC_CTRL register
+ Mon, 06 Jul 2020 08:20:05 -0700 (PDT)
+Subject: Re: [PATCH v6 06/10] iommu/mediatek: Add sub_comm id in translation
+ fault
 To: Chao Hao <chao.hao@mediatek.com>, Joerg Roedel <joro@8bytes.org>,
  Rob Herring <robh+dt@kernel.org>
 References: <20200703044127.27438-1-chao.hao@mediatek.com>
- <20200703044127.27438-5-chao.hao@mediatek.com>
+ <20200703044127.27438-7-chao.hao@mediatek.com>
 From: Matthias Brugger <matthias.bgg@gmail.com>
 Autocrypt: addr=matthias.bgg@gmail.com; prefer-encrypt=mutual; keydata=
  mQINBFP1zgUBEAC21D6hk7//0kOmsUrE3eZ55kjc9DmFPKIz6l4NggqwQjBNRHIMh04BbCMY
@@ -163,12 +164,12 @@ Autocrypt: addr=matthias.bgg@gmail.com; prefer-encrypt=mutual; keydata=
  jzi+DzD9cvj2K6eD5j5kcKJJQactXqfJvF1Eb+OnxlB1BCLE8D1rNkPO5O742Mq3MgDmq19l
  +abzEL6QDAAxn9md8KwrA3RtucNh87cHlDXfUBKa7SRvBjTczDg+HEPNk2u3hrz1j3l2rliQ
  y1UfYx7Vk/TrdwUIJgKS8QAr8Lw9WuvY2hSqL9vEjx8VAkPWNWPwrQ==
-Message-ID: <af96180d-2dbb-1be0-c3c2-ea0e89cda57e@gmail.com>
-Date: Mon, 6 Jul 2020 17:18:21 +0200
+Message-ID: <9f05e20f-fec5-de3a-d069-d7835873380a@gmail.com>
+Date: Mon, 6 Jul 2020 17:20:04 +0200
 User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101
  Thunderbird/68.9.0
 MIME-Version: 1.0
-In-Reply-To: <20200703044127.27438-5-chao.hao@mediatek.com>
+In-Reply-To: <20200703044127.27438-7-chao.hao@mediatek.com>
 Content-Language: en-US
 Cc: devicetree@vger.kernel.org, FY Yang <fy.yang@mediatek.com>,
  wsd_upstream@mediatek.com, linux-kernel@vger.kernel.org,
@@ -194,66 +195,154 @@ Sender: "iommu" <iommu-bounces@lists.linux-foundation.org>
 
 
 On 03/07/2020 06:41, Chao Hao wrote:
-> Add F_MMU_IN_ORDER_WR_EN_MASK and F_MMU_STANDARD_AXI_MODE_EN_MASK
-> definitions in MISC_CTRL register.
-> F_MMU_STANDARD_AXI_MODE_EN_MASK:
-> If we set F_MMU_STANDARD_AXI_MODE_EN_MASK (bit[3][19] = 0, not follow
-> standard AXI protocol), the iommu will priorize sending of urgent read
-> command over a normal read command. This improves the performance.
-> F_MMU_IN_ORDER_WR_EN_MASK:
-> If we set F_MMU_IN_ORDER_WR_EN_MASK (bit[1][17] = 0, out-of-order write),
-> the iommu will re-order write commands and send the write commands with
-> higher priority. Otherwise the sending of write commands will be done in
-> order. The feature is controlled by OUT_ORDER_WR_EN platform data flag.
+> The max larb number that a iommu HW support is 8(larb0~larb7 in the below
+> diagram).
+> If the larb's number is over 8, we use a sub_common for merging
+> several larbs into one larb. At this case, we will extend larb_id:
+> bit[11:9] means common-id;
+> bit[8:7] means subcommon-id;
+> From these two variables, we could get the real larb number when
+> translation fault happen.
+> The diagram is as below:
+> 		 EMI
+> 		  |
+> 		IOMMU
+> 		  |
+>            -----------------
+> 	   |               |
+> 	common1   	common0
+> 	   |		   |
+> 	   -----------------
+> 		  |
+>              smi common
+> 		  |
+>   ------------------------------------
+>   |       |       |       |     |    |
+>  3'd0    3'd1    3'd2    3'd3  ...  3'd7   <-common_id(max is 8)
+>   |       |       |       |     |    |
+> Larb0   Larb1     |     Larb3  ... Larb7
+> 		  |
+> 	    smi sub common
+> 		  |
+>      --------------------------
+>      |        |       |       |
+>     2'd0     2'd1    2'd2    2'd3   <-sub_common_id(max is 4)
+>      |        |       |       |
+>    Larb8    Larb9   Larb10  Larb11
+> 
+> In this patch we extend larb_remap[] to larb_remap[8][4] for this.
+> larb_remap[x][y]: x means common-id above, y means subcommon_id above.
+> 
+> We can also distinguish if the M4U HW has sub_common by HAS_SUB_COMM
+> macro.
 > 
 > Cc: Matthias Brugger <matthias.bgg@gmail.com>
-> Suggested-by: Yong Wu <yong.wu@mediatek.com>
 > Signed-off-by: Chao Hao <chao.hao@mediatek.com>
+> Reviewed-by: Yong Wu <yong.wu@mediatek.com>
 
 Reviewed-by: Matthias Brugger <matthias.bgg@gmail.com>
 
 > ---
->  drivers/iommu/mtk_iommu.c | 12 +++++++++++-
->  1 file changed, 11 insertions(+), 1 deletion(-)
+>  drivers/iommu/mtk_iommu.c | 21 ++++++++++++++-------
+>  drivers/iommu/mtk_iommu.h |  5 ++++-
+>  2 files changed, 18 insertions(+), 8 deletions(-)
 > 
 > diff --git a/drivers/iommu/mtk_iommu.c b/drivers/iommu/mtk_iommu.c
-> index 40ca564d97af..219d7aa6f059 100644
+> index 533b8f76f592..0d96dcd8612b 100644
 > --- a/drivers/iommu/mtk_iommu.c
 > +++ b/drivers/iommu/mtk_iommu.c
-> @@ -42,6 +42,9 @@
->  #define F_INVLD_EN1				BIT(1)
+> @@ -91,6 +91,8 @@
+>  #define REG_MMU1_INVLD_PA			0x148
+>  #define REG_MMU0_INT_ID				0x150
+>  #define REG_MMU1_INT_ID				0x154
+> +#define F_MMU_INT_ID_COMM_ID(a)			(((a) >> 9) & 0x7)
+> +#define F_MMU_INT_ID_SUB_COMM_ID(a)		(((a) >> 7) & 0x3)
+>  #define F_MMU_INT_ID_LARB_ID(a)			(((a) >> 7) & 0x7)
+>  #define F_MMU_INT_ID_PORT_ID(a)			(((a) >> 2) & 0x1f)
 >  
->  #define REG_MMU_MISC_CTRL			0x048
-> +#define F_MMU_IN_ORDER_WR_EN_MASK		(BIT(1) | BIT(17))
-> +#define F_MMU_STANDARD_AXI_MODE_MASK		(BIT(3) | BIT(19))
-> +
->  #define REG_MMU_DCM_DIS				0x050
->  
->  #define REG_MMU_CTRL_REG			0x110
-> @@ -105,6 +108,7 @@
->  #define HAS_BCLK			BIT(1)
+> @@ -109,6 +111,7 @@
 >  #define HAS_VLD_PA_RNG			BIT(2)
 >  #define RESET_AXI			BIT(3)
-> +#define OUT_ORDER_WR_EN			BIT(4)
+>  #define OUT_ORDER_WR_EN			BIT(4)
+> +#define HAS_SUB_COMM			BIT(5)
 >  
 >  #define MTK_IOMMU_HAS_FLAG(pdata, _x) \
 >  		((((pdata)->flags) & (_x)) == (_x))
-> @@ -585,8 +589,14 @@ static int mtk_iommu_hw_init(const struct mtk_iommu_data *data)
+> @@ -239,7 +242,7 @@ static irqreturn_t mtk_iommu_isr(int irq, void *dev_id)
+>  	struct mtk_iommu_data *data = dev_id;
+>  	struct mtk_iommu_domain *dom = data->m4u_dom;
+>  	u32 int_state, regval, fault_iova, fault_pa;
+> -	unsigned int fault_larb, fault_port;
+> +	unsigned int fault_larb, fault_port, sub_comm = 0;
+>  	bool layer, write;
 >  
->  	if (MTK_IOMMU_HAS_FLAG(data->plat_data, RESET_AXI)) {
->  		/* The register is called STANDARD_AXI_MODE in this case */
-> -		writel_relaxed(0, data->base + REG_MMU_MISC_CTRL);
-> +		regval = 0;
-> +	} else {
-> +		regval = readl_relaxed(data->base + REG_MMU_MISC_CTRL);
-> +		regval &= ~F_MMU_STANDARD_AXI_MODE_MASK;
-> +		if (MTK_IOMMU_HAS_FLAG(data->plat_data, OUT_ORDER_WR_EN))
-> +			regval &= ~F_MMU_IN_ORDER_WR_EN_MASK;
+>  	/* Read error info from registers */
+> @@ -255,10 +258,14 @@ static irqreturn_t mtk_iommu_isr(int irq, void *dev_id)
 >  	}
-> +	writel_relaxed(regval, data->base + REG_MMU_MISC_CTRL);
+>  	layer = fault_iova & F_MMU_FAULT_VA_LAYER_BIT;
+>  	write = fault_iova & F_MMU_FAULT_VA_WRITE_BIT;
+> -	fault_larb = F_MMU_INT_ID_LARB_ID(regval);
+>  	fault_port = F_MMU_INT_ID_PORT_ID(regval);
+> -
+> -	fault_larb = data->plat_data->larbid_remap[fault_larb];
+> +	if (MTK_IOMMU_HAS_FLAG(data->plat_data, HAS_SUB_COMM)) {
+> +		fault_larb = F_MMU_INT_ID_COMM_ID(regval);
+> +		sub_comm = F_MMU_INT_ID_SUB_COMM_ID(regval);
+> +	} else {
+> +		fault_larb = F_MMU_INT_ID_LARB_ID(regval);
+> +	}
+> +	fault_larb = data->plat_data->larbid_remap[fault_larb][sub_comm];
 >  
->  	if (devm_request_irq(data->dev, data->irq, mtk_iommu_isr, 0,
->  			     dev_name(data->dev), (void *)data)) {
+>  	if (report_iommu_fault(&dom->domain, data->dev, fault_iova,
+>  			       write ? IOMMU_FAULT_WRITE : IOMMU_FAULT_READ)) {
+> @@ -785,21 +792,21 @@ static const struct mtk_iommu_plat_data mt2712_data = {
+>  	.m4u_plat     = M4U_MT2712,
+>  	.flags        = HAS_4GB_MODE | HAS_BCLK | HAS_VLD_PA_RNG,
+>  	.inv_sel_reg  = REG_MMU_INV_SEL_GEN1,
+> -	.larbid_remap = {0, 1, 2, 3, 4, 5, 6, 7, 8, 9},
+> +	.larbid_remap = {{0}, {1}, {2}, {3}, {4}, {5}, {6}, {7}},
+>  };
+>  
+>  static const struct mtk_iommu_plat_data mt8173_data = {
+>  	.m4u_plat     = M4U_MT8173,
+>  	.flags	      = HAS_4GB_MODE | HAS_BCLK | RESET_AXI,
+>  	.inv_sel_reg  = REG_MMU_INV_SEL_GEN1,
+> -	.larbid_remap = {0, 1, 2, 3, 4, 5}, /* Linear mapping. */
+> +	.larbid_remap = {{0}, {1}, {2}, {3}, {4}, {5}}, /* Linear mapping. */
+>  };
+>  
+>  static const struct mtk_iommu_plat_data mt8183_data = {
+>  	.m4u_plat     = M4U_MT8183,
+>  	.flags        = RESET_AXI,
+>  	.inv_sel_reg  = REG_MMU_INV_SEL_GEN1,
+> -	.larbid_remap = {0, 4, 5, 6, 7, 2, 3, 1},
+> +	.larbid_remap = {{0}, {4}, {5}, {6}, {7}, {2}, {3}, {1}},
+>  };
+>  
+>  static const struct of_device_id mtk_iommu_of_ids[] = {
+> diff --git a/drivers/iommu/mtk_iommu.h b/drivers/iommu/mtk_iommu.h
+> index cf53f5e80d22..46d0d47b22e1 100644
+> --- a/drivers/iommu/mtk_iommu.h
+> +++ b/drivers/iommu/mtk_iommu.h
+> @@ -17,6 +17,9 @@
+>  #include <linux/spinlock.h>
+>  #include <soc/mediatek/smi.h>
+>  
+> +#define MTK_LARB_COM_MAX	8
+> +#define MTK_LARB_SUBCOM_MAX	4
+> +
+>  struct mtk_iommu_suspend_reg {
+>  	union {
+>  		u32			standard_axi_mode;/* v1 */
+> @@ -41,7 +44,7 @@ struct mtk_iommu_plat_data {
+>  	enum mtk_iommu_plat m4u_plat;
+>  	u32                 flags;
+>  	u32                 inv_sel_reg;
+> -	unsigned char       larbid_remap[MTK_LARB_NR_MAX];
+> +	unsigned char       larbid_remap[MTK_LARB_COM_MAX][MTK_LARB_SUBCOM_MAX];
+>  };
+>  
+>  struct mtk_iommu_domain;
 > 
 _______________________________________________
 iommu mailing list
