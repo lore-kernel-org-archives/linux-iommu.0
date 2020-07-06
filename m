@@ -2,98 +2,94 @@ Return-Path: <SRS0=S+y3=AR=lists.linux-foundation.org=iommu-bounces@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-0.6 required=3.0 tests=DKIM_INVALID,DKIM_SIGNED,
-	HEADER_FROM_DIFFERENT_DOMAINS,MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS
-	autolearn=no autolearn_force=no version=3.4.0
+X-Spam-Status: No, score=-8.1 required=3.0 tests=DKIM_INVALID,DKIM_SIGNED,
+	HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_PATCH,MAILING_LIST_MULTI,SIGNED_OFF_BY,
+	SPF_HELO_NONE,SPF_PASS,USER_AGENT_SANE_1 autolearn=unavailable
+	autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 34D0AC433E1
-	for <iommu@archiver.kernel.org>; Mon,  6 Jul 2020 10:32:01 +0000 (UTC)
-Received: from silver.osuosl.org (smtp3.osuosl.org [140.211.166.136])
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 95807C433E2
+	for <iommu@archiver.kernel.org>; Mon,  6 Jul 2020 10:37:29 +0000 (UTC)
+Received: from fraxinus.osuosl.org (smtp4.osuosl.org [140.211.166.137])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by mail.kernel.org (Postfix) with ESMTPS id F1C9120772
-	for <iommu@archiver.kernel.org>; Mon,  6 Jul 2020 10:32:00 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTPS id 5B5AD2070B
+	for <iommu@archiver.kernel.org>; Mon,  6 Jul 2020 10:37:29 +0000 (UTC)
 Authentication-Results: mail.kernel.org;
-	dkim=fail reason="signature verification failed" (2048-bit key) header.d=linaro.org header.i=@linaro.org header.b="bytgTj0I"
-DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org F1C9120772
-Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=linaro.org
+	dkim=fail reason="signature verification failed" (1024-bit key) header.d=redhat.com header.i=@redhat.com header.b="fCkUmq+r"
+DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 5B5AD2070B
+Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=redhat.com
 Authentication-Results: mail.kernel.org; spf=pass smtp.mailfrom=iommu-bounces@lists.linux-foundation.org
 Received: from localhost (localhost [127.0.0.1])
-	by silver.osuosl.org (Postfix) with ESMTP id 90AC22151E;
-	Mon,  6 Jul 2020 10:32:00 +0000 (UTC)
+	by fraxinus.osuosl.org (Postfix) with ESMTP id 79C0586C8C;
+	Mon,  6 Jul 2020 10:37:28 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from silver.osuosl.org ([127.0.0.1])
+Received: from fraxinus.osuosl.org ([127.0.0.1])
 	by localhost (.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
-	with ESMTP id LHDdTuP9lFex; Mon,  6 Jul 2020 10:31:58 +0000 (UTC)
+	with ESMTP id 7CinpNO1KJyk; Mon,  6 Jul 2020 10:37:26 +0000 (UTC)
 Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [140.211.9.56])
-	by silver.osuosl.org (Postfix) with ESMTP id E302820522;
-	Mon,  6 Jul 2020 10:31:57 +0000 (UTC)
+	by fraxinus.osuosl.org (Postfix) with ESMTP id 9C20B8651D;
+	Mon,  6 Jul 2020 10:37:25 +0000 (UTC)
 Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
-	by lists.linuxfoundation.org (Postfix) with ESMTP id D1E94C1798;
-	Mon,  6 Jul 2020 10:31:57 +0000 (UTC)
-Received: from silver.osuosl.org (smtp3.osuosl.org [140.211.166.136])
- by lists.linuxfoundation.org (Postfix) with ESMTP id B7F71C0891
- for <iommu@lists.linux-foundation.org>; Mon,  6 Jul 2020 10:31:55 +0000 (UTC)
+	by lists.linuxfoundation.org (Postfix) with ESMTP id 6CE21C1797;
+	Mon,  6 Jul 2020 10:37:25 +0000 (UTC)
+Received: from whitealder.osuosl.org (smtp1.osuosl.org [140.211.166.138])
+ by lists.linuxfoundation.org (Postfix) with ESMTP id E9EACC016F
+ for <iommu@lists.linux-foundation.org>; Mon,  6 Jul 2020 10:37:22 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
- by silver.osuosl.org (Postfix) with ESMTP id 684CF20522
- for <iommu@lists.linux-foundation.org>; Mon,  6 Jul 2020 10:30:56 +0000 (UTC)
+ by whitealder.osuosl.org (Postfix) with ESMTP id D8F44887F7
+ for <iommu@lists.linux-foundation.org>; Mon,  6 Jul 2020 10:37:22 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from silver.osuosl.org ([127.0.0.1])
+Received: from whitealder.osuosl.org ([127.0.0.1])
  by localhost (.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
- with ESMTP id iZqaKQDSmlxG for <iommu@lists.linux-foundation.org>;
- Mon,  6 Jul 2020 10:30:55 +0000 (UTC)
+ with ESMTP id k8RpqV9pvqt6 for <iommu@lists.linux-foundation.org>;
+ Mon,  6 Jul 2020 10:37:21 +0000 (UTC)
 X-Greylist: domain auto-whitelisted by SQLgrey-1.7.6
-Received: from mail-ed1-f46.google.com (mail-ed1-f46.google.com
- [209.85.208.46])
- by silver.osuosl.org (Postfix) with ESMTPS id 557782000B
- for <iommu@lists.linux-foundation.org>; Mon,  6 Jul 2020 10:30:55 +0000 (UTC)
-Received: by mail-ed1-f46.google.com with SMTP id e22so34265569edq.8
- for <iommu@lists.linux-foundation.org>; Mon, 06 Jul 2020 03:30:55 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linaro.org; s=google;
- h=date:from:to:cc:subject:message-id:references:mime-version
- :content-disposition:in-reply-to;
- bh=guZYpzX8YFjpu7IK/QjLRK3HdD06qZ9ZoBhsUhNn6Sk=;
- b=bytgTj0IMzpwxhqKqf3QYbeqTVEHhBhmq/Ar+h4+MFlR42vkVcbQP2yUpXU+pMY/6F
- 0UVl9BnSl5H8/4PkiciR3NwWtNcc4Ly7Gn5hLFKj/YPsmifKGQXdygfwPZDIQ15JvNyH
- GlXkz6zJ5odofMl4agFQy4FMHzJpRLV9CD1GuKrFj87blLMuZKEt+fpE7KvJgbEemGsr
- SxolseD7RnsMtr3PO3+Isihk1JZpI9rl8ADH2vfQpVfmjIX1OF9HrTA5jlnTIxKj5/he
- 14ViKqi2Q6Dq7EO10e2+tPn1avArbC9dJ8EDuX56k6nv4fvCrfpuREWd7V45L/36m6nf
- pUVA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
- d=1e100.net; s=20161025;
- h=x-gm-message-state:date:from:to:cc:subject:message-id:references
- :mime-version:content-disposition:in-reply-to;
- bh=guZYpzX8YFjpu7IK/QjLRK3HdD06qZ9ZoBhsUhNn6Sk=;
- b=IVbrqm+Fo9XVli8crUzVuijfhbJccEdm14IMq6Ru5gJlxjXkcBL6ZQAD3Pwu0+EtRX
- oNq30D5Ll1OpOV9hgao2+jZEDgkolNajvyRIzwLZxuWs19qp3ZZjp5x+lVnY+5im2MxG
- vzkOoMBKw1ekRSPuuABUNpk/xCvn1jtlYEBtocwz0L3tjfAX+I5TsMbZZzh5v+9y8YaG
- 9rs6I1KJFBtOZB6u0dzZNuCLhE6eZAlz9YSrk+yAxo652XaIb3dcLXCz1D63QKN8PPO1
- DxhSMUtN4SlsrV4Q7J4q+JIOdbEIi4EenPNTEOb2cf8QcHkKyEq7ujs+8jn0v4QTaS16
- Q/lQ==
-X-Gm-Message-State: AOAM533Jcm6mqZrmIj3s9H0QopySFtxqpHEAUq/sP92vaRnYZG/9axEM
- A1xkeqrurXF8Kfk++mTDlfK8LQ==
-X-Google-Smtp-Source: ABdhPJzMZAsDl25f1drfa2xcV58dXfanc9gOgL7EOslPt4eotm8WH+2PBHU9F6ftyEmF4LV/+T9dgg==
-X-Received: by 2002:a50:cf43:: with SMTP id d3mr57657274edk.40.1594031453591; 
- Mon, 06 Jul 2020 03:30:53 -0700 (PDT)
-Received: from myrica ([2001:1715:4e26:a7e0:116c:c27a:3e7f:5eaf])
- by smtp.gmail.com with ESMTPSA id v11sm16153406eja.113.2020.07.06.03.30.52
- (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
- Mon, 06 Jul 2020 03:30:52 -0700 (PDT)
-Date: Mon, 6 Jul 2020 12:30:41 +0200
-From: Jean-Philippe Brucker <jean-philippe@linaro.org>
-To: Jacob Pan <jacob.jun.pan@linux.intel.com>
-Subject: Re: IOASID set token
-Message-ID: <20200706103041.GA3214@myrica>
-References: <20200701232916.38fd7908@jacob-builder>
- <20200702064825.20f9d2b1@jacob-builder>
+Received: from us-smtp-1.mimecast.com (us-smtp-delivery-1.mimecast.com
+ [205.139.110.120])
+ by whitealder.osuosl.org (Postfix) with ESMTPS id 851A7887E2
+ for <iommu@lists.linux-foundation.org>; Mon,  6 Jul 2020 10:37:21 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+ s=mimecast20190719; t=1594031840;
+ h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+ to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+ content-transfer-encoding:content-transfer-encoding:
+ in-reply-to:in-reply-to:references:references;
+ bh=bgnGmr6YoaFNKwoM2eHV+2bomQ6S8w77Ix5AEQGG/so=;
+ b=fCkUmq+rmWT7HBVTtYNQCDKwR3HNxhaMH7vsv8OuJe6hGDd85n/b6QvEEeCxVmP7t90Kz0
+ ncj3MULmfSfar0HITTupzZRVSkRmXA/VRfr6vRIUakxeaTEX4I8Ccy173gn5NX+/gf7zsv
+ Kr7WSyCl1VfRD7mq8LMYdnDmzp3CS/4=
+Received: from mimecast-mx01.redhat.com (mimecast-mx01.redhat.com
+ [209.132.183.4]) (Using TLS) by relay.mimecast.com with ESMTP id
+ us-mta-452-w_y5Go2iN06qyf9u9pA5LQ-1; Mon, 06 Jul 2020 06:37:16 -0400
+X-MC-Unique: w_y5Go2iN06qyf9u9pA5LQ-1
+Received: from smtp.corp.redhat.com (int-mx06.intmail.prod.int.phx2.redhat.com
+ [10.5.11.16])
+ (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
+ (No client certificate requested)
+ by mimecast-mx01.redhat.com (Postfix) with ESMTPS id 02D778015CE;
+ Mon,  6 Jul 2020 10:37:13 +0000 (UTC)
+Received: from [10.36.113.241] (ovpn-113-241.ams2.redhat.com [10.36.113.241])
+ by smtp.corp.redhat.com (Postfix) with ESMTPS id 47D835C1B2;
+ Mon,  6 Jul 2020 10:37:03 +0000 (UTC)
+Subject: Re: [PATCH v4 03/15] iommu/smmu: Report empty domain nesting info
+To: Liu Yi L <yi.l.liu@intel.com>, alex.williamson@redhat.com,
+ baolu.lu@linux.intel.com, joro@8bytes.org
+References: <1593861989-35920-1-git-send-email-yi.l.liu@intel.com>
+ <1593861989-35920-4-git-send-email-yi.l.liu@intel.com>
+From: Auger Eric <eric.auger@redhat.com>
+Message-ID: <d791bad4-57b9-8e97-acbb-76b13e4154f8@redhat.com>
+Date: Mon, 6 Jul 2020 12:37:01 +0200
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101
+ Thunderbird/68.5.0
 MIME-Version: 1.0
-Content-Disposition: inline
-In-Reply-To: <20200702064825.20f9d2b1@jacob-builder>
-Cc: "Tian, Kevin" <kevin.tian@intel.com>, "Raj, Ashok" <ashok.raj@intel.com>,
- Jean-Philippe Brucker <jean-philippe.brucker@arm.com>, "Lu,
- Baolu" <baolu.lu@intel.com>,
- "iommu@lists.linux-foundation.org" <iommu@lists.linux-foundation.org>, "Wu,
- Hao" <hao.wu@intel.com>
+In-Reply-To: <1593861989-35920-4-git-send-email-yi.l.liu@intel.com>
+Content-Language: en-US
+X-Scanned-By: MIMEDefang 2.79 on 10.5.11.16
+Cc: jean-philippe@linaro.org, kevin.tian@intel.com, ashok.raj@intel.com,
+ kvm@vger.kernel.org, stefanha@gmail.com, jun.j.tian@intel.com,
+ iommu@lists.linux-foundation.org, linux-kernel@vger.kernel.org,
+ yi.y.sun@intel.com, Robin Murphy <robin.murphy@arm.com>,
+ Will Deacon <will@kernel.org>, hao.wu@intel.com
 X-BeenThere: iommu@lists.linux-foundation.org
 X-Mailman-Version: 2.1.15
 Precedence: list
@@ -111,75 +107,130 @@ Content-Transfer-Encoding: 7bit
 Errors-To: iommu-bounces@lists.linux-foundation.org
 Sender: "iommu" <iommu-bounces@lists.linux-foundation.org>
 
-Hi Jacob,
+Hi Yi,
 
-On Thu, Jul 02, 2020 at 06:48:25AM -0700, Jacob Pan wrote:
-> Hi Jean,
+Please add a commit message: instead of returning a boolean for
+DOMAIN_ATTR_NESTING, arm_smmu_domain_get_attr() returns a
+iommu_nesting_info handle.
+
+
+On 7/4/20 1:26 PM, Liu Yi L wrote:
+> Cc: Will Deacon <will@kernel.org>
+> Cc: Robin Murphy <robin.murphy@arm.com>
+> Cc: Eric Auger <eric.auger@redhat.com>
+> Cc: Jean-Philippe Brucker <jean-philippe@linaro.org>
+> Suggested-by: Jean-Philippe Brucker <jean-philippe@linaro.org>
+> Signed-off-by: Liu Yi L <yi.l.liu@intel.com>
+> Signed-off-by: Jacob Pan <jacob.jun.pan@linux.intel.com>
+> ---
+>  drivers/iommu/arm-smmu-v3.c | 29 +++++++++++++++++++++++++++--
+>  drivers/iommu/arm-smmu.c    | 29 +++++++++++++++++++++++++++--
+>  2 files changed, 54 insertions(+), 4 deletions(-)
 > 
-> Just realized I should send this to your Linaro account instead of ARM.
-> So Hi again :)
+> diff --git a/drivers/iommu/arm-smmu-v3.c b/drivers/iommu/arm-smmu-v3.c
+> index f578677..0c45d4d 100644
+> --- a/drivers/iommu/arm-smmu-v3.c
+> +++ b/drivers/iommu/arm-smmu-v3.c
+> @@ -3019,6 +3019,32 @@ static struct iommu_group *arm_smmu_device_group(struct device *dev)
+>  	return group;
+>  }
+>  
+> +static int arm_smmu_domain_nesting_info(struct arm_smmu_domain *smmu_domain,
+> +					void *data)
+> +{
+> +	struct iommu_nesting_info *info = (struct iommu_nesting_info *) data;
+> +	u32 size;
+> +
+> +	if (!info || smmu_domain->stage != ARM_SMMU_DOMAIN_NESTED)
+> +		return -ENODEV;
+> +
+> +	size = sizeof(struct iommu_nesting_info);
+> +
+> +	/*
+> +	 * if provided buffer size is not equal to the size, should
+> +	 * return 0 and also the expected buffer size to caller.
+> +	 */
+> +	if (info->size != size) {
+< size?
+> +		info->size = size;
+> +		return 0;
+> +	}
+> +
+> +	/* report an empty iommu_nesting_info for now */
+> +	memset(info, 0x0, size);
+> +	info->size = size;
+For info, the current SMMU NESTED mode is not enabling any nesting. It
+just forces the usage of the 2st stage instead of stage1 for single
+stage translation.
+
+Thanks
+
+Eric
+> +	return 0;
+> +}
+> +
+>  static int arm_smmu_domain_get_attr(struct iommu_domain *domain,
+>  				    enum iommu_attr attr, void *data)
+>  {
+> @@ -3028,8 +3054,7 @@ static int arm_smmu_domain_get_attr(struct iommu_domain *domain,
+>  	case IOMMU_DOMAIN_UNMANAGED:
+>  		switch (attr) {
+>  		case DOMAIN_ATTR_NESTING:
+> -			*(int *)data = (smmu_domain->stage == ARM_SMMU_DOMAIN_NESTED);
+> -			return 0;
+> +			return arm_smmu_domain_nesting_info(smmu_domain, data);
+>  		default:
+>  			return -ENODEV;
+>  		}
+> diff --git a/drivers/iommu/arm-smmu.c b/drivers/iommu/arm-smmu.c
+> index 243bc4c..908607d 100644
+> --- a/drivers/iommu/arm-smmu.c
+> +++ b/drivers/iommu/arm-smmu.c
+> @@ -1506,6 +1506,32 @@ static struct iommu_group *arm_smmu_device_group(struct device *dev)
+>  	return group;
+>  }
+>  
+> +static int arm_smmu_domain_nesting_info(struct arm_smmu_domain *smmu_domain,
+> +					void *data)
+> +{
+> +	struct iommu_nesting_info *info = (struct iommu_nesting_info *) data;
+> +	u32 size;
+> +
+> +	if (!info || smmu_domain->stage != ARM_SMMU_DOMAIN_NESTED)
+> +		return -ENODEV;
+> +
+> +	size = sizeof(struct iommu_nesting_info);
+> +
+> +	/*
+> +	 * if provided buffer size is not equal to the size, should
+> +	 * return 0 and also the expected buffer size to caller.
+> +	 */
+> +	if (info->size != size) {
+> +		info->size = size;
+> +		return 0;
+> +	}
+> +
+> +	/* report an empty iommu_nesting_info for now */
+> +	memset(info, 0x0, size);
+> +	info->size = size;
+> +	return 0;
+> +}
+> +
+>  static int arm_smmu_domain_get_attr(struct iommu_domain *domain,
+>  				    enum iommu_attr attr, void *data)
+>  {
+> @@ -1515,8 +1541,7 @@ static int arm_smmu_domain_get_attr(struct iommu_domain *domain,
+>  	case IOMMU_DOMAIN_UNMANAGED:
+>  		switch (attr) {
+>  		case DOMAIN_ATTR_NESTING:
+> -			*(int *)data = (smmu_domain->stage == ARM_SMMU_DOMAIN_NESTED);
+> -			return 0;
+> +			return arm_smmu_domain_nesting_info(smmu_domain, data);
+>  		default:
+>  			return -ENODEV;
+>  		}
 > 
-> On Wed, 1 Jul 2020 23:29:16 -0700
-> Jacob Pan <jacob.jun.pan@linux.intel.com> wrote:
-> 
-> > Hi Jean,
-> > 
-> > Have a question for you on whether we can have a fixed token type for
-> > ioasid_set.
-> > 
-> > Currently, ioasid_set has an arbitrary token. For VT-d vSVA usage, we
-> > choose mm as ioasid_set token to identify PASIDs within a guest. We
-> > have multiple in-kernel users of PASIDs such as VFIO, KVM, and VDCM.
-> > When an IOASID set is created, there is not a good way to communicate
-> > about the token choices. So we have to let VDCM and KVM *assume* mm
-> > is used as token, then retrieve ioasid_set based on the token.
-> > 
-> > This assumption of "mm as token" is not a reliable SW architecture.
 
-I don't see this as a problem. The token type is tied to the IOASID set,
-so users that pass those IOASID sets to ioasid_find() can safely assume
-that the returned pointer is an mm_struct. That said I'm not opposed to
-consolidating the API with explicit types, it could definitely be more
-elegant.
-
-> > So
-> > we are thinking if we can have an explicit ioasid_set token type where
-> > mm is used. After all, PASID and mm are closely related.
-> > 
-> > The code change might be the following:
-> > 1. add a flag to indicate token type when ioasid_set is allocated,
-> > e.g. IOASID_SET_TYPE_MM
-> > IOASID_SET_TYPE_ANY
-> > 2. other users of the ioasid_set can query if an mm token exists based
-> > on the flag IOASID_SET_TYPE_MM, then retrieve the ioasid_set.
-> > 
-> > Existing ioasid_set user can still use arbitrary token under the flag
-> > IOASID_SET_TYPE_ANY
-> > 
-> > Would this be an issue for ARM usage?
-
-In my current implementation of auxiliary domains for Arm SMMU (which
-might never be useful enough to go upstream) I don't even use a token for
-the private IOASID set. However I still think we should leave the option
-to use a type different than mm_struct as token for some IOASID sets
-because device drivers (e.g. AMD kfd) may also want to dip into the IOASID
-space and use their own token type.
-
-For the moment, though, we could actually specialize the IOASID API to
-only take an mm_struct as token. For example the functions exported by the
-IOASID lib would be:
-
-  ioasid_t ioasid_alloc_mm(set, min, max, struct mm_struct *mm)
-  struct mm_struct *ioasid_find_mm(set, ioasid)
-  ...
-
-And ioasid_alloc(), ioasid_find(), etc would be internal to ioasid.c and
-deal with IOASID_SET_TYPE_MM (or even be removed entirely for now). New
-users that need different token types could then introduce their own
-IOASID_SET_TYPE_* and use the lower-level functions.
-
-Thanks,
-Jean
 _______________________________________________
 iommu mailing list
 iommu@lists.linux-foundation.org
