@@ -6,83 +6,82 @@ X-Spam-Status: No, score=-0.6 required=3.0 tests=DKIM_INVALID,DKIM_SIGNED,
 	HEADER_FROM_DIFFERENT_DOMAINS,MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS
 	autolearn=no autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 3F7EBC433E1
-	for <iommu@archiver.kernel.org>; Mon,  6 Jul 2020 22:17:25 +0000 (UTC)
-Received: from fraxinus.osuosl.org (smtp4.osuosl.org [140.211.166.137])
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 8F6A2C433E2
+	for <iommu@archiver.kernel.org>; Mon,  6 Jul 2020 22:19:05 +0000 (UTC)
+Received: from hemlock.osuosl.org (smtp2.osuosl.org [140.211.166.133])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by mail.kernel.org (Postfix) with ESMTPS id 0381E20720
-	for <iommu@archiver.kernel.org>; Mon,  6 Jul 2020 22:17:24 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTPS id 5C36D20720
+	for <iommu@archiver.kernel.org>; Mon,  6 Jul 2020 22:19:05 +0000 (UTC)
 Authentication-Results: mail.kernel.org;
-	dkim=fail reason="signature verification failed" (2048-bit key) header.d=google.com header.i=@google.com header.b="vNzVRDUl"
-DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 0381E20720
+	dkim=fail reason="signature verification failed" (2048-bit key) header.d=google.com header.i=@google.com header.b="KUh+nyqn"
+DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 5C36D20720
 Authentication-Results: mail.kernel.org; dmarc=none (p=none dis=none) header.from=lists.linux-foundation.org
 Authentication-Results: mail.kernel.org; spf=pass smtp.mailfrom=iommu-bounces@lists.linux-foundation.org
 Received: from localhost (localhost [127.0.0.1])
-	by fraxinus.osuosl.org (Postfix) with ESMTP id D13E786C8C;
-	Mon,  6 Jul 2020 22:17:24 +0000 (UTC)
+	by hemlock.osuosl.org (Postfix) with ESMTP id 29DD08950B;
+	Mon,  6 Jul 2020 22:19:05 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from fraxinus.osuosl.org ([127.0.0.1])
+Received: from hemlock.osuosl.org ([127.0.0.1])
 	by localhost (.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
-	with ESMTP id xMsV3eL96EuE; Mon,  6 Jul 2020 22:17:23 +0000 (UTC)
+	with ESMTP id tuAaYJHgH30P; Mon,  6 Jul 2020 22:19:04 +0000 (UTC)
 Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [140.211.9.56])
-	by fraxinus.osuosl.org (Postfix) with ESMTP id B807486B9E;
-	Mon,  6 Jul 2020 22:17:23 +0000 (UTC)
+	by hemlock.osuosl.org (Postfix) with ESMTP id 1F98A8947D;
+	Mon,  6 Jul 2020 22:19:04 +0000 (UTC)
 Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
-	by lists.linuxfoundation.org (Postfix) with ESMTP id A9237C0891;
-	Mon,  6 Jul 2020 22:17:23 +0000 (UTC)
+	by lists.linuxfoundation.org (Postfix) with ESMTP id 09ECCC0891;
+	Mon,  6 Jul 2020 22:19:04 +0000 (UTC)
 Received: from fraxinus.osuosl.org (smtp4.osuosl.org [140.211.166.137])
- by lists.linuxfoundation.org (Postfix) with ESMTP id A7019C016F
- for <iommu@lists.linux-foundation.org>; Mon,  6 Jul 2020 22:17:22 +0000 (UTC)
+ by lists.linuxfoundation.org (Postfix) with ESMTP id 774BDC016F
+ for <iommu@lists.linux-foundation.org>; Mon,  6 Jul 2020 22:19:03 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
- by fraxinus.osuosl.org (Postfix) with ESMTP id 932C486C15
- for <iommu@lists.linux-foundation.org>; Mon,  6 Jul 2020 22:17:22 +0000 (UTC)
+ by fraxinus.osuosl.org (Postfix) with ESMTP id 621FD86F6A
+ for <iommu@lists.linux-foundation.org>; Mon,  6 Jul 2020 22:19:03 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
 Received: from fraxinus.osuosl.org ([127.0.0.1])
  by localhost (.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
- with ESMTP id LQyAOPW04r-f for <iommu@lists.linux-foundation.org>;
- Mon,  6 Jul 2020 22:17:22 +0000 (UTC)
+ with ESMTP id caWiVAInsT3u for <iommu@lists.linux-foundation.org>;
+ Mon,  6 Jul 2020 22:19:02 +0000 (UTC)
 X-Greylist: domain auto-whitelisted by SQLgrey-1.7.6
-Received: from mail-lf1-f68.google.com (mail-lf1-f68.google.com
- [209.85.167.68])
- by fraxinus.osuosl.org (Postfix) with ESMTPS id BA59186B9E
- for <iommu@lists.linux-foundation.org>; Mon,  6 Jul 2020 22:17:21 +0000 (UTC)
-Received: by mail-lf1-f68.google.com with SMTP id s16so18119013lfp.12
- for <iommu@lists.linux-foundation.org>; Mon, 06 Jul 2020 15:17:21 -0700 (PDT)
+Received: from mail-lj1-f193.google.com (mail-lj1-f193.google.com
+ [209.85.208.193])
+ by fraxinus.osuosl.org (Postfix) with ESMTPS id 4E63886F69
+ for <iommu@lists.linux-foundation.org>; Mon,  6 Jul 2020 22:19:02 +0000 (UTC)
+Received: by mail-lj1-f193.google.com with SMTP id e4so47534157ljn.4
+ for <iommu@lists.linux-foundation.org>; Mon, 06 Jul 2020 15:19:02 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=google.com; s=20161025;
  h=mime-version:references:in-reply-to:from:date:message-id:subject:to
- :cc:content-transfer-encoding;
- bh=VcTg7znjs5NM9gvezTd2PmxFMdpOTVCMT/3yPB+Qgb4=;
- b=vNzVRDUl4U537XT+jFySQw2TYQYIYbNVvMi2vI75OS8G/oHkzYqETbWDdsyWrqnJvB
- ZDagRVkHhKD8zrtLYJJ8qIXo0AuuWaJckY5WFye6ln6rpJlD+AplVS4Ho5fxKhazVYd+
- WwNgl/fOyzqH2mIWWEgJom7RS2Ys5J/RcL078JbEZFoB+AoMeXlDAL/+dvD25aT6hP7g
- cRY8zFElRYhBxqOzi9A+D7S29ctaddBPIC5OT/Ic4cekOp6Ldlh3Lmc0aMJePc/BbAgT
- 305sc89OsH87ksxbW1okc8uaJtthTw6avN9JtPmDdA9CbRbhBy4vF/SiokD2ssfDaKPU
- KjfA==
+ :cc; bh=+g8b8UDutwpjfN6lizjtfC7IoMCTSDjsjPJug8YnTgg=;
+ b=KUh+nyqnQkj9RcybDE5PeCJrAdjLCL6MfvAIePJyXHNRX0F8FKTnKIeG1/vPX6JbR0
+ ZkH2vounWJTv0AHW++nq9HTK5t0tj2w7jkJDno0f/aPPilRdMq6kUjJLsLllyc6nZzA9
+ gFUpa3s60zoHwqlYS1ibCaFMDpBcrs4toKYyR9eGRtgpjbgUrfwu2ZQtV4h54mS9Dk8Q
+ lg38TgKrJ4Lvli78idB1ExZ9K7zVg+JISjzyd/fRrzPpJ9bQnYZblkHcGZJkJsuDKxMs
+ /oeUvTOZc6v1rGutbgXAGNSFIyPxvgBklnWYlKvi0d+6iWbY9jFw/OyGoH076u85nh1D
+ 9QPQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
  d=1e100.net; s=20161025;
  h=x-gm-message-state:mime-version:references:in-reply-to:from:date
- :message-id:subject:to:cc:content-transfer-encoding;
- bh=VcTg7znjs5NM9gvezTd2PmxFMdpOTVCMT/3yPB+Qgb4=;
- b=cUbxeStXas4cxeZVdiNUj7FLsmjcZoSI6eUz8T0wmogTOeEWSyxSa/nJRdLsbVQaEL
- 3i/VLb1cWbusCJFFdccZ3f/H48N2eDPkcnB0uW3tQEZshZA8SmSxxqOzt4OI2JogBGJA
- 9oUdvB/LjyseLjKgfgG7i0q0pTDMVeSPL1WOW4e0YIlgJyyZAS1qnELP2EdJlK1Y/X4w
- nMV30o2hnfaWKMpwyT6tJrJVDBjnQ6CjjnsQEI1FLh8cUZcWa+Mzkc2faxXSSlihZTIz
- R/uAen1ZioFCK2LyruF2ML0heZMCf1WaYPW1g8ga9A8rAclrbES/JGX2mYzU3VVBwz0H
- TV0A==
-X-Gm-Message-State: AOAM530Xk0R//D1w7WmT8MZ8k/rzw4K2CSuxmXdBZi5ADX5av+3sxj5t
- PYlK2hjpFAV+6IvllPcmu0tbK6jv4AJ9G+ttQUrFXQ==
-X-Google-Smtp-Source: ABdhPJwe3ex8kcVRA0T8G22gfsoP7JF+/rquu8J+b6ju8abD2HlCAo8f1V+eED2pMxSAfWVXjFqnh6BvhytT/R+z9+8=
-X-Received: by 2002:a19:435b:: with SMTP id m27mr31417703lfj.40.1594073839263; 
- Mon, 06 Jul 2020 15:17:19 -0700 (PDT)
+ :message-id:subject:to:cc;
+ bh=+g8b8UDutwpjfN6lizjtfC7IoMCTSDjsjPJug8YnTgg=;
+ b=qJhZlDYiUHVtFAVreCftsRcKR2ILmzqAMIxw2QIMdLUmly97SgSqQpeVpQ5lpJKvel
+ PplAjddPD44gq+41Jxl5ZuO0BdDQjHgdiAUUA8Nc17b7ZCvlIlFNGSZ8r2AFZR0aO5bM
+ Yr5PTkXBayN+a05NDhn3NkLJGdU15PJMqHvnaBA87oantoBrclhTeFijlYxs9RwBif/r
+ hU+MlJjkCU4psWIIQPGuDputPwkDmjBnPG2qUFNHyk/6fVXKp4Be3mkH3VWLeNmqJZyF
+ Gj1T2vrNLeTTsLewrP88O1ptNWpxh6WfuCO6nJHtrkFAwIOAayUCD/BTthuyC3ZhnGIK
+ F1uA==
+X-Gm-Message-State: AOAM532rmZ3XQQ7rEfIKLKcUF0c4WhWAOfhWwwzxq/yfORdyQiMZjJxm
+ HWFnies+1Rz0pNR/+fJeWUgJ5WnYjnPe6/scE83hLQ==
+X-Google-Smtp-Source: ABdhPJyJihOFDUusDuGurRmf+ynZe/E6+YCOUFBYwFoV/94U5zmmw6gWFYJpZfrD7hx040m64pq6G+pFjE5iBr5QmJw=
+X-Received: by 2002:a2e:b5a8:: with SMTP id f8mr27313685ljn.247.1594073940036; 
+ Mon, 06 Jul 2020 15:19:00 -0700 (PDT)
 MIME-Version: 1.0
-References: <20200630044943.3425049-2-rajatja@google.com>
- <20200706155815.GA119406@bjorn-Precision-5520>
-In-Reply-To: <20200706155815.GA119406@bjorn-Precision-5520>
-Date: Mon, 6 Jul 2020 15:16:42 -0700
-Message-ID: <CACK8Z6GtOH4o6J17YXnesf0VvQSQRTCR011RRD2U7gkrwA8ziQ@mail.gmail.com>
-Subject: Re: [PATCH v2 1/7] PCI: Keep the ACS capability offset in device
-To: Bjorn Helgaas <helgaas@kernel.org>
+References: <20200630044943.3425049-1-rajatja@google.com>
+ <20200704114452.GA15530@amd>
+In-Reply-To: <20200704114452.GA15530@amd>
+Date: Mon, 6 Jul 2020 15:18:23 -0700
+Message-ID: <CACK8Z6HP00o=rextd0-X-u2aH72PNU3t6zEczC2GGO_QfGhUcA@mail.gmail.com>
+Subject: Re: [PATCH v2 0/7] Tighten PCI security, expose dev location in sysfs
+To: Pavel Machek <pavel@denx.de>
 Cc: Todd Broch <tbroch@google.com>, linux-pci <linux-pci@vger.kernel.org>,
  "Krishnakumar, Lalithambika" <lalithambika.krishnakumar@intel.com>,
  Heikki Krogerus <heikki.krogerus@linux.intel.com>,
@@ -121,46 +120,56 @@ List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
  <mailto:iommu-request@lists.linux-foundation.org?subject=subscribe>
 From: Rajat Jain via iommu <iommu@lists.linux-foundation.org>
 Reply-To: Rajat Jain <rajatja@google.com>
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: base64
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: 7bit
 Errors-To: iommu-bounces@lists.linux-foundation.org
 Sender: "iommu" <iommu-bounces@lists.linux-foundation.org>
 
-SGkgQmpvcm4sCgpUaGFua3MgZm9yIHRha2luZyBhIGxvb2suCgpPbiBNb24sIEp1bCA2LCAyMDIw
-IGF0IDg6NTggQU0gQmpvcm4gSGVsZ2FhcyA8aGVsZ2Fhc0BrZXJuZWwub3JnPiB3cm90ZToKPgo+
-IE9uIE1vbiwgSnVuIDI5LCAyMDIwIGF0IDA5OjQ5OjM3UE0gLTA3MDAsIFJhamF0IEphaW4gd3Jv
-dGU6Cj4gPiBDdXJyZW50bHkgdGhpcyBpcyBiZWluZyBsb29rZWQgdXAgYXQgYSBudW1iZXIgb2Yg
-cGxhY2VzLiBSZWFkIGFuZCBzdG9yZSBpdAo+ID4gb25jZSBhdCBib290dXAgc28gdGhhdCBpdCBj
-YW4gYmUgdXNlZCBieSBhbGwgbGF0ZXIuCj4KPiBXcml0ZSB0aGUgY29tbWl0IGxvZyBzbyBpdCBp
-cyBjb21wbGV0ZSBldmVuIHdpdGhvdXQgdGhlIHN1YmplY3QuCj4gUmlnaHQgbm93LCB5b3UgaGF2
-ZSB0byByZWFkIHRoZSBzdWJqZWN0IHRvIGtub3cgd2hhdCAidGhpcyIgcmVmZXJzIHRvLgo+Cj4g
-VGhlIHN1YmplY3QgaXMgbGlrZSB0aGUgdGl0bGU7IHRoZSBsb2cgaXMgbGlrZSB0aGUgYm9keSBv
-ZiBhbiBhcnRpY2xlLgo+IFRoZSB0aXRsZSBpc24ndCAqcGFydCogb2YgdGhlIGFydGljbGUsIHNv
-IHRoZSBhcnRpY2xlIGhhcyB0byBtYWtlCj4gc2Vuc2UgYWxsIGJ5IGl0c2VsZi4KCkZpeGVkLgoK
-Pgo+ID4gK3N0YXRpYyB2b2lkIHBjaV9lbmFibGVfYWNzKHN0cnVjdCBwY2lfZGV2ICpkZXYpOwo+
-Cj4gSSBkb24ndCB0aGluayB3ZSBuZWVkIHRoaXMgZm9yd2FyZCBkZWNsYXJhdGlvbiwgZG8gd2U/
-CgpXZSBuZWVkIGl0IHVubGVzcyB3ZSBtb3ZlIGl0cyBkZWZpbml0aW9uIGZ1cnRoZXIgdXAgaW4g
-dGhlIGZpbGU6Cgpkcml2ZXJzL3BjaS9wY2kuYzogSW4gZnVuY3Rpb24g4oCYcGNpX3Jlc3RvcmVf
-c3RhdGXigJk6CmRyaXZlcnMvcGNpL3BjaS5jOjE1NTE6MjogZXJyb3I6IGltcGxpY2l0IGRlY2xh
-cmF0aW9uIG9mIGZ1bmN0aW9uCuKAmHBjaV9lbmFibGVfYWNz4oCZOyBkaWQgeW91IG1lYW4g4oCY
-cGNpX2VuYWJsZV9hdHPigJk/ClstV2Vycm9yPWltcGxpY2l0LWZ1bmN0aW9uLWRlY2xhcmF0aW9u
-XQogMTU1MSB8ICBwY2lfZW5hYmxlX2FjcyhkZXYpOwoKRG8geW91IHdhbnQgbWUgdG8gbW92ZSBp
-dCB1cCBpbiB0aGUgZmlsZSBzbyB0aGF0IHdlIGRvIG5vdCBuZWVkIHRoZQpmb3J3YXJkIGRlY2xh
-cmF0aW9uPwoKPgo+ID4gQEAgLTQ2NTMsNyArNDY1Myw3IEBAIHN0YXRpYyBpbnQgcGNpX3F1aXJr
-X2ludGVsX3NwdF9wY2hfYWNzKHN0cnVjdCBwY2lfZGV2ICpkZXYsIHUxNiBhY3NfZmxhZ3MpCj4g
-PiAgICAgICBpZiAoIXBjaV9xdWlya19pbnRlbF9zcHRfcGNoX2Fjc19tYXRjaChkZXYpKQo+ID4g
-ICAgICAgICAgICAgICByZXR1cm4gLUVOT1RUWTsKPiA+Cj4gPiAtICAgICBwb3MgPSBwY2lfZmlu
-ZF9leHRfY2FwYWJpbGl0eShkZXYsIFBDSV9FWFRfQ0FQX0lEX0FDUyk7Cj4gPiArICAgICBwb3Mg
-PSBkZXYtPmFjc19jYXA7Cj4KPiBJIGFzc3VtZSB5b3UgdmVyaWZpZWQgdGhhdCBhbGwgdGhlc2Ug
-cXVpcmtzIGFyZSBGSU5BTCBxdWlya3MsIHNpbmNlCj4gcGNpX2luaXRfY2FwYWJpbGl0aWVzKCkg
-aXMgY2FsbGVkIGFmdGVyIEhFQURFUiBxdWlya3MuICBJJ2xsCj4gZG91YmxlLWNoZWNrIGJlZm9y
-ZSBhcHBseWluZyB0aGlzLgoKTm9uZSBvZiB0aGVzZSBxdWlya3MgYXJlIGFwcGxpZWQgdmlhIERF
-Q0xBUkVfUENJX0ZJWFVQXyooKS4gQWxsIHRoZXNlCnF1aXJrcyBhcmUgY2FsbGVkIChkaXJlY3Rs
-eSBvciBpbmRpcmVjdGx5KSBmcm9tIGVpdGhlcgpwY2lfZW5hYmxlX2FjcygpIG9yIHBjaV9hY3Nf
-ZW5hYmxlZCgpLAoKRVhDRVBUCgpwY2lfaWR0X2J1c19xdWlyaygpLiBUaGF0IG9uZSBpcyBjYWxs
-ZWQgZnJvbQpwY2lfYnVzX3JlYWRfZGV2X3ZlbmRvcl9pZCgpIHdoaWNoIHNob3VsZCBiZSBjYWxs
-ZWQgb25seSBhZnRlciB0aGUKcGFyZW50IGJyaWRnZSBoYXMgYmVlbiBhZGRlZCBhbmQgc2V0dXAg
-Y29ycmVjdGx5LgoKU28gaXQgbG9va3MgYWxsIGdvb2QgdG8gbWUuCgpUaGFua3MsCgpSYWphdAoK
-Cgo+Cj4gQmpvcm4KX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19f
-X18KaW9tbXUgbWFpbGluZyBsaXN0CmlvbW11QGxpc3RzLmxpbnV4LWZvdW5kYXRpb24ub3JnCmh0
-dHBzOi8vbGlzdHMubGludXhmb3VuZGF0aW9uLm9yZy9tYWlsbWFuL2xpc3RpbmZvL2lvbW11
+On Sat, Jul 4, 2020 at 4:44 AM Pavel Machek <pavel@denx.de> wrote:
+>
+> Hi!
+>
+> > * The first 3 patches tighten the PCI security using ACS, and take care
+> >   of a border case.
+> > * The 4th patch takes care of PCI bug.
+> > * 5th and 6th patches expose a device's location into the sysfs to allow
+> >   admin to make decision based on that.
+>
+> I see no patch for Documentation -- new sysfs interfaces should be
+> documented for 5/6.
+
+Yes, sorry. The patches 5/6 have run into discussion and it looks are
+not acceptable at the moment.
+
+Thanks,
+
+Rajat
+
+>
+>                                                                         Pavel
+>
+> >  drivers/base/core.c         | 35 +++++++++++++++++++++++++++++++
+> >  drivers/iommu/intel/iommu.c | 31 ++++++++++++++++++---------
+> >  drivers/pci/ats.c           |  2 +-
+> >  drivers/pci/bus.c           | 13 ++++++------
+> >  drivers/pci/of.c            |  2 +-
+> >  drivers/pci/p2pdma.c        |  2 +-
+> >  drivers/pci/pci-acpi.c      | 13 ++++++------
+> >  drivers/pci/pci-driver.c    |  1 +
+> >  drivers/pci/pci.c           | 34 ++++++++++++++++++++++++++----
+> >  drivers/pci/pci.h           |  3 ++-
+> >  drivers/pci/probe.c         | 20 +++++++++++-------
+> >  drivers/pci/quirks.c        | 19 +++++++++++++----
+> >  include/linux/device.h      | 42 +++++++++++++++++++++++++++++++++++++
+> >  include/linux/device/bus.h  |  8 +++++++
+> >  include/linux/pci.h         | 13 ++++++------
+> >  15 files changed, 191 insertions(+), 47 deletions(-)
+> >
+>
+> --
+> (english) http://www.livejournal.com/~pavelmachek
+> (cesky, pictures) http://atrey.karlin.mff.cuni.cz/~pavel/picture/horses/blog.html
+_______________________________________________
+iommu mailing list
+iommu@lists.linux-foundation.org
+https://lists.linuxfoundation.org/mailman/listinfo/iommu
