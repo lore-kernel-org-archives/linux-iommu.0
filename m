@@ -6,95 +6,92 @@ X-Spam-Status: No, score=-3.5 required=3.0 tests=DKIM_INVALID,DKIM_SIGNED,
 	HEADER_FROM_DIFFERENT_DOMAINS,MAILING_LIST_MULTI,SIGNED_OFF_BY,SPF_HELO_NONE,
 	SPF_PASS,URIBL_BLOCKED autolearn=no autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id E1D95C433DF
-	for <iommu@archiver.kernel.org>; Tue,  7 Jul 2020 10:48:42 +0000 (UTC)
-Received: from fraxinus.osuosl.org (smtp4.osuosl.org [140.211.166.137])
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 1D447C433DF
+	for <iommu@archiver.kernel.org>; Tue,  7 Jul 2020 11:24:02 +0000 (UTC)
+Received: from silver.osuosl.org (smtp3.osuosl.org [140.211.166.136])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by mail.kernel.org (Postfix) with ESMTPS id A90EE20739
-	for <iommu@archiver.kernel.org>; Tue,  7 Jul 2020 10:48:42 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTPS id DA05D206CD
+	for <iommu@archiver.kernel.org>; Tue,  7 Jul 2020 11:24:01 +0000 (UTC)
 Authentication-Results: mail.kernel.org;
-	dkim=fail reason="signature verification failed" (2048-bit key) header.d=linaro.org header.i=@linaro.org header.b="VLodcZ+X"
-DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org A90EE20739
+	dkim=fail reason="signature verification failed" (2048-bit key) header.d=linaro.org header.i=@linaro.org header.b="zFs2OsBC"
+DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org DA05D206CD
 Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=linaro.org
 Authentication-Results: mail.kernel.org; spf=pass smtp.mailfrom=iommu-bounces@lists.linux-foundation.org
 Received: from localhost (localhost [127.0.0.1])
-	by fraxinus.osuosl.org (Postfix) with ESMTP id 710D687861;
-	Tue,  7 Jul 2020 10:48:42 +0000 (UTC)
-X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from fraxinus.osuosl.org ([127.0.0.1])
-	by localhost (.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
-	with ESMTP id BU6YLfxqe0zY; Tue,  7 Jul 2020 10:48:41 +0000 (UTC)
-Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [140.211.9.56])
-	by fraxinus.osuosl.org (Postfix) with ESMTP id CBEF98779F;
-	Tue,  7 Jul 2020 10:48:41 +0000 (UTC)
-Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
-	by lists.linuxfoundation.org (Postfix) with ESMTP id B9C70C0893;
-	Tue,  7 Jul 2020 10:48:41 +0000 (UTC)
-Received: from silver.osuosl.org (smtp3.osuosl.org [140.211.166.136])
- by lists.linuxfoundation.org (Postfix) with ESMTP id 957F4C016F
- for <iommu@lists.linux-foundation.org>; Tue,  7 Jul 2020 10:48:40 +0000 (UTC)
-Received: from localhost (localhost [127.0.0.1])
- by silver.osuosl.org (Postfix) with ESMTP id 8266D26D90
- for <iommu@lists.linux-foundation.org>; Tue,  7 Jul 2020 10:48:40 +0000 (UTC)
+	by silver.osuosl.org (Postfix) with ESMTP id 9CD502655A;
+	Tue,  7 Jul 2020 11:24:01 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
 Received: from silver.osuosl.org ([127.0.0.1])
+	by localhost (.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
+	with ESMTP id ps66c9CGLyQX; Tue,  7 Jul 2020 11:24:00 +0000 (UTC)
+Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [140.211.9.56])
+	by silver.osuosl.org (Postfix) with ESMTP id 7C13C2636C;
+	Tue,  7 Jul 2020 11:24:00 +0000 (UTC)
+Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
+	by lists.linuxfoundation.org (Postfix) with ESMTP id 601EAC07FF;
+	Tue,  7 Jul 2020 11:24:00 +0000 (UTC)
+Received: from fraxinus.osuosl.org (smtp4.osuosl.org [140.211.166.137])
+ by lists.linuxfoundation.org (Postfix) with ESMTP id 7D65EC016F
+ for <iommu@lists.linux-foundation.org>; Tue,  7 Jul 2020 11:23:59 +0000 (UTC)
+Received: from localhost (localhost [127.0.0.1])
+ by fraxinus.osuosl.org (Postfix) with ESMTP id 72A7487941
+ for <iommu@lists.linux-foundation.org>; Tue,  7 Jul 2020 11:23:59 +0000 (UTC)
+X-Virus-Scanned: amavisd-new at osuosl.org
+Received: from fraxinus.osuosl.org ([127.0.0.1])
  by localhost (.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
- with ESMTP id gQnKTMgdmLXh for <iommu@lists.linux-foundation.org>;
- Tue,  7 Jul 2020 10:48:39 +0000 (UTC)
+ with ESMTP id CnZ2iPUhCa2m for <iommu@lists.linux-foundation.org>;
+ Tue,  7 Jul 2020 11:23:58 +0000 (UTC)
 X-Greylist: domain auto-whitelisted by SQLgrey-1.7.6
-Received: from mail-ed1-f65.google.com (mail-ed1-f65.google.com
- [209.85.208.65])
- by silver.osuosl.org (Postfix) with ESMTPS id 2C5E620336
- for <iommu@lists.linux-foundation.org>; Tue,  7 Jul 2020 10:48:39 +0000 (UTC)
-Received: by mail-ed1-f65.google.com with SMTP id dm19so31715348edb.13
- for <iommu@lists.linux-foundation.org>; Tue, 07 Jul 2020 03:48:39 -0700 (PDT)
+Received: from mail-ed1-f66.google.com (mail-ed1-f66.google.com
+ [209.85.208.66])
+ by fraxinus.osuosl.org (Postfix) with ESMTPS id 6180E87923
+ for <iommu@lists.linux-foundation.org>; Tue,  7 Jul 2020 11:23:58 +0000 (UTC)
+Received: by mail-ed1-f66.google.com with SMTP id dm19so31789094edb.13
+ for <iommu@lists.linux-foundation.org>; Tue, 07 Jul 2020 04:23:58 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linaro.org; s=google;
  h=date:from:to:cc:subject:message-id:references:mime-version
  :content-disposition:in-reply-to;
- bh=OZw9WF+sLD7+S/P+7F6VJUju0c1b8KGkxnX1D6C0CBY=;
- b=VLodcZ+XVy6S8cm4qwMKpTFvUNqrFoZEbNt/c4CCapdXa7iXxB5CpvNSLzMPaFPdid
- LHVLihcWQ+Q2oZcjFMyUezBnO/uav7shIwwBtxbaIyBR/zcLXsQS3hdDHRtl1BwJhVyX
- KeCZh+yMfxSDW58BnTwMioYFGPuHU+T9iquLZmLY6QmsymaYnOtBvwmEIYQEQ+xRvPqJ
- Hm8Bi7plNgs/1ulVCD/3t3wD59OEGJ1ktz5X1+9/Rg5i4YrlUspH4ZnC3eTYsuIz9enK
- x0tUCUdT5vuKNswGw+11te2bqgOsOYOEGxaKk3OcG4qgEqfCgyzCD71pXavPIJ7HIoBp
- WgaA==
+ bh=Z+HTaDJORry76de6xJh2nNWpDzvXRte/7hWFD6xg3L0=;
+ b=zFs2OsBCi8DqKxj1YR0JHMK7UjSD/oZ/Z7BDnr1ZUxpIoAaPD4S4IKK4hGDeddFjTt
+ 3BGApI+F1fzdkFWT7exYU5xyhldcg7eLpeBuLLhJ+aXC5j8cN3+H/i5LrHVnap88M9dH
+ W34FYzJkfIjh/aDMP9w8uU0X6SEe9f3nCfiKHej0GGxTEieXobrFZ5elrhd7Q4athgmt
+ K8jd2P2nrdufj2lG76LEKtKxltV8v5QSXfHnH3VFLr4WQvymX2Y2EdwHEr6pgZ10Ue4E
+ 4hMYcgs1r5y1LAAd6lkwxqLFOJMEXIuCVdwCqAKlyfTHjvcB6L4J0Vy2Z6FtePyO6I9E
+ EHdA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
  d=1e100.net; s=20161025;
  h=x-gm-message-state:date:from:to:cc:subject:message-id:references
  :mime-version:content-disposition:in-reply-to;
- bh=OZw9WF+sLD7+S/P+7F6VJUju0c1b8KGkxnX1D6C0CBY=;
- b=MK0B1Kt+h7qqj6rcbjMRoSN43/e5kwWZUcFOzSPLWtnjVdYxikI4NhvR5iy9Jz1Z/k
- BzInTsBhx0jsufb44aBleDkVceZvObEjbeqcbOZgko0BN5d0IMB0Q1vhfAL2Q3nXy+5b
- tJZ8YQ/RvA6n6Zhl6g6bpcKrR1NjzHL/xFAe+QXkJo/G8rU+P2S32UK+tKAuh2d1T0qb
- 51KkPuTuydZrqaLmx+Canm68MCGNY1wAz76pWWhQezb7vGdVHvTzltu6fIBwykXSdDqT
- uQJBPf21siFNpzPR3xE3SRXX8iZ4SNjopAh6GDRRCalqMzyvxU55rA31AxC4OTWs+se5
- sXOA==
-X-Gm-Message-State: AOAM533br9Q7Zg4kK95uCAxXTApYQiKlQh3Z0glP2A5ET5B7GyZEmm7w
- 5Pj1lxh7v6fg2EKEkOFnVmMlVg==
-X-Google-Smtp-Source: ABdhPJxMCfYoXtG9EMvYyx83jtYoaHCy9ePgt3od0RIGDNDJYG7oY/Sdl2HKdoTPTHU2HCFZPmLE6A==
-X-Received: by 2002:a05:6402:16db:: with SMTP id
- r27mr61765206edx.139.1594118917429; 
- Tue, 07 Jul 2020 03:48:37 -0700 (PDT)
+ bh=Z+HTaDJORry76de6xJh2nNWpDzvXRte/7hWFD6xg3L0=;
+ b=UtZWA64sE/N0HnmVItCOtaXRd+ajvohvaquQjnoGFgOonipibyCw0jqKJb9u7P8iot
+ HCcTLA3TqWNw2wZ5P/uJfjAYIRXaiiucqLdX4vDcXx1Fbhg/MbV1tgpCB+f6zxpCiW9r
+ My3W0064GZQiavfSTiOTd7zaUrDODbiqNzZfSG1OYWNTd6tTrC9iBTSqyuX4ifbLaWIa
+ 8yIdYHxM8Nhdf6Q+fV+J76ddW9QIxRdsrQXpGF8JkrUbR2GPiwo0K5Qr6ZfH3KD1JFRL
+ XcWLf9qH84JPCiSm3xvMMeNVmzIx9MeUjZ+IczTxOGZ7oicbIUJ+roZ4VfMd8bPMU+F4
+ m3AQ==
+X-Gm-Message-State: AOAM531ybil265p9ip4oIhEtMacTPruZ/gKOOC7U+dqp2X1CWevO3ddl
+ /OaWlCLnUrm3j9xr/lqWfpXXYw==
+X-Google-Smtp-Source: ABdhPJyYekwZMG+8JnnvjOeze0PtU9kmUGUw77NAnpt4KdPekwPaq5NofPFrBGFOfhl9DiucSf9AFA==
+X-Received: by 2002:aa7:da46:: with SMTP id w6mr50895220eds.261.1594121036582; 
+ Tue, 07 Jul 2020 04:23:56 -0700 (PDT)
 Received: from myrica ([2001:1715:4e26:a7e0:116c:c27a:3e7f:5eaf])
- by smtp.gmail.com with ESMTPSA id t25sm174229ejc.34.2020.07.07.03.48.36
+ by smtp.gmail.com with ESMTPSA id s1sm25488302edy.1.2020.07.07.04.23.55
  (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
- Tue, 07 Jul 2020 03:48:36 -0700 (PDT)
-Date: Tue, 7 Jul 2020 12:48:25 +0200
+ Tue, 07 Jul 2020 04:23:56 -0700 (PDT)
+Date: Tue, 7 Jul 2020 13:23:44 +0200
 From: Jean-Philippe Brucker <jean-philippe@linaro.org>
-To: Jordan Crouse <jcrouse@codeaurora.org>
-Subject: Re: [PATCH v2 1/6] iommu/arm-smmu: Add auxiliary domain support for
- arm-smmuv2
-Message-ID: <20200707104825.GA159413@myrica>
-References: <20200626200414.14382-1-jcrouse@codeaurora.org>
- <20200626200414.14382-2-jcrouse@codeaurora.org>
+To: Lu Baolu <baolu.lu@linux.intel.com>
+Subject: Re: [PATCH v2 3/4] iommu/vt-d: Report page request faults for guest
+ SVA
+Message-ID: <20200707112344.GB159413@myrica>
+References: <20200706002535.9381-1-baolu.lu@linux.intel.com>
+ <20200706002535.9381-4-baolu.lu@linux.intel.com>
 MIME-Version: 1.0
 Content-Disposition: inline
-In-Reply-To: <20200626200414.14382-2-jcrouse@codeaurora.org>
-Cc: freedreno@lists.freedesktop.org, linux-arm-msm@vger.kernel.org,
- Robin Murphy <robin.murphy@arm.com>, linux-kernel@vger.kernel.org,
- iommu@lists.linux-foundation.org, John Stultz <john.stultz@linaro.org>,
- Will Deacon <will@kernel.org>, linux-arm-kernel@lists.infradead.org
+In-Reply-To: <20200706002535.9381-4-baolu.lu@linux.intel.com>
+Cc: linux-kernel@vger.kernel.org, iommu@lists.linux-foundation.org,
+ Kevin Tian <kevin.tian@intel.com>, Ashok Raj <ashok.raj@intel.com>
 X-BeenThere: iommu@lists.linux-foundation.org
 X-Mailman-Version: 2.1.15
 Precedence: list
@@ -112,70 +109,72 @@ Content-Transfer-Encoding: 7bit
 Errors-To: iommu-bounces@lists.linux-foundation.org
 Sender: "iommu" <iommu-bounces@lists.linux-foundation.org>
 
-Hi Jordan,
-
-On Fri, Jun 26, 2020 at 02:04:09PM -0600, Jordan Crouse wrote:
-> Support auxiliary domains for arm-smmu-v2 to initialize and support
-> multiple pagetables for a single SMMU context bank. Since the smmu-v2
-> hardware doesn't have any built in support for switching the pagetable
-> base it is left as an exercise to the caller to actually use the pagetable.
+On Mon, Jul 06, 2020 at 08:25:34AM +0800, Lu Baolu wrote:
+> A pasid might be bound to a page table from a VM guest via the iommu
+> ops.sva_bind_gpasid. In this case, when a DMA page fault is detected
+> on the physical IOMMU, we need to inject the page fault request into
+> the guest. After the guest completes handling the page fault, a page
+> response need to be sent back via the iommu ops.page_response().
 > 
-> Aux domains are supported if split pagetable (TTBR1) support has been
-> enabled on the master domain.  Each auxiliary domain will reuse the
-> configuration of the master domain. By default the a domain with TTBR1
-> support will have the TTBR0 region disabled so the first attached aux
-> domain will enable the TTBR0 region in the hardware and conversely the
-> last domain to be detached will disable TTBR0 translations.  All subsequent
-> auxiliary domains create a pagetable but not touch the hardware.
+> This adds support to report a page request fault. Any external module
+> which is interested in handling this fault should regiester a notifier
+> callback.
 > 
-> The leaf driver will be able to query the physical address of the
-> pagetable with the DOMAIN_ATTR_PTBASE attribute so that it can use the
-> address with whatever means it has to switch the pagetable base.
-> 
-> Following is a pseudo code example of how a domain can be created
-> 
->  /* Check to see if aux domains are supported */
->  if (iommu_dev_has_feature(dev, IOMMU_DEV_FEAT_AUX)) {
-> 	 iommu = iommu_domain_alloc(...);
-> 
-
-The device driver should also call iommu_dev_enable_feature() before using
-the AUX feature. I see that you implement them as NOPs and in this case
-the GPU is tightly coupled with the SMMU so interoperability between
-different IOMMU and device drivers doesn't matter much, but I think it's
-still a good idea to follow the same patterns in all drivers to make
-future work on the core IOMMU easier.
-
-> 	 if (iommu_aux_attach_device(domain, dev))
-> 		 return FAIL;
-> 
-> 	/* Save the base address of the pagetable for use by the driver
-> 	iommu_domain_get_attr(domain, DOMAIN_ATTR_PTBASE, &ptbase);
->  }
-> 
-> Then 'domain' can be used like any other iommu domain to map and
-> unmap iova addresses in the pagetable.
-> 
-> Signed-off-by: Jordan Crouse <jcrouse@codeaurora.org>
+> Co-developed-by: Jacob Pan <jacob.jun.pan@linux.intel.com>
+> Signed-off-by: Jacob Pan <jacob.jun.pan@linux.intel.com>
+> Co-developed-by: Liu Yi L <yi.l.liu@intel.com>
+> Signed-off-by: Liu Yi L <yi.l.liu@intel.com>
+> Signed-off-by: Lu Baolu <baolu.lu@linux.intel.com>
 > ---
-> 
->  drivers/iommu/arm-smmu.c | 219 ++++++++++++++++++++++++++++++++++++---
->  drivers/iommu/arm-smmu.h |   1 +
->  2 files changed, 204 insertions(+), 16 deletions(-)
 [...]
-> @@ -1653,6 +1836,10 @@ static struct iommu_ops arm_smmu_ops = {
->  	.get_resv_regions	= arm_smmu_get_resv_regions,
->  	.put_resv_regions	= generic_iommu_put_resv_regions,
->  	.def_domain_type	= arm_smmu_def_domain_type,
-> +	.dev_has_feat		= arm_smmu_dev_has_feat,
-> +	.dev_enable_feat	= arm_smmu_dev_enable_feat,
-> +	.dev_disable_feat	= arm_smmu_dev_disable_feat,
-> +	.aux_attach_dev		= arm_smmu_aux_attach_dev,
+> +static int
+> +intel_svm_prq_report(struct device *dev, struct page_req_dsc *desc)
+> +{
+> +	struct iommu_fault_event event;
+> +	u8 bus, devfn;
+> +
+> +	memset(&event, 0, sizeof(struct iommu_fault_event));
+> +	bus = PCI_BUS_NUM(desc->rid);
+> +	devfn = desc->rid & 0xff;
+> +
+> +	/* Fill in event data for device specific processing */
+> +	event.fault.type = IOMMU_FAULT_PAGE_REQ;
+> +	event.fault.prm.addr = desc->addr;
+> +	event.fault.prm.pasid = desc->pasid;
+> +	event.fault.prm.grpid = desc->prg_index;
+> +	event.fault.prm.perm = prq_to_iommu_prot(desc);
+> +
+> +	/*
+> +	 * Set last page in group bit if private data is present,
+> +	 * page response is required as it does for LPIG.
+> +	 */
+> +	if (desc->lpig)
+> +		event.fault.prm.flags |= IOMMU_FAULT_PAGE_REQUEST_LAST_PAGE;
+> +	if (desc->pasid_present)
+> +		event.fault.prm.flags |= IOMMU_FAULT_PAGE_REQUEST_PASID_VALID;
 
-To be complete this also needs dev_feat_enabled() and aux_detach_dev() ops
+Do you also need to set IOMMU_FAULT_PAGE_RESPONSE_NEEDS_PASID?  I added
+the flag to deal with devices that do not want a PASID value in their PRI
+response (bit 15 in the PCIe Page Request Status Register):
+https://lore.kernel.org/linux-iommu/20200616144712.748818-1-jean-philippe@linaro.org/
+(applied by Joerg for v5.9)
+
+Grepping for pci_prg_resp_pasid_required() in intel/iommu.c it seems to
+currently reject devices that do not want a PASID in a PRI response, so I
+think you can set this flag unconditionally for now.
 
 Thanks,
 Jean
+
+> +	if (desc->priv_data_present) {
+> +		event.fault.prm.flags |= IOMMU_FAULT_PAGE_REQUEST_LAST_PAGE;
+> +		event.fault.prm.flags |= IOMMU_FAULT_PAGE_REQUEST_PRIV_DATA;
+> +		memcpy(event.fault.prm.private_data, desc->priv_data,
+> +		       sizeof(desc->priv_data));
+> +	}
+> +
+> +	return iommu_report_device_fault(dev, &event);
+> +}
 _______________________________________________
 iommu mailing list
 iommu@lists.linux-foundation.org
