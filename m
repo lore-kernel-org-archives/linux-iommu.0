@@ -2,71 +2,145 @@ Return-Path: <SRS0=m4kH=AS=lists.linux-foundation.org=iommu-bounces@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-8.2 required=3.0 tests=HEADER_FROM_DIFFERENT_DOMAINS,
-	INCLUDES_PATCH,MAILING_LIST_MULTI,SIGNED_OFF_BY,SPF_HELO_NONE,SPF_PASS,
-	URIBL_BLOCKED,USER_AGENT_SANE_1 autolearn=unavailable autolearn_force=no
-	version=3.4.0
+X-Spam-Status: No, score=-5.0 required=3.0 tests=DKIM_INVALID,DKIM_SIGNED,
+	HEADER_FROM_DIFFERENT_DOMAINS,MAILING_LIST_MULTI,SIGNED_OFF_BY,SPF_HELO_NONE,
+	SPF_PASS,URIBL_BLOCKED,USER_AGENT_SANE_1 autolearn=unavailable
+	autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 0B0EAC433E0
-	for <iommu@archiver.kernel.org>; Tue,  7 Jul 2020 12:34:15 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 77E47C433E0
+	for <iommu@archiver.kernel.org>; Tue,  7 Jul 2020 13:07:09 +0000 (UTC)
 Received: from whitealder.osuosl.org (smtp1.osuosl.org [140.211.166.138])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by mail.kernel.org (Postfix) with ESMTPS id D37BC20773
-	for <iommu@archiver.kernel.org>; Tue,  7 Jul 2020 12:34:14 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org D37BC20773
-Authentication-Results: mail.kernel.org; dmarc=none (p=none dis=none) header.from=arm.com
+	by mail.kernel.org (Postfix) with ESMTPS id 3E22F2075B
+	for <iommu@archiver.kernel.org>; Tue,  7 Jul 2020 13:07:09 +0000 (UTC)
+Authentication-Results: mail.kernel.org;
+	dkim=fail reason="signature verification failed" (1024-bit key) header.d=samsung.com header.i=@samsung.com header.b="qFswgmZF"
+DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 3E22F2075B
+Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=samsung.com
 Authentication-Results: mail.kernel.org; spf=pass smtp.mailfrom=iommu-bounces@lists.linux-foundation.org
 Received: from localhost (localhost [127.0.0.1])
-	by whitealder.osuosl.org (Postfix) with ESMTP id 90F5788765;
-	Tue,  7 Jul 2020 12:34:14 +0000 (UTC)
+	by whitealder.osuosl.org (Postfix) with ESMTP id 0CC3F88FAF;
+	Tue,  7 Jul 2020 13:07:09 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
 Received: from whitealder.osuosl.org ([127.0.0.1])
 	by localhost (.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
-	with ESMTP id AXgnpytmdjg0; Tue,  7 Jul 2020 12:34:11 +0000 (UTC)
+	with ESMTP id UPVoz3hwQ8dW; Tue,  7 Jul 2020 13:07:07 +0000 (UTC)
 Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [140.211.9.56])
-	by whitealder.osuosl.org (Postfix) with ESMTP id E2C0A8860B;
-	Tue,  7 Jul 2020 12:34:11 +0000 (UTC)
+	by whitealder.osuosl.org (Postfix) with ESMTP id B815D88FAB;
+	Tue,  7 Jul 2020 13:07:07 +0000 (UTC)
 Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
-	by lists.linuxfoundation.org (Postfix) with ESMTP id D973FC0893;
-	Tue,  7 Jul 2020 12:34:11 +0000 (UTC)
-Received: from whitealder.osuosl.org (smtp1.osuosl.org [140.211.166.138])
- by lists.linuxfoundation.org (Postfix) with ESMTP id F0B69C016F
- for <iommu@lists.linux-foundation.org>; Tue,  7 Jul 2020 12:34:10 +0000 (UTC)
+	by lists.linuxfoundation.org (Postfix) with ESMTP id 8D3BFC0893;
+	Tue,  7 Jul 2020 13:07:07 +0000 (UTC)
+Received: from hemlock.osuosl.org (smtp2.osuosl.org [140.211.166.133])
+ by lists.linuxfoundation.org (Postfix) with ESMTP id 28F62C016F
+ for <iommu@lists.linux-foundation.org>; Tue,  7 Jul 2020 13:07:06 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
- by whitealder.osuosl.org (Postfix) with ESMTP id DB84C88AEB
- for <iommu@lists.linux-foundation.org>; Tue,  7 Jul 2020 12:34:10 +0000 (UTC)
+ by hemlock.osuosl.org (Postfix) with ESMTP id 108AF87A30
+ for <iommu@lists.linux-foundation.org>; Tue,  7 Jul 2020 13:07:06 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from whitealder.osuosl.org ([127.0.0.1])
+Received: from hemlock.osuosl.org ([127.0.0.1])
  by localhost (.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
- with ESMTP id 9KSzaWlIcOPa for <iommu@lists.linux-foundation.org>;
- Tue,  7 Jul 2020 12:34:09 +0000 (UTC)
+ with ESMTP id xUONM6E4il80 for <iommu@lists.linux-foundation.org>;
+ Tue,  7 Jul 2020 13:07:04 +0000 (UTC)
 X-Greylist: domain auto-whitelisted by SQLgrey-1.7.6
-Received: from foss.arm.com (foss.arm.com [217.140.110.172])
- by whitealder.osuosl.org (Postfix) with ESMTP id 212298860B
- for <iommu@lists.linux-foundation.org>; Tue,  7 Jul 2020 12:34:09 +0000 (UTC)
-Received: from usa-sjc-imap-foss1.foss.arm.com (unknown [10.121.207.14])
- by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id 973AC1FB;
- Tue,  7 Jul 2020 05:34:08 -0700 (PDT)
-Received: from [10.57.21.32] (unknown [10.57.21.32])
- by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPSA id 4DE2C3F71E;
- Tue,  7 Jul 2020 05:34:07 -0700 (PDT)
-Subject: Re: [PATCH v2 1/6] iommu/arm-smmu: Add auxiliary domain support for
- arm-smmuv2
-To: Jordan Crouse <jcrouse@codeaurora.org>, linux-arm-msm@vger.kernel.org
-References: <20200626200414.14382-1-jcrouse@codeaurora.org>
- <20200626200414.14382-2-jcrouse@codeaurora.org>
-From: Robin Murphy <robin.murphy@arm.com>
-Message-ID: <9943752c-9e0b-3d11-cba9-ee579d449e30@arm.com>
-Date: Tue, 7 Jul 2020 13:34:06 +0100
-User-Agent: Mozilla/5.0 (Windows NT 10.0; rv:68.0) Gecko/20100101
+Received: from mailout2.w1.samsung.com (mailout2.w1.samsung.com
+ [210.118.77.12])
+ by hemlock.osuosl.org (Postfix) with ESMTPS id 4FBFC84F76
+ for <iommu@lists.linux-foundation.org>; Tue,  7 Jul 2020 13:07:04 +0000 (UTC)
+Received: from eucas1p2.samsung.com (unknown [182.198.249.207])
+ by mailout2.w1.samsung.com (KnoxPortal) with ESMTP id
+ 20200707130701euoutp029f98126ed8ca510007c1486e25cd2550~fekMYEI7g2163521635euoutp02i
+ for <iommu@lists.linux-foundation.org>; Tue,  7 Jul 2020 13:07:01 +0000 (GMT)
+DKIM-Filter: OpenDKIM Filter v2.11.0 mailout2.w1.samsung.com
+ 20200707130701euoutp029f98126ed8ca510007c1486e25cd2550~fekMYEI7g2163521635euoutp02i
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=samsung.com;
+ s=mail20170921; t=1594127221;
+ bh=U2aVauy2+JpINyhil7vNueItQM70I3jBlub5F2RoPaI=;
+ h=Subject:To:Cc:From:Date:In-Reply-To:References:From;
+ b=qFswgmZFPK21NxIp6LjhjIWdiP4hnMa3W/Dfea/0ql20x5k+AP4j4Ar51Tq07mcW+
+ 8tdm5eAwtL8UhhUVSdd8dvvh5J9wY9QzKexvo81d2o9wZXB0qtguzJ41V0ouWd/AKg
+ cPL3NP/bhevlP7zW1sSyyJfI+Srq6V9E1ewDsGM4=
+Received: from eusmges1new.samsung.com (unknown [203.254.199.242]) by
+ eucas1p1.samsung.com (KnoxPortal) with ESMTP id
+ 20200707130700eucas1p17f35c74c6cf62fd3a0373037b209f6e3~fekLfBnmJ2868428684eucas1p1D;
+ Tue,  7 Jul 2020 13:07:00 +0000 (GMT)
+Received: from eucas1p2.samsung.com ( [182.198.249.207]) by
+ eusmges1new.samsung.com (EUCPMTA) with SMTP id B4.42.06456.473740F5; Tue,  7
+ Jul 2020 14:07:00 +0100 (BST)
+Received: from eusmtrp1.samsung.com (unknown [182.198.249.138]) by
+ eucas1p1.samsung.com (KnoxPortal) with ESMTPA id
+ 20200707130700eucas1p1b618f2a9e6f8f5be3c97c762220300a0~fekLBimdw1405714057eucas1p1A;
+ Tue,  7 Jul 2020 13:07:00 +0000 (GMT)
+Received: from eusmgms1.samsung.com (unknown [182.198.249.179]) by
+ eusmtrp1.samsung.com (KnoxPortal) with ESMTP id
+ 20200707130700eusmtrp1b04bf2435e172dc545c8cedac0e8af43~fekLAyDGx0101401014eusmtrp18;
+ Tue,  7 Jul 2020 13:07:00 +0000 (GMT)
+X-AuditID: cbfec7f2-809ff70000001938-7e-5f0473748f5b
+Received: from eusmtip1.samsung.com ( [203.254.199.221]) by
+ eusmgms1.samsung.com (EUCPMTA) with SMTP id D4.D7.06314.473740F5; Tue,  7
+ Jul 2020 14:07:00 +0100 (BST)
+Received: from [106.210.88.143] (unknown [106.210.88.143]) by
+ eusmtip1.samsung.com (KnoxPortal) with ESMTPA id
+ 20200707130659eusmtip1477441c2867581295ee26f9e4279cfdb~fekKW-Wv62686526865eusmtip1N;
+ Tue,  7 Jul 2020 13:06:59 +0000 (GMT)
+Subject: Re: [PATCH v7 04/36] drm: amdgpu: fix common struct sg_table
+ related issues
+To: =?UTF-8?Q?Christian_K=c3=b6nig?= <christian.koenig@amd.com>,
+ dri-devel@lists.freedesktop.org, iommu@lists.linux-foundation.org,
+ linaro-mm-sig@lists.linaro.org, linux-kernel@vger.kernel.org
+From: Marek Szyprowski <m.szyprowski@samsung.com>
+Message-ID: <ef43cce1-40dc-77fd-1107-33c64d947ed1@samsung.com>
+Date: Tue, 7 Jul 2020 15:06:59 +0200
+User-Agent: Mozilla/5.0 (Windows NT 10.0; WOW64; rv:68.0) Gecko/20100101
  Thunderbird/68.10.0
 MIME-Version: 1.0
-In-Reply-To: <20200626200414.14382-2-jcrouse@codeaurora.org>
-Content-Language: en-GB
-Cc: Will Deacon <will@kernel.org>, linux-kernel@vger.kernel.org,
- iommu@lists.linux-foundation.org, John Stultz <john.stultz@linaro.org>,
- freedreno@lists.freedesktop.org, linux-arm-kernel@lists.infradead.org
+In-Reply-To: <bfbdf1ee-c970-d862-cc81-4712c34b7685@amd.com>
+Content-Language: en-US
+X-Brightmail-Tracker: H4sIAAAAAAAAA02Sa1BMYRjH5z23TnHytkXPxLgsg0QJM47J5DI+nC8GX/rQDFmc2aK2Zs8W
+ +UAKq6wmlWiZalS6iLJtF+XWzlLZKabShFSohrJTcs2M0u4Rffv/n+f3PM/7n3lZUjFI+7AR
+ Gp2o1agilYwbVf1k/NkanUSFra2o9+MvtDYTfFZ3Pc0Xlp9y4e9cKad5e++Unay+SPId30YY
+ vuTmY4LPexjEf+14S/Cm95003153jeEbRvvprZxwpu03I5TllCHh/vc8Sqj53kcLvecbCaGy
+ 4KTweuI9KWR0FSGh/mUCI6SaS5HwxbRw96xQt82HxMiIOFEbELzfLdzebiJiCuYcM1rWJSDz
+ 7BTkygLeAD+6Cl1SkBurwMUILnV8ImXzFUGNrY6WzRcEd5OHXaZHJpprkdwoQnBVP0TIZgTB
+ B8sLJ+WJQ+B0tplxNLywFUFRvtVJkbiagDc/PzgpBgdCij2FcWgOB4PhTRrh0BReBjlWPe3Q
+ c/E+KP9YQ8iMBzRn91MO7YqDIFc/4GRIvAiSqq6SsvaGV/25zmOAk1kY7xmdGmCnzA4YzvGR
+ M3jCUKP5b54FYMswUDKfhOBt6y0X2RgQtCdeQTIVBN2tvxjHIhL7QnldgFzeBs8GExl5vzt0
+ 2T3kN7hDevVlUi5zcO6sQqaXg7Hx9r+zDc/byDSkNM5IZpyRxjgjjfH/3TxElSJvMVaKUotS
+ oEY86i+poqRYjdr/YHSUCU39PttE41gt+tZ2wIIwi5SzuXAVFaagVXFSfJQFAUsqvbjtLbZ9
+ Cu6QKv64qI0O08ZGipIFzWcppTe3/vrHvQqsVunEI6IYI2qnuwTr6pOAsgYfWDMjB6ig+nmh
+ 99y7dKlbAh4l5S62Tub/7rxsWB2zsMyTe2z/HJ3+lA8cMNo0vVX3vZLHmzYWLt30DnPqsYT+
+ yiUDfgY2N35kBdvHnKl6kb7Sf2u2L7fnxi68MxO6y0x63xMtTbqWkMNxRzqH1EW3JvQ9ZiVT
+ UTJc3GCoU1JSuCpwFamVVH8AnoTEznkDAAA=
+X-Brightmail-Tracker: H4sIAAAAAAAAA+NgFvrJIsWRmVeSWpSXmKPExsVy+t/xu7olxSzxBv+X8Vj0njvJZDHtzm5W
+ i6XrG9ktNs5Yz2rx9j6Q+3/bRGaLK1/fs1msXH2UyWLBfmuLL1ceMllsenyN1eLyrjlsFgc/
+ PGF14PVovfSXzWPNvDWMHnu/LWDx2P7tAavH/e7jTB6bl9R73P73mNlj8o3ljB67bzawefRt
+ WcXo8XmTXAB3lJ5NUX5pSapCRn5xia1StKGFkZ6hpYWekYmlnqGxeayVkamSvp1NSmpOZllq
+ kb5dgl7G28ubmAqW8FfMOmTUwLiFp4uRk0NCwETi38kdjF2MXBxCAksZJbbc+c4OkZCRODmt
+ gRXCFpb4c62LDaLoLaPEifd9YAlhgTCJ/xNnMoMkRASOMEocPLWECcRhFtjGJPF66S6oud8Y
+ Jd50z2YCaWETMJToegsyi5ODV8BOoufuBLA4i4CKxLwj7WBjRQXiJJZvmc8OUSMocXLmExYQ
+ m1PAWmJ++1OwGmYBM4l5mx8yQ9jyEs1bZ0PZ4hK3nsxnmsAoNAtJ+ywkLbOQtMxC0rKAkWUV
+ o0hqaXFuem6xoV5xYm5xaV66XnJ+7iZGYLRvO/Zz8w7GSxuDDzEKcDAq8fBmJLLEC7EmlhVX
+ 5h5ilOBgVhLhdTp7Ok6INyWxsiq1KD++qDQntfgQoynQcxOZpUST84GJKK8k3tDU0NzC0tDc
+ 2NzYzEJJnLdD4GCMkEB6YklqdmpqQWoRTB8TB6dUA6P1len5y36bVQR9Sa8/Nmta8L8XG9zY
+ Cv9WKU2axvL5/9qss0vCztyIEox9f0uq77yy50zxKM8zc4N9p1ks9jWYyfyw7sHaNz2K69lc
+ rCOjFc7efin6p1kgyvdY3m9rjVUTsjt/fN3V+nw97+SUtVnbdsxYubF9rkP1Wa2/R/69LbhV
+ W5OzeUeJEktxRqKhFnNRcSIAjDRWAQwDAAA=
+X-CMS-MailID: 20200707130700eucas1p1b618f2a9e6f8f5be3c97c762220300a0
+X-Msg-Generator: CA
+X-RootMTR: 20200619103655eucas1p28ea4bf59428550217c8962666d6f077b
+X-EPHeader: CA
+CMS-TYPE: 201P
+X-CMS-RootMailID: 20200619103655eucas1p28ea4bf59428550217c8962666d6f077b
+References: <20200619103636.11974-1-m.szyprowski@samsung.com>
+ <CGME20200619103655eucas1p28ea4bf59428550217c8962666d6f077b@eucas1p2.samsung.com>
+ <20200619103636.11974-5-m.szyprowski@samsung.com>
+ <bfbdf1ee-c970-d862-cc81-4712c34b7685@amd.com>
+Cc: Bartlomiej Zolnierkiewicz <b.zolnierkie@samsung.com>,
+ David Airlie <airlied@linux.ie>, amd-gfx@lists.freedesktop.org,
+ Daniel Vetter <daniel@ffwll.ch>, Alex Deucher <alexander.deucher@amd.com>,
+ Robin Murphy <robin.murphy@arm.com>, Christoph Hellwig <hch@lst.de>,
+ linux-arm-kernel@lists.infradead.org
 X-BeenThere: iommu@lists.linux-foundation.org
 X-Mailman-Version: 2.1.15
 Precedence: list
@@ -79,362 +153,45 @@ List-Post: <mailto:iommu@lists.linux-foundation.org>
 List-Help: <mailto:iommu-request@lists.linux-foundation.org?subject=help>
 List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
  <mailto:iommu-request@lists.linux-foundation.org?subject=subscribe>
-Content-Transfer-Encoding: 7bit
-Content-Type: text/plain; charset="us-ascii"; Format="flowed"
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: base64
 Errors-To: iommu-bounces@lists.linux-foundation.org
 Sender: "iommu" <iommu-bounces@lists.linux-foundation.org>
 
-On 2020-06-26 21:04, Jordan Crouse wrote:
-> Support auxiliary domains for arm-smmu-v2 to initialize and support
-> multiple pagetables for a single SMMU context bank. Since the smmu-v2
-> hardware doesn't have any built in support for switching the pagetable
-> base it is left as an exercise to the caller to actually use the pagetable.
-
-Hmm, I've still been thinking that we could model this as supporting 
-exactly 1 aux domain iff the device is currently attached to a primary 
-domain with TTBR1 enabled. Then supporting multiple aux domains with 
-magic TTBR0 switching is the Adreno-specific extension on top of that.
-
-And if we don't want to go to that length, then - as I think Will was 
-getting at - I'm not sure it's worth bothering at all. There doesn't 
-seem to be any point in half-implementing a pretend aux domain interface 
-while still driving a bus through the rest of the abstractions - it's 
-really the worst of both worlds. If we're going to hand over the guts of 
-io-pgtable to the GPU driver then couldn't it just use 
-DOMAIN_ATTR_PGTABLE_CFG bidirectionally to inject a TTBR0 table straight 
-into the TTBR1-ified domain?
-
-Much as I like the idea of the aux domain abstraction and making this 
-fit semi-transparently into the IOMMU API, if an almost entirely private 
-interface will be the simplest and cleanest way to get it done then at 
-this point also I'm starting to lean towards just getting it done. But 
-if some other mediated-device type case then turns up that doesn't quite 
-fit that private interface, we revisit the proper abstraction again and 
-I reserve the right to say "I told you so" ;)
-
-Robin.
-
-> Aux domains are supported if split pagetable (TTBR1) support has been
-> enabled on the master domain.  Each auxiliary domain will reuse the
-> configuration of the master domain. By default the a domain with TTBR1
-> support will have the TTBR0 region disabled so the first attached aux
-> domain will enable the TTBR0 region in the hardware and conversely the
-> last domain to be detached will disable TTBR0 translations.  All subsequent
-> auxiliary domains create a pagetable but not touch the hardware.
-> 
-> The leaf driver will be able to query the physical address of the
-> pagetable with the DOMAIN_ATTR_PTBASE attribute so that it can use the
-> address with whatever means it has to switch the pagetable base.
-> 
-> Following is a pseudo code example of how a domain can be created
-> 
->   /* Check to see if aux domains are supported */
->   if (iommu_dev_has_feature(dev, IOMMU_DEV_FEAT_AUX)) {
-> 	 iommu = iommu_domain_alloc(...);
-> 
-> 	 if (iommu_aux_attach_device(domain, dev))
-> 		 return FAIL;
-> 
-> 	/* Save the base address of the pagetable for use by the driver
-> 	iommu_domain_get_attr(domain, DOMAIN_ATTR_PTBASE, &ptbase);
->   }
-> 
-> Then 'domain' can be used like any other iommu domain to map and
-> unmap iova addresses in the pagetable.
-> 
-> Signed-off-by: Jordan Crouse <jcrouse@codeaurora.org>
-> ---
-> 
->   drivers/iommu/arm-smmu.c | 219 ++++++++++++++++++++++++++++++++++++---
->   drivers/iommu/arm-smmu.h |   1 +
->   2 files changed, 204 insertions(+), 16 deletions(-)
-> 
-> diff --git a/drivers/iommu/arm-smmu.c b/drivers/iommu/arm-smmu.c
-> index 060139452c54..ce6d654301bf 100644
-> --- a/drivers/iommu/arm-smmu.c
-> +++ b/drivers/iommu/arm-smmu.c
-> @@ -91,6 +91,7 @@ struct arm_smmu_cb {
->   	u32				tcr[2];
->   	u32				mair[2];
->   	struct arm_smmu_cfg		*cfg;
-> +	atomic_t			aux;
->   };
->   
->   struct arm_smmu_master_cfg {
-> @@ -667,6 +668,86 @@ static void arm_smmu_write_context_bank(struct arm_smmu_device *smmu, int idx)
->   	arm_smmu_cb_write(smmu, idx, ARM_SMMU_CB_SCTLR, reg);
->   }
->   
-> +/*
-> + * Update the context context bank to enable TTBR0. Assumes AARCH64 S1
-> + * configuration.
-> + */
-> +static void arm_smmu_context_set_ttbr0(struct arm_smmu_cb *cb,
-> +		struct io_pgtable_cfg *pgtbl_cfg)
-> +{
-> +	u32 tcr = cb->tcr[0];
-> +
-> +	/* Add the TCR configuration from the new pagetable config */
-> +	tcr |= arm_smmu_lpae_tcr(pgtbl_cfg);
-> +
-> +	/* Make sure that both TTBR0 and TTBR1 are enabled */
-> +	tcr &= ~(ARM_SMMU_TCR_EPD0 | ARM_SMMU_TCR_EPD1);
-> +
-> +	/* Udate the TCR register */
-> +	cb->tcr[0] = tcr;
-> +
-> +	/* Program the new TTBR0 */
-> +	cb->ttbr[0] = pgtbl_cfg->arm_lpae_s1_cfg.ttbr;
-> +	cb->ttbr[0] |= FIELD_PREP(ARM_SMMU_TTBRn_ASID, cb->cfg->asid);
-> +}
-> +
-> +/*
-> + * Thus function assumes that the current model only allows aux domains for
-> + * AARCH64 S1 configurations
-> + */
-> +static int arm_smmu_aux_init_domain_context(struct iommu_domain *domain,
-> +		struct arm_smmu_device *smmu, struct arm_smmu_cfg *master)
-> +{
-> +	struct arm_smmu_domain *smmu_domain = to_smmu_domain(domain);
-> +	struct io_pgtable_ops *pgtbl_ops;
-> +	struct io_pgtable_cfg pgtbl_cfg;
-> +
-> +	mutex_lock(&smmu_domain->init_mutex);
-> +
-> +	/* Copy the configuration from the master */
-> +	memcpy(&smmu_domain->cfg, master, sizeof(smmu_domain->cfg));
-> +
-> +	smmu_domain->flush_ops = &arm_smmu_s1_tlb_ops;
-> +	smmu_domain->smmu = smmu;
-> +
-> +	pgtbl_cfg = (struct io_pgtable_cfg) {
-> +		.pgsize_bitmap = smmu->pgsize_bitmap,
-> +		.ias = smmu->va_size,
-> +		.oas = smmu->ipa_size,
-> +		.coherent_walk = smmu->features & ARM_SMMU_FEAT_COHERENT_WALK,
-> +		.tlb = smmu_domain->flush_ops,
-> +		.iommu_dev = smmu->dev,
-> +		.quirks = 0,
-> +	};
-> +
-> +	if (smmu_domain->non_strict)
-> +		pgtbl_cfg.quirks |= IO_PGTABLE_QUIRK_NON_STRICT;
-> +
-> +	pgtbl_ops = alloc_io_pgtable_ops(ARM_64_LPAE_S1, &pgtbl_cfg,
-> +		smmu_domain);
-> +	if (!pgtbl_ops) {
-> +		mutex_unlock(&smmu_domain->init_mutex);
-> +		return -ENOMEM;
-> +	}
-> +
-> +	domain->pgsize_bitmap = pgtbl_cfg.pgsize_bitmap;
-> +
-> +	domain->geometry.aperture_end = (1UL << smmu->va_size) - 1;
-> +	domain->geometry.force_aperture = true;
-> +
-> +	/* enable TTBR0 when the the first aux domain is attached */
-> +	if (atomic_inc_return(&smmu->cbs[master->cbndx].aux) == 1) {
-> +		arm_smmu_context_set_ttbr0(&smmu->cbs[master->cbndx],
-> +			&pgtbl_cfg);
-> +		arm_smmu_write_context_bank(smmu, master->cbndx);
-> +	}
-> +
-> +	smmu_domain->pgtbl_ops = pgtbl_ops;
-> +	mutex_unlock(&smmu_domain->init_mutex);
-> +
-> +	return 0;
-> +}
-> +
->   static int arm_smmu_init_domain_context(struct iommu_domain *domain,
->   					struct arm_smmu_device *smmu,
->   					struct device *dev)
-> @@ -871,36 +952,70 @@ static int arm_smmu_init_domain_context(struct iommu_domain *domain,
->   	return ret;
->   }
->   
-> +static void
-> +arm_smmu_destroy_aux_domain_context(struct arm_smmu_domain *smmu_domain)
-> +{
-> +	struct arm_smmu_device *smmu = smmu_domain->smmu;
-> +	struct arm_smmu_cfg *cfg = &smmu_domain->cfg;
-> +	int ret;
-> +
-> +	/*
-> +	 * If this is the last aux domain to be freed, disable TTBR0 by turning
-> +	 * off translations and clearing TTBR0
-> +	 */
-> +	if (atomic_dec_return(&smmu->cbs[cfg->cbndx].aux) == 0) {
-> +		/* Clear out the T0 region */
-> +		smmu->cbs[cfg->cbndx].tcr[0] &= ~GENMASK(15, 0);
-> +		/* Disable TTBR0 translations */
-> +		smmu->cbs[cfg->cbndx].tcr[0] |= ARM_SMMU_TCR_EPD0;
-> +		/* Clear the TTBR0 pagetable address */
-> +		smmu->cbs[cfg->cbndx].ttbr[0] =
-> +			FIELD_PREP(ARM_SMMU_TTBRn_ASID, cfg->asid);
-> +
-> +		ret = arm_smmu_rpm_get(smmu);
-> +		if (!ret) {
-> +			arm_smmu_write_context_bank(smmu, cfg->cbndx);
-> +			arm_smmu_rpm_put(smmu);
-> +		}
-> +	}
-> +
-> +}
-> +
->   static void arm_smmu_destroy_domain_context(struct iommu_domain *domain)
->   {
->   	struct arm_smmu_domain *smmu_domain = to_smmu_domain(domain);
->   	struct arm_smmu_device *smmu = smmu_domain->smmu;
->   	struct arm_smmu_cfg *cfg = &smmu_domain->cfg;
-> -	int ret, irq;
->   
->   	if (!smmu || domain->type == IOMMU_DOMAIN_IDENTITY)
->   		return;
->   
-> -	ret = arm_smmu_rpm_get(smmu);
-> -	if (ret < 0)
-> -		return;
-> +	if (smmu_domain->aux)
-> +		arm_smmu_destroy_aux_domain_context(smmu_domain);
->   
-> -	/*
-> -	 * Disable the context bank and free the page tables before freeing
-> -	 * it.
-> -	 */
-> -	smmu->cbs[cfg->cbndx].cfg = NULL;
-> -	arm_smmu_write_context_bank(smmu, cfg->cbndx);
-> +	/* Check if the last user is done with the context bank */
-> +	if (atomic_read(&smmu->cbs[cfg->cbndx].aux) == 0) {
-> +		int ret = arm_smmu_rpm_get(smmu);
-> +		int irq;
->   
-> -	if (cfg->irptndx != ARM_SMMU_INVALID_IRPTNDX) {
-> -		irq = smmu->irqs[smmu->num_global_irqs + cfg->irptndx];
-> -		devm_free_irq(smmu->dev, irq, domain);
-> +		if (ret < 0)
-> +			return;
-> +
-> +		/* Disable the context bank */
-> +		smmu->cbs[cfg->cbndx].cfg = NULL;
-> +		arm_smmu_write_context_bank(smmu, cfg->cbndx);
-> +
-> +		if (cfg->irptndx != ARM_SMMU_INVALID_IRPTNDX) {
-> +			irq = smmu->irqs[smmu->num_global_irqs + cfg->irptndx];
-> +			devm_free_irq(smmu->dev, irq, domain);
-> +		}
-> +
-> +		__arm_smmu_free_bitmap(smmu->context_map, cfg->cbndx);
-> +		arm_smmu_rpm_put(smmu);
->   	}
->   
-> +	/* Destroy the pagetable */
->   	free_io_pgtable_ops(smmu_domain->pgtbl_ops);
-> -	__arm_smmu_free_bitmap(smmu->context_map, cfg->cbndx);
-> -
-> -	arm_smmu_rpm_put(smmu);
->   }
->   
->   static struct iommu_domain *arm_smmu_domain_alloc(unsigned type)
-> @@ -1161,6 +1276,74 @@ static int arm_smmu_domain_add_master(struct arm_smmu_domain *smmu_domain,
->   	return 0;
->   }
->   
-> +static bool arm_smmu_dev_has_feat(struct device *dev,
-> +		enum iommu_dev_features feat)
-> +{
-> +	if (feat != IOMMU_DEV_FEAT_AUX)
-> +		return false;
-> +
-> +	return true;
-> +}
-> +
-> +static int arm_smmu_dev_enable_feat(struct device *dev,
-> +		enum iommu_dev_features feat)
-> +{
-> +	/* aux domain support is always available */
-> +	if (feat == IOMMU_DEV_FEAT_AUX)
-> +		return 0;
-> +
-> +	return -ENODEV;
-> +}
-> +
-> +static int arm_smmu_dev_disable_feat(struct device *dev,
-> +		enum iommu_dev_features feat)
-> +{
-> +	return -EBUSY;
-> +}
-> +
-> +static int arm_smmu_aux_attach_dev(struct iommu_domain *domain,
-> +		struct device *dev)
-> +{
-> +	struct iommu_fwspec *fwspec = dev_iommu_fwspec_get(dev);
-> +	struct arm_smmu_master_cfg *cfg = dev_iommu_priv_get(dev);
-> +	struct arm_smmu_device *smmu = cfg->smmu;
-> +	struct arm_smmu_domain *smmu_domain = to_smmu_domain(domain);
-> +	struct arm_smmu_cb *cb;
-> +	int idx, i, ret, cbndx = -1;
-> +
-> +	/* Try to find the context bank configured for this device */
-> +	for_each_cfg_sme(cfg, fwspec, i, idx) {
-> +		if (idx != INVALID_SMENDX) {
-> +			cbndx = smmu->s2crs[idx].cbndx;
-> +			break;
-> +		}
-> +	}
-> +
-> +	if (cbndx == -1)
-> +		return -ENODEV;
-> +
-> +	cb = &smmu->cbs[cbndx];
-> +
-> +	/* Aux domains are only supported for AARCH64 configurations */
-> +	if (cb->cfg->fmt != ARM_SMMU_CTX_FMT_AARCH64)
-> +		return -EINVAL;
-> +
-> +	/* Make sure that TTBR1 is enabled in the hardware */
-> +	if ((cb->tcr[0] & ARM_SMMU_TCR_EPD1))
-> +		return -EINVAL;
-> +
-> +	smmu_domain->aux = true;
-> +
-> +	ret = arm_smmu_rpm_get(smmu);
-> +	if (ret < 0)
-> +		return ret;
-> +
-> +	ret = arm_smmu_aux_init_domain_context(domain, smmu, cb->cfg);
-> +
-> +	arm_smmu_rpm_put(smmu);
-> +	return ret;
-> +}
-> +
->   static int arm_smmu_attach_dev(struct iommu_domain *domain, struct device *dev)
->   {
->   	struct arm_smmu_domain *smmu_domain = to_smmu_domain(domain);
-> @@ -1653,6 +1836,10 @@ static struct iommu_ops arm_smmu_ops = {
->   	.get_resv_regions	= arm_smmu_get_resv_regions,
->   	.put_resv_regions	= generic_iommu_put_resv_regions,
->   	.def_domain_type	= arm_smmu_def_domain_type,
-> +	.dev_has_feat		= arm_smmu_dev_has_feat,
-> +	.dev_enable_feat	= arm_smmu_dev_enable_feat,
-> +	.dev_disable_feat	= arm_smmu_dev_disable_feat,
-> +	.aux_attach_dev		= arm_smmu_aux_attach_dev,
->   	.pgsize_bitmap		= -1UL, /* Restricted during device attach */
->   };
->   
-> diff --git a/drivers/iommu/arm-smmu.h b/drivers/iommu/arm-smmu.h
-> index c417814f1d98..79d441024043 100644
-> --- a/drivers/iommu/arm-smmu.h
-> +++ b/drivers/iommu/arm-smmu.h
-> @@ -346,6 +346,7 @@ struct arm_smmu_domain {
->   	spinlock_t			cb_lock; /* Serialises ATS1* ops and TLB syncs */
->   	struct iommu_domain		domain;
->   	struct device			*dev;	/* Device attached to this domain */
-> +	bool				aux;
->   };
->   
->   static inline u32 arm_smmu_lpae_tcr(struct io_pgtable_cfg *cfg)
-> 
-_______________________________________________
-iommu mailing list
-iommu@lists.linux-foundation.org
-https://lists.linuxfoundation.org/mailman/listinfo/iommu
+SGkgQ2hyaXN0aWFuLAoKT24gMjIuMDYuMjAyMCAxNToyNywgQ2hyaXN0aWFuIEvDtm5pZyB3cm90
+ZToKPiBBbSAxOS4wNi4yMCB1bSAxMjozNiBzY2hyaWViIE1hcmVrIFN6eXByb3dza2k6Cj4+IFRo
+ZSBEb2N1bWVudGF0aW9uL0RNQS1BUEktSE9XVE8udHh0IHN0YXRlcyB0aGF0IHRoZSBkbWFfbWFw
+X3NnKCkgCj4+IGZ1bmN0aW9uCj4+IHJldHVybnMgdGhlIG51bWJlciBvZiB0aGUgY3JlYXRlZCBl
+bnRyaWVzIGluIHRoZSBETUEgYWRkcmVzcyBzcGFjZS4KPj4gSG93ZXZlciB0aGUgc3Vic2VxdWVu
+dCBjYWxscyB0byB0aGUgZG1hX3N5bmNfc2dfZm9yX3tkZXZpY2UsY3B1fSgpIGFuZAo+PiBkbWFf
+dW5tYXBfc2cgbXVzdCBiZSBjYWxsZWQgd2l0aCB0aGUgb3JpZ2luYWwgbnVtYmVyIG9mIHRoZSBl
+bnRyaWVzCj4+IHBhc3NlZCB0byB0aGUgZG1hX21hcF9zZygpLgo+Pgo+PiBzdHJ1Y3Qgc2dfdGFi
+bGUgaXMgYSBjb21tb24gc3RydWN0dXJlIHVzZWQgZm9yIGRlc2NyaWJpbmcgYSAKPj4gbm9uLWNv
+bnRpZ3VvdXMKPj4gbWVtb3J5IGJ1ZmZlciwgdXNlZCBjb21tb25seSBpbiB0aGUgRFJNIGFuZCBn
+cmFwaGljcyBzdWJzeXN0ZW1zLiBJdAo+PiBjb25zaXN0cyBvZiBhIHNjYXR0ZXJsaXN0IHdpdGgg
+bWVtb3J5IHBhZ2VzIGFuZCBETUEgYWRkcmVzc2VzIChzZ2wgCj4+IGVudHJ5KSwKPj4gYXMgd2Vs
+bCBhcyB0aGUgbnVtYmVyIG9mIHNjYXR0ZXJsaXN0IGVudHJpZXM6IENQVSBwYWdlcyAob3JpZ19u
+ZW50cyAKPj4gZW50cnkpCj4+IGFuZCBETUEgbWFwcGVkIHBhZ2VzIChuZW50cyBlbnRyeSkuCj4+
+Cj4+IEl0IHR1cm5lZCBvdXQgdGhhdCBpdCB3YXMgYSBjb21tb24gbWlzdGFrZSB0byBtaXN1c2Ug
+bmVudHMgYW5kIAo+PiBvcmlnX25lbnRzCj4+IGVudHJpZXMsIGNhbGxpbmcgRE1BLW1hcHBpbmcg
+ZnVuY3Rpb25zIHdpdGggYSB3cm9uZyBudW1iZXIgb2YgZW50cmllcyBvcgo+PiBpZ25vcmluZyB0
+aGUgbnVtYmVyIG9mIG1hcHBlZCBlbnRyaWVzIHJldHVybmVkIGJ5IHRoZSBkbWFfbWFwX3NnKCkK
+Pj4gZnVuY3Rpb24uCj4+Cj4+IFRvIGF2b2lkIHN1Y2ggaXNzdWVzLCBsZXRzIHVzZSBhIGNvbW1v
+biBkbWEtbWFwcGluZyB3cmFwcGVycyBvcGVyYXRpbmcKPj4gZGlyZWN0bHkgb24gdGhlIHN0cnVj
+dCBzZ190YWJsZSBvYmplY3RzIGFuZCB1c2Ugc2NhdHRlcmxpc3QgcGFnZQo+PiBpdGVyYXRvcnMg
+d2hlcmUgcG9zc2libGUuIFRoaXMsIGFsbW9zdCBhbHdheXMsIGhpZGVzIHJlZmVyZW5jZXMgdG8g
+dGhlCj4+IG5lbnRzIGFuZCBvcmlnX25lbnRzIGVudHJpZXMsIG1ha2luZyB0aGUgY29kZSByb2J1
+c3QsIGVhc2llciB0byBmb2xsb3cKPj4gYW5kIGNvcHkvcGFzdGUgc2FmZS4KPj4KPj4gU2lnbmVk
+LW9mZi1ieTogTWFyZWsgU3p5cHJvd3NraSA8bS5zenlwcm93c2tpQHNhbXN1bmcuY29tPgo+PiBS
+ZXZpZXdlZC1ieTogQ2hyaXN0aWFuIEvDtm5pZyA8Y2hyaXN0aWFuLmtvZW5pZ0BhbWQuY29tPgo+
+Cj4gQW55IG9iamVjdGlvbiB0aGF0IHdlIHBpY2sgdGhpcyBvbmUgYW5kIHRoZSByYWRlb24gdXAg
+aW50byBvdXIgCj4gYnJhbmNoZXMgZm9yIHVwc3RyZWFtaW5nPwo+Cj4gVGhhdCBzaG91bGQgYWJv
+dXQgY2xhc2hlcyB3aXRoIG90aGVyIGRyaXZlciBjaGFuZ2VzLgoKSSdtIGZpbmUuIFRoaXMgb25l
+IGFuZCByYWRlb24gZG9lc24ndCBkZXBlbmQgb24gdGhlIHByaW1lIGNoYW5nZXMsIHNvIGl0IApz
+aG91bGQgbWVyZ2UgZmluZSB2aWEgeW91ciB0cmVlLiBJIHdpbGwgdHJ5IHRvIGFzayBmb3IgbW9y
+ZSByZXZpZXcgb2YgCnRoZSByZW1haW5pbmcgcGF0Y2hlcyBhbmQgdGhlbiB0cnkgbWVyZ2luZyB2
+aWEgZHJtLW1pc2MuCgpCZXN0IHJlZ2FyZHMKLS0gCk1hcmVrIFN6eXByb3dza2ksIFBoRApTYW1z
+dW5nIFImRCBJbnN0aXR1dGUgUG9sYW5kCgpfX19fX19fX19fX19fX19fX19fX19fX19fX19fX19f
+X19fX19fX19fX19fX19fXwppb21tdSBtYWlsaW5nIGxpc3QKaW9tbXVAbGlzdHMubGludXgtZm91
+bmRhdGlvbi5vcmcKaHR0cHM6Ly9saXN0cy5saW51eGZvdW5kYXRpb24ub3JnL21haWxtYW4vbGlz
+dGluZm8vaW9tbXU=
