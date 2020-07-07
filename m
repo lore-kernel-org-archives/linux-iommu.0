@@ -2,73 +2,89 @@ Return-Path: <SRS0=m4kH=AS=lists.linux-foundation.org=iommu-bounces@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-2.2 required=3.0 tests=HEADER_FROM_DIFFERENT_DOMAINS,
-	MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS,USER_AGENT_SANE_1 autolearn=no
-	autolearn_force=no version=3.4.0
+X-Spam-Status: No, score=-6.5 required=3.0 tests=DKIM_INVALID,DKIM_SIGNED,
+	HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_PATCH,MAILING_LIST_MULTI,SIGNED_OFF_BY,
+	SPF_HELO_NONE,SPF_PASS autolearn=unavailable autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 2A603C433DF
-	for <iommu@archiver.kernel.org>; Tue,  7 Jul 2020 17:36:05 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id D5833C433E1
+	for <iommu@archiver.kernel.org>; Tue,  7 Jul 2020 21:04:19 +0000 (UTC)
 Received: from fraxinus.osuosl.org (smtp4.osuosl.org [140.211.166.137])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by mail.kernel.org (Postfix) with ESMTPS id EBC3220672
-	for <iommu@archiver.kernel.org>; Tue,  7 Jul 2020 17:36:04 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org EBC3220672
-Authentication-Results: mail.kernel.org; dmarc=none (p=none dis=none) header.from=arm.com
+	by mail.kernel.org (Postfix) with ESMTPS id 99508206F6
+	for <iommu@archiver.kernel.org>; Tue,  7 Jul 2020 21:04:19 +0000 (UTC)
+Authentication-Results: mail.kernel.org;
+	dkim=fail reason="signature verification failed" (1024-bit key) header.d=redhat.com header.i=@redhat.com header.b="EOgJOpwB"
+DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 99508206F6
+Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=redhat.com
 Authentication-Results: mail.kernel.org; spf=pass smtp.mailfrom=iommu-bounces@lists.linux-foundation.org
 Received: from localhost (localhost [127.0.0.1])
-	by fraxinus.osuosl.org (Postfix) with ESMTP id AF25E8825B;
-	Tue,  7 Jul 2020 17:36:04 +0000 (UTC)
+	by fraxinus.osuosl.org (Postfix) with ESMTP id 6FC1B882D0;
+	Tue,  7 Jul 2020 21:04:19 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
 Received: from fraxinus.osuosl.org ([127.0.0.1])
 	by localhost (.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
-	with ESMTP id wV5iGR-O5vZs; Tue,  7 Jul 2020 17:36:03 +0000 (UTC)
+	with ESMTP id Xlvf93SXiXX3; Tue,  7 Jul 2020 21:04:18 +0000 (UTC)
 Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [140.211.9.56])
-	by fraxinus.osuosl.org (Postfix) with ESMTP id BA7A987861;
-	Tue,  7 Jul 2020 17:36:03 +0000 (UTC)
+	by fraxinus.osuosl.org (Postfix) with ESMTP id 9BC4485E6B;
+	Tue,  7 Jul 2020 21:04:18 +0000 (UTC)
 Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
-	by lists.linuxfoundation.org (Postfix) with ESMTP id 9FAC0C07FF;
-	Tue,  7 Jul 2020 17:36:03 +0000 (UTC)
-Received: from fraxinus.osuosl.org (smtp4.osuosl.org [140.211.166.137])
- by lists.linuxfoundation.org (Postfix) with ESMTP id 426E5C016F
- for <iommu@lists.linux-foundation.org>; Tue,  7 Jul 2020 17:36:02 +0000 (UTC)
+	by lists.linuxfoundation.org (Postfix) with ESMTP id 7B0E2C0893;
+	Tue,  7 Jul 2020 21:04:18 +0000 (UTC)
+Received: from whitealder.osuosl.org (smtp1.osuosl.org [140.211.166.138])
+ by lists.linuxfoundation.org (Postfix) with ESMTP id 55157C016F
+ for <iommu@lists.linux-foundation.org>; Tue,  7 Jul 2020 21:04:16 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
- by fraxinus.osuosl.org (Postfix) with ESMTP id 34B7D87E28
- for <iommu@lists.linux-foundation.org>; Tue,  7 Jul 2020 17:36:02 +0000 (UTC)
+ by whitealder.osuosl.org (Postfix) with ESMTP id 4BDD8866B1
+ for <iommu@lists.linux-foundation.org>; Tue,  7 Jul 2020 21:04:16 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from fraxinus.osuosl.org ([127.0.0.1])
+Received: from whitealder.osuosl.org ([127.0.0.1])
  by localhost (.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
- with ESMTP id H04Z7XS0WuNU for <iommu@lists.linux-foundation.org>;
- Tue,  7 Jul 2020 17:36:00 +0000 (UTC)
+ with ESMTP id 3ykWyXeDAQ7o for <iommu@lists.linux-foundation.org>;
+ Tue,  7 Jul 2020 21:04:15 +0000 (UTC)
 X-Greylist: domain auto-whitelisted by SQLgrey-1.7.6
-Received: from foss.arm.com (foss.arm.com [217.140.110.172])
- by fraxinus.osuosl.org (Postfix) with ESMTP id AD23587861
- for <iommu@lists.linux-foundation.org>; Tue,  7 Jul 2020 17:36:00 +0000 (UTC)
-Received: from usa-sjc-imap-foss1.foss.arm.com (unknown [10.121.207.14])
- by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id 7B8A61FB;
- Tue,  7 Jul 2020 10:35:59 -0700 (PDT)
-Received: from [10.57.21.32] (unknown [10.57.21.32])
- by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPSA id 7AE373F68F;
- Tue,  7 Jul 2020 10:35:58 -0700 (PDT)
-Subject: Re: the XSK buffer pool needs be to reverted
-To: Jonathan Lemon <jonathan.lemon@gmail.com>
-References: <20200626074725.GA21790@lst.de>
- <20200626205412.xfe4lywdbmh3kmri@bsd-mbp> <20200627070236.GA11854@lst.de>
- <e43ab7b9-22f5-75c3-c9e6-f1eb18d57148@arm.com>
- <20200630190832.vvirrpkmyev2inlh@bsd-mbp.dhcp.thefacebook.com>
- <d47d08a1-fb9f-d02a-a4a2-fe5fbe0d3b52@arm.com>
- <20200706195925.w7mcfnc5qyryx3sa@bsd-mbp.dhcp.thefacebook.com>
-From: Robin Murphy <robin.murphy@arm.com>
-Message-ID: <a8a33735-5ff5-ec39-e002-a49b8c5b06f4@arm.com>
-Date: Tue, 7 Jul 2020 18:35:56 +0100
-User-Agent: Mozilla/5.0 (Windows NT 10.0; rv:68.0) Gecko/20100101
- Thunderbird/68.10.0
+Received: from us-smtp-delivery-1.mimecast.com (us-smtp-1.mimecast.com
+ [205.139.110.61])
+ by whitealder.osuosl.org (Postfix) with ESMTPS id EA49D8506D
+ for <iommu@lists.linux-foundation.org>; Tue,  7 Jul 2020 21:04:14 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+ s=mimecast20190719; t=1594155853;
+ h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+ to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+ content-transfer-encoding:content-transfer-encoding:
+ in-reply-to:in-reply-to:references:references;
+ bh=cKsYa862UOba1pX41B7ZWFKEGALuvSNs0tQVCwNZJ5I=;
+ b=EOgJOpwBUpJCP0ZdlXDclKKyWbAwtN2wyi0UyKajSB5y6aMV7lOarm/B9zFyHM+B40vefr
+ SSwd2WtS/lAxmkfr6OEw2IM0Vsr517ApSPH7DdbmnoaHyNxAu2rIbm6wcSRmIrhVnA1nGp
+ DbFeQADTg5eQlNAw4GztcoaOkqIX8kk=
+Received: from mimecast-mx01.redhat.com (mimecast-mx01.redhat.com
+ [209.132.183.4]) (Using TLS) by relay.mimecast.com with ESMTP id
+ us-mta-236-KxuCHQmVOCCzhyceZtkVOg-1; Tue, 07 Jul 2020 17:04:12 -0400
+X-MC-Unique: KxuCHQmVOCCzhyceZtkVOg-1
+Received: from smtp.corp.redhat.com (int-mx08.intmail.prod.int.phx2.redhat.com
+ [10.5.11.23])
+ (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
+ (No client certificate requested)
+ by mimecast-mx01.redhat.com (Postfix) with ESMTPS id 4463C800C64;
+ Tue,  7 Jul 2020 21:04:10 +0000 (UTC)
+Received: from x1.home (ovpn-112-71.phx2.redhat.com [10.3.112.71])
+ by smtp.corp.redhat.com (Postfix) with ESMTP id 497281A7CD;
+ Tue,  7 Jul 2020 21:04:09 +0000 (UTC)
+Date: Tue, 7 Jul 2020 15:04:08 -0600
+From: Alex Williamson <alex.williamson@redhat.com>
+To: Lu Baolu <baolu.lu@linux.intel.com>
+Subject: Re: [PATCH v2 1/2] iommu: iommu_aux_at(de)tach_device() extension
+Message-ID: <20200707150408.474d81f1@x1.home>
+In-Reply-To: <20200707013957.23672-2-baolu.lu@linux.intel.com>
+References: <20200707013957.23672-1-baolu.lu@linux.intel.com>
+ <20200707013957.23672-2-baolu.lu@linux.intel.com>
+Organization: Red Hat
 MIME-Version: 1.0
-In-Reply-To: <20200706195925.w7mcfnc5qyryx3sa@bsd-mbp.dhcp.thefacebook.com>
-Content-Language: en-GB
-Cc: netdev@vger.kernel.org, iommu@lists.linux-foundation.org,
- =?UTF-8?B?QmrDtnJuIFTDtnBlbA==?= <bjorn.topel@intel.com>,
- Christoph Hellwig <hch@lst.de>
+X-Scanned-By: MIMEDefang 2.84 on 10.5.11.23
+Cc: Kevin Tian <kevin.tian@intel.com>, Dave Jiang <dave.jiang@intel.com>,
+ Ashok Raj <ashok.raj@intel.com>, kvm@vger.kernel.org,
+ Cornelia Huck <cohuck@redhat.com>, linux-kernel@vger.kernel.org,
+ iommu@lists.linux-foundation.org, Robin Murphy <robin.murphy@arm.com>
 X-BeenThere: iommu@lists.linux-foundation.org
 X-Mailman-Version: 2.1.15
 Precedence: list
@@ -81,153 +97,253 @@ List-Post: <mailto:iommu@lists.linux-foundation.org>
 List-Help: <mailto:iommu-request@lists.linux-foundation.org?subject=help>
 List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
  <mailto:iommu-request@lists.linux-foundation.org?subject=subscribe>
+Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
-Content-Type: text/plain; charset="us-ascii"; Format="flowed"
 Errors-To: iommu-bounces@lists.linux-foundation.org
 Sender: "iommu" <iommu-bounces@lists.linux-foundation.org>
 
-On 2020-07-06 20:59, Jonathan Lemon wrote:
-> On Wed, Jul 01, 2020 at 10:46:40AM +0100, Robin Murphy wrote:
->> On 2020-06-30 20:08, Jonathan Lemon wrote:
->>> On Mon, Jun 29, 2020 at 02:15:16PM +0100, Robin Murphy wrote:
->>>> On 2020-06-27 08:02, Christoph Hellwig wrote:
->>>>> On Fri, Jun 26, 2020 at 01:54:12PM -0700, Jonathan Lemon wrote:
->>>>>> On Fri, Jun 26, 2020 at 09:47:25AM +0200, Christoph Hellwig wrote:
->>>>>>>
->>>>>>> Note that this is somewhat urgent, as various of the APIs that the code
->>>>>>> is abusing are slated to go away for Linux 5.9, so this addition comes
->>>>>>> at a really bad time.
->>>>>>
->>>>>> Could you elaborate on what is upcoming here?
->>>>>
->>>>> Moving all these calls out of line, and adding a bypass flag to avoid
->>>>> the indirect function call for IOMMUs in direct mapped mode.
->>>>>
->>>>>> Also, on a semi-related note, are there limitations on how many pages
->>>>>> can be left mapped by the iommu?  Some of the page pool work involves
->>>>>> leaving the pages mapped instead of constantly mapping/unmapping them.
->>>>>
->>>>> There are, but I think for all modern IOMMUs they are so big that they
->>>>> don't matter.  Maintaines of the individual IOMMU drivers might know
->>>>> more.
->>>>
->>>> Right - I don't know too much about older and more esoteric stuff like POWER
->>>> TCE, but for modern pagetable-based stuff like Intel VT-d, AMD-Vi, and Arm
->>>> SMMU, the only "limits" are such that legitimate DMA API use should never
->>>> get anywhere near them (you'd run out of RAM for actual buffers long
->>>> beforehand). The most vaguely-realistic concern might be a pathological
->>>> system topology where some old 32-bit PCI device doesn't have ACS isolation
->>>> from your high-performance NIC such that they have to share an address
->>>> space, where the NIC might happen to steal all the low addresses and prevent
->>>> the soundcard or whatever from being able to map a usable buffer.
->>>>
->>>> With an IOMMU, you typically really *want* to keep a full working set's
->>>> worth of pages mapped, since dma_map/unmap are expensive while dma_sync is
->>>> somewhere between relatively cheap and free. With no IOMMU it makes no real
->>>> difference from the DMA API perspective since map/unmap are effectively no
->>>> more than the equivalent sync operations anyway (I'm assuming we're not
->>>> talking about the kind of constrained hardware that might need SWIOTLB).
->>>>
->>>>>> On a heavily loaded box with iommu enabled, it seems that quite often
->>>>>> there is contention on the iova_lock.  Are there known issues in this
->>>>>> area?
->>>>>
->>>>> I'll have to defer to the IOMMU maintainers, and for that you'll need
->>>>> to say what code you are using.  Current mainlaine doesn't even have
->>>>> an iova_lock anywhere.
->>>>
->>>> Again I can't speak for non-mainstream stuff outside drivers/iommu, but it's
->>>> been over 4 years now since merging the initial scalability work for the
->>>> generic IOVA allocator there that focused on minimising lock contention, and
->>>> it's had considerable evaluation and tweaking since. But if we can achieve
->>>> the goal of efficiently recycling mapped buffers then we shouldn't need to
->>>> go anywhere near IOVA allocation either way except when expanding the pool.
->>>
->>>
->>> I'm running a set of patches which uses the page pool to try and keep
->>> all the RX buffers mapped as the skb goes up the stack, returning the
->>> pages to the pool when the skb is freed.
->>>
->>> On a dual-socket 12-core Intel machine (48 processors), and 256G of
->>> memory, when iommu is enabled, I see the following from 'perf top -U',
->>> as the hottest function being run:
->>>
->>> -   43.42%  worker      [k] queued_spin_lock_slowpath
->>>      - 43.42% queued_spin_lock_slowpath
->>>         - 41.69% _raw_spin_lock_irqsave
->>>            + 41.39% alloc_iova
->>>            + 0.28% iova_magazine_free_pfns
->>>         + 1.07% lock_sock_nested
->>>
->>> Which likely is heavy contention on the iovad->iova_rbtree_lock.
->>> (This is on a 5.6 based system, BTW).  More scripts and data are below.
->>> Is there a way to reduce the contention here?
->>
->> Hmm, how big are your DMA mappings? If you're still hitting the rbtree a
->> lot, that most likely implies that either you're making giant IOVA
->> allocations that are too big to be cached, or you're allocating/freeing
->> IOVAs in a pathological pattern that defeats the whole magazine cache
->> mechanism (It's optimised for relatively-balanced allocation and freeing of
->> sizes up order 6). On a further hunch, does the "intel_iommu=forcedac"
->> option make any difference at all?
+On Tue,  7 Jul 2020 09:39:56 +0800
+Lu Baolu <baolu.lu@linux.intel.com> wrote:
+
+> The hardware assistant vfio mediated device is a use case of iommu
+> aux-domain. The interactions between vfio/mdev and iommu during mdev
+> creation and passthr are:
 > 
-> The allocations are only 4K in size (packet memory) but there are a lot
-> of them.  I tried running with "forcedac" over the weekend, and that
-> seems to have made a huge difference.  Why the name of 'forcedac'?  It
-> would seem this should be the default for a system with a sane 64-bit PCI
-> device.
-
-OK, I think I can imagine what's happening there - I could elaborate if 
-you're particularly interested, but suffice to say that despite all the 
-tricks we've put in to avoid spending unnecessary time down that path 
-wherever possible, there are still ways the allocator could behave 
-pathologically once the low end below 32 bits gets (nearly) full. As far 
-as that command-line option goes, I just happened to notice that it 
-already existed and has the same effect as the hack I was going to 
-suggest ;)
-
-Either way, though, I'm inclined to agree that it might be time to stop 
-applying that particular "optimisation" indiscriminately - I'll cook up 
-some patches.
-
->> Either way if this persists after some initial warm-up period, it further
->> implies that the page pool is not doing its job properly (or at least in the
->> way I would have expected). The alloc_iova() call is part of the dma_map_*()
->> overhead, and if the aim is to keep pages mapped then that should only be
->> called relatively infrequently. The optimal behaviour would be to dma_map()
->> new clean pages as they are added to the pool, use dma_sync() when they are
->> claimed and returned by the driver, and only dma_unmap() if they're actually
->> freed back to the page allocator. And if you're still seeing a lot of
->> dma_map/unmap time after that, then the pool itself is churning pages and
->> clearly needs its size/thresholds tuning.
+> - Create a group for mdev with iommu_group_alloc();
+> - Add the device to the group with
+>         group = iommu_group_alloc();
+>         if (IS_ERR(group))
+>                 return PTR_ERR(group);
 > 
-> Most of the dma_map() overhead is coming from the TX path, which isn't
-> using the page_pool.
-
-Ah, OK, I guess I assumed the TX path might copy into preallocated DMA 
-buffers such that it would use a pool too. Fair enough if it doesn't.
-(Although perhaps it's still worth noting that IOMMUs are liable to skew 
-the threshold for zero-copy benefits in general)
-
-Robin.
-
-> With the RX datapath I'm using, pages are returned to the pool in a
-> non-napi context (so they enter the ring), then the driver refills the
-> cache from the ring.  I'm seeing a 1% overflow (ring_full), so the
-> default size seems appropriate.  The single ring lock is likely a
-> problem, but can be addressed now that things aren't blowing up in
-> alloc_iova().
+>         ret = iommu_group_add_device(group, &mdev->dev);
+>         if (!ret)
+>                 dev_info(&mdev->dev, "MDEV: group_id = %d\n",
+>                          iommu_group_id(group));
+> - Allocate an aux-domain
+>         iommu_domain_alloc()
+> - Attach the aux-domain to the physical device from which the mdev is
+>   created.
+>         iommu_aux_attach_device()
 > 
->  From a box with the mlx4 driver + persistent page pool:
+> In the whole process, an iommu group was allocated for the mdev and an
+> iommu domain was attached to the group, but the group->domain leaves
+> NULL. As the result, iommu_get_domain_for_dev() doesn't work anymore.
 > 
->       rx_alloc_pages: 35239524767
->       cache_hit: 34381377143
->       cache_full: 19935
->       cache_empty: 859266494
->       ring_consume: 31665993135
->       ring_produce: 31666119491
->       ring_full: 353805844
+> The iommu_get_domain_for_dev() is a necessary interface for device
+> drivers that want to support aux-domain. For example,
 > 
+>         struct iommu_domain *domain;
+>         struct device *dev = mdev_dev(mdev);
+>         unsigned long pasid;
+> 
+>         domain = iommu_get_domain_for_dev(dev);
+>         if (!domain)
+>                 return -ENODEV;
+> 
+>         pasid = iommu_aux_get_pasid(domain, dev->parent);
+
+How did we know this was an aux domain? ie. How did we know we could
+use it with iommu_aux_get_pasid()?
+
+Why did we assume the parent device is the iommu device for the aux
+domain?  Should that level of detail be already known by the aux domain?
+
+Nits - The iomu device of an mdev device is found via
+mdev_get_iommu_device(dev), it should not be assumed to be the parent.
+The parent of an mdev device is found via mdev_parent_dev(mdev).
+
+The leaps in logic here make me wonder if we should instead be exposing
+more of an aux domain API rather than blurring the differences between
+these domains.  Thanks,
+
+Alex
+
+>         if (pasid == IOASID_INVALID)
+>                 return -EINVAL;
+> 
+>          /* Program the device context with the PASID value */
+>          ....
+> 
+> This extends iommu_aux_at(de)tach_device() so that the users could pass
+> in an optional device pointer (struct device for vfio/mdev for example),
+> and the necessary check and data link could be done.
+> 
+> Fixes: a3a195929d40b ("iommu: Add APIs for multiple domains per device")
+> Cc: Robin Murphy <robin.murphy@arm.com>
+> Cc: Alex Williamson <alex.williamson@redhat.com>
+> Signed-off-by: Lu Baolu <baolu.lu@linux.intel.com>
+> ---
+>  drivers/iommu/iommu.c           | 86 +++++++++++++++++++++++++++++----
+>  drivers/vfio/vfio_iommu_type1.c |  5 +-
+>  include/linux/iommu.h           | 12 +++--
+>  3 files changed, 87 insertions(+), 16 deletions(-)
+> 
+> diff --git a/drivers/iommu/iommu.c b/drivers/iommu/iommu.c
+> index 1ed1e14a1f0c..435835058209 100644
+> --- a/drivers/iommu/iommu.c
+> +++ b/drivers/iommu/iommu.c
+> @@ -2723,26 +2723,92 @@ EXPORT_SYMBOL_GPL(iommu_dev_feature_enabled);
+>   * This should make us safe against a device being attached to a guest as a
+>   * whole while there are still pasid users on it (aux and sva).
+>   */
+> -int iommu_aux_attach_device(struct iommu_domain *domain, struct device *dev)
+> +int iommu_aux_attach_device(struct iommu_domain *domain,
+> +			    struct device *phys_dev, struct device *dev)
+>  {
+> -	int ret = -ENODEV;
+> +	struct iommu_group *group;
+> +	int ret;
+>  
+> -	if (domain->ops->aux_attach_dev)
+> -		ret = domain->ops->aux_attach_dev(domain, dev);
+> +	if (!domain->ops->aux_attach_dev ||
+> +	    !iommu_dev_feature_enabled(phys_dev, IOMMU_DEV_FEAT_AUX))
+> +		return -ENODEV;
+>  
+> -	if (!ret)
+> -		trace_attach_device_to_domain(dev);
+> +	/* Bare use only. */
+> +	if (!dev) {
+> +		ret = domain->ops->aux_attach_dev(domain, phys_dev);
+> +		if (!ret)
+> +			trace_attach_device_to_domain(phys_dev);
+> +
+> +		return ret;
+> +	}
+> +
+> +	/*
+> +	 * The caller has created a made-up device (for example, vfio/mdev)
+> +	 * and allocated an iommu_group for user level direct assignment.
+> +	 * Make sure that the group has only single device and hasn't been
+> +	 * attached by any other domain.
+> +	 */
+> +	group = iommu_group_get(dev);
+> +	if (!group)
+> +		return -ENODEV;
+> +
+> +	/*
+> +	 * Lock the group to make sure the device-count doesn't change while
+> +	 * we are attaching.
+> +	 */
+> +	mutex_lock(&group->mutex);
+> +	ret = -EINVAL;
+> +	if ((iommu_group_device_count(group) != 1) || group->domain)
+> +		goto out_unlock;
+> +
+> +	ret = -EBUSY;
+> +	if (group->default_domain && group->domain != group->default_domain)
+> +		goto out_unlock;
+> +
+> +	ret = domain->ops->aux_attach_dev(domain, phys_dev);
+> +	if (!ret) {
+> +		trace_attach_device_to_domain(phys_dev);
+> +		group->domain = domain;
+> +	}
+> +
+> +out_unlock:
+> +	mutex_unlock(&group->mutex);
+> +	iommu_group_put(group);
+>  
+>  	return ret;
+>  }
+>  EXPORT_SYMBOL_GPL(iommu_aux_attach_device);
+>  
+> -void iommu_aux_detach_device(struct iommu_domain *domain, struct device *dev)
+> +void iommu_aux_detach_device(struct iommu_domain *domain,
+> +			     struct device *phys_dev, struct device *dev)
+>  {
+> -	if (domain->ops->aux_detach_dev) {
+> -		domain->ops->aux_detach_dev(domain, dev);
+> -		trace_detach_device_from_domain(dev);
+> +	struct iommu_group *group;
+> +
+> +	if (WARN_ON_ONCE(!domain->ops->aux_detach_dev))
+> +		return;
+> +
+> +	if (!dev) {
+> +		domain->ops->aux_detach_dev(domain, phys_dev);
+> +		trace_detach_device_from_domain(phys_dev);
+> +
+> +		return;
+>  	}
+> +
+> +	group = iommu_group_get(dev);
+> +	if (!group)
+> +		return;
+> +
+> +	mutex_lock(&group->mutex);
+> +	if (WARN_ON(iommu_group_device_count(group) != 1))
+> +		goto out_unlock;
+> +
+> +	domain->ops->aux_detach_dev(domain, phys_dev);
+> +	group->domain = NULL;
+> +	trace_detach_device_from_domain(phys_dev);
+> +
+> +out_unlock:
+> +	mutex_unlock(&group->mutex);
+> +	iommu_group_put(group);
+>  }
+>  EXPORT_SYMBOL_GPL(iommu_aux_detach_device);
+>  
+> diff --git a/drivers/vfio/vfio_iommu_type1.c b/drivers/vfio/vfio_iommu_type1.c
+> index 5e556ac9102a..d3be45dfa58e 100644
+> --- a/drivers/vfio/vfio_iommu_type1.c
+> +++ b/drivers/vfio/vfio_iommu_type1.c
+> @@ -1635,7 +1635,8 @@ static int vfio_mdev_attach_domain(struct device *dev, void *data)
+>  	iommu_device = vfio_mdev_get_iommu_device(dev);
+>  	if (iommu_device) {
+>  		if (iommu_dev_feature_enabled(iommu_device, IOMMU_DEV_FEAT_AUX))
+> -			return iommu_aux_attach_device(domain, iommu_device);
+> +			return iommu_aux_attach_device(domain,
+> +						       iommu_device, dev);
+>  		else
+>  			return iommu_attach_device(domain, iommu_device);
+>  	}
+> @@ -1651,7 +1652,7 @@ static int vfio_mdev_detach_domain(struct device *dev, void *data)
+>  	iommu_device = vfio_mdev_get_iommu_device(dev);
+>  	if (iommu_device) {
+>  		if (iommu_dev_feature_enabled(iommu_device, IOMMU_DEV_FEAT_AUX))
+> -			iommu_aux_detach_device(domain, iommu_device);
+> +			iommu_aux_detach_device(domain, iommu_device, dev);
+>  		else
+>  			iommu_detach_device(domain, iommu_device);
+>  	}
+> diff --git a/include/linux/iommu.h b/include/linux/iommu.h
+> index 5657d4fef9f2..7da5e67bf7dc 100644
+> --- a/include/linux/iommu.h
+> +++ b/include/linux/iommu.h
+> @@ -632,8 +632,10 @@ bool iommu_dev_has_feature(struct device *dev, enum iommu_dev_features f);
+>  int iommu_dev_enable_feature(struct device *dev, enum iommu_dev_features f);
+>  int iommu_dev_disable_feature(struct device *dev, enum iommu_dev_features f);
+>  bool iommu_dev_feature_enabled(struct device *dev, enum iommu_dev_features f);
+> -int iommu_aux_attach_device(struct iommu_domain *domain, struct device *dev);
+> -void iommu_aux_detach_device(struct iommu_domain *domain, struct device *dev);
+> +int iommu_aux_attach_device(struct iommu_domain *domain,
+> +			    struct device *phys_dev, struct device *dev);
+> +void iommu_aux_detach_device(struct iommu_domain *domain,
+> +			     struct device *phys_dev, struct device *dev);
+>  int iommu_aux_get_pasid(struct iommu_domain *domain, struct device *dev);
+>  
+>  struct iommu_sva *iommu_sva_bind_device(struct device *dev,
+> @@ -1007,13 +1009,15 @@ iommu_dev_disable_feature(struct device *dev, enum iommu_dev_features feat)
+>  }
+>  
+>  static inline int
+> -iommu_aux_attach_device(struct iommu_domain *domain, struct device *dev)
+> +iommu_aux_attach_device(struct iommu_domain *domain,
+> +			struct device *phys_dev, struct device *dev)
+>  {
+>  	return -ENODEV;
+>  }
+>  
+>  static inline void
+> -iommu_aux_detach_device(struct iommu_domain *domain, struct device *dev)
+> +iommu_aux_detach_device(struct iommu_domain *domain,
+> +			struct device *phys_dev, struct device *dev)
+>  {
+>  }
+>  
+
 _______________________________________________
 iommu mailing list
 iommu@lists.linux-foundation.org
