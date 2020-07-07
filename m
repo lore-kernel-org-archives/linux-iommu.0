@@ -2,98 +2,143 @@ Return-Path: <SRS0=m4kH=AS=lists.linux-foundation.org=iommu-bounces@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-6.5 required=3.0 tests=DKIM_ADSP_CUSTOM_MED,
-	DKIM_INVALID,DKIM_SIGNED,FREEMAIL_FORGED_FROMDOMAIN,FREEMAIL_FROM,
+X-Spam-Status: No, score=-8.1 required=3.0 tests=DKIM_INVALID,DKIM_SIGNED,
 	HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_PATCH,MAILING_LIST_MULTI,SIGNED_OFF_BY,
-	SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED autolearn=unavailable autolearn_force=no
-	version=3.4.0
+	SPF_HELO_NONE,SPF_PASS,USER_AGENT_SANE_1 autolearn=unavailable
+	autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 30D85C433E0
-	for <iommu@archiver.kernel.org>; Tue,  7 Jul 2020 14:57:55 +0000 (UTC)
-Received: from fraxinus.osuosl.org (smtp4.osuosl.org [140.211.166.137])
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 0DF44C433E0
+	for <iommu@archiver.kernel.org>; Tue,  7 Jul 2020 15:02:18 +0000 (UTC)
+Received: from hemlock.osuosl.org (smtp2.osuosl.org [140.211.166.133])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by mail.kernel.org (Postfix) with ESMTPS id EDB0D20775
-	for <iommu@archiver.kernel.org>; Tue,  7 Jul 2020 14:57:54 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTPS id C6AAE206E2
+	for <iommu@archiver.kernel.org>; Tue,  7 Jul 2020 15:02:17 +0000 (UTC)
 Authentication-Results: mail.kernel.org;
-	dkim=fail reason="signature verification failed" (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="jaAXDwnb"
-DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org EDB0D20775
-Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=gmail.com
+	dkim=fail reason="signature verification failed" (1024-bit key) header.d=samsung.com header.i=@samsung.com header.b="DeBAWV0F"
+DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org C6AAE206E2
+Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=samsung.com
 Authentication-Results: mail.kernel.org; spf=pass smtp.mailfrom=iommu-bounces@lists.linux-foundation.org
 Received: from localhost (localhost [127.0.0.1])
-	by fraxinus.osuosl.org (Postfix) with ESMTP id C232D863FF;
-	Tue,  7 Jul 2020 14:57:54 +0000 (UTC)
+	by hemlock.osuosl.org (Postfix) with ESMTP id 7AD5E89A6D;
+	Tue,  7 Jul 2020 15:02:17 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from fraxinus.osuosl.org ([127.0.0.1])
+Received: from hemlock.osuosl.org ([127.0.0.1])
 	by localhost (.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
-	with ESMTP id JBfQ10G560_d; Tue,  7 Jul 2020 14:57:53 +0000 (UTC)
+	with ESMTP id TfCd8zdweff2; Tue,  7 Jul 2020 15:02:16 +0000 (UTC)
 Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [140.211.9.56])
-	by fraxinus.osuosl.org (Postfix) with ESMTP id 92AA38623F;
-	Tue,  7 Jul 2020 14:57:53 +0000 (UTC)
+	by hemlock.osuosl.org (Postfix) with ESMTP id 6646789A55;
+	Tue,  7 Jul 2020 15:02:16 +0000 (UTC)
 Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
-	by lists.linuxfoundation.org (Postfix) with ESMTP id 730A2C0893;
-	Tue,  7 Jul 2020 14:57:53 +0000 (UTC)
+	by lists.linuxfoundation.org (Postfix) with ESMTP id 425C1C0893;
+	Tue,  7 Jul 2020 15:02:16 +0000 (UTC)
 Received: from whitealder.osuosl.org (smtp1.osuosl.org [140.211.166.138])
- by lists.linuxfoundation.org (Postfix) with ESMTP id 5DB9CC016F
- for <iommu@lists.linux-foundation.org>; Tue,  7 Jul 2020 14:57:52 +0000 (UTC)
+ by lists.linuxfoundation.org (Postfix) with ESMTP id 0E5CBC016F
+ for <iommu@lists.linux-foundation.org>; Tue,  7 Jul 2020 15:02:15 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
- by whitealder.osuosl.org (Postfix) with ESMTP id 4C3588904A
- for <iommu@lists.linux-foundation.org>; Tue,  7 Jul 2020 14:57:52 +0000 (UTC)
+ by whitealder.osuosl.org (Postfix) with ESMTP id 0569C89030
+ for <iommu@lists.linux-foundation.org>; Tue,  7 Jul 2020 15:02:15 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
 Received: from whitealder.osuosl.org ([127.0.0.1])
  by localhost (.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
- with ESMTP id 0YyUSr3PA7wn for <iommu@lists.linux-foundation.org>;
- Tue,  7 Jul 2020 14:57:49 +0000 (UTC)
+ with ESMTP id K+QLCrKFSQkH for <iommu@lists.linux-foundation.org>;
+ Tue,  7 Jul 2020 15:02:13 +0000 (UTC)
 X-Greylist: domain auto-whitelisted by SQLgrey-1.7.6
-Received: from mail-ed1-f67.google.com (mail-ed1-f67.google.com
- [209.85.208.67])
- by whitealder.osuosl.org (Postfix) with ESMTPS id 222FE89045
- for <iommu@lists.linux-foundation.org>; Tue,  7 Jul 2020 14:57:49 +0000 (UTC)
-Received: by mail-ed1-f67.google.com with SMTP id dg28so38667362edb.3
- for <iommu@lists.linux-foundation.org>; Tue, 07 Jul 2020 07:57:49 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=gmail.com; s=20161025;
- h=mime-version:references:in-reply-to:from:date:message-id:subject:to
- :cc; bh=khu65Pwbl1kNKTb89zOFCrlCO2yNz4sw1thf27kEsfQ=;
- b=jaAXDwnbE/CaK5p1bftSc2YTXzV6lblG73oSqeDq0/3RqUg+H6kxlpO2UlOhqskGTj
- jsv8Z6x5JGoER60nKmqxf8NLbkJAhDrYhEvMEzd9VOU9ATFgQA+ChJB55NpV0Gj1NS+H
- sqUtz9OuC7J1lM7NhOs/Lnuwl/OzTFJ/OeMSZmvom9RETA+EJhjR5cVODwsSPJo/H2I9
- igf46DSpq3jeKyhUK800GmH9Hx8rn1AFxOPPnKgcZ9woQHKH9YIqB3E/m7anxqTtYufZ
- 7DzcPfd8sWj1UxcWwESDny9/aZbbD/ompTdYwTuV8YlhKwH8MwQnUP73u2UOVAeVck5W
- yPZg==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
- d=1e100.net; s=20161025;
- h=x-gm-message-state:mime-version:references:in-reply-to:from:date
- :message-id:subject:to:cc;
- bh=khu65Pwbl1kNKTb89zOFCrlCO2yNz4sw1thf27kEsfQ=;
- b=RbrdrhBgtnl19AmJ8raeHIwR16BMzSBBrMity5NSH+rO3kPI2/mmpT+XAqPOWmNDos
- SZPruCKlm/i1ACiYEWIpaE37I32EART732HzPOko42pOe4uhz/Hg66fBC3aR2PyWECNf
- 8RExXi1a6nBKQm7cPCc/kdKUlKRvI3qVYks6yvagtIXC2NzG3cfxjbEcObwl6JJTsRe5
- paI91sIk/foveZP2iE+VxL5cIRmxL2cC00fC1Zj4eQcXeUGgGt97CkT49sbWZPFc8/Gg
- jnBt1+OoCpGkjmgYh0JjVThM6DIZqj7n6xZa8BdS7iZrrAuKGfyEC7Z0rCW24FewW/vb
- SRZA==
-X-Gm-Message-State: AOAM5310qFElEyvUKfnfHx8JaaGuLkcV+LJ7k2c1nZEmus1CR1G5w1S/
- KOPmgDRD3Ad+SWupDPcYu7ScYKkEBJY/lRY4Q2Y=
-X-Google-Smtp-Source: ABdhPJyDZNWjZFmf40c+Y+boUsk7CQi9jFvF3xqkGvgARdOzu3nM3Ittis1px28gNvEhpp0/KtQJzuCWsqoa4CfOnU0=
-X-Received: by 2002:aa7:d792:: with SMTP id s18mr63073213edq.7.1594133867449; 
- Tue, 07 Jul 2020 07:57:47 -0700 (PDT)
+Received: from mailout2.w1.samsung.com (mailout2.w1.samsung.com
+ [210.118.77.12])
+ by whitealder.osuosl.org (Postfix) with ESMTPS id 131C18902F
+ for <iommu@lists.linux-foundation.org>; Tue,  7 Jul 2020 15:02:12 +0000 (UTC)
+Received: from eucas1p1.samsung.com (unknown [182.198.249.206])
+ by mailout2.w1.samsung.com (KnoxPortal) with ESMTP id
+ 20200707150210euoutp02c81bbde53ef03cd849a5eead8769cf18~fgIu90Ots0055000550euoutp02a
+ for <iommu@lists.linux-foundation.org>; Tue,  7 Jul 2020 15:02:10 +0000 (GMT)
+DKIM-Filter: OpenDKIM Filter v2.11.0 mailout2.w1.samsung.com
+ 20200707150210euoutp02c81bbde53ef03cd849a5eead8769cf18~fgIu90Ots0055000550euoutp02a
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=samsung.com;
+ s=mail20170921; t=1594134130;
+ bh=wOb/cwkj3XJiREprcybZVqbIIRoFX3C5VdLNDsmM354=;
+ h=Subject:To:Cc:From:Date:In-Reply-To:References:From;
+ b=DeBAWV0FX7eFTUx0PQzHr+d7B1H8zmsfQteKBweMLVvvFADnHPAnvU7wSPLtQpbGN
+ e3tzTeOAgAinCOeWbW7jUZ0pR/WQhLDG3gh4Ipn+cu9QHTKLFJMq+NlzEVhYJI+Dm7
+ ttLCtLHZFuXbaCwmHFjsgxHv+PROdra9Dc757eFY=
+Received: from eusmges1new.samsung.com (unknown [203.254.199.242]) by
+ eucas1p2.samsung.com (KnoxPortal) with ESMTP id
+ 20200707150210eucas1p2c875f6411dc355973b7512b4cdcc6310~fgIubcEW10679706797eucas1p2K;
+ Tue,  7 Jul 2020 15:02:10 +0000 (GMT)
+Received: from eucas1p1.samsung.com ( [182.198.249.206]) by
+ eusmges1new.samsung.com (EUCPMTA) with SMTP id 20.74.06456.27E840F5; Tue,  7
+ Jul 2020 16:02:10 +0100 (BST)
+Received: from eusmtrp2.samsung.com (unknown [182.198.249.139]) by
+ eucas1p1.samsung.com (KnoxPortal) with ESMTPA id
+ 20200707150209eucas1p17faf97752ee07c5b7dae3f359a18db90~fgIuGDO0o0165001650eucas1p1U;
+ Tue,  7 Jul 2020 15:02:09 +0000 (GMT)
+Received: from eusmgms2.samsung.com (unknown [182.198.249.180]) by
+ eusmtrp2.samsung.com (KnoxPortal) with ESMTP id
+ 20200707150209eusmtrp2e8b136c9b25a7dd37470b5db0e6c6154~fgIuFWk-O1360213602eusmtrp2Y;
+ Tue,  7 Jul 2020 15:02:09 +0000 (GMT)
+X-AuditID: cbfec7f2-7efff70000001938-fe-5f048e72144f
+Received: from eusmtip2.samsung.com ( [203.254.199.222]) by
+ eusmgms2.samsung.com (EUCPMTA) with SMTP id A7.09.06017.17E840F5; Tue,  7
+ Jul 2020 16:02:09 +0100 (BST)
+Received: from [106.210.85.205] (unknown [106.210.85.205]) by
+ eusmtip2.samsung.com (KnoxPortal) with ESMTPA id
+ 20200707150208eusmtip224acf9ca1e9dc958003f2203ce8bb385~fgIsm4kJv1267812678eusmtip2U;
+ Tue,  7 Jul 2020 15:02:08 +0000 (GMT)
+Subject: Re: [PATCH v7 03/36] drm: core: fix common struct sg_table related
+ issues
+To: Marek Szyprowski <m.szyprowski@samsung.com>,
+ dri-devel@lists.freedesktop.org, iommu@lists.linux-foundation.org,
+ linaro-mm-sig@lists.linaro.org, linux-kernel@vger.kernel.org
+From: Andrzej Hajda <a.hajda@samsung.com>
+Message-ID: <f7306f61-089f-9639-1d7d-2dca60ef19d3@samsung.com>
+Date: Tue, 7 Jul 2020 17:02:07 +0200
+User-Agent: Mozilla/5.0 (Windows NT 10.0; WOW64; rv:68.0) Gecko/20100101
+ Thunderbird/68.10.0
 MIME-Version: 1.0
-References: <20200626200414.14382-1-jcrouse@codeaurora.org>
- <20200626200414.14382-3-jcrouse@codeaurora.org>
- <99ecd948-7476-b9b4-12b4-1ced0084654f@arm.com>
- <CAF6AEGv2YXu44r9O0ZRkNM2ny4oMStxn4=GoCS3CLpPAKh_KZw@mail.gmail.com>
-In-Reply-To: <CAF6AEGv2YXu44r9O0ZRkNM2ny4oMStxn4=GoCS3CLpPAKh_KZw@mail.gmail.com>
-From: Rob Clark <robdclark@gmail.com>
-Date: Tue, 7 Jul 2020 07:58:18 -0700
-Message-ID: <CAF6AEGttgRQ3Ug2Nw_vJgjjjUOc0OLPSs+xLv-XFHNrHTOL8sg@mail.gmail.com>
-Subject: Re: [Freedreno] [PATCH v2 2/6] iommu/io-pgtable: Allow a pgtable
- implementation to skip TLB operations
-To: Robin Murphy <robin.murphy@arm.com>
-Cc: freedreno <freedreno@lists.freedesktop.org>, Joerg Roedel <jroedel@suse.de>,
- linux-arm-msm <linux-arm-msm@vger.kernel.org>,
- Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
- "list@263.net:IOMMU DRIVERS <iommu@lists.linux-foundation.org>,
- Joerg Roedel <joro@8bytes.org>, " <iommu@lists.linux-foundation.org>,
- John Stultz <john.stultz@linaro.org>, Will Deacon <will@kernel.org>
+In-Reply-To: <20200619103636.11974-4-m.szyprowski@samsung.com>
+Content-Language: en-GB
+X-Brightmail-Tracker: H4sIAAAAAAAAA02Se0hTYRjG+c5tZ6vZcSp700icVhikSRcOGVIWcf4ME6MkddVBLW/taGVB
+ WpaJ1jAt0qElmXfNa06NqEY6RFrLy1IqZlqB4TJ1FlZazqPkf7/3e5738sBH44oB0p2OTUjm
+ NQnqOBUlI1q7Zk1bNFoicmverJS9aerG2MaCepLtn5mg2KqaTowteRbI2vs/YmzTqIVk+zqK
+ KLbu5QcJ++L7J5JtGb9F7lnF1d6rRZz+xzDJWXOMGNf8MI17Nz+Kc/mDFYh7MpROcdqWasQ1
+ 91zkppvWH5Qdle0+ycfFnuU1/kFRshhDYaYkKc/3/PUOG5mOir2ykZQGZjsMmRtRNpLRCqYS
+ Qc5UKSkWdgTm511LyjSCyi8F+HKL3lRHiUIFguHqIkwsJhAUWI0Sh8uFCQVtZzpysCvTgiDj
+ zgGHCXeMumZ5ijkEivGFueYhysFyJgiGG0cWmWB8oNSSsbjOjYmA+jE9JnqcobvwE+Fg6YJ/
+ tHZu0Y8znqC3FeEiK+GKvWoxBDCTEng71CwR794PLz4UUSK7wFdjy9L7Ovjbfh8TOQ2slVdx
+ sTkLweOG9qXQgfDe9GuhmV7Y4Av1Hf4OBGYvVJRtEtEJBm3O4glOkNd6Fxef5ZCVqRBneIH1
+ 1eOleUooM89QuUilWxFMtyKMbkUY3f+1JYioRko+RYiP5oWABP6cn6COF1ISov1OJMY3oYXP
+ 1jNvnGpDM73HDYihkWq1PEZNRCpI9VkhNd6AgMZVrvLgVz0RCvlJdeoFXpMYqUmJ4wUD8qAJ
+ lVK+7cHYMQUTrU7mT/N8Eq9ZVjFa6p6OgmP+hFudbTtvkIc7X4/8nHUpi15z6dL4YLmlTTjd
+ UFjo+dT+O39yU+6wOQTTHlrbQ9q1MPU5qa9/4Exx1JHJ+rBd+wZqkFtlkHeIT7d/eO8G5vLE
+ KcncDsOZ58kedboCb8JtlTSZ/Gb0GFFsDGvb9Sj0dmr53FhS1zZ8XG97E6sihBh1wGZcI6j/
+ Ac/ypUFoAwAA
+X-Brightmail-Tracker: H4sIAAAAAAAAA+NgFnrFIsWRmVeSWpSXmKPExsVy+t/xe7qFfSzxBg/e6Vv0njvJZLFxxnpW
+ iytf37NZrFx9lMliwX5riy9XHjJZbHp8jdXi8q45bBZrj9xltzj44QmrxZY3E1kduD3WzFvD
+ 6LH92wNWj/vdx5k8Ni+p97j97zGzx+Qbyxk9dt9sYPPo27KK0WPz6WqPz5vkArii9GyK8ktL
+ UhUy8otLbJWiDS2M9AwtLfSMTCz1DI3NY62MTJX07WxSUnMyy1KL9O0S9DIOzWxjL5ikWdG+
+ 6y1rA+NcxS5GTg4JAROJ7efWsnUxcnEICSxllPjddoYNIiEusXv+W2YIW1jiz7UuqKK3jBJb
+ Ds9nBUkIC4RI9B1tYARJiAhsYZR4tuIwmMMs8JlR4u/1j1AtRxklrk/bww7SwiagKfF3802w
+ HbwCdhIPNj4Cs1kEVCQWX2sG2ycqECexfMt8dogaQYmTM5+wgNicQPWP1/wFq2cWMJOYt/kh
+ M4QtL7H97RwoW1yi6ctK1gmMQrOQtM9C0jILScssJC0LGFlWMYqklhbnpucWG+kVJ+YWl+al
+ 6yXn525iBMbztmM/t+xg7HoXfIhRgINRiYc3I5ElXog1say4MvcQowQHs5IIr9PZ03FCvCmJ
+ lVWpRfnxRaU5qcWHGE2BnpvILCWanA9MNXkl8YamhuYWlobmxubGZhZK4rwdAgdjhATSE0tS
+ s1NTC1KLYPqYODilGhiLjXwys542i7Xa+3luWq07iflvn7vXe8etKxvfiqctfzXxzdFyf6t1
+ uy1mXOWZnt4WK2eUeiHu/ltj7trXe68qPOMsXDfB89i2sPbd76rbZz1WKmTzOZxyYrVqkrfS
+ iXte79XPi0bsevzsUp6c4IHbXjzu20KS/33zbYg3qrx7aH64fpqG8VMlluKMREMt5qLiRAAO
+ 5m+6/QIAAA==
+X-CMS-MailID: 20200707150209eucas1p17faf97752ee07c5b7dae3f359a18db90
+X-Msg-Generator: CA
+X-RootMTR: 20200619103655eucas1p1b01cbe67526e2b2f8254eb20ccac1858
+X-EPHeader: CA
+CMS-TYPE: 201P
+X-CMS-RootMailID: 20200619103655eucas1p1b01cbe67526e2b2f8254eb20ccac1858
+References: <20200619103636.11974-1-m.szyprowski@samsung.com>
+ <CGME20200619103655eucas1p1b01cbe67526e2b2f8254eb20ccac1858@eucas1p1.samsung.com>
+ <20200619103636.11974-4-m.szyprowski@samsung.com>
+Cc: Bartlomiej Zolnierkiewicz <b.zolnierkie@samsung.com>,
+ David Airlie <airlied@linux.ie>, Thomas Zimmermann <tzimmermann@suse.de>,
+ Robin Murphy <robin.murphy@arm.com>, Christoph Hellwig <hch@lst.de>,
+ linux-arm-kernel@lists.infradead.org
 X-BeenThere: iommu@lists.linux-foundation.org
 X-Mailman-Version: 2.1.15
 Precedence: list
@@ -111,179 +156,143 @@ Content-Transfer-Encoding: 7bit
 Errors-To: iommu-bounces@lists.linux-foundation.org
 Sender: "iommu" <iommu-bounces@lists.linux-foundation.org>
 
-On Tue, Jul 7, 2020 at 7:25 AM Rob Clark <robdclark@gmail.com> wrote:
->
-> On Tue, Jul 7, 2020 at 4:34 AM Robin Murphy <robin.murphy@arm.com> wrote:
-> >
-> > On 2020-06-26 21:04, Jordan Crouse wrote:
-> > > Allow a io-pgtable implementation to skip TLB operations by checking for
-> > > NULL pointers in the helper functions. It will be up to to the owner
-> > > of the io-pgtable instance to make sure that they independently handle
-> > > the TLB correctly.
-> >
-> > I don't really understand what this is for - tricking the IOMMU driver
-> > into not performing its TLB maintenance at points when that maintenance
-> > has been deemed necessary doesn't seem like the appropriate way to
-> > achieve anything good :/
->
-> No, for triggering the io-pgtable helpers into not performing TLB
-> maintenance.  But seriously, since we are creating pgtables ourselves,
-> and we don't want to be ioremap'ing the GPU's SMMU instance, the
-> alternative is plugging in no-op helpers.  Which amounts to the same
-> thing.
 
-Hmm, that said, since we are just memcpy'ing the io_pgtable_cfg from
-arm-smmu, it will already be populated with arm-smmu's fxn ptrs.  I
-guess we could maybe make it work without no-op helpers, although in
-that case it looks like we need to fix something about aux-domain vs
-tlb helpers:
+On 19.06.2020 12:36, Marek Szyprowski wrote:
+> The Documentation/DMA-API-HOWTO.txt states that the dma_map_sg() function
+> returns the number of the created entries in the DMA address space.
+> However the subsequent calls to the dma_sync_sg_for_{device,cpu}() and
+> dma_unmap_sg must be called with the original number of the entries
+> passed to the dma_map_sg().
+>
+> struct sg_table is a common structure used for describing a non-contiguous
+> memory buffer, used commonly in the DRM and graphics subsystems. It
+> consists of a scatterlist with memory pages and DMA addresses (sgl entry),
+> as well as the number of scatterlist entries: CPU pages (orig_nents entry)
+> and DMA mapped pages (nents entry).
+>
+> It turned out that it was a common mistake to misuse nents and orig_nents
+> entries, calling DMA-mapping functions with a wrong number of entries or
+> ignoring the number of mapped entries returned by the dma_map_sg()
+> function.
+>
+> To avoid such issues, lets use a common dma-mapping wrappers operating
+> directly on the struct sg_table objects and use scatterlist page
+> iterators where possible. This, almost always, hides references to the
+> nents and orig_nents entries, making the code robust, easier to follow
+> and copy/paste safe.
+>
+> Signed-off-by: Marek Szyprowski <m.szyprowski@samsung.com>
 
-[  +0.004373] Unable to handle kernel NULL pointer dereference at
-virtual address 0000000000000019
-[  +0.004086] Mem abort info:
-[  +0.004319]   ESR = 0x96000004
-[  +0.003462]   EC = 0x25: DABT (current EL), IL = 32 bits
-[  +0.003494]   SET = 0, FnV = 0
-[  +0.002812]   EA = 0, S1PTW = 0
-[  +0.002873] Data abort info:
-[  +0.003031]   ISV = 0, ISS = 0x00000004
-[  +0.003785]   CM = 0, WnR = 0
-[  +0.003641] user pgtable: 4k pages, 48-bit VAs, pgdp=0000000261d65000
-[  +0.003383] [0000000000000019] pgd=0000000000000000, p4d=0000000000000000
-[  +0.003715] Internal error: Oops: 96000004 [#1] PREEMPT SMP
-[  +0.002744] Modules linked in: xt_CHECKSUM xt_MASQUERADE
-xt_conntrack ipt_REJECT nf_reject_ipv4 xt_tcpudp ip6table_mangle
-ip6table_nat iptable_mangle iptable_nat nf_nat nf_conntrack
-nf_defrag_ipv4 libcrc32c bridge stp llc ip6table_filter ip6_tables
-iptable_filter ax88179_178a usbnet uvcvideo videobuf2_vmalloc
-videobuf2_memops videobuf2_v4l2 videobuf2_common videodev mc
-hid_multitouch i2c_hid some_battery ti_sn65dsi86 hci_uart btqca btbcm
-qcom_spmi_adc5 bluetooth qcom_spmi_temp_alarm qcom_vadc_common
-ecdh_generic ecc snd_soc_sdm845 snd_soc_rt5663 snd_soc_qcom_common
-ath10k_snoc ath10k_core crct10dif_ce ath mac80211 snd_soc_rl6231
-soundwire_bus i2c_qcom_geni libarc4 qcom_rng msm phy_qcom_qusb2
-reset_qcom_pdc drm_kms_helper cfg80211 rfkill qcom_q6v5_mss
-qcom_q6v5_ipa_notify socinfo qrtr ns panel_simple qcom_q6v5_pas
-qcom_common qcom_glink_smem slim_qcom_ngd_ctrl qcom_sysmon drm
-qcom_q6v5 slimbus qmi_helpers qcom_wdt mdt_loader rmtfs_mem be2iscsi
-bnx2i cnic uio cxgb4i cxgb4 cxgb3i cxgb3 mdio
-[  +0.000139]  libcxgbi libcxgb qla4xxx iscsi_boot_sysfs iscsi_tcp
-libiscsi_tcp libiscsi scsi_transport_iscsi fuse ip_tables x_tables
-ipv6 nf_defrag_ipv6
-[  +0.020933] CPU: 3 PID: 168 Comm: kworker/u16:7 Not tainted
-5.8.0-rc1-c630+ #31
-[  +0.003828] Hardware name: LENOVO 81JL/LNVNB161216, BIOS
-9UCN33WW(V2.06) 06/ 4/2019
-[  +0.004039] Workqueue: msm msm_gem_free_work [msm]
-[  +0.003885] pstate: 60c00005 (nZCv daif +PAN +UAO BTYPE=--)
-[  +0.003859] pc : arm_smmu_tlb_inv_range_s1+0x30/0x148
-[  +0.003742] lr : arm_smmu_tlb_add_page_s1+0x1c/0x28
-[  +0.003887] sp : ffff800011cdb970
-[  +0.003868] x29: ffff800011cdb970 x28: 0000000000000003
-[  +0.003930] x27: ffff0001f1882f80 x26: 0000000000000001
-[  +0.003886] x25: 0000000000000003 x24: 0000000000000620
-[  +0.003932] x23: 0000000000000000 x22: 0000000000001000
-[  +0.003886] x21: 0000000000001000 x20: ffff0001cf857300
-[  +0.003916] x19: 0000000000000001 x18: 00000000ffffffff
-[  +0.003921] x17: ffffd9e6a24ae0e8 x16: 0000000000012577
-[  +0.003843] x15: 0000000000012578 x14: 0000000000000000
-[  +0.003884] x13: 0000000000012574 x12: ffffd9e6a2550180
-[  +0.003834] x11: 0000000000083f80 x10: 0000000000000000
-[  +0.003889] x9 : 0000000000000000 x8 : ffff0001f1882f80
-[  +0.003812] x7 : 0000000000000001 x6 : 0000000000000048
-[  +0.003807] x5 : ffff0001c86e1000 x4 : 0000000000000620
-[  +0.003802] x3 : ffff0001ddb57700 x2 : 0000000000001000
-[  +0.003809] x1 : 0000000000001000 x0 : 0000000101048000
-[  +0.003768] Call trace:
-[  +0.003665]  arm_smmu_tlb_inv_range_s1+0x30/0x148
-[  +0.003769]  arm_smmu_tlb_add_page_s1+0x1c/0x28
-[  +0.003760]  __arm_lpae_unmap+0x3c4/0x498
-[  +0.003821]  __arm_lpae_unmap+0xfc/0x498
-[  +0.003693]  __arm_lpae_unmap+0xfc/0x498
-[  +0.003704]  __arm_lpae_unmap+0xfc/0x498
-[  +0.003608]  arm_lpae_unmap+0x60/0x78
-[  +0.003653]  msm_iommu_pagetable_unmap+0x5c/0xa0 [msm]
-[  +0.003711]  msm_gem_purge_vma+0x48/0x70 [msm]
-[  +0.003716]  put_iova+0x68/0xc8 [msm]
-[  +0.003792]  msm_gem_free_work+0x118/0x190 [msm]
-[  +0.003739]  process_one_work+0x28c/0x6e8
-[  +0.003595]  worker_thread+0x4c/0x420
-[  +0.003546]  kthread+0x148/0x168
-[  +0.003675]  ret_from_fork+0x10/0x1c
-[  +0.003596] Code: 2a0403f8 a9046bf9 f9400073 39406077 (b9401a61)
 
-BR,
--R
+I guess whole patchset can go via drm-misc, after r-b/a-b.
 
+
+Reviewed-by: Andrzej Hajda <a.hajda@samsung.com>
+
+
+Regards
+Andrzej
+> ---
+>   drivers/gpu/drm/drm_cache.c            |  2 +-
+>   drivers/gpu/drm/drm_gem_shmem_helper.c | 14 +++++++++-----
+>   drivers/gpu/drm/drm_prime.c            | 11 ++++++-----
+>   3 files changed, 16 insertions(+), 11 deletions(-)
 >
-> Currently (in a later patch in the series) we are using
-> iommu_flush_tlb_all() when unmapping, which is a bit of a big hammer.
-> Although I think we could be a bit more clever and do the TLB ops on
-> the GPU (since the GPU knows if pagetables we are unmapping from are
-> in-use and could skip the TLB ops otherwise).
->
-> On the topic, if we are using unique ASID values per set of
-> pagetables, how expensive is tlb invalidate for an ASID that has no
-> entries in the TLB?
->
-> BR,
-> -R
->
-> >
-> > Robin.
-> >
-> > > Signed-off-by: Jordan Crouse <jcrouse@codeaurora.org>
-> > > ---
-> > >
-> > >   include/linux/io-pgtable.h | 11 +++++++----
-> > >   1 file changed, 7 insertions(+), 4 deletions(-)
-> > >
-> > > diff --git a/include/linux/io-pgtable.h b/include/linux/io-pgtable.h
-> > > index 53d53c6c2be9..bbed1d3925ba 100644
-> > > --- a/include/linux/io-pgtable.h
-> > > +++ b/include/linux/io-pgtable.h
-> > > @@ -210,21 +210,24 @@ struct io_pgtable {
-> > >
-> > >   static inline void io_pgtable_tlb_flush_all(struct io_pgtable *iop)
-> > >   {
-> > > -     iop->cfg.tlb->tlb_flush_all(iop->cookie);
-> > > +     if (iop->cfg.tlb)
-> > > +             iop->cfg.tlb->tlb_flush_all(iop->cookie);
-> > >   }
-> > >
-> > >   static inline void
-> > >   io_pgtable_tlb_flush_walk(struct io_pgtable *iop, unsigned long iova,
-> > >                         size_t size, size_t granule)
-> > >   {
-> > > -     iop->cfg.tlb->tlb_flush_walk(iova, size, granule, iop->cookie);
-> > > +     if (iop->cfg.tlb)
-> > > +             iop->cfg.tlb->tlb_flush_walk(iova, size, granule, iop->cookie);
-> > >   }
-> > >
-> > >   static inline void
-> > >   io_pgtable_tlb_flush_leaf(struct io_pgtable *iop, unsigned long iova,
-> > >                         size_t size, size_t granule)
-> > >   {
-> > > -     iop->cfg.tlb->tlb_flush_leaf(iova, size, granule, iop->cookie);
-> > > +     if (iop->cfg.tlb)
-> > > +             iop->cfg.tlb->tlb_flush_leaf(iova, size, granule, iop->cookie);
-> > >   }
-> > >
-> > >   static inline void
-> > > @@ -232,7 +235,7 @@ io_pgtable_tlb_add_page(struct io_pgtable *iop,
-> > >                       struct iommu_iotlb_gather * gather, unsigned long iova,
-> > >                       size_t granule)
-> > >   {
-> > > -     if (iop->cfg.tlb->tlb_add_page)
-> > > +     if (iop->cfg.tlb && iop->cfg.tlb->tlb_add_page)
-> > >               iop->cfg.tlb->tlb_add_page(gather, iova, granule, iop->cookie);
-> > >   }
-> > >
-> > >
-> > _______________________________________________
-> > Freedreno mailing list
-> > Freedreno@lists.freedesktop.org
-> > https://lists.freedesktop.org/mailman/listinfo/freedreno
+> diff --git a/drivers/gpu/drm/drm_cache.c b/drivers/gpu/drm/drm_cache.c
+> index 03e01b000f7a..0fe3c496002a 100644
+> --- a/drivers/gpu/drm/drm_cache.c
+> +++ b/drivers/gpu/drm/drm_cache.c
+> @@ -127,7 +127,7 @@ drm_clflush_sg(struct sg_table *st)
+>   		struct sg_page_iter sg_iter;
+>   
+>   		mb(); /*CLFLUSH is ordered only by using memory barriers*/
+> -		for_each_sg_page(st->sgl, &sg_iter, st->nents, 0)
+> +		for_each_sgtable_page(st, &sg_iter, 0)
+>   			drm_clflush_page(sg_page_iter_page(&sg_iter));
+>   		mb(); /*Make sure that all cache line entry is flushed*/
+>   
+> diff --git a/drivers/gpu/drm/drm_gem_shmem_helper.c b/drivers/gpu/drm/drm_gem_shmem_helper.c
+> index 4b7cfbac4daa..47d8211221f2 100644
+> --- a/drivers/gpu/drm/drm_gem_shmem_helper.c
+> +++ b/drivers/gpu/drm/drm_gem_shmem_helper.c
+> @@ -126,8 +126,8 @@ void drm_gem_shmem_free_object(struct drm_gem_object *obj)
+>   		drm_prime_gem_destroy(obj, shmem->sgt);
+>   	} else {
+>   		if (shmem->sgt) {
+> -			dma_unmap_sg(obj->dev->dev, shmem->sgt->sgl,
+> -				     shmem->sgt->nents, DMA_BIDIRECTIONAL);
+> +			dma_unmap_sgtable(obj->dev->dev, shmem->sgt,
+> +					  DMA_BIDIRECTIONAL, 0);
+>   			sg_free_table(shmem->sgt);
+>   			kfree(shmem->sgt);
+>   		}
+> @@ -424,8 +424,7 @@ void drm_gem_shmem_purge_locked(struct drm_gem_object *obj)
+>   
+>   	WARN_ON(!drm_gem_shmem_is_purgeable(shmem));
+>   
+> -	dma_unmap_sg(obj->dev->dev, shmem->sgt->sgl,
+> -		     shmem->sgt->nents, DMA_BIDIRECTIONAL);
+> +	dma_unmap_sgtable(obj->dev->dev, shmem->sgt, DMA_BIDIRECTIONAL, 0);
+>   	sg_free_table(shmem->sgt);
+>   	kfree(shmem->sgt);
+>   	shmem->sgt = NULL;
+> @@ -697,12 +696,17 @@ struct sg_table *drm_gem_shmem_get_pages_sgt(struct drm_gem_object *obj)
+>   		goto err_put_pages;
+>   	}
+>   	/* Map the pages for use by the h/w. */
+> -	dma_map_sg(obj->dev->dev, sgt->sgl, sgt->nents, DMA_BIDIRECTIONAL);
+> +	ret = dma_map_sgtable(obj->dev->dev, sgt, DMA_BIDIRECTIONAL, 0);
+> +	if (ret)
+> +		goto err_free_sgt;
+>   
+>   	shmem->sgt = sgt;
+>   
+>   	return sgt;
+>   
+> +err_free_sgt:
+> +	sg_free_table(sgt);
+> +	kfree(sgt);
+>   err_put_pages:
+>   	drm_gem_shmem_put_pages(shmem);
+>   	return ERR_PTR(ret);
+> diff --git a/drivers/gpu/drm/drm_prime.c b/drivers/gpu/drm/drm_prime.c
+> index b717e52e909e..d583d6545666 100644
+> --- a/drivers/gpu/drm/drm_prime.c
+> +++ b/drivers/gpu/drm/drm_prime.c
+> @@ -617,6 +617,7 @@ struct sg_table *drm_gem_map_dma_buf(struct dma_buf_attachment *attach,
+>   {
+>   	struct drm_gem_object *obj = attach->dmabuf->priv;
+>   	struct sg_table *sgt;
+> +	int ret;
+>   
+>   	if (WARN_ON(dir == DMA_NONE))
+>   		return ERR_PTR(-EINVAL);
+> @@ -626,11 +627,12 @@ struct sg_table *drm_gem_map_dma_buf(struct dma_buf_attachment *attach,
+>   	else
+>   		sgt = obj->dev->driver->gem_prime_get_sg_table(obj);
+>   
+> -	if (!dma_map_sg_attrs(attach->dev, sgt->sgl, sgt->nents, dir,
+> -			      DMA_ATTR_SKIP_CPU_SYNC)) {
+> +	ret = dma_map_sgtable(attach->dev, sgt, dir,
+> +			      DMA_ATTR_SKIP_CPU_SYNC);
+> +	if (ret) {
+>   		sg_free_table(sgt);
+>   		kfree(sgt);
+> -		sgt = ERR_PTR(-ENOMEM);
+> +		sgt = ERR_PTR(ret);
+>   	}
+>   
+>   	return sgt;
+> @@ -652,8 +654,7 @@ void drm_gem_unmap_dma_buf(struct dma_buf_attachment *attach,
+>   	if (!sgt)
+>   		return;
+>   
+> -	dma_unmap_sg_attrs(attach->dev, sgt->sgl, sgt->nents, dir,
+> -			   DMA_ATTR_SKIP_CPU_SYNC);
+> +	dma_unmap_sgtable(attach->dev, sgt, dir, DMA_ATTR_SKIP_CPU_SYNC);
+>   	sg_free_table(sgt);
+>   	kfree(sgt);
+>   }
 _______________________________________________
 iommu mailing list
 iommu@lists.linux-foundation.org
