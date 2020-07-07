@@ -2,119 +2,144 @@ Return-Path: <SRS0=m4kH=AS=lists.linux-foundation.org=iommu-bounces@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-0.6 required=3.0 tests=DKIM_INVALID,DKIM_SIGNED,
-	HEADER_FROM_DIFFERENT_DOMAINS,MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS
+X-Spam-Status: No, score=-2.0 required=3.0 tests=DKIM_INVALID,DKIM_SIGNED,
+	FREEMAIL_FORGED_FROMDOMAIN,FREEMAIL_FROM,HEADER_FROM_DIFFERENT_DOMAINS,
+	MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED,USER_AGENT_SANE_1
 	autolearn=no autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 0DFEBC433E3
-	for <iommu@archiver.kernel.org>; Tue,  7 Jul 2020 06:03:51 +0000 (UTC)
-Received: from hemlock.osuosl.org (smtp2.osuosl.org [140.211.166.133])
+	by smtp.lore.kernel.org (Postfix) with ESMTP id D25EDC433E0
+	for <iommu@archiver.kernel.org>; Tue,  7 Jul 2020 06:05:39 +0000 (UTC)
+Received: from whitealder.osuosl.org (smtp1.osuosl.org [140.211.166.138])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by mail.kernel.org (Postfix) with ESMTPS id C859020739
-	for <iommu@archiver.kernel.org>; Tue,  7 Jul 2020 06:03:50 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTPS id 8C71A20739
+	for <iommu@archiver.kernel.org>; Tue,  7 Jul 2020 06:05:39 +0000 (UTC)
 Authentication-Results: mail.kernel.org;
-	dkim=fail reason="signature verification failed" (2048-bit key) header.d=google.com header.i=@google.com header.b="GgPOPzZV"
-DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org C859020739
-Authentication-Results: mail.kernel.org; dmarc=none (p=none dis=none) header.from=lists.linux-foundation.org
+	dkim=fail reason="signature verification failed" (1024-bit key) header.d=web.de header.i=@web.de header.b="A1FsX9GT"
+DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 8C71A20739
+Authentication-Results: mail.kernel.org; dmarc=none (p=none dis=none) header.from=web.de
 Authentication-Results: mail.kernel.org; spf=pass smtp.mailfrom=iommu-bounces@lists.linux-foundation.org
 Received: from localhost (localhost [127.0.0.1])
-	by hemlock.osuosl.org (Postfix) with ESMTP id 8483E893B4;
-	Tue,  7 Jul 2020 06:03:50 +0000 (UTC)
+	by whitealder.osuosl.org (Postfix) with ESMTP id 74DAC88144;
+	Tue,  7 Jul 2020 06:05:39 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from hemlock.osuosl.org ([127.0.0.1])
+Received: from whitealder.osuosl.org ([127.0.0.1])
 	by localhost (.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
-	with ESMTP id dwqnJUjFAa-J; Tue,  7 Jul 2020 06:03:49 +0000 (UTC)
+	with ESMTP id SC+E10ZzBH59; Tue,  7 Jul 2020 06:05:38 +0000 (UTC)
 Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [140.211.9.56])
-	by hemlock.osuosl.org (Postfix) with ESMTP id 62A96893A5;
-	Tue,  7 Jul 2020 06:03:49 +0000 (UTC)
+	by whitealder.osuosl.org (Postfix) with ESMTP id C3ED188391;
+	Tue,  7 Jul 2020 06:05:38 +0000 (UTC)
 Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
-	by lists.linuxfoundation.org (Postfix) with ESMTP id 53BF2C0893;
-	Tue,  7 Jul 2020 06:03:49 +0000 (UTC)
+	by lists.linuxfoundation.org (Postfix) with ESMTP id AE0E2C0893;
+	Tue,  7 Jul 2020 06:05:38 +0000 (UTC)
 Received: from whitealder.osuosl.org (smtp1.osuosl.org [140.211.166.138])
- by lists.linuxfoundation.org (Postfix) with ESMTP id 257A0C016F
- for <iommu@lists.linux-foundation.org>; Tue,  7 Jul 2020 06:03:48 +0000 (UTC)
+ by lists.linuxfoundation.org (Postfix) with ESMTP id 05FA2C016F
+ for <iommu@lists.linux-foundation.org>; Tue,  7 Jul 2020 06:05:38 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
- by whitealder.osuosl.org (Postfix) with ESMTP id 14007888BC
- for <iommu@lists.linux-foundation.org>; Tue,  7 Jul 2020 06:03:48 +0000 (UTC)
+ by whitealder.osuosl.org (Postfix) with ESMTP id 766838814A
+ for <iommu@lists.linux-foundation.org>; Tue,  7 Jul 2020 06:05:22 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
 Received: from whitealder.osuosl.org ([127.0.0.1])
  by localhost (.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
- with ESMTP id NVbvijS7Gry4 for <iommu@lists.linux-foundation.org>;
- Tue,  7 Jul 2020 06:03:46 +0000 (UTC)
+ with ESMTP id 5hkp0ziFmKWw for <iommu@lists.linux-foundation.org>;
+ Tue,  7 Jul 2020 06:05:21 +0000 (UTC)
 X-Greylist: domain auto-whitelisted by SQLgrey-1.7.6
-Received: from mail-lf1-f67.google.com (mail-lf1-f67.google.com
- [209.85.167.67])
- by whitealder.osuosl.org (Postfix) with ESMTPS id 57939888B5
- for <iommu@lists.linux-foundation.org>; Tue,  7 Jul 2020 06:03:46 +0000 (UTC)
-Received: by mail-lf1-f67.google.com with SMTP id o4so24071447lfi.7
- for <iommu@lists.linux-foundation.org>; Mon, 06 Jul 2020 23:03:46 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=google.com; s=20161025;
- h=mime-version:references:in-reply-to:from:date:message-id:subject:to
- :cc; bh=At7frkuP//m2C4wO/t68JtiKfwGrxfIjgNhoGFPjuqY=;
- b=GgPOPzZVB9QG+V16ArbLi5HbSt8wmX/XmnUem6yWxPjNtsObAzq4Iu9cmw7ZSWeDyB
- mGodJ1zI8Trej+99LGaRcwwPrnC2CWw3fkde9h2CLvAz5Oq2GNg3GBNDXWkVTJwk499z
- va0qiN0auLDXpURyHcMx0O5f4twmGjWZNUlUiMzUumLZ5+GiAvfINFNk4jNgVcUUX+CS
- sGy8XHr63Pt36UrDUeceTJD7/K2ZMK9XduWN2tVc0+VRly4yh1fpYbXReeJy5XPtPm+1
- B+kWAKlt3lJDmUnPS5Hd/kKzs2DRBiPrHxZXT2uKd6TTthaAtnaHNt+/94D/CAWaGUQW
- ipdg==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
- d=1e100.net; s=20161025;
- h=x-gm-message-state:mime-version:references:in-reply-to:from:date
- :message-id:subject:to:cc;
- bh=At7frkuP//m2C4wO/t68JtiKfwGrxfIjgNhoGFPjuqY=;
- b=GtgRlJEpqrkERiCjz9EO9T0F/ShjKWkM8uj+6IWg2l0v1SX+zzGQ1G26BCep6FNl1D
- qb1NtJjDHpHdf7cojX91ELUpNk18e+t3ZEJoIOaNdbx8bkHZZejFpLZwPTDPj9OPSCVd
- Y4cD2xSINDQpcaYYH4OPuKawqLRIttJyH3VPSzo5bLC4W/spqrpEOb6jIFqgnvoNmz/3
- o65X/QjQWu8u+8E/AQ+8D2HSrkZ/ASK/TU/HtsCoH6oppfFuWZquEvPUrpUiOnh1L27S
- cvGKvQQFWwFRMBQ5GDbjZdvxkIcNu4vTTTNjdhEUkzd5lGaEgKLFuxq/vT3GxruTyNy7
- T/bQ==
-X-Gm-Message-State: AOAM530mLyjWCDF2/lYK/MDbsI3djKFPThk1HQdt49gxO8+XK7eEvhof
- PMGK4vm21Lznz0FUPP6yPOyR7O4x4webGp1SQDCc+Q==
-X-Google-Smtp-Source: ABdhPJxzodXQqLhLPfzMvxo2OHubv3t6cD0Sl4TaPP/Y1UnmLsUpcHicO2BtsMPwbhbOKSkDPHuAo5Vc9TtcI0L9aoE=
-X-Received: by 2002:a05:6512:34c3:: with SMTP id
- w3mr15837701lfr.122.1594101823881; 
- Mon, 06 Jul 2020 23:03:43 -0700 (PDT)
+Received: from mout.web.de (mout.web.de [217.72.192.78])
+ by whitealder.osuosl.org (Postfix) with ESMTPS id E6C0A88134
+ for <iommu@lists.linux-foundation.org>; Tue,  7 Jul 2020 06:05:20 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=web.de;
+ s=dbaedf251592; t=1594101902;
+ bh=8JM2O9jcHjAbFpQBOjma2wnTkbwYl3IQhMDrSrqvnYI=;
+ h=X-UI-Sender-Class:Subject:To:Cc:References:From:Date:In-Reply-To;
+ b=A1FsX9GT90we5fowiGnbvuZJCLBoyb7X4dQZDgWQkxrbNNJzRxxUi/ItvwYqIjwGt
+ 5HoUVjfSTB9NcS9KBmFTV4571CPOfV7CQ618Jm0dWAcuDiBZFeY+betbFdhWhRSPQs
+ iMiiusLwCY/6IRxxb9J4voalZkA5cU6him+maxAs=
+X-UI-Sender-Class: c548c8c5-30a9-4db5-a2e7-cb6cb037b8f9
+Received: from [192.168.1.2] ([93.133.121.241]) by smtp.web.de (mrweb103
+ [213.165.67.124]) with ESMTPSA (Nemesis) id 0MCqkB-1k2LmA39jn-009eyu; Tue, 07
+ Jul 2020 08:05:01 +0200
+Subject: Re: [RFC PATCH] vfio: type1: fix kthread use case
+To: Hillf Danton <hdanton@sina.com>, iommu@lists.linux-foundation.org
+References: <20200706104915.11460-1-hdanton@sina.com>
+ <20200706124241.4392-1-hdanton@sina.com>
+ <20200707011420.1416-1-hdanton@sina.com>
+From: Markus Elfring <Markus.Elfring@web.de>
+Autocrypt: addr=Markus.Elfring@web.de; prefer-encrypt=mutual; keydata=
+ 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 FEE=
+Message-ID: <f29f7008-6489-0db3-86b3-5f83f5ed7770@web.de>
+Date: Tue, 7 Jul 2020 08:04:54 +0200
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101
+ Thunderbird/68.9.0
 MIME-Version: 1.0
-References: <20200630044943.3425049-1-rajatja@google.com>
- <20200630044943.3425049-6-rajatja@google.com>
- <20200630104948.GC856968@kuha.fi.intel.com>
- <20200630125216.GA1109228@kroah.com>
- <CAJZ5v0iYFKrouQx_b7afPnz7ohjWOKKDhdHj_3HObKYV_rRhiw@mail.gmail.com>
- <20200630153816.GD1785141@kroah.com>
- <CAJZ5v0jUx-RVhJRDngkOXx-3szFJDOgCJs2yuGKFyo2f1qZAwA@mail.gmail.com>
- <20200630170012.GB1894898@kroah.com>
- <CACK8Z6Fcrb8PtmbUJLn8RgiGnC8eqTC9GjsgjPmQgU212WPU0Q@mail.gmail.com>
- <CAOSf1CEZ82iXhYnig0UScS+oRRaxHzSCge9LbA1hW3NaQAiSxQ@mail.gmail.com>
-In-Reply-To: <CAOSf1CEZ82iXhYnig0UScS+oRRaxHzSCge9LbA1hW3NaQAiSxQ@mail.gmail.com>
-Date: Mon, 6 Jul 2020 23:03:07 -0700
-Message-ID: <CACK8Z6EqTkHbWQdWB-yGapUrtiesxEv=S8OCsoxf+AzVAj9jJA@mail.gmail.com>
-Subject: Re: [PATCH v2 5/7] driver core: Add device location to "struct
- device" and expose it in sysfs
-To: "Oliver O'Halloran" <oohall@gmail.com>
-Cc: Heikki Krogerus <heikki.krogerus@linux.intel.com>,
- "Rafael J. Wysocki" <rafael@kernel.org>, Linux PCI <linux-pci@vger.kernel.org>,
- "Krishnakumar, Lalithambika" <lalithambika.krishnakumar@intel.com>,
- Todd Broch <tbroch@google.com>, Diego Rivas <diegorivas@google.com>,
- Jean-Philippe Brucker <jean-philippe@linaro.org>,
- Furquan Shaikh <furquan@google.com>, Raj Ashok <ashok.raj@intel.com>,
- Saravana Kannan <saravanak@google.com>,
- ACPI Devel Maling List <linux-acpi@vger.kernel.org>,
- Christian Kellner <christian@kellner.me>,
- Mattias Nissler <mnissler@google.com>, Jesse Barnes <jsbarnes@google.com>,
- Len Brown <lenb@kernel.org>, Rajat Jain <rajatxjain@gmail.com>,
- Prashant Malani <pmalani@google.com>,
- Suzuki K Poulose <suzuki.poulose@arm.com>, Aaron Durbin <adurbin@google.com>,
- Alex Williamson <alex.williamson@redhat.com>,
- Bjorn Helgaas <bhelgaas@google.com>,
- Mika Westerberg <mika.westerberg@linux.intel.com>,
- Bernie Keany <bernie.keany@intel.com>, Duncan Laurie <dlaurie@google.com>,
- Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
- "Rafael J. Wysocki" <rjw@rjwysocki.net>,
- Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
- "open list:AMD IOMMU \(AMD-VI\)" <iommu@lists.linux-foundation.org>,
- Arnd Bergmann <arnd@arndb.de>, Benson Leung <bleung@google.com>,
- David Woodhouse <dwmw2@infradead.org>, Alex Levin <levinale@google.com>
+In-Reply-To: <20200707011420.1416-1-hdanton@sina.com>
+Content-Language: en-GB
+X-Provags-ID: V03:K1:FjEVrQWL2QA5e4X0aVFByqrubBufrf7DYh3N3MlILuX7K7HSyMz
+ U1kbCSZuNLw3tmincyjBqV8H+D3Z9Xst0EU/762LG04H/pOmEpOPI6pyW31RZQmcmpOtvWu
+ eHL2O4w5hEjIckphsLdgWszNCHuqOznsDh7pubtDRZFy1OYYHu9ONqRJiIy0VbZTYxPZCkG
+ t65wGHu5PXBjx9brtccgw==
+X-UI-Out-Filterresults: notjunk:1;V03:K0:RuTW5/5Es3w=:/gvupHiTAIkF9FbZ9XFiys
+ A+VYE5eipB8Ccvhww8ybH852MiOD5JjN5frTKbFEz3sP1Oy4EsORIuLUI0TatBQV90YDjll4O
+ 5LQ9y7CzcPvUTkjFFsHbyB9dN+Pb41mVgSv4J00+2mlUCjoeYe4VNg68pwOQixhl3kOWbQURp
+ RlHwraH8PBBrH/VO8pL15GlBTlxoSwkl0Ltm3FVgqiIMEoPx6gB0GI/GhXqY696oWLlw8f28z
+ b4v8g8MMj4PrI1bUgWRrFNz9zTLr/WMGfhTXJPGjzOUhjqIuEdMYmqGmk5+S5A2RgkVUBqufU
+ izJzYgQfpDvrcn1oZbwtTpwgjC8+bx6K9otplZkTATwjQhZgAYLU/OEPRQuMdQapcZMbaoNnl
+ YO9OlMduNTbkFIjoH35p4iZH2d1jmi2A55rU5whZZ5SvPFXTLAdn9O41JI90tU/872zjU6Aim
+ tQPgTQUG1LQLN0djJktTGSzpMI9JMVKzWLB/RiXCF8hNjPpM4YRRLqBRVyPdFAPeBOKdzaNZ9
+ WA5Othv4GZax0FiP2hKx+kjjhh/zgHjhHZVu980wmLbIQFjzdF9Qi/qRsXYCJxxbqz6ttYEGO
+ RlP79RUenZGMKk3ezQcF0aZLvCynoYLNbj0WF9u37J5WS3Q9p9+3Icgo+ZjfpWDcpShNXn865
+ AAw7XVcsZRF+p7m121TsJsdONZl8dRJJUzBd9l0Dqc+Og9PZM/dEyHuHgWKqoR2vICInnIgXh
+ 7mtETRcJlRjx6hIbBmV2GjhFLhfMsCcx4oV1RFkDwaM9d6GEBlz9RW5MV780GKTe+u0S/sqED
+ 4Tg9ps9bJtiyv750Qm0a6Evz3Rh1ozVtFKEWl83T8nNiLdT28r3SeF++p1HWCqXePN7nwnL73
+ q898y+UWBqV0dr6gRUtKUy/F3UT0+6N8hUdlKSnyatMn6JSs59n2WUgAgTeJaE7r5P+sswdFv
+ XaavkJC17ihYgBukuqkpi4RlQbF96aviQrrHM7CPYimBTlpX9D/G4eh7/iHRIXO0rMQhAN2Q0
+ dFyot2H/tGSZPD64lr4mQa8lywopZlPArXvk6+sTmGJ2dMw27VyZ6xB0qY3wBKLaINepwWMwQ
+ MS/Lv5pYv2fCWC3xc18AjZlu+YjnrqDDotgDMRAMiuwagXJGaS0yl8HdTo9toQQDPkiyN4sfz
+ 1Wd2RPTXmUqer3NsMT3vv0fmcS98fOGrX7bdZmJa4Y22nj23xzxjUwMGEXtFPhcNWTarFM+Yg
+ 55Y6BT+D1DvrqWnSr19yI1FhsK4+vVMcNc0Y33g==
+Cc: Kevin Tian <kevin.tian@intel.com>, Yan Zhao <yan.y.zhao@intel.com>,
+ kernel-janitors@vger.kernel.org, linux-kernel@vger.kernel.org,
+ Alex Williamson <alex.williamson@redhat.com>, Christoph Hellwig <hch@lst.de>
 X-BeenThere: iommu@lists.linux-foundation.org
 X-Mailman-Version: 2.1.15
 Precedence: list
@@ -127,216 +152,23 @@ List-Post: <mailto:iommu@lists.linux-foundation.org>
 List-Help: <mailto:iommu-request@lists.linux-foundation.org?subject=help>
 List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
  <mailto:iommu-request@lists.linux-foundation.org?subject=subscribe>
-From: Rajat Jain via iommu <iommu@lists.linux-foundation.org>
-Reply-To: Rajat Jain <rajatja@google.com>
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: base64
 Errors-To: iommu-bounces@lists.linux-foundation.org
 Sender: "iommu" <iommu-bounces@lists.linux-foundation.org>
 
-On Wed, Jul 1, 2020 at 10:23 PM Oliver O'Halloran <oohall@gmail.com> wrote:
->
-> On Thu, Jul 2, 2020 at 4:07 AM Rajat Jain <rajatja@google.com> wrote:
-> >
-> > *snip*
-> >
-> > > > I guess it would make sense to have an attribute for user space to
-> > > > write to in order to make the kernel reject device plug-in events
-> > > > coming from a given port or connector, but the kernel has no reliable
-> > > > means to determine *which* ports or connectors are "safe", and even if
-> > > > there was a way for it to do that, it still may not agree with user
-> > > > space on which ports or connectors should be regarded as "safe".
-> > >
-> > > Again, we have been doing this for USB devices for a very long time, PCI
-> > > shouldn't be any different.  Why people keep ignoring working solutions
-> > > is beyond me, there's nothing "special" about PCI devices here for this
-> > > type of "worry" or reasoning to try to create new solutions.
-> > >
-> > > So, again, I ask, go do what USB does, and to do that, take the logic
-> > > out of the USB core, make it bus-agnositic, and _THEN_ add it to the PCI
-> > > code. Why the original submitter keeps ignoring my request to do this
-> > > is beyond me, I guess they like making patches that will get rejected :(
-> >
-> > IMHO I'm actually trying to precisely do what I think was the
-> > conclusion of our discussion, and then some changes because of the
-> > further feedback I received on those patches. Let's take a step back
-> > and please allow me to explain how I got here (my apologies but this
-> > spans a couple of threads, and I"m trying to tie them all together
-> > here):
->
-> The previous thread had some suggestions, but no real conclusions.
-> That's probably why we're still arguing about it...
->
-> > GOAL: To allow user space to control what (PCI) drivers he wants to
-> > allow on external (thunderbolt) ports. There was a lot of debate about
-> > the need for such a policy at
-> > https://lore.kernel.org/linux-pci/CACK8Z6GR7-wseug=TtVyRarVZX_ao2geoLDNBwjtB+5Y7VWNEQ@mail.gmail.com/
-> > with the final conclusion that it should be OK to implement such a
-> > policy in userspace, as long as the policy is not implemented in the
-> > kernel. The kernel only needs to expose bits & info that is needed by
-> > the userspace to implement such a policy, and it can be used in
-> > conjunction with "drivers_autoprobe" to implement this policy:
-> > --------------------------------------------------------------------
-> > ....
-> > That's an odd thing, but sure, if you want to write up such a policy for
-> > your systems, great.  But that policy does not belong in the kernel, it
-> > belongs in userspace.
-> > ....
-> > --------------------------------------------------------------------
-> > 1) The post https://lore.kernel.org/linux-pci/20200609210400.GA1461839@bjorn-Precision-5520/
-> > lists out the approach that was agreed on. Replicating it here:
-> > -----------------------------------------------------------------------
-> >   - Expose the PCI pdev->untrusted bit in sysfs.  We don't expose this
-> >     today, but doing so would be trivial.  I think I would prefer a
-> >     sysfs name like "external" so it's more descriptive and less of a
-> >     judgment.
-> >
-> >     This comes from either the DT "external-facing" property or the
-> >     ACPI "ExternalFacingPort" property.
-> >
-> >   - All devices present at boot are enumerated.  Any statically built
-> >     drivers will bind to them before any userspace code runs.
-> >
-> >     If you want to keep statically built drivers from binding, you'd
-> >     need to invent some mechanism so pci_driver_init() could clear
-> >     drivers_autoprobe after registering pci_bus_type.
-> >
-> >   - Early userspace code prevents modular drivers from automatically
-> >     binding to PCI devices:
-> >
-> >       echo 0 > /sys/bus/pci/drivers_autoprobe
-> >
-> >     This prevents modular drivers from binding to all devices, whether
-> >     present at boot or hot-added.
-> >
-> >   - Userspace code uses the sysfs "bind" file to control which drivers
-> >     are loaded and can bind to each device, e.g.,
-> >
-> >       echo 0000:02:00.0 > /sys/bus/pci/drivers/nvme/bind
->
-> I think this is a reasonable suggestion. However, as Greg pointed out
-> it's gratuitously different to what USB does for no real reason.
->
-> > -----------------------------------------------------------------------
-> > 2) As part of implementing the above agreed approach, when I exposed
-> > PCI "untrusted" attribute to userspace, it ran into discussion that
-> > concluded that instead of this, the device core should be enhanced
-> > with a location attribute.
-> > https://lore.kernel.org/linux-pci/20200618184621.GA446639@kroah.com/
-> > -----------------------------------------------------------------------
-> > ...
-> > The attribute should be called something like "location" or something
-> > like that (naming is hard), as you don't always know if something is
-> > external or not (it could be internal, it could be unknown, it could be
-> > internal to an external device that you trust (think PCI drawers for
-> > "super" computers that are hot pluggable but yet really part of the
-> > internal bus).
-> > ....
-> > "trust" has no direct relation to the location, except in a policy of
-> > what you wish to do with that device, so as long as you keep them
-> > separate that way, I am fine with it.
-> > ...
-> > -----------------------------------------------------------------------
-> >
-> > And hence this patch. I don't see an attribute in USB comparable to
-> > this new attribute, except for the boolean "removable" may be. Are you
-> > suggesting to pull that into the device core instead of adding this
-> > "physical_location" attribute?
->
-> He's suggesting you pull the "authorized" attribute into the driver
-> core. That's the mechanism USB uses to block drivers binding unless
-> userspace authorizes them. I don't see any reason why we can't re-use
-> that sysfs interface for PCI devices since the problem being solved is
-> fundamentally the same. The main question is what we should do as a
-> default policy in the kernel. For USB the default comes from the
-> "authorized_default" module param of usbcore:
->
-> > /* authorized_default behaviour:
-> >  * -1 is authorized for all devices except wireless (old behaviour)
-> >  * 0 is unauthorized for all devices
-> >  * 1 is authorized for all devices
-> >  * 2 is authorized for internal devices
-> >  */
-> > #define USB_AUTHORIZE_WIRED   -1
-> > #define USB_AUTHORIZE_NONE    0
-> > #define USB_AUTHORIZE_ALL     1
-> > #define USB_AUTHORIZE_INTERNAL        2
-> >
-> > static int authorized_default = USB_AUTHORIZE_WIRED;
-> > module_param(authorized_default, int, S_IRUGO|S_IWUSR);
->
-> So the default policy for USB is to authorize any wired USB device and
-> we can optionally restrict that to just integrated devices. Sounding
-> familiar?
-
-Thank you for explaining! It is a lot more clear now :-)
-
-I have separated out the PCI portions of this patchset (patches 1-4
-i.e. ones not related to this controversial change) into its own
-patchset. W.r.t patches 5-7, I think I'd like to collect my thoughts
-and send out a fresh RFC once I am ready (I'm running out of time on
-my deliverables so may have to carry some patches internally for the
-time being). But 2 quick points:
-
-1) Currently there are already at least 2 existing buses with their
-own versions of "authorized": usb and thunderbolt, and the UAPI /
-semantics of "authorized" is different amongst these.
-
-Documentation/ABI/testing/sysfs-bus-thunderbolt - "authorized" is boolean
-Documentation/usb/authorization.rst  - "authorized" is 0/1/2
-
-(Side note: In addition to that, usb also has additional "authorized"
-related attributes e.g. interface_authorized_default etc which might
-not have an easy corresponding sensible meaning in other buses, so we
-may have to still leave it in USB.)
-
-So my question is, assuming we do not want to change or break existing
-UAPI, if I move the "authorized" attribute to the device core, who
-defines the semantics of the values it can take? It seems to me like
-individual buses should define that. And if so, then device core
-cannot use "authorized" value to decide to prevent drivers from
-binding to it?
-
-2) It seemed to me
-(https://lore.kernel.org/linux-acpi/20200618184621.GA446639@kroah.com/)
-that we had at least somewhat agreement that the location of a device
-is a useful piece of info to have for userspace to have. The point I'm
-trying to make is that "exporting the location of device in sysfs"
-seems independent of "move untrusted attribute to the device core".
-LIke you said below, location of device is still useful (may not be
-sufficient, BMC case you mention) for the userspace to have, in order
-to decide whether to allow a device.  So why object to this patch?
-
-Thanks,
-
-Rajat
-
-
-
->
-> The internal / external status is still useful to know so we might
-> want to make a sysfs attribute for that too. However, I'd like to
-> point out that internal / external isn't the whole story. As I
-> mentioned in the last thread if I have a BMC device I *really* don't
-> want it to be authorized by default even though it's an internal
-> device. Similarly, if I know all my internal cards support PCIe
-> Component Authentication then I might choose not to trust any PCI
-> devices unless they authenticate successfully.
->
-> > 3) The one deviation from the agreed approach in (1) is
-> > https://patchwork.kernel.org/patch/11633095/ . The reason is I
-> > realized that contrary to what I earlier believed, we might not be
-> > able to disable the PCI link to all external PCI devices at boot. So
-> > external PCI devices may actually bind to drivers before userspace
-> > comes up and does "echo 0 > /sys/bus/pci/drivers_autoprobe").
->
-> Yep, that's a problem. If we want to provide a useful mechanism to
-> userspace then the default behaviour of the kernel can't undermine
-> that mechanism. If that means we need another kernel command line
-> parameter then I guess we just have to live with it.
->
-> Oliver
-_______________________________________________
-iommu mailing list
-iommu@lists.linux-foundation.org
-https://lists.linuxfoundation.org/mailman/listinfo/iommu
+4oCmCj4gKysrIGIvZHJpdmVycy92ZmlvL3ZmaW9faW9tbXVfdHlwZTEuYwo+IEBAIC0yNzk4LDcg
+KzI3OTgsNyBAQCBzdGF0aWMgaW50IHZmaW9faW9tbXVfdHlwZTFfZG1hX3J3X2NodW5rCuKApgo+
+IC0JYm9vbCBrdGhyZWFkID0gY3VycmVudC0+bW0gPT0gTlVMTDsKPiArCWJvb2wga3RocmVhZF9s
+b2FkX21tOwo+ICAJc2l6ZV90IG9mZnNldDsKCkhvdyBkbyB5b3UgdGhpbmsgYWJvdXQgdG8gcmVk
+dWNlIHRoZSBzY29wZSBmb3Igc3VjaCB2YXJpYWJsZXM/Cmh0dHBzOi8vcmVmYWN0b3JpbmcuY29t
+L2NhdGFsb2cvcmVkdWNlU2NvcGVPZlZhcmlhYmxlLmh0bWwKCgrigKYKPiBAQCAtMjgxMiwxMSAr
+MjgxMiwxMiBAQCBzdGF0aWMgaW50IHZmaW9faW9tbXVfdHlwZTFfZG1hX3J3X2NodW5rCuKApgo+
+ICAJaWYgKCFtbSkKPiAgCQlyZXR1cm4gLUVQRVJNOwrigKYKPiArCWt0aHJlYWRfbG9hZF9tbSA9
+IGN1cnJlbnQtPmZsYWdzICYgUEZfS1RIUkVBRCAmJgo+ICsJCQkJY3VycmVudC0+bW0gPT0gTlVM
+TDsK4oCmCgpXb3VsZCB5b3UgbGlrZSB0byBhcHBseSBhIG1vcmUgc3VjY2luY3QgY29kZSB2YXJp
+YW50PwoKKwlrdGhyZWFkX2xvYWRfbW0gPSBjdXJyZW50LT5mbGFncyAmIFBGX0tUSFJFQUQgJiYg
+IWN1cnJlbnQtPm1tOwoKClJlZ2FyZHMsCk1hcmt1cwpfX19fX19fX19fX19fX19fX19fX19fX19f
+X19fX19fX19fX19fX19fX19fX19fXwppb21tdSBtYWlsaW5nIGxpc3QKaW9tbXVAbGlzdHMubGlu
+dXgtZm91bmRhdGlvbi5vcmcKaHR0cHM6Ly9saXN0cy5saW51eGZvdW5kYXRpb24ub3JnL21haWxt
+YW4vbGlzdGluZm8vaW9tbXU=
