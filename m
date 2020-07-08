@@ -2,96 +2,103 @@ Return-Path: <SRS0=dlfR=AT=lists.linux-foundation.org=iommu-bounces@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-0.6 required=3.0 tests=DKIM_INVALID,DKIM_SIGNED,
-	HEADER_FROM_DIFFERENT_DOMAINS,MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS
-	autolearn=no autolearn_force=no version=3.4.0
+X-Spam-Status: No, score=-5.0 required=3.0 tests=DKIM_ADSP_CUSTOM_MED,
+	DKIM_INVALID,DKIM_SIGNED,FREEMAIL_FORGED_FROMDOMAIN,FREEMAIL_FROM,
+	HEADER_FROM_DIFFERENT_DOMAINS,MAILING_LIST_MULTI,SIGNED_OFF_BY,SPF_HELO_NONE,
+	SPF_PASS,USER_AGENT_SANE_1 autolearn=ham autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 762E0C433E0
-	for <iommu@archiver.kernel.org>; Wed,  8 Jul 2020 19:55:31 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 38C1EC433E0
+	for <iommu@archiver.kernel.org>; Wed,  8 Jul 2020 20:36:36 +0000 (UTC)
 Received: from hemlock.osuosl.org (smtp2.osuosl.org [140.211.166.133])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by mail.kernel.org (Postfix) with ESMTPS id 4657B206DF
-	for <iommu@archiver.kernel.org>; Wed,  8 Jul 2020 19:55:31 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTPS id 0342C20708
+	for <iommu@archiver.kernel.org>; Wed,  8 Jul 2020 20:36:35 +0000 (UTC)
 Authentication-Results: mail.kernel.org;
-	dkim=fail reason="signature verification failed" (1024-bit key) header.d=redhat.com header.i=@redhat.com header.b="fi54/RK7"
-DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 4657B206DF
-Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=redhat.com
+	dkim=fail reason="signature verification failed" (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="hop4Z7+h"
+DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 0342C20708
+Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=gmail.com
 Authentication-Results: mail.kernel.org; spf=pass smtp.mailfrom=iommu-bounces@lists.linux-foundation.org
 Received: from localhost (localhost [127.0.0.1])
-	by hemlock.osuosl.org (Postfix) with ESMTP id 0F84088400;
-	Wed,  8 Jul 2020 19:55:31 +0000 (UTC)
+	by hemlock.osuosl.org (Postfix) with ESMTP id C001F8816A;
+	Wed,  8 Jul 2020 20:36:35 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
 Received: from hemlock.osuosl.org ([127.0.0.1])
 	by localhost (.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
-	with ESMTP id N0VaWgRLvcBA; Wed,  8 Jul 2020 19:55:30 +0000 (UTC)
+	with ESMTP id 5H2fiBVKfeMi; Wed,  8 Jul 2020 20:36:35 +0000 (UTC)
 Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [140.211.9.56])
-	by hemlock.osuosl.org (Postfix) with ESMTP id 7DBCE883C1;
-	Wed,  8 Jul 2020 19:55:30 +0000 (UTC)
+	by hemlock.osuosl.org (Postfix) with ESMTP id 32A5587EDB;
+	Wed,  8 Jul 2020 20:36:35 +0000 (UTC)
 Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
-	by lists.linuxfoundation.org (Postfix) with ESMTP id 512DEC0893;
-	Wed,  8 Jul 2020 19:55:30 +0000 (UTC)
-Received: from hemlock.osuosl.org (smtp2.osuosl.org [140.211.166.133])
- by lists.linuxfoundation.org (Postfix) with ESMTP id DF954C016F
- for <iommu@lists.linux-foundation.org>; Wed,  8 Jul 2020 19:55:28 +0000 (UTC)
+	by lists.linuxfoundation.org (Postfix) with ESMTP id 131A1C077B;
+	Wed,  8 Jul 2020 20:36:35 +0000 (UTC)
+Received: from fraxinus.osuosl.org (smtp4.osuosl.org [140.211.166.137])
+ by lists.linuxfoundation.org (Postfix) with ESMTP id A1F25C016F
+ for <iommu@lists.linux-foundation.org>; Wed,  8 Jul 2020 20:36:33 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
- by hemlock.osuosl.org (Postfix) with ESMTP id C8E3488400
- for <iommu@lists.linux-foundation.org>; Wed,  8 Jul 2020 19:55:28 +0000 (UTC)
+ by fraxinus.osuosl.org (Postfix) with ESMTP id 9D9DE868CE
+ for <iommu@lists.linux-foundation.org>; Wed,  8 Jul 2020 20:36:33 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from hemlock.osuosl.org ([127.0.0.1])
+Received: from fraxinus.osuosl.org ([127.0.0.1])
  by localhost (.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
- with ESMTP id rloT2zP75CL8 for <iommu@lists.linux-foundation.org>;
- Wed,  8 Jul 2020 19:55:28 +0000 (UTC)
+ with ESMTP id sRiZ3VddshRP for <iommu@lists.linux-foundation.org>;
+ Wed,  8 Jul 2020 20:36:33 +0000 (UTC)
 X-Greylist: domain auto-whitelisted by SQLgrey-1.7.6
-Received: from us-smtp-delivery-1.mimecast.com (us-smtp-1.mimecast.com
- [205.139.110.61])
- by hemlock.osuosl.org (Postfix) with ESMTPS id F38E3883C1
- for <iommu@lists.linux-foundation.org>; Wed,  8 Jul 2020 19:55:27 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
- s=mimecast20190719; t=1594238126;
- h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
- to:to:cc:cc:mime-version:mime-version:content-type:content-type:
- content-transfer-encoding:content-transfer-encoding:
- in-reply-to:in-reply-to:references:references;
- bh=k4zYLdQwkBISSt97sZJVBWHYyMqX21StTgcEywwSVHM=;
- b=fi54/RK7YG4KV8Z+hF1d78z964SS9VdGhAlcgi+87U/h94QvF5Kj+NwJifHmmnREADTLTq
- AOgcC5Rm2KEhVG3dDnb0rj3jgamPQFqkF50hD+R4qzZ8PhvHaMYHYZ277XJrQepDvfqM4W
- Qe9zs66+Vg95zBkI68CIN8dgSI5hJTE=
-Received: from mimecast-mx01.redhat.com (mimecast-mx01.redhat.com
- [209.132.183.4]) (Using TLS) by relay.mimecast.com with ESMTP id
- us-mta-356-7z3WF3iqMRmKuVNARq36Gw-1; Wed, 08 Jul 2020 15:55:22 -0400
-X-MC-Unique: 7z3WF3iqMRmKuVNARq36Gw-1
-Received: from smtp.corp.redhat.com (int-mx01.intmail.prod.int.phx2.redhat.com
- [10.5.11.11])
- (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
- (No client certificate requested)
- by mimecast-mx01.redhat.com (Postfix) with ESMTPS id 0E18580BCC7;
- Wed,  8 Jul 2020 19:55:17 +0000 (UTC)
-Received: from x1.home (ovpn-112-71.phx2.redhat.com [10.3.112.71])
- by smtp.corp.redhat.com (Postfix) with ESMTP id A5D246FEC4;
- Wed,  8 Jul 2020 19:54:44 +0000 (UTC)
-Date: Wed, 8 Jul 2020 13:54:44 -0600
-From: Alex Williamson <alex.williamson@redhat.com>
-To: "Liu, Yi L" <yi.l.liu@intel.com>
-Subject: Re: [PATCH v3 06/14] vfio/type1: Add VFIO_IOMMU_PASID_REQUEST
- (alloc/free)
-Message-ID: <20200708135444.4eac48a4@x1.home>
-In-Reply-To: <DM5PR11MB1435B159DA10C8301B89A6F0C3670@DM5PR11MB1435.namprd11.prod.outlook.com>
-References: <1592988927-48009-1-git-send-email-yi.l.liu@intel.com>
- <1592988927-48009-7-git-send-email-yi.l.liu@intel.com>
- <20200702151832.048b44d1@x1.home>
- <CY4PR11MB1432DD97F44EB8AA5CCC87D8C36A0@CY4PR11MB1432.namprd11.prod.outlook.com>
- <DM5PR11MB1435B159DA10C8301B89A6F0C3670@DM5PR11MB1435.namprd11.prod.outlook.com>
-Organization: Red Hat
+Received: from mail-pl1-f193.google.com (mail-pl1-f193.google.com
+ [209.85.214.193])
+ by fraxinus.osuosl.org (Postfix) with ESMTPS id 27EBD8687B
+ for <iommu@lists.linux-foundation.org>; Wed,  8 Jul 2020 20:36:33 +0000 (UTC)
+Received: by mail-pl1-f193.google.com with SMTP id k5so2801990plk.13
+ for <iommu@lists.linux-foundation.org>; Wed, 08 Jul 2020 13:36:33 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=gmail.com; s=20161025;
+ h=date:from:to:cc:subject:message-id:references:mime-version
+ :content-disposition:in-reply-to:user-agent;
+ bh=9rLMHF7RPOkdP8XBfKv5DeFSqMtc69/zKxIruSrtRkg=;
+ b=hop4Z7+hPacoKF2K2a9kPOSfxgM5ZnlHngC8TvhdAUSh0hP5SaGebffZ8vCftXZPLf
+ VNoTIeuMbvbIQfxnN4LajYTG79nIHpHVuyL+Iqp16e9O7fyWJ50vBL9O4wO6g36rpXkC
+ RYhn7fR1ldEaFEiNiOUpwwte+C9dsoCJPtnJQSZ7ffDVyU13JBqY5gDVSkIghL7eDaJq
+ necJ+UXPglOcc9LfjN1bGxdmjjlXrSFLQHkZWsrGSbuOlDQuwA/Tr6k+FrReKtpyAXif
+ yMXzD1y3pyvrESCxLD7Jc1Z2K8H3Lr34VZZHLIKd4SMDTS9qFupaDM+4F4ItAYl5OCaA
+ H7yA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+ d=1e100.net; s=20161025;
+ h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+ :mime-version:content-disposition:in-reply-to:user-agent;
+ bh=9rLMHF7RPOkdP8XBfKv5DeFSqMtc69/zKxIruSrtRkg=;
+ b=Wv2B0z5hRrtRn1a3fKhc2x4tQzs2yr9G343JFvkQhJVQw074N3IdmHkbBxFn8V9UfF
+ buRBt7M9ohPHxKyP4UjKObdUFvkURZRyQCBmA2tFA6NoCzuK7STs0q/D5bpA7wLQUrTU
+ GwMpoGYfILdL7hJU7ClxOW2m+kbPHiYfsHz1ChMQRRN4rbrCSy2RGxDZGLVxrxyNDcLj
+ GLPhNPwTuRpO06VdHJB29u+Eozo3lCFKT+PnpDclfK6KwZumIUk95w8/5tYtZ6niyOdg
+ 5Fyv2ppGDj7xaOqlbyQ7Pwkz2aYWaZ3ieq/kidF55rTUm0sBo+sDMxuyUKCRsZx6a5eM
+ Fq8g==
+X-Gm-Message-State: AOAM530Q/D/7wDPNHkU8v36q0QLdHbaOBKYtFL7/irFZa2lTrnaquDHO
+ dptc4R60gEWpWXRYgTxYYq4=
+X-Google-Smtp-Source: ABdhPJzemCEI2WFYj68dmrOodtuH49vvXwwDiDf/1BJQPvSdsAAuf3s/BfJtg+3GTR292+GXPwPmXQ==
+X-Received: by 2002:a17:902:c38b:: with SMTP id
+ g11mr5179940plg.340.1594240592678; 
+ Wed, 08 Jul 2020 13:36:32 -0700 (PDT)
+Received: from Asurada-Nvidia (searspoint.nvidia.com. [216.228.112.21])
+ by smtp.gmail.com with ESMTPSA id e8sm535878pff.185.2020.07.08.13.36.31
+ (version=TLS1_2 cipher=ECDHE-ECDSA-CHACHA20-POLY1305 bits=256/256);
+ Wed, 08 Jul 2020 13:36:32 -0700 (PDT)
+Date: Wed, 8 Jul 2020 13:36:17 -0700
+From: Nicolin Chen <nicoleotsuka@gmail.com>
+To: Krishna Reddy <vdumpa@nvidia.com>
+Subject: Re: [PATCH v10 5/5] iommu/arm-smmu: Add global/context fault
+ implementation hooks
+Message-ID: <20200708203616.GA28080@Asurada-Nvidia>
+References: <20200708050017.31563-1-vdumpa@nvidia.com>
+ <20200708050017.31563-6-vdumpa@nvidia.com>
 MIME-Version: 1.0
-X-Scanned-By: MIMEDefang 2.79 on 10.5.11.11
-Cc: "jean-philippe@linaro.org" <jean-philippe@linaro.org>, "Tian,
- Kevin" <kevin.tian@intel.com>, "Raj, 
- Ashok" <ashok.raj@intel.com>, "kvm@vger.kernel.org" <kvm@vger.kernel.org>,
- "iommu@lists.linux-foundation.org" <iommu@lists.linux-foundation.org>,
- "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>, "Sun, 
- Yi Y" <yi.y.sun@intel.com>, "Wu,
- Hao" <hao.wu@intel.com>, "Tian, Jun J" <jun.j.tian@intel.com>
+Content-Disposition: inline
+In-Reply-To: <20200708050017.31563-6-vdumpa@nvidia.com>
+User-Agent: Mutt/1.9.4 (2018-02-28)
+Cc: snikam@nvidia.com, devicetree@vger.kernel.org, mperttunen@nvidia.com,
+ praithatha@nvidia.com, bhuntsman@nvidia.com, will@kernel.org,
+ linux-kernel@vger.kernel.org, jonathanh@nvidia.com, talho@nvidia.com,
+ iommu@lists.linux-foundation.org, robh+dt@kernel.org, nicolinc@nvidia.com,
+ linux-tegra@vger.kernel.org, yhsu@nvidia.com, treding@nvidia.com,
+ robin.murphy@arm.com, linux-arm-kernel@lists.infradead.org, bbiswas@nvidia.com
 X-BeenThere: iommu@lists.linux-foundation.org
 X-Mailman-Version: 2.1.15
 Precedence: list
@@ -109,77 +116,17 @@ Content-Transfer-Encoding: 7bit
 Errors-To: iommu-bounces@lists.linux-foundation.org
 Sender: "iommu" <iommu-bounces@lists.linux-foundation.org>
 
-On Wed, 8 Jul 2020 08:16:16 +0000
-"Liu, Yi L" <yi.l.liu@intel.com> wrote:
-
-> Hi Alex,
+On Tue, Jul 07, 2020 at 10:00:17PM -0700, Krishna Reddy wrote:
+> Add global/context fault hooks to allow vendor specific implementations
+> override default fault interrupt handlers.
 > 
-> > From: Liu, Yi L < yi.l.liu@intel.com>
-> > Sent: Friday, July 3, 2020 2:28 PM
-> > 
-> > Hi Alex,
-> >   
-> > > From: Alex Williamson <alex.williamson@redhat.com>
-> > > Sent: Friday, July 3, 2020 5:19 AM
-> > >
-> > > On Wed, 24 Jun 2020 01:55:19 -0700
-> > > Liu Yi L <yi.l.liu@intel.com> wrote:
-> > >  
-> > > > This patch allows user space to request PASID allocation/free, e.g.
-> > > > when serving the request from the guest.
-> > > >
-> > > > PASIDs that are not freed by userspace are automatically freed when
-> > > > the IOASID set is destroyed when process exits.  
-> [...]
-> > > > +static int vfio_iommu_type1_pasid_request(struct vfio_iommu *iommu,
-> > > > +					  unsigned long arg)
-> > > > +{
-> > > > +	struct vfio_iommu_type1_pasid_request req;
-> > > > +	unsigned long minsz;
-> > > > +
-> > > > +	minsz = offsetofend(struct vfio_iommu_type1_pasid_request, range);
-> > > > +
-> > > > +	if (copy_from_user(&req, (void __user *)arg, minsz))
-> > > > +		return -EFAULT;
-> > > > +
-> > > > +	if (req.argsz < minsz || (req.flags & ~VFIO_PASID_REQUEST_MASK))
-> > > > +		return -EINVAL;
-> > > > +
-> > > > +	if (req.range.min > req.range.max)  
-> > >
-> > > Is it exploitable that a user can spin the kernel for a long time in
-> > > the case of a free by calling this with [0, MAX_UINT] regardless of their actual  
-> > allocations?
-> > 
-> > IOASID can ensure that user can only free the PASIDs allocated to the user. but
-> > it's true, kernel needs to loop all the PASIDs within the range provided by user. it
-> > may take a long time. is there anything we can do? one thing may limit the range
-> > provided by user?  
+> Update NVIDIA implementation to override the default global/context fault
+> interrupt handlers and handle interrupts across the two ARM MMU-500s that
+> are programmed identically.
 > 
-> thought about it more, we have per-VM pasid quota (say 1000), so even if
-> user passed down [0, MAX_UNIT], kernel will only loop the 1000 pasids at
-> most. do you think we still need to do something on it?
+> Signed-off-by: Krishna Reddy <vdumpa@nvidia.com>
 
-How do you figure that?  vfio_iommu_type1_pasid_request() accepts the
-user's min/max so long as (max > min) and passes that to
-vfio_iommu_type1_pasid_free(), then to vfio_pasid_free_range()  which
-loops as:
-
-	ioasid_t pasid = min;
-	for (; pasid <= max; pasid++)
-		ioasid_free(pasid);
-
-A user might only be able to allocate 1000 pasids, but apparently they
-can ask to free all they want.
-
-It's also not obvious to me that calling ioasid_free() is only allowing
-the user to free their own passid.  Does it?  It would be a pretty
-gaping hole if a user could free arbitrary pasids.  A r-b tree of
-passids might help both for security and to bound spinning in a loop.
-Thanks,
-
-Alex
-
+Reviewed-by: Nicolin Chen <nicoleotsuka@gmail.com>
 _______________________________________________
 iommu mailing list
 iommu@lists.linux-foundation.org
