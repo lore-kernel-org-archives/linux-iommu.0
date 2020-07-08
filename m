@@ -2,81 +2,94 @@ Return-Path: <SRS0=dlfR=AT=lists.linux-foundation.org=iommu-bounces@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-2.2 required=3.0 tests=HEADER_FROM_DIFFERENT_DOMAINS,
-	MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS,USER_AGENT_SANE_1 autolearn=no
-	autolearn_force=no version=3.4.0
+X-Spam-Status: No, score=-3.5 required=3.0 tests=DKIM_INVALID,DKIM_SIGNED,
+	HEADER_FROM_DIFFERENT_DOMAINS,MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS,
+	USER_AGENT_GIT autolearn=no autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 61E8DC433DF
-	for <iommu@archiver.kernel.org>; Wed,  8 Jul 2020 02:58:18 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 1C9E6C433E2
+	for <iommu@archiver.kernel.org>; Wed,  8 Jul 2020 05:00:22 +0000 (UTC)
 Received: from silver.osuosl.org (smtp3.osuosl.org [140.211.166.136])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by mail.kernel.org (Postfix) with ESMTPS id 2F39420708
-	for <iommu@archiver.kernel.org>; Wed,  8 Jul 2020 02:58:18 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 2F39420708
-Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=linux.intel.com
+	by mail.kernel.org (Postfix) with ESMTPS id D919A2078C
+	for <iommu@archiver.kernel.org>; Wed,  8 Jul 2020 05:00:21 +0000 (UTC)
+Authentication-Results: mail.kernel.org;
+	dkim=fail reason="signature verification failed" (2048-bit key) header.d=nvidia.com header.i=@nvidia.com header.b="qgWKt/Hl"
+DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org D919A2078C
+Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=nvidia.com
 Authentication-Results: mail.kernel.org; spf=pass smtp.mailfrom=iommu-bounces@lists.linux-foundation.org
 Received: from localhost (localhost [127.0.0.1])
-	by silver.osuosl.org (Postfix) with ESMTP id E638A24951;
-	Wed,  8 Jul 2020 02:58:17 +0000 (UTC)
+	by silver.osuosl.org (Postfix) with ESMTP id 9A2B824763;
+	Wed,  8 Jul 2020 05:00:21 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
 Received: from silver.osuosl.org ([127.0.0.1])
 	by localhost (.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
-	with ESMTP id Y5Yk-jaj2MTW; Wed,  8 Jul 2020 02:58:16 +0000 (UTC)
+	with ESMTP id P5GWn+COcioM; Wed,  8 Jul 2020 05:00:20 +0000 (UTC)
 Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [140.211.9.56])
-	by silver.osuosl.org (Postfix) with ESMTP id 7ABEE234BD;
-	Wed,  8 Jul 2020 02:58:16 +0000 (UTC)
+	by silver.osuosl.org (Postfix) with ESMTP id 83AD622846;
+	Wed,  8 Jul 2020 05:00:20 +0000 (UTC)
 Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
-	by lists.linuxfoundation.org (Postfix) with ESMTP id 404E3C0893;
-	Wed,  8 Jul 2020 02:58:16 +0000 (UTC)
-Received: from silver.osuosl.org (smtp3.osuosl.org [140.211.166.136])
- by lists.linuxfoundation.org (Postfix) with ESMTP id 452E6C016F
- for <iommu@lists.linux-foundation.org>; Wed,  8 Jul 2020 02:58:14 +0000 (UTC)
+	by lists.linuxfoundation.org (Postfix) with ESMTP id 6CC43C0895;
+	Wed,  8 Jul 2020 05:00:20 +0000 (UTC)
+Received: from hemlock.osuosl.org (smtp2.osuosl.org [140.211.166.133])
+ by lists.linuxfoundation.org (Postfix) with ESMTP id 2203BC016F
+ for <iommu@lists.linux-foundation.org>; Wed,  8 Jul 2020 05:00:19 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
- by silver.osuosl.org (Postfix) with ESMTP id 168E3234BD
- for <iommu@lists.linux-foundation.org>; Wed,  8 Jul 2020 02:57:47 +0000 (UTC)
+ by hemlock.osuosl.org (Postfix) with ESMTP id 0995888802
+ for <iommu@lists.linux-foundation.org>; Wed,  8 Jul 2020 05:00:19 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from silver.osuosl.org ([127.0.0.1])
+Received: from hemlock.osuosl.org ([127.0.0.1])
  by localhost (.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
- with ESMTP id P4EzUgMhqG0r for <iommu@lists.linux-foundation.org>;
- Wed,  8 Jul 2020 02:57:45 +0000 (UTC)
+ with ESMTP id hiQ5Cy5RtMSl for <iommu@lists.linux-foundation.org>;
+ Wed,  8 Jul 2020 05:00:17 +0000 (UTC)
 X-Greylist: domain auto-whitelisted by SQLgrey-1.7.6
-Received: from mga17.intel.com (mga17.intel.com [192.55.52.151])
- by silver.osuosl.org (Postfix) with ESMTPS id BB5E523453
- for <iommu@lists.linux-foundation.org>; Wed,  8 Jul 2020 02:57:45 +0000 (UTC)
-IronPort-SDR: KAAgyK2mPls48eI3G5X4LzkqbObBN9VP4EpruI41YD57jJ0/sxL7s4dRtOFz3vCdvCzlPPikSY
- Z6GF9G9brBCw==
-X-IronPort-AV: E=McAfee;i="6000,8403,9675"; a="127810670"
-X-IronPort-AV: E=Sophos;i="5.75,326,1589266800"; d="scan'208";a="127810670"
-X-Amp-Result: SKIPPED(no attachment in message)
-X-Amp-File-Uploaded: False
-Received: from orsmga005.jf.intel.com ([10.7.209.41])
- by fmsmga107.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384;
- 07 Jul 2020 19:57:44 -0700
-IronPort-SDR: NWBGavxXZ0Y2OEfeOpa5yL3dbxWEkLftrQJ1t6KHDS/S4/wLSkPMlMJ/7R0rlPEJGtpdkhJq4B
- C2UnIQJWPqPw==
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.75,326,1589266800"; d="scan'208";a="457339798"
-Received: from allen-box.sh.intel.com (HELO [10.239.159.139])
- ([10.239.159.139])
- by orsmga005.jf.intel.com with ESMTP; 07 Jul 2020 19:57:41 -0700
-Subject: Re: [PATCH v2 1/2] iommu: iommu_aux_at(de)tach_device() extension
-To: Alex Williamson <alex.williamson@redhat.com>
-References: <20200707013957.23672-1-baolu.lu@linux.intel.com>
- <20200707013957.23672-2-baolu.lu@linux.intel.com>
- <20200707150408.474d81f1@x1.home>
-From: Lu Baolu <baolu.lu@linux.intel.com>
-Message-ID: <dc98a109-7121-36b7-0854-f899b09692a4@linux.intel.com>
-Date: Wed, 8 Jul 2020 10:53:12 +0800
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101
- Thunderbird/68.8.0
+Received: from hqnvemgate25.nvidia.com (hqnvemgate25.nvidia.com
+ [216.228.121.64])
+ by hemlock.osuosl.org (Postfix) with ESMTPS id D187388647
+ for <iommu@lists.linux-foundation.org>; Wed,  8 Jul 2020 05:00:17 +0000 (UTC)
+Received: from hqpgpgate101.nvidia.com (Not Verified[216.228.121.13]) by
+ hqnvemgate25.nvidia.com (using TLS: TLSv1.2, DES-CBC3-SHA)
+ id <B5f0552ab0002>; Tue, 07 Jul 2020 21:59:23 -0700
+Received: from hqmail.nvidia.com ([172.20.161.6])
+ by hqpgpgate101.nvidia.com (PGP Universal service);
+ Tue, 07 Jul 2020 22:00:17 -0700
+X-PGP-Universal: processed;
+ by hqpgpgate101.nvidia.com on Tue, 07 Jul 2020 22:00:17 -0700
+Received: from HQMAIL105.nvidia.com (172.20.187.12) by HQMAIL105.nvidia.com
+ (172.20.187.12) with Microsoft SMTP Server (TLS) id 15.0.1473.3; Wed, 8 Jul
+ 2020 05:00:13 +0000
+Received: from hqnvemgw03.nvidia.com (10.124.88.68) by HQMAIL105.nvidia.com
+ (172.20.187.12) with Microsoft SMTP Server (TLS) id 15.0.1473.3 via Frontend
+ Transport; Wed, 8 Jul 2020 05:00:13 +0000
+Received: from vdumpa-ubuntu.nvidia.com (Not Verified[172.17.173.140]) by
+ hqnvemgw03.nvidia.com with Trustwave SEG (v7, 5, 8, 10121)
+ id <B5f0552dd0001>; Tue, 07 Jul 2020 22:00:13 -0700
+From: Krishna Reddy <vdumpa@nvidia.com>
+To: <joro@8bytes.org>, <will@kernel.org>, <robin.murphy@arm.com>,
+ <robh+dt@kernel.org>, <treding@nvidia.com>, <jonathanh@nvidia.com>
+Subject: [PATCH v10 0/5] NVIDIA ARM SMMU Implementation
+Date: Tue, 7 Jul 2020 22:00:12 -0700
+Message-ID: <20200708050017.31563-1-vdumpa@nvidia.com>
+X-Mailer: git-send-email 2.26.2
 MIME-Version: 1.0
-In-Reply-To: <20200707150408.474d81f1@x1.home>
-Content-Language: en-US
-Cc: Kevin Tian <kevin.tian@intel.com>, Dave Jiang <dave.jiang@intel.com>,
- Ashok Raj <ashok.raj@intel.com>, kvm@vger.kernel.org,
- Cornelia Huck <cohuck@redhat.com>, linux-kernel@vger.kernel.org,
- iommu@lists.linux-foundation.org, Robin Murphy <robin.murphy@arm.com>
+X-NVConfidentiality: public
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=nvidia.com; s=n1;
+ t=1594184363; bh=+VIMULVcX/VU6BtBuWewZbJl68Bh+UrUfFfMcAm4UI4=;
+ h=X-PGP-Universal:From:To:CC:Subject:Date:Message-ID:X-Mailer:
+ MIME-Version:X-NVConfidentiality:Content-Transfer-Encoding:
+ Content-Type;
+ b=qgWKt/HlteNBV+Xgo/IPryofk7LkeQfjTY6lpdJ6OV//R8I1OutMYPX+GjWXuwkCV
+ JXwq2R7CgE1k3tgTZoCQraHRxz5Fnjxwg/wqbsWFCc4DdFiv70IU7UUF5CXWpCTi1A
+ dRSLY/QSLQATnzDTAEncddPo7o6ooPmHmTwffnCfhKVzi6mxHDseXQ7czVi47MkXtQ
+ 6QynXZNc6Q9DokeafjZvk2ByvkHtIY1S1l0HwYQzkIsaTLFsOfpyibiYa2kunp61QO
+ L2lRiD/w6HMfj6dS9CD8kRiqfue9YHsP3XKc5y9fXCwinIVMg83WnfJmAhp19Mnhhh
+ 0iLrz7b5ePFww==
+Cc: snikam@nvidia.com, devicetree@vger.kernel.org, nicoleotsuka@gmail.com,
+ mperttunen@nvidia.com, bhuntsman@nvidia.com, yhsu@nvidia.com,
+ linux-kernel@vger.kernel.org, talho@nvidia.com,
+ iommu@lists.linux-foundation.org, nicolinc@nvidia.com,
+ linux-tegra@vger.kernel.org, praithatha@nvidia.com,
+ linux-arm-kernel@lists.infradead.org, bbiswas@nvidia.com
 X-BeenThere: iommu@lists.linux-foundation.org
 X-Mailman-Version: 2.1.15
 Precedence: list
@@ -89,105 +102,50 @@ List-Post: <mailto:iommu@lists.linux-foundation.org>
 List-Help: <mailto:iommu-request@lists.linux-foundation.org?subject=help>
 List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
  <mailto:iommu-request@lists.linux-foundation.org?subject=subscribe>
+Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
-Content-Type: text/plain; charset="us-ascii"; Format="flowed"
 Errors-To: iommu-bounces@lists.linux-foundation.org
 Sender: "iommu" <iommu-bounces@lists.linux-foundation.org>
 
-Hi Alex,
+Changes in v10:
+Perform SMMU base ioremap before calling implementation init.
+Check for Global faults across both ARM MMU-500s during global interrupt.
+Check for context faults across all contexts of both ARM MMU-500s during context fault interrupt.
+Add new DT binding nvidia,smmu-500 for NVIDIA implementation.
 
-Thanks a lot for your comments. Please check my reply inline.
+v9 - https://lkml.org/lkml/2020/6/30/1282
+v8 - https://lkml.org/lkml/2020/6/29/2385
+v7 - https://lkml.org/lkml/2020/6/28/347
+v6 - https://lkml.org/lkml/2020/6/4/1018
+v5 - https://lkml.org/lkml/2020/5/21/1114
+v4 - https://lkml.org/lkml/2019/10/30/1054
+v3 - https://lkml.org/lkml/2019/10/18/1601
+v2 - https://lkml.org/lkml/2019/9/2/980
+v1 - https://lkml.org/lkml/2019/8/29/1588
 
-On 7/8/20 5:04 AM, Alex Williamson wrote:
-> On Tue,  7 Jul 2020 09:39:56 +0800
-> Lu Baolu<baolu.lu@linux.intel.com>  wrote:
-> 
->> The hardware assistant vfio mediated device is a use case of iommu
->> aux-domain. The interactions between vfio/mdev and iommu during mdev
->> creation and passthr are:
->>
->> - Create a group for mdev with iommu_group_alloc();
->> - Add the device to the group with
->>          group = iommu_group_alloc();
->>          if (IS_ERR(group))
->>                  return PTR_ERR(group);
->>
->>          ret = iommu_group_add_device(group, &mdev->dev);
->>          if (!ret)
->>                  dev_info(&mdev->dev, "MDEV: group_id = %d\n",
->>                           iommu_group_id(group));
->> - Allocate an aux-domain
->>          iommu_domain_alloc()
->> - Attach the aux-domain to the physical device from which the mdev is
->>    created.
->>          iommu_aux_attach_device()
->>
->> In the whole process, an iommu group was allocated for the mdev and an
->> iommu domain was attached to the group, but the group->domain leaves
->> NULL. As the result, iommu_get_domain_for_dev() doesn't work anymore.
->>
->> The iommu_get_domain_for_dev() is a necessary interface for device
->> drivers that want to support aux-domain. For example,
->>
->>          struct iommu_domain *domain;
->>          struct device *dev = mdev_dev(mdev);
->>          unsigned long pasid;
->>
->>          domain = iommu_get_domain_for_dev(dev);
->>          if (!domain)
->>                  return -ENODEV;
->>
->>          pasid = iommu_aux_get_pasid(domain, dev->parent);
-> How did we know this was an aux domain? ie. How did we know we could
-> use it with iommu_aux_get_pasid()?
 
-Yes. It's a bit confusing if iommu_get_domain_for_dev() is reused here
-for aux-domain.
+Krishna Reddy (5):
+  iommu/arm-smmu: move TLB timeout and spin count macros
+  iommu/arm-smmu: ioremap smmu mmio region before implementation init
+  iommu/arm-smmu: add NVIDIA implementation for ARM MMU-500 usage
+  dt-bindings: arm-smmu: add binding for Tegra194 SMMU
+  iommu/arm-smmu: Add global/context fault implementation hooks
 
-> 
-> Why did we assume the parent device is the iommu device for the aux
-> domain?  Should that level of detail be already known by the aux domain?
-> 
-> Nits - The iomu device of an mdev device is found via
-> mdev_get_iommu_device(dev), it should not be assumed to be the parent.
-> The parent of an mdev device is found via mdev_parent_dev(mdev).
+ .../devicetree/bindings/iommu/arm,smmu.yaml   |  18 ++
+ MAINTAINERS                                   |   2 +
+ drivers/iommu/Makefile                        |   2 +-
+ drivers/iommu/arm-smmu-impl.c                 |   3 +
+ drivers/iommu/arm-smmu-nvidia.c               | 278 ++++++++++++++++++
+ drivers/iommu/arm-smmu.c                      |  29 +-
+ drivers/iommu/arm-smmu.h                      |   6 +
+ 7 files changed, 328 insertions(+), 10 deletions(-)
+ create mode 100644 drivers/iommu/arm-smmu-nvidia.c
 
-My bad. The driver should use mdev_get_iommu_device() instead.
 
-> 
-> The leaps in logic here make me wonder if we should instead be exposing
-> more of an aux domain API rather than blurring the differences between
-> these domains.  Thanks,
+base-commit: e5640f21b63d2a5d3e4e0c4111b2b38e99fe5164
+-- 
+2.26.2
 
-How about add below API?
-
-/**
-  * iommu_aux_get_domain_for_dev - get aux domain for a device
-  * @dev: the accessory device
-  *
-  * The caller should pass a valid @dev to iommu_aux_attach_device() before
-  * calling this api. Return an attached aux-domain, or NULL otherwise.
-  */
-struct iommu_domain *iommu_aux_get_domain_for_dev(struct device *dev)
-{
-         struct iommu_domain *domain = NULL;
-         struct iommu_group *group;
-
-         group = iommu_group_get(dev);
-         if (!group)
-                 return NULL;
-
-         if (group->aux_domain_attached)
-                 domain = group->domain;
-
-         iommu_group_put(group);
-
-         return domain;
-}
-EXPORT_SYMBOL_GPL(iommu_aux_get_domain_for_dev);
-
-Best regards,
-baolu
 _______________________________________________
 iommu mailing list
 iommu@lists.linux-foundation.org
