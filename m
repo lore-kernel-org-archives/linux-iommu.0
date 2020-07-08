@@ -2,103 +2,96 @@ Return-Path: <SRS0=dlfR=AT=lists.linux-foundation.org=iommu-bounces@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-8.1 required=3.0 tests=DKIM_INVALID,DKIM_SIGNED,
-	HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_PATCH,MAILING_LIST_MULTI,SIGNED_OFF_BY,
-	SPF_HELO_NONE,SPF_PASS,USER_AGENT_SANE_1 autolearn=unavailable
-	autolearn_force=no version=3.4.0
+X-Spam-Status: No, score=-0.6 required=3.0 tests=DKIM_INVALID,DKIM_SIGNED,
+	HEADER_FROM_DIFFERENT_DOMAINS,MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS
+	autolearn=no autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 3AD7EC433E0
-	for <iommu@archiver.kernel.org>; Wed,  8 Jul 2020 19:36:04 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 762E0C433E0
+	for <iommu@archiver.kernel.org>; Wed,  8 Jul 2020 19:55:31 +0000 (UTC)
 Received: from hemlock.osuosl.org (smtp2.osuosl.org [140.211.166.133])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by mail.kernel.org (Postfix) with ESMTPS id 0FD0D206E9
-	for <iommu@archiver.kernel.org>; Wed,  8 Jul 2020 19:36:03 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTPS id 4657B206DF
+	for <iommu@archiver.kernel.org>; Wed,  8 Jul 2020 19:55:31 +0000 (UTC)
 Authentication-Results: mail.kernel.org;
-	dkim=fail reason="signature verification failed" (1024-bit key) header.d=mg.codeaurora.org header.i=@mg.codeaurora.org header.b="GcQM+KWt"
-DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 0FD0D206E9
-Authentication-Results: mail.kernel.org; dmarc=none (p=none dis=none) header.from=codeaurora.org
+	dkim=fail reason="signature verification failed" (1024-bit key) header.d=redhat.com header.i=@redhat.com header.b="fi54/RK7"
+DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 4657B206DF
+Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=redhat.com
 Authentication-Results: mail.kernel.org; spf=pass smtp.mailfrom=iommu-bounces@lists.linux-foundation.org
 Received: from localhost (localhost [127.0.0.1])
-	by hemlock.osuosl.org (Postfix) with ESMTP id C4A5A89848;
-	Wed,  8 Jul 2020 19:36:03 +0000 (UTC)
+	by hemlock.osuosl.org (Postfix) with ESMTP id 0F84088400;
+	Wed,  8 Jul 2020 19:55:31 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
 Received: from hemlock.osuosl.org ([127.0.0.1])
 	by localhost (.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
-	with ESMTP id BrqAX7FC2xHx; Wed,  8 Jul 2020 19:36:02 +0000 (UTC)
+	with ESMTP id N0VaWgRLvcBA; Wed,  8 Jul 2020 19:55:30 +0000 (UTC)
 Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [140.211.9.56])
-	by hemlock.osuosl.org (Postfix) with ESMTP id AA0BD897D9;
-	Wed,  8 Jul 2020 19:36:02 +0000 (UTC)
+	by hemlock.osuosl.org (Postfix) with ESMTP id 7DBCE883C1;
+	Wed,  8 Jul 2020 19:55:30 +0000 (UTC)
 Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
-	by lists.linuxfoundation.org (Postfix) with ESMTP id 9CF06C0893;
-	Wed,  8 Jul 2020 19:36:02 +0000 (UTC)
-Received: from whitealder.osuosl.org (smtp1.osuosl.org [140.211.166.138])
- by lists.linuxfoundation.org (Postfix) with ESMTP id AFCF8C016F
- for <iommu@lists.linux-foundation.org>; Wed,  8 Jul 2020 19:36:01 +0000 (UTC)
+	by lists.linuxfoundation.org (Postfix) with ESMTP id 512DEC0893;
+	Wed,  8 Jul 2020 19:55:30 +0000 (UTC)
+Received: from hemlock.osuosl.org (smtp2.osuosl.org [140.211.166.133])
+ by lists.linuxfoundation.org (Postfix) with ESMTP id DF954C016F
+ for <iommu@lists.linux-foundation.org>; Wed,  8 Jul 2020 19:55:28 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
- by whitealder.osuosl.org (Postfix) with ESMTP id 9DB8D88C45
- for <iommu@lists.linux-foundation.org>; Wed,  8 Jul 2020 19:36:01 +0000 (UTC)
+ by hemlock.osuosl.org (Postfix) with ESMTP id C8E3488400
+ for <iommu@lists.linux-foundation.org>; Wed,  8 Jul 2020 19:55:28 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from whitealder.osuosl.org ([127.0.0.1])
+Received: from hemlock.osuosl.org ([127.0.0.1])
  by localhost (.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
- with ESMTP id JPE7bOAxzjVp for <iommu@lists.linux-foundation.org>;
- Wed,  8 Jul 2020 19:36:00 +0000 (UTC)
-X-Greylist: from auto-whitelisted by SQLgrey-1.7.6
-Received: from m43-7.mailgun.net (m43-7.mailgun.net [69.72.43.7])
- by whitealder.osuosl.org (Postfix) with ESMTPS id 0D2A488C19
- for <iommu@lists.linux-foundation.org>; Wed,  8 Jul 2020 19:35:57 +0000 (UTC)
-DKIM-Signature: a=rsa-sha256; v=1; c=relaxed/relaxed; d=mg.codeaurora.org;
- q=dns/txt; 
- s=smtp; t=1594236960; h=In-Reply-To: Content-Type: MIME-Version:
- References: Message-ID: Subject: Cc: To: From: Date: Sender;
- bh=LC9f74TU7sRenomNvH9Jl50KN/ZMUzl3hwIz8duJSio=;
- b=GcQM+KWtfEv0QT7ueWaOpLc8EeXCPnaS8ZZJRBXcXeDBR7iSiyfWIzZramrr9gavvGOEjZcp
- PLWlHfpleGlnplHFraPRGgkE8xhs3D0m4n4QuHmn7SzaS605ijiio9CP0s7eXr7yKCcN/xqB
- 7hy/S+1+ic920ljxV8cSN2nlk04=
-X-Mailgun-Sending-Ip: 69.72.43.7
-X-Mailgun-Sid: WyI3NDkwMCIsICJpb21tdUBsaXN0cy5saW51eC1mb3VuZGF0aW9uLm9yZyIsICJiZTllNGEiXQ==
-Received: from smtp.codeaurora.org
- (ec2-35-166-182-171.us-west-2.compute.amazonaws.com [35.166.182.171]) by
- smtp-out-n10.prod.us-west-2.postgun.com with SMTP id
- 5f062014d8ca07a5736b581c (version=TLS1.2,
- cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256); Wed, 08 Jul 2020 19:35:48
- GMT
-Received: by smtp.codeaurora.org (Postfix, from userid 1001)
- id 90BF0C433CA; Wed,  8 Jul 2020 19:35:47 +0000 (UTC)
-Received: from jcrouse1-lnx.qualcomm.com (i-global254.qualcomm.com
- [199.106.103.254])
- (using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
- (No client certificate requested) (Authenticated sender: jcrouse)
- by smtp.codeaurora.org (Postfix) with ESMTPSA id 24DA9C433CB;
- Wed,  8 Jul 2020 19:35:45 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.3.2 smtp.codeaurora.org 24DA9C433CB
-Authentication-Results: aws-us-west-2-caf-mail-1.web.codeaurora.org;
- dmarc=none (p=none dis=none) header.from=codeaurora.org
-Authentication-Results: aws-us-west-2-caf-mail-1.web.codeaurora.org;
- spf=none smtp.mailfrom=jcrouse@codeaurora.org
-Date: Wed, 8 Jul 2020 13:35:41 -0600
-From: Jordan Crouse <jcrouse@codeaurora.org>
-To: Robin Murphy <robin.murphy@arm.com>
-Subject: Re: [PATCH v2 4/6] drm/msm: Add support to create a local pagetable
-Message-ID: <20200708193541.GB21059@jcrouse1-lnx.qualcomm.com>
-Mail-Followup-To: Robin Murphy <robin.murphy@arm.com>,
- linux-arm-msm@vger.kernel.org, David Airlie <airlied@linux.ie>,
- Sean Paul <sean@poorly.run>, dri-devel@lists.freedesktop.org,
- linux-kernel@vger.kernel.org, iommu@lists.linux-foundation.org,
- John Stultz <john.stultz@linaro.org>,
- Daniel Vetter <daniel@ffwll.ch>, freedreno@lists.freedesktop.org
-References: <20200626200414.14382-1-jcrouse@codeaurora.org>
- <20200626200414.14382-5-jcrouse@codeaurora.org>
- <3feed674-5eb9-ca2f-76a7-f888f431c409@arm.com>
+ with ESMTP id rloT2zP75CL8 for <iommu@lists.linux-foundation.org>;
+ Wed,  8 Jul 2020 19:55:28 +0000 (UTC)
+X-Greylist: domain auto-whitelisted by SQLgrey-1.7.6
+Received: from us-smtp-delivery-1.mimecast.com (us-smtp-1.mimecast.com
+ [205.139.110.61])
+ by hemlock.osuosl.org (Postfix) with ESMTPS id F38E3883C1
+ for <iommu@lists.linux-foundation.org>; Wed,  8 Jul 2020 19:55:27 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+ s=mimecast20190719; t=1594238126;
+ h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+ to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+ content-transfer-encoding:content-transfer-encoding:
+ in-reply-to:in-reply-to:references:references;
+ bh=k4zYLdQwkBISSt97sZJVBWHYyMqX21StTgcEywwSVHM=;
+ b=fi54/RK7YG4KV8Z+hF1d78z964SS9VdGhAlcgi+87U/h94QvF5Kj+NwJifHmmnREADTLTq
+ AOgcC5Rm2KEhVG3dDnb0rj3jgamPQFqkF50hD+R4qzZ8PhvHaMYHYZ277XJrQepDvfqM4W
+ Qe9zs66+Vg95zBkI68CIN8dgSI5hJTE=
+Received: from mimecast-mx01.redhat.com (mimecast-mx01.redhat.com
+ [209.132.183.4]) (Using TLS) by relay.mimecast.com with ESMTP id
+ us-mta-356-7z3WF3iqMRmKuVNARq36Gw-1; Wed, 08 Jul 2020 15:55:22 -0400
+X-MC-Unique: 7z3WF3iqMRmKuVNARq36Gw-1
+Received: from smtp.corp.redhat.com (int-mx01.intmail.prod.int.phx2.redhat.com
+ [10.5.11.11])
+ (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
+ (No client certificate requested)
+ by mimecast-mx01.redhat.com (Postfix) with ESMTPS id 0E18580BCC7;
+ Wed,  8 Jul 2020 19:55:17 +0000 (UTC)
+Received: from x1.home (ovpn-112-71.phx2.redhat.com [10.3.112.71])
+ by smtp.corp.redhat.com (Postfix) with ESMTP id A5D246FEC4;
+ Wed,  8 Jul 2020 19:54:44 +0000 (UTC)
+Date: Wed, 8 Jul 2020 13:54:44 -0600
+From: Alex Williamson <alex.williamson@redhat.com>
+To: "Liu, Yi L" <yi.l.liu@intel.com>
+Subject: Re: [PATCH v3 06/14] vfio/type1: Add VFIO_IOMMU_PASID_REQUEST
+ (alloc/free)
+Message-ID: <20200708135444.4eac48a4@x1.home>
+In-Reply-To: <DM5PR11MB1435B159DA10C8301B89A6F0C3670@DM5PR11MB1435.namprd11.prod.outlook.com>
+References: <1592988927-48009-1-git-send-email-yi.l.liu@intel.com>
+ <1592988927-48009-7-git-send-email-yi.l.liu@intel.com>
+ <20200702151832.048b44d1@x1.home>
+ <CY4PR11MB1432DD97F44EB8AA5CCC87D8C36A0@CY4PR11MB1432.namprd11.prod.outlook.com>
+ <DM5PR11MB1435B159DA10C8301B89A6F0C3670@DM5PR11MB1435.namprd11.prod.outlook.com>
+Organization: Red Hat
 MIME-Version: 1.0
-Content-Disposition: inline
-In-Reply-To: <3feed674-5eb9-ca2f-76a7-f888f431c409@arm.com>
-User-Agent: Mutt/1.5.24 (2015-08-30)
-Cc: freedreno@lists.freedesktop.org, David Airlie <airlied@linux.ie>,
- linux-arm-msm@vger.kernel.org, linux-kernel@vger.kernel.org,
- dri-devel@lists.freedesktop.org, iommu@lists.linux-foundation.org,
- John Stultz <john.stultz@linaro.org>, Daniel Vetter <daniel@ffwll.ch>,
- Sean Paul <sean@poorly.run>
+X-Scanned-By: MIMEDefang 2.79 on 10.5.11.11
+Cc: "jean-philippe@linaro.org" <jean-philippe@linaro.org>, "Tian,
+ Kevin" <kevin.tian@intel.com>, "Raj, 
+ Ashok" <ashok.raj@intel.com>, "kvm@vger.kernel.org" <kvm@vger.kernel.org>,
+ "iommu@lists.linux-foundation.org" <iommu@lists.linux-foundation.org>,
+ "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>, "Sun, 
+ Yi Y" <yi.y.sun@intel.com>, "Wu,
+ Hao" <hao.wu@intel.com>, "Tian, Jun J" <jun.j.tian@intel.com>
 X-BeenThere: iommu@lists.linux-foundation.org
 X-Mailman-Version: 2.1.15
 Precedence: list
@@ -116,297 +109,77 @@ Content-Transfer-Encoding: 7bit
 Errors-To: iommu-bounces@lists.linux-foundation.org
 Sender: "iommu" <iommu-bounces@lists.linux-foundation.org>
 
-On Tue, Jul 07, 2020 at 12:36:42PM +0100, Robin Murphy wrote:
-> On 2020-06-26 21:04, Jordan Crouse wrote:
-> >Add support to create a io-pgtable for use by targets that support
-> >per-instance pagetables.  In order to support per-instance pagetables the
-> >GPU SMMU device needs to have the qcom,adreno-smmu compatible string and
-> >split pagetables and auxiliary domains need to be supported and enabled.
-> >
-> >Signed-off-by: Jordan Crouse <jcrouse@codeaurora.org>
-> >---
-> >
-> >  drivers/gpu/drm/msm/msm_gpummu.c |   2 +-
-> >  drivers/gpu/drm/msm/msm_iommu.c  | 180 ++++++++++++++++++++++++++++++-
-> >  drivers/gpu/drm/msm/msm_mmu.h    |  16 ++-
-> >  3 files changed, 195 insertions(+), 3 deletions(-)
-> >
-> >diff --git a/drivers/gpu/drm/msm/msm_gpummu.c b/drivers/gpu/drm/msm/msm_gpummu.c
-> >index 310a31b05faa..aab121f4beb7 100644
-> >--- a/drivers/gpu/drm/msm/msm_gpummu.c
-> >+++ b/drivers/gpu/drm/msm/msm_gpummu.c
-> >@@ -102,7 +102,7 @@ struct msm_mmu *msm_gpummu_new(struct device *dev, struct msm_gpu *gpu)
-> >  	}
-> >  	gpummu->gpu = gpu;
-> >-	msm_mmu_init(&gpummu->base, dev, &funcs);
-> >+	msm_mmu_init(&gpummu->base, dev, &funcs, MSM_MMU_GPUMMU);
-> >  	return &gpummu->base;
-> >  }
-> >diff --git a/drivers/gpu/drm/msm/msm_iommu.c b/drivers/gpu/drm/msm/msm_iommu.c
-> >index 1b6635504069..f455c597f76d 100644
-> >--- a/drivers/gpu/drm/msm/msm_iommu.c
-> >+++ b/drivers/gpu/drm/msm/msm_iommu.c
-> >@@ -4,15 +4,192 @@
-> >   * Author: Rob Clark <robdclark@gmail.com>
-> >   */
-> >+#include <linux/io-pgtable.h>
-> >  #include "msm_drv.h"
-> >  #include "msm_mmu.h"
-> >  struct msm_iommu {
-> >  	struct msm_mmu base;
-> >  	struct iommu_domain *domain;
-> >+	struct iommu_domain *aux_domain;
-> >  };
-> >+
-> >  #define to_msm_iommu(x) container_of(x, struct msm_iommu, base)
-> >+struct msm_iommu_pagetable {
-> >+	struct msm_mmu base;
-> >+	struct msm_mmu *parent;
-> >+	struct io_pgtable_ops *pgtbl_ops;
-> >+	phys_addr_t ttbr;
-> >+	u32 asid;
-> >+};
-> >+
-> >+static struct msm_iommu_pagetable *to_pagetable(struct msm_mmu *mmu)
-> >+{
-> >+	return container_of(mmu, struct msm_iommu_pagetable, base);
-> >+}
-> >+
-> >+static int msm_iommu_pagetable_unmap(struct msm_mmu *mmu, u64 iova,
-> >+		size_t size)
-> >+{
-> >+	struct msm_iommu_pagetable *pagetable = to_pagetable(mmu);
-> >+	struct io_pgtable_ops *ops = pagetable->pgtbl_ops;
-> >+	size_t unmapped = 0;
-> >+
-> >+	/* Unmap the block one page at a time */
-> >+	while (size) {
-> >+		unmapped += ops->unmap(ops, iova, 4096, NULL);
-> >+		iova += 4096;
-> >+		size -= 4096;
-> >+	}
-> >+
-> >+	iommu_flush_tlb_all(to_msm_iommu(pagetable->parent)->domain);
-> >+
-> >+	return (unmapped == size) ? 0 : -EINVAL;
-> >+}
-> 
-> Remember in patch #1 when you said "Then 'domain' can be used like any other
-> iommu domain to map and unmap iova addresses in the pagetable."?
-> 
-> This appears to be very much not that :/
- 
-The code changed but the commit log stayed the same.  I'll reword.
+On Wed, 8 Jul 2020 08:16:16 +0000
+"Liu, Yi L" <yi.l.liu@intel.com> wrote:
 
-Jordan
-
-> Robin.
+> Hi Alex,
 > 
-> >+
-> >+static int msm_iommu_pagetable_map(struct msm_mmu *mmu, u64 iova,
-> >+		struct sg_table *sgt, size_t len, int prot)
-> >+{
-> >+	struct msm_iommu_pagetable *pagetable = to_pagetable(mmu);
-> >+	struct io_pgtable_ops *ops = pagetable->pgtbl_ops;
-> >+	struct scatterlist *sg;
-> >+	size_t mapped = 0;
-> >+	u64 addr = iova;
-> >+	unsigned int i;
-> >+
-> >+	for_each_sg(sgt->sgl, sg, sgt->nents, i) {
-> >+		size_t size = sg->length;
-> >+		phys_addr_t phys = sg_phys(sg);
-> >+
-> >+		/* Map the block one page at a time */
-> >+		while (size) {
-> >+			if (ops->map(ops, addr, phys, 4096, prot)) {
-> >+				msm_iommu_pagetable_unmap(mmu, iova, mapped);
-> >+				return -EINVAL;
-> >+			}
-> >+
-> >+			phys += 4096;
-> >+			addr += 4096;
-> >+			size -= 4096;
-> >+			mapped += 4096;
-> >+		}
-> >+	}
-> >+
-> >+	return 0;
-> >+}
-> >+
-> >+static void msm_iommu_pagetable_destroy(struct msm_mmu *mmu)
-> >+{
-> >+	struct msm_iommu_pagetable *pagetable = to_pagetable(mmu);
-> >+
-> >+	free_io_pgtable_ops(pagetable->pgtbl_ops);
-> >+	kfree(pagetable);
-> >+}
-> >+
-> >+/*
-> >+ * Given a parent device, create and return an aux domain. This will enable the
-> >+ * TTBR0 region
-> >+ */
-> >+static struct iommu_domain *msm_iommu_get_aux_domain(struct msm_mmu *parent)
-> >+{
-> >+	struct msm_iommu *iommu = to_msm_iommu(parent);
-> >+	struct iommu_domain *domain;
-> >+	int ret;
-> >+
-> >+	if (iommu->aux_domain)
-> >+		return iommu->aux_domain;
-> >+
-> >+	if (!iommu_dev_has_feature(parent->dev, IOMMU_DEV_FEAT_AUX))
-> >+		return ERR_PTR(-ENODEV);
-> >+
-> >+	domain = iommu_domain_alloc(&platform_bus_type);
-> >+	if (!domain)
-> >+		return ERR_PTR(-ENODEV);
-> >+
-> >+	ret = iommu_aux_attach_device(domain, parent->dev);
-> >+	if (ret) {
-> >+		iommu_domain_free(domain);
-> >+		return ERR_PTR(ret);
-> >+	}
-> >+
-> >+	iommu->aux_domain = domain;
-> >+	return domain;
-> >+}
-> >+
-> >+int msm_iommu_pagetable_params(struct msm_mmu *mmu,
-> >+		phys_addr_t *ttbr, int *asid)
-> >+{
-> >+	struct msm_iommu_pagetable *pagetable;
-> >+
-> >+	if (mmu->type != MSM_MMU_IOMMU_PAGETABLE)
-> >+		return -EINVAL;
-> >+
-> >+	pagetable = to_pagetable(mmu);
-> >+
-> >+	if (ttbr)
-> >+		*ttbr = pagetable->ttbr;
-> >+
-> >+	if (asid)
-> >+		*asid = pagetable->asid;
-> >+
-> >+	return 0;
-> >+}
-> >+
-> >+static const struct msm_mmu_funcs pagetable_funcs = {
-> >+		.map = msm_iommu_pagetable_map,
-> >+		.unmap = msm_iommu_pagetable_unmap,
-> >+		.destroy = msm_iommu_pagetable_destroy,
-> >+};
-> >+
-> >+struct msm_mmu *msm_iommu_pagetable_create(struct msm_mmu *parent)
-> >+{
-> >+	static int next_asid = 16;
-> >+	struct msm_iommu_pagetable *pagetable;
-> >+	struct iommu_domain *aux_domain;
-> >+	struct io_pgtable_cfg cfg;
-> >+	int ret;
-> >+
-> >+	/* Make sure that the parent has a aux domain attached */
-> >+	aux_domain = msm_iommu_get_aux_domain(parent);
-> >+	if (IS_ERR(aux_domain))
-> >+		return ERR_CAST(aux_domain);
-> >+
-> >+	/* Get the pagetable configuration from the aux domain */
-> >+	ret = iommu_domain_get_attr(aux_domain, DOMAIN_ATTR_PGTABLE_CFG, &cfg);
-> >+	if (ret)
-> >+		return ERR_PTR(ret);
-> >+
-> >+	pagetable = kzalloc(sizeof(*pagetable), GFP_KERNEL);
-> >+	if (!pagetable)
-> >+		return ERR_PTR(-ENOMEM);
-> >+
-> >+	msm_mmu_init(&pagetable->base, parent->dev, &pagetable_funcs,
-> >+		MSM_MMU_IOMMU_PAGETABLE);
-> >+
-> >+	cfg.tlb = NULL;
-> >+
-> >+	pagetable->pgtbl_ops = alloc_io_pgtable_ops(ARM_64_LPAE_S1,
-> >+		&cfg, aux_domain);
-> >+
-> >+	if (!pagetable->pgtbl_ops) {
-> >+		kfree(pagetable);
-> >+		return ERR_PTR(-ENOMEM);
-> >+	}
-> >+
-> >+
-> >+	/* Needed later for TLB flush */
-> >+	pagetable->parent = parent;
-> >+	pagetable->ttbr = cfg.arm_lpae_s1_cfg.ttbr;
-> >+
-> >+	pagetable->asid = next_asid;
-> >+	next_asid = (next_asid + 1)  % 255;
-> >+	if (next_asid < 16)
-> >+		next_asid = 16;
-> >+
-> >+	return &pagetable->base;
-> >+}
-> >+
-> >  static int msm_fault_handler(struct iommu_domain *domain, struct device *dev,
-> >  		unsigned long iova, int flags, void *arg)
-> >  {
-> >@@ -40,6 +217,7 @@ static int msm_iommu_map(struct msm_mmu *mmu, uint64_t iova,
-> >  	if (iova & BIT_ULL(48))
-> >  		iova |= GENMASK_ULL(63, 49);
-> >+
-> >  	ret = iommu_map_sg(iommu->domain, iova, sgt->sgl, sgt->nents, prot);
-> >  	WARN_ON(!ret);
-> >@@ -85,7 +263,7 @@ struct msm_mmu *msm_iommu_new(struct device *dev, struct iommu_domain *domain)
-> >  		return ERR_PTR(-ENOMEM);
-> >  	iommu->domain = domain;
-> >-	msm_mmu_init(&iommu->base, dev, &funcs);
-> >+	msm_mmu_init(&iommu->base, dev, &funcs, MSM_MMU_IOMMU);
-> >  	iommu_set_fault_handler(domain, msm_fault_handler, iommu);
-> >  	ret = iommu_attach_device(iommu->domain, dev);
-> >diff --git a/drivers/gpu/drm/msm/msm_mmu.h b/drivers/gpu/drm/msm/msm_mmu.h
-> >index 3a534ee59bf6..61ade89d9e48 100644
-> >--- a/drivers/gpu/drm/msm/msm_mmu.h
-> >+++ b/drivers/gpu/drm/msm/msm_mmu.h
-> >@@ -17,18 +17,26 @@ struct msm_mmu_funcs {
-> >  	void (*destroy)(struct msm_mmu *mmu);
-> >  };
-> >+enum msm_mmu_type {
-> >+	MSM_MMU_GPUMMU,
-> >+	MSM_MMU_IOMMU,
-> >+	MSM_MMU_IOMMU_PAGETABLE,
-> >+};
-> >+
-> >  struct msm_mmu {
-> >  	const struct msm_mmu_funcs *funcs;
-> >  	struct device *dev;
-> >  	int (*handler)(void *arg, unsigned long iova, int flags);
-> >  	void *arg;
-> >+	enum msm_mmu_type type;
-> >  };
-> >  static inline void msm_mmu_init(struct msm_mmu *mmu, struct device *dev,
-> >-		const struct msm_mmu_funcs *funcs)
-> >+		const struct msm_mmu_funcs *funcs, enum msm_mmu_type type)
-> >  {
-> >  	mmu->dev = dev;
-> >  	mmu->funcs = funcs;
-> >+	mmu->type = type;
-> >  }
-> >  struct msm_mmu *msm_iommu_new(struct device *dev, struct iommu_domain *domain);
-> >@@ -41,7 +49,13 @@ static inline void msm_mmu_set_fault_handler(struct msm_mmu *mmu, void *arg,
-> >  	mmu->handler = handler;
-> >  }
-> >+struct msm_mmu *msm_iommu_pagetable_create(struct msm_mmu *parent);
-> >+
-> >  void msm_gpummu_params(struct msm_mmu *mmu, dma_addr_t *pt_base,
-> >  		dma_addr_t *tran_error);
-> >+
-> >+int msm_iommu_pagetable_params(struct msm_mmu *mmu, phys_addr_t *ttbr,
-> >+		int *asid);
-> >+
-> >  #endif /* __MSM_MMU_H__ */
-> >
+> > From: Liu, Yi L < yi.l.liu@intel.com>
+> > Sent: Friday, July 3, 2020 2:28 PM
+> > 
+> > Hi Alex,
+> >   
+> > > From: Alex Williamson <alex.williamson@redhat.com>
+> > > Sent: Friday, July 3, 2020 5:19 AM
+> > >
+> > > On Wed, 24 Jun 2020 01:55:19 -0700
+> > > Liu Yi L <yi.l.liu@intel.com> wrote:
+> > >  
+> > > > This patch allows user space to request PASID allocation/free, e.g.
+> > > > when serving the request from the guest.
+> > > >
+> > > > PASIDs that are not freed by userspace are automatically freed when
+> > > > the IOASID set is destroyed when process exits.  
+> [...]
+> > > > +static int vfio_iommu_type1_pasid_request(struct vfio_iommu *iommu,
+> > > > +					  unsigned long arg)
+> > > > +{
+> > > > +	struct vfio_iommu_type1_pasid_request req;
+> > > > +	unsigned long minsz;
+> > > > +
+> > > > +	minsz = offsetofend(struct vfio_iommu_type1_pasid_request, range);
+> > > > +
+> > > > +	if (copy_from_user(&req, (void __user *)arg, minsz))
+> > > > +		return -EFAULT;
+> > > > +
+> > > > +	if (req.argsz < minsz || (req.flags & ~VFIO_PASID_REQUEST_MASK))
+> > > > +		return -EINVAL;
+> > > > +
+> > > > +	if (req.range.min > req.range.max)  
+> > >
+> > > Is it exploitable that a user can spin the kernel for a long time in
+> > > the case of a free by calling this with [0, MAX_UINT] regardless of their actual  
+> > allocations?
+> > 
+> > IOASID can ensure that user can only free the PASIDs allocated to the user. but
+> > it's true, kernel needs to loop all the PASIDs within the range provided by user. it
+> > may take a long time. is there anything we can do? one thing may limit the range
+> > provided by user?  
+> 
+> thought about it more, we have per-VM pasid quota (say 1000), so even if
+> user passed down [0, MAX_UNIT], kernel will only loop the 1000 pasids at
+> most. do you think we still need to do something on it?
 
--- 
-The Qualcomm Innovation Center, Inc. is a member of Code Aurora Forum,
-a Linux Foundation Collaborative Project
+How do you figure that?  vfio_iommu_type1_pasid_request() accepts the
+user's min/max so long as (max > min) and passes that to
+vfio_iommu_type1_pasid_free(), then to vfio_pasid_free_range()  which
+loops as:
+
+	ioasid_t pasid = min;
+	for (; pasid <= max; pasid++)
+		ioasid_free(pasid);
+
+A user might only be able to allocate 1000 pasids, but apparently they
+can ask to free all they want.
+
+It's also not obvious to me that calling ioasid_free() is only allowing
+the user to free their own passid.  Does it?  It would be a pretty
+gaping hole if a user could free arbitrary pasids.  A r-b tree of
+passids might help both for security and to bound spinning in a loop.
+Thanks,
+
+Alex
+
 _______________________________________________
 iommu mailing list
 iommu@lists.linux-foundation.org
