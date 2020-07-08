@@ -2,112 +2,99 @@ Return-Path: <SRS0=dlfR=AT=lists.linux-foundation.org=iommu-bounces@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-8.1 required=3.0 tests=DKIM_INVALID,DKIM_SIGNED,
-	HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_PATCH,MAILING_LIST_MULTI,SIGNED_OFF_BY,
-	SPF_HELO_NONE,SPF_PASS,USER_AGENT_SANE_1 autolearn=ham autolearn_force=no
-	version=3.4.0
+X-Spam-Status: No, score=-0.6 required=3.0 tests=DKIM_INVALID,DKIM_SIGNED,
+	HEADER_FROM_DIFFERENT_DOMAINS,MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS
+	autolearn=no autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id D6881C433DF
-	for <iommu@archiver.kernel.org>; Wed,  8 Jul 2020 19:19:36 +0000 (UTC)
-Received: from silver.osuosl.org (smtp3.osuosl.org [140.211.166.136])
+	by smtp.lore.kernel.org (Postfix) with ESMTP id DF609C433DF
+	for <iommu@archiver.kernel.org>; Wed,  8 Jul 2020 19:30:10 +0000 (UTC)
+Received: from hemlock.osuosl.org (smtp2.osuosl.org [140.211.166.133])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by mail.kernel.org (Postfix) with ESMTPS id A4F1D206E2
-	for <iommu@archiver.kernel.org>; Wed,  8 Jul 2020 19:19:36 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTPS id B0BA02065D
+	for <iommu@archiver.kernel.org>; Wed,  8 Jul 2020 19:30:10 +0000 (UTC)
 Authentication-Results: mail.kernel.org;
-	dkim=fail reason="signature verification failed" (1024-bit key) header.d=mg.codeaurora.org header.i=@mg.codeaurora.org header.b="LwMzh1/O"
-DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org A4F1D206E2
-Authentication-Results: mail.kernel.org; dmarc=none (p=none dis=none) header.from=codeaurora.org
+	dkim=fail reason="signature verification failed" (1024-bit key) header.d=redhat.com header.i=@redhat.com header.b="Gas97tBR"
+DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org B0BA02065D
+Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=redhat.com
 Authentication-Results: mail.kernel.org; spf=pass smtp.mailfrom=iommu-bounces@lists.linux-foundation.org
 Received: from localhost (localhost [127.0.0.1])
-	by silver.osuosl.org (Postfix) with ESMTP id 4DDA5241A8;
-	Wed,  8 Jul 2020 19:19:36 +0000 (UTC)
-X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from silver.osuosl.org ([127.0.0.1])
-	by localhost (.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
-	with ESMTP id 1l5APGi8-Sog; Wed,  8 Jul 2020 19:19:33 +0000 (UTC)
-Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [140.211.9.56])
-	by silver.osuosl.org (Postfix) with ESMTP id A3B8423B31;
-	Wed,  8 Jul 2020 19:19:33 +0000 (UTC)
-Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
-	by lists.linuxfoundation.org (Postfix) with ESMTP id 8C321C0893;
-	Wed,  8 Jul 2020 19:19:33 +0000 (UTC)
-Received: from hemlock.osuosl.org (smtp2.osuosl.org [140.211.166.133])
- by lists.linuxfoundation.org (Postfix) with ESMTP id 868AFC016F
- for <iommu@lists.linux-foundation.org>; Wed,  8 Jul 2020 19:19:32 +0000 (UTC)
-Received: from localhost (localhost [127.0.0.1])
- by hemlock.osuosl.org (Postfix) with ESMTP id 74AAF897D1
- for <iommu@lists.linux-foundation.org>; Wed,  8 Jul 2020 19:19:32 +0000 (UTC)
+	by hemlock.osuosl.org (Postfix) with ESMTP id 0F72B89829;
+	Wed,  8 Jul 2020 19:30:10 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
 Received: from hemlock.osuosl.org ([127.0.0.1])
+	by localhost (.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
+	with ESMTP id f1O0jODJgHLl; Wed,  8 Jul 2020 19:30:07 +0000 (UTC)
+Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [140.211.9.56])
+	by hemlock.osuosl.org (Postfix) with ESMTP id 018668961C;
+	Wed,  8 Jul 2020 19:30:06 +0000 (UTC)
+Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
+	by lists.linuxfoundation.org (Postfix) with ESMTP id C6DCFC0893;
+	Wed,  8 Jul 2020 19:30:06 +0000 (UTC)
+Received: from fraxinus.osuosl.org (smtp4.osuosl.org [140.211.166.137])
+ by lists.linuxfoundation.org (Postfix) with ESMTP id 6955EC016F
+ for <iommu@lists.linux-foundation.org>; Wed,  8 Jul 2020 19:30:04 +0000 (UTC)
+Received: from localhost (localhost [127.0.0.1])
+ by fraxinus.osuosl.org (Postfix) with ESMTP id 64DCF86E65
+ for <iommu@lists.linux-foundation.org>; Wed,  8 Jul 2020 19:30:04 +0000 (UTC)
+X-Virus-Scanned: amavisd-new at osuosl.org
+Received: from fraxinus.osuosl.org ([127.0.0.1])
  by localhost (.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
- with ESMTP id rQNDsZ49Wnpd for <iommu@lists.linux-foundation.org>;
- Wed,  8 Jul 2020 19:19:31 +0000 (UTC)
-X-Greylist: from auto-whitelisted by SQLgrey-1.7.6
-Received: from m43-7.mailgun.net (m43-7.mailgun.net [69.72.43.7])
- by hemlock.osuosl.org (Postfix) with ESMTPS id 0460E897C9
- for <iommu@lists.linux-foundation.org>; Wed,  8 Jul 2020 19:19:30 +0000 (UTC)
-DKIM-Signature: a=rsa-sha256; v=1; c=relaxed/relaxed; d=mg.codeaurora.org;
- q=dns/txt; 
- s=smtp; t=1594235970; h=In-Reply-To: Content-Type: MIME-Version:
- References: Message-ID: Subject: Cc: To: From: Date: Sender;
- bh=qojzIDTgjnm9ZArhrXmC1tciIgZFOaaeo03EvGhAwOw=;
- b=LwMzh1/ONKYE8q57ZNQbuZuMyetK/wbm85D9obGRRKxqXGLSfM9iFummMac/qxb7OA8ng9gv
- 4PC/92OLL16tXJ6DsGMCEl2dOaP3z42kbPAMzh0hbj8O0VhftqnP9BJNDgSDMFELkxLyGETN
- wHEPtuYx1O79muvtGjlggD6gNto=
-X-Mailgun-Sending-Ip: 69.72.43.7
-X-Mailgun-Sid: WyI3NDkwMCIsICJpb21tdUBsaXN0cy5saW51eC1mb3VuZGF0aW9uLm9yZyIsICJiZTllNGEiXQ==
-Received: from smtp.codeaurora.org
- (ec2-35-166-182-171.us-west-2.compute.amazonaws.com [35.166.182.171]) by
- smtp-out-n12.prod.us-west-2.postgun.com with SMTP id
- 5f061c42c431f7323bd7f0cd (version=TLS1.2,
- cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256); Wed, 08 Jul 2020 19:19:30
- GMT
-Received: by smtp.codeaurora.org (Postfix, from userid 1001)
- id B5707C43391; Wed,  8 Jul 2020 19:19:29 +0000 (UTC)
-Received: from jcrouse1-lnx.qualcomm.com (i-global254.qualcomm.com
- [199.106.103.254])
- (using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
- (No client certificate requested) (Authenticated sender: jcrouse)
- by smtp.codeaurora.org (Postfix) with ESMTPSA id 342F1C433C6;
- Wed,  8 Jul 2020 19:19:27 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.3.2 smtp.codeaurora.org 342F1C433C6
-Authentication-Results: aws-us-west-2-caf-mail-1.web.codeaurora.org;
- dmarc=none (p=none dis=none) header.from=codeaurora.org
-Authentication-Results: aws-us-west-2-caf-mail-1.web.codeaurora.org;
- spf=none smtp.mailfrom=jcrouse@codeaurora.org
-Date: Wed, 8 Jul 2020 13:19:23 -0600
-From: Jordan Crouse <jcrouse@codeaurora.org>
-To: Rob Clark <robdclark@gmail.com>
-Subject: Re: [Freedreno] [PATCH v2 2/6] iommu/io-pgtable: Allow a pgtable
- implementation to skip TLB operations
-Message-ID: <20200708191923.GA21059@jcrouse1-lnx.qualcomm.com>
-Mail-Followup-To: Rob Clark <robdclark@gmail.com>,
- Robin Murphy <robin.murphy@arm.com>,
- linux-arm-msm <linux-arm-msm@vger.kernel.org>,
- Sai Prakash Ranjan <saiprakash.ranjan@codeaurora.org>,
- Joerg Roedel <jroedel@suse.de>, Will Deacon <will@kernel.org>,
- Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
- "list@263.net:IOMMU DRIVERS <iommu@lists.linux-foundation.org>,
- Joerg Roedel <joro@8bytes.org>, " <iommu@lists.linux-foundation.org>, 
- John Stultz <john.stultz@linaro.org>,
- freedreno <freedreno@lists.freedesktop.org>,
- Yong Wu <yong.wu@mediatek.com>
-References: <20200626200414.14382-1-jcrouse@codeaurora.org>
- <20200626200414.14382-3-jcrouse@codeaurora.org>
- <99ecd948-7476-b9b4-12b4-1ced0084654f@arm.com>
- <CAF6AEGv2YXu44r9O0ZRkNM2ny4oMStxn4=GoCS3CLpPAKh_KZw@mail.gmail.com>
- <CAF6AEGttgRQ3Ug2Nw_vJgjjjUOc0OLPSs+xLv-XFHNrHTOL8sg@mail.gmail.com>
+ with ESMTP id cZTy5ZEybaPy for <iommu@lists.linux-foundation.org>;
+ Wed,  8 Jul 2020 19:30:02 +0000 (UTC)
+X-Greylist: domain auto-whitelisted by SQLgrey-1.7.6
+Received: from us-smtp-delivery-1.mimecast.com (us-smtp-2.mimecast.com
+ [205.139.110.61])
+ by fraxinus.osuosl.org (Postfix) with ESMTPS id 5F5EF86DF3
+ for <iommu@lists.linux-foundation.org>; Wed,  8 Jul 2020 19:30:02 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+ s=mimecast20190719; t=1594236600;
+ h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+ to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+ content-transfer-encoding:content-transfer-encoding:
+ in-reply-to:in-reply-to:references:references;
+ bh=UJjkq/41DYBOCSHo3nTf+zUI4aMZSKM39jLWG6kR/zY=;
+ b=Gas97tBRq2VmgRA9lWCmxibWy+rA2YBpeE1hBU2Eq6EoySIJrk37REDecRPoVLTzaA/skZ
+ gJICwsJenHdJlUizC6WXjBya25XDplXEWC0L7n4Wm1Bkgq6NdA90oN/rv4BqS33nc1p+u2
+ xjCK+7olvWmRTQ9nr1U+MLm0MN39fSc=
+Received: from mimecast-mx01.redhat.com (mimecast-mx01.redhat.com
+ [209.132.183.4]) (Using TLS) by relay.mimecast.com with ESMTP id
+ us-mta-154-fQ7c72TkN5irDaNSzxo8Vw-1; Wed, 08 Jul 2020 15:29:57 -0400
+X-MC-Unique: fQ7c72TkN5irDaNSzxo8Vw-1
+Received: from smtp.corp.redhat.com (int-mx08.intmail.prod.int.phx2.redhat.com
+ [10.5.11.23])
+ (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
+ (No client certificate requested)
+ by mimecast-mx01.redhat.com (Postfix) with ESMTPS id 165AF107ACF3;
+ Wed,  8 Jul 2020 19:29:55 +0000 (UTC)
+Received: from x1.home (ovpn-112-71.phx2.redhat.com [10.3.112.71])
+ by smtp.corp.redhat.com (Postfix) with ESMTP id 686162DE60;
+ Wed,  8 Jul 2020 19:29:48 +0000 (UTC)
+Date: Wed, 8 Jul 2020 13:29:47 -0600
+From: Alex Williamson <alex.williamson@redhat.com>
+To: "Liu, Yi L" <yi.l.liu@intel.com>
+Subject: Re: [PATCH v4 04/15] vfio/type1: Report iommu nesting info to
+ userspace
+Message-ID: <20200708132947.5b7ee954@x1.home>
+In-Reply-To: <DM5PR11MB143531E2B54ED82FB0649F8CC3670@DM5PR11MB1435.namprd11.prod.outlook.com>
+References: <1593861989-35920-1-git-send-email-yi.l.liu@intel.com>
+ <1593861989-35920-5-git-send-email-yi.l.liu@intel.com>
+ <d434cbcc-d3b1-d11d-0304-df2d2c93efa0@redhat.com>
+ <DM5PR11MB1435290B6CD561EC61027892C3690@DM5PR11MB1435.namprd11.prod.outlook.com>
+ <94b4e5d3-8d24-9a55-6bee-ed86f3846996@redhat.com>
+ <DM5PR11MB14357A5953EB630A58FF568EC3660@DM5PR11MB1435.namprd11.prod.outlook.com>
+ <DM5PR11MB143531E2B54ED82FB0649F8CC3670@DM5PR11MB1435.namprd11.prod.outlook.com>
+Organization: Red Hat
 MIME-Version: 1.0
-Content-Disposition: inline
-In-Reply-To: <CAF6AEGttgRQ3Ug2Nw_vJgjjjUOc0OLPSs+xLv-XFHNrHTOL8sg@mail.gmail.com>
-User-Agent: Mutt/1.5.24 (2015-08-30)
-Cc: freedreno <freedreno@lists.freedesktop.org>, Joerg Roedel <jroedel@suse.de>,
- Will Deacon <will@kernel.org>, linux-arm-msm <linux-arm-msm@vger.kernel.org>,
- Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
- "list@263.net:IOMMU DRIVERS <iommu@lists.linux-foundation.org>,
- Joerg Roedel <joro@8bytes.org>, " <iommu@lists.linux-foundation.org>,
- John Stultz <john.stultz@linaro.org>, Robin Murphy <robin.murphy@arm.com>
+X-Scanned-By: MIMEDefang 2.84 on 10.5.11.23
+Cc: "jean-philippe@linaro.org" <jean-philippe@linaro.org>, "Tian,
+ Kevin" <kevin.tian@intel.com>, "Raj, Ashok" <ashok.raj@intel.com>,
+ "kvm@vger.kernel.org" <kvm@vger.kernel.org>,
+ "stefanha@gmail.com" <stefanha@gmail.com>,
+ "iommu@lists.linux-foundation.org" <iommu@lists.linux-foundation.org>,
+ "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>, "Sun,
+ Yi Y" <yi.y.sun@intel.com>, "Wu, Hao" <hao.wu@intel.com>, "Tian, 
+ Jun J" <jun.j.tian@intel.com>
 X-BeenThere: iommu@lists.linux-foundation.org
 X-Mailman-Version: 2.1.15
 Precedence: list
@@ -125,193 +112,93 @@ Content-Transfer-Encoding: 7bit
 Errors-To: iommu-bounces@lists.linux-foundation.org
 Sender: "iommu" <iommu-bounces@lists.linux-foundation.org>
 
-On Tue, Jul 07, 2020 at 07:58:18AM -0700, Rob Clark wrote:
-> On Tue, Jul 7, 2020 at 7:25 AM Rob Clark <robdclark@gmail.com> wrote:
-> >
-> > On Tue, Jul 7, 2020 at 4:34 AM Robin Murphy <robin.murphy@arm.com> wrote:
-> > >
-> > > On 2020-06-26 21:04, Jordan Crouse wrote:
-> > > > Allow a io-pgtable implementation to skip TLB operations by checking for
-> > > > NULL pointers in the helper functions. It will be up to to the owner
-> > > > of the io-pgtable instance to make sure that they independently handle
-> > > > the TLB correctly.
-> > >
-> > > I don't really understand what this is for - tricking the IOMMU driver
-> > > into not performing its TLB maintenance at points when that maintenance
-> > > has been deemed necessary doesn't seem like the appropriate way to
-> > > achieve anything good :/
-> >
-> > No, for triggering the io-pgtable helpers into not performing TLB
-> > maintenance.  But seriously, since we are creating pgtables ourselves,
-> > and we don't want to be ioremap'ing the GPU's SMMU instance, the
-> > alternative is plugging in no-op helpers.  Which amounts to the same
-> > thing.
+On Wed, 8 Jul 2020 08:08:40 +0000
+"Liu, Yi L" <yi.l.liu@intel.com> wrote:
+
+> Hi Alex,
 > 
-> Hmm, that said, since we are just memcpy'ing the io_pgtable_cfg from
-> arm-smmu, it will already be populated with arm-smmu's fxn ptrs.  I
-> guess we could maybe make it work without no-op helpers, although in
-> that case it looks like we need to fix something about aux-domain vs
-> tlb helpers:
-
-I had a change that handled these correctly but I abandoned it because the
-TLB functions didn't kick the power and I didn't think that would be desirable
-at the generic level for performance reasons. Since the GPU SMMU is on the same
-power domain as the GMU we could enable it in the GPU driver before calling
-the TLB operations but we would need to be clever about it to prevent bringing
-up the GMU just to unmap memory.
-
-Jordan
-
-> [  +0.004373] Unable to handle kernel NULL pointer dereference at
-> virtual address 0000000000000019
-> [  +0.004086] Mem abort info:
-> [  +0.004319]   ESR = 0x96000004
-> [  +0.003462]   EC = 0x25: DABT (current EL), IL = 32 bits
-> [  +0.003494]   SET = 0, FnV = 0
-> [  +0.002812]   EA = 0, S1PTW = 0
-> [  +0.002873] Data abort info:
-> [  +0.003031]   ISV = 0, ISS = 0x00000004
-> [  +0.003785]   CM = 0, WnR = 0
-> [  +0.003641] user pgtable: 4k pages, 48-bit VAs, pgdp=0000000261d65000
-> [  +0.003383] [0000000000000019] pgd=0000000000000000, p4d=0000000000000000
-> [  +0.003715] Internal error: Oops: 96000004 [#1] PREEMPT SMP
-> [  +0.002744] Modules linked in: xt_CHECKSUM xt_MASQUERADE
-> xt_conntrack ipt_REJECT nf_reject_ipv4 xt_tcpudp ip6table_mangle
-> ip6table_nat iptable_mangle iptable_nat nf_nat nf_conntrack
-> nf_defrag_ipv4 libcrc32c bridge stp llc ip6table_filter ip6_tables
-> iptable_filter ax88179_178a usbnet uvcvideo videobuf2_vmalloc
-> videobuf2_memops videobuf2_v4l2 videobuf2_common videodev mc
-> hid_multitouch i2c_hid some_battery ti_sn65dsi86 hci_uart btqca btbcm
-> qcom_spmi_adc5 bluetooth qcom_spmi_temp_alarm qcom_vadc_common
-> ecdh_generic ecc snd_soc_sdm845 snd_soc_rt5663 snd_soc_qcom_common
-> ath10k_snoc ath10k_core crct10dif_ce ath mac80211 snd_soc_rl6231
-> soundwire_bus i2c_qcom_geni libarc4 qcom_rng msm phy_qcom_qusb2
-> reset_qcom_pdc drm_kms_helper cfg80211 rfkill qcom_q6v5_mss
-> qcom_q6v5_ipa_notify socinfo qrtr ns panel_simple qcom_q6v5_pas
-> qcom_common qcom_glink_smem slim_qcom_ngd_ctrl qcom_sysmon drm
-> qcom_q6v5 slimbus qmi_helpers qcom_wdt mdt_loader rmtfs_mem be2iscsi
-> bnx2i cnic uio cxgb4i cxgb4 cxgb3i cxgb3 mdio
-> [  +0.000139]  libcxgbi libcxgb qla4xxx iscsi_boot_sysfs iscsi_tcp
-> libiscsi_tcp libiscsi scsi_transport_iscsi fuse ip_tables x_tables
-> ipv6 nf_defrag_ipv6
-> [  +0.020933] CPU: 3 PID: 168 Comm: kworker/u16:7 Not tainted
-> 5.8.0-rc1-c630+ #31
-> [  +0.003828] Hardware name: LENOVO 81JL/LNVNB161216, BIOS
-> 9UCN33WW(V2.06) 06/ 4/2019
-> [  +0.004039] Workqueue: msm msm_gem_free_work [msm]
-> [  +0.003885] pstate: 60c00005 (nZCv daif +PAN +UAO BTYPE=--)
-> [  +0.003859] pc : arm_smmu_tlb_inv_range_s1+0x30/0x148
-> [  +0.003742] lr : arm_smmu_tlb_add_page_s1+0x1c/0x28
-> [  +0.003887] sp : ffff800011cdb970
-> [  +0.003868] x29: ffff800011cdb970 x28: 0000000000000003
-> [  +0.003930] x27: ffff0001f1882f80 x26: 0000000000000001
-> [  +0.003886] x25: 0000000000000003 x24: 0000000000000620
-> [  +0.003932] x23: 0000000000000000 x22: 0000000000001000
-> [  +0.003886] x21: 0000000000001000 x20: ffff0001cf857300
-> [  +0.003916] x19: 0000000000000001 x18: 00000000ffffffff
-> [  +0.003921] x17: ffffd9e6a24ae0e8 x16: 0000000000012577
-> [  +0.003843] x15: 0000000000012578 x14: 0000000000000000
-> [  +0.003884] x13: 0000000000012574 x12: ffffd9e6a2550180
-> [  +0.003834] x11: 0000000000083f80 x10: 0000000000000000
-> [  +0.003889] x9 : 0000000000000000 x8 : ffff0001f1882f80
-> [  +0.003812] x7 : 0000000000000001 x6 : 0000000000000048
-> [  +0.003807] x5 : ffff0001c86e1000 x4 : 0000000000000620
-> [  +0.003802] x3 : ffff0001ddb57700 x2 : 0000000000001000
-> [  +0.003809] x1 : 0000000000001000 x0 : 0000000101048000
-> [  +0.003768] Call trace:
-> [  +0.003665]  arm_smmu_tlb_inv_range_s1+0x30/0x148
-> [  +0.003769]  arm_smmu_tlb_add_page_s1+0x1c/0x28
-> [  +0.003760]  __arm_lpae_unmap+0x3c4/0x498
-> [  +0.003821]  __arm_lpae_unmap+0xfc/0x498
-> [  +0.003693]  __arm_lpae_unmap+0xfc/0x498
-> [  +0.003704]  __arm_lpae_unmap+0xfc/0x498
-> [  +0.003608]  arm_lpae_unmap+0x60/0x78
-> [  +0.003653]  msm_iommu_pagetable_unmap+0x5c/0xa0 [msm]
-> [  +0.003711]  msm_gem_purge_vma+0x48/0x70 [msm]
-> [  +0.003716]  put_iova+0x68/0xc8 [msm]
-> [  +0.003792]  msm_gem_free_work+0x118/0x190 [msm]
-> [  +0.003739]  process_one_work+0x28c/0x6e8
-> [  +0.003595]  worker_thread+0x4c/0x420
-> [  +0.003546]  kthread+0x148/0x168
-> [  +0.003675]  ret_from_fork+0x10/0x1c
-> [  +0.003596] Code: 2a0403f8 a9046bf9 f9400073 39406077 (b9401a61)
+> Eric asked if we will to have data strcut other than struct iommu_nesting_info
+> type in the struct vfio_iommu_type1_info_cap_nesting @info[] field. I'm not
+> quit sure on it. I guess the answer may be not as VFIO's nesting support should
+> based on IOMMU UAPI. how about your opinion?
 > 
-> BR,
-> -R
-> 
-> >
-> > Currently (in a later patch in the series) we are using
-> > iommu_flush_tlb_all() when unmapping, which is a bit of a big hammer.
-> > Although I think we could be a bit more clever and do the TLB ops on
-> > the GPU (since the GPU knows if pagetables we are unmapping from are
-> > in-use and could skip the TLB ops otherwise).
-> >
-> > On the topic, if we are using unique ASID values per set of
-> > pagetables, how expensive is tlb invalidate for an ASID that has no
-> > entries in the TLB?
-> >
-> > BR,
-> > -R
-> >
-> > >
-> > > Robin.
-> > >
-> > > > Signed-off-by: Jordan Crouse <jcrouse@codeaurora.org>
-> > > > ---
-> > > >
-> > > >   include/linux/io-pgtable.h | 11 +++++++----
-> > > >   1 file changed, 7 insertions(+), 4 deletions(-)
-> > > >
-> > > > diff --git a/include/linux/io-pgtable.h b/include/linux/io-pgtable.h
-> > > > index 53d53c6c2be9..bbed1d3925ba 100644
-> > > > --- a/include/linux/io-pgtable.h
-> > > > +++ b/include/linux/io-pgtable.h
-> > > > @@ -210,21 +210,24 @@ struct io_pgtable {
-> > > >
-> > > >   static inline void io_pgtable_tlb_flush_all(struct io_pgtable *iop)
-> > > >   {
-> > > > -     iop->cfg.tlb->tlb_flush_all(iop->cookie);
-> > > > +     if (iop->cfg.tlb)
-> > > > +             iop->cfg.tlb->tlb_flush_all(iop->cookie);
-> > > >   }
-> > > >
-> > > >   static inline void
-> > > >   io_pgtable_tlb_flush_walk(struct io_pgtable *iop, unsigned long iova,
-> > > >                         size_t size, size_t granule)
-> > > >   {
-> > > > -     iop->cfg.tlb->tlb_flush_walk(iova, size, granule, iop->cookie);
-> > > > +     if (iop->cfg.tlb)
-> > > > +             iop->cfg.tlb->tlb_flush_walk(iova, size, granule, iop->cookie);
-> > > >   }
-> > > >
-> > > >   static inline void
-> > > >   io_pgtable_tlb_flush_leaf(struct io_pgtable *iop, unsigned long iova,
-> > > >                         size_t size, size_t granule)
-> > > >   {
-> > > > -     iop->cfg.tlb->tlb_flush_leaf(iova, size, granule, iop->cookie);
-> > > > +     if (iop->cfg.tlb)
-> > > > +             iop->cfg.tlb->tlb_flush_leaf(iova, size, granule, iop->cookie);
-> > > >   }
-> > > >
-> > > >   static inline void
-> > > > @@ -232,7 +235,7 @@ io_pgtable_tlb_add_page(struct io_pgtable *iop,
-> > > >                       struct iommu_iotlb_gather * gather, unsigned long iova,
-> > > >                       size_t granule)
-> > > >   {
-> > > > -     if (iop->cfg.tlb->tlb_add_page)
-> > > > +     if (iop->cfg.tlb && iop->cfg.tlb->tlb_add_page)
-> > > >               iop->cfg.tlb->tlb_add_page(gather, iova, granule, iop->cookie);
-> > > >   }
-> > > >
-> > > >
-> > > _______________________________________________
-> > > Freedreno mailing list
-> > > Freedreno@lists.freedesktop.org
-> > > https://lists.freedesktop.org/mailman/listinfo/freedreno
+> +#define VFIO_IOMMU_TYPE1_INFO_CAP_NESTING  3
+> +
+> +/*
+> + * Reporting nesting info to user space.
+> + *
+> + * @info:	the nesting info provided by IOMMU driver. Today
+> + *		it is expected to be a struct iommu_nesting_info
+> + *		data.
+> + */
+> +struct vfio_iommu_type1_info_cap_nesting {
+> +	struct	vfio_info_cap_header header;
+> +	__u32	flags;
+> +	__u32	padding;
+> +	__u8	info[];
+> +};
 
--- 
-The Qualcomm Innovation Center, Inc. is a member of Code Aurora Forum,
-a Linux Foundation Collaborative Project
+It's not a very useful uAPI if the user can't be sure what they're
+getting out of it.  Info capabilities are "cheap", they don't need to
+be as extensible as an ioctl.  It's not clear that we really even need
+the flags (and therefore the padding), just define it to return the
+IOMMU uAPI structure with no extensibility.  If we need to expose
+something else, create a new capability.  Thanks,
+
+Alex
+
+> 
+> https://lore.kernel.org/linux-iommu/DM5PR11MB1435290B6CD561EC61027892C3690@DM5PR11MB1435.namprd11.prod.outlook.com/
+> 
+> Regards,
+> Yi Liu
+> 
+> > From: Liu, Yi L
+> > Sent: Tuesday, July 7, 2020 5:32 PM
+> >   
+> [...]
+> > > >  
+> > > >>> +
+> > > >>> +/*
+> > > >>> + * Reporting nesting info to user space.
+> > > >>> + *
+> > > >>> + * @info:	the nesting info provided by IOMMU driver. Today
+> > > >>> + *		it is expected to be a struct iommu_nesting_info
+> > > >>> + *		data.  
+> > > >> Is it expected to change?  
+> > > >
+> > > > honestly, I'm not quite sure on it. I did considered to embed struct
+> > > > iommu_nesting_info here instead of using info[]. but I hesitated as
+> > > > using info[] may leave more flexibility on this struct. how about
+> > > > your opinion? perhaps it's fine to embed the struct
+> > > > iommu_nesting_info here as long as VFIO is setup nesting based on
+> > > > IOMMU UAPI.
+> > > >  
+> > > >>> + */
+> > > >>> +struct vfio_iommu_type1_info_cap_nesting {
+> > > >>> +	struct	vfio_info_cap_header header;
+> > > >>> +	__u32	flags;  
+> > > >> You may document flags.  
+> > > >
+> > > > sure. it's reserved for future.
+> > > >
+> > > > Regards,
+> > > > Yi Liu
+> > > >  
+> > > >>> +	__u32	padding;
+> > > >>> +	__u8	info[];
+> > > >>> +};
+> > > >>> +
+> > > >>>  #define VFIO_IOMMU_GET_INFO _IO(VFIO_TYPE, VFIO_BASE + 12)
+> > > >>>
+> > > >>>  /**
+> > > >>>  
+> > > >> Thanks
+> > > >>
+> > > >> Eric  
+> > > >  
+> 
+
 _______________________________________________
 iommu mailing list
 iommu@lists.linux-foundation.org
