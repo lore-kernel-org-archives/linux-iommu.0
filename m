@@ -2,131 +2,98 @@ Return-Path: <SRS0=szPT=AU=lists.linux-foundation.org=iommu-bounces@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-5.0 required=3.0 tests=DKIM_INVALID,DKIM_SIGNED,
-	HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_PATCH,MAILING_LIST_MULTI,SPF_HELO_NONE,
-	SPF_PASS,URIBL_BLOCKED,USER_AGENT_SANE_1 autolearn=unavailable
-	autolearn_force=no version=3.4.0
+X-Spam-Status: No, score=-6.5 required=3.0 tests=DKIM_ADSP_CUSTOM_MED,
+	DKIM_INVALID,DKIM_SIGNED,FREEMAIL_FORGED_FROMDOMAIN,FREEMAIL_FROM,
+	HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_PATCH,MAILING_LIST_MULTI,SIGNED_OFF_BY,
+	SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED autolearn=unavailable autolearn_force=no
+	version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id EBA94C433DF
-	for <iommu@archiver.kernel.org>; Thu,  9 Jul 2020 16:14:41 +0000 (UTC)
-Received: from whitealder.osuosl.org (smtp1.osuosl.org [140.211.166.138])
+	by smtp.lore.kernel.org (Postfix) with ESMTP id F32EAC433E0
+	for <iommu@archiver.kernel.org>; Thu,  9 Jul 2020 16:17:58 +0000 (UTC)
+Received: from fraxinus.osuosl.org (smtp4.osuosl.org [140.211.166.137])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by mail.kernel.org (Postfix) with ESMTPS id BD4C32078B
-	for <iommu@archiver.kernel.org>; Thu,  9 Jul 2020 16:14:41 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTPS id BF25B2078B
+	for <iommu@archiver.kernel.org>; Thu,  9 Jul 2020 16:17:58 +0000 (UTC)
 Authentication-Results: mail.kernel.org;
-	dkim=fail reason="signature verification failed" (1024-bit key) header.d=mg.codeaurora.org header.i=@mg.codeaurora.org header.b="nQr4d60b"
-DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org BD4C32078B
-Authentication-Results: mail.kernel.org; dmarc=none (p=none dis=none) header.from=codeaurora.org
+	dkim=fail reason="signature verification failed" (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="n3wS0iGz"
+DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org BF25B2078B
+Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=gmail.com
 Authentication-Results: mail.kernel.org; spf=pass smtp.mailfrom=iommu-bounces@lists.linux-foundation.org
 Received: from localhost (localhost [127.0.0.1])
-	by whitealder.osuosl.org (Postfix) with ESMTP id 996B787D39;
-	Thu,  9 Jul 2020 16:14:41 +0000 (UTC)
+	by fraxinus.osuosl.org (Postfix) with ESMTP id 586D786BAD;
+	Thu,  9 Jul 2020 16:17:33 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from whitealder.osuosl.org ([127.0.0.1])
+Received: from fraxinus.osuosl.org ([127.0.0.1])
 	by localhost (.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
-	with ESMTP id zqIH5bGcJZFl; Thu,  9 Jul 2020 16:14:40 +0000 (UTC)
+	with ESMTP id 7RgixJyuWmI2; Thu,  9 Jul 2020 16:17:31 +0000 (UTC)
 Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [140.211.9.56])
-	by whitealder.osuosl.org (Postfix) with ESMTP id DE0D88852D;
-	Thu,  9 Jul 2020 16:14:40 +0000 (UTC)
+	by fraxinus.osuosl.org (Postfix) with ESMTP id 7905386A5D;
+	Thu,  9 Jul 2020 16:17:31 +0000 (UTC)
 Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
-	by lists.linuxfoundation.org (Postfix) with ESMTP id CA26FC0865;
-	Thu,  9 Jul 2020 16:14:40 +0000 (UTC)
-Received: from silver.osuosl.org (smtp3.osuosl.org [140.211.166.136])
- by lists.linuxfoundation.org (Postfix) with ESMTP id 9ADC0C016F
- for <iommu@lists.linux-foundation.org>; Thu,  9 Jul 2020 16:14:39 +0000 (UTC)
+	by lists.linuxfoundation.org (Postfix) with ESMTP id 5DC32C0865;
+	Thu,  9 Jul 2020 16:17:31 +0000 (UTC)
+Received: from hemlock.osuosl.org (smtp2.osuosl.org [140.211.166.133])
+ by lists.linuxfoundation.org (Postfix) with ESMTP id 6EC65C016F
+ for <iommu@lists.linux-foundation.org>; Thu,  9 Jul 2020 16:17:29 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
- by silver.osuosl.org (Postfix) with ESMTP id 7D5042C91A
- for <iommu@lists.linux-foundation.org>; Thu,  9 Jul 2020 16:14:39 +0000 (UTC)
+ by hemlock.osuosl.org (Postfix) with ESMTP id 96040895FC
+ for <iommu@lists.linux-foundation.org>; Thu,  9 Jul 2020 16:17:13 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from silver.osuosl.org ([127.0.0.1])
+Received: from hemlock.osuosl.org ([127.0.0.1])
  by localhost (.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
- with ESMTP id OakwCkMOImuF for <iommu@lists.linux-foundation.org>;
- Thu,  9 Jul 2020 16:14:38 +0000 (UTC)
-X-Greylist: from auto-whitelisted by SQLgrey-1.7.6
-Received: from mail29.static.mailgun.info (mail29.static.mailgun.info
- [104.130.122.29])
- by silver.osuosl.org (Postfix) with ESMTPS id 63FD02C885
- for <iommu@lists.linux-foundation.org>; Thu,  9 Jul 2020 16:14:32 +0000 (UTC)
-DKIM-Signature: a=rsa-sha256; v=1; c=relaxed/relaxed; d=mg.codeaurora.org;
- q=dns/txt; 
- s=smtp; t=1594311278; h=In-Reply-To: Content-Type: MIME-Version:
- References: Message-ID: Subject: Cc: To: From: Date: Sender;
- bh=/e4a8wMAdSV6hoIv60z68EueAnjMwjfv1t94V3tJoe0=;
- b=nQr4d60bOqZzDvYFh3Z1BZc629dJe0nTXwXfM3R6YYwgLGzFky8J2M8NdDeXxerCT0tyPFXG
- o2UbwETXPmZC8lnGJ/0igIuRIyisyA/0X53wfinxVzkWvITXX5hxnG0Ah1SifWKi81z61GGj
- UgiP0lrURa6zSuz8REPHMkSVQDY=
-X-Mailgun-Sending-Ip: 104.130.122.29
-X-Mailgun-Sid: WyI3NDkwMCIsICJpb21tdUBsaXN0cy5saW51eC1mb3VuZGF0aW9uLm9yZyIsICJiZTllNGEiXQ==
-Received: from smtp.codeaurora.org
- (ec2-35-166-182-171.us-west-2.compute.amazonaws.com [35.166.182.171]) by
- smtp-out-n02.prod.us-east-1.postgun.com with SMTP id
- 5f074248c746eb6f00d86ee7 (version=TLS1.2,
- cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256); Thu, 09 Jul 2020 16:14:00
- GMT
-Received: by smtp.codeaurora.org (Postfix, from userid 1001)
- id 2F23DC433A1; Thu,  9 Jul 2020 16:13:59 +0000 (UTC)
-Received: from jcrouse1-lnx.qualcomm.com (i-global254.qualcomm.com
- [199.106.103.254])
- (using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
- (No client certificate requested) (Authenticated sender: jcrouse)
- by smtp.codeaurora.org (Postfix) with ESMTPSA id 6D8A4C433C6;
- Thu,  9 Jul 2020 16:13:56 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.3.2 smtp.codeaurora.org 6D8A4C433C6
-Authentication-Results: aws-us-west-2-caf-mail-1.web.codeaurora.org;
- dmarc=none (p=none dis=none) header.from=codeaurora.org
-Authentication-Results: aws-us-west-2-caf-mail-1.web.codeaurora.org;
- spf=none smtp.mailfrom=jcrouse@codeaurora.org
-Date: Thu, 9 Jul 2020 10:13:53 -0600
-From: Jordan Crouse <jcrouse@codeaurora.org>
-To: Rob Clark <robdclark@gmail.com>
-Subject: Re: [PATCHv3 7/7] drm/msm/a6xx: Add support for using system
- cache(LLC)
-Message-ID: <20200709161352.GC21059@jcrouse1-lnx.qualcomm.com>
-Mail-Followup-To: Rob Clark <robdclark@gmail.com>,
- Sai Prakash Ranjan <saiprakash.ranjan@codeaurora.org>,
- Will Deacon <will@kernel.org>, Robin Murphy <robin.murphy@arm.com>,
- Joerg Roedel <joro@8bytes.org>,
- "list@263.net:IOMMU DRIVERS <iommu@lists.linux-foundation.org>,
- Joerg Roedel <joro@8bytes.org>, " <iommu@lists.linux-foundation.org>, 
- linux-arm-msm <linux-arm-msm@vger.kernel.org>,
- Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
- Sean Paul <sean@poorly.run>,
- Sharat Masetty <smasetty@codeaurora.org>,
- Akhil P Oommen <akhilpo@codeaurora.org>,
- freedreno <freedreno@lists.freedesktop.org>,
- Daniel Vetter <daniel@ffwll.ch>, David Airlie <airlied@linux.ie>,
- Emil Velikov <emil.velikov@collabora.com>,
- dri-devel <dri-devel@lists.freedesktop.org>,
- "moderated list:ARM/FREESCALE IMX / MXC ARM ARCHITECTURE"
- <linux-arm-kernel@lists.infradead.org>, 
- "Kristian H . Kristensen" <hoegsberg@google.com>,
- Stephen Boyd <swboyd@chromium.org>,
- Matthias Kaehlcke <mka@chromium.org>
-References: <cover.1593344119.git.saiprakash.ranjan@codeaurora.org>
- <449a6544b10f0035d191ac52283198343187c153.1593344120.git.saiprakash.ranjan@codeaurora.org>
- <20200703133732.GD18953@willie-the-truck>
- <ecfda7ca80f6d7b4ff3d89b8758f4dc9@codeaurora.org>
- <CAF6AEGsCROVTsi2R7_aUkmH9Luoc_guMR0w0KUJc2cEgpfj79w@mail.gmail.com>
+ with ESMTP id yep3LNVigrer for <iommu@lists.linux-foundation.org>;
+ Thu,  9 Jul 2020 16:17:12 +0000 (UTC)
+X-Greylist: domain auto-whitelisted by SQLgrey-1.7.6
+Received: from mail-ed1-f68.google.com (mail-ed1-f68.google.com
+ [209.85.208.68])
+ by hemlock.osuosl.org (Postfix) with ESMTPS id 8C39788515
+ for <iommu@lists.linux-foundation.org>; Thu,  9 Jul 2020 16:17:12 +0000 (UTC)
+Received: by mail-ed1-f68.google.com with SMTP id n2so2296051edr.5
+ for <iommu@lists.linux-foundation.org>; Thu, 09 Jul 2020 09:17:12 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=gmail.com; s=20161025;
+ h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+ :cc; bh=PbZTITmKTO9v4/Yy5DRRIZvAYJtU4hHDRKc55yhoFy4=;
+ b=n3wS0iGzZ+3YDjJV1K5llsijCzKsYTst8VuFIEVvZOSavY1U74imu45mEgZlSakZf4
+ WPMJYVU/0tUHeJI3M2J3pGB9N9I0H/aWlu4TC3GOoAmF1NMT3dbJiX+p67oqmwRKay3O
+ rRhCmZU9Ek/IOFhh4gljW512FIRCzsVu0P0yGrBxP2tJZuj3RJtcUN8slT8VL3/PRwOr
+ oCk+66SFbGZUkpjpXBrLDGG3gSQrv4VNLRiE7fUMK12wfZVibjY4XmW7JXJm2YxSxfy7
+ 78A2ckUJ3hQUx7LFW2vusyS+D+99aRqGihxtgozQebu7h6jbQ+dlYEMptlp+nE7Rbtbn
+ hCrw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+ d=1e100.net; s=20161025;
+ h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+ :message-id:subject:to:cc;
+ bh=PbZTITmKTO9v4/Yy5DRRIZvAYJtU4hHDRKc55yhoFy4=;
+ b=qs6XoQjhVtzGVuk2oVzZyZxoxoIQZX5J/kqbyC2Eb7y4MIFxYtDv7oZoAondq3EZvG
+ w6U2LbzbikSQNuXNI6g2jjCcEv3+AOJ3HeRe3lRzETJzylqz3WC8lm2Rrs1SxTG9rKZp
+ lnh99TXMWqU0vWZ9Dqx8w5Jvxi1fKK/s75MkaWcPZv3v7f2uE+DAiXn1lSukj5sScwXo
+ cWLYdWy7GL7SXJuxOBIp5HRVAFjAVJHJMZRoK/vGizX3BerAmFYG+ijcoPym1S3lmmmi
+ SlrUwaJ/xAkYNnwunl/7T6+f7SNSb0N9UZx6cbRR0y9PWJNzr361i0BVJCSyPmNNDHwM
+ a1mA==
+X-Gm-Message-State: AOAM531ZvQKeB7/XYserVyQTQhDihdA1pK764IAdqH202d9n0Z9c2brR
+ A3gOXwS5iIi7n+mWcjKJracvZ3AUzuANulOvcu4=
+X-Google-Smtp-Source: ABdhPJxyxniiEqOkIUEv4MnLELcL6+agHSgEU06T0R8qfHUOr7BcZLOmDEYtKyWKxCrm4Pm5IgGcCEQKfeInQQacQDs=
+X-Received: by 2002:a50:f392:: with SMTP id g18mr49995614edm.151.1594311430652; 
+ Thu, 09 Jul 2020 09:17:10 -0700 (PDT)
 MIME-Version: 1.0
-Content-Disposition: inline
-In-Reply-To: <CAF6AEGsCROVTsi2R7_aUkmH9Luoc_guMR0w0KUJc2cEgpfj79w@mail.gmail.com>
-User-Agent: Mutt/1.5.24 (2015-08-30)
-Cc: Sean Paul <sean@poorly.run>, freedreno <freedreno@lists.freedesktop.org>,
- David Airlie <airlied@linux.ie>, Will Deacon <will@kernel.org>,
+References: <20200709050145.3520931-1-bjorn.andersson@linaro.org>
+ <20200709050145.3520931-3-bjorn.andersson@linaro.org>
+In-Reply-To: <20200709050145.3520931-3-bjorn.andersson@linaro.org>
+From: Rob Clark <robdclark@gmail.com>
+Date: Thu, 9 Jul 2020 09:17:42 -0700
+Message-ID: <CAF6AEGugJYmMpeH_9mWXcegq1awzraUzBTa0S1Rqcr3=Bmk0uQ@mail.gmail.com>
+Subject: Re: [PATCH 2/5] iommu/arm-smmu: Emulate bypass by using context banks
+To: Bjorn Andersson <bjorn.andersson@linaro.org>
+Cc: Jonathan Marek <jonathan@marek.ca>, Will Deacon <will@kernel.org>,
  Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
- dri-devel <dri-devel@lists.freedesktop.org>,
- Akhil P Oommen <akhilpo@codeaurora.org>,
  "list@263.net:IOMMU DRIVERS <iommu@lists.linux-foundation.org>,
  Joerg Roedel <joro@8bytes.org>, " <iommu@lists.linux-foundation.org>,
- Matthias Kaehlcke <mka@chromium.org>,
- "Kristian H . Kristensen" <hoegsberg@google.com>,
- Daniel Vetter <daniel@ffwll.ch>, linux-arm-msm <linux-arm-msm@vger.kernel.org>,
- Stephen Boyd <swboyd@chromium.org>, Robin Murphy <robin.murphy@arm.com>,
- Sharat Masetty <smasetty@codeaurora.org>,
+ Thierry Reding <thierry.reding@gmail.com>,
+ linux-arm-msm <linux-arm-msm@vger.kernel.org>,
+ Robin Murphy <robin.murphy@arm.com>,
  "moderated list:ARM/FREESCALE IMX / MXC ARM ARCHITECTURE"
- <linux-arm-kernel@lists.infradead.org>,
- Emil Velikov <emil.velikov@collabora.com>
+ <linux-arm-kernel@lists.infradead.org>
 X-BeenThere: iommu@lists.linux-foundation.org
 X-Mailman-Version: 2.1.15
 Precedence: list
@@ -144,71 +111,143 @@ Content-Transfer-Encoding: 7bit
 Errors-To: iommu-bounces@lists.linux-foundation.org
 Sender: "iommu" <iommu-bounces@lists.linux-foundation.org>
 
-On Fri, Jul 03, 2020 at 09:04:49AM -0700, Rob Clark wrote:
-> On Fri, Jul 3, 2020 at 7:53 AM Sai Prakash Ranjan
-> <saiprakash.ranjan@codeaurora.org> wrote:
-> >
-> > Hi Will,
-> >
-> > On 2020-07-03 19:07, Will Deacon wrote:
-> > > On Mon, Jun 29, 2020 at 09:22:50PM +0530, Sai Prakash Ranjan wrote:
-> > >> diff --git a/drivers/gpu/drm/msm/msm_iommu.c
-> > >> b/drivers/gpu/drm/msm/msm_iommu.c
-> > >> index f455c597f76d..bd1d58229cc2 100644
-> > >> --- a/drivers/gpu/drm/msm/msm_iommu.c
-> > >> +++ b/drivers/gpu/drm/msm/msm_iommu.c
-> > >> @@ -218,6 +218,9 @@ static int msm_iommu_map(struct msm_mmu *mmu,
-> > >> uint64_t iova,
-> > >>              iova |= GENMASK_ULL(63, 49);
-> > >>
-> > >>
-> > >> +    if (mmu->features & MMU_FEATURE_USE_SYSTEM_CACHE)
-> > >> +            prot |= IOMMU_SYS_CACHE_ONLY;
-> > >
-> > > Given that I think this is the only user of IOMMU_SYS_CACHE_ONLY, then
-> > > it
-> > > looks like it should actually be a property on the domain because we
-> > > never
-> > > need to configure it on a per-mapping basis within a domain, and
-> > > therefore
-> > > it shouldn't be exposed by the IOMMU API as a prot flag.
-> > >
-> > > Do you agree?
-> > >
-> >
-> > GPU being the only user is for now, but there are other clients which
-> > can use this.
-> > Plus how do we set the memory attributes if we do not expose this as
-> > prot flag?
-> 
-> It does appear that the downstream kgsl driver sets this for basically
-> all mappings.. well there is some conditional stuff around
-> DOMAIN_ATTR_USE_LLC_NWA but it seems based on the property of the
-> domain.  (Jordan may know more about what that is about.)  But looks
-> like there are a lot of different paths into iommu_map in kgsl so I
-> might have missed something.
+On Wed, Jul 8, 2020 at 10:01 PM Bjorn Andersson
+<bjorn.andersson@linaro.org> wrote:
+>
+> Some firmware found on various Qualcomm platforms traps writes to S2CR
+> of type BYPASS and writes FAULT into the register. This prevents us from
+> marking the streams for the display controller as BYPASS to allow
+> continued scanout of the screen through the initialization of the ARM
+> SMMU.
+>
+> This adds a Qualcomm specific cfg_probe function, which probes the
+> behavior of the S2CR registers and if found faulty enables the related
+> quirk. Based on this quirk context banks are allocated for IDENTITY
+> domains as well, but with ARM_SMMU_SCTLR_M omitted.
+>
+> The result is valid stream mappings, without translation.
+>
+> Signed-off-by: Bjorn Andersson <bjorn.andersson@linaro.org>
+> ---
+>  drivers/iommu/arm-smmu-qcom.c | 21 +++++++++++++++++++++
+>  drivers/iommu/arm-smmu.c      | 14 ++++++++++++--
+>  drivers/iommu/arm-smmu.h      |  3 +++
+>  3 files changed, 36 insertions(+), 2 deletions(-)
+>
+> diff --git a/drivers/iommu/arm-smmu-qcom.c b/drivers/iommu/arm-smmu-qcom.c
+> index cf01d0215a39..e8a36054e912 100644
+> --- a/drivers/iommu/arm-smmu-qcom.c
+> +++ b/drivers/iommu/arm-smmu-qcom.c
+> @@ -23,6 +23,26 @@ static const struct of_device_id qcom_smmu_client_of_match[] = {
+>         { }
+>  };
+>
+> +static int qcom_smmu_cfg_probe(struct arm_smmu_device *smmu)
+> +{
+> +       unsigned int last_s2cr = ARM_SMMU_GR0_S2CR(smmu->num_mapping_groups - 1);
+> +       u32 reg;
+> +
+> +       /*
+> +        * With some firmware writes to S2CR of type FAULT are ignored, and
+> +        * writing BYPASS will end up as FAULT in the register. Perform a write
+> +        * to S2CR to detect if this is the case with the current firmware.
+> +        */
+> +       arm_smmu_gr0_write(smmu, last_s2cr, FIELD_PREP(ARM_SMMU_S2CR_TYPE, S2CR_TYPE_BYPASS) |
+> +                                           FIELD_PREP(ARM_SMMU_S2CR_CBNDX, 0xff) |
+> +                                           FIELD_PREP(ARM_SMMU_S2CR_PRIVCFG, S2CR_PRIVCFG_DEFAULT));
+> +       reg = arm_smmu_gr0_read(smmu, last_s2cr);
+> +       if (FIELD_GET(ARM_SMMU_S2CR_TYPE, reg) != S2CR_TYPE_BYPASS)
+> +               smmu->qcom_bypass_quirk = true;
+> +
+> +       return 0;
+> +}
+> +
+>  static int qcom_smmu_def_domain_type(struct device *dev)
+>  {
+>         const struct of_device_id *match =
+> @@ -61,6 +81,7 @@ static int qcom_smmu500_reset(struct arm_smmu_device *smmu)
+>  }
+>
+>  static const struct arm_smmu_impl qcom_smmu_impl = {
+> +       .cfg_probe = qcom_smmu_cfg_probe,
+>         .def_domain_type = qcom_smmu_def_domain_type,
+>         .reset = qcom_smmu500_reset,
+>  };
+> diff --git a/drivers/iommu/arm-smmu.c b/drivers/iommu/arm-smmu.c
+> index 2e27cf9815ab..f33eda3117fa 100644
+> --- a/drivers/iommu/arm-smmu.c
+> +++ b/drivers/iommu/arm-smmu.c
+> @@ -654,7 +654,9 @@ static void arm_smmu_write_context_bank(struct arm_smmu_device *smmu, int idx)
+>
+>         /* SCTLR */
+>         reg = ARM_SMMU_SCTLR_CFIE | ARM_SMMU_SCTLR_CFRE | ARM_SMMU_SCTLR_AFE |
+> -             ARM_SMMU_SCTLR_TRE | ARM_SMMU_SCTLR_M;
+> +             ARM_SMMU_SCTLR_TRE;
+> +       if (cfg->m)
+> +               reg |= ARM_SMMU_SCTLR_M;
+>         if (stage1)
+>                 reg |= ARM_SMMU_SCTLR_S1_ASIDPNE;
+>         if (IS_ENABLED(CONFIG_CPU_BIG_ENDIAN))
+> @@ -678,7 +680,11 @@ static int arm_smmu_init_domain_context(struct iommu_domain *domain,
+>         if (smmu_domain->smmu)
+>                 goto out_unlock;
+>
+> -       if (domain->type == IOMMU_DOMAIN_IDENTITY) {
+> +       /*
+> +        * Nothing to do for IDENTITY domains,unless disabled context banks are
+> +        * used to emulate bypass mappings on Qualcomm platforms.
+> +        */
+> +       if (domain->type == IOMMU_DOMAIN_IDENTITY && !smmu->qcom_bypass_quirk) {
 
-Downstream does set it universally. There are some theoretical use cases
-where it might be beneficial to set it on a per-mapping basis with a bunch
-of hinting from userspace and nobody has tried to characterize this on real
-hardware so it is not clear to me if it is worth it.
+maybe I'm overlooking something, but I think this would put us back to
+allocating pgtables (and making iommu->map/unmap() no longer no-ops),
+which I don't think we want
 
-I think a domain wide attribute works for now but if a compelling per-mapping
-use case does comes down the pipeline we need to have a backup in mind -
-possibly a prot flag to disable NWA?
+BR,
+-R
 
-Jordan
-
-> Assuming there isn't some case where we specifically don't want to use
-> the system cache for some mapping, I think it could be a domain
-> attribute that sets an io_pgtable_cfg::quirks flag
-> 
-> BR,
-> -R
-
--- 
-The Qualcomm Innovation Center, Inc. is a member of Code Aurora Forum,
-a Linux Foundation Collaborative Project
+>                 smmu_domain->stage = ARM_SMMU_DOMAIN_BYPASS;
+>                 smmu_domain->smmu = smmu;
+>                 goto out_unlock;
+> @@ -826,6 +832,10 @@ static int arm_smmu_init_domain_context(struct iommu_domain *domain,
+>         domain->geometry.aperture_end = (1UL << ias) - 1;
+>         domain->geometry.force_aperture = true;
+>
+> +       /* Enable translation for non-identity context banks */
+> +       if (domain->type != IOMMU_DOMAIN_IDENTITY)
+> +               cfg->m = true;
+> +
+>         /* Initialise the context bank with our page table cfg */
+>         arm_smmu_init_context_bank(smmu_domain, &pgtbl_cfg);
+>         arm_smmu_write_context_bank(smmu, cfg->cbndx);
+> diff --git a/drivers/iommu/arm-smmu.h b/drivers/iommu/arm-smmu.h
+> index d172c024be61..a71d193073e4 100644
+> --- a/drivers/iommu/arm-smmu.h
+> +++ b/drivers/iommu/arm-smmu.h
+> @@ -305,6 +305,8 @@ struct arm_smmu_device {
+>
+>         /* IOMMU core code handle */
+>         struct iommu_device             iommu;
+> +
+> +       bool                            qcom_bypass_quirk;
+>  };
+>
+>  enum arm_smmu_context_fmt {
+> @@ -323,6 +325,7 @@ struct arm_smmu_cfg {
+>         };
+>         enum arm_smmu_cbar_type         cbar;
+>         enum arm_smmu_context_fmt       fmt;
+> +       bool                            m;
+>  };
+>  #define ARM_SMMU_INVALID_IRPTNDX       0xff
+>
+> --
+> 2.26.2
+>
+> _______________________________________________
+> iommu mailing list
+> iommu@lists.linux-foundation.org
+> https://lists.linuxfoundation.org/mailman/listinfo/iommu
 _______________________________________________
 iommu mailing list
 iommu@lists.linux-foundation.org
