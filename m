@@ -2,78 +2,98 @@ Return-Path: <SRS0=szPT=AU=lists.linux-foundation.org=iommu-bounces@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-8.2 required=3.0 tests=HEADER_FROM_DIFFERENT_DOMAINS,
-	INCLUDES_PATCH,MAILING_LIST_MULTI,SIGNED_OFF_BY,SPF_HELO_NONE,SPF_PASS,
-	URIBL_BLOCKED,USER_AGENT_SANE_1 autolearn=unavailable autolearn_force=no
-	version=3.4.0
+X-Spam-Status: No, score=-0.5 required=3.0 tests=DKIM_INVALID,DKIM_SIGNED,
+	HEADER_FROM_DIFFERENT_DOMAINS,MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS,
+	URIBL_BLOCKED autolearn=no autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 27064C433DF
-	for <iommu@archiver.kernel.org>; Thu,  9 Jul 2020 09:35:25 +0000 (UTC)
-Received: from silver.osuosl.org (smtp3.osuosl.org [140.211.166.136])
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 9A901C433E1
+	for <iommu@archiver.kernel.org>; Thu,  9 Jul 2020 09:40:04 +0000 (UTC)
+Received: from fraxinus.osuosl.org (smtp4.osuosl.org [140.211.166.137])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by mail.kernel.org (Postfix) with ESMTPS id EAA67206C3
-	for <iommu@archiver.kernel.org>; Thu,  9 Jul 2020 09:35:24 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org EAA67206C3
-Authentication-Results: mail.kernel.org; dmarc=none (p=none dis=none) header.from=arm.com
+	by mail.kernel.org (Postfix) with ESMTPS id 6622B206E2
+	for <iommu@archiver.kernel.org>; Thu,  9 Jul 2020 09:40:04 +0000 (UTC)
+Authentication-Results: mail.kernel.org;
+	dkim=fail reason="signature verification failed" (2048-bit key) header.d=linaro.org header.i=@linaro.org header.b="FavBHG8I"
+DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 6622B206E2
+Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=linaro.org
 Authentication-Results: mail.kernel.org; spf=pass smtp.mailfrom=iommu-bounces@lists.linux-foundation.org
 Received: from localhost (localhost [127.0.0.1])
-	by silver.osuosl.org (Postfix) with ESMTP id AFFFC24912;
-	Thu,  9 Jul 2020 09:35:24 +0000 (UTC)
+	by fraxinus.osuosl.org (Postfix) with ESMTP id 2A1F987CCB;
+	Thu,  9 Jul 2020 09:40:04 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from silver.osuosl.org ([127.0.0.1])
+Received: from fraxinus.osuosl.org ([127.0.0.1])
 	by localhost (.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
-	with ESMTP id aaI+ewpL6HSs; Thu,  9 Jul 2020 09:35:23 +0000 (UTC)
+	with ESMTP id JZLESdoNpZ5n; Thu,  9 Jul 2020 09:40:03 +0000 (UTC)
 Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [140.211.9.56])
-	by silver.osuosl.org (Postfix) with ESMTP id 0BF00220D6;
-	Thu,  9 Jul 2020 09:35:23 +0000 (UTC)
+	by fraxinus.osuosl.org (Postfix) with ESMTP id 98F6E87CCF;
+	Thu,  9 Jul 2020 09:40:03 +0000 (UTC)
 Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
-	by lists.linuxfoundation.org (Postfix) with ESMTP id D6B9EC077B;
-	Thu,  9 Jul 2020 09:35:22 +0000 (UTC)
+	by lists.linuxfoundation.org (Postfix) with ESMTP id 89DB5C077B;
+	Thu,  9 Jul 2020 09:40:03 +0000 (UTC)
 Received: from fraxinus.osuosl.org (smtp4.osuosl.org [140.211.166.137])
- by lists.linuxfoundation.org (Postfix) with ESMTP id C46D1C016F
- for <iommu@lists.linux-foundation.org>; Thu,  9 Jul 2020 09:35:21 +0000 (UTC)
+ by lists.linuxfoundation.org (Postfix) with ESMTP id 4FF7FC016F
+ for <iommu@lists.linux-foundation.org>; Thu,  9 Jul 2020 09:40:02 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
- by fraxinus.osuosl.org (Postfix) with ESMTP id AD47C87C85
- for <iommu@lists.linux-foundation.org>; Thu,  9 Jul 2020 09:35:21 +0000 (UTC)
+ by fraxinus.osuosl.org (Postfix) with ESMTP id 37F8C87CD3
+ for <iommu@lists.linux-foundation.org>; Thu,  9 Jul 2020 09:40:02 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
 Received: from fraxinus.osuosl.org ([127.0.0.1])
  by localhost (.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
- with ESMTP id gjXAPvq3Qg70 for <iommu@lists.linux-foundation.org>;
- Thu,  9 Jul 2020 09:35:19 +0000 (UTC)
+ with ESMTP id dq70UDB51xJF for <iommu@lists.linux-foundation.org>;
+ Thu,  9 Jul 2020 09:40:01 +0000 (UTC)
 X-Greylist: domain auto-whitelisted by SQLgrey-1.7.6
-Received: from foss.arm.com (foss.arm.com [217.140.110.172])
- by fraxinus.osuosl.org (Postfix) with ESMTP id C582B87C81
- for <iommu@lists.linux-foundation.org>; Thu,  9 Jul 2020 09:35:19 +0000 (UTC)
-Received: from usa-sjc-imap-foss1.foss.arm.com (unknown [10.121.207.14])
- by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id 08F5631B;
- Thu,  9 Jul 2020 02:35:19 -0700 (PDT)
-Received: from e121166-lin.cambridge.arm.com (e121166-lin.cambridge.arm.com
- [10.1.196.255])
- by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPSA id CD36D3F887;
- Thu,  9 Jul 2020 02:35:16 -0700 (PDT)
-Date: Thu, 9 Jul 2020 10:35:14 +0100
-From: Lorenzo Pieralisi <lorenzo.pieralisi@arm.com>
-To: linux-arm-kernel@lists.infradead.org,
- "Rafael J. Wysocki" <rjw@rjwysocki.net>
-Subject: Re: [PATCH v2 05/12] ACPI/IORT: Add an input ID to
- acpi_dma_configure()
-Message-ID: <20200709093514.GC18149@e121166-lin.cambridge.arm.com>
-References: <20200521130008.8266-1-lorenzo.pieralisi@arm.com>
- <20200619082013.13661-1-lorenzo.pieralisi@arm.com>
- <20200619082013.13661-6-lorenzo.pieralisi@arm.com>
+Received: from mail-ej1-f66.google.com (mail-ej1-f66.google.com
+ [209.85.218.66])
+ by fraxinus.osuosl.org (Postfix) with ESMTPS id 15A4B87CCB
+ for <iommu@lists.linux-foundation.org>; Thu,  9 Jul 2020 09:40:01 +0000 (UTC)
+Received: by mail-ej1-f66.google.com with SMTP id w16so1584477ejj.5
+ for <iommu@lists.linux-foundation.org>; Thu, 09 Jul 2020 02:40:01 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linaro.org; s=google;
+ h=date:from:to:cc:subject:message-id:references:mime-version
+ :content-disposition:in-reply-to;
+ bh=2THE/Ch7o0atdMFuV+uYcIIPapd2rod4QXyGDJ/dFko=;
+ b=FavBHG8IG2M/1g82xJw00majkxmSP5shEMXvMHDHe7094E4Hs00vjp8TSSeR812KOm
+ uC7FGqeoRqCDwBgdgygc/j1M0Msyq/Ih3poWhDEiWpFtl68h4WZWGazIM4Nb76BfjWKN
+ tzXZHrubqlL/oEkduaS00KzNt4j/7hWc+bBdZBkZ0sR4ZauY5UmPmwJGHDi20CGqw+S9
+ A/ofjh4eAf0kBuaLw/NQbbbbm4RNOztwCCAt6vX3Jlo1wlr4gj/NKXc0I47EcR5lzOF/
+ UCTt8pKDGUbPmgFRlhMpkF+INN5Ld1zjZLpvr12d6Fca3LQNgtvD2qy/WRGnQGNt84y8
+ UdAA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+ d=1e100.net; s=20161025;
+ h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+ :mime-version:content-disposition:in-reply-to;
+ bh=2THE/Ch7o0atdMFuV+uYcIIPapd2rod4QXyGDJ/dFko=;
+ b=XOwqBe98tqZMIt86fyJD9D89jULSLLfr/35sn/OnWL76lRBbOQg/c5tIsQ8VNMAKwE
+ VdtOMPH5VchftzJCWBabNZLcqQZngE0C+sOmkchsws9CO/z1FzcBaitRex/NTxuapcg0
+ SjXu9gnPk/STZ5Cp6G9+FF9ej7F4/MTdfdP6vzlU9J4kbjnHb3XR7tMxGMNAUsHBCERq
+ sUAICkrNAVaUpfoYcbKAjqtgstTWu7eM+awQ1a9PgvyVk89OLqgw7rVYyXXm795deeUu
+ aOrWkxLVgDwe+JJfsW4ia9PHckuSBmkGnbooBJq7QAtTLn+vKOLwrXoWc2Gl2/wxlFBS
+ 086Q==
+X-Gm-Message-State: AOAM5305tT/KdjT6J7j+8ucfZdto+LYIZEkuJ5Eydw+j5ReZbaB0jXAR
+ WtnpZVH8Xyeu+Yzuxsp902tSN7NGpvg=
+X-Google-Smtp-Source: ABdhPJwRIJMZIpLlplX9lPskZd1R8tF64miPnKHMtY82fk3Knb0HoMgI+IgSJLyxwoNHoioyY3/W0A==
+X-Received: by 2002:a17:906:945:: with SMTP id
+ j5mr56100930ejd.52.1594287599016; 
+ Thu, 09 Jul 2020 02:39:59 -0700 (PDT)
+Received: from myrica ([2001:1715:4e26:a7e0:116c:c27a:3e7f:5eaf])
+ by smtp.gmail.com with ESMTPSA id q21sm1428288ejr.75.2020.07.09.02.39.57
+ (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+ Thu, 09 Jul 2020 02:39:58 -0700 (PDT)
+Date: Thu, 9 Jul 2020 11:39:46 +0200
+From: Jean-Philippe Brucker <jean-philippe@linaro.org>
+To: iommu@lists.linux-foundation.org, linux-arm-kernel@lists.infradead.org,
+ linux-mm@kvack.org
+Subject: Re: [PATCH v8 00/12] iommu: Shared Virtual Addressing for SMMUv3 (PT
+ sharing part)
+Message-ID: <20200709093946.GC4477@myrica>
+References: <20200618155125.1548969-1-jean-philippe@linaro.org>
 MIME-Version: 1.0
 Content-Disposition: inline
-In-Reply-To: <20200619082013.13661-6-lorenzo.pieralisi@arm.com>
-User-Agent: Mutt/1.9.4 (2018-02-28)
-Cc: devicetree@vger.kernel.org, Marc Zyngier <maz@kernel.org>,
- Makarand Pawagi <makarand.pawagi@nxp.com>,
- Catalin Marinas <catalin.marinas@arm.com>, Hanjun Guo <guohanjun@huawei.com>,
- linux-pci@vger.kernel.org, Robin Murphy <robin.murphy@arm.com>,
- linux-acpi@vger.kernel.org, iommu@lists.linux-foundation.org,
- Rob Herring <robh+dt@kernel.org>, Sudeep Holla <sudeep.holla@arm.com>,
- Bjorn Helgaas <bhelgaas@google.com>, Will Deacon <will@kernel.org>,
- Diana Craciun <diana.craciun@oss.nxp.com>
+In-Reply-To: <20200618155125.1548969-1-jean-philippe@linaro.org>
+Cc: fenghua.yu@intel.com, catalin.marinas@arm.com, robin.murphy@arm.com,
+ hch@infradead.org, zhengxiang9@huawei.com, zhangfei.gao@linaro.org,
+ will@kernel.org
 X-BeenThere: iommu@lists.linux-foundation.org
 X-Mailman-Version: 2.1.15
 Precedence: list
@@ -91,263 +111,73 @@ Content-Transfer-Encoding: 7bit
 Errors-To: iommu-bounces@lists.linux-foundation.org
 Sender: "iommu" <iommu-bounces@lists.linux-foundation.org>
 
-On Fri, Jun 19, 2020 at 09:20:06AM +0100, Lorenzo Pieralisi wrote:
-> Some HW devices are created as child devices of proprietary busses,
-> that have a bus specific policy defining how the child devices
-> wires representing the devices ID are translated into IOMMU and
-> IRQ controllers device IDs.
-> 
-> Current IORT code provides translations for:
-> 
-> - PCI devices, where the device ID is well identified at bus level
->   as the requester ID (RID)
-> - Platform devices that are endpoint devices where the device ID is
->   retrieved from the ACPI object IORT mappings (Named components single
->   mappings). A platform device is represented in IORT as a named
->   component node
-> 
-> For devices that are child devices of proprietary busses the IORT
-> firmware represents the bus node as a named component node in IORT
-> and it is up to that named component node to define in/out bus
-> specific ID translations for the bus child devices that are
-> allocated and created in a bus specific manner.
-> 
-> In order to make IORT ID translations available for proprietary
-> bus child devices, the current ACPI (and IORT) code must be
-> augmented to provide an additional ID parameter to acpi_dma_configure()
-> representing the child devices input ID. This ID is bus specific
-> and it is retrieved in bus specific code.
-> 
-> By adding an ID parameter to acpi_dma_configure(), the IORT
-> code can map the child device ID to an IOMMU stream ID through
-> the IORT named component representing the bus in/out ID mappings.
-> 
-> Signed-off-by: Lorenzo Pieralisi <lorenzo.pieralisi@arm.com>
-> Cc: Will Deacon <will@kernel.org>
-> Cc: Hanjun Guo <guohanjun@huawei.com>
-> Cc: Sudeep Holla <sudeep.holla@arm.com>
-> Cc: Catalin Marinas <catalin.marinas@arm.com>
-> Cc: Robin Murphy <robin.murphy@arm.com>
-> Cc: "Rafael J. Wysocki" <rjw@rjwysocki.net>
-> ---
->  drivers/acpi/arm64/iort.c | 59 +++++++++++++++++++++++++++++----------
->  drivers/acpi/scan.c       |  8 ++++--
->  include/acpi/acpi_bus.h   |  9 ++++--
->  include/linux/acpi.h      |  7 +++++
->  include/linux/acpi_iort.h |  7 +++--
->  5 files changed, 67 insertions(+), 23 deletions(-)
+Hi Will,
 
-Hi Rafael,
+On Thu, Jun 18, 2020 at 05:51:13PM +0200, Jean-Philippe Brucker wrote:
+> Since v7 [1], I split the series into three parts to ease review. This
+> first one adds page table sharing to the SMMUv3 driver. The second one
+> adds support for I/O page faults through PRI and Stall, and the last one
+> adds additional and optional features (DVM, VHE and HTTU). SVA needs the
+> three parts to work. No significant change apart from that, I just
+> addressed the previous comments.
+> 
+> I'd rather everything went through the IOMMU tree but I'm assuming patch
+> 1 will also go through the x86 tree as part of [2]. It is definitely
+> required by patch 3 which is required by patch 11. I don't know how this
+> kind of conflict is usually resolved, but if it's a problem I could
+> further shrink the series to only patches 4-10 this cycle.
 
-just to ask if the ACPI core changes in this patch are OK with you,
-thank you very much.
+I have one bugfix for this series but am planning to hold off resending
+until you've found time to have a look. I can also reduce it to 7 patches
+for v4.9, please let me know what you prefer.
 
-Lorenzo
+Thanks,
+Jean
 
-> diff --git a/drivers/acpi/arm64/iort.c b/drivers/acpi/arm64/iort.c
-> index 421c6976ab81..ec782e4a0fe4 100644
-> --- a/drivers/acpi/arm64/iort.c
-> +++ b/drivers/acpi/arm64/iort.c
-> @@ -978,19 +978,54 @@ static void iort_named_component_init(struct device *dev,
->  					   nc->node_flags);
->  }
->  
-> +static int iort_nc_iommu_map(struct device *dev, struct acpi_iort_node *node)
-> +{
-> +	struct acpi_iort_node *parent;
-> +	int err = -ENODEV, i = 0;
-> +	u32 streamid = 0;
-> +
-> +	do {
-> +
-> +		parent = iort_node_map_platform_id(node, &streamid,
-> +						   IORT_IOMMU_TYPE,
-> +						   i++);
-> +
-> +		if (parent)
-> +			err = iort_iommu_xlate(dev, parent, streamid);
-> +	} while (parent && !err);
-> +
-> +	return err;
-> +}
-> +
-> +static int iort_nc_iommu_map_id(struct device *dev,
-> +				struct acpi_iort_node *node,
-> +				const u32 *in_id)
-> +{
-> +	struct acpi_iort_node *parent;
-> +	u32 streamid;
-> +
-> +	parent = iort_node_map_id(node, *in_id, &streamid, IORT_IOMMU_TYPE);
-> +	if (parent)
-> +		return iort_iommu_xlate(dev, parent, streamid);
-> +
-> +	return -ENODEV;
-> +}
-> +
-> +
->  /**
-> - * iort_iommu_configure - Set-up IOMMU configuration for a device.
-> + * iort_iommu_configure_id - Set-up IOMMU configuration for a device.
->   *
->   * @dev: device to configure
-> + * @id_in: optional input id const value pointer
->   *
->   * Returns: iommu_ops pointer on configuration success
->   *          NULL on configuration failure
->   */
-> -const struct iommu_ops *iort_iommu_configure(struct device *dev)
-> +const struct iommu_ops *iort_iommu_configure_id(struct device *dev,
-> +						const u32 *id_in)
->  {
-> -	struct acpi_iort_node *node, *parent;
-> +	struct acpi_iort_node *node;
->  	const struct iommu_ops *ops;
-> -	u32 streamid = 0;
->  	int err = -ENODEV;
->  
->  	/*
-> @@ -1019,21 +1054,13 @@ const struct iommu_ops *iort_iommu_configure(struct device *dev)
->  		if (fwspec && iort_pci_rc_supports_ats(node))
->  			fwspec->flags |= IOMMU_FWSPEC_PCI_RC_ATS;
->  	} else {
-> -		int i = 0;
-> -
->  		node = iort_scan_node(ACPI_IORT_NODE_NAMED_COMPONENT,
->  				      iort_match_node_callback, dev);
->  		if (!node)
->  			return NULL;
->  
-> -		do {
-> -			parent = iort_node_map_platform_id(node, &streamid,
-> -							   IORT_IOMMU_TYPE,
-> -							   i++);
-> -
-> -			if (parent)
-> -				err = iort_iommu_xlate(dev, parent, streamid);
-> -		} while (parent && !err);
-> +		err = id_in ? iort_nc_iommu_map_id(dev, node, id_in) :
-> +			      iort_nc_iommu_map(dev, node);
->  
->  		if (!err)
->  			iort_named_component_init(dev, node);
-> @@ -1058,6 +1085,7 @@ const struct iommu_ops *iort_iommu_configure(struct device *dev)
->  
->  	return ops;
->  }
-> +
->  #else
->  static inline const struct iommu_ops *iort_fwspec_iommu_ops(struct device *dev)
->  { return NULL; }
-> @@ -1066,7 +1094,8 @@ static inline int iort_add_device_replay(const struct iommu_ops *ops,
->  { return 0; }
->  int iort_iommu_msi_get_resv_regions(struct device *dev, struct list_head *head)
->  { return 0; }
-> -const struct iommu_ops *iort_iommu_configure(struct device *dev)
-> +const struct iommu_ops *iort_iommu_configure_id(struct device *dev,
-> +						const u32 *input_id)
->  { return NULL; }
->  #endif
->  
-> diff --git a/drivers/acpi/scan.c b/drivers/acpi/scan.c
-> index 8777faced51a..2142f1554761 100644
-> --- a/drivers/acpi/scan.c
-> +++ b/drivers/acpi/scan.c
-> @@ -1457,8 +1457,10 @@ int acpi_dma_get_range(struct device *dev, u64 *dma_addr, u64 *offset,
->   * acpi_dma_configure - Set-up DMA configuration for the device.
->   * @dev: The pointer to the device
->   * @attr: device dma attributes
-> + * @input_id: input device id const value pointer
->   */
-> -int acpi_dma_configure(struct device *dev, enum dev_dma_attr attr)
-> +int acpi_dma_configure_id(struct device *dev, enum dev_dma_attr attr,
-> +			  const u32 *input_id)
->  {
->  	const struct iommu_ops *iommu;
->  	u64 dma_addr = 0, size = 0;
-> @@ -1470,7 +1472,7 @@ int acpi_dma_configure(struct device *dev, enum dev_dma_attr attr)
->  
->  	iort_dma_setup(dev, &dma_addr, &size);
->  
-> -	iommu = iort_iommu_configure(dev);
-> +	iommu = iort_iommu_configure_id(dev, input_id);
->  	if (PTR_ERR(iommu) == -EPROBE_DEFER)
->  		return -EPROBE_DEFER;
->  
-> @@ -1479,7 +1481,7 @@ int acpi_dma_configure(struct device *dev, enum dev_dma_attr attr)
->  
->  	return 0;
->  }
-> -EXPORT_SYMBOL_GPL(acpi_dma_configure);
-> +EXPORT_SYMBOL_GPL(acpi_dma_configure_id);
->  
->  static void acpi_init_coherency(struct acpi_device *adev)
->  {
-> diff --git a/include/acpi/acpi_bus.h b/include/acpi/acpi_bus.h
-> index 5afb6ceb284f..a3abcc4b7d9f 100644
-> --- a/include/acpi/acpi_bus.h
-> +++ b/include/acpi/acpi_bus.h
-> @@ -588,8 +588,13 @@ bool acpi_dma_supported(struct acpi_device *adev);
->  enum dev_dma_attr acpi_get_dma_attr(struct acpi_device *adev);
->  int acpi_dma_get_range(struct device *dev, u64 *dma_addr, u64 *offset,
->  		       u64 *size);
-> -int acpi_dma_configure(struct device *dev, enum dev_dma_attr attr);
-> -
-> +int acpi_dma_configure_id(struct device *dev, enum dev_dma_attr attr,
-> +			   const u32 *input_id);
-> +static inline int acpi_dma_configure(struct device *dev,
-> +				     enum dev_dma_attr attr)
-> +{
-> +	return acpi_dma_configure_id(dev, attr, NULL);
-> +}
->  struct acpi_device *acpi_find_child_device(struct acpi_device *parent,
->  					   u64 address, bool check_children);
->  int acpi_is_root_bridge(acpi_handle);
-> diff --git a/include/linux/acpi.h b/include/linux/acpi.h
-> index d661cd0ee64d..6d2c47489d90 100644
-> --- a/include/linux/acpi.h
-> +++ b/include/linux/acpi.h
-> @@ -905,6 +905,13 @@ static inline int acpi_dma_configure(struct device *dev,
->  	return 0;
->  }
->  
-> +static inline int acpi_dma_configure_id(struct device *dev,
-> +					enum dev_dma_attr attr,
-> +					const u32 *input_id)
-> +{
-> +	return 0;
-> +}
-> +
->  #define ACPI_PTR(_ptr)	(NULL)
->  
->  static inline void acpi_device_set_enumerated(struct acpi_device *adev)
-> diff --git a/include/linux/acpi_iort.h b/include/linux/acpi_iort.h
-> index e51425e083da..20a32120bb88 100644
-> --- a/include/linux/acpi_iort.h
-> +++ b/include/linux/acpi_iort.h
-> @@ -35,7 +35,8 @@ void acpi_configure_pmsi_domain(struct device *dev);
->  int iort_pmsi_get_dev_id(struct device *dev, u32 *dev_id);
->  /* IOMMU interface */
->  void iort_dma_setup(struct device *dev, u64 *dma_addr, u64 *size);
-> -const struct iommu_ops *iort_iommu_configure(struct device *dev);
-> +const struct iommu_ops *iort_iommu_configure_id(struct device *dev,
-> +						const u32 *id_in);
->  int iort_iommu_msi_get_resv_regions(struct device *dev, struct list_head *head);
->  #else
->  static inline void acpi_iort_init(void) { }
-> @@ -48,8 +49,8 @@ static inline void acpi_configure_pmsi_domain(struct device *dev) { }
->  /* IOMMU interface */
->  static inline void iort_dma_setup(struct device *dev, u64 *dma_addr,
->  				  u64 *size) { }
-> -static inline const struct iommu_ops *iort_iommu_configure(
-> -				      struct device *dev)
-> +static inline const struct iommu_ops *iort_iommu_configure_id(
-> +				      struct device *dev, const u32 *id_in)
->  { return NULL; }
->  static inline
->  int iort_iommu_msi_get_resv_regions(struct device *dev, struct list_head *head)
+> 
+> [1] https://lore.kernel.org/linux-iommu/20200519175502.2504091-1-jean-philippe@linaro.org/
+> [2] https://lore.kernel.org/linux-iommu/1592418233-17762-1-git-send-email-fenghua.yu@intel.com/
+> 
+> Fenghua Yu (1):
+>   mm: Define pasid in mm
+> 
+> Jean-Philippe Brucker (11):
+>   iommu/ioasid: Add ioasid references
+>   iommu/sva: Add PASID helpers
+>   arm64: mm: Pin down ASIDs for sharing mm with devices
+>   iommu/io-pgtable-arm: Move some definitions to a header
+>   arm64: cpufeature: Export symbol read_sanitised_ftr_reg()
+>   iommu/arm-smmu-v3: Share process page tables
+>   iommu/arm-smmu-v3: Seize private ASID
+>   iommu/arm-smmu-v3: Check for SVA features
+>   iommu/arm-smmu-v3: Add SVA device feature
+>   iommu/arm-smmu-v3: Implement iommu_sva_bind/unbind()
+>   iommu/arm-smmu-v3: Hook up ATC invalidation to mm ops
+> 
+>  drivers/iommu/Kconfig                |   7 +
+>  drivers/iommu/Makefile               |   1 +
+>  arch/arm64/include/asm/mmu.h         |   1 +
+>  arch/arm64/include/asm/mmu_context.h |  11 +-
+>  drivers/iommu/io-pgtable-arm.h       |  30 ++
+>  drivers/iommu/iommu-sva-lib.h        |  15 +
+>  include/linux/ioasid.h               |  10 +-
+>  include/linux/mm_types.h             |   4 +
+>  arch/arm64/kernel/cpufeature.c       |   1 +
+>  arch/arm64/mm/context.c              |  95 +++-
+>  drivers/iommu/arm-smmu-v3.c          | 702 ++++++++++++++++++++++++++-
+>  drivers/iommu/intel/iommu.c          |   4 +-
+>  drivers/iommu/intel/svm.c            |   6 +-
+>  drivers/iommu/io-pgtable-arm.c       |  27 +-
+>  drivers/iommu/ioasid.c               |  38 +-
+>  drivers/iommu/iommu-sva-lib.c        |  85 ++++
+>  MAINTAINERS                          |   3 +-
+>  17 files changed, 977 insertions(+), 63 deletions(-)
+>  create mode 100644 drivers/iommu/io-pgtable-arm.h
+>  create mode 100644 drivers/iommu/iommu-sva-lib.h
+>  create mode 100644 drivers/iommu/iommu-sva-lib.c
+> 
 > -- 
-> 2.26.1
+> 2.27.0
 > 
 _______________________________________________
 iommu mailing list
