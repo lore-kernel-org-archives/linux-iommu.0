@@ -2,82 +2,73 @@ Return-Path: <SRS0=szPT=AU=lists.linux-foundation.org=iommu-bounces@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-8.2 required=3.0 tests=HEADER_FROM_DIFFERENT_DOMAINS,
+X-Spam-Status: No, score=-9.7 required=3.0 tests=HEADER_FROM_DIFFERENT_DOMAINS,
 	INCLUDES_PATCH,MAILING_LIST_MULTI,SIGNED_OFF_BY,SPF_HELO_NONE,SPF_PASS,
-	URIBL_BLOCKED,USER_AGENT_SANE_1 autolearn=ham autolearn_force=no version=3.4.0
+	URIBL_BLOCKED,USER_AGENT_GIT autolearn=ham autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id D6239C433E0
-	for <iommu@archiver.kernel.org>; Thu,  9 Jul 2020 06:52:52 +0000 (UTC)
-Received: from hemlock.osuosl.org (smtp2.osuosl.org [140.211.166.133])
+	by smtp.lore.kernel.org (Postfix) with ESMTP id BDA8BC433E0
+	for <iommu@archiver.kernel.org>; Thu,  9 Jul 2020 07:10:20 +0000 (UTC)
+Received: from fraxinus.osuosl.org (smtp4.osuosl.org [140.211.166.137])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by mail.kernel.org (Postfix) with ESMTPS id A1E622070E
-	for <iommu@archiver.kernel.org>; Thu,  9 Jul 2020 06:52:52 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org A1E622070E
+	by mail.kernel.org (Postfix) with ESMTPS id 8649D2073A
+	for <iommu@archiver.kernel.org>; Thu,  9 Jul 2020 07:10:20 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 8649D2073A
 Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=linux.intel.com
 Authentication-Results: mail.kernel.org; spf=pass smtp.mailfrom=iommu-bounces@lists.linux-foundation.org
 Received: from localhost (localhost [127.0.0.1])
-	by hemlock.osuosl.org (Postfix) with ESMTP id 6A08F87B7D;
-	Thu,  9 Jul 2020 06:52:52 +0000 (UTC)
+	by fraxinus.osuosl.org (Postfix) with ESMTP id 52A1687A4E;
+	Thu,  9 Jul 2020 07:10:20 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from hemlock.osuosl.org ([127.0.0.1])
+Received: from fraxinus.osuosl.org ([127.0.0.1])
 	by localhost (.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
-	with ESMTP id v6e1CzdpKfzX; Thu,  9 Jul 2020 06:52:51 +0000 (UTC)
+	with ESMTP id 2gu4Xchid40P; Thu,  9 Jul 2020 07:10:19 +0000 (UTC)
 Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [140.211.9.56])
-	by hemlock.osuosl.org (Postfix) with ESMTP id 715A38633B;
-	Thu,  9 Jul 2020 06:52:51 +0000 (UTC)
+	by fraxinus.osuosl.org (Postfix) with ESMTP id 9886587A44;
+	Thu,  9 Jul 2020 07:10:19 +0000 (UTC)
 Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
-	by lists.linuxfoundation.org (Postfix) with ESMTP id 63BBBC0865;
-	Thu,  9 Jul 2020 06:52:51 +0000 (UTC)
-Received: from hemlock.osuosl.org (smtp2.osuosl.org [140.211.166.133])
- by lists.linuxfoundation.org (Postfix) with ESMTP id C0376C016F
- for <iommu@lists.linux-foundation.org>; Thu,  9 Jul 2020 06:52:50 +0000 (UTC)
+	by lists.linuxfoundation.org (Postfix) with ESMTP id 7AC75C077B;
+	Thu,  9 Jul 2020 07:10:19 +0000 (UTC)
+Received: from silver.osuosl.org (smtp3.osuosl.org [140.211.166.136])
+ by lists.linuxfoundation.org (Postfix) with ESMTP id 613CEC08A5
+ for <iommu@lists.linux-foundation.org>; Thu,  9 Jul 2020 07:10:18 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
- by hemlock.osuosl.org (Postfix) with ESMTP id AE9438633B
- for <iommu@lists.linux-foundation.org>; Thu,  9 Jul 2020 06:52:50 +0000 (UTC)
+ by silver.osuosl.org (Postfix) with ESMTP id 4F1DD20487
+ for <iommu@lists.linux-foundation.org>; Thu,  9 Jul 2020 07:10:18 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from hemlock.osuosl.org ([127.0.0.1])
+Received: from silver.osuosl.org ([127.0.0.1])
  by localhost (.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
- with ESMTP id T4XGekXS-QMt for <iommu@lists.linux-foundation.org>;
- Thu,  9 Jul 2020 06:52:49 +0000 (UTC)
+ with ESMTP id y7EmmANZHRoT for <iommu@lists.linux-foundation.org>;
+ Thu,  9 Jul 2020 07:10:17 +0000 (UTC)
 X-Greylist: domain auto-whitelisted by SQLgrey-1.7.6
-Received: from mga03.intel.com (mga03.intel.com [134.134.136.65])
- by hemlock.osuosl.org (Postfix) with ESMTPS id A4BD887834
- for <iommu@lists.linux-foundation.org>; Thu,  9 Jul 2020 06:52:49 +0000 (UTC)
-IronPort-SDR: F63gp5VYuk8I6x2iqKCcJVR7ob5uW2aWYY0Dur1z7fw5js0V0/89sDqzSvU4TJN0NgaBInOjtJ
- FQy5dZRXU08g==
-X-IronPort-AV: E=McAfee;i="6000,8403,9676"; a="147941551"
-X-IronPort-AV: E=Sophos;i="5.75,330,1589266800"; d="scan'208";a="147941551"
+Received: from mga02.intel.com (mga02.intel.com [134.134.136.20])
+ by silver.osuosl.org (Postfix) with ESMTPS id C9FF522268
+ for <iommu@lists.linux-foundation.org>; Thu,  9 Jul 2020 07:10:16 +0000 (UTC)
+IronPort-SDR: ZsFbpKm+/XXYpOY6cz11aySJHEdZJ4adkoZ+7VqwoMaN+fCfKBhMgVfhdHH9iUOGM+4FEhmn2W
+ zs2f9mIeDlHg==
+X-IronPort-AV: E=McAfee;i="6000,8403,9676"; a="136178173"
+X-IronPort-AV: E=Sophos;i="5.75,331,1589266800"; d="scan'208";a="136178173"
 X-Amp-Result: SKIPPED(no attachment in message)
 X-Amp-File-Uploaded: False
-Received: from fmsmga005.fm.intel.com ([10.253.24.32])
- by orsmga103.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384;
- 08 Jul 2020 23:52:48 -0700
-IronPort-SDR: DQx8SsSANSNSyEiyLe5IMsuP+TDx7d+iTxwqPOIOKZvClH8We/a8xuwx3zl+ajjzt5s+FlPszM
- Zzc4/sso1dSQ==
+Received: from fmsmga002.fm.intel.com ([10.253.24.26])
+ by orsmga101.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384;
+ 09 Jul 2020 00:10:16 -0700
+IronPort-SDR: gSJNJ4lHerAL0VOyfAiB4ahrn95XWSkCgs6gRGgMB+pLcgq4vyAfVdHw1R8K7/l4xd0ZqNS1uZ
+ sAcHFigkEjiA==
 X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.75,330,1589266800"; d="scan'208";a="484166202"
-Received: from blu2-mobl3.ccr.corp.intel.com (HELO [10.255.31.114])
- ([10.255.31.114])
- by fmsmga005.fm.intel.com with ESMTP; 08 Jul 2020 23:52:45 -0700
-Subject: Re: [PATCH v2 1/2] iommu: iommu_aux_at(de)tach_device() extension
-To: Joerg Roedel <joro@8bytes.org>,
- Alex Williamson <alex.williamson@redhat.com>,
- Robin Murphy <robin.murphy@arm.com>
-References: <20200707013957.23672-1-baolu.lu@linux.intel.com>
- <20200707013957.23672-2-baolu.lu@linux.intel.com>
+X-IronPort-AV: E=Sophos;i="5.75,331,1589266800"; d="scan'208";a="316138834"
+Received: from allen-box.sh.intel.com ([10.239.159.139])
+ by fmsmga002.fm.intel.com with ESMTP; 09 Jul 2020 00:10:14 -0700
 From: Lu Baolu <baolu.lu@linux.intel.com>
-Message-ID: <508d92a1-a13a-2082-53c0-ea23094533c1@linux.intel.com>
-Date: Thu, 9 Jul 2020 14:52:44 +0800
-User-Agent: Mozilla/5.0 (Windows NT 10.0; WOW64; rv:68.0) Gecko/20100101
- Thunderbird/68.10.0
-MIME-Version: 1.0
-In-Reply-To: <20200707013957.23672-2-baolu.lu@linux.intel.com>
-Content-Language: en-US
-Cc: Kevin Tian <kevin.tian@intel.com>, Dave Jiang <dave.jiang@intel.com>,
- Ashok Raj <ashok.raj@intel.com>, kvm@vger.kernel.org,
- Cornelia Huck <cohuck@redhat.com>, linux-kernel@vger.kernel.org,
- iommu@lists.linux-foundation.org
+To: iommu@lists.linux-foundation.org
+Subject: [PATCH v3 1/4] iommu/vt-d: Refactor device_to_iommu() helper
+Date: Thu,  9 Jul 2020 15:05:34 +0800
+Message-Id: <20200709070537.18473-2-baolu.lu@linux.intel.com>
+X-Mailer: git-send-email 2.17.1
+In-Reply-To: <20200709070537.18473-1-baolu.lu@linux.intel.com>
+References: <20200709070537.18473-1-baolu.lu@linux.intel.com>
+Cc: Kevin Tian <kevin.tian@intel.com>, Ashok Raj <ashok.raj@intel.com>,
+ linux-kernel@vger.kernel.org
 X-BeenThere: iommu@lists.linux-foundation.org
 X-Mailman-Version: 2.1.15
 Precedence: list
@@ -90,241 +81,226 @@ List-Post: <mailto:iommu@lists.linux-foundation.org>
 List-Help: <mailto:iommu-request@lists.linux-foundation.org?subject=help>
 List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
  <mailto:iommu-request@lists.linux-foundation.org?subject=subscribe>
+MIME-Version: 1.0
+Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
-Content-Type: text/plain; charset="us-ascii"; Format="flowed"
 Errors-To: iommu-bounces@lists.linux-foundation.org
 Sender: "iommu" <iommu-bounces@lists.linux-foundation.org>
 
-On 2020/7/7 9:39, Lu Baolu wrote:
-> The hardware assistant vfio mediated device is a use case of iommu
-> aux-domain. The interactions between vfio/mdev and iommu during mdev
-> creation and passthr are:
-> 
-> - Create a group for mdev with iommu_group_alloc();
-> - Add the device to the group with
->          group = iommu_group_alloc();
->          if (IS_ERR(group))
->                  return PTR_ERR(group);
-> 
->          ret = iommu_group_add_device(group, &mdev->dev);
->          if (!ret)
->                  dev_info(&mdev->dev, "MDEV: group_id = %d\n",
->                           iommu_group_id(group));
-> - Allocate an aux-domain
->          iommu_domain_alloc()
-> - Attach the aux-domain to the physical device from which the mdev is
->    created.
->          iommu_aux_attach_device()
-> 
-> In the whole process, an iommu group was allocated for the mdev and an
-> iommu domain was attached to the group, but the group->domain leaves
-> NULL. As the result, iommu_get_domain_for_dev() doesn't work anymore.
-> 
-> The iommu_get_domain_for_dev() is a necessary interface for device
-> drivers that want to support aux-domain. For example,
-> 
->          struct iommu_domain *domain;
->          struct device *dev = mdev_dev(mdev);
->          unsigned long pasid;
-> 
->          domain = iommu_get_domain_for_dev(dev);
->          if (!domain)
->                  return -ENODEV;
-> 
->          pasid = iommu_aux_get_pasid(domain, dev->parent);
->          if (pasid == IOASID_INVALID)
->                  return -EINVAL;
-> 
->           /* Program the device context with the PASID value */
->           ....
-> 
-> This extends iommu_aux_at(de)tach_device() so that the users could pass
-> in an optional device pointer (struct device for vfio/mdev for example),
-> and the necessary check and data link could be done.
-> 
-> Fixes: a3a195929d40b ("iommu: Add APIs for multiple domains per device")
-> Cc: Robin Murphy <robin.murphy@arm.com>
-> Cc: Alex Williamson <alex.williamson@redhat.com>
-> Signed-off-by: Lu Baolu <baolu.lu@linux.intel.com>
-> ---
->   drivers/iommu/iommu.c           | 86 +++++++++++++++++++++++++++++----
->   drivers/vfio/vfio_iommu_type1.c |  5 +-
->   include/linux/iommu.h           | 12 +++--
->   3 files changed, 87 insertions(+), 16 deletions(-)
-> 
-> diff --git a/drivers/iommu/iommu.c b/drivers/iommu/iommu.c
-> index 1ed1e14a1f0c..435835058209 100644
-> --- a/drivers/iommu/iommu.c
-> +++ b/drivers/iommu/iommu.c
-> @@ -2723,26 +2723,92 @@ EXPORT_SYMBOL_GPL(iommu_dev_feature_enabled);
->    * This should make us safe against a device being attached to a guest as a
->    * whole while there are still pasid users on it (aux and sva).
->    */
-> -int iommu_aux_attach_device(struct iommu_domain *domain, struct device *dev)
-> +int iommu_aux_attach_device(struct iommu_domain *domain,
-> +			    struct device *phys_dev, struct device *dev)
+It is refactored in two ways:
 
-I hit a lock issue during internal test. Will fix it in the next
-version.
+- Make it global so that it could be used in other files.
 
-Best regards,
-baolu
+- Make bus/devfn optional so that callers could ignore these two returned
+values when they only want to get the coresponding iommu pointer.
 
->   {
-> -	int ret = -ENODEV;
-> +	struct iommu_group *group;
-> +	int ret;
->   
-> -	if (domain->ops->aux_attach_dev)
-> -		ret = domain->ops->aux_attach_dev(domain, dev);
-> +	if (!domain->ops->aux_attach_dev ||
-> +	    !iommu_dev_feature_enabled(phys_dev, IOMMU_DEV_FEAT_AUX))
-> +		return -ENODEV;
->   
-> -	if (!ret)
-> -		trace_attach_device_to_domain(dev);
-> +	/* Bare use only. */
-> +	if (!dev) {
-> +		ret = domain->ops->aux_attach_dev(domain, phys_dev);
-> +		if (!ret)
-> +			trace_attach_device_to_domain(phys_dev);
-> +
-> +		return ret;
-> +	}
-> +
-> +	/*
-> +	 * The caller has created a made-up device (for example, vfio/mdev)
-> +	 * and allocated an iommu_group for user level direct assignment.
-> +	 * Make sure that the group has only single device and hasn't been
-> +	 * attached by any other domain.
-> +	 */
-> +	group = iommu_group_get(dev);
-> +	if (!group)
-> +		return -ENODEV;
-> +
-> +	/*
-> +	 * Lock the group to make sure the device-count doesn't change while
-> +	 * we are attaching.
-> +	 */
-> +	mutex_lock(&group->mutex);
-> +	ret = -EINVAL;
-> +	if ((iommu_group_device_count(group) != 1) || group->domain)
-> +		goto out_unlock;
-> +
-> +	ret = -EBUSY;
-> +	if (group->default_domain && group->domain != group->default_domain)
-> +		goto out_unlock;
-> +
-> +	ret = domain->ops->aux_attach_dev(domain, phys_dev);
-> +	if (!ret) {
-> +		trace_attach_device_to_domain(phys_dev);
-> +		group->domain = domain;
-> +	}
-> +
-> +out_unlock:
-> +	mutex_unlock(&group->mutex);
-> +	iommu_group_put(group);
->   
->   	return ret;
->   }
->   EXPORT_SYMBOL_GPL(iommu_aux_attach_device);
->   
-> -void iommu_aux_detach_device(struct iommu_domain *domain, struct device *dev)
-> +void iommu_aux_detach_device(struct iommu_domain *domain,
-> +			     struct device *phys_dev, struct device *dev)
->   {
-> -	if (domain->ops->aux_detach_dev) {
-> -		domain->ops->aux_detach_dev(domain, dev);
-> -		trace_detach_device_from_domain(dev);
-> +	struct iommu_group *group;
-> +
-> +	if (WARN_ON_ONCE(!domain->ops->aux_detach_dev))
-> +		return;
-> +
-> +	if (!dev) {
-> +		domain->ops->aux_detach_dev(domain, phys_dev);
-> +		trace_detach_device_from_domain(phys_dev);
-> +
-> +		return;
->   	}
-> +
-> +	group = iommu_group_get(dev);
-> +	if (!group)
-> +		return;
-> +
-> +	mutex_lock(&group->mutex);
-> +	if (WARN_ON(iommu_group_device_count(group) != 1))
-> +		goto out_unlock;
-> +
-> +	domain->ops->aux_detach_dev(domain, phys_dev);
-> +	group->domain = NULL;
-> +	trace_detach_device_from_domain(phys_dev);
-> +
-> +out_unlock:
-> +	mutex_unlock(&group->mutex);
-> +	iommu_group_put(group);
->   }
->   EXPORT_SYMBOL_GPL(iommu_aux_detach_device);
->   
-> diff --git a/drivers/vfio/vfio_iommu_type1.c b/drivers/vfio/vfio_iommu_type1.c
-> index 5e556ac9102a..d3be45dfa58e 100644
-> --- a/drivers/vfio/vfio_iommu_type1.c
-> +++ b/drivers/vfio/vfio_iommu_type1.c
-> @@ -1635,7 +1635,8 @@ static int vfio_mdev_attach_domain(struct device *dev, void *data)
->   	iommu_device = vfio_mdev_get_iommu_device(dev);
->   	if (iommu_device) {
->   		if (iommu_dev_feature_enabled(iommu_device, IOMMU_DEV_FEAT_AUX))
-> -			return iommu_aux_attach_device(domain, iommu_device);
-> +			return iommu_aux_attach_device(domain,
-> +						       iommu_device, dev);
->   		else
->   			return iommu_attach_device(domain, iommu_device);
->   	}
-> @@ -1651,7 +1652,7 @@ static int vfio_mdev_detach_domain(struct device *dev, void *data)
->   	iommu_device = vfio_mdev_get_iommu_device(dev);
->   	if (iommu_device) {
->   		if (iommu_dev_feature_enabled(iommu_device, IOMMU_DEV_FEAT_AUX))
-> -			iommu_aux_detach_device(domain, iommu_device);
-> +			iommu_aux_detach_device(domain, iommu_device, dev);
->   		else
->   			iommu_detach_device(domain, iommu_device);
->   	}
-> diff --git a/include/linux/iommu.h b/include/linux/iommu.h
-> index 5657d4fef9f2..7da5e67bf7dc 100644
-> --- a/include/linux/iommu.h
-> +++ b/include/linux/iommu.h
-> @@ -632,8 +632,10 @@ bool iommu_dev_has_feature(struct device *dev, enum iommu_dev_features f);
->   int iommu_dev_enable_feature(struct device *dev, enum iommu_dev_features f);
->   int iommu_dev_disable_feature(struct device *dev, enum iommu_dev_features f);
->   bool iommu_dev_feature_enabled(struct device *dev, enum iommu_dev_features f);
-> -int iommu_aux_attach_device(struct iommu_domain *domain, struct device *dev);
-> -void iommu_aux_detach_device(struct iommu_domain *domain, struct device *dev);
-> +int iommu_aux_attach_device(struct iommu_domain *domain,
-> +			    struct device *phys_dev, struct device *dev);
-> +void iommu_aux_detach_device(struct iommu_domain *domain,
-> +			     struct device *phys_dev, struct device *dev);
->   int iommu_aux_get_pasid(struct iommu_domain *domain, struct device *dev);
->   
->   struct iommu_sva *iommu_sva_bind_device(struct device *dev,
-> @@ -1007,13 +1009,15 @@ iommu_dev_disable_feature(struct device *dev, enum iommu_dev_features feat)
->   }
->   
->   static inline int
-> -iommu_aux_attach_device(struct iommu_domain *domain, struct device *dev)
-> +iommu_aux_attach_device(struct iommu_domain *domain,
-> +			struct device *phys_dev, struct device *dev)
->   {
->   	return -ENODEV;
->   }
->   
->   static inline void
-> -iommu_aux_detach_device(struct iommu_domain *domain, struct device *dev)
-> +iommu_aux_detach_device(struct iommu_domain *domain,
-> +			struct device *phys_dev, struct device *dev)
->   {
->   }
->   
-> 
+Signed-off-by: Lu Baolu <baolu.lu@linux.intel.com>
+Reviewed-by: Kevin Tian <kevin.tian@intel.com>
+---
+ drivers/iommu/intel/iommu.c | 55 +++++++++++--------------------------
+ drivers/iommu/intel/svm.c   |  8 +++---
+ include/linux/intel-iommu.h |  3 +-
+ 3 files changed, 21 insertions(+), 45 deletions(-)
+
+diff --git a/drivers/iommu/intel/iommu.c b/drivers/iommu/intel/iommu.c
+index 2ce490c2eab8..4a6b6960fc32 100644
+--- a/drivers/iommu/intel/iommu.c
++++ b/drivers/iommu/intel/iommu.c
+@@ -778,16 +778,16 @@ is_downstream_to_pci_bridge(struct device *dev, struct device *bridge)
+ 	return false;
+ }
+ 
+-static struct intel_iommu *device_to_iommu(struct device *dev, u8 *bus, u8 *devfn)
++struct intel_iommu *device_to_iommu(struct device *dev, u8 *bus, u8 *devfn)
+ {
+ 	struct dmar_drhd_unit *drhd = NULL;
++	struct pci_dev *pdev = NULL;
+ 	struct intel_iommu *iommu;
+ 	struct device *tmp;
+-	struct pci_dev *pdev = NULL;
+ 	u16 segment = 0;
+ 	int i;
+ 
+-	if (iommu_dummy(dev))
++	if (!dev || iommu_dummy(dev))
+ 		return NULL;
+ 
+ 	if (dev_is_pci(dev)) {
+@@ -818,8 +818,10 @@ static struct intel_iommu *device_to_iommu(struct device *dev, u8 *bus, u8 *devf
+ 				if (pdev && pdev->is_virtfn)
+ 					goto got_pdev;
+ 
+-				*bus = drhd->devices[i].bus;
+-				*devfn = drhd->devices[i].devfn;
++				if (bus && devfn) {
++					*bus = drhd->devices[i].bus;
++					*devfn = drhd->devices[i].devfn;
++				}
+ 				goto out;
+ 			}
+ 
+@@ -829,8 +831,10 @@ static struct intel_iommu *device_to_iommu(struct device *dev, u8 *bus, u8 *devf
+ 
+ 		if (pdev && drhd->include_all) {
+ 		got_pdev:
+-			*bus = pdev->bus->number;
+-			*devfn = pdev->devfn;
++			if (bus && devfn) {
++				*bus = pdev->bus->number;
++				*devfn = pdev->devfn;
++			}
+ 			goto out;
+ 		}
+ 	}
+@@ -5146,11 +5150,10 @@ static int aux_domain_add_dev(struct dmar_domain *domain,
+ 			      struct device *dev)
+ {
+ 	int ret;
+-	u8 bus, devfn;
+ 	unsigned long flags;
+ 	struct intel_iommu *iommu;
+ 
+-	iommu = device_to_iommu(dev, &bus, &devfn);
++	iommu = device_to_iommu(dev, NULL, NULL);
+ 	if (!iommu)
+ 		return -ENODEV;
+ 
+@@ -5236,9 +5239,8 @@ static int prepare_domain_attach_device(struct iommu_domain *domain,
+ 	struct dmar_domain *dmar_domain = to_dmar_domain(domain);
+ 	struct intel_iommu *iommu;
+ 	int addr_width;
+-	u8 bus, devfn;
+ 
+-	iommu = device_to_iommu(dev, &bus, &devfn);
++	iommu = device_to_iommu(dev, NULL, NULL);
+ 	if (!iommu)
+ 		return -ENODEV;
+ 
+@@ -5658,9 +5660,8 @@ static bool intel_iommu_capable(enum iommu_cap cap)
+ static struct iommu_device *intel_iommu_probe_device(struct device *dev)
+ {
+ 	struct intel_iommu *iommu;
+-	u8 bus, devfn;
+ 
+-	iommu = device_to_iommu(dev, &bus, &devfn);
++	iommu = device_to_iommu(dev, NULL, NULL);
+ 	if (!iommu)
+ 		return ERR_PTR(-ENODEV);
+ 
+@@ -5673,9 +5674,8 @@ static struct iommu_device *intel_iommu_probe_device(struct device *dev)
+ static void intel_iommu_release_device(struct device *dev)
+ {
+ 	struct intel_iommu *iommu;
+-	u8 bus, devfn;
+ 
+-	iommu = device_to_iommu(dev, &bus, &devfn);
++	iommu = device_to_iommu(dev, NULL, NULL);
+ 	if (!iommu)
+ 		return;
+ 
+@@ -5825,37 +5825,14 @@ static struct iommu_group *intel_iommu_device_group(struct device *dev)
+ 	return generic_device_group(dev);
+ }
+ 
+-#ifdef CONFIG_INTEL_IOMMU_SVM
+-struct intel_iommu *intel_svm_device_to_iommu(struct device *dev)
+-{
+-	struct intel_iommu *iommu;
+-	u8 bus, devfn;
+-
+-	if (iommu_dummy(dev)) {
+-		dev_warn(dev,
+-			 "No IOMMU translation for device; cannot enable SVM\n");
+-		return NULL;
+-	}
+-
+-	iommu = device_to_iommu(dev, &bus, &devfn);
+-	if ((!iommu)) {
+-		dev_err(dev, "No IOMMU for device; cannot enable SVM\n");
+-		return NULL;
+-	}
+-
+-	return iommu;
+-}
+-#endif /* CONFIG_INTEL_IOMMU_SVM */
+-
+ static int intel_iommu_enable_auxd(struct device *dev)
+ {
+ 	struct device_domain_info *info;
+ 	struct intel_iommu *iommu;
+ 	unsigned long flags;
+-	u8 bus, devfn;
+ 	int ret;
+ 
+-	iommu = device_to_iommu(dev, &bus, &devfn);
++	iommu = device_to_iommu(dev, NULL, NULL);
+ 	if (!iommu || dmar_disabled)
+ 		return -EINVAL;
+ 
+diff --git a/drivers/iommu/intel/svm.c b/drivers/iommu/intel/svm.c
+index 6c87c807a0ab..25dd74f27252 100644
+--- a/drivers/iommu/intel/svm.c
++++ b/drivers/iommu/intel/svm.c
+@@ -231,7 +231,7 @@ static LIST_HEAD(global_svm_list);
+ int intel_svm_bind_gpasid(struct iommu_domain *domain, struct device *dev,
+ 			  struct iommu_gpasid_bind_data *data)
+ {
+-	struct intel_iommu *iommu = intel_svm_device_to_iommu(dev);
++	struct intel_iommu *iommu = device_to_iommu(dev, NULL, NULL);
+ 	struct dmar_domain *dmar_domain;
+ 	struct intel_svm_dev *sdev;
+ 	struct intel_svm *svm;
+@@ -373,7 +373,7 @@ int intel_svm_bind_gpasid(struct iommu_domain *domain, struct device *dev,
+ 
+ int intel_svm_unbind_gpasid(struct device *dev, int pasid)
+ {
+-	struct intel_iommu *iommu = intel_svm_device_to_iommu(dev);
++	struct intel_iommu *iommu = device_to_iommu(dev, NULL, NULL);
+ 	struct intel_svm_dev *sdev;
+ 	struct intel_svm *svm;
+ 	int ret = -EINVAL;
+@@ -430,7 +430,7 @@ static int
+ intel_svm_bind_mm(struct device *dev, int flags, struct svm_dev_ops *ops,
+ 		  struct mm_struct *mm, struct intel_svm_dev **sd)
+ {
+-	struct intel_iommu *iommu = intel_svm_device_to_iommu(dev);
++	struct intel_iommu *iommu = device_to_iommu(dev, NULL, NULL);
+ 	struct device_domain_info *info;
+ 	struct intel_svm_dev *sdev;
+ 	struct intel_svm *svm = NULL;
+@@ -608,7 +608,7 @@ static int intel_svm_unbind_mm(struct device *dev, int pasid)
+ 	struct intel_svm *svm;
+ 	int ret = -EINVAL;
+ 
+-	iommu = intel_svm_device_to_iommu(dev);
++	iommu = device_to_iommu(dev, NULL, NULL);
+ 	if (!iommu)
+ 		goto out;
+ 
+diff --git a/include/linux/intel-iommu.h b/include/linux/intel-iommu.h
+index 3e8fa1c7a1e6..fc2cfc3db6e1 100644
+--- a/include/linux/intel-iommu.h
++++ b/include/linux/intel-iommu.h
+@@ -728,6 +728,7 @@ void iommu_flush_write_buffer(struct intel_iommu *iommu);
+ int intel_iommu_enable_pasid(struct intel_iommu *iommu, struct device *dev);
+ struct dmar_domain *find_domain(struct device *dev);
+ struct device_domain_info *get_domain_info(struct device *dev);
++struct intel_iommu *device_to_iommu(struct device *dev, u8 *bus, u8 *devfn);
+ 
+ #ifdef CONFIG_INTEL_IOMMU_SVM
+ extern void intel_svm_check(struct intel_iommu *iommu);
+@@ -766,8 +767,6 @@ struct intel_svm {
+ 	struct list_head devs;
+ 	struct list_head list;
+ };
+-
+-extern struct intel_iommu *intel_svm_device_to_iommu(struct device *dev);
+ #else
+ static inline void intel_svm_check(struct intel_iommu *iommu) {}
+ #endif
+-- 
+2.17.1
+
 _______________________________________________
 iommu mailing list
 iommu@lists.linux-foundation.org
