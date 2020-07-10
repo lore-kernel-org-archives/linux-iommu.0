@@ -2,92 +2,92 @@ Return-Path: <SRS0=wTTv=AV=lists.linux-foundation.org=iommu-bounces@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-6.5 required=3.0 tests=BAYES_00,DKIM_INVALID,
-	DKIM_SIGNED,HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_PATCH,MAILING_LIST_MULTI,
-	SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED autolearn=no autolearn_force=no
-	version=3.4.0
+X-Spam-Status: No, score=-3.5 required=3.0 tests=BAYES_00,DKIM_INVALID,
+	DKIM_SIGNED,HEADER_FROM_DIFFERENT_DOMAINS,MAILING_LIST_MULTI,SPF_HELO_NONE,
+	SPF_PASS autolearn=no autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 7C1BAC433EA
-	for <iommu@archiver.kernel.org>; Fri, 10 Jul 2020 22:22:14 +0000 (UTC)
-Received: from silver.osuosl.org (smtp3.osuosl.org [140.211.166.136])
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 7F0E2C433E7
+	for <iommu@archiver.kernel.org>; Fri, 10 Jul 2020 22:52:35 +0000 (UTC)
+Received: from hemlock.osuosl.org (smtp2.osuosl.org [140.211.166.133])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by mail.kernel.org (Postfix) with ESMTPS id 4B2CB207BB
-	for <iommu@archiver.kernel.org>; Fri, 10 Jul 2020 22:22:14 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTPS id 3F4C3206E2
+	for <iommu@archiver.kernel.org>; Fri, 10 Jul 2020 22:52:35 +0000 (UTC)
 Authentication-Results: mail.kernel.org;
-	dkim=fail reason="signature verification failed" (2048-bit key) header.d=linaro.org header.i=@linaro.org header.b="CGWgrEwl"
-DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 4B2CB207BB
+	dkim=fail reason="signature verification failed" (2048-bit key) header.d=linaro.org header.i=@linaro.org header.b="pEe0x1D2"
+DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 3F4C3206E2
 Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=linaro.org
 Authentication-Results: mail.kernel.org; spf=pass smtp.mailfrom=iommu-bounces@lists.linux-foundation.org
 Received: from localhost (localhost [127.0.0.1])
-	by silver.osuosl.org (Postfix) with ESMTP id 7ED5E2048D;
-	Fri, 10 Jul 2020 22:22:12 +0000 (UTC)
+	by hemlock.osuosl.org (Postfix) with ESMTP id 0E88E89C2E;
+	Fri, 10 Jul 2020 22:52:35 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from silver.osuosl.org ([127.0.0.1])
+Received: from hemlock.osuosl.org ([127.0.0.1])
 	by localhost (.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
-	with ESMTP id pAIYAee7OWkk; Fri, 10 Jul 2020 22:22:09 +0000 (UTC)
+	with ESMTP id wpcMN944WZ4V; Fri, 10 Jul 2020 22:52:34 +0000 (UTC)
 Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [140.211.9.56])
-	by silver.osuosl.org (Postfix) with ESMTP id C9D332DF58;
-	Fri, 10 Jul 2020 22:22:09 +0000 (UTC)
+	by hemlock.osuosl.org (Postfix) with ESMTP id 777B788C3F;
+	Fri, 10 Jul 2020 22:52:34 +0000 (UTC)
 Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
-	by lists.linuxfoundation.org (Postfix) with ESMTP id AA320C077B;
-	Fri, 10 Jul 2020 22:22:09 +0000 (UTC)
-Received: from fraxinus.osuosl.org (smtp4.osuosl.org [140.211.166.137])
- by lists.linuxfoundation.org (Postfix) with ESMTP id 627B9C016F
- for <iommu@lists.linux-foundation.org>; Fri, 10 Jul 2020 22:22:08 +0000 (UTC)
+	by lists.linuxfoundation.org (Postfix) with ESMTP id 6895CC077B;
+	Fri, 10 Jul 2020 22:52:34 +0000 (UTC)
+Received: from hemlock.osuosl.org (smtp2.osuosl.org [140.211.166.133])
+ by lists.linuxfoundation.org (Postfix) with ESMTP id 9E31DC016F
+ for <iommu@lists.linux-foundation.org>; Fri, 10 Jul 2020 22:52:32 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
- by fraxinus.osuosl.org (Postfix) with ESMTP id 518BE88AE5
- for <iommu@lists.linux-foundation.org>; Fri, 10 Jul 2020 22:22:08 +0000 (UTC)
+ by hemlock.osuosl.org (Postfix) with ESMTP id 1642189455
+ for <iommu@lists.linux-foundation.org>; Fri, 10 Jul 2020 22:52:13 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from fraxinus.osuosl.org ([127.0.0.1])
+Received: from hemlock.osuosl.org ([127.0.0.1])
  by localhost (.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
- with ESMTP id eB19AfvIvZbr for <iommu@lists.linux-foundation.org>;
- Fri, 10 Jul 2020 22:22:07 +0000 (UTC)
-X-Greylist: domain auto-whitelisted by SQLgrey-1.7.6
-Received: from mail-oi1-f195.google.com (mail-oi1-f195.google.com
- [209.85.167.195])
- by fraxinus.osuosl.org (Postfix) with ESMTPS id 693A38896A
- for <iommu@lists.linux-foundation.org>; Fri, 10 Jul 2020 22:22:07 +0000 (UTC)
-Received: by mail-oi1-f195.google.com with SMTP id t4so6042194oij.9
- for <iommu@lists.linux-foundation.org>; Fri, 10 Jul 2020 15:22:07 -0700 (PDT)
+ with ESMTP id bciW+72ippRl for <iommu@lists.linux-foundation.org>;
+ Fri, 10 Jul 2020 22:52:12 +0000 (UTC)
+X-Greylist: from auto-whitelisted by SQLgrey-1.7.6
+Received: from mail-yb1-f195.google.com (mail-yb1-f195.google.com
+ [209.85.219.195])
+ by hemlock.osuosl.org (Postfix) with ESMTPS id 34D5789433
+ for <iommu@lists.linux-foundation.org>; Fri, 10 Jul 2020 22:52:12 +0000 (UTC)
+Received: by mail-yb1-f195.google.com with SMTP id f5so1428452ybq.2
+ for <iommu@lists.linux-foundation.org>; Fri, 10 Jul 2020 15:52:12 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linaro.org; s=google;
  h=mime-version:references:in-reply-to:from:date:message-id:subject:to
- :cc; bh=sfPk1+u61DN4Dz/z2Pu4rTndUdKhPwDaWZtZBaUU1jg=;
- b=CGWgrEwlpWSxGS28p+B9aKE3dWl38zgj4StlTqSCg3W9KgUJXjeDSaY6Jwx8i9lwRi
- 9UpvDUF7JWYl638DQLAuqEazgzf8DbZZ9YxsBc+6s4pA0JeV/ASd0IAshGRT8qT4BX0S
- xxqg9moE+lu34pnF6PLPa3mQs1nK4VYFyAzoCRitXkydtj0aNPoPsnzkeIETzFjSHGPb
- shBuYBhaTugM1OgtxES7TxTi/SzCN3mS/hMPilaBmHk0TAg8MoF64kvJ+n7z+8WllDhx
- AAW0+zB1xhT0lObKRKFabhrxJAJ+RjvomcYh6bFq6juanWOudCq7LiXglEaxQI7fxDia
- slHA==
+ :cc; bh=gCyI0kUrT87FAQAI0Q1u+opAu/z1jGmTcNbCc0ywLlQ=;
+ b=pEe0x1D2oXhrROhhsfdBSl2Of0HeeOQzHLu21ytP7olDdMMZPcgjiV0SFxkgRAMS/a
+ zblIckErEPPlyKbegdkpsh0OW2Xqu9dnKnUdDl8IU+qez3avQGV8FZM14sbgNWmRlm7w
+ Ko1PO1Prn7C0/+tMbFDpECoaIDNxX4OffjwTb6Ox7od3D9ZNzpnW3pgRUR/h8hQQQUnw
+ NAWhdtBgvYpwFCMZjLHabISmRiZm6E7qj3wdj04qmnUqNzmD90pKyk3HAmgJ+Eu491o1
+ m/JxPxczvMRz7ZVoUvv+TZ8LvVDcYiZGgoZQEAs290rCxG9VW0H0QJwbyUdRTgYdcdoP
+ jx5Q==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
  d=1e100.net; s=20161025;
  h=x-gm-message-state:mime-version:references:in-reply-to:from:date
  :message-id:subject:to:cc;
- bh=sfPk1+u61DN4Dz/z2Pu4rTndUdKhPwDaWZtZBaUU1jg=;
- b=U2+9GcZMUzhW+kG97M7VdlEg9R+5sPpTypB1qqyQagDFsTrSmUTYMSwbocnI1tCoc0
- lnPSdP63rbx1pqKJsHJ7ECWO9l5/ymfguN+0mUrGTJyhn6rn0AtL5J13sjqEW5Bu9Hj7
- b36XUAmokJn7zNnEfBg4uhBeawYdiGlEkZvxnnHToUVh2nztDg5I5A2+O7RJ30c4nkRS
- IlReom1IGS25LOSjprF0G3Q4YgqLd1fhmKmivit35z5jA7DDgehzXQKsrPapxGNpnSX0
- 6f3URGZbpXrkKTUw9G80kj6kGI1iIx6zLbaoGeeiviKXzh0MUHkOgmSeQmRUxBX4U6pM
- CySA==
-X-Gm-Message-State: AOAM531vcI6duGJEK6DuTj2FRvHopaDD0/Y1JGj2Z3S/IOppT6PfUY1A
- PkLritZsdJbRofrm1kaaCq2mShMZL+QUbDmbuArCbA==
-X-Google-Smtp-Source: ABdhPJxLt4Cehy4m7wD0RYUwN5jq18bgpscixR8K5qySY9mHffzEWL0hF8baUYqT7R4HfV0LqTJoVtMk95ufKZmESKg=
-X-Received: by 2002:aca:b5c3:: with SMTP id e186mr5976661oif.10.1594419726479; 
- Fri, 10 Jul 2020 15:22:06 -0700 (PDT)
+ bh=gCyI0kUrT87FAQAI0Q1u+opAu/z1jGmTcNbCc0ywLlQ=;
+ b=EnfVOWM9J6lzTSWGlKp2M5cswFdgGZYEew/gMh58k+n1jehYjKQGP2oZafbqr7ykyt
+ 9FxlBM6W8UiBdDTvzckP62RJWPtltoUG72STK2GkMo8QguVmGbMx4EVtXsoZ8rPxgwQL
+ yoU0FdSu+kYyRLm/dPtjOkFBhFbD7t37YbIj6ks2SKOVeAEhqOznZ7OAeF4+vQnEQRYk
+ FxULXxChqtQ26UaEAL6gGm2pJqKgQMuC/ykrdfRvjT8t3lAFPyAbWuU+oESqR7ljf0Fc
+ 9ocxg3cgyqPgD5J0MNknu76UcsixsIICybpu+vngbrQ2ubBmNQ8FPL3++rNuKqcj6apO
+ kUdQ==
+X-Gm-Message-State: AOAM532ohKFDD3+cfO4MJFO3IyypSZjKSqjBxS1pi8aLWidZ49fKIR8Q
+ BLGfuRLB2BKJfHSyyUyJG23RlLWezNCHW9rSxNm//LK2rbw=
+X-Google-Smtp-Source: ABdhPJwHQLhjN0fx5nsYDQ/5gAMYf/FtTG+FNllJpIvQ3csH/hy0WBxDIT6X+tOsNnJi0NtINvoXzdjwg4qm1AYXGVE=
+X-Received: by 2002:a4a:d08a:: with SMTP id i10mr60007237oor.88.1594421071672; 
+ Fri, 10 Jul 2020 15:44:31 -0700 (PDT)
 MIME-Version: 1.0
 References: <20200625001039.56174-1-john.stultz@linaro.org>
- <20200625001039.56174-6-john.stultz@linaro.org>
- <20200702141825.GA16941@willie-the-truck>
- <CALAqxLVZ2EhutYjOt7Be1RgnYwHT6-4m6DxA-t1wuxuSy=6yDQ@mail.gmail.com>
- <20200710075411.GA30011@willie-the-truck>
-In-Reply-To: <20200710075411.GA30011@willie-the-truck>
+ <20200625001039.56174-4-john.stultz@linaro.org>
+ <159315737502.62212.16093934831673347066@swboyd.mtv.corp.google.com>
+ <CALAqxLVNGar8g+FvHaVHN_e-MOZZ+=ZPmDt_GKKSC8AS-wLFGg@mail.gmail.com>
+ <87wo3setn8.wl-maz@kernel.org>
+ <159436097057.1987609.13993891118929459851@swboyd.mtv.corp.google.com>
+In-Reply-To: <159436097057.1987609.13993891118929459851@swboyd.mtv.corp.google.com>
 From: John Stultz <john.stultz@linaro.org>
-Date: Fri, 10 Jul 2020 15:21:53 -0700
-Message-ID: <CALAqxLWadLrxckRHRAR0Q417RnFKquQJbRfO_DLEVH56cykRow@mail.gmail.com>
-Subject: Re: [PATCH v2 5/5] firmware: QCOM_SCM: Allow qcom_scm driver to be
- loadable as a permenent module
-To: Will Deacon <will@kernel.org>
+Date: Fri, 10 Jul 2020 15:44:18 -0700
+Message-ID: <CALAqxLW14f4Gn6Q3b89X10y7=Zct2NJSgjagUqxez_bObcp42w@mail.gmail.com>
+Subject: Re: [PATCH v2 3/5] irqchip: Allow QCOM_PDC to be loadable as a
+ permanent module
+To: Stephen Boyd <swboyd@chromium.org>
 Cc: Maulik Shah <mkshah@codeaurora.org>, Jason Cooper <jason@lakedaemon.net>,
  Saravana Kannan <saravanak@google.com>, Marc Zyngier <maz@kernel.org>,
  lkml <linux-kernel@vger.kernel.org>, Lina Iyer <ilina@codeaurora.org>,
@@ -113,82 +113,49 @@ Content-Transfer-Encoding: 7bit
 Errors-To: iommu-bounces@lists.linux-foundation.org
 Sender: "iommu" <iommu-bounces@lists.linux-foundation.org>
 
-On Fri, Jul 10, 2020 at 12:54 AM Will Deacon <will@kernel.org> wrote:
-> On Thu, Jul 09, 2020 at 08:28:45PM -0700, John Stultz wrote:
-> > On Thu, Jul 2, 2020 at 7:18 AM Will Deacon <will@kernel.org> wrote:
-> > > On Thu, Jun 25, 2020 at 12:10:39AM +0000, John Stultz wrote:
-> > > > diff --git a/drivers/iommu/Kconfig b/drivers/iommu/Kconfig
-> > > > index b510f67dfa49..714893535dd2 100644
-> > > > --- a/drivers/iommu/Kconfig
-> > > > +++ b/drivers/iommu/Kconfig
-> > > > @@ -381,6 +381,7 @@ config SPAPR_TCE_IOMMU
-> > > >  config ARM_SMMU
-> > > >       tristate "ARM Ltd. System MMU (SMMU) Support"
-> > > >       depends on (ARM64 || ARM || (COMPILE_TEST && !GENERIC_ATOMIC64)) && MMU
-> > > > +     depends on QCOM_SCM || !QCOM_SCM #if QCOM_SCM=m this can't be =y
-> > > >       select IOMMU_API
-> > > >       select IOMMU_IO_PGTABLE_LPAE
-> > > >       select ARM_DMA_USE_IOMMU if ARM
+On Thu, Jul 9, 2020 at 11:02 PM Stephen Boyd <swboyd@chromium.org> wrote:
+> Quoting Marc Zyngier (2020-06-27 02:37:47)
+> > On Sat, 27 Jun 2020 02:34:25 +0100,
+> > John Stultz <john.stultz@linaro.org> wrote:
 > > >
-> > > This looks like a giant hack. Is there another way to handle this?
+> > > On Fri, Jun 26, 2020 at 12:42 AM Stephen Boyd <swboyd@chromium.org> wrote:
+> > > >
+> > > >
+> > > > Is there any reason to use IRQCHIP_DECLARE if this can work as a
+> > > > platform device driver?
+> > > >
+> > >
+> > > Hey! Thanks so much for the review!
+> > >
+> > > Mostly it was done this way to minimize the change in the non-module
+> > > case. But if you'd rather avoid the #ifdefery I'll respin it without.
 > >
-> > Sorry for the slow response here.
+> > That would certainly be my own preference. In general, IRQCHIP_DECLARE
+> > and platform drivers should be mutually exclusive in the same driver:
+> > if you can delay the probing and have it as a proper platform device,
+> > then this should be the one true way.
 > >
-> > So, I agree the syntax looks strange (requiring a comment obviously
-> > isn't a good sign), but it's a fairly common way to ensure drivers
-> > don't get built in if they optionally depend on another driver that
-> > can be built as a module.
-> >   See "RFKILL || !RFKILL", "EXTCON || !EXTCON", or "USB_GADGET ||
-> > !USB_GADGET" in various Kconfig files.
-> >
-> > I'm open to using a different method, and in a different thread you
-> > suggested using something like symbol_get(). I need to look into it
-> > more, but that approach looks even more messy and prone to runtime
-> > failures. Blocking the unwanted case at build time seems a bit cleaner
-> > to me, even if the syntax is odd.
 >
-> Maybe just split it out then, so that the ARM_SMMU entry doesn't have this,
-> as that driver _really_ doesn't care about SoC details like this. In other
-> words, add a new entry along the lines of:
->
->         config ARM_SMMU_QCOM_IMPL
->         default y
->         #if QCOM_SCM=m this can't be =y
->         depends on ARM_SMMU & (QCOM_SCM || !QCOM_SCM)
->
-> and then have arm-smmu.h provide a static inline qcom_smmu_impl_init()
-> which returns -ENODEV if CONFIG_ARM_SMMU_QCOM_IMPL=n and hack the Makefile
-> so that we don't bother to compile arm-smmu-qcom.o in that case.
->
-> Would that work?
+> Does it work? I haven't looked in detail but I worry that the child
+> irqdomain (i.e. pinctrl-msm) would need to delay probing until this
+> parent irqdomain is registered. Or has the hierarchical irqdomain code
+> been updated to handle the parent child relationship and wait for things
+> to probe or be loaded?
 
-I think this proposal still has problems with the directionality of the call.
+So I can't say I know the underlying hardware particularly well, but
+I've been using this successfully on the Dragonboard 845c with both
+static builds as well as module enabled builds.
+And the same patch has been in the android-mainline and android-5.4
+kernels for a while without objections from QCOM.
 
-The arm-smmu-impl.o calls to arm-smmu-qcom.o which calls qcom_scm.o
-So if qcom_scm.o is part of a module, the calling code in
-arm-smmu-qcom.o also needs to be a module, which means CONFIG_ARM_SMMU
-needs to be a module.
-
-I know you said the arm-smmu driver doesn't care about SoC details,
-but the trouble is that currently the arm-smmu driver does directly
-call the qcom-scm code. So it is a real dependency. However, if
-QCOM_SCM is not configured, it calls stubs and that's ok.  In that
-way, the "depends on QCOM_SCM || !QCOM_SCM" line actually makes sense.
-It looks terrible because we're used to boolean logic, but it's
-ternary.
-
-Maybe can have the ARM_SMMU_QCOM_IMPL approach you suggest above, but
-that just holds the issue out at arms length, because we're still
-going to need to have:
-  depends on ARM_SMMU_QCOM_IMPL || !ARM_SMMU_QCOM_IMPL
-in the ARM_SMMU definition, which I suspect you're wanting to avoid.
-
-Otherwise the only thing I can think of is a deeper reworking of the
-arm-smmu-impl code so that the arm-smmu-qcom code probes itself and
-registers its hooks with the arm-smmu core.
-That way the arm-smmu driver would not directly call any SoC specific
-code (and thus have no dependencies outward). But it's probably a fair
-amount of churn vs the extra depends string.
+As to the probe ordering question, Saravana can maybe speak in more
+detail if it's involved in this case but the fw_devlink code has
+addressed many of these sorts of ordering issues.
+However, I'm not sure if I'm lucking into the right probe order, as we
+have been able to boot android-mainline w/ both fw_devlink=on and
+fw_devlink=off (though in the =off case, we need
+deferred_probe_timeout=30 to give us a bit more time for modules to
+load after init starts).
 
 thanks
 -john
