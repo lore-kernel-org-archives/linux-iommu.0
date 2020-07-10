@@ -2,63 +2,105 @@ Return-Path: <SRS0=wTTv=AV=lists.linux-foundation.org=iommu-bounces@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-5.2 required=3.0 tests=BAYES_00,
-	HEADER_FROM_DIFFERENT_DOMAINS,MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS,
-	URIBL_BLOCKED,USER_AGENT_SANE_1 autolearn=no autolearn_force=no version=3.4.0
+X-Spam-Status: No, score=-3.5 required=3.0 tests=BAYES_00,DKIM_INVALID,
+	DKIM_SIGNED,HEADER_FROM_DIFFERENT_DOMAINS,MAILING_LIST_MULTI,SPF_HELO_NONE,
+	SPF_PASS,URIBL_BLOCKED autolearn=no autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 85729C433E5
-	for <iommu@archiver.kernel.org>; Fri, 10 Jul 2020 12:31:11 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 97D8BC433E5
+	for <iommu@archiver.kernel.org>; Fri, 10 Jul 2020 12:55:24 +0000 (UTC)
 Received: from whitealder.osuosl.org (smtp1.osuosl.org [140.211.166.138])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by mail.kernel.org (Postfix) with ESMTPS id 382BA20772
-	for <iommu@archiver.kernel.org>; Fri, 10 Jul 2020 12:31:11 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 382BA20772
-Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=8bytes.org
+	by mail.kernel.org (Postfix) with ESMTPS id 61E5A20720
+	for <iommu@archiver.kernel.org>; Fri, 10 Jul 2020 12:55:24 +0000 (UTC)
+Authentication-Results: mail.kernel.org;
+	dkim=fail reason="signature verification failed" (1024-bit key) header.d=redhat.com header.i=@redhat.com header.b="cT4XZXtK"
+DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 61E5A20720
+Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=redhat.com
 Authentication-Results: mail.kernel.org; spf=pass smtp.mailfrom=iommu-bounces@lists.linux-foundation.org
 Received: from localhost (localhost [127.0.0.1])
-	by whitealder.osuosl.org (Postfix) with ESMTP id 022388993C;
-	Fri, 10 Jul 2020 12:31:11 +0000 (UTC)
+	by whitealder.osuosl.org (Postfix) with ESMTP id 20DBB8994D;
+	Fri, 10 Jul 2020 12:55:24 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
 Received: from whitealder.osuosl.org ([127.0.0.1])
 	by localhost (.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
-	with ESMTP id qL-0DaOiegVB; Fri, 10 Jul 2020 12:31:10 +0000 (UTC)
+	with ESMTP id 27YnWKWs6uxL; Fri, 10 Jul 2020 12:55:21 +0000 (UTC)
 Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [140.211.9.56])
-	by whitealder.osuosl.org (Postfix) with ESMTP id 476288993B;
-	Fri, 10 Jul 2020 12:31:10 +0000 (UTC)
+	by whitealder.osuosl.org (Postfix) with ESMTP id 5DB18896FD;
+	Fri, 10 Jul 2020 12:55:21 +0000 (UTC)
 Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
-	by lists.linuxfoundation.org (Postfix) with ESMTP id 2B991C077B;
-	Fri, 10 Jul 2020 12:31:10 +0000 (UTC)
+	by lists.linuxfoundation.org (Postfix) with ESMTP id 2F387C077B;
+	Fri, 10 Jul 2020 12:55:21 +0000 (UTC)
 Received: from hemlock.osuosl.org (smtp2.osuosl.org [140.211.166.133])
- by lists.linuxfoundation.org (Postfix) with ESMTP id 5E3E0C016F
- for <iommu@lists.linux-foundation.org>; Fri, 10 Jul 2020 12:31:08 +0000 (UTC)
+ by lists.linuxfoundation.org (Postfix) with ESMTP id 7D21CC016F
+ for <iommu@lists.linux-foundation.org>; Fri, 10 Jul 2020 12:55:19 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
- by hemlock.osuosl.org (Postfix) with ESMTP id 4732789C4F
- for <iommu@lists.linux-foundation.org>; Fri, 10 Jul 2020 12:31:08 +0000 (UTC)
+ by hemlock.osuosl.org (Postfix) with ESMTP id 6BE72897E4
+ for <iommu@lists.linux-foundation.org>; Fri, 10 Jul 2020 12:55:19 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
 Received: from hemlock.osuosl.org ([127.0.0.1])
  by localhost (.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
- with ESMTP id gFfAHBC3NLAq for <iommu@lists.linux-foundation.org>;
- Fri, 10 Jul 2020 12:31:07 +0000 (UTC)
-X-Greylist: from auto-whitelisted by SQLgrey-1.7.6
-Received: from theia.8bytes.org (8bytes.org [81.169.241.247])
- by hemlock.osuosl.org (Postfix) with ESMTPS id E881B88A83
- for <iommu@lists.linux-foundation.org>; Fri, 10 Jul 2020 12:31:06 +0000 (UTC)
-Received: by theia.8bytes.org (Postfix, from userid 1000)
- id 83BE420C; Fri, 10 Jul 2020 14:31:03 +0200 (CEST)
-Date: Fri, 10 Jul 2020 14:31:00 +0200
-From: Joerg Roedel <joro@8bytes.org>
-To: Sebastian Ott <sebott@amazon.de>
-Subject: Re: [PATCH v2 0/3] iommu/amd: I/O VA address limits
-Message-ID: <20200710123059.GF27672@8bytes.org>
-References: <20200630093039.GC28824@8bytes.org>
- <20200630224634.319-1-sebott@amazon.de>
+ with ESMTP id 0ywmx3qOSI67 for <iommu@lists.linux-foundation.org>;
+ Fri, 10 Jul 2020 12:55:18 +0000 (UTC)
+X-Greylist: domain auto-whitelisted by SQLgrey-1.7.6
+Received: from us-smtp-1.mimecast.com (us-smtp-delivery-1.mimecast.com
+ [207.211.31.120])
+ by hemlock.osuosl.org (Postfix) with ESMTPS id 3931F89866
+ for <iommu@lists.linux-foundation.org>; Fri, 10 Jul 2020 12:55:18 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+ s=mimecast20190719; t=1594385716;
+ h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+ to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+ content-transfer-encoding:content-transfer-encoding:
+ in-reply-to:in-reply-to:references:references;
+ bh=jzg2wtxzp+eHBwgl8GzKA1QrNROln2TAWisTWE/iRDY=;
+ b=cT4XZXtKEFVWdBnY39NjbS3vVHJRVatJp/s90tDYmwk23QuY8s3LrpFC3hl2CrMuHRDZLj
+ 1glXmV5AWFvOS8uBLQdriRhnk4JPZnX14mzJAOBzXSK4z/RLlJT+eQRk2hzyo3X8uigO5d
+ JjbjG3b8olXslS6U5WtXtEnbZEpqIt4=
+Received: from mimecast-mx01.redhat.com (mimecast-mx01.redhat.com
+ [209.132.183.4]) (Using TLS) by relay.mimecast.com with ESMTP id
+ us-mta-271-rwP4P9u6PGSUaPMO1hmaRw-1; Fri, 10 Jul 2020 08:55:13 -0400
+X-MC-Unique: rwP4P9u6PGSUaPMO1hmaRw-1
+Received: from smtp.corp.redhat.com (int-mx02.intmail.prod.int.phx2.redhat.com
+ [10.5.11.12])
+ (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
+ (No client certificate requested)
+ by mimecast-mx01.redhat.com (Postfix) with ESMTPS id 46A548027E4;
+ Fri, 10 Jul 2020 12:55:09 +0000 (UTC)
+Received: from x1.home (ovpn-112-71.phx2.redhat.com [10.3.112.71])
+ by smtp.corp.redhat.com (Postfix) with ESMTP id 2FA58619C4;
+ Fri, 10 Jul 2020 12:55:00 +0000 (UTC)
+Date: Fri, 10 Jul 2020 06:55:00 -0600
+From: Alex Williamson <alex.williamson@redhat.com>
+To: "Liu, Yi L" <yi.l.liu@intel.com>
+Subject: Re: [PATCH v3 06/14] vfio/type1: Add VFIO_IOMMU_PASID_REQUEST
+ (alloc/free)
+Message-ID: <20200710065500.2478db37@x1.home>
+In-Reply-To: <DM5PR11MB1435AA0A724D4A59B56E8CA8C3650@DM5PR11MB1435.namprd11.prod.outlook.com>
+References: <1592988927-48009-1-git-send-email-yi.l.liu@intel.com>
+ <1592988927-48009-7-git-send-email-yi.l.liu@intel.com>
+ <20200702151832.048b44d1@x1.home>
+ <CY4PR11MB1432DD97F44EB8AA5CCC87D8C36A0@CY4PR11MB1432.namprd11.prod.outlook.com>
+ <DM5PR11MB1435B159DA10C8301B89A6F0C3670@DM5PR11MB1435.namprd11.prod.outlook.com>
+ <20200708135444.4eac48a4@x1.home>
+ <DM5PR11MB14358A8797E3C02E50B37FFEC3640@DM5PR11MB1435.namprd11.prod.outlook.com>
+ <MWHPR11MB16456D12135AA36BA16CE4208C640@MWHPR11MB1645.namprd11.prod.outlook.com>
+ <DM5PR11MB14357DC99EFCDE7E02944E2EC3640@DM5PR11MB1435.namprd11.prod.outlook.com>
+ <MWHPR11MB1645F822D9267005AE5BCE528C640@MWHPR11MB1645.namprd11.prod.outlook.com>
+ <DM5PR11MB143577F0C21EDB82B82EEB35C3640@DM5PR11MB1435.namprd11.prod.outlook.com>
+ <DM5PR11MB143584D5A0AAE13E0D2D04B7C3640@DM5PR11MB1435.namprd11.prod.outlook.com>
+ <20200709082751.320742ab@x1.home>
+ <DM5PR11MB1435AA0A724D4A59B56E8CA8C3650@DM5PR11MB1435.namprd11.prod.outlook.com>
+Organization: Red Hat
 MIME-Version: 1.0
-Content-Disposition: inline
-In-Reply-To: <20200630224634.319-1-sebott@amazon.de>
-User-Agent: Mutt/1.10.1 (2018-07-13)
-Cc: Benjamin Serebrin <serebrin@amazon.com>, Filippo Sironi <sironi@amazon.de>,
- iommu@lists.linux-foundation.org
+X-Scanned-By: MIMEDefang 2.79 on 10.5.11.12
+Cc: "jean-philippe@linaro.org" <jean-philippe@linaro.org>, "Tian,
+ Kevin" <kevin.tian@intel.com>, "Raj, 
+ Ashok" <ashok.raj@intel.com>, "kvm@vger.kernel.org" <kvm@vger.kernel.org>,
+ "iommu@lists.linux-foundation.org" <iommu@lists.linux-foundation.org>,
+ "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>, "Sun, 
+ Yi Y" <yi.y.sun@intel.com>, "Wu,
+ Hao" <hao.wu@intel.com>, "Tian, Jun J" <jun.j.tian@intel.com>
 X-BeenThere: iommu@lists.linux-foundation.org
 X-Mailman-Version: 2.1.15
 Precedence: list
@@ -76,31 +118,250 @@ Content-Transfer-Encoding: 7bit
 Errors-To: iommu-bounces@lists.linux-foundation.org
 Sender: "iommu" <iommu-bounces@lists.linux-foundation.org>
 
-Hi Sebastian,
+On Fri, 10 Jul 2020 05:39:57 +0000
+"Liu, Yi L" <yi.l.liu@intel.com> wrote:
 
-On Wed, Jul 01, 2020 at 12:46:31AM +0200, Sebastian Ott wrote:
-> The IVRS ACPI table specifies maximum address sizes for I/O virtual
-> addresses that can be handled by the IOMMUs in the system. Parse that
-> data from the IVRS header to provide aperture information for DMA
-> mappings and users of the iommu API.
+> Hi Alex, 
 > 
-> Changes for V2:
->  - use limits in iommu_setup_dma_ops()
->  - rebased to current upstream
+> > From: Alex Williamson <alex.williamson@redhat.com>
+> > Sent: Thursday, July 9, 2020 10:28 PM
+> > 
+> > On Thu, 9 Jul 2020 07:16:31 +0000
+> > "Liu, Yi L" <yi.l.liu@intel.com> wrote:
+> >   
+> > > Hi Alex,
+> > >
+> > > After more thinking, looks like adding a r-b tree is still not enough to
+> > > solve the potential problem for free a range of PASID in one ioctl. If
+> > > caller gives [0, MAX_UNIT] in the free request, kernel anyhow should
+> > > loop all the PASIDs and search in the r-b tree. Even VFIO can track the
+> > > smallest/largest allocated PASID, and limit the free range to an accurate
+> > > range, it is still no efficient. For example, user has allocated two PASIDs
+> > > ( 1 and 999), and user gives the [0, MAX_UNIT] range in free request. VFIO
+> > > will limit the free range to be [1, 999], but still needs to loop PASID 1 -
+> > > 999, and search in r-b tree.  
+> > 
+> > That sounds like a poor tree implementation.  Look at vfio_find_dma()
+> > for instance, it returns a node within the specified range.  If the
+> > tree has two nodes within the specified range we should never need to
+> > call a search function like vfio_find_dma() more than three times.  We
+> > call it once, get the first node, remove it.  Call it again, get the
+> > other node, remove it.  Call a third time, find no matches, we're done.
+> > So such an implementation limits searches to N+1 where N is the number
+> > of nodes within the range.  
 > 
-> Sebastian Ott (3):
->   iommu/amd: Parse supported address sizes from IVRS
->   iommu/amd: Restrict aperture for domains to conform with IVRS
->   iommu/amd: Actually enforce geometry aperture
+> I see. When getting a free range from user. Use the range to find suited
+> PASIDs in the r-b tree. For the example I mentioned, if giving [0, MAX_UNIT],
+> will find two nodes. If giving [0, 100] range, then only one node will be
+> found. But even though, it still take some time if the user holds a bunch
+> of PASIDs and user gives a big free range.
 
-Thanks for the changes. May I ask what the reason for those changes are?
-AFAIK all AMD IOMMU implementations (in hardware) support full 64bit
-address spaces, and the IVRS table might actually be wrong, limiting the
-address space in the worst case to only 32 bit.
 
-Regards,
+But that time is bounded.  The complexity of the tree and maximum
+number of operations on the tree are bounded by the number of nodes,
+which is bound by the user's pasid quota.  Thanks,
 
-	Joerg
+Alex
+ 
+> > > So I'm wondering can we fall back to prior proposal which only free one
+> > > PASID for a free request. how about your opinion?  
+> > 
+> > Doesn't it still seem like it would be a useful user interface to have
+> > a mechanism to free all pasids, by calling with exactly [0, MAX_UINT]?
+> > I'm not sure if there's another use case for this given than the user
+> > doesn't have strict control of the pasid values they get.  Thanks,  
+> 
+> I don't have such use case neither. perhaps we may allow it in future by
+> adding flag. but if it's still useful, I may try with your suggestion. :-)
+> 
+> Regards,
+> Yi Liu
+> 
+> > Alex
+> >   
+> > > > From: Liu, Yi L <yi.l.liu@intel.com>
+> > > > Sent: Thursday, July 9, 2020 10:26 AM
+> > > >
+> > > > Hi Kevin,
+> > > >  
+> > > > > From: Tian, Kevin <kevin.tian@intel.com>
+> > > > > Sent: Thursday, July 9, 2020 10:18 AM
+> > > > >  
+> > > > > > From: Liu, Yi L <yi.l.liu@intel.com>
+> > > > > > Sent: Thursday, July 9, 2020 10:08 AM
+> > > > > >
+> > > > > > Hi Kevin,
+> > > > > >  
+> > > > > > > From: Tian, Kevin <kevin.tian@intel.com>
+> > > > > > > Sent: Thursday, July 9, 2020 9:57 AM
+> > > > > > >  
+> > > > > > > > From: Liu, Yi L <yi.l.liu@intel.com>
+> > > > > > > > Sent: Thursday, July 9, 2020 8:32 AM
+> > > > > > > >
+> > > > > > > > Hi Alex,
+> > > > > > > >  
+> > > > > > > > > Alex Williamson <alex.williamson@redhat.com>
+> > > > > > > > > Sent: Thursday, July 9, 2020 3:55 AM
+> > > > > > > > >
+> > > > > > > > > On Wed, 8 Jul 2020 08:16:16 +0000 "Liu, Yi L"
+> > > > > > > > > <yi.l.liu@intel.com> wrote:
+> > > > > > > > >  
+> > > > > > > > > > Hi Alex,
+> > > > > > > > > >  
+> > > > > > > > > > > From: Liu, Yi L < yi.l.liu@intel.com>
+> > > > > > > > > > > Sent: Friday, July 3, 2020 2:28 PM
+> > > > > > > > > > >
+> > > > > > > > > > > Hi Alex,
+> > > > > > > > > > >  
+> > > > > > > > > > > > From: Alex Williamson <alex.williamson@redhat.com>
+> > > > > > > > > > > > Sent: Friday, July 3, 2020 5:19 AM
+> > > > > > > > > > > >
+> > > > > > > > > > > > On Wed, 24 Jun 2020 01:55:19 -0700 Liu Yi L
+> > > > > > > > > > > > <yi.l.liu@intel.com> wrote:
+> > > > > > > > > > > >  
+> > > > > > > > > > > > > This patch allows user space to request PASID
+> > > > > > > > > > > > > allocation/free,  
+> > > > > > e.g.  
+> > > > > > > > > > > > > when serving the request from the guest.
+> > > > > > > > > > > > >
+> > > > > > > > > > > > > PASIDs that are not freed by userspace are
+> > > > > > > > > > > > > automatically freed  
+> > > > > > > > when  
+> > > > > > > > > > > > > the IOASID set is destroyed when process exits.  
+> > > > > > > > > > [...]  
+> > > > > > > > > > > > > +static int vfio_iommu_type1_pasid_request(struct
+> > > > > > > > > > > > > +vfio_iommu  
+> > > > > > > > *iommu,  
+> > > > > > > > > > > > > +					  unsigned long arg) {
+> > > > > > > > > > > > > +	struct vfio_iommu_type1_pasid_request req;
+> > > > > > > > > > > > > +	unsigned long minsz;
+> > > > > > > > > > > > > +
+> > > > > > > > > > > > > +	minsz = offsetofend(struct  
+> > > > > vfio_iommu_type1_pasid_request,  
+> > > > > > > > > range);  
+> > > > > > > > > > > > > +
+> > > > > > > > > > > > > +	if (copy_from_user(&req, (void __user *)arg, minsz))
+> > > > > > > > > > > > > +		return -EFAULT;
+> > > > > > > > > > > > > +
+> > > > > > > > > > > > > +	if (req.argsz < minsz || (req.flags &  
+> > > > > > > > > ~VFIO_PASID_REQUEST_MASK))  
+> > > > > > > > > > > > > +		return -EINVAL;
+> > > > > > > > > > > > > +
+> > > > > > > > > > > > > +	if (req.range.min > req.range.max)  
+> > > > > > > > > > > >
+> > > > > > > > > > > > Is it exploitable that a user can spin the kernel for a
+> > > > > > > > > > > > long time in the case of a free by calling this with [0,
+> > > > > > > > > > > > MAX_UINT] regardless of their  
+> > > > > > > > > actual  
+> > > > > > > > > > > allocations?
+> > > > > > > > > > >
+> > > > > > > > > > > IOASID can ensure that user can only free the PASIDs
+> > > > > > > > > > > allocated to the  
+> > > > > > > > user.  
+> > > > > > > > > but  
+> > > > > > > > > > > it's true, kernel needs to loop all the PASIDs within the
+> > > > > > > > > > > range provided by user.  
+> > > > > > > > > it  
+> > > > > > > > > > > may take a long time. is there anything we can do? one
+> > > > > > > > > > > thing may limit  
+> > > > > > > > the  
+> > > > > > > > > range  
+> > > > > > > > > > > provided by user?  
+> > > > > > > > > >
+> > > > > > > > > > thought about it more, we have per-VM pasid quota (say
+> > > > > > > > > > 1000), so even if user passed down [0, MAX_UNIT], kernel
+> > > > > > > > > > will only loop the
+> > > > > > > > > > 1000 pasids at most. do you think we still need to do something on  
+> > it?  
+> > > > > > > > >
+> > > > > > > > > How do you figure that?  vfio_iommu_type1_pasid_request()
+> > > > > > > > > accepts the user's min/max so long as (max > min) and passes
+> > > > > > > > > that to vfio_iommu_type1_pasid_free(), then to
+> > > > > > > > > vfio_pasid_free_range() which loops as:
+> > > > > > > > >
+> > > > > > > > > 	ioasid_t pasid = min;
+> > > > > > > > > 	for (; pasid <= max; pasid++)
+> > > > > > > > > 		ioasid_free(pasid);
+> > > > > > > > >
+> > > > > > > > > A user might only be able to allocate 1000 pasids, but
+> > > > > > > > > apparently they can ask to free all they want.
+> > > > > > > > >
+> > > > > > > > > It's also not obvious to me that calling ioasid_free() is only
+> > > > > > > > > allowing the user to free their own passid.  Does it?  It
+> > > > > > > > > would be a pretty  
+> > > > > > >
+> > > > > > > Agree. I thought ioasid_free should at least carry a token since
+> > > > > > > the user  
+> > > > > > space is  
+> > > > > > > only allowed to manage PASIDs in its own set...
+> > > > > > >  
+> > > > > > > > > gaping hole if a user could free arbitrary pasids.  A r-b tree
+> > > > > > > > > of passids might help both for security and to bound spinning in a  
+> > loop.  
+> > > > > > > >
+> > > > > > > > oh, yes. BTW. instead of r-b tree in VFIO, maybe we can add an
+> > > > > > > > ioasid_set parameter for ioasid_free(), thus to prevent the user
+> > > > > > > > from freeing PASIDs that doesn't belong to it. I remember Jacob
+> > > > > > > > mentioned it  
+> > > > > > before.  
+> > > > > > > >  
+> > > > > > >
+> > > > > > > check current ioasid_free:
+> > > > > > >
+> > > > > > >         spin_lock(&ioasid_allocator_lock);
+> > > > > > >         ioasid_data = xa_load(&active_allocator->xa, ioasid);
+> > > > > > >         if (!ioasid_data) {
+> > > > > > >                 pr_err("Trying to free unknown IOASID %u\n", ioasid);
+> > > > > > >                 goto exit_unlock;
+> > > > > > >         }
+> > > > > > >
+> > > > > > > Allow an user to trigger above lock paths with MAX_UINT times
+> > > > > > > might still  
+> > > > > > be bad.
+> > > > > >
+> > > > > > yeah, how about the below two options:
+> > > > > >
+> > > > > > - comparing the max - min with the quota before calling ioasid_free().
+> > > > > >   If max - min > current quota of the user, then should fail it. If
+> > > > > >   max - min < quota, then call ioasid_free() one by one. still trigger
+> > > > > >   the above lock path with quota times.  
+> > > > >
+> > > > > This is definitely wrong. [min, max] is about the range of the PASID
+> > > > > value, while quota is about the number of allocated PASIDs. It's a bit
+> > > > > weird to mix two together.  
+> > > >
+> > > > got it.
+> > > >  
+> > > > > btw what is the main purpose of allowing batch PASID free requests?
+> > > > > Can we just simplify to allow one PASID in each free just like how is
+> > > > > it done in allocation path?  
+> > > >
+> > > > it's an intention to reuse the [min, max] range as allocation path. currently,  
+> > we  
+> > > > don't have such request as far as I can see.
+> > > >  
+> > > > > >
+> > > > > > - pass the max and min to ioasid_free(), let ioasid_free() decide. should
+> > > > > >   be able to avoid trigger the lock multiple times, and ioasid has have a
+> > > > > >   track on how may PASIDs have been allocated, if max - min is larger than
+> > > > > >   the allocated number, should fail anyway.  
+> > > > >
+> > > > > What about Alex's r-b tree suggestion? Is there any downside in you mind?  
+> > > >
+> > > > no downside, I was just wanting to reuse the tracks in ioasid_set. I can add a  
+> > r-b  
+> > > > for allocated PASIDs and find the PASIDs in the r-b tree only do free for the
+> > > > PASIDs found in r-b tree, others in the range would be ignored.
+> > > > does it look good?
+> > > >
+> > > > Regards,
+> > > > Yi Liu
+> > > >  
+> > > > > Thanks,
+> > > > > Kevin  
+> > >  
+> 
+
 _______________________________________________
 iommu mailing list
 iommu@lists.linux-foundation.org
