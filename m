@@ -2,68 +2,77 @@ Return-Path: <SRS0=wTTv=AV=lists.linux-foundation.org=iommu-bounces@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-3.7 required=3.0 tests=HEADER_FROM_DIFFERENT_DOMAINS,
-	MAILING_LIST_MULTI,SIGNED_OFF_BY,SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED
-	autolearn=no autolearn_force=no version=3.4.0
+X-Spam-Status: No, score=-5.2 required=3.0 tests=BAYES_00,
+	HEADER_FROM_DIFFERENT_DOMAINS,MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS,
+	UNPARSEABLE_RELAY,URIBL_BLOCKED,USER_AGENT_SANE_1 autolearn=no
+	autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id AE8C1C433E0
-	for <iommu@archiver.kernel.org>; Fri, 10 Jul 2020 08:20:11 +0000 (UTC)
-Received: from whitealder.osuosl.org (smtp1.osuosl.org [140.211.166.138])
+	by smtp.lore.kernel.org (Postfix) with ESMTP id DD506C433E1
+	for <iommu@archiver.kernel.org>; Fri, 10 Jul 2020 11:40:10 +0000 (UTC)
+Received: from fraxinus.osuosl.org (smtp4.osuosl.org [140.211.166.137])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by mail.kernel.org (Postfix) with ESMTPS id 841D0206A5
-	for <iommu@archiver.kernel.org>; Fri, 10 Jul 2020 08:20:11 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 841D0206A5
-Authentication-Results: mail.kernel.org; dmarc=none (p=none dis=none) header.from=suse.de
+	by mail.kernel.org (Postfix) with ESMTPS id 5653B20748
+	for <iommu@archiver.kernel.org>; Fri, 10 Jul 2020 11:40:10 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 5653B20748
+Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=linux.alibaba.com
 Authentication-Results: mail.kernel.org; spf=pass smtp.mailfrom=iommu-bounces@lists.linux-foundation.org
 Received: from localhost (localhost [127.0.0.1])
-	by whitealder.osuosl.org (Postfix) with ESMTP id 4F40E88310;
-	Fri, 10 Jul 2020 08:20:11 +0000 (UTC)
+	by fraxinus.osuosl.org (Postfix) with ESMTP id 10820888AB;
+	Fri, 10 Jul 2020 11:40:10 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from whitealder.osuosl.org ([127.0.0.1])
+Received: from fraxinus.osuosl.org ([127.0.0.1])
 	by localhost (.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
-	with ESMTP id uxsjiskLQzvv; Fri, 10 Jul 2020 08:20:10 +0000 (UTC)
+	with ESMTP id Gl4zUs93bPkx; Fri, 10 Jul 2020 11:40:08 +0000 (UTC)
 Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [140.211.9.56])
-	by whitealder.osuosl.org (Postfix) with ESMTP id AE8E6882FD;
-	Fri, 10 Jul 2020 08:20:10 +0000 (UTC)
+	by fraxinus.osuosl.org (Postfix) with ESMTP id 60FB2887AB;
+	Fri, 10 Jul 2020 11:40:08 +0000 (UTC)
 Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
-	by lists.linuxfoundation.org (Postfix) with ESMTP id 9D2C0C016F;
-	Fri, 10 Jul 2020 08:20:10 +0000 (UTC)
-Received: from whitealder.osuosl.org (smtp1.osuosl.org [140.211.166.138])
- by lists.linuxfoundation.org (Postfix) with ESMTP id D7FDCC0865
- for <iommu@lists.linux-foundation.org>; Fri, 10 Jul 2020 08:20:08 +0000 (UTC)
+	by lists.linuxfoundation.org (Postfix) with ESMTP id 4AD87C0890;
+	Fri, 10 Jul 2020 11:40:08 +0000 (UTC)
+Received: from hemlock.osuosl.org (smtp2.osuosl.org [140.211.166.133])
+ by lists.linuxfoundation.org (Postfix) with ESMTP id 578A5C016F
+ for <iommu@lists.linux-foundation.org>; Fri, 10 Jul 2020 09:35:38 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
- by whitealder.osuosl.org (Postfix) with ESMTP id 5042C89666
- for <iommu@lists.linux-foundation.org>; Fri, 10 Jul 2020 08:19:46 +0000 (UTC)
+ by hemlock.osuosl.org (Postfix) with ESMTP id 398DE894CF
+ for <iommu@lists.linux-foundation.org>; Fri, 10 Jul 2020 09:35:38 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from whitealder.osuosl.org ([127.0.0.1])
+Received: from hemlock.osuosl.org ([127.0.0.1])
  by localhost (.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
- with ESMTP id DpwwM4MNqsrk for <iommu@lists.linux-foundation.org>;
- Fri, 10 Jul 2020 08:19:45 +0000 (UTC)
+ with ESMTP id ZDJ4TXckDMGC for <iommu@lists.linux-foundation.org>;
+ Fri, 10 Jul 2020 09:35:37 +0000 (UTC)
 X-Greylist: domain auto-whitelisted by SQLgrey-1.7.6
-Received: from mx2.suse.de (mx2.suse.de [195.135.220.15])
- by whitealder.osuosl.org (Postfix) with ESMTPS id BF5A789660
- for <iommu@lists.linux-foundation.org>; Fri, 10 Jul 2020 08:19:44 +0000 (UTC)
-X-Virus-Scanned: by amavisd-new at test-mx.suse.de
-Received: from relay2.suse.de (unknown [195.135.221.27])
- by mx2.suse.de (Postfix) with ESMTP id AFBB7AB7A;
- Fri, 10 Jul 2020 08:19:42 +0000 (UTC)
-Message-ID: <5c21867fd2e9c1c25f3080deeeb0ccdb3070ead2.camel@suse.de>
-Subject: Re: [PATCH] dma-pool: use single atomic pool for both DMA zones
-From: Nicolas Saenz Julienne <nsaenzjulienne@suse.de>
-To: David Rientjes <rientjes@google.com>, Christoph Hellwig <hch@lst.de>
-Date: Fri, 10 Jul 2020 10:19:40 +0200
-In-Reply-To: <alpine.DEB.2.23.453.2007091448550.972523@chino.kir.corp.google.com>
-References: <20200707122804.21262-1-nsaenzjulienne@suse.de>
- <20200708153509.GA26743@lst.de>
- <e81db35628a22a0d1635699d1e87bacde706ad25.camel@suse.de>
- <20200708161010.GA30184@lst.de>
- <alpine.DEB.2.23.453.2007091448550.972523@chino.kir.corp.google.com>
-User-Agent: Evolution 3.36.3 
+Received: from out30-45.freemail.mail.aliyun.com
+ (out30-45.freemail.mail.aliyun.com [115.124.30.45])
+ by hemlock.osuosl.org (Postfix) with ESMTPS id 12D5F894D3
+ for <iommu@lists.linux-foundation.org>; Fri, 10 Jul 2020 09:35:36 +0000 (UTC)
+X-Alimail-AntiSpam: AC=PASS; BC=-1|-1; BR=01201311R121e4; CH=green; DM=||false|;
+ DS=||; FP=0|-1|-1|-1|0|-1|-1|-1; HT=e01e07484; MF=alex.shi@linux.alibaba.com;
+ NM=1; PH=DS; RN=9; SR=0; TI=SMTPD_---0U2H8hSR_1594373729; 
+Received: from IT-FVFX43SYHV2H.local(mailfrom:alex.shi@linux.alibaba.com
+ fp:SMTPD_---0U2H8hSR_1594373729) by smtp.aliyun-inc.com(127.0.0.1);
+ Fri, 10 Jul 2020 17:35:30 +0800
+Subject: Re: a question of split_huge_page
+To: =?UTF-8?Q?Mika_Penttil=c3=a4?= <mika.penttila@nextfour.com>,
+ "Kirill A. Shutemov" <kirill@shutemov.name>,
+ Matthew Wilcox <willy@infradead.org>
+References: <df2597f6-af21-5547-d39c-94c02ad17adb@linux.alibaba.com>
+ <20200709155002.GF12769@casper.infradead.org>
+ <20200709160750.utl46xvavceuvnom@box>
+ <f761007f-4663-f72e-b0da-fc3ce9486b4b@linux.alibaba.com>
+ <441ebbeb-0408-e22e-20f4-1be571c4a18e@nextfour.com>
+From: Alex Shi <alex.shi@linux.alibaba.com>
+Message-ID: <50113530-fae5-bb36-56c2-5b5c4f90426d@linux.alibaba.com>
+Date: Fri, 10 Jul 2020 17:34:52 +0800
+User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10.15; rv:68.0)
+ Gecko/20100101 Thunderbird/68.7.0
 MIME-Version: 1.0
-Cc: linux-kernel@vger.kernel.org, jeremy.linton@arm.com,
- iommu@lists.linux-foundation.org, linux-rpi-kernel@lists.infradead.org,
- Robin Murphy <robin.murphy@arm.com>
+In-Reply-To: <441ebbeb-0408-e22e-20f4-1be571c4a18e@nextfour.com>
+X-Mailman-Approved-At: Fri, 10 Jul 2020 11:40:06 +0000
+Cc: Hugh Dickins <hughd@google.com>,
+ "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
+ Linux-MM <linux-mm@kvack.org>, iommu@lists.linux-foundation.org,
+ Johannes Weiner <hannes@cmpxchg.org>
 X-BeenThere: iommu@lists.linux-foundation.org
 X-Mailman-Version: 2.1.15
 Precedence: list
@@ -76,115 +85,50 @@ List-Post: <mailto:iommu@lists.linux-foundation.org>
 List-Help: <mailto:iommu-request@lists.linux-foundation.org?subject=help>
 List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
  <mailto:iommu-request@lists.linux-foundation.org?subject=subscribe>
-Content-Type: multipart/mixed; boundary="===============0048570396864706301=="
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: base64
 Errors-To: iommu-bounces@lists.linux-foundation.org
 Sender: "iommu" <iommu-bounces@lists.linux-foundation.org>
 
-
---===============0048570396864706301==
-Content-Type: multipart/signed; micalg="pgp-sha256";
-	protocol="application/pgp-signature"; boundary="=-ghHFpb3jrVR40NR7F7FC"
-
-
---=-ghHFpb3jrVR40NR7F7FC
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
-
-On Thu, 2020-07-09 at 14:49 -0700, David Rientjes wrote:
-> On Wed, 8 Jul 2020, Christoph Hellwig wrote:
->=20
-> > On Wed, Jul 08, 2020 at 06:00:35PM +0200, Nicolas Saenz Julienne wrote:
-> > > On Wed, 2020-07-08 at 17:35 +0200, Christoph Hellwig wrote:
-> > > > On Tue, Jul 07, 2020 at 02:28:04PM +0200, Nicolas Saenz Julienne wr=
-ote:
-> > > > > When allocating atomic DMA memory for a device, the dma-pool core
-> > > > > queries __dma_direct_optimal_gfp_mask() to check which atomic poo=
-l to
-> > > > > use. It turns out the GFP flag returned is only an optimistic gue=
-ss.
-> > > > > The pool selected might sometimes live in a zone higher than the
-> > > > > device's view of memory.
-> > > > >=20
-> > > > > As there isn't a way to grantee a mapping between a device's DMA
-> > > > > constraints and correct GFP flags this unifies both DMA atomic po=
-ols.
-> > > > > The resulting pool is allocated in the lower DMA zone available, =
-if
-> > > > > any,
-> > > > > so as for devices to always get accessible memory while having th=
-e
-> > > > > flexibility of using dma_pool_kernel for the non constrained ones=
-.
-> > > > >=20
-> > > > > Fixes: c84dc6e68a1d ("dma-pool: add additional coherent pools to =
-map
-> > > > > to gfp
-> > > > > mask")
-> > > > > Reported-by: Jeremy Linton <jeremy.linton@arm.com>
-> > > > > Suggested-by: Robin Murphy <robin.murphy@arm.com>
-> > > > > Signed-off-by: Nicolas Saenz Julienne <nsaenzjulienne@suse.de>
-> > > >=20
-> > > > Hmm, this is not what I expected from the previous thread.  I thoug=
-ht
-> > > > we'd just use one dma pool based on runtime available of the zones.=
-.
-> > >=20
-> > > I may be misunderstanding you, but isn't that going back to how thing=
-s
-> > > used to
-> > > be before pulling in David Rientjes' work? The benefit of having a
-> > > GFP_KERNEL
-> > > pool is that non-address-constrained devices can get their atomic mem=
-ory
-> > > there,
-> > > instead of consuming somewhat scarcer low memory.
-> >=20
-> > Yes, I think we are misunderstanding each other.  I don't want to remov=
-e
-> > any pool, just make better runtime decisions when to use them.
-> >=20
->=20
-> Just to be extra explicit for the record and for my own understanding:=
-=20
-> Nicolas, your patch series "dma-pool: Fix atomic pool selection" obsolete=
-s=20
-> this patch, right? :)
-
-Yes, that's right.
-
-Regards,
-Nicolas
-
-
---=-ghHFpb3jrVR40NR7F7FC
-Content-Type: application/pgp-signature; name="signature.asc"
-Content-Description: This is a digitally signed message part
-Content-Transfer-Encoding: 7bit
-
------BEGIN PGP SIGNATURE-----
-
-iQEzBAABCAAdFiEErOkkGDHCg2EbPcGjlfZmHno8x/4FAl8IJJwACgkQlfZmHno8
-x/7eRgf+LVqWrnAjb1c88gXOrDMdl27HUQzIDYXit5TQgnkyp7CwzALmvSEnc2Es
-BtY2vTG+MkAnQosY5mRuw2Ycs6K89qFjVnd5JmCefM44A89n3vTG1Fu3/1yOFjEZ
-dcdJuY7x6pFvZal7dEJpm3BMjWMGPRwCgdgF3fMmVqfwA7k4R0TflEZT/W7fSz1N
-c9mVgO4dfv4uBghkHYe+ffZ/71uuWtebNkM5mwygsTJ6IFvQErnf0jF4ROi+Tv+o
-XvKnWsFxvX8B36eZWhNHr5bWXbS7dHjAqiwIqhgKvwRvEqrSWVL3np29KwdrP09k
-4AowWeWsNLJ9kHsHfaoaubpv6nUDbA==
-=ZWwI
------END PGP SIGNATURE-----
-
---=-ghHFpb3jrVR40NR7F7FC--
-
-
---===============0048570396864706301==
-Content-Type: text/plain; charset="us-ascii"
-MIME-Version: 1.0
-Content-Transfer-Encoding: 7bit
-Content-Disposition: inline
-
-_______________________________________________
-iommu mailing list
-iommu@lists.linux-foundation.org
-https://lists.linuxfoundation.org/mailman/listinfo/iommu
---===============0048570396864706301==--
-
+5ZyoIDIwMjAvNy8xMCDkuIvljYgxOjI4LCBNaWthIFBlbnR0aWzDpCDlhpnpgZM6Cj4gCj4gCj4g
+T24gMTAuNy4yMDIwIDcuNTEsIEFsZXggU2hpIHdyb3RlOgo+Pgo+PiDlnKggMjAyMC83LzEwIOS4
+iuWNiDEyOjA3LCBLaXJpbGwgQS4gU2h1dGVtb3Yg5YaZ6YGTOgo+Pj4gT24gVGh1LCBKdWwgMDks
+IDIwMjAgYXQgMDQ6NTA6MDJQTSArMDEwMCwgTWF0dGhldyBXaWxjb3ggd3JvdGU6Cj4+Pj4gT24g
+VGh1LCBKdWwgMDksIDIwMjAgYXQgMTE6MTE6MTFQTSArMDgwMCwgQWxleCBTaGkgd3JvdGU6Cj4+
+Pj4+IEhpIEtpcmlsbCAmIE1hdHRoZXcsCj4+Pj4+Cj4+Pj4+IEluIHRoZSBmdW5jIGNhbGwgY2hh
+aW4sIGZyb20gc3BsaXRfaHVnZV9wYWdlKCkgdG8gbHJ1X2FkZF9wYWdlX3RhaWwoKSwKPj4+Pj4g
+U2VlbXMgdGFpbCBwYWdlcyBhcmUgYWRkZWQgdG8gbHJ1IGxpc3QgYXQgbGluZSA5NjMsIGJ1dCBp
+biB0aGlzIHNjZW5hcmlvCj4+Pj4+IHRoZSBoZWFkIHBhZ2UgaGFzIG5vIGxydSBiaXQgYW5kIGlz
+bid0IHNldCB0aGUgYml0IGxhdGVyLiBXaHkgd2UgZG8gdGhpcz8KPj4+Pj4gb3IgZG8gSSBtaXNz
+IHN0aD8KPj4+PiBJIGRvbid0IHVuZGVyc3RhbmQgaG93IHdlIGdldCB0byBzcGxpdF9odWdlX3Bh
+Z2UoKSB3aXRoIGEgcGFnZSB0aGF0J3MKPj4+PiBub3Qgb24gYW4gTFJVIGxpc3QuICBCb3RoIGFu
+b255bW91cyBhbmQgcGFnZSBjYWNoZSBwYWdlcyBzaG91bGQgYmUgb24KPj4+PiBhbiBMUlUgbGlz
+dC4gIFdoYXQgYW0gSSBtaXNzaW5nPz4gCj4+Cj4+IFRoYW5rcyBhIGxvdCBmb3IgcXVpY2sgcmVw
+bHkhCj4+IFdoYXQgSSBhbSBjb25mdXNpbmcgaXMgdGhlIGNhbGwgY2hhaW46IF9faW9tbXVfZG1h
+X2FsbG9jX3BhZ2VzKCkKPj4gdG8gc3BsaXRfaHVnZV9wYWdlKCksIGluIHRoZSBmdW5jLCBzcGxp
+dGVkIHBhZ2UsCj4+IAlwYWdlID0gYWxsb2NfcGFnZXNfbm9kZShuaWQsIGFsbG9jX2ZsYWdzLCBv
+cmRlcik7Cj4+IEFuZCBpZiB0aGUgcGFnZXMgd2VyZSBhZGRlZCBpbnRvIGxydSwgdGhleSBtYXli
+ZSByZWNsYWltZWQgYW5kIGxvc3QsCj4+IHRoYXQgd291bGQgYmUgYSBwYW5pYyBidWcuIEJ1dCBp
+biBmYWN0LCB0aGlzIG5ldmVyIGhhcHBlbmVkIGZvciBsb25nIHRpbWUuCj4+IEFsc28gSSBwdXQg
+YSBCVUcoKSBhdCB0aGUgbGluZSwgaXQncyBuZXZyZSB0cmlnZ2VyZWQgaW4gbHRwLCBhbmQgcnVu
+X3ZtdGVzdHMKPiAKPiAKPiBJbsKgIF9faW9tbXVfZG1hX2FsbG9jX3BhZ2VzLCBhZnRlciBzcGxp
+dF9odWdlX3BhZ2UoKSzCoCB3aG8gaXMgdGFraW5nIGEKPiByZWZlcmVuY2Ugb24gdGFpbCBwYWdl
+cz8gU2VlbXMgdGFpbCBwYWdlcyBhcmUgZnJlZWQgYW5kIHRoZSBmdW5jdGlvbgo+IGVycm9ybm91
+c2x5IHJldHVybnMgdGhlbSBpbiBwYWdlc1tdIGFycmF5IGZvciB1c2U/Cj4gCgpDQyBKb2VyZyBh
+bmQgaW9tbXUgbGlzdCwKClRoYXQncyBhIGdvb2QgcXVlc3Rpb24uIHNlZW1zIHRoZSBzcGxpdF9o
+dWdlX3BhZ2Ugd2FzIG5ldmVyIHRyaWdnZXJlZCBoZXJlLApzaW5jZSB0aGUgZnVuYyB3b3VsZCBj
+aGVjayB0aGUgUGFnZUxvY2sgZmlyc3QuIGFuZCBoYXZlIHBhZ2UtPm1hcHBpbmcgYW5kIFBhZ2VB
+bm9uCmNoZWNrLCBhbnkgb2YgdGhlbSBjb3VsZG4ndCBiZSBtYXRjaGVkIGZvciB0aGUgYWxsb2Nl
+ZCBwYWdlLgoKSGkgSm9lcmcsCndvdWxkIHlvdSBsaWtlIGxvb2sgaW50byB0aGlzPyBkbyB3ZSBz
+dGlsbCBuZWVkIHRoZSBzcGxpdF9odWdlX3BhZ2UoKSBoZXJlPwoKVGhhbmtzCkFsZXgKCmludCBz
+cGxpdF9odWdlX3BhZ2VfdG9fbGlzdChzdHJ1Y3QgcGFnZSAqcGFnZSwgc3RydWN0IGxpc3RfaGVh
+ZCAqbGlzdCkKewogICAgICAgIHN0cnVjdCBwYWdlICpoZWFkID0gY29tcG91bmRfaGVhZChwYWdl
+KTsKICAgICAgICBzdHJ1Y3QgZGVmZXJyZWRfc3BsaXQgKmRzX3F1ZXVlID0gZ2V0X2RlZmVycmVk
+X3NwbGl0X3F1ZXVlKGhlYWQpOwogICAgICAgIHN0cnVjdCBhbm9uX3ZtYSAqYW5vbl92bWEgPSBO
+VUxMOwogICAgICAgIHN0cnVjdCBhZGRyZXNzX3NwYWNlICptYXBwaW5nID0gTlVMTDsKICAgICAg
+ICBpbnQgY291bnQsIG1hcGNvdW50LCBleHRyYV9waW5zLCByZXQ7CiAgICAgICAgcGdvZmZfdCBl
+bmQ7CgogICAgICAgIFZNX0JVR19PTl9QQUdFKGlzX2h1Z2VfemVyb19wYWdlKGhlYWQpLCBoZWFk
+KTsKICAgICAgICBWTV9CVUdfT05fUEFHRSghUGFnZUxvY2tlZChoZWFkKSwgaGVhZCk7CTw9PQo+
+IApfX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fXwppb21tdSBt
+YWlsaW5nIGxpc3QKaW9tbXVAbGlzdHMubGludXgtZm91bmRhdGlvbi5vcmcKaHR0cHM6Ly9saXN0
+cy5saW51eGZvdW5kYXRpb24ub3JnL21haWxtYW4vbGlzdGluZm8vaW9tbXU=
