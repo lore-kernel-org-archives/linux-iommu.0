@@ -2,167 +2,151 @@ Return-Path: <SRS0=wTTv=AV=lists.linux-foundation.org=iommu-bounces@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-0.5 required=3.0 tests=DKIM_INVALID,DKIM_SIGNED,
-	HEADER_FROM_DIFFERENT_DOMAINS,MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS,
-	URIBL_BLOCKED autolearn=no autolearn_force=no version=3.4.0
+X-Spam-Status: No, score=-6.5 required=3.0 tests=DKIM_INVALID,DKIM_SIGNED,
+	HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_PATCH,MAILING_LIST_MULTI,SIGNED_OFF_BY,
+	SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED autolearn=ham autolearn_force=no
+	version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 07A73C433DF
-	for <iommu@archiver.kernel.org>; Fri, 10 Jul 2020 05:40:08 +0000 (UTC)
-Received: from hemlock.osuosl.org (smtp2.osuosl.org [140.211.166.133])
+	by smtp.lore.kernel.org (Postfix) with ESMTP id C1C38C433DF
+	for <iommu@archiver.kernel.org>; Fri, 10 Jul 2020 05:50:09 +0000 (UTC)
+Received: from whitealder.osuosl.org (smtp1.osuosl.org [140.211.166.138])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by mail.kernel.org (Postfix) with ESMTPS id C92502072E
-	for <iommu@archiver.kernel.org>; Fri, 10 Jul 2020 05:40:07 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTPS id 84DD02072E
+	for <iommu@archiver.kernel.org>; Fri, 10 Jul 2020 05:50:09 +0000 (UTC)
 Authentication-Results: mail.kernel.org;
-	dkim=fail reason="signature verification failed" (1024-bit key) header.d=intel.onmicrosoft.com header.i=@intel.onmicrosoft.com header.b="Kvt+p5W2"
-DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org C92502072E
+	dkim=fail reason="signature verification failed" (1024-bit key) header.d=intel.onmicrosoft.com header.i=@intel.onmicrosoft.com header.b="TVOm3P1q"
+DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 84DD02072E
 Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=intel.com
 Authentication-Results: mail.kernel.org; spf=pass smtp.mailfrom=iommu-bounces@lists.linux-foundation.org
 Received: from localhost (localhost [127.0.0.1])
-	by hemlock.osuosl.org (Postfix) with ESMTP id B59C589B62;
-	Fri, 10 Jul 2020 05:40:07 +0000 (UTC)
+	by whitealder.osuosl.org (Postfix) with ESMTP id 333F4895FE;
+	Fri, 10 Jul 2020 05:50:09 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from hemlock.osuosl.org ([127.0.0.1])
+Received: from whitealder.osuosl.org ([127.0.0.1])
 	by localhost (.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
-	with ESMTP id DOgPMpp0FdsF; Fri, 10 Jul 2020 05:40:06 +0000 (UTC)
+	with ESMTP id fOMfCSosBU6T; Fri, 10 Jul 2020 05:50:08 +0000 (UTC)
 Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [140.211.9.56])
-	by hemlock.osuosl.org (Postfix) with ESMTP id B374089878;
-	Fri, 10 Jul 2020 05:40:06 +0000 (UTC)
+	by whitealder.osuosl.org (Postfix) with ESMTP id 5354C895CF;
+	Fri, 10 Jul 2020 05:50:08 +0000 (UTC)
 Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
-	by lists.linuxfoundation.org (Postfix) with ESMTP id 9AE90C077B;
-	Fri, 10 Jul 2020 05:40:06 +0000 (UTC)
+	by lists.linuxfoundation.org (Postfix) with ESMTP id 3007BC077B;
+	Fri, 10 Jul 2020 05:50:08 +0000 (UTC)
 Received: from whitealder.osuosl.org (smtp1.osuosl.org [140.211.166.138])
- by lists.linuxfoundation.org (Postfix) with ESMTP id 89A01C016F
- for <iommu@lists.linux-foundation.org>; Fri, 10 Jul 2020 05:40:05 +0000 (UTC)
+ by lists.linuxfoundation.org (Postfix) with ESMTP id EF12AC016F
+ for <iommu@lists.linux-foundation.org>; Fri, 10 Jul 2020 05:50:06 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
- by whitealder.osuosl.org (Postfix) with ESMTP id 715AE885D1
- for <iommu@lists.linux-foundation.org>; Fri, 10 Jul 2020 05:40:05 +0000 (UTC)
+ by whitealder.osuosl.org (Postfix) with ESMTP id 6D0D689499
+ for <iommu@lists.linux-foundation.org>; Fri, 10 Jul 2020 05:49:42 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
 Received: from whitealder.osuosl.org ([127.0.0.1])
  by localhost (.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
- with ESMTP id 5s2DIn6DToqx for <iommu@lists.linux-foundation.org>;
- Fri, 10 Jul 2020 05:40:02 +0000 (UTC)
+ with ESMTP id pKTzaHxe4iRE for <iommu@lists.linux-foundation.org>;
+ Fri, 10 Jul 2020 05:49:41 +0000 (UTC)
 X-Greylist: domain auto-whitelisted by SQLgrey-1.7.6
-Received: from mga09.intel.com (mga09.intel.com [134.134.136.24])
- by whitealder.osuosl.org (Postfix) with ESMTPS id 55CDB885D0
- for <iommu@lists.linux-foundation.org>; Fri, 10 Jul 2020 05:40:02 +0000 (UTC)
-IronPort-SDR: g1XF2XNpl09s0vxYeCGNw2rDbaYmFeXs7nRlfc50Jp+KpTolCtN+flPbplYRDO0K0BKA9UhoyV
- RWimPI11wOAA==
-X-IronPort-AV: E=McAfee;i="6000,8403,9677"; a="149624158"
-X-IronPort-AV: E=Sophos;i="5.75,334,1589266800"; d="scan'208";a="149624158"
+Received: from mga02.intel.com (mga02.intel.com [134.134.136.20])
+ by whitealder.osuosl.org (Postfix) with ESMTPS id 4DD378946B
+ for <iommu@lists.linux-foundation.org>; Fri, 10 Jul 2020 05:49:41 +0000 (UTC)
+IronPort-SDR: JuhaH4+QAuG7gRUz2Ubv0HgV4tyykmYJvuJBKBBsZ4llurVOtMCpjEfu1ey905i8p4tB/B9fxr
+ iogILeC5+Ybw==
+X-IronPort-AV: E=McAfee;i="6000,8403,9677"; a="136360151"
+X-IronPort-AV: E=Sophos;i="5.75,334,1589266800"; d="scan'208";a="136360151"
 X-Amp-Result: SKIPPED(no attachment in message)
 X-Amp-File-Uploaded: False
-Received: from orsmga005.jf.intel.com ([10.7.209.41])
- by orsmga102.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384;
- 09 Jul 2020 22:40:01 -0700
-IronPort-SDR: 0zQfPGqDyhjHp5kdSjhADbkGsqhXyi/yoRnR0fGEy0bKTBZOyAaBxaWqLeDnKL2pz9r/YJFVAG
- s7NsZWN+UFjA==
+Received: from orsmga007.jf.intel.com ([10.7.209.58])
+ by orsmga101.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384;
+ 09 Jul 2020 22:49:39 -0700
+IronPort-SDR: bchubPE4SMeVtG5TX4i3WiS+mcoC3Grj603ZOtbLvzLHQfKgWguMCoRDkWl5Pm3TxE4LHAb/Lm
+ Q8q5SHM2O4Zw==
 X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.75,334,1589266800"; d="scan'208";a="458177304"
-Received: from fmsmsx603.amr.corp.intel.com ([10.18.126.83])
- by orsmga005.jf.intel.com with ESMTP; 09 Jul 2020 22:40:01 -0700
-Received: from fmsmsx606.amr.corp.intel.com (10.18.126.86) by
- fmsmsx603.amr.corp.intel.com (10.18.126.83) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.1713.5; Thu, 9 Jul 2020 22:40:00 -0700
+X-IronPort-AV: E=Sophos;i="5.75,334,1589266800"; d="scan'208";a="324495012"
+Received: from fmsmsx107.amr.corp.intel.com ([10.18.124.205])
+ by orsmga007.jf.intel.com with ESMTP; 09 Jul 2020 22:49:38 -0700
+Received: from fmsmsx101.amr.corp.intel.com (10.18.124.199) by
+ fmsmsx107.amr.corp.intel.com (10.18.124.205) with Microsoft SMTP Server (TLS)
+ id 14.3.439.0; Thu, 9 Jul 2020 22:49:38 -0700
 Received: from FMSEDG002.ED.cps.intel.com (10.1.192.134) by
- fmsmsx606.amr.corp.intel.com (10.18.126.86) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256) id 15.1.1713.5
- via Frontend Transport; Thu, 9 Jul 2020 22:40:00 -0700
-Received: from NAM12-BN8-obe.outbound.protection.outlook.com (104.47.55.174)
+ fmsmsx101.amr.corp.intel.com (10.18.124.199) with Microsoft SMTP Server (TLS)
+ id 14.3.439.0; Thu, 9 Jul 2020 22:49:37 -0700
+Received: from NAM11-DM6-obe.outbound.protection.outlook.com (104.47.57.170)
  by edgegateway.intel.com (192.55.55.69) with Microsoft SMTP Server (TLS) id
- 14.3.439.0; Thu, 9 Jul 2020 22:40:00 -0700
+ 14.3.439.0; Thu, 9 Jul 2020 22:49:37 -0700
 ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=oDaQMPMa9BNYehYmg1MATWmvsPVK0IzqOgAJ02Miejk7dSxEB7jeO1jtd+zEVqg8AtFtcV4Nk6+2HVZS09jwdLmnAEa/uEkmRP82klv7D+FFI/BT29v3HCyxpyE4F07ItZuou5a9VuSS9I6hW2V+2TMnPZvCapxupvYsny40zLtb94bxFPAORUgSaKCm1Zvqvuk25b9XT+sSqCSHCRokkQt0Ox0rHU1omqWzAGe5Z12KnPX+7n1kKx87D9T9ZEnMBPclk3c8yeYfjE127RSIeQ5LSPgxOAPTijA4xWHQvuoWVU0pqyYt8czc2dyaGMr2NWJ81FRMA/XtCAxoYdJbkw==
+ b=kP45rpwchYjRUUvG9DVYdeUzqG1yNtyjEhQPlrdKZGOuC/wGg4vOZQSjpP0iVKCK5qAEgnq++LZlb3iMzv8CYTEK+xnAqu0mhbFml+/sAHyuePhIz+uBsgwZG4jPOFD4ss7D0k6sRMBzzpGodfVqcM9lD9SOTL7ebetsrGKhq6QS0mvcTeL6I+W00+KqtybqeHlFS9O8SC+BnLidkmXnu1m+rzzWt0PQ118uCwtwQ74STxn3ZuieJq8mqF9oY/C7KhiEfr+aEwT33h4ZMNeMzR3fRmqkNs8wmRIMLCfxUyZEYqb0rregPDN6y6V5arpcwA1zOSswOqM6CHkvNtKb/A==
 ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com; 
  s=arcselector9901;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=D1ZtNYnCFu7azqklSuX0z5ZLg1mZJ4vwAuwESYqlLlQ=;
- b=gMa33u8TUs5gn1FkGfhyqRLWBF5wNU1UdHDMCb2oCXku3lNVosQ/FWgV5aAubGaTpYp+1qqshLN5lzxAgNk3pEp9D03RQNKJUf1PFOs+gbbOGKWM7I369x7vw5yA+u6W5Y92T1a/19EsbOYUErlcgFp5sch+UlF1W5fc8lnvY5pqQnCO1/DyIyoNWpwL+1E7iZcaPlsPrsT3lMsYrk76B2xs3gbWP0YOO8znTDWb/DytjewygEvWFeDLa9AgvxrERl92Q2ecg1i/U8OFDu6mUqnnswZmwq4pmT31jJUyTqptCmL2e7CpPOCpWIC62AIxamNJWLsumyUsDVAt06OxKw==
+ bh=p9If5RsxQ3u2i9WodtwoiHSv0PtR1ZoRMVd9OrdMKNc=;
+ b=F+CY8NjsUJfWfeEQ46hZfDY9SzFHP3t9PARsPxAXg4jJVjrq/+ayG8fJOxGKWl0jnhgpD94c7/NYAIYiOY+TbIiX7f6qpD2VJQX0t5cIZZniCXDU49OEC6WYeRQ/98Z5iIBjk93wBL+qSSNdQRJ+ZYB22XRJP3O62HXJz2QvYF1AUV2gFryun9ZAHQj2bfXum65M3CwHqlIZYzgdI87XgEgDQ6J1xqYzTvwa17BVUFcUKBCFf5tWnsDsuaW69OY3eF5ho+B4b8nZnuedn9Z4Y2hj8zhJcdTfPkS7EIRYXrbIRR5Y6xnKZv3TZQ59XwtzOf/iUs4P7qkUKJ90jfh5Iw==
 ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
  smtp.mailfrom=intel.com; dmarc=pass action=none header.from=intel.com;
  dkim=pass header.d=intel.com; arc=none
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=intel.onmicrosoft.com; 
  s=selector2-intel-onmicrosoft-com;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=D1ZtNYnCFu7azqklSuX0z5ZLg1mZJ4vwAuwESYqlLlQ=;
- b=Kvt+p5W2YOO+913taIUtySBAdQkqKyJlhBytywiQrejZ75ms0mFy2xdCFP3krh7NOS1gee42kPQ1ep3cMxIWr/Df0hZ8J1Tdn5bPy/0uwPrc85WmO1ymAHV9zmo1SIlPWPPR7pt2/zXndgbmEThz5ritHdc3IDH/8US+9QX9RH8=
-Received: from DM5PR11MB1435.namprd11.prod.outlook.com (2603:10b6:4:7::18) by
- DM6PR11MB4642.namprd11.prod.outlook.com (2603:10b6:5:2a2::24) with
- Microsoft
- SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.20.3174.20; Fri, 10 Jul 2020 05:39:58 +0000
-Received: from DM5PR11MB1435.namprd11.prod.outlook.com
- ([fe80::9002:97a2:d8c0:8364]) by DM5PR11MB1435.namprd11.prod.outlook.com
- ([fe80::9002:97a2:d8c0:8364%10]) with mapi id 15.20.3174.021; Fri, 10 Jul
- 2020 05:39:57 +0000
-From: "Liu, Yi L" <yi.l.liu@intel.com>
-To: Alex Williamson <alex.williamson@redhat.com>
-Subject: RE: [PATCH v3 06/14] vfio/type1: Add VFIO_IOMMU_PASID_REQUEST
- (alloc/free)
-Thread-Topic: [PATCH v3 06/14] vfio/type1: Add VFIO_IOMMU_PASID_REQUEST
- (alloc/free)
-Thread-Index: AQHWSgRRzB2G/Oy5QEmxCHQWFS0FB6j02KQAgACUCyCAB/5SUIAAxDYAgABLnwCAABmKAIAAAO4wgAAFFYCAAAD78IAASzDwgAB/qYCAAOQrQA==
-Date: Fri, 10 Jul 2020 05:39:57 +0000
-Message-ID: <DM5PR11MB1435AA0A724D4A59B56E8CA8C3650@DM5PR11MB1435.namprd11.prod.outlook.com>
-References: <1592988927-48009-1-git-send-email-yi.l.liu@intel.com>
- <1592988927-48009-7-git-send-email-yi.l.liu@intel.com>
- <20200702151832.048b44d1@x1.home>
- <CY4PR11MB1432DD97F44EB8AA5CCC87D8C36A0@CY4PR11MB1432.namprd11.prod.outlook.com>
- <DM5PR11MB1435B159DA10C8301B89A6F0C3670@DM5PR11MB1435.namprd11.prod.outlook.com>
- <20200708135444.4eac48a4@x1.home>
- <DM5PR11MB14358A8797E3C02E50B37FFEC3640@DM5PR11MB1435.namprd11.prod.outlook.com>
- <MWHPR11MB16456D12135AA36BA16CE4208C640@MWHPR11MB1645.namprd11.prod.outlook.com>
- <DM5PR11MB14357DC99EFCDE7E02944E2EC3640@DM5PR11MB1435.namprd11.prod.outlook.com>
- <MWHPR11MB1645F822D9267005AE5BCE528C640@MWHPR11MB1645.namprd11.prod.outlook.com>
- <DM5PR11MB143577F0C21EDB82B82EEB35C3640@DM5PR11MB1435.namprd11.prod.outlook.com>
- <DM5PR11MB143584D5A0AAE13E0D2D04B7C3640@DM5PR11MB1435.namprd11.prod.outlook.com>
- <20200709082751.320742ab@x1.home>
-In-Reply-To: <20200709082751.320742ab@x1.home>
+ bh=p9If5RsxQ3u2i9WodtwoiHSv0PtR1ZoRMVd9OrdMKNc=;
+ b=TVOm3P1qCFBv+PyqOJzPGtdTV1Tn0r+PenDCuMyXGug+3k3GsOw+lJ49VJ6w5mChV7GuDM7jgdNwI8Ihq8S4CimEMDJworTrpD4qMUwZNtpb+STRbG2dMSMum5UKQjFFgXwKdu6x/IkWUu1N3zdG1SlGlMiyL/6g7OcXRbBemtQ=
+Received: from MWHPR11MB1645.namprd11.prod.outlook.com (2603:10b6:301:b::12)
+ by MWHPR11MB2045.namprd11.prod.outlook.com (2603:10b6:300:29::18) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.3174.20; Fri, 10 Jul
+ 2020 05:49:35 +0000
+Received: from MWHPR11MB1645.namprd11.prod.outlook.com
+ ([fe80::9864:e0cb:af36:6feb]) by MWHPR11MB1645.namprd11.prod.outlook.com
+ ([fe80::9864:e0cb:af36:6feb%5]) with mapi id 15.20.3174.022; Fri, 10 Jul 2020
+ 05:49:35 +0000
+From: "Tian, Kevin" <kevin.tian@intel.com>
+To: Lu Baolu <baolu.lu@linux.intel.com>, "iommu@lists.linux-foundation.org"
+ <iommu@lists.linux-foundation.org>
+Subject: RE: [PATCH v3 4/4] iommu/vt-d: Add page response ops support
+Thread-Topic: [PATCH v3 4/4] iommu/vt-d: Add page response ops support
+Thread-Index: AQHWVcAM+avb7Y6qlkuRLGDQ/735sakAFvrQgAA1wACAAAGkcA==
+Date: Fri, 10 Jul 2020 05:49:35 +0000
+Message-ID: <MWHPR11MB164513189877BD3734F589328C650@MWHPR11MB1645.namprd11.prod.outlook.com>
+References: <20200709070537.18473-1-baolu.lu@linux.intel.com>
+ <20200709070537.18473-5-baolu.lu@linux.intel.com>
+ <MWHPR11MB164546581C5F6B6B77AE28C88C650@MWHPR11MB1645.namprd11.prod.outlook.com>
+ <cbf470fe-933a-54d5-e215-afb32d40165f@linux.intel.com>
+In-Reply-To: <cbf470fe-933a-54d5-e215-afb32d40165f@linux.intel.com>
 Accept-Language: en-US
 Content-Language: en-US
 X-MS-Has-Attach: 
 X-MS-TNEF-Correlator: 
-dlp-reaction: no-action
 dlp-version: 11.2.0.6
 dlp-product: dlpe-windows
-authentication-results: redhat.com; dkim=none (message not signed)
- header.d=none;redhat.com; dmarc=none action=none header.from=intel.com;
-x-originating-ip: [192.198.147.206]
+dlp-reaction: no-action
+authentication-results: linux.intel.com; dkim=none (message not signed)
+ header.d=none;linux.intel.com; dmarc=none action=none header.from=intel.com;
+x-originating-ip: [192.198.147.202]
 x-ms-publictraffictype: Email
-x-ms-office365-filtering-correlation-id: 5e65f010-c4e7-4641-58f5-08d82493ae85
-x-ms-traffictypediagnostic: DM6PR11MB4642:
+x-ms-office365-filtering-correlation-id: ccd2bf79-f24a-441e-ba20-08d8249506bb
+x-ms-traffictypediagnostic: MWHPR11MB2045:
 x-ld-processed: 46c98d88-e344-4ed4-8496-4ed7712e255d,ExtAddr
 x-ms-exchange-transport-forked: True
-x-microsoft-antispam-prvs: <DM6PR11MB46420133ABB41480113D0BABC3650@DM6PR11MB4642.namprd11.prod.outlook.com>
-x-ms-oob-tlc-oobclassifiers: OLM:6790;
+x-microsoft-antispam-prvs: <MWHPR11MB20458172A7D3C2DB0C8076BA8C650@MWHPR11MB2045.namprd11.prod.outlook.com>
+x-ms-oob-tlc-oobclassifiers: OLM:8882;
 x-ms-exchange-senderadcheck: 1
 x-microsoft-antispam: BCL:0;
-x-microsoft-antispam-message-info: B/XfRb0zs0cg4oiM9qU53h2uufxZSmK952XW/t+2vAB+GrgkU3crGtf+3YseTaHhIN9v7YDt3OLF5eI3GN89xC143KyjA3s7cwhPpYSRczoutpt4AcoLtaXp7+aKgI5ys7hOP5idQJWSYsJsanQV+UistKIWOkoYIeLgVUTWOV9QcDGF10VLLF1DOZVlPvMbC8DfJxYGya7Qr5QYZMhPdzZu8FHR9xYeturMnara7pqGKTquYTGPf3KJdHolzeCS2nNd12fRbSh1prBFFpctwVbYOhGoQh0KHJabsOTesuOVsbIJkvDjqVyp51AAY6xG1OqMKGJAMlcBby2VcYOGzA==
+x-microsoft-antispam-message-info: IX0QBCokXNGSN7ICEJTgFv8ZPBV68ZGKRq9+xdVTvhBLxXul3rzZGtUZmwioT0U89QaUFZd5bgkuF3VI8002aWmVI+LdIRPTl0xAfdc07ABFgwJ1plPi4BM1hAoLAMpPYflHwjQgXoKv85zijRtQle0p5L9quhWUoPkdbOFEWTDKp9O+ORp+tMu5F2PtHQrHbKcXyBPfjkbvIvgPv7kbzUVzETp93CqbQWDQpECm2xVy76yWyxhGpEgmjBZlyC0xc8Gs26GyJuICX/5ozIkI+/xVfAqaAfT+ICaYkHKsBMKU57RGzL7xaJ20/1nAvrGBTnrTh22CUIPHfxSKxgoUQA==
 x-forefront-antispam-report: CIP:255.255.255.255; CTRY:; LANG:en; SCL:1; SRV:;
- IPV:NLI; SFV:NSPM; H:DM5PR11MB1435.namprd11.prod.outlook.com; PTR:; CAT:NONE;
+ IPV:NLI; SFV:NSPM; H:MWHPR11MB1645.namprd11.prod.outlook.com; PTR:; CAT:NONE;
  SFTY:;
- SFS:(4636009)(396003)(366004)(136003)(376002)(39860400002)(346002)(8936002)(54906003)(316002)(9686003)(66946007)(26005)(2906002)(478600001)(55016002)(66446008)(66476007)(6506007)(66556008)(64756008)(186003)(8676002)(76116006)(86362001)(7416002)(6916009)(33656002)(71200400001)(7696005)(5660300002)(83380400001)(52536014)(4326008);
+ SFS:(4636009)(136003)(39860400002)(346002)(376002)(366004)(396003)(66946007)(76116006)(2906002)(71200400001)(26005)(8676002)(64756008)(66476007)(66556008)(52536014)(5660300002)(66446008)(186003)(33656002)(9686003)(8936002)(4326008)(53546011)(55016002)(54906003)(7696005)(110136005)(478600001)(86362001)(83380400001)(316002)(6506007);
  DIR:OUT; SFP:1102; 
-x-ms-exchange-antispam-messagedata: KSSQMjhjiwqmkZpPpqHY4HkVAtR70Rp+hcllknJKetYLMnr9o7Nk6v3sKMGZH0fy9nMZUyZMTv/8iSO+A9TQ52zuxjSk889n+OiU9yKUvhQYZwWlyCYkJpog8BNJAbw9XEfyMshENka3Fn5HQeovWIIjeUBaUeZJqSnMYuvTK2koySMiJuY1U+rnPhjemlBFUG31/TX8tQlJL6mc5fc8VpuNwru6mKqreyIEbW9sGgJA3oxYD/aAf2IC/0kxYCoPP5QdWceFJKfJ75jPa67bFOUuuvprT6HAEXYYsHrC0jMWXHNmhEFr2k497fufKUUrc8svp6VQ+UaNcjTjzgxSajq6xEusZCw2SC/huSD7OxVhuS3Jjxi3PV9hzuh00YeqhS2aM1YGsstYQuePxLqyDfYbkd1ySymmm39SoA2vnEukaRmY4DEVVrgreajpGmuLa0053xLfwrAkk8iCRAQ2utzd/95T9AllxGqBQW3iH9R+TR2oooJ36djKW/DT/Vvx
+x-ms-exchange-antispam-messagedata: N9LyF+QtwdC8W8aae8tmJv+M5iOw56/Be1fqVMh3bcFTtT7tTBQNPy3lFXoUZAO/YZVPHJ7ocbN6PMtNdO+iHkBKLtVZyKCz6+ac40hHqMY6Mv9tO4CivxRxoeU2kQHfmdr+q8jfpnD815DzwGlu6Ief2O2KZd0chVKGr3l1BNUqbcTQIfpS0xv3YU1fJ8SFtn6mREZpziDQPAwHfsElXxY2X4+hefVVzJxZjbTCqoe4ZQ3Lcg4TKAijWB18IkZp28Gn+kt/mot/E3YBOxcJ6uDqhVAGmpTODbp8pDuxTKRGfaqTWZ2ZNRENHwc+bNIcT419mQzotn2Kt/QQ85YBGu7qwQThn6DWMOd4A8MXQ6/LU8vbXRSj8e+Kfxwrx7raamEs81rA+tqVz1OG6q6FWL521r8xbbR9Qg5diCNX8jztBMOodMY2lvSY4kYNhaJ1UdxhmYPI5gDUxj+qtVArDy2+YKdyczQZBIe8CnKov6Xu9uDvRHk0i64EQ9kl4uPb
 MIME-Version: 1.0
 X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-AuthSource: DM5PR11MB1435.namprd11.prod.outlook.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: 5e65f010-c4e7-4641-58f5-08d82493ae85
-X-MS-Exchange-CrossTenant-originalarrivaltime: 10 Jul 2020 05:39:57.8272 (UTC)
+X-MS-Exchange-CrossTenant-AuthSource: MWHPR11MB1645.namprd11.prod.outlook.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: ccd2bf79-f24a-441e-ba20-08d8249506bb
+X-MS-Exchange-CrossTenant-originalarrivaltime: 10 Jul 2020 05:49:35.3828 (UTC)
 X-MS-Exchange-CrossTenant-fromentityheader: Hosted
 X-MS-Exchange-CrossTenant-id: 46c98d88-e344-4ed4-8496-4ed7712e255d
 X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
-X-MS-Exchange-CrossTenant-userprincipalname: SeL8kip4IDglF9XPA4hh2E9wxukWgA4XcUPSjm2aJ0BVUuYOhK58D4hBLDl4oeMQYVlRbzEzszQTKmqFQ0JhmQ==
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: DM6PR11MB4642
+X-MS-Exchange-CrossTenant-userprincipalname: c3YFldo8VF7/eJfPR6CnnXE38ewokTYa0LKUxvKFtknSbyDJOHyAk9Nh/lko9aLX0VRqPUpUvUZj338zw5kopA==
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: MWHPR11MB2045
 X-OriginatorOrg: intel.com
-Cc: "jean-philippe@linaro.org" <jean-philippe@linaro.org>, "Tian,
- Kevin" <kevin.tian@intel.com>, "Raj, Ashok" <ashok.raj@intel.com>,
- "kvm@vger.kernel.org" <kvm@vger.kernel.org>,
- "iommu@lists.linux-foundation.org" <iommu@lists.linux-foundation.org>,
- "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>, "Sun,
- Yi Y" <yi.y.sun@intel.com>, "Wu, Hao" <hao.wu@intel.com>, "Tian,
- Jun J" <jun.j.tian@intel.com>
+Cc: "Raj, Ashok" <ashok.raj@intel.com>,
+ "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>
 X-BeenThere: iommu@lists.linux-foundation.org
 X-Mailman-Version: 2.1.15
 Precedence: list
@@ -180,239 +164,216 @@ Content-Transfer-Encoding: 7bit
 Errors-To: iommu-bounces@lists.linux-foundation.org
 Sender: "iommu" <iommu-bounces@lists.linux-foundation.org>
 
-Hi Alex, 
-
-> From: Alex Williamson <alex.williamson@redhat.com>
-> Sent: Thursday, July 9, 2020 10:28 PM
+> From: Lu Baolu <baolu.lu@linux.intel.com>
+> Sent: Friday, July 10, 2020 1:37 PM
 > 
-> On Thu, 9 Jul 2020 07:16:31 +0000
-> "Liu, Yi L" <yi.l.liu@intel.com> wrote:
+> Hi Kevin,
 > 
-> > Hi Alex,
+> On 2020/7/10 10:42, Tian, Kevin wrote:
+> >> From: Lu Baolu <baolu.lu@linux.intel.com>
+> >> Sent: Thursday, July 9, 2020 3:06 PM
+> >>
+> >> After page requests are handled, software must respond to the device
+> >> which raised the page request with the result. This is done through
+> >> the iommu ops.page_response if the request was reported to outside of
+> >> vendor iommu driver through iommu_report_device_fault(). This adds
+> the
+> >> VT-d implementation of page_response ops.
+> >>
+> >> Co-developed-by: Jacob Pan <jacob.jun.pan@linux.intel.com>
+> >> Signed-off-by: Jacob Pan <jacob.jun.pan@linux.intel.com>
+> >> Co-developed-by: Liu Yi L <yi.l.liu@intel.com>
+> >> Signed-off-by: Liu Yi L <yi.l.liu@intel.com>
+> >> Signed-off-by: Lu Baolu <baolu.lu@linux.intel.com>
+> >> ---
+> >>   drivers/iommu/intel/iommu.c |   1 +
+> >>   drivers/iommu/intel/svm.c   | 100
+> >> ++++++++++++++++++++++++++++++++++++
+> >>   include/linux/intel-iommu.h |   3 ++
+> >>   3 files changed, 104 insertions(+)
+> >>
+> >> diff --git a/drivers/iommu/intel/iommu.c b/drivers/iommu/intel/iommu.c
+> >> index 4a6b6960fc32..98390a6d8113 100644
+> >> --- a/drivers/iommu/intel/iommu.c
+> >> +++ b/drivers/iommu/intel/iommu.c
+> >> @@ -6057,6 +6057,7 @@ const struct iommu_ops intel_iommu_ops = {
+> >>   	.sva_bind		= intel_svm_bind,
+> >>   	.sva_unbind		= intel_svm_unbind,
+> >>   	.sva_get_pasid		= intel_svm_get_pasid,
+> >> +	.page_response		= intel_svm_page_response,
+> >>   #endif
+> >>   };
+> >>
+> >> diff --git a/drivers/iommu/intel/svm.c b/drivers/iommu/intel/svm.c
+> >> index d24e71bac8db..839d2af377b6 100644
+> >> --- a/drivers/iommu/intel/svm.c
+> >> +++ b/drivers/iommu/intel/svm.c
+> >> @@ -1082,3 +1082,103 @@ int intel_svm_get_pasid(struct iommu_sva
+> *sva)
+> >>
+> >>   	return pasid;
+> >>   }
+> >> +
+> >> +int intel_svm_page_response(struct device *dev,
+> >> +			    struct iommu_fault_event *evt,
+> >> +			    struct iommu_page_response *msg)
+> >> +{
+> >> +	struct iommu_fault_page_request *prm;
+> >> +	struct intel_svm_dev *sdev = NULL;
+> >> +	struct intel_svm *svm = NULL;
+> >> +	struct intel_iommu *iommu;
+> >> +	bool private_present;
+> >> +	bool pasid_present;
+> >> +	bool last_page;
+> >> +	u8 bus, devfn;
+> >> +	int ret = 0;
+> >> +	u16 sid;
+> >> +
+> >> +	if (!dev || !dev_is_pci(dev))
+> >> +		return -ENODEV;
+> >> +
+> >> +	iommu = device_to_iommu(dev, &bus, &devfn);
+> >> +	if (!iommu)
+> >> +		return -ENODEV;
+> >> +
+> >> +	if (!msg || !evt)
+> >> +		return -EINVAL;
+> >> +
+> >> +	mutex_lock(&pasid_mutex);
+> >> +
+> >> +	prm = &evt->fault.prm;
+> >> +	sid = PCI_DEVID(bus, devfn);
+> >> +	pasid_present = prm->flags &
+> >> IOMMU_FAULT_PAGE_REQUEST_PASID_VALID;
+> >> +	private_present = prm->flags &
+> >> IOMMU_FAULT_PAGE_REQUEST_PRIV_DATA;
+> >> +	last_page = prm->flags &
+> >> IOMMU_FAULT_PAGE_REQUEST_LAST_PAGE;
+> >> +
+> >> +	if (pasid_present) {
+> >> +		if (prm->pasid == 0 || prm->pasid >= PASID_MAX) {
+> >> +			ret = -EINVAL;
+> >> +			goto out;
+> >> +		}
+> >> +
+> >> +		ret = pasid_to_svm_sdev(dev, prm->pasid, &svm, &sdev);
+> >> +		if (ret || !sdev) {
+> >> +			ret = -ENODEV;
+> >> +			goto out;
+> >> +		}
+> >> +
+> >> +		/*
+> >> +		 * For responses from userspace, need to make sure that the
+> >> +		 * pasid has been bound to its mm.
+> >> +		*/
+> >> +		if (svm->flags & SVM_FLAG_GUEST_MODE) {
+> >> +			struct mm_struct *mm;
+> >> +
+> >> +			mm = get_task_mm(current);
+> >> +			if (!mm) {
+> >> +				ret = -EINVAL;
+> >> +				goto out;
+> >> +			}
+> >> +
+> >> +			if (mm != svm->mm) {
+> >> +				ret = -ENODEV;
+> >> +				mmput(mm);
+> >> +				goto out;
+> >> +			}
+> >> +
+> >> +			mmput(mm);
+> >> +		}
+> >> +	} else {
+> >> +		pr_err_ratelimited("Invalid page response: no pasid\n");
+> >> +		ret = -EINVAL;
+> >> +		goto out;
 > >
-> > After more thinking, looks like adding a r-b tree is still not enough to
-> > solve the potential problem for free a range of PASID in one ioctl. If
-> > caller gives [0, MAX_UNIT] in the free request, kernel anyhow should
-> > loop all the PASIDs and search in the r-b tree. Even VFIO can track the
-> > smallest/largest allocated PASID, and limit the free range to an accurate
-> > range, it is still no efficient. For example, user has allocated two PASIDs
-> > ( 1 and 999), and user gives the [0, MAX_UNIT] range in free request. VFIO
-> > will limit the free range to be [1, 999], but still needs to loop PASID 1 -
-> > 999, and search in r-b tree.
+> > check pasid=0 first, then no need to indent so many lines above.
 > 
-> That sounds like a poor tree implementation.  Look at vfio_find_dma()
-> for instance, it returns a node within the specified range.  If the
-> tree has two nodes within the specified range we should never need to
-> call a search function like vfio_find_dma() more than three times.  We
-> call it once, get the first node, remove it.  Call it again, get the
-> other node, remove it.  Call a third time, find no matches, we're done.
-> So such an implementation limits searches to N+1 where N is the number
-> of nodes within the range.
-
-I see. When getting a free range from user. Use the range to find suited
-PASIDs in the r-b tree. For the example I mentioned, if giving [0, MAX_UNIT],
-will find two nodes. If giving [0, 100] range, then only one node will be
-found. But even though, it still take some time if the user holds a bunch
-of PASIDs and user gives a big free range.
-
-> > So I'm wondering can we fall back to prior proposal which only free one
-> > PASID for a free request. how about your opinion?
+> Yes.
 > 
-> Doesn't it still seem like it would be a useful user interface to have
-> a mechanism to free all pasids, by calling with exactly [0, MAX_UINT]?
-> I'm not sure if there's another use case for this given than the user
-> doesn't have strict control of the pasid values they get.  Thanks,
-
-I don't have such use case neither. perhaps we may allow it in future by
-adding flag. but if it's still useful, I may try with your suggestion. :-)
-
-Regards,
-Yi Liu
-
-> Alex
-> 
-> > > From: Liu, Yi L <yi.l.liu@intel.com>
-> > > Sent: Thursday, July 9, 2020 10:26 AM
-> > >
-> > > Hi Kevin,
-> > >
-> > > > From: Tian, Kevin <kevin.tian@intel.com>
-> > > > Sent: Thursday, July 9, 2020 10:18 AM
-> > > >
-> > > > > From: Liu, Yi L <yi.l.liu@intel.com>
-> > > > > Sent: Thursday, July 9, 2020 10:08 AM
-> > > > >
-> > > > > Hi Kevin,
-> > > > >
-> > > > > > From: Tian, Kevin <kevin.tian@intel.com>
-> > > > > > Sent: Thursday, July 9, 2020 9:57 AM
-> > > > > >
-> > > > > > > From: Liu, Yi L <yi.l.liu@intel.com>
-> > > > > > > Sent: Thursday, July 9, 2020 8:32 AM
-> > > > > > >
-> > > > > > > Hi Alex,
-> > > > > > >
-> > > > > > > > Alex Williamson <alex.williamson@redhat.com>
-> > > > > > > > Sent: Thursday, July 9, 2020 3:55 AM
-> > > > > > > >
-> > > > > > > > On Wed, 8 Jul 2020 08:16:16 +0000 "Liu, Yi L"
-> > > > > > > > <yi.l.liu@intel.com> wrote:
-> > > > > > > >
-> > > > > > > > > Hi Alex,
-> > > > > > > > >
-> > > > > > > > > > From: Liu, Yi L < yi.l.liu@intel.com>
-> > > > > > > > > > Sent: Friday, July 3, 2020 2:28 PM
-> > > > > > > > > >
-> > > > > > > > > > Hi Alex,
-> > > > > > > > > >
-> > > > > > > > > > > From: Alex Williamson <alex.williamson@redhat.com>
-> > > > > > > > > > > Sent: Friday, July 3, 2020 5:19 AM
-> > > > > > > > > > >
-> > > > > > > > > > > On Wed, 24 Jun 2020 01:55:19 -0700 Liu Yi L
-> > > > > > > > > > > <yi.l.liu@intel.com> wrote:
-> > > > > > > > > > >
-> > > > > > > > > > > > This patch allows user space to request PASID
-> > > > > > > > > > > > allocation/free,
-> > > > > e.g.
-> > > > > > > > > > > > when serving the request from the guest.
-> > > > > > > > > > > >
-> > > > > > > > > > > > PASIDs that are not freed by userspace are
-> > > > > > > > > > > > automatically freed
-> > > > > > > when
-> > > > > > > > > > > > the IOASID set is destroyed when process exits.
-> > > > > > > > > [...]
-> > > > > > > > > > > > +static int vfio_iommu_type1_pasid_request(struct
-> > > > > > > > > > > > +vfio_iommu
-> > > > > > > *iommu,
-> > > > > > > > > > > > +					  unsigned long arg) {
-> > > > > > > > > > > > +	struct vfio_iommu_type1_pasid_request req;
-> > > > > > > > > > > > +	unsigned long minsz;
-> > > > > > > > > > > > +
-> > > > > > > > > > > > +	minsz = offsetofend(struct
-> > > > vfio_iommu_type1_pasid_request,
-> > > > > > > > range);
-> > > > > > > > > > > > +
-> > > > > > > > > > > > +	if (copy_from_user(&req, (void __user *)arg, minsz))
-> > > > > > > > > > > > +		return -EFAULT;
-> > > > > > > > > > > > +
-> > > > > > > > > > > > +	if (req.argsz < minsz || (req.flags &
-> > > > > > > > ~VFIO_PASID_REQUEST_MASK))
-> > > > > > > > > > > > +		return -EINVAL;
-> > > > > > > > > > > > +
-> > > > > > > > > > > > +	if (req.range.min > req.range.max)
-> > > > > > > > > > >
-> > > > > > > > > > > Is it exploitable that a user can spin the kernel for a
-> > > > > > > > > > > long time in the case of a free by calling this with [0,
-> > > > > > > > > > > MAX_UINT] regardless of their
-> > > > > > > > actual
-> > > > > > > > > > allocations?
-> > > > > > > > > >
-> > > > > > > > > > IOASID can ensure that user can only free the PASIDs
-> > > > > > > > > > allocated to the
-> > > > > > > user.
-> > > > > > > > but
-> > > > > > > > > > it's true, kernel needs to loop all the PASIDs within the
-> > > > > > > > > > range provided by user.
-> > > > > > > > it
-> > > > > > > > > > may take a long time. is there anything we can do? one
-> > > > > > > > > > thing may limit
-> > > > > > > the
-> > > > > > > > range
-> > > > > > > > > > provided by user?
-> > > > > > > > >
-> > > > > > > > > thought about it more, we have per-VM pasid quota (say
-> > > > > > > > > 1000), so even if user passed down [0, MAX_UNIT], kernel
-> > > > > > > > > will only loop the
-> > > > > > > > > 1000 pasids at most. do you think we still need to do something on
-> it?
-> > > > > > > >
-> > > > > > > > How do you figure that?  vfio_iommu_type1_pasid_request()
-> > > > > > > > accepts the user's min/max so long as (max > min) and passes
-> > > > > > > > that to vfio_iommu_type1_pasid_free(), then to
-> > > > > > > > vfio_pasid_free_range() which loops as:
-> > > > > > > >
-> > > > > > > > 	ioasid_t pasid = min;
-> > > > > > > > 	for (; pasid <= max; pasid++)
-> > > > > > > > 		ioasid_free(pasid);
-> > > > > > > >
-> > > > > > > > A user might only be able to allocate 1000 pasids, but
-> > > > > > > > apparently they can ask to free all they want.
-> > > > > > > >
-> > > > > > > > It's also not obvious to me that calling ioasid_free() is only
-> > > > > > > > allowing the user to free their own passid.  Does it?  It
-> > > > > > > > would be a pretty
-> > > > > >
-> > > > > > Agree. I thought ioasid_free should at least carry a token since
-> > > > > > the user
-> > > > > space is
-> > > > > > only allowed to manage PASIDs in its own set...
-> > > > > >
-> > > > > > > > gaping hole if a user could free arbitrary pasids.  A r-b tree
-> > > > > > > > of passids might help both for security and to bound spinning in a
-> loop.
-> > > > > > >
-> > > > > > > oh, yes. BTW. instead of r-b tree in VFIO, maybe we can add an
-> > > > > > > ioasid_set parameter for ioasid_free(), thus to prevent the user
-> > > > > > > from freeing PASIDs that doesn't belong to it. I remember Jacob
-> > > > > > > mentioned it
-> > > > > before.
-> > > > > > >
-> > > > > >
-> > > > > > check current ioasid_free:
-> > > > > >
-> > > > > >         spin_lock(&ioasid_allocator_lock);
-> > > > > >         ioasid_data = xa_load(&active_allocator->xa, ioasid);
-> > > > > >         if (!ioasid_data) {
-> > > > > >                 pr_err("Trying to free unknown IOASID %u\n", ioasid);
-> > > > > >                 goto exit_unlock;
-> > > > > >         }
-> > > > > >
-> > > > > > Allow an user to trigger above lock paths with MAX_UINT times
-> > > > > > might still
-> > > > > be bad.
-> > > > >
-> > > > > yeah, how about the below two options:
-> > > > >
-> > > > > - comparing the max - min with the quota before calling ioasid_free().
-> > > > >   If max - min > current quota of the user, then should fail it. If
-> > > > >   max - min < quota, then call ioasid_free() one by one. still trigger
-> > > > >   the above lock path with quota times.
-> > > >
-> > > > This is definitely wrong. [min, max] is about the range of the PASID
-> > > > value, while quota is about the number of allocated PASIDs. It's a bit
-> > > > weird to mix two together.
-> > >
-> > > got it.
-> > >
-> > > > btw what is the main purpose of allowing batch PASID free requests?
-> > > > Can we just simplify to allow one PASID in each free just like how is
-> > > > it done in allocation path?
-> > >
-> > > it's an intention to reuse the [min, max] range as allocation path. currently,
-> we
-> > > don't have such request as far as I can see.
-> > >
-> > > > >
-> > > > > - pass the max and min to ioasid_free(), let ioasid_free() decide. should
-> > > > >   be able to avoid trigger the lock multiple times, and ioasid has have a
-> > > > >   track on how may PASIDs have been allocated, if max - min is larger than
-> > > > >   the allocated number, should fail anyway.
-> > > >
-> > > > What about Alex's r-b tree suggestion? Is there any downside in you mind?
-> > >
-> > > no downside, I was just wanting to reuse the tracks in ioasid_set. I can add a
-> r-b
-> > > for allocated PASIDs and find the PASIDs in the r-b tree only do free for the
-> > > PASIDs found in r-b tree, others in the range would be ignored.
-> > > does it look good?
-> > >
-> > > Regards,
-> > > Yi Liu
-> > >
-> > > > Thanks,
-> > > > Kevin
 > >
+> >> +	}
+> >> +
+> >> +	/*
+> >> +	 * Per VT-d spec. v3.0 ch7.7, system software must respond
+> >> +	 * with page group response if private data is present (PDP)
+> >> +	 * or last page in group (LPIG) bit is set. This is an
+> >> +	 * additional VT-d requirement beyond PCI ATS spec.
+> >> +	 */
+> >
+> > What is the behavior if system software doesn't follow the requirement?
+> > en... maybe the question is really about whether the information in prm
+> > comes from userspace or from internally-recorded info in iommu core.
+> > The former cannot be trusted. The latter one is OK.
+> 
+> We require a page response when reporting such event. The upper layer
+> (IOMMU core or VFIO) will be implemented with a timer, if userspace
+> doesn't respond in time, the timer will get expired and a FAILURE
+> response will be sent to device.
 
+Yes, timer helps when userspace doesn't respond. Then I'm fine with
+this patch.
+
+Reviewed-by: Kevin Tian <kevin.tian@intel.com>
+
+btw when you say IOMMU core or VFIO, does it mean the timer mechanism
+is not implemented yet?
+
+Thanks
+Kevin
+
+> 
+> Best regards,
+> baolu
+> 
+> >
+> > Thanks
+> > Kevin
+> >
+> >> +	if (last_page || private_present) {
+> >> +		struct qi_desc desc;
+> >> +
+> >> +		desc.qw0 = QI_PGRP_PASID(prm->pasid) | QI_PGRP_DID(sid)
+> >> |
+> >> +				QI_PGRP_PASID_P(pasid_present) |
+> >> +				QI_PGRP_PDP(private_present) |
+> >> +				QI_PGRP_RESP_CODE(msg->code) |
+> >> +				QI_PGRP_RESP_TYPE;
+> >> +		desc.qw1 = QI_PGRP_IDX(prm->grpid) |
+> >> QI_PGRP_LPIG(last_page);
+> >> +		desc.qw2 = 0;
+> >> +		desc.qw3 = 0;
+> >> +		if (private_present)
+> >> +			memcpy(&desc.qw2, prm->private_data,
+> >> +			       sizeof(prm->private_data));
+> >> +
+> >> +		qi_submit_sync(iommu, &desc, 1, 0);
+> >> +	}
+> >> +out:
+> >> +	mutex_unlock(&pasid_mutex);
+> >> +	return ret;
+> >> +}
+> >> diff --git a/include/linux/intel-iommu.h b/include/linux/intel-iommu.h
+> >> index fc2cfc3db6e1..bf6009a344f5 100644
+> >> --- a/include/linux/intel-iommu.h
+> >> +++ b/include/linux/intel-iommu.h
+> >> @@ -741,6 +741,9 @@ struct iommu_sva *intel_svm_bind(struct device
+> >> *dev, struct mm_struct *mm,
+> >>   				 void *drvdata);
+> >>   void intel_svm_unbind(struct iommu_sva *handle);
+> >>   int intel_svm_get_pasid(struct iommu_sva *handle);
+> >> +int intel_svm_page_response(struct device *dev, struct
+> iommu_fault_event
+> >> *evt,
+> >> +			    struct iommu_page_response *msg);
+> >> +
+> >>   struct svm_dev_ops;
+> >>
+> >>   struct intel_svm_dev {
+> >> --
+> >> 2.17.1
+> >
 _______________________________________________
 iommu mailing list
 iommu@lists.linux-foundation.org
