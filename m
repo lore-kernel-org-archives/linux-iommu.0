@@ -2,116 +2,96 @@ Return-Path: <SRS0=PEfB=AW=lists.linux-foundation.org=iommu-bounces@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-3.5 required=3.0 tests=BAYES_00,DKIM_INVALID,
-	DKIM_SIGNED,HEADER_FROM_DIFFERENT_DOMAINS,MAILING_LIST_MULTI,SPF_HELO_NONE,
-	SPF_PASS,URIBL_BLOCKED autolearn=no autolearn_force=no version=3.4.0
+X-Spam-Status: No, score=-9.8 required=3.0 tests=BAYES_00,DKIM_INVALID,
+	DKIM_SIGNED,INCLUDES_PATCH,MAILING_LIST_MULTI,SIGNED_OFF_BY,SPF_HELO_NONE,
+	SPF_PASS autolearn=unavailable autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id A78DBC433E1
-	for <iommu@archiver.kernel.org>; Sat, 11 Jul 2020 18:44:49 +0000 (UTC)
-Received: from silver.osuosl.org (smtp3.osuosl.org [140.211.166.136])
+	by smtp.lore.kernel.org (Postfix) with ESMTP id A788BC433E0
+	for <iommu@archiver.kernel.org>; Sat, 11 Jul 2020 19:53:51 +0000 (UTC)
+Received: from fraxinus.osuosl.org (smtp4.osuosl.org [140.211.166.137])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by mail.kernel.org (Postfix) with ESMTPS id 6F1D420786
-	for <iommu@archiver.kernel.org>; Sat, 11 Jul 2020 18:44:49 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTPS id 67A8F2077D
+	for <iommu@archiver.kernel.org>; Sat, 11 Jul 2020 19:53:51 +0000 (UTC)
 Authentication-Results: mail.kernel.org;
-	dkim=fail reason="signature verification failed" (1024-bit key) header.d=redhat.com header.i=@redhat.com header.b="RXWbofu3"
-DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 6F1D420786
-Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=redhat.com
+	dkim=fail reason="signature verification failed" (1024-bit key) header.d=kernel.org header.i=@kernel.org header.b="j5yQ/Coh"
+DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 67A8F2077D
+Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=kernel.org
 Authentication-Results: mail.kernel.org; spf=pass smtp.mailfrom=iommu-bounces@lists.linux-foundation.org
 Received: from localhost (localhost [127.0.0.1])
-	by silver.osuosl.org (Postfix) with ESMTP id 3BF0321541;
-	Sat, 11 Jul 2020 18:44:49 +0000 (UTC)
-X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from silver.osuosl.org ([127.0.0.1])
-	by localhost (.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
-	with ESMTP id cp2npsXnLryH; Sat, 11 Jul 2020 18:44:48 +0000 (UTC)
-Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [140.211.9.56])
-	by silver.osuosl.org (Postfix) with ESMTP id 5040C2272C;
-	Sat, 11 Jul 2020 18:44:48 +0000 (UTC)
-Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
-	by lists.linuxfoundation.org (Postfix) with ESMTP id 31682C088E;
-	Sat, 11 Jul 2020 18:44:48 +0000 (UTC)
-Received: from fraxinus.osuosl.org (smtp4.osuosl.org [140.211.166.137])
- by lists.linuxfoundation.org (Postfix) with ESMTP id 0ADC5C016F
- for <iommu@lists.linux-foundation.org>; Sat, 11 Jul 2020 18:44:47 +0000 (UTC)
-Received: from localhost (localhost [127.0.0.1])
- by fraxinus.osuosl.org (Postfix) with ESMTP id E1BB687BE5
- for <iommu@lists.linux-foundation.org>; Sat, 11 Jul 2020 18:44:46 +0000 (UTC)
+	by fraxinus.osuosl.org (Postfix) with ESMTP id 3A8A387A28;
+	Sat, 11 Jul 2020 19:53:51 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
 Received: from fraxinus.osuosl.org ([127.0.0.1])
+	by localhost (.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
+	with ESMTP id ZWajxsCfhGk4; Sat, 11 Jul 2020 19:53:50 +0000 (UTC)
+Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [140.211.9.56])
+	by fraxinus.osuosl.org (Postfix) with ESMTP id A314F87A21;
+	Sat, 11 Jul 2020 19:53:50 +0000 (UTC)
+Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
+	by lists.linuxfoundation.org (Postfix) with ESMTP id 85ACEC077B;
+	Sat, 11 Jul 2020 19:53:50 +0000 (UTC)
+Received: from whitealder.osuosl.org (smtp1.osuosl.org [140.211.166.138])
+ by lists.linuxfoundation.org (Postfix) with ESMTP id 49869C016F
+ for <iommu@lists.linux-foundation.org>; Sat, 11 Jul 2020 19:53:49 +0000 (UTC)
+Received: from localhost (localhost [127.0.0.1])
+ by whitealder.osuosl.org (Postfix) with ESMTP id 2C74B88F6E
+ for <iommu@lists.linux-foundation.org>; Sat, 11 Jul 2020 19:53:49 +0000 (UTC)
+X-Virus-Scanned: amavisd-new at osuosl.org
+Received: from whitealder.osuosl.org ([127.0.0.1])
  by localhost (.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
- with ESMTP id akuItgFuKwtg for <iommu@lists.linux-foundation.org>;
- Sat, 11 Jul 2020 18:44:46 +0000 (UTC)
+ with ESMTP id SQkOgDUEIMCi for <iommu@lists.linux-foundation.org>;
+ Sat, 11 Jul 2020 19:53:48 +0000 (UTC)
 X-Greylist: domain auto-whitelisted by SQLgrey-1.7.6
-Received: from us-smtp-1.mimecast.com (us-smtp-delivery-1.mimecast.com
- [205.139.110.120])
- by fraxinus.osuosl.org (Postfix) with ESMTPS id 285CC87BC6
- for <iommu@lists.linux-foundation.org>; Sat, 11 Jul 2020 18:44:46 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
- s=mimecast20190719; t=1594493084;
- h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
- to:to:cc:cc:mime-version:mime-version:content-type:content-type:
- in-reply-to:in-reply-to:references:references;
- bh=bS19/wWScaoigC28WtauFL/l6Ha+uxblMLUn/Mypy1E=;
- b=RXWbofu3M4GyKEjp+NncetAIqIGaQEgBkGa7dE7xksSHd3mKzM4aYajkYR0VST3yemP+HZ
- 53XQYfwC7riQNuedUH4f3PNSpA4l2XCsmDmeAUJ0P5fAsSrmUhcHsCyAVXBaV9g8kIPtrH
- w5eLlh0j4+7ZM/7MwcLzNYIBY97KutA=
-Received: from mail-wm1-f72.google.com (mail-wm1-f72.google.com
- [209.85.128.72]) (Using TLS) by relay.mimecast.com with ESMTP id
- us-mta-324-_XvXz4BMM9yhAP-hBXKdJA-1; Sat, 11 Jul 2020 14:44:41 -0400
-X-MC-Unique: _XvXz4BMM9yhAP-hBXKdJA-1
-Received: by mail-wm1-f72.google.com with SMTP id g124so11748764wmg.6
- for <iommu@lists.linux-foundation.org>; Sat, 11 Jul 2020 11:44:40 -0700 (PDT)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
- d=1e100.net; s=20161025;
- h=x-gm-message-state:date:from:to:cc:subject:message-id:references
- :mime-version:content-disposition:in-reply-to;
- bh=bS19/wWScaoigC28WtauFL/l6Ha+uxblMLUn/Mypy1E=;
- b=XT/eGRS1a0MapVA1geLQ/ca4UvRCqZ8Dx6dPELFZ8eZkeKM8s7qfLBweHXo1hZUUhu
- Fd/d3Kn8BK8aq7Rih1iecjVWvpWgGH30wGiMJSDPEphhiSdsjxMondTbNtJMVwbZrT18
- k2B3Ln7atJroL3EXZPasSrGToX7i8SNaf1ny8xRMCHA3oaxqZoCcpPQufv6afrAjAy/3
- tP+Fq/YZkpzMZmgmQFkJl9D0C+FdCXhPHSXEEdsswNWjAK2L8+Z096Lg/hfxbBdK98ym
- K+MeS9MO9YekL/kGx4Q9w1BRr/o4A0xvddWK76fHyGYaKIwGe4Kbos4PUh2ZeeNchT8F
- /50w==
-X-Gm-Message-State: AOAM530cXmHgSUOXh/Lu/CbYea7F1EBslEWG65Zd2RkSwir+3OuKDfAp
- ZWw0T7bboJMN0q3Hso9bKtt89ATRHt2CRUgDGT23jQQarLQEpTrFLxNR/NwBDA6O+jwCmE8w/pO
- M5Z/d3gWMEnUFQEownYKLAOOrJ4fzEQ==
-X-Received: by 2002:a1c:4d11:: with SMTP id o17mr10838365wmh.134.1594493079890; 
- Sat, 11 Jul 2020 11:44:39 -0700 (PDT)
-X-Google-Smtp-Source: ABdhPJygwQmxPTGDCpKObOVAAUSmALBrwy00qKV5C2K74YeE+tRXIP/JRrrSaIMIkdPE6mekfNCtDg==
-X-Received: by 2002:a1c:4d11:: with SMTP id o17mr10838336wmh.134.1594493079525; 
- Sat, 11 Jul 2020 11:44:39 -0700 (PDT)
-Received: from redhat.com (bzq-79-182-31-92.red.bezeqint.net. [79.182.31.92])
- by smtp.gmail.com with ESMTPSA id
- a84sm4541096wmh.47.2020.07.11.11.44.36
- (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
- Sat, 11 Jul 2020 11:44:38 -0700 (PDT)
-Date: Sat, 11 Jul 2020 14:44:34 -0400
-From: "Michael S. Tsirkin" <mst@redhat.com>
-To: Stefano Stabellini <sstabellini@kernel.org>
-Subject: Re: [PATCH] xen: introduce xen_vring_use_dma
-Message-ID: <20200711144334-mutt-send-email-mst@kernel.org>
-References: <20200624163940-mutt-send-email-mst@kernel.org>
- <alpine.DEB.2.21.2006241351430.8121@sstabellini-ThinkPad-T480s>
- <20200624181026-mutt-send-email-mst@kernel.org>
- <alpine.DEB.2.21.2006251014230.8121@sstabellini-ThinkPad-T480s>
- <20200626110629-mutt-send-email-mst@kernel.org>
- <alpine.DEB.2.21.2006291621300.8121@sstabellini-ThinkPad-T480s>
- <20200701133456.GA23888@infradead.org>
- <alpine.DEB.2.21.2007011020320.8121@sstabellini-ThinkPad-T480s>
- <20200701172219-mutt-send-email-mst@kernel.org>
- <alpine.DEB.2.21.2007101019340.4124@sstabellini-ThinkPad-T480s>
+Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
+ by whitealder.osuosl.org (Postfix) with ESMTPS id 60FA388F47
+ for <iommu@lists.linux-foundation.org>; Sat, 11 Jul 2020 19:53:48 +0000 (UTC)
+Received: from localhost (mobile-166-175-191-139.mycingular.net
+ [166.175.191.139])
+ (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+ (No client certificate requested)
+ by mail.kernel.org (Postfix) with ESMTPSA id 939A820725;
+ Sat, 11 Jul 2020 19:53:47 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+ s=default; t=1594497228;
+ bh=Z16Tvyu00GM8lWPjZaVxUYQVl8q4upyC4+JAo11HVT4=;
+ h=Date:From:To:Cc:Subject:In-Reply-To:From;
+ b=j5yQ/CohDw63QZlCRPNpB3igj8YUwmWz54kQmR+NLDemFBfMmRRyj9/fuFXIS/v5l
+ 3+MtbbkCOKqOka1dDKyYWRtf6hATIydJPL9bZqOY/LWXNw0x+EsedbDrP/UmzD93DF
+ 3kZBjfdZw4jfkVJfgeBp42Hfh+z3ro3SuIb9JwjA=
+Date: Sat, 11 Jul 2020 14:53:46 -0500
+From: Bjorn Helgaas <helgaas@kernel.org>
+To: Rajat Jain <rajatja@google.com>
+Subject: Re: [PATCH v4 4/4] PCI/ACS: Enable PCI_ACS_TB for
+ untrusted/external-facing devices
+Message-ID: <20200711195346.GA132330@bjorn-Precision-5520>
 MIME-Version: 1.0
-In-Reply-To: <alpine.DEB.2.21.2007101019340.4124@sstabellini-ThinkPad-T480s>
-X-Mimecast-Spam-Score: 0
-X-Mimecast-Originator: redhat.com
 Content-Disposition: inline
-Cc: jgross@suse.com, Peng Fan <peng.fan@nxp.com>, konrad.wilk@oracle.com,
- jasowang@redhat.com, x86@kernel.org, linux-kernel@vger.kernel.org,
- virtualization@lists.linux-foundation.org,
- Christoph Hellwig <hch@infradead.org>, iommu@lists.linux-foundation.org,
- linux-imx@nxp.com, xen-devel@lists.xenproject.org, boris.ostrovsky@oracle.com,
- linux-arm-kernel@lists.infradead.org
+In-Reply-To: <CACK8Z6F-8OZNJU8wqWuZq=moCaOi+3W=CzBeppfO31VZnkqBrg@mail.gmail.com>
+Cc: Todd Broch <tbroch@google.com>, linux-pci <linux-pci@vger.kernel.org>,
+ "Krishnakumar, Lalithambika" <lalithambika.krishnakumar@intel.com>,
+ Heikki Krogerus <heikki.krogerus@linux.intel.com>,
+ Diego Rivas <diegorivas@google.com>,
+ Jean-Philippe Brucker <jean-philippe@linaro.org>,
+ Furquan Shaikh <furquan@google.com>, "Raj, Ashok" <ashok.raj@intel.com>,
+ Saravana Kannan <saravanak@google.com>,
+ ACPI Devel Maling List <linux-acpi@vger.kernel.org>,
+ Christian Kellner <christian@kellner.me>,
+ Mattias Nissler <mnissler@google.com>, Jesse Barnes <jsbarnes@google.com>,
+ Len Brown <lenb@kernel.org>, Rajat Jain <rajatxjain@gmail.com>,
+ Prashant Malani <pmalani@google.com>,
+ Suzuki K Poulose <suzuki.poulose@arm.com>, Aaron Durbin <adurbin@google.com>,
+ Alex Williamson <alex.williamson@redhat.com>,
+ Bjorn Helgaas <bhelgaas@google.com>,
+ Mika Westerberg <mika.westerberg@linux.intel.com>,
+ Bernie Keany <bernie.keany@intel.com>, Duncan Laurie <dlaurie@google.com>,
+ Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+ "Rafael J. Wysocki" <rjw@rjwysocki.net>,
+ Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
+ "open list:AMD IOMMU \(AMD-VI\)" <iommu@lists.linux-foundation.org>,
+ Arnd Bergmann <arnd@arndb.de>, Oliver O'Halloran <oohall@gmail.com>,
+ Benson Leung <bleung@google.com>, David Woodhouse <dwmw2@infradead.org>,
+ Alex Levin <levinale@google.com>
 X-BeenThere: iommu@lists.linux-foundation.org
 X-Mailman-Version: 2.1.15
 Precedence: list
@@ -129,39 +109,71 @@ Content-Transfer-Encoding: 7bit
 Errors-To: iommu-bounces@lists.linux-foundation.org
 Sender: "iommu" <iommu-bounces@lists.linux-foundation.org>
 
-On Fri, Jul 10, 2020 at 10:23:22AM -0700, Stefano Stabellini wrote:
-> Sorry for the late reply -- a couple of conferences kept me busy.
+On Fri, Jul 10, 2020 at 03:53:59PM -0700, Rajat Jain wrote:
+> On Fri, Jul 10, 2020 at 2:29 PM Raj, Ashok <ashok.raj@intel.com> wrote:
+> > On Fri, Jul 10, 2020 at 03:29:22PM -0500, Bjorn Helgaas wrote:
+> > > On Tue, Jul 07, 2020 at 03:46:04PM -0700, Rajat Jain wrote:
+> > > > When enabling ACS, enable translation blocking for external facing ports
+> > > > and untrusted devices.
+> > > >
+> > > > Signed-off-by: Rajat Jain <rajatja@google.com>
+> > > > ---
+> > > > v4: Add braces to avoid warning from kernel robot
+> > > >     print warning for only external-facing devices.
+> > > > v3: print warning if ACS_TB not supported on external-facing/untrusted ports.
+> > > >     Minor code comments fixes.
+> > > > v2: Commit log change
+> > > >
+> > > >  drivers/pci/pci.c    |  8 ++++++++
+> > > >  drivers/pci/quirks.c | 15 +++++++++++++++
+> > > >  2 files changed, 23 insertions(+)
+> > > >
+> > > > diff --git a/drivers/pci/pci.c b/drivers/pci/pci.c
+> > > > index 73a8627822140..a5a6bea7af7ce 100644
+> > > > --- a/drivers/pci/pci.c
+> > > > +++ b/drivers/pci/pci.c
+> > > > @@ -876,6 +876,14 @@ static void pci_std_enable_acs(struct pci_dev *dev)
+> > > >     /* Upstream Forwarding */
+> > > >     ctrl |= (cap & PCI_ACS_UF);
+> > > >
+> > > > +   /* Enable Translation Blocking for external devices */
+> > > > +   if (dev->external_facing || dev->untrusted) {
+> > > > +           if (cap & PCI_ACS_TB)
+> > > > +                   ctrl |= PCI_ACS_TB;
+> > > > +           else if (dev->external_facing)
+> > > > +                   pci_warn(dev, "ACS: No Translation Blocking on external-facing dev\n");
+> > > > +   }
+> > >
+> > > IIUC, this means that external devices can *never* use ATS and
+> > > can never cache translations.
 > 
+> Yes, but it already exists today (and this patch doesn't change that):
+> 521376741b2c2 "PCI/ATS: Only enable ATS for trusted devices"
 > 
-> On Wed, 1 Jul 2020, Michael S. Tsirkin wrote:
-> > On Wed, Jul 01, 2020 at 10:34:53AM -0700, Stefano Stabellini wrote:
-> > > Would you be in favor of a more flexible check along the lines of the
-> > > one proposed in the patch that started this thread:
-> > > 
-> > >     if (xen_vring_use_dma())
-> > >             return true;
-> > > 
-> > > 
-> > > xen_vring_use_dma would be implemented so that it returns true when
-> > > xen_swiotlb is required and false otherwise.
-> > 
-> > Just to stress - with a patch like this virtio can *still* use DMA API
-> > if PLATFORM_ACCESS is set. So if DMA API is broken on some platforms
-> > as you seem to be saying, you guys should fix it before doing something
-> > like this..
-> 
-> Yes, DMA API is broken with some interfaces (specifically: rpmesg and
-> trusty), but for them PLATFORM_ACCESS is never set. That is why the
-> errors weren't reported before. Xen special case aside, there is no
-> problem under normal circumstances.
+> IMHO any external device trying to send ATS traffic despite having ATS
+> disabled should count as a bad intent. And this patch is trying to
+> plug that loophole, by blocking the AT traffic from devices that we do
+> not expect to see AT from anyway.
 
-So why not fix DMA API? Then this patch is not needed.
+Thinking about this some more, I wonder if Linux should:
 
+  - Explicitly disable ATS for every device at enumeration-time, e.g.,
+    in pci_init_capabilities(), 
 
-> 
-> If you are OK with this patch (after a little bit of clean-up), Peng,
-> are you OK with sending an update or do you want me to?
+  - Enable PCI_ACS_TB for every device (not just external-facing or
+    untrusted ones),
 
+  - Disable PCI_ACS_TB for the relevant devices along the path only
+    when enabling ATS.
+
+One nice thing about doing that is that the "untrusted" test would be
+only in pci_enable_ats(), and we wouldn't need one in
+pci_std_enable_acs().
+
+It's possible BIOS gives us devices with ATS enabled, and this might
+break them, but that seems like something we'd want to find out about.
+
+Bjorn
 _______________________________________________
 iommu mailing list
 iommu@lists.linux-foundation.org
