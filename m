@@ -2,66 +2,67 @@ Return-Path: <SRS0=SFHS=AY=lists.linux-foundation.org=iommu-bounces@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-5.5 required=3.0 tests=BAYES_00,
-	HEADER_FROM_DIFFERENT_DOMAINS,MAILING_LIST_MULTI,NICE_REPLY_A,SPF_HELO_NONE,
-	SPF_PASS,URIBL_BLOCKED,USER_AGENT_SANE_1 autolearn=no autolearn_force=no
-	version=3.4.0
+X-Spam-Status: No, score=-11.5 required=3.0 tests=BAYES_00,
+	HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_PATCH,MAILING_LIST_MULTI,NICE_REPLY_A,
+	SIGNED_OFF_BY,SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED,USER_AGENT_SANE_1
+	autolearn=unavailable autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 607C4C433E3
-	for <iommu@archiver.kernel.org>; Mon, 13 Jul 2020 11:40:10 +0000 (UTC)
-Received: from silver.osuosl.org (smtp3.osuosl.org [140.211.166.136])
+	by smtp.lore.kernel.org (Postfix) with ESMTP id DC0C4C433E8
+	for <iommu@archiver.kernel.org>; Mon, 13 Jul 2020 11:55:51 +0000 (UTC)
+Received: from hemlock.osuosl.org (smtp2.osuosl.org [140.211.166.133])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by mail.kernel.org (Postfix) with ESMTPS id 30B6220738
-	for <iommu@archiver.kernel.org>; Mon, 13 Jul 2020 11:40:10 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 30B6220738
+	by mail.kernel.org (Postfix) with ESMTPS id A782B2072D
+	for <iommu@archiver.kernel.org>; Mon, 13 Jul 2020 11:55:51 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org A782B2072D
 Authentication-Results: mail.kernel.org; dmarc=none (p=none dis=none) header.from=arm.com
 Authentication-Results: mail.kernel.org; spf=pass smtp.mailfrom=iommu-bounces@lists.linux-foundation.org
 Received: from localhost (localhost [127.0.0.1])
-	by silver.osuosl.org (Postfix) with ESMTP id EE89C2201C;
-	Mon, 13 Jul 2020 11:40:09 +0000 (UTC)
+	by hemlock.osuosl.org (Postfix) with ESMTP id 3FFEB888BD;
+	Mon, 13 Jul 2020 11:55:51 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from silver.osuosl.org ([127.0.0.1])
+Received: from hemlock.osuosl.org ([127.0.0.1])
 	by localhost (.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
-	with ESMTP id r5G0clgFEIEt; Mon, 13 Jul 2020 11:40:07 +0000 (UTC)
+	with ESMTP id uTNQer18gg20; Mon, 13 Jul 2020 11:55:50 +0000 (UTC)
 Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [140.211.9.56])
-	by silver.osuosl.org (Postfix) with ESMTP id 5064225014;
-	Mon, 13 Jul 2020 11:40:07 +0000 (UTC)
+	by hemlock.osuosl.org (Postfix) with ESMTP id 47DBC887BE;
+	Mon, 13 Jul 2020 11:55:50 +0000 (UTC)
 Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
-	by lists.linuxfoundation.org (Postfix) with ESMTP id 31D79C0888;
-	Mon, 13 Jul 2020 11:40:07 +0000 (UTC)
-Received: from silver.osuosl.org (smtp3.osuosl.org [140.211.166.136])
- by lists.linuxfoundation.org (Postfix) with ESMTP id 67C11C0733
- for <iommu@lists.linux-foundation.org>; Mon, 13 Jul 2020 11:40:05 +0000 (UTC)
+	by lists.linuxfoundation.org (Postfix) with ESMTP id 2BC60C0888;
+	Mon, 13 Jul 2020 11:55:50 +0000 (UTC)
+Received: from hemlock.osuosl.org (smtp2.osuosl.org [140.211.166.133])
+ by lists.linuxfoundation.org (Postfix) with ESMTP id 5EC12C0733
+ for <iommu@lists.linux-foundation.org>; Mon, 13 Jul 2020 11:55:49 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
- by silver.osuosl.org (Postfix) with ESMTP id 491F925014
- for <iommu@lists.linux-foundation.org>; Mon, 13 Jul 2020 11:40:05 +0000 (UTC)
+ by hemlock.osuosl.org (Postfix) with ESMTP id 58C1688878
+ for <iommu@lists.linux-foundation.org>; Mon, 13 Jul 2020 11:55:49 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from silver.osuosl.org ([127.0.0.1])
+Received: from hemlock.osuosl.org ([127.0.0.1])
  by localhost (.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
- with ESMTP id SKCMyoAn1grs for <iommu@lists.linux-foundation.org>;
- Mon, 13 Jul 2020 11:40:03 +0000 (UTC)
+ with ESMTP id hSojF9W6BlzL for <iommu@lists.linux-foundation.org>;
+ Mon, 13 Jul 2020 11:55:48 +0000 (UTC)
 X-Greylist: domain auto-whitelisted by SQLgrey-1.7.6
 Received: from foss.arm.com (foss.arm.com [217.140.110.172])
- by silver.osuosl.org (Postfix) with ESMTP id 6B36C2201C
- for <iommu@lists.linux-foundation.org>; Mon, 13 Jul 2020 11:40:03 +0000 (UTC)
+ by hemlock.osuosl.org (Postfix) with ESMTP id E3CE7887BE
+ for <iommu@lists.linux-foundation.org>; Mon, 13 Jul 2020 11:55:47 +0000 (UTC)
 Received: from usa-sjc-imap-foss1.foss.arm.com (unknown [10.121.207.14])
- by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id 9B0BD1FB;
- Mon, 13 Jul 2020 04:40:02 -0700 (PDT)
+ by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id 2636630E;
+ Mon, 13 Jul 2020 04:55:47 -0700 (PDT)
 Received: from [10.57.62.178] (unknown [10.57.62.178])
- by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPSA id 326733F7D8;
- Mon, 13 Jul 2020 04:40:00 -0700 (PDT)
-Subject: Re: [PATCH 0/4] Bounced DMA support
+ by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPSA id 957063F887;
+ Mon, 13 Jul 2020 04:55:44 -0700 (PDT)
+Subject: Re: [PATCH 1/4] dma-mapping: Add bounced DMA ops
 To: Claire Chang <tientzu@chromium.org>, robh+dt@kernel.org,
  frowand.list@gmail.com, hch@lst.de, m.szyprowski@samsung.com
 References: <20200713091211.2183368-1-tientzu@chromium.org>
+ <20200713091211.2183368-2-tientzu@chromium.org>
 From: Robin Murphy <robin.murphy@arm.com>
-Message-ID: <8a7ce34e-87c0-d224-3974-34f1877fbb0e@arm.com>
-Date: Mon, 13 Jul 2020 12:39:59 +0100
+Message-ID: <4a2451f9-57d8-2e83-e1d6-f144f37173c0@arm.com>
+Date: Mon, 13 Jul 2020 12:55:43 +0100
 User-Agent: Mozilla/5.0 (Windows NT 10.0; rv:68.0) Gecko/20100101
  Thunderbird/68.10.0
 MIME-Version: 1.0
-In-Reply-To: <20200713091211.2183368-1-tientzu@chromium.org>
+In-Reply-To: <20200713091211.2183368-2-tientzu@chromium.org>
 Content-Language: en-GB
 Cc: devicetree@vger.kernel.org, heikki.krogerus@linux.intel.com,
  saravanak@google.com, suzuki.poulose@arm.com, gregkh@linuxfoundation.org,
@@ -86,90 +87,320 @@ Errors-To: iommu-bounces@lists.linux-foundation.org
 Sender: "iommu" <iommu-bounces@lists.linux-foundation.org>
 
 On 2020-07-13 10:12, Claire Chang wrote:
-> This series implements mitigations for lack of DMA access control on
-> systems without an IOMMU, which could result in the DMA accessing the
-> system memory at unexpected times and/or unexpected addresses, possibly
-> leading to data leakage or corruption.
-> 
-> For example, we plan to use the PCI-e bus for Wi-Fi and that PCI-e bus
-> is not behind an IOMMU. As PCI-e, by design, gives the device full
-> access to system memory, a vulnerability in the Wi-Fi firmware could
-> easily escalate to a full system exploit (remote wifi exploits: [1a],
-> [1b] that shows a full chain of exploits; [2], [3]).
-> 
-> To mitigate the security concerns, we introduce bounced DMA. The bounced
-> DMA ops provide an implementation of DMA ops that bounce streaming DMA
-> in and out of a specially allocated region. The feature on its own
-> provides a basic level of protection against the DMA overwriting buffer
-> contents at unexpected times. However, to protect against general data
-> leakage and system memory corruption, the system needs to provide a way
-> to restrict the DMA to a predefined memory region (this is usually done
-> at firmware level, e.g. in ATF on some ARM platforms).
+> The bounced DMA ops provide an implementation of DMA ops that bounce
+> streaming DMA in and out of a specially allocated region. Only the
+> operations relevant to streaming DMA are supported.
 
-More to the point, this seems to need some fairly special interconnect 
-hardware too. On typical systems that just stick a TZASC directly in 
-front of the memory controller it would be hard to block DMA access 
-without also blocking CPU access. With something like Arm TZC-400 I 
-guess you could set up a "secure" region for most of DRAM that allows NS 
-accesses by NSAID from the CPUs, then similar regions for the pools with 
-NSAID access for both the respective device and the CPUs, but by that 
-point you've probably used up most of the available regions before even 
-considering what the firmware and TEE might want for actual Secure memory.
+I think there are too many implicit assumptions here - apparently that 
+coherent allocations will always be intercepted by 
+dma_*_from_dev_coherent(), and that calling into dma-direct won't 
+actually bounce things a second time beyond where you thought they were 
+going, manage coherency for a different address, and make it all go 
+subtly wrong. Consider "swiotlb=force", for instance...
 
-In short, I don't foresee this being used by very many systems.
-
-That said,, although the motivation is different, it appears to end up 
-being almost exactly the same end result as the POWER secure 
-virtualisation thingy (essentially: constrain DMA to a specific portion 
-of RAM). The more code can be shared with that, the better.
-
-> Currently, 32-bit architectures are not supported because of the need to
-> handle HIGHMEM, which increases code complexity and adds more
-> performance penalty for such platforms. Also, bounced DMA can not be
-> enabled on devices behind an IOMMU, as those require an IOMMU-aware
-> implementation of DMA ops and do not require this kind of mitigation
-> anyway.
-
-Note that we do actually have the notion of bounced DMA with IOMMUs 
-already (to avoid leakage of unrelated data in the same page). I think 
-it's only implemented for intel-iommu so far, but shouldn't take much 
-work to generalise to iommu-dma if anyone wanted to. That's already done 
-a bunch of work to generalise the SWIOTLB routines to be more reusable, 
-so building on top of that would be highly preferable.
-
-Thirdly, the concept of device-private bounce buffers does in fact 
-already exist to some degree too - there are various USB, crypto and 
-other devices that can only DMA to a local SRAM buffer (not to mention 
-subsystems doing their own bouncing for the sake of alignment/block 
-merging/etc.). Again, a slightly more generalised solution that makes 
-this a first-class notion for dma-direct itself and could help supplant 
-some of those hacks would be really really good.
+Again, plumbing this straight into dma-direct so that SWIOTLB can simply 
+target a different buffer and always bounce regardless of masks would 
+seem a far better option.
 
 Robin.
 
-> [1a] https://googleprojectzero.blogspot.com/2017/04/over-air-exploiting-broadcoms-wi-fi_4.html
-> [1b] https://googleprojectzero.blogspot.com/2017/04/over-air-exploiting-broadcoms-wi-fi_11.html
-> [2] https://blade.tencent.com/en/advisories/qualpwn/
-> [3] https://www.bleepingcomputer.com/news/security/vulnerabilities-found-in-highly-popular-firmware-for-wifi-chips/
-> 
-> 
-> Claire Chang (4):
->    dma-mapping: Add bounced DMA ops
->    dma-mapping: Add bounced DMA pool
->    dt-bindings: of: Add plumbing for bounced DMA pool
->    of: Add plumbing for bounced DMA pool
-> 
->   .../reserved-memory/reserved-memory.txt       |  36 +++
->   drivers/of/address.c                          |  37 +++
->   drivers/of/device.c                           |   3 +
->   drivers/of/of_private.h                       |   6 +
->   include/linux/device.h                        |   3 +
->   include/linux/dma-mapping.h                   |   1 +
->   kernel/dma/Kconfig                            |  17 +
->   kernel/dma/Makefile                           |   1 +
->   kernel/dma/bounced.c                          | 304 ++++++++++++++++++
->   9 files changed, 408 insertions(+)
+> Signed-off-by: Claire Chang <tientzu@chromium.org>
+> ---
+>   include/linux/device.h      |   3 +
+>   include/linux/dma-mapping.h |   1 +
+>   kernel/dma/Kconfig          |  17 +++
+>   kernel/dma/Makefile         |   1 +
+>   kernel/dma/bounced.c        | 215 ++++++++++++++++++++++++++++++++++++
+>   5 files changed, 237 insertions(+)
 >   create mode 100644 kernel/dma/bounced.c
+> 
+> diff --git a/include/linux/device.h b/include/linux/device.h
+> index 7322c51e9c0c..868b9a364003 100644
+> --- a/include/linux/device.h
+> +++ b/include/linux/device.h
+> @@ -588,6 +588,9 @@ struct device {
+>   
+>   	struct list_head	dma_pools;	/* dma pools (if dma'ble) */
+>   
+> +#ifdef CONFIG_DMA_BOUNCED
+> +	struct dma_bounced_mem  *dma_bounced_mem;
+> +#endif
+>   #ifdef CONFIG_DMA_DECLARE_COHERENT
+>   	struct dma_coherent_mem	*dma_mem; /* internal for coherent mem
+>   					     override */
+> diff --git a/include/linux/dma-mapping.h b/include/linux/dma-mapping.h
+> index 2328f451a45d..86089424dafd 100644
+> --- a/include/linux/dma-mapping.h
+> +++ b/include/linux/dma-mapping.h
+> @@ -135,6 +135,7 @@ struct dma_map_ops {
+>   
+>   extern const struct dma_map_ops dma_virt_ops;
+>   extern const struct dma_map_ops dma_dummy_ops;
+> +extern const struct dma_map_ops dma_bounced_ops;
+>   
+>   #define DMA_BIT_MASK(n)	(((n) == 64) ? ~0ULL : ((1ULL<<(n))-1))
+>   
+> diff --git a/kernel/dma/Kconfig b/kernel/dma/Kconfig
+> index 1da3f44f2565..148734c8748b 100644
+> --- a/kernel/dma/Kconfig
+> +++ b/kernel/dma/Kconfig
+> @@ -88,6 +88,23 @@ config DMA_DIRECT_REMAP
+>   	select DMA_REMAP
+>   	select DMA_COHERENT_POOL
+>   
+> +config DMA_BOUNCED
+> +	bool "DMA Bounced"
+> +	depends on !HIGHMEM
+> +	select OF_RESERVED_MEM
+> +	help
+> +	  This enables support for bounced DMA pools which provide a level of
+> +	  DMA memory protection on systems with limited hardware protection
+> +	  capabilities, such as those lacking an IOMMU. It does so by bouncing
+> +	  the data to a specially allocated DMA-accessible protected region
+> +	  before mapping and unmapping. One can assign the protected memory
+> +	  region in the device tree by using reserved-memory.
+> +
+> +	  For more information see
+> +	  <Documentation/devicetree/bindings/reserved-memory/reserved-memory.txt>
+> +	  and <kernel/dma/bounced.c>.
+> +	  If unsure, say "n".
+> +
+>   config DMA_CMA
+>   	bool "DMA Contiguous Memory Allocator"
+>   	depends on HAVE_DMA_CONTIGUOUS && CMA
+> diff --git a/kernel/dma/Makefile b/kernel/dma/Makefile
+> index 370f63344e9c..f5fb4f42326a 100644
+> --- a/kernel/dma/Makefile
+> +++ b/kernel/dma/Makefile
+> @@ -1,6 +1,7 @@
+>   # SPDX-License-Identifier: GPL-2.0
+>   
+>   obj-$(CONFIG_HAS_DMA)			+= mapping.o direct.o dummy.o
+> +obj-$(CONFIG_DMA_BOUNCED)		+= bounced.o
+>   obj-$(CONFIG_DMA_CMA)			+= contiguous.o
+>   obj-$(CONFIG_DMA_DECLARE_COHERENT)	+= coherent.o
+>   obj-$(CONFIG_DMA_VIRT_OPS)		+= virt.o
+> diff --git a/kernel/dma/bounced.c b/kernel/dma/bounced.c
+> new file mode 100644
+> index 000000000000..fcaabb5eccf2
+> --- /dev/null
+> +++ b/kernel/dma/bounced.c
+> @@ -0,0 +1,215 @@
+> +// SPDX-License-Identifier: GPL-2.0
+> +/*
+> + * Bounced DMA support.
+> + *
+> + * This implements the mitigations for lack of IOMMU by bouncing the data to a
+> + * specially allocated region before mapping and unmapping.
+> + *
+> + * Copyright 2020 Google LLC.
+> + */
+> +#include <linux/dma-direct.h>
+> +#include <linux/dma-mapping.h>
+> +#include <linux/dma-noncoherent.h>
+> +#include <linux/io.h>
+> +#include <linux/genalloc.h>
+> +#include <linux/slab.h>
+> +
+> +struct dma_bounced_mem {
+> +	void		**orig_addr;
+> +	void		*virt_base;
+> +	dma_addr_t	device_base;
+> +	dma_addr_t	device_end;
+> +	struct gen_pool	*pool;
+> +	size_t		size;
+> +};
+> +
+> +static void dma_bounced_set_orig_virt(struct device *dev, dma_addr_t dma_addr,
+> +				      void *orig_addr)
+> +{
+> +	struct dma_bounced_mem *mem = dev->dma_bounced_mem;
+> +	int idx = (dma_addr - mem->device_base) >> PAGE_SHIFT;
+> +
+> +	if (dma_addr < mem->device_base || dma_addr >= mem->device_end)
+> +		return;
+> +
+> +	mem->orig_addr[idx] = orig_addr;
+> +}
+> +
+> +static void *dma_bounced_get_orig_virt(struct device *dev, dma_addr_t dma_addr)
+> +{
+> +	struct dma_bounced_mem *mem = dev->dma_bounced_mem;
+> +	int idx = (dma_addr - mem->device_base) >> PAGE_SHIFT;
+> +
+> +	if (dma_addr < mem->device_base || dma_addr >= mem->device_end)
+> +		return NULL;
+> +
+> +	return mem->orig_addr[idx];
+> +}
+> +
+> +static void *dma_bounced_get_virt(struct device *dev, dma_addr_t dma_addr)
+> +{
+> +	struct dma_bounced_mem *mem = dev->dma_bounced_mem;
+> +
+> +	if (dma_addr < mem->device_base || dma_addr >= mem->device_end)
+> +		return NULL;
+> +
+> +	return (dma_addr - mem->device_base) + mem->virt_base;
+> +}
+> +
+> +static void dma_bounced_sync_single_for_cpu(struct device *dev,
+> +					    dma_addr_t dma_addr, size_t size,
+> +					    enum dma_data_direction dir)
+> +{
+> +	void *orig_virt = dma_bounced_get_orig_virt(dev, dma_addr);
+> +	void *bounced_virt = dma_bounced_get_virt(dev, dma_addr);
+> +
+> +	if (!orig_virt || !bounced_virt)
+> +		return;
+> +
+> +	dma_direct_sync_single_for_cpu(dev, dma_addr, size, dir);
+> +
+> +	if (dir == DMA_FROM_DEVICE || dir == DMA_BIDIRECTIONAL)
+> +		memcpy(orig_virt, bounced_virt, size);
+> +}
+> +
+> +static void dma_bounced_sync_single_for_device(struct device *dev,
+> +					       dma_addr_t dma_addr, size_t size,
+> +					       enum dma_data_direction dir)
+> +{
+> +	void *orig_virt = dma_bounced_get_orig_virt(dev, dma_addr);
+> +	void *bounced_virt = dma_bounced_get_virt(dev, dma_addr);
+> +
+> +	if (!orig_virt || !bounced_virt)
+> +		return;
+> +
+> +	if (dir == DMA_TO_DEVICE || dir == DMA_BIDIRECTIONAL)
+> +		memcpy(bounced_virt, orig_virt, size);
+> +
+> +	dma_direct_sync_single_for_device(dev, dma_addr, size, dir);
+> +}
+> +
+> +static void dma_bounced_sync_sg_for_cpu(struct device *dev,
+> +					struct scatterlist *sgl, int nents,
+> +					enum dma_data_direction dir)
+> +{
+> +	struct scatterlist *sg;
+> +	int i;
+> +
+> +	for_each_sg(sgl, sg, nents, i) {
+> +		dma_bounced_sync_single_for_cpu(dev, sg->dma_address,
+> +						sg->length, dir);
+> +	}
+> +}
+> +
+> +static void dma_bounced_sync_sg_for_device(struct device *dev,
+> +					   struct scatterlist *sgl, int nents,
+> +					   enum dma_data_direction dir)
+> +{
+> +	struct scatterlist *sg;
+> +	int i;
+> +
+> +	for_each_sg(sgl, sg, nents, i) {
+> +		dma_bounced_sync_single_for_device(dev, sg->dma_address,
+> +						   sg->length, dir);
+> +	}
+> +}
+> +
+> +static void dma_bounced_unmap_page(struct device *dev, dma_addr_t dma_addr,
+> +				   size_t size, enum dma_data_direction dir,
+> +				   unsigned long attrs)
+> +{
+> +	struct dma_bounced_mem *mem = dev->dma_bounced_mem;
+> +
+> +	if (dma_addr < mem->device_base || dma_addr >= mem->device_end)
+> +		return;
+> +
+> +	if (!(attrs & DMA_ATTR_SKIP_CPU_SYNC))
+> +		dma_bounced_sync_single_for_cpu(dev, dma_addr, size, dir);
+> +
+> +	dma_bounced_set_orig_virt(dev, dma_addr, NULL);
+> +	gen_pool_free(mem->pool,
+> +		      (unsigned long)dma_bounced_get_virt(dev, dma_addr), size);
+> +}
+> +
+> +static dma_addr_t dma_bounced_map_page(struct device *dev, struct page *page,
+> +				       unsigned long offset, size_t size,
+> +				       enum dma_data_direction dir,
+> +				       unsigned long attrs)
+> +{
+> +	struct dma_bounced_mem *mem = dev->dma_bounced_mem;
+> +	dma_addr_t dma_addr;
+> +	void *orig_virt;
+> +
+> +	if (unlikely(!gen_pool_dma_alloc(mem->pool, size, &dma_addr)))
+> +		return DMA_MAPPING_ERROR;
+> +
+> +	orig_virt = page_to_virt(page) + offset;
+> +	dma_bounced_set_orig_virt(dev, dma_addr, orig_virt);
+> +
+> +	if (!(attrs & DMA_ATTR_SKIP_CPU_SYNC))
+> +		dma_bounced_sync_single_for_device(dev, dma_addr, size, dir);
+> +
+> +	return dma_addr;
+> +}
+> +
+> +static void dma_bounced_unmap_sg(struct device *dev, struct scatterlist *sgl,
+> +				 int nents, enum dma_data_direction dir,
+> +				 unsigned long attrs)
+> +{
+> +	struct scatterlist *sg;
+> +	int i;
+> +
+> +	for_each_sg(sgl, sg, nents, i) {
+> +		dma_bounced_unmap_page(dev, sg->dma_address, sg_dma_len(sg),
+> +				       dir, attrs);
+> +	}
+> +}
+> +
+> +static int dma_bounced_map_sg(struct device *dev, struct scatterlist *sgl,
+> +			      int nents, enum dma_data_direction dir,
+> +			      unsigned long attrs)
+> +{
+> +	int i;
+> +	struct scatterlist *sg;
+> +
+> +	for_each_sg(sgl, sg, nents, i) {
+> +		sg->dma_address = dma_bounced_map_page(
+> +			dev, sg_page(sg), sg->offset, sg->length, dir, attrs);
+> +		if (sg->dma_address == DMA_MAPPING_ERROR)
+> +			goto out_unmap;
+> +		sg_dma_len(sg) = sg->length;
+> +	}
+> +
+> +	return nents;
+> +
+> +out_unmap:
+> +	dma_bounced_unmap_sg(dev, sgl, i, dir, attrs | DMA_ATTR_SKIP_CPU_SYNC);
+> +	return 0;
+> +}
+> +
+> +static size_t dma_bounced_max_mapping_size(struct device *dev)
+> +{
+> +	return dev->dma_bounced_mem->size;
+> +}
+> +
+> +const struct dma_map_ops dma_bounced_ops = {
+> +	.alloc			= NULL,
+> +	.free			= NULL,
+> +	.mmap			= NULL,
+> +	.get_sgtable		= NULL,
+> +	.sync_single_for_cpu	= dma_bounced_sync_single_for_cpu,
+> +	.sync_single_for_device = dma_bounced_sync_single_for_device,
+> +	.sync_sg_for_cpu	= dma_bounced_sync_sg_for_cpu,
+> +	.sync_sg_for_device	= dma_bounced_sync_sg_for_device,
+> +	.map_page		= dma_bounced_map_page,
+> +	.unmap_page		= dma_bounced_unmap_page,
+> +	.map_sg			= dma_bounced_map_sg,
+> +	.unmap_sg		= dma_bounced_unmap_sg,
+> +	.unmap_resource		= NULL,
+> +	.map_resource		= NULL,
+> +	.cache_sync		= NULL,
+> +	.dma_supported		= dma_direct_supported,
+> +	.get_required_mask	= dma_direct_get_required_mask,
+> +	.max_mapping_size	= dma_bounced_max_mapping_size,
+> +	.get_merge_boundary	= NULL,
+> +};
 > 
 _______________________________________________
 iommu mailing list
