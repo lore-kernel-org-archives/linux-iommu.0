@@ -2,67 +2,79 @@ Return-Path: <SRS0=SFHS=AY=lists.linux-foundation.org=iommu-bounces@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-13.0 required=3.0 tests=BAYES_00,
-	HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_PATCH,MAILING_LIST_MULTI,SIGNED_OFF_BY,
-	SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED,USER_AGENT_GIT autolearn=unavailable
+X-Spam-Status: No, score=-11.3 required=3.0 tests=BAYES_00,DKIM_INVALID,
+	DKIM_SIGNED,INCLUDES_PATCH,MAILING_LIST_MULTI,SIGNED_OFF_BY,SPF_HELO_NONE,
+	SPF_PASS,URIBL_BLOCKED,USER_AGENT_SANE_1 autolearn=unavailable
 	autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 8F6B9C433E5
-	for <iommu@archiver.kernel.org>; Mon, 13 Jul 2020 14:16:02 +0000 (UTC)
-Received: from fraxinus.osuosl.org (smtp4.osuosl.org [140.211.166.137])
+	by smtp.lore.kernel.org (Postfix) with ESMTP id ABA5CC433E1
+	for <iommu@archiver.kernel.org>; Mon, 13 Jul 2020 15:09:11 +0000 (UTC)
+Received: from whitealder.osuosl.org (smtp1.osuosl.org [140.211.166.138])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by mail.kernel.org (Postfix) with ESMTPS id 5B7A62072D
-	for <iommu@archiver.kernel.org>; Mon, 13 Jul 2020 14:16:01 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 5B7A62072D
-Authentication-Results: mail.kernel.org; dmarc=none (p=none dis=none) header.from=huawei.com
+	by mail.kernel.org (Postfix) with ESMTPS id 7BA872075B
+	for <iommu@archiver.kernel.org>; Mon, 13 Jul 2020 15:09:11 +0000 (UTC)
+Authentication-Results: mail.kernel.org;
+	dkim=fail reason="signature verification failed" (1024-bit key) header.d=kernel.org header.i=@kernel.org header.b="E040T9qh"
+DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 7BA872075B
+Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=kernel.org
 Authentication-Results: mail.kernel.org; spf=pass smtp.mailfrom=iommu-bounces@lists.linux-foundation.org
 Received: from localhost (localhost [127.0.0.1])
-	by fraxinus.osuosl.org (Postfix) with ESMTP id E05F18780E;
-	Mon, 13 Jul 2020 14:16:01 +0000 (UTC)
+	by whitealder.osuosl.org (Postfix) with ESMTP id 4D97087746;
+	Mon, 13 Jul 2020 15:09:11 +0000 (UTC)
+X-Virus-Scanned: amavisd-new at osuosl.org
+Received: from whitealder.osuosl.org ([127.0.0.1])
+	by localhost (.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
+	with ESMTP id exlnjm5G8BcO; Mon, 13 Jul 2020 15:09:10 +0000 (UTC)
+Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [140.211.9.56])
+	by whitealder.osuosl.org (Postfix) with ESMTP id B7A9F8840E;
+	Mon, 13 Jul 2020 15:09:10 +0000 (UTC)
+Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
+	by lists.linuxfoundation.org (Postfix) with ESMTP id A058FC088E;
+	Mon, 13 Jul 2020 15:09:10 +0000 (UTC)
+Received: from fraxinus.osuosl.org (smtp4.osuosl.org [140.211.166.137])
+ by lists.linuxfoundation.org (Postfix) with ESMTP id D221EC0733
+ for <iommu@lists.linux-foundation.org>; Mon, 13 Jul 2020 15:09:09 +0000 (UTC)
+Received: from localhost (localhost [127.0.0.1])
+ by fraxinus.osuosl.org (Postfix) with ESMTP id C0DAF87431
+ for <iommu@lists.linux-foundation.org>; Mon, 13 Jul 2020 15:09:09 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
 Received: from fraxinus.osuosl.org ([127.0.0.1])
-	by localhost (.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
-	with ESMTP id wdac3yAV4w8Z; Mon, 13 Jul 2020 14:16:00 +0000 (UTC)
-Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [140.211.9.56])
-	by fraxinus.osuosl.org (Postfix) with ESMTP id 886E987527;
-	Mon, 13 Jul 2020 14:16:00 +0000 (UTC)
-Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
-	by lists.linuxfoundation.org (Postfix) with ESMTP id 79F02C088E;
-	Mon, 13 Jul 2020 14:16:00 +0000 (UTC)
-Received: from silver.osuosl.org (smtp3.osuosl.org [140.211.166.136])
- by lists.linuxfoundation.org (Postfix) with ESMTP id 49E7FC0733
- for <iommu@lists.linux-foundation.org>; Mon, 13 Jul 2020 14:15:59 +0000 (UTC)
-Received: from localhost (localhost [127.0.0.1])
- by silver.osuosl.org (Postfix) with ESMTP id 2BB0223735
- for <iommu@lists.linux-foundation.org>; Mon, 13 Jul 2020 14:15:59 +0000 (UTC)
-X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from silver.osuosl.org ([127.0.0.1])
  by localhost (.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
- with ESMTP id BGG1tewAT5dE for <iommu@lists.linux-foundation.org>;
- Mon, 13 Jul 2020 14:15:57 +0000 (UTC)
+ with ESMTP id z2uhc1OoSukq for <iommu@lists.linux-foundation.org>;
+ Mon, 13 Jul 2020 15:09:09 +0000 (UTC)
 X-Greylist: domain auto-whitelisted by SQLgrey-1.7.6
-Received: from huawei.com (szxga04-in.huawei.com [45.249.212.190])
- by silver.osuosl.org (Postfix) with ESMTPS id 8197B23504
- for <iommu@lists.linux-foundation.org>; Mon, 13 Jul 2020 14:15:57 +0000 (UTC)
-Received: from DGGEMS411-HUB.china.huawei.com (unknown [172.30.72.59])
- by Forcepoint Email with ESMTP id 7CDD5BCC515B84495D4F;
- Mon, 13 Jul 2020 22:15:48 +0800 (CST)
-Received: from kernelci-master.huawei.com (10.175.101.6) by
- DGGEMS411-HUB.china.huawei.com (10.3.19.211) with Microsoft SMTP Server id
- 14.3.487.0; Mon, 13 Jul 2020 22:15:38 +0800
-From: Wei Yongjun <weiyongjun1@huawei.com>
-To: Hulk Robot <hulkci@huawei.com>, Joerg Roedel <joro@8bytes.org>, Eric Auger
- <eric.auger@redhat.com>, Tom Murphy <murphyt7@tcd.ie>
-Subject: [PATCH -next] iommu: Make some functions static
-Date: Mon, 13 Jul 2020 22:25:42 +0800
-Message-ID: <20200713142542.50294-1-weiyongjun1@huawei.com>
-X-Mailer: git-send-email 2.17.1
+Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
+ by fraxinus.osuosl.org (Postfix) with ESMTPS id 4E6EA872A4
+ for <iommu@lists.linux-foundation.org>; Mon, 13 Jul 2020 15:09:09 +0000 (UTC)
+Received: from willie-the-truck (236.31.169.217.in-addr.arpa [217.169.31.236])
+ (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256
+ bits)) (No client certificate requested)
+ by mail.kernel.org (Postfix) with ESMTPSA id C8A14205CB;
+ Mon, 13 Jul 2020 15:09:05 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+ s=default; t=1594652947;
+ bh=vngHFPy6JLQna7o2+Dx1IPDqHMOEQth8MnxQOxW04yA=;
+ h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+ b=E040T9qhClnKRLJxdVpFYW9R6VpwPxG9f7y42Fa2tHvqsGskw4NuW6j0cd3ObUudq
+ C88NkzK3mA+1rIsiiflU4VV5PwpEa7I2V/YQEyD1t8Tu42WQKdA1ZFog36C6ESpbNV
+ 57ZOU5atVZ7mjGB1ufC8p0H5F1tiOPa8sFPjAVqs=
+Date: Mon, 13 Jul 2020 16:09:02 +0100
+From: Will Deacon <will@kernel.org>
+To: Jordan Crouse <jcrouse@codeaurora.org>
+Subject: Re: [PATCH v9 4/7] iommu/arm-smmu: Add a pointer to the attached
+ device to smmu_domain
+Message-ID: <20200713150901.GA3072@willie-the-truck>
+References: <20200626200042.13713-1-jcrouse@codeaurora.org>
+ <20200626200042.13713-5-jcrouse@codeaurora.org>
 MIME-Version: 1.0
-X-Originating-IP: [10.175.101.6]
-X-CFilter-Loop: Reflected
-Cc: iommu@lists.linux-foundation.org, Wei Yongjun <weiyongjun1@huawei.com>,
- linux-kernel@vger.kernel.org
+Content-Disposition: inline
+In-Reply-To: <20200626200042.13713-5-jcrouse@codeaurora.org>
+User-Agent: Mutt/1.10.1 (2018-07-13)
+Cc: linux-arm-msm@vger.kernel.org, Robin Murphy <robin.murphy@arm.com>,
+ linux-kernel@vger.kernel.org, iommu@lists.linux-foundation.org,
+ John Stultz <john.stultz@linaro.org>, freedreno@lists.freedesktop.org,
+ linux-arm-kernel@lists.infradead.org
 X-BeenThere: iommu@lists.linux-foundation.org
 X-Mailman-Version: 2.1.15
 Precedence: list
@@ -80,48 +92,67 @@ Content-Transfer-Encoding: 7bit
 Errors-To: iommu-bounces@lists.linux-foundation.org
 Sender: "iommu" <iommu-bounces@lists.linux-foundation.org>
 
-The sparse tool complains as follows:
+On Fri, Jun 26, 2020 at 02:00:38PM -0600, Jordan Crouse wrote:
+> Add a link to the pointer to the struct device that is attached to a
+> domain. This makes it easy to get the pointer if it is needed in the
+> implementation specific code.
+> 
+> Signed-off-by: Jordan Crouse <jcrouse@codeaurora.org>
+> ---
+> 
+>  drivers/iommu/arm-smmu.c | 6 ++++--
+>  drivers/iommu/arm-smmu.h | 1 +
+>  2 files changed, 5 insertions(+), 2 deletions(-)
+> 
+> diff --git a/drivers/iommu/arm-smmu.c b/drivers/iommu/arm-smmu.c
+> index 048de2681670..060139452c54 100644
+> --- a/drivers/iommu/arm-smmu.c
+> +++ b/drivers/iommu/arm-smmu.c
+> @@ -668,7 +668,8 @@ static void arm_smmu_write_context_bank(struct arm_smmu_device *smmu, int idx)
+>  }
+>  
+>  static int arm_smmu_init_domain_context(struct iommu_domain *domain,
+> -					struct arm_smmu_device *smmu)
+> +					struct arm_smmu_device *smmu,
+> +					struct device *dev)
+>  {
+>  	int irq, start, ret = 0;
+>  	unsigned long ias, oas;
+> @@ -801,6 +802,7 @@ static int arm_smmu_init_domain_context(struct iommu_domain *domain,
+>  		cfg->asid = cfg->cbndx;
+>  
+>  	smmu_domain->smmu = smmu;
+> +	smmu_domain->dev = dev;
+>  
+>  	pgtbl_cfg = (struct io_pgtable_cfg) {
+>  		.pgsize_bitmap	= smmu->pgsize_bitmap,
+> @@ -1190,7 +1192,7 @@ static int arm_smmu_attach_dev(struct iommu_domain *domain, struct device *dev)
+>  		return ret;
+>  
+>  	/* Ensure that the domain is finalised */
+> -	ret = arm_smmu_init_domain_context(domain, smmu);
+> +	ret = arm_smmu_init_domain_context(domain, smmu, dev);
+>  	if (ret < 0)
+>  		goto rpm_put;
+>  
+> diff --git a/drivers/iommu/arm-smmu.h b/drivers/iommu/arm-smmu.h
+> index 5f2de20e883b..d33cfe26b2f5 100644
+> --- a/drivers/iommu/arm-smmu.h
+> +++ b/drivers/iommu/arm-smmu.h
+> @@ -345,6 +345,7 @@ struct arm_smmu_domain {
+>  	struct mutex			init_mutex; /* Protects smmu pointer */
+>  	spinlock_t			cb_lock; /* Serialises ATS1* ops and TLB syncs */
+>  	struct iommu_domain		domain;
+> +	struct device			*dev;	/* Device attached to this domain */
 
-drivers/iommu/iommu.c:386:5: warning:
- symbol 'iommu_insert_resv_region' was not declared. Should it be static?
-drivers/iommu/iommu.c:2182:5: warning:
- symbol '__iommu_map' was not declared. Should it be static?
+This really doesn't feel right to me -- you can generally have multiple
+devices attached to a domain and they can come and go without the domain
+being destroyed. Perhaps you could instead identify the GPU during
+cfg_probe() and squirrel that information away somewhere?
 
-Those functions are not used outside of iommu.c, so mark them static.
+The rest of the series looks ok to me.
 
-Reported-by: Hulk Robot <hulkci@huawei.com>
-Signed-off-by: Wei Yongjun <weiyongjun1@huawei.com>
----
- drivers/iommu/iommu.c | 8 ++++----
- 1 file changed, 4 insertions(+), 4 deletions(-)
-
-diff --git a/drivers/iommu/iommu.c b/drivers/iommu/iommu.c
-index 1ed1e14a1f0c..40947f5bc6c5 100644
---- a/drivers/iommu/iommu.c
-+++ b/drivers/iommu/iommu.c
-@@ -383,8 +383,8 @@ static ssize_t iommu_group_show_name(struct iommu_group *group, char *buf)
-  * Elements are sorted by start address and overlapping segments
-  * of the same type are merged.
-  */
--int iommu_insert_resv_region(struct iommu_resv_region *new,
--			     struct list_head *regions)
-+static int iommu_insert_resv_region(struct iommu_resv_region *new,
-+				    struct list_head *regions)
- {
- 	struct iommu_resv_region *iter, *tmp, *nr, *top;
- 	LIST_HEAD(stack);
-@@ -2179,8 +2179,8 @@ static size_t iommu_pgsize(struct iommu_domain *domain,
- 	return pgsize;
- }
- 
--int __iommu_map(struct iommu_domain *domain, unsigned long iova,
--	      phys_addr_t paddr, size_t size, int prot, gfp_t gfp)
-+static int __iommu_map(struct iommu_domain *domain, unsigned long iova,
-+		       phys_addr_t paddr, size_t size, int prot, gfp_t gfp)
- {
- 	const struct iommu_ops *ops = domain->ops;
- 	unsigned long orig_iova = iova;
-
+Will
 _______________________________________________
 iommu mailing list
 iommu@lists.linux-foundation.org
