@@ -7,51 +7,51 @@ X-Spam-Status: No, score=-13.0 required=3.0 tests=BAYES_00,
 	SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED,USER_AGENT_GIT autolearn=unavailable
 	autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 4DE77C433E1
-	for <iommu@archiver.kernel.org>; Mon, 13 Jul 2020 21:54:04 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 55B5EC433E3
+	for <iommu@archiver.kernel.org>; Mon, 13 Jul 2020 21:54:14 +0000 (UTC)
 Received: from whitealder.osuosl.org (smtp1.osuosl.org [140.211.166.138])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by mail.kernel.org (Postfix) with ESMTPS id 2DDF52082E
-	for <iommu@archiver.kernel.org>; Mon, 13 Jul 2020 21:54:04 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 2DDF52082E
+	by mail.kernel.org (Postfix) with ESMTPS id 346142072D
+	for <iommu@archiver.kernel.org>; Mon, 13 Jul 2020 21:54:14 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 346142072D
 Authentication-Results: mail.kernel.org; dmarc=none (p=none dis=none) header.from=bp.renesas.com
 Authentication-Results: mail.kernel.org; spf=pass smtp.mailfrom=iommu-bounces@lists.linux-foundation.org
 Received: from localhost (localhost [127.0.0.1])
-	by whitealder.osuosl.org (Postfix) with ESMTP id D63FD8A395;
-	Mon, 13 Jul 2020 21:54:03 +0000 (UTC)
+	by whitealder.osuosl.org (Postfix) with ESMTP id 9BBFF882E4;
+	Mon, 13 Jul 2020 21:54:12 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
 Received: from whitealder.osuosl.org ([127.0.0.1])
 	by localhost (.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
-	with ESMTP id 4IdK8t-lh6P0; Mon, 13 Jul 2020 21:54:00 +0000 (UTC)
+	with ESMTP id bw3+dGVzA3n0; Mon, 13 Jul 2020 21:54:07 +0000 (UTC)
 Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [140.211.9.56])
-	by whitealder.osuosl.org (Postfix) with ESMTP id B79F58A36A;
-	Mon, 13 Jul 2020 21:54:00 +0000 (UTC)
+	by whitealder.osuosl.org (Postfix) with ESMTP id E7BC28A382;
+	Mon, 13 Jul 2020 21:54:01 +0000 (UTC)
 Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
-	by lists.linuxfoundation.org (Postfix) with ESMTP id A450EC08A0;
-	Mon, 13 Jul 2020 21:54:00 +0000 (UTC)
-Received: from whitealder.osuosl.org (smtp1.osuosl.org [140.211.166.138])
- by lists.linuxfoundation.org (Postfix) with ESMTP id 3A86BC0733
- for <iommu@lists.linux-foundation.org>; Mon, 13 Jul 2020 21:40:37 +0000 (UTC)
+	by lists.linuxfoundation.org (Postfix) with ESMTP id CCEADC08A0;
+	Mon, 13 Jul 2020 21:54:01 +0000 (UTC)
+Received: from silver.osuosl.org (smtp3.osuosl.org [140.211.166.136])
+ by lists.linuxfoundation.org (Postfix) with ESMTP id 3837CC0733
+ for <iommu@lists.linux-foundation.org>; Mon, 13 Jul 2020 21:40:57 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
- by whitealder.osuosl.org (Postfix) with ESMTP id 353C08A11E
- for <iommu@lists.linux-foundation.org>; Mon, 13 Jul 2020 21:40:37 +0000 (UTC)
+ by silver.osuosl.org (Postfix) with ESMTP id 31923230A4
+ for <iommu@lists.linux-foundation.org>; Mon, 13 Jul 2020 21:40:57 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from whitealder.osuosl.org ([127.0.0.1])
+Received: from silver.osuosl.org ([127.0.0.1])
  by localhost (.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
- with ESMTP id rFzw4h55MpIx for <iommu@lists.linux-foundation.org>;
- Mon, 13 Jul 2020 21:40:36 +0000 (UTC)
+ with ESMTP id m0T7EJnjuaAx for <iommu@lists.linux-foundation.org>;
+ Mon, 13 Jul 2020 21:40:55 +0000 (UTC)
 X-Greylist: from auto-whitelisted by SQLgrey-1.7.6
-Received: from relmlie6.idc.renesas.com (relmlor2.renesas.com
- [210.160.252.172])
- by whitealder.osuosl.org (Postfix) with ESMTP id 746668A131
- for <iommu@lists.linux-foundation.org>; Mon, 13 Jul 2020 21:40:36 +0000 (UTC)
-X-IronPort-AV: E=Sophos;i="5.75,348,1589209200"; d="scan'208";a="51803356"
+Received: from relmlie5.idc.renesas.com (relmlor1.renesas.com
+ [210.160.252.171])
+ by silver.osuosl.org (Postfix) with ESMTP id 5192C204CB
+ for <iommu@lists.linux-foundation.org>; Mon, 13 Jul 2020 21:40:55 +0000 (UTC)
+X-IronPort-AV: E=Sophos;i="5.75,348,1589209200"; d="scan'208";a="52016003"
 Received: from unknown (HELO relmlir6.idc.renesas.com) ([10.200.68.152])
- by relmlie6.idc.renesas.com with ESMTP; 14 Jul 2020 06:35:34 +0900
+ by relmlie5.idc.renesas.com with ESMTP; 14 Jul 2020 06:35:51 +0900
 Received: from localhost.localdomain (unknown [10.226.36.204])
- by relmlir6.idc.renesas.com (Postfix) with ESMTP id C3C6E40F7FC8;
- Tue, 14 Jul 2020 06:35:30 +0900 (JST)
+ by relmlir6.idc.renesas.com (Postfix) with ESMTP id 532E640F7FC8;
+ Tue, 14 Jul 2020 06:35:47 +0900 (JST)
 From: Lad Prabhakar <prabhakar.mahadev-lad.rj@bp.renesas.com>
 To: Geert Uytterhoeven <geert+renesas@glider.be>,
  Vinod Koul <vkoul@kernel.org>, Rob Herring <robh+dt@kernel.org>,
@@ -60,9 +60,10 @@ To: Geert Uytterhoeven <geert+renesas@glider.be>,
  Joerg Roedel <joro@8bytes.org>,
  Sergei Shtylyov <sergei.shtylyov@gmail.com>,
  "David S. Miller" <davem@davemloft.net>, Jakub Kicinski <kuba@kernel.org>
-Subject: [PATCH 2/9] iommu/ipmmu-vmsa: Hook up R8A774E1 DT matching code
-Date: Mon, 13 Jul 2020 22:35:13 +0100
-Message-Id: <1594676120-5862-3-git-send-email-prabhakar.mahadev-lad.rj@bp.renesas.com>
+Subject: [PATCH 6/9] dt-bindings: gpio: renesas,
+ rcar-gpio: Add r8a774e1 support
+Date: Mon, 13 Jul 2020 22:35:17 +0100
+Message-Id: <1594676120-5862-7-git-send-email-prabhakar.mahadev-lad.rj@bp.renesas.com>
 X-Mailer: git-send-email 2.7.4
 In-Reply-To: <1594676120-5862-1-git-send-email-prabhakar.mahadev-lad.rj@bp.renesas.com>
 References: <1594676120-5862-1-git-send-email-prabhakar.mahadev-lad.rj@bp.renesas.com>
@@ -90,38 +91,26 @@ Content-Transfer-Encoding: 7bit
 Errors-To: iommu-bounces@lists.linux-foundation.org
 Sender: "iommu" <iommu-bounces@lists.linux-foundation.org>
 
-From: Marian-Cristian Rotariu <marian-cristian.rotariu.rb@bp.renesas.com>
+Document Renesas RZ/G2H (R8A774E1) GPIO blocks compatibility within the
+relevant dt-bindings.
 
-Add support for RZ/G2H (R8A774E1) SoC IPMMUs.
-
-Signed-off-by: Marian-Cristian Rotariu <marian-cristian.rotariu.rb@bp.renesas.com>
 Signed-off-by: Lad Prabhakar <prabhakar.mahadev-lad.rj@bp.renesas.com>
 ---
- drivers/iommu/ipmmu-vmsa.c | 4 ++++
- 1 file changed, 4 insertions(+)
+ Documentation/devicetree/bindings/gpio/renesas,rcar-gpio.yaml | 1 +
+ 1 file changed, 1 insertion(+)
 
-diff --git a/drivers/iommu/ipmmu-vmsa.c b/drivers/iommu/ipmmu-vmsa.c
-index b90cd9ff96f6..cbce88ac5a71 100644
---- a/drivers/iommu/ipmmu-vmsa.c
-+++ b/drivers/iommu/ipmmu-vmsa.c
-@@ -751,6 +751,7 @@ static const struct soc_device_attribute soc_rcar_gen3[] = {
- static const struct soc_device_attribute soc_rcar_gen3_whitelist[] = {
- 	{ .soc_id = "r8a774b1", },
- 	{ .soc_id = "r8a774c0", },
-+	{ .soc_id = "r8a774e1", },
- 	{ .soc_id = "r8a7795", .revision = "ES3.*" },
- 	{ .soc_id = "r8a77961", },
- 	{ .soc_id = "r8a77965", },
-@@ -963,6 +964,9 @@ static const struct of_device_id ipmmu_of_ids[] = {
- 	}, {
- 		.compatible = "renesas,ipmmu-r8a774c0",
- 		.data = &ipmmu_features_rcar_gen3,
-+	}, {
-+		.compatible = "renesas,ipmmu-r8a774e1",
-+		.data = &ipmmu_features_rcar_gen3,
- 	}, {
- 		.compatible = "renesas,ipmmu-r8a7795",
- 		.data = &ipmmu_features_rcar_gen3,
+diff --git a/Documentation/devicetree/bindings/gpio/renesas,rcar-gpio.yaml b/Documentation/devicetree/bindings/gpio/renesas,rcar-gpio.yaml
+index 397d9383d15a..a9a9dd0854e7 100644
+--- a/Documentation/devicetree/bindings/gpio/renesas,rcar-gpio.yaml
++++ b/Documentation/devicetree/bindings/gpio/renesas,rcar-gpio.yaml
+@@ -37,6 +37,7 @@ properties:
+              - renesas,gpio-r8a774a1     # RZ/G2M
+              - renesas,gpio-r8a774b1     # RZ/G2N
+              - renesas,gpio-r8a774c0     # RZ/G2E
++             - renesas,gpio-r8a774e1     # RZ/G2H
+              - renesas,gpio-r8a7795      # R-Car H3
+              - renesas,gpio-r8a7796      # R-Car M3-W
+              - renesas,gpio-r8a77961     # R-Car M3-W+
 -- 
 2.17.1
 
