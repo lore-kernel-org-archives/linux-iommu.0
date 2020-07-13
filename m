@@ -2,81 +2,178 @@ Return-Path: <SRS0=SFHS=AY=lists.linux-foundation.org=iommu-bounces@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-4.0 required=3.0 tests=BAYES_00,
-	HEADER_FROM_DIFFERENT_DOMAINS,MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS,
-	URIBL_BLOCKED autolearn=no autolearn_force=no version=3.4.0
+X-Spam-Status: No, score=-11.3 required=3.0 tests=BAYES_00,DKIM_INVALID,
+	DKIM_SIGNED,HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_PATCH,MAILING_LIST_MULTI,
+	NICE_REPLY_A,SIGNED_OFF_BY,SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED,
+	USER_AGENT_SANE_1 autolearn=unavailable autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 6C9D5C433E2
-	for <iommu@archiver.kernel.org>; Mon, 13 Jul 2020 02:46:14 +0000 (UTC)
-Received: from whitealder.osuosl.org (smtp1.osuosl.org [140.211.166.138])
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 3D953C433DF
+	for <iommu@archiver.kernel.org>; Mon, 13 Jul 2020 05:26:11 +0000 (UTC)
+Received: from hemlock.osuosl.org (smtp2.osuosl.org [140.211.166.133])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by mail.kernel.org (Postfix) with ESMTPS id 3CF94206D9
-	for <iommu@archiver.kernel.org>; Mon, 13 Jul 2020 02:46:14 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 3CF94206D9
-Authentication-Results: mail.kernel.org; dmarc=none (p=none dis=none) header.from=hisilicon.com
+	by mail.kernel.org (Postfix) with ESMTPS id 027122068F
+	for <iommu@archiver.kernel.org>; Mon, 13 Jul 2020 05:26:10 +0000 (UTC)
+Authentication-Results: mail.kernel.org;
+	dkim=fail reason="signature verification failed" (2048-bit key) header.d=ozlabs-ru.20150623.gappssmtp.com header.i=@ozlabs-ru.20150623.gappssmtp.com header.b="bkhVj8gU"
+DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 027122068F
+Authentication-Results: mail.kernel.org; dmarc=none (p=none dis=none) header.from=ozlabs.ru
 Authentication-Results: mail.kernel.org; spf=pass smtp.mailfrom=iommu-bounces@lists.linux-foundation.org
 Received: from localhost (localhost [127.0.0.1])
-	by whitealder.osuosl.org (Postfix) with ESMTP id F005389555;
-	Mon, 13 Jul 2020 02:46:13 +0000 (UTC)
+	by hemlock.osuosl.org (Postfix) with ESMTP id C96938815F;
+	Mon, 13 Jul 2020 05:26:10 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from whitealder.osuosl.org ([127.0.0.1])
+Received: from hemlock.osuosl.org ([127.0.0.1])
 	by localhost (.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
-	with ESMTP id WXhMAceRT87t; Mon, 13 Jul 2020 02:46:13 +0000 (UTC)
+	with ESMTP id e4PYtTAVK+Ew; Mon, 13 Jul 2020 05:26:08 +0000 (UTC)
 Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [140.211.9.56])
-	by whitealder.osuosl.org (Postfix) with ESMTP id 1BB3389553;
-	Mon, 13 Jul 2020 02:46:13 +0000 (UTC)
+	by hemlock.osuosl.org (Postfix) with ESMTP id 1844785BA7;
+	Mon, 13 Jul 2020 05:26:08 +0000 (UTC)
 Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
-	by lists.linuxfoundation.org (Postfix) with ESMTP id 029A2C0894;
-	Mon, 13 Jul 2020 02:46:13 +0000 (UTC)
+	by lists.linuxfoundation.org (Postfix) with ESMTP id EED09C088E;
+	Mon, 13 Jul 2020 05:26:07 +0000 (UTC)
 Received: from whitealder.osuosl.org (smtp1.osuosl.org [140.211.166.138])
- by lists.linuxfoundation.org (Postfix) with ESMTP id 737BFC0733
- for <iommu@lists.linux-foundation.org>; Mon, 13 Jul 2020 02:46:11 +0000 (UTC)
+ by lists.linuxfoundation.org (Postfix) with ESMTP id BF252C0733
+ for <iommu@lists.linux-foundation.org>; Mon, 13 Jul 2020 05:26:05 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
- by whitealder.osuosl.org (Postfix) with ESMTP id 69BC389553
- for <iommu@lists.linux-foundation.org>; Mon, 13 Jul 2020 02:46:11 +0000 (UTC)
+ by whitealder.osuosl.org (Postfix) with ESMTP id A3FF388F1B
+ for <iommu@lists.linux-foundation.org>; Mon, 13 Jul 2020 05:26:05 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
 Received: from whitealder.osuosl.org ([127.0.0.1])
  by localhost (.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
- with ESMTP id DGhq8Nh3hkOy for <iommu@lists.linux-foundation.org>;
- Mon, 13 Jul 2020 02:46:09 +0000 (UTC)
-X-Greylist: domain auto-whitelisted by SQLgrey-1.7.6
-Received: from huawei.com (szxga08-in.huawei.com [45.249.212.255])
- by whitealder.osuosl.org (Postfix) with ESMTPS id 995418954E
- for <iommu@lists.linux-foundation.org>; Mon, 13 Jul 2020 02:46:09 +0000 (UTC)
-Received: from dggemi404-hub.china.huawei.com (unknown [172.30.72.53])
- by Forcepoint Email with ESMTP id 3363524694F6BD98319D;
- Mon, 13 Jul 2020 10:46:05 +0800 (CST)
-Received: from DGGEMI422-HUB.china.huawei.com (10.1.199.151) by
- dggemi404-hub.china.huawei.com (10.3.17.142) with Microsoft SMTP Server (TLS)
- id 14.3.487.0; Mon, 13 Jul 2020 10:46:04 +0800
-Received: from DGGEMI525-MBS.china.huawei.com ([169.254.6.52]) by
- dggemi422-hub.china.huawei.com ([10.1.199.151]) with mapi id 14.03.0487.000;
- Mon, 13 Jul 2020 10:45:56 +0800
-From: "Song Bao Hua (Barry Song)" <song.bao.hua@hisilicon.com>
-To: "hch@lst.de" <hch@lst.de>, "m.szyprowski@samsung.com"
- <m.szyprowski@samsung.com>, "robin.murphy@arm.com" <robin.murphy@arm.com>,
- "will@kernel.org" <will@kernel.org>, "ganapatrao.kulkarni@cavium.com"
- <ganapatrao.kulkarni@cavium.com>, "catalin.marinas@arm.com"
- <catalin.marinas@arm.com>
-Subject: RE: [PATCH v3 0/2] make dma_alloc_coherent NUMA-aware by per-NUMA CMA
-Thread-Topic: [PATCH v3 0/2] make dma_alloc_coherent NUMA-aware by per-NUMA CMA
-Thread-Index: AQHWTT1WiDDuu36nVEqWJTTrKM1O/6kE49zg
-Date: Mon, 13 Jul 2020 02:45:56 +0000
-Message-ID: <B926444035E5E2439431908E3842AFD257B188@DGGEMI525-MBS.china.huawei.com>
-References: <20200628111251.19108-1-song.bao.hua@hisilicon.com>
-In-Reply-To: <20200628111251.19108-1-song.bao.hua@hisilicon.com>
-Accept-Language: en-GB, en-US
-Content-Language: en-US
-X-MS-Has-Attach: 
-X-MS-TNEF-Correlator: 
-x-originating-ip: [10.126.202.160]
+ with ESMTP id NOTWDz9LBtS7 for <iommu@lists.linux-foundation.org>;
+ Mon, 13 Jul 2020 05:26:04 +0000 (UTC)
+X-Greylist: delayed 00:19:19 by SQLgrey-1.7.6
+Received: from mail-oi1-f194.google.com (mail-oi1-f194.google.com
+ [209.85.167.194])
+ by whitealder.osuosl.org (Postfix) with ESMTPS id E60A488F16
+ for <iommu@lists.linux-foundation.org>; Mon, 13 Jul 2020 05:26:03 +0000 (UTC)
+Received: by mail-oi1-f194.google.com with SMTP id y22so10003038oie.8
+ for <iommu@lists.linux-foundation.org>; Sun, 12 Jul 2020 22:26:03 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+ d=ozlabs-ru.20150623.gappssmtp.com; s=20150623;
+ h=subject:to:cc:references:from:autocrypt:message-id:date:user-agent
+ :mime-version:in-reply-to:content-language:content-transfer-encoding;
+ bh=WViXlg1/uxOnEpre+2HgmXORmbkY4/q7j7ylo9larMo=;
+ b=bkhVj8gUPflLw4qDkxP/z6b2jJ0VGtRScz/1/b8BGcXayM7EH4LgnlGvfjReS7vY+L
+ gFd+Z7oALVHe/ygFeG0fbi1dhf5LYoTHHc3jMz/emDfB+K2Y6nNGTl/ioEmqtRVYf29X
+ L/awGO/RLXhE3i1gYlzVGSNzRUhFY1rGXlN069jEbkRiRL3bJFlvuQ9zwISggSjIy0rm
+ aR/zO69wUmNUWUpJo9+aHV3Or/bM1MQbJg+M7Syv3VyezPfIUx8CCd1xZ/B6bM4ek/NI
+ c7s+iBwysQhztQduKkRH5e9vE6CBxsjSqb/FDSvk8QjH17+O3Kp4PqPMyu7gSBoq+KFg
+ cFjg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+ d=1e100.net; s=20161025;
+ h=x-gm-message-state:subject:to:cc:references:from:autocrypt
+ :message-id:date:user-agent:mime-version:in-reply-to
+ :content-language:content-transfer-encoding;
+ bh=WViXlg1/uxOnEpre+2HgmXORmbkY4/q7j7ylo9larMo=;
+ b=RXQqolmmRHHF6FA8AmWVEpWovtWOWG8PhWHJHwXXXs2/qhB00EU3pzedueS1MGsrUZ
+ rczqUpmWw0BgixEPsKL9YAncLXx4EVUiwLfVCIMl+g5WWkdYCz0HNkx2PVCA2yMIL3E9
+ X7YPRHy6URDQp+XCmbaHA2Th0b+whIJRhnSF8W68RElwR1fAX3CLK4zmgaPQCKfDoglk
+ 93Okp+PJU+Nw+7hcEZnmnb62cFmxQSro6NAv+C3oue2UmL1XX75Nob6UZaBJAk76fZh+
+ xXtL7prjjgNbuCDcQ/y3hj2bVsUnBOYY81cxQyQ2k7ELRPbmqlAbvw5o41z1khpWrZK/
+ 7yVg==
+X-Gm-Message-State: AOAM5326dKzMRcTkF7CfyVj4HHBSYEKcQ3vjJLNMH/3sdrM1AQdxQ2uW
+ UQuS190L5INOcZf7GJIbNpMKUmM0rZStMA==
+X-Google-Smtp-Source: ABdhPJw78KwMzPERI1MQjsPxNgV4AmhG1+29J0G0LkfultKuiktyGJdktjTafEiWnlddeV4RgHgvWw==
+X-Received: by 2002:a17:90a:31ce:: with SMTP id
+ j14mr7330521pjf.65.1594616386235; 
+ Sun, 12 Jul 2020 21:59:46 -0700 (PDT)
+Received: from [192.168.10.94] (124-171-83-152.dyn.iinet.net.au.
+ [124.171.83.152])
+ by smtp.gmail.com with ESMTPSA id d14sm13201702pjc.20.2020.07.12.21.59.41
+ (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+ Sun, 12 Jul 2020 21:59:45 -0700 (PDT)
+Subject: Re: [PATCH 4/5] dma-mapping: add a dma_ops_bypass flag to struct
+ device
+To: Christoph Hellwig <hch@lst.de>, iommu@lists.linux-foundation.org
+References: <20200708152449.316476-1-hch@lst.de>
+ <20200708152449.316476-5-hch@lst.de>
+From: Alexey Kardashevskiy <aik@ozlabs.ru>
+Autocrypt: addr=aik@ozlabs.ru; keydata=
+ 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
+Message-ID: <9bff7460-e6fa-f765-dcb4-cc96eb86d92c@ozlabs.ru>
+Date: Mon, 13 Jul 2020 14:59:39 +1000
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101
+ Thunderbird/68.10.0
 MIME-Version: 1.0
-X-CFilter-Loop: Reflected
-Cc: "iommu@lists.linux-foundation.org" <iommu@lists.linux-foundation.org>,
- huangdaode <huangdaode@huawei.com>, Linuxarm <linuxarm@huawei.com>,
- "linux-arm-kernel@lists.infradead.org" <linux-arm-kernel@lists.infradead.org>,
- "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>
+In-Reply-To: <20200708152449.316476-5-hch@lst.de>
+Content-Language: en-US
+Cc: Daniel Borkmann <daniel@iogearbox.net>,
+ Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+ Robin Murphy <robin.murphy@arm.com>, linux-kernel@vger.kernel.org,
+ Jesper Dangaard Brouer <brouer@redhat.com>, linuxppc-dev@lists.ozlabs.org
 X-BeenThere: iommu@lists.linux-foundation.org
 X-Mailman-Version: 2.1.15
 Precedence: list
@@ -96,106 +193,41 @@ Sender: "iommu" <iommu-bounces@lists.linux-foundation.org>
 
 
 
-> -----Original Message-----
-> From: Song Bao Hua (Barry Song)
-> Sent: Sunday, June 28, 2020 11:13 PM
-> To: hch@lst.de; m.szyprowski@samsung.com; robin.murphy@arm.com;
-> will@kernel.org; ganapatrao.kulkarni@cavium.com;
-> catalin.marinas@arm.com
-> Cc: iommu@lists.linux-foundation.org; Linuxarm <linuxarm@huawei.com>;
-> linux-arm-kernel@lists.infradead.org; linux-kernel@vger.kernel.org; Song Bao
-> Hua (Barry Song) <song.bao.hua@hisilicon.com>
-> Subject: [PATCH v3 0/2] make dma_alloc_coherent NUMA-aware by
-> per-NUMA CMA
+On 09/07/2020 01:24, Christoph Hellwig wrote:
+> Several IOMMU drivers have a bypass mode where they can use a direct
+> mapping if the devices DMA mask is large enough.  Add generic support
+> to the core dma-mapping code to do that to switch those drivers to
+> a common solution.
 > 
-> Ganapatrao Kulkarni has put some effort on making arm-smmu-v3 use local
-> memory to save command queues[1]. I also did similar job in patch
-> "iommu/arm-smmu-v3: allocate the memory of queues in local numa node"
-> [2] while not realizing Ganapatrao has done that before.
+> Signed-off-by: Christoph Hellwig <hch@lst.de>
+> ---
+>  include/linux/device.h |  8 +++++
+>  kernel/dma/Kconfig     |  8 +++++
+>  kernel/dma/mapping.c   | 74 +++++++++++++++++++++++++++++-------------
+>  3 files changed, 68 insertions(+), 22 deletions(-)
 > 
-> But it seems it is much better to make dma_alloc_coherent() to be inherently
-> NUMA-aware on NUMA-capable systems.
-> 
-> Right now, smmu is using dma_alloc_coherent() to get memory to save queues
-> and tables. Typically, on ARM64 server, there is a default CMA located at
-> node0, which could be far away from node2, node3 etc.
-> Saving queues and tables remotely will increase the latency of ARM SMMU
-> significantly. For example, when SMMU is at node2 and the default global
-> CMA is at node0, after sending a CMD_SYNC in an empty command queue, we
-> have to wait more than 550ns for the completion of the command
-> CMD_SYNC.
-> However, if we save them locally, we only need to wait for 240ns.
-> 
-> with per-numa CMA, smmu will get memory from local numa node to save
-> command queues and page tables. that means dma_unmap latency will be
-> shrunk much.
-> 
-> Meanwhile, when iommu.passthrough is on, device drivers which call dma_
-> alloc_coherent() will also get local memory and avoid the travel between
-> numa nodes.
-> 
-> [1]
-> https://lists.linuxfoundation.org/pipermail/iommu/2017-October/024455.htm
-> l
-> [2] https://www.spinics.net/lists/iommu/msg44767.html
-> 
-> -v3:
->   * move to use page_to_nid() while freeing cma with respect to Robin's
->   comment, but this will only work after applying my below patch:
->   "mm/cma.c: use exact_nid true to fix possible per-numa cma leak"
->   https://marc.info/?l=linux-mm&m=159333034726647&w=2
-> 
->   * handle the case count <= 1 more properly according to Robin's
->   comment;
-> 
->   * add pernuma_cma parameter to support dynamic setting of per-numa
->   cma size;
->   ideally we can leverage the CMA_SIZE_MBYTES, CMA_SIZE_PERCENTAGE and
->   "cma=" kernel parameter and avoid a new paramter separately for per-
->   numa cma. Practically, it is really too complicated considering the
->   below problems:
->   (1) if we leverage the size of default numa for per-numa, we have to
->   avoid creating two cma with same size in node0 since default cma is
->   probably on node0.
->   (2) default cma can consider the address limitation for old devices
->   while per-numa cma doesn't support GFP_DMA and GFP_DMA32. all
->   allocations with limitation flags will fallback to default one.
->   (3) hard to apply CMA_SIZE_PERCENTAGE to per-numa. it is hard to
->   decide if the percentage should apply to the whole memory size
->   or only apply to the memory size of a specific numa node.
->   (4) default cma size has CMA_SIZE_SEL_MIN and CMA_SIZE_SEL_MAX, it
->   makes things even more complicated to per-numa cma.
-> 
->   I haven't figured out a good way to leverage the size of default cma
->   for per-numa cma. it seems a separate parameter for per-numa could
->   make life easier.
-> 
->   * move dma_pernuma_cma_reserve() after hugetlb_cma_reserve() to
->   reuse the comment before hugetlb_cma_reserve() with respect to
->   Robin's comment
-> 
-> -v2:
->   * fix some issues reported by kernel test robot
->   * fallback to default cma while allocation fails in per-numa cma
->      free memory properly
-> 
-> Barry Song (2):
->   dma-direct: provide the ability to reserve per-numa CMA
->   arm64: mm: reserve per-numa CMA to localize coherent dma buffers
-> 
->  .../admin-guide/kernel-parameters.txt         |  9 ++
->  arch/arm64/mm/init.c                          |  2 +
->  include/linux/dma-contiguous.h                |  4 +
->  kernel/dma/Kconfig                            | 10 ++
->  kernel/dma/contiguous.c                       | 98
-> +++++++++++++++++--
->  5 files changed, 114 insertions(+), 9 deletions(-)
+> diff --git a/include/linux/device.h b/include/linux/device.h
+> index 4c4af98321ebd6..1f71acf37f78d7 100644
+> --- a/include/linux/device.h
+> +++ b/include/linux/device.h
+> @@ -523,6 +523,11 @@ struct dev_links_info {
+>   *		  sync_state() callback.
+>   * @dma_coherent: this particular device is dma coherent, even if the
+>   *		architecture supports non-coherent devices.
+> + * @dma_ops_bypass: If set to %true then the dma_ops are bypassed for the
+> + *		streaming DMA operations (->map_* / ->unmap_* / ->sync_*),
+> + *		and optionall (if the coherent mask is large enough) also
 
-Gentle ping :-)
 
-Thanks
-Barry
+s/optionall/optional/g
 
+Otherwise the series looks good and works well on powernv and pseries.
+Thanks,
+
+
+
+-- 
+Alexey
 _______________________________________________
 iommu mailing list
 iommu@lists.linux-foundation.org
