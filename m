@@ -7,82 +7,83 @@ X-Spam-Status: No, score=-12.8 required=3.0 tests=BAYES_00,DKIM_INVALID,
 	SIGNED_OFF_BY,SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED,USER_AGENT_GIT
 	autolearn=unavailable autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id EECC7C433E5
+	by smtp.lore.kernel.org (Postfix) with ESMTP id A3B7CC433E4
 	for <iommu@archiver.kernel.org>; Mon, 13 Jul 2020 09:35:27 +0000 (UTC)
-Received: from fraxinus.osuosl.org (smtp4.osuosl.org [140.211.166.137])
+Received: from silver.osuosl.org (smtp3.osuosl.org [140.211.166.136])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by mail.kernel.org (Postfix) with ESMTPS id C4D7F2068F
+	by mail.kernel.org (Postfix) with ESMTPS id 7919B2068F
 	for <iommu@archiver.kernel.org>; Mon, 13 Jul 2020 09:35:27 +0000 (UTC)
 Authentication-Results: mail.kernel.org;
-	dkim=fail reason="signature verification failed" (1024-bit key) header.d=chromium.org header.i=@chromium.org header.b="Dc8HNhuT"
-DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org C4D7F2068F
+	dkim=fail reason="signature verification failed" (1024-bit key) header.d=chromium.org header.i=@chromium.org header.b="YxAF0ZDW"
+DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 7919B2068F
 Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=chromium.org
 Authentication-Results: mail.kernel.org; spf=pass smtp.mailfrom=iommu-bounces@lists.linux-foundation.org
 Received: from localhost (localhost [127.0.0.1])
-	by fraxinus.osuosl.org (Postfix) with ESMTP id 5AFFD873EF;
+	by silver.osuosl.org (Postfix) with ESMTP id 4212C2272C;
 	Mon, 13 Jul 2020 09:35:27 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from fraxinus.osuosl.org ([127.0.0.1])
+Received: from silver.osuosl.org ([127.0.0.1])
 	by localhost (.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
-	with ESMTP id E3qRc2eE6KqQ; Mon, 13 Jul 2020 09:35:26 +0000 (UTC)
+	with ESMTP id pRcX8zPB8PB3; Mon, 13 Jul 2020 09:35:25 +0000 (UTC)
 Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [140.211.9.56])
-	by fraxinus.osuosl.org (Postfix) with ESMTP id E1CA28758A;
+	by silver.osuosl.org (Postfix) with ESMTP id 6E8822264C;
 	Mon, 13 Jul 2020 09:35:25 +0000 (UTC)
 Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
-	by lists.linuxfoundation.org (Postfix) with ESMTP id B88EFC0733;
+	by lists.linuxfoundation.org (Postfix) with ESMTP id 4D8CDC08A0;
 	Mon, 13 Jul 2020 09:35:25 +0000 (UTC)
-Received: from fraxinus.osuosl.org (smtp4.osuosl.org [140.211.166.137])
- by lists.linuxfoundation.org (Postfix) with ESMTP id 3D9CAC0733
- for <iommu@lists.linux-foundation.org>; Mon, 13 Jul 2020 09:12:55 +0000 (UTC)
+Received: from whitealder.osuosl.org (smtp1.osuosl.org [140.211.166.138])
+ by lists.linuxfoundation.org (Postfix) with ESMTP id ED77DC0733
+ for <iommu@lists.linux-foundation.org>; Mon, 13 Jul 2020 09:12:45 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
- by fraxinus.osuosl.org (Postfix) with ESMTP id 3810B86F45
- for <iommu@lists.linux-foundation.org>; Mon, 13 Jul 2020 09:12:55 +0000 (UTC)
+ by whitealder.osuosl.org (Postfix) with ESMTP id DCC8E88E98
+ for <iommu@lists.linux-foundation.org>; Mon, 13 Jul 2020 09:12:45 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from fraxinus.osuosl.org ([127.0.0.1])
+Received: from whitealder.osuosl.org ([127.0.0.1])
  by localhost (.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
- with ESMTP id o-XOVvonLpJo for <iommu@lists.linux-foundation.org>;
- Mon, 13 Jul 2020 09:12:54 +0000 (UTC)
+ with ESMTP id 5Y456MtbLB8P for <iommu@lists.linux-foundation.org>;
+ Mon, 13 Jul 2020 09:12:45 +0000 (UTC)
 X-Greylist: domain auto-whitelisted by SQLgrey-1.7.6
-Received: from mail-pg1-f196.google.com (mail-pg1-f196.google.com
- [209.85.215.196])
- by fraxinus.osuosl.org (Postfix) with ESMTPS id 9E33386F43
- for <iommu@lists.linux-foundation.org>; Mon, 13 Jul 2020 09:12:54 +0000 (UTC)
-Received: by mail-pg1-f196.google.com with SMTP id j19so5746538pgm.11
- for <iommu@lists.linux-foundation.org>; Mon, 13 Jul 2020 02:12:54 -0700 (PDT)
+Received: from mail-pj1-f66.google.com (mail-pj1-f66.google.com
+ [209.85.216.66])
+ by whitealder.osuosl.org (Postfix) with ESMTPS id 3F455888CB
+ for <iommu@lists.linux-foundation.org>; Mon, 13 Jul 2020 09:12:45 +0000 (UTC)
+Received: by mail-pj1-f66.google.com with SMTP id b92so5935498pjc.4
+ for <iommu@lists.linux-foundation.org>; Mon, 13 Jul 2020 02:12:45 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=chromium.org; s=google;
  h=from:to:cc:subject:date:message-id:in-reply-to:references
  :mime-version:content-transfer-encoding;
- bh=2pjchSlwME4GrTpEw7XTrDCwU1gG4HJg02FXR22Hkas=;
- b=Dc8HNhuThCDkktDS6B+WjGZyK0LdkXIxeRs+uY86mwkgQgeDrNeZBcgHv+dr/VgE8i
- 99LjcelPnCB6GxqIqDnK+19HuhjUyqsLTqBZV76hoWI+PhdoeFHI4rolEPvfQ03OsjQj
- T0K19kPY3cx28Xa3O40GxC3+syA37DHUIx4xo=
+ bh=wW9UG9GkA5eq2tRO9SfLLrAbTAFpGwf7ilxMSntDIQU=;
+ b=YxAF0ZDWNLRZbwatioa2W5wcq4CfxtsxsHlwEUn8kgIb6fCeDsCrWleQlNqOvMXiJ+
+ LOoq5CKoHitDi5bruIZe80ea/NHJk8Y7SPSlkaSj1cpKaSzzyLmt4+HU5BB+/Za+6ObR
+ 5vstthuC8jO7QKbBxZSldp54hw1ndXzecTz5I=
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
  d=1e100.net; s=20161025;
  h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
  :references:mime-version:content-transfer-encoding;
- bh=2pjchSlwME4GrTpEw7XTrDCwU1gG4HJg02FXR22Hkas=;
- b=tEdiZE0Svju87uzOuMHJ+2rFS5+TmQkBk9xnqRajgi/hI+AKkh9yLLVS6h1lZV4ux0
- Ic7Ft9eR8oPgLObfYEL5yLmyz2IAsWziJ0hUsUNvqCgkBCHzdNfUVSNT/9KaGuOdpoHJ
- umuFkwo+l80dYe0WEvz0YgTvBcJcOEpmiO7rRFo7kjCt/2vXR8cNEMYaH7ClYoyb0qf9
- 6uQ0dziTzdxHzUsqe2LWsOqG4xQEYJUkqbWoQVL/0DS3BfQE+V0rF5t2y3xB8GIYc35B
- GH1WM07Qi02wTxvhAoHloQ6Z3CXY0r5gsPZD6mLEtcuJjpzkNwGil89R63j3K95XlYvS
- R+Bw==
-X-Gm-Message-State: AOAM5335I7mtC6Fz1YGuS9ONrqCVj8GC9F1k6smaQr3QJUO0rgSzQwMi
- Wi5LjbueQDp72MiWqSe3qOLsWw==
-X-Google-Smtp-Source: ABdhPJzCBz1wXNm6srY4fV+QTPs1p1GBdSr9wd1N0xPtsZeiUu/632nKu46kLsgjWtntLiQYzALTzw==
-X-Received: by 2002:a63:140a:: with SMTP id u10mr71073813pgl.238.1594631574223; 
- Mon, 13 Jul 2020 02:12:54 -0700 (PDT)
+ bh=wW9UG9GkA5eq2tRO9SfLLrAbTAFpGwf7ilxMSntDIQU=;
+ b=WvGJwL5p28x6CkVmSQDzC5mTJ/p0E6UviTYSJCkg0vdvOH8uajAJFdXEEJJkDjYSay
+ 3PSzR//wppKdnaaFn8MpSVzKjV3Jg97m1HX99fqtRfYglB9bZKN3XcPi8+mXuG5FrnRb
+ ASJ8NDm2d9Wdu+eKr0UKK2A2FtUfqxJ54vATP6MApkJ91hB3+/t2PLTRIO2UPFDPGqy4
+ dHfR0ItEdodz6u2Qwcnb0SpzOMXOjgVs8ZF2EtU/WtrF2zU13ym/P4HO3OuxbZr7d6Ls
+ h7V26bzizbt/LWKj+IUarnle9t7yIehoW/uXUE7uY5IYlO/pzao2kSOrTFzsCHZCBgRf
+ b3/g==
+X-Gm-Message-State: AOAM533Sul9EgjqEdegmzXhKxyA2k4TdAuLEWiVlRvlk5/5R25hOhS91
+ FtSIZQWAstGZdb46EGr7Eq0OAw==
+X-Google-Smtp-Source: ABdhPJzFuHMhPXzcXoFvEGJ2D3yKj+lsnp095Bn7A6IGRnnd7qXSC1PeqLmbJsZOAM2xionjMj9p8A==
+X-Received: by 2002:a17:90a:ea83:: with SMTP id
+ h3mr19821787pjz.176.1594631564912; 
+ Mon, 13 Jul 2020 02:12:44 -0700 (PDT)
 Received: from localhost ([2401:fa00:1:10:3e52:82ff:fe5e:cc9d])
- by smtp.gmail.com with ESMTPSA id kk6sm10887305pjb.1.2020.07.13.02.12.50
+ by smtp.gmail.com with ESMTPSA id d22sm13790576pfd.105.2020.07.13.02.12.41
  (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
- Mon, 13 Jul 2020 02:12:53 -0700 (PDT)
+ Mon, 13 Jul 2020 02:12:44 -0700 (PDT)
 From: Claire Chang <tientzu@chromium.org>
 To: robh+dt@kernel.org, frowand.list@gmail.com, hch@lst.de,
  m.szyprowski@samsung.com, robin.murphy@arm.com
-Subject: [PATCH 4/4] of: Add plumbing for bounced DMA pool
-Date: Mon, 13 Jul 2020 17:12:11 +0800
-Message-Id: <20200713091211.2183368-5-tientzu@chromium.org>
+Subject: [PATCH 2/4] dma-mapping: Add bounced DMA pool
+Date: Mon, 13 Jul 2020 17:12:09 +0800
+Message-Id: <20200713091211.2183368-3-tientzu@chromium.org>
 X-Mailer: git-send-email 2.27.0.383.g050319c2ae-goog
 In-Reply-To: <20200713091211.2183368-1-tientzu@chromium.org>
 References: <20200713091211.2183368-1-tientzu@chromium.org>
@@ -111,112 +112,124 @@ Content-Transfer-Encoding: 7bit
 Errors-To: iommu-bounces@lists.linux-foundation.org
 Sender: "iommu" <iommu-bounces@lists.linux-foundation.org>
 
-If a device is not behind an IOMMU, we look up the device node and set
-up the bounced DMA when the bounced-dma property is presented. One can
-specify two reserved-memory nodes in the device tree. One with
-shared-dma-pool to handle the coherent DMA buffer allocation, and
-another one with bounced-dma-pool for regular DMA to/from system memory,
-which would be subject to bouncing.
+Add the initialization function to create bounce buffer pools from
+matching reserved-memory nodes in the device tree.
+
+The bounce buffer pools provide a basic level of protection against
+the DMA overwriting buffer contents at unexpected times. However, to
+protect against general data leakage and system memory corruption, the
+system needs to provide a way to restrict the DMA to a predefined memory
+region.
 
 Signed-off-by: Claire Chang <tientzu@chromium.org>
 ---
- drivers/of/address.c    | 37 +++++++++++++++++++++++++++++++++++++
- drivers/of/device.c     |  3 +++
- drivers/of/of_private.h |  6 ++++++
- 3 files changed, 46 insertions(+)
+ kernel/dma/bounced.c | 89 ++++++++++++++++++++++++++++++++++++++++++++
+ 1 file changed, 89 insertions(+)
 
-diff --git a/drivers/of/address.c b/drivers/of/address.c
-index 8eea3f6e29a4..a767b80f8862 100644
---- a/drivers/of/address.c
-+++ b/drivers/of/address.c
-@@ -8,6 +8,7 @@
- #include <linux/logic_pio.h>
- #include <linux/module.h>
- #include <linux/of_address.h>
+diff --git a/kernel/dma/bounced.c b/kernel/dma/bounced.c
+index fcaabb5eccf2..0bfd6cf90aee 100644
+--- a/kernel/dma/bounced.c
++++ b/kernel/dma/bounced.c
+@@ -12,6 +12,9 @@
+ #include <linux/dma-noncoherent.h>
+ #include <linux/io.h>
+ #include <linux/genalloc.h>
++#include <linux/of.h>
++#include <linux/of_fdt.h>
 +#include <linux/of_reserved_mem.h>
- #include <linux/pci.h>
- #include <linux/pci_regs.h>
- #include <linux/sizes.h>
-@@ -1009,6 +1010,42 @@ int of_dma_get_range(struct device_node *np, u64 *dma_addr, u64 *paddr, u64 *siz
- 	return ret;
- }
+ #include <linux/slab.h>
  
-+int of_dma_set_bounce_buffer(struct device *dev)
+ struct dma_bounced_mem {
+@@ -213,3 +216,89 @@ const struct dma_map_ops dma_bounced_ops = {
+ 	.max_mapping_size	= dma_bounced_max_mapping_size,
+ 	.get_merge_boundary	= NULL,
+ };
++
++static int dma_bounced_device_init(struct reserved_mem *rmem,
++				   struct device *dev)
 +{
-+	int length, size, ret, i;
-+	u32 idx[2];
++	struct dma_bounced_mem *mem;
++	int ret;
 +
-+	if (!dev || !dev->of_node)
-+		return -EINVAL;
++	mem = kzalloc(sizeof(*mem), GFP_KERNEL);
++	if (!mem)
++		return -ENOMEM;
 +
-+	if (!of_get_property(dev->of_node, "bounced-dma", &length))
-+		return 0;
-+
-+	size = length / sizeof(idx[0]);
-+	if (size > ARRAY_SIZE(idx)) {
-+		dev_err(dev,
-+			"bounced-dma expected less than or equal to 2 indexs, but got %d\n",
-+			size);
-+		return -EINVAL;
++	mem->virt_base =
++		devm_memremap(dev, rmem->base, rmem->size, MEMREMAP_WB);
++	if (!mem->virt_base) {
++		ret = -EINVAL;
++		goto error;
 +	}
 +
-+	ret = of_property_read_u32_array(dev->of_node, "bounced-dma", idx,
-+					 size);
++	mem->size = rmem->size;
++	mem->device_base = phys_to_dma(dev, rmem->base);
++	mem->device_end = mem->device_base + rmem->size;
 +
-+	for (i = 0; i < size; i++) {
-+		ret = of_reserved_mem_device_init_by_idx(dev, dev->of_node,
-+							 idx[i]);
-+		if (ret) {
-+			dev_err(dev,
-+				"of_reserved_mem_device_init_by_idx() failed with %d\n",
-+				ret);
-+			return ret;
-+		}
++	mem->orig_addr = kcalloc(mem->size >> PAGE_SHIFT,
++				 sizeof(*mem->orig_addr), GFP_KERNEL);
++	if (!mem->orig_addr) {
++		ret = -ENOMEM;
++		goto error;
 +	}
 +
++	mem->pool = devm_gen_pool_create(dev, PAGE_SHIFT, NUMA_NO_NODE,
++					 "bounced DMA");
++	if (!mem->pool) {
++		ret = -ENOMEM;
++		goto error;
++	}
++
++	ret = gen_pool_add_virt(mem->pool, (unsigned long)mem->virt_base,
++				rmem->base, rmem->size, NUMA_NO_NODE);
++	if (ret)
++		goto error;
++
++	dev->dma_bounced_mem = mem;
++	set_dma_ops(dev, &dma_bounced_ops);
++
++	return 0;
++
++error:
++	kfree(mem);
++
++	return ret;
++}
++
++static void dma_bounced_device_release(struct reserved_mem *rmem,
++				       struct device *dev)
++{
++	struct dma_bounced_mem *mem = dev->dma_bounced_mem;
++
++	set_dma_ops(dev, NULL);
++	dev->dma_bounced_mem = NULL;
++
++	kfree(mem->orig_addr);
++	kfree(mem);
++}
++
++static const struct reserved_mem_ops rmem_dma_bounced_ops = {
++	.device_init	= dma_bounced_device_init,
++	.device_release	= dma_bounced_device_release,
++};
++
++static int __init dma_bounced_setup(struct reserved_mem *rmem)
++{
++	unsigned long node = rmem->fdt_node;
++
++	if (of_get_flat_dt_prop(node, "reusable", NULL) ||
++	    of_get_flat_dt_prop(node, "linux,cma-default", NULL) ||
++	    of_get_flat_dt_prop(node, "linux,dma-default", NULL) ||
++	    of_get_flat_dt_prop(node, "no-map", NULL))
++		return -EINVAL;
++
++	rmem->ops = &rmem_dma_bounced_ops;
++	pr_info("Reserved memory: created DMA bounced memory pool at %pa, size %ld MiB\n",
++		&rmem->base, (unsigned long)rmem->size / SZ_1M);
 +	return 0;
 +}
 +
- /**
-  * of_dma_is_coherent - Check if device is coherent
-  * @np:	device node
-diff --git a/drivers/of/device.c b/drivers/of/device.c
-index 27203bfd0b22..238beef48a50 100644
---- a/drivers/of/device.c
-+++ b/drivers/of/device.c
-@@ -169,6 +169,9 @@ int of_dma_configure(struct device *dev, struct device_node *np, bool force_dma)
- 
- 	arch_setup_dma_ops(dev, dma_addr, size, iommu, coherent);
- 
-+	if (!iommu)
-+		return of_dma_set_bounce_buffer(dev);
-+
- 	return 0;
- }
- EXPORT_SYMBOL_GPL(of_dma_configure);
-diff --git a/drivers/of/of_private.h b/drivers/of/of_private.h
-index edc682249c00..3d1b8cca1519 100644
---- a/drivers/of/of_private.h
-+++ b/drivers/of/of_private.h
-@@ -160,12 +160,18 @@ extern int of_bus_n_size_cells(struct device_node *np);
- #ifdef CONFIG_OF_ADDRESS
- extern int of_dma_get_range(struct device_node *np, u64 *dma_addr,
- 			    u64 *paddr, u64 *size);
-+extern int of_dma_set_bounce_buffer(struct device *dev);
- #else
- static inline int of_dma_get_range(struct device_node *np, u64 *dma_addr,
- 				   u64 *paddr, u64 *size)
- {
- 	return -ENODEV;
- }
-+
-+static inline int of_dma_get_bounce_buffer(struct device *dev)
-+{
-+	return -ENODEV;
-+}
- #endif
- 
- #endif /* _LINUX_OF_PRIVATE_H */
++RESERVEDMEM_OF_DECLARE(dma, "bounced-dma-pool", dma_bounced_setup);
 -- 
 2.27.0.383.g050319c2ae-goog
 
