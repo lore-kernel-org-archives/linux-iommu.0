@@ -2,178 +2,98 @@ Return-Path: <SRS0=SFHS=AY=lists.linux-foundation.org=iommu-bounces@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-11.3 required=3.0 tests=BAYES_00,DKIM_INVALID,
+X-Spam-Status: No, score=-9.8 required=3.0 tests=BAYES_00,DKIM_INVALID,
 	DKIM_SIGNED,HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_PATCH,MAILING_LIST_MULTI,
-	NICE_REPLY_A,SIGNED_OFF_BY,SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED,
-	USER_AGENT_SANE_1 autolearn=unavailable autolearn_force=no version=3.4.0
+	SIGNED_OFF_BY,SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED autolearn=unavailable
+	autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 3D953C433DF
-	for <iommu@archiver.kernel.org>; Mon, 13 Jul 2020 05:26:11 +0000 (UTC)
-Received: from hemlock.osuosl.org (smtp2.osuosl.org [140.211.166.133])
+	by smtp.lore.kernel.org (Postfix) with ESMTP id B87D3C433DF
+	for <iommu@archiver.kernel.org>; Mon, 13 Jul 2020 05:43:06 +0000 (UTC)
+Received: from silver.osuosl.org (smtp3.osuosl.org [140.211.166.136])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by mail.kernel.org (Postfix) with ESMTPS id 027122068F
-	for <iommu@archiver.kernel.org>; Mon, 13 Jul 2020 05:26:10 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTPS id 70E5E20674
+	for <iommu@archiver.kernel.org>; Mon, 13 Jul 2020 05:43:06 +0000 (UTC)
 Authentication-Results: mail.kernel.org;
-	dkim=fail reason="signature verification failed" (2048-bit key) header.d=ozlabs-ru.20150623.gappssmtp.com header.i=@ozlabs-ru.20150623.gappssmtp.com header.b="bkhVj8gU"
-DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 027122068F
-Authentication-Results: mail.kernel.org; dmarc=none (p=none dis=none) header.from=ozlabs.ru
+	dkim=fail reason="signature verification failed" (1024-bit key) header.d=chromium.org header.i=@chromium.org header.b="I5mH74j0"
+DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 70E5E20674
+Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=chromium.org
 Authentication-Results: mail.kernel.org; spf=pass smtp.mailfrom=iommu-bounces@lists.linux-foundation.org
 Received: from localhost (localhost [127.0.0.1])
-	by hemlock.osuosl.org (Postfix) with ESMTP id C96938815F;
-	Mon, 13 Jul 2020 05:26:10 +0000 (UTC)
+	by silver.osuosl.org (Postfix) with ESMTP id 2F4CA2037E;
+	Mon, 13 Jul 2020 05:43:06 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from hemlock.osuosl.org ([127.0.0.1])
+Received: from silver.osuosl.org ([127.0.0.1])
 	by localhost (.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
-	with ESMTP id e4PYtTAVK+Ew; Mon, 13 Jul 2020 05:26:08 +0000 (UTC)
+	with ESMTP id paBGrqVaX9tP; Mon, 13 Jul 2020 05:43:05 +0000 (UTC)
 Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [140.211.9.56])
-	by hemlock.osuosl.org (Postfix) with ESMTP id 1844785BA7;
-	Mon, 13 Jul 2020 05:26:08 +0000 (UTC)
+	by silver.osuosl.org (Postfix) with ESMTP id F1CE720354;
+	Mon, 13 Jul 2020 05:43:04 +0000 (UTC)
 Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
-	by lists.linuxfoundation.org (Postfix) with ESMTP id EED09C088E;
-	Mon, 13 Jul 2020 05:26:07 +0000 (UTC)
-Received: from whitealder.osuosl.org (smtp1.osuosl.org [140.211.166.138])
- by lists.linuxfoundation.org (Postfix) with ESMTP id BF252C0733
- for <iommu@lists.linux-foundation.org>; Mon, 13 Jul 2020 05:26:05 +0000 (UTC)
+	by lists.linuxfoundation.org (Postfix) with ESMTP id D89A4C088E;
+	Mon, 13 Jul 2020 05:43:04 +0000 (UTC)
+Received: from fraxinus.osuosl.org (smtp4.osuosl.org [140.211.166.137])
+ by lists.linuxfoundation.org (Postfix) with ESMTP id 32A89C0733
+ for <iommu@lists.linux-foundation.org>; Mon, 13 Jul 2020 05:43:03 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
- by whitealder.osuosl.org (Postfix) with ESMTP id A3FF388F1B
- for <iommu@lists.linux-foundation.org>; Mon, 13 Jul 2020 05:26:05 +0000 (UTC)
+ by fraxinus.osuosl.org (Postfix) with ESMTP id 28C73871C3
+ for <iommu@lists.linux-foundation.org>; Mon, 13 Jul 2020 05:43:03 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from whitealder.osuosl.org ([127.0.0.1])
+Received: from fraxinus.osuosl.org ([127.0.0.1])
  by localhost (.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
- with ESMTP id NOTWDz9LBtS7 for <iommu@lists.linux-foundation.org>;
- Mon, 13 Jul 2020 05:26:04 +0000 (UTC)
-X-Greylist: delayed 00:19:19 by SQLgrey-1.7.6
-Received: from mail-oi1-f194.google.com (mail-oi1-f194.google.com
- [209.85.167.194])
- by whitealder.osuosl.org (Postfix) with ESMTPS id E60A488F16
- for <iommu@lists.linux-foundation.org>; Mon, 13 Jul 2020 05:26:03 +0000 (UTC)
-Received: by mail-oi1-f194.google.com with SMTP id y22so10003038oie.8
- for <iommu@lists.linux-foundation.org>; Sun, 12 Jul 2020 22:26:03 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
- d=ozlabs-ru.20150623.gappssmtp.com; s=20150623;
- h=subject:to:cc:references:from:autocrypt:message-id:date:user-agent
- :mime-version:in-reply-to:content-language:content-transfer-encoding;
- bh=WViXlg1/uxOnEpre+2HgmXORmbkY4/q7j7ylo9larMo=;
- b=bkhVj8gUPflLw4qDkxP/z6b2jJ0VGtRScz/1/b8BGcXayM7EH4LgnlGvfjReS7vY+L
- gFd+Z7oALVHe/ygFeG0fbi1dhf5LYoTHHc3jMz/emDfB+K2Y6nNGTl/ioEmqtRVYf29X
- L/awGO/RLXhE3i1gYlzVGSNzRUhFY1rGXlN069jEbkRiRL3bJFlvuQ9zwISggSjIy0rm
- aR/zO69wUmNUWUpJo9+aHV3Or/bM1MQbJg+M7Syv3VyezPfIUx8CCd1xZ/B6bM4ek/NI
- c7s+iBwysQhztQduKkRH5e9vE6CBxsjSqb/FDSvk8QjH17+O3Kp4PqPMyu7gSBoq+KFg
- cFjg==
+ with ESMTP id pIsQRuCa4zfv for <iommu@lists.linux-foundation.org>;
+ Mon, 13 Jul 2020 05:43:01 +0000 (UTC)
+X-Greylist: delayed 00:05:38 by SQLgrey-1.7.6
+Received: from mail-lj1-f194.google.com (mail-lj1-f194.google.com
+ [209.85.208.194])
+ by fraxinus.osuosl.org (Postfix) with ESMTPS id E0B4E871C1
+ for <iommu@lists.linux-foundation.org>; Mon, 13 Jul 2020 05:43:00 +0000 (UTC)
+Received: by mail-lj1-f194.google.com with SMTP id b25so15277146ljp.6
+ for <iommu@lists.linux-foundation.org>; Sun, 12 Jul 2020 22:43:00 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=chromium.org; s=google;
+ h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+ :cc; bh=JZ9NBtGhK+C5WPxWTTuXRE71ybFquUFtwgSFUSFj0PQ=;
+ b=I5mH74j0x33+O0sPgotD8Ov+x9JEj3hMbYPLIByQegEOBjPBM32K858i9rvObt+Sh/
+ ocvxgOpfDHSlT2f0SKViMGJgJmwBjhMeEx2X7/DyjvXhGxiQnsOogzSeGX8zdJiObqsC
+ QjQN1y7TIoO0kt9LD+VH9awYEsgIzvu62leLI=
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
  d=1e100.net; s=20161025;
- h=x-gm-message-state:subject:to:cc:references:from:autocrypt
- :message-id:date:user-agent:mime-version:in-reply-to
- :content-language:content-transfer-encoding;
- bh=WViXlg1/uxOnEpre+2HgmXORmbkY4/q7j7ylo9larMo=;
- b=RXQqolmmRHHF6FA8AmWVEpWovtWOWG8PhWHJHwXXXs2/qhB00EU3pzedueS1MGsrUZ
- rczqUpmWw0BgixEPsKL9YAncLXx4EVUiwLfVCIMl+g5WWkdYCz0HNkx2PVCA2yMIL3E9
- X7YPRHy6URDQp+XCmbaHA2Th0b+whIJRhnSF8W68RElwR1fAX3CLK4zmgaPQCKfDoglk
- 93Okp+PJU+Nw+7hcEZnmnb62cFmxQSro6NAv+C3oue2UmL1XX75Nob6UZaBJAk76fZh+
- xXtL7prjjgNbuCDcQ/y3hj2bVsUnBOYY81cxQyQ2k7ELRPbmqlAbvw5o41z1khpWrZK/
- 7yVg==
-X-Gm-Message-State: AOAM5326dKzMRcTkF7CfyVj4HHBSYEKcQ3vjJLNMH/3sdrM1AQdxQ2uW
- UQuS190L5INOcZf7GJIbNpMKUmM0rZStMA==
-X-Google-Smtp-Source: ABdhPJw78KwMzPERI1MQjsPxNgV4AmhG1+29J0G0LkfultKuiktyGJdktjTafEiWnlddeV4RgHgvWw==
-X-Received: by 2002:a17:90a:31ce:: with SMTP id
- j14mr7330521pjf.65.1594616386235; 
- Sun, 12 Jul 2020 21:59:46 -0700 (PDT)
-Received: from [192.168.10.94] (124-171-83-152.dyn.iinet.net.au.
- [124.171.83.152])
- by smtp.gmail.com with ESMTPSA id d14sm13201702pjc.20.2020.07.12.21.59.41
- (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
- Sun, 12 Jul 2020 21:59:45 -0700 (PDT)
-Subject: Re: [PATCH 4/5] dma-mapping: add a dma_ops_bypass flag to struct
- device
-To: Christoph Hellwig <hch@lst.de>, iommu@lists.linux-foundation.org
-References: <20200708152449.316476-1-hch@lst.de>
- <20200708152449.316476-5-hch@lst.de>
-From: Alexey Kardashevskiy <aik@ozlabs.ru>
-Autocrypt: addr=aik@ozlabs.ru; keydata=
- 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
-Message-ID: <9bff7460-e6fa-f765-dcb4-cc96eb86d92c@ozlabs.ru>
-Date: Mon, 13 Jul 2020 14:59:39 +1000
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101
- Thunderbird/68.10.0
+ h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+ :message-id:subject:to:cc;
+ bh=JZ9NBtGhK+C5WPxWTTuXRE71ybFquUFtwgSFUSFj0PQ=;
+ b=XBu/KmIqUM2BaamMQ1HOr/9WNQeqS8jeuj9DBTx1F4WfH13KGnaueTwCsUoGPhQq11
+ Hz+NVSyEgr/osOA9iiK1bEEuvNV93Au41IN+0hP4eG3B95mgK5/iV308CazkBJ/r0Egw
+ HWxIGgai4hXTX44E/842PqVHFcNol8ioU1xOreThAhO0+tQywifhICwR/M79J9Z2Kba2
+ 4+ZoIdCiXf+uXD6opn5J6RK/WDzIZRaTvxvqeCnCQtNWj+CmFRo+g76i39ll8pPLxnY8
+ llMBCdiiTKE4yWOu8ApJxqtBrK7HIZiepNjiabGaieQ727lvJ3c6kPmmkjJpZTEcVkwO
+ ccew==
+X-Gm-Message-State: AOAM533IA0fEi49KOTANyYILzGJukC+a7gbnaldhFC9GsznUaSPmv/4C
+ bGl14Q2rpv8tVZjt2hMnVGsLiBhaeRdupyaK/q5MdD1m4m4=
+X-Google-Smtp-Source: ABdhPJyYL23ot1CCgoFjUvfVTWVGWF6IlrkvQ5vJIbi1guEyZhVmenhpfLkf8+Ge8qIDirvrFYO43Tu8N+jHK5yWE5A=
+X-Received: by 2002:a50:d908:: with SMTP id t8mr35579891edj.373.1594618640938; 
+ Sun, 12 Jul 2020 22:37:20 -0700 (PDT)
 MIME-Version: 1.0
-In-Reply-To: <20200708152449.316476-5-hch@lst.de>
-Content-Language: en-US
-Cc: Daniel Borkmann <daniel@iogearbox.net>,
- Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
- Robin Murphy <robin.murphy@arm.com>, linux-kernel@vger.kernel.org,
- Jesper Dangaard Brouer <brouer@redhat.com>, linuxppc-dev@lists.ozlabs.org
+References: <20200711064846.16007-1-yong.wu@mediatek.com>
+ <20200711064846.16007-5-yong.wu@mediatek.com>
+In-Reply-To: <20200711064846.16007-5-yong.wu@mediatek.com>
+From: Pi-Hsun Shih <pihsun@chromium.org>
+Date: Mon, 13 Jul 2020 13:36:45 +0800
+Message-ID: <CANdKZ0cGNy7ckzD_NAOV613o62WHdYazRRM-J8jY2-4mx_sNDA@mail.gmail.com>
+Subject: Re: [PATCH 04/21] dt-binding: mediatek: Add binding for mt8192 IOMMU
+ and SMI
+To: Yong Wu <yong.wu@mediatek.com>
+Cc: =?UTF-8?B?WW91bGluIFBlaSAo6KO05Y+L5p6XKQ==?= <youlin.pei@mediatek.com>,
+ "open list:OPEN FIRMWARE AND FLATTENED DEVICE TREE BINDINGS"
+ <devicetree@vger.kernel.org>, Nicolas Boichat <drinkcat@chromium.org>,
+ cui.zhang@mediatek.com, srv_heupstream@mediatek.com, chao.hao@mediatek.com,
+ Robin Murphy <robin.murphy@arm.com>, open list <linux-kernel@vger.kernel.org>,
+ Evan Green <evgreen@chromium.org>, Tomasz Figa <tfiga@google.com>,
+ iommu@lists.linux-foundation.org, Rob Herring <robh+dt@kernel.org>,
+ "moderated list:ARM/Mediatek SoC support" <linux-mediatek@lists.infradead.org>,
+ Matthias Brugger <matthias.bgg@gmail.com>, ming-fan.chen@mediatek.com,
+ anan.sun@mediatek.com, Will Deacon <will@kernel.org>,
+ "moderated list:ARM/Mediatek SoC support"
+ <linux-arm-kernel@lists.infradead.org>
 X-BeenThere: iommu@lists.linux-foundation.org
 X-Mailman-Version: 2.1.15
 Precedence: list
@@ -191,43 +111,94 @@ Content-Transfer-Encoding: 7bit
 Errors-To: iommu-bounces@lists.linux-foundation.org
 Sender: "iommu" <iommu-bounces@lists.linux-foundation.org>
 
-
-
-On 09/07/2020 01:24, Christoph Hellwig wrote:
-> Several IOMMU drivers have a bypass mode where they can use a direct
-> mapping if the devices DMA mask is large enough.  Add generic support
-> to the core dma-mapping code to do that to switch those drivers to
-> a common solution.
-> 
-> Signed-off-by: Christoph Hellwig <hch@lst.de>
+On Sat, Jul 11, 2020 at 2:50 PM Yong Wu <yong.wu@mediatek.com> wrote:
+>
+> This patch adds decriptions for mt8192 IOMMU and SMI.
+>
+> mt8192 also is MTK IOMMU gen2 which uses ARM Short-Descriptor translation
+> table format. The M4U-SMI HW diagram is as below:
+>
+>                           EMI
+>                            |
+>                           M4U
+>                            |
+>                       ------------
+>                        SMI Common
+>                       ------------
+>                            |
+>   +-------+------+------+----------------------+-------+
+>   |       |      |      |       ......         |       |
+>   |       |      |      |                      |       |
+> larb0   larb1  larb2  larb4     ......      larb19   larb20
+> disp0   disp1   mdp    vdec                   IPE      IPE
+>
+> All the connections are HW fixed, SW can NOT adjust it.
+>
+> mt8192 M4U support 0~16GB iova range. we preassign different engines
+> into different iova ranges:
+>
+> domain-id  module     iova-range                  larbs
+>    0       disp        0 ~ 4G                      larb0/1
+>    1       vcodec      4G ~ 8G                     larb4/5/7
+>    2       cam/mdp     8G ~ 12G             larb2/9/11/13/14/16/17/18/19/20
+>    3       CCU0    0x4000_0000 ~ 0x43ff_ffff     larb13: port 9/10
+>    4       CCU1    0x4400_0000 ~ 0x47ff_ffff     larb14: port 4/5
+>
+> The iova range for CCU0/1(camera control unit) is HW requirement.
+>
+> Signed-off-by: Yong Wu <yong.wu@mediatek.com>
 > ---
->  include/linux/device.h |  8 +++++
->  kernel/dma/Kconfig     |  8 +++++
->  kernel/dma/mapping.c   | 74 +++++++++++++++++++++++++++++-------------
->  3 files changed, 68 insertions(+), 22 deletions(-)
-> 
-> diff --git a/include/linux/device.h b/include/linux/device.h
-> index 4c4af98321ebd6..1f71acf37f78d7 100644
-> --- a/include/linux/device.h
-> +++ b/include/linux/device.h
-> @@ -523,6 +523,11 @@ struct dev_links_info {
->   *		  sync_state() callback.
->   * @dma_coherent: this particular device is dma coherent, even if the
->   *		architecture supports non-coherent devices.
-> + * @dma_ops_bypass: If set to %true then the dma_ops are bypassed for the
-> + *		streaming DMA operations (->map_* / ->unmap_* / ->sync_*),
-> + *		and optionall (if the coherent mask is large enough) also
+>  .../bindings/iommu/mediatek,iommu.txt         |   8 +-
+>  .../mediatek,smi-common.txt                   |   5 +-
+>  .../memory-controllers/mediatek,smi-larb.txt  |   3 +-
+>  include/dt-bindings/memory/mt8192-larb-port.h | 237 ++++++++++++++++++
+>  4 files changed, 247 insertions(+), 6 deletions(-)
+>  create mode 100644 include/dt-bindings/memory/mt8192-larb-port.h
+> ...
+> diff --git a/include/dt-bindings/memory/mt8192-larb-port.h b/include/dt-bindings/memory/mt8192-larb-port.h
+> new file mode 100644
+> index 000000000000..fbe0d5d50f1c
+> --- /dev/null
+> +++ b/include/dt-bindings/memory/mt8192-larb-port.h
+> ...
+> +/* larb7 */
+> +#define M4U_PORT_L7_VENC_RCPU                  MTK_M4U_DOM_ID(1, 7, 0)
+> +#define M4U_PORT_L7_VENC_REC                   MTK_M4U_DOM_ID(1, 7, 1)
+> +#define M4U_PORT_L7_VENC_BSDMA                 MTK_M4U_DOM_ID(1, 7, 2)
+> +#define M4U_PORT_L7_VENC_SV_COMV               MTK_M4U_DOM_ID(1, 7, 3)
+> +#define M4U_PORT_L7_VENC_RD_COMV               MTK_M4U_DOM_ID(1, 7, 4)
+> +#define M4U_PORT_L7_VENC_CUR_LUMA              MTK_M4U_DOM_ID(1, 7, 5)
+> +#define M4U_PORT_L7_VENC_CUR_CHROMA            MTK_M4U_DOM_ID(1, 7, 6)
+> +#define M4U_PORT_L7_VENC_REF_LUMA              MTK_M4U_DOM_ID(1, 7, 7)
+> +#define M4U_PORT_L7_VENC_REF_CHROMA            MTK_M4U_DOM_ID(1, 7, 8)
+> +#define M4U_PORT_L7_JPGENC_Y_RDMA              MTK_M4U_DOM_ID(1, 7, 9)
+> +#define M4U_PORT_L7_JPGENC_Q_RDMA              MTK_M4U_DOM_ID(1, 7, 10)
+> +#define M4U_PORT_L7_JPGENC_C_TABLE             MTK_M4U_DOM_ID(1, 7, 11)
+> +#define M4U_PORT_L7_JPGENC_BSDMA               MTK_M4U_DOM_ID(1, 7, 12)
+> +#define M4U_PORT_L7_VENC_SUB_R_LUMA            MTK_M4U_DOM_ID(1, 7, 13)
+> +#define M4U_PORT_L7_VENC_SUB_W_LUMA            MTK_M4U_DOM_ID(1, 7, 14)
+> +
 
+Small nit, /* larb8: null */ is missing here.
 
-s/optionall/optional/g
-
-Otherwise the series looks good and works well on powernv and pseries.
-Thanks,
-
-
-
--- 
-Alexey
+> +/* larb9 */
+> +#define M4U_PORT_L9_IMG_IMGI_D1                        MTK_M4U_DOM_ID(2, 9, 0)
+> +#define M4U_PORT_L9_IMG_IMGBI_D1               MTK_M4U_DOM_ID(2, 9, 1)
+> +#define M4U_PORT_L9_IMG_DMGI_D1                        MTK_M4U_DOM_ID(2, 9, 2)
+> +#define M4U_PORT_L9_IMG_DEPI_D1                        MTK_M4U_DOM_ID(2, 9, 3)
+> +#define M4U_PORT_L9_IMG_ICE_D1                 MTK_M4U_DOM_ID(2, 9, 4)
+> +#define M4U_PORT_L9_IMG_SMTI_D1                        MTK_M4U_DOM_ID(2, 9, 5)
+> +#define M4U_PORT_L9_IMG_SMTO_D2                        MTK_M4U_DOM_ID(2, 9, 6)
+> +#define M4U_PORT_L9_IMG_SMTO_D1                        MTK_M4U_DOM_ID(2, 9, 7)
+> +#define M4U_PORT_L9_IMG_CRZO_D1                        MTK_M4U_DOM_ID(2, 9, 8)
+> +#define M4U_PORT_L9_IMG_IMG3O_D1               MTK_M4U_DOM_ID(2, 9, 9)
+> +#define M4U_PORT_L9_IMG_VIPI_D1                        MTK_M4U_DOM_ID(2, 9, 10)
+> +#define M4U_PORT_L9_IMG_SMTI_D5                        MTK_M4U_DOM_ID(2, 9, 11)
+> +#define M4U_PORT_L9_IMG_TIMGO_D1               MTK_M4U_DOM_ID(2, 9, 12)
+> +#define M4U_PORT_L9_IMG_UFBC_W0                        MTK_M4U_DOM_ID(2, 9, 13)
+> +#define M4U_PORT_L9_IMG_UFBC_R0                        MTK_M4U_DOM_ID(2, 9, 14)
+> +
+> ...
 _______________________________________________
 iommu mailing list
 iommu@lists.linux-foundation.org
