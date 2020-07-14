@@ -2,64 +2,94 @@ Return-Path: <SRS0=v902=AZ=lists.linux-foundation.org=iommu-bounces@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-13.0 required=3.0 tests=BAYES_00,
-	HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_PATCH,MAILING_LIST_MULTI,SIGNED_OFF_BY,
-	SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED,USER_AGENT_GIT autolearn=unavailable
-	autolearn_force=no version=3.4.0
+X-Spam-Status: No, score=-4.0 required=3.0 tests=BAYES_00,
+	HEADER_FROM_DIFFERENT_DOMAINS,MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS,
+	URIBL_BLOCKED autolearn=no autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 596F9C433E5
-	for <iommu@archiver.kernel.org>; Tue, 14 Jul 2020 11:59:38 +0000 (UTC)
-Received: from fraxinus.osuosl.org (smtp4.osuosl.org [140.211.166.137])
+	by smtp.lore.kernel.org (Postfix) with ESMTP id B025AC433F1
+	for <iommu@archiver.kernel.org>; Tue, 14 Jul 2020 12:39:58 +0000 (UTC)
+Received: from whitealder.osuosl.org (smtp1.osuosl.org [140.211.166.138])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by mail.kernel.org (Postfix) with ESMTPS id 0D32B22224
-	for <iommu@archiver.kernel.org>; Tue, 14 Jul 2020 11:59:37 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 0D32B22224
-Authentication-Results: mail.kernel.org; dmarc=none (p=none dis=none) header.from=arm.com
+	by mail.kernel.org (Postfix) with ESMTPS id 7694D22453
+	for <iommu@archiver.kernel.org>; Tue, 14 Jul 2020 12:39:58 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 7694D22453
+Authentication-Results: mail.kernel.org; dmarc=none (p=none dis=none) header.from=linux-m68k.org
 Authentication-Results: mail.kernel.org; spf=pass smtp.mailfrom=iommu-bounces@lists.linux-foundation.org
 Received: from localhost (localhost [127.0.0.1])
-	by fraxinus.osuosl.org (Postfix) with ESMTP id BE41C883C2;
-	Tue, 14 Jul 2020 11:59:37 +0000 (UTC)
+	by whitealder.osuosl.org (Postfix) with ESMTP id 19DD189F0A;
+	Tue, 14 Jul 2020 12:39:58 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from fraxinus.osuosl.org ([127.0.0.1])
+Received: from whitealder.osuosl.org ([127.0.0.1])
 	by localhost (.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
-	with ESMTP id k4Pc0JAKySLI; Tue, 14 Jul 2020 11:59:36 +0000 (UTC)
+	with ESMTP id UDi6dGhTslLb; Tue, 14 Jul 2020 12:39:56 +0000 (UTC)
 Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [140.211.9.56])
-	by fraxinus.osuosl.org (Postfix) with ESMTP id 083D888371;
-	Tue, 14 Jul 2020 11:59:36 +0000 (UTC)
+	by whitealder.osuosl.org (Postfix) with ESMTP id 267AF89EF8;
+	Tue, 14 Jul 2020 12:39:56 +0000 (UTC)
 Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
-	by lists.linuxfoundation.org (Postfix) with ESMTP id CC207C0891;
-	Tue, 14 Jul 2020 11:59:35 +0000 (UTC)
-Received: from fraxinus.osuosl.org (smtp4.osuosl.org [140.211.166.137])
- by lists.linuxfoundation.org (Postfix) with ESMTP id CA7E3C0733
- for <iommu@lists.linux-foundation.org>; Tue, 14 Jul 2020 11:59:34 +0000 (UTC)
+	by lists.linuxfoundation.org (Postfix) with ESMTP id 10D56C0888;
+	Tue, 14 Jul 2020 12:39:56 +0000 (UTC)
+Received: from hemlock.osuosl.org (smtp2.osuosl.org [140.211.166.133])
+ by lists.linuxfoundation.org (Postfix) with ESMTP id 653D3C0733
+ for <iommu@lists.linux-foundation.org>; Tue, 14 Jul 2020 12:39:54 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
- by fraxinus.osuosl.org (Postfix) with ESMTP id B618B883A6
- for <iommu@lists.linux-foundation.org>; Tue, 14 Jul 2020 11:59:34 +0000 (UTC)
+ by hemlock.osuosl.org (Postfix) with ESMTP id 4BD838A27B
+ for <iommu@lists.linux-foundation.org>; Tue, 14 Jul 2020 12:39:54 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from fraxinus.osuosl.org ([127.0.0.1])
+Received: from hemlock.osuosl.org ([127.0.0.1])
  by localhost (.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
- with ESMTP id HnH1lJfP5yzt for <iommu@lists.linux-foundation.org>;
- Tue, 14 Jul 2020 11:59:33 +0000 (UTC)
+ with ESMTP id fSM50PDn11oV for <iommu@lists.linux-foundation.org>;
+ Tue, 14 Jul 2020 12:39:51 +0000 (UTC)
 X-Greylist: domain auto-whitelisted by SQLgrey-1.7.6
-Received: from foss.arm.com (foss.arm.com [217.140.110.172])
- by fraxinus.osuosl.org (Postfix) with ESMTP id 8A6E988371
- for <iommu@lists.linux-foundation.org>; Tue, 14 Jul 2020 11:59:33 +0000 (UTC)
-Received: from usa-sjc-imap-foss1.foss.arm.com (unknown [10.121.207.14])
- by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id D97231FB;
- Tue, 14 Jul 2020 04:59:32 -0700 (PDT)
-Received: from e121345-lin.cambridge.arm.com (e121345-lin.cambridge.arm.com
- [10.1.196.37])
- by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPA id 4E01D3F73D;
- Tue, 14 Jul 2020 04:59:32 -0700 (PDT)
-From: Robin Murphy <robin.murphy@arm.com>
-To: joro@8bytes.org
-Subject: [PATCH v2] iommu/exynos: Rename update_pte()
-Date: Tue, 14 Jul 2020 12:59:28 +0100
-Message-Id: <829bb5dc18e734870b75db673ddce86e7e37fc73.1594727968.git.robin.murphy@arm.com>
-X-Mailer: git-send-email 2.26.2.dirty
+Received: from mail-ot1-f68.google.com (mail-ot1-f68.google.com
+ [209.85.210.68])
+ by hemlock.osuosl.org (Postfix) with ESMTPS id 4C15F8A279
+ for <iommu@lists.linux-foundation.org>; Tue, 14 Jul 2020 12:39:51 +0000 (UTC)
+Received: by mail-ot1-f68.google.com with SMTP id 5so12866563oty.11
+ for <iommu@lists.linux-foundation.org>; Tue, 14 Jul 2020 05:39:51 -0700 (PDT)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+ d=1e100.net; s=20161025;
+ h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+ :message-id:subject:to:cc;
+ bh=1gkM+uPTnitshLBuV08goagb6Ra5DyU+s9EwRHXtZeQ=;
+ b=Za5qYW1pV1a1PbxqLnfNQ+0pt2c6C+7+bcsD0ea440qQcwRdFRbQ9Fu7hZsU4e/3hD
+ MDi6pMQNgmWafnyWIjjaihEbgBnegRhHfs4sG5lh/j+DwNVcK8fkjMCJNhIMH90qUg1g
+ z66AGe3ES3xMIY8hevllRt1zjIkKmUv5YJawfnxK5gMcQCX8e3cO35+R3pf8uaOcH0vd
+ tPGaJ6CEYrgHlURpSN1Gli18xglM+DU8GnmWdizYUGy7DXPkf1BSmPn/n8GfOo8e7J5t
+ pOahdMNqDX03uJyj3yxaTezzjeYeO2xUAagXQyxdU7n9vaKONuRDONqUuanExvNU0sQo
+ WuSA==
+X-Gm-Message-State: AOAM533D0tYcxQhDC8ViXXurVmS/Q5gtDhOiXPKuVhpBcaBg7B641Kc4
+ Is9gno4KycVjrlTz014vzEKYQSrrHfkX7HIjAlc=
+X-Google-Smtp-Source: ABdhPJwQEGIYICCEl9+rMfVmtnnA3KEy1Oav7DAM0WyYTDfpBWgrg5GEkZrfN+c/weUUf5GnvXRjVxzrNetFysb/vow=
+X-Received: by 2002:a9d:2646:: with SMTP id a64mr3637009otb.107.1594730390491; 
+ Tue, 14 Jul 2020 05:39:50 -0700 (PDT)
 MIME-Version: 1.0
-Cc: iommu@lists.linux-foundation.org
+References: <1594676120-5862-1-git-send-email-prabhakar.mahadev-lad.rj@bp.renesas.com>
+ <1594676120-5862-3-git-send-email-prabhakar.mahadev-lad.rj@bp.renesas.com>
+ <CAMuHMdV4zzrk_=-2Cmgq8=PKTeU457iveJ58gYekJ-Z8SXqaCQ@mail.gmail.com>
+ <CA+V-a8tB0mA17f51GMQQ-Cj_CUXze_JjTahrpoAtmwuOFHQV6g@mail.gmail.com>
+ <CAMuHMdXM3qf266exJtJrN0XAogEsJoM-k3FON9CjX+stLpuMFA@mail.gmail.com>
+ <TY2PR01MB3692A868DD4E67D770C610E3D8610@TY2PR01MB3692.jpnprd01.prod.outlook.com>
+In-Reply-To: <TY2PR01MB3692A868DD4E67D770C610E3D8610@TY2PR01MB3692.jpnprd01.prod.outlook.com>
+From: Geert Uytterhoeven <geert@linux-m68k.org>
+Date: Tue, 14 Jul 2020 14:39:39 +0200
+Message-ID: <CAMuHMdUry12MnLvVgmd7NJ+Gv4mA86qKKfsQobP1o-ohzKm=RQ@mail.gmail.com>
+Subject: Re: [PATCH 2/9] iommu/ipmmu-vmsa: Hook up R8A774E1 DT matching code
+To: Yoshihiro Shimoda <yoshihiro.shimoda.uh@renesas.com>
+Cc: "open list:OPEN FIRMWARE AND FLATTENED DEVICE TREE BINDINGS"
+ <devicetree@vger.kernel.org>, "David S. Miller" <davem@davemloft.net>,
+ netdev <netdev@vger.kernel.org>, Linus Walleij <linus.walleij@linaro.org>,
+ Sergei Shtylyov <sergei.shtylyov@gmail.com>,
+ Magnus Damm <magnus.damm@gmail.com>, "Lad,
+ Prabhakar" <prabhakar.csengg@gmail.com>,
+ Linux IOMMU <iommu@lists.linux-foundation.org>,
+ Prabhakar Mahadev Lad <prabhakar.mahadev-lad.rj@bp.renesas.com>,
+ Linux-Renesas <linux-renesas-soc@vger.kernel.org>,
+ Bartosz Golaszewski <bgolaszewski@baylibre.com>, Vinod Koul <vkoul@kernel.org>,
+ Rob Herring <robh+dt@kernel.org>,
+ "open list:GPIO SUBSYSTEM" <linux-gpio@vger.kernel.org>,
+ dmaengine <dmaengine@vger.kernel.org>, Jakub Kicinski <kuba@kernel.org>,
+ Linux Kernel Mailing List <linux-kernel@vger.kernel.org>
 X-BeenThere: iommu@lists.linux-foundation.org
 X-Mailman-Version: 2.1.15
 Precedence: list
@@ -77,81 +107,55 @@ Content-Transfer-Encoding: 7bit
 Errors-To: iommu-bounces@lists.linux-foundation.org
 Sender: "iommu" <iommu-bounces@lists.linux-foundation.org>
 
-The name "update_pte" is a little too generic, and can end up clashing
-with architecture pagetable code leaked out of common mm headers. Rename
-it to something more appropriately namespaced.
+Hi Shimoda-san,
 
-Reported-by: kernel test robot <lkp@intel.com>
-Acked-by: Marek Szyprowski <m.szyprowski@samsung.com>
-Signed-off-by: Robin Murphy <robin.murphy@arm.com>
+On Tue, Jul 14, 2020 at 1:42 PM Yoshihiro Shimoda
+<yoshihiro.shimoda.uh@renesas.com> wrote:
+> > From: Geert Uytterhoeven, Sent: Tuesday, July 14, 2020 5:42 PM
+> > On Tue, Jul 14, 2020 at 10:30 AM Lad, Prabhakar
+> > <prabhakar.csengg@gmail.com> wrote:
+> > > On Tue, Jul 14, 2020 at 9:09 AM Geert Uytterhoeven <geert@linux-m68k.org> wrote:
+> > > > On Mon, Jul 13, 2020 at 11:35 PM Lad Prabhakar
+> > > Also the recent patch to add
+> > > "r8a77961" just adds to soc_rcar_gen3_whitelist.
+> >
+> > Oops, commit 17fe16181639801b ("iommu/renesas: Add support for r8a77961")
+> > did it wrong, too.
+>
+> Thank you for the point it out. We should add r8a77961 to the soc_rcar_gen3[].
+> However, I don't know why I could not realize this issue...
+> So, I investigated this a little and then, IIUC, glob_match() which
+> soc_device_match() uses seems to return true, if *pat = "r8a7796" and *str = "r8a77961".
 
----
-v2: fix typo - thanks Marek!
----
- drivers/iommu/exynos-iommu.c | 12 ++++++------
- 1 file changed, 6 insertions(+), 6 deletions(-)
+Are you sure about this?
+I enabled CONFIG_GLOB_SELFTEST, and globtest succeeded.
+It does test glob_match("a", "aa"), which is a similar test.
 
-diff --git a/drivers/iommu/exynos-iommu.c b/drivers/iommu/exynos-iommu.c
-index 60c8a56e4a3f..75cdd37fae38 100644
---- a/drivers/iommu/exynos-iommu.c
-+++ b/drivers/iommu/exynos-iommu.c
-@@ -721,7 +721,7 @@ static struct platform_driver exynos_sysmmu_driver __refdata = {
- 	}
- };
- 
--static inline void update_pte(sysmmu_pte_t *ent, sysmmu_pte_t val)
-+static inline void exynos_iommu_set_pte(sysmmu_pte_t *ent, sysmmu_pte_t val)
- {
- 	dma_sync_single_for_cpu(dma_dev, virt_to_phys(ent), sizeof(*ent),
- 				DMA_TO_DEVICE);
-@@ -933,7 +933,7 @@ static sysmmu_pte_t *alloc_lv2entry(struct exynos_iommu_domain *domain,
- 		if (!pent)
- 			return ERR_PTR(-ENOMEM);
- 
--		update_pte(sent, mk_lv1ent_page(virt_to_phys(pent)));
-+		exynos_iommu_set_pte(sent, mk_lv1ent_page(virt_to_phys(pent)));
- 		kmemleak_ignore(pent);
- 		*pgcounter = NUM_LV2ENTRIES;
- 		handle = dma_map_single(dma_dev, pent, LV2TABLE_SIZE,
-@@ -994,7 +994,7 @@ static int lv1set_section(struct exynos_iommu_domain *domain,
- 		*pgcnt = 0;
- 	}
- 
--	update_pte(sent, mk_lv1ent_sect(paddr, prot));
-+	exynos_iommu_set_pte(sent, mk_lv1ent_sect(paddr, prot));
- 
- 	spin_lock(&domain->lock);
- 	if (lv1ent_page_zero(sent)) {
-@@ -1018,7 +1018,7 @@ static int lv2set_page(sysmmu_pte_t *pent, phys_addr_t paddr, size_t size,
- 		if (WARN_ON(!lv2ent_fault(pent)))
- 			return -EADDRINUSE;
- 
--		update_pte(pent, mk_lv2ent_spage(paddr, prot));
-+		exynos_iommu_set_pte(pent, mk_lv2ent_spage(paddr, prot));
- 		*pgcnt -= 1;
- 	} else { /* size == LPAGE_SIZE */
- 		int i;
-@@ -1150,7 +1150,7 @@ static size_t exynos_iommu_unmap(struct iommu_domain *iommu_domain,
- 		}
- 
- 		/* workaround for h/w bug in System MMU v3.3 */
--		update_pte(ent, ZERO_LV2LINK);
-+		exynos_iommu_set_pte(ent, ZERO_LV2LINK);
- 		size = SECT_SIZE;
- 		goto done;
- 	}
-@@ -1171,7 +1171,7 @@ static size_t exynos_iommu_unmap(struct iommu_domain *iommu_domain,
- 	}
- 
- 	if (lv2ent_small(ent)) {
--		update_pte(ent, 0);
-+		exynos_iommu_set_pte(ent, 0);
- 		size = SPAGE_SIZE;
- 		domain->lv2entcnt[lv1ent_offset(iova)] += 1;
- 		goto done;
+To be 100% sure, I added:
+
+--- a/lib/globtest.c
++++ b/lib/globtest.c
+@@ -59,6 +59,7 @@ static char const glob_tests[] __initconst =
+        "1" "a\0" "a\0"
+        "0" "a\0" "b\0"
+        "0" "a\0" "aa\0"
++       "0" "r8a7796\0" "r8a77961\0"
+        "0" "a\0" "\0"
+        "1" "\0" "\0"
+        "0" "\0" "a\0"
+
+and it still succeeded.
+
+Gr{oetje,eeting}s,
+
+                        Geert
+
 -- 
-2.26.2.dirty
+Geert Uytterhoeven -- There's lots of Linux beyond ia32 -- geert@linux-m68k.org
 
+In personal conversations with technical people, I call myself a hacker. But
+when I'm talking to journalists I just say "programmer" or something like that.
+                                -- Linus Torvalds
 _______________________________________________
 iommu mailing list
 iommu@lists.linux-foundation.org
