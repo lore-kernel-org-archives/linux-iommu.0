@@ -2,69 +2,90 @@ Return-Path: <SRS0=v902=AZ=lists.linux-foundation.org=iommu-bounces@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-11.5 required=3.0 tests=BAYES_00,
-	HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_PATCH,MAILING_LIST_MULTI,SIGNED_OFF_BY,
-	SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED,USER_AGENT_SANE_1 autolearn=unavailable
-	autolearn_force=no version=3.4.0
+X-Spam-Status: No, score=-7.0 required=3.0 tests=BAYES_00,
+	HEADER_FROM_DIFFERENT_DOMAINS,MAILING_LIST_MULTI,SIGNED_OFF_BY,SPF_HELO_NONE,
+	SPF_PASS,URIBL_BLOCKED autolearn=no autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id E85C3C433DF
-	for <iommu@archiver.kernel.org>; Tue, 14 Jul 2020 07:08:06 +0000 (UTC)
-Received: from fraxinus.osuosl.org (smtp4.osuosl.org [140.211.166.137])
+	by smtp.lore.kernel.org (Postfix) with ESMTP id DF4F1C433EB
+	for <iommu@archiver.kernel.org>; Tue, 14 Jul 2020 07:35:38 +0000 (UTC)
+Received: from whitealder.osuosl.org (smtp1.osuosl.org [140.211.166.138])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by mail.kernel.org (Postfix) with ESMTPS id BA772221FD
-	for <iommu@archiver.kernel.org>; Tue, 14 Jul 2020 07:08:06 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org BA772221FD
-Authentication-Results: mail.kernel.org; dmarc=none (p=none dis=none) header.from=lst.de
+	by mail.kernel.org (Postfix) with ESMTPS id B129D207BB
+	for <iommu@archiver.kernel.org>; Tue, 14 Jul 2020 07:35:38 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org B129D207BB
+Authentication-Results: mail.kernel.org; dmarc=none (p=none dis=none) header.from=linux-m68k.org
 Authentication-Results: mail.kernel.org; spf=pass smtp.mailfrom=iommu-bounces@lists.linux-foundation.org
 Received: from localhost (localhost [127.0.0.1])
-	by fraxinus.osuosl.org (Postfix) with ESMTP id 713DF891FA;
-	Tue, 14 Jul 2020 07:08:06 +0000 (UTC)
-X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from fraxinus.osuosl.org ([127.0.0.1])
-	by localhost (.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
-	with ESMTP id PANEKhG4ahQN; Tue, 14 Jul 2020 07:08:05 +0000 (UTC)
-Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [140.211.9.56])
-	by fraxinus.osuosl.org (Postfix) with ESMTP id C0B9788F8D;
-	Tue, 14 Jul 2020 07:08:05 +0000 (UTC)
-Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
-	by lists.linuxfoundation.org (Postfix) with ESMTP id 9982FC088E;
-	Tue, 14 Jul 2020 07:08:05 +0000 (UTC)
-Received: from whitealder.osuosl.org (smtp1.osuosl.org [140.211.166.138])
- by lists.linuxfoundation.org (Postfix) with ESMTP id 830EEC0733
- for <iommu@lists.linux-foundation.org>; Tue, 14 Jul 2020 07:08:03 +0000 (UTC)
-Received: from localhost (localhost [127.0.0.1])
- by whitealder.osuosl.org (Postfix) with ESMTP id 7CD448A9A9
- for <iommu@lists.linux-foundation.org>; Tue, 14 Jul 2020 07:08:03 +0000 (UTC)
+	by whitealder.osuosl.org (Postfix) with ESMTP id 9CAC28AF72;
+	Tue, 14 Jul 2020 07:35:38 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
 Received: from whitealder.osuosl.org ([127.0.0.1])
+	by localhost (.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
+	with ESMTP id SrnYF6oIaYfv; Tue, 14 Jul 2020 07:35:37 +0000 (UTC)
+Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [140.211.9.56])
+	by whitealder.osuosl.org (Postfix) with ESMTP id A8E238AF6D;
+	Tue, 14 Jul 2020 07:35:37 +0000 (UTC)
+Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
+	by lists.linuxfoundation.org (Postfix) with ESMTP id A222FC0888;
+	Tue, 14 Jul 2020 07:35:37 +0000 (UTC)
+Received: from hemlock.osuosl.org (smtp2.osuosl.org [140.211.166.133])
+ by lists.linuxfoundation.org (Postfix) with ESMTP id CA7E9C0733
+ for <iommu@lists.linux-foundation.org>; Tue, 14 Jul 2020 07:35:35 +0000 (UTC)
+Received: from localhost (localhost [127.0.0.1])
+ by hemlock.osuosl.org (Postfix) with ESMTP id B6FB98AA21
+ for <iommu@lists.linux-foundation.org>; Tue, 14 Jul 2020 07:35:35 +0000 (UTC)
+X-Virus-Scanned: amavisd-new at osuosl.org
+Received: from hemlock.osuosl.org ([127.0.0.1])
  by localhost (.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
- with ESMTP id o4RselPekQMD for <iommu@lists.linux-foundation.org>;
- Tue, 14 Jul 2020 07:08:02 +0000 (UTC)
-X-Greylist: from auto-whitelisted by SQLgrey-1.7.6
-Received: from verein.lst.de (verein.lst.de [213.95.11.211])
- by whitealder.osuosl.org (Postfix) with ESMTPS id DEC718A9A5
- for <iommu@lists.linux-foundation.org>; Tue, 14 Jul 2020 07:08:01 +0000 (UTC)
-Received: by verein.lst.de (Postfix, from userid 2407)
- id DFC6868CFC; Tue, 14 Jul 2020 09:07:57 +0200 (CEST)
-Date: Tue, 14 Jul 2020 09:07:57 +0200
-From: Christoph Hellwig <hch@lst.de>
-To: Alexey Kardashevskiy <aik@ozlabs.ru>
-Subject: Re: [PATCH 4/5] dma-mapping: add a dma_ops_bypass flag to struct
- device
-Message-ID: <20200714070757.GA776@lst.de>
-References: <20200708152449.316476-1-hch@lst.de>
- <20200708152449.316476-5-hch@lst.de>
- <9bff7460-e6fa-f765-dcb4-cc96eb86d92c@ozlabs.ru>
+ with ESMTP id 6a7hXmebFFU5 for <iommu@lists.linux-foundation.org>;
+ Tue, 14 Jul 2020 07:35:34 +0000 (UTC)
+X-Greylist: domain auto-whitelisted by SQLgrey-1.7.6
+Received: from mail-ot1-f67.google.com (mail-ot1-f67.google.com
+ [209.85.210.67])
+ by hemlock.osuosl.org (Postfix) with ESMTPS id 7B5908AA1F
+ for <iommu@lists.linux-foundation.org>; Tue, 14 Jul 2020 07:35:34 +0000 (UTC)
+Received: by mail-ot1-f67.google.com with SMTP id h1so12281323otq.12
+ for <iommu@lists.linux-foundation.org>; Tue, 14 Jul 2020 00:35:34 -0700 (PDT)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+ d=1e100.net; s=20161025;
+ h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+ :message-id:subject:to:cc;
+ bh=NZcIe/n8EL1l/9gxEVLtkEGOYa9jYbE3R0xJVcLLVWo=;
+ b=BH47jE5qYFNsxrm94uj98EH/X4g07Q3nxVH2Lmrx1BGMbu+mxC8UT3f7jDZiYsNPHF
+ u+klDg09JUc2AcDppBQOs81BwvgG6iaXPnu1U57ETl24qvd/t+8AMunjOMSRoNM/Hum7
+ GKSrEK2/h/uRd7tYGRQazHyuvV1nm2cybFLpID31vb3wjQIYO1+KdSBlu/IWD9gaVXZU
+ 3Eg9D8aaJebqujk7PN0DC2WoYiDrL0DnxQp30udQKxEEhkqFGEnBfqyZrqenxNK75k1i
+ vBOqMFxEDSy0NDWj81kIlWd5+uLPS0K9qi4Dg2D8GwvZySh4lFrCngtzdTHIBI6I5ybk
+ t0Hw==
+X-Gm-Message-State: AOAM533eGBT1t29MWk51V7qW+dLwCaZmlT9+af5n9SgPNmmYxSML/YZx
+ A7ByJFajdfpB+TpGRV/VXQLGODXP1uqy7IehHbE=
+X-Google-Smtp-Source: ABdhPJzA6FPp5jleEWzm/FeVEe/oRoGYj9B6NSxQuasfiLs2MoznFs7U6TgH+op0h6Q480AB2MO5mvvOiAIGabzifls=
+X-Received: by 2002:a9d:2646:: with SMTP id a64mr2793065otb.107.1594712133696; 
+ Tue, 14 Jul 2020 00:35:33 -0700 (PDT)
 MIME-Version: 1.0
-Content-Disposition: inline
-In-Reply-To: <9bff7460-e6fa-f765-dcb4-cc96eb86d92c@ozlabs.ru>
-User-Agent: Mutt/1.5.17 (2007-11-01)
-Cc: Daniel Borkmann <daniel@iogearbox.net>,
- Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
- Robin Murphy <robin.murphy@arm.com>, linux-kernel@vger.kernel.org,
- iommu@lists.linux-foundation.org, Jesper Dangaard Brouer <brouer@redhat.com>,
- linuxppc-dev@lists.ozlabs.org, Christoph Hellwig <hch@lst.de>
+References: <1594676120-5862-1-git-send-email-prabhakar.mahadev-lad.rj@bp.renesas.com>
+ <1594676120-5862-2-git-send-email-prabhakar.mahadev-lad.rj@bp.renesas.com>
+In-Reply-To: <1594676120-5862-2-git-send-email-prabhakar.mahadev-lad.rj@bp.renesas.com>
+From: Geert Uytterhoeven <geert@linux-m68k.org>
+Date: Tue, 14 Jul 2020 09:35:22 +0200
+Message-ID: <CAMuHMdX2w+N4=UNEbK_yELvgs0BZ4rXM=QdAwvgWbZokHN+s0Q@mail.gmail.com>
+Subject: Re: [PATCH 1/9] dt-bindings: iommu: renesas,
+ ipmmu-vmsa: Add r8a774e1 support
+To: Lad Prabhakar <prabhakar.mahadev-lad.rj@bp.renesas.com>
+Cc: "open list:OPEN FIRMWARE AND FLATTENED DEVICE TREE BINDINGS"
+ <devicetree@vger.kernel.org>,
+ "open list:GPIO SUBSYSTEM" <linux-gpio@vger.kernel.org>,
+ netdev <netdev@vger.kernel.org>, Linus Walleij <linus.walleij@linaro.org>,
+ Sergei Shtylyov <sergei.shtylyov@gmail.com>,
+ Magnus Damm <magnus.damm@gmail.com>,
+ Linux IOMMU <iommu@lists.linux-foundation.org>,
+ "David S. Miller" <davem@davemloft.net>,
+ Linux-Renesas <linux-renesas-soc@vger.kernel.org>,
+ Bartosz Golaszewski <bgolaszewski@baylibre.com>, Vinod Koul <vkoul@kernel.org>,
+ Rob Herring <robh+dt@kernel.org>, Prabhakar <prabhakar.csengg@gmail.com>,
+ dmaengine <dmaengine@vger.kernel.org>, Jakub Kicinski <kuba@kernel.org>,
+ Linux Kernel Mailing List <linux-kernel@vger.kernel.org>
 X-BeenThere: iommu@lists.linux-foundation.org
 X-Mailman-Version: 2.1.15
 Precedence: list
@@ -82,41 +103,43 @@ Content-Transfer-Encoding: 7bit
 Errors-To: iommu-bounces@lists.linux-foundation.org
 Sender: "iommu" <iommu-bounces@lists.linux-foundation.org>
 
-On Mon, Jul 13, 2020 at 02:59:39PM +1000, Alexey Kardashevskiy wrote:
-> 
-> 
-> On 09/07/2020 01:24, Christoph Hellwig wrote:
-> > Several IOMMU drivers have a bypass mode where they can use a direct
-> > mapping if the devices DMA mask is large enough.  Add generic support
-> > to the core dma-mapping code to do that to switch those drivers to
-> > a common solution.
-> > 
-> > Signed-off-by: Christoph Hellwig <hch@lst.de>
-> > ---
-> >  include/linux/device.h |  8 +++++
-> >  kernel/dma/Kconfig     |  8 +++++
-> >  kernel/dma/mapping.c   | 74 +++++++++++++++++++++++++++++-------------
-> >  3 files changed, 68 insertions(+), 22 deletions(-)
-> > 
-> > diff --git a/include/linux/device.h b/include/linux/device.h
-> > index 4c4af98321ebd6..1f71acf37f78d7 100644
-> > --- a/include/linux/device.h
-> > +++ b/include/linux/device.h
-> > @@ -523,6 +523,11 @@ struct dev_links_info {
-> >   *		  sync_state() callback.
-> >   * @dma_coherent: this particular device is dma coherent, even if the
-> >   *		architecture supports non-coherent devices.
-> > + * @dma_ops_bypass: If set to %true then the dma_ops are bypassed for the
-> > + *		streaming DMA operations (->map_* / ->unmap_* / ->sync_*),
-> > + *		and optionall (if the coherent mask is large enough) also
-> 
-> 
-> s/optionall/optional/g
-> 
-> Otherwise the series looks good and works well on powernv and pseries.
-> Thanks,
+Hi Prabhakar,
 
-Can you give a formal ACK?
+On Mon, Jul 13, 2020 at 11:35 PM Lad Prabhakar
+<prabhakar.mahadev-lad.rj@bp.renesas.com> wrote:
+> Document RZ/G2H (R8A774E1) SoC bindings.
+>
+> Signed-off-by: Lad Prabhakar <prabhakar.mahadev-lad.rj@bp.renesas.com>
+
+Thanks for your patch!
+
+> --- a/Documentation/devicetree/bindings/iommu/renesas,ipmmu-vmsa.yaml
+> +++ b/Documentation/devicetree/bindings/iommu/renesas,ipmmu-vmsa.yaml
+> @@ -32,6 +32,7 @@ properties:
+>            - enum:
+>                - renesas,ipmmu-r8a774a1 # RZ/G2M
+>                - renesas,ipmmu-r8a774b1 # RZ/G2N
+> +              - renesas,ipmmu-r8a774e1 # RZ/G2H
+>                - renesas,ipmmu-r8a774c0 # RZ/G2E
+
+Please preserve alphabetical sort order.
+
+>                - renesas,ipmmu-r8a7795  # R-Car H3
+>                - renesas,ipmmu-r8a7796  # R-Car M3-W
+
+With the above fixed:
+Reviewed-by: Geert Uytterhoeven <geert+renesas@glider.be>
+
+Gr{oetje,eeting}s,
+
+                        Geert
+
+-- 
+Geert Uytterhoeven -- There's lots of Linux beyond ia32 -- geert@linux-m68k.org
+
+In personal conversations with technical people, I call myself a hacker. But
+when I'm talking to journalists I just say "programmer" or something like that.
+                                -- Linus Torvalds
 _______________________________________________
 iommu mailing list
 iommu@lists.linux-foundation.org
