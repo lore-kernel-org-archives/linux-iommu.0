@@ -2,83 +2,89 @@ Return-Path: <SRS0=xM8W=A2=lists.linux-foundation.org=iommu-bounces@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-11.5 required=3.0 tests=BAYES_00,
-	HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_PATCH,MAILING_LIST_MULTI,SIGNED_OFF_BY,
-	SPF_HELO_NONE,SPF_PASS,USER_AGENT_SANE_2 autolearn=unavailable
-	autolearn_force=no version=3.4.0
+X-Spam-Status: No, score=-5.3 required=3.0 tests=BAYES_00,DKIM_INVALID,
+	DKIM_SIGNED,MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS,USER_AGENT_SANE_1
+	autolearn=no autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id D65D9C433E7
-	for <iommu@archiver.kernel.org>; Wed, 15 Jul 2020 15:54:40 +0000 (UTC)
-Received: from silver.osuosl.org (smtp3.osuosl.org [140.211.166.136])
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 7595BC433E1
+	for <iommu@archiver.kernel.org>; Wed, 15 Jul 2020 17:06:05 +0000 (UTC)
+Received: from hemlock.osuosl.org (smtp2.osuosl.org [140.211.166.133])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by mail.kernel.org (Postfix) with ESMTPS id A606220658
-	for <iommu@archiver.kernel.org>; Wed, 15 Jul 2020 15:54:40 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org A606220658
-Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=linux.intel.com
+	by mail.kernel.org (Postfix) with ESMTPS id 3C23E2065F
+	for <iommu@archiver.kernel.org>; Wed, 15 Jul 2020 17:06:05 +0000 (UTC)
+Authentication-Results: mail.kernel.org;
+	dkim=fail reason="signature verification failed" (1024-bit key) header.d=kernel.org header.i=@kernel.org header.b="CBPLDZ0a"
+DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 3C23E2065F
+Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=kernel.org
 Authentication-Results: mail.kernel.org; spf=pass smtp.mailfrom=iommu-bounces@lists.linux-foundation.org
 Received: from localhost (localhost [127.0.0.1])
-	by silver.osuosl.org (Postfix) with ESMTP id 647EF20479;
-	Wed, 15 Jul 2020 15:54:40 +0000 (UTC)
+	by hemlock.osuosl.org (Postfix) with ESMTP id 3C8248AEA7;
+	Wed, 15 Jul 2020 17:06:04 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from silver.osuosl.org ([127.0.0.1])
+Received: from hemlock.osuosl.org ([127.0.0.1])
 	by localhost (.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
-	with ESMTP id zWVR1iwJksJl; Wed, 15 Jul 2020 15:54:37 +0000 (UTC)
+	with ESMTP id w+VKKtrZigoF; Wed, 15 Jul 2020 17:06:03 +0000 (UTC)
 Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [140.211.9.56])
-	by silver.osuosl.org (Postfix) with ESMTP id 5C41A20487;
-	Wed, 15 Jul 2020 15:54:37 +0000 (UTC)
+	by hemlock.osuosl.org (Postfix) with ESMTP id 517E78AEA2;
+	Wed, 15 Jul 2020 17:06:03 +0000 (UTC)
 Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
-	by lists.linuxfoundation.org (Postfix) with ESMTP id 4F845C07FF;
-	Wed, 15 Jul 2020 15:54:37 +0000 (UTC)
-Received: from whitealder.osuosl.org (smtp1.osuosl.org [140.211.166.138])
- by lists.linuxfoundation.org (Postfix) with ESMTP id 459CEC0733
- for <iommu@lists.linux-foundation.org>; Wed, 15 Jul 2020 15:54:36 +0000 (UTC)
+	by lists.linuxfoundation.org (Postfix) with ESMTP id 3226FC07FF;
+	Wed, 15 Jul 2020 17:06:03 +0000 (UTC)
+Received: from fraxinus.osuosl.org (smtp4.osuosl.org [140.211.166.137])
+ by lists.linuxfoundation.org (Postfix) with ESMTP id 5E763C0733;
+ Wed, 15 Jul 2020 17:06:02 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
- by whitealder.osuosl.org (Postfix) with ESMTP id 3E85889F84
- for <iommu@lists.linux-foundation.org>; Wed, 15 Jul 2020 15:54:36 +0000 (UTC)
+ by fraxinus.osuosl.org (Postfix) with ESMTP id 4C9098891B;
+ Wed, 15 Jul 2020 17:06:02 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from whitealder.osuosl.org ([127.0.0.1])
+Received: from fraxinus.osuosl.org ([127.0.0.1])
  by localhost (.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
- with ESMTP id rUJ05L9jBd9j for <iommu@lists.linux-foundation.org>;
- Wed, 15 Jul 2020 15:54:33 +0000 (UTC)
+ with ESMTP id 7VxAeuq8vaYs; Wed, 15 Jul 2020 17:06:01 +0000 (UTC)
 X-Greylist: domain auto-whitelisted by SQLgrey-1.7.6
-Received: from mga03.intel.com (mga03.intel.com [134.134.136.65])
- by whitealder.osuosl.org (Postfix) with ESMTPS id 4D77588364
- for <iommu@lists.linux-foundation.org>; Wed, 15 Jul 2020 15:54:33 +0000 (UTC)
-IronPort-SDR: G1qDE55p4N5ZnN4CKZLbGov/uAFpmOAjnTXMhAQEr+oC1efawpcYjECocXn9FEwwndLEsITX68
- IjAPdcOuJdCA==
-X-IronPort-AV: E=McAfee;i="6000,8403,9683"; a="149173759"
-X-IronPort-AV: E=Sophos;i="5.75,355,1589266800"; d="scan'208";a="149173759"
-X-Amp-Result: SKIPPED(no attachment in message)
-X-Amp-File-Uploaded: False
-Received: from orsmga005.jf.intel.com ([10.7.209.41])
- by orsmga103.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384;
- 15 Jul 2020 08:54:32 -0700
-IronPort-SDR: aQuOBvXboXvtr9LVjlL5IQoQ7kAhQ0ypAtkS+t3EQWIQbydXd6EzK86vUF9k3FT6R/aJglWQbE
- fG7j1Cnj2I4g==
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.75,355,1589266800"; d="scan'208";a="460137858"
-Received: from jacob-builder.jf.intel.com (HELO jacob-builder) ([10.7.199.155])
- by orsmga005.jf.intel.com with ESMTP; 15 Jul 2020 08:54:32 -0700
-Date: Wed, 15 Jul 2020 09:01:14 -0700
-From: Jacob Pan <jacob.jun.pan@linux.intel.com>
-To: Lu Baolu <baolu.lu@linux.intel.com>
-Subject: Re: [PATCH v3 2/4] iommu: Add iommu_aux_at(de)tach_group()
-Message-ID: <20200715090114.50a459d4@jacob-builder>
-In-Reply-To: <b5b22e01-4a51-8dfe-9ba4-aeca783740f1@linux.intel.com>
-References: <20200714055703.5510-1-baolu.lu@linux.intel.com>
- <20200714055703.5510-3-baolu.lu@linux.intel.com>
- <20200714093909.1ab93c9e@jacob-builder>
- <b5b22e01-4a51-8dfe-9ba4-aeca783740f1@linux.intel.com>
-Organization: OTC
-X-Mailer: Claws Mail 3.13.2 (GTK+ 2.24.30; x86_64-pc-linux-gnu)
+X-Greylist: domain auto-whitelisted by SQLgrey-1.7.6
+Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
+ by fraxinus.osuosl.org (Postfix) with ESMTPS id BAAD18890F;
+ Wed, 15 Jul 2020 17:06:01 +0000 (UTC)
+Received: from localhost (c-67-164-102-47.hsd1.ca.comcast.net [67.164.102.47])
+ (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256
+ bits)) (No client certificate requested)
+ by mail.kernel.org (Postfix) with ESMTPSA id 0D53F2065E;
+ Wed, 15 Jul 2020 17:06:01 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+ s=default; t=1594832761;
+ bh=MVQs60eyaseKttygMi5Okmio5UqpxovjpBaGYM2KopU=;
+ h=Date:From:To:cc:Subject:In-Reply-To:References:From;
+ b=CBPLDZ0a2kofL5+ir7rsYDlbbpzpSFpGzRjY5GXtgxKoOkAVo9rx/IXw2nZaAg6FP
+ 0PGoTpRFSOeEWLcCxLE4J3D3xFoVDU+sXxptoew5BleNGM0IN0YcxXbu+SlhudGRTe
+ VCtmQZUU53N6u7CQ+nguMHVqQdrr4STCBfllpVWM=
+Date: Wed, 15 Jul 2020 10:06:00 -0700 (PDT)
+From: Stefano Stabellini <sstabellini@kernel.org>
+X-X-Sender: sstabellini@sstabellini-ThinkPad-T480s
+To: "Michael S. Tsirkin" <mst@redhat.com>
+Subject: Re: [PATCH] xen: introduce xen_vring_use_dma
+In-Reply-To: <20200711144334-mutt-send-email-mst@kernel.org>
+Message-ID: <alpine.DEB.2.21.2007151001140.4124@sstabellini-ThinkPad-T480s>
+References: <20200624163940-mutt-send-email-mst@kernel.org>
+ <alpine.DEB.2.21.2006241351430.8121@sstabellini-ThinkPad-T480s>
+ <20200624181026-mutt-send-email-mst@kernel.org>
+ <alpine.DEB.2.21.2006251014230.8121@sstabellini-ThinkPad-T480s>
+ <20200626110629-mutt-send-email-mst@kernel.org>
+ <alpine.DEB.2.21.2006291621300.8121@sstabellini-ThinkPad-T480s>
+ <20200701133456.GA23888@infradead.org>
+ <alpine.DEB.2.21.2007011020320.8121@sstabellini-ThinkPad-T480s>
+ <20200701172219-mutt-send-email-mst@kernel.org>
+ <alpine.DEB.2.21.2007101019340.4124@sstabellini-ThinkPad-T480s>
+ <20200711144334-mutt-send-email-mst@kernel.org>
+User-Agent: Alpine 2.21 (DEB 202 2017-01-01)
 MIME-Version: 1.0
-Cc: Jean-Philippe Brucker <jean-philippe@linaro.org>,
- Kevin Tian <kevin.tian@intel.com>, Dave Jiang <dave.jiang@intel.com>,
- Ashok Raj <ashok.raj@intel.com>, kvm@vger.kernel.org,
- Cornelia Huck <cohuck@redhat.com>, linux-kernel@vger.kernel.org,
- iommu@lists.linux-foundation.org, Alex Williamson <alex.williamson@redhat.com>,
- Robin Murphy <robin.murphy@arm.com>
+Cc: jgross@suse.com, Peng Fan <peng.fan@nxp.com>,
+ Stefano Stabellini <sstabellini@kernel.org>, konrad.wilk@oracle.com,
+ jasowang@redhat.com, x86@kernel.org, linux-kernel@vger.kernel.org,
+ virtualization@lists.linux-foundation.org,
+ Christoph Hellwig <hch@infradead.org>, iommu@lists.linux-foundation.org,
+ linux-imx@nxp.com, xen-devel@lists.xenproject.org, boris.ostrovsky@oracle.com,
+ linux-arm-kernel@lists.infradead.org
 X-BeenThere: iommu@lists.linux-foundation.org
 X-Mailman-Version: 2.1.15
 Precedence: list
@@ -96,127 +102,44 @@ Content-Transfer-Encoding: 7bit
 Errors-To: iommu-bounces@lists.linux-foundation.org
 Sender: "iommu" <iommu-bounces@lists.linux-foundation.org>
 
-On Wed, 15 Jul 2020 08:47:36 +0800
-Lu Baolu <baolu.lu@linux.intel.com> wrote:
+On Sat, 11 Jul 2020, Michael S. Tsirkin wrote:
+> On Fri, Jul 10, 2020 at 10:23:22AM -0700, Stefano Stabellini wrote:
+> > Sorry for the late reply -- a couple of conferences kept me busy.
+> > 
+> > 
+> > On Wed, 1 Jul 2020, Michael S. Tsirkin wrote:
+> > > On Wed, Jul 01, 2020 at 10:34:53AM -0700, Stefano Stabellini wrote:
+> > > > Would you be in favor of a more flexible check along the lines of the
+> > > > one proposed in the patch that started this thread:
+> > > > 
+> > > >     if (xen_vring_use_dma())
+> > > >             return true;
+> > > > 
+> > > > 
+> > > > xen_vring_use_dma would be implemented so that it returns true when
+> > > > xen_swiotlb is required and false otherwise.
+> > > 
+> > > Just to stress - with a patch like this virtio can *still* use DMA API
+> > > if PLATFORM_ACCESS is set. So if DMA API is broken on some platforms
+> > > as you seem to be saying, you guys should fix it before doing something
+> > > like this..
+> > 
+> > Yes, DMA API is broken with some interfaces (specifically: rpmesg and
+> > trusty), but for them PLATFORM_ACCESS is never set. That is why the
+> > errors weren't reported before. Xen special case aside, there is no
+> > problem under normal circumstances.
+> 
+> So why not fix DMA API? Then this patch is not needed.
 
-> Hi Jacob,
-> 
-> On 7/15/20 12:39 AM, Jacob Pan wrote:
-> > On Tue, 14 Jul 2020 13:57:01 +0800
-> > Lu Baolu<baolu.lu@linux.intel.com>  wrote:
-> >   
-> >> This adds two new aux-domain APIs for a use case like vfio/mdev
-> >> where sub-devices derived from an aux-domain capable device are
-> >> created and put in an iommu_group.
-> >>
-> >> /**
-> >>   * iommu_aux_attach_group - attach an aux-domain to an iommu_group
-> >> which
-> >>   *                          contains sub-devices (for example
-> >> mdevs) derived
-> >>   *                          from @dev.
-> >>   * @domain: an aux-domain;
-> >>   * @group:  an iommu_group which contains sub-devices derived from
-> >> @dev;
-> >>   * @dev:    the physical device which supports IOMMU_DEV_FEAT_AUX.
-> >>   *
-> >>   * Returns 0 on success, or an error value.
-> >>   */
-> >> int iommu_aux_attach_group(struct iommu_domain *domain,
-> >>                             struct iommu_group *group,
-> >>                             struct device *dev)
-> >>
-> >> /**
-> >>   * iommu_aux_detach_group - detach an aux-domain from an
-> >> iommu_group *
-> >>   * @domain: an aux-domain;
-> >>   * @group:  an iommu_group which contains sub-devices derived from
-> >> @dev;
-> >>   * @dev:    the physical device which supports IOMMU_DEV_FEAT_AUX.
-> >>   *
-> >>   * @domain must have been attached to @group via
-> >> iommu_aux_attach_group(). */
-> >> void iommu_aux_detach_group(struct iommu_domain *domain,
-> >>                              struct iommu_group *group,
-> >>                              struct device *dev)
-> >>
-> >> It also adds a flag in the iommu_group data structure to identify
-> >> an iommu_group with aux-domain attached from those normal ones.
-> >>
-> >> Signed-off-by: Lu Baolu<baolu.lu@linux.intel.com>
-> >> ---
-> >>   drivers/iommu/iommu.c | 58
-> >> +++++++++++++++++++++++++++++++++++++++++++ include/linux/iommu.h |
-> >> 17 +++++++++++++ 2 files changed, 75 insertions(+)
-> >>
-> >> diff --git a/drivers/iommu/iommu.c b/drivers/iommu/iommu.c
-> >> index e1fdd3531d65..cad5a19ebf22 100644
-> >> --- a/drivers/iommu/iommu.c
-> >> +++ b/drivers/iommu/iommu.c
-> >> @@ -45,6 +45,7 @@ struct iommu_group {
-> >>   	struct iommu_domain *default_domain;
-> >>   	struct iommu_domain *domain;
-> >>   	struct list_head entry;
-> >> +	unsigned int aux_domain_attached:1;
-> >>   };
-> >>   
-> >>   struct group_device {
-> >> @@ -2759,6 +2760,63 @@ int iommu_aux_get_pasid(struct iommu_domain
-> >> *domain, struct device *dev) }
-> >>   EXPORT_SYMBOL_GPL(iommu_aux_get_pasid);
-> >>   
-> >> +/**
-> >> + * iommu_aux_attach_group - attach an aux-domain to an iommu_group
-> >> which
-> >> + *                          contains sub-devices (for example
-> >> mdevs) derived
-> >> + *                          from @dev.
-> >> + * @domain: an aux-domain;
-> >> + * @group:  an iommu_group which contains sub-devices derived from
-> >> @dev;
-> >> + * @dev:    the physical device which supports IOMMU_DEV_FEAT_AUX.
-> >> + *
-> >> + * Returns 0 on success, or an error value.
-> >> + */
-> >> +int iommu_aux_attach_group(struct iommu_domain *domain,
-> >> +			   struct iommu_group *group, struct
-> >> device *dev) +{
-> >> +	int ret = -EBUSY;
-> >> +
-> >> +	mutex_lock(&group->mutex);
-> >> +	if (group->domain)
-> >> +		goto out_unlock;
-> >> +  
-> > Perhaps I missed something but are we assuming only one mdev per
-> > mdev group? That seems to change the logic where vfio does:
-> > iommu_group_for_each_dev()
-> > 	iommu_aux_attach_device()
-> >   
-> 
-> It has been changed in PATCH 4/4:
-> 
-> static int vfio_iommu_attach_group(struct vfio_domain *domain,
->                                     struct vfio_group *group)
-> {
->          if (group->mdev_group)
->                  return iommu_aux_attach_group(domain->domain,
->                                                group->iommu_group,
->                                                group->iommu_device);
->          else
->                  return iommu_attach_group(domain->domain, 
-> group->iommu_group);
-> }
-> 
-> So, for both normal domain and aux-domain, we use the same concept:
-> attach a domain to a group.
-> 
-I get that, but don't you have to attach all the devices within the
-group? Here you see the group already has a domain and exit.
+It looks like the conversation is going in circles :-)
 
-> Best regards,
-> baolu
+I tried to explain the reason why, even if we fixed the DMA API to work
+with rpmesg and trusty, we still need this patch with the following
+email:  https://marc.info/?l=linux-kernel&m=159347446709625&w=2
 
-[Jacob Pan]
+
+At that time it looked like you agreed that we needed to improve this
+check?  (https://marc.info/?l=linux-kernel&m=159363662418250&w=2)
 _______________________________________________
 iommu mailing list
 iommu@lists.linux-foundation.org
