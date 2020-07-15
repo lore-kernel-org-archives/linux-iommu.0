@@ -7,86 +7,85 @@ X-Spam-Status: No, score=-12.8 required=3.0 tests=BAYES_00,DKIM_INVALID,
 	SIGNED_OFF_BY,SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED,USER_AGENT_GIT
 	autolearn=unavailable autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 9FAECC433E7
-	for <iommu@archiver.kernel.org>; Wed, 15 Jul 2020 07:07:10 +0000 (UTC)
-Received: from silver.osuosl.org (smtp3.osuosl.org [140.211.166.136])
+	by smtp.lore.kernel.org (Postfix) with ESMTP id AC40DC433EC
+	for <iommu@archiver.kernel.org>; Wed, 15 Jul 2020 07:07:12 +0000 (UTC)
+Received: from whitealder.osuosl.org (smtp1.osuosl.org [140.211.166.138])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by mail.kernel.org (Postfix) with ESMTPS id 7460320663
-	for <iommu@archiver.kernel.org>; Wed, 15 Jul 2020 07:07:10 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTPS id 81B232065E
+	for <iommu@archiver.kernel.org>; Wed, 15 Jul 2020 07:07:12 +0000 (UTC)
 Authentication-Results: mail.kernel.org;
-	dkim=fail reason="signature verification failed" (2048-bit key) header.d=semihalf-com.20150623.gappssmtp.com header.i=@semihalf-com.20150623.gappssmtp.com header.b="gF+PCH8l"
-DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 7460320663
+	dkim=fail reason="signature verification failed" (2048-bit key) header.d=semihalf-com.20150623.gappssmtp.com header.i=@semihalf-com.20150623.gappssmtp.com header.b="M5yRZ7ZN"
+DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 81B232065E
 Authentication-Results: mail.kernel.org; dmarc=none (p=none dis=none) header.from=semihalf.com
 Authentication-Results: mail.kernel.org; spf=pass smtp.mailfrom=iommu-bounces@lists.linux-foundation.org
 Received: from localhost (localhost [127.0.0.1])
-	by silver.osuosl.org (Postfix) with ESMTP id 48FF420510;
-	Wed, 15 Jul 2020 07:07:10 +0000 (UTC)
-X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from silver.osuosl.org ([127.0.0.1])
-	by localhost (.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
-	with ESMTP id yJe+PjAOr-+8; Wed, 15 Jul 2020 07:07:09 +0000 (UTC)
-Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [140.211.9.56])
-	by silver.osuosl.org (Postfix) with ESMTP id 7227A20529;
-	Wed, 15 Jul 2020 07:07:09 +0000 (UTC)
-Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
-	by lists.linuxfoundation.org (Postfix) with ESMTP id 5C15CC07FF;
-	Wed, 15 Jul 2020 07:07:09 +0000 (UTC)
-Received: from whitealder.osuosl.org (smtp1.osuosl.org [140.211.166.138])
- by lists.linuxfoundation.org (Postfix) with ESMTP id 3248BC0733
- for <iommu@lists.linux-foundation.org>; Wed, 15 Jul 2020 07:07:08 +0000 (UTC)
-Received: from localhost (localhost [127.0.0.1])
- by whitealder.osuosl.org (Postfix) with ESMTP id 1FCE88AC1B
- for <iommu@lists.linux-foundation.org>; Wed, 15 Jul 2020 07:07:08 +0000 (UTC)
+	by whitealder.osuosl.org (Postfix) with ESMTP id 637948AC0B;
+	Wed, 15 Jul 2020 07:07:12 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
 Received: from whitealder.osuosl.org ([127.0.0.1])
+	by localhost (.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
+	with ESMTP id xWTMNFhAf9bJ; Wed, 15 Jul 2020 07:07:11 +0000 (UTC)
+Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [140.211.9.56])
+	by whitealder.osuosl.org (Postfix) with ESMTP id D05D58ABFE;
+	Wed, 15 Jul 2020 07:07:11 +0000 (UTC)
+Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
+	by lists.linuxfoundation.org (Postfix) with ESMTP id BB658C07FF;
+	Wed, 15 Jul 2020 07:07:11 +0000 (UTC)
+Received: from silver.osuosl.org (smtp3.osuosl.org [140.211.166.136])
+ by lists.linuxfoundation.org (Postfix) with ESMTP id D7C4DC0733
+ for <iommu@lists.linux-foundation.org>; Wed, 15 Jul 2020 07:07:10 +0000 (UTC)
+Received: from localhost (localhost [127.0.0.1])
+ by silver.osuosl.org (Postfix) with ESMTP id CF6BA20529
+ for <iommu@lists.linux-foundation.org>; Wed, 15 Jul 2020 07:07:10 +0000 (UTC)
+X-Virus-Scanned: amavisd-new at osuosl.org
+Received: from silver.osuosl.org ([127.0.0.1])
  by localhost (.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
- with ESMTP id toLr1zWYUQgP for <iommu@lists.linux-foundation.org>;
- Wed, 15 Jul 2020 07:07:04 +0000 (UTC)
+ with ESMTP id 8fNyAXhoK-sX for <iommu@lists.linux-foundation.org>;
+ Wed, 15 Jul 2020 07:07:08 +0000 (UTC)
 X-Greylist: from auto-whitelisted by SQLgrey-1.7.6
 Received: from mail-lj1-f194.google.com (mail-lj1-f194.google.com
  [209.85.208.194])
- by whitealder.osuosl.org (Postfix) with ESMTPS id 6486B8ABF9
- for <iommu@lists.linux-foundation.org>; Wed, 15 Jul 2020 07:07:04 +0000 (UTC)
-Received: by mail-lj1-f194.google.com with SMTP id z24so1363349ljn.8
- for <iommu@lists.linux-foundation.org>; Wed, 15 Jul 2020 00:07:04 -0700 (PDT)
+ by silver.osuosl.org (Postfix) with ESMTPS id 225512151E
+ for <iommu@lists.linux-foundation.org>; Wed, 15 Jul 2020 07:07:08 +0000 (UTC)
+Received: by mail-lj1-f194.google.com with SMTP id r19so1316486ljn.12
+ for <iommu@lists.linux-foundation.org>; Wed, 15 Jul 2020 00:07:08 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
  d=semihalf-com.20150623.gappssmtp.com; s=20150623;
  h=from:to:cc:subject:date:message-id:in-reply-to:references;
- bh=XKlU4lKdj3Ftg6VNKCWCajRZmLcVTJL9ntL6mukO1Xo=;
- b=gF+PCH8lg8YMRFFsAE56yzhfmMGgdqCwmFwD+TI9qs4NjXA1tiHS6Ng9cBRIlXAV0+
- WCkjEPG3UJIHt6DeJHB/FjIubAtTL7CyxsoPExKei5HJM7ySufym6lJ+h8iRL9+vTUsw
- ISdsHJA9pYutZad938G9Urv189itUM0pmpe5WHRkQeLIjIhFcCykEhxNOtkdVMccCWtz
- EaTHFk3ScQ1oGdXiGcH/YtvSNom4QWkw2pEzygUwSi6xF6IHglEVq5V0amRAeFsVCEkZ
- +HTLxpKlANISyR6cgjlLextWUoGANjHqlz0Lv5HJ6im9wyutODiiMlXFlGzJTSIoqyIs
- zuAg==
+ bh=VY6/nDkB+l4D8VdfNdnYyBq9q17cRBW9+cu/3oGCNgQ=;
+ b=M5yRZ7ZNspTd64Y3T6EJeSR8BEe9OMlQ4XzMqNsOL1aKRBkPYizWm15squLSNLr9f4
+ rBa60eFJit6+maotnQ0qwVNmkkLEr4LVlSlzvj50dEO69YdHS5LGWqgTJl3WaayqMB8R
+ Ss6sFZTMqqjWmVvbOlQURv3BkEDVa/Hs+YtYv7dc6MrmaUbbM4HVBY0SmwiSfe+i3cFi
+ 4+58toaeQyrLor5BcsThGO+Y+N1NOvzG0UskCEa6PKcaO3ky/HnQ0o061JCSBoKZf7Da
+ 9TPt7j8CUVnAL6og2kyuNqRC+YEboLTL+BgBpgFEUYvj2Or8EzdjCQuqd1NoOSsGkyTI
+ wmCw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
  d=1e100.net; s=20161025;
  h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
  :references;
- bh=XKlU4lKdj3Ftg6VNKCWCajRZmLcVTJL9ntL6mukO1Xo=;
- b=fZKZq76McQcEfEMpj1SJwUxzt1+luZiyWqoXCFCEKhl2twezD2KczV91mWlsQVUIa5
- 9m2WeVjREg4WU8MezsqWgbccFmXZncNQKv1xHXnisEdf5L9d0puVoMHkIanxykz53JLx
- Jz4A4GUd5x+k6oV4STgMO+mPFBkYjWWg1Sfr9l0LoGisVbzywKkPv+urW8hd4FzhqmwV
- TNg8TWBDbvhBA1veXU6SZkBXprV7YUTNoyZQBsQJARvn8PFWNwgs8ndII1fBK/6hD/hX
- PrNU7S6KnfRGO/0Ql/MHo+v+fPqHYTgisIFKQkXHaaMQPszK6Ku/vsd1Uop0JYTjiFmz
- RX8g==
-X-Gm-Message-State: AOAM530XUyvGu77W5jikuON62/uMrhQJTMdq8Lx62wpoyXVREG424N2n
- 3T1dH4y6ITHLsL0Exp+u4Pg11Q==
-X-Google-Smtp-Source: ABdhPJyht9u1Fi6qxzop87V103kj55HzGKn38flKrFtKPYX7IW+C8BjpSSZJXdo5uDLpBlP6rEyH7Q==
-X-Received: by 2002:a2e:9585:: with SMTP id w5mr3671931ljh.58.1594796822599;
- Wed, 15 Jul 2020 00:07:02 -0700 (PDT)
+ bh=VY6/nDkB+l4D8VdfNdnYyBq9q17cRBW9+cu/3oGCNgQ=;
+ b=KstOJ8Nk78VfVvx1UPF6mTIRSujlAhAf/HaBuhgGV1GlFeCD4vOGimhIjtBfJD7dbs
+ z8hIP0vpSiuJ9P8ue+9iPm7bREZCzeHjY0XSw60tLVEekJDsFaOxpM0fdK0gVS4NG1me
+ /OEUvk8yH6bGLVYhkW9QBvT+2RumV7AZMQNZVmNOB/8Bdz6p77rqlauXvWIxPbnH5P3b
+ OSnLoeSCMctGO60q9+rF1OUvG9AIzOI3nPCydEVHatbCU2hW2NH06bgI789YOTOdMlOY
+ n/h/2rUeZdW607H2sW+kafd/I2F/HRMZ/N3n/rrIxLHmZLPu0aUgMYjYbB1yhpaP/5kC
+ QOqw==
+X-Gm-Message-State: AOAM5302MeLkuPTdTqTmbZWzuNTcjmkBCX/jWIg8xZOrQJvUys4eOQxn
+ nRBSI/FDYGnGqwlFLzn6nOcx6w==
+X-Google-Smtp-Source: ABdhPJwrpgLAN7Afl7yoGdK1hqq6n9x3hw3elslWkLxcDk1FTatcRnB2CeQPdKz7PyWfn5zgrTCMAQ==
+X-Received: by 2002:a2e:859a:: with SMTP id b26mr4332777lji.241.1594796825939; 
+ Wed, 15 Jul 2020 00:07:05 -0700 (PDT)
 Received: from localhost.localdomain ([83.68.95.66])
- by smtp.gmail.com with ESMTPSA id 83sm276040ljj.51.2020.07.15.00.07.01
+ by smtp.gmail.com with ESMTPSA id 83sm276040ljj.51.2020.07.15.00.07.04
  (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
- Wed, 15 Jul 2020 00:07:01 -0700 (PDT)
+ Wed, 15 Jul 2020 00:07:05 -0700 (PDT)
 From: Tomasz Nowicki <tn@semihalf.com>
 To: will@kernel.org, robin.murphy@arm.com, joro@8bytes.org,
  gregory.clement@bootlin.com, robh+dt@kernel.org, hannah@marvell.com
-Subject: [PATCH v4 2/4] iommu/arm-smmu: Workaround for Marvell Armada-AP806
- SoC erratum #582743
-Date: Wed, 15 Jul 2020 09:06:47 +0200
-Message-Id: <20200715070649.18733-3-tn@semihalf.com>
+Subject: [PATCH v4 4/4] arm64: dts: marvell: add SMMU support
+Date: Wed, 15 Jul 2020 09:06:49 +0200
+Message-Id: <20200715070649.18733-5-tn@semihalf.com>
 X-Mailer: git-send-email 2.17.1
 In-Reply-To: <20200715070649.18733-1-tn@semihalf.com>
 References: <20200715070649.18733-1-tn@semihalf.com>
@@ -112,104 +111,139 @@ Content-Transfer-Encoding: 7bit
 Errors-To: iommu-bounces@lists.linux-foundation.org
 Sender: "iommu" <iommu-bounces@lists.linux-foundation.org>
 
-From: Hanna Hawa <hannah@marvell.com>
+From: Marcin Wojtas <mw@semihalf.com>
 
-Due to erratum #582743, the Marvell Armada-AP806 can't access 64bit to
-ARM SMMUv2 registers.
+Add IOMMU node for Marvell AP806 based SoCs together with platform
+and PCI device Stream ID mapping.
 
-Provide implementation relevant hooks:
-- split the writeq/readq to two accesses of writel/readl.
-- mask the MMU_IDR2.PTFSv8 fields to not use AArch64 format (but
-only AARCH32_L) since with AArch64 format 32 bits access is not supported.
-
-Note that most 64-bit registers like TTBRn can be accessed as two 32-bit
-halves without issue, and AArch32 format ensures that the register writes
-which must be atomic (for TLBI etc.) need only be 32-bit.
-
-Signed-off-by: Hanna Hawa <hannah@marvell.com>
-Signed-off-by: Gregory CLEMENT <gregory.clement@bootlin.com>
+Signed-off-by: Marcin Wojtas <mw@semihalf.com>
 Signed-off-by: Tomasz Nowicki <tn@semihalf.com>
 ---
- Documentation/arm64/silicon-errata.rst |  3 ++
- drivers/iommu/arm-smmu-impl.c          | 45 ++++++++++++++++++++++++++
- 2 files changed, 48 insertions(+)
+ arch/arm64/boot/dts/marvell/armada-7040.dtsi  | 28 +++++++++++++
+ arch/arm64/boot/dts/marvell/armada-8040.dtsi  | 40 +++++++++++++++++++
+ arch/arm64/boot/dts/marvell/armada-ap80x.dtsi | 18 +++++++++
+ 3 files changed, 86 insertions(+)
 
-diff --git a/Documentation/arm64/silicon-errata.rst b/Documentation/arm64/silicon-errata.rst
-index 936cf2a59ca4..157214d3abe1 100644
---- a/Documentation/arm64/silicon-errata.rst
-+++ b/Documentation/arm64/silicon-errata.rst
-@@ -125,6 +125,9 @@ stable kernels.
- | Cavium         | ThunderX2 Core  | #219            | CAVIUM_TX2_ERRATUM_219      |
- +----------------+-----------------+-----------------+-----------------------------+
- +----------------+-----------------+-----------------+-----------------------------+
-+| Marvell        | ARM-MMU-500     | #582743         | N/A                         |
-++----------------+-----------------+-----------------+-----------------------------+
-++----------------+-----------------+-----------------+-----------------------------+
- | Freescale/NXP  | LS2080A/LS1043A | A-008585        | FSL_ERRATUM_A008585         |
- +----------------+-----------------+-----------------+-----------------------------+
- +----------------+-----------------+-----------------+-----------------------------+
-diff --git a/drivers/iommu/arm-smmu-impl.c b/drivers/iommu/arm-smmu-impl.c
-index c75b9d957b70..59422cb92488 100644
---- a/drivers/iommu/arm-smmu-impl.c
-+++ b/drivers/iommu/arm-smmu-impl.c
-@@ -147,6 +147,48 @@ static const struct arm_smmu_impl arm_mmu500_impl = {
- 	.reset = arm_mmu500_reset,
+diff --git a/arch/arm64/boot/dts/marvell/armada-7040.dtsi b/arch/arm64/boot/dts/marvell/armada-7040.dtsi
+index 47247215770d..7a3198cd7a07 100644
+--- a/arch/arm64/boot/dts/marvell/armada-7040.dtsi
++++ b/arch/arm64/boot/dts/marvell/armada-7040.dtsi
+@@ -14,3 +14,31 @@
+ 	compatible = "marvell,armada7040", "marvell,armada-ap806-quad",
+ 		     "marvell,armada-ap806";
  };
- 
-+static u64 mrvl_mmu500_readq(struct arm_smmu_device *smmu, int page, int off)
-+{
-+	/*
-+	 * Marvell Armada-AP806 erratum #582743.
-+	 * Split all the readq to double readl
-+	 */
-+	return hi_lo_readq_relaxed(arm_smmu_page(smmu, page) + off);
-+}
 +
-+static void mrvl_mmu500_writeq(struct arm_smmu_device *smmu, int page, int off,
-+			       u64 val)
-+{
-+	/*
-+	 * Marvell Armada-AP806 erratum #582743.
-+	 * Split all the writeq to double writel
-+	 */
-+	hi_lo_writeq_relaxed(val, arm_smmu_page(smmu, page) + off);
-+}
-+
-+static int mrvl_mmu500_cfg_probe(struct arm_smmu_device *smmu)
-+{
-+
-+	/*
-+	 * Armada-AP806 erratum #582743.
-+	 * Hide the SMMU_IDR2.PTFSv8 fields to sidestep the AArch64
-+	 * formats altogether and allow using 32 bits access on the
-+	 * interconnect.
-+	 */
-+	smmu->features &= ~(ARM_SMMU_FEAT_FMT_AARCH64_4K |
-+			    ARM_SMMU_FEAT_FMT_AARCH64_16K |
-+			    ARM_SMMU_FEAT_FMT_AARCH64_64K);
-+
-+	return 0;
-+}
-+
-+static const struct arm_smmu_impl mrvl_mmu500_impl = {
-+	.read_reg64 = mrvl_mmu500_readq,
-+	.write_reg64 = mrvl_mmu500_writeq,
-+	.cfg_probe = mrvl_mmu500_cfg_probe,
-+	.reset = arm_mmu500_reset,
++&smmu {
++	status = "okay";
 +};
 +
- 
- struct arm_smmu_device *arm_smmu_impl_init(struct arm_smmu_device *smmu)
- {
-@@ -175,5 +217,8 @@ struct arm_smmu_device *arm_smmu_impl_init(struct arm_smmu_device *smmu)
- 	    of_device_is_compatible(np, "qcom,sc7180-smmu-500"))
- 		return qcom_smmu_impl_init(smmu);
- 
-+	if (of_device_is_compatible(np, "marvell,ap806-smmu-500"))
-+		smmu->impl = &mrvl_mmu500_impl;
++&cp0_pcie0 {
++	iommu-map =
++		<0x0   &smmu 0x480 0x20>,
++		<0x100 &smmu 0x4a0 0x20>,
++		<0x200 &smmu 0x4c0 0x20>;
++	iommu-map-mask = <0x031f>;
++};
 +
- 	return smmu;
- }
++&cp0_sata0 {
++	iommus = <&smmu 0x444>;
++};
++
++&cp0_sdhci0 {
++	iommus = <&smmu 0x445>;
++};
++
++&cp0_usb3_0 {
++	iommus = <&smmu 0x440>;
++};
++
++&cp0_usb3_1 {
++	iommus = <&smmu 0x441>;
++};
+diff --git a/arch/arm64/boot/dts/marvell/armada-8040.dtsi b/arch/arm64/boot/dts/marvell/armada-8040.dtsi
+index 7699b19224c2..79e8ce59baa8 100644
+--- a/arch/arm64/boot/dts/marvell/armada-8040.dtsi
++++ b/arch/arm64/boot/dts/marvell/armada-8040.dtsi
+@@ -15,6 +15,18 @@
+ 		     "marvell,armada-ap806";
+ };
+ 
++&smmu {
++	status = "okay";
++};
++
++&cp0_pcie0 {
++	iommu-map =
++		<0x0   &smmu 0x480 0x20>,
++		<0x100 &smmu 0x4a0 0x20>,
++		<0x200 &smmu 0x4c0 0x20>;
++	iommu-map-mask = <0x031f>;
++};
++
+ /* The RTC requires external oscillator. But on Aramda 80x0, the RTC clock
+  * in CP master is not connected (by package) to the oscillator. So
+  * disable it. However, the RTC clock in CP slave is connected to the
+@@ -23,3 +35,31 @@
+ &cp0_rtc {
+ 	status = "disabled";
+ };
++
++&cp0_sata0 {
++	iommus = <&smmu 0x444>;
++};
++
++&cp0_sdhci0 {
++	iommus = <&smmu 0x445>;
++};
++
++&cp0_usb3_0 {
++	iommus = <&smmu 0x440>;
++};
++
++&cp0_usb3_1 {
++	iommus = <&smmu 0x441>;
++};
++
++&cp1_sata0 {
++	iommus = <&smmu 0x454>;
++};
++
++&cp1_usb3_0 {
++	iommus = <&smmu 0x450>;
++};
++
++&cp1_usb3_1 {
++	iommus = <&smmu 0x451>;
++};
+diff --git a/arch/arm64/boot/dts/marvell/armada-ap80x.dtsi b/arch/arm64/boot/dts/marvell/armada-ap80x.dtsi
+index 7f9b9a647717..12e477f1aeb9 100644
+--- a/arch/arm64/boot/dts/marvell/armada-ap80x.dtsi
++++ b/arch/arm64/boot/dts/marvell/armada-ap80x.dtsi
+@@ -56,6 +56,24 @@
+ 			compatible = "simple-bus";
+ 			ranges = <0x0 0x0 0xf0000000 0x1000000>;
+ 
++			smmu: iommu@5000000 {
++				compatible = "marvell,ap806-smmu-500", "arm,mmu-500";
++				reg = <0x100000 0x100000>;
++				dma-coherent;
++				#iommu-cells = <1>;
++				#global-interrupts = <1>;
++				interrupts = <GIC_SPI 6 IRQ_TYPE_LEVEL_HIGH>,
++					     <GIC_SPI 6 IRQ_TYPE_LEVEL_HIGH>,
++					     <GIC_SPI 6 IRQ_TYPE_LEVEL_HIGH>,
++					     <GIC_SPI 6 IRQ_TYPE_LEVEL_HIGH>,
++					     <GIC_SPI 6 IRQ_TYPE_LEVEL_HIGH>,
++					     <GIC_SPI 6 IRQ_TYPE_LEVEL_HIGH>,
++					     <GIC_SPI 6 IRQ_TYPE_LEVEL_HIGH>,
++					     <GIC_SPI 6 IRQ_TYPE_LEVEL_HIGH>,
++					     <GIC_SPI 6 IRQ_TYPE_LEVEL_HIGH>;
++				status = "disabled";
++			};
++
+ 			gic: interrupt-controller@210000 {
+ 				compatible = "arm,gic-400";
+ 				#interrupt-cells = <3>;
 -- 
 2.17.1
 
