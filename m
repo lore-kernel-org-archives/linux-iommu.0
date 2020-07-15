@@ -2,89 +2,73 @@ Return-Path: <SRS0=xM8W=A2=lists.linux-foundation.org=iommu-bounces@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-7.0 required=3.0 tests=BAYES_00,
-	HEADER_FROM_DIFFERENT_DOMAINS,MAILING_LIST_MULTI,SIGNED_OFF_BY,SPF_HELO_NONE,
-	SPF_PASS autolearn=no autolearn_force=no version=3.4.0
+X-Spam-Status: No, score=-11.5 required=3.0 tests=BAYES_00,
+	HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_PATCH,MAILING_LIST_MULTI,NICE_REPLY_A,
+	SIGNED_OFF_BY,SPF_HELO_NONE,SPF_PASS,USER_AGENT_SANE_1 autolearn=unavailable
+	autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 8C05BC433E5
-	for <iommu@archiver.kernel.org>; Wed, 15 Jul 2020 10:19:13 +0000 (UTC)
-Received: from silver.osuosl.org (smtp3.osuosl.org [140.211.166.136])
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 5D22DC433ED
+	for <iommu@archiver.kernel.org>; Wed, 15 Jul 2020 10:20:46 +0000 (UTC)
+Received: from whitealder.osuosl.org (smtp1.osuosl.org [140.211.166.138])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by mail.kernel.org (Postfix) with ESMTPS id 5F55F2072E
-	for <iommu@archiver.kernel.org>; Wed, 15 Jul 2020 10:19:13 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 5F55F2072E
-Authentication-Results: mail.kernel.org; dmarc=none (p=none dis=none) header.from=linux-m68k.org
+	by mail.kernel.org (Postfix) with ESMTPS id 1FA8D205CB
+	for <iommu@archiver.kernel.org>; Wed, 15 Jul 2020 10:20:46 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 1FA8D205CB
+Authentication-Results: mail.kernel.org; dmarc=none (p=none dis=none) header.from=arm.com
 Authentication-Results: mail.kernel.org; spf=pass smtp.mailfrom=iommu-bounces@lists.linux-foundation.org
 Received: from localhost (localhost [127.0.0.1])
-	by silver.osuosl.org (Postfix) with ESMTP id F3A7C2275A;
-	Wed, 15 Jul 2020 10:19:12 +0000 (UTC)
+	by whitealder.osuosl.org (Postfix) with ESMTP id E5A7488126;
+	Wed, 15 Jul 2020 10:20:45 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from silver.osuosl.org ([127.0.0.1])
+Received: from whitealder.osuosl.org ([127.0.0.1])
 	by localhost (.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
-	with ESMTP id a5We73Xi56pG; Wed, 15 Jul 2020 10:19:12 +0000 (UTC)
+	with ESMTP id KP5sDun2GK2T; Wed, 15 Jul 2020 10:20:44 +0000 (UTC)
 Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [140.211.9.56])
-	by silver.osuosl.org (Postfix) with ESMTP id 2BD1020467;
-	Wed, 15 Jul 2020 10:19:12 +0000 (UTC)
+	by whitealder.osuosl.org (Postfix) with ESMTP id AAA9B879B1;
+	Wed, 15 Jul 2020 10:20:44 +0000 (UTC)
 Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
-	by lists.linuxfoundation.org (Postfix) with ESMTP id 0FBE8C0891;
-	Wed, 15 Jul 2020 10:19:12 +0000 (UTC)
-Received: from fraxinus.osuosl.org (smtp4.osuosl.org [140.211.166.137])
- by lists.linuxfoundation.org (Postfix) with ESMTP id AE98CC0733
- for <iommu@lists.linux-foundation.org>; Wed, 15 Jul 2020 10:19:10 +0000 (UTC)
+	by lists.linuxfoundation.org (Postfix) with ESMTP id A14FDC0891;
+	Wed, 15 Jul 2020 10:20:44 +0000 (UTC)
+Received: from hemlock.osuosl.org (smtp2.osuosl.org [140.211.166.133])
+ by lists.linuxfoundation.org (Postfix) with ESMTP id 0CC3BC0733
+ for <iommu@lists.linux-foundation.org>; Wed, 15 Jul 2020 10:20:43 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
- by fraxinus.osuosl.org (Postfix) with ESMTP id AAD8A891D9
- for <iommu@lists.linux-foundation.org>; Wed, 15 Jul 2020 10:19:10 +0000 (UTC)
+ by hemlock.osuosl.org (Postfix) with ESMTP id EF6E68839E
+ for <iommu@lists.linux-foundation.org>; Wed, 15 Jul 2020 10:20:42 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from fraxinus.osuosl.org ([127.0.0.1])
+Received: from hemlock.osuosl.org ([127.0.0.1])
  by localhost (.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
- with ESMTP id fweFv2_wxaEu for <iommu@lists.linux-foundation.org>;
- Wed, 15 Jul 2020 10:19:10 +0000 (UTC)
+ with ESMTP id IlBR4CPez8J1 for <iommu@lists.linux-foundation.org>;
+ Wed, 15 Jul 2020 10:20:41 +0000 (UTC)
 X-Greylist: domain auto-whitelisted by SQLgrey-1.7.6
-Received: from mail-oo1-f67.google.com (mail-oo1-f67.google.com
- [209.85.161.67])
- by fraxinus.osuosl.org (Postfix) with ESMTPS id 1033A88855
- for <iommu@lists.linux-foundation.org>; Wed, 15 Jul 2020 10:19:10 +0000 (UTC)
-Received: by mail-oo1-f67.google.com with SMTP id t6so357742ooh.4
- for <iommu@lists.linux-foundation.org>; Wed, 15 Jul 2020 03:19:10 -0700 (PDT)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
- d=1e100.net; s=20161025;
- h=x-gm-message-state:mime-version:references:in-reply-to:from:date
- :message-id:subject:to:cc;
- bh=NAkHhGCBdih32hqt76V0j8Veg+fQ7FChhZOK219jyyg=;
- b=MIKRbvPZV4J46raS6/fs16pafuPbg8ldhzFRa6vpCsq8u/vgs5A05CHM/OTP37MF4f
- cTIMnbMca0oUYyQ7idj7vxYF6YhCDjDbsTrafCNIGS8x5rN8raHAsbdqZypYuTYjV9fQ
- twmZBMki4qdPrbftR63meIb3IGWaE49FdseZWCzMhJ8mmQPasTBxim1jYxR3YN6iK/yQ
- ibaUFe1z8sHrEr5obkfQ/usQqUQ3D+DeUJJCKDRE+dM/HqtVuZKHFaMcmVUEzyVtjkej
- hX36x0doKJ8AjFt1qBEz1IOUpsilVNo8OAbUesHob9LvuF8xNgQuKOY1qyDIGo6nhkcW
- /Z7Q==
-X-Gm-Message-State: AOAM533JAZnnQiUfRdXrJzOgLJKaJpmsAU2ZjZ2FY5UomMD8ZBLmPIto
- QuK7Qoq9BjgD11pLdWrJU7YdhBKnA43lbVzI8WM=
-X-Google-Smtp-Source: ABdhPJwSAaZJfpGKxkLLTXuhq5d9bq9sTol7NAMegIgcAukEn+36YLrrN0ajD7D+Vfxo36peiJOo78hXGiX/3pGPC7k=
-X-Received: by 2002:a4a:9552:: with SMTP id n18mr8646494ooi.1.1594808349233;
- Wed, 15 Jul 2020 03:19:09 -0700 (PDT)
+Received: from foss.arm.com (foss.arm.com [217.140.110.172])
+ by hemlock.osuosl.org (Postfix) with ESMTP id CF95588007
+ for <iommu@lists.linux-foundation.org>; Wed, 15 Jul 2020 10:20:41 +0000 (UTC)
+Received: from usa-sjc-imap-foss1.foss.arm.com (unknown [10.121.207.14])
+ by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id 320B930E;
+ Wed, 15 Jul 2020 03:20:41 -0700 (PDT)
+Received: from [10.57.32.45] (unknown [10.57.32.45])
+ by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPSA id 50A073F718;
+ Wed, 15 Jul 2020 03:20:39 -0700 (PDT)
+Subject: Re: [PATCH v4 1/4] iommu/arm-smmu: Call configuration impl hook
+ before consuming features
+To: Tomasz Nowicki <tn@semihalf.com>, will@kernel.org, joro@8bytes.org,
+ gregory.clement@bootlin.com, robh+dt@kernel.org, hannah@marvell.com
+References: <20200715070649.18733-1-tn@semihalf.com>
+ <20200715070649.18733-2-tn@semihalf.com>
+From: Robin Murphy <robin.murphy@arm.com>
+Message-ID: <def8aa82-bcca-b209-a6b4-81725fc4fbdb@arm.com>
+Date: Wed, 15 Jul 2020 11:20:37 +0100
+User-Agent: Mozilla/5.0 (Windows NT 10.0; rv:68.0) Gecko/20100101
+ Thunderbird/68.10.0
 MIME-Version: 1.0
-References: <1594676120-5862-1-git-send-email-prabhakar.mahadev-lad.rj@bp.renesas.com>
- <1594676120-5862-4-git-send-email-prabhakar.mahadev-lad.rj@bp.renesas.com>
-In-Reply-To: <1594676120-5862-4-git-send-email-prabhakar.mahadev-lad.rj@bp.renesas.com>
-From: Geert Uytterhoeven <geert@linux-m68k.org>
-Date: Wed, 15 Jul 2020 12:18:58 +0200
-Message-ID: <CAMuHMdUH4yVek8Fn2z1xneTS0Y_vkMv+w7VwEDJvCUXR9qVQRw@mail.gmail.com>
-Subject: Re: [PATCH 3/9] arm64: dts: renesas: r8a774e1: Add IPMMU device nodes
-To: Lad Prabhakar <prabhakar.mahadev-lad.rj@bp.renesas.com>
-Cc: "open list:OPEN FIRMWARE AND FLATTENED DEVICE TREE BINDINGS"
- <devicetree@vger.kernel.org>,
- "open list:GPIO SUBSYSTEM" <linux-gpio@vger.kernel.org>,
- netdev <netdev@vger.kernel.org>, Linus Walleij <linus.walleij@linaro.org>,
- Sergei Shtylyov <sergei.shtylyov@gmail.com>,
- Magnus Damm <magnus.damm@gmail.com>,
- Linux IOMMU <iommu@lists.linux-foundation.org>,
- "David S. Miller" <davem@davemloft.net>,
- Linux-Renesas <linux-renesas-soc@vger.kernel.org>,
- Bartosz Golaszewski <bgolaszewski@baylibre.com>, Vinod Koul <vkoul@kernel.org>,
- Rob Herring <robh+dt@kernel.org>, Prabhakar <prabhakar.csengg@gmail.com>,
- dmaengine <dmaengine@vger.kernel.org>, Jakub Kicinski <kuba@kernel.org>,
- Linux Kernel Mailing List <linux-kernel@vger.kernel.org>
+In-Reply-To: <20200715070649.18733-2-tn@semihalf.com>
+Content-Language: en-GB
+Cc: devicetree@vger.kernel.org, catalin.marinas@arm.com,
+ linux-kernel@vger.kernel.org, nadavh@marvell.com,
+ iommu@lists.linux-foundation.org, mw@semihalf.com,
+ linux-arm-kernel@lists.infradead.org
 X-BeenThere: iommu@lists.linux-foundation.org
 X-Mailman-Version: 2.1.15
 Precedence: list
@@ -97,33 +81,69 @@ List-Post: <mailto:iommu@lists.linux-foundation.org>
 List-Help: <mailto:iommu-request@lists.linux-foundation.org?subject=help>
 List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
  <mailto:iommu-request@lists.linux-foundation.org?subject=subscribe>
-Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset="us-ascii"; Format="flowed"
 Errors-To: iommu-bounces@lists.linux-foundation.org
 Sender: "iommu" <iommu-bounces@lists.linux-foundation.org>
 
-On Mon, Jul 13, 2020 at 11:35 PM Lad Prabhakar
-<prabhakar.mahadev-lad.rj@bp.renesas.com> wrote:
-> From: Marian-Cristian Rotariu <marian-cristian.rotariu.rb@bp.renesas.com>
->
-> Add RZ/G2H (R8A774E1) IPMMU nodes.
->
-> Signed-off-by: Marian-Cristian Rotariu <marian-cristian.rotariu.rb@bp.renesas.com>
-> Signed-off-by: Lad Prabhakar <prabhakar.mahadev-lad.rj@bp.renesas.com>
+On 2020-07-15 08:06, Tomasz Nowicki wrote:
+> 'cfg_probe' hook is called at the very end of configuration probing
+> procedure and therefore features override and workaround may become
+> complex like for ID register fixups. In preparation for adding Marvell
+> errata move 'cfg_probe' a bit earlier to have chance to adjust
+> the detected features before we start consuming them.
+> 
+> Since the Cavium quirk (the only user) does not alter features
+> it is safe to do so.
 
-Reviewed-by: Geert Uytterhoeven <geert+renesas@glider.be>
-i.e. will queue in renesas-devel for v5.9.
+Sorry for the confusion of failing to match my own intent in the first 
+place ;)
 
-Gr{oetje,eeting}s,
+Reviewed-by: Robin Murphy <robin.murphy@arm.com>
 
-                        Geert
-
--- 
-Geert Uytterhoeven -- There's lots of Linux beyond ia32 -- geert@linux-m68k.org
-
-In personal conversations with technical people, I call myself a hacker. But
-when I'm talking to journalists I just say "programmer" or something like that.
-                                -- Linus Torvalds
+> Suggested-by: Robin Murphy <robin.murphy@arm.com>
+> Signed-off-by: Tomasz Nowicki <tn@semihalf.com>
+> ---
+>   drivers/iommu/arm-smmu.c | 11 +++++++----
+>   1 file changed, 7 insertions(+), 4 deletions(-)
+> 
+> diff --git a/drivers/iommu/arm-smmu.c b/drivers/iommu/arm-smmu.c
+> index 243bc4cb2705..19f906de6420 100644
+> --- a/drivers/iommu/arm-smmu.c
+> +++ b/drivers/iommu/arm-smmu.c
+> @@ -1728,7 +1728,7 @@ static int arm_smmu_device_cfg_probe(struct arm_smmu_device *smmu)
+>   	unsigned int size;
+>   	u32 id;
+>   	bool cttw_reg, cttw_fw = smmu->features & ARM_SMMU_FEAT_COHERENT_WALK;
+> -	int i;
+> +	int i, ret;
+>   
+>   	dev_notice(smmu->dev, "probing hardware configuration...\n");
+>   	dev_notice(smmu->dev, "SMMUv%d with:\n",
+> @@ -1891,6 +1891,12 @@ static int arm_smmu_device_cfg_probe(struct arm_smmu_device *smmu)
+>   			smmu->features |= ARM_SMMU_FEAT_FMT_AARCH64_64K;
+>   	}
+>   
+> +	if (smmu->impl && smmu->impl->cfg_probe) {
+> +		ret = smmu->impl->cfg_probe(smmu);
+> +		if (ret)
+> +			return ret;
+> +	}
+> +
+>   	/* Now we've corralled the various formats, what'll it do? */
+>   	if (smmu->features & ARM_SMMU_FEAT_FMT_AARCH32_S)
+>   		smmu->pgsize_bitmap |= SZ_4K | SZ_64K | SZ_1M | SZ_16M;
+> @@ -1918,9 +1924,6 @@ static int arm_smmu_device_cfg_probe(struct arm_smmu_device *smmu)
+>   		dev_notice(smmu->dev, "\tStage-2: %lu-bit IPA -> %lu-bit PA\n",
+>   			   smmu->ipa_size, smmu->pa_size);
+>   
+> -	if (smmu->impl && smmu->impl->cfg_probe)
+> -		return smmu->impl->cfg_probe(smmu);
+> -
+>   	return 0;
+>   }
+>   
+> 
 _______________________________________________
 iommu mailing list
 iommu@lists.linux-foundation.org
