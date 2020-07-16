@@ -2,80 +2,65 @@ Return-Path: <SRS0=k4B3=A3=lists.linux-foundation.org=iommu-bounces@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-5.5 required=3.0 tests=BAYES_00,
-	HEADER_FROM_DIFFERENT_DOMAINS,MAILING_LIST_MULTI,NICE_REPLY_A,SPF_HELO_NONE,
-	SPF_PASS,URIBL_BLOCKED,USER_AGENT_SANE_1 autolearn=no autolearn_force=no
+X-Spam-Status: No, score=-10.0 required=3.0 tests=BAYES_00,
+	HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_PATCH,MAILING_LIST_MULTI,SIGNED_OFF_BY,
+	SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED autolearn=unavailable autolearn_force=no
 	version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id A84A4C433DF
-	for <iommu@archiver.kernel.org>; Thu, 16 Jul 2020 16:52:39 +0000 (UTC)
-Received: from fraxinus.osuosl.org (smtp4.osuosl.org [140.211.166.137])
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 2CB8BC433E2
+	for <iommu@archiver.kernel.org>; Thu, 16 Jul 2020 17:06:31 +0000 (UTC)
+Received: from silver.osuosl.org (smtp3.osuosl.org [140.211.166.136])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by mail.kernel.org (Postfix) with ESMTPS id 7A49A20739
-	for <iommu@archiver.kernel.org>; Thu, 16 Jul 2020 16:52:39 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 7A49A20739
-Authentication-Results: mail.kernel.org; dmarc=none (p=none dis=none) header.from=huawei.com
+	by mail.kernel.org (Postfix) with ESMTPS id EBD4E204EC
+	for <iommu@archiver.kernel.org>; Thu, 16 Jul 2020 17:06:30 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org EBD4E204EC
+Authentication-Results: mail.kernel.org; dmarc=none (p=none dis=none) header.from=suse.de
 Authentication-Results: mail.kernel.org; spf=pass smtp.mailfrom=iommu-bounces@lists.linux-foundation.org
 Received: from localhost (localhost [127.0.0.1])
-	by fraxinus.osuosl.org (Postfix) with ESMTP id 4A8CC87AD9;
-	Thu, 16 Jul 2020 16:52:39 +0000 (UTC)
+	by silver.osuosl.org (Postfix) with ESMTP id 7B67F26F1A;
+	Thu, 16 Jul 2020 17:06:30 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from fraxinus.osuosl.org ([127.0.0.1])
+Received: from silver.osuosl.org ([127.0.0.1])
 	by localhost (.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
-	with ESMTP id IIYkW6oYZ67x; Thu, 16 Jul 2020 16:52:37 +0000 (UTC)
+	with ESMTP id 8JBE70ts5KZa; Thu, 16 Jul 2020 17:06:29 +0000 (UTC)
 Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [140.211.9.56])
-	by fraxinus.osuosl.org (Postfix) with ESMTP id 1695487AD0;
-	Thu, 16 Jul 2020 16:52:37 +0000 (UTC)
+	by silver.osuosl.org (Postfix) with ESMTP id 5276126F0D;
+	Thu, 16 Jul 2020 17:06:29 +0000 (UTC)
 Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
-	by lists.linuxfoundation.org (Postfix) with ESMTP id D75E6C07FF;
-	Thu, 16 Jul 2020 16:52:36 +0000 (UTC)
-Received: from whitealder.osuosl.org (smtp1.osuosl.org [140.211.166.138])
- by lists.linuxfoundation.org (Postfix) with ESMTP id AFA8EC0733
- for <iommu@lists.linux-foundation.org>; Thu, 16 Jul 2020 16:52:34 +0000 (UTC)
+	by lists.linuxfoundation.org (Postfix) with ESMTP id 37A04C07FF;
+	Thu, 16 Jul 2020 17:06:29 +0000 (UTC)
+Received: from silver.osuosl.org (smtp3.osuosl.org [140.211.166.136])
+ by lists.linuxfoundation.org (Postfix) with ESMTP id D29DCC0733
+ for <iommu@lists.linux-foundation.org>; Thu, 16 Jul 2020 17:06:27 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
- by whitealder.osuosl.org (Postfix) with ESMTP id 991D58A876
- for <iommu@lists.linux-foundation.org>; Thu, 16 Jul 2020 16:52:34 +0000 (UTC)
+ by silver.osuosl.org (Postfix) with ESMTP id 8AC2F26F0D
+ for <iommu@lists.linux-foundation.org>; Thu, 16 Jul 2020 17:06:27 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from whitealder.osuosl.org ([127.0.0.1])
+Received: from silver.osuosl.org ([127.0.0.1])
  by localhost (.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
- with ESMTP id XAPW1CpW5mHj for <iommu@lists.linux-foundation.org>;
- Thu, 16 Jul 2020 16:52:33 +0000 (UTC)
+ with ESMTP id NMiiwv8knGDA for <iommu@lists.linux-foundation.org>;
+ Thu, 16 Jul 2020 17:06:26 +0000 (UTC)
 X-Greylist: domain auto-whitelisted by SQLgrey-1.7.6
-Received: from huawei.com (lhrrgout.huawei.com [185.176.76.210])
- by whitealder.osuosl.org (Postfix) with ESMTPS id 667D58A5FB
- for <iommu@lists.linux-foundation.org>; Thu, 16 Jul 2020 16:52:33 +0000 (UTC)
-Received: from lhreml724-chm.china.huawei.com (unknown [172.18.7.107])
- by Forcepoint Email with ESMTP id 845DA1299124E69D3125;
- Thu, 16 Jul 2020 17:52:30 +0100 (IST)
-Received: from [127.0.0.1] (10.210.168.254) by lhreml724-chm.china.huawei.com
- (10.201.108.75) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.1913.5; Thu, 16 Jul
- 2020 17:52:29 +0100
-Subject: Re: [PATCH 0/4] iommu/arm-smmu-v3: Improve cmdq lock efficiency
-To: Will Deacon <will@kernel.org>, Robin Murphy <robin.murphy@arm.com>
-References: <1592846920-45338-1-git-send-email-john.garry@huawei.com>
- <20200716101940.GA7036@willie-the-truck>
- <20200716102233.GC7036@willie-the-truck>
- <20200716102814.GD7036@willie-the-truck>
- <bd302efa-20d8-e1b3-6a80-db65ab5ad752@huawei.com>
- <aef1e4a4-d594-f477-9029-8f4295bb9f6c@arm.com>
- <20200716113234.GA7290@willie-the-truck>
-From: John Garry <john.garry@huawei.com>
-Message-ID: <cfd36aff-94ae-2019-3331-d43fba01070b@huawei.com>
-Date: Thu, 16 Jul 2020 17:50:41 +0100
-User-Agent: Mozilla/5.0 (Windows NT 10.0; WOW64; rv:68.0) Gecko/20100101
- Thunderbird/68.1.2
+Received: from mx2.suse.de (mx2.suse.de [195.135.220.15])
+ by silver.osuosl.org (Postfix) with ESMTPS id 0F4A52044D
+ for <iommu@lists.linux-foundation.org>; Thu, 16 Jul 2020 17:06:25 +0000 (UTC)
+X-Virus-Scanned: by amavisd-new at test-mx.suse.de
+Received: from relay2.suse.de (unknown [195.135.221.27])
+ by mx2.suse.de (Postfix) with ESMTP id BB08DB609;
+ Thu, 16 Jul 2020 17:06:27 +0000 (UTC)
+Message-ID: <fe14037b02fd887a73cd91c115dccc4485f8446e.camel@suse.de>
+Subject: Re: [PATCH] dma-pool: Only allocate from CMA when in same memory zone
+From: Nicolas Saenz Julienne <nsaenzjulienne@suse.de>
+To: hch@lst.de, Marek Szyprowski <m.szyprowski@samsung.com>, Robin Murphy
+ <robin.murphy@arm.com>, David Rientjes <rientjes@google.com>
+Date: Thu, 16 Jul 2020 19:06:22 +0200
+In-Reply-To: <20200710141016.15495-1-nsaenzjulienne@suse.de>
+References: <20200710141016.15495-1-nsaenzjulienne@suse.de>
+User-Agent: Evolution 3.36.4 
 MIME-Version: 1.0
-In-Reply-To: <20200716113234.GA7290@willie-the-truck>
-Content-Language: en-US
-X-Originating-IP: [10.210.168.254]
-X-ClientProxiedBy: lhreml714-chm.china.huawei.com (10.201.108.65) To
- lhreml724-chm.china.huawei.com (10.201.108.75)
-X-CFilter-Loop: Reflected
-Cc: trivial@kernel.org, maz@kernel.org, linuxarm@huawei.com,
- linux-kernel@vger.kernel.org, iommu@lists.linux-foundation.org,
- linux-arm-kernel@lists.infradead.org
+Cc: iommu@lists.linux-foundation.org, linux-rpi-kernel@lists.infradead.org,
+ jeremy.linton@arm.com, linux-kernel@vger.kernel.org
 X-BeenThere: iommu@lists.linux-foundation.org
 X-Mailman-Version: 2.1.15
 Precedence: list
@@ -88,180 +73,149 @@ List-Post: <mailto:iommu@lists.linux-foundation.org>
 List-Help: <mailto:iommu-request@lists.linux-foundation.org?subject=help>
 List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
  <mailto:iommu-request@lists.linux-foundation.org?subject=subscribe>
-Content-Transfer-Encoding: 7bit
-Content-Type: text/plain; charset="us-ascii"; Format="flowed"
+Content-Type: multipart/mixed; boundary="===============5650605971811693317=="
 Errors-To: iommu-bounces@lists.linux-foundation.org
 Sender: "iommu" <iommu-bounces@lists.linux-foundation.org>
 
->>
->> Perhaps a silly question (I'm too engrossed in PMU world ATM to get properly
->> back up to speed on this), but couldn't this be done without cmpxchg anyway?
->> Instinctively it feels like instead of maintaining a literal software copy
->> of the prod value, we could resolve the "claim my slot in the queue" part
->> with atomic_fetch_add on a free-running 32-bit "pseudo-prod" index, then
->> whoever updates the hardware deals with the truncation and wrap bit to
->> convert it to an actual register value.
-> 
-> Maybe, but it's easier said than done. The hard part is figuring how that
-> you have space and there's no way I'm touching that logic without a way to
-> test this.
-> 
-> I'm also not keen to complicate the code because of systems that don't scale
-> well with contended CAS [1]. If you put down loads of cores, you need an
-> interconnect/coherence protocol that can handle it.
 
-JFYI, I added some debug to the driver to get the cmpxchg() attempt rate 
-while running a testharness (below):
-
-cpus	rate
-2	1.1
-4	1.1
-8	1.3
-16	3.6
-32	8.1
-64	12.6
-96	14.7
-
-Ideal rate is 1. So it's not crazy high for many CPUs, but still 
-drifting away from 1.
-
-John
-
-> 
-> Will
-> 
-> [1] https://lore.kernel.org/lkml/20190607072652.GA5522@hc/T/#m0d00f107c29223045933292a8b5b90d2ca9b7e5c
-> .
-> 
-
-//copied from Barry, thanks :)
-
-static int ways = 64;
-module_param(ways, int, S_IRUGO);
-
-static int seconds = 20;
-module_param(seconds, int, S_IRUGO);
-
-int mappings[NR_CPUS];
-struct semaphore sem[NR_CPUS];
+--===============5650605971811693317==
+Content-Type: multipart/signed; micalg="pgp-sha256";
+	protocol="application/pgp-signature"; boundary="=-i8vqeUqMtzSmwKfBb2jT"
 
 
-#define COMPLETIONS_SIZE 50
+--=-i8vqeUqMtzSmwKfBb2jT
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
 
-static noinline dma_addr_t test_mapsingle(struct device *dev, void *buf, 
-int size)
-{
-     dma_addr_t dma_addr = dma_map_single(dev, buf, size, DMA_TO_DEVICE);
-     return dma_addr;
-}
+Hi Chritoph,
 
-static noinline void test_unmapsingle(struct device *dev, void *buf, int 
-size, dma_addr_t dma_addr)
-{
-     dma_unmap_single(dev, dma_addr, size, DMA_TO_DEVICE);
-}
+On Fri, 2020-07-10 at 16:10 +0200, Nicolas Saenz Julienne wrote:
+> There is no guarantee to CMA's placement, so allocating a zone specific
+> atomic pool from CMA might return memory from a completely different
+> memory zone. To get around this double check CMA's placement before
+> allocating from it.
+>=20
+> Fixes: c84dc6e68a1d ("dma-pool: add additional coherent pools to map to g=
+fp
+> mask")
+> Reported-by: Jeremy Linton <jeremy.linton@arm.com>
+> Signed-off-by: Nicolas Saenz Julienne <nsaenzjulienne@suse.de>
+> ---
+>=20
+> This is a code intensive alternative to "dma-pool: Do not allocate pool
+> memory from CMA"[1].
 
-static noinline void test_memcpy(void *out, void *in, int size)
-{
-     memcpy(out, in, size);
-}
+I see you applied "dma-pool: Do not allocate pool memory from CMA" on your
+tree. Do you want me to send a v2 of this patch taking that into account
+targeting v5.9? or you'd rather just follow another approach?
 
-//just a hack to get a dev h behind a SMMU
-extern struct device *hisi_dev;
+Regards,
+Nicolas
 
-static int testthread(void *data)
-{
-     unsigned long stop = jiffies +seconds*HZ;
-     struct device *dev = hisi_dev;
-     char *inputs[COMPLETIONS_SIZE];
-     char *outputs[COMPLETIONS_SIZE];
-     dma_addr_t dma_addr[COMPLETIONS_SIZE];
-     int i, cpu = smp_processor_id();
-     struct semaphore *sem = data;
+>=20
+> [1] https://lkml.org/lkml/2020/7/8/1108
+>=20
+>  kernel/dma/pool.c | 36 +++++++++++++++++++++++++++++++++++-
+>  1 file changed, 35 insertions(+), 1 deletion(-)
+>=20
+> diff --git a/kernel/dma/pool.c b/kernel/dma/pool.c
+> index 8cfa01243ed2..ccf3eeb77e00 100644
+> --- a/kernel/dma/pool.c
+> +++ b/kernel/dma/pool.c
+> @@ -3,6 +3,7 @@
+>   * Copyright (C) 2012 ARM Ltd.
+>   * Copyright (C) 2020 Google LLC
+>   */
+> +#include <linux/cma.h>
+>  #include <linux/debugfs.h>
+>  #include <linux/dma-direct.h>
+>  #include <linux/dma-noncoherent.h>
+> @@ -56,6 +57,39 @@ static void dma_atomic_pool_size_add(gfp_t gfp, size_t
+> size)
+>  		pool_size_kernel +=3D size;
+>  }
+> =20
+> +static bool cma_in_zone(gfp_t gfp)
+> +{
+> +	u64 zone_dma_end, zone_dma32_end;
+> +	phys_addr_t base, end;
+> +	unsigned long size;
+> +	struct cma *cma;
+> +
+> +	cma =3D dev_get_cma_area(NULL);
+> +	if (!cma)
+> +		return false;
+> +
+> +	size =3D cma_get_size(cma);
+> +	if (!size)
+> +		return false;
+> +	base =3D cma_get_base(cma) - memblock_start_of_DRAM();
+> +	end =3D base + size - 1;
+> +
+> +	zone_dma_end =3D IS_ENABLED(CONFIG_ZONE_DMA) ? DMA_BIT_MASK(zone_dma_bi=
+ts)
+> : 0;
+> +	zone_dma32_end =3D IS_ENABLED(CONFIG_ZONE_DMA32) ? DMA_BIT_MASK(32) : 0=
+;
+> +
+> +	/* CMA can't cross zone boundaries, see cma_activate_area() */
+> +	if (IS_ENABLED(CONFIG_ZONE_DMA) && gfp & GFP_DMA &&
+> +	   end <=3D zone_dma_end)
+> +		return true;
+> +	else if (IS_ENABLED(CONFIG_ZONE_DMA32) && gfp & GFP_DMA32 &&
+> +		base > zone_dma_end && end <=3D zone_dma32_end)
+> +		return true;
+> +	else if (base > zone_dma32_end)
+> +		return true;
+> +
+> +	return false;
+> +}
+> +
+>  static int atomic_pool_expand(struct gen_pool *pool, size_t pool_size,
+>  			      gfp_t gfp)
+>  {
+> @@ -70,7 +104,7 @@ static int atomic_pool_expand(struct gen_pool *pool, s=
+ize_t
+> pool_size,
+>  	do {
+>  		pool_size =3D 1 << (PAGE_SHIFT + order);
+> =20
+> -		if (dev_get_cma_area(NULL))
+> +		if (cma_in_zone(gfp))
+>  			page =3D dma_alloc_from_contiguous(NULL, 1 << order,
+>  							 order, false);
+>  		else
 
-     for (i = 0; i < COMPLETIONS_SIZE; i++) {
-         inputs[i] = kzalloc(4096, GFP_KERNEL);
-         if (!inputs[i])
-             return -ENOMEM;
-     }
 
-     for (i = 0; i < COMPLETIONS_SIZE; i++) {
-         outputs[i] = kzalloc(4096, GFP_KERNEL);
-         if (!outputs[i])
-             return -ENOMEM;
-     }
+--=-i8vqeUqMtzSmwKfBb2jT
+Content-Type: application/pgp-signature; name="signature.asc"
+Content-Description: This is a digitally signed message part
+Content-Transfer-Encoding: 7bit
 
-     while (time_before(jiffies, stop)) {
-         for (i = 0; i < COMPLETIONS_SIZE; i++) {
-             dma_addr[i] = test_mapsingle(dev, inputs[i], 4096);
-             test_memcpy(outputs[i], inputs[i], 4096);
-         }
-         for (i = 0; i < COMPLETIONS_SIZE; i++) {
-             test_unmapsingle(dev, inputs[i], 4096, dma_addr[i]);
-         }
-         mappings[cpu] += COMPLETIONS_SIZE;
-     }
+-----BEGIN PGP SIGNATURE-----
 
-     for (i = 0; i < COMPLETIONS_SIZE; i++) {
-         kfree(outputs[i]);
-         kfree(inputs[i]);
-     }
+iQEzBAABCAAdFiEErOkkGDHCg2EbPcGjlfZmHno8x/4FAl8QiQ4ACgkQlfZmHno8
+x/5J8wgAgtnoi3awUaaAoJDZ3SxyOCK0RAeATzl/PIyFmwFPHIHmHND7mUjdEKDZ
+hAJC5gVoRZfflUHUgQ0VhccWa6KoL0Jkf74PiS0h+JRjsHkLWeGCAsJs8532sRrR
+4bHjmyDRi3YtQZu8zpTp9iYbICXN5N9ekA4HyvRo/rTTfbq8THwLsLqtcgfO+uL8
+MMDa6Nsh8Y5KyVWJQCo5/giHR3KEqrN2tHkFi3iBwK+7NQxUzKEOaVl5EHXbmf3T
+rO2MP6cfi0sIz/r3H1Kuni2ntDI4PP4lGVF45H3WSmTntUVOx8/bqV6FtAV0QhqB
+Coam+hyQ0aB/eHvPHwUFJw/fsOQ2KA==
+=iOG2
+-----END PGP SIGNATURE-----
 
-     up(sem);
-
-     return 0;
-}
-
-void smmu_test_core(int cpus)
-{
-     struct task_struct *tsk;
-     int i;
-     int total_mappings = 0;
-
-     ways = cpus;
-
-     for(i=0;i<ways;i++) {
-         mappings[i] = 0;
-         tsk = kthread_create_on_cpu(testthread, &sem[i], i,  "map_test");
-
-         if (IS_ERR(tsk))
-             printk(KERN_ERR "create test thread failed\n");
-         wake_up_process(tsk);
-     }
-
-     for(i=0;i<ways;i++) {
-         down(&sem[i]);
-         total_mappings += mappings[i];
-     }
-
-     printk(KERN_ERR "finished total_mappings=%d (per way=%d) (rate=%d 
-per second per cpu) ways=%d\n",
-     total_mappings, total_mappings / ways, total_mappings / (seconds* 
-ways), ways);
-
-}
-EXPORT_SYMBOL(smmu_test_core);
+--=-i8vqeUqMtzSmwKfBb2jT--
 
 
-static int __init test_init(void)
-{
-     int i;
-
-     for(i=0;i<NR_CPUS;i++)
-         sema_init(&sem[i], 0);
-
-     return 0;
-}
-
-static void __exit test_exit(void)
-{
-}
-
-module_init(test_init);
-module_exit(test_exit);
-MODULE_LICENSE("GPL");
+--===============5650605971811693317==
+Content-Type: text/plain; charset="us-ascii"
+MIME-Version: 1.0
+Content-Transfer-Encoding: 7bit
+Content-Disposition: inline
 
 _______________________________________________
 iommu mailing list
 iommu@lists.linux-foundation.org
 https://lists.linuxfoundation.org/mailman/listinfo/iommu
+--===============5650605971811693317==--
+
